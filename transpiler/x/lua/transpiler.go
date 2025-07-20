@@ -99,6 +99,9 @@ type Ident struct{ Name string }
 type ListLit struct{ Elems []Expr }
 type MapLit struct{ Keys, Values []Expr }
 type MapItem struct{ Key, Value Expr }
+type ListStringExpr struct{ List Expr }
+type MapStringExpr struct{ Map Expr }
+type ValuesStringExpr struct{ List Expr }
 type IndexExpr struct {
 	Target Expr
 	Index  Expr
@@ -144,6 +147,15 @@ func (c *CallExpr) emit(w io.Writer) {
 			} else if isIntExpr(a) {
 				fmtBuf.WriteString("%d")
 				exprs = append(exprs, a)
+			} else if ce, ok := a.(*CallExpr); ok && ce.Func == "values" {
+				fmtBuf.WriteString("%s")
+				exprs = append(exprs, &ValuesStringExpr{List: a})
+			} else if isListExpr(a) {
+				fmtBuf.WriteString("%s")
+				exprs = append(exprs, &ListStringExpr{List: a})
+			} else if isMapExpr(a) {
+				fmtBuf.WriteString("%s")
+				exprs = append(exprs, &MapStringExpr{Map: a})
 			} else {
 				fmtBuf.WriteString("%s")
 				exprs = append(exprs, a)
@@ -521,6 +533,24 @@ func (m *MapLit) emit(w io.Writer) {
 	io.WriteString(w, "}")
 }
 
+func (ls *ListStringExpr) emit(w io.Writer) {
+	io.WriteString(w, "(function(lst)\n  local tmp={}\n  for _,v in ipairs(lst) do\n    table.insert(tmp, tostring(v))\n  end\n  return '[' .. table.concat(tmp, ', ') .. ']'\nend)(")
+	ls.List.emit(w)
+	io.WriteString(w, ")")
+}
+
+func (vs *ValuesStringExpr) emit(w io.Writer) {
+	io.WriteString(w, "(function(lst)\n  local tmp={}\n  for _,v in ipairs(lst) do\n    table.insert(tmp, tostring(v))\n  end\n  return table.concat(tmp, ' ')\nend)(")
+	vs.List.emit(w)
+	io.WriteString(w, ")")
+}
+
+func (ms *MapStringExpr) emit(w io.Writer) {
+	io.WriteString(w, "(function(m)\n  local keys={}\n  for k in pairs(m) do\n    table.insert(keys,k)\n  end\n  table.sort(keys,function(a,b) return a<b end)\n  local tmp={}\n  for _,k in ipairs(keys) do\n    local v=m[k]\n    local kk=(type(k)=='string') and string.format('%q',k) or tostring(k)\n    local vv=(type(v)=='string') and string.format('%q',v) or tostring(v)\n    table.insert(tmp, kk .. ': ' .. vv)\n  end\n  return '{' .. table.concat(tmp, ', ') .. '}'\nend)(")
+	ms.Map.emit(w)
+	io.WriteString(w, ")")
+}
+
 func (ix *IndexExpr) emit(w io.Writer) {
 	switch ix.Kind {
 	case "string":
@@ -715,9 +745,11 @@ func isListExpr(e Expr) bool {
 			return true
 		}
 	case *CallExpr:
-		if ex.Func == "values" {
+		if ex.Func == "values" || ex.Func == "append" {
 			return true
 		}
+	case *QueryComp:
+		return true
 	}
 	return false
 }
