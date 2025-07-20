@@ -6,6 +6,8 @@ import (
 	"bytes"
 	"fmt"
 	"io"
+	"strconv"
+	"strings"
 	"time"
 
 	"mochi/parser"
@@ -66,8 +68,8 @@ type CallExpr struct {
 	Args []Expr
 }
 
-// PrintStmt writes an expression using std.debug.print.
-type PrintStmt struct{ Value Expr }
+// PrintStmt writes one or more expressions using std.debug.print.
+type PrintStmt struct{ Values []Expr }
 
 // VarDecl represents `let` or `var` declarations.
 type VarDecl struct {
@@ -94,6 +96,9 @@ type ExprStmt struct{ Expr Expr }
 type StringLit struct{ Value string }
 
 type IntLit struct{ Value int }
+
+// FloatLit represents a floating point literal.
+type FloatLit struct{ Value float64 }
 
 type VarRef struct{ Name string }
 
@@ -153,8 +158,27 @@ func writeIndent(w io.Writer, n int) {
 
 func (s *PrintStmt) emit(w io.Writer, indent int) {
 	writeIndent(w, indent)
-	io.WriteString(w, "std.debug.print(\"{any}\\n\", .{")
-	s.Value.emit(w)
+	if len(s.Values) == 0 {
+		io.WriteString(w, "std.debug.print(\"\\n\", .{});\n")
+		return
+	}
+	fmtSpec := make([]string, len(s.Values))
+	for i, v := range s.Values {
+		if _, ok := v.(*IndexExpr); ok {
+			fmtSpec[i] = "{c}"
+		} else {
+			fmtSpec[i] = "{any}"
+		}
+	}
+	io.WriteString(w, "std.debug.print(\"")
+	io.WriteString(w, strings.Join(fmtSpec, " "))
+	io.WriteString(w, "\\n\", .{")
+	for i, v := range s.Values {
+		if i > 0 {
+			io.WriteString(w, ", ")
+		}
+		v.emit(w)
+	}
 	io.WriteString(w, "});\n")
 }
 
@@ -205,6 +229,10 @@ func (e *ExprStmt) emit(w io.Writer, indent int) {
 func (s *StringLit) emit(w io.Writer) { fmt.Fprintf(w, "%q", s.Value) }
 
 func (i *IntLit) emit(w io.Writer) { fmt.Fprintf(w, "%d", i.Value) }
+
+func (f *FloatLit) emit(w io.Writer) {
+	io.WriteString(w, strconv.FormatFloat(f.Value, 'f', 1, 64))
+}
 
 func (v *VarRef) emit(w io.Writer) { io.WriteString(w, v.Name) }
 
@@ -606,6 +634,24 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 					return &IntLit{Value: total}, nil
 				}
 			}
+		case "avg":
+			if len(args) == 1 {
+				if list, ok := args[0].(*ListLit); ok {
+					if len(list.Elems) == 0 {
+						return &FloatLit{Value: 0}, nil
+					}
+					total := 0
+					for _, e := range list.Elems {
+						lit, ok := e.(*IntLit)
+						if !ok {
+							return nil, fmt.Errorf("unsupported avg element")
+						}
+						total += lit.Value
+					}
+					avg := float64(total) / float64(len(list.Elems))
+					return &FloatLit{Value: avg}, nil
+				}
+			}
 		case "append":
 			if len(args) == 2 {
 				if list, ok := args[0].(*ListLit); ok {
@@ -764,14 +810,18 @@ func compileStmt(s *parser.Statement, prog *parser.Program) (Stmt, error) {
 	switch {
 	case s.Expr != nil:
 		call := s.Expr.Expr.Binary.Left.Value.Target.Call
-		if call == nil || call.Func != "print" || len(call.Args) != 1 {
+		if call == nil || call.Func != "print" || len(call.Args) == 0 {
 			return nil, fmt.Errorf("unsupported expression")
 		}
-		arg, err := compileExpr(call.Args[0])
-		if err != nil {
-			return nil, err
+		args := make([]Expr, len(call.Args))
+		for i, a := range call.Args {
+			ex, err := compileExpr(a)
+			if err != nil {
+				return nil, err
+			}
+			args[i] = ex
 		}
-		return &PrintStmt{Value: arg}, nil
+		return &PrintStmt{Values: args}, nil
 	case s.Let != nil:
 		var expr Expr
 		var err error

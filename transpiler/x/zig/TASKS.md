@@ -1,3 +1,10 @@
+## Progress (2025-07-20 06:40 +0000)
+- Added multi-argument `print` support with per-element formatting.
+- Implemented `%` operator and string index printing.
+- Constant folded `avg` builtin to emit float literals.
+- Generated golden files for `avg_builtin`, `break_continue` and `string_index`.
+- Updated README checklist (31/100 tests passing)
+
 ## Progress (2025-07-20 05:59 +0000)
 - Implemented constant-folding for `append` builtin including variables.
 - Improved mutable variable detection across blocks and added string comparison using `std.mem.order`.
@@ -42,6 +49,8 @@
 - Regenerated golden files - 24/100 vm valid programs passing
 
 # Zig Transpiler Tasks
+
+- 2025-07-20 06:40 +0000 - Added multi-argument print, avg folding and new golden files (31/100 tests passing)
 
 - 2025-07-20 05:59 +0000 - Implemented append builtin and improved string comparison (28/100 tests passing)
 
