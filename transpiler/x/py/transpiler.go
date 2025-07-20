@@ -2489,7 +2489,22 @@ func convertQueryExpr(q *parser.QueryExpr) (Expr, error) {
 	var cond Expr
 	for _, j := range q.Joins {
 		if j.Side != nil {
-			return nil, fmt.Errorf("unsupported query")
+			if *j.Side != "left" || len(q.Joins) > 1 || len(q.Froms) > 0 {
+				return nil, fmt.Errorf("unsupported query")
+			}
+			src, err := convertExpr(j.Src)
+			if err != nil {
+				return nil, err
+			}
+			on, err := convertExpr(j.On)
+			if err != nil {
+				return nil, err
+			}
+			inner := &ListComp{Var: j.Var, Iter: src, Expr: &Name{Name: j.Var}, Cond: on}
+			left := &BinaryExpr{Left: inner, Op: "||", Right: &ListLit{Elems: []Expr{&Name{Name: "None"}}}}
+			vars = append(vars, j.Var)
+			iters = append(iters, left)
+			continue
 		}
 		e, err := convertExpr(j.Src)
 		if err != nil {
