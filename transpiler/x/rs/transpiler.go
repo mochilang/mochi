@@ -644,9 +644,9 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 				if _, ok := args[0].(*StringLit); !ok {
 					fmtStr := "{}"
 					switch args[0].(type) {
-					case *MapLit, *ValuesExpr:
+					case *MapLit:
 						fmtStr = "{:?}"
-					case *AppendExpr, *ListLit:
+					case *ValuesExpr, *AppendExpr, *ListLit:
 						args[0] = &JoinExpr{List: args[0]}
 					}
 					args = append([]Expr{&StringLit{Value: fmtStr}}, args...)
@@ -777,7 +777,23 @@ func inferType(e Expr) string {
 		return "bool"
 	case *StringLit:
 		return "String"
-	case *ListLit, *ValuesExpr:
+	case *ListLit:
+		if len(ex.Elems) > 0 {
+			t := inferType(ex.Elems[0])
+			if t != "" {
+				return fmt.Sprintf("Vec<%s>", t)
+			}
+		}
+		return "Vec<i64>"
+	case *ValuesExpr:
+		mt := inferType(ex.Map)
+		if strings.HasPrefix(mt, "HashMap<") {
+			parts := strings.TrimPrefix(mt, "HashMap<")
+			if idx := strings.Index(parts, ","); idx > 0 {
+				vt := strings.TrimSuffix(parts[idx+1:], ">")
+				return fmt.Sprintf("Vec<%s>", strings.TrimSpace(vt))
+			}
+		}
 		return "Vec<i64>"
 	case *AppendExpr:
 		return inferType(e.(*AppendExpr).List)
@@ -803,7 +819,20 @@ func inferType(e Expr) string {
 		return "i64"
 	case *MapLit:
 		usesHashMap = true
-		return ""
+		if len(ex.Items) > 0 {
+			kt := inferType(ex.Items[0].Key)
+			vt := inferType(ex.Items[0].Value)
+			if kt == "String" {
+				kt = "&str"
+			} else if kt == "" {
+				kt = "String"
+			}
+			if vt == "" {
+				vt = "i64"
+			}
+			return fmt.Sprintf("HashMap<%s, %s>", kt, vt)
+		}
+		return "HashMap<String, i64>"
 	}
 	return ""
 }
