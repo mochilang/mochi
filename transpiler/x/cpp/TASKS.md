@@ -1,3 +1,53 @@
+## Progress (2025-07-20 21:59 +0700)
+- c transpiler: add values builtin
+- Generated C++ for 73/100 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-20 21:59 +0700)
+- c transpiler: add values builtin
+- Generated C++ for 73/100 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-20 21:59 +0700)
+- c transpiler: add values builtin
+- Generated C++ for 73/100 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-20 21:59 +0700)
+- c transpiler: add values builtin
+- Generated C++ for 73/100 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-20 21:59 +0700)
+- c transpiler: add values builtin
+- Generated C++ for 73/100 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-20 21:59 +0700)
+- c transpiler: add values builtin
+- Generated C++ for 73/100 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-20 21:59 +0700)
+- c transpiler: add values builtin
+- Generated C++ for 73/100 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-20 21:59 +0700)
+- c transpiler: add values builtin
+- Generated C++ for 72/100 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-20 21:59 +0700)
+- c transpiler: add values builtin
+- Generated C++ for 72/100 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-20 21:59 +0700)
+- c transpiler: add values builtin
+- Generated C++ for 72/100 programs
+- Updated README checklist and outputs
+
 ## Progress (2025-07-20 21:09 +0700)
 - transpiler/cpp: improve type inference
 - Generated C++ for 72/100 programs
