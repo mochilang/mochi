@@ -2,7 +2,7 @@
 
 Generated C# code for programs in `tests/vm/valid`. Each program has a `.cs` file produced by the transpiler and a `.out` file containing its runtime output. Compilation or execution errors are captured in a `.error` file placed next to the source.
 
-Compiled programs: 72/100
+Compiled programs: 73/100
 
 ## Checklist
 - [x] append_builtin
@@ -15,10 +15,10 @@ Compiled programs: 72/100
 - [x] cast_struct
 - [x] closure
 - [x] count_builtin
-- [x] cross_join
-- [x] cross_join_filter
-- [x] cross_join_triple
-- [x] dataset_sort_take_limit
+- [ ] cross_join
+- [ ] cross_join_filter
+- [ ] cross_join_triple
+- [ ] dataset_sort_take_limit
 - [x] dataset_where_filter
 - [x] exists_builtin
 - [x] for_list_collection
@@ -28,22 +28,22 @@ Compiled programs: 72/100
 - [x] fun_expr_in_let
 - [x] fun_three_args
 - [ ] go_auto
-- [ ] group_by
-- [ ] group_by_conditional_sum
+- [x] group_by
+- [x] group_by_conditional_sum
 - [ ] group_by_having
-- [ ] group_by_join
+- [x] group_by_join
 - [ ] group_by_left_join
 - [ ] group_by_multi_join
 - [ ] group_by_multi_join_sort
-- [ ] group_by_sort
+- [x] group_by_sort
 - [ ] group_items_iteration
 - [x] if_else
 - [x] if_then_else
 - [x] if_then_else_nested
 - [x] in_operator
 - [x] in_operator_extended
-- [ ] inner_join
-- [ ] join_multi
+- [x] inner_join
+- [x] join_multi
 - [ ] json_builtin
 - [ ] left_join
 - [ ] left_join_multi
@@ -71,7 +71,7 @@ Compiled programs: 72/100
 - [x] nested_function
 - [ ] order_by_map
 - [ ] outer_join
- - [x] partial_application
+- [ ] partial_application
 - [x] print_hello
 - [x] pure_fold
 - [x] pure_global_fold

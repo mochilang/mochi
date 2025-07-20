@@ -31,6 +31,7 @@ var varTypes map[string]string
 var usesDict bool
 var usesLinq bool
 var usesJson bool
+var usesGroup bool
 
 type Stmt interface{ emit(io.Writer) }
 
@@ -1033,6 +1034,7 @@ func Transpile(p *parser.Program, env *types.Env) (*Program, error) {
 	usesDict = false
 	usesLinq = false
 	usesJson = false
+	usesGroup = false
 	for _, st := range p.Statements {
 		s, err := compileStmt(prog, st)
 		if err != nil {
@@ -1716,7 +1718,7 @@ func compileMatchExpr(me *parser.MatchExpr) (Expr, error) {
 }
 
 func compileQueryExpr(q *parser.QueryExpr) (Expr, error) {
-	if len(q.Joins) > 0 || q.Group != nil || q.Distinct {
+	if q.Distinct {
 		return nil, fmt.Errorf("unsupported query")
 	}
 
@@ -1726,40 +1728,112 @@ func compileQueryExpr(q *parser.QueryExpr) (Expr, error) {
 	}
 
 	builder := &strings.Builder{}
-	fmt.Fprintf(builder, "from %s in %s", q.Var, exprString(src))
+	curVar := q.Var
+	fmt.Fprintf(builder, "from %s in %s", curVar, exprString(src))
 
-	savedVar := varTypes[q.Var]
-	savedMap := mapVars[q.Var]
-	varTypes[q.Var] = strings.TrimSuffix(typeOfExpr(src), "[]")
-	if strings.HasPrefix(varTypes[q.Var], "Dictionary<") {
-		mapVars[q.Var] = true
+	savedVar := varTypes[curVar]
+	savedMap := mapVars[curVar]
+	varTypes[curVar] = strings.TrimSuffix(typeOfExpr(src), "[]")
+	if strings.HasPrefix(varTypes[curVar], "Dictionary<") {
+		mapVars[curVar] = true
 	}
 
 	for _, f := range q.Froms {
 		s, err := compileExpr(f.Src)
 		if err != nil {
-			varTypes[q.Var] = savedVar
-			mapVars[q.Var] = savedMap
+			varTypes[curVar] = savedVar
+			mapVars[curVar] = savedMap
 			return nil, err
 		}
 		fmt.Fprintf(builder, " from %s in %s", f.Var, exprString(s))
 	}
 
+	for _, j := range q.Joins {
+		js, err := compileExpr(j.Src)
+		if err != nil {
+			varTypes[curVar] = savedVar
+			mapVars[curVar] = savedMap
+			return nil, err
+		}
+		cond, err := compileExpr(j.On)
+		if err != nil {
+			varTypes[curVar] = savedVar
+			mapVars[curVar] = savedMap
+			return nil, err
+		}
+		cmp, ok := cond.(*CmpExpr)
+		if !ok || cmp.Op != "==" {
+			varTypes[curVar] = savedVar
+			mapVars[curVar] = savedMap
+			return nil, fmt.Errorf("unsupported join condition")
+		}
+		left := exprString(cmp.Left)
+		right := exprString(cmp.Right)
+		if j.Side == nil {
+			fmt.Fprintf(builder, " join %s in %s on %s equals %s", j.Var, exprString(js), left, right)
+		} else if *j.Side == "left" {
+			tmp := j.Var + "Tmp"
+			fmt.Fprintf(builder, " join %s in %s on %s equals %s into %s", tmp, exprString(js), left, right, tmp)
+			fmt.Fprintf(builder, " from %s in %s.DefaultIfEmpty()", j.Var, tmp)
+		} else {
+			varTypes[curVar] = savedVar
+			mapVars[curVar] = savedMap
+			return nil, fmt.Errorf("unsupported join side")
+		}
+		varTypes[j.Var] = strings.TrimSuffix(typeOfExpr(js), "[]")
+		if strings.HasPrefix(varTypes[j.Var], "Dictionary<") {
+			mapVars[j.Var] = true
+		}
+	}
+
 	if q.Where != nil {
 		cond, err := compileExpr(q.Where)
 		if err != nil {
-			varTypes[q.Var] = savedVar
-			mapVars[q.Var] = savedMap
+			varTypes[curVar] = savedVar
+			mapVars[curVar] = savedMap
 			return nil, err
 		}
 		fmt.Fprintf(builder, " where %s", exprString(cond))
 	}
 
+	if q.Group != nil {
+		if len(q.Group.Exprs) != 1 {
+			varTypes[curVar] = savedVar
+			mapVars[curVar] = savedMap
+			return nil, fmt.Errorf("unsupported group")
+		}
+		keyExpr, err := compileExpr(q.Group.Exprs[0])
+		if err != nil {
+			varTypes[curVar] = savedVar
+			mapVars[curVar] = savedMap
+			return nil, err
+		}
+		keyType := typeOfExpr(keyExpr)
+		elemType := varTypes[curVar]
+		tmp := q.Group.Name + "Tmp"
+		fmt.Fprintf(builder, " group %s by %s into %s", curVar, exprString(keyExpr), tmp)
+		fmt.Fprintf(builder, " let %s = new Group<%s, %s>(%s.Key, %s)", q.Group.Name, keyType, elemType, tmp, tmp)
+		varTypes[q.Group.Name] = fmt.Sprintf("%s[]", elemType)
+		usesGroup = true
+		if q.Group.Having != nil {
+			cond, err := compileExpr(q.Group.Having)
+			if err != nil {
+				varTypes[curVar] = savedVar
+				mapVars[curVar] = savedMap
+				return nil, err
+			}
+			fmt.Fprintf(builder, " where %s", exprString(cond))
+		}
+		// after grouping, use new variable
+		savedVar = varTypes[q.Group.Name]
+		curVar = q.Group.Name
+	}
+
 	if q.Sort != nil {
 		sortExpr, err := compileExpr(q.Sort)
 		if err != nil {
-			varTypes[q.Var] = savedVar
-			mapVars[q.Var] = savedMap
+			varTypes[curVar] = savedVar
+			mapVars[curVar] = savedMap
 			return nil, err
 		}
 		desc := false
@@ -1775,8 +1849,8 @@ func compileQueryExpr(q *parser.QueryExpr) (Expr, error) {
 
 	sel, err := compileExpr(q.Select)
 	if err != nil {
-		varTypes[q.Var] = savedVar
-		mapVars[q.Var] = savedMap
+		varTypes[curVar] = savedVar
+		mapVars[curVar] = savedMap
 		return nil, err
 	}
 
@@ -1801,8 +1875,8 @@ func compileQueryExpr(q *parser.QueryExpr) (Expr, error) {
 
 	query = fmt.Sprintf("(%s).ToArray()", query)
 
-	varTypes[q.Var] = savedVar
-	mapVars[q.Var] = savedMap
+	varTypes[curVar] = savedVar
+	mapVars[curVar] = savedMap
 	usesLinq = true
 
 	elemType := typeOfExpr(sel)
@@ -1813,7 +1887,7 @@ func compileQueryExpr(q *parser.QueryExpr) (Expr, error) {
 func Emit(prog *Program) []byte {
 	var buf bytes.Buffer
 	buf.WriteString("using System;\n")
-	if usesDict {
+	if usesDict || usesGroup {
 		buf.WriteString("using System.Collections.Generic;\n")
 	}
 	if usesLinq {
@@ -1823,6 +1897,15 @@ func Emit(prog *Program) []byte {
 		buf.WriteString("using System.Text.Json;\n")
 	}
 	buf.WriteString("\n")
+	if usesGroup {
+		buf.WriteString("class Group<K,T> : IEnumerable<T> {\n")
+		buf.WriteString("    public K key;\n")
+		buf.WriteString("    List<T> items;\n")
+		buf.WriteString("    public Group(K k, IEnumerable<T> it) { key = k; items = new List<T>(it); }\n")
+		buf.WriteString("    public IEnumerator<T> GetEnumerator() => items.GetEnumerator();\n")
+		buf.WriteString("    System.Collections.IEnumerator IEnumerable.GetEnumerator() => items.GetEnumerator();\n")
+		buf.WriteString("}\n\n")
+	}
 	buf.WriteString("class Program {\n")
 	for _, g := range prog.Globals {
 		buf.WriteString("\tstatic ")

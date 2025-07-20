@@ -1,3 +1,18 @@
+## Progress (2025-07-20 07:59 UTC)
+- cs transpiler: add join and group by (progress 73/100)
+
+## Progress (2025-07-20 14:44 +0700)
+- cs transpiler: support cross join and sort (progress 73/100)
+
+## Progress (2025-07-20 14:44 +0700)
+- cs transpiler: support cross join and sort (progress 67/100)
+
+## Progress (2025-07-20 14:44 +0700)
+- cs transpiler: support cross join and sort (progress 67/100)
+
+## Progress (2025-07-20 14:44 +0700)
+- cs transpiler: support cross join and sort (progress 67/100)
+
 ## Progress (2025-07-20 14:31 +0700)
 - feat(scala): support structs and match (progress 67/100)
 
@@ -18,4 +33,9 @@
 ## Remaining Work
 - [x] Implement loops and conditionals
 - [ ] Support map and list mutation operations
+
+
+
+
+
 
