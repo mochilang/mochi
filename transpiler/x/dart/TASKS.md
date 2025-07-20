@@ -1,26 +1,10 @@
-## Recent Enhancements (2025-07-20 09:12 +0700)
+## Recent Enhancements (2025-07-20 09:35 +0700)
 - Improved variable declarations with basic type inference.
 - Simplified `avg` builtin emission using list methods.
 - Updated README checklist with progress summary.
 
-- Refined boolean operator emission.
-- Added string concatenation type inference.
-- Simplified main emitter for readability.
-- Regenerated README progress (48/100).
-
-- Updated README checklist to include all golden tests.
-- Enhanced type inference for lists and maps.
-- Removed version/time helpers for simpler output.
-
-- Added support for map literals and method calls.
-- Generated golden outputs for `len_map` and `string_contains`.
-
-- Added support for `break` and `continue` statements.
-- Implemented `if ... then ... else` expressions.
-- Added list indexing support and `substring` builtin.
-- Implemented `append` and `avg` builtins.
-- Added list and string `in` operator support.
-- Refactored `avg` builtin to use a simple loop for clarity.
+## Progress (2025-07-20 09:35 +0700)
+- VM valid 48/100
 
 # Dart Transpiler Tasks
 - Added boolean literals and logical operators.
