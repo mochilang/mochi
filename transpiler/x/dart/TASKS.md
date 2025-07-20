@@ -1,12 +1,11 @@
-## Recent Enhancements (2025-07-20 11:38 +0700)
+## Recent Enhancements (2025-07-20 11:50 +0700)
 - Improved variable declarations with basic type inference.
 - Simplified `avg` builtin emission using list methods.
 - Updated README checklist with progress summary.
-- Enhanced loop indentation for more idiomatic Dart output.
+- Added support for `exists` queries using `any()`.
 
-## Progress (2025-07-20 11:38 +0700)
-- VM valid 56/100
-- Regenerated dart sources with improved indentation
+## Progress (2025-07-20 11:50 +0700)
+- VM valid 57/100
 
 # Dart Transpiler Tasks
 - Added boolean literals and logical operators.
