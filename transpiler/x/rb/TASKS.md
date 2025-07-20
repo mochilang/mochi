@@ -1,3 +1,8 @@
+## Progress (2025-07-20 09:56 +0700)
+- VM valid golden test results updated
+- Added support for typed variable declarations with default values
+- Header now uses Git commit timestamp for deterministic output
+
 ## Progress (2025-07-20 09:22 +0700)
 - VM valid golden test results updated
 - Improved average builtin to emit floating-point division
