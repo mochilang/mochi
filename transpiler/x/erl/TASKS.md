@@ -1,3 +1,7 @@
+## Progress (2025-07-20 10:18 +0700)
+- Multi-line case expressions for clearer output.
+- VM valid golden test results updated to 34/100
+
 ## Progress (2025-07-20 09:38 +0700)
 - VM valid golden test results updated to 34/100
 
