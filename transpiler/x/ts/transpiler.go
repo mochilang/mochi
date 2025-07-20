@@ -342,6 +342,13 @@ type UpdateStmt struct {
 	Cond   Expr
 }
 
+// StructUpdateExpr creates a copy of a struct with one field changed.
+type StructUpdateExpr struct {
+	Target Expr
+	Field  string
+	Value  Expr
+}
+
 // RawExpr emits raw TypeScript code verbatim.
 type RawExpr struct{ Code string }
 
@@ -1040,6 +1047,19 @@ func (u *UpdateStmt) emit(w io.Writer) {
 	io.WriteString(w, "}\n")
 }
 
+func (u *StructUpdateExpr) emit(w io.Writer) {
+	io.WriteString(w, "({ ...")
+	if u.Target != nil {
+		u.Target.emit(w)
+	}
+	io.WriteString(w, ", ")
+	fmt.Fprintf(w, "%q: ", u.Field)
+	if u.Value != nil {
+		u.Value.emit(w)
+	}
+	io.WriteString(w, " })")
+}
+
 func (r *RawExpr) emit(w io.Writer) { io.WriteString(w, r.Code) }
 
 func (v *VarDecl) emit(w io.Writer) {
@@ -1469,6 +1489,14 @@ func convertStmt(s *parser.Statement) (Stmt, error) {
 			return nil, err
 		}
 		target := Expr(&NameRef{Name: s.Assign.Name})
+		if len(s.Assign.Field) == 1 && len(s.Assign.Index) == 0 {
+			if t, err2 := transpileEnv.GetVar(s.Assign.Name); err2 == nil {
+				if _, ok := t.(types.StructType); ok {
+					expr := &StructUpdateExpr{Target: target, Field: s.Assign.Field[0].Name, Value: val}
+					return &AssignStmt{Name: s.Assign.Name, Expr: expr}, nil
+				}
+			}
+		}
 		if len(s.Assign.Index) > 0 {
 			target, err = applyIndexOps(target, s.Assign.Index)
 			if err != nil {
@@ -3024,6 +3052,11 @@ func exprToNode(e Expr) *ast.Node {
 		for _, e := range ex.Entries {
 			n.Children = append(n.Children, &ast.Node{Kind: "entry", Children: []*ast.Node{exprToNode(e.Key), exprToNode(e.Value)}})
 		}
+		return n
+	case *StructUpdateExpr:
+		n := &ast.Node{Kind: "struct-update", Value: ex.Field}
+		n.Children = append(n.Children, exprToNode(ex.Target))
+		n.Children = append(n.Children, exprToNode(ex.Value))
 		return n
 	case *IndexExpr:
 		return &ast.Node{Kind: "index", Children: []*ast.Node{exprToNode(ex.Target), exprToNode(ex.Index)}}
