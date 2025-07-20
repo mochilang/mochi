@@ -1,3 +1,18 @@
+## Progress (2025-07-20 13:26 +0700)
+- VM valid golden test results updated
+
+## Progress (2025-07-20 13:26 +0700)
+- VM valid golden test results updated
+
+## Progress (2025-07-20 13:26 +0700)
+- VM valid golden test results updated
+
+## Progress (2025-07-20 13:26 +0700)
+- VM valid golden test results updated
+
+## Progress (2025-07-20 13:26 +0700)
+- VM valid golden test results updated
+
 ## Progress (2025-07-20 12:54 +0700)
 - Added support for named function calls and generated golden output for `fun_call`
 - VM valid golden test results updated
