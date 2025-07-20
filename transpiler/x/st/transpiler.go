@@ -72,6 +72,18 @@ func (v value) String() string {
 			parts[i] = elem.String()
 		}
 		return "#(" + strings.Join(parts, " ") + ")"
+	case valMap:
+		keys := make([]string, 0, len(v.kv))
+		for k := range v.kv {
+			keys = append(keys, k)
+		}
+		sort.Strings(keys)
+		items := make([]string, len(keys))
+		for i, k := range keys {
+			val := v.kv[k]
+			items[i] = fmt.Sprintf("'%s'->%s", escape(k), val.String())
+		}
+		return "Dictionary newFrom: { " + strings.Join(items, ". ") + " }"
 	default:
 		return ""
 	}
@@ -739,14 +751,26 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 			return nil
 		case st.Expr != nil:
 			call := st.Expr.Expr.Binary.Left.Value.Target.Call
-			if call == nil || call.Func != "print" || len(call.Args) != 1 {
+			if call == nil || call.Func != "print" {
 				return fmt.Errorf("unsupported expression")
 			}
-			arg, err := evalExpr(call.Args[0], vars)
-			if err != nil {
-				return err
+			if len(call.Args) == 0 {
+				return fmt.Errorf("print with no args")
 			}
-			p.Lines = append(p.Lines, fmt.Sprintf("Transcript show: %s; cr", arg))
+			parts := make([]string, len(call.Args))
+			for i, a := range call.Args {
+				v, err := evalExpr(a, vars)
+				if err != nil {
+					return err
+				}
+				parts[i] = v.String()
+			}
+			line := "Transcript show:" + parts[0]
+			for _, part := range parts[1:] {
+				line += "; show:' '; show:" + part
+			}
+			line += "; cr"
+			p.Lines = append(p.Lines, line)
 		default:
 			return fmt.Errorf("unsupported statement")
 		}
