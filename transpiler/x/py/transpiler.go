@@ -24,9 +24,25 @@ type Program struct {
 	Stmts []Stmt
 }
 
+type ClassDef struct {
+	Name   string
+	Fields []Field
+}
+
+type Field struct {
+	Name string
+	Type string
+}
+
+func (*ClassDef) isStmt() {}
+
 var (
 	currentImports map[string]bool
 	currentEnv     *types.Env
+
+	autoStructs map[string]*ClassDef
+	structKeys  map[string]string
+	structCount int
 )
 
 type Stmt interface{ isStmt() }
@@ -273,6 +289,41 @@ func (d *DictLit) emit(w io.Writer) error {
 	_, err := io.WriteString(w, "}")
 	return err
 }
+
+type StructExpr struct {
+	Name   string
+	Fields []string
+	Values []Expr
+}
+
+func (s *StructExpr) emit(w io.Writer) error {
+	if _, err := io.WriteString(w, s.Name+"("); err != nil {
+		return err
+	}
+	for i, f := range s.Fields {
+		if i > 0 {
+			if _, err := io.WriteString(w, ", "); err != nil {
+				return err
+			}
+		}
+		if _, err := io.WriteString(w, f+"="); err != nil {
+			return err
+		}
+		if err := emitExpr(w, s.Values[i]); err != nil {
+			return err
+		}
+	}
+	_, err := io.WriteString(w, ")")
+	return err
+}
+
+type AttrAssignStmt struct {
+	Target Expr
+	Field  string
+	Value  Expr
+}
+
+func (*AttrAssignStmt) isStmt() {}
 
 type IndexExpr struct {
 	Target Expr
@@ -793,6 +844,21 @@ func emitStmtIndent(w io.Writer, s Stmt, indent string) error {
 		}
 		_, err := io.WriteString(w, "\n")
 		return err
+	case *AttrAssignStmt:
+		if _, err := io.WriteString(w, indent); err != nil {
+			return err
+		}
+		if err := emitExpr(w, st.Target); err != nil {
+			return err
+		}
+		if _, err := io.WriteString(w, "."+st.Field+" = "); err != nil {
+			return err
+		}
+		if err := emitExpr(w, st.Value); err != nil {
+			return err
+		}
+		_, err := io.WriteString(w, "\n")
+		return err
 	case *FuncDef:
 		if _, err := io.WriteString(w, indent+"def "+st.Name+"("); err != nil {
 			return err
@@ -1017,13 +1083,53 @@ func zeroValueExpr(t types.Type) Expr {
 	}
 }
 
+func pyType(t types.Type) string {
+	switch t.(type) {
+	case types.IntType, types.Int64Type:
+		return "int"
+	case types.FloatType:
+		return "float"
+	case types.StringType:
+		return "str"
+	case types.BoolType:
+		return "bool"
+	default:
+		return "object"
+	}
+}
+
+func registerAutoStruct(st types.StructType, base string) string {
+	if autoStructs == nil {
+		autoStructs = map[string]*ClassDef{}
+		structKeys = map[string]string{}
+	}
+	keyParts := append([]string(nil), st.Order...)
+	key := strings.Join(keyParts, ",")
+	if n, ok := structKeys[key]; ok {
+		return n
+	}
+	structCount++
+	name := base
+	if name == "" {
+		name = fmt.Sprintf("Auto%d", structCount)
+	}
+	fields := make([]Field, len(st.Order))
+	for i, f := range st.Order {
+		fields[i] = Field{Name: f, Type: pyType(st.Fields[f])}
+	}
+	autoStructs[name] = &ClassDef{Name: name, Fields: fields}
+	structKeys[key] = name
+	currentImports["dataclasses"] = true
+	return name
+}
+
 // substituteFields replaces Name nodes that match the given field names with
 // map access on the provided variable.
 func substituteFields(e Expr, varName string, fields map[string]bool) Expr {
 	switch ex := e.(type) {
 	case *Name:
 		if fields[ex.Name] {
-			return &FieldExpr{Target: &Name{Name: varName}, Name: ex.Name, MapIndex: true}
+			return &FieldExpr{Target: &Name{Name: varName}, Name: ex.Name}
 		}
 		return ex
 	case *BinaryExpr:
@@ -1360,6 +1466,9 @@ func Emit(w io.Writer, p *Program) error {
 		if currentImports["os"] && !hasImport(p, "os") {
 			imports = append(imports, "import os")
 		}
+		if currentImports["dataclasses"] && !hasImport(p, "dataclasses") {
+			imports = append(imports, "import dataclasses")
+		}
 	}
 	for _, s := range p.Stmts {
 		if im, ok := s.(*ImportStmt); ok {
@@ -1385,6 +1494,24 @@ func Emit(w io.Writer, p *Program) error {
 		switch st := s.(type) {
 		case *ImportStmt:
 			// already emitted above
+			continue
+		case *ClassDef:
+			if _, err := io.WriteString(w, "@dataclasses.dataclass\nclass "+st.Name+":\n"); err != nil {
+				return err
+			}
+			for _, f := range st.Fields {
+				if _, err := io.WriteString(w, "    "+f.Name+": "+f.Type+"\n"); err != nil {
+					return err
+				}
+			}
+			if len(st.Fields) == 0 {
+				if _, err := io.WriteString(w, "    pass\n"); err != nil {
+					return err
+				}
+			}
+			if _, err := io.WriteString(w, "\n"); err != nil {
+				return err
+			}
 			continue
 		case *ExprStmt:
 			if err := emitExpr(w, st.Expr); err != nil {
@@ -1573,6 +1700,9 @@ func Emit(w io.Writer, p *Program) error {
 func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	currentImports = map[string]bool{}
 	currentEnv = env
+	autoStructs = map[string]*ClassDef{}
+	structKeys = map[string]string{}
+	structCount = 0
 	p := &Program{}
 	for _, st := range prog.Statements {
 		switch {
@@ -1700,10 +1830,10 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 			} else if len(st.Assign.Index) == 0 && len(st.Assign.Field) > 0 {
 				target := Expr(&Name{Name: st.Assign.Name})
 				for i := 0; i < len(st.Assign.Field)-1; i++ {
-					target = &FieldExpr{Target: target, Name: st.Assign.Field[i].Name, MapIndex: true}
+					target = &FieldExpr{Target: target, Name: st.Assign.Field[i].Name}
 				}
-				idx := &StringLit{Value: st.Assign.Field[len(st.Assign.Field)-1].Name}
-				p.Stmts = append(p.Stmts, &IndexAssignStmt{Target: target, Index: idx, Value: val})
+				field := st.Assign.Field[len(st.Assign.Field)-1].Name
+				p.Stmts = append(p.Stmts, &AttrAssignStmt{Target: target, Field: field, Value: val})
 			} else {
 				return nil, fmt.Errorf("unsupported assignment")
 			}
@@ -1783,6 +1913,18 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 			// ignore extern object declarations
 			continue
 		case st.Type != nil:
+			if len(st.Type.Variants) == 0 {
+				var fields []Field
+				for _, m := range st.Type.Members {
+					if m.Field != nil {
+						ft := types.ResolveTypeRef(m.Field.Type, env)
+						fields = append(fields, Field{Name: m.Field.Name, Type: pyType(ft)})
+					}
+				}
+				autoStructs[st.Type.Name] = &ClassDef{Name: st.Type.Name, Fields: fields}
+				currentImports["dataclasses"] = true
+				continue
+			}
 			for _, v := range st.Type.Variants {
 				if len(v.Fields) == 0 {
 					p.Stmts = append(p.Stmts, &LetStmt{Name: v.Name, Expr: &Name{Name: "None"}})
@@ -1792,7 +1934,13 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 		case st.ExternType != nil:
 			continue
 		case st.Fun != nil:
-			body, err := convertStmts(st.Fun.Body, env)
+			child := types.NewEnv(env)
+			for _, pa := range st.Fun.Params {
+				if pa.Type != nil {
+					child.SetVar(pa.Name, types.ResolveTypeRef(pa.Type, env), true)
+				}
+			}
+			body, err := convertStmts(st.Fun.Body, child)
 			if err != nil {
 				return nil, err
 			}
@@ -1805,11 +1953,29 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 			return nil, fmt.Errorf("unsupported statement")
 		}
 	}
+	if len(autoStructs) > 0 {
+		names := make([]string, 0, len(autoStructs))
+		for n := range autoStructs {
+			names = append(names, n)
+		}
+		sort.Strings(names)
+		var classStmts []Stmt
+		for _, n := range names {
+			classStmts = append(classStmts, autoStructs[n])
+		}
+		p.Stmts = append(classStmts, p.Stmts...)
+	}
 	_ = env // unused for now
 	return p, nil
 }
 
 func convertStmts(list []*parser.Statement, env *types.Env) ([]Stmt, error) {
+	prevEnv := currentEnv
+	if env != nil {
+		currentEnv = env
+	}
+	defer func() { currentEnv = prevEnv }()
+
 	var out []Stmt
 	for _, s := range list {
 		switch {
@@ -1937,10 +2103,10 @@ func convertStmts(list []*parser.Statement, env *types.Env) ([]Stmt, error) {
 			} else if len(s.Assign.Index) == 0 && len(s.Assign.Field) > 0 {
 				target := Expr(&Name{Name: s.Assign.Name})
 				for i := 0; i < len(s.Assign.Field)-1; i++ {
-					target = &FieldExpr{Target: target, Name: s.Assign.Field[i].Name, MapIndex: true}
+					target = &FieldExpr{Target: target, Name: s.Assign.Field[i].Name}
 				}
-				idx := &StringLit{Value: s.Assign.Field[len(s.Assign.Field)-1].Name}
-				out = append(out, &IndexAssignStmt{Target: target, Index: idx, Value: val})
+				field := s.Assign.Field[len(s.Assign.Field)-1].Name
+				out = append(out, &AttrAssignStmt{Target: target, Field: field, Value: val})
 			} else {
 				return nil, fmt.Errorf("unsupported assignment")
 			}
@@ -2135,10 +2301,16 @@ func convertSelector(sel *parser.SelectorExpr, method bool) Expr {
 	if currentImports != nil && currentImports[sel.Root] {
 		mapIndex = false
 	}
+	if currentEnv != nil {
+		if t, err := currentEnv.GetVar(sel.Root); err == nil {
+			if _, ok := t.(types.StructType); ok {
+				mapIndex = false
+			}
+		}
+	}
 	for i, t := range sel.Tail {
 		idx := i == len(sel.Tail)-1 && method
 		expr = &FieldExpr{Target: expr, Name: t, MapIndex: mapIndex && !idx}
-		mapIndex = true
 	}
 	return expr
 }
@@ -2205,6 +2377,14 @@ func convertPostfix(p *parser.PostfixExpr) (Expr, error) {
 				if err != nil {
 					return nil, err
 				}
+				if n, ok := ae.(*Name); ok && currentEnv != nil {
+					if t, err := currentEnv.GetVar(n.Name); err == nil {
+						if _, ok := t.(types.StructType); ok {
+							ae = &RawExpr{Code: fmt.Sprintf("dataclasses.replace(%s)", n.Name)}
+							currentImports["dataclasses"] = true
+						}
+					}
+				}
 				args = append(args, ae)
 			}
 			if fe, ok := expr.(*FieldExpr); ok && fe.Name == "contains" && len(args) == 1 {
@@ -2224,6 +2404,16 @@ func convertPostfix(p *parser.PostfixExpr) (Expr, error) {
 			case "bool":
 				expr = &CallExpr{Func: &Name{Name: "bool"}, Args: []Expr{expr}}
 			default:
+				if st, ok := currentEnv.GetStruct(name); ok {
+					if dl, ok := expr.(*DictLit); ok {
+						if len(dl.Keys) == len(st.Order) {
+							values := make([]Expr, len(dl.Values))
+							copy(values, dl.Values)
+							expr = &StructExpr{Name: st.Name, Fields: st.Order, Values: values}
+							break
+						}
+					}
+				}
 				// ignore cast for other types
 			}
 		default:
@@ -2389,15 +2579,21 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 		}
 		return &DictLit{Keys: keys, Values: values}, nil
 	case p.Struct != nil:
-		var keys []Expr
+		st, ok := currentEnv.GetStruct(p.Struct.Name)
 		var values []Expr
 		for _, f := range p.Struct.Fields {
 			ve, err := convertExpr(f.Value)
 			if err != nil {
 				return nil, err
 			}
-			keys = append(keys, &StringLit{Value: f.Name})
 			values = append(values, ve)
+		}
+		if ok {
+			return &StructExpr{Name: st.Name, Fields: st.Order, Values: values}, nil
+		}
+		keys := make([]Expr, len(p.Struct.Fields))
+		for i, f := range p.Struct.Fields {
+			keys[i] = &StringLit{Value: f.Name}
 		}
 		return &DictLit{Keys: keys, Values: values}, nil
 	case p.FunExpr != nil && p.FunExpr.ExprBody != nil:

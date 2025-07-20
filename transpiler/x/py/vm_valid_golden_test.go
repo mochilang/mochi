@@ -109,9 +109,6 @@ func updateReadme() {
 	readmePath := filepath.Join(root, "transpiler", "x", "py", "README.md")
 	files, _ := filepath.Glob(filepath.Join(srcDir, "*.mochi"))
 	sort.Strings(files)
-	if len(files) > 100 {
-		files = files[:100]
-	}
 	total := len(files)
 	compiled := 0
 	var lines []string
@@ -152,9 +149,6 @@ func updateTasks() {
 	outDir := filepath.Join(root, "tests", "transpiler", "x", "py")
 	files, _ := filepath.Glob(filepath.Join(srcDir, "*.mochi"))
 	sort.Strings(files)
-	if len(files) > 100 {
-		files = files[:100]
-	}
 	total := len(files)
 	compiled := 0
 	for _, f := range files {

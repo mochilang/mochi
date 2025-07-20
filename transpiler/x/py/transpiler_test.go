@@ -379,3 +379,7 @@ func TestTranspile_QuerySumSelect(t *testing.T) {
 func TestTranspile_UpdateStmt(t *testing.T) {
 	runCase(t, "update_stmt")
 }
+
+func TestTranspile_UpdateRecordField(t *testing.T) {
+	runCase(t, "update_record_field")
+}

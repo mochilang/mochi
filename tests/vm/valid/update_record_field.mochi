@@ -1,0 +1,11 @@
+// Demonstrates updating a record field inside a function
+
+type Counter { count: int }
+
+fun inc(c: Counter) {
+  c.count = c.count + 1
+}
+
+var ctr = Counter { count: 0 }
+inc(ctr)
+print(ctr.count)
