@@ -1,3 +1,7 @@
+## Progress (2025-07-20 22:05 +0700)
+- Added exists builtin support in the F# transpiler
+- Generated F# for 100/100 programs (61 passing)
+
 ## Progress (2025-07-20 14:36 UTC)
 - Generated F# for 100/100 programs (60 passing)
 

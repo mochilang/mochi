@@ -1331,6 +1331,15 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 				fn = "List.averageBy float"
 			}
 			return &CallExpr{Func: fn, Args: args}, nil
+		case "exists":
+			if len(args) != 1 {
+				return nil, fmt.Errorf("exists expects 1 arg")
+			}
+			fn := "Seq.isEmpty"
+			if inferType(args[0]) == "list" {
+				fn = "List.isEmpty"
+			}
+			return &UnaryExpr{Op: "not", Expr: &CallExpr{Func: fn, Args: args}}, nil
 		case "append":
 			if len(args) != 2 {
 				return nil, fmt.Errorf("append expects 2 args")
