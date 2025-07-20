@@ -21,8 +21,10 @@ func javaType(t string) string {
 		return "boolean"
 	case "string":
 		return "String"
+	case "void":
+		return "void"
 	default:
-		return "Object"
+		return "int"
 	}
 }
 
@@ -188,15 +190,10 @@ func (s *LetStmt) emit(w io.Writer, indent string) {
 	if typ == "" && s.Expr != nil {
 		typ = inferType(s.Expr)
 	}
-	if typ != "" {
-		fmt.Fprint(w, javaType(typ)+" "+s.Name)
-	} else {
-		if indent == "    " {
-			fmt.Fprint(w, "int "+s.Name)
-		} else {
-			fmt.Fprint(w, "var "+s.Name)
-		}
+	if typ == "" {
+		typ = "int"
 	}
+	fmt.Fprint(w, javaType(typ)+" "+s.Name)
 	if s.Expr != nil {
 		fmt.Fprint(w, " = ")
 		s.Expr.emit(w)
@@ -219,15 +216,10 @@ func (s *VarStmt) emit(w io.Writer, indent string) {
 	if typ == "" && s.Expr != nil {
 		typ = inferType(s.Expr)
 	}
-	if typ != "" {
-		fmt.Fprint(w, javaType(typ)+" "+s.Name)
-	} else {
-		if indent == "    " {
-			fmt.Fprint(w, "int "+s.Name)
-		} else {
-			fmt.Fprint(w, "var "+s.Name)
-		}
+	if typ == "" {
+		typ = "int"
 	}
+	fmt.Fprint(w, javaType(typ)+" "+s.Name)
 	if s.Expr != nil {
 		fmt.Fprint(w, " = ")
 		s.Expr.emit(w)

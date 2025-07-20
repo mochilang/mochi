@@ -1,4 +1,10 @@
-## Progress (2025-07-20 10:00 +0700)
+## Progress (2025-07-20 10:28 +0700)
+- java transpiler: simplify var types (717a1b129)
+
+- prolog: improve readability and remove style check (5d6f4afbd)
+
+- prolog: improve readability and remove style check (5d6f4afbd)
+
 - java transpiler: support string indexing and casts (6fbf9613a)
 - java transpiler: improve inference (1fc6f104a)
 - remove stale error files (ffbcf3bb2)
