@@ -22,7 +22,7 @@ Generated C++ code for programs in `tests/vm/valid`. Each program has a `.cpp` f
 - [ ] exists_builtin
 - [x] for_list_collection
 - [x] for_loop
-- [ ] for_map_collection
+- [x] for_map_collection
 - [x] fun_call
 - [x] fun_expr_in_let
 - [x] fun_three_args
@@ -65,7 +65,7 @@ Generated C++ code for programs in `tests/vm/valid`. Each program has a `.cpp` f
 - [ ] match_expr
 - [ ] match_full
 - [x] math_ops
-- [x] membership
+- [ ] membership
 - [ ] min_max_builtin
 - [ ] nested_function
 - [ ] order_by_map

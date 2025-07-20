@@ -1,3 +1,13 @@
+## Progress (2025-07-20 12:50 +0700)
+- cpp transpiler: support map iteration
+- Generated C++ for 48/100 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-20 12:42 +0700)
+- cs transpiler: improve exists builtin emission
+- Generated C++ for 48/100 programs
+- Updated README checklist and outputs
+
 ## Progress (2025-07-20 12:19 +0700)
 - update scala progress
 - Generated C++ for 48/100 programs
