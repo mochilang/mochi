@@ -84,3 +84,6 @@ func TestCPPTranspiler_Slice(t *testing.T)             { runExample(t, "slice") 
 func TestCPPTranspiler_StringPrefixSlice(t *testing.T) { runExample(t, "string_prefix_slice") }
 func TestCPPTranspiler_MapAssign(t *testing.T)         { runExample(t, "map_assign") }
 func TestCPPTranspiler_MapIndex(t *testing.T)          { runExample(t, "map_index") }
+func TestCPPTranspiler_AppendBuiltin(t *testing.T)     { runExample(t, "append_builtin") }
+func TestCPPTranspiler_AvgBuiltin(t *testing.T)        { runExample(t, "avg_builtin") }
+func TestCPPTranspiler_CountBuiltin(t *testing.T)      { runExample(t, "count_builtin") }
