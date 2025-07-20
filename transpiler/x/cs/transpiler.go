@@ -560,6 +560,20 @@ func (f *FieldExpr) emit(w io.Writer) {
 	}
 }
 
+// RawExpr holds arbitrary C# code produced by the transpiler.
+type RawExpr struct {
+	Code string
+	Type string
+}
+
+func (r *RawExpr) emit(w io.Writer) { io.WriteString(w, r.Code) }
+
+func exprString(e Expr) string {
+	var buf bytes.Buffer
+	e.emit(&buf)
+	return buf.String()
+}
+
 // SliceExpr represents xs[a:b] or s[a:b] for lists and strings.
 type SliceExpr struct {
 	Value Expr
@@ -787,6 +801,8 @@ func typeOfExpr(e Expr) string {
 		case "Select", "Where":
 			return typeOfExpr(ex.Target)
 		}
+	case *RawExpr:
+		return ex.Type
 	}
 	return ""
 }
@@ -1700,7 +1716,7 @@ func compileMatchExpr(me *parser.MatchExpr) (Expr, error) {
 }
 
 func compileQueryExpr(q *parser.QueryExpr) (Expr, error) {
-	if len(q.Froms) > 0 || len(q.Joins) > 0 || q.Group != nil || q.Sort != nil || q.Skip != nil || q.Take != nil || q.Distinct {
+	if len(q.Joins) > 0 || q.Group != nil || q.Distinct {
 		return nil, fmt.Errorf("unsupported query")
 	}
 
@@ -1709,48 +1725,88 @@ func compileQueryExpr(q *parser.QueryExpr) (Expr, error) {
 		return nil, err
 	}
 
-	t := typeOfExpr(src)
-	elemT := "object"
-	if strings.HasSuffix(t, "[]") {
-		elemT = strings.TrimSuffix(t, "[]")
-	} else if strings.HasPrefix(t, "Dictionary<") {
-		parts := strings.TrimPrefix(strings.TrimSuffix(t, ">"), "Dictionary<")
-		arr := strings.Split(parts, ",")
-		if len(arr) == 2 {
-			elemT = strings.TrimSpace(arr[1])
-		}
-	}
+	builder := &strings.Builder{}
+	fmt.Fprintf(builder, "from %s in %s", q.Var, exprString(src))
 
-	saved := varTypes[q.Var]
+	savedVar := varTypes[q.Var]
 	savedMap := mapVars[q.Var]
-	varTypes[q.Var] = elemT
-	if strings.HasPrefix(elemT, "Dictionary<") {
+	varTypes[q.Var] = strings.TrimSuffix(typeOfExpr(src), "[]")
+	if strings.HasPrefix(varTypes[q.Var], "Dictionary<") {
 		mapVars[q.Var] = true
 	}
-	var cond Expr
-	if q.Where != nil {
-		cond, err = compileExpr(q.Where)
+
+	for _, f := range q.Froms {
+		s, err := compileExpr(f.Src)
 		if err != nil {
-			varTypes[q.Var] = saved
+			varTypes[q.Var] = savedVar
 			mapVars[q.Var] = savedMap
 			return nil, err
 		}
+		fmt.Fprintf(builder, " from %s in %s", f.Var, exprString(s))
 	}
+
+	if q.Where != nil {
+		cond, err := compileExpr(q.Where)
+		if err != nil {
+			varTypes[q.Var] = savedVar
+			mapVars[q.Var] = savedMap
+			return nil, err
+		}
+		fmt.Fprintf(builder, " where %s", exprString(cond))
+	}
+
+	if q.Sort != nil {
+		sortExpr, err := compileExpr(q.Sort)
+		if err != nil {
+			varTypes[q.Var] = savedVar
+			mapVars[q.Var] = savedMap
+			return nil, err
+		}
+		desc := false
+		if ue, ok := sortExpr.(*UnaryExpr); ok && ue.Op == "-" {
+			sortExpr = ue.Val
+			desc = true
+		}
+		fmt.Fprintf(builder, " orderby %s", exprString(sortExpr))
+		if desc {
+			fmt.Fprintf(builder, " descending")
+		}
+	}
+
 	sel, err := compileExpr(q.Select)
 	if err != nil {
-		varTypes[q.Var] = saved
+		varTypes[q.Var] = savedVar
+		mapVars[q.Var] = savedMap
 		return nil, err
 	}
-	varTypes[q.Var] = saved
+
+	fmt.Fprintf(builder, " select %s", exprString(sel))
+
+	query := builder.String()
+
+	if q.Skip != nil {
+		s, err := compileExpr(q.Skip)
+		if err != nil {
+			return nil, err
+		}
+		query = fmt.Sprintf("(%s).Skip(%s)", query, exprString(s))
+	}
+	if q.Take != nil {
+		t, err := compileExpr(q.Take)
+		if err != nil {
+			return nil, err
+		}
+		query = fmt.Sprintf("(%s).Take(%s)", query, exprString(t))
+	}
+
+	query = fmt.Sprintf("(%s).ToArray()", query)
+
+	varTypes[q.Var] = savedVar
+	mapVars[q.Var] = savedMap
 	usesLinq = true
 
-	expr := src
-	if cond != nil {
-		expr = &MethodCallExpr{Target: expr, Name: "Where", Args: []Expr{&FunLit{Params: []string{q.Var}, ExprBody: cond}}}
-	}
-	expr = &MethodCallExpr{Target: expr, Name: "Select", Args: []Expr{&FunLit{Params: []string{q.Var}, ExprBody: sel}}}
-	expr = &MethodCallExpr{Target: expr, Name: "ToArray"}
-	return expr, nil
+	elemType := typeOfExpr(sel)
+	return &RawExpr{Code: query, Type: fmt.Sprintf("%s[]", elemType)}, nil
 }
 
 // Emit generates formatted C# source from the AST.
