@@ -1,6 +1,8 @@
-## Progress (2025-07-20 10:53 +0700)
-- Improved type inference for conditional expressions.
+## Progress (2025-07-20 11:04 +0700)
+- Enhanced constant folding for comparisons and logical operators.
+- Single-string print now uses `puts` for variables.
 - VM valid golden test results updated to 42/100
+
 
 ## Progress (2025-07-20 10:35 +0700)
 - VM valid golden test results updated to 42/100
