@@ -1,1 +1,6 @@
-transpile error: unsupported primary
+run error: exit status 1
+Syntax error compiling at (/workspace/mochi/tests/transpiler/x/clj/json_builtin.clj:4:8).
+Unable to resolve symbol: a in this context
+
+Full report at:
+/tmp/clojure-2934353447496882461.edn
