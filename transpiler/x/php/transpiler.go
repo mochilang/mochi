@@ -11,6 +11,8 @@ import (
 	"mochi/types"
 )
 
+var transpileEnv *types.Env
+
 // --- Simple PHP AST ---
 
 type Program struct {
@@ -31,6 +33,7 @@ func (s *IfStmt) emit(w io.Writer) {
 	s.Cond.emit(w)
 	io.WriteString(w, ") {\n")
 	for _, st := range s.Then {
+		io.WriteString(w, "  ")
 		st.emit(w)
 		io.WriteString(w, ";\n")
 	}
@@ -38,6 +41,7 @@ func (s *IfStmt) emit(w io.Writer) {
 	if len(s.Else) > 0 {
 		io.WriteString(w, " else {\n")
 		for _, st := range s.Else {
+			io.WriteString(w, "  ")
 			st.emit(w)
 			io.WriteString(w, ";\n")
 		}
@@ -74,6 +78,45 @@ func (s *VarStmt) emit(w io.Writer) {
 		s.Value.emit(w)
 	} else {
 		io.WriteString(w, "null")
+	}
+}
+
+// FuncDecl represents a simple function declaration.
+type FuncDecl struct {
+	Name   string
+	Params []string
+	Body   []Stmt
+}
+
+func (f *FuncDecl) emit(w io.Writer) {
+	fmt.Fprintf(w, "function %s(", f.Name)
+	for i, p := range f.Params {
+		if i > 0 {
+			fmt.Fprint(w, ", ")
+		}
+		fmt.Fprintf(w, "$%s", p)
+	}
+	fmt.Fprint(w, ") {\n")
+	for _, st := range f.Body {
+		fmt.Fprint(w, "  ")
+		st.emit(w)
+		if _, ok := st.(*IfStmt); ok {
+			fmt.Fprint(w, "\n")
+		} else {
+			fmt.Fprint(w, ";\n")
+		}
+	}
+	fmt.Fprint(w, "}")
+}
+
+// ReturnStmt returns from a function.
+type ReturnStmt struct{ Value Expr }
+
+func (r *ReturnStmt) emit(w io.Writer) {
+	fmt.Fprint(w, "return")
+	if r.Value != nil {
+		fmt.Fprint(w, " ")
+		r.Value.emit(w)
 	}
 }
 
@@ -252,11 +295,12 @@ func Emit(w io.Writer, p *Program) error {
 	}
 	for _, s := range p.Stmts {
 		s.emit(w)
-		if _, ok := s.(*IfStmt); ok {
+		switch s.(type) {
+		case *IfStmt, *FuncDecl:
 			if _, err := io.WriteString(w, "\n"); err != nil {
 				return err
 			}
-		} else {
+		default:
 			if _, err := io.WriteString(w, ";\n"); err != nil {
 				return err
 			}
@@ -268,6 +312,8 @@ func Emit(w io.Writer, p *Program) error {
 
 // Transpile converts a Mochi program into our PHP AST.
 func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
+	transpileEnv = env
+	defer func() { transpileEnv = nil }()
 	p := &Program{}
 	for _, st := range prog.Statements {
 		conv, err := convertStmt(st)
@@ -396,9 +442,12 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 		name := p.Call.Func
 		if name == "print" {
 			name = "echo"
+			for i := range args {
+				args[i] = maybeBoolString(args[i])
+			}
 		} else if name == "len" {
 			if len(args) == 1 {
-				if _, ok := args[0].(*ListLit); ok {
+				if isListArg(args[0]) {
 					name = "count"
 				} else {
 					name = "strlen"
@@ -530,6 +579,30 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 			return nil, err
 		}
 		return &AssignStmt{Name: st.Assign.Name, Value: e}, nil
+	case st.Return != nil:
+		var val Expr
+		if st.Return.Value != nil {
+			v, err := convertExpr(st.Return.Value)
+			if err != nil {
+				return nil, err
+			}
+			val = v
+		}
+		return &ReturnStmt{Value: val}, nil
+	case st.Fun != nil:
+		params := make([]string, len(st.Fun.Params))
+		for i, p := range st.Fun.Params {
+			params[i] = p.Name
+		}
+		body := make([]Stmt, len(st.Fun.Body))
+		for i, b := range st.Fun.Body {
+			bs, err := convertStmt(b)
+			if err != nil {
+				return nil, err
+			}
+			body[i] = bs
+		}
+		return &FuncDecl{Name: st.Fun.Name, Params: params, Body: body}, nil
 	case st.If != nil:
 		return convertIfStmt(st.If)
 	default:
@@ -596,6 +669,52 @@ func convertIfExpr(ie *parser.IfExpr) (Expr, error) {
 	return &CondExpr{Cond: cond, Then: thenExpr, Else: elseExpr}, nil
 }
 
+func isListArg(e Expr) bool {
+	switch v := e.(type) {
+	case *ListLit:
+		return true
+	case *Var:
+		if transpileEnv != nil {
+			if t, err := transpileEnv.GetVar(v.Name); err == nil {
+				if _, ok := t.(types.ListType); ok {
+					return true
+				}
+			}
+		}
+	}
+	return false
+}
+
+func isBoolExpr(e Expr) bool {
+	switch v := e.(type) {
+	case *BoolLit:
+		return true
+	case *Var:
+		if transpileEnv != nil {
+			if t, err := transpileEnv.GetVar(v.Name); err == nil {
+				if _, ok := t.(types.BoolType); ok {
+					return true
+				}
+			}
+		}
+	case *BinaryExpr:
+		switch v.Op {
+		case "<", "<=", ">", ">=", "==", "!=", "&&", "||", "in":
+			return true
+		}
+	case *CondExpr:
+		return true
+	}
+	return false
+}
+
+func maybeBoolString(e Expr) Expr {
+	if isBoolExpr(e) {
+		return &CondExpr{Cond: e, Then: &StringLit{Value: "true"}, Else: &StringLit{Value: "false"}}
+	}
+	return e
+}
+
 // Convert the PHP AST to a generic ast.Node for debugging.
 func toNode(p *Program) *ast.Node {
 	n := &ast.Node{Kind: "program"}
@@ -619,6 +738,25 @@ func stmtNode(s Stmt) *ast.Node {
 		return &ast.Node{Kind: "var_stmt", Value: st.Name, Children: []*ast.Node{child}}
 	case *AssignStmt:
 		return &ast.Node{Kind: "assign_stmt", Value: st.Name, Children: []*ast.Node{exprNode(st.Value)}}
+	case *ReturnStmt:
+		child := &ast.Node{Kind: "null"}
+		if st.Value != nil {
+			child = exprNode(st.Value)
+		}
+		return &ast.Node{Kind: "return_stmt", Children: []*ast.Node{child}}
+	case *FuncDecl:
+		n := &ast.Node{Kind: "func_decl", Value: st.Name}
+		params := &ast.Node{Kind: "params"}
+		for _, p := range st.Params {
+			params.Children = append(params.Children, &ast.Node{Kind: "param", Value: p})
+		}
+		n.Children = append(n.Children, params)
+		body := &ast.Node{Kind: "body"}
+		for _, bs := range st.Body {
+			body.Children = append(body.Children, stmtNode(bs))
+		}
+		n.Children = append(n.Children, body)
+		return n
 	case *IfStmt:
 		n := &ast.Node{Kind: "if_stmt", Children: []*ast.Node{exprNode(st.Cond)}}
 		thenNode := &ast.Node{Kind: "then"}
