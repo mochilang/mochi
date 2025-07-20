@@ -1,3 +1,7 @@
+## Progress (2025-07-20 08:41 +0700)
+- go transpiler: handle string contains
+- Regenerated golden files - 53/100 vm valid programs passing
+
 ## Progress (2025-07-20 08:32 +0700)
 - Add unary not handling to Go transpiler
 - Regenerated golden files - 53/100 vm valid programs passing

@@ -1055,7 +1055,11 @@ func compilePostfix(pf *parser.PostfixExpr, env *types.Env) (Expr, error) {
 		}
 		switch method {
 		case "contains":
-			mtype := types.TypeOfPrimary(pf.Target, env)
+			rec := pf.Target
+			if pf.Target != nil && pf.Target.Selector != nil && len(pf.Target.Selector.Tail) > 0 {
+				rec = &parser.Primary{Selector: &parser.SelectorExpr{Root: pf.Target.Selector.Root}}
+			}
+			mtype := types.TypeOfPrimary(rec, env)
 			var kind, et string
 			switch mt := mtype.(type) {
 			case types.StringType:
