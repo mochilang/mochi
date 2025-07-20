@@ -691,29 +691,29 @@ func (l *BlockLambda) emit(w io.Writer) {
 }
 
 func (lc *MultiListComp) emit(w io.Writer) {
-	io.WriteString(w, "([]{ std::vector<"+lc.ElemType+"> __items; ")
+	io.WriteString(w, "([]{ std::vector<"+lc.ElemType+"> __items;\n")
 	for i, v := range lc.Vars {
 		io.WriteString(w, "for (auto ")
 		io.WriteString(w, v)
 		io.WriteString(w, " : ")
 		lc.Iters[i].emit(w)
-		io.WriteString(w, ") {")
+		io.WriteString(w, ") {\n")
 	}
 	if lc.Cond != nil {
-		io.WriteString(w, " if(")
+		io.WriteString(w, "    if(")
 		lc.Cond.emit(w)
-		io.WriteString(w, ") {")
+		io.WriteString(w, ") {\n")
 	}
-	io.WriteString(w, "__items.push_back(")
+	io.WriteString(w, "        __items.push_back(")
 	lc.Expr.emit(w)
-	io.WriteString(w, ");")
+	io.WriteString(w, ");\n")
 	if lc.Cond != nil {
-		io.WriteString(w, " }")
+		io.WriteString(w, "    }\n")
 	}
 	for range lc.Vars {
-		io.WriteString(w, "}")
+		io.WriteString(w, "}\n")
 	}
-	io.WriteString(w, " return __items; }())")
+	io.WriteString(w, "return __items; }())")
 }
 
 func (b *BinaryExpr) emit(w io.Writer) {
@@ -1928,23 +1928,33 @@ func inferStructFromList(name string, l *ListLit) (*StructDef, string, bool) {
 		return nil, "", false
 	}
 	keys := make([]string, len(first.Keys))
+	keyIndex := map[string]int{}
 	for i, k := range first.Keys {
 		n, ok := keyName(k)
 		if !ok {
 			return nil, "", false
 		}
 		keys[i] = n
+		keyIndex[n] = i
 	}
 	for _, e := range l.Elems[1:] {
 		m, ok := e.(*MapLit)
 		if !ok || len(m.Keys) != len(keys) {
 			return nil, "", false
 		}
-		for i, k := range m.Keys {
+		seen := map[string]bool{}
+		for _, k := range m.Keys {
 			n, ok := keyName(k)
-			if !ok || n != keys[i] {
+			if !ok {
 				return nil, "", false
 			}
+			if _, ok := keyIndex[n]; !ok {
+				return nil, "", false
+			}
+			if seen[n] {
+				return nil, "", false
+			}
+			seen[n] = true
 		}
 	}
 	sname := strings.Title(name) + "Item"
@@ -1956,7 +1966,17 @@ func inferStructFromList(name string, l *ListLit) (*StructDef, string, bool) {
 		m := e.(*MapLit)
 		flds := make([]FieldLit, len(keys))
 		for j, k := range keys {
-			flds[j] = FieldLit{Name: k, Value: m.Values[j]}
+			idx := -1
+			for x, mk := range m.Keys {
+				if n, _ := keyName(mk); n == k {
+					idx = x
+					break
+				}
+			}
+			if idx < 0 {
+				return nil, "", false
+			}
+			flds[j] = FieldLit{Name: k, Value: m.Values[idx]}
 		}
 		l.Elems[i] = &StructLit{Name: sname, Fields: flds}
 	}
