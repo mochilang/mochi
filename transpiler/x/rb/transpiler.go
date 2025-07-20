@@ -360,9 +360,9 @@ type AvgExpr struct{ Value Expr }
 func (a *AvgExpr) emit(w io.Writer) {
 	io.WriteString(w, "(")
 	a.Value.emit(w)
-	io.WriteString(w, ".sum / ")
+	io.WriteString(w, ".sum.fdiv(")
 	a.Value.emit(w)
-	io.WriteString(w, ".length)")
+	io.WriteString(w, ".length))")
 }
 
 type AppendExpr struct {
