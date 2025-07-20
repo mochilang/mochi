@@ -387,7 +387,7 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 			typ = toSwiftType(st.Let.Type)
 		} else if st.Let.Type != nil {
 			ex = zeroValue(st.Let.Type)
-			typ = toSwiftOptionalType(st.Let.Type)
+			typ = toSwiftType(st.Let.Type)
 		}
 		return &VarDecl{Name: st.Let.Name, Const: true, Type: typ, Expr: ex}, nil
 	case st.Var != nil:
@@ -402,7 +402,7 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 			typ = toSwiftType(st.Var.Type)
 		} else if st.Var.Type != nil {
 			ex = zeroValue(st.Var.Type)
-			typ = toSwiftOptionalType(st.Var.Type)
+			typ = toSwiftType(st.Var.Type)
 		}
 		return &VarDecl{Name: st.Var.Name, Const: false, Type: typ, Expr: ex}, nil
 	case st.Assign != nil && len(st.Assign.Index) == 0 && len(st.Assign.Field) == 0:
@@ -815,7 +815,16 @@ func zeroValue(t *parser.TypeRef) Expr {
 	if t == nil || t.Simple == nil {
 		return &LitExpr{Value: "nil", IsString: false}
 	}
-	return &LitExpr{Value: "nil", IsString: false}
+	switch *t.Simple {
+	case "int":
+		return &LitExpr{Value: "0", IsString: false}
+	case "string":
+		return &LitExpr{Value: "", IsString: true}
+	case "bool":
+		return &LitExpr{Value: "false", IsString: false}
+	default:
+		return &LitExpr{Value: "nil", IsString: false}
+	}
 }
 
 func toSwiftType(t *parser.TypeRef) string {
