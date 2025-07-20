@@ -157,6 +157,8 @@ func TestTranspileListIndex(t *testing.T) { runGolden(t, "list_index") }
 
 func TestTranspileStringIndex(t *testing.T) { runGolden(t, "string_index") }
 
+func TestTranspileValuesBuiltin(t *testing.T) { runGolden(t, "values_builtin") }
+
 func updateEnabled() bool { return *update }
 
 func countCompiled() (int, int) {
