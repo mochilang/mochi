@@ -377,6 +377,43 @@ func (b *BinaryExpr) emit(e *emitter) {
 	b.Right.emit(e)
 }
 
+type UnionExpr struct{ Left, Right Expr }
+type UnionAllExpr struct{ Left, Right Expr }
+type ExceptExpr struct{ Left, Right Expr }
+type IntersectExpr struct{ Left, Right Expr }
+
+func (u *UnionExpr) emit(e *emitter) {
+	io.WriteString(e.w, "(")
+	u.Left.emit(e)
+	io.WriteString(e.w, " | ")
+	u.Right.emit(e)
+	io.WriteString(e.w, ")")
+}
+
+func (u *UnionAllExpr) emit(e *emitter) {
+	io.WriteString(e.w, "(")
+	u.Left.emit(e)
+	io.WriteString(e.w, " + ")
+	u.Right.emit(e)
+	io.WriteString(e.w, ")")
+}
+
+func (ex *ExceptExpr) emit(e *emitter) {
+	io.WriteString(e.w, "(")
+	ex.Left.emit(e)
+	io.WriteString(e.w, " - ")
+	ex.Right.emit(e)
+	io.WriteString(e.w, ")")
+}
+
+func (i *IntersectExpr) emit(e *emitter) {
+	io.WriteString(e.w, "(")
+	i.Left.emit(e)
+	io.WriteString(e.w, " & ")
+	i.Right.emit(e)
+	io.WriteString(e.w, ")")
+}
+
 type UnaryExpr struct {
 	Op   string
 	Expr Expr
@@ -428,6 +465,17 @@ type LambdaExpr struct {
 	Params []string
 	Body   []Stmt
 	Expr   Expr
+}
+
+type MatchCase struct {
+	Pattern Expr
+	Result  Expr
+}
+
+type MatchExpr struct {
+	Target Expr
+	Cases  []MatchCase
+	Else   Expr
 }
 
 // ValuesExpr returns the list of values of a map.
@@ -556,6 +604,38 @@ func (l *LambdaExpr) emit(e *emitter) {
 		l.Expr.emit(e)
 	}
 	io.WriteString(e.w, " }")
+}
+
+func (m *MatchExpr) emit(e *emitter) {
+	io.WriteString(e.w, "(case ")
+	m.Target.emit(e)
+	io.WriteString(e.w, ";")
+	e.nl()
+	e.indent++
+	for _, c := range m.Cases {
+		e.writeIndent()
+		io.WriteString(e.w, "in ")
+		c.Pattern.emit(e)
+		e.nl()
+		e.indent++
+		e.writeIndent()
+		c.Result.emit(e)
+		e.nl()
+		e.indent--
+	}
+	if m.Else != nil {
+		e.writeIndent()
+		io.WriteString(e.w, "else")
+		e.nl()
+		e.indent++
+		e.writeIndent()
+		m.Else.emit(e)
+		e.nl()
+		e.indent--
+	}
+	e.indent--
+	e.writeIndent()
+	io.WriteString(e.w, "end)")
 }
 
 func repoRoot() string {
@@ -856,6 +936,31 @@ func convertIfExpr(ie *parser.IfExpr) (Expr, error) {
 	return &CondExpr{Cond: cond, Then: thenExpr, Else: elseExpr}, nil
 }
 
+func convertMatchExpr(me *parser.MatchExpr) (Expr, error) {
+	target, err := convertExpr(me.Target)
+	if err != nil {
+		return nil, err
+	}
+	m := &MatchExpr{Target: target, Else: &Ident{Name: "nil"}}
+	for i := len(me.Cases) - 1; i >= 0; i-- {
+		c := me.Cases[i]
+		res, err := convertExpr(c.Result)
+		if err != nil {
+			return nil, err
+		}
+		pat, err := convertExpr(c.Pattern)
+		if err != nil {
+			return nil, err
+		}
+		if id, ok := pat.(*Ident); ok && id.Name == "_" {
+			m.Else = res
+			continue
+		}
+		m.Cases = append([]MatchCase{{Pattern: pat, Result: res}}, m.Cases...)
+	}
+	return m, nil
+}
+
 func convertWhile(ws *parser.WhileStmt) (Stmt, error) {
 	cond, err := convertExpr(ws.Cond)
 	if err != nil {
@@ -914,9 +1019,6 @@ func convertExpr(e *parser.Expr) (Expr, error) {
 	}
 	expr := left
 	for _, op := range e.Binary.Right {
-		if op.All {
-			return nil, fmt.Errorf("unsupported binary op")
-		}
 		right, err := convertPostfix(op.Right)
 		if err != nil {
 			return nil, err
@@ -930,7 +1032,23 @@ func convertExpr(e *parser.Expr) (Expr, error) {
 			}
 			continue
 		}
-		expr = &BinaryExpr{Op: op.Op, Left: expr, Right: right}
+		switch op.Op {
+		case "union":
+			if op.All {
+				expr = &UnionAllExpr{Left: expr, Right: right}
+			} else {
+				expr = &UnionExpr{Left: expr, Right: right}
+			}
+		case "except":
+			expr = &ExceptExpr{Left: expr, Right: right}
+		case "intersect":
+			expr = &IntersectExpr{Left: expr, Right: right}
+		default:
+			if op.All {
+				return nil, fmt.Errorf("unsupported binary op")
+			}
+			expr = &BinaryExpr{Op: op.Op, Left: expr, Right: right}
+		}
 	}
 	return expr, nil
 }
@@ -1099,9 +1217,26 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 				return nil, fmt.Errorf("append takes two args")
 			}
 			return &AppendExpr{List: args[0], Elem: args[1]}, nil
+		case "substring":
+			if len(args) != 3 {
+				return nil, fmt.Errorf("substring expects 3 args")
+			}
+			return &SliceExpr{Target: args[0], Start: args[1], End: args[2]}, nil
 		default:
 			if currentEnv != nil {
-				if _, ok := currentEnv.GetFunc(name); !ok {
+				if fn, ok := currentEnv.GetFunc(name); ok {
+					if len(args) < len(fn.Params) {
+						extra := []Expr{}
+						params := []string{}
+						for _, p := range fn.Params[len(args):] {
+							params = append(params, p.Name)
+							extra = append(extra, &Ident{Name: p.Name})
+						}
+						callArgs := append(append([]Expr{}, args...), extra...)
+						call := &CallExpr{Func: name, Args: callArgs}
+						return &LambdaExpr{Params: params, Expr: call}, nil
+					}
+				} else {
 					return &MethodCallExpr{Target: &Ident{Name: name}, Method: "call", Args: args}, nil
 				}
 			}
@@ -1153,6 +1288,8 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 			items[i] = MapItem{Key: k, Value: v}
 		}
 		return &MapLit{Items: items}, nil
+	case p.Match != nil:
+		return convertMatchExpr(p.Match)
 	case p.If != nil:
 		return convertIfExpr(p.If)
 	case p.Group != nil:
@@ -1441,6 +1578,26 @@ func exprNode(e Expr) *ast.Node {
 		n.Children = append(n.Children, exprNode(ex.Target))
 		for _, a := range ex.Args {
 			n.Children = append(n.Children, exprNode(a))
+		}
+		return n
+	case *UnionExpr:
+		return &ast.Node{Kind: "union", Children: []*ast.Node{exprNode(ex.Left), exprNode(ex.Right)}}
+	case *UnionAllExpr:
+		return &ast.Node{Kind: "unionall", Children: []*ast.Node{exprNode(ex.Left), exprNode(ex.Right)}}
+	case *ExceptExpr:
+		return &ast.Node{Kind: "except", Children: []*ast.Node{exprNode(ex.Left), exprNode(ex.Right)}}
+	case *IntersectExpr:
+		return &ast.Node{Kind: "intersect", Children: []*ast.Node{exprNode(ex.Left), exprNode(ex.Right)}}
+	case *MatchExpr:
+		n := &ast.Node{Kind: "match"}
+		n.Children = append(n.Children, exprNode(ex.Target))
+		for _, c := range ex.Cases {
+			mc := &ast.Node{Kind: "case"}
+			mc.Children = append(mc.Children, exprNode(c.Pattern), exprNode(c.Result))
+			n.Children = append(n.Children, mc)
+		}
+		if ex.Else != nil {
+			n.Children = append(n.Children, &ast.Node{Kind: "else", Children: []*ast.Node{exprNode(ex.Else)}})
 		}
 		return n
 	default:
