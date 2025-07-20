@@ -26,6 +26,14 @@ var usesDict bool
 
 type Stmt interface{ emit(io.Writer) }
 
+func isBlockStmt(s Stmt) bool {
+	switch s.(type) {
+	case *ForRangeStmt, *ForInStmt, *WhileStmt, *IfStmt:
+		return true
+	}
+	return false
+}
+
 // LetStmt represents a variable declaration.
 type LetStmt struct {
 	Name  string
@@ -123,7 +131,11 @@ func (f *ForRangeStmt) emit(w io.Writer) {
 	for _, st := range f.Body {
 		fmt.Fprint(w, "    ")
 		st.emit(w)
-		fmt.Fprint(w, ";\n")
+		if isBlockStmt(st) {
+			fmt.Fprint(w, "\n")
+		} else {
+			fmt.Fprint(w, ";\n")
+		}
 	}
 	fmt.Fprint(w, "}")
 }
@@ -147,7 +159,11 @@ func (f *ForInStmt) emit(w io.Writer) {
 	for _, st := range f.Body {
 		fmt.Fprint(w, "    ")
 		st.emit(w)
-		fmt.Fprint(w, ";\n")
+		if isBlockStmt(st) {
+			fmt.Fprint(w, "\n")
+		} else {
+			fmt.Fprint(w, ";\n")
+		}
 	}
 	fmt.Fprint(w, "}")
 }
@@ -201,7 +217,11 @@ func (ws *WhileStmt) emit(w io.Writer) {
 	for _, st := range ws.Body {
 		fmt.Fprint(w, "    ")
 		st.emit(w)
-		fmt.Fprint(w, ";\n")
+		if isBlockStmt(st) {
+			fmt.Fprint(w, "\n")
+		} else {
+			fmt.Fprint(w, ";\n")
+		}
 	}
 	fmt.Fprint(w, "}")
 }
@@ -222,7 +242,11 @@ func (i *IfStmt) emit(w io.Writer) {
 	for _, st := range i.Then {
 		fmt.Fprint(w, "    ")
 		st.emit(w)
-		fmt.Fprint(w, ";\n")
+		if isBlockStmt(st) {
+			fmt.Fprint(w, "\n")
+		} else {
+			fmt.Fprint(w, ";\n")
+		}
 	}
 	fmt.Fprint(w, "}")
 	if len(i.Else) > 0 {
@@ -230,7 +254,11 @@ func (i *IfStmt) emit(w io.Writer) {
 		for _, st := range i.Else {
 			fmt.Fprint(w, "    ")
 			st.emit(w)
-			fmt.Fprint(w, ";\n")
+			if isBlockStmt(st) {
+				fmt.Fprint(w, "\n")
+			} else {
+				fmt.Fprint(w, ";\n")
+			}
 		}
 		fmt.Fprint(w, "}")
 	}
@@ -1431,9 +1459,7 @@ func Emit(prog *Program) []byte {
 	if usesDict {
 		buf.WriteString("using System.Collections.Generic;\n")
 	}
-	if needsLinq(prog) {
-		buf.WriteString("using System.Linq;\n")
-	}
+	buf.WriteString("using System.Linq;\n")
 	buf.WriteString("\n")
 	buf.WriteString("class Program {\n")
 	for _, fn := range prog.Funcs {
@@ -1445,7 +1471,11 @@ func Emit(prog *Program) []byte {
 	for _, s := range prog.Stmts {
 		buf.WriteString("\t\t")
 		s.emit(&buf)
-		buf.WriteString(";\n")
+		if isBlockStmt(s) {
+			buf.WriteString("\n")
+		} else {
+			buf.WriteString(";\n")
+		}
 	}
 	buf.WriteString("\t}\n")
 	buf.WriteString("}\n")
@@ -1463,107 +1493,3 @@ func formatCS(src []byte) []byte {
 }
 
 // print converts the custom AST to an ast.Node and prints it.
-
-func needsLinq(p *Program) bool {
-	var found bool
-	for _, s := range p.Stmts {
-		found = found || inspectLinq(s)
-	}
-	return found
-}
-
-func inspectLinq(e Expr) bool {
-	switch ex := e.(type) {
-	case *ExprStmt:
-		return inspectLinq(ex.Expr)
-	case *AvgExpr:
-		return true
-	case *SumExpr:
-		return true
-	case *IfExpr:
-		return inspectLinq(ex.Cond) || inspectLinq(ex.Then) || inspectLinq(ex.Else)
-	case *IfStmt:
-		if inspectLinq(ex.Cond) {
-			return true
-		}
-		for _, s := range ex.Then {
-			if inspectLinq(s) {
-				return true
-			}
-		}
-		for _, s := range ex.Else {
-			if inspectLinq(s) {
-				return true
-			}
-		}
-		return false
-	case *WhileStmt:
-		if inspectLinq(ex.Cond) {
-			return true
-		}
-		for _, s := range ex.Body {
-			if inspectLinq(s) {
-				return true
-			}
-		}
-		return false
-	case *ForRangeStmt:
-		if inspectLinq(ex.Start) || inspectLinq(ex.End) {
-			return true
-		}
-		for _, s := range ex.Body {
-			if inspectLinq(s) {
-				return true
-			}
-		}
-		return false
-	case *ForInStmt:
-		if inspectLinq(ex.Iterable) {
-			return true
-		}
-		for _, s := range ex.Body {
-			if inspectLinq(s) {
-				return true
-			}
-		}
-		return false
-	case *CallExpr:
-		for _, a := range ex.Args {
-			if inspectLinq(a) {
-				return true
-			}
-		}
-	case *ListLit:
-		for _, el := range ex.Elems {
-			if inspectLinq(el) {
-				return true
-			}
-		}
-	case *CountExpr:
-		return inspectLinq(ex.Arg)
-	case *LenExpr:
-		return inspectLinq(ex.Arg)
-	case *AppendExpr:
-		return true
-	case *MinExpr:
-		return true
-	case *MaxExpr:
-		return true
-	case *ValuesExpr:
-		return true
-	case *SliceExpr:
-		return true
-	case *ContainsExpr:
-		return true
-	case *IndexExpr:
-		return inspectLinq(ex.Target) || inspectLinq(ex.Index)
-	case *UnaryExpr:
-		return inspectLinq(ex.Val)
-	case *BinaryExpr:
-		if ex.Op == "union" || ex.Op == "union_all" || ex.Op == "except" || ex.Op == "intersect" {
-			return true
-		}
-		return inspectLinq(ex.Left) || inspectLinq(ex.Right)
-	}
-	return false
-}
