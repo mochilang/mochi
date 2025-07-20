@@ -385,9 +385,32 @@ func (i *IntLit) emitExpr(w io.Writer) {
 	fmt.Fprintf(w, "%d", i.Value)
 }
 
+type FloatLit struct{ Value float64 }
+
+func (f *FloatLit) emitExpr(w io.Writer) {
+	fmt.Fprintf(w, "%g", f.Value)
+}
+
 type UnaryExpr struct {
 	Op   string
 	Expr Expr
+}
+
+func exprIsFloat(e Expr) bool {
+	switch v := e.(type) {
+	case *FloatLit:
+		return true
+	case *UnaryExpr:
+		return exprIsFloat(v.Expr)
+	case *BinaryExpr:
+		if v.Op == "+" || v.Op == "-" || v.Op == "*" || v.Op == "/" {
+			return exprIsFloat(v.Left) || exprIsFloat(v.Right)
+		}
+	}
+	if _, ok := evalFloat(e); ok {
+		return true
+	}
+	return false
 }
 
 func (u *UnaryExpr) emitExpr(w io.Writer) {
@@ -1579,6 +1602,9 @@ func convertUnary(u *parser.Unary) Expr {
 		}
 		return &IntLit{Value: v}
 	}
+	if lit.Float != nil && len(u.Ops) == 0 {
+		return &FloatLit{Value: *lit.Float}
+	}
 	if lit.Bool != nil && len(u.Ops) == 0 {
 		if bool(*lit.Bool) {
 			return &IntLit{Value: 1}
@@ -1686,6 +1712,39 @@ func evalInt(e Expr) (int, bool) {
 	return 0, false
 }
 
+func evalFloat(e Expr) (float64, bool) {
+	switch v := e.(type) {
+	case *FloatLit:
+		return v.Value, true
+	case *IntLit:
+		return float64(v.Value), true
+	case *UnaryExpr:
+		if v.Op == "-" {
+			if f, ok := evalFloat(v.Expr); ok {
+				return -f, true
+			}
+		}
+	case *BinaryExpr:
+		left, ok1 := evalFloat(v.Left)
+		right, ok2 := evalFloat(v.Right)
+		if ok1 && ok2 {
+			switch v.Op {
+			case "+":
+				return left + right, true
+			case "-":
+				return left - right, true
+			case "*":
+				return left * right, true
+			case "/":
+				if right != 0 {
+					return left / right, true
+				}
+			}
+		}
+	}
+	return 0, false
+}
+
 func evalBool(e Expr) (bool, bool) {
 	switch v := e.(type) {
 	case *IntLit:
@@ -1716,6 +1775,24 @@ func evalBool(e Expr) (bool, bool) {
 					return (li != 0) && (ri != 0), true
 				case "||":
 					return (li != 0) || (ri != 0), true
+				}
+			}
+		}
+		if lf, ok1 := evalFloat(v.Left); ok1 {
+			if rf, ok2 := evalFloat(v.Right); ok2 {
+				switch v.Op {
+				case "==":
+					return lf == rf, true
+				case "!=":
+					return lf != rf, true
+				case "<":
+					return lf < rf, true
+				case "<=":
+					return lf <= rf, true
+				case ">":
+					return lf > rf, true
+				case ">=":
+					return lf >= rf, true
 				}
 			}
 		}
@@ -1861,6 +1938,9 @@ func isConstExpr(e Expr) bool {
 	if _, ok := evalInt(e); ok {
 		return true
 	}
+	if _, ok := evalFloat(e); ok {
+		return true
+	}
 	if _, ok := evalString(e); ok {
 		return true
 	}
@@ -1924,6 +2004,8 @@ func exprIsBool(e Expr) bool {
 	switch v := e.(type) {
 	case *IntLit:
 		return v.Value == 0 || v.Value == 1
+	case *FloatLit:
+		return v.Value == 0.0 || v.Value == 1.0
 	case *UnaryExpr:
 		if v.Op == "!" {
 			return exprIsBool(v.Expr)
@@ -1951,6 +2033,8 @@ func inferExprType(env *types.Env, e Expr) string {
 		return "const char*"
 	case *IntLit:
 		return "int"
+	case *FloatLit:
+		return "double"
 	case *ListLit:
 		if len(v.Elems) > 0 {
 			elemType := inferExprType(env, v.Elems[0])
@@ -2063,6 +2147,9 @@ func inferExprType(env *types.Env, e Expr) string {
 		if v.Op == "+" && (exprIsString(v.Left) || exprIsString(v.Right)) {
 			return "const char*"
 		}
+		if exprIsFloat(v.Left) || exprIsFloat(v.Right) {
+			return "double"
+		}
 		return "int"
 	case *UnaryExpr:
 		return inferExprType(env, v.Expr)
@@ -2085,6 +2172,9 @@ func inferExprType(env *types.Env, e Expr) string {
 	if _, ok := evalInt(e); ok {
 		return "int"
 	}
+	if _, ok := evalFloat(e); ok {
+		return "double"
+	}
 	return ""
 }
 
@@ -2103,6 +2193,8 @@ func inferCType(env *types.Env, name string, e Expr) string {
 			return "int[]"
 		case types.BoolType:
 			return "int"
+		case types.FloatType:
+			return "double"
 		case types.StructType:
 			return tt.Name
 		}
