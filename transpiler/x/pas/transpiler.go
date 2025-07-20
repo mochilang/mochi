@@ -202,6 +202,23 @@ func (l *ListLit) emit(w io.Writer) {
 	io.WriteString(w, "]")
 }
 
+// CastExpr represents a simple cast expression, e.g. string to int.
+type CastExpr struct {
+	Expr Expr
+	Type string
+}
+
+func (c *CastExpr) emit(w io.Writer) {
+	switch c.Type {
+	case "int":
+		io.WriteString(w, "StrToInt(")
+		c.Expr.emit(w)
+		io.WriteString(w, ")")
+	default:
+		c.Expr.emit(w)
+	}
+}
+
 // UnaryExpr represents a unary operation like negation.
 type UnaryExpr struct {
 	Op   string
@@ -860,6 +877,13 @@ func convertPostfix(env *types.Env, pf *parser.PostfixExpr) (Expr, error) {
 			t := types.ExprType(&parser.Expr{Binary: &parser.BinaryExpr{Left: &parser.Unary{Value: &tmp}}}, env)
 			_, isStr := t.(types.StringType)
 			expr = &SliceExpr{Target: expr, Start: start, End: end, String: isStr}
+		case op.Cast != nil && op.Cast.Type != nil && op.Cast.Type.Simple != nil:
+			target := *op.Cast.Type.Simple
+			if target == "int" {
+				expr = &CastExpr{Expr: expr, Type: target}
+			} else {
+				return nil, fmt.Errorf("unsupported cast")
+			}
 		default:
 			return nil, fmt.Errorf("unsupported postfix")
 		}
@@ -1038,6 +1062,11 @@ func inferType(e Expr) string {
 			return "string"
 		}
 		return "array of integer"
+	case *CastExpr:
+		if v.Type == "int" {
+			return "integer"
+		}
+		return inferType(v.Expr)
 	case *UnaryExpr:
 		return inferType(v.Expr)
 	default:
@@ -1048,7 +1077,7 @@ func inferType(e Expr) string {
 func usesSysUtilsExpr(e Expr) bool {
 	switch v := e.(type) {
 	case *CallExpr:
-		if v.Name == "IntToStr" {
+		if v.Name == "IntToStr" || v.Name == "StrToInt" {
 			return true
 		}
 		for _, a := range v.Args {
@@ -1072,6 +1101,11 @@ func usesSysUtilsExpr(e Expr) bool {
 		return usesSysUtilsExpr(v.Target) ||
 			(v.Start != nil && usesSysUtilsExpr(v.Start)) ||
 			(v.End != nil && usesSysUtilsExpr(v.End))
+	case *CastExpr:
+		if v.Type == "int" {
+			return true
+		}
+		return usesSysUtilsExpr(v.Expr)
 	}
 	return false
 }
