@@ -3,7 +3,7 @@
 This checklist is auto-generated.
 Generated Python code from programs in `tests/vm/valid` lives in `tests/transpiler/x/py`.
 
-## VM Golden Test Checklist (91/100)
+## VM Golden Test Checklist (90/100)
 - [x] append_builtin
 - [x] avg_builtin
 - [x] basic_compare
@@ -29,12 +29,12 @@ Generated Python code from programs in `tests/vm/valid` lives in `tests/transpil
 - [ ] go_auto
 - [x] group_by
 - [x] group_by_conditional_sum
-- [x] group_by_having
+- [ ] group_by_having
 - [ ] group_by_join
 - [ ] group_by_left_join
-- [x] group_by_multi_join
+- [ ] group_by_multi_join
 - [ ] group_by_multi_join_sort
-- [x] group_by_sort
+- [ ] group_by_sort
 - [x] group_items_iteration
 - [x] if_else
 - [x] if_then_else
@@ -42,10 +42,10 @@ Generated Python code from programs in `tests/vm/valid` lives in `tests/transpil
 - [x] in_operator
 - [x] in_operator_extended
 - [x] inner_join
-- [x] join_multi
+- [ ] join_multi
 - [x] json_builtin
 - [x] left_join
-- [ ] left_join_multi
+- [x] left_join_multi
 - [x] len_builtin
 - [x] len_map
 - [x] len_string
@@ -54,7 +54,7 @@ Generated Python code from programs in `tests/vm/valid` lives in `tests/transpil
 - [x] list_index
 - [x] list_nested_assign
 - [x] list_set_ops
-- [ ] load_yaml
+- [x] load_yaml
 - [x] map_assign
 - [x] map_in_operator
 - [x] map_index
@@ -82,7 +82,7 @@ Generated Python code from programs in `tests/vm/valid` lives in `tests/transpil
 - [x] save_jsonl_stdout
 - [x] short_circuit
 - [x] slice
-- [ ] sort_stable
+- [x] sort_stable
 - [x] str_builtin
 - [x] string_compare
 - [x] string_concat
