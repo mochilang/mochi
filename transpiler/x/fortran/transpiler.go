@@ -986,14 +986,22 @@ func toPostfix(pf *parser.PostfixExpr, env *types.Env) (string, error) {
 	if err != nil {
 		return "", err
 	}
+	typ := types.TypeOfPrimaryBasic(pf.Target, env)
 	for _, op := range pf.Ops {
 		switch {
-		case op.Index != nil && op.Index.Start != nil && op.Index.Colon == nil:
+		case op.Index != nil && op.Index.Start != nil && op.Index.Colon == nil && op.Index.Colon2 == nil && op.Index.Step == nil:
 			idx, err := toExpr(op.Index.Start, env)
 			if err != nil {
 				return "", err
 			}
-			val = fmt.Sprintf("%s(%s+1)", val, idx)
+			if types.IsStringType(typ) {
+				val = fmt.Sprintf("%s(%s+1:%s+1)", val, idx, idx)
+			} else {
+				val = fmt.Sprintf("%s(%s+1)", val, idx)
+			}
+			if lt, ok := typ.(types.ListType); ok {
+				typ = lt.Elem
+			}
 		default:
 			return "", fmt.Errorf("postfix operations unsupported")
 		}
