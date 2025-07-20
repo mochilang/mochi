@@ -1,6 +1,5 @@
 {$mode objfpc}
 program Main;
-uses SysUtils;
 begin
   writeln(6 * 7);
   writeln(7 div 2);
