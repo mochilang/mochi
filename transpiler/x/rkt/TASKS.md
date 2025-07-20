@@ -1,3 +1,8 @@
+## Progress (2025-07-20 12:19 +0700)
+- Generated Racket for 93/100 programs
+- Added update statement and struct literal support
+- Updated README checklist
+
 ## Progress (2025-07-20 11:38 +0700)
 - Removed BoolToInt helper; booleans print as #t/#f
 - Updated README checklist (92/100)

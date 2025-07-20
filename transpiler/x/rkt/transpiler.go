@@ -107,6 +107,40 @@ func (wst *WhileStmt) emit(w io.Writer) {
 	io.WriteString(w, "    (loop)))\n")
 }
 
+type UpdateStmt struct {
+	Target string
+	Fields []string
+	Values []Expr
+	Cond   Expr
+}
+
+func (u *UpdateStmt) emit(w io.Writer) {
+	fmt.Fprintf(w, "(set! %s (for/list ([item %s])\n  ", u.Target, u.Target)
+	if u.Cond != nil {
+		io.WriteString(w, "(begin\n    (when ")
+		u.Cond.emit(w)
+		io.WriteString(w, "\n")
+		for i, f := range u.Fields {
+			io.WriteString(w, "      (set! item (hash-set item \"")
+			io.WriteString(w, f)
+			io.WriteString(w, "\" ")
+			u.Values[i].emit(w)
+			io.WriteString(w, "))\n")
+		}
+		io.WriteString(w, "    )\n    item)))\n")
+	} else {
+		io.WriteString(w, "(begin\n")
+		for i, f := range u.Fields {
+			io.WriteString(w, "    (set! item (hash-set item \"")
+			io.WriteString(w, f)
+			io.WriteString(w, "\" ")
+			u.Values[i].emit(w)
+			io.WriteString(w, "))\n")
+		}
+		io.WriteString(w, "    item)))\n")
+	}
+}
+
 type ReturnStmt struct{ Expr Expr }
 
 func (r *ReturnStmt) emit(w io.Writer) {
@@ -229,11 +263,18 @@ type IndexExpr struct {
 	Target   Expr
 	Index    Expr
 	IsString bool
+	IsMap    bool
 }
 
 func (i *IndexExpr) emit(w io.Writer) {
 	if i.IsString {
 		io.WriteString(w, "(string-ref ")
+		i.Target.emit(w)
+		io.WriteString(w, " ")
+		i.Index.emit(w)
+		io.WriteString(w, ")")
+	} else if i.IsMap {
+		io.WriteString(w, "(hash-ref ")
 		i.Target.emit(w)
 		io.WriteString(w, " ")
 		i.Index.emit(w)
@@ -318,6 +359,98 @@ func (c *CastExpr) emit(w io.Writer) {
 		io.WriteString(w, ")")
 	default:
 		c.Value.emit(w)
+	}
+}
+
+func isSimpleIdent(e *parser.Expr) (string, bool) {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) > 0 {
+		return "", false
+	}
+	u := e.Binary.Left
+	if len(u.Ops) > 0 || u.Value == nil {
+		return "", false
+	}
+	p := u.Value
+	if len(p.Ops) > 0 || p.Target == nil {
+		return "", false
+	}
+	if p.Target.Selector != nil && len(p.Target.Selector.Tail) == 0 {
+		return p.Target.Selector.Root, true
+	}
+	return "", false
+}
+
+func literalString(e *parser.Expr) (string, bool) {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) > 0 {
+		return "", false
+	}
+	u := e.Binary.Left
+	if len(u.Ops) > 0 || u.Value == nil {
+		return "", false
+	}
+	p := u.Value
+	if len(p.Ops) > 0 || p.Target == nil {
+		return "", false
+	}
+	if p.Target.Lit != nil && p.Target.Lit.Str != nil {
+		return *p.Target.Lit.Str, true
+	}
+	if p.Target.Selector != nil && len(p.Target.Selector.Tail) == 0 {
+		return p.Target.Selector.Root, true
+	}
+	return "", false
+}
+
+func substituteFields(e Expr, varName string, fields map[string]bool) Expr {
+	switch ex := e.(type) {
+	case *Name:
+		if fields[ex.Name] {
+			return &IndexExpr{Target: &Name{Name: varName}, Index: &StringLit{Value: ex.Name}, IsMap: true}
+		}
+		return ex
+	case *BinaryExpr:
+		ex.Left = substituteFields(ex.Left, varName, fields)
+		ex.Right = substituteFields(ex.Right, varName, fields)
+		return ex
+	case *UnaryExpr:
+		ex.Expr = substituteFields(ex.Expr, varName, fields)
+		return ex
+	case *CallExpr:
+		for i := range ex.Args {
+			ex.Args[i] = substituteFields(ex.Args[i], varName, fields)
+		}
+		return ex
+	case *IndexExpr:
+		ex.Target = substituteFields(ex.Target, varName, fields)
+		ex.Index = substituteFields(ex.Index, varName, fields)
+		return ex
+	case *IfExpr:
+		ex.Cond = substituteFields(ex.Cond, varName, fields)
+		ex.Then = substituteFields(ex.Then, varName, fields)
+		ex.Else = substituteFields(ex.Else, varName, fields)
+		return ex
+	case *ListLit:
+		for i := range ex.Elems {
+			ex.Elems[i] = substituteFields(ex.Elems[i], varName, fields)
+		}
+		return ex
+	case *LenExpr:
+		ex.Arg = substituteFields(ex.Arg, varName, fields)
+		return ex
+	case *AvgExpr:
+		ex.Arg = substituteFields(ex.Arg, varName, fields)
+		return ex
+	case *SumExpr:
+		ex.Arg = substituteFields(ex.Arg, varName, fields)
+		return ex
+	case *StrExpr:
+		ex.Arg = substituteFields(ex.Arg, varName, fields)
+		return ex
+	case *CastExpr:
+		ex.Value = substituteFields(ex.Value, varName, fields)
+		return ex
+	default:
+		return ex
 	}
 }
 
@@ -475,6 +608,20 @@ func convertStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 			return &PrintStmt{Expr: e}, nil
 		}
 		return nil, fmt.Errorf("unsupported expression statement")
+	case st.Update != nil:
+		up, err := convertUpdateStmt(st.Update, env)
+		if err != nil {
+			return nil, err
+		}
+		return up, nil
+	case st.Type != nil:
+		return nil, nil
+	case st.Test != nil:
+		// ignore test blocks
+		return nil, nil
+	case st.Expect != nil:
+		// ignore expects
+		return nil, nil
 	case st.If != nil:
 		return convertIfStmt(st.If, env)
 	case st.While != nil:
@@ -546,6 +693,54 @@ func convertFunStmt(fn *parser.FunStmt, env *types.Env) (Stmt, error) {
 		return nil, err
 	}
 	return &FunDecl{Name: fn.Name, Params: params, Body: body}, nil
+}
+
+func convertUpdateStmt(u *parser.UpdateStmt, env *types.Env) (Stmt, error) {
+	t, err := env.GetVar(u.Target)
+	if err != nil {
+		return nil, err
+	}
+	lt, ok := t.(types.ListType)
+	if !ok {
+		return nil, fmt.Errorf("update target not list")
+	}
+	st, ok := lt.Elem.(types.StructType)
+	if !ok {
+		return nil, fmt.Errorf("update element not struct")
+	}
+	child := types.NewEnv(env)
+	fields := map[string]bool{}
+	for name, ft := range st.Fields {
+		child.SetVar(name, ft, true)
+		fields[name] = true
+	}
+	var names []string
+	var values []Expr
+	for _, it := range u.Set.Items {
+		key, ok := isSimpleIdent(it.Key)
+		if !ok {
+			key, ok = literalString(it.Key)
+			if !ok {
+				return nil, fmt.Errorf("unsupported update key")
+			}
+		}
+		val, err := convertExpr(it.Value, child)
+		if err != nil {
+			return nil, err
+		}
+		val = substituteFields(val, "item", fields)
+		names = append(names, key)
+		values = append(values, val)
+	}
+	var cond Expr
+	if u.Where != nil {
+		cond, err = convertExpr(u.Where, child)
+		if err != nil {
+			return nil, err
+		}
+		cond = substituteFields(cond, "item", fields)
+	}
+	return &UpdateStmt{Target: u.Target, Fields: names, Values: values, Cond: cond}, nil
 }
 
 func convertExpr(e *parser.Expr, env *types.Env) (Expr, error) {
@@ -716,7 +911,8 @@ func convertPostfix(pf *parser.PostfixExpr, env *types.Env) (Expr, error) {
 				return nil, err
 			}
 			isStr := types.IsStringPrimary(pf.Target, env)
-			expr = &IndexExpr{Target: expr, Index: idx, IsString: isStr}
+			isMap := types.IsMapPrimary(pf.Target, env)
+			expr = &IndexExpr{Target: expr, Index: idx, IsString: isStr, IsMap: isMap}
 		case op.Cast != nil && op.Cast.Type != nil && op.Cast.Type.Simple != nil:
 			expr = &CastExpr{Value: expr, Type: *op.Cast.Type.Simple}
 		default:
@@ -732,6 +928,8 @@ func convertPrimary(p *parser.Primary, env *types.Env) (Expr, error) {
 		return convertLiteral(p.Lit)
 	case p.List != nil:
 		return convertList(p.List, env)
+	case p.Struct != nil:
+		return convertStruct(p.Struct, env)
 	case p.Call != nil:
 		return convertCall(p.Call, env)
 	case p.If != nil:
@@ -771,6 +969,19 @@ func convertList(l *parser.ListLiteral, env *types.Env) (Expr, error) {
 		elems = append(elems, ce)
 	}
 	return &ListLit{Elems: elems}, nil
+}
+
+func convertStruct(s *parser.StructLiteral, env *types.Env) (Expr, error) {
+	var args []Expr
+	for _, f := range s.Fields {
+		val, err := convertExpr(f.Value, env)
+		if err != nil {
+			return nil, err
+		}
+		args = append(args, &StringLit{Value: f.Name})
+		args = append(args, val)
+	}
+	return &CallExpr{Func: "hash", Args: args}, nil
 }
 
 func convertCall(c *parser.CallExpr, env *types.Env) (Expr, error) {
