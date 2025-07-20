@@ -2,7 +2,7 @@
 
 Generated C# code for programs in `tests/vm/valid`. Each program has a `.cs` file produced by the transpiler and a `.out` file containing its runtime output. Compilation or execution errors are captured in a `.error` file placed next to the source.
 
-Compiled programs: 73/100
+Compiled programs: 78/100
 
 ## Checklist
 - [x] append_builtin
@@ -15,10 +15,10 @@ Compiled programs: 73/100
 - [x] cast_struct
 - [x] closure
 - [x] count_builtin
-- [ ] cross_join
-- [ ] cross_join_filter
-- [ ] cross_join_triple
-- [ ] dataset_sort_take_limit
+- [x] cross_join
+- [x] cross_join_filter
+- [x] cross_join_triple
+- [x] dataset_sort_take_limit
 - [x] dataset_where_filter
 - [x] exists_builtin
 - [x] for_list_collection
@@ -36,7 +36,7 @@ Compiled programs: 73/100
 - [ ] group_by_multi_join
 - [ ] group_by_multi_join_sort
 - [x] group_by_sort
-- [ ] group_items_iteration
+- [x] group_items_iteration
 - [x] if_else
 - [x] if_then_else
 - [x] if_then_else_nested

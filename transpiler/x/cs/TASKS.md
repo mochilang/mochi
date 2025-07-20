@@ -1,3 +1,18 @@
+## Progress (2025-07-20 08:11 UTC)
+- transpiler/cs: support more queries (progress 78/100)
+
+## Progress (2025-07-20 15:02 +0700)
+- update progress (progress 78/100)
+
+## Progress (2025-07-20 15:02 +0700)
+- update progress (progress 78/100)
+
+## Progress (2025-07-20 15:02 +0700)
+- update progress (progress 78/100)
+
+## Progress (2025-07-20 15:02 +0700)
+- update progress (progress 73/100)
+
 ## Progress (2025-07-20 07:59 UTC)
 - cs transpiler: add join and group by (progress 73/100)
 
@@ -33,6 +48,11 @@
 ## Remaining Work
 - [x] Implement loops and conditionals
 - [ ] Support map and list mutation operations
+
+
+
+
+
 
 
 
