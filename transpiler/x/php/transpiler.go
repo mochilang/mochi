@@ -208,6 +208,16 @@ func (s *AssignStmt) emit(w io.Writer) {
 	s.Value.emit(w)
 }
 
+// BreakStmt represents a break statement inside loops.
+type BreakStmt struct{}
+
+func (b *BreakStmt) emit(w io.Writer) { io.WriteString(w, "break") }
+
+// ContinueStmt represents a continue statement inside loops.
+type ContinueStmt struct{}
+
+func (c *ContinueStmt) emit(w io.Writer) { io.WriteString(w, "continue") }
+
 type Expr interface{ emit(io.Writer) }
 
 type CallExpr struct {
@@ -294,7 +304,7 @@ func (c *CallExpr) emit(w io.Writer) {
 		fmt.Fprint(w, "echo ")
 		for i, a := range c.Args {
 			if i > 0 {
-				fmt.Fprint(w, ", ")
+				fmt.Fprint(w, " . \" \" . ")
 			}
 			a.emit(w)
 		}
@@ -934,6 +944,10 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 			}
 		}
 		return &ForEachStmt{Name: st.For.Name, Expr: expr, Keys: keys, Body: body}, nil
+	case st.Break != nil:
+		return &BreakStmt{}, nil
+	case st.Continue != nil:
+		return &ContinueStmt{}, nil
 	case st.If != nil:
 		return convertIfStmt(st.If)
 	default:
@@ -1185,6 +1199,10 @@ func stmtNode(s Stmt) *ast.Node {
 		}
 		n.Children = append(n.Children, body)
 		return n
+	case *BreakStmt:
+		return &ast.Node{Kind: "break"}
+	case *ContinueStmt:
+		return &ast.Node{Kind: "continue"}
 	case *IfStmt:
 		n := &ast.Node{Kind: "if_stmt", Children: []*ast.Node{exprNode(st.Cond)}}
 		thenNode := &ast.Node{Kind: "then"}
