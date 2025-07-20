@@ -19,6 +19,10 @@ type Program struct {
 	Stmts []Stmt
 }
 
+// varTypes holds the inferred type for each variable defined during
+// transpilation. It is reset for every call to Transpile.
+var varTypes map[string]string
+
 type Stmt interface{ emit(io.Writer) }
 
 type Expr interface{ emit(io.Writer) }
@@ -460,6 +464,11 @@ func inferType(e Expr) string {
 		return "bool"
 	case *ListLit:
 		return "list"
+	case *IdentExpr:
+		if t, ok := varTypes[v.Name]; ok {
+			return t
+		}
+		return ""
 	case *UnaryExpr:
 		if v.Op == "not" {
 			return "bool"
@@ -628,6 +637,7 @@ func header() string {
 // Transpile converts a Mochi program to a simple F# AST.
 func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	_ = env
+	varTypes = map[string]string{}
 	p := &Program{}
 	for _, st := range prog.Statements {
 		conv, err := convertStmt(st)
@@ -656,14 +666,16 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 				return nil, err
 			}
 		}
-		typ := ""
+		declared := ""
 		if st.Let.Type != nil && st.Let.Type.Simple != nil {
-			typ = *st.Let.Type.Simple
+			declared = *st.Let.Type.Simple
 		} else {
-			typ = inferType(e)
-			if typ == "list" {
-				typ = ""
-			}
+			declared = inferType(e)
+		}
+		varTypes[st.Let.Name] = declared
+		typ := declared
+		if typ == "list" {
+			typ = ""
 		}
 		return &LetStmt{Name: st.Let.Name, Expr: e, Type: typ}, nil
 	case st.Var != nil:
@@ -675,14 +687,16 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 				return nil, err
 			}
 		}
-		typ := ""
+		declared := ""
 		if st.Var.Type != nil && st.Var.Type.Simple != nil {
-			typ = *st.Var.Type.Simple
+			declared = *st.Var.Type.Simple
 		} else {
-			typ = inferType(e)
-			if typ == "list" {
-				typ = ""
-			}
+			declared = inferType(e)
+		}
+		varTypes[st.Var.Name] = declared
+		typ := declared
+		if typ == "list" {
+			typ = ""
 		}
 		return &LetStmt{Name: st.Var.Name, Expr: e, Type: typ, Mutable: true}, nil
 	case st.Assign != nil && len(st.Assign.Index) == 0 && len(st.Assign.Field) == 0:
@@ -690,6 +704,7 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 		if err != nil {
 			return nil, err
 		}
+		varTypes[st.Assign.Name] = inferType(e)
 		return &AssignStmt{Name: st.Assign.Name, Expr: e}, nil
 	case st.Return != nil:
 		var e Expr

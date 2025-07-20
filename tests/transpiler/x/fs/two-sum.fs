@@ -1,8 +1,8 @@
-// Mochi 0.10.31 - generated 2025-07-19 13:09:38 UTC
+// Generated 2025-07-20 10:18 +0700
 open System
 
 let rec twoSum nums target =
-    let n = Seq.length nums
+    let n: int = Seq.length nums
     for i in 0 .. (n - 1) do
 for j in i + 1 .. (n - 1) do
 if ((nums.[i]) + (nums.[j])) = target then

@@ -1,7 +1,7 @@
-// Mochi 0.10.31 - generated 2025-07-19 13:09:46 UTC
+// Generated 2025-07-20 10:18 +0700
 open System
 
-let mutable i = 0
+let mutable i: int = 0
 while i < 3 do
 printfn "%s" (string i)
 i <- i + 1

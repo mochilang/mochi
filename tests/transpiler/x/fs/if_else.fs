@@ -1,7 +1,7 @@
-// Mochi 0.10.31 - generated 2025-07-19 13:08:56 UTC
+// Generated 2025-07-20 10:18 +0700
 open System
 
-let x = 5
+let x: int = 5
 if x > 3 then
 printfn "%s" (string "big")
 else
