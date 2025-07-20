@@ -1,3 +1,8 @@
+## Progress (2025-07-20 12:19 +0700)
+- Generated PHP for 36/100 programs
+- Added break and continue statement support enabling break_continue test
+- Updated README checklist and outputs
+
 ## Progress (2025-07-20 11:56 +0700)
 - Generated PHP for 35/100 programs
 - Added map literal support and len() for maps enabling len_map test
