@@ -1,0 +1,11 @@
+exit status 1
+Main.java:6: error: non-static variable a cannot be referenced from a static context
+        System.out.println(a);
+                           ^
+Main.java:7: error: non-static variable a cannot be referenced from a static context
+        System.out.println(a == 7);
+                           ^
+Main.java:8: error: non-static variable b cannot be referenced from a static context
+        System.out.println(b < 5);
+                           ^
+3 errors

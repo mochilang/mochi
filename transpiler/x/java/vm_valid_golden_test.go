@@ -116,19 +116,18 @@ func updateReadme() {
 	compiled := 0
 	var lines []string
 	for _, f := range files {
-		name := strings.TrimSuffix(filepath.Base(f), ".mochi")
+		name := filepath.Base(f)
 		mark := "[ ]"
-		if _, err := os.Stat(filepath.Join(outDir, name+".java")); err == nil {
+		if _, err := os.Stat(filepath.Join(outDir, strings.TrimSuffix(name, ".mochi")+".java")); err == nil {
 			compiled++
 			mark = "[x]"
 		}
-		lines = append(lines, "- "+mark+" "+name)
+		lines = append(lines, fmt.Sprintf("- %s %s", mark, name))
 	}
 	var buf bytes.Buffer
 	buf.WriteString("# Java Transpiler Output\n\n")
 	buf.WriteString("Generated Java code for programs in `tests/vm/valid`. Each program has a `.java` file produced by the transpiler and a `.out` file with its runtime output. Compilation or execution errors are captured in `.error` files.\n\n")
-	fmt.Fprintf(&buf, "Transpiled programs: %d/%d\n\n", compiled, total)
-	buf.WriteString("Checklist:\n")
+	fmt.Fprintf(&buf, "## VM Golden Test Checklist (%d/%d)\n", compiled, total)
 	buf.WriteString(strings.Join(lines, "\n"))
 	buf.WriteString("\n")
 	_ = os.WriteFile(readmePath, buf.Bytes(), 0o644)
@@ -137,19 +136,41 @@ func updateReadme() {
 func updateTasks() {
 	root := repoRootDir(&testing.T{})
 	taskFile := filepath.Join(root, "transpiler", "x", "java", "TASKS.md")
-	out, err := exec.Command("git", "log", "-1", "--format=%cI").Output()
-	ts := ""
+	out, err := exec.Command("git", "log", "-1", "--format=%h%n%cI%n%s").Output()
+	var hash, ts, msg string
 	if err == nil {
-		if t, perr := time.Parse(time.RFC3339, strings.TrimSpace(string(out))); perr == nil {
+		parts := strings.SplitN(strings.TrimSpace(string(out)), "\n", 3)
+		if len(parts) == 3 {
+			hash, ts, msg = parts[0], parts[1], parts[2]
+		}
+	}
+	if t, perr := time.Parse(time.RFC3339, ts); perr == nil {
+		if loc, lerr := time.LoadLocation("Asia/Bangkok"); lerr == nil {
+			ts = t.In(loc).Format("2006-01-02 15:04 -0700")
+		} else {
 			ts = t.Format("2006-01-02 15:04 MST")
 		}
 	}
+
+	data, _ := os.ReadFile(taskFile)
+	var keep []string
+	for _, line := range strings.Split(string(data), "\n") {
+		if strings.HasPrefix(line, "## Progress") || strings.HasPrefix(line, "- VM valid") {
+			continue
+		}
+		keep = append(keep, line)
+	}
+
 	var buf bytes.Buffer
 	buf.WriteString(fmt.Sprintf("## Progress (%s)\n", ts))
-	buf.WriteString("- VM valid golden test results updated\n")
-	buf.WriteString("\n")
-	if data, err := os.ReadFile(taskFile); err == nil {
-		buf.Write(data)
+	if msg == "" {
+		buf.WriteString("- VM valid golden test results updated\n\n")
+	} else {
+		buf.WriteString(fmt.Sprintf("- %s (%s)\n\n", msg, hash))
+	}
+	buf.WriteString(strings.Join(keep, "\n"))
+	if len(keep) > 0 && keep[len(keep)-1] != "" {
+		buf.WriteString("\n")
 	}
 	_ = os.WriteFile(taskFile, buf.Bytes(), 0o644)
 }

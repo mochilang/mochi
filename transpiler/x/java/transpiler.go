@@ -66,6 +66,23 @@ func inferType(e Expr) string {
 	return ""
 }
 
+func inferReturnType(body []Stmt) string {
+	if len(body) == 0 {
+		return "void"
+	}
+	if ret, ok := body[len(body)-1].(*ReturnStmt); ok {
+		if ret.Expr == nil {
+			return "void"
+		}
+		t := inferType(ret.Expr)
+		if t == "" {
+			return "void"
+		}
+		return t
+	}
+	return "void"
+}
+
 // --- Simple Java AST ---
 
 type Program struct {
@@ -73,9 +90,15 @@ type Program struct {
 	Stmts []Stmt
 }
 
+type Param struct {
+	Name string
+	Type string
+}
+
 type Function struct {
 	Name   string
-	Params []string
+	Params []Param
+	Return string
 	Body   []Stmt
 }
 
@@ -140,7 +163,11 @@ func (s *LetStmt) emit(w io.Writer, indent string) {
 	if typ != "" {
 		fmt.Fprint(w, javaType(typ)+" "+s.Name)
 	} else {
-		fmt.Fprint(w, "var "+s.Name)
+		if indent == "    " {
+			fmt.Fprint(w, "int "+s.Name)
+		} else {
+			fmt.Fprint(w, "var "+s.Name)
+		}
 	}
 	if s.Expr != nil {
 		fmt.Fprint(w, " = ")
@@ -164,7 +191,11 @@ func (s *VarStmt) emit(w io.Writer, indent string) {
 	if typ != "" {
 		fmt.Fprint(w, javaType(typ)+" "+s.Name)
 	} else {
-		fmt.Fprint(w, "var "+s.Name)
+		if indent == "    " {
+			fmt.Fprint(w, "int "+s.Name)
+		} else {
+			fmt.Fprint(w, "var "+s.Name)
+		}
 	}
 	if s.Expr != nil {
 		fmt.Fprint(w, " = ")
@@ -377,11 +408,15 @@ func Transpile(p *parser.Program, env *types.Env) (*Program, error) {
 			if err != nil {
 				return nil, err
 			}
-			var params []string
+			var params []Param
 			for _, p := range s.Fun.Params {
-				params = append(params, p.Name)
+				params = append(params, Param{Name: p.Name, Type: typeRefString(p.Type)})
 			}
-			prog.Funcs = append(prog.Funcs, &Function{Name: s.Fun.Name, Params: params, Body: body})
+			ret := typeRefString(s.Fun.Return)
+			if ret == "" {
+				ret = inferReturnType(body)
+			}
+			prog.Funcs = append(prog.Funcs, &Function{Name: s.Fun.Name, Params: params, Return: ret, Body: body})
 			continue
 		}
 		st, err := compileStmt(s)
@@ -662,13 +697,28 @@ func compileIfExpr(ie *parser.IfExpr) (Expr, error) {
 func Emit(prog *Program) []byte {
 	var buf bytes.Buffer
 	buf.WriteString("public class Main {\n")
+	// emit global variables first
+	for _, st := range prog.Stmts {
+		switch st.(type) {
+		case *LetStmt, *VarStmt:
+			st.emit(&buf, "    ")
+		}
+	}
 	for _, fn := range prog.Funcs {
-		buf.WriteString("    static int " + fn.Name + "(")
+		ret := javaType(fn.Return)
+		if ret == "" {
+			ret = "void"
+		}
+		buf.WriteString("    static " + ret + " " + fn.Name + "(")
 		for i, p := range fn.Params {
 			if i > 0 {
 				buf.WriteString(", ")
 			}
-			buf.WriteString("int " + p)
+			typ := javaType(p.Type)
+			if typ == "" {
+				typ = "int"
+			}
+			buf.WriteString(typ + " " + p.Name)
 		}
 		buf.WriteString(") {\n")
 		for _, s := range fn.Body {
@@ -677,8 +727,13 @@ func Emit(prog *Program) []byte {
 		buf.WriteString("    }\n")
 	}
 	buf.WriteString("    public static void main(String[] args) {\n")
-	for _, s := range prog.Stmts {
-		s.emit(&buf, "        ")
+	for _, st := range prog.Stmts {
+		switch st.(type) {
+		case *LetStmt, *VarStmt:
+			// already emitted as globals
+		default:
+			st.emit(&buf, "        ")
+		}
 	}
 	buf.WriteString("    }\n")
 	buf.WriteString("}\n")
