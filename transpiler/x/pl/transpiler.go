@@ -228,6 +228,11 @@ func (p *PrintStmt) emit(w io.Writer, idx int) {
 		e.Start.emit(w)
 		fmt.Fprintf(w, ", L%d, _, R%d), writeln(R%d)", idx, idx, idx)
 		return
+	case *InExpr:
+		io.WriteString(w, "    (")
+		e.emit(w)
+		io.WriteString(w, " -> writeln(true) ; writeln(false))")
+		return
 	case *IfExpr:
 		io.WriteString(w, "    (")
 		e.Cond.emit(w)
@@ -359,6 +364,12 @@ type SliceExpr struct {
 	Target   Expr
 	Start    Expr
 	End      Expr
+	IsString bool
+}
+
+type InExpr struct {
+	Elem     Expr
+	Target   Expr
 	IsString bool
 }
 
@@ -517,6 +528,22 @@ func (s *SubstringExpr) emit(w io.Writer) {
 	io.WriteString(w, ", Len, _, R))")
 }
 
+func (i *InExpr) emit(w io.Writer) {
+	if i.IsString {
+		io.WriteString(w, "sub_string(")
+		i.Target.emit(w)
+		io.WriteString(w, ", _, _, _, ")
+		i.Elem.emit(w)
+		io.WriteString(w, ")")
+	} else {
+		io.WriteString(w, "member(")
+		i.Elem.emit(w)
+		io.WriteString(w, ", ")
+		i.Target.emit(w)
+		io.WriteString(w, ")")
+	}
+}
+
 func escape(s string) string {
 	s = strings.ReplaceAll(s, "'", "''")
 	return s
@@ -531,7 +558,7 @@ func cap(name string) string {
 
 func isBoolOp(op string) bool {
 	switch op {
-	case "=:=", "=\\=", "=", "\\=", "<", "<=", ">", ">=", "@<", "@=<", "@>", "@>=", ",", ";":
+	case "=:=", "=\\=", "=", "\\=", "<", "<=", ">", ">=", "@<", "@=<", "@>", "@>=", ",", ";", "in":
 		return true
 	}
 	return false
@@ -820,6 +847,8 @@ func toBinary(b *parser.BinaryExpr, env *compileEnv) (Expr, error) {
 			opStr = ","
 		case "||":
 			opStr = ";"
+		case "in":
+			opStr = "in"
 		default:
 			return nil, fmt.Errorf("unsupported op")
 		}
@@ -835,7 +864,24 @@ func toBinary(b *parser.BinaryExpr, env *compileEnv) (Expr, error) {
 				}
 			}
 		}
-		left = &BinaryExpr{Left: left, Op: opStr, Right: right}
+		if opStr == "in" {
+			if list, ok := right.(*ListLit); ok {
+				if lit, ok2 := left.(*IntLit); ok2 {
+					found := false
+					for _, e := range list.Elems {
+						if li, ok3 := e.(*IntLit); ok3 && li.Value == lit.Value {
+							found = true
+							break
+						}
+					}
+					left = &BoolLit{Value: found}
+					continue
+				}
+			}
+			left = &InExpr{Elem: left, Target: right, IsString: isStringLike(right, env)}
+		} else {
+			left = &BinaryExpr{Left: left, Op: opStr, Right: right}
+		}
 	}
 	return left, nil
 }
@@ -862,6 +908,18 @@ func toUnary(u *parser.Unary, env *compileEnv) (Expr, error) {
 }
 
 func toPostfix(pf *parser.PostfixExpr, env *compileEnv) (Expr, error) {
+	if pf.Target.Selector != nil && len(pf.Target.Selector.Tail) == 1 && pf.Target.Selector.Tail[0] == "contains" && len(pf.Ops) == 1 && pf.Ops[0].Call != nil {
+		if len(pf.Ops[0].Call.Args) != 1 {
+			return nil, fmt.Errorf("unsupported call")
+		}
+		arg, err := toExpr(pf.Ops[0].Call.Args[0], env)
+		if err != nil {
+			return nil, err
+		}
+		target := &Var{Name: env.current(pf.Target.Selector.Root)}
+		return &InExpr{Elem: arg, Target: target, IsString: true}, nil
+	}
+
 	expr, err := toPrimary(pf.Target, env)
 	if err != nil {
 		return nil, err
