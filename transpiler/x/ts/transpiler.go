@@ -1875,9 +1875,35 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 	case p.Lit != nil:
 		return convertLiteral(p.Lit)
 	case p.Selector != nil:
+		if transpileEnv != nil && len(p.Selector.Tail) == 0 {
+			if u, ok := transpileEnv.FindUnionByVariant(p.Selector.Root); ok {
+				v := u.Variants[p.Selector.Root]
+				if len(v.Order) == 0 {
+					return &MapLit{Entries: []MapEntry{
+						{Key: &StringLit{Value: "tag"}, Value: &StringLit{Value: p.Selector.Root}},
+					}}, nil
+				}
+			}
+		}
 		expr := selectorToExpr(p.Selector)
 		return expr, nil
 	case p.Call != nil:
+		if transpileEnv != nil {
+			if u, ok := transpileEnv.FindUnionByVariant(p.Call.Func); ok {
+				v := u.Variants[p.Call.Func]
+				if len(v.Order) == len(p.Call.Args) {
+					entries := []MapEntry{{Key: &StringLit{Value: "tag"}, Value: &StringLit{Value: p.Call.Func}}}
+					for i, name := range v.Order {
+						ae, err := convertExpr(p.Call.Args[i])
+						if err != nil {
+							return nil, err
+						}
+						entries = append(entries, MapEntry{Key: &StringLit{Value: name}, Value: ae})
+					}
+					return &MapLit{Entries: entries}, nil
+				}
+			}
+		}
 		args := make([]Expr, len(p.Call.Args))
 		for i, a := range p.Call.Args {
 			ae, err := convertExpr(a)

@@ -103,14 +103,26 @@ func updateReadme() {
 	readmePath := filepath.Join(root, "transpiler", "x", "ts", "README.md")
 	files, _ := filepath.Glob(filepath.Join(srcDir, "*.mochi"))
 	total := len(files)
-	compiled := 0
+	passed := 0
 	var lines []string
 	for _, f := range files {
 		name := filepath.Base(f)
+		base := strings.TrimSuffix(name, ".mochi")
 		mark := "[ ]"
-		if _, err := os.Stat(filepath.Join(outDir, strings.TrimSuffix(name, ".mochi")+".ts")); err == nil {
-			compiled++
-			mark = "[x]"
+		outPath := filepath.Join(outDir, base+".out")
+		errPath := filepath.Join(outDir, base+".error")
+		goldPath := filepath.Join(srcDir, base+".out")
+		if _, err := os.Stat(outPath); err == nil {
+			if _, err2 := os.Stat(errPath); err2 == nil {
+				// failed execution
+			} else if want, err2 := os.ReadFile(goldPath); err2 == nil {
+				if got, err3 := os.ReadFile(outPath); err3 == nil {
+					if bytes.Equal(bytes.TrimSpace(got), bytes.TrimSpace(want)) {
+						passed++
+						mark = "[x]"
+					}
+				}
+			}
 		}
 		lines = append(lines, fmt.Sprintf("- %s %s", mark, name))
 	}
@@ -118,7 +130,7 @@ func updateReadme() {
 	buf.WriteString("# Mochi \u2192 TypeScript Transpiler\n\n")
 	buf.WriteString("This directory contains the experimental TypeScript transpiler.\n")
 	buf.WriteString("Generated sources for the golden tests live under `tests/transpiler/x/ts`.\n\n")
-	fmt.Fprintf(&buf, "## VM Golden Test Checklist (%d/%d)\n", compiled, total)
+	fmt.Fprintf(&buf, "## VM Golden Test Checklist (%d/%d)\n", passed, total)
 	buf.WriteString(strings.Join(lines, "\n"))
 	buf.WriteString("\n")
 	_ = os.WriteFile(readmePath, buf.Bytes(), 0o644)
@@ -143,15 +155,31 @@ func updateTasks() {
 	files, _ := filepath.Glob(filepath.Join(srcDir, "*.mochi"))
 	total := len(files)
 	compiled := 0
+	passed := 0
 	for _, f := range files {
 		name := filepath.Base(f)
-		if _, err := os.Stat(filepath.Join(outDir, strings.TrimSuffix(name, ".mochi")+".ts")); err == nil {
+		base := strings.TrimSuffix(name, ".mochi")
+		if _, err := os.Stat(filepath.Join(outDir, base+".ts")); err == nil {
 			compiled++
+		}
+		outPath := filepath.Join(outDir, base+".out")
+		errPath := filepath.Join(outDir, base+".error")
+		goldPath := filepath.Join(srcDir, base+".out")
+		if _, err := os.Stat(outPath); err == nil {
+			if _, err2 := os.Stat(errPath); err2 == nil {
+				// failed execution
+			} else if want, err2 := os.ReadFile(goldPath); err2 == nil {
+				if got, err3 := os.ReadFile(outPath); err3 == nil {
+					if bytes.Equal(bytes.TrimSpace(got), bytes.TrimSpace(want)) {
+						passed++
+					}
+				}
+			}
 		}
 	}
 	var buf bytes.Buffer
 	buf.WriteString(fmt.Sprintf("## Progress (%s)\n", ts))
-	fmt.Fprintf(&buf, "- Generated TypeScript for %d/%d programs\n", compiled, total)
+	fmt.Fprintf(&buf, "- Generated TypeScript for %d/%d programs (%d passing)\n", compiled, total, passed)
 	buf.WriteString("- Updated README checklist and outputs\n")
 	buf.WriteString("- Enhanced readability and type inference\n")
 	buf.WriteString("- Removed runtime helper functions\n\n")
