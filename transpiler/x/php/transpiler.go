@@ -174,6 +174,19 @@ type SubstringExpr struct {
 	End   Expr
 }
 
+// IndexExpr represents array indexing: x[i].
+type IndexExpr struct {
+	X     Expr
+	Index Expr
+}
+
+// SliceExpr represents array slicing: x[start:end].
+type SliceExpr struct {
+	X     Expr
+	Start Expr
+	End   Expr
+}
+
 // CondExpr represents a conditional expression using PHP's ternary operator.
 type CondExpr struct {
 	Cond Expr
@@ -230,6 +243,23 @@ func (b *BinaryExpr) emit(w io.Writer) {
 			b.Right.emit(w)
 		}
 		return
+	} else if b.Op == "in" {
+		if isListExpr(b.Right) {
+			fmt.Fprint(w, "in_array(")
+			b.Left.emit(w)
+			fmt.Fprint(w, ", ")
+			b.Right.emit(w)
+			fmt.Fprint(w, ")")
+			return
+		}
+		if isStringExpr(b.Right) {
+			fmt.Fprint(w, "str_contains(")
+			b.Right.emit(w)
+			fmt.Fprint(w, ", ")
+			b.Left.emit(w)
+			fmt.Fprint(w, ")")
+			return
+		}
 	}
 	b.Left.emit(w)
 	fmt.Fprintf(w, " %s ", b.Op)
@@ -269,6 +299,23 @@ func (l *ListLit) emit(w io.Writer) {
 func (s *SubstringExpr) emit(w io.Writer) {
 	fmt.Fprint(w, "substr(")
 	s.Str.emit(w)
+	fmt.Fprint(w, ", ")
+	s.Start.emit(w)
+	fmt.Fprint(w, ", ")
+	(&BinaryExpr{Left: s.End, Op: "-", Right: s.Start}).emit(w)
+	fmt.Fprint(w, ")")
+}
+
+func (i *IndexExpr) emit(w io.Writer) {
+	i.X.emit(w)
+	fmt.Fprint(w, "[")
+	i.Index.emit(w)
+	fmt.Fprint(w, "]")
+}
+
+func (s *SliceExpr) emit(w io.Writer) {
+	fmt.Fprint(w, "array_slice(")
+	s.X.emit(w)
 	fmt.Fprint(w, ", ")
 	s.Start.emit(w)
 	fmt.Fprint(w, ", ")
@@ -369,8 +416,16 @@ func convertBinary(b *parser.BinaryExpr) (Expr, error) {
 	}
 
 	apply := func(left Expr, op string, right Expr) Expr {
-		if op == "/" {
+		switch op {
+		case "/":
 			return &IntDivExpr{Left: left, Right: right}
+		case "in":
+			if isListExpr(right) {
+				return &CallExpr{Func: "in_array", Args: []Expr{left, right}}
+			}
+			if isStringExpr(right) {
+				return &CallExpr{Func: "str_contains", Args: []Expr{right, left}}
+			}
 		}
 		return &BinaryExpr{Left: left, Op: op, Right: right}
 	}
@@ -424,9 +479,44 @@ func convertPostfix(pf *parser.PostfixExpr) (Expr, error) {
 	}
 	e, err := convertPrimary(pf.Target)
 	if err != nil {
-		return nil, err
+		if pf.Target != nil && pf.Target.Selector != nil && len(pf.Target.Selector.Tail) > 0 {
+			e = &Var{Name: pf.Target.Selector.Root}
+		} else {
+			return nil, err
+		}
 	}
-	for _, op := range pf.Ops {
+
+	tail := []string{}
+	if pf.Target != nil && pf.Target.Selector != nil {
+		tail = pf.Target.Selector.Tail
+	}
+
+	if len(tail) == 1 && len(pf.Ops) > 0 && pf.Ops[0].Call != nil {
+		method := tail[0]
+		args := make([]Expr, len(pf.Ops[0].Call.Args))
+		for i, a := range pf.Ops[0].Call.Args {
+			ex, err := convertExpr(a)
+			if err != nil {
+				return nil, err
+			}
+			args[i] = ex
+		}
+		switch method {
+		case "contains":
+			if isStringExpr(e) {
+				return &CallExpr{Func: "str_contains", Args: append([]Expr{e}, args...)}, nil
+			}
+			if isListExpr(e) {
+				return &CallExpr{Func: "in_array", Args: append(args, e)}, nil
+			}
+			return nil, fmt.Errorf("contains on unsupported type")
+		default:
+			return nil, fmt.Errorf("method %s not supported", method)
+		}
+	}
+
+	for i := 0; i < len(pf.Ops); i++ {
+		op := pf.Ops[i]
 		switch {
 		case op.Cast != nil:
 			if op.Cast.Type == nil || op.Cast.Type.Simple == nil {
@@ -441,6 +531,59 @@ func convertPostfix(pf *parser.PostfixExpr) (Expr, error) {
 				e = &CallExpr{Func: "boolval", Args: []Expr{e}}
 			default:
 				return nil, fmt.Errorf("unsupported cast to %s", *op.Cast.Type.Simple)
+			}
+		case op.Field != nil && op.Field.Name == "contains":
+			if i+1 >= len(pf.Ops) || pf.Ops[i+1].Call == nil {
+				return nil, fmt.Errorf("method contains requires args")
+			}
+			args := make([]Expr, len(pf.Ops[i+1].Call.Args))
+			for j, a := range pf.Ops[i+1].Call.Args {
+				ex, err := convertExpr(a)
+				if err != nil {
+					return nil, err
+				}
+				args[j] = ex
+			}
+			if isStringExpr(e) {
+				e = &CallExpr{Func: "str_contains", Args: append([]Expr{e}, args...)}
+			} else if isListExpr(e) {
+				e = &CallExpr{Func: "in_array", Args: append(args, e)}
+			} else {
+				return nil, fmt.Errorf("contains on unsupported type")
+			}
+			i++
+		case op.Index != nil:
+			var start Expr = &IntLit{Value: 0}
+			if op.Index.Start != nil {
+				s, err := convertExpr(op.Index.Start)
+				if err != nil {
+					return nil, err
+				}
+				start = s
+			}
+			if op.Index.Colon == nil {
+				if op.Index.End != nil || op.Index.Colon2 != nil || op.Index.Step != nil {
+					return nil, fmt.Errorf("unsupported index expression")
+				}
+				if isStringExpr(e) {
+					end := &BinaryExpr{Left: start, Op: "+", Right: &IntLit{Value: 1}}
+					e = &SubstringExpr{Str: e, Start: start, End: end}
+				} else {
+					e = &IndexExpr{X: e, Index: start}
+				}
+			} else {
+				if op.Index.End == nil || op.Index.Step != nil || op.Index.Colon2 != nil {
+					return nil, fmt.Errorf("unsupported slice expression")
+				}
+				end, err := convertExpr(op.Index.End)
+				if err != nil {
+					return nil, err
+				}
+				if isStringExpr(e) {
+					e = &SubstringExpr{Str: e, Start: start, End: end}
+				} else {
+					e = &SliceExpr{X: e, Start: start, End: end}
+				}
 			}
 		default:
 			return nil, fmt.Errorf("postfix op not supported")
@@ -464,7 +607,13 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 		if name == "print" {
 			name = "echo"
 			for i := range args {
-				args[i] = maybeBoolString(args[i])
+				if isListExpr(args[i]) {
+					join := &CallExpr{Func: "implode", Args: []Expr{&StringLit{Value: " "}, args[i]}}
+					inner := &BinaryExpr{Left: &BinaryExpr{Left: &StringLit{Value: "["}, Op: "+", Right: join}, Op: "+", Right: &StringLit{Value: "]"}}
+					args[i] = inner
+				} else {
+					args[i] = maybeBoolString(args[i])
+				}
 			}
 		} else if name == "len" {
 			if len(args) == 1 {
@@ -506,6 +655,12 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 				return nil, fmt.Errorf("%s expects 1 arg", name)
 			}
 			return &CallExpr{Func: name, Args: args}, nil
+		} else if name == "append" {
+			if len(args) != 2 {
+				return nil, fmt.Errorf("append expects 2 args")
+			}
+			tmp := &ListLit{Elems: []Expr{args[1]}}
+			return &CallExpr{Func: "array_merge", Args: []Expr{args[0], tmp}}, nil
 		}
 		return &CallExpr{Func: name, Args: args}, nil
 	case p.Lit != nil:
@@ -711,6 +866,34 @@ func isListArg(e Expr) bool {
 	return false
 }
 
+func isListExpr(e Expr) bool {
+	if isListArg(e) {
+		return true
+	}
+	if c, ok := e.(*CallExpr); ok {
+		if c.Func == "array_merge" {
+			return true
+		}
+	}
+	return false
+}
+
+func isStringExpr(e Expr) bool {
+	switch v := e.(type) {
+	case *StringLit:
+		return true
+	case *Var:
+		if transpileEnv != nil {
+			if t, err := transpileEnv.GetVar(v.Name); err == nil {
+				if _, ok := t.(types.StringType); ok {
+					return true
+				}
+			}
+		}
+	}
+	return false
+}
+
 func isBoolExpr(e Expr) bool {
 	switch v := e.(type) {
 	case *BoolLit:
@@ -726,6 +909,11 @@ func isBoolExpr(e Expr) bool {
 	case *BinaryExpr:
 		switch v.Op {
 		case "<", "<=", ">", ">=", "==", "!=", "&&", "||", "in":
+			return true
+		}
+	case *CallExpr:
+		switch v.Func {
+		case "str_contains", "in_array":
 			return true
 		}
 	case *CondExpr:
@@ -840,6 +1028,10 @@ func exprNode(e Expr) *ast.Node {
 		return &ast.Node{Kind: "intdiv", Children: []*ast.Node{exprNode(ex.Left), exprNode(ex.Right)}}
 	case *SubstringExpr:
 		return &ast.Node{Kind: "substring", Children: []*ast.Node{exprNode(ex.Str), exprNode(ex.Start), exprNode(ex.End)}}
+	case *IndexExpr:
+		return &ast.Node{Kind: "index", Children: []*ast.Node{exprNode(ex.X), exprNode(ex.Index)}}
+	case *SliceExpr:
+		return &ast.Node{Kind: "slice", Children: []*ast.Node{exprNode(ex.X), exprNode(ex.Start), exprNode(ex.End)}}
 	default:
 		return &ast.Node{Kind: "unknown"}
 	}
