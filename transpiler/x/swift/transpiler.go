@@ -50,6 +50,25 @@ type WhileStmt struct {
 	Body []Stmt
 }
 
+// ForRangeStmt represents a simple numeric range for loop.
+type ForRangeStmt struct {
+	Name  string
+	Start Expr
+	End   Expr
+	Body  []Stmt
+}
+
+// ForEachStmt represents iteration over a collection.
+type ForEachStmt struct {
+	Name string
+	Expr Expr
+	Body []Stmt
+}
+
+type BreakStmt struct{}
+
+type ContinueStmt struct{}
+
 type IfStmt struct {
 	Cond   Expr
 	Then   []Stmt
@@ -115,7 +134,7 @@ func (v *VarDecl) emit(w io.Writer) {
 		kw = "let"
 	}
 	fmt.Fprint(w, kw+" "+v.Name)
-	if v.Type != "" {
+	if v.Type != "" && v.Expr == nil {
 		fmt.Fprintf(w, ": %s", v.Type)
 	}
 	if v.Expr != nil {
@@ -263,6 +282,32 @@ func (ws *WhileStmt) emit(w io.Writer) {
 	fmt.Fprint(w, "}\n")
 }
 
+func (fr *ForRangeStmt) emit(w io.Writer) {
+	fmt.Fprintf(w, "for %s in ", fr.Name)
+	fr.Start.emit(w)
+	fmt.Fprint(w, "..<")
+	fr.End.emit(w)
+	fmt.Fprint(w, " {\n")
+	for _, st := range fr.Body {
+		st.emit(w)
+	}
+	fmt.Fprint(w, "}\n")
+}
+
+func (fe *ForEachStmt) emit(w io.Writer) {
+	fmt.Fprintf(w, "for %s in ", fe.Name)
+	fe.Expr.emit(w)
+	fmt.Fprint(w, " {\n")
+	for _, st := range fe.Body {
+		st.emit(w)
+	}
+	fmt.Fprint(w, "}\n")
+}
+
+func (b *BreakStmt) emit(w io.Writer) { fmt.Fprint(w, "break\n") }
+
+func (c *ContinueStmt) emit(w io.Writer) { fmt.Fprint(w, "continue\n") }
+
 func repoRoot() string {
 	dir, err := os.Getwd()
 	if err != nil {
@@ -384,7 +429,6 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 			if err != nil {
 				return nil, err
 			}
-			typ = toSwiftType(st.Let.Type)
 		} else if st.Let.Type != nil {
 			ex = zeroValue(st.Let.Type)
 			typ = toSwiftType(st.Let.Type)
@@ -399,7 +443,6 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 			if err != nil {
 				return nil, err
 			}
-			typ = toSwiftType(st.Var.Type)
 		} else if st.Var.Type != nil {
 			ex = zeroValue(st.Var.Type)
 			typ = toSwiftType(st.Var.Type)
@@ -417,6 +460,12 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 		return convertReturnStmt(st.Return)
 	case st.While != nil:
 		return convertWhileStmt(st.While)
+	case st.For != nil:
+		return convertForStmt(st.For)
+	case st.Break != nil:
+		return &BreakStmt{}, nil
+	case st.Continue != nil:
+		return &ContinueStmt{}, nil
 	case st.If != nil:
 		return convertIfStmt(st.If)
 	default:
@@ -486,6 +535,29 @@ func convertWhileStmt(wst *parser.WhileStmt) (Stmt, error) {
 		return nil, err
 	}
 	return &WhileStmt{Cond: cond, Body: body}, nil
+}
+
+func convertForStmt(fs *parser.ForStmt) (Stmt, error) {
+	body, err := convertStmts(fs.Body)
+	if err != nil {
+		return nil, err
+	}
+	if fs.RangeEnd != nil {
+		start, err := convertExpr(fs.Source)
+		if err != nil {
+			return nil, err
+		}
+		end, err := convertExpr(fs.RangeEnd)
+		if err != nil {
+			return nil, err
+		}
+		return &ForRangeStmt{Name: fs.Name, Start: start, End: end, Body: body}, nil
+	}
+	expr, err := convertExpr(fs.Source)
+	if err != nil {
+		return nil, err
+	}
+	return &ForEachStmt{Name: fs.Name, Expr: expr, Body: body}, nil
 }
 
 func evalPrintArg(arg *parser.Expr) (val string, isString bool, ok bool) {
@@ -570,6 +642,14 @@ func stmtNode(s Stmt) *ast.Node {
 		return &ast.Node{Kind: "return"}
 	case *WhileStmt:
 		return &ast.Node{Kind: "while"}
+	case *ForRangeStmt:
+		return &ast.Node{Kind: "for-range"}
+	case *ForEachStmt:
+		return &ast.Node{Kind: "for-each"}
+	case *BreakStmt:
+		return &ast.Node{Kind: "break"}
+	case *ContinueStmt:
+		return &ast.Node{Kind: "continue"}
 	default:
 		return &ast.Node{Kind: "stmt"}
 	}
