@@ -621,6 +621,16 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 			p.Functions = append(p.Functions, &Function{Name: st.Fun.Name, Params: params, Body: body})
 			continue
 		}
+		if st.Let != nil {
+			if fn := detectFunExpr(st.Let.Value); fn != nil {
+				fun, err := compileFunction(env, st.Let.Name, fn)
+				if err != nil {
+					return nil, err
+				}
+				p.Functions = append(p.Functions, fun)
+				continue
+			}
+		}
 		stmt, err := compileStmt(env, st)
 		if err != nil {
 			return nil, err
@@ -810,6 +820,40 @@ func convertIfExpr(n *parser.IfExpr) Expr {
 		return nil
 	}
 	return &CondExpr{Cond: cond, Then: thenExpr, Else: elseExpr}
+}
+
+func detectFunExpr(e *parser.Expr) *parser.FunExpr {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) != 0 {
+		return nil
+	}
+	u := e.Binary.Left
+	if u == nil || len(u.Ops) != 0 || u.Value == nil || u.Value.Target == nil {
+		return nil
+	}
+	return u.Value.Target.FunExpr
+}
+
+func compileFunction(env *types.Env, name string, fn *parser.FunExpr) (*Function, error) {
+	var params []Param
+	for _, p := range fn.Params {
+		typ := "int"
+		if p.Type != nil && p.Type.Simple != nil && *p.Type.Simple == "string" {
+			typ = "const char*"
+		}
+		params = append(params, Param{Name: p.Name, Type: typ})
+	}
+	body, err := compileStmts(env, fn.BlockBody)
+	if err != nil {
+		return nil, err
+	}
+	if fn.ExprBody != nil {
+		expr := convertExpr(fn.ExprBody)
+		if expr == nil {
+			return nil, fmt.Errorf("invalid function expression")
+		}
+		body = append(body, &ReturnStmt{Expr: expr})
+	}
+	return &Function{Name: name, Params: params, Body: body}, nil
 }
 
 func convertExpr(e *parser.Expr) Expr {
