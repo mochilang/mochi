@@ -1,5 +1,5 @@
 run: exit status 1
-[0m[1m[31merror[0m: The module's source code could not be parsed: Expected ',', got '{' at file:///workspace/mochi/tests/transpiler/x/ts/left_join_multi.ts:22:3
+[0m[1m[31merror[0m: The module's source code could not be parsed: Expected ',', got '{' at file:///workspace/mochi/tests/transpiler/x/ts/left_join_multi.ts:23:3
 
     { const _joined = []
     ~
