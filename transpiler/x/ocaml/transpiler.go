@@ -70,7 +70,12 @@ func (p *Program) UsesStrModule() bool {
 		case *AssignStmt:
 			return exprUses(st.Expr)
 		case *PrintStmt:
-			return exprUses(st.Expr)
+			for _, e := range st.Exprs {
+				if exprUses(e) {
+					return true
+				}
+			}
+			return false
 		case *IfStmt:
 			if exprUses(st.Cond) {
 				return true
@@ -181,13 +186,18 @@ func (a *AssignStmt) emit(w io.Writer) {
 	io.WriteString(w, ";\n")
 }
 
-// PrintStmt represents a call to print_endline.
-type PrintStmt struct{ Expr Expr }
+// PrintStmt represents a call to print_endline with one or more values.
+type PrintStmt struct{ Exprs []Expr }
 
 func (p *PrintStmt) emit(w io.Writer) {
-	io.WriteString(w, "  print_endline (")
-	p.Expr.emitPrint(w)
-	io.WriteString(w, ");\n")
+	io.WriteString(w, "  print_endline (String.concat \" \" [")
+	for i, e := range p.Exprs {
+		if i > 0 {
+			io.WriteString(w, "; ")
+		}
+		e.emitPrint(w)
+	}
+	io.WriteString(w, "]);\n")
 }
 
 // IfStmt represents a basic if/else statement.
@@ -329,9 +339,12 @@ type LenBuiltin struct {
 }
 
 func (l *LenBuiltin) emit(w io.Writer) {
-	if l.Typ == "string" {
+	switch l.Typ {
+	case "string":
 		io.WriteString(w, "String.length ")
-	} else {
+	case "list", "map":
+		io.WriteString(w, "List.length ")
+	default:
 		io.WriteString(w, "List.length ")
 	}
 	l.Arg.emit(w)
@@ -590,6 +603,53 @@ type MapUpdateExpr struct {
 	Value Expr
 }
 
+// InExpr represents `item in collection`.
+type InExpr struct {
+	Item Expr
+	Coll Expr
+	Typ  string
+}
+
+func (in *InExpr) emit(w io.Writer) {
+	switch in.Typ {
+	case "string":
+		(&StringContainsBuiltin{Str: in.Coll, Sub: in.Item}).emit(w)
+	case "map":
+		io.WriteString(w, "(List.mem_assoc ")
+		in.Item.emit(w)
+		io.WriteString(w, " ")
+		in.Coll.emit(w)
+		io.WriteString(w, ")")
+	default: // list
+		io.WriteString(w, "(List.mem ")
+		in.Item.emit(w)
+		io.WriteString(w, " ")
+		in.Coll.emit(w)
+		io.WriteString(w, ")")
+	}
+}
+
+func (in *InExpr) emitPrint(w io.Writer) {
+	io.WriteString(w, "string_of_bool (")
+	in.emit(w)
+	io.WriteString(w, ")")
+}
+
+func isUnderscoreExpr(e *parser.Expr) bool {
+	if e == nil || len(e.Binary.Right) != 0 {
+		return false
+	}
+	u := e.Binary.Left
+	if len(u.Ops) != 0 || u.Value == nil {
+		return false
+	}
+	p := u.Value
+	if len(p.Ops) != 0 || p.Target == nil || p.Target.Selector == nil {
+		return false
+	}
+	return p.Target.Selector.Root == "_" && len(p.Target.Selector.Tail) == 0
+}
+
 func (mu *MapUpdateExpr) emit(w io.Writer) {
 	io.WriteString(w, "(")
 	io.WriteString(w, "(")
@@ -706,6 +766,48 @@ func (i *IfExpr) emitPrint(w io.Writer) {
 		io.WriteString(w, ")")
 	default:
 		i.emit(w)
+	}
+}
+
+// MatchExpr represents a basic pattern matching expression.
+type MatchExpr struct {
+	Target Expr
+	Arms   []MatchArm
+	Typ    string
+}
+
+type MatchArm struct {
+	Pattern Expr // nil for wildcard
+	Result  Expr
+}
+
+func (m *MatchExpr) emit(w io.Writer) {
+	io.WriteString(w, "(match ")
+	m.Target.emit(w)
+	io.WriteString(w, " with")
+	for _, a := range m.Arms {
+		io.WriteString(w, " | ")
+		if a.Pattern != nil {
+			a.Pattern.emit(w)
+		} else {
+			io.WriteString(w, "_")
+		}
+		io.WriteString(w, " -> ")
+		a.Result.emit(w)
+	}
+	io.WriteString(w, ")")
+}
+
+func (m *MatchExpr) emitPrint(w io.Writer) {
+	switch m.Typ {
+	case "int":
+		io.WriteString(w, "string_of_int ")
+		m.emit(w)
+	case "bool":
+		io.WriteString(w, "string_of_bool ")
+		m.emit(w)
+	default:
+		m.emit(w)
 	}
 }
 
@@ -931,12 +1033,16 @@ func transpileStmt(st *parser.Statement, env *types.Env, vars map[string]VarInfo
 		return &AssignStmt{Name: st.Assign.Name, Expr: valExpr}, nil
 	case st.Expr != nil:
 		call := st.Expr.Expr.Binary.Left.Value.Target.Call
-		if call != nil && call.Func == "print" && len(call.Args) == 1 {
-			expr, _, err := convertExpr(call.Args[0], env, vars)
-			if err != nil {
-				return nil, err
+		if call != nil && call.Func == "print" {
+			args := make([]Expr, len(call.Args))
+			for i, a := range call.Args {
+				ex, _, err := convertExpr(a, env, vars)
+				if err != nil {
+					return nil, err
+				}
+				args[i] = ex
 			}
-			return &PrintStmt{Expr: expr}, nil
+			return &PrintStmt{Exprs: args}, nil
 		}
 		return nil, fmt.Errorf("unsupported expression")
 	case st.If != nil:
@@ -1135,7 +1241,7 @@ func convertBinary(b *parser.BinaryExpr, env *types.Env, vars map[string]VarInfo
 			return 4
 		case "+", "-":
 			return 3
-		case "==", "!=", "<", "<=", ">", ">=":
+		case "==", "!=", "<", "<=", ">", ">=", "in":
 			return 2
 		case "&&":
 			return 1
@@ -1177,11 +1283,17 @@ func convertBinary(b *parser.BinaryExpr, env *types.Env, vars map[string]VarInfo
 			} else {
 				resTyp = "int"
 			}
-		case "==", "!=", "<", "<=", ">", ">=", "&&", "||":
+		case "==", "!=", "<", "<=", ">", ">=", "&&", "||", "in":
 			resTyp = "bool"
 		}
 
-		exprStack = append(exprStack, &BinaryExpr{Left: left, Op: op, Right: right, Typ: resTyp})
+		var expr Expr
+		if op == "in" {
+			expr = &InExpr{Item: left, Coll: right, Typ: rtyp}
+		} else {
+			expr = &BinaryExpr{Left: left, Op: op, Right: right, Typ: resTyp}
+		}
+		exprStack = append(exprStack, expr)
 		typeStack = append(typeStack, resTyp)
 	}
 
@@ -1312,6 +1424,8 @@ func convertPrimary(p *parser.Primary, env *types.Env, vars map[string]VarInfo) 
 		return convertIf(p.If, env, vars)
 	case p.Call != nil:
 		return convertCall(p.Call, env, vars)
+	case p.Match != nil:
+		return convertMatch(p.Match, env, vars)
 	case p.List != nil:
 		elems := make([]Expr, len(p.List.Elems))
 		for i, e := range p.List.Elems {
@@ -1388,6 +1502,37 @@ func convertIf(ifx *parser.IfExpr, env *types.Env, vars map[string]VarInfo) (Exp
 	return &IfExpr{Cond: cond, Then: thenExpr, Else: elseExpr, Typ: thenTyp}, thenTyp, nil
 }
 
+func convertMatch(m *parser.MatchExpr, env *types.Env, vars map[string]VarInfo) (Expr, string, error) {
+	target, _, err := convertExpr(m.Target, env, vars)
+	if err != nil {
+		return nil, "", err
+	}
+	arms := make([]MatchArm, len(m.Cases))
+	var typ string
+	for i, c := range m.Cases {
+		var pat Expr
+		if !isUnderscoreExpr(c.Pattern) {
+			p, _, err := convertExpr(c.Pattern, env, vars)
+			if err != nil {
+				return nil, "", err
+			}
+			pat = p
+		}
+		res, rtyp, err := convertExpr(c.Result, env, vars)
+		if err != nil {
+			return nil, "", err
+		}
+		if i == 0 {
+			typ = rtyp
+		}
+		arms[i] = MatchArm{Pattern: pat, Result: res}
+	}
+	if typ == "" {
+		typ = "int"
+	}
+	return &MatchExpr{Target: target, Arms: arms, Typ: typ}, typ, nil
+}
+
 func convertCall(c *parser.CallExpr, env *types.Env, vars map[string]VarInfo) (Expr, string, error) {
 	if c.Func == "str" && len(c.Args) == 1 {
 		arg, typ, err := convertExpr(c.Args[0], env, vars)
@@ -1405,7 +1550,7 @@ func convertCall(c *parser.CallExpr, env *types.Env, vars map[string]VarInfo) (E
 			return nil, "", err
 		}
 		switch typ {
-		case "string", "list":
+		case "string", "list", "map":
 			return &LenBuiltin{Arg: arg, Typ: typ}, "int", nil
 		default:
 			return nil, "", fmt.Errorf("len unsupported for %s", typ)
