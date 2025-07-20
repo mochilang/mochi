@@ -1,3 +1,8 @@
+## Progress (2025-07-20 16:45 +0700)
+- Checklist updated: 52/100 tests compiled
+- Added support for function return types so `closure` now compiles.
+- Improved type inference for function expressions.
+
 ## Progress (2025-07-20 08:24 UTC)
 - Checklist updated: 56/100 tests compiled
 - Added support for `break` and `continue` statements using recursive loops.

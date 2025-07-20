@@ -2,17 +2,17 @@
 
 The following Mochi programs under `tests/vm/valid` are used as golden inputs for transpiler implementations.  Tick a box once the OCaml transpiler can successfully generate code that matches the VM output.
 
-Completed: 56/100
+Completed: 52/100
 
 - [x] append_builtin
 - [x] avg_builtin
 - [x] basic_compare
 - [x] binary_precedence
 - [x] bool_chain
- - [x] break_continue
+- [ ] break_continue
 - [x] cast_string_to_int
 - [ ] cast_struct
-- [ ] closure
+- [x] closure
 - [x] count_builtin
 - [ ] cross_join
 - [ ] cross_join_filter
@@ -80,8 +80,8 @@ Completed: 56/100
 - [ ] record_assign
 - [ ] right_join
 - [ ] save_jsonl_stdout
- - [x] short_circuit
- - [x] slice
+- [ ] short_circuit
+- [ ] slice
 - [ ] sort_stable
 - [x] str_builtin
 - [x] string_compare
@@ -92,10 +92,10 @@ Completed: 56/100
 - [x] string_prefix_slice
 - [x] substring_builtin
 - [x] sum_builtin
- - [x] tail_recursion
+- [ ] tail_recursion
 - [ ] test_block
 - [ ] tree_sum
- - [x] two-sum
+- [ ] two-sum
 - [x] typed_let
 - [x] typed_var
 - [x] unary_neg

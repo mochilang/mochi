@@ -1295,14 +1295,18 @@ func transpileStmt(st *parser.Statement, env *types.Env, vars map[string]VarInfo
 		}
 		env.SetFunc(st.Fun.Name, st.Fun)
 		var retTyp types.Type = types.BoolType{}
-		if st.Fun.Return != nil && st.Fun.Return.Simple != nil {
-			switch *st.Fun.Return.Simple {
-			case "int":
-				retTyp = types.IntType{}
-			case "string":
-				retTyp = types.StringType{}
-			case "bool":
-				retTyp = types.BoolType{}
+		if st.Fun.Return != nil {
+			if st.Fun.Return.Simple != nil {
+				switch *st.Fun.Return.Simple {
+				case "int":
+					retTyp = types.IntType{}
+				case "string":
+					retTyp = types.StringType{}
+				case "bool":
+					retTyp = types.BoolType{}
+				}
+			} else if st.Fun.Return.Fun != nil {
+				retTyp = types.FuncType{Return: types.IntType{}}
 			}
 		}
 		env.SetFuncType(st.Fun.Name, types.FuncType{Return: retTyp})
@@ -1874,8 +1878,12 @@ func convertCall(c *parser.CallExpr, env *types.Env, vars map[string]VarInfo) (E
 	}
 	if fn, ok := env.GetFunc(c.Func); ok {
 		ret := "int"
-		if fn.Return != nil && fn.Return.Simple != nil {
-			ret = *fn.Return.Simple
+		if fn.Return != nil {
+			if fn.Return.Simple != nil {
+				ret = *fn.Return.Simple
+			} else if fn.Return.Fun != nil {
+				ret = "func"
+			}
 		}
 		args := make([]Expr, len(c.Args))
 		for i, a := range c.Args {
