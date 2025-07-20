@@ -214,6 +214,10 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 
 	body := []Node{}
 	for _, st := range prog.Statements {
+		if st.Type != nil || st.ExternType != nil {
+			// type declarations have no runtime representation
+			continue
+		}
 		if st.Let != nil || st.Var != nil || st.Fun != nil {
 			n, err := transpileStmt(st)
 			if err != nil {
@@ -630,7 +634,9 @@ func transpilePostfix(p *parser.PostfixExpr) (Node, error) {
 				i++
 				continue
 			}
-			return nil, fmt.Errorf("field access not supported")
+			// access map fields by string key
+			key := StringLit(op.Field.Name)
+			n = &List{Elems: []Node{Symbol("get"), n, key}}
 		case op.Call != nil:
 			args := []Node{}
 			for _, a := range op.Call.Args {
@@ -956,6 +962,12 @@ func defaultValue(t *parser.TypeRef) Node {
 func castNode(n Node, t *parser.TypeRef) (Node, error) {
 	if t == nil || t.Simple == nil {
 		return n, nil
+	}
+	if transpileEnv != nil {
+		if _, ok := transpileEnv.GetStruct(*t.Simple); ok {
+			// structs have the same runtime representation as maps
+			return n, nil
+		}
 	}
 	switch *t.Simple {
 	case "int":
