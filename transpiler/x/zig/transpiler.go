@@ -16,6 +16,8 @@ import (
 
 var constLists map[string]*ListLit
 var mapVars map[string]bool
+var extraFuncs []*Func
+var funcCounter int
 
 // Program represents a Zig source file with one or more functions.
 type Program struct {
@@ -144,6 +146,13 @@ type MapEntry struct {
 }
 
 type MapLit struct{ Entries []MapEntry }
+
+type FuncExpr struct {
+	Name       string
+	Params     []Param
+	ReturnType string
+	Body       []Stmt
+}
 
 func zigTypeFromExpr(e Expr) string {
 	switch e.(type) {
@@ -690,6 +699,8 @@ func (c *CallExpr) emit(w io.Writer) {
 func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	main := &Func{Name: "main"}
 	funcs := []*Func{}
+	extraFuncs = nil
+	funcCounter = 0
 	mutables := map[string]bool{}
 	collectMutables(prog.Statements, mutables)
 	constLists = map[string]*ListLit{}
@@ -721,6 +732,7 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 		main.Body = append(main.Body, s)
 	}
 	_ = env
+	funcs = append(funcs, extraFuncs...)
 	funcs = append(funcs, main)
 	return &Program{Functions: funcs}, nil
 }
@@ -924,6 +936,32 @@ func compilePostfix(pf *parser.PostfixExpr) (Expr, error) {
 
 func compilePrimary(p *parser.Primary) (Expr, error) {
 	switch {
+	case p.FunExpr != nil:
+		name := fmt.Sprintf("fn_%d", funcCounter)
+		funcCounter++
+		params := make([]Param, len(p.FunExpr.Params))
+		for i, par := range p.FunExpr.Params {
+			params[i] = Param{Name: par.Name, Type: toZigType(par.Type)}
+		}
+		ret := toZigType(p.FunExpr.Return)
+		body := []Stmt{}
+		if p.FunExpr.ExprBody != nil {
+			expr, err := compileExpr(p.FunExpr.ExprBody)
+			if err != nil {
+				return nil, err
+			}
+			body = append(body, &ReturnStmt{Value: expr})
+		} else {
+			for _, st := range p.FunExpr.BlockBody {
+				s, err := compileStmt(st, nil)
+				if err != nil {
+					return nil, err
+				}
+				body = append(body, s)
+			}
+		}
+		extraFuncs = append(extraFuncs, &Func{Name: name, Params: params, ReturnType: ret, Body: body})
+		return &VarRef{Name: name}, nil
 	case p.Call != nil:
 		args := make([]Expr, len(p.Call.Args))
 		for i, a := range p.Call.Args {
