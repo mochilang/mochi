@@ -462,6 +462,28 @@ func (s *StructLit) emitExpr(w io.Writer) {
 	io.WriteString(w, "}")
 }
 
+type MapItem struct {
+	Key   Expr
+	Value Expr
+}
+
+type MapLit struct{ Items []MapItem }
+
+func (m *MapLit) emitExpr(w io.Writer) {
+	io.WriteString(w, "{ ")
+	for i, it := range m.Items {
+		if i > 0 {
+			io.WriteString(w, ", ")
+		}
+		io.WriteString(w, "{")
+		it.Key.emitExpr(w)
+		io.WriteString(w, ": ")
+		it.Value.emitExpr(w)
+		io.WriteString(w, "}")
+	}
+	io.WriteString(w, " }")
+}
+
 type FieldExpr struct {
 	Target Expr
 	Name   string
@@ -868,6 +890,9 @@ func compileStmt(env *types.Env, s *parser.Statement) (Stmt, error) {
 		if val, ok := valueFromExpr(valExpr); ok {
 			env.SetValue(s.Let.Name, val, true)
 		}
+		if _, isMap := valExpr.(*MapLit); isMap {
+			return nil, nil
+		}
 		return &DeclStmt{Name: s.Let.Name, Value: valExpr, Type: declType}, nil
 	case s.Var != nil:
 		currentVarName = s.Var.Name
@@ -886,6 +911,9 @@ func compileStmt(env *types.Env, s *parser.Statement) (Stmt, error) {
 		}
 		if val, ok := valueFromExpr(valExpr); ok {
 			env.SetValue(s.Var.Name, val, true)
+		}
+		if _, isMap := valExpr.(*MapLit); isMap {
+			return nil, nil
 		}
 		return &DeclStmt{Name: s.Var.Name, Value: valExpr, Type: declType}, nil
 	case s.Assign != nil:
@@ -1238,6 +1266,21 @@ func convertUnary(u *parser.Unary) Expr {
 	if g := u.Value.Target.Group; g != nil {
 		return convertExpr(g)
 	}
+	if ml := u.Value.Target.Map; ml != nil && len(u.Ops) == 0 && len(u.Value.Ops) == 0 {
+		var items []MapItem
+		for _, it := range ml.Items {
+			key := convertExpr(it.Key)
+			if key == nil {
+				return nil
+			}
+			val := convertExpr(it.Value)
+			if val == nil {
+				return nil
+			}
+			items = append(items, MapItem{Key: key, Value: val})
+		}
+		return &MapLit{Items: items}
+	}
 	if sel := u.Value.Target.Selector; sel != nil && len(sel.Tail) == 1 && sel.Tail[0] == "contains" && len(u.Value.Ops) == 1 && u.Value.Ops[0].Call != nil && len(u.Ops) == 0 {
 		base := &VarRef{Name: sel.Root}
 		arg := convertExpr(u.Value.Ops[0].Call.Args[0])
@@ -1476,6 +1519,22 @@ func convertUnary(u *parser.Unary) Expr {
 				}
 				newElems := append(append([]Expr{}, list...), elem)
 				return &ListLit{Elems: newElems}
+			}
+		}
+		if call.Func == "values" && len(call.Args) == 1 {
+			if ml := mapLiteral(call.Args[0]); ml != nil {
+				var elems []Expr
+				for _, it := range ml.Items {
+					val := convertExpr(it.Value)
+					if val == nil {
+						return nil
+					}
+					elems = append(elems, val)
+				}
+				return &ListLit{Elems: elems}
+			}
+			if l, ok := evalMap(convertExpr(call.Args[0])); ok {
+				return l
 			}
 		}
 		if call.Func == "contains" && len(call.Args) == 2 {
@@ -1978,6 +2037,14 @@ func isConstExpr(e Expr) bool {
 		}
 		return true
 	}
+	if m, ok := e.(*MapLit); ok {
+		for _, it := range m.Items {
+			if !isConstExpr(it.Value) {
+				return false
+			}
+		}
+		return true
+	}
 	return false
 }
 
@@ -2321,7 +2388,71 @@ func valueFromExpr(e Expr) (any, bool) {
 			m[f.Name] = val
 		}
 		return m, true
+	case *MapLit:
+		m := map[string]any{}
+		for _, it := range v.Items {
+			keyVal, ok := valueFromExpr(it.Key)
+			if !ok {
+				return nil, false
+			}
+			ks, ok := keyVal.(string)
+			if !ok {
+				return nil, false
+			}
+			val, ok := valueFromExpr(it.Value)
+			if !ok {
+				return nil, false
+			}
+			m[ks] = val
+		}
+		return m, true
 	default:
 		return nil, false
 	}
+}
+
+func mapLiteral(e *parser.Expr) *parser.MapLiteral {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) != 0 {
+		return nil
+	}
+	u := e.Binary.Left
+	if len(u.Ops) != 0 || u.Value == nil {
+		return nil
+	}
+	v := u.Value
+	if len(v.Ops) != 0 || v.Target == nil {
+		return nil
+	}
+	return v.Target.Map
+}
+
+func evalMap(e Expr) (*ListLit, bool) {
+	switch v := e.(type) {
+	case *StructLit:
+		var out []Expr
+		for _, f := range v.Fields {
+			out = append(out, f.Value)
+		}
+		return &ListLit{Elems: out}, true
+	case *VarRef:
+		if val, err := currentEnv.GetValue(v.Name); err == nil {
+			if m, ok := val.(map[string]any); ok {
+				keys := make([]string, 0, len(m))
+				for k := range m {
+					keys = append(keys, k)
+				}
+				sort.Strings(keys)
+				var elems []Expr
+				for _, k := range keys {
+					ex := anyToExpr(m[k])
+					if ex == nil {
+						return nil, false
+					}
+					elems = append(elems, ex)
+				}
+				return &ListLit{Elems: elems}, true
+			}
+		}
+	}
+	return nil, false
 }
