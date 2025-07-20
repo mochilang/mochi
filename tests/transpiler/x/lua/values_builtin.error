@@ -1,1 +1,5 @@
-unsupported expression
+exit status 1
+lua: /workspace/mochi/tests/transpiler/x/lua/values_builtin.lua:4: attempt to call a nil value (global 'values')
+stack traceback:
+	/workspace/mochi/tests/transpiler/x/lua/values_builtin.lua:4: in main chunk
+	[C]: in ?
