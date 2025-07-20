@@ -576,6 +576,28 @@ func (lu *ListUpdateExpr) emit(w io.Writer) {
 
 func (lu *ListUpdateExpr) emitPrint(w io.Writer) { lu.emit(w) }
 
+// MapUpdateExpr updates a map by replacing or adding a key/value pair.
+type MapUpdateExpr struct {
+	Map   Expr
+	Key   Expr
+	Value Expr
+}
+
+func (mu *MapUpdateExpr) emit(w io.Writer) {
+	io.WriteString(w, "(")
+	io.WriteString(w, "(")
+	mu.Key.emit(w)
+	io.WriteString(w, ", ")
+	mu.Value.emit(w)
+	io.WriteString(w, ") :: List.remove_assoc ")
+	mu.Key.emit(w)
+	io.WriteString(w, " ")
+	mu.Map.emit(w)
+	io.WriteString(w, ")")
+}
+
+func (mu *MapUpdateExpr) emitPrint(w io.Writer) { mu.emit(w) }
+
 func (ix *IndexExpr) emit(w io.Writer) {
 	switch ix.Typ {
 	case "string":
@@ -871,6 +893,19 @@ func transpileStmt(st *parser.Statement, env *types.Env, vars map[string]VarInfo
 			return nil, err
 		}
 		if len(st.Assign.Index) > 0 {
+			if info.typ == "map" && len(st.Assign.Index) == 1 {
+				ix := st.Assign.Index[0]
+				if ix.Colon != nil || ix.Colon2 != nil || ix.End != nil || ix.Step != nil {
+					return nil, fmt.Errorf("slice assignment not supported")
+				}
+				key, _, err := convertExpr(ix.Start, env, vars)
+				if err != nil {
+					return nil, err
+				}
+				mapExpr := Expr(&Name{Ident: st.Assign.Name, Typ: info.typ, Ref: true})
+				upd := &MapUpdateExpr{Map: mapExpr, Key: key, Value: valExpr}
+				return &AssignStmt{Name: st.Assign.Name, Expr: upd}, nil
+			}
 			indices := make([]Expr, len(st.Assign.Index))
 			for i, ix := range st.Assign.Index {
 				if ix.Colon != nil || ix.Colon2 != nil || ix.End != nil || ix.Step != nil {
