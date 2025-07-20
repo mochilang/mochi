@@ -145,6 +145,7 @@ type DeclStmt struct {
 type AssignStmt struct {
 	Name    string
 	Indexes []Expr
+	Fields  []string
 	Value   Expr
 }
 
@@ -254,6 +255,10 @@ func (a *AssignStmt) emit(w io.Writer, indent int) {
 		io.WriteString(w, "[")
 		idx.emitExpr(w)
 		io.WriteString(w, "]")
+	}
+	for _, f := range a.Fields {
+		io.WriteString(w, ".")
+		io.WriteString(w, f)
 	}
 	io.WriteString(w, " = ")
 	if a.Value != nil {
@@ -397,6 +402,41 @@ func (l *ListLit) emitExpr(w io.Writer) {
 		e.emitExpr(w)
 	}
 	io.WriteString(w, " }")
+}
+
+type StructField struct {
+	Name  string
+	Value Expr
+}
+
+type StructLit struct {
+	Name   string
+	Fields []StructField
+}
+
+func (s *StructLit) emitExpr(w io.Writer) {
+	fmt.Fprintf(w, "(%s){", s.Name)
+	for i, f := range s.Fields {
+		if i > 0 {
+			io.WriteString(w, ", ")
+		}
+		fmt.Fprintf(w, ".%s = ", f.Name)
+		if f.Value != nil {
+			f.Value.emitExpr(w)
+		}
+	}
+	io.WriteString(w, "}")
+}
+
+type FieldExpr struct {
+	Target Expr
+	Name   string
+}
+
+func (f *FieldExpr) emitExpr(w io.Writer) {
+	f.Target.emitExpr(w)
+	io.WriteString(w, ".")
+	io.WriteString(w, f.Name)
 }
 
 type IndexExpr struct {
@@ -673,7 +713,7 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 					typ = "const char*"
 				} else if pa.Type != nil && pa.Type.Simple != nil {
 					if _, ok := env.GetStruct(*pa.Type.Simple); ok {
-						typ = "struct " + *pa.Type.Simple + "*"
+						typ = *pa.Type.Simple
 					}
 				}
 				paramTypes = append(paramTypes, typ)
@@ -802,6 +842,7 @@ func compileStmt(env *types.Env, s *parser.Statement) (Stmt, error) {
 			delete(constStrings, s.Assign.Name)
 		}
 		var idxs []Expr
+		var fields []string
 		simple := true
 		for _, ix := range s.Assign.Index {
 			if ix.Colon != nil || ix.End != nil || ix.Colon2 != nil || ix.Step != nil {
@@ -815,10 +856,13 @@ func compileStmt(env *types.Env, s *parser.Statement) (Stmt, error) {
 			}
 			idxs = append(idxs, ex)
 		}
+		for _, f := range s.Assign.Field {
+			fields = append(fields, f.Name)
+		}
 		if !simple {
 			return nil, fmt.Errorf("unsupported assignment")
 		}
-		return &AssignStmt{Name: s.Assign.Name, Indexes: idxs, Value: valExpr}, nil
+		return &AssignStmt{Name: s.Assign.Name, Indexes: idxs, Fields: fields, Value: valExpr}, nil
 	case s.Return != nil:
 		return &ReturnStmt{Expr: convertExpr(s.Return.Value)}, nil
 	case s.While != nil:
@@ -901,6 +945,39 @@ func convertIfExpr(n *parser.IfExpr) Expr {
 	return &CondExpr{Cond: cond, Then: thenExpr, Else: elseExpr}
 }
 
+func convertMatchExpr(n *parser.MatchExpr) Expr {
+	if n == nil {
+		return nil
+	}
+	target := convertExpr(n.Target)
+	if target == nil {
+		return nil
+	}
+	var expr Expr
+	for i := len(n.Cases) - 1; i >= 0; i-- {
+		c := n.Cases[i]
+		res := convertExpr(c.Result)
+		if res == nil {
+			return nil
+		}
+		if id, ok := types.SimpleStringKey(c.Pattern); ok && id == "_" {
+			expr = res
+			continue
+		}
+		pat := convertExpr(c.Pattern)
+		if pat == nil {
+			return nil
+		}
+		cond := &BinaryExpr{Op: "==", Left: target, Right: pat}
+		if expr == nil {
+			expr = res
+		} else {
+			expr = &CondExpr{Cond: cond, Then: res, Else: expr}
+		}
+	}
+	return expr
+}
+
 func detectFunExpr(e *parser.Expr) *parser.FunExpr {
 	if e == nil || e.Binary == nil || len(e.Binary.Right) != 0 {
 		return nil
@@ -921,7 +998,7 @@ func compileFunction(env *types.Env, name string, fn *parser.FunExpr) (*Function
 			typ = "const char*"
 		} else if p.Type != nil && p.Type.Simple != nil {
 			if _, ok := env.GetStruct(*p.Type.Simple); ok {
-				typ = "struct " + *p.Type.Simple + "*"
+				typ = *p.Type.Simple
 			}
 		}
 		paramTypes = append(paramTypes, typ)
@@ -1104,25 +1181,28 @@ func convertUnary(u *parser.Unary) Expr {
 		return &CallExpr{Func: "contains", Args: []Expr{base, arg}}
 	}
 	if len(u.Value.Ops) >= 1 && len(u.Ops) == 0 {
-		allIdx := true
-		for _, op := range u.Value.Ops {
-			if op.Index == nil || op.Index.Colon != nil || op.Index.Colon2 != nil || op.Index.Step != nil {
-				allIdx = false
-				break
-			}
+		current := convertUnary(&parser.Unary{Value: &parser.PostfixExpr{Target: u.Value.Target}})
+		if current == nil {
+			return nil
 		}
-		if allIdx {
-			current := convertUnary(&parser.Unary{Value: &parser.PostfixExpr{Target: u.Value.Target}})
-			if current == nil {
-				return nil
-			}
-			for _, op := range u.Value.Ops {
+		simple := true
+		for _, op := range u.Value.Ops {
+			if op.Index != nil && op.Index.Colon == nil && op.Index.Colon2 == nil && op.Index.Step == nil {
 				idx := convertExpr(op.Index.Start)
 				if idx == nil {
 					return nil
 				}
 				current = &IndexExpr{Target: current, Index: idx}
+				continue
 			}
+			if op.Field != nil {
+				current = &FieldExpr{Target: current, Name: op.Field.Name}
+				continue
+			}
+			simple = false
+			break
+		}
+		if simple {
 			return current
 		}
 	}
@@ -1174,13 +1254,31 @@ func convertUnary(u *parser.Unary) Expr {
 		}
 	}
 	if len(u.Value.Ops) == 1 && u.Value.Ops[0].Cast != nil &&
-		u.Value.Ops[0].Cast.Type != nil &&
-		u.Value.Ops[0].Cast.Type.Simple != nil &&
-		*u.Value.Ops[0].Cast.Type.Simple == "int" && len(u.Ops) == 0 {
-		if lit := u.Value.Target.Lit; lit != nil && lit.Str != nil {
-			if n, err := strconv.Atoi(*lit.Str); err == nil {
-				return &IntLit{Value: n}
+		u.Value.Ops[0].Cast.Type != nil && u.Value.Ops[0].Cast.Type.Simple != nil && len(u.Ops) == 0 {
+		castType := *u.Value.Ops[0].Cast.Type.Simple
+		if castType == "int" {
+			if lit := u.Value.Target.Lit; lit != nil && lit.Str != nil {
+				if n, err := strconv.Atoi(*lit.Str); err == nil {
+					return &IntLit{Value: n}
+				}
 			}
+		} else if ml := u.Value.Target.Map; ml != nil {
+			var fields []StructField
+			for _, it := range ml.Items {
+				key, ok := types.SimpleStringKey(it.Key)
+				if !ok {
+					return nil
+				}
+				val := convertExpr(it.Value)
+				if val == nil {
+					return nil
+				}
+				fields = append(fields, StructField{Name: key, Value: val})
+			}
+			return &StructLit{Name: castType, Fields: fields}
+		} else {
+			base := convertUnary(&parser.Unary{Value: &parser.PostfixExpr{Target: u.Value.Target}})
+			return base
 		}
 	} else if len(u.Value.Ops) == 1 && u.Value.Ops[0].Cast != nil {
 		base := convertUnary(&parser.Unary{Value: &parser.PostfixExpr{Target: u.Value.Target}})
@@ -1377,8 +1475,29 @@ func convertUnary(u *parser.Unary) Expr {
 	if ifexpr := u.Value.Target.If; ifexpr != nil && len(u.Ops) == 0 {
 		return convertIfExpr(ifexpr)
 	}
+	if mexpr := u.Value.Target.Match; mexpr != nil && len(u.Ops) == 0 {
+		return convertMatchExpr(mexpr)
+	}
 	if sel := u.Value.Target.Selector; sel != nil && len(sel.Tail) == 0 && len(u.Ops) == 0 {
 		return &VarRef{Name: sel.Root}
+	}
+	if sel := u.Value.Target.Selector; sel != nil && len(sel.Tail) > 0 && len(u.Ops) == 0 {
+		expr := Expr(&VarRef{Name: sel.Root})
+		for _, f := range sel.Tail {
+			expr = &FieldExpr{Target: expr, Name: f}
+		}
+		return expr
+	}
+	if st := u.Value.Target.Struct; st != nil && len(u.Ops) == 0 {
+		var fields []StructField
+		for _, f := range st.Fields {
+			val := convertExpr(f.Value)
+			if val == nil {
+				return nil
+			}
+			fields = append(fields, StructField{Name: f.Name, Value: val})
+		}
+		return &StructLit{Name: st.Name, Fields: fields}
 	}
 	if list := u.Value.Target.List; list != nil && len(u.Ops) == 0 {
 		var elems []Expr
@@ -1700,6 +1819,14 @@ func isConstExpr(e Expr) bool {
 		}
 		return true
 	}
+	if s, ok := e.(*StructLit); ok {
+		for _, f := range s.Fields {
+			if !isConstExpr(f.Value) {
+				return false
+			}
+		}
+		return true
+	}
 	return false
 }
 
@@ -1719,6 +1846,10 @@ func exprIsString(e Expr) bool {
 		return false
 	case *IndexExpr:
 		return exprIsString(v.Target)
+	case *FieldExpr:
+		return exprIsString(v.Target)
+	case *StructLit:
+		return false
 	case *CondExpr:
 		return exprIsString(v.Then) && exprIsString(v.Else)
 	case *UnaryExpr:
@@ -1786,6 +1917,8 @@ func inferExprType(env *types.Env, e Expr) string {
 			return "const char*[]"
 		}
 		return "int[]"
+	case *StructLit:
+		return v.Name
 	case *CondExpr:
 		t1 := inferExprType(env, v.Then)
 		t2 := inferExprType(env, v.Else)
@@ -1836,6 +1969,25 @@ func inferExprType(env *types.Env, e Expr) string {
 				return "const char*[]"
 			}
 			return "int[]"
+		}
+	case *FieldExpr:
+		tname := inferExprType(env, v.Target)
+		if st, ok := env.GetStruct(tname); ok {
+			if ft, ok2 := st.Fields[v.Name]; ok2 {
+				switch ft.(type) {
+				case types.StringType:
+					return "const char*"
+				case types.BoolType:
+					return "int"
+				case types.StructType:
+					return ft.(types.StructType).Name
+				case types.ListType:
+					if _, ok := ft.(types.ListType).Elem.(types.StringType); ok {
+						return "const char*[]"
+					}
+					return "int[]"
+				}
+			}
 		}
 	case *CallExpr:
 		switch v.Func {
@@ -1888,6 +2040,8 @@ func inferCType(env *types.Env, name string, e Expr) string {
 			return "int[]"
 		case types.BoolType:
 			return "int"
+		case types.StructType:
+			return tt.Name
 		}
 	}
 	return "int"

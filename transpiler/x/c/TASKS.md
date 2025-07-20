@@ -1,3 +1,18 @@
+## Progress (2025-07-20 15:06 +0700)
+- VM valid golden test results updated to 52/100
+
+## Progress (2025-07-20 15:06 +0700)
+- VM valid golden test results updated to 51/100
+
+## Progress (2025-07-20 15:06 +0700)
+- VM valid golden test results updated to 51/100
+
+## Progress (2025-07-20 15:06 +0700)
+- VM valid golden test results updated to 49/100
+
+## Progress (2025-07-20 15:06 +0700)
+- VM valid golden test results updated to 49/100
+
 ## Progress (2025-07-20 13:26 +0700)
 - Added global variable support and cast handling.
 - Skipped test blocks during C generation.
