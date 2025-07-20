@@ -1,5 +1,11 @@
+## Progress (2025-07-20 14:31 +0700)
+- feat(scala): support structs and match (progress 67/100)
+
 ## Progress (2025-07-20 13:26 +0700)
 - add match expressions, nested functions and partial application support (progress 67/100)
+
+## Progress (2025-07-20 14:38 +0700)
+- implemented cross join and query sorting with skip/take (progress 72/100)
 
 # C# Transpiler Tasks
 
@@ -12,3 +18,4 @@
 ## Remaining Work
 - [x] Implement loops and conditionals
 - [ ] Support map and list mutation operations
+
