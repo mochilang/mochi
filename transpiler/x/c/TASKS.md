@@ -1,3 +1,7 @@
+## Progress (2025-07-20 09:25 +0700)
+- Added constant list slicing and string list type inference.
+- VM valid golden test results updated to 39/100
+
 ## Progress (2025-07-20 09:12 +0700)
 - Added support for nested index expressions and assignments.
 - VM valid golden test results updated to 37/100
