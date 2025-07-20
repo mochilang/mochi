@@ -189,6 +189,8 @@ func TestTranspileFunThreeArgs(t *testing.T) { runGolden(t, "fun_three_args") }
 
 func TestTranspileWhileLoop(t *testing.T) { runGolden(t, "while_loop") }
 
+func TestTranspileFunExprInLet(t *testing.T) { runGolden(t, "fun_expr_in_let") }
+
 func updateEnabled() bool { return *update }
 
 func countCompiled() (int, int) {
