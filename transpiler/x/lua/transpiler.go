@@ -110,6 +110,31 @@ func (s *ExprStmt) emit(w io.Writer) { s.Expr.emit(w) }
 
 func (c *CallExpr) emit(w io.Writer) {
 	switch c.Func {
+	case "print":
+		io.WriteString(w, "print(")
+		if len(c.Args) == 1 {
+			a := c.Args[0]
+			if isListExpr(a) || (func() bool { ce, ok := a.(*CallExpr); return ok && ce.Func == "append" })() {
+				io.WriteString(w, "table.concat(")
+				a.emit(w)
+				io.WriteString(w, ", \" \" )")
+			} else {
+				a.emit(w)
+			}
+			io.WriteString(w, ")")
+			return
+		}
+
+		io.WriteString(w, "table.concat({")
+		for i, a := range c.Args {
+			if i > 0 {
+				io.WriteString(w, ", ")
+			}
+			a.emit(w)
+		}
+		io.WriteString(w, "}, \" \"))")
+		io.WriteString(w, ")")
+		return
 	case "len", "count":
 		io.WriteString(w, "#")
 		if len(c.Args) > 0 {
@@ -136,7 +161,7 @@ func (c *CallExpr) emit(w io.Writer) {
 		}
 		io.WriteString(w, ")")
 	case "append":
-		io.WriteString(w, "(function(lst,item) table.insert(lst,item) return lst end)(")
+		io.WriteString(w, "(function(lst, item)\n  table.insert(lst, item)\n  return lst\nend)(")
 		if len(c.Args) > 0 {
 			c.Args[0].emit(w)
 		}
@@ -146,19 +171,19 @@ func (c *CallExpr) emit(w io.Writer) {
 		}
 		io.WriteString(w, ")")
 	case "avg":
-		io.WriteString(w, "(function(lst) local sum=0 for _,v in ipairs(lst) do sum=sum+v end if #lst==0 then return 0 end return sum/#lst end)(")
+		io.WriteString(w, "(function(lst)\n  local sum = 0\n  for _, v in ipairs(lst) do\n    sum = sum + v\n  end\n  if #lst == 0 then\n    return 0\n  end\n  local r = sum / #lst\n  if r == math.floor(r) then\n    return math.floor(r)\n  end\n  return r\nend)(")
 		if len(c.Args) > 0 {
 			c.Args[0].emit(w)
 		}
 		io.WriteString(w, ")")
 	case "sum":
-		io.WriteString(w, "(function(lst) local s=0 for _,v in ipairs(lst) do s=s+v end return s end)(")
+		io.WriteString(w, "(function(lst)\n  local s = 0\n  for _, v in ipairs(lst) do\n    s = s + v\n  end\n  return s\nend)(")
 		if len(c.Args) > 0 {
 			c.Args[0].emit(w)
 		}
 		io.WriteString(w, ")")
 	case "contains":
-		io.WriteString(w, "(function(c,v) if type(c)=='string' then return string.find(c,v,1,true)~=nil else for _,x in ipairs(c) do if x==v then return true end end return false end end)(")
+		io.WriteString(w, "(function(c, v)\n  if type(c) == 'string' then\n    return string.find(c, v, 1, true) ~= nil\n  end\n  for _, x in ipairs(c) do\n    if x == v then\n      return true\n    end\n  end\n  return false\nend)(")
 		if len(c.Args) > 0 {
 			c.Args[0].emit(w)
 		}
@@ -634,12 +659,20 @@ func convertPostfix(p *parser.PostfixExpr) (Expr, error) {
 	if p == nil {
 		return nil, fmt.Errorf("nil postfix")
 	}
+	var ops []*parser.PostfixOp
 	expr, err := convertPrimary(p.Target)
 	if err != nil {
-		return nil, err
+		if sel := p.Target.Selector; sel != nil && len(sel.Tail) == 1 {
+			expr = &Ident{Name: sel.Root}
+			ops = append([]*parser.PostfixOp{{Field: &parser.FieldOp{Name: sel.Tail[0]}}}, p.Ops...)
+		} else {
+			return nil, err
+		}
+	} else {
+		ops = p.Ops
 	}
-	for i := 0; i < len(p.Ops); i++ {
-		op := p.Ops[i]
+	for i := 0; i < len(ops); i++ {
+		op := ops[i]
 		switch {
 		case op.Index != nil && op.Index.Colon == nil:
 			idx, err := convertExpr(op.Index.Start)
@@ -654,8 +687,8 @@ func convertPostfix(p *parser.PostfixExpr) (Expr, error) {
 			}
 			expr = &IndexExpr{Target: expr, Index: idx, Kind: kind}
 		case op.Field != nil:
-			if i+1 < len(p.Ops) && p.Ops[i+1].Call != nil {
-				call := p.Ops[i+1].Call
+			if i+1 < len(ops) && ops[i+1].Call != nil {
+				call := ops[i+1].Call
 				i++
 				var args []Expr
 				args = append(args, expr)
