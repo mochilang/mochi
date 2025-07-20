@@ -785,12 +785,21 @@ type QueryExpr struct {
 	Froms    []queryFrom
 	Joins    []queryJoin
 	Where    Expr
+	Sort     Expr
+	SortType string
+	Skip     Expr
+	Take     Expr
 	Select   Expr
 	ElemType string
 }
 
 func (q *QueryExpr) emit(w io.Writer) {
-	fmt.Fprintf(w, "func() []%s { _res := []%s{}; ", q.ElemType, q.ElemType)
+	fmt.Fprintf(w, "func() []%s { ", q.ElemType)
+	if q.Sort != nil {
+		fmt.Fprintf(w, "type _pair struct { Key %s; Val %s }; _tmp := []_pair{}; ", q.SortType, q.ElemType)
+	} else {
+		fmt.Fprintf(w, "_res := []%s{}; ", q.ElemType)
+	}
 	fmt.Fprintf(w, "for _, %s := range ", q.Var)
 	q.Src.emit(w)
 	fmt.Fprint(w, " {")
@@ -816,9 +825,17 @@ func (q *QueryExpr) emit(w io.Writer) {
 		q.Where.emit(w)
 		fmt.Fprint(w, " {")
 	}
-	fmt.Fprint(w, " _res = append(_res, ")
-	q.Select.emit(w)
-	fmt.Fprint(w, ")")
+	if q.Sort != nil {
+		fmt.Fprint(w, " _tmp = append(_tmp, _pair{")
+		q.Sort.emit(w)
+		fmt.Fprint(w, ", ")
+		q.Select.emit(w)
+		fmt.Fprint(w, "})")
+	} else {
+		fmt.Fprint(w, " _res = append(_res, ")
+		q.Select.emit(w)
+		fmt.Fprint(w, ")")
+	}
 	if q.Where != nil {
 		fmt.Fprint(w, " }")
 	}
@@ -830,6 +847,26 @@ func (q *QueryExpr) emit(w io.Writer) {
 		fmt.Fprint(w, " }")
 	}
 	fmt.Fprint(w, " }")
+	if q.Sort != nil {
+		fmt.Fprint(w, " ; sort.Slice(_tmp, func(i,j int) bool { return _tmp[i].Key < _tmp[j].Key })")
+		fmt.Fprintf(w, "; _res := make([]%s, len(_tmp)); for i, p := range _tmp { _res[i] = p.Val }", q.ElemType)
+	}
+	if q.Skip != nil {
+		fmt.Fprint(w, "; if ")
+		q.Skip.emit(w)
+		fmt.Fprint(w, " < len(_res) { _res = _res[")
+		q.Skip.emit(w)
+		fmt.Fprint(w, ":] } else { _res = []")
+		fmt.Fprint(w, q.ElemType)
+		fmt.Fprint(w, "{} }")
+	}
+	if q.Take != nil {
+		fmt.Fprint(w, "; if ")
+		q.Take.emit(w)
+		fmt.Fprint(w, " < len(_res) { _res = _res[:")
+		q.Take.emit(w)
+		fmt.Fprint(w, "] }")
+	}
 	fmt.Fprint(w, "; return _res }()")
 }
 
@@ -1191,7 +1228,7 @@ func compileMatchExpr(me *parser.MatchExpr, env *types.Env) (Expr, error) {
 }
 
 func compileQueryExpr(q *parser.QueryExpr, env *types.Env, base string) (Expr, error) {
-	if q.Group != nil || q.Sort != nil || q.Skip != nil || q.Take != nil {
+	if q.Group != nil {
 		return nil, fmt.Errorf("unsupported query features")
 	}
 	src, err := compileExpr(q.Source, env, "")
@@ -1302,7 +1339,32 @@ func compileQueryExpr(q *parser.QueryExpr, env *types.Env, base string) (Expr, e
 	if et == "" {
 		et = "any"
 	}
-	return &QueryExpr{Var: q.Var, Src: src, Froms: froms, Joins: joins, Where: where, Select: sel, ElemType: et}, nil
+
+	var sortExpr Expr
+	var sortType string
+	if q.Sort != nil {
+		sortExpr, err = compileExpr(q.Sort, child, "")
+		if err != nil {
+			return nil, err
+		}
+		sortType = toGoTypeFromType(types.ExprType(q.Sort, child))
+		usesSort = true
+	}
+	var skipExpr Expr
+	if q.Skip != nil {
+		skipExpr, err = compileExpr(q.Skip, env, "")
+		if err != nil {
+			return nil, err
+		}
+	}
+	var takeExpr Expr
+	if q.Take != nil {
+		takeExpr, err = compileExpr(q.Take, env, "")
+		if err != nil {
+			return nil, err
+		}
+	}
+	return &QueryExpr{Var: q.Var, Src: src, Froms: froms, Joins: joins, Where: where, Sort: sortExpr, SortType: sortType, Skip: skipExpr, Take: takeExpr, Select: sel, ElemType: et}, nil
 }
 
 func zeroValueExpr(goType string) Expr {
@@ -1838,6 +1900,9 @@ func compilePrimary(p *parser.Primary, env *types.Env, base string) (Expr, error
 				fieldsDecl[i] = ParamDecl{Name: fn, Type: toGoTypeFromType(st.Fields[fn])}
 			}
 			extraDecls = append(extraDecls, &TypeDeclStmt{Name: name, Fields: fieldsDecl})
+			if base != "" {
+				env.SetVarDeep(base, types.ListType{Elem: types.StructType{Name: name, Fields: st.Fields, Order: st.Order}}, true)
+			}
 			elems := make([]Expr, len(p.List.Elems))
 			for i, e := range p.List.Elems {
 				ml := e.Binary.Left.Value.Target.Map

@@ -1,3 +1,15 @@
+## Progress (2025-07-20 22:20 +0700)
+- transpiler/go: improve bool and sum handling
+- Regenerated golden files - 79/100 vm valid programs passing
+
+## Progress (2025-07-20 22:20 +0700)
+- transpiler/go: improve bool and sum handling
+- Regenerated golden files - 75/100 vm valid programs passing
+
+## Progress (2025-07-20 22:20 +0700)
+- transpiler/go: improve bool and sum handling
+- Regenerated golden files - 75/100 vm valid programs passing
+
 ## Progress (2025-07-20 22:09 +0700)
 - go transpiler: better boolean output and sum typing
 - Regenerated golden files - 75/100 vm valid programs passing
