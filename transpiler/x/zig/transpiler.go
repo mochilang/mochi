@@ -17,8 +17,6 @@ type Program struct {
 	Functions []*Func
 }
 
-var constLists map[string]*ListLit
-
 type Func struct {
 	Name string
 	Body []Stmt
@@ -164,20 +162,12 @@ func (v *VarDecl) emit(w io.Writer, indent int) {
 	if v.Mutable {
 		kw = "var"
 	}
+	fmt.Fprintf(w, "%s %s = ", kw, v.Name)
 	if v.Value == nil {
-		fmt.Fprintf(w, "%s %s: i64 = 0;\n", kw, v.Name)
-		return
-	}
-	if v.Mutable {
-		if _, ok := v.Value.(*IntLit); ok {
-			fmt.Fprintf(w, "%s %s: i64 = ", kw, v.Name)
-		} else {
-			fmt.Fprintf(w, "%s %s = ", kw, v.Name)
-		}
+		io.WriteString(w, "0")
 	} else {
-		fmt.Fprintf(w, "%s %s = ", kw, v.Name)
+		v.Value.emit(w)
 	}
-	v.Value.emit(w)
 	io.WriteString(w, ";\n")
 }
 
@@ -225,7 +215,17 @@ func (b *BinaryExpr) emit(w io.Writer) {
 }
 
 func (l *ListLit) emit(w io.Writer) {
-	io.WriteString(w, "[_]i64{")
+	if len(l.Elems) > 0 {
+		if _, ok := l.Elems[0].(*ListLit); ok {
+			if sub, ok := l.Elems[0].(*ListLit); ok {
+				fmt.Fprintf(w, "[_][%d]i64{", len(sub.Elems))
+			}
+		} else {
+			io.WriteString(w, "[_]i64{")
+		}
+	} else {
+		io.WriteString(w, "[_]i64{")
+	}
 	for i, e := range l.Elems {
 		if i > 0 {
 			io.WriteString(w, ", ")
@@ -352,6 +352,22 @@ func (c *CallExpr) emit(w io.Writer) {
 		} else {
 			io.WriteString(w, "0")
 		}
+	case "min":
+		if len(c.Args) == 1 {
+			io.WriteString(w, "blk: { var arr = ")
+			c.Args[0].emit(w)
+			io.WriteString(w, "; var m = arr[0]; for (arr[1..]) |v| { if (v < m) m = v; } break :blk m; }")
+		} else {
+			io.WriteString(w, "0")
+		}
+	case "max":
+		if len(c.Args) == 1 {
+			io.WriteString(w, "blk: { var arr = ")
+			c.Args[0].emit(w)
+			io.WriteString(w, "; var m = arr[0]; for (arr[1..]) |v| { if (v > m) m = v; } break :blk m; }")
+		} else {
+			io.WriteString(w, "0")
+		}
 	default:
 		io.WriteString(w, c.Func)
 		io.WriteString(w, "(")
@@ -368,7 +384,6 @@ func (c *CallExpr) emit(w io.Writer) {
 // Transpile converts a Mochi program into our simple Zig AST.
 func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	main := &Func{Name: "main"}
-	constLists = map[string]*ListLit{}
 	mutables := map[string]bool{}
 	for _, st := range prog.Statements {
 		if st.Assign != nil && len(st.Assign.Index) == 0 && len(st.Assign.Field) == 0 {
@@ -467,74 +482,6 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 			if len(args) == 1 {
 				if lit, ok := args[0].(*IntLit); ok {
 					return &StringLit{Value: fmt.Sprintf("%d", lit.Value)}, nil
-				}
-			}
-		case "min":
-			if len(args) == 1 {
-				switch v := args[0].(type) {
-				case *ListLit:
-					if len(v.Elems) == 0 {
-						return &IntLit{Value: 0}, nil
-					}
-					m := v.Elems[0].(*IntLit).Value
-					for _, e := range v.Elems[1:] {
-						if lit, ok := e.(*IntLit); ok {
-							if lit.Value < m {
-								m = lit.Value
-							}
-						} else {
-							return nil, fmt.Errorf("unsupported min element")
-						}
-					}
-					return &IntLit{Value: m}, nil
-				case *VarRef:
-					if l, ok := constLists[v.Name]; ok {
-						if len(l.Elems) == 0 {
-							return &IntLit{Value: 0}, nil
-						}
-						m := l.Elems[0].(*IntLit).Value
-						for _, e := range l.Elems[1:] {
-							lit := e.(*IntLit)
-							if lit.Value < m {
-								m = lit.Value
-							}
-						}
-						return &IntLit{Value: m}, nil
-					}
-				}
-			}
-		case "max":
-			if len(args) == 1 {
-				switch v := args[0].(type) {
-				case *ListLit:
-					if len(v.Elems) == 0 {
-						return &IntLit{Value: 0}, nil
-					}
-					m := v.Elems[0].(*IntLit).Value
-					for _, e := range v.Elems[1:] {
-						if lit, ok := e.(*IntLit); ok {
-							if lit.Value > m {
-								m = lit.Value
-							}
-						} else {
-							return nil, fmt.Errorf("unsupported max element")
-						}
-					}
-					return &IntLit{Value: m}, nil
-				case *VarRef:
-					if l, ok := constLists[v.Name]; ok {
-						if len(l.Elems) == 0 {
-							return &IntLit{Value: 0}, nil
-						}
-						m := l.Elems[0].(*IntLit).Value
-						for _, e := range l.Elems[1:] {
-							lit := e.(*IntLit)
-							if lit.Value > m {
-								m = lit.Value
-							}
-						}
-						return &IntLit{Value: m}, nil
-					}
 				}
 			}
 		case "substring":
@@ -723,11 +670,6 @@ func compileStmt(s *parser.Statement, prog *parser.Program) (Stmt, error) {
 		} else {
 			expr = &IntLit{Value: 0}
 		}
-		if l, ok := expr.(*ListLit); ok {
-			constLists[s.Let.Name] = l
-		} else {
-			delete(constLists, s.Let.Name)
-		}
 		return &VarDecl{Name: s.Let.Name, Value: expr}, nil
 	case s.Var != nil:
 		var expr Expr
@@ -745,11 +687,6 @@ func compileStmt(s *parser.Statement, prog *parser.Program) (Stmt, error) {
 		expr, err := compileExpr(s.Assign.Value)
 		if err != nil {
 			return nil, err
-		}
-		if l, ok := expr.(*ListLit); ok {
-			constLists[s.Assign.Name] = l
-		} else {
-			delete(constLists, s.Assign.Name)
 		}
 		return &AssignStmt{Name: s.Assign.Name, Value: expr}, nil
 	case s.Assign != nil && len(s.Assign.Index) > 0 && len(s.Assign.Field) == 0:

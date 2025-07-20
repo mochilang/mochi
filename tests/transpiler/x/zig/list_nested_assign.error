@@ -1,1 +1,0 @@
-/workspace/mochi/tests/transpiler/x/zig/list_nested_assign.zig:5:31: error: expected type 'i64', found '[2]i64'

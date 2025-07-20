@@ -1,3 +1,9 @@
+## Progress (2025-07-20 11:38 +0700)
+- Improved list literals to infer nested array sizes using Zig type inference.
+- Removed runtime helper state and inlined `min`/`max` loops.
+- Simplified variable declarations and regenerated golden files.
+- Updated README checklist (26/100 tests passing)
+
 ## Progress (2025-07-20 10:30 +0700)
 - Added support for `break` and `continue` statements.
 - Improved mutable variable type inference for numeric constants.
@@ -26,6 +32,7 @@
 
 # Zig Transpiler Tasks
 
+- 2025-07-20 11:38 +0700 - Improved list handling and inlined min/max loops (26/100 tests passing)
 - 2025-07-20 10:30 +0700 - Added break/continue support and improved variable typing (26/100 tests passing)
 - 2025-07-20 10:18 +0700 - Removed helper functions and used Zig's type inference (26/100 tests passing)
 - 2025-07-20 08:31 +0700 - Added for-loop support and generated golden tests for new loops (26/100 tests passing)
