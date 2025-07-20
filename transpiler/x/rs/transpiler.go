@@ -193,6 +193,33 @@ func (m *MapLit) emit(w io.Writer) {
 	io.WriteString(w, "])")
 }
 
+// SliceExpr represents a[start:end] slicing operation.
+type SliceExpr struct {
+	Target Expr
+	Start  Expr
+	End    Expr
+}
+
+func (s *SliceExpr) emit(w io.Writer) {
+	s.Target.emit(w)
+	io.WriteString(w, "[")
+	if s.Start != nil {
+		s.Start.emit(w)
+	} else {
+		io.WriteString(w, "0")
+	}
+	io.WriteString(w, "..")
+	if s.End != nil {
+		s.End.emit(w)
+	}
+	io.WriteString(w, "]")
+	if inferType(s.Target) == "String" {
+		io.WriteString(w, ".to_string()")
+	} else {
+		io.WriteString(w, ".to_vec()")
+	}
+}
+
 // IndexExpr represents `target[index]` access.
 type IndexExpr struct {
 	Target Expr
@@ -321,7 +348,11 @@ type JoinExpr struct{ List Expr }
 func (j *JoinExpr) emit(w io.Writer) {
 	io.WriteString(w, "{ let tmp = ")
 	j.List.emit(w)
-	io.WriteString(w, "; tmp.iter().map(|x| x.to_string()).collect::<Vec<_>>().join(\" \") }")
+	if inferType(j.List) == "String" {
+		io.WriteString(w, "; tmp.chars().map(|x| x.to_string()).collect::<Vec<_>>().join(\" \") }")
+	} else {
+		io.WriteString(w, "; tmp.iter().map(|x| x.to_string()).collect::<Vec<_>>().join(\" \") }")
+	}
 }
 
 // AvgExpr represents a call to the `avg` builtin.
@@ -796,8 +827,25 @@ func compileFunStmt(fn *parser.FunStmt) (Stmt, error) {
 func applyIndexOps(base Expr, ops []*parser.IndexOp) (Expr, error) {
 	var err error
 	for _, op := range ops {
-		if op.Colon != nil || op.Colon2 != nil || op.End != nil || op.Step != nil {
-			return nil, fmt.Errorf("slice not supported")
+		if op.Colon != nil || op.End != nil || op.Colon2 != nil || op.Step != nil {
+			if op.Colon2 != nil || op.Step != nil {
+				return nil, fmt.Errorf("slice step not supported")
+			}
+			var start, end Expr
+			if op.Start != nil {
+				start, err = compileExpr(op.Start)
+				if err != nil {
+					return nil, err
+				}
+			}
+			if op.End != nil {
+				end, err = compileExpr(op.End)
+				if err != nil {
+					return nil, err
+				}
+			}
+			base = &SliceExpr{Target: base, Start: start, End: end}
+			continue
 		}
 		if op.Start == nil {
 			return nil, fmt.Errorf("nil index")
@@ -908,8 +956,25 @@ func compilePostfix(p *parser.PostfixExpr) (Expr, error) {
 	for _, op := range p.Ops {
 		switch {
 		case op.Index != nil:
-			if op.Index.Colon != nil || op.Index.Colon2 != nil || op.Index.End != nil || op.Index.Step != nil {
-				return nil, fmt.Errorf("slice not supported")
+			if op.Index.Colon != nil || op.Index.End != nil || op.Index.Colon2 != nil || op.Index.Step != nil {
+				if op.Index.Colon2 != nil || op.Index.Step != nil {
+					return nil, fmt.Errorf("slice step not supported")
+				}
+				var start, end Expr
+				if op.Index.Start != nil {
+					start, err = compileExpr(op.Index.Start)
+					if err != nil {
+						return nil, err
+					}
+				}
+				if op.Index.End != nil {
+					end, err = compileExpr(op.Index.End)
+					if err != nil {
+						return nil, err
+					}
+				}
+				expr = &SliceExpr{Target: expr, Start: start, End: end}
+				continue
 			}
 			if op.Index.Start == nil {
 				return nil, fmt.Errorf("nil index")
@@ -976,7 +1041,7 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 					switch args[0].(type) {
 					case *MapLit:
 						fmtStr = "{:?}"
-					case *ValuesExpr, *AppendExpr, *ListLit:
+					case *ValuesExpr, *AppendExpr, *ListLit, *SliceExpr:
 						args[0] = &JoinExpr{List: args[0]}
 					}
 					args = append([]Expr{&StringLit{Value: fmtStr}}, args...)
@@ -1229,6 +1294,23 @@ func inferType(e Expr) string {
 			}
 		}
 		return "i64"
+	case *NameRef:
+		if stringVars[ex.Name] {
+			return "String"
+		}
+		if mapVars[ex.Name] {
+			return "HashMap<String, i64>"
+		}
+		return "i64"
+	case *SliceExpr:
+		ct := inferType(ex.Target)
+		if strings.HasPrefix(ct, "Vec<") {
+			return ct
+		}
+		if ct == "String" {
+			return "String"
+		}
+		return ct
 	case *MapLit:
 		usesHashMap = true
 		if len(ex.Items) > 0 {
@@ -1568,6 +1650,18 @@ func exprNode(e Expr) *ast.Node {
 		return &ast.Node{Kind: "join", Children: []*ast.Node{exprNode(ex.List)}}
 	case *IndexExpr:
 		return &ast.Node{Kind: "index", Children: []*ast.Node{exprNode(ex.Target), exprNode(ex.Index)}}
+	case *SliceExpr:
+		n := &ast.Node{Kind: "slice"}
+		n.Children = append(n.Children, exprNode(ex.Target))
+		if ex.Start != nil {
+			n.Children = append(n.Children, exprNode(ex.Start))
+		} else {
+			n.Children = append(n.Children, &ast.Node{Kind: "number", Value: "0"})
+		}
+		if ex.End != nil {
+			n.Children = append(n.Children, exprNode(ex.End))
+		}
+		return n
 	case *BinaryExpr:
 		return &ast.Node{Kind: "bin", Value: ex.Op, Children: []*ast.Node{exprNode(ex.Left), exprNode(ex.Right)}}
 	case *UnaryExpr:
