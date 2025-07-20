@@ -47,6 +47,8 @@ func recordType(name string, ex Expr) {
 		varTypes[name] = "bool"
 	} else if isListExpr(ex) {
 		varTypes[name] = "list"
+	} else if isMapExpr(ex) {
+		varTypes[name] = "map"
 	}
 }
 
@@ -104,6 +106,26 @@ type IfStmt struct {
 }
 type ReturnStmt struct {
 	Expr Expr
+}
+
+// ForStmt iterates over elements in a list, map or range.
+type ForStmt struct {
+	Name string
+	From Expr
+	To   Expr
+	Body []Stmt
+}
+
+// WhileStmt repeats a block while a condition is true.
+type WhileStmt struct {
+	Cond Expr
+	Body []Stmt
+}
+
+// IndexExpr accesses a single element of a list or map.
+type IndexExpr struct {
+	Target Expr
+	Index  Expr
 }
 
 func (p *PrintStmt) emit(w io.Writer) {
@@ -176,6 +198,64 @@ func (i *IfStmt) emit(w io.Writer) {
 func (r *ReturnStmt) emit(w io.Writer) {
 	io.WriteString(w, "return (")
 	r.Expr.emit(w)
+	io.WriteString(w, ")")
+}
+
+func (f *ForStmt) emit(w io.Writer) {
+	io.WriteString(w, "mapM_ (\\")
+	io.WriteString(w, f.Name)
+	io.WriteString(w, " -> do\n")
+	for _, st := range f.Body {
+		io.WriteString(w, "        ")
+		st.emit(w)
+		io.WriteString(w, "\n")
+	}
+	io.WriteString(w, "        ) ")
+	if f.To != nil {
+		io.WriteString(w, "[")
+		f.From.emit(w)
+		io.WriteString(w, " .. ")
+		io.WriteString(w, "(")
+		f.To.emit(w)
+		io.WriteString(w, " - 1)")
+		io.WriteString(w, "]")
+		return
+	}
+	if isMapExpr(f.From) {
+		needDataMap = true
+		io.WriteString(w, "(Map.keys ")
+		f.From.emit(w)
+		io.WriteString(w, ")")
+	} else {
+		f.From.emit(w)
+	}
+}
+
+func (wst *WhileStmt) emit(w io.Writer) {
+	io.WriteString(w, "let loop = do\n")
+	io.WriteString(w, "        if ")
+	wst.Cond.emit(w)
+	io.WriteString(w, " then do\n")
+	for _, st := range wst.Body {
+		io.WriteString(w, "            ")
+		st.emit(w)
+		io.WriteString(w, "\n")
+	}
+	io.WriteString(w, "            loop\n")
+	io.WriteString(w, "        else return ()\n")
+	io.WriteString(w, "    in loop")
+}
+
+func (idx *IndexExpr) emit(w io.Writer) {
+	io.WriteString(w, "(")
+	idx.Target.emit(w)
+	if isMapExpr(idx.Target) {
+		needDataMap = true
+		io.WriteString(w, " Map.! ")
+	} else {
+		io.WriteString(w, " !! ")
+	}
+	idx.Index.emit(w)
 	io.WriteString(w, ")")
 }
 
@@ -326,6 +406,23 @@ func isMapElemsExpr(e Expr) bool {
 	}
 	n, ok := c.Fun.(*NameRef)
 	return ok && n.Name == "Map.elems" && len(c.Args) == 1
+}
+
+func isMapExpr(e Expr) bool {
+	switch ex := e.(type) {
+	case *MapLit:
+		return true
+	case *NameRef:
+		return varTypes[ex.Name] == "map"
+	case *CallExpr:
+		if n, ok := ex.Fun.(*NameRef); ok {
+			switch n.Name {
+			case "Map.insert", "Map.fromList", "Map.delete", "Map.union":
+				return true
+			}
+		}
+	}
+	return false
 }
 
 func (b *BinaryExpr) emit(w io.Writer) {
@@ -549,6 +646,18 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 				return nil, err
 			}
 			h.Stmts = append(h.Stmts, s)
+		case st.While != nil:
+			s, err := convertWhileStmt(st.While)
+			if err != nil {
+				return nil, err
+			}
+			h.Stmts = append(h.Stmts, s)
+		case st.For != nil:
+			s, err := convertForStmt(st.For)
+			if err != nil {
+				return nil, err
+			}
+			h.Stmts = append(h.Stmts, s)
 		case st.Expr != nil:
 			call := st.Expr.Expr.Binary.Left.Value.Target.Call
 			if call != nil && call.Func == "print" && len(call.Args) == 1 {
@@ -608,6 +717,21 @@ func stmtNode(s Stmt) *ast.Node {
 			n.Children = append(n.Children, stmtNode(c))
 		}
 		return n
+	case *ForStmt:
+		n := &ast.Node{Kind: "for", Value: st.Name, Children: []*ast.Node{exprNode(st.From)}}
+		if st.To != nil {
+			n.Children = append(n.Children, exprNode(st.To))
+		}
+		for _, c := range st.Body {
+			n.Children = append(n.Children, stmtNode(c))
+		}
+		return n
+	case *WhileStmt:
+		n := &ast.Node{Kind: "while", Children: []*ast.Node{exprNode(st.Cond)}}
+		for _, c := range st.Body {
+			n.Children = append(n.Children, stmtNode(c))
+		}
+		return n
 	default:
 		return &ast.Node{Kind: "stmt"}
 	}
@@ -655,6 +779,8 @@ func exprNode(e Expr) *ast.Node {
 		return n
 	case *IfExpr:
 		return &ast.Node{Kind: "ifexpr", Children: []*ast.Node{exprNode(ex.Cond), exprNode(ex.Then), exprNode(ex.Else)}}
+	case *IndexExpr:
+		return &ast.Node{Kind: "index", Children: []*ast.Node{exprNode(ex.Target), exprNode(ex.Index)}}
 	default:
 		return &ast.Node{Kind: "expr"}
 	}
@@ -723,6 +849,14 @@ func convertPostfix(pf *parser.PostfixExpr) (Expr, error) {
 			expr = &CallExpr{Fun: expr, Args: args}
 			continue
 		}
+		if op.Index != nil && op.Index.Colon == nil {
+			idx, err := convertExpr(op.Index.Start)
+			if err != nil {
+				return nil, err
+			}
+			expr = &IndexExpr{Target: expr, Index: idx}
+			continue
+		}
 		return nil, fmt.Errorf("postfix op not supported")
 	}
 	return expr, nil
@@ -773,6 +907,7 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 		}
 		return &ListLit{Elems: elems}, nil
 	case p.Map != nil:
+		needDataMap = true
 		var keys []Expr
 		var values []Expr
 		for _, it := range p.Map.Items {
@@ -803,6 +938,14 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 			arg, err := convertExpr(p.Call.Args[0])
 			if err != nil {
 				return nil, err
+			}
+			if isMapExpr(arg) {
+				needDataMap = true
+				g := arg
+				if _, ok := arg.(*NameRef); !ok {
+					g = &GroupExpr{Expr: arg}
+				}
+				return &CallExpr{Fun: &NameRef{Name: "Map.size"}, Args: []Expr{g}}, nil
 			}
 			return &LenExpr{Arg: arg}, nil
 		}
@@ -930,6 +1073,40 @@ func convertFunStmt(f *parser.FunStmt) (*Func, error) {
 	return &Func{Name: f.Name, Params: params, Body: stmts}, nil
 }
 
+func convertForStmt(f *parser.ForStmt) (Stmt, error) {
+	src, err := convertExpr(f.Source)
+	if err != nil {
+		return nil, err
+	}
+	if isMapExpr(src) {
+		varTypes[f.Name] = "string"
+	}
+	var end Expr
+	if f.RangeEnd != nil {
+		end, err = convertExpr(f.RangeEnd)
+		if err != nil {
+			return nil, err
+		}
+	}
+	body, err := convertStmtList(f.Body)
+	if err != nil {
+		return nil, err
+	}
+	return &ForStmt{Name: f.Name, From: src, To: end, Body: body}, nil
+}
+
+func convertWhileStmt(w *parser.WhileStmt) (Stmt, error) {
+	cond, err := convertExpr(w.Cond)
+	if err != nil {
+		return nil, err
+	}
+	body, err := convertStmtList(w.Body)
+	if err != nil {
+		return nil, err
+	}
+	return &WhileStmt{Cond: cond, Body: body}, nil
+}
+
 func convertStmtList(list []*parser.Statement) ([]Stmt, error) {
 	var out []Stmt
 	for _, st := range list {
@@ -954,6 +1131,36 @@ func convertStmtList(list []*parser.Statement) ([]Stmt, error) {
 			out = append(out, &ReturnStmt{Expr: ex})
 		case st.If != nil:
 			s, err := convertIfStmt(st.If)
+			if err != nil {
+				return nil, err
+			}
+			out = append(out, s)
+		case st.Let != nil:
+			ex, err := convertExpr(st.Let.Value)
+			if err != nil {
+				return nil, err
+			}
+			out = append(out, &LetStmt{Name: st.Let.Name, Expr: ex})
+		case st.Var != nil:
+			ex, err := convertExpr(st.Var.Value)
+			if err != nil {
+				return nil, err
+			}
+			out = append(out, &LetStmt{Name: st.Var.Name, Expr: ex})
+		case st.Assign != nil && len(st.Assign.Index) == 0:
+			ex, err := convertExpr(st.Assign.Value)
+			if err != nil {
+				return nil, err
+			}
+			out = append(out, &AssignStmt{Name: st.Assign.Name, Expr: ex})
+		case st.While != nil:
+			s, err := convertWhileStmt(st.While)
+			if err != nil {
+				return nil, err
+			}
+			out = append(out, s)
+		case st.For != nil:
+			s, err := convertForStmt(st.For)
 			if err != nil {
 				return nil, err
 			}
