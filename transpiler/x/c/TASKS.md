@@ -1,3 +1,7 @@
+## Progress (2025-07-20 09:12 +0700)
+- Added support for nested index expressions and assignments.
+- VM valid golden test results updated to 37/100
+
 ## Progress (2025-07-20 08:45 +0700)
 - VM valid golden test results updated to 37/100
 
@@ -29,4 +33,3 @@
 
 ## Progress (2025-07-19 21:26 +0700)
 - Implemented constant folding for string-to-int cast expressions.
-

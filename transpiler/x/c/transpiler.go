@@ -130,9 +130,9 @@ type DeclStmt struct {
 }
 
 type AssignStmt struct {
-	Name  string
-	Index Expr
-	Value Expr
+	Name    string
+	Indexes []Expr
+	Value   Expr
 }
 
 type IfStmt struct {
@@ -219,9 +219,9 @@ func (d *DeclStmt) emit(w io.Writer, indent int) {
 func (a *AssignStmt) emit(w io.Writer, indent int) {
 	writeIndent(w, indent)
 	io.WriteString(w, a.Name)
-	if a.Index != nil {
+	for _, idx := range a.Indexes {
 		io.WriteString(w, "[")
-		a.Index.emitExpr(w)
+		idx.emitExpr(w)
 		io.WriteString(w, "]")
 	}
 	io.WriteString(w, " = ")
@@ -689,11 +689,24 @@ func compileStmt(env *types.Env, s *parser.Statement) (Stmt, error) {
 		} else {
 			delete(constStrings, s.Assign.Name)
 		}
-		var idx Expr
-		if len(s.Assign.Index) == 1 && s.Assign.Index[0].Colon == nil && s.Assign.Index[0].End == nil && s.Assign.Index[0].Colon2 == nil && s.Assign.Index[0].Step == nil {
-			idx = convertExpr(s.Assign.Index[0].Start)
+		var idxs []Expr
+		simple := true
+		for _, ix := range s.Assign.Index {
+			if ix.Colon != nil || ix.End != nil || ix.Colon2 != nil || ix.Step != nil {
+				simple = false
+				break
+			}
+			ex := convertExpr(ix.Start)
+			if ex == nil {
+				simple = false
+				break
+			}
+			idxs = append(idxs, ex)
 		}
-		return &AssignStmt{Name: s.Assign.Name, Index: idx, Value: valExpr}, nil
+		if !simple {
+			return nil, fmt.Errorf("unsupported assignment")
+		}
+		return &AssignStmt{Name: s.Assign.Name, Indexes: idxs, Value: valExpr}, nil
 	case s.Return != nil:
 		return &ReturnStmt{Expr: convertExpr(s.Return.Value)}, nil
 	case s.While != nil:
@@ -883,15 +896,28 @@ func convertUnary(u *parser.Unary) Expr {
 		}
 		return &CallExpr{Func: "contains", Args: []Expr{base, arg}}
 	}
-	if len(u.Value.Ops) == 1 && u.Value.Ops[0].Index != nil &&
-		u.Value.Ops[0].Index.Colon == nil && u.Value.Ops[0].Index.Colon2 == nil &&
-		u.Value.Ops[0].Index.Step == nil && len(u.Ops) == 0 {
-		base := convertUnary(&parser.Unary{Value: &parser.PostfixExpr{Target: u.Value.Target}})
-		idx := convertExpr(u.Value.Ops[0].Index.Start)
-		if base == nil || idx == nil {
-			return nil
+	if len(u.Value.Ops) >= 1 && len(u.Ops) == 0 {
+		allIdx := true
+		for _, op := range u.Value.Ops {
+			if op.Index == nil || op.Index.Colon != nil || op.Index.Colon2 != nil || op.Index.Step != nil {
+				allIdx = false
+				break
+			}
 		}
-		return &IndexExpr{Target: base, Index: idx}
+		if allIdx {
+			current := convertUnary(&parser.Unary{Value: &parser.PostfixExpr{Target: u.Value.Target}})
+			if current == nil {
+				return nil
+			}
+			for _, op := range u.Value.Ops {
+				idx := convertExpr(op.Index.Start)
+				if idx == nil {
+					return nil
+				}
+				current = &IndexExpr{Target: current, Index: idx}
+			}
+			return current
+		}
 	}
 	if len(u.Value.Ops) == 1 && u.Value.Ops[0].Index != nil &&
 		u.Value.Ops[0].Index.Colon != nil && u.Value.Ops[0].Index.Colon2 == nil &&
