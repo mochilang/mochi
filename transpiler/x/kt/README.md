@@ -4,7 +4,7 @@ Generated Kotlin sources for golden tests are stored in `tests/transpiler/x/kt`.
 
 The transpiler currently supports expression programs with `print`, integer and list literals, mutable variables and built-ins `count`, `sum`, `avg`, `len`, `str`, `append`, `min`, `max`, `substring` and `values`.
 
-Completed golden tests: **55/100** (auto-generated)
+Completed golden tests: **61/100** (auto-generated)
 
 ### Golden test checklist
 - [x] append_builtin.mochi
@@ -62,11 +62,11 @@ Completed golden tests: **55/100** (auto-generated)
 - [x] map_in_operator.mochi
 - [x] map_index.mochi
 - [x] map_int_key.mochi
-- [ ] map_literal_dynamic.mochi
+- [x] map_literal_dynamic.mochi
 - [x] map_membership.mochi
 - [x] map_nested_assign.mochi
-- [ ] match_expr.mochi
-- [ ] match_full.mochi
+- [x] match_expr.mochi
+- [x] match_full.mochi
 - [x] math_ops.mochi
 - [x] membership.mochi
 - [x] min_max_builtin.mochi
@@ -75,15 +75,15 @@ Completed golden tests: **55/100** (auto-generated)
 - [ ] outer_join.mochi
 - [ ] partial_application.mochi
 - [x] print_hello.mochi
-- [ ] pure_fold.mochi
-- [ ] pure_global_fold.mochi
+- [x] pure_fold.mochi
+- [x] pure_global_fold.mochi
 - [ ] python_auto.mochi
 - [ ] python_math.mochi
 - [ ] query_sum_select.mochi
 - [ ] record_assign.mochi
 - [ ] right_join.mochi
 - [ ] save_jsonl_stdout.mochi
-- [ ] short_circuit.mochi
+- [x] short_circuit.mochi
 - [x] slice.mochi
 - [ ] sort_stable.mochi
 - [x] str_builtin.mochi

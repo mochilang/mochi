@@ -624,6 +624,35 @@ func (s *SubstringExpr) emit(w io.Writer) {
 	io.WriteString(w, ")")
 }
 
+// WhenExpr models Kotlin's when expression produced from a Mochi match.
+type WhenExpr struct {
+	Target Expr
+	Cases  []WhenCase
+}
+
+type WhenCase struct {
+	Pattern Expr // nil for else
+	Result  Expr
+}
+
+func (wex *WhenExpr) emit(w io.Writer) {
+	io.WriteString(w, "when (")
+	wex.Target.emit(w)
+	io.WriteString(w, ") {\n")
+	for _, c := range wex.Cases {
+		io.WriteString(w, "    ")
+		if c.Pattern != nil {
+			c.Pattern.emit(w)
+		} else {
+			io.WriteString(w, "else")
+		}
+		io.WriteString(w, " -> ")
+		c.Result.emit(w)
+		io.WriteString(w, "\n")
+	}
+	io.WriteString(w, "}")
+}
+
 func kotlinType(t *parser.TypeRef) string {
 	if t == nil {
 		return ""
@@ -1105,6 +1134,45 @@ func convertIfExpr(env *types.Env, ie *parser.IfExpr) (Expr, error) {
 	return &IfExpr{Cond: cond, Then: thenExpr, Else: elseExpr}, nil
 }
 
+func convertMatchExpr(env *types.Env, me *parser.MatchExpr) (Expr, error) {
+	target, err := convertExpr(env, me.Target)
+	if err != nil {
+		return nil, err
+	}
+	cases := make([]WhenCase, 0, len(me.Cases))
+	for _, c := range me.Cases {
+		res, err := convertExpr(env, c.Result)
+		if err != nil {
+			return nil, err
+		}
+		if isUnderscore(c.Pattern) {
+			cases = append(cases, WhenCase{Pattern: nil, Result: res})
+			continue
+		}
+		pat, err := convertExpr(env, c.Pattern)
+		if err != nil {
+			return nil, err
+		}
+		cases = append(cases, WhenCase{Pattern: pat, Result: res})
+	}
+	return &WhenExpr{Target: target, Cases: cases}, nil
+}
+
+func isUnderscore(e *parser.Expr) bool {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) != 0 {
+		return false
+	}
+	u := e.Binary.Left
+	if len(u.Ops) != 0 {
+		return false
+	}
+	p := u.Value
+	if len(p.Ops) != 0 || p.Target == nil || p.Target.Selector == nil {
+		return false
+	}
+	return p.Target.Selector.Root == "_" && len(p.Target.Selector.Tail) == 0
+}
+
 func convertFunExpr(env *types.Env, f *parser.FunExpr) (Expr, error) {
 	params := make([]string, len(f.Params))
 	for i, p := range f.Params {
@@ -1439,6 +1507,8 @@ func convertPrimary(env *types.Env, p *parser.Primary) (Expr, error) {
 			items[i] = MapItem{Key: k, Value: v}
 		}
 		return &MapLit{Items: items}, nil
+	case p.Match != nil:
+		return convertMatchExpr(env, p.Match)
 	case p.FunExpr != nil:
 		return convertFunExpr(env, p.FunExpr)
 	case p.Group != nil:
