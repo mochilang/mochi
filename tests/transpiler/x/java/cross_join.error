@@ -1,1 +1,26 @@
-unsupported primary
+exit status 1
+Main.java:26: error: <identifier> expected
+         orderId;
+                ^
+Main.java:27: error: <identifier> expected
+         orderCustomerId;
+                        ^
+Main.java:28: error: <identifier> expected
+         pairedCustomerName;
+                           ^
+Main.java:29: error: <identifier> expected
+         orderTotal;
+                   ^
+Main.java:30: error: <identifier> expected
+        Result3( orderId,  orderCustomerId,  pairedCustomerName,  orderTotal) {
+                        ^
+Main.java:30: error: <identifier> expected
+        Result3( orderId,  orderCustomerId,  pairedCustomerName,  orderTotal) {
+                                          ^
+Main.java:30: error: <identifier> expected
+        Result3( orderId,  orderCustomerId,  pairedCustomerName,  orderTotal) {
+                                                               ^
+Main.java:30: error: <identifier> expected
+        Result3( orderId,  orderCustomerId,  pairedCustomerName,  orderTotal) {
+                                                                            ^
+8 errors
