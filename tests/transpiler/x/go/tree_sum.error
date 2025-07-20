@@ -1,1 +1,14 @@
-unsupported primary
+exit status 1
+# command-line-arguments
+tests/transpiler/x/go/tree_sum.go:11:9: cannot use func() any {…}() (value of interface type any) as int value in return statement: need type assertion
+tests/transpiler/x/go/tree_sum.go:12:11: undefined: Leaf
+tests/transpiler/x/go/tree_sum.go:16:13: undefined: Node
+tests/transpiler/x/go/tree_sum.go:16:18: undefined: left
+tests/transpiler/x/go/tree_sum.go:16:24: undefined: value
+tests/transpiler/x/go/tree_sum.go:16:31: undefined: right
+tests/transpiler/x/go/tree_sum.go:17:24: undefined: left
+tests/transpiler/x/go/tree_sum.go:17:32: undefined: value
+tests/transpiler/x/go/tree_sum.go:17:50: undefined: right
+tests/transpiler/x/go/tree_sum.go:27:48: undefined: Leaf
+tests/transpiler/x/go/tree_sum.go:27:48: too many errors
+
