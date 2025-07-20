@@ -57,7 +57,10 @@ type StringLit struct{ Value string }
 
 func (s *StringLit) emit(w io.Writer) { fmt.Fprintf(w, "%q", s.Value) }
 
-type NumberLit struct{ Value string }
+type NumberLit struct {
+	Value   string
+	IsFloat bool
+}
 
 func (n *NumberLit) emit(w io.Writer) { io.WriteString(w, n.Value) }
 
@@ -761,7 +764,7 @@ func compileLiteral(l *parser.Literal) (Expr, error) {
 	case l.Int != nil:
 		return &NumberLit{Value: fmt.Sprintf("%d", *l.Int)}, nil
 	case l.Float != nil:
-		return &NumberLit{Value: fmt.Sprintf("%g", *l.Float)}, nil
+		return &NumberLit{Value: fmt.Sprintf("%g", *l.Float), IsFloat: true}, nil
 	case l.Bool != nil:
 		return &BoolLit{Value: bool(*l.Bool)}, nil
 	default:
@@ -772,6 +775,9 @@ func compileLiteral(l *parser.Literal) (Expr, error) {
 func inferType(e Expr) string {
 	switch ex := e.(type) {
 	case *NumberLit:
+		if ex.IsFloat {
+			return "f64"
+		}
 		return "i64"
 	case *BoolLit:
 		return "bool"
@@ -802,7 +808,12 @@ func inferType(e Expr) string {
 		case "<", "<=", ">", ">=", "==", "!=", "&&", "||", "in":
 			return "bool"
 		default:
-			return inferType(ex.Left)
+			lt := inferType(ex.Left)
+			rt := inferType(ex.Right)
+			if lt == "f64" || rt == "f64" {
+				return "f64"
+			}
+			return lt
 		}
 	case *IfExpr:
 		t1 := inferType(ex.Then)

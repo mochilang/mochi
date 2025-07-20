@@ -1,0 +1,15 @@
+rustc: exit status 1
+error: expected one of `)`, `,`, `.`, `?`, or an operator, found keyword `in`
+ --> /workspace/mochi/tests/transpiler/x/rs/membership.rs:4:23
+  |
+4 |     println!("{}", (2 in nums));
+  |                       ^^ expected one of `)`, `,`, `.`, `?`, or an operator
+
+error: expected one of `)`, `,`, `.`, `?`, or an operator, found keyword `in`
+ --> /workspace/mochi/tests/transpiler/x/rs/membership.rs:5:23
+  |
+5 |     println!("{}", (4 in nums));
+  |                       ^^ expected one of `)`, `,`, `.`, `?`, or an operator
+
+error: aborting due to 2 previous errors
+
