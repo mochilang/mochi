@@ -28,6 +28,13 @@ func (s Symbol) Emit(w io.Writer) {
 	io.WriteString(w, string(s))
 }
 
+// Keyword represents a Clojure keyword.
+type Keyword string
+
+func (k Keyword) Emit(w io.Writer) {
+	io.WriteString(w, ":"+string(k))
+}
+
 // StringLit represents a quoted string literal.
 type StringLit string
 
@@ -206,7 +213,7 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 
 	body := []Node{}
 	for _, st := range prog.Statements {
-		if st.Let != nil || st.Var != nil {
+		if st.Let != nil || st.Var != nil || st.Fun != nil {
 			n, err := transpileStmt(st)
 			if err != nil {
 				return nil, err
@@ -273,13 +280,29 @@ func transpileStmt(s *parser.Statement) (Node, error) {
 		if err != nil {
 			return nil, err
 		}
-		if len(s.Assign.Index) == 1 && s.Assign.Index[0].Colon == nil && s.Assign.Index[0].Colon2 == nil && s.Assign.Index[0].End == nil && s.Assign.Index[0].Step == nil {
-			idx, err := transpileExpr(s.Assign.Index[0].Start)
-			if err != nil {
-				return nil, err
+		if len(s.Assign.Index) > 0 {
+			simple := true
+			idxs := []Node{}
+			for _, idx := range s.Assign.Index {
+				if idx.Colon != nil || idx.Colon2 != nil || idx.End != nil || idx.Step != nil {
+					simple = false
+					break
+				}
+				en, err := transpileExpr(idx.Start)
+				if err != nil {
+					return nil, err
+				}
+				idxs = append(idxs, en)
 			}
-			assign := &List{Elems: []Node{Symbol("assoc"), Symbol(s.Assign.Name), idx, v}}
-			return &List{Elems: []Node{Symbol("def"), Symbol(s.Assign.Name), assign}}, nil
+			if simple {
+				var assign Node
+				if len(idxs) == 1 {
+					assign = &List{Elems: []Node{Symbol("assoc"), Symbol(s.Assign.Name), idxs[0], v}}
+				} else {
+					assign = &List{Elems: []Node{Symbol("assoc-in"), Symbol(s.Assign.Name), &Vector{Elems: idxs}, v}}
+				}
+				return &List{Elems: []Node{Symbol("def"), Symbol(s.Assign.Name), assign}}, nil
+			}
 		}
 		return &List{Elems: []Node{Symbol("def"), Symbol(s.Assign.Name), v}}, nil
 	case s.Fun != nil:
@@ -704,6 +727,9 @@ func transpilePrimary(p *parser.Primary) (Node, error) {
 			if err != nil {
 				return nil, err
 			}
+			if sym, ok := k.(Symbol); ok {
+				k = Keyword(sym)
+			}
 			v, err := transpileExpr(it.Value)
 			if err != nil {
 				return nil, err
@@ -767,6 +793,28 @@ func transpileCall(c *parser.CallExpr) (Node, error) {
 		cnt := &List{Elems: []Node{Symbol("count"), coll}}
 		avg := &List{Elems: []Node{Symbol("double"), &List{Elems: []Node{Symbol("/"), sum, cnt}}}}
 		return avg, nil
+	case "json":
+		if len(c.Args) != 1 {
+			return nil, fmt.Errorf("json expects 1 arg")
+		}
+		arg, err := transpileExpr(c.Args[0])
+		if err != nil {
+			return nil, err
+		}
+		pairFn := &List{Elems: []Node{
+			Symbol("fn"),
+			&Vector{Elems: []Node{&Vector{Elems: []Node{Symbol("k"), Symbol("v")}}}},
+			&List{Elems: []Node{Symbol("str"), StringLit("\""), &List{Elems: []Node{Symbol("name"), Symbol("k")}}, StringLit("\":"), Symbol("v")}},
+		}}
+		joinPairs := &List{Elems: []Node{
+			Symbol("clojure.string/join"),
+			StringLit(","),
+			&List{Elems: []Node{Symbol("map"), pairFn, Symbol("m")}},
+		}}
+		body := &List{Elems: []Node{Symbol("str"), StringLit("{"), joinPairs, StringLit("}")}}
+		lambda := &List{Elems: []Node{Symbol("fn"), &Vector{Elems: []Node{Symbol("m")}}, body}}
+		call := &List{Elems: []Node{lambda, arg}}
+		return &List{Elems: []Node{Symbol("println"), call}}, nil
 	case "values":
 		elems = append(elems, Symbol("vals"))
 	default:
@@ -778,6 +826,14 @@ func transpileCall(c *parser.CallExpr) (Node, error) {
 			return nil, err
 		}
 		elems = append(elems, a)
+	}
+	if sym, ok := elems[0].(Symbol); ok && transpileEnv != nil {
+		if typ, err := transpileEnv.GetVar(string(sym)); err == nil {
+			if ft, ok := typ.(types.FuncType); ok && !ft.Variadic && len(ft.Params) > len(c.Args) {
+				elems = append([]Node{Symbol("partial"), sym}, elems[1:]...)
+				return &List{Elems: elems}, nil
+			}
+		}
 	}
 	return &List{Elems: elems}, nil
 }

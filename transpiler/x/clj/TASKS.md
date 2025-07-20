@@ -1,3 +1,7 @@
+## Progress (2025-07-20 13:58 +0700)
+- clj transpiler: support partials and nested assigns
+- Regenerated golden files - 58/100 vm valid programs passing
+
 ## Progress (2025-07-20 13:26 +0700)
 - fix tests
 - Regenerated golden files - 53/100 vm valid programs passing
