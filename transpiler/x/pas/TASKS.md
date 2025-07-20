@@ -1,3 +1,7 @@
+## Progress (2025-07-20 09:51 +0700)
+- pas transpiler: add list assignment and update docs
+- 28/100 VM programs transpiled successfully
+
 # Transpiler Tasks
 
 ## Progress (2025-07-20 02:25 +0000)
