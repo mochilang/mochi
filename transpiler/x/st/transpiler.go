@@ -26,6 +26,7 @@ const (
 	valInt
 	valBool
 	valString
+	valFloat
 	valList
 	valMap
 )
@@ -35,6 +36,7 @@ type value struct {
 	i    int
 	b    bool
 	s    string
+	f    float64
 	list []value
 	kv   map[string]value
 }
@@ -50,6 +52,8 @@ func (v value) String() string {
 		return "false"
 	case valString:
 		return fmt.Sprintf("'%s'", escape(v.s))
+	case valFloat:
+		return fmt.Sprintf("%.1f", v.f)
 	case valList:
 		parts := make([]string, len(v.list))
 		for i, elem := range v.list {
@@ -332,7 +336,11 @@ func evalPrimary(p *parser.Primary, vars map[string]value) (value, error) {
 		}
 		return value{kind: valMap, kv: m}, nil
 	case p.Call != nil:
-		if p.Call.Func == "len" && len(p.Call.Args) == 1 {
+		switch p.Call.Func {
+		case "len", "count":
+			if len(p.Call.Args) != 1 {
+				return value{}, fmt.Errorf("bad args")
+			}
 			v, err := evalExpr(p.Call.Args[0], vars)
 			if err != nil {
 				return value{}, err
@@ -344,6 +352,143 @@ func evalPrimary(p *parser.Primary, vars map[string]value) (value, error) {
 				return value{kind: valInt, i: len(v.list)}, nil
 			case valMap:
 				return value{kind: valInt, i: len(v.kv)}, nil
+			}
+		case "str":
+			if len(p.Call.Args) != 1 {
+				return value{}, fmt.Errorf("bad args")
+			}
+			v, err := evalExpr(p.Call.Args[0], vars)
+			if err != nil {
+				return value{}, err
+			}
+			switch v.kind {
+			case valInt:
+				return value{kind: valString, s: fmt.Sprintf("%d", v.i)}, nil
+			case valBool:
+				if v.b {
+					return value{kind: valString, s: "true"}, nil
+				}
+				return value{kind: valString, s: "false"}, nil
+			case valString:
+				return value{kind: valString, s: v.s}, nil
+			}
+		case "append":
+			if len(p.Call.Args) != 2 {
+				return value{}, fmt.Errorf("bad args")
+			}
+			listv, err := evalExpr(p.Call.Args[0], vars)
+			if err != nil {
+				return value{}, err
+			}
+			elem, err := evalExpr(p.Call.Args[1], vars)
+			if err != nil {
+				return value{}, err
+			}
+			if listv.kind == valList {
+				nl := append(append([]value{}, listv.list...), elem)
+				return value{kind: valList, list: nl}, nil
+			}
+		case "sum":
+			if len(p.Call.Args) != 1 {
+				return value{}, fmt.Errorf("bad args")
+			}
+			listv, err := evalExpr(p.Call.Args[0], vars)
+			if err != nil {
+				return value{}, err
+			}
+			if listv.kind == valList {
+				total := 0
+				for _, it := range listv.list {
+					if it.kind != valInt {
+						return value{}, fmt.Errorf("sum supports int list")
+					}
+					total += it.i
+				}
+				return value{kind: valInt, i: total}, nil
+			}
+		case "avg":
+			if len(p.Call.Args) != 1 {
+				return value{}, fmt.Errorf("bad args")
+			}
+			listv, err := evalExpr(p.Call.Args[0], vars)
+			if err != nil {
+				return value{}, err
+			}
+			if listv.kind == valList {
+				if len(listv.list) == 0 {
+					return value{kind: valFloat, f: 0}, nil
+				}
+				total := 0
+				for _, it := range listv.list {
+					if it.kind != valInt {
+						return value{}, fmt.Errorf("avg supports int list")
+					}
+					total += it.i
+				}
+				return value{kind: valFloat, f: float64(total) / float64(len(listv.list))}, nil
+			}
+		case "substring":
+			if len(p.Call.Args) != 3 {
+				return value{}, fmt.Errorf("bad args")
+			}
+			s, err := evalExpr(p.Call.Args[0], vars)
+			if err != nil {
+				return value{}, err
+			}
+			start, err := evalExpr(p.Call.Args[1], vars)
+			if err != nil {
+				return value{}, err
+			}
+			end, err := evalExpr(p.Call.Args[2], vars)
+			if err != nil {
+				return value{}, err
+			}
+			if s.kind == valString && start.kind == valInt && end.kind == valInt {
+				r := []rune(s.s)
+				if start.i < 0 || end.i > len(r) || start.i > end.i {
+					return value{}, fmt.Errorf("bad substring range")
+				}
+				return value{kind: valString, s: string(r[start.i:end.i])}, nil
+			}
+		case "min":
+			if len(p.Call.Args) != 1 {
+				return value{}, fmt.Errorf("bad args")
+			}
+			listv, err := evalExpr(p.Call.Args[0], vars)
+			if err != nil {
+				return value{}, err
+			}
+			if listv.kind == valList && len(listv.list) > 0 {
+				m := listv.list[0].i
+				for _, it := range listv.list {
+					if it.kind != valInt {
+						return value{}, fmt.Errorf("min supports int list")
+					}
+					if it.i < m {
+						m = it.i
+					}
+				}
+				return value{kind: valInt, i: m}, nil
+			}
+		case "max":
+			if len(p.Call.Args) != 1 {
+				return value{}, fmt.Errorf("bad args")
+			}
+			listv, err := evalExpr(p.Call.Args[0], vars)
+			if err != nil {
+				return value{}, err
+			}
+			if listv.kind == valList && len(listv.list) > 0 {
+				m := listv.list[0].i
+				for _, it := range listv.list {
+					if it.kind != valInt {
+						return value{}, fmt.Errorf("max supports int list")
+					}
+					if it.i > m {
+						m = it.i
+					}
+				}
+				return value{kind: valInt, i: m}, nil
 			}
 		}
 		return value{}, fmt.Errorf("unsupported call")
