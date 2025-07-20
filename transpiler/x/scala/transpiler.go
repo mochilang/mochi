@@ -320,16 +320,16 @@ type MapEntry struct {
 type MapLit struct{ Items []MapEntry }
 
 func (m *MapLit) emit(w io.Writer) {
-	fmt.Fprint(w, "Map(")
-	for i, it := range m.Items {
-		if i > 0 {
-			fmt.Fprint(w, ", ")
-		}
-		it.Key.emit(w)
-		fmt.Fprint(w, " -> ")
-		it.Value.emit(w)
-	}
-	fmt.Fprint(w, ")")
+        fmt.Fprint(w, "Map(")
+        for i, it := range m.Items {
+                if i > 0 {
+                        fmt.Fprint(w, ", ")
+                }
+                it.Key.emit(w)
+                fmt.Fprint(w, " -> ")
+                it.Value.emit(w)
+        }
+        fmt.Fprint(w, ")")
 }
 
 // AppendExpr represents append(list, elem) as `list :+ elem`.
@@ -1047,10 +1047,10 @@ func toScalaTypeFromType(t types.Type) string {
 		return "Boolean"
 	case types.ListType:
 		return fmt.Sprintf("ArrayBuffer[%s]", toScalaTypeFromType(tt.Elem))
-	case types.MapType:
-		return fmt.Sprintf("Map[%s,%s]", toScalaTypeFromType(tt.Key), toScalaTypeFromType(tt.Value))
-	}
-	return "Any"
+       case types.MapType:
+               return fmt.Sprintf("Map[%s,%s]", toScalaTypeFromType(tt.Key), toScalaTypeFromType(tt.Value))
+       }
+       return "Any"
 }
 
 // inferType attempts a best-effort static type deduction for the expression.
@@ -1172,9 +1172,9 @@ func inferTypeWithEnv(e Expr, env *types.Env) string {
 }
 
 func header() string {
-	h := string(meta.Header("//"))
-	h += "import scala.collection.mutable.ArrayBuffer\n"
-	return h
+        h := string(meta.Header("//"))
+        h += "import scala.collection.mutable.{ArrayBuffer, Map}\n"
+        return h
 }
 
 // Print converts the Scala AST to ast.Node and prints it.

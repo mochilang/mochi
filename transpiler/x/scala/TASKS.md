@@ -1,3 +1,23 @@
+## Progress (2025-07-20 13:01 +0700)
+- scala: support mutable maps and update progress
+- Regenerated golden files - 56/100 vm valid programs passing
+
+## Progress (2025-07-20 12:51 +0700)
+- docs: update scala progress
+- Regenerated golden files - 57/100 vm valid programs passing
+
+## Progress (2025-07-20 12:51 +0700)
+- docs: update scala progress
+- Regenerated golden files - 57/100 vm valid programs passing
+
+## Progress (2025-07-20 12:51 +0700)
+- docs: update scala progress
+- Regenerated golden files - 57/100 vm valid programs passing
+
+## Progress (2025-07-20 12:51 +0700)
+- docs: update scala progress
+- Regenerated golden files - 56/100 vm valid programs passing
+
 ## Progress (2025-07-20 12:35 +0700)
 - scala: iterate map keys
 - Regenerated golden files - 55/100 vm valid programs passing
