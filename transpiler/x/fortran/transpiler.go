@@ -922,6 +922,20 @@ func toPrimary(p *parser.Primary, env *types.Env) (string, error) {
 		}
 		return name, nil
 	case p.Call != nil:
+		if p.Call.Func == "len" && len(p.Call.Args) == 1 {
+			argExpr, err := toExpr(p.Call.Args[0], env)
+			if err != nil {
+				return "", err
+			}
+			typ := types.ExprType(p.Call.Args[0], env)
+			if types.IsStringType(typ) {
+				return fmt.Sprintf("len_trim(%s)", argExpr), nil
+			}
+			if types.IsListType(typ) {
+				return fmt.Sprintf("size(%s)", argExpr), nil
+			}
+			return "", fmt.Errorf("unsupported len argument type")
+		}
 		var args []string
 		for _, a := range p.Call.Args {
 			ex, err := toExpr(a, env)

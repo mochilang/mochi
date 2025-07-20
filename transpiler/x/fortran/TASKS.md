@@ -1,3 +1,10 @@
+## Progress (2025-07-20 12:33 +0700)
+- update fortran progress
+
+## Progress (2025-07-20 12:31 +0700)
+- fortran: support len builtin for strings
+
+
 ## Progress (2025-07-20 11:53 +0700)
 - fs transpiler: handle field selectors
 
