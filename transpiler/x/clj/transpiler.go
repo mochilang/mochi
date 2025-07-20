@@ -281,6 +281,15 @@ func isStringNode(n Node) bool {
 	return false
 }
 
+func isMapNode(n Node) bool {
+	if l, ok := n.(*List); ok && len(l.Elems) > 0 {
+		if sym, ok := l.Elems[0].(Symbol); ok && sym == "hash-map" {
+			return true
+		}
+	}
+	return false
+}
+
 func transpileExpr(e *parser.Expr) (Node, error) {
 	if e == nil {
 		return nil, fmt.Errorf("nil expr")
@@ -299,7 +308,14 @@ func transpileExpr(e *parser.Expr) (Node, error) {
 			return nil, err
 		}
 		if op.Op == "in" {
-			n = &List{Elems: []Node{Symbol("clojure.string/includes?"), right, n}}
+			if isStringNode(right) {
+				n = &List{Elems: []Node{Symbol("clojure.string/includes?"), right, n}}
+			} else if isMapNode(right) {
+				n = &List{Elems: []Node{Symbol("contains?"), right, n}}
+			} else {
+				pred := &List{Elems: []Node{Symbol("fn"), &Vector{Elems: []Node{Symbol("x")}}, &List{Elems: []Node{Symbol("="), Symbol("x"), n}}}}
+				n = &List{Elems: []Node{Symbol("some"), pred, right}}
+			}
 			continue
 		}
 		sym, ok := binOp[op.Op]

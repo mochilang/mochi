@@ -1,6 +1,0 @@
-run error: exit status 1
-Execution error (IllegalStateException) at main/-main (list_assign.clj:4).
-Can't change/establish root binding of: nums with set
-
-Full report at:
-/tmp/clojure-2557898733824612391.edn
