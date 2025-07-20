@@ -1,3 +1,0 @@
-exit status 1
-# command-line-arguments
-../../../tests/transpiler/x/go/cast_struct.go:15:17: cannot use map[string]any{…} (value of type map[string]any) as Todo value in variable declaration
