@@ -129,6 +129,65 @@ func (w *WhileStmt) emit(out io.Writer) {
 	io.WriteString(out, "end;")
 }
 
+// ForRangeStmt represents a numeric for-loop like `for i in 0..10 {}`.
+type ForRangeStmt struct {
+	Name  string
+	Start Expr
+	End   Expr
+	Body  []Stmt
+}
+
+func (f *ForRangeStmt) emit(out io.Writer) {
+	fmt.Fprintf(out, "for %s := ", f.Name)
+	if f.Start != nil {
+		f.Start.emit(out)
+	}
+	io.WriteString(out, " to ")
+	if f.End != nil {
+		io.WriteString(out, "(")
+		f.End.emit(out)
+		io.WriteString(out, " - 1)")
+	}
+	io.WriteString(out, " do begin\n")
+	for _, s := range f.Body {
+		io.WriteString(out, "  ")
+		s.emit(out)
+		io.WriteString(out, "\n")
+	}
+	io.WriteString(out, "end;")
+}
+
+// ForEachStmt represents iteration over a list collection.
+type ForEachStmt struct {
+	Name     string
+	Iterable Expr
+	Body     []Stmt
+}
+
+func (f *ForEachStmt) emit(out io.Writer) {
+	fmt.Fprintf(out, "for %s in ", f.Name)
+	if f.Iterable != nil {
+		f.Iterable.emit(out)
+	}
+	io.WriteString(out, " do begin\n")
+	for _, s := range f.Body {
+		io.WriteString(out, "  ")
+		s.emit(out)
+		io.WriteString(out, "\n")
+	}
+	io.WriteString(out, "end;")
+}
+
+// BreakStmt exits the nearest loop.
+type BreakStmt struct{}
+
+func (*BreakStmt) emit(w io.Writer) { io.WriteString(w, "break;") }
+
+// ContinueStmt skips to the next loop iteration.
+type ContinueStmt struct{}
+
+func (*ContinueStmt) emit(w io.Writer) { io.WriteString(w, "continue;") }
+
 // PrintStmt prints a string literal using writeln.
 // Expr represents a Pascal expression.
 type Expr interface{ emit(io.Writer) }
@@ -393,8 +452,8 @@ func (b *BinaryExpr) emit(w io.Writer) {
 	}
 }
 
-// PrintStmt prints the result of an expression using writeln.
-type PrintStmt struct{ Expr Expr }
+// PrintStmt prints one or more expressions using writeln.
+type PrintStmt struct{ Exprs []Expr }
 
 // AssignStmt assigns the result of an expression to a variable.
 type AssignStmt struct {
@@ -446,15 +505,18 @@ func (d *DoubleIndexAssignStmt) emit(w io.Writer) {
 }
 
 func (p *PrintStmt) emit(w io.Writer) {
-	if be, ok := p.Expr.(boolExpr); ok && be.isBool() {
-		io.WriteString(w, "writeln(ord(")
-		p.Expr.emit(w)
-		io.WriteString(w, "));")
-		return
-	}
 	io.WriteString(w, "writeln(")
-	if p.Expr != nil {
-		p.Expr.emit(w)
+	for i, ex := range p.Exprs {
+		if i > 0 {
+			io.WriteString(w, ", ")
+		}
+		if be, ok := ex.(boolExpr); ok && be.isBool() {
+			io.WriteString(w, "ord(")
+			ex.emit(w)
+			io.WriteString(w, ")")
+		} else {
+			ex.emit(w)
+		}
 	}
 	io.WriteString(w, ");")
 }
@@ -527,12 +589,16 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 		switch {
 		case st.Expr != nil:
 			call := st.Expr.Expr.Binary.Left.Value.Target.Call
-			if call != nil && call.Func == "print" && len(call.Args) == 1 && len(st.Expr.Expr.Binary.Right) == 0 {
-				ex, err := convertExpr(env, call.Args[0])
-				if err != nil {
-					return nil, err
+			if call != nil && call.Func == "print" && len(st.Expr.Expr.Binary.Right) == 0 {
+				var parts []Expr
+				for _, a := range call.Args {
+					ex, err := convertExpr(env, a)
+					if err != nil {
+						return nil, err
+					}
+					parts = append(parts, ex)
 				}
-				pr.Stmts = append(pr.Stmts, &PrintStmt{Expr: ex})
+				pr.Stmts = append(pr.Stmts, &PrintStmt{Exprs: parts})
 				continue
 			}
 			return nil, fmt.Errorf("unsupported expression")
@@ -628,6 +694,39 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 				}
 			}
 			pr.Stmts = append(pr.Stmts, &AssignStmt{Name: st.Assign.Name, Expr: ex})
+		case st.For != nil:
+			start, err := convertExpr(env, st.For.Source)
+			if err != nil {
+				return nil, err
+			}
+			body, err := convertBody(env, st.For.Body, varTypes)
+			if err != nil {
+				return nil, err
+			}
+			if st.For.RangeEnd != nil {
+				end, err := convertExpr(env, st.For.RangeEnd)
+				if err != nil {
+					return nil, err
+				}
+				pr.Stmts = append(pr.Stmts, &ForRangeStmt{Name: st.For.Name, Start: start, End: end, Body: body})
+				if _, ok := varTypes[st.For.Name]; !ok {
+					varTypes[st.For.Name] = "integer"
+				}
+			} else {
+				pr.Stmts = append(pr.Stmts, &ForEachStmt{Name: st.For.Name, Iterable: start, Body: body})
+				if _, ok := varTypes[st.For.Name]; !ok {
+					t := types.ExprType(st.For.Source, env)
+					if lt, ok := t.(types.ListType); ok {
+						if _, ok := lt.Elem.(types.StringType); ok {
+							varTypes[st.For.Name] = "string"
+						} else {
+							varTypes[st.For.Name] = "integer"
+						}
+					} else {
+						varTypes[st.For.Name] = "integer"
+					}
+				}
+			}
 		case st.While != nil:
 			cond, err := convertExpr(env, st.While.Cond)
 			if err != nil {
@@ -735,14 +834,55 @@ func convertBody(env *types.Env, body []*parser.Statement, varTypes map[string]s
 				}
 			}
 			out = append(out, &AssignStmt{Name: st.Assign.Name, Expr: ex})
-		case st.Expr != nil:
-			call := st.Expr.Expr.Binary.Left.Value.Target.Call
-			if call != nil && call.Func == "print" && len(call.Args) == 1 && len(st.Expr.Expr.Binary.Right) == 0 {
-				ex, err := convertExpr(env, call.Args[0])
+		case st.For != nil:
+			start, err := convertExpr(env, st.For.Source)
+			if err != nil {
+				return nil, err
+			}
+			body, err := convertBody(env, st.For.Body, varTypes)
+			if err != nil {
+				return nil, err
+			}
+			if st.For.RangeEnd != nil {
+				end, err := convertExpr(env, st.For.RangeEnd)
 				if err != nil {
 					return nil, err
 				}
-				out = append(out, &PrintStmt{Expr: ex})
+				out = append(out, &ForRangeStmt{Name: st.For.Name, Start: start, End: end, Body: body})
+				if _, ok := varTypes[st.For.Name]; !ok {
+					varTypes[st.For.Name] = "integer"
+				}
+			} else {
+				out = append(out, &ForEachStmt{Name: st.For.Name, Iterable: start, Body: body})
+				if _, ok := varTypes[st.For.Name]; !ok {
+					t := types.ExprType(st.For.Source, env)
+					if lt, ok := t.(types.ListType); ok {
+						if _, ok := lt.Elem.(types.StringType); ok {
+							varTypes[st.For.Name] = "string"
+						} else {
+							varTypes[st.For.Name] = "integer"
+						}
+					} else {
+						varTypes[st.For.Name] = "integer"
+					}
+				}
+			}
+		case st.Break != nil:
+			out = append(out, &BreakStmt{})
+		case st.Continue != nil:
+			out = append(out, &ContinueStmt{})
+		case st.Expr != nil:
+			call := st.Expr.Expr.Binary.Left.Value.Target.Call
+			if call != nil && call.Func == "print" && len(st.Expr.Expr.Binary.Right) == 0 {
+				var parts []Expr
+				for _, a := range call.Args {
+					ex, err := convertExpr(env, a)
+					if err != nil {
+						return nil, err
+					}
+					parts = append(parts, ex)
+				}
+				out = append(out, &PrintStmt{Exprs: parts})
 				continue
 			}
 			return nil, fmt.Errorf("unsupported expression")
@@ -1044,6 +1184,8 @@ func convertPrimary(env *types.Env, p *parser.Primary) (Expr, error) {
 		} else if name == "max" && len(args) == 1 {
 			currProg.NeedMax = true
 			return &CallExpr{Name: "max", Args: args}, nil
+		} else if name == "append" && len(args) == 2 {
+			return &CallExpr{Name: "concat", Args: []Expr{args[0], &ListLit{Elems: []Expr{args[1]}}}}, nil
 		}
 		return &CallExpr{Name: name, Args: args}, nil
 	case p.List != nil:
@@ -1231,7 +1373,12 @@ func usesSysUtilsExpr(e Expr) bool {
 func usesSysUtilsStmt(s Stmt) bool {
 	switch v := s.(type) {
 	case *PrintStmt:
-		return usesSysUtilsExpr(v.Expr)
+		for _, ex := range v.Exprs {
+			if usesSysUtilsExpr(ex) {
+				return true
+			}
+		}
+		return false
 	case *AssignStmt:
 		return usesSysUtilsExpr(v.Expr)
 	case *IndexAssignStmt:
@@ -1256,6 +1403,24 @@ func usesSysUtilsStmt(s Stmt) bool {
 		}
 	case *WhileStmt:
 		if usesSysUtilsExpr(v.Cond) {
+			return true
+		}
+		for _, st := range v.Body {
+			if usesSysUtilsStmt(st) {
+				return true
+			}
+		}
+	case *ForRangeStmt:
+		if usesSysUtilsExpr(v.Start) || usesSysUtilsExpr(v.End) {
+			return true
+		}
+		for _, st := range v.Body {
+			if usesSysUtilsStmt(st) {
+				return true
+			}
+		}
+	case *ForEachStmt:
+		if usesSysUtilsExpr(v.Iterable) {
 			return true
 		}
 		for _, st := range v.Body {

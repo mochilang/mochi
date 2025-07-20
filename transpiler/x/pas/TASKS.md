@@ -1,3 +1,6 @@
+## Progress (2025-07-20 07:45 UTC)
+- pascal: add for-loops and other features (progress 43/100)
+
 ## Progress (2025-07-20 14:09 +0700)
 - Added avg, count, min/max and membership support
 - Generated new golden files; progress 38/100
