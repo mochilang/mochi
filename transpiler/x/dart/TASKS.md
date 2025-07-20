@@ -1,4 +1,12 @@
-## Recent Enhancements (2025-07-20 01:52 +0700)
+## Recent Enhancements (2025-07-20 08:22 +0700)
+- Added element type inference for `for-in` loops.
+- Preserved logical `&&` and `||` operators in output.
+- Automatically updates README checklist with progress.
+
+- Improved variable declarations with basic type inference.
+- Simplified `avg` builtin emission using list methods.
+- Updated README checklist with progress summary.
+
 - Updated README checklist to include all golden tests.
 - Enhanced type inference for lists and maps.
 - Removed version/time helpers for simpler output.

@@ -5,6 +5,7 @@ package dartt
 import (
 	"fmt"
 	"io"
+	"strings"
 
 	"mochi/ast"
 	"mochi/parser"
@@ -127,7 +128,12 @@ type ForInStmt struct {
 }
 
 func (f *ForInStmt) emit(out io.Writer) error {
-	if _, err := io.WriteString(out, "for (var "+f.Name+" in "); err != nil {
+	typ := elemType(f.Iterable)
+	decl := "var"
+	if typ != "var" {
+		decl = typ
+	}
+	if _, err := io.WriteString(out, "for ("+decl+" "+f.Name+" in "); err != nil {
 		return err
 	}
 	if f.Iterable != nil {
@@ -396,13 +402,7 @@ func (b *BinaryExpr) emit(w io.Writer) error {
 	if err := b.Left.emit(w); err != nil {
 		return err
 	}
-	op := b.Op
-	if op == "&&" {
-		op = "&"
-	} else if op == "||" {
-		op = "|"
-	}
-	if _, err := io.WriteString(w, " "+op+" "); err != nil {
+	if _, err := io.WriteString(w, " "+b.Op+" "); err != nil {
 		return err
 	}
 	if err := b.Right.emit(w); err != nil {
@@ -780,6 +780,14 @@ func inferType(e Expr) string {
 		}
 		return "var"
 	}
+}
+
+func elemType(e Expr) string {
+	t := inferType(e)
+	if strings.HasPrefix(t, "List<") && strings.HasSuffix(t, ">") {
+		return t[5 : len(t)-1]
+	}
+	return "var"
 }
 
 func inferReturnType(body []Stmt) string {

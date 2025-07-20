@@ -154,9 +154,9 @@ func updateTasks() {
 
 	var buf bytes.Buffer
 	buf.WriteString(fmt.Sprintf("## Recent Enhancements (%s)\n", ts))
-	buf.WriteString("- Improved variable declarations with basic type inference.\n")
-	buf.WriteString("- Simplified `avg` builtin emission using list methods.\n")
-	buf.WriteString("- Updated README checklist with progress summary.\n\n")
+	buf.WriteString("- Added element type inference for `for-in` loops.\n")
+	buf.WriteString("- Preserved logical `&&` and `||` operators in output.\n")
+	buf.WriteString("- Automatically updates README checklist with progress.\n\n")
 	buf.WriteString(strings.Join(keep, "\n"))
 	_ = os.WriteFile(taskFile, buf.Bytes(), 0o644)
 }
