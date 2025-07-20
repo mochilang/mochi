@@ -35,9 +35,9 @@ type BoolLit bool
 
 func (b BoolLit) Emit(w io.Writer) {
 	if bool(b) {
-		io.WriteString(w, "#t")
+		io.WriteString(w, "\"true\"")
 	} else {
-		io.WriteString(w, "#f")
+		io.WriteString(w, "\"false\"")
 	}
 }
 
@@ -119,7 +119,7 @@ func header() []byte {
 		}
 	}
 	loc, _ := time.LoadLocation("Asia/Bangkok")
-	return []byte(fmt.Sprintf(";; Generated on %s\n(import (srfi 1) (chibi string))\n", ts.In(loc).Format("2006-01-02 15:04 -0700")))
+	return []byte(fmt.Sprintf(";; Generated on %s\n(import (srfi 1) (srfi 69) (chibi string))\n", ts.In(loc).Format("2006-01-02 15:04 -0700")))
 }
 
 func voidSym() Node { return &List{Elems: []Node{Symbol("quote"), Symbol("nil")}} }
@@ -135,6 +135,8 @@ func typedDefault(t *parser.TypeRef) Node {
 		return BoolLit(false)
 	case "string":
 		return StringLit("")
+	case "map":
+		return &List{Elems: []Node{Symbol("make-hash-table")}}
 	default:
 		return voidSym()
 	}
@@ -231,6 +233,9 @@ func convertForStmt(fs *parser.ForStmt) (Node, error) {
 	if err != nil {
 		return nil, err
 	}
+	if _, ok := types.ExprType(fs.Source, currentEnv).(types.MapType); ok {
+		iter = &List{Elems: []Node{Symbol("hash-table-keys"), iter}}
+	}
 	body, err := convertStmts(fs.Body)
 	if err != nil {
 		return nil, err
@@ -246,13 +251,24 @@ func convertStmt(st *parser.Statement) (Node, error) {
 	switch {
 	case st.Expr != nil:
 		call := st.Expr.Expr.Binary.Left.Value.Target.Call
-		if call != nil && call.Func == "print" && len(call.Args) == 1 && len(st.Expr.Expr.Binary.Right) == 0 {
-			argExpr := call.Args[0]
-			arg, err := convertParserExpr(argExpr)
-			if err != nil {
-				return nil, err
+		if call != nil && call.Func == "print" && len(st.Expr.Expr.Binary.Right) == 0 {
+			args := make([]Node, len(call.Args))
+			for i, a := range call.Args {
+				n, err := convertParserExpr(a)
+				if err != nil {
+					return nil, err
+				}
+				args[i] = n
 			}
-			return &List{Elems: []Node{Symbol("begin"), &List{Elems: []Node{Symbol("display"), arg}}, &List{Elems: []Node{Symbol("newline")}}}}, nil
+			forms := []Node{Symbol("begin")}
+			for i, a := range args {
+				forms = append(forms, &List{Elems: []Node{Symbol("display"), a}})
+				if i < len(args)-1 {
+					forms = append(forms, &List{Elems: []Node{Symbol("display"), StringLit(" ")}})
+				}
+			}
+			forms = append(forms, &List{Elems: []Node{Symbol("newline")}})
+			return &List{Elems: forms}, nil
 		}
 		return nil, fmt.Errorf("unsupported expression statement")
 	case st.Let != nil:
@@ -499,6 +515,21 @@ func convertParserPrimary(p *parser.Primary) (Node, error) {
 			elems = append(elems, n)
 		}
 		return &List{Elems: append([]Node{Symbol("list")}, elems...)}, nil
+	case p.Map != nil:
+		pairs := []Node{Symbol("list")}
+		for _, it := range p.Map.Items {
+			k, err := convertParserExpr(it.Key)
+			if err != nil {
+				return nil, err
+			}
+			v, err := convertParserExpr(it.Value)
+			if err != nil {
+				return nil, err
+			}
+			pair := &List{Elems: []Node{Symbol("cons"), k, v}}
+			pairs = append(pairs, pair)
+		}
+		return &List{Elems: []Node{Symbol("alist->hash-table"), &List{Elems: pairs}}}, nil
 	case p.FunExpr != nil:
 		return convertFunExpr(p.FunExpr)
 	case p.Call != nil:
@@ -608,10 +639,10 @@ func makeBinary(op string, left, right Node) Node {
 		return &List{Elems: []Node{Symbol("or"), left, right}}
 	case "in":
 		return &List{Elems: []Node{
-			Symbol("if"),
-			&List{Elems: []Node{Symbol("string?"), right}},
-			&List{Elems: []Node{Symbol("string-contains"), right, left}},
-			&List{Elems: []Node{Symbol("if"), &List{Elems: []Node{Symbol("member"), left, right}}, BoolLit(true), BoolLit(false)}},
+			Symbol("cond"),
+			&List{Elems: []Node{&List{Elems: []Node{Symbol("string?"), right}}, &List{Elems: []Node{Symbol("if"), &List{Elems: []Node{Symbol("string-contains"), right, left}}, StringLit("true"), StringLit("false")}}}},
+			&List{Elems: []Node{&List{Elems: []Node{Symbol("hash-table?"), right}}, &List{Elems: []Node{Symbol("if"), &List{Elems: []Node{Symbol("hash-table-exists?"), right, left}}, StringLit("true"), StringLit("false")}}}},
+			&List{Elems: []Node{Symbol("else"), &List{Elems: []Node{Symbol("if"), &List{Elems: []Node{Symbol("member"), left, right}}, StringLit("true"), StringLit("false")}}}},
 		}}
 	default:
 		return &List{Elems: []Node{Symbol(op), left, right}}
@@ -658,12 +689,14 @@ func convertCall(target Node, call *parser.CallOp) (Node, error) {
 			return &List{Elems: []Node{Symbol("string-length"), args[0]}}, nil
 		case types.ListType:
 			return &List{Elems: []Node{Symbol("length"), args[0]}}, nil
+		case types.MapType:
+			return &List{Elems: []Node{Symbol("hash-table-size"), args[0]}}, nil
 		default:
 			return &List{Elems: []Node{
-				Symbol("if"),
-				&List{Elems: []Node{Symbol("string?"), args[0]}},
-				&List{Elems: []Node{Symbol("string-length"), args[0]}},
-				&List{Elems: []Node{Symbol("length"), args[0]}},
+				Symbol("cond"),
+				&List{Elems: []Node{&List{Elems: []Node{Symbol("string?"), args[0]}}, &List{Elems: []Node{Symbol("string-length"), args[0]}}}},
+				&List{Elems: []Node{&List{Elems: []Node{Symbol("hash-table?"), args[0]}}, &List{Elems: []Node{Symbol("hash-table-size"), args[0]}}}},
+				&List{Elems: []Node{Symbol("else"), &List{Elems: []Node{Symbol("length"), args[0]}}}},
 			}}, nil
 		}
 	case "append":
@@ -765,12 +798,14 @@ func convertIndex(target Node, orig *parser.Primary, idx *parser.IndexOp) (Node,
 			return &List{Elems: []Node{Symbol("string-ref"), target, in}}, nil
 		case types.ListType:
 			return &List{Elems: []Node{Symbol("list-ref"), target, in}}, nil
+		case types.MapType:
+			return &List{Elems: []Node{Symbol("hash-table-ref"), target, in}}, nil
 		}
 	}
 	return &List{Elems: []Node{
-		Symbol("if"),
-		&List{Elems: []Node{Symbol("string?"), target}},
-		&List{Elems: []Node{Symbol("string-ref"), target, in}},
-		&List{Elems: []Node{Symbol("list-ref"), target, in}},
+		Symbol("cond"),
+		&List{Elems: []Node{&List{Elems: []Node{Symbol("string?"), target}}, &List{Elems: []Node{Symbol("string-ref"), target, in}}}},
+		&List{Elems: []Node{&List{Elems: []Node{Symbol("hash-table?"), target}}, &List{Elems: []Node{Symbol("hash-table-ref"), target, in}}}},
+		&List{Elems: []Node{Symbol("else"), &List{Elems: []Node{Symbol("list-ref"), target, in}}}},
 	}}, nil
 }
