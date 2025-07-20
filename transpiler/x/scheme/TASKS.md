@@ -1,3 +1,8 @@
+## Progress (2025-07-20 11:38 +0700)
+- Enhanced static type selection for `len`, `append` and indexing
+- Removed unnecessary runtime checks in generated code
+- Updated README checklist and outputs
+
 ## Progress (2025-07-20 10:18 +0700)
 - Removed bool to int conversion; booleans now print as `#t`/`#f`.
 - Added typed default values for `int`, `bool` and `string`.
