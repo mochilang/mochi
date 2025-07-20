@@ -2,10 +2,10 @@
 
 Generated PHP code for selected Mochi programs under `tests/vm/valid`. Each program has a `.php` file and a corresponding `.out` file with the runtime output. Any execution failures are captured in a `.error` file.
 
-Compiled programs: 26/100
+Compiled programs: 31/100
 
 ## Checklist
-- [ ] append_builtin
+- [x] append_builtin
 - [x] avg_builtin
 - [x] basic_compare
 - [x] binary_precedence
@@ -87,10 +87,10 @@ Compiled programs: 26/100
 - [x] str_builtin
 - [x] string_compare
 - [x] string_concat
-- [ ] string_contains
-- [ ] string_in_operator
-- [ ] string_index
-- [ ] string_prefix_slice
+- [x] string_contains
+- [x] string_in_operator
+- [x] string_index
+- [x] string_prefix_slice
 - [x] substring_builtin
 - [x] sum_builtin
 - [ ] tail_recursion

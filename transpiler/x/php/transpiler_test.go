@@ -216,15 +216,35 @@ func TestTranspile_BoolChain(t *testing.T) {
 }
 
 func TestTranspile_MinMaxBuiltin(t *testing.T) {
-        runTranspileTest(t, "min_max_builtin")
+	runTranspileTest(t, "min_max_builtin")
 }
 
 func TestTranspile_CastStringToInt(t *testing.T) {
-        runTranspileTest(t, "cast_string_to_int")
+	runTranspileTest(t, "cast_string_to_int")
 }
 
 func TestTranspile_CountBuiltin(t *testing.T) {
-        runTranspileTest(t, "count_builtin")
+	runTranspileTest(t, "count_builtin")
+}
+
+func TestTranspile_AppendBuiltin(t *testing.T) {
+	runTranspileTest(t, "append_builtin")
+}
+
+func TestTranspile_StringContains(t *testing.T) {
+	runTranspileTest(t, "string_contains")
+}
+
+func TestTranspile_StringInOperator(t *testing.T) {
+	runTranspileTest(t, "string_in_operator")
+}
+
+func TestTranspile_StringIndex(t *testing.T) {
+	runTranspileTest(t, "string_index")
+}
+
+func TestTranspile_StringPrefixSlice(t *testing.T) {
+	runTranspileTest(t, "string_prefix_slice")
 }
 
 func runTranspileTest(t *testing.T, name string) {
