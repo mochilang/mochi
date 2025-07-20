@@ -7,7 +7,12 @@ const expensive: Record<string, any>[] = (() => {
   for (const p of products) {
     result.push({k: -p["price"], v: p})
   }
-  result.sort((a, b) => {const ak = JSON.stringify(a.k); const bk = JSON.stringify(b.k); return ak < bk ? -1 : ak > bk ? 1 : 0})
+  result.sort((a, b) => {
+    const ak = a.k; const bk = b.k;
+    if (ak < bk) return -1; if (ak > bk) return 1;
+    const sak = JSON.stringify(ak); const sbk = JSON.stringify(bk);
+    return sak < sbk ? -1 : sak > sbk ? 1 : 0
+  })
   const out = result.map(r => r.v)
   return out.slice(1, (1 + 3))
 })();
