@@ -1019,6 +1019,24 @@ func convertExpr(env *types.Env, e *parser.Expr) (Expr, error) {
 	return exprs[0], nil
 }
 
+func mapLitFromExpr(e *parser.Expr) *parser.MapLiteral {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) > 0 {
+		return nil
+	}
+	u := e.Binary.Left
+	if u == nil || len(u.Ops) > 0 {
+		return nil
+	}
+	pf := u.Value
+	if pf == nil || len(pf.Ops) > 0 {
+		return nil
+	}
+	if pf.Target != nil {
+		return pf.Target.Map
+	}
+	return nil
+}
+
 func convertUnary(env *types.Env, u *parser.Unary) (Expr, error) {
 	if u == nil {
 		return nil, fmt.Errorf("nil unary")
@@ -1152,7 +1170,10 @@ func convertPrimary(env *types.Env, p *parser.Primary) (Expr, error) {
 			args = append(args, ex)
 		}
 		name := p.Call.Func
-		if name == "len" {
+		if name == "len" && len(p.Call.Args) == 1 {
+			if ml := mapLitFromExpr(p.Call.Args[0]); ml != nil {
+				return &IntLit{Value: int64(len(ml.Items))}, nil
+			}
 			name = "Length"
 		} else if name == "substring" && len(args) == 3 {
 			return &SliceExpr{Target: args[0], Start: args[1], End: args[2], String: true}, nil

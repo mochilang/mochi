@@ -1,3 +1,10 @@
+## Progress (2025-07-20 16:45 +0700)
+- release: v0.10.32 (progress 44/100)
+
+## Progress (2025-07-20 09:54 UTC)
+- Added compile-time map length support and new golden test
+- Updated README checklist and overall progress to 44/100
+
 ## Progress (2025-07-20 07:45 UTC)
 - pascal: add for-loops and other features (progress 43/100)
 
@@ -29,6 +36,7 @@
 - Updated README checklist with 28/100 tests.
 
 ## Recent Updates
+- [2025-07-20T09:54:40+00:00] Added compile-time len(map) support; progress to 44/100
 - [2025-07-20T03:33:26Z] Added str and sum builtins; progress to 30/100
 - [2025-07-20T02:25:09+00:00] Added list assignment feature and updated progress to 28/100
 - [2025-07-20T08:56:36+07:00] Removed helpers and improved inference; progress 27/100
