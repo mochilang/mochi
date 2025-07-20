@@ -479,6 +479,11 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 				return nil, fmt.Errorf("substring expects 3 args")
 			}
 			return &SubstringExpr{Str: args[0], Start: args[1], End: args[2]}, nil
+		} else if name == "count" {
+			if len(args) != 1 {
+				return nil, fmt.Errorf("count expects 1 arg")
+			}
+			name = "count"
 		} else if name == "sum" {
 			if len(args) != 1 {
 				return nil, fmt.Errorf("sum expects 1 arg")

@@ -16,3 +16,4 @@
 - 2025-07-20 08:53 +0700 - Added basic function support and len type inference
   enabling fun_call, fun_three_args and bool_chain tests
 - 2025-07-20 02:18 UTC - Added cast operator support and improved code formatting enabling cast_string_to_int test
+- 2025-07-20 02:57 UTC - Implemented count builtin and added new test enabling count_builtin

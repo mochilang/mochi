@@ -216,11 +216,15 @@ func TestTranspile_BoolChain(t *testing.T) {
 }
 
 func TestTranspile_MinMaxBuiltin(t *testing.T) {
-	runTranspileTest(t, "min_max_builtin")
+        runTranspileTest(t, "min_max_builtin")
 }
 
 func TestTranspile_CastStringToInt(t *testing.T) {
-	runTranspileTest(t, "cast_string_to_int")
+        runTranspileTest(t, "cast_string_to_int")
+}
+
+func TestTranspile_CountBuiltin(t *testing.T) {
+        runTranspileTest(t, "count_builtin")
 }
 
 func runTranspileTest(t *testing.T, name string) {
