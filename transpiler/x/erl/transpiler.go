@@ -987,6 +987,9 @@ func convertStmt(st *parser.Statement, env *types.Env, ctx *context) ([]Stmt, er
 	case st.Test != nil:
 		// test blocks are ignored in transpiled output
 		return nil, nil
+	case st.Type != nil:
+		// type declarations have no runtime effect
+		return nil, nil
 	case st.Return != nil:
 		if st.Return.Value != nil {
 			val, err := convertExpr(st.Return.Value, env, ctx)
@@ -1391,8 +1394,11 @@ func convertPostfix(pf *parser.PostfixExpr, env *types.Env, ctx *context) (Expr,
 	for i := 0; i < len(pf.Ops); i++ {
 		op := pf.Ops[i]
 		switch {
-		case op.Cast != nil && op.Cast.Type.Simple != nil && *op.Cast.Type.Simple == "int":
-			expr = &CallExpr{Func: "list_to_integer", Args: []Expr{expr}}
+		case op.Cast != nil && op.Cast.Type.Simple != nil:
+			if *op.Cast.Type.Simple == "int" {
+				expr = &CallExpr{Func: "list_to_integer", Args: []Expr{expr}}
+			}
+			// other casts are no-ops
 		case op.Index != nil && op.Index.Colon == nil && op.Index.Colon2 == nil:
 			idx, err := convertExpr(op.Index.Start, env, ctx)
 			if err != nil {
@@ -1556,6 +1562,16 @@ func convertPrimary(p *parser.Primary, env *types.Env, ctx *context) (Expr, erro
 			elems[i] = ae
 		}
 		return &ListLit{Elems: elems}, nil
+	case p.Struct != nil:
+		items := make([]MapItem, len(p.Struct.Fields))
+		for i, f := range p.Struct.Fields {
+			v, err := convertExpr(f.Value, env, ctx)
+			if err != nil {
+				return nil, err
+			}
+			items[i] = MapItem{Key: &AtomLit{Name: f.Name}, Value: v}
+		}
+		return &MapLit{Items: items}, nil
 	case p.Map != nil:
 		items := make([]MapItem, len(p.Map.Items))
 		for i, it := range p.Map.Items {
@@ -1563,10 +1579,14 @@ func convertPrimary(p *parser.Primary, env *types.Env, ctx *context) (Expr, erro
 			if s, ok := simpleIdent(it.Key); ok {
 				k = &AtomLit{Name: s}
 			} else {
-				var err error
-				k, err = convertExpr(it.Key, env, ctx)
+				ke, err := convertExpr(it.Key, env, ctx)
 				if err != nil {
 					return nil, err
+				}
+				if sl, ok := ke.(*StringLit); ok {
+					k = &AtomLit{Name: sl.Value}
+				} else {
+					k = ke
 				}
 			}
 			v, err := convertExpr(it.Value, env, ctx)
