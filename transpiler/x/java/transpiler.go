@@ -38,7 +38,20 @@ func javaType(t string) string {
 	case "fn":
 		return "java.util.function.IntUnaryOperator"
 	default:
-		return "int"
+		return ""
+	}
+}
+
+func javaBoxType(t string) string {
+	switch t {
+	case "int":
+		return "Integer"
+	case "bool", "boolean":
+		return "Boolean"
+	case "string", "String":
+		return "String"
+	default:
+		return "Object"
 	}
 }
 
@@ -206,7 +219,7 @@ func (l *LambdaExpr) emit(w io.Writer) {
 		}
 		typ := javaType(p.Type)
 		if typ == "" {
-			typ = "int"
+			typ = "java.util.Map"
 		}
 		fmt.Fprintf(w, "%s %s", typ, p.Name)
 	}
@@ -286,7 +299,7 @@ func (s *LetStmt) emit(w io.Writer, indent string) {
 		typ = inferType(s.Expr)
 	}
 	if typ == "" {
-		typ = "int"
+		typ = "java.util.Map"
 	}
 	fmt.Fprint(w, javaType(typ)+" "+s.Name)
 	if s.Expr != nil {
@@ -312,7 +325,7 @@ func (s *VarStmt) emit(w io.Writer, indent string) {
 		typ = inferType(s.Expr)
 	}
 	if typ == "" {
-		typ = "int"
+		typ = "java.util.Map"
 	}
 	fmt.Fprint(w, javaType(typ)+" "+s.Name)
 	if s.Expr != nil {
@@ -465,7 +478,21 @@ type MapLit struct {
 }
 
 func (m *MapLit) emit(w io.Writer) {
-	fmt.Fprint(w, "new java.util.LinkedHashMap<>() {{")
+	valType := "Object"
+	if len(m.Values) > 0 {
+		t := inferType(m.Values[0])
+		same := true
+		for _, v := range m.Values[1:] {
+			if inferType(v) != t {
+				same = false
+				break
+			}
+		}
+		if same {
+			valType = javaBoxType(t)
+		}
+	}
+	fmt.Fprintf(w, "new java.util.LinkedHashMap<String, %s>() {{", valType)
 	for i := range m.Keys {
 		fmt.Fprint(w, " put(")
 		m.Keys[i].emit(w)
@@ -535,6 +562,14 @@ type FieldExpr struct {
 }
 
 func (f *FieldExpr) emit(w io.Writer) {
+	if isMapExpr(f.Target) {
+		fmt.Fprint(w, "((Integer) (")
+		f.Target.emit(w)
+		fmt.Fprint(w, ".get(")
+		(&StringLit{Value: f.Name}).emit(w)
+		fmt.Fprint(w, ")))")
+		return
+	}
 	f.Target.emit(w)
 	fmt.Fprint(w, "."+f.Name)
 }
@@ -779,6 +814,12 @@ func Transpile(p *parser.Program, env *types.Env) (*Program, error) {
 			if ret == "" {
 				ret = inferReturnType(body)
 			}
+			for _, p := range params {
+				if javaType(p.Type) == "" {
+					stmt := &AssignStmt{Name: p.Name, Expr: &CallExpr{Func: "new java.util.LinkedHashMap", Args: []Expr{&VarExpr{Name: p.Name}}}}
+					body = append([]Stmt{stmt}, body...)
+				}
+			}
 			funcRet[s.Fun.Name] = ret
 			prog.Funcs = append(prog.Funcs, &Function{Name: s.Fun.Name, Params: params, Return: ret, Body: body})
 			continue
@@ -881,6 +922,18 @@ func compileStmt(s *parser.Statement) (Stmt, error) {
 			}
 			base := Expr(&VarExpr{Name: s.Assign.Name})
 			return &IndexAssignStmt{Target: base, Indices: indices, Expr: val}, nil
+		}
+		if len(s.Assign.Field) > 0 && len(s.Assign.Index) == 0 {
+			base := Expr(&VarExpr{Name: s.Assign.Name})
+			for i := 0; i < len(s.Assign.Field)-1; i++ {
+				base = &IndexExpr{Target: base, Index: &StringLit{Value: s.Assign.Field[i].Name}}
+			}
+			key := &StringLit{Value: s.Assign.Field[len(s.Assign.Field)-1].Name}
+			val, err := compileExpr(s.Assign.Value)
+			if err != nil {
+				return nil, err
+			}
+			return &IndexAssignStmt{Target: base, Indices: []Expr{key}, Expr: val}, nil
 		}
 	case s.If != nil:
 		cond, err := compileExpr(s.If.Cond)
@@ -1227,6 +1280,18 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 			vals[i] = ve
 		}
 		return &MapLit{Keys: keys, Values: vals}, nil
+	case p.Struct != nil:
+		keys := make([]Expr, len(p.Struct.Fields))
+		vals := make([]Expr, len(p.Struct.Fields))
+		for i, f := range p.Struct.Fields {
+			keys[i] = &StringLit{Value: f.Name}
+			v, err := compileExpr(f.Value)
+			if err != nil {
+				return nil, err
+			}
+			vals[i] = v
+		}
+		return &MapLit{Keys: keys, Values: vals}, nil
 	case p.FunExpr != nil:
 		return compileFunExpr(p.FunExpr)
 	case p.Match != nil:
@@ -1278,6 +1343,12 @@ func compileFunExpr(fn *parser.FunExpr) (Expr, error) {
 		body, err = compileStmts(fn.BlockBody)
 		if err != nil {
 			return nil, err
+		}
+	}
+	for _, p := range params {
+		if javaType(p.Type) == "" {
+			stmt := &AssignStmt{Name: p.Name, Expr: &CallExpr{Func: "new java.util.LinkedHashMap", Args: []Expr{&VarExpr{Name: p.Name}}}}
+			body = append([]Stmt{stmt}, body...)
 		}
 	}
 	ret := typeRefString(fn.Return)
@@ -1342,7 +1413,7 @@ func Emit(prog *Program) []byte {
 			}
 			typ := javaType(p.Type)
 			if typ == "" {
-				typ = "int"
+				typ = "java.util.Map"
 			}
 			buf.WriteString(typ + " " + p.Name)
 		}

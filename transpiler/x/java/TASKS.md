@@ -1,4 +1,28 @@
-## Progress (2025-07-20 14:43 +0700)
+## Progress (2025-07-20 16:45 +0700)
+- release: v0.10.32 (6cfb3cc0d)
+
+- release: v0.10.32 (6cfb3cc0d)
+
+- release: v0.10.32 (6cfb3cc0d)
+
+- release: v0.10.32 (6cfb3cc0d)
+
+- release: v0.10.32 (6cfb3cc0d)
+
+- release: v0.10.32 (6cfb3cc0d)
+
+- release: v0.10.32 (6cfb3cc0d)
+
+- release: v0.10.32 (6cfb3cc0d)
+
+- release: v0.10.32 (6cfb3cc0d)
+
+- release: v0.10.32 (6cfb3cc0d)
+
+- release: v0.10.32 (6cfb3cc0d)
+
+- release: v0.10.32 (6cfb3cc0d)
+
 - java: support lambdas and match (fb4ae2225)
 
 - feat(scala): support structs and match (f003826ca)
