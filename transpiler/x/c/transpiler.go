@@ -21,6 +21,8 @@ var (
 	structTypes    map[string]types.StructType
 	currentEnv     *types.Env
 	funcParamTypes map[string][]string
+	structCounter  int
+	currentVarName string
 )
 
 const version = "0.10.32"
@@ -706,6 +708,7 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 	structTypes = env.Structs()
 	currentEnv = env
 	funcParamTypes = make(map[string][]string)
+	structCounter = 0
 	p := &Program{}
 	mainFn := &Function{Name: "main"}
 	var globals []Stmt
@@ -817,7 +820,9 @@ func compileStmt(env *types.Env, s *parser.Statement) (Stmt, error) {
 			return &PrintStmt{Args: args, Types: typesList}, nil
 		}
 	case s.Let != nil:
+		currentVarName = s.Let.Name
 		valExpr := convertExpr(s.Let.Value)
+		currentVarName = ""
 		declType := inferCType(env, s.Let.Name, valExpr)
 		if list, ok := convertListExpr(s.Let.Value); ok {
 			constLists[s.Let.Name] = &ListLit{Elems: list}
@@ -831,7 +836,9 @@ func compileStmt(env *types.Env, s *parser.Statement) (Stmt, error) {
 		}
 		return &DeclStmt{Name: s.Let.Name, Value: valExpr, Type: declType}, nil
 	case s.Var != nil:
+		currentVarName = s.Var.Name
 		valExpr := convertExpr(s.Var.Value)
+		currentVarName = ""
 		declType := inferCType(env, s.Var.Name, valExpr)
 		if list, ok := convertListExpr(s.Var.Value); ok {
 			constLists[s.Var.Name] = &ListLit{Elems: list}
@@ -1512,6 +1519,31 @@ func convertUnary(u *parser.Unary) Expr {
 		return &StructLit{Name: st.Name, Fields: fields}
 	}
 	if list := u.Value.Target.List; list != nil && len(u.Ops) == 0 {
+		if st, ok := types.InferStructFromList(list, currentEnv); ok {
+			structCounter++
+			base := strings.Title(currentVarName)
+			if base == "" {
+				base = fmt.Sprintf("Data%d", structCounter)
+			}
+			name := types.UniqueStructName(base, currentEnv, nil)
+			st.Name = name
+			currentEnv.SetStruct(name, st)
+			structTypes = currentEnv.Structs()
+			var elems []Expr
+			for _, it := range list.Elems {
+				ml := it.Binary.Left.Value.Target.Map
+				var fields []StructField
+				for i, item := range ml.Items {
+					val := convertExpr(item.Value)
+					if val == nil {
+						return nil
+					}
+					fields = append(fields, StructField{Name: st.Order[i], Value: val})
+				}
+				elems = append(elems, &StructLit{Name: name, Fields: fields})
+			}
+			return &ListLit{Elems: elems}
+		}
 		var elems []Expr
 		for _, it := range list.Elems {
 			ex := convertExpr(it)
