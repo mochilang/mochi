@@ -113,12 +113,24 @@ func (c *CondExpr) emit(w io.Writer) {
 	fmt.Fprint(w, ")")
 }
 
-type PrintStmt struct{ Expr Expr }
+type PrintStmt struct{ Exprs []Expr }
 
 func (p *PrintStmt) emit(w io.Writer) {
 	fmt.Fprint(w, "print(")
-	p.Expr.emit(w)
+	for i, e := range p.Exprs {
+		if i > 0 {
+			fmt.Fprint(w, ", ")
+		}
+		e.emit(w)
+	}
 	fmt.Fprint(w, ")\n")
+}
+
+type ExprStmt struct{ Expr Expr }
+
+func (e *ExprStmt) emit(w io.Writer) {
+	e.Expr.emit(w)
+	fmt.Fprint(w, "\n")
 }
 
 type VarDecl struct {
@@ -172,6 +184,19 @@ type NameExpr struct{ Name string }
 
 func (n *NameExpr) emit(w io.Writer) { fmt.Fprint(w, n.Name) }
 
+type ArrayLit struct{ Elems []Expr }
+
+func (a *ArrayLit) emit(w io.Writer) {
+	fmt.Fprint(w, "[")
+	for i, e := range a.Elems {
+		if i > 0 {
+			fmt.Fprint(w, ", ")
+		}
+		e.emit(w)
+	}
+	fmt.Fprint(w, "]")
+}
+
 type BinaryExpr struct {
 	Left  Expr
 	Op    string
@@ -206,6 +231,20 @@ func (u *UnaryExpr) emit(w io.Writer) {
 
 func (c *CallExpr) emit(w io.Writer) {
 	switch c.Func {
+	case "len":
+		if len(c.Args) == 1 {
+			fmt.Fprint(w, "(")
+			c.Args[0].emit(w)
+			fmt.Fprint(w, ".count)")
+			return
+		}
+	case "count":
+		if len(c.Args) == 1 {
+			fmt.Fprint(w, "(")
+			c.Args[0].emit(w)
+			fmt.Fprint(w, ".count)")
+			return
+		}
 	case "str":
 		fmt.Fprint(w, "String(")
 		if len(c.Args) > 0 {
@@ -213,6 +252,45 @@ func (c *CallExpr) emit(w io.Writer) {
 		}
 		fmt.Fprint(w, ")")
 		return
+	case "append":
+		if len(c.Args) == 2 {
+			fmt.Fprint(w, "(")
+			c.Args[0].emit(w)
+			fmt.Fprint(w, " + [")
+			c.Args[1].emit(w)
+			fmt.Fprint(w, "])")
+			return
+		}
+	case "avg":
+		if len(c.Args) == 1 {
+			fmt.Fprint(w, "(")
+			c.Args[0].emit(w)
+			fmt.Fprint(w, ".reduce(0,+) / ")
+			c.Args[0].emit(w)
+			fmt.Fprint(w, ".count)")
+			return
+		}
+	case "sum":
+		if len(c.Args) == 1 {
+			fmt.Fprint(w, "(")
+			c.Args[0].emit(w)
+			fmt.Fprint(w, ".reduce(0,+))")
+			return
+		}
+	case "min":
+		if len(c.Args) == 1 {
+			fmt.Fprint(w, "(")
+			c.Args[0].emit(w)
+			fmt.Fprint(w, ".min()!)")
+			return
+		}
+	case "max":
+		if len(c.Args) == 1 {
+			fmt.Fprint(w, "(")
+			c.Args[0].emit(w)
+			fmt.Fprint(w, ".max()!)")
+			return
+		}
 	case "substring":
 		if len(c.Args) == 3 {
 			fmt.Fprint(w, "String(Array(")
@@ -408,16 +486,29 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 	switch {
 	case st.Expr != nil:
 		call := st.Expr.Expr.Binary.Left.Value.Target.Call
-		if call != nil && call.Func == "print" && len(call.Args) == 1 {
-			arg := call.Args[0]
-			if val, str, ok := evalPrintArg(arg); ok {
-				return &PrintStmt{Expr: &LitExpr{Value: val, IsString: str}}, nil
+		if call != nil && call.Func == "print" {
+			if len(call.Args) == 1 {
+				arg := call.Args[0]
+				if val, str, ok := evalPrintArg(arg); ok {
+					return &PrintStmt{Exprs: []Expr{&LitExpr{Value: val, IsString: str}}}, nil
+				}
 			}
-			ex, err := convertExpr(arg)
+			var args []Expr
+			for _, a := range call.Args {
+				ex, err := convertExpr(a)
+				if err != nil {
+					return nil, err
+				}
+				args = append(args, ex)
+			}
+			return &PrintStmt{Exprs: args}, nil
+		}
+		if call != nil {
+			ex, err := convertExpr(st.Expr.Expr)
 			if err != nil {
 				return nil, err
 			}
-			return &PrintStmt{Expr: ex}, nil
+			return &ExprStmt{Expr: ex}, nil
 		}
 		return nil, fmt.Errorf("unsupported expression")
 	case st.Let != nil:
@@ -650,6 +741,8 @@ func stmtNode(s Stmt) *ast.Node {
 		return &ast.Node{Kind: "break"}
 	case *ContinueStmt:
 		return &ast.Node{Kind: "continue"}
+	case *ExprStmt:
+		return &ast.Node{Kind: "expr"}
 	default:
 		return &ast.Node{Kind: "stmt"}
 	}
@@ -845,6 +938,16 @@ func convertPrimary(pr *parser.Primary) (Expr, error) {
 			return &LitExpr{Value: "false", IsString: false}, nil
 		}
 		return nil, fmt.Errorf("unsupported literal")
+	case pr.List != nil:
+		var elems []Expr
+		for _, e := range pr.List.Elems {
+			ce, err := convertExpr(e)
+			if err != nil {
+				return nil, err
+			}
+			elems = append(elems, ce)
+		}
+		return &ArrayLit{Elems: elems}, nil
 	case pr.Call != nil:
 		if pr.Call.Func == "len" && len(pr.Call.Args) == 1 {
 			if n, ok := evalLenConst(pr.Call.Args[0]); ok {
