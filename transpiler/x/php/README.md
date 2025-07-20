@@ -2,7 +2,7 @@
 
 Generated PHP code for selected Mochi programs under `tests/vm/valid`. Each program has a `.php` file and a corresponding `.out` file with the runtime output. Any execution failures are captured in a `.error` file.
 
-Compiled programs: 20/100
+Compiled programs: 21/100
 
 ## Checklist
 - [ ] append_builtin
@@ -37,9 +37,9 @@ Compiled programs: 20/100
 - [ ] group_by_multi_join_sort
 - [ ] group_by_sort
 - [ ] group_items_iteration
- - [x] if_else
- - [x] if_then_else
- - [x] if_then_else_nested
+- [x] if_else
+- [x] if_then_else
+- [x] if_then_else_nested
 - [ ] in_operator
 - [ ] in_operator_extended
 - [ ] inner_join
@@ -49,7 +49,7 @@ Compiled programs: 20/100
 - [ ] left_join_multi
 - [x] len_builtin
 - [ ] len_map
- - [x] len_string
+- [x] len_string
 - [x] let_and_print
 - [ ] list_assign
 - [ ] list_index
@@ -67,7 +67,7 @@ Compiled programs: 20/100
 - [ ] match_full
 - [x] math_ops
 - [ ] membership
-- [ ] min_max_builtin
+- [x] min_max_builtin
 - [ ] nested_function
 - [ ] order_by_map
 - [ ] outer_join
@@ -98,7 +98,7 @@ Compiled programs: 20/100
 - [ ] tree_sum
 - [ ] two-sum
 - [x] typed_let
- - [x] typed_var
+- [x] typed_var
 - [x] unary_neg
 - [ ] update_stmt
 - [ ] user_type_literal
