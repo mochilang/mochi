@@ -1,6 +1,6 @@
-## Progress (2025-07-20 22:17 +0700)
-- refine zig output style
-- Generated golden tests for 59/100 programs
+## Progress (2025-07-20 23:02 +0700)
+- swift transpiler: basic query and join support
+- Generated golden tests for 54/100 programs
 - Updated README checklist and output artifacts
 
 # Swift Transpiler Tasks
