@@ -1,3 +1,7 @@
+## Progress (2025-07-20 22:34 +0700)
+- VM valid golden test results updated to 56/100
+
+
 ## Progress (2025-07-20 22:24 +0700)
 - Added struct dependency ordering with forward declarations for C output.
 - Inferred field types from constant data to support join results.
