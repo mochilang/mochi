@@ -75,6 +75,7 @@ func TestTranspilePrograms(t *testing.T) {
 		"map_assign",
 		"typed_let",
 		"typed_var",
+		"values_builtin",
 	}
 	root := repoRoot(t)
 	outDir := filepath.Join(root, "tests", "transpiler", "x", "rb")
@@ -165,16 +166,29 @@ func updateReadme() {
 func updateTasks() {
 	root := repoRoot(&testing.T{})
 	taskFile := filepath.Join(root, "transpiler", "x", "rb", "TASKS.md")
-	out, err := exec.Command("git", "log", "-1", "--format=%cI").Output()
-	ts := ""
-	if err == nil {
-		if t, perr := time.Parse(time.RFC3339, strings.TrimSpace(string(out))); perr == nil {
+	tsRaw, _ := exec.Command("git", "log", "-1", "--format=%cI").Output()
+	msgRaw, _ := exec.Command("git", "log", "-1", "--format=%s").Output()
+	ts := strings.TrimSpace(string(tsRaw))
+	if t, err := time.Parse(time.RFC3339, ts); err == nil {
+		if loc, lerr := time.LoadLocation("Asia/Bangkok"); lerr == nil {
+			ts = t.In(loc).Format("2006-01-02 15:04 -0700")
+		} else {
 			ts = t.Format("2006-01-02 15:04 MST")
 		}
 	}
+	msg := strings.TrimSpace(string(msgRaw))
+	files, _ := filepath.Glob(filepath.Join(root, "tests", "transpiler", "x", "rb", "*.rb"))
+	compiled := len(files)
+	srcFiles, _ := filepath.Glob(filepath.Join(root, "tests", "vm", "valid", "*.mochi"))
+	total := len(srcFiles)
+
 	var buf bytes.Buffer
 	buf.WriteString(fmt.Sprintf("## Progress (%s)\n", ts))
-	buf.WriteString("- VM valid golden test results updated\n\n")
+	if msg != "" {
+		buf.WriteString("- " + msg + "\n")
+	}
+	fmt.Fprintf(&buf, "- Generated Ruby for %d/%d programs\n", compiled, total)
+	buf.WriteString("- Updated README checklist and outputs\n\n")
 	if data, err := os.ReadFile(taskFile); err == nil {
 		buf.Write(data)
 	}
