@@ -1,3 +1,9 @@
+## Progress (2025-07-20 06:26 UTC)
+- Checklist updated: 41/100 tests compiled
+- Added `in` operator handling for lists, maps and strings.
+- Implemented match expressions and multi-argument printing.
+- Enabled `len_map`, `map_literal_dynamic`, `map_membership`, `map_in_operator`, `string_in_operator` and `match_expr` golden tests.
+
 ## Progress (2025-07-20 12:54 +0700)
 - Checklist updated: 35/100 tests compiled
 - Added support for `len` builtin on lists.
