@@ -825,6 +825,30 @@ func isSimpleIdent(e *parser.Expr) (string, bool) {
 	return "", false
 }
 
+func aggregatorCall(e *parser.Expr) (string, *parser.Expr, bool) {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) > 0 {
+		return "", nil, false
+	}
+	u := e.Binary.Left
+	if len(u.Ops) > 0 || u.Value == nil {
+		return "", nil, false
+	}
+	p := u.Value
+	if len(p.Ops) > 0 || p.Target == nil || p.Target.Call == nil {
+		return "", nil, false
+	}
+	call := p.Target.Call
+	if len(call.Args) != 1 {
+		return "", nil, false
+	}
+	switch call.Func {
+	case "sum", "count", "avg", "min", "max":
+		return call.Func, call.Args[0], true
+	default:
+		return "", nil, false
+	}
+}
+
 func zeroValueExpr(t types.Type) Expr {
 	switch t.(type) {
 	case types.IntType, types.Int64Type:
@@ -1877,9 +1901,14 @@ func convertQueryExpr(q *parser.QueryExpr) (Expr, error) {
 	if err != nil {
 		return nil, err
 	}
-	elem, err := convertExpr(q.Select)
-	if err != nil {
-		return nil, err
+
+	var elem Expr
+	aggName, aggExpr, useAgg := aggregatorCall(q.Select)
+	if !useAgg {
+		elem, err = convertExpr(q.Select)
+		if err != nil {
+			return nil, err
+		}
 	}
 	var cond Expr
 	if q.Where != nil {
@@ -1903,6 +1932,14 @@ func convertQueryExpr(q *parser.QueryExpr) (Expr, error) {
 			keyExpr = &CallExpr{Func: &Name{Name: "tuple"}, Args: []Expr{&ListLit{Elems: vals}}}
 		}
 		list = &SortedExpr{List: list, Var: q.Var, Key: keyExpr}
+	}
+	if useAgg {
+		arg, err := convertExpr(aggExpr)
+		if err != nil {
+			return nil, err
+		}
+		comp := &ListComp{Var: q.Var, Iter: list, Expr: arg}
+		return &CallExpr{Func: &Name{Name: aggName}, Args: []Expr{comp}}, nil
 	}
 	return &ListComp{Var: q.Var, Iter: list, Expr: elem}, nil
 }
