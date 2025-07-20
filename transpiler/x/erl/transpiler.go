@@ -108,9 +108,17 @@ type PrintStmt struct{ Expr Expr }
 // ReturnStmt represents returning a value from a function.
 type ReturnStmt struct{ Expr Expr }
 
-// FuncDecl is a simple function declaration with no parameters.
+// FuncDecl is a simple function declaration.
 type FuncDecl struct {
 	Name   string
+	Params []string
+	Body   []Stmt
+	Return Expr
+}
+
+// AnonFunc represents an anonymous function expression.
+type AnonFunc struct {
+	Params []string
 	Body   []Stmt
 	Return Expr
 }
@@ -218,7 +226,15 @@ func (r *ReturnStmt) emit(w io.Writer) {
 }
 
 func (fd *FuncDecl) emit(w io.Writer) {
-	fmt.Fprintf(w, "%s() ->\n", fd.Name)
+	io.WriteString(w, fd.Name)
+	io.WriteString(w, "(")
+	for i, p := range fd.Params {
+		if i > 0 {
+			io.WriteString(w, ", ")
+		}
+		io.WriteString(w, p)
+	}
+	io.WriteString(w, ") ->\n")
 	for _, st := range fd.Body {
 		io.WriteString(w, "    ")
 		st.emit(w)
@@ -231,6 +247,31 @@ func (fd *FuncDecl) emit(w io.Writer) {
 		io.WriteString(w, "nil")
 	}
 	io.WriteString(w, ".\n\n")
+}
+
+func (af *AnonFunc) emit(w io.Writer) {
+	io.WriteString(w, "fun(")
+	for i, p := range af.Params {
+		if i > 0 {
+			io.WriteString(w, ", ")
+		}
+		io.WriteString(w, p)
+	}
+	io.WriteString(w, ") -> ")
+	if len(af.Body) > 0 {
+		io.WriteString(w, "\n")
+		for _, st := range af.Body {
+			io.WriteString(w, "    ")
+			st.emit(w)
+			io.WriteString(w, ",\n")
+		}
+		io.WriteString(w, "    ")
+		af.Return.emit(w)
+		io.WriteString(w, "\n end")
+	} else {
+		af.Return.emit(w)
+		io.WriteString(w, " end")
+	}
 }
 
 func isStringExpr(e Expr) bool {
@@ -650,6 +691,15 @@ func mapOp(op string) string {
 	}
 }
 
+func builtinFunc(name string) bool {
+	switch name {
+	case "print", "append", "avg", "count", "len", "str", "sum", "min", "max", "values":
+		return true
+	default:
+		return false
+	}
+}
+
 func sanitize(name string) string {
 	if name == "" {
 		return "V"
@@ -810,6 +860,10 @@ func convertIfStmt(n *parser.IfStmt, env *types.Env, ctx *context) (*IfStmt, err
 func convertFunStmt(fn *parser.FunStmt, env *types.Env, ctx *context) (*FuncDecl, error) {
 	child := types.NewEnv(env)
 	fctx := newContext()
+	params := make([]string, len(fn.Params))
+	for i, p := range fn.Params {
+		params[i] = fctx.newAlias(p.Name)
+	}
 	var stmts []Stmt
 	var ret Expr
 	for i, st := range fn.Body {
@@ -832,7 +886,7 @@ func convertFunStmt(fn *parser.FunStmt, env *types.Env, ctx *context) (*FuncDecl
 	if ret == nil {
 		ret = &AtomLit{Name: "nil"}
 	}
-	return &FuncDecl{Name: fn.Name, Body: stmts, Return: ret}, nil
+	return &FuncDecl{Name: fn.Name, Params: params, Body: stmts, Return: ret}, nil
 }
 
 func convertExpr(e *parser.Expr, env *types.Env, ctx *context) (Expr, error) {
@@ -1030,7 +1084,17 @@ func convertPrimary(p *parser.Primary, env *types.Env, ctx *context) (Expr, erro
 			}
 			return &SubstringExpr{Str: strExpr, Start: startExpr, End: endExpr}, nil
 		}
-		ce := &CallExpr{Func: p.Call.Func}
+		name := p.Call.Func
+		if !builtinFunc(name) {
+			if _, ok := ctx.alias[name]; ok {
+				name = ctx.current(name)
+			} else if _, err := env.GetVar(name); err == nil {
+				if _, ok := env.GetFunc(name); !ok {
+					name = ctx.current(name)
+				}
+			}
+		}
+		ce := &CallExpr{Func: name}
 		for _, a := range p.Call.Args {
 			ae, err := convertExpr(a, env, ctx)
 			if err != nil {
@@ -1048,6 +1112,8 @@ func convertPrimary(p *parser.Primary, env *types.Env, ctx *context) (Expr, erro
 			ce.Func = "maps:values"
 		}
 		return ce, nil
+	case p.FunExpr != nil:
+		return convertFunExpr(p.FunExpr, env, ctx)
 	case p.Group != nil:
 		return convertExpr(p.Group, env, ctx)
 	case p.List != nil:
@@ -1079,6 +1145,45 @@ func convertPrimary(p *parser.Primary, env *types.Env, ctx *context) (Expr, erro
 	default:
 		return nil, fmt.Errorf("unsupported primary")
 	}
+}
+
+func convertFunExpr(fn *parser.FunExpr, env *types.Env, ctx *context) (Expr, error) {
+	fctx := newContext()
+	params := make([]string, len(fn.Params))
+	for i, p := range fn.Params {
+		params[i] = fctx.newAlias(p.Name)
+	}
+	var stmts []Stmt
+	var ret Expr
+	if fn.ExprBody != nil {
+		var err error
+		ret, err = convertExpr(fn.ExprBody, env, fctx)
+		if err != nil {
+			return nil, err
+		}
+	} else {
+		for i, st := range fn.BlockBody {
+			if r := st.Return; r != nil && i == len(fn.BlockBody)-1 {
+				if r.Value != nil {
+					var err error
+					ret, err = convertExpr(r.Value, env, fctx)
+					if err != nil {
+						return nil, err
+					}
+				}
+				continue
+			}
+			ss, err := convertStmt(st, env, fctx)
+			if err != nil {
+				return nil, err
+			}
+			stmts = append(stmts, ss...)
+		}
+		if ret == nil {
+			ret = &AtomLit{Name: "nil"}
+		}
+	}
+	return &AnonFunc{Params: params, Body: stmts, Return: ret}, nil
 }
 
 func convertIf(ifx *parser.IfExpr, env *types.Env, ctx *context) (Expr, error) {
@@ -1137,7 +1242,7 @@ func (p *Program) Emit() []byte {
 	buf.WriteString("-module(main).\n")
 	exports := []string{"main/1"}
 	for _, f := range p.Funs {
-		exports = append(exports, fmt.Sprintf("%s/0", f.Name))
+		exports = append(exports, fmt.Sprintf("%s/%d", f.Name, len(f.Params)))
 	}
 	buf.WriteString("-export([" + strings.Join(exports, ", ") + "]).\n\n")
 	buf.WriteString(fmt.Sprintf("%% Generated by Mochi transpiler v%s (%s) on %s\n\n", version(), hash, ts.Format("2006-01-02 15:04 MST")))
