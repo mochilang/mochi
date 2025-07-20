@@ -1,8 +1,10 @@
 //go:build !slow
 
-package ctrans
+package php
 
 import (
+	"io"
+
 	"mochi/parser"
 	"mochi/types"
 )
@@ -11,9 +13,9 @@ import (
 type Program struct{}
 
 // Transpile returns a placeholder program so dependent packages compile without the slow implementation.
-func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
+func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	return &Program{}, nil
 }
 
-// Emit returns an empty byte slice. It is a no-op replacement for the real function.
-func (p *Program) Emit() []byte { return nil }
+// Emit is a no-op replacement for the real function.
+func Emit(w io.Writer, p *Program) error { return nil }
