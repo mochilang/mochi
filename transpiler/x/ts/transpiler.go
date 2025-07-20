@@ -557,6 +557,7 @@ func (f *FormatListExpr) emit(w io.Writer) {
 
 func (p *PrintExpr) emit(w io.Writer) {
 	io.WriteString(w, "console.log(")
+	io.WriteString(w, "[")
 	for i, a := range p.Args {
 		if i > 0 {
 			io.WriteString(w, ", ")
@@ -569,9 +570,11 @@ func (p *PrintExpr) emit(w io.Writer) {
 			} else {
 				a.emit(w)
 			}
+		} else {
+			io.WriteString(w, "\"\"")
 		}
 	}
-	io.WriteString(w, ")")
+	io.WriteString(w, "].join(' ').trimEnd())")
 }
 
 func (s *SubstringExpr) emit(w io.Writer) {
