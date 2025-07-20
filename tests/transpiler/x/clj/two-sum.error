@@ -1,1 +1,6 @@
-transpile error: unsupported statement
+run error: exit status 1
+Syntax error compiling at (/workspace/mochi/tests/transpiler/x/clj/two-sum.clj:4:13).
+Unable to resolve symbol: twoSum in this context
+
+Full report at:
+/tmp/clojure-17015560473785514793.edn

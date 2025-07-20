@@ -1,1 +1,6 @@
-transpile error: unsupported statement
+run error: exit status 1
+Syntax error compiling at (/workspace/mochi/tests/transpiler/x/clj/partial_application.clj:4:11).
+Unable to resolve symbol: add in this context
+
+Full report at:
+/tmp/clojure-14544957702034712501.edn
