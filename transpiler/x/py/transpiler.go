@@ -1719,7 +1719,14 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 				sumCall := &CallExpr{Func: &Name{Name: "sum"}, Args: []Expr{args[0]}}
 				lenCall := &CallExpr{Func: &Name{Name: "len"}, Args: []Expr{args[0]}}
 				div := &BinaryExpr{Left: sumCall, Op: "/", Right: lenCall}
-				return &CondExpr{Cond: args[0], Then: div, Else: &IntLit{Value: "0"}}, nil
+				zero := Expr(&IntLit{Value: "0"})
+				if currentEnv != nil {
+					t := types.ExprType(p.Call.Args[0], currentEnv)
+					if _, ok := t.(types.FloatType); ok {
+						zero = &FloatLit{Value: "0.0"}
+					}
+				}
+				return &CondExpr{Cond: args[0], Then: div, Else: zero}, nil
 			}
 		case "count":
 			if len(args) == 1 {
