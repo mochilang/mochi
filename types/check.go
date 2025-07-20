@@ -575,7 +575,7 @@ func Check(prog *parser.Program, env *Env) []error {
 	}, false)
 	env.SetVar("sum", FuncType{
 		Params: []Type{AnyType{}},
-		Return: FloatType{},
+		Return: IntType{},
 		Pure:   true,
 	}, false)
 	env.SetVar("keys", FuncType{
@@ -2255,7 +2255,16 @@ func checkQueryExpr(q *parser.QueryExpr, env *Env, expected Type) (Type, error) 
 				return nil, err
 			}
 			switch name {
-			case "sum", "avg":
+			case "sum":
+				if _, ok := at.(AnyType); !ok && !isNumeric(at) {
+					return nil, errSumOperand(q.Select.Pos, at)
+				}
+				if _, ok := at.(FloatType); ok {
+					selT = FloatType{}
+				} else {
+					selT = IntType{}
+				}
+			case "avg":
 				if _, ok := at.(AnyType); !ok && !isNumeric(at) {
 					return nil, errSumOperand(q.Select.Pos, at)
 				}

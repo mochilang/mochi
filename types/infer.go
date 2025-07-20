@@ -402,6 +402,9 @@ func inferPrimaryType(env *Env, p *parser.Primary) Type {
 						return FloatType{}
 					}
 					if isNumeric(tt.Elem) {
+						if _, ok := tt.Elem.(IntType); ok {
+							return IntType{}
+						}
 						return FloatType{}
 					}
 				case GroupType:
@@ -409,6 +412,9 @@ func inferPrimaryType(env *Env, p *parser.Primary) Type {
 						return FloatType{}
 					}
 					if isNumeric(tt.Elem) {
+						if _, ok := tt.Elem.(IntType); ok {
+							return IntType{}
+						}
 						return FloatType{}
 					}
 				}
