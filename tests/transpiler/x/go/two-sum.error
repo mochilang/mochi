@@ -1,5 +1,5 @@
 exit status 1
 # command-line-arguments
-../../../tests/transpiler/x/go/two-sum.go:11:11: invalid argument: nums (variable of type int) for built-in len
+../../../tests/transpiler/x/go/two-sum.go:11:18: invalid argument: nums (variable of type int) for built-in len
 ../../../tests/transpiler/x/go/two-sum.go:14:12: invalid operation: cannot index nums (variable of type int)
 ../../../tests/transpiler/x/go/two-sum.go:23:28: cannot use []int{…} (value of type []int) as int value in argument to twoSum

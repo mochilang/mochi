@@ -619,13 +619,6 @@ func compileStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 				if err != nil {
 					return nil, err
 				}
-				if isListExpr(a) {
-					usesStrings = true
-					ex = &CallExpr{Func: "strings.Trim", Args: []Expr{
-						&CallExpr{Func: "fmt.Sprint", Args: []Expr{ex}},
-						&StringLit{Value: "[]"},
-					}}
-				}
 				args[i] = ex
 			}
 			usesPrint = true
@@ -656,6 +649,9 @@ func compileStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 					}
 				}
 			}
+			if typ == "" {
+				typ = toGoTypeFromType(types.TypeOfExpr(st.Let.Value, env))
+			}
 			return &VarDecl{Name: st.Let.Name, Type: typ, Value: e}, nil
 		}
 		return &VarDecl{Name: st.Let.Name, Type: typ}, nil
@@ -678,6 +674,9 @@ func compileStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 						ml.ValueType = toGoTypeFromType(mt.Value)
 					}
 				}
+			}
+			if typ == "" {
+				typ = toGoTypeFromType(types.TypeOfExpr(st.Var.Value, env))
 			}
 			return &VarDecl{Name: st.Var.Name, Type: typ, Value: e}, nil
 		}
@@ -799,29 +798,29 @@ func compileIfExpr(ie *parser.IfExpr, env *types.Env) (Expr, error) {
 }
 
 func compileMatchExpr(me *parser.MatchExpr, env *types.Env) (Expr, error) {
-       target, err := compileExpr(me.Target, env)
-       if err != nil {
-               return nil, err
-       }
-       var expr Expr = &VarRef{Name: "nil"}
-       for i := len(me.Cases) - 1; i >= 0; i-- {
-               c := me.Cases[i]
-               res, err := compileExpr(c.Result, env)
-               if err != nil {
-                       return nil, err
-               }
-               pat, err := compileExpr(c.Pattern, env)
-               if err != nil {
-                       return nil, err
-               }
-               if n, ok := pat.(*VarRef); ok && n.Name == "_" {
-                       expr = res
-                       continue
-               }
-               cond := &BinaryExpr{Left: target, Op: "==", Right: pat}
-               expr = &IfExpr{Cond: cond, Then: res, Else: expr}
-       }
-       return expr, nil
+	target, err := compileExpr(me.Target, env)
+	if err != nil {
+		return nil, err
+	}
+	var expr Expr = &VarRef{Name: "nil"}
+	for i := len(me.Cases) - 1; i >= 0; i-- {
+		c := me.Cases[i]
+		res, err := compileExpr(c.Result, env)
+		if err != nil {
+			return nil, err
+		}
+		pat, err := compileExpr(c.Pattern, env)
+		if err != nil {
+			return nil, err
+		}
+		if n, ok := pat.(*VarRef); ok && n.Name == "_" {
+			expr = res
+			continue
+		}
+		cond := &BinaryExpr{Left: target, Op: "==", Right: pat}
+		expr = &IfExpr{Cond: cond, Then: res, Else: expr}
+	}
+	return expr, nil
 }
 
 func compileWhileStmt(ws *parser.WhileStmt, env *types.Env) (Stmt, error) {
@@ -1232,39 +1231,39 @@ func compilePrimary(p *parser.Primary, env *types.Env) (Expr, error) {
 			elems[i] = ex
 		}
 		return &ListLit{Elems: elems}, nil
-       case p.Map != nil:
-               keys := make([]Expr, len(p.Map.Items))
-               vals := make([]Expr, len(p.Map.Items))
-               for i, it := range p.Map.Items {
-                       ke, err := compileExpr(it.Key, env)
-                       if err != nil {
-                               return nil, err
-                       }
-                       ve, err := compileExpr(it.Value, env)
-                       if err != nil {
-                               return nil, err
-                       }
-                       keys[i] = ke
-                       vals[i] = ve
-               }
-               mt, _ := types.TypeOfPrimaryBasic(p, env).(types.MapType)
-               return &MapLit{KeyType: toGoTypeFromType(mt.Key), ValueType: toGoTypeFromType(mt.Value), Keys: keys, Values: vals}, nil
-       case p.Struct != nil:
-               keys := make([]Expr, len(p.Struct.Fields))
-               vals := make([]Expr, len(p.Struct.Fields))
-               for i, f := range p.Struct.Fields {
-                       ve, err := compileExpr(f.Value, env)
-                       if err != nil {
-                               return nil, err
-                       }
-                       keys[i] = &StringLit{Value: f.Name}
-                       vals[i] = ve
-               }
-               return &MapLit{KeyType: "string", ValueType: "any", Keys: keys, Values: vals}, nil
-        case p.Lit != nil:
-                if p.Lit.Str != nil {
-                        return &StringLit{Value: *p.Lit.Str}, nil
-                }
+	case p.Map != nil:
+		keys := make([]Expr, len(p.Map.Items))
+		vals := make([]Expr, len(p.Map.Items))
+		for i, it := range p.Map.Items {
+			ke, err := compileExpr(it.Key, env)
+			if err != nil {
+				return nil, err
+			}
+			ve, err := compileExpr(it.Value, env)
+			if err != nil {
+				return nil, err
+			}
+			keys[i] = ke
+			vals[i] = ve
+		}
+		mt, _ := types.TypeOfPrimaryBasic(p, env).(types.MapType)
+		return &MapLit{KeyType: toGoTypeFromType(mt.Key), ValueType: toGoTypeFromType(mt.Value), Keys: keys, Values: vals}, nil
+	case p.Struct != nil:
+		keys := make([]Expr, len(p.Struct.Fields))
+		vals := make([]Expr, len(p.Struct.Fields))
+		for i, f := range p.Struct.Fields {
+			ve, err := compileExpr(f.Value, env)
+			if err != nil {
+				return nil, err
+			}
+			keys[i] = &StringLit{Value: f.Name}
+			vals[i] = ve
+		}
+		return &MapLit{KeyType: "string", ValueType: "any", Keys: keys, Values: vals}, nil
+	case p.Lit != nil:
+		if p.Lit.Str != nil {
+			return &StringLit{Value: *p.Lit.Str}, nil
+		}
 		if p.Lit.Int != nil {
 			return &IntLit{Value: int(*p.Lit.Int)}, nil
 		}
@@ -1276,10 +1275,10 @@ func compilePrimary(p *parser.Primary, env *types.Env) (Expr, error) {
 		return compileIfExpr(p.If, env)
 	case p.Group != nil:
 		return compileExpr(p.Group, env)
-       case p.Match != nil:
-               return compileMatchExpr(p.Match, env)
-       case p.FunExpr != nil:
-               return compileFunExpr(p.FunExpr, env)
+	case p.Match != nil:
+		return compileMatchExpr(p.Match, env)
+	case p.FunExpr != nil:
+		return compileFunExpr(p.FunExpr, env)
 	case p.Selector != nil && len(p.Selector.Tail) == 0:
 		return &VarRef{Name: p.Selector.Root}, nil
 	}
@@ -1311,12 +1310,12 @@ func toGoTypeFromType(t types.Type) string {
 		return "bool"
 	case types.ListType:
 		return "[]" + toGoTypeFromType(tt.Elem)
-       case types.MapType:
-               return fmt.Sprintf("map[%s]%s", toGoTypeFromType(tt.Key), toGoTypeFromType(tt.Value))
-       case types.StructType:
-               return "map[string]any"
-       }
-       return "any"
+	case types.MapType:
+		return fmt.Sprintf("map[%s]%s", toGoTypeFromType(tt.Key), toGoTypeFromType(tt.Value))
+	case types.StructType:
+		return "map[string]any"
+	}
+	return "any"
 }
 
 func isBoolExpr(e *parser.Expr) bool { return isBoolBinary(e.Binary) }

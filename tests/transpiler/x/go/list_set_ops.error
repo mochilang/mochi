@@ -1,0 +1,8 @@
+exit status 1
+# command-line-arguments
+../../../tests/transpiler/x/go/list_set_ops.go:11:173: syntax error: unexpected keyword for at end of statement
+../../../tests/transpiler/x/go/list_set_ops.go:12:106: syntax error: unexpected name res at end of statement
+../../../tests/transpiler/x/go/list_set_ops.go:13:24: method has no receiver
+../../../tests/transpiler/x/go/list_set_ops.go:13:24: syntax error: unexpected [, expected name
+../../../tests/transpiler/x/go/list_set_ops.go:14:28: method has no receiver
+../../../tests/transpiler/x/go/list_set_ops.go:14:28: syntax error: unexpected [, expected name

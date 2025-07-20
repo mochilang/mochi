@@ -1,1 +1,6 @@
-unsupported primary
+exit status 1
+# command-line-arguments
+../../../tests/transpiler/x/go/match_full.go:11:9: cannot use func() any {…}() (value of interface type any) as string value in return statement: need type assertion
+../../../tests/transpiler/x/go/match_full.go:28:21: cannot use func() any {…}() (value of interface type any) as string value in variable declaration: need type assertion
+../../../tests/transpiler/x/go/match_full.go:49:20: cannot use func() any {…}() (value of interface type any) as string value in variable declaration: need type assertion
+../../../tests/transpiler/x/go/match_full.go:70:22: cannot use func() any {…}() (value of interface type any) as string value in variable declaration: need type assertion
