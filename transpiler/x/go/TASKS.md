@@ -1,5 +1,5 @@
-## Progress (2025-07-20 09:57 +0700)
-- docs(go): update tasks
+## Progress (2025-07-20 10:18 +0700)
+- prolog: improve readability and remove style check
 - Regenerated golden files - 54/100 vm valid programs passing
 
 ## Progress (2025-07-20 09:57 +0700)
@@ -20,22 +20,6 @@
 
 ## Progress (2025-07-20 09:25 +0700)
 - go transpiler: inline helpers
-- Regenerated golden files - 53/100 vm valid programs passing
-
-## Progress (2025-07-20 09:12 +0700)
-- php transpiler: add func support and update golden
-- Regenerated golden files - 53/100 vm valid programs passing
-
-## Progress (2025-07-20 09:12 +0700)
-- php transpiler: add func support and update golden
-- Regenerated golden files - 53/100 vm valid programs passing
-
-## Progress (2025-07-20 09:12 +0700)
-- php transpiler: add func support and update golden
-- Regenerated golden files - 53/100 vm valid programs passing
-
-## Progress (2025-07-20 09:12 +0700)
-- php transpiler: add func support and update golden
 - Regenerated golden files - 53/100 vm valid programs passing
 
 ## Progress (2025-07-20 09:12 +0700)

@@ -57,6 +57,26 @@ type VarDecl struct {
 }
 
 func (v *VarDecl) emit(w io.Writer) {
+	if ie, ok := v.Value.(*IfExpr); ok {
+		if v.Type != "" {
+			fmt.Fprintf(w, "var %s %s\n", v.Name, v.Type)
+		} else {
+			fmt.Fprintf(w, "var %s\n", v.Name)
+		}
+		fmt.Fprint(w, "    if ")
+		ie.Cond.emit(w)
+		fmt.Fprint(w, " {\n        ")
+		fmt.Fprintf(w, "%s = ", v.Name)
+		ie.Then.emit(w)
+		fmt.Fprint(w, "\n    }")
+		if ie.Else != nil {
+			fmt.Fprint(w, " else {\n        ")
+			fmt.Fprintf(w, "%s = ", v.Name)
+			ie.Else.emit(w)
+			fmt.Fprint(w, "\n    }")
+		}
+		return
+	}
 	switch {
 	case v.Value != nil && v.Type != "":
 		fmt.Fprintf(w, "var %s %s = ", v.Name, v.Type)
@@ -77,6 +97,21 @@ type AssignStmt struct {
 }
 
 func (a *AssignStmt) emit(w io.Writer) {
+	if ie, ok := a.Value.(*IfExpr); ok {
+		fmt.Fprint(w, "if ")
+		ie.Cond.emit(w)
+		fmt.Fprint(w, " {\n    ")
+		fmt.Fprintf(w, "%s = ", a.Name)
+		ie.Then.emit(w)
+		fmt.Fprint(w, "\n}")
+		if ie.Else != nil {
+			fmt.Fprint(w, " else {\n    ")
+			fmt.Fprintf(w, "%s = ", a.Name)
+			ie.Else.emit(w)
+			fmt.Fprint(w, "\n}")
+		}
+		return
+	}
 	fmt.Fprintf(w, "%s = ", a.Name)
 	a.Value.emit(w)
 }
@@ -99,6 +134,19 @@ func (c *ContinueStmt) emit(w io.Writer) { fmt.Fprint(w, "continue") }
 type ReturnStmt struct{ Value Expr }
 
 func (r *ReturnStmt) emit(w io.Writer) {
+	if ie, ok := r.Value.(*IfExpr); ok {
+		fmt.Fprint(w, "if ")
+		ie.Cond.emit(w)
+		fmt.Fprint(w, " {\n    return ")
+		ie.Then.emit(w)
+		fmt.Fprint(w, "\n}")
+		if ie.Else != nil {
+			fmt.Fprint(w, " else {\n    return ")
+			ie.Else.emit(w)
+			fmt.Fprint(w, "\n}")
+		}
+		return
+	}
 	fmt.Fprint(w, "return")
 	if r.Value != nil {
 		fmt.Fprint(w, " ")
