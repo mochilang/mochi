@@ -1,3 +1,8 @@
+## Progress (2025-07-20 09:41 +0700)
+- Added default initialization for map variables.
+- Append builtin now uses the `++` operator.
+- VM valid golden test results updated
+
 ## Progress (2025-07-20 09:12 +0700)
 - VM valid golden test results updated
 
