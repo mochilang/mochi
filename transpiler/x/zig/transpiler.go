@@ -360,15 +360,25 @@ func (c *CallExpr) emit(w io.Writer) {
 		} else {
 			io.WriteString(w, "0")
 		}
-	case "max":
-		if len(c.Args) == 1 {
-			io.WriteString(w, "blk: { var arr = ")
-			c.Args[0].emit(w)
-			io.WriteString(w, "; var m = arr[0]; for (arr[1..]) |v| { if (v > m) m = v; } break :blk m; }")
-		} else {
-			io.WriteString(w, "0")
-		}
-	default:
+       case "max":
+               if len(c.Args) == 1 {
+                       io.WriteString(w, "blk: { var arr = ")
+                       c.Args[0].emit(w)
+                       io.WriteString(w, "; var m = arr[0]; for (arr[1..]) |v| { if (v > m) m = v; } break :blk m; }")
+               } else {
+                       io.WriteString(w, "0")
+               }
+       case "contains":
+               if len(c.Args) == 2 {
+                       io.WriteString(w, "std.mem.contains(u8, ")
+                       c.Args[0].emit(w)
+                       io.WriteString(w, ", ")
+                       c.Args[1].emit(w)
+                       io.WriteString(w, ")")
+               } else {
+                       io.WriteString(w, "false")
+               }
+       default:
 		io.WriteString(w, c.Func)
 		io.WriteString(w, "(")
 		for i, a := range c.Args {
@@ -445,25 +455,41 @@ func compileUnary(u *parser.Unary) (Expr, error) {
 }
 
 func compilePostfix(pf *parser.PostfixExpr) (Expr, error) {
-	if pf == nil {
-		return nil, fmt.Errorf("nil postfix")
-	}
-	expr, err := compilePrimary(pf.Target)
-	if err != nil {
-		return nil, err
-	}
-	for _, op := range pf.Ops {
-		if op.Index != nil && op.Index.Colon == nil && op.Index.Colon2 == nil {
-			idx, err := compileExpr(op.Index.Start)
-			if err != nil {
-				return nil, err
-			}
-			expr = &IndexExpr{Target: expr, Index: idx}
-		} else {
-			return nil, fmt.Errorf("unsupported postfix")
-		}
-	}
-	return expr, nil
+        if pf == nil {
+                return nil, fmt.Errorf("nil postfix")
+        }
+        // Detect selector call pattern like `s.contains(sub)`
+        if pf.Target != nil && pf.Target.Selector != nil && len(pf.Target.Selector.Tail) == 1 && pf.Target.Selector.Tail[0] == "contains" && len(pf.Ops) == 1 && pf.Ops[0].Call != nil {
+                base, err := compilePrimary(&parser.Primary{Selector: &parser.SelectorExpr{Root: pf.Target.Selector.Root}})
+                if err != nil {
+                        return nil, err
+                }
+                if len(pf.Ops[0].Call.Args) != 1 {
+                        return nil, fmt.Errorf("contains expects 1 arg")
+                }
+                arg, err := compileExpr(pf.Ops[0].Call.Args[0])
+                if err != nil {
+                        return nil, err
+                }
+                return &CallExpr{Func: "contains", Args: []Expr{base, arg}}, nil
+        }
+
+        expr, err := compilePrimary(pf.Target)
+        if err != nil {
+                return nil, err
+        }
+        for _, op := range pf.Ops {
+                if op.Index != nil && op.Index.Colon == nil && op.Index.Colon2 == nil {
+                        idx, err := compileExpr(op.Index.Start)
+                        if err != nil {
+                                return nil, err
+                        }
+                        expr = &IndexExpr{Target: expr, Index: idx}
+                } else {
+                        return nil, fmt.Errorf("unsupported postfix")
+                }
+        }
+        return expr, nil
 }
 
 func compilePrimary(p *parser.Primary) (Expr, error) {
