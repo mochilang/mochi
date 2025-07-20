@@ -929,9 +929,13 @@ func (l *LenExpr) emit(w io.Writer) {
 type SumExpr struct{ Arg Expr }
 
 func (s *SumExpr) emit(w io.Writer) {
-	fmt.Fprint(w, "(")
-	s.Arg.emit(w)
-	fmt.Fprint(w, ".Sum())")
+	if strings.HasSuffix(typeOfExpr(s.Arg), "[]") {
+		fmt.Fprint(w, "(")
+		s.Arg.emit(w)
+		fmt.Fprint(w, ".Sum())")
+	} else {
+		s.Arg.emit(w)
+	}
 }
 
 type AppendExpr struct {
@@ -1854,6 +1858,28 @@ func compileQueryExpr(q *parser.QueryExpr) (Expr, error) {
 
 	query := builder.String()
 
+	switch agg := sel.(type) {
+	case *SumExpr:
+		arg := exprString(agg.Arg)
+		base := strings.TrimSuffix(query, " select "+exprString(sel))
+		if arg == curVar {
+			query = fmt.Sprintf("(%s).Sum()", base)
+		} else {
+			query = fmt.Sprintf("(%s).Sum(%s => %s)", base, curVar, arg)
+		}
+		usesLinq = true
+		varTypes[curVar] = savedVar
+		mapVars[curVar] = savedMap
+		return &RawExpr{Code: query, Type: "int"}, nil
+	case *CountExpr:
+		base := strings.TrimSuffix(query, " select "+exprString(sel))
+		query = fmt.Sprintf("(%s).Count()", base)
+		usesLinq = true
+		varTypes[curVar] = savedVar
+		mapVars[curVar] = savedMap
+		return &RawExpr{Code: query, Type: "int"}, nil
+	}
+
 	if q.Skip != nil {
 		s, err := compileExpr(q.Skip)
 		if err != nil {
@@ -1871,11 +1897,10 @@ func compileQueryExpr(q *parser.QueryExpr) (Expr, error) {
 
 	query = fmt.Sprintf("(%s).ToArray()", query)
 
+	usesLinq = true
+	elemType := typeOfExpr(sel)
 	varTypes[curVar] = savedVar
 	mapVars[curVar] = savedMap
-	usesLinq = true
-
-	elemType := typeOfExpr(sel)
 	return &RawExpr{Code: query, Type: fmt.Sprintf("%s[]", elemType)}, nil
 }
 
