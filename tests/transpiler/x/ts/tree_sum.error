@@ -1,4 +1,0 @@
-run: exit status 1
-[0m[1m[31merror[0m: Uncaught (in promise) ReferenceError: left is not defined
-    at [0m[1m[3msum_tree[0m ([0m[36mfile:///workspace/mochi/tests/transpiler/x/ts/tree_sum.ts[0m:[0m[33m5[0m:[0m[33m73[0m)
-    at [0m[36mfile:///workspace/mochi/tests/transpiler/x/ts/tree_sum.ts[0m:[0m[33m8[0m:[0m[33m13[0m

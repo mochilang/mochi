@@ -1863,13 +1863,27 @@ func convertPostfix(p *parser.PostfixExpr) (Expr, error) {
 func convertPrimary(p *parser.Primary) (Expr, error) {
 	switch {
 	case p.Struct != nil:
-		entries := make([]MapEntry, len(p.Struct.Fields))
-		for i, f := range p.Struct.Fields {
+		entries := make([]MapEntry, 0, len(p.Struct.Fields)+1)
+		if transpileEnv != nil {
+			if ut, ok := transpileEnv.FindUnionByVariant(p.Struct.Name); ok {
+				entries = append(entries, MapEntry{Key: &StringLit{Value: "tag"}, Value: &StringLit{Value: p.Struct.Name}})
+				st := ut.Variants[p.Struct.Name]
+				for i, f := range p.Struct.Fields {
+					val, err := convertExpr(f.Value)
+					if err != nil {
+						return nil, err
+					}
+					entries = append(entries, MapEntry{Key: &StringLit{Value: st.Order[i]}, Value: val})
+				}
+				return &MapLit{Entries: entries}, nil
+			}
+		}
+		for _, f := range p.Struct.Fields {
 			val, err := convertExpr(f.Value)
 			if err != nil {
 				return nil, err
 			}
-			entries[i] = MapEntry{Key: &StringLit{Value: f.Name}, Value: val}
+			entries = append(entries, MapEntry{Key: &StringLit{Value: f.Name}, Value: val})
 		}
 		return &MapLit{Entries: entries}, nil
 	case p.Lit != nil:
@@ -2137,15 +2151,11 @@ func convertMatchExpr(me *parser.MatchExpr) (Expr, error) {
 		if err != nil {
 			return nil, err
 		}
-		pat, err := convertExpr(c.Pattern)
+		cond, fields, err := patternCond(c.Pattern, target)
 		if err != nil {
 			return nil, err
 		}
-		if n, ok := pat.(*NameRef); ok && n.Name == "_" {
-			expr = res
-			continue
-		}
-		cond := &BinaryExpr{Left: target, Op: "===", Right: pat}
+		res = replaceFields(res, target, fields)
 		expr = &IfExpr{Cond: cond, Then: res, Else: expr}
 	}
 	return expr, nil
@@ -2214,6 +2224,13 @@ func tsType(t types.Type) string {
 		return tsType(tt.Elem) + " | null"
 	case types.StructType:
 		if tt.Name != "" {
+			if transpileEnv != nil {
+				if ut, ok := transpileEnv.FindUnionByVariant(tt.Name); ok {
+					if ut.Name != "" {
+						return ut.Name
+					}
+				}
+			}
 			return tt.Name
 		}
 		parts := make([]string, len(tt.Order))
@@ -2397,6 +2414,141 @@ func substituteFields(e Expr, varName string, fields map[string]bool) Expr {
 	default:
 		return ex
 	}
+}
+
+func replaceFields(e Expr, target Expr, fields map[string]bool) Expr {
+	switch ex := e.(type) {
+	case *NameRef:
+		if fields[ex.Name] {
+			return &IndexExpr{Target: target, Index: &StringLit{Value: ex.Name}}
+		}
+		return ex
+	case *BinaryExpr:
+		ex.Left = replaceFields(ex.Left, target, fields)
+		ex.Right = replaceFields(ex.Right, target, fields)
+		return ex
+	case *UnaryExpr:
+		ex.Expr = replaceFields(ex.Expr, target, fields)
+		return ex
+	case *CallExpr:
+		for i := range ex.Args {
+			ex.Args[i] = replaceFields(ex.Args[i], target, fields)
+		}
+		return ex
+	case *MethodCallExpr:
+		ex.Target = replaceFields(ex.Target, target, fields)
+		for i := range ex.Args {
+			ex.Args[i] = replaceFields(ex.Args[i], target, fields)
+		}
+		return ex
+	case *IndexExpr:
+		ex.Target = replaceFields(ex.Target, target, fields)
+		ex.Index = replaceFields(ex.Index, target, fields)
+		return ex
+	case *SliceExpr:
+		ex.Target = replaceFields(ex.Target, target, fields)
+		if ex.Start != nil {
+			ex.Start = replaceFields(ex.Start, target, fields)
+		}
+		if ex.End != nil {
+			ex.End = replaceFields(ex.End, target, fields)
+		}
+		return ex
+	case *IfExpr:
+		ex.Cond = replaceFields(ex.Cond, target, fields)
+		ex.Then = replaceFields(ex.Then, target, fields)
+		ex.Else = replaceFields(ex.Else, target, fields)
+		return ex
+	case *ListLit:
+		for i := range ex.Elems {
+			ex.Elems[i] = replaceFields(ex.Elems[i], target, fields)
+		}
+		return ex
+	case *MapLit:
+		for i := range ex.Entries {
+			ex.Entries[i].Key = replaceFields(ex.Entries[i].Key, target, fields)
+			ex.Entries[i].Value = replaceFields(ex.Entries[i].Value, target, fields)
+		}
+		return ex
+	default:
+		return ex
+	}
+}
+
+func patternCond(pat *parser.Expr, target Expr) (Expr, map[string]bool, error) {
+	if pat == nil {
+		return nil, nil, fmt.Errorf("nil pattern")
+	}
+	if call, ok := callPattern(pat); ok && transpileEnv != nil {
+		if ut, ok := transpileEnv.FindUnionByVariant(call.Func); ok {
+			st := ut.Variants[call.Func]
+			cond := &BinaryExpr{Left: &IndexExpr{Target: target, Index: &StringLit{Value: "tag"}}, Op: "===", Right: &StringLit{Value: call.Func}}
+			fields := map[string]bool{}
+			for i, arg := range call.Args {
+				fieldName := st.Order[i]
+				if name, ok := identName(arg); ok {
+					fields[name] = true
+				} else {
+					val, err := convertExpr(arg)
+					if err != nil {
+						return nil, nil, err
+					}
+					part := &BinaryExpr{Left: &IndexExpr{Target: target, Index: &StringLit{Value: fieldName}}, Op: "===", Right: val}
+					cond = &BinaryExpr{Left: cond, Op: "&&", Right: part}
+				}
+			}
+			return cond, fields, nil
+		}
+	}
+	if name, ok := identName(pat); ok {
+		if name == "_" {
+			return &BoolLit{Value: true}, nil, nil
+		}
+		if transpileEnv != nil {
+			if _, ok := transpileEnv.FindUnionByVariant(name); ok {
+				cond := &BinaryExpr{Left: &IndexExpr{Target: target, Index: &StringLit{Value: "tag"}}, Op: "===", Right: &StringLit{Value: name}}
+				return cond, nil, nil
+			}
+		}
+	}
+	expr, err := convertExpr(pat)
+	if err != nil {
+		return nil, nil, err
+	}
+	return &BinaryExpr{Left: target, Op: "===", Right: expr}, nil, nil
+}
+
+func callPattern(e *parser.Expr) (*parser.CallExpr, bool) {
+	if e == nil || len(e.Binary.Right) != 0 {
+		return nil, false
+	}
+	u := e.Binary.Left
+	if len(u.Ops) != 0 {
+		return nil, false
+	}
+	p := u.Value
+	if len(p.Ops) != 0 || p.Target == nil || p.Target.Call == nil {
+		return nil, false
+	}
+	return p.Target.Call, true
+}
+
+func identName(e *parser.Expr) (string, bool) {
+	if e == nil || len(e.Binary.Right) != 0 {
+		return "", false
+	}
+	u := e.Binary.Left
+	if len(u.Ops) != 0 {
+		return "", false
+	}
+	p := u.Value
+	if len(p.Ops) != 0 || p.Target == nil {
+		return "", false
+	}
+	if p.Target.Selector != nil && len(p.Target.Selector.Tail) == 0 {
+		return p.Target.Selector.Root, true
+	}
+	return "", false
 }
 
 // selectorToExpr converts a selector expression like a.b.c into nested index
