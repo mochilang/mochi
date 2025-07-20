@@ -1,3 +1,9 @@
+## Progress (2025-07-20 21:28 +0700)
+- Improved query sorting to apply order before selection
+- Adjusted print of map values for more idiomatic output
+- Generated Python for 100/100 programs
+- Updated README checklist and outputs
+
 ## Progress (2025-07-20 21:17 +0700)
 - Generated Python for 100/100 programs
 - Updated README checklist and outputs

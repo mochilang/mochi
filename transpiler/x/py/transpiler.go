@@ -2854,7 +2854,10 @@ func convertQueryExpr(q *parser.QueryExpr) (Expr, error) {
 			copy(vals, d.Values)
 			keyExpr = &CallExpr{Func: &Name{Name: "tuple"}, Args: []Expr{&ListLit{Elems: vals}}}
 		}
-		list = &SortedExpr{List: list, Var: q.Var, Key: keyExpr, Reverse: reverse}
+		sortBase := &MultiListComp{Vars: vars, Iters: iters, Expr: &Name{Name: q.Var}, Cond: cond}
+		sorted := &SortedExpr{List: sortBase, Var: q.Var, Key: keyExpr, Reverse: reverse}
+		comp := &ListComp{Var: q.Var, Iter: sorted, Expr: elem}
+		list = Expr(comp)
 	}
 
 	var start Expr
