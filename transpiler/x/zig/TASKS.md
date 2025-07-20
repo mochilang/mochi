@@ -1,3 +1,9 @@
+## Progress (2025-07-20 14:31 +0700)
+- Added list and string slicing with `[..]` notation.
+- Implemented membership operator `in` for lists and strings.
+- Added `!` unary operator and basic cast to int.
+- Generated golden files for new tests and updated README checklist (37/100 tests passing)
+
 ## Progress (2025-07-20 06:40 +0000)
 - Added multi-argument `print` support with per-element formatting.
 - Implemented `%` operator and string index printing.
@@ -49,6 +55,8 @@
 - Regenerated golden files - 24/100 vm valid programs passing
 
 # Zig Transpiler Tasks
+
+- 2025-07-20 14:31 +0700 - Added slicing, membership operator and int casts (37/100 tests passing)
 
 - 2025-07-20 06:40 +0000 - Added multi-argument print, avg folding and new golden files (31/100 tests passing)
 
