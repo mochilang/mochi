@@ -1,1 +1,6 @@
-unsupported expression
+exit status 1
+/workspace/mochi/tests/transpiler/x/fortran/substring_builtin.f90:3:16:
+
+    3 |   print *, trim(substring("mochi", 1, 4))
+      |                1
+Error: Function ‘substring’ at (1) has no IMPLICIT type

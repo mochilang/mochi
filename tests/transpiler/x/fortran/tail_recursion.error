@@ -1,1 +1,6 @@
-unsupported statement
+exit status 1
+/workspace/mochi/tests/transpiler/x/fortran/tail_recursion.f90:13:10:
+
+   13 |     res = sum_rec((n - 1), (acc + n))
+      |          1
+Error: Function ‘sum_rec’ at (1) cannot be called recursively, as it is not RECURSIVE

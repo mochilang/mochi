@@ -6,8 +6,6 @@ import (
 	"bytes"
 	"fmt"
 	"io"
-	"os"
-	"path/filepath"
 	"strconv"
 	"strings"
 
@@ -40,7 +38,13 @@ type Program struct {
 	Funcs []*Function
 }
 
-type Stmt interface{ emit(io.Writer) }
+func writeIndent(w io.Writer, n int) {
+	for i := 0; i < n; i++ {
+		io.WriteString(w, " ")
+	}
+}
+
+type Stmt interface{ emit(io.Writer, int) }
 
 type IfStmt struct {
 	Cond string
@@ -66,7 +70,8 @@ type BreakStmt struct{}
 type ContinueStmt struct{}
 
 func (f *Function) emit(w io.Writer) {
-	fmt.Fprintf(w, "  function %s(", f.Name)
+	writeIndent(w, 2)
+	fmt.Fprintf(w, "function %s(", f.Name)
 	for i, p := range f.Params {
 		if i > 0 {
 			fmt.Fprint(w, ", ")
@@ -74,21 +79,25 @@ func (f *Function) emit(w io.Writer) {
 		fmt.Fprint(w, p.Name)
 	}
 	fmt.Fprintln(w, ") result(res)")
-	fmt.Fprintf(w, "    %s :: res\n", f.Ret)
+	writeIndent(w, 4)
+	fmt.Fprintf(w, "%s :: res\n", f.Ret)
 	for _, d := range f.Params {
-		fmt.Fprintf(w, "    %s :: %s\n", d.Type, d.Name)
+		writeIndent(w, 4)
+		fmt.Fprintf(w, "%s :: %s\n", d.Type, d.Name)
 	}
 	for _, d := range f.Decls {
-		fmt.Fprintf(w, "    %s :: %s", d.Type, d.Name)
+		writeIndent(w, 4)
+		fmt.Fprintf(w, "%s :: %s", d.Type, d.Name)
 		if d.Init != "" {
 			fmt.Fprintf(w, " = %s", d.Init)
 		}
 		fmt.Fprintln(w)
 	}
 	for _, s := range f.Stmts {
-		s.emit(w)
+		s.emit(w, 4)
 	}
-	fmt.Fprintf(w, "  end function %s\n", f.Name)
+	writeIndent(w, 2)
+	fmt.Fprintf(w, "end function %s\n", f.Name)
 }
 
 type AssignStmt struct{ Name, Expr string }
@@ -100,129 +109,117 @@ type PrintStmt struct {
 	Typ  types.Type
 }
 
-func (r *ReturnStmt) emit(w io.Writer) {
+func (r *ReturnStmt) emit(w io.Writer, ind int) {
 	if r.Expr != "" {
-		fmt.Fprintf(w, "  res = %s\n", r.Expr)
+		writeIndent(w, ind)
+		fmt.Fprintf(w, "res = %s\n", r.Expr)
 	}
-	io.WriteString(w, "  return\n")
+	writeIndent(w, ind)
+	io.WriteString(w, "return\n")
 }
 
-func (s *AssignStmt) emit(w io.Writer) {
-	fmt.Fprintf(w, "  %s = %s\n", s.Name, s.Expr)
+func (s *AssignStmt) emit(w io.Writer, ind int) {
+	writeIndent(w, ind)
+	fmt.Fprintf(w, "%s = %s\n", s.Name, s.Expr)
 }
 
-func (p *PrintStmt) emit(w io.Writer) {
+func (p *PrintStmt) emit(w io.Writer, ind int) {
 	switch p.Typ.(type) {
 	case types.IntType, types.Int64Type, types.BigIntType:
-		fmt.Fprintf(w, "  print '(I0)', %s\n", p.Expr)
+		writeIndent(w, ind)
+		fmt.Fprintf(w, "print '(I0)', %s\n", p.Expr)
 	case types.FloatType, types.BigRatType:
-		fmt.Fprintf(w, "  print '(F0.6)', %s\n", p.Expr)
+		writeIndent(w, ind)
+		fmt.Fprintf(w, "print '(F0.6)', %s\n", p.Expr)
 	case types.BoolType:
-		fmt.Fprintf(w, "  if (%s) then\n", p.Expr)
-		fmt.Fprintln(w, "    print *, 'true'")
-		fmt.Fprintln(w, "  else")
-		fmt.Fprintln(w, "    print *, 'false'")
-		fmt.Fprintln(w, "  end if")
+		writeIndent(w, ind)
+		fmt.Fprintf(w, "print *, merge('true','false', %s)\n", p.Expr)
 	case types.StringType:
-		fmt.Fprintf(w, "  print *, trim(%s)\n", p.Expr)
+		writeIndent(w, ind)
+		fmt.Fprintf(w, "print *, trim(%s)\n", p.Expr)
 	default:
-		fmt.Fprintf(w, "  print *, %s\n", p.Expr)
+		writeIndent(w, ind)
+		fmt.Fprintf(w, "print *, %s\n", p.Expr)
 	}
 }
 
-func (s *IfStmt) emit(w io.Writer) {
-	fmt.Fprintf(w, "  if (%s) then\n", s.Cond)
+func (s *IfStmt) emit(w io.Writer, ind int) {
+	writeIndent(w, ind)
+	fmt.Fprintf(w, "if (%s) then\n", s.Cond)
 	for _, st := range s.Then {
-		st.emit(w)
+		st.emit(w, ind+2)
 	}
 	if len(s.Else) > 0 {
-		io.WriteString(w, "  else\n")
+		writeIndent(w, ind)
+		io.WriteString(w, "else\n")
 		for _, st := range s.Else {
-			st.emit(w)
+			st.emit(w, ind+2)
 		}
 	}
-	io.WriteString(w, "  end if\n")
+	writeIndent(w, ind)
+	io.WriteString(w, "end if\n")
 }
 
-func (s *WhileStmt) emit(w io.Writer) {
-	fmt.Fprintf(w, "  do while (%s)\n", s.Cond)
+func (s *WhileStmt) emit(w io.Writer, ind int) {
+	writeIndent(w, ind)
+	fmt.Fprintf(w, "do while (%s)\n", s.Cond)
 	for _, st := range s.Body {
-		st.emit(w)
+		st.emit(w, ind+2)
 	}
-	io.WriteString(w, "  end do\n")
+	writeIndent(w, ind)
+	io.WriteString(w, "end do\n")
 }
 
-func (b *BreakStmt) emit(w io.Writer) { io.WriteString(w, "  exit\n") }
+func (b *BreakStmt) emit(w io.Writer, ind int) {
+	writeIndent(w, ind)
+	io.WriteString(w, "exit\n")
+}
 
-func (c *ContinueStmt) emit(w io.Writer) { io.WriteString(w, "  cycle\n") }
+func (c *ContinueStmt) emit(w io.Writer, ind int) {
+	writeIndent(w, ind)
+	io.WriteString(w, "cycle\n")
+}
 
-func (f *ForStmt) emit(w io.Writer) {
+func (f *ForStmt) emit(w io.Writer, ind int) {
 	if len(f.List) > 0 {
-		fmt.Fprintf(w, "  integer, dimension(%d) :: __arr = (/ %s /)\n", len(f.List), strings.Join(f.List, ", "))
-		io.WriteString(w, "  integer :: __i\n")
-		io.WriteString(w, "  do __i = 1, size(__arr)\n")
-		fmt.Fprintf(w, "    %s = __arr(__i)\n", f.Var)
+		writeIndent(w, ind)
+		fmt.Fprintf(w, "integer, dimension(%d) :: __arr = (/ %s /)\n", len(f.List), strings.Join(f.List, ", "))
+		writeIndent(w, ind)
+		io.WriteString(w, "integer :: __i\n")
+		writeIndent(w, ind)
+		io.WriteString(w, "do __i = 1, size(__arr)\n")
+		writeIndent(w, ind+2)
+		fmt.Fprintf(w, "%s = __arr(__i)\n", f.Var)
 		for _, st := range f.Body {
-			st.emit(w)
+			st.emit(w, ind+2)
 		}
-		io.WriteString(w, "  end do\n")
+		writeIndent(w, ind)
+		io.WriteString(w, "end do\n")
 		return
 	}
-	fmt.Fprintf(w, "  do %s = %s, %s\n", f.Var, f.Start, f.End)
+	writeIndent(w, ind)
+	fmt.Fprintf(w, "do %s = %s, %s\n", f.Var, f.Start, f.End)
 	for _, st := range f.Body {
-		st.emit(w)
+		st.emit(w, ind+2)
 	}
-	io.WriteString(w, "  end do\n")
-}
-
-func repoRoot() string {
-	dir, err := os.Getwd()
-	if err != nil {
-		return ""
-	}
-	for i := 0; i < 10; i++ {
-		if _, err := os.Stat(filepath.Join(dir, "go.mod")); err == nil {
-			return dir
-		}
-		parent := filepath.Dir(dir)
-		if parent == dir {
-			break
-		}
-		dir = parent
-	}
-	return ""
-}
-
-func version() string {
-	root := repoRoot()
-	if root == "" {
-		return "dev"
-	}
-	b, err := os.ReadFile(filepath.Join(root, "VERSION"))
-	if err != nil {
-		return "dev"
-	}
-	return strings.TrimSpace(string(b))
-}
-
-func header() string {
-	return fmt.Sprintf("! Generated by Mochi transpiler v%s\n", version())
+	writeIndent(w, ind)
+	io.WriteString(w, "end do\n")
 }
 
 func (p *Program) Emit() []byte {
 	var buf bytes.Buffer
-	buf.WriteString(header())
 	buf.WriteString("program main\n")
 	buf.WriteString("  implicit none\n")
 	for _, d := range p.Decls {
-		fmt.Fprintf(&buf, "  %s :: %s", d.Type, d.Name)
+		writeIndent(&buf, 2)
+		fmt.Fprintf(&buf, "%s :: %s", d.Type, d.Name)
 		if d.Init != "" {
 			fmt.Fprintf(&buf, " = %s", d.Init)
 		}
 		buf.WriteByte('\n')
 	}
 	for _, s := range p.Stmts {
-		s.emit(&buf)
+		s.emit(&buf, 2)
 	}
 	if len(p.Funcs) > 0 {
 		buf.WriteString("contains\n")
@@ -288,6 +285,7 @@ func compileStmt(p *Program, st *parser.Statement, env *types.Env) (Stmt, error)
 				init = defaultValue(typ)
 			}
 			p.Decls = append(p.Decls, Decl{Name: st.Let.Name, Type: ft, Init: init})
+			env.Types()[st.Let.Name] = typ
 			return nil, nil
 		}
 		return nil, fmt.Errorf("unsupported let statement")
@@ -315,6 +313,7 @@ func compileStmt(p *Program, st *parser.Statement, env *types.Env) (Stmt, error)
 			init = defaultValue(typ)
 		}
 		p.Decls = append(p.Decls, Decl{Name: st.Var.Name, Type: ft, Init: init})
+		env.Types()[st.Var.Name] = typ
 		return nil, nil
 	case st.Assign != nil:
 		if len(st.Assign.Index) > 0 || len(st.Assign.Field) > 0 {
