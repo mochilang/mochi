@@ -476,21 +476,48 @@ func (c *CallExpr) emit(w io.Writer) {
 }
 
 func (b *BinaryExpr) emit(w io.Writer) {
-	io.WriteString(w, "(")
-	op := mapOp(b.Op)
-	// use string concatenation operator when needed
-	if b.Op == "+" {
-		if _, ok := b.Left.(*StringLit); ok {
-			op = "++"
+	switch b.Op {
+	case "union":
+		io.WriteString(w, "lists:usort(")
+		b.Left.emit(w)
+		io.WriteString(w, " ++ ")
+		b.Right.emit(w)
+		io.WriteString(w, ")")
+	case "union_all":
+		io.WriteString(w, "(")
+		b.Left.emit(w)
+		io.WriteString(w, " ++ ")
+		b.Right.emit(w)
+		io.WriteString(w, ")")
+	case "except":
+		io.WriteString(w, "([X || X <- ")
+		b.Left.emit(w)
+		io.WriteString(w, ", not lists:member(X, ")
+		b.Right.emit(w)
+		io.WriteString(w, ")])")
+	case "intersect":
+		io.WriteString(w, "lists:usort([X || X <- ")
+		b.Left.emit(w)
+		io.WriteString(w, ", lists:member(X, ")
+		b.Right.emit(w)
+		io.WriteString(w, ")])")
+	default:
+		io.WriteString(w, "(")
+		op := mapOp(b.Op)
+		// use string concatenation operator when needed
+		if b.Op == "+" {
+			if _, ok := b.Left.(*StringLit); ok {
+				op = "++"
+			}
+			if _, ok := b.Right.(*StringLit); ok {
+				op = "++"
+			}
 		}
-		if _, ok := b.Right.(*StringLit); ok {
-			op = "++"
-		}
+		b.Left.emit(w)
+		io.WriteString(w, " "+op+" ")
+		b.Right.emit(w)
+		io.WriteString(w, ")")
 	}
-	b.Left.emit(w)
-	io.WriteString(w, " "+op+" ")
-	b.Right.emit(w)
-	io.WriteString(w, ")")
 }
 
 func (u *UnaryExpr) emit(w io.Writer) {
@@ -1135,7 +1162,11 @@ func convertBinary(b *parser.BinaryExpr, env *types.Env, ctx *context) (Expr, er
 			return nil, err
 		}
 		exprs = append(exprs, r)
-		ops[i] = op.Op
+		name := op.Op
+		if op.All {
+			name = name + "_all"
+		}
+		ops[i] = name
 	}
 	// handle membership operator early
 	for i := 0; i < len(ops); i++ {
@@ -1155,7 +1186,7 @@ func convertBinary(b *parser.BinaryExpr, env *types.Env, ctx *context) (Expr, er
 			i--
 		}
 	}
-	levels := [][]string{{"*", "/", "%"}, {"+", "-"}, {"<", "<=", ">", ">="}, {"==", "!="}, {"&&"}, {"||"}}
+	levels := [][]string{{"*", "/", "%"}, {"+", "-"}, {"<", "<=", ">", ">="}, {"==", "!="}, {"&&"}, {"||"}, {"union", "union_all", "except", "intersect"}}
 	contains := func(list []string, v string) bool {
 		for _, s := range list {
 			if s == v {

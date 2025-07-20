@@ -213,6 +213,8 @@ func TestTranspileMapLiteralDynamic(t *testing.T) { runGolden(t, "map_literal_dy
 func TestTranspileMatchExpr(t *testing.T)         { runGolden(t, "match_expr") }
 func TestTranspileMatchFull(t *testing.T)         { runGolden(t, "match_full") }
 
+func TestTranspileListSetOps(t *testing.T) { runGolden(t, "list_set_ops") }
+
 func TestTranspileTestBlock(t *testing.T) { runGolden(t, "test_block") }
 
 func updateEnabled() bool { return *update }
