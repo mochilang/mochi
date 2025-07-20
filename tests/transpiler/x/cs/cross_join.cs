@@ -3,10 +3,19 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
+struct Customer {
+    public int id;
+    public string name;
+}
+struct Order {
+    public int id;
+    public int customerId;
+    public int total;
+}
 class Program {
-    static Dictionary<string, object>[] customers = new[]{new Dictionary<string, object>{{"id", 1}, {"name", "Alice"}}, new Dictionary<string, object>{{"id", 2}, {"name", "Bob"}}, new Dictionary<string, object>{{"id", 3}, {"name", "Charlie"}}};
-    static Dictionary<string, int>[] orders = new[]{new Dictionary<string, int>{{"id", 100}, {"customerId", 1}, {"total", 250}}, new Dictionary<string, int>{{"id", 101}, {"customerId", 2}, {"total", 125}}, new Dictionary<string, int>{{"id", 102}, {"customerId", 1}, {"total", 300}}};
-    static Dictionary<string, object>[] result = (from o in orders from c in customers select new Dictionary<string, object>{{"orderId", ((dynamic)(o["id"]))}, {"orderCustomerId", ((dynamic)(o["customerId"]))}, {"pairedCustomerName", c.name}, {"orderTotal", ((dynamic)(o["total"]))}}).ToArray();
+    static Customer[] customers = new[]{new Customer{id = 1, name = "Alice"}, new Customer{id = 2, name = "Bob"}, new Customer{id = 3, name = "Charlie"}};
+    static Order[] orders = new[]{new Order{id = 100, customerId = 1, total = 250}, new Order{id = 101, customerId = 2, total = 125}, new Order{id = 102, customerId = 1, total = 300}};
+    static Dictionary<string, object>[] result = (from o in orders from c in customers select new Dictionary<string, object>{{"orderId", o.id}, {"orderCustomerId", o.customerId}, {"pairedCustomerName", c.name}, {"orderTotal", o.total}}).ToArray();
     static void Main() {
         Console.WriteLine("--- Cross Join: All order-customer pairs ---");
         foreach (var entry in result) {
@@ -14,3 +23,4 @@ class Program {
 }
     }
 }
+

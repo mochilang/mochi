@@ -1,3 +1,6 @@
+## Progress (2025-07-20 17:52 +0700)
+- cs transpiler: infer structs from lists (progress 84/100)
+
 ## Progress (2025-07-20 16:47 +0700)
 - zig: add map support and update golden tests (progress 84/100)
 
@@ -78,6 +81,7 @@
 ## Remaining Work
 - [x] Implement loops and conditionals
 - [ ] Support map and list mutation operations
+
 
 
 
