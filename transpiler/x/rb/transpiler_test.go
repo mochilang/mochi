@@ -106,9 +106,14 @@ func TestTranspilePrograms(t *testing.T) {
 		"closure",
 		"json_builtin",
 		"tree_sum",
-		"test_block",
-		"list_set_ops",
-	}
+               "test_block",
+               "list_set_ops",
+               "cross_join_triple",
+               "dataset_where_filter",
+               "inner_join",
+               "join_multi",
+               "in_operator_extended",
+       }
 	root := repoRoot(t)
 	outDir := filepath.Join(root, "tests", "transpiler", "x", "rb")
 	os.MkdirAll(outDir, 0o755)
