@@ -115,14 +115,19 @@ func updateReadme() {
 func updateTasks() {
 	root := repoRoot()
 	taskFile := filepath.Join(root, "transpiler", "x", "swift", "TASKS.md")
-	out, err := exec.Command("git", "log", "-1", "--format=%cI").Output()
-	ts := time.Now()
-	if err == nil {
-		if t, perr := time.Parse(time.RFC3339, strings.TrimSpace(string(out))); perr == nil {
-			ts = t
+	tsRaw, _ := exec.Command("git", "log", "-1", "--format=%cI").Output()
+	msgRaw, _ := exec.Command("git", "log", "-1", "--format=%s").Output()
+	tsStr := strings.TrimSpace(string(tsRaw))
+	if t, err := time.Parse(time.RFC3339, tsStr); err == nil {
+		if loc, lerr := time.LoadLocation("Asia/Bangkok"); lerr == nil {
+			tsStr = t.In(loc).Format("2006-01-02 15:04 -0700")
+		} else {
+			tsStr = t.Format("2006-01-02 15:04 MST")
 		}
+	} else {
+		tsStr = time.Now().Format("2006-01-02 15:04 MST")
 	}
-	tsStr := ts.Format("2006-01-02 15:04 MST")
+	msg := strings.TrimSpace(string(msgRaw))
 
 	readmePath := filepath.Join(root, "transpiler", "x", "swift", "README.md")
 	data, _ := os.ReadFile(readmePath)
@@ -131,6 +136,9 @@ func updateTasks() {
 
 	var buf bytes.Buffer
 	buf.WriteString(fmt.Sprintf("## Progress (%s)\n", tsStr))
+	if msg != "" {
+		buf.WriteString(fmt.Sprintf("- %s\n", msg))
+	}
 	buf.WriteString(fmt.Sprintf("- Generated golden tests for %d/%d programs\n", compiled, total))
 	buf.WriteString("- Updated README checklist and output artifacts\n\n")
 
