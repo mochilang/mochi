@@ -1,5 +1,10 @@
 # C++ Transpiler Tasks
 
+## Progress (2025-07-20 10:58 +0700)
+- docs(cpp): update progress
+- Generated C++ for 44/100 programs
+- Updated README checklist and outputs
+
 ## Recent Enhancements (2025-07-20 03:42 +0000)
 - feat(cpp): support map and list membership
 - 44/100 VM programs transpiled successfully

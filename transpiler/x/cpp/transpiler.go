@@ -815,6 +815,8 @@ func convertStmt(s *parser.Statement) (Stmt, error) {
 		typ := ""
 		if s.Let.Type != nil && s.Let.Type.Simple != nil {
 			typ = cppType(*s.Let.Type.Simple)
+		} else if s.Let.Value != nil {
+			typ = guessType(s.Let.Value)
 		}
 		return &LetStmt{Name: s.Let.Name, Type: typ, Value: val}, nil
 	case s.Var != nil:
@@ -829,6 +831,8 @@ func convertStmt(s *parser.Statement) (Stmt, error) {
 		typ := ""
 		if s.Var.Type != nil && s.Var.Type.Simple != nil {
 			typ = cppType(*s.Var.Type.Simple)
+		} else if s.Var.Value != nil {
+			typ = guessType(s.Var.Value)
 		}
 		return &LetStmt{Name: s.Var.Name, Type: typ, Value: val}, nil
 	case s.Assign != nil:
@@ -1270,13 +1274,41 @@ func cppType(t string) string {
 }
 
 func guessType(e *parser.Expr) string {
-	if e == nil || e.Binary == nil || e.Binary.Left == nil {
+	if e == nil {
+		return "auto"
+	}
+	if types.IsStringExpr(e, nil) {
+		return "std::string"
+	}
+	if types.IsBoolExpr(e, nil) {
+		return "bool"
+	}
+	if types.IsFloatExpr(e, nil) {
+		return "double"
+	}
+	if types.IsListExpr(e, nil) {
+		if e.Binary != nil && e.Binary.Left != nil && e.Binary.Left.Value != nil {
+			if list := e.Binary.Left.Value.Target.List; list != nil && len(list.Elems) > 0 {
+				et := guessType(list.Elems[0])
+				return fmt.Sprintf("std::vector<%s>", et)
+			}
+		}
+		return "std::vector<auto>"
+	}
+	if types.IsMapExpr(e, nil) {
+		if e.Binary != nil && e.Binary.Left != nil && e.Binary.Left.Value != nil {
+			if mp := e.Binary.Left.Value.Target.Map; mp != nil && len(mp.Items) > 0 {
+				kt := guessType(mp.Items[0].Key)
+				vt := guessType(mp.Items[0].Value)
+				return fmt.Sprintf("std::unordered_map<%s, %s>", kt, vt)
+			}
+		}
+		return "std::unordered_map<auto, auto>"
+	}
+	if e.Binary == nil || e.Binary.Left == nil || e.Binary.Left.Value == nil || e.Binary.Left.Value.Target == nil {
 		return "auto"
 	}
 	pf := e.Binary.Left.Value
-	if pf == nil || pf.Target == nil {
-		return "auto"
-	}
 	if lit := pf.Target.Lit; lit != nil {
 		if lit.Int != nil {
 			return "int"
