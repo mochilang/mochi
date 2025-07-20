@@ -1,3 +1,8 @@
+## Progress (2025-07-20 12:49 +0700)
+- Implemented short-circuit boolean evaluation using C's `&&`/`||`.
+- Added golden test `short_circuit`.
+- VM valid golden test results updated to 46/100
+
 ## Progress (2025-07-20 12:38 +0700)
 - Added map literal handling for `len()` and new golden test `len_map`.
 - VM valid golden test results updated to 45/100

@@ -939,6 +939,16 @@ func convertExpr(e *parser.Expr) Expr {
 		return nil
 	}
 	if bin, ok := operands[0].(*BinaryExpr); ok {
+		if bin.Op == "&&" {
+			if v, ok := evalInt(bin.Left); ok && v == 0 {
+				return &IntLit{Value: 0}
+			}
+		}
+		if bin.Op == "||" {
+			if v, ok := evalInt(bin.Left); ok && v != 0 {
+				return &IntLit{Value: 1}
+			}
+		}
 		if bin.Op == "+" {
 			if l, ok := bin.Left.(*StringLit); ok {
 				if r, ok2 := bin.Right.(*StringLit); ok2 {
