@@ -3,7 +3,7 @@
 This checklist is auto-generated.
 Generated C++ code for programs in `tests/vm/valid`. Each program has a `.cpp` file produced by the transpiler and a `.out` file containing its runtime output. Compilation or execution errors are captured in a `.error` file placed next to the source.
 
-## VM Golden Test Checklist (62/100)
+## VM Golden Test Checklist (64/100)
 - [x] append_builtin
 - [x] avg_builtin
 - [x] basic_compare
@@ -18,8 +18,8 @@ Generated C++ code for programs in `tests/vm/valid`. Each program has a `.cpp` f
 - [x] cross_join_filter
 - [x] cross_join_triple
 - [ ] dataset_sort_take_limit
-- [ ] dataset_where_filter
-- [ ] exists_builtin
+- [x] dataset_where_filter
+- [x] exists_builtin
 - [x] for_list_collection
 - [x] for_loop
 - [x] for_map_collection
