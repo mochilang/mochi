@@ -21,10 +21,7 @@ type Program struct {
 	Stmts []Stmt
 }
 
-// helperFuncs collects small helper function declarations that may be emitted
-// if needed by generated code.
-var helperFuncs []Stmt
-
+// TranspileEnv is used for type inference during conversion.
 var transpileEnv *types.Env
 
 type Stmt interface {
@@ -49,6 +46,24 @@ type FuncDecl struct {
 	ParamTypes []string
 	ReturnType string
 	Body       []Stmt
+}
+
+// TypeAlias represents `type Name = { ... }` declarations.
+type TypeAlias struct {
+	Name string
+	Type string
+}
+
+func (t *TypeAlias) emit(w io.Writer) {
+	io.WriteString(w, "type ")
+	io.WriteString(w, t.Name)
+	io.WriteString(w, " = ")
+	io.WriteString(w, t.Type)
+	if b, ok := w.(interface{ WriteByte(byte) error }); ok {
+		b.WriteByte(';')
+	} else {
+		io.WriteString(w, ";")
+	}
 }
 
 // IfStmt represents a conditional statement with an optional else branch.
@@ -1042,6 +1057,10 @@ func emitStmt(w *indentWriter, s Stmt, level int) {
 		io.WriteString(w, pad)
 		st.emit(w)
 		io.WriteString(w, "\n")
+	case *TypeAlias:
+		io.WriteString(w, pad)
+		st.emit(w)
+		io.WriteString(w, "\n")
 	case *AssignStmt:
 		io.WriteString(w, pad)
 		st.emit(w)
@@ -1237,7 +1256,11 @@ func convertStmt(s *parser.Statement) (Stmt, error) {
 		}
 		return &AssignStmt{Name: s.Assign.Name, Expr: val}, nil
 	case s.Type != nil:
-		return nil, nil
+		alias, err := convertTypeDecl(s.Type)
+		if err != nil {
+			return nil, err
+		}
+		return alias, nil
 	case s.ExternVar != nil:
 		return nil, nil
 	case s.ExternFun != nil:
@@ -1454,6 +1477,22 @@ func convertUpdate(u *parser.UpdateStmt, env *types.Env) (*UpdateStmt, error) {
 	}
 	transpileEnv = prev
 	return &UpdateStmt{Target: u.Target, Fields: fields, Values: values, Cond: cond}, nil
+}
+
+func convertTypeDecl(td *parser.TypeDecl) (Stmt, error) {
+	if len(td.Variants) > 0 {
+		return nil, fmt.Errorf("sum types not supported")
+	}
+	var parts []string
+	for _, m := range td.Members {
+		if m.Field == nil {
+			continue
+		}
+		ft := types.ResolveTypeRef(m.Field.Type, transpileEnv)
+		parts = append(parts, fmt.Sprintf("%s: %s", m.Field.Name, tsType(ft)))
+	}
+	typ := "{ " + strings.Join(parts, "; ") + " }"
+	return &TypeAlias{Name: td.Name, Type: typ}, nil
 }
 
 func convertStmtList(list []*parser.Statement) ([]Stmt, error) {
