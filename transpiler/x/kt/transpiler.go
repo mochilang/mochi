@@ -18,7 +18,13 @@ type Program struct {
 	Stmts []Stmt
 }
 
-type Stmt interface{ emit(io.Writer) }
+func indent(w io.Writer, n int) {
+	for i := 0; i < n; i++ {
+		io.WriteString(w, "    ")
+	}
+}
+
+type Stmt interface{ emit(io.Writer, int) }
 
 // IndexAssignStmt assigns to a[i] or m[key].
 type IndexAssignStmt struct {
@@ -26,7 +32,8 @@ type IndexAssignStmt struct {
 	Value  Expr
 }
 
-func (s *IndexAssignStmt) emit(w io.Writer) {
+func (s *IndexAssignStmt) emit(w io.Writer, indentLevel int) {
+	indent(w, indentLevel)
 	s.Target.emit(w)
 	io.WriteString(w, " = ")
 	s.Value.emit(w)
@@ -35,7 +42,8 @@ func (s *IndexAssignStmt) emit(w io.Writer) {
 // ReturnStmt is a return statement inside a function.
 type ReturnStmt struct{ Value Expr }
 
-func (s *ReturnStmt) emit(w io.Writer) {
+func (s *ReturnStmt) emit(w io.Writer, indentLevel int) {
+	indent(w, indentLevel)
 	io.WriteString(w, "return")
 	if s.Value != nil {
 		io.WriteString(w, " ")
@@ -51,7 +59,8 @@ type FuncDef struct {
 	Body   []Stmt
 }
 
-func (f *FuncDef) emit(w io.Writer) {
+func (f *FuncDef) emit(w io.Writer, indentLevel int) {
+	indent(w, indentLevel)
 	io.WriteString(w, "fun "+f.Name+"(")
 	for i, p := range f.Params {
 		if i > 0 {
@@ -65,12 +74,11 @@ func (f *FuncDef) emit(w io.Writer) {
 	}
 	io.WriteString(w, "): "+ret+" {\n")
 	for _, s := range f.Body {
-		io.WriteString(w, "    ")
-		s.emit(w)
+		s.emit(w, indentLevel+1)
 		io.WriteString(w, "\n")
 	}
-	io.WriteString(w, "}")
-	io.WriteString(w, "\n")
+	indent(w, indentLevel)
+	io.WriteString(w, "}\n")
 }
 
 type Expr interface{ emit(io.Writer) }
@@ -78,7 +86,10 @@ type Expr interface{ emit(io.Writer) }
 // ExprStmt is a statement that evaluates an expression.
 type ExprStmt struct{ Expr Expr }
 
-func (s *ExprStmt) emit(w io.Writer) { s.Expr.emit(w) }
+func (s *ExprStmt) emit(w io.Writer, indentLevel int) {
+	indent(w, indentLevel)
+	s.Expr.emit(w)
+}
 
 // CallExpr represents a function call.
 type CallExpr struct {
@@ -217,7 +228,8 @@ type LetStmt struct {
 	Value Expr
 }
 
-func (s *LetStmt) emit(w io.Writer) { // 'let' is immutable
+func (s *LetStmt) emit(w io.Writer, indentLevel int) { // 'let' is immutable
+	indent(w, indentLevel)
 	io.WriteString(w, "val "+s.Name)
 	if s.Type != "" {
 		io.WriteString(w, ": "+s.Type)
@@ -232,7 +244,8 @@ type VarStmt struct {
 	Value Expr
 }
 
-func (s *VarStmt) emit(w io.Writer) {
+func (s *VarStmt) emit(w io.Writer, indentLevel int) {
+	indent(w, indentLevel)
 	io.WriteString(w, "var "+s.Name)
 	if s.Type != "" {
 		io.WriteString(w, ": "+s.Type)
@@ -246,7 +259,8 @@ type AssignStmt struct {
 	Value Expr
 }
 
-func (s *AssignStmt) emit(w io.Writer) {
+func (s *AssignStmt) emit(w io.Writer, indentLevel int) {
+	indent(w, indentLevel)
 	io.WriteString(w, s.Name+" = ")
 	s.Value.emit(w)
 }
@@ -258,25 +272,26 @@ type IfStmt struct {
 	Else []Stmt
 }
 
-func (i *IfStmt) emit(w io.Writer) {
+func (i *IfStmt) emit(w io.Writer, indentLevel int) {
+	indent(w, indentLevel)
 	io.WriteString(w, "if (")
 	if i.Cond != nil {
 		i.Cond.emit(w)
 	}
 	io.WriteString(w, ") {\n")
 	for _, st := range i.Then {
-		io.WriteString(w, "    ")
-		st.emit(w)
+		st.emit(w, indentLevel+1)
 		io.WriteString(w, "\n")
 	}
+	indent(w, indentLevel)
 	io.WriteString(w, "}")
 	if len(i.Else) > 0 {
 		io.WriteString(w, " else {\n")
 		for _, st := range i.Else {
-			io.WriteString(w, "    ")
-			st.emit(w)
+			st.emit(w, indentLevel+1)
 			io.WriteString(w, "\n")
 		}
+		indent(w, indentLevel)
 		io.WriteString(w, "}")
 	}
 }
@@ -287,17 +302,18 @@ type WhileStmt struct {
 	Body []Stmt
 }
 
-func (ws *WhileStmt) emit(w io.Writer) {
+func (ws *WhileStmt) emit(w io.Writer, indentLevel int) {
+	indent(w, indentLevel)
 	io.WriteString(w, "while (")
 	if ws.Cond != nil {
 		ws.Cond.emit(w)
 	}
 	io.WriteString(w, ") {\n")
 	for _, st := range ws.Body {
-		io.WriteString(w, "    ")
-		st.emit(w)
+		st.emit(w, indentLevel+1)
 		io.WriteString(w, "\n")
 	}
+	indent(w, indentLevel)
 	io.WriteString(w, "}")
 }
 
@@ -309,7 +325,8 @@ type ForRangeStmt struct {
 	Body  []Stmt
 }
 
-func (fr *ForRangeStmt) emit(w io.Writer) {
+func (fr *ForRangeStmt) emit(w io.Writer, indentLevel int) {
+	indent(w, indentLevel)
 	io.WriteString(w, "for ("+fr.Name+" in ")
 	if fr.Start != nil {
 		fr.Start.emit(w)
@@ -320,10 +337,10 @@ func (fr *ForRangeStmt) emit(w io.Writer) {
 	}
 	io.WriteString(w, ") {\n")
 	for _, st := range fr.Body {
-		io.WriteString(w, "    ")
-		st.emit(w)
+		st.emit(w, indentLevel+1)
 		io.WriteString(w, "\n")
 	}
+	indent(w, indentLevel)
 	io.WriteString(w, "}")
 }
 
@@ -334,29 +351,36 @@ type ForEachStmt struct {
 	Body     []Stmt
 }
 
-func (fe *ForEachStmt) emit(w io.Writer) {
+func (fe *ForEachStmt) emit(w io.Writer, indentLevel int) {
+	indent(w, indentLevel)
 	io.WriteString(w, "for ("+fe.Name+" in ")
 	if fe.Iterable != nil {
 		fe.Iterable.emit(w)
 	}
 	io.WriteString(w, ") {\n")
 	for _, st := range fe.Body {
-		io.WriteString(w, "    ")
-		st.emit(w)
+		st.emit(w, indentLevel+1)
 		io.WriteString(w, "\n")
 	}
+	indent(w, indentLevel)
 	io.WriteString(w, "}")
 }
 
 // BreakStmt represents a break statement.
 type BreakStmt struct{}
 
-func (b *BreakStmt) emit(w io.Writer) { io.WriteString(w, "break") }
+func (b *BreakStmt) emit(w io.Writer, indentLevel int) {
+	indent(w, indentLevel)
+	io.WriteString(w, "break")
+}
 
 // ContinueStmt represents a continue statement.
 type ContinueStmt struct{}
 
-func (c *ContinueStmt) emit(w io.Writer) { io.WriteString(w, "continue") }
+func (c *ContinueStmt) emit(w io.Writer, indentLevel int) {
+	indent(w, indentLevel)
+	io.WriteString(w, "continue")
+}
 
 // IfExpr is a conditional expression using Kotlin's `if`.
 type IfExpr struct {
@@ -1208,13 +1232,12 @@ func convertPrimary(env *types.Env, p *parser.Primary) (Expr, error) {
 func Emit(prog *Program) []byte {
 	var buf bytes.Buffer
 	for _, f := range prog.Funcs {
-		f.emit(&buf)
+		f.emit(&buf, 0)
 		buf.WriteString("\n")
 	}
 	buf.WriteString("fun main() {\n")
 	for _, s := range prog.Stmts {
-		buf.WriteString("    ")
-		s.emit(&buf)
+		s.emit(&buf, 1)
 		buf.WriteString("\n")
 	}
 	buf.WriteString("}\n")
