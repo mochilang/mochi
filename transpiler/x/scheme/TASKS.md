@@ -1,3 +1,8 @@
+## Progress (2025-07-20 10:18 +0700)
+- Removed bool to int conversion; booleans now print as `#t`/`#f`.
+- Added typed default values for `int`, `bool` and `string`.
+- Updated golden files and README checklist (34/100 passing).
+
 ## Progress (2025-07-20 09:22 +0700)
 - Generated Scheme for 32/100 programs
 - Updated README checklist and outputs

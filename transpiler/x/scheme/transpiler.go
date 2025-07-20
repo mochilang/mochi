@@ -95,6 +95,22 @@ func header() []byte {
 
 func voidSym() Node { return &List{Elems: []Node{Symbol("quote"), Symbol("nil")}} }
 
+func typedDefault(t *parser.TypeRef) Node {
+	if t == nil || t.Simple == nil {
+		return voidSym()
+	}
+	switch *t.Simple {
+	case "int":
+		return IntLit(0)
+	case "bool":
+		return BoolLit(false)
+	case "string":
+		return StringLit("")
+	default:
+		return voidSym()
+	}
+}
+
 func convertStmts(stmts []*parser.Statement) ([]Node, error) {
 	var forms []Node
 	for _, st := range stmts {
@@ -203,9 +219,6 @@ func convertStmt(st *parser.Statement) (Node, error) {
 			if err != nil {
 				return nil, err
 			}
-			if isBoolParserExpr(argExpr) {
-				arg = boolToInt(arg)
-			}
 			return &List{Elems: []Node{Symbol("begin"), &List{Elems: []Node{Symbol("display"), arg}}, &List{Elems: []Node{Symbol("newline")}}}}, nil
 		}
 		return nil, fmt.Errorf("unsupported expression statement")
@@ -219,7 +232,7 @@ func convertStmt(st *parser.Statement) (Node, error) {
 				return nil, err
 			}
 		} else if st.Let.Type != nil {
-			val = voidSym()
+			val = typedDefault(st.Let.Type)
 		} else {
 			val = voidSym()
 		}
@@ -234,7 +247,7 @@ func convertStmt(st *parser.Statement) (Node, error) {
 				return nil, err
 			}
 		} else if st.Var.Type != nil {
-			val = voidSym()
+			val = typedDefault(st.Var.Type)
 		} else {
 			val = voidSym()
 		}
@@ -275,10 +288,6 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 		}
 	}
 	return p, nil
-}
-
-func boolToInt(expr Node) Node {
-	return &List{Elems: []Node{Symbol("if"), expr, IntLit(1), IntLit(0)}}
 }
 
 func convertParserExpr(e *parser.Expr) (Node, error) {
@@ -517,23 +526,6 @@ func precedence(op string) int {
 		return 5
 	default:
 		return 0
-	}
-}
-
-func isBoolParserExpr(e *parser.Expr) bool {
-	if e == nil || e.Binary == nil {
-		return false
-	}
-	if len(e.Binary.Right) == 0 {
-		p := e.Binary.Left.Value.Target
-		return p != nil && p.Lit != nil && p.Lit.Bool != nil
-	}
-	op := e.Binary.Right[0].Op
-	switch op {
-	case "==", "!=", "<", "<=", ">", ">=", "&&", "||", "in":
-		return true
-	default:
-		return false
 	}
 }
 
