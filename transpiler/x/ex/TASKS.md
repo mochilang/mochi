@@ -1,3 +1,6 @@
+## Progress (2025-07-20 09:12 +0700)
+- VM valid golden test results updated
+
 ## Progress (2025-07-19 14:24 +0000)
 - Added nested map assignment and multi-arg `print` support.
 - Generated golden outputs for `map_literal_dynamic` and `map_nested_assign`.
