@@ -1,4 +1,4 @@
-## Progress (2025-07-20 09:03 GMT+7)
-- 44/100 VM tests passing
-- Added readable builtins and string method calls
+## Progress (2025-07-20 09:12 GMT+7)
+- 53/100 VM tests passing
+- Added map literals and index assignments
 
