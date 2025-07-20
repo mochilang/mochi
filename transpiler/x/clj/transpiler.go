@@ -1237,6 +1237,14 @@ func castNode(n Node, t *parser.TypeRef) (Node, error) {
 	}
 	if transpileEnv != nil {
 		if _, ok := transpileEnv.GetStruct(*t.Simple); ok {
+			if m, ok2 := n.(*Map); ok2 {
+				for i, kv := range m.Pairs {
+					switch k := kv[0].(type) {
+					case StringLit:
+						m.Pairs[i][0] = Keyword(string(k))
+					}
+				}
+			}
 			// structs have the same runtime representation as maps
 			return n, nil
 		}
