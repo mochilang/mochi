@@ -102,7 +102,7 @@ type IndexExpr struct {
 	Index  Expr
 }
 
-// MapLit represents a simple map literal using std::unordered_map.
+// MapLit represents a simple map literal using std::map.
 type MapLit struct {
 	Keys      []Expr
 	Values    []Expr
@@ -190,6 +190,7 @@ type ForStmt struct {
 	Var        string
 	Start, End Expr
 	Body       []Stmt
+	IsMap      bool
 }
 
 type IfStmt struct {
@@ -352,7 +353,7 @@ func (l *ListLit) emit(w io.Writer) {
 }
 
 func (m *MapLit) emit(w io.Writer) {
-	fmt.Fprintf(w, "std::unordered_map<%s, %s>{", m.KeyType, m.ValueType)
+	fmt.Fprintf(w, "std::map<%s, %s>{", m.KeyType, m.ValueType)
 	for i := range m.Keys {
 		if i > 0 {
 			io.WriteString(w, ", ")
@@ -621,11 +622,23 @@ func (f *ForStmt) emit(w io.Writer, indent int) {
 		io.WriteString(w, "    ")
 	}
 	if f.End == nil {
-		io.WriteString(w, "for (auto ")
-		io.WriteString(w, f.Var)
-		io.WriteString(w, " : ")
-		f.Start.emit(w)
-		io.WriteString(w, ") {\n")
+		if f.IsMap {
+			io.WriteString(w, "for (const auto& __p : ")
+			f.Start.emit(w)
+			io.WriteString(w, ") {\n")
+			for i := 0; i < indent+1; i++ {
+				io.WriteString(w, "    ")
+			}
+			io.WriteString(w, "auto ")
+			io.WriteString(w, f.Var)
+			io.WriteString(w, " = __p.first;\n")
+		} else {
+			io.WriteString(w, "for (auto ")
+			io.WriteString(w, f.Var)
+			io.WriteString(w, " : ")
+			f.Start.emit(w)
+			io.WriteString(w, ") {\n")
+		}
 	} else {
 		io.WriteString(w, "for (int ")
 		io.WriteString(w, f.Var)
@@ -790,6 +803,13 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 				}
 			}
 			fs := &ForStmt{Var: stmt.For.Name, Start: start, End: end}
+			if currentEnv != nil {
+				if t := types.TypeOfExpr(stmt.For.Source, currentEnv); t != nil {
+					if _, ok := t.(types.MapType); ok {
+						fs.IsMap = true
+					}
+				}
+			}
 			for _, s := range stmt.For.Body {
 				st, err := convertStmt(s)
 				if err != nil {
@@ -1217,7 +1237,7 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 		return &ListLit{Elems: elems}, nil
 	case p.Map != nil:
 		if currentProgram != nil {
-			currentProgram.addInclude("<unordered_map>")
+			currentProgram.addInclude("<map>")
 		}
 		if len(p.Map.Items) == 0 {
 			return &MapLit{KeyType: "auto", ValueType: "auto"}, nil
@@ -1328,7 +1348,7 @@ func cppTypeFrom(tp types.Type) string {
 	case types.ListType:
 		return fmt.Sprintf("std::vector<%s>", cppTypeFrom(t.Elem))
 	case types.MapType:
-		return fmt.Sprintf("std::unordered_map<%s, %s>", cppTypeFrom(t.Key), cppTypeFrom(t.Value))
+		return fmt.Sprintf("std::map<%s, %s>", cppTypeFrom(t.Key), cppTypeFrom(t.Value))
 	default:
 		return "auto"
 	}
@@ -1369,10 +1389,10 @@ func guessType(e *parser.Expr) string {
 			if mp := e.Binary.Left.Value.Target.Map; mp != nil && len(mp.Items) > 0 {
 				kt := guessType(mp.Items[0].Key)
 				vt := guessType(mp.Items[0].Value)
-				return fmt.Sprintf("std::unordered_map<%s, %s>", kt, vt)
+				return fmt.Sprintf("std::map<%s, %s>", kt, vt)
 			}
 		}
-		return "std::unordered_map<auto, auto>"
+		return "std::map<auto, auto>"
 	}
 	if e.Binary == nil || e.Binary.Left == nil || e.Binary.Left.Value == nil || e.Binary.Left.Value.Target == nil {
 		return "auto"
@@ -1396,7 +1416,7 @@ func guessType(e *parser.Expr) string {
 	if mp := pf.Target.Map; mp != nil && len(mp.Items) > 0 {
 		kt := guessType(mp.Items[0].Key)
 		vt := guessType(mp.Items[0].Value)
-		return fmt.Sprintf("std::unordered_map<%s, %s>", kt, vt)
+		return fmt.Sprintf("std::map<%s, %s>", kt, vt)
 	}
 	return "auto"
 }
