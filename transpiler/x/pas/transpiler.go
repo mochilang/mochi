@@ -1167,6 +1167,13 @@ func buildQuery(env *types.Env, q *parser.QueryExpr, varName string, varTypes ma
 	stmts := []Stmt{&AssignStmt{Name: varName, Expr: &ListLit{}}}
 	appendExpr := &AssignStmt{Name: varName, Expr: &CallExpr{Name: "concat", Args: []Expr{&VarRef{Name: varName}, &ListLit{Elems: []Expr{sel}}}}}
 	body := []Stmt{appendExpr}
+	if q.Where != nil {
+		cond, err := convertExpr(env, q.Where)
+		if err != nil {
+			return nil, "", err
+		}
+		body = []Stmt{&IfStmt{Cond: cond, Then: body}}
+	}
 	for i := len(loops) - 1; i >= 0; i-- {
 		body = []Stmt{&ForEachStmt{Name: loops[i].name, Iterable: loops[i].src, Body: body}}
 	}

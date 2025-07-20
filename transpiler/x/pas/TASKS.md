@@ -1,3 +1,6 @@
+## Progress (2025-07-20 15:21 UTC)
+- pascal: support query filtering (progress 46/100)
+
 ## Progress (2025-07-20 17:38 +0700)
 - fmt (progress 45/100)
 
