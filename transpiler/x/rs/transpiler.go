@@ -649,14 +649,16 @@ func (m *MatchExpr) emit(w io.Writer) {
 }
 
 type queryFrom struct {
-	Var string
-	Src Expr
+	Var   string
+	Src   Expr
+	ByRef bool
 }
 
 // QueryExpr represents a simple from/select query expression.
 type QueryExpr struct {
 	Var      string
 	Src      Expr
+	VarByRef bool
 	Froms    []queryFrom
 	Where    Expr
 	Select   Expr
@@ -668,12 +670,18 @@ func (q *QueryExpr) emit(w io.Writer) {
 	io.WriteString(w, "for ")
 	io.WriteString(w, q.Var)
 	io.WriteString(w, " in ")
+	if q.VarByRef {
+		io.WriteString(w, "&")
+	}
 	q.Src.emit(w)
 	io.WriteString(w, " {")
 	for _, f := range q.Froms {
 		io.WriteString(w, " for ")
 		io.WriteString(w, f.Var)
 		io.WriteString(w, " in ")
+		if f.ByRef {
+			io.WriteString(w, "&")
+		}
 		f.Src.emit(w)
 		io.WriteString(w, " {")
 	}
@@ -703,10 +711,11 @@ type IfStmt struct {
 
 // ForStmt represents `for x in iter {}` or a range loop.
 type ForStmt struct {
-	Var  string
-	Iter Expr
-	End  Expr // nil unless range loop
-	Body []Stmt
+	Var   string
+	Iter  Expr
+	End   Expr // nil unless range loop
+	Body  []Stmt
+	ByRef bool
 }
 
 func (i *IfStmt) emit(w io.Writer) {}
@@ -821,6 +830,14 @@ func compileStmt(stmt *parser.Statement) (Stmt, error) {
 		if typ != "" {
 			if typ == "String" {
 				e = &StringCastExpr{Expr: e}
+			} else if typ == "Vec<String>" {
+				if ll, ok := e.(*ListLit); ok {
+					for i, el := range ll.Elems {
+						if _, ok := el.(*StringLit); ok {
+							ll.Elems[i] = &StringCastExpr{Expr: el}
+						}
+					}
+				}
 			}
 			varTypes[stmt.Let.Name] = typ
 		}
@@ -885,6 +902,14 @@ func compileStmt(stmt *parser.Statement) (Stmt, error) {
 		if typ != "" {
 			if typ == "String" {
 				e = &StringCastExpr{Expr: e}
+			} else if typ == "Vec<String>" {
+				if ll, ok := e.(*ListLit); ok {
+					for i, el := range ll.Elems {
+						if _, ok := el.(*StringLit); ok {
+							ll.Elems[i] = &StringCastExpr{Expr: el}
+						}
+					}
+				}
 			}
 			varTypes[stmt.Var.Name] = typ
 		}
@@ -1001,6 +1026,15 @@ func compileForStmt(n *parser.ForStmt) (Stmt, error) {
 	if err != nil {
 		return nil, err
 	}
+	byRef := false
+	if t := inferType(iter); strings.HasPrefix(t, "Vec<") {
+		elem := strings.TrimSuffix(strings.TrimPrefix(t, "Vec<"), ">")
+		if elem == "String" || strings.HasPrefix(elem, "Vec<") || strings.HasPrefix(elem, "HashMap<") {
+			byRef = true
+		} else if _, ok := structTypes[elem]; ok {
+			byRef = true
+		}
+	}
 	var end Expr
 	if n.RangeEnd != nil {
 		end, err = compileExpr(n.RangeEnd)
@@ -1018,7 +1052,7 @@ func compileForStmt(n *parser.ForStmt) (Stmt, error) {
 			body = append(body, cs)
 		}
 	}
-	return &ForStmt{Var: n.Name, Iter: iter, End: end, Body: body}, nil
+	return &ForStmt{Var: n.Name, Iter: iter, End: end, Body: body, ByRef: byRef}, nil
 }
 
 func compileFunStmt(fn *parser.FunStmt) (Stmt, error) {
@@ -1511,6 +1545,15 @@ func compileQueryExpr(q *parser.QueryExpr) (Expr, error) {
 	if err != nil {
 		return nil, err
 	}
+	varByRef := false
+	if t := inferType(src); strings.HasPrefix(t, "Vec<") {
+		elem := strings.TrimSuffix(strings.TrimPrefix(t, "Vec<"), ">")
+		if elem == "String" || strings.HasPrefix(elem, "Vec<") || strings.HasPrefix(elem, "HashMap<") {
+			varByRef = true
+		} else if _, ok := structTypes[elem]; ok {
+			varByRef = true
+		}
+	}
 	srcT := types.ExprType(q.Source, curEnv)
 	var elemT types.Type = types.AnyType{}
 	if lt, ok := srcT.(types.ListType); ok {
@@ -1532,7 +1575,12 @@ func compileQueryExpr(q *parser.QueryExpr) (Expr, error) {
 		}
 		child.SetVar(f.Var, felem, true)
 		varTypes[f.Var] = rustTypeFromType(felem)
-		froms[i] = queryFrom{Var: f.Var, Src: fe}
+		byRef := false
+		et := rustTypeFromType(felem)
+		if et != "i64" && et != "bool" && et != "" {
+			byRef = true
+		}
+		froms[i] = queryFrom{Var: f.Var, Src: fe, ByRef: byRef}
 	}
 	var where Expr
 	if q.Where != nil {
@@ -1567,7 +1615,7 @@ func compileQueryExpr(q *parser.QueryExpr) (Expr, error) {
 			itemType = t
 		}
 	}
-	return &QueryExpr{Var: q.Var, Src: src, Froms: froms, Where: where, Select: sel, ItemType: itemType}, nil
+	return &QueryExpr{Var: q.Var, Src: src, VarByRef: varByRef, Froms: froms, Where: where, Select: sel, ItemType: itemType}, nil
 }
 
 func compileExprWithEnv(e *parser.Expr, env *types.Env) (Expr, error) {
@@ -1906,6 +1954,9 @@ func writeForStmt(buf *bytes.Buffer, s *ForStmt, indent int) {
 		buf.WriteString("..")
 		s.End.emit(buf)
 	} else {
+		if s.ByRef {
+			buf.WriteString("&")
+		}
 		s.Iter.emit(buf)
 	}
 	buf.WriteString(" {\n")
