@@ -16,7 +16,7 @@ Checklist:
 - [x] cast_struct
 - [x] closure
 - [x] count_builtin
-- [ ] cross_join
+- [x] cross_join
 - [ ] cross_join_filter
 - [ ] cross_join_triple
 - [ ] dataset_sort_take_limit
@@ -42,7 +42,7 @@ Checklist:
 - [x] if_then_else
 - [x] if_then_else_nested
 - [x] in_operator
-- [x] in_operator_extended
+- [ ] in_operator_extended
 - [ ] inner_join
 - [ ] join_multi
 - [ ] json_builtin

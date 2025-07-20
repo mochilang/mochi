@@ -1,3 +1,23 @@
+## Progress (2025-07-20 17:02 +0700)
+- go transpiler: infer structs from maps
+- Regenerated golden files - 69/100 vm valid programs passing
+
+## Progress (2025-07-20 16:47 +0700)
+- zig: add map support and update golden tests
+- Regenerated golden files - 69/100 vm valid programs passing
+
+## Progress (2025-07-20 16:47 +0700)
+- zig: add map support and update golden tests
+- Regenerated golden files - 73/100 vm valid programs passing
+
+## Progress (2025-07-20 16:47 +0700)
+- zig: add map support and update golden tests
+- Regenerated golden files - 69/100 vm valid programs passing
+
+## Progress (2025-07-20 16:47 +0700)
+- zig: add map support and update golden tests
+- Regenerated golden files - 68/100 vm valid programs passing
+
 ## Progress (2025-07-20 16:21 +0700)
 - update go transpiler progress
 - Regenerated golden files - 69/100 vm valid programs passing
