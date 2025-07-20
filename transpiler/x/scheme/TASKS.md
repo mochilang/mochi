@@ -1,3 +1,7 @@
+## Progress (2025-07-20 13:26 +0700)
+- Generated Scheme for 37/100 programs
+- Updated README checklist and outputs
+
 ## Progress (2025-07-20 12:19 +0700)
 - Added inexact division and improved avg builtin
 - Updated golden files for avg_builtin and math_ops (25/100 passing)
