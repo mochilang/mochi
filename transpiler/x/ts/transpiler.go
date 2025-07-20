@@ -290,9 +290,18 @@ type QueryLoop struct {
 	Source Expr
 }
 
+// JoinSpec represents a join clause inside a query.
+type JoinSpec struct {
+	Name   string
+	Source Expr
+	Side   string // "", "left", "right", "outer"
+	On     Expr
+}
+
 // QueryExprJS represents a simplified query comprehension.
 type QueryExprJS struct {
 	Loops  []QueryLoop
+	Joins  []JoinSpec
 	Where  Expr
 	Sort   Expr
 	Skip   Expr
@@ -686,79 +695,225 @@ func (e *IfExpr) emit(w io.Writer) {
 func (q *QueryExprJS) emit(w io.Writer) {
 	iw := &indentWriter{w: w, indent: "  "}
 	io.WriteString(iw, "(() => {\n")
-	io.WriteString(iw, "  const result = []\n")
-	var emitLoops func(int, int)
-	emitLoops = func(idx, level int) {
-		if idx >= len(q.Loops) {
-			if q.Where != nil {
+	if len(q.Joins) == 0 && len(q.Loops) <= 1 {
+		io.WriteString(iw, "  const result = []\n")
+		var emitLoops func(int, int)
+		emitLoops = func(idx, level int) {
+			if idx >= len(q.Loops) {
+				if q.Where != nil {
+					io.WriteString(iw, strings.Repeat(iw.indent, level))
+					io.WriteString(iw, "if (")
+					q.Where.emit(iw)
+					io.WriteString(iw, ") {\n")
+					level++
+				}
 				io.WriteString(iw, strings.Repeat(iw.indent, level))
-				io.WriteString(iw, "if (")
-				q.Where.emit(iw)
-				io.WriteString(iw, ") {\n")
-				level++
+				if q.Sort != nil {
+					io.WriteString(iw, "result.push({k: ")
+					q.Sort.emit(iw)
+					io.WriteString(iw, ", v: ")
+					q.Select.emit(iw)
+					io.WriteString(iw, "})\n")
+				} else {
+					io.WriteString(iw, "result.push(")
+					q.Select.emit(iw)
+					io.WriteString(iw, ")\n")
+				}
+				if q.Where != nil {
+					level--
+					io.WriteString(iw, strings.Repeat(iw.indent, level))
+					io.WriteString(iw, "}\n")
+				}
+				return
 			}
+			loop := q.Loops[idx]
 			io.WriteString(iw, strings.Repeat(iw.indent, level))
-			if q.Sort != nil {
-				io.WriteString(iw, "result.push({k: ")
-				q.Sort.emit(iw)
-				io.WriteString(iw, ", v: ")
-				q.Select.emit(iw)
-				io.WriteString(iw, "})\n")
-			} else {
-				io.WriteString(iw, "result.push(")
-				q.Select.emit(iw)
-				io.WriteString(iw, ")\n")
-			}
-			if q.Where != nil {
-				level--
-				io.WriteString(iw, strings.Repeat(iw.indent, level))
-				io.WriteString(iw, "}\n")
-			}
-			return
+			io.WriteString(iw, "for (const ")
+			io.WriteString(iw, loop.Name)
+			io.WriteString(iw, " of ")
+			loop.Source.emit(iw)
+			io.WriteString(iw, ") {\n")
+			emitLoops(idx+1, level+1)
+			io.WriteString(iw, strings.Repeat(iw.indent, level))
+			io.WriteString(iw, "}\n")
 		}
-		loop := q.Loops[idx]
-		io.WriteString(iw, strings.Repeat(iw.indent, level))
-		io.WriteString(iw, "for (const ")
-		io.WriteString(iw, loop.Name)
-		io.WriteString(iw, " of ")
-		loop.Source.emit(iw)
-		io.WriteString(iw, ") {\n")
-		emitLoops(idx+1, level+1)
-		io.WriteString(iw, strings.Repeat(iw.indent, level))
-		io.WriteString(iw, "}\n")
-	}
-	emitLoops(0, 1)
-	if q.Sort != nil {
-		io.WriteString(iw, "  result.sort((a, b) => {")
-		io.WriteString(iw, "const ak = JSON.stringify(a.k); const bk = JSON.stringify(b.k);")
-		io.WriteString(iw, " return ak < bk ? -1 : ak > bk ? 1 : 0})\n")
-		io.WriteString(iw, "  const out = result.map(r => r.v)\n")
-	} else {
-		io.WriteString(iw, "  const out = result\n")
-	}
-	if q.Skip != nil || q.Take != nil {
-		io.WriteString(iw, "  return out.slice(")
-		if q.Skip != nil {
-			q.Skip.emit(iw)
+		emitLoops(0, 1)
+		if q.Sort != nil {
+			io.WriteString(iw, "  result.sort((a, b) => {")
+			io.WriteString(iw, "const ak = JSON.stringify(a.k); const bk = JSON.stringify(b.k);")
+			io.WriteString(iw, " return ak < bk ? -1 : ak > bk ? 1 : 0})\n")
+			io.WriteString(iw, "  const out = result.map(r => r.v)\n")
 		} else {
-			io.WriteString(iw, "0")
+			io.WriteString(iw, "  const out = result\n")
 		}
-		if q.Take != nil {
-			io.WriteString(iw, ", ")
+		if q.Skip != nil || q.Take != nil {
+			io.WriteString(iw, "  return out.slice(")
 			if q.Skip != nil {
-				io.WriteString(iw, "(")
 				q.Skip.emit(iw)
-				io.WriteString(iw, " + ")
-				q.Take.emit(iw)
-				io.WriteString(iw, ")")
 			} else {
-				q.Take.emit(iw)
+				io.WriteString(iw, "0")
 			}
+			if q.Take != nil {
+				io.WriteString(iw, ", ")
+				if q.Skip != nil {
+					io.WriteString(iw, "(")
+					q.Skip.emit(iw)
+					io.WriteString(iw, " + ")
+					q.Take.emit(iw)
+					io.WriteString(iw, ")")
+				} else {
+					q.Take.emit(iw)
+				}
+			}
+			io.WriteString(iw, ")\n")
+		} else {
+			io.WriteString(iw, "  return out\n")
+		}
+		io.WriteString(iw, "})()")
+		return
+	}
+
+	// generic join-based implementation
+	io.WriteString(iw, "  const _join = (items, arr, on, left, right) => {\n")
+	io.WriteString(iw, "    const joined = [];\n")
+	io.WriteString(iw, "    if (right && left) {\n")
+	io.WriteString(iw, "      const matched = new Array(arr.length).fill(false);\n")
+	io.WriteString(iw, "      for (const leftIt of items) {\n")
+	io.WriteString(iw, "        let m = false;\n")
+	io.WriteString(iw, "        for (let ri=0; ri < arr.length; ri++) {\n")
+	io.WriteString(iw, "          const rightIt = arr[ri];\n")
+	io.WriteString(iw, "          let keep = true;\n")
+	io.WriteString(iw, "          if (on) keep = on(...leftIt, rightIt);\n")
+	io.WriteString(iw, "          if (!keep) continue;\n")
+	io.WriteString(iw, "          m = true; matched[ri] = true;\n")
+	io.WriteString(iw, "          joined.push([...leftIt, rightIt]);\n")
+	io.WriteString(iw, "        }\n")
+	io.WriteString(iw, "        if (!m) joined.push([...leftIt, null]);\n")
+	io.WriteString(iw, "      }\n")
+	io.WriteString(iw, "      for (let ri=0; ri < arr.length; ri++) {\n")
+	io.WriteString(iw, "        if (!matched[ri]) {\n")
+	io.WriteString(iw, "          const undef = Array(items[0]?.length || 0).fill(null);\n")
+	io.WriteString(iw, "          joined.push([...undef, arr[ri]]);\n")
+	io.WriteString(iw, "        }\n")
+	io.WriteString(iw, "      }\n")
+	io.WriteString(iw, "    } else if (right) {\n")
+	io.WriteString(iw, "      for (const rightIt of arr) {\n")
+	io.WriteString(iw, "        let m = false;\n")
+	io.WriteString(iw, "        for (const leftIt of items) {\n")
+	io.WriteString(iw, "          let keep = true;\n")
+	io.WriteString(iw, "          if (on) keep = on(...leftIt, rightIt);\n")
+	io.WriteString(iw, "          if (!keep) continue;\n")
+	io.WriteString(iw, "          m = true; joined.push([...leftIt, rightIt]);\n")
+	io.WriteString(iw, "        }\n")
+	io.WriteString(iw, "        if (!m) {\n")
+	io.WriteString(iw, "          const undef = Array(items[0]?.length || 0).fill(null);\n")
+	io.WriteString(iw, "          joined.push([...undef, rightIt]);\n")
+	io.WriteString(iw, "        }\n")
+	io.WriteString(iw, "      }\n")
+	io.WriteString(iw, "    } else {\n")
+	io.WriteString(iw, "      for (const leftIt of items) {\n")
+	io.WriteString(iw, "        let m = false;\n")
+	io.WriteString(iw, "        for (const rightIt of arr) {\n")
+	io.WriteString(iw, "          let keep = true;\n")
+	io.WriteString(iw, "          if (on) keep = on(...leftIt, rightIt);\n")
+	io.WriteString(iw, "          if (!keep) continue;\n")
+	io.WriteString(iw, "          m = true; joined.push([...leftIt, rightIt]);\n")
+	io.WriteString(iw, "        }\n")
+	io.WriteString(iw, "        if (left && !m) joined.push([...leftIt, null]);\n")
+	io.WriteString(iw, "      }\n")
+	io.WriteString(iw, "    }\n")
+	io.WriteString(iw, "    return joined;\n")
+	io.WriteString(iw, "  }\n")
+
+	io.WriteString(iw, "  let _items = ")
+	if len(q.Loops) > 0 {
+		q.Loops[0].Source.emit(iw)
+	} else {
+		io.WriteString(iw, "[]")
+	}
+	io.WriteString(iw, ".map(v => [v])\n")
+
+	names := []string{}
+	if len(q.Loops) > 0 {
+		names = append(names, q.Loops[0].Name)
+	}
+	for i := 1; i < len(q.Loops); i++ {
+		j := q.Loops[i]
+		io.WriteString(iw, "  _items = _join(_items, ")
+		j.Source.emit(iw)
+		io.WriteString(iw, ", null, false, false)\n")
+		names = append(names, j.Name)
+	}
+	for _, j := range q.Joins {
+		io.WriteString(iw, "  _items = _join(_items, ")
+		j.Source.emit(iw)
+		io.WriteString(iw, ", (")
+		params := append(append([]string{}, names...), j.Name)
+		io.WriteString(iw, strings.Join(params, ", "))
+		io.WriteString(iw, ") => (")
+		if j.On != nil {
+			j.On.emit(iw)
+		} else {
+			io.WriteString(iw, "true")
+		}
+		io.WriteString(iw, "), ")
+		if j.Side == "left" || j.Side == "outer" {
+			io.WriteString(iw, "true, ")
+		} else {
+			io.WriteString(iw, "false, ")
+		}
+		if j.Side == "right" || j.Side == "outer" {
+			io.WriteString(iw, "true")
+		} else {
+			io.WriteString(iw, "false")
 		}
 		io.WriteString(iw, ")\n")
-	} else {
-		io.WriteString(iw, "  return out\n")
+		names = append(names, j.Name)
 	}
+
+	if q.Where != nil || q.Sort != nil || q.Skip != nil || q.Take != nil || len(names) > 0 {
+		io.WriteString(iw, "  let _rows = _items\n")
+	} else {
+		io.WriteString(iw, "  let _rows = _items\n")
+	}
+
+	if q.Where != nil {
+		io.WriteString(iw, "  _rows = _rows.filter(r => { const [")
+		io.WriteString(iw, strings.Join(names, ", "))
+		io.WriteString(iw, "] = r; return ")
+		q.Where.emit(iw)
+		io.WriteString(iw, " })\n")
+	}
+
+	if q.Sort != nil {
+		io.WriteString(iw, "  { const _pairs = _rows.map(r => { const [")
+		io.WriteString(iw, strings.Join(names, ", "))
+		io.WriteString(iw, "] = r; return {item: r, key: ")
+		q.Sort.emit(iw)
+		io.WriteString(iw, "} });\n")
+		io.WriteString(iw, "    _pairs.sort((a,b)=>{const ak=JSON.stringify(a.key);const bk=JSON.stringify(b.key);return ak<bk?-1:ak>bk?1:0});\n")
+		io.WriteString(iw, "    _rows = _pairs.map(p=>p.item); }\n")
+	}
+
+	if q.Skip != nil {
+		io.WriteString(iw, "  { const n = ")
+		q.Skip.emit(iw)
+		io.WriteString(iw, "; _rows = n < _rows.length ? _rows.slice(n) : []; }\n")
+	}
+
+	if q.Take != nil {
+		io.WriteString(iw, "  { const n = ")
+		q.Take.emit(iw)
+		io.WriteString(iw, "; if (n < _rows.length) _rows = _rows.slice(0, n); }\n")
+	}
+
+	io.WriteString(iw, "  const result = []\n")
+	io.WriteString(iw, "  for (const r of _rows) { const [")
+	io.WriteString(iw, strings.Join(names, ", "))
+	io.WriteString(iw, "] = r; result.push(")
+	q.Select.emit(iw)
+	io.WriteString(iw, ") }\n")
+	io.WriteString(iw, "  return result\n")
 	io.WriteString(iw, "})()")
 }
 
@@ -1562,6 +1717,22 @@ func convertQueryExpr(q *parser.QueryExpr) (Expr, error) {
 		}
 		loops = append(loops, QueryLoop{Name: f.Var, Source: src})
 	}
+	joins := make([]JoinSpec, 0, len(q.Joins))
+	for _, j := range q.Joins {
+		src, err := convertExpr(j.Src)
+		if err != nil {
+			return nil, err
+		}
+		on, err := convertExpr(j.On)
+		if err != nil {
+			return nil, err
+		}
+		side := ""
+		if j.Side != nil {
+			side = *j.Side
+		}
+		joins = append(joins, JoinSpec{Name: j.Var, Source: src, Side: side, On: on})
+	}
 	var where Expr
 	if q.Where != nil {
 		where, err = convertExpr(q.Where)
@@ -1613,7 +1784,7 @@ func convertQueryExpr(q *parser.QueryExpr) (Expr, error) {
 			}
 		}
 	}
-	return &QueryExprJS{Loops: loops, Where: where, Sort: sort, Skip: skip, Take: take, Select: sel}, nil
+	return &QueryExprJS{Loops: loops, Joins: joins, Where: where, Sort: sort, Skip: skip, Take: take, Select: sel}, nil
 }
 
 func applyIndexOps(base Expr, ops []*parser.IndexOp) (Expr, error) {
