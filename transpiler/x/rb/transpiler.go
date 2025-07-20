@@ -22,6 +22,8 @@ type Program struct {
 	Stmts []Stmt
 }
 
+var needsJSON bool
+
 // emitter maintains the current indentation level while emitting Ruby code.
 type emitter struct {
 	w      io.Writer
@@ -63,6 +65,35 @@ func (b *BreakStmt) emit(e *emitter) { io.WriteString(e.w, "break") }
 type ContinueStmt struct{}
 
 func (c *ContinueStmt) emit(e *emitter) { io.WriteString(e.w, "next") }
+
+// AssertStmt represents an expectation assertion.
+type AssertStmt struct{ Expr Expr }
+
+func (a *AssertStmt) emit(e *emitter) {
+	io.WriteString(e.w, "raise 'assertion failed' unless ")
+	a.Expr.emit(e)
+}
+
+// CommentStmt represents a standalone comment.
+type CommentStmt struct{ Text string }
+
+func (cmt *CommentStmt) emit(e *emitter) {
+	io.WriteString(e.w, "# ")
+	io.WriteString(e.w, cmt.Text)
+}
+
+// BlockStmt is a sequence of statements.
+type BlockStmt struct{ Stmts []Stmt }
+
+func (b *BlockStmt) emit(e *emitter) {
+	for i, st := range b.Stmts {
+		if i > 0 {
+			e.nl()
+			e.writeIndent()
+		}
+		st.emit(e)
+	}
+}
 
 // FuncStmt represents a function definition.
 type FuncStmt struct {
@@ -708,6 +739,103 @@ func zeroValueExpr(t types.Type) Expr {
 	}
 }
 
+func isSimpleIdent(e *parser.Expr) (string, bool) {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) > 0 {
+		return "", false
+	}
+	u := e.Binary.Left
+	if len(u.Ops) > 0 || u.Value == nil {
+		return "", false
+	}
+	p := u.Value
+	if len(p.Ops) > 0 || p.Target == nil {
+		return "", false
+	}
+	if p.Target.Selector != nil && len(p.Target.Selector.Tail) == 0 {
+		return p.Target.Selector.Root, true
+	}
+	return "", false
+}
+
+func substituteFields(ex Expr, varName string, fields map[string]bool) Expr {
+	switch n := ex.(type) {
+	case *Ident:
+		if fields[n.Name] {
+			return &IndexExpr{Target: &Ident{Name: varName}, Index: &StringLit{Value: n.Name}}
+		}
+		return n
+	case *BinaryExpr:
+		n.Left = substituteFields(n.Left, varName, fields)
+		n.Right = substituteFields(n.Right, varName, fields)
+		return n
+	case *UnaryExpr:
+		n.Expr = substituteFields(n.Expr, varName, fields)
+		return n
+	case *CallExpr:
+		for i := range n.Args {
+			n.Args[i] = substituteFields(n.Args[i], varName, fields)
+		}
+		return n
+	case *MethodCallExpr:
+		n.Target = substituteFields(n.Target, varName, fields)
+		for i := range n.Args {
+			n.Args[i] = substituteFields(n.Args[i], varName, fields)
+		}
+		return n
+	case *IndexExpr:
+		n.Target = substituteFields(n.Target, varName, fields)
+		n.Index = substituteFields(n.Index, varName, fields)
+		return n
+	case *SliceExpr:
+		n.Target = substituteFields(n.Target, varName, fields)
+		if n.Start != nil {
+			n.Start = substituteFields(n.Start, varName, fields)
+		}
+		if n.End != nil {
+			n.End = substituteFields(n.End, varName, fields)
+		}
+		return n
+	case *CondExpr:
+		n.Cond = substituteFields(n.Cond, varName, fields)
+		n.Then = substituteFields(n.Then, varName, fields)
+		n.Else = substituteFields(n.Else, varName, fields)
+		return n
+	case *ListLit:
+		for i := range n.Elems {
+			n.Elems[i] = substituteFields(n.Elems[i], varName, fields)
+		}
+		return n
+	case *MapLit:
+		for i := range n.Items {
+			n.Items[i] = MapItem{Key: substituteFields(n.Items[i].Key, varName, fields), Value: substituteFields(n.Items[i].Value, varName, fields)}
+		}
+		return n
+	default:
+		return n
+	}
+}
+
+func literalString(e *parser.Expr) (string, bool) {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) > 0 {
+		return "", false
+	}
+	u := e.Binary.Left
+	if len(u.Ops) > 0 || u.Value == nil {
+		return "", false
+	}
+	p := u.Value
+	if len(p.Ops) > 0 || p.Target == nil {
+		return "", false
+	}
+	if p.Target.Lit != nil && p.Target.Lit.Str != nil {
+		return *p.Target.Lit.Str, true
+	}
+	if p.Target.Selector != nil && len(p.Target.Selector.Tail) == 0 {
+		return p.Target.Selector.Root, true
+	}
+	return "", false
+}
+
 // global environment used for type inference during conversion
 var currentEnv *types.Env
 var funcDepth int
@@ -717,6 +845,11 @@ func Emit(w io.Writer, p *Program) error {
 	e := &emitter{w: w}
 	if _, err := io.WriteString(w, header()); err != nil {
 		return err
+	}
+	if needsJSON {
+		if _, err := io.WriteString(w, "require 'json'\n"); err != nil {
+			return err
+		}
 	}
 	for _, s := range p.Stmts {
 		e.writeIndent()
@@ -728,6 +861,7 @@ func Emit(w io.Writer, p *Program) error {
 
 // Transpile converts a Mochi program into a Ruby AST.
 func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
+	needsJSON = false
 	currentEnv = env
 	rbProg := &Program{}
 	for _, st := range prog.Statements {
@@ -751,7 +885,15 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 		}
 		return &ExprStmt{Expr: e}, nil
 	case st.Type != nil:
-		// type declarations are ignored in Ruby output
+		var stmts []Stmt
+		for _, v := range st.Type.Variants {
+			if len(v.Fields) == 0 {
+				stmts = append(stmts, &LetStmt{Name: v.Name, Value: &Ident{Name: "nil"}})
+			}
+		}
+		if len(stmts) > 0 {
+			return &BlockStmt{Stmts: stmts}, nil
+		}
 		return nil, nil
 	case st.Let != nil:
 		var v Expr
@@ -826,6 +968,23 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 		return convertWhile(st.While)
 	case st.For != nil:
 		return convertFor(st.For)
+	case st.Expect != nil:
+		e, err := convertExpr(st.Expect.Value)
+		if err != nil {
+			return nil, err
+		}
+		return &AssertStmt{Expr: e}, nil
+	case st.Test != nil:
+		body := make([]Stmt, len(st.Test.Body))
+		for i, s := range st.Test.Body {
+			st2, err := convertStmt(s)
+			if err != nil {
+				return nil, err
+			}
+			body[i] = st2
+		}
+		comment := &CommentStmt{Text: "test " + strings.Trim(st.Test.Name, "\"")}
+		return &BlockStmt{Stmts: append([]Stmt{comment}, body...)}, nil
 	case st.Break != nil:
 		return &BreakStmt{}, nil
 	case st.Continue != nil:
@@ -941,24 +1100,56 @@ func convertMatchExpr(me *parser.MatchExpr) (Expr, error) {
 	if err != nil {
 		return nil, err
 	}
-	m := &MatchExpr{Target: target, Else: &Ident{Name: "nil"}}
+	var expr Expr = &Ident{Name: "nil"}
 	for i := len(me.Cases) - 1; i >= 0; i-- {
 		c := me.Cases[i]
 		res, err := convertExpr(c.Result)
 		if err != nil {
 			return nil, err
 		}
-		pat, err := convertExpr(c.Pattern)
+		pat := c.Pattern
+		if pat.Binary != nil && len(pat.Binary.Right) == 0 {
+			u := pat.Binary.Left
+			if len(u.Ops) == 0 && u.Value != nil && u.Value.Target != nil && u.Value.Target.Call != nil && u.Value.Target.Call.Func == "Node" {
+				call := u.Value.Target.Call
+				if len(call.Args) == 3 {
+					names := []string{}
+					ok := true
+					for _, a := range call.Args {
+						name, ok2 := isSimpleIdent(a)
+						if !ok2 {
+							ok = false
+							break
+						}
+						names = append(names, name)
+					}
+					if ok {
+						if tn, ok2 := target.(*Ident); ok2 {
+							fields := map[string]bool{}
+							for _, nm := range names {
+								fields[nm] = true
+							}
+							res = substituteFields(res, tn.Name, fields)
+							cond := &BinaryExpr{Left: target, Op: "!=", Right: &Ident{Name: "nil"}}
+							expr = &CondExpr{Cond: cond, Then: res, Else: expr}
+							continue
+						}
+					}
+				}
+			}
+		}
+		patExpr, err := convertExpr(pat)
 		if err != nil {
 			return nil, err
 		}
-		if id, ok := pat.(*Ident); ok && id.Name == "_" {
-			m.Else = res
+		if id, ok := patExpr.(*Ident); ok && id.Name == "_" {
+			expr = res
 			continue
 		}
-		m.Cases = append([]MatchCase{{Pattern: pat, Result: res}}, m.Cases...)
+		cond := &BinaryExpr{Left: target, Op: "==", Right: patExpr}
+		expr = &CondExpr{Cond: cond, Then: res, Else: expr}
 	}
-	return m, nil
+	return expr, nil
 }
 
 func convertWhile(ws *parser.WhileStmt) (Stmt, error) {
@@ -1222,6 +1413,13 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 				return nil, fmt.Errorf("substring expects 3 args")
 			}
 			return &SliceExpr{Target: args[0], Start: args[1], End: args[2]}, nil
+		case "json":
+			if len(args) != 1 {
+				return nil, fmt.Errorf("json expects 1 arg")
+			}
+			needsJSON = true
+			pretty := &MethodCallExpr{Target: &Ident{Name: "JSON"}, Method: "pretty_generate", Args: []Expr{args[0]}}
+			return &CallExpr{Func: "puts", Args: []Expr{pretty}}, nil
 		default:
 			if currentEnv != nil {
 				if fn, ok := currentEnv.GetFunc(name); ok {
@@ -1266,9 +1464,15 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 	case p.Map != nil:
 		items := make([]MapItem, len(p.Map.Items))
 		for i, it := range p.Map.Items {
-			k, err := convertExpr(it.Key)
-			if err != nil {
-				return nil, err
+			var k Expr
+			if s, ok := literalString(it.Key); ok {
+				k = &StringLit{Value: s}
+			} else {
+				var err error
+				k, err = convertExpr(it.Key)
+				if err != nil {
+					return nil, err
+				}
 			}
 			v, err := convertExpr(it.Value)
 			if err != nil {
@@ -1464,6 +1668,16 @@ func stmtNode(s Stmt) *ast.Node {
 		return &ast.Node{Kind: "break"}
 	case *ContinueStmt:
 		return &ast.Node{Kind: "continue"}
+	case *AssertStmt:
+		return &ast.Node{Kind: "assert", Children: []*ast.Node{exprNode(st.Expr)}}
+	case *CommentStmt:
+		return &ast.Node{Kind: "comment", Value: st.Text}
+	case *BlockStmt:
+		n := &ast.Node{Kind: "block"}
+		for _, b := range st.Stmts {
+			n.Children = append(n.Children, stmtNode(b))
+		}
+		return n
 	case *ReturnStmt:
 		n := &ast.Node{Kind: "return"}
 		if st.Value != nil {
