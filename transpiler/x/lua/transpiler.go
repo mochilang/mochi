@@ -851,13 +851,11 @@ func convertPostfix(p *parser.PostfixExpr) (Expr, error) {
 	}
 	var ops []*parser.PostfixOp
 	expr, err := convertPrimary(p.Target)
-	if err != nil {
-		if sel := p.Target.Selector; sel != nil && len(sel.Tail) == 1 {
-			expr = &Ident{Name: sel.Root}
-			ops = append([]*parser.PostfixOp{{Field: &parser.FieldOp{Name: sel.Tail[0]}}}, p.Ops...)
-		} else {
-			return nil, err
-		}
+	if sel := p.Target.Selector; sel != nil && len(sel.Tail) == 1 {
+		expr = &Ident{Name: sel.Root}
+		ops = append([]*parser.PostfixOp{{Field: &parser.FieldOp{Name: sel.Tail[0]}}}, p.Ops...)
+	} else if err != nil {
+		return nil, err
 	} else {
 		ops = p.Ops
 	}
