@@ -1173,12 +1173,20 @@ func Emit(w io.Writer, p *Program) error {
 		}
 	}
 	sort.Strings(imports)
+	seen := map[string]bool{}
+	var unique []string
 	for _, line := range imports {
+		if !seen[line] {
+			seen[line] = true
+			unique = append(unique, line)
+		}
+	}
+	for _, line := range unique {
 		if _, err := io.WriteString(w, line+"\n"); err != nil {
 			return err
 		}
 	}
-	if len(imports) > 0 {
+	if len(unique) > 0 {
 		if _, err := io.WriteString(w, "\n"); err != nil {
 			return err
 		}
