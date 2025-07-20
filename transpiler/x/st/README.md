@@ -2,7 +2,7 @@
 
 This directory holds an experimental transpiler that converts a small subset of Mochi into Smalltalk. The generated sources for the golden tests live under `tests/transpiler/x/st`.
 
-Checklist of programs that currently transpile and run (26/100):
+Checklist of programs that currently transpile and run (35/100):
 
 - [x] append_builtin
 - [x] avg_builtin
@@ -39,7 +39,7 @@ Checklist of programs that currently transpile and run (26/100):
 - [x] if_else
 - [x] if_then_else
 - [x] if_then_else_nested
-- [ ] in_operator
+- [x] in_operator
 - [ ] in_operator_extended
 - [ ] inner_join
 - [ ] join_multi
@@ -55,17 +55,17 @@ Checklist of programs that currently transpile and run (26/100):
 - [ ] list_nested_assign
 - [ ] list_set_ops
 - [ ] load_yaml
-- [ ] map_assign
-- [ ] map_in_operator
-- [ ] map_index
-- [ ] map_int_key
+- [x] map_assign
+- [x] map_in_operator
+- [x] map_index
+- [x] map_int_key
 - [ ] map_literal_dynamic
-- [ ] map_membership
+- [x] map_membership
 - [ ] map_nested_assign
 - [ ] match_expr
 - [ ] match_full
 - [x] math_ops
-- [ ] membership
+- [x] membership
 - [x] min_max_builtin
 - [ ] nested_function
 - [ ] order_by_map
@@ -88,7 +88,7 @@ Checklist of programs that currently transpile and run (26/100):
 - [x] string_concat
 - [ ] string_contains
 - [ ] string_in_operator
-- [ ] string_index
+- [x] string_index
 - [ ] string_prefix_slice
 - [x] substring_builtin
 - [x] sum_builtin
@@ -101,6 +101,6 @@ Checklist of programs that currently transpile and run (26/100):
 - [x] unary_neg
 - [ ] update_stmt
 - [ ] user_type_literal
-- [ ] values_builtin
+- [x] values_builtin
 - [x] var_assignment
 - [ ] while_loop

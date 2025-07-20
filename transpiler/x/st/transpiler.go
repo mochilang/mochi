@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io"
 	"os/exec"
+	"sort"
 	"strings"
 	"time"
 
@@ -39,6 +40,17 @@ type value struct {
 	f    float64
 	list []value
 	kv   map[string]value
+}
+
+func keyString(v value) (string, error) {
+	switch v.kind {
+	case valString:
+		return v.s, nil
+	case valInt:
+		return fmt.Sprintf("%d", v.i), nil
+	default:
+		return "", fmt.Errorf("invalid key type")
+	}
 }
 
 func (v value) String() string {
@@ -139,7 +151,7 @@ func evalBinary(b *parser.BinaryExpr, vars map[string]value) (value, error) {
 	prec := [][]string{
 		{"*", "/", "%"},
 		{"+", "-"},
-		{"<", "<=", ">", ">=", "==", "!="},
+		{"<", "<=", ">", ">=", "==", "!=", "in"},
 		{"&&"},
 		{"||"},
 	}
@@ -243,6 +255,24 @@ func applyOp(a value, op string, b value) (value, error) {
 			return value{}, err
 		}
 		return value{kind: valBool, b: !res.b}, nil
+	case "in":
+		if b.kind == valList {
+			for _, it := range b.list {
+				res, err := applyOp(a, "==", it)
+				if err == nil && res.kind == valBool && res.b {
+					return value{kind: valBool, b: true}, nil
+				}
+			}
+			return value{kind: valBool, b: false}, nil
+		}
+		if b.kind == valMap {
+			key, err := keyString(a)
+			if err != nil {
+				return value{}, err
+			}
+			_, ok := b.kv[key]
+			return value{kind: valBool, b: ok}, nil
+		}
 	case "&&":
 		if a.kind == valBool && b.kind == valBool {
 			return value{kind: valBool, b: a.b && b.b}, nil
@@ -295,16 +325,37 @@ func evalPostfix(p *parser.PostfixExpr, vars map[string]value) (value, error) {
 			if err != nil {
 				return value{}, err
 			}
-			if idxVal.kind != valInt {
-				return value{}, fmt.Errorf("index must be int")
+			switch v.kind {
+			case valList:
+				if idxVal.kind != valInt {
+					return value{}, fmt.Errorf("index must be int")
+				}
+				if idxVal.i < 0 || idxVal.i >= len(v.list) {
+					return value{}, fmt.Errorf("index out of range")
+				}
+				v = v.list[idxVal.i]
+			case valString:
+				if idxVal.kind != valInt {
+					return value{}, fmt.Errorf("index must be int")
+				}
+				r := []rune(v.s)
+				if idxVal.i < 0 || idxVal.i >= len(r) {
+					return value{}, fmt.Errorf("index out of range")
+				}
+				v = value{kind: valString, s: string(r[idxVal.i])}
+			case valMap:
+				key, err := keyString(idxVal)
+				if err != nil {
+					return value{}, err
+				}
+				mv, ok := v.kv[key]
+				if !ok {
+					return value{}, fmt.Errorf("missing key")
+				}
+				v = mv
+			default:
+				return value{}, fmt.Errorf("indexing non-container")
 			}
-			if v.kind != valList {
-				return value{}, fmt.Errorf("indexing non-list")
-			}
-			if idxVal.i < 0 || idxVal.i >= len(v.list) {
-				return value{}, fmt.Errorf("index out of range")
-			}
-			v = v.list[idxVal.i]
 		default:
 			return value{}, fmt.Errorf("postfix not supported")
 		}
@@ -347,14 +398,15 @@ func evalPrimary(p *parser.Primary, vars map[string]value) (value, error) {
 			if err != nil {
 				return value{}, err
 			}
-			if k.kind != valString {
-				return value{}, fmt.Errorf("map key must be string")
+			key, err := keyString(k)
+			if err != nil {
+				return value{}, err
 			}
 			v, err := evalExpr(it.Value, vars)
 			if err != nil {
 				return value{}, err
 			}
-			m[k.s] = v
+			m[key] = v
 		}
 		return value{kind: valMap, kv: m}, nil
 	case p.Call != nil:
@@ -374,6 +426,26 @@ func evalPrimary(p *parser.Primary, vars map[string]value) (value, error) {
 				return value{kind: valInt, i: len(v.list)}, nil
 			case valMap:
 				return value{kind: valInt, i: len(v.kv)}, nil
+			}
+		case "values":
+			if len(p.Call.Args) != 1 {
+				return value{}, fmt.Errorf("bad args")
+			}
+			v, err := evalExpr(p.Call.Args[0], vars)
+			if err != nil {
+				return value{}, err
+			}
+			if v.kind == valMap {
+				keys := make([]string, 0, len(v.kv))
+				for k := range v.kv {
+					keys = append(keys, k)
+				}
+				sort.Strings(keys)
+				vals := make([]value, 0, len(keys))
+				for _, k := range keys {
+					vals = append(vals, v.kv[k])
+				}
+				return value{kind: valList, list: vals}, nil
 			}
 		case "str":
 			if len(p.Call.Args) != 1 {
@@ -592,26 +664,43 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 				if !ok {
 					return fmt.Errorf("assign to unknown var")
 				}
-				if target.kind != valList {
-					return fmt.Errorf("index assign only for list")
-				}
 				idxVal, err := evalExpr(idx.Start, vars)
 				if err != nil {
 					return err
-				}
-				if idxVal.kind != valInt {
-					return fmt.Errorf("index must be int")
-				}
-				if idxVal.i < 0 || idxVal.i >= len(target.list) {
-					return fmt.Errorf("index out of range")
 				}
 				v, err := evalExpr(st.Assign.Value, vars)
 				if err != nil {
 					return err
 				}
-				target.list[idxVal.i] = v
-				vars[st.Assign.Name] = target
-				p.Lines = append(p.Lines, fmt.Sprintf("%s at:%d put:%s.", st.Assign.Name, idxVal.i+1, v))
+				switch target.kind {
+				case valList:
+					if idxVal.kind != valInt {
+						return fmt.Errorf("index must be int")
+					}
+					if idxVal.i < 0 || idxVal.i >= len(target.list) {
+						return fmt.Errorf("index out of range")
+					}
+					target.list[idxVal.i] = v
+					vars[st.Assign.Name] = target
+					p.Lines = append(p.Lines, fmt.Sprintf("%s at:%d put:%s.", st.Assign.Name, idxVal.i+1, v))
+				case valMap:
+					key, err := keyString(idxVal)
+					if err != nil {
+						return err
+					}
+					if target.kv == nil {
+						target.kv = map[string]value{}
+					}
+					target.kv[key] = v
+					vars[st.Assign.Name] = target
+					keyStr := key
+					if idxVal.kind == valString {
+						keyStr = fmt.Sprintf("'%s'", escape(idxVal.s))
+					}
+					p.Lines = append(p.Lines, fmt.Sprintf("%s at:%s put:%s.", st.Assign.Name, keyStr, v))
+				default:
+					return fmt.Errorf("index assign only for list or map")
+				}
 			} else {
 				v, err := evalExpr(st.Assign.Value, vars)
 				if err != nil {
