@@ -54,3 +54,8 @@ _Last updated: 2025-07-20 01:31 UTC_
 - Added basic type inference for `let` and `var` statements to emit explicit Kotlin types.
 - Generated Kotlin sources without header comments for existing golden tests.
 - README checklist now auto-generated with 46/100 passing.
+
+## VM Golden Progress (2025-07-20 01:51 UTC)
+- Improved Kotlin emitter with indentation for all statements.
+- README checklist regenerated directly from `tests/vm/valid` with 46/100 passing.
+- Documented progress using git timestamp.
