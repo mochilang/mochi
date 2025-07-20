@@ -14,6 +14,9 @@ import (
 
 var varTypes map[string]string
 var funcRet map[string]string
+var extraDecls []Stmt
+var structCount int
+var topEnv *types.Env
 
 func javaType(t string) string {
 	switch t {
@@ -182,6 +185,35 @@ type Param struct {
 	Type string
 }
 
+// TypeDeclStmt declares a simple struct type.
+type TypeDeclStmt struct {
+	Name   string
+	Fields []Param
+}
+
+// queryFrom represents a single 'from' clause in a query.
+type queryFrom struct {
+	Var string
+	Src Expr
+}
+
+// QueryExpr represents a simplified query comprehension.
+type QueryExpr struct {
+	Var      string
+	Src      Expr
+	Froms    []queryFrom
+	Where    Expr
+	Select   Expr
+	ElemType string
+}
+
+// StructLit represents a struct literal.
+type StructLit struct {
+	Name   string
+	Fields []Expr
+	Names  []string
+}
+
 type Function struct {
 	Name   string
 	Params []Param
@@ -203,6 +235,73 @@ func (r *ReturnStmt) emit(w io.Writer, indent string) {
 type Stmt interface{ emit(io.Writer, string) }
 
 type Expr interface{ emit(io.Writer) }
+
+func (t *TypeDeclStmt) emit(w io.Writer, indent string) {
+	fmt.Fprintf(w, indent+"static class %s {\n", t.Name)
+	for _, f := range t.Fields {
+		typ := javaType(f.Type)
+		if typ == "" {
+			typ = f.Type
+		}
+		fmt.Fprintf(w, indent+"    %s %s;\n", typ, f.Name)
+	}
+	fmt.Fprintf(w, indent+"    %s(", t.Name)
+	for i, f := range t.Fields {
+		if i > 0 {
+			fmt.Fprint(w, ", ")
+		}
+		typ := javaType(f.Type)
+		if typ == "" {
+			typ = f.Type
+		}
+		fmt.Fprintf(w, "%s %s", typ, f.Name)
+	}
+	fmt.Fprint(w, ") {\n")
+	for _, f := range t.Fields {
+		fmt.Fprintf(w, indent+"        this.%s = %s;\n", f.Name, f.Name)
+	}
+	fmt.Fprint(w, indent+"    }\n")
+	fmt.Fprint(w, indent+"}\n")
+}
+
+func (s *StructLit) emit(w io.Writer) {
+	fmt.Fprintf(w, "new %s(", s.Name)
+	for i, f := range s.Fields {
+		if i > 0 {
+			fmt.Fprint(w, ", ")
+		}
+		f.emit(w)
+	}
+	fmt.Fprint(w, ")")
+}
+
+func (q *QueryExpr) emit(w io.Writer) {
+	fmt.Fprintf(w, "new java.util.ArrayList<%s>() {{", q.ElemType)
+	fmt.Fprintf(w, " for (var %s : ", q.Var)
+	q.Src.emit(w)
+	fmt.Fprint(w, ") {")
+	for _, f := range q.Froms {
+		fmt.Fprintf(w, " for (var %s : ", f.Var)
+		f.Src.emit(w)
+		fmt.Fprint(w, ") {")
+	}
+	if q.Where != nil {
+		fmt.Fprint(w, " if (")
+		q.Where.emit(w)
+		fmt.Fprint(w, ") {")
+	}
+	fmt.Fprint(w, " add(")
+	q.Select.emit(w)
+	fmt.Fprint(w, ");")
+	if q.Where != nil {
+		fmt.Fprint(w, " }")
+	}
+	for range q.Froms {
+		fmt.Fprint(w, " }")
+	}
+	fmt.Fprint(w, " }")
+	fmt.Fprint(w, "}}")
+}
 
 // LambdaExpr represents a simple lambda expression with a single return value.
 type LambdaExpr struct {
@@ -449,17 +548,24 @@ type ContinueStmt struct{}
 func (c *ContinueStmt) emit(w io.Writer, indent string) { fmt.Fprint(w, indent+"continue;\n") }
 
 // ListLit represents a list literal.
-type ListLit struct{ Elems []Expr }
+type ListLit struct {
+	ElemType string
+	Elems    []Expr
+}
 
 func (l *ListLit) emit(w io.Writer) {
-	arrType := "int"
-	if len(l.Elems) > 0 {
-		switch inferType(l.Elems[0]) {
-		case "string":
-			arrType = "String"
-		case "boolean":
-			arrType = "boolean"
+	arrType := l.ElemType
+	if arrType == "" {
+		arrType = "int"
+		if len(l.Elems) > 0 {
+			switch inferType(l.Elems[0]) {
+			case "string":
+				arrType = "String"
+			case "boolean":
+				arrType = "boolean"
+			}
 		}
+		arrType = javaType(arrType)
 	}
 	fmt.Fprintf(w, "new %s[]{", arrType)
 	for i, e := range l.Elems {
@@ -800,6 +906,9 @@ func Transpile(p *parser.Program, env *types.Env) (*Program, error) {
 	var prog Program
 	varTypes = map[string]string{}
 	funcRet = map[string]string{}
+	extraDecls = nil
+	structCount = 0
+	topEnv = env
 	for _, s := range p.Statements {
 		if s.Fun != nil {
 			body, err := compileStmts(s.Fun.Body)
@@ -831,6 +940,10 @@ func Transpile(p *parser.Program, env *types.Env) (*Program, error) {
 		if st != nil {
 			prog.Stmts = append(prog.Stmts, st)
 		}
+		if len(extraDecls) > 0 {
+			prog.Stmts = append(prog.Stmts, extraDecls...)
+			extraDecls = nil
+		}
 	}
 	_ = env // reserved
 	return &prog, nil
@@ -851,6 +964,9 @@ func compileStmt(s *parser.Statement) (Stmt, error) {
 				return nil, err
 			}
 			t := typeRefString(s.Let.Type)
+			if t == "" && topEnv != nil {
+				t = toJavaTypeFromType(types.ExprType(s.Let.Value, topEnv))
+			}
 			if t == "" {
 				t = inferType(e)
 			}
@@ -860,6 +976,11 @@ func compileStmt(s *parser.Statement) (Stmt, error) {
 			return &LetStmt{Name: s.Let.Name, Type: t, Expr: e}, nil
 		}
 		t := typeRefString(s.Let.Type)
+		if t == "" && topEnv != nil {
+			if v, err := topEnv.GetVar(s.Let.Name); err == nil {
+				t = toJavaTypeFromType(v)
+			}
+		}
 		if t != "" {
 			varTypes[s.Let.Name] = t
 		}
@@ -871,6 +992,9 @@ func compileStmt(s *parser.Statement) (Stmt, error) {
 				return nil, err
 			}
 			t := typeRefString(s.Var.Type)
+			if t == "" && topEnv != nil {
+				t = toJavaTypeFromType(types.ExprType(s.Var.Value, topEnv))
+			}
 			if t == "" {
 				t = inferType(e)
 			}
@@ -880,6 +1004,11 @@ func compileStmt(s *parser.Statement) (Stmt, error) {
 			return &VarStmt{Name: s.Var.Name, Type: t, Expr: e}, nil
 		}
 		t := typeRefString(s.Var.Type)
+		if t == "" && topEnv != nil {
+			if v, err := topEnv.GetVar(s.Var.Name); err == nil {
+				t = toJavaTypeFromType(v)
+			}
+		}
 		if t != "" {
 			varTypes[s.Var.Name] = t
 		}
@@ -1254,7 +1383,36 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 		return &GroupExpr{Expr: e}, nil
 	case p.If != nil:
 		return compileIfExpr(p.If)
+	case p.Query != nil:
+		return compileQueryExpr(p.Query)
 	case p.List != nil:
+		if st, ok := inferStructFromList(p.List); ok {
+			structCount++
+			name := fmt.Sprintf("Data%d", structCount)
+			st.Name = name
+			if topEnv != nil {
+				topEnv.SetStruct(name, st)
+			}
+			fields := make([]Param, len(st.Order))
+			elems := make([]Expr, len(p.List.Elems))
+			for i, fn := range st.Order {
+				fields[i] = Param{Name: fn, Type: toJavaTypeFromType(st.Fields[fn])}
+			}
+			for i, e := range p.List.Elems {
+				ml := e.Binary.Left.Value.Target.Map
+				vals := make([]Expr, len(st.Order))
+				for j, it := range ml.Items {
+					v, err := compileExpr(it.Value)
+					if err != nil {
+						return nil, err
+					}
+					vals[j] = v
+				}
+				elems[i] = &StructLit{Name: name, Fields: vals, Names: st.Order}
+			}
+			extraDecls = append(extraDecls, &TypeDeclStmt{Name: name, Fields: fields})
+			return &ListLit{ElemType: name, Elems: elems}, nil
+		}
 		elems := make([]Expr, len(p.List.Elems))
 		for i, e := range p.List.Elems {
 			ex, err := compileExpr(e)
@@ -1387,13 +1545,85 @@ func compileMatchExpr(me *parser.MatchExpr) (Expr, error) {
 	return expr, nil
 }
 
+func compileQueryExpr(q *parser.QueryExpr) (Expr, error) {
+	if q.Group != nil || q.Sort != nil || q.Skip != nil || q.Take != nil || len(q.Joins) > 0 {
+		return nil, fmt.Errorf("unsupported query features")
+	}
+	src, err := compileExpr(q.Source)
+	if err != nil {
+		return nil, err
+	}
+	var elemType string
+	if topEnv != nil {
+		if lt, ok := types.ExprType(q.Source, topEnv).(types.ListType); ok {
+			elemType = toJavaTypeFromType(lt.Elem)
+		}
+	}
+	if elemType == "" {
+		elemType = "java.util.Map"
+	}
+	varTypes[q.Var] = elemType
+	froms := make([]queryFrom, len(q.Froms))
+	for i, f := range q.Froms {
+		fe, err := compileExpr(f.Src)
+		if err != nil {
+			return nil, err
+		}
+		varTypes[f.Var] = "java.util.Map"
+		if topEnv != nil {
+			if lt, ok := types.ExprType(f.Src, topEnv).(types.ListType); ok {
+				varTypes[f.Var] = toJavaTypeFromType(lt.Elem)
+			}
+		}
+		froms[i] = queryFrom{Var: f.Var, Src: fe}
+	}
+	var where Expr
+	if q.Where != nil {
+		where, err = compileExpr(q.Where)
+		if err != nil {
+			return nil, err
+		}
+	}
+	sel, err := compileExpr(q.Select)
+	if err != nil {
+		return nil, err
+	}
+	if ml := mapLiteral(q.Select); ml != nil {
+		if st, ok := types.InferStructFromMapEnv(ml, topEnv); ok {
+			structCount++
+			name := fmt.Sprintf("Result%d", structCount)
+			st.Name = name
+			if topEnv != nil {
+				topEnv.SetStruct(name, st)
+			}
+			fieldsDecl := make([]Param, len(st.Order))
+			vals := make([]Expr, len(st.Order))
+			for i, it := range ml.Items {
+				fieldsDecl[i] = Param{Name: st.Order[i], Type: toJavaTypeFromType(st.Fields[st.Order[i]])}
+				v, err := compileExpr(it.Value)
+				if err != nil {
+					return nil, err
+				}
+				vals[i] = v
+			}
+			extraDecls = append(extraDecls, &TypeDeclStmt{Name: name, Fields: fieldsDecl})
+			sel = &StructLit{Name: name, Fields: vals, Names: st.Order}
+			elemType = name
+		}
+	}
+	return &QueryExpr{Var: q.Var, Src: src, Froms: froms, Where: where, Select: sel, ElemType: elemType}, nil
+}
+
 // Emit generates formatted Java source from the AST.
 func Emit(prog *Program) []byte {
 	var buf bytes.Buffer
 	buf.WriteString("public class Main {\n")
-	// emit global variables first
+	// emit type declarations and global variables first
 	for _, st := range prog.Stmts {
 		switch st.(type) {
+		case *TypeDeclStmt:
+			st.emit(&buf, "    ")
+			buf.WriteByte('\n')
 		case *LetStmt, *VarStmt:
 			st.emit(&buf, "    ")
 		}
@@ -1430,8 +1660,8 @@ func Emit(prog *Program) []byte {
 	buf.WriteString("    public static void main(String[] args) {\n")
 	for _, st := range prog.Stmts {
 		switch st.(type) {
-		case *LetStmt, *VarStmt:
-			// already emitted as globals
+		case *LetStmt, *VarStmt, *TypeDeclStmt:
+			// already emitted as globals or declarations
 		default:
 			st.emit(&buf, "        ")
 		}
@@ -1463,4 +1693,85 @@ func typeRefString(tr *parser.TypeRef) string {
 		return "fn"
 	}
 	return ""
+}
+
+func toJavaTypeFromType(t types.Type) string {
+	switch tt := t.(type) {
+	case types.IntType, types.Int64Type:
+		return "int"
+	case types.BoolType:
+		return "boolean"
+	case types.StringType:
+		return "String"
+	case types.ListType:
+		et := toJavaTypeFromType(tt.Elem)
+		if et == "" {
+			et = "Object"
+		}
+		return et + "[]"
+	case types.StructType:
+		if tt.Name != "" {
+			return tt.Name
+		}
+	}
+	return ""
+}
+
+func mapLiteral(e *parser.Expr) *parser.MapLiteral {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) != 0 {
+		return nil
+	}
+	u := e.Binary.Left
+	if len(u.Ops) != 0 || u.Value == nil {
+		return nil
+	}
+	v := u.Value
+	if len(v.Ops) != 0 || v.Target == nil {
+		return nil
+	}
+	return v.Target.Map
+}
+
+func inferStructFromList(ll *parser.ListLiteral) (st types.StructType, ok bool) {
+	if ll == nil || len(ll.Elems) == 0 {
+		return types.StructType{}, false
+	}
+	first := ll.Elems[0]
+	if first.Binary == nil || len(first.Binary.Right) != 0 {
+		return types.StructType{}, false
+	}
+	fm := first.Binary.Left.Value.Target.Map
+	if fm == nil {
+		return types.StructType{}, false
+	}
+	fields := map[string]types.Type{}
+	order := make([]string, len(fm.Items))
+	for i, it := range fm.Items {
+		key, ok := types.SimpleStringKey(it.Key)
+		if !ok {
+			return types.StructType{}, false
+		}
+		order[i] = key
+		fields[key] = types.ExprType(it.Value, topEnv)
+	}
+	for _, el := range ll.Elems[1:] {
+		if el.Binary == nil || len(el.Binary.Right) != 0 {
+			return types.StructType{}, false
+		}
+		ml := el.Binary.Left.Value.Target.Map
+		if ml == nil || len(ml.Items) != len(order) {
+			return types.StructType{}, false
+		}
+		for i, it := range ml.Items {
+			key, ok := types.SimpleStringKey(it.Key)
+			if !ok || key != order[i] {
+				return types.StructType{}, false
+			}
+			t := types.ExprType(it.Value, topEnv)
+			if !types.EqualTypes(fields[key], t) {
+				return types.StructType{}, false
+			}
+		}
+	}
+	return types.StructType{Fields: fields, Order: order}, true
 }
