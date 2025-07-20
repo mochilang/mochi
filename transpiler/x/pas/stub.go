@@ -1,6 +1,6 @@
 //go:build !slow
 
-package ctrans
+package pas
 
 import (
 	"mochi/parser"
