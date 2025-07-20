@@ -1,3 +1,7 @@
+## Progress (2025-07-20 08:41 +0700)
+- Checklist updated: 30/100 tests compiled
+- Added support for `cast_string_to_int` and improved type inference.
+
 ## Progress (2025-07-20 08:27 +0700)
 - Checklist updated: 29/100 tests compiled
 - Added `avg_builtin` and `fun_call` programs with support for function parameters.
