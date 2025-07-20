@@ -491,6 +491,18 @@ func (ix *IndexExpr) emit(e *emitter) {
 	io.WriteString(e.w, "]")
 }
 
+// FieldExpr represents accessing a struct field.
+type FieldExpr struct {
+	Target Expr
+	Name   string
+}
+
+func (f *FieldExpr) emit(e *emitter) {
+	f.Target.emit(e)
+	io.WriteString(e.w, ".")
+	io.WriteString(e.w, f.Name)
+}
+
 // CastExpr represents a type conversion.
 type CastExpr struct {
 	Value Expr
@@ -852,6 +864,22 @@ func zeroValueExpr(t types.Type) Expr {
 	}
 }
 
+func exprFromPrimary(p *parser.Primary) *parser.Expr {
+	return &parser.Expr{Binary: &parser.BinaryExpr{Left: &parser.Unary{Value: &parser.PostfixExpr{Target: p}}}}
+}
+
+func fieldAccess(expr Expr, t types.Type, name string) (Expr, types.Type) {
+	switch ty := t.(type) {
+	case types.StructType:
+		if ft, ok := ty.Fields[name]; ok {
+			return &FieldExpr{Target: expr, Name: name}, ft
+		}
+	case types.MapType:
+		return &IndexExpr{Target: expr, Index: &StringLit{Value: name}}, ty.Value
+	}
+	return &IndexExpr{Target: expr, Index: &StringLit{Value: name}}, nil
+}
+
 func isSimpleIdent(e *parser.Expr) (string, bool) {
 	if e == nil || e.Binary == nil || len(e.Binary.Right) > 0 {
 		return "", false
@@ -1084,10 +1112,27 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 		}
 		return &ExprStmt{Expr: e}, nil
 	case st.Type != nil:
+		if len(st.Type.Members) > 0 {
+			fields := make([]string, 0)
+			for _, m := range st.Type.Members {
+				if m.Field != nil {
+					fields = append(fields, m.Field.Name)
+				}
+			}
+			if len(fields) > 0 {
+				return &StructDefStmt{Name: st.Type.Name, Fields: fields}, nil
+			}
+		}
 		var stmts []Stmt
 		for _, v := range st.Type.Variants {
 			if len(v.Fields) == 0 {
 				stmts = append(stmts, &LetStmt{Name: v.Name, Value: &Ident{Name: "nil"}})
+			} else {
+				fields := make([]string, len(v.Fields))
+				for i, f := range v.Fields {
+					fields[i] = f.Name
+				}
+				stmts = append(stmts, &StructDefStmt{Name: v.Name, Fields: fields})
 			}
 		}
 		if len(stmts) > 0 {
@@ -1502,12 +1547,17 @@ func convertPostfix(pf *parser.PostfixExpr) (Expr, error) {
 	}
 	var expr Expr
 	var err error
+	var curType types.Type
 	// special case: selector with method call
 	start := 0
 	if pf.Target != nil && pf.Target.Selector != nil && len(pf.Ops) > 0 && pf.Ops[0].Call != nil && len(pf.Target.Selector.Tail) > 0 {
 		expr = &Ident{Name: pf.Target.Selector.Root}
-		for _, t := range pf.Target.Selector.Tail[:len(pf.Target.Selector.Tail)-1] {
-			expr = &IndexExpr{Target: expr, Index: &StringLit{Value: t}}
+		if currentEnv != nil {
+			rootPrim := &parser.Primary{Selector: &parser.SelectorExpr{Root: pf.Target.Selector.Root}}
+			curType = types.ExprType(exprFromPrimary(rootPrim), currentEnv)
+			for _, t := range pf.Target.Selector.Tail[:len(pf.Target.Selector.Tail)-1] {
+				expr, curType = fieldAccess(expr, curType, t)
+			}
 		}
 		method := pf.Target.Selector.Tail[len(pf.Target.Selector.Tail)-1]
 		args := make([]Expr, len(pf.Ops[0].Call.Args))
@@ -1528,6 +1578,9 @@ func convertPostfix(pf *parser.PostfixExpr) (Expr, error) {
 		if err != nil {
 			return nil, err
 		}
+		if currentEnv != nil {
+			curType = types.ExprType(exprFromPrimary(pf.Target), currentEnv)
+		}
 	}
 	for i := start; i < len(pf.Ops); i++ {
 		op := pf.Ops[i]
@@ -1538,6 +1591,13 @@ func convertPostfix(pf *parser.PostfixExpr) (Expr, error) {
 				return nil, err
 			}
 			expr = &IndexExpr{Target: expr, Index: idx}
+			if lt, ok := curType.(types.ListType); ok {
+				curType = lt.Elem
+			} else if mt, ok := curType.(types.MapType); ok {
+				curType = mt.Value
+			} else {
+				curType = nil
+			}
 		case op.Index != nil && (op.Index.Colon != nil || op.Index.Colon2 != nil):
 			var start, end Expr
 			var err error
@@ -1554,6 +1614,11 @@ func convertPostfix(pf *parser.PostfixExpr) (Expr, error) {
 				}
 			}
 			expr = &SliceExpr{Target: expr, Start: start, End: end}
+			if lt, ok := curType.(types.ListType); ok {
+				curType = lt
+			} else {
+				curType = nil
+			}
 		case op.Field != nil && i+1 < len(pf.Ops) && pf.Ops[i+1].Call != nil:
 			// method call like expr.field(args)
 			call := pf.Ops[i+1].Call
@@ -1571,12 +1636,34 @@ func convertPostfix(pf *parser.PostfixExpr) (Expr, error) {
 			}
 			expr = &MethodCallExpr{Target: expr, Method: method, Args: args}
 			i++ // consume call op
+			curType = nil
 		case op.Field != nil:
-			idx := &StringLit{Value: op.Field.Name}
-			expr = &IndexExpr{Target: expr, Index: idx}
+			expr, curType = fieldAccess(expr, curType, op.Field.Name)
 		case op.Cast != nil:
 			if op.Cast.Type != nil && op.Cast.Type.Simple != nil {
-				expr = &CastExpr{Value: expr, Type: *op.Cast.Type.Simple}
+				typName := *op.Cast.Type.Simple
+				if currentEnv != nil {
+					if st, ok := currentEnv.GetStruct(typName); ok {
+						if ml, ok2 := expr.(*MapLit); ok2 {
+							fields := make([]StructField, len(st.Order))
+							for i, name := range st.Order {
+								for _, it := range ml.Items {
+									if sl, ok := it.Key.(*StringLit); ok && sl.Value == name {
+										fields[i] = StructField{Name: name, Value: it.Value}
+										break
+									}
+								}
+							}
+							expr = &StructNewExpr{Name: typName, Fields: fields}
+						}
+						curType = st
+					} else {
+						curType = types.ResolveTypeRef(op.Cast.Type, currentEnv)
+					}
+				}
+				if curType == nil {
+					expr = &CastExpr{Value: expr, Type: typName}
+				}
 			}
 		default:
 			return nil, fmt.Errorf("unsupported postfix")
@@ -1714,16 +1801,15 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 		}
 		return &MapLit{Items: items}, nil
 	case p.Struct != nil:
-		items := make([]MapItem, len(p.Struct.Fields))
+		fields := make([]StructField, len(p.Struct.Fields))
 		for i, f := range p.Struct.Fields {
-			k := &StringLit{Value: f.Name}
 			v, err := convertExpr(f.Value)
 			if err != nil {
 				return nil, err
 			}
-			items[i] = MapItem{Key: k, Value: v}
+			fields[i] = StructField{Name: f.Name, Value: v}
 		}
-		return &MapLit{Items: items}, nil
+		return &StructNewExpr{Name: p.Struct.Name, Fields: fields}, nil
 	case p.Match != nil:
 		return convertMatchExpr(p.Match)
 	case p.If != nil:
@@ -1736,8 +1822,13 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 		return &GroupExpr{Expr: ex}, nil
 	case p.Selector != nil:
 		expr := Expr(&Ident{Name: p.Selector.Root})
-		for _, t := range p.Selector.Tail {
-			expr = &IndexExpr{Target: expr, Index: &StringLit{Value: t}}
+		var t types.Type
+		if currentEnv != nil {
+			prim := &parser.Primary{Selector: &parser.SelectorExpr{Root: p.Selector.Root}}
+			t = types.ExprType(exprFromPrimary(prim), currentEnv)
+		}
+		for _, seg := range p.Selector.Tail {
+			expr, t = fieldAccess(expr, t, seg)
 		}
 		return expr, nil
 	case p.Query != nil:
