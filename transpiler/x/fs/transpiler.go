@@ -44,6 +44,9 @@ type LambdaExpr struct {
 
 func (l *LambdaExpr) emit(w io.Writer) {
 	io.WriteString(w, "fun")
+	if len(l.Params) == 0 {
+		io.WriteString(w, " ()")
+	}
 	for _, p := range l.Params {
 		io.WriteString(w, " ")
 		io.WriteString(w, p)
@@ -82,6 +85,9 @@ type FunDef struct {
 func (f *FunDef) emit(w io.Writer) {
 	io.WriteString(w, "let rec ")
 	io.WriteString(w, f.Name)
+	if len(f.Params) == 0 {
+		io.WriteString(w, " ()")
+	}
 	for _, p := range f.Params {
 		io.WriteString(w, " ")
 		io.WriteString(w, p)
@@ -583,6 +589,10 @@ func inferType(e Expr) string {
 
 func (c *CallExpr) emit(w io.Writer) {
 	io.WriteString(w, c.Func)
+	if len(c.Args) == 0 {
+		io.WriteString(w, "()")
+		return
+	}
 	for _, a := range c.Args {
 		io.WriteString(w, " ")
 		if needsParen(a) {
@@ -728,9 +738,32 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 		if err != nil {
 			return nil, err
 		}
-		p.Stmts = append(p.Stmts, conv)
+		p.Stmts = append(p.Stmts, optimizeFun(conv))
 	}
 	return p, nil
+}
+
+func optimizeFun(st Stmt) Stmt {
+	fd, ok := st.(*FunDef)
+	if !ok {
+		return st
+	}
+	fd.Body = optimizeBody(fd.Body)
+	return fd
+}
+
+func optimizeBody(body []Stmt) []Stmt {
+	if len(body) == 2 {
+		if ifs, ok := body[0].(*IfStmt); ok && len(ifs.Then) == 1 {
+			if r1, ok := ifs.Then[0].(*ReturnStmt); ok {
+				if r2, ok := body[1].(*ReturnStmt); ok {
+					expr := &IfExpr{Cond: ifs.Cond, Then: r1.Expr, Else: r2.Expr}
+					return []Stmt{&ReturnStmt{Expr: expr}}
+				}
+			}
+		}
+	}
+	return body
 }
 
 func convertStmt(st *parser.Statement) (Stmt, error) {
