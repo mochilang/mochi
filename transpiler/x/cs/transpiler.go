@@ -2049,7 +2049,7 @@ func compileQueryExpr(q *parser.QueryExpr) (Expr, error) {
 			fmt.Fprintf(builder, " join %s in %s on %s equals %s", j.Var, exprString(js), left, right)
 		} else if *j.Side == "left" {
 			tmp := j.Var + "Tmp"
-			fmt.Fprintf(builder, " join %s in %s on %s equals %s into %s", tmp, exprString(js), left, right, tmp)
+			fmt.Fprintf(builder, " join %s in %s on %s equals %s into %s", j.Var, exprString(js), left, right, tmp)
 			fmt.Fprintf(builder, " from %s in %s.DefaultIfEmpty()", j.Var, tmp)
 		} else if *j.Side == "right" {
 			tmp := curVar + "Tmp"
