@@ -1,5 +1,10 @@
 # C++ Transpiler Tasks
 
+## Recent Enhancements (2025-07-20 02:29 +0000)
+- Added builtins `append`, `avg` and `count` with inline implementations.
+- Improved type inference for list and map literals.
+- Generated golden tests for new builtins and updated README progress to 39/100 programs.
+
 ## Recent Enhancements (2025-07-20 08:39 +0700)
 - Added basic map literal support with `std::unordered_map` and index assignments.
 - Generated golden outputs for `map_assign` and `map_index`.

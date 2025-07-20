@@ -128,6 +128,15 @@ type InExpr struct {
 
 type SumExpr struct{ Arg Expr }
 
+// AppendExpr represents a call to the `append` builtin on a list.
+type AppendExpr struct {
+	List Expr
+	Elem Expr
+}
+
+// AvgExpr represents a call to the `avg` builtin on a list of numbers.
+type AvgExpr struct{ List Expr }
+
 type CastExpr struct {
 	Value Expr
 	Type  string
@@ -263,6 +272,14 @@ func (s *PrintStmt) emit(w io.Writer, indent int) {
 			io.WriteString(w, "([&]{ auto tmp = ")
 			ex.emit(w)
 			io.WriteString(w, "; if constexpr(std::is_same_v<std::decay_t<decltype(tmp)>, std::string>) return tmp; std::string o; for(size_t i=0;i<tmp.size();++i){ if(i>0) o += \" \"; o += std::to_string(tmp[i]); } return o; }())")
+		case *AppendExpr:
+			io.WriteString(w, "([&]{ auto tmp = ")
+			ex.emit(w)
+			io.WriteString(w, "; std::string o; for(size_t i=0;i<tmp.size();++i){ if(i>0) o += \" \"; o += std::to_string(tmp[i]); } return o; }())")
+		case *AvgExpr:
+			io.WriteString(w, "([&]{ std::ostringstream ss; ss<<std::fixed<<std::setprecision(1)<<")
+			ex.emit(w)
+			io.WriteString(w, "; return ss.str(); }())")
 		default:
 			v.emit(w)
 		}
@@ -404,6 +421,25 @@ func (s *SumExpr) emit(w io.Writer) {
 		s.Arg.emit(w)
 		io.WriteString(w, ".end(), 0)")
 	}
+}
+
+func (a *AppendExpr) emit(w io.Writer) {
+	io.WriteString(w, "([&]{ auto v = ")
+	a.List.emit(w)
+	io.WriteString(w, "; v.push_back(")
+	a.Elem.emit(w)
+	io.WriteString(w, "); return v; }())")
+}
+
+func (a *AvgExpr) emit(w io.Writer) {
+	if currentProgram != nil {
+		currentProgram.addInclude("<numeric>")
+		currentProgram.addInclude("<sstream>")
+		currentProgram.addInclude("<iomanip>")
+	}
+	io.WriteString(w, "([&]{ auto tmp = ")
+	a.List.emit(w)
+	io.WriteString(w, "; return tmp.empty() ? 0.0 : std::accumulate(tmp.begin(), tmp.end(), 0.0) / tmp.size(); }())")
 }
 
 func (c *CastExpr) emit(w io.Writer) {
@@ -1033,6 +1069,39 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 				}
 				return &SumExpr{Arg: arg}, nil
 			}
+		case "append":
+			if len(p.Call.Args) == 2 {
+				l0, err := convertExpr(p.Call.Args[0])
+				if err != nil {
+					return nil, err
+				}
+				l1, err := convertExpr(p.Call.Args[1])
+				if err != nil {
+					return nil, err
+				}
+				return &AppendExpr{List: l0, Elem: l1}, nil
+			}
+		case "avg":
+			if len(p.Call.Args) == 1 {
+				arg, err := convertExpr(p.Call.Args[0])
+				if err != nil {
+					return nil, err
+				}
+				if currentProgram != nil {
+					currentProgram.addInclude("<numeric>")
+					currentProgram.addInclude("<sstream>")
+					currentProgram.addInclude("<iomanip>")
+				}
+				return &AvgExpr{List: arg}, nil
+			}
+		case "count":
+			if len(p.Call.Args) == 1 {
+				arg, err := convertExpr(p.Call.Args[0])
+				if err != nil {
+					return nil, err
+				}
+				return &LenExpr{Value: arg}, nil
+			}
 		case "substring":
 			if len(p.Call.Args) == 3 {
 				v0, err := convertExpr(p.Call.Args[0])
@@ -1197,6 +1266,15 @@ func guessType(e *parser.Expr) string {
 			return "std::string"
 		}
 	}
+	if list := pf.Target.List; list != nil && len(list.Elems) > 0 {
+		et := guessType(list.Elems[0])
+		return fmt.Sprintf("std::vector<%s>", et)
+	}
+	if mp := pf.Target.Map; mp != nil && len(mp.Items) > 0 {
+		kt := guessType(mp.Items[0].Key)
+		vt := guessType(mp.Items[0].Value)
+		return fmt.Sprintf("std::unordered_map<%s, %s>", kt, vt)
+	}
 	return "auto"
 }
 
@@ -1344,6 +1422,14 @@ func toExprNode(e Expr) *ast.Node {
 	case *SumExpr:
 		n := &ast.Node{Kind: "sum"}
 		n.Children = []*ast.Node{toExprNode(ex.Arg)}
+		return n
+	case *AppendExpr:
+		n := &ast.Node{Kind: "append"}
+		n.Children = []*ast.Node{toExprNode(ex.List), toExprNode(ex.Elem)}
+		return n
+	case *AvgExpr:
+		n := &ast.Node{Kind: "avg"}
+		n.Children = []*ast.Node{toExprNode(ex.List)}
 		return n
 	case *CastExpr:
 		n := &ast.Node{Kind: "cast", Value: ex.Type}
