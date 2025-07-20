@@ -1,3 +1,0 @@
-exit status 1
-# command-line-arguments
-../../../tests/transpiler/x/go/if_then_else.go:12:19: cannot use func() any {…}() (value of interface type any) as string value in variable declaration: need type assertion
