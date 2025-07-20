@@ -42,6 +42,13 @@ func (i IntLit) Emit(w io.Writer) {
 	io.WriteString(w, strconv.FormatInt(int64(i), 10))
 }
 
+// FloatLit represents a floating point literal.
+type FloatLit float64
+
+func (f FloatLit) Emit(w io.Writer) {
+	io.WriteString(w, strconv.FormatFloat(float64(f), 'f', -1, 64))
+}
+
 // List represents a Clojure list form: (elem1 elem2 ...)
 type List struct {
 	Elems []Node
@@ -371,6 +378,8 @@ func isNumberNode(n Node) bool {
 	switch t := n.(type) {
 	case IntLit:
 		return true
+	case FloatLit:
+		return true
 	case Symbol:
 		if transpileEnv != nil {
 			if typ, err := transpileEnv.GetVar(string(t)); err == nil {
@@ -380,6 +389,16 @@ func isNumberNode(n Node) bool {
 				}
 			}
 		}
+	}
+	return false
+}
+
+func isZeroNode(n Node) bool {
+	switch v := n.(type) {
+	case IntLit:
+		return v == 0
+	case FloatLit:
+		return v == 0.0
 	}
 	return false
 }
@@ -633,6 +652,8 @@ func transpileLiteral(l *parser.Literal) (Node, error) {
 		return StringLit(*l.Str), nil
 	case l.Int != nil:
 		return IntLit(*l.Int), nil
+	case l.Float != nil:
+		return FloatLit(*l.Float), nil
 	case l.Bool != nil:
 		if bool(*l.Bool) {
 			return Symbol("true"), nil
@@ -651,7 +672,7 @@ func defaultValue(t *parser.TypeRef) Node {
 	case "int":
 		return IntLit(0)
 	case "float":
-		return Symbol("0.0")
+		return FloatLit(0.0)
 	case "bool":
 		return Symbol("false")
 	case "string":
@@ -703,6 +724,7 @@ func transpileForStmt(f *parser.ForStmt) (Node, error) {
 		return nil, err
 	}
 	var seq Node
+	useDotimes := false
 	if f.RangeEnd != nil {
 		start, err := transpileExpr(f.Source)
 		if err != nil {
@@ -712,7 +734,12 @@ func transpileForStmt(f *parser.ForStmt) (Node, error) {
 		if err != nil {
 			return nil, err
 		}
-		seq = &List{Elems: []Node{Symbol("range"), start, end}}
+		if isZeroNode(start) {
+			useDotimes = true
+			seq = end
+		} else {
+			seq = &List{Elems: []Node{Symbol("range"), start, end}}
+		}
 	} else {
 		iter, err := transpileExpr(f.Source)
 		if err != nil {
@@ -726,6 +753,9 @@ func transpileForStmt(f *parser.ForStmt) (Node, error) {
 		bodyNode = body[0]
 	} else {
 		bodyNode = &List{Elems: append([]Node{Symbol("do")}, body...)}
+	}
+	if useDotimes {
+		return &List{Elems: []Node{Symbol("dotimes"), binding, bodyNode}}, nil
 	}
 	return &List{Elems: []Node{Symbol("doseq"), binding, bodyNode}}, nil
 }
