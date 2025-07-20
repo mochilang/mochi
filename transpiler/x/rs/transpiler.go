@@ -71,6 +71,82 @@ func (b *BoolLit) emit(w io.Writer) {
 	}
 }
 
+type ReturnStmt struct{ Value Expr }
+
+func (r *ReturnStmt) emit(w io.Writer) {
+	io.WriteString(w, "return")
+	if r.Value != nil {
+		io.WriteString(w, " ")
+		r.Value.emit(w)
+	}
+}
+
+type Param struct {
+	Name string
+	Type string
+}
+
+type FuncDecl struct {
+	Name   string
+	Params []Param
+	Return string
+	Body   []Stmt
+}
+
+func (f *FuncDecl) emit(w io.Writer) {
+	fmt.Fprintf(w, "fn %s(", f.Name)
+	for i, p := range f.Params {
+		if i > 0 {
+			io.WriteString(w, ", ")
+		}
+		if p.Type != "" {
+			fmt.Fprintf(w, "%s: %s", p.Name, p.Type)
+		} else {
+			io.WriteString(w, p.Name)
+		}
+	}
+	io.WriteString(w, ")")
+	if f.Return != "" && f.Return != "()" {
+		fmt.Fprintf(w, " -> %s", f.Return)
+	}
+	io.WriteString(w, " {\n")
+	for _, st := range f.Body {
+		writeStmt(w.(*bytes.Buffer), st, 1)
+	}
+	io.WriteString(w, "}")
+}
+
+type FunLit struct {
+	Params []Param
+	Return string
+	Expr   Expr
+}
+
+func (f *FunLit) emit(w io.Writer) {
+	io.WriteString(w, "|")
+	for i, p := range f.Params {
+		if i > 0 {
+			io.WriteString(w, ", ")
+		}
+		if p.Type != "" {
+			fmt.Fprintf(w, "%s: %s", p.Name, p.Type)
+		} else {
+			io.WriteString(w, p.Name)
+		}
+	}
+	io.WriteString(w, "|")
+	if f.Return != "" && f.Return != "()" {
+		fmt.Fprintf(w, " -> %s", f.Return)
+	}
+	io.WriteString(w, " {")
+	if f.Expr != nil {
+		io.WriteString(w, " ")
+		f.Expr.emit(w)
+		io.WriteString(w, " ")
+	}
+	io.WriteString(w, "}")
+}
+
 type ListLit struct{ Elems []Expr }
 
 func (l *ListLit) emit(w io.Writer) {
@@ -451,6 +527,17 @@ func compileStmt(stmt *parser.Statement) (Stmt, error) {
 			mapVars[stmt.Assign.Name] = true
 		}
 		return &AssignStmt{Name: stmt.Assign.Name, Expr: val}, nil
+	case stmt.Return != nil:
+		if stmt.Return.Value != nil {
+			val, err := compileExpr(stmt.Return.Value)
+			if err != nil {
+				return nil, err
+			}
+			return &ReturnStmt{Value: val}, nil
+		}
+		return &ReturnStmt{}, nil
+	case stmt.Fun != nil:
+		return compileFunStmt(stmt.Fun)
 	case stmt.If != nil:
 		return compileIfStmt(stmt.If)
 	case stmt.While != nil:
@@ -543,6 +630,32 @@ func compileForStmt(n *parser.ForStmt) (Stmt, error) {
 		}
 	}
 	return &ForStmt{Var: n.Name, Iter: iter, End: end, Body: body}, nil
+}
+
+func compileFunStmt(fn *parser.FunStmt) (Stmt, error) {
+	body := make([]Stmt, 0, len(fn.Body))
+	for _, st := range fn.Body {
+		cs, err := compileStmt(st)
+		if err != nil {
+			return nil, err
+		}
+		if cs != nil {
+			body = append(body, cs)
+		}
+	}
+	params := make([]Param, len(fn.Params))
+	for i, p := range fn.Params {
+		typ := ""
+		if p.Type != nil && p.Type.Simple != nil {
+			typ = rustType(*p.Type.Simple)
+		}
+		params[i] = Param{Name: p.Name, Type: typ}
+	}
+	ret := ""
+	if fn.Return != nil && fn.Return.Simple != nil {
+		ret = rustType(*fn.Return.Simple)
+	}
+	return &FuncDecl{Name: fn.Name, Params: params, Return: ret, Body: body}, nil
 }
 
 func applyIndexOps(base Expr, ops []*parser.IndexOp) (Expr, error) {
@@ -756,6 +869,28 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 		return &MapLit{Items: entries}, nil
 	case p.Selector != nil && len(p.Selector.Tail) == 0:
 		return &NameRef{Name: p.Selector.Root}, nil
+	case p.FunExpr != nil:
+		params := make([]Param, len(p.FunExpr.Params))
+		for i, pa := range p.FunExpr.Params {
+			typ := ""
+			if pa.Type != nil && pa.Type.Simple != nil {
+				typ = rustType(*pa.Type.Simple)
+			}
+			params[i] = Param{Name: pa.Name, Type: typ}
+		}
+		var expr Expr
+		if p.FunExpr.ExprBody != nil {
+			e, err := compileExpr(p.FunExpr.ExprBody)
+			if err != nil {
+				return nil, err
+			}
+			expr = e
+		}
+		ret := ""
+		if p.FunExpr.Return != nil && p.FunExpr.Return.Simple != nil {
+			ret = rustType(*p.FunExpr.Return.Simple)
+		}
+		return &FunLit{Params: params, Return: ret, Expr: expr}, nil
 	case p.If != nil:
 		return compileIfExpr(p.If)
 	case p.Group != nil:
@@ -882,6 +1017,8 @@ func inferType(e Expr) string {
 			return fmt.Sprintf("HashMap<%s, %s>", kt, vt)
 		}
 		return "HashMap<String, i64>"
+	case *FunLit:
+		return "fn"
 	}
 	return ""
 }
@@ -925,6 +1062,8 @@ func writeStmt(buf *bytes.Buffer, s Stmt, indent int) {
 		writeWhileStmt(buf, st, indent)
 	case *ForStmt:
 		writeForStmt(buf, st, indent)
+	case *ReturnStmt:
+		st.emit(buf)
 	default:
 		st.emit(buf)
 		buf.WriteString(";")
@@ -1003,8 +1142,17 @@ func Emit(prog *Program) []byte {
 	if prog.UsesHashMap {
 		buf.WriteString("use std::collections::HashMap;\n")
 	}
+	for _, s := range prog.Stmts {
+		if fd, ok := s.(*FuncDecl); ok {
+			fd.emit(&buf)
+			buf.WriteString("\n\n")
+		}
+	}
 	buf.WriteString("fn main() {\n")
 	for _, s := range prog.Stmts {
+		if _, ok := s.(*FuncDecl); ok {
+			continue
+		}
 		writeStmt(&buf, s, 1)
 	}
 	buf.WriteString("}\n")
