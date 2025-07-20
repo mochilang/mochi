@@ -873,7 +873,8 @@ func transpileCall(c *parser.CallExpr) (Node, error) {
 	}
 	if sym, ok := elems[0].(Symbol); ok && transpileEnv != nil {
 		if typ, err := transpileEnv.GetVar(string(sym)); err == nil {
-			if ft, ok := typ.(types.FuncType); ok && !ft.Variadic && len(ft.Params) > len(c.Args) {
+			callArity := len(elems) - 1
+			if ft, ok := typ.(types.FuncType); ok && !ft.Variadic && len(ft.Params) > callArity {
 				elems = append([]Node{Symbol("partial"), sym}, elems[1:]...)
 				return &List{Elems: elems}, nil
 			}
@@ -1071,8 +1072,49 @@ func transpileForStmt(f *parser.ForStmt) (Node, error) {
 	binding := &Vector{Elems: []Node{Symbol(seqSym), seq}}
 	iterBinding := &Vector{Elems: []Node{Symbol(f.Name), &List{Elems: []Node{Symbol("first"), Symbol(seqSym)}}}}
 	nextSeq := &List{Elems: []Node{Symbol("rest"), Symbol(seqSym)}}
-	recurExpr := &List{Elems: []Node{Symbol("recur"), nextSeq}}
-	letForm := &List{Elems: []Node{Symbol("let"), iterBinding, bodyNode, recurExpr}}
+
+	condElems := []Node{}
+	other := []Node{}
+	for _, n := range bodyNodes {
+		if c, b, ok := condRecur(n); ok {
+			condElems = append(condElems, c, b)
+		} else {
+			other = append(other, n)
+		}
+	}
+
+	elseBody := append([]Node{}, other...)
+	elseBody = append(elseBody, &List{Elems: []Node{Symbol("recur"), nextSeq}})
+	var elseNode Node
+	if len(elseBody) == 1 {
+		elseNode = elseBody[0]
+	} else {
+		elseNode = &List{Elems: append([]Node{Symbol("do")}, elseBody...)}
+	}
+	condElems = append(condElems, Keyword("else"), elseNode)
+
+	condForm := &List{Elems: append([]Node{Symbol("cond")}, condElems...)}
+	letForm := &List{Elems: []Node{Symbol("let"), iterBinding, condForm}}
 	loopBody := &List{Elems: []Node{Symbol("when"), &List{Elems: []Node{Symbol("seq"), Symbol(seqSym)}}, letForm}}
 	return &List{Elems: []Node{Symbol("loop"), binding, loopBody}}, nil
+}
+
+func condRecur(n Node) (cond Node, recur Node, ok bool) {
+	l, ok := n.(*List)
+	if !ok || len(l.Elems) != 3 {
+		return nil, nil, false
+	}
+	sym, ok := l.Elems[0].(Symbol)
+	if !ok || sym != "when" {
+		return nil, nil, false
+	}
+	r, ok := l.Elems[2].(*List)
+	if !ok || len(r.Elems) != 2 {
+		return nil, nil, false
+	}
+	rsym, ok := r.Elems[0].(Symbol)
+	if !ok || rsym != "recur" {
+		return nil, nil, false
+	}
+	return l.Elems[1], r, true
 }
