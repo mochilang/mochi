@@ -12,6 +12,12 @@ import (
 )
 
 var transpileEnv *types.Env
+var funcStack [][]string
+var builtinNames = map[string]struct{}{
+	"print": {}, "len": {}, "substring": {}, "count": {}, "sum": {}, "avg": {},
+	"str": {}, "min": {}, "max": {}, "append": {},
+}
+var closureNames = map[string]bool{}
 
 // --- Simple PHP AST ---
 
@@ -176,6 +182,45 @@ func (f *FuncDecl) emit(w io.Writer) {
 	}
 	fmt.Fprint(w, ") {\n")
 	for _, st := range f.Body {
+		fmt.Fprint(w, "  ")
+		st.emit(w)
+		if _, ok := st.(*IfStmt); ok {
+			fmt.Fprint(w, "\n")
+		} else {
+			fmt.Fprint(w, ";\n")
+		}
+	}
+	fmt.Fprint(w, "}")
+}
+
+// ClosureExpr represents an anonymous function with optional captured variables.
+type ClosureExpr struct {
+	Params []string
+	Uses   []string
+	Body   []Stmt
+}
+
+func (c *ClosureExpr) emit(w io.Writer) {
+	fmt.Fprint(w, "function(")
+	for i, p := range c.Params {
+		if i > 0 {
+			fmt.Fprint(w, ", ")
+		}
+		fmt.Fprintf(w, "$%s", p)
+	}
+	fmt.Fprint(w, ")")
+	if len(c.Uses) > 0 {
+		fmt.Fprint(w, " use (")
+		for i, u := range c.Uses {
+			if i > 0 {
+				fmt.Fprint(w, ", ")
+			}
+			fmt.Fprintf(w, "$%s", u)
+		}
+		fmt.Fprint(w, ")")
+	}
+	fmt.Fprint(w, " {\n")
+	for _, st := range c.Body {
 		fmt.Fprint(w, "  ")
 		st.emit(w)
 		if _, ok := st.(*IfStmt); ok {
@@ -712,6 +757,13 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 			args[i] = ex
 		}
 		name := p.Call.Func
+		if transpileEnv != nil {
+			if _, builtin := builtinNames[name]; !builtin {
+				if closureNames[name] {
+					name = "$" + name
+				}
+			}
+		}
 		if name == "print" {
 			name = "echo"
 			for i := range args {
@@ -897,13 +949,20 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 		for i, p := range st.Fun.Params {
 			params[i] = p.Name
 		}
-		body := make([]Stmt, len(st.Fun.Body))
-		for i, b := range st.Fun.Body {
-			bs, err := convertStmt(b)
-			if err != nil {
-				return nil, err
+		funcStack = append(funcStack, params)
+		body, err := convertStmtList(st.Fun.Body)
+		funcStack = funcStack[:len(funcStack)-1]
+		if err != nil {
+			return nil, err
+		}
+		if len(funcStack) > 0 {
+			uses := []string{}
+			for _, frame := range funcStack {
+				uses = append(uses, frame...)
 			}
-			body[i] = bs
+			clo := &ClosureExpr{Params: params, Uses: uses, Body: body}
+			closureNames[st.Fun.Name] = true
+			return &LetStmt{Name: st.Fun.Name, Value: clo}, nil
 		}
 		return &FuncDecl{Name: st.Fun.Name, Params: params, Body: body}, nil
 	case st.While != nil:
@@ -1063,9 +1122,12 @@ func isListExpr(e Expr) bool {
 		return true
 	}
 	if c, ok := e.(*CallExpr); ok {
-		if c.Func == "array_merge" {
+		switch c.Func {
+		case "array_merge", "array_slice":
 			return true
 		}
+	} else if _, ok := e.(*SliceExpr); ok {
+		return true
 	}
 	return false
 }
@@ -1123,7 +1185,17 @@ func isBoolExpr(e Expr) bool {
 
 func maybeBoolString(e Expr) Expr {
 	if isBoolExpr(e) {
-		return &CondExpr{Cond: e, Then: &StringLit{Value: "true"}, Else: &StringLit{Value: "false"}}
+		switch v := e.(type) {
+		case *BinaryExpr:
+			if v.Op == "in" {
+				return &CondExpr{Cond: e, Then: &StringLit{Value: "true"}, Else: &StringLit{Value: "false"}}
+			}
+		case *CallExpr:
+			if v.Func == "in_array" || v.Func == "str_contains" {
+				return &CondExpr{Cond: e, Then: &StringLit{Value: "true"}, Else: &StringLit{Value: "false"}}
+			}
+		}
+		return &CondExpr{Cond: e, Then: &IntLit{Value: 1}, Else: &IntLit{Value: 0}}
 	}
 	return e
 }
