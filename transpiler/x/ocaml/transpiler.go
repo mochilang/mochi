@@ -458,6 +458,25 @@ type IndexExpr struct {
 	Typ   string
 }
 
+// ListUpdateExpr updates a list at a specific index and returns the new list.
+type ListUpdateExpr struct {
+	List  Expr
+	Index Expr
+	Value Expr
+}
+
+func (lu *ListUpdateExpr) emit(w io.Writer) {
+	io.WriteString(w, "(List.mapi (fun i x -> if i = ")
+	lu.Index.emit(w)
+	io.WriteString(w, " then ")
+	lu.Value.emit(w)
+	io.WriteString(w, " else x) ")
+	lu.List.emit(w)
+	io.WriteString(w, ")")
+}
+
+func (lu *ListUpdateExpr) emitPrint(w io.Writer) { lu.emit(w) }
+
 func (ix *IndexExpr) emit(w io.Writer) {
 	switch ix.Typ {
 	case "string":
@@ -467,9 +486,9 @@ func (ix *IndexExpr) emit(w io.Writer) {
 		ix.Index.emit(w)
 		io.WriteString(w, ")")
 	default:
-		io.WriteString(w, "List.nth ")
+		io.WriteString(w, "List.nth (")
 		ix.Col.emit(w)
-		io.WriteString(w, " ")
+		io.WriteString(w, ") ")
 		ix.Index.emit(w)
 	}
 }
@@ -706,11 +725,27 @@ func transpileStmt(st *parser.Statement, env *types.Env, vars map[string]VarInfo
 		if !ok || !info.ref {
 			return nil, fmt.Errorf("assignment to unknown or immutable variable")
 		}
-		expr, _, err := convertExpr(st.Assign.Value, env, vars)
+		valExpr, _, err := convertExpr(st.Assign.Value, env, vars)
 		if err != nil {
 			return nil, err
 		}
-		return &AssignStmt{Name: st.Assign.Name, Expr: expr}, nil
+		if len(st.Assign.Index) > 0 {
+			indices := make([]Expr, len(st.Assign.Index))
+			for i, ix := range st.Assign.Index {
+				if ix.Colon != nil || ix.Colon2 != nil || ix.End != nil || ix.Step != nil {
+					return nil, fmt.Errorf("slice assignment not supported")
+				}
+				idx, _, err := convertExpr(ix.Start, env, vars)
+				if err != nil {
+					return nil, err
+				}
+				indices[i] = idx
+			}
+			listExpr := Expr(&Name{Ident: st.Assign.Name, Typ: info.typ, Ref: true})
+			upd := buildListUpdate(listExpr, indices, valExpr)
+			return &AssignStmt{Name: st.Assign.Name, Expr: upd}, nil
+		}
+		return &AssignStmt{Name: st.Assign.Name, Expr: valExpr}, nil
 	case st.Expr != nil:
 		call := st.Expr.Expr.Binary.Left.Value.Target.Call
 		if call != nil && call.Func == "print" && len(call.Args) == 1 {
@@ -1218,4 +1253,13 @@ func convertCall(c *parser.CallExpr, env *types.Env, vars map[string]VarInfo) (E
 		return &FuncCall{Name: c.Func, Args: args, Ret: ret}, ret, nil
 	}
 	return nil, "", fmt.Errorf("call %s not supported", c.Func)
+}
+
+func buildListUpdate(list Expr, indexes []Expr, val Expr) Expr {
+	idx := indexes[0]
+	if len(indexes) == 1 {
+		return &ListUpdateExpr{List: list, Index: idx, Value: val}
+	}
+	inner := buildListUpdate(&IndexExpr{Col: list, Index: idx, Typ: "list"}, indexes[1:], val)
+	return &ListUpdateExpr{List: list, Index: idx, Value: inner}
 }

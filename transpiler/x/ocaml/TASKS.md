@@ -1,3 +1,7 @@
+## Progress (2025-07-20 08:14 +0700)
+- Checklist updated: 27/100 tests compiled
+- Added list index assignment support generating `List.mapi` updates. Generated golden files for `list_assign`.
+
 ## Progress (2025-07-19 19:12 +0000)
 - Checklist updated: 26/100 tests compiled
 - Added support for `append_builtin`, `list_index` and `string_index` programs. Removed runtime helpers and improved type inference.
