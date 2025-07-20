@@ -478,8 +478,11 @@ func makeBinary(op string, left, right Node) Node {
 			return &List{Elems: []Node{Symbol("string-append"), left, right}}
 		}
 		return &List{Elems: []Node{Symbol("+"), left, right}}
-	case "-", "*", "/":
+	case "-", "*":
 		return &List{Elems: []Node{Symbol(op), left, right}}
+	case "/":
+		div := &List{Elems: []Node{Symbol("/"), left, right}}
+		return &List{Elems: []Node{Symbol("exact->inexact"), div}}
 	case "%":
 		return &List{Elems: []Node{Symbol("modulo"), left, right}}
 	case "<":
@@ -588,13 +591,14 @@ func convertCall(target Node, call *parser.CallOp) (Node, error) {
 			return nil, fmt.Errorf("avg expects 1 arg")
 		}
 		xs := Symbol("xs")
+		div := &List{Elems: []Node{Symbol("/"),
+			&List{Elems: []Node{Symbol("apply"), Symbol("+"), xs}},
+			&List{Elems: []Node{Symbol("length"), xs}},
+		}}
 		return &List{Elems: []Node{
 			Symbol("let"),
 			&List{Elems: []Node{&List{Elems: []Node{xs, args[0]}}}},
-			&List{Elems: []Node{Symbol("/"),
-				&List{Elems: []Node{Symbol("apply"), Symbol("+"), xs}},
-				&List{Elems: []Node{Symbol("length"), xs}},
-			}},
+			&List{Elems: []Node{Symbol("exact->inexact"), div}},
 		}}, nil
 	case "str":
 		if len(args) != 1 {
