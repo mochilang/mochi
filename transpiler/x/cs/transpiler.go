@@ -786,6 +786,39 @@ func simpleType(t string) types.Type {
 	}
 }
 
+func inferStructMap(varName string, prog *Program, m *MapLit) (Expr, bool) {
+	if len(m.Items) == 0 {
+		return m, false
+	}
+	keys := make([]string, len(m.Items))
+	typesMap := make(map[string]string)
+	vals := make([]StructFieldValue, len(m.Items))
+	for i, it := range m.Items {
+		k, ok := it.Key.(*StringLit)
+		if !ok {
+			return m, false
+		}
+		keys[i] = k.Value
+		typ := typeOfExpr(it.Value)
+		typesMap[k.Value] = typ
+		vals[i] = StructFieldValue{Name: k.Value, Value: it.Value}
+	}
+
+	sname := toStructName(varName)
+	fields := make([]StructField, len(keys))
+	typeFields := make(map[string]types.Type)
+	for i, k := range keys {
+		fields[i] = StructField{Name: k, Type: typesMap[k]}
+		typeFields[k] = simpleType(typesMap[k])
+	}
+	if prog != nil {
+		prog.Structs = append(prog.Structs, StructDecl{Name: sname, Fields: fields})
+	}
+	structTypes[sname] = types.StructType{Name: sname, Fields: typeFields, Order: keys}
+	varTypes[varName] = sname
+	return &StructLit{Name: sname, Fields: vals}, true
+}
+
 func inferStructList(varName string, prog *Program, l *ListLit) (Expr, bool) {
 	if len(l.Elems) == 0 {
 		return l, false
@@ -1420,6 +1453,11 @@ func compileStmt(prog *Program, s *parser.Statement) (Stmt, error) {
 				val = res
 			}
 		}
+		if mp, ok := val.(*MapLit); ok {
+			if res, changed := inferStructMap(s.Let.Name, prog, mp); changed {
+				val = res
+			}
+		}
 		if isStringExpr(val) {
 			stringVars[s.Let.Name] = true
 		}
@@ -1461,6 +1499,11 @@ func compileStmt(prog *Program, s *parser.Statement) (Stmt, error) {
 				val = res
 			}
 		}
+		if mp, ok := val.(*MapLit); ok {
+			if res, changed := inferStructMap(s.Var.Name, prog, mp); changed {
+				val = res
+			}
+		}
 		if isStringExpr(val) {
 			stringVars[s.Var.Name] = true
 		}
@@ -1497,6 +1540,11 @@ func compileStmt(prog *Program, s *parser.Statement) (Stmt, error) {
 			}
 			if isMapExpr(val) {
 				mapVars[s.Assign.Name] = true
+				if mp, ok := val.(*MapLit); ok {
+					if res, changed := inferStructMap(s.Assign.Name, prog, mp); changed {
+						val = res
+					}
+				}
 			}
 			if t := typeOfExpr(val); t != "" {
 				varTypes[s.Assign.Name] = t
