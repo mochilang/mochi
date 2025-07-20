@@ -497,18 +497,23 @@ func inferType(e Expr) string {
 		return "list"
 	case *SubstringExpr:
 		return "string"
-	case *CallExpr:
-		switch v.Func {
-		case "string":
-			return "string"
-		case "Seq.length", "List.length", "String.length":
-			return "int"
-		case "Seq.sum", "List.sum":
-			return "int"
-		case "Seq.averageBy float", "List.averageBy float":
-			return "float"
-		}
-	case *IfExpr:
+       case *CallExpr:
+               switch v.Func {
+               case "string":
+                       return "string"
+               case "Seq.length", "List.length", "String.length":
+                       return "int"
+               case "Seq.sum", "List.sum":
+                       return "int"
+               case "Seq.averageBy float", "List.averageBy float":
+                       return "float"
+               }
+       case *MethodCallExpr:
+               switch v.Name {
+               case "contains", "Contains":
+                       return "bool"
+               }
+       case *IfExpr:
 		t := inferType(v.Then)
 		e2 := inferType(v.Else)
 		if t == e2 {
@@ -1035,8 +1040,12 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 		}
 		varTypes = save
 		return &LambdaExpr{Params: params, Body: stmts}, nil
-	case p.Selector != nil && len(p.Selector.Tail) == 0:
-		return &IdentExpr{Name: p.Selector.Root}, nil
+       case p.Selector != nil:
+               expr := Expr(&IdentExpr{Name: p.Selector.Root})
+               for _, name := range p.Selector.Tail {
+                       expr = &FieldExpr{Target: expr, Name: name}
+               }
+               return expr, nil
 	case p.Group != nil:
 		return convertExpr(p.Group)
 	}
