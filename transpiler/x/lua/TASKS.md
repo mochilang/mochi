@@ -1,3 +1,7 @@
+## Progress (2025-07-20 11:55 GMT+7)
+- 56/100 VM tests passing
+- Added map literals and index assignments
+
 ## Progress (2025-07-20 11:38 GMT+7)
 - 55/100 VM tests passing
 - Added slice expression support for lists and strings

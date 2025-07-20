@@ -847,7 +847,7 @@ func convertPostfix(p *parser.PostfixExpr) (Expr, error) {
 				// contains handled during emission
 				expr = &CallExpr{Func: op.Field.Name, Args: args}
 			} else {
-				return nil, fmt.Errorf("unsupported selector")
+				expr = &IndexExpr{Target: expr, Index: &StringLit{Value: op.Field.Name}, Kind: "map"}
 			}
 		case op.Call != nil:
 			var args []Expr
@@ -937,10 +937,11 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 		}
 		return fe, nil
 	case p.Selector != nil:
-		if len(p.Selector.Tail) == 0 {
-			return &Ident{Name: p.Selector.Root}, nil
+		expr := Expr(&Ident{Name: p.Selector.Root})
+		for _, name := range p.Selector.Tail {
+			expr = &IndexExpr{Target: expr, Index: &StringLit{Value: name}, Kind: "map"}
 		}
-		return nil, fmt.Errorf("unsupported selector")
+		return expr, nil
 	case p.Group != nil:
 		return convertExpr(p.Group)
 	case p.If != nil:
@@ -1101,6 +1102,10 @@ func convertFunStmt(fs *parser.FunStmt) (Stmt, error) {
 
 func convertStmt(st *parser.Statement) (Stmt, error) {
 	switch {
+	case st.Type != nil:
+		return nil, nil
+	case st.ExternType != nil:
+		return nil, nil
 	case st.Expr != nil:
 		expr, err := convertExpr(st.Expr.Expr)
 		if err != nil {
@@ -1202,7 +1207,9 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 		if err != nil {
 			return nil, err
 		}
-		lp.Stmts = append(lp.Stmts, s)
+		if s != nil {
+			lp.Stmts = append(lp.Stmts, s)
+		}
 	}
 	currentEnv = nil
 	return lp, nil
