@@ -12,6 +12,41 @@ import (
 	"mochi/types"
 )
 
+// --- Struct tracking for generated classes ---
+type StructField struct {
+	Name string
+	Type string
+}
+
+var (
+	structSeq        int
+	structSig        map[string]string
+	structFields     map[string][]StructField
+	mapLitStructName map[*MapLit]string
+	structOrder      []string
+	compVarTypes     map[string]string
+	localVarTypes    map[string]string
+	structNameCount  map[string]int
+	nextStructHint   string
+)
+
+// GetStructOrder returns the generated struct names (for testing).
+func GetStructOrder() []string { return structOrder }
+
+// GetStructFields exposes struct field definitions (for testing).
+func GetStructFields() map[string][]StructField { return structFields }
+
+func capitalize(name string) string {
+	parts := strings.Split(name, "_")
+	for i, p := range parts {
+		if len(p) == 0 {
+			continue
+		}
+		parts[i] = strings.ToUpper(p[:1]) + p[1:]
+	}
+	return strings.Join(parts, "")
+}
+
 // --- Simple Dart AST ---
 
 // Program represents a sequence of statements.
@@ -226,7 +261,10 @@ type VarStmt struct {
 }
 
 func (s *VarStmt) emit(w io.Writer) error {
+	nextStructHint = s.Name
 	typ := inferType(s.Value)
+	nextStructHint = ""
+	localVarTypes[s.Name] = typ
 	if typ == "var" {
 		if _, err := io.WriteString(w, "var "+s.Name); err != nil {
 			return err
@@ -280,7 +318,10 @@ type LetStmt struct {
 }
 
 func (s *LetStmt) emit(w io.Writer) error {
+	nextStructHint = s.Name
 	typ := inferType(s.Value)
+	nextStructHint = ""
+	localVarTypes[s.Name] = typ
 	if typ == "var" {
 		if _, err := io.WriteString(w, "final "+s.Name+" = "); err != nil {
 			return err
@@ -575,6 +616,37 @@ func (n *NotNilExpr) emit(w io.Writer) error {
 }
 
 func (m *MapLit) emit(w io.Writer) error {
+	if name, ok := mapLitStructName[m]; ok {
+		if _, err := io.WriteString(w, name+"("); err != nil {
+			return err
+		}
+		for i, e := range m.Entries {
+			if i > 0 {
+				if _, err := io.WriteString(w, ", "); err != nil {
+					return err
+				}
+			}
+			var fname string
+			switch k := e.Key.(type) {
+			case *Name:
+				fname = k.Name
+			case *StringLit:
+				fname = k.Value
+			default:
+				fname = ""
+			}
+			if fname != "" {
+				if _, err := io.WriteString(w, fname+": "); err != nil {
+					return err
+				}
+			}
+			if err := e.Value.emit(w); err != nil {
+				return err
+			}
+		}
+		_, err := io.WriteString(w, ")")
+		return err
+	}
 	if _, err := io.WriteString(w, "{"); err != nil {
 		return err
 	}
@@ -1019,10 +1091,16 @@ func inferType(e Expr) string {
 	case *StringLit:
 		return "String"
 	case *Name:
+		if t, ok := localVarTypes[ex.Name]; ok {
+			return t
+		}
 		if currentEnv != nil {
 			if t, err := currentEnv.GetVar(ex.Name); err == nil {
 				return dartType(t)
 			}
+		}
+		if t, ok := compVarTypes[ex.Name]; ok {
+			return t
 		}
 		return "var"
 	case *ListLit:
@@ -1041,6 +1119,61 @@ func inferType(e Expr) string {
 		if len(ex.Entries) == 0 {
 			return "Map<dynamic, dynamic>"
 		}
+		sigParts := make([]string, len(ex.Entries))
+		valid := true
+		for i, it := range ex.Entries {
+			var field string
+			switch k := it.Key.(type) {
+			case *Name:
+				field = k.Name
+			case *StringLit:
+				field = k.Value
+			default:
+				valid = false
+			}
+			if !valid {
+				break
+			}
+			t := inferType(it.Value)
+			sigParts[i] = field + ":" + t
+		}
+		if valid {
+			sig := strings.Join(sigParts, ";")
+			name, ok := structSig[sig]
+			if !ok {
+				if nextStructHint != "" {
+					base := capitalize(nextStructHint)
+					cnt := structNameCount[base]
+					if cnt > 0 {
+						name = fmt.Sprintf("%s%d", base, cnt+1)
+					} else {
+						name = base
+					}
+					structNameCount[base] = cnt + 1
+					nextStructHint = ""
+				} else {
+					structSeq++
+					name = fmt.Sprintf("S%d", structSeq)
+				}
+				structSig[sig] = name
+				var fields []StructField
+				for _, part := range ex.Entries {
+					var fn string
+					switch k := part.Key.(type) {
+					case *Name:
+						fn = k.Name
+					case *StringLit:
+						fn = k.Value
+					}
+					fields = append(fields, StructField{Name: fn, Type: inferType(part.Value)})
+				}
+				structFields[name] = fields
+				structOrder = append(structOrder, name)
+			}
+			mapLitStructName[ex] = name
+			return name
+		}
+
 		kt := inferType(ex.Entries[0].Key)
 		if kt == "var" {
 			if _, ok := ex.Entries[0].Key.(*Name); ok {
@@ -1062,9 +1195,33 @@ func inferType(e Expr) string {
 				vt = "dynamic"
 			}
 		}
+		if kt == "var" {
+			kt = "dynamic"
+		}
+		if vt == "var" {
+			vt = "dynamic"
+		}
 		return "Map<" + kt + ", " + vt + ">"
 	case *MultiListComp:
-		return "List<" + inferType(ex.Expr) + ">"
+		saved := map[string]string{}
+		for i, v := range ex.Vars {
+			t := inferType(ex.Iters[i])
+			elem := "dynamic"
+			if strings.HasPrefix(t, "List<") && strings.HasSuffix(t, ">") {
+				elem = strings.TrimSuffix(strings.TrimPrefix(t, "List<"), ">")
+			}
+			saved[v] = compVarTypes[v]
+			compVarTypes[v] = elem
+		}
+		et := inferType(ex.Expr)
+		for _, v := range ex.Vars {
+			if old, ok := saved[v]; ok && old != "" {
+				compVarTypes[v] = old
+			} else {
+				delete(compVarTypes, v)
+			}
+		}
+		return "List<" + et + ">"
 	case *BinaryExpr:
 		switch ex.Op {
 		case "+":
@@ -1130,6 +1287,14 @@ func inferType(e Expr) string {
 		}
 		return "dynamic"
 	case *SelectorExpr:
+		rt := inferType(ex.Receiver)
+		if fields, ok := structFields[rt]; ok {
+			for _, f := range fields {
+				if f.Name == ex.Field {
+					return f.Type
+				}
+			}
+		}
 		return "dynamic"
 	case *ContainsExpr:
 		return "bool"
@@ -1225,13 +1390,51 @@ func Emit(w io.Writer, p *Program) error {
 			}
 		}
 	}
-	_, err := io.WriteString(w, "}\n")
-	return err
+	if _, err := io.WriteString(w, "}\n\n"); err != nil {
+		return err
+	}
+	for _, name := range structOrder {
+		fields := structFields[name]
+		if _, err := fmt.Fprintf(w, "class %s {\n", name); err != nil {
+			return err
+		}
+		for _, f := range fields {
+			if _, err := fmt.Fprintf(w, "  final %s %s;\n", f.Type, f.Name); err != nil {
+				return err
+			}
+		}
+		if _, err := fmt.Fprintf(w, "  const %s({", name); err != nil {
+			return err
+		}
+		for i, f := range fields {
+			if i > 0 {
+				if _, err := io.WriteString(w, ", "); err != nil {
+					return err
+				}
+			}
+			if _, err := fmt.Fprintf(w, "required this.%s", f.Name); err != nil {
+				return err
+			}
+		}
+		if _, err := io.WriteString(w, "});\n}\n"); err != nil {
+			return err
+		}
+	}
+	return nil
 }
 
 // Transpile converts a Mochi program into a simple Dart AST.
 func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	currentEnv = env
+	structSeq = 0
+	structSig = map[string]string{}
+	structFields = map[string][]StructField{}
+	mapLitStructName = map[*MapLit]string{}
+	structOrder = nil
+	compVarTypes = map[string]string{}
+	localVarTypes = map[string]string{}
+	structNameCount = map[string]int{}
+	nextStructHint = ""
 	p := &Program{}
 	for _, st := range prog.Statements {
 		s, err := convertStmtInternal(st)
