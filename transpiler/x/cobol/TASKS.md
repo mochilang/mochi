@@ -1,3 +1,7 @@
+## Progress (2025-07-20 10:18 +0700)
+- Refined TMP-STR detection so simple numeric displays no longer allocate it
+- Regenerated README checklist (18/100)
+
 ## Progress (2025-07-20 09:32 +0700)
 - Generated more idiomatic DISPLAY output without TMP-STR
 - Updated README checklist via script (18/100)
