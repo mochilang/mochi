@@ -1,3 +1,8 @@
+## Progress (2025-07-20 20:22 +0700)
+- clj: regenerate cross join tests
+- Regenerated golden files - 68/100 vm valid programs passing
+
+
 ## Progress (2025-07-20 18:09 +0700)
 - clj: emit map literals and keyword access
 - Regenerated golden files - 67/100 vm valid programs passing
