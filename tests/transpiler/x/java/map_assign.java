@@ -1,8 +1,15 @@
 public class Main {
-    static java.util.Map scores = new java.util.LinkedHashMap<>() {{ put("alice", 1); }};
+    static Data1 scores = new Data1(1);
+    static class Data1 {
+        int alice;
+        Data1(int alice) {
+            this.alice = alice;
+        }
+    }
+
 
     public static void main(String[] args) {
-scores.put("bob", 2);
-        System.out.println(scores.get("bob"));
+scores["bob"] = 2;
+        System.out.println(scores["bob"]);
     }
 }

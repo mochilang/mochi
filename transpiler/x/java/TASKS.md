@@ -1,4 +1,6 @@
-## Progress (2025-07-20 22:08 +0700)
+## Progress (2025-07-20 22:35 +0700)
+- java transpiler: improve inference and queries (295162628)
+
 - cleanup removed error files (2917ce39d)
 
 - cleanup removed error files (2917ce39d)

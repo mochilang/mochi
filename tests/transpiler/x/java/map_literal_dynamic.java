@@ -1,9 +1,18 @@
 public class Main {
     static int x = 3;
     static int y = 4;
-    static java.util.Map m = new java.util.LinkedHashMap<>() {{ put("a", x); put("b", y); }};
+    static Data1 m = new Data1(x, y);
+    static class Data1 {
+        int a;
+        int b;
+        Data1(int a, int b) {
+            this.a = a;
+            this.b = b;
+        }
+    }
+
 
     public static void main(String[] args) {
-        System.out.println(m.get("a") + " " + m.get("b"));
+        System.out.println(m["a"] + " " + m["b"]);
     }
 }

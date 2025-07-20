@@ -1,1 +1,26 @@
-unsupported primary
+exit status 1
+Main.java:14: error: <identifier> expected
+         name;
+             ^
+Main.java:15: error: <identifier> expected
+         age;
+            ^
+Main.java:17: error: <identifier> expected
+        Data2( name,  age, boolean is_senior) {
+                   ^
+Main.java:17: error: <identifier> expected
+        Data2( name,  age, boolean is_senior) {
+                         ^
+Main.java:25: error: <identifier> expected
+         name;
+             ^
+Main.java:26: error: <identifier> expected
+         age;
+            ^
+Main.java:28: error: <identifier> expected
+        Result3( name,  age, int is_senior) {
+                     ^
+Main.java:28: error: <identifier> expected
+        Result3( name,  age, int is_senior) {
+                           ^
+8 errors

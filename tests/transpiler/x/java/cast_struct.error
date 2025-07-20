@@ -1,7 +1,7 @@
 exit status 1
-Main.java:5: error: cannot find symbol
-        System.out.println(todo.title);
-                               ^
-  symbol:   variable title
-  location: variable todo of type Map
+Main.java:2: error: cannot find symbol
+    static Todo todo = new Data1("hi");
+           ^
+  symbol:   class Todo
+  location: class Main
 1 error

@@ -12,15 +12,39 @@ Main.java:29: error: <identifier> expected
          orderTotal;
                    ^
 Main.java:30: error: <identifier> expected
-        Result3( orderId,  orderCustomerId,  pairedCustomerName,  orderTotal) {
+        Data3( orderId,  orderCustomerId,  pairedCustomerName,  orderTotal) {
+                      ^
+Main.java:30: error: <identifier> expected
+        Data3( orderId,  orderCustomerId,  pairedCustomerName,  orderTotal) {
+                                        ^
+Main.java:30: error: <identifier> expected
+        Data3( orderId,  orderCustomerId,  pairedCustomerName,  orderTotal) {
+                                                             ^
+Main.java:30: error: <identifier> expected
+        Data3( orderId,  orderCustomerId,  pairedCustomerName,  orderTotal) {
+                                                                          ^
+Main.java:39: error: <identifier> expected
+         orderId;
+                ^
+Main.java:40: error: <identifier> expected
+         orderCustomerId;
                         ^
-Main.java:30: error: <identifier> expected
-        Result3( orderId,  orderCustomerId,  pairedCustomerName,  orderTotal) {
+Main.java:41: error: <identifier> expected
+         pairedCustomerName;
+                           ^
+Main.java:42: error: <identifier> expected
+         orderTotal;
+                   ^
+Main.java:43: error: <identifier> expected
+        Result4( orderId,  orderCustomerId,  pairedCustomerName,  orderTotal) {
+                        ^
+Main.java:43: error: <identifier> expected
+        Result4( orderId,  orderCustomerId,  pairedCustomerName,  orderTotal) {
                                           ^
-Main.java:30: error: <identifier> expected
-        Result3( orderId,  orderCustomerId,  pairedCustomerName,  orderTotal) {
+Main.java:43: error: <identifier> expected
+        Result4( orderId,  orderCustomerId,  pairedCustomerName,  orderTotal) {
                                                                ^
-Main.java:30: error: <identifier> expected
-        Result3( orderId,  orderCustomerId,  pairedCustomerName,  orderTotal) {
+Main.java:43: error: <identifier> expected
+        Result4( orderId,  orderCustomerId,  pairedCustomerName,  orderTotal) {
                                                                             ^
-8 errors
+16 errors

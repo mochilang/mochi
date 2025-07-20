@@ -1,1 +1,32 @@
-unsupported primary
+exit status 1
+Main.java:16: error: <identifier> expected
+         city;
+             ^
+Main.java:18: error: <identifier> expected
+         avg_age;
+                ^
+Main.java:19: error: <identifier> expected
+        Data2( city, int count,  avg_age) {
+                   ^
+Main.java:19: error: <identifier> expected
+        Data2( city, int count,  avg_age) {
+                                        ^
+Main.java:27: error: <identifier> expected
+         city;
+             ^
+Main.java:29: error: <identifier> expected
+         avg_age;
+                ^
+Main.java:30: error: <identifier> expected
+        Result3( city, int count,  avg_age) {
+                     ^
+Main.java:30: error: <identifier> expected
+        Result3( city, int count,  avg_age) {
+                                          ^
+Main.java:45: error: <identifier> expected
+         key;
+            ^
+Main.java:47: error: <identifier> expected
+        Group4( key, java.util.List<Item4> items) {
+                   ^
+10 errors

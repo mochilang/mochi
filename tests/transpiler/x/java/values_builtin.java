@@ -1,5 +1,16 @@
 public class Main {
-    static java.util.Map m = new java.util.LinkedHashMap<>() {{ put("a", 1); put("b", 2); put("c", 3); }};
+    static Data1 m = new Data1(1, 2, 3);
+    static class Data1 {
+        int a;
+        int b;
+        int c;
+        Data1(int a, int b, int c) {
+            this.a = a;
+            this.b = b;
+            this.c = c;
+        }
+    }
+
 
     public static void main(String[] args) {
         System.out.println(values(m));

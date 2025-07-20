@@ -21,13 +21,26 @@ public class Main {
         }
     }
 
-    static java.util.List<Result3> result = new java.util.ArrayList<Result3>() {{ for (var o : orders) { for (var c : customers) { add(new Result3(o.id, o.customerId, c.name, o.total)); } }}};
-    static class Result3 {
+    static java.util.List<Result4> result = new java.util.ArrayList<Result4>() {{ for (var o : orders) { for (var c : customers) { add(new Result4(o.id, o.customerId, c.name, o.total)); } }}};
+    static class Data3 {
          orderId;
          orderCustomerId;
          pairedCustomerName;
          orderTotal;
-        Result3( orderId,  orderCustomerId,  pairedCustomerName,  orderTotal) {
+        Data3( orderId,  orderCustomerId,  pairedCustomerName,  orderTotal) {
+            this.orderId = orderId;
+            this.orderCustomerId = orderCustomerId;
+            this.pairedCustomerName = pairedCustomerName;
+            this.orderTotal = orderTotal;
+        }
+    }
+
+    static class Result4 {
+         orderId;
+         orderCustomerId;
+         pairedCustomerName;
+         orderTotal;
+        Result4( orderId,  orderCustomerId,  pairedCustomerName,  orderTotal) {
             this.orderId = orderId;
             this.orderCustomerId = orderCustomerId;
             this.pairedCustomerName = pairedCustomerName;

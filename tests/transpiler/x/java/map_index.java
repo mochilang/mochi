@@ -1,7 +1,16 @@
 public class Main {
-    static java.util.Map m = new java.util.LinkedHashMap<>() {{ put("a", 1); put("b", 2); }};
+    static Data1 m = new Data1(1, 2);
+    static class Data1 {
+        int a;
+        int b;
+        Data1(int a, int b) {
+            this.a = a;
+            this.b = b;
+        }
+    }
+
 
     public static void main(String[] args) {
-        System.out.println(m.get("b"));
+        System.out.println(m["b"]);
     }
 }
