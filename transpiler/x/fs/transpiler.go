@@ -6,6 +6,8 @@ import (
 	"bytes"
 	"fmt"
 	"io"
+	"os/exec"
+	"strings"
 	"time"
 
 	"mochi/parser"
@@ -448,6 +450,12 @@ func inferType(e Expr) string {
 		case "Seq.averageBy float":
 			return "float"
 		}
+	case *IfExpr:
+		t := inferType(v.Then)
+		e2 := inferType(v.Else)
+		if t == e2 {
+			return t
+		}
 	}
 	return ""
 }
@@ -570,8 +578,14 @@ func Emit(prog *Program) []byte {
 }
 
 func header() string {
-	ts := time.Now().Format("2006-01-02 15:04 MST")
-	return fmt.Sprintf("// Generated %s\nopen System\n\n", ts)
+	out, err := exec.Command("git", "log", "-1", "--format=%cI").Output()
+	ts := time.Now()
+	if err == nil {
+		if t, perr := time.Parse(time.RFC3339, strings.TrimSpace(string(out))); perr == nil {
+			ts = t
+		}
+	}
+	return fmt.Sprintf("// Generated %s\nopen System\n\n", ts.Format("2006-01-02 15:04 MST"))
 }
 
 // Transpile converts a Mochi program to a simple F# AST.
@@ -833,12 +847,19 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 		switch p.Call.Func {
 		case "print":
 			if len(args) == 1 {
+				if inferType(args[0]) == "bool" {
+					return &CallExpr{Func: "printfn \"%b\"", Args: []Expr{args[0]}}, nil
+				}
 				arg := &CallExpr{Func: "string", Args: []Expr{args[0]}}
 				return &CallExpr{Func: "printfn \"%s\"", Args: []Expr{arg}}, nil
 			}
 			elems := make([]Expr, len(args))
 			for i, a := range args {
-				elems[i] = &CallExpr{Func: "string", Args: []Expr{a}}
+				if inferType(a) == "bool" {
+					elems[i] = &CallExpr{Func: "sprintf \"%b\"", Args: []Expr{a}}
+				} else {
+					elems[i] = &CallExpr{Func: "string", Args: []Expr{a}}
+				}
 			}
 			list := &ListLit{Elems: elems}
 			concat := &CallExpr{Func: "String.concat", Args: []Expr{&StringLit{Value: " "}, list}}
