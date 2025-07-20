@@ -1,7 +1,7 @@
 # Mochi Racket Transpiler
 This directory contains the experimental Racket transpiler. Golden tests under `tests/vm/valid` check the generated code and its runtime output.
 
-## Golden Test Checklist (34/100)
+## Golden Test Checklist (48/100)
 
 - [x] append_builtin
 - [x] avg_builtin
@@ -14,17 +14,17 @@ This directory contains the experimental Racket transpiler. Golden tests under `
 - [ ] closure
 - [x] count_builtin
 - [x] cross_join
-- [ ] cross_join_filter
-- [ ] cross_join_triple
+- [x] cross_join_filter
+- [x] cross_join_triple
 - [ ] dataset_sort_take_limit
-- [ ] dataset_where_filter
-- [ ] exists_builtin
-- [ ] for_list_collection
-- [ ] for_loop
-- [ ] for_map_collection
-- [ ] fun_call
+- [x] dataset_where_filter
+- [x] exists_builtin
+- [x] for_list_collection
+- [x] for_loop
+- [x] for_map_collection
+- [x] fun_call
 - [ ] fun_expr_in_let
-- [ ] fun_three_args
+- [x] fun_three_args
 - [ ] go_auto
 - [ ] group_by
 - [ ] group_by_conditional_sum
@@ -38,8 +38,8 @@ This directory contains the experimental Racket transpiler. Golden tests under `
 - [x] if_else
 - [x] if_then_else
 - [x] if_then_else_nested
-- [ ] in_operator
-- [ ] in_operator_extended
+- [x] in_operator
+- [x] in_operator_extended
 - [ ] inner_join
 - [ ] join_multi
 - [ ] json_builtin
@@ -64,8 +64,8 @@ This directory contains the experimental Racket transpiler. Golden tests under `
 - [ ] match_expr
 - [ ] match_full
 - [x] math_ops
-- [ ] membership
-- [ ] min_max_builtin
+- [x] membership
+- [x] min_max_builtin
 - [ ] nested_function
 - [ ] order_by_map
 - [x] outer_join
@@ -89,7 +89,7 @@ This directory contains the experimental Racket transpiler. Golden tests under `
 - [ ] string_in_operator
 - [x] string_index
 - [ ] string_prefix_slice
-- [ ] substring_builtin
+- [x] substring_builtin
 - [x] sum_builtin
 - [ ] tail_recursion
 - [ ] test_block
