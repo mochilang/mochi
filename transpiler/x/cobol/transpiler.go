@@ -6,6 +6,7 @@ import (
 	"bytes"
 	"fmt"
 	"io"
+	"sort"
 	"strconv"
 	"strings"
 
@@ -901,6 +902,11 @@ func convertVar(name string, t *parser.TypeRef, val *parser.Expr, env *types.Env
 			pic = fmt.Sprintf("PIC X(%d)", len(s))
 			constVal = &StringLit{Value: s}
 			constVars[name] = vals
+		} else if m, ok := mapLiteral(val); ok {
+			s := formatConstMap(m)
+			pic = fmt.Sprintf("PIC X(%d)", len(s))
+			constVal = &StringLit{Value: s}
+			constVars[name] = m
 		} else {
 			delete(constVars, name)
 		}
@@ -1212,34 +1218,148 @@ func listLiteralInts(e *parser.Expr) ([]int, bool) {
 	return nil, false
 }
 
+func mapLiteral(e *parser.Expr) (map[interface{}]interface{}, bool) {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) != 0 {
+		return nil, false
+	}
+	u := e.Binary.Left
+	if len(u.Ops) != 0 || u.Value == nil {
+		return nil, false
+	}
+	ml := u.Value.Target.Map
+	if ml == nil {
+		return nil, false
+	}
+	m := make(map[interface{}]interface{}, len(ml.Items))
+	for _, it := range ml.Items {
+		key, ok := constMapKey(it.Key)
+		if !ok {
+			return nil, false
+		}
+		val, ok := constMapVal(it.Value)
+		if !ok {
+			return nil, false
+		}
+		m[key] = val
+	}
+	return m, true
+}
+
+func constMapKey(e *parser.Expr) (interface{}, bool) {
+	if v, ok := intConstExpr(e); ok {
+		return v, true
+	}
+	if s, ok := stringConstExpr(e); ok {
+		return s, true
+	}
+	if name, ok := identExpr(e); ok {
+		if v, ok := constVars[name]; ok {
+			switch v := v.(type) {
+			case int, string:
+				return v, true
+			}
+		}
+	}
+	return nil, false
+}
+
+func constMapVal(e *parser.Expr) (interface{}, bool) {
+	if v, ok := intConstExpr(e); ok {
+		return v, true
+	}
+	if s, ok := stringConstExpr(e); ok {
+		return s, true
+	}
+	if m, ok := mapLiteral(e); ok {
+		return m, true
+	}
+	if name, ok := identExpr(e); ok {
+		if v, ok := constVars[name]; ok {
+			switch v := v.(type) {
+			case int, string, map[interface{}]interface{}:
+				return v, true
+			}
+		}
+	}
+	return nil, false
+}
+
+func formatConstMap(m map[interface{}]interface{}) string {
+	keys := make([]string, 0, len(m))
+	for k := range m {
+		keys = append(keys, fmt.Sprintf("%v", k))
+	}
+	sort.Strings(keys)
+	parts := make([]string, len(keys))
+	for i, kstr := range keys {
+		var key interface{}
+		if iv, err := strconv.Atoi(kstr); err == nil {
+			key = iv
+		} else {
+			key = kstr
+		}
+		val := m[key]
+		switch v := val.(type) {
+		case string:
+			parts[i] = fmt.Sprintf("%q: %s", kstr, v)
+		case int:
+			parts[i] = fmt.Sprintf("%q: %d", kstr, v)
+		default:
+			parts[i] = fmt.Sprintf("%q: %v", kstr, v)
+		}
+	}
+	return "{" + strings.Join(parts, ", ") + "}"
+}
+
 func convertExpr(e *parser.Expr, env *types.Env) (Expr, error) {
 	if e == nil || e.Binary == nil {
 		return nil, fmt.Errorf("unsupported expr")
 	}
 	if len(e.Binary.Right) == 1 && e.Binary.Right[0].Op == "in" {
 		leftExpr := &parser.Expr{Binary: &parser.BinaryExpr{Left: e.Binary.Left}}
-		leftVal, lok := intConstExpr(leftExpr)
-		var lst []int
 		rightExpr := &parser.Expr{Binary: &parser.BinaryExpr{Left: &parser.Unary{Value: e.Binary.Right[0].Right}}}
-		if vals, ok := listLiteralInts(rightExpr); ok {
-			lst = vals
-		} else if name, ok := identExpr(rightExpr); ok {
-			if vals, ok := constVars[name].([]int); ok {
+
+		// list membership
+		if leftVal, lok := intConstExpr(leftExpr); lok {
+			var lst []int
+			if vals, ok := listLiteralInts(rightExpr); ok {
 				lst = vals
-			}
-		}
-		if lok && lst != nil {
-			found := false
-			for _, v := range lst {
-				if v == leftVal {
-					found = true
-					break
+			} else if name, ok := identExpr(rightExpr); ok {
+				if vals, ok := constVars[name].([]int); ok {
+					lst = vals
 				}
 			}
-			if found {
-				return &StringLit{Value: "true"}, nil
+			if lst != nil {
+				found := false
+				for _, v := range lst {
+					if v == leftVal {
+						found = true
+						break
+					}
+				}
+				if found {
+					return &StringLit{Value: "true"}, nil
+				}
+				return &StringLit{Value: "false"}, nil
 			}
-			return &StringLit{Value: "false"}, nil
+		}
+
+		// map membership
+		if key, ok := constMapKey(leftExpr); ok {
+			var m map[interface{}]interface{}
+			if mm, ok := mapLiteral(rightExpr); ok {
+				m = mm
+			} else if name, ok := identExpr(rightExpr); ok {
+				if mm, ok := constVars[name].(map[interface{}]interface{}); ok {
+					m = mm
+				}
+			}
+			if m != nil {
+				if _, found := m[key]; found {
+					return &StringLit{Value: "true"}, nil
+				}
+				return &StringLit{Value: "false"}, nil
+			}
 		}
 	}
 	first, err := convertUnary(e.Binary.Left, env)
@@ -1364,6 +1484,36 @@ func convertPostfix(pf *parser.PostfixExpr, env *types.Env) (Expr, error) {
 								continue
 							}
 						}
+					} else if m, ok := constVars[name].(map[interface{}]interface{}); ok {
+						if key, ok := constMapKey(idx.Start); ok {
+							if val, ok := m[key]; ok {
+								switch v := val.(type) {
+								case int:
+									ex = &IntLit{Value: v}
+								case string:
+									ex = &StringLit{Value: v}
+								case map[interface{}]interface{}:
+									ex = &StringLit{Value: formatConstMap(v)}
+								}
+								continue
+							}
+						}
+					}
+				} else if pf.Target != nil && pf.Target.Map != nil {
+					if m, ok := mapLiteral(&parser.Expr{Binary: &parser.BinaryExpr{Left: &parser.Unary{Value: pf}}}); ok {
+						if key, ok := constMapKey(idx.Start); ok {
+							if val, ok := m[key]; ok {
+								switch v := val.(type) {
+								case int:
+									ex = &IntLit{Value: v}
+								case string:
+									ex = &StringLit{Value: v}
+								case map[interface{}]interface{}:
+									ex = &StringLit{Value: formatConstMap(v)}
+								}
+								continue
+							}
+						}
 					}
 				}
 				start, err := convertExpr(idx.Start, env)
@@ -1425,6 +1575,14 @@ func convertPrimary(p *parser.Primary, env *types.Env) (Expr, error) {
 	case p.Call != nil && p.Call.Func == "len" && len(p.Call.Args) == 1:
 		if n, ok := listLiteralLen(p.Call.Args[0]); ok {
 			return &IntLit{Value: n}, nil
+		}
+		if m, ok := mapLiteral(p.Call.Args[0]); ok {
+			return &IntLit{Value: len(m)}, nil
+		}
+		if name, ok := identExpr(p.Call.Args[0]); ok {
+			if m, ok := constVars[name].(map[interface{}]interface{}); ok {
+				return &IntLit{Value: len(m)}, nil
+			}
 		}
 		arg, err := convertExpr(p.Call.Args[0], env)
 		if err != nil {
