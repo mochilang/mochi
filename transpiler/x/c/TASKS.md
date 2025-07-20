@@ -1,3 +1,8 @@
+## Progress (2025-07-20 21:08 +0700)
+- Added compile-time query evaluation using the runtime data engine.
+- Initial support for join and group-by queries in the C transpiler.
+- VM valid golden test results updated to 54/100
+
 ## Progress (2025-07-20 20:46 +0700)
 - VM valid golden test results updated to 54/100
 
