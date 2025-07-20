@@ -428,21 +428,17 @@ type StringContainsBuiltin struct {
 }
 
 func (s *StringContainsBuiltin) emit(w io.Writer) {
-	io.WriteString(w, "(let len_s = String.length ")
-	s.Str.emit(w)
-	io.WriteString(w, " and len_sub = String.length ")
+	io.WriteString(w, "Str.string_match (Str.regexp_string ")
 	s.Sub.emit(w)
-	io.WriteString(w, " in let rec aux i = if i + len_sub > len_s then false else if String.sub ")
+	io.WriteString(w, ") ")
 	s.Str.emit(w)
-	io.WriteString(w, " i len_sub = ")
-	s.Sub.emit(w)
-	io.WriteString(w, " then true else aux (i + 1) in aux 0)")
+	io.WriteString(w, " 0")
 }
 
 func (s *StringContainsBuiltin) emitPrint(w io.Writer) {
-	io.WriteString(w, "string_of_bool (if ")
+	io.WriteString(w, "string_of_bool (")
 	s.emit(w)
-	io.WriteString(w, " then true else false)")
+	io.WriteString(w, ")")
 }
 
 // FuncCall represents a call to a user-defined function.
@@ -750,7 +746,7 @@ func (p *Program) Emit() []byte {
 	buf.WriteString(header())
 	buf.WriteString("\n")
 	if p.UsesStrModule() {
-		// no external modules required
+		buf.WriteString("open Str\n\n")
 	}
 	for _, s := range p.Stmts {
 		if _, ok := s.(*FunStmt); ok {

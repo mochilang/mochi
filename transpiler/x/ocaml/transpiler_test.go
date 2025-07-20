@@ -64,7 +64,7 @@ func TestTranspilePrintHello(t *testing.T) {
 		t.Fatalf("write ml: %v", err)
 	}
 	exe := filepath.Join(outDir, "print_hello")
-	if out, err := exec.Command("ocamlc", mlFile, "-o", exe).CombinedOutput(); err != nil {
+	if out, err := exec.Command("ocamlc", "str.cma", mlFile, "-o", exe).CombinedOutput(); err != nil {
 		os.WriteFile(filepath.Join(outDir, "print_hello.error"), out, 0o644)
 		t.Fatalf("ocamlc: %v", err)
 	}
@@ -110,7 +110,7 @@ func TestTranspileBasicCompare(t *testing.T) {
 		t.Fatalf("write ml: %v", err)
 	}
 	exe := filepath.Join(outDir, "basic_compare")
-	if out, err := exec.Command("ocamlc", mlFile, "-o", exe).CombinedOutput(); err != nil {
+	if out, err := exec.Command("ocamlc", "str.cma", mlFile, "-o", exe).CombinedOutput(); err != nil {
 		os.WriteFile(filepath.Join(outDir, "basic_compare.error"), out, 0o644)
 		t.Fatalf("ocamlc: %v", err)
 	}
@@ -156,7 +156,7 @@ func TestTranspileLetAndPrint(t *testing.T) {
 		t.Fatalf("write ml: %v", err)
 	}
 	exe := filepath.Join(outDir, "let_and_print")
-	if out, err := exec.Command("ocamlc", mlFile, "-o", exe).CombinedOutput(); err != nil {
+	if out, err := exec.Command("ocamlc", "str.cma", mlFile, "-o", exe).CombinedOutput(); err != nil {
 		os.WriteFile(filepath.Join(outDir, "let_and_print.error"), out, 0o644)
 		t.Fatalf("ocamlc: %v", err)
 	}
@@ -202,7 +202,7 @@ func TestTranspileMathOps(t *testing.T) {
 		t.Fatalf("write ml: %v", err)
 	}
 	exe := filepath.Join(outDir, "math_ops")
-	if out, err := exec.Command("ocamlc", mlFile, "-o", exe).CombinedOutput(); err != nil {
+	if out, err := exec.Command("ocamlc", "str.cma", mlFile, "-o", exe).CombinedOutput(); err != nil {
 		os.WriteFile(filepath.Join(outDir, "math_ops.error"), out, 0o644)
 		t.Fatalf("ocamlc: %v", err)
 	}
@@ -248,7 +248,7 @@ func TestTranspileStringConcat(t *testing.T) {
 		t.Fatalf("write ml: %v", err)
 	}
 	exe := filepath.Join(outDir, "string_concat")
-	if out, err := exec.Command("ocamlc", mlFile, "-o", exe).CombinedOutput(); err != nil {
+	if out, err := exec.Command("ocamlc", "str.cma", mlFile, "-o", exe).CombinedOutput(); err != nil {
 		os.WriteFile(filepath.Join(outDir, "string_concat.error"), out, 0o644)
 		t.Fatalf("ocamlc: %v", err)
 	}
@@ -294,7 +294,7 @@ func TestTranspileStringCompare(t *testing.T) {
 		t.Fatalf("write ml: %v", err)
 	}
 	exe := filepath.Join(outDir, "string_compare")
-	if out, err := exec.Command("ocamlc", mlFile, "-o", exe).CombinedOutput(); err != nil {
+	if out, err := exec.Command("ocamlc", "str.cma", mlFile, "-o", exe).CombinedOutput(); err != nil {
 		os.WriteFile(filepath.Join(outDir, "string_compare.error"), out, 0o644)
 		t.Fatalf("ocamlc: %v", err)
 	}
@@ -340,7 +340,7 @@ func TestTranspileIfThenElse(t *testing.T) {
 		t.Fatalf("write ml: %v", err)
 	}
 	exe := filepath.Join(outDir, "if_then_else")
-	if out, err := exec.Command("ocamlc", mlFile, "-o", exe).CombinedOutput(); err != nil {
+	if out, err := exec.Command("ocamlc", "str.cma", mlFile, "-o", exe).CombinedOutput(); err != nil {
 		os.WriteFile(filepath.Join(outDir, "if_then_else.error"), out, 0o644)
 		t.Fatalf("ocamlc: %v", err)
 	}
@@ -386,7 +386,7 @@ func TestTranspileUnaryNeg(t *testing.T) {
 		t.Fatalf("write ml: %v", err)
 	}
 	exe := filepath.Join(outDir, "unary_neg")
-	if out, err := exec.Command("ocamlc", mlFile, "-o", exe).CombinedOutput(); err != nil {
+	if out, err := exec.Command("ocamlc", "str.cma", mlFile, "-o", exe).CombinedOutput(); err != nil {
 		os.WriteFile(filepath.Join(outDir, "unary_neg.error"), out, 0o644)
 		t.Fatalf("ocamlc: %v", err)
 	}
@@ -432,7 +432,7 @@ func TestTranspileBinaryPrecedence(t *testing.T) {
 		t.Fatalf("write ml: %v", err)
 	}
 	exe := filepath.Join(outDir, "binary_precedence")
-	if out, err := exec.Command("ocamlc", mlFile, "-o", exe).CombinedOutput(); err != nil {
+	if out, err := exec.Command("ocamlc", "str.cma", mlFile, "-o", exe).CombinedOutput(); err != nil {
 		os.WriteFile(filepath.Join(outDir, "binary_precedence.error"), out, 0o644)
 		t.Fatalf("ocamlc: %v", err)
 	}
@@ -478,7 +478,7 @@ func TestTranspileIfThenElseNested(t *testing.T) {
 		t.Fatalf("write ml: %v", err)
 	}
 	exe := filepath.Join(outDir, "if_then_else_nested")
-	if out, err := exec.Command("ocamlc", mlFile, "-o", exe).CombinedOutput(); err != nil {
+	if out, err := exec.Command("ocamlc", "str.cma", mlFile, "-o", exe).CombinedOutput(); err != nil {
 		os.WriteFile(filepath.Join(outDir, "if_then_else_nested.error"), out, 0o644)
 		t.Fatalf("ocamlc: %v", err)
 	}
@@ -524,7 +524,7 @@ func TestTranspileStrBuiltin(t *testing.T) {
 		t.Fatalf("write ml: %v", err)
 	}
 	exe := filepath.Join(outDir, "str_builtin")
-	if out, err := exec.Command("ocamlc", mlFile, "-o", exe).CombinedOutput(); err != nil {
+	if out, err := exec.Command("ocamlc", "str.cma", mlFile, "-o", exe).CombinedOutput(); err != nil {
 		os.WriteFile(filepath.Join(outDir, "str_builtin.error"), out, 0o644)
 		t.Fatalf("ocamlc: %v", err)
 	}
@@ -570,7 +570,7 @@ func TestTranspileTypedLet(t *testing.T) {
 		t.Fatalf("write ml: %v", err)
 	}
 	exe := filepath.Join(outDir, "typed_let")
-	if out, err := exec.Command("ocamlc", mlFile, "-o", exe).CombinedOutput(); err != nil {
+	if out, err := exec.Command("ocamlc", "str.cma", mlFile, "-o", exe).CombinedOutput(); err != nil {
 		os.WriteFile(filepath.Join(outDir, "typed_let.error"), out, 0o644)
 		t.Fatalf("ocamlc: %v", err)
 	}
@@ -616,7 +616,7 @@ func TestTranspileTypedVar(t *testing.T) {
 		t.Fatalf("write ml: %v", err)
 	}
 	exe := filepath.Join(outDir, "typed_var")
-	if out, err := exec.Command("ocamlc", mlFile, "-o", exe).CombinedOutput(); err != nil {
+	if out, err := exec.Command("ocamlc", "str.cma", mlFile, "-o", exe).CombinedOutput(); err != nil {
 		os.WriteFile(filepath.Join(outDir, "typed_var.error"), out, 0o644)
 		t.Fatalf("ocamlc: %v", err)
 	}
@@ -662,7 +662,7 @@ func TestTranspileVarAssignment(t *testing.T) {
 		t.Fatalf("write ml: %v", err)
 	}
 	exe := filepath.Join(outDir, "var_assignment")
-	if out, err := exec.Command("ocamlc", mlFile, "-o", exe).CombinedOutput(); err != nil {
+	if out, err := exec.Command("ocamlc", "str.cma", mlFile, "-o", exe).CombinedOutput(); err != nil {
 		os.WriteFile(filepath.Join(outDir, "var_assignment.error"), out, 0o644)
 		t.Fatalf("ocamlc: %v", err)
 	}
@@ -708,7 +708,7 @@ func TestTranspileLenString(t *testing.T) {
 		t.Fatalf("write ml: %v", err)
 	}
 	exe := filepath.Join(outDir, "len_string")
-	if out, err := exec.Command("ocamlc", mlFile, "-o", exe).CombinedOutput(); err != nil {
+	if out, err := exec.Command("ocamlc", "str.cma", mlFile, "-o", exe).CombinedOutput(); err != nil {
 		os.WriteFile(filepath.Join(outDir, "len_string.error"), out, 0o644)
 		t.Fatalf("ocamlc: %v", err)
 	}
@@ -754,7 +754,7 @@ func TestTranspileIfElse(t *testing.T) {
 		t.Fatalf("write ml: %v", err)
 	}
 	exe := filepath.Join(outDir, "if_else")
-	if out, err := exec.Command("ocamlc", mlFile, "-o", exe).CombinedOutput(); err != nil {
+	if out, err := exec.Command("ocamlc", "str.cma", mlFile, "-o", exe).CombinedOutput(); err != nil {
 		os.WriteFile(filepath.Join(outDir, "if_else.error"), out, 0o644)
 		t.Fatalf("ocamlc: %v", err)
 	}
@@ -800,7 +800,7 @@ func TestTranspileWhileLoop(t *testing.T) {
 		t.Fatalf("write ml: %v", err)
 	}
 	exe := filepath.Join(outDir, "while_loop")
-	if out, err := exec.Command("ocamlc", mlFile, "-o", exe).CombinedOutput(); err != nil {
+	if out, err := exec.Command("ocamlc", "str.cma", mlFile, "-o", exe).CombinedOutput(); err != nil {
 		os.WriteFile(filepath.Join(outDir, "while_loop.error"), out, 0o644)
 		t.Fatalf("ocamlc: %v", err)
 	}
@@ -846,7 +846,7 @@ func TestTranspileSubstringBuiltin(t *testing.T) {
 		t.Fatalf("write ml: %v", err)
 	}
 	exe := filepath.Join(outDir, "substring_builtin")
-	if out, err := exec.Command("ocamlc", mlFile, "-o", exe).CombinedOutput(); err != nil {
+	if out, err := exec.Command("ocamlc", "str.cma", mlFile, "-o", exe).CombinedOutput(); err != nil {
 		os.WriteFile(filepath.Join(outDir, "substring_builtin.error"), out, 0o644)
 		t.Fatalf("ocamlc: %v", err)
 	}
@@ -892,7 +892,7 @@ func TestTranspileSumBuiltin(t *testing.T) {
 		t.Fatalf("write ml: %v", err)
 	}
 	exe := filepath.Join(outDir, "sum_builtin")
-	if out, err := exec.Command("ocamlc", mlFile, "-o", exe).CombinedOutput(); err != nil {
+	if out, err := exec.Command("ocamlc", "str.cma", mlFile, "-o", exe).CombinedOutput(); err != nil {
 		os.WriteFile(filepath.Join(outDir, "sum_builtin.error"), out, 0o644)
 		t.Fatalf("ocamlc: %v", err)
 	}
@@ -938,7 +938,7 @@ func TestTranspileForLoop(t *testing.T) {
 		t.Fatalf("write ml: %v", err)
 	}
 	exe := filepath.Join(outDir, "for_loop")
-	if out, err := exec.Command("ocamlc", mlFile, "-o", exe).CombinedOutput(); err != nil {
+	if out, err := exec.Command("ocamlc", "str.cma", mlFile, "-o", exe).CombinedOutput(); err != nil {
 		os.WriteFile(filepath.Join(outDir, "for_loop.error"), out, 0o644)
 		t.Fatalf("ocamlc: %v", err)
 	}
@@ -984,7 +984,7 @@ func TestTranspileForListCollection(t *testing.T) {
 		t.Fatalf("write ml: %v", err)
 	}
 	exe := filepath.Join(outDir, "for_list_collection")
-	if out, err := exec.Command("ocamlc", mlFile, "-o", exe).CombinedOutput(); err != nil {
+	if out, err := exec.Command("ocamlc", "str.cma", mlFile, "-o", exe).CombinedOutput(); err != nil {
 		os.WriteFile(filepath.Join(outDir, "for_list_collection.error"), out, 0o644)
 		t.Fatalf("ocamlc: %v", err)
 	}
@@ -1030,7 +1030,7 @@ func TestTranspileStringContains(t *testing.T) {
 		t.Fatalf("write ml: %v", err)
 	}
 	exe := filepath.Join(outDir, "string_contains")
-	if out, err := exec.Command("ocamlc", mlFile, "-o", exe).CombinedOutput(); err != nil {
+	if out, err := exec.Command("ocamlc", "str.cma", mlFile, "-o", exe).CombinedOutput(); err != nil {
 		os.WriteFile(filepath.Join(outDir, "string_contains.error"), out, 0o644)
 		t.Fatalf("ocamlc: %v", err)
 	}
@@ -1076,7 +1076,7 @@ func TestTranspileBoolChain(t *testing.T) {
 		t.Fatalf("write ml: %v", err)
 	}
 	exe := filepath.Join(outDir, "bool_chain")
-	if out, err := exec.Command("ocamlc", mlFile, "-o", exe).CombinedOutput(); err != nil {
+	if out, err := exec.Command("ocamlc", "str.cma", mlFile, "-o", exe).CombinedOutput(); err != nil {
 		os.WriteFile(filepath.Join(outDir, "bool_chain.error"), out, 0o644)
 		t.Fatalf("ocamlc: %v", err)
 	}
@@ -1122,7 +1122,7 @@ func TestTranspileListIndex(t *testing.T) {
 		t.Fatalf("write ml: %v", err)
 	}
 	exe := filepath.Join(outDir, "list_index")
-	if out, err := exec.Command("ocamlc", mlFile, "-o", exe).CombinedOutput(); err != nil {
+	if out, err := exec.Command("ocamlc", "str.cma", mlFile, "-o", exe).CombinedOutput(); err != nil {
 		os.WriteFile(filepath.Join(outDir, "list_index.error"), out, 0o644)
 		t.Fatalf("ocamlc: %v", err)
 	}
@@ -1168,7 +1168,7 @@ func TestTranspileStringIndex(t *testing.T) {
 		t.Fatalf("write ml: %v", err)
 	}
 	exe := filepath.Join(outDir, "string_index")
-	if out, err := exec.Command("ocamlc", mlFile, "-o", exe).CombinedOutput(); err != nil {
+	if out, err := exec.Command("ocamlc", "str.cma", mlFile, "-o", exe).CombinedOutput(); err != nil {
 		os.WriteFile(filepath.Join(outDir, "string_index.error"), out, 0o644)
 		t.Fatalf("ocamlc: %v", err)
 	}
@@ -1214,7 +1214,7 @@ func TestTranspileAppendBuiltin(t *testing.T) {
 		t.Fatalf("write ml: %v", err)
 	}
 	exe := filepath.Join(outDir, "append_builtin")
-	if out, err := exec.Command("ocamlc", mlFile, "-o", exe).CombinedOutput(); err != nil {
+	if out, err := exec.Command("ocamlc", "str.cma", mlFile, "-o", exe).CombinedOutput(); err != nil {
 		os.WriteFile(filepath.Join(outDir, "append_builtin.error"), out, 0o644)
 		t.Fatalf("ocamlc: %v", err)
 	}
@@ -1260,7 +1260,7 @@ func TestTranspileAvgBuiltin(t *testing.T) {
 		t.Fatalf("write ml: %v", err)
 	}
 	exe := filepath.Join(outDir, "avg_builtin")
-	if out, err := exec.Command("ocamlc", mlFile, "-o", exe).CombinedOutput(); err != nil {
+	if out, err := exec.Command("ocamlc", "str.cma", mlFile, "-o", exe).CombinedOutput(); err != nil {
 		os.WriteFile(filepath.Join(outDir, "avg_builtin.error"), out, 0o644)
 		t.Fatalf("ocamlc: %v", err)
 	}
@@ -1306,7 +1306,7 @@ func TestTranspileCountBuiltin(t *testing.T) {
 		t.Fatalf("write ml: %v", err)
 	}
 	exe := filepath.Join(outDir, "count_builtin")
-	if out, err := exec.Command("ocamlc", mlFile, "-o", exe).CombinedOutput(); err != nil {
+	if out, err := exec.Command("ocamlc", "str.cma", mlFile, "-o", exe).CombinedOutput(); err != nil {
 		os.WriteFile(filepath.Join(outDir, "count_builtin.error"), out, 0o644)
 		t.Fatalf("ocamlc: %v", err)
 	}
@@ -1352,7 +1352,7 @@ func TestTranspileFunCall(t *testing.T) {
 		t.Fatalf("write ml: %v", err)
 	}
 	exe := filepath.Join(outDir, "fun_call")
-	if out, err := exec.Command("ocamlc", mlFile, "-o", exe).CombinedOutput(); err != nil {
+	if out, err := exec.Command("ocamlc", "str.cma", mlFile, "-o", exe).CombinedOutput(); err != nil {
 		os.WriteFile(filepath.Join(outDir, "fun_call.error"), out, 0o644)
 		t.Fatalf("ocamlc: %v", err)
 	}
@@ -1398,7 +1398,7 @@ func TestTranspileCastStringToInt(t *testing.T) {
 		t.Fatalf("write ml: %v", err)
 	}
 	exe := filepath.Join(outDir, "cast_string_to_int")
-	if out, err := exec.Command("ocamlc", mlFile, "-o", exe).CombinedOutput(); err != nil {
+	if out, err := exec.Command("ocamlc", "str.cma", mlFile, "-o", exe).CombinedOutput(); err != nil {
 		os.WriteFile(filepath.Join(outDir, "cast_string_to_int.error"), out, 0o644)
 		t.Fatalf("ocamlc: %v", err)
 	}
@@ -1444,7 +1444,7 @@ func TestTranspileListNestedAssign(t *testing.T) {
 		t.Fatalf("write ml: %v", err)
 	}
 	exe := filepath.Join(outDir, "list_nested_assign")
-	if out, err := exec.Command("ocamlc", mlFile, "-o", exe).CombinedOutput(); err != nil {
+	if out, err := exec.Command("ocamlc", "str.cma", mlFile, "-o", exe).CombinedOutput(); err != nil {
 		os.WriteFile(filepath.Join(outDir, "list_nested_assign.error"), out, 0o644)
 		t.Fatalf("ocamlc: %v", err)
 	}

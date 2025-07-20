@@ -1,3 +1,8 @@
+## Progress (2025-07-20 11:38 +0700)
+- Checklist updated: 32/100 tests compiled
+- Added Str library support using `string_match` for contains.
+- Compiled programs using `str.cma`.
+
 ## Progress (2025-07-20 10:18 +0700)
 - Checklist updated: 60/100 tests compiled
 - Removed runtime helper functions for cleaner output.
