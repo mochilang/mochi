@@ -1,1 +1,17 @@
-unsupported primary
+exit status 1
+Main.java:2: error: cannot find symbol
+    static Book book = new Book("Go", new Person("Bob", 42));
+           ^
+  symbol:   class Book
+  location: class Main
+Main.java:2: error: cannot find symbol
+    static Book book = new Book("Go", new Person("Bob", 42));
+                           ^
+  symbol:   class Book
+  location: class Main
+Main.java:2: error: cannot find symbol
+    static Book book = new Book("Go", new Person("Bob", 42));
+                                          ^
+  symbol:   class Person
+  location: class Main
+3 errors

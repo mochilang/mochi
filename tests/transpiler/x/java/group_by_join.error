@@ -1,1 +1,26 @@
-unsupported primary
+exit status 1
+Main.java:24: error: <identifier> expected
+         name;
+             ^
+Main.java:26: error: <identifier> expected
+        Data3( name, int count) {
+                   ^
+Main.java:33: error: <identifier> expected
+         name;
+             ^
+Main.java:35: error: <identifier> expected
+        Result4( name, int count) {
+                     ^
+Main.java:43: error: <identifier> expected
+         c;
+          ^
+Main.java:44: error: <identifier> expected
+        Item5(java.util.Map o,  c) {
+                                 ^
+Main.java:51: error: <identifier> expected
+         key;
+            ^
+Main.java:53: error: <identifier> expected
+        Group5( key, java.util.List<Item5> items) {
+                   ^
+8 errors

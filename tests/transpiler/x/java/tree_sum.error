@@ -1,1 +1,87 @@
-unsupported primary
+exit status 1
+Main.java:2: error: cannot find symbol
+    static Node t = new Node(Leaf, 1, new Node(Leaf, 2, Leaf));
+           ^
+  symbol:   class Node
+  location: class Main
+Main.java:4: error: cannot find symbol
+    static int sum_tree(Tree t) {
+                        ^
+  symbol:   class Tree
+  location: class Main
+Main.java:2: error: cannot find symbol
+    static Node t = new Node(Leaf, 1, new Node(Leaf, 2, Leaf));
+                        ^
+  symbol:   class Node
+  location: class Main
+Main.java:2: error: cannot find symbol
+    static Node t = new Node(Leaf, 1, new Node(Leaf, 2, Leaf));
+                             ^
+  symbol:   variable Leaf
+  location: class Main
+Main.java:2: error: cannot find symbol
+    static Node t = new Node(Leaf, 1, new Node(Leaf, 2, Leaf));
+                                          ^
+  symbol:   class Node
+  location: class Main
+Main.java:2: error: cannot find symbol
+    static Node t = new Node(Leaf, 1, new Node(Leaf, 2, Leaf));
+                                               ^
+  symbol:   variable Leaf
+  location: class Main
+Main.java:2: error: cannot find symbol
+    static Node t = new Node(Leaf, 1, new Node(Leaf, 2, Leaf));
+                                                        ^
+  symbol:   variable Leaf
+  location: class Main
+Main.java:5: error: cannot find symbol
+        return t == Leaf ? 0 : t == Node(left, value, right) ? sum_tree(left) + value + sum_tree(right) : sum_tree(left) + value + sum_tree(right);
+                    ^
+  symbol:   variable Leaf
+  location: class Main
+Main.java:5: error: cannot find symbol
+        return t == Leaf ? 0 : t == Node(left, value, right) ? sum_tree(left) + value + sum_tree(right) : sum_tree(left) + value + sum_tree(right);
+                                         ^
+  symbol:   variable left
+  location: class Main
+Main.java:5: error: cannot find symbol
+        return t == Leaf ? 0 : t == Node(left, value, right) ? sum_tree(left) + value + sum_tree(right) : sum_tree(left) + value + sum_tree(right);
+                                               ^
+  symbol:   variable value
+  location: class Main
+Main.java:5: error: cannot find symbol
+        return t == Leaf ? 0 : t == Node(left, value, right) ? sum_tree(left) + value + sum_tree(right) : sum_tree(left) + value + sum_tree(right);
+                                                      ^
+  symbol:   variable right
+  location: class Main
+Main.java:5: error: cannot find symbol
+        return t == Leaf ? 0 : t == Node(left, value, right) ? sum_tree(left) + value + sum_tree(right) : sum_tree(left) + value + sum_tree(right);
+                                                                        ^
+  symbol:   variable left
+  location: class Main
+Main.java:5: error: cannot find symbol
+        return t == Leaf ? 0 : t == Node(left, value, right) ? sum_tree(left) + value + sum_tree(right) : sum_tree(left) + value + sum_tree(right);
+                                                                                ^
+  symbol:   variable value
+  location: class Main
+Main.java:5: error: cannot find symbol
+        return t == Leaf ? 0 : t == Node(left, value, right) ? sum_tree(left) + value + sum_tree(right) : sum_tree(left) + value + sum_tree(right);
+                                                                                                 ^
+  symbol:   variable right
+  location: class Main
+Main.java:5: error: cannot find symbol
+        return t == Leaf ? 0 : t == Node(left, value, right) ? sum_tree(left) + value + sum_tree(right) : sum_tree(left) + value + sum_tree(right);
+                                                                                                                   ^
+  symbol:   variable left
+  location: class Main
+Main.java:5: error: cannot find symbol
+        return t == Leaf ? 0 : t == Node(left, value, right) ? sum_tree(left) + value + sum_tree(right) : sum_tree(left) + value + sum_tree(right);
+                                                                                                                           ^
+  symbol:   variable value
+  location: class Main
+Main.java:5: error: cannot find symbol
+        return t == Leaf ? 0 : t == Node(left, value, right) ? sum_tree(left) + value + sum_tree(right) : sum_tree(left) + value + sum_tree(right);
+                                                                                                                                            ^
+  symbol:   variable right
+  location: class Main
+17 errors

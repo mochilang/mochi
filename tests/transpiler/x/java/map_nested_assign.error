@@ -1,17 +1,8 @@
 exit status 1
-Main.java:5: error: incompatible types: String cannot be converted to int
-data["outer"]["inner"] = 2;
-     ^
-Main.java:5: error: array required, but Map found
-data["outer"]["inner"] = 2;
-    ^
-Main.java:5: error: incompatible types: String cannot be converted to int
-data["outer"]["inner"] = 2;
+Main.java:11: error: <identifier> expected
+         outer;
               ^
-Main.java:6: error: incompatible types: String cannot be converted to int
-        System.out.println(data.get("outer")["inner"]);
-                                             ^
-Main.java:6: error: array required, but Object found
-        System.out.println(data.get("outer")["inner"]);
-                                            ^
-5 errors
+Main.java:12: error: <identifier> expected
+        Data1( outer) {
+                    ^
+2 errors

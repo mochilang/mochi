@@ -1,1 +1,16 @@
-unsupported primary
+exit status 1
+Main.java:3: error: unexpected type
+    static java.util.List<int> result = new java.util.ArrayList<int>() {{ for (var n : nums) { if (n > 1) { add(sum(n)); } }}};
+                          ^
+  required: reference
+  found:    int
+Main.java:3: error: unexpected type
+    static java.util.List<int> result = new java.util.ArrayList<int>() {{ for (var n : nums) { if (n > 1) { add(sum(n)); } }}};
+                                                                ^
+  required: reference
+  found:    int
+Main.java:3: error: cannot find symbol
+    static java.util.List<int> result = new java.util.ArrayList<int>() {{ for (var n : nums) { if (n > 1) { add(sum(n)); } }}};
+                                                                                                                ^
+  symbol: method sum(int)
+3 errors

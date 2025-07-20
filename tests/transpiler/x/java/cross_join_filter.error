@@ -1,0 +1,14 @@
+exit status 1
+Main.java:6: error: <identifier> expected
+         n;
+          ^
+Main.java:7: error: <identifier> expected
+         l;
+          ^
+Main.java:8: error: <identifier> expected
+        Data1( n,  l) {
+                ^
+Main.java:8: error: <identifier> expected
+        Data1( n,  l) {
+                    ^
+4 errors

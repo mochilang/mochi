@@ -1,11 +1,20 @@
 public class Main {
     static int[] nums = new int[]{1, 2, 3};
     static String[] letters = new String[]{"A", "B"};
-    static java.util.List<Result1> pairs = new java.util.ArrayList<Result1>() {{ for (var n : nums) { for (var l : letters) { if (n % 2 == 0) { add(new Result1(n, l)); } } }}};
-    static class Result1 {
+    static java.util.List<Result2> pairs = new java.util.ArrayList<Result2>() {{ for (var n : nums) { for (var l : letters) { if (n % 2 == 0) { add(new Result2(n, l)); } } }}};
+    static class Data1 {
+         n;
+         l;
+        Data1( n,  l) {
+            this.n = n;
+            this.l = l;
+        }
+    }
+
+    static class Result2 {
         int n;
         String l;
-        Result1(int n, String l) {
+        Result2(int n, String l) {
             this.n = n;
             this.l = l;
         }

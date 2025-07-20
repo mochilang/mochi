@@ -1551,9 +1551,30 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 		}
 		return &ListLit{Elems: elems}, nil
 	case p.Map != nil:
-		keys := make([]Expr, len(p.Map.Items))
-		vals := make([]Expr, len(p.Map.Items))
-		for i, it := range p.Map.Items {
+		ml := p.Map
+		if st, ok := types.InferStructFromMapEnv(ml, topEnv); ok {
+			structCount++
+			name := fmt.Sprintf("Data%d", structCount)
+			st.Name = name
+			if topEnv != nil {
+				topEnv.SetStruct(name, st)
+			}
+			fields := make([]Param, len(st.Order))
+			vals := make([]Expr, len(st.Order))
+			for i, it := range ml.Items {
+				v, err := compileExpr(it.Value)
+				if err != nil {
+					return nil, err
+				}
+				vals[i] = v
+				fields[i] = Param{Name: st.Order[i], Type: toJavaTypeFromType(st.Fields[st.Order[i]])}
+			}
+			extraDecls = append(extraDecls, &TypeDeclStmt{Name: name, Fields: fields})
+			return &StructLit{Name: name, Fields: vals, Names: st.Order}, nil
+		}
+		keys := make([]Expr, len(ml.Items))
+		vals := make([]Expr, len(ml.Items))
+		for i, it := range ml.Items {
 			ke, err := compileExpr(it.Key)
 			if err != nil {
 				return nil, err
@@ -1567,17 +1588,17 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 		}
 		return &MapLit{Keys: keys, Values: vals}, nil
 	case p.Struct != nil:
-		keys := make([]Expr, len(p.Struct.Fields))
+		names := make([]string, len(p.Struct.Fields))
 		vals := make([]Expr, len(p.Struct.Fields))
 		for i, f := range p.Struct.Fields {
-			keys[i] = &StringLit{Value: f.Name}
+			names[i] = f.Name
 			v, err := compileExpr(f.Value)
 			if err != nil {
 				return nil, err
 			}
 			vals[i] = v
 		}
-		return &MapLit{Keys: keys, Values: vals}, nil
+		return &StructLit{Name: p.Struct.Name, Fields: vals, Names: names}, nil
 	case p.FunExpr != nil:
 		return compileFunExpr(p.FunExpr)
 	case p.Match != nil:

@@ -1,0 +1,7 @@
+exit status 1
+Main.java:14: error: for-each not applicable to expression type
+        for (var k : m) {
+                     ^
+  required: array or java.lang.Iterable
+  found:    Data1
+1 error

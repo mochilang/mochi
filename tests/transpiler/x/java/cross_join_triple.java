@@ -2,12 +2,23 @@ public class Main {
     static int[] nums = new int[]{1, 2};
     static String[] letters = new String[]{"A", "B"};
     static boolean[] bools = new boolean[]{true, false};
-    static java.util.List<Result1> combos = new java.util.ArrayList<Result1>() {{ for (var n : nums) { for (var l : letters) { for (var b : bools) { add(new Result1(n, l, b)); } } }}};
-    static class Result1 {
+    static java.util.List<Result2> combos = new java.util.ArrayList<Result2>() {{ for (var n : nums) { for (var l : letters) { for (var b : bools) { add(new Result2(n, l, b)); } } }}};
+    static class Data1 {
+         n;
+         l;
+         b;
+        Data1( n,  l,  b) {
+            this.n = n;
+            this.l = l;
+            this.b = b;
+        }
+    }
+
+    static class Result2 {
         int n;
         String l;
         boolean b;
-        Result1(int n, String l, boolean b) {
+        Result2(int n, String l, boolean b) {
             this.n = n;
             this.l = l;
             this.b = b;

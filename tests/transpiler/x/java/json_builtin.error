@@ -1,15 +1,7 @@
 exit status 1
-Main.java:2: error: cannot find symbol
-    static java.util.Map m = new java.util.LinkedHashMap<>() {{ put(a, 1); put(b, 2); }};
-                                                                    ^
-  symbol: variable a
-Main.java:2: error: cannot find symbol
-    static java.util.Map m = new java.util.LinkedHashMap<>() {{ put(a, 1); put(b, 2); }};
-                                                                               ^
-  symbol: variable b
-Main.java:5: error: cannot find symbol
+Main.java:14: error: cannot find symbol
         json(m);
         ^
-  symbol:   method json(Map)
+  symbol:   method json(Data1)
   location: class Main
-3 errors
+1 error

@@ -1,1 +1,12 @@
-unsupported primary
+exit status 1
+Main.java:3: error: unexpected type
+    static boolean flag = exists(new java.util.ArrayList<int>() {{ for (var x : data) { if (x == 1) { add(x); } }}});
+                                                         ^
+  required: reference
+  found:    int
+Main.java:3: error: cannot find symbol
+    static boolean flag = exists(new java.util.ArrayList<int>() {{ for (var x : data) { if (x == 1) { add(x); } }}});
+                          ^
+  symbol:   method exists(<anonymous ArrayList<<any>>>)
+  location: class Main
+2 errors
