@@ -1126,6 +1126,25 @@ func convertPrimary(p *parser.Primary, env *types.Env) (Expr, error) {
 			}
 		}
 		return nil, fmt.Errorf("unsupported primary")
+	case p.Call != nil && p.Call.Func == "substring" && len(p.Call.Args) == 3:
+		sLit, ok1 := literalExpr(p.Call.Args[0]).(*StringLit)
+		startLit, ok2 := literalExpr(p.Call.Args[1]).(*IntLit)
+		endLit, ok3 := literalExpr(p.Call.Args[2]).(*IntLit)
+		if ok1 && ok2 && ok3 {
+			start := startLit.Value
+			if start < 0 {
+				start = 0
+			}
+			end := endLit.Value
+			if end < start {
+				end = start
+			}
+			if end > len(sLit.Value) {
+				end = len(sLit.Value)
+			}
+			return &StringLit{Value: sLit.Value[start:end]}, nil
+		}
+		return nil, fmt.Errorf("unsupported primary")
 	case p.Selector != nil && len(p.Selector.Tail) == 0:
 		return &VarRef{Name: p.Selector.Root}, nil
 	case p.Group != nil:
