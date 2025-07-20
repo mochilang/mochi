@@ -471,6 +471,36 @@ func (i *IfExpr) emit(w io.Writer) {
 	}
 }
 
+type MatchArm struct {
+	Pattern Expr // nil for _
+	Result  Expr
+}
+
+type MatchExpr struct {
+	Target Expr
+	Arms   []MatchArm
+}
+
+func (m *MatchExpr) emit(w io.Writer) {
+	io.WriteString(w, "match ")
+	m.Target.emit(w)
+	io.WriteString(w, " { ")
+	for i, a := range m.Arms {
+		if i > 0 {
+			io.WriteString(w, " ")
+		}
+		if a.Pattern != nil {
+			a.Pattern.emit(w)
+		} else {
+			io.WriteString(w, "_")
+		}
+		io.WriteString(w, " => ")
+		a.Result.emit(w)
+		io.WriteString(w, ",")
+	}
+	io.WriteString(w, " }")
+}
+
 type IfStmt struct {
 	Cond   Expr
 	Then   []Stmt
@@ -1044,6 +1074,8 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 			ret = rustType(*p.FunExpr.Return.Simple)
 		}
 		return &FunLit{Params: params, Return: ret, Expr: expr}, nil
+	case p.Match != nil:
+		return compileMatchExpr(p.Match)
 	case p.If != nil:
 		return compileIfExpr(p.If)
 	case p.Group != nil:
@@ -1078,6 +1110,29 @@ func compileIfExpr(n *parser.IfExpr) (Expr, error) {
 		elseExpr = e
 	}
 	return &IfExpr{Cond: cond, Then: thenExpr, ElseIf: elseIf, Else: elseExpr}, nil
+}
+
+func compileMatchExpr(me *parser.MatchExpr) (Expr, error) {
+	target, err := compileExpr(me.Target)
+	if err != nil {
+		return nil, err
+	}
+	arms := make([]MatchArm, len(me.Cases))
+	for i, c := range me.Cases {
+		pat, err := compileExpr(c.Pattern)
+		if err != nil {
+			return nil, err
+		}
+		if n, ok := pat.(*NameRef); ok && n.Name == "_" {
+			pat = nil
+		}
+		res, err := compileExpr(c.Result)
+		if err != nil {
+			return nil, err
+		}
+		arms[i] = MatchArm{Pattern: pat, Result: res}
+	}
+	return &MatchExpr{Target: target, Arms: arms}, nil
 }
 
 func compileLiteral(l *parser.Literal) (Expr, error) {
@@ -1139,7 +1194,27 @@ func inferType(e Expr) string {
 			t2 = inferType(ex.Else)
 		}
 		if t1 == t2 {
+			if t1 == "String" {
+				return ""
+			}
 			return t1
+		}
+	case *MatchExpr:
+		if len(ex.Arms) > 0 {
+			t := inferType(ex.Arms[0].Result)
+			same := true
+			for _, a := range ex.Arms[1:] {
+				if inferType(a.Result) != t {
+					same = false
+					break
+				}
+			}
+			if same {
+				if t == "String" {
+					return ""
+				}
+				return t
+			}
 		}
 	case *IndexExpr:
 		ct := inferType(ex.Target)
