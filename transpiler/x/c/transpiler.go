@@ -429,6 +429,33 @@ func (b *BinaryExpr) emitExpr(w io.Writer) {
 		io.WriteString(w, ") != NULL")
 		return
 	}
+	if b.Op == "in" {
+		if list, ok := evalList(b.Right); ok {
+			io.WriteString(w, "(")
+			if len(list.Elems) == 0 {
+				io.WriteString(w, "0")
+			} else {
+				for i, e := range list.Elems {
+					if i > 0 {
+						io.WriteString(w, " || ")
+					}
+					if exprIsString(b.Left) || exprIsString(e) {
+						io.WriteString(w, "strcmp(")
+						b.Left.emitExpr(w)
+						io.WriteString(w, ", ")
+						e.emitExpr(w)
+						io.WriteString(w, ") == 0")
+					} else {
+						b.Left.emitExpr(w)
+						io.WriteString(w, " == ")
+						e.emitExpr(w)
+					}
+				}
+			}
+			io.WriteString(w, ")")
+			return
+		}
+	}
 	if (exprIsString(b.Left) || exprIsString(b.Right)) &&
 		(b.Op == "==" || b.Op == "!=" || b.Op == "<" || b.Op == "<=" || b.Op == ">" || b.Op == ">=") {
 		io.WriteString(w, "strcmp(")
