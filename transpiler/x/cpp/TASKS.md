@@ -1,3 +1,23 @@
+## Progress (2025-07-20 22:24 +0700)
+- cpp transpiler: improve type inference
+- Generated C++ for 69/100 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-20 22:24 +0700)
+- cpp transpiler: improve type inference
+- Generated C++ for 68/100 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-20 22:24 +0700)
+- cpp transpiler: improve type inference
+- Generated C++ for 78/100 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-20 22:24 +0700)
+- cpp transpiler: improve type inference
+- Generated C++ for 73/100 programs
+- Updated README checklist and outputs
+
 ## Progress (2025-07-20 21:59 +0700)
 - c transpiler: add values builtin
 - Generated C++ for 73/100 programs

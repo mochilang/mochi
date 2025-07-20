@@ -271,6 +271,20 @@ type GroupComp struct {
 	ItemType    string
 }
 
+// SortComp represents a query with optional sorting and slicing.
+type SortComp struct {
+	Vars     []string
+	Iters    []Expr
+	Cond     Expr
+	Key      Expr
+	Desc     bool
+	Skip     Expr
+	Take     Expr
+	Body     Expr
+	ElemType string
+	KeyType  string
+}
+
 func (p *Program) Emit() []byte {
 	var buf bytes.Buffer
 	p.write(&buf)
@@ -775,6 +789,65 @@ func (gc *GroupComp) emit(w io.Writer) {
 	io.WriteString(w, "return __items; }())")
 }
 
+func (sc *SortComp) emit(w io.Writer) {
+	io.WriteString(w, "([]{ std::vector<std::pair<"+sc.KeyType+", "+sc.ElemType+">> __tmp;\n")
+	for i, v := range sc.Vars {
+		io.WriteString(w, "for (auto ")
+		io.WriteString(w, v)
+		io.WriteString(w, " : ")
+		sc.Iters[i].emit(w)
+		io.WriteString(w, ") {\n")
+	}
+	if sc.Cond != nil {
+		io.WriteString(w, "    if(")
+		sc.Cond.emit(w)
+		io.WriteString(w, ") {\n")
+	}
+	io.WriteString(w, "        __tmp.emplace_back(")
+	if sc.Key != nil {
+		sc.Key.emit(w)
+	} else {
+		io.WriteString(w, "0")
+	}
+	io.WriteString(w, ", ")
+	sc.Body.emit(w)
+	io.WriteString(w, ");\n")
+	if sc.Cond != nil {
+		io.WriteString(w, "    }\n")
+	}
+	for range sc.Vars {
+		io.WriteString(w, "}\n")
+	}
+	io.WriteString(w, "std::sort(__tmp.begin(), __tmp.end(), [](const auto& a,const auto& b){ return a.first ")
+	if sc.Desc {
+		io.WriteString(w, ">")
+	} else {
+		io.WriteString(w, "<")
+	}
+	io.WriteString(w, " b.first; });\n")
+	io.WriteString(w, "std::vector<"+sc.ElemType+"> __items;\n")
+	if sc.Skip != nil {
+		io.WriteString(w, "auto __skip = ")
+		sc.Skip.emit(w)
+		io.WriteString(w, ";\n")
+	}
+	if sc.Take != nil {
+		io.WriteString(w, "auto __take = ")
+		sc.Take.emit(w)
+		io.WriteString(w, ";\n")
+	}
+	io.WriteString(w, "for(size_t __i=0; __i<__tmp.size(); ++__i){\n")
+	if sc.Skip != nil {
+		io.WriteString(w, "    if(__i < static_cast<size_t>(__skip)) continue;\n")
+	}
+	if sc.Take != nil {
+		io.WriteString(w, "    if(__items.size() >= static_cast<size_t>(__take)) break;\n")
+	}
+	io.WriteString(w, "    __items.push_back(__tmp[__i].second);\n")
+	io.WriteString(w, "}\n")
+	io.WriteString(w, "return __items; }())")
+}
+
 func (e *ExistsExpr) emit(w io.Writer) {
 	if currentProgram != nil {
 		currentProgram.addInclude("<vector>")
@@ -1018,6 +1091,8 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 					}
 				} else if comp, ok := val.(*MultiListComp); ok {
 					typ = fmt.Sprintf("std::vector<%s>", comp.ElemType)
+				} else if scomp, ok := val.(*SortComp); ok {
+					typ = fmt.Sprintf("std::vector<%s>", scomp.ElemType)
 				} else if gcomp, ok := val.(*GroupComp); ok {
 					typ = fmt.Sprintf("std::vector<%s>", gcomp.ElemType)
 				}
@@ -1055,6 +1130,8 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 					}
 				} else if comp, ok := val.(*MultiListComp); ok {
 					typ = fmt.Sprintf("std::vector<%s>", comp.ElemType)
+				} else if scomp, ok := val.(*SortComp); ok {
+					typ = fmt.Sprintf("std::vector<%s>", scomp.ElemType)
 				} else if gcomp, ok := val.(*GroupComp); ok {
 					typ = fmt.Sprintf("std::vector<%s>", gcomp.ElemType)
 				}
@@ -1750,7 +1827,7 @@ func convertIfExpr(ie *parser.IfExpr) (*IfExpr, error) {
 }
 
 func convertSimpleQuery(q *parser.QueryExpr, target string) (Expr, *StructDef, string, error) {
-	if q.Sort != nil || q.Skip != nil || q.Take != nil || q.Distinct {
+	if q.Distinct {
 		return nil, nil, "", fmt.Errorf("unsupported query")
 	}
 	vars := []string{q.Var}
@@ -1936,6 +2013,40 @@ func convertSimpleQuery(q *parser.QueryExpr, target string) (Expr, *StructDef, s
 	}
 	if currentProgram != nil {
 		currentProgram.addInclude("<vector>")
+		if q.Sort != nil {
+			currentProgram.addInclude("<algorithm>")
+		}
+	}
+	if q.Sort != nil || q.Skip != nil || q.Take != nil {
+		var keyExpr Expr
+		var keyType string = "int"
+		var desc bool
+		var err error
+		if q.Sort != nil {
+			keyExpr, err = convertExpr(q.Sort)
+			if err != nil {
+				return nil, nil, "", err
+			}
+			if u, ok := keyExpr.(*UnaryExpr); ok && u.Op == "-" {
+				keyExpr = u.Expr
+				desc = true
+			}
+			keyType = exprType(keyExpr)
+		}
+		var skipExpr, takeExpr Expr
+		if q.Skip != nil {
+			skipExpr, err = convertExpr(q.Skip)
+			if err != nil {
+				return nil, nil, "", err
+			}
+		}
+		if q.Take != nil {
+			takeExpr, err = convertExpr(q.Take)
+			if err != nil {
+				return nil, nil, "", err
+			}
+		}
+		return &SortComp{Vars: vars, Iters: iters, Cond: cond, Key: keyExpr, Desc: desc, Skip: skipExpr, Take: takeExpr, Body: body, ElemType: elemType, KeyType: keyType}, def, elemType, nil
 	}
 	return &MultiListComp{Vars: vars, Iters: iters, Expr: body, Cond: cond, ElemType: elemType}, def, elemType, nil
 }
@@ -2158,6 +2269,8 @@ func exprType(e Expr) string {
 	case *MultiListComp:
 		return fmt.Sprintf("std::vector<%s>", v.ElemType)
 	case *GroupComp:
+		return fmt.Sprintf("std::vector<%s>", v.ElemType)
+	case *SortComp:
 		return fmt.Sprintf("std::vector<%s>", v.ElemType)
 	case *ExistsExpr:
 		return "bool"
