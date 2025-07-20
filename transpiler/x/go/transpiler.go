@@ -295,6 +295,20 @@ type MapLit struct {
 	Values    []Expr
 }
 
+func updateMapLitTypes(ml *MapLit, t types.Type) {
+	mt, ok := t.(types.MapType)
+	if !ok {
+		return
+	}
+	ml.KeyType = toGoTypeFromType(mt.Key)
+	ml.ValueType = toGoTypeFromType(mt.Value)
+	for _, v := range ml.Values {
+		if inner, ok := v.(*MapLit); ok {
+			updateMapLitTypes(inner, mt.Value)
+		}
+	}
+}
+
 func (m *MapLit) emit(w io.Writer) {
 	fmt.Fprintf(w, "map[%s]%s{", m.KeyType, m.ValueType)
 	for i := range m.Keys {
@@ -545,9 +559,9 @@ func (v *ValuesExpr) emit(w io.Writer) {
 type ListStringExpr struct{ List Expr }
 
 func (ls *ListStringExpr) emit(w io.Writer) {
-	io.WriteString(w, "func() string { return fmt.Sprint(")
+	io.WriteString(w, "func() string { var sb strings.Builder; sb.WriteByte('['); for i, v := range ")
 	ls.List.emit(w)
-	io.WriteString(w, ") }()")
+	io.WriteString(w, " { if i > 0 { sb.WriteString(\", \") }; sb.WriteString(fmt.Sprint(v)) }; sb.WriteByte(']'); return sb.String() }()")
 }
 
 // FloatStringExpr formats a float with a trailing decimal.
@@ -718,11 +732,14 @@ func compileStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 					t := types.TypeOfExpr(a, env)
 					switch t.(type) {
 					case types.ListType:
+						usesStrings = true
 						ex = &ListStringExpr{List: ex}
 					case types.FloatType:
 						ex = &FloatStringExpr{Value: ex}
 					case types.BoolType:
-						ex = &BoolIntExpr{Expr: ex}
+						if _, ok := ex.(*ContainsExpr); !ok {
+							ex = &BoolIntExpr{Expr: ex}
+						}
 					}
 				}
 				args[i] = ex
@@ -747,12 +764,9 @@ func compileStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 			if err != nil {
 				return nil, err
 			}
-			if ml, ok := e.(*MapLit); ok && ml.KeyType == "any" {
+			if ml, ok := e.(*MapLit); ok {
 				if t, err := env.GetVar(st.Let.Name); err == nil {
-					if mt, ok2 := t.(types.MapType); ok2 {
-						ml.KeyType = toGoTypeFromType(mt.Key)
-						ml.ValueType = toGoTypeFromType(mt.Value)
-					}
+					updateMapLitTypes(ml, t)
 				}
 			}
 			if typ == "" {
@@ -780,12 +794,9 @@ func compileStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 			if err != nil {
 				return nil, err
 			}
-			if ml, ok := e.(*MapLit); ok && ml.KeyType == "any" {
+			if ml, ok := e.(*MapLit); ok {
 				if t, err := env.GetVar(st.Var.Name); err == nil {
-					if mt, ok2 := t.(types.MapType); ok2 {
-						ml.KeyType = toGoTypeFromType(mt.Key)
-						ml.ValueType = toGoTypeFromType(mt.Value)
-					}
+					updateMapLitTypes(ml, t)
 				}
 			}
 			if typ == "" {

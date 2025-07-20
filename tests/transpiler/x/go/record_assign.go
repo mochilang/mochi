@@ -7,6 +7,12 @@ import (
 	"fmt"
 )
 
+func inc(c any) any {
+	c["n"] = (c["n"] + 1)
+}
+
 func main() {
-	fmt.Println(fmt.Sprint(123))
+	var c map[string]any = map[string]any{"n": 0}
+	inc(c)
+	fmt.Println(c["n"])
 }
