@@ -5,8 +5,7 @@
 int main(void) {
     {
         int n_arr[] = {1, 2, 3};
-        int n_len = (int)(sizeof(n_arr)/sizeof(n_arr[0]));
-        for (int i = 0; i < n_len; i++) {
+        for (int i = 0; i < 3; i++) {
             int n = n_arr[i];
             printf("%d\n", n);
         }
