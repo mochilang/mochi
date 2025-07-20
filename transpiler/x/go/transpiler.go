@@ -30,6 +30,8 @@ var (
 	usesPrint   bool
 	usesSort    bool
 	topEnv      *types.Env
+	extraDecls  []Stmt
+	structCount int
 )
 
 type Stmt interface{ emit(io.Writer) }
@@ -795,6 +797,8 @@ func Transpile(p *parser.Program, env *types.Env) (*Program, error) {
 	usesPrint = false
 	usesSort = false
 	topEnv = env
+	extraDecls = nil
+	structCount = 0
 	gp := &Program{}
 	for _, stmt := range p.Statements {
 		s, err := compileStmt(stmt, env)
@@ -803,6 +807,10 @@ func Transpile(p *parser.Program, env *types.Env) (*Program, error) {
 		}
 		if s != nil {
 			gp.Stmts = append(gp.Stmts, s)
+		}
+		if len(extraDecls) > 0 {
+			gp.Stmts = append(gp.Stmts, extraDecls...)
+			extraDecls = nil
 		}
 	}
 	_ = env // reserved for future use
@@ -887,6 +895,12 @@ func compileStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 					typ = ""
 				}
 			}
+			if ll, ok := e.(*ListLit); ok && ll.ElemType != "" {
+				typ = "[]" + ll.ElemType
+			}
+			if qe, ok := e.(*QueryExpr); ok && qe.ElemType != "" {
+				typ = "[]" + qe.ElemType
+			}
 			return &VarDecl{Name: st.Let.Name, Type: typ, Value: e, Global: env == topEnv}, nil
 		}
 		return &VarDecl{Name: st.Let.Name, Type: typ, Global: env == topEnv}, nil
@@ -916,6 +930,12 @@ func compileStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 				if _, ok := t.(types.FuncType); ok {
 					typ = ""
 				}
+			}
+			if ll, ok := e.(*ListLit); ok && ll.ElemType != "" {
+				typ = "[]" + ll.ElemType
+			}
+			if qe, ok := e.(*QueryExpr); ok && qe.ElemType != "" {
+				typ = "[]" + qe.ElemType
 			}
 			return &VarDecl{Name: st.Var.Name, Type: typ, Value: e, Global: env == topEnv}, nil
 		}
@@ -1154,7 +1174,33 @@ func compileQueryExpr(q *parser.QueryExpr, env *types.Env) (Expr, error) {
 	if err != nil {
 		return nil, err
 	}
-	et := toGoTypeFromType(types.ExprType(q.Select, child))
+	et := ""
+	if ml := mapLiteral(q.Select); ml != nil {
+		if st, ok := types.InferStructFromMapEnv(ml, child); ok {
+			structCount++
+			name := types.UniqueStructName(fmt.Sprintf("Result%d", structCount), topEnv, nil)
+			st.Name = name
+			if topEnv != nil {
+				topEnv.SetStruct(name, st)
+			}
+			fieldsDecl := make([]ParamDecl, len(st.Order))
+			vals := make([]Expr, len(st.Order))
+			for i, it := range ml.Items {
+				fieldsDecl[i] = ParamDecl{Name: st.Order[i], Type: toGoTypeFromType(st.Fields[st.Order[i]])}
+				v, err := compileExpr(it.Value, child)
+				if err != nil {
+					return nil, err
+				}
+				vals[i] = v
+			}
+			extraDecls = append(extraDecls, &TypeDeclStmt{Name: name, Fields: fieldsDecl})
+			sel = &StructLit{Name: name, Fields: vals, Names: st.Order}
+			et = name
+		}
+	}
+	if et == "" {
+		et = toGoTypeFromType(types.ExprType(q.Select, child))
+	}
 	if et == "" {
 		et = "any"
 	}
@@ -1677,6 +1723,33 @@ func compilePrimary(p *parser.Primary, env *types.Env) (Expr, error) {
 		}
 		return &CallExpr{Func: name, Args: args}, nil
 	case p.List != nil:
+		if st, ok := types.InferStructFromList(p.List, env); ok {
+			structCount++
+			name := types.UniqueStructName(fmt.Sprintf("Data%d", structCount), topEnv, nil)
+			st.Name = name
+			if topEnv != nil {
+				topEnv.SetStruct(name, st)
+			}
+			fieldsDecl := make([]ParamDecl, len(st.Order))
+			for i, fn := range st.Order {
+				fieldsDecl[i] = ParamDecl{Name: fn, Type: toGoTypeFromType(st.Fields[fn])}
+			}
+			extraDecls = append(extraDecls, &TypeDeclStmt{Name: name, Fields: fieldsDecl})
+			elems := make([]Expr, len(p.List.Elems))
+			for i, e := range p.List.Elems {
+				ml := e.Binary.Left.Value.Target.Map
+				vals := make([]Expr, len(st.Order))
+				for j, it := range ml.Items {
+					ve, err := compileExpr(it.Value, env)
+					if err != nil {
+						return nil, err
+					}
+					vals[j] = ve
+				}
+				elems[i] = &StructLit{Name: name, Fields: vals, Names: st.Order}
+			}
+			return &ListLit{ElemType: name, Elems: elems}, nil
+		}
 		elems := make([]Expr, len(p.List.Elems))
 		elemType := "any"
 		if len(p.List.Elems) > 0 {
@@ -2234,4 +2307,19 @@ func toNodeExpr(e Expr) *ast.Node {
 	default:
 		return &ast.Node{Kind: "unknown"}
 	}
+}
+
+func mapLiteral(e *parser.Expr) *parser.MapLiteral {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) != 0 {
+		return nil
+	}
+	u := e.Binary.Left
+	if len(u.Ops) != 0 || u.Value == nil {
+		return nil
+	}
+	v := u.Value
+	if len(v.Ops) != 0 || v.Target == nil {
+		return nil
+	}
+	return v.Target.Map
 }
