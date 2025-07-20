@@ -330,3 +330,5 @@ tools/tcc/tools/
 # Ignore OCaml build artifacts
 /tests/transpiler/x/ocaml/*.cmi
 /tests/transpiler/x/ocaml/*.cmo
+zig-linux-x86_64-0.11.0/
+zig-x86_64-linux-0.15.0-dev.1147+69cf40da6/

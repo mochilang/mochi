@@ -12,6 +12,8 @@ import (
 	"mochi/types"
 )
 
+var constLists map[string]*ListLit
+
 // Program represents a Zig source file with one or more functions.
 type Program struct {
 	Functions []*Func
@@ -162,7 +164,13 @@ func (v *VarDecl) emit(w io.Writer, indent int) {
 	if v.Mutable {
 		kw = "var"
 	}
-	fmt.Fprintf(w, "%s %s = ", kw, v.Name)
+	fmt.Fprintf(w, "%s %s", kw, v.Name)
+	if v.Mutable {
+		if _, ok := v.Value.(*IntLit); ok {
+			io.WriteString(w, ": i64")
+		}
+	}
+	io.WriteString(w, " = ")
 	if v.Value == nil {
 		io.WriteString(w, "0")
 	} else {
@@ -205,6 +213,40 @@ func (b *BinaryExpr) emit(w io.Writer) {
 		if l, ok := b.Left.(*StringLit); ok {
 			if r, ok2 := b.Right.(*StringLit); ok2 {
 				fmt.Fprintf(w, "%q", l.Value+r.Value)
+				return
+			}
+		}
+	}
+	if _, ok := b.Left.(*StringLit); ok {
+		if _, ok2 := b.Right.(*StringLit); ok2 {
+			switch b.Op {
+			case "<":
+				io.WriteString(w, "std.mem.order(u8, ")
+				b.Left.emit(w)
+				io.WriteString(w, ", ")
+				b.Right.emit(w)
+				io.WriteString(w, ") == .lt")
+				return
+			case "<=":
+				io.WriteString(w, "std.mem.order(u8, ")
+				b.Left.emit(w)
+				io.WriteString(w, ", ")
+				b.Right.emit(w)
+				io.WriteString(w, ") != .gt")
+				return
+			case ">":
+				io.WriteString(w, "std.mem.order(u8, ")
+				b.Left.emit(w)
+				io.WriteString(w, ", ")
+				b.Right.emit(w)
+				io.WriteString(w, ") == .gt")
+				return
+			case ">=":
+				io.WriteString(w, "std.mem.order(u8, ")
+				b.Left.emit(w)
+				io.WriteString(w, ", ")
+				b.Right.emit(w)
+				io.WriteString(w, ") != .lt")
 				return
 			}
 		}
@@ -360,25 +402,25 @@ func (c *CallExpr) emit(w io.Writer) {
 		} else {
 			io.WriteString(w, "0")
 		}
-       case "max":
-               if len(c.Args) == 1 {
-                       io.WriteString(w, "blk: { var arr = ")
-                       c.Args[0].emit(w)
-                       io.WriteString(w, "; var m = arr[0]; for (arr[1..]) |v| { if (v > m) m = v; } break :blk m; }")
-               } else {
-                       io.WriteString(w, "0")
-               }
-       case "contains":
-               if len(c.Args) == 2 {
-                       io.WriteString(w, "std.mem.contains(u8, ")
-                       c.Args[0].emit(w)
-                       io.WriteString(w, ", ")
-                       c.Args[1].emit(w)
-                       io.WriteString(w, ")")
-               } else {
-                       io.WriteString(w, "false")
-               }
-       default:
+	case "max":
+		if len(c.Args) == 1 {
+			io.WriteString(w, "blk: { var arr = ")
+			c.Args[0].emit(w)
+			io.WriteString(w, "; var m = arr[0]; for (arr[1..]) |v| { if (v > m) m = v; } break :blk m; }")
+		} else {
+			io.WriteString(w, "0")
+		}
+	case "contains":
+		if len(c.Args) == 2 {
+			io.WriteString(w, "std.mem.indexOf(u8, ")
+			c.Args[0].emit(w)
+			io.WriteString(w, ", ")
+			c.Args[1].emit(w)
+			io.WriteString(w, ") != null")
+		} else {
+			io.WriteString(w, "false")
+		}
+	default:
 		io.WriteString(w, c.Func)
 		io.WriteString(w, "(")
 		for i, a := range c.Args {
@@ -395,11 +437,8 @@ func (c *CallExpr) emit(w io.Writer) {
 func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	main := &Func{Name: "main"}
 	mutables := map[string]bool{}
-	for _, st := range prog.Statements {
-		if st.Assign != nil && len(st.Assign.Index) == 0 && len(st.Assign.Field) == 0 {
-			mutables[st.Assign.Name] = true
-		}
-	}
+	collectMutables(prog.Statements, mutables)
+	constLists = map[string]*ListLit{}
 	for _, st := range prog.Statements {
 		s, err := compileStmt(st, prog)
 		if err != nil {
@@ -408,13 +447,44 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 			}
 			continue
 		}
-		if vd, ok := s.(*VarDecl); ok && !vd.Mutable {
+		if vd, ok := s.(*VarDecl); ok {
 			vd.Mutable = mutables[vd.Name]
+			if !vd.Mutable {
+				if lst, ok2 := vd.Value.(*ListLit); ok2 {
+					constLists[vd.Name] = lst
+				}
+			}
 		}
 		main.Body = append(main.Body, s)
 	}
 	_ = env
 	return &Program{Functions: []*Func{main}}, nil
+}
+
+func collectMutables(sts []*parser.Statement, m map[string]bool) {
+	for _, st := range sts {
+		switch {
+		case st.Assign != nil:
+			m[st.Assign.Name] = true
+		case st.If != nil:
+			collectMutablesIf(st.If, m)
+		case st.While != nil:
+			collectMutables(st.While.Body, m)
+		case st.For != nil:
+			collectMutables(st.For.Body, m)
+		}
+	}
+}
+
+func collectMutablesIf(is *parser.IfStmt, m map[string]bool) {
+	if is == nil {
+		return
+	}
+	collectMutables(is.Then, m)
+	if is.ElseIf != nil {
+		collectMutablesIf(is.ElseIf, m)
+	}
+	collectMutables(is.Else, m)
 }
 
 func compileExpr(e *parser.Expr) (Expr, error) {
@@ -455,41 +525,41 @@ func compileUnary(u *parser.Unary) (Expr, error) {
 }
 
 func compilePostfix(pf *parser.PostfixExpr) (Expr, error) {
-        if pf == nil {
-                return nil, fmt.Errorf("nil postfix")
-        }
-        // Detect selector call pattern like `s.contains(sub)`
-        if pf.Target != nil && pf.Target.Selector != nil && len(pf.Target.Selector.Tail) == 1 && pf.Target.Selector.Tail[0] == "contains" && len(pf.Ops) == 1 && pf.Ops[0].Call != nil {
-                base, err := compilePrimary(&parser.Primary{Selector: &parser.SelectorExpr{Root: pf.Target.Selector.Root}})
-                if err != nil {
-                        return nil, err
-                }
-                if len(pf.Ops[0].Call.Args) != 1 {
-                        return nil, fmt.Errorf("contains expects 1 arg")
-                }
-                arg, err := compileExpr(pf.Ops[0].Call.Args[0])
-                if err != nil {
-                        return nil, err
-                }
-                return &CallExpr{Func: "contains", Args: []Expr{base, arg}}, nil
-        }
+	if pf == nil {
+		return nil, fmt.Errorf("nil postfix")
+	}
+	// Detect selector call pattern like `s.contains(sub)`
+	if pf.Target != nil && pf.Target.Selector != nil && len(pf.Target.Selector.Tail) == 1 && pf.Target.Selector.Tail[0] == "contains" && len(pf.Ops) == 1 && pf.Ops[0].Call != nil {
+		base, err := compilePrimary(&parser.Primary{Selector: &parser.SelectorExpr{Root: pf.Target.Selector.Root}})
+		if err != nil {
+			return nil, err
+		}
+		if len(pf.Ops[0].Call.Args) != 1 {
+			return nil, fmt.Errorf("contains expects 1 arg")
+		}
+		arg, err := compileExpr(pf.Ops[0].Call.Args[0])
+		if err != nil {
+			return nil, err
+		}
+		return &CallExpr{Func: "contains", Args: []Expr{base, arg}}, nil
+	}
 
-        expr, err := compilePrimary(pf.Target)
-        if err != nil {
-                return nil, err
-        }
-        for _, op := range pf.Ops {
-                if op.Index != nil && op.Index.Colon == nil && op.Index.Colon2 == nil {
-                        idx, err := compileExpr(op.Index.Start)
-                        if err != nil {
-                                return nil, err
-                        }
-                        expr = &IndexExpr{Target: expr, Index: idx}
-                } else {
-                        return nil, fmt.Errorf("unsupported postfix")
-                }
-        }
-        return expr, nil
+	expr, err := compilePrimary(pf.Target)
+	if err != nil {
+		return nil, err
+	}
+	for _, op := range pf.Ops {
+		if op.Index != nil && op.Index.Colon == nil && op.Index.Colon2 == nil {
+			idx, err := compileExpr(op.Index.Start)
+			if err != nil {
+				return nil, err
+			}
+			expr = &IndexExpr{Target: expr, Index: idx}
+		} else {
+			return nil, fmt.Errorf("unsupported postfix")
+		}
+	}
+	return expr, nil
 }
 
 func compilePrimary(p *parser.Primary) (Expr, error) {
@@ -534,6 +604,23 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 						total += lit.Value
 					}
 					return &IntLit{Value: total}, nil
+				}
+			}
+		case "append":
+			if len(args) == 2 {
+				if list, ok := args[0].(*ListLit); ok {
+					elems := append(append([]Expr{}, list.Elems...), args[1])
+					return &ListLit{Elems: elems}, nil
+				}
+				if v, ok := args[0].(*VarRef); ok {
+					if lst, ok2 := constLists[v.Name]; ok2 {
+						elems := make([]Expr, 0, len(lst.Elems)+1)
+						for i := range lst.Elems {
+							elems = append(elems, &IndexExpr{Target: &VarRef{Name: v.Name}, Index: &IntLit{Value: i}})
+						}
+						elems = append(elems, args[1])
+						return &ListLit{Elems: elems}, nil
+					}
 				}
 			}
 		}
