@@ -1,3 +1,12 @@
+## Progress (2025-07-20 20:47 +0700)
+- cs transpiler: typed groups and right join support (progress 84/100)
+
+
+## Progress (2025-07-20 20:47 +0700)
+- cpp transpiler: readable list comp (progress 84/100)
+
+## Progress (2025-07-20 20:47 +0700)
+
 ## Progress (2025-07-20 17:52 +0700)
 - cs transpiler: infer structs from lists (progress 84/100)
 
@@ -81,6 +90,8 @@
 ## Remaining Work
 - [x] Implement loops and conditionals
 - [ ] Support map and list mutation operations
+
+
 
 
 

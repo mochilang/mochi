@@ -2003,6 +2003,11 @@ func compileQueryExpr(q *parser.QueryExpr) (Expr, error) {
 			tmp := j.Var + "Tmp"
 			fmt.Fprintf(builder, " join %s in %s on %s equals %s into %s", tmp, exprString(js), left, right, tmp)
 			fmt.Fprintf(builder, " from %s in %s.DefaultIfEmpty()", j.Var, tmp)
+		} else if *j.Side == "right" {
+			tmp := curVar + "Tmp"
+			fmt.Fprintf(builder, " join %s in %s on %s equals %s into %s", tmp, exprString(js), left, right, tmp)
+			fmt.Fprintf(builder, " from %s in %s.DefaultIfEmpty()", curVar, tmp)
+			curVar = j.Var
 		} else {
 			varTypes[curVar] = savedVar
 			mapVars[curVar] = savedMap
@@ -2039,8 +2044,13 @@ func compileQueryExpr(q *parser.QueryExpr) (Expr, error) {
 		elemType := varTypes[curVar]
 		tmp := q.Group.Name + "Tmp"
 		fmt.Fprintf(builder, " group %s by %s into %s", curVar, exprString(keyExpr), tmp)
-		fmt.Fprintf(builder, " let %s = new { key = %s.Key, items = %s.ToArray() }", q.Group.Name, tmp, tmp)
-		varTypes[q.Group.Name] = fmt.Sprintf("%s[]", elemType)
+		gStruct := toStructName(q.Group.Name) + "Group"
+		structTypes[gStruct] = types.StructType{Name: gStruct, Fields: map[string]types.Type{
+			"key":   simpleType(typeOfExpr(keyExpr)),
+			"items": types.ListType{Elem: simpleType(elemType)},
+		}, Order: []string{"key", "items"}}
+		fmt.Fprintf(builder, " let %s = new %s{ key = %s.Key, items = %s.ToArray() }", q.Group.Name, gStruct, tmp, tmp)
+		varTypes[q.Group.Name] = gStruct
 		if q.Group.Having != nil {
 			cond, err := compileExpr(q.Group.Having)
 			if err != nil {
