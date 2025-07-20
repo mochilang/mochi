@@ -30,8 +30,14 @@ func init() {
 	}
 }
 
+type StructDef struct {
+	Name   string
+	Fields []Param
+}
+
 type Program struct {
 	Includes  []string
+	Structs   []StructDef
 	Globals   []Stmt
 	Functions []*Func
 }
@@ -77,6 +83,16 @@ type StringLit struct{ Value string }
 type IntLit struct{ Value int }
 
 type BoolLit struct{ Value bool }
+
+type StructLit struct {
+	Name   string
+	Fields []FieldLit
+}
+
+type FieldLit struct {
+	Name  string
+	Value Expr
+}
 
 // BreakStmt represents a break statement.
 type BreakStmt struct{}
@@ -235,6 +251,14 @@ func (p *Program) write(w io.Writer) {
 		fmt.Fprintf(w, "#include %s\n", inc)
 	}
 	fmt.Fprintln(w)
+	for _, st := range p.Structs {
+		fmt.Fprintf(w, "struct %s {\n", st.Name)
+		for _, f := range st.Fields {
+			fmt.Fprintf(w, "    %s %s;\n", f.Type, f.Name)
+		}
+		fmt.Fprintln(w, "};")
+		fmt.Fprintln(w)
+	}
 	currentProgram = p
 	// emit helper functions first
 	first := true
@@ -421,6 +445,19 @@ func (b *BoolLit) emit(w io.Writer) {
 	} else {
 		io.WriteString(w, "false")
 	}
+}
+
+func (s *StructLit) emit(w io.Writer) {
+	io.WriteString(w, s.Name)
+	io.WriteString(w, "{")
+	for i, f := range s.Fields {
+		if i > 0 {
+			io.WriteString(w, ", ")
+		}
+		fmt.Fprintf(w, ".%s = ", f.Name)
+		f.Value.emit(w)
+	}
+	io.WriteString(w, "}")
 }
 
 func (u *UnaryExpr) emit(w io.Writer) {
@@ -846,6 +883,12 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 				typ = cppType(*stmt.Var.Type.Simple)
 			}
 			globals = append(globals, &LetStmt{Name: stmt.Var.Name, Type: typ, Value: val})
+		case stmt.Type != nil:
+			st, err := convertTypeDecl(stmt.Type)
+			if err != nil {
+				return nil, err
+			}
+			cp.Structs = append(cp.Structs, *st)
 		case stmt.Assign != nil:
 			val, err := convertExpr(stmt.Assign.Value)
 			if err != nil {
@@ -1131,7 +1174,24 @@ func convertPostfix(p *parser.PostfixExpr) (Expr, error) {
 				return nil, fmt.Errorf("unsupported call")
 			}
 		case op.Cast != nil && op.Cast.Type != nil && op.Cast.Type.Simple != nil:
-			typ := cppType(*op.Cast.Type.Simple)
+			name := *op.Cast.Type.Simple
+			if currentEnv != nil {
+				if st, ok := currentEnv.GetStruct(name); ok {
+					if ml, ok2 := expr.(*MapLit); ok2 {
+						fields := make([]FieldLit, len(st.Order))
+						for i, fname := range st.Order {
+							for j, k := range ml.Keys {
+								if sl, ok3 := k.(*StringLit); ok3 && sl.Value == fname {
+									fields[i] = FieldLit{Name: fname, Value: ml.Values[j]}
+									break
+								}
+							}
+						}
+						expr = &StructLit{Name: st.Name, Fields: fields}
+					}
+				}
+			}
+			typ := cppType(name)
 			expr = &CastExpr{Value: expr, Type: typ}
 		default:
 			return nil, fmt.Errorf("unsupported postfix")
@@ -1465,6 +1525,11 @@ func cppType(t string) string {
 	case "string":
 		return "std::string"
 	}
+	if currentEnv != nil {
+		if st, ok := currentEnv.GetStruct(t); ok {
+			return st.Name
+		}
+	}
 	return "auto"
 }
 
@@ -1484,6 +1549,8 @@ func cppTypeFrom(tp types.Type) string {
 		return fmt.Sprintf("std::vector<%s>", cppTypeFrom(t.Elem))
 	case types.MapType:
 		return fmt.Sprintf("std::map<%s, %s>", cppTypeFrom(t.Key), cppTypeFrom(t.Value))
+	case types.StructType:
+		return t.Name
 	default:
 		return "auto"
 	}
@@ -1566,4 +1633,25 @@ func defaultValueForType(t string) string {
 		return "\"\""
 	}
 	return "{}"
+}
+
+func convertTypeDecl(td *parser.TypeDecl) (*StructDef, error) {
+	if td == nil {
+		return nil, fmt.Errorf("nil type decl")
+	}
+	if len(td.Variants) > 0 {
+		return nil, fmt.Errorf("unsupported type variants")
+	}
+	st := &StructDef{Name: td.Name}
+	for _, m := range td.Members {
+		if m.Field == nil {
+			return nil, fmt.Errorf("unsupported type member")
+		}
+		typ := "auto"
+		if m.Field.Type != nil {
+			typ = cppTypeFrom(types.ResolveTypeRef(m.Field.Type, currentEnv))
+		}
+		st.Fields = append(st.Fields, Param{Name: m.Field.Name, Type: typ})
+	}
+	return st, nil
 }
