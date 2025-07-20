@@ -70,6 +70,8 @@ func TestTranspile_Golden(t *testing.T) {
 		"count_builtin",
 		"sum_builtin",
 		"str_builtin",
+		"bool_chain",
+		"cast_string_to_int",
 	}
 	for _, name := range names {
 		src := filepath.Join(root, "tests", "vm", "valid", name+".mochi")
