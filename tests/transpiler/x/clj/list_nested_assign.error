@@ -1,6 +1,0 @@
-run error: exit status 1
-Execution error (UnsupportedOperationException) at main/-main (list_nested_assign.clj:8).
-nth not supported on this type: Long
-
-Full report at:
-/tmp/clojure-15943920913331904264.edn
