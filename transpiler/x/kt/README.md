@@ -7,7 +7,6 @@ The transpiler currently supports expression programs with `print`, integer and 
 Completed golden tests: **46/100**
 
 ### Golden test checklist
-
 - [x] append_builtin.mochi
 - [x] avg_builtin.mochi
 - [x] basic_compare.mochi
