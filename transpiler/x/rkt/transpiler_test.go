@@ -78,6 +78,11 @@ func TestTranspile_Golden(t *testing.T) {
 		"string_index",
 		"list_index",
 		"list_assign",
+		"left_join_multi",
+		"right_join",
+		"outer_join",
+		"python_auto",
+		"python_math",
 	}
 	for _, name := range names {
 		src := filepath.Join(root, "tests", "vm", "valid", name+".mochi")

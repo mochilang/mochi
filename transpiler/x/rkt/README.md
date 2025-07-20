@@ -1,7 +1,7 @@
 # Mochi Racket Transpiler
 This directory contains the experimental Racket transpiler. Golden tests under `tests/vm/valid` check the generated code and its runtime output.
 
-## Golden Test Checklist (94/100)
+## Golden Test Checklist (99/100)
 
 - [x] append_builtin
 - [x] avg_builtin
@@ -44,7 +44,7 @@ This directory contains the experimental Racket transpiler. Golden tests under `
 - [x] join_multi
 - [x] json_builtin
 - [x] left_join
-- [ ] left_join_multi
+- [x] left_join_multi
 - [x] len_builtin
 - [x] len_map
 - [x] len_string
@@ -68,16 +68,16 @@ This directory contains the experimental Racket transpiler. Golden tests under `
 - [x] min_max_builtin
 - [x] nested_function
 - [x] order_by_map
-- [ ] outer_join
+- [x] outer_join
 - [x] partial_application
 - [x] print_hello
 - [x] pure_fold
 - [x] pure_global_fold
-- [ ] python_auto
-- [ ] python_math
+- [x] python_auto
+- [x] python_math
 - [x] query_sum_select
 - [x] record_assign
-- [ ] right_join
+- [x] right_join
 - [x] save_jsonl_stdout
 - [x] short_circuit
 - [x] slice
