@@ -6,8 +6,7 @@ int main(void) {
     int numbers[] = { 1, 2, 3, 4, 5, 6, 7, 8, 9 };
     {
         int n_arr[] = {1, 2, 3, 4, 5, 6, 7, 8, 9};
-        int n_len = (int)(sizeof(n_arr)/sizeof(n_arr[0]));
-        for (int i = 0; i < n_len; i++) {
+        for (int i = 0; i < 9; i++) {
             int n = n_arr[i];
             if ((n % 2) == 0) {
                 continue;

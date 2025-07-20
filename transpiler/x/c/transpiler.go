@@ -240,7 +240,6 @@ func (ws *WhileStmt) emit(w io.Writer, indent int) {
 func (f *ForStmt) emit(w io.Writer, indent int) {
 	if len(f.List) > 0 {
 		arrName := fmt.Sprintf("%s_arr", f.Var)
-		lenName := fmt.Sprintf("%s_len", f.Var)
 		writeIndent(w, indent)
 		io.WriteString(w, "{\n")
 		writeIndent(w, indent+1)
@@ -253,9 +252,7 @@ func (f *ForStmt) emit(w io.Writer, indent int) {
 		}
 		io.WriteString(w, "};\n")
 		writeIndent(w, indent+1)
-		fmt.Fprintf(w, "int %s = (int)(sizeof(%s)/sizeof(%s[0]));\n", lenName, arrName, arrName)
-		writeIndent(w, indent+1)
-		fmt.Fprintf(w, "for (int i = 0; i < %s; i++) {\n", lenName)
+		fmt.Fprintf(w, "for (int i = 0; i < %d; i++) {\n", len(f.List))
 		writeIndent(w, indent+2)
 		fmt.Fprintf(w, "int %s = %s[i];\n", f.Var, arrName)
 		for _, s := range f.Body {

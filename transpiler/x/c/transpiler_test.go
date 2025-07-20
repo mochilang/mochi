@@ -137,6 +137,7 @@ func TestTranspilerGolden(t *testing.T) {
 		filepath.Join(srcDir, "string_in_operator.mochi"),
 		filepath.Join(srcDir, "list_index.mochi"),
 		filepath.Join(srcDir, "string_index.mochi"),
+		filepath.Join(srcDir, "list_assign.mochi"),
 		filepath.Join(srcDir, "fun_call.mochi"),
 		filepath.Join(srcDir, "tail_recursion.mochi"),
 		filepath.Join(srcDir, "string_prefix_slice.mochi"),
