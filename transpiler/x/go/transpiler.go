@@ -422,14 +422,19 @@ type ForEachStmt struct {
 
 func (fe *ForEachStmt) emit(w io.Writer) {
 	if fe.IsMap {
-		fmt.Fprintf(w, "for %s := range ", fe.Name)
+		fmt.Fprintf(w, "for _, %s := range func() []string { keys := make([]string, 0, len(", fe.Name)
+		fe.Iterable.emit(w)
+		fmt.Fprint(w, ")) ; for k := range ")
+		fe.Iterable.emit(w)
+		fmt.Fprint(w, " { keys = append(keys, k) }; sort.Strings(keys); return keys }() {")
 	} else {
 		fmt.Fprintf(w, "for _, %s := range ", fe.Name)
+		if fe.Iterable != nil {
+			fe.Iterable.emit(w)
+		}
+		fmt.Fprint(w, " {")
 	}
-	if fe.Iterable != nil {
-		fe.Iterable.emit(w)
-	}
-	fmt.Fprint(w, " {\n")
+	fmt.Fprint(w, "\n")
 	for _, st := range fe.Body {
 		fmt.Fprint(w, "    ")
 		st.emit(w)
@@ -502,9 +507,9 @@ func (a *AvgExpr) emit(w io.Writer) {
 type SumExpr struct{ List Expr }
 
 func (s *SumExpr) emit(w io.Writer) {
-	fmt.Fprint(w, "func() int { s := 0; for _, n := range ")
+	fmt.Fprint(w, "func() float64 { s := 0.0; for _, n := range ")
 	s.List.emit(w)
-	fmt.Fprint(w, " { s += n }; return s }()")
+	fmt.Fprint(w, " { s += float64(n) }; return s }()")
 }
 
 type MinExpr struct{ List Expr }
@@ -735,7 +740,10 @@ func compileStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 						usesStrings = true
 						ex = &ListStringExpr{List: ex}
 					case types.FloatType:
-						ex = &FloatStringExpr{Value: ex}
+						if call2 := extractCall(a); call2 != nil && call2.Func == "sum" {
+						} else {
+							ex = &FloatStringExpr{Value: ex}
+						}
 					case types.BoolType:
 						if _, ok := ex.(*ContainsExpr); !ok {
 							ex = &BoolIntExpr{Expr: ex}
@@ -998,6 +1006,7 @@ func compileForStmt(fs *parser.ForStmt, env *types.Env) (Stmt, error) {
 		if err != nil {
 			return nil, err
 		}
+		env.SetVar(fs.Name, types.IntType{}, true)
 		body, err := compileStmts(fs.Body, env)
 		if err != nil {
 			return nil, err
@@ -1008,12 +1017,24 @@ func compileForStmt(fs *parser.ForStmt, env *types.Env) (Stmt, error) {
 	if err != nil {
 		return nil, err
 	}
+	t := types.TypeOfExpr(fs.Source, env)
+	var elemType types.Type
+	var isMap bool
+	switch tt := t.(type) {
+	case types.MapType:
+		elemType = tt.Key
+		isMap = true
+		usesSort = true
+	case types.ListType:
+		elemType = tt.Elem
+	default:
+		elemType = types.AnyType{}
+	}
+	env.SetVar(fs.Name, elemType, true)
 	body, err := compileStmts(fs.Body, env)
 	if err != nil {
 		return nil, err
 	}
-	t := types.TypeOfExpr(fs.Source, env)
-	_, isMap := t.(types.MapType)
 	return &ForEachStmt{Name: fs.Name, Iterable: iter, Body: body, IsMap: isMap}, nil
 }
 
@@ -1033,6 +1054,11 @@ func compileReturnStmt(rs *parser.ReturnStmt, env *types.Env) (Stmt, error) {
 
 func compileFunStmt(fn *parser.FunStmt, env *types.Env) (Stmt, error) {
 	child := types.NewEnv(env)
+	for _, p := range fn.Params {
+		if p.Type != nil {
+			child.SetVar(p.Name, types.ResolveTypeRef(p.Type, env), true)
+		}
+	}
 	body, err := compileStmts(fn.Body, child)
 	if err != nil {
 		return nil, err
@@ -1049,7 +1075,7 @@ func compileFunStmt(fn *parser.FunStmt, env *types.Env) (Stmt, error) {
 	}
 	ret := toGoType(fn.Return)
 	if ret == "" {
-		if t, err := child.GetVar(fn.Name); err == nil {
+		if t, err := env.GetVar(fn.Name); err == nil {
 			if ft, ok := t.(types.FuncType); ok {
 				ret = toGoTypeFromType(ft.Return)
 			}
@@ -1506,16 +1532,47 @@ func compilePrimary(p *parser.Primary, env *types.Env) (Expr, error) {
 }
 
 func toGoType(t *parser.TypeRef) string {
-	if t == nil || t.Simple == nil {
+	if t == nil {
 		return ""
 	}
-	switch *t.Simple {
-	case "int":
-		return "int"
-	case "string":
-		return "string"
-	case "bool":
-		return "bool"
+	if t.Simple != nil {
+		switch *t.Simple {
+		case "int":
+			return "int"
+		case "string":
+			return "string"
+		case "bool":
+			return "bool"
+		}
+		return "any"
+	}
+	if t.Fun != nil {
+		params := make([]string, len(t.Fun.Params))
+		for i, p := range t.Fun.Params {
+			params[i] = toGoType(p)
+		}
+		ret := toGoType(t.Fun.Return)
+		if ret != "" && ret != "any" {
+			return fmt.Sprintf("func(%s) %s", strings.Join(params, ", "), ret)
+		}
+		return fmt.Sprintf("func(%s)", strings.Join(params, ", "))
+	}
+	if t.Generic != nil {
+		switch t.Generic.Name {
+		case "list":
+			if len(t.Generic.Args) == 1 {
+				return "[]" + toGoType(t.Generic.Args[0])
+			}
+			return "[]any"
+		case "map":
+			if len(t.Generic.Args) == 2 {
+				return fmt.Sprintf("map[%s]%s", toGoType(t.Generic.Args[0]), toGoType(t.Generic.Args[1]))
+			}
+			return "map[string]any"
+		}
+	}
+	if t.Struct != nil {
+		return "map[string]any"
 	}
 	return "any"
 }
