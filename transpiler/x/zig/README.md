@@ -3,7 +3,7 @@
 This directory contains a minimal transpiler that converts a subset of Mochi into Zig code. It currently supports print statements with integer or string expressions, variable declarations and assignments, unary negation and simple addition.
 
 ## Golden tests
-Programs under `tests/vm/valid` that have generated Zig code (24/100 completed):
+Programs under `tests/vm/valid` that have generated Zig code (26/100 completed):
 - [ ] append_builtin
 - [ ] avg_builtin
 - [x] basic_compare
@@ -20,8 +20,8 @@ Programs under `tests/vm/valid` that have generated Zig code (24/100 completed):
 - [ ] dataset_sort_take_limit
 - [ ] dataset_where_filter
 - [ ] exists_builtin
-- [ ] for_list_collection
-- [ ] for_loop
+- [x] for_list_collection
+- [x] for_loop
 - [ ] for_map_collection
 - [ ] fun_call
 - [ ] fun_expr_in_let
