@@ -2592,8 +2592,9 @@ func convertGroupQuery(q *parser.QueryExpr, env *types.Env, target string) ([]St
 		having = replaceGroup(having, q.Group.Name)
 	}
 
-	groupsVar := "_" + target + "_groups"
-	tmpVar := "_g"
+	// Use short and readable temporary names for grouping
+	groupsVar := target + "_groups"
+	tmpVar := "grp"
 
 	stmts := []Stmt{
 		&LetStmt{Name: groupsVar, Expr: &DictLit{}},
@@ -2610,7 +2611,8 @@ func convertGroupQuery(q *parser.QueryExpr, env *types.Env, target string) ([]St
 	}
 	stmts = append(stmts, &ForStmt{Var: q.Var, Iter: src, Body: inner})
 
-	groupDict := &DictLit{Keys: []Expr{&StringLit{Value: "key"}, &StringLit{Value: "items"}}, Values: []Expr{&Name{Name: "k"}, &Name{Name: "items"}}}
+	groupDict := &DictLit{Keys: []Expr{&StringLit{Value: "key"}, &StringLit{Value: "items"}},
+		Values: []Expr{&Name{Name: "key"}, &Name{Name: "group"}}}
 	appendRes := &ExprStmt{Expr: &CallExpr{Func: &FieldExpr{Target: &Name{Name: target}, Name: "append"}, Args: []Expr{sel}}}
 	body := []Stmt{
 		&LetStmt{Name: q.Group.Name, Expr: groupDict},
@@ -2622,7 +2624,7 @@ func convertGroupQuery(q *parser.QueryExpr, env *types.Env, target string) ([]St
 	}
 	iterItems := &CallExpr{Func: &FieldExpr{Target: &Name{Name: groupsVar}, Name: "items"}, Args: nil}
 	stmts = append(stmts, &LetStmt{Name: target, Expr: &ListLit{}})
-	stmts = append(stmts, &ForStmt{Var: "k, items", Iter: iterItems, Body: body})
+	stmts = append(stmts, &ForStmt{Var: "key, group", Iter: iterItems, Body: body})
 
 	return stmts, nil
 }
