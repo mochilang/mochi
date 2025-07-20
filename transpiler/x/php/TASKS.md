@@ -1,3 +1,8 @@
+## Progress (2025-07-20 11:56 +0700)
+- Generated PHP for 35/100 programs
+- Added map literal support and len() for maps enabling len_map test
+- Updated README checklist and outputs
+
 ## Progress (2025-07-20 11:38 +0700)
 - Generated PHP for 34/100 programs
 - Added while and for loop support using range() and foreach
