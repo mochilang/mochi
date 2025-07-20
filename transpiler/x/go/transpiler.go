@@ -296,15 +296,24 @@ type MapLit struct {
 }
 
 func updateMapLitTypes(ml *MapLit, t types.Type) {
-	mt, ok := t.(types.MapType)
-	if !ok {
-		return
-	}
-	ml.KeyType = toGoTypeFromType(mt.Key)
-	ml.ValueType = toGoTypeFromType(mt.Value)
-	for _, v := range ml.Values {
-		if inner, ok := v.(*MapLit); ok {
-			updateMapLitTypes(inner, mt.Value)
+	switch mt := t.(type) {
+	case types.MapType:
+		ml.KeyType = toGoTypeFromType(mt.Key)
+		ml.ValueType = toGoTypeFromType(mt.Value)
+		for _, v := range ml.Values {
+			if inner, ok := v.(*MapLit); ok {
+				updateMapLitTypes(inner, mt.Value)
+			}
+		}
+	case types.StructType:
+		ml.KeyType = "string"
+		ml.ValueType = "any"
+		for i, v := range ml.Values {
+			if inner, ok := v.(*MapLit); ok {
+				if ft, ok2 := mt.Fields[ml.Keys[i].(*StringLit).Value]; ok2 {
+					updateMapLitTypes(inner, ft)
+				}
+			}
 		}
 	}
 }
@@ -568,9 +577,10 @@ func (ls *ListStringExpr) emit(w io.Writer) {
 type FloatStringExpr struct{ Value Expr }
 
 func (fs *FloatStringExpr) emit(w io.Writer) {
-	io.WriteString(w, "func() string { f := ")
+	io.WriteString(w, "func() string { f := float64(")
 	fs.Value.emit(w)
-	io.WriteString(w, "; if f == float64(int(f)) { return fmt.Sprintf(\"%.1f\", f) }; return fmt.Sprint(f) }()")
+	io.WriteString(w, ")")
+	io.WriteString(w, "; if f == float64(int(f)) { return fmt.Sprint(int(f)) }; return fmt.Sprint(f) }()")
 }
 
 // BoolIntExpr converts a boolean to an integer 1 or 0.
@@ -680,6 +690,17 @@ func (a *AtoiExpr) emit(w io.Writer) {
 	fmt.Fprint(w, "); return n }()")
 }
 
+// AssertExpr performs a type assertion on the wrapped expression.
+type AssertExpr struct {
+	Expr Expr
+	Type string
+}
+
+func (a *AssertExpr) emit(w io.Writer) {
+	a.Expr.emit(w)
+	fmt.Fprintf(w, ".(%s)", a.Type)
+}
+
 // Transpile converts a Mochi program to a minimal Go AST.
 func Transpile(p *parser.Program, env *types.Env) (*Program, error) {
 	usesStrings = false
@@ -755,7 +776,7 @@ func compileStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 	case st.Let != nil:
 		var typ string
 		if st.Let.Type != nil {
-			typ = toGoType(st.Let.Type)
+			typ = toGoType(st.Let.Type, env)
 		} else if t, err := env.GetVar(st.Let.Name); err == nil {
 			typ = toGoTypeFromType(t)
 		}
@@ -785,7 +806,7 @@ func compileStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 	case st.Var != nil:
 		var typ string
 		if st.Var.Type != nil {
-			typ = toGoType(st.Var.Type)
+			typ = toGoType(st.Var.Type, env)
 		} else if t, err := env.GetVar(st.Var.Name); err == nil {
 			typ = toGoTypeFromType(t)
 		}
@@ -970,9 +991,16 @@ func compileMatchExpr(me *parser.MatchExpr, env *types.Env) (Expr, error) {
 	}
 	tmp := &parser.Expr{Binary: &parser.BinaryExpr{Left: &parser.Unary{Value: &parser.PostfixExpr{Target: &parser.Primary{Match: me}}}}}
 	typ := toGoTypeFromType(types.ExprType(tmp, env))
-	if ife, ok := expr.(*IfExpr); ok {
-		ife.Type = typ
+	var setType func(Expr)
+	setType = func(e Expr) {
+		if ife, ok := e.(*IfExpr); ok {
+			ife.Type = typ
+			if ife.Else != nil {
+				setType(ife.Else)
+			}
+		}
 	}
+	setType(expr)
 	return expr, nil
 }
 
@@ -1039,7 +1067,7 @@ func compileFunStmt(fn *parser.FunStmt, env *types.Env) (Stmt, error) {
 	}
 	params := make([]ParamDecl, len(fn.Params))
 	for i, p := range fn.Params {
-		typ := toGoType(p.Type)
+		typ := toGoType(p.Type, env)
 		if typ == "" {
 			if t, err := child.GetVar(p.Name); err == nil {
 				typ = toGoTypeFromType(t)
@@ -1047,7 +1075,7 @@ func compileFunStmt(fn *parser.FunStmt, env *types.Env) (Stmt, error) {
 		}
 		params[i] = ParamDecl{Name: p.Name, Type: typ}
 	}
-	ret := toGoType(fn.Return)
+	ret := toGoType(fn.Return, env)
 	if ret == "" {
 		if t, err := child.GetVar(fn.Name); err == nil {
 			if ft, ok := t.(types.FuncType); ok {
@@ -1082,7 +1110,7 @@ func compileFunExpr(fn *parser.FunExpr, env *types.Env) (Expr, error) {
 	}
 	params := make([]ParamDecl, len(fn.Params))
 	for i, p := range fn.Params {
-		typ := toGoType(p.Type)
+		typ := toGoType(p.Type, env)
 		if typ == "" {
 			if t, err := child.GetVar(p.Name); err == nil {
 				typ = toGoTypeFromType(t)
@@ -1090,7 +1118,7 @@ func compileFunExpr(fn *parser.FunExpr, env *types.Env) (Expr, error) {
 		}
 		params[i] = ParamDecl{Name: p.Name, Type: typ}
 	}
-	ret := toGoType(fn.Return)
+	ret := toGoType(fn.Return, env)
 	return &FuncLit{Params: params, Return: ret, Body: stmts}, nil
 }
 
@@ -1242,10 +1270,29 @@ func compilePostfix(pf *parser.PostfixExpr, env *types.Env) (Expr, error) {
 	if pf.Target != nil && pf.Target.Selector != nil {
 		tail = pf.Target.Selector.Tail
 	}
+	t := types.TypeOfPrimaryBasic(pf.Target, env)
 	if len(tail) > 0 && (len(pf.Ops) == 0 || pf.Ops[0].Call == nil) {
-		for _, f := range tail {
+		for i, f := range tail {
 			expr = &IndexExpr{X: expr, Index: &StringLit{Value: f}}
+			switch tt := t.(type) {
+			case types.MapType:
+				t = tt.Value
+			case types.StructType:
+				if ft, ok := tt.Fields[f]; ok {
+					t = ft
+				} else {
+					t = types.AnyType{}
+				}
+				expr = &AssertExpr{Expr: expr, Type: toGoTypeFromType(t)}
+				if i < len(tail)-1 {
+					expr = &AssertExpr{Expr: expr, Type: "map[string]any"}
+				}
+			default:
+				t = types.AnyType{}
+			}
 		}
+	} else {
+		t = types.TypeOfPrimaryBasic(pf.Target, env)
 	}
 	// if tail has one element and first op is CallOp => method call
 	if len(tail) == 1 && len(pf.Ops) > 0 && pf.Ops[0].Call != nil {
@@ -1286,7 +1333,6 @@ func compilePostfix(pf *parser.PostfixExpr, env *types.Env) (Expr, error) {
 			return nil, fmt.Errorf("unsupported method %s", method)
 		}
 	}
-	t := types.TypeOfPrimaryBasic(pf.Target, env)
 	for _, op := range pf.Ops {
 		if op.Index != nil {
 			idx := op.Index
@@ -1377,6 +1423,7 @@ func compilePostfix(pf *parser.PostfixExpr, env *types.Env) (Expr, error) {
 				} else {
 					t = types.AnyType{}
 				}
+				expr = &AssertExpr{Expr: expr, Type: toGoTypeFromType(t)}
 			default:
 				t = types.AnyType{}
 			}
@@ -1441,15 +1488,26 @@ func compilePrimary(p *parser.Primary, env *types.Env) (Expr, error) {
 		return &CallExpr{Func: name, Args: args}, nil
 	case p.List != nil:
 		elems := make([]Expr, len(p.List.Elems))
-		for i, e := range p.List.Elems {
-			ex, err := compileExpr(e, env)
-			if err != nil {
-				return nil, err
+		elemType := "any"
+		if len(p.List.Elems) > 0 {
+			t := types.ExprType(p.List.Elems[0], env)
+			same := true
+			for i, e := range p.List.Elems {
+				ex, err := compileExpr(e, env)
+				if err != nil {
+					return nil, err
+				}
+				elems[i] = ex
+				if i > 0 {
+					if !types.EqualTypes(t, types.ExprType(e, env)) {
+						same = false
+					}
+				}
 			}
-			elems[i] = ex
+			if same {
+				elemType = toGoTypeFromType(t)
+			}
 		}
-		lt, _ := types.TypeOfPrimary(p, env).(types.ListType)
-		elemType := toGoTypeFromType(lt.Elem)
 		return &ListLit{ElemType: elemType, Elems: elems}, nil
 	case p.Map != nil:
 		keys := make([]Expr, len(p.Map.Items))
@@ -1505,17 +1563,51 @@ func compilePrimary(p *parser.Primary, env *types.Env) (Expr, error) {
 	return nil, fmt.Errorf("unsupported primary")
 }
 
-func toGoType(t *parser.TypeRef) string {
-	if t == nil || t.Simple == nil {
+func toGoType(t *parser.TypeRef, env *types.Env) string {
+	if t == nil {
 		return ""
 	}
-	switch *t.Simple {
-	case "int":
-		return "int"
-	case "string":
-		return "string"
-	case "bool":
-		return "bool"
+	if t.Simple != nil {
+		switch *t.Simple {
+		case "int":
+			return "int"
+		case "string":
+			return "string"
+		case "bool":
+			return "bool"
+		default:
+			if env != nil {
+				if _, ok := env.GetStruct(*t.Simple); ok {
+					return "map[string]any"
+				}
+			}
+		}
+	}
+	if t.Generic != nil {
+		switch t.Generic.Name {
+		case "list":
+			if len(t.Generic.Args) == 1 {
+				return "[]" + toGoType(t.Generic.Args[0], env)
+			}
+		case "map":
+			if len(t.Generic.Args) == 2 {
+				return fmt.Sprintf("map[%s]%s", toGoType(t.Generic.Args[0], env), toGoType(t.Generic.Args[1], env))
+			}
+		}
+	}
+	if t.Struct != nil {
+		return "map[string]any"
+	}
+	if t.Fun != nil {
+		params := make([]string, len(t.Fun.Params))
+		for i, p := range t.Fun.Params {
+			params[i] = toGoType(p, env)
+		}
+		ret := toGoType(t.Fun.Return, env)
+		if ret != "" && ret != "any" {
+			return fmt.Sprintf("func(%s) %s", strings.Join(params, ", "), ret)
+		}
+		return fmt.Sprintf("func(%s)", strings.Join(params, ", "))
 	}
 	return "any"
 }
@@ -1859,6 +1951,10 @@ func toNodeExpr(e Expr) *ast.Node {
 		return &ast.Node{Kind: "intersect", Children: []*ast.Node{toNodeExpr(ex.Left), toNodeExpr(ex.Right)}}
 	case *AtoiExpr:
 		return &ast.Node{Kind: "atoi", Children: []*ast.Node{toNodeExpr(ex.Expr)}}
+	case *AssertExpr:
+		n := &ast.Node{Kind: "assert", Value: ex.Type}
+		n.Children = append(n.Children, toNodeExpr(ex.Expr))
+		return n
 	case *IfExpr:
 		n := &ast.Node{Kind: "ifexpr"}
 		n.Children = append(n.Children, toNodeExpr(ex.Cond), toNodeExpr(ex.Then))
