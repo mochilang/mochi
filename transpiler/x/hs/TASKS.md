@@ -1,4 +1,9 @@
-# Progress (2025-07-20 14:31 +0700)
+## Progress (2025-07-20 21:19 +0700)
+- Added support for printing multiple arguments using string concatenation
+- Generated README checklist from golden tests (39/100 passing)
+- Began work on typed joins and group by translation
+
+## Progress (2025-07-20 14:31 +0700)
 - Added basic `for` loops and map iteration support
 - Implemented `while` loops using recursion
 - Added map indexing and `len` on maps
