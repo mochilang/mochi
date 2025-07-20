@@ -118,7 +118,11 @@ func (p *PrintStmt) emit(w io.Writer) {
 	case types.FloatType, types.BigRatType:
 		fmt.Fprintf(w, "  print '(F0.6)', %s\n", p.Expr)
 	case types.BoolType:
-		fmt.Fprintf(w, "  print '(I0)', merge(1,0,%s)\n", p.Expr)
+		fmt.Fprintf(w, "  if (%s) then\n", p.Expr)
+		fmt.Fprintln(w, "    print *, 'true'")
+		fmt.Fprintln(w, "  else")
+		fmt.Fprintln(w, "    print *, 'false'")
+		fmt.Fprintln(w, "  end if")
 	case types.StringType:
 		fmt.Fprintf(w, "  print *, trim(%s)\n", p.Expr)
 	default:
@@ -724,37 +728,86 @@ func toExpr(e *parser.Expr, env *types.Env) (string, error) {
 	if e == nil || e.Binary == nil || e.Binary.Left == nil {
 		return "", fmt.Errorf("unsupported expression")
 	}
-	left, err := toUnary(e.Binary.Left, env)
+	return toBinaryExpr(e.Binary, env)
+}
+
+func toBinaryExpr(b *parser.BinaryExpr, env *types.Env) (string, error) {
+	operands := []string{}
+	ops := []string{}
+
+	first, err := toUnary(b.Left, env)
 	if err != nil {
 		return "", err
 	}
-	expr := left
-	leftType := types.TypeOfPostfixBasic(e.Binary.Left, env)
-	for _, op := range e.Binary.Right {
-		rhs, err := toPostfix(op.Right, env)
+	operands = append(operands, first)
+	leftType := types.TypeOfPostfixBasic(b.Left, env)
+
+	for _, part := range b.Right {
+		rhs, err := toPostfix(part.Right, env)
 		if err != nil {
 			return "", err
 		}
-		rightType := types.TypeOfPostfixBasic(&parser.Unary{Value: op.Right}, env)
-		opStr, err := mapOp(op.Op, leftType, rightType)
+		rightType := types.TypeOfPostfixBasic(&parser.Unary{Value: part.Right}, env)
+		opStr, err := mapOp(part.Op, leftType, rightType)
 		if err != nil {
 			return "", err
 		}
-		if opStr == "mod" {
-			expr = fmt.Sprintf("mod(%s, %s)", expr, rhs)
-		} else {
-			expr = fmt.Sprintf("(%s %s %s)", expr, opStr, rhs)
-		}
-		switch op.Op {
+		operands = append(operands, rhs)
+		ops = append(ops, opStr)
+		switch part.Op {
 		case "==", "!=", "<", "<=", ">", ">=", "&&", "||":
 			leftType = types.BoolType{}
 		case "+":
 			if types.IsStringType(leftType) && types.IsStringType(rightType) {
 				leftType = types.StringType{}
 			}
+		default:
+			leftType = rightType
 		}
 	}
-	return expr, nil
+
+	levels := [][]string{
+		{"*", "/", "mod"},
+		{"+", "-"},
+		{"<", "<=", ">", ">="},
+		{"==", "/=", "in"},
+		{".and."},
+		{".or."},
+	}
+
+	apply := func(a, op, b string) string {
+		if op == "mod" {
+			return fmt.Sprintf("mod(%s, %s)", a, b)
+		}
+		return fmt.Sprintf("(%s %s %s)", a, op, b)
+	}
+
+	contains := func(list []string, s string) bool {
+		for _, v := range list {
+			if v == s {
+				return true
+			}
+		}
+		return false
+	}
+
+	for _, lvl := range levels {
+		for i := 0; i < len(ops); {
+			if contains(lvl, ops[i]) {
+				res := apply(operands[i], ops[i], operands[i+1])
+				operands[i] = res
+				operands = append(operands[:i+1], operands[i+2:]...)
+				ops = append(ops[:i], ops[i+1:]...)
+			} else {
+				i++
+			}
+		}
+	}
+
+	if len(operands) != 1 {
+		return "", fmt.Errorf("expression reduction failed")
+	}
+	return operands[0], nil
 }
 
 func mapOp(op string, left, right types.Type) (string, error) {
