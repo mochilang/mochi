@@ -1120,8 +1120,13 @@ func convertUnary(u *parser.Unary) Expr {
 			arg := call.Args[0]
 			if arg != nil && arg.Binary != nil && arg.Binary.Left != nil && arg.Binary.Left.Value != nil {
 				t := arg.Binary.Left.Value.Target
-				if t != nil && t.Lit != nil && t.Lit.Str != nil {
-					return &IntLit{Value: len(*t.Lit.Str)}
+				if t != nil {
+					if t.Map != nil {
+						return &IntLit{Value: len(t.Map.Items)}
+					}
+					if t.Lit != nil && t.Lit.Str != nil {
+						return &IntLit{Value: len(*t.Lit.Str)}
+					}
 				}
 			}
 		}
