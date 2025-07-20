@@ -711,6 +711,29 @@ func typeOfExpr(e Expr) string {
 		return "string"
 	case *ContainsExpr:
 		return "int"
+	case *IndexExpr:
+		t := typeOfExpr(ex.Target)
+		if strings.HasSuffix(t, "[]") {
+			return strings.TrimSuffix(t, "[]")
+		}
+		if strings.HasPrefix(t, "Dictionary<") {
+			parts := strings.TrimPrefix(strings.TrimSuffix(t, ">"), "Dictionary<")
+			arr := strings.Split(parts, ",")
+			if len(arr) == 2 {
+				return strings.TrimSpace(arr[1])
+			}
+		}
+		return ""
+	case *FieldExpr:
+		t := typeOfExpr(ex.Target)
+		if strings.HasPrefix(t, "Dictionary<") {
+			parts := strings.TrimPrefix(strings.TrimSuffix(t, ">"), "Dictionary<")
+			arr := strings.Split(parts, ",")
+			if len(arr) == 2 {
+				return strings.TrimSpace(arr[1])
+			}
+		}
+		return ""
 	case *ListLit:
 		return listType(ex)
 	case *MapLit:
@@ -859,18 +882,22 @@ type AppendExpr struct {
 }
 
 func (a *AppendExpr) emit(w io.Writer) {
+	fmt.Fprint(w, "(")
 	a.List.emit(w)
-	fmt.Fprint(w, ".Concat(new[]{")
+	fmt.Fprint(w, ".Append(")
 	a.Item.emit(w)
-	fmt.Fprint(w, "}).ToArray()")
+	fmt.Fprint(w, ").ToArray())")
 }
 
 type StrExpr struct{ Arg Expr }
 
 func (s *StrExpr) emit(w io.Writer) {
-	fmt.Fprint(w, "Convert.ToString(")
-	s.Arg.emit(w)
-	fmt.Fprint(w, ")")
+	if isStringExpr(s.Arg) {
+		s.Arg.emit(w)
+	} else {
+		s.Arg.emit(w)
+		fmt.Fprint(w, ".ToString()")
+	}
 }
 
 type MinExpr struct{ Arg Expr }

@@ -1,3 +1,6 @@
+## Progress (2025-07-20 10:58 +0700)
+- cs transpiler: add json and exists builtin (progress 61/100)
+
 ## Progress (2025-07-20 10:34 +0700)
 - cs transpiler: improve type inference (progress 61/100)
 
@@ -43,7 +46,6 @@
 ## Progress (2025-07-20 01:23 +0700)
 - transpiler/cs: refine bool handling and docs (progress 58/100)
 
-
 ## Progress (2025-07-19 18:08 UTC)
 - cs transpiler: emit bool values and simplify condition checks (progress 58/100)
 
@@ -55,8 +57,6 @@
 
 ## Progress (2025-07-19 16:04 UTC)
 - added lambda expression support for closures (progress 56/100)
-## Progress (2025-07-19 23:04 +0700)
-- py transpiler: add struct literals and field assign (progress 55/100)
 
 ## Progress (2025-07-19 14:37 UTC)
 - refine cs map types (progress 55/100)
@@ -75,25 +75,3 @@
 ## Remaining Work
 - [x] Implement loops and conditionals
 - [ ] Support map and list mutation operations
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
