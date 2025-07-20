@@ -1,1 +1,60 @@
-transpile: unsupported expression
+run: exit status 254
+../../../tests/transpiler/x/dart/dataset_where_filter.dart:3:18: Error: The keyword 'var' can't be used as a type name.
+  final List<Map<var, dynamic>> people = [{name: "Alice", age: 30}, {name: "Bob", age: 15}, {name: "Charlie", age: 65}, {name: "Diana", age: 45}];
+                 ^^^
+../../../tests/transpiler/x/dart/dataset_where_filter.dart:3:18: Error: 'var' isn't a type.
+  final List<Map<var, dynamic>> people = [{name: "Alice", age: 30}, {name: "Bob", age: 15}, {name: "Charlie", age: 65}, {name: "Diana", age: 45}];
+                 ^^^
+../../../tests/transpiler/x/dart/dataset_where_filter.dart:3:44: Error: Undefined name 'name'.
+  final List<Map<var, dynamic>> people = [{name: "Alice", age: 30}, {name: "Bob", age: 15}, {name: "Charlie", age: 65}, {name: "Diana", age: 45}];
+                                           ^^^^
+../../../tests/transpiler/x/dart/dataset_where_filter.dart:3:59: Error: Undefined name 'age'.
+  final List<Map<var, dynamic>> people = [{name: "Alice", age: 30}, {name: "Bob", age: 15}, {name: "Charlie", age: 65}, {name: "Diana", age: 45}];
+                                                          ^^^
+../../../tests/transpiler/x/dart/dataset_where_filter.dart:3:70: Error: Undefined name 'name'.
+  final List<Map<var, dynamic>> people = [{name: "Alice", age: 30}, {name: "Bob", age: 15}, {name: "Charlie", age: 65}, {name: "Diana", age: 45}];
+                                                                     ^^^^
+../../../tests/transpiler/x/dart/dataset_where_filter.dart:3:83: Error: Undefined name 'age'.
+  final List<Map<var, dynamic>> people = [{name: "Alice", age: 30}, {name: "Bob", age: 15}, {name: "Charlie", age: 65}, {name: "Diana", age: 45}];
+                                                                                  ^^^
+../../../tests/transpiler/x/dart/dataset_where_filter.dart:3:94: Error: Undefined name 'name'.
+  final List<Map<var, dynamic>> people = [{name: "Alice", age: 30}, {name: "Bob", age: 15}, {name: "Charlie", age: 65}, {name: "Diana", age: 45}];
+                                                                                             ^^^^
+../../../tests/transpiler/x/dart/dataset_where_filter.dart:3:111: Error: Undefined name 'age'.
+  final List<Map<var, dynamic>> people = [{name: "Alice", age: 30}, {name: "Bob", age: 15}, {name: "Charlie", age: 65}, {name: "Diana", age: 45}];
+                                                                                                              ^^^
+../../../tests/transpiler/x/dart/dataset_where_filter.dart:3:122: Error: Undefined name 'name'.
+  final List<Map<var, dynamic>> people = [{name: "Alice", age: 30}, {name: "Bob", age: 15}, {name: "Charlie", age: 65}, {name: "Diana", age: 45}];
+                                                                                                                         ^^^^
+../../../tests/transpiler/x/dart/dataset_where_filter.dart:3:137: Error: Undefined name 'age'.
+  final List<Map<var, dynamic>> people = [{name: "Alice", age: 30}, {name: "Bob", age: 15}, {name: "Charlie", age: 65}, {name: "Diana", age: 45}];
+                                                                                                                                        ^^^
+../../../tests/transpiler/x/dart/dataset_where_filter.dart:4:91: Error: Undefined name 'name'.
+  final dynamic adults = people.where(((person) => (person.age >= 18))).map(((person) => {name: person.name, age: person.age, is_senior: (person.age >= 60)})).toList();
+                                                                                          ^^^^
+../../../tests/transpiler/x/dart/dataset_where_filter.dart:4:110: Error: Undefined name 'age'.
+  final dynamic adults = people.where(((person) => (person.age >= 18))).map(((person) => {name: person.name, age: person.age, is_senior: (person.age >= 60)})).toList();
+                                                                                                             ^^^
+../../../tests/transpiler/x/dart/dataset_where_filter.dart:4:127: Error: Undefined name 'is_senior'.
+  final dynamic adults = people.where(((person) => (person.age >= 18))).map(((person) => {name: person.name, age: person.age, is_senior: (person.age >= 60)})).toList();
+                                                                                                                              ^^^^^^^^^
+../../../tests/transpiler/x/dart/dataset_where_filter.dart:4:60: Error: The getter 'age' isn't defined for the class 'Map<invalid-type, dynamic>'.
+ - 'Map' is from 'dart:core'.
+Try correcting the name to the name of an existing getter, or defining a getter or field named 'age'.
+  final dynamic adults = people.where(((person) => (person.age >= 18))).map(((person) => {name: person.name, age: person.age, is_senior: (person.age >= 60)})).toList();
+                                                           ^^^
+../../../tests/transpiler/x/dart/dataset_where_filter.dart:4:104: Error: The getter 'name' isn't defined for the class 'Map<invalid-type, dynamic>'.
+ - 'Map' is from 'dart:core'.
+Try correcting the name to the name of an existing getter, or defining a getter or field named 'name'.
+  final dynamic adults = people.where(((person) => (person.age >= 18))).map(((person) => {name: person.name, age: person.age, is_senior: (person.age >= 60)})).toList();
+                                                                                                       ^^^^
+../../../tests/transpiler/x/dart/dataset_where_filter.dart:4:122: Error: The getter 'age' isn't defined for the class 'Map<invalid-type, dynamic>'.
+ - 'Map' is from 'dart:core'.
+Try correcting the name to the name of an existing getter, or defining a getter or field named 'age'.
+  final dynamic adults = people.where(((person) => (person.age >= 18))).map(((person) => {name: person.name, age: person.age, is_senior: (person.age >= 60)})).toList();
+                                                                                                                         ^^^
+../../../tests/transpiler/x/dart/dataset_where_filter.dart:4:146: Error: The getter 'age' isn't defined for the class 'Map<invalid-type, dynamic>'.
+ - 'Map' is from 'dart:core'.
+Try correcting the name to the name of an existing getter, or defining a getter or field named 'age'.
+  final dynamic adults = people.where(((person) => (person.age >= 18))).map(((person) => {name: person.name, age: person.age, is_senior: (person.age >= 60)})).toList();
+                                                                                                                                                 ^^^

@@ -251,6 +251,20 @@ type AssignStmt struct {
 }
 
 func (s *AssignStmt) emit(w io.Writer) error {
+	if se, ok := s.Target.(*SelectorExpr); ok {
+		if n, ok := se.Receiver.(*Name); ok && currentEnv != nil {
+			if t, err := currentEnv.GetVar(n.Name); err == nil {
+				if _, ok := t.(types.StructType); ok {
+					fmt.Fprintf(w, "%s = {...%s, %q: ", n.Name, n.Name, se.Field)
+					if err := s.Value.emit(w); err != nil {
+						return err
+					}
+					_, err := io.WriteString(w, "}")
+					return err
+				}
+			}
+		}
+	}
 	if err := s.Target.emit(w); err != nil {
 		return err
 	}
@@ -406,7 +420,15 @@ func (b *BinaryExpr) emit(w io.Writer) error {
 	if err := b.Left.emit(w); err != nil {
 		return err
 	}
-	if _, err := io.WriteString(w, " "+b.Op+" "); err != nil {
+	op := b.Op
+	if b.Op == "/" {
+		lt := inferType(b.Left)
+		rt := inferType(b.Right)
+		if lt == "int" && rt == "int" {
+			op = "~/"
+		}
+	}
+	if _, err := io.WriteString(w, " "+op+" "); err != nil {
 		return err
 	}
 	if err := b.Right.emit(w); err != nil {
@@ -476,6 +498,14 @@ type SelectorExpr struct {
 }
 
 func (s *SelectorExpr) emit(w io.Writer) error {
+	t := inferType(s.Receiver)
+	if strings.HasPrefix(t, "Map<") {
+		if err := s.Receiver.emit(w); err != nil {
+			return err
+		}
+		_, err := fmt.Fprintf(w, "[%q]", s.Field)
+		return err
+	}
 	if err := s.Receiver.emit(w); err != nil {
 		return err
 	}
@@ -914,6 +944,8 @@ func dartType(t types.Type) string {
 		return "List<" + dartType(v.Elem) + ">"
 	case types.MapType:
 		return "Map<" + dartType(v.Key) + ", " + dartType(v.Value) + ">"
+	case types.StructType:
+		return "Map<String, dynamic>"
 	default:
 		return "dynamic"
 	}
@@ -1690,8 +1722,14 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 			entries = append(entries, MapEntry{Key: k, Value: v})
 		}
 		return &MapLit{Entries: entries}, nil
+	case p.Struct != nil:
+		return convertStructLiteral(p.Struct)
 	case p.If != nil:
 		return convertIfExpr(p.If)
+	case p.Match != nil:
+		return convertMatchExpr(p.Match)
+	case p.Query != nil:
+		return convertQueryExpr(p.Query)
 	case p.FunExpr != nil && p.FunExpr.ExprBody != nil:
 		var params []string
 		for _, pa := range p.FunExpr.Params {
@@ -1795,6 +1833,70 @@ func convertExistsQuery(q *parser.QueryExpr) (Expr, error) {
 		return &CallExpr{Func: &SelectorExpr{Receiver: src, Field: "any"}, Args: []Expr{lam}}, nil
 	}
 	return &SelectorExpr{Receiver: src, Field: "isNotEmpty"}, nil
+}
+
+func convertStructLiteral(sl *parser.StructLiteral) (Expr, error) {
+	var entries []MapEntry
+	for _, f := range sl.Fields {
+		v, err := convertExpr(f.Value)
+		if err != nil {
+			return nil, err
+		}
+		entries = append(entries, MapEntry{Key: &StringLit{Value: f.Name}, Value: v})
+	}
+	return &MapLit{Entries: entries}, nil
+}
+
+func convertMatchExpr(me *parser.MatchExpr) (Expr, error) {
+	target, err := convertExpr(me.Target)
+	if err != nil {
+		return nil, err
+	}
+	var expr Expr = &Name{Name: "null"}
+	for i := len(me.Cases) - 1; i >= 0; i-- {
+		c := me.Cases[i]
+		res, err := convertExpr(c.Result)
+		if err != nil {
+			return nil, err
+		}
+		pat, err := convertExpr(c.Pattern)
+		if err != nil {
+			return nil, err
+		}
+		if n, ok := pat.(*Name); ok && n.Name == "_" {
+			expr = res
+			continue
+		}
+		cond := &BinaryExpr{Left: target, Op: "==", Right: pat}
+		expr = &CondExpr{Cond: cond, Then: res, Else: expr}
+	}
+	return expr, nil
+}
+
+func convertQueryExpr(q *parser.QueryExpr) (Expr, error) {
+	if len(q.Froms) > 0 || len(q.Joins) > 0 || q.Group != nil || q.Sort != nil || q.Skip != nil || q.Take != nil || q.Distinct {
+		return nil, fmt.Errorf("unsupported query")
+	}
+	src, err := convertExpr(q.Source)
+	if err != nil {
+		return nil, err
+	}
+	expr := src
+	if q.Where != nil {
+		cond, err := convertExpr(q.Where)
+		if err != nil {
+			return nil, err
+		}
+		expr = &CallExpr{Func: &SelectorExpr{Receiver: expr, Field: "where"}, Args: []Expr{&LambdaExpr{Params: []string{q.Var}, Body: cond}}}
+	}
+	if q.Select != nil {
+		body, err := convertExpr(q.Select)
+		if err != nil {
+			return nil, err
+		}
+		expr = &CallExpr{Func: &SelectorExpr{Receiver: expr, Field: "map"}, Args: []Expr{&LambdaExpr{Params: []string{q.Var}, Body: body}}}
+	}
+	return &CallExpr{Func: &SelectorExpr{Receiver: expr, Field: "toList"}}, nil
 }
 
 // --- AST -> generic node (for debugging) ---
