@@ -236,17 +236,33 @@ func (p *Program) write(w io.Writer) {
 	}
 	fmt.Fprintln(w)
 	currentProgram = p
+	// emit helper functions first
+	first := true
+	var mainFn *Func
+	for _, fn := range p.Functions {
+		if fn.Name == "main" {
+			mainFn = fn
+			continue
+		}
+		if !first {
+			fmt.Fprintln(w)
+		}
+		first = false
+		fn.emit(w)
+	}
+	if len(p.Functions) > 1 {
+		fmt.Fprintln(w)
+	}
 	for _, st := range p.Globals {
 		st.emit(w, 0)
 	}
-	if len(p.Globals) > 0 && len(p.Functions) > 0 {
-		fmt.Fprintln(w)
-	}
-	for i, fn := range p.Functions {
-		if i > 0 {
+	if mainFn != nil {
+		if len(p.Globals) > 0 {
+			fmt.Fprintln(w)
+		} else if !first {
 			fmt.Fprintln(w)
 		}
-		fn.emit(w)
+		mainFn.emit(w)
 	}
 	currentProgram = nil
 }
@@ -583,7 +599,7 @@ func (c *CallExpr) emit(w io.Writer) {
 }
 
 func (l *LambdaExpr) emit(w io.Writer) {
-	io.WriteString(w, "[&](")
+	io.WriteString(w, "[=](")
 	for i, p := range l.Params {
 		if i > 0 {
 			io.WriteString(w, ", ")
@@ -1192,10 +1208,14 @@ func convertFun(fn *parser.FunStmt) (*Func, error) {
 		params = append(params, Param{Name: p.Name, Type: typ})
 	}
 	ret := "int"
-	if fn.Return != nil && fn.Return.Simple != nil {
-		ret = cppType(*fn.Return.Simple)
-	} else if fn.Return == nil {
+	if fn.Return == nil {
 		ret = "void"
+	} else if fn.Return.Simple != nil {
+		ret = cppType(*fn.Return.Simple)
+	} else {
+		// for function, struct or generic return types use auto to
+		// allow the compiler to deduce the concrete closure type
+		ret = "auto"
 	}
 	return &Func{Name: fn.Name, Params: params, ReturnType: ret, Body: body}, nil
 }
