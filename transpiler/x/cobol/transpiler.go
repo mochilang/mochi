@@ -800,7 +800,11 @@ func convertVar(name string, t *parser.TypeRef, val *parser.Expr, env *types.Env
 		if lit := literalExpr(val); lit != nil {
 			switch v := lit.(type) {
 			case *IntLit:
-				n := len(strconv.Itoa(absInt(v.Value)))
+				abs := v.Value
+				if abs < 0 {
+					abs = -abs
+				}
+				n := len(strconv.Itoa(abs))
 				if v.Value < 0 {
 					n++
 				}
@@ -1145,11 +1149,4 @@ func convertLiteral(l *parser.Literal) (Expr, error) {
 	default:
 		return nil, fmt.Errorf("unsupported literal")
 	}
-}
-
-func absInt(v int) int {
-	if v < 0 {
-		return -v
-	}
-	return v
 }

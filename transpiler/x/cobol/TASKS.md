@@ -1,3 +1,7 @@
+## Progress (2025-07-20 10:38 +0700)
+- Simplified DISPLAY handling; removed TMP and TMP-STR variables
+- Updated README checklist (18/100)
+
 ## Progress (2025-07-20 10:18 +0700)
 - Refined TMP-STR detection so simple numeric displays no longer allocate it
 - Regenerated README checklist (18/100)
