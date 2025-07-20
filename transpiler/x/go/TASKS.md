@@ -1,3 +1,31 @@
+## Progress (2025-07-20 21:40 +0700)
+- go transpiler: better print formatting
+- Regenerated golden files - 75/100 vm valid programs passing
+
+## Progress (2025-07-20 21:28 +0700)
+- py transpiler: improve type inference and progress tracking
+- Regenerated golden files - 75/100 vm valid programs passing
+
+## Progress (2025-07-20 21:28 +0700)
+- py transpiler: improve type inference and progress tracking
+- Regenerated golden files - 75/100 vm valid programs passing
+
+## Progress (2025-07-20 21:28 +0700)
+- py transpiler: improve type inference and progress tracking
+- Regenerated golden files - 75/100 vm valid programs passing
+
+## Progress (2025-07-20 21:28 +0700)
+- py transpiler: improve type inference and progress tracking
+- Regenerated golden files - 75/100 vm valid programs passing
+
+## Progress (2025-07-20 21:28 +0700)
+- py transpiler: improve type inference and progress tracking
+- Regenerated golden files - 75/100 vm valid programs passing
+
+## Progress (2025-07-20 21:28 +0700)
+- py transpiler: improve type inference and progress tracking
+- Regenerated golden files - 75/100 vm valid programs passing
+
 ## Progress (2025-07-20 18:18 +0700)
 - transpiler/go: support simple joins
 - Regenerated golden files - 70/100 vm valid programs passing

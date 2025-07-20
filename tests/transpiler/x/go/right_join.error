@@ -1,1 +1,6 @@
-unsupported primary
+exit status 1
+# command-line-arguments
+../../../tests/transpiler/x/go/right_join.go:57:20: cannot use o (variable of struct type Order) as map[string]int value in struct literal
+../../../tests/transpiler/x/go/right_join.go:73:6: non-boolean condition in if statement
+../../../tests/transpiler/x/go/right_join.go:74:117: entry.Order.ID undefined (type map[string]int has no field or method ID)
+../../../tests/transpiler/x/go/right_join.go:74:150: entry.Order.Total undefined (type map[string]int has no field or method Total)

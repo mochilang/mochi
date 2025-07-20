@@ -78,24 +78,25 @@ func (s *ExprStmt) emit(w io.Writer) { s.Expr.emit(w) }
 type PrintStmt struct{ Args []Expr }
 
 func (p *PrintStmt) emit(w io.Writer) {
-	// special handling for values() builtin to match expected output
-	if len(p.Args) == 1 {
-		if ve, ok := p.Args[0].(*ValuesExpr); ok {
-			usesStrings = true
-			io.WriteString(w, "fmt.Println(strings.Join(func() []string { list := ")
-			ve.emit(w)
-			io.WriteString(w, "; out := make([]string, len(list)); for i, v := range list { out[i] = fmt.Sprint(v) }; return out }(), \" \"))")
-			return
-		}
-	}
-	io.WriteString(w, "fmt.Println(")
-	for i, e := range p.Args {
-		if i > 0 {
-			io.WriteString(w, ", ")
-		}
-		e.emit(w)
-	}
-	io.WriteString(w, ")")
+    // special handling for values() builtin to match expected output
+    if len(p.Args) == 1 {
+            if ve, ok := p.Args[0].(*ValuesExpr); ok {
+                    usesStrings = true
+                    io.WriteString(w, "fmt.Println(strings.Join(func() []string { list := ")
+                    ve.emit(w)
+                    io.WriteString(w, "; out := make([]string, len(list)); for i, v := range list { out[i] = fmt.Sprint(v) }; return out }(), \" \"))")
+                    return
+            }
+    }
+    usesStrings = true
+    io.WriteString(w, "fmt.Println(strings.TrimSpace(fmt.Sprint(")
+    for i, e := range p.Args {
+        if i > 0 {
+            io.WriteString(w, ", \" \", ")
+        }
+        e.emit(w)
+    }
+    io.WriteString(w, ")))")
 }
 
 type VarDecl struct {
@@ -653,10 +654,9 @@ func (ls *ListStringExpr) emit(w io.Writer) {
 type FloatStringExpr struct{ Value Expr }
 
 func (fs *FloatStringExpr) emit(w io.Writer) {
-	io.WriteString(w, "func() string { f := float64(")
-	fs.Value.emit(w)
-	io.WriteString(w, ")")
-	io.WriteString(w, "; if f == float64(int(f)) { return fmt.Sprint(int(f)) }; return fmt.Sprint(f) }()")
+        io.WriteString(w, "func() string { f := float64(")
+        fs.Value.emit(w)
+        io.WriteString(w, "); if f == float64(int(f)) { return fmt.Sprintf(\"%.1f\", f) }; return fmt.Sprint(f) }()")
 }
 
 // BoolIntExpr converts a boolean to an integer 1 or 0.
@@ -913,8 +913,9 @@ func compileStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 				}
 				args[i] = ex
 			}
-			usesPrint = true
-			return &PrintStmt{Args: args}, nil
+                        usesPrint = true
+                        usesStrings = true
+                        return &PrintStmt{Args: args}, nil
 		}
 		e, err := compileExpr(st.Expr.Expr, env, "")
 		if err != nil {
