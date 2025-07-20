@@ -363,6 +363,23 @@ func (b *BinaryExpr) emit(w io.Writer) {
 			} else {
 				b.Right.emit(w)
 			}
+		} else if rtyp == "map" {
+			io.WriteString(w, "Map.containsKey ")
+			if needsParen(b.Left) {
+				io.WriteString(w, "(")
+				b.Left.emit(w)
+				io.WriteString(w, ")")
+			} else {
+				b.Left.emit(w)
+			}
+			io.WriteString(w, " ")
+			if needsParen(b.Right) {
+				io.WriteString(w, "(")
+				b.Right.emit(w)
+				io.WriteString(w, ")")
+			} else {
+				b.Right.emit(w)
+			}
 		} else {
 			io.WriteString(w, "Seq.contains ")
 			if needsParen(b.Left) {
@@ -1064,7 +1081,7 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 			list := &ListLit{Elems: elems}
 			concat := &CallExpr{Func: "String.concat", Args: []Expr{&StringLit{Value: " "}, list}}
 			return &CallExpr{Func: "printfn \"%s\"", Args: []Expr{concat}}, nil
-		case "len":
+		case "count", "len":
 			fn := "Seq.length"
 			if len(args) == 1 {
 				switch inferType(args[0]) {
