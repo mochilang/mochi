@@ -1845,9 +1845,15 @@ func convertPrimary(env *types.Env, p *parser.Primary) (Expr, error) {
 	case p.Map != nil:
 		items := make([]MapItem, len(p.Map.Items))
 		for i, it := range p.Map.Items {
-			k, err := convertExpr(env, it.Key)
-			if err != nil {
-				return nil, err
+			var k Expr
+			if s, ok := types.SimpleStringKey(it.Key); ok {
+				k = &StringLit{Value: s}
+			} else {
+				var err error
+				k, err = convertExpr(env, it.Key)
+				if err != nil {
+					return nil, err
+				}
 			}
 			v, err := convertExpr(env, it.Value)
 			if err != nil {
