@@ -157,6 +157,9 @@ type AppendExpr struct {
 	Elem Expr
 }
 
+// SpreadExpr represents spreading an iterable into function arguments.
+type SpreadExpr struct{ Expr Expr }
+
 // AvgExpr represents averaging a list of numbers.
 type AvgExpr struct{ Value Expr }
 
@@ -311,24 +314,20 @@ func (l *ListLit) emit(w io.Writer) {
 }
 
 func (l *LenExpr) emit(w io.Writer) {
+	if l.Value == nil {
+		io.WriteString(w, "0")
+		return
+	}
 	io.WriteString(w, "(")
 	io.WriteString(w, "Array.isArray(")
-	if l.Value != nil {
-		l.Value.emit(w)
-	}
+	l.Value.emit(w)
 	io.WriteString(w, ") || typeof ")
-	if l.Value != nil {
-		l.Value.emit(w)
-	}
-	io.WriteString(w, "==='string' ? ")
-	if l.Value != nil {
-		l.Value.emit(w)
-	}
+	l.Value.emit(w)
+	io.WriteString(w, " === 'string' ? ")
+	l.Value.emit(w)
 	io.WriteString(w, ".length : Object.keys(")
-	if l.Value != nil {
-		l.Value.emit(w)
-	}
-	io.WriteString(w, "||{}).length)")
+	l.Value.emit(w)
+	io.WriteString(w, " ?? {}).length)")
 }
 
 func (a *AppendExpr) emit(w io.Writer) {
@@ -342,6 +341,13 @@ func (a *AppendExpr) emit(w io.Writer) {
 		a.Elem.emit(w)
 	}
 	io.WriteString(w, "]")
+}
+
+func (s *SpreadExpr) emit(w io.Writer) {
+	io.WriteString(w, "...")
+	if s.Expr != nil {
+		s.Expr.emit(w)
+	}
 }
 
 func (e *AvgExpr) emit(w io.Writer) {
@@ -1311,6 +1317,11 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 		}
 		switch p.Call.Func {
 		case "print":
+			if len(args) == 1 && transpileEnv != nil {
+				if _, ok := types.ExprType(p.Call.Args[0], transpileEnv).(types.ListType); ok {
+					args = []Expr{&SpreadExpr{Expr: args[0]}}
+				}
+			}
 			return &CallExpr{Func: "console.log", Args: args}, nil
 		case "len":
 			if len(args) != 1 {
