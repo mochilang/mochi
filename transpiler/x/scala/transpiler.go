@@ -6,6 +6,7 @@ import (
 	"bytes"
 	"fmt"
 	"io"
+	"strings"
 
 	"mochi/ast"
 	"mochi/parser"
@@ -26,9 +27,15 @@ type ExprStmt struct{ Expr Expr }
 
 func (s *ExprStmt) emit(w io.Writer) { s.Expr.emit(w) }
 
+type Param struct {
+	Name string
+	Type string
+}
+
 type FunStmt struct {
 	Name   string
-	Params []string
+	Params []Param
+	Return string
 	Body   []Stmt
 }
 
@@ -68,7 +75,7 @@ type IfExpr struct {
 }
 
 type FunExpr struct {
-	Params []string
+	Params []Param
 	Expr   Expr
 }
 
@@ -126,9 +133,17 @@ func (f *FunStmt) emit(w io.Writer) {
 		if i > 0 {
 			fmt.Fprint(w, ", ")
 		}
-		fmt.Fprint(w, p)
+		if p.Type != "" {
+			fmt.Fprintf(w, "%s: %s", p.Name, p.Type)
+		} else {
+			fmt.Fprint(w, p.Name)
+		}
 	}
-	fmt.Fprint(w, ") = {\n")
+	fmt.Fprint(w, ")")
+	if f.Return != "" {
+		fmt.Fprintf(w, ": %s", f.Return)
+	}
+	fmt.Fprint(w, " = {\n")
 	for _, st := range f.Body {
 		fmt.Fprint(w, "    ")
 		st.emit(w)
@@ -220,7 +235,11 @@ func (f *FunExpr) emit(w io.Writer) {
 		if i > 0 {
 			fmt.Fprint(w, ", ")
 		}
-		fmt.Fprintf(w, "%s: Any", p)
+		if p.Type != "" {
+			fmt.Fprintf(w, "%s: %s", p.Name, p.Type)
+		} else {
+			fmt.Fprintf(w, "%s: Any", p.Name)
+		}
 	}
 	fmt.Fprint(w, ") => ")
 	if f.Expr != nil {
@@ -726,7 +745,7 @@ func convertLiteral(l *parser.Literal) (Expr, error) {
 func convertFunExpr(fe *parser.FunExpr) (Expr, error) {
 	f := &FunExpr{}
 	for _, p := range fe.Params {
-		f.Params = append(f.Params, p.Name)
+		f.Params = append(f.Params, Param{Name: p.Name, Type: toScalaType(p.Type)})
 	}
 	if fe.ExprBody != nil {
 		expr, err := convertExpr(fe.ExprBody)
@@ -770,8 +789,9 @@ func convertIfExpr(ie *parser.IfExpr) (Expr, error) {
 func convertFunStmt(fs *parser.FunStmt, env *types.Env) (Stmt, error) {
 	fn := &FunStmt{Name: fs.Name}
 	for _, p := range fs.Params {
-		fn.Params = append(fn.Params, p.Name)
+		fn.Params = append(fn.Params, Param{Name: p.Name, Type: toScalaType(p.Type)})
 	}
+	fn.Return = toScalaType(fs.Return)
 	for _, st := range fs.Body {
 		s, err := convertStmt(st, env)
 		if err != nil {
@@ -878,16 +898,34 @@ func convertIfStmt(is *parser.IfStmt, env *types.Env) (Stmt, error) {
 }
 
 func toScalaType(t *parser.TypeRef) string {
-	if t == nil || t.Simple == nil {
+	if t == nil {
 		return ""
 	}
-	switch *t.Simple {
-	case "int":
-		return "Int"
-	case "string":
-		return "String"
-	case "bool":
-		return "Boolean"
+	if t.Simple != nil {
+		switch *t.Simple {
+		case "int":
+			return "Int"
+		case "string":
+			return "String"
+		case "bool":
+			return "Boolean"
+		}
+		return "Any"
+	}
+	if t.Fun != nil {
+		parts := make([]string, len(t.Fun.Params))
+		for i, p := range t.Fun.Params {
+			typ := toScalaType(p)
+			if typ == "" {
+				typ = "Any"
+			}
+			parts[i] = typ
+		}
+		ret := toScalaType(t.Fun.Return)
+		if ret == "" {
+			ret = "Unit"
+		}
+		return fmt.Sprintf("(%s) => %s", strings.Join(parts, ", "), ret)
 	}
 	return "Any"
 }
@@ -913,6 +951,20 @@ func inferType(e Expr) string {
 		}
 	case *CastExpr:
 		return toScalaType(&parser.TypeRef{Simple: &ex.Type})
+	case *FunExpr:
+		parts := make([]string, len(ex.Params))
+		for i, p := range ex.Params {
+			if p.Type != "" {
+				parts[i] = p.Type
+			} else {
+				parts[i] = "Any"
+			}
+		}
+		ret := inferType(ex.Expr)
+		if ret == "" {
+			ret = "Any"
+		}
+		return fmt.Sprintf("(%s) => %s", strings.Join(parts, ", "), ret)
 	case *IfExpr:
 		t1 := inferType(ex.Then)
 		t2 := inferType(ex.Else)
