@@ -862,11 +862,37 @@ func convertPostfix(pf *parser.PostfixExpr) (Expr, error) {
 	if pf == nil {
 		return nil, fmt.Errorf("unsupported postfix")
 	}
-	expr, err := convertPrimary(pf.Target)
-	if err != nil {
-		return nil, err
+	var expr Expr
+	var err error
+	// special case: selector with method call
+	start := 0
+	if pf.Target != nil && pf.Target.Selector != nil && len(pf.Ops) > 0 && pf.Ops[0].Call != nil && len(pf.Target.Selector.Tail) > 0 {
+		expr = &Ident{Name: pf.Target.Selector.Root}
+		for _, t := range pf.Target.Selector.Tail[:len(pf.Target.Selector.Tail)-1] {
+			expr = &IndexExpr{Target: expr, Index: &StringLit{Value: t}}
+		}
+		method := pf.Target.Selector.Tail[len(pf.Target.Selector.Tail)-1]
+		args := make([]Expr, len(pf.Ops[0].Call.Args))
+		for i, a := range pf.Ops[0].Call.Args {
+			ex, err := convertExpr(a)
+			if err != nil {
+				return nil, err
+			}
+			args[i] = ex
+		}
+		if method == "contains" {
+			method = "include?"
+		}
+		expr = &MethodCallExpr{Target: expr, Method: method, Args: args}
+		start = 1
+	} else {
+		expr, err = convertPrimary(pf.Target)
+		if err != nil {
+			return nil, err
+		}
 	}
-	for _, op := range pf.Ops {
+	for i := start; i < len(pf.Ops); i++ {
+		op := pf.Ops[i]
 		switch {
 		case op.Index != nil && op.Index.Colon == nil && op.Index.Colon2 == nil:
 			idx, err := convertExpr(op.Index.Start)
@@ -874,6 +900,23 @@ func convertPostfix(pf *parser.PostfixExpr) (Expr, error) {
 				return nil, err
 			}
 			expr = &IndexExpr{Target: expr, Index: idx}
+		case op.Field != nil && i+1 < len(pf.Ops) && pf.Ops[i+1].Call != nil:
+			// method call like expr.field(args)
+			call := pf.Ops[i+1].Call
+			args := make([]Expr, len(call.Args))
+			for j, a := range call.Args {
+				ex, err := convertExpr(a)
+				if err != nil {
+					return nil, err
+				}
+				args[j] = ex
+			}
+			method := op.Field.Name
+			if method == "contains" {
+				method = "include?"
+			}
+			expr = &MethodCallExpr{Target: expr, Method: method, Args: args}
+			i++ // consume call op
 		case op.Field != nil:
 			idx := &StringLit{Value: op.Field.Name}
 			expr = &IndexExpr{Target: expr, Index: idx}
@@ -1057,10 +1100,19 @@ func isValuesCall(e *parser.Expr) bool {
 }
 
 func isMembershipExpr(e *parser.Expr) bool {
-	if e == nil || e.Binary == nil || len(e.Binary.Right) != 1 {
+	if e == nil || e.Binary == nil {
 		return false
 	}
-	return e.Binary.Right[0].Op == "in"
+	if len(e.Binary.Right) == 1 && e.Binary.Right[0].Op == "in" {
+		return true
+	}
+	u := e.Binary.Left
+	if u != nil && u.Value != nil && u.Value.Target != nil && len(u.Value.Ops) == 1 && u.Value.Ops[0].Call != nil {
+		if sel := u.Value.Target.Selector; sel != nil && len(sel.Tail) > 0 && sel.Tail[len(sel.Tail)-1] == "contains" {
+			return true
+		}
+	}
+	return false
 }
 
 func toNode(p *Program) *ast.Node {
