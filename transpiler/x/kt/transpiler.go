@@ -215,11 +215,9 @@ type BinaryExpr struct {
 }
 
 func (b *BinaryExpr) emit(w io.Writer) {
-	io.WriteString(w, "(")
 	b.Left.emit(w)
 	io.WriteString(w, " "+b.Op+" ")
 	b.Right.emit(w)
-	io.WriteString(w, ")")
 }
 
 type LetStmt struct {
