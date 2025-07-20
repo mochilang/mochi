@@ -302,13 +302,14 @@ type JoinSpec struct {
 
 // QueryExprJS represents a simplified query comprehension.
 type QueryExprJS struct {
-	Loops  []QueryLoop
-	Joins  []JoinSpec
-	Where  Expr
-	Sort   Expr
-	Skip   Expr
-	Take   Expr
-	Select Expr
+	Loops    []QueryLoop
+	Joins    []JoinSpec
+	Where    Expr
+	Sort     Expr
+	Skip     Expr
+	Take     Expr
+	Select   Expr
+	ElemType string
 }
 
 // AggQueryExpr represents simple aggregation queries like
@@ -698,7 +699,13 @@ func (q *QueryExprJS) emit(w io.Writer) {
 	iw := &indentWriter{w: w, indent: "  "}
 	io.WriteString(iw, "(() => {\n")
 	if len(q.Joins) == 0 && len(q.Loops) <= 1 {
-		io.WriteString(iw, "  const result = []\n")
+		io.WriteString(iw, "  const result")
+		if q.ElemType != "" {
+			io.WriteString(iw, ": ")
+			io.WriteString(iw, q.ElemType)
+			io.WriteString(iw, "[]")
+		}
+		io.WriteString(iw, " = []\n")
 		var emitLoops func(int, int)
 		emitLoops = func(idx, level int) {
 			if idx >= len(q.Loops) {
@@ -880,7 +887,13 @@ func (q *QueryExprJS) emit(w io.Writer) {
 		io.WriteString(iw, "; if (n < _rows.length) _rows = _rows.slice(0, n); }\n")
 	}
 
-	io.WriteString(iw, "  const result = []\n")
+	io.WriteString(iw, "  const result")
+	if q.ElemType != "" {
+		io.WriteString(iw, ": ")
+		io.WriteString(iw, q.ElemType)
+		io.WriteString(iw, "[]")
+	}
+	io.WriteString(iw, " = []\n")
 	io.WriteString(iw, "  for (const r of _rows) { const [")
 	io.WriteString(iw, strings.Join(names, ", "))
 	io.WriteString(iw, "] = r; result.push(")
@@ -1394,7 +1407,11 @@ func convertStmt(s *parser.Statement) (Stmt, error) {
 				t = tt
 			}
 		}
-		return &VarDecl{Name: s.Let.Name, Expr: e, Const: !mutable, Type: tsType(t)}, nil
+		typeStr := tsType(t)
+		if q, ok := e.(*QueryExprJS); ok && q.ElemType != "" {
+			typeStr = q.ElemType + "[]"
+		}
+		return &VarDecl{Name: s.Let.Name, Expr: e, Const: !mutable, Type: typeStr}, nil
 	case s.Var != nil:
 		var e Expr
 		var err error
@@ -1424,7 +1441,11 @@ func convertStmt(s *parser.Statement) (Stmt, error) {
 				t = tt
 			}
 		}
-		return &VarDecl{Name: s.Var.Name, Expr: e, Const: !mutable, Type: tsType(t)}, nil
+		typeStr := tsType(t)
+		if q, ok := e.(*QueryExprJS); ok && q.ElemType != "" {
+			typeStr = q.ElemType + "[]"
+		}
+		return &VarDecl{Name: s.Var.Name, Expr: e, Const: !mutable, Type: typeStr}, nil
 	case s.Assign != nil:
 		val, err := convertExpr(s.Assign.Value)
 		if err != nil {
@@ -1769,6 +1790,14 @@ func convertQueryExpr(q *parser.QueryExpr) (Expr, error) {
 	if err != nil {
 		return nil, err
 	}
+	elemType := ""
+	if ml := mapLiteral(q.Select); ml != nil && transpileEnv != nil {
+		if st, ok := types.InferStructFromMapEnv(ml, transpileEnv); ok {
+			name := ensureNamedStruct(st, "Result")
+			st.Name = name
+			elemType = name
+		}
+	}
 	if q.Group == nil && q.Sort == nil && q.Skip == nil && q.Take == nil && len(loops) == 1 {
 		if s, ok := sel.(*SumExpr); ok {
 			if n, ok2 := s.Value.(*NameRef); ok2 && n.Name == q.Var {
@@ -1788,7 +1817,7 @@ func convertQueryExpr(q *parser.QueryExpr) (Expr, error) {
 			}
 		}
 	}
-	return &QueryExprJS{Loops: loops, Joins: joins, Where: where, Sort: sort, Skip: skip, Take: take, Select: sel}, nil
+	return &QueryExprJS{Loops: loops, Joins: joins, Where: where, Sort: sort, Skip: skip, Take: take, Select: sel, ElemType: elemType}, nil
 }
 
 func applyIndexOps(base Expr, ops []*parser.IndexOp) (Expr, error) {
@@ -2486,6 +2515,21 @@ func ensureNamedStruct(st types.StructType, hint string) string {
 		generatedTypes[name] = true
 	}
 	return name
+}
+
+func mapLiteral(e *parser.Expr) *parser.MapLiteral {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) != 0 {
+		return nil
+	}
+	u := e.Binary.Left
+	if len(u.Ops) > 0 || u.Value == nil {
+		return nil
+	}
+	p := u.Value
+	if len(p.Ops) > 0 || p.Target == nil {
+		return nil
+	}
+	return p.Target.Map
 }
 
 func isNumericBool(e Expr) bool {
