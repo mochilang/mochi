@@ -22,6 +22,8 @@ type Program struct {
 	NeedTmp bool
 }
 
+var constVars map[string]interface{}
+
 func (p *Program) addStmt(s Stmt) {
 	p.Stmts = append(p.Stmts, s)
 	if stmtNeedsTmp(s) {
@@ -410,12 +412,12 @@ func (d *DisplayStmt) emit(w io.Writer) {
 		io.WriteString(w, "\n    IF TMP > 0\n        DISPLAY \"true\"\n    ELSE\n        DISPLAY \"false\"\n    END-IF")
 		return
 	}
-       if isBoolExpr(d.Expr) {
-               io.WriteString(w, "IF ")
-               emitCondExpr(w, d.Expr)
-               io.WriteString(w, "\n        DISPLAY \"true\"\n    ELSE\n        DISPLAY \"false\"\n    END-IF")
-               return
-       }
+	if isBoolExpr(d.Expr) {
+		io.WriteString(w, "IF ")
+		emitCondExpr(w, d.Expr)
+		io.WriteString(w, "\n        DISPLAY \"true\"\n    ELSE\n        DISPLAY \"false\"\n    END-IF")
+		return
+	}
 	if d.IsString {
 		if d.Temp {
 			io.WriteString(w, "COMPUTE TMP = ")
@@ -560,6 +562,7 @@ func Emit(p *Program) []byte {
 
 func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	pr := &Program{}
+	constVars = map[string]interface{}{}
 	for _, st := range prog.Statements {
 		switch {
 		case st.Let != nil:
@@ -590,6 +593,11 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 				isStr = true
 			}
 			pr.addStmt(&AssignStmt{Name: st.Assign.Name, Expr: ex, IsString: isStr})
+			if vals, ok := listLiteralInts(st.Assign.Value); ok {
+				constVars[st.Assign.Name] = vals
+			} else {
+				delete(constVars, st.Assign.Name)
+			}
 		case st.Expr != nil:
 			call := st.Expr.Expr.Binary.Left.Value.Target.Call
 			if call != nil && call.Func == "print" && len(call.Args) == 1 && len(st.Expr.Expr.Binary.Right) == 0 {
@@ -601,6 +609,12 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 				t := types.TypeOfExpr(call.Args[0], env)
 				isStr := false
 				if _, ok := t.(types.StringType); ok {
+					isStr = true
+				}
+				if _, ok := ex.(*StringLit); ok {
+					isStr = true
+				}
+				if _, ok := ex.(*StringLit); ok {
 					isStr = true
 				}
 				if temp {
@@ -650,6 +664,18 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 					return nil, err
 				}
 				pr.addStmt(&ForRangeStmt{Var: st.For.Name, Start: start, End: end, Body: body})
+			} else if vals, ok := listLiteralInts(st.For.Source); ok {
+				pr.ensureIntVar(st.For.Name)
+				body, err := transpileStmts(st.For.Body, env)
+				if err != nil {
+					return nil, err
+				}
+				for _, v := range vals {
+					pr.addStmt(&AssignStmt{Name: st.For.Name, Expr: &IntLit{Value: v}})
+					for _, b := range body {
+						pr.addStmt(b)
+					}
+				}
 			} else {
 				return nil, fmt.Errorf("unsupported statement")
 			}
@@ -802,6 +828,15 @@ func transpileStmts(list []*parser.Statement, env *types.Env) ([]Stmt, error) {
 					return nil, err
 				}
 				out = append(out, &ForRangeStmt{Var: s.For.Name, Start: start, End: end, Body: body})
+			} else if vals, ok := listLiteralInts(s.For.Source); ok {
+				body, err := transpileStmts(s.For.Body, env)
+				if err != nil {
+					return nil, err
+				}
+				for _, v := range vals {
+					out = append(out, &AssignStmt{Name: s.For.Name, Expr: &IntLit{Value: v}})
+					out = append(out, body...)
+				}
 			} else {
 				return nil, fmt.Errorf("unsupported statement")
 			}
@@ -832,6 +867,7 @@ func convertVar(name string, t *parser.TypeRef, val *parser.Expr, env *types.Env
 			pic = "PIC 9"
 		}
 	}
+	var constVal Expr
 	if val != nil {
 		if lit := literalExpr(val); lit != nil {
 			switch v := lit.(type) {
@@ -856,12 +892,29 @@ func convertVar(name string, t *parser.TypeRef, val *parser.Expr, env *types.Env
 				}
 				pic = fmt.Sprintf("PIC X(%d)", l)
 			}
+		} else if vals, ok := listLiteralInts(val); ok {
+			parts := make([]string, len(vals))
+			for i, n := range vals {
+				parts[i] = strconv.Itoa(n)
+			}
+			s := "[" + strings.Join(parts, ", ") + "]"
+			pic = fmt.Sprintf("PIC X(%d)", len(s))
+			constVal = &StringLit{Value: s}
+			constVars[name] = vals
+		} else {
+			delete(constVars, name)
 		}
 	}
-	var constVal Expr
 	if val != nil {
 		if lit := literalExpr(val); lit != nil {
 			constVal = lit
+		} else if vals, ok := listLiteralInts(val); ok {
+			parts := make([]string, len(vals))
+			for i, n := range vals {
+				parts[i] = strconv.Itoa(n)
+			}
+			s := "[" + strings.Join(parts, ", ") + "]"
+			constVal = &StringLit{Value: s}
 		} else if ie := ifExpr(val); ie != nil {
 			stmt, err := convertIfExprAssign(name, ie, env)
 			if err != nil {
@@ -1006,6 +1059,57 @@ func literalExpr(e *parser.Expr) Expr {
 	}
 }
 
+func stringConstExpr(e *parser.Expr) (string, bool) {
+	if lit := literalExpr(e); lit != nil {
+		if s, ok := lit.(*StringLit); ok {
+			return s.Value, true
+		}
+	}
+	return "", false
+}
+
+func identExpr(e *parser.Expr) (string, bool) {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) != 0 {
+		return "", false
+	}
+	u := e.Binary.Left
+	if len(u.Ops) != 0 || u.Value == nil {
+		return "", false
+	}
+	if sel := u.Value.Target.Selector; sel != nil && len(sel.Tail) == 0 {
+		return sel.Root, true
+	}
+	return "", false
+}
+
+func matchConstString(m *parser.MatchExpr) (string, bool) {
+	tgt, ok := intConstExpr(m.Target)
+	if !ok {
+		return "", false
+	}
+	var def string
+	for _, c := range m.Cases {
+		if name, ok := identExpr(c.Pattern); ok && name == "_" {
+			if s, ok := stringConstExpr(c.Result); ok {
+				def = s
+			}
+			continue
+		}
+		v, ok := intConstExpr(c.Pattern)
+		if !ok || v != tgt {
+			continue
+		}
+		if s, ok := stringConstExpr(c.Result); ok {
+			return s, true
+		}
+		return "", false
+	}
+	if def != "" {
+		return def, true
+	}
+	return "", false
+}
+
 func intConstExpr(e *parser.Expr) (int, bool) {
 	if e == nil || e.Binary == nil {
 		return 0, false
@@ -1112,6 +1216,32 @@ func convertExpr(e *parser.Expr, env *types.Env) (Expr, error) {
 	if e == nil || e.Binary == nil {
 		return nil, fmt.Errorf("unsupported expr")
 	}
+	if len(e.Binary.Right) == 1 && e.Binary.Right[0].Op == "in" {
+		leftExpr := &parser.Expr{Binary: &parser.BinaryExpr{Left: e.Binary.Left}}
+		leftVal, lok := intConstExpr(leftExpr)
+		var lst []int
+		rightExpr := &parser.Expr{Binary: &parser.BinaryExpr{Left: &parser.Unary{Value: e.Binary.Right[0].Right}}}
+		if vals, ok := listLiteralInts(rightExpr); ok {
+			lst = vals
+		} else if name, ok := identExpr(rightExpr); ok {
+			if vals, ok := constVars[name].([]int); ok {
+				lst = vals
+			}
+		}
+		if lok && lst != nil {
+			found := false
+			for _, v := range lst {
+				if v == leftVal {
+					found = true
+					break
+				}
+			}
+			if found {
+				return &StringLit{Value: "true"}, nil
+			}
+			return &StringLit{Value: "false"}, nil
+		}
+	}
 	first, err := convertUnary(e.Binary.Left, env)
 	if err != nil {
 		return nil, err
@@ -1214,6 +1344,28 @@ func convertPostfix(pf *parser.PostfixExpr, env *types.Env) (Expr, error) {
 				if idx.Start == nil {
 					return nil, fmt.Errorf("unsupported index")
 				}
+				// constant list indexing
+				if pf.Target != nil && pf.Target.List != nil {
+					elems, ok := listLiteralInts(&parser.Expr{Binary: &parser.BinaryExpr{Left: &parser.Unary{Value: pf}}})
+					if ok {
+						if pos, ok := intConstExpr(idx.Start); ok {
+							if pos >= 0 && pos < len(elems) {
+								ex = &IntLit{Value: elems[pos]}
+								continue
+							}
+						}
+					}
+				} else if pf.Target != nil && pf.Target.Selector != nil && len(pf.Target.Selector.Tail) == 0 {
+					name := pf.Target.Selector.Root
+					if elems, ok := constVars[name].([]int); ok {
+						if pos, ok := intConstExpr(idx.Start); ok {
+							if pos >= 0 && pos < len(elems) {
+								ex = &IntLit{Value: elems[pos]}
+								continue
+							}
+						}
+					}
+				}
 				start, err := convertExpr(idx.Start, env)
 				if err != nil {
 					return nil, err
@@ -1310,6 +1462,43 @@ func convertPrimary(p *parser.Primary, env *types.Env) (Expr, error) {
 			return &IntLit{Value: total / len(vals)}, nil
 		}
 		return nil, fmt.Errorf("unsupported primary")
+	case p.Call != nil && p.Call.Func == "append" && len(p.Call.Args) == 2:
+		if vals, ok := listLiteralInts(p.Call.Args[0]); ok {
+			if v, ok := intConstExpr(p.Call.Args[1]); ok {
+				vals = append(vals, v)
+				parts := make([]string, len(vals))
+				for i, n := range vals {
+					parts[i] = strconv.Itoa(n)
+				}
+				return &StringLit{Value: "[" + strings.Join(parts, ", ") + "]"}, nil
+			}
+		} else if ref, ok := identExpr(p.Call.Args[0]); ok {
+			if lst, ok := constVars[ref].([]int); ok {
+				if v, ok := intConstExpr(p.Call.Args[1]); ok {
+					lst = append(lst, v)
+					parts := make([]string, len(lst))
+					for i, n := range lst {
+						parts[i] = strconv.Itoa(n)
+					}
+					return &StringLit{Value: "[" + strings.Join(parts, ", ") + "]"}, nil
+				}
+			}
+		}
+		return nil, fmt.Errorf("unsupported primary")
+	case p.Call != nil && p.Call.Func == "count" && len(p.Call.Args) == 1:
+		if vals, ok := listLiteralInts(p.Call.Args[0]); ok {
+			return &IntLit{Value: len(vals)}, nil
+		} else if ref, ok := identExpr(p.Call.Args[0]); ok {
+			if lst, ok := constVars[ref].([]int); ok {
+				return &IntLit{Value: len(lst)}, nil
+			}
+		}
+		return nil, fmt.Errorf("unsupported primary")
+	case p.Match != nil:
+		if s, ok := matchConstString(p.Match); ok {
+			return &StringLit{Value: s}, nil
+		}
+		return nil, fmt.Errorf("unsupported primary")
 	case p.Call != nil && p.Call.Func == "substring" && len(p.Call.Args) == 3:
 		strArg, err := convertExpr(p.Call.Args[0], env)
 		if err != nil {
@@ -1325,6 +1514,13 @@ func convertPrimary(p *parser.Primary, env *types.Env) (Expr, error) {
 		}
 		return &SubstringExpr{Str: strArg, Start: startArg, End: endArg}, nil
 	case p.Selector != nil && len(p.Selector.Tail) == 0:
+		if vals, ok := constVars[p.Selector.Root].([]int); ok {
+			parts := make([]string, len(vals))
+			for i, n := range vals {
+				parts[i] = strconv.Itoa(n)
+			}
+			return &StringLit{Value: "[" + strings.Join(parts, ", ") + "]"}, nil
+		}
 		return &VarRef{Name: p.Selector.Root}, nil
 	case p.Group != nil:
 		return convertExpr(p.Group, env)

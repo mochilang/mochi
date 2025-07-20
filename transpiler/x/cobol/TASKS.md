@@ -1,3 +1,33 @@
+## Progress (2025-07-20 13:48 +0700)
+- cobol: add support for string indexing and simple list sum
+- Generated COBOL for 33/100 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-20 13:48 +0700)
+- cobol: add support for string indexing and simple list sum
+- Generated COBOL for 33/100 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-20 13:48 +0700)
+- cobol: add support for string indexing and simple list sum
+- Generated COBOL for 33/100 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-20 13:48 +0700)
+- cobol: add support for string indexing and simple list sum
+- Generated COBOL for 29/100 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-20 13:48 +0700)
+- cobol: add support for string indexing and simple list sum
+- Generated COBOL for 29/100 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-20 13:48 +0700)
+- cobol: add support for string indexing and simple list sum
+- Generated COBOL for 29/100 programs
+- Updated README checklist and outputs
+
 ## Progress (2025-07-20 13:26 +0700)
 - fix tests
 - Generated COBOL for 26/100 programs

@@ -3,9 +3,9 @@
 This directory stores COBOL code generated from Mochi programs in `tests/vm/valid`.
 Each program is transpiled and the resulting `.cob` sources are compiled with `cobc` during testing.
 
-## VM Golden Test Checklist (26/100)
-- [ ] append_builtin
-- [ ] avg_builtin
+## VM Golden Test Checklist (33/100)
+- [x] append_builtin
+- [x] avg_builtin
 - [x] basic_compare
 - [x] binary_precedence
 - [ ] bool_chain
@@ -13,14 +13,14 @@ Each program is transpiled and the resulting `.cob` sources are compiled with `c
 - [x] cast_string_to_int
 - [ ] cast_struct
 - [ ] closure
-- [ ] count_builtin
+- [x] count_builtin
 - [ ] cross_join
 - [ ] cross_join_filter
 - [ ] cross_join_triple
 - [ ] dataset_sort_take_limit
 - [ ] dataset_where_filter
 - [ ] exists_builtin
-- [ ] for_list_collection
+- [x] for_list_collection
 - [x] for_loop
 - [ ] for_map_collection
 - [ ] fun_call
@@ -50,8 +50,8 @@ Each program is transpiled and the resulting `.cob` sources are compiled with `c
 - [ ] len_map
 - [x] len_string
 - [x] let_and_print
-- [ ] list_assign
-- [ ] list_index
+- [x] list_assign
+- [x] list_index
 - [ ] list_nested_assign
 - [ ] list_set_ops
 - [ ] load_yaml
@@ -65,7 +65,7 @@ Each program is transpiled and the resulting `.cob` sources are compiled with `c
 - [ ] match_expr
 - [ ] match_full
 - [x] math_ops
-- [ ] membership
+- [x] membership
 - [ ] min_max_builtin
 - [ ] nested_function
 - [ ] order_by_map

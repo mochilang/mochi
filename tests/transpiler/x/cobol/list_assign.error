@@ -1,1 +1,3 @@
-transpile: unsupported primary
+compile: exit status 1
+/workspace/mochi/tests/transpiler/x/cobol/list_assign.cob:11: error: 'NUMS' is not a numeric or numeric-edited name
+/workspace/mochi/tests/transpiler/x/cobol/list_assign.cob:12: error: 'NUMS (2:1)' is not a numeric value
