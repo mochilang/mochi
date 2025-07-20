@@ -659,6 +659,21 @@ func kotlinType(t *parser.TypeRef) string {
 			return "MutableMap<" + k + ", " + v + ">"
 		}
 	}
+	if t.Fun != nil {
+		params := make([]string, len(t.Fun.Params))
+		for i, p := range t.Fun.Params {
+			pt := kotlinType(p)
+			if pt == "" {
+				pt = "Any"
+			}
+			params[i] = pt
+		}
+		ret := kotlinType(t.Fun.Return)
+		if ret == "" {
+			ret = "Any"
+		}
+		return "(" + strings.Join(params, ", ") + ") -> " + ret
+	}
 	return "Any"
 }
 
@@ -920,6 +935,28 @@ func convertStmts(env *types.Env, list []*parser.Statement) ([]Stmt, error) {
 				return nil, err
 			}
 			out = append(out, &IndexAssignStmt{Target: target, Value: v})
+		case s.Fun != nil:
+			body, err := convertStmts(env, s.Fun.Body)
+			if err != nil {
+				return nil, err
+			}
+			var params []string
+			for _, p0 := range s.Fun.Params {
+				typ := kotlinType(p0.Type)
+				if typ == "" {
+					typ = "Any"
+				}
+				params = append(params, fmt.Sprintf("%s: %s", p0.Name, typ))
+			}
+			ret := kotlinType(s.Fun.Return)
+			if ret == "" {
+				if t, ok := env.Types()[s.Fun.Name]; ok {
+					if ft, ok := t.(types.FuncType); ok {
+						ret = kotlinTypeFromType(ft.Return)
+					}
+				}
+			}
+			out = append(out, &FuncDef{Name: s.Fun.Name, Params: params, Ret: ret, Body: body})
 		case s.Return != nil:
 			var v Expr
 			if s.Return.Value != nil {
