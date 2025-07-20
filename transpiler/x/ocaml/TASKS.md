@@ -1,3 +1,11 @@
+## Progress (2025-07-19 19:12 +0000)
+- Checklist updated: 26/100 tests compiled
+- Added support for `append_builtin`, `list_index` and `string_index` programs. Removed runtime helpers and improved type inference.
+
+## Progress (2025-07-20 02:02 +0700)
+- Checklist updated: 23/100 tests compiled
+- Added support for `substring_builtin` and `sum_builtin` programs.
+
 ## Progress (2025-07-20 01:34 +0700)
 - Checklist updated: 23/100 tests compiled
 - Added support for `bool_chain` and improved boolean output.
