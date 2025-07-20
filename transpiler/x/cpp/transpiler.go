@@ -32,6 +32,7 @@ func init() {
 
 type Program struct {
 	Includes  []string
+	Globals   []Stmt
 	Functions []*Func
 }
 
@@ -235,6 +236,12 @@ func (p *Program) write(w io.Writer) {
 	}
 	fmt.Fprintln(w)
 	currentProgram = p
+	for _, st := range p.Globals {
+		st.emit(w, 0)
+	}
+	if len(p.Globals) > 0 && len(p.Functions) > 0 {
+		fmt.Fprintln(w)
+	}
 	for i, fn := range p.Functions {
 		if i > 0 {
 			fmt.Fprintln(w)
@@ -318,23 +325,23 @@ func (s *PrintStmt) emit(w io.Writer, indent int) {
 			io.WriteString(w, "([&]{ std::ostringstream ss; auto tmp = ")
 			ex.emit(w)
 			io.WriteString(w, "; for(size_t i=0;i<tmp.size();++i){ if(i>0) ss<<\" \"; ss<<tmp[i]; } return ss.str(); }())")
-                case *AvgExpr:
-                        if currentProgram != nil {
-                                currentProgram.addInclude("<sstream>")
-                        }
-                        io.WriteString(w, "([&]{ std::ostringstream ss; ss<<std::fixed<<std::setprecision(1)<<")
-                        ex.emit(w)
-                        io.WriteString(w, "; return ss.str(); }())")
-               case *ValuesExpr:
-                       if currentProgram != nil {
-                               currentProgram.addInclude("<sstream>")
-                       }
-                       io.WriteString(w, "([&]{ std::ostringstream ss; auto tmp = ")
-                       ex.emit(w)
-                       io.WriteString(w, "; for(size_t i=0;i<tmp.size();++i){ if(i>0) ss<<\" \"; ss<<tmp[i]; } return ss.str(); }())")
-                default:
-                        v.emit(w)
-                }
+		case *AvgExpr:
+			if currentProgram != nil {
+				currentProgram.addInclude("<sstream>")
+			}
+			io.WriteString(w, "([&]{ std::ostringstream ss; ss<<std::fixed<<std::setprecision(1)<<")
+			ex.emit(w)
+			io.WriteString(w, "; return ss.str(); }())")
+		case *ValuesExpr:
+			if currentProgram != nil {
+				currentProgram.addInclude("<sstream>")
+			}
+			io.WriteString(w, "([&]{ std::ostringstream ss; auto tmp = ")
+			ex.emit(w)
+			io.WriteString(w, "; for(size_t i=0;i<tmp.size();++i){ if(i>0) ss<<\" \"; ss<<tmp[i]; } return ss.str(); }())")
+		default:
+			v.emit(w)
+		}
 	}
 	io.WriteString(w, " << std::endl;\n")
 }
@@ -484,56 +491,56 @@ func (a *AppendExpr) emit(w io.Writer) {
 }
 
 func (a *AvgExpr) emit(w io.Writer) {
-        if currentProgram != nil {
-                currentProgram.addInclude("<numeric>")
-                currentProgram.addInclude("<sstream>")
-                currentProgram.addInclude("<iomanip>")
-        }
-        io.WriteString(w, "([&]{ auto tmp = ")
-        a.List.emit(w)
-        io.WriteString(w, "; return tmp.empty() ? 0.0 : std::accumulate(tmp.begin(), tmp.end(), 0.0) / tmp.size(); }())")
+	if currentProgram != nil {
+		currentProgram.addInclude("<numeric>")
+		currentProgram.addInclude("<sstream>")
+		currentProgram.addInclude("<iomanip>")
+	}
+	io.WriteString(w, "([&]{ auto tmp = ")
+	a.List.emit(w)
+	io.WriteString(w, "; return tmp.empty() ? 0.0 : std::accumulate(tmp.begin(), tmp.end(), 0.0) / tmp.size(); }())")
 }
 
 func (s *StrExpr) emit(w io.Writer) {
-        if currentProgram != nil {
-                currentProgram.addInclude("<sstream>")
-        }
-        io.WriteString(w, "([&]{ std::ostringstream ss; ss<<")
-        s.Value.emit(w)
-        io.WriteString(w, "; return ss.str(); }())")
+	if currentProgram != nil {
+		currentProgram.addInclude("<sstream>")
+	}
+	io.WriteString(w, "([&]{ std::ostringstream ss; ss<<")
+	s.Value.emit(w)
+	io.WriteString(w, "; return ss.str(); }())")
 }
 
 func (v *ValuesExpr) emit(w io.Writer) {
-        if currentProgram != nil {
-                currentProgram.addInclude("<vector>")
-        }
-        io.WriteString(w, "([&]{ std::vector<decltype(")
-        v.Map.emit(w)
-        io.WriteString(w, ".begin()->second)> vals; for(const auto& __p : ")
-        v.Map.emit(w)
-        io.WriteString(w, ") vals.push_back(__p.second); return vals; }())")
+	if currentProgram != nil {
+		currentProgram.addInclude("<vector>")
+	}
+	io.WriteString(w, "([&]{ std::vector<decltype(")
+	v.Map.emit(w)
+	io.WriteString(w, ".begin()->second)> vals; for(const auto& __p : ")
+	v.Map.emit(w)
+	io.WriteString(w, ") vals.push_back(__p.second); return vals; }())")
 }
 
 func (m *MinExpr) emit(w io.Writer) {
-        if currentProgram != nil {
-                currentProgram.addInclude("<algorithm>")
-        }
-        io.WriteString(w, "(*std::min_element(")
-        m.List.emit(w)
-        io.WriteString(w, ".begin(), ")
-        m.List.emit(w)
-        io.WriteString(w, ".end()))")
+	if currentProgram != nil {
+		currentProgram.addInclude("<algorithm>")
+	}
+	io.WriteString(w, "(*std::min_element(")
+	m.List.emit(w)
+	io.WriteString(w, ".begin(), ")
+	m.List.emit(w)
+	io.WriteString(w, ".end()))")
 }
 
 func (m *MaxExpr) emit(w io.Writer) {
-        if currentProgram != nil {
-                currentProgram.addInclude("<algorithm>")
-        }
-        io.WriteString(w, "(*std::max_element(")
-        m.List.emit(w)
-        io.WriteString(w, ".begin(), ")
-        m.List.emit(w)
-        io.WriteString(w, ".end()))")
+	if currentProgram != nil {
+		currentProgram.addInclude("<algorithm>")
+	}
+	io.WriteString(w, "(*std::max_element(")
+	m.List.emit(w)
+	io.WriteString(w, ".begin(), ")
+	m.List.emit(w)
+	io.WriteString(w, ".end()))")
 }
 
 func (c *CastExpr) emit(w io.Writer) {
@@ -772,6 +779,7 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	currentEnv = env
 	defer func() { currentProgram = nil; currentEnv = nil }()
 	var body []Stmt
+	var globals []Stmt
 	for _, stmt := range prog.Statements {
 		switch {
 		case stmt.Fun != nil:
@@ -807,7 +815,7 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 			if stmt.Let.Type != nil && stmt.Let.Type.Simple != nil {
 				typ = cppType(*stmt.Let.Type.Simple)
 			}
-			body = append(body, &LetStmt{Name: stmt.Let.Name, Type: typ, Value: val})
+			globals = append(globals, &LetStmt{Name: stmt.Let.Name, Type: typ, Value: val})
 		case stmt.Var != nil:
 			var val Expr
 			var err error
@@ -821,7 +829,7 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 			if stmt.Var.Type != nil && stmt.Var.Type.Simple != nil {
 				typ = cppType(*stmt.Var.Type.Simple)
 			}
-			body = append(body, &LetStmt{Name: stmt.Var.Name, Type: typ, Value: val})
+			globals = append(globals, &LetStmt{Name: stmt.Var.Name, Type: typ, Value: val})
 		case stmt.Assign != nil:
 			val, err := convertExpr(stmt.Assign.Value)
 			if err != nil {
@@ -895,6 +903,7 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 			return nil, fmt.Errorf("unsupported statement")
 		}
 	}
+	cp.Globals = globals
 	cp.Functions = append(cp.Functions, &Func{Name: "main", ReturnType: "int", Body: body})
 	return cp, nil
 }
@@ -1228,75 +1237,75 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 				}
 				return &AppendExpr{List: l0, Elem: l1}, nil
 			}
-               case "avg":
-                       if len(p.Call.Args) == 1 {
-                               arg, err := convertExpr(p.Call.Args[0])
-                               if err != nil {
-                                       return nil, err
-                               }
-                               if currentProgram != nil {
-                                       currentProgram.addInclude("<numeric>")
-                                       currentProgram.addInclude("<sstream>")
-                                       currentProgram.addInclude("<iomanip>")
-                               }
-                               return &AvgExpr{List: arg}, nil
-                       }
-               case "str":
-                       if len(p.Call.Args) == 1 {
-                               arg, err := convertExpr(p.Call.Args[0])
-                               if err != nil {
-                                       return nil, err
-                               }
-                               if currentProgram != nil {
-                                       currentProgram.addInclude("<sstream>")
-                               }
-                               return &StrExpr{Value: arg}, nil
-                       }
-               case "count":
-                       if len(p.Call.Args) == 1 {
-                               arg, err := convertExpr(p.Call.Args[0])
-                               if err != nil {
-                                       return nil, err
-                               }
-                               return &LenExpr{Value: arg}, nil
-                       }
-               case "values":
-                       if len(p.Call.Args) == 1 {
-                               arg, err := convertExpr(p.Call.Args[0])
-                               if err != nil {
-                                       return nil, err
-                               }
-                               if currentProgram != nil {
-                                       currentProgram.addInclude("<vector>")
-                                       currentProgram.addInclude("<sstream>")
-                               }
-                               return &ValuesExpr{Map: arg}, nil
-                       }
-               case "min":
-                       if len(p.Call.Args) == 1 {
-                               arg, err := convertExpr(p.Call.Args[0])
-                               if err != nil {
-                                       return nil, err
-                               }
-                               if currentProgram != nil {
-                                       currentProgram.addInclude("<algorithm>")
-                               }
-                               return &MinExpr{List: arg}, nil
-                       }
-               case "max":
-                       if len(p.Call.Args) == 1 {
-                               arg, err := convertExpr(p.Call.Args[0])
-                               if err != nil {
-                                       return nil, err
-                               }
-                               if currentProgram != nil {
-                                       currentProgram.addInclude("<algorithm>")
-                               }
-                               return &MaxExpr{List: arg}, nil
-                       }
-               case "substring":
-                       if len(p.Call.Args) == 3 {
-                               v0, err := convertExpr(p.Call.Args[0])
+		case "avg":
+			if len(p.Call.Args) == 1 {
+				arg, err := convertExpr(p.Call.Args[0])
+				if err != nil {
+					return nil, err
+				}
+				if currentProgram != nil {
+					currentProgram.addInclude("<numeric>")
+					currentProgram.addInclude("<sstream>")
+					currentProgram.addInclude("<iomanip>")
+				}
+				return &AvgExpr{List: arg}, nil
+			}
+		case "str":
+			if len(p.Call.Args) == 1 {
+				arg, err := convertExpr(p.Call.Args[0])
+				if err != nil {
+					return nil, err
+				}
+				if currentProgram != nil {
+					currentProgram.addInclude("<sstream>")
+				}
+				return &StrExpr{Value: arg}, nil
+			}
+		case "count":
+			if len(p.Call.Args) == 1 {
+				arg, err := convertExpr(p.Call.Args[0])
+				if err != nil {
+					return nil, err
+				}
+				return &LenExpr{Value: arg}, nil
+			}
+		case "values":
+			if len(p.Call.Args) == 1 {
+				arg, err := convertExpr(p.Call.Args[0])
+				if err != nil {
+					return nil, err
+				}
+				if currentProgram != nil {
+					currentProgram.addInclude("<vector>")
+					currentProgram.addInclude("<sstream>")
+				}
+				return &ValuesExpr{Map: arg}, nil
+			}
+		case "min":
+			if len(p.Call.Args) == 1 {
+				arg, err := convertExpr(p.Call.Args[0])
+				if err != nil {
+					return nil, err
+				}
+				if currentProgram != nil {
+					currentProgram.addInclude("<algorithm>")
+				}
+				return &MinExpr{List: arg}, nil
+			}
+		case "max":
+			if len(p.Call.Args) == 1 {
+				arg, err := convertExpr(p.Call.Args[0])
+				if err != nil {
+					return nil, err
+				}
+				if currentProgram != nil {
+					currentProgram.addInclude("<algorithm>")
+				}
+				return &MaxExpr{List: arg}, nil
+			}
+		case "substring":
+			if len(p.Call.Args) == 3 {
+				v0, err := convertExpr(p.Call.Args[0])
 				if err != nil {
 					return nil, err
 				}

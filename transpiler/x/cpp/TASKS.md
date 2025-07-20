@@ -1,3 +1,68 @@
+## Progress (2025-07-20 13:53 +0700)
+- cpp transpiler: add globals support and new goldens
+- Generated C++ for 56/100 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-20 13:43 +0700)
+- docs(cpp): update progress
+- Generated C++ for 56/100 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-20 13:43 +0700)
+- docs(cpp): update progress
+- Generated C++ for 56/100 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-20 13:43 +0700)
+- docs(cpp): update progress
+- Generated C++ for 56/100 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-20 13:43 +0700)
+- docs(cpp): update progress
+- Generated C++ for 56/100 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-20 13:43 +0700)
+- docs(cpp): update progress
+- Generated C++ for 56/100 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-20 13:43 +0700)
+- docs(cpp): update progress
+- Generated C++ for 56/100 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-20 13:43 +0700)
+- docs(cpp): update progress
+- Generated C++ for 56/100 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-20 13:43 +0700)
+- docs(cpp): update progress
+- Generated C++ for 55/100 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-20 13:43 +0700)
+- docs(cpp): update progress
+- Generated C++ for 54/100 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-20 13:43 +0700)
+- docs(cpp): update progress
+- Generated C++ for 54/100 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-20 13:43 +0700)
+- docs(cpp): update progress
+- Generated C++ for 53/100 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-20 13:43 +0700)
+- docs(cpp): update progress
+- Generated C++ for 52/100 programs
+- Updated README checklist and outputs
+
 ## Progress (2025-07-20 13:40 +0700)
 - cpp transpiler: support str, values, min/max builtins
 - Generated C++ for 51/100 programs
