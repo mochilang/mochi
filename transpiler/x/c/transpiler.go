@@ -49,15 +49,10 @@ type PrintStmt struct {
 }
 
 func (p *PrintStmt) emit(w io.Writer, indent int) {
+	var format []string
+	var exprs []Expr
 	for i, a := range p.Args {
-		sep := " "
-		if i == len(p.Args)-1 {
-			sep = "\\n"
-		}
 		switch v := a.(type) {
-		case *StringLit:
-			writeIndent(w, indent)
-			fmt.Fprintf(w, "printf(\"%s%s\");\n", escape(v.Value), sep)
 		case *ListLit:
 			for j, e := range v.Elems {
 				lsep := " "
@@ -78,17 +73,29 @@ func (p *PrintStmt) emit(w io.Writer, indent int) {
 				io.WriteString(w, ");\n")
 			}
 		default:
-			writeIndent(w, indent)
 			if p.Types[i] == "string" || exprIsString(a) {
-				io.WriteString(w, "printf(\"%s"+sep+"\", ")
-				a.emitExpr(w)
-				io.WriteString(w, ");\n")
+				format = append(format, "%s")
 			} else {
-				io.WriteString(w, "printf(\"%d"+sep+"\", ")
-				a.emitExpr(w)
-				io.WriteString(w, ");\n")
+				format = append(format, "%d")
 			}
+			exprs = append(exprs, a)
 		}
+	}
+	if len(format) == 1 {
+		if lit, ok := exprs[0].(*StringLit); ok {
+			writeIndent(w, indent)
+			fmt.Fprintf(w, "printf(\"%s\\n\");\n", escape(lit.Value))
+			return
+		}
+	}
+	if len(format) > 0 {
+		writeIndent(w, indent)
+		fmt.Fprintf(w, "printf(\"%s\\n\"", strings.Join(format, " "))
+		for _, e := range exprs {
+			io.WriteString(w, ", ")
+			e.emitExpr(w)
+		}
+		io.WriteString(w, ");\n")
 	}
 }
 
