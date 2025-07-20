@@ -54,6 +54,8 @@ func TestTranspile_Golden(t *testing.T) {
 		"binary_precedence",
 		"math_ops",
 		"len_string",
+		"len_builtin",
+		"len_map",
 		"if_then_else",
 		"if_then_else_nested",
 		"for_loop",

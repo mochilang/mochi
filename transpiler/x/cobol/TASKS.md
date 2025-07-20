@@ -1,3 +1,7 @@
+-## Progress (2025-07-20 01:48 +0000)
+- Updated code generation header and constant len() evaluation
+- README checklist now 20/100
+
 ## Progress (2025-07-20 08:26 +0700)
 - Removed TMP-STR helper variable
 - Improved PIC inference for constant strings

@@ -2,7 +2,7 @@
 
 Generated COBOL code from Mochi programs in `tests/vm/valid`. Each test is compiled with `cobc`.
 
-## VM Golden Test Checklist (18/100)
+## VM Golden Test Checklist (20/100)
 - [ ] append_builtin
 - [ ] avg_builtin
 - [x] basic_compare
@@ -45,8 +45,8 @@ Generated COBOL code from Mochi programs in `tests/vm/valid`. Each test is compi
 - [ ] json_builtin
 - [ ] left_join
 - [ ] left_join_multi
-- [ ] len_builtin
-- [ ] len_map
+- [x] len_builtin
+- [x] len_map
 - [x] len_string
 - [x] let_and_print
 - [ ] list_assign
