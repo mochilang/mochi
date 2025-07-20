@@ -2,9 +2,9 @@
 
 This directory contains experimental source translators for generating Clojure code. Each program in `tests/vm/valid` is transpiled and executed with `clojure`.
 
-Compiled programs: 47/100
+Compiled programs: 48/100
 
-- [ ] append_builtin
+- [x] append_builtin
 - [ ] avg_builtin
 - [x] basic_compare
 - [x] binary_precedence

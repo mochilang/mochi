@@ -1,3 +1,7 @@
+## Progress (2025-07-20 11:54 +0700)
+- clj transpiler: support append builtin
+- Regenerated golden files - 48/100 vm valid programs passing
+
 ## Progress (2025-07-20 11:33 +0700)
 - clj: support casts and string compare
 - Regenerated golden files - 47/100 vm valid programs passing
