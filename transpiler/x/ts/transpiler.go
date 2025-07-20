@@ -189,6 +189,11 @@ type IntersectExpr struct{ Left, Right Expr }
 
 type FormatListExpr struct{ Value Expr }
 
+// PrintExpr represents a call to the builtin print function. The arguments are
+// joined with a space and trailing whitespace is trimmed to avoid mismatches
+// with the VM output.
+type PrintExpr struct{ Args []Expr }
+
 // MapLit represents a map/object literal.
 type MapLit struct {
 	Entries []MapEntry
@@ -462,14 +467,27 @@ func (e *IntersectExpr) emit(w io.Writer) {
 }
 
 func (f *FormatListExpr) emit(w io.Writer) {
-	io.WriteString(w, "\"[\" + ")
-	if f.Value != nil {
-		f.Value.emit(w)
-		io.WriteString(w, ".join(\", \")")
-	} else {
-		io.WriteString(w, "\"\"")
-	}
-	io.WriteString(w, " + \"]\"")
+        io.WriteString(w, "\"[\" + ")
+        if f.Value != nil {
+                f.Value.emit(w)
+                io.WriteString(w, ".join(\", \")")
+        } else {
+                io.WriteString(w, "\"\"")
+        }
+        io.WriteString(w, " + \"]\"")
+}
+
+func (p *PrintExpr) emit(w io.Writer) {
+        io.WriteString(w, "console.log([")
+        for i, a := range p.Args {
+                if i > 0 {
+                        io.WriteString(w, ", ")
+                }
+                if a != nil {
+                        a.emit(w)
+                }
+        }
+        io.WriteString(w, "].join(\" \").trimEnd())")
 }
 
 func (s *SubstringExpr) emit(w io.Writer) {
@@ -1534,14 +1552,14 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 			}
 			args[i] = ae
 		}
-		switch p.Call.Func {
-		case "print":
-			if len(args) == 1 && transpileEnv != nil {
-				if _, ok := types.ExprType(p.Call.Args[0], transpileEnv).(types.ListType); ok {
-					args = []Expr{&FormatListExpr{Value: args[0]}}
-				}
-			}
-			return &CallExpr{Func: "console.log", Args: args}, nil
+                switch p.Call.Func {
+                case "print":
+                        if len(args) == 1 && transpileEnv != nil {
+                                if _, ok := types.ExprType(p.Call.Args[0], transpileEnv).(types.ListType); ok {
+                                        args = []Expr{&FormatListExpr{Value: args[0]}}
+                                }
+                        }
+                        return &PrintExpr{Args: args}, nil
 		case "len":
 			if len(args) != 1 {
 				return nil, fmt.Errorf("len expects one argument")
@@ -1958,9 +1976,15 @@ func exprToNode(e Expr) *ast.Node {
 		return &ast.Node{Kind: "except", Children: []*ast.Node{exprToNode(ex.Left), exprToNode(ex.Right)}}
 	case *IntersectExpr:
 		return &ast.Node{Kind: "intersect", Children: []*ast.Node{exprToNode(ex.Left), exprToNode(ex.Right)}}
-	case *FormatListExpr:
-		return &ast.Node{Kind: "fmtlist", Children: []*ast.Node{exprToNode(ex.Value)}}
-	case *SubstringExpr:
+        case *FormatListExpr:
+                return &ast.Node{Kind: "fmtlist", Children: []*ast.Node{exprToNode(ex.Value)}}
+        case *PrintExpr:
+                n := &ast.Node{Kind: "print"}
+                for _, a := range ex.Args {
+                        n.Children = append(n.Children, exprToNode(a))
+                }
+                return n
+        case *SubstringExpr:
 		return &ast.Node{Kind: "substring", Children: []*ast.Node{exprToNode(ex.Str), exprToNode(ex.Start), exprToNode(ex.End)}}
 	case *MapLit:
 		n := &ast.Node{Kind: "map"}
