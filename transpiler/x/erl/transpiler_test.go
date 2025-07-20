@@ -177,6 +177,12 @@ func TestTranspileSlice(t *testing.T) { runGolden(t, "slice") }
 
 func TestTranspileStringPrefixSlice(t *testing.T) { runGolden(t, "string_prefix_slice") }
 
+func TestTranspileForLoop(t *testing.T) { runGolden(t, "for_loop") }
+
+func TestTranspileForListCollection(t *testing.T) { runGolden(t, "for_list_collection") }
+
+func TestTranspileForMapCollection(t *testing.T) { runGolden(t, "for_map_collection") }
+
 func updateEnabled() bool { return *update }
 
 func countCompiled() (int, int) {

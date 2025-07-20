@@ -35,6 +35,22 @@ func newContext() *context {
 	return &context{alias: map[string]string{}, orig: map[string]string{}, counter: map[string]int{}}
 }
 
+func (c *context) clone() *context {
+	alias := make(map[string]string, len(c.alias))
+	for k, v := range c.alias {
+		alias[k] = v
+	}
+	orig := make(map[string]string, len(c.orig))
+	for k, v := range c.orig {
+		orig[k] = v
+	}
+	counter := make(map[string]int, len(c.counter))
+	for k, v := range c.counter {
+		counter[k] = v
+	}
+	return &context{alias: alias, orig: orig, counter: counter}
+}
+
 func (c *context) newAlias(name string) string {
 	c.counter[name]++
 	alias := sanitize(name)
@@ -171,6 +187,16 @@ type IfStmt struct {
 	Cond Expr
 	Then []Stmt
 	Else []Stmt
+}
+
+// ForStmt represents a simple for-in or range loop.
+type ForStmt struct {
+	Var   string
+	Kind  string // "range", "list" or "map"
+	Start Expr   // for range loops
+	End   Expr   // for range loops
+	Src   Expr   // list or map expression
+	Body  []Stmt
 }
 
 func (p *PrintStmt) emit(w io.Writer) {
@@ -576,6 +602,35 @@ func (i *IfStmt) emit(w io.Writer) {
 	io.WriteString(w, "\n    end")
 }
 
+func (f *ForStmt) emit(w io.Writer) {
+	io.WriteString(w, "lists:foreach(fun(")
+	io.WriteString(w, f.Var)
+	io.WriteString(w, ") ->")
+	for idx, st := range f.Body {
+		io.WriteString(w, "\n    ")
+		st.emit(w)
+		if idx < len(f.Body)-1 {
+			io.WriteString(w, ",")
+		}
+	}
+	io.WriteString(w, "\nend, ")
+	switch f.Kind {
+	case "range":
+		io.WriteString(w, "lists:seq(")
+		f.Start.emit(w)
+		io.WriteString(w, ", (")
+		f.End.emit(w)
+		io.WriteString(w, ") - 1))")
+	case "map":
+		io.WriteString(w, "maps:keys(")
+		f.Src.emit(w)
+		io.WriteString(w, "))")
+	default: // list
+		f.Src.emit(w)
+		io.WriteString(w, ")")
+	}
+}
+
 func mapOp(op string) string {
 	switch op {
 	case "&&":
@@ -684,6 +739,37 @@ func convertStmt(st *parser.Statement, env *types.Env, ctx *context) ([]Stmt, er
 			return nil, err
 		}
 		return []Stmt{s}, nil
+	case st.For != nil:
+		loopCtx := ctx.clone()
+		alias := loopCtx.newAlias(st.For.Name)
+		body := []Stmt{}
+		for _, bs := range st.For.Body {
+			cs, err := convertStmt(bs, env, loopCtx)
+			if err != nil {
+				return nil, err
+			}
+			body = append(body, cs...)
+		}
+		if st.For.RangeEnd != nil {
+			start, err := convertExpr(st.For.Source, env, ctx)
+			if err != nil {
+				return nil, err
+			}
+			end, err := convertExpr(st.For.RangeEnd, env, ctx)
+			if err != nil {
+				return nil, err
+			}
+			return []Stmt{&ForStmt{Var: alias, Kind: "range", Start: start, End: end, Body: body}}, nil
+		}
+		src, err := convertExpr(st.For.Source, env, ctx)
+		if err != nil {
+			return nil, err
+		}
+		kind := "list"
+		if isMapExpr(src, env, ctx) {
+			kind = "map"
+		}
+		return []Stmt{&ForStmt{Var: alias, Kind: kind, Src: src, Body: body}}, nil
 	default:
 		return nil, fmt.Errorf("unsupported statement")
 	}
