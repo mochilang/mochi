@@ -1,3 +1,6 @@
+## Progress (2025-07-20 09:33 +0700)
+- fortran transpiler: improve expressions and bool output
+
 ## Progress (2025-07-20 01:49 +07)
 - docs(go): update VM checklist and tasks
 
