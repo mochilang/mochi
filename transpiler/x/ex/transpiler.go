@@ -209,6 +209,37 @@ func (fn *FuncDecl) emit(w io.Writer, indent int) {
 	io.WriteString(w, "end")
 }
 
+// AnonFun represents an anonymous function expression.
+type AnonFun struct {
+	Params []string
+	Body   []Stmt
+}
+
+func (af *AnonFun) emit(w io.Writer) {
+	io.WriteString(w, "fn ")
+	for i, p := range af.Params {
+		if i > 0 {
+			io.WriteString(w, ", ")
+		}
+		io.WriteString(w, p)
+	}
+	io.WriteString(w, " ->")
+	if len(af.Body) == 1 {
+		if es, ok := af.Body[0].(*ExprStmt); ok {
+			io.WriteString(w, " ")
+			es.Expr.emit(w)
+			io.WriteString(w, " end")
+			return
+		}
+	}
+	io.WriteString(w, "\n")
+	for _, st := range af.Body {
+		st.emit(w, 1)
+		io.WriteString(w, "\n")
+	}
+	io.WriteString(w, "end")
+}
+
 // CondExpr represents a conditional expression.
 type CondExpr struct {
 	Cond Expr
@@ -346,11 +377,16 @@ func (u *UnaryExpr) emit(w io.Writer) {
 type CallExpr struct {
 	Func string
 	Args []Expr
+	Var  bool
 }
 
 func (c *CallExpr) emit(w io.Writer) {
 	io.WriteString(w, c.Func)
-	io.WriteString(w, "(")
+	if c.Var {
+		io.WriteString(w, ".(")
+	} else {
+		io.WriteString(w, "(")
+	}
 	for i, a := range c.Args {
 		if i > 0 {
 			io.WriteString(w, ", ")
@@ -759,6 +795,34 @@ func compileForStmt(fs *parser.ForStmt, env *types.Env) (Stmt, error) {
 	return res, nil
 }
 
+func compileFunExpr(fn *parser.FunExpr, env *types.Env) (Expr, error) {
+	child := types.NewEnv(env)
+	params := make([]string, len(fn.Params))
+	for i, p := range fn.Params {
+		params[i] = p.Name
+		child.SetVar(p.Name, types.AnyType{}, false)
+	}
+	var body []Stmt
+	if fn.ExprBody != nil {
+		ex, err := compileExpr(fn.ExprBody, child)
+		if err != nil {
+			return nil, err
+		}
+		body = []Stmt{&ExprStmt{Expr: ex}}
+	} else {
+		for _, s := range fn.BlockBody {
+			st, err := compileStmt(s, child)
+			if err != nil {
+				return nil, err
+			}
+			if st != nil {
+				body = append(body, st)
+			}
+		}
+	}
+	return &AnonFun{Params: params, Body: body}, nil
+}
+
 func compileExpr(e *parser.Expr, env *types.Env) (Expr, error) {
 	if e == nil || e.Binary == nil {
 		return nil, fmt.Errorf("unsupported expression")
@@ -1057,6 +1121,11 @@ func compilePrimary(p *parser.Primary, env *types.Env) (Expr, error) {
 				return &CallExpr{Func: "String.slice", Args: []Expr{args[0], args[1], diff}}, nil
 			}
 		}
+		if t, err := env.GetVar(name); err == nil {
+			if _, ok := t.(types.FuncType); ok {
+				return &CallExpr{Func: name, Args: args, Var: true}, nil
+			}
+		}
 		return &CallExpr{Func: name, Args: args}, nil
 	case p.Lit != nil:
 		return compileLiteral(p.Lit)
@@ -1090,6 +1159,8 @@ func compilePrimary(p *parser.Primary, env *types.Env) (Expr, error) {
 			items[i] = MapItem{Key: k, Value: v}
 		}
 		return &MapLit{Items: items}, nil
+	case p.FunExpr != nil:
+		return compileFunExpr(p.FunExpr, env)
 	case p.If != nil:
 		return compileIfExpr(p.If, env)
 	case p.Match != nil:
