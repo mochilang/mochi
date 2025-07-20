@@ -5,7 +5,7 @@ Main.java:2: error: incompatible types: int[] cannot be converted to int
 Main.java:2: error: incompatible types: int[] cannot be converted to int
     static int[] matrix = new int[]{new int[]{1, 2}, new int[]{3, 4}};
                                                      ^
-Main.java:4: error: array required, but int found
+Main.java:5: error: array required, but int found
         System.out.println(matrix[1][0]);
                                     ^
 3 errors

@@ -1,4 +1,6 @@
-## Progress (2025-07-20 11:48 +0700)
+## Progress (2025-07-20 12:01 +0700)
+- java transpiler: improve formatting and inference (5540777bf)
+
 - java transpiler: add foreach loops and list/map literals (93aba1531)
 
 - cobol: add golden test suite and update checklist (01fa5b5d5)

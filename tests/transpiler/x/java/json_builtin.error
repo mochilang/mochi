@@ -9,7 +9,7 @@ Main.java:2: error: cannot find symbol
                                                                      ^
   symbol:   variable b
   location: class Main
-Main.java:4: error: cannot find symbol
+Main.java:5: error: cannot find symbol
         json(m);
         ^
   symbol:   method json(Map<String,Integer>)

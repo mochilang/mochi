@@ -1,5 +1,5 @@
 exit status 1
-Main.java:3: error: cannot find symbol
+Main.java:4: error: cannot find symbol
         System.out.println(new int[]{1, 2, 3}.length());
                                              ^
   symbol:   method length()

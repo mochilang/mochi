@@ -1,5 +1,5 @@
 exit status 1
-Main.java:4: error: cannot find symbol
+Main.java:5: error: cannot find symbol
         System.out.println(values(m));
                            ^
   symbol:   method values(Map<String,Integer>)

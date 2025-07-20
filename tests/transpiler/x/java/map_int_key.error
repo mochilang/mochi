@@ -7,7 +7,7 @@ Main.java:2: error: incompatible types: inference variable K has incompatible bo
   where K,V are type-variables:
     K extends Object declared in method <K,V>of(K,V,K,V)
     V extends Object declared in method <K,V>of(K,V,K,V)
-Main.java:4: error: array required, but Map<String,Integer> found
+Main.java:5: error: array required, but Map<String,Integer> found
         System.out.println(m[1]);
                             ^
 2 errors

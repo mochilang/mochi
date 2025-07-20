@@ -2,19 +2,19 @@ exit status 1
 Main.java:2: error: incompatible types: int[] cannot be converted to int
     static int result = twoSum(new int[]{2, 7, 11, 15}, 9);
                                ^
-Main.java:4: error: int cannot be dereferenced
+Main.java:5: error: int cannot be dereferenced
         int n = nums.length();
                     ^
-Main.java:7: error: array required, but int found
+Main.java:8: error: array required, but int found
                 if (nums[i] + nums[j] == target) {
                         ^
-Main.java:7: error: array required, but int found
+Main.java:8: error: array required, but int found
                 if (nums[i] + nums[j] == target) {
                                   ^
-Main.java:8: error: incompatible types: int[] cannot be converted to int
+Main.java:9: error: incompatible types: int[] cannot be converted to int
                     return new int[]{i, j};
                            ^
-Main.java:12: error: incompatible types: int[] cannot be converted to int
+Main.java:13: error: incompatible types: int[] cannot be converted to int
         return new int[]{-1, -1};
                ^
 Main.java:16: error: array required, but int found
