@@ -2,7 +2,7 @@
 
 Generated C++ code for programs in `tests/vm/valid`. Each program has a `.cpp` file produced by the transpiler and a `.out` file containing its runtime output. Compilation or execution errors are captured in a `.error` file placed next to the source.
 
-## VM Golden Test Checklist (41/100)
+## VM Golden Test Checklist (44/100)
 - [x] append_builtin
 - [x] avg_builtin
 - [x] basic_compare
@@ -38,7 +38,7 @@ Generated C++ code for programs in `tests/vm/valid`. Each program has a `.cpp` f
 - [x] if_else
 - [x] if_then_else
 - [x] if_then_else_nested
-- [ ] in_operator
+- [x] in_operator
 - [ ] in_operator_extended
 - [ ] inner_join
 - [ ] join_multi
@@ -46,7 +46,7 @@ Generated C++ code for programs in `tests/vm/valid`. Each program has a `.cpp` f
 - [ ] left_join
 - [ ] left_join_multi
 - [x] len_builtin
-- [ ] len_map
+- [x] len_map
 - [x] len_string
 - [x] let_and_print
 - [x] list_assign
@@ -55,7 +55,7 @@ Generated C++ code for programs in `tests/vm/valid`. Each program has a `.cpp` f
 - [ ] list_set_ops
 - [ ] load_yaml
 - [x] map_assign
-- [ ] map_in_operator
+- [x] map_in_operator
 - [x] map_index
 - [ ] map_int_key
 - [ ] map_literal_dynamic

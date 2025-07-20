@@ -1,5 +1,9 @@
 # C++ Transpiler Tasks
 
+## Recent Enhancements (2025-07-20 03:42 +0000)
+- feat(cpp): support map and list membership
+- 44/100 VM programs transpiled successfully
+
 ## Recent Enhancements (2025-07-20 09:39 +0700)
 - Added support for index assignment including nested indexes.
 - Generated golden outputs for `list_assign` and `list_nested_assign`.
