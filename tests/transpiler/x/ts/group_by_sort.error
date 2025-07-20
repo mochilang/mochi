@@ -2,6 +2,6 @@ run: exit status 1
 [0m[1m[31merror[0m: Uncaught (in promise) ReferenceError: g is not defined
   for (const x of g) {
 [0m[31m                  ^[0m
-    at [0m[36mfile:///workspace/mochi/tests/transpiler/x/ts/group_by_sort.ts[0m:[0m[33m9[0m:[0m[33m19[0m
-    at [0m[36mfile:///workspace/mochi/tests/transpiler/x/ts/group_by_sort.ts[0m:[0m[33m14[0m:[0m[33m2[0m
-    at [0m[36mfile:///workspace/mochi/tests/transpiler/x/ts/group_by_sort.ts[0m:[0m[33m26[0m:[0m[33m2[0m
+    at [0m[36mfile:///workspace/mochi/tests/transpiler/x/ts/group_by_sort.ts[0m:[0m[33m10[0m:[0m[33m19[0m
+    at [0m[36mfile:///workspace/mochi/tests/transpiler/x/ts/group_by_sort.ts[0m:[0m[33m15[0m:[0m[33m2[0m
+    at [0m[36mfile:///workspace/mochi/tests/transpiler/x/ts/group_by_sort.ts[0m:[0m[33m27[0m:[0m[33m2[0m
