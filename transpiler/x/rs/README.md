@@ -1,108 +1,106 @@
-# Mochi to Rust transpiler
+# Mochi → Rust Transpiler
 
-This experimental transpiler converts a tiny subset of Mochi into Rust code. Only
-simple expressions are currently supported.
+This experimental transpiler converts a subset of Mochi into readable Rust code.
+Generated sources for the golden tests live under `tests/transpiler/x/rs`.
 
-## Golden tests
-
-Programs under `tests/vm/valid` that have generated Rust code (30/100):
-- [x] append_builtin
-- [x] avg_builtin
-- [x] basic_compare
-- [x] binary_precedence
-- [ ] bool_chain
-- [ ] break_continue
-- [x] cast_string_to_int
-- [ ] cast_struct
-- [ ] closure
-- [x] count_builtin
-- [ ] cross_join
-- [ ] cross_join_filter
-- [ ] cross_join_triple
-- [ ] dataset_sort_take_limit
-- [ ] dataset_where_filter
-- [ ] exists_builtin
-- [ ] for_list_collection
-- [ ] for_loop
-- [ ] for_map_collection
-- [ ] fun_call
-- [ ] fun_expr_in_let
-- [ ] fun_three_args
-- [ ] go_auto
-- [ ] group_by
-- [ ] group_by_conditional_sum
-- [ ] group_by_having
-- [ ] group_by_join
-- [ ] group_by_left_join
-- [ ] group_by_multi_join
-- [ ] group_by_multi_join_sort
-- [ ] group_by_sort
-- [ ] group_items_iteration
-- [x] if_else
-- [x] if_then_else
-- [x] if_then_else_nested
-- [ ] in_operator
-- [ ] in_operator_extended
-- [ ] inner_join
-- [ ] join_multi
-- [ ] json_builtin
-- [ ] left_join
-- [ ] left_join_multi
-- [x] len_builtin
-- [x] len_map
-- [x] len_string
-- [x] let_and_print
-- [ ] list_assign
-- [x] list_index
-- [ ] list_nested_assign
-- [ ] list_set_ops
-- [ ] load_yaml
-- [ ] map_assign
-- [ ] map_in_operator
-- [x] map_index
-- [x] map_int_key
-- [x] map_literal_dynamic
-- [ ] map_membership
-- [ ] map_nested_assign
-- [ ] match_expr
-- [ ] match_full
-- [x] math_ops
-- [ ] membership
-- [x] min_max_builtin
-- [ ] nested_function
-- [ ] order_by_map
-- [ ] outer_join
-- [ ] partial_application
-- [x] print_hello
-- [ ] pure_fold
-- [ ] pure_global_fold
-- [ ] python_auto
-- [ ] python_math
-- [ ] query_sum_select
-- [ ] record_assign
-- [ ] right_join
-- [ ] save_jsonl_stdout
-- [ ] short_circuit
-- [ ] slice
-- [ ] sort_stable
-- [x] str_builtin
-- [x] string_compare
-- [x] string_concat
-- [ ] string_contains
-- [ ] string_in_operator
-- [ ] string_index
-- [ ] string_prefix_slice
-- [ ] substring_builtin
-- [x] sum_builtin
-- [ ] tail_recursion
-- [ ] test_block
-- [ ] tree_sum
-- [ ] two-sum
-- [x] typed_let
-- [x] typed_var
-- [x] unary_neg
-- [ ] update_stmt
-- [ ] user_type_literal
-- [x] values_builtin
-- [x] var_assignment
-- [x] while_loop
+## VM Golden Test Checklist (30/100)
+- [x] append_builtin.mochi
+- [x] avg_builtin.mochi
+- [x] basic_compare.mochi
+- [x] binary_precedence.mochi
+- [ ] bool_chain.mochi
+- [ ] break_continue.mochi
+- [x] cast_string_to_int.mochi
+- [ ] cast_struct.mochi
+- [ ] closure.mochi
+- [x] count_builtin.mochi
+- [ ] cross_join.mochi
+- [ ] cross_join_filter.mochi
+- [ ] cross_join_triple.mochi
+- [ ] dataset_sort_take_limit.mochi
+- [ ] dataset_where_filter.mochi
+- [ ] exists_builtin.mochi
+- [ ] for_list_collection.mochi
+- [ ] for_loop.mochi
+- [ ] for_map_collection.mochi
+- [ ] fun_call.mochi
+- [ ] fun_expr_in_let.mochi
+- [ ] fun_three_args.mochi
+- [ ] go_auto.mochi
+- [ ] group_by.mochi
+- [ ] group_by_conditional_sum.mochi
+- [ ] group_by_having.mochi
+- [ ] group_by_join.mochi
+- [ ] group_by_left_join.mochi
+- [ ] group_by_multi_join.mochi
+- [ ] group_by_multi_join_sort.mochi
+- [ ] group_by_sort.mochi
+- [ ] group_items_iteration.mochi
+- [x] if_else.mochi
+- [x] if_then_else.mochi
+- [x] if_then_else_nested.mochi
+- [ ] in_operator.mochi
+- [ ] in_operator_extended.mochi
+- [ ] inner_join.mochi
+- [ ] join_multi.mochi
+- [ ] json_builtin.mochi
+- [ ] left_join.mochi
+- [ ] left_join_multi.mochi
+- [x] len_builtin.mochi
+- [x] len_map.mochi
+- [x] len_string.mochi
+- [x] let_and_print.mochi
+- [ ] list_assign.mochi
+- [x] list_index.mochi
+- [ ] list_nested_assign.mochi
+- [ ] list_set_ops.mochi
+- [ ] load_yaml.mochi
+- [ ] map_assign.mochi
+- [ ] map_in_operator.mochi
+- [x] map_index.mochi
+- [x] map_int_key.mochi
+- [x] map_literal_dynamic.mochi
+- [ ] map_membership.mochi
+- [ ] map_nested_assign.mochi
+- [ ] match_expr.mochi
+- [ ] match_full.mochi
+- [x] math_ops.mochi
+- [ ] membership.mochi
+- [x] min_max_builtin.mochi
+- [ ] nested_function.mochi
+- [ ] order_by_map.mochi
+- [ ] outer_join.mochi
+- [ ] partial_application.mochi
+- [x] print_hello.mochi
+- [ ] pure_fold.mochi
+- [ ] pure_global_fold.mochi
+- [ ] python_auto.mochi
+- [ ] python_math.mochi
+- [ ] query_sum_select.mochi
+- [ ] record_assign.mochi
+- [ ] right_join.mochi
+- [ ] save_jsonl_stdout.mochi
+- [ ] short_circuit.mochi
+- [ ] slice.mochi
+- [ ] sort_stable.mochi
+- [x] str_builtin.mochi
+- [x] string_compare.mochi
+- [x] string_concat.mochi
+- [ ] string_contains.mochi
+- [ ] string_in_operator.mochi
+- [ ] string_index.mochi
+- [ ] string_prefix_slice.mochi
+- [ ] substring_builtin.mochi
+- [x] sum_builtin.mochi
+- [ ] tail_recursion.mochi
+- [ ] test_block.mochi
+- [ ] tree_sum.mochi
+- [ ] two-sum.mochi
+- [x] typed_let.mochi
+- [x] typed_var.mochi
+- [x] unary_neg.mochi
+- [ ] update_stmt.mochi
+- [ ] user_type_literal.mochi
+- [x] values_builtin.mochi
+- [x] var_assignment.mochi
+- [x] while_loop.mochi

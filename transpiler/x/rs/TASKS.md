@@ -1,4 +1,13 @@
+## Progress (2025-07-20 02:06 +0700)
+- Generated Rust for 30/100 programs
+- Updated README checklist and outputs
+
 # Rust Transpiler Tasks
+## Recent Enhancements (2025-07-19 19:06 +0000)
+- Added automatic golden test harness.
+- README now lists all vm programs.
+- Improved append code emission and type inference.
+- Regenerated outputs.
 
 ## Recent Enhancements (2025-07-19 19:02 +0000)
 - Removed `mochi_print_vec` helper; lists are printed inline using `join`.
