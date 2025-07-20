@@ -556,7 +556,13 @@ func (s *SelectorExpr) emit(w io.Writer) error {
 
 type StringLit struct{ Value string }
 
-func (s *StringLit) emit(w io.Writer) error { _, err := fmt.Fprintf(w, "%q", s.Value); return err }
+func (s *StringLit) emit(w io.Writer) error {
+	val := strings.ReplaceAll(s.Value, "\\", "\\\\")
+	val = strings.ReplaceAll(val, "\"", "\\\"")
+	val = strings.ReplaceAll(val, "$", "\\$")
+	_, err := io.WriteString(w, "\""+val+"\"")
+	return err
+}
 
 type IntLit struct{ Value int }
 
@@ -982,14 +988,22 @@ type MultiListComp struct {
 }
 
 func (lc *MultiListComp) emit(w io.Writer) error {
-	if _, err := io.WriteString(w, "["); err != nil {
+	if _, err := io.WriteString(w, "[for (var "); err != nil {
 		return err
 	}
-	if err := lc.Expr.emit(w); err != nil {
-		return err
+	if len(lc.Vars) > 0 {
+		if _, err := io.WriteString(w, lc.Vars[0]+" in "); err != nil {
+			return err
+		}
+		if err := lc.Iters[0].emit(w); err != nil {
+			return err
+		}
+		if _, err := io.WriteString(w, ")"); err != nil {
+			return err
+		}
 	}
-	for i, v := range lc.Vars {
-		if _, err := io.WriteString(w, " for (var "+v+" in "); err != nil {
+	for i := 1; i < len(lc.Vars); i++ {
+		if _, err := io.WriteString(w, " for (var "+lc.Vars[i]+" in "); err != nil {
 			return err
 		}
 		if err := lc.Iters[i].emit(w); err != nil {
@@ -1010,7 +1024,42 @@ func (lc *MultiListComp) emit(w io.Writer) error {
 			return err
 		}
 	}
+	if _, err := io.WriteString(w, " "); err != nil {
+		return err
+	}
+	if err := lc.Expr.emit(w); err != nil {
+		return err
+	}
 	_, err := io.WriteString(w, "]")
+	return err
+}
+
+// SortExpr represents sorting of a list with a comparison lambda.
+type SortExpr struct {
+	List    Expr
+	Compare *LambdaExpr
+}
+
+func (s *SortExpr) emit(w io.Writer) error {
+	if _, err := io.WriteString(w, "("); err != nil {
+		return err
+	}
+	if _, err := io.WriteString(w, "List.of("); err != nil {
+		return err
+	}
+	if err := s.List.emit(w); err != nil {
+		return err
+	}
+	if _, err := io.WriteString(w, ")..sort("); err != nil {
+		return err
+	}
+	if err := s.Compare.emit(w); err != nil {
+		return err
+	}
+	if _, err := io.WriteString(w, ")"); err != nil {
+		return err
+	}
+	_, err := io.WriteString(w, ")")
 	return err
 }
 
@@ -1222,6 +1271,8 @@ func inferType(e Expr) string {
 			}
 		}
 		return "List<" + et + ">"
+	case *SortExpr:
+		return inferType(ex.List)
 	case *BinaryExpr:
 		switch ex.Op {
 		case "+":
@@ -2148,8 +2199,46 @@ func convertMatchExpr(me *parser.MatchExpr) (Expr, error) {
 	return expr, nil
 }
 
+func cloneReplace(e Expr, old, new string) Expr {
+	switch ex := e.(type) {
+	case *Name:
+		if ex.Name == old {
+			return &Name{Name: new}
+		}
+		return &Name{Name: ex.Name}
+	case *SelectorExpr:
+		return &SelectorExpr{Receiver: cloneReplace(ex.Receiver, old, new), Field: ex.Field}
+	case *UnaryExpr:
+		return &UnaryExpr{Op: ex.Op, X: cloneReplace(ex.X, old, new)}
+	case *BinaryExpr:
+		return &BinaryExpr{Left: cloneReplace(ex.Left, old, new), Op: ex.Op, Right: cloneReplace(ex.Right, old, new)}
+	case *CallExpr:
+		args := make([]Expr, len(ex.Args))
+		for i, a := range ex.Args {
+			args[i] = cloneReplace(a, old, new)
+		}
+		return &CallExpr{Func: cloneReplace(ex.Func, old, new), Args: args}
+	case *IndexExpr:
+		return &IndexExpr{Target: cloneReplace(ex.Target, old, new), Index: cloneReplace(ex.Index, old, new)}
+	case *ListLit:
+		elems := make([]Expr, len(ex.Elems))
+		for i, a := range ex.Elems {
+			elems[i] = cloneReplace(a, old, new)
+		}
+		return &ListLit{Elems: elems}
+	case *MapLit:
+		ents := make([]MapEntry, len(ex.Entries))
+		for i, m := range ex.Entries {
+			ents[i] = MapEntry{Key: cloneReplace(m.Key, old, new), Value: cloneReplace(m.Value, old, new)}
+		}
+		return &MapLit{Entries: ents}
+	default:
+		return ex
+	}
+}
+
 func convertQueryExpr(q *parser.QueryExpr) (Expr, error) {
-	if q.Group != nil || q.Sort != nil || q.Skip != nil || q.Take != nil || q.Distinct {
+	if q.Group != nil || q.Distinct {
 		return nil, fmt.Errorf("unsupported query")
 	}
 
@@ -2214,7 +2303,47 @@ func convertQueryExpr(q *parser.QueryExpr) (Expr, error) {
 		}
 	}
 
-	return &MultiListComp{Vars: vars, Iters: iters, Expr: body, Cond: cond}, nil
+	expr := Expr(&MultiListComp{Vars: vars, Iters: iters, Expr: body, Cond: cond})
+
+	if q.Sort != nil {
+		sortExpr, err := convertExpr(q.Sort)
+		if err != nil {
+			return nil, err
+		}
+		desc := false
+		if ue, ok := sortExpr.(*UnaryExpr); ok && ue.Op == "-" {
+			desc = true
+			sortExpr = ue.X
+		}
+		a := cloneReplace(sortExpr, q.Var, "a")
+		b := cloneReplace(sortExpr, q.Var, "b")
+		if desc {
+			a, b = b, a
+		}
+		cmp := &CallExpr{Func: &SelectorExpr{Receiver: a, Field: "compareTo"}, Args: []Expr{b}}
+		expr = &SortExpr{List: expr, Compare: &LambdaExpr{Params: []string{"a", "b"}, Body: cmp}}
+	}
+
+	if q.Skip != nil || q.Take != nil {
+		iter := expr
+		if q.Skip != nil {
+			s, err := convertExpr(q.Skip)
+			if err != nil {
+				return nil, err
+			}
+			iter = &CallExpr{Func: &SelectorExpr{Receiver: iter, Field: "skip"}, Args: []Expr{s}}
+		}
+		if q.Take != nil {
+			t, err := convertExpr(q.Take)
+			if err != nil {
+				return nil, err
+			}
+			iter = &CallExpr{Func: &SelectorExpr{Receiver: iter, Field: "take"}, Args: []Expr{t}}
+		}
+		expr = &CallExpr{Func: &SelectorExpr{Receiver: iter, Field: "toList"}, Args: nil}
+	}
+
+	return expr, nil
 }
 
 // --- AST -> generic node (for debugging) ---
@@ -2354,6 +2483,8 @@ func exprNode(e Expr) *ast.Node {
 		return &ast.Node{Kind: "str", Children: []*ast.Node{exprNode(ex.Value)}}
 	case *FormatList:
 		return &ast.Node{Kind: "format-list", Children: []*ast.Node{exprNode(ex.List)}}
+	case *SortExpr:
+		return &ast.Node{Kind: "sort", Children: []*ast.Node{exprNode(ex.List), exprNode(ex.Compare)}}
 	case *MultiListComp:
 		n := &ast.Node{Kind: "multi-list-comp"}
 		for i, v := range ex.Vars {
