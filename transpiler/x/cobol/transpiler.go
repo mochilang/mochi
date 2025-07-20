@@ -137,6 +137,12 @@ type LenExpr struct{ Value Expr }
 // StrExpr represents a builtin str() call on a constant.
 type StrExpr struct{ Value string }
 
+// ContainsExpr represents s.contains(sub).
+type ContainsExpr struct {
+	Str Expr
+	Sub Expr
+}
+
 type UnaryExpr struct {
 	Op   string
 	Expr Expr
@@ -163,6 +169,14 @@ func (s *StringLit) emitExpr(w io.Writer) {
 func (s *StrExpr) emitExpr(w io.Writer) {
 	esc := strings.ReplaceAll(s.Value, "\"", "\"\"")
 	fmt.Fprintf(w, "\"%s\"", esc)
+}
+
+func (c *ContainsExpr) emitExpr(w io.Writer) {
+	io.WriteString(w, "FUNCTION POSITION(")
+	c.Sub.emitExpr(w)
+	io.WriteString(w, ", ")
+	c.Str.emitExpr(w)
+	io.WriteString(w, ") > 0")
 }
 
 func (l *LenExpr) emitExpr(w io.Writer) {
@@ -368,6 +382,14 @@ func emitCondExpr(w io.Writer, e Expr) {
 // --- Statement emitters ---
 
 func (d *DisplayStmt) emit(w io.Writer) {
+	if ce, ok := d.Expr.(*ContainsExpr); ok {
+		io.WriteString(w, "MOVE 0 TO TMP\n    INSPECT ")
+		ce.Str.emitExpr(w)
+		io.WriteString(w, " TALLYING TMP FOR ALL ")
+		ce.Sub.emitExpr(w)
+		io.WriteString(w, "\n    IF TMP > 0\n        DISPLAY \"true\"\n    ELSE\n        DISPLAY \"false\"\n    END-IF")
+		return
+	}
 	if isBoolExpr(d.Expr) {
 		io.WriteString(w, "IF ")
 		emitCondExpr(w, d.Expr)
@@ -1031,6 +1053,29 @@ func convertPostfix(pf *parser.PostfixExpr, env *types.Env) (Expr, error) {
 	if pf == nil {
 		return nil, fmt.Errorf("unsupported postfix")
 	}
+	if pf.Target != nil && pf.Target.Selector != nil && len(pf.Target.Selector.Tail) == 1 && len(pf.Ops) == 1 && pf.Ops[0].Call != nil {
+		base := &parser.Primary{Selector: &parser.SelectorExpr{Root: pf.Target.Selector.Root}}
+		recv, err := convertPrimary(base, env)
+		if err != nil {
+			return nil, err
+		}
+		method := pf.Target.Selector.Tail[0]
+		args := pf.Ops[0].Call.Args
+		switch method {
+		case "contains":
+			if len(args) != 1 {
+				return nil, fmt.Errorf("unsupported call")
+			}
+			arg, err := convertExpr(args[0], env)
+			if err != nil {
+				return nil, err
+			}
+			return &ContainsExpr{Str: recv, Sub: arg}, nil
+		default:
+			return nil, fmt.Errorf("unsupported method")
+		}
+	}
+
 	ex, err := convertPrimary(pf.Target, env)
 	if err != nil {
 		return nil, err

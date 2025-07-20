@@ -1,3 +1,28 @@
+## Progress (2025-07-20 11:58 +0700)
+- transpiler/rs: improve string handling and closures
+- Generated COBOL for 21/100 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-20 11:58 +0700)
+- transpiler/rs: improve string handling and closures
+- Generated COBOL for 21/100 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-20 11:58 +0700)
+- transpiler/rs: improve string handling and closures
+- Generated COBOL for 21/100 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-20 11:58 +0700)
+- transpiler/rs: improve string handling and closures
+- Generated COBOL for 21/100 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-20 11:58 +0700)
+- transpiler/rs: improve string handling and closures
+- Generated COBOL for 20/100 programs
+- Updated README checklist and outputs
+
 ## Progress (2025-07-20 11:55 +0700)
 - cobol: support string to int cast
 - Generated COBOL for 20/100 programs
