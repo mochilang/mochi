@@ -1,0 +1,10 @@
+compile: exit status 1
+/workspace/mochi/tests/transpiler/x/cpp/cross_join_triple.cpp:8:5: error: non-static data member declared with placeholder ‘auto’
+    8 |     auto n;
+      |     ^~~~
+/workspace/mochi/tests/transpiler/x/cpp/cross_join_triple.cpp:9:5: error: non-static data member declared with placeholder ‘auto’
+    9 |     auto l;
+      |     ^~~~
+/workspace/mochi/tests/transpiler/x/cpp/cross_join_triple.cpp:10:5: error: non-static data member declared with placeholder ‘auto’
+   10 |     auto b;
+      |     ^~~~
