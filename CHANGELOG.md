@@ -1,4 +1,22 @@
 # 📦 CHANGELOG.md
+## [0.10.32] – 2025-07-20T15:13:08+07:00
+
+### Added
+
+* Experimental transpiler framework supporting many languages
+* AST printing helpers and golden tests for transpiled programs
+* Map operations, joins, slicing and membership across languages
+
+### Changed
+
+* Code generation improved with typed variables and header comments
+* Documentation and progress logs reorganized across compilers
+
+### Fixed
+
+* Runtime string membership issues
+* Go and C build/test stability
+
 ## [0.10.31] – 2025-07-19T10:21:06+07:00
 
 ### Added
