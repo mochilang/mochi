@@ -1,3 +1,23 @@
+## Progress (2025-07-20 08:31 +0700)
+- VM valid golden test results updated
+- Added list literals and if statements inside functions
+- Enabled sum builtin support
+
+## Progress (2025-07-20 08:31 +0700)
+- VM valid golden test results updated
+- Added list literals and if statements inside functions
+- Enabled sum builtin support
+
+## Progress (2025-07-20 08:31 +0700)
+- VM valid golden test results updated
+- Added list literals and if statements inside functions
+- Enabled sum builtin support
+
+## Progress (2025-07-20 08:31 +0700)
+- VM valid golden test results updated
+- Added list literals and if statements inside functions
+- Enabled sum builtin support
+
 ## Progress (2025-07-20 01:18 +0700)
 - VM valid golden test results updated
 - Added list literals and if statements inside functions

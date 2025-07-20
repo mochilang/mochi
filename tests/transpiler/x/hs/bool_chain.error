@@ -1,21 +1,21 @@
 run: exit status 1
 
-/workspace/mochi/tests/transpiler/x/hs/bool_chain.hs:11:44: error:
+/workspace/mochi/tests/transpiler/x/hs/bool_chain.hs:10:44: error:
     • Couldn't match expected type ‘Bool’ with actual type ‘IO Bool’
     • In the second argument of ‘(&&)’, namely ‘boom’
       In the second argument of ‘(&&)’, namely ‘(2 > 3) && boom’
       In the first argument of ‘fromEnum’, namely
         ‘((1 < 2) && (2 > 3) && boom)’
    |
-11 |     print (fromEnum ((1 < 2) && (2 > 3) && boom))
+10 |     print (fromEnum ((1 < 2) && (2 > 3) && boom))
    |                                            ^^^^
 
-/workspace/mochi/tests/transpiler/x/hs/bool_chain.hs:12:55: error:
+/workspace/mochi/tests/transpiler/x/hs/bool_chain.hs:11:55: error:
     • Couldn't match expected type ‘Bool’ with actual type ‘IO Bool’
     • In the second argument of ‘(&&)’, namely ‘boom’
       In the second argument of ‘(&&)’, namely ‘(3 > 4) && boom’
       In the second argument of ‘(&&)’, namely
         ‘(2 < 3) && (3 > 4) && boom’
    |
-12 |     print (fromEnum ((1 < 2) && (2 < 3) && (3 > 4) && boom))
+11 |     print (fromEnum ((1 < 2) && (2 < 3) && (3 > 4) && boom))
    |                                                       ^^^^
