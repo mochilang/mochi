@@ -77,6 +77,21 @@ func (c *context) original(alias string) string {
 	return alias
 }
 
+func simpleIdent(e *parser.Expr) (string, bool) {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) > 0 {
+		return "", false
+	}
+	u := e.Binary.Left
+	if len(u.Ops) > 0 || u.Value == nil {
+		return "", false
+	}
+	pf := u.Value
+	if len(pf.Ops) > 0 || pf.Target == nil || pf.Target.Selector == nil || len(pf.Target.Selector.Tail) > 0 {
+		return "", false
+	}
+	return pf.Target.Selector.Root, true
+}
+
 type Stmt interface{ emit(io.Writer) }
 
 type Expr interface{ emit(io.Writer) }
@@ -206,6 +221,20 @@ type ForStmt struct {
 	End   Expr   // for range loops
 	Src   Expr   // list or map expression
 	Body  []Stmt
+}
+
+// QueryExpr represents a basic list comprehension query.
+type QueryExpr struct {
+	Var    string
+	Src    Expr
+	Froms  []queryFrom
+	Where  Expr
+	Select Expr
+}
+
+type queryFrom struct {
+	Var string
+	Src Expr
 }
 
 // WhileStmt represents a while loop implemented via recursion.
@@ -789,6 +818,26 @@ func (ma *MapAssignStmt) emit(w io.Writer) {
 	fmt.Fprintf(w, ", %s)", ma.Old)
 }
 
+func (q *QueryExpr) emit(w io.Writer) {
+	io.WriteString(w, "[")
+	q.Select.emit(w)
+	io.WriteString(w, " || ")
+	io.WriteString(w, q.Var)
+	io.WriteString(w, " <- ")
+	q.Src.emit(w)
+	for _, f := range q.Froms {
+		io.WriteString(w, ", ")
+		io.WriteString(w, f.Var)
+		io.WriteString(w, " <- ")
+		f.Src.emit(w)
+	}
+	if q.Where != nil {
+		io.WriteString(w, ", ")
+		q.Where.emit(w)
+	}
+	io.WriteString(w, "]")
+}
+
 func mapOp(op string) string {
 	switch op {
 	case "&&":
@@ -1322,6 +1371,20 @@ func convertPrimary(p *parser.Primary, env *types.Env, ctx *context) (Expr, erro
 			}
 		}
 		return nr, nil
+	case p.Selector != nil && len(p.Selector.Tail) > 0:
+		expr := Expr(&NameRef{Name: ctx.current(p.Selector.Root)})
+		for i, f := range p.Selector.Tail {
+			key := &AtomLit{Name: f}
+			// determine if resulting value is string only on last step
+			isStr := false
+			if i == len(p.Selector.Tail)-1 {
+				if mapValueIsString(expr, env, ctx) {
+					isStr = true
+				}
+			}
+			expr = &IndexExpr{Target: expr, Index: key, Kind: "map", IsString: isStr}
+		}
+		return expr, nil
 	case p.Call != nil:
 		if p.Call.Func == "substring" && len(p.Call.Args) == 3 {
 			strExpr, err := convertExpr(p.Call.Args[0], env, ctx)
@@ -1392,9 +1455,15 @@ func convertPrimary(p *parser.Primary, env *types.Env, ctx *context) (Expr, erro
 	case p.Map != nil:
 		items := make([]MapItem, len(p.Map.Items))
 		for i, it := range p.Map.Items {
-			k, err := convertExpr(it.Key, env, ctx)
-			if err != nil {
-				return nil, err
+			var k Expr
+			if s, ok := simpleIdent(it.Key); ok {
+				k = &AtomLit{Name: s}
+			} else {
+				var err error
+				k, err = convertExpr(it.Key, env, ctx)
+				if err != nil {
+					return nil, err
+				}
 			}
 			v, err := convertExpr(it.Value, env, ctx)
 			if err != nil {
@@ -1403,6 +1472,8 @@ func convertPrimary(p *parser.Primary, env *types.Env, ctx *context) (Expr, erro
 			items[i] = MapItem{Key: k, Value: v}
 		}
 		return &MapLit{Items: items}, nil
+	case p.Query != nil:
+		return convertQueryExpr(p.Query, env, ctx)
 	case p.If != nil:
 		return convertIf(p.If, env, ctx)
 	case p.Match != nil:
@@ -1500,6 +1571,42 @@ func convertMatch(me *parser.MatchExpr, env *types.Env, ctx *context) (Expr, err
 		expr = &IfExpr{Cond: cond, Then: res, Else: expr}
 	}
 	return expr, nil
+}
+
+func convertQueryExpr(q *parser.QueryExpr, env *types.Env, ctx *context) (Expr, error) {
+	if q == nil || q.Group != nil || q.Sort != nil || q.Skip != nil || q.Take != nil || q.Distinct || len(q.Joins) > 0 {
+		return nil, fmt.Errorf("unsupported query")
+	}
+	loopCtx := ctx.clone()
+	src, err := convertExpr(q.Source, env, ctx)
+	if err != nil {
+		return nil, err
+	}
+	alias := loopCtx.newAlias(q.Var)
+	child := types.NewEnv(env)
+	child.SetVar(q.Var, types.AnyType{}, true)
+	froms := make([]queryFrom, len(q.Froms))
+	for i, f := range q.Froms {
+		fe, err := convertExpr(f.Src, env, ctx)
+		if err != nil {
+			return nil, err
+		}
+		av := loopCtx.newAlias(f.Var)
+		child.SetVar(f.Var, types.AnyType{}, true)
+		froms[i] = queryFrom{Var: av, Src: fe}
+	}
+	var where Expr
+	if q.Where != nil {
+		where, err = convertExpr(q.Where, child, loopCtx)
+		if err != nil {
+			return nil, err
+		}
+	}
+	sel, err := convertExpr(q.Select, child, loopCtx)
+	if err != nil {
+		return nil, err
+	}
+	return &QueryExpr{Var: alias, Src: src, Froms: froms, Where: where, Select: sel}, nil
 }
 
 func convertLiteral(l *parser.Literal) (Expr, error) {
