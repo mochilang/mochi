@@ -423,15 +423,15 @@ func transpileExpr(e *parser.Expr) (Node, error) {
 		if op.Op == "in" {
 			if isStringNode(right) {
 				n = &List{Elems: []Node{Symbol("clojure.string/includes?"), right, n}}
-                       } else if isMapNode(right) {
-                               n = &List{Elems: []Node{Symbol("contains?"), right, n}}
-                       } else {
-                               set := &Set{Elems: []Node{n}}
-                               some := &List{Elems: []Node{Symbol("some"), set, right}}
-                               n = &List{Elems: []Node{Symbol("boolean"), some}}
-                       }
-                       continue
-               }
+			} else if isMapNode(right) {
+				n = &List{Elems: []Node{Symbol("contains?"), right, n}}
+			} else {
+				set := &Set{Elems: []Node{n}}
+				some := &List{Elems: []Node{Symbol("some"), set, right}}
+				n = &List{Elems: []Node{Symbol("boolean"), some}}
+			}
+			continue
+		}
 		if (op.Op == "<" || op.Op == "<=" || op.Op == ">" || op.Op == ">=") && (isStringNode(n) || isStringNode(right)) {
 			cmp := &List{Elems: []Node{Symbol("compare"), n, right}}
 			switch op.Op {
@@ -484,11 +484,24 @@ func transpilePostfix(p *parser.PostfixExpr) (Node, error) {
 	if p == nil {
 		return nil, fmt.Errorf("nil postfix")
 	}
-	n, err := transpilePrimary(p.Target)
+
+	ops := []*parser.PostfixOp{}
+	target := p.Target
+	if target.Selector != nil && len(target.Selector.Tail) > 0 {
+		for _, name := range target.Selector.Tail {
+			ops = append(ops, &parser.PostfixOp{Field: &parser.FieldOp{Name: name}})
+		}
+		target = &parser.Primary{Selector: &parser.SelectorExpr{Root: target.Selector.Root}}
+	}
+	ops = append(ops, p.Ops...)
+
+	n, err := transpilePrimary(target)
 	if err != nil {
 		return nil, err
 	}
-	for _, op := range p.Ops {
+
+	for i := 0; i < len(ops); i++ {
+		op := ops[i]
 		switch {
 		case op.Index != nil:
 			idx := op.Index
@@ -504,6 +517,31 @@ func transpilePostfix(p *parser.PostfixExpr) (Node, error) {
 			} else {
 				n = &List{Elems: []Node{Symbol("nth"), n, i}}
 			}
+		case op.Field != nil:
+			if i+1 < len(ops) && ops[i+1].Call != nil && op.Field.Name == "contains" {
+				call := ops[i+1].Call
+				if len(call.Args) != 1 {
+					return nil, fmt.Errorf("contains expects 1 arg")
+				}
+				arg, err := transpileExpr(call.Args[0])
+				if err != nil {
+					return nil, err
+				}
+				n = &List{Elems: []Node{Symbol("clojure.string/includes?"), n, arg}}
+				i++
+				continue
+			}
+			return nil, fmt.Errorf("field access not supported")
+		case op.Call != nil:
+			args := []Node{}
+			for _, a := range op.Call.Args {
+				ae, err := transpileExpr(a)
+				if err != nil {
+					return nil, err
+				}
+				args = append(args, ae)
+			}
+			n = &List{Elems: append([]Node{n}, args...)}
 		case op.Cast != nil:
 			var err error
 			n, err = castNode(n, op.Cast.Type)
@@ -648,12 +686,12 @@ func transpileCall(c *parser.CallExpr) (Node, error) {
 		elems = append(elems, Symbol("apply"), Symbol("min"))
 	case "max":
 		elems = append(elems, Symbol("apply"), Symbol("max"))
-       case "substring":
-               elems = append(elems, Symbol("subs"))
-       case "append":
-               elems = append(elems, Symbol("conj"))
-       case "sum":
-               elems = append(elems, Symbol("reduce"), Symbol("+"), IntLit(0))
+	case "substring":
+		elems = append(elems, Symbol("subs"))
+	case "append":
+		elems = append(elems, Symbol("conj"))
+	case "sum":
+		elems = append(elems, Symbol("reduce"), Symbol("+"), IntLit(0))
 	case "values":
 		elems = append(elems, Symbol("vals"))
 	default:

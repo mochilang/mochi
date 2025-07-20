@@ -1,3 +1,19 @@
+## Progress (2025-07-20 12:33 +0700)
+- clj: support string contains
+- Regenerated golden files - 49/100 vm valid programs passing
+
+## Progress (2025-07-20 12:19 +0700)
+- update scala progress
+- Regenerated golden files - 49/100 vm valid programs passing
+
+## Progress (2025-07-20 12:19 +0700)
+- update scala progress
+- Regenerated golden files - 49/100 vm valid programs passing
+
+## Progress (2025-07-20 12:19 +0700)
+- update scala progress
+- Regenerated golden files - 48/100 vm valid programs passing
+
 ## Progress (2025-07-20 11:54 +0700)
 - clj transpiler: support append builtin
 - Regenerated golden files - 48/100 vm valid programs passing
