@@ -47,6 +47,20 @@ func (s *LetStmt) emit(w io.Writer, indent int) {
 	}
 }
 
+func (s *LetStmt) emitGlobal(w io.Writer, indent int) {
+	for i := 0; i < indent; i++ {
+		io.WriteString(w, "  ")
+	}
+	io.WriteString(w, "@")
+	io.WriteString(w, s.Name)
+	io.WriteString(w, " ")
+	if s.Value != nil {
+		s.Value.emit(w)
+	} else {
+		io.WriteString(w, "nil")
+	}
+}
+
 // AssignStmt reassigns a variable.
 type AssignStmt struct {
 	Name  string
@@ -595,14 +609,33 @@ func Emit(p *Program) []byte {
 	}
 	if hasFunc {
 		buf.WriteString("defmodule Main do\n")
+		var globals []Stmt
+		var funcs []Stmt
 		var main []Stmt
+		foundFunc := false
 		for _, st := range p.Stmts {
 			if _, ok := st.(*FuncDecl); ok {
-				st.emit(&buf, 1)
-				buf.WriteString("\n")
+				foundFunc = true
+				funcs = append(funcs, st)
+				continue
+			}
+			if !foundFunc {
+				globals = append(globals, st)
 			} else {
 				main = append(main, st)
 			}
+		}
+		for _, st := range globals {
+			if ls, ok := st.(*LetStmt); ok {
+				ls.emitGlobal(&buf, 1)
+			} else {
+				st.emit(&buf, 1)
+			}
+			buf.WriteString("\n")
+		}
+		for _, st := range funcs {
+			st.emit(&buf, 1)
+			buf.WriteString("\n")
 		}
 		buf.WriteString("  def main() do\n")
 		for _, st := range main {
@@ -666,6 +699,9 @@ func compileStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 				val = &MapLit{}
 			}
 		}
+		if funcDepth == 0 {
+			env.SetVar(st.Let.Name, types.AnyType{}, false)
+		}
 		return &LetStmt{Name: st.Let.Name, Value: val}, nil
 	case st.Var != nil:
 		var val Expr
@@ -688,6 +724,9 @@ func compileStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 			case "map":
 				val = &MapLit{}
 			}
+		}
+		if funcDepth == 0 {
+			env.SetVar(st.Var.Name, types.AnyType{}, false)
 		}
 		return &LetStmt{Name: st.Var.Name, Value: val}, nil
 	case st.Assign != nil:
@@ -1003,6 +1042,30 @@ func compileMatchExpr(me *parser.MatchExpr, env *types.Env) (Expr, error) {
 	return &CaseExpr{Target: target, Clauses: clauses}, nil
 }
 
+func compileQueryExpr(q *parser.QueryExpr, env *types.Env) (Expr, error) {
+	src, err := compileExpr(q.Source, env)
+	if err != nil {
+		return nil, err
+	}
+	child := types.NewEnv(env)
+	child.SetVar(q.Var, types.AnyType{}, true)
+	iter := src
+	if q.Where != nil {
+		cond, err := compileExpr(q.Where, child)
+		if err != nil {
+			return nil, err
+		}
+		fn := &AnonFun{Params: []string{q.Var}, Body: []Stmt{&ExprStmt{Expr: cond}}}
+		iter = &CallExpr{Func: "Enum.filter", Args: []Expr{iter, fn}}
+	}
+	sel, err := compileExpr(q.Select, child)
+	if err != nil {
+		return nil, err
+	}
+	mapFn := &AnonFun{Params: []string{q.Var}, Body: []Stmt{&ExprStmt{Expr: sel}}}
+	return &CallExpr{Func: "Enum.map", Args: []Expr{iter, mapFn}}, nil
+}
+
 func compileUnary(u *parser.Unary, env *types.Env) (Expr, error) {
 	if u == nil {
 		return nil, fmt.Errorf("unsupported unary")
@@ -1255,8 +1318,24 @@ func compilePrimary(p *parser.Primary, env *types.Env) (Expr, error) {
 				diff := &BinaryExpr{Left: args[2], Op: "-", Right: args[1]}
 				return &CallExpr{Func: "String.slice", Args: []Expr{args[0], args[1], diff}}, nil
 			}
+		case "exists":
+			if len(args) == 1 {
+				return &CallExpr{Func: "Enum.any?", Args: []Expr{args[0]}}, nil
+			}
 		}
-		if _, ok := env.GetFunc(name); ok {
+		if fn, ok := env.GetFunc(name); ok {
+			if len(args) < len(fn.Params) {
+				remain := fn.Params[len(args):]
+				params := make([]string, len(remain))
+				callArgs := append([]Expr{}, args...)
+				for i, p := range remain {
+					params[i] = p.Name
+					callArgs = append(callArgs, &VarRef{Name: p.Name})
+				}
+				call := &CallExpr{Func: name, Args: callArgs}
+				body := []Stmt{&ExprStmt{Expr: call}}
+				return &AnonFun{Params: params, Body: body}, nil
+			}
 			return &CallExpr{Func: name, Args: args}, nil
 		}
 		if t, err := env.GetVar(name); err == nil {
@@ -1272,6 +1351,11 @@ func compilePrimary(p *parser.Primary, env *types.Env) (Expr, error) {
 		for _, t := range p.Selector.Tail {
 			name += "." + t
 		}
+		if _, ok := env.Types()[name]; !ok {
+			if _, err := env.GetVar(name); err == nil {
+				return &VarRef{Name: "@" + name}, nil
+			}
+		}
 		return &VarRef{Name: name}, nil
 	case p.List != nil:
 		elems := make([]Expr, len(p.List.Elems))
@@ -1286,9 +1370,15 @@ func compilePrimary(p *parser.Primary, env *types.Env) (Expr, error) {
 	case p.Map != nil:
 		items := make([]MapItem, len(p.Map.Items))
 		for i, it := range p.Map.Items {
-			k, err := compileExpr(it.Key, env)
-			if err != nil {
-				return nil, err
+			var k Expr
+			if s, ok := types.SimpleStringKey(it.Key); ok {
+				k = &StringLit{Value: s}
+			} else {
+				var err error
+				k, err = compileExpr(it.Key, env)
+				if err != nil {
+					return nil, err
+				}
 			}
 			v, err := compileExpr(it.Value, env)
 			if err != nil {
@@ -1297,6 +1387,18 @@ func compilePrimary(p *parser.Primary, env *types.Env) (Expr, error) {
 			items[i] = MapItem{Key: k, Value: v}
 		}
 		return &MapLit{Items: items}, nil
+	case p.Struct != nil:
+		items := make([]MapItem, len(p.Struct.Fields))
+		for i, f := range p.Struct.Fields {
+			v, err := compileExpr(f.Value, env)
+			if err != nil {
+				return nil, err
+			}
+			items[i] = MapItem{Key: &StringLit{Value: f.Name}, Value: v}
+		}
+		return &MapLit{Items: items}, nil
+	case p.Query != nil:
+		return compileQueryExpr(p.Query, env)
 	case p.FunExpr != nil:
 		return compileFunExpr(p.FunExpr, env)
 	case p.If != nil:
