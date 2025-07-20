@@ -71,6 +71,16 @@ func (b *BoolLit) emit(w io.Writer) {
 	}
 }
 
+// BreakStmt represents a `break` statement.
+type BreakStmt struct{}
+
+func (b *BreakStmt) emit(w io.Writer) { io.WriteString(w, "break") }
+
+// ContinueStmt represents a `continue` statement.
+type ContinueStmt struct{}
+
+func (c *ContinueStmt) emit(w io.Writer) { io.WriteString(w, "continue") }
+
 type ReturnStmt struct{ Value Expr }
 
 func (r *ReturnStmt) emit(w io.Writer) {
@@ -209,6 +219,39 @@ func (i *IndexExpr) emit(w io.Writer) {
 	io.WriteString(w, "[")
 	i.Index.emit(w)
 	io.WriteString(w, "]")
+}
+
+// FieldExpr represents `receiver.field` access.
+type FieldExpr struct {
+	Receiver Expr
+	Name     string
+}
+
+func (f *FieldExpr) emit(w io.Writer) {
+	f.Receiver.emit(w)
+	io.WriteString(w, ".")
+	io.WriteString(w, f.Name)
+}
+
+// MethodCallExpr represents `receiver.method(args...)`.
+type MethodCallExpr struct {
+	Receiver Expr
+	Name     string
+	Args     []Expr
+}
+
+func (m *MethodCallExpr) emit(w io.Writer) {
+	m.Receiver.emit(w)
+	io.WriteString(w, ".")
+	io.WriteString(w, m.Name)
+	io.WriteString(w, "(")
+	for i, a := range m.Args {
+		if i > 0 {
+			io.WriteString(w, ", ")
+		}
+		a.emit(w)
+	}
+	io.WriteString(w, ")")
 }
 
 // LenExpr represents a call to the `len` builtin.
@@ -489,6 +532,9 @@ func compileStmt(stmt *parser.Statement) (Stmt, error) {
 			typ = rustType(*stmt.Let.Type.Simple)
 		} else if e != nil {
 			typ = inferType(e)
+			if _, ok := e.(*StringLit); ok {
+				typ = ""
+			}
 		}
 		return &VarDecl{Name: stmt.Let.Name, Expr: e, Type: typ}, nil
 	case stmt.Var != nil:
@@ -508,6 +554,9 @@ func compileStmt(stmt *parser.Statement) (Stmt, error) {
 			typ = rustType(*stmt.Var.Type.Simple)
 		} else if e != nil {
 			typ = inferType(e)
+			if _, ok := e.(*StringLit); ok {
+				typ = ""
+			}
 		}
 		return &VarDecl{Name: stmt.Var.Name, Expr: e, Type: typ, Mutable: true}, nil
 	case stmt.Assign != nil:
@@ -544,6 +593,10 @@ func compileStmt(stmt *parser.Statement) (Stmt, error) {
 		return compileWhileStmt(stmt.While)
 	case stmt.For != nil:
 		return compileForStmt(stmt.For)
+	case stmt.Break != nil:
+		return &BreakStmt{}, nil
+	case stmt.Continue != nil:
+		return &ContinueStmt{}, nil
 	case stmt.Test == nil && stmt.Import == nil && stmt.Type == nil:
 		return nil, fmt.Errorf("unsupported statement at %d:%d", stmt.Pos.Line, stmt.Pos.Column)
 	}
@@ -769,6 +822,24 @@ func compilePostfix(p *parser.PostfixExpr) (Expr, error) {
 				return nil, err
 			}
 			expr = &IndexExpr{Target: expr, Index: idx}
+		case op.Field != nil:
+			expr = &FieldExpr{Receiver: expr, Name: op.Field.Name}
+		case op.Call != nil:
+			args := make([]Expr, len(op.Call.Args))
+			for i, a := range op.Call.Args {
+				ex, err := compileExpr(a)
+				if err != nil {
+					return nil, err
+				}
+				args[i] = ex
+			}
+			if fe, ok := expr.(*FieldExpr); ok {
+				expr = &MethodCallExpr{Receiver: fe.Receiver, Name: fe.Name, Args: args}
+			} else if id, ok := expr.(*NameRef); ok {
+				expr = &CallExpr{Func: id.Name, Args: args}
+			} else {
+				expr = &MethodCallExpr{Receiver: expr, Name: "apply", Args: args}
+			}
 		case op.Cast != nil:
 			// ignore casts
 		default:
@@ -867,8 +938,12 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 		}
 		usesHashMap = true
 		return &MapLit{Items: entries}, nil
-	case p.Selector != nil && len(p.Selector.Tail) == 0:
-		return &NameRef{Name: p.Selector.Root}, nil
+	case p.Selector != nil:
+		expr := Expr(&NameRef{Name: p.Selector.Root})
+		for _, f := range p.Selector.Tail {
+			expr = &FieldExpr{Receiver: expr, Name: f}
+		}
+		return expr, nil
 	case p.FunExpr != nil:
 		params := make([]Param, len(p.FunExpr.Params))
 		for i, pa := range p.FunExpr.Params {
@@ -1017,6 +1092,13 @@ func inferType(e Expr) string {
 			return fmt.Sprintf("HashMap<%s, %s>", kt, vt)
 		}
 		return "HashMap<String, i64>"
+	case *MethodCallExpr:
+		switch ex.Name {
+		case "contains":
+			return "bool"
+		}
+	case *FieldExpr:
+		return inferType(ex.Receiver)
 	case *FunLit:
 		return "fn"
 	}
@@ -1062,6 +1144,8 @@ func writeStmt(buf *bytes.Buffer, s Stmt, indent int) {
 		writeWhileStmt(buf, st, indent)
 	case *ForStmt:
 		writeForStmt(buf, st, indent)
+	case *BreakStmt, *ContinueStmt:
+		st.emit(buf)
 	case *ReturnStmt:
 		st.emit(buf)
 	default:
