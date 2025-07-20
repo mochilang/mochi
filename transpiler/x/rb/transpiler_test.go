@@ -96,6 +96,12 @@ func TestTranspilePrograms(t *testing.T) {
 		"str_builtin",
 		"tail_recursion",
 		"two-sum",
+		"match_expr",
+		"match_full",
+		"partial_application",
+		"string_index",
+		"string_prefix_slice",
+		"substring_builtin",
 	}
 	root := repoRoot(t)
 	outDir := filepath.Join(root, "tests", "transpiler", "x", "rb")
