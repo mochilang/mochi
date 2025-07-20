@@ -1,3 +1,15 @@
+## Progress (2025-07-20 11:53 +0700)
+- fs transpiler: handle field selectors
+
+## Progress (2025-07-20 11:53 +0700)
+- fs transpiler: handle field selectors
+
+## Progress (2025-07-20 11:53 +0700)
+- fs transpiler: handle field selectors
+
+## Progress (2025-07-20 11:53 +0700)
+- fs transpiler: handle field selectors
+
 ## Progress (2025-07-20 11:43 +0700)
 - fortran: improve boolean printing
 
