@@ -2,7 +2,7 @@
 
 Generated C# code for programs in `tests/vm/valid`. Each program has a `.cs` file produced by the transpiler and a `.out` file containing its runtime output. Compilation or execution errors are captured in a `.error` file placed next to the source.
 
-Compiled programs: 61/100
+Compiled programs: 62/100
 
 ## Checklist
 - [x] append_builtin
@@ -19,7 +19,7 @@ Compiled programs: 61/100
 - [ ] cross_join_filter
 - [ ] cross_join_triple
 - [ ] dataset_sort_take_limit
-- [ ] dataset_where_filter
+- [x] dataset_where_filter
 - [ ] exists_builtin
 - [x] for_list_collection
 - [x] for_loop

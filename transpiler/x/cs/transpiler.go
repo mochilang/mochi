@@ -464,6 +464,25 @@ func (c *CallExpr) emit(w io.Writer) {
 	fmt.Fprint(w, ")")
 }
 
+// MethodCallExpr represents target.Method(args...).
+type MethodCallExpr struct {
+	Target Expr
+	Name   string
+	Args   []Expr
+}
+
+func (m *MethodCallExpr) emit(w io.Writer) {
+	m.Target.emit(w)
+	fmt.Fprintf(w, ".%s(", m.Name)
+	for i, a := range m.Args {
+		if i > 0 {
+			fmt.Fprint(w, ", ")
+		}
+		a.emit(w)
+	}
+	fmt.Fprint(w, ")")
+}
+
 type StringLit struct{ Value string }
 
 func (s *StringLit) emit(w io.Writer) { fmt.Fprintf(w, "%q", s.Value) }
@@ -532,8 +551,9 @@ type FieldExpr struct {
 
 func (f *FieldExpr) emit(w io.Writer) {
 	if isMapExpr(f.Target) {
+		fmt.Fprint(w, "((dynamic)(")
 		f.Target.emit(w)
-		fmt.Fprintf(w, "[\"%s\"]", f.Name)
+		fmt.Fprintf(w, "[\"%s\"]))", f.Name)
 	} else {
 		f.Target.emit(w)
 		fmt.Fprintf(w, ".%s", f.Name)
@@ -748,6 +768,20 @@ func typeOfExpr(e Expr) string {
 	case *VarRef:
 		if t, ok := varTypes[ex.Name]; ok {
 			return t
+		}
+	case *MethodCallExpr:
+		switch ex.Name {
+		case "ToArray":
+			t := typeOfExpr(ex.Target)
+			if strings.HasSuffix(t, "[]") {
+				return t
+			}
+			if t != "" {
+				return t
+			}
+			return "object[]"
+		case "Select", "Where":
+			return typeOfExpr(ex.Target)
 		}
 	}
 	return ""
@@ -1418,7 +1452,13 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 		switch name {
 		case "print":
 			name = "Console.WriteLine"
-			return &CallExpr{Func: name, Args: args}, nil
+			if len(args) == 1 {
+				return &CallExpr{Func: name, Args: args}, nil
+			}
+			list := &ListLit{Elems: args}
+			join := &CallExpr{Func: "string.Join", Args: []Expr{&StringLit{Value: " "}, list}}
+			trimmed := &MethodCallExpr{Target: join, Name: "TrimEnd"}
+			return &CallExpr{Func: name, Args: []Expr{trimmed}}, nil
 		case "append":
 			if len(args) == 2 {
 				usesLinq = true
@@ -1502,6 +1542,9 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 			if err != nil {
 				return nil, err
 			}
+			if vr, ok := k.(*VarRef); ok {
+				k = &StringLit{Value: vr.Name}
+			}
 			v, err := compileExpr(it.Value)
 			if err != nil {
 				return nil, err
@@ -1510,6 +1553,8 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 		}
 		usesDict = true
 		return &MapLit{Items: items}, nil
+	case p.Query != nil:
+		return compileQueryExpr(p.Query)
 	case p.Selector != nil:
 		expr := Expr(&VarRef{Name: p.Selector.Root})
 		for _, t := range p.Selector.Tail {
@@ -1576,6 +1621,60 @@ func compileIfExpr(i *parser.IfExpr) (Expr, error) {
 		}
 	}
 	return &IfExpr{Cond: cond, Then: thenExpr, Else: elseExpr}, nil
+}
+
+func compileQueryExpr(q *parser.QueryExpr) (Expr, error) {
+	if len(q.Froms) > 0 || len(q.Joins) > 0 || q.Group != nil || q.Sort != nil || q.Skip != nil || q.Take != nil || q.Distinct {
+		return nil, fmt.Errorf("unsupported query")
+	}
+
+	src, err := compileExpr(q.Source)
+	if err != nil {
+		return nil, err
+	}
+
+	t := typeOfExpr(src)
+	elemT := "object"
+	if strings.HasSuffix(t, "[]") {
+		elemT = strings.TrimSuffix(t, "[]")
+	} else if strings.HasPrefix(t, "Dictionary<") {
+		parts := strings.TrimPrefix(strings.TrimSuffix(t, ">"), "Dictionary<")
+		arr := strings.Split(parts, ",")
+		if len(arr) == 2 {
+			elemT = strings.TrimSpace(arr[1])
+		}
+	}
+
+	saved := varTypes[q.Var]
+	savedMap := mapVars[q.Var]
+	varTypes[q.Var] = elemT
+	if strings.HasPrefix(elemT, "Dictionary<") {
+		mapVars[q.Var] = true
+	}
+	var cond Expr
+	if q.Where != nil {
+		cond, err = compileExpr(q.Where)
+		if err != nil {
+			varTypes[q.Var] = saved
+			mapVars[q.Var] = savedMap
+			return nil, err
+		}
+	}
+	sel, err := compileExpr(q.Select)
+	if err != nil {
+		varTypes[q.Var] = saved
+		return nil, err
+	}
+	varTypes[q.Var] = saved
+	usesLinq = true
+
+	expr := src
+	if cond != nil {
+		expr = &MethodCallExpr{Target: expr, Name: "Where", Args: []Expr{&FunLit{Params: []string{q.Var}, ExprBody: cond}}}
+	}
+	expr = &MethodCallExpr{Target: expr, Name: "Select", Args: []Expr{&FunLit{Params: []string{q.Var}, ExprBody: sel}}}
+	expr = &MethodCallExpr{Target: expr, Name: "ToArray"}
+	return expr, nil
 }
 
 // Emit generates formatted C# source from the AST.
