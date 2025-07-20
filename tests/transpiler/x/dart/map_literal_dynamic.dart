@@ -2,6 +2,6 @@
 void main() {
   int x = 3;
   int y = 4;
-  Map<String, var> m = {"a": x, "b": y};
+  Map<String, int> m = {"a": x, "b": y};
   print([m["a"], m["b"]].join(" "));
 }
