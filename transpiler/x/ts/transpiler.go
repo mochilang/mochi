@@ -55,6 +55,25 @@ type TypeAlias struct {
 	Type string
 }
 
+// InterfaceDecl represents `interface Name { ... }` declarations.
+type InterfaceDecl struct {
+	Name   string
+	Fields []string
+}
+
+func (i *InterfaceDecl) emit(w io.Writer) {
+	io.WriteString(w, "interface ")
+	io.WriteString(w, i.Name)
+	io.WriteString(w, " { ")
+	io.WriteString(w, strings.Join(i.Fields, "; "))
+	io.WriteString(w, " }")
+	if b, ok := w.(interface{ WriteByte(byte) error }); ok {
+		b.WriteByte(';')
+	} else {
+		io.WriteString(w, ";")
+	}
+}
+
 func (t *TypeAlias) emit(w io.Writer) {
 	io.WriteString(w, "type ")
 	io.WriteString(w, t.Name)
@@ -1062,6 +1081,10 @@ func emitStmt(w *indentWriter, s Stmt, level int) {
 		io.WriteString(w, pad)
 		st.emit(w)
 		io.WriteString(w, "\n")
+	case *InterfaceDecl:
+		io.WriteString(w, pad)
+		st.emit(w)
+		io.WriteString(w, "\n")
 	case *AssignStmt:
 		io.WriteString(w, pad)
 		st.emit(w)
@@ -1494,16 +1517,15 @@ func convertTypeDecl(td *parser.TypeDecl) (Stmt, error) {
 		typ := strings.Join(parts, " | ")
 		return &TypeAlias{Name: td.Name, Type: typ}, nil
 	}
-	var parts []string
+	var fields []string
 	for _, m := range td.Members {
 		if m.Field == nil {
 			continue
 		}
 		ft := types.ResolveTypeRef(m.Field.Type, transpileEnv)
-		parts = append(parts, fmt.Sprintf("%s: %s", m.Field.Name, tsType(ft)))
+		fields = append(fields, fmt.Sprintf("%s: %s", m.Field.Name, tsType(ft)))
 	}
-	typ := "{ " + strings.Join(parts, "; ") + " }"
-	return &TypeAlias{Name: td.Name, Type: typ}, nil
+	return &InterfaceDecl{Name: td.Name, Fields: fields}, nil
 }
 
 func convertStmtList(list []*parser.Statement) ([]Stmt, error) {
@@ -2165,12 +2187,18 @@ func tsType(t types.Type) string {
 	case types.OptionType:
 		return tsType(tt.Elem) + " | null"
 	case types.StructType:
+		if tt.Name != "" {
+			return tt.Name
+		}
 		parts := make([]string, len(tt.Order))
 		for i, name := range tt.Order {
 			parts[i] = name + ": " + tsType(tt.Fields[name])
 		}
 		return "{ " + strings.Join(parts, "; ") + " }"
 	case types.UnionType:
+		if tt.Name != "" {
+			return tt.Name
+		}
 		parts := make([]string, 0, len(tt.Variants))
 		for name, st := range tt.Variants {
 			fields := []string{"tag: \"" + name + "\""}
