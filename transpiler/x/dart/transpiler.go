@@ -246,12 +246,15 @@ func (s *VarStmt) emit(w io.Writer) error {
 }
 
 type AssignStmt struct {
-	Name  string
-	Value Expr
+	Target Expr
+	Value  Expr
 }
 
 func (s *AssignStmt) emit(w io.Writer) error {
-	if _, err := io.WriteString(w, s.Name+" = "); err != nil {
+	if err := s.Target.emit(w); err != nil {
+		return err
+	}
+	if _, err := io.WriteString(w, " = "); err != nil {
 		return err
 	}
 	return s.Value.emit(w)
@@ -528,6 +531,17 @@ type MapLit struct{ Entries []MapEntry }
 type MapEntry struct {
 	Key   Expr
 	Value Expr
+}
+
+// NotNilExpr appends `!` to an expression to assert it is not null.
+type NotNilExpr struct{ X Expr }
+
+func (n *NotNilExpr) emit(w io.Writer) error {
+	if err := n.X.emit(w); err != nil {
+		return err
+	}
+	_, err := io.WriteString(w, "!")
+	return err
 }
 
 func (m *MapLit) emit(w io.Writer) error {
@@ -833,7 +847,7 @@ func (f *FormatList) emit(w io.Writer) error {
 	if err := f.List.emit(w); err != nil {
 		return err
 	}
-	if _, err := io.WriteString(w, ".join(' ') + \"]\""); err != nil {
+	if _, err := io.WriteString(w, ".join(', ') + \"]\""); err != nil {
 		return err
 	}
 	return nil
@@ -1120,7 +1134,9 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 		if err != nil {
 			return nil, err
 		}
-		p.Stmts = append(p.Stmts, s)
+		if s != nil {
+			p.Stmts = append(p.Stmts, s)
+		}
 	}
 	return p, nil
 }
@@ -1222,13 +1238,27 @@ func convertStmtList(list []*parser.Statement) ([]Stmt, error) {
 		if err != nil {
 			return nil, err
 		}
-		out = append(out, s)
+		if s != nil {
+			out = append(out, s)
+		}
 	}
 	return out, nil
 }
 
 func convertStmtInternal(st *parser.Statement) (Stmt, error) {
 	switch {
+	case st.Test != nil:
+		if _, err := convertStmtList(st.Test.Body); err != nil {
+			return nil, err
+		}
+		return nil, nil
+	case st.Expect != nil:
+		return nil, nil
+	case st.Type != nil:
+		// ignore type declarations
+		return nil, nil
+	case st.ExternType != nil:
+		return nil, nil
 	case st.Expr != nil:
 		e, err := convertExpr(st.Expr.Expr)
 		if err != nil {
@@ -1262,14 +1292,15 @@ func convertStmtInternal(st *parser.Statement) (Stmt, error) {
 		}
 		return &VarStmt{Name: st.Var.Name, Value: e}, nil
 	case st.Assign != nil:
-		if len(st.Assign.Index) > 0 || len(st.Assign.Field) > 0 {
-			return nil, fmt.Errorf("complex assignment not supported")
-		}
-		e, err := convertExpr(st.Assign.Value)
+		target, err := convertAssignTarget(st.Assign)
 		if err != nil {
 			return nil, err
 		}
-		return &AssignStmt{Name: st.Assign.Name, Value: e}, nil
+		val, err := convertExpr(st.Assign.Value)
+		if err != nil {
+			return nil, err
+		}
+		return &AssignStmt{Target: target, Value: val}, nil
 	case st.Return != nil:
 		var e Expr
 		if st.Return.Value != nil {
@@ -1303,6 +1334,34 @@ func convertStmtInternal(st *parser.Statement) (Stmt, error) {
 	default:
 		return nil, fmt.Errorf("unsupported statement")
 	}
+}
+
+func convertAssignTarget(as *parser.AssignStmt) (Expr, error) {
+	expr := Expr(&Name{Name: as.Name})
+	for i, idx := range as.Index {
+		if idx.Start == nil || idx.Colon != nil || idx.Colon2 != nil || idx.End != nil || idx.Step != nil {
+			return nil, fmt.Errorf("complex assignment not supported")
+		}
+		val, err := convertExpr(idx.Start)
+		if err != nil {
+			return nil, err
+		}
+		iexpr := &IndexExpr{Target: expr, Index: val}
+		if i < len(as.Index)-1 || len(as.Field) > 0 {
+			expr = &NotNilExpr{X: iexpr}
+		} else {
+			expr = iexpr
+		}
+	}
+	for i, f := range as.Field {
+		nexpr := &SelectorExpr{Receiver: expr, Field: f.Name}
+		if i < len(as.Field)-1 {
+			expr = &NotNilExpr{X: nexpr}
+		} else {
+			expr = nexpr
+		}
+	}
+	return expr, nil
 }
 
 func convertExpr(e *parser.Expr) (Expr, error) {
@@ -1430,7 +1489,12 @@ func convertPostfix(pf *parser.PostfixExpr) (Expr, error) {
 				if err != nil {
 					return nil, err
 				}
-				expr = &IndexExpr{Target: expr, Index: idx}
+				iex := &IndexExpr{Target: expr, Index: idx}
+				if i < len(pf.Ops)-1 {
+					expr = &NotNilExpr{X: iex}
+				} else {
+					expr = iex
+				}
 			}
 		case op.Field != nil:
 			// method call if next op is call
@@ -1755,7 +1819,7 @@ func stmtNode(s Stmt) *ast.Node {
 		}
 		return node
 	case *AssignStmt:
-		return &ast.Node{Kind: "assign", Value: st.Name, Children: []*ast.Node{exprNode(st.Value)}}
+		return &ast.Node{Kind: "assign", Children: []*ast.Node{exprNode(st.Target), exprNode(st.Value)}}
 	case *ReturnStmt:
 		n := &ast.Node{Kind: "return"}
 		if st.Value != nil {
@@ -1870,6 +1934,8 @@ func exprNode(e Expr) *ast.Node {
 		return &ast.Node{Kind: "str", Children: []*ast.Node{exprNode(ex.Value)}}
 	case *FormatList:
 		return &ast.Node{Kind: "format-list", Children: []*ast.Node{exprNode(ex.List)}}
+	case *NotNilExpr:
+		return &ast.Node{Kind: "notnil", Children: []*ast.Node{exprNode(ex.X)}}
 	default:
 		return &ast.Node{Kind: "unknown"}
 	}
