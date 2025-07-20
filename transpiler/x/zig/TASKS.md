@@ -1,3 +1,9 @@
+## Progress (2025-07-20 09:55 +0000)
+- Added support for maps with integer keys using `std.AutoHashMap`.
+- Improved print formatting for map indexing and strings.
+- Generated golden files for `map_int_key` and `map_in_operator`.
+- Updated README checklist (59/100 tests passing)
+
 ## Progress (2025-07-20 09:40 +0000)
 - Added basic map support using `std.StringHashMap` and value extraction.
 - Implemented `count` builtin and constant `values` folding.
@@ -67,6 +73,7 @@
 
 # Zig Transpiler Tasks
 
+- 2025-07-20 09:55 +0000 - Added AutoHashMap support and generated golden tests for map_in_operator and map_int_key (59/100 tests passing)
 - 2025-07-20 09:40 +0000 - Added map literals and assignment plus `count` builtin (58/100 tests passing)
 
 - 2025-07-20 14:31 +0700 - Added slicing, membership operator and int casts (37/100 tests passing)
