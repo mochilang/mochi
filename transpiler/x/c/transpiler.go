@@ -20,7 +20,7 @@ var (
 	constStrings map[string]string
 )
 
-const version = "0.10.32"
+const version = "0.10.33"
 
 // --- Simple C AST ---
 
@@ -249,10 +249,21 @@ func (f *ForStmt) emit(w io.Writer, indent int) {
 	if len(f.List) > 0 {
 		arrName := fmt.Sprintf("%s_arr", f.Var)
 		lenName := fmt.Sprintf("%s_len", f.Var)
+		elemType := "int"
+		allString := true
+		for _, e := range f.List {
+			if !exprIsString(e) {
+				allString = false
+				break
+			}
+		}
+		if allString {
+			elemType = "const char*"
+		}
 		writeIndent(w, indent)
 		io.WriteString(w, "{\n")
 		writeIndent(w, indent+1)
-		fmt.Fprintf(w, "int %s[] = {", arrName)
+		fmt.Fprintf(w, "%s %s[] = {", elemType, arrName)
 		for i, e := range f.List {
 			if i > 0 {
 				io.WriteString(w, ", ")
@@ -267,7 +278,7 @@ func (f *ForStmt) emit(w io.Writer, indent int) {
 		io.WriteString(w, lenName)
 		io.WriteString(w, "; i++) {\n")
 		writeIndent(w, indent+2)
-		fmt.Fprintf(w, "int %s = %s[i];\n", f.Var, arrName)
+		fmt.Fprintf(w, "%s %s = %s[i];\n", elemType, f.Var, arrName)
 		for _, s := range f.Body {
 			s.emit(w, indent+2)
 		}
