@@ -18,26 +18,12 @@ import (
 )
 
 var currentEnv *types.Env
-var (
-	useAppend       bool
-	useAvg          bool
-	useSum          bool
-	useContainsList bool
-	useContainsMap  bool
-	useMapLen       bool
-)
 
 // Program represents a simple Lua program consisting of a sequence of
 // statements.
 type Program struct {
-	Stmts           []Stmt
-	UseAppend       bool
-	UseAvg          bool
-	UseSum          bool
-	UseContainsList bool
-	UseContainsMap  bool
-	UseMapLen       bool
-	Env             *types.Env
+	Stmts []Stmt
+	Env   *types.Env
 }
 
 type Stmt interface{ emit(io.Writer) }
@@ -153,8 +139,7 @@ func (c *CallExpr) emit(w io.Writer) {
 		return
 	case "len", "count":
 		if len(c.Args) > 0 && isMapExpr(c.Args[0]) {
-			useMapLen = true
-			io.WriteString(w, "map_len(")
+			io.WriteString(w, "(function(m) local c=0 for _ in pairs(m) do c=c+1 end return c end)(")
 			c.Args[0].emit(w)
 			io.WriteString(w, ")")
 		} else {
@@ -184,8 +169,7 @@ func (c *CallExpr) emit(w io.Writer) {
 		}
 		io.WriteString(w, ")")
 	case "append":
-		useAppend = true
-		io.WriteString(w, "append(")
+		io.WriteString(w, "(function(lst, item) table.insert(lst, item); return lst end)(")
 		if len(c.Args) > 0 {
 			c.Args[0].emit(w)
 		}
@@ -195,32 +179,36 @@ func (c *CallExpr) emit(w io.Writer) {
 		}
 		io.WriteString(w, ")")
 	case "avg":
-		useAvg = true
-		io.WriteString(w, "avg(")
+		io.WriteString(w, "(function(lst) local sum=0 for _,v in ipairs(lst) do sum=sum+v end if #lst==0 then return 0 end return sum/#lst end)(")
 		if len(c.Args) > 0 {
 			c.Args[0].emit(w)
 		}
 		io.WriteString(w, ")")
 	case "sum":
-		useSum = true
-		io.WriteString(w, "sum(")
+		io.WriteString(w, "(function(lst) local s=0 for _,v in ipairs(lst) do s=s+v end return s end)(")
 		if len(c.Args) > 0 {
 			c.Args[0].emit(w)
 		}
 		io.WriteString(w, ")")
 	case "contains":
 		if len(c.Args) > 0 && isMapExpr(c.Args[0]) {
-			useContainsMap = true
-			io.WriteString(w, "containsMap(")
+			io.WriteString(w, "(function(m,k) return m[k] ~= nil end)(")
 			c.Args[0].emit(w)
 			io.WriteString(w, ", ")
 			if len(c.Args) > 1 {
 				c.Args[1].emit(w)
 			}
 			io.WriteString(w, ")")
+		} else if len(c.Args) > 0 && isStringExpr(c.Args[0]) {
+			io.WriteString(w, "(string.find(")
+			c.Args[0].emit(w)
+			io.WriteString(w, ", ")
+			if len(c.Args) > 1 {
+				c.Args[1].emit(w)
+			}
+			io.WriteString(w, ", 1, true) ~= nil)")
 		} else {
-			useContainsList = true
-			io.WriteString(w, "contains(")
+			io.WriteString(w, "(function(lst,v) for _,x in ipairs(lst) do if x==v then return true end end return false end)(")
 			if len(c.Args) > 0 {
 				c.Args[0].emit(w)
 			}
@@ -523,8 +511,7 @@ func (b *BinaryExpr) emit(w io.Writer) {
 			io.WriteString(w, "] ~= nil)")
 			return
 		}
-		useContainsList = true
-		io.WriteString(w, "contains(")
+		io.WriteString(w, "(function(lst,v) for _,x in ipairs(lst) do if x==v then return true end end return false end)(")
 		b.Right.emit(w)
 		io.WriteString(w, ", ")
 		b.Left.emit(w)
@@ -637,24 +624,6 @@ func Emit(p *Program) []byte {
 	b.WriteString(header())
 	prevEnv := currentEnv
 	currentEnv = p.Env
-	if p.UseAppend {
-		b.WriteString("function append(lst, item)\n  table.insert(lst, item)\n  return lst\nend\n\n")
-	}
-	if p.UseAvg {
-		b.WriteString("function avg(lst)\n  local sum = 0\n  for _, v in ipairs(lst) do\n    sum = sum + v\n  end\n  if #lst == 0 then\n    return 0\n  end\n  return sum / #lst\nend\n\n")
-	}
-	if p.UseSum {
-		b.WriteString("function sum(lst)\n  local s = 0\n  for _, v in ipairs(lst) do\n    s = s + v\n  end\n  return s\nend\n\n")
-	}
-	if p.UseContainsList {
-		b.WriteString("function contains(lst, v)\n  for _, x in ipairs(lst) do\n    if x == v then\n      return true\n    end\n  end\n  return false\nend\n\n")
-	}
-	if p.UseContainsMap {
-		b.WriteString("function containsMap(m, k)\n  return m[k] ~= nil\nend\n\n")
-	}
-	if p.UseMapLen {
-		b.WriteString("function map_len(m)\n  local c = 0\n  for _ in pairs(m) do\n    c = c + 1\n  end\n  return c\nend\n\n")
-	}
 	for i, st := range p.Stmts {
 		if i > 0 {
 			b.WriteByte('\n')
@@ -689,13 +658,7 @@ func convertBinary(b *parser.BinaryExpr) (Expr, error) {
 			return nil, err
 		}
 		if op.Op == "in" {
-			if isMapExpr(right) {
-				// nothing
-			} else if isStringExpr(right) {
-				// nothing
-			} else {
-				useContainsList = true
-			}
+			// handled during emission
 		}
 		exprs = append(exprs, right)
 		ops = append(ops, op.Op)
@@ -807,13 +770,7 @@ func convertPostfix(p *parser.PostfixExpr) (Expr, error) {
 					}
 					args = append(args, ae)
 				}
-				if op.Field.Name == "contains" {
-					if isMapExpr(expr) {
-						useContainsMap = true
-					} else {
-						useContainsList = true
-					}
-				}
+				// contains handled during emission
 				expr = &CallExpr{Func: op.Field.Name, Args: args}
 			} else {
 				return nil, fmt.Errorf("unsupported selector")
@@ -855,29 +812,8 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 			ce.Args = append(ce.Args, ae)
 		}
 		switch p.Call.Func {
-		case "append":
-			useAppend = true
-		case "avg":
-			useAvg = true
-		case "sum":
-			useSum = true
-		case "contains":
-			if len(p.Call.Args) > 0 {
-				if currentEnv != nil {
-					t := types.ExprType(p.Call.Args[0], currentEnv)
-					if _, ok := t.(types.MapType); ok {
-						useContainsMap = true
-					} else {
-						useContainsList = true
-					}
-				}
-			}
-		case "len", "count":
-			if len(p.Call.Args) > 0 && currentEnv != nil {
-				if _, ok := types.ExprType(p.Call.Args[0], currentEnv).(types.MapType); ok {
-					useMapLen = true
-				}
-			}
+		case "append", "avg", "sum", "contains", "len", "count":
+			// handled during emission
 		}
 		return ce, nil
 	case p.List != nil:
@@ -1186,13 +1122,6 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 // boolean operators.
 func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	currentEnv = env
-	useAppend = false
-	useAvg = false
-	useSum = false
-	useContainsList = false
-	useContainsMap = false
-	useMapLen = false
-
 	lp := &Program{Env: env}
 	for _, st := range prog.Statements {
 		s, err := convertStmt(st)
@@ -1201,12 +1130,6 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 		}
 		lp.Stmts = append(lp.Stmts, s)
 	}
-	lp.UseAppend = useAppend
-	lp.UseAvg = useAvg
-	lp.UseSum = useSum
-	lp.UseContainsList = useContainsList
-	lp.UseContainsMap = useContainsMap
-	lp.UseMapLen = useMapLen
 	currentEnv = nil
 	return lp, nil
 }
