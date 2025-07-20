@@ -1,7 +1,5 @@
-:- style_check(-singleton).
 :- initialization(main).
 
 main :-
-    X is 1,
-    X1 is 2,
-    writeln(X1).
+    X is 2,
+    writeln(X).
