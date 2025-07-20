@@ -550,6 +550,14 @@ func (b *BinaryExpr) emit(w io.Writer) {
 			fmt.Fprint(w, ")")
 			return
 		}
+		if isMapExpr(b.Right) {
+			fmt.Fprint(w, "array_key_exists(")
+			b.Left.emit(w)
+			fmt.Fprint(w, ", ")
+			b.Right.emit(w)
+			fmt.Fprint(w, ")")
+			return
+		}
 		if isStringExpr(b.Right) {
 			fmt.Fprint(w, "str_contains(")
 			b.Right.emit(w)
@@ -1135,6 +1143,13 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 		if len(funcStack) == 0 {
 			globalNames = append(globalNames, st.Let.Name)
 		}
+		if transpileEnv != nil {
+			if t, err := transpileEnv.GetVar(st.Let.Name); err == nil {
+				if _, ok := t.(types.FuncType); ok {
+					closureNames[st.Let.Name] = true
+				}
+			}
+		}
 		return &LetStmt{Name: st.Let.Name, Value: val}, nil
 	case st.Var != nil:
 		var val Expr
@@ -1156,6 +1171,13 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 		}
 		if len(funcStack) == 0 {
 			globalNames = append(globalNames, st.Var.Name)
+		}
+		if transpileEnv != nil {
+			if t, err := transpileEnv.GetVar(st.Var.Name); err == nil {
+				if _, ok := t.(types.FuncType); ok {
+					closureNames[st.Var.Name] = true
+				}
+			}
 		}
 		return &VarStmt{Name: st.Var.Name, Value: val}, nil
 	case st.Assign != nil:

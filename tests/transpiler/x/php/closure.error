@@ -1,6 +1,0 @@
-run: exit status 255
-
-Fatal error: Uncaught Error: Call to undefined function add10() in /workspace/mochi/tests/transpiler/x/php/closure.php:8
-Stack trace:
-#0 {main}
-  thrown in /workspace/mochi/tests/transpiler/x/php/closure.php on line 8
