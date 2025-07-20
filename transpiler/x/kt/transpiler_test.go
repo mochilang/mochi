@@ -92,6 +92,12 @@ func TestTranspilePrograms(t *testing.T) {
 		"map_membership",
 		"closure",
 		"nested_function",
+		"map_literal_dynamic",
+		"pure_fold",
+		"pure_global_fold",
+		"short_circuit",
+		"match_expr",
+		"match_full",
 	}
 	root := repoRoot(t)
 	outDir := filepath.Join(root, "tests", "transpiler", "x", "kt")
