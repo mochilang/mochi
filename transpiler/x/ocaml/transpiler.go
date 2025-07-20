@@ -495,6 +495,61 @@ func (l *ListLit) emit(w io.Writer) {
 
 func (l *ListLit) emitPrint(w io.Writer) { l.emit(w) }
 
+// MapEntry represents a key/value pair in a map literal.
+type MapEntry struct {
+	Key   Expr
+	Value Expr
+}
+
+// MapLit represents a simple map literal implemented as a list of
+// key/value tuples. Only string keys and int values are currently supported.
+type MapLit struct{ Items []MapEntry }
+
+func (m *MapLit) emit(w io.Writer) {
+	io.WriteString(w, "[")
+	for i, it := range m.Items {
+		if i > 0 {
+			io.WriteString(w, "; ")
+		}
+		io.WriteString(w, "(")
+		it.Key.emit(w)
+		io.WriteString(w, ", ")
+		it.Value.emit(w)
+		io.WriteString(w, ")")
+	}
+	io.WriteString(w, "]")
+}
+
+func (m *MapLit) emitPrint(w io.Writer) { m.emit(w) }
+
+// MapIndexExpr represents map[key] access.
+type MapIndexExpr struct {
+	Map Expr
+	Key Expr
+	Typ string
+}
+
+func (mi *MapIndexExpr) emit(w io.Writer) {
+	io.WriteString(w, "(List.assoc ")
+	mi.Key.emit(w)
+	io.WriteString(w, " ")
+	mi.Map.emit(w)
+	io.WriteString(w, ")")
+}
+
+func (mi *MapIndexExpr) emitPrint(w io.Writer) {
+	switch mi.Typ {
+	case "int":
+		io.WriteString(w, "string_of_int (List.assoc ")
+		mi.Key.emit(w)
+		io.WriteString(w, " ")
+		mi.Map.emit(w)
+		io.WriteString(w, ")")
+	default:
+		mi.emit(w)
+	}
+}
+
 // IndexExpr represents list[index] or string[index].
 type IndexExpr struct {
 	Col   Expr
@@ -740,6 +795,8 @@ func defaultValueExpr(typ string) Expr {
 		return &StringLit{Value: ""}
 	case "list":
 		return &ListLit{Elems: nil}
+	case "map":
+		return &MapLit{Items: nil}
 	}
 	return &IntLit{Value: 0}
 }
@@ -1175,11 +1232,16 @@ func convertPostfix(p *parser.PostfixExpr, env *types.Env, vars map[string]VarIn
 			if err != nil {
 				return nil, "", err
 			}
-			expr = &IndexExpr{Col: expr, Index: idxExpr, Typ: typ}
-			if typ == "string" {
-				typ = "string"
-			} else {
+			if typ == "map" {
+				expr = &MapIndexExpr{Map: expr, Key: idxExpr, Typ: "int"}
 				typ = "int"
+			} else {
+				expr = &IndexExpr{Col: expr, Index: idxExpr, Typ: typ}
+				if typ == "string" {
+					typ = "string"
+				} else {
+					typ = "int"
+				}
 			}
 			i++
 		case op.Cast != nil && op.Cast.Type != nil && op.Cast.Type.Simple != nil:
@@ -1218,6 +1280,20 @@ func convertPrimary(p *parser.Primary, env *types.Env, vars map[string]VarInfo) 
 			elems[i] = ex
 		}
 		return &ListLit{Elems: elems}, "list", nil
+	case p.Map != nil:
+		items := make([]MapEntry, len(p.Map.Items))
+		for i, it := range p.Map.Items {
+			k, _, err := convertExpr(it.Key, env, vars)
+			if err != nil {
+				return nil, "", err
+			}
+			v, _, err := convertExpr(it.Value, env, vars)
+			if err != nil {
+				return nil, "", err
+			}
+			items[i] = MapEntry{Key: k, Value: v}
+		}
+		return &MapLit{Items: items}, "map", nil
 	case p.Selector != nil:
 		if len(p.Selector.Tail) == 0 {
 			info := vars[p.Selector.Root]

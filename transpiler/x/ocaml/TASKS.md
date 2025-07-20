@@ -1,3 +1,7 @@
+## Progress (2025-07-20 11:55 +0700)
+- Checklist updated: 33/100 tests compiled
+- Added support for `map_index` using association lists.
+
 ## Progress (2025-07-20 10:18 +0700)
 - Checklist updated: 60/100 tests compiled
 - Removed runtime helper functions for cleaner output.

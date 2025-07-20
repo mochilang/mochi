@@ -326,3 +326,7 @@ tools/tcc/tools/
 !/tests/machine/x/ocaml/*.out
 !/tests/machine/x/ocaml/*.error
 !/tests/machine/x/ocaml/README.md
+
+# Ignore OCaml build artifacts
+/tests/transpiler/x/ocaml/*.cmi
+/tests/transpiler/x/ocaml/*.cmo
