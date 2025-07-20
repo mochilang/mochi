@@ -973,6 +973,24 @@ func aggregatorCall(e *parser.Expr) (string, *parser.Expr, bool) {
 	}
 }
 
+func isSumUnary(u *parser.Unary) bool {
+	if u == nil || len(u.Ops) > 0 || u.Value == nil {
+		return false
+	}
+	p := u.Value
+	if len(p.Ops) > 0 || p.Target == nil || p.Target.Call == nil {
+		return false
+	}
+	return p.Target.Call.Func == "sum"
+}
+
+func isSumPostfix(p *parser.PostfixExpr) bool {
+	if p == nil || len(p.Ops) > 0 || p.Target == nil || p.Target.Call == nil {
+		return false
+	}
+	return p.Target.Call.Func == "sum"
+}
+
 func zeroValueExpr(t types.Type) Expr {
 	switch t.(type) {
 	case types.IntType, types.Int64Type:
@@ -1967,8 +1985,14 @@ func convertBinary(b *parser.BinaryExpr) (Expr, error) {
 		operands = append(operands, o)
 	}
 
+	if len(ops) == 1 && ops[0] == "/" {
+		if isSumUnary(b.Left) && isSumPostfix(b.Right[0].Right) {
+			ops[0] = "//"
+		}
+	}
+
 	levels := [][]string{
-		{"*", "/", "%"},
+		{"*", "/", "//", "%"},
 		{"+", "-"},
 		{"<", "<=", ">", ">="},
 		{"==", "!=", "in"},
@@ -2151,6 +2175,23 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 			}
 		}
 		switch p.Call.Func {
+		case "print":
+			if len(args) == 1 && currentEnv != nil {
+				if _, ok := types.ExprType(p.Call.Args[0], currentEnv).(types.ListType); ok {
+					if currentImports != nil {
+						currentImports["json"] = true
+					}
+					v := "_v"
+					strCall := &CallExpr{Func: &Name{Name: "str"}, Args: []Expr{&Name{Name: v}}}
+					dumps := &CallExpr{Func: &FieldExpr{Target: &Name{Name: "json"}, Name: "dumps"}, Args: []Expr{&Name{Name: v}}}
+					check := &CallExpr{Func: &Name{Name: "isinstance"}, Args: []Expr{&Name{Name: v}, &Name{Name: "dict"}}}
+					item := &CondExpr{Cond: check, Then: dumps, Else: strCall}
+					comp := &ListComp{Var: v, Iter: args[0], Expr: item}
+					join := &CallExpr{Func: &FieldExpr{Target: &StringLit{Value: " "}, Name: "join"}, Args: []Expr{comp}}
+					return &CallExpr{Func: &Name{Name: "print"}, Args: []Expr{join}}, nil
+				}
+			}
+			return &CallExpr{Func: &Name{Name: "print"}, Args: args}, nil
 		case "append":
 			if len(args) == 2 {
 				return &BinaryExpr{Left: args[0], Op: "+", Right: &ListLit{Elems: []Expr{args[1]}}}, nil
