@@ -701,6 +701,32 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 			}
 			return &LenExpr{Arg: arg}, nil
 		}
+		if p.Call.Func == "count" && len(p.Call.Args) == 1 {
+			arg, err := convertExpr(p.Call.Args[0])
+			if err != nil {
+				return nil, err
+			}
+			return &LenExpr{Arg: arg}, nil
+		}
+		if p.Call.Func == "append" && len(p.Call.Args) == 2 {
+			listArg, err := convertExpr(p.Call.Args[0])
+			if err != nil {
+				return nil, err
+			}
+			itemArg, err := convertExpr(p.Call.Args[1])
+			if err != nil {
+				return nil, err
+			}
+			return &BinaryExpr{Left: listArg, Ops: []BinaryOp{{Op: "++", Right: &ListLit{Elems: []Expr{itemArg}}}}}, nil
+		}
+		if p.Call.Func == "avg" && len(p.Call.Args) == 1 {
+			arg, err := convertExpr(p.Call.Args[0])
+			if err != nil {
+				return nil, err
+			}
+			sumExpr := &CallExpr{Fun: &NameRef{Name: "sum"}, Args: []Expr{arg}}
+			return &BinaryExpr{Left: sumExpr, Ops: []BinaryOp{{Op: "`div`", Right: &LenExpr{Arg: arg}}}}, nil
+		}
 		if p.Call.Func == "min" && len(p.Call.Args) == 1 {
 			arg, err := convertExpr(p.Call.Args[0])
 			if err != nil {
