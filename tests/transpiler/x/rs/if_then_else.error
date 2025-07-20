@@ -1,0 +1,33 @@
+rustc: exit status 1
+warning: unnecessary parentheses around `if` condition
+ --> /workspace/mochi/tests/transpiler/x/rs/if_then_else.rs:4:26
+  |
+4 |     let msg: String = if (x > 10) { "yes" } else { "no" };
+  |                          ^      ^
+  |
+  = note: `#[warn(unused_parens)]` on by default
+help: remove these parentheses
+  |
+4 -     let msg: String = if (x > 10) { "yes" } else { "no" };
+4 +     let msg: String = if x > 10 { "yes" } else { "no" };
+  |
+
+error[E0308]: mismatched types
+ --> /workspace/mochi/tests/transpiler/x/rs/if_then_else.rs:4:37
+  |
+4 |     let msg: String = if (x > 10) { "yes" } else { "no" };
+  |                                     ^^^^^- help: try using a conversion method: `.to_string()`
+  |                                     |
+  |                                     expected `String`, found `&str`
+
+error[E0308]: mismatched types
+ --> /workspace/mochi/tests/transpiler/x/rs/if_then_else.rs:4:52
+  |
+4 |     let msg: String = if (x > 10) { "yes" } else { "no" };
+  |                                                    ^^^^- help: try using a conversion method: `.to_string()`
+  |                                                    |
+  |                                                    expected `String`, found `&str`
+
+error: aborting due to 2 previous errors; 1 warning emitted
+
+For more information about this error, try `rustc --explain E0308`.

@@ -3,7 +3,7 @@
 This experimental transpiler converts a subset of Mochi into readable Rust code.
 Generated sources for the golden tests live under `tests/transpiler/x/rs`.
 
-## VM Golden Test Checklist (30/100)
+## VM Golden Test Checklist (47/100)
 - [x] append_builtin.mochi
 - [x] avg_builtin.mochi
 - [x] basic_compare.mochi
@@ -20,9 +20,9 @@ Generated sources for the golden tests live under `tests/transpiler/x/rs`.
 - [ ] dataset_sort_take_limit.mochi
 - [ ] dataset_where_filter.mochi
 - [ ] exists_builtin.mochi
-- [ ] for_list_collection.mochi
-- [ ] for_loop.mochi
-- [ ] for_map_collection.mochi
+- [x] for_list_collection.mochi
+- [x] for_loop.mochi
+- [x] for_map_collection.mochi
 - [ ] fun_call.mochi
 - [ ] fun_expr_in_let.mochi
 - [ ] fun_three_args.mochi
@@ -39,33 +39,33 @@ Generated sources for the golden tests live under `tests/transpiler/x/rs`.
 - [x] if_else.mochi
 - [x] if_then_else.mochi
 - [x] if_then_else_nested.mochi
-- [ ] in_operator.mochi
+- [x] in_operator.mochi
 - [ ] in_operator_extended.mochi
 - [ ] inner_join.mochi
 - [ ] join_multi.mochi
-- [ ] json_builtin.mochi
+- [x] json_builtin.mochi
 - [ ] left_join.mochi
 - [ ] left_join_multi.mochi
 - [x] len_builtin.mochi
 - [x] len_map.mochi
 - [x] len_string.mochi
 - [x] let_and_print.mochi
-- [ ] list_assign.mochi
+- [x] list_assign.mochi
 - [x] list_index.mochi
-- [ ] list_nested_assign.mochi
-- [ ] list_set_ops.mochi
+- [x] list_nested_assign.mochi
+- [x] list_set_ops.mochi
 - [ ] load_yaml.mochi
-- [ ] map_assign.mochi
-- [ ] map_in_operator.mochi
+- [x] map_assign.mochi
+- [x] map_in_operator.mochi
 - [x] map_index.mochi
 - [x] map_int_key.mochi
 - [x] map_literal_dynamic.mochi
-- [ ] map_membership.mochi
-- [ ] map_nested_assign.mochi
+- [x] map_membership.mochi
+- [x] map_nested_assign.mochi
 - [ ] match_expr.mochi
 - [ ] match_full.mochi
 - [x] math_ops.mochi
-- [ ] membership.mochi
+- [x] membership.mochi
 - [x] min_max_builtin.mochi
 - [ ] nested_function.mochi
 - [ ] order_by_map.mochi
@@ -87,13 +87,13 @@ Generated sources for the golden tests live under `tests/transpiler/x/rs`.
 - [x] string_compare.mochi
 - [x] string_concat.mochi
 - [ ] string_contains.mochi
-- [ ] string_in_operator.mochi
-- [ ] string_index.mochi
+- [x] string_in_operator.mochi
+- [x] string_index.mochi
 - [ ] string_prefix_slice.mochi
-- [ ] substring_builtin.mochi
+- [x] substring_builtin.mochi
 - [x] sum_builtin.mochi
 - [ ] tail_recursion.mochi
-- [ ] test_block.mochi
+- [x] test_block.mochi
 - [ ] tree_sum.mochi
 - [ ] two-sum.mochi
 - [x] typed_let.mochi
