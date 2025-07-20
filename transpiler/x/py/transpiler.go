@@ -1238,6 +1238,82 @@ func replaceGroup(e Expr, name string) Expr {
 	}
 }
 
+func replaceVar(e Expr, name string, val Expr) Expr {
+	switch ex := e.(type) {
+	case *Name:
+		if ex.Name == name {
+			return val
+		}
+		return ex
+	case *BinaryExpr:
+		ex.Left = replaceVar(ex.Left, name, val)
+		ex.Right = replaceVar(ex.Right, name, val)
+		return ex
+	case *UnaryExpr:
+		ex.Expr = replaceVar(ex.Expr, name, val)
+		return ex
+	case *CallExpr:
+		ex.Func = replaceVar(ex.Func, name, val)
+		for i := range ex.Args {
+			ex.Args[i] = replaceVar(ex.Args[i], name, val)
+		}
+		return ex
+	case *FieldExpr:
+		ex.Target = replaceVar(ex.Target, name, val)
+		return ex
+	case *IndexExpr:
+		ex.Target = replaceVar(ex.Target, name, val)
+		ex.Index = replaceVar(ex.Index, name, val)
+		return ex
+	case *SliceExpr:
+		ex.Target = replaceVar(ex.Target, name, val)
+		if ex.Start != nil {
+			ex.Start = replaceVar(ex.Start, name, val)
+		}
+		if ex.End != nil {
+			ex.End = replaceVar(ex.End, name, val)
+		}
+		if ex.Step != nil {
+			ex.Step = replaceVar(ex.Step, name, val)
+		}
+		return ex
+	case *CondExpr:
+		ex.Cond = replaceVar(ex.Cond, name, val)
+		ex.Then = replaceVar(ex.Then, name, val)
+		ex.Else = replaceVar(ex.Else, name, val)
+		return ex
+	case *ListLit:
+		for i := range ex.Elems {
+			ex.Elems[i] = replaceVar(ex.Elems[i], name, val)
+		}
+		return ex
+	case *DictLit:
+		for i := range ex.Keys {
+			ex.Keys[i] = replaceVar(ex.Keys[i], name, val)
+			ex.Values[i] = replaceVar(ex.Values[i], name, val)
+		}
+		return ex
+	case *ListComp:
+		ex.Iter = replaceVar(ex.Iter, name, val)
+		ex.Expr = replaceVar(ex.Expr, name, val)
+		if ex.Cond != nil {
+			ex.Cond = replaceVar(ex.Cond, name, val)
+		}
+		return ex
+	case *MultiListComp:
+		for i := range ex.Iters {
+			ex.Iters[i] = replaceVar(ex.Iters[i], name, val)
+		}
+		ex.Expr = replaceVar(ex.Expr, name, val)
+		if ex.Cond != nil {
+			ex.Cond = replaceVar(ex.Cond, name, val)
+		}
+		return ex
+	default:
+		return ex
+	}
+}
+
 func precedence(op string) int {
 	switch op {
 	case "*", "/", "%":
@@ -2483,6 +2559,11 @@ func convertQueryExpr(q *parser.QueryExpr) (Expr, error) {
 	if q.Group != nil || q.Distinct {
 		return nil, fmt.Errorf("unsupported query")
 	}
+	if len(q.Joins) == 1 && q.Joins[0].Side != nil &&
+		(*q.Joins[0].Side == "right" || *q.Joins[0].Side == "outer") &&
+		len(q.Froms) == 0 {
+		return convertSpecialJoin(q)
+	}
 
 	vars := []string{q.Var}
 	iters := []Expr{}
@@ -2618,6 +2699,66 @@ func convertQueryExpr(q *parser.QueryExpr) (Expr, error) {
 	}
 
 	return list, nil
+}
+
+func convertSpecialJoin(q *parser.QueryExpr) (Expr, error) {
+	j := q.Joins[0]
+	side := *j.Side
+	leftIter, err := convertExpr(q.Source)
+	if err != nil {
+		return nil, err
+	}
+	rightIter, err := convertExpr(j.Src)
+	if err != nil {
+		return nil, err
+	}
+	cond, err := convertExpr(j.On)
+	if err != nil {
+		return nil, err
+	}
+	sel, err := convertExpr(q.Select)
+	if err != nil {
+		return nil, err
+	}
+
+	var base Expr
+	if side == "right" {
+		base = &MultiListComp{Vars: []string{j.Var, q.Var}, Iters: []Expr{rightIter, leftIter}, Expr: sel, Cond: cond}
+	} else {
+		base = &MultiListComp{Vars: []string{q.Var, j.Var}, Iters: []Expr{leftIter, rightIter}, Expr: sel, Cond: cond}
+	}
+
+	parts := []Expr{base}
+
+	if side == "outer" {
+		noneRightBody, err := convertExpr(q.Select)
+		if err != nil {
+			return nil, err
+		}
+		lam := &LambdaExpr{Params: []string{j.Var}, Expr: noneRightBody}
+		call := &CallExpr{Func: &RawExpr{Code: fmt.Sprintf("(%s)", exprString(lam))}, Args: []Expr{&Name{Name: "None"}}}
+		anyMatch := &CallExpr{Func: &Name{Name: "any"}, Args: []Expr{&ListComp{Var: j.Var, Iter: rightIter, Expr: cond}}}
+		condLeft := &UnaryExpr{Op: "not ", Expr: anyMatch}
+		parts = append(parts, &ListComp{Var: q.Var, Iter: leftIter, Expr: call, Cond: condLeft})
+	}
+
+	if side == "right" || side == "outer" {
+		noneLeftBody, err := convertExpr(q.Select)
+		if err != nil {
+			return nil, err
+		}
+		lam := &LambdaExpr{Params: []string{q.Var}, Expr: noneLeftBody}
+		call := &CallExpr{Func: &RawExpr{Code: fmt.Sprintf("(%s)", exprString(lam))}, Args: []Expr{&Name{Name: "None"}}}
+		anyMatch := &CallExpr{Func: &Name{Name: "any"}, Args: []Expr{&ListComp{Var: q.Var, Iter: leftIter, Expr: cond}}}
+		condRight := &UnaryExpr{Op: "not ", Expr: anyMatch}
+		parts = append(parts, &ListComp{Var: j.Var, Iter: rightIter, Expr: call, Cond: condRight})
+	}
+
+	expr := parts[0]
+	for _, p := range parts[1:] {
+		expr = &BinaryExpr{Left: expr, Op: "+", Right: p}
+	}
+	return expr, nil
 }
 
 func convertUpdate(u *parser.UpdateStmt, env *types.Env) (*UpdateStmt, error) {
