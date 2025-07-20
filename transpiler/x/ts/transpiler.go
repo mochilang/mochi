@@ -1009,7 +1009,10 @@ func (s *SaveStmt) emit(w io.Writer) {
 			s.Src.emit(w)
 		}
 		io.WriteString(w, ") {\n")
-		io.WriteString(w, "  console.log(JSON.stringify(_row))\n")
+		io.WriteString(w, "  const _keys = Object.keys(_row).sort()\n")
+		io.WriteString(w, "  const _tmp:any = {}\n")
+		io.WriteString(w, "  for (const k of _keys) _tmp[k] = _row[k]\n")
+		io.WriteString(w, "  console.log(JSON.stringify(_tmp))\n")
 		io.WriteString(w, "}")
 		return
 	}
@@ -1384,6 +1387,10 @@ func emitStmt(w *indentWriter, s Stmt, level int) {
 		}
 		io.WriteString(w, pad)
 		io.WriteString(w, "}\n")
+	case *SaveStmt:
+		io.WriteString(w, pad)
+		st.emit(w)
+		io.WriteString(w, "\n")
 	}
 }
 
