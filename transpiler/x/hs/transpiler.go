@@ -41,6 +41,39 @@ var needUnsafe bool
 // vars holds the last computed expression of each variable at the top level.
 var vars map[string]Expr
 
+// reserved lists Haskell reserved keywords that cannot be used as identifiers.
+var reserved = map[string]bool{
+	"case":     true,
+	"class":    true,
+	"data":     true,
+	"default":  true,
+	"deriving": true,
+	"do":       true,
+	"else":     true,
+	"if":       true,
+	"import":   true,
+	"in":       true,
+	"infix":    true,
+	"infixl":   true,
+	"infixr":   true,
+	"instance": true,
+	"let":      true,
+	"module":   true,
+	"newtype":  true,
+	"of":       true,
+	"then":     true,
+	"type":     true,
+	"where":    true,
+}
+
+// safeName prefixes an underscore when the provided identifier is reserved.
+func safeName(n string) string {
+	if reserved[n] {
+		return "_" + n
+	}
+	return n
+}
+
 type TypeDecl struct {
 	Name   string
 	Fields []string
@@ -84,10 +117,10 @@ type Func struct {
 }
 
 func (f *Func) emit(w io.Writer) {
-	io.WriteString(w, f.Name)
+	io.WriteString(w, safeName(f.Name))
 	for _, p := range f.Params {
 		io.WriteString(w, " ")
-		io.WriteString(w, p)
+		io.WriteString(w, safeName(p))
 	}
 	io.WriteString(w, " = ")
 	if len(f.Body) == 1 {
@@ -187,13 +220,13 @@ func (p *PrintStmt) emit(w io.Writer) {
 }
 
 func (l *LetStmt) emit(w io.Writer) {
-	io.WriteString(w, l.Name)
+	io.WriteString(w, safeName(l.Name))
 	io.WriteString(w, " = ")
 	l.Expr.emit(w)
 }
 
 func (a *AssignStmt) emit(w io.Writer) {
-	io.WriteString(w, a.Name)
+	io.WriteString(w, safeName(a.Name))
 	io.WriteString(w, " = ")
 	a.Expr.emit(w)
 }
@@ -224,7 +257,7 @@ func (r *ReturnStmt) emit(w io.Writer) {
 
 func (f *ForStmt) emit(w io.Writer) {
 	io.WriteString(w, "mapM_ (\\")
-	io.WriteString(w, f.Name)
+	io.WriteString(w, safeName(f.Name))
 	io.WriteString(w, " -> do\n")
 	for _, st := range f.Body {
 		io.WriteString(w, "        ")
@@ -382,7 +415,7 @@ func (r *RecordLit) emit(w io.Writer) {
 	}
 	io.WriteString(w, "}")
 }
-func (n *NameRef) emit(w io.Writer) { io.WriteString(w, n.Name) }
+func (n *NameRef) emit(w io.Writer) { io.WriteString(w, safeName(n.Name)) }
 func (f *FieldExpr) emit(w io.Writer) {
 	io.WriteString(w, f.Field)
 	io.WriteString(w, " ")
@@ -561,13 +594,14 @@ func (b *BinaryExpr) emit(w io.Writer) {
 func (u *UnaryExpr) emit(w io.Writer) {
 	if u.Op == "!" {
 		io.WriteString(w, "not ")
-		if _, ok := u.Expr.(*BinaryExpr); ok {
+		switch u.Expr.(type) {
+		case *NameRef, *IntLit, *StringLit, *BoolLit:
+			u.Expr.emit(w)
+		default:
 			io.WriteString(w, "(")
 			u.Expr.emit(w)
 			io.WriteString(w, ")")
-			return
 		}
-		u.Expr.emit(w)
 		return
 	}
 	io.WriteString(w, u.Op)
@@ -742,22 +776,25 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 			if err != nil {
 				return nil, err
 			}
-			vars[st.Let.Name] = ex
-			recordType(st.Let.Name, ex)
+			name := safeName(st.Let.Name)
+			vars[name] = ex
+			recordType(name, ex)
 		case st.Var != nil:
 			ex, err := convertExpr(st.Var.Value)
 			if err != nil {
 				return nil, err
 			}
-			vars[st.Var.Name] = ex
-			recordType(st.Var.Name, ex)
+			name := safeName(st.Var.Name)
+			vars[name] = ex
+			recordType(name, ex)
 		case st.Assign != nil:
 			ex, err := convertExpr(st.Assign.Value)
 			if err != nil {
 				return nil, err
 			}
-			vars[st.Assign.Name] = ex
-			recordType(st.Assign.Name, ex)
+			name := safeName(st.Assign.Name)
+			vars[name] = ex
+			recordType(name, ex)
 		case st.Fun != nil:
 			fn, err := convertFunStmt(st.Fun)
 			if err != nil {
@@ -1021,9 +1058,9 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 	case p.Lit != nil:
 		return convertLiteral(p.Lit)
 	case p.Selector != nil && len(p.Selector.Tail) == 0:
-		return &NameRef{Name: p.Selector.Root}, nil
+		return &NameRef{Name: safeName(p.Selector.Root)}, nil
 	case p.Selector != nil:
-		expr := Expr(&NameRef{Name: p.Selector.Root})
+		expr := Expr(&NameRef{Name: safeName(p.Selector.Root)})
 		for _, fld := range p.Selector.Tail {
 			expr = &FieldExpr{Target: expr, Field: fld}
 		}
@@ -1175,6 +1212,14 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 			}
 			return &BinaryExpr{Left: listArg, Ops: []BinaryOp{{Op: "++", Right: &ListLit{Elems: []Expr{itemArg}}}}}, nil
 		}
+		if p.Call.Func == "exists" && len(p.Call.Args) == 1 {
+			arg, err := convertExpr(p.Call.Args[0])
+			if err != nil {
+				return nil, err
+			}
+			nullCall := &CallExpr{Fun: &NameRef{Name: "null"}, Args: []Expr{arg}}
+			return &UnaryExpr{Op: "!", Expr: &GroupExpr{Expr: nullCall}}, nil
+		}
 		if p.Call.Func == "values" && len(p.Call.Args) == 1 {
 			arg, err := convertExpr(p.Call.Args[0])
 			if err != nil {
@@ -1276,9 +1321,9 @@ func convertFunStmt(f *parser.FunStmt) (*Func, error) {
 	}
 	var params []string
 	for _, p := range f.Params {
-		params = append(params, p.Name)
+		params = append(params, safeName(p.Name))
 	}
-	return &Func{Name: f.Name, Params: params, Body: stmts}, nil
+	return &Func{Name: safeName(f.Name), Params: params, Body: stmts}, nil
 }
 
 func convertForStmt(f *parser.ForStmt) (Stmt, error) {
@@ -1287,7 +1332,7 @@ func convertForStmt(f *parser.ForStmt) (Stmt, error) {
 		return nil, err
 	}
 	if isMapExpr(src) {
-		varTypes[f.Name] = "string"
+		varTypes[safeName(f.Name)] = "string"
 	}
 	var end Expr
 	if f.RangeEnd != nil {
@@ -1300,7 +1345,7 @@ func convertForStmt(f *parser.ForStmt) (Stmt, error) {
 	if err != nil {
 		return nil, err
 	}
-	return &ForStmt{Name: f.Name, From: src, To: end, Body: body}, nil
+	return &ForStmt{Name: safeName(f.Name), From: src, To: end, Body: body}, nil
 }
 
 func convertWhileStmt(w *parser.WhileStmt) (Stmt, error) {
@@ -1348,19 +1393,19 @@ func convertStmtList(list []*parser.Statement) ([]Stmt, error) {
 			if err != nil {
 				return nil, err
 			}
-			out = append(out, &LetStmt{Name: st.Let.Name, Expr: ex})
+			out = append(out, &LetStmt{Name: safeName(st.Let.Name), Expr: ex})
 		case st.Var != nil:
 			ex, err := convertExpr(st.Var.Value)
 			if err != nil {
 				return nil, err
 			}
-			out = append(out, &LetStmt{Name: st.Var.Name, Expr: ex})
+			out = append(out, &LetStmt{Name: safeName(st.Var.Name), Expr: ex})
 		case st.Assign != nil && len(st.Assign.Index) == 0:
 			ex, err := convertExpr(st.Assign.Value)
 			if err != nil {
 				return nil, err
 			}
-			out = append(out, &AssignStmt{Name: st.Assign.Name, Expr: ex})
+			out = append(out, &AssignStmt{Name: safeName(st.Assign.Name), Expr: ex})
 		case st.While != nil:
 			s, err := convertWhileStmt(st.While)
 			if err != nil {

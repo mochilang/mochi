@@ -138,8 +138,8 @@ func updateTasks() {
 	var buf bytes.Buffer
 	buf.WriteString(fmt.Sprintf("## Progress (%s)\n", ts))
 	buf.WriteString("- VM valid golden test results updated\n")
-	buf.WriteString("- Added list literals and if statements inside functions\n")
-	buf.WriteString("- Enabled sum builtin support\n\n")
+	buf.WriteString("- Added escaping for Haskell reserved keywords\n")
+	buf.WriteString("- Regenerated README checklist from golden tests\n\n")
 	if data, err := os.ReadFile(taskFile); err == nil {
 		buf.Write(data)
 	}
