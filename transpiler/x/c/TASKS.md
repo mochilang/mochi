@@ -1,3 +1,7 @@
+## Progress (2025-07-20 12:19 +0700)
+- Added constant folding for list set operations and new golden test `list_set_ops`.
+- VM valid golden test results updated to 44/100
+
 ## Progress (2025-07-20 05:03 UTC)
 - Added support for 2D list initialization for matrices.
 - Implemented nested index assignment handling.
