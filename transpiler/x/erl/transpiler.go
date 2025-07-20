@@ -21,6 +21,42 @@ type Program struct {
 	Stmts []Stmt
 }
 
+// context tracks variable aliases to emulate mutable variables.
+type context struct {
+	alias   map[string]string
+	orig    map[string]string
+	counter map[string]int
+}
+
+func newContext() *context {
+	return &context{alias: map[string]string{}, orig: map[string]string{}, counter: map[string]int{}}
+}
+
+func (c *context) newAlias(name string) string {
+	c.counter[name]++
+	alias := sanitize(name)
+	if c.counter[name] > 1 {
+		alias = fmt.Sprintf("%s%d", alias, c.counter[name])
+	}
+	c.alias[name] = alias
+	c.orig[alias] = name
+	return alias
+}
+
+func (c *context) current(name string) string {
+	if a, ok := c.alias[name]; ok {
+		return a
+	}
+	return c.newAlias(name)
+}
+
+func (c *context) original(alias string) string {
+	if o, ok := c.orig[alias]; ok {
+		return o
+	}
+	return alias
+}
+
 type Stmt interface{ emit(io.Writer) }
 
 type Expr interface{ emit(io.Writer) }
@@ -134,13 +170,17 @@ func isStringExpr(e Expr) bool {
 	}
 }
 
-func isMapExpr(e Expr, env *types.Env) bool {
+func isMapExpr(e Expr, env *types.Env, ctx *context) bool {
 	switch v := e.(type) {
 	case *MapLit:
 		return true
 	case *NameRef:
 		if env != nil {
-			if t, err := env.GetVar(v.Name); err == nil {
+			name := v.Name
+			if ctx != nil {
+				name = ctx.original(v.Name)
+			}
+			if t, err := env.GetVar(name); err == nil {
 				if _, ok := t.(types.MapType); ok {
 					return true
 				}
@@ -150,9 +190,13 @@ func isMapExpr(e Expr, env *types.Env) bool {
 	return false
 }
 
-func mapValueIsString(e Expr, env *types.Env) bool {
+func mapValueIsString(e Expr, env *types.Env, ctx *context) bool {
 	if nr, ok := e.(*NameRef); ok {
-		if t, err := env.GetVar(nr.Name); err == nil {
+		name := nr.Name
+		if ctx != nil {
+			name = ctx.original(nr.Name)
+		}
+		if t, err := env.GetVar(name); err == nil {
 			if mt, ok := t.(types.MapType); ok {
 				if _, ok := mt.Value.(types.StringType); ok {
 					return true
@@ -167,7 +211,7 @@ func mapValueIsString(e Expr, env *types.Env) bool {
 }
 
 func (l *LetStmt) emit(w io.Writer) {
-	fmt.Fprintf(w, "%s = ", sanitize(l.Name))
+	fmt.Fprintf(w, "%s = ", l.Name)
 	l.Expr.emit(w)
 }
 
@@ -348,7 +392,7 @@ func (i *IfExpr) emit(w io.Writer) {
 	io.WriteString(w, " end)")
 }
 
-func (n *NameRef) emit(w io.Writer) { io.WriteString(w, sanitize(n.Name)) }
+func (n *NameRef) emit(w io.Writer) { io.WriteString(w, n.Name) }
 
 func (i *IntLit) emit(w io.Writer) { fmt.Fprintf(w, "%d", i.Value) }
 
@@ -414,9 +458,10 @@ func sanitize(name string) string {
 
 // Transpile converts a subset of Mochi to an Erlang AST.
 func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
+	ctx := newContext()
 	p := &Program{}
 	for _, st := range prog.Statements {
-		stmts, err := convertStmt(st, env)
+		stmts, err := convertStmt(st, env, ctx)
 		if err != nil {
 			return nil, err
 		}
@@ -425,34 +470,43 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	return p, nil
 }
 
-func convertStmt(st *parser.Statement, env *types.Env) ([]Stmt, error) {
+func convertStmt(st *parser.Statement, env *types.Env, ctx *context) ([]Stmt, error) {
 	switch {
 	case st.Let != nil:
 		var e Expr
 		var err error
 		if st.Let.Value != nil {
-			e, err = convertExpr(st.Let.Value, env)
+			e, err = convertExpr(st.Let.Value, env, ctx)
 			if err != nil {
 				return nil, err
 			}
 		} else {
 			e = &AtomLit{Name: "nil"}
 		}
-		return []Stmt{&LetStmt{Name: st.Let.Name, Expr: e}}, nil
+		alias := ctx.newAlias(st.Let.Name)
+		return []Stmt{&LetStmt{Name: alias, Expr: e}}, nil
 	case st.Var != nil:
 		var e Expr
 		var err error
 		if st.Var.Value != nil {
-			e, err = convertExpr(st.Var.Value, env)
+			e, err = convertExpr(st.Var.Value, env, ctx)
 			if err != nil {
 				return nil, err
 			}
 		} else {
 			e = &AtomLit{Name: "nil"}
 		}
-		return []Stmt{&LetStmt{Name: st.Var.Name, Expr: e}}, nil
+		alias := ctx.newAlias(st.Var.Name)
+		return []Stmt{&LetStmt{Name: alias, Expr: e}}, nil
+	case st.Assign != nil && len(st.Assign.Index) == 0 && len(st.Assign.Field) == 0:
+		val, err := convertExpr(st.Assign.Value, env, ctx)
+		if err != nil {
+			return nil, err
+		}
+		alias := ctx.newAlias(st.Assign.Name)
+		return []Stmt{&LetStmt{Name: alias, Expr: val}}, nil
 	case st.Expr != nil:
-		e, err := convertExpr(st.Expr.Expr, env)
+		e, err := convertExpr(st.Expr.Expr, env, ctx)
 		if err != nil {
 			return nil, err
 		}
@@ -462,7 +516,7 @@ func convertStmt(st *parser.Statement, env *types.Env) ([]Stmt, error) {
 		}
 		return nil, fmt.Errorf("unsupported expression")
 	case st.If != nil:
-		s, err := convertIfStmt(st.If, env)
+		s, err := convertIfStmt(st.If, env, ctx)
 		if err != nil {
 			return nil, err
 		}
@@ -472,14 +526,14 @@ func convertStmt(st *parser.Statement, env *types.Env) ([]Stmt, error) {
 	}
 }
 
-func convertIfStmt(n *parser.IfStmt, env *types.Env) (*IfStmt, error) {
-	cond, err := convertExpr(n.Cond, env)
+func convertIfStmt(n *parser.IfStmt, env *types.Env, ctx *context) (*IfStmt, error) {
+	cond, err := convertExpr(n.Cond, env, ctx)
 	if err != nil {
 		return nil, err
 	}
 	thenStmts := []Stmt{}
 	for _, st := range n.Then {
-		cs, err := convertStmt(st, env)
+		cs, err := convertStmt(st, env, ctx)
 		if err != nil {
 			return nil, err
 		}
@@ -487,14 +541,14 @@ func convertIfStmt(n *parser.IfStmt, env *types.Env) (*IfStmt, error) {
 	}
 	var elseStmts []Stmt
 	if n.ElseIf != nil {
-		es, err := convertIfStmt(n.ElseIf, env)
+		es, err := convertIfStmt(n.ElseIf, env, ctx)
 		if err != nil {
 			return nil, err
 		}
 		elseStmts = []Stmt{es}
 	} else if len(n.Else) > 0 {
 		for _, st := range n.Else {
-			cs, err := convertStmt(st, env)
+			cs, err := convertStmt(st, env, ctx)
 			if err != nil {
 				return nil, err
 			}
@@ -504,25 +558,25 @@ func convertIfStmt(n *parser.IfStmt, env *types.Env) (*IfStmt, error) {
 	return &IfStmt{Cond: cond, Then: thenStmts, Else: elseStmts}, nil
 }
 
-func convertExpr(e *parser.Expr, env *types.Env) (Expr, error) {
+func convertExpr(e *parser.Expr, env *types.Env, ctx *context) (Expr, error) {
 	if e == nil {
 		return nil, fmt.Errorf("nil expr")
 	}
-	return convertBinary(e.Binary, env)
+	return convertBinary(e.Binary, env, ctx)
 }
 
-func convertBinary(b *parser.BinaryExpr, env *types.Env) (Expr, error) {
+func convertBinary(b *parser.BinaryExpr, env *types.Env, ctx *context) (Expr, error) {
 	if b == nil {
 		return nil, fmt.Errorf("nil binary")
 	}
-	left, err := convertUnary(b.Left, env)
+	left, err := convertUnary(b.Left, env, ctx)
 	if err != nil {
 		return nil, err
 	}
 	ops := make([]string, len(b.Right))
 	exprs := []Expr{left}
 	for i, op := range b.Right {
-		r, err := convertPostfix(op.Right, env)
+		r, err := convertPostfix(op.Right, env, ctx)
 		if err != nil {
 			return nil, err
 		}
@@ -537,7 +591,7 @@ func convertBinary(b *parser.BinaryExpr, env *types.Env) (Expr, error) {
 			if isStringExpr(r) {
 				cmp := &CallExpr{Func: "string:str", Args: []Expr{r, l}}
 				exprs[i] = &BinaryExpr{Left: cmp, Op: "!=", Right: &IntLit{Value: 0}}
-			} else if isMapExpr(r, env) {
+			} else if isMapExpr(r, env, ctx) {
 				exprs[i] = &CallExpr{Func: "maps:is_key", Args: []Expr{l, r}}
 			} else {
 				exprs[i] = &CallExpr{Func: "lists:member", Args: []Expr{l, r}}
@@ -572,11 +626,11 @@ func convertBinary(b *parser.BinaryExpr, env *types.Env) (Expr, error) {
 	return exprs[0], nil
 }
 
-func convertUnary(u *parser.Unary, env *types.Env) (Expr, error) {
+func convertUnary(u *parser.Unary, env *types.Env, ctx *context) (Expr, error) {
 	if u == nil {
 		return nil, fmt.Errorf("nil unary")
 	}
-	expr, err := convertPostfix(u.Value, env)
+	expr, err := convertPostfix(u.Value, env, ctx)
 	if err != nil {
 		return nil, err
 	}
@@ -587,11 +641,11 @@ func convertUnary(u *parser.Unary, env *types.Env) (Expr, error) {
 	return expr, nil
 }
 
-func convertPostfix(pf *parser.PostfixExpr, env *types.Env) (Expr, error) {
+func convertPostfix(pf *parser.PostfixExpr, env *types.Env, ctx *context) (Expr, error) {
 	if pf == nil {
 		return nil, fmt.Errorf("nil postfix")
 	}
-	expr, err := convertPrimary(pf.Target, env)
+	expr, err := convertPrimary(pf.Target, env, ctx)
 	if err != nil {
 		return nil, err
 	}
@@ -600,15 +654,15 @@ func convertPostfix(pf *parser.PostfixExpr, env *types.Env) (Expr, error) {
 		case op.Cast != nil && op.Cast.Type.Simple != nil && *op.Cast.Type.Simple == "int":
 			expr = &CallExpr{Func: "list_to_integer", Args: []Expr{expr}}
 		case op.Index != nil && op.Index.Colon == nil && op.Index.Colon2 == nil:
-			idx, err := convertExpr(op.Index.Start, env)
+			idx, err := convertExpr(op.Index.Start, env, ctx)
 			if err != nil {
 				return nil, err
 			}
 			kind := "list"
 			isStr := false
-			if isMapExpr(expr, env) {
+			if isMapExpr(expr, env, ctx) {
 				kind = "map"
-				if mapValueIsString(expr, env) {
+				if mapValueIsString(expr, env, ctx) {
 					isStr = true
 				}
 			} else if isStringExpr(expr) {
@@ -623,13 +677,13 @@ func convertPostfix(pf *parser.PostfixExpr, env *types.Env) (Expr, error) {
 	return expr, nil
 }
 
-func convertPrimary(p *parser.Primary, env *types.Env) (Expr, error) {
+func convertPrimary(p *parser.Primary, env *types.Env, ctx *context) (Expr, error) {
 	switch {
 	case p.Lit != nil:
 		return convertLiteral(p.Lit)
 	case p.Selector != nil && len(p.Selector.Tail) == 0:
-		nr := &NameRef{Name: p.Selector.Root}
-		if t, err := env.GetVar(nr.Name); err == nil {
+		nr := &NameRef{Name: ctx.current(p.Selector.Root)}
+		if t, err := env.GetVar(p.Selector.Root); err == nil {
 			if _, ok := t.(types.StringType); ok {
 				nr.IsString = true
 			}
@@ -638,14 +692,14 @@ func convertPrimary(p *parser.Primary, env *types.Env) (Expr, error) {
 	case p.Call != nil:
 		ce := &CallExpr{Func: p.Call.Func}
 		for _, a := range p.Call.Args {
-			ae, err := convertExpr(a, env)
+			ae, err := convertExpr(a, env, ctx)
 			if err != nil {
 				return nil, err
 			}
 			ce.Args = append(ce.Args, ae)
 		}
 		if ce.Func == "len" && len(ce.Args) == 1 {
-			if isMapExpr(ce.Args[0], env) {
+			if isMapExpr(ce.Args[0], env, ctx) {
 				ce.Func = "maps:size"
 			} else {
 				ce.Func = "length"
@@ -655,11 +709,11 @@ func convertPrimary(p *parser.Primary, env *types.Env) (Expr, error) {
 		}
 		return ce, nil
 	case p.Group != nil:
-		return convertExpr(p.Group, env)
+		return convertExpr(p.Group, env, ctx)
 	case p.List != nil:
 		elems := make([]Expr, len(p.List.Elems))
 		for i, e := range p.List.Elems {
-			ae, err := convertExpr(e, env)
+			ae, err := convertExpr(e, env, ctx)
 			if err != nil {
 				return nil, err
 			}
@@ -669,11 +723,11 @@ func convertPrimary(p *parser.Primary, env *types.Env) (Expr, error) {
 	case p.Map != nil:
 		items := make([]MapItem, len(p.Map.Items))
 		for i, it := range p.Map.Items {
-			k, err := convertExpr(it.Key, env)
+			k, err := convertExpr(it.Key, env, ctx)
 			if err != nil {
 				return nil, err
 			}
-			v, err := convertExpr(it.Value, env)
+			v, err := convertExpr(it.Value, env, ctx)
 			if err != nil {
 				return nil, err
 			}
@@ -681,29 +735,29 @@ func convertPrimary(p *parser.Primary, env *types.Env) (Expr, error) {
 		}
 		return &MapLit{Items: items}, nil
 	case p.If != nil:
-		return convertIf(p.If, env)
+		return convertIf(p.If, env, ctx)
 	default:
 		return nil, fmt.Errorf("unsupported primary")
 	}
 }
 
-func convertIf(ifx *parser.IfExpr, env *types.Env) (Expr, error) {
-	cond, err := convertExpr(ifx.Cond, env)
+func convertIf(ifx *parser.IfExpr, env *types.Env, ctx *context) (Expr, error) {
+	cond, err := convertExpr(ifx.Cond, env, ctx)
 	if err != nil {
 		return nil, err
 	}
-	thenExpr, err := convertExpr(ifx.Then, env)
+	thenExpr, err := convertExpr(ifx.Then, env, ctx)
 	if err != nil {
 		return nil, err
 	}
 	elseExpr := Expr(&BoolLit{Value: false})
 	if ifx.Else != nil {
-		elseExpr, err = convertExpr(ifx.Else, env)
+		elseExpr, err = convertExpr(ifx.Else, env, ctx)
 		if err != nil {
 			return nil, err
 		}
 	} else if ifx.ElseIf != nil {
-		elseExpr, err = convertIf(ifx.ElseIf, env)
+		elseExpr, err = convertIf(ifx.ElseIf, env, ctx)
 		if err != nil {
 			return nil, err
 		}

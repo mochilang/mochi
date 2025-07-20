@@ -163,6 +163,8 @@ func TestTranspileTypedLet(t *testing.T) { runGolden(t, "typed_let") }
 
 func TestTranspileTypedVar(t *testing.T) { runGolden(t, "typed_var") }
 
+func TestTranspileVarAssignment(t *testing.T) { runGolden(t, "var_assignment") }
+
 func updateEnabled() bool { return *update }
 
 func countCompiled() (int, int) {

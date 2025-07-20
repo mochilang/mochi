@@ -1,4 +1,4 @@
-# Erlang Transpiler Output (32/100 generated and run)
+# Erlang Transpiler Output (33/100 generated and run)
 
 This directory contains a minimal transpiler that converts a very small
 subset of Mochi into Erlang. Generated programs are executed with
@@ -108,5 +108,5 @@ that produces the same output as the Mochi VM.
 - [ ] update_stmt
 - [ ] user_type_literal
 - [x] values_builtin
-- [ ] var_assignment
+- [x] var_assignment
 - [ ] while_loop
