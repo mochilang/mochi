@@ -1,4 +1,4 @@
 exit status 1
 # command-line-arguments
-../../../tests/transpiler/x/go/record_assign.go:11:3: invalid operation: cannot index c (variable of interface type any)
+../../../tests/transpiler/x/go/record_assign.go:11:12: invalid operation: c["n"] + 1 (mismatched types any and int)
 ../../../tests/transpiler/x/go/record_assign.go:12:1: missing return
