@@ -64,16 +64,27 @@ func (s *StructNewExpr) emit(e *emitter) {
 }
 
 type queryFrom struct {
-	Var string
-	Src Expr
+        Var string
+        Src Expr
+}
+
+type queryJoin struct {
+        Var  string
+        Src  Expr
+        On   Expr
+        Side string // "", "left", "right", "outer"
 }
 
 type QueryExpr struct {
-	Var    string
-	Src    Expr
-	Froms  []queryFrom
-	Where  Expr
-	Select Expr
+        Var    string
+        Src    Expr
+        Froms  []queryFrom
+        Joins  []queryJoin
+        Where  Expr
+        Sort   Expr
+        Skip   Expr
+        Take   Expr
+        Select Expr
 }
 
 func (q *QueryExpr) emit(e *emitter) {
@@ -90,38 +101,67 @@ func (q *QueryExpr) emit(e *emitter) {
 	q.Src.emit(e)
 	e.nl()
 	e.indent++
-	for _, f := range q.Froms {
-		e.writeIndent()
-		io.WriteString(e.w, "for ")
-		io.WriteString(e.w, f.Var)
-		io.WriteString(e.w, " in ")
-		f.Src.emit(e)
-		e.nl()
-		e.indent++
-	}
-	if q.Where != nil {
-		e.writeIndent()
-		io.WriteString(e.w, "if ")
-		q.Where.emit(e)
-		e.nl()
-		e.indent++
-	}
-	e.writeIndent()
-	io.WriteString(e.w, "_res << ")
-	q.Select.emit(e)
-	e.nl()
-	if q.Where != nil {
-		e.indent--
-		e.writeIndent()
-		io.WriteString(e.w, "end")
-		e.nl()
-	}
-	for range q.Froms {
-		e.indent--
-		e.writeIndent()
-		io.WriteString(e.w, "end")
-		e.nl()
-	}
+       for _, f := range q.Froms {
+               e.writeIndent()
+               io.WriteString(e.w, "for ")
+               io.WriteString(e.w, f.Var)
+               io.WriteString(e.w, " in ")
+               f.Src.emit(e)
+               e.nl()
+               e.indent++
+       }
+       for _, j := range q.Joins {
+               e.writeIndent()
+               io.WriteString(e.w, "for ")
+               io.WriteString(e.w, j.Var)
+               io.WriteString(e.w, " in ")
+               j.Src.emit(e)
+               e.nl()
+               e.indent++
+               if j.On != nil {
+                       e.writeIndent()
+                       io.WriteString(e.w, "if ")
+                       j.On.emit(e)
+                       e.nl()
+                       e.indent++
+               }
+       }
+       if q.Where != nil {
+               e.writeIndent()
+               io.WriteString(e.w, "if ")
+               q.Where.emit(e)
+               e.nl()
+               e.indent++
+       }
+       e.writeIndent()
+       io.WriteString(e.w, "_res << ")
+       q.Select.emit(e)
+       e.nl()
+       if q.Where != nil {
+               e.indent--
+               e.writeIndent()
+               io.WriteString(e.w, "end")
+               e.nl()
+       }
+       for i := len(q.Joins) - 1; i >= 0; i-- {
+               j := q.Joins[i]
+               if j.On != nil {
+                       e.indent--
+                       e.writeIndent()
+                       io.WriteString(e.w, "end")
+                       e.nl()
+               }
+               e.indent--
+               e.writeIndent()
+               io.WriteString(e.w, "end")
+               e.nl()
+       }
+       for range q.Froms {
+               e.indent--
+               e.writeIndent()
+               io.WriteString(e.w, "end")
+               e.nl()
+       }
 	e.indent--
 	e.writeIndent()
 	io.WriteString(e.w, "end")
@@ -1717,16 +1757,23 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 				return nil, fmt.Errorf("str takes one arg")
 			}
 			return &CastExpr{Value: args[0], Type: "string"}, nil
-		case "values":
-			if len(args) != 1 {
-				return nil, fmt.Errorf("values takes one arg")
-			}
-			return &ValuesExpr{Map: args[0]}, nil
-		case "append":
-			if len(args) != 2 {
-				return nil, fmt.Errorf("append takes two args")
-			}
-			return &AppendExpr{List: args[0], Elem: args[1]}, nil
+               case "values":
+                       if len(args) != 1 {
+                               return nil, fmt.Errorf("values takes one arg")
+                       }
+                       return &ValuesExpr{Map: args[0]}, nil
+               case "exists":
+                       if len(args) != 1 {
+                               return nil, fmt.Errorf("exists takes one arg")
+                       }
+                       emptyCall := &MethodCallExpr{Target: args[0], Method: "empty?"}
+                       boolVal := &UnaryExpr{Op: "!", Expr: emptyCall}
+                       return &CastExpr{Value: boolVal, Type: "string"}, nil
+               case "append":
+                       if len(args) != 2 {
+                               return nil, fmt.Errorf("append takes two args")
+                       }
+                       return &AppendExpr{List: args[0], Elem: args[1]}, nil
 		case "substring":
 			if len(args) != 3 {
 				return nil, fmt.Errorf("substring expects 3 args")
@@ -1873,10 +1920,10 @@ func convertPrintCall(args []Expr, orig []*parser.Expr) (Expr, error) {
 			} else {
 				ex = &FormatList{List: ex}
 			}
-		case types.BoolType:
-			if !isMembershipExpr(orig[0]) {
-				ex = &CondExpr{Cond: ex, Then: &IntLit{Value: 1}, Else: &IntLit{Value: 0}}
-			}
+               case types.BoolType:
+                       if !isMembershipExpr(orig[0]) && !isExistsCall(orig[0]) {
+                               ex = &CondExpr{Cond: ex, Then: &IntLit{Value: 1}, Else: &IntLit{Value: 0}}
+                       }
 		}
 		return &CallExpr{Func: "puts", Args: []Expr{ex}}, nil
 	}
@@ -1890,15 +1937,16 @@ func convertPrintCall(args []Expr, orig []*parser.Expr) (Expr, error) {
 			} else {
 				ex = &FormatList{List: ex}
 			}
-		case types.BoolType:
-			if !isMembershipExpr(orig[i]) {
-				ex = &CondExpr{Cond: ex, Then: &IntLit{Value: 1}, Else: &IntLit{Value: 0}}
-			}
+               case types.BoolType:
+                        if !isMembershipExpr(orig[i]) && !isExistsCall(orig[i]) {
+                                ex = &CondExpr{Cond: ex, Then: &IntLit{Value: 1}, Else: &IntLit{Value: 0}}
+                        }
 		}
 		conv[i] = ex
 	}
-	list := &ListLit{Elems: conv}
-	return &CallExpr{Func: "puts", Args: []Expr{&JoinExpr{List: list}}}, nil
+       list := &ListLit{Elems: conv}
+       joined := &JoinExpr{List: list}
+       return &CallExpr{Func: "puts", Args: []Expr{&MethodCallExpr{Target: joined, Method: "rstrip"}}}, nil
 }
 
 func isValuesCall(e *parser.Expr) bool {
@@ -1913,6 +1961,20 @@ func isValuesCall(e *parser.Expr) bool {
 		return true
 	}
 	return false
+}
+
+func isExistsCall(e *parser.Expr) bool {
+       if e == nil || e.Binary == nil || len(e.Binary.Right) != 0 {
+               return false
+       }
+       u := e.Binary.Left
+       if u == nil || u.Value == nil || u.Value.Target == nil {
+               return false
+       }
+       if u.Value.Target.Call != nil && u.Value.Target.Call.Func == "exists" {
+               return true
+       }
+       return false
 }
 
 func isMembershipExpr(e *parser.Expr) bool {
@@ -1932,36 +1994,56 @@ func isMembershipExpr(e *parser.Expr) bool {
 }
 
 func convertQueryExpr(q *parser.QueryExpr) (Expr, error) {
-	if q.Group != nil || q.Sort != nil || q.Skip != nil || q.Take != nil || len(q.Joins) > 0 {
-		return nil, fmt.Errorf("unsupported query")
-	}
-	src, err := convertExpr(q.Source)
-	if err != nil {
-		return nil, err
-	}
-	froms := make([]queryFrom, len(q.Froms))
-	child := types.NewEnv(currentEnv)
-	child.SetVar(q.Var, types.AnyType{}, true)
-	for i, f := range q.Froms {
-		fe, err := convertExpr(f.Src)
-		if err != nil {
-			return nil, err
-		}
-		child.SetVar(f.Var, types.AnyType{}, true)
-		froms[i] = queryFrom{Var: f.Var, Src: fe}
-	}
-	var where Expr
-	if q.Where != nil {
-		where, err = convertExpr(q.Where)
-		if err != nil {
-			return nil, err
-		}
-	}
-	sel, err := convertExpr(q.Select)
-	if err != nil {
-		return nil, err
-	}
-	return &QueryExpr{Var: q.Var, Src: src, Froms: froms, Where: where, Select: sel}, nil
+       if q.Group != nil || q.Sort != nil || q.Skip != nil || q.Take != nil {
+               return nil, fmt.Errorf("unsupported query")
+       }
+       src, err := convertExpr(q.Source)
+       if err != nil {
+               return nil, err
+       }
+       froms := make([]queryFrom, len(q.Froms))
+       child := types.NewEnv(currentEnv)
+       child.SetVar(q.Var, types.AnyType{}, true)
+       for i, f := range q.Froms {
+               fe, err := convertExpr(f.Src)
+               if err != nil {
+                       return nil, err
+               }
+               child.SetVar(f.Var, types.AnyType{}, true)
+               froms[i] = queryFrom{Var: f.Var, Src: fe}
+       }
+       joins := make([]queryJoin, len(q.Joins))
+       for i, j := range q.Joins {
+               je, err := convertExpr(j.Src)
+               if err != nil {
+                       return nil, err
+               }
+               child.SetVar(j.Var, types.AnyType{}, true)
+               var onExpr Expr
+               if j.On != nil {
+                       onExpr, err = convertExpr(j.On)
+                       if err != nil {
+                               return nil, err
+                       }
+               }
+               side := ""
+               if j.Side != nil {
+                       side = *j.Side
+               }
+               joins[i] = queryJoin{Var: j.Var, Src: je, On: onExpr, Side: side}
+       }
+       var where Expr
+       if q.Where != nil {
+               where, err = convertExpr(q.Where)
+               if err != nil {
+                       return nil, err
+               }
+       }
+       sel, err := convertExpr(q.Select)
+       if err != nil {
+               return nil, err
+       }
+       return &QueryExpr{Var: q.Var, Src: src, Froms: froms, Joins: joins, Where: where, Select: sel}, nil
 }
 
 func convertQueryForLet(q *parser.QueryExpr, name string) (Expr, Stmt, error) {
