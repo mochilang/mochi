@@ -8,8 +8,10 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"sort"
 	"strings"
 	"testing"
+	"time"
 
 	"mochi/parser"
 	rkt "mochi/transpiler/x/rkt"
@@ -149,17 +151,36 @@ func updateReadme() {
 func updateTasks() {
 	root := repoRoot(&testing.T{})
 	taskPath := filepath.Join(root, "transpiler", "x", "rkt", "TASKS.md")
-	out, err := exec.Command("git", "log", "-1", "--format=%cd", "--date=format:%Y-%m-%d %H:%M:%S %z").Output()
-	ts := strings.TrimSpace(string(out))
-	if err != nil {
-		ts = ""
+	out, err := exec.Command("git", "log", "-1", "--format=%cI").Output()
+	ts := ""
+	if err == nil {
+		if t, perr := time.Parse(time.RFC3339, strings.TrimSpace(string(out))); perr == nil {
+			if loc, lerr := time.LoadLocation("Asia/Bangkok"); lerr == nil {
+				ts = t.In(loc).Format("2006-01-02 15:04 -0700")
+			} else {
+				ts = t.Format("2006-01-02 15:04 MST")
+			}
+		}
+	}
+	srcDir := filepath.Join(root, "tests", "vm", "valid")
+	outDir := srcDir
+	files, _ := filepath.Glob(filepath.Join(srcDir, "*.mochi"))
+	sort.Strings(files)
+	if len(files) > 100 {
+		files = files[:100]
+	}
+	total := len(files)
+	compiled := 0
+	for _, f := range files {
+		name := strings.TrimSuffix(filepath.Base(f), ".mochi")
+		if _, err := os.Stat(filepath.Join(outDir, name+".rkt.out")); err == nil {
+			compiled++
+		}
 	}
 	var buf bytes.Buffer
-	fmt.Fprintf(&buf, "## Progress (%s)\n", ts)
-	buf.WriteString("- Checklist now uses vm golden tests\n")
-	buf.WriteString("- Removed runtime helper functions\n")
-	buf.WriteString("- Enhanced division handling and type inference\n")
-	buf.WriteString("- Updated golden tests and documentation\n\n")
+	buf.WriteString(fmt.Sprintf("## Progress (%s)\n", ts))
+	fmt.Fprintf(&buf, "- Generated Racket for %d/%d programs\n", compiled, total)
+	buf.WriteString("- Updated README checklist\n\n")
 	if data, err := os.ReadFile(taskPath); err == nil {
 		buf.Write(data)
 	}
