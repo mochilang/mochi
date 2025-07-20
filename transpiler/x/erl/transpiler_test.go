@@ -191,6 +191,12 @@ func TestTranspileWhileLoop(t *testing.T) { runGolden(t, "while_loop") }
 
 func TestTranspileFunExprInLet(t *testing.T) { runGolden(t, "fun_expr_in_let") }
 
+func TestTranspileShortCircuit(t *testing.T) { runGolden(t, "short_circuit") }
+
+func TestTranspileClosure(t *testing.T) { runGolden(t, "closure") }
+
+func TestTranspileNestedFunction(t *testing.T) { runGolden(t, "nested_function") }
+
 func updateEnabled() bool { return *update }
 
 func countCompiled() (int, int) {
