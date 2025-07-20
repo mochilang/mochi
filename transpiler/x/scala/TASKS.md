@@ -1,3 +1,7 @@
+## Progress (2025-07-20 09:41 +0700)
+- scala transpiler: support append and loops
+- Regenerated golden files - 46/100 vm valid programs passing
+
 ## Progress (2025-07-20 09:09 +0700)
 - scala transpiler: idiomatic main and type inference
 - Regenerated golden files - 46/100 vm valid programs passing
