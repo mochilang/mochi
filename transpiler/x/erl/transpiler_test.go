@@ -183,6 +183,10 @@ func TestTranspileForListCollection(t *testing.T) { runGolden(t, "for_list_colle
 
 func TestTranspileForMapCollection(t *testing.T) { runGolden(t, "for_map_collection") }
 
+func TestTranspileFunCall(t *testing.T) { runGolden(t, "fun_call") }
+
+func TestTranspileFunThreeArgs(t *testing.T) { runGolden(t, "fun_three_args") }
+
 func updateEnabled() bool { return *update }
 
 func countCompiled() (int, int) {
