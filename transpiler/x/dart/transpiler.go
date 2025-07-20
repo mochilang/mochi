@@ -722,6 +722,8 @@ func inferType(e Expr) string {
 		return "bool"
 	case *StringLit:
 		return "String"
+	case *Name:
+		return "var"
 	case *ListLit:
 		if len(ex.Elems) == 0 {
 			return "List<dynamic>"
@@ -765,6 +767,34 @@ func inferType(e Expr) string {
 		default:
 			return "var"
 		}
+	case *UnaryExpr:
+		if ex.Op == "-" {
+			return "int"
+		}
+		return inferType(ex.X)
+	case *CondExpr:
+		t1 := inferType(ex.Then)
+		t2 := inferType(ex.Else)
+		if t1 == t2 {
+			return t1
+		}
+		return "dynamic"
+	case *CallExpr:
+		if n, ok := ex.Func.(*Name); ok {
+			switch n.Name {
+			case "len":
+				return "int"
+			case "avg":
+				return "num"
+			case "append":
+				if len(ex.Args) > 0 {
+					return inferType(ex.Args[0])
+				}
+			}
+		}
+		return "dynamic"
+	case *SelectorExpr, *IndexExpr:
+		return "dynamic"
 	case *ContainsExpr:
 		return "bool"
 	case *LenExpr:
