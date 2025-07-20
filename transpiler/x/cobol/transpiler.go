@@ -410,12 +410,12 @@ func (d *DisplayStmt) emit(w io.Writer) {
 		io.WriteString(w, "\n    IF TMP > 0\n        DISPLAY \"true\"\n    ELSE\n        DISPLAY \"false\"\n    END-IF")
 		return
 	}
-	if isBoolExpr(d.Expr) {
-		io.WriteString(w, "IF ")
-		emitCondExpr(w, d.Expr)
-		io.WriteString(w, "\n        DISPLAY 1\n    ELSE\n        DISPLAY 0\n    END-IF")
-		return
-	}
+       if isBoolExpr(d.Expr) {
+               io.WriteString(w, "IF ")
+               emitCondExpr(w, d.Expr)
+               io.WriteString(w, "\n        DISPLAY \"true\"\n    ELSE\n        DISPLAY \"false\"\n    END-IF")
+               return
+       }
 	if d.IsString {
 		if d.Temp {
 			io.WriteString(w, "COMPUTE TMP = ")
@@ -1086,6 +1086,28 @@ func listLiteralLen(e *parser.Expr) (int, bool) {
 	return 0, false
 }
 
+func listLiteralInts(e *parser.Expr) ([]int, bool) {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) != 0 {
+		return nil, false
+	}
+	u := e.Binary.Left
+	if len(u.Ops) != 0 || u.Value == nil {
+		return nil, false
+	}
+	if lst := u.Value.Target.List; lst != nil {
+		out := make([]int, len(lst.Elems))
+		for i, el := range lst.Elems {
+			v, ok := intConstExpr(el)
+			if !ok {
+				return nil, false
+			}
+			out[i] = v
+		}
+		return out, true
+	}
+	return nil, false
+}
+
 func convertExpr(e *parser.Expr, env *types.Env) (Expr, error) {
 	if e == nil || e.Binary == nil {
 		return nil, fmt.Errorf("unsupported expr")
@@ -1186,7 +1208,40 @@ func convertPostfix(pf *parser.PostfixExpr, env *types.Env) (Expr, error) {
 		return nil, err
 	}
 	for _, op := range pf.Ops {
-		if op.Cast != nil {
+		if op.Index != nil {
+			idx := op.Index
+			if idx.Colon == nil && idx.Colon2 == nil {
+				if idx.Start == nil {
+					return nil, fmt.Errorf("unsupported index")
+				}
+				start, err := convertExpr(idx.Start, env)
+				if err != nil {
+					return nil, err
+				}
+				end := &BinaryExpr{Op: "+", Left: start, Right: &IntLit{Value: 1}}
+				ex = &SubstringExpr{Str: ex, Start: start, End: end}
+			} else if idx.Colon != nil && idx.Colon2 == nil {
+				var startExpr Expr = &IntLit{Value: 0}
+				var endExpr Expr
+				if idx.Start != nil {
+					startExpr, err = convertExpr(idx.Start, env)
+					if err != nil {
+						return nil, err
+					}
+				}
+				if idx.End != nil {
+					endExpr, err = convertExpr(idx.End, env)
+					if err != nil {
+						return nil, err
+					}
+				} else {
+					return nil, fmt.Errorf("unsupported index")
+				}
+				ex = &SubstringExpr{Str: ex, Start: startExpr, End: endExpr}
+			} else {
+				return nil, fmt.Errorf("unsupported postfix")
+			}
+		} else if op.Cast != nil {
 			if op.Cast.Type == nil || op.Cast.Type.Simple == nil {
 				return nil, fmt.Errorf("unsupported cast")
 			}
@@ -1232,6 +1287,27 @@ func convertPrimary(p *parser.Primary, env *types.Env) (Expr, error) {
 			case *StringLit:
 				return &StrExpr{Value: v.Value}, nil
 			}
+		}
+		return nil, fmt.Errorf("unsupported primary")
+	case p.Call != nil && p.Call.Func == "sum" && len(p.Call.Args) == 1:
+		if vals, ok := listLiteralInts(p.Call.Args[0]); ok {
+			total := 0
+			for _, v := range vals {
+				total += v
+			}
+			return &IntLit{Value: total}, nil
+		}
+		return nil, fmt.Errorf("unsupported primary")
+	case p.Call != nil && p.Call.Func == "avg" && len(p.Call.Args) == 1:
+		if vals, ok := listLiteralInts(p.Call.Args[0]); ok {
+			total := 0
+			for _, v := range vals {
+				total += v
+			}
+			if len(vals) == 0 {
+				return &IntLit{Value: 0}, nil
+			}
+			return &IntLit{Value: total / len(vals)}, nil
 		}
 		return nil, fmt.Errorf("unsupported primary")
 	case p.Call != nil && p.Call.Func == "substring" && len(p.Call.Args) == 3:

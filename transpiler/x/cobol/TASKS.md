@@ -1,3 +1,23 @@
+## Progress (2025-07-20 13:26 +0700)
+- fix tests
+- Generated COBOL for 26/100 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-20 13:26 +0700)
+- fix tests
+- Generated COBOL for 27/100 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-20 13:26 +0700)
+- fix tests
+- Generated COBOL for 27/100 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-20 13:26 +0700)
+- fix tests
+- Generated COBOL for 23/100 programs
+- Updated README checklist and outputs
+
 ## Progress (2025-07-20 12:58 +0700)
 - cobol: constant len for list literals
 - Generated COBOL for 23/100 programs
