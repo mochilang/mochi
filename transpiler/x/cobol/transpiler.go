@@ -560,7 +560,7 @@ func Emit(p *Program) []byte {
 	buf.WriteString(">>SOURCE FORMAT FREE\n")
 	buf.WriteString("IDENTIFICATION DIVISION.\n")
 	buf.WriteString("PROGRAM-ID. MAIN.\n")
-	if len(p.Vars) > 0 || p.NeedTmp {
+	if len(p.Vars) > 0 || p.NeedTmp || p.NeedStr {
 		buf.WriteString("\nDATA DIVISION.\n")
 		buf.WriteString("WORKING-STORAGE SECTION.\n")
 		for _, v := range p.Vars {
