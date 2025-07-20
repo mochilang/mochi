@@ -1,4 +1,7 @@
-## Progress (2025-07-20 02:12 +0700)
+## Recent Enhancements (2025-07-20 09:12 +0700)
+- Improved variable declarations with basic type inference.
+- Simplified `avg` builtin emission using list methods.
+- Updated README checklist with progress summary.
 
 - Refined boolean operator emission.
 - Added string concatenation type inference.
