@@ -132,9 +132,9 @@ func updateTasks() {
 	ts := ""
 	if t, err := time.Parse(time.RFC3339, strings.TrimSpace(string(tsOut))); err == nil {
 		if loc, lerr := time.LoadLocation("Asia/Bangkok"); lerr == nil {
-			ts = t.In(loc).Format("2006-01-02 15:04 MST")
+			ts = t.In(loc).Format("2006-01-02 15:04 -0700")
 		} else {
-			ts = t.Format("2006-01-02 15:04 MST")
+			ts = t.Format("2006-01-02 15:04 -0700")
 		}
 	}
 	msgOut, _ := exec.Command("git", "log", "-1", "--format=%s").Output()

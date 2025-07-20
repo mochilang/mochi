@@ -1,3 +1,6 @@
+## Progress (2025-07-20 01:49 +07)
+- docs(go): update VM checklist and tasks
+
 # Transpiler Tasks
 ## Progress (2025-07-20 00:49 +07)
 - regenerate README and tasks; add bool_chain test
