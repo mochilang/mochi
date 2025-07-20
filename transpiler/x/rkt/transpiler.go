@@ -188,6 +188,8 @@ type ForInStmt struct {
 	Iterable Expr
 	Body     []Stmt
 	Keys     bool
+	Break    Expr
+	Unless   Expr
 }
 
 func (f *ForInStmt) emit(w io.Writer) {
@@ -197,12 +199,21 @@ func (f *ForInStmt) emit(w io.Writer) {
 	if f.Keys {
 		io.WriteString(w, "(in-hash-keys ")
 		f.Iterable.emit(w)
-		io.WriteString(w, ")])\n")
+		io.WriteString(w, ")])")
 	} else {
 		io.WriteString(w, "")
 		f.Iterable.emit(w)
-		io.WriteString(w, "])\n")
+		io.WriteString(w, "])")
 	}
+	if f.Break != nil {
+		io.WriteString(w, " #:break ")
+		f.Break.emit(w)
+	}
+	if f.Unless != nil {
+		io.WriteString(w, " #:unless ")
+		f.Unless.emit(w)
+	}
+	io.WriteString(w, "\n")
 	for _, st := range f.Body {
 		st.emit(w)
 	}
@@ -884,7 +895,37 @@ func convertForStmt(n *parser.ForStmt, env *types.Env) (Stmt, error) {
 	}
 	child := types.NewEnv(env)
 	child.SetVar(n.Name, types.AnyType{}, true)
-	body, err := convertStatements(n.Body, child)
+
+	var continueCond Expr
+	var breakCond Expr
+	bodyStmts := n.Body
+	// detect leading if statements that contain only continue/break
+	for len(bodyStmts) > 0 {
+		st := bodyStmts[0]
+		if st.If != nil && len(st.If.Then) == 1 && len(st.If.Else) == 0 {
+			if st.If.Then[0].Continue != nil {
+				c, err := convertExpr(st.If.Cond, child)
+				if err != nil {
+					return nil, err
+				}
+				continueCond = c
+				bodyStmts = bodyStmts[1:]
+				continue
+			}
+			if st.If.Then[0].Break != nil {
+				c, err := convertExpr(st.If.Cond, child)
+				if err != nil {
+					return nil, err
+				}
+				breakCond = c
+				bodyStmts = bodyStmts[1:]
+				continue
+			}
+		}
+		break
+	}
+
+	body, err := convertStatements(bodyStmts, child)
 	if err != nil {
 		return nil, err
 	}
@@ -892,7 +933,7 @@ func convertForStmt(n *parser.ForStmt, env *types.Env) (Stmt, error) {
 	if _, ok := types.ExprType(n.Source, env).(types.MapType); ok {
 		keys = true
 	}
-	return &ForInStmt{Name: n.Name, Iterable: iter, Body: body, Keys: keys}, nil
+	return &ForInStmt{Name: n.Name, Iterable: iter, Body: body, Keys: keys, Break: breakCond, Unless: continueCond}, nil
 }
 
 func convertFunStmt(fn *parser.FunStmt, env *types.Env) (Stmt, error) {
