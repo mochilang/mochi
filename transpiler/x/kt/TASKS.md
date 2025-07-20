@@ -1,3 +1,7 @@
+## VM Golden Progress (2025-07-20 11:55 +0700)
+- Added map membership support using `in` operator for maps
+- Regenerated Kotlin golden files and README
+
 ## VM Golden Progress (2025-07-20 11:38 +0700)
 - Improved expression-based type inference for variable declarations.
 - Regenerated Kotlin golden files and README

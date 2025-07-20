@@ -78,6 +78,7 @@ func TestTranspilePrograms(t *testing.T) {
 		"fun_three_args",
 		"list_assign",
 		"map_assign",
+		"map_in_operator",
 		"slice",
 		"string_prefix_slice",
 		"cast_string_to_int",
