@@ -167,6 +167,9 @@ type MaxExpr struct{ Value Expr }
 // ValuesExpr returns Object.values(o).
 type ValuesExpr struct{ Value Expr }
 
+// FormatExpr renders values for printing. Arrays are joined by space.
+type FormatExpr struct{ Value Expr }
+
 // SubstringExpr represents substring(s, start, end).
 type SubstringExpr struct {
 	Str   Expr
@@ -338,36 +341,38 @@ func (a *AppendExpr) emit(w io.Writer) {
 }
 
 func (e *AvgExpr) emit(w io.Writer) {
-	io.WriteString(w, "((n)=>n.length==0 ? '0.0' : (n.reduce((a,b)=>a+b,0)/n.length).toFixed(1))(")
+	io.WriteString(w, "(() => { const arr = ")
 	if e.Value != nil {
 		e.Value.emit(w)
 	}
-	io.WriteString(w, ")")
+	io.WriteString(w, "; let sum = 0; for (const v of arr) { sum += v; } ")
+	io.WriteString(w, "return sum / arr.length; })()")
 }
 
 func (e *SumExpr) emit(w io.Writer) {
-	io.WriteString(w, "(")
+	io.WriteString(w, "(() => { let s = 0; for (const n of ")
 	if e.Value != nil {
 		e.Value.emit(w)
 	}
-	io.WriteString(w, ".reduce((a,b)=>a+b,0)")
-	io.WriteString(w, ")")
+	io.WriteString(w, ") { s += n; } return s; })()")
 }
 
 func (e *MinExpr) emit(w io.Writer) {
-	io.WriteString(w, "((arr)=>arr.length?Math.min(...arr):0)(")
+	io.WriteString(w, "(() => { const arr = ")
 	if e.Value != nil {
 		e.Value.emit(w)
 	}
-	io.WriteString(w, ")")
+	io.WriteString(w, "; if (arr.length === 0) return 0; let m = arr[0];")
+	io.WriteString(w, " for (const v of arr) { if (v < m) m = v; } return m; })()")
 }
 
 func (e *MaxExpr) emit(w io.Writer) {
-	io.WriteString(w, "((arr)=>arr.length?Math.max(...arr):0)(")
+	io.WriteString(w, "(() => { const arr = ")
 	if e.Value != nil {
 		e.Value.emit(w)
 	}
-	io.WriteString(w, ")")
+	io.WriteString(w, "; if (arr.length === 0) return 0; let m = arr[0];")
+	io.WriteString(w, " for (const v of arr) { if (v > m) m = v; } return m; })()")
 }
 
 func (e *ValuesExpr) emit(w io.Writer) {
@@ -375,7 +380,15 @@ func (e *ValuesExpr) emit(w io.Writer) {
 	if e.Value != nil {
 		e.Value.emit(w)
 	}
-	io.WriteString(w, ").join(\" \")")
+	io.WriteString(w, ")")
+}
+
+func (f *FormatExpr) emit(w io.Writer) {
+	io.WriteString(w, "(() => { const v = ")
+	if f.Value != nil {
+		f.Value.emit(w)
+	}
+	io.WriteString(w, "; return Array.isArray(v) ? v.join(\" \") : v; })()")
 }
 
 func (s *SubstringExpr) emit(w io.Writer) {
@@ -1269,7 +1282,11 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 		}
 		switch p.Call.Func {
 		case "print":
-			return &CallExpr{Func: "console.log", Args: args}, nil
+			printArgs := make([]Expr, len(args))
+			for i, a := range args {
+				printArgs[i] = &FormatExpr{Value: a}
+			}
+			return &CallExpr{Func: "console.log", Args: printArgs}, nil
 		case "len":
 			if len(args) != 1 {
 				return nil, fmt.Errorf("len expects one argument")
