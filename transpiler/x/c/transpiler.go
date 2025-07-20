@@ -638,11 +638,16 @@ func (p *Program) Emit() []byte {
 		for _, field := range st.Order {
 			typ := "int"
 			if ft, ok := st.Fields[field]; ok {
-				switch ft.(type) {
+				switch t := ft.(type) {
 				case types.StringType:
 					typ = "const char*"
 				case types.BoolType:
 					typ = "int"
+				case types.StructType:
+					typ = t.Name
+				case types.ListType:
+					elem := inferSimpleCType(t.Elem)
+					typ = fmt.Sprintf("%s[]", elem)
 				}
 			}
 			fmt.Fprintf(&buf, "    %s %s;\n", typ, field)
@@ -2059,4 +2064,20 @@ func inferCType(env *types.Env, name string, e Expr) string {
 		}
 	}
 	return "int"
+}
+
+func inferSimpleCType(t types.Type) string {
+	switch tt := t.(type) {
+	case types.StringType:
+		return "const char*"
+	case types.BoolType:
+		return "int"
+	case types.StructType:
+		return tt.Name
+	case types.ListType:
+		elem := inferSimpleCType(tt.Elem)
+		return fmt.Sprintf("%s[]", elem)
+	default:
+		return "int"
+	}
 }
