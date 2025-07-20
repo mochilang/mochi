@@ -1,4 +1,28 @@
-## Progress (2025-07-20 13:57 +0700)
+## Progress (2025-07-20 14:43 +0700)
+- java: support lambdas and match (fb4ae2225)
+
+- feat(scala): support structs and match (f003826ca)
+
+- feat(scala): support structs and match (f003826ca)
+
+- feat(scala): support structs and match (f003826ca)
+
+- feat(scala): support structs and match (f003826ca)
+
+- feat(scala): support structs and match (f003826ca)
+
+- feat(scala): support structs and match (f003826ca)
+
+- feat(scala): support structs and match (f003826ca)
+
+- feat(scala): support structs and match (f003826ca)
+
+- feat(scala): support structs and match (f003826ca)
+
+- feat(scala): support structs and match (f003826ca)
+
+- feat(scala): support structs and match (f003826ca)
+
 - java transpiler: improve inference and indexing (befee42d0)
 
 - java transpiler: improve inference and indexing (befee42d0)
