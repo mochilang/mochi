@@ -314,6 +314,8 @@ func isSimpleExpr(e Expr) bool {
 			if _, ok := v.Expr.(*IntLit); ok {
 				return true
 			}
+		} else if strings.TrimSpace(v.Op) == "NOT" {
+			return isBoolExpr(v.Expr)
 		}
 	case *BinaryExpr:
 		if v.Op == "+" && (isStringLit(v.Left) || isStringLit(v.Right)) {
@@ -366,6 +368,10 @@ func isBoolExpr(e Expr) bool {
 			return true
 		case "&&", "||":
 			return isBoolExpr(b.Left) && isBoolExpr(b.Right)
+		}
+	case *UnaryExpr:
+		if strings.TrimSpace(b.Op) == "NOT" {
+			return isBoolExpr(b.Expr)
 		}
 	}
 	return false
@@ -1418,10 +1424,24 @@ func convertUnary(u *parser.Unary, env *types.Env) (Expr, error) {
 		return nil, err
 	}
 	for i := len(u.Ops) - 1; i >= 0; i-- {
-		if u.Ops[i] != "-" {
+		switch u.Ops[i] {
+		case "-":
+			ex = &UnaryExpr{Op: "-", Expr: ex}
+		case "!":
+			if sl, ok := ex.(*StringLit); ok {
+				if sl.Value == "true" {
+					ex = &IntLit{Value: 0}
+				} else if sl.Value == "false" {
+					ex = &IntLit{Value: 1}
+				} else {
+					return nil, fmt.Errorf("unsupported unary op")
+				}
+			} else {
+				ex = &UnaryExpr{Op: "NOT ", Expr: ex}
+			}
+		default:
 			return nil, fmt.Errorf("unsupported unary op")
 		}
-		ex = &UnaryExpr{Op: "-", Expr: ex}
 	}
 	return ex, nil
 }
