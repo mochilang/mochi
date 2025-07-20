@@ -1,0 +1,22 @@
+rustc: exit status 1
+error[E0425]: cannot find value `a` in this scope
+ --> /workspace/mochi/tests/transpiler/x/rs/json_builtin.rs:4:51
+  |
+4 |     let m: HashMap<String, i64> = HashMap::from([(a, 1), (b, 2)]);
+  |                                                   ^ not found in this scope
+
+error[E0425]: cannot find value `b` in this scope
+ --> /workspace/mochi/tests/transpiler/x/rs/json_builtin.rs:4:59
+  |
+4 |     let m: HashMap<String, i64> = HashMap::from([(a, 1), (b, 2)]);
+  |                                                           ^ not found in this scope
+
+error[E0425]: cannot find function `json` in this scope
+ --> /workspace/mochi/tests/transpiler/x/rs/json_builtin.rs:5:5
+  |
+5 |     json(m);
+  |     ^^^^ not found in this scope
+
+error: aborting due to 3 previous errors
+
+For more information about this error, try `rustc --explain E0425`.

@@ -1,0 +1,27 @@
+rustc: exit status 1
+error: expected one of `)`, `,`, `.`, `?`, or an operator, found keyword `in`
+ --> /workspace/mochi/tests/transpiler/x/rs/map_in_operator.rs:5:23
+  |
+5 |     println!("{}", (1 in m));
+  |                       ^^ expected one of `)`, `,`, `.`, `?`, or an operator
+
+error: expected one of `)`, `,`, `.`, `?`, or an operator, found keyword `in`
+ --> /workspace/mochi/tests/transpiler/x/rs/map_in_operator.rs:6:23
+  |
+6 |     println!("{}", (3 in m));
+  |                       ^^ expected one of `)`, `,`, `.`, `?`, or an operator
+
+error[E0308]: mismatched types
+ --> /workspace/mochi/tests/transpiler/x/rs/map_in_operator.rs:4:35
+  |
+4 |     let m: HashMap<i64, String> = HashMap::from([(1, "a"), (2, "b")]);
+  |            --------------------   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ expected `HashMap<i64, String>`, found `HashMap<{integer}, &str>`
+  |            |
+  |            expected due to this
+  |
+  = note: expected struct `HashMap<i64, String>`
+             found struct `HashMap<{integer}, &str>`
+
+error: aborting due to 3 previous errors
+
+For more information about this error, try `rustc --explain E0308`.

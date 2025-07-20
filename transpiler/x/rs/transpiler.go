@@ -345,6 +345,14 @@ type IfStmt struct {
 	Else   []Stmt
 }
 
+// ForStmt represents `for x in iter {}` or a range loop.
+type ForStmt struct {
+	Var  string
+	Iter Expr
+	End  Expr // nil unless range loop
+	Body []Stmt
+}
+
 func (i *IfStmt) emit(w io.Writer) {}
 
 // WhileStmt represents a basic while loop.
@@ -354,6 +362,9 @@ type WhileStmt struct {
 }
 
 func (ws *WhileStmt) emit(w io.Writer) {}
+
+// ForStmt emits `for` loops.
+func (fs *ForStmt) emit(w io.Writer) {}
 
 // --- Transpiler ---
 
@@ -444,6 +455,8 @@ func compileStmt(stmt *parser.Statement) (Stmt, error) {
 		return compileIfStmt(stmt.If)
 	case stmt.While != nil:
 		return compileWhileStmt(stmt.While)
+	case stmt.For != nil:
+		return compileForStmt(stmt.For)
 	case stmt.Test == nil && stmt.Import == nil && stmt.Type == nil:
 		return nil, fmt.Errorf("unsupported statement at %d:%d", stmt.Pos.Line, stmt.Pos.Column)
 	}
@@ -505,6 +518,31 @@ func compileWhileStmt(n *parser.WhileStmt) (Stmt, error) {
 		}
 	}
 	return &WhileStmt{Cond: cond, Body: body}, nil
+}
+
+func compileForStmt(n *parser.ForStmt) (Stmt, error) {
+	iter, err := compileExpr(n.Source)
+	if err != nil {
+		return nil, err
+	}
+	var end Expr
+	if n.RangeEnd != nil {
+		end, err = compileExpr(n.RangeEnd)
+		if err != nil {
+			return nil, err
+		}
+	}
+	body := make([]Stmt, 0, len(n.Body))
+	for _, st := range n.Body {
+		cs, err := compileStmt(st)
+		if err != nil {
+			return nil, err
+		}
+		if cs != nil {
+			body = append(body, cs)
+		}
+	}
+	return &ForStmt{Var: n.Name, Iter: iter, End: end, Body: body}, nil
 }
 
 func applyIndexOps(base Expr, ops []*parser.IndexOp) (Expr, error) {
@@ -816,6 +854,17 @@ func inferType(e Expr) string {
 			return t1
 		}
 	case *IndexExpr:
+		ct := inferType(ex.Target)
+		if strings.HasPrefix(ct, "Vec<") {
+			return strings.TrimSuffix(strings.TrimPrefix(ct, "Vec<"), ">")
+		}
+		if strings.HasPrefix(ct, "HashMap<") {
+			parts := strings.TrimPrefix(ct, "HashMap<")
+			if idx := strings.Index(parts, ","); idx > 0 {
+				vt := strings.TrimSuffix(parts[idx+1:], ">")
+				return strings.TrimSpace(vt)
+			}
+		}
 		return "i64"
 	case *MapLit:
 		usesHashMap = true
@@ -874,6 +923,8 @@ func writeStmt(buf *bytes.Buffer, s Stmt, indent int) {
 		writeIfStmt(buf, st, indent)
 	case *WhileStmt:
 		writeWhileStmt(buf, st, indent)
+	case *ForStmt:
+		writeForStmt(buf, st, indent)
 	default:
 		st.emit(buf)
 		buf.WriteString(";")
@@ -913,6 +964,27 @@ func writeWhileStmt(buf *bytes.Buffer, s *WhileStmt, indent int) {
 		s.Cond.emit(buf)
 	} else {
 		buf.WriteString("true")
+	}
+	buf.WriteString(" {\n")
+	for _, st := range s.Body {
+		writeStmt(buf, st, indent+1)
+	}
+	for i := 0; i < indent; i++ {
+		buf.WriteString("    ")
+	}
+	buf.WriteString("}")
+}
+
+func writeForStmt(buf *bytes.Buffer, s *ForStmt, indent int) {
+	buf.WriteString("for ")
+	buf.WriteString(s.Var)
+	buf.WriteString(" in ")
+	if s.End != nil {
+		s.Iter.emit(buf)
+		buf.WriteString("..")
+		s.End.emit(buf)
+	} else {
+		s.Iter.emit(buf)
 	}
 	buf.WriteString(" {\n")
 	for _, st := range s.Body {
@@ -1030,6 +1102,18 @@ func stmtNode(s Stmt) *ast.Node {
 			}
 			n.Children = append(n.Children, elseNode)
 		}
+		return n
+	case *ForStmt:
+		n := &ast.Node{Kind: "for", Value: st.Var}
+		n.Children = append(n.Children, exprNode(st.Iter))
+		if st.End != nil {
+			n.Children = append(n.Children, exprNode(st.End))
+		}
+		bodyNode := &ast.Node{Kind: "body"}
+		for _, s2 := range st.Body {
+			bodyNode.Children = append(bodyNode.Children, stmtNode(s2))
+		}
+		n.Children = append(n.Children, bodyNode)
 		return n
 	case *WhileStmt:
 		n := &ast.Node{Kind: "while"}
