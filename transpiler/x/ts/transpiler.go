@@ -738,9 +738,9 @@ func emitStmt(w *indentWriter, s Stmt, level int) {
 		io.WriteString(w, "continue\n")
 	case *FuncDecl:
 		io.WriteString(w, pad)
-		io.WriteString(w, "const ")
+		io.WriteString(w, "function ")
 		io.WriteString(w, st.Name)
-		io.WriteString(w, " = (")
+		io.WriteString(w, "(")
 		for i, p := range st.Params {
 			if i > 0 {
 				io.WriteString(w, ", ")
@@ -756,19 +756,7 @@ func emitStmt(w *indentWriter, s Stmt, level int) {
 			io.WriteString(w, ": ")
 			io.WriteString(w, st.ReturnType)
 		}
-		if len(st.Body) == 1 {
-			if ret, ok := st.Body[0].(*ReturnStmt); ok {
-				io.WriteString(w, " => ")
-				if ret.Value != nil {
-					ret.Value.emit(w)
-				} else {
-					io.WriteString(w, "undefined")
-				}
-				io.WriteString(w, "\n")
-				break
-			}
-		}
-		io.WriteString(w, " => {\n")
+		io.WriteString(w, " {\n")
 		for _, bs := range st.Body {
 			emitStmt(w, bs, level+1)
 		}
@@ -1543,6 +1531,12 @@ func tsType(t types.Type) string {
 		return "Record<" + tsType(tt.Key) + ", " + tsType(tt.Value) + ">"
 	case types.OptionType:
 		return tsType(tt.Elem) + " | null"
+	case types.StructType:
+		parts := make([]string, len(tt.Order))
+		for i, name := range tt.Order {
+			parts[i] = name + ": " + tsType(tt.Fields[name])
+		}
+		return "{ " + strings.Join(parts, "; ") + " }"
 	default:
 		return "any"
 	}
