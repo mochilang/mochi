@@ -258,6 +258,71 @@ func (m *MapLit) emit(w io.Writer) {
 	fmt.Fprint(w, "]")
 }
 
+// queryFrom represents a secondary source in a query expression.
+type queryFrom struct {
+	Var string
+	Src Expr
+}
+
+// queryJoin represents a join clause.
+type queryJoin struct {
+	Var string
+	Src Expr
+	On  Expr
+}
+
+// QueryExpr represents a basic comprehension supporting joins.
+type QueryExpr struct {
+	Var    string
+	Src    Expr
+	Froms  []queryFrom
+	Joins  []queryJoin
+	Where  Expr
+	Select Expr
+}
+
+func (q *QueryExpr) emit(w io.Writer) {
+	fmt.Fprint(w, "({ var _res: [[String: Any]] = []\n")
+	fmt.Fprintf(w, "for %s in ", q.Var)
+	q.Src.emit(w)
+	fmt.Fprint(w, " {\n")
+	for _, f := range q.Froms {
+		fmt.Fprintf(w, "for %s in ", f.Var)
+		f.Src.emit(w)
+		fmt.Fprint(w, " {\n")
+	}
+	for _, j := range q.Joins {
+		fmt.Fprintf(w, "for %s in ", j.Var)
+		j.Src.emit(w)
+		fmt.Fprint(w, " {\nif ")
+		if j.On != nil {
+			j.On.emit(w)
+		} else {
+			fmt.Fprint(w, "true")
+		}
+		fmt.Fprint(w, " {\n")
+	}
+	if q.Where != nil {
+		fmt.Fprint(w, "if ")
+		q.Where.emit(w)
+		fmt.Fprint(w, " {\n")
+	}
+	fmt.Fprint(w, "_res.append(")
+	q.Select.emit(w)
+	fmt.Fprint(w, ")\n")
+	if q.Where != nil {
+		fmt.Fprint(w, "}\n")
+	}
+	for range q.Joins {
+		fmt.Fprint(w, "}\n")
+		fmt.Fprint(w, "}\n")
+	}
+	for range q.Froms {
+		fmt.Fprint(w, "}\n")
+	}
+	fmt.Fprint(w, "}\nreturn _res })()")
+}
+
 type IndexExpr struct {
 	Base     Expr
 	Index    Expr
@@ -1043,7 +1108,18 @@ func convertPostfix(env *types.Env, p *parser.PostfixExpr) (Expr, error) {
 	}
 	expr, err := convertPrimary(env, p.Target)
 	if err != nil {
-		return nil, err
+		if p.Target != nil && p.Target.Selector != nil && len(p.Target.Selector.Tail) > 0 {
+			expr = &NameExpr{Name: p.Target.Selector.Root}
+		} else {
+			return nil, err
+		}
+	}
+	tail := []string{}
+	if p.Target != nil && p.Target.Selector != nil {
+		tail = p.Target.Selector.Tail
+	}
+	for _, f := range tail {
+		expr = &IndexExpr{Base: expr, Index: &LitExpr{Value: f, IsString: true}, Force: true}
 	}
 	for _, op := range p.Ops {
 		if op.Index != nil {
@@ -1100,6 +1176,55 @@ func convertIfExpr(env *types.Env, i *parser.IfExpr) (Expr, error) {
 	return &CondExpr{Cond: cond, Then: thenExpr, Else: elseExpr}, nil
 }
 
+func convertQueryExpr(env *types.Env, q *parser.QueryExpr) (Expr, error) {
+	if q.Group != nil || q.Sort != nil || q.Skip != nil || q.Take != nil {
+		return nil, fmt.Errorf("unsupported query")
+	}
+	src, err := convertExpr(env, q.Source)
+	if err != nil {
+		return nil, err
+	}
+	child := types.NewEnv(env)
+	child.SetVar(q.Var, types.AnyType{}, true)
+	froms := make([]queryFrom, len(q.Froms))
+	for i, f := range q.Froms {
+		fe, err := convertExpr(child, f.Src)
+		if err != nil {
+			return nil, err
+		}
+		child.SetVar(f.Var, types.AnyType{}, true)
+		froms[i] = queryFrom{Var: f.Var, Src: fe}
+	}
+	joins := make([]queryJoin, len(q.Joins))
+	for i, j := range q.Joins {
+		je, err := convertExpr(child, j.Src)
+		if err != nil {
+			return nil, err
+		}
+		child.SetVar(j.Var, types.AnyType{}, true)
+		var on Expr
+		if j.On != nil {
+			on, err = convertExpr(child, j.On)
+			if err != nil {
+				return nil, err
+			}
+		}
+		joins[i] = queryJoin{Var: j.Var, Src: je, On: on}
+	}
+	var where Expr
+	if q.Where != nil {
+		where, err = convertExpr(child, q.Where)
+		if err != nil {
+			return nil, err
+		}
+	}
+	sel, err := convertExpr(child, q.Select)
+	if err != nil {
+		return nil, err
+	}
+	return &QueryExpr{Var: q.Var, Src: src, Froms: froms, Joins: joins, Where: where, Select: sel}, nil
+}
+
 func convertPrimary(env *types.Env, pr *parser.Primary) (Expr, error) {
 	switch {
 	case pr == nil:
@@ -1132,9 +1257,15 @@ func convertPrimary(env *types.Env, pr *parser.Primary) (Expr, error) {
 		var keys []Expr
 		var vals []Expr
 		for _, it := range pr.Map.Items {
-			k, err := convertExpr(env, it.Key)
-			if err != nil {
-				return nil, err
+			var k Expr
+			if key, ok := types.SimpleStringKey(it.Key); ok {
+				k = &LitExpr{Value: key, IsString: true}
+			} else {
+				var err error
+				k, err = convertExpr(env, it.Key)
+				if err != nil {
+					return nil, err
+				}
 			}
 			v, err := convertExpr(env, it.Value)
 			if err != nil {
@@ -1174,6 +1305,8 @@ func convertPrimary(env *types.Env, pr *parser.Primary) (Expr, error) {
 		return convertExpr(env, pr.Group)
 	case pr.If != nil:
 		return convertIfExpr(env, pr.If)
+	case pr.Query != nil:
+		return convertQueryExpr(env, pr.Query)
 	case pr.Selector != nil && len(pr.Selector.Tail) == 0:
 		return &NameExpr{Name: pr.Selector.Root}, nil
 	}

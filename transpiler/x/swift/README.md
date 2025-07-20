@@ -2,7 +2,7 @@
 
 Generated Swift code for programs in `tests/vm/valid`. Each program has a `.swift` file produced by the transpiler and a `.out` file with its runtime output. Compilation or execution errors are captured in `.error` files.
 
-Transpiled programs: 59/100
+Transpiled programs: 54/100
 
 Checklist:
 - [x] append_builtin
@@ -13,9 +13,9 @@ Checklist:
 - [x] break_continue
 - [x] cast_string_to_int
 - [ ] cast_struct
-- [x] closure
+- [ ] closure
 - [x] count_builtin
-- [ ] cross_join
+- [x] cross_join
 - [ ] cross_join_filter
 - [ ] cross_join_triple
 - [ ] dataset_sort_take_limit
@@ -44,7 +44,7 @@ Checklist:
 - [ ] in_operator_extended
 - [ ] inner_join
 - [ ] join_multi
-- [x] json_builtin
+- [ ] json_builtin
 - [ ] left_join
 - [ ] left_join_multi
 - [x] len_builtin
@@ -53,8 +53,8 @@ Checklist:
 - [x] let_and_print
 - [x] list_assign
 - [x] list_index
-- [x] list_nested_assign
-- [x] list_set_ops
+- [ ] list_nested_assign
+- [ ] list_set_ops
 - [ ] load_yaml
 - [x] map_assign
 - [x] map_in_operator
@@ -96,12 +96,12 @@ Checklist:
 - [x] tail_recursion
 - [ ] test_block
 - [ ] tree_sum
-- [x] two-sum
+- [ ] two-sum
 - [x] typed_let
 - [x] typed_var
 - [x] unary_neg
 - [ ] update_stmt
 - [ ] user_type_literal
-- [x] values_builtin
+- [ ] values_builtin
 - [x] var_assignment
 - [x] while_loop
