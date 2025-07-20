@@ -64,6 +64,28 @@ type Stmt interface{ emit(io.Writer) }
 
 type Expr interface{ emit(io.Writer) }
 
+// ContainsExpr represents s.contains(sub).
+type ContainsExpr struct {
+	Str Expr
+	Sub Expr
+}
+
+// SliceExpr represents s[i:j] for strings and lists.
+type SliceExpr struct {
+	Target   Expr
+	Start    Expr
+	End      Expr
+	Kind     string
+	IsString bool
+}
+
+// SubstringExpr represents substring(s, i, j).
+type SubstringExpr struct {
+	Str   Expr
+	Start Expr
+	End   Expr
+}
+
 // PrintStmt represents a call to print/1.
 type PrintStmt struct{ Expr Expr }
 
@@ -419,6 +441,93 @@ func (i *IndexExpr) emit(w io.Writer) {
 	}
 }
 
+func (s *SliceExpr) emit(w io.Writer) {
+	switch s.Kind {
+	case "string":
+		io.WriteString(w, "string:substr(")
+		s.Target.emit(w)
+		io.WriteString(w, ", ")
+		if s.Start != nil {
+			s.Start.emit(w)
+			io.WriteString(w, " + 1")
+		} else {
+			io.WriteString(w, "1")
+		}
+		io.WriteString(w, ", ")
+		if s.End != nil {
+			io.WriteString(w, "(")
+			s.End.emit(w)
+			io.WriteString(w, " - ")
+			if s.Start != nil {
+				s.Start.emit(w)
+			} else {
+				io.WriteString(w, "0")
+			}
+			io.WriteString(w, ")")
+		} else {
+			io.WriteString(w, "byte_size(")
+			s.Target.emit(w)
+			io.WriteString(w, ")")
+			if s.Start != nil {
+				io.WriteString(w, " - ")
+				s.Start.emit(w)
+			}
+		}
+		io.WriteString(w, ")")
+	default:
+		io.WriteString(w, "lists:sublist(")
+		s.Target.emit(w)
+		io.WriteString(w, ", ")
+		if s.Start != nil {
+			s.Start.emit(w)
+			io.WriteString(w, " + 1")
+		} else {
+			io.WriteString(w, "1")
+		}
+		io.WriteString(w, ", ")
+		if s.End != nil {
+			io.WriteString(w, "(")
+			s.End.emit(w)
+			io.WriteString(w, " - ")
+			if s.Start != nil {
+				s.Start.emit(w)
+			} else {
+				io.WriteString(w, "0")
+			}
+			io.WriteString(w, ")")
+		} else {
+			io.WriteString(w, "length(")
+			s.Target.emit(w)
+			io.WriteString(w, ")")
+			if s.Start != nil {
+				io.WriteString(w, " - ")
+				s.Start.emit(w)
+			}
+		}
+		io.WriteString(w, ")")
+	}
+}
+
+func (c *ContainsExpr) emit(w io.Writer) {
+	io.WriteString(w, "(string:str(")
+	c.Str.emit(w)
+	io.WriteString(w, ", ")
+	c.Sub.emit(w)
+	io.WriteString(w, ") =/= 0)")
+}
+
+func (s *SubstringExpr) emit(w io.Writer) {
+	io.WriteString(w, "string:substr(")
+	s.Str.emit(w)
+	io.WriteString(w, ", ")
+	s.Start.emit(w)
+	io.WriteString(w, " + 1, (")
+	s.End.emit(w)
+	io.WriteString(w, " - ")
+	s.Start.emit(w)
+	io.WriteString(w, "))")
+}
+
 func (i *IfExpr) emit(w io.Writer) {
 	io.WriteString(w, "(case ")
 	i.Cond.emit(w)
@@ -727,11 +836,26 @@ func convertPostfix(pf *parser.PostfixExpr, env *types.Env, ctx *context) (Expr,
 	if pf == nil {
 		return nil, fmt.Errorf("nil postfix")
 	}
+	if pf.Target != nil && pf.Target.Selector != nil && len(pf.Target.Selector.Tail) == 1 && pf.Target.Selector.Tail[0] == "contains" && len(pf.Ops) == 1 && pf.Ops[0].Call != nil {
+		base, err := convertPrimary(&parser.Primary{Selector: &parser.SelectorExpr{Root: pf.Target.Selector.Root}}, env, ctx)
+		if err != nil {
+			return nil, err
+		}
+		if len(pf.Ops[0].Call.Args) != 1 {
+			return nil, fmt.Errorf("contains expects 1 arg")
+		}
+		arg, err := convertExpr(pf.Ops[0].Call.Args[0], env, ctx)
+		if err != nil {
+			return nil, err
+		}
+		return &ContainsExpr{Str: base, Sub: arg}, nil
+	}
 	expr, err := convertPrimary(pf.Target, env, ctx)
 	if err != nil {
 		return nil, err
 	}
-	for _, op := range pf.Ops {
+	for i := 0; i < len(pf.Ops); i++ {
+		op := pf.Ops[i]
 		switch {
 		case op.Cast != nil && op.Cast.Type.Simple != nil && *op.Cast.Type.Simple == "int":
 			expr = &CallExpr{Func: "list_to_integer", Args: []Expr{expr}}
@@ -752,6 +876,39 @@ func convertPostfix(pf *parser.PostfixExpr, env *types.Env, ctx *context) (Expr,
 				isStr = true
 			}
 			expr = &IndexExpr{Target: expr, Index: idx, Kind: kind, IsString: isStr}
+		case op.Index != nil && op.Index.Colon != nil && op.Index.Step == nil && op.Index.Colon2 == nil:
+			var startExpr, endExpr Expr
+			var err error
+			if op.Index.Start != nil {
+				startExpr, err = convertExpr(op.Index.Start, env, ctx)
+				if err != nil {
+					return nil, err
+				}
+			}
+			if op.Index.End != nil {
+				endExpr, err = convertExpr(op.Index.End, env, ctx)
+				if err != nil {
+					return nil, err
+				}
+			}
+			kind := "list"
+			isStr := false
+			if isStringExpr(expr) {
+				kind = "string"
+				isStr = true
+			}
+			expr = &SliceExpr{Target: expr, Start: startExpr, End: endExpr, Kind: kind, IsString: isStr}
+		case op.Field != nil && op.Field.Name == "contains" && i+1 < len(pf.Ops) && pf.Ops[i+1].Call != nil:
+			call := pf.Ops[i+1].Call
+			if len(call.Args) != 1 {
+				return nil, fmt.Errorf("contains expects 1 arg")
+			}
+			arg, err := convertExpr(call.Args[0], env, ctx)
+			if err != nil {
+				return nil, err
+			}
+			expr = &ContainsExpr{Str: expr, Sub: arg}
+			i++
 		default:
 			return nil, fmt.Errorf("unsupported postfix")
 		}
@@ -772,6 +929,21 @@ func convertPrimary(p *parser.Primary, env *types.Env, ctx *context) (Expr, erro
 		}
 		return nr, nil
 	case p.Call != nil:
+		if p.Call.Func == "substring" && len(p.Call.Args) == 3 {
+			strExpr, err := convertExpr(p.Call.Args[0], env, ctx)
+			if err != nil {
+				return nil, err
+			}
+			startExpr, err := convertExpr(p.Call.Args[1], env, ctx)
+			if err != nil {
+				return nil, err
+			}
+			endExpr, err := convertExpr(p.Call.Args[2], env, ctx)
+			if err != nil {
+				return nil, err
+			}
+			return &SubstringExpr{Str: strExpr, Start: startExpr, End: endExpr}, nil
+		}
 		ce := &CallExpr{Func: p.Call.Func}
 		for _, a := range p.Call.Args {
 			ae, err := convertExpr(a, env, ctx)
