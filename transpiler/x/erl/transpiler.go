@@ -946,7 +946,7 @@ func mapOp(op string) string {
 
 func builtinFunc(name string) bool {
 	switch name {
-	case "print", "append", "avg", "count", "len", "str", "sum", "min", "max", "values":
+	case "print", "append", "avg", "count", "len", "str", "sum", "min", "max", "values", "exists":
 		return true
 	default:
 		return false
@@ -1525,8 +1525,21 @@ func convertPrimary(p *parser.Primary, env *types.Env, ctx *context) (Expr, erro
 			} else {
 				ce.Func = "length"
 			}
+			return ce, nil
 		} else if ce.Func == "values" && len(ce.Args) == 1 {
 			ce.Func = "maps:values"
+			return ce, nil
+		} else if ce.Func == "exists" && len(ce.Args) == 1 {
+			arg := ce.Args[0]
+			var lenExpr Expr
+			if isMapExpr(arg, env, ctx) {
+				lenExpr = &CallExpr{Func: "maps:size", Args: []Expr{arg}}
+			} else if isStringExpr(arg) {
+				lenExpr = &CallExpr{Func: "byte_size", Args: []Expr{arg}}
+			} else {
+				lenExpr = &CallExpr{Func: "length", Args: []Expr{arg}}
+			}
+			return &BinaryExpr{Left: lenExpr, Op: ">", Right: &IntLit{Value: 0}}, nil
 		}
 		return ce, nil
 	case p.FunExpr != nil:
