@@ -1,4 +1,10 @@
-## Recent Enhancements (2025-07-20 01:52 +0700)
+## Progress (2025-07-20 02:12 +0700)
+
+- Refined boolean operator emission.
+- Added string concatenation type inference.
+- Simplified main emitter for readability.
+- Regenerated README progress (48/100).
+
 - Updated README checklist to include all golden tests.
 - Enhanced type inference for lists and maps.
 - Removed version/time helpers for simpler output.
