@@ -373,6 +373,15 @@ type ListComp struct {
 	Cond Expr
 }
 
+// MultiListComp represents a list comprehension with multiple input
+// iterators, e.g. `[f(a,b) for a in A for b in B if cond]`.
+type MultiListComp struct {
+	Vars  []string
+	Iters []Expr
+	Expr  Expr
+	Cond  Expr
+}
+
 func (lc *ListComp) emit(w io.Writer) error {
 	if _, err := io.WriteString(w, "["); err != nil {
 		return err
@@ -385,6 +394,33 @@ func (lc *ListComp) emit(w io.Writer) error {
 	}
 	if err := emitExpr(w, lc.Iter); err != nil {
 		return err
+	}
+	if lc.Cond != nil {
+		if _, err := io.WriteString(w, " if "); err != nil {
+			return err
+		}
+		if err := emitExpr(w, lc.Cond); err != nil {
+			return err
+		}
+	}
+	_, err := io.WriteString(w, "]")
+	return err
+}
+
+func (lc *MultiListComp) emit(w io.Writer) error {
+	if _, err := io.WriteString(w, "["); err != nil {
+		return err
+	}
+	if err := emitExpr(w, lc.Expr); err != nil {
+		return err
+	}
+	for i, v := range lc.Vars {
+		if _, err := io.WriteString(w, " for "+v+" in "); err != nil {
+			return err
+		}
+		if err := emitExpr(w, lc.Iters[i]); err != nil {
+			return err
+		}
 	}
 	if lc.Cond != nil {
 		if _, err := io.WriteString(w, " if "); err != nil {
@@ -2075,12 +2111,24 @@ func convertMatchExpr(me *parser.MatchExpr) (Expr, error) {
 }
 
 func convertQueryExpr(q *parser.QueryExpr) (Expr, error) {
-	if len(q.Froms) > 0 || len(q.Joins) > 0 || q.Group != nil || q.Skip != nil || q.Take != nil || q.Distinct {
+	if len(q.Joins) > 0 || q.Group != nil || q.Distinct {
 		return nil, fmt.Errorf("unsupported query")
 	}
-	iter, err := convertExpr(q.Source)
+
+	vars := []string{q.Var}
+	iters := []Expr{}
+	firstIter, err := convertExpr(q.Source)
 	if err != nil {
 		return nil, err
+	}
+	iters = append(iters, firstIter)
+	for _, f := range q.Froms {
+		e, err := convertExpr(f.Src)
+		if err != nil {
+			return nil, err
+		}
+		vars = append(vars, f.Var)
+		iters = append(iters, e)
 	}
 
 	var elem Expr
@@ -2091,6 +2139,7 @@ func convertQueryExpr(q *parser.QueryExpr) (Expr, error) {
 			return nil, err
 		}
 	}
+
 	var cond Expr
 	if q.Where != nil {
 		cond, err = convertExpr(q.Where)
@@ -2098,12 +2147,12 @@ func convertQueryExpr(q *parser.QueryExpr) (Expr, error) {
 			return nil, err
 		}
 	}
-	list := iter
-	if cond != nil {
-		list = &ListComp{Var: q.Var, Iter: iter, Expr: &Name{Name: q.Var}, Cond: cond}
-	}
+
+	base := &MultiListComp{Vars: vars, Iters: iters, Expr: elem, Cond: cond}
+	list := Expr(base)
+	var keyExpr Expr
 	if q.Sort != nil {
-		keyExpr, err := convertExpr(q.Sort)
+		keyExpr, err = convertExpr(q.Sort)
 		if err != nil {
 			return nil, err
 		}
@@ -2114,15 +2163,47 @@ func convertQueryExpr(q *parser.QueryExpr) (Expr, error) {
 		}
 		list = &SortedExpr{List: list, Var: q.Var, Key: keyExpr}
 	}
+
+	var start Expr
+	var end Expr
+	if q.Skip != nil {
+		start, err = convertExpr(q.Skip)
+		if err != nil {
+			return nil, err
+		}
+	}
+	if q.Take != nil {
+		take, err := convertExpr(q.Take)
+		if err != nil {
+			return nil, err
+		}
+		if start != nil {
+			end = &BinaryExpr{Left: start, Op: "+", Right: take}
+		} else {
+			end = take
+		}
+	}
+	if start != nil || end != nil {
+		list = &SliceExpr{Target: list, Start: start, End: end}
+	}
+
 	if useAgg {
 		arg, err := convertExpr(aggExpr)
 		if err != nil {
 			return nil, err
 		}
-		comp := &ListComp{Var: q.Var, Iter: list, Expr: arg}
-		return &CallExpr{Func: &Name{Name: aggName}, Args: []Expr{comp}}, nil
+		comp := &MultiListComp{Vars: vars, Iters: iters, Expr: arg, Cond: cond}
+		aggList := Expr(comp)
+		if q.Sort != nil {
+			aggList = &SortedExpr{List: aggList, Var: q.Var, Key: keyExpr}
+		}
+		if start != nil || end != nil {
+			aggList = &SliceExpr{Target: aggList, Start: start, End: end}
+		}
+		return &CallExpr{Func: &Name{Name: aggName}, Args: []Expr{aggList}}, nil
 	}
-	return &ListComp{Var: q.Var, Iter: list, Expr: elem}, nil
+
+	return list, nil
 }
 
 // --- AST printing helpers ---
@@ -2273,6 +2354,17 @@ func exprNode(e Expr) *ast.Node {
 	case *ListComp:
 		n := &ast.Node{Kind: "list_comp", Value: ex.Var}
 		n.Children = append(n.Children, exprNode(ex.Iter))
+		n.Children = append(n.Children, exprNode(ex.Expr))
+		if ex.Cond != nil {
+			n.Children = append(n.Children, exprNode(ex.Cond))
+		}
+		return n
+	case *MultiListComp:
+		n := &ast.Node{Kind: "list_comp_multi"}
+		for i, v := range ex.Vars {
+			iter := &ast.Node{Kind: "for", Value: v, Children: []*ast.Node{exprNode(ex.Iters[i])}}
+			n.Children = append(n.Children, iter)
+		}
 		n.Children = append(n.Children, exprNode(ex.Expr))
 		if ex.Cond != nil {
 			n.Children = append(n.Children, exprNode(ex.Cond))
