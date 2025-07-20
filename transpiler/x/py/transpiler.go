@@ -1017,6 +1017,82 @@ func zeroValueExpr(t types.Type) Expr {
 	}
 }
 
+func inferTypeFromExpr(e *parser.Expr) types.Type {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) > 0 {
+		return types.AnyType{}
+	}
+	u := e.Binary.Left
+	if len(u.Ops) > 0 || u.Value == nil {
+		return types.AnyType{}
+	}
+	p := u.Value
+	if len(p.Ops) > 0 || p.Target == nil {
+		return types.AnyType{}
+	}
+	t := p.Target
+	switch {
+	case t.Lit != nil:
+		l := t.Lit
+		switch {
+		case l.Int != nil:
+			return types.IntType{}
+		case l.Float != nil:
+			return types.FloatType{}
+		case l.Bool != nil:
+			return types.BoolType{}
+		case l.Str != nil:
+			return types.StringType{}
+		default:
+			return types.AnyType{}
+		}
+	case t.List != nil:
+		var elem types.Type = nil
+		for _, it := range t.List.Elems {
+			et := inferTypeFromExpr(it)
+			if elem == nil {
+				elem = et
+			} else if elem.String() != et.String() {
+				elem = types.AnyType{}
+			}
+		}
+		if elem == nil {
+			elem = types.AnyType{}
+		}
+		return types.ListType{Elem: elem}
+	case t.Map != nil:
+		var kt, vt types.Type
+		for _, it := range t.Map.Items {
+			itK := inferTypeFromExpr(it.Key)
+			itV := inferTypeFromExpr(it.Value)
+			if kt == nil {
+				kt = itK
+			} else if kt.String() != itK.String() {
+				kt = types.AnyType{}
+			}
+			if vt == nil {
+				vt = itV
+			} else if vt.String() != itV.String() {
+				vt = types.AnyType{}
+			}
+		}
+		if kt == nil {
+			kt = types.AnyType{}
+		}
+		if vt == nil {
+			vt = types.AnyType{}
+		}
+		return types.MapType{Key: kt, Value: vt}
+	case t.Struct != nil:
+		fields := map[string]types.Type{}
+		for _, f := range t.Struct.Fields {
+			fields[f.Name] = inferTypeFromExpr(f.Value)
+		}
+		return types.StructType{Fields: fields}
+	default:
+		return types.AnyType{}
+	}
+}
+
 // substituteFields replaces Name nodes that match the given field names with
 // map access on the provided variable.
 func substituteFields(e Expr, varName string, fields map[string]bool) Expr {
@@ -1608,13 +1684,20 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 			} else {
 				var e Expr
 				var err error
+				var typ types.Type
 				if st.Let.Value != nil {
 					e, err = convertExpr(st.Let.Value)
 					if err != nil {
 						return nil, err
 					}
+					if env != nil {
+						typ = inferTypeFromExpr(st.Let.Value)
+						env.SetVar(st.Let.Name, typ, false)
+					}
 				} else if st.Let.Type != nil && env != nil {
-					e = zeroValueExpr(types.ResolveTypeRef(st.Let.Type, env))
+					typ = types.ResolveTypeRef(st.Let.Type, env)
+					e = zeroValueExpr(typ)
+					env.SetVar(st.Let.Name, typ, false)
 				} else {
 					return nil, fmt.Errorf("let without value")
 				}
@@ -1630,13 +1713,20 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 			} else {
 				var e Expr
 				var err error
+				var typ types.Type
 				if st.Var.Value != nil {
 					e, err = convertExpr(st.Var.Value)
 					if err != nil {
 						return nil, err
 					}
+					if env != nil {
+						typ = inferTypeFromExpr(st.Var.Value)
+						env.SetVar(st.Var.Name, typ, true)
+					}
 				} else if st.Var.Type != nil && env != nil {
-					e = zeroValueExpr(types.ResolveTypeRef(st.Var.Type, env))
+					typ = types.ResolveTypeRef(st.Var.Type, env)
+					e = zeroValueExpr(typ)
+					env.SetVar(st.Var.Name, typ, true)
 				} else {
 					return nil, fmt.Errorf("var without value")
 				}
@@ -1845,13 +1935,18 @@ func convertStmts(list []*parser.Statement, env *types.Env) ([]Stmt, error) {
 			} else {
 				var e Expr
 				var err error
+				var typ types.Type
 				if s.Let.Value != nil {
 					e, err = convertExpr(s.Let.Value)
 					if err != nil {
 						return nil, err
 					}
+					typ = inferTypeFromExpr(s.Let.Value)
+					env.SetVar(s.Let.Name, typ, false)
 				} else if s.Let.Type != nil {
-					e = zeroValueExpr(types.ResolveTypeRef(s.Let.Type, env))
+					typ = types.ResolveTypeRef(s.Let.Type, env)
+					e = zeroValueExpr(typ)
+					env.SetVar(s.Let.Name, typ, false)
 				} else {
 					return nil, fmt.Errorf("let without value")
 				}
@@ -1867,13 +1962,18 @@ func convertStmts(list []*parser.Statement, env *types.Env) ([]Stmt, error) {
 			} else {
 				var e Expr
 				var err error
+				var typ types.Type
 				if s.Var.Value != nil {
 					e, err = convertExpr(s.Var.Value)
 					if err != nil {
 						return nil, err
 					}
+					typ = inferTypeFromExpr(s.Var.Value)
+					env.SetVar(s.Var.Name, typ, true)
 				} else if s.Var.Type != nil {
-					e = zeroValueExpr(types.ResolveTypeRef(s.Var.Type, env))
+					typ = types.ResolveTypeRef(s.Var.Type, env)
+					e = zeroValueExpr(typ)
+					env.SetVar(s.Var.Name, typ, true)
 				} else {
 					return nil, fmt.Errorf("var without value")
 				}
