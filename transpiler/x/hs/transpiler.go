@@ -500,6 +500,24 @@ func isMapExpr(e Expr) bool {
 	return false
 }
 
+func toStringExpr(e Expr) Expr {
+	if isStringExpr(e) {
+		return e
+	}
+	return &CallExpr{Fun: &NameRef{Name: "show"}, Args: []Expr{e}}
+}
+
+func joinPrintArgs(args []Expr) Expr {
+	if len(args) == 0 {
+		return &StringLit{Value: ""}
+	}
+	ex := toStringExpr(args[0])
+	for _, a := range args[1:] {
+		ex = &BinaryExpr{Left: ex, Ops: []BinaryOp{{Op: "+", Right: toStringExpr(a)}}}
+	}
+	return ex
+}
+
 func (b *BinaryExpr) emit(w io.Writer) {
 	left := b.Left
 	left.emit(w)
@@ -766,13 +784,21 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 			h.Stmts = append(h.Stmts, s)
 		case st.Expr != nil:
 			call := st.Expr.Expr.Binary.Left.Value.Target.Call
-			if call != nil && call.Func == "print" && len(call.Args) == 1 {
-				arg, err := convertExpr(call.Args[0])
-				if err != nil {
-					return nil, err
+			if call != nil && call.Func == "print" {
+				var args []Expr
+				for _, a := range call.Args {
+					ex, err := convertExpr(a)
+					if err != nil {
+						return nil, err
+					}
+					args = append(args, ex)
 				}
-				str := isStringExpr(arg)
-				h.Stmts = append(h.Stmts, &PrintStmt{Expr: arg, String: str})
+				if len(args) == 1 {
+					str := isStringExpr(args[0])
+					h.Stmts = append(h.Stmts, &PrintStmt{Expr: args[0], String: str})
+				} else {
+					h.Stmts = append(h.Stmts, &PrintStmt{Expr: joinPrintArgs(args), String: true})
+				}
 				continue
 			}
 			return nil, fmt.Errorf("unsupported expression")
