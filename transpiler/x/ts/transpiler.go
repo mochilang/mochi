@@ -1844,7 +1844,7 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 				}
 				for i, a := range args {
 					if isNumericBool(a) {
-						args[i] = &CallExpr{Func: "Number", Args: []Expr{a}}
+						args[i] = &UnaryExpr{Op: "+", Expr: a}
 					}
 				}
 			}
