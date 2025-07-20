@@ -1,3 +1,8 @@
+## Progress (2025-07-20 10:18 +0700)
+- Checklist updated: 60/100 tests compiled
+- Removed runtime helper functions for cleaner output.
+- Enhanced type inference and code generation.
+
 ## Progress (2025-07-20 09:50 +0700)
 - Checklist updated: 32/100 tests compiled
 - Added support for `count_builtin` using `List.length`.
