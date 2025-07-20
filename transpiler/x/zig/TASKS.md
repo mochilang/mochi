@@ -1,3 +1,7 @@
+## Progress (2025-07-20 16:00 +0000)
+- Implemented `exists` builtin and improved list type inference.
+- Generated golden file for `exists_builtin` and updated README checklist (63/100 tests passing).
+
 ## Progress (2025-07-20 15:28 +0000)
 - Added join and where filter support for queries.
 - Generated golden file for `cross_join_filter` and updated README checklist (62/100 tests passing).
@@ -90,6 +94,8 @@
 - Regenerated golden files - 24/100 vm valid programs passing
 
 # Zig Transpiler Tasks
+
+- 2025-07-20 16:00 +0000 - Implemented exists builtin and generated golden test for exists_builtin (63/100 tests passing)
 
 - 2025-07-20 10:12 +0000 - Implemented function expressions and generated golden files for fun_expr_in_let (60/100 tests passing)
 

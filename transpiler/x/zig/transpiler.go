@@ -209,29 +209,42 @@ type QueryComp struct {
 }
 
 func (qc *QueryComp) emit(w io.Writer) {
-	fmt.Fprintf(w, "blk: { var arr = std.ArrayList(%s).init(std.heap.page_allocator);", qc.ElemType)
+	fmt.Fprintf(w, "blk: {\n    var arr = std.ArrayList(%s).init(std.heap.page_allocator);\n", qc.ElemType)
+	indent := 1
 	for i, src := range qc.Sources {
-		io.WriteString(w, " for (")
+		writeIndent(w, indent)
+		io.WriteString(w, "for (")
 		src.emit(w)
 		io.WriteString(w, ") |")
 		io.WriteString(w, qc.Vars[i])
-		io.WriteString(w, "| {")
+		io.WriteString(w, "| {\n")
+		indent++
 	}
 	if qc.Filter != nil {
-		io.WriteString(w, " if (")
+		writeIndent(w, indent)
+		io.WriteString(w, "if (")
 		qc.Filter.emit(w)
-		io.WriteString(w, ") {")
+		io.WriteString(w, ") {\n")
+		indent++
 	}
-	io.WriteString(w, " arr.append(")
+	writeIndent(w, indent)
+	io.WriteString(w, "arr.append(")
 	qc.Elem.emit(w)
-	io.WriteString(w, ") catch unreachable;")
+	io.WriteString(w, ") catch unreachable;\n")
 	if qc.Filter != nil {
-		io.WriteString(w, " }")
+		indent--
+		writeIndent(w, indent)
+		io.WriteString(w, "}\n")
 	}
 	for range qc.Sources {
-		io.WriteString(w, " }")
+		indent--
+		writeIndent(w, indent)
+		io.WriteString(w, "}\n")
 	}
-	io.WriteString(w, " const tmp = arr.toOwnedSlice() catch unreachable; break :blk tmp; }")
+	writeIndent(w, 1)
+	io.WriteString(w, "const tmp = arr.toOwnedSlice() catch unreachable;\n")
+	writeIndent(w, 1)
+	io.WriteString(w, "break :blk tmp;\n}")
 }
 
 type FuncExpr struct {
@@ -247,6 +260,8 @@ func zigTypeFromExpr(e Expr) string {
 		return "[]const u8"
 	case *BoolLit:
 		return "bool"
+	case *FloatLit:
+		return "f64"
 	case *MapLit:
 		if m := e.(*MapLit); m.StructName != "" {
 			return m.StructName
@@ -1150,6 +1165,11 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 					return &FloatLit{Value: avg}, nil
 				}
 			}
+		case "exists":
+			if len(args) == 1 {
+				call := &CallExpr{Func: "len", Args: []Expr{args[0]}}
+				return &BinaryExpr{Left: call, Op: "!=", Right: &IntLit{Value: 0}}, nil
+			}
 		case "append":
 			if len(args) == 2 {
 				if list, ok := args[0].(*ListLit); ok {
@@ -1189,7 +1209,17 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 			}
 			elems[i] = ex
 		}
-		return &ListLit{Elems: elems}, nil
+		var elemType string
+		if len(elems) > 0 {
+			elemType = zigTypeFromExpr(elems[0])
+			for _, e := range elems[1:] {
+				if zigTypeFromExpr(e) != elemType {
+					elemType = ""
+					break
+				}
+			}
+		}
+		return &ListLit{Elems: elems, ElemType: elemType}, nil
 	case p.Map != nil:
 		entries := make([]MapEntry, len(p.Map.Items))
 		for i, it := range p.Map.Items {
@@ -1450,29 +1480,29 @@ func compileQueryExpr(q *parser.QueryExpr) (Expr, error) {
 	if err != nil {
 		return nil, err
 	}
-	ml, ok := elem.(*MapLit)
-	if !ok {
-		return nil, fmt.Errorf("unsupported select expression")
-	}
-	structName := "Entry"
-	if _, exists := structDefs[structName]; !exists {
-		fields := make([]Field, len(ml.Entries))
-		for i, e := range ml.Entries {
-			var name string
-			switch k := e.Key.(type) {
-			case *StringLit:
-				name = k.Value
-			case *VarRef:
-				name = k.Name
-			default:
-				return nil, fmt.Errorf("query key must be string")
+	elemType := zigTypeFromExpr(elem)
+	if ml, ok := elem.(*MapLit); ok {
+		structName := "Entry"
+		if _, exists := structDefs[structName]; !exists {
+			fields := make([]Field, len(ml.Entries))
+			for i, e := range ml.Entries {
+				var name string
+				switch k := e.Key.(type) {
+				case *StringLit:
+					name = k.Value
+				case *VarRef:
+					name = k.Name
+				default:
+					return nil, fmt.Errorf("query key must be string")
+				}
+				fields[i] = Field{Name: toSnakeCase(name), Type: zigTypeFromExpr(e.Value)}
 			}
-			fields[i] = Field{Name: toSnakeCase(name), Type: zigTypeFromExpr(e.Value)}
+			structDefs[structName] = &StructDef{Name: structName, Fields: fields}
 		}
-		structDefs[structName] = &StructDef{Name: structName, Fields: fields}
+		ml.StructName = structName
+		elemType = structName
 	}
-	ml.StructName = structName
-	return &QueryComp{Vars: vars, Sources: sources, Elem: ml, ElemType: structName, Filter: filter}, nil
+	return &QueryComp{Vars: vars, Sources: sources, Elem: elem, ElemType: elemType, Filter: filter}, nil
 }
 
 func toZigType(t *parser.TypeRef) string {
