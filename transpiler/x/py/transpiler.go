@@ -2390,6 +2390,9 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 							outArgs[i] = &RawExpr{Code: code}
 							continue
 						}
+					case types.BoolType:
+						outArgs[i] = &CallExpr{Func: &Name{Name: "int"}, Args: []Expr{a}}
+						continue
 					}
 				}
 				outArgs[i] = a
