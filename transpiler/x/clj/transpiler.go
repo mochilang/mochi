@@ -186,6 +186,7 @@ func Format(src []byte) []byte {
 // --- Transpiler ---
 
 var transpileEnv *types.Env
+var currentSeqVar string
 
 // Transpile converts a Mochi program into a Clojure AST. The implementation
 // is intentionally minimal and currently only supports very small programs used
@@ -289,6 +290,17 @@ func transpileStmt(s *parser.Statement) (Node, error) {
 		return transpileWhileStmt(s.While)
 	case s.For != nil:
 		return transpileForStmt(s.For)
+	case s.Break != nil:
+		if currentSeqVar != "" {
+			return &List{Elems: []Node{Symbol("recur"), Symbol("nil")}}, nil
+		}
+		return nil, fmt.Errorf("break outside loop")
+	case s.Continue != nil:
+		if currentSeqVar != "" {
+			restSeq := &List{Elems: []Node{Symbol("rest"), Symbol(currentSeqVar)}}
+			return &List{Elems: []Node{Symbol("recur"), restSeq}}, nil
+		}
+		return nil, fmt.Errorf("continue outside loop")
 	default:
 		return nil, fmt.Errorf("unsupported statement")
 	}
@@ -506,7 +518,29 @@ func transpilePostfix(p *parser.PostfixExpr) (Node, error) {
 		case op.Index != nil:
 			idx := op.Index
 			if idx.Colon != nil || idx.Colon2 != nil || idx.End != nil || idx.Step != nil {
-				return nil, fmt.Errorf("slices not supported")
+				var start Node = IntLit(0)
+				var end Node
+				var err error
+				if idx.Start != nil {
+					start, err = transpileExpr(idx.Start)
+					if err != nil {
+						return nil, err
+					}
+				}
+				if idx.End != nil {
+					end, err = transpileExpr(idx.End)
+					if err != nil {
+						return nil, err
+					}
+				} else {
+					end = &List{Elems: []Node{Symbol("count"), n}}
+				}
+				if isStringNode(n) {
+					n = &List{Elems: []Node{Symbol("subs"), n, start, end}}
+				} else {
+					n = &List{Elems: []Node{Symbol("subvec"), n, start, end}}
+				}
+				continue
 			}
 			i, err := transpileExpr(idx.Start)
 			if err != nil {
@@ -575,6 +609,19 @@ func transpileBlock(stmts []*parser.Statement) (Node, error) {
 	return &List{Elems: elems}, nil
 }
 
+func hasLoopCtrl(stmts []*parser.Statement) bool {
+	for _, st := range stmts {
+		switch {
+		case st.Break != nil, st.Continue != nil:
+			return true
+		case st.If != nil:
+			if hasLoopCtrl(st.If.Then) || (st.If.ElseIf != nil && hasLoopCtrl(st.If.ElseIf.Then)) || (len(st.If.Else) > 0 && hasLoopCtrl(st.If.Else)) {
+				return true
+			}
+		}
+	}
+	return false
+}
 func transpileIfStmt(s *parser.IfStmt) (Node, error) {
 	cond, err := transpileExpr(s.Cond)
 	if err != nil {
@@ -664,6 +711,22 @@ func transpilePrimary(p *parser.Primary) (Node, error) {
 			elems = append(elems, k, v)
 		}
 		return &List{Elems: elems}, nil
+	case p.FunExpr != nil:
+		params := []Node{}
+		for _, pm := range p.FunExpr.Params {
+			params = append(params, Symbol(pm.Name))
+		}
+		var body Node
+		var err error
+		if p.FunExpr.ExprBody != nil {
+			body, err = transpileExpr(p.FunExpr.ExprBody)
+		} else {
+			body, err = transpileBlock(p.FunExpr.BlockBody)
+		}
+		if err != nil {
+			return nil, err
+		}
+		return &List{Elems: []Node{Symbol("fn"), &Vector{Elems: params}, body}}, nil
 	case p.Selector != nil && len(p.Selector.Tail) == 0:
 		return Symbol(p.Selector.Root), nil
 	case p.Group != nil:
@@ -814,9 +877,33 @@ func transpileWhileStmt(w *parser.WhileStmt) (Node, error) {
 }
 
 func transpileForStmt(f *parser.ForStmt) (Node, error) {
-	body, err := blockForms(f.Body)
-	if err != nil {
-		return nil, err
+	useCtrl := hasLoopCtrl(f.Body)
+	var prevSeq string
+	if useCtrl {
+		prevSeq = currentSeqVar
+		currentSeqVar = f.Name + "_seq"
+	}
+	bodyNodes := []Node{}
+	for _, st := range f.Body {
+		n, err := transpileStmt(st)
+		if err != nil {
+			if useCtrl {
+				currentSeqVar = prevSeq
+			}
+			return nil, err
+		}
+		if n != nil {
+			bodyNodes = append(bodyNodes, n)
+		}
+	}
+	if useCtrl {
+		currentSeqVar = prevSeq
+	}
+	var bodyNode Node
+	if len(bodyNodes) == 1 {
+		bodyNode = bodyNodes[0]
+	} else {
+		bodyNode = &List{Elems: append([]Node{Symbol("do")}, bodyNodes...)}
 	}
 	var seq Node
 	useDotimes := false
@@ -842,15 +929,20 @@ func transpileForStmt(f *parser.ForStmt) (Node, error) {
 		}
 		seq = iter
 	}
-	binding := &Vector{Elems: []Node{Symbol(f.Name), seq}}
-	var bodyNode Node
-	if len(body) == 1 {
-		bodyNode = body[0]
-	} else {
-		bodyNode = &List{Elems: append([]Node{Symbol("do")}, body...)}
+	if !useCtrl {
+		binding := &Vector{Elems: []Node{Symbol(f.Name), seq}}
+		if useDotimes {
+			return &List{Elems: []Node{Symbol("dotimes"), binding, bodyNode}}, nil
+		}
+		return &List{Elems: []Node{Symbol("doseq"), binding, bodyNode}}, nil
 	}
-	if useDotimes {
-		return &List{Elems: []Node{Symbol("dotimes"), binding, bodyNode}}, nil
-	}
-	return &List{Elems: []Node{Symbol("doseq"), binding, bodyNode}}, nil
+
+	seqSym := f.Name + "_seq"
+	binding := &Vector{Elems: []Node{Symbol(seqSym), seq}}
+	iterBinding := &Vector{Elems: []Node{Symbol(f.Name), &List{Elems: []Node{Symbol("first"), Symbol(seqSym)}}}}
+	nextSeq := &List{Elems: []Node{Symbol("rest"), Symbol(seqSym)}}
+	recurExpr := &List{Elems: []Node{Symbol("recur"), nextSeq}}
+	letForm := &List{Elems: []Node{Symbol("let"), iterBinding, bodyNode, recurExpr}}
+	loopBody := &List{Elems: []Node{Symbol("when"), &List{Elems: []Node{Symbol("seq"), Symbol(seqSym)}}, letForm}}
+	return &List{Elems: []Node{Symbol("loop"), binding, loopBody}}, nil
 }

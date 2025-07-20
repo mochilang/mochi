@@ -1,3 +1,15 @@
+## Progress (2025-07-20 13:26 +0700)
+- fix tests
+- Regenerated golden files - 53/100 vm valid programs passing
+
+## Progress (2025-07-20 13:26 +0700)
+- fix tests
+- Regenerated golden files - 53/100 vm valid programs passing
+
+## Progress (2025-07-20 13:26 +0700)
+- fix tests
+- Regenerated golden files - 50/100 vm valid programs passing
+
 ## Progress (2025-07-20 12:48 +0700)
 - clj transpiler: implement avg builtin
 - Regenerated golden files - 50/100 vm valid programs passing
