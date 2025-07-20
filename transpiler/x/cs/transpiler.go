@@ -764,6 +764,87 @@ func structMapType(st types.StructType) string {
 	return fmt.Sprintf("Dictionary<string, %s>", valType)
 }
 
+func toStructName(name string) string {
+	if strings.HasSuffix(name, "s") && len(name) > 1 {
+		name = name[:len(name)-1]
+	}
+	return strings.Title(name)
+}
+
+func simpleType(t string) types.Type {
+	switch t {
+	case "int":
+		return types.IntType{}
+	case "double":
+		return types.FloatType{}
+	case "string":
+		return types.StringType{}
+	case "bool":
+		return types.BoolType{}
+	default:
+		return types.AnyType{}
+	}
+}
+
+func inferStructList(varName string, prog *Program, l *ListLit) (Expr, bool) {
+	if len(l.Elems) == 0 {
+		return l, false
+	}
+	first, ok := l.Elems[0].(*MapLit)
+	if !ok {
+		return l, false
+	}
+	keys := make([]string, len(first.Items))
+	typesMap := make(map[string]string)
+	for i, it := range first.Items {
+		k, ok := it.Key.(*StringLit)
+		if !ok {
+			return l, false
+		}
+		keys[i] = k.Value
+		typesMap[k.Value] = typeOfExpr(it.Value)
+	}
+	for _, e := range l.Elems[1:] {
+		m, ok := e.(*MapLit)
+		if !ok || len(m.Items) != len(keys) {
+			return l, false
+		}
+		for i, it := range m.Items {
+			k, ok := it.Key.(*StringLit)
+			if !ok || k.Value != keys[i] {
+				return l, false
+			}
+			t := typeOfExpr(it.Value)
+			if typesMap[keys[i]] != t {
+				typesMap[keys[i]] = "object"
+			}
+		}
+	}
+	sname := toStructName(varName)
+	fields := make([]StructField, len(keys))
+	typeFields := make(map[string]types.Type)
+	for i, k := range keys {
+		fields[i] = StructField{Name: k, Type: typesMap[k]}
+		typeFields[k] = simpleType(typesMap[k])
+	}
+	if prog != nil {
+		prog.Structs = append(prog.Structs, StructDecl{Name: sname, Fields: fields})
+	}
+	structTypes[sname] = types.StructType{Name: sname, Fields: typeFields, Order: keys}
+	varTypes[varName] = fmt.Sprintf("%s[]", sname)
+	newElems := make([]Expr, len(l.Elems))
+	for i, e := range l.Elems {
+		m := e.(*MapLit)
+		vals := make([]StructFieldValue, len(keys))
+		for j, k := range keys {
+			val := m.Items[j].Value
+			vals[j] = StructFieldValue{Name: k, Value: val}
+		}
+		newElems[i] = &StructLit{Name: sname, Fields: vals}
+	}
+	return &ListLit{Elems: newElems}, true
+}
+
 func typeOfExpr(e Expr) string {
 	switch ex := e.(type) {
 	case *StringLit:
@@ -1334,6 +1415,11 @@ func compileStmt(prog *Program, s *parser.Statement) (Stmt, error) {
 		} else {
 			return nil, fmt.Errorf("unsupported let")
 		}
+		if list, ok := val.(*ListLit); ok {
+			if res, changed := inferStructList(s.Let.Name, prog, list); changed {
+				val = res
+			}
+		}
 		if isStringExpr(val) {
 			stringVars[s.Let.Name] = true
 		}
@@ -1369,6 +1455,11 @@ func compileStmt(prog *Program, s *parser.Statement) (Stmt, error) {
 				return nil, fmt.Errorf("unsupported var type")
 			}
 			varTypes[s.Var.Name] = csType(s.Var.Type)
+		}
+		if list, ok := val.(*ListLit); ok {
+			if res, changed := inferStructList(s.Var.Name, prog, list); changed {
+				val = res
+			}
 		}
 		if isStringExpr(val) {
 			stringVars[s.Var.Name] = true
