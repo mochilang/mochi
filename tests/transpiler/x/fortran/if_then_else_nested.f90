@@ -2,10 +2,11 @@ program main
   implicit none
   integer :: x = 8
   character(len=100) :: msg
-  if ((x > 10)) then
+
+  if (x > 10) then
     msg = "big"
   else
-    if ((x > 5)) then
+    if (x > 5) then
       msg = "medium"
     else
       msg = "small"
