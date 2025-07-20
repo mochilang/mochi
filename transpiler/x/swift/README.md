@@ -25,7 +25,7 @@ Checklist:
 - [x] for_loop
 - [ ] for_map_collection
 - [x] fun_call
-- [ ] fun_expr_in_let
+- [x] fun_expr_in_let
 - [x] fun_three_args
 - [ ] go_auto
 - [ ] group_by
@@ -54,7 +54,7 @@ Checklist:
 - [ ] list_assign
 - [ ] list_index
 - [ ] list_nested_assign
-- [x] list_set_ops
+- [ ] list_set_ops
 - [ ] load_yaml
 - [ ] map_assign
 - [ ] map_in_operator
