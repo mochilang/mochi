@@ -2,6 +2,6 @@
 
 const prefix: string = "fore";
 const s1: string = "forest";
-console.log([Number((s1.slice(0, (Array.isArray(prefix) || typeof prefix === 'string' ? prefix.length : Object.keys(prefix ?? {}).length)) == prefix))].join(" ").trimEnd());
+console.log(Number((s1.slice(0, (Array.isArray(prefix) || typeof prefix === 'string' ? prefix.length : Object.keys(prefix ?? {}).length)) == prefix)));
 const s2: string = "desert";
-console.log([Number((s2.slice(0, (Array.isArray(prefix) || typeof prefix === 'string' ? prefix.length : Object.keys(prefix ?? {}).length)) == prefix))].join(" ").trimEnd());
+console.log(Number((s2.slice(0, (Array.isArray(prefix) || typeof prefix === 'string' ? prefix.length : Object.keys(prefix ?? {}).length)) == prefix)));

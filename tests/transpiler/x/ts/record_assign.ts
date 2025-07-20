@@ -5,4 +5,4 @@ function inc(c: { n: number }) {
 }
 let c: { n: number } = {"n": 0};
 inc(c);
-console.log([c["n"]].join(" ").trimEnd());
+console.log(c["n"]);

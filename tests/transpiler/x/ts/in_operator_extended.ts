@@ -11,11 +11,11 @@ const ys: number[] = (() => {
   const out = result
   return out
 })();
-console.log([ys.includes(1)].join(" ").trimEnd());
-console.log([ys.includes(2)].join(" ").trimEnd());
+console.log(ys.includes(1));
+console.log(ys.includes(2));
 const m: Record<string, number> = {a: 1};
-console.log([("a" in m)].join(" ").trimEnd());
-console.log([("b" in m)].join(" ").trimEnd());
+console.log(("a" in m));
+console.log(("b" in m));
 const s: string = "hello";
-console.log([s.includes("ell")].join(" ").trimEnd());
-console.log([s.includes("foo")].join(" ").trimEnd());
+console.log(s.includes("ell"));
+console.log(s.includes("foo"));

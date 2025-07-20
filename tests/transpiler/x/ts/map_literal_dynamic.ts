@@ -3,4 +3,4 @@
 let x: number = 3;
 let y: number = 4;
 let m: Record<string, number> = {"a": x, "b": y};
-console.log([m["a"], m["b"]].join(" ").trimEnd());
+console.log(m["a"], m["b"]);

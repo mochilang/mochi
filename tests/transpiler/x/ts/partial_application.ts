@@ -4,4 +4,4 @@ function add(a: number, b: number): number {
   return (a + b);
 }
 const add5 = (b) => add(5, b);
-console.log([add5(3)].join(" ").trimEnd());
+console.log(add5(3));

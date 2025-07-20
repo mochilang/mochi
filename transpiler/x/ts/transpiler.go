@@ -6,6 +6,7 @@ import (
 	"bytes"
 	"fmt"
 	"io"
+	"sort"
 	"strings"
 
 	"mochi/ast"
@@ -524,7 +525,7 @@ func (f *FormatListExpr) emit(w io.Writer) {
 }
 
 func (p *PrintExpr) emit(w io.Writer) {
-	io.WriteString(w, "console.log([")
+	io.WriteString(w, "console.log(")
 	for i, a := range p.Args {
 		if i > 0 {
 			io.WriteString(w, ", ")
@@ -533,7 +534,7 @@ func (p *PrintExpr) emit(w io.Writer) {
 			a.emit(w)
 		}
 	}
-	io.WriteString(w, "].join(\" \").trimEnd())")
+	io.WriteString(w, ")")
 }
 
 func (s *SubstringExpr) emit(w io.Writer) {
@@ -1481,7 +1482,17 @@ func convertUpdate(u *parser.UpdateStmt, env *types.Env) (*UpdateStmt, error) {
 
 func convertTypeDecl(td *parser.TypeDecl) (Stmt, error) {
 	if len(td.Variants) > 0 {
-		return nil, fmt.Errorf("sum types not supported")
+		parts := make([]string, len(td.Variants))
+		for i, v := range td.Variants {
+			fields := []string{"tag: \"" + v.Name + "\""}
+			for _, f := range v.Fields {
+				ft := types.ResolveTypeRef(f.Type, transpileEnv)
+				fields = append(fields, fmt.Sprintf("%s: %s", f.Name, tsType(ft)))
+			}
+			parts[i] = "{ " + strings.Join(fields, "; ") + " }"
+		}
+		typ := strings.Join(parts, " | ")
+		return &TypeAlias{Name: td.Name, Type: typ}, nil
 	}
 	var parts []string
 	for _, m := range td.Members {
@@ -2159,6 +2170,17 @@ func tsType(t types.Type) string {
 			parts[i] = name + ": " + tsType(tt.Fields[name])
 		}
 		return "{ " + strings.Join(parts, "; ") + " }"
+	case types.UnionType:
+		parts := make([]string, 0, len(tt.Variants))
+		for name, st := range tt.Variants {
+			fields := []string{"tag: \"" + name + "\""}
+			for _, f := range st.Order {
+				fields = append(fields, f+": "+tsType(st.Fields[f]))
+			}
+			parts = append(parts, "{ "+strings.Join(fields, "; ")+" }")
+		}
+		sort.Strings(parts)
+		return strings.Join(parts, " | ")
 	default:
 		return "any"
 	}

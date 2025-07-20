@@ -10,7 +10,7 @@ const expensive: Record<string, any>[] = (() => {
   const out = result.map(r => r.v)
   return out.slice(1, (1 + 3))
 })();
-console.log(["--- Top products (excluding most expensive) ---"].join(" ").trimEnd());
+console.log("--- Top products (excluding most expensive) ---");
 for (const item of expensive) {
-  console.log([item["name"], "costs $", item["price"]].join(" ").trimEnd());
+  console.log(item["name"], "costs $", item["price"]);
 }

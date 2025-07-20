@@ -12,5 +12,5 @@ function twoSum(nums: number[], target: number): number[] {
   return [-1, -1];
 }
 const result: number[] = twoSum([2, 7, 11, 15], 9);
-console.log([result[0]].join(" ").trimEnd());
-console.log([result[1]].join(" ").trimEnd());
+console.log(result[0]);
+console.log(result[1]);

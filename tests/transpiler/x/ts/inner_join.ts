@@ -10,7 +10,7 @@ const result: Record<string, number>[] = (() => {
   const out = result
   return out
 })();
-console.log(["--- Orders with customer info ---"].join(" ").trimEnd());
+console.log("--- Orders with customer info ---");
 for (const entry of result) {
-  console.log(["Order", entry["orderId"], "by", entry["customerName"], "- $", entry["total"]].join(" ").trimEnd());
+  console.log("Order", entry["orderId"], "by", entry["customerName"], "- $", entry["total"]);
 }

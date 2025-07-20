@@ -12,7 +12,7 @@ const result: Record<string, number>[] = (() => {
   const out = result
   return out
 })();
-console.log(["--- Cross Join: All order-customer pairs ---"].join(" ").trimEnd());
+console.log("--- Cross Join: All order-customer pairs ---");
 for (const entry of result) {
-  console.log(["Order", entry["orderId"], "(customerId:", entry["orderCustomerId"], ", total: $", entry["orderTotal"], ") paired with", entry["pairedCustomerName"]].join(" ").trimEnd());
+  console.log("Order", entry["orderId"], "(customerId:", entry["orderCustomerId"], ", total: $", entry["orderTotal"], ") paired with", entry["pairedCustomerName"]);
 }

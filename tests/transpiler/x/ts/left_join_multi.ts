@@ -11,7 +11,7 @@ const result: Record<string, any>[] = (() => {
   const out = result
   return out
 })();
-console.log(["--- Left Join Multi ---"].join(" ").trimEnd());
+console.log("--- Left Join Multi ---");
 for (const r of result) {
-  console.log([r["orderId"], r["name"], r["item"]].join(" ").trimEnd());
+  console.log(r["orderId"], r["name"], r["item"]);
 }

@@ -2,4 +2,4 @@
 
 let data: Record<string, Record<string, number>> = {"outer": {"inner": 1}};
 data["outer"]["inner"] = 2;
-console.log([data["outer"]["inner"]].join(" ").trimEnd());
+console.log(data["outer"]["inner"]);

@@ -8,5 +8,5 @@ for (const n of numbers) {
   if ((n > 7)) {
     break
   }
-  console.log(["odd number:", n].join(" ").trimEnd());
+  console.log("odd number:", n);
 }

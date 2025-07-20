@@ -14,7 +14,7 @@ const pairs: Record<string, any>[] = (() => {
   const out = result
   return out
 })();
-console.log(["--- Even pairs ---"].join(" ").trimEnd());
+console.log("--- Even pairs ---");
 for (const p of pairs) {
-  console.log([p["n"], p["l"]].join(" ").trimEnd());
+  console.log(p["n"], p["l"]);
 }

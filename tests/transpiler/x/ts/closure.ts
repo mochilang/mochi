@@ -4,4 +4,4 @@ function makeAdder(n: number) {
   return (x) => (x + n);
 }
 const add10 = makeAdder(10);
-console.log([add10(7)].join(" ").trimEnd());
+console.log(add10(7));

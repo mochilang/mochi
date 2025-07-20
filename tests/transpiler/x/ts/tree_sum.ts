@@ -4,4 +4,4 @@ function sum_tree(t): number {
   return ((t === Leaf) ? 0 : ((t === Node(left, value, right)) ? ((sum_tree(left) + value) + sum_tree(right)) : undefined));
 }
 const t: { left: any; value: number; right: any } = {"left": Leaf, "value": 1, "right": {"left": Leaf, "value": 2, "right": Leaf}};
-console.log([sum_tree(t)].join(" ").trimEnd());
+console.log(sum_tree(t));

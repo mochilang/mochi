@@ -10,4 +10,4 @@ const sorted: Record<string, number>[] = (() => {
   const out = result.map(r => r.v)
   return out
 })();
-console.log([sorted.map((x) => JSON.stringify(x).replace(RegExp(":", "g"), ": ").replace(RegExp(",", "g"), ", ")).join(" ")].join(" ").trimEnd());
+console.log(sorted.map((x) => JSON.stringify(x).replace(RegExp(":", "g"), ": ").replace(RegExp(",", "g"), ", ")).join(" "));

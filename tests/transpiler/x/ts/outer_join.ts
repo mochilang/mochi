@@ -10,15 +10,15 @@ const result: Record<string, Record<string, number>>[] = (() => {
   const out = result
   return out
 })();
-console.log(["--- Outer Join using syntax ---"].join(" ").trimEnd());
+console.log("--- Outer Join using syntax ---");
 for (const row of result) {
   if (row["order"]) {
     if (row["customer"]) {
-      console.log(["Order", row["order"]["id"], "by", row["customer"]["name"], "- $", row["order"]["total"]].join(" ").trimEnd());
+      console.log("Order", row["order"]["id"], "by", row["customer"]["name"], "- $", row["order"]["total"]);
     } else {
-      console.log(["Order", row["order"]["id"], "by", "Unknown", "- $", row["order"]["total"]].join(" ").trimEnd());
+      console.log("Order", row["order"]["id"], "by", "Unknown", "- $", row["order"]["total"]);
     }
   } else {
-    console.log(["Customer", row["customer"]["name"], "has no orders"].join(" ").trimEnd());
+    console.log("Customer", row["customer"]["name"], "has no orders");
   }
 }

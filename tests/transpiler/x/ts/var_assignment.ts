@@ -2,4 +2,4 @@
 
 let x: number = 1;
 x = 2;
-console.log([x].join(" ").trimEnd());
+console.log(x);

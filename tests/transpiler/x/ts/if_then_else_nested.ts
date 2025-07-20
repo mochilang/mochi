@@ -2,4 +2,4 @@
 
 const x: number = 8;
 const msg: string = ((x > 10) ? "big" : ((x > 5) ? "medium" : "small"));
-console.log([msg].join(" ").trimEnd());
+console.log(msg);
