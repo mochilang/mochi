@@ -125,6 +125,7 @@ func TestTranspilerGolden(t *testing.T) {
 		filepath.Join(srcDir, "break_continue.mochi"),
 		filepath.Join(srcDir, "cast_string_to_int.mochi"),
 		filepath.Join(srcDir, "fun_three_args.mochi"),
+		filepath.Join(srcDir, "fun_expr_in_let.mochi"),
 		filepath.Join(srcDir, "typed_let.mochi"),
 		filepath.Join(srcDir, "typed_var.mochi"),
 		filepath.Join(srcDir, "str_builtin.mochi"),

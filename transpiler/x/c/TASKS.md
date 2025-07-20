@@ -1,3 +1,6 @@
+## Progress (2025-07-20 10:35 +0700)
+- VM valid golden test results updated to 42/100
+
 ## Progress (2025-07-20 10:18 +0700)
 - Improved print statements with `puts` for string literals.
 - Tightened `for` loop syntax.
