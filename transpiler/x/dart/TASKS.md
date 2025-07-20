@@ -1,9 +1,9 @@
-## Recent Enhancements (2025-07-20 10:18 +0700)
-- Immutable `let` bindings now emit `final` for readability.
-- Index expression type inference handles lists and maps.
-- README checklist regenerated automatically.
+## Recent Enhancements (2025-07-20 11:11 +0700)
+- Improved variable declarations with basic type inference.
+- Simplified `avg` builtin emission using list methods.
+- Updated README checklist with progress summary.
 
-## Progress (2025-07-20 10:18 +0700)
+## Progress (2025-07-20 11:11 +0700)
 - VM valid 56/100
 
 # Dart Transpiler Tasks

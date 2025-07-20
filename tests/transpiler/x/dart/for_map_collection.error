@@ -1,1 +1,6 @@
-transpile: unsupported expression
+run: exit status 254
+../../../tests/transpiler/x/dart/for_map_collection.dart:4:17: Error: The type 'Map<String, int>' used in the 'for' loop must implement 'Iterable<dynamic>'.
+ - 'Map' is from 'dart:core'.
+ - 'Iterable' is from 'dart:core'.
+  for (var k in m) {
+                ^
