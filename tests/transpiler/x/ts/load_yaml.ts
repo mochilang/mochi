@@ -12,5 +12,5 @@ const adults: Record<string, string>[] = (() => {
   return out
 })();
 for (const a of adults) {
-  console.log([a["name"], a["email"]].join(" ").trimEnd());
+  console.log(a["name"], a["email"]);
 }

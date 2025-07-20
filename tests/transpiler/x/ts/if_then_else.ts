@@ -2,4 +2,4 @@
 
 const x: number = 12;
 const msg: string = ((x > 10) ? "yes" : "no");
-console.log([msg].join(" ").trimEnd());
+console.log(msg);

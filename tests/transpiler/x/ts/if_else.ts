@@ -2,7 +2,7 @@
 
 const x: number = 5;
 if ((x > 3)) {
-  console.log(["big"].join(" ").trimEnd());
+  console.log("big");
 } else {
-  console.log(["small"].join(" ").trimEnd());
+  console.log("small");
 }

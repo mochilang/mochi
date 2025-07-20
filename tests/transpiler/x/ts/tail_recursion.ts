@@ -6,4 +6,4 @@ function sum_rec(n: number, acc: number): number {
   }
   return sum_rec((n - 1), (acc + n));
 }
-console.log([sum_rec(10, 0)].join(" ").trimEnd());
+console.log(sum_rec(10, 0));

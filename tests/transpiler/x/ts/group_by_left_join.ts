@@ -46,7 +46,7 @@ const stats: Record<string, any>[] = (() => {
   const out = result
   return out
 })();
-console.log(["--- Group Left Join ---"].join(" ").trimEnd());
+console.log("--- Group Left Join ---");
 for (const s of stats) {
-  console.log([s["name"], "orders:", s["count"]].join(" ").trimEnd());
+  console.log(s["name"], "orders:", s["count"]);
 }

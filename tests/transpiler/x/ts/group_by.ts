@@ -16,7 +16,7 @@ const stats: Record<string, any>[] = (() => {
   const out = result
   return out
 })();
-console.log(["--- People grouped by city ---"].join(" ").trimEnd());
+console.log("--- People grouped by city ---");
 for (const s of stats) {
-  console.log([s["city"], ": count =", s["count"], ", avg_age =", s["avg_age"]].join(" ").trimEnd());
+  console.log(s["city"], ": count =", s["count"], ", avg_age =", s["avg_age"]);
 }

@@ -6,4 +6,4 @@ function outer(x: number): number {
   }
   return inner(5);
 }
-console.log([outer(3)].join(" ").trimEnd());
+console.log(outer(3));

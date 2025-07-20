@@ -10,4 +10,4 @@ const result: any[] = (() => {
   const out = result.map(r => r.v)
   return out
 })();
-console.log([result.join(" ")].join(" ").trimEnd());
+console.log(result.join(" "));

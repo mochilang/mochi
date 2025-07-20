@@ -2,6 +2,6 @@
 
 const a: number = (10 - 3);
 const b: number = (2 + 2);
-console.log([a].join(" ").trimEnd());
-console.log([Number((a == 7))].join(" ").trimEnd());
-console.log([Number((b < 5))].join(" ").trimEnd());
+console.log(a);
+console.log(Number((a == 7)));
+console.log(Number((b < 5)));

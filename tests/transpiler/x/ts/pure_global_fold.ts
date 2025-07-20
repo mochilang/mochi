@@ -4,4 +4,4 @@ const k: number = 2;
 function inc(x: number): number {
   return (x + k);
 }
-console.log([inc(3)].join(" ").trimEnd());
+console.log(inc(3));

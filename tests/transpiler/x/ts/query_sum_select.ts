@@ -10,4 +10,4 @@ const result: number = (() => {
   }
   return acc
 })();
-console.log([result].join(" ").trimEnd());
+console.log(result);

@@ -38,4 +38,4 @@ const flag: boolean = ((Array.isArray((() => {
   const out = result
   return out
 })() ?? {}).length) > 0);
-console.log([flag].join(" ").trimEnd());
+console.log(flag);

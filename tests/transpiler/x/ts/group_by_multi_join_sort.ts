@@ -31,4 +31,4 @@ const result: Record<string, any>[] = (() => {
   const out = result.map(r => r.v)
   return out
 })();
-console.log([result.map((x) => JSON.stringify(x).replace(RegExp(":", "g"), ": ").replace(RegExp(",", "g"), ", ")).join(" ")].join(" ").trimEnd());
+console.log(result.map((x) => JSON.stringify(x).replace(RegExp(":", "g"), ": ").replace(RegExp(",", "g"), ", ")).join(" "));

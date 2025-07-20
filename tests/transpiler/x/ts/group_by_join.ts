@@ -10,7 +10,7 @@ const stats: Record<string, any>[] = (() => {
   const out = result
   return out
 })();
-console.log(["--- Orders per customer ---"].join(" ").trimEnd());
+console.log("--- Orders per customer ---");
 for (const s of stats) {
-  console.log([s["name"], "orders:", s["count"]].join(" ").trimEnd());
+  console.log(s["name"], "orders:", s["count"]);
 }

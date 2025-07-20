@@ -10,11 +10,11 @@ const result: Record<string, any>[] = (() => {
   const out = result
   return out
 })();
-console.log(["--- Right Join using syntax ---"].join(" ").trimEnd());
+console.log("--- Right Join using syntax ---");
 for (const entry of result) {
   if (entry["order"]) {
-    console.log(["Customer", entry["customerName"], "has order", entry["order"]["id"], "- $", entry["order"]["total"]].join(" ").trimEnd());
+    console.log("Customer", entry["customerName"], "has order", entry["order"]["id"], "- $", entry["order"]["total"]);
   } else {
-    console.log(["Customer", entry["customerName"], "has no orders"].join(" ").trimEnd());
+    console.log("Customer", entry["customerName"], "has no orders");
   }
 }

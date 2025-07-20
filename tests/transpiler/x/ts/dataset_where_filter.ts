@@ -11,7 +11,7 @@ const adults: Record<string, any>[] = (() => {
   const out = result
   return out
 })();
-console.log(["--- Adults ---"].join(" ").trimEnd());
+console.log("--- Adults ---");
 for (const person of adults) {
-  console.log([person["name"], "is", person["age"], (person["is_senior"] ? " (senior)" : "")].join(" ").trimEnd());
+  console.log(person["name"], "is", person["age"], (person["is_senior"] ? " (senior)" : ""));
 }

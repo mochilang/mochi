@@ -2,15 +2,15 @@
 
 const x: number = 2;
 const label: string = ((x === 1) ? "one" : ((x === 2) ? "two" : ((x === 3) ? "three" : "unknown")));
-console.log([label].join(" ").trimEnd());
+console.log(label);
 const day: string = "sun";
 const mood: string = ((day === "mon") ? "tired" : ((day === "fri") ? "excited" : ((day === "sun") ? "relaxed" : "normal")));
-console.log([mood].join(" ").trimEnd());
+console.log(mood);
 const ok: boolean = true;
 const status: string = ((ok === true) ? "confirmed" : ((ok === false) ? "denied" : undefined));
-console.log([status].join(" ").trimEnd());
+console.log(status);
 function classify(n: number): string {
   return ((n === 0) ? "zero" : ((n === 1) ? "one" : "many"));
 }
-console.log([classify(0)].join(" ").trimEnd());
-console.log([classify(5)].join(" ").trimEnd());
+console.log(classify(0));
+console.log(classify(5));

@@ -15,7 +15,7 @@ const combos: Record<string, any>[] = (() => {
   const out = result
   return out
 })();
-console.log(["--- Cross Join of three lists ---"].join(" ").trimEnd());
+console.log("--- Cross Join of three lists ---");
 for (const c of combos) {
-  console.log([c["n"], c["l"], c["b"]].join(" ").trimEnd());
+  console.log(c["n"], c["l"], c["b"]);
 }
