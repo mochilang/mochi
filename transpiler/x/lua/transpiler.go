@@ -18,6 +18,8 @@ import (
 )
 
 var currentEnv *types.Env
+var loopCounter int
+var continueLabels []string
 
 // Program represents a simple Lua program consisting of a sequence of
 // statements.
@@ -141,7 +143,6 @@ func (c *CallExpr) emit(w io.Writer) {
 			a.emit(w)
 		}
 		io.WriteString(w, "}, \" \"))")
-		io.WriteString(w, ")")
 		return
 	case "len", "count":
 		if len(c.Args) > 0 && isMapExpr(c.Args[0]) {
@@ -322,6 +323,8 @@ func (i *IfStmt) emit(w io.Writer) {
 }
 
 func (wst *WhileStmt) emit(w io.Writer) {
+	label := newContinueLabel()
+	continueLabels = append(continueLabels, label)
 	io.WriteString(w, "while ")
 	if wst.Cond != nil {
 		wst.Cond.emit(w)
@@ -331,10 +334,15 @@ func (wst *WhileStmt) emit(w io.Writer) {
 		st.emit(w)
 		io.WriteString(w, "\n")
 	}
-	io.WriteString(w, "end")
+	io.WriteString(w, "::")
+	io.WriteString(w, label)
+	io.WriteString(w, "::\nend")
+	continueLabels = continueLabels[:len(continueLabels)-1]
 }
 
 func (fr *ForRangeStmt) emit(w io.Writer) {
+	label := newContinueLabel()
+	continueLabels = append(continueLabels, label)
 	io.WriteString(w, "for ")
 	io.WriteString(w, fr.Name)
 	io.WriteString(w, " = ")
@@ -353,13 +361,24 @@ func (fr *ForRangeStmt) emit(w io.Writer) {
 		st.emit(w)
 		io.WriteString(w, "\n")
 	}
-	io.WriteString(w, "end")
+	io.WriteString(w, "::")
+	io.WriteString(w, label)
+	io.WriteString(w, "::\nend")
+	continueLabels = continueLabels[:len(continueLabels)-1]
 }
 
 func (fi *ForInStmt) emit(w io.Writer) {
-	io.WriteString(w, "for _, ")
-	io.WriteString(w, fi.Name)
-	io.WriteString(w, " in ipairs(")
+	label := newContinueLabel()
+	continueLabels = append(continueLabels, label)
+	io.WriteString(w, "for ")
+	if isMapExpr(fi.Iterable) {
+		io.WriteString(w, fi.Name)
+		io.WriteString(w, " in pairs(")
+	} else {
+		io.WriteString(w, "_, ")
+		io.WriteString(w, fi.Name)
+		io.WriteString(w, " in ipairs(")
+	}
 	if fi.Iterable != nil {
 		fi.Iterable.emit(w)
 	}
@@ -368,12 +387,22 @@ func (fi *ForInStmt) emit(w io.Writer) {
 		st.emit(w)
 		io.WriteString(w, "\n")
 	}
-	io.WriteString(w, "end")
+	io.WriteString(w, "::")
+	io.WriteString(w, label)
+	io.WriteString(w, "::\nend")
+	continueLabels = continueLabels[:len(continueLabels)-1]
 }
 
 func (b *BreakStmt) emit(w io.Writer) { io.WriteString(w, "break") }
 
-func (c *ContinueStmt) emit(w io.Writer) { io.WriteString(w, "-- continue") }
+func (c *ContinueStmt) emit(w io.Writer) {
+	if len(continueLabels) == 0 {
+		io.WriteString(w, "-- continue")
+		return
+	}
+	io.WriteString(w, "goto ")
+	io.WriteString(w, continueLabels[len(continueLabels)-1])
+}
 
 func (ie *IfExpr) emit(w io.Writer) {
 	io.WriteString(w, "((")
@@ -573,10 +602,6 @@ func isListExpr(e Expr) bool {
 		if ex.Func == "values" {
 			return true
 		}
-	case *IndexExpr:
-		if ex.Kind == "list" {
-			return true
-		}
 	}
 	return false
 }
@@ -626,6 +651,12 @@ func (b *BinaryExpr) emit(w io.Writer) {
 	io.WriteString(w, " ")
 	b.Right.emit(w)
 	io.WriteString(w, ")")
+}
+
+func newContinueLabel() string {
+	loopCounter++
+	lbl := fmt.Sprintf("__cont_%d", loopCounter)
+	return lbl
 }
 
 func repoRoot() string {

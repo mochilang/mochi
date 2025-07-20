@@ -1,2 +1,0 @@
-exit status 1
-lua: /workspace/mochi/tests/transpiler/x/lua/break_continue.lua:11: unexpected symbol near ')'
