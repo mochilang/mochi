@@ -4,6 +4,7 @@ package py
 
 import (
 	"bytes"
+	"encoding/json"
 	"fmt"
 	"io"
 	"os"
@@ -12,6 +13,8 @@ import (
 	"sort"
 	"strings"
 	"time"
+
+	yaml "gopkg.in/yaml.v3"
 
 	"mochi/ast"
 	"mochi/parser"
@@ -1017,6 +1020,84 @@ func zeroValueExpr(t types.Type) Expr {
 	}
 }
 
+func inferTypeFromData(path, format string) types.Type {
+	if path == "" {
+		return types.AnyType{}
+	}
+	root := repoRoot()
+	if root != "" && strings.HasPrefix(path, "../") {
+		clean := strings.TrimPrefix(path, "../")
+		path = filepath.Join(root, "tests", clean)
+	}
+	data, err := os.ReadFile(path)
+	if err != nil {
+		return types.AnyType{}
+	}
+
+	var v interface{}
+	switch format {
+	case "yaml":
+		if err := yaml.Unmarshal(data, &v); err != nil {
+			return types.AnyType{}
+		}
+	case "json":
+		if err := json.Unmarshal(data, &v); err != nil {
+			return types.AnyType{}
+		}
+	case "jsonl":
+		var arr []interface{}
+		for _, line := range bytes.Split(data, []byte{'\n'}) {
+			line = bytes.TrimSpace(line)
+			if len(line) == 0 {
+				continue
+			}
+			var item interface{}
+			if err := json.Unmarshal(line, &item); err == nil {
+				arr = append(arr, item)
+			}
+		}
+		v = arr
+	default:
+		return types.AnyType{}
+	}
+	return inferTypeFromValue(v)
+}
+
+func inferTypeFromValue(v interface{}) types.Type {
+	switch val := v.(type) {
+	case map[string]interface{}:
+		fields := map[string]types.Type{}
+		for k, vv := range val {
+			fields[k] = inferTypeFromValue(vv)
+		}
+		return types.StructType{Fields: fields}
+	case []interface{}:
+		var elem types.Type
+		for _, it := range val {
+			et := inferTypeFromValue(it)
+			if elem == nil {
+				elem = et
+			} else if elem.String() != et.String() {
+				elem = types.AnyType{}
+			}
+		}
+		if elem == nil {
+			elem = types.AnyType{}
+		}
+		return types.ListType{Elem: elem}
+	case string:
+		return types.StringType{}
+	case bool:
+		return types.BoolType{}
+	case int, int64:
+		return types.IntType{}
+	case float32, float64:
+		return types.FloatType{}
+	default:
+		return types.AnyType{}
+	}
+}
+
 func inferTypeFromExpr(e *parser.Expr) types.Type {
 	if e == nil || e.Binary == nil || len(e.Binary.Right) > 0 {
 		return types.AnyType{}
@@ -1088,6 +1169,13 @@ func inferTypeFromExpr(e *parser.Expr) types.Type {
 			fields[f.Name] = inferTypeFromExpr(f.Value)
 		}
 		return types.StructType{Fields: fields}
+	case t.Load != nil:
+		format := parseFormat(t.Load.With)
+		path := ""
+		if t.Load.Path != nil {
+			path = strings.Trim(*t.Load.Path, "\"")
+		}
+		return inferTypeFromData(path, format)
 	default:
 		return types.AnyType{}
 	}
