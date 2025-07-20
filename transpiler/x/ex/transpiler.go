@@ -1121,6 +1121,9 @@ func compilePrimary(p *parser.Primary, env *types.Env) (Expr, error) {
 				return &CallExpr{Func: "String.slice", Args: []Expr{args[0], args[1], diff}}, nil
 			}
 		}
+		if _, ok := env.GetFunc(name); ok {
+			return &CallExpr{Func: name, Args: args}, nil
+		}
 		if t, err := env.GetVar(name); err == nil {
 			if _, ok := t.(types.FuncType); ok {
 				return &CallExpr{Func: name, Args: args, Var: true}, nil
