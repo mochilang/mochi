@@ -1321,14 +1321,33 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 			}
 			return &SubstringExpr{Str: s0, Start: s1, End: s2}, nil
 		}
+		if p.Call.Func == "print" {
+			var args []Expr
+			for _, a := range p.Call.Args {
+				ex, err := convertExpr(a)
+				if err != nil {
+					return nil, err
+				}
+				if len(p.Call.Args) == 1 && isBoolExpr(a) {
+					ex = &CondExpr{Cond: ex, Then: &IntLit{Value: 1}, Else: &IntLit{Value: 0}}
+				}
+				args = append(args, ex)
+			}
+			if len(args) == 1 {
+				return &CallExpr{Func: &Name{"print"}, Args: args}, nil
+			}
+			join := &CallExpr{
+				Func: &SelectorExpr{Receiver: &ListLit{Elems: args}, Field: "join"},
+				Args: []Expr{&StringLit{Value: " "}},
+			}
+			return &CallExpr{Func: &Name{"print"}, Args: []Expr{join}}, nil
+		}
+
 		ce := &CallExpr{Func: &Name{p.Call.Func}}
 		for _, a := range p.Call.Args {
 			ex, err := convertExpr(a)
 			if err != nil {
 				return nil, err
-			}
-			if p.Call.Func == "print" && len(p.Call.Args) == 1 && isBoolExpr(a) {
-				ex = &CondExpr{Cond: ex, Then: &IntLit{Value: 1}, Else: &IntLit{Value: 0}}
 			}
 			ce.Args = append(ce.Args, ex)
 		}

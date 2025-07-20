@@ -1,8 +1,0 @@
-run: exit status 254
-../../../tests/transpiler/x/dart/break_continue.dart:11:8: Error: Too many positional arguments: 1 allowed, but 2 found.
-Try removing the extra positional arguments.
-  print("odd number:", n);
-       ^
-org-dartlang-sdk:///sdk/lib/core/print.dart:19:6: Context: Found this candidate, but the arguments don't match.
-void print(Object? object) {
-     ^^^^^

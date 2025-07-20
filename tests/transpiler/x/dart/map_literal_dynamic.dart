@@ -3,5 +3,5 @@ void main() {
   int x = 3;
   int y = 4;
   Map<String, var> m = {"a": x, "b": y};
-  print(m["a"], m["b"]);
+  print([m["a"], m["b"]].join(" "));
 }
