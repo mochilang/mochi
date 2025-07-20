@@ -1,3 +1,15 @@
+## Progress (2025-07-20 16:35 +0700)
+- scala transpiler: improve codegen and update goldens
+- Regenerated golden files - 58/100 vm valid programs passing
+
+## Progress (2025-07-20 16:25 +0700)
+- docs: update ocaml transpiler progress
+- Regenerated golden files - 58/100 vm valid programs passing
+
+## Progress (2025-07-20 16:25 +0700)
+- docs: update ocaml transpiler progress
+- Regenerated golden files - 56/100 vm valid programs passing
+
 ## Progress (2025-07-20 14:11 +0700)
 - enhance scala transpiler for structs and match
 - Regenerated golden files - 59/100 vm valid programs passing

@@ -204,7 +204,9 @@ func (f *FunStmt) emit(w io.Writer) {
 }
 
 func (r *ReturnStmt) emit(w io.Writer) {
+	fmt.Fprint(w, "return")
 	if r.Value != nil {
+		fmt.Fprint(w, " ")
 		r.Value.emit(w)
 	}
 }
@@ -458,7 +460,13 @@ type FieldExpr struct {
 }
 
 func (f *FieldExpr) emit(w io.Writer) {
-	f.Receiver.emit(w)
+	if _, ok := f.Receiver.(*BinaryExpr); ok {
+		fmt.Fprint(w, "(")
+		f.Receiver.emit(w)
+		fmt.Fprint(w, ")")
+	} else {
+		f.Receiver.emit(w)
+	}
 	fmt.Fprintf(w, ".%s", f.Name)
 }
 
@@ -932,10 +940,13 @@ func convertCall(c *parser.CallExpr, env *types.Env) (Expr, error) {
 			if len(args) < len(fn.Params) {
 				missing := fn.Params[len(args):]
 				params := make([]Param, len(missing))
+				callArgs := make([]Expr, 0, len(fn.Params))
+				callArgs = append(callArgs, args...)
 				for i, p := range missing {
 					params[i] = Param{Name: p.Name, Type: toScalaType(p.Type)}
+					callArgs = append(callArgs, &Name{Name: p.Name})
 				}
-				call := &CallExpr{Fn: &Name{Name: name}, Args: args}
+				call := &CallExpr{Fn: &Name{Name: name}, Args: callArgs}
 				return &FunExpr{Params: params, Expr: call}, nil
 			}
 		}
@@ -1182,6 +1193,30 @@ func toScalaType(t *parser.TypeRef) string {
 			return "Boolean"
 		}
 		return "Any"
+	}
+	if t.Generic != nil {
+		switch t.Generic.Name {
+		case "list":
+			if len(t.Generic.Args) == 1 {
+				elem := toScalaType(t.Generic.Args[0])
+				if elem == "" {
+					elem = "Any"
+				}
+				return fmt.Sprintf("ArrayBuffer[%s]", elem)
+			}
+		case "map":
+			if len(t.Generic.Args) == 2 {
+				k := toScalaType(t.Generic.Args[0])
+				v := toScalaType(t.Generic.Args[1])
+				if k == "" {
+					k = "Any"
+				}
+				if v == "" {
+					v = "Any"
+				}
+				return fmt.Sprintf("Map[%s,%s]", k, v)
+			}
+		}
 	}
 	if t.Fun != nil {
 		parts := make([]string, len(t.Fun.Params))
