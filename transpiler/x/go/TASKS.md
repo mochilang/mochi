@@ -1,3 +1,27 @@
+## Progress (2025-07-20 17:16 +0700)
+- Improve struct naming in Go transpiler
+- Regenerated golden files - 70/100 vm valid programs passing
+
+## Progress (2025-07-20 17:06 +0700)
+- Applying previous commit.
+- Regenerated golden files - 73/100 vm valid programs passing
+
+## Progress (2025-07-20 17:06 +0700)
+- Applying previous commit.
+- Regenerated golden files - 73/100 vm valid programs passing
+
+## Progress (2025-07-20 17:06 +0700)
+- Applying previous commit.
+- Regenerated golden files - 73/100 vm valid programs passing
+
+## Progress (2025-07-20 17:06 +0700)
+- Applying previous commit.
+- Regenerated golden files - 73/100 vm valid programs passing
+
+## Progress (2025-07-20 17:06 +0700)
+- Applying previous commit.
+- Regenerated golden files - 69/100 vm valid programs passing
+
 ## Progress (2025-07-20 17:02 +0700)
 - go transpiler: infer structs from maps
 - Regenerated golden files - 69/100 vm valid programs passing
