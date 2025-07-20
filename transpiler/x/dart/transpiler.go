@@ -1301,6 +1301,11 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 			}
 			return &AvgExpr{List: list}, nil
 		}
+		if p.Call.Func == "exists" && len(p.Call.Args) == 1 {
+			if q := extractQuery(p.Call.Args[0]); q != nil {
+				return convertExistsQuery(q)
+			}
+		}
 		if p.Call.Func == "substring" && len(p.Call.Args) == 3 {
 			s0, err := convertExpr(p.Call.Args[0])
 			if err != nil {
@@ -1434,6 +1439,35 @@ func isBoolPrimary(p *parser.Primary) bool {
 	default:
 		return false
 	}
+}
+
+func extractQuery(e *parser.Expr) *parser.QueryExpr {
+	if e == nil || e.Binary == nil || e.Binary.Left == nil || e.Binary.Left.Value == nil {
+		return nil
+	}
+	if e.Binary.Left.Value.Target != nil {
+		return e.Binary.Left.Value.Target.Query
+	}
+	return nil
+}
+
+func convertExistsQuery(q *parser.QueryExpr) (Expr, error) {
+	if len(q.Froms) > 0 || len(q.Joins) > 0 || q.Group != nil || q.Sort != nil || q.Skip != nil || q.Take != nil || q.Distinct {
+		return nil, fmt.Errorf("unsupported query")
+	}
+	src, err := convertExpr(q.Source)
+	if err != nil {
+		return nil, err
+	}
+	if q.Where != nil {
+		cond, err := convertExpr(q.Where)
+		if err != nil {
+			return nil, err
+		}
+		lam := &LambdaExpr{Params: []string{q.Var}, Body: cond}
+		return &CallExpr{Func: &SelectorExpr{Receiver: src, Field: "any"}, Args: []Expr{lam}}, nil
+	}
+	return &SelectorExpr{Receiver: src, Field: "isNotEmpty"}, nil
 }
 
 // --- AST -> generic node (for debugging) ---
