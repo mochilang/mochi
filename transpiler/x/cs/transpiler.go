@@ -672,8 +672,32 @@ func typeOfExpr(e Expr) string {
 		return "bool"
 	case *InExpr:
 		return "bool"
+	case *BinaryExpr:
+		lt := typeOfExpr(ex.Left)
+		rt := typeOfExpr(ex.Right)
+		if lt == rt {
+			return lt
+		}
+		if lt == "double" || rt == "double" {
+			return "double"
+		}
+		if lt == "string" || rt == "string" {
+			return "string"
+		}
+		return "int"
 	case *IfExpr:
-		return "bool"
+		t := typeOfExpr(ex.Then)
+		e := typeOfExpr(ex.Else)
+		if t == e {
+			return t
+		}
+		if t == "" {
+			return e
+		}
+		if e == "" {
+			return t
+		}
+		return ""
 	case *AvgExpr:
 		return "double"
 	case *SumExpr:

@@ -1,3 +1,6 @@
+## Progress (2025-07-20 10:18 +0700)
+- prolog: improve readability and remove style check (progress 61/100)
+
 ## Progress (2025-07-20 09:31 +0700)
 - docs: log progress for cs transpiler (progress 61/100)
 
@@ -69,6 +72,8 @@
 ## Remaining Work
 - [x] Implement loops and conditionals
 - [ ] Support map and list mutation operations
+
+
 
 
 
