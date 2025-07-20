@@ -70,6 +70,7 @@ func TestTranspilePrograms(t *testing.T) {
 		"fun_three_args",
 		"cast_string_to_int",
 		"cast_struct",
+		"cross_join_filter",
 		"list_index",
 		"map_index",
 		"map_assign",

@@ -1,3 +1,13 @@
+## Progress (2025-07-20 22:29 +0700)
+- rb transpiler: struct support and new query test
+- Generated Ruby for 68/100 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-20 22:13 +0700)
+- rb transpiler: support query structs
+- Generated Ruby for 68/100 programs
+- Updated README checklist and outputs
+
 ## Progress (2025-07-20 17:38 +0700)
 - fmt
 - Generated Ruby for 67/100 programs
