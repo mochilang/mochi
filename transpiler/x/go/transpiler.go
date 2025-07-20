@@ -1181,10 +1181,15 @@ func compilePostfix(pf *parser.PostfixExpr, env *types.Env) (Expr, error) {
 			return nil, err
 		}
 	}
-	// handle selector tail as method call
+	// handle selector tail
 	tail := []string{}
 	if pf.Target != nil && pf.Target.Selector != nil {
 		tail = pf.Target.Selector.Tail
+	}
+	if len(tail) > 0 && (len(pf.Ops) == 0 || pf.Ops[0].Call == nil) {
+		for _, f := range tail {
+			expr = &IndexExpr{X: expr, Index: &StringLit{Value: f}}
+		}
 	}
 	// if tail has one element and first op is CallOp => method call
 	if len(tail) == 1 && len(pf.Ops) > 0 && pf.Ops[0].Call != nil {
@@ -1280,9 +1285,28 @@ func compilePostfix(pf *parser.PostfixExpr, env *types.Env) (Expr, error) {
 		} else if op.Call != nil {
 			return nil, fmt.Errorf("unsupported call")
 		} else if op.Cast != nil {
-			if op.Cast.Type != nil && op.Cast.Type.Simple != nil && *op.Cast.Type.Simple == "int" {
-				usesStrconv = true
-				expr = &AtoiExpr{Expr: expr}
+			if op.Cast.Type != nil {
+				if op.Cast.Type.Simple != nil {
+					name := *op.Cast.Type.Simple
+					if name == "int" {
+						usesStrconv = true
+						expr = &AtoiExpr{Expr: expr}
+					} else if _, ok := env.GetStruct(name); ok {
+						if ml, ok := expr.(*MapLit); ok {
+							ml.KeyType = "string"
+							ml.ValueType = "any"
+						}
+					} else {
+						return nil, fmt.Errorf("unsupported postfix")
+					}
+				} else if op.Cast.Type.Struct != nil {
+					if ml, ok := expr.(*MapLit); ok {
+						ml.KeyType = "string"
+						ml.ValueType = "any"
+					}
+				} else {
+					return nil, fmt.Errorf("unsupported postfix")
+				}
 			} else {
 				return nil, fmt.Errorf("unsupported postfix")
 			}
