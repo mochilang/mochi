@@ -1,11 +1,11 @@
 # Transpiler Tasks
 
-## Progress (2025-07-19 12:53 +0000)
-- Added list literal and array indexing support.
-- Added tests `len_builtin` and `list_index`.
-- Updated README progress to 27/100.
+## Progress (2025-07-20 08:31 +0700)
+- Improved code generation formatting and added basic type inference for auto-declared variables.
+- Updated README checklist with 27/100 tests.
 
 ## Recent Updates
+- [2025-07-20T08:31:52+07:00] Improved formatting and added variable inference.
 - [2025-07-19T12:53:18Z] Added list literal support and new tests; progress to 27/100
 - [2025-07-19T12:29:49Z] Added short_circuit test and progress to 25/100
 - [2025-07-19T11:43:36+00:00] Added substring and contains features; progress to 24/100

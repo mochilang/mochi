@@ -1,9 +1,9 @@
 # Pascal Transpiler
 
 This folder contains the experimental Pascal transpiler.
-The checklist below tracks which example programs from `tests/vm/valid` have been successfully transpiled.
-Progress: **27/100**
+Generated sources for the golden tests live under `tests/transpiler/x/pas`.
 
+## VM Golden Test Checklist (27/100)
 - [ ] append_builtin.mochi
 - [ ] avg_builtin.mochi
 - [x] basic_compare.mochi
@@ -80,17 +80,17 @@ Progress: **27/100**
 - [ ] record_assign.mochi
 - [ ] right_join.mochi
 - [ ] save_jsonl_stdout.mochi
- - [x] short_circuit.mochi
+- [x] short_circuit.mochi
 - [ ] slice.mochi
 - [ ] sort_stable.mochi
 - [ ] str_builtin.mochi
 - [x] string_compare.mochi
 - [x] string_concat.mochi
- - [x] string_contains.mochi
+- [x] string_contains.mochi
 - [x] string_in_operator.mochi
 - [x] string_index.mochi
 - [x] string_prefix_slice.mochi
- - [x] substring_builtin.mochi
+- [x] substring_builtin.mochi
 - [ ] sum_builtin.mochi
 - [ ] tail_recursion.mochi
 - [ ] test_block.mochi
