@@ -79,6 +79,9 @@ func TestTranspilePrograms(t *testing.T) {
 		"map_in_operator",
 		"string_in_operator",
 		"values_builtin",
+		"map_int_key",
+		"map_membership",
+		"string_contains",
 	}
 	root := repoRoot(t)
 	outDir := filepath.Join(root, "tests", "transpiler", "x", "rb")
