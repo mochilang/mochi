@@ -216,9 +216,29 @@ type ForStmt struct {
 	End    Expr // optional, when non-nil compile as range
 	Source Expr // used when End is nil
 	Body   []Stmt
+	Simple bool
 }
 
 func (fs *ForStmt) emit(w io.Writer, indent int) {
+	if fs.Simple && fs.End == nil {
+		for i := 0; i < indent; i++ {
+			io.WriteString(w, "  ")
+		}
+		io.WriteString(w, "Enum.each(")
+		fs.Source.emit(w)
+		io.WriteString(w, ", fn ")
+		io.WriteString(w, fs.Name)
+		io.WriteString(w, " ->\n")
+		for _, st := range fs.Body {
+			st.emit(w, indent+1)
+			io.WriteString(w, "\n")
+		}
+		for i := 0; i < indent; i++ {
+			io.WriteString(w, "  ")
+		}
+		io.WriteString(w, "end)")
+		return
+	}
 	for i := 0; i < indent; i++ {
 		io.WriteString(w, "  ")
 	}
@@ -506,6 +526,12 @@ type IndexExpr struct {
 
 func (i *IndexExpr) emit(w io.Writer) {
 	if i.UseMapSyntax {
+		if a, ok := i.Index.(*AtomLit); ok {
+			i.Target.emit(w)
+			io.WriteString(w, ".")
+			io.WriteString(w, a.Name)
+			return
+		}
 		i.Target.emit(w)
 		io.WriteString(w, "[")
 		i.Index.emit(w)
@@ -544,6 +570,35 @@ func (b *BoolLit) emit(w io.Writer) {
 	}
 }
 
+// AtomLit represents a simple atom key like :id.
+type AtomLit struct{ Name string }
+
+func (a *AtomLit) emit(w io.Writer) { io.WriteString(w, a.Name) }
+
+// InterpString represents a string with interpolated expressions.
+type InterpString struct{ Parts []interface{} }
+
+func escape(s string) string {
+	s = strings.ReplaceAll(s, "\\", "\\\\")
+	s = strings.ReplaceAll(s, "\"", "\\\"")
+	return s
+}
+
+func (s *InterpString) emit(w io.Writer) {
+	io.WriteString(w, "\"")
+	for _, p := range s.Parts {
+		switch v := p.(type) {
+		case string:
+			io.WriteString(w, escape(v))
+		case Expr:
+			io.WriteString(w, "#{")
+			v.emit(w)
+			io.WriteString(w, "}")
+		}
+	}
+	io.WriteString(w, "\"")
+}
+
 // ListLit is a list literal like [1,2,3].
 type ListLit struct{ Elems []Expr }
 
@@ -572,11 +627,47 @@ func (m *MapLit) emit(w io.Writer) {
 		if i > 0 {
 			io.WriteString(w, ", ")
 		}
-		it.Key.emit(w)
-		io.WriteString(w, " => ")
+		if a, ok := it.Key.(*AtomLit); ok {
+			io.WriteString(w, a.Name)
+			io.WriteString(w, ": ")
+		} else {
+			it.Key.emit(w)
+			io.WriteString(w, " => ")
+		}
 		it.Value.emit(w)
 	}
 	io.WriteString(w, "}")
+}
+
+// CompGen represents a generator within a list comprehension.
+type CompGen struct {
+	Var string
+	Src Expr
+}
+
+// Comprehension represents an Elixir comprehension expression.
+type Comprehension struct {
+	Gens   []CompGen
+	Filter Expr
+	Body   Expr
+}
+
+func (c *Comprehension) emit(w io.Writer) {
+	io.WriteString(w, "for ")
+	for i, g := range c.Gens {
+		if i > 0 {
+			io.WriteString(w, ", ")
+		}
+		io.WriteString(w, g.Var)
+		io.WriteString(w, " <- ")
+		g.Src.emit(w)
+	}
+	if c.Filter != nil {
+		io.WriteString(w, ", filter: ")
+		c.Filter.emit(w)
+	}
+	io.WriteString(w, ", do: ")
+	c.Body.emit(w)
 }
 
 // CastExpr represents a simple cast like expr as int.
@@ -847,6 +938,9 @@ func compileStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 			return &AssignStmt{Name: st.Fun.Name, Value: &AnonFun{Params: params, Body: body}}, nil
 		}
 		return &FuncDecl{Name: st.Fun.Name, Params: params, Body: body}, nil
+	case st.Type != nil:
+		// Type declarations are ignored by this simple transpiler
+		return nil, nil
 	default:
 		if st.Test == nil && st.Import == nil && st.Type == nil {
 			return nil, fmt.Errorf("unsupported statement at %d:%d", st.Pos.Line, st.Pos.Column)
@@ -940,7 +1034,25 @@ func compileForStmt(fs *parser.ForStmt, env *types.Env) (Stmt, error) {
 	if end != nil {
 		src = nil
 	}
-	res := &ForStmt{Name: fs.Name, Start: start, End: end, Source: src, Body: body}
+	simple := true
+	var check func([]Stmt)
+	check = func(stmts []Stmt) {
+		for _, s := range stmts {
+			switch t := s.(type) {
+			case *BreakStmt, *ContinueStmt:
+				simple = false
+			case *IfStmt:
+				check(t.Then)
+				check(t.Else)
+			case *ForStmt:
+				check(t.Body)
+			case *WhileStmt:
+				check(t.Body)
+			}
+		}
+	}
+	check(body)
+	res := &ForStmt{Name: fs.Name, Start: start, End: end, Source: src, Body: body, Simple: simple}
 	return res, nil
 }
 
@@ -1047,23 +1159,29 @@ func compileQueryExpr(q *parser.QueryExpr, env *types.Env) (Expr, error) {
 	if err != nil {
 		return nil, err
 	}
+	gens := []CompGen{{Var: q.Var, Src: src}}
 	child := types.NewEnv(env)
 	child.SetVar(q.Var, types.AnyType{}, true)
-	iter := src
-	if q.Where != nil {
-		cond, err := compileExpr(q.Where, child)
+	for _, f := range q.Froms {
+		fe, err := compileExpr(f.Src, child)
 		if err != nil {
 			return nil, err
 		}
-		fn := &AnonFun{Params: []string{q.Var}, Body: []Stmt{&ExprStmt{Expr: cond}}}
-		iter = &CallExpr{Func: "Enum.filter", Args: []Expr{iter, fn}}
+		child.SetVar(f.Var, types.AnyType{}, true)
+		gens = append(gens, CompGen{Var: f.Var, Src: fe})
+	}
+	var filt Expr
+	if q.Where != nil {
+		filt, err = compileExpr(q.Where, child)
+		if err != nil {
+			return nil, err
+		}
 	}
 	sel, err := compileExpr(q.Select, child)
 	if err != nil {
 		return nil, err
 	}
-	mapFn := &AnonFun{Params: []string{q.Var}, Body: []Stmt{&ExprStmt{Expr: sel}}}
-	return &CallExpr{Func: "Enum.map", Args: []Expr{iter, mapFn}}, nil
+	return &Comprehension{Gens: gens, Filter: filt, Body: sel}, nil
 }
 
 func compileUnary(u *parser.Unary, env *types.Env) (Expr, error) {
@@ -1285,9 +1403,19 @@ func compilePrimary(p *parser.Primary, env *types.Env) (Expr, error) {
 			if len(args) == 1 {
 				name = "IO.puts"
 			} else {
-				list := &ListLit{Elems: args}
-				join := &CallExpr{Func: "Enum.join", Args: []Expr{list, &StringLit{Value: " "}}}
-				return &CallExpr{Func: "IO.puts", Args: []Expr{join}}, nil
+				parts := make([]interface{}, 0, len(args)*2-1)
+				for i, a := range args {
+					if i > 0 {
+						parts = append(parts, " ")
+					}
+					if s, ok := a.(*StringLit); ok {
+						parts = append(parts, s.Value)
+					} else {
+						parts = append(parts, a)
+					}
+				}
+				str := &InterpString{Parts: parts}
+				return &CallExpr{Func: "IO.puts", Args: []Expr{str}}, nil
 			}
 		case "count":
 			name = "Enum.count"
@@ -1363,7 +1491,7 @@ func compilePrimary(p *parser.Primary, env *types.Env) (Expr, error) {
 	case p.Selector != nil:
 		expr := Expr(&VarRef{Name: p.Selector.Root})
 		for _, t := range p.Selector.Tail {
-			expr = &IndexExpr{Target: expr, Index: &StringLit{Value: t}, UseMapSyntax: true}
+			expr = &IndexExpr{Target: expr, Index: &AtomLit{Name: t}, UseMapSyntax: true}
 		}
 		return expr, nil
 	case p.List != nil:
@@ -1381,7 +1509,7 @@ func compilePrimary(p *parser.Primary, env *types.Env) (Expr, error) {
 		for i, it := range p.Map.Items {
 			var k Expr
 			if s, ok := types.SimpleStringKey(it.Key); ok {
-				k = &StringLit{Value: s}
+				k = &AtomLit{Name: s}
 			} else {
 				var err error
 				k, err = compileExpr(it.Key, env)
@@ -1403,7 +1531,7 @@ func compilePrimary(p *parser.Primary, env *types.Env) (Expr, error) {
 			if err != nil {
 				return nil, err
 			}
-			items[i] = MapItem{Key: &StringLit{Value: f.Name}, Value: v}
+			items[i] = MapItem{Key: &AtomLit{Name: f.Name}, Value: v}
 		}
 		return &MapLit{Items: items}, nil
 	case p.Query != nil:
