@@ -12,10 +12,6 @@ import (
 	"mochi/types"
 )
 
-func quote(s string) string {
-	s = strings.ReplaceAll(s, "'", "''")
-	return "'" + s + "'"
-}
 
 // Program is a minimal Pascal AST consisting of a sequence of statements.
 // VarDecl represents a simple variable declaration.
@@ -187,7 +183,10 @@ func (i *IntLit) emit(w io.Writer) { fmt.Fprintf(w, "%d", i.Value) }
 // StringLit is a quoted string literal.
 type StringLit struct{ Value string }
 
-func (s *StringLit) emit(w io.Writer) { fmt.Fprintf(w, "%s", quote(s.Value)) }
+func (s *StringLit) emit(w io.Writer) {
+        escaped := strings.ReplaceAll(s.Value, "'", "''")
+        fmt.Fprintf(w, "'%s'", escaped)
+}
 
 // ListLit is a simple list literal using Pascal's open array syntax.
 type ListLit struct{ Elems []Expr }
@@ -948,7 +947,7 @@ func convertIfExpr(env *types.Env, ie *parser.IfExpr) (*IfExpr, error) {
 }
 
 func inferType(e Expr) string {
-	switch v := e.(type) {
+        switch v := e.(type) {
 	case *IntLit:
 		return "integer"
 	case *StringLit:
@@ -968,12 +967,41 @@ func inferType(e Expr) string {
 			return lt
 		}
 		return rt
-	case *CallExpr:
-		if v.Name == "Length" {
-			return "integer"
-		}
-		return ""
-	default:
-		return ""
-	}
+        case *CallExpr:
+                if v.Name == "Length" {
+                        return "integer"
+                }
+                return ""
+        case *IfExpr:
+                thenT := inferType(v.Then)
+                elseT := ""
+                if v.ElseIf != nil {
+                        elseT = inferType(v.ElseIf)
+                } else if v.Else != nil {
+                        elseT = inferType(v.Else)
+                }
+                if thenT == elseT {
+                        return thenT
+                }
+                if thenT != "" {
+                        return thenT
+                }
+                return elseT
+        case *ListLit:
+                if len(v.Elems) == 0 {
+                        return ""
+                }
+                t := inferType(v.Elems[0])
+                for _, el := range v.Elems[1:] {
+                        if inferType(el) != t {
+                                return ""
+                        }
+                }
+                if t != "" {
+                        return "array of " + t
+                }
+                return ""
+        default:
+                return ""
+        }
 }
