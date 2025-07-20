@@ -1,3 +1,8 @@
+## Progress (2025-07-20 08:54:03)
+- Added cast expressions and function declarations
+- Removed _div helper and improved type-based division
+- Updated golden tests and README
+
 ## Progress (2025-07-19 18:36:23)
 - Added str(), sum() and count() builtin support
 - Updated golden tests and README
