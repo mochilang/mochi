@@ -1,3 +1,6 @@
+## Progress (2025-07-20 11:24 +0700)
+- cs transpiler: tidy code generation and enhanced type inference (progress 61/100)
+
 ## Progress (2025-07-20 10:58 +0700)
 - cs transpiler: add json and exists builtin (progress 61/100)
 
