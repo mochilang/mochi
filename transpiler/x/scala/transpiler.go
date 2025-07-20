@@ -320,16 +320,16 @@ type MapEntry struct {
 type MapLit struct{ Items []MapEntry }
 
 func (m *MapLit) emit(w io.Writer) {
-        fmt.Fprint(w, "Map(")
-        for i, it := range m.Items {
-                if i > 0 {
-                        fmt.Fprint(w, ", ")
-                }
-                it.Key.emit(w)
-                fmt.Fprint(w, " -> ")
-                it.Value.emit(w)
-        }
-        fmt.Fprint(w, ")")
+	fmt.Fprint(w, "Map(")
+	for i, it := range m.Items {
+		if i > 0 {
+			fmt.Fprint(w, ", ")
+		}
+		it.Key.emit(w)
+		fmt.Fprint(w, " -> ")
+		it.Value.emit(w)
+	}
+	fmt.Fprint(w, ")")
 }
 
 // AppendExpr represents append(list, elem) as `list :+ elem`.
@@ -804,21 +804,21 @@ func convertCall(c *parser.CallExpr) (Expr, error) {
 		}
 	case "sum":
 		if len(args) == 1 {
-			return &CallExpr{Fn: &FieldExpr{Receiver: args[0], Name: "sum"}}, nil
+			return &FieldExpr{Receiver: args[0], Name: "sum"}, nil
 		}
 	case "avg":
 		if len(args) == 1 {
-			sum := &CallExpr{Fn: &FieldExpr{Receiver: args[0], Name: "sum"}}
+			sum := &FieldExpr{Receiver: args[0], Name: "sum"}
 			ln := &LenExpr{Value: args[0]}
 			return &BinaryExpr{Left: sum, Op: "/", Right: ln}, nil
 		}
 	case "min":
 		if len(args) == 1 {
-			return &CallExpr{Fn: &FieldExpr{Receiver: args[0], Name: "min"}}, nil
+			return &FieldExpr{Receiver: args[0], Name: "min"}, nil
 		}
 	case "max":
 		if len(args) == 1 {
-			return &CallExpr{Fn: &FieldExpr{Receiver: args[0], Name: "max"}}, nil
+			return &FieldExpr{Receiver: args[0], Name: "max"}, nil
 		}
 	case "values":
 		if len(args) == 1 {
@@ -950,17 +950,17 @@ func convertForStmt(fs *parser.ForStmt, env *types.Env) (Stmt, error) {
 		}
 		return &ForRangeStmt{Name: fs.Name, Start: start, End: end, Body: body}, nil
 	}
-        iter, err := convertExpr(fs.Source)
-        if err != nil {
-                return nil, err
-        }
-        if n, ok := iter.(*Name); ok && env != nil {
-                if typ, err := env.GetVar(n.Name); err == nil {
-                        if _, ok := typ.(types.MapType); ok {
-                                iter = &FieldExpr{Receiver: iter, Name: "keys"}
-                        }
-                }
-        }
+	iter, err := convertExpr(fs.Source)
+	if err != nil {
+		return nil, err
+	}
+	if n, ok := iter.(*Name); ok && env != nil {
+		if typ, err := env.GetVar(n.Name); err == nil {
+			if _, ok := typ.(types.MapType); ok {
+				iter = &FieldExpr{Receiver: iter, Name: "keys"}
+			}
+		}
+	}
 	var body []Stmt
 	for _, st := range fs.Body {
 		s, err := convertStmt(st, env)
@@ -1047,10 +1047,10 @@ func toScalaTypeFromType(t types.Type) string {
 		return "Boolean"
 	case types.ListType:
 		return fmt.Sprintf("ArrayBuffer[%s]", toScalaTypeFromType(tt.Elem))
-       case types.MapType:
-               return fmt.Sprintf("Map[%s,%s]", toScalaTypeFromType(tt.Key), toScalaTypeFromType(tt.Value))
-       }
-       return "Any"
+	case types.MapType:
+		return fmt.Sprintf("Map[%s,%s]", toScalaTypeFromType(tt.Key), toScalaTypeFromType(tt.Value))
+	}
+	return "Any"
 }
 
 // inferType attempts a best-effort static type deduction for the expression.
@@ -1172,9 +1172,9 @@ func inferTypeWithEnv(e Expr, env *types.Env) string {
 }
 
 func header() string {
-        h := string(meta.Header("//"))
-        h += "import scala.collection.mutable.{ArrayBuffer, Map}\n"
-        return h
+	h := string(meta.Header("//"))
+	h += "import scala.collection.mutable.{ArrayBuffer, Map}\n"
+	return h
 }
 
 // Print converts the Scala AST to ast.Node and prints it.

@@ -1,3 +1,37 @@
+## Progress (2025-07-20 13:26 +0700)
+- scala: implement list aggregation builtins (avg, count, min, max)
+- Update Scala golden test checklist - 54/100 passing
+- Regenerated golden files for avg_builtin, count_builtin and min_max_builtin
+
+## Progress (2025-07-20 13:26 +0700)
+- fix tests
+- Regenerated golden files - 56/100 vm valid programs passing
+
+## Progress (2025-07-20 13:26 +0700)
+- fix tests
+- Regenerated golden files - 56/100 vm valid programs passing
+
+## Progress (2025-07-20 13:26 +0700)
+- fix tests
+- Regenerated golden files - 56/100 vm valid programs passing
+
+## Progress (2025-07-20 13:26 +0700)
+- scala: implement list aggregation builtins (avg, count, min, max)
+- Update Scala golden test checklist - 54/100 passing
+- Regenerated golden files for avg_builtin, count_builtin and min_max_builtin
+
+## Progress (2025-07-20 13:26 +0700)
+- fix tests
+- Regenerated golden files - 56/100 vm valid programs passing
+
+## Progress (2025-07-20 13:26 +0700)
+- fix tests
+- Regenerated golden files - 56/100 vm valid programs passing
+
+## Progress (2025-07-20 13:26 +0700)
+- fix tests
+- Regenerated golden files - 56/100 vm valid programs passing
+
 ## Progress (2025-07-20 13:01 +0700)
 - scala: support mutable maps and update progress
 - Regenerated golden files - 56/100 vm valid programs passing
