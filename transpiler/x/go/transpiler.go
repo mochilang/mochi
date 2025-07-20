@@ -66,9 +66,10 @@ func (p *PrintStmt) emit(w io.Writer) {
 }
 
 type VarDecl struct {
-	Name  string
-	Type  string
-	Value Expr
+	Name   string
+	Type   string
+	Value  Expr
+	Global bool
 }
 
 func (v *VarDecl) emit(w io.Writer) {
@@ -800,9 +801,9 @@ func compileStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 					typ = ""
 				}
 			}
-			return &VarDecl{Name: st.Let.Name, Type: typ, Value: e}, nil
+			return &VarDecl{Name: st.Let.Name, Type: typ, Value: e, Global: env == topEnv}, nil
 		}
-		return &VarDecl{Name: st.Let.Name, Type: typ}, nil
+		return &VarDecl{Name: st.Let.Name, Type: typ, Global: env == topEnv}, nil
 	case st.Var != nil:
 		var typ string
 		if st.Var.Type != nil {
@@ -830,9 +831,9 @@ func compileStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 					typ = ""
 				}
 			}
-			return &VarDecl{Name: st.Var.Name, Type: typ, Value: e}, nil
+			return &VarDecl{Name: st.Var.Name, Type: typ, Value: e, Global: env == topEnv}, nil
 		}
-		return &VarDecl{Name: st.Var.Name, Type: typ}, nil
+		return &VarDecl{Name: st.Var.Name, Type: typ, Global: env == topEnv}, nil
 	case st.Assign != nil:
 		if len(st.Assign.Index) == 1 && st.Assign.Index[0].Colon == nil && st.Assign.Index[0].Colon2 == nil && len(st.Assign.Field) == 0 {
 			idx, err := compileExpr(st.Assign.Index[0].Start, env)
@@ -863,6 +864,9 @@ func compileStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 		target, err := compilePostfix(pf, env)
 		if err != nil {
 			return nil, err
+		}
+		if as, ok := target.(*AssertExpr); ok {
+			target = as.Expr
 		}
 		val, err := compileExpr(st.Assign.Value, env)
 		if err != nil {
@@ -971,7 +975,9 @@ func compileMatchExpr(me *parser.MatchExpr, env *types.Env) (Expr, error) {
 	if err != nil {
 		return nil, err
 	}
-	var expr Expr = &VarRef{Name: "nil"}
+	tmp := &parser.Expr{Binary: &parser.BinaryExpr{Left: &parser.Unary{Value: &parser.PostfixExpr{Target: &parser.Primary{Match: me}}}}}
+	typ := toGoTypeFromType(types.ExprType(tmp, env))
+	var expr Expr = zeroValueExpr(typ)
 	for i := len(me.Cases) - 1; i >= 0; i-- {
 		c := me.Cases[i]
 		res, err := compileExpr(c.Result, env)
@@ -989,8 +995,7 @@ func compileMatchExpr(me *parser.MatchExpr, env *types.Env) (Expr, error) {
 		cond := &BinaryExpr{Left: target, Op: "==", Right: pat}
 		expr = &IfExpr{Cond: cond, Then: res, Else: expr, Type: ""}
 	}
-	tmp := &parser.Expr{Binary: &parser.BinaryExpr{Left: &parser.Unary{Value: &parser.PostfixExpr{Target: &parser.Primary{Match: me}}}}}
-	typ := toGoTypeFromType(types.ExprType(tmp, env))
+
 	var setType func(Expr)
 	setType = func(e Expr) {
 		if ife, ok := e.(*IfExpr); ok {
@@ -1002,6 +1007,23 @@ func compileMatchExpr(me *parser.MatchExpr, env *types.Env) (Expr, error) {
 	}
 	setType(expr)
 	return expr, nil
+}
+
+func zeroValueExpr(goType string) Expr {
+	switch {
+	case goType == "int":
+		return &IntLit{Value: 0}
+	case goType == "float64":
+		return &CallExpr{Func: "float64", Args: []Expr{&IntLit{Value: 0}}}
+	case goType == "bool":
+		return &BoolLit{Value: false}
+	case goType == "string":
+		return &StringLit{Value: ""}
+	case strings.HasPrefix(goType, "[]"):
+		return &VarRef{Name: "nil"}
+	default:
+		return &VarRef{Name: "nil"}
+	}
 }
 
 func compileWhileStmt(ws *parser.WhileStmt, env *types.Env) (Stmt, error) {
@@ -1026,7 +1048,9 @@ func compileForStmt(fs *parser.ForStmt, env *types.Env) (Stmt, error) {
 		if err != nil {
 			return nil, err
 		}
-		body, err := compileStmts(fs.Body, env)
+		child := types.NewEnv(env)
+		child.SetVar(fs.Name, types.IntType{}, true)
+		body, err := compileStmts(fs.Body, child)
 		if err != nil {
 			return nil, err
 		}
@@ -1036,12 +1060,22 @@ func compileForStmt(fs *parser.ForStmt, env *types.Env) (Stmt, error) {
 	if err != nil {
 		return nil, err
 	}
-	body, err := compileStmts(fs.Body, env)
+	t := types.TypeOfExpr(fs.Source, env)
+	child := types.NewEnv(env)
+	var isMap bool
+	switch tt := t.(type) {
+	case types.MapType:
+		isMap = true
+		child.SetVar(fs.Name, tt.Key, true)
+	case types.ListType:
+		child.SetVar(fs.Name, tt.Elem, true)
+	default:
+		child.SetVar(fs.Name, types.AnyType{}, true)
+	}
+	body, err := compileStmts(fs.Body, child)
 	if err != nil {
 		return nil, err
 	}
-	t := types.TypeOfExpr(fs.Source, env)
-	_, isMap := t.(types.MapType)
 	return &ForEachStmt{Name: fs.Name, Iterable: iter, Body: body, IsMap: isMap}, nil
 }
 
@@ -1277,6 +1311,9 @@ func compilePostfix(pf *parser.PostfixExpr, env *types.Env) (Expr, error) {
 			switch tt := t.(type) {
 			case types.MapType:
 				t = tt.Value
+				if !types.IsAnyType(t) {
+					expr = &AssertExpr{Expr: expr, Type: toGoTypeFromType(t)}
+				}
 			case types.StructType:
 				if ft, ok := tt.Fields[f]; ok {
 					t = ft
@@ -1768,13 +1805,22 @@ func Emit(prog *Program) []byte {
 
 	// no runtime helper functions needed
 	for _, s := range prog.Stmts {
-		if _, ok := s.(*FuncDecl); ok {
-			s.emit(&buf)
+		switch st := s.(type) {
+		case *FuncDecl:
+			st.emit(&buf)
 			buf.WriteString("\n\n")
+		case *VarDecl:
+			if st.Global {
+				st.emit(&buf)
+				buf.WriteString("\n\n")
+			}
 		}
 	}
 	buf.WriteString("func main() {\n")
 	for _, s := range prog.Stmts {
+		if vd, ok := s.(*VarDecl); ok && vd.Global {
+			continue
+		}
 		if _, ok := s.(*FuncDecl); ok {
 			continue
 		}
