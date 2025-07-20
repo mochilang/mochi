@@ -102,6 +102,14 @@ type IndexExpr struct {
 	Index  Expr
 }
 
+// MapLit represents a simple map literal using std::unordered_map.
+type MapLit struct {
+	Keys      []Expr
+	Values    []Expr
+	KeyType   string
+	ValueType string
+}
+
 type SliceExpr struct {
 	Target Expr
 	Start  Expr
@@ -160,6 +168,13 @@ type LetStmt struct {
 type AssignStmt struct {
 	Name  string
 	Value Expr
+}
+
+// AssignIndexStmt represents assignment to an indexed element like m[k] = v.
+type AssignIndexStmt struct {
+	Target Expr
+	Index  Expr
+	Value  Expr
 }
 
 type ForStmt struct {
@@ -287,6 +302,21 @@ func (l *ListLit) emit(w io.Writer) {
 	io.WriteString(w, "}")
 }
 
+func (m *MapLit) emit(w io.Writer) {
+	fmt.Fprintf(w, "std::unordered_map<%s, %s>{", m.KeyType, m.ValueType)
+	for i := range m.Keys {
+		if i > 0 {
+			io.WriteString(w, ", ")
+		}
+		io.WriteString(w, "{")
+		m.Keys[i].emit(w)
+		io.WriteString(w, ", ")
+		m.Values[i].emit(w)
+		io.WriteString(w, "}")
+	}
+	io.WriteString(w, "}")
+}
+
 func (s *StringLit) emit(w io.Writer) {
 	fmt.Fprintf(w, "std::string(%q)", s.Value)
 }
@@ -349,7 +379,10 @@ func (in *InExpr) emit(w io.Writer) {
 		currentProgram.addInclude("<algorithm>")
 		currentProgram.addInclude("<type_traits>")
 	}
-	io.WriteString(w, "([&](const auto& c, const auto& v){ if constexpr(std::is_same_v<std::decay_t<decltype(c)>, std::string>) { return c.find(v) != std::string::npos; } else { return std::find(c.begin(), c.end(), v) != c.end(); } } )(")
+	io.WriteString(w, "([&](const auto& c, const auto& v){ ")
+	io.WriteString(w, "if constexpr(std::is_same_v<std::decay_t<decltype(c)>, std::string>) { return c.find(v) != std::string::npos; } ")
+	io.WriteString(w, "else if constexpr(requires { c.find(v); }) { return c.find(v) != c.end(); } ")
+	io.WriteString(w, "else { return std::find(c.begin(), c.end(), v) != c.end(); } })(")
 	in.Coll.emit(w)
 	io.WriteString(w, ", ")
 	in.Value.emit(w)
@@ -465,6 +498,18 @@ func (a *AssignStmt) emit(w io.Writer, indent int) {
 	}
 	io.WriteString(w, a.Name)
 	io.WriteString(w, " = ")
+	a.Value.emit(w)
+	io.WriteString(w, ";\n")
+}
+
+func (a *AssignIndexStmt) emit(w io.Writer, indent int) {
+	for i := 0; i < indent; i++ {
+		io.WriteString(w, "    ")
+	}
+	a.Target.emit(w)
+	io.WriteString(w, "[")
+	a.Index.emit(w)
+	io.WriteString(w, "] = ")
 	a.Value.emit(w)
 	io.WriteString(w, ";\n")
 }
@@ -632,7 +677,19 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 			if err != nil {
 				return nil, err
 			}
-			body = append(body, &AssignStmt{Name: stmt.Assign.Name, Value: val})
+			if len(stmt.Assign.Index) > 0 {
+				if len(stmt.Assign.Index) != 1 || stmt.Assign.Index[0].Colon != nil {
+					return nil, fmt.Errorf("unsupported index assignment")
+				}
+				idx, err := convertExpr(stmt.Assign.Index[0].Start)
+				if err != nil {
+					return nil, err
+				}
+				target := &VarRef{Name: stmt.Assign.Name}
+				body = append(body, &AssignIndexStmt{Target: target, Index: idx, Value: val})
+			} else {
+				body = append(body, &AssignStmt{Name: stmt.Assign.Name, Value: val})
+			}
 		case stmt.For != nil:
 			start, err := convertExpr(stmt.For.Source)
 			if err != nil {
@@ -731,6 +788,17 @@ func convertStmt(s *parser.Statement) (Stmt, error) {
 		val, err := convertExpr(s.Assign.Value)
 		if err != nil {
 			return nil, err
+		}
+		if len(s.Assign.Index) > 0 {
+			if len(s.Assign.Index) != 1 || s.Assign.Index[0].Colon != nil {
+				return nil, fmt.Errorf("unsupported index assignment")
+			}
+			idx, err := convertExpr(s.Assign.Index[0].Start)
+			if err != nil {
+				return nil, err
+			}
+			target := &VarRef{Name: s.Assign.Name}
+			return &AssignIndexStmt{Target: target, Index: idx, Value: val}, nil
 		}
 		return &AssignStmt{Name: s.Assign.Name, Value: val}, nil
 	case s.Break != nil:
@@ -1012,6 +1080,30 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 			elems = append(elems, ce)
 		}
 		return &ListLit{Elems: elems}, nil
+	case p.Map != nil:
+		if currentProgram != nil {
+			currentProgram.addInclude("<unordered_map>")
+		}
+		if len(p.Map.Items) == 0 {
+			return &MapLit{KeyType: "auto", ValueType: "auto"}, nil
+		}
+		kt := guessType(p.Map.Items[0].Key)
+		vt := guessType(p.Map.Items[0].Value)
+		keys := make([]Expr, len(p.Map.Items))
+		vals := make([]Expr, len(p.Map.Items))
+		for i, it := range p.Map.Items {
+			ke, err := convertExpr(it.Key)
+			if err != nil {
+				return nil, err
+			}
+			ve, err := convertExpr(it.Value)
+			if err != nil {
+				return nil, err
+			}
+			keys[i] = ke
+			vals[i] = ve
+		}
+		return &MapLit{Keys: keys, Values: vals, KeyType: kt, ValueType: vt}, nil
 	case p.FunExpr != nil && p.FunExpr.ExprBody != nil:
 		var params []Param
 		for _, pa := range p.FunExpr.Params {
@@ -1086,6 +1178,28 @@ func cppType(t string) string {
 	return "auto"
 }
 
+func guessType(e *parser.Expr) string {
+	if e == nil || e.Binary == nil || e.Binary.Left == nil {
+		return "auto"
+	}
+	pf := e.Binary.Left.Value
+	if pf == nil || pf.Target == nil {
+		return "auto"
+	}
+	if lit := pf.Target.Lit; lit != nil {
+		if lit.Int != nil {
+			return "int"
+		}
+		if lit.Bool != nil {
+			return "bool"
+		}
+		if lit.Str != nil {
+			return "std::string"
+		}
+	}
+	return "auto"
+}
+
 func defaultValueForType(t string) string {
 	switch t {
 	case "int", "double":
@@ -1138,6 +1252,10 @@ func toStmtNode(s Stmt) *ast.Node {
 		return n
 	case *AssignStmt:
 		return &ast.Node{Kind: "assign", Value: st.Name, Children: []*ast.Node{toExprNode(st.Value)}}
+	case *AssignIndexStmt:
+		n := &ast.Node{Kind: "assign_index"}
+		n.Children = []*ast.Node{toExprNode(&IndexExpr{Target: st.Target, Index: st.Index}), toExprNode(st.Value)}
+		return n
 	case *WhileStmt:
 		n := &ast.Node{Kind: "while"}
 		n.Children = append(n.Children, toExprNode(st.Cond))
@@ -1239,6 +1357,14 @@ func toExprNode(e Expr) *ast.Node {
 		n := &ast.Node{Kind: "list"}
 		for _, e := range ex.Elems {
 			n.Children = append(n.Children, toExprNode(e))
+		}
+		return n
+	case *MapLit:
+		n := &ast.Node{Kind: "map"}
+		for i := range ex.Keys {
+			pair := &ast.Node{Kind: "pair"}
+			pair.Children = []*ast.Node{toExprNode(ex.Keys[i]), toExprNode(ex.Values[i])}
+			n.Children = append(n.Children, pair)
 		}
 		return n
 	case *CallExpr:

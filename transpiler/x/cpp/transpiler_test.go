@@ -82,3 +82,5 @@ func TestCPPTranspiler_SumBuiltin(t *testing.T)        { runExample(t, "sum_buil
 func TestCPPTranspiler_ListIndex(t *testing.T)         { runExample(t, "list_index") }
 func TestCPPTranspiler_Slice(t *testing.T)             { runExample(t, "slice") }
 func TestCPPTranspiler_StringPrefixSlice(t *testing.T) { runExample(t, "string_prefix_slice") }
+func TestCPPTranspiler_MapAssign(t *testing.T)         { runExample(t, "map_assign") }
+func TestCPPTranspiler_MapIndex(t *testing.T)          { runExample(t, "map_index") }
