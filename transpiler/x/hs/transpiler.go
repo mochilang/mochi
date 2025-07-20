@@ -31,6 +31,9 @@ var varTypes map[string]string
 // needDataList reports whether Data.List functions are required.
 var needDataList bool
 
+// needDataMap reports whether Data.Map functions are required.
+var needDataMap bool
+
 // vars holds the last computed expression of each variable at the top level.
 var vars map[string]Expr
 
@@ -109,9 +112,15 @@ func (p *PrintStmt) emit(w io.Writer) {
 	}
 
 	if isListExpr(p.Expr) {
-		io.WriteString(w, "putStrLn (\"[\" ++ unwords (map show (")
-		p.Expr.emit(w)
-		io.WriteString(w, ")) ++ \"]\")")
+		if isMapElemsExpr(p.Expr) {
+			io.WriteString(w, "putStrLn (unwords (map show (")
+			p.Expr.emit(w)
+			io.WriteString(w, ")))")
+		} else {
+			io.WriteString(w, "putStrLn (\"[\" ++ unwords (map show (")
+			p.Expr.emit(w)
+			io.WriteString(w, ")) ++ \"]\")")
+		}
 		return
 	}
 
@@ -188,6 +197,9 @@ type UnaryExpr struct {
 }
 type GroupExpr struct{ Expr Expr }
 type ListLit struct{ Elems []Expr }
+
+// MapLit represents a simple map literal.
+type MapLit struct{ Keys, Values []Expr }
 type CallExpr struct {
 	Fun  Expr
 	Args []Expr
@@ -218,6 +230,21 @@ func (l *ListLit) emit(w io.Writer) {
 			io.WriteString(w, ", ")
 		}
 		e.emit(w)
+	}
+	io.WriteString(w, "]")
+}
+func (m *MapLit) emit(w io.Writer) {
+	needDataMap = true
+	io.WriteString(w, "Map.fromList [")
+	for i := range m.Keys {
+		if i > 0 {
+			io.WriteString(w, ", ")
+		}
+		io.WriteString(w, "(")
+		m.Keys[i].emit(w)
+		io.WriteString(w, ", ")
+		m.Values[i].emit(w)
+		io.WriteString(w, ")")
 	}
 	io.WriteString(w, "]")
 }
@@ -280,8 +307,21 @@ func isListExpr(e Expr) bool {
 				return true
 			}
 		}
+	case *CallExpr:
+		if n, ok := ex.Fun.(*NameRef); ok && n.Name == "Map.elems" && len(ex.Args) == 1 {
+			return true
+		}
 	}
 	return false
+}
+
+func isMapElemsExpr(e Expr) bool {
+	c, ok := e.(*CallExpr)
+	if !ok {
+		return false
+	}
+	n, ok := c.Fun.(*NameRef)
+	return ok && n.Name == "Map.elems" && len(c.Args) == 1
 }
 
 func (b *BinaryExpr) emit(w io.Writer) {
@@ -401,7 +441,7 @@ func version() string {
 	return strings.TrimSpace(string(b))
 }
 
-func header(withList bool) string {
+func header(withList bool, withMap bool) string {
 	out, err := exec.Command("git", "log", "-1", "--date=iso-strict", "--format=%cd").Output()
 	ts := time.Now()
 	if err == nil {
@@ -414,13 +454,16 @@ func header(withList bool) string {
 	if withList {
 		h += "import Data.List (isInfixOf, union, intersect, (\\\\))\n"
 	}
+	if withMap {
+		h += "import qualified Data.Map as Map\n"
+	}
 	return h
 }
 
 // Emit generates formatted Haskell code.
 func Emit(p *Program) []byte {
 	var buf bytes.Buffer
-	buf.WriteString(header(needDataList))
+	buf.WriteString(header(needDataList, needDataMap))
 	for _, f := range p.Funcs {
 		f.emit(&buf)
 		buf.WriteByte('\n')
@@ -453,6 +496,7 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	vars = map[string]Expr{}
 	varTypes = map[string]string{}
 	needDataList = false
+	needDataMap = false
 	for _, st := range prog.Statements {
 		switch {
 		case st.Let != nil:
@@ -711,6 +755,22 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 			elems = append(elems, ce)
 		}
 		return &ListLit{Elems: elems}, nil
+	case p.Map != nil:
+		var keys []Expr
+		var values []Expr
+		for _, it := range p.Map.Items {
+			ke, err := convertExpr(it.Key)
+			if err != nil {
+				return nil, err
+			}
+			keys = append(keys, ke)
+			ve, err := convertExpr(it.Value)
+			if err != nil {
+				return nil, err
+			}
+			values = append(values, ve)
+		}
+		return &MapLit{Keys: keys, Values: values}, nil
 	case p.FunExpr != nil && p.FunExpr.ExprBody != nil:
 		var params []string
 		for _, pa := range p.FunExpr.Params {
@@ -746,6 +806,14 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 				return nil, err
 			}
 			return &BinaryExpr{Left: listArg, Ops: []BinaryOp{{Op: "++", Right: &ListLit{Elems: []Expr{itemArg}}}}}, nil
+		}
+		if p.Call.Func == "values" && len(p.Call.Args) == 1 {
+			arg, err := convertExpr(p.Call.Args[0])
+			if err != nil {
+				return nil, err
+			}
+			needDataMap = true
+			return &CallExpr{Fun: &NameRef{Name: "Map.elems"}, Args: []Expr{arg}}, nil
 		}
 		if p.Call.Func == "avg" && len(p.Call.Args) == 1 {
 			arg, err := convertExpr(p.Call.Args[0])
