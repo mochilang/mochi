@@ -515,26 +515,37 @@ type QueryExpr struct {
 	Where    Expr
 	Select   Expr
 	Distinct bool
+	ElemType string
 }
 
 func (q *QueryExpr) emit(w io.Writer) {
+	et := q.ElemType
+	if et == "" {
+		et = "Any"
+	}
+	fmt.Fprintf(w, "({ var _res = ArrayBuffer[%s]() ; for (%s <- ", et, q.Var)
 	q.Src.emit(w)
+	fmt.Fprint(w, ") {")
 	for _, f := range q.Froms {
-		fmt.Fprint(w, ".flatMap(")
-		fmt.Fprintf(w, "%s => ", f.Var)
+		fmt.Fprintf(w, " for (%s <- ", f.Var)
 		f.Src.emit(w)
-		fmt.Fprint(w, ")")
+		fmt.Fprint(w, ") {")
 	}
 	if q.Where != nil {
-		fmt.Fprint(w, ".filter(")
-		fmt.Fprintf(w, "%s => ", q.Var)
+		fmt.Fprint(w, " if (")
 		q.Where.emit(w)
-		fmt.Fprint(w, ")")
+		fmt.Fprint(w, ") {")
 	}
-	fmt.Fprint(w, ".map(")
-	fmt.Fprintf(w, "%s => ", q.Var)
+	fmt.Fprint(w, " _res.append(")
 	q.Select.emit(w)
 	fmt.Fprint(w, ")")
+	if q.Where != nil {
+		fmt.Fprint(w, " }")
+	}
+	for range q.Froms {
+		fmt.Fprint(w, " }")
+	}
+	fmt.Fprint(w, " }; _res })")
 	if q.Distinct {
 		fmt.Fprint(w, ".distinct")
 	}
@@ -880,6 +891,37 @@ func convertPrimary(p *parser.Primary, env *types.Env) (Expr, error) {
 		}
 		return expr, nil
 	case p.List != nil:
+		if env != nil {
+			if st, ok := types.InferStructFromList(p.List, env); ok {
+				name := types.UniqueStructName("Item", env, nil)
+				st.Name = name
+				env.SetStruct(name, st)
+				fields := make([]Param, len(st.Order))
+				for i, n := range st.Order {
+					fields[i] = Param{Name: n, Type: toScalaTypeFromType(st.Fields[n])}
+				}
+				typeDecls = append(typeDecls, &TypeDeclStmt{Name: name, Fields: fields})
+				elems := make([]Expr, len(p.List.Elems))
+				for i, el := range p.List.Elems {
+					ml := el.Binary.Left.Value.Target.Map
+					sl := &parser.StructLiteral{Name: name}
+					for _, fn := range st.Order {
+						for _, it := range ml.Items {
+							if key, _ := types.SimpleStringKey(it.Key); key == fn {
+								sl.Fields = append(sl.Fields, &parser.StructLitField{Name: fn, Value: it.Value})
+								break
+							}
+						}
+					}
+					ex, err := convertStructLiteral(sl, env)
+					if err != nil {
+						return nil, err
+					}
+					elems[i] = ex
+				}
+				return &ListLit{Elems: elems}, nil
+			}
+		}
 		elems := make([]Expr, len(p.List.Elems))
 		for i, e := range p.List.Elems {
 			ex, err := convertExpr(e, env)
@@ -892,9 +934,15 @@ func convertPrimary(p *parser.Primary, env *types.Env) (Expr, error) {
 	case p.Map != nil:
 		entries := make([]MapEntry, len(p.Map.Items))
 		for i, it := range p.Map.Items {
-			k, err := convertExpr(it.Key, env)
-			if err != nil {
-				return nil, err
+			var k Expr
+			if s, ok := types.SimpleStringKey(it.Key); ok {
+				k = &StringLit{Value: s}
+			} else {
+				var err error
+				k, err = convertExpr(it.Key, env)
+				if err != nil {
+					return nil, err
+				}
 			}
 			v, err := convertExpr(it.Value, env)
 			if err != nil {
@@ -938,7 +986,12 @@ func convertCall(c *parser.CallExpr, env *types.Env) (Expr, error) {
 			return &LenExpr{Value: args[0]}, nil
 		}
 	case "print":
-		name = "println"
+		if len(args) == 1 {
+			return &CallExpr{Fn: &Name{Name: "println"}, Args: args}, nil
+		}
+		list := &CallExpr{Fn: &Name{Name: "List"}, Args: args}
+		join := &CallExpr{Fn: &FieldExpr{Receiver: list, Name: "mkString"}, Args: []Expr{&StringLit{Value: " "}}}
+		return &CallExpr{Fn: &Name{Name: "println"}, Args: []Expr{join}}, nil
 	case "str":
 		if len(args) == 1 {
 			name = "String.valueOf"
@@ -1114,12 +1167,12 @@ func convertQueryExpr(q *parser.QueryExpr, env *types.Env) (Expr, error) {
 		return nil, err
 	}
 	srcType := types.ExprType(q.Source, env)
-	var elemType types.Type = types.AnyType{}
+	var elemT types.Type = types.AnyType{}
 	if lt, ok := srcType.(types.ListType); ok {
-		elemType = lt.Elem
+		elemT = lt.Elem
 	}
 	child := types.NewEnv(env)
-	child.SetVar(q.Var, elemType, true)
+	child.SetVar(q.Var, elemT, true)
 	froms := make([]queryFrom, len(q.Froms))
 	for i, f := range q.Froms {
 		fe, err := convertExpr(f.Src, child)
@@ -1144,6 +1197,7 @@ func convertQueryExpr(q *parser.QueryExpr, env *types.Env) (Expr, error) {
 	if ml := mapLiteral(q.Select); ml != nil {
 		if st, ok := types.InferStructFromMapEnv(ml, child); ok {
 			name := types.UniqueStructName("QueryItem", env, nil)
+			st.Name = name
 			env.SetStruct(name, st)
 			fields := make([]Param, len(st.Order))
 			for i, n := range st.Order {
@@ -1166,7 +1220,11 @@ func convertQueryExpr(q *parser.QueryExpr, env *types.Env) (Expr, error) {
 	if err != nil {
 		return nil, err
 	}
-	return &QueryExpr{Var: q.Var, Src: src, Froms: froms, Where: where, Select: sel, Distinct: q.Distinct}, nil
+	elemTypeStr := toScalaTypeFromType(types.ExprType(q.Select, child))
+	if elemTypeStr == "" {
+		elemTypeStr = "Any"
+	}
+	return &QueryExpr{Var: q.Var, Src: src, Froms: froms, Where: where, Select: sel, Distinct: q.Distinct, ElemType: elemTypeStr}, nil
 }
 
 func mapLiteral(e *parser.Expr) *parser.MapLiteral {
@@ -1367,6 +1425,11 @@ func toScalaTypeFromType(t types.Type) string {
 		return fmt.Sprintf("ArrayBuffer[%s]", toScalaTypeFromType(tt.Elem))
 	case types.MapType:
 		return fmt.Sprintf("Map[%s,%s]", toScalaTypeFromType(tt.Key), toScalaTypeFromType(tt.Value))
+	case types.StructType:
+		if tt.Name != "" {
+			return tt.Name
+		}
+		return "Any"
 	}
 	return "Any"
 }
@@ -1415,6 +1478,8 @@ func inferType(e Expr) string {
 			}
 		}
 		return fmt.Sprintf("Map[%s,%s]", kt, vt)
+	case *StructLit:
+		return ex.Name
 	case *LenExpr:
 		return "Int"
 	case *AppendExpr:
@@ -1471,6 +1536,11 @@ func inferType(e Expr) string {
 		if t1 == t2 {
 			return t1
 		}
+	case *QueryExpr:
+		if ex.ElemType != "" {
+			return fmt.Sprintf("ArrayBuffer[%s]", ex.ElemType)
+		}
+		return "ArrayBuffer[Any]"
 	default:
 		_ = ex
 	}
