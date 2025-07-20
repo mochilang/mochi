@@ -1,1 +1,10 @@
-{"cat": "a", "share": 0} {"cat": "b", "share": 1}
+[
+  {
+    "cat": "a",
+    "share": 0
+  },
+  {
+    "cat": "b",
+    "share": 1
+  }
+]

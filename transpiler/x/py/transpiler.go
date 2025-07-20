@@ -1770,6 +1770,7 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 				alias = parser.AliasFromPath(st.Import.Path)
 			}
 			module := strings.Trim(st.Import.Path, "\"")
+			module = strings.ReplaceAll(module, "/", ".")
 			p.Stmts = append(p.Stmts, &ImportStmt{Module: module, Alias: alias})
 			currentImports[alias] = true
 		case st.ExternVar != nil:
@@ -2006,6 +2007,7 @@ func convertStmts(list []*parser.Statement, env *types.Env) ([]Stmt, error) {
 				alias = parser.AliasFromPath(s.Import.Path)
 			}
 			module := strings.Trim(s.Import.Path, "\"")
+			module = strings.ReplaceAll(module, "/", ".")
 			out = append(out, &ImportStmt{Module: module, Alias: alias})
 		case s.ExternVar != nil:
 			continue
@@ -2259,33 +2261,38 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 		}
 		switch p.Call.Func {
 		case "print":
-			if len(args) == 1 && currentEnv != nil {
-				if _, ok := types.ExprType(p.Call.Args[0], currentEnv).(types.ListType); ok {
-					if currentImports != nil {
-						currentImports["json"] = true
-					}
-					v := "_v"
-					strCall := &CallExpr{Func: &Name{Name: "str"}, Args: []Expr{&Name{Name: v}}}
-					dumps := &CallExpr{Func: &FieldExpr{Target: &Name{Name: "json"}, Name: "dumps"}, Args: []Expr{&Name{Name: v}}}
-					check := &CallExpr{Func: &Name{Name: "isinstance"}, Args: []Expr{&Name{Name: v}, &Name{Name: "dict"}}}
-					item := &CondExpr{Cond: check, Then: dumps, Else: strCall}
-					comp := &ListComp{Var: v, Iter: args[0], Expr: item}
-					join := &CallExpr{Func: &FieldExpr{Target: &StringLit{Value: " "}, Name: "join"}, Args: []Expr{comp}}
-					return &CallExpr{Func: &Name{Name: "print"}, Args: []Expr{join}}, nil
-				}
-			}
-
-			formatArg := func(e Expr) Expr {
-				if currentImports != nil {
-					currentImports["json"] = true
-				}
-				code := fmt.Sprintf("(lambda _x: 'nil' if _x is None else json.dumps(_x) if isinstance(_x, dict) else str(_x))(%s)", exprString(e))
-				return &RawExpr{Code: code}
-			}
-
 			outArgs := make([]Expr, len(args))
 			for i, a := range args {
-				outArgs[i] = formatArg(a)
+				if currentEnv != nil {
+					t := types.ExprType(p.Call.Args[i], currentEnv)
+					switch tt := t.(type) {
+					case types.MapType, types.StructType:
+						if currentImports != nil {
+							currentImports["json"] = true
+						}
+						code := fmt.Sprintf("json.dumps(%s, indent=2)", exprString(a))
+						outArgs[i] = &RawExpr{Code: code}
+						continue
+					case types.ListType:
+						if _, ok := tt.Elem.(types.MapType); ok {
+							if currentImports != nil {
+								currentImports["json"] = true
+							}
+							code := fmt.Sprintf("json.dumps(%s, indent=2)", exprString(a))
+							outArgs[i] = &RawExpr{Code: code}
+							continue
+						}
+						if _, ok := tt.Elem.(types.StructType); ok {
+							if currentImports != nil {
+								currentImports["json"] = true
+							}
+							code := fmt.Sprintf("json.dumps(%s, indent=2)", exprString(a))
+							outArgs[i] = &RawExpr{Code: code}
+							continue
+						}
+					}
+				}
+				outArgs[i] = a
 			}
 			return &CallExpr{Func: &Name{Name: "print"}, Args: outArgs}, nil
 		case "append":
