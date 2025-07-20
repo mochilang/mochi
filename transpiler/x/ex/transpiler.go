@@ -14,6 +14,8 @@ import (
 	"mochi/types"
 )
 
+var funcDepth int
+
 // Program represents a sequence of Elixir statements.
 type Program struct {
 	Stmts []Stmt
@@ -148,13 +150,45 @@ func (wst *WhileStmt) emit(w io.Writer, indent int) {
 	for i := 0; i < indent; i++ {
 		io.WriteString(w, "  ")
 	}
+	io.WriteString(w, "try do\n")
+	for i := 0; i < indent+1; i++ {
+		io.WriteString(w, "  ")
+	}
 	io.WriteString(w, "while ")
 	wst.Cond.emit(w)
 	io.WriteString(w, " do\n")
+	for i := 0; i < indent+2; i++ {
+		io.WriteString(w, "  ")
+	}
+	io.WriteString(w, "try do\n")
 	for _, st := range wst.Body {
-		st.emit(w, indent+1)
+		st.emit(w, indent+3)
 		io.WriteString(w, "\n")
 	}
+	for i := 0; i < indent+2; i++ {
+		io.WriteString(w, "  ")
+	}
+	io.WriteString(w, "catch\n")
+	for i := 0; i < indent+3; i++ {
+		io.WriteString(w, "  ")
+	}
+	io.WriteString(w, ":continue -> nil\n")
+	for i := 0; i < indent+2; i++ {
+		io.WriteString(w, "  ")
+	}
+	io.WriteString(w, "end\n")
+	for i := 0; i < indent+1; i++ {
+		io.WriteString(w, "  ")
+	}
+	io.WriteString(w, "end\n")
+	for i := 0; i < indent; i++ {
+		io.WriteString(w, "  ")
+	}
+	io.WriteString(w, "catch\n")
+	for i := 0; i < indent+1; i++ {
+		io.WriteString(w, "  ")
+	}
+	io.WriteString(w, ":break -> nil\n")
 	for i := 0; i < indent; i++ {
 		io.WriteString(w, "  ")
 	}
@@ -174,6 +208,10 @@ func (fs *ForStmt) emit(w io.Writer, indent int) {
 	for i := 0; i < indent; i++ {
 		io.WriteString(w, "  ")
 	}
+	io.WriteString(w, "try do\n")
+	for i := 0; i < indent+1; i++ {
+		io.WriteString(w, "  ")
+	}
 	io.WriteString(w, "for ")
 	io.WriteString(w, fs.Name)
 	io.WriteString(w, " <- ")
@@ -188,10 +226,38 @@ func (fs *ForStmt) emit(w io.Writer, indent int) {
 		fs.Source.emit(w)
 	}
 	io.WriteString(w, " do\n")
+	for i := 0; i < indent+2; i++ {
+		io.WriteString(w, "  ")
+	}
+	io.WriteString(w, "try do\n")
 	for _, st := range fs.Body {
-		st.emit(w, indent+1)
+		st.emit(w, indent+3)
 		io.WriteString(w, "\n")
 	}
+	for i := 0; i < indent+2; i++ {
+		io.WriteString(w, "  ")
+	}
+	io.WriteString(w, "catch\n")
+	for i := 0; i < indent+3; i++ {
+		io.WriteString(w, "  ")
+	}
+	io.WriteString(w, ":continue -> nil\n")
+	for i := 0; i < indent+2; i++ {
+		io.WriteString(w, "  ")
+	}
+	io.WriteString(w, "end\n")
+	for i := 0; i < indent+1; i++ {
+		io.WriteString(w, "  ")
+	}
+	io.WriteString(w, "end\n")
+	for i := 0; i < indent; i++ {
+		io.WriteString(w, "  ")
+	}
+	io.WriteString(w, "catch\n")
+	for i := 0; i < indent+1; i++ {
+		io.WriteString(w, "  ")
+	}
+	io.WriteString(w, ":break -> nil\n")
 	for i := 0; i < indent; i++ {
 		io.WriteString(w, "  ")
 	}
@@ -692,6 +758,10 @@ func compileStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 		return compileWhileStmt(st.While, env)
 	case st.For != nil:
 		return compileForStmt(st.For, env)
+	case st.Break != nil:
+		return &BreakStmt{}, nil
+	case st.Continue != nil:
+		return &ContinueStmt{}, nil
 	case st.Return != nil:
 		var val Expr
 		if st.Return.Value != nil {
@@ -703,16 +773,19 @@ func compileStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 		}
 		return &ReturnStmt{Value: val}, nil
 	case st.Fun != nil:
+		funcDepth++
 		body := make([]Stmt, 0, len(st.Fun.Body))
 		for _, b := range st.Fun.Body {
 			bs, err := compileStmt(b, env)
 			if err != nil {
+				funcDepth--
 				return nil, err
 			}
 			if bs != nil {
 				body = append(body, bs)
 			}
 		}
+		funcDepth--
 		params := make([]string, len(st.Fun.Params))
 		for i, p := range st.Fun.Params {
 			params[i] = p.Name
@@ -729,6 +802,10 @@ func compileStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 					}
 				}
 			}
+		}
+		if funcDepth > 0 {
+			env.SetVar(st.Fun.Name, types.FuncType{}, false)
+			return &AssignStmt{Name: st.Fun.Name, Value: &AnonFun{Params: params, Body: body}}, nil
 		}
 		return &FuncDecl{Name: st.Fun.Name, Params: params, Body: body}, nil
 	default:
@@ -962,6 +1039,7 @@ func compileBinary(b *parser.BinaryExpr, env *types.Env) (Expr, error) {
 		{"==", "!=", "in"},
 		{"&&"},
 		{"||"},
+		{"union", "union_all", "except", "intersect"},
 	}
 	contains := func(list []string, op string) bool {
 		for _, s := range list {
@@ -974,13 +1052,37 @@ func compileBinary(b *parser.BinaryExpr, env *types.Env) (Expr, error) {
 	for _, level := range levels {
 		for i := 0; i < len(ops); {
 			if contains(level, ops[i].Op) {
-				bin := &BinaryExpr{Left: operands[i], Op: ops[i].Op, Right: operands[i+1]}
-				if ops[i].Op == "in" {
-					if _, ok := types.TypeOfPostfix(ops[i].Right, env).(types.MapType); ok {
-						bin.MapIn = true
-					}
+				opName := ops[i].Op
+				if opName == "union" && ops[i].All {
+					opName = "union_all"
 				}
-				operands[i] = bin
+				var expr Expr
+				switch opName {
+				case "union":
+					concat := &BinaryExpr{Left: operands[i], Op: "++", Right: operands[i+1]}
+					expr = &CallExpr{Func: "Enum.uniq", Args: []Expr{concat}}
+				case "union_all":
+					expr = &BinaryExpr{Left: operands[i], Op: "++", Right: operands[i+1]}
+				case "except":
+					param := "x"
+					cond := &UnaryExpr{Op: "!", Expr: &CallExpr{Func: "Enum.member?", Args: []Expr{operands[i+1], &VarRef{Name: param}}}}
+					fn := &AnonFun{Params: []string{param}, Body: []Stmt{&ExprStmt{Expr: cond}}}
+					expr = &CallExpr{Func: "Enum.filter", Args: []Expr{operands[i], fn}}
+				case "intersect":
+					param := "x"
+					cond := &CallExpr{Func: "Enum.member?", Args: []Expr{operands[i+1], &VarRef{Name: param}}}
+					fn := &AnonFun{Params: []string{param}, Body: []Stmt{&ExprStmt{Expr: cond}}}
+					expr = &CallExpr{Func: "Enum.filter", Args: []Expr{operands[i], fn}}
+				default:
+					bin := &BinaryExpr{Left: operands[i], Op: opName, Right: operands[i+1]}
+					if opName == "in" {
+						if _, ok := types.TypeOfPostfix(ops[i].Right, env).(types.MapType); ok {
+							bin.MapIn = true
+						}
+					}
+					expr = bin
+				}
+				operands[i] = expr
 				operands = append(operands[:i+1], operands[i+2:]...)
 				ops = append(ops[:i], ops[i+1:]...)
 			} else {
