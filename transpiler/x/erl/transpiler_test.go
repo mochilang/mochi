@@ -159,6 +159,8 @@ func TestTranspileStringIndex(t *testing.T) { runGolden(t, "string_index") }
 
 func TestTranspileValuesBuiltin(t *testing.T) { runGolden(t, "values_builtin") }
 
+func TestTranspileBoolChain(t *testing.T) { runGolden(t, "bool_chain") }
+
 func TestTranspileTypedLet(t *testing.T) { runGolden(t, "typed_let") }
 
 func TestTranspileTypedVar(t *testing.T) { runGolden(t, "typed_var") }
