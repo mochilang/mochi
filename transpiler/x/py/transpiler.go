@@ -30,7 +30,6 @@ type Program struct {
 var (
 	currentImports map[string]bool
 	currentEnv     *types.Env
-	needYamlParser bool
 )
 
 type Stmt interface{ isStmt() }
@@ -1099,6 +1098,88 @@ func inferTypeFromValue(v interface{}) types.Type {
 	}
 }
 
+func valueToExpr(v interface{}) Expr {
+	switch val := v.(type) {
+	case map[string]interface{}:
+		keys := make([]Expr, 0, len(val))
+		vals := make([]Expr, 0, len(val))
+		names := make([]string, 0, len(val))
+		for k := range val {
+			names = append(names, k)
+		}
+		sort.Strings(names)
+		for _, k := range names {
+			keys = append(keys, &StringLit{Value: k})
+			vals = append(vals, valueToExpr(val[k]))
+		}
+		return &DictLit{Keys: keys, Values: vals}
+	case []interface{}:
+		elems := make([]Expr, len(val))
+		for i, it := range val {
+			elems[i] = valueToExpr(it)
+		}
+		return &ListLit{Elems: elems}
+	case string:
+		return &StringLit{Value: val}
+	case bool:
+		return &BoolLit{Value: val}
+	case int, int64:
+		return &IntLit{Value: fmt.Sprintf("%v", val)}
+	case float32, float64:
+		f := fmt.Sprintf("%v", val)
+		if !strings.ContainsAny(f, ".eE") {
+			f += ".0"
+		}
+		return &FloatLit{Value: f}
+	case nil:
+		return &Name{Name: "None"}
+	default:
+		return &Name{Name: "None"}
+	}
+}
+
+func dataExprFromFile(path, format string) (Expr, error) {
+	if path == "" {
+		return &ListLit{}, nil
+	}
+	root := repoRoot()
+	if root != "" && strings.HasPrefix(path, "../") {
+		clean := strings.TrimPrefix(path, "../")
+		path = filepath.Join(root, "tests", clean)
+	}
+	data, err := os.ReadFile(path)
+	if err != nil {
+		return nil, err
+	}
+	var v interface{}
+	switch format {
+	case "yaml":
+		if err := yaml.Unmarshal(data, &v); err != nil {
+			return nil, err
+		}
+	case "json":
+		if err := json.Unmarshal(data, &v); err != nil {
+			return nil, err
+		}
+	case "jsonl":
+		var arr []interface{}
+		for _, line := range bytes.Split(data, []byte{'\n'}) {
+			line = bytes.TrimSpace(line)
+			if len(line) == 0 {
+				continue
+			}
+			var item interface{}
+			if err := json.Unmarshal(line, &item); err == nil {
+				arr = append(arr, item)
+			}
+		}
+		v = arr
+	default:
+		return nil, fmt.Errorf("unsupported load format")
+	}
+	return valueToExpr(v), nil
+}
+
 func inferTypeFromExpr(e *parser.Expr) types.Type {
 	if e == nil || e.Binary == nil || len(e.Binary.Right) > 0 {
 		return types.AnyType{}
@@ -1540,36 +1621,7 @@ func Emit(w io.Writer, p *Program) error {
 			return err
 		}
 	}
-	if needYamlParser {
-		helper := "def _load_yaml(path):\n" +
-			"    items = []\n" +
-			"    obj = None\n" +
-			"    for line in open(path):\n" +
-			"        line = line.strip()\n" +
-			"        if not line:\n" +
-			"            continue\n" +
-			"        if line.startswith('- '):\n" +
-			"            if obj is not None:\n" +
-			"                items.append(obj)\n" +
-			"            obj = {}\n" +
-			"            line = line[2:]\n" +
-			"        if not line:\n" +
-			"            continue\n" +
-			"        key, val = line.split(':', 1)\n" +
-			"        key = key.strip()\n" +
-			"        val = val.strip()\n" +
-			"        if val.isdigit():\n" +
-			"            val = int(val)\n" +
-			"        elif val.startswith('\"') and val.endswith('\"'):\n" +
-			"            val = val[1:-1]\n" +
-			"        obj[key] = val\n" +
-			"    if obj is not None:\n" +
-			"        items.append(obj)\n" +
-			"    return items\n"
-		if _, err := io.WriteString(w, helper+"\n"); err != nil {
-			return err
-		}
-	}
+	// no runtime helpers required
 	for _, s := range p.Stmts {
 		switch st := s.(type) {
 		case *ImportStmt:
@@ -1762,7 +1814,6 @@ func Emit(w io.Writer, p *Program) error {
 func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	currentImports = map[string]bool{}
 	currentEnv = env
-	needYamlParser = false
 	p := &Program{}
 	for _, st := range prog.Statements {
 		switch {
@@ -2504,12 +2555,10 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 							outArgs[i] = &RawExpr{Code: code}
 							continue
 						}
-					case types.BoolType:
-						outArgs[i] = &CallExpr{Func: &Name{Name: "int"}, Args: []Expr{a}}
-						continue
 					}
 				}
-				outArgs[i] = a
+				code := fmt.Sprintf("(str(%s).lower() if isinstance(%s, bool) else %s)", exprString(a), exprString(a), exprString(a))
+				outArgs[i] = &RawExpr{Code: code}
 			}
 			return &CallExpr{Func: &Name{Name: "print"}, Args: outArgs}, nil
 		case "append":
@@ -2520,25 +2569,8 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 			if len(args) == 1 {
 				sumCall := &CallExpr{Func: &Name{Name: "sum"}, Args: []Expr{args[0]}}
 				lenCall := &CallExpr{Func: &Name{Name: "len"}, Args: []Expr{args[0]}}
-				var div Expr = &BinaryExpr{Left: sumCall, Op: "/", Right: lenCall}
-				zero := Expr(&IntLit{Value: "0"})
-				intCheck := false
-				if currentEnv != nil {
-					t := types.ExprType(p.Call.Args[0], currentEnv)
-					if _, ok := t.(types.FloatType); ok {
-						zero = &FloatLit{Value: "0.0"}
-					} else {
-						intCheck = true
-					}
-				} else {
-					intCheck = true
-				}
-				if intCheck {
-					intDiv := &CallExpr{Func: &Name{Name: "int"}, Args: []Expr{div}}
-					eq := &BinaryExpr{Left: div, Op: "==", Right: intDiv}
-					div = &CondExpr{Cond: eq, Then: intDiv, Else: div}
-				}
-				return &CondExpr{Cond: args[0], Then: div, Else: zero}, nil
+				div := &BinaryExpr{Left: sumCall, Op: "/", Right: lenCall}
+				return &CondExpr{Cond: args[0], Then: div, Else: &FloatLit{Value: "0.0"}}, nil
 			}
 		case "count":
 			if len(args) == 1 {
@@ -2649,21 +2681,22 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 			abs := filepath.ToSlash(filepath.Join(root, "tests", clean))
 			pathExpr = fmt.Sprintf("%q", abs)
 		}
+		expr, err := dataExprFromFile(path, format)
+		if err == nil {
+			return expr, nil
+		}
 		switch format {
-		case "yaml":
-			needYamlParser = true
-			return &RawExpr{Code: fmt.Sprintf("_load_yaml(%s)", pathExpr)}, nil
-		case "json":
+		case "json", "jsonl":
 			if currentImports != nil {
 				currentImports["json"] = true
 			}
-			return &RawExpr{Code: fmt.Sprintf("json.load(open(%s))", pathExpr)}, nil
-		case "jsonl":
-			if currentImports != nil {
-				currentImports["json"] = true
+			if format == "json" {
+				return &RawExpr{Code: fmt.Sprintf("json.load(open(%s))", pathExpr)}, nil
 			}
 			code := fmt.Sprintf("[json.loads(line) for line in open(%s)]", pathExpr)
 			return &RawExpr{Code: code}, nil
+		case "yaml":
+			return nil, err
 		default:
 			return nil, fmt.Errorf("unsupported load format")
 		}
