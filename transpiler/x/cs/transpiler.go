@@ -30,6 +30,7 @@ var mapVars map[string]bool
 var varTypes map[string]string
 var usesDict bool
 var usesLinq bool
+var usesJson bool
 
 type Stmt interface{ emit(io.Writer) }
 
@@ -912,6 +913,14 @@ func (v *ValuesExpr) emit(w io.Writer) {
 	fmt.Fprint(w, ".Values.ToList()")
 }
 
+type ExistsExpr struct{ Arg Expr }
+
+func (e *ExistsExpr) emit(w io.Writer) {
+	fmt.Fprint(w, "(")
+	e.Arg.emit(w)
+	fmt.Fprint(w, ".Any())")
+}
+
 // Transpile converts a Mochi AST to a simple C# AST.
 func Transpile(p *parser.Program, env *types.Env) (*Program, error) {
 	prog := &Program{}
@@ -920,6 +929,7 @@ func Transpile(p *parser.Program, env *types.Env) (*Program, error) {
 	varTypes = make(map[string]string)
 	usesDict = false
 	usesLinq = false
+	usesJson = false
 	for _, st := range p.Statements {
 		s, err := compileStmt(prog, st)
 		if err != nil {
@@ -1371,6 +1381,11 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 				usesLinq = true
 				return &AppendExpr{List: args[0], Item: args[1]}, nil
 			}
+		case "exists":
+			if len(args) == 1 {
+				usesLinq = true
+				return &ExistsExpr{Arg: args[0]}, nil
+			}
 		case "count":
 			if len(args) == 1 {
 				return &CountExpr{Arg: args[0]}, nil
@@ -1412,6 +1427,12 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 				usesDict = true
 				usesLinq = true
 				return &ValuesExpr{Map: args[0]}, nil
+			}
+		case "json":
+			if len(args) == 1 {
+				usesJson = true
+				inner := &CallExpr{Func: "JsonSerializer.Serialize", Args: []Expr{args[0]}}
+				return &CallExpr{Func: "Console.WriteLine", Args: []Expr{inner}}, nil
 			}
 		}
 		return &CallExpr{Func: name, Args: args}, nil
@@ -1523,6 +1544,9 @@ func Emit(prog *Program) []byte {
 	}
 	if usesLinq {
 		buf.WriteString("using System.Linq;\n")
+	}
+	if usesJson {
+		buf.WriteString("using System.Text.Json;\n")
 	}
 	buf.WriteString("\n")
 	buf.WriteString("class Program {\n")
