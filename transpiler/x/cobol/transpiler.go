@@ -792,9 +792,10 @@ func convertVar(name string, t *parser.TypeRef, val *parser.Expr, env *types.Env
 	}
 	if val != nil {
 		if lit := literalExpr(val); lit != nil {
-			if il, ok := lit.(*IntLit); ok {
-				n := len(strconv.Itoa(absInt(il.Value)))
-				if il.Value < 0 {
+			switch v := lit.(type) {
+			case *IntLit:
+				n := len(strconv.Itoa(absInt(v.Value)))
+				if v.Value < 0 {
 					n++
 				}
 				if n <= 1 {
@@ -802,6 +803,12 @@ func convertVar(name string, t *parser.TypeRef, val *parser.Expr, env *types.Env
 				} else {
 					pic = fmt.Sprintf("PIC 9(%d)", n)
 				}
+			case *StringLit:
+				l := len(v.Value)
+				if l == 0 {
+					l = 1
+				}
+				pic = fmt.Sprintf("PIC X(%d)", l)
 			}
 		}
 	}
@@ -816,7 +823,12 @@ func convertVar(name string, t *parser.TypeRef, val *parser.Expr, env *types.Env
 			}
 			tval := types.TypeOfExpr(val, env)
 			if _, ok := tval.(types.StringType); ok {
-				pic = "PIC X(100)"
+				l := maxIfStringLen(ie)
+				if l > 0 {
+					pic = fmt.Sprintf("PIC X(%d)", l)
+				} else {
+					pic = "PIC X(100)"
+				}
 			}
 			return VarDecl{Name: name, Pic: pic}, stmt, nil
 		} else {
@@ -827,7 +839,15 @@ func convertVar(name string, t *parser.TypeRef, val *parser.Expr, env *types.Env
 			tval := types.TypeOfExpr(val, env)
 			isStr := false
 			if _, ok := tval.(types.StringType); ok {
-				pic = "PIC X(100)"
+				if sl, ok := literalExpr(val).(*StringLit); ok {
+					l := len(sl.Value)
+					if l == 0 {
+						l = 1
+					}
+					pic = fmt.Sprintf("PIC X(%d)", l)
+				} else {
+					pic = "PIC X(100)"
+				}
 				isStr = true
 			}
 			return VarDecl{Name: name, Pic: pic}, &AssignStmt{Name: name, Expr: ex, IsString: isStr}, nil
@@ -884,6 +904,31 @@ func convertIfExprAssign(name string, ie *parser.IfExpr, env *types.Env) (Stmt, 
 		elseStmts = []Stmt{&AssignStmt{Name: name, Expr: elseEx, IsString: isStrElse}}
 	}
 	return &IfStmt{Cond: cond, Then: thenStmts, Else: elseStmts}, nil
+}
+
+func maxIfStringLen(ie *parser.IfExpr) int {
+	max := 0
+	if lit := literalExpr(ie.Then); lit != nil {
+		if s, ok := lit.(*StringLit); ok {
+			if len(s.Value) > max {
+				max = len(s.Value)
+			}
+		}
+	}
+	if ie.ElseIf != nil {
+		if l := maxIfStringLen(ie.ElseIf); l > max {
+			max = l
+		}
+	} else if ie.Else != nil {
+		if lit := literalExpr(ie.Else); lit != nil {
+			if s, ok := lit.(*StringLit); ok {
+				if len(s.Value) > max {
+					max = len(s.Value)
+				}
+			}
+		}
+	}
+	return max
 }
 
 func literalExpr(e *parser.Expr) Expr {
