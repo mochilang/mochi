@@ -547,10 +547,12 @@ func compileStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 		return &ExprStmt{Expr: e}, nil
 	case st.Let != nil:
 		var typ string
-		if st.Let.Type != nil {
-			typ = toGoType(st.Let.Type)
-		} else if t, err := env.GetVar(st.Let.Name); err == nil {
-			typ = toGoTypeFromType(t)
+		if st.Let.Value == nil {
+			if st.Let.Type != nil {
+				typ = toGoType(st.Let.Type)
+			} else if t, err := env.GetVar(st.Let.Name); err == nil {
+				typ = toGoTypeFromType(t)
+			}
 		}
 		if st.Let.Value != nil {
 			e, err := compileExpr(st.Let.Value, env)
@@ -565,15 +567,17 @@ func compileStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 					}
 				}
 			}
-			return &VarDecl{Name: st.Let.Name, Type: typ, Value: e}, nil
+			return &VarDecl{Name: st.Let.Name, Type: "", Value: e}, nil
 		}
 		return &VarDecl{Name: st.Let.Name, Type: typ}, nil
 	case st.Var != nil:
 		var typ string
-		if st.Var.Type != nil {
-			typ = toGoType(st.Var.Type)
-		} else if t, err := env.GetVar(st.Var.Name); err == nil {
-			typ = toGoTypeFromType(t)
+		if st.Var.Value == nil {
+			if st.Var.Type != nil {
+				typ = toGoType(st.Var.Type)
+			} else if t, err := env.GetVar(st.Var.Name); err == nil {
+				typ = toGoTypeFromType(t)
+			}
 		}
 		if st.Var.Value != nil {
 			e, err := compileExpr(st.Var.Value, env)
@@ -588,7 +592,7 @@ func compileStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 					}
 				}
 			}
-			return &VarDecl{Name: st.Var.Name, Type: typ, Value: e}, nil
+			return &VarDecl{Name: st.Var.Name, Type: "", Value: e}, nil
 		}
 		return &VarDecl{Name: st.Var.Name, Type: typ}, nil
 	case st.Assign != nil:

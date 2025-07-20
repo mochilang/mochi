@@ -1,3 +1,7 @@
+## Progress (2025-07-20 02:08 +0700)
+- go transpiler: better inference
+- Regenerated golden files - 52/100 vm valid programs passing
+
 ## Progress (2025-07-20 01:38 +0700)
 - regenerate go golden files
 - Regenerated golden files - 52/100 vm valid programs passing
