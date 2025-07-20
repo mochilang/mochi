@@ -374,6 +374,15 @@ func mapOp(op string) string {
 	}
 }
 
+func mapMethod(name string) string {
+	switch name {
+	case "contains":
+		return "Contains"
+	default:
+		return name
+	}
+}
+
 func precedence(op string) int {
 	switch op {
 	case "||":
@@ -403,7 +412,7 @@ func needsParen(e Expr) bool {
 }
 
 func inferType(e Expr) string {
-	switch e.(type) {
+	switch v := e.(type) {
 	case *IntLit:
 		return "int"
 	case *StringLit:
@@ -412,9 +421,35 @@ func inferType(e Expr) string {
 		return "bool"
 	case *ListLit:
 		return "list"
-	default:
-		return ""
+	case *UnaryExpr:
+		if v.Op == "not" {
+			return "bool"
+		}
+		return inferType(v.Expr)
+	case *BinaryExpr:
+		switch v.Op {
+		case "==", "!=", "<", "<=", ">", ">=", "&&", "||", "in":
+			return "bool"
+		case "+", "-", "*", "/", "%":
+			lt := inferType(v.Left)
+			rt := inferType(v.Right)
+			if lt == rt {
+				return lt
+			}
+		}
+	case *CallExpr:
+		switch v.Func {
+		case "string":
+			return "string"
+		case "Seq.length":
+			return "int"
+		case "Seq.sum":
+			return "int"
+		case "Seq.averageBy float":
+			return "float"
+		}
 	}
+	return ""
 }
 
 func (c *CallExpr) emit(w io.Writer) {
@@ -469,7 +504,7 @@ type MethodCallExpr struct {
 func (m *MethodCallExpr) emit(w io.Writer) {
 	m.Target.emit(w)
 	io.WriteString(w, ".")
-	io.WriteString(w, m.Name)
+	io.WriteString(w, mapMethod(m.Name))
 	io.WriteString(w, "(")
 	for i, a := range m.Args {
 		if i > 0 {
