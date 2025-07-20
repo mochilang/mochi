@@ -1,4 +1,4 @@
 <?php
 $todo = ["title" => "hi"];
-echo $todo, PHP_EOL;
+echo $todo["title"], PHP_EOL;
 ?>
