@@ -23,6 +23,14 @@ type Program struct {
 // transpilation. It is reset for every call to Transpile.
 var varTypes map[string]string
 
+func copyMap(src map[string]string) map[string]string {
+	dst := make(map[string]string, len(src))
+	for k, v := range src {
+		dst[k] = v
+	}
+	return dst
+}
+
 type Stmt interface{ emit(io.Writer) }
 
 type Expr interface{ emit(io.Writer) }
@@ -485,6 +493,10 @@ func inferType(e Expr) string {
 				return lt
 			}
 		}
+	case *AppendExpr:
+		return "list"
+	case *SubstringExpr:
+		return "string"
 	case *CallExpr:
 		switch v.Func {
 		case "string":
@@ -717,10 +729,18 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 		}
 		return &ReturnStmt{Expr: e}, nil
 	case st.Fun != nil:
+		save := varTypes
+		varTypes = copyMap(varTypes)
+		for _, p := range st.Fun.Params {
+			if p.Type != nil && p.Type.Simple != nil {
+				varTypes[p.Name] = *p.Type.Simple
+			}
+		}
 		body := make([]Stmt, len(st.Fun.Body))
 		for i, s := range st.Fun.Body {
 			cs, err := convertStmt(s)
 			if err != nil {
+				varTypes = save
 				return nil, err
 			}
 			body[i] = cs
@@ -729,6 +749,7 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 		for i, p := range st.Fun.Params {
 			params[i] = p.Name
 		}
+		varTypes = save
 		return &FunDef{Name: st.Fun.Name, Params: params, Body: body}, nil
 	case st.While != nil:
 		cond, err := convertExpr(st.While.Cond)
@@ -905,17 +926,24 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 		switch p.Call.Func {
 		case "print":
 			if len(args) == 1 {
-				if inferType(args[0]) == "bool" {
+				switch inferType(args[0]) {
+				case "bool":
 					return &CallExpr{Func: "printfn \"%b\"", Args: []Expr{args[0]}}, nil
+				case "int":
+					return &CallExpr{Func: "printfn \"%d\"", Args: []Expr{args[0]}}, nil
+				default:
+					arg := &CallExpr{Func: "string", Args: []Expr{args[0]}}
+					return &CallExpr{Func: "printfn \"%s\"", Args: []Expr{arg}}, nil
 				}
-				arg := &CallExpr{Func: "string", Args: []Expr{args[0]}}
-				return &CallExpr{Func: "printfn \"%s\"", Args: []Expr{arg}}, nil
 			}
 			elems := make([]Expr, len(args))
 			for i, a := range args {
-				if inferType(a) == "bool" {
+				switch inferType(a) {
+				case "bool":
 					elems[i] = &CallExpr{Func: "sprintf \"%b\"", Args: []Expr{a}}
-				} else {
+				case "int":
+					elems[i] = &CallExpr{Func: "sprintf \"%d\"", Args: []Expr{a}}
+				default:
 					elems[i] = &CallExpr{Func: "string", Args: []Expr{a}}
 				}
 			}
@@ -979,12 +1007,18 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 		}
 		return &ListLit{Elems: elems}, nil
 	case p.FunExpr != nil:
+		save := varTypes
+		varTypes = copyMap(varTypes)
 		params := make([]string, len(p.FunExpr.Params))
-		for i, p := range p.FunExpr.Params {
-			params[i] = p.Name
+		for i, par := range p.FunExpr.Params {
+			params[i] = par.Name
+			if par.Type != nil && par.Type.Simple != nil {
+				varTypes[par.Name] = *par.Type.Simple
+			}
 		}
 		if p.FunExpr.ExprBody != nil {
 			body, err := convertExpr(p.FunExpr.ExprBody)
+			varTypes = save
 			if err != nil {
 				return nil, err
 			}
@@ -994,10 +1028,12 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 		for i, s := range p.FunExpr.BlockBody {
 			cs, err := convertStmt(s)
 			if err != nil {
+				varTypes = save
 				return nil, err
 			}
 			stmts[i] = cs
 		}
+		varTypes = save
 		return &LambdaExpr{Params: params, Body: stmts}, nil
 	case p.Selector != nil && len(p.Selector.Tail) == 0:
 		return &IdentExpr{Name: p.Selector.Root}, nil
