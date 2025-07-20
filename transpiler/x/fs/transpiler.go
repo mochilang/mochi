@@ -15,13 +15,29 @@ import (
 )
 
 // Program represents a simple sequence of statements.
+type StructField struct {
+	Name string
+	Type string
+}
+
+type StructDef struct {
+	Name   string
+	Fields []StructField
+}
+
 type Program struct {
-	Stmts []Stmt
+	Structs []StructDef
+	Stmts   []Stmt
 }
 
 // varTypes holds the inferred type for each variable defined during
 // transpilation. It is reset for every call to Transpile.
-var varTypes map[string]string
+var (
+	varTypes     map[string]string
+	structDefs   []StructDef
+	structCount  int
+	transpileEnv *types.Env
+)
 
 func copyMap(src map[string]string) map[string]string {
 	dst := make(map[string]string, len(src))
@@ -29,6 +45,76 @@ func copyMap(src map[string]string) map[string]string {
 		dst[k] = v
 	}
 	return dst
+}
+
+func fsType(t types.Type) string {
+	switch tt := t.(type) {
+	case types.IntType, types.Int64Type:
+		return "int"
+	case types.FloatType:
+		return "float"
+	case types.BoolType:
+		return "bool"
+	case types.StringType:
+		return "string"
+	case types.ListType:
+		return fsType(tt.Elem) + " list"
+	case types.MapType:
+		return fmt.Sprintf("Map<%s, %s>", fsType(tt.Key), fsType(tt.Value))
+	case types.OptionType:
+		return fsType(tt.Elem) + " option"
+	case types.StructType:
+		if tt.Name != "" {
+			return tt.Name
+		}
+	}
+	return "obj"
+}
+
+func addStructDef(name string, st types.StructType) {
+	def := StructDef{Name: name}
+	for _, f := range st.Order {
+		def.Fields = append(def.Fields, StructField{f, fsType(st.Fields[f])})
+	}
+	structDefs = append(structDefs, def)
+}
+
+func inferLiteralType(e *parser.Expr) string {
+	if transpileEnv == nil || e == nil || e.Binary == nil || len(e.Binary.Right) != 0 {
+		return ""
+	}
+	u := e.Binary.Left
+	if len(u.Ops) > 0 || u.Value == nil || u.Value.Target == nil {
+		return ""
+	}
+	if ll := u.Value.Target.List; ll != nil {
+		if st, ok := types.InferStructFromList(ll, transpileEnv); ok {
+			structCount++
+			name := fmt.Sprintf("Anon%d", structCount)
+			addStructDef(name, st)
+			return name + " list"
+		}
+	}
+	return ""
+}
+
+func inferQueryType(q *parser.QueryExpr) string {
+	if transpileEnv == nil || q == nil {
+		return ""
+	}
+	if stSel := q.Select; stSel != nil {
+		if stSel.Binary != nil && len(stSel.Binary.Right) == 0 {
+			if ml := stSel.Binary.Left.Value.Target.Map; ml != nil {
+				if st, ok := types.InferStructFromMapEnv(ml, transpileEnv); ok {
+					structCount++
+					name := fmt.Sprintf("Anon%d", structCount)
+					addStructDef(name, st)
+					return name + " list"
+				}
+			}
+		}
+	}
+	return "list"
 }
 
 type Stmt interface{ emit(io.Writer) }
@@ -154,6 +240,56 @@ func (m *MapLit) emit(w io.Writer) {
 type AppendExpr struct {
 	List Expr
 	Elem Expr
+}
+
+type queryFrom struct {
+	Var string
+	Src Expr
+}
+
+type QueryExpr struct {
+	Var    string
+	Src    Expr
+	Froms  []queryFrom
+	Select Expr
+}
+
+type StructLit struct{ Fields []StructFieldExpr }
+
+type StructFieldExpr struct {
+	Name  string
+	Value Expr
+}
+
+func (s *StructLit) emit(w io.Writer) {
+	io.WriteString(w, "{ ")
+	for i, f := range s.Fields {
+		io.WriteString(w, f.Name)
+		io.WriteString(w, " = ")
+		f.Value.emit(w)
+		if i < len(s.Fields)-1 {
+			io.WriteString(w, "; ")
+		}
+	}
+	io.WriteString(w, " }")
+}
+
+func (q *QueryExpr) emit(w io.Writer) {
+	io.WriteString(w, "[ for ")
+	io.WriteString(w, q.Var)
+	io.WriteString(w, " in ")
+	q.Src.emit(w)
+	io.WriteString(w, " do")
+	for _, f := range q.Froms {
+		io.WriteString(w, " for ")
+		io.WriteString(w, f.Var)
+		io.WriteString(w, " in ")
+		f.Src.emit(w)
+		io.WriteString(w, " do")
+	}
+	io.WriteString(w, " yield ")
+	q.Select.emit(w)
+	io.WriteString(w, " ]")
 }
 
 func (a *AppendExpr) emit(w io.Writer) {
@@ -534,8 +670,18 @@ func inferType(e Expr) string {
 		return "list"
 	case *MapLit:
 		return "map"
+	case *StructLit:
+		return "struct"
+	case *QueryExpr:
+		return "list"
 	case *IdentExpr:
 		if t, ok := varTypes[v.Name]; ok {
+			if strings.HasSuffix(t, " list") {
+				return "list"
+			}
+			if strings.HasPrefix(t, "Map<") {
+				return "map"
+			}
 			return t
 		}
 		return ""
@@ -705,6 +851,13 @@ func (c *CastExpr) emit(w io.Writer) {
 func Emit(prog *Program) []byte {
 	var buf bytes.Buffer
 	buf.WriteString(header())
+	for _, st := range prog.Structs {
+		fmt.Fprintf(&buf, "type %s = {\n", st.Name)
+		for _, f := range st.Fields {
+			fmt.Fprintf(&buf, "    %s: %s\n", f.Name, f.Type)
+		}
+		buf.WriteString("}\n")
+	}
 	for i, st := range prog.Stmts {
 		st.emit(&buf)
 		if i < len(prog.Stmts)-1 {
@@ -730,8 +883,10 @@ func header() string {
 
 // Transpile converts a Mochi program to a simple F# AST.
 func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
-	_ = env
+	transpileEnv = env
 	varTypes = map[string]string{}
+	structDefs = nil
+	structCount = 0
 	p := &Program{}
 	for _, st := range prog.Statements {
 		conv, err := convertStmt(st)
@@ -740,6 +895,8 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 		}
 		p.Stmts = append(p.Stmts, optimizeFun(conv))
 	}
+	p.Structs = structDefs
+	transpileEnv = nil
 	return p, nil
 }
 
@@ -786,6 +943,10 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 		declared := ""
 		if st.Let.Type != nil && st.Let.Type.Simple != nil {
 			declared = *st.Let.Type.Simple
+		} else if t := inferLiteralType(st.Let.Value); t != "" {
+			declared = t
+		} else if st.Let.Value != nil && st.Let.Value.Binary != nil && len(st.Let.Value.Binary.Right) == 0 && st.Let.Value.Binary.Left.Value.Target.Query != nil {
+			declared = inferQueryType(st.Let.Value.Binary.Left.Value.Target.Query)
 		} else {
 			declared = inferType(e)
 		}
@@ -807,6 +968,10 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 		declared := ""
 		if st.Var.Type != nil && st.Var.Type.Simple != nil {
 			declared = *st.Var.Type.Simple
+		} else if t := inferLiteralType(st.Var.Value); t != "" {
+			declared = t
+		} else if st.Var.Value != nil && st.Var.Value.Binary != nil && len(st.Var.Value.Binary.Right) == 0 && st.Var.Value.Binary.Left.Value.Target.Query != nil {
+			declared = inferQueryType(st.Var.Value.Binary.Left.Value.Target.Query)
 		} else {
 			declared = inferType(e)
 		}
@@ -1172,7 +1337,34 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 			elems[i] = ex
 		}
 		return &ListLit{Elems: elems}, nil
+	case p.Struct != nil:
+		fields := make([]StructFieldExpr, len(p.Struct.Fields))
+		for i, f := range p.Struct.Fields {
+			v, err := convertExpr(f.Value)
+			if err != nil {
+				return nil, err
+			}
+			fields[i] = StructFieldExpr{Name: f.Name, Value: v}
+		}
+		return &StructLit{Fields: fields}, nil
 	case p.Map != nil:
+		allSimple := true
+		fields := make([]StructFieldExpr, len(p.Map.Items))
+		for i, it := range p.Map.Items {
+			if key, ok := types.SimpleStringKey(it.Key); ok {
+				val, err := convertExpr(it.Value)
+				if err != nil {
+					return nil, err
+				}
+				fields[i] = StructFieldExpr{Name: key, Value: val}
+			} else {
+				allSimple = false
+				break
+			}
+		}
+		if allSimple {
+			return &StructLit{Fields: fields}, nil
+		}
 		items := make([][2]Expr, len(p.Map.Items))
 		for i, it := range p.Map.Items {
 			k, err := convertExpr(it.Key)
@@ -1221,6 +1413,8 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 			expr = &FieldExpr{Target: expr, Name: name}
 		}
 		return expr, nil
+	case p.Query != nil:
+		return convertQueryExpr(p.Query)
 	case p.Group != nil:
 		return convertExpr(p.Group)
 	}
@@ -1318,4 +1512,24 @@ func buildMapUpdate(m Expr, keys []Expr, val Expr) Expr {
 	}
 	inner := buildMapUpdate(&IndexExpr{Target: m, Index: key}, keys[1:], val)
 	return &CallExpr{Func: "Map.add", Args: []Expr{key, inner, m}}
+}
+
+func convertQueryExpr(q *parser.QueryExpr) (Expr, error) {
+	src, err := convertExpr(q.Source)
+	if err != nil {
+		return nil, err
+	}
+	froms := make([]queryFrom, len(q.Froms))
+	for i, f := range q.Froms {
+		e, err := convertExpr(f.Src)
+		if err != nil {
+			return nil, err
+		}
+		froms[i] = queryFrom{Var: f.Var, Src: e}
+	}
+	sel, err := convertExpr(q.Select)
+	if err != nil {
+		return nil, err
+	}
+	return &QueryExpr{Var: q.Var, Src: src, Froms: froms, Select: sel}, nil
 }
