@@ -1,3 +1,28 @@
+## Progress (2025-07-20 11:45 +0700)
+- cobol: simplify display and remove runtime helpers
+- Generated COBOL for 19/100 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-20 11:38 +0700)
+- cobol: add golden test suite and update checklist
+- Generated COBOL for 19/100 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-20 11:38 +0700)
+- cobol: add golden test suite and update checklist
+- Generated COBOL for 19/100 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-20 11:38 +0700)
+- cobol: add golden test suite and update checklist
+- Generated COBOL for 19/100 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-20 11:38 +0700)
+- cobol: add golden test suite and update checklist
+- Generated COBOL for 19/100 programs
+- Updated README checklist and outputs
+
 ## Progress (2025-07-20 11:24 +0700)
 - ex: update timestamp handling
 - Generated COBOL for 19/100 programs
