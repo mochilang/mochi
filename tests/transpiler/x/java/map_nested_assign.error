@@ -1,1 +1,19 @@
-unsupported primary
+exit status 1
+Main.java:2: error: incompatible types: inference variable V has incompatible bounds
+    static java.util.Map<String, Integer> data = java.util.Map.of("outer", java.util.Map.of("inner", 1));
+                                                                 ^
+    equality constraints: Integer
+    lower bounds: Map<K,V>
+  where V,K are type-variables:
+    V extends Object declared in method <K,V>of(K,V)
+    K extends Object declared in method <K,V>of(K,V)
+Main.java:4: error: incompatible types: String cannot be converted to int
+        System.out.println(data["outer"]["inner"]);
+                                ^
+Main.java:4: error: array required, but Map<String,Integer> found
+        System.out.println(data["outer"]["inner"]);
+                               ^
+Main.java:4: error: incompatible types: String cannot be converted to int
+        System.out.println(data["outer"]["inner"]);
+                                         ^
+4 errors

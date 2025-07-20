@@ -1,4 +1,10 @@
-## Progress (2025-07-20 10:28 +0700)
+## Progress (2025-07-20 11:48 +0700)
+- java transpiler: add foreach loops and list/map literals (93aba1531)
+
+- cobol: add golden test suite and update checklist (01fa5b5d5)
+
+- cobol: add golden test suite and update checklist (01fa5b5d5)
+
 - java transpiler: simplify var types (717a1b129)
 
 - prolog: improve readability and remove style check (5d6f4afbd)

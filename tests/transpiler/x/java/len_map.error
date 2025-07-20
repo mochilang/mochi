@@ -1,1 +1,7 @@
-unsupported primary
+exit status 1
+Main.java:3: error: cannot find symbol
+        System.out.println(java.util.Map.of("a", 1, "b", 2).length());
+                                                           ^
+  symbol:   method length()
+  location: interface Map<String,Integer>
+1 error

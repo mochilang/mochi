@@ -1,1 +1,13 @@
-unsupported primary
+exit status 1
+Main.java:2: error: incompatible types: inference variable K has incompatible bounds
+    static java.util.Map<String, Integer> m = java.util.Map.of(1, "a", 2, "b");
+                                                              ^
+    equality constraints: String
+    lower bounds: Integer
+  where K,V are type-variables:
+    K extends Object declared in method <K,V>of(K,V,K,V)
+    V extends Object declared in method <K,V>of(K,V,K,V)
+Main.java:4: error: array required, but Map<String,Integer> found
+        System.out.println(m[1]);
+                            ^
+2 errors
