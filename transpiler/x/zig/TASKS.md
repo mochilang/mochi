@@ -1,3 +1,12 @@
+## Progress (2025-07-20 11:01 +0000)
+- Improved Zig output style with snake_case fields and const collections.
+- Query results now emit an `Entry` struct.
+- Print statements use `std.io` writer.
+
+## Progress (2025-07-20 10:55 +0000)
+ - Added basic query comprehension and struct inference from lists.
+ - Generated golden files for `cross_join` and updated README checklist (61/100 tests passing)
+
 ## Progress (2025-07-20 10:12 +0000)
 - Added function expression support for `let` declarations.
 - Generated golden files for `fun_expr_in_let`.

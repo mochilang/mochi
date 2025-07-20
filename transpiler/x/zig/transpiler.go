@@ -9,6 +9,7 @@ import (
 	"strconv"
 	"strings"
 	"time"
+	"unicode"
 
 	"mochi/parser"
 	"mochi/types"
@@ -16,11 +17,46 @@ import (
 
 var constLists map[string]*ListLit
 var mapVars map[string]bool
+var structDefs map[string]*StructDef
 var extraFuncs []*Func
 var funcCounter int
 
+func toSnakeCase(s string) string {
+	var buf strings.Builder
+	for i, r := range s {
+		if unicode.IsUpper(r) {
+			if i > 0 {
+				buf.WriteByte('_')
+			}
+			buf.WriteRune(unicode.ToLower(r))
+		} else {
+			buf.WriteRune(r)
+		}
+	}
+	return buf.String()
+}
+
 // Program represents a Zig source file with one or more functions.
+type Field struct {
+	Name string
+	Type string
+}
+
+type StructDef struct {
+	Name   string
+	Fields []Field
+}
+
+func (sd *StructDef) emit(w io.Writer) {
+	fmt.Fprintf(w, "const %s = struct {\n", sd.Name)
+	for _, f := range sd.Fields {
+		fmt.Fprintf(w, "    %s: %s,\n", f.Name, f.Type)
+	}
+	io.WriteString(w, "};\n")
+}
+
 type Program struct {
+	Structs   []*StructDef
 	Functions []*Func
 }
 
@@ -78,7 +114,7 @@ type CallExpr struct {
 	Args []Expr
 }
 
-// PrintStmt writes one or more expressions using std.debug.print.
+// PrintStmt writes values using std.io.getStdOut().writer().print.
 type PrintStmt struct{ Values []Expr }
 
 // VarDecl represents `let` or `var` declarations.
@@ -86,6 +122,7 @@ type VarDecl struct {
 	Name    string
 	Value   Expr
 	Mutable bool
+	Type    string
 }
 
 // AssignStmt represents simple assignments like `x = expr`.
@@ -138,14 +175,55 @@ type CastExpr struct {
 type NotExpr struct{ Expr Expr }
 
 // ListLit represents a list literal of integer expressions.
-type ListLit struct{ Elems []Expr }
+type ListLit struct {
+	Elems    []Expr
+	ElemType string
+}
 
 type MapEntry struct {
 	Key   Expr
 	Value Expr
 }
 
-type MapLit struct{ Entries []MapEntry }
+type MapLit struct {
+	Entries    []MapEntry
+	StructName string
+}
+
+type FieldExpr struct {
+	Target Expr
+	Name   string
+}
+
+func (fe *FieldExpr) emit(w io.Writer) {
+	fe.Target.emit(w)
+	fmt.Fprintf(w, ".%s", toSnakeCase(fe.Name))
+}
+
+type QueryComp struct {
+	Vars     []string
+	Sources  []Expr
+	Elem     Expr
+	ElemType string
+}
+
+func (qc *QueryComp) emit(w io.Writer) {
+	fmt.Fprintf(w, "blk: { var arr = std.ArrayList(%s).init(std.heap.page_allocator);", qc.ElemType)
+	for i, src := range qc.Sources {
+		io.WriteString(w, " for (")
+		src.emit(w)
+		io.WriteString(w, ") |")
+		io.WriteString(w, qc.Vars[i])
+		io.WriteString(w, "| {")
+	}
+	io.WriteString(w, " arr.append(")
+	qc.Elem.emit(w)
+	io.WriteString(w, ") catch unreachable;")
+	for range qc.Sources {
+		io.WriteString(w, " }")
+	}
+	io.WriteString(w, " const tmp = arr.toOwnedSlice() catch unreachable; break :blk tmp; }")
+}
 
 type FuncExpr struct {
 	Name       string
@@ -160,12 +238,36 @@ func zigTypeFromExpr(e Expr) string {
 		return "[]const u8"
 	case *BoolLit:
 		return "bool"
+	case *MapLit:
+		if m := e.(*MapLit); m.StructName != "" {
+			return m.StructName
+		}
+		return "std.StringHashMap(i64)"
+	case *ListLit:
+		if l := e.(*ListLit); l.ElemType != "" {
+			return "[]" + l.ElemType
+		}
+		return "[]i64"
 	default:
 		return "i64"
 	}
 }
 
 func (m *MapLit) emit(w io.Writer) {
+	if m.StructName != "" {
+		io.WriteString(w, ".{ ")
+		for i, e := range m.Entries {
+			if i > 0 {
+				io.WriteString(w, ", ")
+			}
+			if k, ok := e.Key.(*StringLit); ok {
+				fmt.Fprintf(w, ".%s = ", toSnakeCase(k.Value))
+			}
+			e.Value.emit(w)
+		}
+		io.WriteString(w, " }")
+		return
+	}
 	keyType := "[]const u8"
 	valType := "i64"
 	if len(m.Entries) > 0 {
@@ -213,6 +315,10 @@ func (p *Program) Emit() []byte {
 	var buf bytes.Buffer
 	buf.WriteString(header())
 	buf.WriteString("const std = @import(\"std\");\n\n")
+	for _, st := range p.Structs {
+		st.emit(&buf)
+		buf.WriteString("\n")
+	}
 	for i, fn := range p.Functions {
 		if i > 0 {
 			buf.WriteString("\n")
@@ -254,7 +360,7 @@ func writeIndent(w io.Writer, n int) {
 func (s *PrintStmt) emit(w io.Writer, indent int) {
 	writeIndent(w, indent)
 	if len(s.Values) == 0 {
-		io.WriteString(w, "std.debug.print(\"\\n\", .{});\n")
+		io.WriteString(w, "try std.io.getStdOut().writer().print(\"\\n\", .{});\n")
 		return
 	}
 	fmtSpec := make([]string, len(s.Values))
@@ -272,7 +378,7 @@ func (s *PrintStmt) emit(w io.Writer, indent int) {
 			fmtSpec[i] = "{any}"
 		}
 	}
-	io.WriteString(w, "std.debug.print(\"")
+	io.WriteString(w, "try std.io.getStdOut().writer().print(\"")
 	io.WriteString(w, strings.Join(fmtSpec, " "))
 	io.WriteString(w, "\\n\", .{")
 	for i, v := range s.Values {
@@ -291,7 +397,9 @@ func (v *VarDecl) emit(w io.Writer, indent int) {
 		kw = "var"
 	}
 	fmt.Fprintf(w, "%s %s", kw, v.Name)
-	if v.Mutable {
+	if v.Type != "" {
+		fmt.Fprintf(w, ": %s", v.Type)
+	} else if v.Mutable {
 		if _, ok := v.Value.(*IntLit); ok {
 			io.WriteString(w, ": i64")
 		}
@@ -419,7 +527,9 @@ func (b *BinaryExpr) emit(w io.Writer) {
 }
 
 func (l *ListLit) emit(w io.Writer) {
-	if len(l.Elems) > 0 {
+	if l.ElemType != "" {
+		fmt.Fprintf(w, "[_]%s{", l.ElemType)
+	} else if len(l.Elems) > 0 {
 		if _, ok := l.Elems[0].(*ListLit); ok {
 			if sub, ok := l.Elems[0].(*ListLit); ok {
 				fmt.Fprintf(w, "[_][%d]i64{", len(sub.Elems))
@@ -705,6 +815,7 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	collectMutables(prog.Statements, mutables)
 	constLists = map[string]*ListLit{}
 	mapVars = map[string]bool{}
+	structDefs = map[string]*StructDef{}
 	for _, st := range prog.Statements {
 		if st.Fun != nil {
 			fn, err := compileFunStmt(st.Fun, prog)
@@ -734,7 +845,11 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	_ = env
 	funcs = append(funcs, extraFuncs...)
 	funcs = append(funcs, main)
-	return &Program{Functions: funcs}, nil
+	structs := make([]*StructDef, 0, len(structDefs))
+	for _, sd := range structDefs {
+		structs = append(structs, sd)
+	}
+	return &Program{Structs: structs, Functions: funcs}, nil
 }
 
 func collectMutables(sts []*parser.Statement, m map[string]bool) {
@@ -922,6 +1037,10 @@ func compilePostfix(pf *parser.PostfixExpr) (Expr, error) {
 			}
 			return nil, fmt.Errorf("unsupported postfix")
 		}
+		if op.Field != nil {
+			expr = &FieldExpr{Target: expr, Name: op.Field.Name}
+			continue
+		}
 		if op.Cast != nil {
 			if op.Cast.Type != nil && op.Cast.Type.Simple != nil {
 				expr = &CastExpr{Value: expr, Type: *op.Cast.Type.Simple}
@@ -1076,6 +1195,8 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 			entries[i] = MapEntry{Key: k, Value: v}
 		}
 		return &MapLit{Entries: entries}, nil
+	case p.Query != nil:
+		return compileQueryExpr(p.Query)
 	case p.If != nil:
 		return compileIfExpr(p.If)
 	case p.Match != nil:
@@ -1218,6 +1339,102 @@ func compileForStmt(fs *parser.ForStmt, prog *parser.Program) (Stmt, error) {
 	return &ForStmt{Name: fs.Name, Start: start, End: end, Iterable: iter, Body: body}, nil
 }
 
+func mapFields(m *MapLit) ([]Field, bool) {
+	fields := make([]Field, len(m.Entries))
+	for i, e := range m.Entries {
+		key, ok := e.Key.(*StringLit)
+		if !ok {
+			return nil, false
+		}
+		fields[i] = Field{Name: toSnakeCase(key.Value), Type: zigTypeFromExpr(e.Value)}
+	}
+	return fields, true
+}
+
+func inferListStruct(varName string, list *ListLit) string {
+	if len(list.Elems) == 0 {
+		return ""
+	}
+	first, ok := list.Elems[0].(*MapLit)
+	if !ok {
+		return ""
+	}
+	fields, ok := mapFields(first)
+	if !ok {
+		return ""
+	}
+	for _, el := range list.Elems[1:] {
+		ml, ok := el.(*MapLit)
+		if !ok {
+			return ""
+		}
+		if len(ml.Entries) != len(first.Entries) {
+			return ""
+		}
+		for i, e := range ml.Entries {
+			k, ok := e.Key.(*StringLit)
+			if !ok || k.Value != fields[i].Name {
+				return ""
+			}
+		}
+	}
+	base := strings.TrimSuffix(varName, "s")
+	structName := strings.Title(base)
+	if _, ok := structDefs[structName]; !ok {
+		structDefs[structName] = &StructDef{Name: structName, Fields: fields}
+	}
+	for _, el := range list.Elems {
+		if ml, ok := el.(*MapLit); ok {
+			ml.StructName = structName
+		}
+	}
+	list.ElemType = structName
+	return structName
+}
+
+func compileQueryExpr(q *parser.QueryExpr) (Expr, error) {
+	if q.Where != nil || q.Group != nil || q.Sort != nil || q.Skip != nil || q.Take != nil || len(q.Joins) > 0 {
+		return nil, fmt.Errorf("unsupported query features")
+	}
+	vars := []string{q.Var}
+	sources := []Expr{}
+	src, err := compileExpr(q.Source)
+	if err != nil {
+		return nil, err
+	}
+	sources = append(sources, src)
+	for _, fc := range q.Froms {
+		s, err := compileExpr(fc.Src)
+		if err != nil {
+			return nil, err
+		}
+		vars = append(vars, fc.Var)
+		sources = append(sources, s)
+	}
+	elem, err := compileExpr(q.Select)
+	if err != nil {
+		return nil, err
+	}
+	ml, ok := elem.(*MapLit)
+	if !ok {
+		return nil, fmt.Errorf("unsupported select expression")
+	}
+	structName := "Entry"
+	if _, exists := structDefs[structName]; !exists {
+		fields := make([]Field, len(ml.Entries))
+		for i, e := range ml.Entries {
+			key, ok := e.Key.(*StringLit)
+			if !ok {
+				return nil, fmt.Errorf("query key must be string")
+			}
+			fields[i] = Field{Name: toSnakeCase(key.Value), Type: zigTypeFromExpr(e.Value)}
+		}
+		structDefs[structName] = &StructDef{Name: structName, Fields: fields}
+	}
+	ml.StructName = structName
+	return &QueryComp{Vars: vars, Sources: sources, Elem: ml, ElemType: structName}, nil
+}
+
 func toZigType(t *parser.TypeRef) string {
 	if t == nil {
 		return "i64"
@@ -1297,10 +1514,22 @@ func compileStmt(s *parser.Statement, prog *parser.Program) (Stmt, error) {
 		} else {
 			expr = &IntLit{Value: 0}
 		}
-		if _, ok := expr.(*MapLit); ok {
-			mapVars[s.Let.Name] = true
+		vd := &VarDecl{Name: s.Let.Name, Value: expr}
+		if lst, ok := expr.(*ListLit); ok {
+			if inferListStruct(s.Let.Name, lst) != "" {
+				vd.Type = "[_]" + lst.ElemType
+			}
 		}
-		return &VarDecl{Name: s.Let.Name, Value: expr}, nil
+		if ml, ok := expr.(*MapLit); ok {
+			mapVars[s.Let.Name] = true
+			if ml.StructName != "" {
+				vd.Type = ml.StructName
+			}
+		}
+		if qc, ok := expr.(*QueryComp); ok {
+			vd.Type = "[]" + qc.ElemType
+		}
+		return vd, nil
 	case s.Var != nil:
 		var expr Expr
 		var err error
@@ -1312,10 +1541,22 @@ func compileStmt(s *parser.Statement, prog *parser.Program) (Stmt, error) {
 		} else {
 			expr = &IntLit{Value: 0}
 		}
-		if _, ok := expr.(*MapLit); ok {
-			mapVars[s.Var.Name] = true
+		vd := &VarDecl{Name: s.Var.Name, Value: expr, Mutable: true}
+		if lst, ok := expr.(*ListLit); ok {
+			if inferListStruct(s.Var.Name, lst) != "" {
+				vd.Type = "[_]" + lst.ElemType
+			}
 		}
-		return &VarDecl{Name: s.Var.Name, Value: expr, Mutable: true}, nil
+		if ml, ok := expr.(*MapLit); ok {
+			mapVars[s.Var.Name] = true
+			if ml.StructName != "" {
+				vd.Type = ml.StructName
+			}
+		}
+		if qc, ok := expr.(*QueryComp); ok {
+			vd.Type = "[]" + qc.ElemType
+		}
+		return vd, nil
 	case s.Assign != nil && len(s.Assign.Index) == 0 && len(s.Assign.Field) == 0:
 		expr, err := compileExpr(s.Assign.Value)
 		if err != nil {
