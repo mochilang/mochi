@@ -822,7 +822,11 @@ func compileStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 			}
 		}
 		if funcDepth == 0 {
-			env.SetVar(st.Let.Name, types.AnyType{}, false)
+			if _, ok := val.(*AnonFun); ok {
+				env.SetVar(st.Let.Name, types.FuncType{}, false)
+			} else {
+				env.SetVar(st.Let.Name, types.AnyType{}, false)
+			}
 		}
 		return &LetStmt{Name: st.Let.Name, Value: val}, nil
 	case st.Var != nil:
@@ -848,7 +852,11 @@ func compileStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 			}
 		}
 		if funcDepth == 0 {
-			env.SetVar(st.Var.Name, types.AnyType{}, false)
+			if _, ok := val.(*AnonFun); ok {
+				env.SetVar(st.Var.Name, types.FuncType{}, false)
+			} else {
+				env.SetVar(st.Var.Name, types.AnyType{}, false)
+			}
 		}
 		return &LetStmt{Name: st.Var.Name, Value: val}, nil
 	case st.Assign != nil:
@@ -1511,10 +1519,8 @@ func compilePrimary(p *parser.Primary, env *types.Env) (Expr, error) {
 			}
 			return &CallExpr{Func: name, Args: args}, nil
 		}
-		if t, err := env.GetVar(name); err == nil {
-			if _, ok := t.(types.FuncType); ok {
-				return &CallExpr{Func: name, Args: args, Var: true}, nil
-			}
+		if _, err := env.GetVar(name); err == nil {
+			return &CallExpr{Func: name, Args: args, Var: true}, nil
 		}
 		return &CallExpr{Func: name, Args: args}, nil
 	case p.Lit != nil:
