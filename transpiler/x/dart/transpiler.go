@@ -5,6 +5,7 @@ package dartt
 import (
 	"fmt"
 	"io"
+	"strings"
 
 	"mochi/ast"
 	"mochi/parser"
@@ -258,11 +259,11 @@ type LetStmt struct {
 func (s *LetStmt) emit(w io.Writer) error {
 	typ := inferType(s.Value)
 	if typ == "var" {
-		if _, err := io.WriteString(w, "var "+s.Name+" = "); err != nil {
+		if _, err := io.WriteString(w, "final "+s.Name+" = "); err != nil {
 			return err
 		}
 	} else {
-		if _, err := io.WriteString(w, typ+" "+s.Name+" = "); err != nil {
+		if _, err := io.WriteString(w, "final "+typ+" "+s.Name+" = "); err != nil {
 			return err
 		}
 	}
@@ -797,7 +798,19 @@ func inferType(e Expr) string {
 			}
 		}
 		return "dynamic"
-	case *SelectorExpr, *IndexExpr:
+	case *IndexExpr:
+		t := inferType(ex.Target)
+		if strings.HasPrefix(t, "List<") && strings.HasSuffix(t, ">") {
+			return strings.TrimSuffix(strings.TrimPrefix(t, "List<"), ">")
+		}
+		if strings.HasPrefix(t, "Map<") && strings.HasSuffix(t, ">") {
+			parts := strings.TrimSuffix(strings.TrimPrefix(t, "Map<"), ">")
+			if idx := strings.Index(parts, ","); idx >= 0 {
+				return strings.TrimSpace(parts[idx+1:])
+			}
+		}
+		return "dynamic"
+	case *SelectorExpr:
 		return "dynamic"
 	case *ContainsExpr:
 		return "bool"
