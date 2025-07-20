@@ -1,3 +1,33 @@
+## Progress (2025-07-20 22:51 +0700)
+- fortran: add string.contains support
+
+## Progress (2025-07-20 22:30 +0700)
+- ftn: support multiple print args and update progress
+
+## Progress (2025-07-20 22:30 +0700)
+- ftn: support multiple print args and update progress
+
+## Progress (2025-07-20 22:30 +0700)
+- ftn: support multiple print args and update progress
+
+## Progress (2025-07-20 22:30 +0700)
+- ftn: support multiple print args and update progress
+
+## Progress (2025-07-20 22:30 +0700)
+- ftn: support multiple print args and update progress
+
+## Progress (2025-07-20 22:30 +0700)
+- ftn: support multiple print args and update progress
+
+## Progress (2025-07-20 22:30 +0700)
+- ftn: support multiple print args and update progress
+
+## Progress (2025-07-20 22:30 +0700)
+- ftn: support multiple print args and update progress
+
+## Progress (2025-07-20 22:30 +0700)
+- ftn: support multiple print args and update progress
+
 ## Progress (2025-07-20 22:06 +0700)
 - docs(fortran): update progress
 
