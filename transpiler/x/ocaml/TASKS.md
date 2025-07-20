@@ -1,3 +1,7 @@
+## Progress (2025-07-20 12:54 +0700)
+- Checklist updated: 35/100 tests compiled
+- Added support for `len` builtin on lists.
+
 ## Progress (2025-07-20 12:19 +0700)
 - Checklist updated: 34/100 tests compiled
 - Added support for `map_assign` using association lists.
