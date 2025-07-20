@@ -1,3 +1,15 @@
+## Progress (2025-07-20 09:56:03 +0700)
+- Checklist now uses vm golden tests
+- Removed runtime helper functions
+- Enhanced division handling and type inference
+- Updated golden tests and documentation
+
+## Progress (2025-07-20T09:56:03+07:00)
+- Added list and string indexing support
+- Implemented string contains builtin
+- Improved header timestamp format
+- Updated golden tests and README
+
 ## Progress (2025-07-20T09:22:16+07:00)
 - Added list and string indexing support
 - Implemented string contains builtin

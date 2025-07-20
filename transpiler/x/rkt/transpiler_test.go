@@ -122,7 +122,7 @@ func TestTranspile_Golden(t *testing.T) {
 func updateReadme() {
 	root := repoRoot(&testing.T{})
 	srcDir := filepath.Join(root, "tests", "vm", "valid")
-	outDir := filepath.Join(root, "tests", "transpiler", "x", "rkt")
+	outDir := srcDir
 	readmePath := filepath.Join(root, "transpiler", "x", "rkt", "README.md")
 	files, _ := filepath.Glob(filepath.Join(srcDir, "*.mochi"))
 	total := len(files)
@@ -131,7 +131,7 @@ func updateReadme() {
 	for _, f := range files {
 		name := strings.TrimSuffix(filepath.Base(f), ".mochi")
 		mark := "[ ]"
-		if _, err := os.Stat(filepath.Join(outDir, name+".rkt")); err == nil {
+		if _, err := os.Stat(filepath.Join(outDir, name+".rkt.out")); err == nil {
 			compiled++
 			mark = "[x]"
 		}
@@ -139,7 +139,7 @@ func updateReadme() {
 	}
 	var buf bytes.Buffer
 	buf.WriteString("# Mochi Racket Transpiler\n")
-	buf.WriteString("This directory contains the experimental Racket transpiler. Golden tests under `tests/transpiler/x/rkt` check the generated code and its runtime output.\n")
+	buf.WriteString("This directory contains the experimental Racket transpiler. Golden tests under `tests/vm/valid` check the generated code and its runtime output.\n")
 	fmt.Fprintf(&buf, "\n## Golden Test Checklist (%d/%d)\n\n", compiled, total)
 	buf.WriteString(strings.Join(lines, "\n"))
 	buf.WriteString("\n")
@@ -149,17 +149,17 @@ func updateReadme() {
 func updateTasks() {
 	root := repoRoot(&testing.T{})
 	taskPath := filepath.Join(root, "transpiler", "x", "rkt", "TASKS.md")
-	out, err := exec.Command("git", "log", "-1", "--format=%cd", "--date=iso-strict").Output()
+	out, err := exec.Command("git", "log", "-1", "--format=%cd", "--date=format:%Y-%m-%d %H:%M:%S %z").Output()
 	ts := strings.TrimSpace(string(out))
 	if err != nil {
 		ts = ""
 	}
 	var buf bytes.Buffer
 	fmt.Fprintf(&buf, "## Progress (%s)\n", ts)
-	buf.WriteString("- Added list and string indexing support\n")
-	buf.WriteString("- Implemented string contains builtin\n")
-	buf.WriteString("- Improved header timestamp format\n")
-	buf.WriteString("- Updated golden tests and README\n\n")
+	buf.WriteString("- Checklist now uses vm golden tests\n")
+	buf.WriteString("- Removed runtime helper functions\n")
+	buf.WriteString("- Enhanced division handling and type inference\n")
+	buf.WriteString("- Updated golden tests and documentation\n\n")
 	if data, err := os.ReadFile(taskPath); err == nil {
 		buf.Write(data)
 	}
