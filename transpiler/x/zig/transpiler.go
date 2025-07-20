@@ -6,6 +6,7 @@ import (
 	"bytes"
 	"fmt"
 	"io"
+	"strings"
 	"time"
 
 	"mochi/parser"
@@ -108,6 +109,12 @@ type ListLit struct{ Elems []Expr }
 type IndexExpr struct {
 	Target Expr
 	Index  Expr
+}
+
+// FieldAccess represents a simple field selection like `obj.field`.
+type FieldAccess struct {
+	Target Expr
+	Name   string
 }
 
 // BreakStmt exits the nearest loop.
@@ -242,6 +249,12 @@ func (i *IndexExpr) emit(w io.Writer) {
 	io.WriteString(w, "]")
 }
 
+func (f *FieldAccess) emit(w io.Writer) {
+	f.Target.emit(w)
+	io.WriteString(w, ".")
+	io.WriteString(w, f.Name)
+}
+
 func (b *BoolLit) emit(w io.Writer) {
 	if b.Value {
 		io.WriteString(w, "true")
@@ -368,6 +381,16 @@ func (c *CallExpr) emit(w io.Writer) {
 		} else {
 			io.WriteString(w, "0")
 		}
+	case "contains":
+		if len(c.Args) == 2 {
+			io.WriteString(w, "std.mem.indexOf(u8, ")
+			c.Args[0].emit(w)
+			io.WriteString(w, ", ")
+			c.Args[1].emit(w)
+			io.WriteString(w, ") != null")
+		} else {
+			io.WriteString(w, "false")
+		}
 	default:
 		io.WriteString(w, c.Func)
 		io.WriteString(w, "(")
@@ -452,14 +475,50 @@ func compilePostfix(pf *parser.PostfixExpr) (Expr, error) {
 	if err != nil {
 		return nil, err
 	}
+	var pendingField string
 	for _, op := range pf.Ops {
-		if op.Index != nil && op.Index.Colon == nil && op.Index.Colon2 == nil {
+		switch {
+		case op.Field != nil:
+			pendingField = op.Field.Name
+		case op.Index != nil && op.Index.Colon == nil && op.Index.Colon2 == nil:
 			idx, err := compileExpr(op.Index.Start)
 			if err != nil {
 				return nil, err
 			}
 			expr = &IndexExpr{Target: expr, Index: idx}
-		} else {
+		case op.Call != nil:
+			args := make([]Expr, len(op.Call.Args))
+			for i, a := range op.Call.Args {
+				ex, err := compileExpr(a)
+				if err != nil {
+					return nil, err
+				}
+				args[i] = ex
+			}
+			if fa, ok := expr.(*FieldAccess); ok {
+				pendingField = fa.Name
+				expr = fa.Target
+			}
+			if pendingField != "" {
+				switch pendingField {
+				case "contains":
+					allArgs := append([]Expr{expr}, args...)
+					if s1, ok1 := allArgs[0].(*StringLit); ok1 {
+						if s2, ok2 := allArgs[1].(*StringLit); ok2 {
+							return &BoolLit{Value: strings.Contains(s1.Value, s2.Value)}, nil
+						}
+					}
+					expr = &CallExpr{Func: "contains", Args: allArgs}
+				default:
+					return nil, fmt.Errorf("unsupported method %s", pendingField)
+				}
+				pendingField = ""
+			} else if vr, ok := expr.(*VarRef); ok {
+				expr = &CallExpr{Func: vr.Name, Args: args}
+			} else {
+				return nil, fmt.Errorf("unsupported call")
+			}
+		default:
 			return nil, fmt.Errorf("unsupported postfix")
 		}
 	}
@@ -535,8 +594,12 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 		return &ListLit{Elems: elems}, nil
 	case p.If != nil:
 		return compileIfExpr(p.If)
-	case p.Selector != nil && len(p.Selector.Tail) == 0:
-		return &VarRef{Name: p.Selector.Root}, nil
+	case p.Selector != nil:
+		expr := Expr(&VarRef{Name: p.Selector.Root})
+		for _, fld := range p.Selector.Tail {
+			expr = &FieldAccess{Target: expr, Name: fld}
+		}
+		return expr, nil
 	case p.Group != nil:
 		return compileExpr(p.Group)
 	default:

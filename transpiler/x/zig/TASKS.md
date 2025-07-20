@@ -1,3 +1,8 @@
+## Progress (2025-07-20 05:38 +0000)
+- Added support for string `contains` method with field access.
+- Generated golden file for `string_contains`.
+- Updated README checklist (27/100 tests passing)
+
 ## Progress (2025-07-20 11:38 +0700)
 - Improved list literals to infer nested array sizes using Zig type inference.
 - Removed runtime helper state and inlined `min`/`max` loops.
@@ -31,6 +36,8 @@
 - Regenerated golden files - 24/100 vm valid programs passing
 
 # Zig Transpiler Tasks
+
+- 2025-07-20 05:38 +0000 - Added `contains` support and generated string_contains (27/100 tests passing)
 
 - 2025-07-20 11:38 +0700 - Improved list handling and inlined min/max loops (26/100 tests passing)
 - 2025-07-20 10:30 +0700 - Added break/continue support and improved variable typing (26/100 tests passing)
