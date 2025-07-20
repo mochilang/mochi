@@ -3,12 +3,18 @@
 - Improved PIC inference for constant strings
 - Updated README checklist with progress 18/100
 
+## Progress (2025-07-20 09:20 GMT+7)
+- Simplified Display logic and updated numeric formatting
+- Regenerated COBOL sources; checklist still 18/100
+
 ## Progress (2025-07-20 01:47 +0700)
 - Updated README checklist with progress 18/100
 - Improved isDirectNumber for arithmetic detection
 
 
 # Transpiler Progress
+
+- 2025-07-20 09:20 GMT+7 - Refined display formatting using TMP-STR helper
 
 - 2025-07-20 01:32 +0700 - Simplified DISPLAY handling and removed TMP-STR helper; README checklist now 18/100
 - 2025-07-19 21:14 +0700 - Implemented boolean operators and generated golden files for `string_compare`; README checklist now 18/100
