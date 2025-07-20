@@ -88,6 +88,10 @@ func TestTranspilePrograms(t *testing.T) {
 		"map_nested_assign",
 		"tail_recursion",
 		"two-sum",
+		"membership",
+		"map_membership",
+		"closure",
+		"nested_function",
 	}
 	root := repoRoot(t)
 	outDir := filepath.Join(root, "tests", "transpiler", "x", "kt")
@@ -134,6 +138,7 @@ func TestTranspilePrograms(t *testing.T) {
 			if !bytes.Equal(got, want) {
 				t.Errorf("output mismatch:\nGot: %s\nWant: %s", got, want)
 			}
+			_ = os.Remove(jar)
 		})
 	}
 }
