@@ -1038,6 +1038,8 @@ func inferType(e Expr) string {
 			return "string"
 		}
 		return "array of integer"
+	case *UnaryExpr:
+		return inferType(v.Expr)
 	default:
 		return ""
 	}
