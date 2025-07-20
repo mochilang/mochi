@@ -1,3 +1,8 @@
+## Progress (2025-07-20 17:02 +0700)
+- Added struct field typing to generate nested structs correctly.
+- Passed golden test `user_type_literal`.
+- VM valid golden test results updated to 54/100
+
 ## Progress (2025-07-20 16:44 +0700)
 - VM valid golden test results updated to 53/100
 

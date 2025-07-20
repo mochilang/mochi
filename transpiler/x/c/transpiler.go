@@ -638,11 +638,19 @@ func (p *Program) Emit() []byte {
 		for _, field := range st.Order {
 			typ := "int"
 			if ft, ok := st.Fields[field]; ok {
-				switch ft.(type) {
+				switch ft := ft.(type) {
 				case types.StringType:
 					typ = "const char*"
 				case types.BoolType:
 					typ = "int"
+				case types.StructType:
+					typ = ft.Name
+				case types.ListType:
+					if _, ok := ft.Elem.(types.StringType); ok {
+						typ = "const char*[]"
+					} else {
+						typ = "int[]"
+					}
 				}
 			}
 			fmt.Fprintf(&buf, "    %s %s;\n", typ, field)
