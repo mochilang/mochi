@@ -11,7 +11,7 @@ Checklist:
 - [x] basic_compare
 - [x] binary_precedence
 - [x] bool_chain
-- [x] break_continue
+- [ ] break_continue
 - [x] cast_string_to_int
 - [ ] cast_struct
 - [x] closure
@@ -88,7 +88,7 @@ Checklist:
 - [x] str_builtin
 - [x] string_compare
 - [x] string_concat
-- [ ] string_contains
+- [x] string_contains
 - [ ] string_in_operator
 - [x] string_index
 - [ ] string_prefix_slice
