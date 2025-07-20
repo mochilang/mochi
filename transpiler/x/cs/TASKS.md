@@ -1,3 +1,6 @@
+## Progress (2025-07-20 10:34 +0700)
+- cs transpiler: improve type inference (progress 61/100)
+
 ## Progress (2025-07-20 10:18 +0700)
 - prolog: improve readability and remove style check (progress 61/100)
 
@@ -72,6 +75,7 @@
 ## Remaining Work
 - [x] Implement loops and conditionals
 - [ ] Support map and list mutation operations
+
 
 
 
