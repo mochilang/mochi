@@ -153,7 +153,7 @@ func updateTasks() {
 	var buf bytes.Buffer
 	buf.WriteString(fmt.Sprintf("## Progress (%s)\n", ts))
 	fmt.Fprintf(&buf, "- %d/%d VM tests passing\n", compiled, total)
-	buf.WriteString("- Added cast expressions and function literals\n")
+	buf.WriteString("- Added map literals and index assignments\n")
 	buf.WriteString("\n")
 
 	if data, err := os.ReadFile(taskFile); err == nil {

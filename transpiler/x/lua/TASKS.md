@@ -1,3 +1,7 @@
+## Progress (2025-07-20 01:48 GMT+7)
+- 39/100 VM tests passing
+- Added map literals and index assignments
+
 
 ## Progress (2025-07-20 01:45 +07)
 - 34/100 VM tests passing

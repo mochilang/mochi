@@ -16,6 +16,8 @@ import (
 	"mochi/types"
 )
 
+var currentEnv *types.Env
+
 // Program represents a simple Lua program consisting of a sequence of
 // statements.
 type Program struct {
@@ -30,6 +32,10 @@ type ExprStmt struct{ Expr Expr }
 type AssignStmt struct {
 	Name  string
 	Value Expr
+}
+type IndexAssignStmt struct {
+	Target Expr
+	Value  Expr
 }
 type FunStmt struct {
 	Name   string
@@ -82,6 +88,13 @@ type IntLit struct{ Value int }
 type BoolLit struct{ Value bool }
 type Ident struct{ Name string }
 type ListLit struct{ Elems []Expr }
+type MapLit struct{ Keys, Values []Expr }
+type MapItem struct{ Key, Value Expr }
+type IndexExpr struct {
+	Target Expr
+	Index  Expr
+	Kind   string
+}
 type FunExpr struct {
 	Params []string
 	Body   []Stmt
@@ -169,6 +182,16 @@ func (c *CallExpr) emit(w io.Writer) {
 
 func (a *AssignStmt) emit(w io.Writer) {
 	io.WriteString(w, a.Name)
+	io.WriteString(w, " = ")
+	if a.Value == nil {
+		io.WriteString(w, "nil")
+	} else {
+		a.Value.emit(w)
+	}
+}
+
+func (a *IndexAssignStmt) emit(w io.Writer) {
+	a.Target.emit(w)
 	io.WriteString(w, " = ")
 	if a.Value == nil {
 		io.WriteString(w, "nil")
@@ -307,6 +330,44 @@ func (l *ListLit) emit(w io.Writer) {
 	io.WriteString(w, "}")
 }
 
+func (m *MapLit) emit(w io.Writer) {
+	io.WriteString(w, "{")
+	for i := range m.Keys {
+		if i > 0 {
+			io.WriteString(w, ", ")
+		}
+		io.WriteString(w, "[")
+		m.Keys[i].emit(w)
+		io.WriteString(w, "] = ")
+		m.Values[i].emit(w)
+	}
+	io.WriteString(w, "}")
+}
+
+func (ix *IndexExpr) emit(w io.Writer) {
+	switch ix.Kind {
+	case "string":
+		io.WriteString(w, "string.sub(")
+		ix.Target.emit(w)
+		io.WriteString(w, ", (")
+		ix.Index.emit(w)
+		io.WriteString(w, " + 1), (")
+		ix.Index.emit(w)
+		io.WriteString(w, " + 1)")
+		io.WriteString(w, ")")
+	case "list":
+		ix.Target.emit(w)
+		io.WriteString(w, "[")
+		ix.Index.emit(w)
+		io.WriteString(w, " + 1]")
+	default: // map
+		ix.Target.emit(w)
+		io.WriteString(w, "[")
+		ix.Index.emit(w)
+		io.WriteString(w, "]")
+	}
+}
+
 func (f *FunExpr) emit(w io.Writer) {
 	io.WriteString(w, "function(")
 	for i, p := range f.Params {
@@ -336,6 +397,38 @@ func isStringExpr(e Expr) bool {
 	case *BinaryExpr:
 		if ex.Op == ".." || ex.Op == "+" {
 			return isStringExpr(ex.Left) || isStringExpr(ex.Right)
+		}
+	}
+	return false
+}
+
+func isMapExpr(e Expr) bool {
+	switch ex := e.(type) {
+	case *MapLit:
+		return true
+	case *Ident:
+		if currentEnv != nil {
+			if t, err := currentEnv.GetVar(ex.Name); err == nil {
+				if _, ok := t.(types.MapType); ok {
+					return true
+				}
+			}
+		}
+	}
+	return false
+}
+
+func isListExpr(e Expr) bool {
+	switch ex := e.(type) {
+	case *ListLit:
+		return true
+	case *Ident:
+		if currentEnv != nil {
+			if t, err := currentEnv.GetVar(ex.Name); err == nil {
+				if _, ok := t.(types.ListType); ok {
+					return true
+				}
+			}
 		}
 	}
 	return false
@@ -518,10 +611,54 @@ func convertPostfix(p *parser.PostfixExpr) (Expr, error) {
 	if err != nil {
 		return nil, err
 	}
-	for _, op := range p.Ops {
+	for i := 0; i < len(p.Ops); i++ {
+		op := p.Ops[i]
 		switch {
+		case op.Index != nil && op.Index.Colon == nil:
+			idx, err := convertExpr(op.Index.Start)
+			if err != nil {
+				return nil, err
+			}
+			kind := "list"
+			if isStringExpr(expr) {
+				kind = "string"
+			} else if isMapExpr(expr) {
+				kind = "map"
+			}
+			expr = &IndexExpr{Target: expr, Index: idx, Kind: kind}
+		case op.Field != nil:
+			if i+1 < len(p.Ops) && p.Ops[i+1].Call != nil {
+				call := p.Ops[i+1].Call
+				i++
+				var args []Expr
+				args = append(args, expr)
+				for _, a := range call.Args {
+					ae, err := convertExpr(a)
+					if err != nil {
+						return nil, err
+					}
+					args = append(args, ae)
+				}
+				expr = &CallExpr{Func: op.Field.Name, Args: args}
+			} else {
+				return nil, fmt.Errorf("unsupported selector")
+			}
+		case op.Call != nil:
+			var args []Expr
+			for _, a := range op.Call.Args {
+				ae, err := convertExpr(a)
+				if err != nil {
+					return nil, err
+				}
+				args = append(args, ae)
+			}
+			if id, ok := expr.(*Ident); ok {
+				expr = &CallExpr{Func: id.Name, Args: args}
+			} else {
+				return nil, fmt.Errorf("unsupported call")
+			}
 		case op.Cast != nil:
-			// ignore cast type, just keep expression
+			// ignore cast
 		default:
 			return nil, fmt.Errorf("postfix ops not supported")
 		}
@@ -553,6 +690,22 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 			elems = append(elems, ce)
 		}
 		return &ListLit{Elems: elems}, nil
+	case p.Map != nil:
+		var keys []Expr
+		var values []Expr
+		for _, it := range p.Map.Items {
+			ke, err := convertExpr(it.Key)
+			if err != nil {
+				return nil, err
+			}
+			ve, err := convertExpr(it.Value)
+			if err != nil {
+				return nil, err
+			}
+			keys = append(keys, ke)
+			values = append(values, ve)
+		}
+		return &MapLit{Keys: keys, Values: values}, nil
 	case p.FunExpr != nil:
 		fe := &FunExpr{}
 		for _, pa := range p.FunExpr.Params {
@@ -769,12 +922,29 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 		}
 		return &AssignStmt{Name: st.Var.Name, Value: expr}, nil
 	case st.Assign != nil:
-		if len(st.Assign.Index) > 0 || len(st.Assign.Field) > 0 {
-			return nil, fmt.Errorf("unsupported assignment")
-		}
 		expr, err := convertExpr(st.Assign.Value)
 		if err != nil {
 			return nil, err
+		}
+		if len(st.Assign.Index) > 0 {
+			target := Expr(&Ident{Name: st.Assign.Name})
+			for _, idx := range st.Assign.Index {
+				iexpr, err := convertExpr(idx.Start)
+				if err != nil {
+					return nil, err
+				}
+				kind := "list"
+				if isStringExpr(target) {
+					kind = "string"
+				} else if isMapExpr(target) {
+					kind = "map"
+				}
+				target = &IndexExpr{Target: target, Index: iexpr, Kind: kind}
+			}
+			return &IndexAssignStmt{Target: target, Value: expr}, nil
+		}
+		if len(st.Assign.Field) > 0 {
+			return nil, fmt.Errorf("unsupported assignment")
 		}
 		return &AssignStmt{Name: st.Assign.Name, Value: expr}, nil
 	case st.Fun != nil:
@@ -801,7 +971,7 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 // `print`. Expressions handle unary negation, arithmetic, comparison and basic
 // boolean operators.
 func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
-	_ = env
+	currentEnv = env
 	lp := &Program{}
 	for _, st := range prog.Statements {
 		s, err := convertStmt(st)
@@ -810,6 +980,7 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 		}
 		lp.Stmts = append(lp.Stmts, s)
 	}
+	currentEnv = nil
 	return lp, nil
 }
 
@@ -837,6 +1008,10 @@ func stmtNode(s Stmt) *ast.Node {
 			child = exprNode(st.Value)
 		}
 		return &ast.Node{Kind: "assign", Value: st.Name, Children: []*ast.Node{child}}
+	case *IndexAssignStmt:
+		n := &ast.Node{Kind: "index_assign"}
+		n.Children = append(n.Children, exprNode(st.Target), exprNode(st.Value))
+		return n
 	case *FunStmt:
 		n := &ast.Node{Kind: "fun", Value: st.Name}
 		params := &ast.Node{Kind: "params"}
@@ -934,6 +1109,18 @@ func exprNode(e Expr) *ast.Node {
 		for _, e2 := range ex.Elems {
 			n.Children = append(n.Children, exprNode(e2))
 		}
+		return n
+	case *MapLit:
+		n := &ast.Node{Kind: "map"}
+		for i := range ex.Keys {
+			pair := &ast.Node{Kind: "pair"}
+			pair.Children = append(pair.Children, exprNode(ex.Keys[i]), exprNode(ex.Values[i]))
+			n.Children = append(n.Children, pair)
+		}
+		return n
+	case *IndexExpr:
+		n := &ast.Node{Kind: "index"}
+		n.Children = append(n.Children, exprNode(ex.Target), exprNode(ex.Index))
 		return n
 	case *BinaryExpr:
 		return &ast.Node{Kind: "bin", Value: ex.Op, Children: []*ast.Node{exprNode(ex.Left), exprNode(ex.Right)}}
