@@ -437,6 +437,15 @@ func (m *MaxExpr) emit(w io.Writer) {
 	io.WriteString(w, ".clone(); *tmp.iter().max().unwrap_or(&0) }")
 }
 
+// ExistsExpr represents a call to the `exists` builtin.
+type ExistsExpr struct{ List Expr }
+
+func (e *ExistsExpr) emit(w io.Writer) {
+	io.WriteString(w, "!(")
+	e.List.emit(w)
+	io.WriteString(w, ".is_empty())")
+}
+
 // SubstringExpr represents a call to the `substring` builtin.
 type SubstringExpr struct {
 	Str   Expr
@@ -1374,6 +1383,9 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 		if name == "count" && len(args) == 1 {
 			return &LenExpr{Arg: args[0]}, nil
 		}
+		if name == "exists" && len(args) == 1 {
+			return &ExistsExpr{List: args[0]}, nil
+		}
 		if name == "min" && len(args) == 1 {
 			return &MinExpr{List: args[0]}, nil
 		}
@@ -1668,6 +1680,8 @@ func inferType(e Expr) string {
 		return "Vec<i64>"
 	case *AppendExpr:
 		return inferType(e.(*AppendExpr).List)
+	case *ExistsExpr:
+		return "bool"
 	case *BinaryExpr:
 		switch ex.Op {
 		case "<", "<=", ">", ">=", "==", "!=", "&&", "||", "in":
@@ -2161,6 +2175,8 @@ func exprNode(e Expr) *ast.Node {
 		return &ast.Node{Kind: "append", Children: []*ast.Node{exprNode(ex.List), exprNode(ex.Elem)}}
 	case *AvgExpr:
 		return &ast.Node{Kind: "avg", Children: []*ast.Node{exprNode(ex.List)}}
+	case *ExistsExpr:
+		return &ast.Node{Kind: "exists", Children: []*ast.Node{exprNode(ex.List)}}
 	case *MinExpr:
 		return &ast.Node{Kind: "min", Children: []*ast.Node{exprNode(ex.List)}}
 	case *MaxExpr:
