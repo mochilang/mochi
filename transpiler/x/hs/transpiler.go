@@ -20,6 +20,7 @@ import (
 
 // Program represents a minimal Haskell program AST.
 type Program struct {
+	Types []TypeDecl
 	Funcs []Func
 	Stmts []Stmt
 }
@@ -39,6 +40,26 @@ var needUnsafe bool
 
 // vars holds the last computed expression of each variable at the top level.
 var vars map[string]Expr
+
+type TypeDecl struct {
+	Name   string
+	Fields []string
+	Types  []string
+}
+
+func (t *TypeDecl) emit(w io.Writer) {
+	fmt.Fprintf(w, "data %s = %s\n  { ", t.Name, t.Name)
+	for i, f := range t.Fields {
+		if i > 0 {
+			io.WriteString(w, ",\n    ")
+		}
+		fmt.Fprintf(w, "%s :: %s", f, t.Types[i])
+	}
+	io.WriteString(w, "\n  } deriving (Show)\n")
+}
+
+var structDefs map[string]*TypeDecl
+var structCount int
 
 func recordType(name string, ex Expr) {
 	if isStringExpr(ex) {
@@ -280,9 +301,24 @@ type UnaryExpr struct {
 }
 type GroupExpr struct{ Expr Expr }
 type ListLit struct{ Elems []Expr }
+type RecordLit struct {
+	Name   string
+	Names  []string
+	Fields []Expr
+}
 
 // MapLit represents a simple map literal.
 type MapLit struct{ Keys, Values []Expr }
+type FieldExpr struct {
+	Target Expr
+	Field  string
+}
+type ComprExpr struct {
+	Vars    []string
+	Sources []Expr
+	Cond    Expr
+	Body    Expr
+}
 type CallExpr struct {
 	Fun    Expr
 	Args   []Expr
@@ -332,7 +368,44 @@ func (m *MapLit) emit(w io.Writer) {
 	}
 	io.WriteString(w, "]")
 }
+
+func (r *RecordLit) emit(w io.Writer) {
+	io.WriteString(w, r.Name)
+	io.WriteString(w, " {")
+	for i, n := range r.Names {
+		if i > 0 {
+			io.WriteString(w, ", ")
+		}
+		io.WriteString(w, n)
+		io.WriteString(w, " = ")
+		r.Fields[i].emit(w)
+	}
+	io.WriteString(w, "}")
+}
 func (n *NameRef) emit(w io.Writer) { io.WriteString(w, n.Name) }
+func (f *FieldExpr) emit(w io.Writer) {
+	io.WriteString(w, f.Field)
+	io.WriteString(w, " ")
+	f.Target.emit(w)
+}
+func (c *ComprExpr) emit(w io.Writer) {
+	io.WriteString(w, "[")
+	c.Body.emit(w)
+	io.WriteString(w, " | ")
+	for i := range c.Vars {
+		if i > 0 {
+			io.WriteString(w, ", ")
+		}
+		io.WriteString(w, c.Vars[i])
+		io.WriteString(w, " <- ")
+		c.Sources[i].emit(w)
+	}
+	if c.Cond != nil {
+		io.WriteString(w, ", ")
+		c.Cond.emit(w)
+	}
+	io.WriteString(w, "]")
+}
 func (l *LenExpr) emit(w io.Writer) {
 	io.WriteString(w, "length ")
 	l.Arg.emit(w)
@@ -412,6 +485,8 @@ func isMapExpr(e Expr) bool {
 	switch ex := e.(type) {
 	case *MapLit:
 		return true
+	case *RecordLit:
+		return false
 	case *NameRef:
 		return varTypes[ex.Name] == "map"
 	case *CallExpr:
@@ -549,6 +624,30 @@ func version() string {
 	return strings.TrimSpace(string(b))
 }
 
+func toHsType(t types.Type) string {
+	switch tt := t.(type) {
+	case types.IntType, types.Int64Type, types.BigIntType:
+		return "Int"
+	case types.StringType:
+		return "String"
+	case types.BoolType:
+		return "Bool"
+	case types.BigRatType, types.FloatType:
+		return "Double"
+	case types.ListType:
+		return "[" + toHsType(tt.Elem) + "]"
+	case types.MapType:
+		needDataMap = true
+		return "Map.Map " + toHsType(tt.Key) + " " + toHsType(tt.Value)
+	case types.StructType:
+		return tt.Name
+	case types.VoidType:
+		return "()"
+	default:
+		return "()"
+	}
+}
+
 func header(withList bool, withMap bool, withUnsafe bool) string {
 	out, err := exec.Command("git", "log", "-1", "--date=iso-strict", "--format=%cd").Output()
 	ts := time.Now()
@@ -575,6 +674,11 @@ func header(withList bool, withMap bool, withUnsafe bool) string {
 func Emit(p *Program) []byte {
 	var buf bytes.Buffer
 	buf.WriteString(header(needDataList, needDataMap, needUnsafe))
+	for _, t := range p.Types {
+		t.emit(&buf)
+		buf.WriteByte('\n')
+		buf.WriteByte('\n')
+	}
 	for _, f := range p.Funcs {
 		f.emit(&buf)
 		buf.WriteByte('\n')
@@ -611,6 +715,8 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	needDataList = false
 	needDataMap = false
 	needUnsafe = false
+	structDefs = map[string]*TypeDecl{}
+	structCount = 0
 	for _, st := range prog.Statements {
 		switch {
 		case st.Let != nil:
@@ -685,6 +791,10 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	for i := len(names) - 1; i >= 0; i-- {
 		n := names[i]
 		h.Stmts = append([]Stmt{&LetStmt{Name: n, Expr: vars[n]}}, h.Stmts...)
+	}
+	// attach struct type declarations
+	for _, tdecl := range structDefs {
+		h.Types = append(h.Types, *tdecl)
 	}
 	return h, nil
 }
@@ -781,6 +891,24 @@ func exprNode(e Expr) *ast.Node {
 		return &ast.Node{Kind: "ifexpr", Children: []*ast.Node{exprNode(ex.Cond), exprNode(ex.Then), exprNode(ex.Else)}}
 	case *IndexExpr:
 		return &ast.Node{Kind: "index", Children: []*ast.Node{exprNode(ex.Target), exprNode(ex.Index)}}
+	case *RecordLit:
+		n := &ast.Node{Kind: "record", Value: ex.Name}
+		for i, f := range ex.Names {
+			n.Children = append(n.Children, &ast.Node{Kind: f, Children: []*ast.Node{exprNode(ex.Fields[i])}})
+		}
+		return n
+	case *FieldExpr:
+		return &ast.Node{Kind: "field", Value: ex.Field, Children: []*ast.Node{exprNode(ex.Target)}}
+	case *ComprExpr:
+		n := &ast.Node{Kind: "compr"}
+		n.Children = append(n.Children, exprNode(ex.Body))
+		for i, v := range ex.Vars {
+			n.Children = append(n.Children, &ast.Node{Kind: "gen", Value: v, Children: []*ast.Node{exprNode(ex.Sources[i])}})
+		}
+		if ex.Cond != nil {
+			n.Children = append(n.Children, &ast.Node{Kind: "cond", Children: []*ast.Node{exprNode(ex.Cond)}})
+		}
+		return n
 	default:
 		return &ast.Node{Kind: "expr"}
 	}
@@ -868,6 +996,12 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 		return convertLiteral(p.Lit)
 	case p.Selector != nil && len(p.Selector.Tail) == 0:
 		return &NameRef{Name: p.Selector.Root}, nil
+	case p.Selector != nil:
+		expr := Expr(&NameRef{Name: p.Selector.Root})
+		for _, fld := range p.Selector.Tail {
+			expr = &FieldExpr{Target: expr, Field: fld}
+		}
+		return expr, nil
 	case p.If != nil:
 		cond, err := convertExpr(p.If.Cond)
 		if err != nil {
@@ -907,6 +1041,26 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 		}
 		return &ListLit{Elems: elems}, nil
 	case p.Map != nil:
+		if envInfo != nil {
+			if st, ok := types.InferStructFromMapEnv(p.Map, envInfo); ok {
+				structCount++
+				name := fmt.Sprintf("GenType%d", structCount)
+				fields := make([]string, len(st.Order))
+				typestr := make([]string, len(st.Order))
+				vals := make([]Expr, len(st.Order))
+				for i, it := range p.Map.Items {
+					fields[i] = st.Order[i]
+					typestr[i] = toHsType(st.Fields[st.Order[i]])
+					ve, err := convertExpr(it.Value)
+					if err != nil {
+						return nil, err
+					}
+					vals[i] = ve
+				}
+				structDefs[name] = &TypeDecl{Name: name, Fields: fields, Types: typestr}
+				return &RecordLit{Name: name, Names: fields, Fields: vals}, nil
+			}
+		}
 		needDataMap = true
 		var keys []Expr
 		var values []Expr
@@ -923,6 +1077,34 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 			values = append(values, ve)
 		}
 		return &MapLit{Keys: keys, Values: values}, nil
+	case p.Query != nil:
+		vars := []string{p.Query.Var}
+		srcs := []Expr{}
+		se, err := convertExpr(p.Query.Source)
+		if err != nil {
+			return nil, err
+		}
+		srcs = append(srcs, se)
+		for _, f := range p.Query.Froms {
+			fe, err := convertExpr(f.Src)
+			if err != nil {
+				return nil, err
+			}
+			vars = append(vars, f.Var)
+			srcs = append(srcs, fe)
+		}
+		var cond Expr
+		if p.Query.Where != nil {
+			cond, err = convertExpr(p.Query.Where)
+			if err != nil {
+				return nil, err
+			}
+		}
+		body, err := convertExpr(p.Query.Select)
+		if err != nil {
+			return nil, err
+		}
+		return &ComprExpr{Vars: vars, Sources: srcs, Cond: cond, Body: body}, nil
 	case p.FunExpr != nil && p.FunExpr.ExprBody != nil:
 		var params []string
 		for _, pa := range p.FunExpr.Params {
