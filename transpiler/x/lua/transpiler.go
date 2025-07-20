@@ -11,6 +11,7 @@ import (
 	"path/filepath"
 	"strings"
 	"time"
+	"unicode"
 
 	"mochi/ast"
 	"mochi/parser"
@@ -36,6 +37,10 @@ type ExprStmt struct{ Expr Expr }
 type AssignStmt struct {
 	Name  string
 	Value Expr
+}
+type QueryAssignStmt struct {
+	Name  string
+	Query *QueryComp
 }
 type IndexAssignStmt struct {
 	Target Expr
@@ -116,33 +121,37 @@ type BinaryExpr struct {
 	Right Expr
 }
 
+type QueryComp struct {
+	Vars    []string
+	Sources []Expr
+	Body    Expr
+}
+
 func (s *ExprStmt) emit(w io.Writer) { s.Expr.emit(w) }
 
 func (c *CallExpr) emit(w io.Writer) {
 	switch c.Func {
 	case "print":
-		io.WriteString(w, "print(")
-		if len(c.Args) == 1 {
-			a := c.Args[0]
-			if isListExpr(a) || (func() bool { ce, ok := a.(*CallExpr); return ok && ce.Func == "append" })() {
-				io.WriteString(w, "table.concat(")
-				a.emit(w)
-				io.WriteString(w, ", \" \" )")
-			} else {
-				a.emit(w)
-			}
-			io.WriteString(w, ")")
-			return
-		}
-
-		io.WriteString(w, "table.concat({")
+		io.WriteString(w, "print(string.format(")
+		var fmtBuf strings.Builder
+		var exprs []Expr
 		for i, a := range c.Args {
 			if i > 0 {
-				io.WriteString(w, ", ")
+				fmtBuf.WriteByte(' ')
 			}
+			if s, ok := a.(*StringLit); ok {
+				fmtBuf.WriteString(s.Value)
+			} else {
+				fmtBuf.WriteString("%s")
+				exprs = append(exprs, a)
+			}
+		}
+		fmt.Fprintf(w, "%q", fmtBuf.String())
+		for _, a := range exprs {
+			io.WriteString(w, ", ")
 			a.emit(w)
 		}
-		io.WriteString(w, "}, \" \"))")
+		io.WriteString(w, "))")
 		return
 	case "len", "count":
 		if len(c.Args) > 0 && isMapExpr(c.Args[0]) {
@@ -266,6 +275,30 @@ func (a *AssignStmt) emit(w io.Writer) {
 	}
 }
 
+func (qa *QueryAssignStmt) emit(w io.Writer) {
+	io.WriteString(w, qa.Name)
+	io.WriteString(w, " = {}\n")
+	for i, v := range qa.Query.Vars {
+		io.WriteString(w, "for _, ")
+		io.WriteString(w, v)
+		io.WriteString(w, " in ipairs(")
+		qa.Query.Sources[i].emit(w)
+		io.WriteString(w, ") do\n")
+	}
+	io.WriteString(w, "  table.insert(")
+	io.WriteString(w, qa.Name)
+	io.WriteString(w, ", ")
+	if qa.Query.Body != nil {
+		qa.Query.Body.emit(w)
+	} else {
+		io.WriteString(w, "nil")
+	}
+	io.WriteString(w, ")\n")
+	for range qa.Query.Vars {
+		io.WriteString(w, "end\n")
+	}
+}
+
 func (a *IndexAssignStmt) emit(w io.Writer) {
 	a.Target.emit(w)
 	io.WriteString(w, " = ")
@@ -323,8 +356,11 @@ func (i *IfStmt) emit(w io.Writer) {
 }
 
 func (wst *WhileStmt) emit(w io.Writer) {
-	label := newContinueLabel()
-	continueLabels = append(continueLabels, label)
+	var label string
+	if hasContinue(wst.Body) {
+		label = newContinueLabel()
+		continueLabels = append(continueLabels, label)
+	}
 	io.WriteString(w, "while ")
 	if wst.Cond != nil {
 		wst.Cond.emit(w)
@@ -334,15 +370,21 @@ func (wst *WhileStmt) emit(w io.Writer) {
 		st.emit(w)
 		io.WriteString(w, "\n")
 	}
-	io.WriteString(w, "::")
-	io.WriteString(w, label)
-	io.WriteString(w, "::\nend")
-	continueLabels = continueLabels[:len(continueLabels)-1]
+	if label != "" {
+		io.WriteString(w, "::")
+		io.WriteString(w, label)
+		io.WriteString(w, "::\n")
+		continueLabels = continueLabels[:len(continueLabels)-1]
+	}
+	io.WriteString(w, "end")
 }
 
 func (fr *ForRangeStmt) emit(w io.Writer) {
-	label := newContinueLabel()
-	continueLabels = append(continueLabels, label)
+	var label string
+	if hasContinue(fr.Body) {
+		label = newContinueLabel()
+		continueLabels = append(continueLabels, label)
+	}
 	io.WriteString(w, "for ")
 	io.WriteString(w, fr.Name)
 	io.WriteString(w, " = ")
@@ -361,15 +403,21 @@ func (fr *ForRangeStmt) emit(w io.Writer) {
 		st.emit(w)
 		io.WriteString(w, "\n")
 	}
-	io.WriteString(w, "::")
-	io.WriteString(w, label)
-	io.WriteString(w, "::\nend")
-	continueLabels = continueLabels[:len(continueLabels)-1]
+	if label != "" {
+		io.WriteString(w, "::")
+		io.WriteString(w, label)
+		io.WriteString(w, "::\n")
+		continueLabels = continueLabels[:len(continueLabels)-1]
+	}
+	io.WriteString(w, "end")
 }
 
 func (fi *ForInStmt) emit(w io.Writer) {
-	label := newContinueLabel()
-	continueLabels = append(continueLabels, label)
+	var label string
+	if hasContinue(fi.Body) {
+		label = newContinueLabel()
+		continueLabels = append(continueLabels, label)
+	}
 	io.WriteString(w, "for ")
 	if isMapExpr(fi.Iterable) {
 		io.WriteString(w, fi.Name)
@@ -387,10 +435,13 @@ func (fi *ForInStmt) emit(w io.Writer) {
 		st.emit(w)
 		io.WriteString(w, "\n")
 	}
-	io.WriteString(w, "::")
-	io.WriteString(w, label)
-	io.WriteString(w, "::\nend")
-	continueLabels = continueLabels[:len(continueLabels)-1]
+	if label != "" {
+		io.WriteString(w, "::")
+		io.WriteString(w, label)
+		io.WriteString(w, "::\n")
+		continueLabels = continueLabels[:len(continueLabels)-1]
+	}
+	io.WriteString(w, "end")
 }
 
 func (b *BreakStmt) emit(w io.Writer) { io.WriteString(w, "break") }
@@ -440,10 +491,16 @@ func (m *MapLit) emit(w io.Writer) {
 		if i > 0 {
 			io.WriteString(w, ", ")
 		}
-		io.WriteString(w, "[")
-		m.Keys[i].emit(w)
-		io.WriteString(w, "] = ")
-		m.Values[i].emit(w)
+		if s, ok := m.Keys[i].(*StringLit); ok && isLuaIdent(s.Value) {
+			io.WriteString(w, s.Value)
+			io.WriteString(w, " = ")
+			m.Values[i].emit(w)
+		} else {
+			io.WriteString(w, "[")
+			m.Keys[i].emit(w)
+			io.WriteString(w, "] = ")
+			m.Values[i].emit(w)
+		}
 	}
 	io.WriteString(w, "}")
 }
@@ -465,10 +522,16 @@ func (ix *IndexExpr) emit(w io.Writer) {
 		ix.Index.emit(w)
 		io.WriteString(w, " + 1]")
 	default: // map
-		ix.Target.emit(w)
-		io.WriteString(w, "[")
-		ix.Index.emit(w)
-		io.WriteString(w, "]")
+		if s, ok := ix.Index.(*StringLit); ok && isLuaIdent(s.Value) {
+			ix.Target.emit(w)
+			io.WriteString(w, ".")
+			io.WriteString(w, s.Value)
+		} else {
+			ix.Target.emit(w)
+			io.WriteString(w, "[")
+			ix.Index.emit(w)
+			io.WriteString(w, "]")
+		}
 	}
 }
 
@@ -562,6 +625,22 @@ func isStringExpr(e Expr) bool {
 	return false
 }
 
+func isLuaIdent(s string) bool {
+	if s == "" {
+		return false
+	}
+	r := []rune(s)
+	if !(unicode.IsLetter(r[0]) || r[0] == '_') {
+		return false
+	}
+	for _, ch := range r[1:] {
+		if !(unicode.IsLetter(ch) || unicode.IsDigit(ch) || ch == '_') {
+			return false
+		}
+	}
+	return true
+}
+
 func isMapExpr(e Expr) bool {
 	switch ex := e.(type) {
 	case *MapLit:
@@ -653,10 +732,62 @@ func (b *BinaryExpr) emit(w io.Writer) {
 	io.WriteString(w, ")")
 }
 
+func (qc *QueryComp) emit(w io.Writer) {
+	io.WriteString(w, "(function()\n  local _res = {}\n")
+	for i, v := range qc.Vars {
+		io.WriteString(w, "  for _, ")
+		io.WriteString(w, v)
+		io.WriteString(w, " in ipairs(")
+		qc.Sources[i].emit(w)
+		io.WriteString(w, ") do\n")
+	}
+	io.WriteString(w, "    table.insert(_res, ")
+	if qc.Body != nil {
+		qc.Body.emit(w)
+	} else {
+		io.WriteString(w, "nil")
+	}
+	io.WriteString(w, ")\n")
+	for range qc.Vars {
+		io.WriteString(w, "  end\n")
+	}
+	io.WriteString(w, "  return _res\nend)()")
+}
+
 func newContinueLabel() string {
 	loopCounter++
 	lbl := fmt.Sprintf("__cont_%d", loopCounter)
 	return lbl
+}
+
+func hasContinue(stmts []Stmt) bool {
+	for _, st := range stmts {
+		switch s := st.(type) {
+		case *ContinueStmt:
+			return true
+		case *ForRangeStmt:
+			if hasContinue(s.Body) {
+				return true
+			}
+		case *ForInStmt:
+			if hasContinue(s.Body) {
+				return true
+			}
+		case *WhileStmt:
+			if hasContinue(s.Body) {
+				return true
+			}
+		case *IfStmt:
+			if hasContinue(s.Then) || hasContinue(s.Else) {
+				return true
+			}
+		case *FunStmt:
+			if hasContinue(s.Body) {
+				return true
+			}
+		}
+	}
+	return false
 }
 
 func repoRoot() string {
@@ -971,6 +1102,13 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 			if err != nil {
 				return nil, err
 			}
+			if id, ok := ke.(*Ident); ok {
+				if currentEnv == nil {
+					ke = &StringLit{Value: id.Name}
+				} else if _, err := currentEnv.GetVar(id.Name); err != nil {
+					ke = &StringLit{Value: id.Name}
+				}
+			}
 			ve, err := convertExpr(it.Value)
 			if err != nil {
 				return nil, err
@@ -979,6 +1117,8 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 			values = append(values, ve)
 		}
 		return &MapLit{Keys: keys, Values: values}, nil
+	case p.Query != nil:
+		return convertQueryExpr(p.Query)
 	case p.FunExpr != nil:
 		fe := &FunExpr{}
 		for _, pa := range p.FunExpr.Params {
@@ -1051,6 +1191,32 @@ func convertIfExpr(ie *parser.IfExpr) (Expr, error) {
 		elseExpr = &Ident{Name: "nil"}
 	}
 	return &IfExpr{Cond: cond, Then: thenExpr, Else: elseExpr}, nil
+}
+
+func convertQueryExpr(q *parser.QueryExpr) (Expr, error) {
+	if q.Where != nil || q.Group != nil || q.Sort != nil || len(q.Joins) > 0 || q.Skip != nil || q.Take != nil || q.Distinct {
+		return nil, fmt.Errorf("unsupported query")
+	}
+	vars := []string{q.Var}
+	sources := []Expr{}
+	first, err := convertExpr(q.Source)
+	if err != nil {
+		return nil, err
+	}
+	sources = append(sources, first)
+	for _, fc := range q.Froms {
+		expr, err := convertExpr(fc.Src)
+		if err != nil {
+			return nil, err
+		}
+		vars = append(vars, fc.Var)
+		sources = append(sources, expr)
+	}
+	body, err := convertExpr(q.Select)
+	if err != nil {
+		return nil, err
+	}
+	return &QueryComp{Vars: vars, Sources: sources, Body: body}, nil
 }
 
 func convertIfStmt(is *parser.IfStmt) (Stmt, error) {
@@ -1193,6 +1359,9 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 				expr = &BoolLit{Value: false}
 			}
 		}
+		if qc, ok := expr.(*QueryComp); ok {
+			return &QueryAssignStmt{Name: st.Let.Name, Query: qc}, nil
+		}
 		return &AssignStmt{Name: st.Let.Name, Value: expr}, nil
 	case st.Var != nil:
 		var expr Expr
@@ -1211,6 +1380,9 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 			case "bool":
 				expr = &BoolLit{Value: false}
 			}
+		}
+		if qc, ok := expr.(*QueryComp); ok {
+			return &QueryAssignStmt{Name: st.Var.Name, Query: qc}, nil
 		}
 		return &AssignStmt{Name: st.Var.Name, Value: expr}, nil
 	case st.Assign != nil:
@@ -1237,6 +1409,9 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 		}
 		if len(st.Assign.Field) > 0 {
 			return nil, fmt.Errorf("unsupported assignment")
+		}
+		if qc, ok := expr.(*QueryComp); ok {
+			return &QueryAssignStmt{Name: st.Assign.Name, Query: qc}, nil
 		}
 		return &AssignStmt{Name: st.Assign.Name, Value: expr}, nil
 	case st.Fun != nil:
@@ -1302,6 +1477,11 @@ func stmtNode(s Stmt) *ast.Node {
 			child = exprNode(st.Value)
 		}
 		return &ast.Node{Kind: "assign", Value: st.Name, Children: []*ast.Node{child}}
+	case *QueryAssignStmt:
+		n := &ast.Node{Kind: "assign", Value: st.Name}
+		q := exprNode(st.Query)
+		n.Children = append(n.Children, q)
+		return n
 	case *IndexAssignStmt:
 		n := &ast.Node{Kind: "index_assign"}
 		n.Children = append(n.Children, exprNode(st.Target), exprNode(st.Value))
@@ -1435,6 +1615,15 @@ func exprNode(e Expr) *ast.Node {
 	case *IfExpr:
 		n := &ast.Node{Kind: "cond"}
 		n.Children = append(n.Children, exprNode(ex.Cond), exprNode(ex.Then), exprNode(ex.Else))
+		return n
+	case *QueryComp:
+		n := &ast.Node{Kind: "query"}
+		for i, v := range ex.Vars {
+			clause := &ast.Node{Kind: "from", Value: v}
+			clause.Children = append(clause.Children, exprNode(ex.Sources[i]))
+			n.Children = append(n.Children, clause)
+		}
+		n.Children = append(n.Children, exprNode(ex.Body))
 		return n
 	default:
 		return &ast.Node{Kind: "unknown"}
