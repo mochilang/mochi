@@ -2,7 +2,7 @@
 
 Generated Lua code for programs in `tests/vm/valid`. Each program has a `.lua` file produced by the transpiler and a `.out` file with its runtime output. Compilation or execution errors are captured in `.error` files.
 
-Transpiled programs: 56/100
+Transpiled programs: 59/100
 
 Checklist:
 
@@ -63,12 +63,12 @@ Checklist:
 - [x] map_int_key
 - [x] map_literal_dynamic
 - [x] map_membership
-- [ ] map_nested_assign
+- [x] map_nested_assign
 - [ ] match_expr
 - [ ] match_full
 - [x] math_ops
 - [x] membership
-- [ ] min_max_builtin
+- [x] min_max_builtin
 - [x] nested_function
 - [ ] order_by_map
 - [ ] outer_join
@@ -103,6 +103,6 @@ Checklist:
 - [x] unary_neg
 - [ ] update_stmt
 - [ ] user_type_literal
-- [ ] values_builtin
+- [x] values_builtin
 - [x] var_assignment
 - [x] while_loop
