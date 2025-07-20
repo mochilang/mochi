@@ -496,9 +496,9 @@ func (lu *ListUpdateExpr) emit(w io.Writer) {
 	lu.Index.emit(w)
 	io.WriteString(w, " then ")
 	lu.Value.emit(w)
-	io.WriteString(w, " else x) ")
+	io.WriteString(w, " else x) (")
 	lu.List.emit(w)
-	io.WriteString(w, ")")
+	io.WriteString(w, "))")
 }
 
 func (lu *ListUpdateExpr) emitPrint(w io.Writer) { lu.emit(w) }
