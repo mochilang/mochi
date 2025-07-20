@@ -1,3 +1,9 @@
+## Progress (2025-07-20 12:15 +0700)
+- cs transpiler: add exists builtin and improve code formatting (progress 63/100)
+
+## Progress (2025-07-20 12:19 +0700)
+- update scala progress (progress 62/100)
+
 ## Progress (2025-07-20 11:47 +0700)
 - cs transpiler: improve emission and type inference (progress 62/100)
 
@@ -117,6 +123,7 @@
 ## Remaining Work
 - [x] Implement loops and conditionals
 - [ ] Support map and list mutation operations
+
 
 
 

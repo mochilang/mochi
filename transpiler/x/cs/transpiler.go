@@ -993,6 +993,12 @@ func valueType(e Expr) string {
 type ExistsExpr struct{ Arg Expr }
 
 func (e *ExistsExpr) emit(w io.Writer) {
+	if mc, ok := e.Arg.(*MethodCallExpr); ok && mc.Name == "ToArray" {
+		fmt.Fprint(w, "(")
+		mc.Target.emit(w)
+		fmt.Fprint(w, ".Any())")
+		return
+	}
 	fmt.Fprint(w, "(")
 	e.Arg.emit(w)
 	fmt.Fprint(w, ".Any())")
