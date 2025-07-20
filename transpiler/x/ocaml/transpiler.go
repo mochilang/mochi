@@ -441,6 +441,49 @@ func (a *AppendBuiltin) emitPrint(w io.Writer) {
 	io.WriteString(w, "))")
 }
 
+// MinBuiltin represents min(list).
+type MinBuiltin struct{ List Expr }
+
+func (m *MinBuiltin) emit(w io.Writer) {
+	io.WriteString(w, "(List.fold_left min max_int ")
+	m.List.emit(w)
+	io.WriteString(w, ")")
+}
+
+func (m *MinBuiltin) emitPrint(w io.Writer) {
+	io.WriteString(w, "string_of_int ")
+	m.emit(w)
+}
+
+// MaxBuiltin represents max(list).
+type MaxBuiltin struct{ List Expr }
+
+func (m *MaxBuiltin) emit(w io.Writer) {
+	io.WriteString(w, "(List.fold_left max min_int ")
+	m.List.emit(w)
+	io.WriteString(w, ")")
+}
+
+func (m *MaxBuiltin) emitPrint(w io.Writer) {
+	io.WriteString(w, "string_of_int ")
+	m.emit(w)
+}
+
+// ValuesBuiltin represents values(map) returning list of values.
+type ValuesBuiltin struct{ Map Expr }
+
+func (v *ValuesBuiltin) emit(w io.Writer) {
+	io.WriteString(w, "(List.map snd ")
+	v.Map.emit(w)
+	io.WriteString(w, ")")
+}
+
+func (v *ValuesBuiltin) emitPrint(w io.Writer) {
+	io.WriteString(w, "String.concat \" \" (List.map string_of_int (")
+	v.emit(w)
+	io.WriteString(w, "))")
+}
+
 // StringContainsBuiltin represents s.contains(sub).
 type StringContainsBuiltin struct {
 	Str Expr
@@ -499,6 +542,34 @@ func (f *FuncCall) emitPrint(w io.Writer) {
 	}
 }
 
+// FuncExpr represents an anonymous function expression.
+type FuncExpr struct {
+	Params []string
+	Body   []Stmt
+	Ret    Expr
+}
+
+func (f *FuncExpr) emit(w io.Writer) {
+	io.WriteString(w, "(fun")
+	for _, p := range f.Params {
+		io.WriteString(w, " ")
+		io.WriteString(w, p)
+	}
+	io.WriteString(w, " ->\n")
+	for _, st := range f.Body {
+		st.emit(w)
+	}
+	io.WriteString(w, "  ")
+	if f.Ret != nil {
+		f.Ret.emit(w)
+	} else {
+		io.WriteString(w, "()")
+	}
+	io.WriteString(w, ")")
+}
+
+func (f *FuncExpr) emitPrint(w io.Writer) { f.emit(w) }
+
 // ListLit represents a list literal of integers.
 type ListLit struct{ Elems []Expr }
 
@@ -513,7 +584,11 @@ func (l *ListLit) emit(w io.Writer) {
 	io.WriteString(w, "]")
 }
 
-func (l *ListLit) emitPrint(w io.Writer) { l.emit(w) }
+func (l *ListLit) emitPrint(w io.Writer) {
+	io.WriteString(w, "String.concat \" \" (List.map string_of_int (")
+	l.emit(w)
+	io.WriteString(w, "))")
+}
 
 // MapEntry represents a key/value pair in a map literal.
 type MapEntry struct {
@@ -928,6 +1003,8 @@ func defaultValueExpr(typ string) Expr {
 		return &ListLit{Elems: nil}
 	case "map":
 		return &MapLit{Items: nil}
+	case "func":
+		return &FuncExpr{}
 	}
 	return &IntLit{Value: 0}
 }
@@ -1450,6 +1527,8 @@ func convertPrimary(p *parser.Primary, env *types.Env, vars map[string]VarInfo) 
 			items[i] = MapEntry{Key: k, Value: v}
 		}
 		return &MapLit{Items: items}, "map", nil
+	case p.FunExpr != nil:
+		return convertFunExpr(p.FunExpr, env, vars)
 	case p.Selector != nil:
 		if len(p.Selector.Tail) == 0 {
 			info := vars[p.Selector.Root]
@@ -1531,6 +1610,43 @@ func convertMatch(m *parser.MatchExpr, env *types.Env, vars map[string]VarInfo) 
 		typ = "int"
 	}
 	return &MatchExpr{Target: target, Arms: arms, Typ: typ}, typ, nil
+}
+
+func convertFunExpr(fn *parser.FunExpr, env *types.Env, vars map[string]VarInfo) (Expr, string, error) {
+	child := env.Copy()
+	fnVars := make(map[string]VarInfo)
+	params := make([]string, len(fn.Params))
+	for i, p := range fn.Params {
+		typ := "int"
+		if p.Type != nil && p.Type.Simple != nil {
+			typ = *p.Type.Simple
+		}
+		fnVars[p.Name] = VarInfo{typ: typ}
+		params[i] = p.Name
+	}
+	var retExpr Expr
+	if fn.ExprBody != nil {
+		ex, _, err := convertExpr(fn.ExprBody, child, fnVars)
+		if err != nil {
+			return nil, "", err
+		}
+		retExpr = ex
+	} else if len(fn.BlockBody) > 0 {
+		body, err := transpileStmts(fn.BlockBody, child, fnVars)
+		if err != nil {
+			return nil, "", err
+		}
+		var ret Expr
+		if last := fn.BlockBody[len(fn.BlockBody)-1]; last.Return != nil && last.Return.Value != nil {
+			r, _, err := convertExpr(last.Return.Value, child, fnVars)
+			if err != nil {
+				return nil, "", err
+			}
+			ret = r
+		}
+		return &FuncExpr{Params: params, Body: body, Ret: ret}, "func", nil
+	}
+	return &FuncExpr{Params: params, Body: nil, Ret: retExpr}, "func", nil
 }
 
 func convertCall(c *parser.CallExpr, env *types.Env, vars map[string]VarInfo) (Expr, string, error) {
@@ -1624,6 +1740,36 @@ func convertCall(c *parser.CallExpr, env *types.Env, vars map[string]VarInfo) (E
 		}
 		return &AvgBuiltin{List: listArg}, "int", nil
 	}
+	if c.Func == "min" && len(c.Args) == 1 {
+		listArg, typ, err := convertExpr(c.Args[0], env, vars)
+		if err != nil {
+			return nil, "", err
+		}
+		if typ != "list" {
+			return nil, "", fmt.Errorf("min expects list")
+		}
+		return &MinBuiltin{List: listArg}, "int", nil
+	}
+	if c.Func == "max" && len(c.Args) == 1 {
+		listArg, typ, err := convertExpr(c.Args[0], env, vars)
+		if err != nil {
+			return nil, "", err
+		}
+		if typ != "list" {
+			return nil, "", fmt.Errorf("max expects list")
+		}
+		return &MaxBuiltin{List: listArg}, "int", nil
+	}
+	if c.Func == "values" && len(c.Args) == 1 {
+		mapArg, typ, err := convertExpr(c.Args[0], env, vars)
+		if err != nil {
+			return nil, "", err
+		}
+		if typ != "map" {
+			return nil, "", fmt.Errorf("values expects map")
+		}
+		return &ValuesBuiltin{Map: mapArg}, "list", nil
+	}
 	if fn, ok := env.GetFunc(c.Func); ok {
 		ret := "int"
 		if fn.Return != nil && fn.Return.Simple != nil {
@@ -1638,6 +1784,17 @@ func convertCall(c *parser.CallExpr, env *types.Env, vars map[string]VarInfo) (E
 			args[i] = ex
 		}
 		return &FuncCall{Name: c.Func, Args: args, Ret: ret}, ret, nil
+	}
+	if v, ok := vars[c.Func]; ok && v.typ == "func" {
+		args := make([]Expr, len(c.Args))
+		for i, a := range c.Args {
+			ex, _, err := convertExpr(a, env, vars)
+			if err != nil {
+				return nil, "", err
+			}
+			args[i] = ex
+		}
+		return &FuncCall{Name: c.Func, Args: args, Ret: "int"}, "int", nil
 	}
 	return nil, "", fmt.Errorf("call %s not supported", c.Func)
 }
