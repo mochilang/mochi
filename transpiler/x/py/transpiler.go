@@ -129,6 +129,28 @@ type CommentStmt struct {
 
 func (*CommentStmt) isStmt() {}
 
+// DataClassDef represents a @dataclass definition.
+type DataClassDef struct {
+	Name   string
+	Fields []DataClassField
+}
+
+type DataClassField struct {
+	Name string
+	Type string
+}
+
+func (*DataClassDef) isStmt() {}
+
+// FieldAssignStmt assigns to an attribute of a dataclass.
+type FieldAssignStmt struct {
+	Target Expr
+	Field  string
+	Value  Expr
+}
+
+func (*FieldAssignStmt) isStmt() {}
+
 // IndexAssignStmt assigns to an element of a list or map.
 type IndexAssignStmt struct {
 	Target Expr
@@ -162,6 +184,19 @@ type RawExpr struct{ Code string }
 
 func (r *RawExpr) emit(w io.Writer) error { _, err := io.WriteString(w, r.Code); return err }
 
+// KeywordArg represents a keyword argument in a call expression.
+type KeywordArg struct {
+	Name  string
+	Value Expr
+}
+
+func (k *KeywordArg) emit(w io.Writer) error {
+	if _, err := io.WriteString(w, k.Name+"="); err != nil {
+		return err
+	}
+	return emitExpr(w, k.Value)
+}
+
 type Expr interface{ emit(io.Writer) error }
 
 type CallExpr struct {
@@ -181,6 +216,12 @@ func (c *CallExpr) emit(w io.Writer) error {
 			if _, err := io.WriteString(w, ", "); err != nil {
 				return err
 			}
+		}
+		if ka, ok := a.(*KeywordArg); ok {
+			if err := ka.emit(w); err != nil {
+				return err
+			}
+			continue
 		}
 		if err := emitExpr(w, a); err != nil {
 			return err
@@ -774,6 +815,21 @@ func emitStmtIndent(w io.Writer, s Stmt, indent string) error {
 		return err
 	case *CommentStmt:
 		_, err := io.WriteString(w, indent+"# "+st.Text+"\n")
+		return err
+	case *FieldAssignStmt:
+		if _, err := io.WriteString(w, indent); err != nil {
+			return err
+		}
+		if err := emitExpr(w, st.Target); err != nil {
+			return err
+		}
+		if _, err := io.WriteString(w, "."+st.Field+" = "); err != nil {
+			return err
+		}
+		if err := emitExpr(w, st.Value); err != nil {
+			return err
+		}
+		_, err := io.WriteString(w, "\n")
 		return err
 	case *IndexAssignStmt:
 		if _, err := io.WriteString(w, indent); err != nil {
@@ -1596,12 +1652,16 @@ func Emit(w io.Writer, p *Program) error {
 		return err
 	}
 	var imports []string
+	needDC := false
 	if currentImports != nil {
 		if currentImports["json"] && !hasImport(p, "json") {
 			imports = append(imports, "import json")
 		}
 	}
 	for _, s := range p.Stmts {
+		if _, ok := s.(*DataClassDef); ok {
+			needDC = true
+		}
 		if im, ok := s.(*ImportStmt); ok {
 			line := "import " + im.Module
 			if im.Alias != "" && im.Alias != im.Module {
@@ -1609,6 +1669,9 @@ func Emit(w io.Writer, p *Program) error {
 			}
 			imports = append(imports, line)
 		}
+	}
+	if needDC {
+		imports = append(imports, "from dataclasses import dataclass")
 	}
 	sort.Strings(imports)
 	for _, line := range imports {
@@ -1626,6 +1689,26 @@ func Emit(w io.Writer, p *Program) error {
 		switch st := s.(type) {
 		case *ImportStmt:
 			// already emitted above
+			continue
+		case *DataClassDef:
+			if _, err := io.WriteString(w, "@dataclass\nclass "+st.Name+":\n"); err != nil {
+				return err
+			}
+			if len(st.Fields) == 0 {
+				if _, err := io.WriteString(w, "    pass\n\n"); err != nil {
+					return err
+				}
+				continue
+			}
+			for _, f := range st.Fields {
+				line := fmt.Sprintf("    %s: %s\n", f.Name, f.Type)
+				if _, err := io.WriteString(w, line); err != nil {
+					return err
+				}
+			}
+			if _, err := io.WriteString(w, "\n"); err != nil {
+				return err
+			}
 			continue
 		case *ExprStmt:
 			if err := emitExpr(w, st.Expr); err != nil {
@@ -1954,11 +2037,25 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 				p.Stmts = append(p.Stmts, &AssignStmt{Name: st.Assign.Name, Expr: val})
 			} else if len(st.Assign.Index) == 0 && len(st.Assign.Field) > 0 {
 				target := Expr(&Name{Name: st.Assign.Name})
-				for i := 0; i < len(st.Assign.Field)-1; i++ {
-					target = &FieldExpr{Target: target, Name: st.Assign.Field[i].Name, MapIndex: true}
+				mapIndex := true
+				if currentEnv != nil {
+					if t, err := currentEnv.GetVar(st.Assign.Name); err == nil {
+						if _, ok := t.(types.StructType); ok {
+							mapIndex = false
+						}
+					}
 				}
-				idx := &StringLit{Value: st.Assign.Field[len(st.Assign.Field)-1].Name}
-				p.Stmts = append(p.Stmts, &IndexAssignStmt{Target: target, Index: idx, Value: val})
+				for i := 0; i < len(st.Assign.Field)-1; i++ {
+					target = &FieldExpr{Target: target, Name: st.Assign.Field[i].Name, MapIndex: mapIndex}
+					mapIndex = true
+				}
+				field := st.Assign.Field[len(st.Assign.Field)-1].Name
+				if mapIndex {
+					idx := &StringLit{Value: field}
+					p.Stmts = append(p.Stmts, &IndexAssignStmt{Target: target, Index: idx, Value: val})
+				} else {
+					p.Stmts = append(p.Stmts, &FieldAssignStmt{Target: target, Field: field, Value: val})
+				}
 			} else {
 				return nil, fmt.Errorf("unsupported assignment")
 			}
@@ -2038,6 +2135,19 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 			// ignore extern object declarations
 			continue
 		case st.Type != nil:
+			if len(st.Type.Members) > 0 {
+				var fields []DataClassField
+				for _, m := range st.Type.Members {
+					if m.Field != nil {
+						typ := "any"
+						if m.Field.Type != nil {
+							typ = types.ResolveTypeRef(m.Field.Type, env).String()
+						}
+						fields = append(fields, DataClassField{Name: m.Field.Name, Type: typ})
+					}
+				}
+				p.Stmts = append(p.Stmts, &DataClassDef{Name: st.Type.Name, Fields: fields})
+			}
 			for _, v := range st.Type.Variants {
 				if len(v.Fields) == 0 {
 					p.Stmts = append(p.Stmts, &LetStmt{Name: v.Name, Expr: &Name{Name: "None"}})
@@ -2047,7 +2157,15 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 		case st.ExternType != nil:
 			continue
 		case st.Fun != nil:
-			body, err := convertStmts(st.Fun.Body, env)
+			fenv := types.NewEnv(env)
+			for _, p := range st.Fun.Params {
+				var pt types.Type = types.AnyType{}
+				if p.Type != nil {
+					pt = types.ResolveTypeRef(p.Type, env)
+				}
+				fenv.SetVar(p.Name, pt, true)
+			}
+			body, err := convertStmts(st.Fun.Body, fenv)
 			if err != nil {
 				return nil, err
 			}
@@ -2065,6 +2183,9 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 }
 
 func convertStmts(list []*parser.Statement, env *types.Env) ([]Stmt, error) {
+	prev := currentEnv
+	currentEnv = env
+	defer func() { currentEnv = prev }()
 	var out []Stmt
 	for _, s := range list {
 		switch {
@@ -2281,13 +2402,38 @@ func convertStmts(list []*parser.Statement, env *types.Env) ([]Stmt, error) {
 		case s.ExternObject != nil:
 			continue
 		case s.Type != nil:
-			// type declarations are ignored in Python output
+			if len(s.Type.Members) > 0 {
+				var fields []DataClassField
+				for _, m := range s.Type.Members {
+					if m.Field != nil {
+						typ := "any"
+						if m.Field.Type != nil {
+							typ = types.ResolveTypeRef(m.Field.Type, env).String()
+						}
+						fields = append(fields, DataClassField{Name: m.Field.Name, Type: typ})
+					}
+				}
+				out = append(out, &DataClassDef{Name: s.Type.Name, Fields: fields})
+			}
+			for _, v := range s.Type.Variants {
+				if len(v.Fields) == 0 {
+					out = append(out, &LetStmt{Name: v.Name, Expr: &Name{Name: "None"}})
+				}
+			}
 			continue
 		case s.ExternType != nil:
 			// ignore extern type declarations
 			continue
 		case s.Fun != nil:
-			b, err := convertStmts(s.Fun.Body, env)
+			fenv := types.NewEnv(env)
+			for _, p := range s.Fun.Params {
+				var pt types.Type = types.AnyType{}
+				if p.Type != nil {
+					pt = types.ResolveTypeRef(p.Type, env)
+				}
+				fenv.SetVar(p.Name, pt, true)
+			}
+			b, err := convertStmts(s.Fun.Body, fenv)
 			if err != nil {
 				return nil, err
 			}
@@ -2399,6 +2545,13 @@ func convertSelector(sel *parser.SelectorExpr, method bool) Expr {
 	mapIndex := true
 	if currentImports != nil && currentImports[sel.Root] {
 		mapIndex = false
+	}
+	if currentEnv != nil {
+		if t, err := currentEnv.GetVar(sel.Root); err == nil {
+			if _, ok := t.(types.StructType); ok {
+				mapIndex = false
+			}
+		}
 	}
 	for i, t := range sel.Tail {
 		idx := i == len(sel.Tail)-1 && method
@@ -2638,6 +2791,19 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 		}
 		return &DictLit{Keys: keys, Values: values}, nil
 	case p.Struct != nil:
+		if currentEnv != nil {
+			if _, ok := currentEnv.GetStruct(p.Struct.Name); ok {
+				var args []Expr
+				for _, f := range p.Struct.Fields {
+					ve, err := convertExpr(f.Value)
+					if err != nil {
+						return nil, err
+					}
+					args = append(args, &KeywordArg{Name: f.Name, Value: ve})
+				}
+				return &CallExpr{Func: &Name{Name: p.Struct.Name}, Args: args}, nil
+			}
+		}
 		var keys []Expr
 		var values []Expr
 		for _, f := range p.Struct.Fields {
@@ -3271,6 +3437,8 @@ func stmtNode(s Stmt) *ast.Node {
 		return &ast.Node{Kind: "break"}
 	case *ContinueStmt:
 		return &ast.Node{Kind: "continue"}
+	case *FieldAssignStmt:
+		return &ast.Node{Kind: "field_assign", Children: []*ast.Node{exprNode(st.Target), &ast.Node{Kind: "string", Value: st.Field}, exprNode(st.Value)}}
 	case *IndexAssignStmt:
 		return &ast.Node{Kind: "index_assign", Children: []*ast.Node{exprNode(st.Target), exprNode(st.Index), exprNode(st.Value)}}
 	case *UpdateStmt:
@@ -3296,6 +3464,13 @@ func stmtNode(s Stmt) *ast.Node {
 		return n
 	case *ImportStmt:
 		return &ast.Node{Kind: "import", Value: st.Module}
+	case *DataClassDef:
+		n := &ast.Node{Kind: "dataclass", Value: st.Name}
+		for _, f := range st.Fields {
+			pair := &ast.Node{Kind: "field", Value: f.Name, Children: []*ast.Node{&ast.Node{Kind: "type", Value: f.Type}}}
+			n.Children = append(n.Children, pair)
+		}
+		return n
 	default:
 		return &ast.Node{Kind: "unknown"}
 	}
@@ -3308,6 +3483,10 @@ func exprNode(e Expr) *ast.Node {
 		for _, a := range ex.Args {
 			n.Children = append(n.Children, exprNode(a))
 		}
+		return n
+	case *KeywordArg:
+		n := &ast.Node{Kind: "kwarg", Value: ex.Name}
+		n.Children = []*ast.Node{exprNode(ex.Value)}
 		return n
 	case *Name:
 		return &ast.Node{Kind: "name", Value: ex.Name}
