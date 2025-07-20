@@ -2,7 +2,7 @@
 
 This directory holds an experimental transpiler that converts a small subset of Mochi into Smalltalk. The generated sources for the golden tests live under `tests/transpiler/x/st`.
 
-Checklist of programs that currently transpile and run (37/100):
+Checklist of programs that currently transpile and run (47/100):
 
 - [x] append_builtin
 - [x] avg_builtin
@@ -10,19 +10,19 @@ Checklist of programs that currently transpile and run (37/100):
 - [x] binary_precedence
 - [ ] bool_chain
 - [ ] break_continue
-- [ ] cast_string_to_int
+- [x] cast_string_to_int
 - [ ] cast_struct
 - [ ] closure
 - [x] count_builtin
 - [x] cross_join
 - [ ] cross_join_filter
 - [ ] cross_join_triple
-- [ ] dataset_sort_take_limit
-- [ ] dataset_where_filter
-- [ ] exists_builtin
-- [ ] for_list_collection
-- [ ] for_loop
-- [ ] for_map_collection
+- [x] dataset_sort_take_limit
+- [x] dataset_where_filter
+- [x] exists_builtin
+- [x] for_list_collection
+- [x] for_loop
+- [x] for_map_collection
 - [ ] fun_call
 - [ ] fun_expr_in_let
 - [ ] fun_three_args
@@ -44,7 +44,7 @@ Checklist of programs that currently transpile and run (37/100):
 - [ ] inner_join
 - [ ] join_multi
 - [ ] json_builtin
-- [ ] left_join
+- [x] left_join
 - [ ] left_join_multi
 - [x] len_builtin
 - [x] len_map
@@ -68,7 +68,7 @@ Checklist of programs that currently transpile and run (37/100):
 - [x] membership
 - [x] min_max_builtin
 - [ ] nested_function
-- [ ] order_by_map
+- [x] order_by_map
 - [ ] outer_join
 - [ ] partial_application
 - [x] print_hello
@@ -82,7 +82,7 @@ Checklist of programs that currently transpile and run (37/100):
 - [ ] save_jsonl_stdout
 - [ ] short_circuit
 - [ ] slice
-- [ ] sort_stable
+- [x] sort_stable
 - [x] str_builtin
 - [x] string_compare
 - [x] string_concat

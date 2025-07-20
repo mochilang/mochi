@@ -7,6 +7,7 @@ import (
 	"io"
 	"os/exec"
 	"sort"
+	"strconv"
 	"strings"
 	"time"
 
@@ -401,6 +402,28 @@ func evalPostfix(p *parser.PostfixExpr, vars map[string]value) (value, error) {
 			default:
 				return value{}, fmt.Errorf("indexing non-container")
 			}
+		case op.Cast != nil:
+			if op.Cast.Type == nil || op.Cast.Type.Simple == nil {
+				return value{}, fmt.Errorf("unsupported cast")
+			}
+			t := *op.Cast.Type.Simple
+			switch t {
+			case "int":
+				switch v.kind {
+				case valInt:
+					// no-op
+				case valString:
+					n, err := strconv.Atoi(v.s)
+					if err != nil {
+						return value{}, fmt.Errorf("invalid int")
+					}
+					v = value{kind: valInt, i: n}
+				default:
+					return value{}, fmt.Errorf("bad cast")
+				}
+			default:
+				return value{}, fmt.Errorf("unsupported cast")
+			}
 		default:
 			return value{}, fmt.Errorf("postfix not supported")
 		}
@@ -641,6 +664,17 @@ func evalPrimary(p *parser.Primary, vars map[string]value) (value, error) {
 					}
 				}
 				return value{kind: valInt, i: m}, nil
+			}
+		case "exists":
+			if len(p.Call.Args) != 1 {
+				return value{}, fmt.Errorf("bad args")
+			}
+			v, err := evalExpr(p.Call.Args[0], vars)
+			if err != nil {
+				return value{}, err
+			}
+			if v.kind == valList {
+				return value{kind: valBool, b: len(v.list) > 0}, nil
 			}
 		}
 		return value{}, fmt.Errorf("unsupported call")
