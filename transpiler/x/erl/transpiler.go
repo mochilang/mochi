@@ -240,6 +240,13 @@ func (c *CallExpr) emit(w io.Writer) {
 		}
 		io.WriteString(w, ")")
 		return
+	case "values":
+		io.WriteString(w, "maps:values(")
+		if len(c.Args) > 0 {
+			c.Args[0].emit(w)
+		}
+		io.WriteString(w, ")")
+		return
 	}
 	name := c.Func
 	io.WriteString(w, name)
@@ -625,6 +632,8 @@ func convertPrimary(p *parser.Primary, env *types.Env) (Expr, error) {
 			} else {
 				ce.Func = "length"
 			}
+		} else if ce.Func == "values" && len(ce.Args) == 1 {
+			ce.Func = "maps:values"
 		}
 		return ce, nil
 	case p.Group != nil:
