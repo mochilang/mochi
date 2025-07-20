@@ -1,3 +1,7 @@
+## Progress (2025-07-20 12:48 +0700)
+- clj transpiler: implement avg builtin
+- Regenerated golden files - 50/100 vm valid programs passing
+
 ## Progress (2025-07-20 12:33 +0700)
 - clj: support string contains
 - Regenerated golden files - 49/100 vm valid programs passing
