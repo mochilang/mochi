@@ -33,9 +33,17 @@ func inferType(e Expr) string {
 	case *BoolLit:
 		return "boolean"
 	case *StringLit:
-		return "String"
+		return "string"
 	case *SubstringExpr:
-		return "String"
+		return "string"
+	case *IndexExpr:
+		if isStringExpr(ex.Target) {
+			return "string"
+		}
+	case *SliceExpr:
+		if isStringExpr(ex.Value) {
+			return "string"
+		}
 	case *UnaryExpr:
 		if ex.Op == "!" {
 			return "boolean"
@@ -290,6 +298,16 @@ type BinaryExpr struct {
 func (b *BinaryExpr) emit(w io.Writer) {
 	if isStringExpr(b.Left) && isStringExpr(b.Right) {
 		switch b.Op {
+		case "==", "!=":
+			if b.Op == "!=" {
+				fmt.Fprint(w, "!")
+			}
+			fmt.Fprint(w, "(")
+			b.Left.emit(w)
+			fmt.Fprint(w, ".equals(")
+			b.Right.emit(w)
+			fmt.Fprint(w, "))")
+			return
 		case "<", "<=", ">", ">=":
 			fmt.Fprint(w, "(")
 			b.Left.emit(w)
@@ -404,6 +422,46 @@ func (s *SubstringExpr) emit(w io.Writer) {
 	fmt.Fprint(w, ")")
 }
 
+// IndexExpr represents s[i]. For strings it emits charAt.
+type IndexExpr struct {
+	Target Expr
+	Index  Expr
+}
+
+func (ix *IndexExpr) emit(w io.Writer) {
+	if isStringExpr(ix.Target) {
+		ix.Target.emit(w)
+		fmt.Fprint(w, ".charAt(")
+		ix.Index.emit(w)
+		fmt.Fprint(w, ")")
+	} else {
+		ix.Target.emit(w)
+		fmt.Fprint(w, "[")
+		ix.Index.emit(w)
+		fmt.Fprint(w, "]")
+	}
+}
+
+// SliceExpr represents s[a:b]. Only strings are currently supported.
+type SliceExpr struct {
+	Value Expr
+	Start Expr
+	End   Expr
+}
+
+func (sli *SliceExpr) emit(w io.Writer) {
+	if isStringExpr(sli.Value) {
+		sli.Value.emit(w)
+		fmt.Fprint(w, ".substring(")
+		sli.Start.emit(w)
+		fmt.Fprint(w, ", ")
+		sli.End.emit(w)
+		fmt.Fprint(w, ")")
+	} else {
+		sli.Value.emit(w)
+	}
+}
+
 type StringLit struct{ Value string }
 
 func (s *StringLit) emit(w io.Writer) { fmt.Fprintf(w, "%q", s.Value) }
@@ -412,12 +470,24 @@ func isStringExpr(e Expr) bool {
 	switch ex := e.(type) {
 	case *StringLit:
 		return true
+	case *VarExpr:
+		if t, ok := varTypes[ex.Name]; ok && (t == "string" || t == "String") {
+			return true
+		}
 	case *CallExpr:
 		if ex.Func == "String.valueOf" {
 			return true
 		}
 	case *SubstringExpr:
 		return true
+	case *IndexExpr:
+		if isStringExpr(ex.Target) {
+			return true
+		}
+	case *SliceExpr:
+		if isStringExpr(ex.Value) {
+			return true
+		}
 	}
 	return false
 }
@@ -662,10 +732,49 @@ func compileUnary(u *parser.Unary) (Expr, error) {
 }
 
 func compilePostfix(pf *parser.PostfixExpr) (Expr, error) {
-	if pf == nil || len(pf.Ops) > 0 {
+	if pf == nil {
 		return nil, fmt.Errorf("unsupported postfix")
 	}
-	return compilePrimary(pf.Target)
+	expr, err := compilePrimary(pf.Target)
+	if err != nil {
+		return nil, err
+	}
+	for _, op := range pf.Ops {
+		switch {
+		case op.Index != nil && op.Index.Colon == nil && op.Index.Colon2 == nil:
+			if op.Index.Start == nil {
+				return nil, fmt.Errorf("unsupported index")
+			}
+			idx, err := compileExpr(op.Index.Start)
+			if err != nil {
+				return nil, err
+			}
+			expr = &IndexExpr{Target: expr, Index: idx}
+		case op.Index != nil && op.Index.Colon != nil && op.Index.Colon2 == nil && op.Index.Step == nil:
+			if op.Index.Start == nil || op.Index.End == nil {
+				return nil, fmt.Errorf("unsupported slice")
+			}
+			start, err := compileExpr(op.Index.Start)
+			if err != nil {
+				return nil, err
+			}
+			end, err := compileExpr(op.Index.End)
+			if err != nil {
+				return nil, err
+			}
+			expr = &SliceExpr{Value: expr, Start: start, End: end}
+		case op.Cast != nil && op.Cast.Type != nil && op.Cast.Type.Simple != nil:
+			switch *op.Cast.Type.Simple {
+			case "int":
+				expr = &CallExpr{Func: "Integer.parseInt", Args: []Expr{expr}}
+			default:
+				// ignore other casts
+			}
+		default:
+			return nil, fmt.Errorf("unsupported postfix")
+		}
+	}
+	return expr, nil
 }
 
 func compilePrimary(p *parser.Primary) (Expr, error) {
