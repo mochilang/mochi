@@ -3,14 +3,14 @@
 This folder contains the experimental Pascal transpiler.
 Generated sources for the golden tests live under `tests/transpiler/x/pas`.
 
-## VM Golden Test Checklist (31/100)
+## VM Golden Test Checklist (32/100)
 - [ ] append_builtin.mochi
 - [ ] avg_builtin.mochi
 - [x] basic_compare.mochi
 - [x] binary_precedence.mochi
 - [x] bool_chain.mochi
 - [ ] break_continue.mochi
-- [ ] cast_string_to_int.mochi
+- [x] cast_string_to_int.mochi
 - [ ] cast_struct.mochi
 - [ ] closure.mochi
 - [ ] count_builtin.mochi

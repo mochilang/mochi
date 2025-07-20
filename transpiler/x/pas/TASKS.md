@@ -1,3 +1,7 @@
+## Progress (2025-07-20 05:41 +0000)
+- pascal: add string-to-int cast
+- 32/100 VM programs transpiled successfully
+
 ## Progress (2025-07-20 05:02 UTC)
 - Added tail_recursion support and updated README
 - 31/100 VM programs transpiled successfully
