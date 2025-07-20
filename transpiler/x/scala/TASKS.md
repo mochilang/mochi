@@ -1,3 +1,15 @@
+## Progress (2025-07-20 17:06 +0700)
+- scala transpiler: support simple queries
+- Regenerated golden files - 57/100 vm valid programs passing
+
+## Progress (2025-07-20 16:47 +0700)
+- zig: add map support and update golden tests
+- Regenerated golden files - 67/100 vm valid programs passing
+
+## Progress (2025-07-20 16:47 +0700)
+- zig: add map support and update golden tests
+- Regenerated golden files - 67/100 vm valid programs passing
+
 ## Progress (2025-07-20 14:11 +0700)
 - enhance scala transpiler for structs and match
 - Regenerated golden files - 59/100 vm valid programs passing

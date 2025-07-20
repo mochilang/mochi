@@ -14,6 +14,8 @@ import (
 	"mochi/types"
 )
 
+var typeDecls []*TypeDeclStmt
+
 // Program represents a simple Scala program consisting of statements in main.
 type Program struct {
 	Stmts []Stmt
@@ -501,6 +503,43 @@ func (b *BinaryExpr) emit(w io.Writer) {
 	b.Right.emit(w)
 }
 
+type queryFrom struct {
+	Var string
+	Src Expr
+}
+
+type QueryExpr struct {
+	Var      string
+	Src      Expr
+	Froms    []queryFrom
+	Where    Expr
+	Select   Expr
+	Distinct bool
+}
+
+func (q *QueryExpr) emit(w io.Writer) {
+	q.Src.emit(w)
+	for _, f := range q.Froms {
+		fmt.Fprint(w, ".flatMap(")
+		fmt.Fprintf(w, "%s => ", f.Var)
+		f.Src.emit(w)
+		fmt.Fprint(w, ")")
+	}
+	if q.Where != nil {
+		fmt.Fprint(w, ".filter(")
+		fmt.Fprintf(w, "%s => ", q.Var)
+		q.Where.emit(w)
+		fmt.Fprint(w, ")")
+	}
+	fmt.Fprint(w, ".map(")
+	fmt.Fprintf(w, "%s => ", q.Var)
+	q.Select.emit(w)
+	fmt.Fprint(w, ")")
+	if q.Distinct {
+		fmt.Fprint(w, ".distinct")
+	}
+}
+
 // Emit generates formatted Scala source for the given program.
 func Emit(p *Program) []byte {
 	var buf bytes.Buffer
@@ -533,12 +572,20 @@ func Emit(p *Program) []byte {
 // Transpile converts a Mochi AST into our simple Scala AST.
 func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	sc := &Program{}
+	typeDecls = nil
 	for _, st := range prog.Statements {
 		s, err := convertStmt(st, env)
 		if err != nil {
 			return nil, err
 		}
 		sc.Stmts = append(sc.Stmts, s)
+	}
+	if len(typeDecls) > 0 {
+		stmts := make([]Stmt, 0, len(typeDecls)+len(sc.Stmts))
+		for _, d := range typeDecls {
+			stmts = append(stmts, d)
+		}
+		sc.Stmts = append(stmts, sc.Stmts...)
 	}
 	return sc, nil
 }
@@ -856,6 +903,8 @@ func convertPrimary(p *parser.Primary, env *types.Env) (Expr, error) {
 			entries[i] = MapEntry{Key: k, Value: v}
 		}
 		return &MapLit{Items: entries}, nil
+	case p.Query != nil:
+		return convertQueryExpr(p.Query, env)
 	case p.Struct != nil:
 		return convertStructLiteral(p.Struct, env)
 	case p.If != nil:
@@ -924,6 +973,17 @@ func convertCall(c *parser.CallExpr, env *types.Env) (Expr, error) {
 		if len(args) == 1 {
 			valCall := &CallExpr{Fn: &FieldExpr{Receiver: args[0], Name: "values"}}
 			return &CallExpr{Fn: &FieldExpr{Receiver: valCall, Name: "toList"}}, nil
+		}
+	case "exists":
+		if len(c.Args) == 1 {
+			if q := ExtractQueryExpr(c.Args[0]); q != nil {
+				qe, err := convertQueryExpr(q, env)
+				if err != nil {
+					return nil, err
+				}
+				return &FieldExpr{Receiver: qe, Name: "nonEmpty"}, nil
+			}
+			return &BinaryExpr{Left: &LenExpr{Value: args[0]}, Op: ">", Right: &IntLit{Value: 0}}, nil
 		}
 	}
 
@@ -1028,6 +1088,100 @@ func convertStructLiteral(sl *parser.StructLiteral, env *types.Env) (Expr, error
 		args[i] = ex
 	}
 	return &StructLit{Name: sl.Name, Fields: args}, nil
+}
+
+func ExtractQueryExpr(e *parser.Expr) *parser.QueryExpr {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) > 0 {
+		return nil
+	}
+	u := e.Binary.Left
+	if len(u.Ops) > 0 || u.Value == nil {
+		return nil
+	}
+	p := u.Value
+	if len(p.Ops) > 0 || p.Target == nil {
+		return nil
+	}
+	return p.Target.Query
+}
+
+func convertQueryExpr(q *parser.QueryExpr, env *types.Env) (Expr, error) {
+	if q.Group != nil || q.Sort != nil || q.Skip != nil || q.Take != nil || len(q.Joins) > 0 {
+		return nil, fmt.Errorf("unsupported query")
+	}
+	src, err := convertExpr(q.Source, env)
+	if err != nil {
+		return nil, err
+	}
+	srcType := types.ExprType(q.Source, env)
+	var elemType types.Type = types.AnyType{}
+	if lt, ok := srcType.(types.ListType); ok {
+		elemType = lt.Elem
+	}
+	child := types.NewEnv(env)
+	child.SetVar(q.Var, elemType, true)
+	froms := make([]queryFrom, len(q.Froms))
+	for i, f := range q.Froms {
+		fe, err := convertExpr(f.Src, child)
+		if err != nil {
+			return nil, err
+		}
+		ft := types.ExprType(f.Src, child)
+		var felem types.Type = types.AnyType{}
+		if lt, ok := ft.(types.ListType); ok {
+			felem = lt.Elem
+		}
+		child.SetVar(f.Var, felem, true)
+		froms[i] = queryFrom{Var: f.Var, Src: fe}
+	}
+	var where Expr
+	if q.Where != nil {
+		where, err = convertExpr(q.Where, child)
+		if err != nil {
+			return nil, err
+		}
+	}
+	if ml := mapLiteral(q.Select); ml != nil {
+		if st, ok := types.InferStructFromMapEnv(ml, child); ok {
+			name := types.UniqueStructName("QueryItem", env, nil)
+			env.SetStruct(name, st)
+			fields := make([]Param, len(st.Order))
+			for i, n := range st.Order {
+				fields[i] = Param{Name: n, Type: toScalaTypeFromType(st.Fields[n])}
+			}
+			typeDecls = append(typeDecls, &TypeDeclStmt{Name: name, Fields: fields})
+			sl := &parser.StructLiteral{Name: name}
+			for _, n := range st.Order {
+				for _, it := range ml.Items {
+					if key, _ := types.SimpleStringKey(it.Key); key == n {
+						sl.Fields = append(sl.Fields, &parser.StructLitField{Name: n, Value: it.Value})
+						break
+					}
+				}
+			}
+			q.Select = &parser.Expr{Binary: &parser.BinaryExpr{Left: &parser.Unary{Value: &parser.PostfixExpr{Target: &parser.Primary{Struct: sl}}}}}
+		}
+	}
+	sel, err := convertExpr(q.Select, child)
+	if err != nil {
+		return nil, err
+	}
+	return &QueryExpr{Var: q.Var, Src: src, Froms: froms, Where: where, Select: sel, Distinct: q.Distinct}, nil
+}
+
+func mapLiteral(e *parser.Expr) *parser.MapLiteral {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) != 0 {
+		return nil
+	}
+	u := e.Binary.Left
+	if len(u.Ops) > 0 || u.Value == nil {
+		return nil
+	}
+	p := u.Value
+	if len(p.Ops) > 0 || p.Target == nil {
+		return nil
+	}
+	return p.Target.Map
 }
 
 func convertMatchExpr(me *parser.MatchExpr, env *types.Env) (Expr, error) {
