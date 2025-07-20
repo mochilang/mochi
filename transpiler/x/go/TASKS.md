@@ -1,3 +1,7 @@
+## Progress (2025-07-20 08:32 +0700)
+- Add unary not handling to Go transpiler
+- Regenerated golden files - 53/100 vm valid programs passing
+
 ## Progress (2025-07-20 08:19 +0700)
 - go transpiler: support function literals
 - Regenerated golden files - 52/100 vm valid programs passing

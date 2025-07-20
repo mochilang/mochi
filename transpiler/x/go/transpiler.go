@@ -247,6 +247,14 @@ type BoolLit struct{ Value bool }
 
 func (b *BoolLit) emit(w io.Writer) { fmt.Fprintf(w, "%t", b.Value) }
 
+// NotExpr represents a boolean negation.
+type NotExpr struct{ Expr Expr }
+
+func (n *NotExpr) emit(w io.Writer) {
+	fmt.Fprint(w, "!")
+	n.Expr.emit(w)
+}
+
 // MapLit represents a map literal.
 type MapLit struct {
 	KeyType   string
@@ -1004,9 +1012,12 @@ func compileUnary(u *parser.Unary, env *types.Env) (Expr, error) {
 	}
 	for i := len(u.Ops) - 1; i >= 0; i-- {
 		op := u.Ops[i]
-		if op == "-" {
+		switch op {
+		case "-":
 			expr = &BinaryExpr{Left: &IntLit{Value: 0}, Op: "-", Right: expr}
-		} else {
+		case "!":
+			expr = &NotExpr{Expr: expr}
+		default:
 			return nil, fmt.Errorf("unsupported unary op")
 		}
 	}
@@ -1547,6 +1558,8 @@ func toNodeExpr(e Expr) *ast.Node {
 			n.Children = append(n.Children, toNodeExpr(ex.Else))
 		}
 		return n
+	case *NotExpr:
+		return &ast.Node{Kind: "not", Children: []*ast.Node{toNodeExpr(ex.Expr)}}
 	case *FuncLit:
 		n := &ast.Node{Kind: "funclit"}
 		params := &ast.Node{Kind: "params"}
