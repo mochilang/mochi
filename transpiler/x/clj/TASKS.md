@@ -1,3 +1,15 @@
+## Progress (2025-07-20 22:32 +0700)
+- clj: add exists builtin
+- Regenerated golden files - 80/100 vm valid programs passing
+
+## Progress (2025-07-20 22:25 +0700)
+- clj: support left joins
+- Regenerated golden files - 80/100 vm valid programs passing
+
+## Progress (2025-07-20 22:25 +0700)
+- clj: support left joins
+- Regenerated golden files - 79/100 vm valid programs passing
+
 ## Progress (2025-07-20 22:01 +0700)
 - clj: infer struct types and left join
 - Regenerated golden files - 79/100 vm valid programs passing
