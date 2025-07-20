@@ -1681,7 +1681,11 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 			// ignore extern object declarations
 			continue
 		case st.Type != nil:
-			// ignore type declarations at top level
+			for _, v := range st.Type.Variants {
+				if len(v.Fields) == 0 {
+					p.Stmts = append(p.Stmts, &LetStmt{Name: v.Name, Expr: &Name{Name: "None"}})
+				}
+			}
 			continue
 		case st.ExternType != nil:
 			continue
@@ -2370,15 +2374,46 @@ func convertMatchExpr(me *parser.MatchExpr) (Expr, error) {
 		if err != nil {
 			return nil, err
 		}
-		pat, err := convertExpr(c.Pattern)
+		pat := c.Pattern
+		if pat.Binary != nil && len(pat.Binary.Right) == 0 {
+			u := pat.Binary.Left
+			if len(u.Ops) == 0 && u.Value != nil && u.Value.Target != nil && u.Value.Target.Call != nil && u.Value.Target.Call.Func == "Node" {
+				call := u.Value.Target.Call
+				if len(call.Args) == 3 {
+					names := []string{}
+					ok := true
+					for _, a := range call.Args {
+						name, ok2 := isSimpleIdent(a)
+						if !ok2 {
+							ok = false
+							break
+						}
+						names = append(names, name)
+					}
+					if ok {
+						if tn, ok2 := target.(*Name); ok2 {
+							fields := map[string]bool{}
+							for _, nm := range names {
+								fields[nm] = true
+							}
+							res = substituteFields(res, tn.Name, fields)
+							cond := &BinaryExpr{Left: target, Op: "!=", Right: &Name{Name: "None"}}
+							expr = &CondExpr{Cond: cond, Then: res, Else: expr}
+							continue
+						}
+					}
+				}
+			}
+		}
+		patExpr, err := convertExpr(pat)
 		if err != nil {
 			return nil, err
 		}
-		if n, ok := pat.(*Name); ok && n.Name == "_" {
+		if n, ok := patExpr.(*Name); ok && n.Name == "_" {
 			expr = res
 			continue
 		}
-		cond := &BinaryExpr{Left: target, Op: "==", Right: pat}
+		cond := &BinaryExpr{Left: target, Op: "==", Right: patExpr}
 		expr = &CondExpr{Cond: cond, Then: res, Else: expr}
 	}
 	return expr, nil
