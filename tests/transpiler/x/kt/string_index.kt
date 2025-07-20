@@ -1,4 +1,4 @@
+val s: String = "mochi"
 fun main() {
-    val s: String = "mochi"
     println(s[1])
 }

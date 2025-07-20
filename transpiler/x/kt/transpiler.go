@@ -20,6 +20,7 @@ var (
 // Program contains top level functions and statements executed in `main`.
 type Program struct {
 	Structs []*DataClass
+	Globals []*GlobalVar
 	Funcs   []*FuncDef
 	Stmts   []Stmt
 }
@@ -74,6 +75,14 @@ type DataClass struct {
 type ParamDecl struct {
 	Name string
 	Type string
+}
+
+// GlobalVar declares a top level variable.
+type GlobalVar struct {
+	Name  string
+	Type  string
+	Value Expr
+	Mut   bool
 }
 
 // StructLit represents instantiation of a data class.
@@ -1055,7 +1064,7 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 					typ = guessType(val)
 				}
 			}
-			p.Stmts = append(p.Stmts, &LetStmt{Name: st.Let.Name, Type: typ, Value: val})
+			p.Globals = append(p.Globals, &GlobalVar{Name: st.Let.Name, Type: typ, Value: val, Mut: false})
 		case st.Var != nil:
 			var val Expr
 			if st.Var.Value != nil {
@@ -1075,7 +1084,7 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 					typ = guessType(val)
 				}
 			}
-			p.Stmts = append(p.Stmts, &VarStmt{Name: st.Var.Name, Type: typ, Value: val})
+			p.Globals = append(p.Globals, &GlobalVar{Name: st.Var.Name, Type: typ, Value: val, Mut: true})
 		case st.Assign != nil && len(st.Assign.Index) == 0 && len(st.Assign.Field) == 0:
 			e, err := convertExpr(env, st.Assign.Value)
 			if err != nil {
@@ -1813,9 +1822,15 @@ func convertPrimary(env *types.Env, p *parser.Primary) (Expr, error) {
 					name = "println"
 					return &CallExpr{Func: name, Args: args}, nil
 				}
-				// concatenate arguments with spaces
+				// concatenate arguments with spaces as strings
 				expr := args[0]
+				if guessType(expr) != "String" {
+					expr = &CastExpr{Value: expr, Type: "string"}
+				}
 				for _, a := range args[1:] {
+					if guessType(a) != "String" {
+						a = &CastExpr{Value: a, Type: "string"}
+					}
 					expr = &BinaryExpr{Left: &BinaryExpr{Left: expr, Op: "+", Right: &StringLit{Value: " "}}, Op: "+", Right: a}
 				}
 				return &CallExpr{Func: "println", Args: []Expr{expr}}, nil
@@ -1880,6 +1895,23 @@ func Emit(prog *Program) []byte {
 	var buf bytes.Buffer
 	for _, d := range prog.Structs {
 		d.emit(&buf, 0)
+		buf.WriteString("\n")
+	}
+	for _, g := range prog.Globals {
+		if g.Mut {
+			buf.WriteString("var " + g.Name)
+		} else {
+			buf.WriteString("val " + g.Name)
+		}
+		if g.Type != "" {
+			buf.WriteString(": " + g.Type)
+		}
+		buf.WriteString(" = ")
+		if g.Value != nil {
+			g.Value.emit(&buf)
+		} else {
+			buf.WriteString("0")
+		}
 		buf.WriteString("\n")
 	}
 	for _, f := range prog.Funcs {
