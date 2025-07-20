@@ -693,7 +693,11 @@ func (c *ContainsExpr) emit(w io.Writer) error {
 	if err := c.Target.emit(w); err != nil {
 		return err
 	}
-	if _, err := io.WriteString(w, ".contains("); err != nil {
+	method := ".contains("
+	if strings.HasPrefix(inferType(c.Target), "Map<") {
+		method = ".containsKey("
+	}
+	if _, err := io.WriteString(w, method); err != nil {
 		return err
 	}
 	if err := c.Elem.emit(w); err != nil {
@@ -750,6 +754,89 @@ func (a *AvgExpr) emit(w io.Writer) error {
 	}
 	_, err := io.WriteString(w, ".length)")
 	return err
+}
+
+// SumExpr represents sum(list).
+type SumExpr struct{ List Expr }
+
+func (s *SumExpr) emit(w io.Writer) error {
+	if err := s.List.emit(w); err != nil {
+		return err
+	}
+	if _, err := io.WriteString(w, ".isEmpty ? 0 : ("); err != nil {
+		return err
+	}
+	if err := s.List.emit(w); err != nil {
+		return err
+	}
+	if _, err := io.WriteString(w, ".reduce((a, b) => a + b))"); err != nil {
+		return err
+	}
+	return nil
+}
+
+// MinExpr represents min(list).
+type MinExpr struct{ List Expr }
+
+func (m *MinExpr) emit(w io.Writer) error {
+	if err := m.List.emit(w); err != nil {
+		return err
+	}
+	if _, err := io.WriteString(w, ".reduce((a, b) => a < b ? a : b)"); err != nil {
+		return err
+	}
+	return nil
+}
+
+// MaxExpr represents max(list).
+type MaxExpr struct{ List Expr }
+
+func (m *MaxExpr) emit(w io.Writer) error {
+	if err := m.List.emit(w); err != nil {
+		return err
+	}
+	if _, err := io.WriteString(w, ".reduce((a, b) => a > b ? a : b)"); err != nil {
+		return err
+	}
+	return nil
+}
+
+// ValuesExpr represents values(map).
+type ValuesExpr struct{ Map Expr }
+
+func (v *ValuesExpr) emit(w io.Writer) error {
+	if err := v.Map.emit(w); err != nil {
+		return err
+	}
+	_, err := io.WriteString(w, ".values.toList()")
+	return err
+}
+
+// StrExpr represents str(x).
+type StrExpr struct{ Value Expr }
+
+func (s *StrExpr) emit(w io.Writer) error {
+	if err := s.Value.emit(w); err != nil {
+		return err
+	}
+	_, err := io.WriteString(w, ".toString()")
+	return err
+}
+
+// FormatList renders a list like "[a b]".
+type FormatList struct{ List Expr }
+
+func (f *FormatList) emit(w io.Writer) error {
+	if _, err := io.WriteString(w, "\"[\" + "); err != nil {
+		return err
+	}
+	if err := f.List.emit(w); err != nil {
+		return err
+	}
+	if _, err := io.WriteString(w, ".join(' ') + \"]\""); err != nil {
+		return err
+	}
+	return nil
 }
 
 // LambdaExpr represents an inline function expression.
@@ -899,6 +986,12 @@ func inferType(e Expr) string {
 				return "int"
 			case "avg":
 				return "num"
+			case "sum":
+				return "num"
+			case "min", "max":
+				return "num"
+			case "values":
+				return "List<dynamic>"
 			case "append":
 				if len(ex.Args) > 0 {
 					return inferType(ex.Args[0])
@@ -934,8 +1027,12 @@ func inferType(e Expr) string {
 		return t
 	case *AppendExpr:
 		return inferType(ex.List)
-	case *AvgExpr:
+	case *AvgExpr, *SumExpr, *MinExpr, *MaxExpr:
 		return "num"
+	case *ValuesExpr:
+		return "List<dynamic>"
+	case *StrExpr, *FormatList:
+		return "String"
 	default:
 		if e == nil {
 			return "var"
@@ -1025,7 +1122,6 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 		}
 		p.Stmts = append(p.Stmts, s)
 	}
-	currentEnv = nil
 	return p, nil
 }
 
@@ -1400,6 +1496,48 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 			}
 			return &AvgExpr{List: list}, nil
 		}
+		if p.Call.Func == "sum" && len(p.Call.Args) == 1 {
+			list, err := convertExpr(p.Call.Args[0])
+			if err != nil {
+				return nil, err
+			}
+			return &SumExpr{List: list}, nil
+		}
+		if p.Call.Func == "min" && len(p.Call.Args) == 1 {
+			list, err := convertExpr(p.Call.Args[0])
+			if err != nil {
+				return nil, err
+			}
+			return &MinExpr{List: list}, nil
+		}
+		if p.Call.Func == "max" && len(p.Call.Args) == 1 {
+			list, err := convertExpr(p.Call.Args[0])
+			if err != nil {
+				return nil, err
+			}
+			return &MaxExpr{List: list}, nil
+		}
+		if p.Call.Func == "values" && len(p.Call.Args) == 1 {
+			mp, err := convertExpr(p.Call.Args[0])
+			if err != nil {
+				return nil, err
+			}
+			return &ValuesExpr{Map: mp}, nil
+		}
+		if p.Call.Func == "str" && len(p.Call.Args) == 1 {
+			v, err := convertExpr(p.Call.Args[0])
+			if err != nil {
+				return nil, err
+			}
+			return &StrExpr{Value: v}, nil
+		}
+		if p.Call.Func == "count" && len(p.Call.Args) == 1 {
+			arg, err := convertExpr(p.Call.Args[0])
+			if err != nil {
+				return nil, err
+			}
+			return &LenExpr{X: arg}, nil
+		}
 		if p.Call.Func == "exists" && len(p.Call.Args) == 1 {
 			if q := extractQuery(p.Call.Args[0]); q != nil {
 				return convertExistsQuery(q)
@@ -1426,6 +1564,13 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 				ex, err := convertExpr(a)
 				if err != nil {
 					return nil, err
+				}
+				if v, ok := ex.(*ValuesExpr); ok {
+					ex = &CallExpr{Func: &SelectorExpr{Receiver: v, Field: "join"}, Args: []Expr{&StringLit{Value: " "}}}
+				} else if t := types.ExprType(a, currentEnv); t != nil {
+					if _, ok := t.(types.ListType); ok {
+						ex = &FormatList{List: ex}
+					}
 				}
 				if len(p.Call.Args) == 1 && isBoolExpr(a) {
 					ex = &CondExpr{Cond: ex, Then: &IntLit{Value: 1}, Else: &IntLit{Value: 0}}
@@ -1713,6 +1858,18 @@ func exprNode(e Expr) *ast.Node {
 		return &ast.Node{Kind: "contains", Children: []*ast.Node{exprNode(ex.Target), exprNode(ex.Elem)}}
 	case *AvgExpr:
 		return &ast.Node{Kind: "avg", Children: []*ast.Node{exprNode(ex.List)}}
+	case *SumExpr:
+		return &ast.Node{Kind: "sum", Children: []*ast.Node{exprNode(ex.List)}}
+	case *MinExpr:
+		return &ast.Node{Kind: "min", Children: []*ast.Node{exprNode(ex.List)}}
+	case *MaxExpr:
+		return &ast.Node{Kind: "max", Children: []*ast.Node{exprNode(ex.List)}}
+	case *ValuesExpr:
+		return &ast.Node{Kind: "values", Children: []*ast.Node{exprNode(ex.Map)}}
+	case *StrExpr:
+		return &ast.Node{Kind: "str", Children: []*ast.Node{exprNode(ex.Value)}}
+	case *FormatList:
+		return &ast.Node{Kind: "format-list", Children: []*ast.Node{exprNode(ex.List)}}
 	default:
 		return &ast.Node{Kind: "unknown"}
 	}

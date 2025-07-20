@@ -1,7 +1,0 @@
-run: exit status 254
-../../../tests/transpiler/x/dart/map_literal_dynamic.dart:5:15: Error: The keyword 'var' can't be used as a type name.
-  Map<String, var> m = {"a": x, "b": y};
-              ^^^
-../../../tests/transpiler/x/dart/map_literal_dynamic.dart:5:15: Error: 'var' isn't a type.
-  Map<String, var> m = {"a": x, "b": y};
-              ^^^
