@@ -217,6 +217,8 @@ func TestTranspileListSetOps(t *testing.T) { runGolden(t, "list_set_ops") }
 
 func TestTranspileTestBlock(t *testing.T) { runGolden(t, "test_block") }
 
+func TestTranspileCrossJoin(t *testing.T) { runGolden(t, "cross_join") }
+
 func updateEnabled() bool { return *update }
 
 func countCompiled() (int, int) {
