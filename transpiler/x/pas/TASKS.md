@@ -1,3 +1,7 @@
+## Progress (2025-07-20 14:09 +0700)
+- Added avg, count, min/max and membership support
+- Generated new golden files; progress 38/100
+
 ## Progress (2025-07-20 05:41 +0000)
 - pascal: add string-to-int cast
 - 32/100 VM programs transpiled successfully

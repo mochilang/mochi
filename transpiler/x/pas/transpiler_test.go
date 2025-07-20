@@ -4,13 +4,17 @@ package pas_test
 
 import (
 	"bytes"
-	"mochi/parser"
-	pas "mochi/transpiler/x/pas"
-	"mochi/types"
+	"fmt"
 	"os"
 	"os/exec"
 	"path/filepath"
+	"strings"
 	"testing"
+	"time"
+
+	"mochi/parser"
+	pas "mochi/transpiler/x/pas"
+	"mochi/types"
 )
 
 func repoRoot(t *testing.T) string {
@@ -90,7 +94,83 @@ func runCase(t *testing.T, name string) {
 }
 
 func TestPascalTranspiler(t *testing.T) {
-	for _, tc := range []string{"print_hello", "unary_neg", "math_ops", "let_and_print", "var_assignment", "typed_let", "typed_var", "string_concat", "string_compare", "while_loop", "if_else", "fun_call", "fun_three_args", "bool_chain", "basic_compare", "binary_precedence", "cast_string_to_int", "len_string", "string_contains", "substring_builtin", "short_circuit", "len_builtin", "list_index"} {
+	for _, tc := range []string{"print_hello", "unary_neg", "math_ops", "let_and_print", "var_assignment", "typed_let", "typed_var", "string_concat", "string_compare", "while_loop", "if_else", "fun_call", "fun_three_args", "bool_chain", "basic_compare", "binary_precedence", "cast_string_to_int", "len_string", "string_contains", "substring_builtin", "short_circuit", "len_builtin", "list_index", "membership", "count_builtin", "avg_builtin", "min_max_builtin", "slice", "list_nested_assign"} {
 		t.Run(tc, func(t *testing.T) { runCase(t, tc) })
 	}
+}
+
+func TestMain(m *testing.M) {
+	code := m.Run()
+	updateReadme()
+	updateTasks()
+	os.Exit(code)
+}
+
+func countCompiled() (int, int) {
+	root := repoRoot(&testing.T{})
+	srcDir := filepath.Join(root, "tests", "vm", "valid")
+	outDir := filepath.Join(root, "tests", "transpiler", "x", "pas")
+	files, _ := filepath.Glob(filepath.Join(srcDir, "*.mochi"))
+	total := len(files)
+	compiled := 0
+	for _, f := range files {
+		name := strings.TrimSuffix(filepath.Base(f), ".mochi")
+		if _, err := os.Stat(filepath.Join(outDir, name+".pas")); err == nil {
+			compiled++
+		}
+	}
+	return compiled, total
+}
+
+func updateReadme() {
+	root := repoRoot(&testing.T{})
+	srcDir := filepath.Join(root, "tests", "vm", "valid")
+	outDir := filepath.Join(root, "tests", "transpiler", "x", "pas")
+	readmePath := filepath.Join(root, "transpiler", "x", "pas", "README.md")
+	files, _ := filepath.Glob(filepath.Join(srcDir, "*.mochi"))
+	total := len(files)
+	compiled := 0
+	var lines []string
+	for _, f := range files {
+		name := strings.TrimSuffix(filepath.Base(f), ".mochi")
+		mark := "[ ]"
+		if _, err := os.Stat(filepath.Join(outDir, name+".pas")); err == nil {
+			compiled++
+			mark = "[x]"
+		}
+		lines = append(lines, fmt.Sprintf("- %s %s", mark, name))
+	}
+	var buf bytes.Buffer
+	buf.WriteString("# Pascal Transpiler\n\n")
+	buf.WriteString("This folder contains the experimental Pascal transpiler.\n")
+	buf.WriteString("Generated sources for the golden tests live under `tests/transpiler/x/pas`.\n\n")
+	fmt.Fprintf(&buf, "## VM Golden Test Checklist (%d/%d)\n", compiled, total)
+	buf.WriteString(strings.Join(lines, "\n"))
+	buf.WriteString("\n")
+	_ = os.WriteFile(readmePath, buf.Bytes(), 0o644)
+}
+
+func updateTasks() {
+	root := repoRoot(&testing.T{})
+	taskFile := filepath.Join(root, "transpiler", "x", "pas", "TASKS.md")
+	compiled, total := countCompiled()
+	out, err := exec.Command("git", "log", "-1", "--format=%cI;%s").Output()
+	ts := ""
+	msg := "updated"
+	if err == nil {
+		parts := strings.SplitN(strings.TrimSpace(string(out)), ";", 2)
+		if len(parts) == 2 {
+			if t, perr := time.Parse(time.RFC3339, parts[0]); perr == nil {
+				ts = t.Format("2006-01-02 15:04 MST")
+			}
+			msg = parts[1]
+		}
+	}
+	var buf bytes.Buffer
+	fmt.Fprintf(&buf, "## Progress (%s)\n", ts)
+	fmt.Fprintf(&buf, "- %s (progress %d/%d)\n\n", msg, compiled, total)
+	if data, err := os.ReadFile(taskFile); err == nil {
+		buf.Write(data)
+	}
+	_ = os.WriteFile(taskFile, buf.Bytes(), 0o644)
 }

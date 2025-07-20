@@ -12,6 +12,8 @@ import (
 	"mochi/types"
 )
 
+var currProg *Program
+
 // Program is a minimal Pascal AST consisting of a sequence of statements.
 // VarDecl represents a simple variable declaration.
 type VarDecl struct {
@@ -23,10 +25,14 @@ type VarDecl struct {
 // Program is a minimal Pascal AST consisting of a sequence of statements
 // plus optional variable declarations.
 type Program struct {
-	Funs        []FunDecl
-	Vars        []VarDecl
-	Stmts       []Stmt
-	UseSysUtils bool
+	Funs         []FunDecl
+	Vars         []VarDecl
+	Stmts        []Stmt
+	UseSysUtils  bool
+	NeedAvg      bool
+	NeedMin      bool
+	NeedMax      bool
+	NeedContains bool
 }
 
 // Stmt represents a Pascal statement.
@@ -247,14 +253,26 @@ type BinaryExpr struct {
 	Bool  bool
 }
 
-type ContainsExpr struct{ Str, Sub Expr }
+type ContainsExpr struct {
+	Collection Expr
+	Value      Expr
+	Kind       string
+}
 
 func (c *ContainsExpr) emit(w io.Writer) {
-	io.WriteString(w, "Pos(")
-	c.Sub.emit(w)
-	io.WriteString(w, ", ")
-	c.Str.emit(w)
-	io.WriteString(w, ") <> 0")
+	if c.Kind == "string" {
+		io.WriteString(w, "Pos(")
+		c.Value.emit(w)
+		io.WriteString(w, ", ")
+		c.Collection.emit(w)
+		io.WriteString(w, ") <> 0")
+	} else { // list
+		io.WriteString(w, "contains(")
+		c.Collection.emit(w)
+		io.WriteString(w, ", ")
+		c.Value.emit(w)
+		io.WriteString(w, ")")
+	}
 }
 
 func (c *ContainsExpr) isBool() bool { return true }
@@ -403,6 +421,30 @@ func (i *IndexAssignStmt) emit(w io.Writer) {
 	io.WriteString(w, ";")
 }
 
+// DoubleIndexAssignStmt assigns to a nested list element.
+type DoubleIndexAssignStmt struct {
+	Name   string
+	Index1 Expr
+	Index2 Expr
+	Expr   Expr
+}
+
+func (d *DoubleIndexAssignStmt) emit(w io.Writer) {
+	fmt.Fprintf(w, "%s[", d.Name)
+	if d.Index1 != nil {
+		d.Index1.emit(w)
+	}
+	io.WriteString(w, "][")
+	if d.Index2 != nil {
+		d.Index2.emit(w)
+	}
+	io.WriteString(w, "] := ")
+	if d.Expr != nil {
+		d.Expr.emit(w)
+	}
+	io.WriteString(w, ";")
+}
+
 func (p *PrintStmt) emit(w io.Writer) {
 	if be, ok := p.Expr.(boolExpr); ok && be.isBool() {
 		io.WriteString(w, "writeln(ord(")
@@ -431,6 +473,18 @@ func (p *Program) Emit() []byte {
 	buf.WriteString("{$mode objfpc}\nprogram Main;\n")
 	if p.UseSysUtils {
 		buf.WriteString("uses SysUtils;\n")
+	}
+	if p.NeedContains {
+		buf.WriteString("function contains(xs: array of integer; v: integer): boolean;\nvar i: integer;\nbegin\n  for i := 0 to High(xs) do begin\n    if xs[i] = v then begin\n      contains := true; exit;\n    end;\n  end;\n  contains := false;\nend;\n")
+	}
+	if p.NeedAvg {
+		buf.WriteString("function avg(xs: array of integer): real;\nvar i, s: integer;\nbegin\n  if Length(xs) = 0 then begin avg := 0; exit; end;\n  s := 0;\n  for i := 0 to High(xs) do s := s + xs[i];\n  avg := s / Length(xs);\nend;\n")
+	}
+	if p.NeedMin {
+		buf.WriteString("function min(xs: array of integer): integer;\nvar i, m: integer;\nbegin\n  if Length(xs) = 0 then begin min := 0; exit; end;\n  m := xs[0];\n  for i := 1 to High(xs) do if xs[i] < m then m := xs[i];\n  min := m;\nend;\n")
+	}
+	if p.NeedMax {
+		buf.WriteString("function max(xs: array of integer): integer;\nvar i, m: integer;\nbegin\n  if Length(xs) = 0 then begin max := 0; exit; end;\n  m := xs[0];\n  for i := 1 to High(xs) do if xs[i] > m then m := xs[i];\n  max := m;\nend;\n")
 	}
 	for _, f := range p.Funs {
 		f.emit(&buf)
@@ -467,6 +521,7 @@ func (p *Program) Emit() []byte {
 func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 	_ = env
 	pr := &Program{}
+	currProg = pr
 	varTypes := map[string]string{}
 	for _, st := range prog.Statements {
 		switch {
@@ -552,6 +607,21 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 				pr.Stmts = append(pr.Stmts, &IndexAssignStmt{Name: st.Assign.Name, Index: idx, Expr: ex})
 				break
 			}
+			if len(st.Assign.Index) == 2 &&
+				st.Assign.Index[0].Colon == nil && st.Assign.Index[1].Colon == nil &&
+				st.Assign.Index[0].Colon2 == nil && st.Assign.Index[1].Colon2 == nil &&
+				len(st.Assign.Field) == 0 {
+				idx1, err := convertExpr(env, st.Assign.Index[0].Start)
+				if err != nil {
+					return nil, err
+				}
+				idx2, err := convertExpr(env, st.Assign.Index[1].Start)
+				if err != nil {
+					return nil, err
+				}
+				pr.Stmts = append(pr.Stmts, &DoubleIndexAssignStmt{Name: st.Assign.Name, Index1: idx1, Index2: idx2, Expr: ex})
+				break
+			}
 			if _, ok := varTypes[st.Assign.Name]; !ok {
 				if t := inferType(ex); t != "" {
 					varTypes[st.Assign.Name] = t
@@ -623,6 +693,7 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 		}
 	}
 	markSysUtils(pr)
+	currProg = nil
 	return pr, nil
 }
 
@@ -641,6 +712,21 @@ func convertBody(env *types.Env, body []*parser.Statement, varTypes map[string]s
 					return nil, err
 				}
 				out = append(out, &IndexAssignStmt{Name: st.Assign.Name, Index: idx, Expr: ex})
+				break
+			}
+			if len(st.Assign.Index) == 2 &&
+				st.Assign.Index[0].Colon == nil && st.Assign.Index[1].Colon == nil &&
+				st.Assign.Index[0].Colon2 == nil && st.Assign.Index[1].Colon2 == nil &&
+				len(st.Assign.Field) == 0 {
+				idx1, err := convertExpr(env, st.Assign.Index[0].Start)
+				if err != nil {
+					return nil, err
+				}
+				idx2, err := convertExpr(env, st.Assign.Index[1].Start)
+				if err != nil {
+					return nil, err
+				}
+				out = append(out, &DoubleIndexAssignStmt{Name: st.Assign.Name, Index1: idx1, Index2: idx2, Expr: ex})
 				break
 			}
 			if _, ok := varTypes[st.Assign.Name]; !ok {
@@ -698,6 +784,18 @@ func convertExpr(env *types.Env, e *parser.Expr) (Expr, error) {
 	if len(e.Binary.Right) == 0 {
 		return left, nil
 	}
+	if len(e.Binary.Right) == 1 && e.Binary.Right[0].Op == "in" {
+		right, err := convertPostfix(env, e.Binary.Right[0].Right)
+		if err != nil {
+			return nil, err
+		}
+		tmp := &parser.Expr{Binary: &parser.BinaryExpr{Left: &parser.Unary{Value: e.Binary.Right[0].Right}}}
+		t := types.ExprType(tmp, env)
+		if _, ok := t.(types.ListType); ok {
+			currProg.NeedContains = true
+			return &ContainsExpr{Collection: right, Value: left, Kind: "list"}, nil
+		}
+	}
 
 	prec := func(op string) int {
 		switch op {
@@ -742,6 +840,13 @@ func convertExpr(env *types.Env, e *parser.Expr) (Expr, error) {
 		case "||":
 			be = &BinaryExpr{Op: "or", Left: left, Right: right, Bool: true}
 		case "in":
+			rt := inferType(right)
+			if strings.HasPrefix(rt, "array") {
+				currProg.NeedContains = true
+				be = nil
+				exprs = append(exprs, &ContainsExpr{Collection: right, Value: left, Kind: "list"})
+				return nil
+			}
 			be = &BinaryExpr{Op: "in", Left: left, Right: right, Bool: true}
 		default:
 			return fmt.Errorf("unsupported op")
@@ -827,7 +932,8 @@ func convertPostfix(env *types.Env, pf *parser.PostfixExpr) (Expr, error) {
 					if err != nil {
 						return nil, err
 					}
-					expr = &ContainsExpr{Str: &VarRef{Name: t.Root}, Sub: arg}
+					currProg.NeedContains = true
+					expr = &ContainsExpr{Collection: &VarRef{Name: t.Root}, Value: arg, Kind: "list"}
 				} else {
 					return nil, fmt.Errorf("unsupported call target")
 				}
@@ -843,7 +949,8 @@ func convertPostfix(env *types.Env, pf *parser.PostfixExpr) (Expr, error) {
 			if err != nil {
 				return nil, err
 			}
-			expr = &ContainsExpr{Str: expr, Sub: arg}
+			currProg.NeedContains = true
+			expr = &ContainsExpr{Collection: expr, Value: arg, Kind: "list"}
 			i++
 		case op.Index != nil && op.Index.Colon == nil && op.Index.Colon2 == nil:
 			idx, err := convertExpr(env, op.Index.Start)
@@ -926,6 +1033,17 @@ func convertPrimary(env *types.Env, p *parser.Primary) (Expr, error) {
 				}
 				return sum, nil
 			}
+		} else if name == "count" && len(args) == 1 {
+			return &CallExpr{Name: "Length", Args: args}, nil
+		} else if name == "avg" && len(args) == 1 {
+			currProg.NeedAvg = true
+			return &CallExpr{Name: "avg", Args: args}, nil
+		} else if name == "min" && len(args) == 1 {
+			currProg.NeedMin = true
+			return &CallExpr{Name: "min", Args: args}, nil
+		} else if name == "max" && len(args) == 1 {
+			currProg.NeedMax = true
+			return &CallExpr{Name: "max", Args: args}, nil
 		}
 		return &CallExpr{Name: name, Args: args}, nil
 	case p.List != nil:
@@ -1094,7 +1212,7 @@ func usesSysUtilsExpr(e Expr) bool {
 	case *UnaryExpr:
 		return usesSysUtilsExpr(v.Expr)
 	case *ContainsExpr:
-		return usesSysUtilsExpr(v.Str) || usesSysUtilsExpr(v.Sub)
+		return usesSysUtilsExpr(v.Collection) || usesSysUtilsExpr(v.Value)
 	case *IndexExpr:
 		return usesSysUtilsExpr(v.Target) || usesSysUtilsExpr(v.Index)
 	case *SliceExpr:
@@ -1118,6 +1236,8 @@ func usesSysUtilsStmt(s Stmt) bool {
 		return usesSysUtilsExpr(v.Expr)
 	case *IndexAssignStmt:
 		return usesSysUtilsExpr(v.Index) || usesSysUtilsExpr(v.Expr)
+	case *DoubleIndexAssignStmt:
+		return usesSysUtilsExpr(v.Index1) || usesSysUtilsExpr(v.Index2) || usesSysUtilsExpr(v.Expr)
 	case *ReturnStmt:
 		return usesSysUtilsExpr(v.Expr)
 	case *IfStmt:
