@@ -239,10 +239,12 @@ func (ws *WhileStmt) emit(w io.Writer, indent int) {
 
 func (f *ForStmt) emit(w io.Writer, indent int) {
 	if len(f.List) > 0 {
+		arrName := fmt.Sprintf("%s_arr", f.Var)
+		lenName := fmt.Sprintf("%s_len", f.Var)
 		writeIndent(w, indent)
 		io.WriteString(w, "{\n")
 		writeIndent(w, indent+1)
-		io.WriteString(w, "int arr[] = {")
+		fmt.Fprintf(w, "int %s[] = {", arrName)
 		for i, e := range f.List {
 			if i > 0 {
 				io.WriteString(w, ", ")
@@ -251,11 +253,11 @@ func (f *ForStmt) emit(w io.Writer, indent int) {
 		}
 		io.WriteString(w, "};\n")
 		writeIndent(w, indent+1)
-		io.WriteString(w, "int arr_len = (int)(sizeof(arr)/sizeof(arr[0]));\n")
+		fmt.Fprintf(w, "int %s = (int)(sizeof(%s)/sizeof(%s[0]));\n", lenName, arrName, arrName)
 		writeIndent(w, indent+1)
-		io.WriteString(w, "for (int i = 0; i < arr_len; i++) {\n")
+		fmt.Fprintf(w, "for (int i = 0; i < %s; i++) {\n", lenName)
 		writeIndent(w, indent+2)
-		fmt.Fprintf(w, "int %s = arr[i];\n", f.Var)
+		fmt.Fprintf(w, "int %s = %s[i];\n", f.Var, arrName)
 		for _, s := range f.Body {
 			s.emit(w, indent+2)
 		}
@@ -1012,6 +1014,16 @@ func convertUnary(u *parser.Unary) Expr {
 				return &ListLit{Elems: newElems}
 			}
 		}
+		if call.Func == "contains" && len(call.Args) == 2 {
+			hay, ok1 := evalString(convertExpr(call.Args[0]))
+			needle, ok2 := evalString(convertExpr(call.Args[1]))
+			if ok1 && ok2 {
+				if strings.Contains(hay, needle) {
+					return &IntLit{Value: 1}
+				}
+				return &IntLit{Value: 0}
+			}
+		}
 		if call.Func == "substring" && len(call.Args) >= 2 {
 			strArg, ok := evalString(convertExpr(call.Args[0]))
 			if !ok {
@@ -1238,7 +1250,7 @@ func exprIsString(e Expr) bool {
 		_, ok := constStrings[v.Name]
 		return ok
 	case *CallExpr:
-		return v.Func == "str"
+		return v.Func == "str" || v.Func == "substring"
 	case *BinaryExpr:
 		if v.Op == "+" {
 			return exprIsString(v.Left) || exprIsString(v.Right)
