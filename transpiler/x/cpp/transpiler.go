@@ -714,14 +714,25 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 				return nil, err
 			}
 			if len(stmt.Assign.Index) > 0 {
-				if len(stmt.Assign.Index) != 1 || stmt.Assign.Index[0].Colon != nil {
+				parts := stmt.Assign.Index
+				if parts[len(parts)-1].Colon != nil {
 					return nil, fmt.Errorf("unsupported index assignment")
 				}
-				idx, err := convertExpr(stmt.Assign.Index[0].Start)
+				idx, err := convertExpr(parts[len(parts)-1].Start)
 				if err != nil {
 					return nil, err
 				}
-				target := &VarRef{Name: stmt.Assign.Name}
+				var target Expr = &VarRef{Name: stmt.Assign.Name}
+				for _, sp := range parts[:len(parts)-1] {
+					if sp.Colon != nil {
+						return nil, fmt.Errorf("unsupported index assignment")
+					}
+					id, err := convertExpr(sp.Start)
+					if err != nil {
+						return nil, err
+					}
+					target = &IndexExpr{Target: target, Index: id}
+				}
 				body = append(body, &AssignIndexStmt{Target: target, Index: idx, Value: val})
 			} else {
 				body = append(body, &AssignStmt{Name: stmt.Assign.Name, Value: val})
@@ -826,14 +837,25 @@ func convertStmt(s *parser.Statement) (Stmt, error) {
 			return nil, err
 		}
 		if len(s.Assign.Index) > 0 {
-			if len(s.Assign.Index) != 1 || s.Assign.Index[0].Colon != nil {
+			parts := s.Assign.Index
+			if parts[len(parts)-1].Colon != nil {
 				return nil, fmt.Errorf("unsupported index assignment")
 			}
-			idx, err := convertExpr(s.Assign.Index[0].Start)
+			idx, err := convertExpr(parts[len(parts)-1].Start)
 			if err != nil {
 				return nil, err
 			}
-			target := &VarRef{Name: s.Assign.Name}
+			var target Expr = &VarRef{Name: s.Assign.Name}
+			for _, sp := range parts[:len(parts)-1] {
+				if sp.Colon != nil {
+					return nil, fmt.Errorf("unsupported index assignment")
+				}
+				id, err := convertExpr(sp.Start)
+				if err != nil {
+					return nil, err
+				}
+				target = &IndexExpr{Target: target, Index: id}
+			}
 			return &AssignIndexStmt{Target: target, Index: idx, Value: val}, nil
 		}
 		return &AssignStmt{Name: s.Assign.Name, Value: val}, nil

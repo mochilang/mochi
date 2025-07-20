@@ -1,5 +1,11 @@
 # C++ Transpiler Tasks
 
+## Recent Enhancements (2025-07-20 09:39 +0700)
+- Added support for index assignment including nested indexes.
+- Generated golden outputs for `list_assign` and `list_nested_assign`.
+- Updated README progress to 41/100 programs.
+
+
 ## Recent Enhancements (2025-07-20 02:29 +0000)
 - Added builtins `append`, `avg` and `count` with inline implementations.
 - Improved type inference for list and map literals.
