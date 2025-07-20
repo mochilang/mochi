@@ -12,3 +12,4 @@
 - 2025-07-19 21:29 GMT+7 - Implemented integer division and new builtins (sum,
   avg, str) plus comparison fixes enabling binary_precedence, math_ops,
   string_compare, str_builtin, sum_builtin and avg_builtin tests
+- 2025-07-20 01:31 UTC - Added min/max builtin support enabling min_max_builtin test
