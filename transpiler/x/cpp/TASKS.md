@@ -1,3 +1,38 @@
+## Progress (2025-07-20 18:58 +0700)
+- cpp: improve type inference for query vars
+- Generated C++ for 62/100 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-20 18:48 +0700)
+- cpp transpiler: typed query support
+- Generated C++ for 62/100 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-20 18:48 +0700)
+- cpp transpiler: typed query support
+- Generated C++ for 62/100 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-20 18:48 +0700)
+- cpp transpiler: typed query support
+- Generated C++ for 62/100 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-20 18:48 +0700)
+- cpp transpiler: typed query support
+- Generated C++ for 62/100 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-20 18:48 +0700)
+- cpp transpiler: typed query support
+- Generated C++ for 62/100 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-20 18:48 +0700)
+- cpp transpiler: typed query support
+- Generated C++ for 62/100 programs
+- Updated README checklist and outputs
+
 ## Progress (2025-07-20 17:38 +0700)
 - fmt
 - Generated C++ for 68/100 programs
