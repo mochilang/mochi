@@ -54,6 +54,17 @@ func structNameFromVar(name string) string {
 	return toPascalCase(name)
 }
 
+var commonInitialisms = []string{"ID", "URL", "HTTP", "JSON", "XML", "SQL", "UID", "UUID"}
+
+func toGoFieldName(name string) string {
+	n := toPascalCase(name)
+	for _, init := range commonInitialisms {
+		lower := strings.ToLower(init)
+		n = strings.ReplaceAll(n, strings.Title(lower), init)
+	}
+	return n
+}
+
 type Stmt interface{ emit(io.Writer) }
 
 type Expr interface{ emit(io.Writer) }
@@ -170,7 +181,7 @@ type TypeDeclStmt struct {
 func (t *TypeDeclStmt) emit(w io.Writer) {
 	fmt.Fprintf(w, "type %s struct {\n", t.Name)
 	for _, f := range t.Fields {
-		fmt.Fprintf(w, "    %s %s\n", f.Name, f.Type)
+		fmt.Fprintf(w, "    %s %s `json:%q`\n", toGoFieldName(f.Name), f.Type, f.Name)
 	}
 	fmt.Fprint(w, "}")
 }
@@ -376,13 +387,11 @@ type StructLit struct {
 }
 
 func (s *StructLit) emit(w io.Writer) {
-	fmt.Fprintf(w, "%s{", s.Name)
+	fmt.Fprintf(w, "%s{\n", s.Name)
 	for i, f := range s.Fields {
-		if i > 0 {
-			fmt.Fprint(w, ", ")
-		}
-		fmt.Fprintf(w, "%s: ", s.Names[i])
+		fmt.Fprintf(w, "    %s: ", toGoFieldName(s.Names[i]))
 		f.emit(w)
+		fmt.Fprint(w, ",\n")
 	}
 	fmt.Fprint(w, "}")
 }
@@ -410,7 +419,7 @@ type FieldExpr struct {
 
 func (fe *FieldExpr) emit(w io.Writer) {
 	fe.X.emit(w)
-	fmt.Fprintf(w, ".%s", fe.Name)
+	fmt.Fprintf(w, ".%s", toGoFieldName(fe.Name))
 }
 
 // SliceExpr represents `X[i:j]`.
