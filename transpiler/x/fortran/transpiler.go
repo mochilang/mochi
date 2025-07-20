@@ -62,6 +62,7 @@ type ForStmt struct {
 	Start string
 	End   string
 	List  []string
+	Array string
 	Body  []Stmt
 }
 
@@ -71,7 +72,7 @@ type ContinueStmt struct{}
 
 func (f *Function) emit(w io.Writer) {
 	writeIndent(w, 2)
-	fmt.Fprintf(w, "function %s(", f.Name)
+	fmt.Fprintf(w, "recursive function %s(", f.Name)
 	for i, p := range f.Params {
 		if i > 0 {
 			fmt.Fprint(w, ", ")
@@ -79,6 +80,8 @@ func (f *Function) emit(w io.Writer) {
 		fmt.Fprint(w, p.Name)
 	}
 	fmt.Fprintln(w, ") result(res)")
+	writeIndent(w, 4)
+	fmt.Fprintln(w, "implicit none")
 	writeIndent(w, 4)
 	fmt.Fprintf(w, "%s :: res\n", f.Ret)
 	for _, d := range f.Params {
@@ -214,6 +217,21 @@ func (f *ForStmt) emit(w io.Writer, ind int) {
 		io.WriteString(w, "end do\n")
 		return
 	}
+	if f.Array != "" {
+		idxName := fmt.Sprintf("i_%s", f.Var)
+		writeIndent(w, ind)
+		fmt.Fprintf(w, "integer :: %s\n", idxName)
+		writeIndent(w, ind)
+		fmt.Fprintf(w, "do %s = 1, size(%s)\n", idxName, f.Array)
+		writeIndent(w, ind+2)
+		fmt.Fprintf(w, "%s = %s(%s)\n", f.Var, f.Array, idxName)
+		for _, st := range f.Body {
+			st.emit(w, ind+2)
+		}
+		writeIndent(w, ind)
+		io.WriteString(w, "end do\n")
+		return
+	}
 	writeIndent(w, ind)
 	fmt.Fprintf(w, "do %s = %s, %s\n", f.Var, f.Start, f.End)
 	for _, st := range f.Body {
@@ -273,7 +291,11 @@ func compileStmt(p *Program, st *parser.Statement, env *types.Env) (Stmt, error)
 		if st.Let.Value != nil {
 			if ie := extractIfExpr(st.Let.Value); ie != nil {
 				typ := types.ExprType(st.Let.Value, env)
-				ft, err := mapTypeName(typ)
+				size := -1
+				if arr, ok := extractConstList(st.Let.Value, env); ok {
+					size = len(arr)
+				}
+				ft, err := mapTypeNameWithSize(typ, size)
 				if err != nil {
 					return nil, err
 				}
@@ -283,6 +305,20 @@ func compileStmt(p *Program, st *parser.Statement, env *types.Env) (Stmt, error)
 					return nil, err
 				}
 				return stmt, nil
+			}
+			if isCallExpr(st.Let.Value) {
+				typ := types.ExprType(st.Let.Value, env)
+				ft, err := mapTypeNameWithSize(typ, -1)
+				if err != nil {
+					return nil, err
+				}
+				p.Decls = append(p.Decls, Decl{Name: st.Let.Name, Type: ft, Init: defaultValue(typ)})
+				expr, err = toExpr(st.Let.Value, env)
+				if err != nil {
+					return nil, err
+				}
+				env.Types()[st.Let.Name] = typ
+				return &AssignStmt{Name: st.Let.Name, Expr: expr}, nil
 			}
 			expr, err = toExpr(st.Let.Value, env)
 			if err != nil {
@@ -296,7 +332,11 @@ func compileStmt(p *Program, st *parser.Statement, env *types.Env) (Stmt, error)
 			} else {
 				typ = types.ExprType(st.Let.Value, env)
 			}
-			ft, err := mapTypeName(typ)
+			size := -1
+			if arr, ok := extractConstList(st.Let.Value, env); ok {
+				size = len(arr)
+			}
+			ft, err := mapTypeNameWithSize(typ, size)
 			if err != nil {
 				return nil, err
 			}
@@ -324,7 +364,11 @@ func compileStmt(p *Program, st *parser.Statement, env *types.Env) (Stmt, error)
 		} else if st.Var.Value != nil {
 			typ = types.ExprType(st.Var.Value, env)
 		}
-		ft, err := mapTypeName(typ)
+		size := -1
+		if arr, ok := extractConstList(st.Var.Value, env); ok {
+			size = len(arr)
+		}
+		ft, err := mapTypeNameWithSize(typ, size)
 		if err != nil {
 			return nil, err
 		}
@@ -408,6 +452,9 @@ func compileStmt(p *Program, st *parser.Statement, env *types.Env) (Stmt, error)
 			return nil, err
 		}
 		return stmt, nil
+	case st.Test != nil:
+		// ignore test blocks
+		return nil, nil
 	case st.Break != nil:
 		return &BreakStmt{}, nil
 	case st.Continue != nil:
@@ -468,6 +515,14 @@ func compileForStmt(p *Program, fs *parser.ForStmt, env *types.Env) (Stmt, error
 		}
 		return &ForStmt{Var: fs.Name, List: arr, Body: body}, nil
 	}
+	src, err := toExpr(fs.Source, env)
+	if err == nil {
+		body, err := compileStmtList(p, fs.Body, env)
+		if err != nil {
+			return nil, err
+		}
+		return &ForStmt{Var: fs.Name, Array: src, Body: body}, nil
+	}
 	return nil, fmt.Errorf("unsupported for-loop")
 }
 
@@ -475,7 +530,7 @@ func compileFunc(fs *parser.FunStmt, env *types.Env) (*Function, error) {
 	fn := &Function{Name: fs.Name}
 	if fs.Return != nil {
 		t := types.ResolveTypeRef(fs.Return, env)
-		rt, err := mapTypeName(t)
+		rt, err := mapTypeNameWithSize(t, -1)
 		if err != nil {
 			return nil, err
 		}
@@ -486,7 +541,7 @@ func compileFunc(fs *parser.FunStmt, env *types.Env) (*Function, error) {
 	funcEnv := types.NewEnv(env)
 	for _, p := range fs.Params {
 		pt := types.ResolveTypeRef(p.Type, env)
-		ft, err := mapTypeName(pt)
+		ft, err := mapTypeNameWithSize(pt, -1)
 		if err != nil {
 			return nil, err
 		}
@@ -552,6 +607,14 @@ func compileForFuncStmt(fn *Function, fs *parser.ForStmt, env *types.Env) (Stmt,
 		}
 		return &ForStmt{Var: fs.Name, List: arr, Body: body}, nil
 	}
+	src, err := toExpr(fs.Source, env)
+	if err == nil {
+		body, err := compileFuncStmtList(fn, fs.Body, env)
+		if err != nil {
+			return nil, err
+		}
+		return &ForStmt{Var: fs.Name, Array: src, Body: body}, nil
+	}
 	return nil, fmt.Errorf("unsupported for-loop")
 }
 
@@ -563,7 +626,7 @@ func compileFuncStmt(fn *Function, st *parser.Statement, env *types.Env) (Stmt, 
 		if st.Let.Value != nil {
 			if ie := extractIfExpr(st.Let.Value); ie != nil {
 				typ := types.ExprType(st.Let.Value, env)
-				ft, err := mapTypeName(typ)
+				ft, err := mapTypeNameWithSize(typ, -1)
 				if err != nil {
 					return nil, err
 				}
@@ -586,7 +649,11 @@ func compileFuncStmt(fn *Function, st *parser.Statement, env *types.Env) (Stmt, 
 			} else {
 				typ = types.ExprType(st.Let.Value, env)
 			}
-			ft, err := mapTypeName(typ)
+			size := -1
+			if arr, ok := extractConstList(st.Let.Value, env); ok {
+				size = len(arr)
+			}
+			ft, err := mapTypeNameWithSize(typ, size)
 			if err != nil {
 				return nil, err
 			}
@@ -614,7 +681,11 @@ func compileFuncStmt(fn *Function, st *parser.Statement, env *types.Env) (Stmt, 
 		} else if st.Var.Value != nil {
 			typ = types.ExprType(st.Var.Value, env)
 		}
-		ft, err := mapTypeName(typ)
+		size := -1
+		if arr, ok := extractConstList(st.Var.Value, env); ok {
+			size = len(arr)
+		}
+		ft, err := mapTypeNameWithSize(typ, size)
 		if err != nil {
 			return nil, err
 		}
@@ -691,6 +762,9 @@ func compileFuncStmt(fn *Function, st *parser.Statement, env *types.Env) (Stmt, 
 			return nil, err
 		}
 		return stmt, nil
+	case st.Test != nil:
+		// ignore test blocks inside functions
+		return nil, nil
 	case st.Break != nil:
 		return &BreakStmt{}, nil
 	case st.Continue != nil:
@@ -708,6 +782,14 @@ func extractIfExpr(e *parser.Expr) *parser.IfExpr {
 		return nil
 	}
 	return e.Binary.Left.Value.Target.If
+}
+
+func isCallExpr(e *parser.Expr) bool {
+	if e == nil || e.Binary == nil || e.Binary.Left == nil {
+		return false
+	}
+	u := e.Binary.Left
+	return u.Value != nil && u.Value.Target != nil && u.Value.Target.Call != nil
 }
 
 func compileIfExprAssign(name string, ie *parser.IfExpr, env *types.Env) (Stmt, error) {
@@ -900,10 +982,23 @@ func toUnary(u *parser.Unary, env *types.Env) (string, error) {
 }
 
 func toPostfix(pf *parser.PostfixExpr, env *types.Env) (string, error) {
-	if len(pf.Ops) > 0 {
-		return "", fmt.Errorf("postfix operations unsupported")
+	val, err := toPrimary(pf.Target, env)
+	if err != nil {
+		return "", err
 	}
-	return toPrimary(pf.Target, env)
+	for _, op := range pf.Ops {
+		switch {
+		case op.Index != nil && op.Index.Start != nil && op.Index.Colon == nil:
+			idx, err := toExpr(op.Index.Start, env)
+			if err != nil {
+				return "", err
+			}
+			val = fmt.Sprintf("%s(%s+1)", val, idx)
+		default:
+			return "", fmt.Errorf("postfix operations unsupported")
+		}
+	}
+	return val, nil
 }
 
 func toPrimary(p *parser.Primary, env *types.Env) (string, error) {
@@ -967,6 +1062,21 @@ func toPrimary(p *parser.Primary, env *types.Env) (string, error) {
 			}
 			return fmt.Sprintf("sum(%s)", argExpr), nil
 		}
+		if p.Call.Func == "substring" && len(p.Call.Args) == 3 {
+			src, err := toExpr(p.Call.Args[0], env)
+			if err != nil {
+				return "", err
+			}
+			start, err := toExpr(p.Call.Args[1], env)
+			if err != nil {
+				return "", err
+			}
+			length, err := toExpr(p.Call.Args[2], env)
+			if err != nil {
+				return "", err
+			}
+			return fmt.Sprintf("%s(%s:%s+%s-1)", src, start, start, length), nil
+		}
 		if p.Call.Func == "avg" && len(p.Call.Args) == 1 {
 			argExpr, err := toExpr(p.Call.Args[0], env)
 			if err != nil {
@@ -1025,7 +1135,7 @@ func toIfExpr(ie *parser.IfExpr, env *types.Env) (string, error) {
 	return fmt.Sprintf("merge(%s, %s, %s)", thenExpr, elseExpr, cond), nil
 }
 
-func mapTypeName(t types.Type) (string, error) {
+func mapBaseType(t types.Type) (string, error) {
 	switch t.(type) {
 	case types.IntType, types.Int64Type, types.BigIntType:
 		return "integer", nil
@@ -1038,6 +1148,24 @@ func mapTypeName(t types.Type) (string, error) {
 	default:
 		return "", fmt.Errorf("unsupported type %s", t.String())
 	}
+}
+
+func mapTypeNameWithSize(t types.Type, size int) (string, error) {
+	if lt, ok := t.(types.ListType); ok {
+		base, err := mapBaseType(lt.Elem)
+		if err != nil {
+			return "", err
+		}
+		if size <= 0 {
+			size = 2
+		}
+		return fmt.Sprintf("%s, dimension(%d)", base, size), nil
+	}
+	return mapBaseType(t)
+}
+
+func mapTypeName(t types.Type) (string, error) {
+	return mapTypeNameWithSize(t, -1)
 }
 
 func defaultValue(t types.Type) string {
