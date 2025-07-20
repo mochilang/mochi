@@ -1,6 +1,0 @@
-run error: exit status 1
-Execution error (ClassCastException) at main/-main (string_compare.clj:5).
-class java.lang.String cannot be cast to class java.lang.Number (java.lang.String and java.lang.Number are in module java.base of loader 'bootstrap')
-
-Full report at:
-/tmp/clojure-5095784062619501502.edn
