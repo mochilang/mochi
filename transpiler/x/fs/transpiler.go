@@ -247,10 +247,18 @@ type queryFrom struct {
 	Src Expr
 }
 
+type queryJoin struct {
+	Var string
+	Src Expr
+	On  Expr
+}
+
 type QueryExpr struct {
 	Var    string
 	Src    Expr
 	Froms  []queryFrom
+	Joins  []queryJoin
+	Where  Expr
 	Select Expr
 }
 
@@ -280,12 +288,29 @@ func (q *QueryExpr) emit(w io.Writer) {
 	io.WriteString(w, " in ")
 	q.Src.emit(w)
 	io.WriteString(w, " do")
+	for _, j := range q.Joins {
+		io.WriteString(w, " for ")
+		io.WriteString(w, j.Var)
+		io.WriteString(w, " in ")
+		j.Src.emit(w)
+		io.WriteString(w, " do")
+		if j.On != nil {
+			io.WriteString(w, " if ")
+			j.On.emit(w)
+			io.WriteString(w, " then")
+		}
+	}
 	for _, f := range q.Froms {
 		io.WriteString(w, " for ")
 		io.WriteString(w, f.Var)
 		io.WriteString(w, " in ")
 		f.Src.emit(w)
 		io.WriteString(w, " do")
+	}
+	if q.Where != nil {
+		io.WriteString(w, " if ")
+		q.Where.emit(w)
+		io.WriteString(w, " then")
 	}
 	io.WriteString(w, " yield ")
 	q.Select.emit(w)
@@ -1527,9 +1552,31 @@ func convertQueryExpr(q *parser.QueryExpr) (Expr, error) {
 		}
 		froms[i] = queryFrom{Var: f.Var, Src: e}
 	}
+	joins := make([]queryJoin, len(q.Joins))
+	for i, j := range q.Joins {
+		src, err := convertExpr(j.Src)
+		if err != nil {
+			return nil, err
+		}
+		var on Expr
+		if j.On != nil {
+			on, err = convertExpr(j.On)
+			if err != nil {
+				return nil, err
+			}
+		}
+		joins[i] = queryJoin{Var: j.Var, Src: src, On: on}
+	}
+	var where Expr
+	if q.Where != nil {
+		where, err = convertExpr(q.Where)
+		if err != nil {
+			return nil, err
+		}
+	}
 	sel, err := convertExpr(q.Select)
 	if err != nil {
 		return nil, err
 	}
-	return &QueryExpr{Var: q.Var, Src: src, Froms: froms, Select: sel}, nil
+	return &QueryExpr{Var: q.Var, Src: src, Froms: froms, Joins: joins, Where: where, Select: sel}, nil
 }
