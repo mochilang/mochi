@@ -40,9 +40,11 @@ type ReturnStmt struct {
 
 // FuncDecl represents a function definition.
 type FuncDecl struct {
-	Name   string
-	Params []string
-	Body   []Stmt
+	Name       string
+	Params     []string
+	ParamTypes []string
+	ReturnType string
+	Body       []Stmt
 }
 
 // IfStmt represents a conditional statement with an optional else branch.
@@ -658,8 +660,17 @@ func (f *FuncDecl) emit(w io.Writer) {
 			io.WriteString(w, ", ")
 		}
 		io.WriteString(w, p)
+		if i < len(f.ParamTypes) && f.ParamTypes[i] != "" {
+			io.WriteString(w, ": ")
+			io.WriteString(w, f.ParamTypes[i])
+		}
 	}
-	io.WriteString(w, ") {\n")
+	io.WriteString(w, ")")
+	if f.ReturnType != "" {
+		io.WriteString(w, ": ")
+		io.WriteString(w, f.ReturnType)
+	}
+	io.WriteString(w, " {\n")
 	for _, st := range f.Body {
 		st.emit(w)
 		io.WriteString(w, "\n")
@@ -735,10 +746,19 @@ func emitStmt(w *indentWriter, s Stmt, level int) {
 				io.WriteString(w, ", ")
 			}
 			io.WriteString(w, p)
+			if i < len(st.ParamTypes) && st.ParamTypes[i] != "" {
+				io.WriteString(w, ": ")
+				io.WriteString(w, st.ParamTypes[i])
+			}
+		}
+		io.WriteString(w, ")")
+		if st.ReturnType != "" {
+			io.WriteString(w, ": ")
+			io.WriteString(w, st.ReturnType)
 		}
 		if len(st.Body) == 1 {
 			if ret, ok := st.Body[0].(*ReturnStmt); ok {
-				io.WriteString(w, ") => ")
+				io.WriteString(w, " => ")
 				if ret.Value != nil {
 					ret.Value.emit(w)
 				} else {
@@ -748,7 +768,7 @@ func emitStmt(w *indentWriter, s Stmt, level int) {
 				break
 			}
 		}
-		io.WriteString(w, ") => {\n")
+		io.WriteString(w, " => {\n")
 		for _, bs := range st.Body {
 			emitStmt(w, bs, level+1)
 		}
@@ -929,10 +949,20 @@ func convertStmt(s *parser.Statement) (Stmt, error) {
 			return nil, err
 		}
 		var params []string
+		var typesArr []string
 		for _, p := range s.Fun.Params {
 			params = append(params, p.Name)
+			if p.Type != nil {
+				typesArr = append(typesArr, tsType(types.ResolveTypeRef(p.Type, transpileEnv)))
+			} else {
+				typesArr = append(typesArr, "")
+			}
 		}
-		return &FuncDecl{Name: s.Fun.Name, Params: params, Body: body}, nil
+		var retType string
+		if s.Fun.Return != nil {
+			retType = tsType(types.ResolveTypeRef(s.Fun.Return, transpileEnv))
+		}
+		return &FuncDecl{Name: s.Fun.Name, Params: params, ParamTypes: typesArr, ReturnType: retType, Body: body}, nil
 	case s.If != nil:
 		return convertIfStmt(s.If, transpileEnv)
 	case s.While != nil:
@@ -1610,8 +1640,15 @@ func stmtToNode(s Stmt) *ast.Node {
 		return child
 	case *FuncDecl:
 		n := &ast.Node{Kind: "func", Value: st.Name}
-		for _, p := range st.Params {
-			n.Children = append(n.Children, &ast.Node{Kind: "param", Value: p})
+		for i, p := range st.Params {
+			val := p
+			if i < len(st.ParamTypes) && st.ParamTypes[i] != "" {
+				val += ":" + st.ParamTypes[i]
+			}
+			n.Children = append(n.Children, &ast.Node{Kind: "param", Value: val})
+		}
+		if st.ReturnType != "" {
+			n.Children = append(n.Children, &ast.Node{Kind: "returns", Value: st.ReturnType})
 		}
 		for _, b := range st.Body {
 			n.Children = append(n.Children, stmtToNode(b))
