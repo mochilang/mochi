@@ -663,7 +663,9 @@ func (q *QueryExprJS) emit(w io.Writer) {
 	}
 	emitLoops(0, 1)
 	if q.Sort != nil {
-		io.WriteString(iw, "  result.sort((a, b) => a.k < b.k ? -1 : a.k > b.k ? 1 : 0)\n")
+		io.WriteString(iw, "  result.sort((a, b) => {")
+		io.WriteString(iw, "const ak = JSON.stringify(a.k); const bk = JSON.stringify(b.k);")
+		io.WriteString(iw, " return ak < bk ? -1 : ak > bk ? 1 : 0})\n")
 		io.WriteString(iw, "  const out = result.map(r => r.v)\n")
 	} else {
 		io.WriteString(iw, "  const out = result\n")
@@ -1562,9 +1564,20 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 				}
 				if len(args) == 1 {
 					if lt, ok := types.ExprType(p.Call.Args[0], transpileEnv).(types.ListType); ok {
-						if _, isStr := lt.Elem.(types.StringType); isStr || lt.Elem == (types.AnyType{}) {
+						switch lt.Elem.(type) {
+						case types.StringType, types.AnyType:
 							args[0] = &MethodCallExpr{Target: args[0], Method: "join", Args: []Expr{&StringLit{Value: " "}}}
-						} else {
+						case types.MapType, types.StructType:
+							js := &CallExpr{Func: "JSON.stringify", Args: []Expr{&NameRef{Name: "x"}}}
+							rep1 := &MethodCallExpr{Target: js, Method: "replace", Args: []Expr{&CallExpr{Func: "RegExp", Args: []Expr{&StringLit{Value: ":"}, &StringLit{Value: "g"}}}, &StringLit{Value: ": "}}}
+							rep2 := &MethodCallExpr{Target: rep1, Method: "replace", Args: []Expr{&CallExpr{Func: "RegExp", Args: []Expr{&StringLit{Value: ","}, &StringLit{Value: "g"}}}, &StringLit{Value: ", "}}}
+							m := &MethodCallExpr{
+								Target: args[0],
+								Method: "map",
+								Args:   []Expr{&FunExpr{Params: []string{"x"}, Expr: rep2}},
+							}
+							args[0] = &MethodCallExpr{Target: m, Method: "join", Args: []Expr{&StringLit{Value: " "}}}
+						default:
 							args = []Expr{&FormatListExpr{Value: args[0]}}
 						}
 					}
