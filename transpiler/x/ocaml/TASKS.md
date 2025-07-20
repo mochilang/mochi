@@ -1,3 +1,7 @@
+## Progress (2025-07-20 09:17 +0700)
+- Checklist updated: 31/100 tests compiled
+- Added support for `list_nested_assign` and improved list assignment handling.
+
 ## Progress (2025-07-20 08:41 +0700)
 - Checklist updated: 30/100 tests compiled
 - Added support for `cast_string_to_int` and improved type inference.
