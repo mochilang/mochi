@@ -1,3 +1,13 @@
+## Progress (2025-07-20 08:24 UTC)
+- Checklist updated: 56/100 tests compiled
+- Added support for `break` and `continue` statements using recursive loops.
+- Implemented list slicing for lists.
+- Enabled golden tests for `break_continue`, `short_circuit`, `slice`, `tail_recursion` and `two-sum`.
+
+## Progress (2025-07-20 15:14 +0700)
+- Checklist updated: 51/100 tests compiled
+- Added support for `list_nested_assign` and improved list assignment handling.
+
 ## Progress (2025-07-20 08:02 UTC)
 - Checklist updated: 51/100 tests compiled
 - Added map type inference with support for integer keys and nested updates.
