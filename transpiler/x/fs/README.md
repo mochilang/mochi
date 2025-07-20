@@ -2,7 +2,7 @@
 
 This folder contains an experimental transpiler that converts Mochi source code into F#.
 
-## Golden Test Checklist (52/100)
+## Golden Test Checklist (56/100)
 
 The list below tracks Mochi programs under `tests/vm/valid` that should successfully transpile. Checked items indicate tests known to work.
 
@@ -60,9 +60,9 @@ The list below tracks Mochi programs under `tests/vm/valid` that should successf
 - [x] map_assign.mochi
 - [x] map_in_operator.mochi
 - [x] map_index.mochi
-- [ ] map_int_key.mochi
-- [ ] map_literal_dynamic.mochi
-- [ ] map_membership.mochi
+- [x] map_int_key.mochi
+- [x] map_literal_dynamic.mochi
+- [x] map_membership.mochi
 - [x] map_nested_assign.mochi
 - [ ] match_expr.mochi
 - [ ] match_full.mochi
@@ -94,7 +94,7 @@ The list below tracks Mochi programs under `tests/vm/valid` that should successf
 - [x] string_prefix_slice.mochi
 - [x] substring_builtin.mochi
 - [x] sum_builtin.mochi
-- [ ] tail_recursion.mochi
+- [x] tail_recursion.mochi
 - [ ] test_block.mochi
 - [ ] tree_sum.mochi
 - [ ] two-sum.mochi
