@@ -82,11 +82,21 @@ func (p *PrintStmt) emit(w io.Writer, indent int) {
 		}
 	}
 	if len(format) == 1 {
+		writeIndent(w, indent)
 		if lit, ok := exprs[0].(*StringLit); ok {
-			writeIndent(w, indent)
 			fmt.Fprintf(w, "puts(\"%s\");\n", escape(lit.Value))
 			return
 		}
+		if p.Types[0] == "string" || exprIsString(exprs[0]) {
+			io.WriteString(w, "puts(")
+			exprs[0].emitExpr(w)
+			io.WriteString(w, ");\n")
+			return
+		}
+		io.WriteString(w, "printf(\"%d\\n\", ")
+		exprs[0].emitExpr(w)
+		io.WriteString(w, ");\n")
+		return
 	}
 	if len(format) > 0 {
 		writeIndent(w, indent)
@@ -946,6 +956,18 @@ func convertExpr(e *parser.Expr) Expr {
 				}
 			}
 		}
+		if n, ok := evalInt(bin); ok {
+			return &IntLit{Value: n}
+		}
+		if s, ok := evalString(bin); ok {
+			return &StringLit{Value: s}
+		}
+		if b, ok := evalBool(bin); ok {
+			if b {
+				return &IntLit{Value: 1}
+			}
+			return &IntLit{Value: 0}
+		}
 	}
 	return operands[0]
 }
@@ -968,11 +990,11 @@ func convertUnary(u *parser.Unary) Expr {
 					base = &UnaryExpr{Op: "-", Expr: base}
 				}
 			case "!":
-				if v, ok := evalInt(base); ok {
-					if v == 0 {
-						base = &IntLit{Value: 1}
-					} else {
+				if b, ok := evalBool(base); ok {
+					if b {
 						base = &IntLit{Value: 0}
+					} else {
+						base = &IntLit{Value: 1}
 					}
 				} else {
 					base = &UnaryExpr{Op: "!", Expr: base}
@@ -1393,6 +1415,61 @@ func evalInt(e Expr) (int, bool) {
 		}
 	}
 	return 0, false
+}
+
+func evalBool(e Expr) (bool, bool) {
+	switch v := e.(type) {
+	case *IntLit:
+		return v.Value != 0, true
+	case *UnaryExpr:
+		if v.Op == "!" {
+			if b, ok := evalBool(v.Expr); ok {
+				return !b, true
+			}
+		}
+	case *BinaryExpr:
+		if li, ok1 := evalInt(v.Left); ok1 {
+			if ri, ok2 := evalInt(v.Right); ok2 {
+				switch v.Op {
+				case "==":
+					return li == ri, true
+				case "!=":
+					return li != ri, true
+				case "<":
+					return li < ri, true
+				case "<=":
+					return li <= ri, true
+				case ">":
+					return li > ri, true
+				case ">=":
+					return li >= ri, true
+				case "&&":
+					return (li != 0) && (ri != 0), true
+				case "||":
+					return (li != 0) || (ri != 0), true
+				}
+			}
+		}
+		if ls, ok1 := evalString(v.Left); ok1 {
+			if rs, ok2 := evalString(v.Right); ok2 {
+				switch v.Op {
+				case "==":
+					return ls == rs, true
+				case "!=":
+					return ls != rs, true
+				case "<":
+					return ls < rs, true
+				case "<=":
+					return ls <= rs, true
+				case ">":
+					return ls > rs, true
+				case ">=":
+					return ls >= rs, true
+				}
+			}
+		}
+	}
+	return false, false
 }
 
 func evalString(e Expr) (string, bool) {
