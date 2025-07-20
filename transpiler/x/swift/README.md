@@ -2,7 +2,7 @@
 
 Generated Swift code for programs in `tests/vm/valid`. Each program has a `.swift` file produced by the transpiler and a `.out` file with its runtime output. Compilation or execution errors are captured in `.error` files.
 
-Transpiled programs: 41/100
+Transpiled programs: 44/100
 
 Checklist:
 - [x] append_builtin
@@ -40,7 +40,7 @@ Checklist:
 - [x] if_else
 - [x] if_then_else
 - [x] if_then_else_nested
-- [ ] in_operator
+- [x] in_operator
 - [ ] in_operator_extended
 - [ ] inner_join
 - [ ] join_multi
@@ -51,8 +51,8 @@ Checklist:
 - [x] len_map
 - [x] len_string
 - [x] let_and_print
-- [ ] list_assign
-- [ ] list_index
+- [x] list_assign
+- [x] list_index
 - [ ] list_nested_assign
 - [ ] list_set_ops
 - [ ] load_yaml
