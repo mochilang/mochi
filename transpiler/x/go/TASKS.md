@@ -1,3 +1,7 @@
+## Progress (2025-07-20 10:43 +0700)
+- go transpiler: infer list type
+- Regenerated golden files - 56/100 vm valid programs passing
+
 ## Progress (2025-07-20 10:28 +0700)
 - go transpiler: improve type inference
 - Regenerated golden files - 56/100 vm valid programs passing

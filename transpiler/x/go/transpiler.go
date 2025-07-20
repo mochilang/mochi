@@ -407,10 +407,16 @@ func (ias *IndexAssignStmt) emit(w io.Writer) {
 	ias.Value.emit(w)
 }
 
-type ListLit struct{ Elems []Expr }
+type ListLit struct {
+	ElemType string
+	Elems    []Expr
+}
 
 func (l *ListLit) emit(w io.Writer) {
-	fmt.Fprint(w, "[]int{")
+	if l.ElemType == "" {
+		l.ElemType = "any"
+	}
+	fmt.Fprintf(w, "[]%s{", l.ElemType)
 	for i, e := range l.Elems {
 		if i > 0 {
 			fmt.Fprint(w, ", ")
@@ -1245,7 +1251,9 @@ func compilePrimary(p *parser.Primary, env *types.Env) (Expr, error) {
 			}
 			elems[i] = ex
 		}
-		return &ListLit{Elems: elems}, nil
+		lt, _ := types.TypeOfPrimary(p, env).(types.ListType)
+		elemType := toGoTypeFromType(lt.Elem)
+		return &ListLit{ElemType: elemType, Elems: elems}, nil
 	case p.Map != nil:
 		keys := make([]Expr, len(p.Map.Items))
 		vals := make([]Expr, len(p.Map.Items))
