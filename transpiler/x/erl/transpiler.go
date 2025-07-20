@@ -422,11 +422,11 @@ func (i *IndexExpr) emit(w io.Writer) {
 func (i *IfExpr) emit(w io.Writer) {
 	io.WriteString(w, "(case ")
 	i.Cond.emit(w)
-	io.WriteString(w, " of true -> ")
+	io.WriteString(w, " of\n    true -> ")
 	i.Then.emit(w)
-	io.WriteString(w, "; _ -> ")
+	io.WriteString(w, ";\n    _ -> ")
 	i.Else.emit(w)
-	io.WriteString(w, " end)")
+	io.WriteString(w, "\nend)")
 }
 
 func (n *NameRef) emit(w io.Writer) { io.WriteString(w, n.Name) }
