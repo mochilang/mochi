@@ -329,9 +329,11 @@ func isDirectNumber(e Expr) bool {
 		return true
 	case *UnaryExpr:
 		if v.Op == "-" {
-			if _, ok := v.Expr.(*IntLit); ok {
-				return true
-			}
+			return isDirectNumber(v.Expr)
+		}
+	case *BinaryExpr:
+		if v.Op == "+" || v.Op == "-" {
+			return isDirectNumber(v.Left) && isDirectNumber(v.Right)
 		}
 	}
 	return false

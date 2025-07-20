@@ -1,3 +1,8 @@
+## Progress (2025-07-20 01:47 +0700)
+- Updated README checklist with progress 18/100
+- Improved isDirectNumber for arithmetic detection
+
+
 # Transpiler Progress
 
 - 2025-07-20 01:32 +0700 - Simplified DISPLAY handling and removed TMP-STR helper; README checklist now 18/100

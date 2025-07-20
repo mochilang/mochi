@@ -1,9 +1,10 @@
-# COBOL Transpiler
+# COBOL Transpiler Output
 
-This directory stores COBOL code generated from Mochi programs in `tests/vm/valid`.
-Each program is transpiled and the resulting `.cob` sources are compiled with `cobc` during testing.
+This directory contains COBOL code generated from Mochi programs in `tests/vm/valid`. Each program is compiled with `cobc` during testing.
 
-Checklist of programs that currently transpile and run (18/100):
+Compiled programs: 18/100
+
+Checklist:
 
 - [ ] append_builtin
 - [ ] avg_builtin
