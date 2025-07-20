@@ -641,7 +641,11 @@ func convertBinary(b *parser.BinaryExpr, env *types.Env) (Expr, error) {
 	operands = append(operands, left)
 
 	for _, part := range b.Right {
-		operators = append(operators, part.Op)
+		op := part.Op
+		if part.Op == "union" && part.All {
+			op = "union_all"
+		}
+		operators = append(operators, op)
 		right, err := convertPostfix(part.Right, env)
 		if err != nil {
 			return nil, err
@@ -831,7 +835,7 @@ func convertPrimary(p *parser.Primary, env *types.Env) (Expr, error) {
 	case p.List != nil:
 		elems := make([]Expr, len(p.List.Elems))
 		for i, e := range p.List.Elems {
-			ex, err := convertExpr(e)
+			ex, err := convertExpr(e, env)
 			if err != nil {
 				return nil, err
 			}
@@ -922,6 +926,21 @@ func convertCall(c *parser.CallExpr, env *types.Env) (Expr, error) {
 			return &CallExpr{Fn: &FieldExpr{Receiver: valCall, Name: "toList"}}, nil
 		}
 	}
+
+	if env != nil {
+		if fn, ok := env.GetFunc(name); ok {
+			if len(args) < len(fn.Params) {
+				missing := fn.Params[len(args):]
+				params := make([]Param, len(missing))
+				for i, p := range missing {
+					params[i] = Param{Name: p.Name, Type: toScalaType(p.Type)}
+				}
+				call := &CallExpr{Fn: &Name{Name: name}, Args: args}
+				return &FunExpr{Params: params, Expr: call}, nil
+			}
+		}
+	}
+
 	return &CallExpr{Fn: &Name{Name: name}, Args: args}, nil
 }
 
