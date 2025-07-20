@@ -1,8 +1,8 @@
 exit status 1
 /workspace/mochi/tests/transpiler/x/scala/short_circuit.scala:3: error: ':' expected but ',' found.
-    def boom(a, b) = {
-              ^
-/workspace/mochi/tests/transpiler/x/scala/short_circuit.scala:11: error: identifier expected but '}' found.
+  def boom(a, b) = {
+            ^
+/workspace/mochi/tests/transpiler/x/scala/short_circuit.scala:10: error: identifier expected but '}' found.
 }
 ^
 two errors found

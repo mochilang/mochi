@@ -1,3 +1,7 @@
+## Progress (2025-07-20 02:05 +0700)
+- scala transpiler: improve codegen and progress
+- Regenerated golden files - 43/100 vm valid programs passing
+
 ## Progress (2025-07-20 01:52 +0700)
 - dart transpiler: update progress
 - Regenerated golden files - 43/100 vm valid programs passing

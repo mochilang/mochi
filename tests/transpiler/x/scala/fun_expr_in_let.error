@@ -1,5 +1,5 @@
 exit status 1
-/workspace/mochi/tests/transpiler/x/scala/fun_expr_in_let.scala:4: error: value * is not a member of Any
-        val square = ((x: Any) => (x * x))
-                                     ^
+/workspace/mochi/tests/transpiler/x/scala/fun_expr_in_let.scala:3: error: value * is not a member of Any
+  val square = ((x: Any) => (x * x))
+                               ^
 one error found

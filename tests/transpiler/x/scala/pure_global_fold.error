@@ -1,8 +1,8 @@
 exit status 1
-/workspace/mochi/tests/transpiler/x/scala/pure_global_fold.scala:3: error: ':' expected but ')' found.
-    def inc(x) = {
-             ^
-/workspace/mochi/tests/transpiler/x/scala/pure_global_fold.scala:10: error: identifier expected but '}' found.
+/workspace/mochi/tests/transpiler/x/scala/pure_global_fold.scala:4: error: ':' expected but ')' found.
+  def inc(x) = {
+           ^
+/workspace/mochi/tests/transpiler/x/scala/pure_global_fold.scala:9: error: identifier expected but '}' found.
 }
 ^
 two errors found
