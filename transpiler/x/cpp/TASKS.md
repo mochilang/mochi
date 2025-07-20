@@ -1,5 +1,10 @@
 # C++ Transpiler Tasks
 
+## Recent Enhancements (2025-07-20 08:39 +0700)
+- Added basic map literal support with `std::unordered_map` and index assignments.
+- Generated golden outputs for `map_assign` and `map_index`.
+- Updated README progress to 36/100 programs.
+
 ## Recent Enhancements (2025-07-20 01:29 UTC)
 - Added support for slice expressions on strings and vectors using an inline generic lambda.
 - Generated golden outputs for `slice` and `string_prefix_slice`.
