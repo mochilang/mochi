@@ -22,30 +22,47 @@ type Program struct {
 	Stmts []Stmt
 }
 
-type Stmt interface{ emit(io.Writer) }
+// emitter maintains the current indentation level while emitting Ruby code.
+type emitter struct {
+	w      io.Writer
+	indent int
+}
+
+func (e *emitter) writeIndent() {
+	for i := 0; i < e.indent; i++ {
+		io.WriteString(e.w, "  ")
+	}
+}
+
+func (e *emitter) nl() {
+	io.WriteString(e.w, "\n")
+}
+
+// Stmt is an AST node that can emit Ruby code using an emitter.
+type Stmt interface{ emit(*emitter) }
 
 // ReturnStmt represents a return statement.
 type ReturnStmt struct {
 	Value Expr
 }
 
-func (r *ReturnStmt) emit(w io.Writer) {
-	io.WriteString(w, "return")
+func (r *ReturnStmt) emit(e *emitter) {
+	io.WriteString(e.w, "return")
 	if r.Value != nil {
-		io.WriteString(w, " ")
-		r.Value.emit(w)
+		io.WriteString(e.w, " ")
+		r.Value.emit(e)
 	}
 }
 
 // BreakStmt represents a break statement.
 type BreakStmt struct{}
 
-func (b *BreakStmt) emit(w io.Writer) { io.WriteString(w, "break") }
+func (b *BreakStmt) emit(e *emitter) { io.WriteString(e.w, "break") }
 
 // ContinueStmt represents a continue/next statement.
 type ContinueStmt struct{}
 
-func (c *ContinueStmt) emit(w io.Writer) { io.WriteString(w, "next") }
+func (c *ContinueStmt) emit(e *emitter) { io.WriteString(e.w, "next") }
 
 // FuncStmt represents a function definition.
 type FuncStmt struct {
@@ -54,22 +71,27 @@ type FuncStmt struct {
 	Body   []Stmt
 }
 
-func (f *FuncStmt) emit(w io.Writer) {
-	io.WriteString(w, "def ")
-	io.WriteString(w, f.Name)
-	io.WriteString(w, "(")
+func (f *FuncStmt) emit(e *emitter) {
+	io.WriteString(e.w, "def ")
+	io.WriteString(e.w, f.Name)
+	io.WriteString(e.w, "(")
 	for i, p := range f.Params {
 		if i > 0 {
-			io.WriteString(w, ", ")
+			io.WriteString(e.w, ", ")
 		}
-		io.WriteString(w, p)
+		io.WriteString(e.w, p)
 	}
-	io.WriteString(w, ")\n")
+	io.WriteString(e.w, ")")
+	e.nl()
+	e.indent++
 	for _, st := range f.Body {
-		st.emit(w)
-		io.WriteString(w, "\n")
+		e.writeIndent()
+		st.emit(e)
+		e.nl()
 	}
-	io.WriteString(w, "end")
+	e.indent--
+	e.writeIndent()
+	io.WriteString(e.w, "end")
 }
 
 // VarStmt represents a mutable variable declaration.
@@ -78,10 +100,10 @@ type VarStmt struct {
 	Value Expr
 }
 
-func (s *VarStmt) emit(w io.Writer) {
-	io.WriteString(w, s.Name)
-	io.WriteString(w, " = ")
-	s.Value.emit(w)
+func (s *VarStmt) emit(e *emitter) {
+	io.WriteString(e.w, s.Name)
+	io.WriteString(e.w, " = ")
+	s.Value.emit(e)
 }
 
 // AssignStmt represents an assignment statement.
@@ -90,10 +112,10 @@ type AssignStmt struct {
 	Value Expr
 }
 
-func (s *AssignStmt) emit(w io.Writer) {
-	io.WriteString(w, s.Name)
-	io.WriteString(w, " = ")
-	s.Value.emit(w)
+func (s *AssignStmt) emit(e *emitter) {
+	io.WriteString(e.w, s.Name)
+	io.WriteString(e.w, " = ")
+	s.Value.emit(e)
 }
 
 // IndexAssignStmt represents assignment to an indexed element.
@@ -103,20 +125,20 @@ type IndexAssignStmt struct {
 	Value Expr
 }
 
-func (s *IndexAssignStmt) emit(w io.Writer) {
-	io.WriteString(w, s.Name)
-	io.WriteString(w, "[")
-	s.Index.emit(w)
-	io.WriteString(w, "] = ")
-	s.Value.emit(w)
+func (s *IndexAssignStmt) emit(e *emitter) {
+	io.WriteString(e.w, s.Name)
+	io.WriteString(e.w, "[")
+	s.Index.emit(e)
+	io.WriteString(e.w, "] = ")
+	s.Value.emit(e)
 }
 
-type Expr interface{ emit(io.Writer) }
+type Expr interface{ emit(*emitter) }
 
 // ExprStmt represents a statement consisting of a single expression.
 type ExprStmt struct{ Expr Expr }
 
-func (s *ExprStmt) emit(w io.Writer) { s.Expr.emit(w) }
+func (s *ExprStmt) emit(e *emitter) { s.Expr.emit(e) }
 
 // IfStmt represents a conditional statement with optional else branch.
 type IfStmt struct {
@@ -125,22 +147,31 @@ type IfStmt struct {
 	Else []Stmt
 }
 
-func (s *IfStmt) emit(w io.Writer) {
-	io.WriteString(w, "if ")
-	s.Cond.emit(w)
-	io.WriteString(w, "\n")
+func (s *IfStmt) emit(e *emitter) {
+	io.WriteString(e.w, "if ")
+	s.Cond.emit(e)
+	e.nl()
+	e.indent++
 	for _, st := range s.Then {
-		st.emit(w)
-		io.WriteString(w, "\n")
+		e.writeIndent()
+		st.emit(e)
+		e.nl()
 	}
+	e.indent--
 	if len(s.Else) > 0 {
-		io.WriteString(w, "else\n")
+		e.writeIndent()
+		io.WriteString(e.w, "else")
+		e.nl()
+		e.indent++
 		for _, st := range s.Else {
-			st.emit(w)
-			io.WriteString(w, "\n")
+			e.writeIndent()
+			st.emit(e)
+			e.nl()
 		}
+		e.indent--
 	}
-	io.WriteString(w, "end")
+	e.writeIndent()
+	io.WriteString(e.w, "end")
 }
 
 // LetStmt represents a variable binding.
@@ -149,10 +180,10 @@ type LetStmt struct {
 	Value Expr
 }
 
-func (s *LetStmt) emit(w io.Writer) {
-	io.WriteString(w, s.Name)
-	io.WriteString(w, " = ")
-	s.Value.emit(w)
+func (s *LetStmt) emit(e *emitter) {
+	io.WriteString(e.w, s.Name)
+	io.WriteString(e.w, " = ")
+	s.Value.emit(e)
 }
 
 type CallExpr struct {
@@ -160,39 +191,39 @@ type CallExpr struct {
 	Args []Expr
 }
 
-func (c *CallExpr) emit(w io.Writer) {
-	io.WriteString(w, c.Func)
-	io.WriteString(w, "(")
+func (c *CallExpr) emit(e *emitter) {
+	io.WriteString(e.w, c.Func)
+	io.WriteString(e.w, "(")
 	for i, a := range c.Args {
 		if i > 0 {
-			io.WriteString(w, ", ")
+			io.WriteString(e.w, ", ")
 		}
-		a.emit(w)
+		a.emit(e)
 	}
-	io.WriteString(w, ")")
+	io.WriteString(e.w, ")")
 }
 
 type StringLit struct{ Value string }
 
-func (s *StringLit) emit(w io.Writer) { fmt.Fprintf(w, "%q", s.Value) }
+func (s *StringLit) emit(e *emitter) { fmt.Fprintf(e.w, "%q", s.Value) }
 
 type IntLit struct{ Value int }
 
-func (i *IntLit) emit(w io.Writer) { fmt.Fprintf(w, "%d", i.Value) }
+func (i *IntLit) emit(e *emitter) { fmt.Fprintf(e.w, "%d", i.Value) }
 
 type BoolLit struct{ Value bool }
 
-func (b *BoolLit) emit(w io.Writer) {
+func (b *BoolLit) emit(e *emitter) {
 	if b.Value {
-		io.WriteString(w, "true")
+		io.WriteString(e.w, "true")
 	} else {
-		io.WriteString(w, "false")
+		io.WriteString(e.w, "false")
 	}
 }
 
 type Ident struct{ Name string }
 
-func (id *Ident) emit(w io.Writer) { io.WriteString(w, id.Name) }
+func (id *Ident) emit(e *emitter) { io.WriteString(e.w, id.Name) }
 
 // WhileStmt represents a while loop.
 type WhileStmt struct {
@@ -200,15 +231,19 @@ type WhileStmt struct {
 	Body []Stmt
 }
 
-func (wst *WhileStmt) emit(w io.Writer) {
-	io.WriteString(w, "while ")
-	wst.Cond.emit(w)
-	io.WriteString(w, "\n")
+func (wst *WhileStmt) emit(e *emitter) {
+	io.WriteString(e.w, "while ")
+	wst.Cond.emit(e)
+	e.nl()
+	e.indent++
 	for _, st := range wst.Body {
-		st.emit(w)
-		io.WriteString(w, "\n")
+		e.writeIndent()
+		st.emit(e)
+		e.nl()
 	}
-	io.WriteString(w, "end")
+	e.indent--
+	e.writeIndent()
+	io.WriteString(e.w, "end")
 }
 
 // ForRangeStmt iterates from Start to End (exclusive).
@@ -219,19 +254,24 @@ type ForRangeStmt struct {
 	Body  []Stmt
 }
 
-func (f *ForRangeStmt) emit(w io.Writer) {
-	io.WriteString(w, "for ")
-	io.WriteString(w, f.Name)
-	io.WriteString(w, " in (")
-	f.Start.emit(w)
-	io.WriteString(w, "...")
-	f.End.emit(w)
-	io.WriteString(w, ")\n")
+func (f *ForRangeStmt) emit(e *emitter) {
+	io.WriteString(e.w, "for ")
+	io.WriteString(e.w, f.Name)
+	io.WriteString(e.w, " in (")
+	f.Start.emit(e)
+	io.WriteString(e.w, "...")
+	f.End.emit(e)
+	io.WriteString(e.w, ")")
+	e.nl()
+	e.indent++
 	for _, st := range f.Body {
-		st.emit(w)
-		io.WriteString(w, "\n")
+		e.writeIndent()
+		st.emit(e)
+		e.nl()
 	}
-	io.WriteString(w, "end")
+	e.indent--
+	e.writeIndent()
+	io.WriteString(e.w, "end")
 }
 
 // ForInStmt iterates over an iterable expression.
@@ -241,30 +281,34 @@ type ForInStmt struct {
 	Body     []Stmt
 }
 
-func (f *ForInStmt) emit(w io.Writer) {
-	io.WriteString(w, "for ")
-	io.WriteString(w, f.Name)
-	io.WriteString(w, " in ")
-	f.Iterable.emit(w)
-	io.WriteString(w, "\n")
+func (f *ForInStmt) emit(e *emitter) {
+	io.WriteString(e.w, "for ")
+	io.WriteString(e.w, f.Name)
+	io.WriteString(e.w, " in ")
+	f.Iterable.emit(e)
+	e.nl()
+	e.indent++
 	for _, st := range f.Body {
-		st.emit(w)
-		io.WriteString(w, "\n")
+		e.writeIndent()
+		st.emit(e)
+		e.nl()
 	}
-	io.WriteString(w, "end")
+	e.indent--
+	e.writeIndent()
+	io.WriteString(e.w, "end")
 }
 
 type ListLit struct{ Elems []Expr }
 
-func (l *ListLit) emit(w io.Writer) {
-	io.WriteString(w, "[")
-	for i, e := range l.Elems {
+func (l *ListLit) emit(e *emitter) {
+	io.WriteString(e.w, "[")
+	for i, el := range l.Elems {
 		if i > 0 {
-			io.WriteString(w, ", ")
+			io.WriteString(e.w, ", ")
 		}
-		e.emit(w)
+		el.emit(e)
 	}
-	io.WriteString(w, "]")
+	io.WriteString(e.w, "]")
 }
 
 // MapLit represents a Ruby hash literal.
@@ -276,17 +320,17 @@ type MapItem struct {
 	Value Expr
 }
 
-func (m *MapLit) emit(w io.Writer) {
-	io.WriteString(w, "{")
+func (m *MapLit) emit(e *emitter) {
+	io.WriteString(e.w, "{")
 	for i, it := range m.Items {
 		if i > 0 {
-			io.WriteString(w, ", ")
+			io.WriteString(e.w, ", ")
 		}
-		it.Key.emit(w)
-		io.WriteString(w, " => ")
-		it.Value.emit(w)
+		it.Key.emit(e)
+		io.WriteString(e.w, " => ")
+		it.Value.emit(e)
 	}
-	io.WriteString(w, "}")
+	io.WriteString(e.w, "}")
 }
 
 // IndexExpr represents indexing into a collection.
@@ -295,11 +339,11 @@ type IndexExpr struct {
 	Index  Expr
 }
 
-func (ix *IndexExpr) emit(w io.Writer) {
-	ix.Target.emit(w)
-	io.WriteString(w, "[")
-	ix.Index.emit(w)
-	io.WriteString(w, "]")
+func (ix *IndexExpr) emit(e *emitter) {
+	ix.Target.emit(e)
+	io.WriteString(e.w, "[")
+	ix.Index.emit(e)
+	io.WriteString(e.w, "]")
 }
 
 // CastExpr represents a type conversion.
@@ -308,15 +352,15 @@ type CastExpr struct {
 	Type  string
 }
 
-func (c *CastExpr) emit(w io.Writer) {
-	c.Value.emit(w)
+func (c *CastExpr) emit(e *emitter) {
+	c.Value.emit(e)
 	switch c.Type {
 	case "int":
-		io.WriteString(w, ".to_i")
+		io.WriteString(e.w, ".to_i")
 	case "float":
-		io.WriteString(w, ".to_f")
+		io.WriteString(e.w, ".to_f")
 	case "string":
-		io.WriteString(w, ".to_s")
+		io.WriteString(e.w, ".to_s")
 	}
 }
 
@@ -326,10 +370,10 @@ type BinaryExpr struct {
 	Right Expr
 }
 
-func (b *BinaryExpr) emit(w io.Writer) {
-	b.Left.emit(w)
-	io.WriteString(w, " "+b.Op+" ")
-	b.Right.emit(w)
+func (b *BinaryExpr) emit(e *emitter) {
+	b.Left.emit(e)
+	io.WriteString(e.w, " "+b.Op+" ")
+	b.Right.emit(e)
 }
 
 type UnaryExpr struct {
@@ -337,33 +381,33 @@ type UnaryExpr struct {
 	Expr Expr
 }
 
-func (u *UnaryExpr) emit(w io.Writer) {
-	io.WriteString(w, u.Op)
-	u.Expr.emit(w)
+func (u *UnaryExpr) emit(e *emitter) {
+	io.WriteString(e.w, u.Op)
+	u.Expr.emit(e)
 }
 
 type LenExpr struct{ Value Expr }
 
-func (l *LenExpr) emit(w io.Writer) {
-	l.Value.emit(w)
-	io.WriteString(w, ".length")
+func (l *LenExpr) emit(e *emitter) {
+	l.Value.emit(e)
+	io.WriteString(e.w, ".length")
 }
 
 type SumExpr struct{ Value Expr }
 
-func (s *SumExpr) emit(w io.Writer) {
-	s.Value.emit(w)
-	io.WriteString(w, ".sum")
+func (s *SumExpr) emit(e *emitter) {
+	s.Value.emit(e)
+	io.WriteString(e.w, ".sum")
 }
 
 type AvgExpr struct{ Value Expr }
 
-func (a *AvgExpr) emit(w io.Writer) {
-	io.WriteString(w, "(")
-	a.Value.emit(w)
-	io.WriteString(w, ".sum.fdiv(")
-	a.Value.emit(w)
-	io.WriteString(w, ".length))")
+func (a *AvgExpr) emit(e *emitter) {
+	io.WriteString(e.w, "(")
+	a.Value.emit(e)
+	io.WriteString(e.w, ".sum / ")
+	a.Value.emit(e)
+	io.WriteString(e.w, ".length)")
 }
 
 type AppendExpr struct {
@@ -378,40 +422,49 @@ type CondExpr struct {
 	Else Expr
 }
 
-func (c *CondExpr) emit(w io.Writer) {
-	io.WriteString(w, "(")
-	c.Cond.emit(w)
-	io.WriteString(w, " ? ")
-	c.Then.emit(w)
-	io.WriteString(w, " : ")
-	c.Else.emit(w)
-	io.WriteString(w, ")")
+func (c *CondExpr) emit(e *emitter) {
+	io.WriteString(e.w, "(")
+	c.Cond.emit(e)
+	io.WriteString(e.w, " ? ")
+	c.Then.emit(e)
+	io.WriteString(e.w, " : ")
+	c.Else.emit(e)
+	io.WriteString(e.w, ")")
 }
 
 // GroupExpr preserves explicit parentheses from the source.
 type GroupExpr struct{ Expr Expr }
 
-func (g *GroupExpr) emit(w io.Writer) {
-	io.WriteString(w, "(")
-	g.Expr.emit(w)
-	io.WriteString(w, ")")
+func (g *GroupExpr) emit(e *emitter) {
+	io.WriteString(e.w, "(")
+	g.Expr.emit(e)
+	io.WriteString(e.w, ")")
 }
 
 // JoinExpr represents calling join(" ") on a list value.
 type JoinExpr struct{ List Expr }
 
-func (j *JoinExpr) emit(w io.Writer) {
-	io.WriteString(w, "(")
-	j.List.emit(w)
-	io.WriteString(w, ")")
-	io.WriteString(w, ".join(' ')")
+func (j *JoinExpr) emit(e *emitter) {
+	io.WriteString(e.w, "(")
+	j.List.emit(e)
+	io.WriteString(e.w, ")")
+	io.WriteString(e.w, ".join(' ')")
 }
 
-func (a *AppendExpr) emit(w io.Writer) {
-	a.List.emit(w)
-	io.WriteString(w, " + [")
-	a.Elem.emit(w)
-	io.WriteString(w, "]")
+// FormatList renders a list as "[a b]" for printing.
+type FormatList struct{ List Expr }
+
+func (f *FormatList) emit(e *emitter) {
+	io.WriteString(e.w, "\"[\" + (")
+	f.List.emit(e)
+	io.WriteString(e.w, ").join(' ') + \"]\"")
+}
+
+func (a *AppendExpr) emit(e *emitter) {
+	a.List.emit(e)
+	io.WriteString(e.w, " + [")
+	a.Elem.emit(e)
+	io.WriteString(e.w, "]")
 }
 
 func repoRoot() string {
@@ -489,14 +542,14 @@ var currentEnv *types.Env
 
 // Emit writes Ruby code for program p to w.
 func Emit(w io.Writer, p *Program) error {
+	e := &emitter{w: w}
 	if _, err := io.WriteString(w, header()); err != nil {
 		return err
 	}
 	for _, s := range p.Stmts {
-		s.emit(w)
-		if _, err := io.WriteString(w, "\n"); err != nil {
-			return err
-		}
+		e.writeIndent()
+		s.emit(e)
+		e.nl()
 	}
 	return nil
 }
@@ -886,7 +939,7 @@ func convertPrintCall(args []Expr, orig []*parser.Expr) (Expr, error) {
 		ex := args[0]
 		t := types.ExprType(orig[0], currentEnv)
 		if _, ok := t.(types.ListType); ok {
-			ex = &JoinExpr{List: ex}
+			ex = &FormatList{List: ex}
 		}
 		return &CallExpr{Func: "puts", Args: []Expr{ex}}, nil
 	}
@@ -894,7 +947,7 @@ func convertPrintCall(args []Expr, orig []*parser.Expr) (Expr, error) {
 	for i, a := range args {
 		ex := a
 		if _, ok := types.ExprType(orig[i], currentEnv).(types.ListType); ok {
-			ex = &JoinExpr{List: ex}
+			ex = &FormatList{List: ex}
 		}
 		conv[i] = ex
 	}
