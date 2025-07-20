@@ -1,3 +1,7 @@
+## Progress (2025-07-20 13:55 GMT+7)
+- 48/100 VM tests passing
+- Improved boolean and list printing logic
+
 ## Progress (2025-07-20 13:26 GMT+7)
 - 59/100 VM tests passing
 - Added map literals and index assignments

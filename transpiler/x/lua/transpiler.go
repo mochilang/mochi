@@ -122,12 +122,22 @@ func (c *CallExpr) emit(w io.Writer) {
 		io.WriteString(w, "print(")
 		if len(c.Args) == 1 {
 			a := c.Args[0]
-			if isListExpr(a) || (func() bool { ce, ok := a.(*CallExpr); return ok && ce.Func == "append" })() {
-				io.WriteString(w, "table.concat(")
+			if (func() bool { ce, ok := a.(*CallExpr); return ok && ce.Func == "values" })() {
+				io.WriteString(w, "table.concat((function(lst) local t={} for _,v in ipairs(lst) do if type(v)=='boolean' then t[#t+1]=v and '1' or '0' else t[#t+1]=tostring(v) end end return t end)(")
 				a.emit(w)
-				io.WriteString(w, ", \" \" )")
+				io.WriteString(w, "), ' ')")
+			} else if isListExpr(a) || (func() bool { ce, ok := a.(*CallExpr); return ok && ce.Func == "append" })() {
+				io.WriteString(w, "(function(lst) local t={} for _,v in ipairs(lst) do if type(v)=='boolean' then t[#t+1]=v and '1' or '0' else t[#t+1]=tostring(v) end end return '['..table.concat(t, ', ')..']' end)(")
+				a.emit(w)
+				io.WriteString(w, ")")
+			} else if isBoolExpr(a) {
+				io.WriteString(w, "((")
+				a.emit(w)
+				io.WriteString(w, ") and 1 or 0)")
 			} else {
+				io.WriteString(w, "tostring(")
 				a.emit(w)
+				io.WriteString(w, ")")
 			}
 			io.WriteString(w, ")")
 			return
@@ -138,9 +148,17 @@ func (c *CallExpr) emit(w io.Writer) {
 			if i > 0 {
 				io.WriteString(w, ", ")
 			}
-			a.emit(w)
+			if isBoolExpr(a) {
+				io.WriteString(w, "((")
+				a.emit(w)
+				io.WriteString(w, ") and 1 or 0)")
+			} else {
+				io.WriteString(w, "tostring(")
+				a.emit(w)
+				io.WriteString(w, ")")
+			}
 		}
-		io.WriteString(w, "}, \" \"))")
+		io.WriteString(w, "}, ' ')")
 		io.WriteString(w, ")")
 		return
 	case "len", "count":
@@ -573,9 +591,30 @@ func isListExpr(e Expr) bool {
 		if ex.Func == "values" {
 			return true
 		}
-	case *IndexExpr:
-		if ex.Kind == "list" {
+	}
+	return false
+}
+
+func isBoolExpr(e Expr) bool {
+	switch ex := e.(type) {
+	case *BoolLit:
+		return true
+	case *BinaryExpr:
+		switch ex.Op {
+		case "==", "!=", "<", "<=", ">", ">=", "&&", "||", "in":
 			return true
+		}
+	case *CallExpr:
+		if ex.Func == "contains" {
+			return true
+		}
+	case *Ident:
+		if currentEnv != nil {
+			if t, err := currentEnv.GetVar(ex.Name); err == nil {
+				if _, ok := t.(types.BoolType); ok {
+					return true
+				}
+			}
 		}
 	}
 	return false
