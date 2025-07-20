@@ -45,6 +45,7 @@ type Param struct {
 type Function struct {
 	Name   string
 	Params []Param
+	Return string
 	Body   []Stmt
 }
 
@@ -719,7 +720,12 @@ func (p *Program) Emit() []byte {
 		buf.WriteString("\n")
 	}
 	for i, f := range p.Functions {
-		buf.WriteString("int ")
+		ret := f.Return
+		if ret == "" {
+			ret = "int"
+		}
+		buf.WriteString(ret)
+		buf.WriteString(" ")
 		buf.WriteString(f.Name)
 		if f.Name == "main" && len(f.Params) == 0 {
 			buf.WriteString("(void)")
@@ -786,7 +792,20 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 				params = append(params, Param{Name: pa.Name, Type: typ})
 			}
 			funcParamTypes[st.Fun.Name] = paramTypes
-			p.Functions = append(p.Functions, &Function{Name: st.Fun.Name, Params: params, Body: body})
+			ret := "int"
+			if st.Fun.Return != nil && st.Fun.Return.Simple != nil {
+				switch *st.Fun.Return.Simple {
+				case "string":
+					ret = "const char*"
+				case "float":
+					ret = "double"
+				default:
+					if _, ok := env.GetStruct(*st.Fun.Return.Simple); ok {
+						ret = *st.Fun.Return.Simple
+					}
+				}
+			}
+			p.Functions = append(p.Functions, &Function{Name: st.Fun.Name, Params: params, Return: ret, Body: body})
 			continue
 		}
 		if st.Let != nil {
@@ -1099,6 +1118,19 @@ func compileFunction(env *types.Env, name string, fn *parser.FunExpr) (*Function
 		params = append(params, Param{Name: p.Name, Type: typ})
 	}
 	funcParamTypes[name] = paramTypes
+	ret := "int"
+	if fn.Return != nil && fn.Return.Simple != nil {
+		switch *fn.Return.Simple {
+		case "string":
+			ret = "const char*"
+		case "float":
+			ret = "double"
+		default:
+			if _, ok := env.GetStruct(*fn.Return.Simple); ok {
+				ret = *fn.Return.Simple
+			}
+		}
+	}
 	body, err := compileStmts(env, fn.BlockBody)
 	if err != nil {
 		return nil, err
@@ -1110,7 +1142,7 @@ func compileFunction(env *types.Env, name string, fn *parser.FunExpr) (*Function
 		}
 		body = append(body, &ReturnStmt{Expr: expr})
 	}
-	return &Function{Name: name, Params: params, Body: body}, nil
+	return &Function{Name: name, Params: params, Body: body, Return: ret}, nil
 }
 
 func convertExpr(e *parser.Expr) Expr {
@@ -2056,7 +2088,13 @@ func exprIsString(e Expr) bool {
 		_, ok := constStrings[v.Name]
 		return ok
 	case *CallExpr:
-		return v.Func == "str" || v.Func == "substring"
+		if v.Func == "str" || v.Func == "substring" {
+			return true
+		}
+		if fn, ok := currentEnv.GetFunc(v.Func); ok && fn.Return != nil && fn.Return.Simple != nil {
+			return *fn.Return.Simple == "string"
+		}
+		return false
 	case *BinaryExpr:
 		if v.Op == "+" {
 			return exprIsString(v.Left) || exprIsString(v.Right)
@@ -2227,6 +2265,20 @@ func inferExprType(env *types.Env, e Expr) string {
 			return "const char*"
 		case "len":
 			return "int"
+		default:
+			if fn, ok := env.GetFunc(v.Func); ok && fn.Return != nil && fn.Return.Simple != nil {
+				switch *fn.Return.Simple {
+				case "string":
+					return "const char*"
+				case "float":
+					return "double"
+				default:
+					if _, ok := env.GetStruct(*fn.Return.Simple); ok {
+						return *fn.Return.Simple
+					}
+					return "int"
+				}
+			}
 		}
 	case *BinaryExpr:
 		if v.Op == "+" && (exprIsString(v.Left) || exprIsString(v.Right)) {
