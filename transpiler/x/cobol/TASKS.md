@@ -1,3 +1,13 @@
+## Progress (2025-07-20 16:45 +0700)
+- release: v0.10.32
+- Generated COBOL for 35/100 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-20 16:45 +0700)
+- release: v0.10.32
+- Generated COBOL for 34/100 programs
+- Updated README checklist and outputs
+
 ## Progress (2025-07-20 14:31 +0700)
 - feat(scala): support structs and match
 - Generated COBOL for 34/100 programs
