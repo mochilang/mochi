@@ -1639,6 +1639,16 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 		return expr, nil
 	case p.If != nil:
 		return convertIfExpr(p.If)
+	case p.Struct != nil:
+		var fields []FieldLit
+		for _, f := range p.Struct.Fields {
+			val, err := convertExpr(f.Value)
+			if err != nil {
+				return nil, err
+			}
+			fields = append(fields, FieldLit{Name: f.Name, Value: val})
+		}
+		return &StructLit{Name: p.Struct.Name, Fields: fields}, nil
 	case p.List != nil:
 		if currentProgram != nil {
 			currentProgram.addInclude("<vector>")
@@ -1984,6 +1994,14 @@ func guessType(e *parser.Expr) string {
 			}
 		}
 	}
+	if e.Binary != nil && e.Binary.Left != nil && e.Binary.Left.Value != nil {
+		pf := e.Binary.Left.Value
+		if sel := pf.Target.Selector; sel != nil && len(sel.Tail) == 0 {
+			if t, ok := localTypes[sel.Root]; ok {
+				return t
+			}
+		}
+	}
 	if types.IsStringExpr(e, currentEnv) {
 		return "std::string"
 	}
@@ -2016,6 +2034,9 @@ func guessType(e *parser.Expr) string {
 		return "auto"
 	}
 	pf := e.Binary.Left.Value
+	if pf.Target.Struct != nil {
+		return pf.Target.Struct.Name
+	}
 	if lit := pf.Target.Lit; lit != nil {
 		if lit.Int != nil {
 			return "int"
