@@ -1,4 +1,16 @@
-## Progress (2025-07-20 14:43 +0700)
+## Progress (2025-07-20 17:03 +0700)
+- java transpiler: add struct copy semantics (243e9d15e)
+
+- java transpiler: add struct copy semantics (243e9d15e)
+
+- java transpiler: add struct copy semantics (243e9d15e)
+
+- java transpiler: add struct copy semantics (243e9d15e)
+
+- java transpiler: add struct support (a418e9b35)
+
+- java transpiler: add struct support (a418e9b35)
+
 - java: support lambdas and match (fb4ae2225)
 
 - feat(scala): support structs and match (f003826ca)

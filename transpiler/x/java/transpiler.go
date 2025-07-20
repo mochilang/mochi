@@ -14,6 +14,8 @@ import (
 
 var varTypes map[string]string
 var funcRet map[string]string
+var funcParams map[string][]Param
+var structDefs map[string][]Param
 
 func javaType(t string) string {
 	switch t {
@@ -38,6 +40,9 @@ func javaType(t string) string {
 	case "fn":
 		return "java.util.function.IntUnaryOperator"
 	default:
+		if t != "" {
+			return t
+		}
 		return "int"
 	}
 }
@@ -73,6 +78,8 @@ func inferType(e Expr) string {
 		return "int[]"
 	case *MapLit:
 		return "map"
+	case *StructLit:
+		return ex.Name
 	case *LambdaExpr:
 		return "fn"
 	case *UnaryExpr:
@@ -160,6 +167,7 @@ func inferReturnType(body []Stmt) string {
 // --- Simple Java AST ---
 
 type Program struct {
+	Types []*TypeDeclStmt
 	Funcs []*Function
 	Stmts []Stmt
 }
@@ -167,6 +175,40 @@ type Program struct {
 type Param struct {
 	Name string
 	Type string
+}
+
+// TypeDeclStmt represents a simple struct type declaration.
+type TypeDeclStmt struct {
+	Name   string
+	Fields []Param
+}
+
+func (t *TypeDeclStmt) emit(w io.Writer, indent string) {
+	fmt.Fprintf(w, "%sstatic class %s {\n", indent, t.Name)
+	for _, f := range t.Fields {
+		typ := javaType(f.Type)
+		if typ == "" {
+			typ = "int"
+		}
+		fmt.Fprintf(w, "%s    %s %s;\n", indent, typ, f.Name)
+	}
+	fmt.Fprintf(w, "%s    %s(", indent, t.Name)
+	for i, f := range t.Fields {
+		if i > 0 {
+			fmt.Fprint(w, ", ")
+		}
+		typ := javaType(f.Type)
+		if typ == "" {
+			typ = "int"
+		}
+		fmt.Fprintf(w, "%s %s", typ, f.Name)
+	}
+	fmt.Fprint(w, ") {\n")
+	for _, f := range t.Fields {
+		fmt.Fprintf(w, "%s        this.%s = %s;\n", indent, f.Name, f.Name)
+	}
+	fmt.Fprintf(w, "%s    }\n", indent)
+	fmt.Fprintf(w, "%s}\n", indent)
 }
 
 type Function struct {
@@ -361,6 +403,20 @@ func (s *IndexAssignStmt) emit(w io.Writer, indent string) {
 	fmt.Fprint(w, ";\n")
 }
 
+// SetStmt assigns to an arbitrary expression (like field or index).
+type SetStmt struct {
+	Target Expr
+	Value  Expr
+}
+
+func (s *SetStmt) emit(w io.Writer, indent string) {
+	fmt.Fprint(w, indent)
+	s.Target.emit(w)
+	fmt.Fprint(w, " = ")
+	s.Value.emit(w)
+	fmt.Fprint(w, ";\n")
+}
+
 type WhileStmt struct {
 	Cond Expr
 	Body []Stmt
@@ -474,6 +530,24 @@ func (m *MapLit) emit(w io.Writer) {
 		fmt.Fprint(w, ");")
 	}
 	fmt.Fprint(w, " }}")
+}
+
+// StructLit represents constructing a simple struct value.
+type StructLit struct {
+	Name   string
+	Fields []Expr
+	Names  []string
+}
+
+func (s *StructLit) emit(w io.Writer) {
+	fmt.Fprintf(w, "new %s(", s.Name)
+	for i, f := range s.Fields {
+		if i > 0 {
+			fmt.Fprint(w, ", ")
+		}
+		f.emit(w)
+	}
+	fmt.Fprint(w, ")")
 }
 
 type BinaryExpr struct {
@@ -765,6 +839,8 @@ func Transpile(p *parser.Program, env *types.Env) (*Program, error) {
 	var prog Program
 	varTypes = map[string]string{}
 	funcRet = map[string]string{}
+	funcParams = map[string][]Param{}
+	structDefs = map[string][]Param{}
 	for _, s := range p.Statements {
 		if s.Fun != nil {
 			body, err := compileStmts(s.Fun.Body)
@@ -780,6 +856,7 @@ func Transpile(p *parser.Program, env *types.Env) (*Program, error) {
 				ret = inferReturnType(body)
 			}
 			funcRet[s.Fun.Name] = ret
+			funcParams[s.Fun.Name] = params
 			prog.Funcs = append(prog.Funcs, &Function{Name: s.Fun.Name, Params: params, Return: ret, Body: body})
 			continue
 		}
@@ -788,7 +865,11 @@ func Transpile(p *parser.Program, env *types.Env) (*Program, error) {
 			return nil, err
 		}
 		if st != nil {
-			prog.Stmts = append(prog.Stmts, st)
+			if td, ok := st.(*TypeDeclStmt); ok {
+				prog.Types = append(prog.Types, td)
+			} else {
+				prog.Stmts = append(prog.Stmts, st)
+			}
 		}
 	}
 	_ = env // reserved
@@ -843,6 +924,15 @@ func compileStmt(s *parser.Statement) (Stmt, error) {
 			varTypes[s.Var.Name] = t
 		}
 		return &VarStmt{Name: s.Var.Name, Type: t}, nil
+	case s.Type != nil:
+		td := &TypeDeclStmt{Name: s.Type.Name}
+		for _, m := range s.Type.Members {
+			if m.Field != nil {
+				td.Fields = append(td.Fields, Param{Name: m.Field.Name, Type: typeRefString(m.Field.Type)})
+			}
+		}
+		structDefs[s.Type.Name] = td.Fields
+		return td, nil
 	case s.Fun != nil:
 		expr, err := compileFunExpr(&parser.FunExpr{Params: s.Fun.Params, Return: s.Fun.Return, BlockBody: s.Fun.Body})
 		if err != nil {
@@ -882,6 +972,22 @@ func compileStmt(s *parser.Statement) (Stmt, error) {
 			base := Expr(&VarExpr{Name: s.Assign.Name})
 			return &IndexAssignStmt{Target: base, Indices: indices, Expr: val}, nil
 		}
+		pf := &parser.PostfixExpr{Target: &parser.Primary{Selector: &parser.SelectorExpr{Root: s.Assign.Name}}}
+		for _, idx := range s.Assign.Index {
+			pf.Ops = append(pf.Ops, &parser.PostfixOp{Index: idx})
+		}
+		for _, f := range s.Assign.Field {
+			pf.Ops = append(pf.Ops, &parser.PostfixOp{Field: f})
+		}
+		target, err := compilePostfix(pf)
+		if err != nil {
+			return nil, err
+		}
+		val, err := compileExpr(s.Assign.Value)
+		if err != nil {
+			return nil, err
+		}
+		return &SetStmt{Target: target, Value: val}, nil
 	case s.If != nil:
 		cond, err := compileExpr(s.If.Cond)
 		if err != nil {
@@ -1150,6 +1256,19 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 			args[i] = ex
 		}
 		name := p.Call.Func
+		if params, ok := funcParams[name]; ok {
+			for i := range args {
+				if i < len(params) {
+					if fields, ok := structDefs[params[i].Type]; ok {
+						fe := make([]Expr, len(fields))
+						for j, f := range fields {
+							fe[j] = &FieldExpr{Target: args[i], Name: f.Name}
+						}
+						args[i] = &StructLit{Name: params[i].Type, Fields: fe}
+					}
+				}
+			}
+		}
 		if t, ok := varTypes[name]; ok && t == "fn" {
 			return &MethodCallExpr{Target: &VarExpr{Name: name}, Name: "applyAsInt", Args: args}, nil
 		}
@@ -1227,6 +1346,18 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 			vals[i] = ve
 		}
 		return &MapLit{Keys: keys, Values: vals}, nil
+	case p.Struct != nil:
+		names := make([]string, len(p.Struct.Fields))
+		fields := make([]Expr, len(p.Struct.Fields))
+		for i, f := range p.Struct.Fields {
+			ex, err := compileExpr(f.Value)
+			if err != nil {
+				return nil, err
+			}
+			names[i] = f.Name
+			fields[i] = ex
+		}
+		return &StructLit{Name: p.Struct.Name, Fields: fields, Names: names}, nil
 	case p.FunExpr != nil:
 		return compileFunExpr(p.FunExpr)
 	case p.Match != nil:
@@ -1320,7 +1451,15 @@ func compileMatchExpr(me *parser.MatchExpr) (Expr, error) {
 func Emit(prog *Program) []byte {
 	var buf bytes.Buffer
 	buf.WriteString("public class Main {\n")
-	// emit global variables first
+	// emit type declarations
+	for _, td := range prog.Types {
+		td.emit(&buf, "    ")
+		buf.WriteByte('\n')
+	}
+	if len(prog.Types) > 0 {
+		buf.WriteByte('\n')
+	}
+	// emit global variables
 	for _, st := range prog.Stmts {
 		switch st.(type) {
 		case *LetStmt, *VarStmt:
