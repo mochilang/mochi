@@ -97,6 +97,12 @@ type IndexExpr struct {
 	Index  Expr
 	Kind   string
 }
+type SliceExpr struct {
+	Target Expr
+	Start  Expr
+	End    Expr
+	Kind   string
+}
 type FunExpr struct {
 	Params []string
 	Body   []Stmt
@@ -419,6 +425,46 @@ func (ix *IndexExpr) emit(w io.Writer) {
 	}
 }
 
+func (sx *SliceExpr) emit(w io.Writer) {
+	if sx.Kind == "string" {
+		io.WriteString(w, "string.sub(")
+		sx.Target.emit(w)
+		io.WriteString(w, ", ")
+		if sx.Start != nil {
+			io.WriteString(w, "(")
+			sx.Start.emit(w)
+			io.WriteString(w, " + 1)")
+		} else {
+			io.WriteString(w, "1")
+		}
+		io.WriteString(w, ", ")
+		if sx.End != nil {
+			sx.End.emit(w)
+		} else {
+			io.WriteString(w, "#")
+			sx.Target.emit(w)
+		}
+		io.WriteString(w, ")")
+		return
+	}
+	io.WriteString(w, "(function(lst,s,e)\n  local r={}\n  for i=s+1,e do\n    r[#r+1]=lst[i]\n  end\n  return r\nend)(")
+	sx.Target.emit(w)
+	io.WriteString(w, ", ")
+	if sx.Start != nil {
+		sx.Start.emit(w)
+	} else {
+		io.WriteString(w, "0")
+	}
+	io.WriteString(w, ", ")
+	if sx.End != nil {
+		sx.End.emit(w)
+	} else {
+		io.WriteString(w, "#")
+		sx.Target.emit(w)
+	}
+	io.WriteString(w, ")")
+}
+
 func (f *FunExpr) emit(w io.Writer) {
 	io.WriteString(w, "function(")
 	for i, p := range f.Params {
@@ -457,6 +503,10 @@ func isStringExpr(e Expr) bool {
 		if ex.Op == ".." || ex.Op == "+" {
 			return isStringExpr(ex.Left) || isStringExpr(ex.Right)
 		}
+	case *SliceExpr:
+		if ex.Kind == "string" {
+			return true
+		}
 	}
 	return false
 }
@@ -488,6 +538,10 @@ func isListExpr(e Expr) bool {
 					return true
 				}
 			}
+		}
+	case *SliceExpr:
+		if ex.Kind == "list" {
+			return true
 		}
 	}
 	return false
@@ -745,7 +799,7 @@ func convertPostfix(p *parser.PostfixExpr) (Expr, error) {
 	for i := 0; i < len(ops); i++ {
 		op := ops[i]
 		switch {
-		case op.Index != nil && op.Index.Colon == nil:
+		case op.Index != nil && op.Index.Colon == nil && op.Index.Colon2 == nil:
 			idx, err := convertExpr(op.Index.Start)
 			if err != nil {
 				return nil, err
@@ -757,6 +811,26 @@ func convertPostfix(p *parser.PostfixExpr) (Expr, error) {
 				kind = "map"
 			}
 			expr = &IndexExpr{Target: expr, Index: idx, Kind: kind}
+		case op.Index != nil:
+			var start, end Expr
+			var err error
+			if op.Index.Start != nil {
+				start, err = convertExpr(op.Index.Start)
+				if err != nil {
+					return nil, err
+				}
+			}
+			if op.Index.End != nil {
+				end, err = convertExpr(op.Index.End)
+				if err != nil {
+					return nil, err
+				}
+			}
+			kind := "list"
+			if isStringExpr(expr) {
+				kind = "string"
+			}
+			expr = &SliceExpr{Target: expr, Start: start, End: end, Kind: kind}
 		case op.Field != nil:
 			if i+1 < len(ops) && ops[i+1].Call != nil {
 				call := ops[i+1].Call
@@ -1271,6 +1345,20 @@ func exprNode(e Expr) *ast.Node {
 	case *IndexExpr:
 		n := &ast.Node{Kind: "index"}
 		n.Children = append(n.Children, exprNode(ex.Target), exprNode(ex.Index))
+		return n
+	case *SliceExpr:
+		n := &ast.Node{Kind: "slice"}
+		n.Children = append(n.Children, exprNode(ex.Target))
+		if ex.Start != nil {
+			n.Children = append(n.Children, exprNode(ex.Start))
+		} else {
+			n.Children = append(n.Children, &ast.Node{Kind: "nil"})
+		}
+		if ex.End != nil {
+			n.Children = append(n.Children, exprNode(ex.End))
+		} else {
+			n.Children = append(n.Children, &ast.Node{Kind: "nil"})
+		}
 		return n
 	case *BinaryExpr:
 		return &ast.Node{Kind: "bin", Value: ex.Op, Children: []*ast.Node{exprNode(ex.Left), exprNode(ex.Right)}}
