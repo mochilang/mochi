@@ -84,7 +84,7 @@ func (p *PrintStmt) emit(w io.Writer, indent int) {
 	if len(format) == 1 {
 		if lit, ok := exprs[0].(*StringLit); ok {
 			writeIndent(w, indent)
-			fmt.Fprintf(w, "printf(\"%s\\n\");\n", escape(lit.Value))
+			fmt.Fprintf(w, "puts(\"%s\");\n", escape(lit.Value))
 			return
 		}
 	}
@@ -158,9 +158,15 @@ func (c *CallStmt) emit(w io.Writer, indent int) {
 	if c.Func == "print" && len(c.Args) == 1 {
 		writeIndent(w, indent)
 		if c.Type == "string" {
-			io.WriteString(w, "printf(\"%s\\n\", ")
-			c.Args[0].emitExpr(w)
-			io.WriteString(w, ");\n")
+			if lit, ok := c.Args[0].(*StringLit); ok {
+				io.WriteString(w, "puts(")
+				lit.emitExpr(w)
+				io.WriteString(w, ");\n")
+			} else {
+				io.WriteString(w, "printf(\"%s\\n\", ")
+				c.Args[0].emitExpr(w)
+				io.WriteString(w, ");\n")
+			}
 		} else {
 			switch arg := c.Args[0].(type) {
 			case *StringLit:
@@ -296,7 +302,7 @@ func (f *ForStmt) emit(w io.Writer, indent int) {
 	}
 	io.WriteString(w, "; ")
 	io.WriteString(w, f.Var)
-	io.WriteString(w, "++ ) {\n")
+	io.WriteString(w, "++) {\n")
 	for _, s := range f.Body {
 		s.emit(w, indent+1)
 	}
