@@ -1,0 +1,3 @@
+exit status 1
+# command-line-arguments
+../../../tests/transpiler/x/go/user_type_literal.go:12:28: invalid operation: cannot index book["author"] (map index expression of interface type any)

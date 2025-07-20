@@ -1,3 +1,27 @@
+## Progress (2025-07-20 14:00 +0700)
+- transpiler/go: improve bool handling and division
+- Regenerated golden files - 58/100 vm valid programs passing
+
+## Progress (2025-07-20 13:46 +0700)
+- clj: add lambda and slicing support
+- Regenerated golden files - 58/100 vm valid programs passing
+
+## Progress (2025-07-20 13:46 +0700)
+- clj: add lambda and slicing support
+- Regenerated golden files - 58/100 vm valid programs passing
+
+## Progress (2025-07-20 13:46 +0700)
+- clj: add lambda and slicing support
+- Regenerated golden files - 58/100 vm valid programs passing
+
+## Progress (2025-07-20 13:46 +0700)
+- clj: add lambda and slicing support
+- Regenerated golden files - 61/100 vm valid programs passing
+
+## Progress (2025-07-20 13:46 +0700)
+- clj: add lambda and slicing support
+- Regenerated golden files - 61/100 vm valid programs passing
+
 ## Progress (2025-07-20 13:40 +0700)
 - go transpiler: support partials and nested assignments
 - Regenerated golden files - 61/100 vm valid programs passing

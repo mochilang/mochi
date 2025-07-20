@@ -87,6 +87,16 @@ func findRepoRoot(t *testing.T) string {
 }
 
 func TestMain(m *testing.M) {
+	root := findRepoRoot(&testing.T{})
+	outDir := filepath.Join(root, "tests", "transpiler", "x", "go")
+	_ = os.MkdirAll(outDir, 0o755)
+	if files, err := filepath.Glob(filepath.Join(outDir, "*")); err == nil {
+		for _, f := range files {
+			if strings.HasSuffix(f, ".go") || strings.HasSuffix(f, ".out") || strings.HasSuffix(f, ".error") {
+				_ = os.Remove(f)
+			}
+		}
+	}
 	code := m.Run()
 	updateReadme()
 	updateTasks()

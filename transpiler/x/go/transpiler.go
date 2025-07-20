@@ -722,7 +722,9 @@ func compileStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 					case types.FloatType:
 						ex = &FloatStringExpr{Value: ex}
 					case types.BoolType:
-						ex = &BoolIntExpr{Expr: ex}
+						if isBoolExpr(a) {
+							ex = &BoolIntExpr{Expr: ex}
+						}
 					}
 				}
 				args[i] = ex
@@ -1175,6 +1177,12 @@ func compileBinary(b *parser.BinaryExpr, env *types.Env) (Expr, error) {
 						et = toGoTypeFromType(lt.Elem)
 					}
 					newExpr = &IntersectExpr{Left: left, Right: right, ElemType: et}
+				case "/":
+					if isIntType(typesList[i]) && isIntType(typesList[i+1]) {
+						left = &CallExpr{Func: "float64", Args: []Expr{left}}
+						right = &CallExpr{Func: "float64", Args: []Expr{right}}
+					}
+					newExpr = &BinaryExpr{Left: left, Op: "/", Right: right}
 				default:
 					newExpr = &BinaryExpr{Left: left, Op: ops[i].Op, Right: right}
 				}
@@ -1537,6 +1545,14 @@ func toGoTypeFromType(t types.Type) string {
 		return fmt.Sprintf("func(%s)", strings.Join(params, ", "))
 	}
 	return "any"
+}
+
+func isIntType(t types.Type) bool {
+	switch t.(type) {
+	case types.IntType, types.Int64Type, types.BigIntType:
+		return true
+	}
+	return false
 }
 
 func isBoolExpr(e *parser.Expr) bool { return isBoolBinary(e.Binary) }
