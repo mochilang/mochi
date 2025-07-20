@@ -22,6 +22,7 @@ type Program struct {
 	UseStrconv bool
 	UsePrint   bool
 	UseSort    bool
+	UseMath    bool
 }
 
 var (
@@ -29,6 +30,7 @@ var (
 	usesStrconv bool
 	usesPrint   bool
 	usesSort    bool
+	usesMath    bool
 )
 
 type Stmt interface{ emit(io.Writer) }
@@ -256,6 +258,10 @@ func (s *StringLit) emit(w io.Writer) { fmt.Fprintf(w, "%q", s.Value) }
 type IntLit struct{ Value int }
 
 func (i *IntLit) emit(w io.Writer) { fmt.Fprintf(w, "%d", i.Value) }
+
+type FloatLit struct{ Value float64 }
+
+func (f *FloatLit) emit(w io.Writer) { fmt.Fprintf(w, "%v", f.Value) }
 
 type BoolLit struct{ Value bool }
 
@@ -538,7 +544,7 @@ type FloatStringExpr struct{ Value Expr }
 func (fs *FloatStringExpr) emit(w io.Writer) {
 	io.WriteString(w, "func() string { f := ")
 	fs.Value.emit(w)
-	io.WriteString(w, "; if f == float64(int(f)) { return fmt.Sprintf(\"%.1f\", f) }; return fmt.Sprint(f) }()")
+	io.WriteString(w, "; if f == float64(int(f)) { return fmt.Sprint(int(f)) }; return fmt.Sprint(f) }()")
 }
 
 type ContainsExpr struct {
@@ -660,6 +666,7 @@ func Transpile(p *parser.Program, env *types.Env) (*Program, error) {
 	gp.UseStrconv = usesStrconv
 	gp.UsePrint = usesPrint
 	gp.UseSort = usesSort
+	gp.UseMath = usesMath
 	return gp, nil
 }
 
@@ -799,6 +806,10 @@ func compileStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 		return compileForStmt(st.For, env)
 	case st.Return != nil:
 		return compileReturnStmt(st.Return, env)
+	case st.ExternVar != nil:
+		return nil, nil
+	case st.ExternFun != nil:
+		return nil, nil
 	case st.Fun != nil:
 		return compileFunStmt(st.Fun, env)
 	case st.Break != nil:
@@ -1170,10 +1181,37 @@ func compilePostfix(pf *parser.PostfixExpr, env *types.Env) (Expr, error) {
 			return nil, err
 		}
 	}
-	// handle selector tail as method call
 	tail := []string{}
 	if pf.Target != nil && pf.Target.Selector != nil {
 		tail = pf.Target.Selector.Tail
+	}
+	// handle simple selector access or call (e.g. pkg.Func or pkg.Const)
+	if v, ok := expr.(*VarRef); ok && len(tail) == 1 {
+		sel := tail[0]
+		if v.Name == "math" {
+			usesMath = true
+			if len(sel) > 0 {
+				sel = strings.ToUpper(sel[:1]) + sel[1:]
+			}
+		}
+		name := v.Name + "." + sel
+		if len(pf.Ops) == 0 {
+			return &VarRef{Name: name}, nil
+		}
+		if len(pf.Ops) == 1 && pf.Ops[0].Call != nil {
+			args := make([]Expr, len(pf.Ops[0].Call.Args))
+			for i, a := range pf.Ops[0].Call.Args {
+				ex, err := compileExpr(a, env)
+				if err != nil {
+					return nil, err
+				}
+				args[i] = ex
+			}
+			if v.Name == "math" {
+				usesMath = true
+			}
+			return &CallExpr{Func: name, Args: args}, nil
+		}
 	}
 	// if tail has one element and first op is CallOp => method call
 	if len(tail) == 1 && len(pf.Ops) > 0 && pf.Ops[0].Call != nil {
@@ -1362,6 +1400,9 @@ func compilePrimary(p *parser.Primary, env *types.Env) (Expr, error) {
 		if p.Lit.Int != nil {
 			return &IntLit{Value: int(*p.Lit.Int)}, nil
 		}
+		if p.Lit.Float != nil {
+			return &FloatLit{Value: *p.Lit.Float}, nil
+		}
 		if p.Lit.Bool != nil {
 			return &BoolLit{Value: bool(*p.Lit.Bool)}, nil
 		}
@@ -1543,6 +1584,9 @@ func Emit(prog *Program) []byte {
 	}
 	if prog.UseStrconv {
 		buf.WriteString("    \"strconv\"\n")
+	}
+	if prog.UseMath {
+		buf.WriteString("    \"math\"\n")
 	}
 	if prog.UseSort {
 		buf.WriteString("    \"sort\"\n")
