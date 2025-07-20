@@ -1,3 +1,19 @@
+## Progress (2025-07-20 22:17 +0700)
+- refine zig output style
+- Regenerated golden files - 59/100 vm valid programs passing
+
+## Progress (2025-07-20 22:17 +0700)
+- refine zig output style
+- Regenerated golden files - 67/100 vm valid programs passing
+
+## Progress (2025-07-20 22:17 +0700)
+- refine zig output style
+- Regenerated golden files - 67/100 vm valid programs passing
+
+## Progress (2025-07-20 22:17 +0700)
+- refine zig output style
+- Regenerated golden files - 58/100 vm valid programs passing
+
 ## Progress (2025-07-20 17:52 +0700)
 - fix tasks
 - Regenerated golden files - 58/100 vm valid programs passing
