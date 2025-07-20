@@ -143,6 +143,13 @@ type ContainsExpr struct {
 	Sub Expr
 }
 
+// SubstringExpr represents substring(str, start, end).
+type SubstringExpr struct {
+	Str   Expr
+	Start Expr
+	End   Expr
+}
+
 type UnaryExpr struct {
 	Op   string
 	Expr Expr
@@ -177,6 +184,17 @@ func (c *ContainsExpr) emitExpr(w io.Writer) {
 	io.WriteString(w, ", ")
 	c.Str.emitExpr(w)
 	io.WriteString(w, ") > 0")
+}
+
+func (s *SubstringExpr) emitExpr(w io.Writer) {
+	s.Str.emitExpr(w)
+	io.WriteString(w, "(")
+	s.Start.emitExpr(w)
+	io.WriteString(w, " + 1:")
+	s.End.emitExpr(w)
+	io.WriteString(w, " - ")
+	s.Start.emitExpr(w)
+	io.WriteString(w, ")")
 }
 
 func (l *LenExpr) emitExpr(w io.Writer) {
@@ -285,6 +303,8 @@ func isStringLit(e Expr) bool {
 func isSimpleExpr(e Expr) bool {
 	switch v := e.(type) {
 	case *IntLit, *StringLit, *VarRef, *StrExpr:
+		return true
+	case *SubstringExpr:
 		return true
 	case *UnaryExpr:
 		if v.Op == "-" {
@@ -638,7 +658,78 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 		}
 	}
 	_ = env
+	normalizeSubstringLiterals(pr)
 	return pr, nil
+}
+
+func normalizeSubstringLiterals(p *Program) {
+	var count int
+
+	var fixExpr func(e Expr) Expr
+	fixExpr = func(e Expr) Expr {
+		switch v := e.(type) {
+		case *SubstringExpr:
+			if lit, ok := v.Str.(*StringLit); ok {
+				count++
+				name := fmt.Sprintf("STR%d", count)
+				pic := fmt.Sprintf("PIC X(%d)", len(lit.Value))
+				p.Vars = append(p.Vars, VarDecl{Name: name, Pic: pic, Val: lit})
+				v.Str = &VarRef{Name: name}
+			}
+			v.Start = fixExpr(v.Start)
+			v.End = fixExpr(v.End)
+			return v
+		case *BinaryExpr:
+			v.Left = fixExpr(v.Left)
+			v.Right = fixExpr(v.Right)
+			return v
+		case *UnaryExpr:
+			v.Expr = fixExpr(v.Expr)
+			return v
+		case *ContainsExpr:
+			v.Str = fixExpr(v.Str)
+			v.Sub = fixExpr(v.Sub)
+			return v
+		case *LenExpr:
+			v.Value = fixExpr(v.Value)
+			return v
+		default:
+			return e
+		}
+	}
+
+	var fixStmt func(s Stmt)
+	fixStmt = func(s Stmt) {
+		switch st := s.(type) {
+		case *DisplayStmt:
+			st.Expr = fixExpr(st.Expr)
+		case *AssignStmt:
+			st.Expr = fixExpr(st.Expr)
+		case *IfStmt:
+			st.Cond = fixExpr(st.Cond)
+			for i := range st.Then {
+				fixStmt(st.Then[i])
+			}
+			for i := range st.Else {
+				fixStmt(st.Else[i])
+			}
+		case *WhileStmt:
+			st.Cond = fixExpr(st.Cond)
+			for i := range st.Body {
+				fixStmt(st.Body[i])
+			}
+		case *ForRangeStmt:
+			st.Start = fixExpr(st.Start)
+			st.End = fixExpr(st.End)
+			for i := range st.Body {
+				fixStmt(st.Body[i])
+			}
+		}
+	}
+
+	for i := range p.Stmts {
+		fixStmt(p.Stmts[i])
+	}
 }
 
 func transpileStmts(list []*parser.Statement, env *types.Env) ([]Stmt, error) {
@@ -1127,24 +1218,19 @@ func convertPrimary(p *parser.Primary, env *types.Env) (Expr, error) {
 		}
 		return nil, fmt.Errorf("unsupported primary")
 	case p.Call != nil && p.Call.Func == "substring" && len(p.Call.Args) == 3:
-		sLit, ok1 := literalExpr(p.Call.Args[0]).(*StringLit)
-		startLit, ok2 := literalExpr(p.Call.Args[1]).(*IntLit)
-		endLit, ok3 := literalExpr(p.Call.Args[2]).(*IntLit)
-		if ok1 && ok2 && ok3 {
-			start := startLit.Value
-			if start < 0 {
-				start = 0
-			}
-			end := endLit.Value
-			if end < start {
-				end = start
-			}
-			if end > len(sLit.Value) {
-				end = len(sLit.Value)
-			}
-			return &StringLit{Value: sLit.Value[start:end]}, nil
+		strArg, err := convertExpr(p.Call.Args[0], env)
+		if err != nil {
+			return nil, err
 		}
-		return nil, fmt.Errorf("unsupported primary")
+		startArg, err := convertExpr(p.Call.Args[1], env)
+		if err != nil {
+			return nil, err
+		}
+		endArg, err := convertExpr(p.Call.Args[2], env)
+		if err != nil {
+			return nil, err
+		}
+		return &SubstringExpr{Str: strArg, Start: startArg, End: endArg}, nil
 	case p.Selector != nil && len(p.Selector.Tail) == 0:
 		return &VarRef{Name: p.Selector.Root}, nil
 	case p.Group != nil:
