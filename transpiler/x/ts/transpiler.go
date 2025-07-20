@@ -304,6 +304,9 @@ type JoinSpec struct {
 type QueryExprJS struct {
 	Loops    []QueryLoop
 	Joins    []JoinSpec
+	GroupKey Expr
+	GroupVar string
+	Having   Expr
 	Where    Expr
 	Sort     Expr
 	Skip     Expr
@@ -820,6 +823,9 @@ func (q *QueryExprJS) emit(w io.Writer) {
 			io.WriteString(iw, "    const _matched = new Array(_arr.length).fill(false)\n")
 		}
 		io.WriteString(iw, "    for (const _left of _items) {\n")
+		io.WriteString(iw, "      const [")
+		io.WriteString(iw, strings.Join(names, ", "))
+		io.WriteString(iw, "] = _left;\n")
 		io.WriteString(iw, "      let _m = false;\n")
 		io.WriteString(iw, "      for (let _ri=0; _ri < _arr.length; _ri++) {\n")
 		io.WriteString(iw, "        const ")
@@ -865,6 +871,33 @@ func (q *QueryExprJS) emit(w io.Writer) {
 		io.WriteString(iw, " })\n")
 	}
 
+	if q.GroupKey != nil {
+		io.WriteString(iw, "  { const _map = new Map(); const _order: string[] = []\n")
+		io.WriteString(iw, "    for (const r of _rows) { const [")
+		io.WriteString(iw, strings.Join(names, ", "))
+		io.WriteString(iw, "] = r; const _key = ")
+		q.GroupKey.emit(iw)
+		io.WriteString(iw, "; const _ks = JSON.stringify(_key); let _g = _map.get(_ks); if (!_g) { _g = []; (_g as any)['key'] = _key; _map.set(_ks, _g); _order.push(_ks); } _g.push(")
+		if len(names) == 1 {
+			io.WriteString(iw, names[0])
+		} else {
+			io.WriteString(iw, "[")
+			io.WriteString(iw, strings.Join(names, ", "))
+			io.WriteString(iw, "]")
+		}
+		io.WriteString(iw, ") }\n")
+		io.WriteString(iw, "    _rows = _order.map(k => _map.get(k)!) }\n")
+		names = []string{q.GroupVar}
+	}
+
+	if q.Having != nil {
+		io.WriteString(iw, "  _rows = _rows.filter(")
+		io.WriteString(iw, q.GroupVar)
+		io.WriteString(iw, " => ")
+		q.Having.emit(iw)
+		io.WriteString(iw, ")\n")
+	}
+
 	if q.Sort != nil {
 		io.WriteString(iw, "  { const _pairs = _rows.map(r => { const [")
 		io.WriteString(iw, strings.Join(names, ", "))
@@ -894,11 +927,19 @@ func (q *QueryExprJS) emit(w io.Writer) {
 		io.WriteString(iw, "[]")
 	}
 	io.WriteString(iw, " = []\n")
-	io.WriteString(iw, "  for (const r of _rows) { const [")
-	io.WriteString(iw, strings.Join(names, ", "))
-	io.WriteString(iw, "] = r; result.push(")
-	q.Select.emit(iw)
-	io.WriteString(iw, ") }\n")
+	if q.GroupKey != nil && len(names) == 1 && names[0] == q.GroupVar {
+		io.WriteString(iw, "  for (const ")
+		io.WriteString(iw, q.GroupVar)
+		io.WriteString(iw, " of _rows) { result.push(")
+		q.Select.emit(iw)
+		io.WriteString(iw, ") }\n")
+	} else {
+		io.WriteString(iw, "  for (const r of _rows) { const [")
+		io.WriteString(iw, strings.Join(names, ", "))
+		io.WriteString(iw, "] = r; result.push(")
+		q.Select.emit(iw)
+		io.WriteString(iw, ") }\n")
+	}
 	io.WriteString(iw, "  return result\n")
 	io.WriteString(iw, "})()")
 }
@@ -1786,9 +1827,43 @@ func convertQueryExpr(q *parser.QueryExpr) (Expr, error) {
 			return nil, err
 		}
 	}
-	sel, err := convertExpr(q.Select)
-	if err != nil {
-		return nil, err
+	var groupKey Expr
+	var having Expr
+	groupVar := ""
+	var sel Expr
+	if q.Group != nil {
+		groupVar = q.Group.Name
+		groupKey, err = convertExpr(q.Group.Exprs[0])
+		if err != nil {
+			return nil, err
+		}
+		var prev *types.Env
+		if transpileEnv != nil {
+			prev = transpileEnv
+			transpileEnv = types.NewEnv(transpileEnv)
+			transpileEnv.SetVar(groupVar, types.GroupType{}, true)
+		}
+		if q.Group.Having != nil {
+			having, err = convertExpr(q.Group.Having)
+			if err != nil {
+				if prev != nil {
+					transpileEnv = prev
+				}
+				return nil, err
+			}
+		}
+		sel, err = convertExpr(q.Select)
+		if prev != nil {
+			transpileEnv = prev
+		}
+		if err != nil {
+			return nil, err
+		}
+	} else {
+		sel, err = convertExpr(q.Select)
+		if err != nil {
+			return nil, err
+		}
 	}
 	elemType := ""
 	if ml := mapLiteral(q.Select); ml != nil && transpileEnv != nil {
@@ -1817,7 +1892,7 @@ func convertQueryExpr(q *parser.QueryExpr) (Expr, error) {
 			}
 		}
 	}
-	return &QueryExprJS{Loops: loops, Joins: joins, Where: where, Sort: sort, Skip: skip, Take: take, Select: sel, ElemType: elemType}, nil
+	return &QueryExprJS{Loops: loops, Joins: joins, GroupKey: groupKey, GroupVar: groupVar, Having: having, Where: where, Sort: sort, Skip: skip, Take: take, Select: sel, ElemType: elemType}, nil
 }
 
 func applyIndexOps(base Expr, ops []*parser.IndexOp) (Expr, error) {
@@ -2463,6 +2538,8 @@ func tsType(t types.Type) string {
 		return "Record<" + tsType(tt.Key) + ", " + tsType(tt.Value) + ">"
 	case types.OptionType:
 		return tsType(tt.Elem) + " | null"
+	case types.GroupType:
+		return "{ key: " + tsType(tt.Key) + ", items: " + tsType(tt.Elem) + "[] }"
 	case types.StructType:
 		if tt.Name != "" {
 			if transpileEnv != nil {
