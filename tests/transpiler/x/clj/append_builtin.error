@@ -1,6 +1,0 @@
-run error: exit status 1
-Syntax error compiling at (/workspace/mochi/tests/transpiler/x/clj/append_builtin.clj:7:12).
-Unable to resolve symbol: append in this context
-
-Full report at:
-/tmp/clojure-750876478303521587.edn

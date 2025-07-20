@@ -423,14 +423,15 @@ func transpileExpr(e *parser.Expr) (Node, error) {
 		if op.Op == "in" {
 			if isStringNode(right) {
 				n = &List{Elems: []Node{Symbol("clojure.string/includes?"), right, n}}
-			} else if isMapNode(right) {
-				n = &List{Elems: []Node{Symbol("contains?"), right, n}}
-			} else {
-				set := &Set{Elems: []Node{n}}
-				n = &List{Elems: []Node{Symbol("some"), set, right}}
-			}
-			continue
-		}
+                       } else if isMapNode(right) {
+                               n = &List{Elems: []Node{Symbol("contains?"), right, n}}
+                       } else {
+                               set := &Set{Elems: []Node{n}}
+                               some := &List{Elems: []Node{Symbol("some"), set, right}}
+                               n = &List{Elems: []Node{Symbol("boolean"), some}}
+                       }
+                       continue
+               }
 		if (op.Op == "<" || op.Op == "<=" || op.Op == ">" || op.Op == ">=") && (isStringNode(n) || isStringNode(right)) {
 			cmp := &List{Elems: []Node{Symbol("compare"), n, right}}
 			switch op.Op {
@@ -647,10 +648,12 @@ func transpileCall(c *parser.CallExpr) (Node, error) {
 		elems = append(elems, Symbol("apply"), Symbol("min"))
 	case "max":
 		elems = append(elems, Symbol("apply"), Symbol("max"))
-	case "substring":
-		elems = append(elems, Symbol("subs"))
-	case "sum":
-		elems = append(elems, Symbol("reduce"), Symbol("+"), IntLit(0))
+       case "substring":
+               elems = append(elems, Symbol("subs"))
+       case "append":
+               elems = append(elems, Symbol("conj"))
+       case "sum":
+               elems = append(elems, Symbol("reduce"), Symbol("+"), IntLit(0))
 	case "values":
 		elems = append(elems, Symbol("vals"))
 	default:
