@@ -216,6 +216,7 @@ func Format(src []byte) []byte {
 
 var transpileEnv *types.Env
 var currentSeqVar string
+var groupVars map[string]bool
 
 // Transpile converts a Mochi program into a Clojure AST. The implementation
 // is intentionally minimal and currently only supports very small programs used
@@ -226,7 +227,8 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	}
 
 	transpileEnv = env
-	defer func() { transpileEnv = nil }()
+	groupVars = make(map[string]bool)
+	defer func() { transpileEnv = nil; groupVars = nil }()
 
 	pr := &Program{}
 
@@ -977,7 +979,7 @@ func transpileQueryExpr(q *parser.QueryExpr) (Node, error) {
 	if q == nil {
 		return nil, fmt.Errorf("nil query")
 	}
-	if q.Group != nil || q.Sort != nil || q.Skip != nil || q.Take != nil || q.Distinct {
+	if q.Sort != nil || q.Skip != nil || q.Take != nil || q.Distinct {
 		return nil, fmt.Errorf("unsupported query features")
 	}
 
@@ -985,6 +987,9 @@ func transpileQueryExpr(q *parser.QueryExpr) (Node, error) {
 	src, err := transpileExpr(q.Source)
 	if err != nil {
 		return nil, err
+	}
+	if name, ok := identName(q.Source); ok && groupVars != nil && groupVars[name] {
+		src = &List{Elems: []Node{Keyword("items"), Symbol(name)}}
 	}
 	bindings = append(bindings, Symbol(q.Var), src)
 
@@ -1024,9 +1029,50 @@ func transpileQueryExpr(q *parser.QueryExpr) (Node, error) {
 		conds = append(conds, ce)
 	}
 
-	sel, err := transpileExpr(q.Select)
+	if q.Group == nil {
+		sel, err := transpileExpr(q.Select)
+		if err != nil {
+			return nil, err
+		}
+
+		vecElems := bindings
+		if len(conds) == 1 {
+			vecElems = append(vecElems, Keyword("when"), conds[0])
+		} else if len(conds) > 1 {
+			andForm := []Node{Symbol("and")}
+			andForm = append(andForm, conds...)
+			vecElems = append(vecElems, Keyword("when"), &List{Elems: andForm})
+		}
+
+		forForm := &List{Elems: []Node{Symbol("for"), &Vector{Elems: vecElems}, sel}}
+		return forForm, nil
+	}
+
+	if len(q.Group.Exprs) == 0 {
+		return nil, fmt.Errorf("missing group key")
+	}
+	keyExpr, err := transpileExpr(q.Group.Exprs[0])
 	if err != nil {
 		return nil, err
+	}
+
+	names := []string{q.Var}
+	for _, f := range q.Froms {
+		names = append(names, f.Var)
+	}
+	for _, j := range q.Joins {
+		names = append(names, j.Var)
+	}
+
+	var item Node
+	if len(names) == 1 {
+		item = Symbol(q.Var)
+	} else {
+		pairs := make([][2]Node, 0, len(names))
+		for _, n := range names {
+			pairs = append(pairs, [2]Node{Keyword(n), Symbol(n)})
+		}
+		item = &Map{Pairs: pairs}
 	}
 
 	vecElems := bindings
@@ -1037,9 +1083,46 @@ func transpileQueryExpr(q *parser.QueryExpr) (Node, error) {
 		andForm = append(andForm, conds...)
 		vecElems = append(vecElems, Keyword("when"), &List{Elems: andForm})
 	}
+	vecElems = append(vecElems, Keyword("let"), &Vector{Elems: []Node{Symbol("k"), keyExpr}})
 
-	forForm := &List{Elems: []Node{Symbol("for"), &Vector{Elems: vecElems}, sel}}
-	return forForm, nil
+	rowMap := &Map{Pairs: [][2]Node{{Keyword("key"), Symbol("k")}, {Keyword("item"), item}}}
+	rowsFor := &List{Elems: []Node{Symbol("for"), &Vector{Elems: vecElems}, rowMap}}
+	groupMap := &List{Elems: []Node{Symbol("group-by"), Keyword("key"), rowsFor}}
+
+	gPairs := [][2]Node{{Keyword("key"), Symbol("k")}, {Keyword("items"), &List{Elems: []Node{Symbol("map"), Keyword("item"), Symbol("rows")}}}}
+
+	vec2 := []Node{&Vector{Elems: []Node{Symbol("k"), Symbol("rows")}}, groupMap, Keyword("let"), &Vector{Elems: []Node{Symbol(q.Group.Name), &Map{Pairs: gPairs}}}}
+	if groupVars != nil {
+		groupVars[q.Group.Name] = true
+		defer delete(groupVars, q.Group.Name)
+	}
+	if q.Group.Having != nil {
+		hav, err := transpileExpr(q.Group.Having)
+		if err != nil {
+			return nil, err
+		}
+		vec2 = append(vec2, Keyword("when"), hav)
+	}
+	sel, err := transpileExpr(q.Select)
+	if err != nil {
+		return nil, err
+	}
+	return &List{Elems: []Node{Symbol("for"), &Vector{Elems: vec2}, sel}}, nil
+}
+
+func identName(e *parser.Expr) (string, bool) {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) > 0 {
+		return "", false
+	}
+	u := e.Binary.Left
+	if u == nil || len(u.Ops) > 0 || u.Value == nil {
+		return "", false
+	}
+	p := u.Value.Target
+	if p == nil || p.Selector == nil || len(p.Selector.Tail) > 0 {
+		return "", false
+	}
+	return p.Selector.Root, true
 }
 
 func defaultValue(t *parser.TypeRef) Node {
