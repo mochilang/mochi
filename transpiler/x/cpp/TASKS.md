@@ -1,3 +1,33 @@
+## Progress (2025-07-20 23:04 +0700)
+- cpp transpiler: support for loops
+- Generated C++ for 80/100 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-20 22:52 +0700)
+- cpp transpiler: add sort and slice
+- Generated C++ for 80/100 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-20 22:52 +0700)
+- cpp transpiler: add sort and slice
+- Generated C++ for 79/100 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-20 22:52 +0700)
+- cpp transpiler: add sort and slice
+- Generated C++ for 78/100 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-20 22:52 +0700)
+- cpp transpiler: add sort and slice
+- Generated C++ for 78/100 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-20 22:52 +0700)
+- cpp transpiler: add sort and slice
+- Generated C++ for 78/100 programs
+- Updated README checklist and outputs
+
 ## Progress (2025-07-20 22:24 +0700)
 - cpp transpiler: improve type inference
 - Generated C++ for 69/100 programs

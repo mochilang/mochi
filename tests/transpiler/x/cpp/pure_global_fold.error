@@ -1,0 +1,5 @@
+compile: exit status 1
+/workspace/mochi/tests/transpiler/x/cpp/pure_global_fold.cpp: In function ‘int inc(int)’:
+/workspace/mochi/tests/transpiler/x/cpp/pure_global_fold.cpp:6:17: error: ‘k’ was not declared in this scope
+    6 |     return (x + k);
+      |                 ^

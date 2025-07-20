@@ -1,0 +1,154 @@
+compile: exit status 1
+/workspace/mochi/tests/transpiler/x/cpp/group_items_iteration.cpp:32:24: error: class template argument deduction failed:
+   32 | auto tmp = std::vector{};
+      |                        ^
+/workspace/mochi/tests/transpiler/x/cpp/group_items_iteration.cpp:32:24: error: no matching function for call to ‘vector()’
+In file included from /usr/include/c++/13/vector:66,
+                 from /workspace/mochi/tests/transpiler/x/cpp/group_items_iteration.cpp:4:
+/usr/include/c++/13/bits/stl_vector.h:707:9: note: candidate: ‘template<class _Tp, class _Alloc, class _InputIterator, class> vector(_InputIterator, _InputIterator, const _Alloc&)-> std::vector<_Tp, _Alloc>’
+  707 |         vector(_InputIterator __first, _InputIterator __last,
+      |         ^~~~~~
+/usr/include/c++/13/bits/stl_vector.h:707:9: note:   template argument deduction/substitution failed:
+/workspace/mochi/tests/transpiler/x/cpp/group_items_iteration.cpp:32:24: note:   candidate expects 3 arguments, 0 provided
+   32 | auto tmp = std::vector{};
+      |                        ^
+/usr/include/c++/13/bits/stl_vector.h:678:7: note: candidate: ‘template<class _Tp, class _Alloc> vector(std::initializer_list<_Tp>, const _Alloc&)-> std::vector<_Tp, _Alloc>’
+  678 |       vector(initializer_list<value_type> __l,
+      |       ^~~~~~
+/usr/include/c++/13/bits/stl_vector.h:678:7: note:   template argument deduction/substitution failed:
+/workspace/mochi/tests/transpiler/x/cpp/group_items_iteration.cpp:32:24: note:   candidate expects 2 arguments, 0 provided
+   32 | auto tmp = std::vector{};
+      |                        ^
+/usr/include/c++/13/bits/stl_vector.h:659:7: note: candidate: ‘template<class _Tp, class _Alloc> vector(std::vector<_Tp, _Alloc>&&, std::__type_identity_t<_Alloc>&)-> std::vector<_Tp, _Alloc>’
+  659 |       vector(vector&& __rv, const __type_identity_t<allocator_type>& __m)
+      |       ^~~~~~
+/usr/include/c++/13/bits/stl_vector.h:659:7: note:   template argument deduction/substitution failed:
+/workspace/mochi/tests/transpiler/x/cpp/group_items_iteration.cpp:32:24: note:   candidate expects 2 arguments, 0 provided
+   32 | auto tmp = std::vector{};
+      |                        ^
+/usr/include/c++/13/bits/stl_vector.h:640:7: note: candidate: ‘template<class _Tp, class _Alloc> vector(std::vector<_Tp, _Alloc>&&, const _Alloc&, std::false_type)-> std::vector<_Tp, _Alloc>’
+  640 |       vector(vector&& __rv, const allocator_type& __m, false_type)
+      |       ^~~~~~
+/usr/include/c++/13/bits/stl_vector.h:640:7: note:   template argument deduction/substitution failed:
+/workspace/mochi/tests/transpiler/x/cpp/group_items_iteration.cpp:32:24: note:   candidate expects 3 arguments, 0 provided
+   32 | auto tmp = std::vector{};
+      |                        ^
+/usr/include/c++/13/bits/stl_vector.h:635:7: note: candidate: ‘template<class _Tp, class _Alloc> vector(std::vector<_Tp, _Alloc>&&, const _Alloc&, std::true_type)-> std::vector<_Tp, _Alloc>’
+  635 |       vector(vector&& __rv, const allocator_type& __m, true_type) noexcept
+      |       ^~~~~~
+/usr/include/c++/13/bits/stl_vector.h:635:7: note:   template argument deduction/substitution failed:
+/workspace/mochi/tests/transpiler/x/cpp/group_items_iteration.cpp:32:24: note:   candidate expects 3 arguments, 0 provided
+   32 | auto tmp = std::vector{};
+      |                        ^
+/usr/include/c++/13/bits/stl_vector.h:624:7: note: candidate: ‘template<class _Tp, class _Alloc> vector(const std::vector<_Tp, _Alloc>&, std::__type_identity_t<_Alloc>&)-> std::vector<_Tp, _Alloc>’
+  624 |       vector(const vector& __x, const __type_identity_t<allocator_type>& __a)
+      |       ^~~~~~
+/usr/include/c++/13/bits/stl_vector.h:624:7: note:   template argument deduction/substitution failed:
+/workspace/mochi/tests/transpiler/x/cpp/group_items_iteration.cpp:32:24: note:   candidate expects 2 arguments, 0 provided
+   32 | auto tmp = std::vector{};
+      |                        ^
+/usr/include/c++/13/bits/stl_vector.h:620:7: note: candidate: ‘template<class _Tp, class _Alloc> vector(std::vector<_Tp, _Alloc>&&)-> std::vector<_Tp, _Alloc>’
+  620 |       vector(vector&&) noexcept = default;
+      |       ^~~~~~
+/usr/include/c++/13/bits/stl_vector.h:620:7: note:   template argument deduction/substitution failed:
+/workspace/mochi/tests/transpiler/x/cpp/group_items_iteration.cpp:32:24: note:   candidate expects 1 argument, 0 provided
+   32 | auto tmp = std::vector{};
+      |                        ^
+/usr/include/c++/13/bits/stl_vector.h:601:7: note: candidate: ‘template<class _Tp, class _Alloc> vector(const std::vector<_Tp, _Alloc>&)-> std::vector<_Tp, _Alloc>’
+  601 |       vector(const vector& __x)
+      |       ^~~~~~
+/usr/include/c++/13/bits/stl_vector.h:601:7: note:   template argument deduction/substitution failed:
+/workspace/mochi/tests/transpiler/x/cpp/group_items_iteration.cpp:32:24: note:   candidate expects 1 argument, 0 provided
+   32 | auto tmp = std::vector{};
+      |                        ^
+/usr/include/c++/13/bits/stl_vector.h:569:7: note: candidate: ‘template<class _Tp, class _Alloc> vector(std::size_t, const _Tp&, const _Alloc&)-> std::vector<_Tp, _Alloc>’
+  569 |       vector(size_type __n, const value_type& __value,
+      |       ^~~~~~
+/usr/include/c++/13/bits/stl_vector.h:569:7: note:   template argument deduction/substitution failed:
+/workspace/mochi/tests/transpiler/x/cpp/group_items_iteration.cpp:32:24: note:   candidate expects 3 arguments, 0 provided
+   32 | auto tmp = std::vector{};
+      |                        ^
+/usr/include/c++/13/bits/stl_vector.h:556:7: note: candidate: ‘template<class _Tp, class _Alloc> vector(std::size_t, const _Alloc&)-> std::vector<_Tp, _Alloc>’
+  556 |       vector(size_type __n, const allocator_type& __a = allocator_type())
+      |       ^~~~~~
+/usr/include/c++/13/bits/stl_vector.h:556:7: note:   template argument deduction/substitution failed:
+/workspace/mochi/tests/transpiler/x/cpp/group_items_iteration.cpp:32:24: note:   candidate expects 2 arguments, 0 provided
+   32 | auto tmp = std::vector{};
+      |                        ^
+/usr/include/c++/13/bits/stl_vector.h:542:7: note: candidate: ‘template<class _Tp, class _Alloc> vector(const _Alloc&)-> std::vector<_Tp, _Alloc>’
+  542 |       vector(const allocator_type& __a) _GLIBCXX_NOEXCEPT
+      |       ^~~~~~
+/usr/include/c++/13/bits/stl_vector.h:542:7: note:   template argument deduction/substitution failed:
+/workspace/mochi/tests/transpiler/x/cpp/group_items_iteration.cpp:32:24: note:   candidate expects 1 argument, 0 provided
+   32 | auto tmp = std::vector{};
+      |                        ^
+/usr/include/c++/13/bits/stl_vector.h:531:7: note: candidate: ‘template<class _Tp, class _Alloc> vector()-> std::vector<_Tp, _Alloc>’
+  531 |       vector() = default;
+      |       ^~~~~~
+/usr/include/c++/13/bits/stl_vector.h:531:7: note:   template argument deduction/substitution failed:
+/workspace/mochi/tests/transpiler/x/cpp/group_items_iteration.cpp:32:24: note:   couldn’t deduce template parameter ‘_Tp’
+   32 | auto tmp = std::vector{};
+      |                        ^
+/usr/include/c++/13/bits/stl_vector.h:428:11: note: candidate: ‘template<class _Tp, class _Alloc> vector(std::vector<_Tp, _Alloc>)-> std::vector<_Tp, _Alloc>’
+  428 |     class vector : protected _Vector_base<_Tp, _Alloc>
+      |           ^~~~~~
+/usr/include/c++/13/bits/stl_vector.h:428:11: note:   template argument deduction/substitution failed:
+/workspace/mochi/tests/transpiler/x/cpp/group_items_iteration.cpp:32:24: note:   candidate expects 1 argument, 0 provided
+   32 | auto tmp = std::vector{};
+      |                        ^
+/usr/include/c++/13/bits/stl_vector.h:2023:5: note: candidate: ‘template<class _InputIterator, class _ValT, class _Allocator, class, class> std::vector(_InputIterator, _InputIterator, _Allocator)-> vector<_ValT, _Allocator>’
+ 2023 |     vector(_InputIterator, _InputIterator, _Allocator = _Allocator())
+      |     ^~~~~~
+/usr/include/c++/13/bits/stl_vector.h:2023:5: note:   template argument deduction/substitution failed:
+/workspace/mochi/tests/transpiler/x/cpp/group_items_iteration.cpp:32:24: note:   candidate expects 3 arguments, 0 provided
+   32 | auto tmp = std::vector{};
+      |                        ^
+/workspace/mochi/tests/transpiler/x/cpp/group_items_iteration.cpp:33:17: error: template argument 1 is invalid
+   33 | std::vector<auto> result = ([]{ std::vector<std::pair<auto, auto>> __tmp;
+      |                 ^
+/workspace/mochi/tests/transpiler/x/cpp/group_items_iteration.cpp:33:17: error: template argument 2 is invalid
+/workspace/mochi/tests/transpiler/x/cpp/group_items_iteration.cpp: In lambda function:
+/workspace/mochi/tests/transpiler/x/cpp/group_items_iteration.cpp:33:65: error: wrong number of template arguments (1, should be 2)
+   33 | std::vector<auto> result = ([]{ std::vector<std::pair<auto, auto>> __tmp;
+      |                                                                 ^~
+In file included from /usr/include/c++/13/string:48,
+                 from /usr/include/c++/13/bits/locale_classes.h:40,
+                 from /usr/include/c++/13/bits/ios_base.h:41,
+                 from /usr/include/c++/13/ios:44,
+                 from /usr/include/c++/13/ostream:40,
+                 from /usr/include/c++/13/iostream:41,
+                 from /workspace/mochi/tests/transpiler/x/cpp/group_items_iteration.cpp:2:
+/usr/include/c++/13/bits/stl_iterator.h:2992:12: note: provided for ‘template<class _T1, class _T2> struct std::pair’
+ 2992 |     struct pair;
+      |            ^~~~
+/workspace/mochi/tests/transpiler/x/cpp/group_items_iteration.cpp:33:68: error: template argument 1 is invalid
+   33 | std::vector<auto> result = ([]{ std::vector<std::pair<auto, auto>> __tmp;
+      |                                                                    ^~~~~
+/workspace/mochi/tests/transpiler/x/cpp/group_items_iteration.cpp:33:68: error: template argument 2 is invalid
+/workspace/mochi/tests/transpiler/x/cpp/group_items_iteration.cpp:35:9: error: ‘__tmp’ was not declared in this scope; did you mean ‘tmp’?
+   35 |         __tmp.emplace_back(r.tag, r);
+      |         ^~~~~
+      |         tmp
+/workspace/mochi/tests/transpiler/x/cpp/group_items_iteration.cpp:37:11: error: ‘__tmp’ was not declared in this scope; did you mean ‘tmp’?
+   37 | std::sort(__tmp.begin(), __tmp.end(), [](const auto& a,const auto& b){ return a.first < b.first; });
+      |           ^~~~~
+      |           tmp
+/workspace/mochi/tests/transpiler/x/cpp/group_items_iteration.cpp:38:17: error: template argument 1 is invalid
+   38 | std::vector<auto> __items;
+      |                 ^
+/workspace/mochi/tests/transpiler/x/cpp/group_items_iteration.cpp:38:17: error: template argument 2 is invalid
+/workspace/mochi/tests/transpiler/x/cpp/group_items_iteration.cpp:40:13: error: request for member ‘push_back’ in ‘__items’, which is of non-class type ‘int’
+   40 |     __items.push_back(__tmp[__i].second);
+      |             ^~~~~~~~~
+/workspace/mochi/tests/transpiler/x/cpp/group_items_iteration.cpp: In lambda function:
+/workspace/mochi/tests/transpiler/x/cpp/group_items_iteration.cpp:50:66: error: wrong number of template arguments (1, should be at least 2)
+   50 |         tmp = ([&]{ auto v = tmp; v.push_back(std::map<auto, auto>{{tag, g.key}, {total, total}}); return v; }());
+      |                                                                  ^
+In file included from /usr/include/c++/13/map:63,
+                 from /workspace/mochi/tests/transpiler/x/cpp/group_items_iteration.cpp:5:
+/usr/include/c++/13/bits/stl_map.h:102:11: note: provided for ‘template<class _Key, class _Tp, class _Compare, class _Alloc> class std::map’
+  102 |     class map
+      |           ^~~
+/workspace/mochi/tests/transpiler/x/cpp/group_items_iteration.cpp:50:69: error: ‘tag’ was not declared in this scope
+   50 |         tmp = ([&]{ auto v = tmp; v.push_back(std::map<auto, auto>{{tag, g.key}, {total, total}}); return v; }());
+      |                                                                     ^~~
