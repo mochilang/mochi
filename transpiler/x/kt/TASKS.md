@@ -1,6 +1,6 @@
 # Kotlin Transpiler Tasks
 
-_Last updated: 2025-07-19 14:14 UTC_
+_Last updated: 2025-07-20 01:31 UTC_
 
 - Basic programs using `print` are supported.
 - Added integer and list literals.
@@ -48,3 +48,9 @@ _Last updated: 2025-07-19 14:14 UTC_
 - Added Kotlin type generation for generic lists and maps.
 - Generated Kotlin tests for `cast_string_to_int`, `for_map_collection`, `list_nested_assign`, `map_nested_assign`, `tail_recursion` and `two-sum`.
 - README progress updated to 46/100.
+
+## VM Golden Progress (2025-07-20 01:31 UTC)
+- Removed runtime helper functions from the Kotlin transpiler.
+- Added basic type inference for `let` and `var` statements to emit explicit Kotlin types.
+- Generated Kotlin sources without header comments for existing golden tests.
+- README checklist now auto-generated with 46/100 passing.

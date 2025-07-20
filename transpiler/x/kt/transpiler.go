@@ -6,13 +6,7 @@ import (
 	"bytes"
 	"fmt"
 	"io"
-	"os"
-	"path/filepath"
-	"runtime"
-	"strings"
-	"time"
 
-	"mochi/ast"
 	"mochi/parser"
 	"mochi/types"
 )
@@ -219,21 +213,31 @@ func (b *BinaryExpr) emit(w io.Writer) {
 
 type LetStmt struct {
 	Name  string
+	Type  string
 	Value Expr
 }
 
 func (s *LetStmt) emit(w io.Writer) { // 'let' is immutable
-	io.WriteString(w, "val "+s.Name+" = ")
+	io.WriteString(w, "val "+s.Name)
+	if s.Type != "" {
+		io.WriteString(w, ": "+s.Type)
+	}
+	io.WriteString(w, " = ")
 	s.Value.emit(w)
 }
 
 type VarStmt struct {
 	Name  string
+	Type  string
 	Value Expr
 }
 
 func (s *VarStmt) emit(w io.Writer) {
-	io.WriteString(w, "var "+s.Name+" = ")
+	io.WriteString(w, "var "+s.Name)
+	if s.Type != "" {
+		io.WriteString(w, ": "+s.Type)
+	}
+	io.WriteString(w, " = ")
 	s.Value.emit(w)
 }
 
@@ -554,6 +558,36 @@ func kotlinType(t *parser.TypeRef) string {
 	return "Any"
 }
 
+func kotlinTypeFromType(t types.Type) string {
+	switch tt := t.(type) {
+	case types.IntType, *types.IntType, types.Int64Type, *types.Int64Type:
+		return "Int"
+	case types.BoolType, *types.BoolType:
+		return "Boolean"
+	case types.StringType, *types.StringType:
+		return "String"
+	case types.FloatType, *types.FloatType, types.BigRatType, *types.BigRatType:
+		return "Double"
+	case types.ListType:
+		elem := kotlinTypeFromType(tt.Elem)
+		if elem == "" {
+			elem = "Any"
+		}
+		return "MutableList<" + elem + ">"
+	case types.MapType:
+		k := kotlinTypeFromType(tt.Key)
+		v := kotlinTypeFromType(tt.Value)
+		if k == "" {
+			k = "Any"
+		}
+		if v == "" {
+			v = "Any"
+		}
+		return "MutableMap<" + k + ", " + v + ">"
+	}
+	return ""
+}
+
 // Transpile converts a Mochi program to a simple Kotlin AST.
 func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 	p := &Program{}
@@ -576,7 +610,13 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 			} else {
 				val = &IntLit{Value: 0}
 			}
-			p.Stmts = append(p.Stmts, &LetStmt{Name: st.Let.Name, Value: val})
+			typ := kotlinType(st.Let.Type)
+			if typ == "" {
+				if t0, err := env.GetVar(st.Let.Name); err == nil {
+					typ = kotlinTypeFromType(t0)
+				}
+			}
+			p.Stmts = append(p.Stmts, &LetStmt{Name: st.Let.Name, Type: typ, Value: val})
 		case st.Var != nil:
 			var val Expr
 			if st.Var.Value != nil {
@@ -588,7 +628,13 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 			} else {
 				val = &IntLit{Value: 0}
 			}
-			p.Stmts = append(p.Stmts, &VarStmt{Name: st.Var.Name, Value: val})
+			typ := kotlinType(st.Var.Type)
+			if typ == "" {
+				if t0, err := env.GetVar(st.Var.Name); err == nil {
+					typ = kotlinTypeFromType(t0)
+				}
+			}
+			p.Stmts = append(p.Stmts, &VarStmt{Name: st.Var.Name, Type: typ, Value: val})
 		case st.Assign != nil && len(st.Assign.Index) == 0 && len(st.Assign.Field) == 0:
 			e, err := convertExpr(env, st.Assign.Value)
 			if err != nil {
@@ -674,13 +720,25 @@ func convertStmts(env *types.Env, list []*parser.Statement) ([]Stmt, error) {
 			if err != nil {
 				return nil, err
 			}
-			out = append(out, &LetStmt{Name: s.Let.Name, Value: v})
+			typ := kotlinType(s.Let.Type)
+			if typ == "" {
+				if t0, err := env.GetVar(s.Let.Name); err == nil {
+					typ = kotlinTypeFromType(t0)
+				}
+			}
+			out = append(out, &LetStmt{Name: s.Let.Name, Type: typ, Value: v})
 		case s.Var != nil:
 			v, err := convertExpr(env, s.Var.Value)
 			if err != nil {
 				return nil, err
 			}
-			out = append(out, &VarStmt{Name: s.Var.Name, Value: v})
+			typ := kotlinType(s.Var.Type)
+			if typ == "" {
+				if t0, err := env.GetVar(s.Var.Name); err == nil {
+					typ = kotlinTypeFromType(t0)
+				}
+			}
+			out = append(out, &VarStmt{Name: s.Var.Name, Type: typ, Value: v})
 		case s.Assign != nil && len(s.Assign.Index) == 0 && len(s.Assign.Field) == 0:
 			v, err := convertExpr(env, s.Assign.Value)
 			if err != nil {
@@ -1149,9 +1207,6 @@ func convertPrimary(env *types.Env, p *parser.Primary) (Expr, error) {
 // Emit returns formatted Kotlin source code for prog.
 func Emit(prog *Program) []byte {
 	var buf bytes.Buffer
-	ver := readVersion()
-	ts := time.Now().Format("2006-01-02 15:04:05 MST")
-	fmt.Fprintf(&buf, "// Mochi %s - generated %s\n", ver, ts)
 	for _, f := range prog.Funcs {
 		f.emit(&buf)
 		buf.WriteString("\n")
@@ -1164,198 +1219,4 @@ func Emit(prog *Program) []byte {
 	}
 	buf.WriteString("}\n")
 	return buf.Bytes()
-}
-
-func readVersion() string {
-	_, file, _, _ := runtime.Caller(0)
-	dir := filepath.Dir(file)
-	for i := 0; i < 10; i++ {
-		if _, err := os.Stat(filepath.Join(dir, "go.mod")); err == nil {
-			v, err := os.ReadFile(filepath.Join(dir, "VERSION"))
-			if err != nil {
-				return "unknown"
-			}
-			return strings.TrimSpace(string(v))
-		}
-		parent := filepath.Dir(dir)
-		if parent == dir {
-			break
-		}
-		dir = parent
-	}
-	return "unknown"
-}
-
-// Print writes a Lisp-like representation of the Kotlin AST to stdout.
-func Print(p *Program) {
-	toNodeProg(p).Print("")
-}
-
-func toNodeProg(p *Program) *ast.Node {
-	n := &ast.Node{Kind: "program"}
-	for _, f := range p.Funcs {
-		n.Children = append(n.Children, toNodeStmt(f))
-	}
-	for _, s := range p.Stmts {
-		n.Children = append(n.Children, toNodeStmt(s))
-	}
-	return n
-}
-
-func toNodeStmt(s Stmt) *ast.Node {
-	switch st := s.(type) {
-	case *ExprStmt:
-		return &ast.Node{Kind: "expr", Children: []*ast.Node{toNodeExpr(st.Expr)}}
-	case *LetStmt:
-		return &ast.Node{Kind: "let", Value: st.Name, Children: []*ast.Node{toNodeExpr(st.Value)}}
-	case *VarStmt:
-		return &ast.Node{Kind: "var", Value: st.Name, Children: []*ast.Node{toNodeExpr(st.Value)}}
-	case *AssignStmt:
-		return &ast.Node{Kind: "assign", Value: st.Name, Children: []*ast.Node{toNodeExpr(st.Value)}}
-	case *IndexAssignStmt:
-		return &ast.Node{Kind: "indexassign", Children: []*ast.Node{toNodeExpr(st.Target), toNodeExpr(st.Value)}}
-	case *IfStmt:
-		n := &ast.Node{Kind: "if", Children: []*ast.Node{toNodeExpr(st.Cond)}}
-		thenNode := &ast.Node{Kind: "then"}
-		for _, t := range st.Then {
-			thenNode.Children = append(thenNode.Children, toNodeStmt(t))
-		}
-		n.Children = append(n.Children, thenNode)
-		if len(st.Else) > 0 {
-			elseNode := &ast.Node{Kind: "else"}
-			for _, e := range st.Else {
-				elseNode.Children = append(elseNode.Children, toNodeStmt(e))
-			}
-			n.Children = append(n.Children, elseNode)
-		}
-		return n
-	case *WhileStmt:
-		n := &ast.Node{Kind: "while", Children: []*ast.Node{toNodeExpr(st.Cond)}}
-		body := &ast.Node{Kind: "body"}
-		for _, b := range st.Body {
-			body.Children = append(body.Children, toNodeStmt(b))
-		}
-		n.Children = append(n.Children, body)
-		return n
-	case *ForRangeStmt:
-		n := &ast.Node{Kind: "forrange", Value: st.Name}
-		n.Children = append(n.Children, toNodeExpr(st.Start), toNodeExpr(st.End))
-		body := &ast.Node{Kind: "body"}
-		for _, b := range st.Body {
-			body.Children = append(body.Children, toNodeStmt(b))
-		}
-		n.Children = append(n.Children, body)
-		return n
-	case *ForEachStmt:
-		n := &ast.Node{Kind: "foreach", Value: st.Name, Children: []*ast.Node{toNodeExpr(st.Iterable)}}
-		body := &ast.Node{Kind: "body"}
-		for _, b := range st.Body {
-			body.Children = append(body.Children, toNodeStmt(b))
-		}
-		n.Children = append(n.Children, body)
-		return n
-	case *BreakStmt:
-		return &ast.Node{Kind: "break"}
-	case *ContinueStmt:
-		return &ast.Node{Kind: "continue"}
-	case *ReturnStmt:
-		n := &ast.Node{Kind: "return"}
-		if st.Value != nil {
-			n.Children = append(n.Children, toNodeExpr(st.Value))
-		}
-		return n
-	case *FuncDef:
-		n := &ast.Node{Kind: "func", Value: st.Name}
-		for _, b := range st.Body {
-			n.Children = append(n.Children, toNodeStmt(b))
-		}
-		return n
-	default:
-		return &ast.Node{Kind: "unknown"}
-	}
-}
-
-func toNodeExpr(e Expr) *ast.Node {
-	switch ex := e.(type) {
-	case *CallExpr:
-		n := &ast.Node{Kind: "call", Value: ex.Func}
-		for _, a := range ex.Args {
-			n.Children = append(n.Children, toNodeExpr(a))
-		}
-		return n
-	case *CountExpr:
-		return &ast.Node{Kind: "count", Children: []*ast.Node{toNodeExpr(ex.Value)}}
-	case *SumExpr:
-		return &ast.Node{Kind: "sum", Children: []*ast.Node{toNodeExpr(ex.Value)}}
-	case *AvgExpr:
-		return &ast.Node{Kind: "avg", Children: []*ast.Node{toNodeExpr(ex.Value)}}
-	case *LenExpr:
-		return &ast.Node{Kind: "len", Children: []*ast.Node{toNodeExpr(ex.Value)}}
-	case *StrExpr:
-		return &ast.Node{Kind: "str", Children: []*ast.Node{toNodeExpr(ex.Value)}}
-	case *NotExpr:
-		return &ast.Node{Kind: "not", Children: []*ast.Node{toNodeExpr(ex.Value)}}
-	case *BinaryExpr:
-		return &ast.Node{Kind: "bin", Value: ex.Op, Children: []*ast.Node{toNodeExpr(ex.Left), toNodeExpr(ex.Right)}}
-	case *VarRef:
-		return &ast.Node{Kind: "name", Value: ex.Name}
-	case *IntLit:
-		return &ast.Node{Kind: "int", Value: ex.Value}
-	case *BoolLit:
-		return &ast.Node{Kind: "bool", Value: ex.Value}
-	case *ListLit:
-		n := &ast.Node{Kind: "list"}
-		for _, el := range ex.Elems {
-			n.Children = append(n.Children, toNodeExpr(el))
-		}
-		return n
-	case *MapLit:
-		n := &ast.Node{Kind: "map"}
-		for _, it := range ex.Items {
-			n.Children = append(n.Children, &ast.Node{Kind: "entry", Children: []*ast.Node{toNodeExpr(it.Key), toNodeExpr(it.Value)}})
-		}
-		return n
-	case *IndexExpr:
-		return &ast.Node{Kind: "index", Children: []*ast.Node{toNodeExpr(ex.Target), toNodeExpr(ex.Index)}}
-	case *ContainsExpr:
-		return &ast.Node{Kind: "contains", Children: []*ast.Node{toNodeExpr(ex.Str), toNodeExpr(ex.Sub)}}
-	case *AppendExpr:
-		return &ast.Node{Kind: "append", Children: []*ast.Node{toNodeExpr(ex.List), toNodeExpr(ex.Elem)}}
-	case *MinExpr:
-		return &ast.Node{Kind: "min", Children: []*ast.Node{toNodeExpr(ex.Value)}}
-	case *MaxExpr:
-		return &ast.Node{Kind: "max", Children: []*ast.Node{toNodeExpr(ex.Value)}}
-	case *ValuesExpr:
-		return &ast.Node{Kind: "values", Children: []*ast.Node{toNodeExpr(ex.Map)}}
-	case *SubstringExpr:
-		return &ast.Node{Kind: "substring", Children: []*ast.Node{toNodeExpr(ex.Value), toNodeExpr(ex.Start), toNodeExpr(ex.End)}}
-	case *FieldExpr:
-		return &ast.Node{Kind: "field", Value: ex.Name, Children: []*ast.Node{toNodeExpr(ex.Receiver)}}
-	case *CastExpr:
-		return &ast.Node{Kind: "cast", Value: ex.Type, Children: []*ast.Node{toNodeExpr(ex.Value)}}
-	case *SliceExpr:
-		n := &ast.Node{Kind: "slice", Children: []*ast.Node{toNodeExpr(ex.Value)}}
-		if ex.Start != nil {
-			n.Children = append(n.Children, toNodeExpr(ex.Start))
-		} else {
-			n.Children = append(n.Children, &ast.Node{Kind: "none"})
-		}
-		if ex.End != nil {
-			n.Children = append(n.Children, toNodeExpr(ex.End))
-		} else {
-			n.Children = append(n.Children, &ast.Node{Kind: "none"})
-		}
-		return n
-	case *IfExpr:
-		n := &ast.Node{Kind: "ifexpr"}
-		n.Children = append(n.Children, toNodeExpr(ex.Cond), toNodeExpr(ex.Then))
-		if ex.Else != nil {
-			n.Children = append(n.Children, toNodeExpr(ex.Else))
-		}
-		return n
-	case *StringLit:
-		return &ast.Node{Kind: "string", Value: ex.Value}
-	default:
-		return &ast.Node{Kind: "unknown"}
-	}
 }
