@@ -81,7 +81,34 @@ func Format(src []byte) []byte {
 	if len(src) > 0 && src[len(src)-1] != '\n' {
 		src = append(src, '\n')
 	}
-	return append(header(), src...)
+	var buf bytes.Buffer
+	indent := 0
+	for i := 0; i < len(src); i++ {
+		ch := src[i]
+		switch ch {
+		case '(':
+			buf.WriteByte(ch)
+			indent++
+		case ')':
+			buf.WriteByte(ch)
+			if i+1 < len(src) && src[i+1] != '\n' {
+				buf.WriteByte('\n')
+				buf.WriteString(strings.Repeat("  ", indent-1))
+			}
+			indent--
+		case '\n':
+			buf.WriteByte('\n')
+			if i+1 < len(src) && src[i+1] != ')' {
+				buf.WriteString(strings.Repeat("  ", indent))
+			}
+		default:
+			buf.WriteByte(ch)
+		}
+	}
+	if buf.Len() > 0 && buf.Bytes()[buf.Len()-1] != '\n' {
+		buf.WriteByte('\n')
+	}
+	return append(header(), buf.Bytes()...)
 }
 
 func header() []byte {
@@ -92,7 +119,7 @@ func header() []byte {
 		}
 	}
 	loc, _ := time.LoadLocation("Asia/Bangkok")
-	return []byte(fmt.Sprintf(";; Generated on %s\n(import (srfi 1))\n", ts.In(loc).Format("2006-01-02 15:04 -0700")))
+	return []byte(fmt.Sprintf(";; Generated on %s\n(import (srfi 1) (chibi string))\n", ts.In(loc).Format("2006-01-02 15:04 -0700")))
 }
 
 func voidSym() Node { return &List{Elems: []Node{Symbol("quote"), Symbol("nil")}} }
@@ -121,7 +148,11 @@ func convertStmts(stmts []*parser.Statement) ([]Node, error) {
 			return nil, err
 		}
 		if f != nil {
-			forms = append(forms, f)
+			if lst, ok := f.(*List); ok && len(lst.Elems) > 0 && lst.Elems[0] == Symbol("begin") {
+				forms = append(forms, lst.Elems[1:]...)
+			} else {
+				forms = append(forms, f)
+			}
 		}
 	}
 	return forms, nil
@@ -260,6 +291,31 @@ func convertStmt(st *parser.Statement) (Node, error) {
 			return nil, err
 		}
 		return &List{Elems: []Node{Symbol("set!"), Symbol(st.Assign.Name), val}}, nil
+	case st.Fun != nil:
+		params := []Node{}
+		for _, p := range st.Fun.Params {
+			params = append(params, Symbol(p.Name))
+		}
+		bodyForms, err := convertStmts(st.Fun.Body)
+		if err != nil {
+			return nil, err
+		}
+		var body Node
+		if len(bodyForms) == 1 {
+			body = bodyForms[0]
+		} else {
+			body = &List{Elems: append([]Node{Symbol("begin")}, bodyForms...)}
+		}
+		return &List{Elems: []Node{
+			Symbol("define"),
+			&List{Elems: append([]Node{Symbol(st.Fun.Name)}, params...)},
+			body,
+		}}, nil
+	case st.Return != nil:
+		if st.Return.Value == nil {
+			return voidSym(), nil
+		}
+		return convertParserExpr(st.Return.Value)
 	case st.If != nil:
 		return convertIfStmt(st.If)
 	case st.While != nil:
@@ -383,6 +439,15 @@ func convertParserPostfix(pf *parser.PostfixExpr) (Node, error) {
 			if err != nil {
 				return nil, err
 			}
+		case op.Cast != nil:
+			t := op.Cast.Type
+			if t.Simple != nil && *t.Simple == "int" {
+				node = &List{Elems: []Node{Symbol("string->number"), node}}
+			} else if t.Simple != nil && *t.Simple == "string" {
+				node = &List{Elems: []Node{Symbol("number->string"), node}}
+			} else {
+				return nil, fmt.Errorf("unsupported cast")
+			}
 		case op.Field != nil && op.Field.Name == "contains" && i+1 < len(pf.Ops) && pf.Ops[i+1].Call != nil:
 			call := pf.Ops[i+1].Call
 			if len(call.Args) != 1 {
@@ -434,6 +499,8 @@ func convertParserPrimary(p *parser.Primary) (Node, error) {
 			elems = append(elems, n)
 		}
 		return &List{Elems: append([]Node{Symbol("list")}, elems...)}, nil
+	case p.FunExpr != nil:
+		return convertFunExpr(p.FunExpr)
 	case p.Call != nil:
 		return convertCall(Symbol(p.Call.Func), &parser.CallOp{Args: p.Call.Args})
 	}
@@ -462,6 +529,32 @@ func convertIfExpr(ie *parser.IfExpr) (Node, error) {
 		}
 	}
 	return &List{Elems: []Node{Symbol("if"), cond, thenNode, elseNode}}, nil
+}
+
+func convertFunExpr(fe *parser.FunExpr) (Node, error) {
+	params := []Node{}
+	for _, p := range fe.Params {
+		params = append(params, Symbol(p.Name))
+	}
+	var body Node
+	if fe.ExprBody != nil {
+		b, err := convertParserExpr(fe.ExprBody)
+		if err != nil {
+			return nil, err
+		}
+		body = b
+	} else {
+		stmts, err := convertStmts(fe.BlockBody)
+		if err != nil {
+			return nil, err
+		}
+		if len(stmts) == 1 {
+			body = stmts[0]
+		} else {
+			body = &List{Elems: append([]Node{Symbol("begin")}, stmts...)}
+		}
+	}
+	return &List{Elems: []Node{Symbol("lambda"), &List{Elems: params}, body}}, nil
 }
 
 func makeBinary(op string, left, right Node) Node {
@@ -616,7 +709,10 @@ func convertCall(target Node, call *parser.CallOp) (Node, error) {
 		}
 		return &List{Elems: []Node{Symbol("substring"), args[0], args[1], args[2]}}, nil
 	default:
-		return nil, fmt.Errorf("unsupported call")
+		elems := make([]Node, 0, len(args)+1)
+		elems = append(elems, Symbol(sym))
+		elems = append(elems, args...)
+		return &List{Elems: elems}, nil
 	}
 }
 
