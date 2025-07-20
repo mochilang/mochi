@@ -29,6 +29,7 @@ var (
 	usesStrconv bool
 	usesPrint   bool
 	usesSort    bool
+	topEnv      *types.Env
 )
 
 type Stmt interface{ emit(io.Writer) }
@@ -93,6 +94,18 @@ type AssignStmt struct {
 func (a *AssignStmt) emit(w io.Writer) {
 	fmt.Fprintf(w, "%s = ", a.Name)
 	a.Value.emit(w)
+}
+
+// SetStmt assigns to an arbitrary indexed or field-select expression.
+type SetStmt struct {
+	Target Expr
+	Value  Expr
+}
+
+func (s *SetStmt) emit(w io.Writer) {
+	s.Target.emit(w)
+	fmt.Fprint(w, " = ")
+	s.Value.emit(w)
 }
 
 // IfStmt represents a simple if/else statement.
@@ -192,10 +205,15 @@ type IfExpr struct {
 	Cond Expr
 	Then Expr
 	Else Expr
+	Type string
 }
 
 func (ie *IfExpr) emit(w io.Writer) {
-	fmt.Fprint(w, "func() any {")
+	ret := "any"
+	if ie.Type != "" {
+		ret = ie.Type
+	}
+	fmt.Fprintf(w, "func() %s {", ret)
 	fmt.Fprint(w, "if ")
 	ie.Cond.emit(w)
 	fmt.Fprint(w, " { return ")
@@ -654,6 +672,7 @@ func Transpile(p *parser.Program, env *types.Env) (*Program, error) {
 	usesStrconv = false
 	usesPrint = false
 	usesSort = false
+	topEnv = env
 	gp := &Program{}
 	for _, stmt := range p.Statements {
 		s, err := compileStmt(stmt, env)
@@ -801,7 +820,23 @@ func compileStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 			}
 			return &AssignStmt{Name: st.Assign.Name, Value: e}, nil
 		}
-		return nil, fmt.Errorf("unsupported statement at %d:%d", st.Pos.Line, st.Pos.Column)
+		// build postfix expression for complex target
+		pf := &parser.PostfixExpr{Target: &parser.Primary{Selector: &parser.SelectorExpr{Root: st.Assign.Name}}}
+		for _, idx := range st.Assign.Index {
+			pf.Ops = append(pf.Ops, &parser.PostfixOp{Index: idx})
+		}
+		for _, f := range st.Assign.Field {
+			pf.Ops = append(pf.Ops, &parser.PostfixOp{Field: f})
+		}
+		target, err := compilePostfix(pf, env)
+		if err != nil {
+			return nil, err
+		}
+		val, err := compileExpr(st.Assign.Value, env)
+		if err != nil {
+			return nil, err
+		}
+		return &SetStmt{Target: target, Value: val}, nil
 	case st.If != nil:
 		return compileIfStmt(st.If, env)
 	case st.While != nil:
@@ -895,7 +930,8 @@ func compileIfExpr(ie *parser.IfExpr, env *types.Env) (Expr, error) {
 			return nil, err
 		}
 	}
-	return &IfExpr{Cond: cond, Then: thenExpr, Else: elseExpr}, nil
+	typ := toGoTypeFromType(types.IfExprType(ie, env))
+	return &IfExpr{Cond: cond, Then: thenExpr, Else: elseExpr, Type: typ}, nil
 }
 
 func compileMatchExpr(me *parser.MatchExpr, env *types.Env) (Expr, error) {
@@ -919,7 +955,12 @@ func compileMatchExpr(me *parser.MatchExpr, env *types.Env) (Expr, error) {
 			continue
 		}
 		cond := &BinaryExpr{Left: target, Op: "==", Right: pat}
-		expr = &IfExpr{Cond: cond, Then: res, Else: expr}
+		expr = &IfExpr{Cond: cond, Then: res, Else: expr, Type: ""}
+	}
+	tmp := &parser.Expr{Binary: &parser.BinaryExpr{Left: &parser.Unary{Value: &parser.PostfixExpr{Target: &parser.Primary{Match: me}}}}}
+	typ := toGoTypeFromType(types.ExprType(tmp, env))
+	if ife, ok := expr.(*IfExpr); ok {
+		ife.Type = typ
 	}
 	return expr, nil
 }
@@ -1002,6 +1043,10 @@ func compileFunStmt(fn *parser.FunStmt, env *types.Env) (Stmt, error) {
 				ret = toGoTypeFromType(ft.Return)
 			}
 		}
+	}
+	if env != topEnv {
+		lit := &FuncLit{Params: params, Return: ret, Body: body}
+		return &VarDecl{Name: fn.Name, Value: lit}, nil
 	}
 	return &FuncDecl{Name: fn.Name, Params: params, Return: ret, Body: body}, nil
 }
@@ -1311,7 +1356,19 @@ func compilePostfix(pf *parser.PostfixExpr, env *types.Env) (Expr, error) {
 				return nil, fmt.Errorf("unsupported postfix")
 			}
 		} else if op.Field != nil {
-			return nil, fmt.Errorf("unsupported postfix")
+			expr = &IndexExpr{X: expr, Index: &StringLit{Value: op.Field.Name}}
+			switch tt := t.(type) {
+			case types.MapType:
+				t = tt.Value
+			case types.StructType:
+				if ft, ok := tt.Fields[op.Field.Name]; ok {
+					t = ft
+				} else {
+					t = types.AnyType{}
+				}
+			default:
+				t = types.AnyType{}
+			}
 		}
 	}
 	return expr, nil
@@ -1347,6 +1404,28 @@ func compilePrimary(p *parser.Primary, env *types.Env) (Expr, error) {
 			return &ValuesExpr{Map: args[0], ValueType: toGoTypeFromType(mt.Value)}, nil
 		case "substring":
 			return &CallExpr{Func: "string", Args: []Expr{&SliceExpr{X: &RuneSliceExpr{Expr: args[0]}, Start: args[1], End: args[2]}}}, nil
+		}
+		if t, err := env.GetVar(name); err == nil {
+			if ft, ok := t.(types.FuncType); ok && len(args) < len(ft.Params) {
+				missing := ft.Params[len(args):]
+				var fn *parser.FunStmt
+				if f, ok := env.GetFunc(name); ok {
+					fn = f
+				}
+				params := make([]ParamDecl, len(missing))
+				callArgs := make([]Expr, 0, len(ft.Params))
+				callArgs = append(callArgs, args...)
+				for i, mt := range missing {
+					pname := fmt.Sprintf("p%d", i)
+					if fn != nil && i+len(args) < len(fn.Params) {
+						pname = fn.Params[i+len(args)].Name
+					}
+					params[i] = ParamDecl{Name: pname, Type: toGoTypeFromType(mt)}
+					callArgs = append(callArgs, &VarRef{Name: pname})
+				}
+				body := []Stmt{&ReturnStmt{Value: &CallExpr{Func: name, Args: callArgs}}}
+				return &FuncLit{Params: params, Return: toGoTypeFromType(ft.Return), Body: body}, nil
+			}
 		}
 		return &CallExpr{Func: name, Args: args}, nil
 	case p.List != nil:
@@ -1698,6 +1777,8 @@ func toNodeStmt(s Stmt) *ast.Node {
 		return n
 	case *IndexAssignStmt:
 		return &ast.Node{Kind: "indexassign", Value: st.Name, Children: []*ast.Node{toNodeExpr(st.Index), toNodeExpr(st.Value)}}
+	case *SetStmt:
+		return &ast.Node{Kind: "set", Children: []*ast.Node{toNodeExpr(st.Target), toNodeExpr(st.Value)}}
 	default:
 		return &ast.Node{Kind: "unknown"}
 	}
