@@ -340,6 +340,18 @@ type SliceExpr struct {
 	End   Expr
 }
 
+// MatchArm represents one arm of a match expression.
+type MatchArm struct {
+	Pattern Expr // nil for default
+	Result  Expr
+}
+
+// MatchExpr represents PHP's match expression.
+type MatchExpr struct {
+	Target Expr
+	Arms   []MatchArm
+}
+
 // CondExpr represents a conditional expression using PHP's ternary operator.
 type CondExpr struct {
 	Cond Expr
@@ -355,6 +367,24 @@ func (c *CondExpr) emit(w io.Writer) {
 	io.WriteString(w, " : ")
 	c.Else.emit(w)
 	io.WriteString(w, ")")
+}
+
+func (m *MatchExpr) emit(w io.Writer) {
+	io.WriteString(w, "match(")
+	m.Target.emit(w)
+	io.WriteString(w, ") {\n")
+	for _, a := range m.Arms {
+		io.WriteString(w, "    ")
+		if a.Pattern != nil {
+			a.Pattern.emit(w)
+			io.WriteString(w, " => ")
+		} else {
+			io.WriteString(w, "default => ")
+		}
+		a.Result.emit(w)
+		io.WriteString(w, ",\n")
+	}
+	io.WriteString(w, "}")
 }
 
 func (c *CallExpr) emit(w io.Writer) {
@@ -925,6 +955,8 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 			return nil, err
 		}
 		return &GroupExpr{X: ex}, nil
+	case p.Match != nil:
+		return convertMatchExpr(p.Match)
 	default:
 		return nil, fmt.Errorf("unsupported primary")
 	}
@@ -1163,6 +1195,33 @@ func convertIfExpr(ie *parser.IfExpr) (Expr, error) {
 		elseExpr = &BoolLit{Value: false}
 	}
 	return &CondExpr{Cond: cond, Then: thenExpr, Else: elseExpr}, nil
+}
+
+func convertMatchExpr(me *parser.MatchExpr) (Expr, error) {
+	target, err := convertExpr(me.Target)
+	if err != nil {
+		return nil, err
+	}
+	arms := make([]MatchArm, len(me.Cases))
+	for i, c := range me.Cases {
+		res, err := convertExpr(c.Result)
+		if err != nil {
+			return nil, err
+		}
+		var pat Expr
+		if c.Pattern != nil {
+			pex, err := convertExpr(c.Pattern)
+			if err != nil {
+				return nil, err
+			}
+			if v, ok := pex.(*Var); ok && v.Name == "_" {
+				pex = nil
+			}
+			pat = pex
+		}
+		arms[i] = MatchArm{Pattern: pat, Result: res}
+	}
+	return &MatchExpr{Target: target, Arms: arms}, nil
 }
 
 func isListArg(e Expr) bool {
