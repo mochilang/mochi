@@ -1,3 +1,7 @@
+## Progress (2025-07-20 11:04 +0700)
+- go transpiler: support values builtin
+- Regenerated golden files - 57/100 vm valid programs passing
+
 ## Progress (2025-07-20 10:43 +0700)
 - go transpiler: infer list type
 - Regenerated golden files - 56/100 vm valid programs passing

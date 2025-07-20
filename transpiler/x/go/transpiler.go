@@ -21,12 +21,14 @@ type Program struct {
 	UseStrings bool
 	UseStrconv bool
 	UsePrint   bool
+	UseSort    bool
 }
 
 var (
 	usesStrings bool
 	usesStrconv bool
 	usesPrint   bool
+	usesSort    bool
 )
 
 type Stmt interface{ emit(io.Writer) }
@@ -41,6 +43,16 @@ func (s *ExprStmt) emit(w io.Writer) { s.Expr.emit(w) }
 type PrintStmt struct{ Args []Expr }
 
 func (p *PrintStmt) emit(w io.Writer) {
+	// special handling for values() builtin to match expected output
+	if len(p.Args) == 1 {
+		if ve, ok := p.Args[0].(*ValuesExpr); ok {
+			usesStrings = true
+			io.WriteString(w, "fmt.Println(strings.Join(func() []string { list := ")
+			ve.emit(w)
+			io.WriteString(w, "; out := make([]string, len(list)); for i, v := range list { out[i] = fmt.Sprint(v) }; return out }(), \" \"))")
+			return
+		}
+	}
 	io.WriteString(w, "fmt.Println(")
 	for i, e := range p.Args {
 		if i > 0 {
@@ -486,6 +498,30 @@ func (m *MaxExpr) emit(w io.Writer) {
 	fmt.Fprint(w, "[1:] { if n > m { m = n } }; return m }()")
 }
 
+// ValuesExpr collects all values from a map.
+type ValuesExpr struct {
+	Map       Expr
+	ValueType string
+}
+
+func (v *ValuesExpr) emit(w io.Writer) {
+	usesSort = true
+	fmt.Fprintf(w, "func() []%s { res := make([]%s, 0, len(", v.ValueType, v.ValueType)
+	v.Map.emit(w)
+	fmt.Fprint(w, ")) ; for _, val := range ")
+	v.Map.emit(w)
+	fmt.Fprint(w, " { res = append(res, val) } ; ")
+	switch v.ValueType {
+	case "int":
+		fmt.Fprint(w, "sort.Ints(res); ")
+	case "string":
+		fmt.Fprint(w, "sort.Strings(res); ")
+	default:
+		fmt.Fprint(w, "sort.Slice(res, func(i,j int) bool { return fmt.Sprint(res[i]) < fmt.Sprint(res[j]) }); ")
+	}
+	fmt.Fprint(w, "return res }()")
+}
+
 type ContainsExpr struct {
 	Collection Expr
 	Value      Expr
@@ -589,6 +625,7 @@ func Transpile(p *parser.Program, env *types.Env) (*Program, error) {
 	usesStrings = false
 	usesStrconv = false
 	usesPrint = false
+	usesSort = false
 	gp := &Program{}
 	for _, stmt := range p.Statements {
 		s, err := compileStmt(stmt, env)
@@ -603,6 +640,7 @@ func Transpile(p *parser.Program, env *types.Env) (*Program, error) {
 	gp.UseStrings = usesStrings
 	gp.UseStrconv = usesStrconv
 	gp.UsePrint = usesPrint
+	gp.UseSort = usesSort
 	return gp, nil
 }
 
@@ -627,6 +665,11 @@ func compileStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 					return nil, err
 				}
 				args[i] = ex
+				if ve, ok := ex.(*ValuesExpr); ok {
+					usesStrings = true
+					usesSort = true
+					_ = ve
+				}
 			}
 			usesPrint = true
 			return &PrintStmt{Args: args}, nil
@@ -1238,6 +1281,9 @@ func compilePrimary(p *parser.Primary, env *types.Env) (Expr, error) {
 			return &MinExpr{List: args[0]}, nil
 		case "max":
 			return &MaxExpr{List: args[0]}, nil
+		case "values":
+			mt, _ := types.TypeOfExpr(p.Call.Args[0], env).(types.MapType)
+			return &ValuesExpr{Map: args[0], ValueType: toGoTypeFromType(mt.Value)}, nil
 		case "substring":
 			return &CallExpr{Func: "string", Args: []Expr{&SliceExpr{X: &RuneSliceExpr{Expr: args[0]}, Start: args[1], End: args[2]}}}, nil
 		}
@@ -1472,6 +1518,9 @@ func Emit(prog *Program) []byte {
 	if prog.UseStrconv {
 		buf.WriteString("    \"strconv\"\n")
 	}
+	if prog.UseSort {
+		buf.WriteString("    \"sort\"\n")
+	}
 	buf.WriteString(")\n\n")
 
 	// no runtime helper functions needed
@@ -1639,6 +1688,8 @@ func toNodeExpr(e Expr) *ast.Node {
 		return &ast.Node{Kind: "min", Children: []*ast.Node{toNodeExpr(ex.List)}}
 	case *MaxExpr:
 		return &ast.Node{Kind: "max", Children: []*ast.Node{toNodeExpr(ex.List)}}
+	case *ValuesExpr:
+		return &ast.Node{Kind: "values", Children: []*ast.Node{toNodeExpr(ex.Map)}}
 	case *ContainsExpr:
 		return &ast.Node{Kind: "contains", Children: []*ast.Node{toNodeExpr(ex.Collection), toNodeExpr(ex.Value)}}
 	case *UnionExpr:
