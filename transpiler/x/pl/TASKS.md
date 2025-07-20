@@ -1,3 +1,7 @@
+## Progress (2025-07-20 11:38 +0700)
+- Removed `style_check` directive and comment header for cleaner output.
+- Added constant folding for arithmetic expressions.
+- README checklist regenerated (21/100 tests passing).
 ## Progress (2025-07-20 10:18 +0700)
 - prolog: improve readability and remove style check
 - 21/100 VM programs transpiled successfully
@@ -43,3 +47,4 @@
 ## Recent Updates
 - [2025-07-20T09:18:48+07:00] Clean print statements and deterministic header; progress 21/100
 - [2025-07-20T09:54:09+07:00] Removed style_check directive and folded constants; progress 21/100
+- [2025-07-20 11:38 +0700] Improved constant folding and removed runtime directives
