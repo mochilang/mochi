@@ -1,3 +1,13 @@
+## Progress (2025-07-20 21:26 +0700)
+- Added filter support in comprehensions
+- Generated golden for `cross_join_filter`
+
+## Progress (2025-07-20 21:26 +0700)
+- VM valid golden test results updated
+
+## Progress (2025-07-20 21:26 +0700)
+- VM valid golden test results updated
+
 ## Progress (2025-07-20 11:10 +0000)
 - Added atom-based map keys and Enum.each loops
 - VM valid golden test results updated
