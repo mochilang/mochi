@@ -254,6 +254,18 @@ func (s *AssignStmt) emit(w io.Writer) {
 	s.Value.emit(w)
 }
 
+// IndexAssignStmt assigns to an element or field of a list or map.
+type IndexAssignStmt struct {
+	Target Expr
+	Value  Expr
+}
+
+func (s *IndexAssignStmt) emit(w io.Writer) {
+	s.Target.emit(w)
+	io.WriteString(w, " = ")
+	s.Value.emit(w)
+}
+
 // BreakStmt represents a break statement inside loops.
 type BreakStmt struct{}
 
@@ -675,6 +687,10 @@ func convertPostfix(pf *parser.PostfixExpr) (Expr, error) {
 		}
 	}
 
+	for _, f := range tail {
+		e = &IndexExpr{X: e, Index: &StringLit{Value: f}}
+	}
+
 	for i := 0; i < len(pf.Ops); i++ {
 		op := pf.Ops[i]
 		switch {
@@ -858,6 +874,16 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 			items[i] = MapEntry{Key: k, Value: v}
 		}
 		return &MapLit{Items: items}, nil
+	case p.Struct != nil:
+		items := make([]MapEntry, len(p.Struct.Fields))
+		for i, f := range p.Struct.Fields {
+			v, err := convertExpr(f.Value)
+			if err != nil {
+				return nil, err
+			}
+			items[i] = MapEntry{Key: &StringLit{Value: f.Name}, Value: v}
+		}
+		return &MapLit{Items: items}, nil
 	case p.FunExpr != nil:
 		params := make([]string, len(p.FunExpr.Params))
 		for i, p2 := range p.FunExpr.Params {
@@ -969,14 +995,18 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 		}
 		return &VarStmt{Name: st.Var.Name, Value: val}, nil
 	case st.Assign != nil:
-		if len(st.Assign.Index) > 0 || len(st.Assign.Field) > 0 {
-			return nil, fmt.Errorf("complex assignment not supported")
-		}
-		e, err := convertExpr(st.Assign.Value)
+		val, err := convertExpr(st.Assign.Value)
 		if err != nil {
 			return nil, err
 		}
-		return &AssignStmt{Name: st.Assign.Name, Value: e}, nil
+		if len(st.Assign.Index) == 0 && len(st.Assign.Field) == 0 {
+			return &AssignStmt{Name: st.Assign.Name, Value: val}, nil
+		}
+		target, err := buildAssignTarget(st.Assign.Name, st.Assign.Index, st.Assign.Field)
+		if err != nil {
+			return nil, err
+		}
+		return &IndexAssignStmt{Target: target, Value: val}, nil
 	case st.Return != nil:
 		var val Expr
 		if st.Return.Value != nil {
@@ -1250,6 +1280,24 @@ func maybeBoolString(e Expr) Expr {
 	return e
 }
 
+func buildAssignTarget(name string, idx []*parser.IndexOp, fields []*parser.FieldOp) (Expr, error) {
+	var target Expr = &Var{Name: name}
+	for _, op := range idx {
+		if op.Start == nil || op.Colon != nil || op.End != nil || op.Colon2 != nil || op.Step != nil {
+			return nil, fmt.Errorf("unsupported index")
+		}
+		ex, err := convertExpr(op.Start)
+		if err != nil {
+			return nil, err
+		}
+		target = &IndexExpr{X: target, Index: ex}
+	}
+	for _, f := range fields {
+		target = &IndexExpr{X: target, Index: &StringLit{Value: f.Name}}
+	}
+	return target, nil
+}
+
 // Convert the PHP AST to a generic ast.Node for debugging.
 func toNode(p *Program) *ast.Node {
 	n := &ast.Node{Kind: "program"}
@@ -1273,6 +1321,8 @@ func stmtNode(s Stmt) *ast.Node {
 		return &ast.Node{Kind: "var_stmt", Value: st.Name, Children: []*ast.Node{child}}
 	case *AssignStmt:
 		return &ast.Node{Kind: "assign_stmt", Value: st.Name, Children: []*ast.Node{exprNode(st.Value)}}
+	case *IndexAssignStmt:
+		return &ast.Node{Kind: "index_assign", Children: []*ast.Node{exprNode(st.Target), exprNode(st.Value)}}
 	case *ReturnStmt:
 		child := &ast.Node{Kind: "null"}
 		if st.Value != nil {

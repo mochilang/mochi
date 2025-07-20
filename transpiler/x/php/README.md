@@ -2,7 +2,7 @@
 
 Generated PHP code from programs in `tests/vm/valid` lives in `tests/transpiler/x/php`.
 
-## VM Golden Test Checklist (59/100)
+## VM Golden Test Checklist (65/100)
 - [x] append_builtin
 - [x] avg_builtin
 - [x] basic_compare
@@ -49,18 +49,18 @@ Generated PHP code from programs in `tests/vm/valid` lives in `tests/transpiler/
 - [x] len_map
 - [x] len_string
 - [x] let_and_print
-- [ ] list_assign
+- [x] list_assign
 - [x] list_index
-- [ ] list_nested_assign
+- [x] list_nested_assign
 - [x] list_set_ops
 - [ ] load_yaml
-- [ ] map_assign
+- [x] map_assign
 - [x] map_in_operator
 - [x] map_index
 - [x] map_int_key
 - [x] map_literal_dynamic
 - [x] map_membership
-- [ ] map_nested_assign
+- [x] map_nested_assign
 - [ ] match_expr
 - [ ] match_full
 - [x] math_ops
@@ -76,7 +76,7 @@ Generated PHP code from programs in `tests/vm/valid` lives in `tests/transpiler/
 - [ ] python_auto
 - [ ] python_math
 - [ ] query_sum_select
-- [ ] record_assign
+- [x] record_assign
 - [ ] right_join
 - [ ] save_jsonl_stdout
 - [x] short_circuit
@@ -99,7 +99,7 @@ Generated PHP code from programs in `tests/vm/valid` lives in `tests/transpiler/
 - [x] typed_var
 - [x] unary_neg
 - [ ] update_stmt
-- [ ] user_type_literal
+- [x] user_type_literal
 - [x] values_builtin
 - [x] var_assignment
 - [x] while_loop
