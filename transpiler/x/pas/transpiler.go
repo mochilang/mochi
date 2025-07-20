@@ -368,6 +368,25 @@ type AssignStmt struct {
 	Expr Expr
 }
 
+// IndexAssignStmt assigns to a list element by index.
+type IndexAssignStmt struct {
+	Name  string
+	Index Expr
+	Expr  Expr
+}
+
+func (i *IndexAssignStmt) emit(w io.Writer) {
+	fmt.Fprintf(w, "%s[", i.Name)
+	if i.Index != nil {
+		i.Index.emit(w)
+	}
+	io.WriteString(w, "] := ")
+	if i.Expr != nil {
+		i.Expr.emit(w)
+	}
+	io.WriteString(w, ";")
+}
+
 func (p *PrintStmt) emit(w io.Writer) {
 	if be, ok := p.Expr.(boolExpr); ok && be.isBool() {
 		io.WriteString(w, "writeln(ord(")
@@ -506,6 +525,14 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 			if err != nil {
 				return nil, err
 			}
+			if len(st.Assign.Index) == 1 && st.Assign.Index[0].Colon == nil && st.Assign.Index[0].Colon2 == nil && len(st.Assign.Field) == 0 {
+				idx, err := convertExpr(env, st.Assign.Index[0].Start)
+				if err != nil {
+					return nil, err
+				}
+				pr.Stmts = append(pr.Stmts, &IndexAssignStmt{Name: st.Assign.Name, Index: idx, Expr: ex})
+				break
+			}
 			if _, ok := varTypes[st.Assign.Name]; !ok {
 				if t := inferType(ex); t != "" {
 					varTypes[st.Assign.Name] = t
@@ -587,6 +614,14 @@ func convertBody(env *types.Env, body []*parser.Statement, varTypes map[string]s
 			ex, err := convertExpr(env, st.Assign.Value)
 			if err != nil {
 				return nil, err
+			}
+			if len(st.Assign.Index) == 1 && st.Assign.Index[0].Colon == nil && st.Assign.Index[0].Colon2 == nil && len(st.Assign.Field) == 0 {
+				idx, err := convertExpr(env, st.Assign.Index[0].Start)
+				if err != nil {
+					return nil, err
+				}
+				out = append(out, &IndexAssignStmt{Name: st.Assign.Name, Index: idx, Expr: ex})
+				break
 			}
 			if _, ok := varTypes[st.Assign.Name]; !ok {
 				if t := inferType(ex); t != "" {
