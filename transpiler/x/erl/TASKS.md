@@ -1,3 +1,8 @@
+## Progress (2025-07-20 08:43 +0700)
+- VM valid golden test results updated to 32/100
+- Added support for uninitialized typed variables and lets.
+- Generated golden files for typed_let and typed_var.
+
 ## Progress (2025-07-20 08:31 +0700)
 - VM valid golden test results updated to 30/100
 

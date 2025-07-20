@@ -92,6 +92,9 @@ type BoolLit struct{ Value bool }
 
 type StringLit struct{ Value string }
 
+// AtomLit represents a simple atom like 'nil'.
+type AtomLit struct{ Name string }
+
 // IfStmt represents a simple if statement with optional else branch.
 type IfStmt struct {
 	Cond Expr
@@ -359,6 +362,8 @@ func (b *BoolLit) emit(w io.Writer) {
 
 func (s *StringLit) emit(w io.Writer) { fmt.Fprintf(w, "%q", s.Value) }
 
+func (a *AtomLit) emit(w io.Writer) { io.WriteString(w, a.Name) }
+
 func (i *IfStmt) emit(w io.Writer) {
 	io.WriteString(w, "case ")
 	i.Cond.emit(w)
@@ -423,15 +428,27 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 func convertStmt(st *parser.Statement, env *types.Env) ([]Stmt, error) {
 	switch {
 	case st.Let != nil:
-		e, err := convertExpr(st.Let.Value, env)
-		if err != nil {
-			return nil, err
+		var e Expr
+		var err error
+		if st.Let.Value != nil {
+			e, err = convertExpr(st.Let.Value, env)
+			if err != nil {
+				return nil, err
+			}
+		} else {
+			e = &AtomLit{Name: "nil"}
 		}
 		return []Stmt{&LetStmt{Name: st.Let.Name, Expr: e}}, nil
 	case st.Var != nil:
-		e, err := convertExpr(st.Var.Value, env)
-		if err != nil {
-			return nil, err
+		var e Expr
+		var err error
+		if st.Var.Value != nil {
+			e, err = convertExpr(st.Var.Value, env)
+			if err != nil {
+				return nil, err
+			}
+		} else {
+			e = &AtomLit{Name: "nil"}
 		}
 		return []Stmt{&LetStmt{Name: st.Var.Name, Expr: e}}, nil
 	case st.Expr != nil:
@@ -702,6 +719,8 @@ func convertLiteral(l *parser.Literal) (Expr, error) {
 		return &BoolLit{Value: bool(*l.Bool)}, nil
 	case l.Str != nil:
 		return &StringLit{Value: *l.Str}, nil
+	case l.Null:
+		return &AtomLit{Name: "nil"}, nil
 	default:
 		return nil, fmt.Errorf("unsupported literal")
 	}
