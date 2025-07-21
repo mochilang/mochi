@@ -1545,6 +1545,39 @@ type RightJoinExpr struct {
 	Select   Expr
 }
 
+type InnerJoinExpr struct {
+	LeftVar  string
+	LeftSrc  Expr
+	RightVar string
+	RightSrc Expr
+	Cond     Expr
+	Select   Expr
+}
+
+func (i *InnerJoinExpr) emit(w io.Writer) {
+	io.WriteString(w, "(let ([_res '()])\n")
+	io.WriteString(w, "  (for ([")
+	io.WriteString(w, i.LeftVar)
+	io.WriteString(w, " ")
+	i.LeftSrc.emit(w)
+	io.WriteString(w, "])\n")
+	io.WriteString(w, "    (for ([")
+	io.WriteString(w, i.RightVar)
+	io.WriteString(w, " ")
+	i.RightSrc.emit(w)
+	io.WriteString(w, "])\n")
+	io.WriteString(w, "      (when ")
+	i.Cond.emit(w)
+	io.WriteString(w, "\n")
+	io.WriteString(w, "        (set! _res (append _res (list ")
+	i.Select.emit(w)
+	io.WriteString(w, ")))\n")
+	io.WriteString(w, "      )\n")
+	io.WriteString(w, "    )\n")
+	io.WriteString(w, "  )\n")
+	io.WriteString(w, "  _res)")
+}
+
 func (r *RightJoinExpr) emit(w io.Writer) {
 	io.WriteString(w, "(let ([_res '()])\n")
 	io.WriteString(w, "  (for ([")
@@ -1609,6 +1642,36 @@ func convertRightJoinQuery(q *parser.QueryExpr, env *types.Env) (Expr, error) {
 	}
 	sel = wrapOptional(sel, q.Var)
 	return &RightJoinExpr{LeftVar: q.Var, LeftSrc: leftSrc, RightVar: j.Var, RightSrc: rightSrc, Cond: cond, Select: sel}, nil
+}
+
+func convertInnerJoinQuery(q *parser.QueryExpr, env *types.Env) (Expr, error) {
+	if q == nil || len(q.Joins) != 1 || q.Distinct || q.Group != nil || q.Sort != nil || q.Skip != nil || q.Take != nil || q.Where != nil || len(q.Froms) > 0 {
+		return nil, fmt.Errorf("unsupported query")
+	}
+	j := q.Joins[0]
+	if j.Side != nil {
+		return nil, fmt.Errorf("unsupported query")
+	}
+	leftSrc, err := convertExpr(q.Source, env)
+	if err != nil {
+		return nil, err
+	}
+	rightSrc, err := convertExpr(j.Src, env)
+	if err != nil {
+		return nil, err
+	}
+	child := types.NewEnv(env)
+	child.SetVar(q.Var, types.AnyType{}, true)
+	child.SetVar(j.Var, types.AnyType{}, true)
+	cond, err := convertExpr(j.On, child)
+	if err != nil {
+		return nil, err
+	}
+	sel, err := convertExpr(q.Select, child)
+	if err != nil {
+		return nil, err
+	}
+	return &InnerJoinExpr{LeftVar: q.Var, LeftSrc: leftSrc, RightVar: j.Var, RightSrc: rightSrc, Cond: cond, Select: sel}, nil
 }
 
 type LeftJoinMultiExpr struct {
@@ -1894,6 +1957,8 @@ func convertQueryExpr(q *parser.QueryExpr, env *types.Env) (Expr, error) {
 			default:
 				return nil, fmt.Errorf("unsupported query")
 			}
+		} else {
+			return convertInnerJoinQuery(q, env)
 		}
 	}
 	if len(q.Joins) == 2 {
