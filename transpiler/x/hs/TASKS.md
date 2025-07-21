@@ -1,3 +1,49 @@
+## Progress (2025-07-21 13:50 +0700)
+- VM valid golden test results updated
+- Added escaping for Haskell reserved keywords
+- Regenerated README checklist from golden tests
+
+## Progress (2025-07-21 13:50 +0700)
+- Removed `_group_by` helper and generate groups using `nub` and list comprehensions
+- Added `nub` and `sortOn` to Haskell imports
+- Improved lambda handling with parentheses for `sortOn`
+- Regenerated README checklist (49/100)
+
+## Progress (2025-07-21 13:50 +0700)
+- VM valid golden test results updated
+- Added escaping for Haskell reserved keywords
+- Regenerated README checklist from golden tests
+
+## Progress (2025-07-21 13:50 +0700)
+- VM valid golden test results updated
+- Added escaping for Haskell reserved keywords
+- Regenerated README checklist from golden tests
+
+## Progress (2025-07-21 13:50 +0700)
+- VM valid golden test results updated
+- Added escaping for Haskell reserved keywords
+- Regenerated README checklist from golden tests
+
+## Progress (2025-07-21 13:50 +0700)
+- VM valid golden test results updated
+- Added escaping for Haskell reserved keywords
+- Regenerated README checklist from golden tests
+
+## Progress (2025-07-21 13:50 +0700)
+- VM valid golden test results updated
+- Added escaping for Haskell reserved keywords
+- Regenerated README checklist from golden tests
+
+## Progress (2025-07-21 13:50 +0700)
+- VM valid golden test results updated
+- Added escaping for Haskell reserved keywords
+- Regenerated README checklist from golden tests
+
+## Progress (2025-07-21 13:50 +0700)
+- VM valid golden test results updated
+- Added escaping for Haskell reserved keywords
+- Regenerated README checklist from golden tests
+
 ## Progress (2025-07-21 13:31 +0700)
 - VM valid golden test results updated
 - Added escaping for Haskell reserved keywords
