@@ -1,1 +1,33 @@
-transpile: unsupported primary
+rustc: exit status 1
+error[E0308]: mismatched types
+  --> /workspace/mochi/tests/transpiler/x/rs/group_by_conditional_sum.rs:40:572
+   |
+40 | ...let g = &_groups[&ks]; _tmp.push((g.key.clone(), QueryItem {cat: String::from(g.key.clone()), share: ({ let mut _q: Vec<i64> = Vec::ne...
+   |                                      ^^^^^^^^^^^^^ expected `Group<String, ItemsItem>`, found `String`
+   |
+   = note: expected struct `Group<String, ItemsItem>`
+              found struct `String`
+
+error[E0599]: `Group<String, ItemsItem>` is not an iterator
+  --> /workspace/mochi/tests/transpiler/x/rs/group_by_conditional_sum.rs:40:911
+   |
+4  | struct Group<K, V> { key: K, items: Vec<V> }
+   | ------------------ method `partial_cmp` not found for this struct because it doesn't satisfy `Group<String, ItemsItem>: Iterator`
+...
+40 |     let result: Vec<QueryItem> = { let mut _q: Vec<QueryItem> = Vec::new(); let mut _tmp: Vec<(Group<String, ItemsItem>, QueryItem)> = Vec::new(); let mut _groups: HashMap<String, Group<String, ItemsItem>> = HashMap::new(); let mut _order: Vec<String> = Vec::new(); for i in &items { let key = i.cat.clone(); let ks = format!("{:?}", &key); let e = _groups.entry(ks.clone()).or_insert_with(|| { _order.push(ks.clone()); Group::<String, ItemsItem> { key: key.clone(), items: Vec::new() } }); e.items.push(i.clone()); } for ks in _order { let g = &_groups[&ks]; _tmp.push((g.key.clone(), QueryItem {cat: String::from(g.key.clone()), share: ({ let mut _q: Vec<i64> = Vec::new(); for x in g.items.clone() { _q.push(if x.flag { x.val } else { 0 }); } _q }.iter().sum::<i64>() / { let mut _q: Vec<i64> = Vec::new(); for x in g.items.clone() { _q.push(x.val); } _q }.iter().sum::<i64>())})); } _tmp.sort_by(|a,b| a.0.partial_cmp(&b...
+   |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               ^^^^^^^^^^^ `Group<String, ItemsItem>` is not an iterator
+   |
+   = note: the following trait bounds were not satisfied:
+           `Group<String, ItemsItem>: Iterator`
+           which is required by `&mut Group<String, ItemsItem>: Iterator`
+note: the trait `Iterator` must be implemented
+  --> /rustc/17067e9ac6d7ecb70e50f92c1944e545188d2359/library/core/src/iter/traits/iterator.rs:39:1
+   = help: items from traits can only be used if the trait is implemented and in scope
+   = note: the following traits define an item `partial_cmp`, perhaps you need to implement one of them:
+           candidate #1: `Iterator`
+           candidate #2: `PartialOrd`
+
+error: aborting due to 2 previous errors
+
+Some errors have detailed explanations: E0308, E0599.
+For more information about an error, try `rustc --explain E0308`.

@@ -150,6 +150,23 @@ func (s *StructDecl) emit(w io.Writer) {
 		fmt.Fprintf(w, "    %s: %s,\n", f.Name, f.Type)
 	}
 	io.WriteString(w, "}\n")
+	fmt.Fprintf(w, "impl std::fmt::Display for %s {\n", s.Name)
+	io.WriteString(w, "    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {\n")
+	io.WriteString(w, "        write!(f, \"{{\")?;\n")
+	for i, fld := range s.Fields {
+		if i > 0 {
+			io.WriteString(w, "        write!(f, \", \")?;\n")
+		}
+		switch fld.Type {
+		case "String":
+			fmt.Fprintf(w, "        write!(f, \"\\\"%s\\\": \\\"{}\\\"\", self.%s)?;\n", fld.Name, fld.Name)
+		case "f64":
+			fmt.Fprintf(w, "        write!(f, \"\\\"%s\\\": {}\", fmt_float(self.%s))?;\n", fld.Name, fld.Name)
+		default:
+			fmt.Fprintf(w, "        write!(f, \"\\\"%s\\\": {}\", self.%s)?;\n", fld.Name, fld.Name)
+		}
+	}
+	io.WriteString(w, "        write!(f, \"}}\")\n    }\n}\n")
 }
 
 // StructLit represents instantiation of a struct value.
@@ -1600,14 +1617,20 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 						fmtStr = "{:?}"
 					}
 				case *QueryExpr:
-					fmtStr = "{:?}"
+					args[0] = &JoinExpr{List: a}
+					fmtStr = "{}"
 				case *StringLit:
 					// no format needed
 				}
 				if fmtStr == "{}" {
 					t := inferType(args[0])
 					if strings.HasPrefix(t, "Vec<") {
-						fmtStr = "{:?}"
+						elem := strings.TrimSuffix(strings.TrimPrefix(t, "Vec<"), ">")
+						if elem != "i64" && elem != "String" && elem != "bool" {
+							args[0] = &JoinExpr{List: args[0]}
+						} else {
+							fmtStr = "{:?}"
+						}
 					}
 				}
 				return &PrintExpr{Fmt: fmtStr, Args: args, Trim: false}, nil
@@ -2336,9 +2359,20 @@ func Emit(prog *Program) []byte {
 	if prog.UsesGroup {
 		buf.WriteString("#[derive(Clone)]\nstruct Group<K, V> { key: K, items: Vec<V> }\n")
 	}
+	needFloat := false
+	for _, d := range prog.Types {
+		for _, f := range d.Fields {
+			if f.Type == "f64" {
+				needFloat = true
+			}
+		}
+	}
 	for _, d := range prog.Types {
 		d.emit(&buf)
 		buf.WriteByte('\n')
+	}
+	if needFloat {
+		buf.WriteString("fn fmt_float(x: f64) -> String { let s = format!(\"{}\", x); if s.contains('.') { s } else { format!(\"{}.0\", s) } }\n")
 	}
 	for _, s := range prog.Stmts {
 		if fd, ok := s.(*FuncDecl); ok {
