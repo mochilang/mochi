@@ -630,7 +630,7 @@ func (p *PrintExpr) emit(w io.Writer) {
 			io.WriteString(w, "null")
 		}
 	}
-	io.WriteString(w, "].map(v=>v===null?'nil':typeof v==='object'?JSON.stringify(v).replace(/:/g, ': ').replace(/,/g, ', '):v).join(' ').trimEnd())")
+        io.WriteString(w, "].map(v => v === null ? 'nil' : typeof v === 'object' ? JSON.stringify(v).replace(/:/g, ': ').replace(/,/g, ', ') : v).join(' ').trimEnd())")
 }
 
 func (s *SubstringExpr) emit(w io.Writer) {
