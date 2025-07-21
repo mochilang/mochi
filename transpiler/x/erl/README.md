@@ -1,5 +1,5 @@
-# Erlang Transpiler Output (72/101 generated and run)
-Last updated: 2025-07-22 05:10 +0700
+# Erlang Transpiler Output (73/101 generated and run)
+Last updated: 2025-07-22 06:19 +0700
 
 This directory contains a minimal transpiler that converts a very small
 subset of Mochi into Erlang. Generated programs are executed with
@@ -100,7 +100,7 @@ that produces the same output as the Mochi VM.
 - [x] string_prefix_slice
 - [x] substring_builtin
 - [x] sum_builtin
-- [ ] tail_recursion
+- [x] tail_recursion
 - [ ] test_block
 - [ ] tree_sum
 - [ ] two-sum

@@ -1814,6 +1814,27 @@ func convertFunStmt(fn *parser.FunStmt, env *types.Env, ctx *context) (*FuncDecl
 	}
 	var stmts []Stmt
 	var ret Expr
+
+	// detect simple early return pattern: if cond { return A } return B
+	if len(fn.Body) == 2 && fn.Body[0].If != nil &&
+		len(fn.Body[0].If.Then) == 1 && fn.Body[0].If.Then[0].Return != nil &&
+		fn.Body[0].If.ElseIf == nil && len(fn.Body[0].If.Else) == 0 &&
+		fn.Body[1].Return != nil {
+		cond, err := convertExpr(fn.Body[0].If.Cond, child, fctx)
+		if err != nil {
+			return nil, err
+		}
+		thenExpr, err := convertExpr(fn.Body[0].If.Then[0].Return.Value, child, fctx)
+		if err != nil {
+			return nil, err
+		}
+		elseExpr, err := convertExpr(fn.Body[1].Return.Value, child, fctx)
+		if err != nil {
+			return nil, err
+		}
+		ret = &IfExpr{Cond: cond, Then: thenExpr, Else: elseExpr}
+		return &FuncDecl{Name: fn.Name, Params: params, Body: stmts, Return: ret}, nil
+	}
 	for i, st := range fn.Body {
 		if r := st.Return; r != nil && i == len(fn.Body)-1 {
 			if r.Value != nil {
@@ -1846,6 +1867,27 @@ func convertFunStmtAsExpr(fn *parser.FunStmt, env *types.Env, ctx *context) (Exp
 	}
 	var stmts []Stmt
 	var ret Expr
+
+	// detect simple early return pattern: if cond { return A } return B
+	if len(fn.Body) == 2 && fn.Body[0].If != nil &&
+		len(fn.Body[0].If.Then) == 1 && fn.Body[0].If.Then[0].Return != nil &&
+		fn.Body[0].If.ElseIf == nil && len(fn.Body[0].If.Else) == 0 &&
+		fn.Body[1].Return != nil {
+		cond, err := convertExpr(fn.Body[0].If.Cond, child, fctx)
+		if err != nil {
+			return nil, err
+		}
+		thenExpr, err := convertExpr(fn.Body[0].If.Then[0].Return.Value, child, fctx)
+		if err != nil {
+			return nil, err
+		}
+		elseExpr, err := convertExpr(fn.Body[1].Return.Value, child, fctx)
+		if err != nil {
+			return nil, err
+		}
+		ret = &IfExpr{Cond: cond, Then: thenExpr, Else: elseExpr}
+		return &AnonFunc{Params: params, Body: stmts, Return: ret}, nil
+	}
 	for i, st := range fn.Body {
 		if r := st.Return; r != nil && i == len(fn.Body)-1 {
 			if r.Value != nil {
