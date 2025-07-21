@@ -278,6 +278,17 @@ func zigTypeFromExpr(e Expr) string {
 			return "[]" + l.ElemType
 		}
 		return "[]i64"
+	case *FieldExpr:
+		fe := e.(*FieldExpr)
+		typ := zigTypeFromExpr(fe.Target)
+		if sd, ok := structDefs[typ]; ok {
+			for _, f := range sd.Fields {
+				if f.Name == toSnakeCase(fe.Name) {
+					return f.Type
+				}
+			}
+		}
+		return "i64"
 	default:
 		return "i64"
 	}
@@ -390,7 +401,7 @@ func writeIndent(w io.Writer, n int) {
 func (s *PrintStmt) emit(w io.Writer, indent int) {
 	writeIndent(w, indent)
 	if len(s.Values) == 0 {
-		io.WriteString(w, "try std.io.getStdOut().writer().print(\"\\n\", .{});\n")
+		io.WriteString(w, "std.debug.print(\"\\n\", .{});\n")
 		return
 	}
 	fmtSpec := make([]string, len(s.Values))
@@ -405,10 +416,14 @@ func (s *PrintStmt) emit(w io.Writer, indent int) {
 		case *StringLit:
 			fmtSpec[i] = "{s}"
 		default:
-			fmtSpec[i] = "{any}"
+			if zigTypeFromExpr(v) == "[]const u8" {
+				fmtSpec[i] = "{s}"
+			} else {
+				fmtSpec[i] = "{any}"
+			}
 		}
 	}
-	io.WriteString(w, "try std.io.getStdOut().writer().print(\"")
+	io.WriteString(w, "std.debug.print(\"")
 	io.WriteString(w, strings.Join(fmtSpec, " "))
 	io.WriteString(w, "\\n\", .{")
 	for i, v := range s.Values {
@@ -1381,6 +1396,7 @@ func compileForStmt(fs *parser.ForStmt, prog *parser.Program) (Stmt, error) {
 		if err != nil {
 			return nil, err
 		}
+		varTypes[fs.Name] = elemTypeFromExpr(fs.Source)
 	}
 	body := make([]Stmt, 0, len(fs.Body))
 	for _, s := range fs.Body {
@@ -1411,6 +1427,12 @@ func elemTypeFromExpr(e *parser.Expr) string {
 	}
 	pf := e.Binary.Left.Value.Target
 	if pf.Selector != nil && len(pf.Selector.Tail) == 0 {
+		if t, ok := varTypes[pf.Selector.Root]; ok && t != "" {
+			if strings.HasPrefix(t, "[]") {
+				return strings.TrimPrefix(t, "[]")
+			}
+			return t
+		}
 		if lst, ok := constLists[pf.Selector.Root]; ok {
 			if lst.ElemType != "" {
 				return lst.ElemType
@@ -1459,7 +1481,7 @@ func inferListStruct(varName string, list *ListLit) string {
 		}
 		for i, e := range ml.Entries {
 			k, ok := e.Key.(*StringLit)
-			if !ok || k.Value != fields[i].Name {
+			if !ok || toSnakeCase(k.Value) != fields[i].Name {
 				return ""
 			}
 		}
@@ -1637,7 +1659,7 @@ func compileStmt(s *parser.Statement, prog *parser.Program) (Stmt, error) {
 		vd := &VarDecl{Name: s.Let.Name, Value: expr}
 		if lst, ok := expr.(*ListLit); ok {
 			if inferListStruct(s.Let.Name, lst) != "" {
-				vd.Type = "[_]" + lst.ElemType
+				// rely on initializer for size inference
 			}
 		}
 		if ml, ok := expr.(*MapLit); ok {
@@ -1648,6 +1670,11 @@ func compileStmt(s *parser.Statement, prog *parser.Program) (Stmt, error) {
 		}
 		if qc, ok := expr.(*QueryComp); ok {
 			vd.Type = "[]" + qc.ElemType
+		}
+		if vd.Type != "" {
+			varTypes[s.Let.Name] = vd.Type
+		} else {
+			varTypes[s.Let.Name] = zigTypeFromExpr(expr)
 		}
 		return vd, nil
 	case s.Var != nil:
@@ -1664,7 +1691,7 @@ func compileStmt(s *parser.Statement, prog *parser.Program) (Stmt, error) {
 		vd := &VarDecl{Name: s.Var.Name, Value: expr, Mutable: true}
 		if lst, ok := expr.(*ListLit); ok {
 			if inferListStruct(s.Var.Name, lst) != "" {
-				vd.Type = "[_]" + lst.ElemType
+				vd.Type = "[]" + lst.ElemType
 			}
 		}
 		if ml, ok := expr.(*MapLit); ok {
@@ -1675,6 +1702,11 @@ func compileStmt(s *parser.Statement, prog *parser.Program) (Stmt, error) {
 		}
 		if qc, ok := expr.(*QueryComp); ok {
 			vd.Type = "[]" + qc.ElemType
+		}
+		if vd.Type != "" {
+			varTypes[s.Var.Name] = vd.Type
+		} else {
+			varTypes[s.Var.Name] = zigTypeFromExpr(expr)
 		}
 		return vd, nil
 	case s.Assign != nil && len(s.Assign.Index) == 0 && len(s.Assign.Field) == 0:
