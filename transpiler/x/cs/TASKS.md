@@ -1,3 +1,21 @@
+## Progress (2025-07-22 06:19 +0700)
+- add str builtin support (progress 69/101)
+
+## Progress (2025-07-22 06:19 +0700)
+- cs transpiler: support outer join (progress 69/101)
+
+## Progress (2025-07-22 06:19 +0700)
+- cs transpiler: support outer join (progress 91/101)
+
+## Progress (2025-07-22 06:19 +0700)
+- cs transpiler: support outer join (progress 91/101)
+
+## Progress (2025-07-22 06:19 +0700)
+- cs transpiler: support outer join (progress 68/101)
+
+## Progress (2025-07-22 06:19 +0700)
+- cs transpiler: support outer join (progress 68/101)
+
 ## Progress (2025-07-22 06:00 +0700)
 - erl: handle group items and struct cast (progress 67/101)
 
@@ -196,3 +214,8 @@
 
 ## Progress (2025-07-22 06:00 +0700)
 - cs: implemented outer join (progress 68/101)
+
+
+
+
+
