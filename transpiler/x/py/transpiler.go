@@ -1357,6 +1357,18 @@ func inferPyType(e Expr, env *types.Env) types.Type {
 			switch n.Name {
 			case "len":
 				return types.IntType{}
+			case "int":
+				return types.IntType{}
+			case "float":
+				return types.FloatType{}
+			case "str":
+				return types.StringType{}
+			case "bool":
+				return types.BoolType{}
+			case "list":
+				if len(ex.Args) == 1 {
+					return types.ListType{Elem: inferPyType(ex.Args[0], env)}
+				}
 			}
 		}
 		return types.AnyType{}
@@ -3302,11 +3314,7 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 				if currentEnv != nil {
 					t = inferTypeFromExpr(p.Call.Args[i])
 				}
-				if isBoolOp(p.Call.Args[i]) {
-					outArgs[i] = &RawExpr{Code: fmt.Sprintf("(1 if %s else 0)", exprString(a))}
-				} else if _, ok := t.(types.BoolType); ok {
-					outArgs[i] = &RawExpr{Code: fmt.Sprintf("(\"true\" if %s else \"false\")", exprString(a))}
-				} else if _, ok := t.(types.ListType); ok {
+				if _, ok := t.(types.ListType); ok {
 					currentImports["json"] = true
 					outArgs[i] = &CallExpr{Func: &RawExpr{Code: "json.dumps"}, Args: []Expr{a}}
 				} else if _, ok := t.(types.MapType); ok {
