@@ -2794,18 +2794,11 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 			for i, a := range args {
 				if currentEnv != nil {
 					switch types.ExprType(p.Call.Args[i], currentEnv).(type) {
-					case types.MapType, types.StructType:
-						if currentImports != nil {
-							currentImports["json"] = true
-						}
-						outArgs[i] = &RawExpr{Code: fmt.Sprintf("json.dumps(%s, indent=2)", exprString(a))}
-						continue
-					case types.ListType:
-						code := fmt.Sprintf("' '.join(str(int(x)) if isinstance(x, bool) else str(x) for x in %s)", exprString(a))
-						outArgs[i] = &RawExpr{Code: code}
-						continue
 					case types.BoolType:
 						outArgs[i] = &RawExpr{Code: fmt.Sprintf("(1 if %s else 0)", exprString(a))}
+						continue
+					default:
+						outArgs[i] = a
 						continue
 					}
 				}
