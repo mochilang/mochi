@@ -970,6 +970,12 @@ func transpileCall(c *parser.CallExpr) (Node, error) {
 	case "len":
 		elems = append(elems, Symbol("count"))
 	case "count":
+		if len(c.Args) == 1 {
+			if name, ok := identName(c.Args[0]); ok && groupVars != nil && groupVars[name] {
+				arg := &List{Elems: []Node{Keyword("items"), Symbol(name)}}
+				return &List{Elems: []Node{Symbol("count"), arg}}, nil
+			}
+		}
 		elems = append(elems, Symbol("count"))
 	case "min":
 		elems = append(elems, Symbol("apply"), Symbol("min"))
