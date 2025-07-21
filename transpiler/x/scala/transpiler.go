@@ -524,6 +524,17 @@ type QueryExpr struct {
 	ElemType string
 }
 
+// RightJoinExpr represents a simple right join query of two sources.
+type RightJoinExpr struct {
+	LeftVar  string
+	LeftSrc  Expr
+	RightVar string
+	RightSrc Expr
+	Cond     Expr
+	Select   Expr
+	ElemType string
+}
+
 func (q *QueryExpr) emit(w io.Writer) {
 	et := q.ElemType
 	if et == "" {
@@ -586,6 +597,26 @@ func (q *QueryExpr) emit(w io.Writer) {
 		fmt.Fprint(w, ")")
 	}
 	fmt.Fprint(w, "; _res })")
+}
+
+func (r *RightJoinExpr) emit(w io.Writer) {
+	et := r.ElemType
+	if et == "" {
+		et = "Any"
+	}
+	fmt.Fprintf(w, "({ var _res = ArrayBuffer[%s]() ; for (%s <- ", et, r.RightVar)
+	r.RightSrc.emit(w)
+	fmt.Fprintf(w, ") { var matched = false ; for (%s <- ", r.LeftVar)
+	r.LeftSrc.emit(w)
+	fmt.Fprint(w, ") { if (")
+	r.Cond.emit(w)
+	fmt.Fprint(w, ") { matched = true ; _res.append(")
+	r.Select.emit(w)
+	fmt.Fprint(w, ") } } if (!matched) { var ")
+	fmt.Fprint(w, r.LeftVar)
+	fmt.Fprint(w, " = null ; _res.append(")
+	r.Select.emit(w)
+	fmt.Fprint(w, ") } } _res })")
 }
 
 // Emit generates formatted Scala source for the given program.
@@ -1029,6 +1060,9 @@ func convertPrimary(p *parser.Primary, env *types.Env) (Expr, error) {
 		}
 		return &MapLit{Items: entries}, nil
 	case p.Query != nil:
+		if rj, err := convertRightJoinQuery(p.Query, env); err == nil {
+			return rj, nil
+		}
 		return convertQueryExpr(p.Query, env)
 	case p.Struct != nil:
 		return convertStructLiteral(p.Struct, env)
@@ -1233,6 +1267,40 @@ func ExtractQueryExpr(e *parser.Expr) *parser.QueryExpr {
 		return nil
 	}
 	return p.Target.Query
+}
+
+func convertRightJoinQuery(q *parser.QueryExpr, env *types.Env) (Expr, error) {
+	if q == nil || len(q.Joins) != 1 || q.Distinct || q.Group != nil || q.Sort != nil || q.Skip != nil || q.Take != nil || q.Where != nil || len(q.Froms) > 0 {
+		return nil, fmt.Errorf("unsupported query")
+	}
+	j := q.Joins[0]
+	if j.Side == nil || *j.Side != "right" {
+		return nil, fmt.Errorf("unsupported query")
+	}
+	leftSrc, err := convertExpr(q.Source, env)
+	if err != nil {
+		return nil, err
+	}
+	rightSrc, err := convertExpr(j.Src, env)
+	if err != nil {
+		return nil, err
+	}
+	child := types.NewEnv(env)
+	child.SetVar(q.Var, types.AnyType{}, true)
+	child.SetVar(j.Var, types.AnyType{}, true)
+	cond, err := convertExpr(j.On, child)
+	if err != nil {
+		return nil, err
+	}
+	sel, err := convertExpr(q.Select, child)
+	if err != nil {
+		return nil, err
+	}
+	elemTypeStr := toScalaTypeFromType(types.ExprType(q.Select, child))
+	if elemTypeStr == "" {
+		elemTypeStr = "Any"
+	}
+	return &RightJoinExpr{LeftVar: q.Var, LeftSrc: leftSrc, RightVar: j.Var, RightSrc: rightSrc, Cond: cond, Select: sel, ElemType: elemTypeStr}, nil
 }
 
 func convertQueryExpr(q *parser.QueryExpr, env *types.Env) (Expr, error) {
@@ -1640,6 +1708,11 @@ func inferType(e Expr) string {
 			return t1
 		}
 	case *QueryExpr:
+		if ex.ElemType != "" {
+			return fmt.Sprintf("ArrayBuffer[%s]", ex.ElemType)
+		}
+		return "ArrayBuffer[Any]"
+	case *RightJoinExpr:
 		if ex.ElemType != "" {
 			return fmt.Sprintf("ArrayBuffer[%s]", ex.ElemType)
 		}

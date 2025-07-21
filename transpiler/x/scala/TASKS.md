@@ -1,3 +1,15 @@
+## Progress (2025-07-21 08:00 +0700)
+- scala transpiler: add right join support
+- Regenerated golden files - 61/100 vm valid programs passing
+
+## Progress (2025-07-21 07:52 +0700)
+- dart transpiler: add right join support
+- Regenerated golden files - 61/100 vm valid programs passing
+
+## Progress (2025-07-21 07:52 +0700)
+- dart transpiler: add right join support
+- Regenerated golden files - 60/100 vm valid programs passing
+
 ## Progress (2025-07-21 07:33 +0700)
 - scala: default init for typed vars
 - Regenerated golden files - 60/100 vm valid programs passing

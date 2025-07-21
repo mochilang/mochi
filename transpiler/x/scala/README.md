@@ -2,7 +2,7 @@
 
 Generated Scala code for programs in `tests/vm/valid`. Each program has a `.scala` file produced by the transpiler and a `.out` file with its runtime output. Compilation or execution errors are captured in `.error` files.
 
-## Golden Test Checklist (60/100)
+## Golden Test Checklist (61/100)
 
 - [x] append_builtin
 - [x] avg_builtin
@@ -78,7 +78,7 @@ Generated Scala code for programs in `tests/vm/valid`. Each program has a `.scal
 - [ ] python_math
 - [ ] query_sum_select
 - [ ] record_assign
-- [ ] right_join
+- [x] right_join
 - [ ] save_jsonl_stdout
 - [x] short_circuit
 - [x] slice
