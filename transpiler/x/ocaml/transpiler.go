@@ -870,27 +870,44 @@ func (q *QueryExpr) emitPrint(w io.Writer) { q.emit(w) }
 
 // GroupByQueryExpr represents a query with a grouping step.
 type GroupByQueryExpr struct {
-	Source Expr
-	Var    string
+	Loops  []queryLoop
+	Where  Expr
 	Key    Expr
 	Into   string
 	Having Expr
 	Select Expr
 }
 
+func emitGroupLoop(w io.Writer, loops []queryLoop, key Expr, item string, where Expr, idx int) {
+	loop := loops[idx]
+	io.WriteString(w, "  List.iter (fun ")
+	io.WriteString(w, loop.Name)
+	io.WriteString(w, " ->\n")
+	if idx == len(loops)-1 {
+		if where != nil {
+			io.WriteString(w, "    if ")
+			where.emit(w)
+			io.WriteString(w, " then (\n")
+		}
+		io.WriteString(w, "    let key = ")
+		key.emit(w)
+		io.WriteString(w, " in\n")
+		io.WriteString(w, "    let cur = try List.assoc key !__groups0 with Not_found -> [] in\n")
+		fmt.Fprintf(w, "    __groups0 := (key, %s :: cur) :: List.remove_assoc key !__groups0;\n", item)
+		if where != nil {
+			io.WriteString(w, "    )\n")
+		}
+	} else {
+		emitGroupLoop(w, loops, key, item, where, idx+1)
+	}
+	io.WriteString(w, "  ) ")
+	loop.Src.emit(w)
+	io.WriteString(w, ";\n")
+}
+
 func (g *GroupByQueryExpr) emit(w io.Writer) {
 	io.WriteString(w, "(let __groups0 = ref [] in\n")
-	io.WriteString(w, "  List.iter (fun ")
-	io.WriteString(w, g.Var)
-	io.WriteString(w, " ->\n")
-	io.WriteString(w, "    let key = ")
-	g.Key.emit(w)
-	io.WriteString(w, " in\n")
-	io.WriteString(w, "    let cur = try List.assoc key !__groups0 with Not_found -> [] in\n")
-	fmt.Fprintf(w, "    __groups0 := (key, %s :: cur) :: List.remove_assoc key !__groups0;\n", g.Var)
-	io.WriteString(w, "  ) ")
-	g.Source.emit(w)
-	io.WriteString(w, ";\n")
+	emitGroupLoop(w, g.Loops, g.Key, g.Loops[0].Name, g.Where, 0)
 	io.WriteString(w, "  let __res0 = ref [] in\n")
 	io.WriteString(w, "  List.iter (fun (")
 	io.WriteString(w, g.Into+"_key, "+g.Into+"_items")
@@ -2060,15 +2077,57 @@ func convertQueryExpr(q *parser.QueryExpr, env *types.Env, vars map[string]VarIn
 	for k, v := range vars {
 		qVars[k] = v
 	}
+	var whereExpr Expr
 	vtyp := "map"
 	if strings.HasPrefix(srcTyp, "list-") {
 		vtyp = strings.TrimPrefix(srcTyp, "list-")
 	}
 	qVars[q.Var] = VarInfo{typ: vtyp}
-	if q.Group != nil {
-		if len(q.Froms) > 0 || len(q.Joins) > 0 || q.Where != nil {
-			return nil, "", fmt.Errorf("group by: unsupported query form")
+	for _, f := range q.Froms {
+		fs, fsTyp, err := convertExpr(f.Src, env, vars)
+		if err != nil {
+			return nil, "", err
 		}
+		loops = append(loops, queryLoop{Name: f.Var, Src: fs})
+		ftyp := "map"
+		if strings.HasPrefix(fsTyp, "list-") {
+			ftyp = strings.TrimPrefix(fsTyp, "list-")
+		}
+		qVars[f.Var] = VarInfo{typ: ftyp}
+	}
+	for _, j := range q.Joins {
+		js, jsTyp, err := convertExpr(j.Src, env, qVars)
+		if err != nil {
+			return nil, "", err
+		}
+		loops = append(loops, queryLoop{Name: j.Var, Src: js})
+		jtyp := "map"
+		if strings.HasPrefix(jsTyp, "list-") {
+			jtyp = strings.TrimPrefix(jsTyp, "list-")
+		}
+		qVars[j.Var] = VarInfo{typ: jtyp}
+		onExpr, _, err := convertExpr(j.On, env, qVars)
+		if err != nil {
+			return nil, "", err
+		}
+		if whereExpr == nil {
+			whereExpr = onExpr
+		} else {
+			whereExpr = &BinaryExpr{Left: whereExpr, Op: "&&", Right: onExpr, Typ: "bool"}
+		}
+	}
+	if q.Where != nil {
+		cond, _, err := convertExpr(q.Where, env, qVars)
+		if err != nil {
+			return nil, "", err
+		}
+		if whereExpr == nil {
+			whereExpr = cond
+		} else {
+			whereExpr = &BinaryExpr{Left: whereExpr, Op: "&&", Right: cond, Typ: "bool"}
+		}
+	}
+	if q.Group != nil {
 		keyExpr, _, err := convertExpr(q.Group.Exprs[0], env, qVars)
 		if err != nil {
 			return nil, "", err
@@ -2095,27 +2154,7 @@ func convertQueryExpr(q *parser.QueryExpr, env *types.Env, vars map[string]VarIn
 		if selTyp != "" {
 			retTyp = "list-" + selTyp
 		}
-		return &GroupByQueryExpr{Source: src, Var: q.Var, Key: keyExpr, Into: q.Group.Name, Having: havingExpr, Select: sel}, retTyp, nil
-	}
-	for _, f := range q.Froms {
-		fs, fsTyp, err := convertExpr(f.Src, env, vars)
-		if err != nil {
-			return nil, "", err
-		}
-		loops = append(loops, queryLoop{Name: f.Var, Src: fs})
-		ftyp := "map"
-		if strings.HasPrefix(fsTyp, "list-") {
-			ftyp = strings.TrimPrefix(fsTyp, "list-")
-		}
-		qVars[f.Var] = VarInfo{typ: ftyp}
-	}
-	var whereExpr Expr
-	if q.Where != nil {
-		var err error
-		whereExpr, _, err = convertExpr(q.Where, env, qVars)
-		if err != nil {
-			return nil, "", err
-		}
+		return &GroupByQueryExpr{Loops: loops, Where: whereExpr, Key: keyExpr, Into: q.Group.Name, Having: havingExpr, Select: sel}, retTyp, nil
 	}
 	var sortExpr Expr
 	var desc bool
