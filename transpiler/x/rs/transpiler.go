@@ -911,9 +911,19 @@ func (q *QueryExpr) emit(w io.Writer) {
 	}
 	io.WriteString(w, " }")
 	if q.GroupVar != "" {
-		fmt.Fprintf(w, " for ks in _order { let %s = &_groups[&ks]; _q.push(", q.GroupVar)
-		q.Select.emit(w)
-		io.WriteString(w, "); }")
+		fmt.Fprintf(w, " for ks in _order { let %s = &_groups[&ks];", q.GroupVar)
+		if q.Sort != nil {
+			io.WriteString(w, " _tmp.push((")
+			q.Sort.emit(w)
+			io.WriteString(w, ", ")
+			q.Select.emit(w)
+			io.WriteString(w, "));")
+		} else {
+			io.WriteString(w, " _q.push(")
+			q.Select.emit(w)
+			io.WriteString(w, ");")
+		}
+		io.WriteString(w, " }")
 	}
 	if q.Sort != nil {
 		io.WriteString(w, " _tmp.sort_by(|a,b| a.0.partial_cmp(&b.0).unwrap()); for (_,v) in _tmp { _q.push(v); }")
@@ -1589,8 +1599,16 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 					if inferType(a) != "String" {
 						fmtStr = "{:?}"
 					}
+				case *QueryExpr:
+					fmtStr = "{:?}"
 				case *StringLit:
 					// no format needed
+				}
+				if fmtStr == "{}" {
+					t := inferType(args[0])
+					if strings.HasPrefix(t, "Vec<") {
+						fmtStr = "{:?}"
+					}
 				}
 				return &PrintExpr{Fmt: fmtStr, Args: args, Trim: false}, nil
 			}
@@ -1872,6 +1890,29 @@ func compileQueryExpr(q *parser.QueryExpr) (Expr, error) {
 		}
 		joins[i] = queryJoin{Var: j.Var, Src: je, On: on, ByRef: byRef, Side: side}
 	}
+
+	var groupKey Expr
+	groupVar := ""
+	groupType := ""
+	if q.Group != nil {
+		usesGroup = true
+		usesHashMap = true
+		gk, err := compileExprWithEnv(q.Group.Exprs[0], child)
+		if err != nil {
+			return nil, err
+		}
+		groupKey = gk
+		keyT := rustTypeFromType(types.ExprType(q.Group.Exprs[0], child))
+		elemTStr := rustTypeFromType(elemT)
+		groupVar = q.Group.Name
+		groupType = fmt.Sprintf("Group<%s, %s>", keyT, elemTStr)
+		varTypes[groupVar] = groupType
+		groupVars[groupVar] = true
+		genv := types.NewEnv(child)
+		genv.SetVar(groupVar, types.GroupType{Key: types.ExprType(q.Group.Exprs[0], child), Elem: elemT}, true)
+		child = genv
+	}
+
 	var where Expr
 	if q.Where != nil {
 		w, err := compileExprWithEnv(q.Where, child)
@@ -1911,29 +1952,6 @@ func compileQueryExpr(q *parser.QueryExpr) (Expr, error) {
 		takeExpr = te
 	}
 
-	var groupKey Expr
-	groupVar := ""
-	groupType := ""
-	if q.Group != nil && len(q.Froms) == 0 && len(q.Joins) == 0 {
-		usesGroup = true
-		usesHashMap = true
-		gk, err := compileExprWithEnv(q.Group.Exprs[0], child)
-		if err != nil {
-			return nil, err
-		}
-		groupKey = gk
-		keyT := rustTypeFromType(types.ExprType(q.Group.Exprs[0], child))
-		elemTStr := rustTypeFromType(elemT)
-		groupVar = q.Group.Name
-		groupType = fmt.Sprintf("Group<%s, %s>", keyT, elemTStr)
-		varTypes[groupVar] = groupType
-		groupVars[groupVar] = true
-		genv := types.NewEnv(child)
-		genv.SetVar(groupVar, types.GroupType{Key: types.ExprType(q.Group.Exprs[0], child), Elem: elemT}, true)
-		child = genv
-	} else if q.Group != nil {
-		return nil, fmt.Errorf("unsupported query")
-	}
 	ml := mapLiteralExpr(q.Select)
 	itemType := "i64"
 	if ml != nil {
