@@ -155,7 +155,7 @@ func header() []byte {
 		}
 	}
 	loc, _ := time.LoadLocation("Asia/Bangkok")
-	prelude := `(import (srfi 69) (scheme sort) (chibi string))
+	prelude := `(import (scheme base) (srfi 69) (scheme sort) (chibi string))
 (define (to-str x)
   (cond ((hash-table? x)
          (let* ((pairs (hash-table->alist x))
@@ -256,10 +256,18 @@ func convertWhileStmt(ws *parser.WhileStmt) (Node, error) {
 	bodyNode := &List{Elems: append([]Node{Symbol("begin")}, body...)}
 	popLoop()
 	return &List{Elems: []Node{
-		Symbol("let/ec"), breakSym,
+		Symbol("call/cc"),
 		&List{Elems: []Node{
-			Symbol("let"), loopSym, &List{Elems: []Node{}},
-			&List{Elems: []Node{Symbol("if"), cond, bodyNode, voidSym()}}}},
+			Symbol("lambda"), &List{Elems: []Node{breakSym}},
+			&List{Elems: []Node{
+				Symbol("letrec"),
+				&List{Elems: []Node{
+					&List{Elems: []Node{loopSym, &List{Elems: []Node{Symbol("lambda"), &List{Elems: []Node{}},
+						&List{Elems: []Node{Symbol("if"), cond, bodyNode, voidSym()}}}}}},
+				}},
+				&List{Elems: []Node{loopSym}},
+			}},
+		}},
 	}}, nil
 }
 
@@ -303,14 +311,20 @@ func convertForStmt(fs *parser.ForStmt) (Node, error) {
 	}}
 
 	loopFn := &List{Elems: []Node{
-		Symbol("letrec"),
+		Symbol("call/cc"),
 		&List{Elems: []Node{
-			&List{Elems: []Node{loopSym, &List{Elems: []Node{Symbol("lambda"), &List{Elems: []Node{loopVar}}, loopBody}}}},
+			Symbol("lambda"), &List{Elems: []Node{breakSym}},
+			&List{Elems: []Node{
+				Symbol("letrec"),
+				&List{Elems: []Node{
+					&List{Elems: []Node{loopSym, &List{Elems: []Node{Symbol("lambda"), &List{Elems: []Node{loopVar}}, loopBody}}}},
+				}},
+				&List{Elems: []Node{loopSym, iter}},
+			}},
 		}},
-		&List{Elems: []Node{loopSym, iter}},
 	}}
 	popLoop()
-	return &List{Elems: []Node{Symbol("let/ec"), breakSym, loopFn}}, nil
+	return loopFn, nil
 }
 
 func convertStmt(st *parser.Statement) (Node, error) {
@@ -446,7 +460,7 @@ func convertStmt(st *parser.Statement) (Node, error) {
 		if len(breakStack) == 0 {
 			return nil, fmt.Errorf("break outside loop")
 		}
-		return &List{Elems: []Node{currentBreak()}}, nil
+		return &List{Elems: []Node{currentBreak(), voidSym()}}, nil
 	case st.Continue != nil:
 		if len(continueStack) == 0 {
 			return nil, fmt.Errorf("continue outside loop")
