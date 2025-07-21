@@ -631,31 +631,17 @@ func (f *FormatListExpr) emit(w io.Writer) {
 
 func (p *PrintExpr) emit(w io.Writer) {
 	io.WriteString(w, "console.log(")
-	if len(p.Args) == 1 {
-		if _, ok := p.Args[0].(*FormatListExpr); ok {
-			p.Args[0].emit(w)
-			io.WriteString(w, ")")
-			return
-		}
-	}
-	io.WriteString(w, "[")
 	for i, a := range p.Args {
 		if i > 0 {
 			io.WriteString(w, ", ")
 		}
 		if a != nil {
-			if _, ok := a.(*AvgExpr); ok {
-				io.WriteString(w, "(")
-				a.emit(w)
-				io.WriteString(w, ").toFixed(1)")
-			} else {
-				a.emit(w)
-			}
+			a.emit(w)
 		} else {
 			io.WriteString(w, "null")
 		}
 	}
-	io.WriteString(w, `].map(v => { if (v === null) return 'nil'; if (typeof v === 'boolean') return v ? 'True' : 'False'; if (typeof v === 'number') return Number.isInteger(v) ? v.toFixed(1) : String(v); if (typeof v === 'object') return JSON.stringify(v).replace(/:/g, ': ').replace(/,/g, ', '); if (typeof v === 'string') return '\'' + v + '\''; return String(v); }).join(' ').trimEnd())`)
+	io.WriteString(w, ")")
 }
 
 func (s *SubstringExpr) emit(w io.Writer) {
