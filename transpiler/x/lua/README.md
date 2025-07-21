@@ -2,9 +2,9 @@
 
 Generated Lua code for programs in `tests/vm/valid`. Each program has a `.lua` file produced by the transpiler and a `.out` file with its runtime output. Compilation or execution errors are captured in `.error` files.
 
-Transpiled programs: 87/100
+Transpiled programs: 91/100
 
-Last updated: 2025-07-21 23:09 GMT+7
+Last updated: 2025-07-21 23:34 GMT+7
 
 Checklist:
 
@@ -57,7 +57,7 @@ Checklist:
 - [x] list_assign
 - [x] list_index
 - [x] list_nested_assign
-- [ ] list_set_ops
+- [x] list_set_ops
 - [ ] load_yaml
 - [x] map_assign
 - [x] map_in_operator
@@ -72,9 +72,9 @@ Checklist:
 - [x] membership
 - [x] min_max_builtin
 - [x] nested_function
-- [ ] order_by_map
+- [x] order_by_map
 - [x] outer_join
-- [ ] partial_application
+- [x] partial_application
 - [x] print_hello
 - [x] pure_fold
 - [x] pure_global_fold
@@ -97,7 +97,7 @@ Checklist:
 - [x] substring_builtin
 - [x] sum_builtin
 - [x] tail_recursion
-- [ ] test_block
+- [x] test_block
 - [ ] tree_sum
 - [x] two-sum
 - [x] typed_let

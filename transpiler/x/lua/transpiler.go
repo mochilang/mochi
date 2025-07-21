@@ -812,6 +812,11 @@ func isListExpr(e Expr) bool {
 		if ex.Func == "values" {
 			return true
 		}
+	case *BinaryExpr:
+		switch ex.Op {
+		case "union", "union_all", "except", "intersect":
+			return true
+		}
 	}
 	return false
 }
@@ -838,6 +843,38 @@ func (b *BinaryExpr) emit(w io.Writer) {
 		b.Right.emit(w)
 		io.WriteString(w, ", ")
 		b.Left.emit(w)
+		io.WriteString(w, ")")
+		return
+	}
+	if b.Op == "union" {
+		io.WriteString(w, "(function(a,b)\n  local seen={}\n  local res={}\n  for _,v in ipairs(a) do if not seen[v] then seen[v]=true res[#res+1]=v end end\n  for _,v in ipairs(b) do if not seen[v] then seen[v]=true res[#res+1]=v end end\n  return res\nend)(")
+		b.Left.emit(w)
+		io.WriteString(w, ", ")
+		b.Right.emit(w)
+		io.WriteString(w, ")")
+		return
+	}
+	if b.Op == "union_all" {
+		io.WriteString(w, "(function(a,b)\n  local res={table.unpack(a)}\n  for _,v in ipairs(b) do res[#res+1]=v end\n  return res\nend)(")
+		b.Left.emit(w)
+		io.WriteString(w, ", ")
+		b.Right.emit(w)
+		io.WriteString(w, ")")
+		return
+	}
+	if b.Op == "except" {
+		io.WriteString(w, "(function(a,b)\n  local m={}\n  for _,v in ipairs(b) do m[v]=true end\n  local res={}\n  for _,v in ipairs(a) do if not m[v] then res[#res+1]=v end end\n  return res\nend)(")
+		b.Left.emit(w)
+		io.WriteString(w, ", ")
+		b.Right.emit(w)
+		io.WriteString(w, ")")
+		return
+	}
+	if b.Op == "intersect" {
+		io.WriteString(w, "(function(a,b)\n  local m={}\n  for _,v in ipairs(a) do m[v]=true end\n  local res={}\n  for _,v in ipairs(b) do if m[v] then res[#res+1]=v end end\n  return res\nend)(")
+		b.Left.emit(w)
+		io.WriteString(w, ", ")
+		b.Right.emit(w)
 		io.WriteString(w, ")")
 		return
 	}
@@ -963,7 +1000,19 @@ func (qc *QueryComp) emit(w io.Writer) {
 		}
 		io.WriteString(w, "end\n")
 		if qc.SortKey != nil {
-			io.WriteString(w, "table.sort(__tmp, function(a,b) return a.k < b.k end)\nfor i,p in ipairs(__tmp) do res[i] = p.v end\n")
+			if ml, ok := qc.SortKey.(*MapLit); ok {
+				io.WriteString(w, "table.sort(__tmp, function(a,b)\n")
+				for _, k := range ml.Keys {
+					if s, ok := k.(*StringLit); ok {
+						field := s.Value
+						io.WriteString(w, "  if a.k."+field+" ~= b.k."+field+" then return a.k."+field+" < b.k."+field+" end\n")
+					}
+				}
+				io.WriteString(w, "  return false\nend)\n")
+			} else {
+				io.WriteString(w, "table.sort(__tmp, function(a,b) return a.k < b.k end)\n")
+			}
+			io.WriteString(w, "for i,p in ipairs(__tmp) do res[i] = p.v end\n")
 		}
 		if qc.Skip != nil || qc.Take != nil {
 			io.WriteString(w, "local _slice = {}\nlocal _start = 1")
@@ -1052,7 +1101,19 @@ func (qc *QueryComp) emit(w io.Writer) {
 		(&CallExpr{Func: qc.Agg, Args: []Expr{&Ident{Name: "_tmp"}}}).emit(w)
 		io.WriteString(w, "\nend)()")
 	} else if qc.SortKey != nil {
-		io.WriteString(w, "  table.sort(__tmp, function(a,b) return a.k < b.k end)\n  for i,p in ipairs(__tmp) do _res[i] = p.v end\n")
+		if ml, ok := qc.SortKey.(*MapLit); ok {
+			io.WriteString(w, "  table.sort(__tmp, function(a,b)\n")
+			for _, k := range ml.Keys {
+				if s, ok := k.(*StringLit); ok {
+					field := s.Value
+					io.WriteString(w, "    if a.k."+field+" ~= b.k."+field+" then return a.k."+field+" < b.k."+field+" end\n")
+				}
+			}
+			io.WriteString(w, "    return false\n  end)\n")
+		} else {
+			io.WriteString(w, "  table.sort(__tmp, function(a,b) return a.k < b.k end)\n")
+		}
+		io.WriteString(w, "  for i,p in ipairs(__tmp) do _res[i] = p.v end\n")
 		if qc.Skip != nil || qc.Take != nil {
 			io.WriteString(w, "  local _slice = {}\n  local _start = 1")
 			if qc.Skip != nil {
@@ -1250,7 +1311,11 @@ func convertBinary(b *parser.BinaryExpr) (Expr, error) {
 			// handled during emission
 		}
 		exprs = append(exprs, right)
-		ops = append(ops, op.Op)
+		if op.Op == "union" && op.All {
+			ops = append(ops, "union_all")
+		} else {
+			ops = append(ops, op.Op)
+		}
 	}
 	expr, err := buildPrecedence(exprs, ops)
 	if err != nil {
@@ -1267,6 +1332,8 @@ func buildPrecedence(exprs []Expr, ops []string) (Expr, error) {
 			return 2
 		case "+", "-":
 			return 1
+		case "union", "union_all", "except", "intersect":
+			return -1
 		default:
 			return 0
 		}
@@ -1425,6 +1492,25 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 		switch p.Call.Func {
 		case "append", "avg", "sum", "contains", "len", "count":
 			// handled during emission
+			return ce, nil
+		}
+		if currentEnv != nil {
+			if t, err := currentEnv.GetVar(p.Call.Func); err == nil {
+				if ft, ok := t.(types.FuncType); ok {
+					if len(p.Call.Args) < len(ft.Params) {
+						params := []string{}
+						for i := len(p.Call.Args); i < len(ft.Params); i++ {
+							params = append(params, fmt.Sprintf("p%d", i-len(p.Call.Args)))
+						}
+						args := append([]Expr{}, ce.Args...)
+						for _, p := range params {
+							args = append(args, &Ident{Name: p})
+						}
+						body := []Stmt{&ReturnStmt{Value: &CallExpr{Func: p.Call.Func, Args: args}}}
+						return &FunExpr{Params: params, Body: body}, nil
+					}
+				}
+			}
 		}
 		return ce, nil
 	case p.List != nil:
@@ -1913,6 +1999,19 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 		return &BreakStmt{}, nil
 	case st.Continue != nil:
 		return &ContinueStmt{}, nil
+	case st.Test != nil:
+		for _, s := range st.Test.Body {
+			if s.Expect != nil {
+				// ignore expectations
+				continue
+			}
+			if _, err := convertStmt(s); err != nil {
+				return nil, err
+			}
+		}
+		return nil, nil
+	case st.Expect != nil:
+		return nil, nil
 	default:
 		return nil, fmt.Errorf("unsupported statement")
 	}
