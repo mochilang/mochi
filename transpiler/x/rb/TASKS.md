@@ -1,3 +1,13 @@
+## Progress (2025-07-21 16:57 +0700)
+- fortran: support inner join and bool folding
+- Generated Ruby for 77/100 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-21 16:57 +0700)
+- fortran: support inner join and bool folding
+- Generated Ruby for 76/100 programs
+- Updated README checklist and outputs
+
 ## Progress (2025-07-21 16:07 +0700)
 - Clean up transpiler/x
 - Generated Ruby for 76/100 programs
