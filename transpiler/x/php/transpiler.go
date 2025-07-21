@@ -1620,6 +1620,16 @@ func convertQueryExpr(q *parser.QueryExpr) (Expr, error) {
 		}
 		loops = append(loops, QueryLoop{Name: f.Var, Source: groupItemsExpr(ex)})
 	}
+	for _, j := range q.Joins {
+		if j.Side != nil && *j.Side != "inner" {
+			return nil, fmt.Errorf("unsupported join")
+		}
+		ex, err := convertExpr(j.Src)
+		if err != nil {
+			return nil, err
+		}
+		loops = append(loops, QueryLoop{Name: j.Var, Source: groupItemsExpr(ex)})
+	}
 	funcStack = append(funcStack, nil)
 	for _, lp := range loops {
 		funcStack[len(funcStack)-1] = append(funcStack[len(funcStack)-1], lp.Name)
@@ -1630,6 +1640,18 @@ func convertQueryExpr(q *parser.QueryExpr) (Expr, error) {
 		if err != nil {
 			funcStack = funcStack[:len(funcStack)-1]
 			return nil, err
+		}
+	}
+	for _, j := range q.Joins {
+		cond, err := convertExpr(j.On)
+		if err != nil {
+			funcStack = funcStack[:len(funcStack)-1]
+			return nil, err
+		}
+		if where == nil {
+			where = cond
+		} else {
+			where = &BinaryExpr{Left: where, Op: "&&", Right: cond}
 		}
 	}
 	sel, err := convertExpr(q.Select)
@@ -1897,6 +1919,18 @@ func isBoolExpr(e Expr) bool {
 		case "str_contains", "in_array":
 			return true
 		}
+	case *IndexExpr:
+		if s, ok := v.Index.(*StringLit); ok {
+			if vv, ok2 := v.X.(*Var); ok2 && transpileEnv != nil {
+				if t, err := transpileEnv.GetVar(vv.Name); err == nil {
+					if ft := types.FieldType(t, []string{s.Value}); ft != nil {
+						if _, ok3 := ft.(types.BoolType); ok3 {
+							return true
+						}
+					}
+				}
+			}
+		}
 	case *CondExpr:
 		if isBoolExpr(v.Then) && isBoolExpr(v.Else) {
 			return true
@@ -1907,17 +1941,12 @@ func isBoolExpr(e Expr) bool {
 
 func maybeBoolString(e Expr) Expr {
 	if isBoolExpr(e) {
-		switch v := e.(type) {
-		case *BinaryExpr:
-			if v.Op == "in" {
-				return &CondExpr{Cond: e, Then: &StringLit{Value: "true"}, Else: &StringLit{Value: "false"}}
-			}
-		case *CallExpr:
-			if v.Func == "in_array" || v.Func == "str_contains" {
-				return &CondExpr{Cond: e, Then: &StringLit{Value: "true"}, Else: &StringLit{Value: "false"}}
-			}
+		switch e.(type) {
+		case *BoolLit, *Var, *IndexExpr:
+			return &CondExpr{Cond: e, Then: &StringLit{Value: "true"}, Else: &StringLit{Value: "false"}}
+		default:
+			return &CondExpr{Cond: e, Then: &IntLit{Value: 1}, Else: &IntLit{Value: 0}}
 		}
-		return &CondExpr{Cond: e, Then: &IntLit{Value: 1}, Else: &IntLit{Value: 0}}
 	}
 	return e
 }
