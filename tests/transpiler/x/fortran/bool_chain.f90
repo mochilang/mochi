@@ -1,8 +1,8 @@
 program main
   implicit none
-  print '(A)', trim(merge('true  ','false ',.true.))
-  print '(A)', trim(merge('true  ','false ',.false.))
-  print '(A)', trim(merge('true  ','false ',.false.))
+  print '(I0)', merge(1, 0, .true.)
+  print '(I0)', merge(1, 0, .false.)
+  print '(I0)', merge(1, 0, .false.)
 contains
   recursive function boom() result(res)
     implicit none

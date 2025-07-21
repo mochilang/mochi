@@ -1,0 +1,8 @@
+error[I006]: invalid map key: expected string or int, got parser.IntLit
+  --> /workspace/mochi/tests/vm/valid/map_int_key.mochi:1:10
+
+  1 | let m = {1: "a", 2: "b"}
+    |          ^
+
+help:
+  Map keys must be `string` or `int`.

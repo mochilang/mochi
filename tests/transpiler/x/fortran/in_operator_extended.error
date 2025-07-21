@@ -1,0 +1,8 @@
+error[I008]: cannot apply operator '%' to types null and null
+  --> /workspace/mochi/tests/vm/valid/in_operator_extended.mochi:2:31
+
+  2 | let ys = from x in xs where x % 2 == 1 select x
+    |                               ^
+
+help:
+  Use compatible types for the operator.

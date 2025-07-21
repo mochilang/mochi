@@ -1,0 +1,8 @@
+error[I008]: cannot apply operator '+' to types null and null
+  --> /workspace/mochi/tests/vm/valid/closure.mochi:2:32
+
+  2 |   return fun(x: int): int => x + n
+    |                                ^
+
+help:
+  Use compatible types for the operator.

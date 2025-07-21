@@ -1,0 +1,8 @@
+error[I008]: cannot apply operator '==' to types null and null
+  --> /workspace/mochi/tests/vm/valid/group_by_multi_join_sort.mochi:42:35
+
+ 42 |   join o in orders on o.o_custkey == c.c_custkey
+    |                                   ^
+
+help:
+  Use compatible types for the operator.

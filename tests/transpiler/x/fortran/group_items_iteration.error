@@ -1,0 +1,8 @@
+error[I007]: cannot access field `items` on non-object of type *data.Group
+  --> /workspace/mochi/tests/vm/valid/group_items_iteration.mochi:10:12
+
+ 10 |   for x in g.items {
+    |            ^
+
+help:
+  Access fields only on objects or maps.
