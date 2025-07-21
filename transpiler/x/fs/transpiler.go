@@ -27,8 +27,19 @@ type StructDef struct {
 	Fields []StructField
 }
 
+type UnionCase struct {
+	Name   string
+	Fields []string
+}
+
+type UnionDef struct {
+	Name  string
+	Cases []UnionCase
+}
+
 type Program struct {
 	Structs []StructDef
+	Unions  []UnionDef
 	Stmts   []Stmt
 }
 
@@ -37,6 +48,7 @@ type Program struct {
 var (
 	varTypes     map[string]string
 	structDefs   []StructDef
+	unionDefs    []UnionDef
 	structCount  int
 	transpileEnv *types.Env
 )
@@ -381,6 +393,25 @@ type StructFieldExpr struct {
 	Value Expr
 }
 
+type VariantExpr struct {
+	Name string
+	Args []Expr
+}
+
+func (v *VariantExpr) emit(w io.Writer) {
+	io.WriteString(w, v.Name)
+	if len(v.Args) > 0 {
+		io.WriteString(w, "(")
+		for i, a := range v.Args {
+			if i > 0 {
+				io.WriteString(w, ", ")
+			}
+			a.emit(w)
+		}
+		io.WriteString(w, ")")
+	}
+}
+
 func (s *StructLit) emit(w io.Writer) {
 	io.WriteString(w, "{ ")
 	for i, f := range s.Fields {
@@ -638,6 +669,28 @@ func (wst *WhileStmt) emit(w io.Writer) {
 	}
 }
 
+type UpdateStmt struct {
+	Target string
+	Fields []string
+	Values []Expr
+	Cond   Expr
+}
+
+func (u *UpdateStmt) emit(w io.Writer) {
+	io.WriteString(w, u.Target)
+	io.WriteString(w, " <- List.map (fun item -> ")
+	expr := Expr(&IdentExpr{Name: "item"})
+	for i, f := range u.Fields {
+		expr = &StructUpdateExpr{Target: expr, Field: f, Value: u.Values[i]}
+	}
+	if u.Cond != nil {
+		expr = &IfExpr{Cond: u.Cond, Then: expr, Else: &IdentExpr{Name: "item"}}
+	}
+	expr.emit(w)
+	io.WriteString(w, ") ")
+	io.WriteString(w, u.Target)
+}
+
 type ForStmt struct {
 	Name  string
 	Start Expr
@@ -862,7 +915,7 @@ func (m *MatchExpr) emit(w io.Writer) {
 	m.Target.emit(w)
 	io.WriteString(w, " with")
 	for _, c := range m.Cases {
-		io.WriteString(w, "\n| ")
+		io.WriteString(w, "\n    | ")
 		c.Pattern.emit(w)
 		io.WriteString(w, " -> ")
 		c.Result.emit(w)
@@ -937,7 +990,7 @@ func precedence(op string) int {
 
 func needsParen(e Expr) bool {
 	switch e.(type) {
-	case *BinaryExpr, *UnaryExpr, *IfExpr, *AppendExpr, *SubstringExpr, *CallExpr, *IndexExpr, *LambdaExpr, *FieldExpr, *MethodCallExpr, *SliceExpr, *CastExpr, *MapLit, *MatchExpr:
+	case *BinaryExpr, *UnaryExpr, *IfExpr, *AppendExpr, *SubstringExpr, *CallExpr, *VariantExpr, *IndexExpr, *LambdaExpr, *FieldExpr, *MethodCallExpr, *SliceExpr, *CastExpr, *MapLit, *MatchExpr:
 		return true
 	default:
 		return false
@@ -960,6 +1013,13 @@ func inferType(e Expr) string {
 		return "map"
 	case *StructLit:
 		return "struct"
+	case *VariantExpr:
+		if transpileEnv != nil {
+			if u, ok := transpileEnv.FindUnionByVariant(v.Name); ok {
+				return u.Name
+			}
+		}
+		return ""
 	case *QueryExpr, *GroupQueryExpr:
 		return "list"
 	case *IdentExpr:
@@ -1163,6 +1223,27 @@ func (c *CastExpr) emit(w io.Writer) {
 func Emit(prog *Program) []byte {
 	var buf bytes.Buffer
 	buf.WriteString(header())
+	for _, u := range prog.Unions {
+		fmt.Fprintf(&buf, "type %s =\n", u.Name)
+		for i, c := range u.Cases {
+			buf.WriteString("    | ")
+			buf.WriteString(c.Name)
+			if len(c.Fields) > 0 {
+				buf.WriteString(" of ")
+				for j, f := range c.Fields {
+					if j > 0 {
+						buf.WriteString(" * ")
+					}
+					buf.WriteString(f)
+				}
+			}
+			if i < len(u.Cases)-1 {
+				buf.WriteByte('\n')
+			} else {
+				buf.WriteByte('\n')
+			}
+		}
+	}
 	for _, st := range prog.Structs {
 		fmt.Fprintf(&buf, "type %s = {\n", st.Name)
 		for _, f := range st.Fields {
@@ -1202,6 +1283,7 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	transpileEnv = env
 	varTypes = map[string]string{}
 	structDefs = nil
+	unionDefs = nil
 	structCount = 0
 	p := &Program{}
 	for _, st := range prog.Statements {
@@ -1214,6 +1296,7 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 		}
 	}
 	p.Structs = structDefs
+	p.Unions = unionDefs
 	transpileEnv = nil
 	return p, nil
 }
@@ -1445,6 +1528,12 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 			body[i] = cs
 		}
 		return &ForStmt{Name: st.For.Name, Start: start, End: end, Body: body}, nil
+	case st.Update != nil:
+		up, err := convertUpdateStmt(st.Update)
+		if err != nil {
+			return nil, err
+		}
+		return up, nil
 	case st.Type != nil:
 		if err := convertTypeDecl(st.Type); err != nil {
 			return nil, err
@@ -1772,6 +1861,19 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 		}
 		return &ListLit{Elems: elems}, nil
 	case p.Struct != nil:
+		if transpileEnv != nil {
+			if _, ok := transpileEnv.FindUnionByVariant(p.Struct.Name); ok {
+				args := make([]Expr, len(p.Struct.Fields))
+				for i, f := range p.Struct.Fields {
+					v, err := convertExpr(f.Value)
+					if err != nil {
+						return nil, err
+					}
+					args[i] = v
+				}
+				return &VariantExpr{Name: p.Struct.Name, Args: args}, nil
+			}
+		}
 		fields := make([]StructFieldExpr, len(p.Struct.Fields))
 		for i, f := range p.Struct.Fields {
 			v, err := convertExpr(f.Value)
@@ -1983,9 +2085,69 @@ func buildMapUpdate(m Expr, keys []Expr, val Expr) Expr {
 	return &CallExpr{Func: "Map.add", Args: []Expr{key, inner, m}}
 }
 
+func convertUpdateStmt(u *parser.UpdateStmt) (Stmt, error) {
+	if transpileEnv == nil {
+		return nil, fmt.Errorf("missing env")
+	}
+	t, err := transpileEnv.GetVar(u.Target)
+	if err != nil {
+		return nil, err
+	}
+	lt, ok := t.(types.ListType)
+	if !ok {
+		return nil, fmt.Errorf("update target not list")
+	}
+	st, ok := lt.Elem.(types.StructType)
+	if !ok {
+		return nil, fmt.Errorf("update element not struct")
+	}
+	save := varTypes
+	varTypes = copyMap(varTypes)
+	for _, f := range st.Order {
+		varTypes[f] = fsType(st.Fields[f])
+	}
+	fields := make([]string, len(u.Set.Items))
+	values := make([]Expr, len(u.Set.Items))
+	for i, it := range u.Set.Items {
+		key, ok := types.SimpleStringKey(it.Key)
+		if !ok {
+			varTypes = save
+			return nil, fmt.Errorf("unsupported update key")
+		}
+		val, err := convertExpr(it.Value)
+		if err != nil {
+			varTypes = save
+			return nil, err
+		}
+		fields[i] = key
+		values[i] = val
+	}
+	var cond Expr
+	if u.Where != nil {
+		c, err := convertExpr(u.Where)
+		if err != nil {
+			varTypes = save
+			return nil, err
+		}
+		cond = c
+	}
+	varTypes = save
+	return &UpdateStmt{Target: u.Target, Fields: fields, Values: values, Cond: cond}, nil
+}
+
 func convertTypeDecl(td *parser.TypeDecl) error {
 	if len(td.Variants) > 0 {
-		return fmt.Errorf("union types not supported")
+		u := UnionDef{Name: td.Name}
+		for _, v := range td.Variants {
+			fields := make([]string, len(v.Fields))
+			for i, f := range v.Fields {
+				ft := types.ResolveTypeRef(f.Type, transpileEnv)
+				fields[i] = fsType(ft)
+			}
+			u.Cases = append(u.Cases, UnionCase{Name: v.Name, Fields: fields})
+		}
+		unionDefs = append(unionDefs, u)
+		return nil
 	}
 	st := types.StructType{Name: td.Name, Fields: map[string]types.Type{}}
 	for _, m := range td.Members {
