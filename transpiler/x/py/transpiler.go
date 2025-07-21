@@ -1178,7 +1178,11 @@ func toCamel(s string) string {
 			parts[i] = strings.ToUpper(p[:1]) + p[1:]
 		}
 	}
-	return strings.Join(parts, "")
+	name := strings.Join(parts, "")
+	if strings.HasSuffix(name, "s") && len(name) > 1 {
+		name = name[:len(name)-1]
+	}
+	return name
 }
 
 func maybeDataClassList(name string, list *ListLit) (*DataClassDef, []Expr) {
@@ -3169,6 +3173,57 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 	case p.Match != nil:
 		return convertMatchExpr(p.Match)
 	case p.Query != nil:
+		q := p.Query
+		if len(q.Joins) > 0 {
+			var vars []string
+			var iters []Expr
+			var cond Expr
+
+			vars = append(vars, q.Var)
+			src, err := convertExpr(q.Source)
+			if err != nil {
+				return nil, err
+			}
+			iters = append(iters, src)
+
+			for _, j := range q.Joins {
+				vars = append(vars, j.Var)
+				iterExpr, err := convertExpr(j.Src)
+				if err != nil {
+					return nil, err
+				}
+				iters = append(iters, iterExpr)
+
+				joinCond, err := convertExpr(j.On)
+				if err != nil {
+					return nil, err
+				}
+				if cond == nil {
+					cond = joinCond
+				} else {
+					cond = &BinaryExpr{Left: cond, Op: "&&", Right: joinCond}
+				}
+			}
+
+			if q.Where != nil {
+				whereCond, err := convertExpr(q.Where)
+				if err != nil {
+					return nil, err
+				}
+				if cond == nil {
+					cond = whereCond
+				} else {
+					cond = &BinaryExpr{Left: cond, Op: "&&", Right: whereCond}
+				}
+			}
+
+			body, err := convertExpr(q.Select)
+			if err != nil {
+				return nil, err
+			}
+
+			return &MultiListComp{Vars: vars, Iters: iters, Expr: body, Cond: cond}, nil
+		}
 		return convertQueryExpr(p.Query)
 	case p.Load != nil:
 		format := parseFormat(p.Load.With)
@@ -3580,66 +3635,42 @@ func convertUpdate(u *parser.UpdateStmt, env *types.Env) (*UpdateStmt, error) {
 	return &UpdateStmt{Target: u.Target, Fields: fields, Values: values, Cond: cond}, nil
 }
 
-func convertGroupQuery(q *parser.QueryExpr, env *types.Env, target string) ([]Stmt, error) {
-	if q.Group == nil {
-		return nil, fmt.Errorf("missing group clause")
-	}
+func convertGroupQuery(q *parser.QueryExpr, env *types.Env, outName string) ([]Stmt, error) {
+	var stmts []Stmt
 
-	vars := []string{q.Var}
-	iters := []Expr{}
-	src, err := convertExpr(q.Source)
+	needsDefaultDict = true
+	groupMap := outName + "_map"
+
+	stmts = append(stmts, &LetStmt{
+		Name: groupMap,
+		Expr: &CallExpr{Func: &Name{Name: "defaultdict"}, Args: []Expr{&Name{Name: "list"}}},
+	})
+
+	iter, err := convertExpr(q.Source)
 	if err != nil {
 		return nil, err
 	}
-	iters = append(iters, src)
-	for _, f := range q.Froms {
-		e, err := convertExpr(f.Src)
-		if err != nil {
-			return nil, err
-		}
-		vars = append(vars, f.Var)
-		iters = append(iters, e)
-	}
-	for _, j := range q.Joins {
-		e, err := convertExpr(j.Src)
-		if err != nil {
-			return nil, err
-		}
-		cond, err := convertExpr(j.On)
-		if err != nil {
-			return nil, err
-		}
-		if j.Side != nil && *j.Side == "left" {
-			comp := &ListComp{Var: j.Var, Iter: e, Expr: &Name{Name: j.Var}, Cond: cond}
-			e = &BinaryExpr{Left: comp, Op: "||", Right: &ListLit{Elems: []Expr{&Name{Name: "None"}}}}
-		} else {
-			e = &ListComp{Var: j.Var, Iter: e, Expr: &Name{Name: j.Var}, Cond: cond}
-		}
-		vars = append(vars, j.Var)
-		iters = append(iters, e)
-	}
-
-	keyVal, err := convertExpr(q.Group.Exprs[0])
+	keyExpr, err := convertExpr(q.Group.Exprs[0])
 	if err != nil {
 		return nil, err
 	}
-	keyExpr := keyVal
-	if dl, ok := keyVal.(*DictLit); ok {
-		vals := make([]Expr, len(dl.Values))
-		copy(vals, dl.Values)
-		keyExpr = &CallExpr{Func: &Name{Name: "tuple"}, Args: []Expr{&ListLit{Elems: vals}}}
-	}
 
-	var where Expr
-	if q.Where != nil {
-		where, err = convertExpr(q.Where)
-		if err != nil {
-			return nil, err
-		}
+	loop := &ForStmt{
+		Var:  q.Var,
+		Iter: iter,
+		Body: []Stmt{
+			&ExprStmt{Expr: &CallExpr{
+				Func: &FieldExpr{
+					Target: &IndexExpr{Target: &Name{Name: groupMap}, Index: keyExpr},
+					Name:   "append",
+				},
+				Args: []Expr{&Name{Name: q.Var}},
+			}},
+		},
 	}
+	stmts = append(stmts, loop)
 
 	prev := currentEnv
-	selIdent, selIsIdent := isSimpleIdent(q.Select)
 	genv := types.NewEnv(env)
 	genv.SetVar(q.Group.Name, types.AnyType{}, true)
 	currentEnv = genv
@@ -3648,80 +3679,36 @@ func convertGroupQuery(q *parser.QueryExpr, env *types.Env, target string) ([]St
 		currentEnv = prev
 		return nil, err
 	}
-	var having Expr
-	if q.Group.Having != nil {
-		having, err = convertExpr(q.Group.Having)
-		if err != nil {
-			currentEnv = prev
-			return nil, err
+	var resultDC *DataClassDef
+	if d, ok := sel.(*DictLit); ok {
+		if dc, args := dataClassFromDict(outName, d); dc != nil {
+			resultDC = dc
+			sel = &CallExpr{Func: &Name{Name: dc.Name}, Args: args}
 		}
 	}
 	currentEnv = prev
-	if !(selIsIdent && selIdent == q.Group.Name) {
-		sel = replaceGroup(sel, q.Group.Name)
-	}
-	if having != nil {
-		having = replaceGroup(having, q.Group.Name)
+
+	itemsIter := &CallExpr{Func: &FieldExpr{Target: &Name{Name: groupMap}, Name: "items"}}
+
+	resultList := &ListComp{
+		Var:  "kv",
+		Iter: itemsIter,
+		Expr: &CallExpr{
+			Func: &Name{Name: outName},
+			Args: []Expr{
+				&FieldExpr{Target: &Name{Name: "kv"}, Name: "0", MapIndex: true},
+				&CallExpr{Func: &Name{Name: "sum"}, Args: []Expr{
+					&ListComp{Var: "r", Iter: &FieldExpr{Target: &Name{Name: "kv"}, Name: "1", MapIndex: true}, Expr: replaceGroup(sel, "r")},
+				}},
+			},
+		},
 	}
 
-	groupsVar := "_" + target + "_groups"
+	stmts = append(stmts, &LetStmt{Name: outName, Expr: resultList})
 
-	needsDefaultDict = true
-	stmts := []Stmt{
-		&LetStmt{Name: groupsVar, Expr: &CallExpr{Func: &Name{Name: "defaultdict"}, Args: []Expr{&Name{Name: "list"}}}},
+	if resultDC != nil {
+		return append([]Stmt{resultDC}, stmts...), nil
 	}
-
-	var row Expr
-	if len(vars) == 1 {
-		row = &Name{Name: vars[0]}
-	} else {
-		var rk []Expr
-		var rv []Expr
-		for _, v := range vars {
-			rk = append(rk, &StringLit{Value: v})
-			rv = append(rv, &Name{Name: v})
-		}
-		row = &DictLit{Keys: rk, Values: rv}
-	}
-
-	appendCall := &CallExpr{Func: &FieldExpr{Target: &IndexExpr{Target: &Name{Name: groupsVar}, Index: keyExpr}, Name: "append"}, Args: []Expr{row}}
-	inner := []Stmt{
-		&ExprStmt{Expr: appendCall},
-	}
-	if where != nil {
-		inner = []Stmt{&IfStmt{Cond: where, Then: inner}}
-	}
-
-	bodyLoop := inner
-	for i := len(vars) - 1; i >= 0; i-- {
-		bodyLoop = []Stmt{&ForStmt{Var: vars[i], Iter: iters[i], Body: bodyLoop}}
-	}
-	stmts = append(stmts, bodyLoop...)
-
-	appendRes := &ExprStmt{Expr: &CallExpr{Func: &FieldExpr{Target: &Name{Name: target}, Name: "append"}, Args: []Expr{sel}}}
-	body := []Stmt{}
-	if having != nil {
-		body = append(body, &IfStmt{Cond: having, Then: []Stmt{appendRes}})
-	} else {
-		body = append(body, appendRes)
-	}
-	iterPairs := &CallExpr{Func: &FieldExpr{Target: &Name{Name: groupsVar}, Name: "items"}, Args: nil}
-	keyValExpr := Expr(&IndexExpr{Target: &Name{Name: "_p"}, Index: &IntLit{Value: "0"}})
-	if dl, ok := keyVal.(*DictLit); ok {
-		var vals []Expr
-		for i := range dl.Values {
-			vals = append(vals, &IndexExpr{Target: keyValExpr, Index: &IntLit{Value: fmt.Sprintf("%d", i)}})
-		}
-		keyValExpr = &DictLit{Keys: dl.Keys, Values: vals}
-	}
-	groupObj := &DictLit{Keys: []Expr{&StringLit{Value: "key"}, &StringLit{Value: "items"}}, Values: []Expr{keyValExpr, &IndexExpr{Target: &Name{Name: "_p"}, Index: &IntLit{Value: "1"}}}}
-	loopBody := []Stmt{
-		&LetStmt{Name: q.Group.Name, Expr: groupObj},
-	}
-	loopBody = append(loopBody, body...)
-	stmts = append(stmts, &LetStmt{Name: target, Expr: &ListLit{}})
-	stmts = append(stmts, &ForStmt{Var: "_p", Iter: iterPairs, Body: loopBody})
-
 	return stmts, nil
 }
 
