@@ -1,3 +1,24 @@
+## Progress (2025-07-21 07:26 +0700)
+- fortran: support append builtin and update docs
+
+## Progress (2025-07-21 07:26 +0700)
+- fortran: support append builtin and update docs
+
+## Progress (2025-07-21 07:08 +0700)
+- st transpiler: handle identifier map keys
+
+## Progress (2025-07-21 07:08 +0700)
+- st transpiler: handle identifier map keys
+
+## Progress (2025-07-21 07:08 +0700)
+- st transpiler: handle identifier map keys
+
+## Progress (2025-07-21 07:08 +0700)
+- st transpiler: handle identifier map keys
+
+## Progress (2025-07-21 07:08 +0700)
+- st transpiler: handle identifier map keys
+
 ## Progress (2025-07-20 22:51 +0700)
 - fortran: add string.contains support
 
