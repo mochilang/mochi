@@ -174,6 +174,16 @@ func inferType(e Expr) string {
 		return "Object"
 	case *ValuesExpr:
 		return "java.util.List"
+	case *AppendExpr:
+		t := arrayElemType(ex.List)
+		if t == "" {
+			t = "Object"
+		}
+		jt := javaType(t)
+		if jt == "" {
+			jt = t
+		}
+		return jt + "[]"
 	case *CallExpr:
 		switch ex.Func {
 		case "String.valueOf", "substring":
@@ -930,6 +940,12 @@ func (s *SumExpr) emit(w io.Writer) {
 // ValuesExpr collects map values into a list.
 type ValuesExpr struct{ Map Expr }
 
+// AppendExpr appends an element to an array and returns the new array.
+type AppendExpr struct {
+	List  Expr
+	Value Expr
+}
+
 func (v *ValuesExpr) emit(w io.Writer) {
 	if ve, ok := v.Map.(*VarExpr); ok {
 		if t, ok2 := varTypes[ve.Name]; ok2 {
@@ -949,6 +965,37 @@ func (v *ValuesExpr) emit(w io.Writer) {
 	fmt.Fprint(w, "new java.util.ArrayList<>(")
 	v.Map.emit(w)
 	fmt.Fprint(w, ".values())")
+}
+
+func (a *AppendExpr) emit(w io.Writer) {
+	elem := arrayElemType(a.List)
+	if elem == "" {
+		elem = "Object"
+	}
+	jt := javaType(elem)
+	if jt == "" {
+		jt = elem
+	}
+	if elem == "int" {
+		fmt.Fprint(w, "java.util.stream.IntStream.concat(java.util.Arrays.stream(")
+		a.List.emit(w)
+		fmt.Fprint(w, "), java.util.stream.IntStream.of(")
+		a.Value.emit(w)
+		fmt.Fprint(w, ")).toArray()")
+		return
+	}
+	fmt.Fprint(w, "java.util.stream.Stream.concat(java.util.Arrays.stream(")
+	a.List.emit(w)
+	fmt.Fprint(w, "), java.util.stream.Stream.of(")
+	a.Value.emit(w)
+	fmt.Fprint(w, ")).toArray(")
+	switch elem {
+	case "string", "String":
+		fmt.Fprint(w, "String[]::new")
+	default:
+		fmt.Fprintf(w, "%s[]::new", jt)
+	}
+	fmt.Fprint(w, ")")
 }
 
 // ListStrExpr converts a list to a space-separated string.
@@ -1153,6 +1200,8 @@ func isArrayExpr(e Expr) bool {
 	switch ex := e.(type) {
 	case *ListLit:
 		return true
+	case *AppendExpr:
+		return true
 	case *SliceExpr:
 		if !isStringExpr(ex.Value) {
 			return true
@@ -1174,6 +1223,8 @@ func arrayElemType(e Expr) string {
 		if len(ex.Elems) > 0 {
 			return inferType(ex.Elems[0])
 		}
+	case *AppendExpr:
+		return arrayElemType(ex.List)
 	case *VarExpr:
 		if t, ok := varTypes[ex.Name]; ok && strings.HasSuffix(t, "[]") {
 			return strings.TrimSuffix(t, "[]")
@@ -1734,6 +1785,9 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 		}
 		if name == "values" && len(args) == 1 {
 			return &ValuesExpr{Map: args[0]}, nil
+		}
+		if name == "append" && len(args) == 2 {
+			return &AppendExpr{List: args[0], Value: args[1]}, nil
 		}
 		if name == "str" && len(args) == 1 {
 			return &CallExpr{Func: "String.valueOf", Args: args}, nil
