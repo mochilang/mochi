@@ -16,7 +16,7 @@ var transpileEnv *types.Env
 var funcStack [][]string
 var builtinNames = map[string]struct{}{
 	"print": {}, "len": {}, "substring": {}, "count": {}, "sum": {}, "avg": {},
-	"str": {}, "min": {}, "max": {}, "append": {}, "json": {},
+	"str": {}, "min": {}, "max": {}, "append": {}, "json": {}, "exists": {},
 }
 var closureNames = map[string]bool{}
 var groupStack []string
@@ -405,6 +405,17 @@ type RightJoinExpr struct {
 	Uses     []string
 }
 
+// LeftJoinExpr represents a simple left join query with one join clause.
+type LeftJoinExpr struct {
+	LeftVar  string
+	LeftSrc  Expr
+	RightVar string
+	RightSrc Expr
+	Cond     Expr
+	Select   Expr
+	Uses     []string
+}
+
 // emitInto expands the query into nested foreach loops and appends the
 // selected value into the provided result variable.
 func (q *QueryExpr) emitInto(w io.Writer, res string, level int) {
@@ -693,6 +704,44 @@ func (r *RightJoinExpr) emit(w io.Writer) {
 	io.WriteString(w, "})()")
 }
 
+func (l *LeftJoinExpr) emit(w io.Writer) {
+	io.WriteString(w, "(function()")
+	if len(l.Uses) > 0 {
+		io.WriteString(w, " use (")
+		for i, u := range l.Uses {
+			if i > 0 {
+				io.WriteString(w, ", ")
+			}
+			fmt.Fprintf(w, "$%s", u)
+		}
+		io.WriteString(w, ")")
+	}
+	io.WriteString(w, " {\n")
+	io.WriteString(w, "  $result = [];\n")
+	io.WriteString(w, "  foreach (")
+	l.LeftSrc.emit(w)
+	fmt.Fprintf(w, " as $%s) {\n", l.LeftVar)
+	io.WriteString(w, "    $matched = false;\n")
+	io.WriteString(w, "    foreach (")
+	l.RightSrc.emit(w)
+	fmt.Fprintf(w, " as $%s) {\n", l.RightVar)
+	io.WriteString(w, "      if (!(")
+	l.Cond.emit(w)
+	io.WriteString(w, ")) continue;\n")
+	io.WriteString(w, "      $matched = true;\n")
+	io.WriteString(w, "      $result[] = ")
+	l.Select.emit(w)
+	io.WriteString(w, ";\n")
+	io.WriteString(w, "    }\n")
+	io.WriteString(w, "    if (!$matched) {\n")
+	fmt.Fprintf(w, "      $%s = null;\n", l.RightVar)
+	io.WriteString(w, "      $result[] = ")
+	l.Select.emit(w)
+	io.WriteString(w, ";\n")
+	io.WriteString(w, "    }\n  }\n  return $result;\n")
+	io.WriteString(w, "})()")
+}
+
 func (s *StringLit) emit(w io.Writer) { fmt.Fprintf(w, "%q", s.Value) }
 
 func (b *BinaryExpr) emit(w io.Writer) {
@@ -734,6 +783,34 @@ func (b *BinaryExpr) emit(w io.Writer) {
 			fmt.Fprint(w, ")")
 			return
 		}
+	} else if b.Op == "union" {
+		fmt.Fprint(w, "array_values(array_unique(array_merge(")
+		b.Left.emit(w)
+		fmt.Fprint(w, ", ")
+		b.Right.emit(w)
+		fmt.Fprint(w, "), SORT_REGULAR))")
+		return
+	} else if b.Op == "union_all" {
+		fmt.Fprint(w, "array_merge(")
+		b.Left.emit(w)
+		fmt.Fprint(w, ", ")
+		b.Right.emit(w)
+		fmt.Fprint(w, ")")
+		return
+	} else if b.Op == "except" {
+		fmt.Fprint(w, "array_values(array_diff(")
+		b.Left.emit(w)
+		fmt.Fprint(w, ", ")
+		b.Right.emit(w)
+		fmt.Fprint(w, "))")
+		return
+	} else if b.Op == "intersect" {
+		fmt.Fprint(w, "array_values(array_intersect(")
+		b.Left.emit(w)
+		fmt.Fprint(w, ", ")
+		b.Right.emit(w)
+		fmt.Fprint(w, "))")
+		return
 	}
 	b.Left.emit(w)
 	fmt.Fprintf(w, " %s ", b.Op)
@@ -1128,7 +1205,7 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 			}
 		} else if name == "len" {
 			if len(args) == 1 {
-				if isListArg(args[0]) || isMapArg(args[0]) {
+				if isListArg(args[0]) || isMapArg(args[0]) || isListExpr(args[0]) || isMapExpr(args[0]) {
 					name = "count"
 				} else {
 					name = "strlen"
@@ -1190,6 +1267,12 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 			pretty := &CallExpr{Func: "json_encode", Args: []Expr{args[0], &IntLit{Value: 128}}}
 			inner := &CallExpr{Func: "str_replace", Args: []Expr{&StringLit{Value: "    "}, &StringLit{Value: "  "}, pretty}}
 			return &CallExpr{Func: "echo", Args: []Expr{inner}}, nil
+		} else if name == "exists" {
+			if len(args) != 1 {
+				return nil, fmt.Errorf("exists expects 1 arg")
+			}
+			count := &CallExpr{Func: "count", Args: []Expr{args[0]}}
+			return &BinaryExpr{Left: count, Op: ">", Right: &IntLit{Value: 0}}, nil
 		}
 		return &CallExpr{Func: name, Args: args}, nil
 	case p.Lit != nil:
@@ -1607,6 +1690,40 @@ func convertQueryExpr(q *parser.QueryExpr) (Expr, error) {
 		return rj, nil
 	}
 
+	if len(q.Froms) == 0 && len(q.Joins) == 1 && q.Joins[0].Side != nil && *q.Joins[0].Side == "left" && q.Group == nil && q.Sort == nil && q.Skip == nil && q.Take == nil && !q.Distinct && q.Where == nil {
+		j := q.Joins[0]
+		leftSrc, err := convertExpr(q.Source)
+		if err != nil {
+			return nil, err
+		}
+		rightSrc, err := convertExpr(j.Src)
+		if err != nil {
+			return nil, err
+		}
+		saved := funcStack
+		funcStack = append(funcStack, []string{q.Var, j.Var})
+		cond, err := convertExpr(j.On)
+		if err != nil {
+			funcStack = saved
+			return nil, err
+		}
+		sel, err := convertExpr(q.Select)
+		if err != nil {
+			funcStack = saved
+			return nil, err
+		}
+		funcStack = saved
+		uses := []string{}
+		for _, frame := range funcStack {
+			uses = append(uses, frame...)
+		}
+		if len(funcStack) == 0 {
+			uses = append(uses, globalNames...)
+		}
+		lj := &LeftJoinExpr{LeftVar: q.Var, LeftSrc: leftSrc, RightVar: j.Var, RightSrc: rightSrc, Cond: cond, Select: sel, Uses: uses}
+		return lj, nil
+	}
+
 	loops := []QueryLoop{{Name: q.Var}}
 	src, err := convertExpr(q.Source)
 	if err != nil {
@@ -1861,7 +1978,12 @@ func isListExpr(e Expr) bool {
 	}
 	if c, ok := e.(*CallExpr); ok {
 		switch c.Func {
-		case "array_merge", "array_slice":
+		case "array_merge", "array_slice", "array_values", "array_diff", "array_intersect", "array_unique":
+			return true
+		}
+	} else if b, ok := e.(*BinaryExpr); ok {
+		switch b.Op {
+		case "union", "union_all", "except", "intersect":
 			return true
 		}
 	} else if _, ok := e.(*SliceExpr); ok {
@@ -2138,6 +2260,16 @@ func exprNode(e Expr) *ast.Node {
 		return n
 	case *RightJoinExpr:
 		n := &ast.Node{Kind: "right_join"}
+		n.Children = append(n.Children,
+			&ast.Node{Kind: "left_var", Value: ex.LeftVar},
+			exprNode(ex.LeftSrc),
+			&ast.Node{Kind: "right_var", Value: ex.RightVar},
+			exprNode(ex.RightSrc),
+			exprNode(ex.Cond),
+			exprNode(ex.Select))
+		return n
+	case *LeftJoinExpr:
+		n := &ast.Node{Kind: "left_join"}
 		n.Children = append(n.Children,
 			&ast.Node{Kind: "left_var", Value: ex.LeftVar},
 			exprNode(ex.LeftSrc),
