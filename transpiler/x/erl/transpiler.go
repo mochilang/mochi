@@ -1616,7 +1616,7 @@ func convertPrimary(p *parser.Primary, env *types.Env, ctx *context) (Expr, erro
 	case p.Selector != nil && len(p.Selector.Tail) > 0:
 		expr := Expr(&NameRef{Name: ctx.current(p.Selector.Root)})
 		for i, f := range p.Selector.Tail {
-			key := &AtomLit{Name: f}
+			key := &StringLit{Value: f}
 			// determine if resulting value is string only on last step
 			isStr := false
 			if i == len(p.Selector.Tail)-1 {
@@ -1714,7 +1714,7 @@ func convertPrimary(p *parser.Primary, env *types.Env, ctx *context) (Expr, erro
 			if err != nil {
 				return nil, err
 			}
-			items[i] = MapItem{Key: &AtomLit{Name: f.Name}, Value: v}
+			items[i] = MapItem{Key: &StringLit{Value: f.Name}, Value: v}
 		}
 		return &MapLit{Items: items}, nil
 	case p.Map != nil:
@@ -1722,17 +1722,13 @@ func convertPrimary(p *parser.Primary, env *types.Env, ctx *context) (Expr, erro
 		for i, it := range p.Map.Items {
 			var k Expr
 			if s, ok := simpleIdent(it.Key); ok {
-				k = &AtomLit{Name: s}
+				k = &StringLit{Value: s}
 			} else {
 				ke, err := convertExpr(it.Key, env, ctx)
 				if err != nil {
 					return nil, err
 				}
-				if sl, ok := ke.(*StringLit); ok {
-					k = &AtomLit{Name: sl.Value}
-				} else {
-					k = ke
-				}
+				k = ke
 			}
 			v, err := convertExpr(it.Value, env, ctx)
 			if err != nil {
