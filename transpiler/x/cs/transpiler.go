@@ -1120,6 +1120,12 @@ func typeOfExpr(e Expr) string {
 		return fmt.Sprintf("Dictionary<%s, %s>", k, v)
 	case *StructLit:
 		return ex.Name
+	case *AppendExpr:
+		t := typeOfExpr(ex.List)
+		if strings.HasSuffix(t, "[]") {
+			return t
+		}
+		return ""
 	case *FunLit:
 		return fmt.Sprintf("Func<%s>", strings.Join(append(append([]string{}, ex.ParamTypes...), ex.ReturnType), ", "))
 	case *VarRef:
@@ -1966,9 +1972,9 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 					return &CallExpr{Func: name, Args: []Expr{inner}}, nil
 				}
 				if strings.HasSuffix(typeOfExpr(arg), "[]") {
-					join := &CallExpr{Func: "string.Join", Args: []Expr{&StringLit{Value: " "}, arg}}
-					trimmed := &MethodCallExpr{Target: join, Name: "TrimEnd"}
-					return &CallExpr{Func: name, Args: []Expr{trimmed}}, nil
+					join := &CallExpr{Func: "string.Join", Args: []Expr{&StringLit{Value: ", "}, arg}}
+					wrapped := &BinaryExpr{Left: &StringLit{Value: "["}, Op: "+", Right: &BinaryExpr{Left: join, Op: "+", Right: &StringLit{Value: "]"}}}
+					return &CallExpr{Func: name, Args: []Expr{wrapped}}, nil
 				}
 				return &CallExpr{Func: name, Args: []Expr{arg}}, nil
 			}
@@ -1981,9 +1987,9 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 				}
 			}
 			list := &ListLit{Elems: elems}
-			join := &CallExpr{Func: "string.Join", Args: []Expr{&StringLit{Value: " "}, list}}
-			trimmed := &MethodCallExpr{Target: join, Name: "TrimEnd"}
-			return &CallExpr{Func: name, Args: []Expr{trimmed}}, nil
+			join := &CallExpr{Func: "string.Join", Args: []Expr{&StringLit{Value: ", "}, list}}
+			wrapped := &BinaryExpr{Left: &StringLit{Value: "["}, Op: "+", Right: &BinaryExpr{Left: join, Op: "+", Right: &StringLit{Value: "]"}}}
+			return &CallExpr{Func: name, Args: []Expr{wrapped}}, nil
 		case "append":
 			if len(args) == 2 {
 				usesLinq = true
