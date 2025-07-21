@@ -1739,7 +1739,7 @@ func replaceGroup(e Expr, name string) Expr {
 	switch ex := e.(type) {
 	case *Name:
 		if ex.Name == name {
-			return &FieldExpr{Target: &Name{Name: name}, Name: "items", MapIndex: true}
+			return &FieldExpr{Target: &Name{Name: name}, Name: "items"}
 		}
 		return ex
 	case *BinaryExpr:
@@ -1757,13 +1757,14 @@ func replaceGroup(e Expr, name string) Expr {
 		return ex
 	case *FieldExpr:
 		if n, ok := ex.Target.(*Name); ok && n.Name == name {
+			ex.MapIndex = false
 			return ex
 		}
 		ex.Target = replaceGroup(ex.Target, name)
 		return ex
 	case *IndexExpr:
 		if n, ok := ex.Target.(*Name); ok && n.Name == name {
-			return &FieldExpr{Target: n, Name: "items", MapIndex: true}
+			return &FieldExpr{Target: n, Name: "items"}
 		}
 		ex.Target = replaceGroup(ex.Target, name)
 		ex.Index = replaceGroup(ex.Index, name)
@@ -1994,7 +1995,7 @@ func Emit(w io.Writer, p *Program) error {
 					return err
 				}
 			}
-			if _, err := io.WriteString(w, "\n"); err != nil {
+			if _, err := io.WriteString(w, "\n    def __getitem__(self, k):\n        return getattr(self, k)\n\n"); err != nil {
 				return err
 			}
 			continue
@@ -3715,18 +3716,28 @@ func convertGroupQuery(q *parser.QueryExpr, env *types.Env, target string) ([]St
 	}
 
 	groupsVar := "_" + target + "_groups"
+	tempVar := "_" + target + "_g"
 
-	stmts := []Stmt{
-		&LetStmt{Name: groupsVar, Expr: &DictLit{}},
+	groupDict := &DictLit{Keys: []Expr{&StringLit{Value: "key"}, &StringLit{Value: "items"}}, Values: []Expr{keyExpr, &ListLit{}}}
+	groupDC, groupArgs := dataClassFromDict(target+"_group", groupDict)
+
+	stmts := []Stmt{}
+	if groupDC != nil {
+		stmts = append(stmts, groupDC)
+	}
+	stmts = append(stmts, &LetStmt{Name: groupsVar, Expr: &DictLit{}})
+
+	initGroup := &CallExpr{Func: &Name{Name: groupDC.Name}, Args: groupArgs}
+	setdefaultCall := &CallExpr{Func: &FieldExpr{Target: &Name{Name: groupsVar}, Name: "setdefault"}, Args: []Expr{keyExpr, initGroup}}
+
+	appendCall := &CallExpr{
+		Func: &FieldExpr{Target: &FieldExpr{Target: &Name{Name: tempVar}, Name: "items"}, Name: "append"},
+		Args: []Expr{&Name{Name: q.Var}},
 	}
 
-	valExpr := &FieldExpr{Target: &Name{Name: q.Var}, Name: "value"}
 	inner := []Stmt{
-		&IfStmt{
-			Cond: &RawExpr{Code: fmt.Sprintf("%s not in %s", exprString(keyExpr), groupsVar)},
-			Then: []Stmt{&IndexAssignStmt{Target: &Name{Name: groupsVar}, Index: keyExpr, Value: &IntLit{Value: "0"}}},
-		},
-		&ExprStmt{Expr: &RawExpr{Code: fmt.Sprintf("%s[%s] += %s", groupsVar, exprString(keyExpr), exprString(valExpr))}},
+		&AssignStmt{Name: tempVar, Expr: setdefaultCall},
+		&ExprStmt{Expr: appendCall},
 	}
 	if where != nil {
 		inner = []Stmt{&IfStmt{Cond: where, Then: inner}}
@@ -3745,8 +3756,8 @@ func convertGroupQuery(q *parser.QueryExpr, env *types.Env, target string) ([]St
 			sel = &CallExpr{Func: &Name{Name: dc.Name}, Args: args}
 		}
 	}
-	iterPairs := &CallExpr{Func: &FieldExpr{Target: &Name{Name: groupsVar}, Name: "items"}, Args: nil}
-	listComp := &ListComp{Var: "_p", Iter: iterPairs, Expr: sel}
+	iterPairs := &CallExpr{Func: &FieldExpr{Target: &Name{Name: groupsVar}, Name: "values"}, Args: nil}
+	listComp := &ListComp{Var: q.Group.Name, Iter: iterPairs, Expr: sel}
 	stmts = append(stmts, &LetStmt{Name: target, Expr: listComp})
 
 	return stmts, nil
