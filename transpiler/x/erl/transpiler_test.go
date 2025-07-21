@@ -248,6 +248,8 @@ func TestTranspileGroupByJoin(t *testing.T)           { runGolden(t, "group_by_j
 func TestTranspileGroupByMultiJoin(t *testing.T)      { runGolden(t, "group_by_multi_join") }
 func TestTranspileGroupByMultiJoinSort(t *testing.T)  { runGolden(t, "group_by_multi_join_sort") }
 func TestTranspileLeftJoin(t *testing.T)              { runGolden(t, "left_join") }
+func TestTranspileGroupByHaving(t *testing.T)         { runGolden(t, "group_by_having") }
+func TestTranspileGroupByLeftJoin(t *testing.T)       { runGolden(t, "group_by_left_join") }
 
 func TestTranspileJsonBuiltin(t *testing.T) { runGolden(t, "json_builtin") }
 

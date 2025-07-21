@@ -1,3 +1,19 @@
+## Progress (2025-07-21 23:54 +0700)
+- erl transpiler: add break/continue support (3e0d18933)
+- Regenerated golden files - 70/100 vm valid programs passing
+
+## Progress (2025-07-21 23:54 +0700)
+- erl transpiler: add break/continue support (3e0d18933)
+- Regenerated golden files - 69/100 vm valid programs passing
+
+## Progress (2025-07-21 23:54 +0700)
+- erl transpiler: add break/continue support (3e0d18933)
+- Regenerated golden files - 69/100 vm valid programs passing
+
+## Progress (2025-07-21 23:54 +0700)
+- erl transpiler: add break/continue support (3e0d18933)
+- Regenerated golden files - 68/100 vm valid programs passing
+
 ## Progress (2025-07-21 23:34 +0700)
 - lua transpiler: support group iter and sorting (c1850ebb5)
 - Regenerated golden files - 68/100 vm valid programs passing
