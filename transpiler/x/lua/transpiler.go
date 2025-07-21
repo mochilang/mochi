@@ -88,8 +88,9 @@ type IfExpr struct {
 }
 
 type CallExpr struct {
-	Func string
-	Args []Expr
+        Func       string
+        Args       []Expr
+        ParamTypes []types.Type
 }
 
 type StringLit struct{ Value string }
@@ -349,17 +350,23 @@ end)(`)
 			c.Args[0].emit(w)
 		}
 		io.WriteString(w, `)`)
-	default:
-		io.WriteString(w, c.Func)
-		io.WriteString(w, "(")
-		for i, a := range c.Args {
-			if i > 0 {
-				io.WriteString(w, ", ")
-			}
-			a.emit(w)
-		}
-		io.WriteString(w, ")")
-	}
+       default:
+               io.WriteString(w, c.Func)
+               io.WriteString(w, "(")
+               for i, a := range c.Args {
+                       if i > 0 {
+                               io.WriteString(w, ", ")
+                       }
+                       if i < len(c.ParamTypes) && needsCopy(c.ParamTypes[i]) {
+                               io.WriteString(w, "(function(_t) local _c={} for k,v in pairs(_t) do _c[k]=v end return _c end)(")
+                               a.emit(w)
+                               io.WriteString(w, ")")
+                       } else {
+                               a.emit(w)
+                       }
+               }
+               io.WriteString(w, ")")
+       }
 }
 
 func (a *AssignStmt) emit(w io.Writer) {
@@ -874,6 +881,14 @@ func isListExpr(e Expr) bool {
 	return false
 }
 
+func needsCopy(t types.Type) bool {
+        switch t.(type) {
+        case types.StructType:
+                return true
+        }
+        return false
+}
+
 func (b *BinaryExpr) emit(w io.Writer) {
 	if b.Op == "in" {
 		if isStringExpr(b.Right) {
@@ -1161,9 +1176,9 @@ func (qc *QueryComp) emit(w io.Writer) {
 		io.WriteString(w, "  end\n")
 	}
 	if qc.Agg != "" && qc.GroupKey == nil {
-		io.WriteString(w, "  return ")
-		(&CallExpr{Func: qc.Agg, Args: []Expr{&Ident{Name: "_tmp"}}}).emit(w)
-		io.WriteString(w, "\nend)()")
+               io.WriteString(w, "  return ")
+               (&CallExpr{Func: qc.Agg, Args: []Expr{&Ident{Name: "_tmp"}}, ParamTypes: []types.Type{types.ListType{Elem: types.AnyType{}}}}).emit(w)
+               io.WriteString(w, "\nend)()")
 	} else if qc.SortKey != nil {
 		if ml, ok := qc.SortKey.(*MapLit); ok {
 			io.WriteString(w, "  table.sort(__tmp, function(a,b)\n")
@@ -1596,7 +1611,15 @@ func convertPostfix(p *parser.PostfixExpr) (Expr, error) {
 					args = append(args, ae)
 				}
 				// contains handled during emission
-				expr = &CallExpr{Func: op.Field.Name, Args: args}
+                               cexpr := &CallExpr{Func: op.Field.Name, Args: args}
+                               if currentEnv != nil {
+                                       if t, err := currentEnv.GetVar(op.Field.Name); err == nil {
+                                               if ft, ok := t.(types.FuncType); ok {
+                                                       cexpr.ParamTypes = ft.Params
+                                               }
+                                       }
+                               }
+                               expr = cexpr
 			} else {
 				expr = &IndexExpr{Target: expr, Index: &StringLit{Value: op.Field.Name}, Kind: "map"}
 			}
@@ -1609,11 +1632,19 @@ func convertPostfix(p *parser.PostfixExpr) (Expr, error) {
 				}
 				args = append(args, ae)
 			}
-			if id, ok := expr.(*Ident); ok {
-				expr = &CallExpr{Func: id.Name, Args: args}
-			} else {
-				return nil, fmt.Errorf("unsupported call")
-			}
+                       if id, ok := expr.(*Ident); ok {
+                               cexpr := &CallExpr{Func: id.Name, Args: args}
+                               if currentEnv != nil {
+                                       if t, err := currentEnv.GetVar(id.Name); err == nil {
+                                               if ft, ok := t.(types.FuncType); ok {
+                                                       cexpr.ParamTypes = ft.Params
+                                               }
+                                       }
+                               }
+                               expr = cexpr
+                       } else {
+                               return nil, fmt.Errorf("unsupported call")
+                       }
 		case op.Cast != nil:
 			// ignore cast
 		default:
@@ -1628,38 +1659,45 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 	case p.Lit != nil:
 		return convertLiteral(p.Lit)
 	case p.Call != nil:
-		ce := &CallExpr{Func: p.Call.Func}
-		for _, a := range p.Call.Args {
-			ae, err := convertExpr(a)
-			if err != nil {
-				return nil, err
-			}
-			ce.Args = append(ce.Args, ae)
-		}
-		switch p.Call.Func {
+               ce := &CallExpr{Func: p.Call.Func}
+               var ft types.FuncType
+               var hasFT bool
+               if currentEnv != nil {
+                       if t, err := currentEnv.GetVar(p.Call.Func); err == nil {
+                               if ftt, ok := t.(types.FuncType); ok {
+                                       ft = ftt
+                                       hasFT = true
+                                       ce.ParamTypes = ft.Params
+                               }
+                       }
+               }
+               for _, a := range p.Call.Args {
+                       ae, err := convertExpr(a)
+                       if err != nil {
+                               return nil, err
+                       }
+                       ce.Args = append(ce.Args, ae)
+               }
+               switch p.Call.Func {
 		case "append", "avg", "sum", "contains", "len", "count":
 			// handled during emission
 			return ce, nil
 		}
-		if currentEnv != nil {
-			if t, err := currentEnv.GetVar(p.Call.Func); err == nil {
-				if ft, ok := t.(types.FuncType); ok {
-					if len(p.Call.Args) < len(ft.Params) {
-						params := []string{}
-						for i := len(p.Call.Args); i < len(ft.Params); i++ {
-							params = append(params, fmt.Sprintf("p%d", i-len(p.Call.Args)))
-						}
-						args := append([]Expr{}, ce.Args...)
-						for _, p := range params {
-							args = append(args, &Ident{Name: p})
-						}
-						body := []Stmt{&ReturnStmt{Value: &CallExpr{Func: p.Call.Func, Args: args}}}
-						return &FunExpr{Params: params, Body: body}, nil
-					}
-				}
-			}
-		}
-		return ce, nil
+               if hasFT {
+                       if len(p.Call.Args) < len(ft.Params) {
+                               params := []string{}
+                               for i := len(p.Call.Args); i < len(ft.Params); i++ {
+                                       params = append(params, fmt.Sprintf("p%d", i-len(p.Call.Args)))
+                               }
+                               args := append([]Expr{}, ce.Args...)
+                               for _, p := range params {
+                                       args = append(args, &Ident{Name: p})
+                               }
+                               body := []Stmt{&ReturnStmt{Value: &CallExpr{Func: p.Call.Func, Args: args, ParamTypes: ft.Params}}}
+                               return &FunExpr{Params: params, Body: body}, nil
+                       }
+               }
+               return ce, nil
 	case p.Struct != nil:
 		var keys []Expr
 		var values []Expr
