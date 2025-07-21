@@ -1,1 +1,5 @@
-unsupported query
+exit status 1
+/workspace/mochi/tests/transpiler/x/scala/left_join.scala:10: error: Missing closing brace `}' assumed here
+ _res })
+ ^
+one error found

@@ -550,6 +550,17 @@ type RightJoinExpr struct {
 	ElemType string
 }
 
+// LeftJoinExpr represents a simple left join query of two sources.
+type LeftJoinExpr struct {
+	LeftVar  string
+	LeftSrc  Expr
+	RightVar string
+	RightSrc Expr
+	Cond     Expr
+	Select   Expr
+	ElemType string
+}
+
 func (q *QueryExpr) emit(w io.Writer) {
 	et := q.ElemType
 	if et == "" {
@@ -631,7 +642,27 @@ func (r *RightJoinExpr) emit(w io.Writer) {
 	fmt.Fprint(w, r.LeftVar)
 	fmt.Fprint(w, " = null ; _res.append(")
 	r.Select.emit(w)
-	fmt.Fprint(w, ") } } _res })")
+	fmt.Fprint(w, ") }\n _res })")
+}
+
+func (l *LeftJoinExpr) emit(w io.Writer) {
+	et := l.ElemType
+	if et == "" {
+		et = "Any"
+	}
+	fmt.Fprintf(w, "({ var _res = ArrayBuffer[%s]() ; for (%s <- ", et, l.LeftVar)
+	l.LeftSrc.emit(w)
+	fmt.Fprintf(w, ") { var matched = false ; for (%s <- ", l.RightVar)
+	l.RightSrc.emit(w)
+	fmt.Fprint(w, ") { if (")
+	l.Cond.emit(w)
+	fmt.Fprint(w, ") { matched = true ; _res.append(")
+	l.Select.emit(w)
+	fmt.Fprint(w, ") } }; if (!matched) { var ")
+	fmt.Fprint(w, l.RightVar)
+	fmt.Fprint(w, " = null ; _res.append(")
+	l.Select.emit(w)
+	fmt.Fprint(w, ") }\n _res })")
 }
 
 func (g *GroupByExpr) emit(w io.Writer) {
@@ -1164,6 +1195,9 @@ func convertPrimary(p *parser.Primary, env *types.Env) (Expr, error) {
 		if rj, err := convertRightJoinQuery(p.Query, env); err == nil {
 			return rj, nil
 		}
+		if lj, err := convertLeftJoinQuery(p.Query, env); err == nil {
+			return lj, nil
+		}
 		if ij, err := convertInnerJoinQuery(p.Query, env); err == nil {
 			return ij, nil
 		}
@@ -1415,19 +1449,50 @@ func convertRightJoinQuery(q *parser.QueryExpr, env *types.Env) (Expr, error) {
 	return &RightJoinExpr{LeftVar: q.Var, LeftSrc: leftSrc, RightVar: j.Var, RightSrc: rightSrc, Cond: cond, Select: sel, ElemType: elemTypeStr}, nil
 }
 
-func convertInnerJoinQuery(q *parser.QueryExpr, env *types.Env) (Expr, error) {
-	if q == nil || len(q.Joins) != 1 || q.Group != nil || q.Sort != nil || q.Skip != nil || q.Take != nil || len(q.Froms) > 0 {
+func convertLeftJoinQuery(q *parser.QueryExpr, env *types.Env) (Expr, error) {
+	if q == nil || len(q.Joins) != 1 || q.Distinct || q.Group != nil || q.Sort != nil || q.Skip != nil || q.Take != nil || q.Where != nil || len(q.Froms) > 0 {
 		return nil, fmt.Errorf("unsupported query")
 	}
 	j := q.Joins[0]
-	if j.Side != nil {
+	if j.Side == nil || *j.Side != "left" {
 		return nil, fmt.Errorf("unsupported query")
 	}
-	src, err := convertExpr(q.Source, env)
+	leftSrc, err := convertExpr(q.Source, env)
 	if err != nil {
 		return nil, err
 	}
-	joinSrc, err := convertExpr(j.Src, env)
+	rightSrc, err := convertExpr(j.Src, env)
+	if err != nil {
+		return nil, err
+	}
+	child := types.NewEnv(env)
+	child.SetVar(q.Var, types.AnyType{}, true)
+	child.SetVar(j.Var, types.AnyType{}, true)
+	cond, err := convertExpr(j.On, child)
+	if err != nil {
+		return nil, err
+	}
+	sel, err := convertExpr(q.Select, child)
+	if err != nil {
+		return nil, err
+	}
+	elemTypeStr := toScalaTypeFromType(types.ExprType(q.Select, child))
+	if elemTypeStr == "" {
+		elemTypeStr = "Any"
+	}
+	return &LeftJoinExpr{LeftVar: q.Var, LeftSrc: leftSrc, RightVar: j.Var, RightSrc: rightSrc, Cond: cond, Select: sel, ElemType: elemTypeStr}, nil
+}
+
+func convertInnerJoinQuery(q *parser.QueryExpr, env *types.Env) (Expr, error) {
+	if q == nil || len(q.Joins) == 0 || q.Group != nil || q.Sort != nil || q.Skip != nil || q.Take != nil || len(q.Froms) > 0 {
+		return nil, fmt.Errorf("unsupported query")
+	}
+	for _, j := range q.Joins {
+		if j.Side != nil {
+			return nil, fmt.Errorf("unsupported query")
+		}
+	}
+	src, err := convertExpr(q.Source, env)
 	if err != nil {
 		return nil, err
 	}
@@ -1438,15 +1503,30 @@ func convertInnerJoinQuery(q *parser.QueryExpr, env *types.Env) (Expr, error) {
 	}
 	child := types.NewEnv(env)
 	child.SetVar(q.Var, elemT, true)
-	jt := types.ExprType(j.Src, env)
-	var jelem types.Type = types.AnyType{}
-	if lt, ok := jt.(types.ListType); ok {
-		jelem = lt.Elem
-	}
-	child.SetVar(j.Var, jelem, true)
-	cond, err := convertExpr(j.On, child)
-	if err != nil {
-		return nil, err
+
+	froms := make([]queryFrom, 0, len(q.Joins))
+	var where Expr
+	for _, j := range q.Joins {
+		joinSrc, err := convertExpr(j.Src, child)
+		if err != nil {
+			return nil, err
+		}
+		jt := types.ExprType(j.Src, child)
+		var jelem types.Type = types.AnyType{}
+		if lt, ok := jt.(types.ListType); ok {
+			jelem = lt.Elem
+		}
+		child.SetVar(j.Var, jelem, true)
+		froms = append(froms, queryFrom{Var: j.Var, Src: joinSrc})
+		cond, err := convertExpr(j.On, child)
+		if err != nil {
+			return nil, err
+		}
+		if where == nil {
+			where = cond
+		} else {
+			where = &BinaryExpr{Left: where, Op: "&&", Right: cond}
+		}
 	}
 	if ml := mapLiteral(q.Select); ml != nil {
 		if st, ok := types.InferStructFromMapEnv(ml, child); ok {
@@ -1478,8 +1558,7 @@ func convertInnerJoinQuery(q *parser.QueryExpr, env *types.Env) (Expr, error) {
 	if elemTypeStr == "" {
 		elemTypeStr = "Any"
 	}
-	froms := []queryFrom{{Var: j.Var, Src: joinSrc}}
-	return &QueryExpr{Var: q.Var, Src: src, Froms: froms, Where: cond, Select: sel, Distinct: q.Distinct, ElemType: elemTypeStr}, nil
+	return &QueryExpr{Var: q.Var, Src: src, Froms: froms, Where: where, Select: sel, Distinct: q.Distinct, ElemType: elemTypeStr}, nil
 }
 
 func convertGroupQuery(q *parser.QueryExpr, env *types.Env) (Expr, error) {
