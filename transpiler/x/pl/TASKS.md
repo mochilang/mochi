@@ -1,3 +1,10 @@
+## Progress (2025-07-21 23:34 +0700)
+- VM valid golden test results updated to 65/100
+
+## Progress (2025-07-21 23:34 +0700)
+- VM valid golden test results updated to 65/100
+- Regenerated README checklist and outputs
+
 ## Progress (2025-07-21 16:18 +0000)
 - pl: handle left joins and numeric sort
 - 65/100 VM programs transpiled successfully
