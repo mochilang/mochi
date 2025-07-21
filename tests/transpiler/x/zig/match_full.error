@@ -1,0 +1,4 @@
+run: exit status 1
+/workspace/mochi/tests/transpiler/x/zig/match_full.zig:13:26: error: cannot compare strings with ==
+    const mood = if (day == "mon") "tired" else if (day == "fri") "excited" else if (day == "sun") "relaxed" else "normal";
+                     ~~~~^~~~~~~~

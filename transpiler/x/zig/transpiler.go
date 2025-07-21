@@ -422,6 +422,8 @@ func zigTypeFromExpr(e Expr) string {
 		return "bool"
 	case *FloatLit:
 		return "f64"
+	case *IntLit:
+		return "i64"
 	case *VarRef:
 		if t, ok := varTypes[e.(*VarRef).Name]; ok && t != "" {
 			return t
@@ -459,6 +461,44 @@ func zigTypeFromExpr(e Expr) string {
 		default:
 			return "i64"
 		}
+	case *CastExpr:
+		ct := e.(*CastExpr).Type
+		switch ct {
+		case "int":
+			return "i64"
+		case "string":
+			return "[]const u8"
+		default:
+			if ct != "" {
+				return ct
+			}
+		}
+		return zigTypeFromExpr(e.(*CastExpr).Value)
+	case *IfExpr:
+		ie := e.(*IfExpr)
+		tType := zigTypeFromExpr(ie.Then)
+		eType := zigTypeFromExpr(ie.Else)
+		if tType == eType {
+			return tType
+		}
+		return "i64"
+	case *CallExpr:
+		ce := e.(*CallExpr)
+		switch ce.Func {
+		case "len", "sum", "count", "exists":
+			return "i64"
+		case "avg":
+			return "f64"
+		case "min", "max":
+			if len(ce.Args) > 0 {
+				return zigTypeFromExpr(ce.Args[0])
+			}
+			return "i64"
+		default:
+			return "i64"
+		}
+	case *IndexExpr:
+		return "i64"
 	default:
 		return "i64"
 	}

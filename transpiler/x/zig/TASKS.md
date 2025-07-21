@@ -1,3 +1,18 @@
+## Progress (2025-07-21 17:48 +0700)
+- Commit d9ce08277: dart transpiler: add precedence handling and test
+- Generated Zig for 86/100 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-21 17:48 +0700)
+- Commit d9ce08277: dart transpiler: add precedence handling and test
+- Generated Zig for 2/100 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-21 17:48 +0700)
+- Commit d9ce08277: dart transpiler: add precedence handling and test
+- Generated Zig for 2/100 programs
+- Updated README checklist and outputs
+
 ## Progress (2025-07-21 17:26 +0700)
 - Generated Zig for 2/100 programs
 - Updated README checklist and outputs
