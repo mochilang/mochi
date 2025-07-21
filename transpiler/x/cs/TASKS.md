@@ -1,5 +1,5 @@
-## Progress (2025-07-21 13:21 +0700)
-- cs transpiler: improved print for arrays and custom `ToString` generation. `group_by_conditional_sum` now passes (progress 91/100)
+## Progress (2025-07-21 13:50 +0700)
+- cs transpiler: added float literal support and fixed join orientation, enabling `group_by_multi_join` (progress 90/100)
 
 ## Recent Enhancements
 - Added struct inference from list and map literals

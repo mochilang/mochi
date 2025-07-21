@@ -556,6 +556,11 @@ func (b *BoolLit) emit(w io.Writer) {
 	}
 }
 
+// FloatLit represents a floating point literal.
+type FloatLit struct{ Value float64 }
+
+func (f *FloatLit) emit(w io.Writer) { fmt.Fprintf(w, "%g", f.Value) }
+
 // IndexExpr represents xs[i].
 type IndexExpr struct {
 	Target Expr
@@ -704,6 +709,57 @@ func isMapExpr(e Expr) bool {
 	return false
 }
 
+// usesVar reports whether expression e references variable name.
+func usesVar(e Expr, name string) bool {
+	switch ex := e.(type) {
+	case *VarRef:
+		return ex.Name == name
+	case *FieldExpr:
+		return usesVar(ex.Target, name)
+	case *BinaryExpr:
+		return usesVar(ex.Left, name) || usesVar(ex.Right, name)
+	case *BoolOpExpr:
+		return usesVar(ex.Left, name) || usesVar(ex.Right, name)
+	case *CmpExpr:
+		return usesVar(ex.Left, name) || usesVar(ex.Right, name)
+	case *CallExpr:
+		for _, a := range ex.Args {
+			if usesVar(a, name) {
+				return true
+			}
+		}
+		return false
+	case *MethodCallExpr:
+		if usesVar(ex.Target, name) {
+			return true
+		}
+		for _, a := range ex.Args {
+			if usesVar(a, name) {
+				return true
+			}
+		}
+		return false
+	case *UnaryExpr:
+		return usesVar(ex.Val, name)
+	case *NotExpr:
+		return usesVar(ex.Val, name)
+	case *IndexExpr:
+		return usesVar(ex.Target, name) || usesVar(ex.Index, name)
+	case *SliceExpr:
+		if usesVar(ex.Value, name) {
+			return true
+		}
+		if ex.Start != nil && usesVar(ex.Start, name) {
+			return true
+		}
+		if ex.End != nil && usesVar(ex.End, name) {
+			return true
+		}
+		return false
+	}
+	return false
+}
+
 func isBoolExpr(e Expr) bool {
 	return typeOfExpr(e) == "bool"
 }
@@ -829,6 +885,15 @@ func inferStructMap(varName string, prog *Program, m *MapLit) (Expr, bool) {
 		}
 		keys[i] = k.Value
 		typ := typeOfExpr(it.Value)
+		if se, ok := it.Value.(*SumExpr); ok {
+			t := typeOfExpr(se.Arg)
+			if strings.HasSuffix(t, "[]") {
+				t = strings.TrimSuffix(t, "[]")
+			}
+			if t == "double" {
+				typ = "double"
+			}
+		}
 		typesMap[k.Value] = typ
 		vals[i] = StructFieldValue{Name: k.Value, Value: it.Value}
 	}
@@ -913,6 +978,8 @@ func typeOfExpr(e Expr) string {
 		return "string"
 	case *IntLit:
 		return "int"
+	case *FloatLit:
+		return "double"
 	case *BoolLit:
 		return "bool"
 	case *BoolOpExpr:
@@ -952,10 +1019,26 @@ func typeOfExpr(e Expr) string {
 	case *AvgExpr:
 		return "double"
 	case *SumExpr:
-		return "int"
+		return "double"
 	case *CountExpr:
 		return "int"
-	case *MinExpr, *MaxExpr:
+	case *MinExpr:
+		t := typeOfExpr(ex.Arg)
+		if strings.HasSuffix(t, "[]") {
+			t = strings.TrimSuffix(t, "[]")
+		}
+		if t == "double" {
+			return "double"
+		}
+		return "int"
+	case *MaxExpr:
+		t := typeOfExpr(ex.Arg)
+		if strings.HasSuffix(t, "[]") {
+			t = strings.TrimSuffix(t, "[]")
+		}
+		if t == "double" {
+			return "double"
+		}
 		return "int"
 	case *StrExpr:
 		return "string"
@@ -1907,6 +1990,8 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 		return &StringLit{Value: *p.Lit.Str}, nil
 	case p.Lit != nil && p.Lit.Int != nil:
 		return &IntLit{Value: int(*p.Lit.Int)}, nil
+	case p.Lit != nil && p.Lit.Float != nil:
+		return &FloatLit{Value: *p.Lit.Float}, nil
 	case p.Lit != nil && p.Lit.Bool != nil:
 		return &BoolLit{Value: bool(*p.Lit.Bool)}, nil
 	case p.List != nil:
@@ -2126,8 +2211,13 @@ func compileQueryExpr(q *parser.QueryExpr) (Expr, error) {
 			mapVars[curVar] = savedMap
 			return nil, fmt.Errorf("unsupported join condition")
 		}
-		left := exprString(cmp.Left)
-		right := exprString(cmp.Right)
+		leftExpr := cmp.Left
+		rightExpr := cmp.Right
+		if usesVar(leftExpr, j.Var) && !usesVar(rightExpr, j.Var) {
+			leftExpr, rightExpr = rightExpr, leftExpr
+		}
+		left := exprString(leftExpr)
+		right := exprString(rightExpr)
 		if j.Side == nil {
 			fmt.Fprintf(builder, " join %s in %s on %s equals %s", j.Var, exprString(js), left, right)
 		} else if *j.Side == "left" {
@@ -2251,9 +2341,10 @@ func compileQueryExpr(q *parser.QueryExpr) (Expr, error) {
 			query = fmt.Sprintf("(%s).Sum(%s => %s)", base, curVar, arg)
 		}
 		usesLinq = true
+		typ := "double"
 		varTypes[curVar] = savedVar
 		mapVars[curVar] = savedMap
-		return &RawExpr{Code: query, Type: "int"}, nil
+		return &RawExpr{Code: query, Type: typ}, nil
 	case *CountExpr:
 		base := strings.TrimSuffix(query, " select "+exprString(sel))
 		query = fmt.Sprintf("(%s).Count()", base)
