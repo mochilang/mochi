@@ -253,14 +253,14 @@ func (a *AssignStmt) emit(w io.Writer) {
 type PrintStmt struct{ Exprs []Expr }
 
 func (p *PrintStmt) emit(w io.Writer) {
-	io.WriteString(w, "  print_endline (String.concat \" \" (List.filter (fun s -> s <> \"\") [")
+	io.WriteString(w, "  print_endline (String.concat \" \" [")
 	for i, e := range p.Exprs {
 		if i > 0 {
 			io.WriteString(w, "; ")
 		}
 		e.emitPrint(w)
 	}
-	io.WriteString(w, "]));\n")
+	io.WriteString(w, "]);\n")
 }
 
 // IfStmt represents a basic if/else statement.
@@ -2323,7 +2323,7 @@ func convertCall(c *parser.CallExpr, env *types.Env, vars map[string]VarInfo) (E
 			return nil, "", err
 		}
 		switch {
-		case typ == "string" || typ == "list" || typ == "map" || strings.HasPrefix(typ, "map-"):
+		case typ == "string" || typ == "list" || strings.HasPrefix(typ, "list") || typ == "map" || strings.HasPrefix(typ, "map-"):
 			return &LenBuiltin{Arg: arg, Typ: typ}, "int", nil
 		default:
 			return nil, "", fmt.Errorf("len unsupported for %s", typ)

@@ -2242,6 +2242,11 @@ func updateReadme() {
 	buf.WriteString("The list below tracks Mochi programs under `tests/vm/valid` that should successfully transpile. Checked items indicate tests known to work.\n\n")
 	buf.WriteString(strings.Join(lines, "\n"))
 	buf.WriteString("\n")
+	if out, err := exec.Command("git", "log", "-1", "--format=%cI").Output(); err == nil {
+		if t, perr := time.Parse(time.RFC3339, strings.TrimSpace(string(out))); perr == nil {
+			buf.WriteString("\nLast updated " + t.Format("2006-01-02 15:04 MST") + "\n")
+		}
+	}
 	_ = os.WriteFile(readmePath, buf.Bytes(), 0o644)
 }
 
