@@ -25,6 +25,11 @@ var (
 	structTypes          map[string]types.StructType
 	currentEnv           *types.Env
 	funcParamTypes       map[string][]string
+	funcReturnTypes      map[string]string
+	varTypes             map[string]string
+	closureApply         map[string]string
+	closureFields        map[string][]string
+	extraFuncs           []*Function
 	structCounter        int
 	anonStructs          map[string]string
 	currentVarName       string
@@ -919,6 +924,11 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 	anonStructs = make(map[string]string)
 	currentEnv = env
 	funcParamTypes = make(map[string][]string)
+	funcReturnTypes = make(map[string]string)
+	varTypes = make(map[string]string)
+	closureApply = make(map[string]string)
+	closureFields = make(map[string][]string)
+	extraFuncs = nil
 	structCounter = 0
 	needMath = false
 	p := &Program{}
@@ -926,45 +936,17 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 	var globals []Stmt
 	for _, st := range prog.Statements {
 		if st.Fun != nil {
-			body, err := compileStmts(env, st.Fun.Body)
+			fnExpr := &parser.FunExpr{Params: st.Fun.Params, Return: st.Fun.Return, BlockBody: st.Fun.Body}
+			fun, err := compileFunction(env, st.Fun.Name, fnExpr)
 			if err != nil {
 				return nil, err
 			}
-			var params []Param
-			var paramTypes []string
-			for _, pa := range st.Fun.Params {
-				typ := "int"
-				if pa.Type != nil && pa.Type.Simple != nil && *pa.Type.Simple == "string" {
-					typ = "const char*"
-				} else if pa.Type != nil && pa.Type.Simple != nil {
-					if _, ok := env.GetStruct(*pa.Type.Simple); ok {
-						typ = *pa.Type.Simple
-					}
-				}
-				if typ == "double" || strings.HasSuffix(typ, "double[]") {
-					markMath()
-				}
-				paramTypes = append(paramTypes, typ)
-				params = append(params, Param{Name: pa.Name, Type: typ})
+			funcReturnTypes[st.Fun.Name] = fun.Return
+			p.Functions = append(p.Functions, fun)
+			if len(extraFuncs) > 0 {
+				p.Functions = append(p.Functions, extraFuncs...)
+				extraFuncs = nil
 			}
-			funcParamTypes[st.Fun.Name] = paramTypes
-			ret := "int"
-			if st.Fun.Return != nil && st.Fun.Return.Simple != nil {
-				switch *st.Fun.Return.Simple {
-				case "string":
-					ret = "const char*"
-				case "float":
-					ret = "double"
-				default:
-					if _, ok := env.GetStruct(*st.Fun.Return.Simple); ok {
-						ret = *st.Fun.Return.Simple
-					}
-				}
-			}
-			if ret == "double" {
-				markMath()
-			}
-			p.Functions = append(p.Functions, &Function{Name: st.Fun.Name, Params: params, Return: ret, Body: body})
 			continue
 		}
 		if st.Let != nil {
@@ -974,6 +956,11 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 					return nil, err
 				}
 				p.Functions = append(p.Functions, fun)
+				if len(extraFuncs) > 0 {
+					p.Functions = append(p.Functions, extraFuncs...)
+					extraFuncs = nil
+				}
+				funcReturnTypes[st.Let.Name] = fun.Return
 				continue
 			}
 		}
@@ -1178,6 +1165,7 @@ func compileStmt(env *types.Env, s *parser.Statement) (Stmt, error) {
 		if val, ok := valueFromExpr(valExpr); ok {
 			env.SetValue(s.Let.Name, val, true)
 		}
+		varTypes[s.Let.Name] = declType
 		if _, isMap := valExpr.(*MapLit); isMap {
 			return nil, nil
 		}
@@ -1203,6 +1191,7 @@ func compileStmt(env *types.Env, s *parser.Statement) (Stmt, error) {
 		if val, ok := valueFromExpr(valExpr); ok {
 			env.SetValue(s.Var.Name, val, true)
 		}
+		varTypes[s.Var.Name] = declType
 		if _, isMap := valExpr.(*MapLit); isMap {
 			return nil, nil
 		}
@@ -1417,7 +1406,171 @@ func detectFunExpr(e *parser.Expr) *parser.FunExpr {
 	return u.Value.Target.FunExpr
 }
 
+func gatherVarsExpr(e *parser.Expr, vars map[string]struct{}) {
+	if e == nil || e.Binary == nil {
+		return
+	}
+	gatherVarsUnary(e.Binary.Left, vars)
+	for _, p := range e.Binary.Right {
+		gatherVarsUnary(&parser.Unary{Value: p.Right}, vars)
+	}
+}
+
+func gatherVarsUnary(u *parser.Unary, vars map[string]struct{}) {
+	if u == nil || u.Value == nil {
+		return
+	}
+	gatherVarsPrimary(u.Value.Target, vars)
+	for _, op := range u.Value.Ops {
+		if op.Call != nil {
+			for _, a := range op.Call.Args {
+				gatherVarsExpr(a, vars)
+			}
+		}
+		if op.Index != nil {
+			gatherVarsExpr(op.Index.Start, vars)
+			gatherVarsExpr(op.Index.End, vars)
+			gatherVarsExpr(op.Index.Step, vars)
+		}
+	}
+}
+
+func gatherVarsPrimary(p *parser.Primary, vars map[string]struct{}) {
+	if p == nil {
+		return
+	}
+	if p.Selector != nil {
+		vars[p.Selector.Root] = struct{}{}
+	}
+	if p.Call != nil {
+		for _, a := range p.Call.Args {
+			gatherVarsExpr(a, vars)
+		}
+	}
+	if p.FunExpr != nil {
+		for _, st := range p.FunExpr.BlockBody {
+			if st.Return != nil {
+				gatherVarsExpr(st.Return.Value, vars)
+			}
+		}
+		gatherVarsExpr(p.FunExpr.ExprBody, vars)
+	}
+	if p.Group != nil {
+		gatherVarsExpr(p.Group, vars)
+	}
+	if p.List != nil {
+		for _, e := range p.List.Elems {
+			gatherVarsExpr(e, vars)
+		}
+	}
+	if p.Map != nil {
+		for _, it := range p.Map.Items {
+			gatherVarsExpr(it.Key, vars)
+			gatherVarsExpr(it.Value, vars)
+		}
+	}
+	if p.Struct != nil {
+		for _, f := range p.Struct.Fields {
+			gatherVarsExpr(f.Value, vars)
+		}
+	}
+	if p.If != nil {
+		gatherVarsExpr(p.If.Cond, vars)
+		gatherVarsExpr(p.If.Then, vars)
+		if p.If.ElseIf != nil {
+			gatherVarsExpr(p.If.ElseIf.Cond, vars)
+			gatherVarsExpr(p.If.ElseIf.Then, vars)
+		}
+		gatherVarsExpr(p.If.Else, vars)
+	}
+	if p.Match != nil {
+		gatherVarsExpr(p.Match.Target, vars)
+		for _, c := range p.Match.Cases {
+			gatherVarsExpr(c.Pattern, vars)
+			gatherVarsExpr(c.Result, vars)
+		}
+	}
+}
+
+func compileClosure(env *types.Env, name string, params []Param, inner *parser.FunExpr) (*Function, error) {
+	vars := map[string]struct{}{}
+	gatherVarsExpr(inner.ExprBody, vars)
+	for _, p := range inner.Params {
+		delete(vars, p.Name)
+	}
+	capNames := make([]string, 0, len(vars))
+	for k := range vars {
+		capNames = append(capNames, k)
+	}
+	sort.Strings(capNames)
+	closureName := strings.Title(name) + "Closure"
+	closureFields[closureName] = capNames
+	applyName := closureName + "_call"
+	stFields := map[string]types.Type{}
+	var order []string
+	var structFields []StructField
+	var capParams []*parser.Param
+	for _, cn := range capNames {
+		order = append(order, cn)
+		typStr := "int"
+		if t, err := env.GetVar(cn); err == nil {
+			switch t.(type) {
+			case types.StringType:
+				typStr = "const char*"
+				stFields[cn] = types.StringType{}
+			case types.FloatType:
+				typStr = "double"
+				stFields[cn] = types.FloatType{}
+			case types.IntType:
+				typStr = "int"
+				stFields[cn] = types.IntType{}
+			case types.StructType:
+				typStr = t.(types.StructType).Name
+				stFields[cn] = t.(types.StructType)
+			}
+		} else {
+			stFields[cn] = types.IntType{}
+		}
+		structFields = append(structFields, StructField{Name: cn, Value: &VarRef{Name: cn}})
+		typName := typStr
+		capParams = append(capParams, &parser.Param{Name: cn, Type: &parser.TypeRef{Simple: &typName}})
+	}
+	currentEnv.SetStruct(closureName, types.StructType{Name: closureName, Fields: stFields, Order: order})
+	structTypes = currentEnv.Structs()
+	// build apply function params: captured params + inner.Params
+	inner2 := *inner
+	inner2.Params = append(capParams, inner.Params...)
+	applyEnv := types.NewEnv(env)
+	for _, cp := range capParams {
+		switch *cp.Type.Simple {
+		case "const char*":
+			applyEnv.SetVar(cp.Name, types.StringType{}, true)
+		case "double":
+			applyEnv.SetVar(cp.Name, types.FloatType{}, true)
+		case "int":
+			applyEnv.SetVar(cp.Name, types.IntType{}, true)
+		default:
+			if st, ok := env.GetStruct(*cp.Type.Simple); ok {
+				applyEnv.SetVar(cp.Name, st, true)
+			}
+		}
+	}
+	applyFun, err := compileFunction(applyEnv, applyName, &inner2)
+	if err != nil {
+		return nil, err
+	}
+	extraFuncs = append(extraFuncs, applyFun)
+	closureApply[closureName] = applyName
+	funcReturnTypes[applyName] = applyFun.Return
+	ret := closureName
+	var body []Stmt
+	body = append(body, &ReturnStmt{Expr: &StructLit{Name: closureName, Fields: structFields}})
+	funcReturnTypes[name] = ret
+	return &Function{Name: name, Params: params, Body: body, Return: ret}, nil
+}
+
 func compileFunction(env *types.Env, name string, fn *parser.FunExpr) (*Function, error) {
+	localEnv := types.NewEnv(env)
 	var params []Param
 	var paramTypes []string
 	for _, p := range fn.Params {
@@ -1434,6 +1587,18 @@ func compileFunction(env *types.Env, name string, fn *parser.FunExpr) (*Function
 		}
 		paramTypes = append(paramTypes, typ)
 		params = append(params, Param{Name: p.Name, Type: typ})
+		switch typ {
+		case "const char*":
+			localEnv.SetVar(p.Name, types.StringType{}, true)
+		case "double":
+			localEnv.SetVar(p.Name, types.FloatType{}, true)
+		case "int":
+			localEnv.SetVar(p.Name, types.IntType{}, true)
+		default:
+			if st, ok := env.GetStruct(typ); ok {
+				localEnv.SetVar(p.Name, st, true)
+			}
+		}
 	}
 	funcParamTypes[name] = paramTypes
 	ret := "int"
@@ -1452,7 +1617,14 @@ func compileFunction(env *types.Env, name string, fn *parser.FunExpr) (*Function
 	if ret == "double" {
 		markMath()
 	}
-	body, err := compileStmts(env, fn.BlockBody)
+
+	if len(fn.BlockBody) == 1 && fn.BlockBody[0].Return != nil {
+		if inner := detectFunExpr(fn.BlockBody[0].Return.Value); inner != nil {
+			return compileClosure(localEnv, name, params, inner)
+		}
+	}
+
+	body, err := compileStmts(localEnv, fn.BlockBody)
 	if err != nil {
 		return nil, err
 	}
@@ -1978,6 +2150,16 @@ func convertUnary(u *parser.Unary) Expr {
 				return nil
 			}
 			args = append(args, ex)
+		}
+		if t, ok := varTypes[call.Func]; ok {
+			if apply, ok2 := closureApply[t]; ok2 {
+				var all []Expr
+				for _, f := range closureFields[t] {
+					all = append(all, &FieldExpr{Target: &VarRef{Name: call.Func}, Name: f})
+				}
+				all = append(all, args...)
+				return &CallExpr{Func: apply, Args: all}
+			}
 		}
 		return &CallExpr{Func: call.Func, Args: args}
 	}
@@ -2696,6 +2878,9 @@ func inferExprType(env *types.Env, e Expr) string {
 		case "len":
 			return "int"
 		default:
+			if t, ok := funcReturnTypes[v.Func]; ok {
+				return t
+			}
 			if fn, ok := env.GetFunc(v.Func); ok && fn.Return != nil && fn.Return.Simple != nil {
 				switch *fn.Return.Simple {
 				case "string":
@@ -2883,94 +3068,94 @@ func evalQueryConst(q *parser.QueryExpr) (*ListLit, bool) {
 	for _, j := range q.Joins {
 		env.SetVar(j.Var, inferSrc(j.Src), true)
 	}
-       results, err := data.RunQuery(q, env, data.MemoryEngine{}, func(en *types.Env, e *parser.Expr) (any, error) {
-               ip := interpreter.New(&parser.Program{}, en, "")
-               return ip.EvalExpr(e)
-       })
-       if err == nil {
-               var elems []Expr
-               for _, r := range results {
-                       ex := anyToExpr(r)
-                       if ex == nil {
-                               return nil, false
-                       }
-                       elems = append(elems, ex)
-               }
-               return &ListLit{Elems: elems}, true
-       }
+	results, err := data.RunQuery(q, env, data.MemoryEngine{}, func(en *types.Env, e *parser.Expr) (any, error) {
+		ip := interpreter.New(&parser.Program{}, en, "")
+		return ip.EvalExpr(e)
+	})
+	if err == nil {
+		var elems []Expr
+		for _, r := range results {
+			ex := anyToExpr(r)
+			if ex == nil {
+				return nil, false
+			}
+			elems = append(elems, ex)
+		}
+		return &ListLit{Elems: elems}, true
+	}
 
-       if q.Where == nil && q.Group == nil && len(q.Froms) == 0 && len(q.Joins) == 0 && q.Select != nil {
-               srcList, ok := convertListExpr(q.Source)
-               if !ok {
-                       return nil, false
-               }
-               vals := make([]map[string]any, len(srcList))
-               for i, ex := range srcList {
-                       v, ok := valueFromExpr(ex)
-                       if !ok {
-                               return nil, false
-                       }
-                       m, ok := v.(map[string]any)
-                       if !ok {
-                               return nil, false
-                       }
-                       vals[i] = m
-               }
+	if q.Where == nil && q.Group == nil && len(q.Froms) == 0 && len(q.Joins) == 0 && q.Select != nil {
+		srcList, ok := convertListExpr(q.Source)
+		if !ok {
+			return nil, false
+		}
+		vals := make([]map[string]any, len(srcList))
+		for i, ex := range srcList {
+			v, ok := valueFromExpr(ex)
+			if !ok {
+				return nil, false
+			}
+			m, ok := v.(map[string]any)
+			if !ok {
+				return nil, false
+			}
+			vals[i] = m
+		}
 
-               sortField := ""
-               desc := false
-               if s := q.Sort; s != nil && s.Binary != nil && s.Binary.Left != nil {
-                       u := s.Binary.Left
-                       if len(u.Ops) == 1 && u.Ops[0] == "-" {
-                               desc = true
-                       }
-                       tgt := u.Value.Target
-                       if tgt != nil && tgt.Selector != nil && tgt.Selector.Root == q.Var && len(tgt.Selector.Tail) == 1 {
-                               sortField = tgt.Selector.Tail[0]
-                       }
-               }
-               if sortField != "" {
-                       sort.Slice(vals, func(i, j int) bool {
-                               ai, _ := vals[i][sortField].(int)
-                               aj, _ := vals[j][sortField].(int)
-                               if desc {
-                                       return ai > aj
-                               }
-                               return ai < aj
-                       })
-               }
-               skipN := 0
-               if q.Skip != nil {
-                       if n, ok := evalInt(convertExpr(q.Skip)); ok {
-                               skipN = n
-                       }
-               }
-               takeN := len(vals)
-               if q.Take != nil {
-                       if n, ok := evalInt(convertExpr(q.Take)); ok && n < takeN {
-                               takeN = n
-                       }
-               }
-               if skipN < len(vals) {
-                       vals = vals[skipN:]
-               } else {
-                       vals = []map[string]any{}
-               }
-               if takeN < len(vals) {
-                       vals = vals[:takeN]
-               }
-               var elems []Expr
-               for _, v := range vals {
-                       ex := anyToExpr(v)
-                       if ex == nil {
-                               return nil, false
-                       }
-                       elems = append(elems, ex)
-               }
-               return &ListLit{Elems: elems}, true
-       }
+		sortField := ""
+		desc := false
+		if s := q.Sort; s != nil && s.Binary != nil && s.Binary.Left != nil {
+			u := s.Binary.Left
+			if len(u.Ops) == 1 && u.Ops[0] == "-" {
+				desc = true
+			}
+			tgt := u.Value.Target
+			if tgt != nil && tgt.Selector != nil && tgt.Selector.Root == q.Var && len(tgt.Selector.Tail) == 1 {
+				sortField = tgt.Selector.Tail[0]
+			}
+		}
+		if sortField != "" {
+			sort.Slice(vals, func(i, j int) bool {
+				ai, _ := vals[i][sortField].(int)
+				aj, _ := vals[j][sortField].(int)
+				if desc {
+					return ai > aj
+				}
+				return ai < aj
+			})
+		}
+		skipN := 0
+		if q.Skip != nil {
+			if n, ok := evalInt(convertExpr(q.Skip)); ok {
+				skipN = n
+			}
+		}
+		takeN := len(vals)
+		if q.Take != nil {
+			if n, ok := evalInt(convertExpr(q.Take)); ok && n < takeN {
+				takeN = n
+			}
+		}
+		if skipN < len(vals) {
+			vals = vals[skipN:]
+		} else {
+			vals = []map[string]any{}
+		}
+		if takeN < len(vals) {
+			vals = vals[:takeN]
+		}
+		var elems []Expr
+		for _, v := range vals {
+			ex := anyToExpr(v)
+			if ex == nil {
+				return nil, false
+			}
+			elems = append(elems, ex)
+		}
+		return &ListLit{Elems: elems}, true
+	}
 
-       return nil, false
+	return nil, false
 }
 
 func valueFromExpr(e Expr) (any, bool) {
