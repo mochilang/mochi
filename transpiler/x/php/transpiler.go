@@ -5,6 +5,7 @@ package php
 import (
 	"fmt"
 	"io"
+	"strconv"
 	"strings"
 
 	"mochi/ast"
@@ -317,6 +318,8 @@ type IntDivExpr struct {
 type Var struct{ Name string }
 
 type IntLit struct{ Value int }
+
+type FloatLit struct{ Value float64 }
 
 type BoolLit struct{ Value bool }
 
@@ -998,6 +1001,10 @@ func (v *Var) emit(w io.Writer) { fmt.Fprintf(w, "$%s", v.Name) }
 
 func (i *IntLit) emit(w io.Writer) { fmt.Fprint(w, i.Value) }
 
+func (f *FloatLit) emit(w io.Writer) {
+	fmt.Fprint(w, strconv.FormatFloat(f.Value, 'f', -1, 64))
+}
+
 func (b *BoolLit) emit(w io.Writer) {
 	if b.Value {
 		fmt.Fprint(w, "true")
@@ -1506,6 +1513,8 @@ func convertLiteral(l *parser.Literal) (Expr, error) {
 		return &StringLit{Value: *l.Str}, nil
 	case l.Int != nil:
 		return &IntLit{Value: int(*l.Int)}, nil
+	case l.Float != nil:
+		return &FloatLit{Value: *l.Float}, nil
 	case l.Bool != nil:
 		return &BoolLit{Value: bool(*l.Bool)}, nil
 	}
