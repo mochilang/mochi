@@ -1,3 +1,31 @@
+## Progress (2025-07-21 17:37 +0700)
+- feat(clj): simplify json output and group-by
+- Regenerated golden files - 96/100 vm valid programs passing
+
+## Progress (2025-07-21 17:37 +0700)
+- feat(clj): simplify json output and group-by
+- Regenerated golden files - 96/100 vm valid programs passing
+
+## Progress (2025-07-21 17:37 +0700)
+- feat(clj): simplify json output and group-by
+- Regenerated golden files - 96/100 vm valid programs passing
+
+## Progress (2025-07-21 17:37 +0700)
+- feat(clj): simplify json output and group-by
+- Regenerated golden files - 96/100 vm valid programs passing
+
+## Progress (2025-07-21 17:37 +0700)
+- feat(clj): simplify json output and group-by
+- Regenerated golden files - 96/100 vm valid programs passing
+
+## Progress (2025-07-21 17:37 +0700)
+- feat(clj): simplify json output and group-by
+- Regenerated golden files - 96/100 vm valid programs passing
+
+## Progress (2025-07-21 17:37 +0700)
+- feat(clj): simplify json output and group-by
+- Regenerated golden files - 96/100 vm valid programs passing
+
 ## Progress (2025-07-21 16:30 +0700)
 - add update statement support
 - Regenerated golden files - 96/100 vm valid programs passing
