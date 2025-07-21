@@ -90,15 +90,14 @@ func (p *PrintStmt) emit(w io.Writer) {
 			return
 		}
 	}
-	usesStrings = true
-	io.WriteString(w, "fmt.Println(strings.TrimSpace(fmt.Sprint(")
+	io.WriteString(w, "fmt.Println(")
 	for i, e := range p.Args {
 		if i > 0 {
-			io.WriteString(w, ", \" \", ")
+			io.WriteString(w, ", ")
 		}
 		e.emit(w)
 	}
-	io.WriteString(w, ")))")
+	io.WriteString(w, ")")
 }
 
 type VarDecl struct {
@@ -1000,7 +999,6 @@ func compileStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 				args[i] = ex
 			}
 			usesPrint = true
-			usesStrings = true
 			return &PrintStmt{Args: args}, nil
 		}
 		e, err := compileExpr(st.Expr.Expr, env, "")

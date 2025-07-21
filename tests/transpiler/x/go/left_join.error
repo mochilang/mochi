@@ -1,3 +1,0 @@
-exit status 1
-# command-line-arguments
-../../../tests/transpiler/x/go/left_join.go:47:16: cannot use c (variable of struct type Customer) as map[string]any value in struct literal

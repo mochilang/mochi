@@ -1,1 +1,4 @@
-unsupported query features
+exit status 1
+# command-line-arguments
+../../../tests/transpiler/x/go/order_by_map.go:35:29: cannot use map[any]any{…} (value of type map[any]any) as map[string]int value in struct literal
+../../../tests/transpiler/x/go/order_by_map.go:37:48: invalid operation: _tmp[i].Key < _tmp[j].Key (operator < not defined on map)
