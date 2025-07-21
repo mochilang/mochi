@@ -764,6 +764,91 @@ func (e *ExistsExpr) emit(w io.Writer) {
 	io.WriteString(w, ".isNotEmpty()")
 }
 
+// SortQueryExpr represents a sorted list comprehension.
+type SortQueryExpr struct {
+	Vars    []string
+	Iters   []Expr
+	Cond    Expr
+	Sort    Expr
+	Select  Expr
+	ResType string
+}
+
+func (sq *SortQueryExpr) emit(w io.Writer) {
+	io.WriteString(w, "run {\n")
+	indent(w, 1)
+	sortType := guessType(sq.Sort)
+	if sortType == "" {
+		sortType = "Any"
+	}
+	elemType := sq.ResType
+	if elemType == "" {
+		elemType = guessType(sq.Select)
+		if elemType == "" {
+			elemType = "Any"
+		}
+	}
+	fmt.Fprintf(w, "val _tmp = mutableListOf<Pair<%s, %s>>()\n", sortType, elemType)
+	for i, v := range sq.Vars {
+		indent(w, 1+i)
+		fmt.Fprintf(w, "for (%s in ", v)
+		sq.Iters[i].emit(w)
+		io.WriteString(w, ") {\n")
+	}
+	if sq.Cond != nil {
+		indent(w, 1+len(sq.Vars))
+		io.WriteString(w, "if (")
+		sq.Cond.emit(w)
+		io.WriteString(w, ") {\n")
+		indent(w, 2+len(sq.Vars))
+		io.WriteString(w, "_tmp.add(Pair(")
+		sq.Sort.emit(w)
+		io.WriteString(w, ", ")
+		sq.Select.emit(w)
+		io.WriteString(w, "))\n")
+		indent(w, 1+len(sq.Vars))
+		io.WriteString(w, "}\n")
+	} else {
+		indent(w, 1+len(sq.Vars))
+		io.WriteString(w, "_tmp.add(Pair(")
+		sq.Sort.emit(w)
+		io.WriteString(w, ", ")
+		sq.Select.emit(w)
+		io.WriteString(w, "))\n")
+	}
+	for i := len(sq.Vars); i > 0; i-- {
+		indent(w, i)
+		io.WriteString(w, "}\n")
+	}
+	indent(w, 1)
+	io.WriteString(w, "val _res = _tmp.sortedBy { it.first }.map { it.second }.toMutableList()\n")
+	indent(w, 1)
+	io.WriteString(w, "_res\n")
+	io.WriteString(w, "}")
+}
+
+// SkipTakeExpr applies drop/take operations on a list expression.
+type SkipTakeExpr struct {
+	Expr Expr
+	Skip Expr
+	Take Expr
+}
+
+func (st *SkipTakeExpr) emit(w io.Writer) {
+	st.Expr.emit(w)
+	if st.Skip != nil {
+		io.WriteString(w, ".drop(")
+		st.Skip.emit(w)
+		io.WriteString(w, ")")
+	}
+	if st.Take != nil {
+		io.WriteString(w, ".take(")
+		st.Take.emit(w)
+		io.WriteString(w, ")")
+	}
+	io.WriteString(w, ".toMutableList()")
+}
+
 // MultiListComp represents a list comprehension with multiple iterators.
 type MultiListComp struct {
 	Vars  []string
@@ -1215,6 +1300,14 @@ func guessType(e Expr) string {
 			elem = "Any"
 		}
 		return "MutableList<" + elem + ">"
+	case *SortQueryExpr:
+		elem := guessType(v.Select)
+		if elem == "" {
+			elem = "Any"
+		}
+		return "MutableList<" + elem + ">"
+	case *SkipTakeExpr:
+		return guessType(v.Expr)
 	case *RightJoinExpr:
 		elem := guessType(v.Select)
 		if elem == "" {
@@ -1707,13 +1800,21 @@ func convertRightJoinQuery(env *types.Env, q *parser.QueryExpr) (Expr, error) {
 }
 
 func convertQueryExpr(env *types.Env, q *parser.QueryExpr) (Expr, error) {
-	if q.Skip != nil || q.Take != nil {
-		return nil, fmt.Errorf("unsupported query")
+	var skipExpr, takeExpr Expr
+	var err error
+	if q.Skip != nil {
+		skipExpr, err = convertExpr(env, q.Skip)
+		if err != nil {
+			return nil, err
+		}
 	}
-	if q.Sort != nil && q.Group == nil {
-		return nil, fmt.Errorf("unsupported query")
+	if q.Take != nil {
+		takeExpr, err = convertExpr(env, q.Take)
+		if err != nil {
+			return nil, err
+		}
 	}
-	if len(q.Joins) == 1 && q.Joins[0].Side != nil && *q.Joins[0].Side == "right" && q.Group == nil && len(q.Froms) == 0 && q.Where == nil {
+	if len(q.Joins) == 1 && q.Joins[0].Side != nil && *q.Joins[0].Side == "right" && q.Group == nil && len(q.Froms) == 0 && q.Where == nil && skipExpr == nil && takeExpr == nil && q.Sort == nil {
 		return convertRightJoinQuery(env, q)
 	}
 	src, err := convertExpr(env, q.Source)
@@ -1824,7 +1925,7 @@ func convertQueryExpr(env *types.Env, q *parser.QueryExpr) (Expr, error) {
 			{Name: "key", Type: guessType(key)},
 			{Name: "items", Type: "MutableList<" + rowTypeStr + ">"},
 		}})
-		return &GroupQueryExpr{
+		res := Expr(&GroupQueryExpr{
 			Vars:      append([]string{q.Var}, namesFromFroms(froms)...),
 			Iters:     append([]Expr{src}, exprsFromFroms(froms)...),
 			Cond:      cond,
@@ -1837,9 +1938,35 @@ func convertQueryExpr(env *types.Env, q *parser.QueryExpr) (Expr, error) {
 			Having:    having,
 			Sort:      sortExpr,
 			ResType:   guessType(sel2),
-		}, nil
+		})
+		if skipExpr != nil || takeExpr != nil {
+			res = &SkipTakeExpr{Expr: res, Skip: skipExpr, Take: takeExpr}
+		}
+		return res, nil
 	}
-	return &MultiListComp{Vars: append([]string{q.Var}, namesFromFroms(froms)...), Iters: append([]Expr{src}, exprsFromFroms(froms)...), Expr: sel, Cond: cond}, nil
+	if q.Sort != nil {
+		sortExpr, err := convertExpr(child, q.Sort)
+		if err != nil {
+			return nil, err
+		}
+		res := Expr(&SortQueryExpr{
+			Vars:    append([]string{q.Var}, namesFromFroms(froms)...),
+			Iters:   append([]Expr{src}, exprsFromFroms(froms)...),
+			Cond:    cond,
+			Sort:    sortExpr,
+			Select:  sel,
+			ResType: guessType(sel),
+		})
+		if skipExpr != nil || takeExpr != nil {
+			res = &SkipTakeExpr{Expr: res, Skip: skipExpr, Take: takeExpr}
+		}
+		return res, nil
+	}
+	res := Expr(&MultiListComp{Vars: append([]string{q.Var}, namesFromFroms(froms)...), Iters: append([]Expr{src}, exprsFromFroms(froms)...), Expr: sel, Cond: cond})
+	if skipExpr != nil || takeExpr != nil {
+		res = &SkipTakeExpr{Expr: res, Skip: skipExpr, Take: takeExpr}
+	}
+	return res, nil
 }
 
 func namesFromFroms(f []queryFrom) []string {
