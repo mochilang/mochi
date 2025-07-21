@@ -658,12 +658,22 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 			}
 			if st.Let.Value != nil {
 				if q := queryFromExpr(st.Let.Value); q != nil {
-					stmts, typ, err := buildQuery(env, q, st.Let.Name, varTypes)
-					if err != nil {
-						return nil, err
+					if len(q.Joins) == 1 && q.Joins[0].Side != nil && *q.Joins[0].Side == "left" &&
+						len(q.Froms) == 0 && q.Group == nil && q.Sort == nil && q.Skip == nil && q.Take == nil && !q.Distinct {
+						stmts, typ, err := buildLeftJoinQuery(env, q, st.Let.Name, varTypes)
+						if err != nil {
+							return nil, err
+						}
+						vd.Type = typ
+						pr.Stmts = append(pr.Stmts, stmts...)
+					} else {
+						stmts, typ, err := buildQuery(env, q, st.Let.Name, varTypes)
+						if err != nil {
+							return nil, err
+						}
+						vd.Type = typ
+						pr.Stmts = append(pr.Stmts, stmts...)
 					}
-					vd.Type = typ
-					pr.Stmts = append(pr.Stmts, stmts...)
 				} else {
 					ex, err := convertExpr(env, st.Let.Value)
 					if err != nil {
@@ -1212,6 +1222,111 @@ func buildQuery(env *types.Env, q *parser.QueryExpr, varName string, varTypes ma
 		body = []Stmt{&ForEachStmt{Name: loops[i].name, Iterable: loops[i].src, Body: body}}
 	}
 	stmts = append(stmts, body...)
+	return stmts, "array of " + elemT, nil
+}
+
+func replaceVar(e Expr, name string, repl Expr) Expr {
+	switch v := e.(type) {
+	case *VarRef:
+		if v.Name == name {
+			return repl
+		}
+	case *RecordLit:
+		for i, f := range v.Fields {
+			v.Fields[i].Expr = replaceVar(f.Expr, name, repl)
+		}
+	case *BinaryExpr:
+		v.Left = replaceVar(v.Left, name, repl)
+		v.Right = replaceVar(v.Right, name, repl)
+	case *CallExpr:
+		for i, a := range v.Args {
+			v.Args[i] = replaceVar(a, name, repl)
+		}
+	case *IndexExpr:
+		v.Target = replaceVar(v.Target, name, repl)
+		v.Index = replaceVar(v.Index, name, repl)
+	case *SliceExpr:
+		v.Target = replaceVar(v.Target, name, repl)
+		if v.Start != nil {
+			v.Start = replaceVar(v.Start, name, repl)
+		}
+		if v.End != nil {
+			v.End = replaceVar(v.End, name, repl)
+		}
+	case *UnaryExpr:
+		v.Expr = replaceVar(v.Expr, name, repl)
+	}
+	return e
+}
+
+func zeroValue(typ string) Expr {
+	switch typ {
+	case "integer":
+		return &IntLit{Value: 0}
+	case "string":
+		return &StringLit{Value: ""}
+	default:
+		for _, r := range currProg.Records {
+			if r.Name == typ {
+				var fields []FieldExpr
+				for _, f := range r.Fields {
+					fields = append(fields, FieldExpr{Name: f.Name, Expr: zeroValue(f.Type)})
+				}
+				return &RecordLit{Type: typ, Fields: fields}
+			}
+		}
+	}
+	return &IntLit{Value: 0}
+}
+
+func buildLeftJoinQuery(env *types.Env, q *parser.QueryExpr, varName string, varTypes map[string]string) ([]Stmt, string, error) {
+	j := q.Joins[0]
+	leftSrc, err := convertExpr(env, q.Source)
+	if err != nil {
+		return nil, "", err
+	}
+	rightSrc, err := convertExpr(env, j.Src)
+	if err != nil {
+		return nil, "", err
+	}
+	ltyp := typeOf(q.Source, env)
+	rtyp := typeOf(j.Src, env)
+	if _, ok := varTypes[q.Var]; !ok {
+		varTypes[q.Var] = elemType(ltyp)
+	}
+	if _, ok := varTypes[j.Var]; !ok {
+		varTypes[j.Var] = elemType(rtyp)
+	}
+	child := types.NewEnv(env)
+	child.SetVar(q.Var, types.AnyType{}, true)
+	child.SetVar(j.Var, types.AnyType{}, true)
+	cond, err := convertExpr(child, j.On)
+	if err != nil {
+		return nil, "", err
+	}
+	sel, err := convertExpr(child, q.Select)
+	if err != nil {
+		return nil, "", err
+	}
+	jType := elemType(rtyp)
+	unmatchedSel := replaceVar(sel, j.Var, zeroValue(jType))
+	elemT := inferType(sel)
+	matchedVar := fmt.Sprintf("matched%d", len(currProg.Vars))
+	currProg.Vars = append(currProg.Vars, VarDecl{Name: matchedVar, Type: "boolean"})
+
+	appendMatched := &AssignStmt{Name: varName, Expr: &CallExpr{Name: "concat", Args: []Expr{&VarRef{Name: varName}, &ListLit{Elems: []Expr{sel}}}}}
+	appendUnmatched := &AssignStmt{Name: varName, Expr: &CallExpr{Name: "concat", Args: []Expr{&VarRef{Name: varName}, &ListLit{Elems: []Expr{unmatchedSel}}}}}
+
+	innerBody := []Stmt{&IfStmt{Cond: cond, Then: []Stmt{appendMatched, &AssignStmt{Name: matchedVar, Expr: &BoolLit{Value: true}}}}}
+	forBody := []Stmt{
+		&AssignStmt{Name: matchedVar, Expr: &BoolLit{Value: false}},
+		&ForEachStmt{Name: j.Var, Iterable: rightSrc, Body: innerBody},
+		&IfStmt{Cond: &UnaryExpr{Op: "not ", Expr: &VarRef{Name: matchedVar}}, Then: []Stmt{appendUnmatched}},
+	}
+
+	stmts := []Stmt{&AssignStmt{Name: varName, Expr: &ListLit{}}}
+	outer := &ForEachStmt{Name: q.Var, Iterable: leftSrc, Body: forBody}
+	stmts = append(stmts, outer)
 	return stmts, "array of " + elemT, nil
 }
 
