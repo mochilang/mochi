@@ -2,23 +2,3 @@ run: exit status 254
 ../../../tests/transpiler/x/dart/group_by_having.dart:37:3: Error: Method not found: 'json'.
   json(big);
   ^^^^
-../../../tests/transpiler/x/dart/group_by_having.dart:31:11: Error: The getter 'items' isn't defined for the class 'Map<String, dynamic>'.
- - 'Map' is from 'dart:core'.
-Try correcting the name to the name of an existing getter, or defining a getter or field named 'items'.
-    if (g.items.length >= 4) {
-          ^^^^^
-../../../tests/transpiler/x/dart/group_by_having.dart:32:27: Error: The getter 'key' isn't defined for the class 'Map<String, dynamic>'.
- - 'Map' is from 'dart:core'.
-Try correcting the name to the name of an existing getter, or defining a getter or field named 'key'.
-      res.add(Big(city: g.key, num: g.items.length));
-                          ^^^
-../../../tests/transpiler/x/dart/group_by_having.dart:32:39: Error: The getter 'items' isn't defined for the class 'Map<String, dynamic>'.
- - 'Map' is from 'dart:core'.
-Try correcting the name to the name of an existing getter, or defining a getter or field named 'items'.
-      res.add(Big(city: g.key, num: g.items.length));
-                                      ^^^^^
-../../../tests/transpiler/x/dart/group_by_having.dart:36:3: Error: A value of type 'List<dynamic>' can't be assigned to a variable of type 'List<Big>'.
- - 'List' is from 'dart:core'.
- - 'Big' is from '../../../tests/transpiler/x/dart/group_by_having.dart'.
-})();;
-  ^

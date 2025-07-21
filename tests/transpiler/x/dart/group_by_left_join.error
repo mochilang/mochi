@@ -1,1 +1,10 @@
-transpile: unsupported query
+run: exit status 255
+Unhandled exception:
+NoSuchMethodError: Class '_Map<String, Object>' has no instance getter 'o'.
+Receiver: _Map len:2
+Tried calling: o
+#0      Object.noSuchMethod (dart:core-patch/object_patch.dart:38:5)
+#1      main.<anonymous closure> (file:///workspace/mochi/tests/transpiler/x/dart/group_by_left_join.dart:54:72)
+#2      main (file:///workspace/mochi/tests/transpiler/x/dart/group_by_left_join.dart:57:3)
+#3      _delayEntrypointInvocation.<anonymous closure> (dart:isolate-patch/isolate_patch.dart:314:19)
+#4      _RawReceivePort._handleMessage (dart:isolate-patch/isolate_patch.dart:193:12)

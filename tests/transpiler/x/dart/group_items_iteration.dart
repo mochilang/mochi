@@ -20,7 +20,7 @@ void main() {
     (g['items'] as List).add(d);
   }
   var _list = groups.values.toList();
-  var res = <dynamic>[];
+  var res = <Map<String, dynamic>>[];
   for (var g in _list) {
     res.add(g);
   }

@@ -1,41 +1,21 @@
 run: exit status 254
-../../../tests/transpiler/x/dart/group_by_sort.dart:29:40: Error: The type 'Map<String, dynamic>' used in the 'for' loop must implement 'Iterable<dynamic>'.
+../../../tests/transpiler/x/dart/group_by_sort.dart:29:42: Error: The getter 'items' isn't defined for the class 'Map<String, dynamic>'.
  - 'Map' is from 'dart:core'.
- - 'Iterable' is from 'dart:core'.
-  _list.sort(((a, b) => [for (var x in b) x.val].isEmpty ? 0 : ([for (var x in b) x.val].reduce((a, b) => a + b)).compareTo([for (var x in a) x.val].isEmpty ? 0 : ([for (var x in a) x.val].reduce((a, b) => a + b)))));
-                                       ^
-../../../tests/transpiler/x/dart/group_by_sort.dart:29:80: Error: The type 'Map<String, dynamic>' used in the 'for' loop must implement 'Iterable<dynamic>'.
+Try correcting the name to the name of an existing getter, or defining a getter or field named 'items'.
+  _list.sort(((a, b) => [for (var x in b.items) x.val].isEmpty ? 0 : ([for (var x in b.items) x.val].reduce((a, b) => a + b)).compareTo([for (var x in a.items) x.val].isEmpty ? 0 : ([for (var x in a.items) x.val].reduce((a, b) => a + b)))));
+                                         ^^^^^
+../../../tests/transpiler/x/dart/group_by_sort.dart:29:88: Error: The getter 'items' isn't defined for the class 'Map<String, dynamic>'.
  - 'Map' is from 'dart:core'.
- - 'Iterable' is from 'dart:core'.
-  _list.sort(((a, b) => [for (var x in b) x.val].isEmpty ? 0 : ([for (var x in b) x.val].reduce((a, b) => a + b)).compareTo([for (var x in a) x.val].isEmpty ? 0 : ([for (var x in a) x.val].reduce((a, b) => a + b)))));
-                                                                               ^
-../../../tests/transpiler/x/dart/group_by_sort.dart:29:140: Error: The type 'Map<String, dynamic>' used in the 'for' loop must implement 'Iterable<dynamic>'.
+Try correcting the name to the name of an existing getter, or defining a getter or field named 'items'.
+  _list.sort(((a, b) => [for (var x in b.items) x.val].isEmpty ? 0 : ([for (var x in b.items) x.val].reduce((a, b) => a + b)).compareTo([for (var x in a.items) x.val].isEmpty ? 0 : ([for (var x in a.items) x.val].reduce((a, b) => a + b)))));
+                                                                                       ^^^^^
+../../../tests/transpiler/x/dart/group_by_sort.dart:29:154: Error: The getter 'items' isn't defined for the class 'Map<String, dynamic>'.
  - 'Map' is from 'dart:core'.
- - 'Iterable' is from 'dart:core'.
-  _list.sort(((a, b) => [for (var x in b) x.val].isEmpty ? 0 : ([for (var x in b) x.val].reduce((a, b) => a + b)).compareTo([for (var x in a) x.val].isEmpty ? 0 : ([for (var x in a) x.val].reduce((a, b) => a + b)))));
-                                                                                                                                           ^
-../../../tests/transpiler/x/dart/group_by_sort.dart:29:180: Error: The type 'Map<String, dynamic>' used in the 'for' loop must implement 'Iterable<dynamic>'.
+Try correcting the name to the name of an existing getter, or defining a getter or field named 'items'.
+  _list.sort(((a, b) => [for (var x in b.items) x.val].isEmpty ? 0 : ([for (var x in b.items) x.val].reduce((a, b) => a + b)).compareTo([for (var x in a.items) x.val].isEmpty ? 0 : ([for (var x in a.items) x.val].reduce((a, b) => a + b)))));
+                                                                                                                                                         ^^^^^
+../../../tests/transpiler/x/dart/group_by_sort.dart:29:200: Error: The getter 'items' isn't defined for the class 'Map<String, dynamic>'.
  - 'Map' is from 'dart:core'.
- - 'Iterable' is from 'dart:core'.
-  _list.sort(((a, b) => [for (var x in b) x.val].isEmpty ? 0 : ([for (var x in b) x.val].reduce((a, b) => a + b)).compareTo([for (var x in a) x.val].isEmpty ? 0 : ([for (var x in a) x.val].reduce((a, b) => a + b)))));
-                                                                                                                                                                                   ^
-../../../tests/transpiler/x/dart/group_by_sort.dart:32:28: Error: The getter 'key' isn't defined for the class 'Map<String, dynamic>'.
- - 'Map' is from 'dart:core'.
-Try correcting the name to the name of an existing getter, or defining a getter or field named 'key'.
-    res.add(Grouped(cat: g.key, total: [for (var x in g) x.val].isEmpty ? 0 : ([for (var x in g) x.val].reduce((a, b) => a + b))));
-                           ^^^
-../../../tests/transpiler/x/dart/group_by_sort.dart:32:55: Error: The type 'Map<String, dynamic>' used in the 'for' loop must implement 'Iterable<dynamic>'.
- - 'Map' is from 'dart:core'.
- - 'Iterable' is from 'dart:core'.
-    res.add(Grouped(cat: g.key, total: [for (var x in g) x.val].isEmpty ? 0 : ([for (var x in g) x.val].reduce((a, b) => a + b))));
-                                                      ^
-../../../tests/transpiler/x/dart/group_by_sort.dart:32:95: Error: The type 'Map<String, dynamic>' used in the 'for' loop must implement 'Iterable<dynamic>'.
- - 'Map' is from 'dart:core'.
- - 'Iterable' is from 'dart:core'.
-    res.add(Grouped(cat: g.key, total: [for (var x in g) x.val].isEmpty ? 0 : ([for (var x in g) x.val].reduce((a, b) => a + b))));
-                                                                                              ^
-../../../tests/transpiler/x/dart/group_by_sort.dart:35:3: Error: A value of type 'List<dynamic>' can't be assigned to a variable of type 'List<Grouped>'.
- - 'List' is from 'dart:core'.
- - 'Grouped' is from '../../../tests/transpiler/x/dart/group_by_sort.dart'.
-})();;
-  ^
+Try correcting the name to the name of an existing getter, or defining a getter or field named 'items'.
+  _list.sort(((a, b) => [for (var x in b.items) x.val].isEmpty ? 0 : ([for (var x in b.items) x.val].reduce((a, b) => a + b)).compareTo([for (var x in a.items) x.val].isEmpty ? 0 : ([for (var x in a.items) x.val].reduce((a, b) => a + b)))));
+                                                                                                                                                                                                       ^^^^^
