@@ -32,7 +32,7 @@ Compiled programs: 87/100
 - [x] group_by_conditional_sum
 - [ ] group_by_having
 - [x] group_by_join
-- [ ] group_by_left_join
+- [x] group_by_left_join
 - [ ] group_by_multi_join
 - [ ] group_by_multi_join_sort
 - [x] group_by_sort
@@ -46,7 +46,7 @@ Compiled programs: 87/100
 - [x] join_multi
 - [x] json_builtin
 - [x] left_join
-- [x] left_join_multi
+- [ ] left_join_multi
 - [x] len_builtin
 - [x] len_map
 - [x] len_string

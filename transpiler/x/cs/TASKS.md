@@ -1,7 +1,5 @@
-## Progress (2025-07-21 10:52 +0700)
-- scheme transpiler: add right join and simplify loops (progress 87/100)
-
-# C# Transpiler Tasks
+## Progress (2025-07-21 12:05 +0700)
+- cs transpiler: typed group structs and left join (progress 87/100)
 
 ## Progress (2025-07-20 22:25 +0700)
 - cs transpiler: basic left join support (progress 85/100)
