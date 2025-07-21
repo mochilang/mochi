@@ -1,3 +1,43 @@
+## Progress (2025-07-21 16:07 +0700)
+- Clean up transpiler/x
+- Regenerated golden files - 1/100 vm valid programs passing
+
+## Progress (2025-07-21 16:07 +0700)
+- Clean up transpiler/x
+- Regenerated golden files - 1/100 vm valid programs passing
+
+## Progress (2025-07-21 16:07 +0700)
+- Clean up transpiler/x
+- Regenerated golden files - 1/100 vm valid programs passing
+
+## Progress (2025-07-21 16:07 +0700)
+- Clean up transpiler/x
+- Regenerated golden files - 1/100 vm valid programs passing
+
+## Progress (2025-07-21 16:07 +0700)
+- Clean up transpiler/x
+- Regenerated golden files - 1/100 vm valid programs passing
+
+## Progress (2025-07-21 16:07 +0700)
+- Clean up transpiler/x
+- Regenerated golden files - 1/100 vm valid programs passing
+
+## Progress (2025-07-21 16:07 +0700)
+- Clean up transpiler/x
+- Regenerated golden files - 1/100 vm valid programs passing
+
+## Progress (2025-07-21 16:07 +0700)
+- Clean up transpiler/x
+- Regenerated golden files - 1/100 vm valid programs passing
+
+## Progress (2025-07-21 16:07 +0700)
+- Clean up transpiler/x
+- Regenerated golden files - 0/100 vm valid programs passing
+
+## Progress (2025-07-21 16:07 +0700)
+- Clean up transpiler/x
+- Regenerated golden files - 0/100 vm valid programs passing
+
 ## Progress (2025-07-21 15:48 +0700)
 - feat(erl): add json builtin
 - Regenerated golden files - 80/100 vm valid programs passing
