@@ -904,10 +904,6 @@ func (gq *GroupLeftJoinQueryExpr) emit(e *emitter) {
 	e.nl()
 	e.indent--
 	e.writeIndent()
-	io.WriteString(e.w, "end")
-	e.nl()
-	e.indent--
-	e.writeIndent()
 	io.WriteString(e.w, "end)")
 }
 
@@ -1660,11 +1656,23 @@ func exprFromPrimary(p *parser.Primary) *parser.Expr {
 func fieldAccess(expr Expr, t types.Type, name string) (Expr, types.Type) {
 	switch ty := t.(type) {
 	case types.StructType:
+		if ty.Name == "MGroup" {
+			return &IndexExpr{Target: expr, Index: &StringLit{Value: name}}, ty.Fields[name]
+		}
 		if ft, ok := ty.Fields[name]; ok {
 			return &FieldExpr{Target: expr, Name: name}, ft
 		}
 	case types.MapType:
 		return &IndexExpr{Target: expr, Index: &StringLit{Value: name}}, ty.Value
+	}
+	if id, ok := expr.(*Ident); ok && currentEnv != nil {
+		if vt, err := currentEnv.GetVar(id.Name); err == nil {
+			if st, ok := vt.(types.StructType); ok {
+				if ft, ok := st.Fields[name]; ok {
+					return &FieldExpr{Target: expr, Name: name}, ft
+				}
+			}
+		}
 	}
 	return &IndexExpr{Target: expr, Index: &StringLit{Value: name}}, nil
 }
@@ -2789,7 +2797,7 @@ func convertQueryExpr(q *parser.QueryExpr) (Expr, error) {
 	if err != nil {
 		return nil, err
 	}
-	if id, ok := src.(*Ident); ok && id.Name == "g" && len(q.Froms) == 0 && len(q.Joins) == 0 && q.Where == nil {
+	if id, ok := src.(*Ident); ok && id.Name == "g" {
 		src = &IndexExpr{Target: src, Index: &StringLit{Value: "items"}}
 	}
 	froms := make([]queryFrom, len(q.Froms))
@@ -2797,19 +2805,25 @@ func convertQueryExpr(q *parser.QueryExpr) (Expr, error) {
 	var srcElem types.Type = types.AnyType{}
 	if currentEnv != nil {
 		st := types.ExprType(q.Source, currentEnv)
-		if lt, ok := st.(types.ListType); ok {
-			srcElem = lt.Elem
+		switch ty := st.(type) {
+		case types.ListType:
+			srcElem = ty.Elem
+		case types.GroupType:
+			srcElem = ty.Elem
 		}
 	}
 	child.SetVar(q.Var, srcElem, true)
+	savedEnv := currentEnv
+	currentEnv = child
 	for i, f := range q.Froms {
 		fe, err := convertExpr(f.Src)
 		if err != nil {
+			currentEnv = savedEnv
 			return nil, err
 		}
 		var felem types.Type = types.AnyType{}
 		if currentEnv != nil {
-			ft := types.ExprType(f.Src, child)
+			ft := types.ExprType(f.Src, currentEnv)
 			if lt, ok := ft.(types.ListType); ok {
 				felem = lt.Elem
 			}
@@ -2821,11 +2835,12 @@ func convertQueryExpr(q *parser.QueryExpr) (Expr, error) {
 	for i, j := range q.Joins {
 		je, err := convertExpr(j.Src)
 		if err != nil {
+			currentEnv = savedEnv
 			return nil, err
 		}
 		var jelem types.Type = types.AnyType{}
 		if currentEnv != nil {
-			jt := types.ExprType(j.Src, child)
+			jt := types.ExprType(j.Src, currentEnv)
 			if lt, ok := jt.(types.ListType); ok {
 				jelem = lt.Elem
 			}
@@ -2835,6 +2850,7 @@ func convertQueryExpr(q *parser.QueryExpr) (Expr, error) {
 		if j.On != nil {
 			onExpr, err = convertExpr(j.On)
 			if err != nil {
+				currentEnv = savedEnv
 				return nil, err
 			}
 		}
@@ -2848,6 +2864,7 @@ func convertQueryExpr(q *parser.QueryExpr) (Expr, error) {
 	if q.Where != nil {
 		where, err = convertExpr(q.Where)
 		if err != nil {
+			currentEnv = savedEnv
 			return nil, err
 		}
 	}
@@ -2855,6 +2872,7 @@ func convertQueryExpr(q *parser.QueryExpr) (Expr, error) {
 	if q.Sort != nil {
 		sort, err = convertExpr(q.Sort)
 		if err != nil {
+			currentEnv = savedEnv
 			return nil, err
 		}
 	}
@@ -2862,6 +2880,7 @@ func convertQueryExpr(q *parser.QueryExpr) (Expr, error) {
 	if q.Skip != nil {
 		skip, err = convertExpr(q.Skip)
 		if err != nil {
+			currentEnv = savedEnv
 			return nil, err
 		}
 	}
@@ -2869,13 +2888,16 @@ func convertQueryExpr(q *parser.QueryExpr) (Expr, error) {
 	if q.Take != nil {
 		take, err = convertExpr(q.Take)
 		if err != nil {
+			currentEnv = savedEnv
 			return nil, err
 		}
 	}
 	sel, err := convertExpr(q.Select)
 	if err != nil {
+		currentEnv = savedEnv
 		return nil, err
 	}
+	currentEnv = savedEnv
 	return &QueryExpr{Var: q.Var, Src: src, Froms: froms, Joins: joins, Where: where, Sort: sort, Skip: skip, Take: take, Select: sel}, nil
 }
 
@@ -3098,8 +3120,11 @@ func convertGroupJoinQuery(q *parser.QueryExpr) (Expr, error) {
 	var srcElem types.Type = types.AnyType{}
 	if currentEnv != nil {
 		st := types.ExprType(q.Source, currentEnv)
-		if lt, ok := st.(types.ListType); ok {
-			srcElem = lt.Elem
+		switch ty := st.(type) {
+		case types.ListType:
+			srcElem = ty.Elem
+		case types.GroupType:
+			srcElem = ty.Elem
 		}
 	}
 	child.SetVar(q.Var, srcElem, true)
@@ -3217,6 +3242,18 @@ func convertQueryForLet(q *parser.QueryExpr, name string) (Expr, Stmt, error) {
 			qe = ex
 			if gq, ok := qe.(*GroupLeftJoinQueryExpr); ok {
 				gq.Select = &StructNewExpr{Name: structName, Fields: fields}
+			}
+		} else if len(q.Froms) == 0 && len(q.Joins) == 0 {
+			if ex, err2 := convertGroupQuery(q); err2 == nil {
+				qe = ex
+				if gq, ok := qe.(*GroupQueryExpr); ok {
+					gq.Select = &StructNewExpr{Name: structName, Fields: fields}
+				}
+			} else if ex, err2 := convertGroupJoinQuery(q); err2 == nil {
+				qe = ex
+				if gq, ok := qe.(*GroupJoinQueryExpr); ok {
+					gq.Select = &StructNewExpr{Name: structName, Fields: fields}
+				}
 			}
 		} else if ex, err2 := convertGroupJoinQuery(q); err2 == nil {
 			qe = ex

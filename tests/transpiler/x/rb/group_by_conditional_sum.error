@@ -1,5 +1,10 @@
-/workspace/mochi/tests/transpiler/x/rb/group_by_conditional_sum.rb:32:in `+': nil can't be coerced into Integer (TypeError)
-	from /workspace/mochi/tests/transpiler/x/rb/group_by_conditional_sum.rb:32:in `sum'
-	from /workspace/mochi/tests/transpiler/x/rb/group_by_conditional_sum.rb:32:in `block in <main>'
-	from /workspace/mochi/tests/transpiler/x/rb/group_by_conditional_sum.rb:18:in `each'
-	from /workspace/mochi/tests/transpiler/x/rb/group_by_conditional_sum.rb:18:in `<main>'
+/workspace/mochi/tests/transpiler/x/rb/group_by_conditional_sum.rb:31:in `[]': no member 'key' in struct (NameError)
+
+[g["key"], __i]
+  ^^^^^^^
+	from /workspace/mochi/tests/transpiler/x/rb/group_by_conditional_sum.rb:31:in `block in <main>'
+	from /workspace/mochi/tests/transpiler/x/rb/group_by_conditional_sum.rb:30:in `each'
+	from /workspace/mochi/tests/transpiler/x/rb/group_by_conditional_sum.rb:30:in `each_with_index'
+	from /workspace/mochi/tests/transpiler/x/rb/group_by_conditional_sum.rb:30:in `each'
+	from /workspace/mochi/tests/transpiler/x/rb/group_by_conditional_sum.rb:30:in `sort_by'
+	from /workspace/mochi/tests/transpiler/x/rb/group_by_conditional_sum.rb:30:in `<main>'
