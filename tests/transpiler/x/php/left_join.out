@@ -1,0 +1,5 @@
+--- Left Join ---
+
+Warning: Array to string conversion in /workspace/mochi/tests/transpiler/x/php/left_join.php on line 22
+Order 100 customer Array total 250
+Order 101 customer  total 80

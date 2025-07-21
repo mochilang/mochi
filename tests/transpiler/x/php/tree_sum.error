@@ -1,0 +1,15 @@
+run: exit status 255
+
+Warning: Undefined variable $Leaf in /workspace/mochi/tests/transpiler/x/php/tree_sum.php on line 8
+
+Warning: Undefined variable $Leaf in /workspace/mochi/tests/transpiler/x/php/tree_sum.php on line 8
+
+Warning: Undefined variable $Leaf in /workspace/mochi/tests/transpiler/x/php/tree_sum.php on line 8
+
+Warning: Undefined variable $Leaf in /workspace/mochi/tests/transpiler/x/php/tree_sum.php on line 4
+
+Fatal error: Uncaught Error: Call to undefined function Node() in /workspace/mochi/tests/transpiler/x/php/tree_sum.php:5
+Stack trace:
+#0 /workspace/mochi/tests/transpiler/x/php/tree_sum.php(9): {closure:/workspace/mochi/tests/transpiler/x/php/tree_sum.php:2}(Array)
+#1 {main}
+  thrown in /workspace/mochi/tests/transpiler/x/php/tree_sum.php on line 5
