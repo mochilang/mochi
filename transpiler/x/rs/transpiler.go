@@ -68,6 +68,33 @@ func (c *CallExpr) emit(w io.Writer) {
 	io.WriteString(w, ")")
 }
 
+// PrintExpr emits a formatted println! call, optionally trimming trailing spaces.
+type PrintExpr struct {
+	Fmt  string
+	Args []Expr
+	Trim bool
+}
+
+func (p *PrintExpr) emit(w io.Writer) {
+	if p.Trim {
+		io.WriteString(w, "println!(\"{}\", format!(")
+		fmt.Fprintf(w, "%q", p.Fmt)
+		for _, a := range p.Args {
+			io.WriteString(w, ", ")
+			a.emit(w)
+		}
+		io.WriteString(w, ").trim_end())")
+	} else {
+		io.WriteString(w, "println!(")
+		fmt.Fprintf(w, "%q", p.Fmt)
+		for _, a := range p.Args {
+			io.WriteString(w, ", ")
+			a.emit(w)
+		}
+		io.WriteString(w, ")")
+	}
+}
+
 type StringLit struct{ Value string }
 
 func (s *StringLit) emit(w io.Writer) { fmt.Fprintf(w, "%q", s.Value) }
@@ -498,6 +525,18 @@ func (s *StringCastExpr) emit(w io.Writer) {
 	io.WriteString(w, "String::from(")
 	s.Expr.emit(w)
 	io.WriteString(w, ")")
+}
+
+// IntCastExpr converts an expression to a 64-bit integer.
+type IntCastExpr struct{ Expr Expr }
+
+func (i *IntCastExpr) emit(w io.Writer) {
+	if inferType(i.Expr) == "i64" {
+		i.Expr.emit(w)
+	} else {
+		i.Expr.emit(w)
+		io.WriteString(w, " as i64")
+	}
 }
 
 type NameRef struct{ Name string }
@@ -1250,6 +1289,7 @@ func compileForStmt(n *parser.ForStmt) (Stmt, error) {
 		if err != nil {
 			return nil, err
 		}
+		varTypes[n.Name] = "usize"
 	}
 	body := make([]Stmt, 0, len(n.Body))
 	for _, st := range n.Body {
@@ -1259,6 +1299,15 @@ func compileForStmt(n *parser.ForStmt) (Stmt, error) {
 		}
 		if cs != nil {
 			body = append(body, cs)
+		}
+	}
+	if _, ok := varTypes[n.Name]; !ok {
+		t := inferType(iter)
+		if strings.HasPrefix(t, "Vec<") {
+			typ := strings.TrimSuffix(strings.TrimPrefix(t, "Vec<"), ">")
+			varTypes[n.Name] = typ
+		} else {
+			varTypes[n.Name] = "i64"
 		}
 	}
 	return &ForStmt{Var: n.Name, Iter: iter, End: end, Body: body, ByRef: byRef}, nil
@@ -1543,16 +1592,13 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 				case *StringLit:
 					// no format needed
 				}
-				args = append([]Expr{&StringLit{Value: fmtStr}}, args...)
-			} else {
-				fmtStr := "{}"
-				for i := 1; i < len(args); i++ {
-					fmtStr += " {}"
-				}
-				args = append([]Expr{&StringLit{Value: fmtStr}}, args...)
+				return &PrintExpr{Fmt: fmtStr, Args: args, Trim: false}, nil
 			}
-			name = "println!"
-			return &CallExpr{Func: name, Args: args}, nil
+			fmtStr := "{}"
+			for i := 1; i < len(args); i++ {
+				fmtStr += " {}"
+			}
+			return &PrintExpr{Fmt: fmtStr, Args: args, Trim: true}, nil
 		}
 		if name == "len" && len(args) == 1 {
 			return &LenExpr{Arg: args[0]}, nil
@@ -1609,6 +1655,9 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 			ex, err := compileExpr(e)
 			if err != nil {
 				return nil, err
+			}
+			if inferType(ex) == "usize" {
+				ex = &IntCastExpr{Expr: ex}
 			}
 			elems[i] = ex
 		}
