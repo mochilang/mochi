@@ -404,6 +404,7 @@ type FloatLit struct{ Value float64 }
 type BoolLit struct{ Value bool }
 type StringLit struct{ Value string }
 type Var struct{ Name string }
+type UnaryNot struct{ Expr Expr }
 type ListLit struct{ Elems []Expr }
 type MapItem struct {
 	Key   string
@@ -425,6 +426,7 @@ type IndexExpr struct {
 	Target   Expr
 	Index    Expr
 	IsString bool
+	IsMap    bool
 }
 type SubstringExpr struct {
 	Str   Expr
@@ -461,6 +463,7 @@ type InExpr struct {
 	Elem     Expr
 	Target   Expr
 	IsString bool
+	IsMap    bool
 }
 
 func (i *IntLit) emit(w io.Writer)    { fmt.Fprintf(w, "%d", i.Value) }
@@ -468,6 +471,11 @@ func (f *FloatLit) emit(w io.Writer)  { io.WriteString(w, strconv.FormatFloat(f.
 func (b *BoolLit) emit(w io.Writer)   { fmt.Fprintf(w, "%v", b.Value) }
 func (s *StringLit) emit(w io.Writer) { fmt.Fprintf(w, "\"%s\"", escape(s.Value)) }
 func (v *Var) emit(w io.Writer)       { io.WriteString(w, v.Name) }
+func (u *UnaryNot) emit(w io.Writer) {
+	io.WriteString(w, "\\+(")
+	u.Expr.emit(w)
+	io.WriteString(w, ")")
+}
 func (b *BinaryExpr) emit(w io.Writer) {
 	if b.Op == "+" {
 		if l, ok := b.Left.(*StringLit); ok {
@@ -579,7 +587,13 @@ func (a *AppendExpr) emit(w io.Writer) {
 }
 
 func (i *IndexExpr) emit(w io.Writer) {
-	if i.IsString {
+	if i.IsMap {
+		io.WriteString(w, "get_dict(")
+		i.Index.emit(w)
+		io.WriteString(w, ", ")
+		i.Target.emit(w)
+		io.WriteString(w, ", R)")
+	} else if i.IsString {
 		io.WriteString(w, "sub_string(")
 		i.Target.emit(w)
 		io.WriteString(w, ", ")
@@ -633,7 +647,13 @@ func (s *SubstringExpr) emit(w io.Writer) {
 }
 
 func (i *InExpr) emit(w io.Writer) {
-	if i.IsString {
+	if i.IsMap {
+		io.WriteString(w, "get_dict(")
+		i.Elem.emit(w)
+		io.WriteString(w, ", ")
+		i.Target.emit(w)
+		io.WriteString(w, ", _)")
+	} else if i.IsString {
 		io.WriteString(w, "sub_string(")
 		i.Target.emit(w)
 		io.WriteString(w, ", _, _, _, ")
@@ -705,6 +725,8 @@ func needsIs(e Expr) bool {
 		return needsIs(ex.Expr)
 	case *CastExpr:
 		return ex.Type == "int"
+	case *UnaryNot:
+		return false
 	default:
 		return false
 	}
@@ -732,6 +754,18 @@ func isStringLike(e Expr, env *compileEnv) bool {
 	}
 	if _, ok := e.(*SliceExpr); ok {
 		return true
+	}
+	return false
+}
+
+func isMapLike(e Expr, env *compileEnv) bool {
+	if _, ok := e.(*MapLit); ok {
+		return true
+	}
+	if v, ok := e.(*Var); ok {
+		if _, ok2 := env.constExpr(v.Name).(*MapLit); ok2 {
+			return true
+		}
 	}
 	return false
 }
@@ -1081,26 +1115,46 @@ func compileStmts(sts []*parser.Statement, env *compileEnv) ([]Stmt, error) {
 					return nil, err
 				}
 				var list *ListLit
+				var m *MapLit
 				switch ex := src.(type) {
 				case *ListLit:
 					list = ex
+				case *MapLit:
+					m = ex
 				case *Var:
 					if c, ok := env.constExpr(ex.Name).(*ListLit); ok {
 						list = c
 					}
+					if c, ok := env.constExpr(ex.Name).(*MapLit); ok {
+						m = c
+					}
 				}
-				if list == nil {
+				if list == nil && m == nil {
 					return nil, fmt.Errorf("unsupported for-loop")
 				}
-				for _, elem := range list.Elems {
-					vname := env.fresh(s.For.Name)
-					env.setConst(vname, elem)
-					out = append(out, &LetStmt{Name: vname, Expr: elem})
-					body, err := compileStmts(s.For.Body, env)
-					if err != nil {
-						return nil, err
+				if m != nil {
+					for _, it := range m.Items {
+						vname := env.fresh(s.For.Name)
+						lit := &StringLit{Value: it.Key}
+						env.setConst(vname, lit)
+						out = append(out, &LetStmt{Name: vname, Expr: lit})
+						body, err := compileStmts(s.For.Body, env)
+						if err != nil {
+							return nil, err
+						}
+						out = append(out, body...)
 					}
-					out = append(out, body...)
+				} else {
+					for _, elem := range list.Elems {
+						vname := env.fresh(s.For.Name)
+						env.setConst(vname, elem)
+						out = append(out, &LetStmt{Name: vname, Expr: elem})
+						body, err := compileStmts(s.For.Body, env)
+						if err != nil {
+							return nil, err
+						}
+						out = append(out, body...)
+					}
 				}
 			}
 		case s.While != nil:
@@ -1210,6 +1264,45 @@ func toBinary(b *parser.BinaryExpr, env *compileEnv) (Expr, error) {
 		default:
 			return nil, fmt.Errorf("unsupported op")
 		}
+		if li, lok := left.(*IntLit); lok {
+			if ri, rok := right.(*IntLit); rok {
+				switch opStr {
+				case "+":
+					left = &IntLit{Value: li.Value + ri.Value}
+					continue
+				case "-":
+					left = &IntLit{Value: li.Value - ri.Value}
+					continue
+				case "*":
+					left = &IntLit{Value: li.Value * ri.Value}
+					continue
+				case "mod":
+					left = &IntLit{Value: li.Value % ri.Value}
+					continue
+				case "/":
+					left = &FloatLit{Value: float64(li.Value) / float64(ri.Value)}
+					continue
+				case "=:=", "=":
+					left = &BoolLit{Value: li.Value == ri.Value}
+					continue
+				case "=\\=", "\\=":
+					left = &BoolLit{Value: li.Value != ri.Value}
+					continue
+				case "<":
+					left = &BoolLit{Value: li.Value < ri.Value}
+					continue
+				case "<=":
+					left = &BoolLit{Value: li.Value <= ri.Value}
+					continue
+				case ">":
+					left = &BoolLit{Value: li.Value > ri.Value}
+					continue
+				case ">=":
+					left = &BoolLit{Value: li.Value >= ri.Value}
+					continue
+				}
+			}
+		}
 		if lb, lok := left.(*BoolLit); lok {
 			if rb, rok := right.(*BoolLit); rok {
 				switch opStr {
@@ -1236,7 +1329,20 @@ func toBinary(b *parser.BinaryExpr, env *compileEnv) (Expr, error) {
 					continue
 				}
 			}
-			left = &InExpr{Elem: left, Target: right, IsString: isStringLike(right, env)}
+			if mp, ok := right.(*MapLit); ok {
+				if s, ok2 := left.(*StringLit); ok2 {
+					found := false
+					for _, it := range mp.Items {
+						if it.Key == s.Value {
+							found = true
+							break
+						}
+					}
+					left = &BoolLit{Value: found}
+					continue
+				}
+			}
+			left = &InExpr{Elem: left, Target: right, IsString: isStringLike(right, env), IsMap: isMapLike(right, env)}
 		} else {
 			left = &BinaryExpr{Left: left, Op: opStr, Right: right}
 		}
@@ -1257,6 +1363,12 @@ func toUnary(u *parser.Unary, env *compileEnv) (Expr, error) {
 				expr = &IntLit{Value: -lit.Value}
 			} else {
 				expr = &BinaryExpr{Left: &IntLit{Value: 0}, Op: "-", Right: expr}
+			}
+		case "!":
+			if b, ok := expr.(*BoolLit); ok {
+				expr = &BoolLit{Value: !b.Value}
+			} else {
+				expr = &UnaryNot{Expr: expr}
 			}
 		default:
 			return nil, fmt.Errorf("unsupported unary")
@@ -1321,7 +1433,33 @@ func toPostfix(pf *parser.PostfixExpr, env *compileEnv) (Expr, error) {
 					}
 				}
 			}
-			expr = &IndexExpr{Target: expr, Index: idxExpr, IsString: isStringLike(expr, env)}
+			if mp, ok := expr.(*MapLit); ok {
+				switch k := idxExpr.(type) {
+				case *StringLit:
+					found := false
+					var val Expr
+					for _, it := range mp.Items {
+						if it.Key == k.Value {
+							found = true
+							val = it.Value
+							break
+						}
+					}
+					if found {
+						expr = val
+						continue
+					}
+				case *IntLit:
+					s := strconv.Itoa(k.Value)
+					for _, it := range mp.Items {
+						if it.Key == s {
+							expr = it.Value
+							continue
+						}
+					}
+				}
+			}
+			expr = &IndexExpr{Target: expr, Index: idxExpr, IsString: isStringLike(expr, env), IsMap: isMapLike(expr, env)}
 		case op.Cast != nil:
 			if op.Cast.Type == nil || op.Cast.Type.Simple == nil {
 				return nil, fmt.Errorf("unsupported cast")
@@ -1540,6 +1678,8 @@ func toPrimary(p *parser.Primary, env *compileEnv) (Expr, error) {
 			switch k := key.(type) {
 			case *StringLit:
 				keyStr = k.Value
+			case *IntLit:
+				keyStr = strconv.Itoa(k.Value)
 			case *Var:
 				// Treat bare identifiers as string keys if they are not variables
 				if env.constExpr(k.Name) == nil {
@@ -1772,7 +1912,7 @@ func evalQueryExpr(q *parser.QueryExpr, env *compileEnv) (Expr, error) {
 		delete(env.vars, q.Var)
 		return &ListLit{Elems: outElems}, nil
 	}
-	if len(q.Froms) > 0 || len(q.Joins) > 0 || q.Where != nil || q.Sort != nil || q.Skip != nil || q.Take != nil {
+	if len(q.Froms) > 0 || len(q.Joins) > 0 || q.Sort != nil || q.Skip != nil || q.Take != nil {
 		return nil, fmt.Errorf("unsupported query features")
 	}
 	src, err := toExpr(q.Source, env)
@@ -1787,6 +1927,19 @@ func evalQueryExpr(q *parser.QueryExpr, env *compileEnv) (Expr, error) {
 	env.vars[q.Var] = 0
 	for _, item := range list.Elems {
 		env.consts[env.current(q.Var)] = item
+		if q.Where != nil {
+			cond, err := toExpr(q.Where, env)
+			if err != nil {
+				return nil, err
+			}
+			b, ok := cond.(*BoolLit)
+			if !ok {
+				return nil, fmt.Errorf("unsupported query where")
+			}
+			if !b.Value {
+				continue
+			}
+		}
 		val, err := toExpr(q.Select, env)
 		if err != nil {
 			return nil, err

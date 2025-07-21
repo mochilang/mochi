@@ -2,7 +2,7 @@
 
 This directory contains a tiny transpiler that converts a restricted subset of Mochi programs to SWI-Prolog. It is mainly used for experimentation and golden tests.
 
-## VM Golden Test Checklist (37/100)
+## VM Golden Test Checklist (43/100)
 - [x] `append_builtin`
 - [x] `avg_builtin`
 - [x] `basic_compare`
@@ -21,7 +21,7 @@ This directory contains a tiny transpiler that converts a restricted subset of M
 - [ ] `exists_builtin`
 - [x] `for_list_collection`
 - [x] `for_loop`
-- [ ] `for_map_collection`
+- [x] `for_map_collection`
 - [ ] `fun_call`
 - [ ] `fun_expr_in_let`
 - [ ] `fun_three_args`
@@ -38,7 +38,7 @@ This directory contains a tiny transpiler that converts a restricted subset of M
 - [x] `if_else`
 - [x] `if_then_else`
 - [x] `if_then_else_nested`
-- [ ] `in_operator`
+- [x] `in_operator`
 - [ ] `in_operator_extended`
 - [ ] `inner_join`
 - [ ] `join_multi`
@@ -55,11 +55,11 @@ This directory contains a tiny transpiler that converts a restricted subset of M
 - [ ] `list_set_ops`
 - [ ] `load_yaml`
 - [ ] `map_assign`
-- [ ] `map_in_operator`
-- [ ] `map_index`
-- [ ] `map_int_key`
+- [x] `map_in_operator`
+- [x] `map_index`
+- [x] `map_int_key`
 - [ ] `map_literal_dynamic`
-- [ ] `map_membership`
+- [x] `map_membership`
 - [ ] `map_nested_assign`
 - [ ] `match_expr`
 - [ ] `match_full`
