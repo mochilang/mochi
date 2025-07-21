@@ -886,11 +886,9 @@ func (g *GroupBySortExpr) emit(w io.Writer) {
 	g.Key.emit(w)
 	io.WriteString(w, " end)\n  |> Enum.map(fn {key, items} -> %{key: key, items: items} end)\n  |> Enum.sort_by(fn g -> ")
 	g.Sort.emit(w)
-	io.WriteString(w, " end)\n  |> Enum.map(fn g ->\n    ")
-	io.WriteString(w, g.Name)
-	io.WriteString(w, " = g\n    ")
-	g.Select.emit(w)
-	io.WriteString(w, "\n  end")
+        io.WriteString(w, " end)\n  |> Enum.map(fn g ->\n    ")
+        g.Select.emit(w)
+        io.WriteString(w, "\n  end")
 	io.WriteString(w, ")")
 }
 
