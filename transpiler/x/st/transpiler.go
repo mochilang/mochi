@@ -31,6 +31,7 @@ const (
 	valFloat
 	valList
 	valMap
+	valFunc
 )
 
 type value struct {
@@ -42,6 +43,8 @@ type value struct {
 	f    float64
 	list []value
 	kv   map[string]value
+	fun  *parser.FunExpr
+	env  map[string]value
 }
 
 // currentFuncs holds function declarations available during constant
@@ -145,6 +148,8 @@ func formatValue(v value, indent int) string {
 		}
 		lines = append(lines, pad(indent)+"}")
 		return strings.Join(lines, "\n")
+	case valFunc:
+		return "[closure]"
 	default:
 		return ""
 	}
@@ -180,6 +185,8 @@ func jsonString(v value) string {
 			parts[i] = fmt.Sprintf("\"%s\": %s", escape(k), jsonString(v.kv[k]))
 		}
 		return "{" + strings.Join(parts, ", ") + "}"
+	case valFunc:
+		return "\"<fun>\""
 	default:
 		return "null"
 	}
@@ -199,6 +206,8 @@ func isTruthy(v value) bool {
 		return len(v.list) > 0
 	case valMap:
 		return len(v.kv) > 0
+	case valFunc:
+		return true
 	default:
 		return false
 	}
@@ -784,9 +793,28 @@ func evalPostfix(p *parser.PostfixExpr, vars map[string]value) (value, error) {
 				}
 				v = value{kind: valBool, b: strings.Contains(v.s, arg.s)}
 				i++
+			} else if i+1 < len(p.Ops) && p.Ops[i+1].Call != nil {
+				return value{}, fmt.Errorf("postfix not supported")
 			} else {
 				return value{}, fmt.Errorf("postfix not supported")
 			}
+		case op.Call != nil:
+			args := make([]value, len(op.Call.Args))
+			for i2, a := range op.Call.Args {
+				av, err := evalExpr(a, vars)
+				if err != nil {
+					return value{}, err
+				}
+				args[i2] = av
+			}
+			if v.kind != valFunc {
+				return value{}, fmt.Errorf("postfix call on non-function")
+			}
+			res, _, err := evalFunExpr(v.fun, args, v.env)
+			if err != nil {
+				return value{}, err
+			}
+			v = res
 		default:
 			return value{}, fmt.Errorf("postfix not supported")
 		}
@@ -872,6 +900,8 @@ func evalPrimary(p *parser.Primary, vars map[string]value) (value, error) {
 			m[key] = v
 		}
 		return value{kind: valMap, kv: m}, nil
+	case p.FunExpr != nil:
+		return value{kind: valFunc, fun: p.FunExpr, env: copyVars(vars)}, nil
 	case p.Query != nil:
 		return evalQueryExpr(p.Query, vars)
 	case p.Call != nil:
@@ -1074,6 +1104,18 @@ func evalPrimary(p *parser.Primary, vars map[string]value) (value, error) {
 				return value{kind: valBool, b: len(v.list) > 0}, nil
 			}
 		}
+		if fv, ok := vars[p.Call.Func]; ok && fv.kind == valFunc {
+			args := make([]value, len(p.Call.Args))
+			for i, a := range p.Call.Args {
+				av, err := evalExpr(a, vars)
+				if err != nil {
+					return value{}, err
+				}
+				args[i] = av
+			}
+			res, _, err := evalFunExpr(fv.fun, args, fv.env)
+			return res, err
+		}
 		if fn, ok := currentFuncs[p.Call.Func]; ok {
 			args := make([]value, len(p.Call.Args))
 			for i, a := range p.Call.Args {
@@ -1244,6 +1286,16 @@ func evalFunction(fn *parser.FunStmt, args []value, captured map[string]value) (
 		newArgs[i] = vars[p.Name]
 	}
 	return out, newArgs, nil
+}
+
+func evalFunExpr(fe *parser.FunExpr, args []value, captured map[string]value) (value, []value, error) {
+	stmt := &parser.FunStmt{Params: fe.Params, Return: fe.Return}
+	if fe.ExprBody != nil {
+		stmt.Body = []*parser.Statement{{Return: &parser.ReturnStmt{Value: fe.ExprBody}}}
+	} else {
+		stmt.Body = fe.BlockBody
+	}
+	return evalFunction(stmt, args, captured)
 }
 
 func identName(e *parser.Expr) (string, bool) {
