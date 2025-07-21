@@ -953,6 +953,8 @@ func typeOfExpr(e Expr) string {
 		return "double"
 	case *SumExpr:
 		return "int"
+	case *CountExpr:
+		return "int"
 	case *MinExpr, *MaxExpr:
 		return "int"
 	case *StrExpr:
@@ -2151,6 +2153,17 @@ func compileQueryExpr(q *parser.QueryExpr) (Expr, error) {
 			"key":   simpleType(typeOfExpr(keyExpr)),
 			"items": types.ListType{Elem: simpleType(elemType)},
 		}, Order: []string{"key", "items"}}
+		if currentProg != nil {
+			itemType := elemType
+			if strings.HasSuffix(itemType, "[]") {
+				itemType = strings.TrimSuffix(itemType, "[]")
+			}
+			fields := []StructField{
+				{Name: "key", Type: typeOfExpr(keyExpr)},
+				{Name: "items", Type: itemType + "[]"},
+			}
+			currentProg.Structs = append(currentProg.Structs, StructDecl{Name: gStruct, Fields: fields})
+		}
 		fmt.Fprintf(builder, " let %s = new %s{ key = %s.Key, items = %s.ToArray() }", q.Group.Name, gStruct, tmp, tmp)
 		varTypes[q.Group.Name] = gStruct
 		if q.Group.Having != nil {
