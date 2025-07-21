@@ -521,46 +521,105 @@ func evalPostfix(p *parser.PostfixExpr, vars map[string]value) (value, error) {
 	for i := 0; i < len(p.Ops); i++ {
 		op := p.Ops[i]
 		switch {
-		case op.Index != nil:
-			idxOp := op.Index
-			if idxOp.Colon != nil || idxOp.End != nil || idxOp.Colon2 != nil || idxOp.Step != nil {
-				return value{}, fmt.Errorf("slicing not supported")
-			}
-			idxVal, err := evalExpr(idxOp.Start, vars)
-			if err != nil {
-				return value{}, err
-			}
-			switch v.kind {
-			case valList:
-				if idxVal.kind != valInt {
-					return value{}, fmt.Errorf("index must be int")
-				}
-				if idxVal.i < 0 || idxVal.i >= len(v.list) {
-					return value{}, fmt.Errorf("index out of range")
-				}
-				v = v.list[idxVal.i]
-			case valString:
-				if idxVal.kind != valInt {
-					return value{}, fmt.Errorf("index must be int")
-				}
-				r := []rune(v.s)
-				if idxVal.i < 0 || idxVal.i >= len(r) {
-					return value{}, fmt.Errorf("index out of range")
-				}
-				v = value{kind: valString, s: string(r[idxVal.i])}
-			case valMap:
-				key, err := keyString(idxVal)
-				if err != nil {
-					return value{}, err
-				}
-				mv, ok := v.kv[key]
-				if !ok {
-					return value{}, fmt.Errorf("missing key")
-				}
-				v = mv
-			default:
-				return value{}, fmt.Errorf("indexing non-container")
-			}
+                case op.Index != nil:
+                        idxOp := op.Index
+                        if idxOp.Colon != nil || idxOp.End != nil {
+                                if idxOp.Colon2 != nil || idxOp.Step != nil {
+                                        return value{}, fmt.Errorf("slicing not supported")
+                                }
+                                start := 0
+                                if idxOp.Start != nil {
+                                        sv, err := evalExpr(idxOp.Start, vars)
+                                        if err != nil {
+                                                return value{}, err
+                                        }
+                                        if sv.kind != valInt {
+                                                return value{}, fmt.Errorf("index must be int")
+                                        }
+                                        start = sv.i
+                                }
+                                end := 0
+                                switch v.kind {
+                                case valList:
+                                        end = len(v.list)
+                                case valString:
+                                        end = len([]rune(v.s))
+                                default:
+                                        return value{}, fmt.Errorf("slicing non-container")
+                                }
+                                if idxOp.End != nil {
+                                        ev, err := evalExpr(idxOp.End, vars)
+                                        if err != nil {
+                                                return value{}, err
+                                        }
+                                        if ev.kind != valInt {
+                                                return value{}, fmt.Errorf("index must be int")
+                                        }
+                                        end = ev.i
+                                }
+                                if start < 0 {
+                                        start = 0
+                                }
+                                if end < start {
+                                        end = start
+                                }
+                                switch v.kind {
+                                case valList:
+                                        if start > len(v.list) {
+                                                start = len(v.list)
+                                        }
+                                        if end > len(v.list) {
+                                                end = len(v.list)
+                                        }
+                                        slice := append([]value{}, v.list[start:end]...)
+                                        v = value{kind: valList, list: slice}
+                                case valString:
+                                        r := []rune(v.s)
+                                        if start > len(r) {
+                                                start = len(r)
+                                        }
+                                        if end > len(r) {
+                                                end = len(r)
+                                        }
+                                        v = value{kind: valString, s: string(r[start:end])}
+                                }
+                        } else {
+                                idxVal, err := evalExpr(idxOp.Start, vars)
+                                if err != nil {
+                                        return value{}, err
+                                }
+                                switch v.kind {
+                                case valList:
+                                        if idxVal.kind != valInt {
+                                                return value{}, fmt.Errorf("index must be int")
+                                        }
+                                        if idxVal.i < 0 || idxVal.i >= len(v.list) {
+                                                return value{}, fmt.Errorf("index out of range")
+                                        }
+                                        v = v.list[idxVal.i]
+                                case valString:
+                                        if idxVal.kind != valInt {
+                                                return value{}, fmt.Errorf("index must be int")
+                                        }
+                                        r := []rune(v.s)
+                                        if idxVal.i < 0 || idxVal.i >= len(r) {
+                                                return value{}, fmt.Errorf("index out of range")
+                                        }
+                                        v = value{kind: valString, s: string(r[idxVal.i])}
+                                case valMap:
+                                        key, err := keyString(idxVal)
+                                        if err != nil {
+                                                return value{}, err
+                                        }
+                                        mv, ok := v.kv[key]
+                                        if !ok {
+                                                return value{}, fmt.Errorf("missing key")
+                                        }
+                                        v = mv
+                                default:
+                                        return value{}, fmt.Errorf("indexing non-container")
+                                }
+                        }
 		case op.Cast != nil:
 			if op.Cast.Type == nil || op.Cast.Type.Simple == nil {
 				return value{}, fmt.Errorf("unsupported cast")

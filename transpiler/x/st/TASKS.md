@@ -1,3 +1,9 @@
+## Progress (21 Jul 2025 16:07 +0700)
+- VM valid golden test results updated
+- Added list and string slicing
+- string_prefix_slice now passes
+- group_by_multi_join_sort now passes (70/100)
+
 ## Progress (21 Jul 2025 15:29 +0700)
 - VM valid golden test results updated
 - Grouping keys now allow maps and floats
