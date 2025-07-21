@@ -763,7 +763,7 @@ func Emit(p *Program) []byte {
 	}
 	buf.WriteString("  }\n")
 	buf.WriteString("}\n")
-	return buf.Bytes()
+	return formatScala(buf.Bytes())
 }
 
 // Transpile converts a Mochi AST into our simple Scala AST.
@@ -2087,6 +2087,8 @@ func inferType(e Expr) string {
 			}
 		}
 		return "Any"
+	case *SubstringExpr:
+		return "String"
 	case *BinaryExpr:
 		switch ex.Op {
 		case "+", "-", "*", "/", "%":
@@ -2318,4 +2320,23 @@ func exprNode(e Expr) *ast.Node {
 	default:
 		return &ast.Node{Kind: "unknown"}
 	}
+}
+
+func formatScala(src []byte) []byte {
+	lines := strings.Split(string(src), "\n")
+	var out []string
+	indent := 0
+	for _, line := range lines {
+		trimmed := strings.TrimSpace(line)
+		if strings.HasPrefix(trimmed, "}") {
+			if indent > 0 {
+				indent--
+			}
+		}
+		out = append(out, strings.Repeat("  ", indent)+trimmed)
+		if strings.HasSuffix(trimmed, "{") {
+			indent++
+		}
+	}
+	return []byte(strings.Join(out, "\n"))
 }
