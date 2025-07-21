@@ -336,17 +336,7 @@ func (p *Program) write(w io.Writer) {
 		fmt.Fprintf(w, "#include %s\n", inc)
 	}
 	fmt.Fprintln(w)
-	fmt.Fprintln(w, "static std::string format_double(double v) {")
-	fmt.Fprintln(w, "    std::ostringstream ss;")
-	fmt.Fprintln(w, "    ss << std::fixed << std::setprecision(15) << v;")
-	fmt.Fprintln(w, "    auto s = ss.str();")
-	fmt.Fprintln(w, "    if(s.find('.') != std::string::npos) {")
-	fmt.Fprintln(w, "        while(!s.empty() && s.back()=='0') s.pop_back();")
-	fmt.Fprintln(w, "        if(!s.empty() && s.back()=='.') s.push_back('0');")
-	fmt.Fprintln(w, "    }")
-	fmt.Fprintln(w, "    return s;")
-	fmt.Fprintln(w, "}")
-	fmt.Fprintln(w)
+        fmt.Fprintln(w)
 	for _, st := range p.Structs {
 		fmt.Fprintf(w, "struct %s {\n", st.Name)
 		for _, f := range st.Fields {
@@ -417,46 +407,48 @@ func (f *Func) emit(w io.Writer) {
 }
 
 func (s *PrintStmt) emit(w io.Writer, indent int) {
-	for i := 0; i < indent; i++ {
-		io.WriteString(w, "    ")
-	}
-	if currentProgram != nil {
-		currentProgram.addInclude("<iomanip>")
-	}
-	io.WriteString(w, "std::cout << std::boolalpha << std::showpoint << std::setprecision(15)")
-	for i, v := range s.Values {
-		io.WriteString(w, " << ")
-		if i > 0 {
-			io.WriteString(w, "\" \" << ")
-		}
-		switch ex := v.(type) {
-		case *UnaryExpr:
-			if ex.Op == "!" {
-				io.WriteString(w, "(")
-				ex.emit(w)
-				io.WriteString(w, " ? 1 : 0)")
-			} else {
-				ex.emit(w)
-			}
-		case *BinaryExpr:
-			if ex.Op == "&&" || ex.Op == "||" || ex.Op == "==" || ex.Op == "!=" || ex.Op == "<" || ex.Op == "<=" || ex.Op == ">" || ex.Op == ">=" || ex.Op == "in" {
-				io.WriteString(w, "(")
-				ex.emit(w)
-				io.WriteString(w, " ? 1 : 0)")
-			} else {
-				ex.emit(w)
-			}
-		default:
-			if exprType(v) == "double" {
-				io.WriteString(w, "format_double(")
-				v.emit(w)
-				io.WriteString(w, ")")
-			} else {
-				v.emit(w)
-			}
-		}
-	}
-	io.WriteString(w, " << std::endl;\n")
+        for i := 0; i < indent; i++ {
+                io.WriteString(w, "    ")
+        }
+        if currentProgram != nil {
+                currentProgram.addInclude("<sstream>")
+                currentProgram.addInclude("<iomanip>")
+        }
+        io.WriteString(w, "{ std::ostringstream __os; __os << std::boolalpha << std::showpoint << std::setprecision(15);")
+        for i, v := range s.Values {
+                if i > 0 {
+                        io.WriteString(w, " __os << ' ';")
+                }
+                io.WriteString(w, " __os << ")
+                switch ex := v.(type) {
+                case *UnaryExpr:
+                        if ex.Op == "!" {
+                                io.WriteString(w, "(")
+                                ex.emit(w)
+                                io.WriteString(w, " ? 1 : 0)")
+                        } else {
+                                ex.emit(w)
+                        }
+                case *BinaryExpr:
+                        if ex.Op == "&&" || ex.Op == "||" || ex.Op == "==" || ex.Op == "!=" || ex.Op == "<" || ex.Op == "<=" || ex.Op == ">" || ex.Op == ">=" || ex.Op == "in" {
+                                io.WriteString(w, "(")
+                                ex.emit(w)
+                                io.WriteString(w, " ? 1 : 0)")
+                        } else {
+                                ex.emit(w)
+                        }
+                default:
+                        if exprType(v) == "double" {
+                                io.WriteString(w, "([&]{ std::ostringstream ss; ss << std::fixed << std::setprecision(15) << ")
+                                v.emit(w)
+                                io.WriteString(w, "; auto s = ss.str(); if(s.find('.')!=std::string::npos){ while(!s.empty() && s.back()=='0') s.pop_back(); if(!s.empty() && s.back()=='.') s.push_back('0'); } return s; }())")
+                        } else {
+                                v.emit(w)
+                        }
+                }
+                io.WriteString(w, ";")
+        }
+        io.WriteString(w, " auto __str = __os.str(); if(!__str.empty() && __str.back()==' ') __str.pop_back(); std::cout << __str << std::endl; }\n")
 }
 
 func (wst *WhileStmt) emit(w io.Writer, indent int) {
