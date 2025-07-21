@@ -1,4 +1,8 @@
-## Progress (2025-07-21 19:10 +0700)
+## Progress (2025-07-21 19:42 +0700)
+- java transpiler: add float support and update docs (0b5377dd5)
+
+- java transpiler: add float support and update docs (0b5377dd5)
+
 - docs: refresh generated pas files (88ad9915a)
 
 - docs: refresh generated pas files (88ad9915a)

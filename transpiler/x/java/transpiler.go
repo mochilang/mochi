@@ -189,8 +189,13 @@ func inferType(e Expr) string {
 		return "Object"
 	case *SumExpr:
 		return "Object"
-	case *ValuesExpr:
-		return "java.util.List"
+       case *ValuesExpr:
+               return "java.util.List"
+       case *QueryExpr:
+               if ex.ElemType != "" {
+                       return fmt.Sprintf("java.util.List<%s>", ex.ElemType)
+               }
+               return "java.util.List"
 	case *AppendExpr:
 		t := arrayElemType(ex.List)
 		if t == "" {
