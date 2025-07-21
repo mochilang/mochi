@@ -1,0 +1,5 @@
+ERROR: /workspace/mochi/tests/transpiler/x/pl/group_by_multi_join.pl:9:17: Syntax error: Unbalanced operator
+ERROR: /workspace/mochi/tests/transpiler/x/pl/group_by_multi_join.pl:1: Initialization goal raised exception:
+ERROR: catch/3: Unknown procedure: main/1
+ERROR:   However, there are definitions for:
+ERROR:         main/0

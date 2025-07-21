@@ -1,3 +1,11 @@
+## Progress (2025-07-21 16:18 +0000)
+- pl: handle left joins and numeric sort
+- 65/100 VM programs transpiled successfully
+
+## Progress (2025-07-21 23:01 +0700)
+- cs: support group left join
+- 65/100 VM programs transpiled successfully
+
 ## Progress (2025-07-21 21:49 +0700)
 - VM valid golden test results updated to 62/100
 ## Progress (2025-07-21 21:13 +0700)
