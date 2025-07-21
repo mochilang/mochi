@@ -110,6 +110,7 @@ func TestTranspilePrograms(t *testing.T) {
 		"list_set_ops",
 		"cross_join_triple",
 		"exists_builtin",
+		"dataset_sort_take_limit",
 		"dataset_where_filter",
 		"inner_join",
 		"join_multi",

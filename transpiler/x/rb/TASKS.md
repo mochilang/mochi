@@ -1,3 +1,8 @@
+## Progress (2025-07-21 15:42 +0700)
+- rb transpiler: support sort/skip/take queries
+- Generated Ruby for 76/100 programs
+- Updated README checklist and outputs
+
 ## Progress (2025-07-21 08:03 +0700)
 - rb transpiler: add right join
 - Generated Ruby for 75/100 programs

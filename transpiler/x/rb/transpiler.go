@@ -248,6 +248,33 @@ func (q *QueryExpr) emit(e *emitter) {
 	e.writeIndent()
 	io.WriteString(e.w, "end")
 	e.nl()
+	if q.Sort != nil {
+		e.writeIndent()
+		io.WriteString(e.w, "_res = _res.sort_by do |"+q.Var+"|")
+		e.nl()
+		e.indent++
+		e.writeIndent()
+		q.Sort.emit(e)
+		e.nl()
+		e.indent--
+		e.writeIndent()
+		io.WriteString(e.w, "end")
+		e.nl()
+	}
+	if q.Skip != nil {
+		e.writeIndent()
+		io.WriteString(e.w, "_res = _res.drop(")
+		q.Skip.emit(e)
+		io.WriteString(e.w, ")")
+		e.nl()
+	}
+	if q.Take != nil {
+		e.writeIndent()
+		io.WriteString(e.w, "_res = _res.take(")
+		q.Take.emit(e)
+		io.WriteString(e.w, ")")
+		e.nl()
+	}
 	e.indent--
 	e.writeIndent()
 	io.WriteString(e.w, "_res")
@@ -2108,7 +2135,7 @@ func isMembershipExpr(e *parser.Expr) bool {
 }
 
 func convertQueryExpr(q *parser.QueryExpr) (Expr, error) {
-	if q.Group != nil || q.Sort != nil || q.Skip != nil || q.Take != nil {
+	if q.Group != nil {
 		return nil, fmt.Errorf("unsupported query")
 	}
 	src, err := convertExpr(q.Source)
@@ -2153,11 +2180,32 @@ func convertQueryExpr(q *parser.QueryExpr) (Expr, error) {
 			return nil, err
 		}
 	}
+	var sort Expr
+	if q.Sort != nil {
+		sort, err = convertExpr(q.Sort)
+		if err != nil {
+			return nil, err
+		}
+	}
+	var skip Expr
+	if q.Skip != nil {
+		skip, err = convertExpr(q.Skip)
+		if err != nil {
+			return nil, err
+		}
+	}
+	var take Expr
+	if q.Take != nil {
+		take, err = convertExpr(q.Take)
+		if err != nil {
+			return nil, err
+		}
+	}
 	sel, err := convertExpr(q.Select)
 	if err != nil {
 		return nil, err
 	}
-	return &QueryExpr{Var: q.Var, Src: src, Froms: froms, Joins: joins, Where: where, Select: sel}, nil
+	return &QueryExpr{Var: q.Var, Src: src, Froms: froms, Joins: joins, Where: where, Sort: sort, Skip: skip, Take: take, Select: sel}, nil
 }
 
 func convertRightJoinQuery(q *parser.QueryExpr) (Expr, error) {
