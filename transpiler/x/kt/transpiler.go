@@ -818,6 +818,65 @@ func (gq *GroupQueryExpr) emit(w io.Writer) {
 	io.WriteString(w, "}")
 }
 
+// RightJoinExpr represents a simple right join between two lists.
+type RightJoinExpr struct {
+	LeftVar  string
+	LeftSrc  Expr
+	RightVar string
+	RightSrc Expr
+	Cond     Expr
+	Select   Expr
+}
+
+func (r *RightJoinExpr) emit(w io.Writer) {
+	io.WriteString(w, "run {\n")
+	indent(w, 1)
+	elemType := guessType(r.Select)
+	if elemType == "" {
+		elemType = "Any"
+	}
+	fmt.Fprintf(w, "val _res = mutableListOf<%s>()\n", elemType)
+	indent(w, 1)
+	fmt.Fprintf(w, "for (%s in ", r.RightVar)
+	r.RightSrc.emit(w)
+	io.WriteString(w, ") {\n")
+	indent(w, 2)
+	io.WriteString(w, "var matched = false\n")
+	indent(w, 2)
+	fmt.Fprintf(w, "for (%s in ", r.LeftVar)
+	r.LeftSrc.emit(w)
+	io.WriteString(w, ") {\n")
+	indent(w, 3)
+	io.WriteString(w, "if (")
+	r.Cond.emit(w)
+	io.WriteString(w, ") {\n")
+	indent(w, 4)
+	io.WriteString(w, "matched = true\n")
+	indent(w, 4)
+	io.WriteString(w, "_res.add(")
+	r.Select.emit(w)
+	io.WriteString(w, ")\n")
+	indent(w, 3)
+	io.WriteString(w, "}\n")
+	indent(w, 2)
+	io.WriteString(w, "}\n")
+	indent(w, 2)
+	io.WriteString(w, "if (!matched) {\n")
+	indent(w, 3)
+	fmt.Fprintf(w, "val %s: Any? = null\n", r.LeftVar)
+	indent(w, 3)
+	io.WriteString(w, "_res.add(")
+	r.Select.emit(w)
+	io.WriteString(w, ")\n")
+	indent(w, 2)
+	io.WriteString(w, "}\n")
+	indent(w, 1)
+	io.WriteString(w, "}\n")
+	indent(w, 1)
+	io.WriteString(w, "_res\n")
+	io.WriteString(w, "}")
+}
+
 // WhenExpr models Kotlin's when expression produced from a Mochi match.
 type WhenExpr struct {
 	Target Expr
@@ -1417,9 +1476,42 @@ func combineAnd(a, b Expr) Expr {
 	return &BinaryExpr{Left: a, Op: "&&", Right: b}
 }
 
+func convertRightJoinQuery(env *types.Env, q *parser.QueryExpr) (Expr, error) {
+	if q == nil || len(q.Joins) != 1 || q.Group != nil || q.Sort != nil || q.Skip != nil || q.Take != nil || len(q.Froms) > 0 {
+		return nil, fmt.Errorf("unsupported query")
+	}
+	j := q.Joins[0]
+	if j.Side == nil || *j.Side != "right" {
+		return nil, fmt.Errorf("unsupported query")
+	}
+	leftSrc, err := convertExpr(env, q.Source)
+	if err != nil {
+		return nil, err
+	}
+	rightSrc, err := convertExpr(env, j.Src)
+	if err != nil {
+		return nil, err
+	}
+	child := types.NewEnv(env)
+	child.SetVar(q.Var, types.AnyType{}, true)
+	child.SetVar(j.Var, types.AnyType{}, true)
+	cond, err := convertExpr(child, j.On)
+	if err != nil {
+		return nil, err
+	}
+	sel, err := convertExpr(child, q.Select)
+	if err != nil {
+		return nil, err
+	}
+	return &RightJoinExpr{LeftVar: q.Var, LeftSrc: leftSrc, RightVar: j.Var, RightSrc: rightSrc, Cond: cond, Select: sel}, nil
+}
+
 func convertQueryExpr(env *types.Env, q *parser.QueryExpr) (Expr, error) {
 	if q.Sort != nil || q.Skip != nil || q.Take != nil {
 		return nil, fmt.Errorf("unsupported query")
+	}
+	if len(q.Joins) == 1 && q.Joins[0].Side != nil && *q.Joins[0].Side == "right" && q.Group == nil && len(q.Froms) == 0 && q.Where == nil {
+		return convertRightJoinQuery(env, q)
 	}
 	src, err := convertExpr(env, q.Source)
 	if err != nil {
@@ -1514,6 +1606,28 @@ func exprsFromFroms(f []queryFrom) []Expr {
 		out[i] = fr.Src
 	}
 	return out
+}
+
+func convertMapRecord(env *types.Env, m *parser.MapLiteral) (Expr, error) {
+	names := make([]string, len(m.Items))
+	fields := make([]Expr, len(m.Items))
+	decls := make([]ParamDecl, len(m.Items))
+	for i, it := range m.Items {
+		key, ok := types.SimpleStringKey(it.Key)
+		if !ok {
+			return nil, fmt.Errorf("unsupported map key")
+		}
+		val, err := convertExpr(env, it.Value)
+		if err != nil {
+			return nil, err
+		}
+		names[i] = key
+		fields[i] = val
+		decls[i] = ParamDecl{Name: key, Type: guessType(val)}
+	}
+	name := fmt.Sprintf("Record%d", len(extraDecls)+1)
+	extraDecls = append(extraDecls, &DataClass{Name: name, Fields: decls})
+	return &StructLit{Name: name, Fields: fields, Names: names}, nil
 }
 
 func isUnderscore(e *parser.Expr) bool {
@@ -1861,6 +1975,16 @@ func convertPrimary(env *types.Env, p *parser.Primary) (Expr, error) {
 		}
 		return &ListLit{Elems: elems}, nil
 	case p.Map != nil:
+		allSimple := true
+		for _, it := range p.Map.Items {
+			if _, ok := types.SimpleStringKey(it.Key); !ok {
+				allSimple = false
+				break
+			}
+		}
+		if allSimple {
+			return convertMapRecord(env, p.Map)
+		}
 		items := make([]MapItem, len(p.Map.Items))
 		for i, it := range p.Map.Items {
 			var k Expr
