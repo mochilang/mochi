@@ -1972,7 +1972,15 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 				}
 				return &CallExpr{Func: name, Args: []Expr{arg}}, nil
 			}
-			list := &ListLit{Elems: args}
+			elems := make([]Expr, len(args))
+			for i, a := range args {
+				if isBoolExpr(a) {
+					elems[i] = &IfExpr{Cond: a, Then: &StringLit{Value: "true"}, Else: &StringLit{Value: "false"}}
+				} else {
+					elems[i] = a
+				}
+			}
+			list := &ListLit{Elems: elems}
 			join := &CallExpr{Func: "string.Join", Args: []Expr{&StringLit{Value: " "}, list}}
 			trimmed := &MethodCallExpr{Target: join, Name: "TrimEnd"}
 			return &CallExpr{Func: name, Args: []Expr{trimmed}}, nil
