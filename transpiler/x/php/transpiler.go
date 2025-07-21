@@ -1638,9 +1638,10 @@ func convertQueryExpr(q *parser.QueryExpr) (Expr, error) {
 }
 
 func convertGroupQuery(q *parser.QueryExpr) (Expr, error) {
-	if q.Group == nil || len(q.Joins) != 0 || q.Skip != nil || q.Take != nil || q.Distinct {
+	if q.Group == nil || q.Skip != nil || q.Take != nil || q.Distinct {
 		return nil, fmt.Errorf("unsupported query")
 	}
+
 	loops := []QueryLoop{{Name: q.Var}}
 	src, err := convertExpr(q.Source)
 	if err != nil {
@@ -1654,6 +1655,17 @@ func convertGroupQuery(q *parser.QueryExpr) (Expr, error) {
 		}
 		loops = append(loops, QueryLoop{Name: f.Var, Source: groupItemsExpr(ex)})
 	}
+	for _, j := range q.Joins {
+		if j.Side != nil && *j.Side != "inner" {
+			return nil, fmt.Errorf("unsupported join")
+		}
+		ex, err := convertExpr(j.Src)
+		if err != nil {
+			return nil, err
+		}
+		loops = append(loops, QueryLoop{Name: j.Var, Source: groupItemsExpr(ex)})
+	}
+
 	funcStack = append(funcStack, nil)
 	for _, lp := range loops {
 		funcStack[len(funcStack)-1] = append(funcStack[len(funcStack)-1], lp.Name)
@@ -1669,6 +1681,18 @@ func convertGroupQuery(q *parser.QueryExpr) (Expr, error) {
 		if err != nil {
 			funcStack = funcStack[:len(funcStack)-1]
 			return nil, err
+		}
+	}
+	for _, j := range q.Joins {
+		cond, err := convertExpr(j.On)
+		if err != nil {
+			funcStack = funcStack[:len(funcStack)-1]
+			return nil, err
+		}
+		if where == nil {
+			where = cond
+		} else {
+			where = &BinaryExpr{Left: where, Op: "&&", Right: cond}
 		}
 	}
 	funcStack = append(funcStack, []string{q.Group.Name})
