@@ -1,3 +1,8 @@
+## Progress (2025-07-22 06:45 +0700)
+- Simplified print handling and list formatting
+- Updated append_builtin, avg_builtin and while_loop outputs
+- Updated avg builtin VM golden
+
 ## Progress (2025-07-22 05:10 +0700)
 - Generated TypeScript for 100/101 programs (76 passing)
 - Updated README checklist and outputs
@@ -29,3 +34,4 @@
 - Updated README checklist and outputs
 - Enhanced readability and type inference
 - Removed runtime helper functions
+

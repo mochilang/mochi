@@ -6,7 +6,6 @@ import (
 	"bytes"
 	"fmt"
 	"io"
-	"math"
 	"sort"
 	"strings"
 
@@ -160,12 +159,9 @@ type BoolLit struct {
 	Value bool
 }
 
-// formatFloat keeps a trailing `.0` for whole numbers so the generated code
-// more closely matches Mochi's print output for floats.
+// formatFloat simply formats the float using Go's default formatting.
+// We keep it minimal so printed numbers are easy to read.
 func formatFloat(f float64) string {
-	if math.Trunc(f) == f {
-		return fmt.Sprintf("%.1f", f)
-	}
 	return fmt.Sprintf("%g", f)
 }
 
@@ -616,46 +612,26 @@ func (f *FormatListExpr) emit(w io.Writer) {
 	io.WriteString(w, "\"[\" + ")
 	if f.Value != nil {
 		f.Value.emit(w)
-		io.WriteString(w, `.map(v => { if (typeof v === 'string') return '\'' + v + '\''; if (typeof v === 'number') return Number.isInteger(v) ? String(v) : String(v); if (typeof v === 'boolean') return v ? 'True' : 'False'; if (typeof v === 'object') { if (v && v.__name) { const entries = Object.entries(v).filter(([k]) => k !== '__name'); return v.__name + ' {' + entries.map(([k,val]) => { if (typeof val === 'string') return k + ' = ' + '\'' + val + '\''; if (typeof val === 'number') return k + ' = ' + (Number.isInteger(val) ? String(val) : String(val)); if (typeof val === 'boolean') return k + ' = ' + (val ? 'True' : 'False'); return k + ' = ' + String(val); }).join(', ') + '}'; } let s = JSON.stringify(v).replace(/"/g, '\'' ).replace(/:/g, ': ').replace(/,/g, ', ');`)
-		if len(f.FloatFields) > 0 {
-			io.WriteString(w, ` s = s.replace(/'(`)
-			io.WriteString(w, strings.Join(f.FloatFields, "|"))
-			io.WriteString(w, `)'\s*: (-?[0-9]+)([,}])/g, '$1': $2.0$3');`)
-		}
-		io.WriteString(w, ` s = s.replace(/('[^']*(?:id|key)'\s*: )(-?[0-9]+)\.0([,}])/g, '$1$2$3'); return s } return String(v); }).join(', ')`)
+		io.WriteString(w, ".join(', ')")
 	} else {
-		io.WriteString(w, "\"\"")
+		io.WriteString(w, "''")
 	}
 	io.WriteString(w, " + \"]\"")
 }
 
 func (p *PrintExpr) emit(w io.Writer) {
 	io.WriteString(w, "console.log(")
-	if len(p.Args) == 1 {
-		if _, ok := p.Args[0].(*FormatListExpr); ok {
-			p.Args[0].emit(w)
-			io.WriteString(w, ")")
-			return
-		}
-	}
-	io.WriteString(w, "[")
 	for i, a := range p.Args {
 		if i > 0 {
 			io.WriteString(w, ", ")
 		}
 		if a != nil {
-			if _, ok := a.(*AvgExpr); ok {
-				io.WriteString(w, "(")
-				a.emit(w)
-				io.WriteString(w, ").toFixed(1)")
-			} else {
-				a.emit(w)
-			}
+			a.emit(w)
 		} else {
 			io.WriteString(w, "null")
 		}
 	}
-	io.WriteString(w, `].map(v => { if (v === null) return 'nil'; if (typeof v === 'boolean') return v ? 'True' : 'False'; if (typeof v === 'number') return Number.isInteger(v) ? v.toFixed(1) : String(v); if (typeof v === 'object') return JSON.stringify(v).replace(/:/g, ': ').replace(/,/g, ', '); if (typeof v === 'string') return '\'' + v + '\''; return String(v); }).join(' ').trimEnd())`)
+	io.WriteString(w, ")")
 }
 
 func (s *SubstringExpr) emit(w io.Writer) {
