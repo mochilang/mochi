@@ -341,14 +341,16 @@ type QueryExpr struct {
 
 // GroupQueryExpr models `group by` queries.
 type GroupQueryExpr struct {
-	Var      string
-	Src      Expr
-	Froms    []queryFrom
-	Joins    []queryJoin
-	Where    Expr
-	Key      Expr
-	GroupVar string
-	Select   Expr
+	Var       string
+	Src       Expr
+	Froms     []queryFrom
+	Joins     []queryJoin
+	Where     Expr
+	Key       Expr
+	GroupVar  string
+	Select    Expr
+	ItemName  string
+	GroupName string
 }
 
 type StructLit struct {
@@ -477,7 +479,7 @@ func (g *GroupQueryExpr) emit(w io.Writer) {
 			g.Where.emit(w)
 			io.WriteString(w, " then")
 		}
-		io.WriteString(w, " yield {| ")
+		io.WriteString(w, " yield { ")
 		names := []string{g.Var}
 		for _, j := range g.Joins {
 			names = append(names, j.Var)
@@ -493,11 +495,18 @@ func (g *GroupQueryExpr) emit(w io.Writer) {
 			io.WriteString(w, " = ")
 			io.WriteString(w, n)
 		}
-		io.WriteString(w, " |} ]")
+		io.WriteString(w, " }")
+		if g.ItemName != "" {
+			io.WriteString(w, " : ")
+			io.WriteString(w, g.ItemName)
+		}
+		io.WriteString(w, " ]")
 	}
 	io.WriteString(w, " do\n    let ")
 	io.WriteString(w, g.GroupVar)
-	io.WriteString(w, " = {| key = key; items = items |}\n    yield ")
+	io.WriteString(w, " : ")
+	io.WriteString(w, g.GroupName)
+	io.WriteString(w, " = { key = key; items = items }\n    yield ")
 	g.Select.emit(w)
 	io.WriteString(w, " ]")
 }
@@ -1410,6 +1419,15 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 			return nil, err
 		}
 		return nil, nil
+	case st.Test != nil:
+		for _, s := range st.Test.Body {
+			if _, err := convertStmt(s); err != nil {
+				return nil, err
+			}
+		}
+		return nil, nil
+	case st.Expect != nil:
+		return nil, nil
 	case st.If != nil:
 		return convertIfStmt(st.If)
 	default:
@@ -2017,7 +2035,25 @@ func convertQueryExpr(q *parser.QueryExpr) (Expr, error) {
 		if err != nil {
 			return nil, err
 		}
-		return &GroupQueryExpr{Var: q.Var, Src: src, Froms: froms, Joins: joins, Where: where, Key: key, GroupVar: q.Group.Name, Select: sel}, nil
+		names := []string{q.Var}
+		for _, j := range q.Joins {
+			names = append(names, j.Var)
+		}
+		for _, f := range q.Froms {
+			names = append(names, f.Var)
+		}
+		itemFields := make([]StructField, len(names))
+		for i, n := range names {
+			itemFields[i] = StructField{Name: n, Type: "obj", Mut: true}
+		}
+		structCount++
+		itemName := fmt.Sprintf("Anon%d", structCount)
+		structDefs = append(structDefs, StructDef{Name: itemName, Fields: itemFields})
+		groupFields := []StructField{{Name: "key", Type: "obj", Mut: true}, {Name: "items", Type: itemName + " list", Mut: true}}
+		structCount++
+		groupName := fmt.Sprintf("Anon%d", structCount)
+		structDefs = append(structDefs, StructDef{Name: groupName, Fields: groupFields})
+		return &GroupQueryExpr{Var: q.Var, Src: src, Froms: froms, Joins: joins, Where: where, Key: key, GroupVar: q.Group.Name, Select: sel, ItemName: itemName, GroupName: groupName}, nil
 	}
 	sel, err := convertExpr(q.Select)
 	if err != nil {
