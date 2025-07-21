@@ -274,7 +274,7 @@ func (m *MapLit) emit(w io.Writer) {
 		io.WriteString(w, " to ")
 		it.Value.emit(w)
 	}
-	io.WriteString(w, ")")
+	io.WriteString(w, ") as MutableMap<String, Any>")
 }
 
 // ContainsExpr represents s.contains(sub).
@@ -1400,10 +1400,20 @@ func convertForStmt(env *types.Env, fs *parser.ForStmt) (Stmt, error) {
 	if err != nil {
 		return nil, err
 	}
+	var elem types.Type = types.AnyType{}
+	if name := simpleVarName(fs.Source); name != "" {
+		if t, err := env.GetVar(name); err == nil {
+			if lt, ok := t.(types.ListType); ok {
+				elem = lt.Elem
+			}
+		}
+	}
 	if types.IsMapExpr(fs.Source, env) {
 		iter = &FieldExpr{Receiver: iter, Name: "keys"}
 	}
-	body, err := convertStmts(env, fs.Body)
+	bodyEnv := types.NewEnv(env)
+	bodyEnv.SetVar(fs.Name, elem, true)
+	body, err := convertStmts(bodyEnv, fs.Body)
 	if err != nil {
 		return nil, err
 	}
@@ -1539,7 +1549,15 @@ func convertQueryExpr(env *types.Env, q *parser.QueryExpr) (Expr, error) {
 		return nil, err
 	}
 	child := types.NewEnv(env)
-	child.SetVar(q.Var, types.AnyType{}, true)
+	var elem types.Type = types.AnyType{}
+	if name := simpleVarName(q.Source); name != "" {
+		if t, err := env.GetVar(name); err == nil {
+			if lt, ok := t.(types.ListType); ok {
+				elem = lt.Elem
+			}
+		}
+	}
+	child.SetVar(q.Var, elem, true)
 	froms := make([]queryFrom, len(q.Froms))
 	for i, f := range q.Froms {
 		fe, err := convertExpr(child, f.Src)
@@ -1822,7 +1840,7 @@ func convertPostfix(env *types.Env, p *parser.PostfixExpr) (Expr, error) {
 				return nil, err
 			}
 			expr = &IndexExpr{Target: expr, Index: idx}
-			if i+1 < len(p.Ops) {
+			if baseIsMap || i+1 < len(p.Ops) {
 				expr = &NonNullExpr{Value: expr}
 			}
 		case op.Index != nil && op.Index.Colon != nil && op.Index.Colon2 == nil && op.Index.Step == nil:
