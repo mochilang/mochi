@@ -110,7 +110,7 @@ func inferStructFromMapVars(ml *parser.MapLiteral) ([]StructField, bool) {
 		if !ok {
 			return nil, false
 		}
-		fields[i] = StructField{Name: key, Type: fsTypeFromString(vtype), Mut: true}
+		fields[i] = StructField{Name: key, Type: fsTypeFromString(vtype), Mut: false}
 	}
 	return fields, true
 }
@@ -118,7 +118,7 @@ func inferStructFromMapVars(ml *parser.MapLiteral) ([]StructField, bool) {
 func addStructDef(name string, st types.StructType) {
 	def := StructDef{Name: name}
 	for _, f := range st.Order {
-		def.Fields = append(def.Fields, StructField{Name: f, Type: fsType(st.Fields[f]), Mut: true})
+		def.Fields = append(def.Fields, StructField{Name: f, Type: fsType(st.Fields[f]), Mut: false})
 	}
 	structDefs = append(structDefs, def)
 }
@@ -2050,12 +2050,12 @@ func convertQueryExpr(q *parser.QueryExpr) (Expr, error) {
 		}
 		itemFields := make([]StructField, len(names))
 		for i, n := range names {
-			itemFields[i] = StructField{Name: n, Type: "obj", Mut: true}
+			itemFields[i] = StructField{Name: n, Type: "obj", Mut: false}
 		}
 		structCount++
 		itemName := fmt.Sprintf("Anon%d", structCount)
 		structDefs = append(structDefs, StructDef{Name: itemName, Fields: itemFields})
-		groupFields := []StructField{{Name: "key", Type: "obj", Mut: true}, {Name: "items", Type: itemName + " list", Mut: true}}
+		groupFields := []StructField{{Name: "key", Type: "obj", Mut: false}, {Name: "items", Type: itemName + " list", Mut: false}}
 		structCount++
 		groupName := fmt.Sprintf("Anon%d", structCount)
 		structDefs = append(structDefs, StructDef{Name: groupName, Fields: groupFields})
