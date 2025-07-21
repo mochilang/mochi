@@ -888,6 +888,8 @@ type GroupQueryExpr struct {
 	ElemType string
 	ItemType string
 	KeyType  string
+	Sort     Expr
+	SortType string
 }
 
 // GroupJoinQueryExpr represents a `group by` query that may include joins.
@@ -904,6 +906,8 @@ type GroupJoinQueryExpr struct {
 	ElemType   string
 	ItemType   string
 	KeyType    string
+	Sort       Expr
+	SortType   string
 	Vars       []string
 	SimpleItem bool
 }
@@ -1031,21 +1035,49 @@ func (g *GroupQueryExpr) emit(w io.Writer) {
 		fmt.Fprint(w, "}\n")
 	}
 	fmt.Fprint(w, "}\n")
-	fmt.Fprintf(w, "res := []%s{}\n", g.ElemType)
+	if g.Sort != nil {
+		fmt.Fprintf(w, "type pair struct { Key %s; Val %s }\n", g.SortType, g.ElemType)
+		fmt.Fprint(w, "tmp := []pair{}\n")
+	} else {
+		fmt.Fprintf(w, "res := []%s{}\n", g.ElemType)
+	}
 	fmt.Fprint(w, "for _, k := range order {\n")
 	fmt.Fprintf(w, "%s := groups[k]\n", g.GroupVar)
 	if g.Having != nil {
 		fmt.Fprint(w, "if ")
 		g.Having.emit(w)
-		fmt.Fprint(w, " {\n    res = append(res, ")
-		g.Select.emit(w)
-		fmt.Fprint(w, ")\n}\n")
+		fmt.Fprint(w, " {\n    ")
+		if g.Sort != nil {
+			fmt.Fprint(w, "tmp = append(tmp, pair{")
+			g.Sort.emit(w)
+			fmt.Fprint(w, ", ")
+			g.Select.emit(w)
+			fmt.Fprint(w, "})\n")
+		} else {
+			fmt.Fprint(w, "res = append(res, ")
+			g.Select.emit(w)
+			fmt.Fprint(w, ")\n")
+		}
+		fmt.Fprint(w, "}\n")
 	} else {
-		fmt.Fprint(w, "    res = append(res, ")
-		g.Select.emit(w)
-		fmt.Fprint(w, ")\n")
+		if g.Sort != nil {
+			fmt.Fprint(w, "    tmp = append(tmp, pair{")
+			g.Sort.emit(w)
+			fmt.Fprint(w, ", ")
+			g.Select.emit(w)
+			fmt.Fprint(w, "})\n")
+		} else {
+			fmt.Fprint(w, "    res = append(res, ")
+			g.Select.emit(w)
+			fmt.Fprint(w, ")\n")
+		}
 	}
 	fmt.Fprint(w, "}\n")
+	if g.Sort != nil {
+		fmt.Fprint(w, "sort.Slice(tmp, func(i,j int) bool { return tmp[i].Key < tmp[j].Key })\n")
+		fmt.Fprintf(w, "res := make([]%s, len(tmp))\n", g.ElemType)
+		fmt.Fprint(w, "for i, p := range tmp { res[i] = p.Val }\n")
+	}
 	fmt.Fprint(w, "return res }()")
 }
 
@@ -1118,21 +1150,49 @@ func (g *GroupJoinQueryExpr) emit(w io.Writer) {
 		fmt.Fprint(w, " }")
 	}
 	fmt.Fprint(w, " }\n")
-	fmt.Fprintf(w, "res := []%s{}\n", g.ElemType)
+	if g.Sort != nil {
+		fmt.Fprintf(w, "type pair struct { Key %s; Val %s }\n", g.SortType, g.ElemType)
+		fmt.Fprint(w, "tmp := []pair{}\n")
+	} else {
+		fmt.Fprintf(w, "res := []%s{}\n", g.ElemType)
+	}
 	fmt.Fprint(w, "for _, k := range order {\n")
 	fmt.Fprintf(w, "%s := groups[k]\n", g.GroupVar)
 	if g.Having != nil {
 		fmt.Fprint(w, "if ")
 		g.Having.emit(w)
-		fmt.Fprint(w, " {\n    res = append(res, ")
-		g.Select.emit(w)
-		fmt.Fprint(w, ")\n}\n")
+		fmt.Fprint(w, " {\n    ")
+		if g.Sort != nil {
+			fmt.Fprint(w, "tmp = append(tmp, pair{")
+			g.Sort.emit(w)
+			fmt.Fprint(w, ", ")
+			g.Select.emit(w)
+			fmt.Fprint(w, "})\n")
+		} else {
+			fmt.Fprint(w, "res = append(res, ")
+			g.Select.emit(w)
+			fmt.Fprint(w, ")\n")
+		}
+		fmt.Fprint(w, "}\n")
 	} else {
-		fmt.Fprint(w, "    res = append(res, ")
-		g.Select.emit(w)
-		fmt.Fprint(w, ")\n")
+		if g.Sort != nil {
+			fmt.Fprint(w, "    tmp = append(tmp, pair{")
+			g.Sort.emit(w)
+			fmt.Fprint(w, ", ")
+			g.Select.emit(w)
+			fmt.Fprint(w, "})\n")
+		} else {
+			fmt.Fprint(w, "    res = append(res, ")
+			g.Select.emit(w)
+			fmt.Fprint(w, ")\n")
+		}
 	}
 	fmt.Fprint(w, "}\n")
+	if g.Sort != nil {
+		fmt.Fprint(w, "sort.Slice(tmp, func(i,j int) bool { return tmp[i].Key < tmp[j].Key })\n")
+		fmt.Fprintf(w, "res := make([]%s, len(tmp))\n", g.ElemType)
+		fmt.Fprint(w, "for i, p := range tmp { res[i] = p.Val }\n")
+	}
 	fmt.Fprint(w, "return res }()")
 }
 
@@ -1605,8 +1665,18 @@ func compileQueryExpr(q *parser.QueryExpr, env *types.Env, base string) (Expr, e
 		if keyGoType == "" {
 			keyGoType = "any"
 		}
+		var sortExpr Expr
+		var sortType string
+		if q.Sort != nil {
+			sortExpr, err = compileExpr(q.Sort, genv, "")
+			if err != nil {
+				return nil, err
+			}
+			sortType = toGoTypeFromType(types.ExprType(q.Sort, genv))
+			usesSort = true
+		}
 		usesPrint = true
-		return &GroupQueryExpr{Var: q.Var, Src: src, Key: keyExpr, GroupVar: q.Group.Name, Cond: nil, Select: sel, Having: having, ElemType: et, ItemType: itemType, KeyType: keyGoType}, nil
+		return &GroupQueryExpr{Var: q.Var, Src: src, Key: keyExpr, GroupVar: q.Group.Name, Cond: nil, Select: sel, Having: having, ElemType: et, ItemType: itemType, KeyType: keyGoType, Sort: sortExpr, SortType: sortType}, nil
 	}
 	if q.Group != nil {
 		src, err := compileExpr(q.Source, env, "")
@@ -1764,7 +1834,17 @@ func compileQueryExpr(q *parser.QueryExpr, env *types.Env, base string) (Expr, e
 		if keyGoType == "" {
 			keyGoType = "any"
 		}
-		return &GroupJoinQueryExpr{Var: q.Var, Src: src, Froms: froms, Joins: joins, Where: where, Key: keyExpr, GroupVar: q.Group.Name, Select: sel, Having: having, ElemType: et, ItemType: itemName, KeyType: keyGoType, Vars: varNames, SimpleItem: len(varNames) == 1 && len(q.Froms) == 0 && len(q.Joins) == 0}, nil
+		var sortExpr Expr
+		var sortType string
+		if q.Sort != nil {
+			sortExpr, err = compileExpr(q.Sort, genv, "")
+			if err != nil {
+				return nil, err
+			}
+			sortType = toGoTypeFromType(types.ExprType(q.Sort, genv))
+			usesSort = true
+		}
+		return &GroupJoinQueryExpr{Var: q.Var, Src: src, Froms: froms, Joins: joins, Where: where, Key: keyExpr, GroupVar: q.Group.Name, Select: sel, Having: having, ElemType: et, ItemType: itemName, KeyType: keyGoType, Sort: sortExpr, SortType: sortType, Vars: varNames, SimpleItem: len(varNames) == 1 && len(q.Froms) == 0 && len(q.Joins) == 0}, nil
 	}
 	src, err := compileExpr(q.Source, env, "")
 	if err != nil {

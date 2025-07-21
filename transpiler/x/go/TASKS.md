@@ -1,3 +1,31 @@
+## Progress (2025-07-22 00:28 +0700)
+- go transpiler: support group query sorting
+- Regenerated golden files - 92/101 vm valid programs passing
+
+## Progress (2025-07-22 00:15 +0700)
+- ts transpiler: improve nested join code
+- Regenerated golden files - 91/101 vm valid programs passing
+
+## Progress (2025-07-22 00:15 +0700)
+- ts transpiler: improve nested join code
+- Regenerated golden files - 91/101 vm valid programs passing
+
+## Progress (2025-07-22 00:15 +0700)
+- ts transpiler: improve nested join code
+- Regenerated golden files - 91/101 vm valid programs passing
+
+## Progress (2025-07-22 00:15 +0700)
+- ts transpiler: improve nested join code
+- Regenerated golden files - 91/101 vm valid programs passing
+
+## Progress (2025-07-22 00:15 +0700)
+- ts transpiler: improve nested join code
+- Regenerated golden files - 91/101 vm valid programs passing
+
+## Progress (2025-07-22 00:15 +0700)
+- ts transpiler: improve nested join code
+- Regenerated golden files - 92/101 vm valid programs passing
+
 ## Progress (2025-07-21 23:54 +0700)
 - erl transpiler: add break/continue support
 - Regenerated golden files - 89/100 vm valid programs passing
