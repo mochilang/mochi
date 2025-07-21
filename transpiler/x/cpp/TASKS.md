@@ -1,3 +1,13 @@
+## Progress (2025-07-21 15:41 +0700)
+- cpp transpiler: improve values builtin printing
+- Generated C++ for 85/100 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-21 15:33 +0700)
+- php transpiler: support group by join
+- Generated C++ for 85/100 programs
+- Updated README checklist and outputs
+
 ## Progress (2025-07-21 14:47 +0700)
 - ctrans: support group_by_sort
 - Generated C++ for 85/100 programs
