@@ -1571,6 +1571,21 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 		}
 		return &StructLit{Name: p.Struct.Name, Fields: fields}, nil
 	case p.Map != nil:
+		if st, ok := types.InferStructFromMapEnv(p.Map, transpileEnv); ok {
+			structCount++
+			name := fmt.Sprintf("Anon%d", structCount)
+			addStructDef(name, st)
+			fields := make([]StructFieldExpr, len(p.Map.Items))
+			for i, it := range p.Map.Items {
+				val, err := convertExpr(it.Value)
+				if err != nil {
+					return nil, err
+				}
+				key, _ := types.SimpleStringKey(it.Key)
+				fields[i] = StructFieldExpr{Name: key, Value: val}
+			}
+			return &StructLit{Name: name, Fields: fields}, nil
+		}
 		items := make([][2]Expr, len(p.Map.Items))
 		for i, it := range p.Map.Items {
 			k, err := convertExpr(it.Key)
