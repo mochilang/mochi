@@ -104,6 +104,17 @@ func updateReadme() {
 	srcDir := filepath.Join(root, "tests", "vm", "valid")
 	outDir := filepath.Join(root, "tests", "transpiler", "x", "rs")
 	readmePath := filepath.Join(root, "transpiler", "x", "rs", "README.md")
+	out, err := exec.Command("git", "log", "-1", "--format=%cI").Output()
+	ts := ""
+	if err == nil {
+		if t, perr := time.Parse(time.RFC3339, strings.TrimSpace(string(out))); perr == nil {
+			if loc, lerr := time.LoadLocation("Asia/Bangkok"); lerr == nil {
+				ts = t.In(loc).Format("2006-01-02 15:04 -0700")
+			} else {
+				ts = t.Format("2006-01-02 15:04 MST")
+			}
+		}
+	}
 	files, _ := filepath.Glob(filepath.Join(srcDir, "*.mochi"))
 	total := len(files)
 	compiled := 0
@@ -120,7 +131,12 @@ func updateReadme() {
 	var buf bytes.Buffer
 	buf.WriteString("# Mochi \u2192 Rust Transpiler\n\n")
 	buf.WriteString("This experimental transpiler converts a subset of Mochi into readable Rust code.\n")
-	buf.WriteString("Generated sources for the golden tests live under `tests/transpiler/x/rs`.\n\n")
+	buf.WriteString("Generated sources for the golden tests live under `tests/transpiler/x/rs`.\n")
+	if ts != "" {
+		fmt.Fprintf(&buf, "Last updated: %s\n\n", ts)
+	} else {
+		buf.WriteString("\n")
+	}
 	fmt.Fprintf(&buf, "## VM Golden Test Checklist (%d/%d)\n", compiled, total)
 	buf.WriteString(strings.Join(lines, "\n"))
 	buf.WriteString("\n")
@@ -155,7 +171,7 @@ func updateTasks() {
 	var buf bytes.Buffer
 	buf.WriteString(fmt.Sprintf("## Progress (%s)\n", ts))
 	fmt.Fprintf(&buf, "- Generated Rust for %d/%d programs\n", compiled, total)
-	buf.WriteString("- Updated README checklist and outputs\n\n")
+	buf.WriteString("- Updated README checklist and outputs with timestamp\n\n")
 	if data, err := os.ReadFile(taskFile); err == nil {
 		buf.Write(data)
 	}
