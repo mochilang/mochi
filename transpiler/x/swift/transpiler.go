@@ -444,6 +444,11 @@ func (ie *IndexExpr) emit(w io.Writer) {
 }
 
 func (c *CastExpr) emit(w io.Writer) {
+	// avoid noisy casts when the expression is already a literal
+	if _, ok := c.Expr.(*LitExpr); ok {
+		c.Expr.emit(w)
+		return
+	}
 	fmt.Fprint(w, "(")
 	c.Expr.emit(w)
 	fmt.Fprintf(w, " as! %s)", c.Type)
