@@ -1069,7 +1069,7 @@ func transpileQueryExpr(q *parser.QueryExpr) (Node, error) {
 	if q == nil {
 		return nil, fmt.Errorf("nil query")
 	}
-	if q.Sort != nil || q.Skip != nil || q.Take != nil || q.Distinct {
+	if q.Distinct {
 		return nil, fmt.Errorf("unsupported query features")
 	}
 
@@ -1133,6 +1133,28 @@ func transpileQueryExpr(q *parser.QueryExpr) (Node, error) {
 	}
 	if name, ok := identName(q.Source); ok && groupVars != nil && groupVars[name] {
 		src = &List{Elems: []Node{Keyword("items"), Symbol(name)}}
+	}
+	if q.Sort != nil {
+		key, err := transpileExpr(q.Sort)
+		if err != nil {
+			return nil, err
+		}
+		fn := &List{Elems: []Node{Symbol("fn"), &Vector{Elems: []Node{Symbol(q.Var)}}, key}}
+		src = &List{Elems: []Node{Symbol("sort-by"), fn, src}}
+	}
+	if q.Skip != nil {
+		sk, err := transpileExpr(q.Skip)
+		if err != nil {
+			return nil, err
+		}
+		src = &List{Elems: []Node{Symbol("drop"), sk, src}}
+	}
+	if q.Take != nil {
+		tk, err := transpileExpr(q.Take)
+		if err != nil {
+			return nil, err
+		}
+		src = &List{Elems: []Node{Symbol("take"), tk, src}}
 	}
 	bindings = append(bindings, Symbol(q.Var), src)
 
