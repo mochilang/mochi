@@ -1,3 +1,7 @@
+## Progress (2025-07-21 21:38:00 +0700)
+- fortran: add constant handling for multi join sort
+
+
 ## Progress (2025-07-21 20:59:38 +0700)
 - fortran: improve bool printing and add str builtin
 
