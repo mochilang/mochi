@@ -6,6 +6,7 @@ import (
 	"bytes"
 	"fmt"
 	"io"
+	"strconv"
 	"strings"
 
 	"mochi/parser"
@@ -224,6 +225,18 @@ func (s *StringLit) emit(w io.Writer) { fmt.Fprintf(w, "%q", s.Value) }
 type IntLit struct{ Value int64 }
 
 func (i *IntLit) emit(w io.Writer) { fmt.Fprintf(w, "%d", i.Value) }
+
+type FloatLit struct{ Value float64 }
+
+func (f *FloatLit) emit(w io.Writer) {
+	s := strconv.FormatFloat(f.Value, 'f', -1, 64)
+	if !strings.ContainsAny(s, ".eE") {
+		if !strings.Contains(s, ".") {
+			s += ".0"
+		}
+	}
+	io.WriteString(w, s)
+}
 
 type BoolLit struct{ Value bool }
 
@@ -1107,6 +1120,8 @@ func guessType(e Expr) string {
 	switch v := e.(type) {
 	case *IntLit:
 		return "Int"
+	case *FloatLit:
+		return "Double"
 	case *BoolLit:
 		return "Boolean"
 	case *StringLit:
@@ -1935,7 +1950,11 @@ func convertUnary(env *types.Env, u *parser.Unary) (Expr, error) {
 	for i := len(u.Ops) - 1; i >= 0; i-- {
 		switch u.Ops[i] {
 		case "-":
-			ex = &BinaryExpr{Left: &IntLit{Value: 0}, Op: "-", Right: ex}
+			zero := Expr(&IntLit{Value: 0})
+			if guessType(ex) == "Double" {
+				zero = &FloatLit{Value: 0}
+			}
+			ex = &BinaryExpr{Left: zero, Op: "-", Right: ex}
 		case "!":
 			ex = &NotExpr{Value: ex}
 		default:
@@ -1968,6 +1987,12 @@ func convertPostfix(env *types.Env, p *parser.PostfixExpr) (Expr, error) {
 		return nil, err
 	}
 	baseIsMap := types.IsMapPrimary(p.Target, env)
+	if !baseIsMap {
+		t := guessType(expr)
+		if strings.HasPrefix(t, "MutableMap<") {
+			baseIsMap = true
+		}
+	}
 	for i := 0; i < len(p.Ops); i++ {
 		op := p.Ops[i]
 		switch {
@@ -2030,8 +2055,9 @@ func convertPostfix(env *types.Env, p *parser.PostfixExpr) (Expr, error) {
 			expr = &ContainsExpr{Str: expr, Sub: arg}
 			i++ // skip call op
 		case op.Field != nil:
-			if baseIsMap {
+			if baseIsMap || strings.HasPrefix(guessType(expr), "MutableMap<") {
 				expr = &IndexExpr{Target: expr, Index: &StringLit{Value: op.Field.Name}}
+				baseIsMap = false
 			} else {
 				expr = &FieldExpr{Receiver: expr, Name: op.Field.Name}
 			}
@@ -2202,6 +2228,8 @@ func convertPrimary(env *types.Env, p *parser.Primary) (Expr, error) {
 		return &StringLit{Value: *p.Lit.Str}, nil
 	case p.Lit != nil && p.Lit.Int != nil:
 		return &IntLit{Value: int64(*p.Lit.Int)}, nil
+	case p.Lit != nil && p.Lit.Float != nil:
+		return &FloatLit{Value: *p.Lit.Float}, nil
 	case p.Lit != nil && p.Lit.Bool != nil:
 		return &BoolLit{Value: bool(*p.Lit.Bool)}, nil
 	case p.Selector != nil && len(p.Selector.Tail) == 0:
