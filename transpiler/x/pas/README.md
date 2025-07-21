@@ -3,7 +3,7 @@
 This folder contains the experimental Pascal transpiler.
 Generated sources for the golden tests live under `tests/transpiler/x/pas`.
 
-## VM Golden Test Checklist (59/100)
+## VM Golden Test Checklist (40/100)
 - [x] append_builtin
 - [x] avg_builtin
 - [x] basic_compare
@@ -18,27 +18,27 @@ Generated sources for the golden tests live under `tests/transpiler/x/pas`.
 - [x] cross_join_filter
 - [x] cross_join_triple
 - [ ] dataset_sort_take_limit
-- [x] dataset_where_filter
-- [x] exists_builtin
+- [ ] dataset_where_filter
+- [ ] exists_builtin
 - [x] for_list_collection
 - [x] for_loop
 - [ ] for_map_collection
 - [x] fun_call
-- [x] fun_expr_in_let
+- [ ] fun_expr_in_let
 - [x] fun_three_args
 - [ ] go_auto
 - [x] group_by
-- [x] group_by_conditional_sum
+- [ ] group_by_conditional_sum
 - [ ] group_by_having
-- [ ] group_by_join
+- [x] group_by_join
 - [ ] group_by_left_join
 - [ ] group_by_multi_join
 - [ ] group_by_multi_join_sort
 - [ ] group_by_sort
 - [ ] group_items_iteration
 - [x] if_else
-- [x] if_then_else
-- [x] if_then_else_nested
+- [ ] if_then_else
+- [ ] if_then_else_nested
 - [x] in_operator
 - [ ] in_operator_extended
 - [ ] inner_join
@@ -47,10 +47,10 @@ Generated sources for the golden tests live under `tests/transpiler/x/pas`.
 - [x] left_join
 - [ ] left_join_multi
 - [x] len_builtin
-- [x] len_map
+- [ ] len_map
 - [x] len_string
 - [x] let_and_print
-- [x] list_assign
+- [ ] list_assign
 - [x] list_index
 - [x] list_nested_assign
 - [ ] list_set_ops
@@ -72,35 +72,35 @@ Generated sources for the golden tests live under `tests/transpiler/x/pas`.
 - [ ] outer_join
 - [ ] partial_application
 - [x] print_hello
-- [x] pure_fold
-- [x] pure_global_fold
+- [ ] pure_fold
+- [ ] pure_global_fold
 - [ ] python_auto
 - [ ] python_math
 - [ ] query_sum_select
 - [ ] record_assign
-- [x] right_join
+- [ ] right_join
 - [ ] save_jsonl_stdout
 - [x] short_circuit
 - [x] slice
 - [ ] sort_stable
-- [x] str_builtin
+- [ ] str_builtin
 - [x] string_compare
 - [x] string_concat
 - [x] string_contains
-- [x] string_in_operator
-- [x] string_index
-- [x] string_prefix_slice
+- [ ] string_in_operator
+- [ ] string_index
+- [ ] string_prefix_slice
 - [x] substring_builtin
-- [x] sum_builtin
-- [x] tail_recursion
-- [x] test_block
+- [ ] sum_builtin
+- [ ] tail_recursion
+- [ ] test_block
 - [ ] tree_sum
-- [x] two-sum
+- [ ] two-sum
 - [x] typed_let
 - [x] typed_var
 - [x] unary_neg
 - [ ] update_stmt
 - [ ] user_type_literal
-- [x] values_builtin
+- [ ] values_builtin
 - [x] var_assignment
 - [x] while_loop
