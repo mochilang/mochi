@@ -149,6 +149,7 @@ func updateReadme() {
 	outDir := filepath.Join(root, "tests", "transpiler", "x", "rkt")
 	readmePath := filepath.Join(root, "transpiler", "x", "rkt", "README.md")
 	files, _ := filepath.Glob(filepath.Join(srcDir, "*.mochi"))
+	sort.Strings(files)
 	total := len(files)
 	compiled := 0
 	var lines []string
@@ -173,14 +174,22 @@ func updateReadme() {
 func updateTasks() {
 	root := repoRoot(&testing.T{})
 	taskPath := filepath.Join(root, "transpiler", "x", "rkt", "TASKS.md")
-	out, err := exec.Command("git", "log", "-1", "--format=%cI").Output()
+	out, err := exec.Command("git", "log", "-1", "--format=%h|%cI|%s").Output()
+	var sha, msg string
 	ts := ""
 	if err == nil {
-		if t, perr := time.Parse(time.RFC3339, strings.TrimSpace(string(out))); perr == nil {
-			if loc, lerr := time.LoadLocation("Asia/Bangkok"); lerr == nil {
-				ts = t.In(loc).Format("2006-01-02 15:04 -0700")
-			} else {
-				ts = t.Format("2006-01-02 15:04 MST")
+		parts := strings.SplitN(strings.TrimSpace(string(out)), "|", 3)
+		if len(parts) >= 2 {
+			sha = parts[0]
+			if t, perr := time.Parse(time.RFC3339, parts[1]); perr == nil {
+				if loc, lerr := time.LoadLocation("Asia/Bangkok"); lerr == nil {
+					ts = t.In(loc).Format("2006-01-02 15:04 -0700")
+				} else {
+					ts = t.Format("2006-01-02 15:04 MST")
+				}
+			}
+			if len(parts) == 3 {
+				msg = parts[2]
 			}
 		}
 	}
@@ -201,6 +210,9 @@ func updateTasks() {
 	}
 	var buf bytes.Buffer
 	buf.WriteString(fmt.Sprintf("## Progress (%s)\n", ts))
+	if sha != "" {
+		buf.WriteString(fmt.Sprintf("- Commit %s: %s\n", sha, msg))
+	}
 	fmt.Fprintf(&buf, "- Generated Racket for %d/%d programs\n", compiled, total)
 	buf.WriteString("- Updated README checklist\n\n")
 	if data, err := os.ReadFile(taskPath); err == nil {
