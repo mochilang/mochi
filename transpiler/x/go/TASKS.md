@@ -1,3 +1,31 @@
+## Progress (2025-07-21 12:30 +0700)
+- go transpiler: add group-by support
+- Regenerated golden files - 85/100 vm valid programs passing
+
+## Progress (2025-07-21 12:30 +0700)
+- go transpiler: add group-by support
+- Regenerated golden files - 85/100 vm valid programs passing
+
+## Progress (2025-07-21 12:05 +0700)
+- transpiler/c: support group_by
+- Regenerated golden files - 85/100 vm valid programs passing
+
+## Progress (2025-07-21 12:05 +0700)
+- transpiler/c: support group_by
+- Regenerated golden files - 85/100 vm valid programs passing
+
+## Progress (2025-07-21 12:05 +0700)
+- transpiler/c: support group_by
+- Regenerated golden files - 81/100 vm valid programs passing
+
+## Progress (2025-07-21 12:05 +0700)
+- transpiler/c: support group_by
+- Regenerated golden files - 81/100 vm valid programs passing
+
+## Progress (2025-07-21 12:05 +0700)
+- transpiler/c: support group_by
+- Regenerated golden files - 81/100 vm valid programs passing
+
 ## Progress (2025-07-21 11:02 +0700)
 - go transpiler: simplify prints and queries
 - Regenerated golden files - 81/100 vm valid programs passing

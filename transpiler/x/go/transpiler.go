@@ -804,6 +804,21 @@ type QueryExpr struct {
 	ElemType string
 }
 
+// GroupQueryExpr represents a query with grouping support.
+type GroupQueryExpr struct {
+	Var       string
+	Src       Expr
+	Key       Expr
+	KeyType   string
+	Row       Expr
+	RowType   string
+	GroupVar  string
+	GroupType string
+	Having    Expr
+	Select    Expr
+	ElemType  string
+}
+
 func (q *QueryExpr) emit(w io.Writer) {
 	fmt.Fprintf(w, "func() []%s { ", q.ElemType)
 	if q.Sort != nil {
@@ -902,6 +917,47 @@ func (q *QueryExpr) emit(w io.Writer) {
 		fmt.Fprint(w, "] }")
 	}
 	fmt.Fprint(w, "; return res }()")
+}
+
+func (gq *GroupQueryExpr) emit(w io.Writer) {
+	fmt.Fprintf(w, "func() []%s {\n", gq.ElemType)
+	fmt.Fprintf(w, "    groups := map[string]*%s{}\n", gq.GroupType)
+	fmt.Fprint(w, "    order := []string{}\n")
+	fmt.Fprintf(w, "    for _, %s := range ", gq.Var)
+	gq.Src.emit(w)
+	fmt.Fprint(w, " {\n")
+	fmt.Fprint(w, "        key := ")
+	gq.Key.emit(w)
+	fmt.Fprint(w, "\n")
+	fmt.Fprint(w, "        ks := fmt.Sprint(key)\n")
+	fmt.Fprint(w, "        g, ok := groups[ks]\n")
+	fmt.Fprint(w, "        if !ok {\n")
+	fmt.Fprintf(w, "            g = &%s{Key: key}\n", gq.GroupType)
+	fmt.Fprint(w, "            groups[ks] = g\n")
+	fmt.Fprint(w, "            order = append(order, ks)\n")
+	fmt.Fprint(w, "        }\n")
+	fmt.Fprint(w, "        g.Items = append(g.Items, ")
+	gq.Row.emit(w)
+	fmt.Fprint(w, ")\n")
+	fmt.Fprint(w, "    }\n")
+	fmt.Fprintf(w, "    res := make([]%s, 0, len(order))\n", gq.ElemType)
+	fmt.Fprint(w, "    for _, ks := range order {\n")
+	fmt.Fprintf(w, "        %s := groups[ks]\n", gq.GroupVar)
+	if gq.Having != nil {
+		fmt.Fprint(w, "        if ")
+		gq.Having.emit(w)
+		fmt.Fprint(w, " {\n")
+		fmt.Fprint(w, "            res = append(res, ")
+		gq.Select.emit(w)
+		fmt.Fprint(w, ")\n")
+		fmt.Fprint(w, "        }\n")
+	} else {
+		fmt.Fprint(w, "        res = append(res, ")
+		gq.Select.emit(w)
+		fmt.Fprint(w, ")\n")
+	}
+	fmt.Fprint(w, "    }\n")
+	fmt.Fprint(w, "    return res }()")
 }
 
 type AtoiExpr struct{ Expr Expr }
@@ -1042,6 +1098,12 @@ func compileStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 			}
 			if qe, ok := e.(*QueryExpr); ok && qe.ElemType != "" {
 				typ = "[]" + qe.ElemType
+			}
+			if gqe, ok := e.(*GroupQueryExpr); ok && gqe.ElemType != "" {
+				typ = "[]" + gqe.ElemType
+			}
+			if gqe, ok := e.(*GroupQueryExpr); ok && gqe.ElemType != "" {
+				typ = "[]" + gqe.ElemType
 			}
 			return &VarDecl{Name: st.Let.Name, Type: typ, Value: e, Global: env == topEnv}, nil
 		}
@@ -1268,6 +1330,84 @@ func compileMatchExpr(me *parser.MatchExpr, env *types.Env) (Expr, error) {
 }
 
 func compileQueryExpr(q *parser.QueryExpr, env *types.Env, base string) (Expr, error) {
+	if q.Group != nil && len(q.Froms) == 0 && len(q.Joins) == 0 {
+		src, err := compileExpr(q.Source, env, "")
+		if err != nil {
+			return nil, err
+		}
+		srcT := types.ExprType(q.Source, env)
+		var elemT types.Type
+		switch t := srcT.(type) {
+		case types.ListType:
+			elemT = t.Elem
+		case types.GroupType:
+			elemT = t.Elem
+			src = &FieldExpr{X: src, Name: "items"}
+		default:
+			elemT = types.AnyType{}
+		}
+		child := types.NewEnv(env)
+		child.SetVar(q.Var, elemT, true)
+		keyExpr, err := compileExpr(q.Group.Exprs[0], child, "")
+		if err != nil {
+			return nil, err
+		}
+		keyType := toGoTypeFromType(types.ExprType(q.Group.Exprs[0], child))
+		rowType := toGoTypeFromType(elemT)
+		gtype := toPascalCase(q.Group.Name) + "Group"
+		extraDecls = append(extraDecls, &TypeDeclStmt{Name: gtype, Fields: []ParamDecl{
+			{Name: "key", Type: keyType},
+			{Name: "items", Type: "[]" + rowType},
+		}})
+		genv := types.NewEnv(child)
+		genv.SetVar(q.Group.Name, types.GroupType{Key: types.ExprType(q.Group.Exprs[0], child), Elem: elemT}, true)
+		var having Expr
+		if q.Group.Having != nil {
+			having, err = compileExpr(q.Group.Having, genv, "")
+			if err != nil {
+				return nil, err
+			}
+		}
+		sel, err := compileExpr(q.Select, genv, "")
+		if err != nil {
+			return nil, err
+		}
+		et := ""
+		if ml := mapLiteral(q.Select); ml != nil {
+			if st, ok := types.InferStructFromMapEnv(ml, genv); ok {
+				structCount++
+				baseName := fmt.Sprintf("Result%d", structCount)
+				if base != "" {
+					baseName = structNameFromVar(base)
+				}
+				name := types.UniqueStructName(baseName, topEnv, nil)
+				st.Name = name
+				if topEnv != nil {
+					topEnv.SetStruct(name, st)
+				}
+				fieldsDecl := make([]ParamDecl, len(st.Order))
+				vals := make([]Expr, len(st.Order))
+				for i, it := range ml.Items {
+					fieldsDecl[i] = ParamDecl{Name: st.Order[i], Type: toGoTypeFromType(st.Fields[st.Order[i]])}
+					v, err := compileExpr(it.Value, genv, "")
+					if err != nil {
+						return nil, err
+					}
+					vals[i] = v
+				}
+				extraDecls = append(extraDecls, &TypeDeclStmt{Name: name, Fields: fieldsDecl})
+				sel = &StructLit{Name: name, Fields: vals, Names: st.Order}
+				et = name
+			}
+		}
+		if et == "" {
+			et = toGoTypeFromType(types.ExprType(q.Select, genv))
+		}
+		if et == "" {
+			et = "any"
+		}
+		return &GroupQueryExpr{Var: q.Var, Src: src, Key: keyExpr, KeyType: keyType, Row: &VarRef{Name: q.Var}, RowType: rowType, GroupVar: q.Group.Name, GroupType: gtype, Having: having, Select: sel, ElemType: et}, nil
+	}
 	if q.Group != nil {
 		return nil, fmt.Errorf("unsupported query features")
 	}
@@ -1282,6 +1422,7 @@ func compileQueryExpr(q *parser.QueryExpr, env *types.Env, base string) (Expr, e
 		elemT = t.Elem
 	case types.GroupType:
 		elemT = t.Elem
+		src = &FieldExpr{X: src, Name: "items"}
 	default:
 		elemT = types.AnyType{}
 	}
@@ -1488,6 +1629,9 @@ func compileForStmt(fs *parser.ForStmt, env *types.Env) (Stmt, error) {
 		isMap = true
 		child.SetVar(fs.Name, tt.Key, true)
 	case types.ListType:
+		child.SetVar(fs.Name, tt.Elem, true)
+	case types.GroupType:
+		iter = &FieldExpr{X: iter, Name: "items"}
 		child.SetVar(fs.Name, tt.Elem, true)
 	default:
 		child.SetVar(fs.Name, types.AnyType{}, true)
@@ -1908,6 +2052,10 @@ func compilePrimary(p *parser.Primary, env *types.Env, base string) (Expr, error
 		case "avg":
 			return &AvgExpr{List: args[0]}, nil
 		case "count":
+			if _, ok := types.ExprType(p.Call.Args[0], env).(types.GroupType); ok {
+				arg := &FieldExpr{X: args[0], Name: "items"}
+				return &CallExpr{Func: "len", Args: []Expr{arg}}, nil
+			}
 			name = "len"
 		case "str":
 			name = "fmt.Sprint"
@@ -2531,6 +2679,15 @@ func toNodeExpr(e Expr) *ast.Node {
 		}
 		if ex.Where != nil {
 			n.Children = append(n.Children, &ast.Node{Kind: "where", Children: []*ast.Node{toNodeExpr(ex.Where)}})
+		}
+		n.Children = append(n.Children, &ast.Node{Kind: "select", Children: []*ast.Node{toNodeExpr(ex.Select)}})
+		return n
+	case *GroupQueryExpr:
+		n := &ast.Node{Kind: "groupquery"}
+		n.Children = append(n.Children, toNodeExpr(ex.Src))
+		n.Children = append(n.Children, &ast.Node{Kind: "key", Children: []*ast.Node{toNodeExpr(ex.Key)}})
+		if ex.Having != nil {
+			n.Children = append(n.Children, &ast.Node{Kind: "having", Children: []*ast.Node{toNodeExpr(ex.Having)}})
 		}
 		n.Children = append(n.Children, &ast.Node{Kind: "select", Children: []*ast.Node{toNodeExpr(ex.Select)}})
 		return n
