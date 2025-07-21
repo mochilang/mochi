@@ -1,6 +1,6 @@
-## Progress (2025-07-22 05:34 +0700)
-- swift transpiler: support struct casts
-- Generated golden tests for 92/101 programs
+## Progress (2025-07-22 06:37 +0700)
+- swift transpiler: support struct field assignment
+- Generated golden tests for 93/101 programs
 - Updated README checklist and output artifacts
 
 # Swift Transpiler Tasks

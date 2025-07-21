@@ -1139,7 +1139,17 @@ func convertStmt(env *types.Env, st *parser.Statement) (Stmt, error) {
 			lhs = &IndexExpr{Base: lhs, Index: ix}
 		}
 		for _, f := range st.Assign.Field {
-			lhs = &IndexExpr{Base: lhs, Index: &LitExpr{Value: f.Name, IsString: true}, Force: true}
+			if stt, ok := cur.(types.StructType); ok {
+				if ft, ok := stt.Fields[f.Name]; ok {
+					cur = ft
+				}
+				lhs = &FieldExpr{Target: lhs, Name: f.Name}
+			} else {
+				lhs = &IndexExpr{Base: lhs, Index: &LitExpr{Value: f.Name, IsString: true}, Force: true}
+				if mt, ok := cur.(types.MapType); ok {
+					cur = mt.Value
+				}
+			}
 		}
 		val, err := convertExpr(env, st.Assign.Value)
 		if err != nil {
@@ -1200,6 +1210,10 @@ func convertFunDecl(env *types.Env, f *parser.FunStmt) (Stmt, error) {
 	body, err := convertStmts(env, f.Body)
 	if err != nil {
 		return nil, err
+	}
+	for i := len(f.Params) - 1; i >= 0; i-- {
+		p := f.Params[i]
+		body = append([]Stmt{&VarDecl{Name: p.Name, Expr: &NameExpr{Name: p.Name}}}, body...)
 	}
 	fn.Body = body
 	return fn, nil
@@ -2215,6 +2229,7 @@ func convertPrimary(env *types.Env, pr *parser.Primary) (Expr, error) {
 }
 
 func convertStructLiteral(env *types.Env, sl *parser.StructLiteral) (Expr, error) {
+	var fields []FieldInit
 	var keys []Expr
 	var vals []Expr
 	for _, f := range sl.Fields {
@@ -2222,8 +2237,12 @@ func convertStructLiteral(env *types.Env, sl *parser.StructLiteral) (Expr, error
 		if err != nil {
 			return nil, err
 		}
+		fields = append(fields, FieldInit{Name: f.Name, Value: v})
 		keys = append(keys, &LitExpr{Value: f.Name, IsString: true})
 		vals = append(vals, v)
+	}
+	if sl.Name != "" {
+		return &StructInit{Name: sl.Name, Fields: fields}, nil
 	}
 	return &MapLit{Keys: keys, Values: vals}, nil
 }
