@@ -355,7 +355,24 @@ func (t *TypeDeclStmt) emit(w io.Writer, indent string) {
 		fmt.Fprintf(w, indent+"        this.%s = %s;\n", f.Name, f.Name)
 	}
 	fmt.Fprint(w, indent+"    }\n")
-	// no helper methods emitted
+	fmt.Fprint(w, indent+"    @Override public String toString() {\n")
+	fmt.Fprint(w, indent+"        return String.format(\"")
+	fmt.Fprint(w, "{")
+	for i, f := range t.Fields {
+		if i > 0 {
+			fmt.Fprint(w, ", ")
+		}
+		fmt.Fprintf(w, "'%s': %%s", f.Name)
+	}
+	fmt.Fprint(w, "}\", ")
+	for i, f := range t.Fields {
+		if i > 0 {
+			fmt.Fprint(w, ", ")
+		}
+		fmt.Fprint(w, f.Name)
+	}
+	fmt.Fprint(w, ");\n")
+	fmt.Fprint(w, indent+"    }\n")
 	fmt.Fprint(w, indent+"}\n")
 }
 
@@ -451,6 +468,7 @@ func (q *QueryExpr) emit(w io.Writer) {
 	} else {
 		fmt.Fprintf(w, " java.util.ArrayList<%s> list = _tmp;", q.ElemType)
 	}
+	fmt.Fprintf(w, " java.util.ArrayList<%s> _res = new java.util.ArrayList<>();", q.ElemType)
 
 	if q.Sort != nil {
 		fmt.Fprint(w, " list.sort((a, b) -> {")
@@ -500,19 +518,19 @@ func (q *QueryExpr) emit(w io.Writer) {
 			q.Group.Having.emit(w)
 			fmt.Fprint(w, ") {")
 		}
-		fmt.Fprint(w, " _tmp.add(")
+		fmt.Fprint(w, " _res.add(")
 		q.Select.emit(w)
 		fmt.Fprint(w, ");")
 		if q.Group.Having != nil {
 			fmt.Fprint(w, " }")
 		}
 	} else {
-		fmt.Fprint(w, " _tmp.add((")
+		fmt.Fprint(w, " _res.add((")
 		fmt.Fprintf(w, "%s)list.get(i));", q.ElemType)
 	}
 	fmt.Fprint(w, " }")
 
-	fmt.Fprint(w, " addAll(_tmp);")
+	fmt.Fprint(w, " addAll(_res);")
 	fmt.Fprint(w, "}}")
 }
 
@@ -1218,9 +1236,9 @@ func (i *IntersectExpr) emit(w io.Writer) {
 type ListStrExpr struct{ List Expr }
 
 func (ls *ListStrExpr) emit(w io.Writer) {
-	fmt.Fprint(w, "((java.util.List<?>)")
+	fmt.Fprint(w, "(\"[\" + ((java.util.List<?>)")
 	ls.List.emit(w)
-	fmt.Fprint(w, ").stream().map(String::valueOf).collect(java.util.stream.Collectors.joining(\" \"))")
+	fmt.Fprint(w, ").stream().map(String::valueOf).collect(java.util.stream.Collectors.joining(\", \")) + \"]\")")
 }
 
 type UnaryExpr struct {
@@ -1480,8 +1498,13 @@ func arrayElemType(e Expr) string {
 		}
 		return t
 	case *VarExpr:
-		if t, ok := varTypes[ex.Name]; ok && strings.HasSuffix(t, "[]") {
-			return strings.TrimSuffix(t, "[]")
+		if t, ok := varTypes[ex.Name]; ok {
+			if strings.HasSuffix(t, "[]") {
+				return strings.TrimSuffix(t, "[]")
+			}
+			if strings.HasPrefix(t, "java.util.List<") && strings.HasSuffix(t, ">") {
+				return strings.TrimSuffix(strings.TrimPrefix(t, "java.util.List<"), ">")
+			}
 		}
 	}
 	return ""
@@ -2369,7 +2392,11 @@ func compileQueryExpr(q *parser.QueryExpr) (Expr, error) {
 		switch s := src.(type) {
 		case *VarExpr:
 			if vt, ok := varTypes[s.Name]; ok {
-				elemType = strings.TrimSuffix(vt, "[]")
+				if strings.HasSuffix(vt, "[]") {
+					elemType = strings.TrimSuffix(vt, "[]")
+				} else if strings.HasPrefix(vt, "java.util.List<") && strings.HasSuffix(vt, ">") {
+					elemType = strings.TrimSuffix(strings.TrimPrefix(vt, "java.util.List<"), ">")
+				}
 			}
 		case *ListLit:
 			elemType = s.ElemType

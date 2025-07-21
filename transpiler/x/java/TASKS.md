@@ -1,4 +1,30 @@
-## Progress (2025-07-21 21:13 +0700)
+## Progress (2025-07-21 23:02 +0700)
+- java transpiler: fix list printing and grouping (a164b1578)
+
+- update docs (c6b3ac840)
+
+- update docs (c6b3ac840)
+
+- update docs (c6b3ac840)
+
+- update docs (c6b3ac840)
+
+- update docs (c6b3ac840)
+
+- update docs (c6b3ac840)
+
+- update docs (c6b3ac840)
+
+- update docs (c6b3ac840)
+
+- update docs (c6b3ac840)
+
+- update docs (c6b3ac840)
+
+- update docs (c6b3ac840)
+
+- update docs (c6b3ac840)
+
 - update hs golden files (174cba038)
 
 - update hs golden files (174cba038)
