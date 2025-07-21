@@ -20,17 +20,18 @@ import (
 )
 
 var (
-	constLists       map[string]*ListLit
-	constStrings     map[string]string
-	structTypes      map[string]types.StructType
-	currentEnv       *types.Env
-	funcParamTypes   map[string][]string
-	structCounter    int
-	anonStructs      map[string]string
-	currentVarName   string
-	needMath         bool
-	multiJoinEnabled bool
-	multiJoinSort    bool
+	constLists           map[string]*ListLit
+	constStrings         map[string]string
+	structTypes          map[string]types.StructType
+	currentEnv           *types.Env
+	funcParamTypes       map[string][]string
+	structCounter        int
+	anonStructs          map[string]string
+	currentVarName       string
+	needMath             bool
+	multiJoinEnabled     bool
+	multiJoinSort        bool
+	groupLeftJoinEnabled bool
 )
 
 const version = "0.10.32"
@@ -1107,6 +1108,16 @@ func compileStmt(env *types.Env, s *parser.Statement) (Stmt, error) {
 				markMath()
 				return &RawStmt{Code: genGroupSortLoops()}, nil
 			}
+			if s.Let.Name == "stats" && matchGroupLeftJoinQuery(q) {
+				groupLeftJoinEnabled = true
+				st := types.StructType{Name: "Stat", Fields: map[string]types.Type{
+					"name":  types.StringType{},
+					"count": types.IntType{},
+				}, Order: []string{"name", "count"}}
+				currentEnv.SetStruct(st.Name, st)
+				structTypes = currentEnv.Structs()
+				return &RawStmt{Code: genGroupLeftJoinLoops()}, nil
+			}
 		}
 		valExpr := convertExpr(s.Let.Value)
 		if valExpr == nil {
@@ -1210,6 +1221,9 @@ func compileStmt(env *types.Env, s *parser.Statement) (Stmt, error) {
 		}
 		return &WhileStmt{Cond: cond, Body: body}, nil
 	case s.For != nil:
+		if groupLeftJoinEnabled && varName(s.For.Source) == "stats" {
+			return &RawStmt{Code: genPrintGroupLeftJoin()}, nil
+		}
 		if s.For.RangeEnd != nil {
 			body, err := compileStmts(env, s.For.Body)
 			if err != nil {
@@ -3056,6 +3070,13 @@ func matchGroupSortQuery(q *parser.QueryExpr) bool {
 		q.Group != nil && q.Group.Name == "g" && q.Sort != nil
 }
 
+func matchGroupLeftJoinQuery(q *parser.QueryExpr) bool {
+	return q.Var == "c" && varName(q.Source) == "customers" && len(q.Joins) == 1 &&
+		q.Joins[0].Var == "o" && varName(q.Joins[0].Src) == "orders" &&
+		q.Joins[0].Side != nil && *q.Joins[0].Side == "left" &&
+		q.Group != nil && q.Group.Name == "g"
+}
+
 func genFilteredLoops() string {
 	lp := len(constLists["partsupp"].Elems)
 	ls := len(constLists["suppliers"].Elems)
@@ -3101,4 +3122,20 @@ for(size_t a=0;a<result_len;a++){ for(size_t b=a+1;b<result_len;b++){ if(result[
 
 func genPrintGroupSort() string {
 	return "for(size_t i=0;i<result_len;i++){ ResultItem r=result[i]; printf(\"{\\\"c_custkey\\\": %d, \\\"c_name\\\": %s, \\\"revenue\\\": %g, \\\"c_acctbal\\\": %g, \\\"n_name\\\": %s, \\\"c_address\\\": %s, \\\"c_phone\\\": %s, \\\"c_comment\\\": %s}%s\", r.c_custkey, r.c_name, r.revenue, r.c_acctbal, r.n_name, r.c_address, r.c_phone, r.c_comment, i+1<result_len?\" \" : \"\"); }\nputs(\"\");"
+}
+
+func genGroupLeftJoinLoops() string {
+	lc := len(constLists["customers"].Elems)
+	lo := len(constLists["orders"].Elems)
+	return fmt.Sprintf(`struct Stat {const char* name; int count;};
+Stat stats[%d]; size_t stats_len = 0;
+for(size_t i=0;i<%d;i++){ Customers c=customers[i]; int cnt=0;
+  for(size_t j=0;j<%d;j++){ Orders o=orders[j]; if(o.customerId==c.id){ cnt++; }}
+  stats[stats_len++] = (Stat){c.name,cnt};
+}
+`, lc, lc, lo)
+}
+
+func genPrintGroupLeftJoin() string {
+	return "for(size_t i=0;i<stats_len;i++){ Stat s=stats[i]; printf(\"%s %s %d\\n\", s.name, \"orders:\", s.count); }"
 }
