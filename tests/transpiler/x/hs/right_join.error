@@ -3,5 +3,5 @@ run: exit status 1
 /workspace/mochi/tests/transpiler/x/hs/right_join.hs:31:9: error:
     parse error on input ‘putStrLn’
    |
-31 |         putStrLn ("Customer" ++ show entry.customerName ++ "has order" ++ show entry.order.id ++ "- $" ++ show entry.order.total)
+31 |         putStrLn "Customer" ++ " " ++ show entry.customerName ++ " " ++ "has order" ++ " " ++ show entry.order.id ++ " " ++ "- $" ++ " " ++ show entry.order.total
    |         ^^^^^^^^

@@ -1,1 +1,164 @@
-transpile: unsupported literal
+run: exit status 1
+
+/workspace/mochi/tests/transpiler/x/hs/group_by_multi_join_sort.hs:73:401: error:
+    • Couldn't match expected type ‘GenType2’
+                  with actual type ‘GenType3’
+    • In the expression: o
+      In the expression: [c, o, l, n]
+      In the ‘items’ field of a record
+   |
+73 | result = sortOn (\g -> -sum [x.l.l_extendedprice * (1 - x.l.l_discount) | x <- g.items]) [GenType5 {c_custkey = g.key.c_custkey, c_name = g.key.c_name, revenue = sum [x.l.l_extendedprice * (1 - x.l.l_discount) | x <- g.items], c_acctbal = g.key.c_acctbal, n_name = g.key.n_name, c_address = g.key.c_address, c_phone = g.key.c_phone, c_comment = g.key.c_comment} | g <- [MGroup {key = k, items = [[c, o, l, n] | c <- customer, o <- orders, l <- lineitem, n <- nation, o.o_custkey == c.c_custkey && l.l_orderkey == o.o_orderkey && n.n_nationkey == c.c_nationkey && o.o_orderdate >= start_date && o.o_orderdate < end_date && l.l_returnflag == "R" && GenType6 {c_custkey = c.c_custkey, c_name = c.c_name, c_acctbal = c.c_acctbal, c_address = c.c_address, c_phone = c.c_phone, c_comment = c.c_comment, n_name = n.n_name} == k]} | k <- nub (map (\c o l n -> GenType6 {c_custkey = c.c_custkey, c_name = c.c_name, c_acctbal = c.c_acctbal, c_address = c.c_address, c_phone = c.c_phone, c_comment = c.c_comment, n_name = n.n_name}) [[c, o, l, n] | c <- customer, o <- orders, l <- lineitem, n <- nation, o.o_custkey == c.c_custkey && l.l_orderkey == o.o_orderkey && n.n_nationkey == c.c_nationkey && o.o_orderdate >= start_date && o.o_orderdate < end_date && l.l_returnflag == "R"])]]
+   |                                                                                                                                                                                                                                                                                                                                                                                                                 ^
+
+/workspace/mochi/tests/transpiler/x/hs/group_by_multi_join_sort.hs:73:404: error:
+    • Couldn't match expected type ‘GenType2’
+                  with actual type ‘GenType4’
+    • In the expression: l
+      In the expression: [c, o, l, n]
+      In the ‘items’ field of a record
+   |
+73 | result = sortOn (\g -> -sum [x.l.l_extendedprice * (1 - x.l.l_discount) | x <- g.items]) [GenType5 {c_custkey = g.key.c_custkey, c_name = g.key.c_name, revenue = sum [x.l.l_extendedprice * (1 - x.l.l_discount) | x <- g.items], c_acctbal = g.key.c_acctbal, n_name = g.key.n_name, c_address = g.key.c_address, c_phone = g.key.c_phone, c_comment = g.key.c_comment} | g <- [MGroup {key = k, items = [[c, o, l, n] | c <- customer, o <- orders, l <- lineitem, n <- nation, o.o_custkey == c.c_custkey && l.l_orderkey == o.o_orderkey && n.n_nationkey == c.c_nationkey && o.o_orderdate >= start_date && o.o_orderdate < end_date && l.l_returnflag == "R" && GenType6 {c_custkey = c.c_custkey, c_name = c.c_name, c_acctbal = c.c_acctbal, c_address = c.c_address, c_phone = c.c_phone, c_comment = c.c_comment, n_name = n.n_name} == k]} | k <- nub (map (\c o l n -> GenType6 {c_custkey = c.c_custkey, c_name = c.c_name, c_acctbal = c.c_acctbal, c_address = c.c_address, c_phone = c.c_phone, c_comment = c.c_comment, n_name = n.n_name}) [[c, o, l, n] | c <- customer, o <- orders, l <- lineitem, n <- nation, o.o_custkey == c.c_custkey && l.l_orderkey == o.o_orderkey && n.n_nationkey == c.c_nationkey && o.o_orderdate >= start_date && o.o_orderdate < end_date && l.l_returnflag == "R"])]]
+   |                                                                                                                                                                                                                                                                                                                                                                                                                    ^
+
+/workspace/mochi/tests/transpiler/x/hs/group_by_multi_join_sort.hs:73:407: error:
+    • Couldn't match expected type ‘GenType2’
+                  with actual type ‘GenType1’
+    • In the expression: n
+      In the expression: [c, o, l, n]
+      In the ‘items’ field of a record
+   |
+73 | result = sortOn (\g -> -sum [x.l.l_extendedprice * (1 - x.l.l_discount) | x <- g.items]) [GenType5 {c_custkey = g.key.c_custkey, c_name = g.key.c_name, revenue = sum [x.l.l_extendedprice * (1 - x.l.l_discount) | x <- g.items], c_acctbal = g.key.c_acctbal, n_name = g.key.n_name, c_address = g.key.c_address, c_phone = g.key.c_phone, c_comment = g.key.c_comment} | g <- [MGroup {key = k, items = [[c, o, l, n] | c <- customer, o <- orders, l <- lineitem, n <- nation, o.o_custkey == c.c_custkey && l.l_orderkey == o.o_orderkey && n.n_nationkey == c.c_nationkey && o.o_orderdate >= start_date && o.o_orderdate < end_date && l.l_returnflag == "R" && GenType6 {c_custkey = c.c_custkey, c_name = c.c_name, c_acctbal = c.c_acctbal, c_address = c.c_address, c_phone = c.c_phone, c_comment = c.c_comment, n_name = n.n_name} == k]} | k <- nub (map (\c o l n -> GenType6 {c_custkey = c.c_custkey, c_name = c.c_name, c_acctbal = c.c_acctbal, c_address = c.c_address, c_phone = c.c_phone, c_comment = c.c_comment, n_name = n.n_name}) [[c, o, l, n] | c <- customer, o <- orders, l <- lineitem, n <- nation, o.o_custkey == c.c_custkey && l.l_orderkey == o.o_orderkey && n.n_nationkey == c.c_nationkey && o.o_orderdate >= start_date && o.o_orderdate < end_date && l.l_returnflag == "R"])]]
+   |                                                                                                                                                                                                                                                                                                                                                                                                                       ^
+
+/workspace/mochi/tests/transpiler/x/hs/group_by_multi_join_sort.hs:73:670: error:
+    • Couldn't match type ‘Int’ with ‘[Char]’
+        arising from selecting the field ‘c_custkey’
+    • In the ‘c_custkey’ field of a record
+      In the first argument of ‘(==)’, namely
+        ‘GenType6
+           {c_custkey = c.c_custkey, c_name = c.c_name,
+            c_acctbal = c.c_acctbal, c_address = c.c_address,
+            c_phone = c.c_phone, c_comment = c.c_comment, n_name = n.n_name}’
+      In the second argument of ‘(&&)’, namely
+        ‘GenType6
+           {c_custkey = c.c_custkey, c_name = c.c_name,
+            c_acctbal = c.c_acctbal, c_address = c.c_address,
+            c_phone = c.c_phone, c_comment = c.c_comment, n_name = n.n_name}
+           == k’
+   |
+73 | result = sortOn (\g -> -sum [x.l.l_extendedprice * (1 - x.l.l_discount) | x <- g.items]) [GenType5 {c_custkey = g.key.c_custkey, c_name = g.key.c_name, revenue = sum [x.l.l_extendedprice * (1 - x.l.l_discount) | x <- g.items], c_acctbal = g.key.c_acctbal, n_name = g.key.n_name, c_address = g.key.c_address, c_phone = g.key.c_phone, c_comment = g.key.c_comment} | g <- [MGroup {key = k, items = [[c, o, l, n] | c <- customer, o <- orders, l <- lineitem, n <- nation, o.o_custkey == c.c_custkey && l.l_orderkey == o.o_orderkey && n.n_nationkey == c.c_nationkey && o.o_orderdate >= start_date && o.o_orderdate < end_date && l.l_returnflag == "R" && GenType6 {c_custkey = c.c_custkey, c_name = c.c_name, c_acctbal = c.c_acctbal, c_address = c.c_address, c_phone = c.c_phone, c_comment = c.c_comment, n_name = n.n_name} == k]} | k <- nub (map (\c o l n -> GenType6 {c_custkey = c.c_custkey, c_name = c.c_name, c_acctbal = c.c_acctbal, c_address = c.c_address, c_phone = c.c_phone, c_comment = c.c_comment, n_name = n.n_name}) [[c, o, l, n] | c <- customer, o <- orders, l <- lineitem, n <- nation, o.o_custkey == c.c_custkey && l.l_orderkey == o.o_orderkey && n.n_nationkey == c.c_nationkey && o.o_orderdate >= start_date && o.o_orderdate < end_date && l.l_returnflag == "R"])]]
+   |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              ^^^^^^^^^^^
+
+/workspace/mochi/tests/transpiler/x/hs/group_by_multi_join_sort.hs:73:714: error:
+    • Couldn't match type ‘Double’ with ‘[Char]’
+        arising from selecting the field ‘c_acctbal’
+    • In the ‘c_acctbal’ field of a record
+      In the first argument of ‘(==)’, namely
+        ‘GenType6
+           {c_custkey = c.c_custkey, c_name = c.c_name,
+            c_acctbal = c.c_acctbal, c_address = c.c_address,
+            c_phone = c.c_phone, c_comment = c.c_comment, n_name = n.n_name}’
+      In the second argument of ‘(&&)’, namely
+        ‘GenType6
+           {c_custkey = c.c_custkey, c_name = c.c_name,
+            c_acctbal = c.c_acctbal, c_address = c.c_address,
+            c_phone = c.c_phone, c_comment = c.c_comment, n_name = n.n_name}
+           == k’
+   |
+73 | result = sortOn (\g -> -sum [x.l.l_extendedprice * (1 - x.l.l_discount) | x <- g.items]) [GenType5 {c_custkey = g.key.c_custkey, c_name = g.key.c_name, revenue = sum [x.l.l_extendedprice * (1 - x.l.l_discount) | x <- g.items], c_acctbal = g.key.c_acctbal, n_name = g.key.n_name, c_address = g.key.c_address, c_phone = g.key.c_phone, c_comment = g.key.c_comment} | g <- [MGroup {key = k, items = [[c, o, l, n] | c <- customer, o <- orders, l <- lineitem, n <- nation, o.o_custkey == c.c_custkey && l.l_orderkey == o.o_orderkey && n.n_nationkey == c.c_nationkey && o.o_orderdate >= start_date && o.o_orderdate < end_date && l.l_returnflag == "R" && GenType6 {c_custkey = c.c_custkey, c_name = c.c_name, c_acctbal = c.c_acctbal, c_address = c.c_address, c_phone = c.c_phone, c_comment = c.c_comment, n_name = n.n_name} == k]} | k <- nub (map (\c o l n -> GenType6 {c_custkey = c.c_custkey, c_name = c.c_name, c_acctbal = c.c_acctbal, c_address = c.c_address, c_phone = c.c_phone, c_comment = c.c_comment, n_name = n.n_name}) [[c, o, l, n] | c <- customer, o <- orders, l <- lineitem, n <- nation, o.o_custkey == c.c_custkey && l.l_orderkey == o.o_orderkey && n.n_nationkey == c.c_nationkey && o.o_orderdate >= start_date && o.o_orderdate < end_date && l.l_returnflag == "R"])]]
+   |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          ^^^^^^^^^^^
+
+/workspace/mochi/tests/transpiler/x/hs/group_by_multi_join_sort.hs:73:820: error:
+    • Couldn't match expected type ‘GenType6’
+                  with actual type ‘p0 -> p1 -> r3 -> GenType6’
+    • Probable cause: ‘k’ is applied to too few arguments
+      In the second argument of ‘(==)’, namely ‘k’
+      In the second argument of ‘(&&)’, namely
+        ‘GenType6
+           {c_custkey = c.c_custkey, c_name = c.c_name,
+            c_acctbal = c.c_acctbal, c_address = c.c_address,
+            c_phone = c.c_phone, c_comment = c.c_comment, n_name = n.n_name}
+           == k’
+      In the second argument of ‘(&&)’, namely
+        ‘l.l_returnflag == "R"
+           &&
+             GenType6
+               {c_custkey = c.c_custkey, c_name = c.c_name,
+                c_acctbal = c.c_acctbal, c_address = c.c_address,
+                c_phone = c.c_phone, c_comment = c.c_comment, n_name = n.n_name}
+               == k’
+    • Relevant bindings include
+        k :: p0 -> p1 -> r3 -> GenType6
+          (bound at /workspace/mochi/tests/transpiler/x/hs/group_by_multi_join_sort.hs:73:826)
+   |
+73 | result = sortOn (\g -> -sum [x.l.l_extendedprice * (1 - x.l.l_discount) | x <- g.items]) [GenType5 {c_custkey = g.key.c_custkey, c_name = g.key.c_name, revenue = sum [x.l.l_extendedprice * (1 - x.l.l_discount) | x <- g.items], c_acctbal = g.key.c_acctbal, n_name = g.key.n_name, c_address = g.key.c_address, c_phone = g.key.c_phone, c_comment = g.key.c_comment} | g <- [MGroup {key = k, items = [[c, o, l, n] | c <- customer, o <- orders, l <- lineitem, n <- nation, o.o_custkey == c.c_custkey && l.l_orderkey == o.o_orderkey && n.n_nationkey == c.c_nationkey && o.o_orderdate >= start_date && o.o_orderdate < end_date && l.l_returnflag == "R" && GenType6 {c_custkey = c.c_custkey, c_name = c.c_name, c_acctbal = c.c_acctbal, c_address = c.c_address, c_phone = c.c_phone, c_comment = c.c_comment, n_name = n.n_name} == k]} | k <- nub (map (\c o l n -> GenType6 {c_custkey = c.c_custkey, c_name = c.c_name, c_acctbal = c.c_acctbal, c_address = c.c_address, c_phone = c.c_phone, c_comment = c.c_comment, n_name = n.n_name}) [[c, o, l, n] | c <- customer, o <- orders, l <- lineitem, n <- nation, o.o_custkey == c.c_custkey && l.l_orderkey == o.o_orderkey && n.n_nationkey == c.c_nationkey && o.o_orderdate >= start_date && o.o_orderdate < end_date && l.l_returnflag == "R"])]]
+   |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    ^
+
+/workspace/mochi/tests/transpiler/x/hs/group_by_multi_join_sort.hs:73:1028: error:
+    • Couldn't match expected type ‘GenType2’
+                  with actual type ‘GenType3’
+    • In the expression: o
+      In the expression: [c, o, l, n]
+      In the second argument of ‘map’, namely
+        ‘[[c, o, l, ....] |
+            c <- customer,
+            o <- orders,
+            l <- lineitem,
+            n <- nation,
+            o.o_custkey == c.c_custkey
+              &&
+                l.l_orderkey == o.o_orderkey
+                  &&
+                    n.n_nationkey == c.c_nationkey
+                      &&
+                        o.o_orderdate >= start_date
+                          && o.o_orderdate < end_date && l.l_returnflag == "R"]’
+   |
+73 | result = sortOn (\g -> -sum [x.l.l_extendedprice * (1 - x.l.l_discount) | x <- g.items]) [GenType5 {c_custkey = g.key.c_custkey, c_name = g.key.c_name, revenue = sum [x.l.l_extendedprice * (1 - x.l.l_discount) | x <- g.items], c_acctbal = g.key.c_acctbal, n_name = g.key.n_name, c_address = g.key.c_address, c_phone = g.key.c_phone, c_comment = g.key.c_comment} | g <- [MGroup {key = k, items = [[c, o, l, n] | c <- customer, o <- orders, l <- lineitem, n <- nation, o.o_custkey == c.c_custkey && l.l_orderkey == o.o_orderkey && n.n_nationkey == c.c_nationkey && o.o_orderdate >= start_date && o.o_orderdate < end_date && l.l_returnflag == "R" && GenType6 {c_custkey = c.c_custkey, c_name = c.c_name, c_acctbal = c.c_acctbal, c_address = c.c_address, c_phone = c.c_phone, c_comment = c.c_comment, n_name = n.n_name} == k]} | k <- nub (map (\c o l n -> GenType6 {c_custkey = c.c_custkey, c_name = c.c_name, c_acctbal = c.c_acctbal, c_address = c.c_address, c_phone = c.c_phone, c_comment = c.c_comment, n_name = n.n_name}) [[c, o, l, n] | c <- customer, o <- orders, l <- lineitem, n <- nation, o.o_custkey == c.c_custkey && l.l_orderkey == o.o_orderkey && n.n_nationkey == c.c_nationkey && o.o_orderdate >= start_date && o.o_orderdate < end_date && l.l_returnflag == "R"])]]
+   |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    ^
+
+/workspace/mochi/tests/transpiler/x/hs/group_by_multi_join_sort.hs:73:1031: error:
+    • Couldn't match expected type ‘GenType2’
+                  with actual type ‘GenType4’
+    • In the expression: l
+      In the expression: [c, o, l, n]
+      In the second argument of ‘map’, namely
+        ‘[[c, o, l, ....] |
+            c <- customer,
+            o <- orders,
+            l <- lineitem,
+            n <- nation,
+            o.o_custkey == c.c_custkey
+              &&
+                l.l_orderkey == o.o_orderkey
+                  &&
+                    n.n_nationkey == c.c_nationkey
+                      &&
+                        o.o_orderdate >= start_date
+                          && o.o_orderdate < end_date && l.l_returnflag == "R"]’
+   |
+73 | result = sortOn (\g -> -sum [x.l.l_extendedprice * (1 - x.l.l_discount) | x <- g.items]) [GenType5 {c_custkey = g.key.c_custkey, c_name = g.key.c_name, revenue = sum [x.l.l_extendedprice * (1 - x.l.l_discount) | x <- g.items], c_acctbal = g.key.c_acctbal, n_name = g.key.n_name, c_address = g.key.c_address, c_phone = g.key.c_phone, c_comment = g.key.c_comment} | g <- [MGroup {key = k, items = [[c, o, l, n] | c <- customer, o <- orders, l <- lineitem, n <- nation, o.o_custkey == c.c_custkey && l.l_orderkey == o.o_orderkey && n.n_nationkey == c.c_nationkey && o.o_orderdate >= start_date && o.o_orderdate < end_date && l.l_returnflag == "R" && GenType6 {c_custkey = c.c_custkey, c_name = c.c_name, c_acctbal = c.c_acctbal, c_address = c.c_address, c_phone = c.c_phone, c_comment = c.c_comment, n_name = n.n_name} == k]} | k <- nub (map (\c o l n -> GenType6 {c_custkey = c.c_custkey, c_name = c.c_name, c_acctbal = c.c_acctbal, c_address = c.c_address, c_phone = c.c_phone, c_comment = c.c_comment, n_name = n.n_name}) [[c, o, l, n] | c <- customer, o <- orders, l <- lineitem, n <- nation, o.o_custkey == c.c_custkey && l.l_orderkey == o.o_orderkey && n.n_nationkey == c.c_nationkey && o.o_orderdate >= start_date && o.o_orderdate < end_date && l.l_returnflag == "R"])]]
+   |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       ^
+
+/workspace/mochi/tests/transpiler/x/hs/group_by_multi_join_sort.hs:73:1034: error:
+    • Couldn't match expected type ‘GenType2’
+                  with actual type ‘GenType1’
+    • In the expression: n
+      In the expression: [c, o, l, n]
+      In the second argument of ‘map’, namely
+        ‘[[c, o, l, ....] |
+            c <- customer,
+            o <- orders,
+            l <- lineitem,
+            n <- nation,
+            o.o_custkey == c.c_custkey
+              &&
+                l.l_orderkey == o.o_orderkey
+                  &&
+                    n.n_nationkey == c.c_nationkey
+                      &&
+                        o.o_orderdate >= start_date
+                          && o.o_orderdate < end_date && l.l_returnflag == "R"]’
+   |
+73 | result = sortOn (\g -> -sum [x.l.l_extendedprice * (1 - x.l.l_discount) | x <- g.items]) [GenType5 {c_custkey = g.key.c_custkey, c_name = g.key.c_name, revenue = sum [x.l.l_extendedprice * (1 - x.l.l_discount) | x <- g.items], c_acctbal = g.key.c_acctbal, n_name = g.key.n_name, c_address = g.key.c_address, c_phone = g.key.c_phone, c_comment = g.key.c_comment} | g <- [MGroup {key = k, items = [[c, o, l, n] | c <- customer, o <- orders, l <- lineitem, n <- nation, o.o_custkey == c.c_custkey && l.l_orderkey == o.o_orderkey && n.n_nationkey == c.c_nationkey && o.o_orderdate >= start_date && o.o_orderdate < end_date && l.l_returnflag == "R" && GenType6 {c_custkey = c.c_custkey, c_name = c.c_name, c_acctbal = c.c_acctbal, c_address = c.c_address, c_phone = c.c_phone, c_comment = c.c_comment, n_name = n.n_name} == k]} | k <- nub (map (\c o l n -> GenType6 {c_custkey = c.c_custkey, c_name = c.c_name, c_acctbal = c.c_acctbal, c_address = c.c_address, c_phone = c.c_phone, c_comment = c.c_comment, n_name = n.n_name}) [[c, o, l, n] | c <- customer, o <- orders, l <- lineitem, n <- nation, o.o_custkey == c.c_custkey && l.l_orderkey == o.o_orderkey && n.n_nationkey == c.c_nationkey && o.o_orderdate >= start_date && o.o_orderdate < end_date && l.l_returnflag == "R"])]]
+   |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          ^

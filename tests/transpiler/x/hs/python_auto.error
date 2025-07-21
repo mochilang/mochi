@@ -1,1 +1,13 @@
-transpile: unsupported literal
+run: exit status 1
+
+/workspace/mochi/tests/transpiler/x/hs/python_auto.hs:7:12: error:
+    Variable not in scope: math
+  |
+7 |     print (math.sqrt 16)
+  |            ^^^^
+
+/workspace/mochi/tests/transpiler/x/hs/python_auto.hs:8:12: error:
+    Variable not in scope: math
+  |
+8 |     print (math.pi)
+  |            ^^^^

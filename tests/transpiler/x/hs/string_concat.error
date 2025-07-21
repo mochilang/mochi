@@ -1,0 +1,11 @@
+run: exit status 1
+
+/workspace/mochi/tests/transpiler/x/hs/string_concat.hs:7:5: error:
+    • Couldn't match expected type: IO ()
+                  with actual type: [Char]
+    • In a stmt of a 'do' block: putStrLn "hello " ++ "world"
+      In the expression: do putStrLn "hello " ++ "world"
+      In an equation for ‘main’: main = do putStrLn "hello " ++ "world"
+  |
+7 |     putStrLn "hello " ++ "world"
+  |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^

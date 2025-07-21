@@ -1,23 +1,21 @@
 run: exit status 1
 
-/workspace/mochi/tests/transpiler/x/hs/map_membership.hs:11:34: error:
+/workspace/mochi/tests/transpiler/x/hs/map_membership.hs:11:28: error:
     • Couldn't match expected type: [Char]
                   with actual type: Map.Map String a0
     • In the second argument of ‘isInfixOf’, namely ‘m’
-      In the expression: "a" `isInfixOf` m
-      In the first argument of ‘putStrLn’, namely
-        ‘(if "a" `isInfixOf` m then "1" else "0")’
+      In the first argument of ‘print’, namely ‘("a" `isInfixOf` m)’
+      In a stmt of a 'do' block: print ("a" `isInfixOf` m)
    |
-11 |     putStrLn (if "a" `isInfixOf` m then "1" else "0")
-   |                                  ^
+11 |     print ("a" `isInfixOf` m)
+   |                            ^
 
-/workspace/mochi/tests/transpiler/x/hs/map_membership.hs:12:34: error:
+/workspace/mochi/tests/transpiler/x/hs/map_membership.hs:12:28: error:
     • Couldn't match expected type: [Char]
                   with actual type: Map.Map String a0
     • In the second argument of ‘isInfixOf’, namely ‘m’
-      In the expression: "c" `isInfixOf` m
-      In the first argument of ‘putStrLn’, namely
-        ‘(if "c" `isInfixOf` m then "1" else "0")’
+      In the first argument of ‘print’, namely ‘("c" `isInfixOf` m)’
+      In a stmt of a 'do' block: print ("c" `isInfixOf` m)
    |
-12 |     putStrLn (if "c" `isInfixOf` m then "1" else "0")
-   |                                  ^
+12 |     print ("c" `isInfixOf` m)
+   |                            ^
