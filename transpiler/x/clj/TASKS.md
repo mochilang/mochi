@@ -1,3 +1,7 @@
+## Progress (2025-07-21 18:33 +0700)
+- clj: simplify Format and record progress
+- Regenerated golden files - 97/100 vm valid programs passing
+
 ## Progress (2025-07-21 18:25 +0700)
 - clj transpiler: drop header and refresh golden files
 - Regenerated golden files - 96/100 vm valid programs passing

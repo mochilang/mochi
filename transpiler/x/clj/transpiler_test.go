@@ -177,6 +177,16 @@ func updateReadme() {
 	fmt.Fprintf(&buf, "Compiled programs: %d/%d\n\n", compiled, total)
 	buf.WriteString(strings.Join(lines, "\n"))
 	buf.WriteString("\n")
+	tsRaw, _ := exec.Command("git", "log", "-1", "--format=%cI").Output()
+	ts := strings.TrimSpace(string(tsRaw))
+	if t, err := time.Parse(time.RFC3339, ts); err == nil {
+		if loc, lerr := time.LoadLocation("Asia/Bangkok"); lerr == nil {
+			ts = t.In(loc).Format("2006-01-02 15:04 -0700")
+		} else {
+			ts = t.Format("2006-01-02 15:04 MST")
+		}
+	}
+	fmt.Fprintf(&buf, "Last updated: %s\n", ts)
 	_ = os.WriteFile(readmePath, buf.Bytes(), 0o644)
 }
 
