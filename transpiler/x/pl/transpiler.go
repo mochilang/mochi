@@ -98,7 +98,7 @@ func (e *compileEnv) current(name string) string {
 
 func (e *compileEnv) setConst(name string, ex Expr) {
 	switch ex.(type) {
-	case *IntLit, *BoolLit, *StringLit, *ListLit:
+	case *IntLit, *FloatLit, *BoolLit, *StringLit, *ListLit, *MapLit:
 		e.consts[name] = ex
 	default:
 		delete(e.consts, name)
@@ -389,10 +389,16 @@ func (i *IfStmt) emit(w io.Writer, idx int) {
 
 type Expr interface{ emit(io.Writer) }
 type IntLit struct{ Value int }
+type FloatLit struct{ Value float64 }
 type BoolLit struct{ Value bool }
 type StringLit struct{ Value string }
 type Var struct{ Name string }
 type ListLit struct{ Elems []Expr }
+type MapItem struct {
+	Key   string
+	Value Expr
+}
+type MapLit struct{ Items []MapItem }
 type LenExpr struct{ Value Expr }
 type StrExpr struct{ Value Expr }
 type CountExpr struct{ Value Expr }
@@ -447,6 +453,7 @@ type InExpr struct {
 }
 
 func (i *IntLit) emit(w io.Writer)    { fmt.Fprintf(w, "%d", i.Value) }
+func (f *FloatLit) emit(w io.Writer)  { io.WriteString(w, strconv.FormatFloat(f.Value, 'f', -1, 64)) }
 func (b *BoolLit) emit(w io.Writer)   { fmt.Fprintf(w, "%v", b.Value) }
 func (s *StringLit) emit(w io.Writer) { fmt.Fprintf(w, "\"%s\"", escape(s.Value)) }
 func (v *Var) emit(w io.Writer)       { io.WriteString(w, v.Name) }
@@ -491,6 +498,19 @@ func (l *ListLit) emit(w io.Writer) {
 		e.emit(w)
 	}
 	io.WriteString(w, "]")
+}
+
+func (m *MapLit) emit(w io.Writer) {
+	io.WriteString(w, "{")
+	for i, it := range m.Items {
+		if i > 0 {
+			io.WriteString(w, ", ")
+		}
+		io.WriteString(w, it.Key)
+		io.WriteString(w, ": ")
+		it.Value.emit(w)
+	}
+	io.WriteString(w, "}")
 }
 
 func (l *LenExpr) emit(w io.Writer) {
@@ -702,6 +722,8 @@ func intValue(e Expr) (int, bool) {
 	switch v := e.(type) {
 	case *IntLit:
 		return v.Value, true
+	case *FloatLit:
+		return int(v.Value), true
 	case *GroupExpr:
 		return intValue(v.Expr)
 	}
@@ -872,12 +894,47 @@ func compileStmts(sts []*parser.Statement, env *compileEnv) ([]Stmt, error) {
 		switch {
 		case s.Expr != nil:
 			call := s.Expr.Expr.Binary.Left.Value.Target.Call
-			if call == nil || call.Func != "print" || len(call.Args) != 1 {
+			if call == nil || call.Func != "print" {
 				return nil, fmt.Errorf("unsupported expression")
 			}
-			arg, err := toExpr(call.Args[0], env)
-			if err != nil {
-				return nil, err
+			args := make([]Expr, len(call.Args))
+			allConst := true
+			var sb strings.Builder
+			for i, a := range call.Args {
+				ex, err := toExpr(a, env)
+				if err != nil {
+					return nil, err
+				}
+				args[i] = ex
+				if allConst {
+					switch v := ex.(type) {
+					case *StringLit:
+						sb.WriteString(v.Value)
+					case *IntLit:
+						sb.WriteString(strconv.Itoa(v.Value))
+					case *FloatLit:
+						sb.WriteString(strconv.FormatFloat(v.Value, 'f', -1, 64))
+					case *BoolLit:
+						if v.Value {
+							sb.WriteString("true")
+						} else {
+							sb.WriteString("false")
+						}
+					default:
+						allConst = false
+					}
+				}
+				if i < len(call.Args)-1 && allConst {
+					sb.WriteString(" ")
+				}
+			}
+			var arg Expr
+			if len(args) == 1 {
+				arg = args[0]
+			} else if allConst {
+				arg = &StringLit{Value: sb.String()}
+			} else {
+				return nil, fmt.Errorf("unsupported expression")
 			}
 			out = append(out, &PrintStmt{Expr: arg})
 		case s.Let != nil:
@@ -1267,6 +1324,9 @@ func toPrimary(p *parser.Primary, env *compileEnv) (Expr, error) {
 		if p.Lit.Int != nil {
 			return &IntLit{Value: int(*p.Lit.Int)}, nil
 		}
+		if p.Lit.Float != nil {
+			return &FloatLit{Value: *p.Lit.Float}, nil
+		}
 		if p.Lit.Bool != nil {
 			return &BoolLit{Value: bool(*p.Lit.Bool)}, nil
 		}
@@ -1274,10 +1334,19 @@ func toPrimary(p *parser.Primary, env *compileEnv) (Expr, error) {
 			return &StringLit{Value: *p.Lit.Str}, nil
 		}
 	case p.Selector != nil:
-		if len(p.Selector.Tail) > 0 {
-			return nil, fmt.Errorf("unsupported selector")
+		if len(p.Selector.Tail) == 0 {
+			return &Var{Name: env.current(p.Selector.Root)}, nil
 		}
-		return &Var{Name: env.current(p.Selector.Root)}, nil
+		if len(p.Selector.Tail) == 1 {
+			if c, ok := env.constExpr(env.current(p.Selector.Root)).(*MapLit); ok {
+				for _, it := range c.Items {
+					if it.Key == p.Selector.Tail[0] {
+						return it.Value, nil
+					}
+				}
+			}
+		}
+		return nil, fmt.Errorf("unsupported selector")
 	case p.Call != nil:
 		switch p.Call.Func {
 		case "len", "str", "count", "sum", "avg", "min", "max":
@@ -1307,14 +1376,71 @@ func toPrimary(p *parser.Primary, env *compileEnv) (Expr, error) {
 			case "str":
 				return &StrExpr{Value: arg}, nil
 			case "count":
+				if l, ok := constList(arg, env); ok {
+					return &IntLit{Value: len(l.Elems)}, nil
+				}
 				return &CountExpr{Value: arg}, nil
 			case "sum":
+				if l, ok := constList(arg, env); ok {
+					sum := 0
+					for _, e := range l.Elems {
+						iv, ok := intValue(e)
+						if !ok {
+							return nil, fmt.Errorf("non-int in sum")
+						}
+						sum += iv
+					}
+					return &IntLit{Value: sum}, nil
+				}
 				return &SumExpr{Value: arg}, nil
 			case "avg":
+				if l, ok := constList(arg, env); ok && len(l.Elems) > 0 {
+					total := 0
+					for _, e := range l.Elems {
+						iv, ok := intValue(e)
+						if !ok {
+							return nil, fmt.Errorf("non-int in avg")
+						}
+						total += iv
+					}
+					return &FloatLit{Value: float64(total) / float64(len(l.Elems))}, nil
+				}
 				return &AvgExpr{Value: arg}, nil
 			case "min":
+				if l, ok := constList(arg, env); ok && len(l.Elems) > 0 {
+					minV, ok := intValue(l.Elems[0])
+					if !ok {
+						return nil, fmt.Errorf("non-int in min")
+					}
+					for _, e := range l.Elems[1:] {
+						iv, ok := intValue(e)
+						if !ok {
+							return nil, fmt.Errorf("non-int in min")
+						}
+						if iv < minV {
+							minV = iv
+						}
+					}
+					return &IntLit{Value: minV}, nil
+				}
 				return &MinExpr{Value: arg}, nil
 			case "max":
+				if l, ok := constList(arg, env); ok && len(l.Elems) > 0 {
+					maxV, ok := intValue(l.Elems[0])
+					if !ok {
+						return nil, fmt.Errorf("non-int in max")
+					}
+					for _, e := range l.Elems[1:] {
+						iv, ok := intValue(e)
+						if !ok {
+							return nil, fmt.Errorf("non-int in max")
+						}
+						if iv > maxV {
+							maxV = iv
+						}
+					}
+					return &IntLit{Value: maxV}, nil
+				}
 				return &MaxExpr{Value: arg}, nil
 			}
 		case "substring":
@@ -1373,6 +1499,31 @@ func toPrimary(p *parser.Primary, env *compileEnv) (Expr, error) {
 			elems[i] = ex
 		}
 		return &ListLit{Elems: elems}, nil
+	case p.Map != nil:
+		items := make([]MapItem, len(p.Map.Items))
+		for i, it := range p.Map.Items {
+			key, err := toExpr(it.Key, env)
+			if err != nil {
+				return nil, err
+			}
+			var keyStr string
+			switch k := key.(type) {
+			case *StringLit:
+				keyStr = k.Value
+			case *Var:
+				keyStr = k.Name
+			default:
+				return nil, fmt.Errorf("unsupported map key")
+			}
+			val, err := toExpr(it.Value, env)
+			if err != nil {
+				return nil, err
+			}
+			items[i] = MapItem{Key: keyStr, Value: val}
+		}
+		return &MapLit{Items: items}, nil
+	case p.Query != nil:
+		return evalQueryExpr(p.Query, env)
 	case p.Group != nil:
 		expr, err := toExpr(p.Group, env)
 		if err != nil {
@@ -1389,6 +1540,8 @@ func exprNode(e Expr) *ast.Node {
 	switch ex := e.(type) {
 	case *IntLit:
 		return &ast.Node{Kind: "int", Value: ex.Value}
+	case *FloatLit:
+		return &ast.Node{Kind: "float", Value: ex.Value}
 	case *BoolLit:
 		return &ast.Node{Kind: "bool", Value: ex.Value}
 	case *StringLit:
@@ -1401,6 +1554,12 @@ func exprNode(e Expr) *ast.Node {
 		n := &ast.Node{Kind: "list"}
 		for _, e := range ex.Elems {
 			n.Children = append(n.Children, exprNode(e))
+		}
+		return n
+	case *MapLit:
+		n := &ast.Node{Kind: "map"}
+		for _, it := range ex.Items {
+			n.Children = append(n.Children, &ast.Node{Kind: "entry", Value: it.Key, Children: []*ast.Node{exprNode(it.Value)}})
 		}
 		return n
 	case *LenExpr:
@@ -1476,4 +1635,91 @@ func toIfExpr(ifp *parser.IfExpr, env *compileEnv) (Expr, error) {
 		elseExpr = &IntLit{Value: 0}
 	}
 	return &IfExpr{Cond: cond, Then: thenExpr, Else: elseExpr}, nil
+}
+
+func constList(e Expr, env *compileEnv) (*ListLit, bool) {
+	switch v := e.(type) {
+	case *ListLit:
+		return v, true
+	case *Var:
+		if c, ok := env.constExpr(v.Name).(*ListLit); ok {
+			return c, true
+		}
+	}
+	return nil, false
+}
+
+func evalQueryExpr(q *parser.QueryExpr, env *compileEnv) (Expr, error) {
+	if q.Group != nil {
+		src, err := toExpr(q.Source, env)
+		if err != nil {
+			return nil, err
+		}
+		list, ok := constList(src, env)
+		if !ok {
+			return nil, fmt.Errorf("unsupported query source")
+		}
+		groups := make(map[string]*ListLit)
+		order := []string{}
+		env.vars[q.Var] = 0
+		for _, item := range list.Elems {
+			env.consts[env.current(q.Var)] = item
+			keyEx, err := toExpr(q.Group.Exprs[0], env)
+			if err != nil {
+				return nil, err
+			}
+			keyStr, ok := keyEx.(*StringLit)
+			if !ok {
+				return nil, fmt.Errorf("non-string key")
+			}
+			gl, ok := groups[keyStr.Value]
+			if !ok {
+				gl = &ListLit{}
+				groups[keyStr.Value] = gl
+				order = append(order, keyStr.Value)
+			}
+			gl.Elems = append(gl.Elems, item)
+		}
+		var outElems []Expr
+		for _, k := range order {
+			keyLit := &StringLit{Value: k}
+			g := &MapLit{Items: []MapItem{{Key: "key", Value: keyLit}, {Key: "items", Value: groups[k]}}}
+			env.vars[q.Group.Name] = 0
+			env.consts[env.current(q.Group.Name)] = g
+			val, err := toExpr(q.Select, env)
+			if err != nil {
+				return nil, err
+			}
+			delete(env.consts, env.current(q.Group.Name))
+			delete(env.vars, q.Group.Name)
+			outElems = append(outElems, val)
+		}
+		delete(env.consts, env.current(q.Var))
+		delete(env.vars, q.Var)
+		return &ListLit{Elems: outElems}, nil
+	}
+	if len(q.Froms) > 0 || len(q.Joins) > 0 || q.Where != nil || q.Sort != nil || q.Skip != nil || q.Take != nil {
+		return nil, fmt.Errorf("unsupported query features")
+	}
+	src, err := toExpr(q.Source, env)
+	if err != nil {
+		return nil, err
+	}
+	list, ok := constList(src, env)
+	if !ok {
+		return nil, fmt.Errorf("unsupported query source")
+	}
+	out := &ListLit{}
+	env.vars[q.Var] = 0
+	for _, item := range list.Elems {
+		env.consts[env.current(q.Var)] = item
+		val, err := toExpr(q.Select, env)
+		if err != nil {
+			return nil, err
+		}
+		out.Elems = append(out.Elems, val)
+	}
+	delete(env.consts, env.current(q.Var))
+	delete(env.vars, q.Var)
+	return out, nil
 }

@@ -1,3 +1,19 @@
+## Progress (2025-07-21 12:05 +0700)
+- VM valid golden test results updated to 35/100
+
+## Progress (2025-07-21 05:23 +0000)
+- group_by query folded at compile time, basic map literals supported
+- VM valid golden test results updated to 36/100
+
+## Progress (2025-07-21 12:05 +0700)
+- VM valid golden test results updated to 35/100
+
+## Progress (2025-07-21 12:05 +0700)
+- VM valid golden test results updated to 35/100
+
+## Progress (2025-07-21 12:05 +0700)
+- VM valid golden test results updated to 35/100
+
 ## Progress (2025-07-21 07:08 +0700)
 - VM valid golden test results updated to 35/100
 
