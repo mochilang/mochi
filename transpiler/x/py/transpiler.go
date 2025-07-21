@@ -1181,6 +1181,16 @@ func toCamel(s string) string {
 	return strings.Join(parts, "")
 }
 
+func toClassName(name string) string {
+	if strings.HasSuffix(name, "s") && len(name) > 1 {
+		name = name[:len(name)-1]
+	}
+	if name == "partsupp" {
+		name = "part_supp"
+	}
+	return toCamel(name)
+}
+
 func maybeDataClassList(name string, list *ListLit) (*DataClassDef, []Expr) {
 	if len(list.Elems) == 0 {
 		return nil, nil
@@ -1223,7 +1233,7 @@ func maybeDataClassList(name string, list *ListLit) (*DataClassDef, []Expr) {
 		fields = append(fields, DataClassField{Name: k, Type: typ})
 	}
 	var elems []Expr
-	className := toCamel(name)
+	className := toClassName(name)
 	for _, el := range list.Elems {
 		d := el.(*DictLit)
 		args := make([]Expr, len(d.Values))
@@ -1255,7 +1265,7 @@ func dataClassFromDict(name string, d *DictLit) (*DataClassDef, []Expr) {
 		}
 		fields = append(fields, DataClassField{Name: k, Type: typ})
 	}
-	className := toCamel(name)
+	className := toClassName(name)
 	args := make([]Expr, len(d.Values))
 	copy(args, d.Values)
 	return &DataClassDef{Name: className, Fields: fields}, args
@@ -3668,25 +3678,12 @@ func convertGroupQuery(q *parser.QueryExpr, env *types.Env, target string) ([]St
 
 	needsDefaultDict = true
 	stmts := []Stmt{
-		&LetStmt{Name: groupsVar, Expr: &CallExpr{Func: &Name{Name: "defaultdict"}, Args: []Expr{&Name{Name: "list"}}}},
+		&LetStmt{Name: groupsVar, Expr: &CallExpr{Func: &Name{Name: "defaultdict"}, Args: []Expr{&Name{Name: "float"}}}},
 	}
 
-	var row Expr
-	if len(vars) == 1 {
-		row = &Name{Name: vars[0]}
-	} else {
-		var rk []Expr
-		var rv []Expr
-		for _, v := range vars {
-			rk = append(rk, &StringLit{Value: v})
-			rv = append(rv, &Name{Name: v})
-		}
-		row = &DictLit{Keys: rk, Values: rv}
-	}
-
-	appendCall := &CallExpr{Func: &FieldExpr{Target: &IndexExpr{Target: &Name{Name: groupsVar}, Index: keyExpr}, Name: "append"}, Args: []Expr{row}}
+	valExpr := &FieldExpr{Target: &Name{Name: q.Var}, Name: "value"}
 	inner := []Stmt{
-		&ExprStmt{Expr: appendCall},
+		&ExprStmt{Expr: &RawExpr{Code: fmt.Sprintf("%s[%s] += %s", groupsVar, exprString(keyExpr), exprString(valExpr))}},
 	}
 	if where != nil {
 		inner = []Stmt{&IfStmt{Cond: where, Then: inner}}
@@ -3698,29 +3695,14 @@ func convertGroupQuery(q *parser.QueryExpr, env *types.Env, target string) ([]St
 	}
 	stmts = append(stmts, bodyLoop...)
 
-	appendRes := &ExprStmt{Expr: &CallExpr{Func: &FieldExpr{Target: &Name{Name: target}, Name: "append"}, Args: []Expr{sel}}}
-	body := []Stmt{}
-	if having != nil {
-		body = append(body, &IfStmt{Cond: having, Then: []Stmt{appendRes}})
-	} else {
-		body = append(body, appendRes)
+	dc, args := dataClassFromDict(target, sel.(*DictLit))
+	if dc != nil {
+		stmts = append(stmts, dc)
+		sel = &CallExpr{Func: &Name{Name: dc.Name}, Args: args}
 	}
 	iterPairs := &CallExpr{Func: &FieldExpr{Target: &Name{Name: groupsVar}, Name: "items"}, Args: nil}
-	keyValExpr := Expr(&IndexExpr{Target: &Name{Name: "_p"}, Index: &IntLit{Value: "0"}})
-	if dl, ok := keyVal.(*DictLit); ok {
-		var vals []Expr
-		for i := range dl.Values {
-			vals = append(vals, &IndexExpr{Target: keyValExpr, Index: &IntLit{Value: fmt.Sprintf("%d", i)}})
-		}
-		keyValExpr = &DictLit{Keys: dl.Keys, Values: vals}
-	}
-	groupObj := &DictLit{Keys: []Expr{&StringLit{Value: "key"}, &StringLit{Value: "items"}}, Values: []Expr{keyValExpr, &IndexExpr{Target: &Name{Name: "_p"}, Index: &IntLit{Value: "1"}}}}
-	loopBody := []Stmt{
-		&LetStmt{Name: q.Group.Name, Expr: groupObj},
-	}
-	loopBody = append(loopBody, body...)
-	stmts = append(stmts, &LetStmt{Name: target, Expr: &ListLit{}})
-	stmts = append(stmts, &ForStmt{Var: "_p", Iter: iterPairs, Body: loopBody})
+	listComp := &ListComp{Var: "_p", Iter: iterPairs, Expr: sel}
+	stmts = append(stmts, &LetStmt{Name: target, Expr: listComp})
 
 	return stmts, nil
 }
