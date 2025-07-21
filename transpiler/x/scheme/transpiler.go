@@ -238,55 +238,84 @@ func convertWhileStmt(ws *parser.WhileStmt) (Node, error) {
 
 func convertForStmt(fs *parser.ForStmt) (Node, error) {
 	loopSym := gensym("loop")
-	pushLoop(Symbol(""), loopSym)
+	breakSym := gensym("break")
+	contSym := gensym("cont")
+
+	prevEnv := currentEnv
+	currentEnv = types.NewEnv(currentEnv)
+	currentEnv.SetVar(fs.Name, types.AnyType{}, true)
+
+	pushLoop(breakSym, contSym)
+
 	if fs.RangeEnd != nil {
 		start, err := convertParserExpr(fs.Source)
 		if err != nil {
 			popLoop()
+			currentEnv = prevEnv
 			return nil, err
 		}
 		end, err := convertParserExpr(fs.RangeEnd)
 		if err != nil {
 			popLoop()
+			currentEnv = prevEnv
 			return nil, err
 		}
 		body, err := convertStmts(fs.Body)
 		if err != nil {
 			popLoop()
+			currentEnv = prevEnv
 			return nil, err
 		}
-		inc := &List{Elems: []Node{Symbol("+"), Symbol(fs.Name), IntLit(1)}}
-		loopCall := &List{Elems: []Node{loopSym, inc}}
-		body = append(body, loopCall)
-		bodyNode := &List{Elems: append([]Node{Symbol("begin")}, body...)}
+		inc := &List{Elems: []Node{Symbol("set!"), Symbol(fs.Name), &List{Elems: []Node{Symbol("+"), Symbol(fs.Name), IntLit(1)}}}}
+		loopCall := &List{Elems: []Node{loopSym}}
+		contDef := &List{Elems: []Node{Symbol("define"), contSym, &List{Elems: []Node{Symbol("lambda"), &List{Elems: []Node{}}, &List{Elems: []Node{inc, loopCall}}}}}}
+		bodyNode := &List{Elems: append([]Node{Symbol("begin")}, append(body, inc, loopCall)...)}
 		cond := &List{Elems: []Node{Symbol("<"), Symbol(fs.Name), end}}
+		res := &List{Elems: []Node{
+			Symbol("begin"),
+			&List{Elems: []Node{Symbol("define"), Symbol(fs.Name), start}},
+			&List{Elems: []Node{Symbol("let/ec"), breakSym,
+				&List{Elems: []Node{Symbol("let"), loopSym, &List{Elems: []Node{}}, contDef, &List{Elems: []Node{Symbol("if"), cond, bodyNode, voidSym()}}}}}},
+		}}
 		popLoop()
-		return &List{Elems: []Node{
-			Symbol("let"), loopSym,
-			&List{Elems: []Node{&List{Elems: []Node{Symbol(fs.Name), start}}}},
-			&List{Elems: []Node{Symbol("if"), cond, bodyNode, voidSym()}}}}, nil
+		currentEnv = prevEnv
+		return res, nil
 	}
+
 	iter, err := convertParserExpr(fs.Source)
 	if err != nil {
 		popLoop()
+		currentEnv = prevEnv
 		return nil, err
 	}
-	if _, ok := types.ExprType(fs.Source, currentEnv).(types.MapType); ok {
+	if _, ok := types.ExprType(fs.Source, prevEnv).(types.MapType); ok {
 		iter = &List{Elems: []Node{Symbol("hash-table-keys"), iter}}
 	}
-	elemSym := Symbol(fs.Name)
+	iterSym := gensym("iter")
 	body, err := convertStmts(fs.Body)
 	if err != nil {
 		popLoop()
+		currentEnv = prevEnv
 		return nil, err
 	}
-	bodyNode := &List{Elems: append([]Node{Symbol("begin")}, body...)}
+	elemSym := Symbol(fs.Name)
+	inc := &List{Elems: []Node{Symbol("set!"), iterSym, &List{Elems: []Node{Symbol("cdr"), iterSym}}}}
+	loopCall := &List{Elems: []Node{loopSym}}
+	contDef := &List{Elems: []Node{Symbol("define"), contSym, &List{Elems: []Node{Symbol("lambda"), &List{Elems: []Node{}}, &List{Elems: []Node{inc, loopCall}}}}}}
+	bodyNode := &List{Elems: append([]Node{Symbol("begin")}, append(body, inc, loopCall)...)}
+	loopBody := &List{Elems: []Node{Symbol("if"),
+		&List{Elems: []Node{Symbol("null?"), iterSym}},
+		voidSym(),
+		&List{Elems: []Node{Symbol("let"), &List{Elems: []Node{&List{Elems: []Node{elemSym, &List{Elems: []Node{Symbol("car"), iterSym}}}}}}, bodyNode}}}}
+	res := &List{Elems: []Node{
+		Symbol("begin"),
+		&List{Elems: []Node{Symbol("define"), iterSym, iter}},
+		&List{Elems: []Node{Symbol("let/ec"), breakSym,
+			&List{Elems: []Node{Symbol("let"), loopSym, &List{Elems: []Node{}}, contDef, loopBody}}}},
+	}}
 	popLoop()
-	return &List{Elems: []Node{
-		Symbol("for-each"),
-		&List{Elems: []Node{Symbol("lambda"), &List{Elems: []Node{elemSym}}, bodyNode}},
-		iter,
-	}}, nil
+	currentEnv = prevEnv
+	return res, nil
 }
 
 func convertStmt(st *parser.Statement) (Node, error) {
@@ -975,6 +1004,11 @@ func convertCall(target Node, call *parser.CallOp) (Node, error) {
 			return nil, fmt.Errorf("substring expects 3 args")
 		}
 		return &List{Elems: []Node{Symbol("substring"), args[0], args[1], args[2]}}, nil
+	case "exists":
+		if len(args) != 1 {
+			return nil, fmt.Errorf("exists expects 1 arg")
+		}
+		return &List{Elems: []Node{Symbol("if"), &List{Elems: []Node{Symbol("null?"), args[0]}}, StringLit("false"), StringLit("true")}}, nil
 	default:
 		elems := make([]Node, 0, len(args)+1)
 		elems = append(elems, Symbol(sym))
