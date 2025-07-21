@@ -1834,6 +1834,9 @@ func convertQueryExpr(env *types.Env, q *parser.QueryExpr) (Expr, error) {
 			}
 		}
 	}
+	if len(q.Froms) > 0 || len(q.Joins) > 0 {
+		elem = types.MapType{Key: types.StringType{}, Value: types.AnyType{}}
+	}
 	child.SetVar(q.Var, elem, true)
 	froms := make([]queryFrom, len(q.Froms))
 	for i, f := range q.Froms {
@@ -1896,15 +1899,22 @@ func convertQueryExpr(env *types.Env, q *parser.QueryExpr) (Expr, error) {
 		if err != nil {
 			return nil, err
 		}
-		// Items in each group should be the original row value,
-		// not the final select expression.
-		rowExpr := Expr(newVarRef(child, q.Var))
-		rowTypeStr := kotlinTypeFromType(elem)
+		// Items in each group should include all join variables so
+		// expressions inside the group can reference them. Build a
+		// simple map from variable name to value for the original row.
+		varsForRow := append([]string{q.Var}, namesFromFroms(froms)...)
+		rowItems := make([]MapItem, len(varsForRow))
+		for i, vn := range varsForRow {
+			rowItems[i] = MapItem{Key: &StringLit{Value: vn}, Value: newVarRef(child, vn)}
+		}
+		rowExpr := Expr(&MapLit{Items: rowItems})
+		rowTypeStr := guessType(rowExpr)
 		if rowTypeStr == "" {
-			rowTypeStr = "Any"
+			rowTypeStr = "MutableMap<String, Any>"
 		}
 		genv := types.NewEnv(child)
-		genv.SetVar(q.Group.Name, types.GroupType{Key: types.AnyType{}, Elem: elem}, true)
+		rowMapType := types.MapType{Key: types.StringType{}, Value: types.AnyType{}}
+		genv.SetVar(q.Group.Name, types.GroupType{Key: types.AnyType{}, Elem: rowMapType}, true)
 		having, err := convertExpr(genv, q.Group.Having)
 		if q.Group.Having != nil && err != nil {
 			return nil, err
@@ -2416,11 +2426,13 @@ func convertPrimary(env *types.Env, p *parser.Primary) (Expr, error) {
 		}
 		for _, name := range p.Selector.Tail {
 			if baseIsMap {
-				expr = &IndexExpr{Target: expr, Index: &StringLit{Value: name}}
-				baseIsMap = false
+				typ := envTypeName(env, name)
+				expr = &IndexExpr{Target: expr, Index: &StringLit{Value: name}, Type: typ}
 			} else {
 				expr = &FieldExpr{Receiver: expr, Name: name}
 			}
+			t := guessType(expr)
+			baseIsMap = strings.HasPrefix(t, "MutableMap<")
 		}
 		return expr, nil
 	case p.List != nil:
