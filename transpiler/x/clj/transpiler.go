@@ -1519,7 +1519,7 @@ func transpileQueryExpr(q *parser.QueryExpr) (Node, error) {
 		}
 		src = &List{Elems: []Node{Symbol("take"), tk, src}}
 	}
-	bindings = append(bindings, Symbol(q.Var), src)
+	qVarExpr := src
 
 	conds := []Node{}
 
@@ -1536,6 +1536,9 @@ func transpileQueryExpr(q *parser.QueryExpr) (Node, error) {
 		if err != nil {
 			return nil, err
 		}
+		if name, ok := identName(j.Src); ok && groupVars != nil && groupVars[name] {
+			je = &List{Elems: []Node{Keyword("items"), Symbol(name)}}
+		}
 		if j.Side != nil && *j.Side == "left" && j.On != nil {
 			onExpr, err := transpileExpr(j.On)
 			if err != nil {
@@ -1547,6 +1550,18 @@ func transpileQueryExpr(q *parser.QueryExpr) (Node, error) {
 			joinSeq := &List{Elems: []Node{Symbol("let"), &Vector{Elems: []Node{Symbol(tmp), filtered}},
 				&List{Elems: []Node{Symbol("if"), &List{Elems: []Node{Symbol("seq"), Symbol(tmp)}}, Symbol(tmp), &Vector{Elems: []Node{Symbol("nil")}}}}}}
 			bindings = append(bindings, Symbol(j.Var), joinSeq)
+		} else if j.Side != nil && *j.Side == "right" && j.On != nil {
+			onExpr, err := transpileExpr(j.On)
+			if err != nil {
+				return nil, err
+			}
+			tmp := q.Var + "_tmp"
+			filterFn := &List{Elems: []Node{Symbol("fn"), &Vector{Elems: []Node{Symbol(q.Var)}}, onExpr}}
+			filtered := &List{Elems: []Node{Symbol("filter"), filterFn, qVarExpr}}
+			joinSeq := &List{Elems: []Node{Symbol("let"), &Vector{Elems: []Node{Symbol(tmp), filtered}},
+				&List{Elems: []Node{Symbol("if"), &List{Elems: []Node{Symbol("seq"), Symbol(tmp)}}, Symbol(tmp), &Vector{Elems: []Node{Symbol("nil")}}}}}}
+			qVarExpr = joinSeq
+			bindings = append(bindings, Symbol(j.Var), je)
 		} else if j.Side != nil {
 			return nil, fmt.Errorf("unsupported join type")
 		} else {
@@ -1560,6 +1575,8 @@ func transpileQueryExpr(q *parser.QueryExpr) (Node, error) {
 			}
 		}
 	}
+
+	bindings = append([]Node{Symbol(q.Var), qVarExpr}, bindings...)
 
 	if q.Where != nil {
 		ce, err := transpileExpr(q.Where)
