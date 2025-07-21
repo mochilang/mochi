@@ -247,6 +247,10 @@ func TestTranspile_StringPrefixSlice(t *testing.T) {
 	runTranspileTest(t, "string_prefix_slice")
 }
 
+func TestTranspile_UpdateStmt(t *testing.T) {
+	runTranspileTest(t, "update_stmt")
+}
+
 func runTranspileTest(t *testing.T, name string) {
 	if _, err := exec.LookPath("php"); err != nil {
 		t.Skip("php not installed")

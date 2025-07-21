@@ -304,6 +304,14 @@ type SaveStmt struct {
 	Format string
 }
 
+// UpdateStmt represents an `update` statement on a list of structs.
+type UpdateStmt struct {
+	Target string
+	Fields []string
+	Values []Expr
+	Cond   Expr
+}
+
 func (s *SaveStmt) emit(w io.Writer) {
 	if s.Format == "jsonl" {
 		if s.Path == "" || s.Path == "-" {
@@ -336,6 +344,29 @@ func (l *LoadExpr) emit(w io.Writer) {
 	if l.Format == "yaml" {
 		fmt.Fprintf(w, "(function() { $lines = file(%q, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES); $rows = []; $curr = []; foreach ($lines as $line) { $line = trim($line); if (str_starts_with($line, '-')) { if ($curr) $rows[] = $curr; $curr = []; $line = trim(substr($line, 1)); if ($line !== '') { [$k,$v] = array_map('trim', explode(':', $line, 2)); $curr[$k] = is_numeric($v) ? (int)$v : $v; } } else { [$k,$v] = array_map('trim', explode(':', $line, 2)); $curr[$k] = is_numeric($v) ? (int)$v : $v; } } if ($curr) $rows[] = $curr; return $rows; })()", l.Path)
 	}
+}
+
+func (u *UpdateStmt) emit(w io.Writer) {
+	io.WriteString(w, "foreach ($"+u.Target+" as $idx => $item) {\n")
+	inner := "  "
+	if u.Cond != nil {
+		io.WriteString(w, inner+"if (")
+		u.Cond.emit(w)
+		io.WriteString(w, ") {\n")
+		inner += "  "
+	}
+	for i, f := range u.Fields {
+		io.WriteString(w, inner)
+		fmt.Fprintf(w, "$item['%s'] = ", f)
+		u.Values[i].emit(w)
+		io.WriteString(w, ";\n")
+	}
+	if u.Cond != nil {
+		inner = inner[:len(inner)-2]
+		io.WriteString(w, inner+"}\n")
+	}
+	fmt.Fprintf(w, "  $%s[$idx] = $item;\n", u.Target)
+	io.WriteString(w, "}")
 }
 
 type Expr interface{ emit(io.Writer) }
@@ -1740,6 +1771,12 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 			return nil, err
 		}
 		return &IndexAssignStmt{Target: target, Value: val}, nil
+	case st.Update != nil:
+		up, err := convertUpdate(st.Update)
+		if err != nil {
+			return nil, err
+		}
+		return up, nil
 	case st.Return != nil:
 		var val Expr
 		if st.Return.Value != nil {
@@ -2409,6 +2446,63 @@ func isBoolExpr(e Expr) bool {
 	return false
 }
 
+func convertUpdate(u *parser.UpdateStmt) (*UpdateStmt, error) {
+	if transpileEnv == nil {
+		return nil, fmt.Errorf("missing env")
+	}
+	t, err := transpileEnv.GetVar(u.Target)
+	if err != nil {
+		return nil, err
+	}
+	lt, ok := t.(types.ListType)
+	if !ok {
+		return nil, fmt.Errorf("update target not list")
+	}
+	st, ok := lt.Elem.(types.StructType)
+	if !ok {
+		return nil, fmt.Errorf("update element not struct")
+	}
+	child := types.NewEnv(transpileEnv)
+	fieldSet := map[string]bool{}
+	for name, ft := range st.Fields {
+		child.SetVar(name, ft, true)
+		fieldSet[name] = true
+	}
+	prev := transpileEnv
+	transpileEnv = child
+	var fields []string
+	var values []Expr
+	for _, item := range u.Set.Items {
+		key, ok := isSimpleIdent(item.Key)
+		if !ok {
+			key, ok = literalString(item.Key)
+			if !ok {
+				transpileEnv = prev
+				return nil, fmt.Errorf("unsupported update key")
+			}
+		}
+		val, err := convertExpr(item.Value)
+		if err != nil {
+			transpileEnv = prev
+			return nil, err
+		}
+		val = substituteFields(val, "item", fieldSet)
+		fields = append(fields, key)
+		values = append(values, val)
+	}
+	var cond Expr
+	if u.Where != nil {
+		c, err := convertExpr(u.Where)
+		if err != nil {
+			transpileEnv = prev
+			return nil, err
+		}
+		cond = substituteFields(c, "item", fieldSet)
+	}
+	transpileEnv = prev
+	return &UpdateStmt{Target: u.Target, Fields: fields, Values: values, Cond: cond}, nil
+}
+
 func maybeBoolString(e Expr) Expr {
 	if isBoolExpr(e) {
 		return &CondExpr{Cond: e, Then: &StringLit{Value: "True"}, Else: &StringLit{Value: "False"}}
@@ -2558,6 +2652,18 @@ func stmtNode(s Stmt) *ast.Node {
 		n.Children = append(n.Children, exprNode(st.Src))
 		n.Children = append(n.Children, &ast.Node{Kind: "path", Value: st.Path})
 		n.Children = append(n.Children, &ast.Node{Kind: "format", Value: st.Format})
+		return n
+	case *UpdateStmt:
+		n := &ast.Node{Kind: "update", Value: st.Target}
+		setNode := &ast.Node{Kind: "set"}
+		for i, f := range st.Fields {
+			pair := &ast.Node{Kind: "pair", Children: []*ast.Node{&ast.Node{Kind: "string", Value: f}, exprNode(st.Values[i])}}
+			setNode.Children = append(setNode.Children, pair)
+		}
+		n.Children = append(n.Children, setNode)
+		if st.Cond != nil {
+			n.Children = append(n.Children, &ast.Node{Kind: "where", Children: []*ast.Node{exprNode(st.Cond)}})
+		}
 		return n
 	case *IfStmt:
 		n := &ast.Node{Kind: "if_stmt", Children: []*ast.Node{exprNode(st.Cond)}}
@@ -2753,6 +2859,70 @@ func literalString(e *parser.Expr) (string, bool) {
 		return p.Target.Selector.Root, true
 	}
 	return "", false
+}
+
+func isSimpleIdent(e *parser.Expr) (string, bool) {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) > 0 {
+		return "", false
+	}
+	u := e.Binary.Left
+	if len(u.Ops) > 0 || u.Value == nil {
+		return "", false
+	}
+	p := u.Value
+	if len(p.Ops) > 0 || p.Target == nil || p.Target.Selector == nil || len(p.Target.Selector.Tail) > 0 {
+		return "", false
+	}
+	return p.Target.Selector.Root, true
+}
+
+func substituteFields(e Expr, varName string, fields map[string]bool) Expr {
+	switch ex := e.(type) {
+	case *Var:
+		if fields[ex.Name] {
+			return &IndexExpr{X: &Var{Name: varName}, Index: &StringLit{Value: ex.Name}}
+		}
+		return ex
+	case *BinaryExpr:
+		ex.Left = substituteFields(ex.Left, varName, fields)
+		ex.Right = substituteFields(ex.Right, varName, fields)
+		return ex
+	case *UnaryExpr:
+		ex.X = substituteFields(ex.X, varName, fields)
+		return ex
+	case *CallExpr:
+		for i := range ex.Args {
+			ex.Args[i] = substituteFields(ex.Args[i], varName, fields)
+		}
+		return ex
+	case *IndexExpr:
+		ex.X = substituteFields(ex.X, varName, fields)
+		ex.Index = substituteFields(ex.Index, varName, fields)
+		return ex
+	case *SliceExpr:
+		ex.X = substituteFields(ex.X, varName, fields)
+		ex.Start = substituteFields(ex.Start, varName, fields)
+		ex.End = substituteFields(ex.End, varName, fields)
+		return ex
+	case *CondExpr:
+		ex.Cond = substituteFields(ex.Cond, varName, fields)
+		ex.Then = substituteFields(ex.Then, varName, fields)
+		ex.Else = substituteFields(ex.Else, varName, fields)
+		return ex
+	case *ListLit:
+		for i := range ex.Elems {
+			ex.Elems[i] = substituteFields(ex.Elems[i], varName, fields)
+		}
+		return ex
+	case *MapLit:
+		for i := range ex.Items {
+			ex.Items[i].Key = substituteFields(ex.Items[i].Key, varName, fields)
+			ex.Items[i].Value = substituteFields(ex.Items[i].Value, varName, fields)
+		}
+		return ex
+	default:
+		return ex
+	}
 }
 
 func repoRoot() string {
