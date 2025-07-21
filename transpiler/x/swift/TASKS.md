@@ -1,5 +1,5 @@
-## Progress (2025-07-21 07:21 +0700)
-- swift transpiler: improve bool and avg handling
+## Progress (2025-07-21 10:43 +0700)
+- st transpiler: add join support and update tests
 - Generated golden tests for 72/100 programs
 - Updated README checklist and output artifacts
 

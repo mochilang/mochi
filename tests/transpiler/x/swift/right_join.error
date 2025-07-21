@@ -1,8 +1,16 @@
 exit status 1
-/tmp/TestSwiftTranspiler_VMValid_Golden3486495249/056/main.swift:7:40: error: cannot convert value of type 'Any' to expected argument type 'Int'
+/tmp/TestSwiftTranspiler_VMValid_Golden2095448394/001/main.swift:7:30: warning: forced cast of 'Int' to same type has no effect
  5 | for c in customers {
  6 |     for o in orders {
- 7 |         if (o["customerId"]! == c["id"]!) {
-   |                                        `- error: cannot convert value of type 'Any' to expected argument type 'Int'
- 8 |             _res.append(["customerName": c["name"]!, "order": o])
+ 7 |         if (o["customerId"]! as! Int == c["id"]! as! Int) {
+   |                              `- warning: forced cast of 'Int' to same type has no effect
+ 8 |             _res.append(["customerName": c["name"]! as! String, "order": o])
  9 |         }
+
+/tmp/TestSwiftTranspiler_VMValid_Golden2095448394/001/main.swift:15:24: error: cannot convert value of type '[String : Any]' to expected condition type 'Bool'
+13 | print("--- Right Join using syntax ---")
+14 | for entry in result {
+15 |     if entry["order"]! as! [String: Any] {
+   |                        `- error: cannot convert value of type '[String : Any]' to expected condition type 'Bool'
+16 |         print("Customer", entry["customerName"]! as! String, "has order", (entry["order"]! as! [String: Any])["id"]!, "- $", (entry["order"]! as! [String: Any])["total"]!)
+17 |     } else {

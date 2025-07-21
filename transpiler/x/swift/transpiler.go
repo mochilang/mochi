@@ -17,6 +17,209 @@ import (
 	"mochi/types"
 )
 
+var varFieldTypes = map[string]map[string]string{}
+
+// VarFieldTypes exposes the collected field type hints.
+func VarFieldTypes() map[string]map[string]string { return varFieldTypes }
+
+func recordFieldTypes(name string, expr *parser.Expr, ast Expr) {
+	if fields := collectFieldTypes(expr); fields != nil {
+		varFieldTypes[name] = fields
+	}
+	if q, ok := ast.(*QueryExpr); ok {
+		if ml, ok2 := q.Select.(*MapLit); ok2 {
+			fields := map[string]string{}
+			for i, k := range ml.Keys {
+				lit, ok := k.(*LitExpr)
+				if !ok || !lit.IsString {
+					continue
+				}
+				fields[lit.Value] = exprTypeFromExpr(ml.Values[i])
+			}
+			if len(fields) > 0 {
+				if existing, ok := varFieldTypes[name]; ok {
+					for k, v := range fields {
+						if v != "Any" {
+							existing[k] = v
+						}
+					}
+					varFieldTypes[name] = existing
+				} else {
+					varFieldTypes[name] = fields
+				}
+			}
+		}
+	}
+}
+
+func collectFieldTypes(expr *parser.Expr) map[string]string {
+	if expr == nil || expr.Binary == nil || len(expr.Binary.Right) != 0 {
+		return nil
+	}
+	u := expr.Binary.Left
+	if u == nil || u.Value == nil || len(u.Value.Ops) != 0 || u.Value.Target == nil {
+		return nil
+	}
+	if u.Value.Target.List != nil {
+		fields := map[string]string{}
+		for _, elem := range u.Value.Target.List.Elems {
+			mv := elem.Binary
+			if mv == nil || len(mv.Right) != 0 || mv.Left == nil || mv.Left.Value == nil || len(mv.Left.Value.Ops) != 0 || mv.Left.Value.Target == nil || mv.Left.Value.Target.Map == nil {
+				return nil
+			}
+			for _, it := range mv.Left.Value.Target.Map.Items {
+				key, ok := types.SimpleStringKey(it.Key)
+				if !ok {
+					return nil
+				}
+				t := literalSwiftType(it.Value)
+				if prev, ok := fields[key]; ok {
+					if prev != t {
+						fields[key] = "Any"
+					}
+				} else {
+					fields[key] = t
+				}
+			}
+		}
+		return fields
+	}
+	if u.Value.Target.Query != nil {
+		return collectSelectFieldTypes(u.Value.Target.Query.Select)
+	}
+	return nil
+}
+
+func collectSelectFieldTypes(e *parser.Expr) map[string]string {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) != 0 {
+		return nil
+	}
+	v := e.Binary.Left.Value
+	if v == nil || len(v.Ops) != 0 || v.Target == nil || v.Target.Map == nil {
+		return nil
+	}
+	fields := map[string]string{}
+	for _, it := range v.Target.Map.Items {
+		key, ok := types.SimpleStringKey(it.Key)
+		if !ok {
+			return nil
+		}
+		fields[key] = exprSwiftType(it.Value)
+	}
+	return fields
+}
+
+func exprSwiftType(e *parser.Expr) string {
+	if name := simpleVarName(e); name != "" {
+		if _, ok := varFieldTypes[name]; ok {
+			return "[String: Any]"
+		}
+	}
+	return literalSwiftType(e)
+}
+
+func exprTypeFromExpr(e Expr) string {
+	switch v := e.(type) {
+	case *LitExpr:
+		if v.IsString {
+			return "String"
+		}
+		if _, err := fmt.Sscanf(v.Value, "%d", new(int)); err == nil {
+			return "Int"
+		}
+		if v.Value == "true" || v.Value == "false" {
+			return "Bool"
+		}
+		return "Any"
+	case *NameExpr:
+		if _, ok := varFieldTypes[v.Name]; ok {
+			return "[String: Any]"
+		}
+	case *IndexExpr:
+		if k, ok := v.Index.(*LitExpr); ok && k.IsString {
+			if t := fieldType(baseName(v.Base), k.Value); t != "" {
+				return t
+			}
+		}
+		return "Any"
+	default:
+		return "Any"
+	}
+	return "Any"
+}
+
+// ExprTypeFromExpr is exported for debugging.
+func ExprTypeFromExpr(e Expr) string { return exprTypeFromExpr(e) }
+
+func literalSwiftType(e *parser.Expr) string {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) != 0 {
+		return "Any"
+	}
+	v := e.Binary.Left.Value
+	if v == nil || len(v.Ops) != 0 || v.Target == nil || v.Target.Lit == nil {
+		return "Any"
+	}
+	lit := v.Target.Lit
+	switch {
+	case lit.Int != nil:
+		return "Int"
+	case lit.Str != nil:
+		return "String"
+	case lit.Bool != nil:
+		return "Bool"
+	default:
+		return "Any"
+	}
+}
+
+func baseName(e Expr) string {
+	switch v := e.(type) {
+	case *NameExpr:
+		return v.Name
+	case *IndexExpr:
+		return baseName(v.Base)
+	default:
+		return ""
+	}
+}
+
+func fieldType(base, key string) string {
+	if m, ok := varFieldTypes[base]; ok {
+		if t, ok2 := m[key]; ok2 {
+			return t
+		}
+	}
+	return ""
+}
+
+// FieldType is exported for debugging.
+func FieldType(base, key string) string { return fieldType(base, key) }
+
+func simpleVarName(e *parser.Expr) string {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) != 0 {
+		return ""
+	}
+	u := e.Binary.Left
+	if u == nil || len(u.Ops) != 0 || u.Value == nil || len(u.Value.Ops) != 0 {
+		return ""
+	}
+	if u.Value.Target != nil && u.Value.Target.Selector != nil && len(u.Value.Target.Selector.Tail) == 0 {
+		return u.Value.Target.Selector.Root
+	}
+	return ""
+}
+
+func stringConst(e *parser.Expr) (string, bool) {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) != 0 {
+		return "", false
+	}
+	u := e.Binary.Left
+	if u == nil || len(u.Ops) != 0 || u.Value == nil || len(u.Value.Ops) != 0 || u.Value.Target == nil || u.Value.Target.Lit == nil || u.Value.Target.Lit.Str == nil {
+		return "", false
+	}
+	return *u.Value.Target.Lit.Str, true
+}
+
 // Program is a sequence of Swift statements.
 type Program struct {
 	Stmts []Stmt
@@ -328,6 +531,15 @@ type IndexExpr struct {
 	Index    Expr
 	AsString bool
 	Force    bool
+	Cast     string
+}
+
+type ParenExpr struct{ Inner Expr }
+
+func (pe *ParenExpr) emit(w io.Writer) {
+	fmt.Fprint(w, "(")
+	pe.Inner.emit(w)
+	fmt.Fprint(w, ")")
 }
 
 func (ie *IndexExpr) emit(w io.Writer) {
@@ -345,6 +557,9 @@ func (ie *IndexExpr) emit(w io.Writer) {
 	fmt.Fprint(w, "]")
 	if ie.Force {
 		fmt.Fprint(w, "!")
+	}
+	if ie.Cast != "" {
+		fmt.Fprintf(w, " as! %s", ie.Cast)
 	}
 }
 
@@ -697,6 +912,7 @@ func convertStmt(env *types.Env, st *parser.Statement) (Stmt, error) {
 			if err != nil {
 				return nil, err
 			}
+			recordFieldTypes(st.Let.Name, st.Let.Value, ex)
 		} else if st.Let.Type != nil {
 			ex = zeroValue(st.Let.Type)
 			typ = toSwiftType(st.Let.Type)
@@ -711,6 +927,7 @@ func convertStmt(env *types.Env, st *parser.Statement) (Stmt, error) {
 			if err != nil {
 				return nil, err
 			}
+			recordFieldTypes(st.Var.Name, st.Var.Value, ex)
 		} else if st.Var.Type != nil {
 			ex = zeroValue(st.Var.Type)
 			typ = toSwiftType(st.Var.Type)
@@ -834,11 +1051,11 @@ func convertWhileStmt(env *types.Env, wst *parser.WhileStmt) (Stmt, error) {
 }
 
 func convertForStmt(env *types.Env, fs *parser.ForStmt) (Stmt, error) {
-	body, err := convertStmts(env, fs.Body)
-	if err != nil {
-		return nil, err
-	}
 	if fs.RangeEnd != nil {
+		body, err := convertStmts(env, fs.Body)
+		if err != nil {
+			return nil, err
+		}
 		start, err := convertExpr(env, fs.Source)
 		if err != nil {
 			return nil, err
@@ -850,6 +1067,15 @@ func convertForStmt(env *types.Env, fs *parser.ForStmt) (Stmt, error) {
 		return &ForRangeStmt{Name: fs.Name, Start: start, End: end, Body: body}, nil
 	}
 	expr, err := convertExpr(env, fs.Source)
+	if err != nil {
+		return nil, err
+	}
+	if src := simpleVarName(fs.Source); src != "" {
+		if f, ok := varFieldTypes[src]; ok {
+			varFieldTypes[fs.Name] = f
+		}
+	}
+	body, err := convertStmts(env, fs.Body)
 	if err != nil {
 		return nil, err
 	}
@@ -1114,10 +1340,16 @@ func convertPostfix(env *types.Env, p *parser.PostfixExpr) (Expr, error) {
 	if p.Target != nil && p.Target.Selector != nil {
 		tail = p.Target.Selector.Tail
 	}
-	for _, f := range tail {
-		expr = &IndexExpr{Base: expr, Index: &LitExpr{Value: f, IsString: true}, Force: true}
+	for i, f := range tail {
+		cast := fieldType(baseName(expr), f)
+		ie := &IndexExpr{Base: expr, Index: &LitExpr{Value: f, IsString: true}, Force: true, Cast: cast}
+		if i < len(tail)-1 || len(p.Ops) > 0 {
+			expr = &ParenExpr{Inner: ie}
+		} else {
+			expr = ie
+		}
 	}
-	for _, op := range p.Ops {
+	for i, op := range p.Ops {
 		if op.Index != nil {
 			if op.Index.Start == nil || op.Index.Colon != nil || op.Index.End != nil || op.Index.Colon2 != nil || op.Index.Step != nil {
 				return nil, fmt.Errorf("unsupported index")
@@ -1136,7 +1368,20 @@ func convertPostfix(env *types.Env, p *parser.PostfixExpr) (Expr, error) {
 					force = true
 				}
 			}
-			expr = &IndexExpr{Base: expr, Index: idx, AsString: isStr, Force: force}
+			keyName := ""
+			if k, ok := stringConst(op.Index.Start); ok {
+				keyName = k
+			}
+			cast := ""
+			if keyName != "" {
+				cast = fieldType(baseName(expr), keyName)
+			}
+			ie := &IndexExpr{Base: expr, Index: idx, AsString: isStr, Force: force, Cast: cast}
+			if i < len(p.Ops)-1 {
+				expr = &ParenExpr{Inner: ie}
+			} else {
+				expr = ie
+			}
 			continue
 		}
 		return nil, fmt.Errorf("unsupported postfix")
@@ -1180,6 +1425,11 @@ func convertQueryExpr(env *types.Env, q *parser.QueryExpr) (Expr, error) {
 	if err != nil {
 		return nil, err
 	}
+	if name := simpleVarName(q.Source); name != "" {
+		if f, ok := varFieldTypes[name]; ok {
+			varFieldTypes[q.Var] = f
+		}
+	}
 	child := types.NewEnv(env)
 	child.SetVar(q.Var, types.AnyType{}, true)
 	froms := make([]queryFrom, len(q.Froms))
@@ -1187,6 +1437,11 @@ func convertQueryExpr(env *types.Env, q *parser.QueryExpr) (Expr, error) {
 		fe, err := convertExpr(child, f.Src)
 		if err != nil {
 			return nil, err
+		}
+		if n := simpleVarName(f.Src); n != "" {
+			if ft, ok := varFieldTypes[n]; ok {
+				varFieldTypes[f.Var] = ft
+			}
 		}
 		child.SetVar(f.Var, types.AnyType{}, true)
 		froms[i] = queryFrom{Var: f.Var, Src: fe}
@@ -1196,6 +1451,11 @@ func convertQueryExpr(env *types.Env, q *parser.QueryExpr) (Expr, error) {
 		je, err := convertExpr(child, j.Src)
 		if err != nil {
 			return nil, err
+		}
+		if n := simpleVarName(j.Src); n != "" {
+			if ft, ok := varFieldTypes[n]; ok {
+				varFieldTypes[j.Var] = ft
+			}
 		}
 		child.SetVar(j.Var, types.AnyType{}, true)
 		var on Expr
