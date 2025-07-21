@@ -625,11 +625,7 @@ func inferPrimaryType(env *Env, p *parser.Primary) Type {
 				st.Order[i] = key
 			}
 			if allConst {
-				// Previously this returned a struct type based on the
-				// constant keys. That prevented simple map literals
-				// from being used with generic map operations such as
-				// iteration. Fall through to infer a MapType instead
-				// so loops like `for k in m` work correctly.
+				return st
 			}
 		}
 

@@ -102,10 +102,23 @@ func updateReadme() {
 		}
 		lines = append(lines, "- "+mark+" "+name)
 	}
+	tsRaw, _ := exec.Command("git", "log", "-1", "--format=%cI").Output()
+	tsStr := strings.TrimSpace(string(tsRaw))
+	if t, err := time.Parse(time.RFC3339, tsStr); err == nil {
+		if loc, lerr := time.LoadLocation("Asia/Bangkok"); lerr == nil {
+			tsStr = t.In(loc).Format("2006-01-02 15:04 -0700")
+		} else {
+			tsStr = t.Format("2006-01-02 15:04 MST")
+		}
+	} else {
+		tsStr = time.Now().Format("2006-01-02 15:04 MST")
+	}
+
 	var buf bytes.Buffer
 	buf.WriteString("# Swift Transpiler Output\n\n")
 	buf.WriteString("Generated Swift code for programs in `tests/vm/valid`. Each program has a `.swift` file produced by the transpiler and a `.out` file with its runtime output. Compilation or execution errors are captured in `.error` files.\n\n")
-	buf.WriteString(fmt.Sprintf("Transpiled programs: %d/%d\n\n", compiled, total))
+	buf.WriteString(fmt.Sprintf("Transpiled programs: %d/%d\n", compiled, total))
+	buf.WriteString(fmt.Sprintf("Last updated: %s\n\n", tsStr))
 	buf.WriteString("Checklist:\n")
 	buf.WriteString(strings.Join(lines, "\n"))
 	buf.WriteString("\n")
