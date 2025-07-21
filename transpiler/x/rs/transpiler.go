@@ -182,9 +182,11 @@ func (s *StructDecl) emit(w io.Writer) {
 		if i > 0 {
 			io.WriteString(w, "        write!(f, \", \")?;\n")
 		}
-		switch fld.Type {
-		case "String":
+		switch {
+		case fld.Type == "String":
 			fmt.Fprintf(w, "        write!(f, \"\\\"%s\\\": \\\"{}\\\"\", self.%s)?;\n", fld.Name, fld.Name)
+		case strings.HasPrefix(fld.Type, "Option<"):
+			fmt.Fprintf(w, "        write!(f, \"\\\"%s\\\": {:?}\", self.%s)?;\n", fld.Name, fld.Name)
 		default:
 			fmt.Fprintf(w, "        write!(f, \"\\\"%s\\\": {}\", self.%s)?;\n", fld.Name, fld.Name)
 		}
@@ -386,6 +388,12 @@ func (f *FieldExpr) emit(w io.Writer) {
 	if strings.HasPrefix(inferType(f.Receiver), "HashMap<") {
 		f.Receiver.emit(w)
 		fmt.Fprintf(w, "[\"%s\"]", f.Name)
+		return
+	}
+	if strings.HasPrefix(inferType(f.Receiver), "Option<") {
+		f.Receiver.emit(w)
+		io.WriteString(w, ".as_ref().unwrap().")
+		io.WriteString(w, f.Name)
 		return
 	}
 	if nr, ok := f.Receiver.(*NameRef); ok && groupVars[nr.Name] {
@@ -831,6 +839,21 @@ type queryJoin struct {
 	Typ   string
 }
 
+// OuterJoinExpr represents a simple full outer join query.
+type OuterJoinExpr struct {
+	LeftVar    string
+	LeftSrc    Expr
+	LeftByRef  bool
+	LeftType   string
+	RightVar   string
+	RightSrc   Expr
+	RightByRef bool
+	RightType  string
+	Cond       Expr
+	Select     Expr
+	ItemType   string
+}
+
 // QueryExpr represents a simple from/select query expression.
 type QueryExpr struct {
 	Var       string
@@ -1063,6 +1086,98 @@ func (q *QueryExpr) emit(w io.Writer) {
 		q.Take.emit(w)
 		io.WriteString(w, " as usize)].to_vec(); }")
 	}
+	io.WriteString(w, " _q }")
+}
+
+func (o *OuterJoinExpr) emit(w io.Writer) {
+	fmt.Fprintf(w, "{ let mut _q: Vec<%s> = Vec::new(); ", o.ItemType)
+	io.WriteString(w, "for ")
+	io.WriteString(w, o.LeftVar)
+	io.WriteString(w, " in ")
+	if o.LeftByRef {
+		io.WriteString(w, "&")
+	}
+	o.LeftSrc.emit(w)
+	io.WriteString(w, " {")
+	io.WriteString(w, " let mut _matched = false;")
+	io.WriteString(w, " for ")
+	io.WriteString(w, o.RightVar)
+	io.WriteString(w, " in ")
+	if o.RightByRef {
+		io.WriteString(w, "&")
+	}
+	o.RightSrc.emit(w)
+	io.WriteString(w, " {")
+	io.WriteString(w, " if ")
+	o.Cond.emit(w)
+	io.WriteString(w, " {")
+	io.WriteString(w, " _matched = true; let ")
+	io.WriteString(w, o.LeftVar)
+	fmt.Fprintf(w, ": Option<%s> = Some(", o.LeftType)
+	cloneVars = map[string]bool{o.LeftVar: o.LeftByRef}
+	(&NameRef{Name: o.LeftVar}).emit(w)
+	cloneVars = nil
+	io.WriteString(w, "); let ")
+	io.WriteString(w, o.RightVar)
+	fmt.Fprintf(w, ": Option<%s> = Some(", o.RightType)
+	cloneVars = map[string]bool{o.RightVar: o.RightByRef}
+	(&NameRef{Name: o.RightVar}).emit(w)
+	cloneVars = nil
+	io.WriteString(w, "); _q.push(")
+	cloneVars = map[string]bool{o.LeftVar: true, o.RightVar: true}
+	o.Select.emit(w)
+	cloneVars = nil
+	io.WriteString(w, "); }")
+	io.WriteString(w, " }")
+	io.WriteString(w, " if !_matched { let ")
+	io.WriteString(w, o.RightVar)
+	fmt.Fprintf(w, ": Option<%s> = None; let ", o.RightType)
+	io.WriteString(w, o.LeftVar)
+	fmt.Fprintf(w, ": Option<%s> = Some(", o.LeftType)
+	cloneVars = map[string]bool{o.LeftVar: o.LeftByRef}
+	(&NameRef{Name: o.LeftVar}).emit(w)
+	cloneVars = nil
+	io.WriteString(w, "); _q.push(")
+	cloneVars = map[string]bool{o.LeftVar: true, o.RightVar: true}
+	o.Select.emit(w)
+	cloneVars = nil
+	io.WriteString(w, "); }")
+	io.WriteString(w, " }")
+	io.WriteString(w, " for ")
+	io.WriteString(w, o.RightVar)
+	io.WriteString(w, " in ")
+	if o.RightByRef {
+		io.WriteString(w, "&")
+	}
+	o.RightSrc.emit(w)
+	io.WriteString(w, " {")
+	io.WriteString(w, " let mut _matched = false;")
+	io.WriteString(w, " for ")
+	io.WriteString(w, o.LeftVar)
+	io.WriteString(w, " in ")
+	if o.LeftByRef {
+		io.WriteString(w, "&")
+	}
+	o.LeftSrc.emit(w)
+	io.WriteString(w, " {")
+	io.WriteString(w, " if ")
+	o.Cond.emit(w)
+	io.WriteString(w, " { _matched = true; break; }")
+	io.WriteString(w, " }")
+	io.WriteString(w, " if !_matched { let ")
+	io.WriteString(w, o.LeftVar)
+	fmt.Fprintf(w, ": Option<%s> = None; let ", o.LeftType)
+	io.WriteString(w, o.RightVar)
+	fmt.Fprintf(w, ": Option<%s> = Some(", o.RightType)
+	cloneVars = map[string]bool{o.RightVar: o.RightByRef}
+	(&NameRef{Name: o.RightVar}).emit(w)
+	cloneVars = nil
+	io.WriteString(w, "); _q.push(")
+	cloneVars = map[string]bool{o.LeftVar: true, o.RightVar: true}
+	o.Select.emit(w)
+	cloneVars = nil
+	io.WriteString(w, "); }")
+	io.WriteString(w, " }")
 	io.WriteString(w, " _q }")
 }
 
@@ -1355,7 +1470,16 @@ func compileIfStmt(n *parser.IfStmt) (Stmt, error) {
 		return nil, err
 	}
 	if inferType(cond) != "bool" {
-		cond = &BoolLit{Value: true}
+		if strings.HasPrefix(inferType(cond), "Option<") {
+			cond = &MethodCallExpr{Receiver: cond, Name: "is_some"}
+		} else {
+			switch cond.(type) {
+			case *FieldExpr, *NameRef:
+				cond = &MethodCallExpr{Receiver: cond, Name: "is_some"}
+			default:
+				cond = &BoolLit{Value: true}
+			}
+		}
 	}
 	thenStmts := make([]Stmt, 0, len(n.Then))
 	for _, st := range n.Then {
@@ -2058,7 +2182,7 @@ func compileQueryExpr(q *parser.QueryExpr) (Expr, error) {
 		side := ""
 		if j.Side != nil {
 			side = *j.Side
-			if side != "right" && side != "left" {
+			if side != "right" && side != "left" && side != "outer" {
 				return nil, fmt.Errorf("join side not supported")
 			}
 		}
@@ -2148,6 +2272,55 @@ func compileQueryExpr(q *parser.QueryExpr) (Expr, error) {
 			return nil, err
 		}
 		takeExpr = te
+	}
+
+	if len(q.Joins) == 1 && q.Joins[0].Side != nil && *q.Joins[0].Side == "outer" && len(q.Froms) == 0 && q.Group == nil && q.Sort == nil && q.Skip == nil && q.Take == nil && q.Where == nil {
+		j := q.Joins[0]
+		selectEnv := types.NewEnv(child)
+		selectEnv.SetVar(q.Var, types.OptionType{Elem: elemT}, true)
+		oldLeft := varTypes[q.Var]
+		varTypes[q.Var] = fmt.Sprintf("Option<%s>", rustTypeFromType(elemT))
+		jt := types.ExprType(j.Src, child)
+		var jelem types.Type = types.AnyType{}
+		if lt, ok := jt.(types.ListType); ok {
+			jelem = lt.Elem
+		}
+		selectEnv.SetVar(j.Var, types.OptionType{Elem: jelem}, true)
+		oldRight := varTypes[j.Var]
+		varTypes[j.Var] = fmt.Sprintf("Option<%s>", rustTypeFromType(jelem))
+
+		ml := mapLiteralExpr(q.Select)
+		itemType := "i64"
+		if ml != nil {
+			if st, ok := types.InferStructFromMapEnv(ml, selectEnv); ok {
+				name := types.UniqueStructName("QueryItem", curEnv, nil)
+				st.Name = name
+				curEnv.SetStruct(name, st)
+				fields := make([]Param, len(st.Order))
+				for i, n := range st.Order {
+					fields[i] = Param{Name: n, Type: rustTypeFromType(st.Fields[n])}
+				}
+				typeDecls = append(typeDecls, &StructDecl{Name: name, Fields: fields})
+				structTypes[name] = st
+				structForMap[ml] = name
+				itemType = name
+			}
+		}
+		sel, err := compileExprWithEnv(q.Select, selectEnv)
+		if err != nil {
+			varTypes[q.Var] = oldLeft
+			varTypes[j.Var] = oldRight
+			return nil, err
+		}
+		if t := inferType(sel); t != "" {
+			itemType = t
+		}
+		rt := rustTypeFromType(jelem)
+		lt := rustTypeFromType(elemT)
+		ex := &OuterJoinExpr{LeftVar: q.Var, LeftSrc: src, LeftByRef: varByRef, LeftType: lt, RightVar: j.Var, RightSrc: joins[0].Src, RightByRef: joins[0].ByRef, RightType: rt, Cond: joins[0].On, Select: sel, ItemType: itemType}
+		varTypes[q.Var] = oldLeft
+		varTypes[j.Var] = oldRight
+		return ex, nil
 	}
 
 	ml := mapLiteralExpr(q.Select)
@@ -2304,6 +2477,8 @@ func inferType(e Expr) string {
 		return ex.Name
 	case *QueryExpr:
 		return fmt.Sprintf("Vec<%s>", ex.ItemType)
+	case *OuterJoinExpr:
+		return fmt.Sprintf("Vec<%s>", ex.ItemType)
 	case *MapLit:
 		usesHashMap = true
 		if len(ex.Items) > 0 {
@@ -2375,6 +2550,10 @@ func rustTypeRef(tr *parser.TypeRef) string {
 				vt := rustTypeRef(tr.Generic.Args[1])
 				return fmt.Sprintf("HashMap<%s, %s>", kt, vt)
 			}
+		case "option":
+			if len(tr.Generic.Args) == 1 {
+				return fmt.Sprintf("Option<%s>", rustTypeRef(tr.Generic.Args[0]))
+			}
 		}
 	}
 	if tr.Fun != nil {
@@ -2398,6 +2577,8 @@ func rustTypeFromType(t types.Type) string {
 	case types.MapType:
 		usesHashMap = true
 		return fmt.Sprintf("HashMap<%s, %s>", rustTypeFromType(tt.Key), rustTypeFromType(tt.Value))
+	case types.OptionType:
+		return fmt.Sprintf("Option<%s>", rustTypeFromType(tt.Elem))
 	case types.StructType:
 		return tt.Name
 	case types.VoidType:
