@@ -1,0 +1,12 @@
+run: exit status 1
+/workspace/mochi/tests/transpiler/x/zig/cast_string_to_int.zig:5:15: error: root source file struct 'Io' has no member named 'getStdOut'
+    try std.io.getStdOut().writer().print("{any}\n", .{std.fmt.parseInt(i64, "1995", 10) catch 0});
+        ~~~~~~^~~~~~~~~~
+/workspace/mochi/zig-x86_64-linux-0.15.0-dev.1160+e43617e68/lib/std/Io.zig:1:1: note: struct declared here
+const std = @import("std.zig");
+^~~~~
+referenced by:
+    callMain [inlined]: /workspace/mochi/zig-x86_64-linux-0.15.0-dev.1160+e43617e68/lib/std/start.zig:668:22
+    callMainWithArgs [inlined]: /workspace/mochi/zig-x86_64-linux-0.15.0-dev.1160+e43617e68/lib/std/start.zig:637:20
+    posixCallMainAndExit: /workspace/mochi/zig-x86_64-linux-0.15.0-dev.1160+e43617e68/lib/std/start.zig:592:36
+    2 reference(s) hidden; use '-freference-trace=5' to see all references

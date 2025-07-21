@@ -1,0 +1,4 @@
+run: exit status 1
+/workspace/mochi/tests/transpiler/x/zig/group_items_iteration.zig:15:18: error: unable to infer array size
+    const data: [_]Data = [_]Data{.{ .tag = "a", .val = 1 }, .{ .tag = "a", .val = 2 }, .{ .tag = "b", .val = 3 }};
+                 ^

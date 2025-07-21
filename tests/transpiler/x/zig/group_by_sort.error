@@ -1,0 +1,4 @@
+run: exit status 1
+/workspace/mochi/tests/transpiler/x/zig/group_by_sort.zig:15:19: error: unable to infer array size
+    const items: [_]Item = [_]Item{.{ .cat = "a", .val = 3 }, .{ .cat = "a", .val = 1 }, .{ .cat = "b", .val = 5 }, .{ .cat = "b", .val = 2 }};
+                  ^

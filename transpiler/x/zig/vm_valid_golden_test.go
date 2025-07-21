@@ -123,15 +123,22 @@ func updateReadme() {
 func updateTasks() {
 	root := vmRepoRoot(&testing.T{})
 	taskFile := filepath.Join(root, "transpiler", "x", "zig", "TASKS.md")
-	out, err := exec.Command("git", "log", "-1", "--format=%cI").Output()
+	out, err := exec.Command("git", "log", "-1", "--format=%cI%n%h%n%s").Output()
 	ts := ""
+	hash := ""
+	msg := ""
 	if err == nil {
-		if t, perr := time.Parse(time.RFC3339, strings.TrimSpace(string(out))); perr == nil {
-			if loc, lerr := time.LoadLocation("Asia/Bangkok"); lerr == nil {
-				ts = t.In(loc).Format("2006-01-02 15:04 -0700")
-			} else {
-				ts = t.Format("2006-01-02 15:04 MST")
+		parts := strings.SplitN(strings.TrimSpace(string(out)), "\n", 3)
+		if len(parts) == 3 {
+			if t, perr := time.Parse(time.RFC3339, parts[0]); perr == nil {
+				if loc, lerr := time.LoadLocation("Asia/Bangkok"); lerr == nil {
+					ts = t.In(loc).Format("2006-01-02 15:04 -0700")
+				} else {
+					ts = t.Format("2006-01-02 15:04 MST")
+				}
 			}
+			hash = parts[1]
+			msg = parts[2]
 		}
 	}
 	srcDir := filepath.Join(root, "tests", "vm", "valid")
@@ -147,6 +154,7 @@ func updateTasks() {
 	}
 	var buf bytes.Buffer
 	buf.WriteString(fmt.Sprintf("## Progress (%s)\n", ts))
+	fmt.Fprintf(&buf, "- Commit %s: %s\n", hash, msg)
 	fmt.Fprintf(&buf, "- Generated Zig for %d/%d programs\n", compiled, total)
 	buf.WriteString("- Updated README checklist and outputs\n\n")
 	if data, err := os.ReadFile(taskFile); err == nil {

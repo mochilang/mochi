@@ -1,0 +1,4 @@
+run: exit status 1
+/workspace/mochi/tests/transpiler/x/zig/left_join_multi.zig:29:43: error: ambiguous use of '&&'; use 'and' for logical AND, or change whitespace to ' & &' for bitwise AND
+                if (o.customer_id == c.id && o.id == i.order_id) {
+                                          ^

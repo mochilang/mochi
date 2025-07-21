@@ -1,0 +1,4 @@
+run: exit status 1
+/workspace/mochi/tests/transpiler/x/zig/dataset_sort_take_limit.zig:10:22: error: unable to infer array size
+    const products: [_]Product = [_]Product{.{ .name = "Laptop", .price = 1500 }, .{ .name = "Smartphone", .price = 900 }, .{ .name = "Tablet", .price = 600 }, .{ .name = "Monitor", .price = 300 }, .{ .name = "Keyboard", .price = 100 }, .{ .name = "Mouse", .price = 50 }, .{ .name = "Headphones", .price = 200 }};
+                     ^
