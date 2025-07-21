@@ -11,13 +11,13 @@ WORKING-STORAGE SECTION.
 PROCEDURE DIVISION.
     DISPLAY A
     IF A = 7
-        DISPLAY "true"
+        DISPLAY 1
     ELSE
-        DISPLAY "false"
+        DISPLAY 0
     END-IF
     IF B < 5
-        DISPLAY "true"
+        DISPLAY 1
     ELSE
-        DISPLAY "false"
+        DISPLAY 0
     END-IF
     STOP RUN.

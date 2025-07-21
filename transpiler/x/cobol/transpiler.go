@@ -419,12 +419,12 @@ func (d *DisplayStmt) emit(w io.Writer) {
 		io.WriteString(w, "\n    IF TMP > 0\n        DISPLAY \"true\"\n    ELSE\n        DISPLAY \"false\"\n    END-IF")
 		return
 	}
-	if isBoolExpr(d.Expr) {
-		io.WriteString(w, "IF ")
-		emitCondExpr(w, d.Expr)
-		io.WriteString(w, "\n        DISPLAY \"true\"\n    ELSE\n        DISPLAY \"false\"\n    END-IF")
-		return
-	}
+    if isBoolExpr(d.Expr) {
+        io.WriteString(w, "IF ")
+        emitCondExpr(w, d.Expr)
+        io.WriteString(w, "\n        DISPLAY 1\n    ELSE\n        DISPLAY 0\n    END-IF")
+        return
+    }
 	if d.IsString {
 		if d.Temp {
 			io.WriteString(w, "COMPUTE TMP = ")

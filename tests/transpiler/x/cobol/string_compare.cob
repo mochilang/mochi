@@ -8,23 +8,23 @@ WORKING-STORAGE SECTION.
 
 PROCEDURE DIVISION.
     IF "a" < "b"
-        DISPLAY "true"
+        DISPLAY 1
     ELSE
-        DISPLAY "false"
+        DISPLAY 0
     END-IF
     IF "a" <= "a"
-        DISPLAY "true"
+        DISPLAY 1
     ELSE
-        DISPLAY "false"
+        DISPLAY 0
     END-IF
     IF "b" > "a"
-        DISPLAY "true"
+        DISPLAY 1
     ELSE
-        DISPLAY "false"
+        DISPLAY 0
     END-IF
     IF "b" >= "b"
-        DISPLAY "true"
+        DISPLAY 1
     ELSE
-        DISPLAY "false"
+        DISPLAY 0
     END-IF
     STOP RUN.
