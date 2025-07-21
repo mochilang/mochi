@@ -1,0 +1,11 @@
+:- style_check(-singleton).
+:- initialization(main).
+
+main :-
+    People = [{name: "Alice", age: 30, city: "Paris"}, {name: "Bob", age: 15, city: "Hanoi"}, {name: "Charlie", age: 65, city: "Paris"}, {name: "Diana", age: 45, city: "Hanoi"}, {name: "Eve", age: 70, city: "Paris"}, {name: "Frank", age: 22, city: "Hanoi"}],
+    Stats = [{city: "Paris", count: 3, avg_age: 55}, {city: "Hanoi", count: 3, avg_age: 27.333333333333332}],
+    writeln("--- People grouped by city ---"),
+    S = {city: "Paris", count: 3, avg_age: 55},
+    writeln("Paris : count = 3 , avg_age = 55"),
+    S1 = {city: "Hanoi", count: 3, avg_age: 27.333333333333332},
+    writeln("Hanoi : count = 3 , avg_age = 27.333333333333332").
