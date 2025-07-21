@@ -332,9 +332,12 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 }
 
 func transpileStmt(s *parser.Statement) (Node, error) {
-	switch {
-	case s.Expr != nil:
-		return transpileExpr(s.Expr.Expr)
+        switch {
+       case s.Test != nil:
+               // test blocks are ignored by the transpiler
+               return nil, nil
+       case s.Expr != nil:
+               return transpileExpr(s.Expr.Expr)
 	case s.If != nil:
 		return transpileIfStmt(s.If)
 	case s.Let != nil:
