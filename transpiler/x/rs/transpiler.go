@@ -178,12 +178,12 @@ func (s *StructDecl) emit(w io.Writer) {
 		if i > 0 {
 			io.WriteString(w, "        write!(f, \", \")?;\n")
 		}
-               switch fld.Type {
-               case "String":
-                       fmt.Fprintf(w, "        write!(f, \"\\\"%s\\\": \\\"{}\\\"\", self.%s)?;\n", fld.Name, fld.Name)
-               default:
-                       fmt.Fprintf(w, "        write!(f, \"\\\"%s\\\": {}\", self.%s)?;\n", fld.Name, fld.Name)
-               }
+		switch fld.Type {
+		case "String":
+			fmt.Fprintf(w, "        write!(f, \"\\\"%s\\\": \\\"{}\\\"\", self.%s)?;\n", fld.Name, fld.Name)
+		default:
+			fmt.Fprintf(w, "        write!(f, \"\\\"%s\\\": {}\", self.%s)?;\n", fld.Name, fld.Name)
+		}
 	}
 	io.WriteString(w, "        write!(f, \"}}\")\n    }\n}\n")
 }
@@ -439,7 +439,18 @@ type SumExpr struct{ Arg Expr }
 
 func (s *SumExpr) emit(w io.Writer) {
 	s.Arg.emit(w)
-	io.WriteString(w, ".iter().sum::<i64>()")
+	typ := inferType(s.Arg)
+	if q, ok := s.Arg.(*QueryExpr); ok {
+		typ = "Vec<" + q.ItemType + ">"
+		if strings.Contains(inferType(q.Select), "f64") {
+			typ = "Vec<f64>"
+		}
+	}
+	if strings.Contains(typ, "f64") {
+		io.WriteString(w, ".iter().sum::<f64>()")
+	} else {
+		io.WriteString(w, ".iter().map(|x| *x as f64).sum::<f64>()")
+	}
 }
 
 // StrExpr represents a call to the `str` builtin.
@@ -575,6 +586,18 @@ func (i *IntCastExpr) emit(w io.Writer) {
 	}
 }
 
+// FloatCastExpr converts an expression to a 64-bit float.
+type FloatCastExpr struct{ Expr Expr }
+
+func (f *FloatCastExpr) emit(w io.Writer) {
+	if inferType(f.Expr) == "f64" {
+		f.Expr.emit(w)
+	} else {
+		f.Expr.emit(w)
+		io.WriteString(w, " as f64")
+	}
+}
+
 type NameRef struct{ Name string }
 
 func (n *NameRef) emit(w io.Writer) {
@@ -707,11 +730,22 @@ func (b *BinaryExpr) emit(w io.Writer) {
 		}
 	}
 	io.WriteString(w, "(")
-	b.Left.emit(w)
+	left := b.Left
+	right := b.Right
+	if b.Op == "+" || b.Op == "-" || b.Op == "*" || b.Op == "/" {
+		lt := inferType(left)
+		rt := inferType(right)
+		if lt == "f64" && rt == "i64" {
+			right = &FloatCastExpr{Expr: right}
+		} else if lt == "i64" && rt == "f64" {
+			left = &FloatCastExpr{Expr: left}
+		}
+	}
+	left.emit(w)
 	io.WriteString(w, " ")
 	io.WriteString(w, b.Op)
 	io.WriteString(w, " ")
-	b.Right.emit(w)
+	right.emit(w)
 	io.WriteString(w, ")")
 }
 
@@ -1172,6 +1206,11 @@ func compileStmt(stmt *parser.Statement) (Stmt, error) {
 				}
 			}
 			varTypes[stmt.Let.Name] = typ
+			if q, ok := e.(*QueryExpr); ok {
+				if st, ok := structTypes[q.ItemType]; ok {
+					curEnv.SetVar(stmt.Let.Name, types.ListType{Elem: st}, true)
+				}
+			}
 		}
 		return &VarDecl{Name: stmt.Let.Name, Expr: e, Type: typ}, nil
 	case stmt.Var != nil:
@@ -1247,6 +1286,11 @@ func compileStmt(stmt *parser.Statement) (Stmt, error) {
 				}
 			}
 			varTypes[stmt.Var.Name] = typ
+			if q, ok := e.(*QueryExpr); ok {
+				if st, ok := structTypes[q.ItemType]; ok {
+					curEnv.SetVar(stmt.Var.Name, types.ListType{Elem: st}, true)
+				}
+			}
 		}
 		return &VarDecl{Name: stmt.Var.Name, Expr: e, Type: typ, Mutable: true}, nil
 	case stmt.Assign != nil:
@@ -1803,8 +1847,13 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 					return nil, err
 				}
 				if st, ok := structTypes[name]; ok {
-					if ft, okf := st.Fields[names[i]]; okf && rustTypeFromType(ft) == "String" {
-						v = &StringCastExpr{Expr: v}
+					if ft, okf := st.Fields[names[i]]; okf {
+						rt := rustTypeFromType(ft)
+						if rt == "String" {
+							v = &StringCastExpr{Expr: v}
+						} else if rt == "f64" && inferType(v) == "i64" {
+							v = &FloatCastExpr{Expr: v}
+						}
 					}
 				}
 				fields[i] = v
@@ -1838,8 +1887,13 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 			if err != nil {
 				return nil, err
 			}
-			if stf, ok := st.Fields[f.Name]; ok && rustTypeFromType(stf) == "String" {
-				v = &StringCastExpr{Expr: v}
+			if stf, ok := st.Fields[f.Name]; ok {
+				rt := rustTypeFromType(stf)
+				if rt == "String" {
+					v = &StringCastExpr{Expr: v}
+				} else if rt == "f64" && inferType(v) == "i64" {
+					v = &FloatCastExpr{Expr: v}
+				}
 			}
 			fields[i] = v
 		}
@@ -2102,10 +2156,8 @@ func compileQueryExpr(q *parser.QueryExpr) (Expr, error) {
 	if err != nil {
 		return nil, err
 	}
-	if itemType == "i64" {
-		if t := inferType(sel); t != "" {
-			itemType = t
-		}
+	if t := inferType(sel); t != "" {
+		itemType = t
 	}
 	return &QueryExpr{Var: q.Var, Src: src, VarByRef: varByRef, Froms: froms, Joins: joins, Where: where, Sort: sortExpr, SortType: sortType, Skip: skipExpr, Take: takeExpr, GroupKey: groupKey, GroupVar: groupVar, GroupType: groupType, Select: sel, ItemType: itemType}, nil
 }
@@ -2465,10 +2517,10 @@ func Emit(prog *Program) []byte {
 	if prog.UsesGroup {
 		buf.WriteString("#[derive(Clone)]\nstruct Group<K, V> { key: K, items: Vec<V> }\n")
 	}
-       for _, d := range prog.Types {
-               d.emit(&buf)
-               buf.WriteByte('\n')
-       }
+	for _, d := range prog.Types {
+		d.emit(&buf)
+		buf.WriteByte('\n')
+	}
 	for _, s := range prog.Stmts {
 		if fd, ok := s.(*FuncDecl); ok {
 			fd.emit(&buf)
