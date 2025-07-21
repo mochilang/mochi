@@ -280,6 +280,7 @@ type GroupComp struct {
 	Cond        Expr
 	Key         Expr
 	ItemVar     string
+	RowVars     []string
 	GroupName   string
 	GroupStruct string
 	Body        Expr
@@ -386,6 +387,7 @@ func (p *Program) write(w io.Writer) {
 		for _, f := range st.Fields {
 			fmt.Fprintf(w, "    %s %s;\n", f.Type, f.Name)
 		}
+		fmt.Fprintf(w, "    auto operator<=>(const %s&) const = default;\n", st.Name)
 		if strings.HasSuffix(st.Name, "Group") && len(st.Fields) == 2 && st.Fields[1].Name == "items" {
 			fmt.Fprintln(w, "    auto begin() { return items.begin(); }")
 			fmt.Fprintln(w, "    auto end() { return items.end(); }")
@@ -403,6 +405,8 @@ func (p *Program) write(w io.Writer) {
 			}
 			if f.Type == "std::string" {
 				fmt.Fprintf(w, " << \"'%s': '\" << v.%s << \"'\"", f.Name, f.Name)
+			} else if f.Type == "double" {
+				fmt.Fprintf(w, " << \"'%s': \" << std::fixed << std::setprecision(1) << v.%s", f.Name, f.Name)
 			} else {
 				fmt.Fprintf(w, " << \"'%s': \" << v.%s", f.Name, f.Name)
 			}
@@ -481,6 +485,9 @@ func (s *PrintStmt) emit(w io.Writer, indent int) {
 			io.WriteString(w, " << \" \" << ")
 		} else {
 			io.WriteString(w, " << ")
+		}
+		if exprType(v) == "double" {
+			io.WriteString(w, "std::fixed << std::setprecision(1) << ")
 		}
 		v.emit(w)
 	}
@@ -603,9 +610,16 @@ func (u *UnaryExpr) emit(w io.Writer) {
 }
 
 func (s *SelectorExpr) emit(w io.Writer) {
-	s.Target.emit(w)
-	io.WriteString(w, ".")
-	io.WriteString(w, s.Field)
+	if strings.HasPrefix(exprType(s.Target), "std::map<") {
+		s.Target.emit(w)
+		io.WriteString(w, "[\"")
+		io.WriteString(w, s.Field)
+		io.WriteString(w, "\"]")
+	} else {
+		s.Target.emit(w)
+		io.WriteString(w, ".")
+		io.WriteString(w, s.Field)
+	}
 }
 
 func (i *IndexExpr) emit(w io.Writer) {
@@ -848,7 +862,6 @@ func (gc *GroupComp) emit(w io.Writer) {
 	io.WriteString(w, "("+cap+"{ std::vector<"+gc.ElemType+"> __items;\n")
 	inLambda++
 	io.WriteString(w, "std::vector<"+gc.GroupStruct+"> __groups;\n")
-	io.WriteString(w, "std::unordered_map<"+gc.KeyType+", size_t> __idx;\n")
 	for i, v := range gc.Vars {
 		io.WriteString(w, "for (auto ")
 		io.WriteString(w, v)
@@ -861,21 +874,25 @@ func (gc *GroupComp) emit(w io.Writer) {
 		gc.Cond.emit(w)
 		io.WriteString(w, ") {\n")
 	}
+	io.WriteString(w, "        "+gc.ItemType+" __row{")
+	for i, v := range gc.RowVars {
+		if i > 0 {
+			io.WriteString(w, ", ")
+		}
+		io.WriteString(w, v)
+	}
+	io.WriteString(w, "};\n")
 	io.WriteString(w, "        auto __key = ")
 	gc.Key.emit(w)
 	io.WriteString(w, ";\n")
-	io.WriteString(w, "        auto it = __idx.find(__key);\n")
-	io.WriteString(w, "        if(it == __idx.end()) {\n")
+	io.WriteString(w, "        bool __found = false;\n")
+	io.WriteString(w, "        for(auto &__g : __groups) {\n")
+	io.WriteString(w, "            if(__g.key == __key) { __g.items.push_back(__row); __found = true; break; }\n")
+	io.WriteString(w, "        }\n")
+	io.WriteString(w, "        if(!__found) {\n")
 	io.WriteString(w, "            "+gc.GroupStruct+" __g{__key, {}};\n")
-	io.WriteString(w, "            __g.items.push_back(")
-	io.WriteString(w, gc.ItemVar)
-	io.WriteString(w, ");\n")
-	io.WriteString(w, "            __idx[__key] = __groups.size();\n")
+	io.WriteString(w, "            __g.items.push_back(__row);\n")
 	io.WriteString(w, "            __groups.push_back(__g);\n")
-	io.WriteString(w, "        } else {\n")
-	io.WriteString(w, "            __groups[it->second].items.push_back(")
-	io.WriteString(w, gc.ItemVar)
-	io.WriteString(w, ");\n")
 	io.WriteString(w, "        }\n")
 	if gc.Cond != nil {
 		io.WriteString(w, "    }\n")
@@ -2499,6 +2516,41 @@ func convertSimpleQuery(q *parser.QueryExpr, target string) (Expr, *StructDef, s
 		if len(keyExprs) == 1 {
 			keyExpr = keyExprs[0]
 			keyType = keyTypes[0]
+			if ml, ok := keyExpr.(*MapLit); ok {
+				names := make([]string, len(ml.Keys))
+				fields := make([]Param, len(ml.Keys))
+				flds := make([]FieldLit, len(ml.Keys))
+				for i, k := range ml.Keys {
+					n, ok := keyName(k)
+					if !ok {
+						names = nil
+						break
+					}
+					typ := exprType(ml.Values[i])
+					if sel, ok := ml.Values[i].(*SelectorExpr); ok {
+						if vr, ok2 := sel.Target.(*VarRef); ok2 {
+							if s, ok3 := qTypes[vr.Name]; ok3 {
+								typ = structFieldType(s, sel.Field)
+							}
+						}
+					} else if vr, ok := ml.Values[i].(*VarRef); ok {
+						if t, ok2 := qTypes[vr.Name]; ok2 {
+							typ = t
+						}
+					}
+					names[i] = n
+					fields[i] = Param{Name: n, Type: typ}
+					flds[i] = FieldLit{Name: n, Value: ml.Values[i]}
+				}
+				if names != nil {
+					structNameK := strings.Title(q.Group.Name) + "Key"
+					keyExpr = &StructLit{Name: structNameK, Fields: flds}
+					keyType = structNameK
+					if currentProgram != nil {
+						currentProgram.Structs = append(currentProgram.Structs, StructDef{Name: structNameK, Fields: fields})
+					}
+				}
+			}
 		} else {
 			keyExpr = &TupleExpr{Elems: keyExprs}
 			keyType = fmt.Sprintf("std::tuple<%s>", strings.Join(keyTypes, ", "))
@@ -2506,8 +2558,15 @@ func convertSimpleQuery(q *parser.QueryExpr, target string) (Expr, *StructDef, s
 				currentProgram.addInclude("<tuple>")
 			}
 		}
-		itemVar := vars[len(vars)-1]
-		itemType := qTypes[itemVar]
+		pairName := strings.Title(q.Group.Name) + "Row"
+		pfields := make([]Param, len(vars))
+		for i, v := range vars {
+			pfields[i] = Param{Name: v, Type: qTypes[v]}
+		}
+		if currentProgram != nil {
+			currentProgram.Structs = append(currentProgram.Structs, StructDef{Name: pairName, Fields: pfields})
+		}
+		itemType := pairName
 		structName := strings.Title(q.Group.Name) + "Group"
 		gdef := &StructDef{Name: structName, Fields: []Param{{Name: "key", Type: keyType}, {Name: "items", Type: fmt.Sprintf("std::vector<%s>", itemType)}}}
 		if currentProgram != nil {
@@ -2557,9 +2616,8 @@ func convertSimpleQuery(q *parser.QueryExpr, target string) (Expr, *StructDef, s
 		}
 		if currentProgram != nil {
 			currentProgram.addInclude("<vector>")
-			currentProgram.addInclude("<unordered_map>")
 		}
-		return &GroupComp{Vars: vars, Iters: iters, Cond: cond, Key: keyExpr, ItemVar: itemVar, GroupName: q.Group.Name, GroupStruct: structName, Body: body, ElemType: elemType, KeyType: keyType, ItemType: itemType}, def, elemType, nil
+		return &GroupComp{Vars: vars, Iters: iters, Cond: cond, Key: keyExpr, ItemVar: "__row", RowVars: vars, GroupName: q.Group.Name, GroupStruct: structName, Body: body, ElemType: elemType, KeyType: keyType, ItemType: itemType}, def, elemType, nil
 	}
 	if currentProgram != nil {
 		currentProgram.addInclude("<vector>")
@@ -3119,17 +3177,17 @@ func exprType(e Expr) string {
 		return "std::vector<auto>"
 	case *MapLit:
 		if len(v.Keys) > 0 {
-			return fmt.Sprintf("std::map<%s, %s>", exprType(v.Keys[0]), exprType(v.Values[0]))
+			kt := exprType(v.Keys[0])
+			if kt == "auto" {
+				kt = "std::string"
+			}
+			return fmt.Sprintf("std::map<%s, %s>", kt, exprType(v.Values[0]))
 		}
 		return "std::map<auto, auto>"
 	case *SelectorExpr:
-		if vr, ok := v.Target.(*VarRef); ok {
-			if t, ok2 := localTypes[vr.Name]; ok2 {
-				ft := structFieldType(t, v.Field)
-				if ft != "" {
-					return ft
-				}
-			}
+		t := exprType(v.Target)
+		if ft := structFieldType(t, v.Field); ft != "" {
+			return ft
 		}
 		return "auto"
 	case *UnaryExpr:

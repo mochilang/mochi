@@ -1,3 +1,23 @@
+## Progress (2025-07-21 23:34 +0700)
+- lua transpiler: support group iter and sorting
+- Generated C++ for 90/100 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-21 23:34 +0700)
+- lua transpiler: support group iter and sorting
+- Generated C++ for 90/100 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-21 23:34 +0700)
+- lua transpiler: support group iter and sorting
+- Generated C++ for 89/100 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-21 23:34 +0700)
+- lua transpiler: support group iter and sorting
+- Generated C++ for 89/100 programs
+- Updated README checklist and outputs
+
 ## Progress (2025-07-21 23:03 +0700)
 - cpp transpiler: support floats and captured queries
 - Generated C++ for 89/100 programs
