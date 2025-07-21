@@ -1288,15 +1288,16 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 			args[i] = ex
 		}
 		name := p.Call.Func
+		callName := name
 		if transpileEnv != nil {
 			if _, builtin := builtinNames[name]; !builtin {
 				if closureNames[name] {
-					name = "$" + name
+					callName = "$" + name
 				}
 			}
 		}
 		if name == "print" {
-			name = "echo"
+			callName = "echo"
 			for i := range args {
 				if isListExpr(args[i]) || isMapExpr(args[i]) || isGroupArg(args[i]) {
 					enc := &CallExpr{Func: "json_encode", Args: []Expr{args[i], &IntLit{Value: 320}}}
@@ -1314,9 +1315,9 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 		} else if name == "len" {
 			if len(args) == 1 {
 				if isListArg(args[0]) || isMapArg(args[0]) || isListExpr(args[0]) || isMapExpr(args[0]) {
-					name = "count"
+					callName = "count"
 				} else {
-					name = "strlen"
+					callName = "strlen"
 				}
 			}
 		} else if name == "substring" {
@@ -1361,7 +1362,7 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 			if len(args) != 1 {
 				return nil, fmt.Errorf("%s expects 1 arg", name)
 			}
-			return &CallExpr{Func: name, Args: args}, nil
+			return &CallExpr{Func: callName, Args: args}, nil
 		} else if name == "append" {
 			if len(args) != 2 {
 				return nil, fmt.Errorf("append expects 2 args")
@@ -1382,7 +1383,28 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 			count := &CallExpr{Func: "count", Args: []Expr{args[0]}}
 			return &BinaryExpr{Left: count, Op: ">", Right: &IntLit{Value: 0}}, nil
 		}
-		return &CallExpr{Func: name, Args: args}, nil
+		if transpileEnv != nil {
+			if t, err := transpileEnv.GetVar(name); err == nil {
+				if ft, ok := t.(types.FuncType); ok && len(args) < len(ft.Params) {
+					rem := len(ft.Params) - len(args)
+					params := make([]string, rem)
+					for i := range params {
+						params[i] = fmt.Sprintf("a%d", i)
+					}
+					fullArgs := append([]Expr{}, args...)
+					for _, p := range params {
+						fullArgs = append(fullArgs, &Var{Name: p})
+					}
+					uses := []string{}
+					if closureNames[name] {
+						uses = append(uses, name)
+					}
+					body := []Stmt{&ReturnStmt{Value: &CallExpr{Func: callName, Args: fullArgs}}}
+					return &ClosureExpr{Params: params, Uses: uses, Body: body}, nil
+				}
+			}
+		}
+		return &CallExpr{Func: callName, Args: args}, nil
 	case p.Lit != nil:
 		return convertLiteral(p.Lit)
 	case p.List != nil:
@@ -1499,6 +1521,13 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 		}
 		return &ExprStmt{Expr: e}, nil
 	case st.Let != nil:
+		if transpileEnv != nil {
+			if t, err := transpileEnv.GetVar(st.Let.Name); err == nil {
+				if _, ok := t.(types.FuncType); ok {
+					closureNames[st.Let.Name] = true
+				}
+			}
+		}
 		var val Expr
 		if st.Let.Value != nil {
 			v, err := convertExpr(st.Let.Value)
@@ -1525,15 +1554,15 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 		if len(funcStack) == 0 {
 			globalNames = append(globalNames, st.Let.Name)
 		}
+		return &LetStmt{Name: st.Let.Name, Value: val}, nil
+	case st.Var != nil:
 		if transpileEnv != nil {
-			if t, err := transpileEnv.GetVar(st.Let.Name); err == nil {
+			if t, err := transpileEnv.GetVar(st.Var.Name); err == nil {
 				if _, ok := t.(types.FuncType); ok {
-					closureNames[st.Let.Name] = true
+					closureNames[st.Var.Name] = true
 				}
 			}
 		}
-		return &LetStmt{Name: st.Let.Name, Value: val}, nil
-	case st.Var != nil:
 		var val Expr
 		if st.Var.Value != nil {
 			v, err := convertExpr(st.Var.Value)
@@ -1553,13 +1582,6 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 		}
 		if len(funcStack) == 0 {
 			globalNames = append(globalNames, st.Var.Name)
-		}
-		if transpileEnv != nil {
-			if t, err := transpileEnv.GetVar(st.Var.Name); err == nil {
-				if _, ok := t.(types.FuncType); ok {
-					closureNames[st.Var.Name] = true
-				}
-			}
 		}
 		return &VarStmt{Name: st.Var.Name, Value: val}, nil
 	case st.Assign != nil:
@@ -1586,11 +1608,16 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 		}
 		return &ReturnStmt{Value: val}, nil
 	case st.Fun != nil:
+		topLevel := len(funcStack) == 0
+		if !topLevel {
+			closureNames[st.Fun.Name] = true
+		}
 		params := make([]string, len(st.Fun.Params))
 		for i, p := range st.Fun.Params {
 			params[i] = p.Name
 		}
 		funcStack = append(funcStack, params)
+		wasTop := topLevel
 		body, err := convertStmtList(st.Fun.Body)
 		funcStack = funcStack[:len(funcStack)-1]
 		if err != nil {
@@ -1603,8 +1630,12 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 		if len(funcStack) == 0 {
 			uses = append(uses, globalNames...)
 		}
+		if wasTop {
+			decl := &FuncDecl{Name: st.Fun.Name, Params: params, Body: body}
+			globalNames = append(globalNames, st.Fun.Name)
+			return decl, nil
+		}
 		clo := &ClosureExpr{Params: params, Uses: uses, Body: body}
-		closureNames[st.Fun.Name] = true
 		if len(funcStack) == 0 {
 			globalNames = append(globalNames, st.Fun.Name)
 		}
