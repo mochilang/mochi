@@ -213,6 +213,9 @@ type MinExpr struct{ Value Expr }
 // MaxExpr returns the maximum value of a list.
 type MaxExpr struct{ Value Expr }
 
+// IntDivExpr performs integer division of two expressions.
+type IntDivExpr struct{ Left, Right Expr }
+
 // ValuesExpr returns Object.values(o).
 type ValuesExpr struct{ Value Expr }
 
@@ -494,6 +497,18 @@ func (e *MaxExpr) emit(w io.Writer) {
 		e.Value.emit(w)
 	}
 	io.WriteString(w, "; return arr.length === 0 ? 0 : Math.max(...arr); })()")
+}
+
+func (e *IntDivExpr) emit(w io.Writer) {
+	io.WriteString(w, "Math.trunc(")
+	if e.Left != nil {
+		e.Left.emit(w)
+	}
+	io.WriteString(w, " / ")
+	if e.Right != nil {
+		e.Right.emit(w)
+	}
+	io.WriteString(w, ")")
 }
 
 func (e *ValuesExpr) emit(w io.Writer) {
@@ -1953,12 +1968,19 @@ func convertBinary(b *parser.BinaryExpr) (Expr, error) {
 	operands := []Expr{}
 	ops := []string{}
 	opnodes := []*parser.BinaryOp{}
+	typesArr := []types.Type{}
 
 	first, err := convertUnary(b.Left)
 	if err != nil {
 		return nil, err
 	}
 	operands = append(operands, first)
+	if transpileEnv != nil {
+		t := types.CheckExprType(&parser.Expr{Binary: &parser.BinaryExpr{Left: b.Left}}, transpileEnv)
+		typesArr = append(typesArr, t)
+	} else {
+		typesArr = append(typesArr, types.ExprType(&parser.Expr{Binary: &parser.BinaryExpr{Left: b.Left}}, nil))
+	}
 	for _, r := range b.Right {
 		o, err := convertPostfix(r.Right)
 		if err != nil {
@@ -1967,6 +1989,11 @@ func convertBinary(b *parser.BinaryExpr) (Expr, error) {
 		operands = append(operands, o)
 		ops = append(ops, r.Op)
 		opnodes = append(opnodes, r)
+		if transpileEnv != nil {
+			typesArr = append(typesArr, types.CheckExprType(&parser.Expr{Binary: &parser.BinaryExpr{Left: &parser.Unary{Value: r.Right}}}, transpileEnv))
+		} else {
+			typesArr = append(typesArr, types.ExprType(&parser.Expr{Binary: &parser.BinaryExpr{Left: &parser.Unary{Value: r.Right}}}, nil))
+		}
 	}
 
 	levels := [][]string{
@@ -2007,11 +2034,29 @@ func convertBinary(b *parser.BinaryExpr) (Expr, error) {
 		case "intersect":
 			operands[i] = &IntersectExpr{Left: operands[i], Right: operands[i+1]}
 		default:
+			if ops[i] == "/" {
+				if _, ok := typesArr[i].(types.IntType); ok {
+					if _, ok2 := typesArr[i+1].(types.IntType); ok2 {
+						operands[i] = &IntDivExpr{Left: operands[i], Right: operands[i+1]}
+						typesArr[i] = types.IntType{}
+						break
+					}
+				}
+			}
 			operands[i] = &BinaryExpr{Left: operands[i], Op: ops[i], Right: operands[i+1]}
+			switch ops[i] {
+			case "+", "-", "*", "/", "%":
+				typesArr[i] = types.FloatType{}
+			case "==", "!=", "<", "<=", ">", ">=", "&&", "||", "in":
+				typesArr[i] = types.BoolType{}
+			default:
+				typesArr[i] = typesArr[i]
+			}
 		}
 		operands = append(operands[:i+1], operands[i+2:]...)
 		ops = append(ops[:i], ops[i+1:]...)
 		opnodes = append(opnodes[:i], opnodes[i+1:]...)
+		typesArr = append(typesArr[:i+1], typesArr[i+2:]...)
 	}
 
 	for _, lvl := range levels {
