@@ -9,5 +9,5 @@ begin
   avg := s / Length(xs);
 end;
 begin
-  writeln(avg([1, 2, 3]));
+  writeln(avg([1, 2, 3]):0:1);
 end.

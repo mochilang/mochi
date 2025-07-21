@@ -34,9 +34,9 @@ end;
   writeln('--- Right Join using syntax ---');
   for entry in result do begin
   if entry.order then begin
-  writeln('Customer', entry.customerName, 'has order', entry.order.id, '- $', entry.order.total);
+  writeln('Customer', ' ', entry.customerName, ' ', 'has order', ' ', entry.order.id, ' ', '- $', ' ', entry.order.total);
 end else begin
-  writeln('Customer', entry.customerName, 'has no orders');
+  writeln('Customer', ' ', entry.customerName, ' ', 'has no orders');
 end;
 end;
 end.

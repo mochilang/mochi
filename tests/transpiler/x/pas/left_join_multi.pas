@@ -22,10 +22,10 @@ var
   orders: array of Anon42;
   items: array of Anon43;
   result: array of Anon44;
-  o: Anon42;
-  c: Anon41;
   i: Anon43;
   r: integer;
+  o: Anon42;
+  c: Anon41;
 begin
   customers := [(id: 1; name: 'Alice'), (id: 2; name: 'Bob')];
   orders := [(id: 100; customerId: 1), (id: 101; customerId: 2)];
@@ -42,6 +42,6 @@ end;
 end;
   writeln('--- Left Join Multi ---');
   for r in result do begin
-  writeln(r.orderId, r.name, r.item);
+  writeln(r.orderId, ' ', r.name, ' ', r.item);
 end;
 end.

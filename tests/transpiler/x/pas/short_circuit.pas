@@ -1,11 +1,12 @@
 {$mode objfpc}
 program Main;
+uses SysUtils;
 function boom(a: integer; b: integer): boolean;
 begin
   writeln('boom');
   exit(true);
 end;
 begin
-  writeln(ord(false and boom(1, 2)));
-  writeln(ord(true or boom(1, 2)));
+  writeln(BoolToStr(false and boom(1, 2), True));
+  writeln(BoolToStr(true or boom(1, 2), True));
 end.

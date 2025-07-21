@@ -24,6 +24,6 @@ end;
 end;
   writeln('--- Adults ---');
   for person in adults do begin
-  writeln(person.name, 'is', person.age, IfThen(person.is_senior, ' (senior)', ''));
+  writeln(person.name, ' ', 'is', ' ', person.age, ' ', IfThen(person.is_senior, ' (senior)', ''));
 end;
 end.

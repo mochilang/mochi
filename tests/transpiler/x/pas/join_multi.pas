@@ -21,10 +21,10 @@ var
   orders: array of Anon34;
   items: array of Anon35;
   result: array of Anon36;
-  r: integer;
-  o: Anon34;
   c: Anon33;
   i: Anon35;
+  r: integer;
+  o: Anon34;
 begin
   customers := [(id: 1; name: 'Alice'), (id: 2; name: 'Bob')];
   orders := [(id: 100; customerId: 1), (id: 101; customerId: 2)];
@@ -41,6 +41,6 @@ end;
 end;
   writeln('--- Multi Join ---');
   for r in result do begin
-  writeln(r.name, 'bought item', r.sku);
+  writeln(r.name, ' ', 'bought item', ' ', r.sku);
 end;
 end.

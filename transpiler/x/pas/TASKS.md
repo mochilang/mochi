@@ -1,6 +1,7 @@
-## Progress (2025-07-21 18:06 +0700)
-- regenerated VM valid Pascal golden files
-- improved formatting and type inference
-- progress 77/100
+## Progress (2025-07-21 11:59 UTC)
+- docs: update pascal transpiler progress (progress 77/100)
+
+## Progress (2025-07-21 11:57 UTC)
+- pascal: improve print formatting and builtin values (progress 77/100)
 
 # Transpiler Tasks

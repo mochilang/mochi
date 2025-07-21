@@ -12,5 +12,5 @@ begin
   x := 3;
   y := 4;
   m := (a: x; b: y);
-  writeln(m['a'], m['b']);
+  writeln(m['a'], ' ', m['b']);
 end.

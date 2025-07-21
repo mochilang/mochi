@@ -1,5 +1,6 @@
 {$mode objfpc}
 program Main;
+uses SysUtils;
 function contains(xs: array of integer; v: integer): boolean;
 var i: integer;
 begin
@@ -14,6 +15,6 @@ var
   nums: array of integer;
 begin
   nums := [1, 2, 3];
-  writeln(ord(contains(nums, 2)));
-  writeln(ord(contains(nums, 4)));
+  writeln(BoolToStr(contains(nums, 2), True));
+  writeln(BoolToStr(contains(nums, 4), True));
 end.

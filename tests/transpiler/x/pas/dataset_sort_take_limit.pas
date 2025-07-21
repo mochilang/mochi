@@ -17,6 +17,6 @@ begin
 end;
   writeln('--- Top products (excluding most expensive) ---');
   for item in expensive do begin
-  writeln(item.name, 'costs $', item.price);
+  writeln(item.name, ' ', 'costs $', ' ', item.price);
 end;
 end.

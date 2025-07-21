@@ -17,9 +17,9 @@ var
   customers: array of Anon53;
   orders: array of Anon54;
   result: array of Anon55;
-  row: integer;
   o: Anon54;
   c: Anon53;
+  row: integer;
 begin
   customers := [(id: 1; name: 'Alice'), (id: 2; name: 'Bob'), (id: 3; name: 'Charlie'), (id: 4; name: 'Diana')];
   orders := [(id: 100; customerId: 1; total: 250), (id: 101; customerId: 2; total: 125), (id: 102; customerId: 1; total: 300), (id: 103; customerId: 5; total: 80)];
@@ -35,12 +35,12 @@ end;
   for row in result do begin
   if row.order then begin
   if row.customer then begin
-  writeln('Order', row.order.id, 'by', row.customer.name, '- $', row.order.total);
+  writeln('Order', ' ', row.order.id, ' ', 'by', ' ', row.customer.name, ' ', '- $', ' ', row.order.total);
 end else begin
-  writeln('Order', row.order.id, 'by', 'Unknown', '- $', row.order.total);
+  writeln('Order', ' ', row.order.id, ' ', 'by', ' ', 'Unknown', ' ', '- $', ' ', row.order.total);
 end;
 end else begin
-  writeln('Customer', row.customer.name, 'has no orders');
+  writeln('Customer', ' ', row.customer.name, ' ', 'has no orders');
 end;
 end;
 end.

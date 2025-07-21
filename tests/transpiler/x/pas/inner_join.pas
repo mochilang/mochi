@@ -34,6 +34,6 @@ end;
 end;
   writeln('--- Orders with customer info ---');
   for entry in result do begin
-  writeln('Order', entry.orderId, 'by', entry.customerName, '- $', entry.total);
+  writeln('Order', ' ', entry.orderId, ' ', 'by', ' ', entry.customerName, ' ', '- $', ' ', entry.total);
 end;
 end.

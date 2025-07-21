@@ -24,6 +24,6 @@ end;
 end;
   writeln('--- Even pairs ---');
   for p in pairs do begin
-  writeln(p.n, p.l);
+  writeln(p.n, ' ', p.l);
 end;
 end.
