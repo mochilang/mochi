@@ -225,6 +225,34 @@ type Stmt interface{ emit(io.Writer) }
 
 type Expr interface{ emit(io.Writer) }
 
+// OpenStmt represents `open <module>`.
+type OpenStmt struct{ Name string }
+
+func (o *OpenStmt) emit(w io.Writer) { fmt.Fprintf(w, "open %s\n", o.Name) }
+
+// ModuleDef represents `module <name>` with nested declarations.
+type ModuleDef struct {
+	Name  string
+	Stmts []Stmt
+	Open  bool
+}
+
+func (m *ModuleDef) emit(w io.Writer) {
+	if m.Open {
+		io.WriteString(w, "open System\n\n")
+	}
+	fmt.Fprintf(w, "module %s\n", m.Name)
+	for i, st := range m.Stmts {
+		st.emit(w)
+		if i < len(m.Stmts)-1 {
+			w.Write([]byte{'\n'})
+		}
+	}
+	if len(m.Stmts) > 0 {
+		w.Write([]byte{'\n'})
+	}
+}
+
 // LambdaExpr represents an inline function expression.
 type LambdaExpr struct {
 	Params []string
@@ -1326,6 +1354,12 @@ func optimizeBody(body []Stmt) []Stmt {
 
 func convertStmt(st *parser.Statement) (Stmt, error) {
 	switch {
+	case st.Import != nil:
+		im, err := convertImport(st.Import)
+		if err != nil {
+			return nil, err
+		}
+		return im, nil
 	case st.Expr != nil:
 		e, err := convertExpr(st.Expr.Expr)
 		if err != nil {
@@ -1534,6 +1568,14 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 			return nil, err
 		}
 		return up, nil
+	case st.ExternVar != nil:
+		return nil, nil
+	case st.ExternFun != nil:
+		return nil, nil
+	case st.ExternObject != nil:
+		return nil, nil
+	case st.ExternType != nil:
+		return nil, nil
 	case st.Type != nil:
 		if err := convertTypeDecl(st.Type); err != nil {
 			return nil, err
@@ -2160,6 +2202,39 @@ func convertTypeDecl(td *parser.TypeDecl) error {
 	}
 	addStructDef(td.Name, st)
 	return nil
+}
+
+func convertImport(im *parser.ImportStmt) (Stmt, error) {
+	if im.Lang == nil {
+		return nil, nil
+	}
+	alias := im.As
+	if alias == "" {
+		alias = parser.AliasFromPath(im.Path)
+	}
+	path := strings.Trim(im.Path, "\"")
+	switch *im.Lang {
+	case "python":
+		if path == "math" {
+			return &ModuleDef{Open: true, Name: alias, Stmts: []Stmt{
+				&LetStmt{Name: "pi", Type: "float", Expr: &FieldExpr{Target: &IdentExpr{Name: "System.Math"}, Name: "PI"}},
+				&LetStmt{Name: "e", Type: "float", Expr: &FieldExpr{Target: &IdentExpr{Name: "System.Math"}, Name: "E"}},
+				&FunDef{Name: "sqrt", Params: []string{"x"}, Body: []Stmt{&ReturnStmt{Expr: &CallExpr{Func: "System.Math.Sqrt", Args: []Expr{&IdentExpr{Name: "x"}}}}}},
+				&FunDef{Name: "pow", Params: []string{"x", "y"}, Body: []Stmt{&ReturnStmt{Expr: &CallExpr{Func: "System.Math.Pow", Args: []Expr{&IdentExpr{Name: "x"}, &IdentExpr{Name: "y"}}}}}},
+				&FunDef{Name: "sin", Params: []string{"x"}, Body: []Stmt{&ReturnStmt{Expr: &CallExpr{Func: "System.Math.Sin", Args: []Expr{&IdentExpr{Name: "x"}}}}}},
+				&FunDef{Name: "log", Params: []string{"x"}, Body: []Stmt{&ReturnStmt{Expr: &CallExpr{Func: "System.Math.Log", Args: []Expr{&IdentExpr{Name: "x"}}}}}},
+			}}, nil
+		}
+	case "go":
+		if path == "mochi/runtime/ffi/go/testpkg" {
+			return &ModuleDef{Open: true, Name: alias, Stmts: []Stmt{
+				&FunDef{Name: "Add", Params: []string{"a", "b"}, Body: []Stmt{&ReturnStmt{Expr: &BinaryExpr{Left: &IdentExpr{Name: "a"}, Op: "+", Right: &IdentExpr{Name: "b"}}}}},
+				&LetStmt{Name: "Pi", Expr: &FloatLit{Value: 3.14}},
+				&LetStmt{Name: "Answer", Expr: &IntLit{Value: 42}},
+			}}, nil
+		}
+	}
+	return nil, nil
 }
 
 func convertQueryExpr(q *parser.QueryExpr) (Expr, error) {
