@@ -1,2 +1,1 @@
-Grouped(part=100, total=20.0)
-Grouped(part=200, total=15.0)
+[GenType1 {part = 100, total = 20}, GenType1 {part = 200, total = 15}]
