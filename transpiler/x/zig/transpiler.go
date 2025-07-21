@@ -278,6 +278,28 @@ func zigTypeFromExpr(e Expr) string {
 			return "[]" + l.ElemType
 		}
 		return "[]i64"
+	case *FieldExpr:
+		if fe := e.(*FieldExpr); fe != nil {
+			if vr, ok := fe.Target.(*VarRef); ok {
+				if stName, ok := varTypes[vr.Name]; ok {
+					if sd, ok2 := structDefs[stName]; ok2 {
+						for _, f := range sd.Fields {
+							if f.Name == toSnakeCase(fe.Name) {
+								return f.Type
+							}
+						}
+					}
+				}
+			}
+		}
+		return "i64"
+	case *BinaryExpr:
+		switch e.(*BinaryExpr).Op {
+		case "==", "!=", "<", "<=", ">", ">=", "&&", "||", "in":
+			return "bool"
+		default:
+			return "i64"
+		}
 	default:
 		return "i64"
 	}
