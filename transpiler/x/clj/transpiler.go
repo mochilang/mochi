@@ -1192,9 +1192,40 @@ func transpileQueryExpr(q *parser.QueryExpr) (Node, error) {
 				andForm = append(andForm, conds...)
 				vecElems = append(vecElems, Keyword("when"), &List{Elems: andForm})
 			}
-			return &List{Elems: []Node{Symbol("for"), &Vector{Elems: vecElems}, sel}}, nil
-		}
-	}
+                        return &List{Elems: []Node{Symbol("for"), &Vector{Elems: vecElems}, sel}}, nil
+                }
+                if j.Side != nil && *j.Side == "outer" && j.On != nil {
+                        leftSrc, err := transpileExpr(q.Source)
+                        if err != nil {
+                                return nil, err
+                        }
+                        rightSrc, err := transpileExpr(j.Src)
+                        if err != nil {
+                                return nil, err
+                        }
+                        onExpr, err := transpileExpr(j.On)
+                        if err != nil {
+                                return nil, err
+                        }
+                        someFn := &List{Elems: []Node{Symbol("fn"), &Vector{Elems: []Node{Symbol(j.Var)}}, &List{Elems: []Node{Symbol("when"), onExpr, Symbol(j.Var)}}}}
+                        someExpr := &List{Elems: []Node{Symbol("some"), someFn, rightSrc}}
+                        sel1, err := transpileExpr(q.Select)
+                        if err != nil {
+                                return nil, err
+                        }
+                        bind1 := []Node{Symbol(q.Var), leftSrc, Keyword("let"), &Vector{Elems: []Node{Symbol(j.Var), someExpr}}}
+                        seq1 := &List{Elems: []Node{Symbol("for"), &Vector{Elems: bind1}, sel1}}
+                        notAnyFn := &List{Elems: []Node{Symbol("fn"), &Vector{Elems: []Node{Symbol(q.Var)}}, onExpr}}
+                        notAny := &List{Elems: []Node{Symbol("not-any?"), notAnyFn, leftSrc}}
+                        sel2, err := transpileExpr(q.Select)
+                        if err != nil {
+                                return nil, err
+                        }
+                        bind2 := []Node{Symbol(j.Var), rightSrc, Keyword("when"), notAny, Keyword("let"), &Vector{Elems: []Node{Symbol(q.Var), Symbol("nil")}}}
+                        seq2 := &List{Elems: []Node{Symbol("for"), &Vector{Elems: bind2}, sel2}}
+                        return &List{Elems: []Node{Symbol("concat"), seq1, seq2}}, nil
+                }
+        }
 
 	bindings := []Node{}
 	src, err := transpileExpr(q.Source)
