@@ -1,4 +1,0 @@
-dotnet run: exit status 1
-/tmp/TestCSTranspiler_VMValid_Golden3245023897/031/Program.cs(21,55): error CS1061: 'object' does not contain a definition for 'tag' and no accessible extension method 'tag' accepting a first argument of type 'object' could be found (are you missing a using directive or an assembly reference?) [/tmp/TestCSTranspiler_VMValid_Golden3245023897/031/app.csproj]
-
-The build failed. Fix the build errors and run again.

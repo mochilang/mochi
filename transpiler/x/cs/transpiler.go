@@ -64,6 +64,9 @@ var funRets map[string]string
 var usesDict bool
 var usesLinq bool
 var usesJson bool
+var globalDecls map[string]*Global
+var mutatedVars map[string]bool
+var blockDepth int
 
 func gitTimestamp() string {
 	out, err := exec.Command("git", "log", "-1", "--format=%cI").Output()
@@ -668,6 +671,11 @@ func exprString(e Expr) string {
 	var buf bytes.Buffer
 	e.emit(&buf)
 	return buf.String()
+}
+
+func exprUsesVar(e Expr, name string) bool {
+	s := exprString(e)
+	return strings.Contains(s, name)
 }
 
 // SliceExpr represents xs[a:b] or s[a:b] for lists and strings.
@@ -1443,6 +1451,8 @@ func Transpile(p *parser.Program, env *types.Env) (*Program, error) {
 	usesDict = false
 	usesLinq = false
 	usesJson = false
+	globalDecls = make(map[string]*Global)
+	mutatedVars = make(map[string]bool)
 	for _, st := range p.Statements {
 		s, err := compileStmt(prog, st)
 		if err != nil {
@@ -1690,8 +1700,15 @@ func compileStmt(prog *Program, s *parser.Statement) (Stmt, error) {
 		if t := typeOfExpr(val); t != "" {
 			varTypes[s.Let.Name] = t
 		}
-		if prog != nil {
-			prog.Globals = append(prog.Globals, &Global{Name: s.Let.Name, Value: val})
+		if prog != nil && blockDepth == 0 {
+			for m := range mutatedVars {
+				if exprUsesVar(val, m) {
+					return &LetStmt{Name: s.Let.Name, Value: val}, nil
+				}
+			}
+			g := &Global{Name: s.Let.Name, Value: val}
+			prog.Globals = append(prog.Globals, g)
+			globalDecls[s.Let.Name] = g
 			return nil, nil
 		}
 		return &LetStmt{Name: s.Let.Name, Value: val}, nil
@@ -1732,8 +1749,10 @@ func compileStmt(prog *Program, s *parser.Statement) (Stmt, error) {
 		if t := typeOfExpr(val); t != "" {
 			varTypes[s.Var.Name] = t
 		}
-		if prog != nil {
-			prog.Globals = append(prog.Globals, &Global{Name: s.Var.Name, Value: val})
+		if prog != nil && blockDepth == 0 {
+			g := &Global{Name: s.Var.Name, Value: val}
+			prog.Globals = append(prog.Globals, g)
+			globalDecls[s.Var.Name] = g
 			return nil, nil
 		}
 		return &VarStmt{Name: s.Var.Name, Value: val}, nil
@@ -1754,6 +1773,24 @@ func compileStmt(prog *Program, s *parser.Statement) (Stmt, error) {
 			if err != nil {
 				return nil, err
 			}
+			if app, ok := val.(*AppendExpr); ok {
+				if vt, ok2 := varTypes[s.Assign.Name]; ok2 && (vt == "" || vt == "object[]") {
+					item := app.Item
+					if mp, ok3 := item.(*MapLit); ok3 {
+						if res, changed := inferStructMap(s.Assign.Name, prog, mp); changed {
+							item = res
+						}
+					}
+					t := typeOfExpr(item)
+					if t != "" {
+						varTypes[s.Assign.Name] = t + "[]"
+						if g, ok3 := globalDecls[s.Assign.Name]; ok3 {
+							g.Value = &RawExpr{Code: fmt.Sprintf("new %s{}", varTypes[s.Assign.Name])}
+						}
+					}
+					val = &AppendExpr{List: app.List, Item: item}
+				}
+			}
 			if isStringExpr(val) {
 				stringVars[s.Assign.Name] = true
 			}
@@ -1768,6 +1805,7 @@ func compileStmt(prog *Program, s *parser.Statement) (Stmt, error) {
 			if t := typeOfExpr(val); t != "" {
 				varTypes[s.Assign.Name] = t
 			}
+			mutatedVars[s.Assign.Name] = true
 			return &AssignStmt{Name: s.Assign.Name, Value: val}, nil
 		}
 		if len(s.Assign.Index) > 0 && len(s.Assign.Field) == 0 {
@@ -1814,8 +1852,9 @@ func compileStmt(prog *Program, s *parser.Statement) (Stmt, error) {
 			ptypes[i] = csType(p.Type)
 		}
 		var body []Stmt
+		blockDepth++
 		for _, b := range s.Fun.Body {
-			st, err := compileStmt(nil, b)
+			st, err := compileStmt(prog, b)
 			if err != nil {
 				return nil, err
 			}
@@ -1823,6 +1862,7 @@ func compileStmt(prog *Program, s *parser.Statement) (Stmt, error) {
 				body = append(body, st)
 			}
 		}
+		blockDepth--
 		varTypes[s.Fun.Name] = fmt.Sprintf("fn/%d", len(ptypes))
 		retType := csType(s.Fun.Return)
 		funRets[s.Fun.Name] = retType
@@ -1861,6 +1901,7 @@ func compileStmt(prog *Program, s *parser.Statement) (Stmt, error) {
 				return nil, err
 			}
 			var body []Stmt
+			blockDepth++
 			for _, b := range s.For.Body {
 				st, err := compileStmt(prog, b)
 				if err != nil {
@@ -1870,6 +1911,7 @@ func compileStmt(prog *Program, s *parser.Statement) (Stmt, error) {
 					body = append(body, st)
 				}
 			}
+			blockDepth--
 			return &ForRangeStmt{Var: s.For.Name, Start: start, End: end, Body: body}, nil
 		}
 		iterable, err := compileExpr(s.For.Source)
@@ -1886,6 +1928,7 @@ func compileStmt(prog *Program, s *parser.Statement) (Stmt, error) {
 			}
 		}
 		var body []Stmt
+		blockDepth++
 		for _, b := range s.For.Body {
 			st, err := compileStmt(prog, b)
 			if err != nil {
@@ -1895,6 +1938,7 @@ func compileStmt(prog *Program, s *parser.Statement) (Stmt, error) {
 				body = append(body, st)
 			}
 		}
+		blockDepth--
 		return &ForInStmt{Var: s.For.Name, Iterable: iterable, Body: body}, nil
 	case s.While != nil:
 		cond, err := compileExpr(s.While.Cond)
@@ -1902,6 +1946,7 @@ func compileStmt(prog *Program, s *parser.Statement) (Stmt, error) {
 			return nil, err
 		}
 		var body []Stmt
+		blockDepth++
 		for _, b := range s.While.Body {
 			st, err := compileStmt(prog, b)
 			if err != nil {
@@ -1911,6 +1956,7 @@ func compileStmt(prog *Program, s *parser.Statement) (Stmt, error) {
 				body = append(body, st)
 			}
 		}
+		blockDepth--
 		return &WhileStmt{Cond: cond, Body: body}, nil
 	case s.If != nil:
 		return compileIfStmt(prog, s.If)
@@ -1926,6 +1972,7 @@ func compileIfStmt(prog *Program, i *parser.IfStmt) (Stmt, error) {
 		return nil, err
 	}
 	var thenStmts []Stmt
+	blockDepth++
 	for _, st := range i.Then {
 		s, err := compileStmt(prog, st)
 		if err != nil {
@@ -1935,6 +1982,7 @@ func compileIfStmt(prog *Program, i *parser.IfStmt) (Stmt, error) {
 			thenStmts = append(thenStmts, s)
 		}
 	}
+	blockDepth--
 	var elseStmts []Stmt
 	if i.ElseIf != nil {
 		s, err := compileIfStmt(prog, i.ElseIf)
@@ -1943,6 +1991,7 @@ func compileIfStmt(prog *Program, i *parser.IfStmt) (Stmt, error) {
 		}
 		elseStmts = []Stmt{s}
 	} else if len(i.Else) > 0 {
+		blockDepth++
 		for _, st := range i.Else {
 			s, err := compileStmt(prog, st)
 			if err != nil {
@@ -1952,6 +2001,7 @@ func compileIfStmt(prog *Program, i *parser.IfStmt) (Stmt, error) {
 				elseStmts = append(elseStmts, s)
 			}
 		}
+		blockDepth--
 	}
 	return &IfStmt{Cond: cond, Then: thenStmts, Else: elseStmts}, nil
 }
