@@ -1,3 +1,18 @@
+## Progress (2025-07-21 12:53 +0700)
+- pl transpiler: basic map and query support
+- Generated COBOL for 37/100 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-21 12:53 +0700)
+- pl transpiler: basic map and query support
+- Generated COBOL for 36/100 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-21 12:53 +0700)
+- pl transpiler: basic map and query support
+- Generated COBOL for 36/100 programs
+- Updated README checklist and outputs
+
 ## Progress (2025-07-21 12:30 +0700)
 - cobol transpiler: improve numeric display
 - Generated COBOL for 36/100 programs

@@ -3,7 +3,7 @@
 This directory stores COBOL code generated from Mochi programs in `tests/vm/valid`.
 Each program is transpiled and the resulting `.cob` sources are compiled with `cobc` during testing.
 
-## VM Golden Test Checklist (36/100)
+## VM Golden Test Checklist (37/100)
 - [x] append_builtin
 - [x] avg_builtin
 - [x] basic_compare
@@ -27,7 +27,7 @@ Each program is transpiled and the resulting `.cob` sources are compiled with `c
 - [ ] fun_expr_in_let
 - [ ] fun_three_args
 - [ ] go_auto
-- [ ] group_by
+- [x] group_by
 - [ ] group_by_conditional_sum
 - [ ] group_by_having
 - [ ] group_by_join

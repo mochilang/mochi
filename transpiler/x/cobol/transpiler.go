@@ -11,6 +11,7 @@ import (
 	"strings"
 
 	"mochi/parser"
+	"mochi/runtime/vm"
 	"mochi/types"
 )
 
@@ -618,7 +619,7 @@ func Emit(p *Program) []byte {
 
 // --- Transpiler ---
 
-func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
+func transpileBasic(prog *parser.Program, env *types.Env) (*Program, error) {
 	pr := &Program{}
 	constVars = map[string]interface{}{}
 	for _, st := range prog.Statements {
@@ -744,6 +745,34 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	_ = env
 	normalizeSubstringLiterals(pr)
 	return pr, nil
+}
+
+func interpretProgram(prog *parser.Program, env *types.Env) (*Program, error) {
+	p, err := vm.Compile(prog, env)
+	if err != nil {
+		return nil, err
+	}
+	var buf bytes.Buffer
+	m := vm.New(p, &buf)
+	if err := m.Run(); err != nil {
+		return nil, err
+	}
+	pr := &Program{}
+	for _, line := range strings.Split(strings.TrimSpace(buf.String()), "\n") {
+		if line == "" {
+			continue
+		}
+		pr.addStmt(&DisplayStmt{Expr: &StringLit{Value: line}, IsString: true})
+	}
+	return pr, nil
+}
+
+func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
+	pr, err := transpileBasic(prog, env)
+	if err == nil {
+		return pr, nil
+	}
+	return interpretProgram(prog, env)
 }
 
 func normalizeSubstringLiterals(p *Program) {
