@@ -1,0 +1,35 @@
+rustc: exit status 1
+warning: unnecessary parentheses around block return value
+ --> /workspace/mochi/tests/transpiler/x/rs/closure.rs:3:30
+  |
+3 |     return |x: i64| -> i64 { (x + n) }
+  |                              ^     ^
+  |
+  = note: `#[warn(unused_parens)]` on by default
+help: remove these parentheses
+  |
+3 -     return |x: i64| -> i64 { (x + n) }
+3 +     return |x: i64| -> i64 { x + n }
+  |
+
+error[E0373]: closure may outlive the current function, but it borrows `n`, which is owned by the current function
+ --> /workspace/mochi/tests/transpiler/x/rs/closure.rs:3:12
+  |
+3 |     return |x: i64| -> i64 { (x + n) }
+  |            ^^^^^^^^^^^^^^^        - `n` is borrowed here
+  |            |
+  |            may outlive borrowed value `n`
+  |
+note: closure is returned here
+ --> /workspace/mochi/tests/transpiler/x/rs/closure.rs:3:12
+  |
+3 |     return |x: i64| -> i64 { (x + n) }
+  |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+help: to force the closure to take ownership of `n` (and any other referenced variables), use the `move` keyword
+  |
+3 |     return move |x: i64| -> i64 { (x + n) }
+  |            ++++
+
+error: aborting due to 1 previous error; 1 warning emitted
+
+For more information about this error, try `rustc --explain E0373`.

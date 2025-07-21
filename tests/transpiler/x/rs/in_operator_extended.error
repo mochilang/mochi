@@ -1,0 +1,23 @@
+rustc: exit status 1
+error[E0425]: cannot find value `a` in this scope
+ --> /workspace/mochi/tests/transpiler/x/rs/in_operator_extended.rs:8:29
+  |
+8 |     let m = HashMap::from([(a, 1)]);
+  |                             ^ not found in this scope
+
+warning: unnecessary parentheses around `if` condition
+ --> /workspace/mochi/tests/transpiler/x/rs/in_operator_extended.rs:5:78
+  |
+5 |     let ys: Vec<i64> = { let mut _q: Vec<i64> = Vec::new(); for x in xs { if ((x % 2) == 1) { _q.push(x); } } _q };
+  |                                                                              ^            ^
+  |
+  = note: `#[warn(unused_parens)]` on by default
+help: remove these parentheses
+  |
+5 -     let ys: Vec<i64> = { let mut _q: Vec<i64> = Vec::new(); for x in xs { if ((x % 2) == 1) { _q.push(x); } } _q };
+5 +     let ys: Vec<i64> = { let mut _q: Vec<i64> = Vec::new(); for x in xs { if (x % 2) == 1 { _q.push(x); } } _q };
+  |
+
+error: aborting due to 1 previous error; 1 warning emitted
+
+For more information about this error, try `rustc --explain E0425`.

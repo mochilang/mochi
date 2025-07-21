@@ -1,0 +1,28 @@
+rustc: exit status 1
+error[E0425]: cannot find value `a` in this scope
+  --> /workspace/mochi/tests/transpiler/x/rs/order_by_map.rs:20:182
+   |
+20 | ... in &data { _tmp.push((HashMap::from([(a, x.a), (b, x.b)]), x.clone())); } _tmp.sort_by(|a,b| a.0.partial_cmp(&b.0).unwrap()); for (_,...
+   |                                           ^ help: a local variable with a similar name exists: `x`
+
+error[E0425]: cannot find value `b` in this scope
+  --> /workspace/mochi/tests/transpiler/x/rs/order_by_map.rs:20:192
+   |
+20 | ...{ _tmp.push((HashMap::from([(a, x.a), (b, x.b)]), x.clone())); } _tmp.sort_by(|a,b| a.0.partial_cmp(&b.0).unwrap()); for (_,v) in _tmp...
+   |                                           ^ help: a local variable with a similar name exists: `x`
+
+error[E0599]: no method named `partial_cmp` found for struct `HashMap<i64, i64>` in the current scope
+  --> /workspace/mochi/tests/transpiler/x/rs/order_by_map.rs:20:241
+   |
+20 | ...]), x.clone())); } _tmp.sort_by(|a,b| a.0.partial_cmp(&b.0).unwrap()); for (_,v) in _tmp { _q.push(v); } _q };
+   |                                              ^^^^^^^^^^^ `HashMap<i64, i64>` is not an iterator
+   |
+help: call `.into_iter()` first
+   |
+20 |     let sorted: Vec<DataItem> = { let mut _q: Vec<DataItem> = Vec::new(); let mut _tmp: Vec<(HashMap<i64, i64>, DataItem)> = Vec::new(); for x in &data { _tmp.push((HashMap::from([(a, x.a), (b, x.b)]), x.clone())); } _tmp.sort_by(|a,b| a.0.into_iter().partial_cmp(&b.0).unwrap()); for (_,v) in _tmp { _q.push(v); } _q };
+   |                                                                                                                                                                                                                                                 ++++++++++++
+
+error: aborting due to 3 previous errors
+
+Some errors have detailed explanations: E0425, E0599.
+For more information about an error, try `rustc --explain E0425`.

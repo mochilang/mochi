@@ -178,14 +178,12 @@ func (s *StructDecl) emit(w io.Writer) {
 		if i > 0 {
 			io.WriteString(w, "        write!(f, \", \")?;\n")
 		}
-		switch fld.Type {
-		case "String":
-			fmt.Fprintf(w, "        write!(f, \"\\\"%s\\\": \\\"{}\\\"\", self.%s)?;\n", fld.Name, fld.Name)
-		case "f64":
-			fmt.Fprintf(w, "        write!(f, \"\\\"%s\\\": {}\", fmt_float(self.%s))?;\n", fld.Name, fld.Name)
-		default:
-			fmt.Fprintf(w, "        write!(f, \"\\\"%s\\\": {}\", self.%s)?;\n", fld.Name, fld.Name)
-		}
+               switch fld.Type {
+               case "String":
+                       fmt.Fprintf(w, "        write!(f, \"\\\"%s\\\": \\\"{}\\\"\", self.%s)?;\n", fld.Name, fld.Name)
+               default:
+                       fmt.Fprintf(w, "        write!(f, \"\\\"%s\\\": {}\", self.%s)?;\n", fld.Name, fld.Name)
+               }
 	}
 	io.WriteString(w, "        write!(f, \"}}\")\n    }\n}\n")
 }
@@ -2467,21 +2465,10 @@ func Emit(prog *Program) []byte {
 	if prog.UsesGroup {
 		buf.WriteString("#[derive(Clone)]\nstruct Group<K, V> { key: K, items: Vec<V> }\n")
 	}
-	needFloat := false
-	for _, d := range prog.Types {
-		for _, f := range d.Fields {
-			if f.Type == "f64" {
-				needFloat = true
-			}
-		}
-	}
-	for _, d := range prog.Types {
-		d.emit(&buf)
-		buf.WriteByte('\n')
-	}
-	if needFloat {
-		buf.WriteString("fn fmt_float(x: f64) -> String { let s = format!(\"{}\", x); if s.contains('.') { s } else { format!(\"{}.0\", s) } }\n")
-	}
+       for _, d := range prog.Types {
+               d.emit(&buf)
+               buf.WriteByte('\n')
+       }
 	for _, s := range prog.Stmts {
 		if fd, ok := s.(*FuncDecl); ok {
 			fd.emit(&buf)

@@ -1,0 +1,16 @@
+rustc: exit status 1
+error[E0425]: cannot find value `math` in this scope
+ --> /workspace/mochi/tests/transpiler/x/rs/python_auto.rs:3:20
+  |
+3 |     println!("{}", math.sqrt(16));
+  |                    ^^^^ not found in this scope
+
+error[E0425]: cannot find value `math` in this scope
+ --> /workspace/mochi/tests/transpiler/x/rs/python_auto.rs:4:20
+  |
+4 |     println!("{}", math.pi);
+  |                    ^^^^ not found in this scope
+
+error: aborting due to 2 previous errors
+
+For more information about this error, try `rustc --explain E0425`.

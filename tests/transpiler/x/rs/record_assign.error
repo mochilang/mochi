@@ -1,0 +1,38 @@
+rustc: exit status 1
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/transpiler/x/rs/record_assign.rs:15:9
+   |
+15 |     c = (c.n + 1);
+   |         ^       ^
+   |
+   = note: `#[warn(unused_parens)]` on by default
+help: remove these parentheses
+   |
+15 -     c = (c.n + 1);
+15 +     c = c.n + 1;
+   |
+
+error[E0610]: `i64` is a primitive type and therefore doesn't have fields
+  --> /workspace/mochi/tests/transpiler/x/rs/record_assign.rs:15:12
+   |
+15 |     c = (c.n + 1);
+   |            ^
+
+error[E0308]: mismatched types
+  --> /workspace/mochi/tests/transpiler/x/rs/record_assign.rs:20:9
+   |
+20 |     inc(c);
+   |     --- ^ expected `i64`, found `Counter`
+   |     |
+   |     arguments to this function are incorrect
+   |
+note: function defined here
+  --> /workspace/mochi/tests/transpiler/x/rs/record_assign.rs:14:4
+   |
+14 | fn inc(c: i64) {
+   |    ^^^ ------
+
+error: aborting due to 2 previous errors; 1 warning emitted
+
+Some errors have detailed explanations: E0308, E0610.
+For more information about an error, try `rustc --explain E0308`.

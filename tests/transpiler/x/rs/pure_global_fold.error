@@ -1,0 +1,34 @@
+rustc: exit status 1
+error[E0425]: cannot find value `k` in this scope
+ --> /workspace/mochi/tests/transpiler/x/rs/pure_global_fold.rs:3:17
+  |
+3 |     return (x + k)
+  |                 ^ help: a tuple variant with a similar name exists: `Ok`
+ --> /rustc/17067e9ac6d7ecb70e50f92c1944e545188d2359/library/core/src/result.rs:532:5
+  |
+  = note: similarly named tuple variant `Ok` defined here
+
+warning: unnecessary parentheses around `return` value
+ --> /workspace/mochi/tests/transpiler/x/rs/pure_global_fold.rs:3:12
+  |
+3 |     return (x + k)
+  |            ^     ^
+  |
+  = note: `#[warn(unused_parens)]` on by default
+help: remove these parentheses
+  |
+3 -     return (x + k)
+3 +     return x + k
+  |
+
+warning: unused variable: `k`
+ --> /workspace/mochi/tests/transpiler/x/rs/pure_global_fold.rs:7:9
+  |
+7 |     let k: i64 = 2;
+  |         ^ help: if this is intentional, prefix it with an underscore: `_k`
+  |
+  = note: `#[warn(unused_variables)]` on by default
+
+error: aborting due to 1 previous error; 2 warnings emitted
+
+For more information about this error, try `rustc --explain E0425`.
