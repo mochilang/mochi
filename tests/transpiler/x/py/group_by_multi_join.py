@@ -1,16 +1,18 @@
-from dataclasses import dataclass
 from collections import defaultdict
+from dataclasses import dataclass
 
 @dataclass
 class Nation:
     id: int
     name: str
 
+nations = [Nation(1, "A"), Nation(2, "B")]
 @dataclass
 class Supplier:
     id: int
     nation: int
 
+suppliers = [Supplier(1, 1), Supplier(2, 2)]
 @dataclass
 class PartSupp:
     part: int
@@ -18,50 +20,30 @@ class PartSupp:
     cost: float
     qty: int
 
+partsupp = [PartSupp(100, 1, 10.0, 2), PartSupp(100, 2, 20.0, 1), PartSupp(200, 1, 5.0, 3)]
 @dataclass
 class Filtered:
     part: int
     value: float
 
+filtered = []
+for ps in partsupp:
+    for s in suppliers:
+        if s.id == ps.supplier:
+            for n in nations:
+                if n.id == s.nation and n.name == "A":
+                    filtered.append(Filtered(ps.part, ps.cost * ps.qty))
 @dataclass
 class Grouped:
     part: int
     total: float
 
-nations = [
-    Nation(1, "A"),
-    Nation(2, "B")
-]
-
-suppliers = [
-    Supplier(1, 1),
-    Supplier(2, 2)
-]
-
-partsupp = [
-    PartSupp(100, 1, 10.0, 2),
-    PartSupp(100, 2, 20.0, 1),
-    PartSupp(200, 1, 5.0, 3)
-]
-
-# Filtered join
-filtered = [
-    Filtered(ps.part, ps.cost * ps.qty)
-    for ps in partsupp
-    for s in suppliers
-    if s.id == ps.supplier
-    for n in nations
-    if n.id == s.nation and n.name == "A"
-]
-
-# Group by part
 grouped_dict = defaultdict(float)
 for x in filtered:
     grouped_dict[x.part] += x.value
-
-# Result
 grouped = [Grouped(part=k, total=v) for k, v in grouped_dict.items()]
-
-# Output
+for g in grouped:
+    if g.total.is_integer():
+        g.total = int(g.total)
 for g in grouped:
     print(g)
