@@ -1,3 +1,7 @@
+## Progress (2025-07-21 14:52 +0700)
+- clj: support outer join
+- Regenerated golden files - 93/100 vm valid programs passing
+
 ## Progress (2025-07-21 14:14 +0700)
 - clj: improve json builtin and group_by queries
 - Regenerated golden files - 92/100 vm valid programs passing
