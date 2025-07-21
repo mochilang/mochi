@@ -1,0 +1,4 @@
+dotnet run: exit status 1
+/tmp/TestCSTranspiler_VMValid_Golden3245023897/052/Program.cs(13,27): error CS0021: Cannot apply indexing with [] to an expression of type 'M' [/tmp/TestCSTranspiler_VMValid_Golden3245023897/052/app.csproj]
+
+The build failed. Fix the build errors and run again.

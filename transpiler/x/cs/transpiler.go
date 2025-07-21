@@ -2534,16 +2534,16 @@ func Emit(prog *Program) []byte {
 
 // formatCS performs very basic formatting and prepends a standard header.
 func formatCS(src []byte) []byte {
-	src = bytes.ReplaceAll(src, []byte("\t"), []byte("    "))
-	lines := bytes.Split(src, []byte("\n"))
+	s := strings.ReplaceAll(string(src), "\t", "    ")
+	lines := strings.Split(s, "\n")
 	for i, ln := range lines {
-		lines[i] = bytes.TrimRight(ln, " ")
+		lines[i] = strings.TrimRight(ln, " ")
 	}
-	out := bytes.Join(lines, []byte("\n"))
-	if len(out) > 0 && out[len(out)-1] != '\n' {
-		out = append(out, '\n')
+	out := strings.Join(lines, "\n")
+	if !strings.HasSuffix(out, "\n") {
+		out += "\n"
 	}
-	return out
+	return []byte(out)
 }
 
 func fieldNames(fs []StructField) []string {
