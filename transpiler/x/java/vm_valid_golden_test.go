@@ -127,7 +127,8 @@ func updateReadme() {
 	var buf bytes.Buffer
 	buf.WriteString("# Java Transpiler Output\n\n")
 	buf.WriteString("Generated Java code for programs in `tests/vm/valid`. Each program has a `.java` file produced by the transpiler and a `.out` file with its runtime output. Compilation or execution errors are captured in `.error` files.\n\n")
-	fmt.Fprintf(&buf, "## VM Golden Test Checklist (%d/%d)\n", compiled, total)
+	ts := time.Now().Format("2006-01-02 15:04 MST")
+	fmt.Fprintf(&buf, "## VM Golden Test Checklist (%d/%d) - updated %s\n", compiled, total, ts)
 	buf.WriteString(strings.Join(lines, "\n"))
 	buf.WriteString("\n")
 	_ = os.WriteFile(readmePath, buf.Bytes(), 0o644)
