@@ -125,3 +125,30 @@ func formatConstMapSlice(ms []map[string]any) string {
 	}
 	return strings.Join(parts, " ")
 }
+
+func formatConstValues(m map[interface{}]interface{}) string {
+	keys := make([]string, 0, len(m))
+	for k := range m {
+		keys = append(keys, fmt.Sprintf("%v", k))
+	}
+	sort.Strings(keys)
+	vals := make([]string, len(keys))
+	for i, kstr := range keys {
+		var key interface{}
+		if iv, err := strconv.Atoi(kstr); err == nil {
+			key = iv
+		} else {
+			key = kstr
+		}
+		val := m[key]
+		switch v := val.(type) {
+		case string:
+			vals[i] = v
+		case int:
+			vals[i] = fmt.Sprintf("%d", v)
+		default:
+			vals[i] = fmt.Sprintf("%v", v)
+		}
+	}
+	return "[" + strings.Join(vals, ", ") + "]"
+}

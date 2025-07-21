@@ -386,13 +386,13 @@ func (d *DisplayStmt) emit(w io.Writer) {
 	if ce, ok := d.Expr.(*ContainsExpr); ok {
 		io.WriteString(w, "IF ")
 		ce.emitExpr(w)
-		io.WriteString(w, " THEN\n        DISPLAY \"true\"\n    ELSE\n        DISPLAY \"false\"\n    END-IF")
+		io.WriteString(w, " THEN\n        DISPLAY \"True\"\n    ELSE\n        DISPLAY \"False\"\n    END-IF")
 		return
 	}
 	if isBoolExpr(d.Expr) {
 		io.WriteString(w, "IF ")
 		emitCondExpr(w, d.Expr)
-		io.WriteString(w, "\n        DISPLAY \"true\"\n    ELSE\n        DISPLAY \"false\"\n    END-IF")
+		io.WriteString(w, "\n        DISPLAY \"True\"\n    ELSE\n        DISPLAY \"False\"\n    END-IF")
 		return
 	}
 	io.WriteString(w, "DISPLAY ")
@@ -1280,9 +1280,9 @@ func convertExpr(e *parser.Expr, env *types.Env) (Expr, error) {
 					}
 				}
 				if found {
-					return &StringLit{Value: "true"}, nil
+					return &StringLit{Value: "True"}, nil
 				}
-				return &StringLit{Value: "false"}, nil
+				return &StringLit{Value: "False"}, nil
 			}
 		}
 
@@ -1298,9 +1298,9 @@ func convertExpr(e *parser.Expr, env *types.Env) (Expr, error) {
 			}
 			if m != nil {
 				if _, found := m[key]; found {
-					return &StringLit{Value: "true"}, nil
+					return &StringLit{Value: "True"}, nil
 				}
-				return &StringLit{Value: "false"}, nil
+				return &StringLit{Value: "False"}, nil
 			}
 		}
 	}
@@ -1369,9 +1369,9 @@ func convertUnary(u *parser.Unary, env *types.Env) (Expr, error) {
 			ex = &UnaryExpr{Op: "-", Expr: ex}
 		case "!":
 			if sl, ok := ex.(*StringLit); ok {
-				if sl.Value == "true" {
+				if sl.Value == "True" {
 					ex = &IntLit{Value: 0}
-				} else if sl.Value == "false" {
+				} else if sl.Value == "False" {
 					ex = &IntLit{Value: 1}
 				} else {
 					return nil, fmt.Errorf("unsupported unary op")
@@ -1648,6 +1648,16 @@ func convertPrimary(p *parser.Primary, env *types.Env) (Expr, error) {
 		} else if ref, ok := identExpr(p.Call.Args[0]); ok {
 			if lst, ok := constVars[ref].([]int); ok {
 				return &IntLit{Value: len(lst)}, nil
+			}
+		}
+		return nil, fmt.Errorf("unsupported primary")
+	case p.Call != nil && p.Call.Func == "values" && len(p.Call.Args) == 1:
+		if m, ok := mapLiteral(p.Call.Args[0]); ok {
+			return &StringLit{Value: formatConstValues(m)}, nil
+		}
+		if name, ok := identExpr(p.Call.Args[0]); ok {
+			if m, ok := constVars[name].(map[interface{}]interface{}); ok {
+				return &StringLit{Value: formatConstValues(m)}, nil
 			}
 		}
 		return nil, fmt.Errorf("unsupported primary")
