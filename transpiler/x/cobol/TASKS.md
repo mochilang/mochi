@@ -1,3 +1,18 @@
+## Progress (2025-07-21 12:30 +0700)
+- cobol transpiler: improve numeric display
+- Generated COBOL for 36/100 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-21 12:21 +0700)
+- c transpiler: support conditional group_by
+- Generated COBOL for 36/100 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-21 12:21 +0700)
+- c transpiler: support conditional group_by
+- Generated COBOL for 36/100 programs
+- Updated README checklist and outputs
+
 ## Progress (2025-07-21 07:20 +0700)
 - cpp transpiler: fix precedence and bool output
 - Generated COBOL for 36/100 programs
