@@ -808,6 +808,7 @@ type MapUpdateExpr struct {
 type queryLoop struct {
 	Name string
 	Src  Expr
+	Side string // "", "left", "right", or "outer"
 }
 
 // QueryExpr represents a basic cross join query without filtering.
@@ -823,6 +824,9 @@ type QueryExpr struct {
 
 func emitQueryLoop(w io.Writer, loops []queryLoop, sel Expr, where Expr, idx int) {
 	loop := loops[idx]
+	if loop.Side != "" {
+		fmt.Fprintf(w, "(* %s join *) ", loop.Side)
+	}
 	if idx == len(loops)-1 {
 		if where != nil {
 			io.WriteString(w, "(List.filter_map (fun ")
@@ -2158,7 +2162,7 @@ func convertQueryExpr(q *parser.QueryExpr, env *types.Env, vars map[string]VarIn
 	if err != nil {
 		return nil, "", err
 	}
-	loops = append(loops, queryLoop{Name: q.Var, Src: src})
+	loops = append(loops, queryLoop{Name: q.Var, Src: src, Side: ""})
 	qVars := map[string]VarInfo{}
 	for k, v := range vars {
 		qVars[k] = v
@@ -2174,7 +2178,7 @@ func convertQueryExpr(q *parser.QueryExpr, env *types.Env, vars map[string]VarIn
 		if err != nil {
 			return nil, "", err
 		}
-		loops = append(loops, queryLoop{Name: f.Var, Src: fs})
+		loops = append(loops, queryLoop{Name: f.Var, Src: fs, Side: ""})
 		ftyp := "map"
 		if strings.HasPrefix(fsTyp, "list-") {
 			ftyp = strings.TrimPrefix(fsTyp, "list-")
@@ -2186,7 +2190,11 @@ func convertQueryExpr(q *parser.QueryExpr, env *types.Env, vars map[string]VarIn
 		if err != nil {
 			return nil, "", err
 		}
-		loops = append(loops, queryLoop{Name: j.Var, Src: js})
+		side := ""
+		if j.Side != nil {
+			side = *j.Side
+		}
+		loops = append(loops, queryLoop{Name: j.Var, Src: js, Side: side})
 		jtyp := "map"
 		if strings.HasPrefix(jsTyp, "list-") {
 			jtyp = strings.TrimPrefix(jsTyp, "list-")
