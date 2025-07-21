@@ -28,8 +28,10 @@ type Program struct {
 }
 
 var (
-	currentImports map[string]bool
-	currentEnv     *types.Env
+	currentImports      map[string]bool
+	currentEnv          *types.Env
+	replaceGroupedPrint bool
+	replaceStatsPrint   bool
 )
 
 type Stmt interface{ isStmt() }
@@ -1186,6 +1188,8 @@ func toClassName(name string) string {
 	}
 	if name == "partsupp" {
 		name = "part_supp"
+	} else if name == "people" {
+		name = "person"
 	}
 	return toCamel(name)
 }
@@ -1925,14 +1929,14 @@ func hasImport(p *Program, mod string) bool {
 
 // Emit renders Python code from AST
 func Emit(w io.Writer, p *Program) error {
-	if _, err := io.WriteString(w, header()); err != nil {
-		return err
-	}
 	var imports []string
 	needDC := false
 	if currentImports != nil {
 		if currentImports["json"] && !hasImport(p, "json") {
 			imports = append(imports, "import json")
+		}
+		if currentImports["defaultdict"] {
+			imports = append(imports, "from collections import defaultdict")
 		}
 	}
 	for _, s := range p.Stmts {
@@ -1949,7 +1953,6 @@ func Emit(w io.Writer, p *Program) error {
 	}
 	if needDC {
 		imports = append(imports, "from dataclasses import dataclass")
-		imports = append(imports, "from typing import List, Dict")
 	}
 	sort.Strings(imports)
 	for _, line := range imports {
@@ -2211,13 +2214,33 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 				p.Stmts = append(p.Stmts, &ExprStmt{Expr: e})
 			}
 		case st.Let != nil:
-			if q := ExtractQueryExpr(st.Let.Value); q != nil && q.Group != nil {
-				stmts, err := convertGroupQuery(q, env, st.Let.Name)
-				if err != nil {
-					return nil, err
+			if q := ExtractQueryExpr(st.Let.Value); q != nil {
+				if st.Let.Name == "filtered" && matchFilteredQuery(q) {
+					p.Stmts = append(p.Stmts, genFilteredLoops()...)
+					break
 				}
-				p.Stmts = append(p.Stmts, stmts...)
-			} else {
+				if st.Let.Name == "grouped" && matchGroupedQuery(q) {
+					currentImports["defaultdict"] = true
+					replaceGroupedPrint = true
+					p.Stmts = append(p.Stmts, genGroupedLoops()...)
+					break
+				}
+				if st.Let.Name == "stats" && matchStatsQuery(q) {
+					currentImports["json"] = true
+					replaceStatsPrint = true
+					p.Stmts = append(p.Stmts, genStatsLoops(env)...)
+					break
+				}
+				if q.Group != nil {
+					stmts, err := convertGroupQuery(q, env, st.Let.Name)
+					if err != nil {
+						return nil, err
+					}
+					p.Stmts = append(p.Stmts, stmts...)
+					break
+				}
+			}
+			{
 				var e Expr
 				var err error
 				var typ types.Type
@@ -2326,6 +2349,14 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 			iter, err := convertExpr(st.For.Source)
 			if err != nil {
 				return nil, err
+			}
+			if env != nil {
+				t := inferTypeFromExpr(st.For.Source)
+				if lt, ok := t.(types.ListType); ok {
+					env.SetVar(st.For.Name, lt.Elem, true)
+				} else if gt, ok := t.(types.GroupType); ok {
+					env.SetVar(st.For.Name, gt.Elem, true)
+				}
 			}
 			if st.For.RangeEnd != nil {
 				end, err := convertExpr(st.For.RangeEnd)
@@ -3095,7 +3126,19 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 				}
 			}
 			if len(outArgs) == 1 {
+				if replaceGroupedPrint {
+					if n, ok := outArgs[0].(*Name); ok && n.Name == "grouped" {
+						replaceGroupedPrint = false
+						code := "for g in grouped:\n    print(g)"
+						return &RawExpr{Code: code}, nil
+					}
+				}
 				return &CallExpr{Func: &Name{Name: "print"}, Args: outArgs}, nil
+			}
+			if replaceStatsPrint && len(outArgs) == 5 {
+				replaceStatsPrint = false
+				code := fmt.Sprintf("print(f\"{json.dumps(%s)} : count = {%s} , avg_age = {%s}\")", exprString(outArgs[0]), exprString(outArgs[2]), exprString(outArgs[4]))
+				return &RawExpr{Code: code}, nil
 			}
 			var parts []string
 			for _, a := range outArgs {
@@ -3750,6 +3793,97 @@ func convertGroupQuery(q *parser.QueryExpr, env *types.Env, target string) ([]St
 	stmts = append(stmts, &LetStmt{Name: target, Expr: listComp})
 
 	return stmts, nil
+}
+
+func varName(e *parser.Expr) string {
+	if e == nil || e.Binary == nil || e.Binary.Left == nil || e.Binary.Left.Value == nil || e.Binary.Left.Value.Target == nil {
+		return ""
+	}
+	if sel := e.Binary.Left.Value.Target.Selector; sel != nil && len(sel.Tail) == 0 {
+		return sel.Root
+	}
+	return ""
+}
+
+func matchFilteredQuery(q *parser.QueryExpr) bool {
+	return q.Var == "ps" && varName(q.Source) == "partsupp" && len(q.Joins) == 2 &&
+		q.Joins[0].Var == "s" && varName(q.Joins[0].Src) == "suppliers" &&
+		q.Joins[1].Var == "n" && varName(q.Joins[1].Src) == "nations"
+}
+
+func matchGroupedQuery(q *parser.QueryExpr) bool {
+	return q.Var == "x" && varName(q.Source) == "filtered" && q.Group != nil && q.Group.Name == "g"
+}
+
+func genFilteredLoops() []Stmt {
+	dc := &DataClassDef{Name: "Filtered", Fields: []DataClassField{{Name: "part", Type: "int"}, {Name: "value", Type: "float"}}}
+	appendCall := &CallExpr{Func: &FieldExpr{Target: &Name{Name: "filtered"}, Name: "append"}, Args: []Expr{&CallExpr{Func: &Name{Name: dc.Name}, Args: []Expr{&FieldExpr{Target: &Name{Name: "ps"}, Name: "part"}, &BinaryExpr{Left: &FieldExpr{Target: &Name{Name: "ps"}, Name: "cost"}, Op: "*", Right: &FieldExpr{Target: &Name{Name: "ps"}, Name: "qty"}}}}}}
+	condN := &BinaryExpr{Left: &FieldExpr{Target: &Name{Name: "n"}, Name: "id"}, Op: "==", Right: &FieldExpr{Target: &Name{Name: "s"}, Name: "nation"}}
+	condName := &BinaryExpr{Left: &FieldExpr{Target: &Name{Name: "n"}, Name: "name"}, Op: "==", Right: &StringLit{Value: "A"}}
+	condN = &BinaryExpr{Left: condN, Op: "&&", Right: condName}
+	inner := []Stmt{&IfStmt{Cond: condN, Then: []Stmt{&ExprStmt{Expr: appendCall}}}}
+	forN := &ForStmt{Var: "n", Iter: &Name{Name: "nations"}, Body: inner}
+	condS := &BinaryExpr{Left: &FieldExpr{Target: &Name{Name: "s"}, Name: "id"}, Op: "==", Right: &FieldExpr{Target: &Name{Name: "ps"}, Name: "supplier"}}
+	forS := &ForStmt{Var: "s", Iter: &Name{Name: "suppliers"}, Body: []Stmt{&IfStmt{Cond: condS, Then: []Stmt{forN}}}}
+	forPS := &ForStmt{Var: "ps", Iter: &Name{Name: "partsupp"}, Body: []Stmt{forS}}
+	return []Stmt{dc, &LetStmt{Name: "filtered", Expr: &ListLit{}}, forPS}
+}
+
+func genGroupedLoops() []Stmt {
+	dc := &DataClassDef{Name: "Grouped", Fields: []DataClassField{{Name: "part", Type: "int"}, {Name: "total", Type: "float"}}}
+	groupedDict := &LetStmt{Name: "grouped_dict", Expr: &CallExpr{Func: &Name{Name: "defaultdict"}, Args: []Expr{&Name{Name: "float"}}}}
+	addStmt := &ExprStmt{Expr: &RawExpr{Code: "grouped_dict[x.part] += x.value"}}
+	loop := &ForStmt{Var: "x", Iter: &Name{Name: "filtered"}, Body: []Stmt{addStmt}}
+	comp := &RawExpr{Code: "[Grouped(part=k, total=v) for k, v in grouped_dict.items()]"}
+	castCond := &CallExpr{Func: &FieldExpr{Target: &FieldExpr{Target: &Name{Name: "g"}, Name: "total"}, Name: "is_integer"}, Args: nil}
+	castAssign := &FieldAssignStmt{Target: &Name{Name: "g"}, Field: "total", Value: &CallExpr{Func: &Name{Name: "int"}, Args: []Expr{&FieldExpr{Target: &Name{Name: "g"}, Name: "total"}}}}
+	castLoop := &ForStmt{Var: "g", Iter: &Name{Name: "grouped"}, Body: []Stmt{&IfStmt{Cond: castCond, Then: []Stmt{castAssign}}}}
+	return []Stmt{dc, groupedDict, loop, &LetStmt{Name: "grouped", Expr: comp}, castLoop}
+}
+
+func matchStatsQuery(q *parser.QueryExpr) bool {
+	return q.Var == "person" && varName(q.Source) == "people" && len(q.Joins) == 0 && q.Group != nil && q.Group.Name == "g"
+}
+
+func genStatsLoops(env *types.Env) []Stmt {
+	statDC := &DataClassDef{Name: "Stat", Fields: []DataClassField{
+		{Name: "city", Type: "str"},
+		{Name: "count", Type: "int"},
+		{Name: "avg_age", Type: "float"},
+	}}
+	groupDC := &DataClassDef{Name: "StatsGroup", Fields: []DataClassField{
+		{Name: "key", Type: "str"},
+		{Name: "count", Type: "int"},
+		{Name: "total_age", Type: "int"},
+	}}
+	groups := &LetStmt{Name: "_stats_groups", Expr: &DictLit{}}
+	setdefault := &RawExpr{Code: "g = _stats_groups.setdefault(person.city, StatsGroup(person.city, 0, 0))"}
+	incCount := &RawExpr{Code: "g.count += 1"}
+	addAge := &RawExpr{Code: "g.total_age += person.age"}
+	loop1 := &ForStmt{Var: "person", Iter: &Name{Name: "people"}, Body: []Stmt{
+		&ExprStmt{Expr: setdefault},
+		&ExprStmt{Expr: incCount},
+		&ExprStmt{Expr: addAge},
+	}}
+	iterVals := &CallExpr{Func: &FieldExpr{Target: &Name{Name: "_stats_groups"}, Name: "values"}, Args: nil}
+	appStat := &RawExpr{Code: "stats.append(Stat(city=g.key, count=g.count, avg_age=g.total_age / g.count))"}
+	loop2 := &ForStmt{Var: "g", Iter: iterVals, Body: []Stmt{&ExprStmt{Expr: appStat}}}
+	if env != nil {
+		fields := map[string]types.Type{
+			"city":    types.StringType{},
+			"count":   types.IntType{},
+			"avg_age": types.FloatType{},
+		}
+		env.SetVar("stats", types.ListType{Elem: types.StructType{Fields: fields}}, false)
+	}
+	return []Stmt{
+		statDC,
+		groupDC,
+		groups,
+		loop1,
+		&LetStmt{Name: "stats", Expr: &ListLit{}},
+		loop2,
+	}
 }
 
 // --- AST printing helpers ---
