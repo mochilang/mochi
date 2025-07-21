@@ -3,7 +3,7 @@ program main
   print '(I0)', merge(1, 0, .false.)
   print '(I0)', merge(1, 0, .true.)
 contains
-  recursive function boom(a, b) result(res)
+  function boom(a, b) result(res)
     implicit none
     logical :: res
     integer :: a

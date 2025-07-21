@@ -4,7 +4,7 @@ program main
   print '(I0)', merge(1, 0, .false.)
   print '(I0)', merge(1, 0, .false.)
 contains
-  recursive function boom() result(res)
+  function boom() result(res)
     implicit none
     logical :: res
     print '(A)', trim("boom")

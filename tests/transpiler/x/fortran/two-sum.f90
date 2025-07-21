@@ -6,7 +6,7 @@ program main
   print '(I0)', result(0+1)
   print '(I0)', result(1+1)
 contains
-  recursive function twoSum(nums, target) result(res)
+  function twoSum(nums, target) result(res)
     implicit none
     integer, dimension(2) :: res
     integer, dimension(2) :: nums

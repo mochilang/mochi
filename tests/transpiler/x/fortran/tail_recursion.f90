@@ -2,7 +2,7 @@ program main
   implicit none
   print '(I0)', sum_rec(10, 0)
 contains
-  recursive function sum_rec(n, acc) result(res)
+  function sum_rec(n, acc) result(res)
     implicit none
     integer :: res
     integer :: n

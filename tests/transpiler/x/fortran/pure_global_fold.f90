@@ -4,7 +4,7 @@ program main
 
   print '(I0)', inc(3)
 contains
-  recursive function inc(x) result(res)
+  function inc(x) result(res)
     implicit none
     integer :: res
     integer :: x

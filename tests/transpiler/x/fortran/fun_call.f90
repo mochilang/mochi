@@ -2,7 +2,7 @@ program main
   implicit none
   print '(I0)', add(2, 3)
 contains
-  recursive function add(a, b) result(res)
+  function add(a, b) result(res)
     implicit none
     integer :: res
     integer :: a
