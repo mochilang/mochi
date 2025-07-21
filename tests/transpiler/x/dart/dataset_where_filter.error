@@ -1,0 +1,7 @@
+run: exit status 254
+../../../tests/transpiler/x/dart/dataset_where_filter.dart:17:14: Error: 'Adult2' isn't a type.
+  final List<Adult2> adults = [for (var person in people) if ((person.age >= 18)) Adult2(name: person.name, age: person.age, is_senior: (person.age >= 60))];
+             ^^^^^^
+../../../tests/transpiler/x/dart/dataset_where_filter.dart:17:83: Error: Method not found: 'Adult2'.
+  final List<Adult2> adults = [for (var person in people) if ((person.age >= 18)) Adult2(name: person.name, age: person.age, is_senior: (person.age >= 60))];
+                                                                                  ^^^^^^

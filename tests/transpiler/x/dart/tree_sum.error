@@ -1,34 +1,34 @@
 run: exit status 254
-../../../tests/transpiler/x/dart/tree_sum.dart:3:16: Error: Undefined name 'Leaf'.
+../../../tests/transpiler/x/dart/tree_sum.dart:17:16: Error: Undefined name 'Leaf'.
   return (t == Leaf) ? 0 : (t == Node(left, value, right)) ? ((sum_tree(left) + value) + sum_tree(right)) : null;
                ^^^^
-../../../tests/transpiler/x/dart/tree_sum.dart:3:39: Error: Undefined name 'left'.
+../../../tests/transpiler/x/dart/tree_sum.dart:17:39: Error: Undefined name 'left'.
   return (t == Leaf) ? 0 : (t == Node(left, value, right)) ? ((sum_tree(left) + value) + sum_tree(right)) : null;
                                       ^^^^
-../../../tests/transpiler/x/dart/tree_sum.dart:3:45: Error: Undefined name 'value'.
+../../../tests/transpiler/x/dart/tree_sum.dart:17:45: Error: Undefined name 'value'.
   return (t == Leaf) ? 0 : (t == Node(left, value, right)) ? ((sum_tree(left) + value) + sum_tree(right)) : null;
                                             ^^^^^
-../../../tests/transpiler/x/dart/tree_sum.dart:3:52: Error: Undefined name 'right'.
+../../../tests/transpiler/x/dart/tree_sum.dart:17:52: Error: Undefined name 'right'.
   return (t == Leaf) ? 0 : (t == Node(left, value, right)) ? ((sum_tree(left) + value) + sum_tree(right)) : null;
                                                    ^^^^^
-../../../tests/transpiler/x/dart/tree_sum.dart:3:34: Error: Method not found: 'Node'.
+../../../tests/transpiler/x/dart/tree_sum.dart:17:34: Error: Method not found: 'Node'.
   return (t == Leaf) ? 0 : (t == Node(left, value, right)) ? ((sum_tree(left) + value) + sum_tree(right)) : null;
                                  ^^^^
-../../../tests/transpiler/x/dart/tree_sum.dart:3:73: Error: Undefined name 'left'.
+../../../tests/transpiler/x/dart/tree_sum.dart:17:73: Error: Undefined name 'left'.
   return (t == Leaf) ? 0 : (t == Node(left, value, right)) ? ((sum_tree(left) + value) + sum_tree(right)) : null;
                                                                         ^^^^
-../../../tests/transpiler/x/dart/tree_sum.dart:3:81: Error: Undefined name 'value'.
+../../../tests/transpiler/x/dart/tree_sum.dart:17:81: Error: Undefined name 'value'.
   return (t == Leaf) ? 0 : (t == Node(left, value, right)) ? ((sum_tree(left) + value) + sum_tree(right)) : null;
                                                                                 ^^^^^
-../../../tests/transpiler/x/dart/tree_sum.dart:3:99: Error: Undefined name 'right'.
+../../../tests/transpiler/x/dart/tree_sum.dart:17:99: Error: Undefined name 'right'.
   return (t == Leaf) ? 0 : (t == Node(left, value, right)) ? ((sum_tree(left) + value) + sum_tree(right)) : null;
                                                                                                   ^^^^^
-../../../tests/transpiler/x/dart/tree_sum.dart:7:43: Error: Undefined name 'Leaf'.
-  final Map<String, dynamic> t = {"left": Leaf, "value": 1, "right": {"left": Leaf, "value": 2, "right": Leaf}};
-                                          ^^^^
-../../../tests/transpiler/x/dart/tree_sum.dart:7:79: Error: Undefined name 'Leaf'.
-  final Map<String, dynamic> t = {"left": Leaf, "value": 1, "right": {"left": Leaf, "value": 2, "right": Leaf}};
+../../../tests/transpiler/x/dart/tree_sum.dart:21:25: Error: Undefined name 'Leaf'.
+  final S1 t = S1(left: Leaf, value: 1, right: T(left: Leaf, value: 2, right: Leaf));
+                        ^^^^
+../../../tests/transpiler/x/dart/tree_sum.dart:21:56: Error: Undefined name 'Leaf'.
+  final S1 t = S1(left: Leaf, value: 1, right: T(left: Leaf, value: 2, right: Leaf));
+                                                       ^^^^
+../../../tests/transpiler/x/dart/tree_sum.dart:21:79: Error: Undefined name 'Leaf'.
+  final S1 t = S1(left: Leaf, value: 1, right: T(left: Leaf, value: 2, right: Leaf));
                                                                               ^^^^
-../../../tests/transpiler/x/dart/tree_sum.dart:7:106: Error: Undefined name 'Leaf'.
-  final Map<String, dynamic> t = {"left": Leaf, "value": 1, "right": {"left": Leaf, "value": 2, "right": Leaf}};
-                                                                                                         ^^^^

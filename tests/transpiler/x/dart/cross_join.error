@@ -1,0 +1,7 @@
+run: exit status 254
+../../../tests/transpiler/x/dart/cross_join.dart:26:14: Error: 'Result2' isn't a type.
+  final List<Result2> result = [for (var o in orders) for (var c in customers) Result2(orderId: o.id, orderCustomerId: o.customerId, pairedCustomerName: c.name, orderTotal: o.total)];
+             ^^^^^^^
+../../../tests/transpiler/x/dart/cross_join.dart:26:80: Error: Method not found: 'Result2'.
+  final List<Result2> result = [for (var o in orders) for (var c in customers) Result2(orderId: o.id, orderCustomerId: o.customerId, pairedCustomerName: c.name, orderTotal: o.total)];
+                                                                               ^^^^^^^

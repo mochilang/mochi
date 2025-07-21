@@ -1,9 +1,9 @@
 run: exit status 254
-../../../tests/transpiler/x/dart/query_sum_select.dart:4:69: Error: The getter 'isEmpty' isn't defined for the class 'int'.
+../../../tests/transpiler/x/dart/query_sum_select.dart:4:64: Error: The getter 'isEmpty' isn't defined for the class 'int'.
 Try correcting the name to the name of an existing getter, or defining a getter or field named 'isEmpty'.
-  final dynamic result = nums.where(((n) => (n > 1))).map(((n) => n.isEmpty ? 0 : (n.reduce((a, b) => a + b)))).toList();
-                                                                    ^^^^^^^
-../../../tests/transpiler/x/dart/query_sum_select.dart:4:86: Error: The method 'reduce' isn't defined for the class 'int'.
+  final List<num> result = [for (var n in nums) if ((n > 1)) n.isEmpty ? 0 : (n.reduce((a, b) => a + b))];
+                                                               ^^^^^^^
+../../../tests/transpiler/x/dart/query_sum_select.dart:4:81: Error: The method 'reduce' isn't defined for the class 'int'.
 Try correcting the name to the name of an existing method, or defining a method named 'reduce'.
-  final dynamic result = nums.where(((n) => (n > 1))).map(((n) => n.isEmpty ? 0 : (n.reduce((a, b) => a + b)))).toList();
-                                                                                     ^^^^^^
+  final List<num> result = [for (var n in nums) if ((n > 1)) n.isEmpty ? 0 : (n.reduce((a, b) => a + b))];
+                                                                                ^^^^^^

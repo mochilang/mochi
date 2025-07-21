@@ -1,1 +1,7 @@
-transpile: unsupported query
+run: exit status 254
+../../../tests/transpiler/x/dart/join_multi.dart:30:14: Error: 'Result2' isn't a type.
+  final List<Result2> result = [for (var o in orders) for (var c in customers) for (var i in items) if (((o.customerId == c.id) && (o.id == i.orderId))) Result2(name: c.name, sku: i.sku)];
+             ^^^^^^^
+../../../tests/transpiler/x/dart/join_multi.dart:30:154: Error: Method not found: 'Result2'.
+  final List<Result2> result = [for (var o in orders) for (var c in customers) for (var i in items) if (((o.customerId == c.id) && (o.id == i.orderId))) Result2(name: c.name, sku: i.sku)];
+                                                                                                                                                         ^^^^^^^
