@@ -212,10 +212,7 @@ func inferType(e Expr) string {
 			}
 			return "int"
 		case "==", "!=", "<", "<=", ">", ">=":
-			if isStringExpr(ex.Left) || isStringExpr(ex.Right) {
-				return "boolean"
-			}
-			return "int"
+			return "boolean"
 		case "&&", "||":
 			lt := inferType(ex.Left)
 			rt := inferType(ex.Right)
@@ -969,9 +966,21 @@ func (b *BinaryExpr) emit(w io.Writer) {
 			return
 		}
 	}
-	b.Left.emit(w)
+	if _, ok := b.Left.(*TernaryExpr); ok {
+		fmt.Fprint(w, "(")
+		b.Left.emit(w)
+		fmt.Fprint(w, ")")
+	} else {
+		b.Left.emit(w)
+	}
 	fmt.Fprint(w, " "+b.Op+" ")
-	b.Right.emit(w)
+	if _, ok := b.Right.(*TernaryExpr); ok {
+		fmt.Fprint(w, "(")
+		b.Right.emit(w)
+		fmt.Fprint(w, ")")
+	} else {
+		b.Right.emit(w)
+	}
 }
 
 type IntLit struct{ Value int }
