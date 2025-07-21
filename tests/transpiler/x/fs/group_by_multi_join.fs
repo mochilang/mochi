@@ -1,55 +1,55 @@
-// Generated 2025-07-21 18:37 +0700
+// Generated 2025-07-22 04:52 +0700
 
 type Anon1 = {
-    mutable id: int
-    mutable name: string
+    id: int
+    name: string
 }
 type Anon2 = {
-    mutable id: int
-    mutable name: string
+    id: int
+    name: string
 }
 type Anon3 = {
-    mutable id: int
-    mutable nation: int
+    id: int
+    nation: int
 }
 type Anon4 = {
-    mutable id: int
-    mutable nation: int
+    id: int
+    nation: int
 }
 type Anon5 = {
-    mutable part: int
-    mutable supplier: int
-    mutable cost: float
-    mutable qty: int
+    part: int
+    supplier: int
+    cost: float
+    qty: int
 }
 type Anon6 = {
-    mutable part: int
-    mutable supplier: int
-    mutable cost: float
-    mutable qty: int
+    part: int
+    supplier: int
+    cost: float
+    qty: int
 }
 type Anon7 = {
-    mutable part: obj
-    mutable value: obj
+    part: obj
+    value: obj
 }
 type Anon8 = {
-    mutable part: obj
-    mutable value: obj
+    part: obj
+    value: obj
 }
 type Anon9 = {
-    mutable part: obj
-    mutable total: float
+    part: obj
+    total: float
 }
 type Anon10 = {
-    mutable x: obj
+    x: Anon8
 }
 type Anon11 = {
-    mutable key: obj
-    mutable items: Anon10 list
+    key: obj
+    items: Anon10 list
 }
 type Anon12 = {
-    mutable part: obj
-    mutable total: float
+    part: obj
+    total: float
 }
 let nations: Anon2 list = [{ id = 1; name = "A" }; { id = 2; name = "B" }]
 let suppliers: Anon4 list = [{ id = 1; nation = 1 }; { id = 2; nation = 2 }]

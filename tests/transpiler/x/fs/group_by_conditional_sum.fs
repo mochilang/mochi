@@ -1,29 +1,29 @@
-// Generated 2025-07-21 18:37 +0700
+// Generated 2025-07-22 04:52 +0700
 
 type Anon1 = {
-    mutable cat: string
-    mutable val: int
-    mutable flag: bool
+    cat: string
+    val: int
+    flag: bool
 }
 type Anon2 = {
-    mutable cat: string
-    mutable val: int
-    mutable flag: bool
+    cat: string
+    val: int
+    flag: bool
 }
 type Anon3 = {
-    mutable cat: obj
-    mutable share: float
+    cat: obj
+    share: float
 }
 type Anon4 = {
-    mutable i: obj
+    i: Anon2
 }
 type Anon5 = {
-    mutable key: obj
-    mutable items: Anon4 list
+    key: string
+    items: Anon4 list
 }
 type Anon6 = {
-    mutable cat: obj
-    mutable share: float
+    cat: obj
+    share: float
 }
 let items: Anon2 list = [{ cat = "a"; val = 10; flag = true }; { cat = "a"; val = 5; flag = false }; { cat = "b"; val = 20; flag = true }]
 let result: Anon6 list = [ for (key, items) in List.groupBy (fun i -> i.cat) items do

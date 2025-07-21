@@ -24,6 +24,11 @@ but given a
     Anon2 list    
 The type 'Anon6' does not match the type 'Anon2'
 
+/workspace/mochi/tests/transpiler/x/fs/group_by.fs(32,29): error FS0001: This expression was expected to have type
+    string    
+but here has type
+    obj    
+
 /workspace/mochi/tests/transpiler/x/fs/group_by.fs(32,42): error FS0001: Type mismatch. Expecting a
     Anon4 list    
 but given a
