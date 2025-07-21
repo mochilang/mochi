@@ -114,8 +114,15 @@ func recordType(name string, ex Expr) {
 		varTypes[name] = "int"
 	} else if isListExpr(ex) {
 		varTypes[name] = "list"
-		if ll, ok := ex.(*ListLit); ok && len(ll.Elems) > 0 {
-			if rl, ok2 := ll.Elems[0].(*RecordLit); ok2 {
+		switch ll := ex.(type) {
+		case *ListLit:
+			if len(ll.Elems) > 0 {
+				if rl, ok2 := ll.Elems[0].(*RecordLit); ok2 {
+					varStruct[name] = rl.Name
+				}
+			}
+		case *ComprExpr:
+			if rl, ok2 := ll.Body.(*RecordLit); ok2 {
 				varStruct[name] = rl.Name
 			}
 		}
@@ -143,6 +150,18 @@ func recordType(name string, ex Expr) {
 func guessHsType(ex Expr) string {
 	if _, ok := ex.(*IntLit); ok {
 		return "Int"
+	}
+	if nr, ok := ex.(*NameRef); ok {
+		switch varTypes[nr.Name] {
+		case "int":
+			return "Int"
+		case "float":
+			return "Double"
+		case "bool":
+			return "Bool"
+		case "string":
+			return "String"
+		}
 	}
 	if fe, ok := ex.(*FieldExpr); ok {
 		if n, ok2 := fe.Target.(*NameRef); ok2 {
@@ -500,7 +519,7 @@ func (r *RecordLit) emit(w io.Writer) {
 }
 func (n *NameRef) emit(w io.Writer) { io.WriteString(w, safeName(n.Name)) }
 func (f *FieldExpr) emit(w io.Writer) {
-	if isMapExpr(f.Target) {
+	if isMapExpr(f.Target) && !hasStruct(f.Target) {
 		needDataMap = true
 		f.Target.emit(w)
 		fmt.Fprintf(w, " Map.! %q", f.Field)
@@ -509,6 +528,13 @@ func (f *FieldExpr) emit(w io.Writer) {
 	f.Target.emit(w)
 	io.WriteString(w, ".")
 	io.WriteString(w, f.Field)
+}
+
+func hasStruct(e Expr) bool {
+	if n, ok := e.(*NameRef); ok {
+		return varStruct[n.Name] != ""
+	}
+	return false
 }
 func (c *ComprExpr) emit(w io.Writer) {
 	io.WriteString(w, "[")
@@ -885,6 +911,57 @@ func toHsType(t types.Type) string {
 		return "()"
 	default:
 		return "String"
+	}
+}
+
+func shortType(t types.Type) string {
+	switch t.(type) {
+	case types.IntType, types.Int64Type, types.BigIntType:
+		return "int"
+	case types.StringType:
+		return "string"
+	case types.BoolType:
+		return "bool"
+	case types.BigRatType, types.FloatType:
+		return "float"
+	case types.ListType:
+		return "list"
+	case types.MapType:
+		return "map"
+	case types.StructType:
+		return "record"
+	default:
+		return ""
+	}
+}
+
+func inferVarFromSource(name string, src Expr) {
+	if ll, ok := src.(*ListLit); ok && len(ll.Elems) > 0 {
+		recordType(name, ll.Elems[0])
+		return
+	}
+	if n, ok := src.(*NameRef); ok {
+		if s := varStruct[n.Name]; s != "" {
+			varStruct[name] = s
+			varTypes[name] = "record"
+		}
+		if envInfo != nil {
+			if vt, err := envInfo.GetVar(n.Name); err == nil {
+				switch tt := vt.(type) {
+				case types.ListType:
+					if st, ok := tt.Elem.(types.StructType); ok {
+						varStruct[name] = st.Name
+						varTypes[name] = "record"
+					} else if varStruct[name] == "" {
+						varTypes[name] = shortType(tt.Elem)
+					}
+				case types.MapType:
+					if varStruct[name] == "" {
+						varTypes[name] = shortType(tt.Key)
+					}
+				}
+			}
+		}
 	}
 }
 
@@ -1420,11 +1497,7 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 			return nil, err
 		}
 		srcs = append(srcs, se)
-		if r, ok := se.(*NameRef); ok {
-			if s := varStruct[r.Name]; s != "" {
-				varStruct[p.Query.Var] = s
-			}
-		}
+		inferVarFromSource(p.Query.Var, se)
 		for _, f := range p.Query.Froms {
 			fe, err := convertExpr(f.Src)
 			if err != nil {
@@ -1432,11 +1505,7 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 			}
 			vars = append(vars, f.Var)
 			srcs = append(srcs, fe)
-			if r, ok := fe.(*NameRef); ok {
-				if s := varStruct[r.Name]; s != "" {
-					varStruct[f.Var] = s
-				}
-			}
+			inferVarFromSource(f.Var, fe)
 		}
 		var cond Expr
 		for _, j := range p.Query.Joins {
@@ -1446,11 +1515,7 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 			}
 			vars = append(vars, j.Var)
 			srcs = append(srcs, je)
-			if r, ok := je.(*NameRef); ok {
-				if s := varStruct[r.Name]; s != "" {
-					varStruct[j.Var] = s
-				}
-			}
+			inferVarFromSource(j.Var, je)
 			if j.On != nil {
 				jc, err := convertExpr(j.On)
 				if err != nil {
@@ -1685,8 +1750,11 @@ func convertForStmt(f *parser.ForStmt) (Stmt, error) {
 	if err != nil {
 		return nil, err
 	}
+	name := safeName(f.Name)
 	if isMapExpr(src) {
-		varTypes[safeName(f.Name)] = "string"
+		varTypes[name] = "string"
+	} else {
+		inferVarFromSource(name, src)
 	}
 	var end Expr
 	if f.RangeEnd != nil {
