@@ -1,3 +1,33 @@
+## Progress (2025-07-21 18:22 +0700)
+- rb transpiler: simplify struct param handling
+- Generated Ruby for 77/100 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-21 18:06 +0700)
+- zig transpiler: regenerate golden tests
+- Generated Ruby for 77/100 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-21 18:06 +0700)
+- zig transpiler: regenerate golden tests
+- Generated Ruby for 77/100 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-21 18:06 +0700)
+- zig transpiler: regenerate golden tests
+- Generated Ruby for 77/100 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-21 18:06 +0700)
+- zig transpiler: regenerate golden tests
+- Generated Ruby for 77/100 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-21 18:06 +0700)
+- zig transpiler: regenerate golden tests
+- Generated Ruby for 77/100 programs
+- Updated README checklist and outputs
+
 ## Progress (2025-07-21 16:57 +0700)
 - fortran: support inner join and bool folding
 - Generated Ruby for 77/100 programs
