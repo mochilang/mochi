@@ -27,17 +27,18 @@ type Program struct {
 
 // context tracks variable aliases to emulate mutable variables.
 type context struct {
-	alias    map[string]string
-	orig     map[string]string
-	counter  map[string]int
-	strField map[string]map[string]bool
-	groups   map[string]groupInfo
+	alias     map[string]string
+	orig      map[string]string
+	counter   map[string]int
+	strField  map[string]map[string]bool
+	boolField map[string]map[string]bool
+	groups    map[string]groupInfo
 }
 
 type groupInfo struct{ key, items string }
 
 func newContext() *context {
-	return &context{alias: map[string]string{}, orig: map[string]string{}, counter: map[string]int{}, strField: map[string]map[string]bool{}, groups: map[string]groupInfo{}}
+	return &context{alias: map[string]string{}, orig: map[string]string{}, counter: map[string]int{}, strField: map[string]map[string]bool{}, boolField: map[string]map[string]bool{}, groups: map[string]groupInfo{}}
 }
 
 func (c *context) clone() *context {
@@ -61,11 +62,19 @@ func (c *context) clone() *context {
 		}
 		fields[k] = fm
 	}
+	bfields := make(map[string]map[string]bool, len(c.boolField))
+	for k, v := range c.boolField {
+		fm := make(map[string]bool, len(v))
+		for kk, vv := range v {
+			fm[kk] = vv
+		}
+		bfields[k] = fm
+	}
 	groups := make(map[string]groupInfo, len(c.groups))
 	for k, v := range c.groups {
 		groups[k] = v
 	}
-	return &context{alias: alias, orig: orig, counter: counter, strField: fields, groups: groups}
+	return &context{alias: alias, orig: orig, counter: counter, strField: fields, boolField: bfields, groups: groups}
 }
 
 func (c *context) newAlias(name string) string {
@@ -103,6 +112,16 @@ func (c *context) setStrFields(name string, fields map[string]bool) {
 	c.strField[name] = fields
 }
 
+func (c *context) setBoolFields(name string, fields map[string]bool) {
+	if len(fields) == 0 {
+		return
+	}
+	if c.boolField == nil {
+		c.boolField = map[string]map[string]bool{}
+	}
+	c.boolField[name] = fields
+}
+
 func (c *context) setGroup(name, keyVar, itemsVar string) {
 	if c.groups == nil {
 		c.groups = map[string]groupInfo{}
@@ -122,6 +141,13 @@ func (c *context) isStrField(name, field string) bool {
 	return false
 }
 
+func (c *context) isBoolField(name, field string) bool {
+	if m, ok := c.boolField[name]; ok {
+		return m[field]
+	}
+	return false
+}
+
 func simpleIdent(e *parser.Expr) (string, bool) {
 	if e == nil || e.Binary == nil || len(e.Binary.Right) > 0 {
 		return "", false
@@ -135,6 +161,27 @@ func simpleIdent(e *parser.Expr) (string, bool) {
 		return "", false
 	}
 	return pf.Target.Selector.Root, true
+}
+
+func isGroupKeyExpr(e *parser.Expr, name string) bool {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) > 0 {
+		return false
+	}
+	u := e.Binary.Left
+	if len(u.Ops) > 0 || u.Value == nil {
+		return false
+	}
+	pf := u.Value
+	if pf.Target == nil || pf.Target.Selector == nil || pf.Target.Selector.Root != name {
+		return false
+	}
+	if len(pf.Target.Selector.Tail) == 1 && pf.Target.Selector.Tail[0] == "key" && len(pf.Ops) == 0 {
+		return true
+	}
+	if len(pf.Target.Selector.Tail) == 0 && len(pf.Ops) == 1 && pf.Ops[0].Field != nil && pf.Ops[0].Field.Name == "key" {
+		return true
+	}
+	return false
 }
 
 func replaceGroupExpr(e Expr, groupVar, keyVar, itemsVar string) Expr {
@@ -512,6 +559,25 @@ func isStringExpr(e Expr) bool {
 	}
 }
 
+func isBoolExpr(e Expr) bool {
+	switch v := e.(type) {
+	case *BoolLit:
+		return true
+	case *UnaryExpr:
+		if v.Op == "!" {
+			return true
+		}
+	case *BinaryExpr:
+		switch v.Op {
+		case "&&", "||", "==", "!=", "<", ">", "<=", ">=":
+			return true
+		}
+	case *IfExpr:
+		return isBoolExpr(v.Then) && isBoolExpr(v.Else)
+	}
+	return false
+}
+
 func isMapExpr(e Expr, env *types.Env, ctx *context) bool {
 	switch v := e.(type) {
 	case *MapLit:
@@ -596,6 +662,41 @@ func stringFields(e Expr) map[string]bool {
 	return nil
 }
 
+func boolFields(e Expr) map[string]bool {
+	switch v := e.(type) {
+	case *MapLit:
+		fields := map[string]bool{}
+		for _, it := range v.Items {
+			if k, ok := it.Key.(*AtomLit); ok {
+				if isBoolExpr(it.Value) {
+					fields[k.Name] = true
+				}
+			}
+		}
+		if len(fields) > 0 {
+			return fields
+		}
+	case *ListLit:
+		accum := map[string]bool{}
+		for _, el := range v.Elems {
+			if ml, ok := el.(*MapLit); ok {
+				ff := boolFields(ml)
+				for k, b := range ff {
+					if b {
+						accum[k] = true
+					}
+				}
+			}
+		}
+		if len(accum) > 0 {
+			return accum
+		}
+	case *QueryExpr:
+		return boolFields(v.Select)
+	}
+	return nil
+}
+
 func fieldIsString(target Expr, key Expr, env *types.Env, ctx *context) bool {
 	if a, ok := key.(*AtomLit); ok {
 		switch t := target.(type) {
@@ -615,6 +716,27 @@ func fieldIsString(target Expr, key Expr, env *types.Env, ctx *context) bool {
 		}
 	}
 	return mapValueIsString(target, env, ctx)
+}
+
+func fieldIsBool(target Expr, key Expr, env *types.Env, ctx *context) bool {
+	if a, ok := key.(*AtomLit); ok {
+		switch t := target.(type) {
+		case *MapLit:
+			for _, it := range t.Items {
+				if ak, ok2 := it.Key.(*AtomLit); ok2 && ak.Name == a.Name {
+					return isBoolExpr(it.Value)
+				}
+			}
+		case *NameRef:
+			if ctx != nil {
+				name := ctx.original(t.Name)
+				if ctx.isBoolField(name, a.Name) {
+					return true
+				}
+			}
+		}
+	}
+	return false
 }
 
 func (l *LetStmt) emit(w io.Writer) {
@@ -1275,6 +1397,7 @@ func convertStmt(st *parser.Statement, env *types.Env, ctx *context) ([]Stmt, er
 		}
 		alias := ctx.newAlias(st.Let.Name)
 		ctx.setStrFields(st.Let.Name, stringFields(e))
+		ctx.setBoolFields(st.Let.Name, boolFields(e))
 		return []Stmt{&LetStmt{Name: alias, Expr: e}}, nil
 	case st.Var != nil:
 		var e Expr
@@ -1289,6 +1412,7 @@ func convertStmt(st *parser.Statement, env *types.Env, ctx *context) ([]Stmt, er
 		}
 		alias := ctx.newAlias(st.Var.Name)
 		ctx.setStrFields(st.Var.Name, stringFields(e))
+		ctx.setBoolFields(st.Var.Name, boolFields(e))
 		return []Stmt{&LetStmt{Name: alias, Expr: e}}, nil
 	case st.Assign != nil && len(st.Assign.Index) == 0 && len(st.Assign.Field) == 0:
 		val, err := convertExpr(st.Assign.Value, env, ctx)
@@ -1297,6 +1421,7 @@ func convertStmt(st *parser.Statement, env *types.Env, ctx *context) ([]Stmt, er
 		}
 		alias := ctx.newAlias(st.Assign.Name)
 		ctx.setStrFields(st.Assign.Name, stringFields(val))
+		ctx.setBoolFields(st.Assign.Name, boolFields(val))
 		return []Stmt{&LetStmt{Name: alias, Expr: val}}, nil
 	case st.Assign != nil && len(st.Assign.Index) == 1 && len(st.Assign.Field) == 0:
 		idx, err := convertExpr(st.Assign.Index[0].Start, env, ctx)
@@ -1401,6 +1526,7 @@ func convertStmt(st *parser.Statement, env *types.Env, ctx *context) ([]Stmt, er
 			return nil, err
 		}
 		loopCtx.setStrFields(st.For.Name, stringFields(src))
+		loopCtx.setBoolFields(st.For.Name, boolFields(src))
 		kind := "list"
 		if isMapExpr(src, env, ctx) {
 			kind = "map"
@@ -1972,6 +2098,7 @@ func convertQueryExpr(q *parser.QueryExpr, env *types.Env, ctx *context) (Expr, 
 	}
 	alias := loopCtx.newAlias(q.Var)
 	loopCtx.setStrFields(q.Var, stringFields(src))
+	loopCtx.setBoolFields(q.Var, boolFields(src))
 	child := types.NewEnv(env)
 	child.SetVar(q.Var, types.AnyType{}, true)
 	froms := []queryFrom{}
@@ -1986,6 +2113,7 @@ func convertQueryExpr(q *parser.QueryExpr, env *types.Env, ctx *context) (Expr, 
 		}
 		ralias := loopCtx.newAlias(j.Var)
 		loopCtx.setStrFields(j.Var, stringFields(js))
+		loopCtx.setBoolFields(j.Var, boolFields(js))
 		child.SetVar(j.Var, types.AnyType{}, true)
 		onExpr, err := convertExpr(j.On, child, loopCtx)
 		if err != nil {
@@ -2002,6 +2130,7 @@ func convertQueryExpr(q *parser.QueryExpr, env *types.Env, ctx *context) (Expr, 
 		}
 		av := loopCtx.newAlias(f.Var)
 		loopCtx.setStrFields(f.Var, stringFields(fe))
+		loopCtx.setBoolFields(f.Var, boolFields(fe))
 		child.SetVar(f.Var, types.AnyType{}, true)
 		froms = append(froms, queryFrom{Var: av, Src: fe})
 	}
@@ -2015,6 +2144,7 @@ func convertQueryExpr(q *parser.QueryExpr, env *types.Env, ctx *context) (Expr, 
 		}
 		jv := loopCtx.newAlias(j.Var)
 		loopCtx.setStrFields(j.Var, stringFields(je))
+		loopCtx.setBoolFields(j.Var, boolFields(je))
 		child.SetVar(j.Var, types.AnyType{}, true)
 		froms = append(froms, queryFrom{Var: jv, Src: je})
 		jc, err := convertExpr(j.On, child, loopCtx)
@@ -2067,7 +2197,7 @@ func convertQueryExpr(q *parser.QueryExpr, env *types.Env, ctx *context) (Expr, 
 }
 
 func convertGroupQuery(q *parser.QueryExpr, env *types.Env, ctx *context) (Expr, error) {
-	if len(q.Group.Exprs) != 1 || len(q.Froms) > 0 || len(q.Joins) > 0 || q.Where != nil || q.Group.Having != nil || q.Sort != nil || q.Distinct || q.Skip != nil || q.Take != nil {
+	if len(q.Group.Exprs) != 1 || len(q.Froms) > 0 || len(q.Joins) > 0 || q.Where != nil || q.Group.Having != nil || q.Distinct || q.Skip != nil || q.Take != nil {
 		return nil, fmt.Errorf("unsupported group query")
 	}
 	src, err := convertExpr(q.Source, env, ctx)
@@ -2105,11 +2235,21 @@ func convertGroupQuery(q *parser.QueryExpr, env *types.Env, ctx *context) (Expr,
 		return nil, err
 	}
 	selExpr = replaceGroupExpr(selExpr, "G", keyVar, itemsVar)
+	ctx.setGroup(q.Group.Name, keyVar, itemsVar)
 
 	keyLet := &LetStmt{Name: keyVar, Expr: &CallExpr{Func: "element", Args: []Expr{&IntLit{Value: 1}, &NameRef{Name: pair}}}}
 	itemsLet := &LetStmt{Name: itemsVar, Expr: &CallExpr{Func: "element", Args: []Expr{&IntLit{Value: 2}, &NameRef{Name: pair}}}}
+	ctx.setStrFields(itemsVar, stringFields(src))
+	ctx.setBoolFields(itemsVar, boolFields(src))
 	mapFun := &AnonFunc{Params: []string{pair}, Body: []Stmt{keyLet, itemsLet}, Return: selExpr}
 	toList := &CallExpr{Func: "maps:to_list", Args: []Expr{groupsMap}}
+	if q.Sort != nil {
+		if isGroupKeyExpr(q.Sort, q.Group.Name) {
+			toList = &CallExpr{Func: "lists:keysort", Args: []Expr{&IntLit{Value: 1}, toList}}
+		} else {
+			return nil, fmt.Errorf("unsupported group sort")
+		}
+	}
 	return &CallExpr{Func: "lists:map", Args: []Expr{mapFun, toList}}, nil
 }
 

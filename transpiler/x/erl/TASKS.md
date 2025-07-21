@@ -1,3 +1,11 @@
+## Progress (2025-07-21 13:23 +0700)
+- erl transpiler: update tasks
+- Regenerated golden files - 77/100 vm valid programs passing
+
+## Progress (2025-07-21 13:19 +0700)
+- kt transpiler: improve map indexing and printing
+- Regenerated golden files - 76/100 vm valid programs passing
+
 ## Progress (2025-07-21 12:53 +0700)
 - pl transpiler: basic map and query support
 - Regenerated golden files - 76/100 vm valid programs passing
