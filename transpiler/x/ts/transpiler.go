@@ -2272,7 +2272,8 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 			if len(args) != 1 {
 				return nil, fmt.Errorf("json expects one argument")
 			}
-			return &CallExpr{Func: "console.log", Args: []Expr{&CallExpr{Func: "JSON.stringify", Args: args}}}, nil
+			pretty := &CallExpr{Func: "JSON.stringify", Args: []Expr{args[0], &NullLit{}, &NumberLit{Value: "2"}}}
+			return &CallExpr{Func: "console.log", Args: []Expr{pretty}}, nil
 		case "str":
 			if len(args) != 1 {
 				return nil, fmt.Errorf("str expects one argument")
