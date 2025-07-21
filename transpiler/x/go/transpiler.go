@@ -375,7 +375,13 @@ func updateMapLitTypes(ml *MapLit, t types.Type) {
 	switch mt := t.(type) {
 	case types.MapType:
 		ml.KeyType = toGoTypeFromType(mt.Key)
+		if ml.KeyType == "" {
+			ml.KeyType = "any"
+		}
 		ml.ValueType = toGoTypeFromType(mt.Value)
+		if ml.ValueType == "" {
+			ml.ValueType = "any"
+		}
 		for _, v := range ml.Values {
 			if inner, ok := v.(*MapLit); ok {
 				updateMapLitTypes(inner, mt.Value)
@@ -1056,12 +1062,6 @@ func (g *GroupJoinQueryExpr) emit(w io.Writer) {
 	fmt.Fprintf(w, "for _, %s := range ", g.Var)
 	g.Src.emit(w)
 	fmt.Fprint(w, " {")
-	fmt.Fprint(w, "\n    k := fmt.Sprint(")
-	g.Key.emit(w)
-	fmt.Fprint(w, ")\n")
-	fmt.Fprintf(w, "    grp, ok := groups[k]\n    if !ok {\n        grp = struct{Key %s; Items []%s}{Key: ", g.KeyType, g.ItemType)
-	g.Key.emit(w)
-	fmt.Fprintf(w, ", Items: []%s{}}\n        groups[k] = grp\n        order = append(order, k)\n    }\n", g.ItemType)
 	if len(g.Joins) == 1 && g.Joins[0].Side == "left" && len(g.Froms) == 0 {
 		fmt.Fprint(w, "    matched := false\n")
 	}
@@ -1090,6 +1090,12 @@ func (g *GroupJoinQueryExpr) emit(w io.Writer) {
 		g.Where.emit(w)
 		fmt.Fprint(w, " {")
 	}
+	fmt.Fprint(w, " k := fmt.Sprint(")
+	g.Key.emit(w)
+	fmt.Fprint(w, ")\n")
+	fmt.Fprintf(w, "    grp, ok := groups[k]\n    if !ok {\n        grp = struct{Key %s; Items []%s}{Key: ", g.KeyType, g.ItemType)
+	g.Key.emit(w)
+	fmt.Fprintf(w, ", Items: []%s{}}\n        groups[k] = grp\n        order = append(order, k)\n    }\n", g.ItemType)
 	if g.SimpleItem {
 		fmt.Fprintf(w, "grp.Items = append(grp.Items, %s)\n", g.Vars[0])
 		fmt.Fprint(w, "groups[k] = grp")
@@ -1682,6 +1688,30 @@ func compileQueryExpr(q *parser.QueryExpr, env *types.Env, base string) (Expr, e
 		if err != nil {
 			return nil, err
 		}
+		keyType := types.ExprType(q.Group.Exprs[0], child)
+		if ml := mapLiteral(q.Group.Exprs[0]); ml != nil {
+			if st, ok := types.InferStructFromMapEnv(ml, child); ok {
+				structCount++
+				name := types.UniqueStructName("GroupKey", topEnv, nil)
+				st.Name = name
+				if topEnv != nil {
+					topEnv.SetStruct(name, st)
+				}
+				fieldsDecl := make([]ParamDecl, len(st.Order))
+				vals := make([]Expr, len(st.Order))
+				for i, it := range ml.Items {
+					fieldsDecl[i] = ParamDecl{Name: st.Order[i], Type: toGoTypeFromType(st.Fields[st.Order[i]])}
+					v, err := compileExpr(it.Value, child, "")
+					if err != nil {
+						return nil, err
+					}
+					vals[i] = v
+				}
+				extraDecls = append(extraDecls, &TypeDeclStmt{Name: name, Fields: fieldsDecl})
+				keyExpr = &StructLit{Name: name, Fields: vals, Names: st.Order}
+				keyType = types.StructType{Name: name, Fields: st.Fields, Order: st.Order}
+			}
+		}
 		var where Expr
 		if q.Where != nil {
 			where, err = compileExpr(q.Where, child, "")
@@ -1697,7 +1727,6 @@ func compileQueryExpr(q *parser.QueryExpr, env *types.Env, base string) (Expr, e
 			if itemName == "" {
 				itemName = "any"
 			}
-			keyType := types.ExprType(q.Group.Exprs[0], child)
 			genv.SetVar(q.Group.Name, types.GroupType{Key: keyType, Elem: elemT}, true)
 		} else {
 			fieldTypes := make(map[string]types.Type, len(varNames))
@@ -1763,7 +1792,7 @@ func compileQueryExpr(q *parser.QueryExpr, env *types.Env, base string) (Expr, e
 			et = "any"
 		}
 		usesPrint = true
-		keyGoType := toGoTypeFromType(types.ExprType(q.Group.Exprs[0], child))
+		keyGoType := toGoTypeFromType(keyType)
 		if keyGoType == "" {
 			keyGoType = "any"
 		}
@@ -2587,7 +2616,15 @@ func compilePrimary(p *parser.Primary, env *types.Env, base string) (Expr, error
 			vals[i] = ve
 		}
 		mt, _ := types.TypeOfPrimaryBasic(p, env).(types.MapType)
-		return &MapLit{KeyType: toGoTypeFromType(mt.Key), ValueType: toGoTypeFromType(mt.Value), Keys: keys, Values: vals}, nil
+		keyT := toGoTypeFromType(mt.Key)
+		if keyT == "" {
+			keyT = "any"
+		}
+		valT := toGoTypeFromType(mt.Value)
+		if valT == "" {
+			valT = "any"
+		}
+		return &MapLit{KeyType: keyT, ValueType: valT, Keys: keys, Values: vals}, nil
 	case p.Struct != nil:
 		st, ok := env.GetStruct(p.Struct.Name)
 		if !ok {
