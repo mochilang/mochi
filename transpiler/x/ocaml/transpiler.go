@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"io"
 	"os/exec"
+	"strconv"
 	"strings"
 	"time"
 
@@ -470,24 +471,42 @@ func (s *SubstringBuiltin) emit(w io.Writer) {
 func (s *SubstringBuiltin) emitPrint(w io.Writer) { s.emit(w) }
 
 // SumBuiltin represents sum(list).
-type SumBuiltin struct{ List Expr }
+type SumBuiltin struct {
+	List     Expr
+	ElemType string
+}
 
 func (s *SumBuiltin) emit(w io.Writer) {
-	io.WriteString(w, "(List.fold_left (fun acc x -> acc + x) 0 ")
+	if s.ElemType == "float" {
+		io.WriteString(w, "(List.fold_left (fun acc x -> acc +. x) 0.0 ")
+	} else {
+		io.WriteString(w, "(List.fold_left (fun acc x -> acc + x) 0 ")
+	}
 	s.List.emit(w)
 	io.WriteString(w, ")")
 }
 
 func (s *SumBuiltin) emitPrint(w io.Writer) {
-	io.WriteString(w, "string_of_int ")
+	if s.ElemType == "float" {
+		io.WriteString(w, "string_of_float ")
+	} else {
+		io.WriteString(w, "string_of_int ")
+	}
 	s.emit(w)
 }
 
 // AvgBuiltin represents avg(list).
-type AvgBuiltin struct{ List Expr }
+type AvgBuiltin struct {
+	List     Expr
+	ElemType string
+}
 
 func (a *AvgBuiltin) emit(w io.Writer) {
-	io.WriteString(w, "((List.fold_left (fun acc x -> acc + x) 0 ")
+	if a.ElemType == "float" {
+		io.WriteString(w, "((List.fold_left (fun acc x -> acc +. x) 0.0 ")
+	} else {
+		io.WriteString(w, "((List.fold_left (fun acc x -> acc + x) 0 ")
+	}
 	a.List.emit(w)
 	io.WriteString(w, ") / List.length ")
 	a.List.emit(w)
@@ -495,7 +514,11 @@ func (a *AvgBuiltin) emit(w io.Writer) {
 }
 
 func (a *AvgBuiltin) emitPrint(w io.Writer) {
-	io.WriteString(w, "string_of_int ")
+	if a.ElemType == "float" {
+		io.WriteString(w, "string_of_float ")
+	} else {
+		io.WriteString(w, "string_of_int ")
+	}
 	a.emit(w)
 }
 
@@ -1194,6 +1217,20 @@ type IntLit struct{ Value int }
 func (i *IntLit) emit(w io.Writer)      { fmt.Fprintf(w, "%d", i.Value) }
 func (i *IntLit) emitPrint(w io.Writer) { fmt.Fprintf(w, "string_of_int %d", i.Value) }
 
+// FloatLit represents a floating point literal.
+type FloatLit struct{ Value float64 }
+
+func formatFloat(v float64) string {
+	s := strconv.FormatFloat(v, 'f', -1, 64)
+	if !strings.ContainsAny(s, ".eE") {
+		s += ".0"
+	}
+	return s
+}
+
+func (f *FloatLit) emit(w io.Writer)      { io.WriteString(w, formatFloat(f.Value)) }
+func (f *FloatLit) emitPrint(w io.Writer) { io.WriteString(w, "string_of_float "+formatFloat(f.Value)) }
+
 // BoolLit represents a boolean literal.
 type BoolLit struct{ Value bool }
 
@@ -1227,6 +1264,17 @@ func (b *BinaryExpr) emit(w io.Writer) {
 	}
 	if b.Op == "+" && b.Typ == "string" {
 		op = "^"
+	} else if b.Typ == "float" {
+		switch b.Op {
+		case "+":
+			op = "+."
+		case "-":
+			op = "-."
+		case "*":
+			op = "*."
+		case "/":
+			op = "/."
+		}
 	}
 	fmt.Fprintf(w, "(")
 	b.Left.emit(w)
@@ -1241,6 +1289,9 @@ func (b *BinaryExpr) emitPrint(w io.Writer) {
 		io.WriteString(w, "string_of_bool ")
 		b.emit(w)
 	case "string":
+		b.emit(w)
+	case "float":
+		io.WriteString(w, "string_of_float ")
 		b.emit(w)
 	default:
 		io.WriteString(w, "string_of_int ")
@@ -1272,6 +1323,8 @@ func defaultValueExpr(typ string) Expr {
 		return &BoolLit{Value: false}
 	case "string":
 		return &StringLit{Value: ""}
+	case "float":
+		return &FloatLit{Value: 0}
 	case "list":
 		return &ListLit{Elems: nil}
 	case "map":
@@ -1669,6 +1722,8 @@ func convertBinary(b *parser.BinaryExpr, env *types.Env, vars map[string]VarInfo
 		case "+", "-", "*", "/", "%":
 			if op == "+" && ltyp == "string" && rtyp == "string" {
 				resTyp = "string"
+			} else if ltyp == "float" || rtyp == "float" {
+				resTyp = "float"
 			} else {
 				resTyp = "int"
 			}
@@ -1715,10 +1770,10 @@ func convertUnary(u *parser.Unary, env *types.Env, vars map[string]VarInfo) (Exp
 			if err != nil {
 				return nil, "", err
 			}
-			if typ != "int" {
-				return nil, "", fmt.Errorf("unary - only for ints")
+			if typ != "int" && typ != "float" {
+				return nil, "", fmt.Errorf("unary - only for numeric")
 			}
-			return &UnaryMinus{Expr: expr}, "int", nil
+			return &UnaryMinus{Expr: expr}, typ, nil
 		}
 		return nil, "", fmt.Errorf("unary ops not supported")
 	}
@@ -1959,6 +2014,9 @@ func convertLiteral(l *parser.Literal) (Expr, string, error) {
 	if l.Int != nil {
 		return &IntLit{Value: int(*l.Int)}, "int", nil
 	}
+	if l.Float != nil {
+		return &FloatLit{Value: *l.Float}, "float", nil
+	}
 	if l.Bool != nil {
 		return &BoolLit{Value: bool(*l.Bool)}, "bool", nil
 	}
@@ -2136,7 +2194,8 @@ func convertQueryExpr(q *parser.QueryExpr, env *types.Env, vars map[string]VarIn
 		for k, v := range qVars {
 			gVars[k] = v
 		}
-		gVars[q.Group.Name] = VarInfo{typ: "list", group: true}
+		elemTyp := qVars[q.Var].typ
+		gVars[q.Group.Name] = VarInfo{typ: "list-" + elemTyp, group: true}
 		gVars[q.Group.Name+"Key"] = VarInfo{typ: "string"}
 		var havingExpr Expr
 		if q.Group.Having != nil {
@@ -2266,7 +2325,15 @@ func convertCall(c *parser.CallExpr, env *types.Env, vars map[string]VarInfo) (E
 		if !strings.HasPrefix(typ, "list") {
 			return nil, "", fmt.Errorf("sum expects list")
 		}
-		return &SumBuiltin{List: listArg}, "int", nil
+		elemTyp := "int"
+		if strings.HasPrefix(typ, "list-") {
+			elemTyp = strings.TrimPrefix(typ, "list-")
+		}
+		retTyp := "int"
+		if elemTyp == "float" {
+			retTyp = "float"
+		}
+		return &SumBuiltin{List: listArg, ElemType: elemTyp}, retTyp, nil
 	}
 	if c.Func == "count" && len(c.Args) == 1 {
 		listArg, typ, err := convertExpr(c.Args[0], env, vars)
@@ -2286,7 +2353,15 @@ func convertCall(c *parser.CallExpr, env *types.Env, vars map[string]VarInfo) (E
 		if !strings.HasPrefix(typ, "list") {
 			return nil, "", fmt.Errorf("avg expects list")
 		}
-		return &AvgBuiltin{List: listArg}, "int", nil
+		elemTyp := "int"
+		if strings.HasPrefix(typ, "list-") {
+			elemTyp = strings.TrimPrefix(typ, "list-")
+		}
+		retTyp := "int"
+		if elemTyp == "float" {
+			retTyp = "float"
+		}
+		return &AvgBuiltin{List: listArg, ElemType: elemTyp}, retTyp, nil
 	}
 	if c.Func == "min" && len(c.Args) == 1 {
 		listArg, typ, err := convertExpr(c.Args[0], env, vars)
