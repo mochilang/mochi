@@ -2340,6 +2340,9 @@ func convertQueryExpr(q *parser.QueryExpr, env *types.Env, ctx *context) (Expr, 
 		if err != nil {
 			return nil, err
 		}
+		if !isBoolExpr(w) {
+			w = &BinaryExpr{Left: w, Op: "/=", Right: &AtomLit{Name: "nil"}}
+		}
 		if cond == nil {
 			cond = w
 		} else {
@@ -2405,9 +2408,137 @@ func convertLeftJoinQuery(q *parser.QueryExpr, env *types.Env, ctx *context) (Ex
 	return &LeftJoinExpr{LeftVar: leftVar, LeftSrc: leftSrc, RightVar: rightVar, RightSrc: rightSrc, On: cond, Select: sel}, nil
 }
 
+func convertGroupLeftJoinQuery(q *parser.QueryExpr, env *types.Env, ctx *context) (Expr, error) {
+	j := q.Joins[0]
+	loopCtx := ctx.clone()
+	leftSrc, err := convertExpr(q.Source, env, ctx)
+	if err != nil {
+		return nil, err
+	}
+	leftVar := loopCtx.newAlias(q.Var)
+	loopCtx.setStrFields(q.Var, stringFields(leftSrc))
+	loopCtx.setBoolFields(q.Var, boolFields(leftSrc))
+	rightSrc, err := convertExpr(j.Src, env, ctx)
+	if err != nil {
+		return nil, err
+	}
+	rightVar := loopCtx.newAlias(j.Var)
+	loopCtx.setStrFields(j.Var, stringFields(rightSrc))
+	loopCtx.setBoolFields(j.Var, boolFields(rightSrc))
+	child := types.NewEnv(env)
+	child.SetVar(q.Var, types.AnyType{}, true)
+	child.SetVar(j.Var, types.AnyType{}, true)
+	cond, err := convertExpr(j.On, child, loopCtx)
+	if err != nil {
+		return nil, err
+	}
+	keyExpr, err := convertExpr(q.Group.Exprs[0], child, loopCtx)
+	if err != nil {
+		return nil, err
+	}
+	vars := []struct{ name, alias string }{
+		{q.Var, leftVar},
+		{j.Var, rightVar},
+	}
+	items := []MapItem{
+		{Key: &StringLit{Value: q.Var}, Value: &NameRef{Name: leftVar}},
+		{Key: &StringLit{Value: j.Var}, Value: &NameRef{Name: rightVar}},
+	}
+	itemExpr := Expr(&MapLit{Items: items})
+	pairSelect := &TupleExpr{A: keyExpr, B: itemExpr}
+	pairQuery := &LeftJoinExpr{LeftVar: leftVar, LeftSrc: leftSrc, RightVar: rightVar, RightSrc: rightSrc, On: cond, Select: pairSelect}
+
+	pairKV := "P"
+	kLet := &LetStmt{Name: "K", Expr: &CallExpr{Func: "element", Args: []Expr{&IntLit{Value: 1}, &NameRef{Name: pairKV}}}}
+	vLet := &LetStmt{Name: "V", Expr: &CallExpr{Func: "element", Args: []Expr{&IntLit{Value: 2}, &NameRef{Name: pairKV}}}}
+	getItems := &CallExpr{Func: "maps:get", Args: []Expr{&NameRef{Name: "K"}, &NameRef{Name: "Acc"}, &ListLit{}}}
+	appendItem := &BinaryExpr{Left: getItems, Op: "++", Right: &ListLit{Elems: []Expr{&NameRef{Name: "V"}}}}
+	putCall := &CallExpr{Func: "maps:put", Args: []Expr{&NameRef{Name: "K"}, appendItem, &NameRef{Name: "Acc"}}}
+	foldFun := &AnonFunc{Params: []string{pairKV, "Acc"}, Body: []Stmt{kLet, vLet}, Return: putCall}
+	groupsMap := &CallExpr{Func: "lists:foldl", Args: []Expr{foldFun, &MapLit{}, pairQuery}}
+
+	pair := "P"
+	keyVar := ctx.newAlias("key")
+	itemsVar := ctx.newAlias("items")
+	mapCtx := ctx.clone()
+	selEnv := types.NewEnv(env)
+	selEnv.SetVar(q.Group.Name, types.AnyType{}, true)
+	mapCtx.alias[q.Group.Name] = "G"
+	mapCtx.orig["G"] = q.Group.Name
+	selExpr, err := convertExpr(q.Select, selEnv, mapCtx)
+	if err != nil {
+		return nil, err
+	}
+	selExpr = replaceGroupExpr(selExpr, "G", keyVar, itemsVar)
+	ctx.setGroup(q.Group.Name, keyVar, itemsVar)
+
+	keyLet := &LetStmt{Name: keyVar, Expr: &CallExpr{Func: "element", Args: []Expr{&IntLit{Value: 1}, &NameRef{Name: pair}}}}
+	itemsLet := &LetStmt{Name: itemsVar, Expr: &CallExpr{Func: "element", Args: []Expr{&IntLit{Value: 2}, &NameRef{Name: pair}}}}
+
+	strUnion := map[string]bool{}
+	boolUnion := map[string]bool{}
+	for _, v := range vars {
+		if m, ok := loopCtx.strField[v.name]; ok {
+			for k, b := range m {
+				if b {
+					strUnion[k] = true
+				}
+			}
+		}
+		if m, ok := loopCtx.boolField[v.name]; ok {
+			for k, b := range m {
+				if b {
+					boolUnion[k] = true
+				}
+			}
+		}
+	}
+	ctx.setStrFields(itemsVar, strUnion)
+	ctx.setBoolFields(itemsVar, boolUnion)
+	mapFun := &AnonFunc{Params: []string{pair}, Body: []Stmt{keyLet, itemsLet}, Return: selExpr}
+	toList := &CallExpr{Func: "maps:to_list", Args: []Expr{groupsMap}}
+	if q.Group.Having != nil {
+		haveEnv := types.NewEnv(env)
+		haveEnv.SetVar(q.Group.Name, types.AnyType{}, true)
+		haveCtx := ctx.clone()
+		haveCtx.alias[q.Group.Name] = "G"
+		haveCtx.orig["G"] = q.Group.Name
+		haveExpr, err := convertExpr(q.Group.Having, haveEnv, haveCtx)
+		if err != nil {
+			return nil, err
+		}
+		haveExpr = replaceGroupExpr(haveExpr, "G", keyVar, itemsVar)
+		filterFun := &AnonFunc{Params: []string{pair}, Body: []Stmt{keyLet, itemsLet}, Return: haveExpr}
+		toList = &CallExpr{Func: "lists:filter", Args: []Expr{filterFun, toList}}
+	}
+	var result Expr = &CallExpr{Func: "lists:map", Args: []Expr{mapFun, toList}}
+	if q.Sort != nil {
+		sortEnv := types.NewEnv(env)
+		sortEnv.SetVar(q.Group.Name, types.AnyType{}, true)
+		sortCtx := ctx.clone()
+		sortCtx.alias[q.Group.Name] = "G"
+		sortCtx.orig["G"] = q.Group.Name
+		sortExpr, err := convertExpr(q.Sort, sortEnv, sortCtx)
+		if err != nil {
+			return nil, err
+		}
+		sortExpr = replaceGroupExpr(sortExpr, "G", keyVar, itemsVar)
+		sortMapFun := &AnonFunc{Params: []string{pair}, Body: []Stmt{keyLet, itemsLet}, Return: &TupleExpr{A: sortExpr, B: selExpr}}
+		mapped := &CallExpr{Func: "lists:map", Args: []Expr{sortMapFun, toList}}
+		sortFun := &AnonFunc{Params: []string{"A", "B"}, Return: &BinaryExpr{Left: &CallExpr{Func: "element", Args: []Expr{&IntLit{Value: 1}, &NameRef{Name: "A"}}}, Op: "<=", Right: &CallExpr{Func: "element", Args: []Expr{&IntLit{Value: 1}, &NameRef{Name: "B"}}}}}
+		sorted := &CallExpr{Func: "lists:sort", Args: []Expr{sortFun, mapped}}
+		result = &CallExpr{Func: "lists:map", Args: []Expr{&AnonFunc{Params: []string{"T"}, Return: &CallExpr{Func: "element", Args: []Expr{&IntLit{Value: 2}, &NameRef{Name: "T"}}}}, sorted}}
+	}
+	return result, nil
+}
+
 func convertGroupQuery(q *parser.QueryExpr, env *types.Env, ctx *context) (Expr, error) {
 	if len(q.Group.Exprs) != 1 || q.Distinct || q.Skip != nil || q.Take != nil {
 		return nil, fmt.Errorf("unsupported group query")
+	}
+
+	if len(q.Joins) == 1 && q.Joins[0].Side != nil && *q.Joins[0].Side == "left" && len(q.Froms) == 0 {
+		return convertGroupLeftJoinQuery(q, env, ctx)
 	}
 
 	loopCtx := ctx.clone()
