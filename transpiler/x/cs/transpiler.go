@@ -60,6 +60,7 @@ var stringVars map[string]bool
 var mapVars map[string]bool
 var varTypes map[string]string
 var structTypes map[string]types.StructType
+var funRets map[string]string
 var usesDict bool
 var usesLinq bool
 var usesJson bool
@@ -744,6 +745,19 @@ func isMapExpr(e Expr) bool {
 	return false
 }
 
+func isStructExpr(e Expr) bool {
+	switch ex := e.(type) {
+	case *StructLit:
+		return true
+	case *VarRef:
+		if t, ok := varTypes[ex.Name]; ok {
+			_, ok2 := structTypes[t]
+			return ok2
+		}
+	}
+	return false
+}
+
 // usesVar reports whether expression e references variable name.
 func usesVar(e Expr, name string) bool {
 	switch ex := e.(type) {
@@ -945,6 +959,7 @@ func inferStructMap(varName string, prog *Program, m *MapLit) (Expr, bool) {
 	}
 	structTypes[sname] = types.StructType{Name: sname, Fields: typeFields, Order: keys}
 	varTypes[varName] = sname
+	delete(mapVars, varName)
 	return &StructLit{Name: sname, Fields: vals}, true
 }
 
@@ -994,6 +1009,7 @@ func inferStructList(varName string, prog *Program, l *ListLit) (Expr, bool) {
 	}
 	structTypes[sname] = types.StructType{Name: sname, Fields: typeFields, Order: keys}
 	varTypes[varName] = fmt.Sprintf("%s[]", sname)
+	delete(mapVars, varName)
 	newElems := make([]Expr, len(l.Elems))
 	for i, e := range l.Elems {
 		m := e.(*MapLit)
@@ -1131,6 +1147,10 @@ func typeOfExpr(e Expr) string {
 	case *VarRef:
 		if t, ok := varTypes[ex.Name]; ok {
 			return t
+		}
+	case *CallExpr:
+		if ret, ok := funRets[ex.Func]; ok {
+			return ret
 		}
 	case *MethodCallExpr:
 		switch ex.Name {
@@ -1413,6 +1433,7 @@ func Transpile(p *parser.Program, env *types.Env) (*Program, error) {
 	mapVars = make(map[string]bool)
 	varTypes = make(map[string]string)
 	structTypes = env.Structs()
+	funRets = make(map[string]string)
 	usesDict = false
 	usesLinq = false
 	usesJson = false
@@ -1538,6 +1559,16 @@ func compilePostfix(p *parser.PostfixExpr) (Expr, error) {
 			idx, err := compileExpr(op.Index.Start)
 			if err != nil {
 				return nil, err
+			}
+			if lit, ok := idx.(*StringLit); ok && isStructExpr(expr) {
+				if t := typeOfExpr(expr); t != "" {
+					if st, ok2 := structTypes[t]; ok2 {
+						if _, ok3 := st.Fields[lit.Value]; ok3 {
+							expr = &FieldExpr{Target: expr, Name: lit.Value}
+							continue
+						}
+					}
+				}
 			}
 			expr = &IndexExpr{Target: expr, Index: idx}
 		case op.Index != nil && op.Index.Colon != nil && op.Index.Colon2 == nil && op.Index.Step == nil:
@@ -1681,14 +1712,10 @@ func compileStmt(prog *Program, s *parser.Statement) (Stmt, error) {
 			varTypes[s.Var.Name] = csType(s.Var.Type)
 		}
 		if list, ok := val.(*ListLit); ok {
-			if res, changed := inferStructList(s.Var.Name, prog, list); changed {
-				val = res
-			}
+			_ = list // do not convert mutable vars to structs
 		}
 		if mp, ok := val.(*MapLit); ok {
-			if res, changed := inferStructMap(s.Var.Name, prog, mp); changed {
-				val = res
-			}
+			_ = mp // keep as dictionary for mutable vars
 		}
 		if isStringExpr(val) {
 			stringVars[s.Var.Name] = true
@@ -1792,6 +1819,7 @@ func compileStmt(prog *Program, s *parser.Statement) (Stmt, error) {
 		}
 		varTypes[s.Fun.Name] = fmt.Sprintf("fn/%d", len(ptypes))
 		retType := csType(s.Fun.Return)
+		funRets[s.Fun.Name] = retType
 		if s.Fun.Return == nil {
 			retType = ""
 		}
@@ -2352,8 +2380,36 @@ func compileQueryExpr(q *parser.QueryExpr) (Expr, error) {
 			}
 		}
 		elemType := varTypes[curVar]
+		groupExprStr := curVar
+		if len(q.Joins) > 0 {
+			jStruct := toStructName(q.Group.Name + "Row")
+			names := []string{curVar}
+			for _, j := range q.Joins {
+				names = append(names, j.Var)
+			}
+			fields := make([]StructFieldValue, len(names))
+			typeFields := make(map[string]types.Type)
+			sf := make([]StructField, len(names))
+			for i, n := range names {
+				fields[i] = StructFieldValue{Name: n, Value: &VarRef{Name: n}}
+				if t, ok := varTypes[n]; ok {
+					typeFields[n] = simpleType(t)
+					sf[i] = StructField{Name: n, Type: t}
+				} else {
+					typeFields[n] = types.AnyType{}
+					sf[i] = StructField{Name: n, Type: "object"}
+				}
+			}
+			structTypes[jStruct] = types.StructType{Name: jStruct, Fields: typeFields, Order: names}
+			if currentProg != nil {
+				currentProg.Structs = append(currentProg.Structs, StructDecl{Name: jStruct, Fields: sf})
+			}
+			joinLit := &StructLit{Name: jStruct, Fields: fields}
+			groupExprStr = exprString(joinLit)
+			elemType = jStruct
+		}
 		tmp := q.Group.Name + "Tmp"
-		fmt.Fprintf(builder, " group %s by %s into %s", curVar, exprString(keyExpr), tmp)
+		fmt.Fprintf(builder, " group %s by %s into %s", groupExprStr, exprString(keyExpr), tmp)
 		gStruct := toStructName(q.Group.Name) + "Group"
 		keyT := simpleType(typeOfExpr(keyExpr))
 		if sl, ok := keyExpr.(*StructLit); ok {
