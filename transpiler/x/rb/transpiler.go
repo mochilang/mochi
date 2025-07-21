@@ -93,20 +93,20 @@ func (r *RightJoinExpr) emit(e *emitter) {
 	io.WriteString(e.w, "_res = []")
 	e.nl()
 	e.writeIndent()
-	io.WriteString(e.w, "for ")
-	io.WriteString(e.w, r.RightVar)
-	io.WriteString(e.w, " in ")
 	r.RightSrc.emit(e)
+	io.WriteString(e.w, ".each do |")
+	io.WriteString(e.w, r.RightVar)
+	io.WriteString(e.w, "|")
 	e.nl()
 	e.indent++
 	e.writeIndent()
 	io.WriteString(e.w, "matched = false")
 	e.nl()
 	e.writeIndent()
-	io.WriteString(e.w, "for ")
-	io.WriteString(e.w, r.LeftVar)
-	io.WriteString(e.w, " in ")
 	r.LeftSrc.emit(e)
+	io.WriteString(e.w, ".each do |")
+	io.WriteString(e.w, r.LeftVar)
+	io.WriteString(e.w, "|")
 	e.nl()
 	e.indent++
 	e.writeIndent()
@@ -186,27 +186,27 @@ func (q *QueryExpr) emit(e *emitter) {
 	io.WriteString(e.w, "_res = []")
 	e.nl()
 	e.writeIndent()
-	io.WriteString(e.w, "for ")
-	io.WriteString(e.w, q.Var)
-	io.WriteString(e.w, " in ")
 	q.Src.emit(e)
+	io.WriteString(e.w, ".each do |")
+	io.WriteString(e.w, q.Var)
+	io.WriteString(e.w, "|")
 	e.nl()
 	e.indent++
 	for _, f := range q.Froms {
 		e.writeIndent()
-		io.WriteString(e.w, "for ")
-		io.WriteString(e.w, f.Var)
-		io.WriteString(e.w, " in ")
 		f.Src.emit(e)
+		io.WriteString(e.w, ".each do |")
+		io.WriteString(e.w, f.Var)
+		io.WriteString(e.w, "|")
 		e.nl()
 		e.indent++
 	}
 	for _, j := range q.Joins {
 		e.writeIndent()
-		io.WriteString(e.w, "for ")
-		io.WriteString(e.w, j.Var)
-		io.WriteString(e.w, " in ")
 		j.Src.emit(e)
+		io.WriteString(e.w, ".each do |")
+		io.WriteString(e.w, j.Var)
+		io.WriteString(e.w, "|")
 		e.nl()
 		e.indent++
 		if j.On != nil {
@@ -301,10 +301,10 @@ func (gq *GroupQueryExpr) emit(e *emitter) {
 	io.WriteString(e.w, "groups = {}")
 	e.nl()
 	e.writeIndent()
-	io.WriteString(e.w, "for ")
-	io.WriteString(e.w, gq.Var)
-	io.WriteString(e.w, " in ")
 	gq.Src.emit(e)
+	io.WriteString(e.w, ".each do |")
+	io.WriteString(e.w, gq.Var)
+	io.WriteString(e.w, "|")
 	e.nl()
 	e.indent++
 	e.writeIndent()
@@ -331,7 +331,7 @@ func (gq *GroupQueryExpr) emit(e *emitter) {
 	e.indent++
 	e.writeIndent()
 	io.WriteString(e.w, gq.GroupVar)
-	io.WriteString(e.w, " = MGroup.new(k, items)")
+	io.WriteString(e.w, " = { key: k, items: items }")
 	e.nl()
 	e.writeIndent()
 	io.WriteString(e.w, "result << ")
@@ -350,7 +350,6 @@ func (gq *GroupQueryExpr) emit(e *emitter) {
 }
 
 var needsJSON bool
-var needsGroup bool
 
 // emitter maintains the current indentation level while emitting Ruby code.
 type emitter struct {
@@ -615,13 +614,13 @@ type ForRangeStmt struct {
 }
 
 func (f *ForRangeStmt) emit(e *emitter) {
-	io.WriteString(e.w, "for ")
-	io.WriteString(e.w, f.Name)
-	io.WriteString(e.w, " in (")
+	io.WriteString(e.w, "(")
 	f.Start.emit(e)
 	io.WriteString(e.w, "...")
 	f.End.emit(e)
-	io.WriteString(e.w, ")")
+	io.WriteString(e.w, ").each do |")
+	io.WriteString(e.w, f.Name)
+	io.WriteString(e.w, "|")
 	e.nl()
 	e.indent++
 	for _, st := range f.Body {
@@ -642,10 +641,10 @@ type ForInStmt struct {
 }
 
 func (f *ForInStmt) emit(e *emitter) {
-	io.WriteString(e.w, "for ")
-	io.WriteString(e.w, f.Name)
-	io.WriteString(e.w, " in ")
 	f.Iterable.emit(e)
+	io.WriteString(e.w, ".each do |")
+	io.WriteString(e.w, f.Name)
+	io.WriteString(e.w, "|")
 	e.nl()
 	e.indent++
 	for _, st := range f.Body {
@@ -1293,12 +1292,6 @@ func Emit(w io.Writer, p *Program) error {
 			return err
 		}
 	}
-	if needsGroup {
-		constGroup := "class MGroup\n  include Enumerable\n  attr_accessor :key, :items\n  def initialize(k, it)\n    @key = k\n    @items = it\n  end\n  def each(&b); @items.each(&b); end\n  def length; @items.length; end\n  def [](name); name == 'key' ? @key : @items; end\nend\n"
-		if _, err := io.WriteString(w, constGroup); err != nil {
-			return err
-		}
-	}
 	for _, s := range p.Stmts {
 		e.writeIndent()
 		s.emit(e)
@@ -1310,7 +1303,6 @@ func Emit(w io.Writer, p *Program) error {
 // Transpile converts a Mochi program into a Ruby AST.
 func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	needsJSON = false
-	needsGroup = false
 	currentEnv = env
 	rbProg := &Program{}
 	for _, st := range prog.Statements {
@@ -2343,7 +2335,6 @@ func convertGroupQuery(q *parser.QueryExpr) (Expr, error) {
 	if err != nil {
 		return nil, err
 	}
-	needsGroup = true
 	return &GroupQueryExpr{Var: q.Var, Src: src, Key: keyExpr, GroupVar: q.Group.Name, Select: sel}, nil
 }
 
