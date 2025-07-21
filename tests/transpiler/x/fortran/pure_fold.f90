@@ -2,7 +2,7 @@ program main
   implicit none
   print '(I0)', triple(1 + 2)
 contains
-  recursive function triple(x) result(res)
+  function triple(x) result(res)
     implicit none
     integer :: res
     integer :: x

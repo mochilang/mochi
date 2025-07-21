@@ -75,7 +75,7 @@ type ContinueStmt struct{}
 
 func (f *Function) emit(w io.Writer) {
 	writeIndent(w, 2)
-	fmt.Fprintf(w, "recursive function %s(", f.Name)
+	fmt.Fprintf(w, "function %s(", f.Name)
 	for i, p := range f.Params {
 		if i > 0 {
 			fmt.Fprint(w, ", ")
@@ -1100,16 +1100,6 @@ func compileForStmt(p *Program, fs *parser.ForStmt, env *types.Env) (Stmt, error
 
 func compileFunc(fs *parser.FunStmt, env *types.Env) (*Function, error) {
 	fn := &Function{Name: fs.Name}
-	if fs.Return != nil {
-		t := types.ResolveTypeRef(fs.Return, env)
-		rt, err := mapTypeNameWithSize(t, -1)
-		if err != nil {
-			return nil, err
-		}
-		fn.Ret = rt
-	} else {
-		fn.Ret = "integer"
-	}
 	funcEnv := types.NewEnv(env)
 	for _, p := range fs.Params {
 		pt := types.ResolveTypeRef(p.Type, env)
@@ -1125,6 +1115,26 @@ func compileFunc(fs *parser.FunStmt, env *types.Env) (*Function, error) {
 		return nil, err
 	}
 	fn.Stmts = body
+
+	if fs.Return != nil {
+		t := types.ResolveTypeRef(fs.Return, env)
+		rt, err := mapTypeNameWithSize(t, -1)
+		if err != nil {
+			return nil, err
+		}
+		fn.Ret = rt
+	} else {
+		if inferred := inferReturnType(fs.Body, funcEnv); inferred != nil {
+			rt, err := mapTypeNameWithSize(inferred, -1)
+			if err != nil {
+				return nil, err
+			}
+			fn.Ret = rt
+		} else {
+			fn.Ret = "integer"
+		}
+	}
+
 	return fn, nil
 }
 
@@ -1140,6 +1150,33 @@ func compileFuncStmtList(fn *Function, list []*parser.Statement, env *types.Env)
 		}
 	}
 	return out, nil
+}
+
+func inferReturnType(list []*parser.Statement, env *types.Env) types.Type {
+	for _, st := range list {
+		if st.Return != nil && st.Return.Value != nil {
+			return types.ExprType(st.Return.Value, env)
+		}
+		if st.If != nil {
+			if t := inferReturnType(st.If.Then, env); t != nil {
+				return t
+			}
+			if t := inferReturnType(st.If.Else, env); t != nil {
+				return t
+			}
+		}
+		if st.While != nil {
+			if t := inferReturnType(st.While.Body, env); t != nil {
+				return t
+			}
+		}
+		if st.For != nil {
+			if t := inferReturnType(st.For.Body, env); t != nil {
+				return t
+			}
+		}
+	}
+	return nil
 }
 
 func compileForFuncStmt(fn *Function, fs *parser.ForStmt, env *types.Env) (Stmt, error) {
