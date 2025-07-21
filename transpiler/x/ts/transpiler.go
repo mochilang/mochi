@@ -310,6 +310,19 @@ type QueryExprJS struct {
 	ElemType string
 }
 
+// GroupQueryExpr represents a simple query with grouping support.
+type GroupQueryExpr struct {
+	Var      string
+	Source   Expr
+	Key      Expr
+	Row      Expr
+	GroupVar string
+	Cond     Expr
+	Select   Expr
+	Having   Expr
+	ElemType string
+}
+
 // AggQueryExpr represents simple aggregation queries like
 // `from x in xs where ... select sum(x)`.
 type AggQueryExpr struct {
@@ -970,6 +983,51 @@ func (q *QueryExprJS) emit(w io.Writer) {
 	q.Select.emit(iw)
 	io.WriteString(iw, ") }\n")
 	io.WriteString(iw, "  return result\n")
+	io.WriteString(iw, "})()")
+}
+
+func (gq *GroupQueryExpr) emit(w io.Writer) {
+	iw := &indentWriter{w: w, indent: "  "}
+	io.WriteString(iw, "(() => {\n")
+	io.WriteString(iw, "  const _groups: Record<string, {key: any; items: any[]}> = {}\n")
+	io.WriteString(iw, "  const _order: string[] = []\n")
+	io.WriteString(iw, "  for (const ")
+	io.WriteString(iw, gq.Var)
+	io.WriteString(iw, " of ")
+	gq.Source.emit(iw)
+	io.WriteString(iw, ") {\n")
+	if gq.Cond != nil {
+		io.WriteString(iw, "    if (!(")
+		gq.Cond.emit(iw)
+		io.WriteString(iw, ")) continue\n")
+	}
+	io.WriteString(iw, "    const _k = ")
+	gq.Key.emit(iw)
+	io.WriteString(iw, "\n    const _ks = JSON.stringify(_k)\n    let _g = _groups[_ks]\n    if (!_g) { _g = {key: _k, items: []}; _groups[_ks] = _g; _order.push(_ks) }\n    _g.items.push(")
+	gq.Row.emit(iw)
+	io.WriteString(iw, ")\n  }\n")
+	io.WriteString(iw, "  const result")
+	if gq.ElemType != "" {
+		io.WriteString(iw, ": ")
+		io.WriteString(iw, gq.ElemType)
+		io.WriteString(iw, "[]")
+	}
+	io.WriteString(iw, " = []\n")
+	io.WriteString(iw, "  for (const ks of _order) {\n    const ")
+	io.WriteString(iw, gq.GroupVar)
+	io.WriteString(iw, " = _groups[ks]\n")
+	if gq.Having != nil {
+		io.WriteString(iw, "    if (")
+		gq.Having.emit(iw)
+		io.WriteString(iw, ") {\n      result.push(")
+		gq.Select.emit(iw)
+		io.WriteString(iw, ")\n    }\n")
+	} else {
+		io.WriteString(iw, "    result.push(")
+		gq.Select.emit(iw)
+		io.WriteString(iw, ")\n")
+	}
+	io.WriteString(iw, "  }\n  return result\n")
 	io.WriteString(iw, "})()")
 }
 
@@ -1832,6 +1890,13 @@ func convertQueryExpr(q *parser.QueryExpr) (Expr, error) {
 	if err != nil {
 		return nil, err
 	}
+	if nr, ok := src.(*NameRef); ok && transpileEnv != nil {
+		if t, err := transpileEnv.GetVar(nr.Name); err == nil {
+			if _, ok2 := t.(types.GroupType); ok2 {
+				src = &IndexExpr{Target: src, Index: &StringLit{Value: "items"}}
+			}
+		}
+	}
 	loops[0].Source = src
 	for _, f := range q.Froms {
 		src, err := convertExpr(f.Src)
@@ -1884,17 +1949,56 @@ func convertQueryExpr(q *parser.QueryExpr) (Expr, error) {
 			return nil, err
 		}
 	}
+	selEnv := transpileEnv
 	sel, err := convertExpr(q.Select)
 	if err != nil {
 		return nil, err
 	}
 	elemType := ""
-	if ml := mapLiteral(q.Select); ml != nil && transpileEnv != nil {
-		if st, ok := types.InferStructFromMapEnv(ml, transpileEnv); ok {
+	if ml := mapLiteral(q.Select); ml != nil && selEnv != nil {
+		if st, ok := types.InferStructFromMapEnv(ml, selEnv); ok {
 			name := ensureNamedStruct(st, "Result")
 			st.Name = name
 			elemType = name
 		}
+	}
+
+	if q.Group != nil && len(q.Group.Exprs) == 1 && len(q.Froms) == 0 && len(q.Joins) == 0 && q.Sort == nil && q.Skip == nil && q.Take == nil {
+		key, err := convertExpr(q.Group.Exprs[0])
+		if err != nil {
+			return nil, err
+		}
+		prev := transpileEnv
+		elemT := types.ExprType(q.Source, transpileEnv)
+		if lt, ok := elemT.(types.ListType); ok {
+			elemT = lt.Elem
+		}
+		child := types.NewEnv(transpileEnv)
+		child.SetVar(q.Group.Name, types.GroupType{Key: types.AnyType{}, Elem: elemT}, true)
+		transpileEnv = child
+		sel, err = convertExpr(q.Select)
+		if err != nil {
+			transpileEnv = prev
+			return nil, err
+		}
+		var having Expr
+		if q.Group.Having != nil {
+			having, err = convertExpr(q.Group.Having)
+			if err != nil {
+				transpileEnv = prev
+				return nil, err
+			}
+		}
+		elemType = ""
+		if ml := mapLiteral(q.Select); ml != nil {
+			if st, ok := types.InferStructFromMapEnv(ml, transpileEnv); ok {
+				name := ensureNamedStruct(st, "Result")
+				st.Name = name
+				elemType = name
+			}
+		}
+		transpileEnv = prev
+		return &GroupQueryExpr{Var: q.Var, Source: src, Key: key, Row: &NameRef{Name: q.Var}, GroupVar: q.Group.Name, Cond: where, Select: sel, Having: having, ElemType: elemType}, nil
 	}
 	if q.Group == nil && q.Sort == nil && q.Skip == nil && q.Take == nil && len(loops) == 1 {
 		if s, ok := sel.(*SumExpr); ok {
@@ -3208,6 +3312,16 @@ func exprToNode(e Expr) *ast.Node {
 		if ex.Where != nil {
 			n.Children = append(n.Children, &ast.Node{Kind: "where", Children: []*ast.Node{exprToNode(ex.Where)}})
 		}
+		return n
+	case *GroupQueryExpr:
+		n := &ast.Node{Kind: "group-query"}
+		n.Children = append(n.Children, &ast.Node{Kind: "var", Value: ex.Var})
+		n.Children = append(n.Children, exprToNode(ex.Source))
+		n.Children = append(n.Children, &ast.Node{Kind: "key", Children: []*ast.Node{exprToNode(ex.Key)}})
+		if ex.Having != nil {
+			n.Children = append(n.Children, &ast.Node{Kind: "having", Children: []*ast.Node{exprToNode(ex.Having)}})
+		}
+		n.Children = append(n.Children, &ast.Node{Kind: "select", Children: []*ast.Node{exprToNode(ex.Select)}})
 		return n
 	default:
 		return &ast.Node{Kind: "unknown"}
