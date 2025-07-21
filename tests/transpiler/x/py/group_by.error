@@ -1,6 +1,12 @@
 run: exit status 1
 Traceback (most recent call last):
-  File "/workspace/mochi/tests/transpiler/x/py/group_by.py", line 10, in <module>
-    _stats_groups[person["city"]] += person.value
-                                     ^^^^^^^^^^^^
-AttributeError: 'dict' object has no attribute 'value'. Did you mean: 'values'?
+  File "/workspace/mochi/tests/transpiler/x/py/group_by.py", line 22, in <module>
+    stats = [Stat(g["key"], len(g["items"]), (sum([p["age"] for p in g["items"]]) / len([p["age"] for p in g["items"]]) if [p["age"] for p in g["items"]] else 0.0)) for g in _stats_groups.values()]
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/mochi/tests/transpiler/x/py/group_by.py", line 22, in <listcomp>
+    stats = [Stat(g["key"], len(g["items"]), (sum([p["age"] for p in g["items"]]) / len([p["age"] for p in g["items"]]) if [p["age"] for p in g["items"]] else 0.0)) for g in _stats_groups.values()]
+                                                                                                                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/mochi/tests/transpiler/x/py/group_by.py", line 22, in <listcomp>
+    stats = [Stat(g["key"], len(g["items"]), (sum([p["age"] for p in g["items"]]) / len([p["age"] for p in g["items"]]) if [p["age"] for p in g["items"]] else 0.0)) for g in _stats_groups.values()]
+                                                                                                                            ~^^^^^^^
+TypeError: 'People' object is not subscriptable
