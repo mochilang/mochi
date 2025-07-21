@@ -577,16 +577,13 @@ func (gq *GroupQueryExpr) emit(e *emitter) {
 	io.WriteString(e.w, "end")
 	e.nl()
 	e.writeIndent()
+	e.writeIndent()
 	io.WriteString(e.w, "result = []")
 	e.nl()
 	e.writeIndent()
 	io.WriteString(e.w, "groups.each do |k, items|")
 	e.nl()
 	e.indent++
-	e.writeIndent()
-	io.WriteString(e.w, gq.GroupVar)
-	io.WriteString(e.w, " = { \"key\" => k, \"items\" => items }")
-	e.nl()
 	e.writeIndent()
 	io.WriteString(e.w, gq.GroupVar+" = { \"key\" => k, \"items\" => items }")
 	e.nl()
@@ -611,21 +608,6 @@ func (gq *GroupQueryExpr) emit(e *emitter) {
 	e.writeIndent()
 	io.WriteString(e.w, "end")
 	e.nl()
-	e.writeIndent()
-	if gq.Sort != nil {
-		io.WriteString(e.w, "result = result.each_with_index.sort_by do |"+gq.GroupVar+", __i|")
-		e.nl()
-		e.indent++
-		e.writeIndent()
-		io.WriteString(e.w, "[")
-		gq.Sort.emit(e)
-		io.WriteString(e.w, ", __i]")
-		e.nl()
-		e.indent--
-		e.writeIndent()
-		io.WriteString(e.w, "end.map{ |x, _| x }")
-		e.nl()
-	}
 	e.writeIndent()
 	io.WriteString(e.w, "result")
 	e.nl()
@@ -1460,7 +1442,7 @@ type FormatList struct{ List Expr }
 func (f *FormatList) emit(e *emitter) {
 	io.WriteString(e.w, `("[" + (`)
 	f.List.emit(e)
-	io.WriteString(e.w, `).map{ |x| x.is_a?(String) ? '\'' + x + '\'' : x.to_s }.join(', ') + "]")`)
+	io.WriteString(e.w, `).map{ |x| if x.is_a?(String) then '\'' + x + '\'' elsif x.respond_to?(:to_h) then '{' + x.to_h.map{ |k,v| "'#{k}': #{v.is_a?(String) ? '\'' + v + '\'' : v.to_s}" }.join(', ') + '}' else x.to_s end }.join(', ') + "]")`)
 }
 
 // FormatBool renders a boolean as "True" or "False" for printing.
@@ -3109,7 +3091,7 @@ func convertGroupQuery(q *parser.QueryExpr) (Expr, error) {
 }
 
 func convertGroupJoinQuery(q *parser.QueryExpr) (Expr, error) {
-	if q == nil || q.Group == nil || len(q.Group.Exprs) != 1 || q.Distinct {
+	if q == nil || q.Group == nil || len(q.Group.Exprs) != 1 || q.Distinct || (len(q.Froms) == 0 && len(q.Joins) == 0) {
 		return nil, fmt.Errorf("unsupported query")
 	}
 	src, err := convertExpr(q.Source)
