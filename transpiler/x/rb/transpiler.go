@@ -646,6 +646,20 @@ func (q *QueryExpr) emit(e *emitter) {
 }
 
 func (gq *GroupQueryExpr) emit(e *emitter) {
+	// simple grouping without helpers when selecting the group itself
+	if gq.Sort == nil && gq.Having == nil {
+		if id, ok := gq.Select.(*Ident); ok && id.Name == gq.GroupVar {
+			gq.Src.emit(e)
+			io.WriteString(e.w, ".group_by { |")
+			io.WriteString(e.w, gq.Var)
+			io.WriteString(e.w, "| ")
+			gq.Key.emit(e)
+			io.WriteString(e.w, " }")
+			io.WriteString(e.w, ".map { |k, items| { \"key\" => k, \"items\" => items } }")
+			return
+		}
+	}
+
 	io.WriteString(e.w, "(begin")
 	e.indent++
 	e.nl()
@@ -3201,8 +3215,7 @@ func convertGroupQuery(q *parser.QueryExpr) (Expr, error) {
 	}
 	child := types.NewEnv(currentEnv)
 	child.SetVar(q.Var, types.AnyType{}, true)
-	grp := types.StructType{Name: "MGroup", Fields: map[string]types.Type{"key": types.AnyType{}, "items": types.ListType{Elem: types.AnyType{}}}, Order: []string{"key", "items"}}
-	child.SetStruct("MGroup", grp)
+	grp := types.MapType{Key: types.StringType{}, Value: types.AnyType{}}
 	child.SetVar(q.Group.Name, grp, true)
 	saved := currentEnv
 	currentEnv = child
