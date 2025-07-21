@@ -423,6 +423,17 @@ type LeftJoinExpr struct {
 	Uses     []string
 }
 
+// OuterJoinExpr represents a full outer join with one join clause.
+type OuterJoinExpr struct {
+	LeftVar  string
+	LeftSrc  Expr
+	RightVar string
+	RightSrc Expr
+	Cond     Expr
+	Select   Expr
+	Uses     []string
+}
+
 // emitInto expands the query into nested foreach loops and appends the
 // selected value into the provided result variable.
 func (q *QueryExpr) emitInto(w io.Writer, res string, level int) {
@@ -776,6 +787,63 @@ func (l *LeftJoinExpr) emit(w io.Writer) {
 	fmt.Fprintf(w, "      $%s = null;\n", l.RightVar)
 	io.WriteString(w, "      $result[] = ")
 	l.Select.emit(w)
+	io.WriteString(w, ";\n")
+	io.WriteString(w, "    }\n  }\n  return $result;\n")
+	io.WriteString(w, "})()")
+}
+
+func (o *OuterJoinExpr) emit(w io.Writer) {
+	io.WriteString(w, "(function()")
+	if len(o.Uses) > 0 {
+		io.WriteString(w, " use (")
+		for i, u := range o.Uses {
+			if i > 0 {
+				io.WriteString(w, ", ")
+			}
+			fmt.Fprintf(w, "$%s", u)
+		}
+		io.WriteString(w, ")")
+	}
+	io.WriteString(w, " {\n")
+	io.WriteString(w, "  $result = [];\n")
+	io.WriteString(w, "  foreach (")
+	o.LeftSrc.emit(w)
+	fmt.Fprintf(w, " as $%s) {\n", o.LeftVar)
+	io.WriteString(w, "    $matched = false;\n")
+	io.WriteString(w, "    foreach (")
+	o.RightSrc.emit(w)
+	fmt.Fprintf(w, " as $%s) {\n", o.RightVar)
+	io.WriteString(w, "      if (!(")
+	o.Cond.emit(w)
+	io.WriteString(w, ")) continue;\n")
+	io.WriteString(w, "      $matched = true;\n")
+	io.WriteString(w, "      $result[] = ")
+	o.Select.emit(w)
+	io.WriteString(w, ";\n")
+	io.WriteString(w, "    }\n")
+	io.WriteString(w, "    if (!$matched) {\n")
+	fmt.Fprintf(w, "      $%s = null;\n", o.RightVar)
+	io.WriteString(w, "      $result[] = ")
+	o.Select.emit(w)
+	io.WriteString(w, ";\n")
+	io.WriteString(w, "    }\n  }\n")
+	io.WriteString(w, "  foreach (")
+	o.RightSrc.emit(w)
+	fmt.Fprintf(w, " as $%s) {\n", o.RightVar)
+	io.WriteString(w, "    $matched = false;\n")
+	io.WriteString(w, "    foreach (")
+	o.LeftSrc.emit(w)
+	fmt.Fprintf(w, " as $%s) {\n", o.LeftVar)
+	io.WriteString(w, "      if (!(")
+	o.Cond.emit(w)
+	io.WriteString(w, ")) continue;\n")
+	io.WriteString(w, "      $matched = true;\n")
+	io.WriteString(w, "      break;\n")
+	io.WriteString(w, "    }\n")
+	io.WriteString(w, "    if (!$matched) {\n")
+	fmt.Fprintf(w, "      $%s = null;\n", o.LeftVar)
+	io.WriteString(w, "      $result[] = ")
+	o.Select.emit(w)
 	io.WriteString(w, ";\n")
 	io.WriteString(w, "    }\n  }\n  return $result;\n")
 	io.WriteString(w, "})()")
@@ -1764,6 +1832,40 @@ func convertQueryExpr(q *parser.QueryExpr) (Expr, error) {
 		return lj, nil
 	}
 
+	if len(q.Froms) == 0 && len(q.Joins) == 1 && q.Joins[0].Side != nil && *q.Joins[0].Side == "outer" && q.Group == nil && q.Sort == nil && q.Skip == nil && q.Take == nil && !q.Distinct && q.Where == nil {
+		j := q.Joins[0]
+		leftSrc, err := convertExpr(q.Source)
+		if err != nil {
+			return nil, err
+		}
+		rightSrc, err := convertExpr(j.Src)
+		if err != nil {
+			return nil, err
+		}
+		saved := funcStack
+		funcStack = append(funcStack, []string{q.Var, j.Var})
+		cond, err := convertExpr(j.On)
+		if err != nil {
+			funcStack = saved
+			return nil, err
+		}
+		sel, err := convertExpr(q.Select)
+		if err != nil {
+			funcStack = saved
+			return nil, err
+		}
+		funcStack = saved
+		uses := []string{}
+		for _, frame := range funcStack {
+			uses = append(uses, frame...)
+		}
+		if len(funcStack) == 0 {
+			uses = append(uses, globalNames...)
+		}
+		oj := &OuterJoinExpr{LeftVar: q.Var, LeftSrc: leftSrc, RightVar: j.Var, RightSrc: rightSrc, Cond: cond, Select: sel, Uses: uses}
+		return oj, nil
+	}
+
 	loops := []QueryLoop{{Name: q.Var}}
 	src, err := convertExpr(q.Source)
 	if err != nil {
@@ -2327,6 +2429,16 @@ func exprNode(e Expr) *ast.Node {
 		return n
 	case *LeftJoinExpr:
 		n := &ast.Node{Kind: "left_join"}
+		n.Children = append(n.Children,
+			&ast.Node{Kind: "left_var", Value: ex.LeftVar},
+			exprNode(ex.LeftSrc),
+			&ast.Node{Kind: "right_var", Value: ex.RightVar},
+			exprNode(ex.RightSrc),
+			exprNode(ex.Cond),
+			exprNode(ex.Select))
+		return n
+	case *OuterJoinExpr:
+		n := &ast.Node{Kind: "outer_join"}
 		n.Children = append(n.Children,
 			&ast.Node{Kind: "left_var", Value: ex.LeftVar},
 			exprNode(ex.LeftSrc),

@@ -2,7 +2,7 @@
 
 Generated PHP code from programs in `tests/vm/valid` lives in `tests/transpiler/x/php`.
 
-## VM Golden Test Checklist (89/100)
+## VM Golden Test Checklist (90/100)
 - [x] append_builtin
 - [x] avg_builtin
 - [x] basic_compare
@@ -68,7 +68,7 @@ Generated PHP code from programs in `tests/vm/valid` lives in `tests/transpiler/
 - [x] min_max_builtin
 - [x] nested_function
 - [x] order_by_map
-- [ ] outer_join
+- [x] outer_join
 - [x] partial_application
 - [x] print_hello
 - [x] pure_fold
