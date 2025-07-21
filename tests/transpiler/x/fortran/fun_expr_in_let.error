@@ -1,0 +1,8 @@
+error[I008]: cannot apply operator '*' to types null and null
+  --> /workspace/mochi/tests/vm/valid/fun_expr_in_let.mochi:1:36
+
+  1 | let square = fun(x: int): int => x * x
+    |                                    ^
+
+help:
+  Use compatible types for the operator.

@@ -1,0 +1,8 @@
+error[I008]: cannot apply operator '==' to types null and null
+  --> /workspace/mochi/tests/vm/valid/match_full.mochi:4:3
+
+  4 |   1 => "one"
+    |   ^
+
+help:
+  Use compatible types for the operator.

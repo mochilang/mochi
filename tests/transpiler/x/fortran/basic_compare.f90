@@ -4,6 +4,6 @@ program main
   integer :: b = 2 + 2
 
   print '(I0)', a
-  print '(A)', trim(merge('true  ','false ',a == 7))
-  print '(A)', trim(merge('true  ','false ',b < 5))
+  print '(I0)', merge(1, 0, a == 7)
+  print '(I0)', merge(1, 0, b < 5)
 end program main

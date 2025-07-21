@@ -1,3 +1,27 @@
+## Progress (2025-07-21 18:25 +0700)
+- fortran: print bools as ints
+
+## Progress (2025-07-21 18:06 +0700)
+- zig transpiler: regenerate golden tests
+
+## Progress (2025-07-21 18:06 +0700)
+- zig transpiler: regenerate golden tests
+
+## Progress (2025-07-21 18:06 +0700)
+- zig transpiler: regenerate golden tests
+
+## Progress (2025-07-21 18:06 +0700)
+- zig transpiler: regenerate golden tests
+
+## Progress (2025-07-21 18:06 +0700)
+- zig transpiler: regenerate golden tests
+
+## Progress (2025-07-21 18:06 +0700)
+- zig transpiler: regenerate golden tests
+
+## Progress (2025-07-21 18:06 +0700)
+- zig transpiler: regenerate golden tests
+
 ## Progress (2025-07-21 17:42 +0700)
 - feat(fortran): add left join groups
 

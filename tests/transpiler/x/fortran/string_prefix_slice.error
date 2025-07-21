@@ -1,0 +1,8 @@
+error[I013]: index must be an integer, got parser.IntLit
+  --> /workspace/mochi/tests/vm/valid/string_prefix_slice.mochi:3:9
+
+  3 | print(s1[0:len(prefix)] == prefix)
+    |         ^
+
+help:
+  Use an `int` value as an index (e.g., `list[0]`).

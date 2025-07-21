@@ -146,7 +146,7 @@ func (p *PrintStmt) emit(w io.Writer, ind int) {
 				fmt.Fprintf(w, "print '(F0.1)', %s\n", expr)
 			}
 		case types.BoolType:
-			fmt.Fprintf(w, "print '(A)', trim(merge('true  ','false ',%s))\n", expr)
+			fmt.Fprintf(w, "print '(I0)', merge(1, 0, %s)\n", expr)
 		case types.StringType:
 			fmt.Fprintf(w, "print '(A)', trim(%s)\n", expr)
 		default:

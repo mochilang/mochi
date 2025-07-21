@@ -1,0 +1,6 @@
+exit status 1
+/workspace/mochi/tests/transpiler/x/fortran/str_builtin.f90:3:20:
+
+    3 |   print '(A)', trim(str(123))
+      |                    1
+Error: Function ‘str’ at (1) has no IMPLICIT type

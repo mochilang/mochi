@@ -1,0 +1,8 @@
+error[I008]: cannot apply operator '+' to types null and null
+  --> /workspace/mochi/tests/vm/valid/record_assign.mochi:4:13
+
+  4 |   c.n = c.n + 1
+    |             ^
+
+help:
+  Use compatible types for the operator.

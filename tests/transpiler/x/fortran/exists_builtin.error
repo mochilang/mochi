@@ -1,0 +1,8 @@
+error[I001]: undefined function or closure: exists
+  --> /workspace/mochi/tests/vm/valid/exists_builtin.mochi:2:12
+
+  2 | let flag = exists(
+    |            ^
+
+help:
+  `%s` is not defined. Declare it before calling.

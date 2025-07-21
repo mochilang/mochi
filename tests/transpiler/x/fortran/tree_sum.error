@@ -1,0 +1,8 @@
+error[I008]: cannot apply operator '+' to types null and null
+  --> /workspace/mochi/tests/vm/valid/tree_sum.mochi:12:48
+
+ 12 |     Node(left, value, right) => sum_tree(left) + value + sum_tree(right)
+    |                                                ^
+
+help:
+  Use compatible types for the operator.

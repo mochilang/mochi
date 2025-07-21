@@ -1,0 +1,8 @@
+error[I001]: undefined function or closure: values
+  --> /workspace/mochi/tests/vm/valid/values_builtin.mochi:2:7
+
+  2 | print(values(m))
+    |       ^
+
+help:
+  `%s` is not defined. Declare it before calling.

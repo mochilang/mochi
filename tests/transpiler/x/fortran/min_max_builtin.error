@@ -1,0 +1,11 @@
+exit status 1
+/workspace/mochi/tests/transpiler/x/fortran/min_max_builtin.f90:5:15:
+
+    5 |   print '(I0)', min(nums)
+      |               1
+Error: Intrinsic ‘min’ at (1) must have at least two arguments
+/workspace/mochi/tests/transpiler/x/fortran/min_max_builtin.f90:6:15:
+
+    6 |   print '(I0)', max(nums)
+      |               1
+Error: Intrinsic ‘max’ at (1) must have at least two arguments
