@@ -1,1 +1,5 @@
-unsupported statement
+exit status 1
+F# Compiler for F# 4.0 (Open Source Edition)
+Freely distributed under the Apache 2.0 Open Source License
+
+/workspace/mochi/tests/transpiler/x/fs/python_auto.fs(11,1): error FS0010: Unexpected start of structured construct in definition. Expected '=' or other token.
