@@ -617,7 +617,7 @@ func (s *StrExpr) emit(w io.Writer) {
 type NotExpr struct{ Value Expr }
 
 func (n *NotExpr) emit(w io.Writer) {
-	io.WriteString(w, "!")
+        io.WriteString(w, "!")
 	switch n.Value.(type) {
 	case *BoolLit, *VarRef, *CallExpr, *IndexExpr, *FieldExpr:
 		n.Value.emit(w)
@@ -626,6 +626,22 @@ func (n *NotExpr) emit(w io.Writer) {
 		n.Value.emit(w)
 		io.WriteString(w, ")")
 	}
+}
+
+// NotNullCheck converts Mochi truthiness to Kotlin null check.
+type NotNullCheck struct{ Value Expr }
+
+func (n *NotNullCheck) emit(w io.Writer) {
+        n.Value.emit(w)
+        io.WriteString(w, " != null")
+}
+
+func isBoolExpr(e Expr) bool {
+        switch e.(type) {
+        case *BoolLit, *BinaryExpr, *ContainsExpr, *ExistsExpr, *NotExpr, *WhenExpr:
+                return true
+        }
+        return false
 }
 
 type AppendExpr struct {
@@ -1334,10 +1350,13 @@ func convertStmts(env *types.Env, list []*parser.Statement) ([]Stmt, error) {
 }
 
 func convertIfStmt(env *types.Env, is *parser.IfStmt) (Stmt, error) {
-	cond, err := convertExpr(env, is.Cond)
-	if err != nil {
-		return nil, err
-	}
+        cond, err := convertExpr(env, is.Cond)
+        if err != nil {
+                return nil, err
+        }
+        if !isBoolExpr(cond) {
+                cond = &NotNullCheck{Value: cond}
+        }
 	thenStmts, err := convertStmts(env, is.Then)
 	if err != nil {
 		return nil, err
@@ -1359,15 +1378,18 @@ func convertIfStmt(env *types.Env, is *parser.IfStmt) (Stmt, error) {
 }
 
 func convertWhileStmt(env *types.Env, ws *parser.WhileStmt) (Stmt, error) {
-	cond, err := convertExpr(env, ws.Cond)
-	if err != nil {
-		return nil, err
-	}
-	body, err := convertStmts(env, ws.Body)
-	if err != nil {
-		return nil, err
-	}
-	return &WhileStmt{Cond: cond, Body: body}, nil
+        cond, err := convertExpr(env, ws.Cond)
+        if err != nil {
+                return nil, err
+        }
+        if !isBoolExpr(cond) {
+                cond = &NotNullCheck{Value: cond}
+        }
+        body, err := convertStmts(env, ws.Body)
+        if err != nil {
+                return nil, err
+        }
+        return &WhileStmt{Cond: cond, Body: body}, nil
 }
 
 func convertForStmt(env *types.Env, fs *parser.ForStmt) (Stmt, error) {
@@ -1419,14 +1441,17 @@ func buildIndexTarget(env *types.Env, name string, idx []*parser.IndexOp) (Expr,
 }
 
 func convertIfExpr(env *types.Env, ie *parser.IfExpr) (Expr, error) {
-	cond, err := convertExpr(env, ie.Cond)
-	if err != nil {
-		return nil, err
-	}
-	thenExpr, err := convertExpr(env, ie.Then)
-	if err != nil {
-		return nil, err
-	}
+        cond, err := convertExpr(env, ie.Cond)
+        if err != nil {
+                return nil, err
+        }
+        if !isBoolExpr(cond) {
+                cond = &NotNullCheck{Value: cond}
+        }
+        thenExpr, err := convertExpr(env, ie.Then)
+        if err != nil {
+                return nil, err
+        }
 	var elseExpr Expr
 	if ie.ElseIf != nil {
 		elseExpr, err = convertIfExpr(env, ie.ElseIf)
