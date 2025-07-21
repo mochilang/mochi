@@ -1,6 +1,6 @@
-## Progress (2025-07-21 11:42 +0700)
-- swift: add left join support
-- Generated golden tests for 73/100 programs
+## Progress (2025-07-21 12:27 +0700)
+- transpiler/ex: add inner_join support
+- Generated golden tests for 75/100 programs
 - Updated README checklist and output artifacts
 
 # Swift Transpiler Tasks

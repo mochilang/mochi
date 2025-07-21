@@ -222,9 +222,18 @@ func (l *LitExpr) emit(w io.Writer) {
 	}
 }
 
-type NameExpr struct{ Name string }
+type NameExpr struct {
+	Name    string
+	AsItems bool
+}
 
-func (n *NameExpr) emit(w io.Writer) { fmt.Fprint(w, n.Name) }
+func (n *NameExpr) emit(w io.Writer) {
+	if n.AsItems {
+		fmt.Fprintf(w, "%s[\"items\"] as! [Any]", n.Name)
+	} else {
+		fmt.Fprint(w, n.Name)
+	}
+}
 
 type ArrayLit struct{ Elems []Expr }
 
@@ -271,6 +280,17 @@ type queryJoin struct {
 	On  Expr
 }
 
+// GroupByExpr represents a simple query with grouping support.
+type GroupByExpr struct {
+	Var    string
+	Source Expr
+	Key    Expr
+	Name   string
+	Where  Expr
+	Select Expr
+	Having Expr
+}
+
 // QueryExpr represents a basic comprehension supporting joins.
 type QueryExpr struct {
 	Var    string
@@ -292,7 +312,11 @@ type LeftJoinExpr struct {
 }
 
 func (q *QueryExpr) emit(w io.Writer) {
-	fmt.Fprint(w, "({ var _res: [[String: Any]] = []\n")
+	if _, ok := q.Select.(*MapLit); ok {
+		fmt.Fprint(w, "({ var _res: [[String: Any]] = []\n")
+	} else {
+		fmt.Fprint(w, "({ var _res: [Any] = []\n")
+	}
 	fmt.Fprintf(w, "for %s in ", q.Var)
 	q.Src.emit(w)
 	fmt.Fprint(w, " {\n")
@@ -351,6 +375,41 @@ func (l *LeftJoinExpr) emit(w io.Writer) {
 	l.Select.emit(w)
 	fmt.Fprint(w, ")\n}\n}")
 	fmt.Fprint(w, "\nreturn _res })()")
+}
+
+func (g *GroupByExpr) emit(w io.Writer) {
+	fmt.Fprint(w, "({ var _groups: [String: [String: Any]] = [:]\n")
+	fmt.Fprint(w, "var _res: [[String: Any]] = []\n")
+	fmt.Fprintf(w, "for %s in ", g.Var)
+	g.Source.emit(w)
+	fmt.Fprint(w, " {\n")
+	if g.Where != nil {
+		fmt.Fprint(w, "if ")
+		g.Where.emit(w)
+		fmt.Fprint(w, " {\n")
+	}
+	fmt.Fprint(w, "let _key = ")
+	g.Key.emit(w)
+	fmt.Fprint(w, "\nlet _ks = String(describing: _key)\nvar _g = _groups[_ks] ?? [\"key\": _key, \"items\": []]\n")
+	fmt.Fprintf(w, "_g[\"items\"] = (_g[\"items\"] as! [Any]) + [%s]\n", g.Var)
+	fmt.Fprint(w, "_groups[_ks] = _g\n")
+	if g.Where != nil {
+		fmt.Fprint(w, "}\n")
+	}
+	fmt.Fprint(w, "}\n")
+	fmt.Fprintf(w, "for %s in _groups.values {\n", g.Name)
+	if g.Having != nil {
+		fmt.Fprint(w, "if ")
+		g.Having.emit(w)
+		fmt.Fprint(w, " {\n_res.append(")
+		g.Select.emit(w)
+		fmt.Fprint(w, ")\n}\n")
+	} else {
+		fmt.Fprint(w, "_res.append(")
+		g.Select.emit(w)
+		fmt.Fprint(w, ")\n")
+	}
+	fmt.Fprint(w, "}\nreturn _res })()")
 }
 
 type IndexExpr struct {
@@ -453,14 +512,18 @@ func (c *CallExpr) emit(w io.Writer) {
 	case "len":
 		if len(c.Args) == 1 {
 			fmt.Fprint(w, "(")
+			fmt.Fprint(w, "(")
 			c.Args[0].emit(w)
+			fmt.Fprint(w, ")")
 			fmt.Fprint(w, ".count)")
 			return
 		}
 	case "count":
 		if len(c.Args) == 1 {
 			fmt.Fprint(w, "(")
+			fmt.Fprint(w, "(")
 			c.Args[0].emit(w)
+			fmt.Fprint(w, ")")
 			fmt.Fprint(w, ".count)")
 			return
 		}
@@ -483,11 +546,11 @@ func (c *CallExpr) emit(w io.Writer) {
 	case "avg":
 		if len(c.Args) == 1 {
 			fmt.Fprint(w, "(")
-			fmt.Fprint(w, "Double(")
+			fmt.Fprint(w, "Double((")
 			c.Args[0].emit(w)
-			fmt.Fprint(w, ".reduce(0,+)) / Double(")
+			fmt.Fprint(w, ").reduce(0,+)) / Double((")
 			c.Args[0].emit(w)
-			fmt.Fprint(w, ".count))")
+			fmt.Fprint(w, ").count))")
 			return
 		}
 	case "sum":
@@ -1273,7 +1336,10 @@ func convertIfExpr(env *types.Env, i *parser.IfExpr) (Expr, error) {
 }
 
 func convertQueryExpr(env *types.Env, q *parser.QueryExpr) (Expr, error) {
-	if q.Group != nil || q.Sort != nil || q.Skip != nil || q.Take != nil {
+	if q.Group != nil {
+		return convertGroupQuery(env, q)
+	}
+	if q.Sort != nil || q.Skip != nil || q.Take != nil {
 		return nil, fmt.Errorf("unsupported query")
 	}
 	if len(q.Joins) == 1 && q.Joins[0].Side != nil && *q.Joins[0].Side == "left" &&
@@ -1287,6 +1353,8 @@ func convertQueryExpr(env *types.Env, q *parser.QueryExpr) (Expr, error) {
 	varType := types.TypeOfExpr(q.Source, env)
 	if lt, ok := varType.(types.ListType); ok {
 		varType = lt.Elem
+	} else if gt, ok := varType.(types.GroupType); ok {
+		varType = gt.Elem
 	}
 	child := types.NewEnv(env)
 	child.SetVar(q.Var, varType, true)
@@ -1299,6 +1367,8 @@ func convertQueryExpr(env *types.Env, q *parser.QueryExpr) (Expr, error) {
 		t := types.TypeOfExpr(f.Src, child)
 		if lt, ok := t.(types.ListType); ok {
 			t = lt.Elem
+		} else if gt, ok := t.(types.GroupType); ok {
+			t = gt.Elem
 		}
 		child.SetVar(f.Var, t, true)
 		froms[i] = queryFrom{Var: f.Var, Src: fe}
@@ -1312,6 +1382,8 @@ func convertQueryExpr(env *types.Env, q *parser.QueryExpr) (Expr, error) {
 		jt := types.TypeOfExpr(j.Src, child)
 		if lt, ok := jt.(types.ListType); ok {
 			jt = lt.Elem
+		} else if gt, ok := jt.(types.GroupType); ok {
+			jt = gt.Elem
 		}
 		child.SetVar(j.Var, jt, true)
 		var on Expr
@@ -1347,11 +1419,15 @@ func convertLeftJoinQuery(env *types.Env, q *parser.QueryExpr) (Expr, error) {
 	lt := types.TypeOfExpr(q.Source, env)
 	if llist, ok := lt.(types.ListType); ok {
 		lt = llist.Elem
+	} else if gt, ok := lt.(types.GroupType); ok {
+		lt = gt.Elem
 	}
 	child.SetVar(q.Var, lt, true)
 	rt := types.TypeOfExpr(j.Src, child)
 	if rlist, ok := rt.(types.ListType); ok {
 		rt = rlist.Elem
+	} else if gt, ok := rt.(types.GroupType); ok {
+		rt = gt.Elem
 	}
 	child.SetVar(j.Var, rt, true)
 	rightSrc, err := convertExpr(child, j.Src)
@@ -1367,6 +1443,54 @@ func convertLeftJoinQuery(env *types.Env, q *parser.QueryExpr) (Expr, error) {
 		return nil, err
 	}
 	return &LeftJoinExpr{LeftVar: q.Var, LeftSrc: leftSrc, RightVar: j.Var, RightSrc: rightSrc, Cond: cond, Select: sel}, nil
+}
+
+func convertGroupQuery(env *types.Env, q *parser.QueryExpr) (Expr, error) {
+	if q.Group == nil || len(q.Froms) != 0 || len(q.Joins) != 0 || q.Sort != nil || q.Skip != nil || q.Take != nil || q.Distinct {
+		return nil, fmt.Errorf("unsupported query")
+	}
+	src, err := convertExpr(env, q.Source)
+	if err != nil {
+		return nil, err
+	}
+	child := types.NewEnv(env)
+	t := types.TypeOfExpr(q.Source, env)
+	var elemT types.Type = types.AnyType{}
+	if lt, ok := t.(types.ListType); ok {
+		elemT = lt.Elem
+	} else if gt, ok := t.(types.GroupType); ok {
+		elemT = gt.Elem
+	}
+	child.SetVar(q.Var, elemT, true)
+	key, err := convertExpr(child, q.Group.Exprs[0])
+	if err != nil {
+		return nil, err
+	}
+	var keyT types.Type = types.AnyType{}
+	if kt := types.TypeOfExpr(q.Group.Exprs[0], child); kt != nil {
+		keyT = kt
+	}
+	var where Expr
+	if q.Where != nil {
+		where, err = convertExpr(child, q.Where)
+		if err != nil {
+			return nil, err
+		}
+	}
+	genv := types.NewEnv(env)
+	genv.SetVar(q.Group.Name, types.GroupType{Key: keyT, Elem: elemT}, true)
+	sel, err := convertExpr(genv, q.Select)
+	if err != nil {
+		return nil, err
+	}
+	var having Expr
+	if q.Group.Having != nil {
+		having, err = convertExpr(genv, q.Group.Having)
+		if err != nil {
+			return nil, err
+		}
+	}
+	return &GroupByExpr{Var: q.Var, Source: src, Key: key, Name: q.Group.Name, Where: where, Select: sel, Having: having}, nil
 }
 
 func convertPrimary(env *types.Env, pr *parser.Primary) (Expr, error) {
@@ -1452,6 +1576,13 @@ func convertPrimary(env *types.Env, pr *parser.Primary) (Expr, error) {
 	case pr.Query != nil:
 		return convertQueryExpr(env, pr.Query)
 	case pr.Selector != nil && len(pr.Selector.Tail) == 0:
+		if env != nil {
+			if t, err := env.GetVar(pr.Selector.Root); err == nil {
+				if _, ok := t.(types.GroupType); ok {
+					return &NameExpr{Name: pr.Selector.Root, AsItems: true}, nil
+				}
+			}
+		}
 		return &NameExpr{Name: pr.Selector.Root}, nil
 	}
 	return nil, fmt.Errorf("unsupported primary")
