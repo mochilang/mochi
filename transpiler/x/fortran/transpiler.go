@@ -1074,6 +1074,17 @@ func toPrimary(p *parser.Primary, env *types.Env) (string, error) {
 			}
 			return "", fmt.Errorf("unsupported len argument type")
 		}
+		if p.Call.Func == "append" && len(p.Call.Args) == 2 {
+			arrExpr, err := toExpr(p.Call.Args[0], env)
+			if err != nil {
+				return "", err
+			}
+			valExpr, err := toExpr(p.Call.Args[1], env)
+			if err != nil {
+				return "", err
+			}
+			return fmt.Sprintf("(/ %s, %s /)", arrExpr, valExpr), nil
+		}
 		if p.Call.Func == "sum" && len(p.Call.Args) == 1 {
 			argExpr, err := toExpr(p.Call.Args[0], env)
 			if err != nil {
