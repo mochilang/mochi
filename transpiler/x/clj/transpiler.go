@@ -1400,13 +1400,27 @@ func transpileQueryExpr(q *parser.QueryExpr) (Node, error) {
 		return forForm, nil
 	}
 
-	if len(q.Group.Exprs) == 0 {
-		return nil, fmt.Errorf("missing group key")
-	}
-	keyExpr, err := transpileExpr(q.Group.Exprs[0])
-	if err != nil {
-		return nil, err
-	}
+       if len(q.Group.Exprs) == 0 {
+               return nil, fmt.Errorf("missing group key")
+       }
+       var keyExpr Node
+       if len(q.Group.Exprs) == 1 {
+               var err error
+               keyExpr, err = transpileExpr(q.Group.Exprs[0])
+               if err != nil {
+                       return nil, err
+               }
+       } else {
+               keys := []Node{}
+               for _, ke := range q.Group.Exprs {
+                       kn, err := transpileExpr(ke)
+                       if err != nil {
+                               return nil, err
+                       }
+                       keys = append(keys, kn)
+               }
+               keyExpr = &Vector{Elems: keys}
+       }
 
 	names := []string{q.Var}
 	for _, f := range q.Froms {
