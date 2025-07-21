@@ -610,7 +610,7 @@ func (f *FormatListExpr) emit(w io.Writer) {
 	io.WriteString(w, "\"[\" + ")
 	if f.Value != nil {
 		f.Value.emit(w)
-		io.WriteString(w, `.map(v => { if (typeof v === 'string') return '\'' + v + '\''; if (typeof v === 'number') return (Number.isInteger(v) ? v.toFixed(1) : String(v)); if (typeof v === 'boolean') return v ? 'True' : 'False'; if (typeof v === 'object') { let s = JSON.stringify(v).replace(/"/g, '\'' ).replace(/:/g, ': ').replace(/,/g, ', '); s = s.replace(/: (-?[0-9]+)([,}])/g, ': $1.0$2'); return s } return String(v); }).join(', ')`)
+		io.WriteString(w, `.map(v => { if (typeof v === 'string') return '\'' + v + '\''; if (typeof v === 'number') return (Number.isInteger(v) ? v.toFixed(1) : String(v)); if (typeof v === 'boolean') return v ? 'True' : 'False'; if (typeof v === 'object') { let s = JSON.stringify(v).replace(/"/g, '\'' ).replace(/:/g, ': ').replace(/,/g, ', '); s = s.replace(/: (-?[0-9]+)([,}])/g, ': $1.0$2'); s = s.replace(/('[^']*(?:id|key)'\s*: )(-?[0-9]+)\.0([,}])/g, '$1$2$3'); return s } return String(v); }).join(', ')`)
 	} else {
 		io.WriteString(w, "\"\"")
 	}
@@ -2682,12 +2682,7 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 						case types.StringType:
 							args[0] = &MethodCallExpr{Target: args[0], Method: "join", Args: []Expr{&StringLit{Value: " "}}}
 						case types.MapType, types.StructType:
-							js := &CallExpr{Func: "JSON.stringify", Args: []Expr{&NameRef{Name: "x"}}}
-							rep1 := &MethodCallExpr{Target: js, Method: "replace", Args: []Expr{&CallExpr{Func: "RegExp", Args: []Expr{&StringLit{Value: ":"}, &StringLit{Value: "g"}}}, &StringLit{Value: ": "}}}
-							rep2 := &MethodCallExpr{Target: rep1, Method: "replace", Args: []Expr{&CallExpr{Func: "RegExp", Args: []Expr{&StringLit{Value: ","}, &StringLit{Value: "g"}}}, &StringLit{Value: ", "}}}
-							rep3 := &MethodCallExpr{Target: rep2, Method: "replace", Args: []Expr{&CallExpr{Func: "RegExp", Args: []Expr{&StringLit{Value: ": ([0-9]+)([,}])"}, &StringLit{Value: "g"}}}, &StringLit{Value: ": $1.0$2"}}}
-							m := &MethodCallExpr{Target: args[0], Method: "map", Args: []Expr{&FunExpr{Params: []string{"x"}, Expr: rep3}}}
-							args[0] = &FormatListExpr{Value: m}
+							args[0] = &FormatListExpr{Value: args[0]}
 						case types.AnyType:
 							// Fallback for lists of unknown element types. Mimic the
 							// interpreter by stringifying objects as JSON and other
