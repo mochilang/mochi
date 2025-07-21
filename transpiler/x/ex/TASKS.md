@@ -1,3 +1,7 @@
+## Progress (2025-07-21 18:21 +0700)
+- Updated golden tests after refining range `for` loops
+- VM valid golden test results updated
+
 ## Progress (2025-07-21 17:26 +0700)
 - VM valid golden test results updated
 

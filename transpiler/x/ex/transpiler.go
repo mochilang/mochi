@@ -227,25 +227,33 @@ type ForStmt struct {
 }
 
 func (fs *ForStmt) emit(w io.Writer, indent int) {
-	if fs.Simple && fs.End == nil {
-		for i := 0; i < indent; i++ {
-			io.WriteString(w, "  ")
-		}
-		io.WriteString(w, "Enum.each(")
-		fs.Source.emit(w)
-		io.WriteString(w, ", fn ")
-		io.WriteString(w, fs.Name)
-		io.WriteString(w, " ->\n")
-		for _, st := range fs.Body {
-			st.emit(w, indent+1)
-			io.WriteString(w, "\n")
-		}
-		for i := 0; i < indent; i++ {
-			io.WriteString(w, "  ")
-		}
-		io.WriteString(w, "end)")
-		return
-	}
+        if fs.Simple {
+                for i := 0; i < indent; i++ {
+                        io.WriteString(w, "  ")
+                }
+                io.WriteString(w, "Enum.each(")
+                if fs.End != nil {
+                        io.WriteString(w, "(")
+                        fs.Start.emit(w)
+                        io.WriteString(w, "..(")
+                        fs.End.emit(w)
+                        io.WriteString(w, " - 1))")
+                } else {
+                        fs.Source.emit(w)
+                }
+                io.WriteString(w, ", fn ")
+                io.WriteString(w, fs.Name)
+                io.WriteString(w, " ->\n")
+                for _, st := range fs.Body {
+                        st.emit(w, indent+1)
+                        io.WriteString(w, "\n")
+                }
+                for i := 0; i < indent; i++ {
+                        io.WriteString(w, "  ")
+                }
+                io.WriteString(w, "end)")
+                return
+        }
 	for i := 0; i < indent; i++ {
 		io.WriteString(w, "  ")
 	}
