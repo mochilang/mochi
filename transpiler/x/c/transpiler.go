@@ -2441,6 +2441,8 @@ func inferCType(env *types.Env, name string, e Expr) string {
 
 func anyToExpr(v any) Expr {
 	switch t := v.(type) {
+	case nil:
+		return &IntLit{Value: 0}
 	case int:
 		return &IntLit{Value: t}
 	case int64:
