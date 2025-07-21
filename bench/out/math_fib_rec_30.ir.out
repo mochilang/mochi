@@ -1,34 +1,38 @@
-func main (regs=19)
+func main (regs=15)
   // let n = 30
   Const        r0, 30
-  Move         r1, r0
+  Move         r0, r0
+  SetGlobal    0,0,0,0
   // let start = now()
-  Now          r2
-  Move         r3, r2
+  Now          r1
+  Move         r1, r1
+  SetGlobal    1,1,0,0
   // let result = fib(n)
   Const        r0, 30
-  Move         r4, r0
-  Call         r5, fib, r4
-  Move         r6, r5
+  Move         r2, r0
+  Call         r3, fib, r2
+  Move         r2, r3
+  SetGlobal    2,2,0,0
   // let duration = (now() - start) / 1000
-  Now          r7
-  SubInt       r8, r7, r3
-  Const        r9, 1000
-  DivInt       r10, r8, r9
-  Move         r11, r10
+  Now          r4
+  SubInt       r5, r4, r1
+  Const        r6, 1000
+  DivInt       r7, r5, r6
+  Move         r3, r7
+  SetGlobal    3,3,0,0
   // "duration_us": duration,
-  Const        r12, "duration_us"
+  Const        r8, "duration_us"
   // "output": result,
-  Const        r13, "output"
+  Const        r9, "output"
   // "duration_us": duration,
-  Move         r14, r12
-  Move         r15, r11
+  Move         r10, r8
+  Move         r11, r3
   // "output": result,
-  Move         r16, r13
-  Move         r17, r6
+  Move         r12, r9
+  Move         r13, r2
   // json({
-  MakeMap      r18, 2, r14
-  JSON         r18
+  MakeMap      r14, 2, r10
+  JSON         r14
   Return       r0
 
   // fun fib(n: int): int {

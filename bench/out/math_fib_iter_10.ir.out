@@ -1,53 +1,59 @@
-func main (regs=25)
+func main (regs=20)
   // let n = 10
   Const        r0, 10
-  Move         r1, r0
+  Move         r0, r0
+  SetGlobal    0,0,0,0
   // let repeat = 1000
-  Const        r2, 1000
-  Move         r3, r2
+  Const        r1, 1000
+  Move         r1, r1
+  SetGlobal    1,1,0,0
   // var last = 0
-  Const        r4, 0
-  Move         r5, r4
+  Const        r2, 0
+  Move         r2, r2
+  SetGlobal    2,2,0,0
   // let start = now()
-  Now          r6
-  Move         r7, r6
+  Now          r3
+  Move         r3, r3
+  SetGlobal    3,3,0,0
   // for i in 0..repeat {
-  Const        r4, 0
-  Const        r2, 1000
-  Move         r8, r4
+  Const        r2, 0
+  Const        r1, 1000
+  Move         r4, r2
 L1:
-  LessInt      r9, r8, r2
-  JumpIfFalse  r9, L0
+  LessInt      r5, r4, r1
+  JumpIfFalse  r5, L0
   // last = fib(n)
   Const        r0, 10
-  Move         r10, r0
-  Call         r11, fib, r10
-  Move         r5, r11
+  Move         r6, r0
+  Call         r7, fib, r6
+  Move         r2, r7
+  SetGlobal    2,2,0,0
   // for i in 0..repeat {
-  Const        r12, 1
-  AddInt       r13, r8, r12
-  Move         r8, r13
+  Const        r8, 1
+  AddInt       r9, r4, r8
+  Move         r4, r9
   Jump         L1
 L0:
   // let duration = (now() - start) / 1000
-  Now          r14
-  SubInt       r15, r14, r7
-  Const        r2, 1000
-  DivInt       r16, r15, r2
-  Move         r17, r16
+  Now          r10
+  SubInt       r11, r10, r3
+  Const        r1, 1000
+  DivInt       r12, r11, r1
+  Move         r4, r12
+  SetGlobal    4,4,0,0
   // "duration_us": duration,
-  Const        r18, "duration_us"
+  Const        r13, "duration_us"
   // "output": last,
-  Const        r19, "output"
+  Const        r14, "output"
   // "duration_us": duration,
-  Move         r20, r18
-  Move         r21, r17
+  Move         r15, r13
+  Move         r16, r4
   // "output": last,
-  Move         r22, r19
-  Move         r23, r5
+  Move         r17, r14
+  Move         r18, r2
   // json({
-  MakeMap      r24, 2, r20
-  JSON         r24
+  MakeMap      r19, 2, r15
+  JSON         r19
   Return       r0
 
   // fun fib(n: int): int {

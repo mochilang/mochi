@@ -1,145 +1,156 @@
-func main (regs=62)
+func main (regs=54)
   // let size = 10
   Const        r0, 10
-  Move         r1, r0
+  Move         r0, r0
+  SetGlobal    0,0,0,0
   // let repeat = 10
   Const        r0, 10
-  Move         r2, r0
+  Move         r1, r0
+  SetGlobal    1,1,0,0
   // var a: list<list<int>> = []
-  Const        r3, []
-  Move         r4, r3
+  Const        r1, []
+  Move         r2, r1
+  SetGlobal    2,2,0,0
   // for i in 0..size {
-  Const        r5, 0
+  Const        r2, 0
   Const        r0, 10
-  Move         r6, r5
+  Move         r3, r2
 L3:
-  LessInt      r7, r6, r0
-  JumpIfFalse  r7, L0
+  LessInt      r4, r3, r0
+  JumpIfFalse  r4, L0
   // var row: list<int> = []
-  Const        r3, []
-  Move         r8, r3
+  Const        r1, []
+  Move         r5, r1
   // for j in 0..size {
-  Const        r5, 0
+  Const        r2, 0
   Const        r0, 10
-  Move         r9, r5
+  Move         r6, r2
 L2:
-  LessInt      r10, r9, r0
-  JumpIfFalse  r10, L1
+  LessInt      r7, r6, r0
+  JumpIfFalse  r7, L1
   // row = row + [i + j]
-  AddInt       r12, r6, r9
-  Move         r11, r12
-  MakeList     r13, 1, r11
-  Add          r14, r8, r13
-  Move         r8, r14
+  AddInt       r9, r3, r6
+  Move         r8, r9
+  MakeList     r10, 1, r8
+  Add          r11, r5, r10
+  Move         r5, r11
   // for j in 0..size {
-  Const        r15, 1
-  AddInt       r16, r9, r15
-  Move         r9, r16
+  Const        r12, 1
+  AddInt       r13, r6, r12
+  Move         r6, r13
   Jump         L2
 L1:
   // a = a + [row]
-  Move         r17, r8
-  MakeList     r18, 1, r17
-  Add          r19, r4, r18
-  Move         r4, r19
+  Move         r14, r5
+  MakeList     r15, 1, r14
+  Add          r16, r2, r15
+  Move         r2, r16
+  SetGlobal    2,2,0,0
   // for i in 0..size {
-  Const        r20, 1
-  AddInt       r21, r6, r20
-  Move         r6, r21
+  Const        r17, 1
+  AddInt       r18, r3, r17
+  Move         r3, r18
   Jump         L3
 L0:
   // var b: list<list<int>> = []
-  Const        r3, []
-  Move         r22, r3
+  Const        r1, []
+  Move         r3, r1
+  SetGlobal    3,3,0,0
   // for i in 0..size {
-  Const        r5, 0
+  Const        r2, 0
   Const        r0, 10
-  Move         r6, r5
+  Move         r3, r2
 L7:
-  LessInt      r23, r6, r0
-  JumpIfFalse  r23, L4
+  LessInt      r19, r3, r0
+  JumpIfFalse  r19, L4
   // var row: list<int> = []
-  Const        r3, []
-  Move         r24, r3
+  Const        r1, []
+  Move         r20, r1
   // for j in 0..size {
-  Const        r5, 0
+  Const        r2, 0
   Const        r0, 10
-  Move         r25, r5
+  Move         r21, r2
 L6:
-  LessInt      r26, r25, r0
-  JumpIfFalse  r26, L5
+  LessInt      r22, r21, r0
+  JumpIfFalse  r22, L5
   // row = row + [i * j]
-  MulInt       r28, r6, r25
-  Move         r27, r28
-  MakeList     r29, 1, r27
-  Add          r30, r24, r29
-  Move         r24, r30
+  MulInt       r24, r3, r21
+  Move         r23, r24
+  MakeList     r25, 1, r23
+  Add          r26, r20, r25
+  Move         r20, r26
   // for j in 0..size {
-  Const        r31, 1
-  AddInt       r32, r25, r31
-  Move         r25, r32
+  Const        r27, 1
+  AddInt       r28, r21, r27
+  Move         r21, r28
   Jump         L6
 L5:
   // b = b + [row]
-  Move         r33, r24
-  MakeList     r34, 1, r33
-  Add          r35, r22, r34
-  Move         r22, r35
+  Move         r29, r20
+  MakeList     r30, 1, r29
+  Add          r31, r3, r30
+  Move         r3, r31
+  SetGlobal    3,3,0,0
   // for i in 0..size {
-  Const        r36, 1
-  AddInt       r37, r6, r36
-  Move         r6, r37
+  Const        r32, 1
+  AddInt       r33, r3, r32
+  Move         r3, r33
   Jump         L7
 L4:
   // var last: list<list<int>> = []
-  Const        r3, []
-  Move         r38, r3
+  Const        r1, []
+  Move         r4, r1
+  SetGlobal    4,4,0,0
   // let start = now()
-  Now          r39
-  Move         r40, r39
+  Now          r34
+  Move         r5, r34
+  SetGlobal    5,5,0,0
   // for i in 0..repeat {
-  Const        r5, 0
+  Const        r2, 0
   Const        r0, 10
-  Move         r6, r5
+  Move         r3, r2
 L9:
-  LessInt      r41, r6, r0
-  JumpIfFalse  r41, L8
+  LessInt      r35, r3, r0
+  JumpIfFalse  r35, L8
   // last = matmul(a, b)
-  Move         r42, r4
-  Move         r43, r22
-  Call2        r44, matmul, r42, r43
-  Move         r38, r44
+  Move         r36, r2
+  Move         r37, r3
+  Call2        r38, matmul, r36, r37
+  Move         r4, r38
+  SetGlobal    4,4,0,0
   // for i in 0..repeat {
-  Const        r45, 1
-  AddInt       r46, r6, r45
-  Move         r6, r46
+  Const        r39, 1
+  AddInt       r40, r3, r39
+  Move         r3, r40
   Jump         L9
 L8:
   // let end = now()
-  Now          r47
-  Move         r48, r47
+  Now          r41
+  Move         r6, r41
+  SetGlobal    6,6,0,0
   // let duration = (end - start) / 1000
-  SubInt       r49, r48, r40
-  Const        r50, 1000
-  DivInt       r51, r49, r50
-  Move         r52, r51
+  SubInt       r42, r6, r5
+  Const        r43, 1000
+  DivInt       r44, r42, r43
+  Move         r7, r44
+  SetGlobal    7,7,0,0
   // "duration_us": duration,
-  Const        r53, "duration_us"
+  Const        r45, "duration_us"
   // "output": last[0][0], // last[0][0] type any does not support indexing
-  Const        r54, "output"
-  Const        r5, 0
-  Index        r55, r38, r5
-  Const        r5, 0
-  Index        r56, r55, r5
+  Const        r46, "output"
+  Const        r2, 0
+  Index        r47, r4, r2
+  Const        r2, 0
+  Index        r48, r47, r2
   // "duration_us": duration,
-  Move         r57, r53
-  Move         r58, r52
+  Move         r49, r45
+  Move         r50, r7
   // "output": last[0][0], // last[0][0] type any does not support indexing
-  Move         r59, r54
-  Move         r60, r56
+  Move         r51, r46
+  Move         r52, r48
   // json({
-  MakeMap      r61, 2, r57
-  JSON         r61
+  MakeMap      r53, 2, r49
+  JSON         r53
   Return       r0
 
   // fun matmul(a: list<list<int>>, b: list<list<int>>): list<list<int>> {
