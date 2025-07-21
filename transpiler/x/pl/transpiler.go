@@ -1347,7 +1347,7 @@ func toBinary(b *parser.BinaryExpr, env *compileEnv) (Expr, error) {
 				opStr = "=\\="
 			}
 		case "<", "<=", ">", ">=":
-			if isStringLit(left) || isStringLit(right) {
+			if isStringLike(left, env) || isStringLike(right, env) {
 				switch op {
 				case "<":
 					opStr = "@<"
