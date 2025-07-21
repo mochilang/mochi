@@ -121,6 +121,11 @@ type BinaryExpr struct {
 	Right Expr
 }
 
+type UnaryExpr struct {
+	Op    string
+	Value Expr
+}
+
 type QueryComp struct {
 	Vars     []string
 	Sources  []Expr
@@ -914,6 +919,23 @@ func (b *BinaryExpr) emit(w io.Writer) {
 	io.WriteString(w, ")")
 }
 
+func (u *UnaryExpr) emit(w io.Writer) {
+	switch u.Op {
+	case "!":
+		io.WriteString(w, "(not ")
+		if u.Value != nil {
+			u.Value.emit(w)
+		}
+		io.WriteString(w, ")")
+	case "-":
+		io.WriteString(w, "(-")
+		if u.Value != nil {
+			u.Value.emit(w)
+		}
+		io.WriteString(w, ")")
+	}
+}
+
 func (qc *QueryComp) emit(w io.Writer) {
 	io.WriteString(w, "(function()\n  local _res = {}\n")
 	order := make([]int, len(qc.Vars))
@@ -1173,10 +1195,14 @@ func convertUnary(u *parser.Unary) (Expr, error) {
 	}
 	for i := len(u.Ops) - 1; i >= 0; i-- {
 		op := u.Ops[i]
-		if op != "-" {
+		switch op {
+		case "-":
+			expr = &BinaryExpr{Left: &IntLit{Value: 0}, Op: "-", Right: expr}
+		case "!":
+			expr = &IfExpr{Cond: expr, Then: &IntLit{Value: 0}, Else: &IntLit{Value: 1}}
+		default:
 			return nil, fmt.Errorf("unsupported unary operator")
 		}
-		expr = &BinaryExpr{Left: &IntLit{Value: 0}, Op: "-", Right: expr}
 	}
 	return expr, nil
 }
