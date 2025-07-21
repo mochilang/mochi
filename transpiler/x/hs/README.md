@@ -2,8 +2,8 @@
 
 This package contains experimental transpilers that convert Mochi bytecode to other programming languages. The Haskell backend currently supports a tiny subset of the language.
 
-Compiled programs: 60/100
-Last updated: 2025-07-21 23:34 GMT+7
+Compiled programs: 61/101
+Last updated: 2025-07-22 04:52 GMT+7
 
 ## Golden test checklist
 - [x] append_builtin
@@ -36,8 +36,9 @@ Last updated: 2025-07-21 23:34 GMT+7
 - [x] group_by_left_join
 - [x] group_by_multi_join
 - [x] group_by_multi_join_sort
+- [ ] group_by_multi_sort
 - [ ] group_by_sort
-- [ ] group_items_iteration
+- [x] group_items_iteration
 - [x] if_else
 - [x] if_then_else
 - [x] if_then_else_nested
