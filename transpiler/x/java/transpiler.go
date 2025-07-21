@@ -1388,6 +1388,13 @@ func isStringExpr(e Expr) bool {
 		}
 	case *SubstringExpr:
 		return true
+	case *FieldExpr:
+		if t, ok := fieldTypeFromVar(ex.Target, ex.Name); ok {
+			return t == "String" || t == "string"
+		}
+		if inferType(ex) == "string" || inferType(ex) == "String" {
+			return true
+		}
 	case *IndexExpr:
 		if isStringExpr(ex.Target) {
 			return true
@@ -2207,7 +2214,14 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 					return nil, err
 				}
 				vals[i] = v
-				fields[i] = Param{Name: st.Order[i], Type: toJavaTypeFromType(st.Fields[st.Order[i]])}
+				tname := toJavaTypeFromType(st.Fields[st.Order[i]])
+				if tname == "" {
+					tname = inferType(v)
+					if tname == "" {
+						tname = "Object"
+					}
+				}
+				fields[i] = Param{Name: st.Order[i], Type: tname}
 			}
 			extraDecls = append(extraDecls, &TypeDeclStmt{Name: name, Fields: fields})
 			return &StructLit{Name: name, Fields: vals, Names: st.Order}, nil
@@ -2376,15 +2390,25 @@ func compileQueryExpr(q *parser.QueryExpr) (Expr, error) {
 		if err != nil {
 			return nil, err
 		}
-		varTypes[f.Var] = "java.util.Map"
+		ftype := "java.util.Map"
 		if topEnv != nil {
 			if lt, ok := types.ExprType(f.Src, topEnv).(types.ListType); ok {
-				varTypes[f.Var] = toJavaTypeFromType(lt.Elem)
-				if st, ok := topEnv.GetStruct(varTypes[f.Var]); ok {
+				ftype = toJavaTypeFromType(lt.Elem)
+				if st, ok := topEnv.GetStruct(ftype); ok {
 					topEnv.SetVar(f.Var, st, false)
 				}
 			}
 		}
+		if ftype == "" {
+			ft := inferType(fe)
+			if strings.HasSuffix(ft, "[]") {
+				ftype = strings.TrimSuffix(ft, "[]")
+			}
+			if ftype == "" {
+				ftype = "java.util.Map"
+			}
+		}
+		varTypes[f.Var] = ftype
 		froms[i] = queryFrom{Var: f.Var, Src: fe}
 	}
 	joins := make([]queryJoin, len(q.Joins))
@@ -2400,6 +2424,15 @@ func compileQueryExpr(q *parser.QueryExpr) (Expr, error) {
 				if st, ok := topEnv.GetStruct(jt); ok {
 					topEnv.SetVar(j.Var, st, false)
 				}
+			}
+		}
+		if jt == "" {
+			t := inferType(je)
+			if strings.HasSuffix(t, "[]") {
+				jt = strings.TrimSuffix(t, "[]")
+			}
+			if jt == "" {
+				jt = "java.util.Map"
 			}
 		}
 		varTypes[j.Var] = jt
@@ -2741,6 +2774,16 @@ func renameVar(e Expr, oldName, newName string) Expr {
 		return &IndexExpr{Target: renameVar(ex.Target, oldName, newName), Index: renameVar(ex.Index, oldName, newName)}
 	case *SliceExpr:
 		return &SliceExpr{Value: renameVar(ex.Value, oldName, newName), Start: renameVar(ex.Start, oldName, newName), End: renameVar(ex.End, oldName, newName)}
+	case *LenExpr:
+		return &LenExpr{Value: renameVar(ex.Value, oldName, newName)}
+	case *AvgExpr:
+		return &AvgExpr{Value: renameVar(ex.Value, oldName, newName)}
+	case *SumExpr:
+		return &SumExpr{Value: renameVar(ex.Value, oldName, newName)}
+	case *ValuesExpr:
+		return &ValuesExpr{Map: renameVar(ex.Map, oldName, newName)}
+	case *AppendExpr:
+		return &AppendExpr{List: renameVar(ex.List, oldName, newName), Value: renameVar(ex.Value, oldName, newName)}
 	case *ListLit:
 		elems := make([]Expr, len(ex.Elems))
 		for i, el := range ex.Elems {
