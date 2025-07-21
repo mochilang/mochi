@@ -1,6 +1,6 @@
-## Progress (2025-07-21 15:59 +0700)
-- swifttrans: deterministic group order
-- Generated golden tests for 79/100 programs
+## Progress (2025-07-21 16:17 +0700)
+- swifttrans: support slice indexing
+- Generated golden tests for 81/100 programs
 - Updated README checklist and output artifacts
 
 # Swift Transpiler Tasks

@@ -471,6 +471,14 @@ type IndexExpr struct {
 	Force    bool
 }
 
+// SliceExpr represents a[start:end] slicing for lists or strings.
+type SliceExpr struct {
+	Base     Expr
+	Start    Expr // optional
+	End      Expr // optional
+	AsString bool
+}
+
 // CastExpr represents a type cast.
 type CastExpr struct {
 	Expr Expr
@@ -493,6 +501,46 @@ func (ie *IndexExpr) emit(w io.Writer) {
 	if ie.Force {
 		fmt.Fprint(w, "!")
 	}
+}
+
+func (s *SliceExpr) emit(w io.Writer) {
+	if s.AsString {
+		fmt.Fprint(w, "String(Array(")
+		s.Base.emit(w)
+		fmt.Fprint(w, ")[")
+		if s.Start != nil {
+			s.Start.emit(w)
+		} else {
+			fmt.Fprint(w, "0")
+		}
+		fmt.Fprint(w, "..<")
+		if s.End != nil {
+			s.End.emit(w)
+		} else {
+			fmt.Fprint(w, "Array(")
+			s.Base.emit(w)
+			fmt.Fprint(w, ").count")
+		}
+		fmt.Fprint(w, "])")
+		return
+	}
+	fmt.Fprint(w, "Array(")
+	s.Base.emit(w)
+	fmt.Fprint(w, "[")
+	if s.Start != nil {
+		s.Start.emit(w)
+	} else {
+		fmt.Fprint(w, "0")
+	}
+	fmt.Fprint(w, "..<")
+	if s.End != nil {
+		s.End.emit(w)
+	} else {
+		s.Base.emit(w)
+		fmt.Fprint(w, ".count")
+	}
+	fmt.Fprint(w, "])")
+	fmt.Fprint(w, ")")
 }
 
 func (c *CastExpr) emit(w io.Writer) {
@@ -1330,6 +1378,29 @@ func convertPostfix(env *types.Env, p *parser.PostfixExpr) (Expr, error) {
 	for i := 0; i < len(p.Ops); i++ {
 		op := p.Ops[i]
 		if op.Index != nil {
+			if op.Index.Colon != nil && op.Index.Colon2 == nil && op.Index.Step == nil {
+				var start, end Expr
+				if op.Index.Start != nil {
+					start, err = convertExpr(env, op.Index.Start)
+					if err != nil {
+						return nil, err
+					}
+				}
+				if op.Index.End != nil {
+					end, err = convertExpr(env, op.Index.End)
+					if err != nil {
+						return nil, err
+					}
+				}
+				isStr := false
+				if env != nil {
+					if t := types.TypeOfPrimaryBasic(p.Target, env); types.IsStringType(t) {
+						isStr = true
+					}
+				}
+				expr = &SliceExpr{Base: expr, Start: start, End: end, AsString: isStr}
+				continue
+			}
 			if op.Index.Start == nil || op.Index.Colon != nil || op.Index.End != nil || op.Index.Colon2 != nil || op.Index.Step != nil {
 				return nil, fmt.Errorf("unsupported index")
 			}
