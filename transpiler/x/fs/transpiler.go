@@ -819,6 +819,29 @@ type UnitLit struct{}
 
 func (u *UnitLit) emit(w io.Writer) { io.WriteString(w, "()") }
 
+// MatchExpr represents a match expression.
+type MatchExpr struct {
+	Target Expr
+	Cases  []MatchCase
+}
+
+type MatchCase struct {
+	Pattern Expr
+	Result  Expr
+}
+
+func (m *MatchExpr) emit(w io.Writer) {
+	io.WriteString(w, "match ")
+	m.Target.emit(w)
+	io.WriteString(w, " with")
+	for _, c := range m.Cases {
+		io.WriteString(w, "\n| ")
+		c.Pattern.emit(w)
+		io.WriteString(w, " -> ")
+		c.Result.emit(w)
+	}
+}
+
 type IfExpr struct {
 	Cond Expr
 	Then Expr
@@ -887,7 +910,7 @@ func precedence(op string) int {
 
 func needsParen(e Expr) bool {
 	switch e.(type) {
-	case *BinaryExpr, *UnaryExpr, *IfExpr, *AppendExpr, *SubstringExpr, *CallExpr, *IndexExpr, *LambdaExpr, *FieldExpr, *MethodCallExpr, *SliceExpr, *CastExpr, *MapLit:
+	case *BinaryExpr, *UnaryExpr, *IfExpr, *AppendExpr, *SubstringExpr, *CallExpr, *IndexExpr, *LambdaExpr, *FieldExpr, *MethodCallExpr, *SliceExpr, *CastExpr, *MapLit, *MatchExpr:
 		return true
 	default:
 		return false
@@ -945,6 +968,17 @@ func inferType(e Expr) string {
 		return "string"
 	case *SliceExpr:
 		return inferType(v.Target)
+	case *MatchExpr:
+		if len(v.Cases) == 0 {
+			return ""
+		}
+		t := inferType(v.Cases[0].Result)
+		for _, c := range v.Cases[1:] {
+			if inferType(c.Result) != t {
+				return ""
+			}
+		}
+		return t
 	case *CallExpr:
 		switch v.Func {
 		case "string":
@@ -1737,6 +1771,8 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 			items[i] = [2]Expr{k, v}
 		}
 		return &MapLit{Items: items}, nil
+	case p.Match != nil:
+		return convertMatchExpr(p.Match)
 	case p.FunExpr != nil:
 		save := varTypes
 		varTypes = copyMap(varTypes)
@@ -1834,6 +1870,26 @@ func convertIfStmt(in *parser.IfStmt) (Stmt, error) {
 		}
 	}
 	return &IfStmt{Cond: cond, Then: thenStmts, Else: elseStmts}, nil
+}
+
+func convertMatchExpr(in *parser.MatchExpr) (Expr, error) {
+	target, err := convertExpr(in.Target)
+	if err != nil {
+		return nil, err
+	}
+	cases := make([]MatchCase, len(in.Cases))
+	for i, c := range in.Cases {
+		pat, err := convertExpr(c.Pattern)
+		if err != nil {
+			return nil, err
+		}
+		res, err := convertExpr(c.Result)
+		if err != nil {
+			return nil, err
+		}
+		cases[i] = MatchCase{Pattern: pat, Result: res}
+	}
+	return &MatchExpr{Target: target, Cases: cases}, nil
 }
 
 func applyIndexOps(base Expr, ops []*parser.IndexOp) (Expr, error) {
