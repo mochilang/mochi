@@ -237,7 +237,10 @@ type UnionAllExpr struct{ Left, Right Expr }
 type ExceptExpr struct{ Left, Right Expr }
 type IntersectExpr struct{ Left, Right Expr }
 
-type FormatListExpr struct{ Value Expr }
+type FormatListExpr struct{
+        Value       Expr
+        FloatFields []string
+}
 
 // PrintExpr represents a call to the builtin print function. The arguments are
 // joined with a space and trailing whitespace is trimmed to avoid mismatches
@@ -607,14 +610,20 @@ func (e *IntersectExpr) emit(w io.Writer) {
 }
 
 func (f *FormatListExpr) emit(w io.Writer) {
-	io.WriteString(w, "\"[\" + ")
-	if f.Value != nil {
-		f.Value.emit(w)
-		io.WriteString(w, `.map(v => { if (typeof v === 'string') return '\'' + v + '\''; if (typeof v === 'number') return (Number.isInteger(v) ? v.toFixed(1) : String(v)); if (typeof v === 'boolean') return v ? 'True' : 'False'; if (typeof v === 'object') { let s = JSON.stringify(v).replace(/"/g, '\'' ).replace(/:/g, ': ').replace(/,/g, ', '); s = s.replace(/: (-?[0-9]+)([,}])/g, ': $1.0$2'); s = s.replace(/('[^']*(?:id|key)'\s*: )(-?[0-9]+)\.0([,}])/g, '$1$2$3'); return s } return String(v); }).join(', ')`)
-	} else {
-		io.WriteString(w, "\"\"")
-	}
-	io.WriteString(w, " + \"]\"")
+        io.WriteString(w, "\"[\" + ")
+        if f.Value != nil {
+                f.Value.emit(w)
+                io.WriteString(w, `.map(v => { if (typeof v === 'string') return '\'' + v + '\''; if (typeof v === 'number') return Number.isInteger(v) ? String(v) : String(v); if (typeof v === 'boolean') return v ? 'True' : 'False'; if (typeof v === 'object') { let s = JSON.stringify(v).replace(/"/g, '\'' ).replace(/:/g, ': ').replace(/,/g, ', ');`)
+                if len(f.FloatFields) > 0 {
+                        io.WriteString(w, ` s = s.replace(/'(`)
+                        io.WriteString(w, strings.Join(f.FloatFields, "|"))
+                        io.WriteString(w, `)'\s*: (-?[0-9]+)([,}])/g, '$1': $2.0$3');`)
+                }
+                io.WriteString(w, ` s = s.replace(/('[^']*(?:id|key)'\s*: )(-?[0-9]+)\.0([,}])/g, '$1$2$3'); return s } return String(v); }).join(', ')`)
+        } else {
+                io.WriteString(w, "\"\"")
+        }
+        io.WriteString(w, " + \"]\"")
 }
 
 func (p *PrintExpr) emit(w io.Writer) {
@@ -2681,8 +2690,16 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 						switch lt.Elem.(type) {
 						case types.StringType:
 							args[0] = &MethodCallExpr{Target: args[0], Method: "join", Args: []Expr{&StringLit{Value: " "}}}
-						case types.MapType, types.StructType:
-							args[0] = &FormatListExpr{Value: args[0]}
+                                               case types.MapType, types.StructType:
+                                                        var floats []string
+                                                        if st, ok := lt.Elem.(types.StructType); ok {
+                                                                for _, name := range st.Order {
+                                                                        if _, ok := st.Fields[name].(types.FloatType); ok {
+                                                                                floats = append(floats, name)
+                                                                        }
+                                                                }
+                                                        }
+                                                        args[0] = &FormatListExpr{Value: args[0], FloatFields: floats}
 						case types.AnyType:
 							// Fallback for lists of unknown element types. Mimic the
 							// interpreter by stringifying objects as JSON and other
@@ -2692,10 +2709,10 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 							rep2 := &MethodCallExpr{Target: rep1, Method: "replace", Args: []Expr{&CallExpr{Func: "RegExp", Args: []Expr{&StringLit{Value: ","}, &StringLit{Value: "g"}}}, &StringLit{Value: ", "}}}
 							rep3 := &MethodCallExpr{Target: rep2, Method: "replace", Args: []Expr{&CallExpr{Func: "RegExp", Args: []Expr{&StringLit{Value: ": ([0-9]+)([,}])"}, &StringLit{Value: "g"}}}, &StringLit{Value: ": $1.0$2"}}}
 							cond := &IfExpr{Cond: &BinaryExpr{Left: &UnaryExpr{Op: "typeof", Expr: &NameRef{Name: "x"}}, Op: "===", Right: &StringLit{Value: "object"}}, Then: rep3, Else: &CallExpr{Func: "String", Args: []Expr{&NameRef{Name: "x"}}}}
-							m := &MethodCallExpr{Target: args[0], Method: "map", Args: []Expr{&FunExpr{Params: []string{"x"}, Expr: cond}}}
-							args[0] = &FormatListExpr{Value: m}
-						default:
-							args = []Expr{&FormatListExpr{Value: args[0]}}
+                                                        m := &MethodCallExpr{Target: args[0], Method: "map", Args: []Expr{&FunExpr{Params: []string{"x"}, Expr: cond}}}
+                                                        args[0] = &FormatListExpr{Value: m}
+                                               default:
+                                                        args = []Expr{&FormatListExpr{Value: args[0]}}
 						}
 					}
 				}
