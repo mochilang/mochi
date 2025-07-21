@@ -864,6 +864,7 @@ type GroupJoinQueryExpr struct {
 	Select   Expr
 	Having   Expr
 	ElemType string
+	ItemType string
 	Vars     []string
 }
 
@@ -1010,11 +1011,20 @@ func (g *GroupQueryExpr) emit(w io.Writer) {
 
 func (g *GroupJoinQueryExpr) emit(w io.Writer) {
 	fmt.Fprintf(w, "func() []%s {\n", g.ElemType)
-	fmt.Fprint(w, "groups := map[string]struct{Key any; Items []map[string]any}{}\n")
+	fmt.Fprintf(w, "groups := map[string]struct{Key any; Items []%s}{}\n", g.ItemType)
 	fmt.Fprint(w, "order := []string{}\n")
 	fmt.Fprintf(w, "for _, %s := range ", g.Var)
 	g.Src.emit(w)
 	fmt.Fprint(w, " {")
+	fmt.Fprint(w, "\n    k := fmt.Sprint(")
+	g.Key.emit(w)
+	fmt.Fprint(w, ")\n")
+	fmt.Fprintf(w, "    grp, ok := groups[k]\n    if !ok {\n        grp = struct{Key any; Items []%s}{Key: ", g.ItemType)
+	g.Key.emit(w)
+	fmt.Fprintf(w, ", Items: []%s{}}\n        groups[k] = grp\n        order = append(order, k)\n    }\n", g.ItemType)
+	if len(g.Joins) == 1 && g.Joins[0].Side == "left" && len(g.Froms) == 0 {
+		fmt.Fprint(w, "    matched := false\n")
+	}
 	for _, f := range g.Froms {
 		fmt.Fprintf(w, " for _, %s := range ", f.Var)
 		f.Src.emit(w)
@@ -1031,26 +1041,26 @@ func (g *GroupJoinQueryExpr) emit(w io.Writer) {
 			fmt.Fprint(w, "true")
 		}
 		fmt.Fprint(w, " {")
+		if j.Side != "" && j.Side == "left" {
+			fmt.Fprint(w, "matched = true; ")
+		}
 	}
 	if g.Where != nil {
 		fmt.Fprint(w, " if ")
 		g.Where.emit(w)
 		fmt.Fprint(w, " {")
 	}
-	fmt.Fprint(w, "k := fmt.Sprint(")
-	g.Key.emit(w)
-	fmt.Fprint(w, ")\n")
-	fmt.Fprint(w, "grp, ok := groups[k]\nif !ok {\n    grp = struct{Key any; Items []map[string]any}{Key: ")
-	g.Key.emit(w)
-	fmt.Fprint(w, ", Items: []map[string]any{}}\n    groups[k] = grp\n    order = append(order, k)\n}\n")
-	fmt.Fprint(w, "grp.Items = append(grp.Items, map[string]any{")
+	fmt.Fprintf(w, "grp.Items = append(grp.Items, %s{", g.ItemType)
 	for i, v := range g.Vars {
 		if i > 0 {
 			fmt.Fprint(w, ", ")
 		}
-		fmt.Fprintf(w, "\"%s\": %s", v, v)
+		fmt.Fprintf(w, "%s: %s", toGoFieldName(v), v)
 	}
 	fmt.Fprint(w, "})\ngroups[k] = grp")
+	if len(g.Joins) == 1 && g.Joins[0].Side == "left" && len(g.Froms) == 0 {
+		fmt.Fprintf(w, "\n    if !matched { grp.Items = append(grp.Items, %s{}) }", g.ItemType)
+	}
 	if g.Where != nil {
 		fmt.Fprint(w, " }")
 	}
@@ -1613,9 +1623,24 @@ func compileQueryExpr(q *parser.QueryExpr, env *types.Env, base string) (Expr, e
 			if err != nil {
 				return nil, err
 			}
+			where = boolExprFor(where, types.ExprType(q.Where, child))
 		}
 		genv := types.NewEnv(child)
-		genv.SetVar(q.Group.Name, types.GroupType{Key: types.AnyType{}, Elem: types.MapType{Key: types.StringType{}, Value: types.AnyType{}}}, true)
+		fieldTypes := make(map[string]types.Type, len(varNames))
+		fieldsDecl := make([]ParamDecl, len(varNames))
+		for i, v := range varNames {
+			if t, err := child.GetVar(v); err == nil {
+				fieldTypes[v] = t
+				fieldsDecl[i] = ParamDecl{Name: v, Type: toGoTypeFromType(t)}
+			} else {
+				fieldTypes[v] = types.AnyType{}
+				fieldsDecl[i] = ParamDecl{Name: v, Type: "any"}
+			}
+		}
+		structCount++
+		itemName := fmt.Sprintf("GroupItem%d", structCount)
+		extraDecls = append(extraDecls, &TypeDeclStmt{Name: itemName, Fields: fieldsDecl})
+		genv.SetVar(q.Group.Name, types.GroupType{Key: types.AnyType{}, Elem: types.StructType{Name: itemName, Fields: fieldTypes, Order: varNames}}, true)
 		sel, err := compileExpr(q.Select, genv, "")
 		if err != nil {
 			return nil, err
@@ -1662,7 +1687,7 @@ func compileQueryExpr(q *parser.QueryExpr, env *types.Env, base string) (Expr, e
 			et = "any"
 		}
 		usesPrint = true
-		return &GroupJoinQueryExpr{Var: q.Var, Src: src, Froms: froms, Joins: joins, Where: where, Key: keyExpr, GroupVar: q.Group.Name, Select: sel, Having: having, ElemType: et, Vars: varNames}, nil
+		return &GroupJoinQueryExpr{Var: q.Var, Src: src, Froms: froms, Joins: joins, Where: where, Key: keyExpr, GroupVar: q.Group.Name, Select: sel, Having: having, ElemType: et, ItemType: itemName, Vars: varNames}, nil
 	}
 	src, err := compileExpr(q.Source, env, "")
 	if err != nil {
@@ -1736,6 +1761,7 @@ func compileQueryExpr(q *parser.QueryExpr, env *types.Env, base string) (Expr, e
 		if err != nil {
 			return nil, err
 		}
+		where = boolExprFor(where, types.ExprType(q.Where, child))
 	}
 	sel, err := compileExpr(q.Select, child, "")
 	if err != nil {
@@ -2279,26 +2305,26 @@ func compilePostfix(pf *parser.PostfixExpr, env *types.Env, base string) (Expr, 
 				return nil, fmt.Errorf("unsupported postfix")
 			}
 		} else if op.Field != nil {
-               switch tt := t.(type) {
-               case types.MapType:
-                       expr = &IndexExpr{X: expr, Index: &StringLit{Value: op.Field.Name}}
-                       t = tt.Value
-               case types.StructType:
-                       expr = &FieldExpr{X: expr, Name: op.Field.Name}
-                       if ft, ok := tt.Fields[op.Field.Name]; ok {
-                               t = ft
-                       } else {
-                               t = types.AnyType{}
-                       }
-               default:
-                       // when type information is unknown, assume map access to
-                       // avoid generating invalid struct field references
-                       expr = &IndexExpr{X: expr, Index: &StringLit{Value: op.Field.Name}}
-                       t = types.AnyType{}
-               }
-               }
-       }
-       return expr, nil
+			switch tt := t.(type) {
+			case types.MapType:
+				expr = &IndexExpr{X: expr, Index: &StringLit{Value: op.Field.Name}}
+				t = tt.Value
+			case types.StructType:
+				expr = &FieldExpr{X: expr, Name: op.Field.Name}
+				if ft, ok := tt.Fields[op.Field.Name]; ok {
+					t = ft
+				} else {
+					t = types.AnyType{}
+				}
+			default:
+				// when type information is unknown, assume map access to
+				// avoid generating invalid struct field references
+				expr = &IndexExpr{X: expr, Index: &StringLit{Value: op.Field.Name}}
+				t = types.AnyType{}
+			}
+		}
+	}
+	return expr, nil
 }
 
 func compilePrimary(p *parser.Primary, env *types.Env, base string) (Expr, error) {
