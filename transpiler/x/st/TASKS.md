@@ -1,3 +1,8 @@
+## Progress (21 Jul 2025 17:26 +0700)
+- VM valid golden test results updated
+- Added short-circuit boolean operators
+- bool_chain and short_circuit now pass (75/100)
+
 ## Progress (21 Jul 2025 16:57 +0700)
 - VM valid golden test results updated
 - Added match expression support

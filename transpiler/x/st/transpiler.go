@@ -340,21 +340,34 @@ func evalExpr(e *parser.Expr, vars map[string]value) (value, error) {
 }
 
 func evalBinary(b *parser.BinaryExpr, vars map[string]value) (value, error) {
-	values := []value{}
-	ops := []string{}
+	ops := make([]string, len(b.Right))
+	exprs := make([]*parser.PostfixExpr, len(b.Right)+1)
+	values := make([]value, len(b.Right)+1)
+	done := make([]bool, len(b.Right)+1)
+
 	left, err := evalUnary(b.Left, vars)
 	if err != nil {
 		return value{}, err
 	}
-	values = append(values, left)
-	for _, op := range b.Right {
-		right, err := evalPostfix(op.Right, vars)
-		if err != nil {
-			return value{}, err
-		}
-		ops = append(ops, op.Op)
-		values = append(values, right)
+	values[0] = left
+	done[0] = true
+	for i, op := range b.Right {
+		ops[i] = op.Op
+		exprs[i+1] = op.Right
 	}
+
+	getVal := func(i int) (value, error) {
+		if !done[i] {
+			v, err := evalPostfix(exprs[i], vars)
+			if err != nil {
+				return value{}, err
+			}
+			values[i] = v
+			done[i] = true
+		}
+		return values[i], nil
+	}
+
 	prec := [][]string{
 		{"*", "/", "%"},
 		{"+", "-"},
@@ -366,12 +379,45 @@ func evalBinary(b *parser.BinaryExpr, vars map[string]value) (value, error) {
 		i := 0
 		for i < len(ops) {
 			if contains(level, ops[i]) {
-				v, err := applyOp(values[i], ops[i], values[i+1])
+				leftVal, err := getVal(i)
+				if err != nil {
+					return value{}, err
+				}
+				if ops[i] == "&&" {
+					if leftVal.kind == valBool && !leftVal.b {
+						values[i] = value{kind: valBool, b: false}
+						done[i] = true
+						exprs = append(exprs[:i+1], exprs[i+2:]...)
+						values = append(values[:i+1], values[i+2:]...)
+						done = append(done[:i+1], done[i+2:]...)
+						ops = append(ops[:i], ops[i+1:]...)
+						continue
+					}
+				}
+				if ops[i] == "||" {
+					if leftVal.kind == valBool && leftVal.b {
+						values[i] = value{kind: valBool, b: true}
+						done[i] = true
+						exprs = append(exprs[:i+1], exprs[i+2:]...)
+						values = append(values[:i+1], values[i+2:]...)
+						done = append(done[:i+1], done[i+2:]...)
+						ops = append(ops[:i], ops[i+1:]...)
+						continue
+					}
+				}
+				rightVal, err := getVal(i + 1)
+				if err != nil {
+					return value{}, err
+				}
+				v, err := applyOp(leftVal, ops[i], rightVal)
 				if err != nil {
 					return value{}, err
 				}
 				values[i] = v
+				done[i] = true
+				exprs = append(exprs[:i+1], exprs[i+2:]...)
 				values = append(values[:i+1], values[i+2:]...)
+				done = append(done[:i+1], done[i+2:]...)
 				ops = append(ops[:i], ops[i+1:]...)
 			} else {
 				i++
@@ -1718,6 +1764,7 @@ func evalQueryExpr(q *parser.QueryExpr, vars map[string]value) (value, error) {
 // Transpile converts a Mochi program into our Smalltalk AST.
 func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	vars := map[string]value{}
+	funcs := map[string]*parser.FunStmt{}
 	p := &Program{}
 
 	var processStmt func(*parser.Statement) error
@@ -1749,6 +1796,9 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 			}
 			vars[st.Var.Name] = v
 			appendAssign(&p.Lines, st.Var.Name, v)
+		case st.Fun != nil:
+			funcs[st.Fun.Name] = st.Fun
+			return nil
 		case st.Assign != nil:
 			if len(st.Assign.Field) > 0 {
 				return fmt.Errorf("unsupported assign")

@@ -158,8 +158,8 @@ func updateTasks() {
 	var buf bytes.Buffer
 	buf.WriteString(fmt.Sprintf("## Progress (%s)\n", ts))
 	buf.WriteString("- VM valid golden test results updated\n")
-	buf.WriteString("- Added match expression support\n")
-	buf.WriteString(fmt.Sprintf("- match_expr now passes (%d/%d)\n\n", compiled, total))
+	buf.WriteString("- Added short-circuit boolean operators\n")
+	buf.WriteString(fmt.Sprintf("- bool_chain and short_circuit now pass (%d/%d)\n\n", compiled, total))
 	if data, err := os.ReadFile(taskFile); err == nil {
 		buf.Write(data)
 	}
