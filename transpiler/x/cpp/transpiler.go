@@ -448,16 +448,15 @@ func (s *PrintStmt) emit(w io.Writer, indent int) {
 	}
 	if currentProgram != nil {
 		currentProgram.addInclude("<iostream>")
-		currentProgram.addInclude("<sstream>")
 	}
 	io.WriteString(w, "std::cout")
 	for i, v := range s.Values {
 		if i > 0 {
-			io.WriteString(w, " << ' '")
+			io.WriteString(w, " << \" \" << ")
+		} else {
+			io.WriteString(w, " << ")
 		}
-		io.WriteString(w, " << ([&]{ std::ostringstream ss; ss<<")
 		v.emit(w)
-		io.WriteString(w, "; return ss.str(); }())")
 	}
 	io.WriteString(w, " << std::endl;\n")
 }
@@ -501,7 +500,24 @@ func (m *MapLit) emit(w io.Writer) {
 			io.WriteString(w, ", ")
 		}
 		io.WriteString(w, "{")
-		m.Keys[i].emit(w)
+		switch k := m.Keys[i].(type) {
+		case *StringLit:
+			fmt.Fprintf(w, "%q", k.Value)
+		case *VarRef:
+			if _, ok := localTypes[k.Name]; ok {
+				io.WriteString(w, k.Name)
+			} else if currentEnv != nil {
+				if _, err := currentEnv.GetVar(k.Name); err == nil {
+					io.WriteString(w, k.Name)
+				} else {
+					fmt.Fprintf(w, "%q", k.Name)
+				}
+			} else {
+				fmt.Fprintf(w, "%q", k.Name)
+			}
+		default:
+			m.Keys[i].emit(w)
+		}
 		io.WriteString(w, ", ")
 		m.Values[i].emit(w)
 		io.WriteString(w, "}")
@@ -521,7 +537,7 @@ func (t *TupleExpr) emit(w io.Writer) {
 }
 
 func (s *StringLit) emit(w io.Writer) {
-	fmt.Fprintf(w, "%q", s.Value)
+	fmt.Fprintf(w, "std::string(%q)", s.Value)
 }
 
 func (i *IntLit) emit(w io.Writer) { fmt.Fprintf(w, "%d", i.Value) }
@@ -1490,6 +1506,11 @@ func convertStmt(s *parser.Statement) (Stmt, error) {
 			typ = cppType(*s.Let.Type.Simple)
 		} else if s.Let.Value != nil {
 			typ = guessType(s.Let.Value)
+			if typ == "" {
+				if _, ok := val.(*StringLit); ok {
+					typ = "std::string"
+				}
+			}
 		}
 		return &LetStmt{Name: s.Let.Name, Type: typ, Value: val}, nil
 	case s.Var != nil:
@@ -1506,6 +1527,11 @@ func convertStmt(s *parser.Statement) (Stmt, error) {
 			typ = cppType(*s.Var.Type.Simple)
 		} else if s.Var.Value != nil {
 			typ = guessType(s.Var.Value)
+			if typ == "" {
+				if _, ok := val.(*StringLit); ok {
+					typ = "std::string"
+				}
+			}
 		}
 		return &LetStmt{Name: s.Var.Name, Type: typ, Value: val}, nil
 	case s.Assign != nil:
@@ -2667,6 +2693,13 @@ func guessType(e *parser.Expr) string {
 		if sel := pf.Target.Selector; sel != nil && len(sel.Tail) == 0 {
 			if t, ok := localTypes[sel.Root]; ok {
 				return t
+			}
+			if currentEnv != nil {
+				if _, err := currentEnv.GetVar(sel.Root); err != nil {
+					return "std::string"
+				}
+			} else {
+				return "std::string"
 			}
 		}
 	}
