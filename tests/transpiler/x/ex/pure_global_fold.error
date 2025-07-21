@@ -1,9 +1,0 @@
-run: exit status 1
-warning: variable "k" is unused (if the variable is not meant to be used, prefix it with an underscore)
-  /workspace/mochi/tests/transpiler/x/ex/pure_global_fold.exs:3: Main
-
-warning: variable "k" does not exist and is being expanded to "k()", please use parentheses to remove the ambiguity or change the variable name
-  /workspace/mochi/tests/transpiler/x/ex/pure_global_fold.exs:5: Main.inc/1
-
-** (CompileError) /workspace/mochi/tests/transpiler/x/ex/pure_global_fold.exs:5: undefined function k/0 (expected Main to define such a function or for it to be imported, but none are available)
-

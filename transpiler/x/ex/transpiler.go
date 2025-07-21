@@ -21,6 +21,12 @@ var funcDepth int
 // builtinAliases maps import aliases to special built-in modules.
 var builtinAliases map[string]string
 
+// globalVars tracks variables defined before the first function declaration.
+var globalVars map[string]struct{}
+
+// moduleMode is true when emitting a module with functions.
+var moduleMode bool
+
 // Program represents a sequence of Elixir statements.
 type Program struct {
 	Stmts []Stmt
@@ -31,7 +37,16 @@ type Stmt interface{ emit(io.Writer, int) }
 // VarRef references a variable name or dotted selector.
 type VarRef struct{ Name string }
 
-func (v *VarRef) emit(w io.Writer) { io.WriteString(w, v.Name) }
+func (v *VarRef) emit(w io.Writer) {
+	if moduleMode {
+		if _, ok := globalVars[v.Name]; ok {
+			io.WriteString(w, "@")
+		}
+		io.WriteString(w, v.Name)
+		return
+	}
+	io.WriteString(w, v.Name)
+}
 
 // LetStmt binds a variable optionally to a value.
 type LetStmt struct {
@@ -56,8 +71,9 @@ func (s *LetStmt) emitGlobal(w io.Writer, indent int) {
 	for i := 0; i < indent; i++ {
 		io.WriteString(w, "  ")
 	}
+	io.WriteString(w, "@")
 	io.WriteString(w, s.Name)
-	io.WriteString(w, " = ")
+	io.WriteString(w, " ")
 	if s.Value != nil {
 		s.Value.emit(w)
 	} else {
@@ -119,9 +135,13 @@ func (r *ReturnStmt) emit(w io.Writer, indent int) {
 	for i := 0; i < indent; i++ {
 		io.WriteString(w, "  ")
 	}
+	io.WriteString(w, "throw {:return, ")
 	if r.Value != nil {
 		r.Value.emit(w)
+	} else {
+		io.WriteString(w, "nil")
 	}
+	io.WriteString(w, "}")
 }
 
 // IfStmt is a simple if/else statement.
@@ -393,10 +413,26 @@ func (fn *FuncDecl) emit(w io.Writer, indent int) {
 		io.WriteString(w, p)
 	}
 	io.WriteString(w, ") do\n")
+	for i := 0; i < indent+1; i++ {
+		io.WriteString(w, "  ")
+	}
+	io.WriteString(w, "try do\n")
 	for _, st := range fn.Body {
-		st.emit(w, indent+1)
+		st.emit(w, indent+2)
 		io.WriteString(w, "\n")
 	}
+	for i := 0; i < indent+1; i++ {
+		io.WriteString(w, "  ")
+	}
+	io.WriteString(w, "catch\n")
+	for i := 0; i < indent+2; i++ {
+		io.WriteString(w, "  ")
+	}
+	io.WriteString(w, "{:return, val} -> val\n")
+	for i := 0; i < indent+1; i++ {
+		io.WriteString(w, "  ")
+	}
+	io.WriteString(w, "end\n")
 	for i := 0; i < indent; i++ {
 		io.WriteString(w, "  ")
 	}
@@ -972,6 +1008,7 @@ func Emit(p *Program) []byte {
 		}
 	}
 	hasFunc := funcsExist
+	moduleMode = hasFunc
 	if hasFunc {
 		buf.WriteString("defmodule Main do\n")
 		var globals []Stmt
@@ -1015,6 +1052,7 @@ func Emit(p *Program) []byte {
 			buf.WriteString("\n")
 		}
 	}
+	moduleMode = false
 	return buf.Bytes()
 }
 
@@ -1022,6 +1060,8 @@ func Emit(p *Program) []byte {
 func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	res := &Program{}
 	builtinAliases = make(map[string]string)
+	globalVars = make(map[string]struct{})
+	foundFunc := false
 	for _, st := range prog.Statements {
 		if st.Import != nil && st.Import.Lang != nil {
 			alias := st.Import.As
@@ -1038,6 +1078,15 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 				if path == "math" {
 					builtinAliases[alias] = "python_math"
 				}
+			}
+		}
+		if !foundFunc {
+			if st.Fun != nil {
+				foundFunc = true
+			} else if st.Let != nil {
+				globalVars[st.Let.Name] = struct{}{}
+			} else if st.Var != nil {
+				globalVars[st.Var.Name] = struct{}{}
 			}
 		}
 	}

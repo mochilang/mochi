@@ -1,6 +1,6 @@
-## Progress (2025-07-21 23:34 +0700)
-- Commit c1850ebb5: lua transpiler: support group iter and sorting
-- Generated Elixir for 94/100 programs
+## Progress (2025-07-22 04:52 +0700)
+- Commit 58a01bf82: Improve Python group_by
+- Generated Elixir for 96/101 programs
 - Updated README checklist and outputs
 - Improved code emission and type inference
 
