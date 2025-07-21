@@ -430,6 +430,10 @@ func (f *FloatLit) emitExpr(w io.Writer) {
 	fmt.Fprintf(w, "%g", f.Value)
 }
 
+type NullLit struct{}
+
+func (n *NullLit) emitExpr(w io.Writer) { io.WriteString(w, "NULL") }
+
 type UnaryExpr struct {
 	Op   string
 	Expr Expr
@@ -2627,6 +2631,13 @@ func inferCType(env *types.Env, name string, e Expr) string {
 
 func anyToExpr(v any) Expr {
 	switch t := v.(type) {
+	case bool:
+		if t {
+			return &IntLit{Value: 1}
+		}
+		return &IntLit{Value: 0}
+	case nil:
+		return &NullLit{}
 	case int:
 		return &IntLit{Value: t}
 	case int64:
