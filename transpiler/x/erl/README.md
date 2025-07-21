@@ -1,5 +1,5 @@
-# Erlang Transpiler Output (9/100 generated and run)
-Last updated: 2025-07-21 18:35 +0700
+# Erlang Transpiler Output (56/100 generated and run)
+Last updated: 2025-07-21 20:01 +0700
 
 This directory contains a minimal transpiler that converts a very small
 subset of Mochi into Erlang. Generated programs are executed with
@@ -11,28 +11,28 @@ The following programs under `tests/vm/valid` have golden outputs. A
 checked item means the Erlang transpiler can successfully generate code
 that produces the same output as the Mochi VM.
 
-- [ ] append_builtin
-- [ ] avg_builtin
+- [x] append_builtin
+- [x] avg_builtin
 - [ ] basic_compare
 - [ ] binary_precedence
-- [ ] bool_chain
+- [x] bool_chain
 - [ ] break_continue
 - [ ] cast_string_to_int
 - [ ] cast_struct
-- [ ] closure
-- [ ] count_builtin
+- [x] closure
+- [x] count_builtin
 - [x] cross_join
 - [x] cross_join_filter
 - [x] cross_join_triple
 - [ ] dataset_sort_take_limit
 - [ ] dataset_where_filter
 - [ ] exists_builtin
-- [ ] for_list_collection
-- [ ] for_loop
-- [ ] for_map_collection
-- [ ] fun_call
-- [ ] fun_expr_in_let
-- [ ] fun_three_args
+- [x] for_list_collection
+- [x] for_loop
+- [x] for_map_collection
+- [x] fun_call
+- [x] fun_expr_in_let
+- [x] fun_three_args
 - [ ] go_auto
 - [x] group_by
 - [x] group_by_conditional_sum
@@ -43,43 +43,43 @@ that produces the same output as the Mochi VM.
 - [ ] group_by_multi_join_sort
 - [x] group_by_sort
 - [ ] group_items_iteration
-- [ ] if_else
-- [ ] if_then_else
-- [ ] if_then_else_nested
-- [ ] in_operator
+- [x] if_else
+- [x] if_then_else
+- [x] if_then_else_nested
+- [x] in_operator
 - [ ] in_operator_extended
 - [ ] inner_join
 - [ ] join_multi
 - [ ] json_builtin
 - [x] left_join
 - [ ] left_join_multi
-- [ ] len_builtin
-- [ ] len_map
-- [ ] len_string
-- [ ] let_and_print
+- [x] len_builtin
+- [x] len_map
+- [x] len_string
+- [x] let_and_print
 - [ ] list_assign
-- [ ] list_index
+- [x] list_index
 - [ ] list_nested_assign
 - [ ] list_set_ops
 - [ ] load_yaml
 - [ ] map_assign
-- [ ] map_in_operator
-- [ ] map_index
-- [ ] map_int_key
+- [x] map_in_operator
+- [x] map_index
+- [x] map_int_key
 - [ ] map_literal_dynamic
-- [ ] map_membership
+- [x] map_membership
 - [ ] map_nested_assign
 - [ ] match_expr
 - [ ] match_full
-- [ ] math_ops
-- [ ] membership
-- [ ] min_max_builtin
-- [ ] nested_function
+- [x] math_ops
+- [x] membership
+- [x] min_max_builtin
+- [x] nested_function
 - [ ] order_by_map
 - [ ] outer_join
-- [ ] partial_application
+- [x] partial_application
 - [x] print_hello
-- [ ] pure_fold
+- [x] pure_fold
 - [ ] pure_global_fold
 - [ ] python_auto
 - [ ] python_math
@@ -87,27 +87,27 @@ that produces the same output as the Mochi VM.
 - [ ] record_assign
 - [ ] right_join
 - [ ] save_jsonl_stdout
-- [ ] short_circuit
-- [ ] slice
+- [x] short_circuit
+- [x] slice
 - [ ] sort_stable
-- [ ] str_builtin
-- [ ] string_compare
-- [ ] string_concat
-- [ ] string_contains
-- [ ] string_in_operator
-- [ ] string_index
-- [ ] string_prefix_slice
-- [ ] substring_builtin
-- [ ] sum_builtin
+- [x] str_builtin
+- [x] string_compare
+- [x] string_concat
+- [x] string_contains
+- [x] string_in_operator
+- [x] string_index
+- [x] string_prefix_slice
+- [x] substring_builtin
+- [x] sum_builtin
 - [ ] tail_recursion
 - [ ] test_block
 - [ ] tree_sum
 - [ ] two-sum
-- [ ] typed_let
-- [ ] typed_var
-- [ ] unary_neg
+- [x] typed_let
+- [x] typed_var
+- [x] unary_neg
 - [ ] update_stmt
 - [ ] user_type_literal
-- [ ] values_builtin
-- [ ] var_assignment
-- [ ] while_loop
+- [x] values_builtin
+- [x] var_assignment
+- [x] while_loop
