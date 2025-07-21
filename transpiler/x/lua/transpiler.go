@@ -138,16 +138,18 @@ type MatchExpr struct {
 }
 
 type QueryComp struct {
-        Vars     []string
-        Sources  []Expr
-        Sides    []string
-        Body     Expr
-        Where    Expr
-        GroupKey Expr
-        GroupVar string
-        Having   Expr
-        Agg      string
-        SortKey  Expr
+	Vars     []string
+	Sources  []Expr
+	Sides    []string
+	Body     Expr
+	Where    Expr
+	GroupKey Expr
+	GroupVar string
+	Having   Expr
+	Agg      string
+	SortKey  Expr
+	Skip     Expr
+	Take     Expr
 }
 
 func (s *ExprStmt) emit(w io.Writer) { s.Expr.emit(w) }
@@ -377,146 +379,10 @@ func (a *AssignStmt) emit(w io.Writer) {
 }
 
 func (qa *QueryAssignStmt) emit(w io.Writer) {
-	order := make([]int, len(qa.Query.Vars))
-	idx := 0
-	for i := range qa.Query.Vars {
-		if i < len(qa.Query.Sides) && qa.Query.Sides[i] == "right" {
-			order[idx] = i
-			idx++
-		}
-	}
-	for i := range qa.Query.Vars {
-		if i >= len(qa.Query.Sides) || qa.Query.Sides[i] != "right" {
-			order[idx] = i
-			idx++
-		}
-	}
-	if qa.Query.GroupKey != nil {
-		io.WriteString(w, qa.Name)
-		io.WriteString(w, " = (function()\n")
-		io.WriteString(w, "  local groups = {}\n  local orderKeys = {}\n")
-		for _, i := range order {
-			v := qa.Query.Vars[i]
-			io.WriteString(w, "  for _, ")
-			io.WriteString(w, v)
-			io.WriteString(w, " in ipairs(")
-			if id, ok := qa.Query.Sources[i].(*Ident); ok && qa.Query.GroupVar != "" && id.Name == qa.Query.GroupVar {
-				io.WriteString(w, id.Name)
-				io.WriteString(w, ".items")
-			} else {
-				qa.Query.Sources[i].emit(w)
-			}
-			io.WriteString(w, ") do\n")
-		}
-		if qa.Query.Where != nil {
-			io.WriteString(w, "    if ")
-			qa.Query.Where.emit(w)
-			io.WriteString(w, " then\n")
-		}
-		io.WriteString(w, "      local key = ")
-		qa.Query.GroupKey.emit(w)
-		io.WriteString(w, "\n      local ks = tostring(key)\n      local g = groups[ks]\n      if g == nil then\n        g = {key = ")
-		qa.Query.GroupKey.emit(w)
-               io.WriteString(w, ", items = {}}\n        groups[ks] = g\n        table.insert(orderKeys, ks)\n      end\n      local row = {}\n")
-               for _, v := range qa.Query.Vars {
-                       io.WriteString(w, "      row.")
-                       io.WriteString(w, v)
-                       io.WriteString(w, " = ")
-                       io.WriteString(w, v)
-                       io.WriteString(w, "\n")
-               }
-               io.WriteString(w, "      table.insert(g.items, row)\n")
-               if qa.Query.Where != nil {
-                       io.WriteString(w, "    end\n")
-               }
-		for range qa.Query.Vars {
-			io.WriteString(w, "  end\n")
-		}
-               if qa.Query.SortKey != nil {
-                       io.WriteString(w, "  local tmp = {}\n  local res = {}\n  for _, ks in ipairs(orderKeys) do\n    local ")
-               } else {
-                       io.WriteString(w, "  local res = {}\n  for _, ks in ipairs(orderKeys) do\n    local ")
-               }
-               io.WriteString(w, qa.Query.GroupVar)
-               io.WriteString(w, " = groups[ks]\n")
-		if qa.Query.Having != nil {
-			io.WriteString(w, "    if ")
-			qa.Query.Having.emit(w)
-			io.WriteString(w, " then\n")
-		}
-               if qa.Query.SortKey != nil {
-                       io.WriteString(w, "    table.insert(tmp, {k = ")
-                       qa.Query.SortKey.emit(w)
-                       io.WriteString(w, ", v = ")
-               } else {
-                       io.WriteString(w, "    table.insert(res, ")
-               }
-               if qa.Query.Body != nil {
-                       qa.Query.Body.emit(w)
-               } else {
-                       io.WriteString(w, "nil")
-               }
-               if qa.Query.SortKey != nil {
-                       io.WriteString(w, "})\n")
-               } else {
-                       io.WriteString(w, ")\n")
-               }
-		if qa.Query.Having != nil {
-			io.WriteString(w, "    end\n")
-		}
-               io.WriteString(w, "  end\n")
-               if qa.Query.SortKey != nil {
-                       io.WriteString(w, "  table.sort(tmp, function(a,b) return a.k < b.k end)\n  for i,p in ipairs(tmp) do res[i] = p.v end\n")
-               }
-               io.WriteString(w, "  return res\nend)()\n")
-               return
-       }
-
-	if qa.Query.Agg != "" {
-		io.WriteString(w, qa.Name)
-		io.WriteString(w, " = (function()\n  local _tmp = {}\n")
-	} else {
-		io.WriteString(w, qa.Name)
-		io.WriteString(w, " = {}\n")
-	}
-	for _, i := range order {
-		v := qa.Query.Vars[i]
-		io.WriteString(w, "for _, ")
-		io.WriteString(w, v)
-		io.WriteString(w, " in ipairs(")
-		qa.Query.Sources[i].emit(w)
-		io.WriteString(w, ") do\n")
-	}
-	if qa.Query.Where != nil {
-		io.WriteString(w, "  if ")
-		qa.Query.Where.emit(w)
-		io.WriteString(w, " then\n")
-	}
-	io.WriteString(w, "  ")
-	if qa.Query.Agg != "" {
-		io.WriteString(w, "table.insert(_tmp, ")
-	} else {
-		io.WriteString(w, "table.insert(")
-		io.WriteString(w, qa.Name)
-		io.WriteString(w, ", ")
-	}
-	if qa.Query.Body != nil {
-		qa.Query.Body.emit(w)
-	} else {
-		io.WriteString(w, "nil")
-	}
-	io.WriteString(w, ")\n")
-	if qa.Query.Where != nil {
-		io.WriteString(w, "  end\n")
-	}
-	for range qa.Query.Vars {
-		io.WriteString(w, "end\n")
-	}
-	if qa.Query.Agg != "" {
-		io.WriteString(w, "  return ")
-		(&CallExpr{Func: qa.Query.Agg, Args: []Expr{&Ident{Name: "_tmp"}}}).emit(w)
-		io.WriteString(w, "\nend)()\n")
-	}
+	io.WriteString(w, qa.Name)
+	io.WriteString(w, " = ")
+	qa.Query.emit(w)
+	w.Write([]byte{'\n'})
 }
 
 func (a *IndexAssignStmt) emit(w io.Writer) {
@@ -1044,13 +910,13 @@ func (m *MatchExpr) emit(w io.Writer) {
 }
 
 func (qc *QueryComp) emit(w io.Writer) {
-       if qc.Agg != "" && qc.GroupKey == nil {
-               io.WriteString(w, "(function()\n  local _tmp = {}\n")
-       } else if qc.SortKey != nil {
-               io.WriteString(w, "(function()\n  local tmp = {}\n  local _res = {}\n")
-       } else {
-               io.WriteString(w, "(function()\n  local _res = {}\n")
-       }
+	if qc.Agg != "" && qc.GroupKey == nil {
+		io.WriteString(w, "(function()\n  local _tmp = {}\n")
+	} else if qc.SortKey != nil {
+		io.WriteString(w, "(function()\n  local tmp = {}\n  local _res = {}\n")
+	} else {
+		io.WriteString(w, "(function()\n  local _res = {}\n")
+	}
 	order := make([]int, len(qc.Vars))
 	idx := 0
 	for i := range qc.Vars {
@@ -1078,43 +944,78 @@ func (qc *QueryComp) emit(w io.Writer) {
 		qc.Where.emit(w)
 		io.WriteString(w, " then\n")
 	}
-       io.WriteString(w, "    ")
-       if qc.Agg != "" && qc.GroupKey == nil {
-               io.WriteString(w, "table.insert(_tmp, ")
-       } else if qc.SortKey != nil {
-               io.WriteString(w, "table.insert(tmp, {k = ")
-               qc.SortKey.emit(w)
-               io.WriteString(w, ", v = ")
-       } else {
-               io.WriteString(w, "table.insert(_res, ")
-       }
-       if qc.Body != nil {
-               qc.Body.emit(w)
-       } else {
-               io.WriteString(w, "nil")
-       }
-       if qc.Agg != "" && qc.GroupKey == nil {
-               io.WriteString(w, ")\n")
-       } else if qc.SortKey != nil {
-               io.WriteString(w, "})\n")
-       } else {
-               io.WriteString(w, ")\n")
-       }
+	io.WriteString(w, "    ")
+	if qc.Agg != "" && qc.GroupKey == nil {
+		io.WriteString(w, "table.insert(_tmp, ")
+	} else if qc.SortKey != nil {
+		io.WriteString(w, "table.insert(tmp, {k = ")
+		qc.SortKey.emit(w)
+		io.WriteString(w, ", v = ")
+	} else {
+		io.WriteString(w, "table.insert(_res, ")
+	}
+	if qc.Body != nil {
+		qc.Body.emit(w)
+	} else {
+		io.WriteString(w, "nil")
+	}
+	if qc.Agg != "" && qc.GroupKey == nil {
+		io.WriteString(w, ")\n")
+	} else if qc.SortKey != nil {
+		io.WriteString(w, "})\n")
+	} else {
+		io.WriteString(w, ")\n")
+	}
 	if qc.Where != nil {
 		io.WriteString(w, "    end\n")
 	}
 	for range qc.Vars {
 		io.WriteString(w, "  end\n")
 	}
-       if qc.Agg != "" && qc.GroupKey == nil {
-               io.WriteString(w, "  return ")
-               (&CallExpr{Func: qc.Agg, Args: []Expr{&Ident{Name: "_tmp"}}}).emit(w)
-               io.WriteString(w, "\nend)()")
-       } else if qc.SortKey != nil {
-               io.WriteString(w, "  table.sort(tmp, function(a,b) return a.k < b.k end)\n  for i,p in ipairs(tmp) do _res[i] = p.v end\n  return _res\nend)()")
-       } else {
-               io.WriteString(w, "  return _res\nend)()")
-       }
+	if qc.Agg != "" && qc.GroupKey == nil {
+		io.WriteString(w, "  return ")
+		(&CallExpr{Func: qc.Agg, Args: []Expr{&Ident{Name: "_tmp"}}}).emit(w)
+		io.WriteString(w, "\nend)()")
+	} else if qc.SortKey != nil {
+		io.WriteString(w, "  table.sort(tmp, function(a,b) return a.k < b.k end)\n  for i,p in ipairs(tmp) do _res[i] = p.v end\n")
+		if qc.Skip != nil || qc.Take != nil {
+			io.WriteString(w, "  local _slice = {}\n  local _start = 1")
+			if qc.Skip != nil {
+				io.WriteString(w, " + (")
+				qc.Skip.emit(w)
+				io.WriteString(w, ")")
+			}
+			io.WriteString(w, "\n  local _stop = #_res")
+			if qc.Take != nil {
+				io.WriteString(w, "\n  if (")
+				qc.Take.emit(w)
+				io.WriteString(w, ") < _stop - _start + 1 then _stop = _start + (")
+				qc.Take.emit(w)
+				io.WriteString(w, ") - 1 end")
+			}
+			io.WriteString(w, "\n  for i=_start,_stop do _slice[#_slice+1] = _res[i] end\n  _res = _slice\n")
+		}
+		io.WriteString(w, "  return _res\nend)()")
+	} else {
+		if qc.Skip != nil || qc.Take != nil {
+			io.WriteString(w, "  local _slice = {}\n  local _start = 1")
+			if qc.Skip != nil {
+				io.WriteString(w, " + (")
+				qc.Skip.emit(w)
+				io.WriteString(w, ")")
+			}
+			io.WriteString(w, "\n  local _stop = #_res")
+			if qc.Take != nil {
+				io.WriteString(w, "\n  if (")
+				qc.Take.emit(w)
+				io.WriteString(w, ") < _stop - _start + 1 then _stop = _start + (")
+				qc.Take.emit(w)
+				io.WriteString(w, ") - 1 end")
+			}
+			io.WriteString(w, "\n  for i=_start,_stop do _slice[#_slice+1] = _res[i] end\n  _res = _slice\n")
+		}
+		io.WriteString(w, "  return _res\nend)()")
+	}
 }
 
 func newContinueLabel() string {
@@ -1584,9 +1485,9 @@ func convertMatchExpr(me *parser.MatchExpr) (Expr, error) {
 }
 
 func convertQueryExpr(q *parser.QueryExpr) (Expr, error) {
-       if q.Skip != nil || q.Take != nil || q.Distinct {
-               return nil, fmt.Errorf("unsupported query")
-       }
+	if q.Distinct {
+		return nil, fmt.Errorf("unsupported query")
+	}
 	vars := []string{q.Var}
 	sources := []Expr{}
 	sides := []string{""}
@@ -1683,36 +1584,49 @@ func convertQueryExpr(q *parser.QueryExpr) (Expr, error) {
 		}
 	}
 
-       env := currentEnv
-       if groupVar != "" {
-               env = types.NewEnv(currentEnv)
-               env.SetVar(groupVar, types.GroupType{}, false)
-       }
-       prevEnv := currentEnv
-       currentEnv = env
-       body, err := convertExpr(q.Select)
-       if err != nil {
-               return nil, err
-       }
-       var sortKey Expr
-       if q.Sort != nil {
-               sortKey, err = convertExpr(q.Sort)
-               if err != nil {
-                       return nil, err
-               }
-       }
-       agg := ""
-       if call, ok := body.(*CallExpr); ok && groupExpr == nil {
-               switch call.Func {
-               case "sum", "count", "avg", "min", "max":
-                       if len(call.Args) == 1 {
-                               agg = call.Func
-                               body = call.Args[0]
-                       }
-               }
-       }
-       currentEnv = prevEnv
-       return &QueryComp{Vars: vars, Sources: sources, Sides: sides, Body: body, Where: where, GroupKey: groupExpr, GroupVar: groupVar, Having: having, Agg: agg, SortKey: sortKey}, nil
+	env := currentEnv
+	if groupVar != "" {
+		env = types.NewEnv(currentEnv)
+		env.SetVar(groupVar, types.GroupType{}, false)
+	}
+	prevEnv := currentEnv
+	currentEnv = env
+	body, err := convertExpr(q.Select)
+	if err != nil {
+		return nil, err
+	}
+	var sortKey Expr
+	if q.Sort != nil {
+		sortKey, err = convertExpr(q.Sort)
+		if err != nil {
+			return nil, err
+		}
+	}
+	agg := ""
+	if call, ok := body.(*CallExpr); ok && groupExpr == nil {
+		switch call.Func {
+		case "sum", "count", "avg", "min", "max":
+			if len(call.Args) == 1 {
+				agg = call.Func
+				body = call.Args[0]
+			}
+		}
+	}
+	currentEnv = prevEnv
+	var skipExpr, takeExpr Expr
+	if q.Skip != nil {
+		skipExpr, err = convertExpr(q.Skip)
+		if err != nil {
+			return nil, err
+		}
+	}
+	if q.Take != nil {
+		takeExpr, err = convertExpr(q.Take)
+		if err != nil {
+			return nil, err
+		}
+	}
+	return &QueryComp{Vars: vars, Sources: sources, Sides: sides, Body: body, Where: where, GroupKey: groupExpr, GroupVar: groupVar, Having: having, Agg: agg, SortKey: sortKey, Skip: skipExpr, Take: takeExpr}, nil
 }
 
 func convertIfStmt(is *parser.IfStmt) (Stmt, error) {
