@@ -675,65 +675,37 @@ func (g *GroupByExpr) emit(w io.Writer) {
 	if elem == "" {
 		elem = "Any"
 	}
-	fmt.Fprint(w, "({ var _groups = Map[Any, Map[String, Any]]() ; ")
-	if g.Sort != nil {
-		fmt.Fprintf(w, "var _tmp = ArrayBuffer[(%s,%s)]() ; ", g.SortType, elem)
-	}
-	fmt.Fprintf(w, "var _res = ArrayBuffer[%s]() ; for (", elem)
-	fmt.Fprint(w, g.Var)
-	fmt.Fprint(w, " <- ")
+	fmt.Fprint(w, "ArrayBuffer.from(")
 	g.Source.emit(w)
-	fmt.Fprint(w, ") {")
-	for _, f := range g.Froms {
-		fmt.Fprintf(w, " for (%s <- ", f.Var)
-		f.Src.emit(w)
-		fmt.Fprint(w, ") {")
-	}
-	if g.Where != nil {
-		fmt.Fprint(w, " if (")
-		g.Where.emit(w)
-		fmt.Fprint(w, ") {")
-	}
-	fmt.Fprint(w, " val _key = ")
+	fmt.Fprintf(w, ".groupBy(%s => ", g.Var)
 	g.Key.emit(w)
-	fmt.Fprint(w, " ; val _g = _groups.getOrElseUpdate(_key, Map(\"key\" -> _key, \"items\" -> ArrayBuffer[Any]())) ; _g(\"items\").asInstanceOf[ArrayBuffer[Any]].append(")
-	fmt.Fprint(w, g.Var)
 	fmt.Fprint(w, ")")
+	for _, f := range g.Froms {
+		_ = f
+	}
 	if g.Where != nil {
-		fmt.Fprint(w, " }")
+		fmt.Fprint(w, ".filter(")
+		fmt.Fprintf(w, "%s => ", g.Var)
+		g.Where.emit(w)
+		fmt.Fprint(w, ")")
 	}
-	for range g.Froms {
-		fmt.Fprint(w, " }")
-	}
-	fmt.Fprint(w, " for (")
-	fmt.Fprint(w, g.Name)
-	fmt.Fprint(w, " <- _groups.values) {")
+	fmt.Fprintf(w, ".map{ case (k, %s) => Map(\"key\" -> k, \"items\" -> ArrayBuffer.from(%s)) }", g.Name, g.Name)
 	if g.Having != nil {
-		fmt.Fprint(w, " if (")
+		fmt.Fprint(w, ".filter(")
+		fmt.Fprintf(w, "%s => ", g.Name)
 		g.Having.emit(w)
-		fmt.Fprint(w, ") {")
+		fmt.Fprint(w, ")")
 	}
 	if g.Sort != nil {
-		fmt.Fprint(w, " _tmp.append(")
-		fmt.Fprint(w, "(")
+		fmt.Fprint(w, ".toSeq.sortBy(")
+		fmt.Fprintf(w, "%s => ", g.Name)
 		g.Sort.emit(w)
-		fmt.Fprint(w, ", ")
-		g.Select.emit(w)
-		fmt.Fprint(w, ")")
-		fmt.Fprint(w, ")")
-	} else {
-		fmt.Fprint(w, " _res.append(")
-		g.Select.emit(w)
-		fmt.Fprint(w, ")")
+		fmt.Fprint(w, ").map(_._2)")
 	}
-	if g.Having != nil {
-		fmt.Fprint(w, " }")
-	}
-	fmt.Fprint(w, " }")
-	if g.Sort != nil {
-		fmt.Fprint(w, " ; _res = _tmp.sortBy(_._1).map(_._2)")
-	}
-	fmt.Fprint(w, " ; _res })")
+	fmt.Fprint(w, ".map(")
+	fmt.Fprintf(w, "%s => ", g.Name)
+	g.Select.emit(w)
+	fmt.Fprint(w, "))")
 }
 
 // Emit generates formatted Scala source for the given program.

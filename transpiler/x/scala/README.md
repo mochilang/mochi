@@ -2,16 +2,17 @@
 
 Generated Scala code for programs in `tests/vm/valid`. Each program has a `.scala` file produced by the transpiler and a `.out` file with its runtime output. Compilation or execution errors are captured in `.error` files.
 
-## Golden Test Checklist (90/100)
+## Golden Test Checklist (68/100)
+_Last updated: 2025-07-21 19:26 +0700_
 
 - [x] append_builtin
 - [x] avg_builtin
 - [x] basic_compare
 - [x] binary_precedence
 - [x] bool_chain
-- [x] break_continue
+- [ ] break_continue
 - [x] cast_string_to_int
-- [x] cast_struct
+- [ ] cast_struct
 - [x] closure
 - [x] count_builtin
 - [x] cross_join
@@ -27,15 +28,15 @@ Generated Scala code for programs in `tests/vm/valid`. Each program has a `.scal
 - [x] fun_expr_in_let
 - [x] fun_three_args
 - [ ] go_auto
-- [x] group_by
-- [x] group_by_conditional_sum
-- [x] group_by_having
-- [x] group_by_join
+- [ ] group_by
+- [ ] group_by_conditional_sum
+- [ ] group_by_having
+- [ ] group_by_join
 - [ ] group_by_left_join
 - [x] group_by_multi_join
 - [x] group_by_multi_join_sort
-- [x] group_by_sort
-- [x] group_items_iteration
+- [ ] group_by_sort
+- [ ] group_items_iteration
 - [x] if_else
 - [x] if_then_else
 - [x] if_then_else_nested
@@ -43,8 +44,8 @@ Generated Scala code for programs in `tests/vm/valid`. Each program has a `.scal
 - [x] in_operator_extended
 - [x] inner_join
 - [x] join_multi
-- [x] json_builtin
-- [x] left_join
+- [ ] json_builtin
+- [ ] left_join
 - [ ] left_join_multi
 - [x] len_builtin
 - [x] len_map
@@ -53,7 +54,7 @@ Generated Scala code for programs in `tests/vm/valid`. Each program has a `.scal
 - [x] list_assign
 - [x] list_index
 - [x] list_nested_assign
-- [x] list_set_ops
+- [ ] list_set_ops
 - [ ] load_yaml
 - [x] map_assign
 - [x] map_in_operator
@@ -68,21 +69,21 @@ Generated Scala code for programs in `tests/vm/valid`. Each program has a `.scal
 - [x] membership
 - [x] min_max_builtin
 - [x] nested_function
-- [x] order_by_map
+- [ ] order_by_map
 - [ ] outer_join
-- [x] partial_application
+- [ ] partial_application
 - [x] print_hello
 - [x] pure_fold
-- [x] pure_global_fold
+- [ ] pure_global_fold
 - [ ] python_auto
 - [ ] python_math
-- [x] query_sum_select
-- [x] record_assign
-- [x] right_join
+- [ ] query_sum_select
+- [ ] record_assign
+- [ ] right_join
 - [ ] save_jsonl_stdout
 - [x] short_circuit
 - [x] slice
-- [x] sort_stable
+- [ ] sort_stable
 - [x] str_builtin
 - [x] string_compare
 - [x] string_concat
@@ -94,13 +95,13 @@ Generated Scala code for programs in `tests/vm/valid`. Each program has a `.scal
 - [x] sum_builtin
 - [x] tail_recursion
 - [ ] test_block
-- [x] tree_sum
-- [x] two-sum
+- [ ] tree_sum
+- [ ] two-sum
 - [x] typed_let
 - [x] typed_var
 - [x] unary_neg
 - [ ] update_stmt
-- [x] user_type_literal
-- [x] values_builtin
+- [ ] user_type_literal
+- [ ] values_builtin
 - [x] var_assignment
 - [x] while_loop
