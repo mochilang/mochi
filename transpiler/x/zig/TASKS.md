@@ -1,3 +1,7 @@
+## Progress (2025-07-21 10:43 +0700)
+- Generated Zig for 66/100 programs
+- Added right_join support and outputs
+
 ## Progress (2025-07-21 07:16 +0700)
 - Generated Zig for 65/100 programs
 - Updated README checklist and outputs
