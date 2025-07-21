@@ -786,7 +786,9 @@ func (gq *GroupQueryExpr) emit(w io.Writer) {
 	}
 	indent(w, 1+len(gq.Vars))
 	io.WriteString(w, "val _list = _groups.getOrPut(")
+	io.WriteString(w, "(")
 	gq.Key.emit(w)
+	io.WriteString(w, ") as Any")
 	io.WriteString(w, ") { mutableListOf() }\n")
 	indent(w, 1+len(gq.Vars))
 	io.WriteString(w, "_list.add(")
@@ -1098,6 +1100,8 @@ func guessType(e Expr) string {
 			elem = "Any"
 		}
 		return "MutableList<" + elem + ">"
+	case *VarRef:
+		return "Any"
 	case *StructLit:
 		return v.Name
 	case *ExistsExpr:
@@ -1552,8 +1556,12 @@ func convertQueryExpr(env *types.Env, q *parser.QueryExpr) (Expr, error) {
 	var elem types.Type = types.AnyType{}
 	if name := simpleVarName(q.Source); name != "" {
 		if t, err := env.GetVar(name); err == nil {
-			if lt, ok := t.(types.ListType); ok {
-				elem = lt.Elem
+			switch v := t.(type) {
+			case types.ListType:
+				elem = v.Elem
+			case types.GroupType:
+				elem = v.Elem
+				src = &FieldExpr{Receiver: src, Name: "items"}
 			}
 		}
 	}
@@ -1567,8 +1575,11 @@ func convertQueryExpr(env *types.Env, q *parser.QueryExpr) (Expr, error) {
 		var elem types.Type = types.AnyType{}
 		if name := simpleVarName(f.Src); name != "" {
 			if t, err := env.GetVar(name); err == nil {
-				if lt, ok := t.(types.ListType); ok {
-					elem = lt.Elem
+				switch v := t.(type) {
+				case types.ListType:
+					elem = v.Elem
+				case types.GroupType:
+					elem = v.Elem
 				}
 			}
 		}
@@ -1590,8 +1601,11 @@ func convertQueryExpr(env *types.Env, q *parser.QueryExpr) (Expr, error) {
 		var elem types.Type = types.AnyType{}
 		if name := simpleVarName(j.Src); name != "" {
 			if t, err := env.GetVar(name); err == nil {
-				if lt, ok := t.(types.ListType); ok {
-					elem = lt.Elem
+				switch v := t.(type) {
+				case types.ListType:
+					elem = v.Elem
+				case types.GroupType:
+					elem = v.Elem
 				}
 			}
 		}
@@ -1612,12 +1626,15 @@ func convertQueryExpr(env *types.Env, q *parser.QueryExpr) (Expr, error) {
 		if err != nil {
 			return nil, err
 		}
-		rowExpr := sel
-		if q.Select == nil {
-			rowExpr = &VarRef{Name: q.Var}
+		// Items in each group should be the original row value,
+		// not the final select expression.
+		rowExpr := Expr(&VarRef{Name: q.Var})
+		rowTypeStr := kotlinTypeFromType(elem)
+		if rowTypeStr == "" {
+			rowTypeStr = "Any"
 		}
 		genv := types.NewEnv(child)
-		genv.SetVar(q.Group.Name, types.AnyType{}, true)
+		genv.SetVar(q.Group.Name, types.GroupType{Key: types.AnyType{}, Elem: elem}, true)
 		having, err := convertExpr(genv, q.Group.Having)
 		if q.Group.Having != nil && err != nil {
 			return nil, err
@@ -1629,7 +1646,7 @@ func convertQueryExpr(env *types.Env, q *parser.QueryExpr) (Expr, error) {
 		gtype := strings.Title(q.Group.Name) + "Group"
 		extraDecls = append(extraDecls, &DataClass{Name: gtype, Fields: []ParamDecl{
 			{Name: "key", Type: guessType(key)},
-			{Name: "items", Type: "MutableList<" + guessType(rowExpr) + ">"},
+			{Name: "items", Type: "MutableList<" + rowTypeStr + ">"},
 		}})
 		return &GroupQueryExpr{
 			Vars:      append([]string{q.Var}, namesFromFroms(froms)...),
@@ -1927,6 +1944,13 @@ func convertPrimary(env *types.Env, p *parser.Primary) (Expr, error) {
 			}
 			switch p.Call.Func {
 			case "count":
+				if v, ok := arg.(*VarRef); ok {
+					if t, err := env.GetVar(v.Name); err == nil {
+						if _, ok := t.(types.GroupType); ok {
+							return &CountExpr{Value: &FieldExpr{Receiver: arg, Name: "items"}}, nil
+						}
+					}
+				}
 				return &CountExpr{Value: arg}, nil
 			case "sum":
 				return &SumExpr{Value: arg}, nil
