@@ -18,13 +18,15 @@ class Order {
 }
 
 void main() {
-  final List<Customer> customers = [Customer(id: 1, name: "Alice"), Customer(id: 2, name: "Bob")];
+  final List<Customer> customers = [Customer(id: 1, name: "Alice"), Customer(id: 2, name: "Bob"), Customer(id: 3, name: "Charlie")];
   final List<Order> orders = [Order(id: 100, customerId: 1), Order(id: 101, customerId: 1), Order(id: 102, customerId: 2)];
   final List<S1> stats = (() {
   var groups = <String, Map<String, dynamic>>{};
-  for (var o in orders) {
   for (var c in customers) {
+    var matched = false;
+    for (var o in orders) {
       if (!(o.customerId == c.id)) continue;
+      matched = true;
       var key = c.name;
       var ks = key.toString();
       var g = groups[ks];
@@ -32,17 +34,28 @@ void main() {
         g = {'key': key, 'items': []};
         groups[ks] = g;
       }
-      (g['items'] as List).add({"o": o, "c": c});
+      (g['items'] as List).add({"c": c, "o": o});
+    }
+    if (!matched) {
+      var o = null;
+      var key = c.name;
+      var ks = key.toString();
+      var g = groups[ks];
+      if (g == null) {
+        g = {'key': key, 'items': []};
+        groups[ks] = g;
+      }
+      (g['items'] as List).add({"c": c, "o": o});
     }
   }
   var _list = groups.values.toList();
   var res = <S1>[];
   for (var g in _list) {
-    res.add(S1(name: g["key"], count: g["items"].length));
+    res.add(S1(name: g["key"], count: [for (var r in g["items"]) if (r.o) r].length));
   }
   return res;
 })();;
-  print("--- Orders per customer ---");
+  print("--- Group Left Join ---");
   for (var s in stats) {
     print([s.name, "orders:", s.count].join(" "));
   }

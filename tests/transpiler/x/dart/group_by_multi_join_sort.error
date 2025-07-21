@@ -1,1 +1,29 @@
-transpile: unsupported expression
+run: exit status 254
+../../../tests/transpiler/x/dart/group_by_multi_join_sort.dart:59:127: Error: The operator '>=' isn't defined for the class 'String'.
+Try correcting the operator to an existing operator, or defining a '>=' operator.
+          if (!(o.o_custkey == c.c_custkey && l.l_orderkey == o.o_orderkey && n.n_nationkey == c.c_nationkey && o.o_orderdate >= start_date && o.o_orderdate < end_date && l.l_returnflag == "R")) continue;
+                                                                                                                              ^^
+../../../tests/transpiler/x/dart/group_by_multi_join_sort.dart:59:158: Error: The operator '<' isn't defined for the class 'String'.
+Try correcting the operator to an existing operator, or defining a '<' operator.
+          if (!(o.o_custkey == c.c_custkey && l.l_orderkey == o.o_orderkey && n.n_nationkey == c.c_nationkey && o.o_orderdate >= start_date && o.o_orderdate < end_date && l.l_returnflag == "R")) continue;
+                                                                                                                                                             ^
+../../../tests/transpiler/x/dart/group_by_multi_join_sort.dart:73:42: Error: The getter 'items' isn't defined for the class 'Map<String, dynamic>'.
+ - 'Map' is from 'dart:core'.
+Try correcting the name to the name of an existing getter, or defining a getter or field named 'items'.
+  _list.sort(((a, b) => [for (var x in b.items) x.l.l_extendedprice * (1 - x.l.l_discount)].isEmpty ? 0 : ([for (var x in b.items) x.l.l_extendedprice * (1 - x.l.l_discount)].reduce((a, b) => a + b)).compareTo([for (var x in a.items) x.l.l_extendedprice * (1 - x.l.l_discount)].isEmpty ? 0 : ([for (var x in a.items) x.l.l_extendedprice * (1 - x.l.l_discount)].reduce((a, b) => a + b)))));
+                                         ^^^^^
+../../../tests/transpiler/x/dart/group_by_multi_join_sort.dart:73:125: Error: The getter 'items' isn't defined for the class 'Map<String, dynamic>'.
+ - 'Map' is from 'dart:core'.
+Try correcting the name to the name of an existing getter, or defining a getter or field named 'items'.
+  _list.sort(((a, b) => [for (var x in b.items) x.l.l_extendedprice * (1 - x.l.l_discount)].isEmpty ? 0 : ([for (var x in b.items) x.l.l_extendedprice * (1 - x.l.l_discount)].reduce((a, b) => a + b)).compareTo([for (var x in a.items) x.l.l_extendedprice * (1 - x.l.l_discount)].isEmpty ? 0 : ([for (var x in a.items) x.l.l_extendedprice * (1 - x.l.l_discount)].reduce((a, b) => a + b)))));
+                                                                                                                            ^^^^^
+../../../tests/transpiler/x/dart/group_by_multi_join_sort.dart:73:228: Error: The getter 'items' isn't defined for the class 'Map<String, dynamic>'.
+ - 'Map' is from 'dart:core'.
+Try correcting the name to the name of an existing getter, or defining a getter or field named 'items'.
+  _list.sort(((a, b) => [for (var x in b.items) x.l.l_extendedprice * (1 - x.l.l_discount)].isEmpty ? 0 : ([for (var x in b.items) x.l.l_extendedprice * (1 - x.l.l_discount)].reduce((a, b) => a + b)).compareTo([for (var x in a.items) x.l.l_extendedprice * (1 - x.l.l_discount)].isEmpty ? 0 : ([for (var x in a.items) x.l.l_extendedprice * (1 - x.l.l_discount)].reduce((a, b) => a + b)))));
+                                                                                                                                                                                                                                   ^^^^^
+../../../tests/transpiler/x/dart/group_by_multi_join_sort.dart:73:311: Error: The getter 'items' isn't defined for the class 'Map<String, dynamic>'.
+ - 'Map' is from 'dart:core'.
+Try correcting the name to the name of an existing getter, or defining a getter or field named 'items'.
+  _list.sort(((a, b) => [for (var x in b.items) x.l.l_extendedprice * (1 - x.l.l_discount)].isEmpty ? 0 : ([for (var x in b.items) x.l.l_extendedprice * (1 - x.l.l_discount)].reduce((a, b) => a + b)).compareTo([for (var x in a.items) x.l.l_extendedprice * (1 - x.l.l_discount)].isEmpty ? 0 : ([for (var x in a.items) x.l.l_extendedprice * (1 - x.l.l_discount)].reduce((a, b) => a + b)))));
+                                                                                                                                                                                                                                                                                                                      ^^^^^
