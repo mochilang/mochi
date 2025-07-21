@@ -1319,9 +1319,27 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 			}
 			group := &CallExpr{Fun: &NameRef{Name: "_group_by"}, Args: []Expr{list, &GroupExpr{Expr: &LambdaExpr{Params: vars, Body: keyExpr}}}}
 			varTypes[p.Query.Group.Name] = "list"
-			return &ComprExpr{Vars: []string{p.Query.Group.Name}, Sources: []Expr{group}, Cond: nil, Body: body}, nil
+			var result Expr = &ComprExpr{Vars: []string{p.Query.Group.Name}, Sources: []Expr{group}, Cond: nil, Body: body}
+			if p.Query.Sort != nil {
+				sortExpr, err := convertExpr(p.Query.Sort)
+				if err != nil {
+					return nil, err
+				}
+				needDataList = true
+				result = &CallExpr{Fun: &NameRef{Name: "sortOn"}, Args: []Expr{&LambdaExpr{Params: []string{p.Query.Group.Name}, Body: sortExpr}, result}}
+			}
+			return result, nil
 		}
-		return &ComprExpr{Vars: vars, Sources: srcs, Cond: cond, Body: body}, nil
+		var result Expr = &ComprExpr{Vars: vars, Sources: srcs, Cond: cond, Body: body}
+		if p.Query.Sort != nil {
+			sortExpr, err := convertExpr(p.Query.Sort)
+			if err != nil {
+				return nil, err
+			}
+			needDataList = true
+			result = &CallExpr{Fun: &NameRef{Name: "sortOn"}, Args: []Expr{&LambdaExpr{Params: []string{vars[0]}, Body: sortExpr}, result}}
+		}
+		return result, nil
 	case p.FunExpr != nil && p.FunExpr.ExprBody != nil:
 		var params []string
 		for _, pa := range p.FunExpr.Params {
