@@ -2279,24 +2279,26 @@ func compilePostfix(pf *parser.PostfixExpr, env *types.Env, base string) (Expr, 
 				return nil, fmt.Errorf("unsupported postfix")
 			}
 		} else if op.Field != nil {
-			switch tt := t.(type) {
-			case types.MapType:
-				expr = &IndexExpr{X: expr, Index: &StringLit{Value: op.Field.Name}}
-				t = tt.Value
-			case types.StructType:
-				expr = &FieldExpr{X: expr, Name: op.Field.Name}
-				if ft, ok := tt.Fields[op.Field.Name]; ok {
-					t = ft
-				} else {
-					t = types.AnyType{}
-				}
-			default:
-				expr = &FieldExpr{X: expr, Name: op.Field.Name}
-				t = types.AnyType{}
-			}
-		}
-	}
-	return expr, nil
+               switch tt := t.(type) {
+               case types.MapType:
+                       expr = &IndexExpr{X: expr, Index: &StringLit{Value: op.Field.Name}}
+                       t = tt.Value
+               case types.StructType:
+                       expr = &FieldExpr{X: expr, Name: op.Field.Name}
+                       if ft, ok := tt.Fields[op.Field.Name]; ok {
+                               t = ft
+                       } else {
+                               t = types.AnyType{}
+                       }
+               default:
+                       // when type information is unknown, assume map access to
+                       // avoid generating invalid struct field references
+                       expr = &IndexExpr{X: expr, Index: &StringLit{Value: op.Field.Name}}
+                       t = types.AnyType{}
+               }
+               }
+       }
+       return expr, nil
 }
 
 func compilePrimary(p *parser.Primary, env *types.Env, base string) (Expr, error) {
