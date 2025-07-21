@@ -41,6 +41,9 @@ var needGroupBy bool
 // needJSON reports whether JSON helpers are required.
 var needJSON bool
 
+// needTrace reports whether Debug.Trace is required.
+var needTrace bool
+
 // groupVars tracks variables that represent groups.
 var groupVars map[string]bool
 
@@ -384,7 +387,13 @@ func (p *PrintStmt) emit(w io.Writer) {
 	}
 
 	io.WriteString(w, "print (")
-	p.Expr.emit(w)
+	if isBoolExpr(p.Expr) {
+		io.WriteString(w, "fromEnum (")
+		p.Expr.emit(w)
+		io.WriteString(w, ")")
+	} else {
+		p.Expr.emit(w)
+	}
 	io.WriteString(w, ")")
 }
 
@@ -1138,7 +1147,7 @@ func inferVarFromSource(name string, src Expr) {
 	}
 }
 
-func header(withList, withMap, withJSON bool) string {
+func header(withList, withMap, withJSON, withTrace bool) string {
 	out, err := exec.Command("git", "log", "-1", "--date=iso-strict", "--format=%cd").Output()
 	ts := time.Now()
 	if err == nil {
@@ -1169,13 +1178,16 @@ func header(withList, withMap, withJSON bool) string {
 		h += "import qualified Data.Aeson as Aeson\n"
 		h += "import qualified Data.ByteString.Lazy.Char8 as BSL\n"
 	}
+	if withTrace {
+		h += "import Debug.Trace (trace)\n"
+	}
 	return h
 }
 
 // Emit generates formatted Haskell code.
 func Emit(p *Program) []byte {
 	var buf bytes.Buffer
-	buf.WriteString(header(needDataList, needDataMap, needJSON))
+	buf.WriteString(header(needDataList, needDataMap, needJSON, needTrace))
 	if needGroupBy {
 		buf.WriteString(groupPrelude())
 		buf.WriteByte('\n')
@@ -1223,6 +1235,7 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	needDataMap = false
 	needGroupBy = false
 	needJSON = false
+	needTrace = false
 	groupVars = map[string]bool{}
 	groupKeyStruct = map[string]string{}
 	groupItemType = map[string]string{}
@@ -2003,6 +2016,15 @@ func convertFunStmt(f *parser.FunStmt) (*Func, error) {
 	var params []string
 	for _, p := range f.Params {
 		params = append(params, safeName(p.Name))
+	}
+	if len(stmts) == 2 {
+		if ps, ok := stmts[0].(*PrintStmt); ok {
+			if rs, ok2 := stmts[1].(*ReturnStmt); ok2 {
+				needTrace = true
+				tr := &CallExpr{Fun: &NameRef{Name: "trace"}, Args: []Expr{ps.Expr, rs.Expr}}
+				return &Func{Name: safeName(f.Name), Params: params, Body: []Stmt{&ReturnStmt{Expr: tr}}}, nil
+			}
+		}
 	}
 	return &Func{Name: safeName(f.Name), Params: params, Body: stmts}, nil
 }

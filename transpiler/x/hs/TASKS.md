@@ -1,3 +1,10 @@
+## Progress (2025-07-22 06:19 +0700)
+- VM valid golden test results updated
+- Added escaping for Haskell reserved keywords
+- Regenerated README checklist from golden tests
+
+- Converted simple IO functions to use Debug.Trace for lazy evaluation
+
 ## Progress (2025-07-22 05:31 +0700)
 - VM valid golden test results updated
 - Added escaping for Haskell reserved keywords
