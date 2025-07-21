@@ -1,7 +1,0 @@
-run: exit status 255
-
-Fatal error: Uncaught TypeError: Cannot access offset of type array on array in /workspace/mochi/tests/transpiler/x/php/group_by_multi_join_sort.php:16
-Stack trace:
-#0 /workspace/mochi/tests/transpiler/x/php/group_by_multi_join_sort.php(44): {closure:/workspace/mochi/tests/transpiler/x/php/group_by_multi_join_sort.php:8}()
-#1 {main}
-  thrown in /workspace/mochi/tests/transpiler/x/php/group_by_multi_join_sort.php on line 16
