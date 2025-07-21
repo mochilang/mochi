@@ -18,8 +18,10 @@ import (
 )
 
 var usesHashMap bool
+var usesGroup bool
 var mapVars map[string]bool
 var stringVars map[string]bool
+var groupVars map[string]bool
 var varTypes map[string]string
 var funParams map[string]int
 var typeDecls []*StructDecl
@@ -35,6 +37,7 @@ func VarTypes() map[string]string { return varTypes }
 type Program struct {
 	Stmts       []Stmt
 	UsesHashMap bool
+	UsesGroup   bool
 	Types       []*StructDecl
 }
 
@@ -327,6 +330,17 @@ func (f *FieldExpr) emit(w io.Writer) {
 		fmt.Fprintf(w, "[\"%s\"]", f.Name)
 		return
 	}
+	if nr, ok := f.Receiver.(*NameRef); ok && groupVars[nr.Name] {
+		f.Receiver.emit(w)
+		if f.Name == "key" {
+			io.WriteString(w, ".key.clone()")
+			return
+		}
+		if f.Name == "items" {
+			io.WriteString(w, ".items.clone()")
+			return
+		}
+	}
 	f.Receiver.emit(w)
 	io.WriteString(w, ".")
 	io.WriteString(w, f.Name)
@@ -357,8 +371,13 @@ func (m *MethodCallExpr) emit(w io.Writer) {
 type LenExpr struct{ Arg Expr }
 
 func (l *LenExpr) emit(w io.Writer) {
-	l.Arg.emit(w)
-	io.WriteString(w, ".len()")
+	if nr, ok := l.Arg.(*NameRef); ok && groupVars[nr.Name] {
+		l.Arg.emit(w)
+		io.WriteString(w, ".items.len() as i64")
+	} else {
+		l.Arg.emit(w)
+		io.WriteString(w, ".len()")
+	}
 }
 
 // SumExpr represents a call to the `sum` builtin.
@@ -417,9 +436,9 @@ func (j *JoinExpr) emit(w io.Writer) {
 type AvgExpr struct{ List Expr }
 
 func (a *AvgExpr) emit(w io.Writer) {
-	io.WriteString(w, "format!(\"{:.1}\", { let tmp = ")
+	io.WriteString(w, "{ let tmp = ")
 	a.List.emit(w)
-	io.WriteString(w, "; tmp.iter().map(|x| *x as f64).sum::<f64>() / (tmp.len() as f64) })")
+	io.WriteString(w, "; tmp.iter().map(|x| *x as f64).sum::<f64>() / (tmp.len() as f64) }")
 }
 
 // MinExpr represents a call to the `min` builtin.
@@ -705,18 +724,25 @@ type queryJoin struct {
 
 // QueryExpr represents a simple from/select query expression.
 type QueryExpr struct {
-	Var      string
-	Src      Expr
-	VarByRef bool
-	Froms    []queryFrom
-	Joins    []queryJoin
-	Where    Expr
-	Select   Expr
-	ItemType string
+	Var       string
+	Src       Expr
+	VarByRef  bool
+	Froms     []queryFrom
+	Joins     []queryJoin
+	Where     Expr
+	GroupKey  Expr
+	GroupVar  string
+	GroupType string
+	Select    Expr
+	ItemType  string
 }
 
 func (q *QueryExpr) emit(w io.Writer) {
 	fmt.Fprintf(w, "{ let mut _q: Vec<%s> = Vec::new(); ", q.ItemType)
+	if q.GroupVar != "" {
+		fmt.Fprintf(w, "let mut _groups: HashMap<String, %s> = HashMap::new(); ", q.GroupType)
+		io.WriteString(w, "let mut _order: Vec<String> = Vec::new(); ")
+	}
 	// Special-case single right join without extra from clauses
 	if len(q.Joins) == 1 && q.Joins[0].Side == "right" && len(q.Froms) == 0 {
 		j := q.Joins[0]
@@ -794,17 +820,30 @@ func (q *QueryExpr) emit(w io.Writer) {
 		q.Where.emit(w)
 		io.WriteString(w, " {")
 	}
-	io.WriteString(w, " _q.push(")
-	cloneVars = map[string]bool{q.Var: q.VarByRef}
-	for _, f := range q.Froms {
-		cloneVars[f.Var] = f.ByRef
+	if q.GroupVar != "" {
+		io.WriteString(w, " let key = ")
+		q.GroupKey.emit(w)
+		io.WriteString(w, ".clone(); let ks = format!(\"{:?}\", &key);")
+		gen := strings.TrimPrefix(q.GroupType, "Group")
+		fmt.Fprintf(w, " let e = _groups.entry(ks.clone()).or_insert_with(|| { _order.push(ks.clone()); Group::%s { key: key.clone(), items: Vec::new() } });", gen)
+		io.WriteString(w, " e.items.push(")
+		cloneVars = map[string]bool{q.Var: q.VarByRef}
+		(&NameRef{Name: q.Var}).emit(w)
+		cloneVars = nil
+		io.WriteString(w, ");")
+	} else {
+		io.WriteString(w, " _q.push(")
+		cloneVars = map[string]bool{q.Var: q.VarByRef}
+		for _, f := range q.Froms {
+			cloneVars[f.Var] = f.ByRef
+		}
+		for _, j := range q.Joins {
+			cloneVars[j.Var] = j.ByRef
+		}
+		q.Select.emit(w)
+		cloneVars = nil
+		io.WriteString(w, ");")
 	}
-	for _, j := range q.Joins {
-		cloneVars[j.Var] = j.ByRef
-	}
-	q.Select.emit(w)
-	cloneVars = nil
-	io.WriteString(w, ");")
 	if q.Where != nil {
 		io.WriteString(w, " }")
 	}
@@ -815,7 +854,13 @@ func (q *QueryExpr) emit(w io.Writer) {
 	for range q.Froms {
 		io.WriteString(w, " }")
 	}
-	io.WriteString(w, " } _q }")
+	io.WriteString(w, " }")
+	if q.GroupVar != "" {
+		fmt.Fprintf(w, " for ks in _order { let %s = &_groups[&ks]; _q.push(", q.GroupVar)
+		q.Select.emit(w)
+		io.WriteString(w, "); }")
+	}
+	io.WriteString(w, " _q }")
 }
 
 type IfStmt struct {
@@ -853,8 +898,10 @@ func (fs *ForStmt) emit(w io.Writer) {}
 // subset of Mochi is supported which is sufficient for tests.
 func Transpile(p *parser.Program, env *types.Env) (*Program, error) {
 	usesHashMap = false
+	usesGroup = false
 	mapVars = make(map[string]bool)
 	stringVars = make(map[string]bool)
+	groupVars = make(map[string]bool)
 	varTypes = make(map[string]string)
 	funParams = make(map[string]int)
 	typeDecls = nil
@@ -875,6 +922,7 @@ func Transpile(p *parser.Program, env *types.Env) (*Program, error) {
 	prog.Types = typeDecls
 	_ = env // reserved for future use
 	prog.UsesHashMap = usesHashMap
+	prog.UsesGroup = usesGroup
 	return prog, nil
 }
 
@@ -1148,6 +1196,9 @@ func compileWhileStmt(n *parser.WhileStmt) (Stmt, error) {
 
 func compileForStmt(n *parser.ForStmt) (Stmt, error) {
 	iter, err := compileExpr(n.Source)
+	if nr, ok := iter.(*NameRef); ok && groupVars[nr.Name] {
+		iter = &FieldExpr{Receiver: iter, Name: "items"}
+	}
 	if err != nil {
 		return nil, err
 	}
@@ -1661,10 +1712,13 @@ func compileMatchExpr(me *parser.MatchExpr) (Expr, error) {
 }
 
 func compileQueryExpr(q *parser.QueryExpr) (Expr, error) {
-	if q.Group != nil || q.Sort != nil || q.Skip != nil || q.Take != nil {
+	if q.Sort != nil || q.Skip != nil || q.Take != nil {
 		return nil, fmt.Errorf("unsupported query")
 	}
 	src, err := compileExpr(q.Source)
+	if nr, ok := src.(*NameRef); ok && groupVars[nr.Name] {
+		src = &FieldExpr{Receiver: src, Name: "items"}
+	}
 	if err != nil {
 		return nil, err
 	}
@@ -1688,6 +1742,9 @@ func compileQueryExpr(q *parser.QueryExpr) (Expr, error) {
 	froms := make([]queryFrom, len(q.Froms))
 	for i, f := range q.Froms {
 		fe, err := compileExprWithEnv(f.Src, child)
+		if nr, ok := fe.(*NameRef); ok && groupVars[nr.Name] {
+			fe = &FieldExpr{Receiver: fe, Name: "items"}
+		}
 		if err != nil {
 			return nil, err
 		}
@@ -1715,6 +1772,9 @@ func compileQueryExpr(q *parser.QueryExpr) (Expr, error) {
 			}
 		}
 		je, err := compileExprWithEnv(j.Src, child)
+		if nr, ok := je.(*NameRef); ok && groupVars[nr.Name] {
+			je = &FieldExpr{Receiver: je, Name: "items"}
+		}
 		if err != nil {
 			return nil, err
 		}
@@ -1744,6 +1804,30 @@ func compileQueryExpr(q *parser.QueryExpr) (Expr, error) {
 		}
 		where = w
 	}
+
+	var groupKey Expr
+	groupVar := ""
+	groupType := ""
+	if q.Group != nil && len(q.Froms) == 0 && len(q.Joins) == 0 {
+		usesGroup = true
+		usesHashMap = true
+		gk, err := compileExprWithEnv(q.Group.Exprs[0], child)
+		if err != nil {
+			return nil, err
+		}
+		groupKey = gk
+		keyT := rustTypeFromType(types.ExprType(q.Group.Exprs[0], child))
+		elemTStr := rustTypeFromType(elemT)
+		groupVar = q.Group.Name
+		groupType = fmt.Sprintf("Group<%s, %s>", keyT, elemTStr)
+		varTypes[groupVar] = groupType
+		groupVars[groupVar] = true
+		genv := types.NewEnv(child)
+		genv.SetVar(groupVar, types.GroupType{Key: types.ExprType(q.Group.Exprs[0], child), Elem: elemT}, true)
+		child = genv
+	} else if q.Group != nil {
+		return nil, fmt.Errorf("unsupported query")
+	}
 	ml := mapLiteralExpr(q.Select)
 	itemType := "i64"
 	if ml != nil {
@@ -1770,7 +1854,7 @@ func compileQueryExpr(q *parser.QueryExpr) (Expr, error) {
 			itemType = t
 		}
 	}
-	return &QueryExpr{Var: q.Var, Src: src, VarByRef: varByRef, Froms: froms, Joins: joins, Where: where, Select: sel, ItemType: itemType}, nil
+	return &QueryExpr{Var: q.Var, Src: src, VarByRef: varByRef, Froms: froms, Joins: joins, Where: where, GroupKey: groupKey, GroupVar: groupVar, GroupType: groupType, Select: sel, ItemType: itemType}, nil
 }
 
 func compileExprWithEnv(e *parser.Expr, env *types.Env) (Expr, error) {
@@ -2138,6 +2222,9 @@ func Emit(prog *Program) []byte {
 	buf.WriteString(header())
 	if prog.UsesHashMap {
 		buf.WriteString("use std::collections::HashMap;\n")
+	}
+	if prog.UsesGroup {
+		buf.WriteString("#[derive(Clone)]\nstruct Group<K, V> { key: K, items: Vec<V> }\n")
 	}
 	for _, d := range prog.Types {
 		d.emit(&buf)
