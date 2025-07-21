@@ -1,7 +1,6 @@
-## Progress (2025-07-21 17:52 +0700)
-- Improved boolean printing for `!` expressions
-- Added `mapString` helper to produce readable maps
-- Generated golden tests for 65/100 programs
+## Progress (2025-07-21 18:47 +0700)
+- scheme transpiler: improve formatting and update tasks
+- Generated golden tests for 83/100 programs
 - Updated README checklist and output artifacts
 
 # Swift Transpiler Tasks

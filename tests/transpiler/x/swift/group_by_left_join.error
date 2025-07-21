@@ -1,24 +1,24 @@
 exit status 1
-/tmp/TestSwiftTranspiler_VMValid_Golden2524844172/025/main.swift:23:63: error: type 'Any' does not conform to protocol 'Hashable'
-21 | _list.sort { a, b in String(describing: a["key"]) < String(describing: b["key"]) }
-22 | for g in _list {
-23 |     _res.append(["name": g["key"]!, "count": (((({ var _res: [[Any: Any]] = []
+/tmp/TestSwiftTranspiler_VMValid_Golden2846850477/025/main.swift:24:63: error: type 'Any' does not conform to protocol 'Hashable'
+22 | _list.sort { a, b in String(describing: a["key"]) < String(describing: b["key"]) }
+23 | for g in _list {
+24 |     _res.append(["name": g["key"]!, "count": (((({ var _res: [[Any: Any]] = []
    |                                                               `- error: type 'Any' does not conform to protocol 'Hashable'
-24 |     for r in g["items"] as! [[String: Any]] {
-25 |         if r["o"]! {
+25 |     for r in g["items"] as! [[String: Any]] {
+26 |         if r["o"]! {
 
-/tmp/TestSwiftTranspiler_VMValid_Golden2524844172/025/main.swift:8:31: warning: forced cast of 'Int' to same type has no effect
- 6 | for c in customers {
- 7 |     for o in orders {
- 8 |         if ((o["customerId"]! as! Int) == (c["id"]! as! Int)) {
+/tmp/TestSwiftTranspiler_VMValid_Golden2846850477/025/main.swift:9:31: warning: forced cast of 'Int' to same type has no effect
+ 7 | for c in customers {
+ 8 |     for o in orders {
+ 9 |         if ((o["customerId"]! as! Int) == (c["id"]! as! Int)) {
    |                               `- warning: forced cast of 'Int' to same type has no effect
- 9 |             let _key = c["name"]!
-10 |             let _ks = String(describing: _key)
+10 |             let _key = c["name"]!
+11 |             let _ks = String(describing: _key)
 
-/tmp/TestSwiftTranspiler_VMValid_Golden2524844172/025/main.swift:25:18: error: cannot convert value of type 'Any' to expected condition type 'Bool'
-23 |     _res.append(["name": g["key"]!, "count": (((({ var _res: [[Any: Any]] = []
-24 |     for r in g["items"] as! [[String: Any]] {
-25 |         if r["o"]! {
+/tmp/TestSwiftTranspiler_VMValid_Golden2846850477/025/main.swift:26:18: error: cannot convert value of type 'Any' to expected condition type 'Bool'
+24 |     _res.append(["name": g["key"]!, "count": (((({ var _res: [[Any: Any]] = []
+25 |     for r in g["items"] as! [[String: Any]] {
+26 |         if r["o"]! {
    |                  `- error: cannot convert value of type 'Any' to expected condition type 'Bool'
-26 |             _res.append(r)
-27 |         }
+27 |             _res.append(r)
+28 |         }

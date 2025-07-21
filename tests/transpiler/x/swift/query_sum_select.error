@@ -1,8 +1,8 @@
 exit status 1
-/tmp/TestSwiftTranspiler_VMValid_Golden2524844172/063/main.swift:6:35: error: value of type 'Int' has no member 'reduce'
- 4 | for n in nums {
- 5 |     if ((n as! Int) > 1) {
- 6 |         _res.append((((n as! Int).reduce(0,+)) as! Double))
+/tmp/TestSwiftTranspiler_VMValid_Golden2846850477/063/main.swift:7:35: error: value of type 'Int' has no member 'reduce'
+ 5 | for n in nums {
+ 6 |     if ((n as! Int) > 1) {
+ 7 |         _res.append((((n as! Int).reduce(0,+)) as! Double))
    |                                   `- error: value of type 'Int' has no member 'reduce'
- 7 |     }
- 8 | }
+ 8 |     }
+ 9 | }

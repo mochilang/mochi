@@ -1,16 +1,16 @@
 exit status 1
-/tmp/TestSwiftTranspiler_VMValid_Golden2524844172/022/main.swift:25:31: error: cannot convert value of type 'Any' to expected condition type 'Bool'
-23 |     _res.append(["cat": g["key"]!, "share": (((({ var _res: [Any] = []
-24 |     for x in g["items"] as! [[String: Any]] {
-25 |         _res.append((x["flag"]! ? x["val"]! : 0))
+/tmp/TestSwiftTranspiler_VMValid_Golden2846850477/022/main.swift:26:31: error: cannot convert value of type 'Any' to expected condition type 'Bool'
+24 |     _res.append(["cat": g["key"]!, "share": (((({ var _res: [Any] = []
+25 |     for x in g["items"] as! [[String: Any]] {
+26 |         _res.append((x["flag"]! ? x["val"]! : 0))
    |                               `- error: cannot convert value of type 'Any' to expected condition type 'Bool'
-26 |     }
-27 |     return _res })().reduce(0,+)) as! Double) / ((({ var _res: [Any] = []
+27 |     }
+28 |     return _res })().reduce(0,+)) as! Double) / ((({ var _res: [Any] = []
 
-/tmp/TestSwiftTranspiler_VMValid_Golden2524844172/022/main.swift:31:31: error: cannot convert value of type '(Int) -> Int' to expected argument type '(Int, Any) throws -> Int'
-29 |         _res.append(x["val"]!)
-30 |     }
-31 |     return _res })().reduce(0,+)) as! Double))])
+/tmp/TestSwiftTranspiler_VMValid_Golden2846850477/022/main.swift:32:31: error: cannot convert value of type '(Int) -> Int' to expected argument type '(Int, Any) throws -> Int'
+30 |         _res.append(x["val"]!)
+31 |     }
+32 |     return _res })().reduce(0,+)) as! Double))])
    |                               `- error: cannot convert value of type '(Int) -> Int' to expected argument type '(Int, Any) throws -> Int'
-32 | }
-33 | return _res })()
+33 | }
+34 | return _res })()

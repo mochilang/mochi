@@ -1,24 +1,8 @@
 exit status 1
-/tmp/TestSwiftTranspiler_VMValid_Golden2524844172/021/main.swift:17:88: warning: forced cast of 'Int' to same type has no effect
-15 | _list.sort { a, b in String(describing: a["key"]) < String(describing: b["key"]) }
-16 | for g in _list {
-17 |     _res.append(["city": g["key"]!, "count": (((g["items"] as! [[String: Any]]).count) as! Int), "avg_age": ((Double((({ var _res: [Any] = []
-   |                                                                                        `- warning: forced cast of 'Int' to same type has no effect
-18 |     for p in g["items"] as! [[String: Any]] {
-19 |         _res.append(p["age"]!)
-
-/tmp/TestSwiftTranspiler_VMValid_Golden2524844172/021/main.swift:21:32: error: cannot convert value of type '(Int) -> Int' to expected argument type '(Int, Any) throws -> Int'
-19 |         _res.append(p["age"]!)
-20 |     }
-21 |     return _res })()).reduce(0,+)) / Double((({ var _res: [Any] = []
-   |                                `- error: cannot convert value of type '(Int) -> Int' to expected argument type '(Int, Any) throws -> Int'
-22 |     for p in g["items"] as! [[String: Any]] {
-23 |         _res.append(p["age"]!)
-
-/tmp/TestSwiftTranspiler_VMValid_Golden2524844172/021/main.swift:25:31: warning: forced cast of 'Double' to same type has no effect
-23 |         _res.append(p["age"]!)
-24 |     }
-25 |     return _res })()).count)) as! Double)])
-   |                               `- warning: forced cast of 'Double' to same type has no effect
-26 | }
-27 | return _res })()
+/tmp/TestSwiftTranspiler_VMValid_Golden2846850477/021/main.swift:4:5: error: the compiler is unable to type-check this expression in reasonable time; try breaking up the expression into distinct sub-expressions
+ 2 | import Foundation
+ 3 | let people = [["name": "Alice", "age": 30, "city": "Paris"], ["name": "Bob", "age": 15, "city": "Hanoi"], ["name": "Charlie", "age": 65, "city": "Paris"], ["name": "Diana", "age": 45, "city": "Hanoi"], ["name": "Eve", "age": 70, "city": "Paris"], ["name": "Frank", "age": 22, "city": "Hanoi"]]
+ 4 | let stats = ({ var _groups: [String: [String: Any]] = [:]
+   |     `- error: the compiler is unable to type-check this expression in reasonable time; try breaking up the expression into distinct sub-expressions
+ 5 | var _res: [[String: Any]] = []
+ 6 | for person in people {

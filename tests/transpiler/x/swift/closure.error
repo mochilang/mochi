@@ -1,7 +1,7 @@
 exit status 1
-/tmp/TestSwiftTranspiler_VMValid_Golden2524844172/008/main.swift:6:8: error: cannot call value of non-function type 'Any'
-4 | }
-5 | let add10 = makeAdder(10)
-6 | print((add10(7) as! Int))
+/tmp/TestSwiftTranspiler_VMValid_Golden2846850477/008/main.swift:7:8: error: cannot call value of non-function type 'Any'
+5 | }
+6 | let add10 = makeAdder(10)
+7 | print((add10(7) as! Int))
   |        `- error: cannot call value of non-function type 'Any'
-7 | 
+8 | 
