@@ -258,6 +258,11 @@ type IntLit struct{ Value int64 }
 
 func (i *IntLit) emit(w io.Writer) { fmt.Fprintf(w, "%d", i.Value) }
 
+// RealLit is a floating point literal.
+type RealLit struct{ Value float64 }
+
+func (r *RealLit) emit(w io.Writer) { fmt.Fprintf(w, "%g", r.Value) }
+
 // StringLit is a quoted string literal.
 type StringLit struct{ Value string }
 
@@ -725,6 +730,13 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 					} else if q.Group != nil && len(q.Froms) == 0 && len(q.Joins) == 0 && q.Skip == nil && q.Take == nil && !q.Distinct {
 						if q.Sort == nil && isSimpleGroupBy(q) {
 							stmts, typ, err := buildGroupByQuery(env, q, st.Let.Name, varTypes)
+							if err != nil {
+								return nil, err
+							}
+							vd.Type = typ
+							pr.Stmts = append(pr.Stmts, stmts...)
+						} else if isGroupBySum(q) {
+							stmts, typ, err := buildGroupBySum(env, q, st.Let.Name, varTypes)
 							if err != nil {
 								return nil, err
 							}
@@ -1520,6 +1532,44 @@ func isGroupByJoin(q *parser.QueryExpr) bool {
 	return true
 }
 
+func isGroupBySum(q *parser.QueryExpr) bool {
+	if q.Group == nil || len(q.Group.Exprs) != 1 || q.Group.Having != nil {
+		return false
+	}
+	if q.Select == nil || q.Select.Binary == nil {
+		return false
+	}
+	ml := q.Select.Binary.Left.Value.Target.Map
+	if ml == nil || len(ml.Items) != 2 {
+		return false
+	}
+	k0, ok0 := exprToIdent(ml.Items[0].Key)
+	k1, ok1 := exprToIdent(ml.Items[1].Key)
+	if !ok0 || !ok1 {
+		return false
+	}
+	if k0 != "part" || k1 != "total" {
+		return false
+	}
+	call := ml.Items[1].Value.Binary.Left.Value.Target.Call
+	if call == nil || call.Func != "sum" || len(call.Args) != 1 {
+		return false
+	}
+	argQ := call.Args[0].Binary.Left.Value.Target.Query
+	if argQ == nil || argQ.Source == nil || argQ.Var != "r" {
+		return false
+	}
+	srcSel := argQ.Source.Binary.Left.Value.Target.Selector
+	if srcSel == nil || srcSel.Root != q.Group.Name {
+		return false
+	}
+	sel := argQ.Select.Binary.Left.Value.Target.Selector
+	if sel == nil || sel.Root != "r" || len(sel.Tail) != 1 || sel.Tail[0] != "value" {
+		return false
+	}
+	return true
+}
+
 func buildGroupByQuery(env *types.Env, q *parser.QueryExpr, varName string, varTypes map[string]string) ([]Stmt, string, error) {
 	src, err := convertExpr(env, q.Source)
 	if err != nil {
@@ -1671,6 +1721,66 @@ func buildGroupByConditionalSum(env *types.Env, q *parser.QueryExpr, varName str
 	stmts := []Stmt{&AssignStmt{Name: groupsVar, Expr: &ListLit{}}, outer, &AssignStmt{Name: varName, Expr: &ListLit{}}, resultFor}
 	varTypes[varName] = "array of " + resRec
 	return stmts, "array of " + resRec, nil
+}
+
+func buildGroupBySum(env *types.Env, q *parser.QueryExpr, varName string, varTypes map[string]string) ([]Stmt, string, error) {
+	src, err := convertExpr(env, q.Source)
+	if err != nil {
+		return nil, "", err
+	}
+	child := types.NewEnv(env)
+	child.SetVar(q.Var, types.AnyType{}, true)
+	keyExpr, err := convertExpr(child, q.Group.Exprs[0])
+	if err != nil {
+		return nil, "", err
+	}
+	elemT := elemType(typeOf(q.Source, env))
+	if _, ok := varTypes[q.Var]; !ok {
+		varTypes[q.Var] = elemT
+	}
+	keyT := inferType(keyExpr)
+	valExpr := &SelectorExpr{Root: q.Var, Tail: []string{"value"}}
+	valT := inferType(valExpr)
+
+	rec := ensureRecord([]Field{{Name: "part", Type: keyT}, {Name: "total", Type: valT}})
+	groupsVar := fmt.Sprintf("grp%d", len(currProg.Vars))
+	currProg.Vars = append(currProg.Vars, VarDecl{Name: groupsVar, Type: "array of " + rec})
+	idxVar := fmt.Sprintf("idx%d", len(currProg.Vars))
+	currProg.Vars = append(currProg.Vars, VarDecl{Name: idxVar, Type: "integer"})
+	iVar := fmt.Sprintf("i%d", len(currProg.Vars))
+	currProg.Vars = append(currProg.Vars, VarDecl{Name: iVar, Type: "integer"})
+
+	searchBody := []Stmt{
+		&IfStmt{Cond: &BinaryExpr{Op: "=", Bool: true,
+			Left:  &SelectorExpr{Root: fmt.Sprintf("%s[%s]", groupsVar, iVar), Tail: []string{"part"}},
+			Right: keyExpr},
+			Then: []Stmt{&AssignStmt{Name: idxVar, Expr: &VarRef{Name: iVar}}, &BreakStmt{}}},
+	}
+	forLoop := &ForRangeStmt{Name: iVar, Start: &IntLit{Value: 0}, End: &CallExpr{Name: "Length", Args: []Expr{&VarRef{Name: groupsVar}}}, Body: searchBody}
+
+	addNew := &AssignStmt{
+		Name: groupsVar,
+		Expr: &CallExpr{Name: "concat", Args: []Expr{
+			&VarRef{Name: groupsVar},
+			&ListLit{Elems: []Expr{
+				&RecordLit{Type: rec, Fields: []FieldExpr{{Name: "part", Expr: keyExpr}, {Name: "total", Expr: valExpr}}},
+			}},
+		}},
+	}
+	incTotal := &AssignStmt{Name: fmt.Sprintf("%s[%s].total", groupsVar, idxVar), Expr: &BinaryExpr{Op: "+", Left: &SelectorExpr{Root: fmt.Sprintf("%s[%s]", groupsVar, idxVar), Tail: []string{"total"}}, Right: valExpr}}
+	condUpdate := &IfStmt{Cond: &BinaryExpr{Op: "=", Bool: true, Left: &VarRef{Name: idxVar}, Right: &IntLit{Value: -1}}, Then: []Stmt{addNew}, Else: []Stmt{incTotal}}
+
+	outerBody := []Stmt{
+		&AssignStmt{Name: idxVar, Expr: &IntLit{Value: -1}},
+		forLoop,
+		condUpdate,
+	}
+
+	outer := &ForEachStmt{Name: q.Var, Iterable: src, Body: outerBody}
+
+	stmts := []Stmt{&AssignStmt{Name: groupsVar, Expr: &ListLit{}}, outer, &AssignStmt{Name: varName, Expr: &VarRef{Name: groupsVar}}}
+	varTypes[varName] = "array of " + rec
+	return stmts, "array of " + rec, nil
 }
 
 func buildGroupByJoinQuery(env *types.Env, q *parser.QueryExpr, varName string, varTypes map[string]string) ([]Stmt, string, error) {
@@ -2106,6 +2216,8 @@ func convertLiteral(l *parser.Literal) (Expr, error) {
 	switch {
 	case l.Int != nil:
 		return &IntLit{Value: int64(*l.Int)}, nil
+	case l.Float != nil:
+		return &RealLit{Value: *l.Float}, nil
 	case l.Str != nil:
 		return &StringLit{Value: *l.Str}, nil
 	case l.Bool != nil:
@@ -2146,6 +2258,8 @@ func inferType(e Expr) string {
 	switch v := e.(type) {
 	case *IntLit:
 		return "integer"
+	case *RealLit:
+		return "real"
 	case *StringLit:
 		return "string"
 	case *BoolLit:
