@@ -669,6 +669,13 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 						}
 						vd.Type = typ
 						pr.Stmts = append(pr.Stmts, stmts...)
+					} else if q.Group != nil && len(q.Froms) == 0 && len(q.Joins) == 1 && isGroupByJoin(q) {
+						stmts, typ, err := buildGroupByJoinQuery(env, q, st.Let.Name, varTypes)
+						if err != nil {
+							return nil, err
+						}
+						vd.Type = typ
+						pr.Stmts = append(pr.Stmts, stmts...)
 					} else if q.Group != nil && len(q.Froms) == 0 && len(q.Joins) == 0 && q.Skip == nil && q.Take == nil && !q.Distinct {
 						if q.Sort == nil && isSimpleGroupBy(q) {
 							stmts, typ, err := buildGroupByQuery(env, q, st.Let.Name, varTypes)
@@ -1443,6 +1450,35 @@ func isGroupByConditionalSum(q *parser.QueryExpr) bool {
 	return true
 }
 
+func isGroupByJoin(q *parser.QueryExpr) bool {
+	if q.Group == nil || len(q.Group.Exprs) != 1 || q.Group.Having != nil {
+		return false
+	}
+	if len(q.Joins) != 1 || len(q.Froms) != 0 || q.Sort != nil || q.Skip != nil || q.Take != nil || q.Distinct {
+		return false
+	}
+	if q.Select == nil || q.Select.Binary == nil {
+		return false
+	}
+	ml := q.Select.Binary.Left.Value.Target.Map
+	if ml == nil || len(ml.Items) != 2 {
+		return false
+	}
+	k0, ok0 := exprToIdent(ml.Items[0].Key)
+	k1, ok1 := exprToIdent(ml.Items[1].Key)
+	if !ok0 || !ok1 {
+		return false
+	}
+	if k0 != "name" || k1 != "count" {
+		return false
+	}
+	call := ml.Items[1].Value.Binary.Left.Value.Target.Call
+	if call == nil || call.Func != "count" || len(call.Args) != 1 {
+		return false
+	}
+	return true
+}
+
 func buildGroupByQuery(env *types.Env, q *parser.QueryExpr, varName string, varTypes map[string]string) ([]Stmt, string, error) {
 	src, err := convertExpr(env, q.Source)
 	if err != nil {
@@ -1594,6 +1630,77 @@ func buildGroupByConditionalSum(env *types.Env, q *parser.QueryExpr, varName str
 	stmts := []Stmt{&AssignStmt{Name: groupsVar, Expr: &ListLit{}}, outer, &AssignStmt{Name: varName, Expr: &ListLit{}}, resultFor}
 	varTypes[varName] = "array of " + resRec
 	return stmts, "array of " + resRec, nil
+}
+
+func buildGroupByJoinQuery(env *types.Env, q *parser.QueryExpr, varName string, varTypes map[string]string) ([]Stmt, string, error) {
+	j := q.Joins[0]
+	leftSrc, err := convertExpr(env, q.Source)
+	if err != nil {
+		return nil, "", err
+	}
+	rightSrc, err := convertExpr(env, j.Src)
+	if err != nil {
+		return nil, "", err
+	}
+	ltyp := typeOf(q.Source, env)
+	rtyp := typeOf(j.Src, env)
+	if _, ok := varTypes[q.Var]; !ok {
+		varTypes[q.Var] = elemType(ltyp)
+	}
+	if _, ok := varTypes[j.Var]; !ok {
+		varTypes[j.Var] = elemType(rtyp)
+	}
+	child := types.NewEnv(env)
+	child.SetVar(q.Var, types.AnyType{}, true)
+	child.SetVar(j.Var, types.AnyType{}, true)
+	cond, err := convertExpr(child, j.On)
+	if err != nil {
+		return nil, "", err
+	}
+	keyExpr, err := convertExpr(child, q.Group.Exprs[0])
+	if err != nil {
+		return nil, "", err
+	}
+	keyT := inferType(keyExpr)
+
+	rec := ensureRecord([]Field{{Name: "name", Type: keyT}, {Name: "count", Type: "integer"}})
+	groupsVar := fmt.Sprintf("grp%d", len(currProg.Vars))
+	currProg.Vars = append(currProg.Vars, VarDecl{Name: groupsVar, Type: "array of " + rec})
+	idxVar := fmt.Sprintf("idx%d", len(currProg.Vars))
+	currProg.Vars = append(currProg.Vars, VarDecl{Name: idxVar, Type: "integer"})
+	iVar := fmt.Sprintf("i%d", len(currProg.Vars))
+	currProg.Vars = append(currProg.Vars, VarDecl{Name: iVar, Type: "integer"})
+
+	searchBody := []Stmt{
+		&IfStmt{Cond: &BinaryExpr{Op: "=", Bool: true,
+			Left:  &SelectorExpr{Root: fmt.Sprintf("%s[%s]", groupsVar, iVar), Tail: []string{"name"}},
+			Right: keyExpr},
+			Then: []Stmt{&AssignStmt{Name: idxVar, Expr: &VarRef{Name: iVar}}, &BreakStmt{}}},
+	}
+	forLoop := &ForRangeStmt{Name: iVar, Start: &IntLit{Value: 0}, End: &CallExpr{Name: "Length", Args: []Expr{&VarRef{Name: groupsVar}}}, Body: searchBody}
+
+	addNew := &AssignStmt{
+		Name: groupsVar,
+		Expr: &CallExpr{Name: "concat", Args: []Expr{
+			&VarRef{Name: groupsVar},
+			&ListLit{Elems: []Expr{
+				&RecordLit{Type: rec, Fields: []FieldExpr{
+					{Name: "name", Expr: keyExpr},
+					{Name: "count", Expr: &IntLit{Value: 1}},
+				}},
+			}},
+		}},
+	}
+	incCount := &AssignStmt{Name: fmt.Sprintf("%s[%s].count", groupsVar, idxVar), Expr: &BinaryExpr{Op: "+", Left: &SelectorExpr{Root: fmt.Sprintf("%s[%s]", groupsVar, idxVar), Tail: []string{"count"}}, Right: &IntLit{Value: 1}}}
+	condUpdate := &IfStmt{Cond: &BinaryExpr{Op: "=", Bool: true, Left: &VarRef{Name: idxVar}, Right: &IntLit{Value: -1}}, Then: []Stmt{addNew}, Else: []Stmt{incCount}}
+
+	innerBody := []Stmt{&AssignStmt{Name: idxVar, Expr: &IntLit{Value: -1}}, forLoop, condUpdate}
+	joinLoop := &ForEachStmt{Name: j.Var, Iterable: rightSrc, Body: []Stmt{&IfStmt{Cond: cond, Then: innerBody}}}
+	outer := &ForEachStmt{Name: q.Var, Iterable: leftSrc, Body: []Stmt{joinLoop}}
+
+	stmts := []Stmt{&AssignStmt{Name: groupsVar, Expr: &ListLit{}}, outer, &AssignStmt{Name: varName, Expr: &VarRef{Name: groupsVar}}}
+	varTypes[varName] = "array of " + rec
+	return stmts, "array of " + rec, nil
 }
 
 func exprToIdent(e *parser.Expr) (string, bool) {
