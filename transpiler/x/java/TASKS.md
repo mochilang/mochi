@@ -1,4 +1,24 @@
-## Progress (2025-07-21 23:17 +0700)
+## Progress (2025-07-21 23:57 +0700)
+- py transpiler: support dataclass for top-level vars (d34a22daa)
+
+- py transpiler: support dataclass for top-level vars (d34a22daa)
+
+- py transpiler: support dataclass for top-level vars (d34a22daa)
+
+- py transpiler: support dataclass for top-level vars (d34a22daa)
+
+- py transpiler: support dataclass for top-level vars (d34a22daa)
+
+- py transpiler: support dataclass for top-level vars (d34a22daa)
+
+- py transpiler: support dataclass for top-level vars (d34a22daa)
+
+- py transpiler: support dataclass for top-level vars (d34a22daa)
+
+- py transpiler: support dataclass for top-level vars (d34a22daa)
+
+- py transpiler: support dataclass for top-level vars (d34a22daa)
+
 - java transpiler: fix update stmt (31e246ed7)
 
 - java transpiler: fix list printing and grouping (a164b1578)
