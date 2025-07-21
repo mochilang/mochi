@@ -1400,15 +1400,6 @@ func evalQueryExpr(q *parser.QueryExpr, vars map[string]value) (value, error) {
 					continue
 				}
 			}
-			if q.Where != nil {
-				cond, err := evalExpr(q.Where, local)
-				if err != nil {
-					return value{}, err
-				}
-				if cond.kind != valBool || !cond.b {
-					continue
-				}
-			}
 			v, err := evalExpr(q.Select, local)
 			if err != nil {
 				return value{}, err
@@ -1516,15 +1507,6 @@ func evalQueryExpr(q *parser.QueryExpr, vars map[string]value) (value, error) {
 					continue
 				}
 			}
-			if q.Where != nil {
-				cond, err := evalExpr(q.Where, local)
-				if err != nil {
-					return value{}, err
-				}
-				if cond.kind != valBool || !cond.b {
-					continue
-				}
-			}
 			v, err := evalExpr(q.Select, local)
 			if err != nil {
 				return value{}, err
@@ -1573,6 +1555,15 @@ func evalQueryExpr(q *parser.QueryExpr, vars map[string]value) (value, error) {
 			var iter func(int, map[string]value) error
 			iter = func(i int, local map[string]value) error {
 				if i == len(clauses) {
+					if q.Where != nil {
+						cond, err := evalExpr(q.Where, local)
+						if err != nil {
+							return err
+						}
+						if cond.kind != valBool || !cond.b {
+							return nil
+						}
+					}
 					item := value{kind: valMap, kv: map[string]value{}}
 					for k, v := range local {
 						item.kv[k] = v
@@ -1643,15 +1634,6 @@ func evalQueryExpr(q *parser.QueryExpr, vars map[string]value) (value, error) {
 				local[q.Group.Name] = gv
 				if q.Group.Having != nil {
 					cond, err := evalExpr(q.Group.Having, local)
-					if err != nil {
-						return value{}, err
-					}
-					if cond.kind != valBool || !cond.b {
-						continue
-					}
-				}
-				if q.Where != nil {
-					cond, err := evalExpr(q.Where, local)
 					if err != nil {
 						return value{}, err
 					}
