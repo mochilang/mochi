@@ -1,3 +1,19 @@
+## Progress (2025-07-21 15:03 +0700)
+- feat(erl): support group by join queries
+- Regenerated golden files - 79/100 vm valid programs passing
+
+## Progress (2025-07-21 14:54 +0700)
+- chore(py tests): update outputs
+- Regenerated golden files - 79/100 vm valid programs passing
+
+## Progress (2025-07-21 14:54 +0700)
+- chore(py tests): update outputs
+- Regenerated golden files - 79/100 vm valid programs passing
+
+## Progress (2025-07-21 14:54 +0700)
+- chore(py tests): update outputs
+- Regenerated golden files - 78/100 vm valid programs passing
+
 ## Progress (2025-07-21 14:20 +0700)
 - erl transpiler: support group sort
 - Regenerated golden files - 78/100 vm valid programs passing
