@@ -919,6 +919,14 @@ func convertGroupByJoinQuery(q *parser.QueryExpr) (Node, error) {
 		return nil, err
 	}
 	sel = mapToAlist(sel)
+	var having Node
+	if q.Group.Having != nil {
+		having, err = convertParserExpr(q.Group.Having)
+		if err != nil {
+			currentEnv = prevEnv
+			return nil, err
+		}
+	}
 	var sortExpr Node
 	if q.Sort != nil {
 		sortExpr, err = convertParserExpr(q.Sort)
@@ -1063,15 +1071,19 @@ func convertGroupByJoinQuery(q *parser.QueryExpr) (Node, error) {
 			l.source,
 		}}
 	}
+	appendRes := &List{Elems: []Node{
+		Symbol("set!"), Symbol(res),
+		&List{Elems: []Node{Symbol("append"), Symbol(res), &List{Elems: []Node{Symbol("list"), sel}}}},
+	}}
+	if having != nil {
+		appendRes = &List{Elems: []Node{Symbol("if"), having, appendRes, voidSym()}}
+	}
 	buildRes := &List{Elems: []Node{
 		Symbol("for-each"),
 		&List{Elems: []Node{
 			Symbol("lambda"),
 			&List{Elems: []Node{gParam}},
-			&List{Elems: []Node{
-				Symbol("set!"), Symbol(res),
-				&List{Elems: []Node{Symbol("append"), Symbol(res), &List{Elems: []Node{Symbol("list"), sel}}}},
-			}},
+			appendRes,
 		}},
 		&List{Elems: []Node{Symbol("hash-table-values"), Symbol(groups)}},
 	}}

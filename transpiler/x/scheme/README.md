@@ -3,7 +3,7 @@
 Generated Scheme code for programs in `tests/vm/valid`. Each program has a `.scm` file produced by the transpiler and a `.out` file with its runtime output. Compilation or execution errors are captured in `.error` files.
 
 ## VM Golden Test Checklist (69/100)
-Last updated: 2025-07-21 14:13 UTC
+Last updated: 2025-07-21 15:29 UTC
 
 - [x] append_builtin
 - [x] avg_builtin
@@ -28,7 +28,7 @@ Last updated: 2025-07-21 14:13 UTC
 - [ ] fun_expr_in_let
 - [x] fun_three_args
 - [ ] go_auto
-- [x] group_by
+- [ ] group_by
 - [ ] group_by_conditional_sum
 - [ ] group_by_having
 - [x] group_by_join
@@ -90,7 +90,7 @@ Last updated: 2025-07-21 14:13 UTC
 - [x] string_contains
 - [x] string_in_operator
 - [x] string_index
-- [ ] string_prefix_slice
+- [x] string_prefix_slice
 - [x] substring_builtin
 - [x] sum_builtin
 - [ ] tail_recursion
