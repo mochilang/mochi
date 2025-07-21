@@ -117,10 +117,20 @@ func updateReadme() {
 		}
 		lines = append(lines, fmt.Sprintf("- %s %s", mark, name))
 	}
+	tsRaw, _ := exec.Command("git", "log", "-1", "--format=%cI").Output()
+	ts := strings.TrimSpace(string(tsRaw))
+	if t, err := time.Parse(time.RFC3339, ts); err == nil {
+		if loc, lerr := time.LoadLocation("Asia/Bangkok"); lerr == nil {
+			ts = t.In(loc).Format("2006-01-02 15:04 -0700")
+		} else {
+			ts = t.Format("2006-01-02 15:04 MST")
+		}
+	}
 	var buf bytes.Buffer
 	buf.WriteString("# C++ Transpiler Output\n\n")
 	buf.WriteString("This checklist is auto-generated.\n")
 	buf.WriteString("Generated C++ code for programs in `tests/vm/valid`. Each program has a `.cpp` file produced by the transpiler and a `.out` file containing its runtime output. Compilation or execution errors are captured in a `.error` file placed next to the source.\n\n")
+	fmt.Fprintf(&buf, "Last updated: %s\n\n", ts)
 	fmt.Fprintf(&buf, "## VM Golden Test Checklist (%d/%d)\n", compiled, total)
 	buf.WriteString(strings.Join(lines, "\n"))
 	buf.WriteString("\n")

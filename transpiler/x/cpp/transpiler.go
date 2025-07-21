@@ -412,9 +412,8 @@ func (s *PrintStmt) emit(w io.Writer, indent int) {
 	}
 	if currentProgram != nil {
 		currentProgram.addInclude("<iostream>")
-		currentProgram.addInclude("<iomanip>")
 	}
-	io.WriteString(w, "std::cout << std::boolalpha")
+	io.WriteString(w, "std::cout")
 	for i, v := range s.Values {
 		if i > 0 {
 			io.WriteString(w, " << ' '")
