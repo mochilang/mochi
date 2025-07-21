@@ -169,6 +169,15 @@ type QueryExpr struct {
 	Select Expr
 }
 
+// GroupQueryExpr represents a simple group-by query.
+type GroupQueryExpr struct {
+	Var      string
+	Src      Expr
+	Key      Expr
+	GroupVar string
+	Select   Expr
+}
+
 func (q *QueryExpr) emit(e *emitter) {
 	io.WriteString(e.w, "(begin")
 	e.indent++
@@ -284,7 +293,64 @@ func (q *QueryExpr) emit(e *emitter) {
 	io.WriteString(e.w, "end)")
 }
 
+func (gq *GroupQueryExpr) emit(e *emitter) {
+	io.WriteString(e.w, "(begin")
+	e.indent++
+	e.nl()
+	e.writeIndent()
+	io.WriteString(e.w, "groups = {}")
+	e.nl()
+	e.writeIndent()
+	io.WriteString(e.w, "for ")
+	io.WriteString(e.w, gq.Var)
+	io.WriteString(e.w, " in ")
+	gq.Src.emit(e)
+	e.nl()
+	e.indent++
+	e.writeIndent()
+	io.WriteString(e.w, "k = ")
+	gq.Key.emit(e)
+	e.nl()
+	e.writeIndent()
+	io.WriteString(e.w, "groups[k] ||= []")
+	e.nl()
+	e.writeIndent()
+	io.WriteString(e.w, "groups[k] << ")
+	io.WriteString(e.w, gq.Var)
+	e.nl()
+	e.indent--
+	e.writeIndent()
+	io.WriteString(e.w, "end")
+	e.nl()
+	e.writeIndent()
+	io.WriteString(e.w, "result = []")
+	e.nl()
+	e.writeIndent()
+	io.WriteString(e.w, "groups.each do |k, items|")
+	e.nl()
+	e.indent++
+	e.writeIndent()
+	io.WriteString(e.w, gq.GroupVar)
+	io.WriteString(e.w, " = MGroup.new(k, items)")
+	e.nl()
+	e.writeIndent()
+	io.WriteString(e.w, "result << ")
+	gq.Select.emit(e)
+	e.nl()
+	e.indent--
+	e.writeIndent()
+	io.WriteString(e.w, "end")
+	e.nl()
+	e.writeIndent()
+	io.WriteString(e.w, "result")
+	e.nl()
+	e.indent--
+	e.writeIndent()
+	io.WriteString(e.w, "end)")
+}
+
 var needsJSON bool
+var needsGroup bool
 
 // emitter maintains the current indentation level while emitting Ruby code.
 type emitter struct {
@@ -1227,6 +1293,12 @@ func Emit(w io.Writer, p *Program) error {
 			return err
 		}
 	}
+	if needsGroup {
+		constGroup := "class MGroup\n  include Enumerable\n  attr_accessor :key, :items\n  def initialize(k, it)\n    @key = k\n    @items = it\n  end\n  def each(&b); @items.each(&b); end\n  def length; @items.length; end\n  def [](name); name == 'key' ? @key : @items; end\nend\n"
+		if _, err := io.WriteString(w, constGroup); err != nil {
+			return err
+		}
+	}
 	for _, s := range p.Stmts {
 		e.writeIndent()
 		s.emit(e)
@@ -1238,6 +1310,7 @@ func Emit(w io.Writer, p *Program) error {
 // Transpile converts a Mochi program into a Ruby AST.
 func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	needsJSON = false
+	needsGroup = false
 	currentEnv = env
 	rbProg := &Program{}
 	for _, st := range prog.Statements {
@@ -2017,6 +2090,9 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 		}
 		return expr, nil
 	case p.Query != nil:
+		if ex, err := convertGroupQuery(p.Query); err == nil {
+			return ex, nil
+		}
 		if ex, err := convertRightJoinQuery(p.Query); err == nil {
 			return ex, nil
 		}
@@ -2242,6 +2318,35 @@ func convertRightJoinQuery(q *parser.QueryExpr) (Expr, error) {
 	return &RightJoinExpr{LeftVar: q.Var, LeftSrc: leftSrc, RightVar: j.Var, RightSrc: rightSrc, Cond: cond, Select: sel}, nil
 }
 
+func convertGroupQuery(q *parser.QueryExpr) (Expr, error) {
+	if q == nil || q.Group == nil || len(q.Group.Exprs) != 1 || len(q.Froms) > 0 || len(q.Joins) > 0 || q.Sort != nil || q.Skip != nil || q.Take != nil || q.Distinct {
+		return nil, fmt.Errorf("unsupported query")
+	}
+	src, err := convertExpr(q.Source)
+	if err != nil {
+		return nil, err
+	}
+	child := types.NewEnv(currentEnv)
+	child.SetVar(q.Var, types.AnyType{}, true)
+	grp := types.StructType{Name: "MGroup", Fields: map[string]types.Type{"key": types.AnyType{}, "items": types.ListType{Elem: types.AnyType{}}}, Order: []string{"key", "items"}}
+	child.SetStruct("MGroup", grp)
+	child.SetVar(q.Group.Name, grp, true)
+	saved := currentEnv
+	currentEnv = child
+	keyExpr, err := convertExpr(q.Group.Exprs[0])
+	if err != nil {
+		currentEnv = saved
+		return nil, err
+	}
+	sel, err := convertExpr(q.Select)
+	currentEnv = saved
+	if err != nil {
+		return nil, err
+	}
+	needsGroup = true
+	return &GroupQueryExpr{Var: q.Var, Src: src, Key: keyExpr, GroupVar: q.Group.Name, Select: sel}, nil
+}
+
 func convertQueryForLet(q *parser.QueryExpr, name string) (Expr, Stmt, error) {
 	if keys, vals, ok := extractMapLiteral(q.Select); ok {
 		structName := toStructName(name)
@@ -2259,7 +2364,12 @@ func convertQueryForLet(q *parser.QueryExpr, name string) (Expr, Stmt, error) {
 		}
 		var qe Expr
 		var err error
-		if ex, err2 := convertRightJoinQuery(q); err2 == nil {
+		if ex, err2 := convertGroupQuery(q); err2 == nil {
+			qe = ex
+			if gq, ok := qe.(*GroupQueryExpr); ok {
+				gq.Select = &StructNewExpr{Name: structName, Fields: fields}
+			}
+		} else if ex, err2 := convertRightJoinQuery(q); err2 == nil {
 			qe = ex
 			if rj, ok := qe.(*RightJoinExpr); ok {
 				rj.Select = &StructNewExpr{Name: structName, Fields: fields}
@@ -2279,6 +2389,9 @@ func convertQueryForLet(q *parser.QueryExpr, name string) (Expr, Stmt, error) {
 		return qe, &StructDefStmt{Name: structName, Fields: keys}, nil
 	}
 	if ex, err := convertRightJoinQuery(q); err == nil {
+		return ex, nil, nil
+	}
+	if ex, err := convertGroupQuery(q); err == nil {
 		return ex, nil, nil
 	}
 	qe, err := convertQueryExpr(q)
