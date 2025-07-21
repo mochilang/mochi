@@ -1,3 +1,6 @@
+## Progress (2025-07-22 06:00 +0700)
+- erl: handle group items and struct cast (progress 67/101)
+
 ## Progress (2025-07-21 23:52 +0700)
 - lua transpiler: support set ops, sort map, partial apps (progress 67/100)
 
@@ -190,3 +193,6 @@
 
 
 
+
+## Progress (2025-07-22 06:00 +0700)
+- cs: implemented outer join (progress 68/101)
