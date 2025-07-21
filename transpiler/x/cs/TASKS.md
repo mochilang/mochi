@@ -1,11 +1,8 @@
-## Progress (2025-07-21 12:05 +0700)
-- cs transpiler: typed group structs and left join (progress 87/100)
+## Progress (2025-07-21 12:24 +0700)
+- cs transpiler: support grouping with left join (progress 87/100)
 
-## Progress (2025-07-20 22:25 +0700)
-- cs transpiler: basic left join support (progress 85/100)
-
-## Progress (2025-07-20 21:07 +0700)
-- cs transpiler: typed grouping and right join (progress 84/100)
+## Progress (2025-07-21 12:24 +0700)
+- cs transpiler: handle having clause and numeric avg (progress 88/100)
 
 ## Recent Enhancements
 - Added struct inference from list and map literals
