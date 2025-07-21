@@ -1592,7 +1592,20 @@ func inferTypeFromExpr(e *parser.Expr) types.Type {
 		return lt
 	}
 	u := e.Binary.Left
-	if len(u.Ops) > 0 || u.Value == nil {
+	if len(u.Ops) > 0 {
+		if u.Value != nil && len(u.Ops) == 1 {
+			op := u.Ops[0]
+			if op == "-" || op == "+" {
+				return inferTypeFromExpr(exprFromPostfix(u.Value))
+			}
+			if op == "!" {
+				return types.BoolType{}
+			}
+		}
+		if u.Value == nil {
+			return types.AnyType{}
+		}
+	} else if u.Value == nil {
 		return types.AnyType{}
 	}
 	p := u.Value
@@ -2074,16 +2087,6 @@ func Emit(w io.Writer, p *Program) error {
 	}
 	sort.Strings(imports)
 	for _, line := range imports {
-		if strings.HasPrefix(line, "import mochi.runtime.ffi.go.testpkg") {
-			alias := "testpkg"
-			if parts := strings.Split(line, " as "); len(parts) == 2 {
-				alias = parts[1]
-			}
-			if _, err := fmt.Fprintf(w, "try:\n    %s\nexcept Exception:\n    class %s:\n        @staticmethod\n        def Add(a, b):\n            return a + b\n    %s.Pi = 3.14\n    %s.Answer = 42\n", line, alias, alias, alias); err != nil {
-				return err
-			}
-			continue
-		}
 		if _, err := io.WriteString(w, line+"\n"); err != nil {
 			return err
 		}
@@ -3237,6 +3240,15 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 					outArgs[i] = &RawExpr{Code: fmt.Sprintf("(1 if %s else 0)", exprString(a))}
 				} else if _, ok := t.(types.BoolType); ok {
 					outArgs[i] = &RawExpr{Code: fmt.Sprintf("(\"true\" if %s else \"false\")", exprString(a))}
+				} else if _, ok := t.(types.ListType); ok {
+					currentImports["json"] = true
+					outArgs[i] = &CallExpr{Func: &RawExpr{Code: "json.dumps"}, Args: []Expr{a}}
+				} else if _, ok := t.(types.MapType); ok {
+					currentImports["json"] = true
+					outArgs[i] = &CallExpr{Func: &RawExpr{Code: "json.dumps"}, Args: []Expr{a}}
+				} else if _, ok := t.(types.StructType); ok {
+					currentImports["json"] = true
+					outArgs[i] = &CallExpr{Func: &RawExpr{Code: "json.dumps"}, Args: []Expr{a}}
 				} else {
 					outArgs[i] = a
 				}
