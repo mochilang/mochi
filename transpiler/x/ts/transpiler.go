@@ -449,6 +449,12 @@ func (b *BinaryExpr) emit(w io.Writer) {
 
 func (u *UnaryExpr) emit(w io.Writer) {
 	io.WriteString(w, u.Op)
+	if u.Op == "typeof" || strings.HasSuffix(u.Op, " ") {
+		// operators like "typeof" require a trailing space before the operand
+		if !strings.HasSuffix(u.Op, " ") {
+			io.WriteString(w, " ")
+		}
+	}
 	u.Expr.emit(w)
 }
 
@@ -630,7 +636,7 @@ func (p *PrintExpr) emit(w io.Writer) {
 			io.WriteString(w, "null")
 		}
 	}
-        io.WriteString(w, "].map(v => v === null ? 'nil' : typeof v === 'object' ? JSON.stringify(v).replace(/:/g, ': ').replace(/,/g, ', ') : v).join(' ').trimEnd())")
+	io.WriteString(w, "].map(v => v === null ? 'nil' : typeof v === 'object' ? JSON.stringify(v).replace(/:/g, ': ').replace(/,/g, ', ') : v).join(' ').trimEnd())")
 }
 
 func (s *SubstringExpr) emit(w io.Writer) {
@@ -2679,7 +2685,14 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 							}
 							args[0] = &MethodCallExpr{Target: m, Method: "join", Args: []Expr{&StringLit{Value: " "}}}
 						case types.AnyType:
-							m := &MethodCallExpr{Target: args[0], Method: "map", Args: []Expr{&FunExpr{Params: []string{"x"}, Expr: &CallExpr{Func: "String", Args: []Expr{&NameRef{Name: "x"}}}}}}
+							// Fallback for lists of unknown element types. Mimic the
+							// interpreter by stringifying objects as JSON and other
+							// values via `String(x)`.
+							js := &CallExpr{Func: "JSON.stringify", Args: []Expr{&NameRef{Name: "x"}}}
+							rep1 := &MethodCallExpr{Target: js, Method: "replace", Args: []Expr{&CallExpr{Func: "RegExp", Args: []Expr{&StringLit{Value: ":"}, &StringLit{Value: "g"}}}, &StringLit{Value: ": "}}}
+							rep2 := &MethodCallExpr{Target: rep1, Method: "replace", Args: []Expr{&CallExpr{Func: "RegExp", Args: []Expr{&StringLit{Value: ","}, &StringLit{Value: "g"}}}, &StringLit{Value: ", "}}}
+							cond := &IfExpr{Cond: &BinaryExpr{Left: &UnaryExpr{Op: "typeof", Expr: &NameRef{Name: "x"}}, Op: "===", Right: &StringLit{Value: "object"}}, Then: rep2, Else: &CallExpr{Func: "String", Args: []Expr{&NameRef{Name: "x"}}}}
+							m := &MethodCallExpr{Target: args[0], Method: "map", Args: []Expr{&FunExpr{Params: []string{"x"}, Expr: cond}}}
 							args[0] = &MethodCallExpr{Target: m, Method: "join", Args: []Expr{&StringLit{Value: " "}}}
 						default:
 							args = []Expr{&FormatListExpr{Value: args[0]}}
