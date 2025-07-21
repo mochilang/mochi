@@ -1,3 +1,83 @@
+## Progress (2025-07-21 16:00 +0700)
+- rb transpiler: add group by support
+- Generated Ruby for 76/100 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-21 15:42 +0700)
+- docs(ts): update task log
+- Generated Ruby for 76/100 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-21 15:42 +0700)
+- docs(ts): update task log
+- Generated Ruby for 76/100 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-21 15:42 +0700)
+- docs(ts): update task log
+- Generated Ruby for 76/100 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-21 15:42 +0700)
+- docs(ts): update task log
+- Generated Ruby for 76/100 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-21 15:42 +0700)
+- docs(ts): update task log
+- Generated Ruby for 76/100 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-21 15:42 +0700)
+- docs(ts): update task log
+- Generated Ruby for 76/100 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-21 15:42 +0700)
+- docs(ts): update task log
+- Generated Ruby for 76/100 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-21 15:42 +0700)
+- docs(ts): update task log
+- Generated Ruby for 76/100 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-21 15:42 +0700)
+- docs(ts): update task log
+- Generated Ruby for 76/100 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-21 15:42 +0700)
+- docs(ts): update task log
+- Generated Ruby for 76/100 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-21 15:42 +0700)
+- docs(ts): update task log
+- Generated Ruby for 76/100 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-21 15:42 +0700)
+- docs(ts): update task log
+- Generated Ruby for 76/100 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-21 15:42 +0700)
+- docs(ts): update task log
+- Generated Ruby for 76/100 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-21 15:42 +0700)
+- docs(ts): update task log
+- Generated Ruby for 76/100 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-21 15:42 +0700)
+- docs(ts): update task log
+- Generated Ruby for 75/100 programs
+- Updated README checklist and outputs
+
 ## Progress (2025-07-21 08:03 +0700)
 - rb transpiler: add right join
 - Generated Ruby for 75/100 programs

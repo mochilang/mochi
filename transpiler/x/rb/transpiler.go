@@ -1177,6 +1177,106 @@ func extractQueryExpr(e *parser.Expr) *parser.QueryExpr {
 	return p.Target.Query
 }
 
+func replaceGroup(e Expr, name string) Expr {
+	switch ex := e.(type) {
+	case *QueryExpr:
+		ex.Src = replaceGroup(ex.Src, name)
+		for i := range ex.Froms {
+			ex.Froms[i].Src = replaceGroup(ex.Froms[i].Src, name)
+		}
+		for i := range ex.Joins {
+			ex.Joins[i].Src = replaceGroup(ex.Joins[i].Src, name)
+			if ex.Joins[i].On != nil {
+				ex.Joins[i].On = replaceGroup(ex.Joins[i].On, name)
+			}
+		}
+		if ex.Where != nil {
+			ex.Where = replaceGroup(ex.Where, name)
+		}
+		if ex.Select != nil {
+			ex.Select = replaceGroup(ex.Select, name)
+		}
+		return ex
+	case *AvgExpr:
+		ex.Value = replaceGroup(ex.Value, name)
+		return ex
+	case *SumExpr:
+		ex.Value = replaceGroup(ex.Value, name)
+		return ex
+	case *LenExpr:
+		ex.Value = replaceGroup(ex.Value, name)
+		return ex
+	case *ValuesExpr:
+		ex.Map = replaceGroup(ex.Map, name)
+		return ex
+	case *Ident:
+		if ex.Name == name {
+			return &IndexExpr{Target: &Ident{Name: name}, Index: &StringLit{Value: "items"}}
+		}
+		return ex
+	case *BinaryExpr:
+		ex.Left = replaceGroup(ex.Left, name)
+		ex.Right = replaceGroup(ex.Right, name)
+		return ex
+	case *UnaryExpr:
+		ex.Expr = replaceGroup(ex.Expr, name)
+		return ex
+	case *CallExpr:
+		for i := range ex.Args {
+			ex.Args[i] = replaceGroup(ex.Args[i], name)
+		}
+		return ex
+	case *MethodCallExpr:
+		ex.Target = replaceGroup(ex.Target, name)
+		for i := range ex.Args {
+			ex.Args[i] = replaceGroup(ex.Args[i], name)
+		}
+		return ex
+	case *FieldExpr:
+		if id, ok := ex.Target.(*Ident); ok && id.Name == name {
+			return &IndexExpr{Target: id, Index: &StringLit{Value: ex.Name}}
+		}
+		ex.Target = replaceGroup(ex.Target, name)
+		return ex
+	case *IndexExpr:
+		if id, ok := ex.Target.(*Ident); ok && id.Name == name {
+			if sl, ok2 := ex.Index.(*StringLit); ok2 && sl.Value == "key" {
+				return ex
+			}
+			return &IndexExpr{Target: id, Index: &StringLit{Value: "items"}}
+		}
+		ex.Target = replaceGroup(ex.Target, name)
+		ex.Index = replaceGroup(ex.Index, name)
+		return ex
+	case *SliceExpr:
+		ex.Target = replaceGroup(ex.Target, name)
+		if ex.Start != nil {
+			ex.Start = replaceGroup(ex.Start, name)
+		}
+		if ex.End != nil {
+			ex.End = replaceGroup(ex.End, name)
+		}
+		return ex
+	case *CondExpr:
+		ex.Cond = replaceGroup(ex.Cond, name)
+		ex.Then = replaceGroup(ex.Then, name)
+		ex.Else = replaceGroup(ex.Else, name)
+		return ex
+	case *ListLit:
+		for i := range ex.Elems {
+			ex.Elems[i] = replaceGroup(ex.Elems[i], name)
+		}
+		return ex
+	case *MapLit:
+		for i := range ex.Items {
+			ex.Items[i] = MapItem{Key: replaceGroup(ex.Items[i].Key, name), Value: replaceGroup(ex.Items[i].Value, name)}
+		}
+		return ex
+	default:
+		return ex
+	}
+}
+
 func toStructName(varName string) string {
 	name := strings.Title(varName)
 	if strings.HasSuffix(varName, "s") {
@@ -1291,6 +1391,13 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 				return &BlockStmt{Stmts: stmts}, nil
 			}
 			if q := extractQueryExpr(st.Let.Value); q != nil {
+				if q.Group != nil {
+					stmts, err := convertGroupQuery(q, st.Let.Name)
+					if err != nil {
+						return nil, err
+					}
+					return &BlockStmt{Stmts: stmts}, nil
+				}
 				qe, def, err := convertQueryForLet(q, st.Let.Name)
 				if err != nil {
 					return nil, err
@@ -2192,6 +2299,82 @@ func convertRightJoinQuery(q *parser.QueryExpr) (Expr, error) {
 		return nil, err
 	}
 	return &RightJoinExpr{LeftVar: q.Var, LeftSrc: leftSrc, RightVar: j.Var, RightSrc: rightSrc, Cond: cond, Select: sel}, nil
+}
+
+func convertGroupQuery(q *parser.QueryExpr, name string) ([]Stmt, error) {
+	if q == nil || q.Group == nil || len(q.Froms) > 0 || len(q.Joins) > 0 || q.Sort != nil || q.Skip != nil || q.Take != nil {
+		return nil, fmt.Errorf("unsupported query")
+	}
+	src, err := convertExpr(q.Source)
+	if err != nil {
+		return nil, err
+	}
+	keyVal, err := convertExpr(q.Group.Exprs[0])
+	if err != nil {
+		return nil, err
+	}
+	groupsVar := "_" + name + "_groups"
+	idx := &IndexExpr{Target: &Ident{Name: groupsVar}, Index: keyVal}
+	initMap := &MapLit{Items: []MapItem{{Key: &StringLit{Value: "key"}, Value: keyVal}, {Key: &StringLit{Value: "items"}, Value: &ListLit{}}}}
+	condNil := &BinaryExpr{Left: idx, Op: "==", Right: &Ident{Name: "nil"}}
+	assign := &IndexAssignStmt{Target: &Ident{Name: groupsVar}, Index: keyVal, Value: initMap}
+	appendRow := &ExprStmt{Expr: &MethodCallExpr{Target: &IndexExpr{Target: idx, Index: &StringLit{Value: "items"}}, Method: "<<", Args: []Expr{&Ident{Name: q.Var}}}}
+	inner := []Stmt{&IfStmt{Cond: condNil, Then: []Stmt{assign}}, appendRow}
+	if q.Where != nil {
+		w, err := convertExpr(q.Where)
+		if err != nil {
+			return nil, err
+		}
+		inner = []Stmt{&IfStmt{Cond: w, Then: inner}}
+	}
+	loop := &ForInStmt{Name: q.Var, Iterable: src, Body: inner}
+
+	prev := currentEnv
+	genv := types.NewEnv(currentEnv)
+	genv.SetVar(q.Group.Name, types.AnyType{}, true)
+	currentEnv = genv
+	sel, err := convertExpr(q.Select)
+	if err != nil {
+		currentEnv = prev
+		return nil, err
+	}
+	var having Expr
+	if q.Group.Having != nil {
+		having, err = convertExpr(q.Group.Having)
+		if err != nil {
+			currentEnv = prev
+			return nil, err
+		}
+	}
+	currentEnv = prev
+	sel = replaceGroup(sel, q.Group.Name)
+	if having != nil {
+		having = replaceGroup(having, q.Group.Name)
+	}
+	if m, ok := sel.(*MapLit); ok {
+		for i, it := range m.Items {
+			if _, ok2 := it.Value.(*AvgExpr); ok2 {
+				m.Items[i] = MapItem{Key: it.Key, Value: &CallExpr{Func: "sprintf", Args: []Expr{&StringLit{Value: "%.17g"}, it.Value}}}
+			}
+		}
+	}
+	appendSel := &ExprStmt{Expr: &MethodCallExpr{Target: &Ident{Name: name}, Method: "<<", Args: []Expr{sel}}}
+	body := []Stmt{}
+	if having != nil {
+		body = append(body, &IfStmt{Cond: having, Then: []Stmt{appendSel}})
+	} else {
+		body = append(body, appendSel)
+	}
+	iterVals := &MethodCallExpr{Target: &Ident{Name: groupsVar}, Method: "values"}
+	loop2 := &ForInStmt{Name: q.Group.Name, Iterable: iterVals, Body: body}
+
+	stmts := []Stmt{
+		&LetStmt{Name: groupsVar, Value: &MapLit{}},
+		loop,
+		&LetStmt{Name: name, Value: &ListLit{}},
+		loop2,
+	}
+	return stmts, nil
 }
 
 func convertQueryForLet(q *parser.QueryExpr, name string) (Expr, Stmt, error) {
