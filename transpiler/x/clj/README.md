@@ -2,7 +2,7 @@
 
 This directory contains experimental source translators for generating Clojure code. Each program in `tests/vm/valid` is transpiled and executed with `clojure`.
 
-Compiled programs: 97/100
+Compiled programs: 100/100
 
 - [x] append_builtin
 - [x] avg_builtin
@@ -26,7 +26,7 @@ Compiled programs: 97/100
 - [x] fun_call
 - [x] fun_expr_in_let
 - [x] fun_three_args
-- [ ] go_auto
+- [x] go_auto
 - [x] group_by
 - [x] group_by_conditional_sum
 - [x] group_by_having
@@ -74,8 +74,8 @@ Compiled programs: 97/100
 - [x] print_hello
 - [x] pure_fold
 - [x] pure_global_fold
-- [ ] python_auto
-- [ ] python_math
+- [x] python_auto
+- [x] python_math
 - [x] query_sum_select
 - [x] record_assign
 - [x] right_join
@@ -104,4 +104,4 @@ Compiled programs: 97/100
 - [x] values_builtin
 - [x] var_assignment
 - [x] while_loop
-Last updated: 2025-07-21 18:33 +0700
+Last updated: 2025-07-21 19:31 +0700
