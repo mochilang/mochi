@@ -975,6 +975,26 @@ func transpilePrimary(p *parser.Primary) (Node, error) {
 		return &List{Elems: []Node{Symbol("fn"), &Vector{Elems: params}, body}}, nil
 	case p.Query != nil:
 		return transpileQueryExpr(p.Query)
+	case p.Save != nil:
+		src, err := transpileExpr(p.Save.Src)
+		if err != nil {
+			return nil, err
+		}
+		mapJoin := &List{Elems: []Node{Symbol("clojure.string/join"), StringLit(","), &List{Elems: []Node{Symbol("map"), &List{Elems: []Node{Symbol("fn"), &Vector{Elems: []Node{&Vector{Elems: []Node{Symbol("k"), Symbol("v")}}}}, &List{Elems: []Node{Symbol("str"), StringLit("\""), &List{Elems: []Node{Symbol("name"), Symbol("k")}}, StringLit("\":"), &List{Elems: []Node{Symbol("json_str"), Symbol("v")}}}}}}, Symbol("x")}}}}
+		mapBody := &List{Elems: []Node{Symbol("str"), StringLit("{"), mapJoin, StringLit("}")}}
+		seqJoin := &List{Elems: []Node{Symbol("clojure.string/join"), StringLit(","), &List{Elems: []Node{Symbol("map"), Symbol("json_str"), Symbol("x")}}}}
+		seqBody := &List{Elems: []Node{Symbol("str"), StringLit("["), seqJoin, StringLit("]")}}
+		condForm := &List{Elems: []Node{Symbol("cond"),
+			&List{Elems: []Node{Symbol("map?"), Symbol("x")}}, mapBody,
+			&List{Elems: []Node{Symbol("sequential?"), Symbol("x")}}, seqBody,
+			&List{Elems: []Node{Symbol("string?"), Symbol("x")}}, &List{Elems: []Node{Symbol("pr-str"), Symbol("x")}},
+			Keyword("else"), &List{Elems: []Node{Symbol("str"), Symbol("x")}},
+		}}
+		jsonFn := &List{Elems: []Node{Symbol("fn"), Symbol("json_str"), &Vector{Elems: []Node{Symbol("x")}}, condForm}}
+		binding := &Vector{Elems: []Node{Symbol("item"), src}}
+		line := &List{Elems: []Node{jsonFn, Symbol("item")}}
+		printExpr := &List{Elems: []Node{Symbol("println"), line}}
+		return &List{Elems: []Node{Symbol("doseq"), binding, printExpr}}, nil
 	case p.Selector != nil && len(p.Selector.Tail) == 0:
 		name := p.Selector.Root
 		if transpileEnv != nil {
