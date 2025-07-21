@@ -1,3 +1,39 @@
+## Progress (2025-07-21 12:07 +0700)
+- remove old error files
+- Regenerated golden files - 88/100 vm valid programs passing
+
+## Progress (2025-07-21 11:52 +0700)
+- clj transpiler: support nested closures
+- Regenerated golden files - 88/100 vm valid programs passing
+
+## Progress (2025-07-21 11:52 +0700)
+- clj transpiler: support nested closures
+- Regenerated golden files - 86/100 vm valid programs passing
+
+## Progress (2025-07-21 11:52 +0700)
+- clj transpiler: support nested closures
+- Regenerated golden files - 85/100 vm valid programs passing
+
+## Progress (2025-07-21 11:52 +0700)
+- clj transpiler: support nested closures
+- Regenerated golden files - 85/100 vm valid programs passing
+
+## Progress (2025-07-21 11:52 +0700)
+- clj transpiler: support nested closures
+- Regenerated golden files - 85/100 vm valid programs passing
+
+## Progress (2025-07-21 11:52 +0700)
+- clj transpiler: support nested closures
+- Regenerated golden files - 85/100 vm valid programs passing
+
+## Progress (2025-07-21 11:52 +0700)
+- clj transpiler: support nested closures
+- Regenerated golden files - 85/100 vm valid programs passing
+
+## Progress (2025-07-21 11:52 +0700)
+- clj transpiler: support nested closures
+- Regenerated golden files - 85/100 vm valid programs passing
+
 ## Progress (2025-07-21 11:33 +0700)
 - clj transpiler: support nested function closures
 - Regenerated golden files - 86/100 vm valid programs passing
