@@ -2328,12 +2328,23 @@ func compileQueryExpr(q *parser.QueryExpr) (Expr, error) {
 			mapVars[curVar] = savedMap
 			return nil, err
 		}
+		if mp, ok := keyExpr.(*MapLit); ok {
+			if res, changed := inferStructMap(q.Group.Name+"Key", currentProg, mp); changed {
+				keyExpr = res
+			}
+		}
 		elemType := varTypes[curVar]
 		tmp := q.Group.Name + "Tmp"
 		fmt.Fprintf(builder, " group %s by %s into %s", curVar, exprString(keyExpr), tmp)
 		gStruct := toStructName(q.Group.Name) + "Group"
+		keyT := simpleType(typeOfExpr(keyExpr))
+		if sl, ok := keyExpr.(*StructLit); ok {
+			if st, ok2 := structTypes[sl.Name]; ok2 {
+				keyT = st
+			}
+		}
 		structTypes[gStruct] = types.StructType{Name: gStruct, Fields: map[string]types.Type{
-			"key":   simpleType(typeOfExpr(keyExpr)),
+			"key":   keyT,
 			"items": types.ListType{Elem: simpleType(elemType)},
 		}, Order: []string{"key", "items"}}
 		if currentProg != nil {
