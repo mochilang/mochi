@@ -23,11 +23,11 @@ var (
 	constStrings   map[string]string
 	structTypes    map[string]types.StructType
 	currentEnv     *types.Env
-        funcParamTypes map[string][]string
-        structCounter  int
-        anonStructs    map[string]string
-        currentVarName string
-        needMath       bool
+	funcParamTypes map[string][]string
+	structCounter  int
+	anonStructs    map[string]string
+	currentVarName string
+	needMath       bool
 )
 
 const version = "0.10.32"
@@ -77,6 +77,8 @@ func (p *PrintStmt) emit(w io.Writer, indent int) {
 				io.WriteString(w, "printf(\"")
 				if exprIsString(e) {
 					io.WriteString(w, "%s")
+				} else if exprIsFloat(e) {
+					io.WriteString(w, "%g")
 				} else {
 					io.WriteString(w, "%d")
 				}
@@ -87,6 +89,8 @@ func (p *PrintStmt) emit(w io.Writer, indent int) {
 		default:
 			if p.Types[i] == "string" || exprIsString(a) {
 				format = append(format, "%s")
+			} else if p.Types[i] == "double" || exprIsFloat(a) {
+				format = append(format, "%g")
 			} else {
 				format = append(format, "%d")
 			}
@@ -104,10 +108,15 @@ func (p *PrintStmt) emit(w io.Writer, indent int) {
 			exprs[0].emitExpr(w)
 			io.WriteString(w, ");\n")
 			return
+		} else if p.Types[0] == "double" || exprIsFloat(exprs[0]) {
+			io.WriteString(w, "printf(\"%g\\n\", ")
+			exprs[0].emitExpr(w)
+			io.WriteString(w, ");\n")
+		} else {
+			io.WriteString(w, "printf(\"%d\\n\", ")
+			exprs[0].emitExpr(w)
+			io.WriteString(w, ");\n")
 		}
-		io.WriteString(w, "printf(\"%d\\n\", ")
-		exprs[0].emitExpr(w)
-		io.WriteString(w, ");\n")
 		return
 	}
 	if len(format) > 0 {
@@ -412,9 +421,6 @@ func exprIsFloat(e Expr) bool {
 		if v.Op == "+" || v.Op == "-" || v.Op == "*" || v.Op == "/" {
 			return exprIsFloat(v.Left) || exprIsFloat(v.Right)
 		}
-	}
-	if _, ok := evalFloat(e); ok {
-		return true
 	}
 	return false
 }
@@ -778,6 +784,8 @@ func (p *Program) Emit() []byte {
 					typ = "const char*"
 				case types.BoolType:
 					typ = "int"
+				case types.FloatType:
+					typ = "double"
 				case types.StructType:
 					typ = ft.Name
 				case types.ListType:
@@ -841,11 +849,11 @@ func (p *Program) Emit() []byte {
 
 // Transpile converts a Mochi program into a C AST.
 func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
-        constLists = make(map[string]*ListLit)
-        constStrings = make(map[string]string)
-        structTypes = env.Structs()
-        anonStructs = make(map[string]string)
-        currentEnv = env
+	constLists = make(map[string]*ListLit)
+	constStrings = make(map[string]string)
+	structTypes = env.Structs()
+	anonStructs = make(map[string]string)
+	currentEnv = env
 	funcParamTypes = make(map[string][]string)
 	structCounter = 0
 	needMath = false
@@ -961,15 +969,22 @@ func compileStmt(env *types.Env, s *parser.Statement) (Stmt, error) {
 				tname := ""
 				if exprIsString(ex) {
 					tname = "string"
+				} else if exprIsFloat(ex) {
+					tname = "double"
 				} else if _, ok := ex.(*FieldExpr); ok {
 					ft := inferExprType(env, ex)
 					if ft == "const char*" {
 						tname = "string"
+					} else if ft == "double" {
+						tname = "double"
 					}
 				} else if v, ok := ex.(*VarRef); ok {
 					if t, err := env.GetVar(v.Name); err == nil {
-						if _, ok := t.(types.StringType); ok {
+						switch t.(type) {
+						case types.StringType:
 							tname = "string"
+						case types.FloatType:
+							tname = "double"
 						}
 					}
 				}
@@ -1075,16 +1090,16 @@ func compileStmt(env *types.Env, s *parser.Statement) (Stmt, error) {
 		}
 		return &WhileStmt{Cond: cond, Body: body}, nil
 	case s.For != nil:
-        if s.For.RangeEnd != nil {
-                body, err := compileStmts(env, s.For.Body)
-                if err != nil {
-                        return nil, err
-                }
-                start := convertExpr(s.For.Source)
-                end := convertExpr(s.For.RangeEnd)
-                return &ForStmt{Var: s.For.Name, Start: start, End: end, Body: body}, nil
-        }
-        list, ok := convertListExpr(s.For.Source)
+		if s.For.RangeEnd != nil {
+			body, err := compileStmts(env, s.For.Body)
+			if err != nil {
+				return nil, err
+			}
+			start := convertExpr(s.For.Source)
+			end := convertExpr(s.For.RangeEnd)
+			return &ForStmt{Var: s.For.Name, Start: start, End: end, Body: body}, nil
+		}
+		list, ok := convertListExpr(s.For.Source)
 		if !ok {
 			ex := convertExpr(s.For.Source)
 			if val, ok2 := valueFromExpr(ex); ok2 {
@@ -1102,31 +1117,31 @@ func compileStmt(env *types.Env, s *parser.Statement) (Stmt, error) {
 				}
 			}
 		}
-        if ok {
-                elemType := "int"
-                if len(list) > 0 {
-                        elemType = inferExprType(env, list[0])
-                }
-                switch elemType {
-                case "const char*":
-                        env.SetVarDeep(s.For.Name, types.StringType{}, true)
-                case "int":
-                        env.SetVarDeep(s.For.Name, types.IntType{}, true)
-                case "double":
-                        env.SetVarDeep(s.For.Name, types.FloatType{}, true)
-                default:
-                        if st, ok := env.GetStruct(elemType); ok {
-                                env.SetVarDeep(s.For.Name, st, true)
-                        } else {
-                                env.SetVarDeep(s.For.Name, types.AnyType{}, true)
-                        }
-                }
-                body, err := compileStmts(env, s.For.Body)
-                if err != nil {
-                        return nil, err
-                }
-                return &ForStmt{Var: s.For.Name, List: list, ElemType: elemType, Body: body}, nil
-        }
+		if ok {
+			elemType := "int"
+			if len(list) > 0 {
+				elemType = inferExprType(env, list[0])
+			}
+			switch elemType {
+			case "const char*":
+				env.SetVarDeep(s.For.Name, types.StringType{}, true)
+			case "int":
+				env.SetVarDeep(s.For.Name, types.IntType{}, true)
+			case "double":
+				env.SetVarDeep(s.For.Name, types.FloatType{}, true)
+			default:
+				if st, ok := env.GetStruct(elemType); ok {
+					env.SetVarDeep(s.For.Name, st, true)
+				} else {
+					env.SetVarDeep(s.For.Name, types.AnyType{}, true)
+				}
+			}
+			body, err := compileStmts(env, s.For.Body)
+			if err != nil {
+				return nil, err
+			}
+			return &ForStmt{Var: s.For.Name, List: list, ElemType: elemType, Body: body}, nil
+		}
 		return nil, fmt.Errorf("unsupported for-loop")
 	case s.If != nil:
 		return compileIfStmt(env, s.If)
@@ -2397,6 +2412,8 @@ func inferExprType(env *types.Env, e Expr) string {
 					return "const char*"
 				case types.BoolType:
 					return "int"
+				case types.FloatType:
+					return "double"
 				case types.StructType:
 					return ft.(types.StructType).Name
 				case types.ListType:
@@ -2525,49 +2542,27 @@ func anyToExpr(v any) Expr {
 			}
 			fields = append(fields, StructField{Name: k, Value: ex})
 		}
-                key := strings.Join(keys, ",")
-                name, ok := anonStructs[key]
-                if !ok {
-                        structCounter++
-                        name = fmt.Sprintf("Anon%d", structCounter)
-                        anonStructs[key] = name
-                }
-                stFields := map[string]types.Type{}
+		key := strings.Join(keys, ",")
+		name, ok := anonStructs[key]
+		if !ok {
+			structCounter++
+			name = fmt.Sprintf("Anon%d", structCounter)
+			anonStructs[key] = name
+		}
+		st, _ := currentEnv.GetStruct(name)
+		if st.Fields == nil {
+			st = types.StructType{Name: name, Fields: map[string]types.Type{}, Order: keys}
+		}
 		for _, f := range fields {
 			tname := inferExprType(currentEnv, f.Value)
-			var tt types.Type = types.AnyType{}
-			switch tname {
-			case "int":
-				tt = types.IntType{}
-			case "double":
-				tt = types.FloatType{}
-			case "const char*":
-				tt = types.StringType{}
-			case "int[]":
-				tt = types.ListType{Elem: types.IntType{}}
-			case "double[]":
-				tt = types.ListType{Elem: types.FloatType{}}
-			case "const char*[]":
-				tt = types.ListType{Elem: types.StringType{}}
-			default:
-				if strings.HasSuffix(tname, "[]") {
-					base := strings.TrimSuffix(tname, "[]")
-					if base == "const char*" {
-						tt = types.ListType{Elem: types.StringType{}}
-					} else if base == "int" {
-						tt = types.ListType{Elem: types.IntType{}}
-					} else if base == "double" {
-						tt = types.ListType{Elem: types.FloatType{}}
-					} else if st, ok := currentEnv.GetStruct(base); ok {
-						tt = types.ListType{Elem: st}
-					}
-				} else if st, ok := currentEnv.GetStruct(tname); ok {
-					tt = st
-				}
+			tt := cTypeFromName(tname)
+			if old, ok := st.Fields[f.Name]; ok {
+				st.Fields[f.Name] = unifyTypes(old, tt)
+			} else {
+				st.Fields[f.Name] = tt
 			}
-			stFields[f.Name] = tt
 		}
-		currentEnv.SetStruct(name, types.StructType{Name: name, Fields: stFields, Order: keys})
+		currentEnv.SetStruct(name, st)
 		structTypes = currentEnv.Structs()
 		return &StructLit{Name: name, Fields: fields}
 	case *data.Group:
@@ -2578,11 +2573,79 @@ func anyToExpr(v any) Expr {
 	}
 }
 
+func cTypeFromName(name string) types.Type {
+	switch name {
+	case "int":
+		return types.IntType{}
+	case "double":
+		return types.FloatType{}
+	case "const char*":
+		return types.StringType{}
+	case "int[]":
+		return types.ListType{Elem: types.IntType{}}
+	case "double[]":
+		return types.ListType{Elem: types.FloatType{}}
+	case "const char*[]":
+		return types.ListType{Elem: types.StringType{}}
+	default:
+		if strings.HasSuffix(name, "[]") {
+			base := strings.TrimSuffix(name, "[]")
+			switch base {
+			case "int":
+				return types.ListType{Elem: types.IntType{}}
+			case "double":
+				return types.ListType{Elem: types.FloatType{}}
+			case "const char*":
+				return types.ListType{Elem: types.StringType{}}
+			default:
+				if st, ok := currentEnv.GetStruct(base); ok {
+					return types.ListType{Elem: st}
+				}
+			}
+		}
+		if st, ok := currentEnv.GetStruct(name); ok {
+			return st
+		}
+	}
+	return types.AnyType{}
+}
+
+func unifyTypes(a, b types.Type) types.Type {
+	if _, ok := a.(types.FloatType); ok {
+		return a
+	}
+	if _, ok := b.(types.FloatType); ok {
+		return types.FloatType{}
+	}
+	if _, ok := a.(types.IntType); ok {
+		if _, ok := b.(types.IntType); ok {
+			return a
+		}
+		if _, ok := b.(types.FloatType); ok {
+			return types.FloatType{}
+		}
+	}
+	if at, ok := a.(types.ListType); ok {
+		if bt, ok2 := b.(types.ListType); ok2 {
+			return types.ListType{Elem: unifyTypes(at.Elem, bt.Elem)}
+		}
+	}
+	if at, ok := a.(types.StructType); ok {
+		if bt, ok2 := b.(types.StructType); ok2 && at.Name == bt.Name {
+			return a
+		}
+	}
+	if _, ok := a.(types.AnyType); ok {
+		return b
+	}
+	return a
+}
+
 func evalQueryConst(q *parser.QueryExpr) (*ListLit, bool) {
-    results, err := data.RunQuery(q, currentEnv, data.MemoryEngine{}, func(env *types.Env, e *parser.Expr) (any, error) {
-            ip := interpreter.New(&parser.Program{}, env, "")
-            return ip.EvalExpr(e)
-    })
+	results, err := data.RunQuery(q, currentEnv, data.MemoryEngine{}, func(env *types.Env, e *parser.Expr) (any, error) {
+		ip := interpreter.New(&parser.Program{}, env, "")
+		return ip.EvalExpr(e)
+	})
 	if err != nil {
 		return nil, false
 	}
