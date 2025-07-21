@@ -119,6 +119,7 @@ func TestTranspilePrograms(t *testing.T) {
 		"join_multi",
 		"in_operator_extended",
 		"right_join",
+		"left_join_multi",
 		"group_by_multi_join",
 		"group_by_multi_join_sort",
 		"group_by",

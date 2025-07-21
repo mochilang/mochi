@@ -1,3 +1,28 @@
+## Progress (2025-07-22 00:02 +0700)
+- Commit afa92b769: rb transpiler: fix group_by queries
+- Generated Ruby for 89/100 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-22 00:02 +0700)
+- Commit afa92b769: rb transpiler: fix group_by queries
+- Generated Ruby for 89/100 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-22 00:02 +0700)
+- Commit afa92b769: rb transpiler: fix group_by queries
+- Generated Ruby for 89/100 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-22 00:02 +0700)
+- Commit afa92b769: rb transpiler: fix group_by queries
+- Generated Ruby for 89/100 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-22 00:02 +0700)
+- Commit afa92b769: rb transpiler: fix group_by queries
+- Generated Ruby for 89/100 programs
+- Updated README checklist and outputs
+
 ## Progress (2025-07-21 23:34 +0700)
 - Commit c1850ebb5: lua transpiler: support group iter and sorting
 - Generated Ruby for 88/100 programs
