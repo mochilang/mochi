@@ -1,0 +1,5 @@
+--- Left Join Multi ---
+
+Warning: Array to string conversion in /workspace/mochi/tests/transpiler/x/php/left_join_multi.php on line 27
+100 Alice Array
+101 Bob

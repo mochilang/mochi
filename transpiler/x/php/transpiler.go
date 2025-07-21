@@ -384,7 +384,7 @@ type LeftJoinLoop struct {
 }
 
 type QueryExpr struct {
-	Loops  []QueryLoop
+	Loops  []interface{}
 	Where  Expr
 	Select Expr
 	Uses   []string
@@ -465,11 +465,29 @@ func (q *QueryExpr) emitInto(w io.Writer, res string, level int) {
 			return
 		}
 		loop := q.Loops[idx]
-		fmt.Fprintf(w, "%sforeach (", ind)
-		loop.Source.emit(w)
-		fmt.Fprintf(w, " as $%s) {\n", loop.Name)
-		emitLoops(idx+1, lvl+1)
-		fmt.Fprintf(w, "%s}\n", ind)
+		switch lp := loop.(type) {
+		case QueryLoop:
+			fmt.Fprintf(w, "%sforeach (", ind)
+			lp.Source.emit(w)
+			fmt.Fprintf(w, " as $%s) {\n", lp.Name)
+			emitLoops(idx+1, lvl+1)
+			fmt.Fprintf(w, "%s}\n", ind)
+		case LeftJoinLoop:
+			fmt.Fprintf(w, "%s$matched = false;\n", ind)
+			fmt.Fprintf(w, "%sforeach (", ind)
+			lp.Source.emit(w)
+			fmt.Fprintf(w, " as $%s) {\n", lp.Name)
+			fmt.Fprintf(w, "%s  if (!(", ind)
+			lp.Cond.emit(w)
+			fmt.Fprint(w, ")) continue;\n")
+			fmt.Fprintf(w, "%s  $matched = true;\n", ind)
+			emitLoops(idx+1, lvl+1)
+			fmt.Fprintf(w, "%s}\n", ind)
+			fmt.Fprintf(w, "%sif (!$matched) {\n", ind)
+			fmt.Fprintf(w, "%s  $%s = null;\n", ind, lp.Name)
+			emitLoops(idx+1, lvl+1)
+			fmt.Fprintf(w, "%s}\n", ind)
+		}
 	}
 	emitLoops(0, level)
 }
@@ -571,13 +589,36 @@ func (q *QueryExpr) emit(w io.Writer) {
 			return
 		}
 		loop := q.Loops[idx]
-		io.WriteString(w, indent)
-		io.WriteString(w, "foreach (")
-		loop.Source.emit(w)
-		fmt.Fprintf(w, " as $%s) {\n", loop.Name)
-		emitLoops(idx+1, level+1)
-		io.WriteString(w, indent)
-		io.WriteString(w, "}\n")
+		switch lp := loop.(type) {
+		case QueryLoop:
+			io.WriteString(w, indent)
+			io.WriteString(w, "foreach (")
+			lp.Source.emit(w)
+			fmt.Fprintf(w, " as $%s) {\n", lp.Name)
+			emitLoops(idx+1, level+1)
+			io.WriteString(w, indent)
+			io.WriteString(w, "}\n")
+		case LeftJoinLoop:
+			io.WriteString(w, indent)
+			io.WriteString(w, "$matched = false;\n")
+			io.WriteString(w, indent)
+			io.WriteString(w, "foreach (")
+			lp.Source.emit(w)
+			fmt.Fprintf(w, " as $%s) {\n", lp.Name)
+			io.WriteString(w, indent+"  if (!(")
+			lp.Cond.emit(w)
+			io.WriteString(w, ")) continue;\n")
+			io.WriteString(w, indent+"  $matched = true;\n")
+			emitLoops(idx+1, level+1)
+			io.WriteString(w, indent)
+			io.WriteString(w, "}\n")
+			io.WriteString(w, indent)
+			io.WriteString(w, "if (!$matched) {\n")
+			fmt.Fprintf(w, indent+"  $%s = null;\n", lp.Name)
+			emitLoops(idx+1, level+1)
+			io.WriteString(w, indent)
+			io.WriteString(w, "}\n")
+		}
 	}
 	emitLoops(0, 1)
 	io.WriteString(w, "  return $result;\n")
@@ -1906,12 +1947,11 @@ func convertQueryExpr(q *parser.QueryExpr) (Expr, error) {
 		return oj, nil
 	}
 
-	loops := []QueryLoop{{Name: q.Var}}
 	src, err := convertExpr(q.Source)
 	if err != nil {
 		return nil, err
 	}
-	loops[0].Source = groupItemsExpr(src)
+	loops := []interface{}{QueryLoop{Name: q.Var, Source: groupItemsExpr(src)}}
 	var where Expr
 	for _, f := range q.Froms {
 		ex, err := convertExpr(f.Src)
@@ -1921,27 +1961,39 @@ func convertQueryExpr(q *parser.QueryExpr) (Expr, error) {
 		loops = append(loops, QueryLoop{Name: f.Var, Source: groupItemsExpr(ex)})
 	}
 	for _, j := range q.Joins {
-		if j.Side != nil && *j.Side != "inner" {
-			return nil, fmt.Errorf("unsupported join")
-		}
 		ex, err := convertExpr(j.Src)
 		if err != nil {
 			return nil, err
 		}
-		loops = append(loops, QueryLoop{Name: j.Var, Source: groupItemsExpr(ex)})
-		cond, err := convertExpr(j.On)
-		if err != nil {
-			return nil, err
-		}
-		if where == nil {
-			where = cond
+		if j.Side != nil && *j.Side == "left" {
+			cond, err := convertExpr(j.On)
+			if err != nil {
+				return nil, err
+			}
+			loops = append(loops, LeftJoinLoop{Name: j.Var, Source: groupItemsExpr(ex), Cond: cond})
+		} else if j.Side == nil || *j.Side == "inner" {
+			loops = append(loops, QueryLoop{Name: j.Var, Source: groupItemsExpr(ex)})
+			cond, err := convertExpr(j.On)
+			if err != nil {
+				return nil, err
+			}
+			if where == nil {
+				where = cond
+			} else {
+				where = &BinaryExpr{Left: where, Op: "&&", Right: cond}
+			}
 		} else {
-			where = &BinaryExpr{Left: where, Op: "&&", Right: cond}
+			return nil, fmt.Errorf("unsupported join")
 		}
 	}
 	funcStack = append(funcStack, nil)
 	for _, lp := range loops {
-		funcStack[len(funcStack)-1] = append(funcStack[len(funcStack)-1], lp.Name)
+		switch l := lp.(type) {
+		case QueryLoop:
+			funcStack[len(funcStack)-1] = append(funcStack[len(funcStack)-1], l.Name)
+		case LeftJoinLoop:
+			funcStack[len(funcStack)-1] = append(funcStack[len(funcStack)-1], l.Name)
+		}
 	}
 	if q.Where != nil {
 		w, err := convertExpr(q.Where)
