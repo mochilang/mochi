@@ -625,12 +625,21 @@ func (a *AvgExpr) emit(w io.Writer) {
 	fmt.Fprint(w, ") ) }()")
 }
 
-type SumExpr struct{ List Expr }
+type SumExpr struct {
+	List    Expr
+	IsFloat bool
+}
 
 func (s *SumExpr) emit(w io.Writer) {
-	fmt.Fprint(w, "func() int { s := 0; for _, n := range ")
-	s.List.emit(w)
-	fmt.Fprint(w, " { s += n }; return s }()")
+	if s.IsFloat {
+		fmt.Fprint(w, "func() float64 { s := 0.0; for _, n := range ")
+		s.List.emit(w)
+		fmt.Fprint(w, " { s += n }; return s }()")
+	} else {
+		fmt.Fprint(w, "func() int { s := 0; for _, n := range ")
+		s.List.emit(w)
+		fmt.Fprint(w, " { s += n }; return s }()")
+	}
 }
 
 type MinExpr struct{ List Expr }
@@ -1269,12 +1278,21 @@ func compileStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 			}
 			if qe, ok := e.(*QueryExpr); ok && qe.ElemType != "" {
 				typ = "[]" + qe.ElemType
+				if stype, ok := topEnv.GetStruct(qe.ElemType); ok {
+					env.SetVarDeep(st.Let.Name, types.ListType{Elem: stype}, false)
+				}
 			}
 			if gq, ok := e.(*GroupQueryExpr); ok && gq.ElemType != "" {
 				typ = "[]" + gq.ElemType
+				if stype, ok := topEnv.GetStruct(gq.ElemType); ok {
+					env.SetVarDeep(st.Let.Name, types.ListType{Elem: stype}, false)
+				}
 			}
 			if gj, ok := e.(*GroupJoinQueryExpr); ok && gj.ElemType != "" {
 				typ = "[]" + gj.ElemType
+				if stype, ok := topEnv.GetStruct(gj.ElemType); ok {
+					env.SetVarDeep(st.Let.Name, types.ListType{Elem: stype}, false)
+				}
 			}
 			return &VarDecl{Name: st.Let.Name, Type: typ, Value: e, Global: env == topEnv}, nil
 		}
@@ -1311,9 +1329,15 @@ func compileStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 			}
 			if qe, ok := e.(*QueryExpr); ok && qe.ElemType != "" {
 				typ = "[]" + qe.ElemType
+				if stype, ok := topEnv.GetStruct(qe.ElemType); ok {
+					env.SetVarDeep(st.Var.Name, types.ListType{Elem: stype}, true)
+				}
 			}
 			if gj, ok := e.(*GroupJoinQueryExpr); ok && gj.ElemType != "" {
 				typ = "[]" + gj.ElemType
+				if stype, ok := topEnv.GetStruct(gj.ElemType); ok {
+					env.SetVarDeep(st.Var.Name, types.ListType{Elem: stype}, true)
+				}
 			}
 			return &VarDecl{Name: st.Var.Name, Type: typ, Value: e, Global: env == topEnv}, nil
 		}
@@ -2421,7 +2445,26 @@ func compilePrimary(p *parser.Primary, env *types.Env, base string) (Expr, error
 		case "str":
 			name = "fmt.Sprint"
 		case "sum":
-			return &SumExpr{List: args[0]}, nil
+			isFloat := false
+			switch a := args[0].(type) {
+			case *ListLit:
+				if a.ElemType == "float64" {
+					isFloat = true
+				}
+			case *QueryExpr:
+				if a.ElemType == "float64" {
+					isFloat = true
+				}
+			case *GroupQueryExpr:
+				if a.ElemType == "float64" {
+					isFloat = true
+				}
+			case *GroupJoinQueryExpr:
+				if a.ElemType == "float64" {
+					isFloat = true
+				}
+			}
+			return &SumExpr{List: args[0], IsFloat: isFloat}, nil
 		case "min":
 			return &MinExpr{List: args[0]}, nil
 		case "max":
