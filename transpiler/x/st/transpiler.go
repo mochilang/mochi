@@ -778,7 +778,10 @@ func evalPostfix(p *parser.PostfixExpr, vars map[string]value) (value, error) {
 					return value{}, fmt.Errorf("bad cast")
 				}
 			default:
-				return value{}, fmt.Errorf("unsupported cast")
+				if v.kind != valMap {
+					return value{}, fmt.Errorf("bad cast")
+				}
+				v.typ = t
 			}
 		case op.Field != nil:
 			// support simple string methods like contains
