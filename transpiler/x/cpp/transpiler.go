@@ -21,6 +21,7 @@ var currentProgram *Program
 var currentEnv *types.Env
 var localTypes map[string]string
 var inFunction bool
+var inLambda int
 
 func init() {
 	_, file, _, _ := runtime.Caller(0)
@@ -84,6 +85,8 @@ type LenExpr struct{ Value Expr }
 type StringLit struct{ Value string }
 
 type IntLit struct{ Value int }
+
+type FloatLit struct{ Value float64 }
 
 type BoolLit struct{ Value bool }
 
@@ -355,6 +358,13 @@ func (p *Program) write(w io.Writer) {
 	fmt.Fprintln(w, "    if(v) os << *v; else os << \"None\";")
 	fmt.Fprintln(w, "    return os;\n}")
 	fmt.Fprintln(w)
+	fmt.Fprintln(w, "template<typename T>\nstd::ostream& operator<<(std::ostream& os, const std::vector<T>& v) {")
+	fmt.Fprintln(w, "    os << '[';")
+	fmt.Fprintln(w, "    bool first = true;")
+	fmt.Fprintln(w, "    for(const auto& x : v) { if(!first) os << \", \"; first = false; os << x; }")
+	fmt.Fprintln(w, "    os << ']';")
+	fmt.Fprintln(w, "    return os;\n}")
+	fmt.Fprintln(w)
 	for _, st := range p.Structs {
 		fmt.Fprintf(w, "struct %s {\n", st.Name)
 		for _, f := range st.Fields {
@@ -542,6 +552,14 @@ func (s *StringLit) emit(w io.Writer) {
 
 func (i *IntLit) emit(w io.Writer) { fmt.Fprintf(w, "%d", i.Value) }
 
+func (f *FloatLit) emit(w io.Writer) {
+	if f.Value == float64(int(f.Value)) {
+		fmt.Fprintf(w, "%.1f", f.Value)
+	} else {
+		fmt.Fprintf(w, "%g", f.Value)
+	}
+}
+
 func (b *BoolLit) emit(w io.Writer) {
 	if b.Value {
 		io.WriteString(w, "true")
@@ -628,13 +646,11 @@ func (s *SumExpr) emit(w io.Writer) {
 	if lit, ok := s.Arg.(*ListLit); ok {
 		io.WriteString(w, "([&]{ auto tmp = ")
 		lit.emit(w)
-		io.WriteString(w, "; return std::accumulate(tmp.begin(), tmp.end(), 0); })()")
+		io.WriteString(w, "; return std::accumulate(tmp.begin(), tmp.end(), 0.0); })()")
 	} else {
-		io.WriteString(w, "std::accumulate(")
+		io.WriteString(w, "([&]{ auto __tmp = ")
 		s.Arg.emit(w)
-		io.WriteString(w, ".begin(), ")
-		s.Arg.emit(w)
-		io.WriteString(w, ".end(), 0)")
+		io.WriteString(w, "; return std::accumulate(__tmp.begin(), __tmp.end(), 0.0); }())")
 	}
 }
 
@@ -777,7 +793,12 @@ func (l *BlockLambda) emit(w io.Writer) {
 }
 
 func (lc *MultiListComp) emit(w io.Writer) {
-	io.WriteString(w, "([]{ std::vector<"+lc.ElemType+"> __items;\n")
+	cap := "[]"
+	if inFunction || inLambda > 0 {
+		cap = "[&]"
+	}
+	io.WriteString(w, "("+cap+"{ std::vector<"+lc.ElemType+"> __items;\n")
+	inLambda++
 	for i, v := range lc.Vars {
 		io.WriteString(w, "for (auto ")
 		io.WriteString(w, v)
@@ -800,10 +821,16 @@ func (lc *MultiListComp) emit(w io.Writer) {
 		io.WriteString(w, "}\n")
 	}
 	io.WriteString(w, "return __items; }())")
+	inLambda--
 }
 
 func (gc *GroupComp) emit(w io.Writer) {
-	io.WriteString(w, "([]{ std::vector<"+gc.ElemType+"> __items;\n")
+	cap := "[]"
+	if inFunction || inLambda > 0 {
+		cap = "[&]"
+	}
+	io.WriteString(w, "("+cap+"{ std::vector<"+gc.ElemType+"> __items;\n")
+	inLambda++
 	io.WriteString(w, "std::vector<"+gc.GroupStruct+"> __groups;\n")
 	io.WriteString(w, "std::unordered_map<"+gc.KeyType+", size_t> __idx;\n")
 	for i, v := range gc.Vars {
@@ -848,10 +875,16 @@ func (gc *GroupComp) emit(w io.Writer) {
 	io.WriteString(w, ");\n")
 	io.WriteString(w, "}\n")
 	io.WriteString(w, "return __items; }())")
+	inLambda--
 }
 
 func (lgc *LeftJoinGroupComp) emit(w io.Writer) {
-	io.WriteString(w, "([]{ std::vector<"+lgc.ElemType+"> __items;\n")
+	cap := "[]"
+	if inFunction || inLambda > 0 {
+		cap = "[&]"
+	}
+	io.WriteString(w, "("+cap+"{ std::vector<"+lgc.ElemType+"> __items;\n")
+	inLambda++
 	io.WriteString(w, "std::vector<"+lgc.GroupStruct+"> __groups;\n")
 	io.WriteString(w, "std::unordered_map<"+lgc.KeyType+", size_t> __idx;\n")
 	io.WriteString(w, "for (auto "+lgc.LeftVar+" : ")
@@ -912,10 +945,16 @@ func (lgc *LeftJoinGroupComp) emit(w io.Writer) {
 	io.WriteString(w, ");\n")
 	io.WriteString(w, "}\n")
 	io.WriteString(w, "return __items; }())")
+	inLambda--
 }
 
 func (ljc *LeftJoinComp) emit(w io.Writer) {
-	io.WriteString(w, "([]{ std::vector<"+ljc.ElemType+"> __items;\n")
+	cap := "[]"
+	if inFunction || inLambda > 0 {
+		cap = "[&]"
+	}
+	io.WriteString(w, "("+cap+"{ std::vector<"+ljc.ElemType+"> __items;\n")
+	inLambda++
 	io.WriteString(w, "for (auto "+ljc.LeftVar+" : ")
 	ljc.LeftIter.emit(w)
 	io.WriteString(w, ") {\n")
@@ -943,10 +982,16 @@ func (ljc *LeftJoinComp) emit(w io.Writer) {
 	io.WriteString(w, "    }\n")
 	io.WriteString(w, "}\n")
 	io.WriteString(w, "return __items; }())")
+	inLambda--
 }
 
 func (sc *SortComp) emit(w io.Writer) {
-	io.WriteString(w, "([]{ std::vector<std::pair<"+sc.KeyType+", "+sc.ElemType+">> __tmp;\n")
+	cap := "[]"
+	if inFunction || inLambda > 0 {
+		cap = "[&]"
+	}
+	io.WriteString(w, "("+cap+"{ std::vector<std::pair<"+sc.KeyType+", "+sc.ElemType+">> __tmp;\n")
+	inLambda++
 	for i, v := range sc.Vars {
 		io.WriteString(w, "for (auto ")
 		io.WriteString(w, v)
@@ -1002,6 +1047,7 @@ func (sc *SortComp) emit(w io.Writer) {
 	io.WriteString(w, "    __items.push_back(__tmp[__i].second);\n")
 	io.WriteString(w, "}\n")
 	io.WriteString(w, "return __items; }())")
+	inLambda--
 }
 
 func (e *ExistsExpr) emit(w io.Writer) {
@@ -1290,15 +1336,41 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 					if def, sname, ok := inferStructFromList(stmt.Let.Name, lst); ok {
 						cp.Structs = append(cp.Structs, *def)
 						typ = fmt.Sprintf("std::vector<%s>", sname)
+						if cp.ListTypes == nil {
+							cp.ListTypes = map[string]string{}
+						}
+						cp.ListTypes[stmt.Let.Name] = sname
 					}
 				} else if comp, ok := val.(*MultiListComp); ok {
 					typ = fmt.Sprintf("std::vector<%s>", comp.ElemType)
+					if cp.ListTypes == nil {
+						cp.ListTypes = map[string]string{}
+					}
+					cp.ListTypes[stmt.Let.Name] = comp.ElemType
 				} else if scomp, ok := val.(*SortComp); ok {
 					typ = fmt.Sprintf("std::vector<%s>", scomp.ElemType)
+					if cp.ListTypes == nil {
+						cp.ListTypes = map[string]string{}
+					}
+					cp.ListTypes[stmt.Let.Name] = scomp.ElemType
 				} else if gcomp, ok := val.(*GroupComp); ok {
 					typ = fmt.Sprintf("std::vector<%s>", gcomp.ElemType)
+					if cp.ListTypes == nil {
+						cp.ListTypes = map[string]string{}
+					}
+					cp.ListTypes[stmt.Let.Name] = gcomp.ElemType
 				} else if lgc, ok := val.(*LeftJoinGroupComp); ok {
 					typ = fmt.Sprintf("std::vector<%s>", lgc.ElemType)
+					if cp.ListTypes == nil {
+						cp.ListTypes = map[string]string{}
+					}
+					cp.ListTypes[stmt.Let.Name] = lgc.ElemType
+				} else if ljc, ok := val.(*LeftJoinComp); ok {
+					typ = fmt.Sprintf("std::vector<%s>", ljc.ElemType)
+					if cp.ListTypes == nil {
+						cp.ListTypes = map[string]string{}
+					}
+					cp.ListTypes[stmt.Let.Name] = ljc.ElemType
 				}
 			}
 			globals = append(globals, &LetStmt{Name: stmt.Let.Name, Type: typ, Value: val})
@@ -1339,15 +1411,41 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 					if def, sname, ok := inferStructFromList(stmt.Var.Name, lst); ok {
 						cp.Structs = append(cp.Structs, *def)
 						typ = fmt.Sprintf("std::vector<%s>", sname)
+						if cp.ListTypes == nil {
+							cp.ListTypes = map[string]string{}
+						}
+						cp.ListTypes[stmt.Var.Name] = sname
 					}
 				} else if comp, ok := val.(*MultiListComp); ok {
 					typ = fmt.Sprintf("std::vector<%s>", comp.ElemType)
+					if cp.ListTypes == nil {
+						cp.ListTypes = map[string]string{}
+					}
+					cp.ListTypes[stmt.Var.Name] = comp.ElemType
 				} else if scomp, ok := val.(*SortComp); ok {
 					typ = fmt.Sprintf("std::vector<%s>", scomp.ElemType)
+					if cp.ListTypes == nil {
+						cp.ListTypes = map[string]string{}
+					}
+					cp.ListTypes[stmt.Var.Name] = scomp.ElemType
 				} else if gcomp, ok := val.(*GroupComp); ok {
 					typ = fmt.Sprintf("std::vector<%s>", gcomp.ElemType)
+					if cp.ListTypes == nil {
+						cp.ListTypes = map[string]string{}
+					}
+					cp.ListTypes[stmt.Var.Name] = gcomp.ElemType
 				} else if lgc, ok := val.(*LeftJoinGroupComp); ok {
 					typ = fmt.Sprintf("std::vector<%s>", lgc.ElemType)
+					if cp.ListTypes == nil {
+						cp.ListTypes = map[string]string{}
+					}
+					cp.ListTypes[stmt.Var.Name] = lgc.ElemType
+				} else if ljc, ok := val.(*LeftJoinComp); ok {
+					typ = fmt.Sprintf("std::vector<%s>", ljc.ElemType)
+					if cp.ListTypes == nil {
+						cp.ListTypes = map[string]string{}
+					}
+					cp.ListTypes[stmt.Var.Name] = ljc.ElemType
 				}
 			}
 			globals = append(globals, &LetStmt{Name: stmt.Var.Name, Type: typ, Value: val})
@@ -2123,6 +2221,8 @@ func convertLiteral(l *parser.Literal) (Expr, error) {
 		return &StringLit{Value: *l.Str}, nil
 	case l.Int != nil:
 		return &IntLit{Value: int(*l.Int)}, nil
+	case l.Float != nil:
+		return &FloatLit{Value: *l.Float}, nil
 	case l.Bool != nil:
 		return &BoolLit{Value: bool(*l.Bool)}, nil
 	default:
@@ -2755,6 +2855,9 @@ func guessType(e *parser.Expr) string {
 		if lit.Int != nil {
 			return "int"
 		}
+		if lit.Float != nil {
+			return "double"
+		}
 		if lit.Bool != nil {
 			return "bool"
 		}
@@ -2808,6 +2911,8 @@ func exprType(e Expr) string {
 	switch v := e.(type) {
 	case *IntLit:
 		return "int"
+	case *FloatLit:
+		return "double"
 	case *BoolLit:
 		return "bool"
 	case *StringLit:
@@ -2879,6 +2984,8 @@ func exprType(e Expr) string {
 	case *LenExpr:
 		return "int"
 	case *AvgExpr:
+		return "double"
+	case *SumExpr:
 		return "double"
 	case *MultiListComp:
 		return fmt.Sprintf("std::vector<%s>", v.ElemType)
