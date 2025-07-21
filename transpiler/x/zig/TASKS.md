@@ -1,3 +1,7 @@
+## Progress (2025-07-21 06:55 +0700)
+- Added selector field handling and variable type inference for queries.
+- Generated golden file for `cross_join_triple` and updated README checklist (64/100 tests passing).
+
 ## Progress (2025-07-20 16:00 +0000)
 - Implemented `exists` builtin and improved list type inference.
 - Generated golden file for `exists_builtin` and updated README checklist (63/100 tests passing).

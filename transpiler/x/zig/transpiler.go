@@ -20,6 +20,7 @@ var mapVars map[string]bool
 var structDefs map[string]*StructDef
 var extraFuncs []*Func
 var funcCounter int
+var varTypes map[string]string
 
 func toSnakeCase(s string) string {
 	var buf strings.Builder
@@ -262,6 +263,11 @@ func zigTypeFromExpr(e Expr) string {
 		return "bool"
 	case *FloatLit:
 		return "f64"
+	case *VarRef:
+		if t, ok := varTypes[e.(*VarRef).Name]; ok && t != "" {
+			return t
+		}
+		return "i64"
 	case *MapLit:
 		if m := e.(*MapLit); m.StructName != "" {
 			return m.StructName
@@ -835,6 +841,7 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	funcs := []*Func{}
 	extraFuncs = nil
 	funcCounter = 0
+	varTypes = map[string]string{}
 	mutables := map[string]bool{}
 	collectMutables(prog.Statements, mutables)
 	constLists = map[string]*ListLit{}
@@ -1240,8 +1247,12 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 		return compileIfExpr(p.If)
 	case p.Match != nil:
 		return compileMatchExpr(p.Match)
-	case p.Selector != nil && len(p.Selector.Tail) == 0:
-		return &VarRef{Name: p.Selector.Root}, nil
+	case p.Selector != nil:
+		var expr Expr = &VarRef{Name: p.Selector.Root}
+		for _, f := range p.Selector.Tail {
+			expr = &FieldExpr{Target: expr, Name: f}
+		}
+		return expr, nil
 	case p.Group != nil:
 		return compileExpr(p.Group)
 	default:
@@ -1390,6 +1401,38 @@ func mapFields(m *MapLit) ([]Field, bool) {
 	return fields, true
 }
 
+func elemTypeFromExpr(e *parser.Expr) string {
+	if e == nil || e.Binary == nil {
+		return "i64"
+	}
+	pf := e.Binary.Left.Value.Target
+	if pf.Selector != nil && len(pf.Selector.Tail) == 0 {
+		if lst, ok := constLists[pf.Selector.Root]; ok {
+			if lst.ElemType != "" {
+				return lst.ElemType
+			}
+		}
+	}
+	if pf.List != nil && len(pf.List.Elems) > 0 {
+		elem := pf.List.Elems[0]
+		if elem.Binary != nil && elem.Binary.Left != nil {
+			lit := elem.Binary.Left.Value.Target.Lit
+			if lit != nil {
+				if lit.Int != nil {
+					return "i64"
+				}
+				if lit.Bool != nil {
+					return "bool"
+				}
+				if lit.Str != nil {
+					return "[]const u8"
+				}
+			}
+		}
+	}
+	return "i64"
+}
+
 func inferListStruct(varName string, list *ListLit) string {
 	if len(list.Elems) == 0 {
 		return ""
@@ -1442,6 +1485,7 @@ func compileQueryExpr(q *parser.QueryExpr) (Expr, error) {
 		return nil, err
 	}
 	sources = append(sources, src)
+	varTypes[q.Var] = elemTypeFromExpr(q.Source)
 	for _, fc := range q.Froms {
 		s, err := compileExpr(fc.Src)
 		if err != nil {
@@ -1449,6 +1493,7 @@ func compileQueryExpr(q *parser.QueryExpr) (Expr, error) {
 		}
 		vars = append(vars, fc.Var)
 		sources = append(sources, s)
+		varTypes[fc.Var] = elemTypeFromExpr(fc.Src)
 	}
 	var filter Expr
 	if q.Where != nil {
@@ -1464,6 +1509,7 @@ func compileQueryExpr(q *parser.QueryExpr) (Expr, error) {
 		}
 		vars = append(vars, jc.Var)
 		sources = append(sources, s)
+		varTypes[jc.Var] = elemTypeFromExpr(jc.Src)
 		if jc.On != nil {
 			cond, err := compileExpr(jc.On)
 			if err != nil {
