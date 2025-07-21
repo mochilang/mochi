@@ -48,6 +48,14 @@ type value struct {
 // transpilation run.
 var currentFuncs map[string]*parser.FunStmt
 
+type breakErr struct{}
+
+func (breakErr) Error() string { return "break" }
+
+type continueErr struct{}
+
+func (continueErr) Error() string { return "continue" }
+
 func toFloat(v value) float64 {
 	switch v.kind {
 	case valFloat:
@@ -1945,10 +1953,22 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 				if !isTruthy(cond) {
 					break
 				}
+				cont := false
 				for _, b := range st.While.Body {
 					if err := processStmt(b); err != nil {
-						return err
+						switch err.(type) {
+						case breakErr:
+							return nil
+						case continueErr:
+							cont = true
+							break
+						default:
+							return err
+						}
 					}
+				}
+				if cont {
+					continue
 				}
 			}
 			return nil
@@ -1988,14 +2008,32 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 			}
 			for _, it := range items {
 				vars[st.For.Name] = it
+				cont := false
 				for _, b := range st.For.Body {
 					if err := processStmt(b); err != nil {
-						return err
+						switch err.(type) {
+						case breakErr:
+							delete(vars, st.For.Name)
+							return nil
+						case continueErr:
+							cont = true
+							break
+						default:
+							delete(vars, st.For.Name)
+							return err
+						}
 					}
+				}
+				if cont {
+					continue
 				}
 			}
 			delete(vars, st.For.Name)
 			return nil
+		case st.Break != nil:
+			return breakErr{}
+		case st.Continue != nil:
+			return continueErr{}
 		case st.Expr != nil:
 			call := st.Expr.Expr.Binary.Left.Value.Target.Call
 			if call == nil {

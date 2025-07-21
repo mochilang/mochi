@@ -8,6 +8,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"sort"
 	"strings"
 	"testing"
 	"time"
@@ -112,6 +113,7 @@ func updateReadme() {
 	outDir := filepath.Join(root, "tests", "transpiler", "x", "st")
 	readmePath := filepath.Join(root, "transpiler", "x", "st", "README.md")
 	files, _ := filepath.Glob(filepath.Join(srcDir, "*.mochi"))
+	sort.Strings(files)
 	total := len(files)
 	compiled := 0
 	var lines []string
@@ -124,10 +126,22 @@ func updateReadme() {
 		}
 		lines = append(lines, fmt.Sprintf("- %s %s", mark, name))
 	}
+	out, err := exec.Command("git", "log", "-1", "--format=%cI").Output()
+	ts := time.Now()
+	if err == nil {
+		if t, perr := time.Parse(time.RFC3339, strings.TrimSpace(string(out))); perr == nil {
+			if loc, lerr := time.LoadLocation("Asia/Bangkok"); lerr == nil {
+				ts = t.In(loc)
+			} else {
+				ts = t
+			}
+		}
+	}
 	var buf bytes.Buffer
 	buf.WriteString("# Smalltalk Transpiler\n\n")
-	buf.WriteString("This directory holds an experimental transpiler that converts a small subset of Mochi into Smalltalk. The generated sources for the golden tests live under `tests/transpiler/x/st`.\n\n")
-	fmt.Fprintf(&buf, "Checklist of programs that currently transpile and run (%d/%d):\n\n", compiled, total)
+	buf.WriteString("This directory holds an experimental transpiler that converts a small subset of Mochi into Smalltalk. The generated sources for the golden tests live under `tests/transpiler/x/st`.\n")
+	fmt.Fprintf(&buf, "Last updated: %s\n\n", ts.Format("2006-01-02 15:04 -0700"))
+	fmt.Fprintf(&buf, "## VM Golden Test Checklist (%d/%d)\n", compiled, total)
 	buf.WriteString(strings.Join(lines, "\n"))
 	buf.WriteString("\n")
 	_ = os.WriteFile(readmePath, buf.Bytes(), 0o644)
@@ -138,11 +152,22 @@ func updateTasks() {
 	taskFile := filepath.Join(root, "transpiler", "x", "st", "TASKS.md")
 	srcDir := filepath.Join(root, "tests", "vm", "valid")
 	outDir := filepath.Join(root, "tests", "transpiler", "x", "st")
-	out, err := exec.Command("git", "log", "-1", "--format=%cI").Output()
+	out, err := exec.Command("git", "log", "-1", "--format=%cI%n%h%n%s").Output()
 	ts := ""
+	hash := ""
+	msg := ""
 	if err == nil {
-		if t, perr := time.Parse(time.RFC3339, strings.TrimSpace(string(out))); perr == nil {
-			ts = t.Format("02 Jan 2006 15:04 MST")
+		parts := strings.SplitN(strings.TrimSpace(string(out)), "\n", 3)
+		if len(parts) == 3 {
+			if t, perr := time.Parse(time.RFC3339, parts[0]); perr == nil {
+				if loc, lerr := time.LoadLocation("Asia/Bangkok"); lerr == nil {
+					ts = t.In(loc).Format("2006-01-02 15:04 -0700")
+				} else {
+					ts = t.Format("2006-01-02 15:04 -0700")
+				}
+			}
+			hash = parts[1]
+			msg = parts[2]
 		}
 	}
 	files, _ := filepath.Glob(filepath.Join(srcDir, "*.mochi"))
@@ -157,11 +182,25 @@ func updateTasks() {
 
 	var buf bytes.Buffer
 	buf.WriteString(fmt.Sprintf("## Progress (%s)\n", ts))
-	buf.WriteString("- VM valid golden test results updated\n")
-	buf.WriteString("- Added short-circuit boolean operators\n")
-	buf.WriteString(fmt.Sprintf("- bool_chain and short_circuit now pass (%d/%d)\n\n", compiled, total))
+	fmt.Fprintf(&buf, "- Commit %s: %s\n", hash, msg)
+	fmt.Fprintf(&buf, "- Generated Smalltalk for %d/%d programs\n", compiled, total)
+	buf.WriteString("- Updated README checklist and outputs\n")
+	buf.WriteString("- Added support for break and continue statements\n\n")
 	if data, err := os.ReadFile(taskFile); err == nil {
-		buf.Write(data)
+		sections := strings.Split(string(data), "\n## ")
+		count := 0
+		for _, sec := range sections {
+			if strings.HasPrefix(sec, "Progress") {
+				if count >= 4 {
+					break
+				}
+				buf.WriteString("## " + sec)
+				if !strings.HasSuffix(sec, "\n") {
+					buf.WriteString("\n")
+				}
+				count++
+			}
+		}
 	}
 	_ = os.WriteFile(taskFile, buf.Bytes(), 0o644)
 }
