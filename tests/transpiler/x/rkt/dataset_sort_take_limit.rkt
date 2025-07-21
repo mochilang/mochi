@@ -5,7 +5,7 @@
 (define products (list (hash "name" "Laptop" "price" 1500) (hash "name" "Smartphone" "price" 900) (hash "name" "Tablet" "price" 600) (hash "name" "Monitor" "price" 300) (hash "name" "Keyboard" "price" 100) (hash "name" "Mouse" "price" 50) (hash "name" "Headphones" "price" 200)))
 (define expensive (let ([_res '()])
   (for ([p products])
-    (set! _res (append _res (list (cons (hash-ref p "price") p)))
+    (set! _res (append _res (list (cons (hash-ref p "price") p))))
   )
   (set! _res (sort _res > #:key car))
   (set! _res (map cdr _res))
