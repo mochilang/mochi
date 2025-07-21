@@ -1,4 +1,6 @@
-## Progress (2025-07-21 07:06 +0700)
+## Progress (2025-07-21 07:25 +0700)
+- Added basic right join support in query expressions
+- Generated golden output for `right_join`
 - VM valid golden test results updated
 
 ## Progress (2025-07-20 22:03 +0700)
