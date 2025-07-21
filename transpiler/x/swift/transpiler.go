@@ -281,6 +281,16 @@ type QueryExpr struct {
 	Select Expr
 }
 
+// LeftJoinExpr represents a basic left join between two sources.
+type LeftJoinExpr struct {
+	LeftVar  string
+	LeftSrc  Expr
+	RightVar string
+	RightSrc Expr
+	Cond     Expr
+	Select   Expr
+}
+
 func (q *QueryExpr) emit(w io.Writer) {
 	fmt.Fprint(w, "({ var _res: [[String: Any]] = []\n")
 	fmt.Fprintf(w, "for %s in ", q.Var)
@@ -323,11 +333,37 @@ func (q *QueryExpr) emit(w io.Writer) {
 	fmt.Fprint(w, "}\nreturn _res })()")
 }
 
+func (l *LeftJoinExpr) emit(w io.Writer) {
+	fmt.Fprint(w, "({ var _res: [[String: Any]] = []\n")
+	fmt.Fprintf(w, "for %s in ", l.LeftVar)
+	l.LeftSrc.emit(w)
+	fmt.Fprint(w, " {\nvar matched = false\n")
+	fmt.Fprintf(w, "for %s in ", l.RightVar)
+	l.RightSrc.emit(w)
+	fmt.Fprint(w, " {\nif ")
+	l.Cond.emit(w)
+	fmt.Fprint(w, " {\nmatched = true\n_res.append(")
+	l.Select.emit(w)
+	fmt.Fprint(w, ")\n}\n}\n")
+	fmt.Fprint(w, "if !matched {\n")
+	fmt.Fprintf(w, "let %s: Any? = nil\n", l.RightVar)
+	fmt.Fprint(w, "_res.append(")
+	l.Select.emit(w)
+	fmt.Fprint(w, ")\n}\n}")
+	fmt.Fprint(w, "\nreturn _res })()")
+}
+
 type IndexExpr struct {
 	Base     Expr
 	Index    Expr
 	AsString bool
 	Force    bool
+}
+
+// CastExpr represents a type cast.
+type CastExpr struct {
+	Expr Expr
+	Type string
 }
 
 func (ie *IndexExpr) emit(w io.Writer) {
@@ -346,6 +382,12 @@ func (ie *IndexExpr) emit(w io.Writer) {
 	if ie.Force {
 		fmt.Fprint(w, "!")
 	}
+}
+
+func (c *CastExpr) emit(w io.Writer) {
+	fmt.Fprint(w, "(")
+	c.Expr.emit(w)
+	fmt.Fprintf(w, " as! %s)", c.Type)
 }
 
 type BinaryExpr struct {
@@ -1059,18 +1101,37 @@ func convertExpr(env *types.Env, e *parser.Expr) (Expr, error) {
 		return nil, err
 	}
 	expr := first
+	leftType := types.TypeOfUnary(e.Binary.Left, env)
 	for _, op := range e.Binary.Right {
 		right, err := convertPostfix(env, op.Right)
 		if err != nil {
 			return nil, err
 		}
-		inMap := false
+		rightType := types.TypeOfPostfix(op.Right, env)
 		if op.Op == "in" && env != nil {
-			if t := types.TypeOfPostfix(op.Right, env); types.IsMapType(t) {
+			inMap := false
+			if types.IsMapType(rightType) {
 				inMap = true
 			}
+			expr = &BinaryExpr{Left: expr, Op: op.Op, Right: right, InMap: inMap}
+			leftType = types.BoolType{}
+			continue
 		}
-		expr = &BinaryExpr{Left: expr, Op: op.Op, Right: right, InMap: inMap}
+		// cast comparisons for simple types
+		switch op.Op {
+		case "==", "!=", "<", "<=", ">", ">=":
+			if types.IsIntType(leftType) && types.IsAnyType(rightType) {
+				right = &CastExpr{Expr: right, Type: "Int"}
+			} else if types.IsIntType(rightType) && types.IsAnyType(leftType) {
+				expr = &CastExpr{Expr: expr, Type: "Int"}
+			} else if types.IsStringType(leftType) && types.IsAnyType(rightType) {
+				right = &CastExpr{Expr: right, Type: "String"}
+			} else if types.IsStringType(rightType) && types.IsAnyType(leftType) {
+				expr = &CastExpr{Expr: expr, Type: "String"}
+			}
+		}
+		expr = &BinaryExpr{Left: expr, Op: op.Op, Right: right, InMap: false}
+		leftType = types.TypeOfPostfix(op.Right, env)
 	}
 	return expr, nil
 }
@@ -1165,6 +1226,21 @@ func convertPostfix(env *types.Env, p *parser.PostfixExpr) (Expr, error) {
 		}
 		return nil, fmt.Errorf("unsupported postfix")
 	}
+	if env != nil {
+		t := types.TypeOfPostfix(p, env)
+		switch {
+		case types.IsIntType(t):
+			expr = &CastExpr{Expr: expr, Type: "Int"}
+		case types.IsInt64Type(t):
+			expr = &CastExpr{Expr: expr, Type: "Int64"}
+		case types.IsFloatType(t):
+			expr = &CastExpr{Expr: expr, Type: "Double"}
+		case types.IsStringType(t):
+			expr = &CastExpr{Expr: expr, Type: "String"}
+		case types.IsBoolType(t):
+			expr = &CastExpr{Expr: expr, Type: "Bool"}
+		}
+	}
 	return expr, nil
 }
 
@@ -1200,19 +1276,31 @@ func convertQueryExpr(env *types.Env, q *parser.QueryExpr) (Expr, error) {
 	if q.Group != nil || q.Sort != nil || q.Skip != nil || q.Take != nil {
 		return nil, fmt.Errorf("unsupported query")
 	}
+	if len(q.Joins) == 1 && q.Joins[0].Side != nil && *q.Joins[0].Side == "left" &&
+		len(q.Froms) == 0 && q.Where == nil && !q.Distinct {
+		return convertLeftJoinQuery(env, q)
+	}
 	src, err := convertExpr(env, q.Source)
 	if err != nil {
 		return nil, err
 	}
+	varType := types.TypeOfExpr(q.Source, env)
+	if lt, ok := varType.(types.ListType); ok {
+		varType = lt.Elem
+	}
 	child := types.NewEnv(env)
-	child.SetVar(q.Var, types.AnyType{}, true)
+	child.SetVar(q.Var, varType, true)
 	froms := make([]queryFrom, len(q.Froms))
 	for i, f := range q.Froms {
 		fe, err := convertExpr(child, f.Src)
 		if err != nil {
 			return nil, err
 		}
-		child.SetVar(f.Var, types.AnyType{}, true)
+		t := types.TypeOfExpr(f.Src, child)
+		if lt, ok := t.(types.ListType); ok {
+			t = lt.Elem
+		}
+		child.SetVar(f.Var, t, true)
 		froms[i] = queryFrom{Var: f.Var, Src: fe}
 	}
 	joins := make([]queryJoin, len(q.Joins))
@@ -1221,7 +1309,11 @@ func convertQueryExpr(env *types.Env, q *parser.QueryExpr) (Expr, error) {
 		if err != nil {
 			return nil, err
 		}
-		child.SetVar(j.Var, types.AnyType{}, true)
+		jt := types.TypeOfExpr(j.Src, child)
+		if lt, ok := jt.(types.ListType); ok {
+			jt = lt.Elem
+		}
+		child.SetVar(j.Var, jt, true)
 		var on Expr
 		if j.On != nil {
 			on, err = convertExpr(child, j.On)
@@ -1243,6 +1335,38 @@ func convertQueryExpr(env *types.Env, q *parser.QueryExpr) (Expr, error) {
 		return nil, err
 	}
 	return &QueryExpr{Var: q.Var, Src: src, Froms: froms, Joins: joins, Where: where, Select: sel}, nil
+}
+
+func convertLeftJoinQuery(env *types.Env, q *parser.QueryExpr) (Expr, error) {
+	j := q.Joins[0]
+	leftSrc, err := convertExpr(env, q.Source)
+	if err != nil {
+		return nil, err
+	}
+	child := types.NewEnv(env)
+	lt := types.TypeOfExpr(q.Source, env)
+	if llist, ok := lt.(types.ListType); ok {
+		lt = llist.Elem
+	}
+	child.SetVar(q.Var, lt, true)
+	rt := types.TypeOfExpr(j.Src, child)
+	if rlist, ok := rt.(types.ListType); ok {
+		rt = rlist.Elem
+	}
+	child.SetVar(j.Var, rt, true)
+	rightSrc, err := convertExpr(child, j.Src)
+	if err != nil {
+		return nil, err
+	}
+	cond, err := convertExpr(child, j.On)
+	if err != nil {
+		return nil, err
+	}
+	sel, err := convertExpr(child, q.Select)
+	if err != nil {
+		return nil, err
+	}
+	return &LeftJoinExpr{LeftVar: q.Var, LeftSrc: leftSrc, RightVar: j.Var, RightSrc: rightSrc, Cond: cond, Select: sel}, nil
 }
 
 func convertPrimary(env *types.Env, pr *parser.Primary) (Expr, error) {
@@ -1432,6 +1556,29 @@ func toSwiftOptionalType(t *parser.TypeRef) string {
 		return "Bool?"
 	default:
 		return "Any?"
+	}
+}
+
+func swiftTypeOf(t types.Type) string {
+	switch tt := t.(type) {
+	case types.IntType:
+		return "Int"
+	case types.Int64Type:
+		return "Int64"
+	case types.FloatType, types.BigRatType:
+		return "Double"
+	case types.StringType:
+		return "String"
+	case types.BoolType:
+		return "Bool"
+	case types.ListType:
+		return "[" + swiftTypeOf(tt.Elem) + "]"
+	case types.MapType:
+		return "[" + swiftTypeOf(tt.Key) + ": " + swiftTypeOf(tt.Value) + "]"
+	case types.OptionType:
+		return swiftTypeOf(tt.Elem) + "?"
+	default:
+		return "Any"
 	}
 }
 

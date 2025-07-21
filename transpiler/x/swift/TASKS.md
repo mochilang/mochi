@@ -1,5 +1,5 @@
-## Progress (2025-07-21 10:56 +0700)
-- swift transpiler: handle contains method
+## Progress (2025-07-21 11:42 +0700)
+- swift: add left join support
 - Generated golden tests for 73/100 programs
 - Updated README checklist and output artifacts
 
