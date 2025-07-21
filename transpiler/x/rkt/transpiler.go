@@ -1831,6 +1831,29 @@ type CrossJoinExpr struct {
 }
 
 func (c *CrossJoinExpr) emit(w io.Writer) {
+	if c.Sort == nil && c.Skip == nil && c.Take == nil {
+		io.WriteString(w, "(for*/list (")
+		for i := range c.Vars {
+			if i > 0 {
+				io.WriteString(w, " ")
+			}
+			io.WriteString(w, "[")
+			io.WriteString(w, c.Vars[i])
+			io.WriteString(w, " ")
+			c.Sources[i].emit(w)
+			io.WriteString(w, "]")
+		}
+		io.WriteString(w, ")")
+		if c.Where != nil {
+			io.WriteString(w, " #:when ")
+			c.Where.emit(w)
+		}
+		io.WriteString(w, " ")
+		c.Select.emit(w)
+		io.WriteString(w, ")")
+		return
+	}
+
 	io.WriteString(w, "(let ([_res '()])\n")
 	for i := range c.Vars {
 		io.WriteString(w, strings.Repeat("  ", i+1))
