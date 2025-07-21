@@ -1,6 +1,6 @@
-## Progress (2025-07-21 21:01 +0700)
-- Commit 65fd873a3: st: add basic struct support
-- Generated Smalltalk for 84/100 programs
+## Progress (2025-07-21 21:45 +0700)
+- Commit 0fa948c36: st: support multi-join grouping with sorting
+- Generated Smalltalk for 85/100 programs
 - Updated README checklist and outputs
 - Added support for break and continue statements
 
