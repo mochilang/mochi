@@ -1,3 +1,15 @@
+## Progress (2025-07-21 20:42 +0700)
+- update go transpiler docs
+- Regenerated golden files - 88/100 vm valid programs passing
+
+## Progress (2025-07-21 20:42 +0700)
+- update go transpiler docs
+- Regenerated golden files - 87/100 vm valid programs passing
+
+## Progress (2025-07-21 20:42 +0700)
+- update go transpiler docs
+- Regenerated golden files - 87/100 vm valid programs passing
+
 ## Progress (2025-07-21 20:39 +0700)
 - go transpiler: improve group queries
 - Regenerated golden files - 87/100 vm valid programs passing
