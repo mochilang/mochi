@@ -210,6 +210,41 @@ func mapFieldType(typ, field string) (string, bool) {
 	return "", false
 }
 
+func isDynamicMapType(typ string) bool {
+	if strings.HasPrefix(typ, "map{") && strings.HasSuffix(typ, "}") {
+		inner := strings.TrimSuffix(strings.TrimPrefix(typ, "map{"), "}")
+		parts := strings.Split(inner, ",")
+		var base string
+		for _, p := range parts {
+			kv := strings.SplitN(p, ":", 2)
+			if len(kv) != 2 {
+				continue
+			}
+			if base == "" {
+				base = kv[1]
+			} else if kv[1] != base {
+				return true
+			}
+		}
+	}
+	return false
+}
+
+func ocamlType(t string) string {
+	switch t {
+	case "int":
+		return "int"
+	case "float":
+		return "float"
+	case "string":
+		return "string"
+	case "bool":
+		return "bool"
+	default:
+		return "int"
+	}
+}
+
 // Stmt can emit itself as OCaml code.
 type Stmt interface{ emit(io.Writer) }
 
@@ -258,7 +293,9 @@ func (p *PrintStmt) emit(w io.Writer) {
 		if i > 0 {
 			io.WriteString(w, "; ")
 		}
-		e.emitPrint(w)
+		io.WriteString(w, "__show (")
+		e.emit(w)
+		io.WriteString(w, ")")
 	}
 	io.WriteString(w, "]);\n")
 }
@@ -716,7 +753,10 @@ type MapEntry struct {
 
 // MapLit represents a simple map literal implemented as a list of
 // key/value tuples. Only string keys and int values are currently supported.
-type MapLit struct{ Items []MapEntry }
+type MapLit struct {
+	Items   []MapEntry
+	Dynamic bool
+}
 
 func (m *MapLit) emit(w io.Writer) {
 	io.WriteString(w, "[")
@@ -727,6 +767,9 @@ func (m *MapLit) emit(w io.Writer) {
 		io.WriteString(w, "(")
 		it.Key.emit(w)
 		io.WriteString(w, ", ")
+		if m.Dynamic {
+			io.WriteString(w, "Obj.repr ")
+		}
 		it.Value.emit(w)
 		io.WriteString(w, ")")
 	}
@@ -740,26 +783,50 @@ type MapIndexExpr struct {
 	Map Expr
 	Key Expr
 	Typ string
+	Dyn bool
 }
 
 func (mi *MapIndexExpr) emit(w io.Writer) {
-	io.WriteString(w, "(List.assoc ")
-	mi.Key.emit(w)
-	io.WriteString(w, " ")
-	mi.Map.emit(w)
-	io.WriteString(w, ")")
-}
-
-func (mi *MapIndexExpr) emitPrint(w io.Writer) {
-	switch mi.Typ {
-	case "int":
-		io.WriteString(w, "string_of_int (List.assoc ")
+	if mi.Dyn {
+		io.WriteString(w, "(Obj.obj (List.assoc ")
+		mi.Key.emit(w)
+		io.WriteString(w, " ")
+		mi.Map.emit(w)
+		io.WriteString(w, ") : ")
+		io.WriteString(w, ocamlType(mi.Typ))
+		io.WriteString(w, ")")
+	} else {
+		io.WriteString(w, "(List.assoc ")
 		mi.Key.emit(w)
 		io.WriteString(w, " ")
 		mi.Map.emit(w)
 		io.WriteString(w, ")")
-	default:
-		mi.emit(w)
+	}
+}
+
+func (mi *MapIndexExpr) emitPrint(w io.Writer) {
+	if mi.Dyn {
+		switch mi.Typ {
+		case "int":
+			io.WriteString(w, "string_of_int ")
+			mi.emit(w)
+		case "float":
+			io.WriteString(w, "string_of_float ")
+			mi.emit(w)
+		default:
+			mi.emit(w)
+		}
+	} else {
+		switch mi.Typ {
+		case "int":
+			io.WriteString(w, "string_of_int (List.assoc ")
+			mi.Key.emit(w)
+			io.WriteString(w, " ")
+			mi.Map.emit(w)
+			io.WriteString(w, ")")
+		default:
+			mi.emit(w)
+		}
 	}
 }
 
@@ -1287,6 +1354,8 @@ type BinaryExpr struct {
 	Op    string
 	Right Expr
 	Typ   string
+	Ltyp  string
+	Rtyp  string
 }
 
 func (b *BinaryExpr) emit(w io.Writer) {
@@ -1309,9 +1378,21 @@ func (b *BinaryExpr) emit(w io.Writer) {
 		}
 	}
 	fmt.Fprintf(w, "(")
-	b.Left.emit(w)
+	if b.Typ == "float" && b.Ltyp == "int" {
+		io.WriteString(w, "float_of_int (")
+		b.Left.emit(w)
+		io.WriteString(w, ")")
+	} else {
+		b.Left.emit(w)
+	}
 	fmt.Fprintf(w, " %s ", op)
-	b.Right.emit(w)
+	if b.Typ == "float" && b.Rtyp == "int" {
+		io.WriteString(w, "float_of_int (")
+		b.Right.emit(w)
+		io.WriteString(w, ")")
+	} else {
+		b.Right.emit(w)
+	}
 	fmt.Fprintf(w, ")")
 }
 
@@ -1372,6 +1453,7 @@ func (p *Program) Emit() []byte {
 	var buf bytes.Buffer
 	buf.WriteString(header())
 	buf.WriteString("\n")
+	buf.WriteString("let rec __show v =\n  let open Obj in\n  let rec list_aux o =\n    if is_int o && (magic (obj o) : int) = 0 then \"\" else\n     let hd = field o 0 in\n     let tl = field o 1 in\n     let rest = list_aux tl in\n     if rest = \"\" then __show (obj hd) else __show (obj hd) ^ \"; \" ^ rest\n  in\n  let r = repr v in\n  if is_int r then string_of_int (magic v) else\n  match tag r with\n    | 0 -> if size r = 0 then \"[]\" else \"[\" ^ list_aux r ^ \"]\"\n    | 252 -> (magic v : string)\n    | 253 -> string_of_float (magic v)\n    | _ -> \"<value>\"\n\n")
 	if p.UsesStrModule() {
 		buf.WriteString("open Str\n\n")
 	}
@@ -1767,7 +1849,7 @@ func convertBinary(b *parser.BinaryExpr, env *types.Env, vars map[string]VarInfo
 		if op == "in" {
 			expr = &InExpr{Item: left, Coll: right, Typ: rtyp}
 		} else {
-			expr = &BinaryExpr{Left: left, Op: op, Right: right, Typ: resTyp}
+			expr = &BinaryExpr{Left: left, Op: op, Right: right, Typ: resTyp, Ltyp: ltyp, Rtyp: rtyp}
 		}
 		exprStack = append(exprStack, expr)
 		typeStack = append(typeStack, resTyp)
@@ -1877,11 +1959,12 @@ func convertPostfix(p *parser.PostfixExpr, env *types.Env, vars map[string]VarIn
 				}
 			}
 			key := &StringLit{Value: op.Field.Name}
+			dyn := isDynamicMapType(typ)
 			if ft, ok := mapFieldType(typ, op.Field.Name); ok {
-				expr = &MapIndexExpr{Map: expr, Key: key, Typ: ft}
+				expr = &MapIndexExpr{Map: expr, Key: key, Typ: ft, Dyn: dyn}
 				typ = ft
 			} else {
-				expr = &MapIndexExpr{Map: expr, Key: key, Typ: "int"}
+				expr = &MapIndexExpr{Map: expr, Key: key, Typ: "int", Dyn: dyn}
 				typ = "int"
 			}
 			i++
@@ -1890,12 +1973,13 @@ func convertPostfix(p *parser.PostfixExpr, env *types.Env, vars map[string]VarIn
 			if err != nil {
 				return nil, "", err
 			}
+			dyn := isDynamicMapType(typ)
 			if sl, ok := idxExpr.(*StringLit); ok {
 				if ft, ok := mapFieldType(typ, sl.Value); ok {
-					expr = &MapIndexExpr{Map: expr, Key: idxExpr, Typ: ft}
+					expr = &MapIndexExpr{Map: expr, Key: idxExpr, Typ: ft, Dyn: dyn}
 					typ = ft
 				} else {
-					expr = &MapIndexExpr{Map: expr, Key: idxExpr, Typ: "int"}
+					expr = &MapIndexExpr{Map: expr, Key: idxExpr, Typ: "int", Dyn: dyn}
 					typ = "int"
 				}
 			} else if strings.HasPrefix(typ, "map-") {
@@ -1904,10 +1988,10 @@ func convertPostfix(p *parser.PostfixExpr, env *types.Env, vars map[string]VarIn
 				if len(parts) >= 3 {
 					valTyp = parts[2]
 				}
-				expr = &MapIndexExpr{Map: expr, Key: idxExpr, Typ: valTyp}
+				expr = &MapIndexExpr{Map: expr, Key: idxExpr, Typ: valTyp, Dyn: dyn}
 				typ = valTyp
 			} else if typ == "map" || strings.HasPrefix(typ, "map{") {
-				expr = &MapIndexExpr{Map: expr, Key: idxExpr, Typ: "int"}
+				expr = &MapIndexExpr{Map: expr, Key: idxExpr, Typ: "int", Dyn: dyn}
 				typ = "int"
 			} else {
 				expr = &IndexExpr{Col: expr, Index: idxExpr, Typ: typ}
@@ -1956,11 +2040,12 @@ func convertSelector(sel *parser.SelectorExpr, env *types.Env, vars map[string]V
 			continue
 		}
 		key := &StringLit{Value: t}
+		dyn := isDynamicMapType(typ)
 		if ft, ok := mapFieldType(typ, t); ok {
-			expr = &MapIndexExpr{Map: expr, Key: key, Typ: ft}
+			expr = &MapIndexExpr{Map: expr, Key: key, Typ: ft, Dyn: dyn}
 			typ = ft
 		} else {
-			expr = &MapIndexExpr{Map: expr, Key: key, Typ: "int"}
+			expr = &MapIndexExpr{Map: expr, Key: key, Typ: "int", Dyn: dyn}
 			typ = "int"
 		}
 	}
@@ -2000,6 +2085,8 @@ func convertPrimary(p *parser.Primary, env *types.Env, vars map[string]VarInfo) 
 	case p.Map != nil:
 		items := make([]MapEntry, len(p.Map.Items))
 		fieldTypes := []string{}
+		var firstType string
+		dynamic := false
 		for i, it := range p.Map.Items {
 			k, _, err := convertExpr(it.Key, env, vars)
 			if err != nil {
@@ -2012,6 +2099,11 @@ func convertPrimary(p *parser.Primary, env *types.Env, vars map[string]VarInfo) 
 			if err != nil {
 				return nil, "", err
 			}
+			if i == 0 {
+				firstType = vt
+			} else if vt != firstType {
+				dynamic = true
+			}
 			if ks, ok := k.(*StringLit); ok {
 				fieldTypes = append(fieldTypes, ks.Value+":"+vt)
 			} else {
@@ -2022,6 +2114,9 @@ func convertPrimary(p *parser.Primary, env *types.Env, vars map[string]VarInfo) 
 		typ := "map"
 		if fieldTypes != nil {
 			typ = "map{" + strings.Join(fieldTypes, ",") + "}"
+		}
+		if dynamic {
+			return &MapLit{Items: items, Dynamic: true}, typ, nil
 		}
 		return &MapLit{Items: items}, typ, nil
 	case p.Query != nil:
@@ -2490,7 +2585,7 @@ func buildMapUpdate(mp Expr, keys []Expr, val Expr) Expr {
 	if len(keys) == 1 {
 		return &MapUpdateExpr{Map: mp, Key: key, Value: val}
 	}
-	inner := buildMapUpdate(&MapIndexExpr{Map: mp, Key: key, Typ: "map"}, keys[1:], val)
+	inner := buildMapUpdate(&MapIndexExpr{Map: mp, Key: key, Typ: "map", Dyn: false}, keys[1:], val)
 	return &MapUpdateExpr{Map: mp, Key: key, Value: inner}
 }
 
