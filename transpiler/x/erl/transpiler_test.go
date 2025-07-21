@@ -237,6 +237,8 @@ func TestTranspileDatasetSortTakeLimit(t *testing.T) { runGolden(t, "dataset_sor
 
 func TestTranspileCastStruct(t *testing.T) { runGolden(t, "cast_struct") }
 
+func TestTranspileGroupItemsIteration(t *testing.T) { runGolden(t, "group_items_iteration") }
+
 func TestTranspileUserTypeLiteral(t *testing.T) { runGolden(t, "user_type_literal") }
 
 func TestTranspileRightJoin(t *testing.T)             { runGolden(t, "right_join") }

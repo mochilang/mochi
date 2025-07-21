@@ -203,6 +203,27 @@ func isGroupKeyExpr(e *parser.Expr, name string) bool {
 	return false
 }
 
+func isGroupItemsExpr(e *parser.Expr, name string) bool {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) > 0 {
+		return false
+	}
+	u := e.Binary.Left
+	if len(u.Ops) > 0 || u.Value == nil {
+		return false
+	}
+	pf := u.Value
+	if pf.Target == nil || pf.Target.Selector == nil || pf.Target.Selector.Root != name {
+		return false
+	}
+	if len(pf.Target.Selector.Tail) == 1 && pf.Target.Selector.Tail[0] == "items" && len(pf.Ops) == 0 {
+		return true
+	}
+	if len(pf.Target.Selector.Tail) == 0 && len(pf.Ops) == 1 && pf.Ops[0].Field != nil && pf.Ops[0].Field.Name == "items" {
+		return true
+	}
+	return false
+}
+
 func replaceGroupExpr(e Expr, groupVar, keyVar, itemsVar string) Expr {
 	switch v := e.(type) {
 	case *NameRef:
@@ -1701,7 +1722,16 @@ func convertStmt(st *parser.Statement, env *types.Env, ctx *context) ([]Stmt, er
 		loopCtx.setStringVar(st.For.Name, isStringExpr(src))
 		kind := "list"
 		if isMapExpr(src, env, ctx) {
-			kind = "map"
+			isGroupItems := false
+			for g := range ctx.groups {
+				if isGroupItemsExpr(st.For.Source, g) {
+					isGroupItems = true
+					break
+				}
+			}
+			if !isGroupItems {
+				kind = "map"
+			}
 		}
 		return []Stmt{&ForStmt{Var: alias, Kind: kind, Src: src, Body: body, Breakable: brk}}, nil
 	case st.While != nil:
@@ -2006,6 +2036,23 @@ func convertPostfix(pf *parser.PostfixExpr, env *types.Env, ctx *context) (Expr,
 			}
 			expr = &ContainsExpr{Str: expr, Sub: arg}
 			i++
+		case op.Field != nil:
+			field := op.Field.Name
+			if nr, ok := expr.(*NameRef); ok {
+				if g, ok := ctx.getGroup(ctx.original(nr.Name)); ok {
+					if field == "key" {
+						expr = &NameRef{Name: g.key}
+						continue
+					}
+					if field == "items" {
+						expr = &NameRef{Name: g.items}
+						continue
+					}
+				}
+			}
+			keyLit := &StringLit{Value: field}
+			isStr := fieldIsString(expr, keyLit, env, ctx)
+			expr = &IndexExpr{Target: expr, Index: keyLit, Kind: "map", IsString: isStr}
 		default:
 			return nil, fmt.Errorf("unsupported postfix")
 		}
@@ -2465,11 +2512,20 @@ func convertGroupLeftJoinQuery(q *parser.QueryExpr, env *types.Env, ctx *context
 	selEnv.SetVar(q.Group.Name, types.AnyType{}, true)
 	mapCtx.alias[q.Group.Name] = "G"
 	mapCtx.orig["G"] = q.Group.Name
-	selExpr, err := convertExpr(q.Select, selEnv, mapCtx)
-	if err != nil {
-		return nil, err
+	var selExpr Expr
+	if name, ok := simpleIdent(q.Select); ok && name == q.Group.Name {
+		selExpr = &MapLit{Items: []MapItem{
+			{Key: &StringLit{Value: "key"}, Value: &NameRef{Name: keyVar}},
+			{Key: &StringLit{Value: "items"}, Value: &NameRef{Name: itemsVar}},
+		}}
+	} else {
+		var err error
+		selExpr, err = convertExpr(q.Select, selEnv, mapCtx)
+		if err != nil {
+			return nil, err
+		}
+		selExpr = replaceGroupExpr(selExpr, "G", keyVar, itemsVar)
 	}
-	selExpr = replaceGroupExpr(selExpr, "G", keyVar, itemsVar)
 	ctx.setGroup(q.Group.Name, keyVar, itemsVar)
 
 	keyLet := &LetStmt{Name: keyVar, Expr: &CallExpr{Func: "element", Args: []Expr{&IntLit{Value: 1}, &NameRef{Name: pair}}}}
@@ -2660,11 +2716,20 @@ func convertGroupQuery(q *parser.QueryExpr, env *types.Env, ctx *context) (Expr,
 	selEnv.SetVar(q.Group.Name, types.AnyType{}, true)
 	mapCtx.alias[q.Group.Name] = "G"
 	mapCtx.orig["G"] = q.Group.Name
-	selExpr, err := convertExpr(q.Select, selEnv, mapCtx)
-	if err != nil {
-		return nil, err
+	var selExpr Expr
+	if name, ok := simpleIdent(q.Select); ok && name == q.Group.Name {
+		selExpr = &MapLit{Items: []MapItem{
+			{Key: &StringLit{Value: "key"}, Value: &NameRef{Name: keyVar}},
+			{Key: &StringLit{Value: "items"}, Value: &NameRef{Name: itemsVar}},
+		}}
+	} else {
+		var err error
+		selExpr, err = convertExpr(q.Select, selEnv, mapCtx)
+		if err != nil {
+			return nil, err
+		}
+		selExpr = replaceGroupExpr(selExpr, "G", keyVar, itemsVar)
 	}
-	selExpr = replaceGroupExpr(selExpr, "G", keyVar, itemsVar)
 	ctx.setGroup(q.Group.Name, keyVar, itemsVar)
 
 	keyLet := &LetStmt{Name: keyVar, Expr: &CallExpr{Func: "element", Args: []Expr{&IntLit{Value: 1}, &NameRef{Name: pair}}}}
