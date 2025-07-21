@@ -1,3 +1,9 @@
+## Progress (21 Jul 2025 15:29 +0700)
+- VM valid golden test results updated
+- Grouping keys now allow maps and floats
+- Unary minus supports floats
+- group_by_multi_join_sort now passes (68/100)
+
 ## Progress (21 Jul 2025 13:50 +0700)
 - VM valid golden test results updated
 - Added support for float literals and numeric operations
