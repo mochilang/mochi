@@ -1,3 +1,18 @@
+## Progress (2025-07-21 23:46 UTC)
+- cs transpiler: support string contains (progress 70/101)
+
+## Progress (2025-07-22 06:38 +0700)
+- cs transpiler: add str builtin support (progress 70/101)
+
+## Progress (2025-07-22 06:38 +0700)
+- cs transpiler: add str builtin support (progress 70/101)
+
+## Progress (2025-07-22 06:38 +0700)
+- cs transpiler: add str builtin support (progress 69/101)
+
+## Progress (2025-07-22 06:38 +0700)
+- cs transpiler: add str builtin support (progress 69/101)
+
 ## Progress (2025-07-22 06:19 +0700)
 - add str builtin support (progress 69/101)
 
@@ -214,6 +229,11 @@
 
 ## Progress (2025-07-22 06:00 +0700)
 - cs: implemented outer join (progress 68/101)
+
+
+
+
+
 
 
 

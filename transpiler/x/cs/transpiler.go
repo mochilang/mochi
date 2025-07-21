@@ -717,11 +717,10 @@ type ContainsExpr struct {
 }
 
 func (c *ContainsExpr) emit(w io.Writer) {
-	fmt.Fprint(w, "(")
 	c.Str.emit(w)
 	fmt.Fprint(w, ".Contains(")
 	c.Sub.emit(w)
-	fmt.Fprint(w, ") ? 1 : 0)")
+	fmt.Fprint(w, ")")
 }
 
 func isStringExpr(e Expr) bool {
@@ -1111,7 +1110,7 @@ func typeOfExpr(e Expr) string {
 	case *SubstringExpr:
 		return "string"
 	case *ContainsExpr:
-		return "int"
+		return "bool"
 	case *ExistsExpr:
 		return "bool"
 	case *ValuesExpr:
