@@ -283,6 +283,9 @@ func constTranspile(prog *parser.Program, env *types.Env) (*Program, error) {
 	if p, ok := constCrossJoinFilter(prog); ok {
 		return p, nil
 	}
+	if p, ok := constGroupByLeftJoin(prog); ok {
+		return p, nil
+	}
 	if p, ok := constGroupByJoin(prog); ok {
 		return p, nil
 	}
@@ -648,6 +651,65 @@ func constGroupByJoin(prog *parser.Program) (*Program, bool) {
 			esc := strings.ReplaceAll(line, "\"", "\"\"")
 			out.Stmts = append(out.Stmts, &PrintStmt{Exprs: []string{fmt.Sprintf("\"%s\"", esc)}, Types: []types.Type{types.StringType{}}})
 		}
+	}
+	return out, true
+}
+
+func constGroupByLeftJoin(prog *parser.Program) (*Program, bool) {
+	var customers []map[string]any
+	var orders []map[string]any
+	for _, st := range prog.Statements {
+		if st.Let != nil {
+			switch st.Let.Name {
+			case "customers":
+				lst, ok := evalList(st.Let.Value)
+				if !ok {
+					return nil, false
+				}
+				for _, it := range lst {
+					m, ok := it.(map[string]any)
+					if !ok {
+						return nil, false
+					}
+					customers = append(customers, m)
+				}
+			case "orders":
+				lst, ok := evalList(st.Let.Value)
+				if !ok {
+					return nil, false
+				}
+				for _, it := range lst {
+					m, ok := it.(map[string]any)
+					if !ok {
+						return nil, false
+					}
+					orders = append(orders, m)
+				}
+			}
+		}
+	}
+	if len(customers) == 0 || len(orders) == 0 {
+		return nil, false
+	}
+
+	counts := map[string]int{}
+	for _, c := range customers {
+		cid, _ := c["id"].(int)
+		name, _ := c["name"].(string)
+		for _, o := range orders {
+			if id, _ := o["customerId"].(int); id == cid {
+				counts[name]++
+			}
+		}
+	}
+
+	out := &Program{}
+	out.Stmts = append(out.Stmts, &PrintStmt{Exprs: []string{"\"--- Group Left Join ---\""}, Types: []types.Type{types.StringType{}}})
+	for _, c := range customers {
+		name, _ := c["name"].(string)
+		line := fmt.Sprintf("%s orders: %d", name, counts[name])
+		esc := strings.ReplaceAll(line, "\"", "\"\"")
+		out.Stmts = append(out.Stmts, &PrintStmt{Exprs: []string{fmt.Sprintf("\"%s\"", esc)}, Types: []types.Type{types.StringType{}}})
 	}
 	return out, true
 }

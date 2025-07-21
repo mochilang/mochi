@@ -1,3 +1,9 @@
+## Progress (2025-07-21 17:42 +0700)
+- feat(fortran): add left join groups
+
+## Progress (2025-07-21 17:26 +0700)
+- scala: support multi-join queries
+
 ## Progress (2025-07-21 17:15 +0700)
 - ftn: add group_by join
 
