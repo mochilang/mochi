@@ -267,6 +267,9 @@ type QueryExpr struct {
 	Joins    []queryJoin
 	Group    *queryGroup
 	Where    Expr
+	Sort     Expr
+	Skip     Expr
+	Take     Expr
 	Select   Expr
 	ElemType string
 }
@@ -344,6 +347,7 @@ func (q *QueryExpr) emit(w io.Writer) {
 	if q.Group != nil {
 		fmt.Fprintf(w, " java.util.LinkedHashMap<String,%s> _groups = new java.util.LinkedHashMap<>();", q.Group.GroupType)
 	}
+	fmt.Fprintf(w, " java.util.ArrayList<%s> _tmp = new java.util.ArrayList<>();", q.ElemType)
 	fmt.Fprintf(w, " for (var %s : ", q.Var)
 	if v, ok := q.Src.(*VarExpr); ok {
 		if _, ok2 := groupItems[varTypes[v.Name]]; ok2 {
@@ -398,7 +402,7 @@ func (q *QueryExpr) emit(w io.Writer) {
 			fmt.Fprint(w, "));")
 		}
 	} else {
-		fmt.Fprint(w, " add(")
+		fmt.Fprint(w, " _tmp.add(")
 		q.Select.emit(w)
 		fmt.Fprint(w, ");")
 	}
@@ -413,21 +417,74 @@ func (q *QueryExpr) emit(w io.Writer) {
 		fmt.Fprint(w, " }")
 	}
 	fmt.Fprint(w, " }")
+
 	if q.Group != nil {
-		fmt.Fprintf(w, " for (var %s : _groups.values()) {", q.Group.Name)
+		fmt.Fprintf(w, " java.util.ArrayList<%s> __list = new java.util.ArrayList<>(_groups.values());", q.Group.GroupType)
+	} else {
+		fmt.Fprintf(w, " java.util.ArrayList<%s> __list = _tmp;", q.ElemType)
+	}
+
+	if q.Sort != nil {
+		fmt.Fprint(w, " __list.sort((a, b) -> {")
+		expr := q.Sort
+		desc := false
+		if ue, ok := q.Sort.(*UnaryExpr); ok && ue.Op == "-" {
+			expr = ue.Value
+			desc = true
+		}
+		base := q.Var
+		if q.Group != nil {
+			base = q.Group.Name
+		}
+		a := renameVar(expr, base, "a")
+		b := renameVar(expr, base, "b")
+		fmt.Fprint(w, "Comparable _va = (Comparable)(")
+		a.emit(w)
+		fmt.Fprint(w, "); Comparable _vb = (Comparable)(")
+		b.emit(w)
+		fmt.Fprint(w, "); return ")
+		if desc {
+			fmt.Fprint(w, "_vb.compareTo(_va)")
+		} else {
+			fmt.Fprint(w, "_va.compareTo(_vb)")
+		}
+		fmt.Fprint(w, ";});")
+	}
+
+	fmt.Fprint(w, " int __skip = ")
+	if q.Skip != nil {
+		q.Skip.emit(w)
+	} else {
+		fmt.Fprint(w, "0")
+	}
+	fmt.Fprint(w, "; int __take = ")
+	if q.Take != nil {
+		q.Take.emit(w)
+	} else {
+		fmt.Fprint(w, "-1")
+	}
+	fmt.Fprint(w, "; for (int __i = 0; __i < __list.size(); __i++) {")
+	fmt.Fprint(w, " if (__i < __skip) continue; if (__take >= 0 && __i >= __skip + __take) break;")
+	if q.Group != nil {
+		fmt.Fprintf(w, " var %s = (%s)__list.get(__i);", q.Group.Name, q.Group.GroupType)
 		if q.Group.Having != nil {
 			fmt.Fprint(w, " if (")
 			q.Group.Having.emit(w)
 			fmt.Fprint(w, ") {")
 		}
-		fmt.Fprint(w, " add(")
+		fmt.Fprint(w, " _tmp.add(")
 		q.Select.emit(w)
 		fmt.Fprint(w, ");")
 		if q.Group.Having != nil {
 			fmt.Fprint(w, " }")
 		}
-		fmt.Fprint(w, " }")
+	} else {
+		fmt.Fprint(w, " _tmp.add((")
+		fmt.Fprintf(w, "%s)__list.get(__i));", q.ElemType)
 	}
+	fmt.Fprint(w, " }")
+
+	fmt.Fprint(w, " addAll(_tmp);")
 	fmt.Fprint(w, "}}")
 }
 
@@ -1871,9 +1928,6 @@ func compileMatchExpr(me *parser.MatchExpr) (Expr, error) {
 }
 
 func compileQueryExpr(q *parser.QueryExpr) (Expr, error) {
-	if q.Sort != nil || q.Skip != nil || q.Take != nil {
-		return nil, fmt.Errorf("unsupported query features")
-	}
 	src, err := compileExpr(q.Source)
 	if err != nil {
 		return nil, err
@@ -2062,7 +2116,27 @@ func compileQueryExpr(q *parser.QueryExpr) (Expr, error) {
 		elemType = "Object"
 	}
 
-	return &QueryExpr{Var: q.Var, Src: src, Froms: froms, Joins: joins, Group: group, Where: where, Select: sel, ElemType: elemType}, nil
+	var sortExpr, skipExpr, takeExpr Expr
+	if q.Sort != nil {
+		sortExpr, err = compileExpr(q.Sort)
+		if err != nil {
+			return nil, err
+		}
+	}
+	if q.Skip != nil {
+		skipExpr, err = compileExpr(q.Skip)
+		if err != nil {
+			return nil, err
+		}
+	}
+	if q.Take != nil {
+		takeExpr, err = compileExpr(q.Take)
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	return &QueryExpr{Var: q.Var, Src: src, Froms: froms, Joins: joins, Group: group, Where: where, Sort: sortExpr, Skip: skipExpr, Take: takeExpr, Select: sel, ElemType: elemType}, nil
 }
 
 // Emit generates formatted Java source from the AST.
@@ -2225,4 +2299,95 @@ func inferStructFromList(ll *parser.ListLiteral) (st types.StructType, ok bool) 
 		}
 	}
 	return types.StructType{Fields: fields, Order: order}, true
+}
+
+func renameVar(e Expr, oldName, newName string) Expr {
+	switch ex := e.(type) {
+	case *VarExpr:
+		if ex.Name == oldName {
+			return &VarExpr{Name: newName}
+		}
+		return ex
+	case *FieldExpr:
+		return &FieldExpr{Target: renameVar(ex.Target, oldName, newName), Name: ex.Name}
+	case *BinaryExpr:
+		return &BinaryExpr{Left: renameVar(ex.Left, oldName, newName), Op: ex.Op, Right: renameVar(ex.Right, oldName, newName)}
+	case *UnaryExpr:
+		return &UnaryExpr{Op: ex.Op, Value: renameVar(ex.Value, oldName, newName)}
+	case *TernaryExpr:
+		return &TernaryExpr{Cond: renameVar(ex.Cond, oldName, newName), Then: renameVar(ex.Then, oldName, newName), Else: renameVar(ex.Else, oldName, newName)}
+	case *CallExpr:
+		args := make([]Expr, len(ex.Args))
+		for i, a := range ex.Args {
+			args[i] = renameVar(a, oldName, newName)
+		}
+		return &CallExpr{Func: ex.Func, Args: args}
+	case *MethodCallExpr:
+		args := make([]Expr, len(ex.Args))
+		for i, a := range ex.Args {
+			args[i] = renameVar(a, oldName, newName)
+		}
+		return &MethodCallExpr{Target: renameVar(ex.Target, oldName, newName), Name: ex.Name, Args: args}
+	case *IndexExpr:
+		return &IndexExpr{Target: renameVar(ex.Target, oldName, newName), Index: renameVar(ex.Index, oldName, newName)}
+	case *SliceExpr:
+		return &SliceExpr{Value: renameVar(ex.Value, oldName, newName), Start: renameVar(ex.Start, oldName, newName), End: renameVar(ex.End, oldName, newName)}
+	case *ListLit:
+		elems := make([]Expr, len(ex.Elems))
+		for i, el := range ex.Elems {
+			elems[i] = renameVar(el, oldName, newName)
+		}
+		return &ListLit{ElemType: ex.ElemType, Elems: elems}
+	case *StructLit:
+		fields := make([]Expr, len(ex.Fields))
+		for i, f := range ex.Fields {
+			fields[i] = renameVar(f, oldName, newName)
+		}
+		return &StructLit{Name: ex.Name, Fields: fields, Names: ex.Names}
+	case *QueryExpr:
+		src := renameVar(ex.Src, oldName, newName)
+		froms := make([]queryFrom, len(ex.Froms))
+		for i, f := range ex.Froms {
+			froms[i] = queryFrom{Var: f.Var, Src: renameVar(f.Src, oldName, newName)}
+			if f.Var == oldName {
+				froms[i].Var = newName
+			}
+		}
+		joins := make([]queryJoin, len(ex.Joins))
+		for i, j := range ex.Joins {
+			joins[i] = queryJoin{Var: j.Var, Src: renameVar(j.Src, oldName, newName), On: renameVar(j.On, oldName, newName), Side: j.Side}
+			if j.Var == oldName {
+				joins[i].Var = newName
+			}
+		}
+		grp := ex.Group
+		if grp != nil {
+			grp = &queryGroup{Key: renameVar(grp.Key, oldName, newName), Name: grp.Name, Having: renameVar(grp.Having, oldName, newName), ItemType: grp.ItemType, GroupType: grp.GroupType, Fields: grp.Fields}
+			if grp.Name == oldName {
+				grp.Name = newName
+			}
+		}
+		return &QueryExpr{
+			Var:      choose(ex.Var, oldName, newName),
+			Src:      src,
+			Froms:    froms,
+			Joins:    joins,
+			Group:    grp,
+			Where:    renameVar(ex.Where, oldName, newName),
+			Sort:     renameVar(ex.Sort, oldName, newName),
+			Skip:     renameVar(ex.Skip, oldName, newName),
+			Take:     renameVar(ex.Take, oldName, newName),
+			Select:   renameVar(ex.Select, oldName, newName),
+			ElemType: ex.ElemType,
+		}
+	default:
+		return ex
+	}
+}
+
+func choose(name, oldName, newName string) string {
+	if name == oldName {
+		return newName
+	}
+	return name
 }

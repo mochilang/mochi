@@ -1,4 +1,10 @@
-## Progress (2025-07-21 15:12 +0700)
+## Progress (2025-07-21 15:41 +0700)
+- lua transpiler: add json builtin and group-by having (d9518dd5c)
+
+- lua transpiler: add json builtin and group-by having (d9518dd5c)
+
+- lua transpiler: add json builtin and group-by having (d9518dd5c)
+
 - java transpiler: add sum and values builtins (68173845e)
 
 - java transpiler: add sum and values builtins (68173845e)
