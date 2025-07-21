@@ -2,20 +2,20 @@ rustc: exit status 1
 warning: unnecessary parentheses around `if` condition
  --> /workspace/mochi/tests/transpiler/x/rs/query_sum_select.rs:4:84
   |
-4 |     let result: Vec<i64> = { let mut _q: Vec<i64> = Vec::new(); for n in nums { if (n > 1) { _q.push(n.iter().sum::<i64>()); } } _q };
+4 |     let result: Vec<i64> = { let mut _q: Vec<i64> = Vec::new(); for n in nums { if (n > 1) { _q.push(n.iter().map(|x| *x as f64).sum::<f6...
   |                                                                                    ^     ^
   |
   = note: `#[warn(unused_parens)]` on by default
 help: remove these parentheses
   |
-4 -     let result: Vec<i64> = { let mut _q: Vec<i64> = Vec::new(); for n in nums { if (n > 1) { _q.push(n.iter().sum::<i64>()); } } _q };
-4 +     let result: Vec<i64> = { let mut _q: Vec<i64> = Vec::new(); for n in nums { if n > 1 { _q.push(n.iter().sum::<i64>()); } } _q };
+4 -     let result: Vec<i64> = { let mut _q: Vec<i64> = Vec::new(); for n in nums { if (n > 1) { _q.push(n.iter().map(|x| *x as f64).sum::<f64>()); } } _q };
+4 +     let result: Vec<i64> = { let mut _q: Vec<i64> = Vec::new(); for n in nums { if n > 1 { _q.push(n.iter().map(|x| *x as f64).sum::<f64>()); } } _q };
   |
 
 error[E0599]: no method named `iter` found for type `i64` in the current scope
  --> /workspace/mochi/tests/transpiler/x/rs/query_sum_select.rs:4:104
   |
-4 |     let result: Vec<i64> = { let mut _q: Vec<i64> = Vec::new(); for n in nums { if (n > 1) { _q.push(n.iter().sum::<i64>()); } } _q };
+4 |     let result: Vec<i64> = { let mut _q: Vec<i64> = Vec::new(); for n in nums { if (n > 1) { _q.push(n.iter().map(|x| *x as f64).sum::<f6...
   |                                                                                                        ^^^^ method not found in `i64`
 
 error: aborting due to 1 previous error; 1 warning emitted
