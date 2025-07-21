@@ -1622,12 +1622,9 @@ func toPrimary(p *parser.Primary, env *compileEnv) (Expr, error) {
 					}
 				}
 			}
-			if isMapLike(&Var{Name: env.current(p.Selector.Root)}, env) {
-				idx := &StringLit{Value: p.Selector.Tail[0]}
-				target := &Var{Name: env.current(p.Selector.Root)}
-				return &IndexExpr{Target: target, Index: idx, IsString: true, IsMap: true}, nil
-			}
-			return nil, fmt.Errorf("unsupported selector")
+			idx := &StringLit{Value: p.Selector.Tail[0]}
+			target := &Var{Name: env.current(p.Selector.Root)}
+			return &IndexExpr{Target: target, Index: idx, IsString: true, IsMap: true}, nil
 		}
 		return nil, fmt.Errorf("unsupported selector")
 	case p.Call != nil:

@@ -2,8 +2,8 @@
 
 This directory contains a tiny transpiler that converts a restricted subset of Mochi programs to SWI-Prolog. It is mainly used for experimentation and golden tests.
 
-## VM Golden Test Checklist (66/100)
-Last updated: 2025-07-22 00:03 +0700
+## VM Golden Test Checklist (67/101)
+Last updated: 2025-07-22 05:31 +0700
 - [x] `append_builtin`
 - [x] `avg_builtin`
 - [x] `basic_compare`
@@ -30,10 +30,11 @@ Last updated: 2025-07-22 00:03 +0700
 - [x] `group_by`
 - [x] `group_by_conditional_sum`
 - [x] `group_by_having`
-- [ ] `group_by_join`
+- [x] `group_by_join`
 - [x] `group_by_left_join`
 - [x] `group_by_multi_join`
 - [x] `group_by_multi_join_sort`
+- [ ] `group_by_multi_sort`
 - [x] `group_by_sort`
 - [ ] `group_items_iteration`
 - [x] `if_else`
