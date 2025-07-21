@@ -2,7 +2,7 @@
 
 (require 'clojure.set)
 
-(defrecord Anon1 [cat val])
+(defrecord Items [cat val])
 
 (def items [{:cat "a" :val 3} {:cat "a" :val 1} {:cat "b" :val 5} {:cat "b" :val 2}])
 

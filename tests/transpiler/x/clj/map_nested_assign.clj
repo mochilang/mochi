@@ -2,7 +2,7 @@
 
 (require 'clojure.set)
 
-(defrecord Anon1 [outer])
+(defrecord Data [outer])
 
 (def data {"outer" {"inner" 1}})
 

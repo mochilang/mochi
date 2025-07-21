@@ -2,7 +2,7 @@
 
 (require 'clojure.set)
 
-(defrecord Anon1 [name age])
+(defrecord People [name age])
 
 (def people [{:name "Alice" :age 30} {:name "Bob" :age 15} {:name "Charlie" :age 65} {:name "Diana" :age 45}])
 

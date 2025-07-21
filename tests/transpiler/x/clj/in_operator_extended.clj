@@ -2,7 +2,7 @@
 
 (require 'clojure.set)
 
-(defrecord Anon1 [a])
+(defrecord M [a])
 
 (def xs [1 2 3])
 
