@@ -1,3 +1,8 @@
+## Progress (2025-07-21 17:26 +0700)
+- Added int and float type inference for variables
+- Track local variable types when compiling blocks
+- README checklist regenerated from golden tests
+
 ## Progress (2025-07-21 16:57 +0700)
 - Removed unsafePerformIO helper and related imports
 - Simplified call expression emission

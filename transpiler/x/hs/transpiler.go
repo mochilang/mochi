@@ -107,6 +107,10 @@ func recordType(name string, ex Expr) {
 		varTypes[name] = "string"
 	} else if isBoolExpr(ex) {
 		varTypes[name] = "bool"
+	} else if isFloatExpr(ex) {
+		varTypes[name] = "float"
+	} else if _, ok := ex.(*IntLit); ok {
+		varTypes[name] = "int"
 	} else if isListExpr(ex) {
 		varTypes[name] = "list"
 	} else if ml, ok := ex.(*MapLit); ok {
@@ -367,6 +371,7 @@ func (idx *IndexExpr) emit(w io.Writer) {
 }
 
 type IntLit struct{ Value string }
+type FloatLit struct{ Value string }
 type StringLit struct{ Value string }
 type BoolLit struct{ Value bool }
 type NameRef struct{ Name string }
@@ -420,6 +425,7 @@ type IfExpr struct {
 }
 
 func (i *IntLit) emit(w io.Writer)    { io.WriteString(w, i.Value) }
+func (f *FloatLit) emit(w io.Writer)  { io.WriteString(w, f.Value) }
 func (s *StringLit) emit(w io.Writer) { fmt.Fprintf(w, "%q", s.Value) }
 func (b *BoolLit) emit(w io.Writer) {
 	if b.Value {
@@ -609,6 +615,8 @@ func isMapExpr(e Expr) bool {
 
 func isFloatExpr(e Expr) bool {
 	switch ex := e.(type) {
+	case *FloatLit:
+		return true
 	case *CallExpr:
 		if n, ok := ex.Fun.(*NameRef); ok && n.Name == "fromIntegral" {
 			return true
@@ -617,6 +625,8 @@ func isFloatExpr(e Expr) bool {
 		if len(ex.Ops) > 0 && ex.Ops[0].Op == "/" {
 			return true
 		}
+	case *NameRef:
+		return varTypes[ex.Name] == "float"
 	}
 	return false
 }
@@ -1510,6 +1520,8 @@ func convertLiteral(l *parser.Literal) (Expr, error) {
 	switch {
 	case l.Int != nil:
 		return &IntLit{Value: fmt.Sprintf("%d", *l.Int)}, nil
+	case l.Float != nil:
+		return &FloatLit{Value: fmt.Sprintf("%g", *l.Float)}, nil
 	case l.Str != nil:
 		return &StringLit{Value: *l.Str}, nil
 	case l.Bool != nil:
@@ -1652,18 +1664,21 @@ func convertStmtList(list []*parser.Statement) ([]Stmt, error) {
 			if err != nil {
 				return nil, err
 			}
+			recordType(safeName(st.Let.Name), ex)
 			out = append(out, &LetStmt{Name: safeName(st.Let.Name), Expr: ex})
 		case st.Var != nil:
 			ex, err := convertExpr(st.Var.Value)
 			if err != nil {
 				return nil, err
 			}
+			recordType(safeName(st.Var.Name), ex)
 			out = append(out, &LetStmt{Name: safeName(st.Var.Name), Expr: ex})
 		case st.Assign != nil && len(st.Assign.Index) == 0:
 			ex, err := convertExpr(st.Assign.Value)
 			if err != nil {
 				return nil, err
 			}
+			recordType(safeName(st.Assign.Name), ex)
 			out = append(out, &AssignStmt{Name: safeName(st.Assign.Name), Expr: ex})
 		case st.While != nil:
 			s, err := convertWhileStmt(st.While)
