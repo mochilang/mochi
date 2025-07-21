@@ -251,11 +251,14 @@ type ForStmt struct {
 
 // QueryExpr represents a basic list comprehension query.
 type QueryExpr struct {
-	Var    string
-	Src    Expr
-	Froms  []queryFrom
-	Where  Expr
-	Select Expr
+	Var     string
+	Src     Expr
+	Froms   []queryFrom
+	Where   Expr
+	Select  Expr
+	SortKey Expr
+	Skip    Expr
+	Take    Expr
 }
 
 type queryFrom struct {
@@ -906,23 +909,75 @@ func (ma *MapAssignStmt) emit(w io.Writer) {
 }
 
 func (q *QueryExpr) emit(w io.Writer) {
-	io.WriteString(w, "[")
-	q.Select.emit(w)
-	io.WriteString(w, " || ")
-	io.WriteString(w, q.Var)
-	io.WriteString(w, " <- ")
-	q.Src.emit(w)
+	base := &bytes.Buffer{}
+	io.WriteString(base, "[")
+	if q.SortKey != nil {
+		io.WriteString(base, "{")
+		q.SortKey.emit(base)
+		io.WriteString(base, ", ")
+	}
+	q.Select.emit(base)
+	if q.SortKey != nil {
+		io.WriteString(base, "}")
+	}
+	io.WriteString(base, " || ")
+	io.WriteString(base, q.Var)
+	io.WriteString(base, " <- ")
+	q.Src.emit(base)
 	for _, f := range q.Froms {
-		io.WriteString(w, ", ")
-		io.WriteString(w, f.Var)
-		io.WriteString(w, " <- ")
-		f.Src.emit(w)
+		io.WriteString(base, ", ")
+		io.WriteString(base, f.Var)
+		io.WriteString(base, " <- ")
+		f.Src.emit(base)
 	}
 	if q.Where != nil {
-		io.WriteString(w, ", ")
-		q.Where.emit(w)
+		io.WriteString(base, ", ")
+		q.Where.emit(base)
 	}
-	io.WriteString(w, "]")
+	io.WriteString(base, "]")
+
+	expr := base.String()
+	if q.SortKey != nil {
+		io.WriteString(w, "lists:map(fun({_,V}) -> V end, ")
+		if q.Take != nil {
+			io.WriteString(w, "lists:sublist(")
+		}
+		if q.Skip != nil {
+			io.WriteString(w, "lists:nthtail(")
+			q.Skip.emit(w)
+			io.WriteString(w, ", ")
+		}
+		io.WriteString(w, "lists:sort(fun({K1,_},{K2,_}) -> K1 =< K2 end, ")
+		io.WriteString(w, expr)
+		io.WriteString(w, ")")
+		if q.Skip != nil {
+			io.WriteString(w, ")")
+		}
+		if q.Take != nil {
+			io.WriteString(w, ", ")
+			q.Take.emit(w)
+			io.WriteString(w, ")")
+		}
+		io.WriteString(w, ")")
+		return
+	}
+	if q.Take != nil {
+		io.WriteString(w, "lists:sublist(")
+	}
+	if q.Skip != nil {
+		io.WriteString(w, "lists:nthtail(")
+		q.Skip.emit(w)
+		io.WriteString(w, ", ")
+	}
+	io.WriteString(w, expr)
+	if q.Skip != nil {
+		io.WriteString(w, ")")
+	}
+	if q.Take != nil {
+		io.WriteString(w, ", ")
+		q.Take.emit(w)
+		io.WriteString(w, ")")
+	}
 }
 
 func mapOp(op string) string {
@@ -1698,7 +1753,7 @@ func convertMatch(me *parser.MatchExpr, env *types.Env, ctx *context) (Expr, err
 }
 
 func convertQueryExpr(q *parser.QueryExpr, env *types.Env, ctx *context) (Expr, error) {
-	if q == nil || q.Group != nil || q.Sort != nil || q.Skip != nil || q.Take != nil || q.Distinct {
+	if q == nil || q.Group != nil || q.Distinct {
 		return nil, fmt.Errorf("unsupported query")
 	}
 	loopCtx := ctx.clone()
@@ -1759,7 +1814,28 @@ func convertQueryExpr(q *parser.QueryExpr, env *types.Env, ctx *context) (Expr, 
 	if err != nil {
 		return nil, err
 	}
-	return &QueryExpr{Var: alias, Src: src, Froms: froms, Where: cond, Select: sel}, nil
+	var sortKey Expr
+	if q.Sort != nil {
+		sortKey, err = convertExpr(q.Sort, child, loopCtx)
+		if err != nil {
+			return nil, err
+		}
+	}
+	var skipExpr Expr
+	if q.Skip != nil {
+		skipExpr, err = convertExpr(q.Skip, env, ctx)
+		if err != nil {
+			return nil, err
+		}
+	}
+	var takeExpr Expr
+	if q.Take != nil {
+		takeExpr, err = convertExpr(q.Take, env, ctx)
+		if err != nil {
+			return nil, err
+		}
+	}
+	return &QueryExpr{Var: alias, Src: src, Froms: froms, Where: cond, Select: sel, SortKey: sortKey, Skip: skipExpr, Take: takeExpr}, nil
 }
 
 func convertLiteral(l *parser.Literal) (Expr, error) {
