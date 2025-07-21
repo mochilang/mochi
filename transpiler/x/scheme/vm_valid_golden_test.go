@@ -100,6 +100,7 @@ func updateReadme() {
 	binDir := filepath.Join(root, "tests", "transpiler", "x", "scheme")
 	readmePath := filepath.Join(root, "transpiler", "x", "scheme", "README.md")
 	files, _ := filepath.Glob(filepath.Join(srcDir, "*.mochi"))
+	sort.Strings(files)
 	total := len(files)
 	compiled := 0
 	var lines []string
@@ -112,11 +113,22 @@ func updateReadme() {
 		}
 		lines = append(lines, fmt.Sprintf("- %s %s", mark, name))
 	}
+	ts := ""
+	if out, err := exec.Command("git", "log", "-1", "--format=%cI").Output(); err == nil {
+		if t, perr := time.Parse(time.RFC3339, strings.TrimSpace(string(out))); perr == nil {
+			ts = t.UTC().Format("2006-01-02 15:04 UTC")
+		}
+	}
+
 	var buf bytes.Buffer
 	buf.WriteString("# Scheme Transpiler Output\n\n")
 	buf.WriteString("Generated Scheme code for programs in `tests/vm/valid`. Each program has a `.scm` file produced by the transpiler and a `.out` file with its runtime output. Compilation or execution errors are captured in `.error` files.\n\n")
-	fmt.Fprintf(&buf, "Transpiled programs: %d/%d\n\n", compiled, total)
-	buf.WriteString("Checklist:\n\n")
+	fmt.Fprintf(&buf, "## VM Golden Test Checklist (%d/%d)\n", compiled, total)
+	if ts != "" {
+		fmt.Fprintf(&buf, "Last updated: %s\n\n", ts)
+	} else {
+		buf.WriteString("\n")
+	}
 	buf.WriteString(strings.Join(lines, "\n"))
 	buf.WriteString("\n")
 	_ = os.WriteFile(readmePath, buf.Bytes(), 0o644)
@@ -126,15 +138,22 @@ func updateTasks() {
 	root := findRepoRoot2(&testing.T{})
 	taskFile := filepath.Join(root, "transpiler", "x", "scheme", "TASKS.md")
 
-	out, err := exec.Command("git", "log", "-1", "--format=%cI").Output()
+	out, err := exec.Command("git", "log", "-1", "--format=%cI%n%h%n%s").Output()
 	ts := ""
+	hash := ""
+	msg := ""
 	if err == nil {
-		if t, perr := time.Parse(time.RFC3339, strings.TrimSpace(string(out))); perr == nil {
-			if loc, lerr := time.LoadLocation("Asia/Bangkok"); lerr == nil {
-				ts = t.In(loc).Format("2006-01-02 15:04 -0700")
-			} else {
-				ts = t.Format("2006-01-02 15:04 MST")
+		parts := strings.SplitN(strings.TrimSpace(string(out)), "\n", 3)
+		if len(parts) == 3 {
+			if t, perr := time.Parse(time.RFC3339, parts[0]); perr == nil {
+				if loc, lerr := time.LoadLocation("Asia/Bangkok"); lerr == nil {
+					ts = t.In(loc).Format("2006-01-02 15:04 -0700")
+				} else {
+					ts = t.Format("2006-01-02 15:04 -0700")
+				}
 			}
+			hash = parts[1]
+			msg = parts[2]
 		}
 	}
 
@@ -156,6 +175,9 @@ func updateTasks() {
 
 	var buf bytes.Buffer
 	buf.WriteString(fmt.Sprintf("## Progress (%s)\n", ts))
+	if hash != "" {
+		fmt.Fprintf(&buf, "- Commit %s: %s\n", hash, msg)
+	}
 	fmt.Fprintf(&buf, "- Generated Scheme for %d/%d programs\n", compiled, total)
 	buf.WriteString("- Updated README checklist and outputs\n\n")
 	if data, err := os.ReadFile(taskFile); err == nil {
