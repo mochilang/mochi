@@ -218,9 +218,18 @@ func (p *PrintStmt) emit(w io.Writer) {
 	}
 
 	if isBoolExpr(p.Expr) {
-		io.WriteString(w, "putStrLn (if ")
-		p.Expr.emit(w)
-		io.WriteString(w, " then \"true\" else \"false\")")
+		io.WriteString(w, "putStrLn (")
+		switch p.Expr.(type) {
+		case *BoolLit, *NameRef:
+			io.WriteString(w, "if ")
+			p.Expr.emit(w)
+			io.WriteString(w, " then \"true\" else \"false\"")
+		default:
+			io.WriteString(w, "if ")
+			p.Expr.emit(w)
+			io.WriteString(w, " then \"1\" else \"0\"")
+		}
+		io.WriteString(w, ")")
 		return
 	}
 

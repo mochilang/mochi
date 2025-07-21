@@ -1,0 +1,11 @@
+run: exit status 1
+
+/workspace/mochi/tests/transpiler/x/hs/map_in_operator.hs:11:18: error:
+    • No instance for (Num String) arising from the literal ‘1’
+    • In the first argument of ‘elem’, namely ‘1’
+      In the expression: 1 `elem` m
+      In the first argument of ‘putStrLn’, namely
+        ‘(if 1 `elem` m then "1" else "0")’
+   |
+11 |     putStrLn (if 1 `elem` m then "1" else "0")
+   |                  ^

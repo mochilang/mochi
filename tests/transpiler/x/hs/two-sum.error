@@ -1,0 +1,10 @@
+run: exit status 1
+
+/workspace/mochi/tests/transpiler/x/hs/two-sum.hs:6:7: error:
+    parse error on input ‘=’
+    Suggested fix:
+      Perhaps you need a 'let' in a 'do' block?
+      e.g. 'let x = 5' instead of 'x = 5'
+  |
+6 |     n = length nums
+  |       ^

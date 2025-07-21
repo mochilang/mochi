@@ -1,0 +1,23 @@
+run: exit status 1
+
+/workspace/mochi/tests/transpiler/x/hs/map_membership.hs:11:34: error:
+    • Couldn't match expected type: [Char]
+                  with actual type: Map.Map String a0
+    • In the second argument of ‘isInfixOf’, namely ‘m’
+      In the expression: "a" `isInfixOf` m
+      In the first argument of ‘putStrLn’, namely
+        ‘(if "a" `isInfixOf` m then "1" else "0")’
+   |
+11 |     putStrLn (if "a" `isInfixOf` m then "1" else "0")
+   |                                  ^
+
+/workspace/mochi/tests/transpiler/x/hs/map_membership.hs:12:34: error:
+    • Couldn't match expected type: [Char]
+                  with actual type: Map.Map String a0
+    • In the second argument of ‘isInfixOf’, namely ‘m’
+      In the expression: "c" `isInfixOf` m
+      In the first argument of ‘putStrLn’, namely
+        ‘(if "c" `isInfixOf` m then "1" else "0")’
+   |
+12 |     putStrLn (if "c" `isInfixOf` m then "1" else "0")
+   |                                  ^

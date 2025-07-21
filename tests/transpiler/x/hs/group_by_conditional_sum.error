@@ -1,0 +1,16 @@
+run: exit status 1
+
+/workspace/mochi/tests/transpiler/x/hs/group_by_conditional_sum.hs:18:47: error:
+    Variable not in scope: cat
+    Suggested fix:
+      Notice that ‘cat’ is a field selector belonging to the type ‘GenType1’
+      that has been suppressed by NoFieldSelectors.
+   |
+18 | result = sortOn (\g -> g.key) [Map.fromList [(cat, g.key), (share, sum [if x.flag then x.val else 0 | x <- g.items] `div` sum [x.val | x <- g.items])] | g <- [MGroup {key = k, items = [i | i <- items, i.cat == k]} | k <- nub (map (\i -> i.cat) [i | i <- items])]]
+   |                                               ^^^
+
+/workspace/mochi/tests/transpiler/x/hs/group_by_conditional_sum.hs:18:61: error:
+    Variable not in scope: share
+   |
+18 | result = sortOn (\g -> g.key) [Map.fromList [(cat, g.key), (share, sum [if x.flag then x.val else 0 | x <- g.items] `div` sum [x.val | x <- g.items])] | g <- [MGroup {key = k, items = [i | i <- items, i.cat == k]} | k <- nub (map (\i -> i.cat) [i | i <- items])]]
+   |                                                             ^^^^^
