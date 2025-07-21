@@ -22,6 +22,7 @@ type Program struct {
 	UseStrconv bool
 	UsePrint   bool
 	UseSort    bool
+	UseJSON    bool
 }
 
 var (
@@ -29,6 +30,7 @@ var (
 	usesStrconv bool
 	usesPrint   bool
 	usesSort    bool
+	usesJSON    bool
 	topEnv      *types.Env
 	extraDecls  []Stmt
 	structCount int
@@ -659,6 +661,16 @@ func (fs *FloatStringExpr) emit(w io.Writer) {
 	io.WriteString(w, "); if f == float64(int(f)) { return fmt.Sprintf(\"%.1f\", f) }; return fmt.Sprint(f) }()")
 }
 
+// JsonExpr prints a value as pretty JSON.
+type JsonExpr struct{ Value Expr }
+
+func (je *JsonExpr) emit(w io.Writer) {
+	usesJSON = true
+	io.WriteString(w, "func() { b, _ := json.MarshalIndent(")
+	je.Value.emit(w)
+	io.WriteString(w, ", \"\", \"  \"); fmt.Println(string(b)) }()")
+}
+
 // BoolIntExpr converts a boolean to an integer 1 or 0.
 type BoolIntExpr struct{ Expr Expr }
 
@@ -895,6 +907,7 @@ func Transpile(p *parser.Program, env *types.Env) (*Program, error) {
 	usesStrconv = false
 	usesPrint = false
 	usesSort = false
+	usesJSON = false
 	topEnv = env
 	extraDecls = nil
 	structCount = 0
@@ -917,6 +930,7 @@ func Transpile(p *parser.Program, env *types.Env) (*Program, error) {
 	gp.UseStrconv = usesStrconv
 	gp.UsePrint = usesPrint
 	gp.UseSort = usesSort
+	gp.UseJSON = usesJSON
 	return gp, nil
 }
 
@@ -1866,6 +1880,9 @@ func compilePrimary(p *parser.Primary, env *types.Env, base string) (Expr, error
 			return &ExistsExpr{Expr: bexpr}, nil
 		case "substring":
 			return &CallExpr{Func: "string", Args: []Expr{&SliceExpr{X: &RuneSliceExpr{Expr: args[0]}, Start: args[1], End: args[2]}}}, nil
+		case "json":
+			usesJSON = true
+			return &JsonExpr{Value: args[0]}, nil
 		}
 		if t, err := env.GetVar(name); err == nil {
 			if ft, ok := t.(types.FuncType); ok && len(args) < len(ft.Params) {
@@ -2226,6 +2243,9 @@ func Emit(prog *Program) []byte {
 	if prog.UseStrconv {
 		buf.WriteString("    \"strconv\"\n")
 	}
+	if prog.UseJSON {
+		buf.WriteString("    \"encoding/json\"\n")
+	}
 	if prog.UseSort {
 		buf.WriteString("    \"sort\"\n")
 	}
@@ -2430,6 +2450,8 @@ func toNodeExpr(e Expr) *ast.Node {
 		return &ast.Node{Kind: "liststr", Children: []*ast.Node{toNodeExpr(ex.List)}}
 	case *FloatStringExpr:
 		return &ast.Node{Kind: "floatstr", Children: []*ast.Node{toNodeExpr(ex.Value)}}
+	case *JsonExpr:
+		return &ast.Node{Kind: "json", Children: []*ast.Node{toNodeExpr(ex.Value)}}
 	case *ContainsExpr:
 		return &ast.Node{Kind: "contains", Children: []*ast.Node{toNodeExpr(ex.Collection), toNodeExpr(ex.Value)}}
 	case *ExistsExpr:
