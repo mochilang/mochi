@@ -2,7 +2,7 @@
 
 This directory contains experimental source translators for generating Clojure code. Each program in `tests/vm/valid` is transpiled and executed with `clojure`.
 
-Compiled programs: 96/100
+Compiled programs: 97/100
 
 - [x] append_builtin
 - [x] avg_builtin
@@ -54,7 +54,7 @@ Compiled programs: 96/100
 - [x] list_index
 - [x] list_nested_assign
 - [x] list_set_ops
-- [ ] load_yaml
+- [x] load_yaml
 - [x] map_assign
 - [x] map_in_operator
 - [x] map_index
@@ -104,3 +104,4 @@ Compiled programs: 96/100
 - [x] values_builtin
 - [x] var_assignment
 - [x] while_loop
+Last updated: 2025-07-21 18:33 +0700

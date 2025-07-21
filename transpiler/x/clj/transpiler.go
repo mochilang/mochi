@@ -4,10 +4,16 @@ package cljt
 
 import (
 	"bytes"
+	"encoding/json"
 	"fmt"
 	"io"
+	"os"
+	"path/filepath"
+	"sort"
 	"strconv"
 	"strings"
+
+	yaml "gopkg.in/yaml.v3"
 
 	"mochi/parser"
 	"mochi/types"
@@ -248,6 +254,133 @@ func Format(src []byte) []byte {
 		src = append(src, '\n')
 	}
 	return src
+}
+
+func repoRoot() string {
+	dir, err := os.Getwd()
+	if err != nil {
+		return ""
+	}
+	for i := 0; i < 10; i++ {
+		if _, err := os.Stat(filepath.Join(dir, "go.mod")); err == nil {
+			return dir
+		}
+		parent := filepath.Dir(dir)
+		if parent == dir {
+			break
+		}
+		dir = parent
+	}
+	return ""
+}
+
+func parseFormat(e *parser.Expr) string {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) > 0 {
+		return ""
+	}
+	u := e.Binary.Left
+	if len(u.Ops) > 0 || u.Value == nil {
+		return ""
+	}
+	p := u.Value.Target
+	if p == nil || p.Map == nil {
+		return ""
+	}
+	for _, it := range p.Map.Items {
+		key, ok := identName(it.Key)
+		if !ok {
+			key, _ = literalString(it.Key)
+		}
+		if key == "format" {
+			if lit, ok := literalString(it.Value); ok {
+				return lit
+			}
+		}
+	}
+	return ""
+}
+
+func valueToNode(v interface{}) Node {
+	switch val := v.(type) {
+	case map[string]interface{}:
+		keys := make([]string, 0, len(val))
+		for k := range val {
+			keys = append(keys, k)
+		}
+		sort.Strings(keys)
+		pairs := make([][2]Node, 0, len(keys))
+		for _, k := range keys {
+			pairs = append(pairs, [2]Node{Keyword(k), valueToNode(val[k])})
+		}
+		return &Map{Pairs: pairs}
+	case []interface{}:
+		elems := make([]Node, len(val))
+		for i, it := range val {
+			elems[i] = valueToNode(it)
+		}
+		return &Vector{Elems: elems}
+	case string:
+		return StringLit(val)
+	case bool:
+		if val {
+			return Symbol("true")
+		}
+		return Symbol("false")
+	case int:
+		return IntLit(int64(val))
+	case int64:
+		return IntLit(val)
+	case int32:
+		return IntLit(int64(val))
+	case float32:
+		return FloatLit(float64(val))
+	case float64:
+		return FloatLit(val)
+	default:
+		return Symbol("nil")
+	}
+}
+
+func dataNodeFromFile(path, format string) (Node, error) {
+	if path == "" {
+		return &Vector{}, nil
+	}
+	root := repoRoot()
+	if root != "" && strings.HasPrefix(path, "../") {
+		clean := strings.TrimPrefix(path, "../")
+		path = filepath.Join(root, "tests", clean)
+	}
+	data, err := os.ReadFile(path)
+	if err != nil {
+		return nil, err
+	}
+	var v interface{}
+	switch format {
+	case "yaml":
+		if err := yaml.Unmarshal(data, &v); err != nil {
+			return nil, err
+		}
+	case "json":
+		if err := json.Unmarshal(data, &v); err != nil {
+			return nil, err
+		}
+	case "jsonl":
+		var arr []interface{}
+		for _, line := range bytes.Split(data, []byte{'\n'}) {
+			line = bytes.TrimSpace(line)
+			if len(line) == 0 {
+				continue
+			}
+			var item interface{}
+			if err := json.Unmarshal(line, &item); err == nil {
+				arr = append(arr, item)
+			}
+		}
+		v = arr
+	default:
+		return nil, fmt.Errorf("unsupported load format")
+	}
+	return valueToNode(v), nil
 }
 
 // --- Transpiler ---
@@ -978,6 +1111,18 @@ func transpilePrimary(p *parser.Primary) (Node, error) {
 		return &List{Elems: []Node{Symbol("fn"), &Vector{Elems: params}, body}}, nil
 	case p.Query != nil:
 		return transpileQueryExpr(p.Query)
+	case p.Load != nil:
+		format := parseFormat(p.Load.With)
+		n, err := dataNodeFromFile("", format)
+		path := ""
+		if p.Load.Path != nil {
+			path = strings.Trim(*p.Load.Path, "\"")
+			n, err = dataNodeFromFile(path, format)
+		}
+		if err == nil {
+			return n, nil
+		}
+		return nil, err
 	case p.Save != nil:
 		src, err := transpileExpr(p.Save.Src)
 		if err != nil {
@@ -1516,6 +1661,27 @@ func identName(e *parser.Expr) (string, bool) {
 		return "", false
 	}
 	return p.Selector.Root, true
+}
+
+func literalString(e *parser.Expr) (string, bool) {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) > 0 {
+		return "", false
+	}
+	u := e.Binary.Left
+	if u == nil || len(u.Ops) > 0 || u.Value == nil {
+		return "", false
+	}
+	p := u.Value.Target
+	if p == nil {
+		return "", false
+	}
+	if p.Lit != nil && p.Lit.Str != nil {
+		return *p.Lit.Str, true
+	}
+	if p.Selector != nil && len(p.Selector.Tail) == 0 {
+		return p.Selector.Root, true
+	}
+	return "", false
 }
 
 func callPattern(e *parser.Expr) (string, []string, bool) {
