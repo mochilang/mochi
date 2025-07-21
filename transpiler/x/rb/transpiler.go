@@ -85,6 +85,16 @@ type RightJoinExpr struct {
 	Select   Expr
 }
 
+// LeftJoinExpr represents a simple left join query.
+type LeftJoinExpr struct {
+	LeftVar  string
+	LeftSrc  Expr
+	RightVar string
+	RightSrc Expr
+	Cond     Expr
+	Select   Expr
+}
+
 func (r *RightJoinExpr) emit(e *emitter) {
 	io.WriteString(e.w, "(begin")
 	e.indent++
@@ -139,6 +149,78 @@ func (r *RightJoinExpr) emit(e *emitter) {
 	e.writeIndent()
 	io.WriteString(e.w, "_res << ")
 	r.Select.emit(e)
+	e.nl()
+	e.indent--
+	e.writeIndent()
+	io.WriteString(e.w, "end")
+	e.nl()
+	e.indent--
+	e.writeIndent()
+	io.WriteString(e.w, "end")
+	e.nl()
+	e.indent--
+	e.writeIndent()
+	io.WriteString(e.w, "_res")
+	e.nl()
+	e.indent--
+	e.writeIndent()
+	io.WriteString(e.w, "end)")
+}
+
+func (l *LeftJoinExpr) emit(e *emitter) {
+	io.WriteString(e.w, "(begin")
+	e.indent++
+	e.nl()
+	e.writeIndent()
+	io.WriteString(e.w, "_res = []")
+	e.nl()
+	e.writeIndent()
+	l.LeftSrc.emit(e)
+	io.WriteString(e.w, ".each do |")
+	io.WriteString(e.w, l.LeftVar)
+	io.WriteString(e.w, "|")
+	e.nl()
+	e.indent++
+	e.writeIndent()
+	io.WriteString(e.w, "matched = false")
+	e.nl()
+	e.writeIndent()
+	l.RightSrc.emit(e)
+	io.WriteString(e.w, ".each do |")
+	io.WriteString(e.w, l.RightVar)
+	io.WriteString(e.w, "|")
+	e.nl()
+	e.indent++
+	e.writeIndent()
+	io.WriteString(e.w, "if ")
+	l.Cond.emit(e)
+	e.nl()
+	e.indent++
+	e.writeIndent()
+	io.WriteString(e.w, "matched = true")
+	e.nl()
+	e.writeIndent()
+	io.WriteString(e.w, "_res << ")
+	l.Select.emit(e)
+	e.nl()
+	e.indent--
+	e.writeIndent()
+	io.WriteString(e.w, "end")
+	e.nl()
+	e.indent--
+	e.writeIndent()
+	io.WriteString(e.w, "end")
+	e.nl()
+	e.writeIndent()
+	io.WriteString(e.w, "unless matched")
+	e.nl()
+	e.indent++
+	e.writeIndent()
+	io.WriteString(e.w, l.RightVar+" = nil")
+	e.nl()
+	e.writeIndent()
+	io.WriteString(e.w, "_res << ")
+	l.Select.emit(e)
 	e.nl()
 	e.indent--
 	e.writeIndent()
@@ -2088,6 +2170,9 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 		if ex, err := convertRightJoinQuery(p.Query); err == nil {
 			return ex, nil
 		}
+		if ex, err := convertLeftJoinQuery(p.Query); err == nil {
+			return ex, nil
+		}
 		return convertQueryExpr(p.Query)
 	default:
 		if p.FunExpr != nil {
@@ -2310,6 +2395,40 @@ func convertRightJoinQuery(q *parser.QueryExpr) (Expr, error) {
 	return &RightJoinExpr{LeftVar: q.Var, LeftSrc: leftSrc, RightVar: j.Var, RightSrc: rightSrc, Cond: cond, Select: sel}, nil
 }
 
+func convertLeftJoinQuery(q *parser.QueryExpr) (Expr, error) {
+	if q == nil || len(q.Joins) != 1 || len(q.Froms) > 0 || q.Group != nil || q.Sort != nil || q.Skip != nil || q.Take != nil || q.Where != nil {
+		return nil, fmt.Errorf("unsupported query")
+	}
+	j := q.Joins[0]
+	if j.Side == nil || *j.Side != "left" {
+		return nil, fmt.Errorf("unsupported query")
+	}
+	leftSrc, err := convertExpr(q.Source)
+	if err != nil {
+		return nil, err
+	}
+	rightSrc, err := convertExpr(j.Src)
+	if err != nil {
+		return nil, err
+	}
+	child := types.NewEnv(currentEnv)
+	child.SetVar(q.Var, types.AnyType{}, true)
+	child.SetVar(j.Var, types.AnyType{}, true)
+	saved := currentEnv
+	currentEnv = child
+	cond, err := convertExpr(j.On)
+	if err != nil {
+		currentEnv = saved
+		return nil, err
+	}
+	sel, err := convertExpr(q.Select)
+	currentEnv = saved
+	if err != nil {
+		return nil, err
+	}
+	return &LeftJoinExpr{LeftVar: q.Var, LeftSrc: leftSrc, RightVar: j.Var, RightSrc: rightSrc, Cond: cond, Select: sel}, nil
+}
+
 func convertGroupQuery(q *parser.QueryExpr) (Expr, error) {
 	if q == nil || q.Group == nil || len(q.Group.Exprs) != 1 || len(q.Froms) > 0 || len(q.Joins) > 0 || q.Sort != nil || q.Skip != nil || q.Take != nil || q.Distinct {
 		return nil, fmt.Errorf("unsupported query")
@@ -2365,6 +2484,11 @@ func convertQueryForLet(q *parser.QueryExpr, name string) (Expr, Stmt, error) {
 			if rj, ok := qe.(*RightJoinExpr); ok {
 				rj.Select = &StructNewExpr{Name: structName, Fields: fields}
 			}
+		} else if ex, err2 := convertLeftJoinQuery(q); err2 == nil {
+			qe = ex
+			if lj, ok := qe.(*LeftJoinExpr); ok {
+				lj.Select = &StructNewExpr{Name: structName, Fields: fields}
+			}
 		} else {
 			qe, err = convertQueryExpr(q)
 			if err != nil {
@@ -2380,6 +2504,9 @@ func convertQueryForLet(q *parser.QueryExpr, name string) (Expr, Stmt, error) {
 		return qe, &StructDefStmt{Name: structName, Fields: keys}, nil
 	}
 	if ex, err := convertRightJoinQuery(q); err == nil {
+		return ex, nil, nil
+	}
+	if ex, err := convertLeftJoinQuery(q); err == nil {
 		return ex, nil, nil
 	}
 	if ex, err := convertGroupQuery(q); err == nil {
@@ -2599,6 +2726,15 @@ func exprNode(e Expr) *ast.Node {
 		return n
 	case *RightJoinExpr:
 		n := &ast.Node{Kind: "right_join"}
+		n.Children = append(n.Children, &ast.Node{Kind: "left_var", Value: ex.LeftVar})
+		n.Children = append(n.Children, exprNode(ex.LeftSrc))
+		n.Children = append(n.Children, &ast.Node{Kind: "right_var", Value: ex.RightVar})
+		n.Children = append(n.Children, exprNode(ex.RightSrc))
+		n.Children = append(n.Children, exprNode(ex.Cond))
+		n.Children = append(n.Children, exprNode(ex.Select))
+		return n
+	case *LeftJoinExpr:
+		n := &ast.Node{Kind: "left_join"}
 		n.Children = append(n.Children, &ast.Node{Kind: "left_var", Value: ex.LeftVar})
 		n.Children = append(n.Children, exprNode(ex.LeftSrc))
 		n.Children = append(n.Children, &ast.Node{Kind: "right_var", Value: ex.RightVar})
