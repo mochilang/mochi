@@ -1,0 +1,15 @@
+compile: exit status 1
+/workspace/mochi/tests/transpiler/x/cpp/group_by.cpp: In lambda function:
+/workspace/mochi/tests/transpiler/x/cpp/group_by.cpp:51:15: error: ‘g’ is not captured
+   51 | for (auto p : g) {
+      |               ^
+/workspace/mochi/tests/transpiler/x/cpp/group_by.cpp:50:97: note: the lambda has no capture-default
+   50 |     __items.push_back(StatsItem{.city = g.key, .count = g.size(), .avg_age = ([&]{ auto tmp = ([]{ std::vector<int> __items;
+      |                                                                                                 ^
+/workspace/mochi/tests/transpiler/x/cpp/group_by.cpp:49:12: note: ‘GGroup g’ declared here
+   49 |     GGroup g = __g;
+      |            ^
+/workspace/mochi/tests/transpiler/x/cpp/group_by.cpp: In lambda function:
+/workspace/mochi/tests/transpiler/x/cpp/group_by.cpp:50:63: warning: narrowing conversion of ‘g.GGroup::size()’ from ‘size_t’ {aka ‘long unsigned int’} to ‘int’ [-Wnarrowing]
+   50 |     __items.push_back(StatsItem{.city = g.key, .count = g.size(), .avg_age = ([&]{ auto tmp = ([]{ std::vector<int> __items;
+      |                                                         ~~~~~~^~

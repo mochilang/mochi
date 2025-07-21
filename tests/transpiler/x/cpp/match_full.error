@@ -1,0 +1,4 @@
+compile: exit status 1
+/workspace/mochi/tests/transpiler/x/cpp/match_full.cpp:17:99: error: expected primary-expression before ‘)’ token
+   17 | auto status = ((ok == true) ? std::string("confirmed") : ((ok == false) ? std::string("denied") : ));
+      |                                                                                                   ^

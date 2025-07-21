@@ -1,0 +1,7 @@
+compile: exit status 1
+/workspace/mochi/tests/transpiler/x/cpp/partial_application.cpp:12:16: error: too few arguments to function ‘int add(int, int)’
+   12 | auto add5 = add(5);
+      |             ~~~^~~
+/workspace/mochi/tests/transpiler/x/cpp/partial_application.cpp:8:5: note: declared here
+    8 | int add(int a, int b) {
+      |     ^~~

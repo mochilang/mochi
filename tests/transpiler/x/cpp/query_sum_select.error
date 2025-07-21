@@ -1,0 +1,19 @@
+compile: exit status 1
+/workspace/mochi/tests/transpiler/x/cpp/query_sum_select.cpp:11:17: error: template argument 1 is invalid
+   11 | std::vector<auto> result = ([]{ std::vector<auto> __items;
+      |                 ^
+/workspace/mochi/tests/transpiler/x/cpp/query_sum_select.cpp:11:17: error: template argument 2 is invalid
+/workspace/mochi/tests/transpiler/x/cpp/query_sum_select.cpp: In lambda function:
+/workspace/mochi/tests/transpiler/x/cpp/query_sum_select.cpp:11:49: error: template argument 1 is invalid
+   11 | std::vector<auto> result = ([]{ std::vector<auto> __items;
+      |                                                 ^
+/workspace/mochi/tests/transpiler/x/cpp/query_sum_select.cpp:11:49: error: template argument 2 is invalid
+/workspace/mochi/tests/transpiler/x/cpp/query_sum_select.cpp:14:17: error: request for member ‘push_back’ in ‘__items’, which is of non-class type ‘int’
+   14 |         __items.push_back(std::accumulate(n.begin(), n.end(), 0));
+      |                 ^~~~~~~~~
+/workspace/mochi/tests/transpiler/x/cpp/query_sum_select.cpp:14:45: error: request for member ‘begin’ in ‘n’, which is of non-class type ‘int’
+   14 |         __items.push_back(std::accumulate(n.begin(), n.end(), 0));
+      |                                             ^~~~~
+/workspace/mochi/tests/transpiler/x/cpp/query_sum_select.cpp:14:56: error: request for member ‘end’ in ‘n’, which is of non-class type ‘int’
+   14 |         __items.push_back(std::accumulate(n.begin(), n.end(), 0));
+      |                                                        ^~~

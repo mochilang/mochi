@@ -1,0 +1,9 @@
+compile: exit status 1
+/workspace/mochi/tests/transpiler/x/cpp/group_by_having.cpp: In lambda function:
+/workspace/mochi/tests/transpiler/x/cpp/group_by_having.cpp:47:59: warning: narrowing conversion of ‘g.GGroup::size()’ from ‘size_t’ {aka ‘long unsigned int’} to ‘int’ [-Wnarrowing]
+   47 |     __items.push_back(BigItem{.city = g.key, .num = g.size()});
+      |                                                     ~~~~~~^~
+/workspace/mochi/tests/transpiler/x/cpp/group_by_having.cpp: In function ‘int main()’:
+/workspace/mochi/tests/transpiler/x/cpp/group_by_having.cpp:52:5: error: ‘json’ was not declared in this scope
+   52 |     json(big);
+      |     ^~~~
