@@ -1091,7 +1091,7 @@ func zeroValueExpr(t types.Type) Expr {
 }
 
 func pyType(t types.Type) string {
-	switch t.(type) {
+	switch tt := t.(type) {
 	case types.IntType, types.Int64Type:
 		return "int"
 	case types.FloatType:
@@ -1100,6 +1100,19 @@ func pyType(t types.Type) string {
 		return "str"
 	case types.BoolType:
 		return "bool"
+	case types.ListType:
+		return "list[" + pyType(tt.Elem) + "]"
+	case types.MapType:
+		return "dict[" + pyType(tt.Key) + ", " + pyType(tt.Value) + "]"
+	case types.StructType:
+		return tt.Name
+	case types.OptionType:
+		if currentImports != nil {
+			currentImports["typing"] = true
+		}
+		return "typing.Optional[" + pyType(tt.Elem) + "]"
+	case types.UnionType:
+		return tt.Name
 	default:
 		return "object"
 	}
@@ -1466,6 +1479,7 @@ func Emit(w io.Writer, p *Program) error {
 	if _, err := io.WriteString(w, header()); err != nil {
 		return err
 	}
+	futureAnn := false
 	var imports []string
 	if currentImports != nil {
 		if currentImports["json"] && !hasImport(p, "json") {
@@ -1479,9 +1493,15 @@ func Emit(w io.Writer, p *Program) error {
 		}
 		if currentImports["dataclasses"] && !hasImport(p, "dataclasses") {
 			imports = append(imports, "import dataclasses")
+			futureAnn = true
 		}
 		if currentImports["dataclass"] && !hasImport(p, "dataclass") {
 			imports = append(imports, "from dataclasses import dataclass")
+			futureAnn = true
+		}
+		if currentImports["typing"] && !hasImport(p, "typing") {
+			imports = append(imports, "import typing")
+			futureAnn = true
 		}
 	}
 	for _, s := range p.Stmts {
@@ -1494,6 +1514,11 @@ func Emit(w io.Writer, p *Program) error {
 		}
 	}
 	sort.Strings(imports)
+	if futureAnn {
+		if _, err := io.WriteString(w, "from __future__ import annotations\n"); err != nil {
+			return err
+		}
+	}
 	for _, line := range imports {
 		if _, err := io.WriteString(w, line+"\n"); err != nil {
 			return err
