@@ -1813,7 +1813,17 @@ func compileQueryExpr(q *parser.QueryExpr, env *types.Env) (Expr, error) {
 	if err != nil {
 		return nil, err
 	}
-	base := Expr(&Comprehension{Gens: gens, Filter: filt, Body: sel})
+	var base Expr
+	if ce, ok := sel.(*CallExpr); ok && len(ce.Args) == 1 {
+		switch ce.Func {
+		case "Enum.sum", "Enum.min", "Enum.max", "Enum.count", "Enum.avg":
+			comp := &Comprehension{Gens: gens, Filter: filt, Body: ce.Args[0]}
+			base = &CallExpr{Func: ce.Func, Args: []Expr{comp}}
+		}
+	}
+	if base == nil {
+		base = Expr(&Comprehension{Gens: gens, Filter: filt, Body: sel})
+	}
 	if q.Sort != nil {
 		key, err := compileExpr(q.Sort, child)
 		if err != nil {
