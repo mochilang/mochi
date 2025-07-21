@@ -2,11 +2,11 @@
 
 Generated Kotlin sources for golden tests are stored in `tests/transpiler/x/kt`.
 
-Last updated: 2025-07-22 05:35 +0700
+Last updated: 2025-07-22 06:19 +0700
 
 The transpiler currently supports expression programs with `print`, integer and list literals, mutable variables and built-ins `count`, `sum`, `avg`, `len`, `str`, `append`, `min`, `max`, `substring` and `values`.
 
-Completed golden tests: **91/101** (auto-generated)
+Completed golden tests: **92/101** (auto-generated)
 
 ### Golden test checklist
 - [x] append_builtin.mochi
@@ -106,7 +106,7 @@ Completed golden tests: **91/101** (auto-generated)
 - [x] typed_var.mochi
 - [x] unary_neg.mochi
 - [ ] update_stmt.mochi
-- [ ] user_type_literal.mochi
+- [x] user_type_literal.mochi
 - [x] values_builtin.mochi
 - [x] var_assignment.mochi
 - [x] while_loop.mochi
