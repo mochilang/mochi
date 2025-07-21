@@ -260,6 +260,13 @@ func (ix *IndexExpr) emit(w io.Writer) {
 	io.WriteString(w, "[")
 	ix.Index.emit(w)
 	io.WriteString(w, "]")
+	if strings.HasPrefix(guessType(ix.Target), "MutableMap<") {
+		if ix.Type != "" {
+			io.WriteString(w, " as "+ix.Type)
+		} else {
+			io.WriteString(w, "!!")
+		}
+	}
 }
 
 // MapLit represents a Kotlin map literal.
@@ -271,7 +278,29 @@ type MapItem struct {
 }
 
 func (m *MapLit) emit(w io.Writer) {
-	io.WriteString(w, "mutableMapOf(")
+	keyType := "Any"
+	valType := "Any"
+	if len(m.Items) > 0 {
+		keyType = guessType(m.Items[0].Key)
+		if keyType == "" {
+			keyType = "Any"
+		}
+		valType = guessType(m.Items[0].Value)
+		if valType == "" {
+			valType = "Any"
+		}
+		for _, it := range m.Items[1:] {
+			k := guessType(it.Key)
+			v := guessType(it.Value)
+			if k != keyType {
+				keyType = "Any"
+			}
+			if v != valType {
+				valType = "Any"
+			}
+		}
+	}
+	fmt.Fprintf(w, "mutableMapOf<%s, %s>(", keyType, valType)
 	for i, it := range m.Items {
 		if i > 0 {
 			io.WriteString(w, ", ")
@@ -340,20 +369,33 @@ type BinaryExpr struct {
 }
 
 func (b *BinaryExpr) emit(w io.Writer) {
+	numOp := b.Op == "+" || b.Op == "-" || b.Op == "*" || b.Op == "/" || b.Op == "%"
+	emitOperand := func(e Expr) {
+		if numOp {
+			t := guessType(e)
+			if t == "" || t == "Any" {
+				io.WriteString(w, "(")
+				e.emit(w)
+				io.WriteString(w, " as Number).toDouble()")
+				return
+			}
+		}
+		e.emit(w)
+	}
 	if _, ok := b.Left.(*BinaryExpr); ok {
 		io.WriteString(w, "(")
-		b.Left.emit(w)
+		emitOperand(b.Left)
 		io.WriteString(w, ")")
 	} else {
-		b.Left.emit(w)
+		emitOperand(b.Left)
 	}
 	io.WriteString(w, " "+b.Op+" ")
 	if _, ok := b.Right.(*BinaryExpr); ok {
 		io.WriteString(w, "(")
-		b.Right.emit(w)
+		emitOperand(b.Right)
 		io.WriteString(w, ")")
 	} else {
-		b.Right.emit(w)
+		emitOperand(b.Right)
 	}
 }
 
@@ -1713,12 +1755,6 @@ func convertQueryExpr(env *types.Env, q *parser.QueryExpr) (Expr, error) {
 		froms[i] = queryFrom{Var: f.Var, Src: fe}
 	}
 	var cond Expr
-	if q.Where != nil {
-		cond, err = convertExpr(child, q.Where)
-		if err != nil {
-			return nil, err
-		}
-	}
 	for _, j := range q.Joins {
 		je, err := convertExpr(child, j.Src)
 		if err != nil {
@@ -1742,6 +1778,13 @@ func convertQueryExpr(env *types.Env, q *parser.QueryExpr) (Expr, error) {
 			return nil, err
 		}
 		cond = combineAnd(cond, jc)
+	}
+	if q.Where != nil {
+		wcond, err := convertExpr(child, q.Where)
+		if err != nil {
+			return nil, err
+		}
+		cond = combineAnd(cond, wcond)
 	}
 	sel, err := convertExpr(child, q.Select)
 	if err != nil {

@@ -7,24 +7,24 @@ fun classify(n: Int): String {
 }
 
 fun main() {
-    val x = 2
-    val label = when (x) {
+    val x: Int = 2
+    val label: String = when (x) {
     1 -> "one"
     2 -> "two"
     3 -> "three"
     else -> "unknown"
 }
     println(label)
-    val day = "sun"
-    val mood = when (day) {
+    val day: String = "sun"
+    val mood: String = when (day) {
     "mon" -> "tired"
     "fri" -> "excited"
     "sun" -> "relaxed"
     else -> "normal"
 }
     println(mood)
-    val ok = true
-    val status = when (ok) {
+    val ok: Boolean = true
+    val status: String = when (ok) {
     true -> "confirmed"
     false -> "denied"
 }

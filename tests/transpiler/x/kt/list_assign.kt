@@ -1,5 +1,5 @@
 fun main() {
-    var nums = mutableListOf(1, 2)
+    var nums: MutableList<Int> = mutableListOf(1, 2)
     nums[1] = 3
     println(nums[1])
 }

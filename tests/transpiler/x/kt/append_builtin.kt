@@ -1,4 +1,4 @@
 fun main() {
-    val a = mutableListOf(1, 2)
+    val a: MutableList<Int> = mutableListOf(1, 2)
     println(a + 3)
 }

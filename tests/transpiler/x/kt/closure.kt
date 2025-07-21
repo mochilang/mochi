@@ -3,6 +3,6 @@ fun makeAdder(n: Int): (Int) -> Int {
 }
 
 fun main() {
-    val add10 = makeAdder(10)
+    val add10: (Int) -> Int = makeAdder(10)
     println(add10(7))
 }
