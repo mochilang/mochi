@@ -1,5 +1,4 @@
-// Generated 2025-07-21 15:37 +0700
-open System
+// Generated 2025-07-21 18:37 +0700
 
 printfn "%s" (string ([1; 2] union [2; 3]))
 printfn "%s" (string ([1; 2; 3] except [2]))

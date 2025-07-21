@@ -1,5 +1,4 @@
-// Generated 2025-07-21 15:37 +0700
-open System
+// Generated 2025-07-21 18:37 +0700
 
 let numbers: int list = [1; 2; 3; 4; 5; 6; 7; 8; 9]
 for n in numbers do

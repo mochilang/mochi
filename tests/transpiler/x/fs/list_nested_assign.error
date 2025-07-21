@@ -1,0 +1,7 @@
+exit status 1
+F# Compiler for F# 4.0 (Open Source Edition)
+Freely distributed under the Apache 2.0 Open Source License
+
+/workspace/mochi/tests/transpiler/x/fs/list_nested_assign.fs(3,21): error FS0033: The type 'Microsoft.FSharp.Collections.list<_>' expects 1 type argument(s) but is given 0
+
+/workspace/mochi/tests/transpiler/x/fs/list_nested_assign.fs(4,1): error FS0810: Property 'Item' cannot be set

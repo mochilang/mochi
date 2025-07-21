@@ -1,5 +1,4 @@
-// Generated 2025-07-21 15:37 +0700
-open System
+// Generated 2025-07-21 18:37 +0700
 
 type Anon1 = {
     mutable tag: string
@@ -10,12 +9,19 @@ type Anon2 = {
     mutable val: int
 }
 type Anon3 = {
+    mutable d: obj
+}
+type Anon4 = {
+    mutable key: obj
+    mutable items: Anon3 list
+}
+type Anon5 = {
     mutable tag: obj
     mutable total: obj
 }
 let data: Anon2 list = [{ tag = "a"; val = 1 }; { tag = "a"; val = 2 }; { tag = "b"; val = 3 }]
 let groups = [ for (key, items) in List.groupBy (fun d -> d.tag) data do
-    let g = {| key = key; items = items |}
+    let g : Anon4 = { key = key; items = items }
     yield g ]
 let mutable tmp = []
 for g in groups do

@@ -1,0 +1,33 @@
+exit status 1
+F# Compiler for F# 4.0 (Open Source Edition)
+Freely distributed under the Apache 2.0 Open Source License
+
+/workspace/mochi/tests/transpiler/x/fs/group_by_having.fs(28,5): warning FS0058: Possible incorrect indentation: this token is offside of context started at position (27:25). Try indenting this token further or using standard formatting conventions.
+
+/workspace/mochi/tests/transpiler/x/fs/group_by_having.fs(28,5): warning FS0058: Possible incorrect indentation: this token is offside of context started at position (27:25). Try indenting this token further or using standard formatting conventions.
+
+/workspace/mochi/tests/transpiler/x/fs/group_by_having.fs(29,5): warning FS0058: Possible incorrect indentation: this token is offside of context started at position (27:25). Try indenting this token further or using standard formatting conventions.
+
+/workspace/mochi/tests/transpiler/x/fs/group_by_having.fs(29,5): warning FS0058: Possible incorrect indentation: this token is offside of context started at position (27:25). Try indenting this token further or using standard formatting conventions.
+
+/workspace/mochi/tests/transpiler/x/fs/group_by_having.fs(29,13): warning FS0058: Possible incorrect indentation: this token is offside of context started at position (27:25). Try indenting this token further or using standard formatting conventions.
+
+/workspace/mochi/tests/transpiler/x/fs/group_by_having.fs(29,13): warning FS0058: Possible incorrect indentation: this token is offside of context started at position (27:25). Try indenting this token further or using standard formatting conventions.
+
+/workspace/mochi/tests/transpiler/x/fs/group_by_having.fs(29,20): warning FS0058: Possible incorrect indentation: this token is offside of context started at position (27:25). Try indenting this token further or using standard formatting conventions.
+
+/workspace/mochi/tests/transpiler/x/fs/group_by_having.fs(29,20): warning FS0058: Possible incorrect indentation: this token is offside of context started at position (27:25). Try indenting this token further or using standard formatting conventions.
+
+/workspace/mochi/tests/transpiler/x/fs/group_by_having.fs(27,76): error FS0001: Type mismatch. Expecting a
+    Anon6 list    
+but given a
+    Anon2 list    
+The type 'Anon6' does not match the type 'Anon2'
+
+/workspace/mochi/tests/transpiler/x/fs/group_by_having.fs(28,42): error FS0001: Type mismatch. Expecting a
+    Anon4 list    
+but given a
+    Anon6 list    
+The type 'Anon4' does not match the type 'Anon6'
+
+/workspace/mochi/tests/transpiler/x/fs/group_by_having.fs(30,1): error FS0039: The value or constructor 'json' is not defined

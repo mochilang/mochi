@@ -1,0 +1,121 @@
+exit status 1
+F# Compiler for F# 4.0 (Open Source Edition)
+Freely distributed under the Apache 2.0 Open Source License
+
+/workspace/mochi/tests/transpiler/x/fs/group_by_multi_join_sort.fs(97,5): warning FS0058: Possible incorrect indentation: this token is offside of context started at position (96:29). Try indenting this token further or using standard formatting conventions.
+
+/workspace/mochi/tests/transpiler/x/fs/group_by_multi_join_sort.fs(97,5): warning FS0058: Possible incorrect indentation: this token is offside of context started at position (96:29). Try indenting this token further or using standard formatting conventions.
+
+/workspace/mochi/tests/transpiler/x/fs/group_by_multi_join_sort.fs(98,5): warning FS0058: Possible incorrect indentation: this token is offside of context started at position (96:29). Try indenting this token further or using standard formatting conventions.
+
+/workspace/mochi/tests/transpiler/x/fs/group_by_multi_join_sort.fs(98,5): warning FS0058: Possible incorrect indentation: this token is offside of context started at position (96:29). Try indenting this token further or using standard formatting conventions.
+
+/workspace/mochi/tests/transpiler/x/fs/group_by_multi_join_sort.fs(98,13): warning FS0058: Possible incorrect indentation: this token is offside of context started at position (96:29). Try indenting this token further or using standard formatting conventions.
+
+/workspace/mochi/tests/transpiler/x/fs/group_by_multi_join_sort.fs(98,13): warning FS0058: Possible incorrect indentation: this token is offside of context started at position (96:29). Try indenting this token further or using standard formatting conventions.
+
+/workspace/mochi/tests/transpiler/x/fs/group_by_multi_join_sort.fs(98,25): warning FS0058: Possible incorrect indentation: this token is offside of context started at position (96:29). Try indenting this token further or using standard formatting conventions.
+
+/workspace/mochi/tests/transpiler/x/fs/group_by_multi_join_sort.fs(98,25): warning FS0058: Possible incorrect indentation: this token is offside of context started at position (96:29). Try indenting this token further or using standard formatting conventions.
+
+/workspace/mochi/tests/transpiler/x/fs/group_by_multi_join_sort.fs(96,115): error FS0193: Type constraint mismatch. The type 
+    obj    
+is not compatible with type
+    Anon13    
+The type 'obj' is not compatible with the type 'Anon13'
+
+/workspace/mochi/tests/transpiler/x/fs/group_by_multi_join_sort.fs(96,137): error FS0193: Type constraint mismatch. The type 
+    obj    
+is not compatible with type
+    Anon13    
+The type 'obj' is not compatible with the type 'Anon13'
+
+/workspace/mochi/tests/transpiler/x/fs/group_by_multi_join_sort.fs(96,159): error FS0193: Type constraint mismatch. The type 
+    obj    
+is not compatible with type
+    Anon13    
+The type 'obj' is not compatible with the type 'Anon13'
+
+/workspace/mochi/tests/transpiler/x/fs/group_by_multi_join_sort.fs(96,184): error FS0193: Type constraint mismatch. The type 
+    obj    
+is not compatible with type
+    Anon13    
+The type 'obj' is not compatible with the type 'Anon13'
+
+/workspace/mochi/tests/transpiler/x/fs/group_by_multi_join_sort.fs(96,207): error FS0193: Type constraint mismatch. The type 
+    obj    
+is not compatible with type
+    Anon13    
+The type 'obj' is not compatible with the type 'Anon13'
+
+/workspace/mochi/tests/transpiler/x/fs/group_by_multi_join_sort.fs(96,230): error FS0193: Type constraint mismatch. The type 
+    obj    
+is not compatible with type
+    Anon13    
+The type 'obj' is not compatible with the type 'Anon13'
+
+/workspace/mochi/tests/transpiler/x/fs/group_by_multi_join_sort.fs(96,252): error FS0193: Type constraint mismatch. The type 
+    obj    
+is not compatible with type
+    Anon13    
+The type 'obj' is not compatible with the type 'Anon13'
+
+/workspace/mochi/tests/transpiler/x/fs/group_by_multi_join_sort.fs(96,101): error FS0764: No assignment given for field 'revenue' of type 'Group_by_multi_join_sort.Anon13'
+
+/workspace/mochi/tests/transpiler/x/fs/group_by_multi_join_sort.fs(96,56): error FS0747: This construct may only be used within list, array and sequence expressions, e.g. expressions of the form 'seq { ... }', '[ ... ]' or '[| ... |]'. These use the syntax 'for ... in ... do ... yield...' to generate elements
+
+/workspace/mochi/tests/transpiler/x/fs/group_by_multi_join_sort.fs(96,56): warning FS0020: This expression should have type 'unit', but has type 'Anon11'. Use 'ignore' to discard the result of the expression, or 'let' to bind the result to a name.
+
+/workspace/mochi/tests/transpiler/x/fs/group_by_multi_join_sort.fs(98,25): error FS0193: Type constraint mismatch. The type 
+    obj    
+is not compatible with type
+    Anon13    
+The type 'obj' is not compatible with the type 'Anon13'
+
+/workspace/mochi/tests/transpiler/x/fs/group_by_multi_join_sort.fs(98,51): error FS0193: Type constraint mismatch. The type 
+    obj    
+is not compatible with type
+    Anon13    
+The type 'obj' is not compatible with the type 'Anon13'
+
+/workspace/mochi/tests/transpiler/x/fs/group_by_multi_join_sort.fs(98,113): error FS0193: Type constraint mismatch. The type 
+    obj    
+is not compatible with type
+    Anon8    
+The type 'obj' is not compatible with the type 'Anon8'
+
+/workspace/mochi/tests/transpiler/x/fs/group_by_multi_join_sort.fs(98,142): error FS0193: Type constraint mismatch. The type 
+    obj    
+is not compatible with type
+    Anon8    
+The type 'obj' is not compatible with the type 'Anon8'
+
+/workspace/mochi/tests/transpiler/x/fs/group_by_multi_join_sort.fs(98,174): error FS0193: Type constraint mismatch. The type 
+    obj    
+is not compatible with type
+    Anon13    
+The type 'obj' is not compatible with the type 'Anon13'
+
+/workspace/mochi/tests/transpiler/x/fs/group_by_multi_join_sort.fs(98,200): error FS0193: Type constraint mismatch. The type 
+    obj    
+is not compatible with type
+    Anon13    
+The type 'obj' is not compatible with the type 'Anon13'
+
+/workspace/mochi/tests/transpiler/x/fs/group_by_multi_join_sort.fs(98,226): error FS0193: Type constraint mismatch. The type 
+    obj    
+is not compatible with type
+    Anon13    
+The type 'obj' is not compatible with the type 'Anon13'
+
+/workspace/mochi/tests/transpiler/x/fs/group_by_multi_join_sort.fs(98,253): error FS0193: Type constraint mismatch. The type 
+    obj    
+is not compatible with type
+    Anon13    
+The type 'obj' is not compatible with the type 'Anon13'
+
+/workspace/mochi/tests/transpiler/x/fs/group_by_multi_join_sort.fs(98,280): error FS0193: Type constraint mismatch. The type 
+    obj    
+is not compatible with type
+    Anon13    
+The type 'obj' is not compatible with the type 'Anon13'

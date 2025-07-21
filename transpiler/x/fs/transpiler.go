@@ -970,6 +970,12 @@ func inferType(e Expr) string {
 			if lt == rt {
 				return lt
 			}
+			if (lt == "int" && rt == "float") || (lt == "float" && rt == "int") {
+				return "float"
+			}
+			if v.Op == "+" && (lt == "string" || rt == "string") {
+				return "string"
+			}
 		}
 	case *AppendExpr:
 		return "list"
@@ -1163,7 +1169,7 @@ func header() string {
 			ts = t
 		}
 	}
-	return fmt.Sprintf("// Generated %s\nopen System\n\n", ts.Format("2006-01-02 15:04 MST"))
+	return fmt.Sprintf("// Generated %s\n\n", ts.Format("2006-01-02 15:04 MST"))
 }
 
 // Transpile converts a Mochi program to a simple F# AST.

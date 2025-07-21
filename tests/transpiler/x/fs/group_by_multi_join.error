@@ -1,0 +1,39 @@
+exit status 1
+F# Compiler for F# 4.0 (Open Source Edition)
+Freely distributed under the Apache 2.0 Open Source License
+
+/workspace/mochi/tests/transpiler/x/fs/group_by_multi_join.fs(59,5): warning FS0058: Possible incorrect indentation: this token is offside of context started at position (58:30). Try indenting this token further or using standard formatting conventions.
+
+/workspace/mochi/tests/transpiler/x/fs/group_by_multi_join.fs(59,5): warning FS0058: Possible incorrect indentation: this token is offside of context started at position (58:30). Try indenting this token further or using standard formatting conventions.
+
+/workspace/mochi/tests/transpiler/x/fs/group_by_multi_join.fs(60,5): warning FS0058: Possible incorrect indentation: this token is offside of context started at position (58:30). Try indenting this token further or using standard formatting conventions.
+
+/workspace/mochi/tests/transpiler/x/fs/group_by_multi_join.fs(60,5): warning FS0058: Possible incorrect indentation: this token is offside of context started at position (58:30). Try indenting this token further or using standard formatting conventions.
+
+/workspace/mochi/tests/transpiler/x/fs/group_by_multi_join.fs(60,13): warning FS0058: Possible incorrect indentation: this token is offside of context started at position (58:30). Try indenting this token further or using standard formatting conventions.
+
+/workspace/mochi/tests/transpiler/x/fs/group_by_multi_join.fs(60,13): warning FS0058: Possible incorrect indentation: this token is offside of context started at position (58:30). Try indenting this token further or using standard formatting conventions.
+
+/workspace/mochi/tests/transpiler/x/fs/group_by_multi_join.fs(60,20): warning FS0058: Possible incorrect indentation: this token is offside of context started at position (58:30). Try indenting this token further or using standard formatting conventions.
+
+/workspace/mochi/tests/transpiler/x/fs/group_by_multi_join.fs(60,20): warning FS0058: Possible incorrect indentation: this token is offside of context started at position (58:30). Try indenting this token further or using standard formatting conventions.
+
+/workspace/mochi/tests/transpiler/x/fs/group_by_multi_join.fs(57,221): error FS0001: The type 'int' does not match the type 'float'
+
+/workspace/mochi/tests/transpiler/x/fs/group_by_multi_join.fs(58,81): error FS0001: Type mismatch. Expecting a
+    Anon12 list    
+but given a
+    Anon8 list    
+The type 'Anon12' does not match the type 'Anon8'
+
+/workspace/mochi/tests/transpiler/x/fs/group_by_multi_join.fs(59,43): error FS0001: Type mismatch. Expecting a
+    Anon10 list    
+but given a
+    Anon12 list    
+The type 'Anon10' does not match the type 'Anon12'
+
+/workspace/mochi/tests/transpiler/x/fs/group_by_multi_join.fs(60,72): error FS0193: Type constraint mismatch. The type 
+    Anon10    
+is not compatible with type
+    Anon8    
+The type 'Anon10' is not compatible with the type 'Anon8'

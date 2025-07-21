@@ -1,0 +1,24 @@
+exit status 1
+F# Compiler for F# 4.0 (Open Source Edition)
+Freely distributed under the Apache 2.0 Open Source License
+
+/workspace/mochi/tests/transpiler/x/fs/right_join.fs(35,1): warning FS0058: Possible incorrect indentation: this token is offside of context started at position (34:1). Try indenting this token further or using standard formatting conventions.
+
+/workspace/mochi/tests/transpiler/x/fs/right_join.fs(35,1): warning FS0058: Possible incorrect indentation: this token is offside of context started at position (34:1). Try indenting this token further or using standard formatting conventions.
+
+/workspace/mochi/tests/transpiler/x/fs/right_join.fs(34,4): error FS0001: This expression was expected to have type
+    bool    
+but here has type
+    obj    
+
+/workspace/mochi/tests/transpiler/x/fs/right_join.fs(35,110): error FS0193: Type constraint mismatch. The type 
+    obj    
+is not compatible with type
+    Anon4    
+The type 'obj' is not compatible with the type 'Anon4'
+
+/workspace/mochi/tests/transpiler/x/fs/right_join.fs(35,149): error FS0193: Type constraint mismatch. The type 
+    obj    
+is not compatible with type
+    Anon4    
+The type 'obj' is not compatible with the type 'Anon4'

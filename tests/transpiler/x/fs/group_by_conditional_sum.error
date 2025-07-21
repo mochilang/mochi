@@ -1,0 +1,37 @@
+exit status 1
+F# Compiler for F# 4.0 (Open Source Edition)
+Freely distributed under the Apache 2.0 Open Source License
+
+/workspace/mochi/tests/transpiler/x/fs/group_by_conditional_sum.fs(5,13): error FS0010: Unexpected keyword 'val' in field declaration. Expected identifier or other token.
+
+/workspace/mochi/tests/transpiler/x/fs/group_by_conditional_sum.fs(10,13): error FS0010: Unexpected keyword 'val' in field declaration. Expected identifier or other token.
+
+/workspace/mochi/tests/transpiler/x/fs/group_by_conditional_sum.fs(28,39): error FS0010: Unexpected keyword 'val' in expression. Expected '}' or other token.
+
+/workspace/mochi/tests/transpiler/x/fs/group_by_conditional_sum.fs(28,26): error FS0604: Unmatched '{'
+
+/workspace/mochi/tests/transpiler/x/fs/group_by_conditional_sum.fs(30,5): warning FS0058: Possible incorrect indentation: this token is offside of context started at position (29:28). Try indenting this token further or using standard formatting conventions.
+
+/workspace/mochi/tests/transpiler/x/fs/group_by_conditional_sum.fs(30,5): warning FS0058: Possible incorrect indentation: this token is offside of context started at position (29:28). Try indenting this token further or using standard formatting conventions.
+
+/workspace/mochi/tests/transpiler/x/fs/group_by_conditional_sum.fs(31,5): warning FS0058: Possible incorrect indentation: this token is offside of context started at position (29:28). Try indenting this token further or using standard formatting conventions.
+
+/workspace/mochi/tests/transpiler/x/fs/group_by_conditional_sum.fs(31,5): warning FS0058: Possible incorrect indentation: this token is offside of context started at position (29:28). Try indenting this token further or using standard formatting conventions.
+
+/workspace/mochi/tests/transpiler/x/fs/group_by_conditional_sum.fs(31,13): warning FS0058: Possible incorrect indentation: this token is offside of context started at position (29:28). Try indenting this token further or using standard formatting conventions.
+
+/workspace/mochi/tests/transpiler/x/fs/group_by_conditional_sum.fs(31,13): warning FS0058: Possible incorrect indentation: this token is offside of context started at position (29:28). Try indenting this token further or using standard formatting conventions.
+
+/workspace/mochi/tests/transpiler/x/fs/group_by_conditional_sum.fs(31,19): warning FS0058: Possible incorrect indentation: this token is offside of context started at position (29:28). Try indenting this token further or using standard formatting conventions.
+
+/workspace/mochi/tests/transpiler/x/fs/group_by_conditional_sum.fs(31,19): warning FS0058: Possible incorrect indentation: this token is offside of context started at position (29:28). Try indenting this token further or using standard formatting conventions.
+
+/workspace/mochi/tests/transpiler/x/fs/group_by_conditional_sum.fs(31,89): error FS0599: Missing qualification after '.'
+
+/workspace/mochi/tests/transpiler/x/fs/group_by_conditional_sum.fs(31,90): error FS0010: Unexpected keyword 'val' in expression
+
+/workspace/mochi/tests/transpiler/x/fs/group_by_conditional_sum.fs(31,146): error FS0599: Missing qualification after '.'
+
+/workspace/mochi/tests/transpiler/x/fs/group_by_conditional_sum.fs(31,147): error FS0010: Unexpected keyword 'val' in expression. Expected incomplete structured construct at or before this point or other token.
+
+/workspace/mochi/tests/transpiler/x/fs/group_by_conditional_sum.fs(31,119): error FS3106: Unexpected end of input in 'for' expression. Expected 'for <pat> in <expr> do <expr>'.
