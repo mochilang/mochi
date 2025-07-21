@@ -279,6 +279,12 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	return fp, nil
 }
 
+// constTranspile is a temporary fallback used when the main compiler
+// encounters unsupported language features. It attempts a series of
+// specialised constant evaluators and ultimately falls back to running
+// the interpreter at compile time. The generated program simply prints
+// the interpreted result. In the future this should be replaced with a
+// real code generator for the missing features.
 func constTranspile(prog *parser.Program, env *types.Env) (*Program, error) {
 	if p, ok := constCrossJoinFilter(prog); ok {
 		return p, nil
