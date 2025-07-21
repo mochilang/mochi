@@ -4,6 +4,7 @@ package ctrans
 
 import (
 	"bytes"
+	"encoding/json"
 	"fmt"
 	"io"
 	"os/exec"
@@ -1035,6 +1036,13 @@ func compileStmt(env *types.Env, s *parser.Statement) (Stmt, error) {
 			}
 			return &PrintStmt{Args: args, Types: typesList}, nil
 		}
+		if call != nil && call.Func == "json" && len(call.Args) == 1 {
+			arg := convertExpr(call.Args[0])
+			if str, ok := evalString(&CallExpr{Func: "json", Args: []Expr{arg}}); ok {
+				return &PrintStmt{Args: []Expr{&StringLit{Value: str}}, Types: []string{"string"}}, nil
+			}
+			return nil, fmt.Errorf("unsupported json argument")
+		}
 	case s.Let != nil:
 		currentVarName = s.Let.Name
 		valExpr := convertExpr(s.Let.Value)
@@ -1816,6 +1824,14 @@ func convertUnary(u *parser.Unary) Expr {
 				return &StringLit{Value: fmt.Sprintf("%d", lit.Value)}
 			}
 		}
+		if call.Func == "json" && len(call.Args) == 1 {
+			if val, ok := valueFromExpr(convertExpr(call.Args[0])); ok {
+				b, err := json.Marshal(val)
+				if err == nil {
+					return &StringLit{Value: string(b)}
+				}
+			}
+		}
 		var args []Expr
 		for _, a := range call.Args {
 			ex := convertExpr(a)
@@ -2164,9 +2180,18 @@ func evalString(e Expr) (string, bool) {
 		return "", false
 	case *UnaryExpr:
 		return evalString(v.Expr)
+	case *CallExpr:
+		if v.Func == "json" && len(v.Args) == 1 {
+			if val, ok := valueFromExpr(v.Args[0]); ok {
+				if b, err := json.Marshal(val); err == nil {
+					return string(b), true
+				}
+			}
+		}
 	default:
 		return "", false
 	}
+	return "", false
 }
 
 func evalList(e Expr) (*ListLit, bool) {
@@ -2293,7 +2318,7 @@ func exprIsString(e Expr) bool {
 		_, ok := constStrings[v.Name]
 		return ok
 	case *CallExpr:
-		if v.Func == "str" || v.Func == "substring" {
+		if v.Func == "str" || v.Func == "substring" || v.Func == "json" {
 			return true
 		}
 		if fn, ok := currentEnv.GetFunc(v.Func); ok && fn.Return != nil && fn.Return.Simple != nil {
@@ -2468,7 +2493,7 @@ func inferExprType(env *types.Env, e Expr) string {
 		}
 	case *CallExpr:
 		switch v.Func {
-		case "str", "substring":
+		case "str", "substring", "json":
 			return "const char*"
 		case "len":
 			return "int"
