@@ -2654,7 +2654,8 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 							}
 							args[0] = &MethodCallExpr{Target: m, Method: "join", Args: []Expr{&StringLit{Value: " "}}}
 						case types.AnyType:
-							args = []Expr{&FormatListExpr{Value: args[0]}}
+							m := &MethodCallExpr{Target: args[0], Method: "map", Args: []Expr{&FunExpr{Params: []string{"x"}, Expr: &CallExpr{Func: "String", Args: []Expr{&NameRef{Name: "x"}}}}}}
+							args[0] = &MethodCallExpr{Target: m, Method: "join", Args: []Expr{&StringLit{Value: " "}}}
 						default:
 							args = []Expr{&FormatListExpr{Value: args[0]}}
 						}
