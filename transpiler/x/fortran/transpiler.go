@@ -280,15 +280,18 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 }
 
 func constTranspile(prog *parser.Program, env *types.Env) (*Program, error) {
-        if p, ok := constCrossJoinFilter(prog); ok {
-                return p, nil
-        }
-        if p, ok := constInnerJoin(prog); ok {
-                return p, nil
-        }
-        if p, ok := constCrossJoin(prog); ok {
-                return p, nil
-        }
+	if p, ok := constCrossJoinFilter(prog); ok {
+		return p, nil
+	}
+	if p, ok := constGroupByJoin(prog); ok {
+		return p, nil
+	}
+	if p, ok := constInnerJoin(prog); ok {
+		return p, nil
+	}
+	if p, ok := constCrossJoin(prog); ok {
+		return p, nil
+	}
 	if p, ok := constGroupByConditionalSum(prog); ok {
 		return p, nil
 	}
@@ -584,62 +587,124 @@ func constCrossJoinFilter(prog *parser.Program) (*Program, bool) {
 			out.Stmts = append(out.Stmts, &PrintStmt{Exprs: []string{fmt.Sprintf("\"%s\"", esc)}, Types: []types.Type{types.StringType{}}})
 		}
 	}
-        return out, true
+	return out, true
+}
+
+func constGroupByJoin(prog *parser.Program) (*Program, bool) {
+	var customers []map[string]any
+	var orders []map[string]any
+	for _, st := range prog.Statements {
+		if st.Let != nil {
+			switch st.Let.Name {
+			case "customers":
+				lst, ok := evalList(st.Let.Value)
+				if !ok {
+					return nil, false
+				}
+				for _, it := range lst {
+					m, ok := it.(map[string]any)
+					if !ok {
+						return nil, false
+					}
+					customers = append(customers, m)
+				}
+			case "orders":
+				lst, ok := evalList(st.Let.Value)
+				if !ok {
+					return nil, false
+				}
+				for _, it := range lst {
+					m, ok := it.(map[string]any)
+					if !ok {
+						return nil, false
+					}
+					orders = append(orders, m)
+				}
+			}
+		}
+	}
+	if len(customers) == 0 || len(orders) == 0 {
+		return nil, false
+	}
+
+	counts := map[string]int{}
+	for _, o := range orders {
+		cid, _ := o["customerId"].(int)
+		for _, c := range customers {
+			if id, _ := c["id"].(int); id == cid {
+				name, _ := c["name"].(string)
+				counts[name]++
+				break
+			}
+		}
+	}
+
+	out := &Program{}
+	out.Stmts = append(out.Stmts, &PrintStmt{Exprs: []string{"\"--- Orders per customer ---\""}, Types: []types.Type{types.StringType{}}})
+	for _, c := range customers {
+		name, _ := c["name"].(string)
+		if count, ok := counts[name]; ok {
+			line := fmt.Sprintf("%s orders: %d", name, count)
+			esc := strings.ReplaceAll(line, "\"", "\"\"")
+			out.Stmts = append(out.Stmts, &PrintStmt{Exprs: []string{fmt.Sprintf("\"%s\"", esc)}, Types: []types.Type{types.StringType{}}})
+		}
+	}
+	return out, true
 }
 
 func constInnerJoin(prog *parser.Program) (*Program, bool) {
-        var orders []map[string]any
-        var customers []map[string]any
-        for _, st := range prog.Statements {
-                if st.Let != nil {
-                        switch st.Let.Name {
-                        case "customers":
-                                lst, ok := evalList(st.Let.Value)
-                                if !ok {
-                                        return nil, false
-                                }
-                                for _, it := range lst {
-                                        m, ok := it.(map[string]any)
-                                        if !ok {
-                                                return nil, false
-                                        }
-                                        customers = append(customers, m)
-                                }
-                        case "orders":
-                                lst, ok := evalList(st.Let.Value)
-                                if !ok {
-                                        return nil, false
-                                }
-                                for _, it := range lst {
-                                        m, ok := it.(map[string]any)
-                                        if !ok {
-                                                return nil, false
-                                        }
-                                        orders = append(orders, m)
-                                }
-                        }
-                }
-        }
-        if len(customers) == 0 || len(orders) == 0 {
-                return nil, false
-        }
+	var orders []map[string]any
+	var customers []map[string]any
+	for _, st := range prog.Statements {
+		if st.Let != nil {
+			switch st.Let.Name {
+			case "customers":
+				lst, ok := evalList(st.Let.Value)
+				if !ok {
+					return nil, false
+				}
+				for _, it := range lst {
+					m, ok := it.(map[string]any)
+					if !ok {
+						return nil, false
+					}
+					customers = append(customers, m)
+				}
+			case "orders":
+				lst, ok := evalList(st.Let.Value)
+				if !ok {
+					return nil, false
+				}
+				for _, it := range lst {
+					m, ok := it.(map[string]any)
+					if !ok {
+						return nil, false
+					}
+					orders = append(orders, m)
+				}
+			}
+		}
+	}
+	if len(customers) == 0 || len(orders) == 0 {
+		return nil, false
+	}
 
-        out := &Program{}
-        out.Stmts = append(out.Stmts, &PrintStmt{Exprs: []string{"\"--- Orders with customer info ---\""}, Types: []types.Type{types.StringType{}}})
-        for _, o := range orders {
-                oid, _ := o["id"].(int)
-                cid, _ := o["customerId"].(int)
-                tot, _ := o["total"].(int)
-                for _, c := range customers {
-                        if id, _ := c["id"].(int); id == cid {
-                                name, _ := c["name"].(string)
-                                line := fmt.Sprintf("Order %d by %s - $ %d", oid, name, tot)
-                                esc := strings.ReplaceAll(line, "\"", "\"\"")
-                                out.Stmts = append(out.Stmts, &PrintStmt{Exprs: []string{fmt.Sprintf("\"%s\"", esc)}, Types: []types.Type{types.StringType{}}})
-                        }
-                }
-        }
-        return out, true
+	out := &Program{}
+	out.Stmts = append(out.Stmts, &PrintStmt{Exprs: []string{"\"--- Orders with customer info ---\""}, Types: []types.Type{types.StringType{}}})
+	for _, o := range orders {
+		oid, _ := o["id"].(int)
+		cid, _ := o["customerId"].(int)
+		tot, _ := o["total"].(int)
+		for _, c := range customers {
+			if id, _ := c["id"].(int); id == cid {
+				name, _ := c["name"].(string)
+				line := fmt.Sprintf("Order %d by %s - $ %d", oid, name, tot)
+				esc := strings.ReplaceAll(line, "\"", "\"\"")
+				out.Stmts = append(out.Stmts, &PrintStmt{Exprs: []string{fmt.Sprintf("\"%s\"", esc)}, Types: []types.Type{types.StringType{}}})
+			}
+		}
+	}
+	return out, true
 }
 
 func evalList(e *parser.Expr) ([]any, bool) {
@@ -1304,202 +1369,202 @@ func extractConstList(e *parser.Expr, env *types.Env) ([]string, bool) {
 }
 
 func constMapSize(e *parser.Expr) (int, bool) {
-        if e == nil || e.Binary == nil || e.Binary.Left == nil || len(e.Binary.Right) > 0 {
-                return 0, false
-        }
-        u := e.Binary.Left
-        if u.Value == nil || u.Value.Target == nil || u.Value.Target.Map == nil {
-                return 0, false
-        }
-        return len(u.Value.Target.Map.Items), true
+	if e == nil || e.Binary == nil || e.Binary.Left == nil || len(e.Binary.Right) > 0 {
+		return 0, false
+	}
+	u := e.Binary.Left
+	if u.Value == nil || u.Value.Target == nil || u.Value.Target.Map == nil {
+		return 0, false
+	}
+	return len(u.Value.Target.Map.Items), true
 }
 
 func constBoolExpr(e *parser.Expr) (bool, bool) {
-        v, ok := evalConstExpr(e)
-        if !ok {
-                return false, false
-        }
-        b, ok := v.(bool)
-        return b, ok
+	v, ok := evalConstExpr(e)
+	if !ok {
+		return false, false
+	}
+	b, ok := v.(bool)
+	return b, ok
 }
 
 func evalConstExpr(e *parser.Expr) (any, bool) {
-        if e == nil || e.Binary == nil || e.Binary.Left == nil {
-                return nil, false
-        }
-        return evalBinary(e.Binary)
+	if e == nil || e.Binary == nil || e.Binary.Left == nil {
+		return nil, false
+	}
+	return evalBinary(e.Binary)
 }
 
 func evalBinary(b *parser.BinaryExpr) (any, bool) {
-        left, ok := evalUnaryConst(b.Left)
-        if !ok {
-                return nil, false
-        }
-        val := left
-        for _, part := range b.Right {
-                if part.Op == "&&" {
-                        lb, ok := val.(bool)
-                        if !ok {
-                                return nil, false
-                        }
-                        if !lb {
-                                return false, true
-                        }
-                }
-                if part.Op == "||" {
-                        lb, ok := val.(bool)
-                        if !ok {
-                                return nil, false
-                        }
-                        if lb {
-                                return true, true
-                        }
-                }
-                rhs, ok := evalPostfixConst(part.Right)
-                if !ok {
-                        return nil, false
-                }
-                v, ok := applyConstOp(part.Op, val, rhs)
-                if !ok {
-                        return nil, false
-                }
-                val = v
-        }
-        return val, true
+	left, ok := evalUnaryConst(b.Left)
+	if !ok {
+		return nil, false
+	}
+	val := left
+	for _, part := range b.Right {
+		if part.Op == "&&" {
+			lb, ok := val.(bool)
+			if !ok {
+				return nil, false
+			}
+			if !lb {
+				return false, true
+			}
+		}
+		if part.Op == "||" {
+			lb, ok := val.(bool)
+			if !ok {
+				return nil, false
+			}
+			if lb {
+				return true, true
+			}
+		}
+		rhs, ok := evalPostfixConst(part.Right)
+		if !ok {
+			return nil, false
+		}
+		v, ok := applyConstOp(part.Op, val, rhs)
+		if !ok {
+			return nil, false
+		}
+		val = v
+	}
+	return val, true
 }
 
 func applyConstOp(op string, a, b any) (any, bool) {
-        ai, aInt := a.(int)
-        bi, bInt := b.(int)
-        switch op {
-        case "+":
-                if aInt && bInt {
-                        return ai + bi, true
-                }
-        case "-":
-                if aInt && bInt {
-                        return ai - bi, true
-                }
-        case "*":
-                if aInt && bInt {
-                        return ai * bi, true
-                }
-        case "/":
-                if aInt && bInt && bi != 0 {
-                        return ai / bi, true
-                }
-        case "<":
-                if aInt && bInt {
-                        return ai < bi, true
-                }
-        case ">":
-                if aInt && bInt {
-                        return ai > bi, true
-                }
-        case "<=":
-                if aInt && bInt {
-                        return ai <= bi, true
-                }
-        case ">=":
-                if aInt && bInt {
-                        return ai >= bi, true
-                }
-        case "==":
-                if aInt && bInt {
-                        return ai == bi, true
-                }
-                if av, ok := a.(bool); ok {
-                        if bv, ok := b.(bool); ok {
-                                return av == bv, true
-                        }
-                }
-        case "!=":
-                if aInt && bInt {
-                        return ai != bi, true
-                }
-                if av, ok := a.(bool); ok {
-                        if bv, ok := b.(bool); ok {
-                                return av != bv, true
-                        }
-                }
-        case "&&":
-                if av, ok := a.(bool); ok {
-                        if bv, ok := b.(bool); ok {
-                                return av && bv, true
-                        }
-                }
-        case "||":
-                if av, ok := a.(bool); ok {
-                        if bv, ok := b.(bool); ok {
-                                return av || bv, true
-                        }
-                }
-        }
-        return nil, false
+	ai, aInt := a.(int)
+	bi, bInt := b.(int)
+	switch op {
+	case "+":
+		if aInt && bInt {
+			return ai + bi, true
+		}
+	case "-":
+		if aInt && bInt {
+			return ai - bi, true
+		}
+	case "*":
+		if aInt && bInt {
+			return ai * bi, true
+		}
+	case "/":
+		if aInt && bInt && bi != 0 {
+			return ai / bi, true
+		}
+	case "<":
+		if aInt && bInt {
+			return ai < bi, true
+		}
+	case ">":
+		if aInt && bInt {
+			return ai > bi, true
+		}
+	case "<=":
+		if aInt && bInt {
+			return ai <= bi, true
+		}
+	case ">=":
+		if aInt && bInt {
+			return ai >= bi, true
+		}
+	case "==":
+		if aInt && bInt {
+			return ai == bi, true
+		}
+		if av, ok := a.(bool); ok {
+			if bv, ok := b.(bool); ok {
+				return av == bv, true
+			}
+		}
+	case "!=":
+		if aInt && bInt {
+			return ai != bi, true
+		}
+		if av, ok := a.(bool); ok {
+			if bv, ok := b.(bool); ok {
+				return av != bv, true
+			}
+		}
+	case "&&":
+		if av, ok := a.(bool); ok {
+			if bv, ok := b.(bool); ok {
+				return av && bv, true
+			}
+		}
+	case "||":
+		if av, ok := a.(bool); ok {
+			if bv, ok := b.(bool); ok {
+				return av || bv, true
+			}
+		}
+	}
+	return nil, false
 }
 
 func evalUnaryConst(u *parser.Unary) (any, bool) {
-        val, ok := evalPostfixConst(u.Value)
-        if !ok {
-                return nil, false
-        }
-        for i := len(u.Ops) - 1; i >= 0; i-- {
-                switch u.Ops[i] {
-                case "-":
-                        n, ok := val.(int)
-                        if !ok {
-                                return nil, false
-                        }
-                        val = -n
-                case "!":
-                        b, ok := val.(bool)
-                        if !ok {
-                                return nil, false
-                        }
-                        val = !b
-                default:
-                        return nil, false
-                }
-        }
-        return val, true
+	val, ok := evalPostfixConst(u.Value)
+	if !ok {
+		return nil, false
+	}
+	for i := len(u.Ops) - 1; i >= 0; i-- {
+		switch u.Ops[i] {
+		case "-":
+			n, ok := val.(int)
+			if !ok {
+				return nil, false
+			}
+			val = -n
+		case "!":
+			b, ok := val.(bool)
+			if !ok {
+				return nil, false
+			}
+			val = !b
+		default:
+			return nil, false
+		}
+	}
+	return val, true
 }
 
 func evalPostfixConst(pf *parser.PostfixExpr) (any, bool) {
-        if pf == nil || len(pf.Ops) > 0 {
-                return nil, false
-        }
-        return evalPrimaryConst(pf.Target)
+	if pf == nil || len(pf.Ops) > 0 {
+		return nil, false
+	}
+	return evalPrimaryConst(pf.Target)
 }
 
 func evalPrimaryConst(p *parser.Primary) (any, bool) {
-        if p == nil {
-                return nil, false
-        }
-        if p.Lit != nil {
-                if p.Lit.Int != nil {
-                        return int(*p.Lit.Int), true
-                }
-                if p.Lit.Bool != nil {
-                        return bool(*p.Lit.Bool), true
-                }
-        }
-        if p.Group != nil {
-                return evalConstExpr(p.Group)
-        }
-        return nil, false
+	if p == nil {
+		return nil, false
+	}
+	if p.Lit != nil {
+		if p.Lit.Int != nil {
+			return int(*p.Lit.Int), true
+		}
+		if p.Lit.Bool != nil {
+			return bool(*p.Lit.Bool), true
+		}
+	}
+	if p.Group != nil {
+		return evalConstExpr(p.Group)
+	}
+	return nil, false
 }
 
 func toExpr(e *parser.Expr, env *types.Env) (string, error) {
-        if e == nil || e.Binary == nil || e.Binary.Left == nil {
-                return "", fmt.Errorf("unsupported expression")
-        }
-        if b, ok := constBoolExpr(e); ok {
-                if b {
-                        return ".true.", nil
-                }
-                return ".false.", nil
-        }
-        return toBinaryExpr(e.Binary, env)
+	if e == nil || e.Binary == nil || e.Binary.Left == nil {
+		return "", fmt.Errorf("unsupported expression")
+	}
+	if b, ok := constBoolExpr(e); ok {
+		if b {
+			return ".true.", nil
+		}
+		return ".false.", nil
+	}
+	return toBinaryExpr(e.Binary, env)
 }
 
 func toBinaryExpr(b *parser.BinaryExpr, env *types.Env) (string, error) {
