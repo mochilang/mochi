@@ -1,9 +1,8 @@
-## Recent Enhancements (2025-07-21 17:26 +0700)
-- Added query cross join support using collection `for` loops.
-- Removed `where`/`map` helpers for cleaner output.
-- Enhanced type inference for query results.
+## Recent Enhancements (2025-07-21 18:06 +0700)
+- Improved readability of generated code and removed helper functions.
+- Enhanced type inference for records and loops.
 
-## Progress (2025-07-21 17:26 +0700)
+## Progress (2025-07-21 18:06 +0700)
 - VM valid 7/100
 
 # Dart Transpiler Tasks
