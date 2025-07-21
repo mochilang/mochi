@@ -2,8 +2,8 @@
 
 Generated Swift code for programs in `tests/vm/valid`. Each program has a `.swift` file produced by the transpiler and a `.out` file with its runtime output. Compilation or execution errors are captured in `.error` files.
 
-Transpiled programs: 91/100
-Last updated: 2025-07-22 00:10 +0700
+Transpiled programs: 92/101
+Last updated: 2025-07-22 05:34 +0700
 
 Checklist:
 - [x] append_builtin
@@ -13,7 +13,7 @@ Checklist:
 - [x] bool_chain
 - [x] break_continue
 - [x] cast_string_to_int
-- [ ] cast_struct
+- [x] cast_struct
 - [x] closure
 - [x] count_builtin
 - [x] cross_join
@@ -36,6 +36,7 @@ Checklist:
 - [x] group_by_left_join
 - [x] group_by_multi_join
 - [x] group_by_multi_join_sort
+- [ ] group_by_multi_sort
 - [x] group_by_sort
 - [x] group_items_iteration
 - [x] if_else

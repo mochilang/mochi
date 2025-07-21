@@ -1,6 +1,6 @@
-## Progress (2025-07-22 00:10 +0700)
-- swift transpiler: handle groups
-- Generated golden tests for 91/100 programs
+## Progress (2025-07-22 05:34 +0700)
+- swift transpiler: support struct casts
+- Generated golden tests for 92/101 programs
 - Updated README checklist and output artifacts
 
 # Swift Transpiler Tasks
