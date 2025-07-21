@@ -135,6 +135,11 @@ func TestTranspileSumBuiltin(t *testing.T) { runGolden(t, "sum_builtin") }
 
 func TestTranspileMinMaxBuiltin(t *testing.T) { runGolden(t, "min_max_builtin") }
 
+func TestTranspileBasicCompare(t *testing.T)     { runGolden(t, "basic_compare") }
+func TestTranspileBinaryPrecedence(t *testing.T) { runGolden(t, "binary_precedence") }
+func TestTranspileBreakContinue(t *testing.T)    { runGolden(t, "break_continue") }
+func TestTranspileCastStringToInt(t *testing.T)  { runGolden(t, "cast_string_to_int") }
+
 func TestTranspileIfElse(t *testing.T) { runGolden(t, "if_else") }
 
 func TestTranspileInOperator(t *testing.T) { runGolden(t, "in_operator") }

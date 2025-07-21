@@ -429,12 +429,13 @@ type IfStmt struct {
 
 // ForStmt represents a simple for-in or range loop.
 type ForStmt struct {
-	Var   string
-	Kind  string // "range", "list" or "map"
-	Start Expr   // for range loops
-	End   Expr   // for range loops
-	Src   Expr   // list or map expression
-	Body  []Stmt
+	Var       string
+	Kind      string // "range", "list" or "map"
+	Start     Expr   // for range loops
+	End       Expr   // for range loops
+	Src       Expr   // list or map expression
+	Body      []Stmt
+	Breakable bool
 }
 
 // QueryExpr represents a basic list comprehension query.
@@ -500,6 +501,12 @@ type MapAssignStmt struct {
 	Key   Expr
 	Value Expr
 }
+
+// BreakStmt represents a `break` statement.
+type BreakStmt struct{}
+
+// ContinueStmt represents a `continue` statement.
+type ContinueStmt struct{}
 
 func (p *PrintStmt) emit(w io.Writer) {
 	if len(p.Args) == 0 {
@@ -781,6 +788,46 @@ func fieldIsBool(target Expr, key Expr, env *types.Env, ctx *context) bool {
 					return true
 				}
 			}
+		}
+	}
+	return false
+}
+
+func hasLoopCtrl(s Stmt) bool {
+	switch v := s.(type) {
+	case *BreakStmt, *ContinueStmt:
+		return true
+	case *IfStmt:
+		for _, st := range v.Then {
+			if hasLoopCtrl(st) {
+				return true
+			}
+		}
+		for _, st := range v.Else {
+			if hasLoopCtrl(st) {
+				return true
+			}
+		}
+	case *ForStmt:
+		for _, st := range v.Body {
+			if hasLoopCtrl(st) {
+				return true
+			}
+		}
+	case *WhileStmt:
+		for _, st := range v.Body {
+			if hasLoopCtrl(st) {
+				return true
+			}
+		}
+	}
+	return false
+}
+
+func containsLoopCtrl(list []Stmt) bool {
+	for _, st := range list {
+		if hasLoopCtrl(st) {
+			return true
 		}
 	}
 	return false
@@ -1133,32 +1180,59 @@ func (i *IfStmt) emit(w io.Writer) {
 }
 
 func (f *ForStmt) emit(w io.Writer) {
-	io.WriteString(w, "lists:foreach(fun(")
-	io.WriteString(w, f.Var)
-	io.WriteString(w, ") ->")
-	for idx, st := range f.Body {
-		io.WriteString(w, "\n    ")
-		st.emit(w)
-		if idx < len(f.Body)-1 {
-			io.WriteString(w, ",")
+	if !f.Breakable {
+		io.WriteString(w, "lists:foreach(fun(")
+		io.WriteString(w, f.Var)
+		io.WriteString(w, ") ->")
+		for idx, st := range f.Body {
+			io.WriteString(w, "\n    ")
+			st.emit(w)
+			if idx < len(f.Body)-1 {
+				io.WriteString(w, ",")
+			}
 		}
+		io.WriteString(w, "\nend, ")
+		switch f.Kind {
+		case "range":
+			io.WriteString(w, "lists:seq(")
+			f.Start.emit(w)
+			io.WriteString(w, ", (")
+			f.End.emit(w)
+			io.WriteString(w, ") - 1))")
+		case "map":
+			io.WriteString(w, "maps:keys(")
+			f.Src.emit(w)
+			io.WriteString(w, "))")
+		default: // list
+			f.Src.emit(w)
+			io.WriteString(w, ")")
+		}
+		return
 	}
-	io.WriteString(w, "\nend, ")
+	io.WriteString(w, "Fun = fun F([]) -> ok;\n    F([")
+	io.WriteString(w, f.Var)
+	io.WriteString(w, "|Rest]) ->\n        try")
+	for _, st := range f.Body {
+		io.WriteString(w, "\n            ")
+		st.emit(w)
+		io.WriteString(w, ",")
+	}
+	io.WriteString(w, "\n            F(Rest)\n        catch\n            continue -> F(Rest);\n            break -> ok\n        end\nend,\nFun(")
 	switch f.Kind {
 	case "range":
 		io.WriteString(w, "lists:seq(")
 		f.Start.emit(w)
 		io.WriteString(w, ", (")
 		f.End.emit(w)
-		io.WriteString(w, ") - 1))")
+		io.WriteString(w, ") - 1)")
 	case "map":
 		io.WriteString(w, "maps:keys(")
 		f.Src.emit(w)
-		io.WriteString(w, "))")
+		io.WriteString(w, ")")
 	default: // list
 		f.Src.emit(w)
-		io.WriteString(w, ")")
 	}
+	io.WriteString(w, ")")
 }
 
 func (ws *WhileStmt) emit(w io.Writer) {
@@ -1207,6 +1281,9 @@ func (ma *MapAssignStmt) emit(w io.Writer) {
 	ma.Value.emit(w)
 	fmt.Fprintf(w, ", %s)", ma.Old)
 }
+
+func (b *BreakStmt) emit(w io.Writer)    { io.WriteString(w, "throw(break)") }
+func (c *ContinueStmt) emit(w io.Writer) { io.WriteString(w, "throw(continue)") }
 
 func (q *QueryExpr) emit(w io.Writer) {
 	if q.Right != nil {
@@ -1582,6 +1659,10 @@ func convertStmt(st *parser.Statement, env *types.Env, ctx *context) ([]Stmt, er
 			}
 		}
 		return nil, fmt.Errorf("unsupported expression")
+	case st.Break != nil:
+		return []Stmt{&BreakStmt{}}, nil
+	case st.Continue != nil:
+		return []Stmt{&ContinueStmt{}}, nil
 	case st.If != nil:
 		s, err := convertIfStmt(st.If, env, ctx)
 		if err != nil {
@@ -1599,6 +1680,7 @@ func convertStmt(st *parser.Statement, env *types.Env, ctx *context) ([]Stmt, er
 			}
 			body = append(body, cs...)
 		}
+		brk := containsLoopCtrl(body)
 		if st.For.RangeEnd != nil {
 			start, err := convertExpr(st.For.Source, env, ctx)
 			if err != nil {
@@ -1608,7 +1690,7 @@ func convertStmt(st *parser.Statement, env *types.Env, ctx *context) ([]Stmt, er
 			if err != nil {
 				return nil, err
 			}
-			return []Stmt{&ForStmt{Var: alias, Kind: "range", Start: start, End: end, Body: body}}, nil
+			return []Stmt{&ForStmt{Var: alias, Kind: "range", Start: start, End: end, Body: body, Breakable: brk}}, nil
 		}
 		src, err := convertExpr(st.For.Source, env, ctx)
 		if err != nil {
@@ -1621,7 +1703,7 @@ func convertStmt(st *parser.Statement, env *types.Env, ctx *context) ([]Stmt, er
 		if isMapExpr(src, env, ctx) {
 			kind = "map"
 		}
-		return []Stmt{&ForStmt{Var: alias, Kind: kind, Src: src, Body: body}}, nil
+		return []Stmt{&ForStmt{Var: alias, Kind: kind, Src: src, Body: body, Breakable: brk}}, nil
 	case st.While != nil:
 		// parameters are current aliases sorted for stable output
 		names := make([]string, 0, len(ctx.alias))
