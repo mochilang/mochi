@@ -1957,6 +1957,12 @@ func evalBool(e Expr) (bool, bool) {
 	switch v := e.(type) {
 	case *IntLit:
 		return v.Value != 0, true
+	case *VarRef:
+		if val, err := currentEnv.GetValue(v.Name); err == nil {
+			if b, ok := val.(bool); ok {
+				return b, true
+			}
+		}
 	case *UnaryExpr:
 		if v.Op == "!" {
 			if b, ok := evalBool(v.Expr); ok {
@@ -2229,6 +2235,17 @@ func exprIsBool(e Expr) bool {
 		return v.Value == 0 || v.Value == 1
 	case *FloatLit:
 		return v.Value == 0.0 || v.Value == 1.0
+	case *VarRef:
+		if t, err := currentEnv.GetVar(v.Name); err == nil {
+			if _, ok := t.(types.BoolType); ok {
+				return true
+			}
+		}
+		if val, err := currentEnv.GetValue(v.Name); err == nil {
+			if _, ok := val.(bool); ok {
+				return true
+			}
+		}
 	case *UnaryExpr:
 		if v.Op == "!" {
 			return exprIsBool(v.Expr)

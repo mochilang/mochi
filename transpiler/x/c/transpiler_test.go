@@ -266,7 +266,7 @@ func updateTasks() {
 	ts := ""
 	if err == nil {
 		if t, perr := time.Parse(time.RFC3339, strings.TrimSpace(string(out))); perr == nil {
-			ts = t.Format("2006-01-02 15:04 MST")
+			ts = t.Format("2006-01-02 15:04 -0700")
 		}
 	}
 	var buf bytes.Buffer
