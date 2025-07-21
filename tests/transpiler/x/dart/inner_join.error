@@ -1,0 +1,7 @@
+run: exit status 254
+../../../tests/transpiler/x/dart/inner_join.dart:25:14: Error: 'Result2' isn't a type.
+  final List<Result2> result = [for (var o in orders) for (var c in customers) if ((o.customerId == c.id)) Result2(orderId: o.id, customerName: c.name, total: o.total)];
+             ^^^^^^^
+../../../tests/transpiler/x/dart/inner_join.dart:25:108: Error: Method not found: 'Result2'.
+  final List<Result2> result = [for (var o in orders) for (var c in customers) if ((o.customerId == c.id)) Result2(orderId: o.id, customerName: c.name, total: o.total)];
+                                                                                                           ^^^^^^^
