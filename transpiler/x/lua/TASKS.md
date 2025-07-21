@@ -1,7 +1,3 @@
-## Progress (2025-07-21 18:37 GMT+7)
-- 80/100 VM tests passing
-- Added map literals and index assignments
-
-## Progress (2025-07-21 16:57 GMT+7)
-- 79/100 VM tests passing
-- Added map literals and index assignments
+## Progress (2025-07-21 19:10 GMT+7)
+- 81/100 VM tests passing
+- Added float literal support

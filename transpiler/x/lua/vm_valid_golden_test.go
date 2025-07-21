@@ -119,6 +119,13 @@ func updateReadme() {
 	buf.WriteString("# Lua Transpiler Output\n\n")
 	buf.WriteString("Generated Lua code for programs in `tests/vm/valid`. Each program has a `.lua` file produced by the transpiler and a `.out` file with its runtime output. Compilation or execution errors are captured in `.error` files.\n\n")
 	fmt.Fprintf(&buf, "Transpiled programs: %d/%d\n\n", compiled, total)
+	out, err := exec.Command("git", "log", "-1", "--format=%cI").Output()
+	if err == nil {
+		if t, perr := time.Parse(time.RFC3339, strings.TrimSpace(string(out))); perr == nil {
+			loc := time.FixedZone("GMT+7", 7*3600)
+			buf.WriteString("Last updated: " + t.In(loc).Format("2006-01-02 15:04 MST") + "\n\n")
+		}
+	}
 	buf.WriteString("Checklist:\n\n")
 	buf.WriteString(strings.Join(lines, "\n"))
 	buf.WriteString("\n")
@@ -153,7 +160,7 @@ func updateTasks() {
 	var buf bytes.Buffer
 	buf.WriteString(fmt.Sprintf("## Progress (%s)\n", ts))
 	fmt.Fprintf(&buf, "- %d/%d VM tests passing\n", compiled, total)
-	buf.WriteString("- Added map literals and index assignments\n")
+	buf.WriteString("- Added float literal support\n")
 	buf.WriteString("\n")
 
 	if data, err := os.ReadFile(taskFile); err == nil {
