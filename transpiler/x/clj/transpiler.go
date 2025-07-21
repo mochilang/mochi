@@ -256,6 +256,7 @@ var currentSeqVar string
 var groupVars map[string]bool
 var structCount int
 var currentProgram *Program
+var funDepth int
 
 // Transpile converts a Mochi program into a Clojure AST. The implementation
 // is intentionally minimal and currently only supports very small programs used
@@ -421,6 +422,9 @@ func transpileStmt(s *parser.Statement) (Node, error) {
 }
 
 func transpileFunStmt(f *parser.FunStmt) (Node, error) {
+	funDepth++
+	defer func() { funDepth-- }()
+
 	params := []Node{}
 	for _, p := range f.Params {
 		params = append(params, Symbol(p.Name))
@@ -455,7 +459,12 @@ func transpileFunStmt(f *parser.FunStmt) (Node, error) {
 			body = append(body, n)
 		}
 	}
-	return &Defn{Name: f.Name, Params: params, Body: body}, nil
+	defn := &Defn{Name: f.Name, Params: params, Body: body}
+	if funDepth > 1 && currentProgram != nil {
+		currentProgram.Forms = append(currentProgram.Forms, defn)
+		return nil, nil
+	}
+	return defn, nil
 }
 
 func transpileReturnStmt(r *parser.ReturnStmt) (Node, error) {

@@ -1,1 +1,6 @@
-transpile error: unsupported literal
+run error: exit status 1
+Syntax error compiling at (/workspace/mochi/tests/transpiler/x/clj/group_by_multi_join_sort.clj:26:83).
+Unable to resolve symbol: g in this context
+
+Full report at:
+/tmp/clojure-11068799125689566387.edn
