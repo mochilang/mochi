@@ -1,3 +1,7 @@
+## Progress (2025-07-21 11:02 +0700)
+- Generated Zig for 67/100 programs
+- Added dataset_where_filter support and improved field inference
+
 ## Progress (2025-07-21 10:43 +0700)
 - Generated Zig for 66/100 programs
 - Added right_join support and outputs
