@@ -29,6 +29,6 @@ $stats = (function() use ($people) {
 })();
 echo "--- People grouped by city ---", PHP_EOL;
 foreach ($stats as $s) {
-  echo $s["city"] . " " . ": count =" . " " . $s["count"] . " " . ", avg_age =" . " " . $s["avg_age"], PHP_EOL;
+  echo (is_float($s["city"]) ? sprintf("%.15f", $s["city"]) : $s["city"]) . " " . ": count =" . " " . (is_float($s["count"]) ? sprintf("%.15f", $s["count"]) : $s["count"]) . " " . ", avg_age =" . " " . (is_float($s["avg_age"]) ? sprintf("%.15f", $s["avg_age"]) : $s["avg_age"]), PHP_EOL;
 }
 ?>
