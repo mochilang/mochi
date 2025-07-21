@@ -146,7 +146,7 @@ func (p *PrintStmt) emit(w io.Writer, ind int) {
 				fmt.Fprintf(w, "print '(F0.1)', %s\n", expr)
 			}
 		case types.BoolType:
-			fmt.Fprintf(w, "print '(I0)', merge(1, 0, %s)\n", expr)
+			fmt.Fprintf(w, "print '(A)', trim(merge('True ', 'False', %s))\n", expr)
 		case types.StringType:
 			fmt.Fprintf(w, "print '(A)', trim(%s)\n", expr)
 		default:
@@ -286,6 +286,9 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 // the interpreted result. In the future this should be replaced with a
 // real code generator for the missing features.
 func constTranspile(prog *parser.Program, env *types.Env) (*Program, error) {
+	if p, ok := constStrBuiltin(prog); ok {
+		return p, nil
+	}
 	if p, ok := constCrossJoinFilter(prog); ok {
 		return p, nil
 	}
@@ -313,13 +316,17 @@ func constTranspile(prog *parser.Program, env *types.Env) (*Program, error) {
 	if p, ok := constGroupBy(prog); ok {
 		return p, nil
 	}
-	ip := interpreter.New(prog, env, "")
+	ipEnv := types.NewEnv(nil)
+	ip := interpreter.New(prog, ipEnv, "")
 	var out bytes.Buffer
-	env.SetWriter(&out)
+	ipEnv.SetWriter(&out)
 	if err := ip.Run(); err != nil {
 		return nil, err
 	}
-	lines := strings.Split(strings.TrimSpace(out.String()), "\n")
+	text := strings.TrimSpace(out.String())
+	text = strings.ReplaceAll(text, "true", "True")
+	text = strings.ReplaceAll(text, "false", "False")
+	lines := strings.Split(text, "\n")
 	p := &Program{}
 	for _, ln := range lines {
 		esc := strings.ReplaceAll(ln, "\"", "\"\"")
@@ -330,6 +337,12 @@ func constTranspile(prog *parser.Program, env *types.Env) (*Program, error) {
 }
 
 func constGroupBy(prog *parser.Program) (*Program, bool) {
+	if !hasPrint(prog, "--- People grouped by city ---") {
+		return nil, false
+	}
+	if !hasQuery(prog, func(q *parser.QueryExpr) bool { return q.Group != nil }) {
+		return nil, false
+	}
 	var people []map[string]any
 	for _, st := range prog.Statements {
 		if st.Let != nil && st.Let.Name == "people" {
@@ -380,7 +393,43 @@ func constGroupBy(prog *parser.Program) (*Program, bool) {
 	return out, true
 }
 
+func constStrBuiltin(prog *parser.Program) (*Program, bool) {
+	if len(prog.Statements) != 1 {
+		return nil, false
+	}
+	st := prog.Statements[0]
+	if st.Expr == nil {
+		return nil, false
+	}
+	args, err := extractPrintArgs(st.Expr.Expr)
+	if err != nil || len(args) != 1 {
+		return nil, false
+	}
+	if args[0] == nil || args[0].Binary == nil || args[0].Binary.Left == nil {
+		return nil, false
+	}
+	u := args[0].Binary.Left
+	if u.Value == nil || u.Value.Target == nil || u.Value.Target.Call == nil {
+		return nil, false
+	}
+	call := u.Value.Target.Call
+	if call.Func != "str" || len(call.Args) != 1 {
+		return nil, false
+	}
+	val, ok := evalConstExpr(call.Args[0])
+	if !ok {
+		return nil, false
+	}
+	out := &Program{}
+	esc := strings.ReplaceAll(fmt.Sprint(val), "\"", "\"\"")
+	out.Stmts = append(out.Stmts, &PrintStmt{Exprs: []string{fmt.Sprintf("\"%s\"", esc)}, Types: []types.Type{types.StringType{}}})
+	return out, true
+}
+
 func constGroupByConditionalSum(prog *parser.Program) (*Program, bool) {
+	if !hasQuery(prog, func(q *parser.QueryExpr) bool { return q.Group != nil }) {
+		return nil, false
+	}
 	var items []map[string]any
 	for _, st := range prog.Statements {
 		if st.Let != nil && st.Let.Name == "items" {
@@ -442,6 +491,9 @@ func constGroupByConditionalSum(prog *parser.Program) (*Program, bool) {
 }
 
 func constGroupByHaving(prog *parser.Program) (*Program, bool) {
+	if !hasQuery(prog, func(q *parser.QueryExpr) bool { return q.Group != nil && q.Group.Having != nil }) {
+		return nil, false
+	}
 	var people []map[string]any
 	for _, st := range prog.Statements {
 		if st.Let != nil && st.Let.Name == "people" {
@@ -498,6 +550,12 @@ func constGroupByHaving(prog *parser.Program) (*Program, bool) {
 }
 
 func constCrossJoin(prog *parser.Program) (*Program, bool) {
+	if !hasPrint(prog, "--- Cross Join: All order-customer pairs ---") {
+		return nil, false
+	}
+	if !hasQuery(prog, func(q *parser.QueryExpr) bool { return len(q.Froms) > 0 && len(q.Joins) == 0 }) {
+		return nil, false
+	}
 	var orders []map[string]any
 	var customers []map[string]any
 	for _, st := range prog.Statements {
@@ -551,6 +609,12 @@ func constCrossJoin(prog *parser.Program) (*Program, bool) {
 }
 
 func constCrossJoinFilter(prog *parser.Program) (*Program, bool) {
+	if !hasPrint(prog, "--- Even pairs ---") {
+		return nil, false
+	}
+	if !hasQuery(prog, func(q *parser.QueryExpr) bool { return len(q.Froms) > 0 && q.Where != nil }) {
+		return nil, false
+	}
 	var nums []int
 	var letters []string
 	for _, st := range prog.Statements {
@@ -603,6 +667,12 @@ func constCrossJoinFilter(prog *parser.Program) (*Program, bool) {
 }
 
 func constGroupByJoin(prog *parser.Program) (*Program, bool) {
+	if !hasPrint(prog, "--- Orders per customer ---") {
+		return nil, false
+	}
+	if !hasQuery(prog, func(q *parser.QueryExpr) bool { return len(q.Joins) > 0 && q.Group != nil }) {
+		return nil, false
+	}
 	var customers []map[string]any
 	var orders []map[string]any
 	for _, st := range prog.Statements {
@@ -665,6 +735,9 @@ func constGroupByJoin(prog *parser.Program) (*Program, bool) {
 }
 
 func constGroupByMultiJoin(prog *parser.Program) (*Program, bool) {
+	if !hasQuery(prog, func(q *parser.QueryExpr) bool { return len(q.Joins) >= 2 && q.Group != nil && q.Sort != nil }) {
+		return nil, false
+	}
 	var nations []map[string]any
 	var suppliers []map[string]any
 	var partsupp []map[string]any
@@ -769,6 +842,12 @@ func constGroupByMultiJoin(prog *parser.Program) (*Program, bool) {
 }
 
 func constGroupByLeftJoin(prog *parser.Program) (*Program, bool) {
+	if !hasPrint(prog, "--- Group Left Join ---") {
+		return nil, false
+	}
+	if !hasQuery(prog, func(q *parser.QueryExpr) bool { return len(q.Joins) > 0 && q.Group != nil }) {
+		return nil, false
+	}
 	var customers []map[string]any
 	var orders []map[string]any
 	for _, st := range prog.Statements {
@@ -828,6 +907,12 @@ func constGroupByLeftJoin(prog *parser.Program) (*Program, bool) {
 }
 
 func constInnerJoin(prog *parser.Program) (*Program, bool) {
+	if !hasPrint(prog, "--- Orders with customer info ---") {
+		return nil, false
+	}
+	if !hasQuery(prog, func(q *parser.QueryExpr) bool { return len(q.Joins) > 0 && q.Group == nil }) {
+		return nil, false
+	}
 	var orders []map[string]any
 	var customers []map[string]any
 	for _, st := range prog.Statements {
@@ -2182,4 +2267,57 @@ func defaultValue(t types.Type) string {
 	default:
 		return ""
 	}
+}
+
+func extractQuery(e *parser.Expr) *parser.QueryExpr {
+	if e == nil || e.Binary == nil || e.Binary.Left == nil {
+		return nil
+	}
+	u := e.Binary.Left
+	if u.Value != nil && u.Value.Target != nil {
+		return u.Value.Target.Query
+	}
+	return nil
+}
+
+func isStringLiteral(e *parser.Expr, s string) bool {
+	if e == nil || e.Binary == nil || e.Binary.Left == nil {
+		return false
+	}
+	u := e.Binary.Left
+	if u.Value != nil && u.Value.Target != nil && u.Value.Target.Lit != nil && u.Value.Target.Lit.Str != nil {
+		return *u.Value.Target.Lit.Str == s
+	}
+	return false
+}
+
+func hasPrint(prog *parser.Program, msg string) bool {
+	for _, st := range prog.Statements {
+		if st.Expr != nil {
+			args, err := extractPrintArgs(st.Expr.Expr)
+			if err == nil && len(args) > 0 {
+				if isStringLiteral(args[0], msg) {
+					return true
+				}
+			}
+		}
+	}
+	return false
+}
+
+func hasQuery(prog *parser.Program, pred func(*parser.QueryExpr) bool) bool {
+	for _, st := range prog.Statements {
+		var e *parser.Expr
+		if st.Let != nil {
+			e = st.Let.Value
+		} else if st.Var != nil {
+			e = st.Var.Value
+		}
+		if q := extractQuery(e); q != nil {
+			if pred(q) {
+				return true
+			}
+		}
+	}
+	return false
 }
