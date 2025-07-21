@@ -13,16 +13,16 @@ class Order {
 }
 
 class Result {
-  final dynamic orderId;
-  final dynamic customerName;
-  final dynamic total;
+  final int orderId;
+  final String customerName;
+  final int total;
   const Result({required this.orderId, required this.customerName, required this.total});
 }
 
 void main() {
   final List<Customer> customers = [Customer(id: 1, name: "Alice"), Customer(id: 2, name: "Bob"), Customer(id: 3, name: "Charlie")];
   final List<Order> orders = [Order(id: 100, customerId: 1, total: 250), Order(id: 101, customerId: 2, total: 125), Order(id: 102, customerId: 1, total: 300), Order(id: 103, customerId: 4, total: 80)];
-  final List<Result2> result = [for (var o in orders) for (var c in customers) if ((o.customerId == c.id)) Result2(orderId: o.id, customerName: c.name, total: o.total)];
+  final List<Result> result = [for (var o in orders) for (var c in customers) if ((o.customerId == c.id)) Result(orderId: o.id, customerName: c.name, total: o.total)];
   print("--- Orders with customer info ---");
   for (var entry in result) {
     print(["Order", entry.orderId, "by", entry.customerName, "- \$", entry.total].join(" "));
