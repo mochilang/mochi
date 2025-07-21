@@ -2230,6 +2230,28 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 						typ = inferTypeFromExpr(st.Let.Value)
 						env.SetVar(st.Let.Name, typ, false)
 					}
+					if list, ok := e.(*ListLit); ok {
+						if dc, elems := maybeDataClassList(st.Let.Name, list); dc != nil {
+							p.Stmts = append(p.Stmts, dc)
+							list.Elems = elems
+							e = list
+						}
+					} else if q := ExtractQueryExpr(st.Let.Value); q != nil && q.Group == nil {
+						selExpr, serr := convertExpr(q.Select)
+						if serr == nil {
+							if d, ok := selExpr.(*DictLit); ok {
+								dc, args := dataClassFromDict(st.Let.Name, d)
+								if dc != nil {
+									p.Stmts = append(p.Stmts, dc)
+									if lc, ok := e.(*ListComp); ok {
+										lc.Expr = &CallExpr{Func: &Name{Name: dc.Name}, Args: args}
+									} else if mc, ok := e.(*MultiListComp); ok {
+										mc.Expr = &CallExpr{Func: &Name{Name: dc.Name}, Args: args}
+									}
+								}
+							}
+						}
+					}
 				} else if st.Let.Type != nil && env != nil {
 					typ = types.ResolveTypeRef(st.Let.Type, env)
 					e = zeroValueExpr(typ)
@@ -2258,6 +2280,28 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 					if env != nil {
 						typ = inferTypeFromExpr(st.Var.Value)
 						env.SetVar(st.Var.Name, typ, true)
+					}
+					if list, ok := e.(*ListLit); ok {
+						if dc, elems := maybeDataClassList(st.Var.Name, list); dc != nil {
+							p.Stmts = append(p.Stmts, dc)
+							list.Elems = elems
+							e = list
+						}
+					} else if q := ExtractQueryExpr(st.Var.Value); q != nil && q.Group == nil {
+						selExpr, serr := convertExpr(q.Select)
+						if serr == nil {
+							if d, ok := selExpr.(*DictLit); ok {
+								dc, args := dataClassFromDict(st.Var.Name, d)
+								if dc != nil {
+									p.Stmts = append(p.Stmts, dc)
+									if lc, ok := e.(*ListComp); ok {
+										lc.Expr = &CallExpr{Func: &Name{Name: dc.Name}, Args: args}
+									} else if mc, ok := e.(*MultiListComp); ok {
+										mc.Expr = &CallExpr{Func: &Name{Name: dc.Name}, Args: args}
+									}
+								}
+							}
+						}
 					}
 				} else if st.Var.Type != nil && env != nil {
 					typ = types.ResolveTypeRef(st.Var.Type, env)
