@@ -928,15 +928,24 @@ func compileStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 			}
 		}
 		return &LetStmt{Name: st.Var.Name, Value: val}, nil
-	case st.Assign != nil:
-		if len(st.Assign.Index) == 0 && len(st.Assign.Field) == 0 {
-			val, err := compileExpr(st.Assign.Value, env)
-			if err != nil {
-				return nil, err
-			}
-			return &AssignStmt{Name: st.Assign.Name, Value: val}, nil
-		}
-		if len(st.Assign.Index) == 1 && len(st.Assign.Field) == 0 {
+        case st.Assign != nil:
+                if len(st.Assign.Index) == 0 && len(st.Assign.Field) == 0 {
+                        val, err := compileExpr(st.Assign.Value, env)
+                        if err != nil {
+                                return nil, err
+                        }
+                        return &AssignStmt{Name: st.Assign.Name, Value: val}, nil
+                }
+                if len(st.Assign.Field) == 1 && len(st.Assign.Index) == 0 {
+                        val, err := compileExpr(st.Assign.Value, env)
+                        if err != nil {
+                                return nil, err
+                        }
+                        key := &AtomLit{Name: ":" + st.Assign.Field[0].Name}
+                        call := &CallExpr{Func: "Map.put", Args: []Expr{&VarRef{Name: st.Assign.Name}, key, val}}
+                        return &AssignStmt{Name: st.Assign.Name, Value: call}, nil
+                }
+                if len(st.Assign.Index) == 1 && len(st.Assign.Field) == 0 {
 			idx, err := compileExpr(st.Assign.Index[0].Start, env)
 			if err != nil {
 				return nil, err
@@ -1443,11 +1452,52 @@ func compileQueryExpr(q *parser.QueryExpr, env *types.Env) (Expr, error) {
 			return nil, err
 		}
 	}
-	sel, err := compileExpr(q.Select, child)
-	if err != nil {
-		return nil, err
-	}
-	return &Comprehension{Gens: gens, Filter: filt, Body: sel}, nil
+        sel, err := compileExpr(q.Select, child)
+        if err != nil {
+                return nil, err
+        }
+        base := Expr(&Comprehension{Gens: gens, Filter: filt, Body: sel})
+        if q.Sort != nil {
+                key, err := compileExpr(q.Sort, child)
+                if err != nil {
+                        return nil, err
+                }
+                pairBody := &MapLit{Items: []MapItem{{Key: &AtomLit{Name: "k"}, Value: key}, {Key: &AtomLit{Name: "v"}, Value: sel}}}
+                pairComp := &Comprehension{Gens: gens, Filter: filt, Body: pairBody}
+                sorter := &CallExpr{Func: "Enum.sort_by", Args: []Expr{pairComp, &AnonFun{Params: []string{"x"}, Body: []Stmt{&ReturnStmt{Value: &IndexExpr{Target: &VarRef{Name: "x"}, Index: &AtomLit{Name: "k"}, UseMapSyntax: true}}}}}}
+                base = sorter
+                if q.Skip != nil {
+                        s, err := compileExpr(q.Skip, env)
+                        if err != nil {
+                                return nil, err
+                        }
+                        base = &CallExpr{Func: "Enum.drop", Args: []Expr{base, s}}
+                }
+                if q.Take != nil {
+                        texpr, err := compileExpr(q.Take, env)
+                        if err != nil {
+                                return nil, err
+                        }
+                        base = &CallExpr{Func: "Enum.take", Args: []Expr{base, texpr}}
+                }
+                mapper := &CallExpr{Func: "Enum.map", Args: []Expr{base, &AnonFun{Params: []string{"x"}, Body: []Stmt{&ReturnStmt{Value: &IndexExpr{Target: &VarRef{Name: "x"}, Index: &AtomLit{Name: "v"}, UseMapSyntax: true}}}}}}
+                return mapper, nil
+        }
+        if q.Skip != nil {
+                s, err := compileExpr(q.Skip, env)
+                if err != nil {
+                        return nil, err
+                }
+                base = &CallExpr{Func: "Enum.drop", Args: []Expr{base, s}}
+        }
+        if q.Take != nil {
+                texpr, err := compileExpr(q.Take, env)
+                if err != nil {
+                        return nil, err
+                }
+                base = &CallExpr{Func: "Enum.take", Args: []Expr{base, texpr}}
+        }
+        return base, nil
 }
 
 func compileUnary(u *parser.Unary, env *types.Env) (Expr, error) {
@@ -1748,11 +1798,16 @@ func compilePrimary(p *parser.Primary, env *types.Env) (Expr, error) {
 				diff := &BinaryExpr{Left: args[2], Op: "-", Right: args[1]}
 				return &CallExpr{Func: "String.slice", Args: []Expr{args[0], args[1], diff}}, nil
 			}
-		case "exists":
-			if len(args) == 1 {
-				return &CallExpr{Func: "Enum.any?", Args: []Expr{args[0]}}, nil
-			}
-		}
+                case "exists":
+                        if len(args) == 1 {
+                                return &CallExpr{Func: "Enum.any?", Args: []Expr{args[0]}}, nil
+                        }
+               case "json":
+                       if len(args) == 1 {
+                               enc := &CallExpr{Func: "Jason.encode!", Args: []Expr{args[0]}}
+                               return &CallExpr{Func: "IO.puts", Args: []Expr{enc}}, nil
+                       }
+                }
 		if fn, ok := env.GetFunc(name); ok {
 			if len(args) < len(fn.Params) {
 				remain := fn.Params[len(args):]

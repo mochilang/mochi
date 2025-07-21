@@ -1,0 +1,8 @@
+warning: variable "c" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+  4 │     c = Map.put(c, :n, c.n + 1)
+    │     ~
+    │
+    └─ tests/transpiler/x/ex/record_assign.exs:4:5: Main.inc/1
+
+0
