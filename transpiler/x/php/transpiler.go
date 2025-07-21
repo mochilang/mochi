@@ -389,6 +389,7 @@ type GroupByExpr struct {
 	Select  Expr
 	Having  Expr
 	SortKey bool
+	Sort    Expr
 	Uses    []string
 }
 
@@ -630,16 +631,26 @@ func (g *GroupByExpr) emit(w io.Writer) {
 		io.WriteString(w, "    if (")
 		g.Having.emit(w)
 		io.WriteString(w, ") {\n")
+	}
+	if g.Sort != nil {
+		io.WriteString(w, "      $result[] = [")
+		g.Sort.emit(w)
+		io.WriteString(w, ", ")
+		g.Select.emit(w)
+		io.WriteString(w, "];\n")
+	} else {
 		io.WriteString(w, "      $result[] = ")
 		g.Select.emit(w)
 		io.WriteString(w, ";\n")
+	}
+	if g.Having != nil {
 		io.WriteString(w, "    }\n")
-	} else {
-		io.WriteString(w, "    $result[] = ")
-		g.Select.emit(w)
-		io.WriteString(w, ";\n")
 	}
 	io.WriteString(w, "  }\n")
+	if g.Sort != nil {
+		io.WriteString(w, "  usort($result, function($a, $b) { return $a[0] <=> $b[0]; });\n")
+		io.WriteString(w, "  $result = array_map(fn($r) => $r[1], $result);\n")
+	}
 	io.WriteString(w, "  return $result;\n")
 	io.WriteString(w, "})()")
 }
@@ -1712,6 +1723,7 @@ func convertGroupQuery(q *parser.QueryExpr) (Expr, error) {
 		}
 	}
 	sortKey := false
+	var sortExpr Expr
 	if q.Sort != nil {
 		ex, err := convertExpr(q.Sort)
 		if err != nil {
@@ -1723,13 +1735,13 @@ func convertGroupQuery(q *parser.QueryExpr) (Expr, error) {
 				if s, ok3 := ie.Index.(*StringLit); ok3 && s.Value == "key" {
 					sortKey = true
 				} else {
-					return nil, fmt.Errorf("unsupported sort expression")
+					sortExpr = ex
 				}
 			} else {
-				return nil, fmt.Errorf("unsupported sort expression")
+				sortExpr = ex
 			}
 		} else {
-			return nil, fmt.Errorf("unsupported sort expression")
+			sortExpr = ex
 		}
 	}
 	funcStack = funcStack[:len(funcStack)-1]
@@ -1741,7 +1753,7 @@ func convertGroupQuery(q *parser.QueryExpr) (Expr, error) {
 	if len(funcStack) == 0 {
 		uses = append(uses, globalNames...)
 	}
-	return &GroupByExpr{Loops: loops, Key: key, Name: q.Group.Name, Where: where, Select: sel, Having: having, SortKey: sortKey, Uses: uses}, nil
+	return &GroupByExpr{Loops: loops, Key: key, Name: q.Group.Name, Where: where, Select: sel, Having: having, SortKey: sortKey, Sort: sortExpr, Uses: uses}, nil
 }
 
 func isListArg(e Expr) bool {
