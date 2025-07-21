@@ -292,6 +292,46 @@ func zeroValue(t *parser.TypeRef) value {
 	}
 }
 
+func setIndexedValue(target value, idxVals []value, val value) (value, error) {
+	if len(idxVals) == 0 {
+		return val, nil
+	}
+	idx := idxVals[0]
+	switch target.kind {
+	case valList:
+		if idx.kind != valInt {
+			return value{}, fmt.Errorf("index must be int")
+		}
+		if idx.i < 0 || idx.i >= len(target.list) {
+			return value{}, fmt.Errorf("index out of range")
+		}
+		child := target.list[idx.i]
+		updated, err := setIndexedValue(child, idxVals[1:], val)
+		if err != nil {
+			return value{}, err
+		}
+		target.list[idx.i] = updated
+		return target, nil
+	case valMap:
+		key, err := keyString(idx)
+		if err != nil {
+			return value{}, err
+		}
+		child := target.kv[key]
+		updated, err := setIndexedValue(child, idxVals[1:], val)
+		if err != nil {
+			return value{}, err
+		}
+		if target.kv == nil {
+			target.kv = map[string]value{}
+		}
+		target.kv[key] = updated
+		return target, nil
+	default:
+		return value{}, fmt.Errorf("index assign only for list or map")
+	}
+}
+
 func evalExpr(e *parser.Expr, vars map[string]value) (value, error) {
 	if e == nil {
 		return value{}, fmt.Errorf("nil expr")
@@ -521,105 +561,105 @@ func evalPostfix(p *parser.PostfixExpr, vars map[string]value) (value, error) {
 	for i := 0; i < len(p.Ops); i++ {
 		op := p.Ops[i]
 		switch {
-                case op.Index != nil:
-                        idxOp := op.Index
-                        if idxOp.Colon != nil || idxOp.End != nil {
-                                if idxOp.Colon2 != nil || idxOp.Step != nil {
-                                        return value{}, fmt.Errorf("slicing not supported")
-                                }
-                                start := 0
-                                if idxOp.Start != nil {
-                                        sv, err := evalExpr(idxOp.Start, vars)
-                                        if err != nil {
-                                                return value{}, err
-                                        }
-                                        if sv.kind != valInt {
-                                                return value{}, fmt.Errorf("index must be int")
-                                        }
-                                        start = sv.i
-                                }
-                                end := 0
-                                switch v.kind {
-                                case valList:
-                                        end = len(v.list)
-                                case valString:
-                                        end = len([]rune(v.s))
-                                default:
-                                        return value{}, fmt.Errorf("slicing non-container")
-                                }
-                                if idxOp.End != nil {
-                                        ev, err := evalExpr(idxOp.End, vars)
-                                        if err != nil {
-                                                return value{}, err
-                                        }
-                                        if ev.kind != valInt {
-                                                return value{}, fmt.Errorf("index must be int")
-                                        }
-                                        end = ev.i
-                                }
-                                if start < 0 {
-                                        start = 0
-                                }
-                                if end < start {
-                                        end = start
-                                }
-                                switch v.kind {
-                                case valList:
-                                        if start > len(v.list) {
-                                                start = len(v.list)
-                                        }
-                                        if end > len(v.list) {
-                                                end = len(v.list)
-                                        }
-                                        slice := append([]value{}, v.list[start:end]...)
-                                        v = value{kind: valList, list: slice}
-                                case valString:
-                                        r := []rune(v.s)
-                                        if start > len(r) {
-                                                start = len(r)
-                                        }
-                                        if end > len(r) {
-                                                end = len(r)
-                                        }
-                                        v = value{kind: valString, s: string(r[start:end])}
-                                }
-                        } else {
-                                idxVal, err := evalExpr(idxOp.Start, vars)
-                                if err != nil {
-                                        return value{}, err
-                                }
-                                switch v.kind {
-                                case valList:
-                                        if idxVal.kind != valInt {
-                                                return value{}, fmt.Errorf("index must be int")
-                                        }
-                                        if idxVal.i < 0 || idxVal.i >= len(v.list) {
-                                                return value{}, fmt.Errorf("index out of range")
-                                        }
-                                        v = v.list[idxVal.i]
-                                case valString:
-                                        if idxVal.kind != valInt {
-                                                return value{}, fmt.Errorf("index must be int")
-                                        }
-                                        r := []rune(v.s)
-                                        if idxVal.i < 0 || idxVal.i >= len(r) {
-                                                return value{}, fmt.Errorf("index out of range")
-                                        }
-                                        v = value{kind: valString, s: string(r[idxVal.i])}
-                                case valMap:
-                                        key, err := keyString(idxVal)
-                                        if err != nil {
-                                                return value{}, err
-                                        }
-                                        mv, ok := v.kv[key]
-                                        if !ok {
-                                                return value{}, fmt.Errorf("missing key")
-                                        }
-                                        v = mv
-                                default:
-                                        return value{}, fmt.Errorf("indexing non-container")
-                                }
-                        }
+		case op.Index != nil:
+			idxOp := op.Index
+			if idxOp.Colon != nil || idxOp.End != nil {
+				if idxOp.Colon2 != nil || idxOp.Step != nil {
+					return value{}, fmt.Errorf("slicing not supported")
+				}
+				start := 0
+				if idxOp.Start != nil {
+					sv, err := evalExpr(idxOp.Start, vars)
+					if err != nil {
+						return value{}, err
+					}
+					if sv.kind != valInt {
+						return value{}, fmt.Errorf("index must be int")
+					}
+					start = sv.i
+				}
+				end := 0
+				switch v.kind {
+				case valList:
+					end = len(v.list)
+				case valString:
+					end = len([]rune(v.s))
+				default:
+					return value{}, fmt.Errorf("slicing non-container")
+				}
+				if idxOp.End != nil {
+					ev, err := evalExpr(idxOp.End, vars)
+					if err != nil {
+						return value{}, err
+					}
+					if ev.kind != valInt {
+						return value{}, fmt.Errorf("index must be int")
+					}
+					end = ev.i
+				}
+				if start < 0 {
+					start = 0
+				}
+				if end < start {
+					end = start
+				}
+				switch v.kind {
+				case valList:
+					if start > len(v.list) {
+						start = len(v.list)
+					}
+					if end > len(v.list) {
+						end = len(v.list)
+					}
+					slice := append([]value{}, v.list[start:end]...)
+					v = value{kind: valList, list: slice}
+				case valString:
+					r := []rune(v.s)
+					if start > len(r) {
+						start = len(r)
+					}
+					if end > len(r) {
+						end = len(r)
+					}
+					v = value{kind: valString, s: string(r[start:end])}
+				}
+			} else {
+				idxVal, err := evalExpr(idxOp.Start, vars)
+				if err != nil {
+					return value{}, err
+				}
+				switch v.kind {
+				case valList:
+					if idxVal.kind != valInt {
+						return value{}, fmt.Errorf("index must be int")
+					}
+					if idxVal.i < 0 || idxVal.i >= len(v.list) {
+						return value{}, fmt.Errorf("index out of range")
+					}
+					v = v.list[idxVal.i]
+				case valString:
+					if idxVal.kind != valInt {
+						return value{}, fmt.Errorf("index must be int")
+					}
+					r := []rune(v.s)
+					if idxVal.i < 0 || idxVal.i >= len(r) {
+						return value{}, fmt.Errorf("index out of range")
+					}
+					v = value{kind: valString, s: string(r[idxVal.i])}
+				case valMap:
+					key, err := keyString(idxVal)
+					if err != nil {
+						return value{}, err
+					}
+					mv, ok := v.kv[key]
+					if !ok {
+						return value{}, fmt.Errorf("missing key")
+					}
+					v = mv
+				default:
+					return value{}, fmt.Errorf("indexing non-container")
+				}
+			}
 		case op.Cast != nil:
 			if op.Cast.Type == nil || op.Cast.Type.Simple == nil {
 				return value{}, fmt.Errorf("unsupported cast")
@@ -1692,54 +1732,67 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 				return fmt.Errorf("unsupported assign")
 			}
 			if len(st.Assign.Index) > 0 {
-				if len(st.Assign.Index) != 1 {
-					return fmt.Errorf("multi index not supported")
-				}
-				idx := st.Assign.Index[0]
-				if idx.Colon != nil || idx.End != nil || idx.Colon2 != nil || idx.Step != nil {
-					return fmt.Errorf("slicing not supported")
-				}
 				target, ok := vars[st.Assign.Name]
 				if !ok {
 					return fmt.Errorf("assign to unknown var")
 				}
-				idxVal, err := evalExpr(idx.Start, vars)
-				if err != nil {
-					return err
-				}
-				v, err := evalExpr(st.Assign.Value, vars)
-				if err != nil {
-					return err
-				}
-				switch target.kind {
-				case valList:
-					if idxVal.kind != valInt {
-						return fmt.Errorf("index must be int")
+
+				idxVals := make([]value, len(st.Assign.Index))
+				for i, idx := range st.Assign.Index {
+					if idx.Colon != nil || idx.End != nil || idx.Colon2 != nil || idx.Step != nil {
+						return fmt.Errorf("slicing not supported")
 					}
-					if idxVal.i < 0 || idxVal.i >= len(target.list) {
-						return fmt.Errorf("index out of range")
-					}
-					target.list[idxVal.i] = v
-					vars[st.Assign.Name] = target
-					p.Lines = append(p.Lines, fmt.Sprintf("%s at:%d put:%s.", st.Assign.Name, idxVal.i+1, v))
-				case valMap:
-					key, err := keyString(idxVal)
+					iv, err := evalExpr(idx.Start, vars)
 					if err != nil {
 						return err
 					}
-					if target.kv == nil {
-						target.kv = map[string]value{}
-					}
-					target.kv[key] = v
-					vars[st.Assign.Name] = target
-					keyStr := key
-					if idxVal.kind == valString {
-						keyStr = fmt.Sprintf("'%s'", escape(idxVal.s))
-					}
-					p.Lines = append(p.Lines, fmt.Sprintf("%s at:%s put:%s.", st.Assign.Name, keyStr, v))
-				default:
-					return fmt.Errorf("index assign only for list or map")
+					idxVals[i] = iv
 				}
+
+				val, err := evalExpr(st.Assign.Value, vars)
+				if err != nil {
+					return err
+				}
+
+				newTarget, err := setIndexedValue(target, idxVals, val)
+				if err != nil {
+					return err
+				}
+				vars[st.Assign.Name] = newTarget
+
+				line := st.Assign.Name
+				cur := target
+				for i, iv := range idxVals {
+					switch cur.kind {
+					case valList:
+						if iv.kind != valInt {
+							return fmt.Errorf("index must be int")
+						}
+						line += fmt.Sprintf(" at:%d", iv.i+1)
+						if i < len(idxVals)-1 && iv.i >= 0 && iv.i < len(cur.list) {
+							cur = cur.list[iv.i]
+						}
+					case valMap:
+						key, err := keyString(iv)
+						if err != nil {
+							return err
+						}
+						if iv.kind == valString {
+							line += fmt.Sprintf(" at:'%s'", escape(iv.s))
+						} else {
+							line += fmt.Sprintf(" at:%s", key)
+						}
+						if i < len(idxVals)-1 {
+							if child, ok := cur.kv[key]; ok {
+								cur = child
+							}
+						}
+					default:
+						return fmt.Errorf("index assign only for list or map")
+					}
+				}
+				line += fmt.Sprintf(" put:%s.", val)
+				p.Lines = append(p.Lines, line)
 			} else {
 				v, err := evalExpr(st.Assign.Value, vars)
 				if err != nil {
