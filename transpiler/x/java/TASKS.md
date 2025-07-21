@@ -1,4 +1,6 @@
-## Progress (2025-07-21 23:02 +0700)
+## Progress (2025-07-21 23:17 +0700)
+- java transpiler: fix update stmt (31e246ed7)
+
 - java transpiler: fix list printing and grouping (a164b1578)
 
 - update docs (c6b3ac840)

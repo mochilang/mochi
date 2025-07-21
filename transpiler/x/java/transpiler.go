@@ -1642,6 +1642,9 @@ func compileStmt(s *parser.Statement) (Stmt, error) {
 			if t != "" {
 				varTypes[s.Let.Name] = t
 			}
+			if l, ok := e.(*ListLit); ok && l.ElemType == "" && strings.HasSuffix(t, "[]") {
+				l.ElemType = strings.TrimSuffix(t, "[]")
+			}
 			return &LetStmt{Name: s.Let.Name, Type: t, Expr: e}, nil
 		}
 		t := typeRefString(s.Let.Type)
@@ -1682,6 +1685,9 @@ func compileStmt(s *parser.Statement) (Stmt, error) {
 			}
 			if t != "" {
 				varTypes[s.Var.Name] = t
+			}
+			if l, ok := e.(*ListLit); ok && l.ElemType == "" && strings.HasSuffix(t, "[]") {
+				l.ElemType = strings.TrimSuffix(t, "[]")
 			}
 			return &VarStmt{Name: s.Var.Name, Type: t, Expr: e}, nil
 		}
