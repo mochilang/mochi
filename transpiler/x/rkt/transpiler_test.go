@@ -104,6 +104,8 @@ func TestTranspile_Golden(t *testing.T) {
 		"group_by_conditional_sum",
 		"group_by_having",
 		"group_by_left_join",
+		"group_by_sort",
+		"group_items_iteration",
 	}
 	for _, name := range names {
 		src := filepath.Join(root, "tests", "vm", "valid", name+".mochi")

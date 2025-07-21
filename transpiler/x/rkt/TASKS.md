@@ -1,3 +1,9 @@
+## Progress (2025-07-21 23:34 +0700)
+- Commit c1850ebb5: lua transpiler: support group iter and sorting
+- Generated Racket for 83/100 programs
+- Updated README checklist
+
+
 ## Progress (2025-07-21 22:29 +0700)
 - Commit c6b3ac840: update docs
 - Generated Racket for 81/100 programs
