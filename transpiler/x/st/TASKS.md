@@ -1,3 +1,8 @@
+## Progress (21 Jul 2025 13:27 +0700)
+- VM valid golden test results updated
+- Added support for identifier keys in map literals so queries can "select{n: n}"
+- Implemented join queries with grouping; group_by_join and group_by_left_join now pass (64/100)
+
 ## Progress (21 Jul 2025 13:09 +0700)
 - VM valid golden test results updated
 - Added basic query sorting support; group_by_sort.mochi now passes (62/100)
