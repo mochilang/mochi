@@ -1550,6 +1550,9 @@ func compileQueryExpr(q *parser.QueryExpr, env *types.Env, base string) (Expr, e
 		if err != nil {
 			return nil, err
 		}
+		if ml, ok := keyExpr.(*MapLit); ok {
+			updateMapLitTypes(ml, types.ExprType(q.Group.Exprs[0], child))
+		}
 		genv := types.NewEnv(child)
 		keyType := types.ExprType(q.Group.Exprs[0], child)
 		genv.SetVar(q.Group.Name, types.GroupType{Key: keyType, Elem: elemT}, true)
