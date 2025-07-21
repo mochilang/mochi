@@ -343,10 +343,11 @@ func (u *UnaryExpr) emit(w io.Writer) {
 
 // BinaryExpr represents a binary arithmetic operation.
 type BinaryExpr struct {
-	Op    string
-	Left  Expr
-	Right Expr
-	Bool  bool
+        Op    string
+        Left  Expr
+        Right Expr
+        Bool  bool
+        Real  bool // use real division for '/'
 }
 
 type ContainsExpr struct {
@@ -472,13 +473,15 @@ func (b *BinaryExpr) emit(w io.Writer) {
 	} else {
 		b.Left.emit(w)
 	}
-	op := b.Op
-	switch op {
-	case "%":
-		op = "mod"
-	case "/":
-		op = "div"
-	}
+        op := b.Op
+        switch op {
+        case "%":
+                op = "mod"
+        case "/":
+                if !b.Real {
+                        op = "div"
+                }
+        }
 	fmt.Fprintf(w, " %s ", op)
 	if _, ok := b.Right.(*BinaryExpr); ok {
 		io.WriteString(w, "(")
@@ -1067,8 +1070,10 @@ func convertExpr(env *types.Env, e *parser.Expr) (Expr, error) {
 		exprs = exprs[:len(exprs)-1]
 		var be *BinaryExpr
 		switch op {
-		case "+", "-", "*", "/", "%":
-			be = &BinaryExpr{Op: op, Left: left, Right: right}
+                case "+", "-", "*", "%":
+                        be = &BinaryExpr{Op: op, Left: left, Right: right}
+                case "/":
+                        be = &BinaryExpr{Op: "/", Left: left, Right: right}
 		case "==":
 			be = &BinaryExpr{Op: "=", Left: left, Right: right, Bool: true}
 		case "!=":
@@ -1447,7 +1452,7 @@ func buildGroupByQuery(env *types.Env, q *parser.QueryExpr, varName string, varT
 		&AssignStmt{Name: sumVar, Expr: &BinaryExpr{Op: "+", Left: &VarRef{Name: sumVar}, Right: &SelectorExpr{Root: q.Var, Tail: []string{"age"}}}},
 	}
 	inner := &ForEachStmt{Name: q.Var, Iterable: &SelectorExpr{Root: "g", Tail: []string{"items"}}, Body: sumLoopBody}
-	avgExpr := &BinaryExpr{Op: "/", Left: &VarRef{Name: sumVar}, Right: &CallExpr{Name: "Length", Args: []Expr{&SelectorExpr{Root: "g", Tail: []string{"items"}}}}}
+        avgExpr := &BinaryExpr{Op: "/", Left: &VarRef{Name: sumVar}, Right: &CallExpr{Name: "Length", Args: []Expr{&SelectorExpr{Root: "g", Tail: []string{"items"}}}}, Real: true}
 	rec := &RecordLit{Type: resRec, Fields: []FieldExpr{{Name: "city", Expr: &SelectorExpr{Root: "g", Tail: []string{"city"}}}, {Name: "count", Expr: &SelectorExpr{Root: "g", Tail: []string{"count"}}}, {Name: "avg_age", Expr: avgExpr}}}
 	appendRes := &AssignStmt{Name: varName, Expr: &CallExpr{Name: "concat", Args: []Expr{&VarRef{Name: varName}, &ListLit{Elems: []Expr{rec}}}}}
 	resultBody := []Stmt{sumInit, inner, appendRes}
