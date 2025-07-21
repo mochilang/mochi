@@ -247,6 +247,7 @@ func (ix *IndexExpr) emit(w io.Writer) {
 	io.WriteString(w, "[")
 	ix.Index.emit(w)
 	io.WriteString(w, "]")
+	io.WriteString(w, "!!")
 }
 
 // NonNullExpr appends `!!` to force unwrap a nullable value.
@@ -2118,6 +2119,24 @@ func convertPrimary(env *types.Env, p *parser.Primary) (Expr, error) {
 				listExpr := &CallExpr{Func: "listOf", Args: args}
 				join := &InvokeExpr{Callee: &FieldExpr{Receiver: listExpr, Name: "joinToString"}, Args: []Expr{&StringLit{Value: " "}}}
 				return &CallExpr{Func: "println", Args: []Expr{join}}, nil
+			}
+			if env != nil {
+				if t, err := env.GetVar(name); err == nil {
+					if ft, ok := t.(types.FuncType); ok && len(args) < len(ft.Params) {
+						missing := len(ft.Params) - len(args)
+						params := make([]string, missing)
+						bodyArgs := make([]Expr, 0, len(ft.Params))
+						bodyArgs = append(bodyArgs, args...)
+						for i := 0; i < missing; i++ {
+							pName := fmt.Sprintf("p%d", i+1)
+							pType := kotlinTypeFromType(ft.Params[len(args)+i])
+							params[i] = fmt.Sprintf("%s: %s", pName, pType)
+							bodyArgs = append(bodyArgs, &VarRef{Name: pName, Type: pType})
+						}
+						body := []Stmt{&ReturnStmt{Value: &CallExpr{Func: name, Args: bodyArgs}}}
+						return &FuncLit{Params: params, Body: body}, nil
+					}
+				}
 			}
 			return &CallExpr{Func: name, Args: args}, nil
 		}
