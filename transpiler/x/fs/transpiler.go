@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"io"
 	"os/exec"
+	"strconv"
 	"strings"
 	"time"
 
@@ -800,6 +801,16 @@ func (b *BoolLit) emit(w io.Writer) {
 	}
 }
 
+type FloatLit struct{ Value float64 }
+
+func (f *FloatLit) emit(w io.Writer) {
+	s := strconv.FormatFloat(f.Value, 'f', -1, 64)
+	if !strings.ContainsAny(s, ".eE") {
+		s += ".0"
+	}
+	io.WriteString(w, s)
+}
+
 type IdentExpr struct{ Name string }
 
 func (i *IdentExpr) emit(w io.Writer) { io.WriteString(w, i.Name) }
@@ -887,6 +898,8 @@ func inferType(e Expr) string {
 	switch v := e.(type) {
 	case *IntLit:
 		return "int"
+	case *FloatLit:
+		return "float"
 	case *StringLit:
 		return "string"
 	case *BoolLit:
@@ -1608,6 +1621,8 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 		return &StringLit{Value: *p.Lit.Str}, nil
 	case p.Lit != nil && p.Lit.Int != nil:
 		return &IntLit{Value: int(*p.Lit.Int)}, nil
+	case p.Lit != nil && p.Lit.Float != nil:
+		return &FloatLit{Value: *p.Lit.Float}, nil
 	case p.Lit != nil && p.Lit.Bool != nil:
 		return &BoolLit{Value: bool(*p.Lit.Bool)}, nil
 	case p.List != nil:
