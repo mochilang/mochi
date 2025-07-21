@@ -652,54 +652,54 @@ func substituteFields(e Expr, varName string, fields map[string]bool) Expr {
 // wrapOptional wraps map field accesses of varName with a nil check to avoid
 // runtime errors when the variable is #f.
 func wrapOptional(e Expr, varName string) Expr {
-    switch ex := e.(type) {
-    case *IndexExpr:
-        if n, ok := ex.Target.(*Name); ok && n.Name == varName && ex.IsMap {
-            return &IfExpr{Cond: &Name{Name: varName}, Then: ex, Else: &Name{Name: "#f"}}
-        }
-        ex.Target = wrapOptional(ex.Target, varName)
-        ex.Index = wrapOptional(ex.Index, varName)
-        return ex
-    case *BinaryExpr:
-        ex.Left = wrapOptional(ex.Left, varName)
-        ex.Right = wrapOptional(ex.Right, varName)
-        return ex
-    case *UnaryExpr:
-        ex.Expr = wrapOptional(ex.Expr, varName)
-        return ex
-    case *CallExpr:
-        for i := range ex.Args {
-            ex.Args[i] = wrapOptional(ex.Args[i], varName)
-        }
-        return ex
-    case *IfExpr:
-        ex.Cond = wrapOptional(ex.Cond, varName)
-        ex.Then = wrapOptional(ex.Then, varName)
-        ex.Else = wrapOptional(ex.Else, varName)
-        return ex
-    case *ListLit:
-        for i := range ex.Elems {
-            ex.Elems[i] = wrapOptional(ex.Elems[i], varName)
-        }
-        return ex
-    case *LenExpr:
-        ex.Arg = wrapOptional(ex.Arg, varName)
-        return ex
-    case *AvgExpr:
-        ex.Arg = wrapOptional(ex.Arg, varName)
-        return ex
-    case *SumExpr:
-        ex.Arg = wrapOptional(ex.Arg, varName)
-        return ex
-    case *StrExpr:
-        ex.Arg = wrapOptional(ex.Arg, varName)
-        return ex
-    case *CastExpr:
-        ex.Value = wrapOptional(ex.Value, varName)
-        return ex
-    default:
-        return ex
-    }
+	switch ex := e.(type) {
+	case *IndexExpr:
+		if n, ok := ex.Target.(*Name); ok && n.Name == varName && ex.IsMap {
+			return &IfExpr{Cond: &Name{Name: varName}, Then: ex, Else: &Name{Name: "#f"}}
+		}
+		ex.Target = wrapOptional(ex.Target, varName)
+		ex.Index = wrapOptional(ex.Index, varName)
+		return ex
+	case *BinaryExpr:
+		ex.Left = wrapOptional(ex.Left, varName)
+		ex.Right = wrapOptional(ex.Right, varName)
+		return ex
+	case *UnaryExpr:
+		ex.Expr = wrapOptional(ex.Expr, varName)
+		return ex
+	case *CallExpr:
+		for i := range ex.Args {
+			ex.Args[i] = wrapOptional(ex.Args[i], varName)
+		}
+		return ex
+	case *IfExpr:
+		ex.Cond = wrapOptional(ex.Cond, varName)
+		ex.Then = wrapOptional(ex.Then, varName)
+		ex.Else = wrapOptional(ex.Else, varName)
+		return ex
+	case *ListLit:
+		for i := range ex.Elems {
+			ex.Elems[i] = wrapOptional(ex.Elems[i], varName)
+		}
+		return ex
+	case *LenExpr:
+		ex.Arg = wrapOptional(ex.Arg, varName)
+		return ex
+	case *AvgExpr:
+		ex.Arg = wrapOptional(ex.Arg, varName)
+		return ex
+	case *SumExpr:
+		ex.Arg = wrapOptional(ex.Arg, varName)
+		return ex
+	case *StrExpr:
+		ex.Arg = wrapOptional(ex.Arg, varName)
+		return ex
+	case *CastExpr:
+		ex.Value = wrapOptional(ex.Value, varName)
+		return ex
+	default:
+		return ex
+	}
 }
 
 type BinaryExpr struct {
@@ -1260,9 +1260,11 @@ func convertPostfix(pf *parser.PostfixExpr, env *types.Env) (Expr, error) {
 	}
 	ops := pf.Ops
 	if pf.Target != nil && pf.Target.Selector != nil && len(pf.Target.Selector.Tail) > 0 {
+		tailOps := make([]*parser.PostfixOp, 0, len(pf.Target.Selector.Tail))
 		for _, t := range pf.Target.Selector.Tail {
-			ops = append([]*parser.PostfixOp{{Field: &parser.FieldOp{Name: t}}}, ops...)
+			tailOps = append(tailOps, &parser.PostfixOp{Field: &parser.FieldOp{Name: t}})
 		}
+		ops = append(tailOps, ops...)
 	}
 	for _, op := range ops {
 		switch {
@@ -1601,12 +1603,12 @@ func convertRightJoinQuery(q *parser.QueryExpr, env *types.Env) (Expr, error) {
 	if err != nil {
 		return nil, err
 	}
-       sel, err := convertExpr(q.Select, child)
-       if err != nil {
-               return nil, err
-       }
-       sel = wrapOptional(sel, q.Var)
-       return &RightJoinExpr{LeftVar: q.Var, LeftSrc: leftSrc, RightVar: j.Var, RightSrc: rightSrc, Cond: cond, Select: sel}, nil
+	sel, err := convertExpr(q.Select, child)
+	if err != nil {
+		return nil, err
+	}
+	sel = wrapOptional(sel, q.Var)
+	return &RightJoinExpr{LeftVar: q.Var, LeftSrc: leftSrc, RightVar: j.Var, RightSrc: rightSrc, Cond: cond, Select: sel}, nil
 }
 
 type LeftJoinMultiExpr struct {
