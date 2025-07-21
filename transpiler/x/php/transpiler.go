@@ -5,6 +5,8 @@ package php
 import (
 	"fmt"
 	"io"
+	"os"
+	"path/filepath"
 	"strconv"
 	"strings"
 
@@ -18,6 +20,7 @@ var funcStack [][]string
 var builtinNames = map[string]struct{}{
 	"print": {}, "len": {}, "substring": {}, "count": {}, "sum": {}, "avg": {},
 	"str": {}, "min": {}, "max": {}, "append": {}, "json": {}, "exists": {},
+	"load": {}, "save": {},
 }
 var closureNames = map[string]bool{}
 var groupStack []string
@@ -292,6 +295,47 @@ func (b *BreakStmt) emit(w io.Writer) { io.WriteString(w, "break") }
 type ContinueStmt struct{}
 
 func (c *ContinueStmt) emit(w io.Writer) { io.WriteString(w, "continue") }
+
+// SaveStmt writes rows into a file or stdout in JSONL format.
+type SaveStmt struct {
+	Src    Expr
+	Path   string
+	Format string
+}
+
+func (s *SaveStmt) emit(w io.Writer) {
+	if s.Format == "jsonl" {
+		if s.Path == "" || s.Path == "-" {
+			io.WriteString(w, "foreach (")
+			s.Src.emit(w)
+			io.WriteString(w, " as $_row) {\n  $j = json_encode($_row);\n  $j = str_replace(\":\", \": \", $j);\n  $j = str_replace(\",\", \", \", $j);\n  echo $j . PHP_EOL;\n}\n")
+			return
+		}
+		p := s.Path
+		if strings.HasPrefix(p, "../") {
+			clean := strings.TrimPrefix(p, "../")
+			root := repoRoot()
+			p = filepath.ToSlash(filepath.Join(root, "tests", clean))
+		}
+		fmt.Fprintf(w, "$__f = fopen(%q, 'w');\n", p)
+		io.WriteString(w, "foreach (")
+		s.Src.emit(w)
+		io.WriteString(w, " as $_row) { $j = json_encode($_row); $j = str_replace(\":\", \": \", $j); $j = str_replace(\",\", \", \", $j); fwrite($__f, $j . PHP_EOL); }\n")
+		io.WriteString(w, "fclose($__f);")
+	}
+}
+
+// LoadExpr loads a YAML file into a list of maps.
+type LoadExpr struct {
+	Path   string
+	Format string
+}
+
+func (l *LoadExpr) emit(w io.Writer) {
+	if l.Format == "yaml" {
+		fmt.Fprintf(w, "(function() { $lines = file(%q, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES); $rows = []; $curr = []; foreach ($lines as $line) { $line = trim($line); if (str_starts_with($line, '-')) { if ($curr) $rows[] = $curr; $curr = []; $line = trim(substr($line, 1)); if ($line !== '') { [$k,$v] = array_map('trim', explode(':', $line, 2)); $curr[$k] = is_numeric($v) ? (int)$v : $v; } } else { [$k,$v] = array_map('trim', explode(':', $line, 2)); $curr[$k] = is_numeric($v) ? (int)$v : $v; } } if ($curr) $rows[] = $curr; return $rows; })()", l.Path)
+	}
+}
 
 type Expr interface{ emit(io.Writer) }
 
@@ -1552,6 +1596,21 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 		return convertMatchExpr(p.Match)
 	case p.Query != nil:
 		return convertQueryExpr(p.Query)
+	case p.Load != nil:
+		format := parseFormat(p.Load.With)
+		path := ""
+		if p.Load.Path != nil {
+			path = strings.Trim(*p.Load.Path, "\"")
+		}
+		clean := path
+		for strings.HasPrefix(clean, "../") {
+			clean = strings.TrimPrefix(clean, "../")
+		}
+		if path != "" && strings.HasPrefix(path, "../") {
+			root := repoRoot()
+			path = filepath.ToSlash(filepath.Join(root, "tests", clean))
+		}
+		return &LoadExpr{Path: path, Format: format}, nil
 	default:
 		return nil, fmt.Errorf("unsupported primary")
 	}
@@ -1574,6 +1633,18 @@ func convertLiteral(l *parser.Literal) (Expr, error) {
 func convertStmt(st *parser.Statement) (Stmt, error) {
 	switch {
 	case st.Expr != nil:
+		if se := extractSaveExpr(st.Expr.Expr); se != nil {
+			src, err := convertExpr(se.Src)
+			if err != nil {
+				return nil, err
+			}
+			format := parseFormat(se.With)
+			path := ""
+			if se.Path != nil {
+				path = strings.Trim(*se.Path, "\"")
+			}
+			return &SaveStmt{Src: src, Path: path, Format: format}, nil
+		}
 		e, err := convertExpr(st.Expr.Expr)
 		if err != nil {
 			return nil, err
@@ -1744,6 +1815,8 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 	case st.If != nil:
 		return convertIfStmt(st.If)
 	case st.Type != nil:
+		return nil, nil
+	case st.Test != nil:
 		return nil, nil
 	default:
 		return nil, fmt.Errorf("unsupported statement")
@@ -2425,6 +2498,12 @@ func stmtNode(s Stmt) *ast.Node {
 		return &ast.Node{Kind: "break"}
 	case *ContinueStmt:
 		return &ast.Node{Kind: "continue"}
+	case *SaveStmt:
+		n := &ast.Node{Kind: "save"}
+		n.Children = append(n.Children, exprNode(st.Src))
+		n.Children = append(n.Children, &ast.Node{Kind: "path", Value: st.Path})
+		n.Children = append(n.Children, &ast.Node{Kind: "format", Value: st.Format})
+		return n
 	case *IfStmt:
 		n := &ast.Node{Kind: "if_stmt", Children: []*ast.Node{exprNode(st.Cond)}}
 		thenNode := &ast.Node{Kind: "then"}
@@ -2548,6 +2627,12 @@ func exprNode(e Expr) *ast.Node {
 			exprNode(ex.Cond),
 			exprNode(ex.Select))
 		return n
+	case *LoadExpr:
+		n := &ast.Node{Kind: "load"}
+		n.Children = append(n.Children,
+			&ast.Node{Kind: "path", Value: ex.Path},
+			&ast.Node{Kind: "format", Value: ex.Format})
+		return n
 	default:
 		return &ast.Node{Kind: "unknown"}
 	}
@@ -2555,3 +2640,80 @@ func exprNode(e Expr) *ast.Node {
 
 // Print writes the AST in Lisp-like form to stdout.
 func Print(p *Program) { toNode(p).Print("") }
+
+func extractSaveExpr(e *parser.Expr) *parser.SaveExpr {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) > 0 {
+		return nil
+	}
+	u := e.Binary.Left
+	if len(u.Ops) > 0 || u.Value == nil {
+		return nil
+	}
+	p := u.Value
+	if len(p.Ops) > 0 || p.Target == nil {
+		return nil
+	}
+	return p.Target.Save
+}
+
+func parseFormat(e *parser.Expr) string {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) > 0 {
+		return ""
+	}
+	u := e.Binary.Left
+	if len(u.Ops) > 0 || u.Value == nil {
+		return ""
+	}
+	p := u.Value
+	if len(p.Ops) > 0 || p.Target == nil || p.Target.Map == nil {
+		return ""
+	}
+	for _, it := range p.Target.Map.Items {
+		key, ok := literalString(it.Key)
+		if ok && key == "format" {
+			if v, ok := literalString(it.Value); ok {
+				return v
+			}
+		}
+	}
+	return ""
+}
+
+func literalString(e *parser.Expr) (string, bool) {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) > 0 {
+		return "", false
+	}
+	u := e.Binary.Left
+	if len(u.Ops) > 0 || u.Value == nil {
+		return "", false
+	}
+	p := u.Value
+	if len(p.Ops) > 0 || p.Target == nil {
+		return "", false
+	}
+	if p.Target.Lit != nil && p.Target.Lit.Str != nil {
+		return *p.Target.Lit.Str, true
+	}
+	if p.Target.Selector != nil && len(p.Target.Selector.Tail) == 0 {
+		return p.Target.Selector.Root, true
+	}
+	return "", false
+}
+
+func repoRoot() string {
+	dir, err := os.Getwd()
+	if err != nil {
+		return ""
+	}
+	for i := 0; i < 10; i++ {
+		if _, err := os.Stat(filepath.Join(dir, "go.mod")); err == nil {
+			return dir
+		}
+		parent := filepath.Dir(dir)
+		if parent == dir {
+			break
+		}
+		dir = parent
+	}
+	return ""
+}
