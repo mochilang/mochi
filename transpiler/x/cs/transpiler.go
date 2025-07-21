@@ -1143,6 +1143,14 @@ func (s *StructLit) emit(w io.Writer) {
 type CountExpr struct{ Arg Expr }
 
 func (c *CountExpr) emit(w io.Writer) {
+	typ := typeOfExpr(c.Arg)
+	if st, ok := structTypes[typ]; ok {
+		if _, ok := st.Fields["items"]; ok {
+			c.Arg.emit(w)
+			fmt.Fprint(w, ".items.Length")
+			return
+		}
+	}
 	c.Arg.emit(w)
 	if isMapExpr(c.Arg) {
 		fmt.Fprint(w, ".Count")
@@ -2052,14 +2060,28 @@ func compileQueryExpr(q *parser.QueryExpr) (Expr, error) {
 		return nil, err
 	}
 
+	srcExpr := exprString(src)
+	srcType := typeOfExpr(src)
+	elemType := strings.TrimSuffix(srcType, "[]")
+	if st, ok := structTypes[srcType]; ok {
+		if it, ok2 := st.Fields["items"]; ok2 {
+			srcExpr += ".items"
+			if lt, ok3 := it.(types.ListType); ok3 {
+				elemType = csTypeFromType(lt.Elem)
+			} else {
+				elemType = strings.TrimSuffix(csTypeFromType(it), "[]")
+			}
+		}
+	}
+
 	builder := &strings.Builder{}
 	curVar := q.Var
-	fmt.Fprintf(builder, "from %s in %s", curVar, exprString(src))
+	fmt.Fprintf(builder, "from %s in %s", curVar, srcExpr)
 
 	savedVar := varTypes[curVar]
 	savedMap := mapVars[curVar]
-	varTypes[curVar] = strings.TrimSuffix(typeOfExpr(src), "[]")
-	if strings.HasPrefix(varTypes[curVar], "Dictionary<") {
+	varTypes[curVar] = elemType
+	if strings.HasPrefix(elemType, "Dictionary<") {
 		mapVars[curVar] = true
 	}
 
@@ -2254,7 +2276,7 @@ func compileQueryExpr(q *parser.QueryExpr) (Expr, error) {
 	query = fmt.Sprintf("(%s).ToArray()", query)
 
 	usesLinq = true
-	elemType := typeOfExpr(sel)
+	elemType = typeOfExpr(sel)
 	varTypes[curVar] = savedVar
 	mapVars[curVar] = savedMap
 	return &RawExpr{Code: query, Type: fmt.Sprintf("%s[]", elemType)}, nil
