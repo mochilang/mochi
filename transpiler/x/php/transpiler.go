@@ -19,6 +19,7 @@ var builtinNames = map[string]struct{}{
 	"str": {}, "min": {}, "max": {}, "append": {}, "json": {},
 }
 var closureNames = map[string]bool{}
+var groupStack []string
 var globalNames []string
 
 // --- Simple PHP AST ---
@@ -379,6 +380,17 @@ type QueryExpr struct {
 	Uses   []string
 }
 
+// GroupByExpr represents a simple group by query without joins or sorting.
+type GroupByExpr struct {
+	Loops  []QueryLoop
+	Key    Expr
+	Name   string
+	Where  Expr
+	Select Expr
+	Having Expr
+	Uses   []string
+}
+
 // RightJoinExpr represents a simple right join query with one join clause and
 // no additional query modifiers.
 type RightJoinExpr struct {
@@ -534,6 +546,96 @@ func (q *QueryExpr) emit(w io.Writer) {
 		io.WriteString(w, "}\n")
 	}
 	emitLoops(0, 1)
+	io.WriteString(w, "  return $result;\n")
+	io.WriteString(w, "})()")
+}
+
+func (g *GroupByExpr) emit(w io.Writer) {
+	io.WriteString(w, "(function()")
+	if len(g.Uses) > 0 {
+		io.WriteString(w, " use (")
+		for i, u := range g.Uses {
+			if i > 0 {
+				io.WriteString(w, ", ")
+			}
+			fmt.Fprintf(w, "$%s", u)
+		}
+		io.WriteString(w, ")")
+	}
+	io.WriteString(w, " {\n")
+	io.WriteString(w, "  $groups = [];\n")
+	var emitLoops func(int, int)
+	emitLoops = func(idx, level int) {
+		indent := strings.Repeat("  ", level)
+		if idx >= len(g.Loops) {
+			if g.Where != nil {
+				io.WriteString(w, indent)
+				io.WriteString(w, "if (")
+				g.Where.emit(w)
+				io.WriteString(w, ") {\n")
+				level++
+				indent = strings.Repeat("  ", level)
+			}
+			io.WriteString(w, indent)
+			io.WriteString(w, "$key = ")
+			g.Key.emit(w)
+			io.WriteString(w, ";\n")
+			io.WriteString(w, indent)
+			io.WriteString(w, "if (!array_key_exists($key, $groups)) {\n")
+			io.WriteString(w, indent)
+			io.WriteString(w, "  $groups[$key] = ['key' => $key, 'items' => []];\n")
+			io.WriteString(w, indent)
+			io.WriteString(w, "}\n")
+			io.WriteString(w, indent)
+			io.WriteString(w, "$groups[$key]['items'][] = ")
+			if len(g.Loops) == 1 {
+				fmt.Fprintf(w, "$%s;\n", g.Loops[0].Name)
+			} else {
+				io.WriteString(w, "[")
+				for i, lp := range g.Loops {
+					if i > 0 {
+						io.WriteString(w, ", ")
+					}
+					fmt.Fprintf(w, "'%s' => $%s", lp.Name, lp.Name)
+				}
+				io.WriteString(w, "];\n")
+			}
+			if g.Where != nil {
+				level--
+				indent = strings.Repeat("  ", level)
+				io.WriteString(w, indent)
+				io.WriteString(w, "}\n")
+			}
+			return
+		}
+		loop := g.Loops[idx]
+		io.WriteString(w, indent)
+		io.WriteString(w, "foreach (")
+		loop.Source.emit(w)
+		fmt.Fprintf(w, " as $%s) {\n", loop.Name)
+		emitLoops(idx+1, level+1)
+		io.WriteString(w, indent)
+		io.WriteString(w, "}\n")
+	}
+	emitLoops(0, 1)
+	io.WriteString(w, "  $result = [];\n")
+	io.WriteString(w, "  foreach ($groups as $")
+	io.WriteString(w, g.Name)
+	io.WriteString(w, ") {\n")
+	if g.Having != nil {
+		io.WriteString(w, "    if (")
+		g.Having.emit(w)
+		io.WriteString(w, ") {\n")
+		io.WriteString(w, "      $result[] = ")
+		g.Select.emit(w)
+		io.WriteString(w, ";\n")
+		io.WriteString(w, "    }\n")
+	} else {
+		io.WriteString(w, "    $result[] = ")
+		g.Select.emit(w)
+		io.WriteString(w, ";\n")
+	}
+	io.WriteString(w, "  }\n")
 	io.WriteString(w, "  return $result;\n")
 	io.WriteString(w, "})()")
 }
@@ -1022,19 +1124,30 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 			if len(args) != 1 {
 				return nil, fmt.Errorf("count expects 1 arg")
 			}
+			if isGroupArg(args[0]) {
+				arg := &IndexExpr{X: args[0], Index: &StringLit{Value: "items"}}
+				return &CallExpr{Func: "count", Args: []Expr{arg}}, nil
+			}
 			name = "count"
 		} else if name == "sum" {
 			if len(args) != 1 {
 				return nil, fmt.Errorf("sum expects 1 arg")
+			}
+			if isGroupArg(args[0]) {
+				arg := &IndexExpr{X: args[0], Index: &StringLit{Value: "items"}}
+				return &CallExpr{Func: "array_sum", Args: []Expr{arg}}, nil
 			}
 			return &CallExpr{Func: "array_sum", Args: args}, nil
 		} else if name == "avg" {
 			if len(args) != 1 {
 				return nil, fmt.Errorf("avg expects 1 arg")
 			}
-			frac := &BinaryExpr{Left: &CallExpr{Func: "array_sum", Args: args}, Op: "/", Right: &CallExpr{Func: "count", Args: args}}
-			nfArgs := []Expr{frac, &IntLit{Value: 1}, &StringLit{Value: "."}, &StringLit{Value: ""}}
-			return &CallExpr{Func: "number_format", Args: nfArgs}, nil
+			var list Expr = args[0]
+			if isGroupArg(args[0]) {
+				list = &IndexExpr{X: args[0], Index: &StringLit{Value: "items"}}
+			}
+			frac := &BinaryExpr{Left: &CallExpr{Func: "array_sum", Args: []Expr{list}}, Op: "/", Right: &CallExpr{Func: "count", Args: []Expr{list}}}
+			return frac, nil
 		} else if name == "str" {
 			if len(args) != 1 {
 				return nil, fmt.Errorf("str expects 1 arg")
@@ -1081,7 +1194,7 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 			}
 			if v, ok := k.(*Var); ok {
 				if transpileEnv != nil {
-					if _, err := transpileEnv.GetVar(v.Name); err != nil {
+					if t, err := transpileEnv.GetVar(v.Name); err != nil || isFuncType(t) {
 						k = &StringLit{Value: v.Name}
 					}
 				} else {
@@ -1438,6 +1551,9 @@ func convertMatchExpr(me *parser.MatchExpr) (Expr, error) {
 }
 
 func convertQueryExpr(q *parser.QueryExpr) (Expr, error) {
+	if q.Group != nil {
+		return convertGroupQuery(q)
+	}
 	if len(q.Froms) == 0 && len(q.Joins) == 1 && q.Joins[0].Side != nil && *q.Joins[0].Side == "right" && q.Group == nil && q.Sort == nil && q.Skip == nil && q.Take == nil && !q.Distinct && q.Where == nil {
 		j := q.Joins[0]
 		leftSrc, err := convertExpr(q.Source)
@@ -1477,13 +1593,13 @@ func convertQueryExpr(q *parser.QueryExpr) (Expr, error) {
 	if err != nil {
 		return nil, err
 	}
-	loops[0].Source = src
+	loops[0].Source = groupItemsExpr(src)
 	for _, f := range q.Froms {
 		ex, err := convertExpr(f.Src)
 		if err != nil {
 			return nil, err
 		}
-		loops = append(loops, QueryLoop{Name: f.Var, Source: ex})
+		loops = append(loops, QueryLoop{Name: f.Var, Source: groupItemsExpr(ex)})
 	}
 	funcStack = append(funcStack, nil)
 	for _, lp := range loops {
@@ -1511,6 +1627,68 @@ func convertQueryExpr(q *parser.QueryExpr) (Expr, error) {
 		uses = append(uses, globalNames...)
 	}
 	return &QueryExpr{Loops: loops, Where: where, Select: sel, Uses: uses}, nil
+}
+
+func convertGroupQuery(q *parser.QueryExpr) (Expr, error) {
+	if q.Group == nil || len(q.Joins) != 0 || q.Sort != nil || q.Skip != nil || q.Take != nil || q.Distinct {
+		return nil, fmt.Errorf("unsupported query")
+	}
+	loops := []QueryLoop{{Name: q.Var}}
+	src, err := convertExpr(q.Source)
+	if err != nil {
+		return nil, err
+	}
+	loops[0].Source = groupItemsExpr(src)
+	for _, f := range q.Froms {
+		ex, err := convertExpr(f.Src)
+		if err != nil {
+			return nil, err
+		}
+		loops = append(loops, QueryLoop{Name: f.Var, Source: groupItemsExpr(ex)})
+	}
+	funcStack = append(funcStack, nil)
+	for _, lp := range loops {
+		funcStack[len(funcStack)-1] = append(funcStack[len(funcStack)-1], lp.Name)
+	}
+	key, err := convertExpr(q.Group.Exprs[0])
+	if err != nil {
+		funcStack = funcStack[:len(funcStack)-1]
+		return nil, err
+	}
+	var where Expr
+	if q.Where != nil {
+		where, err = convertExpr(q.Where)
+		if err != nil {
+			funcStack = funcStack[:len(funcStack)-1]
+			return nil, err
+		}
+	}
+	funcStack = append(funcStack, []string{q.Group.Name})
+	groupStack = append(groupStack, q.Group.Name)
+	defer func() { groupStack = groupStack[:len(groupStack)-1] }()
+	sel, err := convertExpr(q.Select)
+	if err != nil {
+		funcStack = funcStack[:len(funcStack)-2]
+		return nil, err
+	}
+	var having Expr
+	if q.Group.Having != nil {
+		having, err = convertExpr(q.Group.Having)
+		if err != nil {
+			funcStack = funcStack[:len(funcStack)-2]
+			return nil, err
+		}
+	}
+	funcStack = funcStack[:len(funcStack)-1]
+	funcStack = funcStack[:len(funcStack)-1]
+	uses := []string{}
+	for _, frame := range funcStack {
+		uses = append(uses, frame...)
+	}
+	if len(funcStack) == 0 {
+		uses = append(uses, globalNames...)
+	}
+	return &GroupByExpr{Loops: loops, Key: key, Name: q.Group.Name, Where: where, Select: sel, Having: having, Uses: uses}, nil
 }
 
 func isListArg(e Expr) bool {
@@ -1543,6 +1721,51 @@ func isMapArg(e Expr) bool {
 		}
 	}
 	return false
+}
+
+func isGroupArg(e Expr) bool {
+	switch v := e.(type) {
+	case *Var:
+		if transpileEnv != nil {
+			if t, err := transpileEnv.GetVar(v.Name); err == nil {
+				if _, ok := t.(types.GroupType); ok {
+					return true
+				}
+			}
+		}
+		for _, n := range groupStack {
+			if n == v.Name {
+				return true
+			}
+		}
+	}
+	return false
+}
+
+func isFuncType(t types.Type) bool {
+	if t == nil {
+		return false
+	}
+	_, ok := t.(types.FuncType)
+	return ok
+}
+
+func groupItemsExpr(e Expr) Expr {
+	if v, ok := e.(*Var); ok {
+		if transpileEnv != nil {
+			if t, err := transpileEnv.GetVar(v.Name); err == nil {
+				if _, ok := t.(types.GroupType); ok {
+					return &IndexExpr{X: e, Index: &StringLit{Value: "items"}}
+				}
+			}
+		}
+		for _, n := range groupStack {
+			if n == v.Name {
+				return &IndexExpr{X: e, Index: &StringLit{Value: "items"}}
+			}
+		}
+	}
+	return e
 }
 
 func isListExpr(e Expr) bool {
@@ -1792,6 +2015,23 @@ func exprNode(e Expr) *ast.Node {
 		return &ast.Node{Kind: "index", Children: []*ast.Node{exprNode(ex.X), exprNode(ex.Index)}}
 	case *SliceExpr:
 		return &ast.Node{Kind: "slice", Children: []*ast.Node{exprNode(ex.X), exprNode(ex.Start), exprNode(ex.End)}}
+	case *GroupByExpr:
+		n := &ast.Node{Kind: "group_by"}
+		for _, lp := range ex.Loops {
+			n.Children = append(n.Children, &ast.Node{Kind: "loop", Value: lp.Name, Children: []*ast.Node{exprNode(lp.Source)}})
+		}
+		n.Children = append(n.Children,
+			&ast.Node{Kind: "key", Children: []*ast.Node{exprNode(ex.Key)}},
+			&ast.Node{Kind: "name", Value: ex.Name},
+		)
+		if ex.Where != nil {
+			n.Children = append(n.Children, &ast.Node{Kind: "where", Children: []*ast.Node{exprNode(ex.Where)}})
+		}
+		n.Children = append(n.Children, &ast.Node{Kind: "select", Children: []*ast.Node{exprNode(ex.Select)}})
+		if ex.Having != nil {
+			n.Children = append(n.Children, &ast.Node{Kind: "having", Children: []*ast.Node{exprNode(ex.Having)}})
+		}
+		return n
 	case *RightJoinExpr:
 		n := &ast.Node{Kind: "right_join"}
 		n.Children = append(n.Children,
