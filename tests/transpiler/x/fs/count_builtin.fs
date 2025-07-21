@@ -1,4 +1,4 @@
-// Mochi 0.10.31 - generated 2025-07-19 13:08:47 UTC
+// Generated 2025-07-21 15:37 +0700
 open System
 
-printfn "%s" (string (count [1; 2; 3]))
+printfn "%d" (List.length [1; 2; 3])

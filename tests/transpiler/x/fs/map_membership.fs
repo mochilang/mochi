@@ -1,6 +1,10 @@
-// Generated 2025-07-20 16:45 +0700
+// Generated 2025-07-21 15:37 +0700
 open System
 
-let m = Map.ofList [("a", 1); ("b", 2)]
-printfn "%b" (Map.containsKey "a" m)
-printfn "%b" (Map.containsKey "c" m)
+type Anon1 = {
+    mutable a: int
+    mutable b: int
+}
+let m: Anon1 = { a = 1; b = 2 }
+printfn "%b" (Seq.contains "a" m)
+printfn "%b" (Seq.contains "c" m)
