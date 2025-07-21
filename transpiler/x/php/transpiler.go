@@ -382,13 +382,14 @@ type QueryExpr struct {
 
 // GroupByExpr represents a simple group by query without joins or sorting.
 type GroupByExpr struct {
-	Loops  []QueryLoop
-	Key    Expr
-	Name   string
-	Where  Expr
-	Select Expr
-	Having Expr
-	Uses   []string
+	Loops   []QueryLoop
+	Key     Expr
+	Name    string
+	Where   Expr
+	Select  Expr
+	Having  Expr
+	SortKey bool
+	Uses    []string
 }
 
 // RightJoinExpr represents a simple right join query with one join clause and
@@ -477,14 +478,14 @@ func (m *MatchExpr) emit(w io.Writer) {
 
 func (c *CallExpr) emit(w io.Writer) {
 	if c.Func == "echo" {
-		fmt.Fprint(w, "echo ")
+		fmt.Fprint(w, "echo rtrim(")
 		for i, a := range c.Args {
 			if i > 0 {
 				fmt.Fprint(w, " . \" \" . ")
 			}
 			a.emit(w)
 		}
-		fmt.Fprint(w, ", PHP_EOL")
+		fmt.Fprint(w, "), PHP_EOL")
 		return
 	}
 	fmt.Fprint(w, c.Func)
@@ -618,6 +619,9 @@ func (g *GroupByExpr) emit(w io.Writer) {
 		io.WriteString(w, "}\n")
 	}
 	emitLoops(0, 1)
+	if g.SortKey {
+		io.WriteString(w, "  ksort($groups);\n")
+	}
 	io.WriteString(w, "  $result = [];\n")
 	io.WriteString(w, "  foreach ($groups as $")
 	io.WriteString(w, g.Name)
@@ -1100,9 +1104,9 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 			name = "echo"
 			for i := range args {
 				if isListExpr(args[i]) {
-					join := &CallExpr{Func: "implode", Args: []Expr{&StringLit{Value: ", "}, args[i]}}
-					inner := &BinaryExpr{Left: &BinaryExpr{Left: &StringLit{Value: "["}, Op: "+", Right: join}, Op: "+", Right: &StringLit{Value: "]"}}
-					args[i] = inner
+					mapped := &CallExpr{Func: "array_map", Args: []Expr{&StringLit{Value: "json_encode"}, args[i]}}
+					join := &CallExpr{Func: "implode", Args: []Expr{&StringLit{Value: " "}, mapped}}
+					args[i] = join
 				} else {
 					arg := maybeBoolString(args[i])
 					if !isStringExpr(arg) {
@@ -1634,7 +1638,7 @@ func convertQueryExpr(q *parser.QueryExpr) (Expr, error) {
 }
 
 func convertGroupQuery(q *parser.QueryExpr) (Expr, error) {
-	if q.Group == nil || len(q.Joins) != 0 || q.Sort != nil || q.Skip != nil || q.Take != nil || q.Distinct {
+	if q.Group == nil || len(q.Joins) != 0 || q.Skip != nil || q.Take != nil || q.Distinct {
 		return nil, fmt.Errorf("unsupported query")
 	}
 	loops := []QueryLoop{{Name: q.Var}}
@@ -1683,6 +1687,27 @@ func convertGroupQuery(q *parser.QueryExpr) (Expr, error) {
 			return nil, err
 		}
 	}
+	sortKey := false
+	if q.Sort != nil {
+		ex, err := convertExpr(q.Sort)
+		if err != nil {
+			funcStack = funcStack[:len(funcStack)-2]
+			return nil, err
+		}
+		if ie, ok := ex.(*IndexExpr); ok {
+			if v, ok2 := ie.X.(*Var); ok2 && v.Name == q.Group.Name {
+				if s, ok3 := ie.Index.(*StringLit); ok3 && s.Value == "key" {
+					sortKey = true
+				} else {
+					return nil, fmt.Errorf("unsupported sort expression")
+				}
+			} else {
+				return nil, fmt.Errorf("unsupported sort expression")
+			}
+		} else {
+			return nil, fmt.Errorf("unsupported sort expression")
+		}
+	}
 	funcStack = funcStack[:len(funcStack)-1]
 	funcStack = funcStack[:len(funcStack)-1]
 	uses := []string{}
@@ -1692,7 +1717,7 @@ func convertGroupQuery(q *parser.QueryExpr) (Expr, error) {
 	if len(funcStack) == 0 {
 		uses = append(uses, globalNames...)
 	}
-	return &GroupByExpr{Loops: loops, Key: key, Name: q.Group.Name, Where: where, Select: sel, Having: having, Uses: uses}, nil
+	return &GroupByExpr{Loops: loops, Key: key, Name: q.Group.Name, Where: where, Select: sel, Having: having, SortKey: sortKey, Uses: uses}, nil
 }
 
 func isListArg(e Expr) bool {
@@ -1806,6 +1831,10 @@ func isStringExpr(e Expr) bool {
 				}
 			}
 		}
+	case *CondExpr:
+		if isStringExpr(v.Then) && isStringExpr(v.Else) {
+			return true
+		}
 	}
 	return false
 }
@@ -1833,7 +1862,9 @@ func isBoolExpr(e Expr) bool {
 			return true
 		}
 	case *CondExpr:
-		return true
+		if isBoolExpr(v.Then) && isBoolExpr(v.Else) {
+			return true
+		}
 	}
 	return false
 }
