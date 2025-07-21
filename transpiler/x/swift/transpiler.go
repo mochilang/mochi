@@ -279,6 +279,15 @@ func (ms *MapStringExpr) emit(w io.Writer) {
 	fmt.Fprint(w, ")")
 }
 
+// ArrayStringExpr renders a list as a compact string without spaces.
+type ArrayStringExpr struct{ Value Expr }
+
+func (as *ArrayStringExpr) emit(w io.Writer) {
+	fmt.Fprint(w, "\"[\" + ")
+	as.Value.emit(w)
+	fmt.Fprint(w, ".map{ String(describing: $0) }.joined(separator: \",\") + \"]\"")
+}
+
 // queryFrom represents a secondary source in a query expression.
 type queryFrom struct {
 	Var string
@@ -918,6 +927,8 @@ func convertStmt(env *types.Env, st *parser.Statement) (Stmt, error) {
 						ex = &CondExpr{Cond: ex, Then: &LitExpr{Value: "1", IsString: false}, Else: &LitExpr{Value: "0", IsString: false}}
 					} else if types.IsMapType(types.TypeOfExpr(a, env)) || types.IsStructType(types.TypeOfExpr(a, env)) || a.Binary.Left.Value.Target.Selector != nil {
 						ex = &MapStringExpr{Value: ex}
+					} else if types.IsListType(types.TypeOfExpr(a, env)) {
+						ex = &ArrayStringExpr{Value: ex}
 					}
 				}
 				args = append(args, ex)
