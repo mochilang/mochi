@@ -2,7 +2,7 @@
 
 Generated Java code for programs in `tests/vm/valid`. Each program has a `.java` file produced by the transpiler and a `.out` file with its runtime output. Compilation or execution errors are captured in `.error` files.
 
-## VM Golden Test Checklist (91/100)
+## VM Golden Test Checklist (92/100)
 - [x] append_builtin.mochi
 - [x] avg_builtin.mochi
 - [x] basic_compare.mochi
@@ -39,7 +39,7 @@ Generated Java code for programs in `tests/vm/valid`. Each program has a `.java`
 - [x] if_then_else.mochi
 - [x] if_then_else_nested.mochi
 - [x] in_operator.mochi
-- [ ] in_operator_extended.mochi
+- [x] in_operator_extended.mochi
 - [x] inner_join.mochi
 - [x] join_multi.mochi
 - [x] json_builtin.mochi

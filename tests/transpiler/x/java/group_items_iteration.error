@@ -1,0 +1,14 @@
+exit status 1
+Main.java:34: error: <identifier> expected
+         tag;
+            ^
+Main.java:35: error: <identifier> expected
+         total;
+              ^
+Main.java:36: error: <identifier> expected
+        Data3( tag,  total) {
+                  ^
+Main.java:36: error: <identifier> expected
+        Data3( tag,  total) {
+                          ^
+4 errors

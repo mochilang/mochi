@@ -1,0 +1,23 @@
+exit status 1
+Main.java:17: error: incompatible types: Integer cannot be converted to String
+    static java.util.List<String> result = new java.util.ArrayList<String>() {{ java.util.ArrayList<String> _tmp = new java.util.ArrayList<>(); for (var i : items) { _tmp.add(((Integer) (i.get("v")))); } java.util.ArrayList<String> list = _tmp; list.sort((a, b) -> {Comparable _va = (Comparable)(a.n); Comparable _vb = (Comparable)(b.n); return _va.compareTo(_vb);}); int skip = 0; int take = -1; for (int i = 0; i < list.size(); i++) { if (i < skip) continue; if (take >= 0 && i >= skip + take) break; _tmp.add((String)list.get(i)); } addAll(_tmp);}};
+                                                                                                                                                                                ^
+Main.java:17: error: cannot find symbol
+    static java.util.List<String> result = new java.util.ArrayList<String>() {{ java.util.ArrayList<String> _tmp = new java.util.ArrayList<>(); for (var i : items) { _tmp.add(((Integer) (i.get("v")))); } java.util.ArrayList<String> list = _tmp; list.sort((a, b) -> {Comparable _va = (Comparable)(a.n); Comparable _vb = (Comparable)(b.n); return _va.compareTo(_vb);}); int skip = 0; int take = -1; for (int i = 0; i < list.size(); i++) { if (i < skip) continue; if (take >= 0 && i >= skip + take) break; _tmp.add((String)list.get(i)); } addAll(_tmp);}};
+                                                                                                                                                                                            ^
+  symbol:   method get(String)
+  location: variable i of type Data1
+Main.java:17: error: cannot find symbol
+    static java.util.List<String> result = new java.util.ArrayList<String>() {{ java.util.ArrayList<String> _tmp = new java.util.ArrayList<>(); for (var i : items) { _tmp.add(((Integer) (i.get("v")))); } java.util.ArrayList<String> list = _tmp; list.sort((a, b) -> {Comparable _va = (Comparable)(a.n); Comparable _vb = (Comparable)(b.n); return _va.compareTo(_vb);}); int skip = 0; int take = -1; for (int i = 0; i < list.size(); i++) { if (i < skip) continue; if (take >= 0 && i >= skip + take) break; _tmp.add((String)list.get(i)); } addAll(_tmp);}};
+                                                                                                                                                                                                                                                                                                         ^
+  symbol:   variable n
+  location: variable a of type String
+Main.java:17: error: cannot find symbol
+    static java.util.List<String> result = new java.util.ArrayList<String>() {{ java.util.ArrayList<String> _tmp = new java.util.ArrayList<>(); for (var i : items) { _tmp.add(((Integer) (i.get("v")))); } java.util.ArrayList<String> list = _tmp; list.sort((a, b) -> {Comparable _va = (Comparable)(a.n); Comparable _vb = (Comparable)(b.n); return _va.compareTo(_vb);}); int skip = 0; int take = -1; for (int i = 0; i < list.size(); i++) { if (i < skip) continue; if (take >= 0 && i >= skip + take) break; _tmp.add((String)list.get(i)); } addAll(_tmp);}};
+                                                                                                                                                                                                                                                                                                                                             ^
+  symbol:   variable n
+  location: variable b of type String
+Note: Main.java uses unchecked or unsafe operations.
+Note: Recompile with -Xlint:unchecked for details.
+Note: Some messages have been simplified; recompile with -Xdiags:verbose to get full output
+4 errors

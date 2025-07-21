@@ -435,13 +435,13 @@ func (q *QueryExpr) emit(w io.Writer) {
 	fmt.Fprint(w, " }")
 
 	if q.Group != nil {
-		fmt.Fprintf(w, " java.util.ArrayList<%s> __list = new java.util.ArrayList<>(_groups.values());", q.Group.GroupType)
+		fmt.Fprintf(w, " java.util.ArrayList<%s> list = new java.util.ArrayList<>(_groups.values());", q.Group.GroupType)
 	} else {
-		fmt.Fprintf(w, " java.util.ArrayList<%s> __list = _tmp;", q.ElemType)
+		fmt.Fprintf(w, " java.util.ArrayList<%s> list = _tmp;", q.ElemType)
 	}
 
 	if q.Sort != nil {
-		fmt.Fprint(w, " __list.sort((a, b) -> {")
+		fmt.Fprint(w, " list.sort((a, b) -> {")
 		expr := q.Sort
 		desc := false
 		if ue, ok := q.Sort.(*UnaryExpr); ok && ue.Op == "-" {
@@ -467,22 +467,22 @@ func (q *QueryExpr) emit(w io.Writer) {
 		fmt.Fprint(w, ";});")
 	}
 
-	fmt.Fprint(w, " int __skip = ")
+	fmt.Fprint(w, " int skip = ")
 	if q.Skip != nil {
 		q.Skip.emit(w)
 	} else {
 		fmt.Fprint(w, "0")
 	}
-	fmt.Fprint(w, "; int __take = ")
+	fmt.Fprint(w, "; int take = ")
 	if q.Take != nil {
 		q.Take.emit(w)
 	} else {
 		fmt.Fprint(w, "-1")
 	}
-	fmt.Fprint(w, "; for (int __i = 0; __i < __list.size(); __i++) {")
-	fmt.Fprint(w, " if (__i < __skip) continue; if (__take >= 0 && __i >= __skip + __take) break;")
+	fmt.Fprint(w, "; for (int i = 0; i < list.size(); i++) {")
+	fmt.Fprint(w, " if (i < skip) continue; if (take >= 0 && i >= skip + take) break;")
 	if q.Group != nil {
-		fmt.Fprintf(w, " var %s = (%s)__list.get(__i);", q.Group.Name, q.Group.GroupType)
+		fmt.Fprintf(w, " var %s = (%s)list.get(i);", q.Group.Name, q.Group.GroupType)
 		if q.Group.Having != nil {
 			fmt.Fprint(w, " if (")
 			q.Group.Having.emit(w)
@@ -496,7 +496,7 @@ func (q *QueryExpr) emit(w io.Writer) {
 		}
 	} else {
 		fmt.Fprint(w, " _tmp.add((")
-		fmt.Fprintf(w, "%s)__list.get(__i));", q.ElemType)
+		fmt.Fprintf(w, "%s)list.get(i));", q.ElemType)
 	}
 	fmt.Fprint(w, " }")
 

@@ -1,0 +1,44 @@
+exit status 1
+Main.java:17: error: cannot find symbol
+    static java.util.List<Result3> adults = new java.util.ArrayList<Result3>() {{ java.util.ArrayList<Result3> _tmp = new java.util.ArrayList<>(); for (var person : people) { if (((Integer) (person.get("age"))) >= 18) { _tmp.add(new Result3(((Integer) (person.get("name"))), ((Integer) (person.get("age"))), ((Integer) (person.get("age"))) >= 60)); } } java.util.ArrayList<Result3> list = _tmp; int skip = 0; int take = -1; for (int i = 0; i < list.size(); i++) { if (i < skip) continue; if (take >= 0 && i >= skip + take) break; _tmp.add((Result3)list.get(i)); } addAll(_tmp);}};
+                                                                                                                                                                                                     ^
+  symbol:   method get(String)
+  location: variable person of type Data1
+Main.java:17: error: cannot find symbol
+    static java.util.List<Result3> adults = new java.util.ArrayList<Result3>() {{ java.util.ArrayList<Result3> _tmp = new java.util.ArrayList<>(); for (var person : people) { if (((Integer) (person.get("age"))) >= 18) { _tmp.add(new Result3(((Integer) (person.get("name"))), ((Integer) (person.get("age"))), ((Integer) (person.get("age"))) >= 60)); } } java.util.ArrayList<Result3> list = _tmp; int skip = 0; int take = -1; for (int i = 0; i < list.size(); i++) { if (i < skip) continue; if (take >= 0 && i >= skip + take) break; _tmp.add((Result3)list.get(i)); } addAll(_tmp);}};
+                                                                                                                                                                                                                                                                                                                                      ^
+  symbol:   method get(String)
+  location: variable person of type Data1
+Main.java:17: error: incompatible types: Integer cannot be converted to String
+    static java.util.List<Result3> adults = new java.util.ArrayList<Result3>() {{ java.util.ArrayList<Result3> _tmp = new java.util.ArrayList<>(); for (var person : people) { if (((Integer) (person.get("age"))) >= 18) { _tmp.add(new Result3(((Integer) (person.get("name"))), ((Integer) (person.get("age"))), ((Integer) (person.get("age"))) >= 60)); } } java.util.ArrayList<Result3> list = _tmp; int skip = 0; int take = -1; for (int i = 0; i < list.size(); i++) { if (i < skip) continue; if (take >= 0 && i >= skip + take) break; _tmp.add((Result3)list.get(i)); } addAll(_tmp);}};
+                                                                                                                                                                                                                                                  ^
+Main.java:17: error: cannot find symbol
+    static java.util.List<Result3> adults = new java.util.ArrayList<Result3>() {{ java.util.ArrayList<Result3> _tmp = new java.util.ArrayList<>(); for (var person : people) { if (((Integer) (person.get("age"))) >= 18) { _tmp.add(new Result3(((Integer) (person.get("name"))), ((Integer) (person.get("age"))), ((Integer) (person.get("age"))) >= 60)); } } java.util.ArrayList<Result3> list = _tmp; int skip = 0; int take = -1; for (int i = 0; i < list.size(); i++) { if (i < skip) continue; if (take >= 0 && i >= skip + take) break; _tmp.add((Result3)list.get(i)); } addAll(_tmp);}};
+                                                                                                                                                                                                                                                                                                     ^
+  symbol:   method get(String)
+  location: variable person of type Data1
+Main.java:17: error: cannot find symbol
+    static java.util.List<Result3> adults = new java.util.ArrayList<Result3>() {{ java.util.ArrayList<Result3> _tmp = new java.util.ArrayList<>(); for (var person : people) { if (((Integer) (person.get("age"))) >= 18) { _tmp.add(new Result3(((Integer) (person.get("name"))), ((Integer) (person.get("age"))), ((Integer) (person.get("age"))) >= 60)); } } java.util.ArrayList<Result3> list = _tmp; int skip = 0; int take = -1; for (int i = 0; i < list.size(); i++) { if (i < skip) continue; if (take >= 0 && i >= skip + take) break; _tmp.add((Result3)list.get(i)); } addAll(_tmp);}};
+                                                                                                                                                                                                                                                                   ^
+  symbol:   method get(String)
+  location: variable person of type Data1
+Main.java:39: error: cannot find symbol
+            System.out.println(((Integer) (person.get("name"))) + " " + "is" + " " + ((Integer) (person.get("age"))) + " " + ((Integer) (person.get("is_senior"))) ? " (senior)" : "");
+                                                 ^
+  symbol:   method get(String)
+  location: variable person of type Result3
+Main.java:39: error: cannot find symbol
+            System.out.println(((Integer) (person.get("name"))) + " " + "is" + " " + ((Integer) (person.get("age"))) + " " + ((Integer) (person.get("is_senior"))) ? " (senior)" : "");
+                                                                                                       ^
+  symbol:   method get(String)
+  location: variable person of type Result3
+Main.java:39: error: cannot find symbol
+            System.out.println(((Integer) (person.get("name"))) + " " + "is" + " " + ((Integer) (person.get("age"))) + " " + ((Integer) (person.get("is_senior"))) ? " (senior)" : "");
+                                                                                                                                               ^
+  symbol:   method get(String)
+  location: variable person of type Result3
+Main.java:39: error: incompatible types: String cannot be converted to boolean
+            System.out.println(((Integer) (person.get("name"))) + " " + "is" + " " + ((Integer) (person.get("age"))) + " " + ((Integer) (person.get("is_senior"))) ? " (senior)" : "");
+                                                                                                                             ^
+Note: Some messages have been simplified; recompile with -Xdiags:verbose to get full output
+9 errors

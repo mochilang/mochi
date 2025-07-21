@@ -1,0 +1,7 @@
+exit status 1
+Main.java:19: error: cannot find symbol
+        System.out.println(m.get("b"));
+                            ^
+  symbol:   method get(String)
+  location: variable m of type Data1
+1 error

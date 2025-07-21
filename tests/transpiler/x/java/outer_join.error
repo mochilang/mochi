@@ -1,0 +1,23 @@
+exit status 1
+Main.java:35: error: cannot find symbol
+    static java.util.List<Result4> result = new java.util.ArrayList<Result4>() {{ java.util.ArrayList<Result4> _tmp = new java.util.ArrayList<>(); for (var o : orders) { for (var c : customers) { if (((Integer) (o.get("customerId"))) == c.id) { _tmp.add(new Result4(o, c)); } } } java.util.ArrayList<Result4> list = _tmp; int skip = 0; int take = -1; for (int i = 0; i < list.size(); i++) { if (i < skip) continue; if (take >= 0 && i >= skip + take) break; _tmp.add((Result4)list.get(i)); } addAll(_tmp);}};
+                                                                                                                                                                                                                     ^
+  symbol:   method get(String)
+  location: variable o of type Data2
+Main.java:54: error: incompatible types: Data2 cannot be converted to boolean
+            if (row.order) {
+                   ^
+Main.java:55: error: incompatible types: Object cannot be converted to boolean
+                if (row.customer) {
+                       ^
+Main.java:56: error: cannot find symbol
+                    System.out.println("Order" + " " + row.order.id + " " + "by" + " " + row.customer.name + " " + "- $" + " " + row.order.total);
+                                                                                                     ^
+  symbol:   variable name
+  location: variable customer of type Object
+Main.java:61: error: cannot find symbol
+                System.out.println("Customer" + " " + row.customer.name + " " + "has no orders");
+                                                                  ^
+  symbol:   variable name
+  location: variable customer of type Object
+5 errors

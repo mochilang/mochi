@@ -1,0 +1,17 @@
+exit status 1
+Main.java:47: error: cannot find symbol
+    static java.util.List<Result5> result = new java.util.ArrayList<Result5>() {{ java.util.ArrayList<Result5> _tmp = new java.util.ArrayList<>(); for (var o : orders) { for (var c : customers) { if (((Integer) (o.get("customerId"))) == c.id) { for (var i : items) { if (((Integer) (o.get("id"))) == i.orderId) { _tmp.add(new Result5(((Integer) (o.get("id"))), c.name, i)); } } } } } java.util.ArrayList<Result5> list = _tmp; int skip = 0; int take = -1; for (int i = 0; i < list.size(); i++) { if (i < skip) continue; if (take >= 0 && i >= skip + take) break; _tmp.add((Result5)list.get(i)); } addAll(_tmp);}};
+                                                                                                                                                                                                                     ^
+  symbol:   method get(String)
+  location: variable o of type Data2
+Main.java:47: error: cannot find symbol
+    static java.util.List<Result5> result = new java.util.ArrayList<Result5>() {{ java.util.ArrayList<Result5> _tmp = new java.util.ArrayList<>(); for (var o : orders) { for (var c : customers) { if (((Integer) (o.get("customerId"))) == c.id) { for (var i : items) { if (((Integer) (o.get("id"))) == i.orderId) { _tmp.add(new Result5(((Integer) (o.get("id"))), c.name, i)); } } } } } java.util.ArrayList<Result5> list = _tmp; int skip = 0; int take = -1; for (int i = 0; i < list.size(); i++) { if (i < skip) continue; if (take >= 0 && i >= skip + take) break; _tmp.add((Result5)list.get(i)); } addAll(_tmp);}};
+                                                                                                                                                                                                                                                                                            ^
+  symbol:   method get(String)
+  location: variable o of type Data2
+Main.java:47: error: cannot find symbol
+    static java.util.List<Result5> result = new java.util.ArrayList<Result5>() {{ java.util.ArrayList<Result5> _tmp = new java.util.ArrayList<>(); for (var o : orders) { for (var c : customers) { if (((Integer) (o.get("customerId"))) == c.id) { for (var i : items) { if (((Integer) (o.get("id"))) == i.orderId) { _tmp.add(new Result5(((Integer) (o.get("id"))), c.name, i)); } } } } } java.util.ArrayList<Result5> list = _tmp; int skip = 0; int take = -1; for (int i = 0; i < list.size(); i++) { if (i < skip) continue; if (take >= 0 && i >= skip + take) break; _tmp.add((Result5)list.get(i)); } addAll(_tmp);}};
+                                                                                                                                                                                                                                                                                                                                                           ^
+  symbol:   method get(String)
+  location: variable o of type Data2
+3 errors

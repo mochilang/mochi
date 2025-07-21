@@ -1,0 +1,7 @@
+exit status 1
+Main.java:18: error: cannot find symbol
+        System.out.println(new Data1(1, 2).length);
+                                          ^
+  symbol:   variable length
+  location: class Data1
+1 error

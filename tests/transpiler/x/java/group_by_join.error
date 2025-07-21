@@ -1,0 +1,8 @@
+exit status 1
+Main.java:35: error: <identifier> expected
+         c;
+          ^
+Main.java:36: error: <identifier> expected
+        Item3(Data2 o,  c) {
+                         ^
+2 errors
