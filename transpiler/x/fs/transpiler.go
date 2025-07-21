@@ -102,7 +102,7 @@ func inferStructFromMapVars(ml *parser.MapLiteral) ([]StructField, bool) {
 			return nil, false
 		}
 		tgt := it.Value.Binary.Left.Value.Target
-		if tgt.Selector == nil || len(tgt.Selector.Tail) != 0 {
+		if tgt.Selector == nil || len(tgt.Selector.Tail) == 0 {
 			return nil, false
 		}
 		vname := tgt.Selector.Root
@@ -110,9 +110,27 @@ func inferStructFromMapVars(ml *parser.MapLiteral) ([]StructField, bool) {
 		if !ok {
 			return nil, false
 		}
-		fields[i] = StructField{Name: key, Type: fsTypeFromString(vtype), Mut: false}
+		fieldName := tgt.Selector.Tail[len(tgt.Selector.Tail)-1]
+		if ft, ok := structFieldType(vtype, fieldName); ok {
+			fields[i] = StructField{Name: key, Type: ft, Mut: false}
+		} else {
+			return nil, false
+		}
 	}
 	return fields, true
+}
+
+func structFieldType(name, field string) (string, bool) {
+	for _, sd := range structDefs {
+		if sd.Name == name {
+			for _, f := range sd.Fields {
+				if f.Name == field {
+					return f.Type, true
+				}
+			}
+		}
+	}
+	return "", false
 }
 
 func addStructDef(name string, st types.StructType) {
@@ -1971,6 +1989,8 @@ func convertTypeDecl(td *parser.TypeDecl) error {
 }
 
 func convertQueryExpr(q *parser.QueryExpr) (Expr, error) {
+	saved := copyMap(varTypes)
+
 	src, err := convertExpr(q.Source)
 	if err != nil {
 		return nil, err
@@ -1978,6 +1998,9 @@ func convertQueryExpr(q *parser.QueryExpr) (Expr, error) {
 	if id, ok := src.(*IdentExpr); ok {
 		if varTypes[id.Name] == "group" {
 			src = &FieldExpr{Target: id, Name: "items"}
+		}
+		if t, ok := varTypes[id.Name]; ok && strings.HasSuffix(t, " list") {
+			varTypes[q.Var] = strings.TrimSuffix(t, " list")
 		}
 	}
 	froms := make([]queryFrom, len(q.Froms))
@@ -1987,6 +2010,11 @@ func convertQueryExpr(q *parser.QueryExpr) (Expr, error) {
 			return nil, err
 		}
 		froms[i] = queryFrom{Var: f.Var, Src: e}
+		if id, ok := e.(*IdentExpr); ok {
+			if t, ok := varTypes[id.Name]; ok && strings.HasSuffix(t, " list") {
+				varTypes[f.Var] = strings.TrimSuffix(t, " list")
+			}
+		}
 	}
 	joins := make([]queryJoin, len(q.Joins))
 	for i, j := range q.Joins {
@@ -2002,6 +2030,11 @@ func convertQueryExpr(q *parser.QueryExpr) (Expr, error) {
 			}
 		}
 		joins[i] = queryJoin{Var: j.Var, Src: src, On: on}
+		if id, ok := src.(*IdentExpr); ok {
+			if t, ok := varTypes[id.Name]; ok && strings.HasSuffix(t, " list") {
+				varTypes[j.Var] = strings.TrimSuffix(t, " list")
+			}
+		}
 	}
 	var where Expr
 	if q.Where != nil {
@@ -2050,20 +2083,30 @@ func convertQueryExpr(q *parser.QueryExpr) (Expr, error) {
 		}
 		itemFields := make([]StructField, len(names))
 		for i, n := range names {
-			itemFields[i] = StructField{Name: n, Type: "obj", Mut: false}
+			typ := "obj"
+			if t, ok := varTypes[n]; ok {
+				typ = fsTypeFromString(strings.TrimSuffix(t, " list"))
+			}
+			itemFields[i] = StructField{Name: n, Type: typ, Mut: false}
 		}
 		structCount++
 		itemName := fmt.Sprintf("Anon%d", structCount)
 		structDefs = append(structDefs, StructDef{Name: itemName, Fields: itemFields})
-		groupFields := []StructField{{Name: "key", Type: "obj", Mut: false}, {Name: "items", Type: itemName + " list", Mut: false}}
+		keyType := "obj"
+		if sl, ok := key.(*StructLit); ok && sl.Name != "" {
+			keyType = sl.Name
+		}
+		groupFields := []StructField{{Name: "key", Type: keyType, Mut: false}, {Name: "items", Type: itemName + " list", Mut: false}}
 		structCount++
 		groupName := fmt.Sprintf("Anon%d", structCount)
 		structDefs = append(structDefs, StructDef{Name: groupName, Fields: groupFields})
+		varTypes = saved
 		return &GroupQueryExpr{Var: q.Var, Src: src, Froms: froms, Joins: joins, Where: where, Key: key, GroupVar: q.Group.Name, Select: sel, ItemName: itemName, GroupName: groupName}, nil
 	}
 	sel, err := convertExpr(q.Select)
 	if err != nil {
 		return nil, err
 	}
+	varTypes = saved
 	return &QueryExpr{Var: q.Var, Src: src, Froms: froms, Joins: joins, Where: where, Sort: sort, Skip: skip, Take: take, Select: sel}, nil
 }
