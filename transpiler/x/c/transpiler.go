@@ -86,6 +86,28 @@ func (p *PrintStmt) emit(w io.Writer, indent int) {
 				e.emitExpr(w)
 				io.WriteString(w, ");\n")
 			}
+		case *VarRef:
+			if l, ok := constLists[v.Name]; ok {
+				var parts []string
+				for k, e := range l.Elems {
+					s := formatConst(e)
+					if k < len(l.Elems)-1 {
+						s += " "
+					}
+					parts = append(parts, s)
+				}
+				writeIndent(w, indent)
+				fmt.Fprintf(w, "puts(\"%s\");\n", escape(strings.Join(parts, "")))
+				continue
+			}
+			if p.Types[i] == "string" || exprIsString(a) {
+				format = append(format, "%s")
+			} else if p.Types[i] == "float" || exprIsFloat(a) {
+				format = append(format, "%g")
+			} else {
+				format = append(format, "%d")
+			}
+			exprs = append(exprs, a)
 		default:
 			if p.Types[i] == "string" || exprIsString(a) {
 				format = append(format, "%s")
@@ -697,6 +719,25 @@ func escape(s string) string {
 	s = strings.ReplaceAll(s, "\\", "\\\\")
 	s = strings.ReplaceAll(s, "\"", "\\\"")
 	return s
+}
+
+func formatConst(e Expr) string {
+	switch v := e.(type) {
+	case *StringLit:
+		return fmt.Sprintf("\"%s\"", escape(v.Value))
+	case *IntLit:
+		return fmt.Sprintf("%d", v.Value)
+	case *FloatLit:
+		return fmt.Sprintf("%g", v.Value)
+	case *StructLit:
+		parts := make([]string, 0, len(v.Fields))
+		for _, f := range v.Fields {
+			parts = append(parts, fmt.Sprintf("\"%s\": %s", f.Name, formatConst(f.Value)))
+		}
+		return "{" + strings.Join(parts, ", ") + "}"
+	default:
+		return ""
+	}
 }
 
 func markMath() {

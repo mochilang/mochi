@@ -263,11 +263,41 @@ func builtinAvg(i *Interpreter, c *parser.CallExpr) (any, error) {
 	return sum / float64(len(list)), nil
 }
 
+func builtinSum(i *Interpreter, c *parser.CallExpr) (any, error) {
+	if len(c.Args) != 1 {
+		return nil, fmt.Errorf("sum(x) takes exactly one argument")
+	}
+	val, err := i.evalExpr(c.Args[0])
+	if err != nil {
+		return nil, err
+	}
+	var list []any
+	switch v := val.(type) {
+	case []any:
+		list = v
+	case *data.Group:
+		list = v.Items
+	default:
+		return nil, fmt.Errorf("sum() expects list or group, got %T", val)
+	}
+	total := 0
+	for _, it := range list {
+		n, ok := toInt(it)
+		if !ok {
+			return nil, fmt.Errorf("sum() expects numbers, got %T", it)
+		}
+		total += n
+	}
+	return total, nil
+}
+
 func toInt(v any) (int, bool) {
 	switch n := v.(type) {
 	case int:
 		return n, true
 	case int64:
+		return int(n), true
+	case parser.IntLit:
 		return int(n), true
 	case float64:
 		return int(n), true
@@ -328,6 +358,7 @@ func (i *Interpreter) builtinFuncs() map[string]func(*Interpreter, *parser.CallE
 		"int":       builtinInt,
 		"input":     builtinInput,
 		"count":     builtinCount,
+		"sum":       builtinSum,
 		"avg":       builtinAvg,
 		"substr":    builtinSubstring,
 		"substring": builtinSubstring,
