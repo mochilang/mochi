@@ -974,6 +974,122 @@ func evalQueryExpr(q *parser.QueryExpr, vars map[string]value) (value, error) {
 		return value{kind: valList, list: results}, nil
 	}
 
+	// handle join with group by: FROM <src> JOIN ... GROUP BY <expr>
+	if q.Group != nil && len(q.Group.Exprs) == 1 && len(q.Joins) == 1 && len(q.Froms) == 0 && q.Skip == nil && q.Take == nil && !q.Distinct {
+		j := q.Joins[0]
+
+		left, err := evalExpr(q.Source, vars)
+		if err != nil {
+			return value{}, err
+		}
+		right, err := evalExpr(j.Src, vars)
+		if err != nil {
+			return value{}, err
+		}
+		if left.kind != valList || right.kind != valList {
+			return value{}, fmt.Errorf("join sources must be list")
+		}
+
+		type grp struct {
+			key   value
+			items []value
+		}
+		groups := map[string]*grp{}
+		for _, l := range left.list {
+			for _, r := range right.list {
+				local := copyVars(vars)
+				local[q.Var] = l
+				local[j.Var] = r
+				cond, err := evalExpr(j.On, local)
+				if err != nil {
+					return value{}, err
+				}
+				if cond.kind != valBool {
+					return value{}, fmt.Errorf("non-bool join condition")
+				}
+				if !cond.b {
+					continue
+				}
+				kVal, err := evalExpr(q.Group.Exprs[0], local)
+				if err != nil {
+					return value{}, err
+				}
+				kStr, err := keyString(kVal)
+				if err != nil {
+					return value{}, err
+				}
+				g, ok := groups[kStr]
+				if !ok {
+					g = &grp{key: kVal}
+					groups[kStr] = g
+				}
+				item := value{kind: valMap, kv: map[string]value{
+					q.Var: l,
+					j.Var: r,
+				}}
+				g.items = append(g.items, item)
+			}
+		}
+
+		keys := make([]string, 0, len(groups))
+		for k := range groups {
+			keys = append(keys, k)
+		}
+		sort.Strings(keys)
+
+		type pair struct{ key, val value }
+		var pairs []pair
+		for _, k := range keys {
+			g := groups[k]
+			gv := value{kind: valMap, kv: map[string]value{
+				"key":   g.key,
+				"items": {kind: valList, list: g.items},
+			}}
+			local := copyVars(vars)
+			local[q.Group.Name] = gv
+			if q.Group.Having != nil {
+				cond, err := evalExpr(q.Group.Having, local)
+				if err != nil {
+					return value{}, err
+				}
+				if cond.kind != valBool || !cond.b {
+					continue
+				}
+			}
+			if q.Where != nil {
+				cond, err := evalExpr(q.Where, local)
+				if err != nil {
+					return value{}, err
+				}
+				if cond.kind != valBool || !cond.b {
+					continue
+				}
+			}
+			v, err := evalExpr(q.Select, local)
+			if err != nil {
+				return value{}, err
+			}
+			k2 := value{}
+			if q.Sort != nil {
+				k2, err = evalExpr(q.Sort, local)
+				if err != nil {
+					return value{}, err
+				}
+			}
+			pairs = append(pairs, pair{key: k2, val: v})
+		}
+		if q.Sort != nil {
+			sort.Slice(pairs, func(i, j int) bool {
+				return compareValues(pairs[i].key, pairs[j].key) < 0
+			})
+		}
+		results := make([]value, len(pairs))
+		for i, p := range pairs {
+			results[i] = p.val
+		}
+		return value{kind: valList, list: results}, nil
+	}
+
 	// handle simple join form: FROM <src> [JOIN ...] SELECT ...
 	if len(q.Joins) == 1 && len(q.Froms) == 0 && q.Group == nil && q.Sort == nil && q.Skip == nil && q.Take == nil && !q.Distinct {
 		j := q.Joins[0]

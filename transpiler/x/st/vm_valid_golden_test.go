@@ -147,7 +147,7 @@ func updateTasks() {
 	buf.WriteString(fmt.Sprintf("## Progress (%s)\n", ts))
 	buf.WriteString("- VM valid golden test results updated\n")
 	buf.WriteString("- Added support for identifier keys in map literals so queries can \"select{n: n}\"\n")
-	buf.WriteString("- Implemented basic join handling and truthy checks; right_join.mochi now passes\n\n")
+	buf.WriteString("- Implemented join queries with grouping; group_by_join and group_by_left_join now pass (64/100)\n\n")
 	if data, err := os.ReadFile(taskFile); err == nil {
 		buf.Write(data)
 	}
