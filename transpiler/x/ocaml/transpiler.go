@@ -528,9 +528,9 @@ func (a *AppendBuiltin) emit(w io.Writer) {
 }
 
 func (a *AppendBuiltin) emitPrint(w io.Writer) {
-	io.WriteString(w, "String.concat \" \" (List.map string_of_int (")
-	a.emit(w)
-	io.WriteString(w, "))")
+        io.WriteString(w, "(\"[\" ^ String.concat \", \" (List.map string_of_int (")
+        a.emit(w)
+        io.WriteString(w, ")) ^ \"]\")")
 }
 
 // MinBuiltin represents min(list).
@@ -677,9 +677,9 @@ func (l *ListLit) emit(w io.Writer) {
 }
 
 func (l *ListLit) emitPrint(w io.Writer) {
-	io.WriteString(w, "String.concat \" \" (List.map string_of_int (")
-	l.emit(w)
-	io.WriteString(w, "))")
+        io.WriteString(w, "(\"[\" ^ String.concat \", \" (List.map string_of_int (")
+        l.emit(w)
+        io.WriteString(w, ")) ^ \"]\")")
 }
 
 // MapEntry represents a key/value pair in a map literal.
