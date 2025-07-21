@@ -108,21 +108,26 @@ func updateReadme() {
 	files, _ := filepath.Glob(filepath.Join(srcDir, "*.mochi"))
 	sort.Strings(files)
 	total := len(files)
-	compiled := 0
+	completed := 0
 	var lines []string
 	for _, f := range files {
 		name := strings.TrimSuffix(filepath.Base(f), ".mochi")
 		mark := "[ ]"
-		if _, err := os.Stat(filepath.Join(outDir, name+".scala")); err == nil {
-			compiled++
+		if _, err := os.Stat(filepath.Join(outDir, name+".out")); err == nil {
+			completed++
 			mark = "[x]"
+		} else if _, err := os.Stat(filepath.Join(outDir, name+".error")); err == nil {
+			mark = "[ ]"
 		}
 		lines = append(lines, fmt.Sprintf("- %s %s", mark, name))
 	}
 	var buf bytes.Buffer
 	buf.WriteString("# Scala Transpiler Output\n\n")
 	buf.WriteString("Generated Scala code for programs in `tests/vm/valid`. Each program has a `.scala` file produced by the transpiler and a `.out` file with its runtime output. Compilation or execution errors are captured in `.error` files.\n\n")
-	buf.WriteString(fmt.Sprintf("## Golden Test Checklist (%d/%d)\n\n", compiled, total))
+	loc, _ := time.LoadLocation("Asia/Bangkok")
+	ts := time.Now().In(loc).Format("2006-01-02 15:04 -0700")
+	buf.WriteString(fmt.Sprintf("## Golden Test Checklist (%d/%d)\n", completed, total))
+	buf.WriteString(fmt.Sprintf("_Last updated: %s_\n\n", ts))
 	buf.WriteString(strings.Join(lines, "\n"))
 	buf.WriteString("\n")
 	_ = os.WriteFile(filepath.Join(readmeDir, "README.md"), buf.Bytes(), 0o644)
@@ -147,7 +152,7 @@ func updateTasks() {
 	compiled := 0
 	for _, f := range files {
 		name := strings.TrimSuffix(filepath.Base(f), ".mochi")
-		if _, err := os.Stat(filepath.Join(root, "tests", "transpiler", "x", "scala", name+".scala")); err == nil {
+		if _, err := os.Stat(filepath.Join(root, "tests", "transpiler", "x", "scala", name+".out")); err == nil {
 			compiled++
 		}
 	}
