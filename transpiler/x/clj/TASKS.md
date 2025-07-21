@@ -1,25 +1,9 @@
-## Progress (2025-07-21 17:37 +0700)
-- feat(clj): simplify json output and group-by
+## Progress (2025-07-21 18:25 +0700)
+- clj transpiler: drop header and refresh golden files
 - Regenerated golden files - 96/100 vm valid programs passing
 
-## Progress (2025-07-21 17:37 +0700)
-- feat(clj): simplify json output and group-by
-- Regenerated golden files - 96/100 vm valid programs passing
-
-## Progress (2025-07-21 17:37 +0700)
-- feat(clj): simplify json output and group-by
-- Regenerated golden files - 96/100 vm valid programs passing
-
-## Progress (2025-07-21 17:37 +0700)
-- feat(clj): simplify json output and group-by
-- Regenerated golden files - 96/100 vm valid programs passing
-
-## Progress (2025-07-21 17:37 +0700)
-- feat(clj): simplify json output and group-by
-- Regenerated golden files - 96/100 vm valid programs passing
-
-## Progress (2025-07-21 17:37 +0700)
-- feat(clj): simplify json output and group-by
+## Progress (2025-07-21 18:06 +0700)
+- clj: regenerate Clojure golden files
 - Regenerated golden files - 96/100 vm valid programs passing
 
 ## Progress (2025-07-21 17:37 +0700)
@@ -34,22 +18,6 @@
 - Clean up transpiler/x
 - Regenerated golden files - 95/100 vm valid programs passing
 
-## Progress (2025-07-21 16:07 +0700)
-- Clean up transpiler/x
-- Regenerated golden files - 94/100 vm valid programs passing
-
-## Progress (2025-07-21 16:07 +0700)
-- Clean up transpiler/x
-- Regenerated golden files - 94/100 vm valid programs passing
-
-## Progress (2025-07-21 16:07 +0700)
-- Clean up transpiler/x
-- Regenerated golden files - 94/100 vm valid programs passing
-
-## Progress (2025-07-21 16:07 +0700)
-- Clean up transpiler/x
-- Regenerated golden files - 94/100 vm valid programs passing
-
 ## Progress (2025-07-21 15:57 +0700)
 - clj transpiler: handle simple union patterns
 - Regenerated golden files - 94/100 vm valid programs passing
@@ -57,26 +25,6 @@
 ## Progress (2025-07-21 15:36 +0700)
 - ex transpiler: support group by join
 - Regenerated golden files - 94/100 vm valid programs passing
-
-## Progress (2025-07-21 15:36 +0700)
-- ex transpiler: support group by join
-- Regenerated golden files - 94/100 vm valid programs passing
-
-## Progress (2025-07-21 15:36 +0700)
-- ex transpiler: support group by join
-- Regenerated golden files - 94/100 vm valid programs passing
-
-## Progress (2025-07-21 15:36 +0700)
-- ex transpiler: support group by join
-- Regenerated golden files - 93/100 vm valid programs passing
-
-## Progress (2025-07-21 15:36 +0700)
-- ex transpiler: support group by join
-- Regenerated golden files - 93/100 vm valid programs passing
-
-## Progress (2025-07-21 15:36 +0700)
-- ex transpiler: support group by join
-- Regenerated golden files - 93/100 vm valid programs passing
 
 ## Progress (2025-07-21 14:52 +0700)
 - clj: support outer join

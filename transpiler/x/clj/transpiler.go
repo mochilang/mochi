@@ -10,7 +10,6 @@ import (
 	"strings"
 
 	"mochi/parser"
-	meta "mochi/transpiler/meta"
 	"mochi/types"
 )
 
@@ -240,13 +239,15 @@ func EmitString(p *Program) []byte {
 	return buf.Bytes()
 }
 
-// Format returns the Clojure source with a generated header and trailing newline.
+// Format returns the Clojure source with a trailing newline.
+// Unlike the default header-based format, this keeps the output
+// minimal and suitable for version control.
 func Format(src []byte) []byte {
 	src = bytes.TrimRight(src, "\n")
 	if len(src) > 0 {
 		src = append(src, '\n')
 	}
-	return append(meta.Header(";;"), src...)
+	return src
 }
 
 // --- Transpiler ---
@@ -1400,27 +1401,27 @@ func transpileQueryExpr(q *parser.QueryExpr) (Node, error) {
 		return forForm, nil
 	}
 
-       if len(q.Group.Exprs) == 0 {
-               return nil, fmt.Errorf("missing group key")
-       }
-       var keyExpr Node
-       if len(q.Group.Exprs) == 1 {
-               var err error
-               keyExpr, err = transpileExpr(q.Group.Exprs[0])
-               if err != nil {
-                       return nil, err
-               }
-       } else {
-               keys := []Node{}
-               for _, ke := range q.Group.Exprs {
-                       kn, err := transpileExpr(ke)
-                       if err != nil {
-                               return nil, err
-                       }
-                       keys = append(keys, kn)
-               }
-               keyExpr = &Vector{Elems: keys}
-       }
+	if len(q.Group.Exprs) == 0 {
+		return nil, fmt.Errorf("missing group key")
+	}
+	var keyExpr Node
+	if len(q.Group.Exprs) == 1 {
+		var err error
+		keyExpr, err = transpileExpr(q.Group.Exprs[0])
+		if err != nil {
+			return nil, err
+		}
+	} else {
+		keys := []Node{}
+		for _, ke := range q.Group.Exprs {
+			kn, err := transpileExpr(ke)
+			if err != nil {
+				return nil, err
+			}
+			keys = append(keys, kn)
+		}
+		keyExpr = &Vector{Elems: keys}
+	}
 
 	names := []string{q.Var}
 	for _, f := range q.Froms {
