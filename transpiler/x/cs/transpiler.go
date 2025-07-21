@@ -1972,9 +1972,13 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 					return &CallExpr{Func: name, Args: []Expr{inner}}, nil
 				}
 				if strings.HasSuffix(typeOfExpr(arg), "[]") {
-					join := &CallExpr{Func: "string.Join", Args: []Expr{&StringLit{Value: ", "}, arg}}
+					join := &CallExpr{Func: "string.Join", Args: []Expr{&StringLit{Value: ","}, arg}}
 					wrapped := &BinaryExpr{Left: &StringLit{Value: "["}, Op: "+", Right: &BinaryExpr{Left: join, Op: "+", Right: &StringLit{Value: "]"}}}
 					return &CallExpr{Func: name, Args: []Expr{wrapped}}, nil
+				}
+				if typeOfExpr(arg) == "double" {
+					formatted := &MethodCallExpr{Target: arg, Name: "ToString", Args: []Expr{&StringLit{Value: "0.0"}}}
+					return &CallExpr{Func: name, Args: []Expr{formatted}}, nil
 				}
 				return &CallExpr{Func: name, Args: []Expr{arg}}, nil
 			}
@@ -1987,7 +1991,7 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 				}
 			}
 			list := &ListLit{Elems: elems}
-			join := &CallExpr{Func: "string.Join", Args: []Expr{&StringLit{Value: ", "}, list}}
+			join := &CallExpr{Func: "string.Join", Args: []Expr{&StringLit{Value: ","}, list}}
 			wrapped := &BinaryExpr{Left: &StringLit{Value: "["}, Op: "+", Right: &BinaryExpr{Left: join, Op: "+", Right: &StringLit{Value: "]"}}}
 			return &CallExpr{Func: name, Args: []Expr{wrapped}}, nil
 		case "append":
