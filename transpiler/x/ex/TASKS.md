@@ -1,3 +1,8 @@
+## Progress (2025-07-21 10:52 +0700)
+- Fixed global variable emission to avoid module attributes
+- Regenerated golden output for `match_full`
+- VM valid golden test results updated
+
 ## Progress (2025-07-21 07:25 +0700)
 - Added basic right join support in query expressions
 - Generated golden output for `right_join`
