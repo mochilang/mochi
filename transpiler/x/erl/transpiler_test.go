@@ -281,8 +281,19 @@ func updateReadme() {
 		}
 		lines = append(lines, fmt.Sprintf("- %s %s", mark, name))
 	}
+	tsRaw, _ := exec.Command("git", "log", "-1", "--format=%cI").Output()
+	ts := strings.TrimSpace(string(tsRaw))
+	if t, err := time.Parse(time.RFC3339, ts); err == nil {
+		if loc, lerr := time.LoadLocation("Asia/Bangkok"); lerr == nil {
+			ts = t.In(loc).Format("2006-01-02 15:04 -0700")
+		} else {
+			ts = t.Format("2006-01-02 15:04 MST")
+		}
+	}
+
 	var buf bytes.Buffer
-	buf.WriteString(fmt.Sprintf("# Erlang Transpiler Output (%d/%d generated and run)\n\n", compiled, total))
+	buf.WriteString(fmt.Sprintf("# Erlang Transpiler Output (%d/%d generated and run)\n", compiled, total))
+	buf.WriteString(fmt.Sprintf("Last updated: %s\n\n", ts))
 	buf.WriteString("This directory contains a minimal transpiler that converts a very small\n")
 	buf.WriteString("subset of Mochi into Erlang. Generated programs are executed with\n")
 	buf.WriteString("`escript` to verify runtime behaviour.\n\n")
@@ -300,6 +311,7 @@ func updateTasks() {
 	taskFile := filepath.Join(root, "transpiler", "x", "erl", "TASKS.md")
 	compiled, total := countCompiled()
 	tsRaw, _ := exec.Command("git", "log", "-1", "--format=%cI").Output()
+	hashRaw, _ := exec.Command("git", "rev-parse", "--short", "HEAD").Output()
 	msgRaw, _ := exec.Command("git", "log", "-1", "--format=%s").Output()
 	ts := strings.TrimSpace(string(tsRaw))
 	if t, err := time.Parse(time.RFC3339, ts); err == nil {
@@ -310,9 +322,10 @@ func updateTasks() {
 		}
 	}
 	msg := strings.TrimSpace(string(msgRaw))
+	hash := strings.TrimSpace(string(hashRaw))
 	var buf bytes.Buffer
 	buf.WriteString(fmt.Sprintf("## Progress (%s)\n", ts))
-	buf.WriteString(fmt.Sprintf("- %s\n", msg))
+	buf.WriteString(fmt.Sprintf("- %s (%s)\n", msg, hash))
 	buf.WriteString(fmt.Sprintf("- Regenerated golden files - %d/%d vm valid programs passing\n\n", compiled, total))
 	if data, err := os.ReadFile(taskFile); err == nil {
 		buf.Write(data)

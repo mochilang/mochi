@@ -1,5 +1,5 @@
-# Erlang Transpiler Output (58/100 generated and run)
-Last updated: 2025-07-21 20:06 +0700
+# Erlang Transpiler Output (62/100 generated and run)
+Last updated: 2025-07-21 20:57 +0700
 
 This directory contains a minimal transpiler that converts a very small
 subset of Mochi into Erlang. Generated programs are executed with
@@ -26,7 +26,7 @@ that produces the same output as the Mochi VM.
 - [x] cross_join_triple
 - [x] dataset_sort_take_limit
 - [x] dataset_where_filter
-- [ ] exists_builtin
+- [x] exists_builtin
 - [x] for_list_collection
 - [x] for_loop
 - [x] for_map_collection
@@ -47,9 +47,9 @@ that produces the same output as the Mochi VM.
 - [x] if_then_else
 - [x] if_then_else_nested
 - [x] in_operator
-- [ ] in_operator_extended
-- [ ] inner_join
-- [ ] join_multi
+- [x] in_operator_extended
+- [x] inner_join
+- [x] join_multi
 - [ ] json_builtin
 - [x] left_join
 - [ ] left_join_multi
