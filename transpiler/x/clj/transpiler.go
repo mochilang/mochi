@@ -1182,6 +1182,13 @@ func transpileQueryExpr(q *parser.QueryExpr) (Node, error) {
 		if err != nil {
 			return nil, err
 		}
+		if m, ok := key.(*Map); ok {
+			vals := []Node{}
+			for _, kv := range m.Pairs {
+				vals = append(vals, kv[1])
+			}
+			key = &Vector{Elems: vals}
+		}
 		fn := &List{Elems: []Node{Symbol("fn"), &Vector{Elems: []Node{Symbol(q.Var)}}, key}}
 		src = &List{Elems: []Node{Symbol("sort-by"), fn, src}}
 	}
