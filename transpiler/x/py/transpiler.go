@@ -28,8 +28,9 @@ type Program struct {
 }
 
 var (
-	currentImports map[string]bool
-	currentEnv     *types.Env
+	currentImports   map[string]bool
+	currentEnv       *types.Env
+	needsDefaultDict bool
 )
 
 type Stmt interface{ isStmt() }
@@ -1170,6 +1171,96 @@ func zeroValueExpr(t types.Type) Expr {
 	}
 }
 
+func toCamel(s string) string {
+	parts := strings.Split(s, "_")
+	for i, p := range parts {
+		if len(p) > 0 {
+			parts[i] = strings.ToUpper(p[:1]) + p[1:]
+		}
+	}
+	return strings.Join(parts, "")
+}
+
+func maybeDataClassList(name string, list *ListLit) (*DataClassDef, []Expr) {
+	if len(list.Elems) == 0 {
+		return nil, nil
+	}
+	first, ok := list.Elems[0].(*DictLit)
+	if !ok {
+		return nil, nil
+	}
+	keys := make([]string, len(first.Keys))
+	for i, k := range first.Keys {
+		s, ok := k.(*StringLit)
+		if !ok {
+			return nil, nil
+		}
+		keys[i] = s.Value
+	}
+	for _, el := range list.Elems[1:] {
+		d, ok := el.(*DictLit)
+		if !ok || len(d.Keys) != len(keys) {
+			return nil, nil
+		}
+		for i, k := range d.Keys {
+			s, ok := k.(*StringLit)
+			if !ok || s.Value != keys[i] {
+				return nil, nil
+			}
+		}
+	}
+	var fields []DataClassField
+	for i, k := range keys {
+		typ := "any"
+		switch first.Values[i].(type) {
+		case *IntLit:
+			typ = "int"
+		case *FloatLit:
+			typ = "float"
+		case *StringLit:
+			typ = "str"
+		}
+		fields = append(fields, DataClassField{Name: k, Type: typ})
+	}
+	var elems []Expr
+	className := toCamel(name)
+	for _, el := range list.Elems {
+		d := el.(*DictLit)
+		args := make([]Expr, len(d.Values))
+		copy(args, d.Values)
+		elems = append(elems, &CallExpr{Func: &Name{Name: className}, Args: args})
+	}
+	return &DataClassDef{Name: className, Fields: fields}, elems
+}
+
+func dataClassFromDict(name string, d *DictLit) (*DataClassDef, []Expr) {
+	keys := make([]string, len(d.Keys))
+	for i, k := range d.Keys {
+		s, ok := k.(*StringLit)
+		if !ok {
+			return nil, nil
+		}
+		keys[i] = s.Value
+	}
+	var fields []DataClassField
+	for i, k := range keys {
+		typ := "any"
+		switch d.Values[i].(type) {
+		case *IntLit:
+			typ = "int"
+		case *FloatLit:
+			typ = "float"
+		case *StringLit:
+			typ = "str"
+		}
+		fields = append(fields, DataClassField{Name: k, Type: typ})
+	}
+	className := toCamel(name)
+	args := make([]Expr, len(d.Values))
+	copy(args, d.Values)
+	return &DataClassDef{Name: className, Fields: fields}, args
+}
+
 func isNumeric(t types.Type) bool {
 	switch t.(type) {
 	case types.IntType, types.Int64Type, types.FloatType, types.BigIntType, types.BigRatType:
@@ -1835,6 +1926,9 @@ func Emit(w io.Writer, p *Program) error {
 			imports = append(imports, "import json")
 		}
 	}
+	if needsDefaultDict {
+		imports = append(imports, "from collections import defaultdict")
+	}
 	for _, s := range p.Stmts {
 		if _, ok := s.(*DataClassDef); ok {
 			needDC = true
@@ -1849,6 +1943,7 @@ func Emit(w io.Writer, p *Program) error {
 	}
 	if needDC {
 		imports = append(imports, "from dataclasses import dataclass")
+		imports = append(imports, "from typing import List, Dict")
 	}
 	sort.Strings(imports)
 	for _, line := range imports {
@@ -2431,6 +2526,28 @@ func convertStmts(list []*parser.Statement, env *types.Env) ([]Stmt, error) {
 					}
 					typ = inferTypeFromExpr(s.Let.Value)
 					env.SetVar(s.Let.Name, typ, false)
+					if list, ok := e.(*ListLit); ok {
+						if dc, elems := maybeDataClassList(s.Let.Name, list); dc != nil {
+							out = append(out, dc)
+							list.Elems = elems
+							e = list
+						}
+					} else if q := ExtractQueryExpr(s.Let.Value); q != nil && q.Group == nil {
+						selExpr, serr := convertExpr(q.Select)
+						if serr == nil {
+							if d, ok := selExpr.(*DictLit); ok {
+								dc, args := dataClassFromDict(s.Let.Name, d)
+								if dc != nil {
+									out = append(out, dc)
+									if lc, ok := e.(*ListComp); ok {
+										lc.Expr = &CallExpr{Func: &Name{Name: dc.Name}, Args: args}
+									} else if mc, ok := e.(*MultiListComp); ok {
+										mc.Expr = &CallExpr{Func: &Name{Name: dc.Name}, Args: args}
+									}
+								}
+							}
+						}
+					}
 				} else if s.Let.Type != nil {
 					typ = types.ResolveTypeRef(s.Let.Type, env)
 					e = zeroValueExpr(typ)
@@ -2458,6 +2575,28 @@ func convertStmts(list []*parser.Statement, env *types.Env) ([]Stmt, error) {
 					}
 					typ = inferTypeFromExpr(s.Var.Value)
 					env.SetVar(s.Var.Name, typ, true)
+					if list, ok := e.(*ListLit); ok {
+						if dc, elems := maybeDataClassList(s.Var.Name, list); dc != nil {
+							out = append(out, dc)
+							list.Elems = elems
+							e = list
+						}
+					} else if q := ExtractQueryExpr(s.Var.Value); q != nil && q.Group == nil {
+						selExpr, serr := convertExpr(q.Select)
+						if serr == nil {
+							if d, ok := selExpr.(*DictLit); ok {
+								dc, args := dataClassFromDict(s.Var.Name, d)
+								if dc != nil {
+									out = append(out, dc)
+									if lc, ok := e.(*ListComp); ok {
+										lc.Expr = &CallExpr{Func: &Name{Name: dc.Name}, Args: args}
+									} else if mc, ok := e.(*MultiListComp); ok {
+										mc.Expr = &CallExpr{Func: &Name{Name: dc.Name}, Args: args}
+									}
+								}
+							}
+						}
+					}
 				} else if s.Var.Type != nil {
 					typ = types.ResolveTypeRef(s.Var.Type, env)
 					e = zeroValueExpr(typ)
@@ -3526,10 +3665,10 @@ func convertGroupQuery(q *parser.QueryExpr, env *types.Env, target string) ([]St
 	}
 
 	groupsVar := "_" + target + "_groups"
-	tmpVar := "_g"
 
+	needsDefaultDict = true
 	stmts := []Stmt{
-		&LetStmt{Name: groupsVar, Expr: &DictLit{}},
+		&LetStmt{Name: groupsVar, Expr: &CallExpr{Func: &Name{Name: "defaultdict"}, Args: []Expr{&Name{Name: "list"}}}},
 	}
 
 	var row Expr
@@ -3545,11 +3684,8 @@ func convertGroupQuery(q *parser.QueryExpr, env *types.Env, target string) ([]St
 		row = &DictLit{Keys: rk, Values: rv}
 	}
 
-	initMap := &DictLit{Keys: []Expr{&StringLit{Value: "key"}, &StringLit{Value: "items"}}, Values: []Expr{keyVal, &ListLit{}}}
-	setdef := &CallExpr{Func: &FieldExpr{Target: &Name{Name: groupsVar}, Name: "setdefault"}, Args: []Expr{keyExpr, initMap}}
-	appendCall := &CallExpr{Func: &FieldExpr{Target: &FieldExpr{Target: &Name{Name: tmpVar}, Name: "items", MapIndex: true}, Name: "append"}, Args: []Expr{row}}
+	appendCall := &CallExpr{Func: &FieldExpr{Target: &IndexExpr{Target: &Name{Name: groupsVar}, Index: keyExpr}, Name: "append"}, Args: []Expr{row}}
 	inner := []Stmt{
-		&LetStmt{Name: tmpVar, Expr: setdef},
 		&ExprStmt{Expr: appendCall},
 	}
 	if where != nil {
@@ -3569,9 +3705,22 @@ func convertGroupQuery(q *parser.QueryExpr, env *types.Env, target string) ([]St
 	} else {
 		body = append(body, appendRes)
 	}
-	iterVals := &CallExpr{Func: &FieldExpr{Target: &Name{Name: groupsVar}, Name: "values"}, Args: nil}
+	iterPairs := &CallExpr{Func: &FieldExpr{Target: &Name{Name: groupsVar}, Name: "items"}, Args: nil}
+	keyValExpr := Expr(&IndexExpr{Target: &Name{Name: "_p"}, Index: &IntLit{Value: "0"}})
+	if dl, ok := keyVal.(*DictLit); ok {
+		var vals []Expr
+		for i := range dl.Values {
+			vals = append(vals, &IndexExpr{Target: keyValExpr, Index: &IntLit{Value: fmt.Sprintf("%d", i)}})
+		}
+		keyValExpr = &DictLit{Keys: dl.Keys, Values: vals}
+	}
+	groupObj := &DictLit{Keys: []Expr{&StringLit{Value: "key"}, &StringLit{Value: "items"}}, Values: []Expr{keyValExpr, &IndexExpr{Target: &Name{Name: "_p"}, Index: &IntLit{Value: "1"}}}}
+	loopBody := []Stmt{
+		&LetStmt{Name: q.Group.Name, Expr: groupObj},
+	}
+	loopBody = append(loopBody, body...)
 	stmts = append(stmts, &LetStmt{Name: target, Expr: &ListLit{}})
-	stmts = append(stmts, &ForStmt{Var: q.Group.Name, Iter: iterVals, Body: body})
+	stmts = append(stmts, &ForStmt{Var: "_p", Iter: iterPairs, Body: loopBody})
 
 	return stmts, nil
 }
