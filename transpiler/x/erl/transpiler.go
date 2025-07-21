@@ -254,11 +254,18 @@ type QueryExpr struct {
 	Var     string
 	Src     Expr
 	Froms   []queryFrom
+	Right   *rightJoin
 	Where   Expr
 	Select  Expr
 	SortKey Expr
 	Skip    Expr
 	Take    Expr
+}
+
+type rightJoin struct {
+	Var string
+	Src Expr
+	On  Expr
 }
 
 type queryFrom struct {
@@ -909,6 +916,86 @@ func (ma *MapAssignStmt) emit(w io.Writer) {
 }
 
 func (q *QueryExpr) emit(w io.Writer) {
+	if q.Right != nil {
+		base := &bytes.Buffer{}
+		io.WriteString(base, "[")
+		if q.SortKey != nil {
+			io.WriteString(base, "{")
+			q.SortKey.emit(base)
+			io.WriteString(base, ", ")
+		}
+		q.Select.emit(base)
+		if q.SortKey != nil {
+			io.WriteString(base, "}")
+		}
+		io.WriteString(base, " || ")
+		io.WriteString(base, q.Right.Var)
+		io.WriteString(base, " <- ")
+		q.Right.Src.emit(base)
+		io.WriteString(base, ", ")
+		io.WriteString(base, q.Var)
+		io.WriteString(base, " <- ")
+		q.Src.emit(base)
+		for _, f := range q.Froms {
+			io.WriteString(base, ", ")
+			io.WriteString(base, f.Var)
+			io.WriteString(base, " <- ")
+			f.Src.emit(base)
+		}
+		if q.Right.On != nil {
+			io.WriteString(base, ", ")
+			q.Right.On.emit(base)
+		}
+		if q.Where != nil {
+			io.WriteString(base, ", ")
+			q.Where.emit(base)
+		}
+		io.WriteString(base, "]")
+
+		expr := base.String()
+		if q.SortKey != nil {
+			io.WriteString(w, "lists:map(fun({_,V}) -> V end, ")
+			if q.Take != nil {
+				io.WriteString(w, "lists:sublist(")
+			}
+			if q.Skip != nil {
+				io.WriteString(w, "lists:nthtail(")
+				q.Skip.emit(w)
+				io.WriteString(w, ", ")
+			}
+			io.WriteString(w, "lists:sort(fun({K1,_},{K2,_}) -> K1 =< K2 end, ")
+			io.WriteString(w, expr)
+			io.WriteString(w, ")")
+			if q.Skip != nil {
+				io.WriteString(w, ")")
+			}
+			if q.Take != nil {
+				io.WriteString(w, ", ")
+				q.Take.emit(w)
+				io.WriteString(w, ")")
+			}
+			io.WriteString(w, ")")
+			return
+		}
+		if q.Take != nil {
+			io.WriteString(w, "lists:sublist(")
+		}
+		if q.Skip != nil {
+			io.WriteString(w, "lists:nthtail(")
+			q.Skip.emit(w)
+			io.WriteString(w, ", ")
+		}
+		io.WriteString(w, expr)
+		if q.Skip != nil {
+			io.WriteString(w, ")")
+		}
+		if q.Take != nil {
+			io.WriteString(w, ", ")
+			q.Take.emit(w)
+			io.WriteString(w, ")")
+		}
+		return
+	}
 	base := &bytes.Buffer{}
 	io.WriteString(base, "[")
 	if q.SortKey != nil {
@@ -1245,6 +1332,9 @@ func convertIfStmt(n *parser.IfStmt, env *types.Env, ctx *context) (*IfStmt, err
 	cond, err := convertExpr(n.Cond, env, ctx)
 	if err != nil {
 		return nil, err
+	}
+	if _, ok := types.ExprType(n.Cond, env).(types.BoolType); !ok {
+		cond = &BinaryExpr{Left: cond, Op: "!=", Right: &AtomLit{Name: "nil"}}
 	}
 	thenStmts := []Stmt{}
 	for _, st := range n.Then {
@@ -1707,6 +1797,9 @@ func convertIf(ifx *parser.IfExpr, env *types.Env, ctx *context) (Expr, error) {
 	if err != nil {
 		return nil, err
 	}
+	if _, ok := types.ExprType(ifx.Cond, env).(types.BoolType); !ok {
+		cond = &BinaryExpr{Left: cond, Op: "!=", Right: &AtomLit{Name: "nil"}}
+	}
 	thenExpr, err := convertExpr(ifx.Then, env, ctx)
 	if err != nil {
 		return nil, err
@@ -1766,6 +1859,26 @@ func convertQueryExpr(q *parser.QueryExpr, env *types.Env, ctx *context) (Expr, 
 	child := types.NewEnv(env)
 	child.SetVar(q.Var, types.AnyType{}, true)
 	froms := []queryFrom{}
+	var rjoin *rightJoin
+	var cond Expr
+	joins := q.Joins
+	if len(q.Joins) == 1 && q.Joins[0].Side != nil && *q.Joins[0].Side == "right" {
+		j := q.Joins[0]
+		js, err := convertExpr(j.Src, env, ctx)
+		if err != nil {
+			return nil, err
+		}
+		ralias := loopCtx.newAlias(j.Var)
+		loopCtx.setStrFields(j.Var, stringFields(js))
+		child.SetVar(j.Var, types.AnyType{}, true)
+		onExpr, err := convertExpr(j.On, child, loopCtx)
+		if err != nil {
+			return nil, err
+		}
+		rjoin = &rightJoin{Var: ralias, Src: js, On: onExpr}
+		cond = onExpr
+		joins = nil
+	}
 	for _, f := range q.Froms {
 		fe, err := convertExpr(f.Src, env, ctx)
 		if err != nil {
@@ -1776,8 +1889,7 @@ func convertQueryExpr(q *parser.QueryExpr, env *types.Env, ctx *context) (Expr, 
 		child.SetVar(f.Var, types.AnyType{}, true)
 		froms = append(froms, queryFrom{Var: av, Src: fe})
 	}
-	var cond Expr
-	for _, j := range q.Joins {
+	for _, j := range joins {
 		if j.Side != nil {
 			return nil, fmt.Errorf("unsupported join side")
 		}
@@ -1835,7 +1947,7 @@ func convertQueryExpr(q *parser.QueryExpr, env *types.Env, ctx *context) (Expr, 
 			return nil, err
 		}
 	}
-	return &QueryExpr{Var: alias, Src: src, Froms: froms, Where: cond, Select: sel, SortKey: sortKey, Skip: skipExpr, Take: takeExpr}, nil
+	return &QueryExpr{Var: alias, Src: src, Froms: froms, Right: rjoin, Where: cond, Select: sel, SortKey: sortKey, Skip: skipExpr, Take: takeExpr}, nil
 }
 
 func convertLiteral(l *parser.Literal) (Expr, error) {

@@ -233,6 +233,8 @@ func TestTranspileCastStruct(t *testing.T) { runGolden(t, "cast_struct") }
 
 func TestTranspileUserTypeLiteral(t *testing.T) { runGolden(t, "user_type_literal") }
 
+func TestTranspileRightJoin(t *testing.T) { runGolden(t, "right_join") }
+
 func updateEnabled() bool { return *update }
 
 func countCompiled() (int, int) {
