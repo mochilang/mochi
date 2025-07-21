@@ -451,6 +451,12 @@ func (r *RecordLit) emit(w io.Writer) {
 }
 func (n *NameRef) emit(w io.Writer) { io.WriteString(w, safeName(n.Name)) }
 func (f *FieldExpr) emit(w io.Writer) {
+	if isMapExpr(f.Target) {
+		needDataMap = true
+		f.Target.emit(w)
+		fmt.Fprintf(w, " Map.! %q", f.Field)
+		return
+	}
 	f.Target.emit(w)
 	io.WriteString(w, ".")
 	io.WriteString(w, f.Field)
@@ -483,6 +489,10 @@ func isStringExpr(e Expr) bool {
 		return true
 	case *NameRef:
 		return varTypes[ex.Name] == "string"
+	case *IndexExpr:
+		if isMapExpr(ex.Target) {
+			return true
+		}
 	case *BinaryExpr:
 		if len(ex.Ops) > 0 && ex.Ops[0].Op == "+" {
 			if isStringExpr(ex.Left) || isStringExpr(ex.Ops[0].Right) {
@@ -511,6 +521,13 @@ func isBoolExpr(e Expr) bool {
 			op := ex.Ops[0].Op
 			switch op {
 			case "==", "!=", "<", ">", "<=", ">=", "&&", "||", "in":
+				return true
+			}
+		}
+	case *CallExpr:
+		if n, ok := ex.Fun.(*NameRef); ok {
+			switch n.Name {
+			case "isInfixOf", "elem", "notElem", "null":
 				return true
 			}
 		}
@@ -1102,6 +1119,23 @@ func convertPostfix(pf *parser.PostfixExpr) (Expr, error) {
 	if pf == nil {
 		return nil, fmt.Errorf("nil postfix")
 	}
+	if pf.Target != nil && pf.Target.Selector != nil &&
+		len(pf.Target.Selector.Tail) == 1 && pf.Target.Selector.Tail[0] == "contains" &&
+		len(pf.Ops) == 1 && pf.Ops[0].Call != nil {
+		if len(pf.Ops[0].Call.Args) != 1 {
+			return nil, fmt.Errorf("contains expects 1 arg")
+		}
+		base, err := convertPrimary(&parser.Primary{Selector: &parser.SelectorExpr{Root: pf.Target.Selector.Root}})
+		if err != nil {
+			return nil, err
+		}
+		arg, err := convertExpr(pf.Ops[0].Call.Args[0])
+		if err != nil {
+			return nil, err
+		}
+		needDataList = true
+		return &CallExpr{Fun: &NameRef{Name: "isInfixOf"}, Args: []Expr{arg, base}}, nil
+	}
 	expr, err := convertPrimary(pf.Target)
 	if err != nil {
 		return nil, err
@@ -1217,7 +1251,7 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 		}
 		return &ListLit{Elems: elems}, nil
 	case p.Map != nil:
-		if envInfo != nil {
+		if len(p.Map.Items) >= 3 && envInfo != nil {
 			if st, ok := types.InferStructFromMapEnv(p.Map, envInfo); ok {
 				structCount++
 				name := fmt.Sprintf("GenType%d", structCount)
