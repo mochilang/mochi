@@ -1016,6 +1016,34 @@ func pyTypeName(name string) string {
 	}
 }
 
+func pyTypeToType(name string, env *types.Env) types.Type {
+	switch name {
+	case "int":
+		return types.IntType{}
+	case "float":
+		return types.FloatType{}
+	case "string", "str":
+		return types.StringType{}
+	case "bool":
+		return types.BoolType{}
+	default:
+		if env != nil {
+			if st, ok := env.GetStruct(name); ok {
+				return st
+			}
+		}
+		return types.AnyType{}
+	}
+}
+
+func structFromDataClass(dc *DataClassDef, env *types.Env) types.StructType {
+	fields := map[string]types.Type{}
+	for _, f := range dc.Fields {
+		fields[f.Name] = pyTypeToType(f.Type, env)
+	}
+	return types.StructType{Name: dc.Name, Fields: fields}
+}
+
 func typeRefSimpleName(t *parser.TypeRef) string {
 	if t == nil {
 		return ""
@@ -1190,7 +1218,7 @@ func toClassName(name string) string {
 	return toCamel(name)
 }
 
-func maybeDataClassList(name string, list *ListLit) (*DataClassDef, []Expr) {
+func maybeDataClassList(name string, list *ListLit, env *types.Env) (*DataClassDef, []Expr) {
 	if len(list.Elems) == 0 {
 		return nil, nil
 	}
@@ -1220,16 +1248,8 @@ func maybeDataClassList(name string, list *ListLit) (*DataClassDef, []Expr) {
 	}
 	var fields []DataClassField
 	for i, k := range keys {
-		typ := "any"
-		switch first.Values[i].(type) {
-		case *IntLit:
-			typ = "int"
-		case *FloatLit:
-			typ = "float"
-		case *StringLit:
-			typ = "str"
-		}
-		fields = append(fields, DataClassField{Name: k, Type: typ})
+		t := inferPyType(first.Values[i], env)
+		fields = append(fields, DataClassField{Name: k, Type: t.String()})
 	}
 	var elems []Expr
 	className := toClassName(name)
@@ -1242,7 +1262,7 @@ func maybeDataClassList(name string, list *ListLit) (*DataClassDef, []Expr) {
 	return &DataClassDef{Name: className, Fields: fields}, elems
 }
 
-func dataClassFromDict(name string, d *DictLit) (*DataClassDef, []Expr) {
+func dataClassFromDict(name string, d *DictLit, env *types.Env) (*DataClassDef, []Expr) {
 	keys := make([]string, len(d.Keys))
 	for i, k := range d.Keys {
 		s, ok := k.(*StringLit)
@@ -1253,16 +1273,8 @@ func dataClassFromDict(name string, d *DictLit) (*DataClassDef, []Expr) {
 	}
 	var fields []DataClassField
 	for i, k := range keys {
-		typ := "any"
-		switch d.Values[i].(type) {
-		case *IntLit:
-			typ = "int"
-		case *FloatLit:
-			typ = "float"
-		case *StringLit:
-			typ = "str"
-		}
-		fields = append(fields, DataClassField{Name: k, Type: typ})
+		t := inferPyType(d.Values[i], env)
+		fields = append(fields, DataClassField{Name: k, Type: t.String()})
 	}
 	className := toClassName(name)
 	args := make([]Expr, len(d.Values))
@@ -1276,6 +1288,95 @@ func isNumeric(t types.Type) bool {
 		return true
 	default:
 		return false
+	}
+}
+
+func inferPyType(e Expr, env *types.Env) types.Type {
+	switch ex := e.(type) {
+	case *IntLit:
+		return types.IntType{}
+	case *FloatLit:
+		return types.FloatType{}
+	case *StringLit:
+		return types.StringType{}
+	case *BoolLit:
+		return types.BoolType{}
+	case *Name:
+		if env != nil {
+			if t, err := env.GetVar(ex.Name); err == nil {
+				return t
+			}
+		}
+		return types.AnyType{}
+	case *FieldExpr:
+		t := inferPyType(ex.Target, env)
+		if st, ok := t.(types.StructType); ok {
+			if ft, ok := st.Fields[ex.Name]; ok {
+				return ft
+			}
+		}
+		if mp, ok := t.(types.MapType); ok {
+			return mp.Value
+		}
+		return types.AnyType{}
+	case *IndexExpr:
+		t := inferPyType(ex.Target, env)
+		switch tt := t.(type) {
+		case types.ListType:
+			return tt.Elem
+		case types.MapType:
+			return tt.Value
+		case types.StructType:
+			if s, ok := ex.Index.(*StringLit); ok {
+				if ft, ok := tt.Fields[s.Value]; ok {
+					return ft
+				}
+			}
+		}
+		return types.AnyType{}
+	case *CallExpr:
+		if n, ok := ex.Func.(*Name); ok {
+			switch n.Name {
+			case "len":
+				return types.IntType{}
+			}
+		}
+		return types.AnyType{}
+	case *BinaryExpr:
+		lt := inferPyType(ex.Left, env)
+		rt := inferPyType(ex.Right, env)
+		switch ex.Op {
+		case "+", "-", "*":
+			if isNumeric(lt) && isNumeric(rt) {
+				if lt.String() == (types.FloatType{}).String() || rt.String() == (types.FloatType{}).String() {
+					return types.FloatType{}
+				}
+				return types.IntType{}
+			}
+			return types.AnyType{}
+		case "/":
+			if isNumeric(lt) && isNumeric(rt) {
+				return types.FloatType{}
+			}
+			return types.AnyType{}
+		default:
+			return types.AnyType{}
+		}
+	case *CondExpr:
+		t1 := inferPyType(ex.Then, env)
+		t2 := inferPyType(ex.Else, env)
+		if t1.String() == t2.String() {
+			return t1
+		}
+		if isNumeric(t1) && isNumeric(t2) {
+			return types.FloatType{}
+		}
+		return types.AnyType{}
+	case *ListComp:
+		elem := inferPyType(ex.Expr, env)
+		return types.ListType{Elem: elem}
+	default:
+		return types.AnyType{}
 	}
 }
 
@@ -1720,6 +1821,24 @@ func extractSaveExpr(e *parser.Expr) *parser.SaveExpr {
 	return p.Target.Save
 }
 
+func extractMapLiteral(e *parser.Expr) *parser.MapLiteral {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) > 0 {
+		return nil
+	}
+	u := e.Binary.Left
+	if len(u.Ops) > 0 || u.Value == nil {
+		return nil
+	}
+	p := u.Value
+	if len(p.Ops) > 0 || p.Target == nil {
+		return nil
+	}
+	if p.Target.Map != nil {
+		return p.Target.Map
+	}
+	return nil
+}
+
 func ExtractQueryExpr(e *parser.Expr) *parser.QueryExpr {
 	if e == nil || e.Binary == nil || len(e.Binary.Right) > 0 {
 		return nil
@@ -1739,7 +1858,7 @@ func replaceGroup(e Expr, name string) Expr {
 	switch ex := e.(type) {
 	case *Name:
 		if ex.Name == name {
-			return &FieldExpr{Target: &Name{Name: name}, Name: "items", MapIndex: true}
+			return &FieldExpr{Target: &Name{Name: name}, Name: "items"}
 		}
 		return ex
 	case *BinaryExpr:
@@ -1763,7 +1882,7 @@ func replaceGroup(e Expr, name string) Expr {
 		return ex
 	case *IndexExpr:
 		if n, ok := ex.Target.(*Name); ok && n.Name == name {
-			return &FieldExpr{Target: n, Name: "items", MapIndex: true}
+			return &FieldExpr{Target: n, Name: "items"}
 		}
 		ex.Target = replaceGroup(ex.Target, name)
 		ex.Index = replaceGroup(ex.Index, name)
@@ -2231,16 +2350,20 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 						env.SetVar(st.Let.Name, typ, false)
 					}
 					if list, ok := e.(*ListLit); ok {
-						if dc, elems := maybeDataClassList(st.Let.Name, list); dc != nil {
+						if dc, elems := maybeDataClassList(st.Let.Name, list, env); dc != nil {
 							p.Stmts = append(p.Stmts, dc)
 							list.Elems = elems
 							e = list
+							if env != nil {
+								env.SetStruct(dc.Name, structFromDataClass(dc, env))
+								env.SetVar(st.Let.Name, types.ListType{Elem: structFromDataClass(dc, env)}, false)
+							}
 						}
 					} else if q := ExtractQueryExpr(st.Let.Value); q != nil && q.Group == nil {
 						selExpr, serr := convertExpr(q.Select)
 						if serr == nil {
 							if d, ok := selExpr.(*DictLit); ok {
-								dc, args := dataClassFromDict(st.Let.Name, d)
+								dc, args := dataClassFromDict(st.Let.Name, d, env)
 								if dc != nil {
 									p.Stmts = append(p.Stmts, dc)
 									if lc, ok := e.(*ListComp); ok {
@@ -2282,16 +2405,20 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 						env.SetVar(st.Var.Name, typ, true)
 					}
 					if list, ok := e.(*ListLit); ok {
-						if dc, elems := maybeDataClassList(st.Var.Name, list); dc != nil {
+						if dc, elems := maybeDataClassList(st.Var.Name, list, env); dc != nil {
 							p.Stmts = append(p.Stmts, dc)
 							list.Elems = elems
 							e = list
+							if env != nil {
+								env.SetStruct(dc.Name, structFromDataClass(dc, env))
+								env.SetVar(st.Var.Name, types.ListType{Elem: structFromDataClass(dc, env)}, true)
+							}
 						}
 					} else if q := ExtractQueryExpr(st.Var.Value); q != nil && q.Group == nil {
 						selExpr, serr := convertExpr(q.Select)
 						if serr == nil {
 							if d, ok := selExpr.(*DictLit); ok {
-								dc, args := dataClassFromDict(st.Var.Name, d)
+								dc, args := dataClassFromDict(st.Var.Name, d, env)
 								if dc != nil {
 									p.Stmts = append(p.Stmts, dc)
 									if lc, ok := e.(*ListComp); ok {
@@ -2326,6 +2453,11 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 			iter, err := convertExpr(st.For.Source)
 			if err != nil {
 				return nil, err
+			}
+			if env != nil {
+				if lt, ok := inferTypeFromExpr(st.For.Source).(types.ListType); ok {
+					env.SetVar(st.For.Name, lt.Elem, true)
+				}
 			}
 			if st.For.RangeEnd != nil {
 				end, err := convertExpr(st.For.RangeEnd)
@@ -2577,16 +2709,20 @@ func convertStmts(list []*parser.Statement, env *types.Env) ([]Stmt, error) {
 					typ = inferTypeFromExpr(s.Let.Value)
 					env.SetVar(s.Let.Name, typ, false)
 					if list, ok := e.(*ListLit); ok {
-						if dc, elems := maybeDataClassList(s.Let.Name, list); dc != nil {
+						if dc, elems := maybeDataClassList(s.Let.Name, list, env); dc != nil {
 							out = append(out, dc)
 							list.Elems = elems
 							e = list
+							if env != nil {
+								env.SetStruct(dc.Name, structFromDataClass(dc, env))
+								env.SetVar(s.Let.Name, types.ListType{Elem: structFromDataClass(dc, env)}, false)
+							}
 						}
 					} else if q := ExtractQueryExpr(s.Let.Value); q != nil && q.Group == nil {
 						selExpr, serr := convertExpr(q.Select)
 						if serr == nil {
 							if d, ok := selExpr.(*DictLit); ok {
-								dc, args := dataClassFromDict(s.Let.Name, d)
+								dc, args := dataClassFromDict(s.Let.Name, d, env)
 								if dc != nil {
 									out = append(out, dc)
 									if lc, ok := e.(*ListComp); ok {
@@ -2626,16 +2762,20 @@ func convertStmts(list []*parser.Statement, env *types.Env) ([]Stmt, error) {
 					typ = inferTypeFromExpr(s.Var.Value)
 					env.SetVar(s.Var.Name, typ, true)
 					if list, ok := e.(*ListLit); ok {
-						if dc, elems := maybeDataClassList(s.Var.Name, list); dc != nil {
+						if dc, elems := maybeDataClassList(s.Var.Name, list, env); dc != nil {
 							out = append(out, dc)
 							list.Elems = elems
 							e = list
+							if env != nil {
+								env.SetStruct(dc.Name, structFromDataClass(dc, env))
+								env.SetVar(s.Var.Name, types.ListType{Elem: structFromDataClass(dc, env)}, true)
+							}
 						}
 					} else if q := ExtractQueryExpr(s.Var.Value); q != nil && q.Group == nil {
 						selExpr, serr := convertExpr(q.Select)
 						if serr == nil {
 							if d, ok := selExpr.(*DictLit); ok {
-								dc, args := dataClassFromDict(s.Var.Name, d)
+								dc, args := dataClassFromDict(s.Var.Name, d, env)
 								if dc != nil {
 									out = append(out, dc)
 									if lc, ok := e.(*ListComp); ok {
@@ -2670,6 +2810,11 @@ func convertStmts(list []*parser.Statement, env *types.Env) ([]Stmt, error) {
 			iter, err := convertExpr(s.For.Source)
 			if err != nil {
 				return nil, err
+			}
+			if env != nil {
+				if lt, ok := inferTypeFromExpr(s.For.Source).(types.ListType); ok {
+					env.SetVar(s.For.Name, lt.Elem, true)
+				}
 			}
 			if s.For.RangeEnd != nil {
 				end, err := convertExpr(s.For.RangeEnd)
@@ -3380,6 +3525,18 @@ func convertQueryExpr(q *parser.QueryExpr) (Expr, error) {
 	if err != nil {
 		return nil, err
 	}
+	if currentEnv != nil {
+		switch t := inferTypeFromExpr(q.Source).(type) {
+		case types.ListType:
+			currentEnv.SetVar(q.Var, t.Elem, true)
+		case types.StructType:
+			if it, ok := t.Fields["items"]; ok {
+				if lt, ok := it.(types.ListType); ok {
+					currentEnv.SetVar(q.Var, lt.Elem, true)
+				}
+			}
+		}
+	}
 	iters = append(iters, firstIter)
 	for _, f := range q.Froms {
 		e, err := convertExpr(f.Src)
@@ -3641,6 +3798,11 @@ func convertGroupQuery(q *parser.QueryExpr, env *types.Env, target string) ([]St
 	if err != nil {
 		return nil, err
 	}
+	if env != nil {
+		if lt, ok := inferTypeFromExpr(q.Source).(types.ListType); ok {
+			env.SetVar(q.Var, lt.Elem, true)
+		}
+	}
 	iters = append(iters, src)
 	for _, f := range q.Froms {
 		e, err := convertExpr(f.Src)
@@ -3654,6 +3816,11 @@ func convertGroupQuery(q *parser.QueryExpr, env *types.Env, target string) ([]St
 		e, err := convertExpr(j.Src)
 		if err != nil {
 			return nil, err
+		}
+		if env != nil {
+			if lt, ok := inferTypeFromExpr(j.Src).(types.ListType); ok {
+				env.SetVar(j.Var, lt.Elem, true)
+			}
 		}
 		cond, err := convertExpr(j.On)
 		if err != nil {
@@ -3689,44 +3856,40 @@ func convertGroupQuery(q *parser.QueryExpr, env *types.Env, target string) ([]St
 	}
 
 	prev := currentEnv
-	selIdent, selIsIdent := isSimpleIdent(q.Select)
 	genv := types.NewEnv(env)
-	genv.SetVar(q.Group.Name, types.AnyType{}, true)
+	var itemType types.Type = types.AnyType{}
+	if env != nil {
+		if t, err := env.GetVar(q.Var); err == nil {
+			itemType = t
+		}
+	}
+	keyType := inferPyType(keyVal, env)
+	genv.SetVar(q.Group.Name, types.StructType{Fields: map[string]types.Type{"key": keyType, "items": types.ListType{Elem: itemType}}}, true)
 	currentEnv = genv
 	sel, err := convertExpr(q.Select)
 	if err != nil {
 		currentEnv = prev
 		return nil, err
 	}
-	var having Expr
-	if q.Group.Having != nil {
-		having, err = convertExpr(q.Group.Having)
-		if err != nil {
-			currentEnv = prev
-			return nil, err
-		}
-	}
 	currentEnv = prev
-	if !(selIsIdent && selIdent == q.Group.Name) {
-		sel = replaceGroup(sel, q.Group.Name)
-	}
-	if having != nil {
-		having = replaceGroup(having, q.Group.Name)
-	}
+	sel = replaceGroup(sel, q.Group.Name)
 
 	groupsVar := "_" + target + "_groups"
 
-	stmts := []Stmt{
-		&LetStmt{Name: groupsVar, Expr: &DictLit{}},
+	groupDC := &DataClassDef{
+		Name:   toClassName(groupsVar),
+		Fields: []DataClassField{{Name: "key", Type: keyType.String()}, {Name: "items", Type: "list"}},
+	}
+	if env != nil {
+		env.SetStruct(groupDC.Name, types.StructType{Fields: map[string]types.Type{"key": keyType, "items": types.ListType{Elem: itemType}}})
 	}
 
-	valExpr := &FieldExpr{Target: &Name{Name: q.Var}, Name: "value"}
+	stmts := []Stmt{groupDC, &LetStmt{Name: groupsVar, Expr: &DictLit{}}}
+
+	row := &Name{Name: q.Var}
 	inner := []Stmt{
-		&IfStmt{
-			Cond: &RawExpr{Code: fmt.Sprintf("%s not in %s", exprString(keyExpr), groupsVar)},
-			Then: []Stmt{&IndexAssignStmt{Target: &Name{Name: groupsVar}, Index: keyExpr, Value: &IntLit{Value: "0"}}},
-		},
-		&ExprStmt{Expr: &RawExpr{Code: fmt.Sprintf("%s[%s] += %s", groupsVar, exprString(keyExpr), exprString(valExpr))}},
+		&LetStmt{Name: "_g", Expr: &CallExpr{Func: &FieldExpr{Target: &Name{Name: groupsVar}, Name: "setdefault"}, Args: []Expr{keyExpr, &CallExpr{Func: &Name{Name: groupDC.Name}, Args: []Expr{keyExpr, &ListLit{}}}}}},
+		&ExprStmt{Expr: &CallExpr{Func: &FieldExpr{Target: &FieldExpr{Target: &Name{Name: "_g"}, Name: "items"}, Name: "append"}, Args: []Expr{row}}},
 	}
 	if where != nil {
 		inner = []Stmt{&IfStmt{Cond: where, Then: inner}}
@@ -3738,16 +3901,40 @@ func convertGroupQuery(q *parser.QueryExpr, env *types.Env, target string) ([]St
 	}
 	stmts = append(stmts, bodyLoop...)
 
+	var resultDC *DataClassDef
 	if d, ok := sel.(*DictLit); ok {
-		dc, args := dataClassFromDict(target, d)
+		dc, args := dataClassFromDict(target, d, genv)
+		if mp := extractMapLiteral(q.Select); mp != nil && dc != nil {
+			savedEnv := currentEnv
+			currentEnv = genv
+			for i, it := range mp.Items {
+				typ := inferTypeFromExpr(it.Value)
+				if i < len(dc.Fields) {
+					dc.Fields[i].Type = typ.String()
+				}
+			}
+			currentEnv = savedEnv
+			if len(dc.Fields) > 0 {
+				dc.Fields[0].Type = "string"
+			}
+		}
 		if dc != nil {
+			resultDC = dc
 			stmts = append(stmts, dc)
 			sel = &CallExpr{Func: &Name{Name: dc.Name}, Args: args}
 		}
 	}
-	iterPairs := &CallExpr{Func: &FieldExpr{Target: &Name{Name: groupsVar}, Name: "items"}, Args: nil}
-	listComp := &ListComp{Var: "_p", Iter: iterPairs, Expr: sel}
+	iterPairs := &CallExpr{Func: &FieldExpr{Target: &Name{Name: groupsVar}, Name: "values"}, Args: nil}
+	listComp := &ListComp{Var: q.Group.Name, Iter: iterPairs, Expr: sel}
 	stmts = append(stmts, &LetStmt{Name: target, Expr: listComp})
+	if env != nil {
+		if resultDC != nil {
+			env.SetStruct(resultDC.Name, structFromDataClass(resultDC, env))
+			env.SetVar(target, types.ListType{Elem: structFromDataClass(resultDC, env)}, false)
+		} else {
+			env.SetVar(target, types.ListType{Elem: types.AnyType{}}, false)
+		}
+	}
 
 	return stmts, nil
 }
