@@ -1,3 +1,23 @@
+## Progress (2025-07-21 13:50 +0700)
+- ctrans: add map iteration support
+- Regenerated golden files - 64/100 vm valid programs passing
+
+## Progress (2025-07-21 13:50 +0700)
+- ctrans: add map iteration support
+- Regenerated golden files - 63/100 vm valid programs passing
+
+## Progress (2025-07-21 13:50 +0700)
+- ctrans: add map iteration support
+- Regenerated golden files - 63/100 vm valid programs passing
+
+## Progress (2025-07-21 13:50 +0700)
+- ctrans: add map iteration support
+- Regenerated golden files - 63/100 vm valid programs passing
+
+## Progress (2025-07-21 13:50 +0700)
+- ctrans: add map iteration support
+- Regenerated golden files - 63/100 vm valid programs passing
+
 ## Progress (2025-07-21 13:37 +0700)
 - scala transpiler: add group_by support
 - Regenerated golden files - 63/100 vm valid programs passing

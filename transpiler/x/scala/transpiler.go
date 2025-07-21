@@ -512,13 +512,15 @@ type queryFrom struct {
 
 // GroupByExpr represents a query with grouping support.
 type GroupByExpr struct {
-	Var    string
-	Source Expr
-	Key    Expr
-	Name   string
-	Where  Expr
-	Select Expr
-	Having Expr
+	Var      string
+	Source   Expr
+	Key      Expr
+	Name     string
+	Where    Expr
+	Select   Expr
+	Having   Expr
+	Sort     Expr
+	SortType string
 }
 
 type QueryExpr struct {
@@ -631,7 +633,11 @@ func (r *RightJoinExpr) emit(w io.Writer) {
 }
 
 func (g *GroupByExpr) emit(w io.Writer) {
-	fmt.Fprint(w, "({ var _groups = Map[Any, Map[String, Any]]() ; var _res = ArrayBuffer[Any]() ; for (")
+	fmt.Fprint(w, "({ var _groups = Map[Any, Map[String, Any]]() ; ")
+	if g.Sort != nil {
+		fmt.Fprintf(w, "var _tmp = ArrayBuffer[(%s,Any)]() ; ", g.SortType)
+	}
+	fmt.Fprint(w, "var _res = ArrayBuffer[Any]() ; for (")
 	fmt.Fprint(w, g.Var)
 	fmt.Fprint(w, " <- ")
 	g.Source.emit(w)
@@ -657,13 +663,27 @@ func (g *GroupByExpr) emit(w io.Writer) {
 		g.Having.emit(w)
 		fmt.Fprint(w, ") {")
 	}
-	fmt.Fprint(w, " _res.append(")
-	g.Select.emit(w)
-	fmt.Fprint(w, ")")
+	if g.Sort != nil {
+		fmt.Fprint(w, " _tmp.append(")
+		fmt.Fprint(w, "(")
+		g.Sort.emit(w)
+		fmt.Fprint(w, ", ")
+		g.Select.emit(w)
+		fmt.Fprint(w, ")")
+		fmt.Fprint(w, ")")
+	} else {
+		fmt.Fprint(w, " _res.append(")
+		g.Select.emit(w)
+		fmt.Fprint(w, ")")
+	}
 	if g.Having != nil {
 		fmt.Fprint(w, " }")
 	}
-	fmt.Fprint(w, " } ; _res })")
+	fmt.Fprint(w, " }")
+	if g.Sort != nil {
+		fmt.Fprint(w, " ; _res = _tmp.sortBy(_._1).map(_._2)")
+	}
+	fmt.Fprint(w, " ; _res })")
 }
 
 // Emit generates formatted Scala source for the given program.
@@ -1448,7 +1468,7 @@ func convertInnerJoinQuery(q *parser.QueryExpr, env *types.Env) (Expr, error) {
 }
 
 func convertGroupQuery(q *parser.QueryExpr, env *types.Env) (Expr, error) {
-	if q.Group == nil || len(q.Froms) != 0 || len(q.Joins) != 0 || q.Sort != nil || q.Skip != nil || q.Take != nil || q.Distinct {
+	if q.Group == nil || len(q.Froms) != 0 || len(q.Joins) != 0 || q.Skip != nil || q.Take != nil || q.Distinct {
 		return nil, fmt.Errorf("unsupported query")
 	}
 	src, err := convertExpr(q.Source, env)
@@ -1482,13 +1502,25 @@ func convertGroupQuery(q *parser.QueryExpr, env *types.Env) (Expr, error) {
 		return nil, err
 	}
 	var having Expr
+	var sortExpr Expr
+	var sortType string
 	if q.Group.Having != nil {
 		having, err = convertExpr(q.Group.Having, genv)
 		if err != nil {
 			return nil, err
 		}
 	}
-	return &GroupByExpr{Var: q.Var, Source: src, Key: key, Name: q.Group.Name, Where: where, Select: sel, Having: having}, nil
+	if q.Sort != nil {
+		sortExpr, err = convertExpr(q.Sort, genv)
+		if err != nil {
+			return nil, err
+		}
+		sortType = inferType(sortExpr)
+		if sortType == "" {
+			sortType = toScalaTypeFromType(types.ExprType(q.Sort, genv))
+		}
+	}
+	return &GroupByExpr{Var: q.Var, Source: src, Key: key, Name: q.Group.Name, Where: where, Select: sel, Having: having, Sort: sortExpr, SortType: sortType}, nil
 }
 
 func convertQueryExpr(q *parser.QueryExpr, env *types.Env) (Expr, error) {
