@@ -1,5 +1,5 @@
-:- style_check(-singleton).
 :- initialization(main).
+:- style_check(-singleton).
 
 main :-
     Y is 0,

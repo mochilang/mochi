@@ -1429,6 +1429,12 @@ func updateReadme() {
 	buf.WriteString("# Prolog Transpiler\n\n")
 	buf.WriteString("This directory contains a tiny transpiler that converts a restricted subset of Mochi programs to SWI-Prolog. It is mainly used for experimentation and golden tests.\n\n")
 	fmt.Fprintf(&buf, "## VM Golden Test Checklist (%d/%d)\n", compiled, total)
+	out, err := exec.Command("git", "log", "-1", "--format=%cI").Output()
+	if err == nil {
+		if t, perr := time.Parse(time.RFC3339, strings.TrimSpace(string(out))); perr == nil {
+			buf.WriteString(fmt.Sprintf("Last updated: %s\n", t.Format("2006-01-02 15:04 MST")))
+		}
+	}
 	buf.WriteString(strings.Join(lines, "\n"))
 	buf.WriteString("\n\n*Checklist generated automatically from tests/vm/valid*")
 	_ = os.WriteFile(readme, buf.Bytes(), 0o644)
