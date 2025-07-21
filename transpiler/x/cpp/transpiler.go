@@ -304,6 +304,19 @@ type LeftJoinGroupComp struct {
 	KeyType     string
 }
 
+// LeftJoinComp represents a simple left join without grouping.
+type LeftJoinComp struct {
+	LeftVar   string
+	LeftIter  Expr
+	RightVar  string
+	RightIter Expr
+	RightType string
+	InnerType string
+	Cond      Expr
+	Body      Expr
+	ElemType  string
+}
+
 // SortComp represents a query with optional sorting and slicing.
 type SortComp struct {
 	Vars     []string
@@ -332,10 +345,15 @@ func (p *Program) write(w io.Writer) {
 	p.addInclude("<string>")
 	p.addInclude("<sstream>")
 	p.addInclude("<iomanip>")
+	p.addInclude("<optional>")
 	for _, inc := range p.Includes {
 		fmt.Fprintf(w, "#include %s\n", inc)
 	}
 	fmt.Fprintln(w)
+	fmt.Fprintln(w)
+	fmt.Fprintln(w, "template<typename T>\nstd::ostream& operator<<(std::ostream& os, const std::optional<T>& v) {")
+	fmt.Fprintln(w, "    if(v) os << *v; else os << \"None\";")
+	fmt.Fprintln(w, "    return os;\n}")
 	fmt.Fprintln(w)
 	for _, st := range p.Structs {
 		fmt.Fprintf(w, "struct %s {\n", st.Name)
@@ -348,6 +366,24 @@ func (p *Program) write(w io.Writer) {
 			fmt.Fprintln(w, "    size_t size() const { return items.size(); }")
 		}
 		fmt.Fprintln(w, "};")
+		fmt.Fprintln(w)
+	}
+	for _, st := range p.Structs {
+		fmt.Fprintf(w, "std::ostream& operator<<(std::ostream& os, const %s& v) {\n", st.Name)
+		fmt.Fprintf(w, "    os << '{'")
+		for i, f := range st.Fields {
+			if i > 0 {
+				fmt.Fprintf(w, " << \", \"")
+			}
+			if f.Type == "std::string" {
+				fmt.Fprintf(w, " << \"'%s': '\" << v.%s << \"'\"", f.Name, f.Name)
+			} else {
+				fmt.Fprintf(w, " << \"'%s': \" << v.%s", f.Name, f.Name)
+			}
+		}
+		fmt.Fprintln(w, " << '}';")
+		fmt.Fprintln(w, "    return os;")
+		fmt.Fprintln(w, "}")
 		fmt.Fprintln(w)
 	}
 	currentProgram = p
@@ -412,14 +448,16 @@ func (s *PrintStmt) emit(w io.Writer, indent int) {
 	}
 	if currentProgram != nil {
 		currentProgram.addInclude("<iostream>")
+		currentProgram.addInclude("<sstream>")
 	}
 	io.WriteString(w, "std::cout")
 	for i, v := range s.Values {
 		if i > 0 {
 			io.WriteString(w, " << ' '")
 		}
-		io.WriteString(w, " << ")
+		io.WriteString(w, " << ([&]{ std::ostringstream ss; ss<<")
 		v.emit(w)
+		io.WriteString(w, "; return ss.str(); }())")
 	}
 	io.WriteString(w, " << std::endl;\n")
 }
@@ -483,7 +521,7 @@ func (t *TupleExpr) emit(w io.Writer) {
 }
 
 func (s *StringLit) emit(w io.Writer) {
-	fmt.Fprintf(w, "std::string(%q)", s.Value)
+	fmt.Fprintf(w, "%q", s.Value)
 }
 
 func (i *IntLit) emit(w io.Writer) { fmt.Fprintf(w, "%d", i.Value) }
@@ -860,6 +898,37 @@ func (lgc *LeftJoinGroupComp) emit(w io.Writer) {
 	io.WriteString(w, "return __items; }())")
 }
 
+func (ljc *LeftJoinComp) emit(w io.Writer) {
+	io.WriteString(w, "([]{ std::vector<"+ljc.ElemType+"> __items;\n")
+	io.WriteString(w, "for (auto "+ljc.LeftVar+" : ")
+	ljc.LeftIter.emit(w)
+	io.WriteString(w, ") {\n")
+	io.WriteString(w, "    bool __matched = false;\n")
+	io.WriteString(w, "    for (auto __"+ljc.RightVar+" : ")
+	ljc.RightIter.emit(w)
+	io.WriteString(w, ") {\n")
+	io.WriteString(w, "        auto "+ljc.RightVar+" = __"+ljc.RightVar+";\n")
+	io.WriteString(w, "        if(")
+	ljc.Cond.emit(w)
+	io.WriteString(w, ") {\n")
+	io.WriteString(w, "            __matched = true;\n")
+	io.WriteString(w, "            { std::optional<"+ljc.InnerType+"> "+ljc.RightVar+"_opt("+ljc.RightVar+");\n")
+	io.WriteString(w, "            auto "+ljc.RightVar+" = "+ljc.RightVar+"_opt;\n")
+	io.WriteString(w, "            __items.push_back(")
+	ljc.Body.emit(w)
+	io.WriteString(w, "); }\n")
+	io.WriteString(w, "        }\n")
+	io.WriteString(w, "    }\n")
+	io.WriteString(w, "    if(!__matched) {\n")
+	io.WriteString(w, "        std::optional<"+ljc.InnerType+"> "+ljc.RightVar+" = std::nullopt;\n")
+	io.WriteString(w, "        __items.push_back(")
+	ljc.Body.emit(w)
+	io.WriteString(w, ");\n")
+	io.WriteString(w, "    }\n")
+	io.WriteString(w, "}\n")
+	io.WriteString(w, "return __items; }())")
+}
+
 func (sc *SortComp) emit(w io.Writer) {
 	io.WriteString(w, "([]{ std::vector<std::pair<"+sc.KeyType+", "+sc.ElemType+">> __tmp;\n")
 	for i, v := range sc.Vars {
@@ -1174,8 +1243,12 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 			if stmt.Let.Value != nil {
 				if q := extractQuery(stmt.Let.Value); q != nil {
 					var def *StructDef
-					if len(q.Joins) == 1 && q.Joins[0].Side != nil && *q.Joins[0].Side == "left" && q.Group != nil {
-						val, def, _, err = convertLeftJoinGroupQuery(q, stmt.Let.Name)
+					if len(q.Joins) == 1 && q.Joins[0].Side != nil && *q.Joins[0].Side == "left" {
+						if q.Group != nil {
+							val, def, _, err = convertLeftJoinGroupQuery(q, stmt.Let.Name)
+						} else {
+							val, def, _, err = convertLeftJoinQuery(q, stmt.Let.Name)
+						}
 					} else {
 						val, def, _, err = convertSimpleQuery(q, stmt.Let.Name)
 					}
@@ -1219,8 +1292,12 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 			if stmt.Var.Value != nil {
 				if q := extractQuery(stmt.Var.Value); q != nil {
 					var def *StructDef
-					if len(q.Joins) == 1 && q.Joins[0].Side != nil && *q.Joins[0].Side == "left" && q.Group != nil {
-						val, def, _, err = convertLeftJoinGroupQuery(q, stmt.Var.Name)
+					if len(q.Joins) == 1 && q.Joins[0].Side != nil && *q.Joins[0].Side == "left" {
+						if q.Group != nil {
+							val, def, _, err = convertLeftJoinGroupQuery(q, stmt.Var.Name)
+						} else {
+							val, def, _, err = convertLeftJoinQuery(q, stmt.Var.Name)
+						}
 					} else {
 						val, def, _, err = convertSimpleQuery(q, stmt.Var.Name)
 					}
@@ -1983,8 +2060,12 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 		}
 		return &MapLit{Keys: keys, Values: vals, KeyType: kt, ValueType: vt}, nil
 	case p.Query != nil:
-		if len(p.Query.Joins) == 1 && p.Query.Joins[0].Side != nil && *p.Query.Joins[0].Side == "left" && p.Query.Group != nil {
-			expr, _, _, err := convertLeftJoinGroupQuery(p.Query, "tmp")
+		if len(p.Query.Joins) == 1 && p.Query.Joins[0].Side != nil && *p.Query.Joins[0].Side == "left" {
+			if p.Query.Group != nil {
+				expr, _, _, err := convertLeftJoinGroupQuery(p.Query, "tmp")
+				return expr, err
+			}
+			expr, _, _, err := convertLeftJoinQuery(p.Query, "tmp")
 			return expr, err
 		}
 		expr, _, _, err := convertSimpleQuery(p.Query, "tmp")
@@ -2437,6 +2518,96 @@ func convertLeftJoinGroupQuery(q *parser.QueryExpr, target string) (Expr, *Struc
 	return &LeftJoinGroupComp{LeftVar: q.Var, LeftIter: leftIter, RightVar: j.Var, RightIter: rightIter, RightType: optRightType, InnerType: rightType, Cond: cond, Key: keyExpr, ItemVar: itemVar, GroupName: q.Group.Name, GroupStruct: groupName, ItemType: pairName, Body: body, ElemType: elemType, KeyType: keyType}, def, elemType, nil
 }
 
+func convertLeftJoinQuery(q *parser.QueryExpr, target string) (Expr, *StructDef, string, error) {
+	if q == nil || len(q.Joins) != 1 || q.Group != nil || q.Distinct || q.Sort != nil || q.Skip != nil || q.Take != nil {
+		return nil, nil, "", fmt.Errorf("unsupported query")
+	}
+	j := q.Joins[0]
+	if j.Side == nil || *j.Side != "left" {
+		return nil, nil, "", fmt.Errorf("unsupported query")
+	}
+	leftIter, err := convertExpr(q.Source)
+	if err != nil {
+		return nil, nil, "", err
+	}
+	rightIter, err := convertExpr(j.Src)
+	if err != nil {
+		return nil, nil, "", err
+	}
+	leftType := elementTypeFromListType(guessType(q.Source))
+	if vr, ok := leftIter.(*VarRef); ok {
+		if t, ok2 := currentProgram.ListTypes[vr.Name]; ok2 {
+			leftType = t
+		}
+	}
+	rightType := elementTypeFromListType(guessType(j.Src))
+	if vr, ok := rightIter.(*VarRef); ok {
+		if t, ok2 := currentProgram.ListTypes[vr.Name]; ok2 {
+			rightType = t
+		}
+	}
+	optRightType := fmt.Sprintf("std::optional<%s>", rightType)
+	qTypes := map[string]string{q.Var: leftType, j.Var: rightType}
+	oldTypes := localTypes
+	localTypes = qTypes
+	cond, err := convertExpr(j.On)
+	if err != nil {
+		localTypes = oldTypes
+		return nil, nil, "", err
+	}
+	qTypes[j.Var] = optRightType
+	localTypes = qTypes
+	body, err := convertExpr(q.Select)
+	if err != nil {
+		localTypes = oldTypes
+		return nil, nil, "", err
+	}
+	elemType := exprType(body)
+	var def *StructDef
+	if ml, ok := body.(*MapLit); ok {
+		if keys := make([]string, len(ml.Keys)); true {
+			for i, k := range ml.Keys {
+				n, ok := keyName(k)
+				if !ok {
+					keys = nil
+					break
+				}
+				keys[i] = n
+			}
+			if keys != nil {
+				structName := strings.Title(target) + "Item"
+				fields := make([]Param, len(keys))
+				flds := make([]FieldLit, len(keys))
+				for i, k := range keys {
+					typ := exprType(ml.Values[i])
+					if sel, ok := ml.Values[i].(*SelectorExpr); ok {
+						if vr, ok2 := sel.Target.(*VarRef); ok2 {
+							if s, ok3 := qTypes[vr.Name]; ok3 {
+								typ = structFieldType(s, sel.Field)
+							}
+						}
+					} else if vr, ok := ml.Values[i].(*VarRef); ok {
+						if t, ok2 := qTypes[vr.Name]; ok2 {
+							typ = t
+						}
+					}
+					fields[i] = Param{Name: k, Type: typ}
+					flds[i] = FieldLit{Name: k, Value: ml.Values[i]}
+				}
+				body = &StructLit{Name: structName, Fields: flds}
+				def = &StructDef{Name: structName, Fields: fields}
+				elemType = structName
+			}
+		}
+	}
+	localTypes = oldTypes
+	if currentProgram != nil {
+		currentProgram.addInclude("<vector>")
+		currentProgram.addInclude("<optional>")
+	}
+	return &LeftJoinComp{LeftVar: q.Var, LeftIter: leftIter, RightVar: j.Var, RightIter: rightIter, RightType: optRightType, InnerType: rightType, Cond: cond, Body: body, ElemType: elemType}, def, elemType, nil
+}
+
 func cppType(t string) string {
 	switch t {
 	case "int":
@@ -2681,6 +2852,8 @@ func exprType(e Expr) string {
 	case *GroupComp:
 		return fmt.Sprintf("std::vector<%s>", v.ElemType)
 	case *LeftJoinGroupComp:
+		return fmt.Sprintf("std::vector<%s>", v.ElemType)
+	case *LeftJoinComp:
 		return fmt.Sprintf("std::vector<%s>", v.ElemType)
 	case *SortComp:
 		return fmt.Sprintf("std::vector<%s>", v.ElemType)
