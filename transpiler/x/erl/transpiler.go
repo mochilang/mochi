@@ -1186,67 +1186,67 @@ func (ma *MapAssignStmt) emit(w io.Writer) {
 }
 
 func (q *QueryExpr) emit(w io.Writer) {
-	if q.Right != nil {
-		base := &bytes.Buffer{}
-		io.WriteString(base, "[")
-		if q.SortKey != nil {
-			io.WriteString(base, "{")
-			q.SortKey.emit(base)
-			io.WriteString(base, ", ")
-		}
-		q.Select.emit(base)
-		if q.SortKey != nil {
-			io.WriteString(base, "}")
-		}
-		io.WriteString(base, " || ")
-		io.WriteString(base, q.Right.Var)
-		io.WriteString(base, " <- ")
-		q.Right.Src.emit(base)
-		io.WriteString(base, ", ")
-		io.WriteString(base, q.Var)
-		io.WriteString(base, " <- ")
-		q.Src.emit(base)
-		for _, f := range q.Froms {
-			io.WriteString(base, ", ")
-			io.WriteString(base, f.Var)
-			io.WriteString(base, " <- ")
-			f.Src.emit(base)
-		}
-		if q.Right.On != nil {
-			io.WriteString(base, ", ")
-			q.Right.On.emit(base)
-		}
-		if q.Where != nil {
-			io.WriteString(base, ", ")
-			q.Where.emit(base)
-		}
-		io.WriteString(base, "]")
+        if q.Right != nil {
+                base := &bytes.Buffer{}
+                io.WriteString(base, "[")
+                if q.SortKey != nil {
+                        io.WriteString(base, "{")
+                        q.SortKey.emit(base)
+                        io.WriteString(base, ", ")
+                }
+                q.Select.emit(base)
+                if q.SortKey != nil {
+                        io.WriteString(base, "}")
+                }
+                io.WriteString(base, " ||\n        ")
+                io.WriteString(base, q.Right.Var)
+                io.WriteString(base, " <- ")
+                q.Right.Src.emit(base)
+                io.WriteString(base, ",\n        ")
+                io.WriteString(base, q.Var)
+                io.WriteString(base, " <- ")
+                q.Src.emit(base)
+                for _, f := range q.Froms {
+                        io.WriteString(base, ",\n        ")
+                        io.WriteString(base, f.Var)
+                        io.WriteString(base, " <- ")
+                        f.Src.emit(base)
+                }
+                if q.Right.On != nil {
+                        io.WriteString(base, ",\n        ")
+                        q.Right.On.emit(base)
+                }
+                if q.Where != nil {
+                        io.WriteString(base, ",\n        ")
+                        q.Where.emit(base)
+                }
+                io.WriteString(base, "]")
 
-		expr := base.String()
-		if q.SortKey != nil {
-			io.WriteString(w, "lists:map(fun({_,V}) -> V end, ")
-			if q.Take != nil {
-				io.WriteString(w, "lists:sublist(")
-			}
-			if q.Skip != nil {
-				io.WriteString(w, "lists:nthtail(")
-				q.Skip.emit(w)
-				io.WriteString(w, ", ")
-			}
-			io.WriteString(w, "lists:sort(fun({K1,_},{K2,_}) -> K1 =< K2 end, ")
-			io.WriteString(w, expr)
-			io.WriteString(w, ")")
-			if q.Skip != nil {
-				io.WriteString(w, ")")
-			}
-			if q.Take != nil {
-				io.WriteString(w, ", ")
-				q.Take.emit(w)
-				io.WriteString(w, ")")
-			}
-			io.WriteString(w, ")")
-			return
-		}
+                expr := base.String()
+                if q.SortKey != nil {
+                        io.WriteString(w, "lists:map(fun({_,V}) -> V end, ")
+                        if q.Take != nil {
+                                io.WriteString(w, "lists:sublist(")
+                        }
+                        if q.Skip != nil {
+                                io.WriteString(w, "lists:nthtail(")
+                                q.Skip.emit(w)
+                                io.WriteString(w, ", ")
+                        }
+                        io.WriteString(w, "lists:sort(fun({K1,_},{K2,_}) -> K1 =< K2 end, ")
+                        io.WriteString(w, expr)
+                        io.WriteString(w, ")")
+                        if q.Skip != nil {
+                                io.WriteString(w, ")")
+                        }
+                        if q.Take != nil {
+                                io.WriteString(w, ", ")
+                                q.Take.emit(w)
+                                io.WriteString(w, ")")
+                        }
+                        io.WriteString(w, ")")
+                        return
+                }
 		if q.Take != nil {
 			io.WriteString(w, "lists:sublist(")
 		}
@@ -1266,32 +1266,32 @@ func (q *QueryExpr) emit(w io.Writer) {
 		}
 		return
 	}
-	base := &bytes.Buffer{}
-	io.WriteString(base, "[")
-	if q.SortKey != nil {
-		io.WriteString(base, "{")
-		q.SortKey.emit(base)
-		io.WriteString(base, ", ")
-	}
-	q.Select.emit(base)
-	if q.SortKey != nil {
-		io.WriteString(base, "}")
-	}
-	io.WriteString(base, " || ")
-	io.WriteString(base, q.Var)
-	io.WriteString(base, " <- ")
-	q.Src.emit(base)
-	for _, f := range q.Froms {
-		io.WriteString(base, ", ")
-		io.WriteString(base, f.Var)
-		io.WriteString(base, " <- ")
-		f.Src.emit(base)
-	}
-	if q.Where != nil {
-		io.WriteString(base, ", ")
-		q.Where.emit(base)
-	}
-	io.WriteString(base, "]")
+        base := &bytes.Buffer{}
+        io.WriteString(base, "[")
+        if q.SortKey != nil {
+                io.WriteString(base, "{")
+                q.SortKey.emit(base)
+                io.WriteString(base, ", ")
+        }
+        q.Select.emit(base)
+        if q.SortKey != nil {
+                io.WriteString(base, "}")
+        }
+        io.WriteString(base, " ||\n        ")
+        io.WriteString(base, q.Var)
+        io.WriteString(base, " <- ")
+        q.Src.emit(base)
+        for _, f := range q.Froms {
+                io.WriteString(base, ",\n        ")
+                io.WriteString(base, f.Var)
+                io.WriteString(base, " <- ")
+                f.Src.emit(base)
+        }
+        if q.Where != nil {
+                io.WriteString(base, ",\n        ")
+                q.Where.emit(base)
+        }
+        io.WriteString(base, "]")
 
 	expr := base.String()
 	if q.SortKey != nil {

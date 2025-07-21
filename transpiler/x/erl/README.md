@@ -1,4 +1,5 @@
-# Erlang Transpiler Output (8/100 generated and run)
+# Erlang Transpiler Output (9/100 generated and run)
+Last updated: 2025-07-21 18:35 +0700
 
 This directory contains a minimal transpiler that converts a very small
 subset of Mochi into Erlang. Generated programs are executed with
@@ -77,7 +78,7 @@ that produces the same output as the Mochi VM.
 - [ ] order_by_map
 - [ ] outer_join
 - [ ] partial_application
-- [ ] print_hello
+- [x] print_hello
 - [ ] pure_fold
 - [ ] pure_global_fold
 - [ ] python_auto
