@@ -38,7 +38,6 @@ var (
 	nextStructHint   string
 	usesJSON         bool
 	imports          []string
-	preludeLines     []string
 )
 
 // GetStructOrder returns the generated struct names (for testing).
@@ -63,7 +62,6 @@ func capitalize(name string) string {
 // Program represents a sequence of statements.
 type Program struct {
 	Imports []string
-	Prelude []string
 	Stmts   []Stmt
 }
 
@@ -2252,7 +2250,16 @@ func inferType(e Expr) string {
 		}
 		return t
 	case *AppendExpr:
-		return inferType(ex.List)
+		lt := inferType(ex.List)
+		if strings.HasPrefix(lt, "List<") && strings.HasSuffix(lt, ">") {
+			elem := strings.TrimSuffix(strings.TrimPrefix(lt, "List<"), ">")
+			vt := inferType(ex.Value)
+			if vt == elem || vt == "dynamic" {
+				return lt
+			}
+			return "List<dynamic>"
+		}
+		return "List<dynamic>"
 	case *AvgExpr, *SumExpr, *MinExpr, *MaxExpr:
 		return "num"
 	case *ValuesExpr:
@@ -2405,18 +2412,6 @@ func Emit(w io.Writer, p *Program) error {
 			return err
 		}
 	}
-
-	for _, line := range p.Prelude {
-		if _, err := io.WriteString(w, line+"\n"); err != nil {
-			return err
-		}
-	}
-	if len(p.Prelude) > 0 {
-		if _, err := io.WriteString(w, "\n"); err != nil {
-			return err
-		}
-	}
-
 	for _, name := range structOrder {
 		fields := structFields[name]
 		if _, err := fmt.Fprintf(w, "class %s {\n", name); err != nil {
@@ -2498,7 +2493,6 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	nextStructHint = ""
 	usesJSON = false
 	imports = nil
-	preludeLines = nil
 	p := &Program{}
 	for _, st := range prog.Statements {
 		s, err := convertStmtInternal(st)
@@ -2510,7 +2504,6 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 		}
 	}
 	p.Imports = append(p.Imports, imports...)
-	p.Prelude = append(p.Prelude, preludeLines...)
 	return p, nil
 }
 
@@ -2715,12 +2708,6 @@ func convertStmtInternal(st *parser.Statement) (Stmt, error) {
 			return nil, nil
 		}
 		if st.Import.Lang != nil && *st.Import.Lang == "go" && strings.Trim(st.Import.Path, "\"") == "mochi/runtime/ffi/go/testpkg" {
-			preludeLines = append(preludeLines,
-				"class "+alias+" {",
-				"  static int Add(int a, int b) => a + b;",
-				"  static const double Pi = 3.14;",
-				"  static const int Answer = 42;",
-				"}")
 			return nil, nil
 		}
 		return nil, fmt.Errorf("unsupported import")
