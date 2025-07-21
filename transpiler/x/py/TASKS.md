@@ -1,6 +1,6 @@
-## Progress (2025-07-21 22:29 +0700)
-- Commit c6b3ac840: update docs
-- Generated Python for 100/100 programs
-- Updated README checklist and outputs
-- Refactored join handling and improved type inference from loaded data
+## Progress (2025-07-21 19:11 +0000)
+- Commit 1e4c317bc: enhance group query typing
+- Generated Python for 100/101 programs
+- Updated README checklist and group_by output
+- Improved dataclass type inference and attribute access
 
