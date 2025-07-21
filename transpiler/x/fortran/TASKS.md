@@ -1,3 +1,33 @@
+## Progress (2025-07-21 12:41 +0700)
+- fortran: inline group_by const generation
+
+## Progress (2025-07-21 12:25 +0700)
+- Applying previous commit.
+
+## Progress (2025-07-21 12:25 +0700)
+- Applying previous commit.
+
+## Progress (2025-07-21 12:25 +0700)
+- Applying previous commit.
+
+## Progress (2025-07-21 12:25 +0700)
+- Applying previous commit.
+
+## Progress (2025-07-21 12:25 +0700)
+- Applying previous commit.
+
+## Progress (2025-07-21 12:25 +0700)
+- Applying previous commit.
+
+## Progress (2025-07-21 12:25 +0700)
+- Applying previous commit.
+
+## Progress (2025-07-21 12:25 +0700)
+- Applying previous commit.
+
+## Progress (2025-07-21 05:23 +0000)
+- attempt to support group_by but gfortran build errors; feature incomplete
+
 ## Progress (2025-07-21 07:26 +0700)
 - fortran: support append builtin and update docs
 

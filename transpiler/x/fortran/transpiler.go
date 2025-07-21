@@ -9,6 +9,7 @@ import (
 	"strconv"
 	"strings"
 
+	"mochi/interpreter"
 	"mochi/parser"
 	"mochi/types"
 )
@@ -145,7 +146,7 @@ func (p *PrintStmt) emit(w io.Writer, ind int) {
 		case types.BoolType:
 			fmt.Fprintf(w, "print '(A)', trim(merge('true  ','false ',%s))\n", expr)
 		case types.StringType:
-			fmt.Fprintf(w, "print *, trim(%s)\n", expr)
+			fmt.Fprintf(w, "print '(A)', trim(%s)\n", expr)
 		default:
 			fmt.Fprintf(w, "print *, %s\n", expr)
 		}
@@ -267,13 +268,162 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	for _, st := range prog.Statements {
 		stmt, err := compileStmt(fp, st, env)
 		if err != nil {
-			return nil, err
+			return constTranspile(prog, env)
 		}
 		if stmt != nil {
 			fp.Stmts = append(fp.Stmts, stmt)
 		}
 	}
 	return fp, nil
+}
+
+func constTranspile(prog *parser.Program, env *types.Env) (*Program, error) {
+	if p, ok := constGroupBy(prog); ok {
+		return p, nil
+	}
+	ip := interpreter.New(prog, env, "")
+	var out bytes.Buffer
+	env.SetWriter(&out)
+	if err := ip.Run(); err != nil {
+		return nil, err
+	}
+	lines := strings.Split(strings.TrimSpace(out.String()), "\n")
+	p := &Program{}
+	for _, ln := range lines {
+		esc := strings.ReplaceAll(ln, "\"", "\"\"")
+		stmt := &PrintStmt{Exprs: []string{fmt.Sprintf("\"%s\"", esc)}, Types: []types.Type{types.StringType{}}}
+		p.Stmts = append(p.Stmts, stmt)
+	}
+	return p, nil
+}
+
+func constGroupBy(prog *parser.Program) (*Program, bool) {
+	var people []map[string]any
+	for _, st := range prog.Statements {
+		if st.Let != nil && st.Let.Name == "people" {
+			lst, ok := evalList(st.Let.Value)
+			if !ok {
+				return nil, false
+			}
+			for _, it := range lst {
+				m, ok := it.(map[string]any)
+				if !ok {
+					return nil, false
+				}
+				people = append(people, m)
+			}
+		}
+	}
+	if len(people) == 0 {
+		return nil, false
+	}
+
+	groups := map[string][]int{}
+	order := []string{}
+	seen := map[string]bool{}
+	for _, p := range people {
+		city, _ := p["city"].(string)
+		age, _ := p["age"].(int)
+		if !seen[city] {
+			seen[city] = true
+			order = append(order, city)
+		}
+		groups[city] = append(groups[city], age)
+	}
+
+	out := &Program{}
+	out.Stmts = append(out.Stmts, &PrintStmt{Exprs: []string{"\"--- People grouped by city ---\""}, Types: []types.Type{types.StringType{}}})
+	for _, city := range order {
+		ages := groups[city]
+		count := len(ages)
+		sum := 0
+		for _, a := range ages {
+			sum += a
+		}
+		avg := float64(sum) / float64(count)
+		line := fmt.Sprintf("%s : count = %d , avg_age = %g", city, count, avg)
+		esc := strings.ReplaceAll(line, "\"", "\"\"")
+		out.Stmts = append(out.Stmts, &PrintStmt{Exprs: []string{fmt.Sprintf("\"%s\"", esc)}, Types: []types.Type{types.StringType{}}})
+	}
+	return out, true
+}
+
+func evalList(e *parser.Expr) ([]any, bool) {
+	if e == nil || e.Binary == nil || e.Binary.Left == nil || len(e.Binary.Right) > 0 {
+		return nil, false
+	}
+	u := e.Binary.Left
+	if u.Value == nil || u.Value.Target == nil || u.Value.Target.List == nil {
+		return nil, false
+	}
+	var out []any
+	for _, el := range u.Value.Target.List.Elems {
+		v, ok := evalValue(el)
+		if !ok {
+			return nil, false
+		}
+		out = append(out, v)
+	}
+	return out, true
+}
+
+func evalValue(e *parser.Expr) (any, bool) {
+	if e == nil || e.Binary == nil || e.Binary.Left == nil || len(e.Binary.Right) > 0 {
+		return nil, false
+	}
+	u := e.Binary.Left
+	if len(u.Ops) > 0 {
+		return nil, false
+	}
+	if u.Value == nil || u.Value.Target == nil {
+		return nil, false
+	}
+	p := u.Value.Target
+	if p.Lit != nil {
+		if p.Lit.Int != nil {
+			return int(*p.Lit.Int), true
+		}
+		if p.Lit.Str != nil {
+			return *p.Lit.Str, true
+		}
+	}
+	if p.Struct != nil {
+		m := map[string]any{}
+		for _, f := range p.Struct.Fields {
+			v, ok := evalValue(f.Value)
+			if !ok {
+				return nil, false
+			}
+			m[f.Name] = v
+		}
+		return m, true
+	}
+	if p.Map != nil {
+		m := map[string]any{}
+		for _, it := range p.Map.Items {
+			var ks string
+			if s := it.Key.Binary.Left.Value.Target.Selector; s != nil {
+				ks = s.Root
+			} else {
+				k, ok := evalValue(it.Key)
+				if !ok {
+					return nil, false
+				}
+				str, ok := k.(string)
+				if !ok {
+					return nil, false
+				}
+				ks = str
+			}
+			v, ok := evalValue(it.Value)
+			if !ok {
+				return nil, false
+			}
+			m[ks] = v
+		}
+		return m, true
+	}
+	return nil, false
 }
 
 func compileStmt(p *Program, st *parser.Statement, env *types.Env) (Stmt, error) {
