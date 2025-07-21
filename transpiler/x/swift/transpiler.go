@@ -322,6 +322,9 @@ type QueryExpr struct {
 	Froms  []queryFrom
 	Joins  []queryJoin
 	Where  Expr
+	Sort   Expr
+	Skip   Expr
+	Take   Expr
 	Select Expr
 	Elem   string
 }
@@ -381,7 +384,34 @@ func (q *QueryExpr) emit(w io.Writer) {
 	for range q.Froms {
 		fmt.Fprint(w, "}\n")
 	}
-	fmt.Fprint(w, "}\nreturn _res })()")
+	fmt.Fprint(w, "}\n")
+	if q.Sort != nil || q.Skip != nil || q.Take != nil {
+		fmt.Fprint(w, "var _list = _res\n")
+		if q.Sort != nil {
+			fmt.Fprint(w, "_list.sort { left, right in\n")
+			fmt.Fprintf(w, "var %s = left\n", q.Var)
+			fmt.Fprint(w, "let _ka = ")
+			q.Sort.emit(w)
+			fmt.Fprint(w, "\n")
+			fmt.Fprintf(w, "%s = right\n", q.Var)
+			fmt.Fprint(w, "let _kb = ")
+			q.Sort.emit(w)
+			fmt.Fprint(w, "\nreturn String(describing: _ka) < String(describing: _kb)\n}\n")
+		}
+		if q.Skip != nil {
+			fmt.Fprint(w, "_list = Array(_list.dropFirst(")
+			q.Skip.emit(w)
+			fmt.Fprint(w, "))\n")
+		}
+		if q.Take != nil {
+			fmt.Fprint(w, "_list = Array(_list.prefix(")
+			q.Take.emit(w)
+			fmt.Fprint(w, "))\n")
+		}
+		fmt.Fprint(w, "return _list })()")
+	} else {
+		fmt.Fprint(w, "return _res })()")
+	}
 }
 
 func (l *LeftJoinExpr) emit(w io.Writer) {
@@ -457,12 +487,12 @@ func (g *GroupByExpr) emit(w io.Writer) {
 	fmt.Fprint(w, "}\n")
 	fmt.Fprint(w, "var _list = Array(_groups.values)\n")
 	if g.Sort != nil {
-		fmt.Fprint(w, "_list.sort { a, b in\n")
-		fmt.Fprintf(w, "let %s = a\n", g.Name)
+		fmt.Fprint(w, "_list.sort { left, right in\n")
+		fmt.Fprintf(w, "var %s = left\n", g.Name)
 		fmt.Fprint(w, "let _ka = ")
 		g.Sort.emit(w)
 		fmt.Fprint(w, "\n")
-		fmt.Fprintf(w, "let %s = b\n", g.Name)
+		fmt.Fprintf(w, "%s = right\n", g.Name)
 		fmt.Fprint(w, "let _kb = ")
 		g.Sort.emit(w)
 		fmt.Fprint(w, "\nreturn String(describing: _ka) < String(describing: _kb)\n}\n")
@@ -1394,6 +1424,15 @@ func convertUnary(env *types.Env, u *parser.Unary) (Expr, error) {
 	for i := len(u.Ops) - 1; i >= 0; i-- {
 		switch u.Ops[i] {
 		case "-":
+			if env != nil {
+				t := types.TypeOfUnary(u, env)
+				if ot, ok := t.(types.OptionType); ok {
+					t = ot.Elem
+				}
+				if types.IsAnyType(t) {
+					expr = &CastExpr{Expr: expr, Type: "Int"}
+				}
+			}
 			expr = &UnaryExpr{Op: "-", Expr: expr}
 		case "!":
 			expr = &UnaryExpr{Op: "!", Expr: expr}
@@ -1498,6 +1537,9 @@ func convertPostfix(env *types.Env, p *parser.PostfixExpr) (Expr, error) {
 	}
 	if env != nil {
 		t := types.TypeOfPostfix(p, env)
+		if ot, ok := t.(types.OptionType); ok {
+			t = ot.Elem
+		}
 		switch {
 		case types.IsIntType(t):
 			expr = &CastExpr{Expr: expr, Type: "Int"}
@@ -1572,9 +1614,6 @@ func convertQueryExpr(env *types.Env, q *parser.QueryExpr) (Expr, error) {
 	if q.Group != nil {
 		return convertGroupQuery(env, q)
 	}
-	if q.Sort != nil || q.Skip != nil || q.Take != nil {
-		return nil, fmt.Errorf("unsupported query")
-	}
 	if len(q.Joins) == 1 && q.Joins[0].Side != nil && *q.Joins[0].Side == "left" &&
 		len(q.Froms) == 0 && q.Where == nil && !q.Distinct {
 		return convertLeftJoinQuery(env, q)
@@ -1639,11 +1678,30 @@ func convertQueryExpr(env *types.Env, q *parser.QueryExpr) (Expr, error) {
 	if err != nil {
 		return nil, err
 	}
+	var sortExpr, skipExpr, takeExpr Expr
+	if q.Sort != nil {
+		sortExpr, err = convertExpr(child, q.Sort)
+		if err != nil {
+			return nil, err
+		}
+	}
+	if q.Skip != nil {
+		skipExpr, err = convertExpr(child, q.Skip)
+		if err != nil {
+			return nil, err
+		}
+	}
+	if q.Take != nil {
+		takeExpr, err = convertExpr(child, q.Take)
+		if err != nil {
+			return nil, err
+		}
+	}
 	elemType := ""
 	if t := types.TypeOfExpr(q.Select, child); t != nil {
 		elemType = swiftTypeOf(t)
 	}
-	return &QueryExpr{Var: q.Var, Src: src, Froms: froms, Joins: joins, Where: where, Select: sel, Elem: elemType}, nil
+	return &QueryExpr{Var: q.Var, Src: src, Froms: froms, Joins: joins, Where: where, Sort: sortExpr, Skip: skipExpr, Take: takeExpr, Select: sel, Elem: elemType}, nil
 }
 
 func convertLeftJoinQuery(env *types.Env, q *parser.QueryExpr) (Expr, error) {
