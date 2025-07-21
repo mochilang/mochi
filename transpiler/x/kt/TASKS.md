@@ -1,3 +1,7 @@
+## VM Golden Progress (2025-07-21 13:50 +0700)
+- Added support for cross join queries with where clause.
+- Regenerated Kotlin golden files and README.
+
 ## VM Golden Progress (2025-07-21 13:19 +0700)
 - Added Kotlin lambda generation for partial application.
 - Group-by output no longer depends on runtime helpers.

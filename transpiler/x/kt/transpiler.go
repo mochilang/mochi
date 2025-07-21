@@ -1108,6 +1108,19 @@ func guessType(e Expr) string {
 			if val == "" {
 				val = "Any"
 			}
+			for _, it := range v.Items[1:] {
+				vk := guessType(it.Key)
+				vv := guessType(it.Value)
+				if vk != k {
+					k = "Any"
+				}
+				if vv != val {
+					val = "Any"
+				}
+				if k == "Any" && val == "Any" {
+					break
+				}
+			}
 			return "MutableMap<" + k + ", " + val + ">"
 		}
 		return "MutableMap<Any, Any>"
