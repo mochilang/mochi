@@ -408,6 +408,8 @@ type IndexExpr struct {
 
 type IntLit struct{ Value int64 }
 
+type FloatLit struct{ Value float64 }
+
 type BoolLit struct{ Value bool }
 
 type StringLit struct{ Value string }
@@ -1091,6 +1093,8 @@ func (i *IfExpr) emit(w io.Writer) {
 func (n *NameRef) emit(w io.Writer) { io.WriteString(w, n.Name) }
 
 func (i *IntLit) emit(w io.Writer) { fmt.Fprintf(w, "%d", i.Value) }
+
+func (f *FloatLit) emit(w io.Writer) { fmt.Fprintf(w, "%g", f.Value) }
 
 func (b *BoolLit) emit(w io.Writer) {
 	if b.Value {
@@ -2340,6 +2344,7 @@ func convertGroupQuery(q *parser.QueryExpr, env *types.Env, ctx *context) (Expr,
 	var rjoin *rightJoin
 	var cond Expr
 	joins := q.Joins
+	vars := []struct{ name, alias string }{{q.Var, alias}}
 	if len(q.Joins) == 1 && q.Joins[0].Side != nil && *q.Joins[0].Side == "right" {
 		j := q.Joins[0]
 		js, err := convertExpr(j.Src, env, ctx)
@@ -2357,6 +2362,7 @@ func convertGroupQuery(q *parser.QueryExpr, env *types.Env, ctx *context) (Expr,
 		rjoin = &rightJoin{Var: ralias, Src: js, On: onExpr}
 		cond = onExpr
 		joins = nil
+		vars = append(vars, struct{ name, alias string }{j.Var, ralias})
 	}
 	for _, f := range q.Froms {
 		fe, err := convertExpr(f.Src, env, ctx)
@@ -2382,6 +2388,7 @@ func convertGroupQuery(q *parser.QueryExpr, env *types.Env, ctx *context) (Expr,
 		loopCtx.setBoolFields(j.Var, boolFields(je))
 		child.SetVar(j.Var, types.AnyType{}, true)
 		froms = append(froms, queryFrom{Var: jv, Src: je})
+		vars = append(vars, struct{ name, alias string }{j.Var, jv})
 		jc, err := convertExpr(j.On, child, loopCtx)
 		if err != nil {
 			return nil, err
@@ -2409,7 +2416,17 @@ func convertGroupQuery(q *parser.QueryExpr, env *types.Env, ctx *context) (Expr,
 		return nil, err
 	}
 
-	pairSelect := &TupleExpr{A: keyExpr, B: &NameRef{Name: alias}}
+	var itemExpr Expr
+	if len(vars) == 1 {
+		itemExpr = &NameRef{Name: alias}
+	} else {
+		items := make([]MapItem, 0, len(vars))
+		for _, v := range vars {
+			items = append(items, MapItem{Key: &StringLit{Value: v.name}, Value: &NameRef{Name: v.alias}})
+		}
+		itemExpr = &MapLit{Items: items}
+	}
+	pairSelect := &TupleExpr{A: keyExpr, B: itemExpr}
 	pairQuery := &QueryExpr{Var: alias, Src: src, Froms: froms, Right: rjoin, Where: cond, Select: pairSelect}
 
 	pairKV := "P"
@@ -2439,9 +2456,26 @@ func convertGroupQuery(q *parser.QueryExpr, env *types.Env, ctx *context) (Expr,
 
 	keyLet := &LetStmt{Name: keyVar, Expr: &CallExpr{Func: "element", Args: []Expr{&IntLit{Value: 1}, &NameRef{Name: pair}}}}
 	itemsLet := &LetStmt{Name: itemsVar, Expr: &CallExpr{Func: "element", Args: []Expr{&IntLit{Value: 2}, &NameRef{Name: pair}}}}
-	ctx.setStrFields(itemsVar, ctx.strField[q.Var])
-	ctx.setBoolFields(itemsVar, ctx.boolField[q.Var])
-	ctx.setStringVar(itemsVar, ctx.isStringVar(q.Var))
+	strUnion := map[string]bool{}
+	boolUnion := map[string]bool{}
+	for _, v := range vars {
+		if m, ok := loopCtx.strField[v.name]; ok {
+			for k, b := range m {
+				if b {
+					strUnion[k] = true
+				}
+			}
+		}
+		if m, ok := loopCtx.boolField[v.name]; ok {
+			for k, b := range m {
+				if b {
+					boolUnion[k] = true
+				}
+			}
+		}
+	}
+	ctx.setStrFields(itemsVar, strUnion)
+	ctx.setBoolFields(itemsVar, boolUnion)
 	mapFun := &AnonFunc{Params: []string{pair}, Body: []Stmt{keyLet, itemsLet}, Return: selExpr}
 	toList := &CallExpr{Func: "maps:to_list", Args: []Expr{groupsMap}}
 	if q.Group.Having != nil {
@@ -2483,6 +2517,8 @@ func convertLiteral(l *parser.Literal) (Expr, error) {
 	switch {
 	case l.Int != nil:
 		return &IntLit{Value: int64(*l.Int)}, nil
+	case l.Float != nil:
+		return &FloatLit{Value: *l.Float}, nil
 	case l.Bool != nil:
 		return &BoolLit{Value: bool(*l.Bool)}, nil
 	case l.Str != nil:
