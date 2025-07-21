@@ -659,6 +659,9 @@ func convertStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 		if typ == "" {
 			typ = inferTypeWithEnv(e, env)
 		}
+		if e == nil && typ != "" {
+			e = defaultExpr(typ)
+		}
 		if env != nil {
 			var t types.Type = types.AnyType{}
 			if ll, ok := e.(*ListLit); ok && len(ll.Elems) > 0 {
@@ -689,6 +692,9 @@ func convertStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 		typ := toScalaType(st.Var.Type)
 		if typ == "" {
 			typ = inferTypeWithEnv(e, env)
+		}
+		if e == nil && typ != "" {
+			e = defaultExpr(typ)
 		}
 		if env != nil {
 			var t types.Type = types.AnyType{}
@@ -1654,6 +1660,24 @@ func inferTypeWithEnv(e Expr, env *types.Env) string {
 		}
 	}
 	return ""
+}
+
+// defaultExpr returns a zero value expression for the given Scala type.
+func defaultExpr(typ string) Expr {
+	switch {
+	case typ == "Int" || typ == "Long" || typ == "Double" || typ == "Float":
+		return &IntLit{Value: 0}
+	case typ == "String":
+		return &StringLit{Value: ""}
+	case typ == "Boolean":
+		return &BoolLit{Value: false}
+	case strings.HasPrefix(typ, "ArrayBuffer"):
+		return &CallExpr{Fn: &Name{Name: "ArrayBuffer"}, Args: nil}
+	case strings.HasPrefix(typ, "Map"):
+		return &CallExpr{Fn: &Name{Name: "Map"}, Args: nil}
+	default:
+		return nil
+	}
 }
 
 func header() string {

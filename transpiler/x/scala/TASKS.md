@@ -1,3 +1,7 @@
+## Progress (2025-07-21 07:33 +0700)
+- scala: default init for typed vars
+- Regenerated golden files - 60/100 vm valid programs passing
+
 ## Progress (2025-07-21 06:54 +0700)
 - scala transpiler: add return statement and regenerate sum output
 - Regenerated golden files - 60/100 vm valid programs passing
