@@ -109,7 +109,11 @@ func (f *Function) emit(w io.Writer) {
 	fmt.Fprintf(w, "end function %s\n", f.Name)
 }
 
-type AssignStmt struct{ Name, Expr string }
+type AssignStmt struct {
+	Name  string
+	Index []string
+	Expr  string
+}
 
 type ReturnStmt struct{ Expr string }
 
@@ -129,7 +133,11 @@ func (r *ReturnStmt) emit(w io.Writer, ind int) {
 
 func (s *AssignStmt) emit(w io.Writer, ind int) {
 	writeIndent(w, ind)
-	fmt.Fprintf(w, "%s = %s\n", s.Name, s.Expr)
+	name := s.Name
+	for _, idx := range s.Index {
+		name += fmt.Sprintf("(%s)", idx)
+	}
+	fmt.Fprintf(w, "%s = %s\n", name, s.Expr)
 }
 
 func (p *PrintStmt) emit(w io.Writer, ind int) {
@@ -1310,14 +1318,25 @@ func compileStmt(p *Program, st *parser.Statement, env *types.Env) (Stmt, error)
 		env.Types()[st.Var.Name] = typ
 		return nil, nil
 	case st.Assign != nil:
-		if len(st.Assign.Index) > 0 || len(st.Assign.Field) > 0 {
+		if len(st.Assign.Field) > 0 {
 			return nil, fmt.Errorf("unsupported assignment")
+		}
+		var idxs []string
+		for _, ix := range st.Assign.Index {
+			if ix.Start == nil || ix.Colon != nil || ix.Colon2 != nil || ix.Step != nil {
+				return nil, fmt.Errorf("unsupported assignment")
+			}
+			idx, err := toExpr(ix.Start, env)
+			if err != nil {
+				return nil, err
+			}
+			idxs = append(idxs, fmt.Sprintf("%s+1", idx))
 		}
 		expr, err := toExpr(st.Assign.Value, env)
 		if err != nil {
 			return nil, err
 		}
-		return &AssignStmt{Name: st.Assign.Name, Expr: expr}, nil
+		return &AssignStmt{Name: st.Assign.Name, Index: idxs, Expr: expr}, nil
 	case st.Return != nil:
 		expr := ""
 		var err error
@@ -1669,14 +1688,25 @@ func compileFuncStmt(fn *Function, st *parser.Statement, env *types.Env) (Stmt, 
 		env.Types()[st.Var.Name] = typ
 		return nil, nil
 	case st.Assign != nil:
-		if len(st.Assign.Index) > 0 || len(st.Assign.Field) > 0 {
+		if len(st.Assign.Field) > 0 {
 			return nil, fmt.Errorf("unsupported assignment")
+		}
+		var idxs []string
+		for _, ix := range st.Assign.Index {
+			if ix.Start == nil || ix.Colon != nil || ix.Colon2 != nil || ix.Step != nil {
+				return nil, fmt.Errorf("unsupported assignment")
+			}
+			idx, err := toExpr(ix.Start, env)
+			if err != nil {
+				return nil, err
+			}
+			idxs = append(idxs, fmt.Sprintf("%s+1", idx))
 		}
 		expr, err := toExpr(st.Assign.Value, env)
 		if err != nil {
 			return nil, err
 		}
-		return &AssignStmt{Name: st.Assign.Name, Expr: expr}, nil
+		return &AssignStmt{Name: st.Assign.Name, Index: idxs, Expr: expr}, nil
 	case st.Return != nil:
 		expr := ""
 		var err error

@@ -1,3 +1,24 @@
+## Progress (2025-07-22 06:32:20 +0700)
+- fortran: support list index assignment
+
+## Progress (2025-07-22 06:19:00 +0700)
+- cs transpiler: support outer join
+
+## Progress (2025-07-22 06:19:00 +0700)
+- cs transpiler: support outer join
+
+## Progress (2025-07-22 06:19:00 +0700)
+- cs transpiler: support outer join
+
+## Progress (2025-07-22 06:19:00 +0700)
+- cs transpiler: support outer join
+
+## Progress (2025-07-22 06:19:00 +0700)
+- cs transpiler: support outer join
+
+## Progress (2025-07-22 06:19:00 +0700)
+- cs transpiler: support outer join
+
 ## Progress (2025-07-21 21:38:00 +0700)
 - fortran: add constant handling for multi join sort
 
