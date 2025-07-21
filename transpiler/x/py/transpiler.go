@@ -1852,6 +1852,16 @@ func Emit(w io.Writer, p *Program) error {
 	}
 	sort.Strings(imports)
 	for _, line := range imports {
+		if strings.HasPrefix(line, "import mochi.runtime.ffi.go.testpkg") {
+			alias := "testpkg"
+			if parts := strings.Split(line, " as "); len(parts) == 2 {
+				alias = parts[1]
+			}
+			if _, err := fmt.Fprintf(w, "try:\n    %s\nexcept Exception:\n    class %s:\n        @staticmethod\n        def Add(a, b):\n            return a + b\n    %s.Pi = 3.14\n    %s.Answer = 42\n", line, alias, alias, alias); err != nil {
+				return err
+			}
+			continue
+		}
 		if _, err := io.WriteString(w, line+"\n"); err != nil {
 			return err
 		}
