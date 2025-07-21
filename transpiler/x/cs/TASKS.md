@@ -1,3 +1,18 @@
+## Progress (2025-07-21 16:44 UTC)
+- cs transpiler: support map membership (progress 55/100)
+
+## Progress (2025-07-21 23:34 +0700)
+- lua transpiler: support group iter and sorting (progress 55/100)
+
+## Progress (2025-07-21 23:34 +0700)
+- lua transpiler: support group iter and sorting (progress 55/100)
+
+## Progress (2025-07-21 23:34 +0700)
+- lua transpiler: support group iter and sorting (progress 51/100)
+
+## Progress (2025-07-21 23:34 +0700)
+- lua transpiler: support group iter and sorting (progress 51/100)
+
 ## Progress (2025-07-21 23:01 +0700)
 - cs: support group left join (progress 51/100)
 
@@ -47,6 +62,11 @@
 
 ## Remaining Work
 - Support map and list mutation operations
+
+
+
+
+
 
 
 

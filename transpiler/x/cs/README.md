@@ -2,8 +2,8 @@
 
 Generated C# code for programs in `tests/vm/valid`. Each program has a `.cs` file produced by the transpiler and a `.out` file containing its runtime output. Compilation or execution errors are captured in a `.error` file placed next to the source.
 
-Compiled programs: 51/100
-Last updated: 2025-07-21 23:01 +0700
+Compiled programs: 55/100
+Last updated: 2025-07-21 16:44 UTC
 
 ## Checklist
 - [x] append_builtin
@@ -42,7 +42,7 @@ Last updated: 2025-07-21 23:01 +0700
 - [x] if_then_else
 - [x] if_then_else_nested
 - [x] in_operator
-- [ ] in_operator_extended
+- [x] in_operator_extended
 - [x] inner_join
 - [x] join_multi
 - [x] json_builtin
@@ -60,9 +60,9 @@ Last updated: 2025-07-21 23:01 +0700
 - [x] map_assign
 - [x] map_in_operator
 - [x] map_index
-- [ ] map_int_key
-- [ ] map_literal_dynamic
-- [ ] map_membership
+- [x] map_int_key
+- [x] map_literal_dynamic
+- [x] map_membership
 - [ ] map_nested_assign
 - [ ] match_expr
 - [ ] match_full
