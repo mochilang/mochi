@@ -1,3 +1,23 @@
+## Progress (2025-07-21 10:52 +0700)
+- scheme transpiler: add right join and simplify loops
+- Regenerated golden files - 85/100 vm valid programs passing
+
+## Progress (2025-07-21 10:52 +0700)
+- scheme transpiler: add right join and simplify loops
+- Regenerated golden files - 83/100 vm valid programs passing
+
+## Progress (2025-07-21 10:52 +0700)
+- scheme transpiler: add right join and simplify loops
+- Regenerated golden files - 82/100 vm valid programs passing
+
+## Progress (2025-07-21 10:52 +0700)
+- scheme transpiler: add right join and simplify loops
+- Regenerated golden files - 82/100 vm valid programs passing
+
+## Progress (2025-07-21 10:52 +0700)
+- scheme transpiler: add right join and simplify loops
+- Regenerated golden files - 82/100 vm valid programs passing
+
 ## Progress (2025-07-21 07:31 +0700)
 - clj: support simple right join
 - Regenerated golden files - 82/100 vm valid programs passing
