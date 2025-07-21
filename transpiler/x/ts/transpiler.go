@@ -619,6 +619,24 @@ func (f *FormatListExpr) emit(w io.Writer) {
 
 func (p *PrintExpr) emit(w io.Writer) {
 	io.WriteString(w, "console.log(")
+	if len(p.Args) == 1 {
+		a := p.Args[0]
+		if a == nil {
+			io.WriteString(w, "'nil'")
+		} else {
+			io.WriteString(w, "String(")
+			if _, ok := a.(*AvgExpr); ok {
+				io.WriteString(w, "(")
+				a.emit(w)
+				io.WriteString(w, ").toFixed(1)")
+			} else {
+				a.emit(w)
+			}
+			io.WriteString(w, ")")
+		}
+		io.WriteString(w, ")")
+		return
+	}
 	io.WriteString(w, "[")
 	for i, a := range p.Args {
 		if i > 0 {
