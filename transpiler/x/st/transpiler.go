@@ -43,6 +43,11 @@ type value struct {
 	kv   map[string]value
 }
 
+// currentFuncs holds function declarations available during constant
+// evaluation. It is set by Transpile for the duration of a single
+// transpilation run.
+var currentFuncs map[string]*parser.FunStmt
+
 func toFloat(v value) float64 {
 	switch v.kind {
 	case valFloat:
@@ -1024,6 +1029,17 @@ func evalPrimary(p *parser.Primary, vars map[string]value) (value, error) {
 				return value{kind: valBool, b: len(v.list) > 0}, nil
 			}
 		}
+		if fn, ok := currentFuncs[p.Call.Func]; ok {
+			args := make([]value, len(p.Call.Args))
+			for i, a := range p.Call.Args {
+				av, err := evalExpr(a, vars)
+				if err != nil {
+					return value{}, err
+				}
+				args[i] = av
+			}
+			return evalFunction(fn, args)
+		}
 		return value{}, fmt.Errorf("unsupported call")
 	case p.If != nil:
 		return evalIfExpr(p.If, vars)
@@ -1078,6 +1094,26 @@ func copyVars(vars map[string]value) map[string]value {
 		m[k] = v
 	}
 	return m
+}
+
+// evalFunction evaluates a user-defined function with the provided argument
+// values. Only very simple functions containing a single return statement are
+// supported as this transpiler performs aggressive constant folding.
+func evalFunction(fn *parser.FunStmt, args []value) (value, error) {
+	if fn == nil {
+		return value{}, fmt.Errorf("undefined function")
+	}
+	if len(fn.Body) != 1 || fn.Body[0].Return == nil {
+		return value{}, fmt.Errorf("unsupported function body")
+	}
+	if len(args) != len(fn.Params) {
+		return value{}, fmt.Errorf("argument count mismatch")
+	}
+	local := map[string]value{}
+	for i, p := range fn.Params {
+		local[p.Name] = args[i]
+	}
+	return evalExpr(fn.Body[0].Return.Value, local)
 }
 
 func identName(e *parser.Expr) (string, bool) {
@@ -1765,6 +1801,8 @@ func evalQueryExpr(q *parser.QueryExpr, vars map[string]value) (value, error) {
 func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	vars := map[string]value{}
 	funcs := map[string]*parser.FunStmt{}
+	currentFuncs = funcs
+	defer func() { currentFuncs = nil }()
 	p := &Program{}
 
 	var processStmt func(*parser.Statement) error

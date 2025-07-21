@@ -2,7 +2,7 @@
 
 This directory holds an experimental transpiler that converts a small subset of Mochi into Smalltalk. The generated sources for the golden tests live under `tests/transpiler/x/st`.
 
-Checklist of programs that currently transpile and run (75/100):
+Checklist of programs that currently transpile and run (79/100):
 
 - [x] append_builtin
 - [x] avg_builtin
@@ -23,9 +23,9 @@ Checklist of programs that currently transpile and run (75/100):
 - [x] for_list_collection
 - [x] for_loop
 - [x] for_map_collection
-- [ ] fun_call
+- [x] fun_call
 - [ ] fun_expr_in_let
-- [ ] fun_three_args
+- [x] fun_three_args
 - [ ] go_auto
 - [x] group_by
 - [x] group_by_conditional_sum
@@ -63,7 +63,7 @@ Checklist of programs that currently transpile and run (75/100):
 - [x] map_membership
 - [x] map_nested_assign
 - [x] match_expr
-- [ ] match_full
+- [x] match_full
 - [x] math_ops
 - [x] membership
 - [x] min_max_builtin
@@ -72,7 +72,7 @@ Checklist of programs that currently transpile and run (75/100):
 - [x] outer_join
 - [ ] partial_application
 - [x] print_hello
-- [ ] pure_fold
+- [x] pure_fold
 - [ ] pure_global_fold
 - [ ] python_auto
 - [ ] python_math
