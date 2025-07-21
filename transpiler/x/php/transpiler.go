@@ -373,6 +373,13 @@ type QueryLoop struct {
 	Source Expr
 }
 
+// LeftJoinLoop is used inside grouped queries to represent a left join clause.
+type LeftJoinLoop struct {
+	Name   string
+	Source Expr
+	Cond   Expr
+}
+
 type QueryExpr struct {
 	Loops  []QueryLoop
 	Where  Expr
@@ -382,7 +389,7 @@ type QueryExpr struct {
 
 // GroupByExpr represents a simple group by query without joins or sorting.
 type GroupByExpr struct {
-	Loops   []QueryLoop
+	Loops   []interface{}
 	Key     Expr
 	Name    string
 	Where   Expr
@@ -602,14 +609,23 @@ func (g *GroupByExpr) emit(w io.Writer) {
 			io.WriteString(w, indent)
 			io.WriteString(w, "$groups[$key]['items'][] = ")
 			if len(g.Loops) == 1 {
-				fmt.Fprintf(w, "$%s;\n", g.Loops[0].Name)
+				if ql, ok := g.Loops[0].(QueryLoop); ok {
+					fmt.Fprintf(w, "$%s;\n", ql.Name)
+				} else if ll, ok := g.Loops[0].(LeftJoinLoop); ok {
+					fmt.Fprintf(w, "$%s;\n", ll.Name)
+				}
 			} else {
 				io.WriteString(w, "[")
 				for i, lp := range g.Loops {
 					if i > 0 {
 						io.WriteString(w, ", ")
 					}
-					fmt.Fprintf(w, "'%s' => $%s", lp.Name, lp.Name)
+					switch l := lp.(type) {
+					case QueryLoop:
+						fmt.Fprintf(w, "'%s' => $%s", l.Name, l.Name)
+					case LeftJoinLoop:
+						fmt.Fprintf(w, "'%s' => $%s", l.Name, l.Name)
+					}
 				}
 				io.WriteString(w, "];\n")
 			}
@@ -622,13 +638,36 @@ func (g *GroupByExpr) emit(w io.Writer) {
 			return
 		}
 		loop := g.Loops[idx]
-		io.WriteString(w, indent)
-		io.WriteString(w, "foreach (")
-		loop.Source.emit(w)
-		fmt.Fprintf(w, " as $%s) {\n", loop.Name)
-		emitLoops(idx+1, level+1)
-		io.WriteString(w, indent)
-		io.WriteString(w, "}\n")
+		switch lp := loop.(type) {
+		case QueryLoop:
+			io.WriteString(w, indent)
+			io.WriteString(w, "foreach (")
+			lp.Source.emit(w)
+			fmt.Fprintf(w, " as $%s) {\n", lp.Name)
+			emitLoops(idx+1, level+1)
+			io.WriteString(w, indent)
+			io.WriteString(w, "}\n")
+		case LeftJoinLoop:
+			io.WriteString(w, indent)
+			io.WriteString(w, "$matched = false;\n")
+			io.WriteString(w, indent)
+			io.WriteString(w, "foreach (")
+			lp.Source.emit(w)
+			fmt.Fprintf(w, " as $%s) {\n", lp.Name)
+			io.WriteString(w, indent+"  if (!(")
+			lp.Cond.emit(w)
+			io.WriteString(w, ")) continue;\n")
+			io.WriteString(w, indent+"  $matched = true;\n")
+			emitLoops(idx+1, level+1)
+			io.WriteString(w, indent)
+			io.WriteString(w, "}\n")
+			io.WriteString(w, indent)
+			io.WriteString(w, "if (!$matched) {\n")
+			fmt.Fprintf(w, indent+"  $%s = null;\n", lp.Name)
+			emitLoops(idx+1, level+1)
+			io.WriteString(w, indent)
+			io.WriteString(w, "}\n")
+		}
 	}
 	emitLoops(0, 1)
 	if g.SortKey {
@@ -1730,6 +1769,7 @@ func convertQueryExpr(q *parser.QueryExpr) (Expr, error) {
 		return nil, err
 	}
 	loops[0].Source = groupItemsExpr(src)
+	var where Expr
 	for _, f := range q.Froms {
 		ex, err := convertExpr(f.Src)
 		if err != nil {
@@ -1746,29 +1786,30 @@ func convertQueryExpr(q *parser.QueryExpr) (Expr, error) {
 			return nil, err
 		}
 		loops = append(loops, QueryLoop{Name: j.Var, Source: groupItemsExpr(ex)})
-	}
-	funcStack = append(funcStack, nil)
-	for _, lp := range loops {
-		funcStack[len(funcStack)-1] = append(funcStack[len(funcStack)-1], lp.Name)
-	}
-	var where Expr
-	if q.Where != nil {
-		where, err = convertExpr(q.Where)
-		if err != nil {
-			funcStack = funcStack[:len(funcStack)-1]
-			return nil, err
-		}
-	}
-	for _, j := range q.Joins {
 		cond, err := convertExpr(j.On)
 		if err != nil {
-			funcStack = funcStack[:len(funcStack)-1]
 			return nil, err
 		}
 		if where == nil {
 			where = cond
 		} else {
 			where = &BinaryExpr{Left: where, Op: "&&", Right: cond}
+		}
+	}
+	funcStack = append(funcStack, nil)
+	for _, lp := range loops {
+		funcStack[len(funcStack)-1] = append(funcStack[len(funcStack)-1], lp.Name)
+	}
+	if q.Where != nil {
+		w, err := convertExpr(q.Where)
+		if err != nil {
+			funcStack = funcStack[:len(funcStack)-1]
+			return nil, err
+		}
+		if where == nil {
+			where = w
+		} else {
+			where = &BinaryExpr{Left: where, Op: "&&", Right: w}
 		}
 	}
 	sel, err := convertExpr(q.Select)
@@ -1792,12 +1833,11 @@ func convertGroupQuery(q *parser.QueryExpr) (Expr, error) {
 		return nil, fmt.Errorf("unsupported query")
 	}
 
-	loops := []QueryLoop{{Name: q.Var}}
 	src, err := convertExpr(q.Source)
 	if err != nil {
 		return nil, err
 	}
-	loops[0].Source = groupItemsExpr(src)
+	loops := []interface{}{QueryLoop{Name: q.Var, Source: groupItemsExpr(src)}}
 	for _, f := range q.Froms {
 		ex, err := convertExpr(f.Src)
 		if err != nil {
@@ -1805,44 +1845,58 @@ func convertGroupQuery(q *parser.QueryExpr) (Expr, error) {
 		}
 		loops = append(loops, QueryLoop{Name: f.Var, Source: groupItemsExpr(ex)})
 	}
+	var where Expr
 	for _, j := range q.Joins {
-		if j.Side != nil && *j.Side != "inner" {
-			return nil, fmt.Errorf("unsupported join")
-		}
 		ex, err := convertExpr(j.Src)
 		if err != nil {
 			return nil, err
 		}
-		loops = append(loops, QueryLoop{Name: j.Var, Source: groupItemsExpr(ex)})
+		if j.Side != nil && *j.Side == "left" {
+			cond, err := convertExpr(j.On)
+			if err != nil {
+				return nil, err
+			}
+			loops = append(loops, LeftJoinLoop{Name: j.Var, Source: groupItemsExpr(ex), Cond: cond})
+		} else if j.Side == nil || *j.Side == "inner" {
+			loops = append(loops, QueryLoop{Name: j.Var, Source: groupItemsExpr(ex)})
+			cond, err := convertExpr(j.On)
+			if err != nil {
+				return nil, err
+			}
+			if where == nil {
+				where = cond
+			} else {
+				where = &BinaryExpr{Left: where, Op: "&&", Right: cond}
+			}
+		} else {
+			return nil, fmt.Errorf("unsupported join")
+		}
 	}
 
 	funcStack = append(funcStack, nil)
 	for _, lp := range loops {
-		funcStack[len(funcStack)-1] = append(funcStack[len(funcStack)-1], lp.Name)
+		switch l := lp.(type) {
+		case QueryLoop:
+			funcStack[len(funcStack)-1] = append(funcStack[len(funcStack)-1], l.Name)
+		case LeftJoinLoop:
+			funcStack[len(funcStack)-1] = append(funcStack[len(funcStack)-1], l.Name)
+		}
 	}
 	key, err := convertExpr(q.Group.Exprs[0])
 	if err != nil {
 		funcStack = funcStack[:len(funcStack)-1]
 		return nil, err
 	}
-	var where Expr
 	if q.Where != nil {
-		where, err = convertExpr(q.Where)
-		if err != nil {
-			funcStack = funcStack[:len(funcStack)-1]
-			return nil, err
-		}
-	}
-	for _, j := range q.Joins {
-		cond, err := convertExpr(j.On)
+		w, err := convertExpr(q.Where)
 		if err != nil {
 			funcStack = funcStack[:len(funcStack)-1]
 			return nil, err
 		}
 		if where == nil {
-			where = cond
+			where = w
 		} else {
-			where = &BinaryExpr{Left: where, Op: "&&", Right: cond}
+			where = &BinaryExpr{Left: where, Op: "&&", Right: w}
 		}
 	}
 	funcStack = append(funcStack, []string{q.Group.Name})
@@ -2244,7 +2298,14 @@ func exprNode(e Expr) *ast.Node {
 	case *GroupByExpr:
 		n := &ast.Node{Kind: "group_by"}
 		for _, lp := range ex.Loops {
-			n.Children = append(n.Children, &ast.Node{Kind: "loop", Value: lp.Name, Children: []*ast.Node{exprNode(lp.Source)}})
+			switch l := lp.(type) {
+			case QueryLoop:
+				n.Children = append(n.Children, &ast.Node{Kind: "loop", Value: l.Name, Children: []*ast.Node{exprNode(l.Source)}})
+			case LeftJoinLoop:
+				child := &ast.Node{Kind: "left_loop", Value: l.Name}
+				child.Children = append(child.Children, exprNode(l.Source), exprNode(l.Cond))
+				n.Children = append(n.Children, child)
+			}
 		}
 		n.Children = append(n.Children,
 			&ast.Node{Kind: "key", Children: []*ast.Node{exprNode(ex.Key)}},
