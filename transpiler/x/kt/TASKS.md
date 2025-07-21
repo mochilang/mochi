@@ -1,3 +1,6 @@
+## VM Golden Progress (2025-07-21 16:07 +0700)
+- Regenerated Kotlin golden files and README
+
 ## VM Golden Progress (2025-07-21 15:13 +0700)
 - Added `sort by` support for group-by queries.
 - Regenerated Kotlin golden files and README.
