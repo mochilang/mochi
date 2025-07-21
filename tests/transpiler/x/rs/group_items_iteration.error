@@ -1,0 +1,60 @@
+rustc: exit status 1
+error[E0425]: cannot find value `tag` in this scope
+  --> /workspace/mochi/tests/transpiler/x/rs/group_items_iteration.rs:29:65
+   |
+29 |         tmp = { let mut v = tmp.clone(); v.push(HashMap::from([(tag, g.key.clone()), (total, total)])); v };
+   |                                                                 ^^^ not found in this scope
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/transpiler/x/rs/group_items_iteration.rs:27:21
+   |
+27 |             total = (total + x.val);
+   |                     ^             ^
+   |
+   = note: `#[warn(unused_parens)]` on by default
+help: remove these parentheses
+   |
+27 -             total = (total + x.val);
+27 +             total = total + x.val;
+   |
+
+error[E0308]: mismatched types
+  --> /workspace/mochi/tests/transpiler/x/rs/group_items_iteration.rs:22:523
+   |
+22 | ... { let g = &_groups[&ks]; _q.push(g); } _q };
+   |                                 ---- ^ expected `Group<String, DataItem>`, found `&Group<String, DataItem>`
+   |                                 |
+   |                                 arguments to this method are incorrect
+   |
+   = note: expected struct `Group<_, _>`
+           found reference `&Group<_, _>`
+note: method defined here
+  --> /rustc/17067e9ac6d7ecb70e50f92c1944e545188d2359/library/alloc/src/vec/mod.rs:2442:12
+help: consider using clone here
+   |
+22 |     let groups: Vec<Group<String, DataItem>> = { let mut _q: Vec<Group<String, DataItem>> = Vec::new(); let mut _groups: HashMap<String, Group<String, DataItem>> = HashMap::new(); let mut _order: Vec<String> = Vec::new(); for d in &data { let key = d.tag.clone(); let ks = format!("{:?}", &key); let e = _groups.entry(ks.clone()).or_insert_with(|| { _order.push(ks.clone()); Group::<String, DataItem> { key: key.clone(), items: Vec::new() } }); e.items.push(d.clone()); } for ks in _order { let g = &_groups[&ks]; _q.push(g.clone()); } _q };
+   |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            ++++++++
+
+error[E0308]: mismatched types
+  --> /workspace/mochi/tests/transpiler/x/rs/group_items_iteration.rs:29:49
+   |
+29 |         tmp = { let mut v = tmp.clone(); v.push(HashMap::from([(tag, g.key.clone()), (total, total)])); v };
+   |                                            ---- ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ expected `i64`, found `HashMap<_, _>`
+   |                                            |
+   |                                            arguments to this method are incorrect
+   |
+   = note: expected type `i64`
+            found struct `HashMap<_, _>`
+note: method defined here
+  --> /rustc/17067e9ac6d7ecb70e50f92c1944e545188d2359/library/alloc/src/vec/mod.rs:2442:12
+
+error[E0610]: `i64` is a primitive type and therefore doesn't have fields
+  --> /workspace/mochi/tests/transpiler/x/rs/group_items_iteration.rs:31:137
+   |
+31 | ... _tmp: Vec<(i64, i64)> = Vec::new(); for r in tmp { _tmp.push((r.tag, r)); } _tmp.sort_by(|a,b| a.0.partial_cmp(&b.0).unwrap()); for (...
+   |                                                                     ^^^
+
+error: aborting due to 4 previous errors; 1 warning emitted
+
+Some errors have detailed explanations: E0308, E0425, E0610.
+For more information about an error, try `rustc --explain E0308`.

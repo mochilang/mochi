@@ -1,0 +1,41 @@
+rustc: exit status 1
+error[E0434]: can't capture dynamic environment in a fn item
+ --> /workspace/mochi/tests/transpiler/x/rs/nested_function.rs:4:13
+  |
+4 |     return (x + y)
+  |             ^
+  |
+  = help: use the `|| { ... }` closure form instead
+
+warning: unnecessary trailing semicolon
+ --> /workspace/mochi/tests/transpiler/x/rs/nested_function.rs:5:2
+  |
+5 | };
+  |  ^ help: remove this semicolon
+  |
+  = note: `#[warn(redundant_semicolons)]` on by default
+
+warning: unnecessary parentheses around `return` value
+ --> /workspace/mochi/tests/transpiler/x/rs/nested_function.rs:4:12
+  |
+4 |     return (x + y)
+  |            ^     ^
+  |
+  = note: `#[warn(unused_parens)]` on by default
+help: remove these parentheses
+  |
+4 -     return (x + y)
+4 +     return x + y
+  |
+
+warning: unused variable: `x`
+ --> /workspace/mochi/tests/transpiler/x/rs/nested_function.rs:2:10
+  |
+2 | fn outer(x: i64) -> i64 {
+  |          ^ help: if this is intentional, prefix it with an underscore: `_x`
+  |
+  = note: `#[warn(unused_variables)]` on by default
+
+error: aborting due to 1 previous error; 3 warnings emitted
+
+For more information about this error, try `rustc --explain E0434`.
