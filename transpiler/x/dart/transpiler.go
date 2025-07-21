@@ -2942,31 +2942,80 @@ func convertOuterJoinQuery(q *parser.QueryExpr) (Expr, error) {
 }
 
 func convertGroupQuery(q *parser.QueryExpr) (Expr, error) {
-	if q == nil || q.Group == nil || len(q.Group.Exprs) != 1 || len(q.Froms) > 0 || len(q.Joins) > 0 || q.Skip != nil || q.Take != nil || q.Distinct {
+	if q == nil || q.Group == nil || len(q.Group.Exprs) != 1 || q.Distinct {
 		return nil, fmt.Errorf("unsupported query")
 	}
 	src, err := convertExpr(q.Source)
 	if err != nil {
 		return nil, err
 	}
+
 	vars := []string{q.Var}
 	iters := []Expr{src}
 	var cond Expr
+
+	for _, f := range q.Froms {
+		e, err := convertExpr(f.Src)
+		if err != nil {
+			return nil, err
+		}
+		vars = append(vars, f.Var)
+		iters = append(iters, e)
+	}
+
+	for _, j := range q.Joins {
+		if j.Side != nil {
+			return nil, fmt.Errorf("unsupported query")
+		}
+		e, err := convertExpr(j.Src)
+		if err != nil {
+			return nil, err
+		}
+		vars = append(vars, j.Var)
+		iters = append(iters, e)
+		jc, err := convertExpr(j.On)
+		if err != nil {
+			return nil, err
+		}
+		if cond == nil {
+			cond = jc
+		} else {
+			cond = &BinaryExpr{Left: cond, Op: "&&", Right: jc}
+		}
+	}
+
 	if q.Where != nil {
 		c, err := convertExpr(q.Where)
 		if err != nil {
 			return nil, err
 		}
-		cond = c
+		if cond == nil {
+			cond = c
+		} else {
+			cond = &BinaryExpr{Left: cond, Op: "&&", Right: c}
+		}
 	}
 	key, err := convertExpr(q.Group.Exprs[0])
 	if err != nil {
 		return nil, err
 	}
-	row := Expr(&Name{Name: q.Var})
+
+	var row Expr
+	if len(vars) == 1 {
+		row = &Name{Name: vars[0]}
+	} else {
+		var ents []MapEntry
+		for _, v := range vars {
+			ents = append(ents, MapEntry{Key: &Name{Name: v}, Value: &Name{Name: v}})
+		}
+		row = &MapLit{Entries: ents}
+	}
+
 	saved := currentEnv
 	child := types.NewEnv(currentEnv)
-	child.SetVar(q.Var, types.AnyType{}, true)
+	for _, v := range vars {
+		child.SetVar(v, types.AnyType{}, true)
+	}
 	genv := types.NewEnv(child)
 	genv.SetVar(q.Group.Name, types.GroupType{Key: types.AnyType{}, Elem: types.AnyType{}}, true)
 	currentEnv = genv
