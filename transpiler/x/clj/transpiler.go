@@ -559,6 +559,24 @@ func isZeroNode(n Node) bool {
 	return false
 }
 
+func isAggCall(e *parser.Expr) string {
+       if e == nil || e.Binary == nil || e.Binary.Left == nil || len(e.Binary.Right) > 0 {
+               return ""
+       }
+       u := e.Binary.Left
+       if u.Value == nil || u.Value.Target == nil || u.Value.Target.Call == nil {
+               return ""
+       }
+       name := u.Value.Target.Call.Func
+       switch name {
+       case "sum", "avg", "count":
+               if len(u.Value.Target.Call.Args) == 1 {
+                       return name
+               }
+       }
+       return ""
+}
+
 func transpileExpr(e *parser.Expr) (Node, error) {
 	if e == nil {
 		return nil, fmt.Errorf("nil expr")
@@ -1113,24 +1131,42 @@ func transpileQueryExpr(q *parser.QueryExpr) (Node, error) {
 		conds = append(conds, ce)
 	}
 
-	if q.Group == nil {
-		sel, err := transpileExpr(q.Select)
-		if err != nil {
-			return nil, err
-		}
+       if q.Group == nil {
+               selCall := isAggCall(q.Select)
+               vecElems := bindings
+               if len(conds) == 1 {
+                       vecElems = append(vecElems, Keyword("when"), conds[0])
+               } else if len(conds) > 1 {
+                       andForm := []Node{Symbol("and")}
+                       andForm = append(andForm, conds...)
+                       vecElems = append(vecElems, Keyword("when"), &List{Elems: andForm})
+               }
 
-		vecElems := bindings
-		if len(conds) == 1 {
-			vecElems = append(vecElems, Keyword("when"), conds[0])
-		} else if len(conds) > 1 {
-			andForm := []Node{Symbol("and")}
-			andForm = append(andForm, conds...)
-			vecElems = append(vecElems, Keyword("when"), &List{Elems: andForm})
-		}
+               if selCall != "" {
+                       arg, err := transpileExpr(q.Select.Binary.Left.Value.Target.Call.Args[0])
+                       if err != nil {
+                               return nil, err
+                       }
+                       comp := &List{Elems: []Node{Symbol("for"), &Vector{Elems: vecElems}, arg}}
+                       switch selCall {
+                       case "sum":
+                               return &List{Elems: []Node{Symbol("reduce"), Symbol("+"), IntLit(0), comp}}, nil
+                       case "avg":
+                               sum := &List{Elems: []Node{Symbol("reduce"), Symbol("+"), IntLit(0), comp}}
+                               cnt := &List{Elems: []Node{Symbol("count"), comp}}
+                               return &List{Elems: []Node{Symbol("double"), &List{Elems: []Node{Symbol("/"), sum, cnt}}}}, nil
+                       case "count":
+                               return &List{Elems: []Node{Symbol("count"), comp}}, nil
+                       }
+               }
 
-		forForm := &List{Elems: []Node{Symbol("for"), &Vector{Elems: vecElems}, sel}}
-		return forForm, nil
-	}
+               sel, err := transpileExpr(q.Select)
+               if err != nil {
+                       return nil, err
+               }
+               forForm := &List{Elems: []Node{Symbol("for"), &Vector{Elems: vecElems}, sel}}
+               return forForm, nil
+       }
 
 	if len(q.Group.Exprs) == 0 {
 		return nil, fmt.Errorf("missing group key")

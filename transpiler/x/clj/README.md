@@ -2,5 +2,105 @@
 
 This directory contains experimental source translators for generating Clojure code. Each program in `tests/vm/valid` is transpiled and executed with `clojure`.
 
-## VM Golden Test Checklist (80/100)
-- [x] append_builtin\n- [x] avg_builtin\n- [x] basic_compare\n- [x] binary_precedence\n- [x] bool_chain\n- [x] break_continue\n- [x] cast_string_to_int\n- [x] cast_struct\n- [x] closure\n- [x] count_builtin\n- [x] cross_join\n- [x] cross_join_filter\n- [x] cross_join_triple\n- [ ] dataset_sort_take_limit\n- [x] dataset_where_filter\n- [x] exists_builtin\n- [x] for_list_collection\n- [x] for_loop\n- [x] for_map_collection\n- [x] fun_call\n- [x] fun_expr_in_let\n- [x] fun_three_args\n- [ ] go_auto\n- [x] group_by\n- [ ] group_by_conditional_sum\n- [x] group_by_having\n- [x] group_by_join\n- [x] group_by_left_join\n- [x] group_by_multi_join\n- [ ] group_by_multi_join_sort\n- [ ] group_by_sort\n- [ ] group_items_iteration\n- [x] if_else\n- [x] if_then_else\n- [x] if_then_else_nested\n- [x] in_operator\n- [x] in_operator_extended\n- [x] inner_join\n- [x] join_multi\n- [x] json_builtin\n- [x] left_join\n- [x] left_join_multi\n- [x] len_builtin\n- [x] len_map\n- [x] len_string\n- [x] let_and_print\n- [x] list_assign\n- [x] list_index\n- [x] list_nested_assign\n- [x] list_set_ops\n- [ ] load_yaml\n- [x] map_assign\n- [x] map_in_operator\n- [x] map_index\n- [x] map_int_key\n- [x] map_literal_dynamic\n- [x] map_membership\n- [x] map_nested_assign\n- [x] match_expr\n- [x] match_full\n- [x] math_ops\n- [x] membership\n- [x] min_max_builtin\n- [x] nested_function\n- [ ] order_by_map\n- [ ] outer_join\n- [x] partial_application\n- [x] print_hello\n- [x] pure_fold\n- [x] pure_global_fold\n- [ ] python_auto\n- [ ] python_math\n- [ ] query_sum_select\n- [ ] record_assign\n- [ ] right_join\n- [ ] save_jsonl_stdout\n- [x] short_circuit\n- [x] slice\n- [ ] sort_stable\n- [x] str_builtin\n- [x] string_compare\n- [x] string_concat\n- [x] string_contains\n- [x] string_in_operator\n- [x] string_index\n- [x] string_prefix_slice\n- [x] substring_builtin\n- [x] sum_builtin\n- [x] tail_recursion\n- [ ] test_block\n- [ ] tree_sum\n- [x] two-sum\n- [x] typed_let\n- [x] typed_var\n- [x] unary_neg\n- [ ] update_stmt\n- [ ] user_type_literal\n- [x] values_builtin\n- [x] var_assignment\n- [x] while_loop\n
+Compiled programs: 81/100
+
+- [x] append_builtin
+- [x] avg_builtin
+- [x] basic_compare
+- [x] binary_precedence
+- [x] bool_chain
+- [x] break_continue
+- [x] cast_string_to_int
+- [x] cast_struct
+- [x] closure
+- [x] count_builtin
+- [x] cross_join
+- [x] cross_join_filter
+- [x] cross_join_triple
+- [ ] dataset_sort_take_limit
+- [x] dataset_where_filter
+- [x] exists_builtin
+- [x] for_list_collection
+- [x] for_loop
+- [x] for_map_collection
+- [x] fun_call
+- [x] fun_expr_in_let
+- [x] fun_three_args
+- [ ] go_auto
+- [x] group_by
+- [ ] group_by_conditional_sum
+- [x] group_by_having
+- [x] group_by_join
+- [x] group_by_left_join
+- [x] group_by_multi_join
+- [ ] group_by_multi_join_sort
+- [ ] group_by_sort
+- [ ] group_items_iteration
+- [x] if_else
+- [x] if_then_else
+- [x] if_then_else_nested
+- [x] in_operator
+- [x] in_operator_extended
+- [x] inner_join
+- [x] join_multi
+- [x] json_builtin
+- [x] left_join
+- [x] left_join_multi
+- [x] len_builtin
+- [x] len_map
+- [x] len_string
+- [x] let_and_print
+- [x] list_assign
+- [x] list_index
+- [x] list_nested_assign
+- [x] list_set_ops
+- [ ] load_yaml
+- [x] map_assign
+- [x] map_in_operator
+- [x] map_index
+- [x] map_int_key
+- [x] map_literal_dynamic
+- [x] map_membership
+- [x] map_nested_assign
+- [x] match_expr
+- [x] match_full
+- [x] math_ops
+- [x] membership
+- [x] min_max_builtin
+- [x] nested_function
+- [ ] order_by_map
+- [ ] outer_join
+- [x] partial_application
+- [x] print_hello
+- [x] pure_fold
+- [x] pure_global_fold
+- [ ] python_auto
+- [ ] python_math
+- [x] query_sum_select
+- [ ] record_assign
+- [ ] right_join
+- [ ] save_jsonl_stdout
+- [x] short_circuit
+- [x] slice
+- [ ] sort_stable
+- [x] str_builtin
+- [x] string_compare
+- [x] string_concat
+- [x] string_contains
+- [x] string_in_operator
+- [x] string_index
+- [x] string_prefix_slice
+- [x] substring_builtin
+- [x] sum_builtin
+- [x] tail_recursion
+- [ ] test_block
+- [ ] tree_sum
+- [x] two-sum
+- [x] typed_let
+- [x] typed_var
+- [x] unary_neg
+- [ ] update_stmt
+- [ ] user_type_literal
+- [x] values_builtin
+- [x] var_assignment
+- [x] while_loop
