@@ -1345,6 +1345,15 @@ func compileQueryExpr(q *parser.QueryExpr, env *types.Env, base string) (Expr, e
 	if err != nil {
 		return nil, err
 	}
+
+	// detect simple aggregate: select sum(var)
+	if s, ok := sel.(*SumExpr); ok && len(q.Froms) == 0 && len(q.Joins) == 0 && q.Sort == nil && q.Skip == nil && q.Take == nil {
+		if vr, ok2 := s.List.(*VarRef); ok2 && vr.Name == q.Var {
+			baseType := toGoTypeFromType(elemT)
+			qexpr := &QueryExpr{Var: q.Var, Src: src, Froms: nil, Joins: nil, Where: where, Sort: nil, SortType: "", Skip: nil, Take: nil, Select: &VarRef{Name: q.Var}, ElemType: baseType}
+			return &SumExpr{List: qexpr}, nil
+		}
+	}
 	et := ""
 	if ml := mapLiteral(q.Select); ml != nil {
 		if st, ok := types.InferStructFromMapEnv(ml, child); ok {

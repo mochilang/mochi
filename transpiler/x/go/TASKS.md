@@ -1,3 +1,19 @@
+## Progress (2025-07-21 12:27 +0700)
+- go transpiler: support sum aggregation
+- Regenerated golden files - 82/100 vm valid programs passing
+
+## Progress (2025-07-21 12:21 +0700)
+- c transpiler: support conditional group_by
+- Regenerated golden files - 82/100 vm valid programs passing
+
+## Progress (2025-07-21 12:21 +0700)
+- c transpiler: support conditional group_by
+- Regenerated golden files - 82/100 vm valid programs passing
+
+## Progress (2025-07-21 12:21 +0700)
+- c transpiler: support conditional group_by
+- Regenerated golden files - 82/100 vm valid programs passing
+
 ## Progress (2025-07-21 11:02 +0700)
 - go transpiler: simplify prints and queries
 - Regenerated golden files - 81/100 vm valid programs passing
