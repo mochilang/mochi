@@ -1,0 +1,19 @@
+compile: exit status 1
+/workspace/mochi/tests/transpiler/x/cpp/json_builtin.cpp:9:28: error: wrong number of template arguments (1, should be at least 2)
+    9 | auto m = std::map<auto, int>{{a, 1}, {b, 2}};
+      |                            ^
+In file included from /usr/include/c++/13/map:63,
+                 from /workspace/mochi/tests/transpiler/x/cpp/json_builtin.cpp:4:
+/usr/include/c++/13/bits/stl_map.h:102:11: note: provided for ‘template<class _Key, class _Tp, class _Compare, class _Alloc> class std::map’
+  102 |     class map
+      |           ^~~
+/workspace/mochi/tests/transpiler/x/cpp/json_builtin.cpp:9:31: error: ‘a’ was not declared in this scope
+    9 | auto m = std::map<auto, int>{{a, 1}, {b, 2}};
+      |                               ^
+/workspace/mochi/tests/transpiler/x/cpp/json_builtin.cpp:9:39: error: ‘b’ was not declared in this scope
+    9 | auto m = std::map<auto, int>{{a, 1}, {b, 2}};
+      |                                       ^
+/workspace/mochi/tests/transpiler/x/cpp/json_builtin.cpp: In function ‘int main()’:
+/workspace/mochi/tests/transpiler/x/cpp/json_builtin.cpp:12:5: error: ‘json’ was not declared in this scope
+   12 |     json(m);
+      |     ^~~~

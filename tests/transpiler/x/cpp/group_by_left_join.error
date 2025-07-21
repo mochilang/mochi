@@ -1,0 +1,27 @@
+compile: exit status 1
+/workspace/mochi/tests/transpiler/x/cpp/group_by_left_join.cpp: In lambda function:
+/workspace/mochi/tests/transpiler/x/cpp/group_by_left_join.cpp:81:15: error: ‘g’ is not captured
+   81 | for (auto r : g) {
+      |               ^
+/workspace/mochi/tests/transpiler/x/cpp/group_by_left_join.cpp:80:59: note: the lambda has no capture-default
+   80 |     __items.push_back(StatsItem{.name = g.key, .count = ([]{ std::vector<StatsPair> __items;
+      |                                                           ^
+/workspace/mochi/tests/transpiler/x/cpp/group_by_left_join.cpp:79:12: note: ‘GGroup g’ declared here
+   79 |     GGroup g = __g;
+      |            ^
+/workspace/mochi/tests/transpiler/x/cpp/group_by_left_join.cpp: In lambda function:
+/workspace/mochi/tests/transpiler/x/cpp/group_by_left_join.cpp:86:26: warning: narrowing conversion of ‘<lambda()>::<lambda()>().std::vector<StatsPair>::size()’ from ‘std::vector<StatsPair>::size_type’ {aka ‘long unsigned int’} to ‘int’ [-Wnarrowing]
+   80 |     __items.push_back(StatsItem{.name = g.key, .count = ([]{ std::vector<StatsPair> __items;
+      |                                                         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   81 | for (auto r : g) {
+      | ~~~~~~~~~~~~~~~~~~        
+   82 |     if(r.o) {
+      |     ~~~~~~~~~             
+   83 |         __items.push_back(r);
+      |         ~~~~~~~~~~~~~~~~~~~~~
+   84 |     }
+      |     ~                     
+   85 | }
+      | ~                         
+   86 | return __items; }()).size()});
+      | ~~~~~~~~~~~~~~~~~~~~~~~~~^~
