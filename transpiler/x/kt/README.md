@@ -4,11 +4,11 @@ Generated Kotlin sources for golden tests are stored in `tests/transpiler/x/kt`.
 
 The transpiler currently supports expression programs with `print`, integer and list literals, mutable variables and built-ins `count`, `sum`, `avg`, `len`, `str`, `append`, `min`, `max`, `substring` and `values`.
 
-Completed golden tests: **1/100** (auto-generated)
+Completed golden tests: **6/100** (auto-generated)
 
 ### Golden test checklist
 - [ ] append_builtin.mochi
-- [ ] avg_builtin.mochi
+- [x] avg_builtin.mochi
 - [ ] basic_compare.mochi
 - [ ] binary_precedence.mochi
 - [ ] bool_chain.mochi
@@ -16,7 +16,7 @@ Completed golden tests: **1/100** (auto-generated)
 - [ ] cast_string_to_int.mochi
 - [ ] cast_struct.mochi
 - [ ] closure.mochi
-- [ ] count_builtin.mochi
+- [x] count_builtin.mochi
 - [ ] cross_join.mochi
 - [ ] cross_join_filter.mochi
 - [ ] cross_join_triple.mochi
@@ -49,7 +49,7 @@ Completed golden tests: **1/100** (auto-generated)
 - [ ] json_builtin.mochi
 - [ ] left_join.mochi
 - [ ] left_join_multi.mochi
-- [ ] len_builtin.mochi
+- [x] len_builtin.mochi
 - [ ] len_map.mochi
 - [ ] len_string.mochi
 - [ ] let_and_print.mochi
@@ -86,7 +86,7 @@ Completed golden tests: **1/100** (auto-generated)
 - [ ] short_circuit.mochi
 - [ ] slice.mochi
 - [ ] sort_stable.mochi
-- [ ] str_builtin.mochi
+- [x] str_builtin.mochi
 - [ ] string_compare.mochi
 - [ ] string_concat.mochi
 - [ ] string_contains.mochi
@@ -94,7 +94,7 @@ Completed golden tests: **1/100** (auto-generated)
 - [ ] string_index.mochi
 - [ ] string_prefix_slice.mochi
 - [ ] substring_builtin.mochi
-- [ ] sum_builtin.mochi
+- [x] sum_builtin.mochi
 - [ ] tail_recursion.mochi
 - [ ] test_block.mochi
 - [ ] tree_sum.mochi
