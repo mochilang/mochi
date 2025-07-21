@@ -341,15 +341,17 @@ func (q *QueryExpr) emit(e *emitter) {
 	e.nl()
 	if q.Sort != nil {
 		e.writeIndent()
-		io.WriteString(e.w, "_res = _res.sort_by do |"+q.Var+"|")
+		io.WriteString(e.w, "_res = _res.each_with_index.sort_by do |"+q.Var+", __i|")
 		e.nl()
 		e.indent++
 		e.writeIndent()
+		io.WriteString(e.w, "[")
 		q.Sort.emit(e)
+		io.WriteString(e.w, ", __i]")
 		e.nl()
 		e.indent--
 		e.writeIndent()
-		io.WriteString(e.w, "end")
+		io.WriteString(e.w, "end.map{ |x, _| x }")
 		e.nl()
 	}
 	if q.Skip != nil {
@@ -982,9 +984,9 @@ func (j *JoinExpr) emit(e *emitter) {
 type FormatList struct{ List Expr }
 
 func (f *FormatList) emit(e *emitter) {
-	io.WriteString(e.w, "\"[\" + (")
+	io.WriteString(e.w, `("[" + (`)
 	f.List.emit(e)
-	io.WriteString(e.w, ").join(',') + \"]\"")
+	io.WriteString(e.w, `).map{ |x| x.is_a?(String) ? '\'' + x + '\'' : x.to_s }.join(', ') + "]")`)
 }
 
 // FormatBool renders a boolean as "True" or "False" for printing.
