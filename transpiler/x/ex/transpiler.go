@@ -728,22 +728,22 @@ type GroupByExpr struct {
 
 // GroupBySortExpr represents a grouped query sorted by an expression.
 type GroupBySortExpr struct {
-        Var    string
-        Source Expr
-        Key    Expr
-        Name   string
-        Sort   Expr
-        Select Expr
+	Var    string
+	Source Expr
+	Key    Expr
+	Name   string
+	Sort   Expr
+	Select Expr
 }
 
 // GroupByHavingExpr represents a grouped query with a having filter.
 type GroupByHavingExpr struct {
-        Var    string
-        Source Expr
-        Key    Expr
-        Name   string
-        Having Expr
-        Select Expr
+	Var    string
+	Source Expr
+	Key    Expr
+	Name   string
+	Having Expr
+	Select Expr
 }
 
 // NilLit represents a `nil` literal.
@@ -751,12 +751,12 @@ type NilLit struct{}
 
 // LeftJoinExpr represents a simple left join without additional clauses.
 type LeftJoinExpr struct {
-        LeftVar  string
-        LeftSrc  Expr
-        RightVar string
-        RightSrc Expr
-        On       Expr
-        Select   Expr
+	LeftVar  string
+	LeftSrc  Expr
+	RightVar string
+	RightSrc Expr
+	On       Expr
+	Select   Expr
 }
 
 func (g *GroupByExpr) emit(w io.Writer) {
@@ -785,44 +785,44 @@ func (g *GroupBySortExpr) emit(w io.Writer) {
 	io.WriteString(w, " end) |> Enum.map(fn g ->\n  ")
 	io.WriteString(w, g.Name)
 	io.WriteString(w, " = g\n  ")
-        g.Select.emit(w)
-        io.WriteString(w, "\nend)")
+	g.Select.emit(w)
+	io.WriteString(w, "\nend)")
 }
 
 func (g *GroupByHavingExpr) emit(w io.Writer) {
-        io.WriteString(w, "Enum.group_by(")
-        g.Source.emit(w)
-        io.WriteString(w, ", fn ")
-        io.WriteString(w, g.Var)
-        io.WriteString(w, " -> ")
-        g.Key.emit(w)
-        io.WriteString(w, " end) |> Enum.map(fn {key, items} -> %{key: key, items: items} end) |> Enum.filter(fn g -> ")
-        g.Having.emit(w)
-        io.WriteString(w, " end) |> Enum.map(fn g ->\n  ")
-        io.WriteString(w, g.Name)
-        io.WriteString(w, " = g\n  ")
-        g.Select.emit(w)
-        io.WriteString(w, "\nend)")
+	io.WriteString(w, "Enum.group_by(")
+	g.Source.emit(w)
+	io.WriteString(w, ", fn ")
+	io.WriteString(w, g.Var)
+	io.WriteString(w, " -> ")
+	g.Key.emit(w)
+	io.WriteString(w, " end) |> Enum.map(fn {key, items} -> %{key: key, items: items} end) |> Enum.filter(fn g -> ")
+	g.Having.emit(w)
+	io.WriteString(w, " end) |> Enum.map(fn g ->\n  ")
+	io.WriteString(w, g.Name)
+	io.WriteString(w, " = g\n  ")
+	g.Select.emit(w)
+	io.WriteString(w, "\nend)")
 }
 
 func (n *NilLit) emit(w io.Writer) { io.WriteString(w, "nil") }
 
 func (lj *LeftJoinExpr) emit(w io.Writer) {
-        io.WriteString(w, "Enum.flat_map(")
-        lj.LeftSrc.emit(w)
-        io.WriteString(w, ", fn ")
-        io.WriteString(w, lj.LeftVar)
-        io.WriteString(w, " ->\n  matches = Enum.filter(")
-        lj.RightSrc.emit(w)
-        io.WriteString(w, ", fn ")
-        io.WriteString(w, lj.RightVar)
-        io.WriteString(w, " -> ")
-        lj.On.emit(w)
-        io.WriteString(w, " end)\n  list = if Enum.empty?(matches), do: [nil], else: matches\n  Enum.map(list, fn ")
-        io.WriteString(w, lj.RightVar)
-        io.WriteString(w, " -> ")
-        lj.Select.emit(w)
-        io.WriteString(w, " end)\nend)")
+	io.WriteString(w, "Enum.flat_map(")
+	lj.LeftSrc.emit(w)
+	io.WriteString(w, ", fn ")
+	io.WriteString(w, lj.LeftVar)
+	io.WriteString(w, " ->\n  matches = Enum.filter(")
+	lj.RightSrc.emit(w)
+	io.WriteString(w, ", fn ")
+	io.WriteString(w, lj.RightVar)
+	io.WriteString(w, " -> ")
+	lj.On.emit(w)
+	io.WriteString(w, " end)\n  list = if Enum.empty?(matches), do: [nil], else: matches\n  Enum.map(list, fn ")
+	io.WriteString(w, lj.RightVar)
+	io.WriteString(w, " -> ")
+	lj.Select.emit(w)
+	io.WriteString(w, " end)\nend)")
 }
 
 // CastExpr represents a simple cast like expr as int.
@@ -987,24 +987,24 @@ func compileStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 			}
 		}
 		return &LetStmt{Name: st.Var.Name, Value: val}, nil
-        case st.Assign != nil:
-                if len(st.Assign.Index) == 0 && len(st.Assign.Field) == 0 {
-                        val, err := compileExpr(st.Assign.Value, env)
-                        if err != nil {
-                                return nil, err
-                        }
-                        return &AssignStmt{Name: st.Assign.Name, Value: val}, nil
-                }
-                if len(st.Assign.Field) == 1 && len(st.Assign.Index) == 0 {
-                        val, err := compileExpr(st.Assign.Value, env)
-                        if err != nil {
-                                return nil, err
-                        }
-                        key := &AtomLit{Name: ":" + st.Assign.Field[0].Name}
-                        call := &CallExpr{Func: "Map.put", Args: []Expr{&VarRef{Name: st.Assign.Name}, key, val}}
-                        return &AssignStmt{Name: st.Assign.Name, Value: call}, nil
-                }
-                if len(st.Assign.Index) == 1 && len(st.Assign.Field) == 0 {
+	case st.Assign != nil:
+		if len(st.Assign.Index) == 0 && len(st.Assign.Field) == 0 {
+			val, err := compileExpr(st.Assign.Value, env)
+			if err != nil {
+				return nil, err
+			}
+			return &AssignStmt{Name: st.Assign.Name, Value: val}, nil
+		}
+		if len(st.Assign.Field) == 1 && len(st.Assign.Index) == 0 {
+			val, err := compileExpr(st.Assign.Value, env)
+			if err != nil {
+				return nil, err
+			}
+			key := &AtomLit{Name: ":" + st.Assign.Field[0].Name}
+			call := &CallExpr{Func: "Map.put", Args: []Expr{&VarRef{Name: st.Assign.Name}, key, val}}
+			return &AssignStmt{Name: st.Assign.Name, Value: call}, nil
+		}
+		if len(st.Assign.Index) == 1 && len(st.Assign.Field) == 0 {
 			idx, err := compileExpr(st.Assign.Index[0].Start, env)
 			if err != nil {
 				return nil, err
@@ -1335,6 +1335,7 @@ func compileQueryExpr(q *parser.QueryExpr, env *types.Env) (Expr, error) {
 	if err != nil {
 		return nil, err
 	}
+	env.SetVar(q.Var, elemTypeOfExpr(q.Source, env), true)
 	if name, ok := isSimpleIdent(q.Source); ok {
 		if t, err := env.GetVar(name); err == nil {
 			if _, ok := t.(types.GroupType); ok {
@@ -1342,31 +1343,31 @@ func compileQueryExpr(q *parser.QueryExpr, env *types.Env) (Expr, error) {
 			}
 		}
 	}
-       if q.Group != nil && len(q.Group.Exprs) == 1 && len(q.Froms) == 0 && len(q.Joins) == 0 && q.Where == nil && q.Sort == nil && q.Skip == nil && q.Take == nil && !q.Distinct {
-               child := types.NewEnv(env)
-               child.SetVar(q.Var, types.AnyType{}, true)
-               key, err := compileExpr(q.Group.Exprs[0], child)
-               if err != nil {
-                       return nil, err
-               }
-               genv := types.NewEnv(env)
-               genv.SetVar(q.Group.Name, types.GroupType{Key: types.AnyType{}, Elem: types.AnyType{}}, true)
-               sel, err := compileExpr(q.Select, genv)
-               if err != nil {
-                       return nil, err
-               }
-               if q.Group.Having == nil {
-                       return &GroupByExpr{Var: q.Var, Source: src, Key: key, Name: q.Group.Name, Select: sel}, nil
-               }
-               having, err := compileExpr(q.Group.Having, genv)
-               if err != nil {
-                       return nil, err
-               }
-               return &GroupByHavingExpr{Var: q.Var, Source: src, Key: key, Name: q.Group.Name, Having: having, Select: sel}, nil
-       }
+	if q.Group != nil && len(q.Group.Exprs) == 1 && len(q.Froms) == 0 && len(q.Joins) == 0 && q.Where == nil && q.Sort == nil && q.Skip == nil && q.Take == nil && !q.Distinct {
+		child := types.NewEnv(env)
+		child.SetVar(q.Var, elemTypeOfExpr(q.Source, env), true)
+		key, err := compileExpr(q.Group.Exprs[0], child)
+		if err != nil {
+			return nil, err
+		}
+		genv := types.NewEnv(env)
+		genv.SetVar(q.Group.Name, types.GroupType{Key: types.AnyType{}, Elem: types.AnyType{}}, true)
+		sel, err := compileExpr(q.Select, genv)
+		if err != nil {
+			return nil, err
+		}
+		if q.Group.Having == nil {
+			return &GroupByExpr{Var: q.Var, Source: src, Key: key, Name: q.Group.Name, Select: sel}, nil
+		}
+		having, err := compileExpr(q.Group.Having, genv)
+		if err != nil {
+			return nil, err
+		}
+		return &GroupByHavingExpr{Var: q.Var, Source: src, Key: key, Name: q.Group.Name, Having: having, Select: sel}, nil
+	}
 	if q.Group != nil && len(q.Group.Exprs) == 1 && len(q.Froms) == 0 && len(q.Joins) == 0 && q.Where == nil && q.Sort != nil && q.Skip == nil && q.Take == nil && !q.Distinct {
 		child := types.NewEnv(env)
-		child.SetVar(q.Var, types.AnyType{}, true)
+		child.SetVar(q.Var, elemTypeOfExpr(q.Source, env), true)
 		key, err := compileExpr(q.Group.Exprs[0], child)
 		if err != nil {
 			return nil, err
@@ -1387,7 +1388,7 @@ func compileQueryExpr(q *parser.QueryExpr, env *types.Env) (Expr, error) {
 	if q.Group != nil && len(q.Group.Exprs) == 1 && (len(q.Froms) > 0 || len(q.Joins) > 0) && q.Sort == nil && q.Skip == nil && q.Take == nil && !q.Distinct {
 		gens := []CompGen{{Var: q.Var, Src: src}}
 		child := types.NewEnv(env)
-		child.SetVar(q.Var, types.AnyType{}, true)
+		child.SetVar(q.Var, elemTypeOfExpr(q.Source, env), true)
 		varNames := []string{q.Var}
 		var filt Expr
 		for _, f := range q.Froms {
@@ -1395,7 +1396,7 @@ func compileQueryExpr(q *parser.QueryExpr, env *types.Env) (Expr, error) {
 			if err != nil {
 				return nil, err
 			}
-			child.SetVar(f.Var, types.AnyType{}, true)
+			child.SetVar(f.Var, elemTypeOfExpr(f.Src, child), true)
 			varNames = append(varNames, f.Var)
 			gens = append(gens, CompGen{Var: f.Var, Src: fe})
 		}
@@ -1407,7 +1408,7 @@ func compileQueryExpr(q *parser.QueryExpr, env *types.Env) (Expr, error) {
 			if err != nil {
 				return nil, err
 			}
-			child.SetVar(j.Var, types.AnyType{}, true)
+			child.SetVar(j.Var, elemTypeOfExpr(j.Src, child), true)
 			varNames = append(varNames, j.Var)
 			gens = append(gens, CompGen{Var: j.Var, Src: je})
 			if j.On != nil {
@@ -1453,36 +1454,36 @@ func compileQueryExpr(q *parser.QueryExpr, env *types.Env) (Expr, error) {
 		}
 		pattern := fmt.Sprintf("%%{%s}", strings.Join(patParts, ", "))
 		return &GroupByExpr{Var: pattern, Source: comp, Key: key, Name: q.Group.Name, Select: sel}, nil
-       }
-       if len(q.Joins) == 1 && q.Joins[0].Side != nil && *q.Joins[0].Side == "left" && len(q.Froms) == 0 && q.Group == nil && q.Sort == nil && q.Skip == nil && q.Take == nil && q.Where == nil && !q.Distinct {
-               child := types.NewEnv(env)
-               child.SetVar(q.Var, types.AnyType{}, true)
-               j := q.Joins[0]
-               je, err := compileExpr(j.Src, child)
-               if err != nil {
-                       return nil, err
-               }
-               child.SetVar(j.Var, types.AnyType{}, true)
-               onExpr, err := compileExpr(j.On, child)
-               if err != nil {
-                       return nil, err
-               }
-               sel, err := compileExpr(q.Select, child)
-               if err != nil {
-                       return nil, err
-               }
-               return &LeftJoinExpr{LeftVar: q.Var, LeftSrc: src, RightVar: j.Var, RightSrc: je, On: onExpr, Select: sel}, nil
-       }
-       gens := []CompGen{{Var: q.Var, Src: src}}
+	}
+	if len(q.Joins) == 1 && q.Joins[0].Side != nil && *q.Joins[0].Side == "left" && len(q.Froms) == 0 && q.Group == nil && q.Sort == nil && q.Skip == nil && q.Take == nil && q.Where == nil && !q.Distinct {
+		child := types.NewEnv(env)
+		child.SetVar(q.Var, elemTypeOfExpr(q.Source, env), true)
+		j := q.Joins[0]
+		je, err := compileExpr(j.Src, child)
+		if err != nil {
+			return nil, err
+		}
+		child.SetVar(j.Var, elemTypeOfExpr(j.Src, child), true)
+		onExpr, err := compileExpr(j.On, child)
+		if err != nil {
+			return nil, err
+		}
+		sel, err := compileExpr(q.Select, child)
+		if err != nil {
+			return nil, err
+		}
+		return &LeftJoinExpr{LeftVar: q.Var, LeftSrc: src, RightVar: j.Var, RightSrc: je, On: onExpr, Select: sel}, nil
+	}
+	gens := []CompGen{{Var: q.Var, Src: src}}
 	child := types.NewEnv(env)
-	child.SetVar(q.Var, types.AnyType{}, true)
+	child.SetVar(q.Var, elemTypeOfExpr(q.Source, env), true)
 	var filt Expr
 	for _, f := range q.Froms {
 		fe, err := compileExpr(f.Src, child)
 		if err != nil {
 			return nil, err
 		}
-		child.SetVar(f.Var, types.AnyType{}, true)
+		child.SetVar(f.Var, elemTypeOfExpr(f.Src, child), true)
 		gens = append(gens, CompGen{Var: f.Var, Src: fe})
 	}
 	for _, j := range q.Joins {
@@ -1491,7 +1492,7 @@ func compileQueryExpr(q *parser.QueryExpr, env *types.Env) (Expr, error) {
 			if err != nil {
 				return nil, err
 			}
-			child.SetVar(j.Var, types.AnyType{}, true)
+			child.SetVar(j.Var, elemTypeOfExpr(j.Src, child), true)
 			gens = append([]CompGen{{Var: j.Var, Src: je}}, gens...)
 			if j.On != nil {
 				onExpr, err := compileExpr(j.On, child)
@@ -1515,7 +1516,7 @@ func compileQueryExpr(q *parser.QueryExpr, env *types.Env) (Expr, error) {
 		if err != nil {
 			return nil, err
 		}
-		child.SetVar(j.Var, types.AnyType{}, true)
+		child.SetVar(j.Var, elemTypeOfExpr(j.Src, child), true)
 		gens = append(gens, CompGen{Var: j.Var, Src: je})
 		if j.On != nil {
 			onExpr, err := compileExpr(j.On, child)
@@ -1537,52 +1538,52 @@ func compileQueryExpr(q *parser.QueryExpr, env *types.Env) (Expr, error) {
 			return nil, err
 		}
 	}
-        sel, err := compileExpr(q.Select, child)
-        if err != nil {
-                return nil, err
-        }
-        base := Expr(&Comprehension{Gens: gens, Filter: filt, Body: sel})
-        if q.Sort != nil {
-                key, err := compileExpr(q.Sort, child)
-                if err != nil {
-                        return nil, err
-                }
-                pairBody := &MapLit{Items: []MapItem{{Key: &AtomLit{Name: "k"}, Value: key}, {Key: &AtomLit{Name: "v"}, Value: sel}}}
-                pairComp := &Comprehension{Gens: gens, Filter: filt, Body: pairBody}
-                sorter := &CallExpr{Func: "Enum.sort_by", Args: []Expr{pairComp, &AnonFun{Params: []string{"x"}, Body: []Stmt{&ReturnStmt{Value: &IndexExpr{Target: &VarRef{Name: "x"}, Index: &AtomLit{Name: "k"}, UseMapSyntax: true}}}}}}
-                base = sorter
-                if q.Skip != nil {
-                        s, err := compileExpr(q.Skip, env)
-                        if err != nil {
-                                return nil, err
-                        }
-                        base = &CallExpr{Func: "Enum.drop", Args: []Expr{base, s}}
-                }
-                if q.Take != nil {
-                        texpr, err := compileExpr(q.Take, env)
-                        if err != nil {
-                                return nil, err
-                        }
-                        base = &CallExpr{Func: "Enum.take", Args: []Expr{base, texpr}}
-                }
-                mapper := &CallExpr{Func: "Enum.map", Args: []Expr{base, &AnonFun{Params: []string{"x"}, Body: []Stmt{&ReturnStmt{Value: &IndexExpr{Target: &VarRef{Name: "x"}, Index: &AtomLit{Name: "v"}, UseMapSyntax: true}}}}}}
-                return mapper, nil
-        }
-        if q.Skip != nil {
-                s, err := compileExpr(q.Skip, env)
-                if err != nil {
-                        return nil, err
-                }
-                base = &CallExpr{Func: "Enum.drop", Args: []Expr{base, s}}
-        }
-        if q.Take != nil {
-                texpr, err := compileExpr(q.Take, env)
-                if err != nil {
-                        return nil, err
-                }
-                base = &CallExpr{Func: "Enum.take", Args: []Expr{base, texpr}}
-        }
-        return base, nil
+	sel, err := compileExpr(q.Select, child)
+	if err != nil {
+		return nil, err
+	}
+	base := Expr(&Comprehension{Gens: gens, Filter: filt, Body: sel})
+	if q.Sort != nil {
+		key, err := compileExpr(q.Sort, child)
+		if err != nil {
+			return nil, err
+		}
+		pairBody := &MapLit{Items: []MapItem{{Key: &AtomLit{Name: "k"}, Value: key}, {Key: &AtomLit{Name: "v"}, Value: sel}}}
+		pairComp := &Comprehension{Gens: gens, Filter: filt, Body: pairBody}
+		sorter := &CallExpr{Func: "Enum.sort_by", Args: []Expr{pairComp, &AnonFun{Params: []string{"x"}, Body: []Stmt{&ReturnStmt{Value: &IndexExpr{Target: &VarRef{Name: "x"}, Index: &AtomLit{Name: "k"}, UseMapSyntax: true}}}}}}
+		base = sorter
+		if q.Skip != nil {
+			s, err := compileExpr(q.Skip, env)
+			if err != nil {
+				return nil, err
+			}
+			base = &CallExpr{Func: "Enum.drop", Args: []Expr{base, s}}
+		}
+		if q.Take != nil {
+			texpr, err := compileExpr(q.Take, env)
+			if err != nil {
+				return nil, err
+			}
+			base = &CallExpr{Func: "Enum.take", Args: []Expr{base, texpr}}
+		}
+		mapper := &CallExpr{Func: "Enum.map", Args: []Expr{base, &AnonFun{Params: []string{"x"}, Body: []Stmt{&ReturnStmt{Value: &IndexExpr{Target: &VarRef{Name: "x"}, Index: &AtomLit{Name: "v"}, UseMapSyntax: true}}}}}}
+		return mapper, nil
+	}
+	if q.Skip != nil {
+		s, err := compileExpr(q.Skip, env)
+		if err != nil {
+			return nil, err
+		}
+		base = &CallExpr{Func: "Enum.drop", Args: []Expr{base, s}}
+	}
+	if q.Take != nil {
+		texpr, err := compileExpr(q.Take, env)
+		if err != nil {
+			return nil, err
+		}
+		base = &CallExpr{Func: "Enum.take", Args: []Expr{base, texpr}}
+	}
+	return base, nil
 }
 
 func compileUnary(u *parser.Unary, env *types.Env) (Expr, error) {
@@ -1811,25 +1812,25 @@ func compilePrimary(p *parser.Primary, env *types.Env) (Expr, error) {
 					return &CallExpr{Func: "IO.puts", Args: []Expr{inner}}, nil
 				}
 			} else {
-                               parts := make([]interface{}, 0, len(args)*2-1)
-                               for i, a := range args {
-                                       if i > 0 {
-                                               parts = append(parts, " ")
-                                       }
-                                       if s, ok := a.(*StringLit); ok {
-                                               parts = append(parts, s.Value)
-                                       } else {
-                                               t := types.TypeOfExprBasic(p.Call.Args[i], env)
-                                               switch t.(type) {
-                                               case types.StringType, types.IntType, types.FloatType, types.BoolType:
-                                                       parts = append(parts, a)
-                                               default:
-                                                       parts = append(parts, &CallExpr{Func: "Kernel.inspect", Args: []Expr{a}})
-                                               }
-                                       }
-                               }
-                               str := &InterpString{Parts: parts}
-                               return &CallExpr{Func: "IO.puts", Args: []Expr{str}}, nil
+				parts := make([]interface{}, 0, len(args)*2-1)
+				for i, a := range args {
+					if i > 0 {
+						parts = append(parts, " ")
+					}
+					if s, ok := a.(*StringLit); ok {
+						parts = append(parts, s.Value)
+					} else {
+						t := types.TypeOfExprBasic(p.Call.Args[i], env)
+						switch t.(type) {
+						case types.StringType, types.IntType, types.FloatType, types.BoolType:
+							parts = append(parts, a)
+						default:
+							parts = append(parts, &CallExpr{Func: "Kernel.inspect", Args: []Expr{a}})
+						}
+					}
+				}
+				str := &InterpString{Parts: parts}
+				return &CallExpr{Func: "IO.puts", Args: []Expr{str}}, nil
 			}
 		case "count":
 			name = "Enum.count"
@@ -1889,16 +1890,16 @@ func compilePrimary(p *parser.Primary, env *types.Env) (Expr, error) {
 				diff := &BinaryExpr{Left: args[2], Op: "-", Right: args[1]}
 				return &CallExpr{Func: "String.slice", Args: []Expr{args[0], args[1], diff}}, nil
 			}
-                case "exists":
-                        if len(args) == 1 {
-                                return &CallExpr{Func: "Enum.any?", Args: []Expr{args[0]}}, nil
-                        }
-               case "json":
-                       if len(args) == 1 {
-                               enc := &CallExpr{Func: "Jason.encode!", Args: []Expr{args[0]}}
-                               return &CallExpr{Func: "IO.puts", Args: []Expr{enc}}, nil
-                       }
-                }
+		case "exists":
+			if len(args) == 1 {
+				return &CallExpr{Func: "Enum.any?", Args: []Expr{args[0]}}, nil
+			}
+		case "json":
+			if len(args) == 1 {
+				enc := &CallExpr{Func: "Jason.encode!", Args: []Expr{args[0]}}
+				return &CallExpr{Func: "IO.puts", Args: []Expr{enc}}, nil
+			}
+		}
 		if fn, ok := env.GetFunc(name); ok {
 			if len(args) < len(fn.Params) {
 				remain := fn.Params[len(args):]
@@ -2009,13 +2010,13 @@ func inferStaticType(e Expr) types.Type {
 		return types.BoolType{}
 	case *ListLit:
 		return types.ListType{Elem: types.AnyType{}}
-       case *MapLit:
-               return types.MapType{Key: types.AnyType{}, Value: types.AnyType{}}
-       case *NilLit:
-               return types.AnyType{}
-       default:
-               return types.AnyType{}
-       }
+	case *MapLit:
+		return types.MapType{Key: types.AnyType{}, Value: types.AnyType{}}
+	case *NilLit:
+		return types.AnyType{}
+	default:
+		return types.AnyType{}
+	}
 }
 
 func header() string {
@@ -2027,6 +2028,19 @@ func header() string {
 		}
 	}
 	return fmt.Sprintf("# Generated by Mochi transpiler on %s\n", ts.Format("2006-01-02 15:04 -0700"))
+}
+
+func elemTypeOfExpr(e *parser.Expr, env *types.Env) types.Type {
+	switch t := types.TypeOfExpr(e, env).(type) {
+	case types.ListType:
+		return t.Elem
+	case types.GroupType:
+		return t.Elem
+	case types.MapType:
+		return t.Value
+	default:
+		return types.AnyType{}
+	}
 }
 
 func isSimpleIdent(e *parser.Expr) (string, bool) {
