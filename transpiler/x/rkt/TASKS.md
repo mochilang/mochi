@@ -1,6 +1,6 @@
-## Progress (2025-07-21 23:34 +0700)
-- Commit c1850ebb5: lua transpiler: support group iter and sorting
-- Generated Racket for 83/100 programs
+## Progress (2025-07-21 22:19 +0000)
+- Commit 11d71159b: rkt: simplify join cross join emission
+- Generated Racket for 84/101 programs
 - Updated README checklist
 
 
