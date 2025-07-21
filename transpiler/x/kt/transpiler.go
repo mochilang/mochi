@@ -675,6 +675,13 @@ func (s *SubstringExpr) emit(w io.Writer) {
 	io.WriteString(w, ")")
 }
 
+type ExistsExpr struct{ Value Expr }
+
+func (e *ExistsExpr) emit(w io.Writer) {
+	e.Value.emit(w)
+	io.WriteString(w, ".isNotEmpty()")
+}
+
 // MultiListComp represents a list comprehension with multiple iterators.
 type MultiListComp struct {
 	Vars  []string
@@ -1018,6 +1025,8 @@ func guessType(e Expr) string {
 		return "MutableList<" + elem + ">"
 	case *StructLit:
 		return v.Name
+	case *ExistsExpr:
+		return "Boolean"
 	case *FuncLit:
 		return ""
 	}
@@ -1781,6 +1790,15 @@ func convertPrimary(env *types.Env, p *parser.Primary) (Expr, error) {
 				return nil, err
 			}
 			return &ValuesExpr{Map: m}, nil
+		case "exists":
+			if len(p.Call.Args) != 1 {
+				return nil, fmt.Errorf("exists expects 1 arg")
+			}
+			arg, err := convertExpr(env, p.Call.Args[0])
+			if err != nil {
+				return nil, err
+			}
+			return &ExistsExpr{Value: arg}, nil
 		case "substring":
 			if len(p.Call.Args) != 3 {
 				return nil, fmt.Errorf("substring expects 3 args")
