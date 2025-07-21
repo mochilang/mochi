@@ -776,6 +776,9 @@ func isMapExpr(e Expr) bool {
 		}
 	case *IndexExpr:
 		if ex.Kind == "map" {
+			if s, ok := ex.Index.(*StringLit); ok && s.Value == "items" {
+				return false
+			}
 			return true
 		}
 	}
@@ -796,6 +799,13 @@ func isListExpr(e Expr) bool {
 		}
 	case *SliceExpr:
 		if ex.Kind == "list" {
+			return true
+		}
+	case *IndexExpr:
+		if ex.Kind == "list" {
+			return true
+		}
+		if s, ok := ex.Index.(*StringLit); ok && s.Value == "items" {
 			return true
 		}
 	case *CallExpr:
@@ -895,7 +905,6 @@ func (m *MatchExpr) emit(w io.Writer) {
 
 func (qc *QueryComp) emit(w io.Writer) {
 	if qc.GroupKey != nil {
-		// simplified group by implementation
 		io.WriteString(w, "(function()\n")
 		io.WriteString(w, "local groups = {}\nlocal orderKeys = {}\n")
 		if len(qc.Vars) > 0 {
@@ -921,19 +930,65 @@ func (qc *QueryComp) emit(w io.Writer) {
 		if len(qc.Vars) > 0 {
 			io.WriteString(w, "end\n")
 		}
-		io.WriteString(w, "local _res = {}\nfor _, ks in ipairs(orderKeys) do\n  local g = groups[ks]\n  table.insert(_res, ")
+		if qc.SortKey != nil {
+			io.WriteString(w, "local __tmp = {}\nlocal res = {}\n")
+		} else {
+			io.WriteString(w, "local res = {}\n")
+		}
+		io.WriteString(w, "for _, ks in ipairs(orderKeys) do\n  local g = groups[ks]\n")
+		if qc.Having != nil {
+			io.WriteString(w, "  if ")
+			qc.Having.emit(w)
+			io.WriteString(w, " then\n")
+		}
+		if qc.SortKey != nil {
+			io.WriteString(w, "  table.insert(__tmp, {k = ")
+			qc.SortKey.emit(w)
+			io.WriteString(w, ", v = ")
+		} else {
+			io.WriteString(w, "  table.insert(res, ")
+		}
 		if qc.Body != nil {
 			qc.Body.emit(w)
 		} else {
 			io.WriteString(w, "nil")
 		}
-		io.WriteString(w, ")\nend\nreturn _res\nend)()")
+		if qc.SortKey != nil {
+			io.WriteString(w, "})\n")
+		} else {
+			io.WriteString(w, ")\n")
+		}
+		if qc.Having != nil {
+			io.WriteString(w, "  end\n")
+		}
+		io.WriteString(w, "end\n")
+		if qc.SortKey != nil {
+			io.WriteString(w, "table.sort(__tmp, function(a,b) return a.k < b.k end)\nfor i,p in ipairs(__tmp) do res[i] = p.v end\n")
+		}
+		if qc.Skip != nil || qc.Take != nil {
+			io.WriteString(w, "local _slice = {}\nlocal _start = 1")
+			if qc.Skip != nil {
+				io.WriteString(w, " + (")
+				qc.Skip.emit(w)
+				io.WriteString(w, ")")
+			}
+			io.WriteString(w, "\nlocal _stop = #res")
+			if qc.Take != nil {
+				io.WriteString(w, "\nif (")
+				qc.Take.emit(w)
+				io.WriteString(w, ") < _stop - _start + 1 then _stop = _start + (")
+				qc.Take.emit(w)
+				io.WriteString(w, ") - 1 end")
+			}
+			io.WriteString(w, "\nfor i=_start,_stop do _slice[#_slice+1] = res[i] end\nres = _slice\n")
+		}
+		io.WriteString(w, "return res\nend)()")
 		return
 	}
 	if qc.Agg != "" && qc.GroupKey == nil {
 		io.WriteString(w, "(function()\n  local _tmp = {}\n")
 	} else if qc.SortKey != nil {
-		io.WriteString(w, "(function()\n  local tmp = {}\n  local _res = {}\n")
+		io.WriteString(w, "(function()\n  local __tmp = {}\n  local _res = {}\n")
 	} else {
 		io.WriteString(w, "(function()\n  local _res = {}\n")
 	}
@@ -968,7 +1023,7 @@ func (qc *QueryComp) emit(w io.Writer) {
 	if qc.Agg != "" && qc.GroupKey == nil {
 		io.WriteString(w, "table.insert(_tmp, ")
 	} else if qc.SortKey != nil {
-		io.WriteString(w, "table.insert(tmp, {k = ")
+		io.WriteString(w, "table.insert(__tmp, {k = ")
 		qc.SortKey.emit(w)
 		io.WriteString(w, ", v = ")
 	} else {
@@ -997,7 +1052,7 @@ func (qc *QueryComp) emit(w io.Writer) {
 		(&CallExpr{Func: qc.Agg, Args: []Expr{&Ident{Name: "_tmp"}}}).emit(w)
 		io.WriteString(w, "\nend)()")
 	} else if qc.SortKey != nil {
-		io.WriteString(w, "  table.sort(tmp, function(a,b) return a.k < b.k end)\n  for i,p in ipairs(tmp) do _res[i] = p.v end\n")
+		io.WriteString(w, "  table.sort(__tmp, function(a,b) return a.k < b.k end)\n  for i,p in ipairs(__tmp) do _res[i] = p.v end\n")
 		if qc.Skip != nil || qc.Take != nil {
 			io.WriteString(w, "  local _slice = {}\n  local _start = 1")
 			if qc.Skip != nil {
