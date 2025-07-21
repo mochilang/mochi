@@ -1,6 +1,6 @@
-## Progress (2025-07-21 22:05 +0700)
-- Commit ce62dc81e: ex transpiler: support left join after join
-- Generated Elixir for 88/100 programs
+## Progress (2025-07-21 22:29 +0700)
+- Commit c6b3ac840: update docs
+- Generated Elixir for 89/100 programs
 - Updated README checklist and outputs
 - Improved code emission and type inference
 
@@ -9,7 +9,6 @@
 - Generated Elixir for 87/100 programs
 - Updated README checklist and outputs
 - Improved code emission and type inference
-
 ## Progress (2025-07-21 21:08 +0700)
 - Commit d1f903a6f: ex transpiler: improve while loops
 - Generated Elixir for 86/100 programs
