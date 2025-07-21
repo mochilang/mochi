@@ -1,0 +1,2 @@
+/workspace/mochi/tests/transpiler/x/rb/group_items_iteration.rb:2: warning: already initialized constant Data
+[{'tag': 'a', 'total': 3}, {'tag': 'b', 'total': 3}]

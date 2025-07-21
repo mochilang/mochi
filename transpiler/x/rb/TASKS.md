@@ -1,3 +1,8 @@
+## Progress (2025-07-21 22:21 +0000)
+- Commit f00f523a6: rb transpiler: improve grouping and update outputs
+- Generated Ruby for 89/100 programs
+- Updated README checklist and outputs
+
 ## Progress (2025-07-22 00:02 +0700)
 - Commit afa92b769: rb transpiler: fix group_by queries
 - Generated Ruby for 89/100 programs
