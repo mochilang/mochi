@@ -1,3 +1,15 @@
+## Progress (2025-07-21 05:53 +0000)
+- pl transpiler: basic map and query support
+
+## Progress (2025-07-21 12:53 +0700)
+- pl transpiler: basic map and query support
+
+## Progress (2025-07-21 05:53 +0000)
+- pl transpiler: basic map and query support
+
+## Progress (2025-07-21 12:53 +0700)
+- pl transpiler: basic map and query support
+
 ## Progress (2025-07-21 12:41 +0700)
 - fortran: inline group_by const generation
 

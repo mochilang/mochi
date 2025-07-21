@@ -1169,6 +1169,29 @@ func toPostfix(pf *parser.PostfixExpr, env *types.Env) (string, error) {
 			if lt, ok := typ.(types.ListType); ok {
 				typ = lt.Elem
 			}
+		case op.Cast != nil:
+			tgt := types.ResolveTypeRef(op.Cast.Type, env)
+			switch tgt.(type) {
+			case types.IntType, types.Int64Type, types.BigIntType:
+				if strings.HasPrefix(val, "\"") && strings.HasSuffix(val, "\"") {
+					sval := strings.Trim(val, "\"")
+					if _, err := strconv.Atoi(sval); err == nil {
+						val = sval
+						typ = types.IntType{}
+						break
+					}
+				}
+				val = fmt.Sprintf("int(%s)", val)
+				typ = types.IntType{}
+			case types.FloatType, types.BigRatType:
+				val = fmt.Sprintf("real(%s)", val)
+				typ = types.FloatType{}
+			case types.StringType:
+				val = fmt.Sprintf("trim(%s)", val)
+				typ = types.StringType{}
+			default:
+				return "", fmt.Errorf("unsupported cast type")
+			}
 		default:
 			return "", fmt.Errorf("postfix operations unsupported")
 		}
