@@ -2,7 +2,7 @@
 
 This folder contains an experimental transpiler that converts Mochi source code into OCaml.
 
-## Golden Test Checklist (82/101)
+## Golden Test Checklist (79/101)
 
 The list below tracks Mochi programs under `tests/vm/valid` that should successfully transpile. Checked items indicate tests known to work.
 
@@ -34,9 +34,9 @@ The list below tracks Mochi programs under `tests/vm/valid` that should successf
 - [ ] group_by_having.mochi
 - [x] group_by_join.mochi
 - [x] group_by_left_join.mochi
-- [x] group_by_multi_join.mochi
-- [x] group_by_multi_join_sort.mochi
-- [x] group_by_multi_sort.mochi
+- [ ] group_by_multi_join.mochi
+- [ ] group_by_multi_join_sort.mochi
+- [ ] group_by_multi_sort.mochi
 - [x] group_by_sort.mochi
 - [x] group_items_iteration.mochi
 - [x] if_else.mochi
@@ -56,7 +56,7 @@ The list below tracks Mochi programs under `tests/vm/valid` that should successf
 - [x] list_assign.mochi
 - [x] list_index.mochi
 - [x] list_nested_assign.mochi
-- [x] list_set_ops.mochi
+- [ ] list_set_ops.mochi
 - [x] load_yaml.mochi
 - [x] map_assign.mochi
 - [x] map_in_operator.mochi
@@ -73,7 +73,7 @@ The list below tracks Mochi programs under `tests/vm/valid` that should successf
 - [x] nested_function.mochi
 - [x] order_by_map.mochi
 - [x] outer_join.mochi
-- [ ] partial_application.mochi
+- [x] partial_application.mochi
 - [x] print_hello.mochi
 - [x] pure_fold.mochi
 - [x] pure_global_fold.mochi
@@ -108,4 +108,4 @@ The list below tracks Mochi programs under `tests/vm/valid` that should successf
 - [x] var_assignment.mochi
 - [x] while_loop.mochi
 
-Last updated 2025-07-22 04:52 +0700
+Last updated 2025-07-22 06:19 +0700
