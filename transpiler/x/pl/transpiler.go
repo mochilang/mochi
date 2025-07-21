@@ -5,6 +5,7 @@ package pl
 import (
 	"fmt"
 	"io"
+	"sort"
 	"strconv"
 	"strings"
 
@@ -223,6 +224,16 @@ func (p *PrintStmt) emit(w io.Writer, idx int) {
 		io.WriteString(w, ", [")
 		e.Elem.emit(w)
 		fmt.Fprintf(w, "], R%d), writeln(R%d)", idx, idx)
+		return
+	case *ListLit:
+		for i, el := range e.Elems {
+			io.WriteString(w, "    writeln(")
+			el.emit(w)
+			io.WriteString(w, ")")
+			if i < len(e.Elems)-1 {
+				io.WriteString(w, ",\n")
+			}
+		}
 		return
 	case *CallExpr:
 		fmt.Fprintf(w, "    %s(", e.Name)
@@ -856,6 +867,11 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 			if err != nil {
 				return nil, err
 			}
+			if v, ok := arg.(*Var); ok {
+				if c := ce.constExpr(v.Name); c != nil {
+					arg = c
+				}
+			}
 			p.Stmts = append(p.Stmts, &PrintStmt{Expr: arg})
 		default:
 			return nil, fmt.Errorf("unsupported statement")
@@ -939,6 +955,11 @@ func compileStmts(sts []*parser.Statement, env *compileEnv) ([]Stmt, error) {
 			var arg Expr
 			if len(args) == 1 {
 				arg = args[0]
+				if v, ok := arg.(*Var); ok {
+					if c := env.constExpr(v.Name); c != nil {
+						arg = c
+					}
+				}
 			} else if allConst {
 				arg = &StringLit{Value: sb.String()}
 			} else {
@@ -1648,6 +1669,12 @@ func toIfExpr(ifp *parser.IfExpr, env *compileEnv) (Expr, error) {
 	} else {
 		elseExpr = &IntLit{Value: 0}
 	}
+	if b, ok := cond.(*BoolLit); ok {
+		if b.Value {
+			return thenExpr, nil
+		}
+		return elseExpr, nil
+	}
 	return &IfExpr{Cond: cond, Then: thenExpr, Else: elseExpr}, nil
 }
 
@@ -1704,7 +1731,11 @@ func evalQueryExpr(q *parser.QueryExpr, env *compileEnv) (Expr, error) {
 			}
 			gl.Elems = append(gl.Elems, item)
 		}
-		var outElems []Expr
+		type result struct {
+			sortKey string
+			val     Expr
+		}
+		results := []result{}
 		for _, k := range order {
 			keyLit := &StringLit{Value: k}
 			g := &MapLit{Items: []MapItem{{Key: "key", Value: keyLit}, {Key: "items", Value: groups[k]}}}
@@ -1714,9 +1745,28 @@ func evalQueryExpr(q *parser.QueryExpr, env *compileEnv) (Expr, error) {
 			if err != nil {
 				return nil, err
 			}
+			sortVal := k
+			if q.Sort != nil {
+				sv, err := toExpr(q.Sort, env)
+				if err != nil {
+					return nil, err
+				}
+				sl, ok := sv.(*StringLit)
+				if !ok {
+					return nil, fmt.Errorf("non-string sort key")
+				}
+				sortVal = sl.Value
+			}
 			delete(env.consts, env.current(q.Group.Name))
 			delete(env.vars, q.Group.Name)
-			outElems = append(outElems, val)
+			results = append(results, result{sortKey: sortVal, val: val})
+		}
+		if q.Sort != nil {
+			sort.Slice(results, func(i, j int) bool { return results[i].sortKey < results[j].sortKey })
+		}
+		outElems := make([]Expr, len(results))
+		for i, r := range results {
+			outElems[i] = r.val
 		}
 		delete(env.consts, env.current(q.Var))
 		delete(env.vars, q.Var)
