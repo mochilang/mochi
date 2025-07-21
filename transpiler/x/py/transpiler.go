@@ -1548,6 +1548,10 @@ func inferTypeFromExpr(e *parser.Expr) types.Type {
 	if isExistsCall(e) {
 		return types.BoolType{}
 	}
+	if q := ExtractQueryExpr(e); q != nil {
+		elem := inferTypeFromExpr(q.Select)
+		return types.ListType{Elem: elem}
+	}
 	if name, arg, ok := aggregatorCall(e); ok {
 		switch name {
 		case "count":
@@ -3088,21 +3092,8 @@ func convertUnary(u *parser.Unary) (Expr, error) {
 
 func convertSelector(sel *parser.SelectorExpr, method bool) Expr {
 	expr := Expr(&Name{Name: sel.Root})
-	mapIndex := true
-	if currentImports != nil && currentImports[sel.Root] {
-		mapIndex = false
-	}
-	if currentEnv != nil {
-		if t, err := currentEnv.GetVar(sel.Root); err == nil {
-			if _, ok := t.(types.StructType); ok {
-				mapIndex = false
-			}
-		}
-	}
-	for i, t := range sel.Tail {
-		idx := i == len(sel.Tail)-1 && method
-		expr = &FieldExpr{Target: expr, Name: t, MapIndex: mapIndex && !idx}
-		mapIndex = true
+	for _, t := range sel.Tail {
+		expr = &FieldExpr{Target: expr, Name: t}
 	}
 	return expr
 }
@@ -3156,12 +3147,8 @@ func convertPostfix(p *parser.PostfixExpr) (Expr, error) {
 				expr = &IndexExpr{Target: expr, Index: idx}
 			}
 		case op.Field != nil:
-			// use attribute access for method calls, otherwise treat as map lookup
-			if i+1 < len(p.Ops) && p.Ops[i+1].Call != nil {
-				expr = &FieldExpr{Target: expr, Name: op.Field.Name}
-			} else {
-				expr = &FieldExpr{Target: expr, Name: op.Field.Name, MapIndex: true}
-			}
+			// use attribute-style access for simplicity
+			expr = &FieldExpr{Target: expr, Name: op.Field.Name}
 		case op.Call != nil:
 			var args []Expr
 			for _, a := range op.Call.Args {
@@ -3239,15 +3226,7 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 					outArgs[i] = a
 				}
 			}
-			if len(outArgs) == 1 {
-				return &CallExpr{Func: &Name{Name: "print"}, Args: outArgs}, nil
-			}
-			var parts []string
-			for _, a := range outArgs {
-				parts = append(parts, exprString(a))
-			}
-			code := fmt.Sprintf("print(\" \".join(str(x) for x in [%s]).rstrip())", strings.Join(parts, ", "))
-			return &RawExpr{Code: code}, nil
+			return &CallExpr{Func: &Name{Name: "print"}, Args: outArgs}, nil
 		case "append":
 			if len(args) == 2 {
 				return &BinaryExpr{Left: args[0], Op: "+", Right: &ListLit{Elems: []Expr{args[1]}}}, nil
@@ -3543,6 +3522,11 @@ func convertQueryExpr(q *parser.QueryExpr) (Expr, error) {
 		if err != nil {
 			return nil, err
 		}
+		if currentEnv != nil {
+			if lt, ok := inferTypeFromExpr(f.Src).(types.ListType); ok {
+				currentEnv.SetVar(f.Var, lt.Elem, true)
+			}
+		}
 		vars = append(vars, f.Var)
 		iters = append(iters, e)
 	}
@@ -3555,6 +3539,11 @@ func convertQueryExpr(q *parser.QueryExpr) (Expr, error) {
 			src, err := convertExpr(j.Src)
 			if err != nil {
 				return nil, err
+			}
+			if currentEnv != nil {
+				if lt, ok := inferTypeFromExpr(j.Src).(types.ListType); ok {
+					currentEnv.SetVar(j.Var, lt.Elem, true)
+				}
 			}
 			on, err := convertExpr(j.On)
 			if err != nil {
@@ -3569,6 +3558,11 @@ func convertQueryExpr(q *parser.QueryExpr) (Expr, error) {
 		e, err := convertExpr(j.Src)
 		if err != nil {
 			return nil, err
+		}
+		if currentEnv != nil {
+			if lt, ok := inferTypeFromExpr(j.Src).(types.ListType); ok {
+				currentEnv.SetVar(j.Var, lt.Elem, true)
+			}
 		}
 		vars = append(vars, j.Var)
 		iters = append(iters, e)
