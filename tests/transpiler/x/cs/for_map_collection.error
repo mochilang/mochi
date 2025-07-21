@@ -1,4 +1,0 @@
-dotnet run: exit status 1
-/tmp/TestCSTranspiler_VMValid_Golden3245023897/019/Program.cs(13,27): error CS1579: foreach statement cannot operate on variables of type 'M' because 'M' does not contain a public instance or extension definition for 'GetEnumerator' [/tmp/TestCSTranspiler_VMValid_Golden3245023897/019/app.csproj]
-
-The build failed. Fix the build errors and run again.

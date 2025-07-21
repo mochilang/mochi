@@ -2,8 +2,8 @@
 
 Generated C# code for programs in `tests/vm/valid`. Each program has a `.cs` file produced by the transpiler and a `.out` file containing its runtime output. Compilation or execution errors are captured in a `.error` file placed next to the source.
 
-Compiled programs: 44/100
-Last updated: 2025-07-21 21:13 +0700
+Compiled programs: 49/100
+Last updated: 2025-07-21 21:46 +0700
 
 ## Checklist
 - [x] append_builtin
@@ -13,8 +13,8 @@ Last updated: 2025-07-21 21:13 +0700
 - [x] bool_chain
 - [x] break_continue
 - [x] cast_string_to_int
-- [ ] cast_struct
-- [ ] closure
+- [x] cast_struct
+- [x] closure
 - [x] count_builtin
 - [x] cross_join
 - [x] cross_join_filter
@@ -24,7 +24,7 @@ Last updated: 2025-07-21 21:13 +0700
 - [x] exists_builtin
 - [x] for_list_collection
 - [x] for_loop
-- [ ] for_map_collection
+- [x] for_map_collection
 - [x] fun_call
 - [x] fun_expr_in_let
 - [x] fun_three_args
@@ -57,9 +57,9 @@ Last updated: 2025-07-21 21:13 +0700
 - [x] list_nested_assign
 - [x] list_set_ops
 - [ ] load_yaml
-- [ ] map_assign
+- [x] map_assign
 - [x] map_in_operator
-- [ ] map_index
+- [x] map_index
 - [ ] map_int_key
 - [ ] map_literal_dynamic
 - [ ] map_membership
