@@ -1,0 +1,12 @@
+let items = [
+  { a: "x", b: 1, val: 2 },
+  { a: "x", b: 2, val: 3 },
+  { a: "y", b: 1, val: 4 },
+  { a: "y", b: 2, val: 1 }
+]
+let grouped =
+  from i in items
+  group by { a: i.a, b: i.b } into g
+  sort by -sum(from x in g select x.val)
+  select { a: g.key.a, b: g.key.b, total: sum(from x in g select x.val) }
+print(grouped)
