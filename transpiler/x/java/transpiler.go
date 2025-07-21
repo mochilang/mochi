@@ -1212,8 +1212,13 @@ func isNumericBool(e Expr) bool {
 		}
 	case *UnaryExpr:
 		if ex.Op == "!" {
+			if be, ok := ex.Value.(*BinaryExpr); ok && be.Op == "in" {
+				return true
+			}
 			return isNumericBool(ex.Value)
 		}
+	case *GroupExpr:
+		return isNumericBool(ex.Expr)
 	}
 	return false
 }
@@ -1685,7 +1690,20 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 		if name == "print" {
 			name = "System.out.println"
 			for i, a := range args {
-				if isNumericBool(a) {
+				if isNumericBool(a) || (func() bool {
+					if u, ok := a.(*UnaryExpr); ok && u.Op == "!" {
+						if g, ok := u.Value.(*GroupExpr); ok {
+							if mc, ok2 := g.Expr.(*MethodCallExpr); ok2 {
+								switch mc.Name {
+								case "contains", "containsKey", "anyMatch":
+									return true
+								}
+							}
+						}
+						return isNumericBool(u.Value)
+					}
+					return false
+				})() {
 					args[i] = &TernaryExpr{Cond: a, Then: &IntLit{Value: 1}, Else: &IntLit{Value: 0}}
 				} else if isArrayExpr(a) {
 					args[i] = &CallExpr{Func: "java.util.Arrays.toString", Args: []Expr{a}}
