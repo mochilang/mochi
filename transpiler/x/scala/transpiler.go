@@ -339,6 +339,11 @@ type BoolLit struct{ Value bool }
 
 func (b *BoolLit) emit(w io.Writer) { fmt.Fprintf(w, "%t", b.Value) }
 
+// FloatLit represents a floating point literal.
+type FloatLit struct{ Value float64 }
+
+func (f *FloatLit) emit(w io.Writer) { fmt.Fprintf(w, "%g", f.Value) }
+
 type Name struct{ Name string }
 
 func (n *Name) emit(w io.Writer) { fmt.Fprint(w, n.Name) }
@@ -1321,6 +1326,9 @@ func convertLiteral(l *parser.Literal) (Expr, error) {
 	if l.Int != nil {
 		return &IntLit{Value: int(*l.Int)}, nil
 	}
+	if l.Float != nil {
+		return &FloatLit{Value: *l.Float}, nil
+	}
 	if l.Bool != nil {
 		return &BoolLit{Value: bool(*l.Bool)}, nil
 	}
@@ -1958,6 +1966,8 @@ func toScalaType(t *parser.TypeRef) string {
 			return "String"
 		case "bool":
 			return "Boolean"
+		case "float":
+			return "Double"
 		}
 		return "Any"
 	}
@@ -1987,6 +1997,8 @@ func toScalaTypeFromType(t types.Type) string {
 		return "String"
 	case types.BoolType:
 		return "Boolean"
+	case types.FloatType:
+		return "Double"
 	case types.ListType:
 		return fmt.Sprintf("ArrayBuffer[%s]", toScalaTypeFromType(tt.Elem))
 	case types.MapType:
@@ -2009,6 +2021,8 @@ func inferType(e Expr) string {
 		return "String"
 	case *BoolLit:
 		return "Boolean"
+	case *FloatLit:
+		return "Double"
 	case *ListLit:
 		if len(ex.Elems) == 0 {
 			return "ArrayBuffer[Any]"
@@ -2076,6 +2090,11 @@ func inferType(e Expr) string {
 	case *BinaryExpr:
 		switch ex.Op {
 		case "+", "-", "*", "/", "%":
+			lt := inferType(ex.Left)
+			rt := inferType(ex.Right)
+			if lt == "Double" || rt == "Double" {
+				return "Double"
+			}
 			return "Int"
 		case "==", "!=", ">", "<", ">=", "<=":
 			return "Boolean"
@@ -2139,6 +2158,9 @@ func inferTypeWithEnv(e Expr, env *types.Env) string {
 func defaultExpr(typ string) Expr {
 	switch {
 	case typ == "Int" || typ == "Long" || typ == "Double" || typ == "Float":
+		if typ == "Double" || typ == "Float" {
+			return &FloatLit{Value: 0}
+		}
 		return &IntLit{Value: 0}
 	case typ == "String":
 		return &StringLit{Value: ""}
