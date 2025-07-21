@@ -471,6 +471,10 @@ type StringCastExpr struct{ Expr Expr }
 
 func (s *StringCastExpr) emit(w io.Writer) {
 	if inferType(s.Expr) == "String" {
+		if nr, ok := s.Expr.(*NameRef); ok && cloneVars[nr.Name] {
+			s.Expr.emit(w)
+			return
+		}
 		if _, ok := s.Expr.(*StringLit); ok {
 			io.WriteString(w, "String::from(")
 			s.Expr.emit(w)
@@ -490,8 +494,15 @@ type NameRef struct{ Name string }
 
 func (n *NameRef) emit(w io.Writer) {
 	if cloneVars[n.Name] {
-		io.WriteString(w, n.Name)
-		io.WriteString(w, ".clone()")
+		typ := varTypes[n.Name]
+		switch typ {
+		case "i64", "bool", "f64":
+			io.WriteString(w, "*")
+			io.WriteString(w, n.Name)
+		default:
+			io.WriteString(w, n.Name)
+			io.WriteString(w, ".clone()")
+		}
 	} else {
 		io.WriteString(w, n.Name)
 	}
@@ -784,7 +795,15 @@ func (q *QueryExpr) emit(w io.Writer) {
 		io.WriteString(w, " {")
 	}
 	io.WriteString(w, " _q.push(")
+	cloneVars = map[string]bool{q.Var: q.VarByRef}
+	for _, f := range q.Froms {
+		cloneVars[f.Var] = f.ByRef
+	}
+	for _, j := range q.Joins {
+		cloneVars[j.Var] = j.ByRef
+	}
 	q.Select.emit(w)
+	cloneVars = nil
 	io.WriteString(w, ");")
 	if q.Where != nil {
 		io.WriteString(w, " }")
@@ -1427,12 +1446,7 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 		name := p.Call.Func
 		if name == "print" {
 			for i, a := range args {
-				switch be := a.(type) {
-				case *BinaryExpr:
-					if be.Op != "in" {
-						args[i] = &BoolIntExpr{Expr: a}
-					}
-				case *UnaryExpr:
+				if inferType(a) == "bool" {
 					args[i] = &BoolIntExpr{Expr: a}
 				}
 			}
@@ -1686,7 +1700,7 @@ func compileQueryExpr(q *parser.QueryExpr) (Expr, error) {
 		varTypes[f.Var] = rustTypeFromType(felem)
 		byRef := false
 		et := rustTypeFromType(felem)
-		if et != "i64" && et != "bool" && et != "" {
+		if et != "i64" && et != "" {
 			byRef = true
 		}
 		froms[i] = queryFrom{Var: f.Var, Src: fe, ByRef: byRef}
@@ -1713,7 +1727,7 @@ func compileQueryExpr(q *parser.QueryExpr) (Expr, error) {
 		varTypes[j.Var] = rustTypeFromType(jelem)
 		byRef := false
 		et := rustTypeFromType(jelem)
-		if et != "i64" && et != "bool" && et != "" {
+		if et != "i64" && et != "" {
 			byRef = true
 		}
 		on, err := compileExprWithEnv(j.On, child)
