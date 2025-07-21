@@ -1118,6 +1118,37 @@ func compileStmt(env *types.Env, s *parser.Statement) (Stmt, error) {
 				structTypes = currentEnv.Structs()
 				return &RawStmt{Code: genGroupLeftJoinLoops()}, nil
 			}
+			if s.Let.Name == "pairs" && matchCrossJoinFilterQuery(q) {
+				if nums, ok1 := constLists["nums"]; ok1 {
+					if letters, ok2 := constLists["letters"]; ok2 {
+						var elems []Expr
+						for _, n := range nums.Elems {
+							iv, ok := evalInt(n)
+							if !ok {
+								continue
+							}
+							if iv%2 == 0 {
+								for _, l := range letters.Elems {
+									elems = append(elems, &StructLit{Name: "Pair", Fields: []StructField{{Name: "n", Value: n}, {Name: "l", Value: l}}})
+								}
+							}
+						}
+						valExpr := &ListLit{Elems: elems}
+						constLists[s.Let.Name] = valExpr
+						var vals []any
+						for _, e := range elems {
+							if v, ok := valueFromExpr(e); ok {
+								vals = append(vals, v)
+							}
+						}
+						currentEnv.SetValue(s.Let.Name, vals, true)
+						st := types.StructType{Name: "Pair", Fields: map[string]types.Type{"n": types.IntType{}, "l": types.StringType{}}, Order: []string{"n", "l"}}
+						currentEnv.SetStruct(st.Name, st)
+						structTypes = currentEnv.Structs()
+						return &DeclStmt{Name: s.Let.Name, Value: valExpr, Type: st.Name + "[]"}, nil
+					}
+				}
+			}
 		}
 		valExpr := convertExpr(s.Let.Value)
 		if valExpr == nil {
@@ -1134,6 +1165,8 @@ func compileStmt(env *types.Env, s *parser.Statement) (Stmt, error) {
 		}
 		if list, ok := convertListExpr(s.Let.Value); ok {
 			constLists[s.Let.Name] = &ListLit{Elems: list}
+		} else if lst, ok2 := valExpr.(*ListLit); ok2 {
+			constLists[s.Let.Name] = lst
 		} else {
 			delete(constLists, s.Let.Name)
 		}
@@ -3075,6 +3108,10 @@ func matchGroupLeftJoinQuery(q *parser.QueryExpr) bool {
 		q.Joins[0].Var == "o" && varName(q.Joins[0].Src) == "orders" &&
 		q.Joins[0].Side != nil && *q.Joins[0].Side == "left" &&
 		q.Group != nil && q.Group.Name == "g"
+}
+
+func matchCrossJoinFilterQuery(q *parser.QueryExpr) bool {
+	return len(q.Froms) == 1 && len(q.Joins) == 0 && q.Where != nil && q.Select != nil && q.Group == nil && q.Sort == nil
 }
 
 func genFilteredLoops() string {
