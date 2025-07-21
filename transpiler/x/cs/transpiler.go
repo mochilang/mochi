@@ -2313,6 +2313,63 @@ func compileQueryExpr(q *parser.QueryExpr) (Expr, error) {
 		return nil, fmt.Errorf("unsupported query")
 	}
 
+	if len(q.Froms) == 0 && len(q.Joins) == 1 && q.Where == nil &&
+		q.Group == nil && q.Sort == nil && q.Skip == nil && q.Take == nil && !q.Distinct {
+		j := q.Joins[0]
+		if j.Side != nil && *j.Side == "outer" {
+			leftSrc, err := compileExpr(q.Source)
+			if err != nil {
+				return nil, err
+			}
+			rightSrc, err := compileExpr(j.Src)
+			if err != nil {
+				return nil, err
+			}
+			leftType := strings.TrimSuffix(typeOfExpr(leftSrc), "[]")
+			rightType := strings.TrimSuffix(typeOfExpr(rightSrc), "[]")
+			sv1, sv2 := varTypes[q.Var], varTypes[j.Var]
+			sm1, sm2 := mapVars[q.Var], mapVars[j.Var]
+			varTypes[q.Var] = leftType
+			varTypes[j.Var] = rightType
+			if strings.HasPrefix(leftType, "Dictionary<") {
+				mapVars[q.Var] = true
+			}
+			if strings.HasPrefix(rightType, "Dictionary<") {
+				mapVars[j.Var] = true
+			}
+			cond, err := compileExpr(j.On)
+			if err != nil {
+				varTypes[q.Var] = sv1
+				varTypes[j.Var] = sv2
+				mapVars[q.Var] = sm1
+				mapVars[j.Var] = sm2
+				return nil, err
+			}
+			sel, err := compileExpr(q.Select)
+			if err != nil {
+				varTypes[q.Var] = sv1
+				varTypes[j.Var] = sv2
+				mapVars[q.Var] = sm1
+				mapVars[j.Var] = sm2
+				return nil, err
+			}
+			elem := typeOfExpr(sel)
+			code := fmt.Sprintf("(() => { var _res = new List<%s>(); ", elem)
+			code += fmt.Sprintf("foreach (var %s in %s) { bool _matched = false; ", q.Var, exprString(leftSrc))
+			code += fmt.Sprintf("foreach (var %s in %s) { if (!(%s)) continue; _matched = true; _res.Add(%s); } ", j.Var, exprString(rightSrc), exprString(cond), exprString(sel))
+			code += fmt.Sprintf("if (!_matched) { var %s = default(%s); _res.Add(%s); } } ", j.Var, rightType, exprString(sel))
+			code += fmt.Sprintf("foreach (var %s in %s) { bool _exists = false; ", j.Var, exprString(rightSrc))
+			code += fmt.Sprintf("foreach (var %s in %s) { if (%s) { _exists = true; break; } } ", q.Var, exprString(leftSrc), exprString(cond))
+			code += fmt.Sprintf("if (!_exists) { var %s = default(%s); _res.Add(%s); } } return _res.ToArray(); })()", q.Var, leftType, exprString(sel))
+			usesDict = true
+			varTypes[q.Var] = sv1
+			varTypes[j.Var] = sv2
+			mapVars[q.Var] = sm1
+			mapVars[j.Var] = sm2
+			return &RawExpr{Code: code, Type: fmt.Sprintf("%s[]", elem)}, nil
+		}
+	}
+
 	src, err := compileExpr(q.Source)
 	if err != nil {
 		return nil, err
