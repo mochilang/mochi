@@ -796,6 +796,82 @@ func identName(e *parser.Expr) (string, bool) {
 }
 
 func evalQueryExpr(q *parser.QueryExpr, vars map[string]value) (value, error) {
+	// handle group by form: FROM <src> GROUP BY <expr> INTO g SELECT ...
+	if q.Group != nil && len(q.Group.Exprs) == 1 && len(q.Froms) == 0 && len(q.Joins) == 0 && q.Sort == nil && q.Skip == nil && q.Take == nil && !q.Distinct {
+		src, err := evalExpr(q.Source, vars)
+		if err != nil {
+			return value{}, err
+		}
+		if src.kind != valList {
+			return value{}, fmt.Errorf("group-by source must be list")
+		}
+
+		type grp struct {
+			key   value
+			items []value
+		}
+		groups := map[string]*grp{}
+		for _, it := range src.list {
+			local := copyVars(vars)
+			local[q.Var] = it
+			kVal, err := evalExpr(q.Group.Exprs[0], local)
+			if err != nil {
+				return value{}, err
+			}
+			kStr, err := keyString(kVal)
+			if err != nil {
+				return value{}, err
+			}
+			g, ok := groups[kStr]
+			if !ok {
+				g = &grp{key: kVal}
+				groups[kStr] = g
+			}
+			g.items = append(g.items, it)
+		}
+
+		keys := make([]string, 0, len(groups))
+		for k := range groups {
+			keys = append(keys, k)
+		}
+		sort.Strings(keys)
+
+		var results []value
+		for _, k := range keys {
+			g := groups[k]
+			gv := value{kind: valMap, kv: map[string]value{
+				"key":   g.key,
+				"items": {kind: valList, list: g.items},
+			}}
+			local := copyVars(vars)
+			local[q.Group.Name] = gv
+			if q.Group.Having != nil {
+				cond, err := evalExpr(q.Group.Having, local)
+				if err != nil {
+					return value{}, err
+				}
+				if cond.kind != valBool || !cond.b {
+					continue
+				}
+			}
+			if q.Where != nil {
+				cond, err := evalExpr(q.Where, local)
+				if err != nil {
+					return value{}, err
+				}
+				if cond.kind != valBool || !cond.b {
+					continue
+				}
+			}
+			v, err := evalExpr(q.Select, local)
+			if err != nil {
+				return value{}, err
+			}
+			results = append(results, v)
+		}
+		return value{kind: valList, list: results}, nil
+	}
+
 	// handle simple join form: FROM <src> [JOIN ...] SELECT ...
 	if len(q.Joins) == 1 && len(q.Froms) == 0 && q.Group == nil && q.Sort == nil && q.Skip == nil && q.Take == nil && !q.Distinct {
 		j := q.Joins[0]
@@ -927,6 +1003,11 @@ func evalQueryExpr(q *parser.QueryExpr, vars map[string]value) (value, error) {
 		listv, err := evalExpr(cl.src, local)
 		if err != nil {
 			return err
+		}
+		if listv.kind == valMap {
+			if it, ok := listv.kv["items"]; ok && it.kind == valList {
+				listv = it
+			}
 		}
 		if listv.kind != valList {
 			return fmt.Errorf("query source must be list")
