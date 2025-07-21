@@ -6,6 +6,7 @@ import (
 	"bytes"
 	"fmt"
 	"io"
+	"math"
 	"os/exec"
 	"strings"
 	"time"
@@ -55,6 +56,17 @@ func (s StringLit) Emit(w io.Writer) { fmt.Fprintf(w, "%q", string(s)) }
 type IntLit int
 
 func (i IntLit) Emit(w io.Writer) { fmt.Fprintf(w, "%d", int(i)) }
+
+type FloatLit float64
+
+func (f FloatLit) Emit(w io.Writer) {
+	v := float64(f)
+	if math.Trunc(v) == v {
+		fmt.Fprintf(w, "%.1f", v)
+	} else {
+		fmt.Fprintf(w, "%g", v)
+	}
+}
 
 type BoolLit bool
 
@@ -143,7 +155,21 @@ func header() []byte {
 		}
 	}
 	loc, _ := time.LoadLocation("Asia/Bangkok")
-	return []byte(fmt.Sprintf(";; Generated on %s\n", ts.In(loc).Format("2006-01-02 15:04 -0700")))
+	prelude := `(import (srfi 69) (scheme sort) (chibi string))
+(define (to-str x)
+  (cond ((hash-table? x)
+         (let* ((pairs (hash-table->alist x))
+                (pairs (list-sort (lambda (a b) (string<? (car a) (car b))) pairs)))
+           (string-append "{" (string-join (map (lambda (kv)
+                                                  (string-append "'" (car kv) "': " (to-str (cdr kv))))
+                                                pairs) ", ") "}")))
+        ((list? x)
+         (string-append "[" (string-join (map to-str x) ", ") "]"))
+        ((string? x) (string-append "\"" x "\""))
+        (else (number->string x))))
+`
+	return []byte(fmt.Sprintf(";; Generated on %s\n%s\n",
+		ts.In(loc).Format("2006-01-02 15:04 -0700"), prelude))
 }
 
 func voidSym() Node { return &List{Elems: []Node{Symbol("quote"), Symbol("nil")}} }
@@ -155,6 +181,8 @@ func typedDefault(t *parser.TypeRef) Node {
 	switch *t.Simple {
 	case "int":
 		return IntLit(0)
+	case "float":
+		return FloatLit(0)
 	case "bool":
 		return BoolLit(false)
 	case "string":
@@ -303,6 +331,7 @@ func convertStmt(st *parser.Statement) (Node, error) {
 				if _, ok := types.ExprType(call.Args[i], currentEnv).(types.BoolType); ok {
 					a = &List{Elems: []Node{Symbol("if"), a, IntLit(1), IntLit(0)}}
 				}
+				a = &List{Elems: []Node{Symbol("to-str"), a}}
 				forms = append(forms, &List{Elems: []Node{Symbol("display"), a}})
 				if i < len(args)-1 {
 					forms = append(forms, &List{Elems: []Node{Symbol("display"), StringLit(" ")}})
@@ -599,6 +628,8 @@ func convertParserPrimary(p *parser.Primary) (Node, error) {
 	switch {
 	case p.Lit != nil && p.Lit.Int != nil:
 		return IntLit(int(*p.Lit.Int)), nil
+	case p.Lit != nil && p.Lit.Float != nil:
+		return FloatLit(*p.Lit.Float), nil
 	case p.Lit != nil && p.Lit.Str != nil:
 		return StringLit(*p.Lit.Str), nil
 	case p.Lit != nil && p.Lit.Bool != nil:
@@ -929,11 +960,16 @@ func convertGroupByJoinQuery(q *parser.QueryExpr) (Node, error) {
 		&List{Elems: []Node{Symbol("hash-table-set!"), Symbol(groups), Symbol(k), Symbol(g)}},
 	}}
 
-	itemPairs := []Node{Symbol("list")}
-	for _, l := range loops {
-		itemPairs = append(itemPairs, &List{Elems: []Node{Symbol("cons"), StringLit(l.name), Symbol(l.name)}})
+	var item Node
+	if len(loops) == 1 {
+		item = Symbol(loops[0].name)
+	} else {
+		itemPairs := []Node{Symbol("list")}
+		for _, l := range loops {
+			itemPairs = append(itemPairs, &List{Elems: []Node{Symbol("cons"), StringLit(l.name), Symbol(l.name)}})
+		}
+		item = &List{Elems: []Node{Symbol("alist->hash-table"), &List{Elems: itemPairs}}}
 	}
-	item := &List{Elems: []Node{Symbol("alist->hash-table"), &List{Elems: itemPairs}}}
 
 	appendItem := &List{Elems: []Node{
 		Symbol("hash-table-set!"), Symbol(g), StringLit("items"),
@@ -1243,6 +1279,11 @@ func makeBinary(op string, left, right Node) Node {
 	case "-", "*":
 		return &List{Elems: []Node{Symbol(op), left, right}}
 	case "/":
+		_, lfloat := left.(FloatLit)
+		_, rfloat := right.(FloatLit)
+		if lfloat || rfloat {
+			return &List{Elems: []Node{Symbol("/"), left, right}}
+		}
 		return &List{Elems: []Node{Symbol("quotient"), left, right}}
 	case "%":
 		return &List{Elems: []Node{Symbol("modulo"), left, right}}
@@ -1267,8 +1308,14 @@ func makeBinary(op string, left, right Node) Node {
 		}
 		return &List{Elems: []Node{Symbol(">="), left, right}}
 	case "==":
+		if isStr(left) || isStr(right) {
+			return &List{Elems: []Node{Symbol("string=?"), left, right}}
+		}
 		return &List{Elems: []Node{Symbol("="), left, right}}
 	case "!=":
+		if isStr(left) || isStr(right) {
+			return &List{Elems: []Node{Symbol("not"), &List{Elems: []Node{Symbol("string=?"), left, right}}}}
+		}
 		return &List{Elems: []Node{Symbol("not"), &List{Elems: []Node{Symbol("="), left, right}}}}
 	case "&&":
 		return &List{Elems: []Node{Symbol("and"), left, right}}
