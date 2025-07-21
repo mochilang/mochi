@@ -268,6 +268,20 @@ func zigTypeFromExpr(e Expr) string {
 			return t
 		}
 		return "i64"
+	case *FieldExpr:
+		if vr, ok := e.(*FieldExpr).Target.(*VarRef); ok {
+			if structName, ok := varTypes[vr.Name]; ok {
+				if sd, ok := structDefs[structName]; ok {
+					field := toSnakeCase(e.(*FieldExpr).Name)
+					for _, f := range sd.Fields {
+						if f.Name == field {
+							return f.Type
+						}
+					}
+				}
+			}
+		}
+		return "i64"
 	case *MapLit:
 		if m := e.(*MapLit); m.StructName != "" {
 			return m.StructName
@@ -404,6 +418,12 @@ func (s *PrintStmt) emit(w io.Writer, indent int) {
 			}
 		case *StringLit:
 			fmtSpec[i] = "{s}"
+		case *FieldExpr:
+			if zigTypeFromExpr(v) == "[]const u8" {
+				fmtSpec[i] = "{s}"
+			} else {
+				fmtSpec[i] = "{any}"
+			}
 		default:
 			fmtSpec[i] = "{any}"
 		}
@@ -837,7 +857,7 @@ func (c *CallExpr) emit(w io.Writer) {
 
 // Transpile converts a Mochi program into our simple Zig AST.
 func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
-	main := &Func{Name: "main"}
+	main := &Func{Name: "main", ReturnType: "!void"}
 	funcs := []*Func{}
 	extraFuncs = nil
 	funcCounter = 0
@@ -1381,6 +1401,7 @@ func compileForStmt(fs *parser.ForStmt, prog *parser.Program) (Stmt, error) {
 		if err != nil {
 			return nil, err
 		}
+		varTypes[fs.Name] = elemTypeFromExpr(fs.Source)
 	}
 	body := make([]Stmt, 0, len(fs.Body))
 	for _, s := range fs.Body {
@@ -1415,6 +1436,9 @@ func elemTypeFromExpr(e *parser.Expr) string {
 			if lst.ElemType != "" {
 				return lst.ElemType
 			}
+		}
+		if t, ok := varTypes[pf.Selector.Root]; ok && strings.HasPrefix(t, "[]") {
+			return strings.TrimPrefix(t, "[]")
 		}
 	}
 	if pf.List != nil && len(pf.List.Elems) > 0 {
@@ -1459,7 +1483,7 @@ func inferListStruct(varName string, list *ListLit) string {
 		}
 		for i, e := range ml.Entries {
 			k, ok := e.Key.(*StringLit)
-			if !ok || k.Value != fields[i].Name {
+			if !ok || toSnakeCase(k.Value) != fields[i].Name {
 				return ""
 			}
 		}
@@ -1636,9 +1660,7 @@ func compileStmt(s *parser.Statement, prog *parser.Program) (Stmt, error) {
 		}
 		vd := &VarDecl{Name: s.Let.Name, Value: expr}
 		if lst, ok := expr.(*ListLit); ok {
-			if inferListStruct(s.Let.Name, lst) != "" {
-				vd.Type = "[_]" + lst.ElemType
-			}
+			inferListStruct(s.Let.Name, lst)
 		}
 		if ml, ok := expr.(*MapLit); ok {
 			mapVars[s.Let.Name] = true
@@ -1648,6 +1670,7 @@ func compileStmt(s *parser.Statement, prog *parser.Program) (Stmt, error) {
 		}
 		if qc, ok := expr.(*QueryComp); ok {
 			vd.Type = "[]" + qc.ElemType
+			varTypes[s.Let.Name] = vd.Type
 		}
 		return vd, nil
 	case s.Var != nil:
@@ -1663,9 +1686,7 @@ func compileStmt(s *parser.Statement, prog *parser.Program) (Stmt, error) {
 		}
 		vd := &VarDecl{Name: s.Var.Name, Value: expr, Mutable: true}
 		if lst, ok := expr.(*ListLit); ok {
-			if inferListStruct(s.Var.Name, lst) != "" {
-				vd.Type = "[_]" + lst.ElemType
-			}
+			inferListStruct(s.Var.Name, lst)
 		}
 		if ml, ok := expr.(*MapLit); ok {
 			mapVars[s.Var.Name] = true
@@ -1675,6 +1696,7 @@ func compileStmt(s *parser.Statement, prog *parser.Program) (Stmt, error) {
 		}
 		if qc, ok := expr.(*QueryComp); ok {
 			vd.Type = "[]" + qc.ElemType
+			varTypes[s.Var.Name] = vd.Type
 		}
 		return vd, nil
 	case s.Assign != nil && len(s.Assign.Index) == 0 && len(s.Assign.Field) == 0:

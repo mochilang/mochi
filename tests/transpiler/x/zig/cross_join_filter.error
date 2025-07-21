@@ -1,0 +1,2 @@
+run: exit status 1
+/workspace/mochi/tests/transpiler/x/zig/cross_join_filter.zig:16:17: error: remainder division with 'i64' and 'comptime_int': signed integers and floats must use @rem or @mod
