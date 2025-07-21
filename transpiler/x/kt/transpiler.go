@@ -1685,14 +1685,20 @@ func convertForStmt(env *types.Env, fs *parser.ForStmt) (Stmt, error) {
 	if err != nil {
 		return nil, err
 	}
-	var elem types.Type = types.AnyType{}
-	if name := simpleVarName(fs.Source); name != "" {
-		if t, err := env.GetVar(name); err == nil {
-			if lt, ok := t.(types.ListType); ok {
-				elem = lt.Elem
-			}
-		}
-	}
+    var elem types.Type = types.AnyType{}
+    if name := simpleVarName(fs.Source); name != "" {
+            if t, err := env.GetVar(name); err == nil {
+                    if lt, ok := t.(types.ListType); ok {
+                            elem = lt.Elem
+                    }
+            }
+    } else {
+            if t := types.CheckExprType(fs.Source, env); t != nil {
+                    if lt, ok := t.(types.ListType); ok {
+                            elem = lt.Elem
+                    }
+            }
+    }
 	if types.IsMapExpr(fs.Source, env) {
 		iter = &FieldExpr{Receiver: iter, Name: "keys"}
 	}
