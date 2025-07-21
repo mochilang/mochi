@@ -1,3 +1,18 @@
+## Progress (2025-07-21 08:03 +0700)
+- rb transpiler: add right join
+- Generated Ruby for 75/100 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-21 07:52 +0700)
+- dart transpiler: add right join support
+- Generated Ruby for 75/100 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-21 07:52 +0700)
+- dart transpiler: add right join support
+- Generated Ruby for 74/100 programs
+- Updated README checklist and outputs
+
 ## Progress (2025-07-21 07:08 +0700)
 - st transpiler: handle identifier map keys
 - Generated Ruby for 74/100 programs

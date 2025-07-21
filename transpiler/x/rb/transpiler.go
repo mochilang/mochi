@@ -75,6 +75,88 @@ type queryJoin struct {
 	Side string // "", "left", "right", "outer"
 }
 
+// RightJoinExpr represents a simple right join query.
+type RightJoinExpr struct {
+	LeftVar  string
+	LeftSrc  Expr
+	RightVar string
+	RightSrc Expr
+	Cond     Expr
+	Select   Expr
+}
+
+func (r *RightJoinExpr) emit(e *emitter) {
+	io.WriteString(e.w, "(begin")
+	e.indent++
+	e.nl()
+	e.writeIndent()
+	io.WriteString(e.w, "_res = []")
+	e.nl()
+	e.writeIndent()
+	io.WriteString(e.w, "for ")
+	io.WriteString(e.w, r.RightVar)
+	io.WriteString(e.w, " in ")
+	r.RightSrc.emit(e)
+	e.nl()
+	e.indent++
+	e.writeIndent()
+	io.WriteString(e.w, "matched = false")
+	e.nl()
+	e.writeIndent()
+	io.WriteString(e.w, "for ")
+	io.WriteString(e.w, r.LeftVar)
+	io.WriteString(e.w, " in ")
+	r.LeftSrc.emit(e)
+	e.nl()
+	e.indent++
+	e.writeIndent()
+	io.WriteString(e.w, "if ")
+	r.Cond.emit(e)
+	e.nl()
+	e.indent++
+	e.writeIndent()
+	io.WriteString(e.w, "matched = true")
+	e.nl()
+	e.writeIndent()
+	io.WriteString(e.w, "_res << ")
+	r.Select.emit(e)
+	e.nl()
+	e.indent--
+	e.writeIndent()
+	io.WriteString(e.w, "end")
+	e.nl()
+	e.indent--
+	e.writeIndent()
+	io.WriteString(e.w, "end")
+	e.nl()
+	e.writeIndent()
+	io.WriteString(e.w, "unless matched")
+	e.nl()
+	e.indent++
+	e.writeIndent()
+	io.WriteString(e.w, r.LeftVar+" = nil")
+	e.nl()
+	e.writeIndent()
+	io.WriteString(e.w, "_res << ")
+	r.Select.emit(e)
+	e.nl()
+	e.indent--
+	e.writeIndent()
+	io.WriteString(e.w, "end")
+	e.nl()
+	e.indent--
+	e.writeIndent()
+	io.WriteString(e.w, "end")
+	e.nl()
+	e.indent--
+	e.writeIndent()
+	io.WriteString(e.w, "_res")
+	e.nl()
+	e.indent--
+	e.writeIndent()
+	io.WriteString(e.w, "end)")
+}
+
 type QueryExpr struct {
 	Var    string
 	Src    Expr
@@ -1908,6 +1990,9 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 		}
 		return expr, nil
 	case p.Query != nil:
+		if ex, err := convertRightJoinQuery(p.Query); err == nil {
+			return ex, nil
+		}
 		return convertQueryExpr(p.Query)
 	default:
 		if p.FunExpr != nil {
@@ -2075,6 +2160,40 @@ func convertQueryExpr(q *parser.QueryExpr) (Expr, error) {
 	return &QueryExpr{Var: q.Var, Src: src, Froms: froms, Joins: joins, Where: where, Select: sel}, nil
 }
 
+func convertRightJoinQuery(q *parser.QueryExpr) (Expr, error) {
+	if q == nil || len(q.Joins) != 1 || len(q.Froms) > 0 || q.Group != nil || q.Sort != nil || q.Skip != nil || q.Take != nil || q.Where != nil {
+		return nil, fmt.Errorf("unsupported query")
+	}
+	j := q.Joins[0]
+	if j.Side == nil || *j.Side != "right" {
+		return nil, fmt.Errorf("unsupported query")
+	}
+	leftSrc, err := convertExpr(q.Source)
+	if err != nil {
+		return nil, err
+	}
+	rightSrc, err := convertExpr(j.Src)
+	if err != nil {
+		return nil, err
+	}
+	child := types.NewEnv(currentEnv)
+	child.SetVar(q.Var, types.AnyType{}, true)
+	child.SetVar(j.Var, types.AnyType{}, true)
+	saved := currentEnv
+	currentEnv = child
+	cond, err := convertExpr(j.On)
+	if err != nil {
+		currentEnv = saved
+		return nil, err
+	}
+	sel, err := convertExpr(q.Select)
+	currentEnv = saved
+	if err != nil {
+		return nil, err
+	}
+	return &RightJoinExpr{LeftVar: q.Var, LeftSrc: leftSrc, RightVar: j.Var, RightSrc: rightSrc, Cond: cond, Select: sel}, nil
+}
+
 func convertQueryForLet(q *parser.QueryExpr, name string) (Expr, Stmt, error) {
 	if keys, vals, ok := extractMapLiteral(q.Select); ok {
 		structName := toStructName(name)
@@ -2090,18 +2209,29 @@ func convertQueryForLet(q *parser.QueryExpr, name string) (Expr, Stmt, error) {
 				fieldTypes[keys[i]] = types.ExprType(v, currentEnv)
 			}
 		}
-		qe, err := convertQueryExpr(q)
-		if err != nil {
-			return nil, nil, err
+		var qe Expr
+		var err error
+		if ex, err2 := convertRightJoinQuery(q); err2 == nil {
+			qe = ex
+			if rj, ok := qe.(*RightJoinExpr); ok {
+				rj.Select = &StructNewExpr{Name: structName, Fields: fields}
+			}
+		} else {
+			qe, err = convertQueryExpr(q)
+			if err != nil {
+				return nil, nil, err
+			}
+			qe.(*QueryExpr).Select = &StructNewExpr{Name: structName, Fields: fields}
 		}
-		query := qe.(*QueryExpr)
-		query.Select = &StructNewExpr{Name: structName, Fields: fields}
 		if currentEnv != nil {
 			st := types.StructType{Name: structName, Fields: fieldTypes, Order: keys}
 			currentEnv.SetStruct(structName, st)
 			currentEnv.SetVar(name, types.ListType{Elem: st}, false)
 		}
-		return query, &StructDefStmt{Name: structName, Fields: keys}, nil
+		return qe, &StructDefStmt{Name: structName, Fields: keys}, nil
+	}
+	if ex, err := convertRightJoinQuery(q); err == nil {
+		return ex, nil, nil
 	}
 	qe, err := convertQueryExpr(q)
 	return qe, nil, err
@@ -2314,6 +2444,15 @@ func exprNode(e Expr) *ast.Node {
 		if ex.Else != nil {
 			n.Children = append(n.Children, &ast.Node{Kind: "else", Children: []*ast.Node{exprNode(ex.Else)}})
 		}
+		return n
+	case *RightJoinExpr:
+		n := &ast.Node{Kind: "right_join"}
+		n.Children = append(n.Children, &ast.Node{Kind: "left_var", Value: ex.LeftVar})
+		n.Children = append(n.Children, exprNode(ex.LeftSrc))
+		n.Children = append(n.Children, &ast.Node{Kind: "right_var", Value: ex.RightVar})
+		n.Children = append(n.Children, exprNode(ex.RightSrc))
+		n.Children = append(n.Children, exprNode(ex.Cond))
+		n.Children = append(n.Children, exprNode(ex.Select))
 		return n
 	default:
 		return &ast.Node{Kind: "unknown"}
