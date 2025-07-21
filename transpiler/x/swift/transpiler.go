@@ -373,18 +373,13 @@ func (b *BinaryExpr) emit(w io.Writer) {
 		return
 	}
 
-	boolOp := false
 	switch b.Op {
 	case "&&", "||", "<", "<=", ">", ">=", "==", "!=":
-		boolOp = true
-	}
-
-	if boolOp {
-		fmt.Fprint(w, "((")
+		fmt.Fprint(w, "(")
 		b.Left.emit(w)
 		fmt.Fprintf(w, " %s ", b.Op)
 		b.Right.emit(w)
-		fmt.Fprint(w, ") ? 1 : 0)")
+		fmt.Fprint(w, ")")
 		return
 	}
 
@@ -402,9 +397,9 @@ type UnaryExpr struct {
 
 func (u *UnaryExpr) emit(w io.Writer) {
 	if u.Op == "!" {
-		fmt.Fprint(w, "((!")
+		fmt.Fprint(w, "(!")
 		u.Expr.emit(w)
-		fmt.Fprint(w, ") ? 1 : 0)")
+		fmt.Fprint(w, ")")
 		return
 	}
 	fmt.Fprint(w, u.Op)
@@ -446,10 +441,11 @@ func (c *CallExpr) emit(w io.Writer) {
 	case "avg":
 		if len(c.Args) == 1 {
 			fmt.Fprint(w, "(")
+			fmt.Fprint(w, "Double(")
 			c.Args[0].emit(w)
-			fmt.Fprint(w, ".reduce(0,+) / ")
+			fmt.Fprint(w, ".reduce(0,+)) / Double(")
 			c.Args[0].emit(w)
-			fmt.Fprint(w, ".count)")
+			fmt.Fprint(w, ".count))")
 			return
 		}
 	case "sum":

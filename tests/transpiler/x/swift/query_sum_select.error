@@ -1,1 +1,8 @@
-unsupported primary
+exit status 1
+/tmp/TestSwiftTranspiler_VMValid_Golden3486495249/055/main.swift:6:24: error: value of type 'Int' has no member 'reduce'
+ 4 | for n in nums {
+ 5 |     if (n > 1) {
+ 6 |         _res.append((n.reduce(0,+)))
+   |                        `- error: value of type 'Int' has no member 'reduce'
+ 7 |     }
+ 8 | }
