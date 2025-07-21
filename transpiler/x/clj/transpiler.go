@@ -433,6 +433,8 @@ func transpileStmt(s *parser.Statement) (Node, error) {
 		return transpileWhileStmt(s.While)
 	case s.For != nil:
 		return transpileForStmt(s.For)
+	case s.Update != nil:
+		return transpileUpdateStmt(s.Update)
 	case s.Break != nil:
 		if currentSeqVar != "" {
 			return &List{Elems: []Node{Symbol("recur"), Symbol("nil")}}, nil
@@ -1725,4 +1727,49 @@ func condRecur(n Node) (cond Node, recur Node, ok bool) {
 		return nil, nil, false
 	}
 	return l.Elems[1], r, true
+}
+
+func transpileUpdateStmt(u *parser.UpdateStmt) (Node, error) {
+	if u == nil {
+		return nil, fmt.Errorf("nil update")
+	}
+	var expr Node = Symbol("item")
+	for _, it := range u.Set.Items {
+		key, ok := identName(it.Key)
+		if !ok {
+			return nil, fmt.Errorf("update key must be identifier")
+		}
+		val, err := transpileExpr(it.Value)
+		if err != nil {
+			return nil, err
+		}
+		expr = &List{Elems: []Node{Symbol("assoc"), expr, Keyword(key), val}}
+	}
+	if u.Where != nil {
+		cond, err := transpileExpr(u.Where)
+		if err != nil {
+			return nil, err
+		}
+		expr = &List{Elems: []Node{Symbol("if"), cond, expr, Symbol("item")}}
+	}
+	bindings := []Node{}
+	if transpileEnv != nil {
+		if t, err := transpileEnv.GetVar(u.Target); err == nil {
+			if lt, ok := t.(types.ListType); ok {
+				if st, ok := lt.Elem.(types.StructType); ok {
+					for _, f := range st.Order {
+						bindings = append(bindings, Symbol(f), &List{Elems: []Node{Keyword(f), Symbol("item")}})
+					}
+				}
+			}
+		}
+	}
+	body := expr
+	if len(bindings) > 0 {
+		body = &List{Elems: []Node{Symbol("let"), &Vector{Elems: bindings}, expr}}
+	}
+	fn := &List{Elems: []Node{Symbol("fn"), &Vector{Elems: []Node{Symbol("item")}}, body}}
+	mp := &List{Elems: []Node{Symbol("map"), fn, Symbol(u.Target)}}
+	vec := &List{Elems: []Node{Symbol("vec"), mp}}
+	return &List{Elems: []Node{Symbol("def"), Symbol(u.Target), vec}}, nil
 }

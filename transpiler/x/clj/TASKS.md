@@ -1,3 +1,7 @@
+## Progress (2025-07-21 16:30 +0700)
+- add update statement support
+- Regenerated golden files - 96/100 vm valid programs passing
+
 ## Progress (2025-07-21 16:07 +0700)
 - Clean up transpiler/x
 - Regenerated golden files - 95/100 vm valid programs passing
