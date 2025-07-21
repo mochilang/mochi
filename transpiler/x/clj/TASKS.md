@@ -1,3 +1,11 @@
+## Progress (2025-07-22 06:31 +0700)
+- docs(clj): refresh checklist and progress
+- Regenerated golden files - 101/101 vm valid programs passing
+
+## Progress (2025-07-22 06:19 +0700)
+- clj transpiler: add group_by_multi_sort golden test
+- Regenerated golden files - 101/101 vm valid programs passing
+
 ## Progress (2025-07-21 13:48 +0000)
 - clj transpiler: support right joins
 - 100/100 VM programs transpiled successfully
@@ -121,3 +129,4 @@
 ## Progress (2025-07-21 12:07 +0700)
 - remove old error files
 - Regenerated golden files - 88/100 vm valid programs passing
+
