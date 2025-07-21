@@ -982,6 +982,10 @@ func convertStmt(env *types.Env, st *parser.Statement) (Stmt, error) {
 			if err != nil {
 				return nil, err
 			}
+			if env != nil {
+				t := types.TypeOfExpr(st.Let.Value, env)
+				typ = swiftTypeOf(t)
+			}
 		} else if st.Let.Type != nil {
 			ex = zeroValue(st.Let.Type)
 			typ = toSwiftType(st.Let.Type)
@@ -995,6 +999,10 @@ func convertStmt(env *types.Env, st *parser.Statement) (Stmt, error) {
 			ex, err = convertExpr(env, st.Var.Value)
 			if err != nil {
 				return nil, err
+			}
+			if env != nil {
+				t := types.TypeOfExpr(st.Var.Value, env)
+				typ = swiftTypeOf(t)
 			}
 		} else if st.Var.Type != nil {
 			ex = zeroValue(st.Var.Type)
@@ -1373,44 +1381,136 @@ func convertExpr(env *types.Env, e *parser.Expr) (Expr, error) {
 	if e == nil || e.Binary == nil {
 		return nil, fmt.Errorf("unsupported expression")
 	}
+
 	first, err := convertUnary(env, e.Binary.Left)
 	if err != nil {
 		return nil, err
 	}
-	expr := first
-	leftType := types.TypeOfUnary(e.Binary.Left, env)
+
+	operands := []Expr{first}
+	typesList := []types.Type{types.TypeOfUnary(e.Binary.Left, env)}
+	ops := []string{}
+
 	for _, op := range e.Binary.Right {
 		right, err := convertPostfix(env, op.Right)
 		if err != nil {
 			return nil, err
 		}
-		rightType := types.TypeOfPostfix(op.Right, env)
-		if op.Op == "in" && env != nil {
+		operands = append(operands, right)
+		typesList = append(typesList, types.TypeOfPostfix(op.Right, env))
+		ops = append(ops, op.Op)
+	}
+
+	prec := func(op string) int {
+		switch op {
+		case "*", "/", "%":
+			return 4
+		case "+", "-":
+			return 3
+		case "==", "!=", "<", "<=", ">", ">=", "in":
+			return 2
+		case "&&":
+			return 1
+		case "||":
+			return 0
+		default:
+			return -1
+		}
+	}
+
+	var exprStack []Expr
+	var typeStack []types.Type
+	var opStack []string
+
+	pushResult := func() {
+		if len(opStack) == 0 || len(exprStack) < 2 || len(typeStack) < 2 {
+			return
+		}
+		op := opStack[len(opStack)-1]
+		opStack = opStack[:len(opStack)-1]
+
+		right := exprStack[len(exprStack)-1]
+		rtyp := typeStack[len(typeStack)-1]
+		exprStack = exprStack[:len(exprStack)-1]
+		typeStack = typeStack[:len(typeStack)-1]
+
+		left := exprStack[len(exprStack)-1]
+		ltyp := typeStack[len(typeStack)-1]
+		exprStack = exprStack[:len(exprStack)-1]
+		typeStack = typeStack[:len(typeStack)-1]
+
+		if op == "in" && env != nil {
 			inMap := false
-			if types.IsMapType(rightType) {
+			if types.IsMapType(rtyp) {
 				inMap = true
 			}
-			expr = &BinaryExpr{Left: expr, Op: op.Op, Right: right, InMap: inMap}
-			leftType = types.BoolType{}
-			continue
+			exprStack = append(exprStack, &BinaryExpr{Left: left, Op: op, Right: right, InMap: inMap})
+			typeStack = append(typeStack, types.BoolType{})
+			return
 		}
-		// cast comparisons for simple types
-		switch op.Op {
+
+		switch op {
 		case "==", "!=", "<", "<=", ">", ">=":
-			if types.IsIntType(leftType) && types.IsAnyType(rightType) {
-				right = &CastExpr{Expr: right, Type: "Int"}
-			} else if types.IsIntType(rightType) && types.IsAnyType(leftType) {
-				expr = &CastExpr{Expr: expr, Type: "Int"}
-			} else if types.IsStringType(leftType) && types.IsAnyType(rightType) {
+			if types.IsAnyType(ltyp) && types.IsAnyType(rtyp) {
+				left = &CastExpr{Expr: left, Type: "String"}
 				right = &CastExpr{Expr: right, Type: "String"}
-			} else if types.IsStringType(rightType) && types.IsAnyType(leftType) {
-				expr = &CastExpr{Expr: expr, Type: "String"}
+			} else if types.IsIntType(ltyp) && types.IsAnyType(rtyp) {
+				right = &CastExpr{Expr: right, Type: "Int"}
+			} else if types.IsIntType(rtyp) && types.IsAnyType(ltyp) {
+				left = &CastExpr{Expr: left, Type: "Int"}
+			} else if types.IsFloatType(ltyp) && types.IsAnyType(rtyp) {
+				right = &CastExpr{Expr: right, Type: "Double"}
+			} else if types.IsFloatType(rtyp) && types.IsAnyType(ltyp) {
+				left = &CastExpr{Expr: left, Type: "Double"}
+			} else if types.IsStringType(ltyp) && types.IsAnyType(rtyp) {
+				right = &CastExpr{Expr: right, Type: "String"}
+			} else if types.IsStringType(rtyp) && types.IsAnyType(ltyp) {
+				left = &CastExpr{Expr: left, Type: "String"}
+			}
+		case "+", "-", "*", "/", "%":
+			if types.IsAnyType(ltyp) {
+				left = &CastExpr{Expr: left, Type: "Double"}
+			}
+			if types.IsAnyType(rtyp) {
+				right = &CastExpr{Expr: right, Type: "Double"}
 			}
 		}
-		expr = &BinaryExpr{Left: expr, Op: op.Op, Right: right, InMap: false}
-		leftType = types.TypeOfPostfix(op.Right, env)
+
+		resType := ltyp
+		switch op {
+		case "==", "!=", "<", "<=", ">", ">=", "in", "&&", "||":
+			resType = types.BoolType{}
+		case "+", "-", "*", "/", "%":
+			if types.IsStringType(ltyp) || types.IsStringType(rtyp) {
+				resType = types.StringType{}
+			} else {
+				resType = types.FloatType{}
+			}
+		default:
+			resType = rtyp
+		}
+
+		exprStack = append(exprStack, &BinaryExpr{Left: left, Op: op, Right: right, InMap: false})
+		typeStack = append(typeStack, resType)
 	}
-	return expr, nil
+
+	exprStack = append(exprStack, operands[0])
+	typeStack = append(typeStack, typesList[0])
+	for i, op := range ops {
+		for len(opStack) > 0 && prec(opStack[len(opStack)-1]) >= prec(op) {
+			pushResult()
+		}
+		opStack = append(opStack, op)
+		exprStack = append(exprStack, operands[i+1])
+		typeStack = append(typeStack, typesList[i+1])
+	}
+	for len(opStack) > 0 {
+		pushResult()
+	}
+	if len(exprStack) != 1 {
+		return nil, fmt.Errorf("binary conversion failed")
+	}
+	return exprStack[0], nil
 }
 
 func convertUnary(env *types.Env, u *parser.Unary) (Expr, error) {
