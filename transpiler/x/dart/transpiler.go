@@ -1157,6 +1157,83 @@ func (r *RightJoinExpr) emit(w io.Writer) error {
 	return nil
 }
 
+// OuterJoinExpr represents a simple full outer join query.
+type OuterJoinExpr struct {
+	LeftVar  string
+	LeftSrc  Expr
+	RightVar string
+	RightSrc Expr
+	Cond     Expr
+	Select   Expr
+}
+
+func (o *OuterJoinExpr) emit(w io.Writer) error {
+	if _, err := io.WriteString(w, "(() {\n"); err != nil {
+		return err
+	}
+	if _, err := io.WriteString(w, "  var _res = [];\n"); err != nil {
+		return err
+	}
+	if _, err := io.WriteString(w, "  for (var "+o.LeftVar+" in "); err != nil {
+		return err
+	}
+	if err := o.LeftSrc.emit(w); err != nil {
+		return err
+	}
+	if _, err := io.WriteString(w, ") {\n    var matched = false;\n    for (var "+o.RightVar+" in "); err != nil {
+		return err
+	}
+	if err := o.RightSrc.emit(w); err != nil {
+		return err
+	}
+	if _, err := io.WriteString(w, ") {\n      if (!("); err != nil {
+		return err
+	}
+	if err := o.Cond.emit(w); err != nil {
+		return err
+	}
+	if _, err := io.WriteString(w, ")) continue;\n      matched = true;\n      _res.add("); err != nil {
+		return err
+	}
+	if err := o.Select.emit(w); err != nil {
+		return err
+	}
+	if _, err := io.WriteString(w, ");\n    }\n    if (!matched) {\n      var "+o.RightVar+" = null;\n      _res.add("); err != nil {
+		return err
+	}
+	if err := o.Select.emit(w); err != nil {
+		return err
+	}
+	if _, err := io.WriteString(w, ");\n    }\n  }\n  for (var "+o.RightVar+" in "); err != nil {
+		return err
+	}
+	if err := o.RightSrc.emit(w); err != nil {
+		return err
+	}
+	if _, err := io.WriteString(w, ") {\n    var exists = false;\n    for (var "+o.LeftVar+" in "); err != nil {
+		return err
+	}
+	if err := o.LeftSrc.emit(w); err != nil {
+		return err
+	}
+	if _, err := io.WriteString(w, ") {\n      if ("); err != nil {
+		return err
+	}
+	if err := o.Cond.emit(w); err != nil {
+		return err
+	}
+	if _, err := io.WriteString(w, ") { exists = true; break; }\n    }\n    if (!exists) {\n      var "+o.LeftVar+" = null;\n      _res.add("); err != nil {
+		return err
+	}
+	if err := o.Select.emit(w); err != nil {
+		return err
+	}
+	if _, err := io.WriteString(w, ");\n    }\n  }\n  return _res;\n})()"); err != nil {
+		return err
+	}
+	return nil
+}
+
 func (gq *GroupQueryExpr) emit(w io.Writer) error {
 	if _, err := io.WriteString(w, "(() {\n"); err != nil {
 		return err
@@ -1612,6 +1689,32 @@ func inferType(e Expr) string {
 		}
 		return "List<" + et + ">"
 	case *RightJoinExpr:
+		ltype := inferType(ex.LeftSrc)
+		rtype := inferType(ex.RightSrc)
+		lelem := "dynamic"
+		relem := "dynamic"
+		if strings.HasPrefix(ltype, "List<") && strings.HasSuffix(ltype, ">") {
+			lelem = strings.TrimSuffix(strings.TrimPrefix(ltype, "List<"), ">")
+		}
+		if strings.HasPrefix(rtype, "List<") && strings.HasSuffix(rtype, ">") {
+			relem = strings.TrimSuffix(strings.TrimPrefix(rtype, "List<"), ">")
+		}
+		savedL, savedR := compVarTypes[ex.LeftVar], compVarTypes[ex.RightVar]
+		compVarTypes[ex.LeftVar] = lelem
+		compVarTypes[ex.RightVar] = relem
+		et := inferType(ex.Select)
+		if savedL != "" {
+			compVarTypes[ex.LeftVar] = savedL
+		} else {
+			delete(compVarTypes, ex.LeftVar)
+		}
+		if savedR != "" {
+			compVarTypes[ex.RightVar] = savedR
+		} else {
+			delete(compVarTypes, ex.RightVar)
+		}
+		return "List<" + et + ">"
+	case *OuterJoinExpr:
 		ltype := inferType(ex.LeftSrc)
 		rtype := inferType(ex.RightSrc)
 		lelem := "dynamic"
@@ -2510,6 +2613,9 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 		if ex, err := convertRightJoinQuery(p.Query); err == nil {
 			return ex, nil
 		}
+		if ex, err := convertOuterJoinQuery(p.Query); err == nil {
+			return ex, nil
+		}
 		if p.Query.Group != nil {
 			if ex, err := convertGroupQuery(p.Query); err == nil {
 				return ex, nil
@@ -2660,7 +2766,7 @@ func convertMatchExpr(me *parser.MatchExpr) (Expr, error) {
 }
 
 func cloneReplace(e Expr, old, new string) Expr {
-        switch ex := e.(type) {
+	switch ex := e.(type) {
 	case *Name:
 		if ex.Name == old {
 			return &Name{Name: new}
@@ -2686,51 +2792,51 @@ func cloneReplace(e Expr, old, new string) Expr {
 			elems[i] = cloneReplace(a, old, new)
 		}
 		return &ListLit{Elems: elems}
-       case *MapLit:
-               ents := make([]MapEntry, len(ex.Entries))
-               for i, m := range ex.Entries {
-                       ents[i] = MapEntry{Key: cloneReplace(m.Key, old, new), Value: cloneReplace(m.Value, old, new)}
-               }
-               return &MapLit{Entries: ents}
-       case *AvgExpr:
-               return &AvgExpr{List: cloneReplace(ex.List, old, new)}
-       case *SumExpr:
-               return &SumExpr{List: cloneReplace(ex.List, old, new)}
-       case *MinExpr:
-               return &MinExpr{List: cloneReplace(ex.List, old, new)}
-       case *MaxExpr:
-               return &MaxExpr{List: cloneReplace(ex.List, old, new)}
-       case *MultiListComp:
-               iters := make([]Expr, len(ex.Iters))
-               for i, it := range ex.Iters {
-                       iters[i] = cloneReplace(it, old, new)
-               }
-               var cond Expr
-               if ex.Cond != nil {
-                       cond = cloneReplace(ex.Cond, old, new)
-               }
-               return &MultiListComp{Vars: append([]string(nil), ex.Vars...), Iters: iters, Expr: cloneReplace(ex.Expr, old, new), Cond: cond}
-       case *GroupQueryExpr:
-               iters := make([]Expr, len(ex.Iters))
-               for i, it := range ex.Iters {
-                       iters[i] = cloneReplace(it, old, new)
-               }
-               var cond Expr
-               if ex.Cond != nil {
-                       cond = cloneReplace(ex.Cond, old, new)
-               }
-               var having Expr
-               if ex.Having != nil {
-                       having = cloneReplace(ex.Having, old, new)
-               }
-               var sort *LambdaExpr
-               if ex.Sort != nil {
-                       sort = &LambdaExpr{Params: append([]string(nil), ex.Sort.Params...), Body: cloneReplace(ex.Sort.Body, old, new)}
-               }
-               return &GroupQueryExpr{Vars: append([]string(nil), ex.Vars...), Iters: iters, Cond: cond, Key: cloneReplace(ex.Key, old, new), Row: cloneReplace(ex.Row, old, new), GroupVar: ex.GroupVar, Select: cloneReplace(ex.Select, old, new), Having: having, Sort: sort}
-        default:
-                return ex
-        }
+	case *MapLit:
+		ents := make([]MapEntry, len(ex.Entries))
+		for i, m := range ex.Entries {
+			ents[i] = MapEntry{Key: cloneReplace(m.Key, old, new), Value: cloneReplace(m.Value, old, new)}
+		}
+		return &MapLit{Entries: ents}
+	case *AvgExpr:
+		return &AvgExpr{List: cloneReplace(ex.List, old, new)}
+	case *SumExpr:
+		return &SumExpr{List: cloneReplace(ex.List, old, new)}
+	case *MinExpr:
+		return &MinExpr{List: cloneReplace(ex.List, old, new)}
+	case *MaxExpr:
+		return &MaxExpr{List: cloneReplace(ex.List, old, new)}
+	case *MultiListComp:
+		iters := make([]Expr, len(ex.Iters))
+		for i, it := range ex.Iters {
+			iters[i] = cloneReplace(it, old, new)
+		}
+		var cond Expr
+		if ex.Cond != nil {
+			cond = cloneReplace(ex.Cond, old, new)
+		}
+		return &MultiListComp{Vars: append([]string(nil), ex.Vars...), Iters: iters, Expr: cloneReplace(ex.Expr, old, new), Cond: cond}
+	case *GroupQueryExpr:
+		iters := make([]Expr, len(ex.Iters))
+		for i, it := range ex.Iters {
+			iters[i] = cloneReplace(it, old, new)
+		}
+		var cond Expr
+		if ex.Cond != nil {
+			cond = cloneReplace(ex.Cond, old, new)
+		}
+		var having Expr
+		if ex.Having != nil {
+			having = cloneReplace(ex.Having, old, new)
+		}
+		var sort *LambdaExpr
+		if ex.Sort != nil {
+			sort = &LambdaExpr{Params: append([]string(nil), ex.Sort.Params...), Body: cloneReplace(ex.Sort.Body, old, new)}
+		}
+		return &GroupQueryExpr{Vars: append([]string(nil), ex.Vars...), Iters: iters, Cond: cond, Key: cloneReplace(ex.Key, old, new), Row: cloneReplace(ex.Row, old, new), GroupVar: ex.GroupVar, Select: cloneReplace(ex.Select, old, new), Having: having, Sort: sort}
+	default:
+		return ex
+	}
 }
 
 func convertLeftJoinQuery(q *parser.QueryExpr) (Expr, error) {
@@ -2799,6 +2905,40 @@ func convertRightJoinQuery(q *parser.QueryExpr) (Expr, error) {
 		return nil, err
 	}
 	return &RightJoinExpr{LeftVar: q.Var, LeftSrc: leftSrc, RightVar: j.Var, RightSrc: rightSrc, Cond: cond, Select: sel}, nil
+}
+
+func convertOuterJoinQuery(q *parser.QueryExpr) (Expr, error) {
+	if q == nil || len(q.Joins) != 1 || len(q.Froms) > 0 || q.Group != nil || q.Sort != nil || q.Skip != nil || q.Take != nil || q.Where != nil || q.Distinct {
+		return nil, fmt.Errorf("unsupported query")
+	}
+	j := q.Joins[0]
+	if j.Side == nil || *j.Side != "outer" {
+		return nil, fmt.Errorf("unsupported query")
+	}
+	leftSrc, err := convertExpr(q.Source)
+	if err != nil {
+		return nil, err
+	}
+	rightSrc, err := convertExpr(j.Src)
+	if err != nil {
+		return nil, err
+	}
+	child := types.NewEnv(currentEnv)
+	child.SetVar(q.Var, types.AnyType{}, true)
+	child.SetVar(j.Var, types.AnyType{}, true)
+	saved := currentEnv
+	currentEnv = child
+	cond, err := convertExpr(j.On)
+	if err != nil {
+		currentEnv = saved
+		return nil, err
+	}
+	sel, err := convertExpr(q.Select)
+	currentEnv = saved
+	if err != nil {
+		return nil, err
+	}
+	return &OuterJoinExpr{LeftVar: q.Var, LeftSrc: leftSrc, RightVar: j.Var, RightSrc: rightSrc, Cond: cond, Select: sel}, nil
 }
 
 func convertGroupQuery(q *parser.QueryExpr) (Expr, error) {
