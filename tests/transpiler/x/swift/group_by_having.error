@@ -1,31 +1,31 @@
 exit status 1
-/tmp/TestSwiftTranspiler_VMValid_Golden2524844172/023/main.swift:6:28: warning: forced cast of 'String' to same type has no effect
- 4 | var _res: [[String: Any]] = []
- 5 | for p in people {
- 6 |     let _key = (p["city"]! as! String)
+/tmp/TestSwiftTranspiler_VMValid_Golden840429466/023/main.swift:7:28: warning: forced cast of 'String' to same type has no effect
+ 5 | var _res: [[String: Any]] = []
+ 6 | for p in people {
+ 7 |     let _key = (p["city"]! as! String)
    |                            `- warning: forced cast of 'String' to same type has no effect
- 7 |     let _ks = String(describing: _key)
- 8 |     var _g = _groups[_ks] ?? ["key": _key, "items": []]
+ 8 |     let _ks = String(describing: _key)
+ 9 |     var _g = _groups[_ks] ?? ["key": _key, "items": []]
 
-/tmp/TestSwiftTranspiler_VMValid_Golden2524844172/023/main.swift:17:51: warning: forced cast of 'Int' to same type has no effect
-15 | _list.sort { a, b in String(describing: a["key"]) < String(describing: b["key"]) }
-16 | for g in _list {
-17 |     if ((((g["items"] as! [[String: Any]]).count) as! Int) >= 4) {
+/tmp/TestSwiftTranspiler_VMValid_Golden840429466/023/main.swift:18:51: warning: forced cast of 'Int' to same type has no effect
+16 | _list.sort { a, b in String(describing: a["key"]) < String(describing: b["key"]) }
+17 | for g in _list {
+18 |     if ((((g["items"] as! [[String: Any]]).count) as! Int) >= 4) {
    |                                                   `- warning: forced cast of 'Int' to same type has no effect
-18 |         _res.append(["city": (g["key"]! as! String), "num": (((g["items"] as! [[String: Any]]).count) as! Int)])
-19 |     }
+19 |         _res.append(["city": (g["key"]! as! String), "num": (((g["items"] as! [[String: Any]]).count) as! Int)])
+20 |     }
 
-/tmp/TestSwiftTranspiler_VMValid_Golden2524844172/023/main.swift:18:103: warning: forced cast of 'Int' to same type has no effect
-16 | for g in _list {
-17 |     if ((((g["items"] as! [[String: Any]]).count) as! Int) >= 4) {
-18 |         _res.append(["city": (g["key"]! as! String), "num": (((g["items"] as! [[String: Any]]).count) as! Int)])
+/tmp/TestSwiftTranspiler_VMValid_Golden840429466/023/main.swift:19:103: warning: forced cast of 'Int' to same type has no effect
+17 | for g in _list {
+18 |     if ((((g["items"] as! [[String: Any]]).count) as! Int) >= 4) {
+19 |         _res.append(["city": (g["key"]! as! String), "num": (((g["items"] as! [[String: Any]]).count) as! Int)])
    |                                                                                                       `- warning: forced cast of 'Int' to same type has no effect
-19 |     }
-20 | }
+20 |     }
+21 | }
 
-/tmp/TestSwiftTranspiler_VMValid_Golden2524844172/023/main.swift:22:1: error: cannot find 'json' in scope
-20 | }
-21 | return _res })()
-22 | json(big)
+/tmp/TestSwiftTranspiler_VMValid_Golden840429466/023/main.swift:23:1: error: cannot find 'json' in scope
+21 | }
+22 | return _res })()
+23 | json(big)
    | `- error: cannot find 'json' in scope
-23 | 
+24 | 

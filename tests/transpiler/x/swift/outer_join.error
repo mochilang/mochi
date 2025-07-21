@@ -1,72 +1,72 @@
 exit status 1
-/tmp/TestSwiftTranspiler_VMValid_Golden2524844172/058/main.swift:7:31: warning: forced cast of 'Int' to same type has no effect
- 5 | for o in orders {
- 6 |     for c in customers {
- 7 |         if ((o["customerId"]! as! Int) == (c["id"]! as! Int)) {
+/tmp/TestSwiftTranspiler_VMValid_Golden840429466/058/main.swift:8:31: warning: forced cast of 'Int' to same type has no effect
+ 6 | for o in orders {
+ 7 |     for c in customers {
+ 8 |         if ((o["customerId"]! as! Int) == (c["id"]! as! Int)) {
    |                               `- warning: forced cast of 'Int' to same type has no effect
- 8 |             _res.append(["order": o, "customer": c])
- 9 |         }
+ 9 |             _res.append(["order": o, "customer": c])
+10 |         }
 
-/tmp/TestSwiftTranspiler_VMValid_Golden2524844172/058/main.swift:15:20: error: cannot convert value of type 'Any' to expected condition type 'Bool'
-13 | print("--- Outer Join using syntax ---")
-14 | for row in result {
-15 |     if row["order"]! {
+/tmp/TestSwiftTranspiler_VMValid_Golden840429466/058/main.swift:16:20: error: cannot convert value of type 'Any' to expected condition type 'Bool'
+14 | print("--- Outer Join using syntax ---")
+15 | for row in result {
+16 |     if row["order"]! {
    |                    `- error: cannot convert value of type 'Any' to expected condition type 'Bool'
-16 |         if row["customer"]! {
-17 |             print("Order", row["order"]!["id"]!, "by", row["customer"]!["name"]!, "- $", row["order"]!["total"]!)
+17 |         if row["customer"]! {
+18 |             print("Order", String(describing: row["order"]!["id"]!), "by", String(describing: row["customer"]!["name"]!), "- $", String(describing: row["order"]!["total"]!))
 
-/tmp/TestSwiftTranspiler_VMValid_Golden2524844172/058/main.swift:16:27: error: cannot convert value of type 'Any' to expected condition type 'Bool'
-14 | for row in result {
-15 |     if row["order"]! {
-16 |         if row["customer"]! {
+/tmp/TestSwiftTranspiler_VMValid_Golden840429466/058/main.swift:17:27: error: cannot convert value of type 'Any' to expected condition type 'Bool'
+15 | for row in result {
+16 |     if row["order"]! {
+17 |         if row["customer"]! {
    |                           `- error: cannot convert value of type 'Any' to expected condition type 'Bool'
-17 |             print("Order", row["order"]!["id"]!, "by", row["customer"]!["name"]!, "- $", row["order"]!["total"]!)
-18 |         } else {
+18 |             print("Order", String(describing: row["order"]!["id"]!), "by", String(describing: row["customer"]!["name"]!), "- $", String(describing: row["order"]!["total"]!))
+19 |         } else {
 
-/tmp/TestSwiftTranspiler_VMValid_Golden2524844172/058/main.swift:17:41: error: value of type 'Any' has no subscripts
-15 |     if row["order"]! {
-16 |         if row["customer"]! {
-17 |             print("Order", row["order"]!["id"]!, "by", row["customer"]!["name"]!, "- $", row["order"]!["total"]!)
-   |                                         `- error: value of type 'Any' has no subscripts
-18 |         } else {
-19 |             print("Order", row["order"]!["id"]!, "by", "Unknown", "- $", row["order"]!["total"]!)
+/tmp/TestSwiftTranspiler_VMValid_Golden840429466/058/main.swift:18:60: error: value of type 'Any' has no subscripts
+16 |     if row["order"]! {
+17 |         if row["customer"]! {
+18 |             print("Order", String(describing: row["order"]!["id"]!), "by", String(describing: row["customer"]!["name"]!), "- $", String(describing: row["order"]!["total"]!))
+   |                                                            `- error: value of type 'Any' has no subscripts
+19 |         } else {
+20 |             print("Order", String(describing: row["order"]!["id"]!), "by", "Unknown", "- $", String(describing: row["order"]!["total"]!))
 
-/tmp/TestSwiftTranspiler_VMValid_Golden2524844172/058/main.swift:17:72: error: value of type 'Any' has no subscripts
-15 |     if row["order"]! {
-16 |         if row["customer"]! {
-17 |             print("Order", row["order"]!["id"]!, "by", row["customer"]!["name"]!, "- $", row["order"]!["total"]!)
-   |                                                                        `- error: value of type 'Any' has no subscripts
-18 |         } else {
-19 |             print("Order", row["order"]!["id"]!, "by", "Unknown", "- $", row["order"]!["total"]!)
+/tmp/TestSwiftTranspiler_VMValid_Golden840429466/058/main.swift:18:111: error: value of type 'Any' has no subscripts
+16 |     if row["order"]! {
+17 |         if row["customer"]! {
+18 |             print("Order", String(describing: row["order"]!["id"]!), "by", String(describing: row["customer"]!["name"]!), "- $", String(describing: row["order"]!["total"]!))
+   |                                                                                                               `- error: value of type 'Any' has no subscripts
+19 |         } else {
+20 |             print("Order", String(describing: row["order"]!["id"]!), "by", "Unknown", "- $", String(describing: row["order"]!["total"]!))
 
-/tmp/TestSwiftTranspiler_VMValid_Golden2524844172/058/main.swift:17:103: error: value of type 'Any' has no subscripts
-15 |     if row["order"]! {
-16 |         if row["customer"]! {
-17 |             print("Order", row["order"]!["id"]!, "by", row["customer"]!["name"]!, "- $", row["order"]!["total"]!)
-   |                                                                                                       `- error: value of type 'Any' has no subscripts
-18 |         } else {
-19 |             print("Order", row["order"]!["id"]!, "by", "Unknown", "- $", row["order"]!["total"]!)
+/tmp/TestSwiftTranspiler_VMValid_Golden840429466/058/main.swift:18:162: error: value of type 'Any' has no subscripts
+16 |     if row["order"]! {
+17 |         if row["customer"]! {
+18 |             print("Order", String(describing: row["order"]!["id"]!), "by", String(describing: row["customer"]!["name"]!), "- $", String(describing: row["order"]!["total"]!))
+   |                                                                                                                                                                  `- error: value of type 'Any' has no subscripts
+19 |         } else {
+20 |             print("Order", String(describing: row["order"]!["id"]!), "by", "Unknown", "- $", String(describing: row["order"]!["total"]!))
 
-/tmp/TestSwiftTranspiler_VMValid_Golden2524844172/058/main.swift:19:41: error: value of type 'Any' has no subscripts
-17 |             print("Order", row["order"]!["id"]!, "by", row["customer"]!["name"]!, "- $", row["order"]!["total"]!)
-18 |         } else {
-19 |             print("Order", row["order"]!["id"]!, "by", "Unknown", "- $", row["order"]!["total"]!)
-   |                                         `- error: value of type 'Any' has no subscripts
-20 |         }
-21 |     } else {
+/tmp/TestSwiftTranspiler_VMValid_Golden840429466/058/main.swift:20:60: error: value of type 'Any' has no subscripts
+18 |             print("Order", String(describing: row["order"]!["id"]!), "by", String(describing: row["customer"]!["name"]!), "- $", String(describing: row["order"]!["total"]!))
+19 |         } else {
+20 |             print("Order", String(describing: row["order"]!["id"]!), "by", "Unknown", "- $", String(describing: row["order"]!["total"]!))
+   |                                                            `- error: value of type 'Any' has no subscripts
+21 |         }
+22 |     } else {
 
-/tmp/TestSwiftTranspiler_VMValid_Golden2524844172/058/main.swift:19:87: error: value of type 'Any' has no subscripts
-17 |             print("Order", row["order"]!["id"]!, "by", row["customer"]!["name"]!, "- $", row["order"]!["total"]!)
-18 |         } else {
-19 |             print("Order", row["order"]!["id"]!, "by", "Unknown", "- $", row["order"]!["total"]!)
-   |                                                                                       `- error: value of type 'Any' has no subscripts
-20 |         }
-21 |     } else {
+/tmp/TestSwiftTranspiler_VMValid_Golden840429466/058/main.swift:20:126: error: value of type 'Any' has no subscripts
+18 |             print("Order", String(describing: row["order"]!["id"]!), "by", String(describing: row["customer"]!["name"]!), "- $", String(describing: row["order"]!["total"]!))
+19 |         } else {
+20 |             print("Order", String(describing: row["order"]!["id"]!), "by", "Unknown", "- $", String(describing: row["order"]!["total"]!))
+   |                                                                                                                              `- error: value of type 'Any' has no subscripts
+21 |         }
+22 |     } else {
 
-/tmp/TestSwiftTranspiler_VMValid_Golden2524844172/058/main.swift:22:43: error: value of type 'Any' has no subscripts
-20 |         }
-21 |     } else {
-22 |         print("Customer", row["customer"]!["name"]!, "has no orders")
-   |                                           `- error: value of type 'Any' has no subscripts
-23 |     }
-24 | }
+/tmp/TestSwiftTranspiler_VMValid_Golden840429466/058/main.swift:23:62: error: value of type 'Any' has no subscripts
+21 |         }
+22 |     } else {
+23 |         print("Customer", String(describing: row["customer"]!["name"]!), "has no orders")
+   |                                                              `- error: value of type 'Any' has no subscripts
+24 |     }
+25 | }

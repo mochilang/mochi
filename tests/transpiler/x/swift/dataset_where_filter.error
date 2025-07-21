@@ -1,16 +1,16 @@
 exit status 1
-/tmp/TestSwiftTranspiler_VMValid_Golden2524844172/013/main.swift:12:71: error: cannot convert value of type 'Any' to expected condition type 'Bool'
-10 | print("--- Adults ---")
-11 | for person in adults {
-12 |     print(person["name"]!, "is", person["age"]!, ((person["is_senior"]! ? " (senior)" : "") as! String))
-   |                                                                       `- error: cannot convert value of type 'Any' to expected condition type 'Bool'
-13 | }
-14 | 
+/tmp/TestSwiftTranspiler_VMValid_Golden840429466/013/main.swift:13:111: error: cannot convert value of type 'Any' to expected condition type 'Bool'
+11 | print("--- Adults ---")
+12 | for person in adults {
+13 |     print(String(describing: person["name"]!), "is", String(describing: person["age"]!), ((person["is_senior"]! ? " (senior)" : "") as! String))
+   |                                                                                                               `- error: cannot convert value of type 'Any' to expected condition type 'Bool'
+14 | }
+15 | 
 
-/tmp/TestSwiftTranspiler_VMValid_Golden2524844172/013/main.swift:12:93: warning: forced cast of 'String' to same type has no effect
-10 | print("--- Adults ---")
-11 | for person in adults {
-12 |     print(person["name"]!, "is", person["age"]!, ((person["is_senior"]! ? " (senior)" : "") as! String))
-   |                                                                                             `- warning: forced cast of 'String' to same type has no effect
-13 | }
-14 | 
+/tmp/TestSwiftTranspiler_VMValid_Golden840429466/013/main.swift:13:133: warning: forced cast of 'String' to same type has no effect
+11 | print("--- Adults ---")
+12 | for person in adults {
+13 |     print(String(describing: person["name"]!), "is", String(describing: person["age"]!), ((person["is_senior"]! ? " (senior)" : "") as! String))
+   |                                                                                                                                     `- warning: forced cast of 'String' to same type has no effect
+14 | }
+15 | 
