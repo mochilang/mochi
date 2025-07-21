@@ -11,7 +11,7 @@ fun twoSum(nums: MutableList<Int>, target: Int): MutableList<Int> {
 }
 
 fun main() {
-    val result = twoSum(mutableListOf(2, 7, 11, 15), 9)
+    val result: MutableList<Int> = twoSum(mutableListOf(2, 7, 11, 15), 9)
     println(result[0])
     println(result[1])
 }

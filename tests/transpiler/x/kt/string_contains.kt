@@ -1,5 +1,5 @@
 fun main() {
-    val s = "catch"
+    val s: String = "catch"
     println(s.contains("cat"))
     println(s.contains("dog"))
 }

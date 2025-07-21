@@ -3,6 +3,6 @@ fun inc(x: Int): Int {
 }
 
 fun main() {
-    val k = 2
+    val k: Int = 2
     println(inc(3))
 }
