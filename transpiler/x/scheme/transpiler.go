@@ -16,12 +16,12 @@ import (
 
 var currentEnv *types.Env
 var breakStack []Symbol
-var continueStack []Symbol
+var continueStack []Node
 var gensymCounter int
 
-func pushLoop(breakSym, contSym Symbol) {
+func pushLoop(breakSym Symbol, cont Node) {
 	breakStack = append(breakStack, breakSym)
-	continueStack = append(continueStack, contSym)
+	continueStack = append(continueStack, cont)
 }
 
 func popLoop() {
@@ -33,8 +33,8 @@ func popLoop() {
 	}
 }
 
-func currentBreak() Symbol    { return breakStack[len(breakStack)-1] }
-func currentContinue() Symbol { return continueStack[len(continueStack)-1] }
+func currentBreak() Symbol  { return breakStack[len(breakStack)-1] }
+func currentContinue() Node { return continueStack[len(continueStack)-1] }
 
 func gensym(prefix string) Symbol {
 	gensymCounter++
@@ -218,7 +218,7 @@ func convertWhileStmt(ws *parser.WhileStmt) (Node, error) {
 	}
 	loopSym := gensym("loop")
 	breakSym := gensym("break")
-	pushLoop(breakSym, loopSym)
+	pushLoop(breakSym, &List{Elems: []Node{loopSym}})
 	body, err := convertStmts(ws.Body)
 	if err != nil {
 		popLoop()
@@ -249,17 +249,41 @@ func convertForStmt(fs *parser.ForStmt) (Node, error) {
 	if _, ok := types.ExprType(fs.Source, prevEnv).(types.MapType); ok {
 		iter = &List{Elems: []Node{Symbol("hash-table-keys"), iter}}
 	}
+	loopVar := Symbol("xs")
+	loopSym := gensym("loop")
+	breakSym := gensym("break")
+	pushLoop(breakSym, &List{Elems: []Node{loopSym, &List{Elems: []Node{Symbol("cdr"), loopVar}}}})
+
 	body, err := convertStmts(fs.Body)
 	currentEnv = prevEnv
 	if err != nil {
+		popLoop()
 		return nil, err
 	}
 	bodyNode := &List{Elems: append([]Node{Symbol("begin")}, body...)}
-	return &List{Elems: []Node{
-		Symbol("for-each"),
-		&List{Elems: []Node{Symbol("lambda"), &List{Elems: []Node{Symbol(fs.Name)}}, bodyNode}},
-		iter,
-	}}, nil
+
+	loopBody := &List{Elems: []Node{
+		Symbol("if"), &List{Elems: []Node{Symbol("null?"), loopVar}},
+		voidSym(),
+		&List{Elems: []Node{
+			Symbol("begin"),
+			&List{Elems: []Node{
+				Symbol("let"), &List{Elems: []Node{&List{Elems: []Node{Symbol(fs.Name), &List{Elems: []Node{Symbol("car"), loopVar}}}}}},
+				bodyNode,
+			}},
+			&List{Elems: []Node{loopSym, &List{Elems: []Node{Symbol("cdr"), loopVar}}}},
+		}},
+	}}
+
+	loopFn := &List{Elems: []Node{
+		Symbol("letrec"),
+		&List{Elems: []Node{
+			&List{Elems: []Node{loopSym, &List{Elems: []Node{Symbol("lambda"), &List{Elems: []Node{loopVar}}, loopBody}}}},
+		}},
+		&List{Elems: []Node{loopSym, iter}},
+	}}
+	popLoop()
+	return &List{Elems: []Node{Symbol("let/ec"), breakSym, loopFn}}, nil
 }
 
 func convertStmt(st *parser.Statement) (Node, error) {
@@ -399,7 +423,7 @@ func convertStmt(st *parser.Statement) (Node, error) {
 		if len(continueStack) == 0 {
 			return nil, fmt.Errorf("continue outside loop")
 		}
-		return &List{Elems: []Node{currentContinue()}}, nil
+		return currentContinue(), nil
 	default:
 		return nil, fmt.Errorf("unsupported statement")
 	}

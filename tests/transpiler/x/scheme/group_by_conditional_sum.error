@@ -1,0 +1,7 @@
+exit status 70
+ERROR on line 26 of file /workspace/mochi/tests/transpiler/x/scheme/group_by_conditional_sum.scm: divide by zero
+  called from for1 on line 75 of file /usr/share/chibi/init-7.scm
+  called from <anonymous> on line 23 of file /workspace/mochi/tests/transpiler/x/scheme/group_by_conditional_sum.scm
+  called from <anonymous> on line 20 of file /workspace/mochi/tests/transpiler/x/scheme/group_by_conditional_sum.scm
+  called from <anonymous> on line 1292 of file /usr/share/chibi/init-7.scm
+  called from <anonymous> on line 821 of file /usr/share/chibi/init-7.scm

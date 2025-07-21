@@ -1,0 +1,20 @@
+exit status 70
+ERROR on line 19 of file /workspace/mochi/tests/transpiler/x/scheme/break_continue.scm: undefined variable: break2
+  called from loop1 on line 8 of file /workspace/mochi/tests/transpiler/x/scheme/break_continue.scm
+  called from <anonymous> on line 11 of file /workspace/mochi/tests/transpiler/x/scheme/break_continue.scm
+  called from loop1 on line 8 of file /workspace/mochi/tests/transpiler/x/scheme/break_continue.scm
+  called from <anonymous> on line 11 of file /workspace/mochi/tests/transpiler/x/scheme/break_continue.scm
+  called from loop1 on line 6 of file /workspace/mochi/tests/transpiler/x/scheme/break_continue.scm
+  called from <anonymous> on line 11 of file /workspace/mochi/tests/transpiler/x/scheme/break_continue.scm
+  called from loop1 on line 6 of file /workspace/mochi/tests/transpiler/x/scheme/break_continue.scm
+  called from <anonymous> on line 11 of file /workspace/mochi/tests/transpiler/x/scheme/break_continue.scm
+  called from loop1 on line 6 of file /workspace/mochi/tests/transpiler/x/scheme/break_continue.scm
+  called from <anonymous> on line 5 of file /workspace/mochi/tests/transpiler/x/scheme/break_continue.scm
+  called from <anonymous> on line 1292 of file /usr/share/chibi/init-7.scm
+  called from <anonymous> on line 821 of file /usr/share/chibi/init-7.scm
+Searching for modules exporting break2 ...
+... none found.
+odd number: 1
+odd number: 3
+odd number: 5
+odd number: 7

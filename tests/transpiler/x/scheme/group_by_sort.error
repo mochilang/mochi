@@ -1,0 +1,9 @@
+exit status 70
+ERROR on line 25 of file /workspace/mochi/tests/transpiler/x/scheme/group_by_sort.scm: undefined variable: g
+  called from for1 on line 75 of file /usr/share/chibi/init-7.scm
+  called from <anonymous> on line 24 of file /workspace/mochi/tests/transpiler/x/scheme/group_by_sort.scm
+  called from <anonymous> on line 21 of file /workspace/mochi/tests/transpiler/x/scheme/group_by_sort.scm
+  called from <anonymous> on line 1292 of file /usr/share/chibi/init-7.scm
+  called from <anonymous> on line 821 of file /usr/share/chibi/init-7.scm
+Searching for modules exporting g ...
+... none found.

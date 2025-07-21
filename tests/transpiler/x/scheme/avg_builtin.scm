@@ -1,0 +1,12 @@
+;; Generated on 2025-07-21 17:26 +0700
+(import (srfi 1) (srfi 69) (chibi string))
+(display (let ((xs (list 1 2 3)
+        )
+      )
+     (exact->inexact (/ (apply + xs)
+         (length xs)
+        )
+      )
+    )
+  )
+(newline)

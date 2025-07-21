@@ -1,0 +1,11 @@
+exit status 70
+ERROR: hash-table-ref: key not found: "age"
+  called from <anonymous> on line 78 of file /workspace/mochi/tests/transpiler/x/scheme/group_by.scm
+  called from for1 on line 75 of file /usr/share/chibi/init-7.scm
+  called from <anonymous> on line 77 of file /workspace/mochi/tests/transpiler/x/scheme/group_by.scm
+  called from <anonymous> on line 69 of file /workspace/mochi/tests/transpiler/x/scheme/group_by.scm
+  called from for1 on line 75 of file /usr/share/chibi/init-7.scm
+  called from <anonymous> on line 40 of file /workspace/mochi/tests/transpiler/x/scheme/group_by.scm
+  called from <anonymous> on line 35 of file /workspace/mochi/tests/transpiler/x/scheme/group_by.scm
+  called from <anonymous> on line 1292 of file /usr/share/chibi/init-7.scm
+  called from <anonymous> on line 821 of file /usr/share/chibi/init-7.scm
