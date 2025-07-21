@@ -5,6 +5,7 @@ package php
 import (
 	"fmt"
 	"io"
+	"strconv"
 	"strings"
 
 	"mochi/ast"
@@ -318,6 +319,9 @@ type Var struct{ Name string }
 
 type IntLit struct{ Value int }
 
+type FloatLit struct{ Value float64 }
+
+type NullLit struct{}
 type BoolLit struct{ Value bool }
 
 type StringLit struct{ Value string }
@@ -998,6 +1002,16 @@ func (v *Var) emit(w io.Writer) { fmt.Fprintf(w, "$%s", v.Name) }
 
 func (i *IntLit) emit(w io.Writer) { fmt.Fprint(w, i.Value) }
 
+func (f *FloatLit) emit(w io.Writer) {
+	s := strconv.FormatFloat(f.Value, 'f', -1, 64)
+	if !strings.ContainsAny(s, ".eE") {
+		s += ".0"
+	}
+	fmt.Fprint(w, s)
+}
+
+func (n *NullLit) emit(w io.Writer) { io.WriteString(w, "null") }
+
 func (b *BoolLit) emit(w io.Writer) {
 	if b.Value {
 		fmt.Fprint(w, "true")
@@ -1300,7 +1314,7 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 			callName = "echo"
 			for i := range args {
 				if isListExpr(args[i]) || isMapExpr(args[i]) || isGroupArg(args[i]) {
-					enc := &CallExpr{Func: "json_encode", Args: []Expr{args[i], &IntLit{Value: 320}}}
+					enc := &CallExpr{Func: "json_encode", Args: []Expr{args[i], &IntLit{Value: 1344}}}
 					spaced := &CallExpr{Func: "str_replace", Args: []Expr{&StringLit{Value: ","}, &StringLit{Value: ", "}, enc}}
 					spaced = &CallExpr{Func: "str_replace", Args: []Expr{&StringLit{Value: ":"}, &StringLit{Value: ": "}, spaced}}
 					args[i] = spaced
@@ -1373,7 +1387,7 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 			if len(args) != 1 {
 				return nil, fmt.Errorf("json expects 1 arg")
 			}
-			pretty := &CallExpr{Func: "json_encode", Args: []Expr{args[0], &IntLit{Value: 128}}}
+			pretty := &CallExpr{Func: "json_encode", Args: []Expr{args[0], &IntLit{Value: 1152}}}
 			inner := &CallExpr{Func: "str_replace", Args: []Expr{&StringLit{Value: "    "}, &StringLit{Value: "  "}, pretty}}
 			return &CallExpr{Func: "echo", Args: []Expr{inner}}, nil
 		} else if name == "exists" {
@@ -1506,8 +1520,12 @@ func convertLiteral(l *parser.Literal) (Expr, error) {
 		return &StringLit{Value: *l.Str}, nil
 	case l.Int != nil:
 		return &IntLit{Value: int(*l.Int)}, nil
+	case l.Float != nil:
+		return &FloatLit{Value: *l.Float}, nil
 	case l.Bool != nil:
 		return &BoolLit{Value: bool(*l.Bool)}, nil
+	case l.Null:
+		return &NullLit{}, nil
 	}
 	return nil, fmt.Errorf("unsupported literal")
 }

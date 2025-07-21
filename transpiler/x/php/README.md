@@ -1,8 +1,12 @@
 # PHP Transpiler Output
 
-Generated PHP code from programs in `tests/vm/valid` lives in `tests/transpiler/x/php`.
+Generated PHP code for programs in `tests/vm/valid`. Each program has a `.php` file produced by the transpiler and a `.out` file with its runtime output. Compilation or execution errors are captured in `.error` files.
 
-## VM Golden Test Checklist (90/100)
+Transpiled programs: 91/100
+
+Last updated: 2025-07-21 19:35 +0700
+
+Checklist:
 - [x] append_builtin
 - [x] avg_builtin
 - [x] basic_compare
@@ -31,7 +35,7 @@ Generated PHP code from programs in `tests/vm/valid` lives in `tests/transpiler/
 - [x] group_by_having
 - [x] group_by_join
 - [x] group_by_left_join
-- [ ] group_by_multi_join
+ - [x] group_by_multi_join
 - [ ] group_by_multi_join_sort
 - [x] group_by_sort
 - [x] group_items_iteration
