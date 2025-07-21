@@ -1,3 +1,5 @@
+## Progress (2025-07-21T16:28:09+07:00)
+- group_by join support and updated checklist (progress 73/100)
 ## Progress (2025-07-21 16:07 +0700)
 - Clean up transpiler/x (progress 40/100)
 
