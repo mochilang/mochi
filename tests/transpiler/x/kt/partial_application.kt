@@ -3,6 +3,6 @@ fun add(a: Int, b: Int): Int {
 }
 
 fun main() {
-    val add5 = add(5)
+    val add5 = { p1: Int -> add(5, p1) }
     println(add5(3))
 }

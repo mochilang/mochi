@@ -1,3 +1,8 @@
+## VM Golden Progress (2025-07-21 13:19 +0700)
+- Added Kotlin lambda generation for partial application.
+- Group-by output no longer depends on runtime helpers.
+- Regenerated Kotlin golden files and README.
+
 ## VM Golden Progress (2025-07-21 12:53 +0700)
 - Regenerated Kotlin golden files and README
 
