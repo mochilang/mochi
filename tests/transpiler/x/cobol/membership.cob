@@ -7,6 +7,6 @@ WORKING-STORAGE SECTION.
 01 NUMS PIC X(9) VALUE "[1, 2, 3]".
 
 PROCEDURE DIVISION.
-    DISPLAY "true"
-    DISPLAY "false"
+    DISPLAY "True"
+    DISPLAY "False"
     STOP RUN.

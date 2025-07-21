@@ -8,13 +8,13 @@ WORKING-STORAGE SECTION.
 
 PROCEDURE DIVISION.
     IF FUNCTION POSITION("cat", S) > 0 THEN
-        DISPLAY "true"
+        DISPLAY "True"
     ELSE
-        DISPLAY "false"
+        DISPLAY "False"
     END-IF
     IF FUNCTION POSITION("dog", S) > 0 THEN
-        DISPLAY "true"
+        DISPLAY "True"
     ELSE
-        DISPLAY "false"
+        DISPLAY "False"
     END-IF
     STOP RUN.

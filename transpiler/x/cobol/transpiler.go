@@ -88,6 +88,9 @@ type VarRef struct{ Name string }
 
 type IntLit struct{ Value int }
 
+// FloatLit represents a floating point literal.
+type FloatLit struct{ Value float64 }
+
 type StringLit struct{ Value string }
 
 // LenExpr represents a builtin len() call.
@@ -125,6 +128,14 @@ func (v *VarRef) emitExpr(w io.Writer) {
 
 func (i *IntLit) emitExpr(w io.Writer) {
 	fmt.Fprintf(w, "%d", i.Value)
+}
+
+func (f *FloatLit) emitExpr(w io.Writer) {
+	if f.Value == float64(int64(f.Value)) {
+		fmt.Fprintf(w, "%.1f", f.Value)
+	} else {
+		fmt.Fprintf(w, "%g", f.Value)
+	}
 }
 
 func (s *StringLit) emitExpr(w io.Writer) {
@@ -277,7 +288,7 @@ func isStringLit(e Expr) bool {
 
 func isSimpleExpr(e Expr) bool {
 	switch v := e.(type) {
-	case *IntLit, *StringLit, *VarRef, *StrExpr:
+	case *IntLit, *FloatLit, *StringLit, *VarRef, *StrExpr:
 		return true
 	case *SubstringExpr:
 		return true
@@ -304,7 +315,7 @@ func isSimpleExpr(e Expr) bool {
 
 func isDirectNumber(e Expr) bool {
 	switch v := e.(type) {
-	case *IntLit, *VarRef:
+	case *IntLit, *FloatLit, *VarRef:
 		return true
 	case *UnaryExpr:
 		if v.Op == "-" {
@@ -394,6 +405,18 @@ func (d *DisplayStmt) emit(w io.Writer) {
 		emitCondExpr(w, d.Expr)
 		io.WriteString(w, "\n        DISPLAY \"True\"\n    ELSE\n        DISPLAY \"False\"\n    END-IF")
 		return
+	}
+	if d.IsString {
+		if se, ok := d.Expr.(*SubstringExpr); ok {
+			if a, ok1 := evalInt(se.Start); ok1 {
+				if b, ok2 := evalInt(se.End); ok2 && b-a == 1 {
+					io.WriteString(w, "DISPLAY FUNCTION CONCATENATE(\"'\", ")
+					d.Expr.emitExpr(w)
+					io.WriteString(w, ", \"'\")")
+					return
+				}
+			}
+		}
 	}
 	io.WriteString(w, "DISPLAY ")
 	d.Expr.emitExpr(w)
@@ -790,6 +813,8 @@ func convertVar(name string, t *parser.TypeRef, val *parser.Expr, env *types.Env
 			pic = "PIC X(100)"
 		case types.BoolType, types.IntType:
 			pic = "PIC 9"
+		case types.FloatType:
+			pic = "PIC 9V9"
 		}
 	}
 	if t != nil && t.Simple != nil {
@@ -800,6 +825,8 @@ func convertVar(name string, t *parser.TypeRef, val *parser.Expr, env *types.Env
 			pic = "PIC X(100)"
 		case "bool":
 			pic = "PIC 9"
+		case "float":
+			pic = "PIC 9V9"
 		}
 	}
 	var constVal Expr
@@ -820,6 +847,8 @@ func convertVar(name string, t *parser.TypeRef, val *parser.Expr, env *types.Env
 				} else {
 					pic = fmt.Sprintf("PIC 9(%d)", n)
 				}
+			case *FloatLit:
+				pic = "PIC 9V9"
 			case *StringLit:
 				l := len(v.Value)
 				if l == 0 {
@@ -997,6 +1026,8 @@ func literalExpr(e *parser.Expr) Expr {
 	switch {
 	case lit.Int != nil:
 		return &IntLit{Value: int(*lit.Int)}
+	case lit.Float != nil:
+		return &FloatLit{Value: *lit.Float}
 	case lit.Str != nil:
 		return &StringLit{Value: *lit.Str}
 	default:
@@ -1575,9 +1606,9 @@ func convertPrimary(p *parser.Primary, env *types.Env) (Expr, error) {
 				total += v
 			}
 			if len(vals) == 0 {
-				return &IntLit{Value: 0}, nil
+				return &FloatLit{Value: 0}, nil
 			}
-			return &IntLit{Value: total / len(vals)}, nil
+			return &FloatLit{Value: float64(total) / float64(len(vals))}, nil
 		}
 		return nil, fmt.Errorf("unsupported primary")
 	case p.Call != nil && (p.Call.Func == "min" || p.Call.Func == "max") && len(p.Call.Args) == 1:

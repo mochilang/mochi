@@ -10,13 +10,13 @@ WORKING-STORAGE SECTION.
 
 PROCEDURE DIVISION.
     IF S1(0 + 1:FUNCTION LENGTH(PREFIX) - 0) = PREFIX
-        DISPLAY "true"
+        DISPLAY "True"
     ELSE
-        DISPLAY "false"
+        DISPLAY "False"
     END-IF
     IF S2(0 + 1:FUNCTION LENGTH(PREFIX) - 0) = PREFIX
-        DISPLAY "true"
+        DISPLAY "True"
     ELSE
-        DISPLAY "false"
+        DISPLAY "False"
     END-IF
     STOP RUN.

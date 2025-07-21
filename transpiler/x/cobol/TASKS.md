@@ -1,3 +1,38 @@
+## Progress (2025-07-21 19:53 +0700)
+- cobol: improve literals and output
+- Generated COBOL for 37/100 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-21 19:40 +0700)
+- cobol: improve bool handling and add values builtin
+- Generated COBOL for 37/100 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-21 19:40 +0700)
+- cobol: improve bool handling and add values builtin
+- Generated COBOL for 37/100 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-21 19:40 +0700)
+- cobol: improve bool handling and add values builtin
+- Generated COBOL for 37/100 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-21 19:40 +0700)
+- cobol: improve bool handling and add values builtin
+- Generated COBOL for 37/100 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-21 19:40 +0700)
+- cobol: improve bool handling and add values builtin
+- Generated COBOL for 37/100 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-21 19:40 +0700)
+- cobol: improve bool handling and add values builtin
+- Generated COBOL for 37/100 programs
+- Updated README checklist and outputs
+
 ## Progress (2025-07-21 19:10 +0700)
 - docs: refresh generated pas files
 - Generated COBOL for 37/100 programs
