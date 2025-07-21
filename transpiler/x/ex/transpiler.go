@@ -726,6 +726,16 @@ type GroupByExpr struct {
 	Select Expr
 }
 
+// GroupBySortExpr represents a grouped query sorted by an expression.
+type GroupBySortExpr struct {
+	Var    string
+	Source Expr
+	Key    Expr
+	Name   string
+	Sort   Expr
+	Select Expr
+}
+
 func (g *GroupByExpr) emit(w io.Writer) {
 	io.WriteString(w, "Enum.map(Enum.group_by(")
 	g.Source.emit(w)
@@ -736,6 +746,22 @@ func (g *GroupByExpr) emit(w io.Writer) {
 	io.WriteString(w, " end), fn {key, items} ->\n  ")
 	io.WriteString(w, g.Name)
 	io.WriteString(w, " = %{key: key, items: items}\n  ")
+	g.Select.emit(w)
+	io.WriteString(w, "\nend)")
+}
+
+func (g *GroupBySortExpr) emit(w io.Writer) {
+	io.WriteString(w, "Enum.group_by(")
+	g.Source.emit(w)
+	io.WriteString(w, ", fn ")
+	io.WriteString(w, g.Var)
+	io.WriteString(w, " -> ")
+	g.Key.emit(w)
+	io.WriteString(w, " end) |> Enum.map(fn {key, items} -> %{key: key, items: items} end) |> Enum.sort_by(fn g -> ")
+	g.Sort.emit(w)
+	io.WriteString(w, " end) |> Enum.map(fn g ->\n  ")
+	io.WriteString(w, g.Name)
+	io.WriteString(w, " = g\n  ")
 	g.Select.emit(w)
 	io.WriteString(w, "\nend)")
 }
@@ -1263,6 +1289,25 @@ func compileQueryExpr(q *parser.QueryExpr, env *types.Env) (Expr, error) {
 		}
 		return &GroupByExpr{Var: q.Var, Source: src, Key: key, Name: q.Group.Name, Select: sel}, nil
 	}
+	if q.Group != nil && len(q.Group.Exprs) == 1 && len(q.Froms) == 0 && len(q.Joins) == 0 && q.Where == nil && q.Sort != nil && q.Skip == nil && q.Take == nil && !q.Distinct {
+		child := types.NewEnv(env)
+		child.SetVar(q.Var, types.AnyType{}, true)
+		key, err := compileExpr(q.Group.Exprs[0], child)
+		if err != nil {
+			return nil, err
+		}
+		genv := types.NewEnv(env)
+		genv.SetVar(q.Group.Name, types.GroupType{Key: types.AnyType{}, Elem: types.AnyType{}}, true)
+		sel, err := compileExpr(q.Select, genv)
+		if err != nil {
+			return nil, err
+		}
+		sortExpr, err := compileExpr(q.Sort, genv)
+		if err != nil {
+			return nil, err
+		}
+		return &GroupBySortExpr{Var: q.Var, Source: src, Key: key, Name: q.Group.Name, Sort: sortExpr, Select: sel}, nil
+	}
 	gens := []CompGen{{Var: q.Var, Src: src}}
 	child := types.NewEnv(env)
 	child.SetVar(q.Var, types.AnyType{}, true)
@@ -1551,7 +1596,14 @@ func compilePrimary(p *parser.Primary, env *types.Env) (Expr, error) {
 		switch name {
 		case "print":
 			if len(args) == 1 {
-				name = "IO.puts"
+				t := types.TypeOfExprBasic(p.Call.Args[0], env)
+				switch t.(type) {
+				case types.StringType, types.IntType, types.FloatType, types.BoolType:
+					name = "IO.puts"
+				default:
+					inner := &CallExpr{Func: "Kernel.inspect", Args: []Expr{args[0]}}
+					return &CallExpr{Func: "IO.puts", Args: []Expr{inner}}, nil
+				}
 			} else {
 				parts := make([]interface{}, 0, len(args)*2-1)
 				for i, a := range args {
