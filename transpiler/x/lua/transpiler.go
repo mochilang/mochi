@@ -861,12 +861,12 @@ func isIntExpr(e Expr) bool {
 func isBoolExpr(e Expr) bool {
 	switch ex := e.(type) {
 	case *BoolLit:
-		return false
+		return true
 	case *Ident:
 		if currentEnv != nil {
 			if t, err := currentEnv.GetVar(ex.Name); err == nil {
 				if _, ok := t.(types.BoolType); ok {
-					return false
+					return true
 				}
 			}
 		}
@@ -874,6 +874,8 @@ func isBoolExpr(e Expr) bool {
 		switch ex.Op {
 		case "&&", "||":
 			return true
+		case "==", "!=", "<", "<=", ">", ">=":
+			return isIntExpr(ex.Left) && isIntExpr(ex.Right)
 		}
 	case *UnaryExpr:
 		if ex.Op == "!" {
