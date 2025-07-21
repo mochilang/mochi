@@ -748,6 +748,20 @@ func inferType(e Expr) string {
 		case "contains", "Contains":
 			return "bool"
 		}
+	case *FieldExpr:
+		if id, ok := v.Target.(*IdentExpr); ok {
+			if typ, ok := varTypes[id.Name]; ok {
+				for _, st := range structDefs {
+					if st.Name == typ {
+						for _, f := range st.Fields {
+							if f.Name == v.Name {
+								return f.Type
+							}
+						}
+					}
+				}
+			}
+		}
 	case *IfExpr:
 		t := inferType(v.Then)
 		e2 := inferType(v.Else)
@@ -1270,7 +1284,8 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 			if len(args) == 1 {
 				switch inferType(args[0]) {
 				case "bool":
-					return &CallExpr{Func: "printfn \"%b\"", Args: []Expr{args[0]}}, nil
+					cond := &IfExpr{Cond: args[0], Then: &IntLit{Value: 1}, Else: &IntLit{Value: 0}}
+					return &CallExpr{Func: "printfn \"%d\"", Args: []Expr{cond}}, nil
 				case "int":
 					return &CallExpr{Func: "printfn \"%d\"", Args: []Expr{args[0]}}, nil
 				case "float":
@@ -1289,7 +1304,8 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 			for i, a := range args {
 				switch inferType(a) {
 				case "bool":
-					elems[i] = &CallExpr{Func: "sprintf \"%b\"", Args: []Expr{a}}
+					cond := &IfExpr{Cond: a, Then: &IntLit{Value: 1}, Else: &IntLit{Value: 0}}
+					elems[i] = &CallExpr{Func: "sprintf \"%d\"", Args: []Expr{cond}}
 				case "int":
 					elems[i] = &CallExpr{Func: "sprintf \"%d\"", Args: []Expr{a}}
 				case "float":
@@ -1318,6 +1334,10 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 			}
 			return &CallExpr{Func: fn, Args: args}, nil
 		case "str":
+			if len(args) == 1 && inferType(args[0]) == "bool" {
+				inner := &CallExpr{Func: "string", Args: args}
+				return &MethodCallExpr{Target: inner, Name: "ToLower", Args: nil}, nil
+			}
 			return &CallExpr{Func: "string", Args: args}, nil
 		case "sum":
 			fn := "Seq.sum"
@@ -1548,10 +1568,42 @@ func buildMapUpdate(m Expr, keys []Expr, val Expr) Expr {
 	return &CallExpr{Func: "Map.add", Args: []Expr{key, inner, m}}
 }
 
+func elementTypeFromExpr(e interface{}) string {
+	switch v := e.(type) {
+	case *IdentExpr:
+		if typ, ok := varTypes[v.Name]; ok {
+			if strings.HasSuffix(typ, " list") {
+				return strings.TrimSuffix(typ, " list")
+			}
+		}
+	case *parser.Expr:
+		if v != nil && v.Binary != nil && len(v.Binary.Right) == 0 {
+			u := v.Binary.Left
+			if len(u.Ops) == 0 && u.Value != nil && u.Value.Target != nil {
+				if sel := u.Value.Target.Selector; sel != nil && len(sel.Tail) == 0 {
+					if typ, ok := varTypes[sel.Root]; ok {
+						if strings.HasSuffix(typ, " list") {
+							return strings.TrimSuffix(typ, " list")
+						}
+					}
+				}
+			}
+		}
+	}
+	return ""
+}
+
 func convertQueryExpr(q *parser.QueryExpr) (Expr, error) {
+	save := varTypes
+	varTypes = copyMap(varTypes)
+	defer func() { varTypes = save }()
+
 	src, err := convertExpr(q.Source)
 	if err != nil {
 		return nil, err
+	}
+	if et := elementTypeFromExpr(q.Source); et != "" {
+		varTypes[q.Var] = et
 	}
 	froms := make([]queryFrom, len(q.Froms))
 	for i, f := range q.Froms {
@@ -1560,6 +1612,9 @@ func convertQueryExpr(q *parser.QueryExpr) (Expr, error) {
 			return nil, err
 		}
 		froms[i] = queryFrom{Var: f.Var, Src: e}
+		if et := elementTypeFromExpr(f.Src); et != "" {
+			varTypes[f.Var] = et
+		}
 	}
 	joins := make([]queryJoin, len(q.Joins))
 	for i, j := range q.Joins {
@@ -1575,6 +1630,9 @@ func convertQueryExpr(q *parser.QueryExpr) (Expr, error) {
 			}
 		}
 		joins[i] = queryJoin{Var: j.Var, Src: src, On: on}
+		if et := elementTypeFromExpr(j.Src); et != "" {
+			varTypes[j.Var] = et
+		}
 	}
 	var where Expr
 	if q.Where != nil {
