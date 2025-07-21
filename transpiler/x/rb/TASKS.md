@@ -1,3 +1,38 @@
+## Progress (2025-07-21 18:42 +0700)
+- pascal transpiler: regenerate golden tests
+- Generated Ruby for 78/100 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-21 18:42 +0700)
+- pascal transpiler: regenerate golden tests
+- Generated Ruby for 77/100 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-21 18:42 +0700)
+- pascal transpiler: regenerate golden tests
+- Generated Ruby for 77/100 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-21 18:42 +0700)
+- pascal transpiler: regenerate golden tests
+- Generated Ruby for 77/100 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-21 18:42 +0700)
+- pascal transpiler: regenerate golden tests
+- Generated Ruby for 77/100 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-21 18:42 +0700)
+- pascal transpiler: regenerate golden tests
+- Generated Ruby for 77/100 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-21 18:42 +0700)
+- pascal transpiler: regenerate golden tests
+- Generated Ruby for 77/100 programs
+- Updated README checklist and outputs
+
 ## Progress (2025-07-21 16:57 +0700)
 - fortran: support inner join and bool folding
 - Generated Ruby for 77/100 programs
