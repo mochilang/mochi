@@ -781,10 +781,15 @@ func isStringLike(e Expr, env *compileEnv) bool {
 	if _, ok := e.(*SubstringExpr); ok {
 		return true
 	}
-	if _, ok := e.(*SliceExpr); ok {
-		return true
-	}
-	return false
+        if _, ok := e.(*SliceExpr); ok {
+                return true
+        }
+        if ix, ok := e.(*IndexExpr); ok {
+                if ix.IsString {
+                        return true
+                }
+        }
+        return false
 }
 
 func isMapLike(e Expr, env *compileEnv) bool {
@@ -1566,7 +1571,13 @@ func toPostfix(pf *parser.PostfixExpr, env *compileEnv) (Expr, error) {
 					}
 				}
 			}
-			expr = &IndexExpr{Target: expr, Index: idxExpr, IsString: isStringLike(expr, env), IsMap: isMapLike(expr, env)}
+                       isStr := isStringLike(expr, env)
+                       if !isStr {
+                               if _, ok := idxExpr.(*StringLit); ok && isMapLike(expr, env) {
+                                       isStr = true
+                               }
+                       }
+                       expr = &IndexExpr{Target: expr, Index: idxExpr, IsString: isStr, IsMap: isMapLike(expr, env)}
 		case op.Cast != nil:
 			if op.Cast.Type == nil || op.Cast.Type.Simple == nil {
 				return nil, fmt.Errorf("unsupported cast")
@@ -1611,17 +1622,22 @@ func toPrimary(p *parser.Primary, env *compileEnv) (Expr, error) {
 		if len(p.Selector.Tail) == 0 {
 			return &Var{Name: env.current(p.Selector.Root)}, nil
 		}
-		if len(p.Selector.Tail) == 1 {
-			if c, ok := env.constExpr(env.current(p.Selector.Root)).(*MapLit); ok {
-				for _, it := range c.Items {
-					if it.Key == p.Selector.Tail[0] {
-						return it.Value, nil
-					}
-				}
-			}
-			return nil, fmt.Errorf("unsupported selector")
-		}
-		return nil, fmt.Errorf("unsupported selector")
+               if len(p.Selector.Tail) == 1 {
+                       if c, ok := env.constExpr(env.current(p.Selector.Root)).(*MapLit); ok {
+                               for _, it := range c.Items {
+                                       if it.Key == p.Selector.Tail[0] {
+                                               return it.Value, nil
+                                       }
+                               }
+                       }
+                       if isMapLike(&Var{Name: env.current(p.Selector.Root)}, env) {
+                               idx := &StringLit{Value: p.Selector.Tail[0]}
+                               target := &Var{Name: env.current(p.Selector.Root)}
+                               return &IndexExpr{Target: target, Index: idx, IsString: true, IsMap: true}, nil
+                       }
+                       return nil, fmt.Errorf("unsupported selector")
+               }
+               return nil, fmt.Errorf("unsupported selector")
 	case p.Call != nil:
 		switch p.Call.Func {
 		case "len", "str", "count", "sum", "avg", "min", "max":
@@ -1986,11 +2002,13 @@ func evalQueryExpr(q *parser.QueryExpr, env *compileEnv) (Expr, error) {
 			}
 			gl.Elems = append(gl.Elems, item)
 		}
-		type result struct {
-			sortKey string
-			val     Expr
-		}
-		results := []result{}
+               type result struct {
+                       num   float64
+                       str   string
+                       isNum bool
+                       val   Expr
+               }
+               results := []result{}
 		for _, k := range order {
 			keyLit := &StringLit{Value: k}
 			g := &MapLit{Items: []MapItem{{Key: "key", Value: keyLit}, {Key: "items", Value: groups[k]}}}
@@ -2036,25 +2054,43 @@ func evalQueryExpr(q *parser.QueryExpr, env *compileEnv) (Expr, error) {
 			if err != nil {
 				return nil, err
 			}
-			sortVal := k
-			if q.Sort != nil {
-				sv, err := toExpr(q.Sort, env)
-				if err != nil {
-					return nil, err
-				}
-				sl, ok := sv.(*StringLit)
-				if !ok {
-					return nil, fmt.Errorf("non-string sort key")
-				}
-				sortVal = sl.Value
-			}
-			delete(env.consts, env.current(q.Group.Name))
-			delete(env.vars, q.Group.Name)
-			results = append(results, result{sortKey: sortVal, val: val})
-		}
-		if q.Sort != nil {
-			sort.Slice(results, func(i, j int) bool { return results[i].sortKey < results[j].sortKey })
-		}
+                       res := result{str: k}
+                       if q.Sort != nil {
+                               sv, err := toExpr(q.Sort, env)
+                               if err != nil {
+                                       return nil, err
+                               }
+                               switch svt := sv.(type) {
+                               case *IntLit:
+                                       res.num = float64(svt.Value)
+                                       res.isNum = true
+                               case *FloatLit:
+                                       res.num = svt.Value
+                                       res.isNum = true
+                               case *BoolLit:
+                                       if svt.Value {
+                                               res.num = 1
+                                       }
+                                       res.isNum = true
+                               case *StringLit:
+                                       res.str = svt.Value
+                               default:
+                                       return nil, fmt.Errorf("non-string sort key")
+                               }
+                       }
+                       delete(env.consts, env.current(q.Group.Name))
+                       delete(env.vars, q.Group.Name)
+                       res.val = val
+                       results = append(results, res)
+               }
+               if q.Sort != nil {
+                       sort.SliceStable(results, func(i, j int) bool {
+                               if results[i].isNum && results[j].isNum {
+                                       return results[i].num < results[j].num
+                               }
+                               return results[i].str < results[j].str
+                       })
+               }
 		outElems := make([]Expr, len(results))
 		for i, r := range results {
 			outElems[i] = r.val
@@ -2206,12 +2242,12 @@ func evalQueryExpr(q *parser.QueryExpr, env *compileEnv) (Expr, error) {
 		return out, nil
 	}
 
-	if q.Group != nil && len(q.Joins) == 1 && len(q.Froms) == 0 && q.Sort == nil && q.Skip == nil && q.Take == nil {
-		j := q.Joins[0]
-		leftSrc, err := toExpr(q.Source, env)
-		if err != nil {
-			return nil, err
-		}
+       if q.Group != nil && len(q.Joins) == 1 && len(q.Froms) == 0 && q.Sort == nil && q.Skip == nil && q.Take == nil {
+               j := q.Joins[0]
+               leftSrc, err := toExpr(q.Source, env)
+               if err != nil {
+                       return nil, err
+               }
 		left, ok := constList(leftSrc, env)
 		if !ok {
 			return nil, fmt.Errorf("unsupported query source")
@@ -2226,38 +2262,59 @@ func evalQueryExpr(q *parser.QueryExpr, env *compileEnv) (Expr, error) {
 		}
 		groups := map[string]*ListLit{}
 		order := []string{}
-		env.vars[q.Var] = 0
-		env.vars[j.Var] = 0
-		for _, l := range left.Elems {
-			env.consts[env.current(q.Var)] = l
-			for _, r := range right.Elems {
-				env.consts[env.current(j.Var)] = r
-				cond, err := toExpr(j.On, env)
-				if err != nil {
-					return nil, err
-				}
-				b, ok := cond.(*BoolLit)
-				if !ok || !b.Value {
-					continue
-				}
-				keyEx, err := toExpr(q.Group.Exprs[0], env)
-				if err != nil {
-					return nil, err
-				}
-				keyLit, ok := keyEx.(*StringLit)
-				if !ok {
-					return nil, fmt.Errorf("non-string key")
-				}
-				gl, ok := groups[keyLit.Value]
-				if !ok {
-					gl = &ListLit{}
-					groups[keyLit.Value] = gl
-					order = append(order, keyLit.Value)
-				}
-				item := &MapLit{Items: []MapItem{{Key: q.Var, Value: l}, {Key: j.Var, Value: r}}}
-				gl.Elems = append(gl.Elems, item)
-			}
-		}
+               env.vars[q.Var] = 0
+               env.vars[j.Var] = 0
+               for _, l := range left.Elems {
+                       env.consts[env.current(q.Var)] = l
+                       matched := false
+                       for _, r := range right.Elems {
+                               env.consts[env.current(j.Var)] = r
+                               cond, err := toExpr(j.On, env)
+                               if err != nil {
+                                       return nil, err
+                               }
+                               b, ok := cond.(*BoolLit)
+                               if !ok || !b.Value {
+                                       continue
+                               }
+                               matched = true
+                               keyEx, err := toExpr(q.Group.Exprs[0], env)
+                               if err != nil {
+                                       return nil, err
+                               }
+                               keyLit, ok := keyEx.(*StringLit)
+                               if !ok {
+                                       return nil, fmt.Errorf("non-string key")
+                               }
+                               gl, ok := groups[keyLit.Value]
+                               if !ok {
+                                       gl = &ListLit{}
+                                       groups[keyLit.Value] = gl
+                                       order = append(order, keyLit.Value)
+                               }
+                               item := &MapLit{Items: []MapItem{{Key: q.Var, Value: l}, {Key: j.Var, Value: r}}}
+                               gl.Elems = append(gl.Elems, item)
+                       }
+                       if !matched && j.Side != nil && *j.Side == "left" {
+                               env.consts[env.current(j.Var)] = &MapLit{}
+                               keyEx, err := toExpr(q.Group.Exprs[0], env)
+                               if err != nil {
+                                       return nil, err
+                               }
+                               keyLit, ok := keyEx.(*StringLit)
+                               if !ok {
+                                       return nil, fmt.Errorf("non-string key")
+                               }
+                               gl, ok := groups[keyLit.Value]
+                               if !ok {
+                                       gl = &ListLit{}
+                                       groups[keyLit.Value] = gl
+                                       order = append(order, keyLit.Value)
+                               }
+                               item := &MapLit{Items: []MapItem{{Key: q.Var, Value: l}, {Key: j.Var, Value: &MapLit{}}}}
+                               gl.Elems = append(gl.Elems, item)
+                       }
+               }
 		delete(env.consts, env.current(q.Var))
 		delete(env.vars, q.Var)
 		delete(env.consts, env.current(j.Var))
