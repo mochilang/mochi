@@ -1,3 +1,23 @@
+## Progress (2025-07-22 04:52 +0700)
+- VM valid golden test results updated to 69/101
+- group_by_multi_join now passes
+
+## Progress (2025-07-22 04:52 +0700)
+- VM valid golden test results updated to 69/101
+- group_by_multi_join now passes
+
+## Progress (2025-07-22 04:52 +0700)
+- VM valid golden test results updated to 68/101
+- group_by_multi_join now passes
+
+## Progress (2025-07-22 04:52 +0700)
+- VM valid golden test results updated to 68/101
+- group_by_multi_join now passes
+
+## Progress (2025-07-22 04:52 +0700)
+- VM valid golden test results updated to 68/101
+- group_by_multi_join now passes
+
 ## Progress (2025-07-22 00:01 +0700)
 - VM valid golden test results updated to 68/100
 - group_by_multi_join now passes
