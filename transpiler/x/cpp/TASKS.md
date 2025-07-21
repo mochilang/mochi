@@ -1,3 +1,58 @@
+## Progress (2025-07-21 23:03 +0700)
+- cpp transpiler: support floats and captured queries
+- Generated C++ for 89/100 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-21 23:03 +0700)
+- cpp transpiler: support floats and captured queries
+- Generated C++ for 90/100 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-21 23:03 +0700)
+- cpp transpiler: support floats and captured queries
+- Generated C++ for 90/100 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-21 23:03 +0700)
+- cpp transpiler: support floats and captured queries
+- Generated C++ for 90/100 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-21 23:03 +0700)
+- cpp transpiler: support floats and captured queries
+- Generated C++ for 90/100 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-21 23:03 +0700)
+- cpp transpiler: support floats and captured queries
+- Generated C++ for 90/100 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-21 23:03 +0700)
+- cpp transpiler: support floats and captured queries
+- Generated C++ for 90/100 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-21 23:03 +0700)
+- cpp transpiler: support floats and captured queries
+- Generated C++ for 90/100 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-21 23:03 +0700)
+- cpp transpiler: support floats and captured queries
+- Generated C++ for 90/100 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-21 23:03 +0700)
+- cpp transpiler: support floats and captured queries
+- Generated C++ for 90/100 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-21 23:03 +0700)
+- cpp transpiler: support floats and captured queries
+- Generated C++ for 90/100 programs
+- Updated README checklist and outputs
+
 ## Progress (2025-07-21 22:29 +0700)
 - update docs
 - Generated C++ for 88/100 programs
