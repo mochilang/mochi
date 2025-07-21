@@ -1,3 +1,7 @@
+## Progress (2025-07-21 20:06 +0700)
+- erl: add dataset filtering support
+- Regenerated golden files - 58/100 vm valid programs passing
+
 ## Progress (2025-07-21 19:40 +0700)
 - erl: refined string length detection for `len` builtin
 - Regenerated golden files - 56/100 vm valid programs passing
