@@ -811,6 +811,30 @@ func intValue(e Expr) (int, bool) {
 	return 0, false
 }
 
+func cloneList(l *ListLit) *ListLit {
+	elems := make([]Expr, len(l.Elems))
+	copy(elems, l.Elems)
+	return &ListLit{Elems: elems}
+}
+
+func updateNestedList(l *ListLit, idx1, idx2 int, val Expr) (*ListLit, bool) {
+	if idx1 < 0 || idx1 >= len(l.Elems) {
+		return nil, false
+	}
+	inner, ok := l.Elems[idx1].(*ListLit)
+	if !ok {
+		return nil, false
+	}
+	if idx2 < 0 || idx2 >= len(inner.Elems) {
+		return nil, false
+	}
+	newInner := cloneList(inner)
+	newInner.Elems[idx2] = val
+	newOuter := cloneList(l)
+	newOuter.Elems[idx1] = newInner
+	return newOuter, true
+}
+
 func nextSimpleAssign(sts []*parser.Statement, idx int, name string) bool {
 	if idx+1 >= len(sts) {
 		return false
@@ -1085,6 +1109,36 @@ func compileStmts(sts []*parser.Statement, env *compileEnv) ([]Stmt, error) {
 			name := env.fresh(s.Assign.Name)
 			env.setConst(name, expr)
 			out = append(out, &LetStmt{Name: name, Expr: expr})
+		case s.Assign != nil && len(s.Assign.Index) == 2 &&
+			s.Assign.Index[0].Colon == nil && s.Assign.Index[0].End == nil && s.Assign.Index[0].Step == nil &&
+			s.Assign.Index[1].Colon == nil && s.Assign.Index[1].End == nil && s.Assign.Index[1].Step == nil:
+			idx1Expr, err := toExpr(s.Assign.Index[0].Start, env)
+			if err != nil {
+				return nil, err
+			}
+			idx2Expr, err := toExpr(s.Assign.Index[1].Start, env)
+			if err != nil {
+				return nil, err
+			}
+			idx1, ok1 := intValue(idx1Expr)
+			idx2, ok2 := intValue(idx2Expr)
+			list, ok3 := env.constExpr(env.current(s.Assign.Name)).(*ListLit)
+			if ok1 && ok2 && ok3 {
+				val, err := toExpr(s.Assign.Value, env)
+				if err != nil {
+					return nil, err
+				}
+				updated, ok := updateNestedList(list, idx1, idx2, val)
+				if ok {
+					name := env.fresh(s.Assign.Name)
+					env.setConst(name, updated)
+					out = append(out, &LetStmt{Name: name, Expr: updated})
+					// handled
+					break
+				}
+			}
+			return nil, fmt.Errorf("unsupported statement")
+
 		case s.Assign != nil && len(s.Assign.Index) == 1 && s.Assign.Index[0].Colon == nil && s.Assign.Index[0].End == nil && s.Assign.Index[0].Step == nil:
 			idx, err := toExpr(s.Assign.Index[0].Start, env)
 			if err != nil {
