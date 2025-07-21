@@ -528,6 +528,7 @@ type GroupByExpr struct {
 	SortType string
 	Froms    []queryFrom
 	ElemType string
+	ItemType string
 }
 
 type QueryExpr struct {
@@ -689,21 +690,45 @@ func (g *GroupByExpr) emit(w io.Writer) {
 	if elem == "" {
 		elem = "Any"
 	}
-	fmt.Fprint(w, "ArrayBuffer.from(")
+	item := g.ItemType
+	if item == "" {
+		item = "Any"
+	}
+	fmt.Fprintf(w, "({ var _tmp = ArrayBuffer[(Any,%s)]() ; for (%s <- ", item, g.Var)
 	g.Source.emit(w)
-	fmt.Fprintf(w, ".groupBy(%s => ", g.Var)
-	g.Key.emit(w)
-	fmt.Fprint(w, ")")
+	fmt.Fprint(w, ") {")
 	for _, f := range g.Froms {
-		_ = f
+		fmt.Fprintf(w, " for (%s <- ", f.Var)
+		f.Src.emit(w)
+		fmt.Fprint(w, ") {")
 	}
 	if g.Where != nil {
-		fmt.Fprint(w, ".filter(")
-		fmt.Fprintf(w, "%s => ", g.Var)
+		fmt.Fprint(w, " if (")
 		g.Where.emit(w)
-		fmt.Fprint(w, ")")
+		fmt.Fprint(w, ") {")
 	}
-	fmt.Fprintf(w, ".map{ case (k, %s) => Map(\"key\" -> k, \"items\" -> ArrayBuffer.from(%s)) }", g.Name, g.Name)
+	fmt.Fprint(w, " _tmp.append((")
+	g.Key.emit(w)
+	fmt.Fprint(w, ", ")
+	if g.ItemType != "" {
+		fmt.Fprintf(w, "%s(", g.ItemType)
+		fmt.Fprint(w, g.Var)
+		for _, f := range g.Froms {
+			fmt.Fprint(w, ", ")
+			fmt.Fprint(w, f.Var)
+		}
+		fmt.Fprint(w, ")")
+	} else {
+		fmt.Fprint(w, g.Var)
+	}
+	fmt.Fprint(w, "))")
+	if g.Where != nil {
+		fmt.Fprint(w, " }")
+	}
+	for range g.Froms {
+		fmt.Fprint(w, " }")
+	}
+	fmt.Fprint(w, " } ; var _groups = _tmp.groupBy(_._1).map{ case (k,v) => Map(\"key\" -> k, \"items\" -> ArrayBuffer.from(v.map(_._2))) }")
 	if g.Having != nil {
 		fmt.Fprint(w, ".filter(")
 		fmt.Fprintf(w, "%s => ", g.Name)
@@ -1573,6 +1598,7 @@ func convertGroupQuery(q *parser.QueryExpr, env *types.Env) (Expr, error) {
 	}
 	child.SetVar(q.Var, elemT, true)
 	froms := make([]queryFrom, 0, len(q.Froms)+len(q.Joins))
+	itemVars := []string{q.Var}
 	var where Expr
 	for _, f := range q.Froms {
 		fe, err := convertExpr(f.Src, child)
@@ -1586,6 +1612,7 @@ func convertGroupQuery(q *parser.QueryExpr, env *types.Env) (Expr, error) {
 		}
 		child.SetVar(f.Var, felem, true)
 		froms = append(froms, queryFrom{Var: f.Var, Src: fe})
+		itemVars = append(itemVars, f.Var)
 	}
 	for _, j := range q.Joins {
 		if j.Side != nil {
@@ -1602,6 +1629,7 @@ func convertGroupQuery(q *parser.QueryExpr, env *types.Env) (Expr, error) {
 		}
 		child.SetVar(j.Var, jelem, true)
 		froms = append(froms, queryFrom{Var: j.Var, Src: je})
+		itemVars = append(itemVars, j.Var)
 		cond, err := convertExpr(j.On, child)
 		if err != nil {
 			return nil, err
@@ -1622,6 +1650,23 @@ func convertGroupQuery(q *parser.QueryExpr, env *types.Env) (Expr, error) {
 		} else {
 			where = &BinaryExpr{Left: where, Op: "&&", Right: cond}
 		}
+	}
+
+	itemName := ""
+	if len(itemVars) > 1 {
+		st := types.StructType{Name: "", Fields: map[string]types.Type{}, Order: make([]string, len(itemVars))}
+		fields := make([]Param, len(itemVars))
+		for i, v := range itemVars {
+			typ, _ := child.GetVar(v)
+			st.Fields[v] = typ
+			st.Order[i] = v
+			fields[i] = Param{Name: v, Type: toScalaTypeFromType(typ)}
+		}
+		itemName = types.UniqueStructName("Item", env, nil)
+		st.Name = itemName
+		env.SetStruct(itemName, st)
+		typeDecls = append(typeDecls, &TypeDeclStmt{Name: itemName, Fields: fields})
+		elemT = st
 	}
 	key, err := convertExpr(q.Group.Exprs[0], child)
 	if err != nil {
@@ -1656,7 +1701,7 @@ func convertGroupQuery(q *parser.QueryExpr, env *types.Env) (Expr, error) {
 	if elemTypeStr == "" {
 		elemTypeStr = "Any"
 	}
-	return &GroupByExpr{Var: q.Var, Source: src, Key: key, Name: q.Group.Name, Where: where, Select: sel, Having: having, Sort: sortExpr, SortType: sortType, Froms: froms, ElemType: elemTypeStr}, nil
+	return &GroupByExpr{Var: q.Var, Source: src, Key: key, Name: q.Group.Name, Where: where, Select: sel, Having: having, Sort: sortExpr, SortType: sortType, Froms: froms, ElemType: elemTypeStr, ItemType: itemName}, nil
 }
 
 func convertQueryExpr(q *parser.QueryExpr, env *types.Env) (Expr, error) {

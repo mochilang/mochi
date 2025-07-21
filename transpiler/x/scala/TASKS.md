@@ -1,3 +1,11 @@
+## Progress (2025-07-21 21:45 +0700)
+- docs: update scala progress
+- Regenerated golden files - 68/100 vm valid programs passing
+
+## Progress (2025-07-21 21:44 +0700)
+- scala: support group by join sort
+- Regenerated golden files - 68/100 vm valid programs passing
+
 ## Progress (2025-07-21 20:52 +0700)
 - scala transpiler: simpler query emission
 - Regenerated golden files - 68/100 vm valid programs passing
