@@ -51,6 +51,7 @@ var (
 	unionDefs    []UnionDef
 	structCount  int
 	transpileEnv *types.Env
+	neededOpens  map[string]bool
 )
 
 func copyMap(src map[string]string) map[string]string {
@@ -366,6 +367,25 @@ func (m *MapLit) emit(w io.Writer) {
 		}
 	}
 	io.WriteString(w, "]")
+}
+
+// LoadYamlExpr represents loading a YAML file at runtime.
+type LoadYamlExpr struct {
+	Path string
+	Type string
+}
+
+func (l *LoadYamlExpr) emit(w io.Writer) {
+	fmt.Fprintf(w, "(let deserializer = DeserializerBuilder().Build()\n    let yamlText = File.ReadAllText(%q)\n    deserializer.Deserialize<%s list>(yamlText))", l.Path, l.Type)
+}
+
+// SaveJSONLExpr writes a list of records to stdout as JSON lines.
+type SaveJSONLExpr struct{ Src Expr }
+
+func (s *SaveJSONLExpr) emit(w io.Writer) {
+	io.WriteString(w, "(List.iter (fun row -> printfn \"%s\" (JsonSerializer.Serialize(row))) ")
+	s.Src.emit(w)
+	io.WriteString(w, ")")
 }
 
 // AppendExpr represents append(list, elem).
@@ -1313,6 +1333,7 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	structDefs = nil
 	unionDefs = nil
 	structCount = 0
+	neededOpens = map[string]bool{}
 	p := &Program{}
 	for _, st := range prog.Statements {
 		conv, err := convertStmt(st)
@@ -1325,6 +1346,13 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	}
 	p.Structs = structDefs
 	p.Unions = unionDefs
+	if len(neededOpens) > 0 {
+		opens := make([]Stmt, 0, len(neededOpens))
+		for m := range neededOpens {
+			opens = append(opens, &OpenStmt{Name: m})
+		}
+		p.Stmts = append(opens, p.Stmts...)
+	}
 	transpileEnv = nil
 	return p, nil
 }
@@ -1350,6 +1378,47 @@ func optimizeBody(body []Stmt) []Stmt {
 		}
 	}
 	return body
+}
+
+func literalString(e *parser.Expr) (string, bool) {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) > 0 {
+		return "", false
+	}
+	u := e.Binary.Left
+	if len(u.Ops) > 0 || u.Value == nil {
+		return "", false
+	}
+	p := u.Value
+	if len(p.Ops) > 0 || p.Target == nil {
+		return "", false
+	}
+	if p.Target.Lit != nil && p.Target.Lit.Str != nil {
+		return *p.Target.Lit.Str, true
+	}
+	if p.Target.Selector != nil && len(p.Target.Selector.Tail) == 0 {
+		return p.Target.Selector.Root, true
+	}
+	return "", false
+}
+
+func parseFormat(e *parser.Expr) string {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) > 0 {
+		return ""
+	}
+	ml := e.Binary.Left.Value.Target.Map
+	if ml == nil {
+		return ""
+	}
+	for _, it := range ml.Items {
+		key, ok := literalString(it.Key)
+		if !ok || key != "format" {
+			continue
+		}
+		if v, ok := literalString(it.Value); ok {
+			return v
+		}
+	}
+	return ""
 }
 
 func convertStmt(st *parser.Statement) (Stmt, error) {
@@ -2010,6 +2079,34 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 		return convertQueryExpr(p.Query)
 	case p.Group != nil:
 		return convertExpr(p.Group)
+	case p.Load != nil:
+		if p.Load.Path != nil && p.Load.Type != nil && p.Load.With != nil {
+			format := parseFormat(p.Load.With)
+			if format == "yaml" {
+				neededOpens["System"] = true
+				neededOpens["System.IO"] = true
+				neededOpens["YamlDotNet.Serialization"] = true
+				path := strings.Trim(*p.Load.Path, "\"")
+				typ := "obj"
+				if p.Load.Type.Simple != nil {
+					typ = *p.Load.Type.Simple
+				}
+				return &LoadYamlExpr{Path: path, Type: typ}, nil
+			}
+		}
+	case p.Save != nil:
+		if p.Save.Path != nil && p.Save.With != nil {
+			format := parseFormat(p.Save.With)
+			if format == "jsonl" && strings.Trim(*p.Save.Path, "\"") == "-" {
+				neededOpens["System"] = true
+				neededOpens["System.Text.Json"] = true
+				src, err := convertExpr(p.Save.Src)
+				if err != nil {
+					return nil, err
+				}
+				return &SaveJSONLExpr{Src: src}, nil
+			}
+		}
 	}
 	return nil, fmt.Errorf("unsupported primary")
 }
