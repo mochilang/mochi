@@ -1,3 +1,87 @@
+## Progress (2025-07-21 23:52 +0700)
+- lua transpiler: support set ops, sort map, partial apps (progress 67/100)
+
+## Progress (2025-07-21 23:52 +0700)
+- lua transpiler: support set ops, sort map, partial apps (progress 66/100)
+
+## Progress (2025-07-21 23:52 +0700)
+- lua transpiler: support set ops, sort map, partial apps (progress 66/100)
+
+## Progress (2025-07-21 23:52 +0700)
+- lua transpiler: support set ops, sort map, partial apps (progress 65/100)
+
+## Progress (2025-07-21 23:52 +0700)
+- lua transpiler: support set ops, sort map, partial apps (progress 64/100)
+
+## Progress (2025-07-21 23:52 +0700)
+- lua transpiler: support set ops, sort map, partial apps (progress 63/100)
+
+## Progress (2025-07-21 23:52 +0700)
+- lua transpiler: support set ops, sort map, partial apps (progress 63/100)
+
+## Progress (2025-07-21 23:52 +0700)
+- lua transpiler: support set ops, sort map, partial apps (progress 63/100)
+
+## Progress (2025-07-21 23:52 +0700)
+- lua transpiler: support set ops, sort map, partial apps (progress 63/100)
+
+## Progress (2025-07-21 23:52 +0700)
+- lua transpiler: support set ops, sort map, partial apps (progress 62/100)
+
+## Progress (2025-07-21 23:52 +0700)
+- lua transpiler: support set ops, sort map, partial apps (progress 62/100)
+
+## Progress (2025-07-21 23:52 +0700)
+- lua transpiler: support set ops, sort map, partial apps (progress 62/100)
+
+## Progress (2025-07-21 23:52 +0700)
+- lua transpiler: support set ops, sort map, partial apps (progress 62/100)
+
+## Progress (2025-07-21 23:52 +0700)
+- lua transpiler: support set ops, sort map, partial apps (progress 61/100)
+
+## Progress (2025-07-21 23:52 +0700)
+- lua transpiler: support set ops, sort map, partial apps (progress 61/100)
+
+## Progress (2025-07-21 23:52 +0700)
+- lua transpiler: support set ops, sort map, partial apps (progress 61/100)
+
+## Progress (2025-07-21 23:52 +0700)
+- lua transpiler: support set ops, sort map, partial apps (progress 60/100)
+
+## Progress (2025-07-21 23:52 +0700)
+- lua transpiler: support set ops, sort map, partial apps (progress 60/100)
+
+## Progress (2025-07-21 23:52 +0700)
+- lua transpiler: support set ops, sort map, partial apps (progress 60/100)
+
+## Progress (2025-07-21 23:52 +0700)
+- lua transpiler: support set ops, sort map, partial apps (progress 60/100)
+
+## Progress (2025-07-21 23:52 +0700)
+- lua transpiler: support set ops, sort map, partial apps (progress 60/100)
+
+## Progress (2025-07-21 23:52 +0700)
+- lua transpiler: support set ops, sort map, partial apps (progress 60/100)
+
+## Progress (2025-07-21 23:52 +0700)
+- lua transpiler: support set ops, sort map, partial apps (progress 60/100)
+
+## Progress (2025-07-21 23:52 +0700)
+- lua transpiler: support set ops, sort map, partial apps (progress 60/100)
+
+## Progress (2025-07-21 23:52 +0700)
+- lua transpiler: support set ops, sort map, partial apps (progress 59/100)
+
+## Progress (2025-07-21 23:52 +0700)
+- lua transpiler: support set ops, sort map, partial apps (progress 58/100)
+
+## Progress (2025-07-21 23:52 +0700)
+- lua transpiler: support set ops, sort map, partial apps (progress 57/100)
+
+## Progress (2025-07-21 23:52 +0700)
+- lua transpiler: support set ops, sort map, partial apps (progress 56/100)
+
 ## Progress (2025-07-21 16:44 UTC)
 - cs transpiler: support map membership (progress 55/100)
 
@@ -62,6 +146,34 @@
 
 ## Remaining Work
 - Support map and list mutation operations
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

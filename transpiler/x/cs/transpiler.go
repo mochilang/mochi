@@ -61,6 +61,7 @@ var mapVars map[string]bool
 var varTypes map[string]string
 var structTypes map[string]types.StructType
 var funRets map[string]string
+var funParams map[string][]string
 var usesDict bool
 var usesLinq bool
 var usesJson bool
@@ -1448,6 +1449,7 @@ func Transpile(p *parser.Program, env *types.Env) (*Program, error) {
 	varTypes = make(map[string]string)
 	structTypes = env.Structs()
 	funRets = make(map[string]string)
+	funParams = make(map[string][]string)
 	usesDict = false
 	usesLinq = false
 	usesJson = false
@@ -1858,6 +1860,9 @@ func compileStmt(prog *Program, s *parser.Statement) (Stmt, error) {
 			ptypes[i] = csType(p.Type)
 		}
 		var body []Stmt
+		if prog != nil && blockDepth > 0 {
+			prog = nil
+		}
 		blockDepth++
 		for _, b := range s.Fun.Body {
 			st, err := compileStmt(prog, b)
@@ -1869,9 +1874,12 @@ func compileStmt(prog *Program, s *parser.Statement) (Stmt, error) {
 			}
 		}
 		blockDepth--
-		varTypes[s.Fun.Name] = fmt.Sprintf("fn/%d", len(ptypes))
 		retType := csType(s.Fun.Return)
-		funRets[s.Fun.Name] = retType
+		if prog != nil && blockDepth == 0 {
+			varTypes[s.Fun.Name] = fmt.Sprintf("fn/%d", len(ptypes))
+			funRets[s.Fun.Name] = retType
+			funParams[s.Fun.Name] = append([]string{}, ptypes...)
+		}
 		if s.Fun.Return == nil {
 			retType = ""
 		}
@@ -2039,7 +2047,14 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 					callArgs = append(callArgs, &VarRef{Name: params[i]})
 				}
 				body := &CallExpr{Func: name, Args: callArgs}
-				return &FunLit{Params: params, ParamTypes: ptypes, ReturnType: "object", ExprBody: body}, nil
+				if types, ok := funParams[name]; ok {
+					copy(ptypes, types[len(args):])
+				}
+				ret := "object"
+				if r, ok := funRets[name]; ok {
+					ret = r
+				}
+				return &FunLit{Params: params, ParamTypes: ptypes, ReturnType: ret, ExprBody: body}, nil
 			}
 		}
 		switch name {
@@ -2048,8 +2063,7 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 			if len(args) == 1 {
 				arg := args[0]
 				if isBoolExpr(arg) {
-					tern := &IfExpr{Cond: arg, Then: &StringLit{Value: "true"}, Else: &StringLit{Value: "false"}}
-					return &CallExpr{Func: name, Args: []Expr{tern}}, nil
+					return &CallExpr{Func: name, Args: []Expr{arg}}, nil
 				}
 				if _, ok := arg.(*MapLit); ok {
 					usesJson = true
@@ -2062,7 +2076,7 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 					return &CallExpr{Func: name, Args: []Expr{inner}}, nil
 				}
 				if strings.HasSuffix(typeOfExpr(arg), "[]") {
-					join := &CallExpr{Func: "string.Join", Args: []Expr{&StringLit{Value: ","}, arg}}
+					join := &CallExpr{Func: "string.Join", Args: []Expr{&StringLit{Value: ", "}, arg}}
 					wrapped := &BinaryExpr{Left: &StringLit{Value: "["}, Op: "+", Right: &BinaryExpr{Left: join, Op: "+", Right: &StringLit{Value: "]"}}}
 					return &CallExpr{Func: name, Args: []Expr{wrapped}}, nil
 				}
@@ -2074,14 +2088,10 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 			}
 			elems := make([]Expr, len(args))
 			for i, a := range args {
-				if isBoolExpr(a) {
-					elems[i] = &IfExpr{Cond: a, Then: &StringLit{Value: "true"}, Else: &StringLit{Value: "false"}}
-				} else {
-					elems[i] = a
-				}
+				elems[i] = a
 			}
 			list := &ListLit{Elems: elems}
-			join := &CallExpr{Func: "string.Join", Args: []Expr{&StringLit{Value: ","}, list}}
+			join := &CallExpr{Func: "string.Join", Args: []Expr{&StringLit{Value: ", "}, list}}
 			wrapped := &BinaryExpr{Left: &StringLit{Value: "["}, Op: "+", Right: &BinaryExpr{Left: join, Op: "+", Right: &StringLit{Value: "]"}}}
 			return &CallExpr{Func: name, Args: []Expr{wrapped}}, nil
 		case "append":
@@ -2516,6 +2526,13 @@ func compileQueryExpr(q *parser.QueryExpr) (Expr, error) {
 			varTypes[curVar] = savedVar
 			mapVars[curVar] = savedMap
 			return nil, err
+		}
+		if mp, ok := sortExpr.(*MapLit); ok {
+			elems := make([]string, len(mp.Items))
+			for i, it := range mp.Items {
+				elems[i] = exprString(it.Value)
+			}
+			sortExpr = &RawExpr{Code: fmt.Sprintf("Tuple.Create(%s)", strings.Join(elems, ", "))}
 		}
 		desc := false
 		if ue, ok := sortExpr.(*UnaryExpr); ok && ue.Op == "-" {
