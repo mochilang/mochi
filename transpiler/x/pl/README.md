@@ -2,86 +2,87 @@
 
 This directory contains a tiny transpiler that converts a restricted subset of Mochi programs to SWI-Prolog. It is mainly used for experimentation and golden tests.
 
-## VM Golden Test Checklist (36/100)
+## VM Golden Test Checklist (86/100)
+
 - [x] `append_builtin`
 - [x] `avg_builtin`
 - [x] `basic_compare`
 - [x] `binary_precedence`
 - [x] `bool_chain`
-- [ ] `break_continue`
+- [x] `break_continue`
 - [x] `cast_string_to_int`
-- [ ] `cast_struct`
-- [ ] `closure`
+- [x] `cast_struct`
+- [x] `closure`
 - [x] `count_builtin`
-- [ ] `cross_join`
-- [ ] `cross_join_filter`
-- [ ] `cross_join_triple`
-- [ ] `dataset_sort_take_limit`
+- [x] `cross_join`
+- [x] `cross_join_filter`
+- [x] `cross_join_triple`
+- [x] `dataset_sort_take_limit`
 - [ ] `dataset_where_filter`
-- [ ] `exists_builtin`
+- [x] `exists_builtin`
 - [x] `for_list_collection`
 - [x] `for_loop`
-- [ ] `for_map_collection`
-- [ ] `fun_call`
-- [ ] `fun_expr_in_let`
-- [ ] `fun_three_args`
+- [x] `for_map_collection`
+- [x] `fun_call`
+- [x] `fun_expr_in_let`
+- [x] `fun_three_args`
 - [ ] `go_auto`
 - [x] `group_by`
 - [ ] `group_by_conditional_sum`
-- [ ] `group_by_having`
-- [ ] `group_by_join`
-- [ ] `group_by_left_join`
-- [ ] `group_by_multi_join`
-- [ ] `group_by_multi_join_sort`
-- [ ] `group_by_sort`
-- [ ] `group_items_iteration`
+- [x] `group_by_having`
+- [x] `group_by_join`
+- [x] `group_by_left_join`
+- [x] `group_by_multi_join`
+- [x] `group_by_multi_join_sort`
+- [x] `group_by_sort`
+- [x] `group_items_iteration`
 - [x] `if_else`
-- [x] `if_then_else`
-- [x] `if_then_else_nested`
-- [ ] `in_operator`
-- [ ] `in_operator_extended`
-- [ ] `inner_join`
-- [ ] `join_multi`
-- [ ] `json_builtin`
+- [ ] `if_then_else`
+- [ ] `if_then_else_nested`
+- [x] `in_operator`
+- [x] `in_operator_extended`
+- [x] `inner_join`
+- [x] `join_multi`
+- [x] `json_builtin`
 - [ ] `left_join`
 - [ ] `left_join_multi`
 - [x] `len_builtin`
-- [ ] `len_map`
+- [x] `len_map`
 - [x] `len_string`
 - [x] `let_and_print`
 - [x] `list_assign`
 - [x] `list_index`
-- [ ] `list_nested_assign`
-- [ ] `list_set_ops`
-- [ ] `load_yaml`
-- [ ] `map_assign`
-- [ ] `map_in_operator`
-- [ ] `map_index`
-- [ ] `map_int_key`
-- [ ] `map_literal_dynamic`
-- [ ] `map_membership`
-- [ ] `map_nested_assign`
+- [x] `list_nested_assign`
+- [x] `list_set_ops`
+- [x] `load_yaml`
+- [x] `map_assign`
+- [x] `map_in_operator`
+- [x] `map_index`
+- [x] `map_int_key`
+- [x] `map_literal_dynamic`
+- [x] `map_membership`
+- [x] `map_nested_assign`
 - [ ] `match_expr`
 - [ ] `match_full`
 - [x] `math_ops`
 - [x] `membership`
 - [x] `min_max_builtin`
-- [ ] `nested_function`
-- [ ] `order_by_map`
+- [x] `nested_function`
+- [x] `order_by_map`
 - [ ] `outer_join`
-- [ ] `partial_application`
+- [x] `partial_application`
 - [x] `print_hello`
-- [ ] `pure_fold`
-- [ ] `pure_global_fold`
+- [x] `pure_fold`
+- [x] `pure_global_fold`
 - [ ] `python_auto`
-- [ ] `python_math`
-- [ ] `query_sum_select`
-- [ ] `record_assign`
+- [x] `python_math`
+- [x] `query_sum_select`
+- [x] `record_assign`
 - [ ] `right_join`
-- [ ] `save_jsonl_stdout`
-- [ ] `short_circuit`
+- [x] `save_jsonl_stdout`
+- [x] `short_circuit`
 - [x] `slice`
-- [ ] `sort_stable`
+- [x] `sort_stable`
 - [x] `str_builtin`
 - [x] `string_compare`
 - [x] `string_concat`
@@ -91,17 +92,16 @@ This directory contains a tiny transpiler that converts a restricted subset of M
 - [x] `string_prefix_slice`
 - [x] `substring_builtin`
 - [x] `sum_builtin`
-- [ ] `tail_recursion`
-- [ ] `test_block`
+- [x] `tail_recursion`
+- [x] `test_block`
 - [ ] `tree_sum`
-- [ ] `two-sum`
+- [x] `two-sum`
 - [x] `typed_let`
 - [x] `typed_var`
 - [x] `unary_neg`
 - [ ] `update_stmt`
-- [ ] `user_type_literal`
-- [ ] `values_builtin`
+- [x] `user_type_literal`
+- [x] `values_builtin`
 - [x] `var_assignment`
-- [ ] `while_loop`
-
+- [x] `while_loop`
 *Checklist generated automatically from tests/vm/valid*

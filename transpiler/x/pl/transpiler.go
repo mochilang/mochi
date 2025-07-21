@@ -661,6 +661,13 @@ func cap(name string) string {
 	return strings.ToUpper(name[:1]) + name[1:]
 }
 
+func uncap(name string) string {
+	if name == "" {
+		return ""
+	}
+	return strings.ToLower(name[:1]) + name[1:]
+}
+
 func isBoolOp(op string) bool {
 	switch op {
 	case "=:=", "=\\=", "=", "\\=", "<", "<=", ">", ">=", "@<", "@=<", "@>", "@>=", ",", ";", "in":
@@ -859,6 +866,7 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 
 // Emit writes the Prolog source for the given program.
 func Emit(w io.Writer, p *Program) error {
+	io.WriteString(w, ":- style_check(-singleton).\n")
 	io.WriteString(w, ":- initialization(main).\n\n")
 	for _, fn := range p.Funcs {
 		fn.emit(w)
@@ -1345,6 +1353,7 @@ func toPrimary(p *parser.Primary, env *compileEnv) (Expr, error) {
 					}
 				}
 			}
+			return nil, fmt.Errorf("unsupported selector")
 		}
 		return nil, fmt.Errorf("unsupported selector")
 	case p.Call != nil:
@@ -1511,7 +1520,12 @@ func toPrimary(p *parser.Primary, env *compileEnv) (Expr, error) {
 			case *StringLit:
 				keyStr = k.Value
 			case *Var:
-				keyStr = k.Name
+				// Treat bare identifiers as string keys if they are not variables
+				if env.constExpr(k.Name) == nil {
+					keyStr = uncap(k.Name)
+				} else {
+					keyStr = k.Name
+				}
 			default:
 				return nil, fmt.Errorf("unsupported map key")
 			}
@@ -1644,6 +1658,16 @@ func constList(e Expr, env *compileEnv) (*ListLit, bool) {
 	case *Var:
 		if c, ok := env.constExpr(v.Name).(*ListLit); ok {
 			return c, true
+		}
+		if g, ok := env.constExpr(v.Name).(*MapLit); ok {
+			for _, it := range g.Items {
+				if it.Key == "items" {
+					if l, ok2 := it.Value.(*ListLit); ok2 {
+						return l, true
+					}
+					break
+				}
+			}
 		}
 	}
 	return nil, false
