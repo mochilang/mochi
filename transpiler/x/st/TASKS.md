@@ -1,3 +1,8 @@
+## Progress (21 Jul 2025 16:17 +0700)
+- VM valid golden test results updated
+- Added nested index assignment for lists and maps
+- `list_nested_assign` and `map_nested_assign` now pass (72/100)
+
 ## Progress (21 Jul 2025 16:07 +0700)
 - VM valid golden test results updated
 - Added list and string slicing
