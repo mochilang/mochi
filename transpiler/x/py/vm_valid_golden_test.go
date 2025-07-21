@@ -134,13 +134,13 @@ func updateReadme() {
 func updateTasks() {
 	root := repoRoot(&testing.T{})
 	taskFile := filepath.Join(root, "transpiler", "x", "py", "TASKS.md")
-       out, err := exec.Command("git", "log", "-1", "--format=%cI").Output()
-       ts := ""
-       if err == nil {
-               if t, perr := time.Parse(time.RFC3339, strings.TrimSpace(string(out))); perr == nil {
-                       ts = t.Format("2006-01-02 15:04 -0700")
-               }
-       }
+	out, err := exec.Command("git", "log", "-1", "--format=%cI").Output()
+	ts := ""
+	if err == nil {
+		if t, perr := time.Parse(time.RFC3339, strings.TrimSpace(string(out))); perr == nil {
+			ts = t.Format("2006-01-02 15:04 -0700")
+		}
+	}
 	srcDir := filepath.Join(root, "tests", "vm", "valid")
 	outDir := filepath.Join(root, "tests", "transpiler", "x", "py")
 	files, _ := filepath.Glob(filepath.Join(srcDir, "*.mochi"))
@@ -159,7 +159,20 @@ func updateTasks() {
 	buf.WriteString("- Updated README checklist and outputs\n")
 	buf.WriteString("- Refactored join handling and improved type inference from loaded data\n\n")
 	if data, err := os.ReadFile(taskFile); err == nil {
-		buf.Write(data)
+		sections := strings.Split(string(data), "\n## ")
+		count := 0
+		for _, sec := range sections {
+			if strings.HasPrefix(sec, "Progress") {
+				if count >= 4 {
+					break
+				}
+				buf.WriteString("## " + sec)
+				if !strings.HasSuffix(sec, "\n") {
+					buf.WriteString("\n")
+				}
+				count++
+			}
+		}
 	}
 	_ = os.WriteFile(taskFile, buf.Bytes(), 0o644)
 }
