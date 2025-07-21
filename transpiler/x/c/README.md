@@ -2,7 +2,7 @@
 
 This directory stores C translations generated from programs in `tests/vm/valid`. Each file is compiled and executed during tests. Successful runs keep the generated `.c` source along with a matching `.out` file. Failures are recorded in `.error` files when tests run with `-update`.
 
-Checklist of programs that currently transpile and run (57/100):
+Checklist of programs that currently transpile and run (58/100):
 - [x] append_builtin
 - [x] avg_builtin
 - [x] basic_compare
@@ -74,7 +74,7 @@ Checklist of programs that currently transpile and run (57/100):
 - [x] pure_fold
 - [x] pure_global_fold
 - [ ] python_auto
-- [ ] python_math
+- [x] python_math
 - [ ] query_sum_select
 - [x] record_assign
 - [ ] right_join
