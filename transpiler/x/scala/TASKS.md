@@ -1,3 +1,11 @@
+## Progress (2025-07-21 15:29 +0700)
+- scala: add group_by query support and better type inference
+- Regenerated golden files - 67/100 vm valid programs passing
+
+## Progress (2025-07-21 15:29 +0700)
+- docs: update swift tasks
+- Regenerated golden files - 64/100 vm valid programs passing
+
 ## Progress (2025-07-21 13:50 +0700)
 - ctrans: add map iteration support
 - Regenerated golden files - 64/100 vm valid programs passing
