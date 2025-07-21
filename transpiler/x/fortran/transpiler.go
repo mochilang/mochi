@@ -1134,6 +1134,17 @@ func extractConstList(e *parser.Expr, env *types.Env) ([]string, bool) {
 	return out, true
 }
 
+func constMapSize(e *parser.Expr) (int, bool) {
+	if e == nil || e.Binary == nil || e.Binary.Left == nil || len(e.Binary.Right) > 0 {
+		return 0, false
+	}
+	u := e.Binary.Left
+	if u.Value == nil || u.Value.Target == nil || u.Value.Target.Map == nil {
+		return 0, false
+	}
+	return len(u.Value.Target.Map.Items), true
+}
+
 func toExpr(e *parser.Expr, env *types.Env) (string, error) {
 	if e == nil || e.Binary == nil || e.Binary.Left == nil {
 		return "", fmt.Errorf("unsupported expression")
@@ -1362,6 +1373,9 @@ func toPrimary(p *parser.Primary, env *types.Env) (string, error) {
 		return name, nil
 	case p.Call != nil:
 		if p.Call.Func == "len" && len(p.Call.Args) == 1 {
+			if n, ok := constMapSize(p.Call.Args[0]); ok {
+				return strconv.Itoa(n), nil
+			}
 			argExpr, err := toExpr(p.Call.Args[0], env)
 			if err != nil {
 				return "", err
