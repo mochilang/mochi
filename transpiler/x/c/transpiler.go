@@ -1046,6 +1046,13 @@ func compileStmt(env *types.Env, s *parser.Statement) (Stmt, error) {
 	case s.Let != nil:
 		currentVarName = s.Let.Name
 		valExpr := convertExpr(s.Let.Value)
+		if valExpr == nil {
+			if q := queryExpr(s.Let.Value); q != nil {
+				if lst, ok := evalQueryConst(q); ok {
+					valExpr = lst
+				}
+			}
+		}
 		currentVarName = ""
 		declType := inferCType(env, s.Let.Name, valExpr)
 		if strings.Contains(declType, "double") {
@@ -2007,6 +2014,16 @@ func interpretList(e *parser.Expr) ([]Expr, bool) {
 	return out, true
 }
 
+func queryExpr(e *parser.Expr) *parser.QueryExpr {
+	if e == nil || e.Binary == nil {
+		return nil
+	}
+	if e.Binary.Left != nil && e.Binary.Left.Value != nil && e.Binary.Left.Value.Target != nil {
+		return e.Binary.Left.Value.Target.Query
+	}
+	return nil
+}
+
 func convertMapKeysExpr(e *parser.Expr) ([]Expr, bool) {
 	if ml := mapLiteral(e); ml != nil {
 		var out []Expr
@@ -2717,8 +2734,30 @@ func anyToExpr(v any) Expr {
 }
 
 func evalQueryConst(q *parser.QueryExpr) (*ListLit, bool) {
-	results, err := data.RunQuery(q, currentEnv, data.MemoryEngine{}, func(env *types.Env, e *parser.Expr) (any, error) {
-		ip := interpreter.New(&parser.Program{}, env, "")
+	env := types.NewEnv(currentEnv)
+	inferSrc := func(e *parser.Expr) types.Type {
+		if lst, ok := interpretList(e); ok && len(lst) > 0 {
+			tname := inferExprType(env, lst[0])
+			switch tname {
+			case "int":
+				return types.IntType{}
+			case "double":
+				return types.FloatType{}
+			case "const char*":
+				return types.StringType{}
+			}
+		}
+		return types.AnyType{}
+	}
+	env.SetVar(q.Var, inferSrc(q.Source), true)
+	for _, f := range q.Froms {
+		env.SetVar(f.Var, inferSrc(f.Src), true)
+	}
+	for _, j := range q.Joins {
+		env.SetVar(j.Var, inferSrc(j.Src), true)
+	}
+	results, err := data.RunQuery(q, env, data.MemoryEngine{}, func(en *types.Env, e *parser.Expr) (any, error) {
+		ip := interpreter.New(&parser.Program{}, en, "")
 		return ip.EvalExpr(e)
 	})
 	if err != nil {
