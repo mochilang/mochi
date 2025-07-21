@@ -1,10 +1,10 @@
 run: exit status 254
-../../../tests/transpiler/x/dart/map_membership.dart:10:11: Error: The method 'contains' isn't defined for the class 'M'.
+../../../tests/transpiler/x/dart/map_membership.dart:18:11: Error: The method 'contains' isn't defined for the class 'M'.
  - 'M' is from '../../../tests/transpiler/x/dart/map_membership.dart'.
 Try correcting the name to the name of an existing method, or defining a method named 'contains'.
   print(m.contains("a"));
           ^^^^^^^^
-../../../tests/transpiler/x/dart/map_membership.dart:11:11: Error: The method 'contains' isn't defined for the class 'M'.
+../../../tests/transpiler/x/dart/map_membership.dart:19:11: Error: The method 'contains' isn't defined for the class 'M'.
  - 'M' is from '../../../tests/transpiler/x/dart/map_membership.dart'.
 Try correcting the name to the name of an existing method, or defining a method named 'contains'.
   print(m.contains("c"));

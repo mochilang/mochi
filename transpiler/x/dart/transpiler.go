@@ -1209,7 +1209,11 @@ func (gq *GroupQueryExpr) emit(w io.Writer) error {
 			return err
 		}
 	}
-	if _, err := io.WriteString(w, "  var _res = [];\n  for (var ks in _order) {\n    var "+gq.GroupVar+" = _groups[ks]!;\n"); err != nil {
+	elemT := inferType(gq.Select)
+	if _, err := fmt.Fprintf(w, "  var _res = <%s>[];\n", elemT); err != nil {
+		return err
+	}
+	if _, err := io.WriteString(w, "  for (var ks in _order) {\n    var "+gq.GroupVar+" = _groups[ks]!;\n"); err != nil {
 		return err
 	}
 	if gq.Having != nil {
@@ -1384,6 +1388,8 @@ func dartType(t types.Type) string {
 		return "Map<" + dartType(v.Key) + ", " + dartType(v.Value) + ">"
 	case types.StructType:
 		return "Map<String, dynamic>"
+	case types.GroupType:
+		return "Map<String, dynamic>"
 	default:
 		return "dynamic"
 	}
@@ -1543,13 +1549,24 @@ func inferType(e Expr) string {
 			saved[v] = compVarTypes[v]
 			compVarTypes[v] = elem
 		}
+		savedGroup := compVarTypes[ex.GroupVar]
+		compVarTypes[ex.GroupVar] = "Map<String, dynamic>"
+		localVarTypes[ex.GroupVar] = "Map<String, dynamic>"
 		et := inferType(ex.Select)
+		if ex.Having != nil {
+			inferType(ex.Having)
+		}
 		for _, v := range ex.Vars {
 			if old, ok := saved[v]; ok && old != "" {
 				compVarTypes[v] = old
 			} else {
 				delete(compVarTypes, v)
 			}
+		}
+		if savedGroup != "" {
+			compVarTypes[ex.GroupVar] = savedGroup
+		} else {
+			delete(compVarTypes, ex.GroupVar)
 		}
 		return "List<" + et + ">"
 	case *LeftJoinExpr:
@@ -1807,6 +1824,14 @@ func Emit(w io.Writer, p *Program) error {
 		return err
 	}
 
+	if _, err := io.WriteString(w, "import 'dart:convert';\n\n"); err != nil {
+		return err
+	}
+
+	if _, err := io.WriteString(w, "void json(dynamic v) {\n  var e = const JsonEncoder.withIndent('  ');\n  print(e.convert(v));\n}\n\n"); err != nil {
+		return err
+	}
+
 	for _, name := range structOrder {
 		fields := structFields[name]
 		if _, err := fmt.Fprintf(w, "class %s {\n", name); err != nil {
@@ -1830,7 +1855,23 @@ func Emit(w io.Writer, p *Program) error {
 				return err
 			}
 		}
-		if _, err := io.WriteString(w, "});\n}\n\n"); err != nil {
+		if _, err := io.WriteString(w, "});\n"); err != nil {
+			return err
+		}
+		if _, err := io.WriteString(w, "  Map<String, dynamic> toJson() => {"); err != nil {
+			return err
+		}
+		for i, f := range fields {
+			if i > 0 {
+				if _, err := io.WriteString(w, ", "); err != nil {
+					return err
+				}
+			}
+			if _, err := fmt.Fprintf(w, "\"%s\": %s", f.Name, f.Name); err != nil {
+				return err
+			}
+		}
+		if _, err := io.WriteString(w, "};\n}\n\n"); err != nil {
 			return err
 		}
 	}

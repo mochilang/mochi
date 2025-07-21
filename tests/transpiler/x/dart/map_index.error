@@ -1,5 +1,5 @@
 run: exit status 254
-../../../tests/transpiler/x/dart/map_index.dart:10:10: Error: The operator '[]' isn't defined for the class 'M'.
+../../../tests/transpiler/x/dart/map_index.dart:18:10: Error: The operator '[]' isn't defined for the class 'M'.
  - 'M' is from '../../../tests/transpiler/x/dart/map_index.dart'.
 Try correcting the operator to an existing operator, or defining a '[]' operator.
   print(m["b"]);

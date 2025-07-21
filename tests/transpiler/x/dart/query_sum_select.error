@@ -1,9 +1,9 @@
 run: exit status 254
-../../../tests/transpiler/x/dart/query_sum_select.dart:4:64: Error: The getter 'isEmpty' isn't defined for the class 'int'.
+../../../tests/transpiler/x/dart/query_sum_select.dart:11:64: Error: The getter 'isEmpty' isn't defined for the class 'int'.
 Try correcting the name to the name of an existing getter, or defining a getter or field named 'isEmpty'.
   final List<num> result = [for (var n in nums) if ((n > 1)) n.isEmpty ? 0 : (n.reduce((a, b) => a + b))];
                                                                ^^^^^^^
-../../../tests/transpiler/x/dart/query_sum_select.dart:4:81: Error: The method 'reduce' isn't defined for the class 'int'.
+../../../tests/transpiler/x/dart/query_sum_select.dart:11:81: Error: The method 'reduce' isn't defined for the class 'int'.
 Try correcting the name to the name of an existing method, or defining a method named 'reduce'.
   final List<num> result = [for (var n in nums) if ((n > 1)) n.isEmpty ? 0 : (n.reduce((a, b) => a + b))];
                                                                                 ^^^^^^

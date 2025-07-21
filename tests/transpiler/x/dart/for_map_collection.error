@@ -1,5 +1,5 @@
 run: exit status 254
-../../../tests/transpiler/x/dart/for_map_collection.dart:10:17: Error: The type 'M' used in the 'for' loop must implement 'Iterable<dynamic>'.
+../../../tests/transpiler/x/dart/for_map_collection.dart:18:17: Error: The type 'M' used in the 'for' loop must implement 'Iterable<dynamic>'.
  - 'M' is from '../../../tests/transpiler/x/dart/for_map_collection.dart'.
  - 'Iterable' is from 'dart:core'.
   for (var k in m) {

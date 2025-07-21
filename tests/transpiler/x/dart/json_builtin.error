@@ -1,4 +1,0 @@
-run: exit status 254
-../../../tests/transpiler/x/dart/json_builtin.dart:10:3: Error: Method not found: 'json'.
-  json(m);
-  ^^^^

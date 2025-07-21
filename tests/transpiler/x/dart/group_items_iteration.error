@@ -1,1 +1,4 @@
-transpile: unsupported query
+run: exit status 254
+../../../tests/transpiler/x/dart/group_items_iteration.dart:43:20: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    total = (total + x.val);
+                   ^
