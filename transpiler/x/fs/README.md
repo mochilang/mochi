@@ -2,7 +2,7 @@
 
 This folder contains an experimental transpiler that converts Mochi source code into F#.
 
-## Golden Test Checklist (71/100)
+## Golden Test Checklist (66/100)
 
 The list below tracks Mochi programs under `tests/vm/valid` that should successfully transpile. Checked items indicate tests known to work.
 
@@ -13,14 +13,14 @@ The list below tracks Mochi programs under `tests/vm/valid` that should successf
 - [x] bool_chain.mochi
 - [x] break_continue.mochi
 - [x] cast_string_to_int.mochi
-- [x] cast_struct.mochi
+- [ ] cast_struct.mochi
 - [x] closure.mochi
 - [x] count_builtin.mochi
 - [x] cross_join.mochi
 - [x] cross_join_filter.mochi
 - [x] cross_join_triple.mochi
 - [x] dataset_sort_take_limit.mochi
-- [x] dataset_where_filter.mochi
+- [ ] dataset_where_filter.mochi
 - [x] exists_builtin.mochi
 - [x] for_list_collection.mochi
 - [x] for_loop.mochi
@@ -37,12 +37,12 @@ The list below tracks Mochi programs under `tests/vm/valid` that should successf
 - [ ] group_by_multi_join.mochi
 - [ ] group_by_multi_join_sort.mochi
 - [ ] group_by_sort.mochi
-- [x] group_items_iteration.mochi
+- [ ] group_items_iteration.mochi
 - [x] if_else.mochi
 - [x] if_then_else.mochi
 - [x] if_then_else_nested.mochi
 - [x] in_operator.mochi
-- [x] in_operator_extended.mochi
+- [ ] in_operator_extended.mochi
 - [ ] inner_join.mochi
 - [ ] join_multi.mochi
 - [ ] json_builtin.mochi
@@ -64,7 +64,7 @@ The list below tracks Mochi programs under `tests/vm/valid` that should successf
 - [x] map_literal_dynamic.mochi
 - [x] map_membership.mochi
 - [x] map_nested_assign.mochi
-- [x] match_expr.mochi
+- [ ] match_expr.mochi
 - [ ] match_full.mochi
 - [x] math_ops.mochi
 - [x] membership.mochi

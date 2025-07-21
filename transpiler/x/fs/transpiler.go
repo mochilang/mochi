@@ -18,6 +18,7 @@ import (
 type StructField struct {
 	Name string
 	Type string
+	Mut  bool
 }
 
 type StructDef struct {
@@ -74,7 +75,7 @@ func fsType(t types.Type) string {
 func addStructDef(name string, st types.StructType) {
 	def := StructDef{Name: name}
 	for _, f := range st.Order {
-		def.Fields = append(def.Fields, StructField{f, fsType(st.Fields[f])})
+		def.Fields = append(def.Fields, StructField{Name: f, Type: fsType(st.Fields[f]), Mut: true})
 	}
 	structDefs = append(structDefs, def)
 }
@@ -269,12 +270,18 @@ type QueryExpr struct {
 type GroupQueryExpr struct {
 	Var      string
 	Src      Expr
+	Froms    []queryFrom
+	Joins    []queryJoin
+	Where    Expr
 	Key      Expr
 	GroupVar string
 	Select   Expr
 }
 
-type StructLit struct{ Fields []StructFieldExpr }
+type StructLit struct {
+	Name   string
+	Fields []StructFieldExpr
+}
 
 type StructFieldExpr struct {
 	Name  string
@@ -341,11 +348,80 @@ func (q *QueryExpr) emit(w io.Writer) {
 
 func (g *GroupQueryExpr) emit(w io.Writer) {
 	io.WriteString(w, "[ for (key, items) in List.groupBy (fun ")
-	io.WriteString(w, g.Var)
+	if len(g.Joins) == 0 && len(g.Froms) == 0 && g.Where == nil {
+		io.WriteString(w, g.Var)
+	} else {
+		io.WriteString(w, "{ ")
+		names := []string{g.Var}
+		for _, j := range g.Joins {
+			names = append(names, j.Var)
+		}
+		for _, f := range g.Froms {
+			names = append(names, f.Var)
+		}
+		for i, n := range names {
+			if i > 0 {
+				io.WriteString(w, "; ")
+			}
+			io.WriteString(w, n)
+			io.WriteString(w, " = ")
+			io.WriteString(w, n)
+		}
+		io.WriteString(w, " }")
+	}
 	io.WriteString(w, " -> ")
 	g.Key.emit(w)
 	io.WriteString(w, ") ")
-	g.Src.emit(w)
+	if len(g.Joins) == 0 && len(g.Froms) == 0 && g.Where == nil {
+		g.Src.emit(w)
+	} else {
+		io.WriteString(w, "[ for ")
+		io.WriteString(w, g.Var)
+		io.WriteString(w, " in ")
+		g.Src.emit(w)
+		io.WriteString(w, " do")
+		for _, j := range g.Joins {
+			io.WriteString(w, " for ")
+			io.WriteString(w, j.Var)
+			io.WriteString(w, " in ")
+			j.Src.emit(w)
+			io.WriteString(w, " do")
+			if j.On != nil {
+				io.WriteString(w, " if ")
+				j.On.emit(w)
+				io.WriteString(w, " then")
+			}
+		}
+		for _, f := range g.Froms {
+			io.WriteString(w, " for ")
+			io.WriteString(w, f.Var)
+			io.WriteString(w, " in ")
+			f.Src.emit(w)
+			io.WriteString(w, " do")
+		}
+		if g.Where != nil {
+			io.WriteString(w, " if ")
+			g.Where.emit(w)
+			io.WriteString(w, " then")
+		}
+		io.WriteString(w, " yield {| ")
+		names := []string{g.Var}
+		for _, j := range g.Joins {
+			names = append(names, j.Var)
+		}
+		for _, f := range g.Froms {
+			names = append(names, f.Var)
+		}
+		for i, n := range names {
+			if i > 0 {
+				io.WriteString(w, "; ")
+			}
+			io.WriteString(w, n)
+			io.WriteString(w, " = ")
+			io.WriteString(w, n)
+		}
+		io.WriteString(w, " |} ]")
+	}
 	io.WriteString(w, " do\n    let ")
 	io.WriteString(w, g.GroupVar)
 	io.WriteString(w, " = {| key = key; items = items |}\n    yield ")
@@ -427,6 +503,22 @@ func (s *IndexAssignStmt) emit(w io.Writer) {
 	s.Target.emit(w)
 	io.WriteString(w, " <- ")
 	s.Value.emit(w)
+}
+
+type StructUpdateExpr struct {
+	Target Expr
+	Field  string
+	Value  Expr
+}
+
+func (s *StructUpdateExpr) emit(w io.Writer) {
+	io.WriteString(w, "{ ")
+	s.Target.emit(w)
+	io.WriteString(w, " with ")
+	io.WriteString(w, s.Field)
+	io.WriteString(w, " = ")
+	s.Value.emit(w)
+	io.WriteString(w, " }")
 }
 
 type WhileStmt struct {
@@ -915,7 +1007,11 @@ func Emit(prog *Program) []byte {
 	for _, st := range prog.Structs {
 		fmt.Fprintf(&buf, "type %s = {\n", st.Name)
 		for _, f := range st.Fields {
-			fmt.Fprintf(&buf, "    %s: %s\n", f.Name, f.Type)
+			if f.Mut {
+				fmt.Fprintf(&buf, "    mutable %s: %s\n", f.Name, f.Type)
+			} else {
+				fmt.Fprintf(&buf, "    %s: %s\n", f.Name, f.Type)
+			}
 		}
 		buf.WriteString("}\n")
 	}
@@ -954,7 +1050,9 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 		if err != nil {
 			return nil, err
 		}
-		p.Stmts = append(p.Stmts, optimizeFun(conv))
+		if conv != nil {
+			p.Stmts = append(p.Stmts, optimizeFun(conv))
+		}
 	}
 	p.Structs = structDefs
 	transpileEnv = nil
@@ -1011,6 +1109,9 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 		} else {
 			declared = inferType(e)
 		}
+		if sl, ok := e.(*StructLit); ok && sl.Name != "" {
+			declared = sl.Name
+		}
 		varTypes[st.Let.Name] = declared
 		typ := declared
 		if typ == "list" || typ == "map" {
@@ -1035,6 +1136,9 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 			declared = inferQueryType(st.Var.Value.Binary.Left.Value.Target.Query)
 		} else {
 			declared = inferType(e)
+		}
+		if sl, ok := e.(*StructLit); ok && sl.Name != "" {
+			declared = sl.Name
 		}
 		varTypes[st.Var.Name] = declared
 		typ := declared
@@ -1090,6 +1194,10 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 				return &AssignStmt{Name: st.Assign.Name, Expr: upd}, nil
 			}
 			return &IndexAssignStmt{Target: target, Value: val}, nil
+		}
+		if len(st.Assign.Field) == 1 {
+			upd := &StructUpdateExpr{Target: target, Field: st.Assign.Field[0].Name, Value: val}
+			return &ExprStmt{Expr: upd}, nil
 		}
 		return nil, fmt.Errorf("field assignment not supported")
 	case st.Return != nil:
@@ -1164,6 +1272,11 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 			body[i] = cs
 		}
 		return &ForStmt{Name: st.For.Name, Start: start, End: end, Body: body}, nil
+	case st.Type != nil:
+		if err := convertTypeDecl(st.Type); err != nil {
+			return nil, err
+		}
+		return nil, nil
 	case st.If != nil:
 		return convertIfStmt(st.If)
 	default:
@@ -1456,7 +1569,7 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 			}
 			fields[i] = StructFieldExpr{Name: f.Name, Value: v}
 		}
-		return &StructLit{Fields: fields}, nil
+		return &StructLit{Name: p.Struct.Name, Fields: fields}, nil
 	case p.Map != nil:
 		items := make([][2]Expr, len(p.Map.Items))
 		for i, it := range p.Map.Items {
@@ -1607,6 +1720,23 @@ func buildMapUpdate(m Expr, keys []Expr, val Expr) Expr {
 	return &CallExpr{Func: "Map.add", Args: []Expr{key, inner, m}}
 }
 
+func convertTypeDecl(td *parser.TypeDecl) error {
+	if len(td.Variants) > 0 {
+		return fmt.Errorf("union types not supported")
+	}
+	st := types.StructType{Name: td.Name, Fields: map[string]types.Type{}}
+	for _, m := range td.Members {
+		if m.Field == nil {
+			continue
+		}
+		ft := types.ResolveTypeRef(m.Field.Type, transpileEnv)
+		st.Fields[m.Field.Name] = ft
+		st.Order = append(st.Order, m.Field.Name)
+	}
+	addStructDef(td.Name, st)
+	return nil
+}
+
 func convertQueryExpr(q *parser.QueryExpr) (Expr, error) {
 	src, err := convertExpr(q.Source)
 	if err != nil {
@@ -1666,7 +1796,7 @@ func convertQueryExpr(q *parser.QueryExpr) (Expr, error) {
 			return nil, err
 		}
 	}
-	if q.Group != nil && len(q.Group.Exprs) == 1 && len(froms) == 0 && len(joins) == 0 && where == nil {
+	if q.Group != nil && len(q.Group.Exprs) == 1 {
 		key, err := convertExpr(q.Group.Exprs[0])
 		if err != nil {
 			return nil, err
@@ -1678,7 +1808,7 @@ func convertQueryExpr(q *parser.QueryExpr) (Expr, error) {
 		if err != nil {
 			return nil, err
 		}
-		return &GroupQueryExpr{Var: q.Var, Src: src, Key: key, GroupVar: q.Group.Name, Select: sel}, nil
+		return &GroupQueryExpr{Var: q.Var, Src: src, Froms: froms, Joins: joins, Where: where, Key: key, GroupVar: q.Group.Name, Select: sel}, nil
 	}
 	sel, err := convertExpr(q.Select)
 	if err != nil {
