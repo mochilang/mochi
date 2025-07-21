@@ -1,4 +1,0 @@
-exit status 1
-# command-line-arguments
-../../../tests/transpiler/x/go/json_builtin.go:7:2: "fmt" imported and not used
-../../../tests/transpiler/x/go/json_builtin.go:13:2: undefined: json

@@ -1,3 +1,7 @@
+## Progress (2025-07-21 06:48 +0700)
+- c transpiler: constant map index
+- Regenerated golden files - 77/100 vm valid programs passing
+
 ## Progress (2025-07-20 22:48 +0700)
 - go transpiler: support casting map to struct
 - Regenerated golden files - 76/100 vm valid programs passing
