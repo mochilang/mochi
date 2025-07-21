@@ -1640,6 +1640,45 @@ func convertPrimary(p *parser.Primary, env *types.Env) (Expr, error) {
 			return &IntLit{Value: total / len(vals)}, nil
 		}
 		return nil, fmt.Errorf("unsupported primary")
+	case p.Call != nil && (p.Call.Func == "min" || p.Call.Func == "max") && len(p.Call.Args) == 1:
+		if vals, ok := listLiteralInts(p.Call.Args[0]); ok {
+			if len(vals) == 0 {
+				return &IntLit{Value: 0}, nil
+			}
+			m := vals[0]
+			for _, v := range vals[1:] {
+				if p.Call.Func == "min" {
+					if v < m {
+						m = v
+					}
+				} else {
+					if v > m {
+						m = v
+					}
+				}
+			}
+			return &IntLit{Value: m}, nil
+		} else if ref, ok := identExpr(p.Call.Args[0]); ok {
+			if lst, ok := constVars[ref].([]int); ok {
+				if len(lst) == 0 {
+					return &IntLit{Value: 0}, nil
+				}
+				m := lst[0]
+				for _, v := range lst[1:] {
+					if p.Call.Func == "min" {
+						if v < m {
+							m = v
+						}
+					} else {
+						if v > m {
+							m = v
+						}
+					}
+				}
+				return &IntLit{Value: m}, nil
+			}
+		}
+		return nil, fmt.Errorf("unsupported primary")
 	case p.Call != nil && p.Call.Func == "append" && len(p.Call.Args) == 2:
 		if vals, ok := listLiteralInts(p.Call.Args[0]); ok {
 			if v, ok := intConstExpr(p.Call.Args[1]); ok {
