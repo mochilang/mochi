@@ -1,3 +1,27 @@
+## Progress (2025-07-21 11:17 +0700)
+- Generated Zig for 68/100 programs
+- Added inner_join support with improved type inference
+
+## Progress (2025-07-21 11:17 +0700)
+- Generated Zig for 67/100 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-21 11:17 +0700)
+- Generated Zig for 67/100 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-21 11:17 +0700)
+- Generated Zig for 67/100 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-21 11:17 +0700)
+- Generated Zig for 67/100 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-21 11:17 +0700)
+- Generated Zig for 67/100 programs
+- Updated README checklist and outputs
+
 ## Progress (2025-07-21 11:02 +0700)
 - Generated Zig for 67/100 programs
 - Added dataset_where_filter support and improved field inference
