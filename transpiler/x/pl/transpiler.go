@@ -3,6 +3,7 @@
 package pl
 
 import (
+	"encoding/json"
 	"fmt"
 	"io"
 	"sort"
@@ -51,6 +52,7 @@ func (f *Function) emit(w io.Writer) {
 type Stmt interface{ emit(io.Writer, int) }
 
 type PrintStmt struct{ Expr Expr }
+type MultiPrintStmt struct{ Exprs []Expr }
 type LetStmt struct {
 	Name string
 	Expr Expr
@@ -326,6 +328,23 @@ func (p *PrintStmt) emit(w io.Writer, idx int) {
 	io.WriteString(w, "    writeln(")
 	p.Expr.emit(w)
 	io.WriteString(w, ")")
+}
+
+func (p *MultiPrintStmt) emit(w io.Writer, idx int) {
+	for i, ex := range p.Exprs {
+		if i > 0 {
+			io.WriteString(w, ", ")
+		}
+		if i == len(p.Exprs)-1 {
+			io.WriteString(w, "writeln(")
+			ex.emit(w)
+			io.WriteString(w, ")")
+		} else {
+			io.WriteString(w, "write(")
+			ex.emit(w)
+			io.WriteString(w, "), write(' ')")
+		}
+	}
 }
 
 func (l *LetStmt) emit(w io.Writer, _ int) {
@@ -961,7 +980,7 @@ func compileStmts(sts []*parser.Statement, env *compileEnv) ([]Stmt, error) {
 		switch {
 		case s.Expr != nil:
 			call := s.Expr.Expr.Binary.Left.Value.Target.Call
-			if call == nil || call.Func != "print" {
+			if call == nil || (call.Func != "print" && call.Func != "json") {
 				return nil, fmt.Errorf("unsupported expression")
 			}
 			args := make([]Expr, len(call.Args))
@@ -995,20 +1014,38 @@ func compileStmts(sts []*parser.Statement, env *compileEnv) ([]Stmt, error) {
 					sb.WriteString(" ")
 				}
 			}
-			var arg Expr
-			if len(args) == 1 {
-				arg = args[0]
+			if call.Func == "json" {
+				if len(args) != 1 {
+					return nil, fmt.Errorf("unsupported expression")
+				}
+				arg := args[0]
 				if v, ok := arg.(*Var); ok {
 					if c := env.constExpr(v.Name); c != nil {
 						arg = c
 					}
 				}
-			} else if allConst {
-				arg = &StringLit{Value: sb.String()}
+				js, err := jsonString(arg)
+				if err != nil {
+					return nil, err
+				}
+				out = append(out, &PrintStmt{Expr: &StringLit{Value: js}})
 			} else {
-				return nil, fmt.Errorf("unsupported expression")
+				var stmt Stmt
+				if len(args) == 1 {
+					arg := args[0]
+					if v, ok := arg.(*Var); ok {
+						if c := env.constExpr(v.Name); c != nil {
+							arg = c
+						}
+					}
+					stmt = &PrintStmt{Expr: arg}
+					out = append(out, stmt)
+				} else if allConst {
+					out = append(out, &PrintStmt{Expr: &StringLit{Value: sb.String()}})
+				} else {
+					out = append(out, &MultiPrintStmt{Exprs: args})
+				}
 			}
-			out = append(out, &PrintStmt{Expr: arg})
 		case s.Let != nil:
 			var expr Expr
 			if s.Let.Value != nil {
@@ -1196,6 +1233,12 @@ func stmtNode(s Stmt) *ast.Node {
 	switch st := s.(type) {
 	case *PrintStmt:
 		return &ast.Node{Kind: "print", Children: []*ast.Node{exprNode(st.Expr)}}
+	case *MultiPrintStmt:
+		n := &ast.Node{Kind: "printmany"}
+		for _, e := range st.Exprs {
+			n.Children = append(n.Children, exprNode(e))
+		}
+		return n
 	case *LetStmt:
 		return &ast.Node{Kind: "let", Value: st.Name, Children: []*ast.Node{exprNode(st.Expr)}}
 	case *IfStmt:
@@ -1898,6 +1941,42 @@ func evalQueryExpr(q *parser.QueryExpr, env *compileEnv) (Expr, error) {
 			g := &MapLit{Items: []MapItem{{Key: "key", Value: keyLit}, {Key: "items", Value: groups[k]}}}
 			env.vars[q.Group.Name] = 0
 			env.consts[env.current(q.Group.Name)] = g
+			if q.Group.Having != nil {
+				hv, err := toExpr(q.Group.Having, env)
+				if err != nil {
+					return nil, err
+				}
+				hb, ok := hv.(*BoolLit)
+				if !ok || !hb.Value {
+					delete(env.consts, env.current(q.Group.Name))
+					delete(env.vars, q.Group.Name)
+					continue
+				}
+			}
+			if q.Group.Having != nil {
+				hv, err := toExpr(q.Group.Having, env)
+				if err != nil {
+					return nil, err
+				}
+				hb, ok := hv.(*BoolLit)
+				if !ok || !hb.Value {
+					delete(env.consts, env.current(q.Group.Name))
+					delete(env.vars, q.Group.Name)
+					continue
+				}
+			}
+			if q.Where != nil {
+				wc, err := toExpr(q.Where, env)
+				if err != nil {
+					return nil, err
+				}
+				wb, ok := wc.(*BoolLit)
+				if !ok || !wb.Value {
+					delete(env.consts, env.current(q.Group.Name))
+					delete(env.vars, q.Group.Name)
+					continue
+				}
+			}
 			val, err := toExpr(q.Select, env)
 			if err != nil {
 				return nil, err
@@ -2181,4 +2260,51 @@ func evalQueryExpr(q *parser.QueryExpr, env *compileEnv) (Expr, error) {
 	delete(env.consts, env.current(q.Var))
 	delete(env.vars, q.Var)
 	return out, nil
+}
+
+func jsonString(e Expr) (string, error) {
+	v, err := toInterface(e)
+	if err != nil {
+		return "", err
+	}
+	b, err := json.MarshalIndent(v, "", "  ")
+	if err != nil {
+		return "", err
+	}
+	return string(b), nil
+}
+
+func toInterface(e Expr) (interface{}, error) {
+	switch v := e.(type) {
+	case *IntLit:
+		return v.Value, nil
+	case *FloatLit:
+		return v.Value, nil
+	case *BoolLit:
+		return v.Value, nil
+	case *StringLit:
+		return v.Value, nil
+	case *ListLit:
+		arr := make([]interface{}, len(v.Elems))
+		for i, el := range v.Elems {
+			val, err := toInterface(el)
+			if err != nil {
+				return nil, err
+			}
+			arr[i] = val
+		}
+		return arr, nil
+	case *MapLit:
+		m := make(map[string]interface{})
+		for _, it := range v.Items {
+			val, err := toInterface(it.Value)
+			if err != nil {
+				return nil, err
+			}
+			m[it.Key] = val
+		}
+		return m, nil
+	default:
+		return nil, fmt.Errorf("unsupported json expr")
+	}
 }
