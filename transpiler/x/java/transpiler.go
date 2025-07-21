@@ -168,6 +168,8 @@ func inferType(e Expr) string {
 		return t
 	case *LenExpr:
 		return "int"
+	case *AvgExpr:
+		return "Object"
 	case *CallExpr:
 		switch ex.Func {
 		case "String.valueOf", "substring":
@@ -822,12 +824,11 @@ func (l *LenExpr) emit(w io.Writer) {
 type AvgExpr struct{ Value Expr }
 
 func (a *AvgExpr) emit(w io.Writer) {
-	fmt.Fprint(w, "((")
+	fmt.Fprint(w, "(((")
 	a.Value.emit(w)
-	fmt.Fprint(w, ".stream().mapToDouble(v -> ((Number)v).doubleValue()).average().orElse(0))")
-	fmt.Fprint(w, " % 1 == 0 ? (int)(")
+	fmt.Fprint(w, ".stream().mapToDouble(v -> ((Number)v).doubleValue()).average().orElse(0)) % 1 == 0) ? (Object)(int)(")
 	a.Value.emit(w)
-	fmt.Fprint(w, ".stream().mapToDouble(v -> ((Number)v).doubleValue()).average().orElse(0)) : (")
+	fmt.Fprint(w, ".stream().mapToDouble(v -> ((Number)v).doubleValue()).average().orElse(0)) : (Object)(")
 	a.Value.emit(w)
 	fmt.Fprint(w, ".stream().mapToDouble(v -> ((Number)v).doubleValue()).average().orElse(0)))")
 }
