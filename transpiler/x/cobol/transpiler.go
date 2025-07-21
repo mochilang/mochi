@@ -4,12 +4,14 @@ package cobol
 
 import (
 	"bytes"
+	"encoding/json"
 	"fmt"
 	"io"
 	"sort"
 	"strconv"
 	"strings"
 
+	"mochi/interpreter"
 	"mochi/parser"
 	"mochi/types"
 )
@@ -959,6 +961,11 @@ func convertVar(name string, t *parser.TypeRef, val *parser.Expr, env *types.Env
 			pic = fmt.Sprintf("PIC X(%d)", len(s))
 			constVal = &StringLit{Value: s}
 			constVars[name] = vals
+		} else if maps, ok := listLiteralMaps(val); ok {
+			s := formatConstMapSlice(maps)
+			pic = fmt.Sprintf("PIC X(%d)", len(s))
+			constVal = &StringLit{Value: s}
+			constVars[name] = maps
 		} else if m, ok := mapLiteral(val); ok {
 			s := formatConstMap(m)
 			pic = fmt.Sprintf("PIC X(%d)", len(s))
@@ -1275,6 +1282,36 @@ func listLiteralInts(e *parser.Expr) ([]int, bool) {
 	return nil, false
 }
 
+func listLiteralMaps(e *parser.Expr) ([]map[string]any, bool) {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) != 0 {
+		return nil, false
+	}
+	u := e.Binary.Left
+	if len(u.Ops) != 0 || u.Value == nil {
+		return nil, false
+	}
+	if lst := u.Value.Target.List; lst != nil {
+		out := make([]map[string]any, len(lst.Elems))
+		for i, el := range lst.Elems {
+			m, ok := mapLiteral(el)
+			if !ok {
+				return nil, false
+			}
+			sm := map[string]any{}
+			for k, v := range m {
+				ks, ok := k.(string)
+				if !ok {
+					return nil, false
+				}
+				sm[ks] = v
+			}
+			out[i] = sm
+		}
+		return out, true
+	}
+	return nil, false
+}
+
 func mapLiteral(e *parser.Expr) (map[interface{}]interface{}, bool) {
 	if e == nil || e.Binary == nil || len(e.Binary.Right) != 0 {
 		return nil, false
@@ -1366,6 +1403,55 @@ func formatConstMap(m map[interface{}]interface{}) string {
 		}
 	}
 	return "{" + strings.Join(parts, ", ") + "}"
+}
+
+func formatConstMapSlice(ms []map[string]any) string {
+	parts := make([]string, len(ms))
+	for i, m := range ms {
+		im := make(map[interface{}]interface{}, len(m))
+		for k, v := range m {
+			im[k] = v
+		}
+		parts[i] = formatConstMap(im)
+	}
+	return strings.Join(parts, " ")
+}
+
+func evalQueryString(q *parser.QueryExpr) (string, error) {
+	env := types.NewEnv(nil)
+	for name, val := range constVars {
+		env.SetVar(name, types.AnyType{}, false)
+		env.SetValue(name, val, false)
+	}
+	prog := &parser.Program{}
+	interp := interpreter.New(prog, env, ".")
+	expr := &parser.Expr{Binary: &parser.BinaryExpr{Left: &parser.Unary{Value: &parser.PostfixExpr{Target: &parser.Primary{Query: q}}}}}
+	val, err := interp.EvalExpr(expr)
+	if err != nil {
+		return "", err
+	}
+	switch v := val.(type) {
+	case []any:
+		items := make([]map[string]any, len(v))
+		for i, it := range v {
+			if m, ok := it.(map[string]any); ok {
+				items[i] = m
+			} else {
+				b, _ := json.Marshal(it)
+				return string(b), nil
+			}
+		}
+		return formatConstMapSlice(items), nil
+	case map[string]any:
+		ms := []map[string]any{v}
+		return formatConstMapSlice(ms), nil
+	default:
+		b, _ := json.Marshal(v)
+		s := string(b)
+		s = strings.ReplaceAll(s, ":", ": ")
+		s = strings.ReplaceAll(s, ",", ", ")
+		return s, nil
+	}
 }
 
 func convertExpr(e *parser.Expr, env *types.Env) (Expr, error) {
@@ -1790,6 +1876,11 @@ func convertPrimary(p *parser.Primary, env *types.Env) (Expr, error) {
 			return &StringLit{Value: "[" + strings.Join(parts, ", ") + "]"}, nil
 		}
 		return &VarRef{Name: p.Selector.Root}, nil
+	case p.Query != nil:
+		if s, err := evalQueryString(p.Query); err == nil {
+			return &StringLit{Value: s}, nil
+		}
+		return nil, fmt.Errorf("unsupported primary")
 	case p.Group != nil:
 		return convertExpr(p.Group, env)
 	default:
