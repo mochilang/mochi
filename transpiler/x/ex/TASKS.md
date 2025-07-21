@@ -1,3 +1,7 @@
+## Progress (2025-07-21 13:12 +0700)
+- Simplified group-by translation using `Enum.group_by` and pattern matching
+- Regenerated golden output and added partial_application example
+
 ## Progress (2025-07-21 12:53 +0700)
 - Added basic group-by translation using Enum.group_by
 - VM valid golden test results updated
