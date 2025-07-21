@@ -228,6 +228,48 @@ func guessHsType(ex Expr) string {
 			}
 		}
 	}
+	if call, ok := ex.(*CallExpr); ok {
+		if n, ok2 := call.Fun.(*NameRef); ok2 {
+			switch n.Name {
+			case "sum", "max", "min":
+				if len(call.Args) == 1 {
+					if isFloatExpr(call.Args[0]) {
+						return "Double"
+					}
+					if isIntExpr(call.Args[0]) {
+						return "Int"
+					}
+					return "Double"
+				}
+			case "avg":
+				return "Double"
+			case "round":
+				return "Int"
+			case "len", "count":
+				return "Int"
+			}
+		}
+	}
+	if be, ok := ex.(*BinaryExpr); ok {
+		if len(be.Ops) > 0 {
+			op := be.Ops[0].Op
+			switch op {
+			case "+", "-", "*", "/":
+				if op == "/" || isFloatExpr(be.Left) || isFloatExpr(be.Ops[0].Right) {
+					return "Double"
+				}
+				if isIntExpr(be.Left) && isIntExpr(be.Ops[0].Right) {
+					return "Int"
+				}
+				if isFloatExpr(be.Left) || isFloatExpr(be.Ops[0].Right) {
+					return "Double"
+				}
+				if isIntExpr(be.Left) || isIntExpr(be.Ops[0].Right) {
+					return "Int"
+				}
+			}
+		}
+	}
 	switch {
 	case isStringExpr(ex):
 		return "String"
@@ -751,6 +793,41 @@ func isMapExpr(e Expr) bool {
 	return false
 }
 
+func isIntExpr(e Expr) bool {
+	switch ex := e.(type) {
+	case *IntLit:
+		return true
+	case *BinaryExpr:
+		if len(ex.Ops) > 0 && ex.Ops[0].Op == "%" {
+			return true
+		}
+	case *NameRef:
+		return varTypes[ex.Name] == "int"
+	case *FieldExpr:
+		if n, ok := ex.Target.(*NameRef); ok {
+			if s := varStruct[n.Name]; s != "" {
+				if st, ok2 := structDefs[s]; ok2 {
+					for i, f := range st.Fields {
+						if f == ex.Field {
+							return st.Types[i] == "Int"
+						}
+					}
+				}
+			}
+			if envInfo != nil {
+				if vt, err := envInfo.GetVar(n.Name); err == nil {
+					if st, ok3 := vt.(types.StructType); ok3 {
+						if ft, ok4 := st.Fields[ex.Field]; ok4 {
+							return toHsType(ft) == "Int"
+						}
+					}
+				}
+			}
+		}
+	}
+	return false
+}
+
 func isFloatExpr(e Expr) bool {
 	switch ex := e.(type) {
 	case *FloatLit:
@@ -759,6 +836,8 @@ func isFloatExpr(e Expr) bool {
 		if n, ok := ex.Fun.(*NameRef); ok && n.Name == "fromIntegral" {
 			return true
 		}
+	case *ComprExpr:
+		return isFloatExpr(ex.Body)
 	case *BinaryExpr:
 		if len(ex.Ops) > 0 && ex.Ops[0].Op == "/" {
 			return true
@@ -812,9 +891,30 @@ func joinPrintArgs(args []Expr) Expr {
 }
 
 func (b *BinaryExpr) emit(w io.Writer) {
+	emitMaybeFloat := func(e Expr, wantFloat bool) {
+		if wantFloat && isIntExpr(e) {
+			io.WriteString(w, "fromIntegral ")
+			switch e.(type) {
+			case *NameRef, *IntLit:
+				e.emit(w)
+			default:
+				io.WriteString(w, "(")
+				e.emit(w)
+				io.WriteString(w, ")")
+			}
+		} else {
+			e.emit(w)
+		}
+	}
+
 	left := b.Left
-	left.emit(w)
-	for _, op := range b.Ops {
+	if len(b.Ops) == 0 {
+		emitMaybeFloat(left, false)
+		return
+	}
+	wantFloat := b.Ops[0].Op == "/" || isFloatExpr(left) || isFloatExpr(b.Ops[0].Right)
+	emitMaybeFloat(left, wantFloat)
+	for i, op := range b.Ops {
 		io.WriteString(w, " ")
 		switch op.Op {
 		case "+":
@@ -851,8 +951,11 @@ func (b *BinaryExpr) emit(w io.Writer) {
 			io.WriteString(w, op.Op)
 		}
 		io.WriteString(w, " ")
-		op.Right.emit(w)
+		emitMaybeFloat(op.Right, wantFloat)
 		left = op.Right
+		if i+1 < len(b.Ops) {
+			wantFloat = b.Ops[i+1].Op == "/" || isFloatExpr(left) || isFloatExpr(b.Ops[i+1].Right)
+		}
 	}
 }
 func (u *UnaryExpr) emit(w io.Writer) {
@@ -1005,12 +1108,12 @@ func inferVarFromSource(name string, src Expr) {
 				}
 			}
 		}
-		if fe, ok := src.(*FieldExpr); ok {
-			if n, ok2 := fe.Target.(*NameRef); ok2 && fe.Field == "items" {
-				if it := groupItemType[n.Name]; it != "" {
-					varStruct[name] = it
-					varTypes[name] = "record"
-				}
+	}
+	if fe, ok := src.(*FieldExpr); ok {
+		if n, ok2 := fe.Target.(*NameRef); ok2 && fe.Field == "items" {
+			if it := groupItemType[n.Name]; it != "" {
+				varStruct[name] = it
+				varTypes[name] = "record"
 			}
 		}
 	}
@@ -1594,12 +1697,6 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 		}
 		if p.Query.Group != nil && len(p.Query.Group.Exprs) > 0 {
 			groupVars[p.Query.Group.Name] = true
-		}
-		body, err := convertExpr(p.Query.Select)
-		if err != nil {
-			return nil, err
-		}
-		if p.Query.Group != nil && len(p.Query.Group.Exprs) > 0 {
 			needGroupBy = true
 			needDataList = true
 			varsExpr := make([]Expr, len(vars))
@@ -1637,9 +1734,15 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 			}
 			if rowType != "" {
 				groupItemType[p.Query.Group.Name] = rowType
+			} else if s := varStruct[vars[0]]; s != "" {
+				groupItemType[p.Query.Group.Name] = s
 			}
 			if keyType != "" {
 				groupKeyStruct[p.Query.Group.Name] = keyType
+			}
+			body, err := convertExpr(p.Query.Select)
+			if err != nil {
+				return nil, err
 			}
 			keysExpr := &ComprExpr{Vars: vars, Sources: srcs, Cond: cond, Body: keyExpr}
 			keys := &CallExpr{Fun: &NameRef{Name: "nub"}, Args: []Expr{&GroupExpr{Expr: keysExpr}}}
@@ -1661,6 +1764,13 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 				result = &CallExpr{Fun: &NameRef{Name: "sortOn"}, Args: []Expr{&GroupExpr{Expr: &LambdaExpr{Params: []string{p.Query.Group.Name}, Body: sortExpr}}, result}}
 			}
 			return result, nil
+		}
+		body, err := convertExpr(p.Query.Select)
+		if err != nil {
+			return nil, err
+		}
+		if p.Query.Group != nil && len(p.Query.Group.Exprs) > 0 {
+			// unreachable
 		}
 		var result Expr = &ComprExpr{Vars: vars, Sources: srcs, Cond: cond, Body: body}
 		if p.Query.Sort != nil {
@@ -1756,6 +1866,17 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 				return nil, err
 			}
 			return &CallExpr{Fun: &NameRef{Name: "maximum"}, Args: []Expr{arg}}, nil
+		}
+		if p.Call.Func == "sum" && len(p.Call.Args) == 1 {
+			arg, err := convertExpr(p.Call.Args[0])
+			if err != nil {
+				return nil, err
+			}
+			call := &CallExpr{Fun: &NameRef{Name: "sum"}, Args: []Expr{arg}}
+			if isFloatExpr(arg) {
+				return &CallExpr{Fun: &NameRef{Name: "round"}, Args: []Expr{&GroupExpr{Expr: call}}}, nil
+			}
+			return call, nil
 		}
 		fun := &NameRef{Name: p.Call.Func}
 		var args []Expr
