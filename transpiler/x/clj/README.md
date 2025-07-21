@@ -2,7 +2,7 @@
 
 This directory contains experimental source translators for generating Clojure code. Each program in `tests/vm/valid` is transpiled and executed with `clojure`.
 
-Compiled programs: 89/100
+Compiled programs: 91/100
 
 - [x] append_builtin
 - [x] avg_builtin
@@ -77,7 +77,7 @@ Compiled programs: 89/100
 - [ ] python_auto
 - [ ] python_math
 - [x] query_sum_select
-- [ ] record_assign
+- [x] record_assign
 - [x] right_join
 - [ ] save_jsonl_stdout
 - [x] short_circuit
@@ -100,7 +100,7 @@ Compiled programs: 89/100
 - [x] typed_var
 - [x] unary_neg
 - [ ] update_stmt
-- [ ] user_type_literal
+- [x] user_type_literal
 - [x] values_builtin
 - [x] var_assignment
 - [x] while_loop

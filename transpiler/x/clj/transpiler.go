@@ -284,7 +284,21 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	}()
 
 	// emit (ns main)
-	pr.Forms = append(pr.Forms, &List{Elems: []Node{Symbol("ns"), Symbol("main")}})
+	funNames := []string{}
+	for _, st := range prog.Statements {
+		if st.Fun != nil {
+			funNames = append(funNames, st.Fun.Name)
+		}
+	}
+	nsElems := []Node{Symbol("ns"), Symbol("main")}
+	if len(funNames) > 0 {
+		vec := &Vector{}
+		for _, n := range funNames {
+			vec.Elems = append(vec.Elems, Symbol(n))
+		}
+		nsElems = append(nsElems, &List{Elems: []Node{Keyword("refer-clojure"), Keyword("exclude"), vec}})
+	}
+	pr.Forms = append(pr.Forms, &List{Elems: nsElems})
 	pr.Forms = append(pr.Forms, &List{Elems: []Node{Symbol("require"), Symbol("'clojure.set")}})
 
 	body := []Node{}
@@ -382,29 +396,30 @@ func transpileStmt(s *parser.Statement) (Node, error) {
 		if err != nil {
 			return nil, err
 		}
-		if len(s.Assign.Index) > 0 {
-			simple := true
-			idxs := []Node{}
-			for _, idx := range s.Assign.Index {
-				if idx.Colon != nil || idx.Colon2 != nil || idx.End != nil || idx.Step != nil {
-					simple = false
-					break
-				}
-				en, err := transpileExpr(idx.Start)
-				if err != nil {
-					return nil, err
-				}
-				idxs = append(idxs, en)
+		path := []Node{}
+		simple := true
+		for _, idx := range s.Assign.Index {
+			if idx.Colon != nil || idx.Colon2 != nil || idx.End != nil || idx.Step != nil {
+				simple = false
+				break
 			}
-			if simple {
-				var assign Node
-				if len(idxs) == 1 {
-					assign = &List{Elems: []Node{Symbol("assoc"), Symbol(s.Assign.Name), idxs[0], v}}
-				} else {
-					assign = &List{Elems: []Node{Symbol("assoc-in"), Symbol(s.Assign.Name), &Vector{Elems: idxs}, v}}
-				}
-				return &List{Elems: []Node{Symbol("def"), Symbol(s.Assign.Name), assign}}, nil
+			en, err := transpileExpr(idx.Start)
+			if err != nil {
+				return nil, err
 			}
+			path = append(path, en)
+		}
+		for _, fld := range s.Assign.Field {
+			path = append(path, Keyword(fld.Name))
+		}
+		if simple && len(path) > 0 {
+			var assign Node
+			if len(path) == 1 {
+				assign = &List{Elems: []Node{Symbol("assoc"), Symbol(s.Assign.Name), path[0], v}}
+			} else {
+				assign = &List{Elems: []Node{Symbol("assoc-in"), Symbol(s.Assign.Name), &Vector{Elems: path}, v}}
+			}
+			return &List{Elems: []Node{Symbol("def"), Symbol(s.Assign.Name), assign}}, nil
 		}
 		return &List{Elems: []Node{Symbol("def"), Symbol(s.Assign.Name), v}}, nil
 	case s.Fun != nil:
@@ -925,6 +940,16 @@ func transpilePrimary(p *parser.Primary) (Node, error) {
 				return nil, err
 			}
 			pairs = append(pairs, [2]Node{k, v})
+		}
+		return &Map{Pairs: pairs}, nil
+	case p.Struct != nil:
+		pairs := [][2]Node{}
+		for _, f := range p.Struct.Fields {
+			v, err := transpileExpr(f.Value)
+			if err != nil {
+				return nil, err
+			}
+			pairs = append(pairs, [2]Node{Keyword(f.Name), v})
 		}
 		return &Map{Pairs: pairs}, nil
 	case p.Match != nil:
