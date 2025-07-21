@@ -29,7 +29,7 @@ Generated sources for the golden tests live under `tests/transpiler/x/ts`.
 - [x] go_auto.mochi
 - [x] group_by.mochi
 - [ ] group_by_conditional_sum.mochi
-- [ ] group_by_having.mochi
+- [x] group_by_having.mochi
 - [ ] group_by_join.mochi
 - [ ] group_by_left_join.mochi
 - [ ] group_by_multi_join.mochi
