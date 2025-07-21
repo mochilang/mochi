@@ -626,6 +626,10 @@ func (fst *ForStmt) emit(w io.Writer) {
 		io.WriteString(w, " .. (")
 		(&BinaryExpr{Left: fst.End, Op: "-", Right: &IntLit{Value: 1}}).emit(w)
 		io.WriteString(w, ")")
+	} else if inferType(fst.Start) == "map" {
+		io.WriteString(w, "Seq.map fst (Map.toSeq ")
+		fst.Start.emit(w)
+		io.WriteString(w, ")")
 	} else {
 		fst.Start.emit(w)
 	}
@@ -1679,6 +1683,22 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 		}
 		return &StructLit{Name: p.Struct.Name, Fields: fields}, nil
 	case p.Map != nil:
+		if mt, ok := types.InferSimpleMap(p.Map, transpileEnv); ok {
+			items := make([][2]Expr, len(p.Map.Items))
+			for i, it := range p.Map.Items {
+				k, err := convertExpr(it.Key)
+				if err != nil {
+					return nil, err
+				}
+				v, err := convertExpr(it.Value)
+				if err != nil {
+					return nil, err
+				}
+				items[i] = [2]Expr{k, v}
+			}
+			_ = mt // preserve inferred type for future use
+			return &MapLit{Items: items}, nil
+		}
 		if st, ok := types.InferStructFromMapEnv(p.Map, transpileEnv); ok {
 			structCount++
 			name := fmt.Sprintf("Anon%d", structCount)
