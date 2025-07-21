@@ -1,0 +1,5 @@
+Warning: /workspace/mochi/tests/transpiler/x/pl/join_multi.pl:3:
+Warning:    Singleton variables: [Customers,Orders,Items,Result,R,R1]
+--- Multi Join ---
+Alice bought item a
+Bob bought item b

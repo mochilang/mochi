@@ -2126,8 +2126,7 @@ func evalQueryExpr(q *parser.QueryExpr, env *compileEnv) (Expr, error) {
 		return out, nil
 	}
 
-	if len(q.Joins) == 1 && len(q.Froms) == 0 && q.Group == nil && q.Sort == nil && q.Skip == nil && q.Take == nil {
-		j := q.Joins[0]
+	if len(q.Joins) >= 1 && len(q.Froms) == 0 && q.Group == nil && q.Sort == nil && q.Skip == nil && q.Take == nil {
 		leftSrc, err := toExpr(q.Source, env)
 		if err != nil {
 			return nil, err
@@ -2136,50 +2135,73 @@ func evalQueryExpr(q *parser.QueryExpr, env *compileEnv) (Expr, error) {
 		if !ok {
 			return nil, fmt.Errorf("unsupported query source")
 		}
-		rightSrc, err := toExpr(j.Src, env)
-		if err != nil {
-			return nil, err
+		type jl struct {
+			varName string
+			list    *ListLit
+			on      *parser.Expr
 		}
-		right, ok := constList(rightSrc, env)
-		if !ok {
-			return nil, fmt.Errorf("unsupported join source")
+		joins := make([]jl, len(q.Joins))
+		for i, j := range q.Joins {
+			src, err := toExpr(j.Src, env)
+			if err != nil {
+				return nil, err
+			}
+			llist, ok := constList(src, env)
+			if !ok {
+				return nil, fmt.Errorf("unsupported join source")
+			}
+			joins[i] = jl{varName: j.Var, list: llist, on: j.On}
 		}
 		out := &ListLit{}
 		env.vars[q.Var] = 0
-		env.vars[j.Var] = 0
-		for _, l := range left.Elems {
-			env.consts[env.current(q.Var)] = l
-			for _, r := range right.Elems {
-				env.consts[env.current(j.Var)] = r
-				cond, err := toExpr(j.On, env)
+		var iter func(int) error
+		iter = func(idx int) error {
+			if idx == len(joins) {
+				if q.Where != nil {
+					wc, err := toExpr(q.Where, env)
+					if err != nil {
+						return err
+					}
+					wb, ok := wc.(*BoolLit)
+					if !ok || !wb.Value {
+						return nil
+					}
+				}
+				val, err := toExpr(q.Select, env)
 				if err != nil {
-					return nil, err
+					return err
+				}
+				out.Elems = append(out.Elems, val)
+				return nil
+			}
+			j := joins[idx]
+			env.vars[j.varName] = 0
+			for _, item := range j.list.Elems {
+				env.consts[env.current(j.varName)] = item
+				cond, err := toExpr(j.on, env)
+				if err != nil {
+					return err
 				}
 				b, ok := cond.(*BoolLit)
 				if !ok || !b.Value {
 					continue
 				}
-				if q.Where != nil {
-					wc, err := toExpr(q.Where, env)
-					if err != nil {
-						return nil, err
-					}
-					wb, ok := wc.(*BoolLit)
-					if !ok || !wb.Value {
-						continue
-					}
+				if err := iter(idx + 1); err != nil {
+					return err
 				}
-				val, err := toExpr(q.Select, env)
-				if err != nil {
-					return nil, err
-				}
-				out.Elems = append(out.Elems, val)
+			}
+			delete(env.consts, env.current(j.varName))
+			delete(env.vars, j.varName)
+			return nil
+		}
+		for _, l := range left.Elems {
+			env.consts[env.current(q.Var)] = l
+			if err := iter(0); err != nil {
+				return nil, err
 			}
 		}
 		delete(env.consts, env.current(q.Var))
 		delete(env.vars, q.Var)
-		delete(env.consts, env.current(j.Var))
-		delete(env.vars, j.Var)
 		return out, nil
 	}
 
@@ -2277,6 +2299,119 @@ func evalQueryExpr(q *parser.QueryExpr, env *compileEnv) (Expr, error) {
 			delete(env.vars, q.Group.Name)
 		}
 		return &ListLit{Elems: results}, nil
+	}
+
+	if len(q.Froms) > 0 || len(q.Joins) > 0 || q.Group != nil {
+		if q.Sort != nil || q.Skip != nil || q.Take != nil {
+			return nil, fmt.Errorf("unsupported query features")
+		}
+	}
+
+	if len(q.Froms) == 0 && len(q.Joins) == 0 && q.Group == nil {
+		src, err := toExpr(q.Source, env)
+		if err != nil {
+			return nil, err
+		}
+		list, ok := constList(src, env)
+		if !ok {
+			return nil, fmt.Errorf("unsupported query source")
+		}
+		type item struct {
+			val   Expr
+			num   float64
+			str   string
+			isNum bool
+		}
+		elems := []item{}
+		env.vars[q.Var] = 0
+		for _, it := range list.Elems {
+			env.consts[env.current(q.Var)] = it
+			if q.Where != nil {
+				cond, err := toExpr(q.Where, env)
+				if err != nil {
+					return nil, err
+				}
+				b, ok := cond.(*BoolLit)
+				if !ok || !b.Value {
+					continue
+				}
+			}
+			val, err := toExpr(q.Select, env)
+			if err != nil {
+				return nil, err
+			}
+			itRec := item{val: val}
+			if q.Sort != nil {
+				key, err := toExpr(q.Sort, env)
+				if err != nil {
+					return nil, err
+				}
+				switch k := key.(type) {
+				case *IntLit:
+					itRec.num = float64(k.Value)
+					itRec.isNum = true
+				case *FloatLit:
+					itRec.num = k.Value
+					itRec.isNum = true
+				case *BoolLit:
+					if k.Value {
+						itRec.num = 1
+					}
+					itRec.isNum = true
+				case *StringLit:
+					itRec.str = k.Value
+				default:
+					return nil, fmt.Errorf("unsupported sort key")
+				}
+			}
+			elems = append(elems, itRec)
+		}
+		delete(env.consts, env.current(q.Var))
+		delete(env.vars, q.Var)
+		if q.Sort != nil {
+			sort.SliceStable(elems, func(i, j int) bool {
+				if elems[i].isNum && elems[j].isNum {
+					return elems[i].num < elems[j].num
+				}
+				return elems[i].str < elems[j].str
+			})
+		}
+		start := 0
+		end := len(elems)
+		if q.Skip != nil {
+			sv, err := toExpr(q.Skip, env)
+			if err != nil {
+				return nil, err
+			}
+			n, ok := intValue(sv)
+			if !ok {
+				return nil, fmt.Errorf("non-int skip")
+			}
+			if n > start {
+				start = n
+			}
+		}
+		if q.Take != nil {
+			tv, err := toExpr(q.Take, env)
+			if err != nil {
+				return nil, err
+			}
+			n, ok := intValue(tv)
+			if !ok {
+				return nil, fmt.Errorf("non-int take")
+			}
+			if start+n < end {
+				end = start + n
+			}
+		}
+		if start > end {
+			start = end
+		}
+		out := &ListLit{}
+		for i := start; i < end; i++ {
+			out.Elems = append(out.Elems, elems[i].val)
+		}
+		return out, nil
 	}
 
 	if len(q.Froms) > 0 || len(q.Joins) > 0 || q.Sort != nil || q.Skip != nil || q.Take != nil {
