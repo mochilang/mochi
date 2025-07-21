@@ -2,9 +2,9 @@ exit status 1
 F# Compiler for F# 4.0 (Open Source Edition)
 Freely distributed under the Apache 2.0 Open Source License
 
-/workspace/mochi/tests/transpiler/x/fs/group_by_sort.fs(5,13): error FS0010: Unexpected keyword 'val' in field declaration. Expected identifier or other token.
+/workspace/mochi/tests/transpiler/x/fs/group_by_sort.fs(5,5): error FS0010: Unexpected keyword 'val' in field declaration. Expected identifier or other token.
 
-/workspace/mochi/tests/transpiler/x/fs/group_by_sort.fs(9,13): error FS0010: Unexpected keyword 'val' in field declaration. Expected identifier or other token.
+/workspace/mochi/tests/transpiler/x/fs/group_by_sort.fs(9,5): error FS0010: Unexpected keyword 'val' in field declaration. Expected identifier or other token.
 
 /workspace/mochi/tests/transpiler/x/fs/group_by_sort.fs(26,39): error FS0010: Unexpected keyword 'val' in expression. Expected '}' or other token.
 

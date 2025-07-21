@@ -2,7 +2,7 @@
 
 This folder contains an experimental transpiler that converts Mochi source code into F#.
 
-## Golden Test Checklist (100/100)
+## Golden Test Checklist (99/101)
 
 The list below tracks Mochi programs under `tests/vm/valid` that should successfully transpile. Checked items indicate tests known to work.
 
@@ -36,6 +36,7 @@ The list below tracks Mochi programs under `tests/vm/valid` that should successf
 - [x] group_by_left_join.mochi
 - [x] group_by_multi_join.mochi
 - [x] group_by_multi_join_sort.mochi
+- [x] group_by_multi_sort.mochi
 - [x] group_by_sort.mochi
 - [x] group_items_iteration.mochi
 - [x] if_else.mochi
@@ -56,7 +57,7 @@ The list below tracks Mochi programs under `tests/vm/valid` that should successf
 - [x] list_index.mochi
 - [x] list_nested_assign.mochi
 - [x] list_set_ops.mochi
-- [x] load_yaml.mochi
+- [ ] load_yaml.mochi
 - [x] map_assign.mochi
 - [x] map_in_operator.mochi
 - [x] map_index.mochi
@@ -81,7 +82,7 @@ The list below tracks Mochi programs under `tests/vm/valid` that should successf
 - [x] query_sum_select.mochi
 - [x] record_assign.mochi
 - [x] right_join.mochi
-- [x] save_jsonl_stdout.mochi
+- [ ] save_jsonl_stdout.mochi
 - [x] short_circuit.mochi
 - [x] slice.mochi
 - [x] sort_stable.mochi
@@ -107,4 +108,4 @@ The list below tracks Mochi programs under `tests/vm/valid` that should successf
 - [x] var_assignment.mochi
 - [x] while_loop.mochi
 
-Last updated: 2025-07-21 16:34 +0000
+Last updated: 2025-07-22 04:52 +0700

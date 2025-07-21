@@ -1,3 +1,3 @@
-// Generated 2025-07-21 18:37 +0700
+// Generated 2025-07-22 04:52 +0700
 
-printfn "%s" (string "hello")
+printfn "%s" "hello"

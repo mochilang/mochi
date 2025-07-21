@@ -104,6 +104,25 @@ func fsTypeFromString(s string) string {
 	}
 }
 
+func fsIdent(name string) string {
+	keywords := map[string]bool{"and": true, "as": true, "assert": true, "begin": true,
+		"class": true, "default": true, "delegate": true, "do": true, "done": true,
+		"downcast": true, "downto": true, "elif": true, "else": true, "end": true,
+		"exception": true, "extern": true, "false": true, "finally": true, "for": true,
+		"fun": true, "function": true, "if": true, "in": true, "inherit": true,
+		"inline": true, "interface": true, "internal": true, "lazy": true, "let": true,
+		"match": true, "member": true, "module": true, "mutable": true, "namespace": true,
+		"new": true, "null": true, "of": true, "open": true, "or": true, "override": true,
+		"private": true, "public": true, "rec": true, "return": true, "sig": true, "static": true,
+		"struct": true, "then": true, "to": true, "true": true, "try": true, "type": true,
+		"upcast": true, "use": true, "val": true, "void": true, "when": true, "while": true,
+		"with": true, "yield": true}
+	if keywords[name] || strings.ContainsAny(name, "- ") {
+		return "``" + name + "``"
+	}
+	return name
+}
+
 func inferStructFromMapVars(ml *parser.MapLiteral) ([]StructField, bool) {
 	fields := make([]StructField, len(ml.Items))
 	for i, it := range ml.Items {
@@ -229,7 +248,7 @@ type Expr interface{ emit(io.Writer) }
 // OpenStmt represents `open <module>`.
 type OpenStmt struct{ Name string }
 
-func (o *OpenStmt) emit(w io.Writer) { fmt.Fprintf(w, "open %s\n", o.Name) }
+func (o *OpenStmt) emit(w io.Writer) { fmt.Fprintf(w, "open %s\n", fsIdent(o.Name)) }
 
 // ModuleDef represents `module <name>` with nested declarations.
 type ModuleDef struct {
@@ -242,7 +261,7 @@ func (m *ModuleDef) emit(w io.Writer) {
 	if m.Open {
 		io.WriteString(w, "open System\n\n")
 	}
-	fmt.Fprintf(w, "module %s\n", m.Name)
+	fmt.Fprintf(w, "module %s\n", fsIdent(m.Name))
 	for i, st := range m.Stmts {
 		st.emit(w)
 		if i < len(m.Stmts)-1 {
@@ -303,7 +322,7 @@ type FunDef struct {
 
 func (f *FunDef) emit(w io.Writer) {
 	io.WriteString(w, "let rec ")
-	io.WriteString(w, f.Name)
+	io.WriteString(w, fsIdent(f.Name))
 	if len(f.Params) == 0 {
 		io.WriteString(w, " ()")
 	}
@@ -447,7 +466,7 @@ type VariantExpr struct {
 }
 
 func (v *VariantExpr) emit(w io.Writer) {
-	io.WriteString(w, v.Name)
+	io.WriteString(w, fsIdent(v.Name))
 	if len(v.Args) > 0 {
 		io.WriteString(w, "(")
 		for i, a := range v.Args {
@@ -463,7 +482,7 @@ func (v *VariantExpr) emit(w io.Writer) {
 func (s *StructLit) emit(w io.Writer) {
 	io.WriteString(w, "{ ")
 	for i, f := range s.Fields {
-		io.WriteString(w, f.Name)
+		io.WriteString(w, fsIdent(f.Name))
 		io.WriteString(w, " = ")
 		f.Value.emit(w)
 		if i < len(s.Fields)-1 {
@@ -475,11 +494,11 @@ func (s *StructLit) emit(w io.Writer) {
 
 func (q *QueryExpr) emit(w io.Writer) {
 	io.WriteString(w, "[ for ")
-	io.WriteString(w, q.Var)
+	io.WriteString(w, fsIdent(q.Var))
 	io.WriteString(w, " in ")
 	src := q.Src
 	if q.Sort != nil {
-		src = &CallExpr{Func: "List.sortBy", Args: []Expr{&LambdaExpr{Params: []string{q.Var}, Expr: q.Sort}, src}}
+		src = &CallExpr{Func: "List.sortBy", Args: []Expr{&LambdaExpr{Params: []string{fsIdent(q.Var)}, Expr: q.Sort}, src}}
 	}
 	if q.Skip != nil {
 		src = &CallExpr{Func: "List.skip", Args: []Expr{q.Skip, src}}
@@ -491,7 +510,7 @@ func (q *QueryExpr) emit(w io.Writer) {
 	io.WriteString(w, " do")
 	for _, j := range q.Joins {
 		io.WriteString(w, " for ")
-		io.WriteString(w, j.Var)
+		io.WriteString(w, fsIdent(j.Var))
 		io.WriteString(w, " in ")
 		j.Src.emit(w)
 		io.WriteString(w, " do")
@@ -503,7 +522,7 @@ func (q *QueryExpr) emit(w io.Writer) {
 	}
 	for _, f := range q.Froms {
 		io.WriteString(w, " for ")
-		io.WriteString(w, f.Var)
+		io.WriteString(w, fsIdent(f.Var))
 		io.WriteString(w, " in ")
 		f.Src.emit(w)
 		io.WriteString(w, " do")
@@ -521,7 +540,7 @@ func (q *QueryExpr) emit(w io.Writer) {
 func (g *GroupQueryExpr) emit(w io.Writer) {
 	io.WriteString(w, "[ for (key, items) in List.groupBy (fun ")
 	if len(g.Joins) == 0 && len(g.Froms) == 0 && g.Where == nil {
-		io.WriteString(w, g.Var)
+		io.WriteString(w, fsIdent(g.Var))
 	} else {
 		io.WriteString(w, "{ ")
 		names := []string{g.Var}
@@ -535,9 +554,9 @@ func (g *GroupQueryExpr) emit(w io.Writer) {
 			if i > 0 {
 				io.WriteString(w, "; ")
 			}
-			io.WriteString(w, n)
+			io.WriteString(w, fsIdent(n))
 			io.WriteString(w, " = ")
-			io.WriteString(w, n)
+			io.WriteString(w, fsIdent(n))
 		}
 		io.WriteString(w, " }")
 	}
@@ -548,13 +567,13 @@ func (g *GroupQueryExpr) emit(w io.Writer) {
 		g.Src.emit(w)
 	} else {
 		io.WriteString(w, "[ for ")
-		io.WriteString(w, g.Var)
+		io.WriteString(w, fsIdent(g.Var))
 		io.WriteString(w, " in ")
 		g.Src.emit(w)
 		io.WriteString(w, " do")
 		for _, j := range g.Joins {
 			io.WriteString(w, " for ")
-			io.WriteString(w, j.Var)
+			io.WriteString(w, fsIdent(j.Var))
 			io.WriteString(w, " in ")
 			j.Src.emit(w)
 			io.WriteString(w, " do")
@@ -566,7 +585,7 @@ func (g *GroupQueryExpr) emit(w io.Writer) {
 		}
 		for _, f := range g.Froms {
 			io.WriteString(w, " for ")
-			io.WriteString(w, f.Var)
+			io.WriteString(w, fsIdent(f.Var))
 			io.WriteString(w, " in ")
 			f.Src.emit(w)
 			io.WriteString(w, " do")
@@ -588,9 +607,9 @@ func (g *GroupQueryExpr) emit(w io.Writer) {
 			if i > 0 {
 				io.WriteString(w, "; ")
 			}
-			io.WriteString(w, n)
+			io.WriteString(w, fsIdent(n))
 			io.WriteString(w, " = ")
-			io.WriteString(w, n)
+			io.WriteString(w, fsIdent(n))
 		}
 		io.WriteString(w, " }")
 		if g.ItemName != "" {
@@ -600,7 +619,7 @@ func (g *GroupQueryExpr) emit(w io.Writer) {
 		io.WriteString(w, " ]")
 	}
 	io.WriteString(w, " do\n    let ")
-	io.WriteString(w, g.GroupVar)
+	io.WriteString(w, fsIdent(g.GroupVar))
 	io.WriteString(w, " : ")
 	io.WriteString(w, g.GroupName)
 	io.WriteString(w, " = { key = key; items = items }\n    yield ")
@@ -668,7 +687,7 @@ type AssignStmt struct {
 }
 
 func (s *AssignStmt) emit(w io.Writer) {
-	io.WriteString(w, s.Name)
+	io.WriteString(w, fsIdent(s.Name))
 	io.WriteString(w, " <- ")
 	s.Expr.emit(w)
 }
@@ -694,7 +713,7 @@ func (s *StructUpdateExpr) emit(w io.Writer) {
 	io.WriteString(w, "{ ")
 	s.Target.emit(w)
 	io.WriteString(w, " with ")
-	io.WriteString(w, s.Field)
+	io.WriteString(w, fsIdent(s.Field))
 	io.WriteString(w, " = ")
 	s.Value.emit(w)
 	io.WriteString(w, " }")
@@ -725,7 +744,7 @@ type UpdateStmt struct {
 }
 
 func (u *UpdateStmt) emit(w io.Writer) {
-	io.WriteString(w, u.Target)
+	io.WriteString(w, fsIdent(u.Target))
 	io.WriteString(w, " <- List.map (fun item -> ")
 	expr := Expr(&IdentExpr{Name: "item"})
 	for i, f := range u.Fields {
@@ -736,7 +755,7 @@ func (u *UpdateStmt) emit(w io.Writer) {
 	}
 	expr.emit(w)
 	io.WriteString(w, ") ")
-	io.WriteString(w, u.Target)
+	io.WriteString(w, fsIdent(u.Target))
 }
 
 type ForStmt struct {
@@ -748,7 +767,7 @@ type ForStmt struct {
 
 func (fst *ForStmt) emit(w io.Writer) {
 	io.WriteString(w, "for ")
-	io.WriteString(w, fst.Name)
+	io.WriteString(w, fsIdent(fst.Name))
 	io.WriteString(w, " in ")
 	if fst.End != nil {
 		fst.Start.emit(w)
@@ -779,7 +798,7 @@ func (s *LetStmt) emit(w io.Writer) {
 	if s.Mutable {
 		io.WriteString(w, "mutable ")
 	}
-	io.WriteString(w, s.Name)
+	io.WriteString(w, fsIdent(s.Name))
 	if s.Type != "" {
 		io.WriteString(w, ": ")
 		io.WriteString(w, s.Type)
@@ -941,7 +960,7 @@ func (f *FloatLit) emit(w io.Writer) {
 
 type IdentExpr struct{ Name string }
 
-func (i *IdentExpr) emit(w io.Writer) { io.WriteString(w, i.Name) }
+func (i *IdentExpr) emit(w io.Writer) { io.WriteString(w, fsIdent(i.Name)) }
 
 type UnitLit struct{}
 
@@ -1196,7 +1215,7 @@ type FieldExpr struct {
 func (f *FieldExpr) emit(w io.Writer) {
 	f.Target.emit(w)
 	io.WriteString(w, ".")
-	io.WriteString(w, f.Name)
+	io.WriteString(w, fsIdent(f.Name))
 }
 
 // MethodCallExpr represents a method invocation target.method(args).
@@ -1293,12 +1312,12 @@ func Emit(prog *Program) []byte {
 		}
 	}
 	for _, st := range prog.Structs {
-		fmt.Fprintf(&buf, "type %s = {\n", st.Name)
+		fmt.Fprintf(&buf, "type %s = {\n", fsIdent(st.Name))
 		for _, f := range st.Fields {
 			if f.Mut {
-				fmt.Fprintf(&buf, "    mutable %s: %s\n", f.Name, f.Type)
+				fmt.Fprintf(&buf, "    mutable %s: %s\n", fsIdent(f.Name), f.Type)
 			} else {
-				fmt.Fprintf(&buf, "    %s: %s\n", f.Name, f.Type)
+				fmt.Fprintf(&buf, "    %s: %s\n", fsIdent(f.Name), f.Type)
 			}
 		}
 		buf.WriteString("}\n")
