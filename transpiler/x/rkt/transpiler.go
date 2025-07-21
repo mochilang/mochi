@@ -1977,6 +1977,57 @@ type GroupByExpr struct {
 	Having Expr
 }
 
+type GroupJoinExpr struct {
+	LeftVar  string
+	LeftSrc  Expr
+	RightVar string
+	RightSrc Expr
+	Cond     Expr
+	Key      Expr
+	Row      Expr
+	Name     string
+	Select   Expr
+	Having   Expr
+}
+
+func (g *GroupJoinExpr) emit(w io.Writer) {
+	io.WriteString(w, "(let ([_groups (make-hash)] [_res '()])\n")
+	io.WriteString(w, "  (for ([")
+	io.WriteString(w, g.LeftVar)
+	io.WriteString(w, " ")
+	g.LeftSrc.emit(w)
+	io.WriteString(w, "])\n")
+	io.WriteString(w, "    (for ([")
+	io.WriteString(w, g.RightVar)
+	io.WriteString(w, " ")
+	g.RightSrc.emit(w)
+	io.WriteString(w, "])\n")
+	io.WriteString(w, "      (when ")
+	g.Cond.emit(w)
+	io.WriteString(w, "\n        (let* ([_key ")
+	g.Key.emit(w)
+	io.WriteString(w, "][_g (hash-ref _groups _key (lambda () (let ([h (make-hash)]) (hash-set! h \"key\" _key) (hash-set! h \"items\" '()) (hash-set! _groups _key h) h)))])\n")
+	io.WriteString(w, "          (hash-set! _g \"items\" (append (hash-ref _g \"items\") (list ")
+	g.Row.emit(w)
+	io.WriteString(w, ")))\n")
+	io.WriteString(w, "      )\n    )\n  )\n")
+	io.WriteString(w, "  (for ([")
+	io.WriteString(w, g.Name)
+	io.WriteString(w, " (hash-values _groups)])\n")
+	if g.Having != nil {
+		io.WriteString(w, "    (when ")
+		g.Having.emit(w)
+		io.WriteString(w, "\n      (set! _res (append _res (list ")
+		g.Select.emit(w)
+		io.WriteString(w, ")))\n    )\n")
+	} else {
+		io.WriteString(w, "    (set! _res (append _res (list ")
+		g.Select.emit(w)
+		io.WriteString(w, ")))\n")
+	}
+	io.WriteString(w, "  )\n  _res)")
+}
+
 func (g *GroupByExpr) emit(w io.Writer) {
 	io.WriteString(w, "(let ([_groups (make-hash)] [_res '()])\n")
 	io.WriteString(w, "  (for ([")
@@ -2055,9 +2106,62 @@ func convertGroupQuery(q *parser.QueryExpr, env *types.Env) (Expr, error) {
 	return &GroupByExpr{Var: q.Var, Source: src, Key: key, Name: q.Group.Name, Where: where, Select: sel, Having: having}, nil
 }
 
+func convertGroupJoinQuery(q *parser.QueryExpr, env *types.Env) (Expr, error) {
+	if q.Group == nil || len(q.Group.Exprs) != 1 || len(q.Joins) != 1 || len(q.Froms) != 0 || q.Distinct || q.Sort != nil || q.Skip != nil || q.Take != nil {
+		return nil, fmt.Errorf("unsupported query")
+	}
+	j := q.Joins[0]
+	if j.Side != nil && *j.Side != "" {
+		return nil, fmt.Errorf("unsupported query")
+	}
+	needsGroupStruct = true
+	leftSrc, err := convertExpr(q.Source, env)
+	if err != nil {
+		return nil, err
+	}
+	rightSrc, err := convertExpr(j.Src, env)
+	if err != nil {
+		return nil, err
+	}
+	child := types.NewEnv(env)
+	child.SetVar(q.Var, types.AnyType{}, true)
+	child.SetVar(j.Var, types.AnyType{}, true)
+	cond, err := convertExpr(j.On, child)
+	if err != nil {
+		return nil, err
+	}
+	key, err := convertExpr(q.Group.Exprs[0], child)
+	if err != nil {
+		return nil, err
+	}
+	entries := []Expr{
+		&StringLit{Value: q.Var}, &Name{Name: q.Var},
+		&StringLit{Value: j.Var}, &Name{Name: j.Var},
+	}
+	row := &CallExpr{Func: "hash", Args: entries}
+	genv := types.NewEnv(env)
+	genv.SetVar(q.Group.Name, types.AnyType{}, true)
+	groupVars[q.Group.Name] = true
+	sel, err := convertExpr(q.Select, genv)
+	if err != nil {
+		return nil, err
+	}
+	var having Expr
+	if q.Group.Having != nil {
+		having, err = convertExpr(q.Group.Having, genv)
+		if err != nil {
+			return nil, err
+		}
+	}
+	return &GroupJoinExpr{LeftVar: q.Var, LeftSrc: leftSrc, RightVar: j.Var, RightSrc: rightSrc, Cond: cond, Key: key, Row: row, Name: q.Group.Name, Select: sel, Having: having}, nil
+}
+
 func convertQueryExpr(q *parser.QueryExpr, env *types.Env) (Expr, error) {
 	if q.Group != nil {
-		return convertGroupQuery(q, env)
+		if len(q.Joins) == 0 && len(q.Froms) == 0 && q.Skip == nil && q.Take == nil {
+			return convertGroupQuery(q, env)
+		}
+		return convertGroupJoinQuery(q, env)
 	}
 	if len(q.Joins) == 0 {
 		return convertCrossJoinQuery(q, env)
