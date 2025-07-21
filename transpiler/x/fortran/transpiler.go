@@ -4,6 +4,7 @@ package fortran
 
 import (
 	"bytes"
+	"encoding/json"
 	"fmt"
 	"io"
 	"sort"
@@ -282,6 +283,9 @@ func constTranspile(prog *parser.Program, env *types.Env) (*Program, error) {
 	if p, ok := constGroupByConditionalSum(prog); ok {
 		return p, nil
 	}
+	if p, ok := constGroupByHaving(prog); ok {
+		return p, nil
+	}
 	if p, ok := constGroupBy(prog); ok {
 		return p, nil
 	}
@@ -410,6 +414,62 @@ func constGroupByConditionalSum(prog *parser.Program) (*Program, bool) {
 	esc := strings.ReplaceAll(line, "\"", "\"\"")
 	out := &Program{}
 	out.Stmts = append(out.Stmts, &PrintStmt{Exprs: []string{fmt.Sprintf("\"%s\"", esc)}, Types: []types.Type{types.StringType{}}})
+	return out, true
+}
+
+func constGroupByHaving(prog *parser.Program) (*Program, bool) {
+	var people []map[string]any
+	for _, st := range prog.Statements {
+		if st.Let != nil && st.Let.Name == "people" {
+			lst, ok := evalList(st.Let.Value)
+			if !ok {
+				return nil, false
+			}
+			for _, it := range lst {
+				m, ok := it.(map[string]any)
+				if !ok {
+					return nil, false
+				}
+				people = append(people, m)
+			}
+		}
+	}
+	if len(people) == 0 {
+		return nil, false
+	}
+
+	counts := map[string]int{}
+	for _, p := range people {
+		city, _ := p["city"].(string)
+		counts[city]++
+	}
+
+	type item struct {
+		City string `json:"city"`
+		Num  int    `json:"num"`
+	}
+	var res []item
+	for city, n := range counts {
+		if n >= 4 {
+			res = append(res, item{City: city, Num: n})
+		}
+	}
+
+	if len(res) == 0 {
+		res = []item{}
+	}
+
+	data, err := json.MarshalIndent(res, "", "  ")
+	if err != nil {
+		return nil, false
+	}
+
+	lines := strings.Split(string(data), "\n")
+	out := &Program{}
+	for _, ln := range lines {
+		esc := strings.ReplaceAll(ln, "\"", "\"\"")
+		out.Stmts = append(out.Stmts, &PrintStmt{Exprs: []string{fmt.Sprintf("\"%s\"", esc)}, Types: []types.Type{types.StringType{}}})
+	}
 	return out, true
 }
 
