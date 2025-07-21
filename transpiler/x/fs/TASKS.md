@@ -1,3 +1,8 @@
+## Progress (2025-07-21 07:31 +0700)
+- Added right join support and improved type inference
+- Generated F# for 100/100 programs (62 passing)
+- Updated README checklist and outputs
+
 ## Progress (2025-07-20 22:05 +0700)
 - Added exists builtin support in the F# transpiler
 - Generated F# for 100/100 programs (61 passing)
