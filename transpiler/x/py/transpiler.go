@@ -1228,6 +1228,8 @@ func maybeDataClassList(name string, list *ListLit) (*DataClassDef, []Expr) {
 			typ = "float"
 		case *StringLit:
 			typ = "str"
+		case *BoolLit:
+			typ = "bool"
 		}
 		fields = append(fields, DataClassField{Name: k, Type: typ})
 	}
@@ -1261,6 +1263,8 @@ func dataClassFromDict(name string, d *DictLit) (*DataClassDef, []Expr) {
 			typ = "float"
 		case *StringLit:
 			typ = "str"
+		case *BoolLit:
+			typ = "bool"
 		}
 		fields = append(fields, DataClassField{Name: k, Type: typ})
 	}
