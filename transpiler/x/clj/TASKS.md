@@ -1,3 +1,7 @@
+## Progress (2025-07-21 11:04 +0700)
+- clj transpiler: add sort skip take
+- Regenerated golden files - 85/100 vm valid programs passing
+
 ## Progress (2025-07-21 10:52 +0700)
 - scheme transpiler: add right join and simplify loops
 - Regenerated golden files - 85/100 vm valid programs passing
