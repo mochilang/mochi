@@ -5,6 +5,7 @@ package rb
 import (
 	"fmt"
 	"io"
+	"math"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -988,6 +989,7 @@ func (gq *GroupLeftJoinQueryExpr) emit(e *emitter) {
 }
 
 var needsJSON bool
+var pythonMathAliases map[string]bool
 
 // emitter maintains the current indentation level while emitting Ruby code.
 type emitter struct {
@@ -1114,6 +1116,49 @@ func (s *AssignStmt) emit(e *emitter) {
 	s.Value.emit(e)
 }
 
+// UpdateStmt updates fields of items in a list of structs.
+type UpdateStmt struct {
+	Target string
+	Fields []string
+	Values []Expr
+	Cond   Expr
+}
+
+func (u *UpdateStmt) emit(e *emitter) {
+	io.WriteString(e.w, u.Target)
+	io.WriteString(e.w, " = (")
+	io.WriteString(e.w, u.Target)
+	io.WriteString(e.w, ")")
+	io.WriteString(e.w, ".map do |item|")
+	e.nl()
+	e.indent++
+	if u.Cond != nil {
+		e.writeIndent()
+		io.WriteString(e.w, "if ")
+		u.Cond.emit(e)
+		e.nl()
+		e.indent++
+	}
+	for i, f := range u.Fields {
+		e.writeIndent()
+		fmt.Fprintf(e.w, "item[%q] = ", f)
+		u.Values[i].emit(e)
+		e.nl()
+	}
+	if u.Cond != nil {
+		e.indent--
+		e.writeIndent()
+		io.WriteString(e.w, "end")
+		e.nl()
+	}
+	e.writeIndent()
+	io.WriteString(e.w, "item")
+	e.nl()
+	e.indent--
+	e.writeIndent()
+	io.WriteString(e.w, "end")
+}
+
 // IndexAssignStmt represents assignment to an indexed element.
 // IndexAssignStmt assigns to an indexed element of an expression.
 type IndexAssignStmt struct {
@@ -1210,7 +1255,13 @@ func (i *IntLit) emit(e *emitter) { fmt.Fprintf(e.w, "%d", i.Value) }
 
 type FloatLit struct{ Value float64 }
 
-func (f *FloatLit) emit(e *emitter) { fmt.Fprintf(e.w, "%g", f.Value) }
+func (f *FloatLit) emit(e *emitter) {
+	if f.Value == math.Trunc(f.Value) {
+		fmt.Fprintf(e.w, "%.1f", f.Value)
+	} else {
+		fmt.Fprintf(e.w, "%g", f.Value)
+	}
+}
 
 type BoolLit struct{ Value bool }
 
@@ -1320,6 +1371,11 @@ type MapItem struct {
 	Key   Expr
 	Value Expr
 }
+
+// RawExpr emits code directly without modification.
+type RawExpr struct{ Code string }
+
+func (r *RawExpr) emit(e *emitter) { io.WriteString(e.w, r.Code) }
 
 func (m *MapLit) emit(e *emitter) {
 	io.WriteString(e.w, "{")
@@ -1966,6 +2022,7 @@ func Emit(w io.Writer, p *Program) error {
 // Transpile converts a Mochi program into a Ruby AST.
 func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	needsJSON = false
+	pythonMathAliases = map[string]bool{}
 	currentEnv = env
 	rbProg := &Program{}
 	for _, st := range prog.Statements {
@@ -1977,6 +2034,7 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 			rbProg.Stmts = append(rbProg.Stmts, conv)
 		}
 	}
+	pythonMathAliases = nil
 	return rbProg, nil
 }
 
@@ -2151,6 +2209,29 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 		return convertWhile(st.While)
 	case st.For != nil:
 		return convertFor(st.For)
+	case st.Update != nil:
+		up, err := convertUpdate(st.Update)
+		if err != nil {
+			return nil, err
+		}
+		return up, nil
+	case st.Import != nil:
+		alias := st.Import.As
+		if alias == "" {
+			alias = parser.AliasFromPath(st.Import.Path)
+		}
+		if st.Import.Lang != nil && *st.Import.Lang == "python" && strings.Trim(st.Import.Path, "\"") == "math" {
+			if currentEnv != nil {
+				currentEnv.SetVar(alias, types.AnyType{}, false)
+			}
+			if pythonMathAliases != nil {
+				pythonMathAliases[alias] = true
+			}
+			return &LetStmt{Name: alias, Value: &Ident{Name: "Math"}}, nil
+		}
+		return nil, nil
+	case st.ExternVar != nil, st.ExternFun != nil, st.ExternType != nil, st.ExternObject != nil:
+		return nil, nil
 	case st.Expect != nil:
 		e, err := convertExpr(st.Expect.Value)
 		if err != nil {
@@ -2404,6 +2485,63 @@ func convertFor(f *parser.ForStmt) (Stmt, error) {
 	return &ForInStmt{Name: f.Name, Iterable: iterable, Body: body}, nil
 }
 
+func convertUpdate(u *parser.UpdateStmt) (Stmt, error) {
+	if currentEnv == nil {
+		return nil, fmt.Errorf("missing env")
+	}
+	t, err := currentEnv.GetVar(u.Target)
+	if err != nil {
+		return nil, err
+	}
+	lt, ok := t.(types.ListType)
+	if !ok {
+		return nil, fmt.Errorf("update target not list")
+	}
+	st, ok := lt.Elem.(types.StructType)
+	if !ok {
+		return nil, fmt.Errorf("update element not struct")
+	}
+	child := types.NewEnv(currentEnv)
+	fieldSet := map[string]bool{}
+	for n, ft := range st.Fields {
+		child.SetVar(n, ft, true)
+		fieldSet[n] = true
+	}
+	saved := currentEnv
+	currentEnv = child
+	var fields []string
+	var values []Expr
+	for _, it := range u.Set.Items {
+		key, ok := isSimpleIdent(it.Key)
+		if !ok {
+			key, ok = literalString(it.Key)
+			if !ok {
+				currentEnv = saved
+				return nil, fmt.Errorf("unsupported update key")
+			}
+		}
+		val, err := convertExpr(it.Value)
+		if err != nil {
+			currentEnv = saved
+			return nil, err
+		}
+		val = substituteFields(val, "item", fieldSet)
+		fields = append(fields, key)
+		values = append(values, val)
+	}
+	var cond Expr
+	if u.Where != nil {
+		c, err := convertExpr(u.Where)
+		if err != nil {
+			currentEnv = saved
+			return nil, err
+		}
+		cond = substituteFields(c, "item", fieldSet)
+	}
+	currentEnv = saved
+	return &UpdateStmt{Target: u.Target, Fields: fields, Values: values, Cond: cond}, nil
+}
+
 func convertExpr(e *parser.Expr) (Expr, error) {
 	if e == nil || e.Binary == nil {
 		return nil, fmt.Errorf("unsupported expression")
@@ -2498,7 +2636,11 @@ func convertPostfix(pf *parser.PostfixExpr) (Expr, error) {
 		if method == "contains" {
 			method = "include?"
 		}
-		expr = &MethodCallExpr{Target: expr, Method: method, Args: args}
+		if id, ok := expr.(*Ident); ok && pythonMathAliases != nil && pythonMathAliases[id.Name] && method == "pow" && len(args) == 2 {
+			expr = &BinaryExpr{Left: args[0], Op: "**", Right: args[1]}
+		} else {
+			expr = &MethodCallExpr{Target: expr, Method: method, Args: args}
+		}
 		start = 1
 	} else {
 		expr, err = convertPrimary(pf.Target)
@@ -2561,11 +2703,21 @@ func convertPostfix(pf *parser.PostfixExpr) (Expr, error) {
 			if method == "contains" {
 				method = "include?"
 			}
-			expr = &MethodCallExpr{Target: expr, Method: method, Args: args}
+			if id, ok := expr.(*Ident); ok && pythonMathAliases != nil && pythonMathAliases[id.Name] && method == "pow" && len(args) == 2 {
+				expr = &BinaryExpr{Left: args[0], Op: "**", Right: args[1]}
+			} else {
+				expr = &MethodCallExpr{Target: expr, Method: method, Args: args}
+			}
 			i++ // consume call op
 			curType = nil
 		case op.Field != nil:
-			expr, curType = fieldAccess(expr, curType, op.Field.Name)
+			if id, ok := expr.(*Ident); ok && pythonMathAliases != nil && pythonMathAliases[id.Name] {
+				constName := strings.ToUpper(op.Field.Name)
+				expr = &RawExpr{Code: fmt.Sprintf("%s::%s", id.Name, constName)}
+				curType = types.FloatType{}
+			} else {
+				expr, curType = fieldAccess(expr, curType, op.Field.Name)
+			}
 		case op.Cast != nil:
 			if op.Cast.Type != nil && op.Cast.Type.Simple != nil {
 				typName := *op.Cast.Type.Simple
@@ -2758,10 +2910,15 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 		}
 		return &GroupExpr{Expr: ex}, nil
 	case p.Selector != nil:
-		expr := Expr(&Ident{Name: p.Selector.Root})
+		root := p.Selector.Root
+		if pythonMathAliases != nil && pythonMathAliases[root] && len(p.Selector.Tail) == 1 {
+			constName := strings.ToUpper(p.Selector.Tail[0])
+			return &RawExpr{Code: fmt.Sprintf("%s::%s", root, constName)}, nil
+		}
+		expr := Expr(&Ident{Name: root})
 		var t types.Type
 		if currentEnv != nil {
-			prim := &parser.Primary{Selector: &parser.SelectorExpr{Root: p.Selector.Root}}
+			prim := &parser.Primary{Selector: &parser.SelectorExpr{Root: root}}
 			t = types.ExprType(exprFromPrimary(prim), currentEnv)
 		}
 		for _, seg := range p.Selector.Tail {
@@ -3509,6 +3666,16 @@ func stmtNode(s Stmt) *ast.Node {
 		n := &ast.Node{Kind: "for_in", Value: st.Name, Children: []*ast.Node{exprNode(st.Iterable)}}
 		for _, b := range st.Body {
 			n.Children = append(n.Children, stmtNode(b))
+		}
+		return n
+	case *UpdateStmt:
+		n := &ast.Node{Kind: "update", Value: st.Target}
+		for i, f := range st.Fields {
+			assign := &ast.Node{Kind: "field", Value: f, Children: []*ast.Node{exprNode(st.Values[i])}}
+			n.Children = append(n.Children, assign)
+		}
+		if st.Cond != nil {
+			n.Children = append(n.Children, &ast.Node{Kind: "where", Children: []*ast.Node{exprNode(st.Cond)}})
 		}
 		return n
 	case *BreakStmt:

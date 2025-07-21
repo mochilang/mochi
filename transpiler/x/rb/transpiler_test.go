@@ -128,6 +128,8 @@ func TestTranspilePrograms(t *testing.T) {
 		"group_by_sort",
 		"group_by_conditional_sum",
 		"group_by_having",
+		"python_math",
+		"update_stmt",
 	}
 	root := repoRoot(t)
 	outDir := filepath.Join(root, "tests", "transpiler", "x", "rb")
