@@ -1108,6 +1108,23 @@ func isArrayExpr(e Expr) bool {
 	return false
 }
 
+func arrayElemType(e Expr) string {
+	switch ex := e.(type) {
+	case *ListLit:
+		if ex.ElemType != "" {
+			return ex.ElemType
+		}
+		if len(ex.Elems) > 0 {
+			return inferType(ex.Elems[0])
+		}
+	case *VarExpr:
+		if t, ok := varTypes[ex.Name]; ok && strings.HasSuffix(t, "[]") {
+			return strings.TrimSuffix(t, "[]")
+		}
+	}
+	return ""
+}
+
 func isListExpr(e Expr) bool {
 	switch ex := e.(type) {
 	case *QueryExpr, *ListLit, *ValuesExpr:
@@ -1480,8 +1497,17 @@ func compileExpr(e *parser.Expr) (Expr, error) {
 			if isStringExpr(r) {
 				expr = &MethodCallExpr{Target: r, Name: "contains", Args: []Expr{expr}}
 			} else if isArrayExpr(r) {
-				arr := &CallExpr{Func: "java.util.Arrays.asList", Args: []Expr{r}}
-				expr = &MethodCallExpr{Target: arr, Name: "contains", Args: []Expr{expr}}
+				elem := arrayElemType(r)
+				if elem == "int" {
+					lam := &LambdaExpr{Params: []Param{{Name: "x", Type: "int"}}, Body: []Stmt{&ReturnStmt{Expr: &BinaryExpr{Left: &VarExpr{Name: "x"}, Op: "==", Right: expr}}}}
+					stream := &CallExpr{Func: "java.util.Arrays.stream", Args: []Expr{r}}
+					expr = &MethodCallExpr{Target: stream, Name: "anyMatch", Args: []Expr{lam}}
+				} else {
+					arr := &CallExpr{Func: "java.util.Arrays.asList", Args: []Expr{r}}
+					expr = &MethodCallExpr{Target: arr, Name: "contains", Args: []Expr{expr}}
+				}
+			} else if isListExpr(r) {
+				expr = &MethodCallExpr{Target: r, Name: "contains", Args: []Expr{expr}}
 			} else if isMapExpr(r) {
 				expr = &MethodCallExpr{Target: r, Name: "containsKey", Args: []Expr{expr}}
 			} else {
