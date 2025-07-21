@@ -1,0 +1,9 @@
+run: exit status 1
+Traceback (most recent call last):
+  File "/workspace/mochi/tests/transpiler/x/py/outer_join.py", line 23, in <module>
+    result = [{"order": o, "customer": c} for o in orders for c in customers if o["customerId"] == c["id"]] + [(lambda c: {"order": o, "customer": c})(None) for o in orders if not any([o["customerId"] == c["id"] for c in customers])] + [(lambda o: {"order": o, "customer": c})(None) for c in customers if not any([o["customerId"] == c["id"] for o in orders])]
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/mochi/tests/transpiler/x/py/outer_join.py", line 23, in <listcomp>
+    result = [{"order": o, "customer": c} for o in orders for c in customers if o["customerId"] == c["id"]] + [(lambda c: {"order": o, "customer": c})(None) for o in orders if not any([o["customerId"] == c["id"] for c in customers])] + [(lambda o: {"order": o, "customer": c})(None) for c in customers if not any([o["customerId"] == c["id"] for o in orders])]
+                                                                                ~^^^^^^^^^^^^^^
+TypeError: 'Order' object is not subscriptable

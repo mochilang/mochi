@@ -1429,8 +1429,13 @@ func inferTypeFromValue(v interface{}) types.Type {
 	switch val := v.(type) {
 	case map[string]interface{}:
 		fields := map[string]types.Type{}
-		for k, vv := range val {
-			fields[k] = inferTypeFromValue(vv)
+		keys := make([]string, 0, len(val))
+		for k := range val {
+			keys = append(keys, k)
+		}
+		sort.Strings(keys)
+		for _, k := range keys {
+			fields[k] = inferTypeFromValue(val[k])
 		}
 		return types.StructType{Fields: fields}
 	case []interface{}:
@@ -3239,7 +3244,13 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 				if isBoolOp(p.Call.Args[i]) {
 					outArgs[i] = &RawExpr{Code: fmt.Sprintf("(1 if %s else 0)", exprString(a))}
 				} else if _, ok := t.(types.BoolType); ok {
-					outArgs[i] = &RawExpr{Code: fmt.Sprintf("(\"true\" if %s else \"false\")", exprString(a))}
+					outArgs[i] = &RawExpr{Code: fmt.Sprintf("(\"True\" if %s else \"False\")", exprString(a))}
+				} else if ie, ok := a.(*IndexExpr); ok {
+					if _, ok := t.(types.StringType); ok {
+						outArgs[i] = &CallExpr{Func: &Name{Name: "repr"}, Args: []Expr{ie}}
+					} else {
+						outArgs[i] = ie
+					}
 				} else if _, ok := t.(types.ListType); ok {
 					currentImports["json"] = true
 					outArgs[i] = &CallExpr{Func: &RawExpr{Code: "json.dumps"}, Args: []Expr{a}}

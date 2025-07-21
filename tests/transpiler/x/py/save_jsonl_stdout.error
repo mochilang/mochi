@@ -1,8 +1,8 @@
 run: exit status 1
 Traceback (most recent call last):
-  File "/workspace/mochi/tests/transpiler/x/py/group_by_sort.py", line 27, in <module>
-    print(json.dumps(grouped))
-          ^^^^^^^^^^^^^^^^^^^
+  File "/workspace/mochi/tests/transpiler/x/py/save_jsonl_stdout.py", line 13, in <module>
+    print(json.dumps(_row))
+          ^^^^^^^^^^^^^^^^
   File "/root/.pyenv/versions/3.11.12/lib/python3.11/json/__init__.py", line 231, in dumps
     return _default_encoder.encode(obj)
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -14,4 +14,4 @@ Traceback (most recent call last):
            ^^^^^^^^^^^^^^^^^
   File "/root/.pyenv/versions/3.11.12/lib/python3.11/json/encoder.py", line 180, in default
     raise TypeError(f'Object of type {o.__class__.__name__} '
-TypeError: Object of type Grouped is not JSON serializable
+TypeError: Object of type People is not JSON serializable

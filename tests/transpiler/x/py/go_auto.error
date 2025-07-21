@@ -1,0 +1,5 @@
+run: exit status 1
+Traceback (most recent call last):
+  File "/workspace/mochi/tests/transpiler/x/py/go_auto.py", line 2, in <module>
+    import mochi.runtime.ffi.go.testpkg as testpkg
+ModuleNotFoundError: No module named 'mochi'
