@@ -1,3 +1,11 @@
+## Progress (2025-07-21 20:52 +0700)
+- scala transpiler: simpler query emission
+- Regenerated golden files - 68/100 vm valid programs passing
+
+## Progress (2025-07-21 20:06 +0700)
+- update py docs
+- Regenerated golden files - 68/100 vm valid programs passing
+
 ## Progress (2025-07-21 19:24 +0700)
 - scala: simplify group by
 - Regenerated golden files - 68/100 vm valid programs passing
