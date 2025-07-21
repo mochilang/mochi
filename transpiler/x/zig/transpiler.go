@@ -23,6 +23,7 @@ var funcCounter int
 var varTypes map[string]string
 var groupCounter int
 var groupItemTypes map[string]string
+var typeAliases map[string]string
 
 func toSnakeCase(s string) string {
 	var buf strings.Builder
@@ -145,6 +146,14 @@ type FieldAssignStmt struct {
 	Target Expr
 	Name   string
 	Value  Expr
+}
+
+// UpdateStmt updates fields of items in a list of structs.
+type UpdateStmt struct {
+	Target string
+	Fields []string
+	Values []Expr
+	Cond   Expr
 }
 
 // ExprStmt allows top-level expressions.
@@ -741,6 +750,35 @@ func (a *FieldAssignStmt) emit(w io.Writer, indent int) {
 	io.WriteString(w, ";\n")
 }
 
+func (u *UpdateStmt) emit(w io.Writer, indent int) {
+	writeIndent(w, indent)
+	fmt.Fprintf(w, "for (%s) |item, idx| {\n", u.Target)
+	if u.Cond != nil {
+		writeIndent(w, indent+1)
+		io.WriteString(w, "if (")
+		u.Cond.emit(w)
+		io.WriteString(w, ") {\n")
+	}
+	inner := indent + 1
+	if u.Cond != nil {
+		inner++
+	}
+	for i, f := range u.Fields {
+		writeIndent(w, inner)
+		fmt.Fprintf(w, "item.%s = ", toSnakeCase(f))
+		u.Values[i].emit(w)
+		io.WriteString(w, ";\n")
+	}
+	if u.Cond != nil {
+		writeIndent(w, indent+1)
+		io.WriteString(w, "}\n")
+	}
+	writeIndent(w, indent+1)
+	fmt.Fprintf(w, "%s[idx] = item;\n", u.Target)
+	writeIndent(w, indent)
+	io.WriteString(w, "}\n")
+}
+
 func (e *ExprStmt) emit(w io.Writer, indent int) {
 	writeIndent(w, indent)
 	if e.Expr != nil {
@@ -1132,6 +1170,7 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	varTypes = map[string]string{}
 	groupCounter = 0
 	groupItemTypes = map[string]string{}
+	typeAliases = map[string]string{}
 	mutables := map[string]bool{}
 	collectMutables(prog.Statements, mutables)
 	constLists = map[string]*ListLit{}
@@ -1961,6 +2000,12 @@ func toZigType(t *parser.TypeRef) string {
 		return "i64"
 	}
 	if t.Simple != nil {
+		if alias, ok := typeAliases[*t.Simple]; ok {
+			return alias
+		}
+		if _, ok := structDefs[*t.Simple]; ok {
+			return *t.Simple
+		}
 		switch *t.Simple {
 		case "int":
 			return "i64"
@@ -2132,7 +2177,104 @@ func compileStmt(s *parser.Statement, prog *parser.Program) (Stmt, error) {
 		return &BreakStmt{}, nil
 	case s.Continue != nil:
 		return &ContinueStmt{}, nil
+	case s.Update != nil:
+		return compileUpdateStmt(s.Update)
+	case s.Type != nil:
+		return nil, compileTypeDecl(s.Type)
 	default:
 		return nil, fmt.Errorf("unsupported statement")
 	}
+}
+
+func isSimpleIdent(e *parser.Expr) (string, bool) {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) > 0 {
+		return "", false
+	}
+	u := e.Binary.Left
+	if len(u.Ops) > 0 || u.Value == nil {
+		return "", false
+	}
+	p := u.Value
+	if len(p.Ops) > 0 || p.Target == nil {
+		return "", false
+	}
+	if p.Target.Selector != nil && len(p.Target.Selector.Tail) == 0 {
+		return p.Target.Selector.Root, true
+	}
+	return "", false
+}
+
+func literalString(e *parser.Expr) (string, bool) {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) > 0 {
+		return "", false
+	}
+	u := e.Binary.Left
+	if len(u.Ops) > 0 || u.Value == nil {
+		return "", false
+	}
+	p := u.Value
+	if len(p.Ops) > 0 || p.Target == nil {
+		return "", false
+	}
+	if p.Target.Lit != nil && p.Target.Lit.Str != nil {
+		return *p.Target.Lit.Str, true
+	}
+	if p.Target.Selector != nil && len(p.Target.Selector.Tail) == 0 {
+		return p.Target.Selector.Root, true
+	}
+	return "", false
+}
+
+func compileUpdateStmt(u *parser.UpdateStmt) (Stmt, error) {
+	fields := make([]string, len(u.Set.Items))
+	values := make([]Expr, len(u.Set.Items))
+	for i, it := range u.Set.Items {
+		key, ok := isSimpleIdent(it.Key)
+		if !ok {
+			key, ok = literalString(it.Key)
+			if !ok {
+				return nil, fmt.Errorf("unsupported update key")
+			}
+		}
+		val, err := compileExpr(it.Value)
+		if err != nil {
+			return nil, err
+		}
+		fields[i] = key
+		values[i] = val
+	}
+	var cond Expr
+	if u.Where != nil {
+		var err error
+		cond, err = compileExpr(u.Where)
+		if err != nil {
+			return nil, err
+		}
+	}
+	return &UpdateStmt{Target: u.Target, Fields: fields, Values: values, Cond: cond}, nil
+}
+
+func compileTypeDecl(td *parser.TypeDecl) error {
+	if len(td.Variants) > 0 {
+		if td.Name == "Tree" && len(td.Variants) == 2 && td.Variants[1].Name == "Node" {
+			fields := make([]Field, len(td.Variants[1].Fields))
+			for i, f := range td.Variants[1].Fields {
+				fields[i] = Field{Name: toSnakeCase(f.Name), Type: toZigType(f.Type)}
+			}
+			structDefs["Node"] = &StructDef{Name: "Node", Fields: fields}
+			typeAliases["Tree"] = "?*Node"
+		}
+		return nil
+	}
+	if len(td.Members) > 0 {
+		fields := []Field{}
+		for _, m := range td.Members {
+			if m.Field == nil {
+				continue
+			}
+			fields = append(fields, Field{Name: toSnakeCase(m.Field.Name), Type: toZigType(m.Field.Type)})
+		}
+		structDefs[td.Name] = &StructDef{Name: td.Name, Fields: fields}
+	}
+	return nil
 }
