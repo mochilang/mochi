@@ -1227,6 +1227,8 @@ func compileStmt(stmt *parser.Statement) (Stmt, error) {
 		return &BreakStmt{}, nil
 	case stmt.Continue != nil:
 		return &ContinueStmt{}, nil
+	case stmt.Type != nil:
+		return compileTypeStmt(stmt.Type)
 	case stmt.Test == nil && stmt.Import == nil && stmt.Type == nil:
 		return nil, fmt.Errorf("unsupported statement at %d:%d", stmt.Pos.Line, stmt.Pos.Column)
 	}
@@ -1338,6 +1340,23 @@ func compileForStmt(n *parser.ForStmt) (Stmt, error) {
 		}
 	}
 	return &ForStmt{Var: n.Name, Iter: iter, End: end, Body: body, ByRef: byRef}, nil
+}
+
+func compileTypeStmt(t *parser.TypeDecl) (Stmt, error) {
+	if len(t.Variants) > 0 {
+		return nil, fmt.Errorf("union types not supported")
+	}
+	st, ok := curEnv.GetStruct(t.Name)
+	if !ok {
+		return nil, nil
+	}
+	fields := make([]Param, len(st.Order))
+	for i, name := range st.Order {
+		fields[i] = Param{Name: name, Type: rustTypeFromType(st.Fields[name])}
+	}
+	typeDecls = append(typeDecls, &StructDecl{Name: t.Name, Fields: fields})
+	structTypes[t.Name] = st
+	return nil, nil
 }
 
 func compileFunStmt(fn *parser.FunStmt) (Stmt, error) {
@@ -1740,6 +1759,26 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 		}
 		usesHashMap = true
 		return &MapLit{Items: entries}, nil
+	case p.Struct != nil:
+		st, ok := structTypes[p.Struct.Name]
+		if !ok {
+			st, _ = curEnv.GetStruct(p.Struct.Name)
+		}
+		fields := make([]Expr, len(p.Struct.Fields))
+		names := make([]string, len(p.Struct.Fields))
+		for i, f := range p.Struct.Fields {
+			names[i] = f.Name
+			v, err := compileExpr(f.Value)
+			if err != nil {
+				return nil, err
+			}
+			if stf, ok := st.Fields[f.Name]; ok && rustTypeFromType(stf) == "String" {
+				v = &StringCastExpr{Expr: v}
+			}
+			fields[i] = v
+		}
+		structTypes[p.Struct.Name] = st
+		return &StructLit{Name: p.Struct.Name, Fields: fields, Names: names}, nil
 	case p.Selector != nil:
 		expr := Expr(&NameRef{Name: p.Selector.Root})
 		for _, f := range p.Selector.Tail {
