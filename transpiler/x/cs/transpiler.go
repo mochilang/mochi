@@ -2542,8 +2542,22 @@ func Emit(prog *Program) []byte {
 func formatCS(src []byte) []byte {
 	s := strings.ReplaceAll(string(src), "\t", "    ")
 	lines := strings.Split(s, "\n")
+	indent := 0
 	for i, ln := range lines {
-		lines[i] = strings.TrimRight(ln, " ")
+		trimmed := strings.TrimSpace(ln)
+		if strings.HasPrefix(trimmed, "}") {
+			if indent > 0 {
+				indent--
+			}
+		}
+		if trimmed != "" {
+			lines[i] = strings.Repeat("    ", indent) + strings.TrimSpace(ln)
+		} else {
+			lines[i] = ""
+		}
+		if strings.HasSuffix(trimmed, "{") {
+			indent++
+		}
 	}
 	out := strings.Join(lines, "\n")
 	if !strings.HasSuffix(out, "\n") {
