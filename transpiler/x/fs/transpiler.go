@@ -1350,6 +1350,15 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 				return nil, fmt.Errorf("substring expects 3 args")
 			}
 			return &SubstringExpr{Str: args[0], Start: args[1], End: args[2]}, nil
+		case "values":
+			if len(args) != 1 {
+				return nil, fmt.Errorf("values expects 1 arg")
+			}
+			if inferType(args[0]) == "map" {
+				inner := &CallExpr{Func: "Map.toList", Args: []Expr{args[0]}}
+				return &CallExpr{Func: "List.map snd", Args: []Expr{inner}}, nil
+			}
+			return &CallExpr{Func: "Seq.map snd", Args: args}, nil
 		default:
 			return &CallExpr{Func: p.Call.Func, Args: args}, nil
 		}
@@ -1382,23 +1391,6 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 		}
 		return &StructLit{Fields: fields}, nil
 	case p.Map != nil:
-		allSimple := true
-		fields := make([]StructFieldExpr, len(p.Map.Items))
-		for i, it := range p.Map.Items {
-			if key, ok := types.SimpleStringKey(it.Key); ok {
-				val, err := convertExpr(it.Value)
-				if err != nil {
-					return nil, err
-				}
-				fields[i] = StructFieldExpr{Name: key, Value: val}
-			} else {
-				allSimple = false
-				break
-			}
-		}
-		if allSimple {
-			return &StructLit{Fields: fields}, nil
-		}
 		items := make([][2]Expr, len(p.Map.Items))
 		for i, it := range p.Map.Items {
 			k, err := convertExpr(it.Key)
