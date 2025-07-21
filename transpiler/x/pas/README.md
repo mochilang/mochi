@@ -3,7 +3,7 @@
 This folder contains the experimental Pascal transpiler.
 Generated sources for the golden tests live under `tests/transpiler/x/pas`.
 
-## VM Golden Test Checklist (40/100)
+## VM Golden Test Checklist (73/100)
 - [x] append_builtin
 - [x] avg_builtin
 - [x] basic_compare
@@ -11,57 +11,57 @@ Generated sources for the golden tests live under `tests/transpiler/x/pas`.
 - [x] bool_chain
 - [x] break_continue
 - [x] cast_string_to_int
-- [ ] cast_struct
-- [ ] closure
+- [x] cast_struct
+- [x] closure
 - [x] count_builtin
 - [x] cross_join
 - [x] cross_join_filter
 - [x] cross_join_triple
-- [ ] dataset_sort_take_limit
-- [ ] dataset_where_filter
-- [ ] exists_builtin
+- [x] dataset_sort_take_limit
+- [x] dataset_where_filter
+- [x] exists_builtin
 - [x] for_list_collection
 - [x] for_loop
-- [ ] for_map_collection
+- [x] for_map_collection
 - [x] fun_call
-- [ ] fun_expr_in_let
+- [x] fun_expr_in_let
 - [x] fun_three_args
 - [ ] go_auto
 - [x] group_by
 - [ ] group_by_conditional_sum
-- [ ] group_by_having
-- [x] group_by_join
+- [x] group_by_having
+- [ ] group_by_join
 - [ ] group_by_left_join
 - [ ] group_by_multi_join
 - [ ] group_by_multi_join_sort
 - [ ] group_by_sort
 - [ ] group_items_iteration
 - [x] if_else
-- [ ] if_then_else
-- [ ] if_then_else_nested
+- [x] if_then_else
+- [x] if_then_else_nested
 - [x] in_operator
-- [ ] in_operator_extended
-- [ ] inner_join
-- [ ] join_multi
-- [ ] json_builtin
-- [x] left_join
+- [x] in_operator_extended
+- [x] inner_join
+- [x] join_multi
+- [x] json_builtin
+- [ ] left_join
 - [ ] left_join_multi
 - [x] len_builtin
-- [ ] len_map
+- [x] len_map
 - [x] len_string
 - [x] let_and_print
-- [ ] list_assign
+- [x] list_assign
 - [x] list_index
-- [x] list_nested_assign
-- [ ] list_set_ops
+- [ ] list_nested_assign
+- [x] list_set_ops
 - [ ] load_yaml
-- [ ] map_assign
-- [ ] map_in_operator
-- [ ] map_index
-- [ ] map_int_key
-- [ ] map_literal_dynamic
-- [ ] map_membership
-- [ ] map_nested_assign
+- [x] map_assign
+- [x] map_in_operator
+- [x] map_index
+- [x] map_int_key
+- [x] map_literal_dynamic
+- [x] map_membership
+- [x] map_nested_assign
 - [ ] match_expr
 - [ ] match_full
 - [x] math_ops
@@ -72,35 +72,35 @@ Generated sources for the golden tests live under `tests/transpiler/x/pas`.
 - [ ] outer_join
 - [ ] partial_application
 - [x] print_hello
-- [ ] pure_fold
-- [ ] pure_global_fold
+- [x] pure_fold
+- [x] pure_global_fold
 - [ ] python_auto
 - [ ] python_math
 - [ ] query_sum_select
-- [ ] record_assign
+- [x] record_assign
 - [ ] right_join
 - [ ] save_jsonl_stdout
 - [x] short_circuit
 - [x] slice
-- [ ] sort_stable
-- [ ] str_builtin
+- [x] sort_stable
+- [x] str_builtin
 - [x] string_compare
 - [x] string_concat
 - [x] string_contains
-- [ ] string_in_operator
-- [ ] string_index
-- [ ] string_prefix_slice
+- [x] string_in_operator
+- [x] string_index
+- [x] string_prefix_slice
 - [x] substring_builtin
-- [ ] sum_builtin
+- [x] sum_builtin
 - [ ] tail_recursion
-- [ ] test_block
+- [x] test_block
 - [ ] tree_sum
 - [ ] two-sum
 - [x] typed_let
 - [x] typed_var
 - [x] unary_neg
 - [ ] update_stmt
-- [ ] user_type_literal
-- [ ] values_builtin
+- [x] user_type_literal
+- [x] values_builtin
 - [x] var_assignment
 - [x] while_loop

@@ -1451,10 +1451,10 @@ func isGroupByConditionalSum(q *parser.QueryExpr) bool {
 }
 
 func isGroupByJoin(q *parser.QueryExpr) bool {
-	if q.Group == nil || len(q.Group.Exprs) != 1 || q.Group.Having != nil {
+	if q.Group == nil || len(q.Group.Exprs) != 1 {
 		return false
 	}
-	if len(q.Joins) != 1 || len(q.Froms) != 0 || q.Sort != nil || q.Skip != nil || q.Take != nil || q.Distinct {
+	if len(q.Joins) != 1 || len(q.Froms) != 0 {
 		return false
 	}
 	if q.Select == nil || q.Select.Binary == nil {
@@ -1462,18 +1462,6 @@ func isGroupByJoin(q *parser.QueryExpr) bool {
 	}
 	ml := q.Select.Binary.Left.Value.Target.Map
 	if ml == nil || len(ml.Items) != 2 {
-		return false
-	}
-	k0, ok0 := exprToIdent(ml.Items[0].Key)
-	k1, ok1 := exprToIdent(ml.Items[1].Key)
-	if !ok0 || !ok1 {
-		return false
-	}
-	if k0 != "name" || k1 != "count" {
-		return false
-	}
-	call := ml.Items[1].Value.Binary.Left.Value.Target.Call
-	if call == nil || call.Func != "count" || len(call.Args) != 1 {
 		return false
 	}
 	return true
