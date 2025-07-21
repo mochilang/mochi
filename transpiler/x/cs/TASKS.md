@@ -1,3 +1,6 @@
+## Progress (2025-07-21 00:38 UTC)
+- transpiler/cs: improve struct handling (progress 85/100)
+
 # C# Transpiler Tasks
 
 ## Progress (2025-07-20 22:25 +0700)
@@ -12,4 +15,5 @@
 
 ## Remaining Work
 - Support map and list mutation operations
+
 

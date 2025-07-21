@@ -32,7 +32,7 @@ Compiled programs: 85/100
 - [x] group_by_conditional_sum
 - [ ] group_by_having
 - [x] group_by_join
-- [x] group_by_left_join
+- [ ] group_by_left_join
 - [ ] group_by_multi_join
 - [ ] group_by_multi_join_sort
 - [x] group_by_sort
@@ -45,7 +45,7 @@ Compiled programs: 85/100
 - [x] inner_join
 - [x] join_multi
 - [x] json_builtin
-- [x] left_join
+- [ ] left_join
 - [ ] left_join_multi
 - [x] len_builtin
 - [x] len_map
@@ -101,7 +101,7 @@ Compiled programs: 85/100
 - [x] typed_var
 - [x] unary_neg
 - [ ] update_stmt
-- [ ] user_type_literal
+- [x] user_type_literal
 - [x] values_builtin
 - [x] var_assignment
 - [x] while_loop
