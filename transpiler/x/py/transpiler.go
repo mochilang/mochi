@@ -161,6 +161,15 @@ type IndexAssignStmt struct {
 
 func (*IndexAssignStmt) isStmt() {}
 
+// AugAssignStmt represents an augmented assignment like `x += y`.
+type AugAssignStmt struct {
+	Target Expr
+	Op     string
+	Value  Expr
+}
+
+func (*AugAssignStmt) isStmt() {}
+
 // SaveStmt emits code to save a list of maps in various formats.
 type SaveStmt struct {
 	Src    Expr
@@ -853,6 +862,21 @@ func emitStmtIndent(w io.Writer, s Stmt, indent string) error {
 		}
 		_, err := io.WriteString(w, "\n")
 		return err
+	case *AugAssignStmt:
+		if _, err := io.WriteString(w, indent); err != nil {
+			return err
+		}
+		if err := emitExpr(w, st.Target); err != nil {
+			return err
+		}
+		if _, err := io.WriteString(w, " "+st.Op+"= "); err != nil {
+			return err
+		}
+		if err := emitExpr(w, st.Value); err != nil {
+			return err
+		}
+		_, err := io.WriteString(w, "\n")
+		return err
 	case *FuncDef:
 		if _, err := io.WriteString(w, indent+"def "+st.Name+"("); err != nil {
 			return err
@@ -1171,14 +1195,32 @@ func zeroValueExpr(t types.Type) Expr {
 	}
 }
 
-func toCamel(s string) string {
-	parts := strings.Split(s, "_")
+func singular(s string) string {
+	if strings.HasSuffix(s, "s") && len(s) > 1 {
+		return s[:len(s)-1]
+	}
+	return s
+}
+
+func pascalCase(s string) string {
+	switch s {
+	case "partsupp":
+		return "PartSupp"
+	}
+	parts := strings.FieldsFunc(s, func(r rune) bool {
+		return r == '_' || r == '-' || r == ' ' || r == '.'
+	})
 	for i, p := range parts {
-		if len(p) > 0 {
-			parts[i] = strings.ToUpper(p[:1]) + p[1:]
+		if p == "" {
+			continue
 		}
+		parts[i] = strings.ToUpper(p[:1]) + p[1:]
 	}
 	return strings.Join(parts, "")
+}
+
+func toCamel(s string) string {
+	return pascalCase(s)
 }
 
 func maybeDataClassList(name string, list *ListLit) (*DataClassDef, []Expr) {
@@ -1223,7 +1265,7 @@ func maybeDataClassList(name string, list *ListLit) (*DataClassDef, []Expr) {
 		fields = append(fields, DataClassField{Name: k, Type: typ})
 	}
 	var elems []Expr
-	className := toCamel(name)
+	className := pascalCase(singular(name))
 	for _, el := range list.Elems {
 		d := el.(*DictLit)
 		args := make([]Expr, len(d.Values))
@@ -1255,7 +1297,7 @@ func dataClassFromDict(name string, d *DictLit) (*DataClassDef, []Expr) {
 		}
 		fields = append(fields, DataClassField{Name: k, Type: typ})
 	}
-	className := toCamel(name)
+	className := pascalCase(singular(name))
 	args := make([]Expr, len(d.Values))
 	copy(args, d.Values)
 	return &DataClassDef{Name: className, Fields: fields}, args
@@ -3648,6 +3690,24 @@ func convertGroupQuery(q *parser.QueryExpr, env *types.Env, target string) ([]St
 		currentEnv = prev
 		return nil, err
 	}
+	var aggVal Expr
+	if q.Select != nil && q.Select.Binary != nil && q.Select.Binary.Left.Value != nil && q.Select.Binary.Left.Value.Target != nil && q.Select.Binary.Left.Value.Target.Map != nil {
+		for _, it := range q.Select.Binary.Left.Value.Target.Map.Items {
+			if name, arg, ok := aggregatorCall(it.Value); ok && name == "sum" {
+				if qs := ExtractQueryExpr(arg); qs != nil {
+					if ident, ok := isSimpleIdent(qs.Source); ok && ident == q.Group.Name && len(qs.Froms) == 0 && len(qs.Joins) == 0 && qs.Where == nil && qs.Group == nil && qs.Sort == nil && qs.Skip == nil && qs.Take == nil && !qs.Distinct {
+						prevEnv := currentEnv
+						currentEnv = genv
+						expr, err2 := convertExpr(qs.Select)
+						currentEnv = prevEnv
+						if err2 == nil {
+							aggVal = replaceVar(expr, qs.Var, &Name{Name: q.Var})
+						}
+					}
+				}
+			}
+		}
+	}
 	var having Expr
 	if q.Group.Having != nil {
 		having, err = convertExpr(q.Group.Having)
@@ -3664,39 +3724,84 @@ func convertGroupQuery(q *parser.QueryExpr, env *types.Env, target string) ([]St
 		having = replaceGroup(having, q.Group.Name)
 	}
 
+	var resultDC *DataClassDef
+	if d, ok := sel.(*DictLit); ok {
+		if dc, args := dataClassFromDict(target, d); dc != nil {
+			resultDC = dc
+			sel = &CallExpr{Func: &Name{Name: dc.Name}, Args: args}
+		}
+	}
+
 	groupsVar := "_" + target + "_groups"
 
 	needsDefaultDict = true
-	stmts := []Stmt{
-		&LetStmt{Name: groupsVar, Expr: &CallExpr{Func: &Name{Name: "defaultdict"}, Args: []Expr{&Name{Name: "list"}}}},
+	stmts := []Stmt{}
+	if resultDC != nil {
+		stmts = append(stmts, resultDC)
 	}
+	stmts = append(stmts, &LetStmt{Name: groupsVar, Expr: &CallExpr{Func: &Name{Name: "defaultdict"}, Args: []Expr{&Name{Name: "float"}}}})
 
-	var row Expr
-	if len(vars) == 1 {
-		row = &Name{Name: vars[0]}
-	} else {
-		var rk []Expr
-		var rv []Expr
-		for _, v := range vars {
-			rk = append(rk, &StringLit{Value: v})
-			rv = append(rv, &Name{Name: v})
+	if aggVal != nil {
+		inner := []Stmt{
+			&AugAssignStmt{Target: &IndexExpr{Target: &Name{Name: groupsVar}, Index: keyExpr}, Op: "+", Value: aggVal},
 		}
-		row = &DictLit{Keys: rk, Values: rv}
+		if where != nil {
+			inner = []Stmt{&IfStmt{Cond: where, Then: inner}}
+		}
+		bodyLoop := inner
+		for i := len(vars) - 1; i >= 0; i-- {
+			bodyLoop = []Stmt{&ForStmt{Var: vars[i], Iter: iters[i], Body: bodyLoop}}
+		}
+		stmts = append(stmts, bodyLoop...)
+	} else {
+		var row Expr
+		if len(vars) == 1 {
+			row = &Name{Name: vars[0]}
+		} else {
+			var rk []Expr
+			var rv []Expr
+			for _, v := range vars {
+				rk = append(rk, &StringLit{Value: v})
+				rv = append(rv, &Name{Name: v})
+			}
+			row = &DictLit{Keys: rk, Values: rv}
+		}
+
+		appendCall := &CallExpr{Func: &FieldExpr{Target: &IndexExpr{Target: &Name{Name: groupsVar}, Index: keyExpr}, Name: "append"}, Args: []Expr{row}}
+		inner := []Stmt{
+			&ExprStmt{Expr: appendCall},
+		}
+		if where != nil {
+			inner = []Stmt{&IfStmt{Cond: where, Then: inner}}
+		}
+		bodyLoop := inner
+		for i := len(vars) - 1; i >= 0; i-- {
+			bodyLoop = []Stmt{&ForStmt{Var: vars[i], Iter: iters[i], Body: bodyLoop}}
+		}
+		stmts = append(stmts, bodyLoop...)
 	}
 
-	appendCall := &CallExpr{Func: &FieldExpr{Target: &IndexExpr{Target: &Name{Name: groupsVar}, Index: keyExpr}, Name: "append"}, Args: []Expr{row}}
-	inner := []Stmt{
-		&ExprStmt{Expr: appendCall},
+	if aggVal != nil {
+		var resultExpr Expr
+		if resultDC != nil && len(resultDC.Fields) == 2 {
+			args := []Expr{
+				&KeywordArg{Name: resultDC.Fields[0].Name, Value: &Name{Name: "k"}},
+				&KeywordArg{Name: resultDC.Fields[1].Name, Value: &Name{Name: "v"}},
+			}
+			resultExpr = &CallExpr{Func: &Name{Name: resultDC.Name}, Args: args}
+		} else {
+			resultExpr = &DictLit{Keys: []Expr{&StringLit{Value: "key"}, &StringLit{Value: "value"}}, Values: []Expr{&Name{Name: "k"}, &Name{Name: "v"}}}
+		}
+		iterPairs := &CallExpr{Func: &FieldExpr{Target: &Name{Name: groupsVar}, Name: "items"}}
+		loopBody := []Stmt{
+			&LetStmt{Name: "k", Expr: &IndexExpr{Target: &Name{Name: "kv"}, Index: &IntLit{Value: "0"}}},
+			&LetStmt{Name: "v", Expr: &IndexExpr{Target: &Name{Name: "kv"}, Index: &IntLit{Value: "1"}}},
+			&ExprStmt{Expr: &CallExpr{Func: &FieldExpr{Target: &Name{Name: target}, Name: "append"}, Args: []Expr{resultExpr}}},
+		}
+		stmts = append(stmts, &LetStmt{Name: target, Expr: &ListLit{}})
+		stmts = append(stmts, &ForStmt{Var: "kv", Iter: iterPairs, Body: loopBody})
+		return stmts, nil
 	}
-	if where != nil {
-		inner = []Stmt{&IfStmt{Cond: where, Then: inner}}
-	}
-
-	bodyLoop := inner
-	for i := len(vars) - 1; i >= 0; i-- {
-		bodyLoop = []Stmt{&ForStmt{Var: vars[i], Iter: iters[i], Body: bodyLoop}}
-	}
-	stmts = append(stmts, bodyLoop...)
 
 	appendRes := &ExprStmt{Expr: &CallExpr{Func: &FieldExpr{Target: &Name{Name: target}, Name: "append"}, Args: []Expr{sel}}}
 	body := []Stmt{}
