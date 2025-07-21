@@ -118,17 +118,26 @@ type FunDecl struct {
 
 func (f *FunDecl) emit(out io.Writer) {
 	rt := f.ReturnType
+	proc := false
 	if rt == "" {
-		rt = "integer"
+		proc = true
 	}
-	fmt.Fprintf(out, "function %s(", f.Name)
+	if proc {
+		fmt.Fprintf(out, "procedure %s(", f.Name)
+	} else {
+		fmt.Fprintf(out, "function %s(", f.Name)
+	}
 	for i, p := range f.Params {
 		if i > 0 {
 			io.WriteString(out, "; ")
 		}
-		fmt.Fprintf(out, "%s: integer", p)
+		io.WriteString(out, p)
 	}
-	fmt.Fprintf(out, "): %s;\nbegin\n", rt)
+	if proc {
+		io.WriteString(out, ");\nbegin\n")
+	} else {
+		fmt.Fprintf(out, "): %s;\nbegin\n", rt)
+	}
 	for _, s := range f.Body {
 		io.WriteString(out, "  ")
 		s.emit(out)
@@ -339,6 +348,9 @@ func (v *ValuesExpr) emit(w io.Writer) {
 }
 
 func (r *RecordLit) emit(w io.Writer) {
+	if r.Type != "" {
+		io.WriteString(w, r.Type)
+	}
 	io.WriteString(w, "(")
 	for i, f := range r.Fields {
 		if i > 0 {
@@ -596,6 +608,33 @@ func (d *DoubleIndexAssignStmt) emit(w io.Writer) {
 	io.WriteString(w, ";")
 }
 
+// ExprStmt allows a bare expression as a statement.
+type ExprStmt struct{ Expr Expr }
+
+func (e *ExprStmt) emit(w io.Writer) {
+	if e.Expr != nil {
+		e.Expr.emit(w)
+	}
+	io.WriteString(w, ";")
+}
+
+// SetStmt assigns to an arbitrary selector expression.
+type SetStmt struct {
+	Target Expr
+	Expr   Expr
+}
+
+func (s *SetStmt) emit(w io.Writer) {
+	if s.Target != nil {
+		s.Target.emit(w)
+	}
+	io.WriteString(w, " := ")
+	if s.Expr != nil {
+		s.Expr.emit(w)
+	}
+	io.WriteString(w, ";")
+}
+
 func (p *PrintStmt) emit(w io.Writer) {
 	io.WriteString(w, "writeln(")
 	for i, ex := range p.Exprs {
@@ -767,7 +806,12 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 				pr.Stmts = append(pr.Stmts, &PrintStmt{Exprs: parts, Types: typesList, NeedSysUtils: needSys})
 				continue
 			}
-			return nil, fmt.Errorf("unsupported expression")
+			ex, err := convertExpr(env, st.Expr.Expr)
+			if err != nil {
+				return nil, err
+			}
+			pr.Stmts = append(pr.Stmts, &ExprStmt{Expr: ex})
+			continue
 		case st.Type != nil:
 			var fields []Field
 			for _, m := range st.Type.Members {
@@ -915,6 +959,16 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 				if err != nil {
 					return nil, err
 				}
+				if rec, ok := ex.(*RecordLit); ok {
+					if vd.Type == "" {
+						vd.Type = rec.Type
+					}
+					pr.Vars = append(pr.Vars, vd)
+					for _, f := range rec.Fields {
+						pr.Stmts = append(pr.Stmts, &AssignStmt{Name: fmt.Sprintf("%s.%s", vd.Name, f.Name), Expr: f.Expr})
+					}
+					continue
+				}
 				vd.Init = ex
 				if vd.Type == "" {
 					if t := inferType(ex); t != "" {
@@ -938,6 +992,14 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 			ex, err := convertExpr(env, st.Assign.Value)
 			if err != nil {
 				return nil, err
+			}
+			if len(st.Assign.Field) > 0 {
+				target := &SelectorExpr{Root: st.Assign.Name}
+				for _, f := range st.Assign.Field {
+					target.Tail = append(target.Tail, f.Name)
+				}
+				pr.Stmts = append(pr.Stmts, &SetStmt{Target: target, Expr: ex})
+				break
 			}
 			if len(st.Assign.Index) == 1 && st.Assign.Index[0].Colon == nil && st.Assign.Index[0].Colon2 == nil && len(st.Assign.Field) == 0 {
 				idx, err := convertExpr(env, st.Assign.Index[0].Start)
@@ -1032,7 +1094,18 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 			}
 			var params []string
 			for _, p := range st.Fun.Params {
-				params = append(params, p.Name)
+				typ := "integer"
+				if p.Type != nil && p.Type.Simple != nil {
+					switch *p.Type.Simple {
+					case "int":
+						typ = "integer"
+					case "string":
+						typ = "string"
+					default:
+						typ = *p.Type.Simple
+					}
+				}
+				params = append(params, fmt.Sprintf("%s: %s", p.Name, typ))
 			}
 			rt := ""
 			if st.Fun.Return != nil && st.Fun.Return.Simple != nil {
@@ -1090,6 +1163,14 @@ func convertBody(env *types.Env, body []*parser.Statement, varTypes map[string]s
 			ex, err := convertExpr(env, st.Assign.Value)
 			if err != nil {
 				return nil, err
+			}
+			if len(st.Assign.Field) > 0 {
+				target := &SelectorExpr{Root: st.Assign.Name}
+				for _, f := range st.Assign.Field {
+					target.Tail = append(target.Tail, f.Name)
+				}
+				out = append(out, &SetStmt{Target: target, Expr: ex})
+				break
 			}
 			if len(st.Assign.Index) == 1 && st.Assign.Index[0].Colon == nil && st.Assign.Index[0].Colon2 == nil && len(st.Assign.Field) == 0 {
 				idx, err := convertExpr(env, st.Assign.Index[0].Start)
@@ -1240,7 +1321,12 @@ func convertBody(env *types.Env, body []*parser.Statement, varTypes map[string]s
 				out = append(out, &PrintStmt{Exprs: parts, Types: typesList, NeedSysUtils: needSys})
 				continue
 			}
-			return nil, fmt.Errorf("unsupported expression")
+			ex, err := convertExpr(env, st.Expr.Expr)
+			if err != nil {
+				return nil, err
+			}
+			out = append(out, &ExprStmt{Expr: ex})
+			continue
 		case st.If != nil:
 			cond, err := convertExpr(env, st.If.Cond)
 			if err != nil {
@@ -2514,6 +2600,16 @@ func convertPrimary(env *types.Env, p *parser.Primary) (Expr, error) {
 			elems = append(elems, ex)
 		}
 		return &ListLit{Elems: elems}, nil
+	case p.Struct != nil:
+		var fields []FieldExpr
+		for _, it := range p.Struct.Fields {
+			val, err := convertExpr(env, it.Value)
+			if err != nil {
+				return nil, err
+			}
+			fields = append(fields, FieldExpr{Name: it.Name, Expr: val})
+		}
+		return &RecordLit{Type: p.Struct.Name, Fields: fields}, nil
 	case p.Map != nil:
 		var fields []FieldExpr
 		var rec []Field
@@ -2909,6 +3005,10 @@ func usesSysUtilsStmt(s Stmt) bool {
 		return usesSysUtilsExpr(v.Index) || usesSysUtilsExpr(v.Expr)
 	case *DoubleIndexAssignStmt:
 		return usesSysUtilsExpr(v.Index1) || usesSysUtilsExpr(v.Index2) || usesSysUtilsExpr(v.Expr)
+	case *ExprStmt:
+		return usesSysUtilsExpr(v.Expr)
+	case *SetStmt:
+		return usesSysUtilsExpr(v.Target) || usesSysUtilsExpr(v.Expr)
 	case *ReturnStmt:
 		return usesSysUtilsExpr(v.Expr)
 	case *IfStmt:
