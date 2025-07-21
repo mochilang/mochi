@@ -812,17 +812,13 @@ func (q *QueryExpr) emit(w io.Writer) {
 	} else {
 		fmt.Fprintf(w, "_res := []%s{}; ", q.ElemType)
 	}
-	fmt.Fprintf(w, "for _, %s := range ", q.Var)
-	q.Src.emit(w)
-	fmt.Fprint(w, " {")
-	for _, f := range q.Froms {
-		fmt.Fprintf(w, " for _, %s := range ", f.Var)
-		f.Src.emit(w)
-		fmt.Fprint(w, " {")
-	}
-	for _, j := range q.Joins {
-		fmt.Fprintf(w, " for _, %s := range ", j.Var)
+	if len(q.Joins) == 1 && q.Joins[0].Side == "right" && len(q.Froms) == 0 {
+		j := q.Joins[0]
+		fmt.Fprintf(w, "for _, %s := range ", j.Var)
 		j.Src.emit(w)
+		fmt.Fprint(w, " {")
+		fmt.Fprintf(w, " for _, %s := range ", q.Var)
+		q.Src.emit(w)
 		fmt.Fprint(w, " {")
 		fmt.Fprint(w, " if ")
 		if j.On != nil {
@@ -831,6 +827,27 @@ func (q *QueryExpr) emit(w io.Writer) {
 			fmt.Fprint(w, "true")
 		}
 		fmt.Fprint(w, " {")
+	} else {
+		fmt.Fprintf(w, "for _, %s := range ", q.Var)
+		q.Src.emit(w)
+		fmt.Fprint(w, " {")
+		for _, f := range q.Froms {
+			fmt.Fprintf(w, " for _, %s := range ", f.Var)
+			f.Src.emit(w)
+			fmt.Fprint(w, " {")
+		}
+		for _, j := range q.Joins {
+			fmt.Fprintf(w, " for _, %s := range ", j.Var)
+			j.Src.emit(w)
+			fmt.Fprint(w, " {")
+			fmt.Fprint(w, " if ")
+			if j.On != nil {
+				j.On.emit(w)
+			} else {
+				fmt.Fprint(w, "true")
+			}
+			fmt.Fprint(w, " {")
+		}
 	}
 	if q.Where != nil {
 		fmt.Fprint(w, " if ")
@@ -851,14 +868,20 @@ func (q *QueryExpr) emit(w io.Writer) {
 	if q.Where != nil {
 		fmt.Fprint(w, " }")
 	}
-	for range q.Joins {
-		fmt.Fprint(w, " }")
+	if len(q.Joins) == 1 && q.Joins[0].Side == "right" && len(q.Froms) == 0 {
+		fmt.Fprint(w, " }") // if
+		fmt.Fprint(w, " }") // inner for
+		fmt.Fprint(w, " }") // outer for
+	} else {
+		for range q.Joins {
+			fmt.Fprint(w, " }")
+			fmt.Fprint(w, " }")
+		}
+		for range q.Froms {
+			fmt.Fprint(w, " }")
+		}
 		fmt.Fprint(w, " }")
 	}
-	for range q.Froms {
-		fmt.Fprint(w, " }")
-	}
-	fmt.Fprint(w, " }")
 	if q.Sort != nil {
 		fmt.Fprint(w, " ; sort.Slice(_tmp, func(i,j int) bool { return _tmp[i].Key < _tmp[j].Key })")
 		fmt.Fprintf(w, "; _res := make([]%s, len(_tmp)); for i, p := range _tmp { _res[i] = p.Val }", q.ElemType)
@@ -1153,10 +1176,11 @@ func extractCall(e *parser.Expr) *parser.CallExpr {
 }
 
 func compileIfStmt(is *parser.IfStmt, env *types.Env) (Stmt, error) {
-	cond, err := compileExpr(is.Cond, env, "")
+	condExpr, err := compileExpr(is.Cond, env, "")
 	if err != nil {
 		return nil, err
 	}
+	cond := boolExprFor(condExpr, types.ExprType(is.Cond, env))
 	thenStmts, err := compileStmts(is.Then, env)
 	if err != nil {
 		return nil, err
@@ -1401,11 +1425,30 @@ func zeroValueExpr(goType string) Expr {
 	}
 }
 
+func boolExprFor(e Expr, t types.Type) Expr {
+	if _, ok := t.(types.BoolType); ok {
+		return e
+	}
+	switch t.(type) {
+	case types.IntType, types.Int64Type, types.BigIntType,
+		types.FloatType, types.BigRatType:
+		return &BinaryExpr{Left: e, Op: "!=", Right: &IntLit{Value: 0}}
+	case types.StringType:
+		return &BinaryExpr{Left: e, Op: "!=", Right: &StringLit{Value: ""}}
+	case types.ListType, types.MapType:
+		return &BinaryExpr{Left: &CallExpr{Func: "len", Args: []Expr{e}}, Op: "!=", Right: &IntLit{Value: 0}}
+	default:
+		// assume struct or unknown types are always truthy
+		return &BoolLit{Value: true}
+	}
+}
+
 func compileWhileStmt(ws *parser.WhileStmt, env *types.Env) (Stmt, error) {
-	cond, err := compileExpr(ws.Cond, env, "")
+	condExpr, err := compileExpr(ws.Cond, env, "")
 	if err != nil {
 		return nil, err
 	}
+	cond := boolExprFor(condExpr, types.ExprType(ws.Cond, env))
 	body, err := compileStmts(ws.Body, env)
 	if err != nil {
 		return nil, err
