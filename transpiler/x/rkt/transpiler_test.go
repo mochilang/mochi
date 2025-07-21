@@ -99,6 +99,7 @@ func TestTranspile_Golden(t *testing.T) {
 		"min_max_builtin",
 		"substring_builtin",
 		"update_stmt",
+		"group_by",
 	}
 	for _, name := range names {
 		src := filepath.Join(root, "tests", "vm", "valid", name+".mochi")
