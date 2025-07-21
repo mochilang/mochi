@@ -2019,6 +2019,26 @@ func toPrimary(p *parser.Primary, env *types.Env) (string, error) {
 			}
 			return "", fmt.Errorf("unsupported len argument type")
 		}
+		if p.Call.Func == "count" && len(p.Call.Args) == 1 {
+			if n, ok := constMapSize(p.Call.Args[0]); ok {
+				return strconv.Itoa(n), nil
+			}
+			argExpr, err := toExpr(p.Call.Args[0], env)
+			if err != nil {
+				return "", err
+			}
+			typ := types.ExprType(p.Call.Args[0], env)
+			if types.IsStringType(typ) {
+				return fmt.Sprintf("len_trim(%s)", argExpr), nil
+			}
+			if types.IsListType(typ) {
+				return fmt.Sprintf("size(%s)", argExpr), nil
+			}
+			if _, ok := typ.(types.GroupType); ok {
+				return fmt.Sprintf("size(%s)", argExpr), nil
+			}
+			return "", fmt.Errorf("unsupported count argument type")
+		}
 		if p.Call.Func == "append" && len(p.Call.Args) == 2 {
 			arrExpr, err := toExpr(p.Call.Args[0], env)
 			if err != nil {
