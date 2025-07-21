@@ -512,6 +512,14 @@ func evalPrimary(p *parser.Primary, vars map[string]value) (value, error) {
 	case p.Map != nil:
 		m := make(map[string]value)
 		for _, it := range p.Map.Items {
+			if name, ok := identName(it.Key); ok {
+				v, err := evalExpr(it.Value, vars)
+				if err != nil {
+					return value{}, err
+				}
+				m[name] = v
+				continue
+			}
 			k, err := evalExpr(it.Key, vars)
 			if err != nil {
 				return value{}, err
@@ -751,6 +759,21 @@ func copyVars(vars map[string]value) map[string]value {
 		m[k] = v
 	}
 	return m
+}
+
+func identName(e *parser.Expr) (string, bool) {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) != 0 {
+		return "", false
+	}
+	u := e.Binary.Left
+	if len(u.Ops) != 0 || u.Value == nil {
+		return "", false
+	}
+	p := u.Value.Target
+	if p == nil || p.Selector == nil || len(p.Selector.Tail) != 0 {
+		return "", false
+	}
+	return p.Selector.Root, true
 }
 
 func evalQueryExpr(q *parser.QueryExpr, vars map[string]value) (value, error) {

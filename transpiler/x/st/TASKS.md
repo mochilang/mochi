@@ -1,3 +1,13 @@
+## Progress (21 Jul 2025 06:55 +0700)
+- VM valid golden test results updated
+- Added support for identifier keys in map literals so queries can "select{n: n}"
+
+## Progress (2025-07-21 06:55 +0700)
+- VM valid golden test results updated
+
+## Progress (2025-07-21 06:55 +0700)
+- VM valid golden test results updated
+
 ## Progress (2025-07-20 22:47 +0700)
 - VM valid golden test results updated
 
