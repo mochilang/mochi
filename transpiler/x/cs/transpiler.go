@@ -10,6 +10,7 @@ import (
 	"os/exec"
 	"path/filepath"
 	"runtime"
+	"sort"
 	"strconv"
 	"strings"
 	"time"
@@ -176,6 +177,40 @@ func (b *BreakStmt) emit(w io.Writer) { fmt.Fprint(w, "break") }
 type ContinueStmt struct{}
 
 func (c *ContinueStmt) emit(w io.Writer) { fmt.Fprint(w, "continue") }
+
+// SaveStmt saves a list of maps to stdout in JSONL format.
+type SaveStmt struct {
+	Src    Expr
+	Path   string
+	Format string
+}
+
+func (s *SaveStmt) emit(w io.Writer) {
+	if s.Format == "jsonl" && (s.Path == "" || s.Path == "-") {
+		fmt.Fprint(w, "foreach (var _row in ")
+		s.Src.emit(w)
+		fmt.Fprint(w, ") {\n")
+		elemType := strings.TrimSuffix(typeOfExpr(s.Src), "[]")
+		if st, ok := structTypes[elemType]; ok {
+			names := append([]string{}, st.Order...)
+			sort.Strings(names)
+			fmt.Fprint(w, "    var _tmp = new SortedDictionary<string, object>{")
+			for i, f := range names {
+				if i > 0 {
+					fmt.Fprint(w, ", ")
+				}
+				fmt.Fprintf(w, "{\"%s\", _row.%s}", f, f)
+			}
+			fmt.Fprint(w, "};\n")
+		} else {
+			fmt.Fprint(w, "    var _tmp = _row.OrderBy(kv => kv.Key).ToDictionary(kv => kv.Key, kv => kv.Value);\n")
+		}
+		fmt.Fprint(w, "    Console.WriteLine(JsonSerializer.Serialize(_tmp));\n")
+		fmt.Fprint(w, "}")
+		return
+	}
+	fmt.Fprint(w, "// unsupported save")
+}
 
 // ForRangeStmt represents a numeric range for-loop like `for i in 0..10 {}`.
 type ForRangeStmt struct {
@@ -1549,6 +1584,21 @@ func compilePostfix(p *parser.PostfixExpr) (Expr, error) {
 func compileStmt(prog *Program, s *parser.Statement) (Stmt, error) {
 	switch {
 	case s.Expr != nil:
+		if se := extractSaveExpr(s.Expr.Expr); se != nil {
+			src, err := compileExpr(se.Src)
+			if err != nil {
+				return nil, err
+			}
+			format := parseFormat(se.With)
+			path := ""
+			if se.Path != nil {
+				path = strings.Trim(*se.Path, "\"")
+			}
+			usesJson = true
+			usesLinq = true
+			usesDict = true
+			return &SaveStmt{Src: src, Path: path, Format: format}, nil
+		}
 		e, err := compileExpr(s.Expr.Expr)
 		if err != nil {
 			return nil, err
@@ -2483,6 +2533,86 @@ func fieldNames(fs []StructField) []string {
 		names[i] = f.Name
 	}
 	return names
+}
+
+func literalString(e *parser.Expr) (string, bool) {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) > 0 {
+		return "", false
+	}
+	u := e.Binary.Left
+	if len(u.Ops) > 0 || u.Value == nil {
+		return "", false
+	}
+	p := u.Value
+	if len(p.Ops) > 0 || p.Target == nil {
+		return "", false
+	}
+	if p.Target.Lit != nil && p.Target.Lit.Str != nil {
+		return *p.Target.Lit.Str, true
+	}
+	if p.Target.Selector != nil && len(p.Target.Selector.Tail) == 0 {
+		return p.Target.Selector.Root, true
+	}
+	return "", false
+}
+
+func simpleIdent(e *parser.Expr) (string, bool) {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) > 0 {
+		return "", false
+	}
+	u := e.Binary.Left
+	if len(u.Ops) > 0 || u.Value == nil {
+		return "", false
+	}
+	p := u.Value
+	if len(p.Ops) > 0 || p.Target == nil {
+		return "", false
+	}
+	if p.Target.Selector != nil && len(p.Target.Selector.Tail) == 0 {
+		return p.Target.Selector.Root, true
+	}
+	return "", false
+}
+
+func parseFormat(e *parser.Expr) string {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) > 0 {
+		return ""
+	}
+	u := e.Binary.Left
+	if len(u.Ops) > 0 || u.Value == nil {
+		return ""
+	}
+	p := u.Value
+	if len(p.Ops) > 0 || p.Target == nil || p.Target.Map == nil {
+		return ""
+	}
+	for _, it := range p.Target.Map.Items {
+		key, ok := simpleIdent(it.Key)
+		if !ok {
+			key, ok = literalString(it.Key)
+		}
+		if key == "format" {
+			if s, ok := literalString(it.Value); ok {
+				return s
+			}
+		}
+	}
+	return ""
+}
+
+func extractSaveExpr(e *parser.Expr) *parser.SaveExpr {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) > 0 {
+		return nil
+	}
+	u := e.Binary.Left
+	if len(u.Ops) > 0 || u.Value == nil {
+		return nil
+	}
+	p := u.Value
+	if len(p.Ops) > 0 || p.Target == nil {
+		return nil
+	}
+	return p.Target.Save
 }
 
 // print converts the custom AST to an ast.Node and prints it.
