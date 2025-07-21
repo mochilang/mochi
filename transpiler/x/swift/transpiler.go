@@ -72,6 +72,37 @@ type BreakStmt struct{}
 
 type ContinueStmt struct{}
 
+// FieldExpr represents property access on a struct.
+type FieldExpr struct {
+	Target Expr
+	Name   string
+}
+
+func (fe *FieldExpr) emit(w io.Writer) {
+	fe.Target.emit(w)
+	fmt.Fprintf(w, ".%s", fe.Name)
+}
+
+// StructDef represents a simple struct type declaration.
+type StructDef struct {
+	Name   string
+	Fields []StructField
+}
+
+// StructField defines a single field within a struct.
+type StructField struct {
+	Name string
+	Type string
+}
+
+func (sd *StructDef) emit(w io.Writer) {
+	fmt.Fprintf(w, "struct %s {\n", sd.Name)
+	for _, f := range sd.Fields {
+		fmt.Fprintf(w, "    var %s: %s\n", f.Name, f.Type)
+	}
+	fmt.Fprint(w, "}\n")
+}
+
 type IfStmt struct {
 	Cond   Expr
 	Then   []Stmt
@@ -286,6 +317,30 @@ func (m *MapLit) emit(w io.Writer) {
 		m.Values[i].emit(w)
 	}
 	fmt.Fprint(w, "]")
+}
+
+// StructInit represents initialization of a struct value.
+type StructInit struct {
+	Name   string
+	Fields []FieldInit
+}
+
+// FieldInit pairs a field name with its initializing expression.
+type FieldInit struct {
+	Name  string
+	Value Expr
+}
+
+func (si *StructInit) emit(w io.Writer) {
+	fmt.Fprintf(w, "%s(", si.Name)
+	for i, f := range si.Fields {
+		if i > 0 {
+			fmt.Fprint(w, ", ")
+		}
+		fmt.Fprintf(w, "%s: ", f.Name)
+		f.Value.emit(w)
+	}
+	fmt.Fprint(w, ")")
 }
 
 // MapStringExpr renders a dictionary as a JSON-like string.
@@ -973,7 +1028,7 @@ func convertStmt(env *types.Env, st *parser.Statement) (Stmt, error) {
 				if env != nil {
 					if types.IsBoolType(types.TypeOfExpr(a, env)) && boolAsInt(a) {
 						ex = &CondExpr{Cond: ex, Then: &LitExpr{Value: "1", IsString: false}, Else: &LitExpr{Value: "0", IsString: false}}
-					} else if types.IsMapType(types.TypeOfExpr(a, env)) || types.IsStructType(types.TypeOfExpr(a, env)) || a.Binary.Left.Value.Target.Selector != nil {
+					} else if types.IsMapType(types.TypeOfExpr(a, env)) || types.IsStructType(types.TypeOfExpr(a, env)) {
 						ex = &MapStringExpr{Value: ex}
 					} else if types.IsListType(types.TypeOfExpr(a, env)) {
 						ex = &ArrayStringExpr{Value: ex}
@@ -1034,7 +1089,13 @@ func convertStmt(env *types.Env, st *parser.Statement) (Stmt, error) {
 		}
 		return &VarDecl{Name: st.Var.Name, Const: false, Type: typ, Expr: ex}, nil
 	case st.Type != nil:
-		// type declarations do not emit Swift code
+		def, err := convertTypeDecl(env, st.Type)
+		if err != nil {
+			return nil, err
+		}
+		if def != nil {
+			return def, nil
+		}
 		return &BlockStmt{}, nil
 	case st.Test != nil:
 		body, err := convertStmts(env, st.Test.Body)
@@ -1209,6 +1270,21 @@ func convertForStmt(env *types.Env, fs *parser.ForStmt) (Stmt, error) {
 		}
 	}
 	return &ForEachStmt{Name: fs.Name, Expr: expr, Body: body, CastMap: castMap, Keys: keysOnly}, nil
+}
+
+func convertTypeDecl(env *types.Env, td *parser.TypeDecl) (Stmt, error) {
+	if len(td.Variants) > 0 {
+		return &BlockStmt{}, nil
+	}
+	var fields []StructField
+	for _, m := range td.Members {
+		if m.Field == nil {
+			continue
+		}
+		t := types.ResolveTypeRef(m.Field.Type, env)
+		fields = append(fields, StructField{Name: m.Field.Name, Type: swiftTypeOf(t)})
+	}
+	return &StructDef{Name: td.Name, Fields: fields}, nil
 }
 
 func evalPrintArg(arg *parser.Expr) (val string, isString bool, ok bool) {
@@ -1624,8 +1700,31 @@ func convertPostfix(env *types.Env, p *parser.PostfixExpr) (Expr, error) {
 		return &BinaryExpr{Left: arg, Op: "in", Right: expr}, nil
 	}
 
-	for _, f := range tail {
-		expr = &IndexExpr{Base: expr, Index: &LitExpr{Value: f, IsString: true}, Force: true}
+	if len(tail) > 0 {
+		var t types.Type
+		if env != nil && p.Target != nil && p.Target.Selector != nil {
+			if tt, err := env.GetVar(p.Target.Selector.Root); err == nil {
+				t = tt
+			}
+		}
+		if t == nil {
+			t = types.TypeOfPrimaryBasic(p.Target, env)
+		}
+		for _, f := range tail {
+			if _, ok := t.(types.StructType); ok {
+				expr = &FieldExpr{Target: expr, Name: f}
+				if st, ok := t.(types.StructType); ok {
+					if ft, ok := st.Fields[f]; ok {
+						t = ft
+					}
+				}
+			} else {
+				expr = &IndexExpr{Base: expr, Index: &LitExpr{Value: f, IsString: true}, Force: true}
+				if mt, ok := t.(types.MapType); ok {
+					t = mt.Value
+				}
+			}
+		}
 	}
 
 	for i := 0; i < len(p.Ops); i++ {
@@ -1683,6 +1782,29 @@ func convertPostfix(env *types.Env, p *parser.PostfixExpr) (Expr, error) {
 			i++
 			continue
 		}
+		if op.Cast != nil {
+			typ := toSwiftType(op.Cast.Type)
+			if env != nil {
+				if st, ok := types.ResolveTypeRef(op.Cast.Type, env).(types.StructType); ok {
+					if ml, ok := expr.(*MapLit); ok {
+						var fields []FieldInit
+						for j := range ml.Keys {
+							if lk, ok := ml.Keys[j].(*LitExpr); ok && lk.IsString {
+								fields = append(fields, FieldInit{Name: lk.Value, Value: ml.Values[j]})
+							}
+						}
+						expr = &StructInit{Name: st.Name, Fields: fields}
+					} else {
+						expr = &CastExpr{Expr: expr, Type: st.Name}
+					}
+				} else {
+					expr = &CastExpr{Expr: expr, Type: typ}
+				}
+			} else {
+				expr = &CastExpr{Expr: expr, Type: typ}
+			}
+			continue
+		}
 		return nil, fmt.Errorf("unsupported postfix")
 	}
 	if env != nil {
@@ -1690,19 +1812,21 @@ func convertPostfix(env *types.Env, p *parser.PostfixExpr) (Expr, error) {
 		if ot, ok := t.(types.OptionType); ok {
 			t = ot.Elem
 		}
-		switch {
-		case types.IsIntType(t):
-			expr = &CastExpr{Expr: expr, Type: "Int"}
-		case types.IsInt64Type(t):
-			expr = &CastExpr{Expr: expr, Type: "Int64"}
-		case types.IsFloatType(t):
-			expr = &CastExpr{Expr: expr, Type: "Double"}
-		case types.IsStringType(t):
-			expr = &CastExpr{Expr: expr, Type: "String"}
-		case types.IsBoolType(t):
-			expr = &CastExpr{Expr: expr, Type: "Bool"}
-		case types.IsListType(t), types.IsMapType(t):
-			expr = &CastExpr{Expr: expr, Type: swiftTypeOf(t)}
+		if _, ok := expr.(*FieldExpr); !ok {
+			switch {
+			case types.IsIntType(t):
+				expr = &CastExpr{Expr: expr, Type: "Int"}
+			case types.IsInt64Type(t):
+				expr = &CastExpr{Expr: expr, Type: "Int64"}
+			case types.IsFloatType(t):
+				expr = &CastExpr{Expr: expr, Type: "Double"}
+			case types.IsStringType(t):
+				expr = &CastExpr{Expr: expr, Type: "String"}
+			case types.IsBoolType(t):
+				expr = &CastExpr{Expr: expr, Type: "Bool"}
+			case types.IsListType(t), types.IsMapType(t):
+				expr = &CastExpr{Expr: expr, Type: swiftTypeOf(t)}
+			}
 		}
 	}
 	return expr, nil
@@ -2150,7 +2274,7 @@ func zeroValue(t *parser.TypeRef) Expr {
 	case "bool":
 		return &LitExpr{Value: "false", IsString: false}
 	default:
-		return &LitExpr{Value: "nil", IsString: false}
+		return &LitExpr{Value: toSwiftType(t) + "()", IsString: false}
 	}
 }
 
@@ -2189,7 +2313,7 @@ func toSwiftType(t *parser.TypeRef) string {
 	case "bool":
 		return "Bool"
 	default:
-		return "Any"
+		return *t.Simple
 	}
 }
 
@@ -2218,7 +2342,7 @@ func toSwiftOptionalType(t *parser.TypeRef) string {
 	case "bool":
 		return "Bool?"
 	default:
-		return "Any?"
+		return *t.Simple + "?"
 	}
 }
 
@@ -2240,6 +2364,11 @@ func swiftTypeOf(t types.Type) string {
 		return "[" + swiftTypeOf(tt.Key) + ": " + swiftTypeOf(tt.Value) + "]"
 	case types.OptionType:
 		return swiftTypeOf(tt.Elem) + "?"
+	case types.StructType:
+		if tt.Name != "" {
+			return tt.Name
+		}
+		return "Any"
 	default:
 		return "Any"
 	}
