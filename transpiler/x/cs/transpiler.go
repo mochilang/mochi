@@ -2192,7 +2192,7 @@ func compileQueryExpr(q *parser.QueryExpr) (Expr, error) {
 		}
 	}
 
-	for _, j := range q.Joins {
+	for idx, j := range q.Joins {
 		js, err := compileExpr(j.Src)
 		if err != nil {
 			varTypes[curVar] = savedVar
@@ -2225,10 +2225,26 @@ func compileQueryExpr(q *parser.QueryExpr) (Expr, error) {
 			fmt.Fprintf(builder, " join %s in %s on %s equals %s into %s", j.Var, exprString(js), left, right, tmp)
 			fmt.Fprintf(builder, " from %s in %s.DefaultIfEmpty()", j.Var, tmp)
 		} else if *j.Side == "right" {
-			tmp := curVar + "Tmp"
-			fmt.Fprintf(builder, " join %s in %s on %s equals %s into %s", tmp, exprString(js), left, right, tmp)
-			fmt.Fprintf(builder, " from %s in %s.DefaultIfEmpty()", curVar, tmp)
-			curVar = j.Var
+			if idx == 0 && len(q.Froms) == 0 {
+				// rewrite as left join starting from the right-hand sequence
+				builder.Reset()
+				fmt.Fprintf(builder, "from %s in %s", j.Var, exprString(js))
+				tmp := curVar + "Tmp"
+				left := exprString(cmp.Right)
+				right := exprString(cmp.Left)
+				fmt.Fprintf(builder, " join %s in %s on %s equals %s into %s", curVar, srcExpr, left, right, tmp)
+				fmt.Fprintf(builder, " from %s in %s.DefaultIfEmpty()", curVar, tmp)
+				varTypes[j.Var] = strings.TrimSuffix(typeOfExpr(js), "[]")
+				if strings.HasPrefix(varTypes[j.Var], "Dictionary<") {
+					mapVars[j.Var] = true
+				}
+				curVar = j.Var
+			} else {
+				tmp := j.Var + "Tmp"
+				fmt.Fprintf(builder, " join %s in %s on %s equals %s into %s", curVar, exprString(js), right, left, tmp)
+				fmt.Fprintf(builder, " from %s in %s.DefaultIfEmpty()", curVar, tmp)
+				curVar = j.Var
+			}
 		} else {
 			varTypes[curVar] = savedVar
 			mapVars[curVar] = savedMap

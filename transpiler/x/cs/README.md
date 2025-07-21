@@ -46,7 +46,7 @@ Compiled programs: 90/100
 - [x] join_multi
 - [x] json_builtin
 - [x] left_join
-- [x] left_join_multi
+- [ ] left_join_multi
 - [x] len_builtin
 - [x] len_map
 - [x] len_string
@@ -79,7 +79,7 @@ Compiled programs: 90/100
 - [ ] python_math
 - [x] query_sum_select
 - [x] record_assign
-- [ ] right_join
+- [x] right_join
 - [ ] save_jsonl_stdout
 - [x] short_circuit
 - [x] slice
