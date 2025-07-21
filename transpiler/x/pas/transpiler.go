@@ -3,9 +3,13 @@
 package pas
 
 import (
+	"bufio"
 	"bytes"
 	"fmt"
 	"io"
+	"os"
+	"path/filepath"
+	"strconv"
 	"strings"
 
 	"mochi/parser"
@@ -210,6 +214,17 @@ func (*BreakStmt) emit(w io.Writer) { io.WriteString(w, "break;") }
 type ContinueStmt struct{}
 
 func (*ContinueStmt) emit(w io.Writer) { io.WriteString(w, "continue;") }
+
+// WritelnStmt prints a single expression without automatic spaces.
+type WritelnStmt struct{ Expr Expr }
+
+func (wls *WritelnStmt) emit(w io.Writer) {
+	io.WriteString(w, "writeln(")
+	if wls.Expr != nil {
+		wls.Expr.emit(w)
+	}
+	io.WriteString(w, ");")
+}
 
 // PrintStmt prints a string literal using writeln.
 // Expr represents a Pascal expression.
@@ -689,6 +704,41 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 	for _, st := range prog.Statements {
 		switch {
 		case st.Expr != nil:
+			if se := extractSaveExpr(st.Expr.Expr); se != nil {
+				src, err := convertExpr(env, se.Src)
+				if err != nil {
+					return nil, err
+				}
+				format := parseFormat(se.With)
+				path := ""
+				if se.Path != nil {
+					path = strings.Trim(*se.Path, "\"")
+				}
+				if format == "jsonl" && (path == "" || path == "-") {
+					var rec RecordDef
+					t := types.ExprType(se.Src, env)
+					if lt, ok := t.(types.ListType); ok {
+						if stype, ok := lt.Elem.(types.StructType); ok {
+							rec, _ = findRecord(stype.Name)
+						}
+					}
+					if rec.Name == "" {
+						if name, ok := exprToIdent(se.Src); ok {
+							if vt, ok2 := currentVarTypes[sanitize(name)]; ok2 && strings.HasPrefix(vt, "array of ") {
+								rec, _ = findRecord(strings.TrimPrefix(vt, "array of "))
+							}
+						}
+					}
+					if rec.Name == "" {
+						return nil, fmt.Errorf("save expects list of records")
+					}
+					loopVar := "row"
+					body := []Stmt{&WritelnStmt{Expr: buildJSONLineExpr(loopVar, rec)}}
+					pr.Stmts = append(pr.Stmts, &ForEachStmt{Name: loopVar, Iterable: src, Body: body})
+					continue
+				}
+				return nil, fmt.Errorf("unsupported save")
+			}
 			call := st.Expr.Expr.Binary.Left.Value.Target.Call
 			if call != nil && call.Func == "print" && len(st.Expr.Expr.Binary.Right) == 0 {
 				var parts []Expr
@@ -710,6 +760,24 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 				continue
 			}
 			return nil, fmt.Errorf("unsupported expression")
+		case st.Type != nil:
+			var fields []Field
+			for _, m := range st.Type.Members {
+				if m.Field == nil || m.Field.Type == nil || m.Field.Type.Simple == nil {
+					continue
+				}
+				typ := ""
+				switch *m.Field.Type.Simple {
+				case "int":
+					typ = "integer"
+				case "string":
+					typ = "string"
+				default:
+					typ = *m.Field.Type.Simple
+				}
+				fields = append(fields, Field{Name: m.Field.Name, Type: typ})
+			}
+			pr.Records = append(pr.Records, RecordDef{Name: st.Type.Name, Fields: fields})
 		case st.Let != nil:
 			name := sanitize(st.Let.Name)
 			vd := VarDecl{Name: name}
@@ -1103,6 +1171,41 @@ func convertBody(env *types.Env, body []*parser.Statement, varTypes map[string]s
 		case st.Continue != nil:
 			out = append(out, &ContinueStmt{})
 		case st.Expr != nil:
+			if se := extractSaveExpr(st.Expr.Expr); se != nil {
+				src, err := convertExpr(env, se.Src)
+				if err != nil {
+					return nil, err
+				}
+				format := parseFormat(se.With)
+				path := ""
+				if se.Path != nil {
+					path = strings.Trim(*se.Path, "\"")
+				}
+				if format == "jsonl" && (path == "" || path == "-") {
+					var rec RecordDef
+					t := types.ExprType(se.Src, env)
+					if lt, ok := t.(types.ListType); ok {
+						if stype, ok := lt.Elem.(types.StructType); ok {
+							rec, _ = findRecord(stype.Name)
+						}
+					}
+					if rec.Name == "" {
+						if name, ok := exprToIdent(se.Src); ok {
+							if vt, ok2 := currentVarTypes[sanitize(name)]; ok2 && strings.HasPrefix(vt, "array of ") {
+								rec, _ = findRecord(strings.TrimPrefix(vt, "array of "))
+							}
+						}
+					}
+					if rec.Name == "" {
+						return nil, fmt.Errorf("save expects list of records")
+					}
+					loopVar := "row"
+					body := []Stmt{&WritelnStmt{Expr: buildJSONLineExpr(loopVar, rec)}}
+					out = append(out, &ForEachStmt{Name: loopVar, Iterable: src, Body: body})
+					continue
+				}
+				return nil, fmt.Errorf("unsupported save")
+			}
 			call := st.Expr.Expr.Binary.Left.Value.Target.Call
 			if call != nil && call.Func == "print" && len(st.Expr.Expr.Binary.Right) == 0 {
 				var parts []Expr
@@ -2369,6 +2472,53 @@ func convertPrimary(env *types.Env, p *parser.Primary) (Expr, error) {
 		}
 		name := ensureRecord(rec)
 		return &RecordLit{Type: name, Fields: fields}, nil
+	case p.Load != nil:
+		if p.Load.Path == nil || p.Load.Type == nil || p.Load.Type.Simple == nil {
+			return nil, fmt.Errorf("unsupported load")
+		}
+		format := parseFormat(p.Load.With)
+		if format != "yaml" {
+			return nil, fmt.Errorf("unsupported load format")
+		}
+		root := repoRoot()
+		path := strings.Trim(*p.Load.Path, "\"")
+		full := filepath.Join(root, path)
+		if _, err := os.Stat(full); err != nil {
+			alt := filepath.Join(root, "tests", strings.TrimPrefix(path, "../"))
+			if _, err2 := os.Stat(alt); err2 == nil {
+				full = alt
+			}
+		}
+		data, err := os.ReadFile(full)
+		if err != nil {
+			return nil, err
+		}
+		records, err := parseYAMLRecords(data)
+		if err != nil {
+			return nil, err
+		}
+		recDef, ok := findRecord(*p.Load.Type.Simple)
+		if !ok {
+			return nil, fmt.Errorf("unknown type %s", *p.Load.Type.Simple)
+		}
+		var elems []Expr
+		for _, row := range records {
+			var flds []FieldExpr
+			for _, f := range recDef.Fields {
+				val := row[f.Name]
+				var ex Expr
+				switch f.Type {
+				case "integer":
+					iv, _ := strconv.Atoi(val)
+					ex = &IntLit{Value: int64(iv)}
+				default:
+					ex = &StringLit{Value: val}
+				}
+				flds = append(flds, FieldExpr{Name: f.Name, Expr: ex})
+			}
+			elems = append(elems, &RecordLit{Type: recDef.Name, Fields: flds})
+		}
+		return &ListLit{Elems: elems}, nil
 	case p.FunExpr != nil:
 		name := fmt.Sprintf("anon%d", len(currProg.Funs))
 		var params []string
@@ -2668,6 +2818,8 @@ func usesSysUtilsStmt(s Stmt) bool {
 			}
 		}
 		return false
+	case *WritelnStmt:
+		return usesSysUtilsExpr(v.Expr)
 	case *AssignStmt:
 		return usesSysUtilsExpr(v.Expr)
 	case *IndexAssignStmt:
@@ -2742,4 +2894,131 @@ func markSysUtils(p *Program) {
 			}
 		}
 	}
+}
+
+func repoRoot() string {
+	dir, err := os.Getwd()
+	if err != nil {
+		return ""
+	}
+	for i := 0; i < 10; i++ {
+		if _, err := os.Stat(filepath.Join(dir, "go.mod")); err == nil {
+			return dir
+		}
+		parent := filepath.Dir(dir)
+		if parent == dir {
+			break
+		}
+		dir = parent
+	}
+	return ""
+}
+
+func parseFormat(e *parser.Expr) string {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) > 0 {
+		return ""
+	}
+	u := e.Binary.Left
+	if len(u.Ops) > 0 || u.Value == nil || u.Value.Target == nil || u.Value.Target.Map == nil {
+		return ""
+	}
+	for _, it := range u.Value.Target.Map.Items {
+		key, ok := exprToIdent(it.Key)
+		if !ok {
+			if s, ok2 := literalString(it.Key); ok2 {
+				key = s
+			}
+		}
+		if key == "format" {
+			if s, ok := literalString(it.Value); ok {
+				return s
+			}
+		}
+	}
+	return ""
+}
+
+func literalString(e *parser.Expr) (string, bool) {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) > 0 {
+		return "", false
+	}
+	u := e.Binary.Left
+	if len(u.Ops) > 0 || u.Value == nil || u.Value.Target == nil {
+		return "", false
+	}
+	t := u.Value.Target
+	if t.Lit != nil && t.Lit.Str != nil {
+		return *t.Lit.Str, true
+	}
+	if t.Selector != nil && len(t.Selector.Tail) == 0 {
+		return t.Selector.Root, true
+	}
+	return "", false
+}
+
+func parseYAMLRecords(data []byte) ([]map[string]string, error) {
+	var res []map[string]string
+	scanner := bufio.NewScanner(bytes.NewReader(data))
+	cur := map[string]string{}
+	for scanner.Scan() {
+		line := strings.TrimSpace(scanner.Text())
+		if strings.HasPrefix(line, "-") {
+			if len(cur) > 0 {
+				res = append(res, cur)
+				cur = map[string]string{}
+			}
+			line = strings.TrimSpace(strings.TrimPrefix(line, "-"))
+			if idx := strings.Index(line, ":"); idx != -1 {
+				cur[strings.TrimSpace(line[:idx])] = strings.TrimSpace(line[idx+1:])
+			}
+			continue
+		}
+		if idx := strings.Index(line, ":"); idx != -1 {
+			cur[strings.TrimSpace(line[:idx])] = strings.TrimSpace(line[idx+1:])
+		}
+	}
+	if len(cur) > 0 {
+		res = append(res, cur)
+	}
+	return res, scanner.Err()
+}
+
+func findRecord(name string) (RecordDef, bool) {
+	for _, r := range currProg.Records {
+		if r.Name == name {
+			return r, true
+		}
+	}
+	return RecordDef{}, false
+}
+
+func buildJSONLineExpr(varName string, rec RecordDef) Expr {
+	var expr Expr = &StringLit{Value: "{"}
+	for i, f := range rec.Fields {
+		if i > 0 {
+			expr = &BinaryExpr{Op: "+", Left: expr, Right: &StringLit{Value: ", "}}
+		}
+		expr = &BinaryExpr{Op: "+", Left: expr, Right: &StringLit{Value: fmt.Sprintf("\"%s\": ", f.Name)}}
+		sel := &SelectorExpr{Root: varName, Tail: []string{f.Name}}
+		if f.Type == "integer" {
+			expr = &BinaryExpr{Op: "+", Left: expr, Right: &CallExpr{Name: "IntToStr", Args: []Expr{sel}}}
+		} else {
+			expr = &BinaryExpr{Op: "+", Left: expr, Right: &StringLit{Value: "\""}}
+			expr = &BinaryExpr{Op: "+", Left: expr, Right: sel}
+			expr = &BinaryExpr{Op: "+", Left: expr, Right: &StringLit{Value: "\""}}
+		}
+	}
+	expr = &BinaryExpr{Op: "+", Left: expr, Right: &StringLit{Value: "}"}}
+	return expr
+}
+
+func extractSaveExpr(e *parser.Expr) *parser.SaveExpr {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) > 0 {
+		return nil
+	}
+	u := e.Binary.Left
+	if len(u.Ops) > 0 || u.Value == nil || u.Value.Target == nil {
+		return nil
+	}
+	return u.Value.Target.Save
 }
