@@ -171,6 +171,26 @@ func zeroValue(t *parser.TypeRef) value {
 	}
 }
 
+// identStringExpr returns the identifier name if e represents a bare
+// identifier expression with no operators. Otherwise it reports false.
+func identStringExpr(e *parser.Expr) (string, bool) {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) > 0 {
+		return "", false
+	}
+	u := e.Binary.Left
+	if len(u.Ops) > 0 || u.Value == nil {
+		return "", false
+	}
+	if len(u.Value.Ops) > 0 || u.Value.Target == nil {
+		return "", false
+	}
+	sel := u.Value.Target.Selector
+	if sel != nil && len(sel.Tail) == 0 {
+		return sel.Root, true
+	}
+	return "", false
+}
+
 func evalExpr(e *parser.Expr, vars map[string]value) (value, error) {
 	if e == nil {
 		return value{}, fmt.Errorf("nil expr")
@@ -473,6 +493,18 @@ func evalPrimary(p *parser.Primary, vars map[string]value) (value, error) {
 	case p.Map != nil:
 		m := make(map[string]value)
 		for _, it := range p.Map.Items {
+			// Map keys like {foo: bar} should use the literal
+			// identifier "foo" even when a variable named foo is in
+			// scope. Detect bare identifiers and use them directly.
+			if keyName, ok := identStringExpr(it.Key); ok {
+				v, err := evalExpr(it.Value, vars)
+				if err != nil {
+					return value{}, err
+				}
+				m[keyName] = v
+				continue
+			}
+
 			k, err := evalExpr(it.Key, vars)
 			if err != nil {
 				return value{}, err
