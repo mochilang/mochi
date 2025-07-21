@@ -303,6 +303,7 @@ type QueryExpr struct {
 	Joins  []queryJoin
 	Where  Expr
 	Select Expr
+	Elem   string
 }
 
 // LeftJoinExpr represents a basic left join between two sources.
@@ -318,6 +319,8 @@ type LeftJoinExpr struct {
 func (q *QueryExpr) emit(w io.Writer) {
 	if _, ok := q.Select.(*MapLit); ok {
 		fmt.Fprint(w, "({ var _res: [[String: Any]] = []\n")
+	} else if q.Elem != "" {
+		fmt.Fprintf(w, "({ var _res: [%s] = []\n", q.Elem)
 	} else {
 		fmt.Fprint(w, "({ var _res: [Any] = []\n")
 	}
@@ -1473,7 +1476,11 @@ func convertQueryExpr(env *types.Env, q *parser.QueryExpr) (Expr, error) {
 	if err != nil {
 		return nil, err
 	}
-	return &QueryExpr{Var: q.Var, Src: src, Froms: froms, Joins: joins, Where: where, Select: sel}, nil
+	elemType := ""
+	if t := types.TypeOfExpr(q.Select, child); t != nil {
+		elemType = swiftTypeOf(t)
+	}
+	return &QueryExpr{Var: q.Var, Src: src, Froms: froms, Joins: joins, Where: where, Select: sel, Elem: elemType}, nil
 }
 
 func convertLeftJoinQuery(env *types.Env, q *parser.QueryExpr) (Expr, error) {
