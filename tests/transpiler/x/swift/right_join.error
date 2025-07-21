@@ -1,0 +1,32 @@
+exit status 1
+/tmp/TestSwiftTranspiler_VMValid_Golden2036420806/062/main.swift:7:31: warning: forced cast of 'Int' to same type has no effect
+ 5 | for c in customers {
+ 6 |     for o in orders {
+ 7 |         if ((o["customerId"]! as! Int) == (c["id"]! as! Int)) {
+   |                               `- warning: forced cast of 'Int' to same type has no effect
+ 8 |             _res.append(["customerName": c["name"]!, "order": o])
+ 9 |         }
+
+/tmp/TestSwiftTranspiler_VMValid_Golden2036420806/062/main.swift:15:22: error: cannot convert value of type 'Any' to expected condition type 'Bool'
+13 | print("--- Right Join using syntax ---")
+14 | for entry in result {
+15 |     if entry["order"]! {
+   |                      `- error: cannot convert value of type 'Any' to expected condition type 'Bool'
+16 |         print("Customer", entry["customerName"]!, "has order", entry["order"]!["id"]!, "- $", entry["order"]!["total"]!)
+17 |     } else {
+
+/tmp/TestSwiftTranspiler_VMValid_Golden2036420806/062/main.swift:16:79: error: value of type 'Any' has no subscripts
+14 | for entry in result {
+15 |     if entry["order"]! {
+16 |         print("Customer", entry["customerName"]!, "has order", entry["order"]!["id"]!, "- $", entry["order"]!["total"]!)
+   |                                                                               `- error: value of type 'Any' has no subscripts
+17 |     } else {
+18 |         print("Customer", entry["customerName"]!, "has no orders")
+
+/tmp/TestSwiftTranspiler_VMValid_Golden2036420806/062/main.swift:16:110: error: value of type 'Any' has no subscripts
+14 | for entry in result {
+15 |     if entry["order"]! {
+16 |         print("Customer", entry["customerName"]!, "has order", entry["order"]!["id"]!, "- $", entry["order"]!["total"]!)
+   |                                                                                                              `- error: value of type 'Any' has no subscripts
+17 |     } else {
+18 |         print("Customer", entry["customerName"]!, "has no orders")

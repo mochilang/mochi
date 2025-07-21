@@ -2,7 +2,7 @@
 
 Generated Swift code for programs in `tests/vm/valid`. Each program has a `.swift` file produced by the transpiler and a `.out` file with its runtime output. Compilation or execution errors are captured in `.error` files.
 
-Transpiled programs: 79/100
+Transpiled programs: 81/100
 
 Checklist:
 - [x] append_builtin
@@ -82,7 +82,7 @@ Checklist:
 - [x] right_join
 - [ ] save_jsonl_stdout
 - [x] short_circuit
-- [ ] slice
+- [x] slice
 - [ ] sort_stable
 - [x] str_builtin
 - [x] string_compare
@@ -90,7 +90,7 @@ Checklist:
 - [x] string_contains
 - [x] string_in_operator
 - [x] string_index
-- [ ] string_prefix_slice
+- [x] string_prefix_slice
 - [x] substring_builtin
 - [x] sum_builtin
 - [x] tail_recursion

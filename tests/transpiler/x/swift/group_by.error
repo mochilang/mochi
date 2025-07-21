@@ -1,0 +1,24 @@
+exit status 1
+/tmp/TestSwiftTranspiler_VMValid_Golden2036420806/021/main.swift:17:88: warning: forced cast of 'Int' to same type has no effect
+15 | _list.sort { a, b in String(describing: a["key"]) < String(describing: b["key"]) }
+16 | for g in _list {
+17 |     _res.append(["city": g["key"]!, "count": (((g["items"] as! [[String: Any]]).count) as! Int), "avg_age": ((Double((({ var _res: [Any] = []
+   |                                                                                        `- warning: forced cast of 'Int' to same type has no effect
+18 |     for p in g["items"] as! [[String: Any]] {
+19 |         _res.append(p["age"]!)
+
+/tmp/TestSwiftTranspiler_VMValid_Golden2036420806/021/main.swift:21:32: error: cannot convert value of type '(Int) -> Int' to expected argument type '(Int, Any) throws -> Int'
+19 |         _res.append(p["age"]!)
+20 |     }
+21 |     return _res })()).reduce(0,+)) / Double((({ var _res: [Any] = []
+   |                                `- error: cannot convert value of type '(Int) -> Int' to expected argument type '(Int, Any) throws -> Int'
+22 |     for p in g["items"] as! [[String: Any]] {
+23 |         _res.append(p["age"]!)
+
+/tmp/TestSwiftTranspiler_VMValid_Golden2036420806/021/main.swift:25:31: warning: forced cast of 'Double' to same type has no effect
+23 |         _res.append(p["age"]!)
+24 |     }
+25 |     return _res })()).count)) as! Double)])
+   |                               `- warning: forced cast of 'Double' to same type has no effect
+26 | }
+27 | return _res })()
