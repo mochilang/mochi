@@ -669,9 +669,16 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 						}
 						vd.Type = typ
 						pr.Stmts = append(pr.Stmts, stmts...)
-					} else if q.Group != nil && len(q.Froms) == 0 && len(q.Joins) == 0 && q.Sort == nil && q.Skip == nil && q.Take == nil && !q.Distinct {
-						if isSimpleGroupBy(q) {
+					} else if q.Group != nil && len(q.Froms) == 0 && len(q.Joins) == 0 && q.Skip == nil && q.Take == nil && !q.Distinct {
+						if q.Sort == nil && isSimpleGroupBy(q) {
 							stmts, typ, err := buildGroupByQuery(env, q, st.Let.Name, varTypes)
+							if err != nil {
+								return nil, err
+							}
+							vd.Type = typ
+							pr.Stmts = append(pr.Stmts, stmts...)
+						} else if isGroupByConditionalSum(q) {
+							stmts, typ, err := buildGroupByConditionalSum(env, q, st.Let.Name, varTypes)
 							if err != nil {
 								return nil, err
 							}
@@ -1414,6 +1421,28 @@ func isSimpleGroupBy(q *parser.QueryExpr) bool {
 	return true
 }
 
+func isGroupByConditionalSum(q *parser.QueryExpr) bool {
+	if q.Group == nil || len(q.Group.Exprs) != 1 || q.Group.Having != nil {
+		return false
+	}
+	if q.Select == nil || q.Select.Binary == nil {
+		return false
+	}
+	ml := q.Select.Binary.Left.Value.Target.Map
+	if ml == nil || len(ml.Items) != 2 {
+		return false
+	}
+	k0, ok0 := exprToIdent(ml.Items[0].Key)
+	k1, ok1 := exprToIdent(ml.Items[1].Key)
+	if !ok0 || !ok1 {
+		return false
+	}
+	if k0 != "cat" || k1 != "share" {
+		return false
+	}
+	return true
+}
+
 func buildGroupByQuery(env *types.Env, q *parser.QueryExpr, varName string, varTypes map[string]string) ([]Stmt, string, error) {
 	src, err := convertExpr(env, q.Source)
 	if err != nil {
@@ -1489,6 +1518,78 @@ func buildGroupByQuery(env *types.Env, q *parser.QueryExpr, varName string, varT
 	appendRes := &AssignStmt{Name: varName, Expr: &CallExpr{Name: "concat", Args: []Expr{&VarRef{Name: varName}, &ListLit{Elems: []Expr{rec}}}}}
 	resultBody := []Stmt{sumInit, inner, appendRes}
 	resultFor := &ForEachStmt{Name: "g", Iterable: &VarRef{Name: groupsVar}, Body: resultBody}
+
+	stmts := []Stmt{&AssignStmt{Name: groupsVar, Expr: &ListLit{}}, outer, &AssignStmt{Name: varName, Expr: &ListLit{}}, resultFor}
+	varTypes[varName] = "array of " + resRec
+	return stmts, "array of " + resRec, nil
+}
+
+func buildGroupByConditionalSum(env *types.Env, q *parser.QueryExpr, varName string, varTypes map[string]string) ([]Stmt, string, error) {
+	src, err := convertExpr(env, q.Source)
+	if err != nil {
+		return nil, "", err
+	}
+	child := types.NewEnv(env)
+	child.SetVar(q.Var, types.AnyType{}, true)
+	keyExpr, err := convertExpr(child, q.Group.Exprs[0])
+	if err != nil {
+		return nil, "", err
+	}
+	elemT := elemType(typeOf(q.Source, env))
+	if _, ok := varTypes[q.Var]; !ok {
+		varTypes[q.Var] = elemT
+	}
+	keyT := inferType(keyExpr)
+
+	grpRec := ensureRecord([]Field{{Name: "cat", Type: keyT}, {Name: "sumTrue", Type: "integer"}, {Name: "sumTotal", Type: "integer"}})
+	resRec := ensureRecord([]Field{{Name: "cat", Type: keyT}, {Name: "share", Type: "real"}})
+
+	groupsVar := fmt.Sprintf("grp%d", len(currProg.Vars))
+	currProg.Vars = append(currProg.Vars, VarDecl{Name: groupsVar, Type: "array of " + grpRec})
+	idxVar := fmt.Sprintf("idx%d", len(currProg.Vars))
+	currProg.Vars = append(currProg.Vars, VarDecl{Name: idxVar, Type: "integer"})
+	iVar := fmt.Sprintf("i%d", len(currProg.Vars))
+	currProg.Vars = append(currProg.Vars, VarDecl{Name: iVar, Type: "integer"})
+
+	searchBody := []Stmt{
+		&IfStmt{Cond: &BinaryExpr{Op: "=", Bool: true,
+			Left:  &SelectorExpr{Root: fmt.Sprintf("%s[%s]", groupsVar, iVar), Tail: []string{"cat"}},
+			Right: keyExpr},
+			Then: []Stmt{&AssignStmt{Name: idxVar, Expr: &VarRef{Name: iVar}}, &BreakStmt{}}},
+	}
+	forLoop := &ForRangeStmt{Name: iVar, Start: &IntLit{Value: 0}, End: &CallExpr{Name: "Length", Args: []Expr{&VarRef{Name: groupsVar}}}, Body: searchBody}
+
+	condTrue := &IfStmt{Cond: &SelectorExpr{Root: q.Var, Tail: []string{"flag"}},
+		Then: []Stmt{&AssignStmt{Name: fmt.Sprintf("%s[%s].sumTrue", groupsVar, idxVar), Expr: &BinaryExpr{Op: "+", Left: &SelectorExpr{Root: fmt.Sprintf("%s[%s]", groupsVar, idxVar), Tail: []string{"sumTrue"}}, Right: &SelectorExpr{Root: q.Var, Tail: []string{"val"}}}}}}
+	incTotal := &AssignStmt{Name: fmt.Sprintf("%s[%s].sumTotal", groupsVar, idxVar), Expr: &BinaryExpr{Op: "+", Left: &SelectorExpr{Root: fmt.Sprintf("%s[%s]", groupsVar, idxVar), Tail: []string{"sumTotal"}}, Right: &SelectorExpr{Root: q.Var, Tail: []string{"val"}}}}
+
+	addNew := &AssignStmt{
+		Name: groupsVar,
+		Expr: &CallExpr{Name: "concat", Args: []Expr{
+			&VarRef{Name: groupsVar},
+			&ListLit{Elems: []Expr{
+				&RecordLit{Type: grpRec, Fields: []FieldExpr{
+					{Name: "cat", Expr: keyExpr},
+					{Name: "sumTrue", Expr: &IfExpr{Cond: &SelectorExpr{Root: q.Var, Tail: []string{"flag"}}, Then: &SelectorExpr{Root: q.Var, Tail: []string{"val"}}, Else: &IntLit{Value: 0}}},
+					{Name: "sumTotal", Expr: &SelectorExpr{Root: q.Var, Tail: []string{"val"}}},
+				}},
+			}},
+		}},
+	}
+
+	body := []Stmt{
+		&AssignStmt{Name: idxVar, Expr: &IntLit{Value: -1}},
+		forLoop,
+		&IfStmt{Cond: &BinaryExpr{Op: "=", Bool: true, Left: &VarRef{Name: idxVar}, Right: &IntLit{Value: -1}}, Then: []Stmt{addNew}, Else: []Stmt{condTrue, incTotal}},
+	}
+	outer := &ForEachStmt{Name: q.Var, Iterable: src, Body: body}
+
+	resExpr := &RecordLit{Type: resRec, Fields: []FieldExpr{
+		{Name: "cat", Expr: &SelectorExpr{Root: "g", Tail: []string{"cat"}}},
+		{Name: "share", Expr: &BinaryExpr{Op: "/", Left: &SelectorExpr{Root: "g", Tail: []string{"sumTrue"}}, Right: &SelectorExpr{Root: "g", Tail: []string{"sumTotal"}}, Real: true}},
+	}}
+	appendRes := &AssignStmt{Name: varName, Expr: &CallExpr{Name: "concat", Args: []Expr{&VarRef{Name: varName}, &ListLit{Elems: []Expr{resExpr}}}}}
+	resultFor := &ForEachStmt{Name: "g", Iterable: &VarRef{Name: groupsVar}, Body: []Stmt{appendRes}}
 
 	stmts := []Stmt{&AssignStmt{Name: groupsVar, Expr: &ListLit{}}, outer, &AssignStmt{Name: varName, Expr: &ListLit{}}, resultFor}
 	varTypes[varName] = "array of " + resRec
@@ -2010,6 +2111,12 @@ func usesSysUtilsExpr(e Expr) bool {
 			return true
 		}
 		return usesSysUtilsExpr(v.Expr)
+	case *RecordLit:
+		for _, f := range v.Fields {
+			if usesSysUtilsExpr(f.Expr) {
+				return true
+			}
+		}
 	}
 	return false
 }
