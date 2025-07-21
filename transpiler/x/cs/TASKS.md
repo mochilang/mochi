@@ -1,9 +1,9 @@
-## Progress (2025-07-21 10:14 UTC)
-- cs transpiler: infer grouped key structs (progress 2/100)
+## Progress (2025-07-21 17:26 +0700)
+- cs transpiler: 3/100 golden tests passing after fixing bool output for cross joins
 
 ## Recent Enhancements
-- Added struct inference from list and map literals
-- Basic LINQ query translation with joins and grouping
+- Improved bool printing for lists
+- Basic support for multi-source cross joins
 
 ## Remaining Work
 - Support map and list mutation operations
