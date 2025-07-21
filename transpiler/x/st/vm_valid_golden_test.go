@@ -158,9 +158,8 @@ func updateTasks() {
 	var buf bytes.Buffer
 	buf.WriteString(fmt.Sprintf("## Progress (%s)\n", ts))
 	buf.WriteString("- VM valid golden test results updated\n")
-	buf.WriteString("- Grouping keys now allow maps and floats\n")
-	buf.WriteString("- Unary minus supports floats\n")
-	buf.WriteString(fmt.Sprintf("- group_by_multi_join_sort now passes (%d/%d)\n\n", compiled, total))
+	buf.WriteString("- Added match expression support\n")
+	buf.WriteString(fmt.Sprintf("- match_expr now passes (%d/%d)\n\n", compiled, total))
 	if data, err := os.ReadFile(taskFile); err == nil {
 		buf.Write(data)
 	}

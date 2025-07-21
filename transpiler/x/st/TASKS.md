@@ -1,3 +1,8 @@
+## Progress (21 Jul 2025 16:57 +0700)
+- VM valid golden test results updated
+- Added match expression support
+- match_expr now passes (73/100)
+
 ## Progress (21 Jul 2025 16:17 +0700)
 - VM valid golden test results updated
 - Added nested index assignment for lists and maps
