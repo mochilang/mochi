@@ -2883,22 +2883,94 @@ func evalQueryConst(q *parser.QueryExpr) (*ListLit, bool) {
 	for _, j := range q.Joins {
 		env.SetVar(j.Var, inferSrc(j.Src), true)
 	}
-	results, err := data.RunQuery(q, env, data.MemoryEngine{}, func(en *types.Env, e *parser.Expr) (any, error) {
-		ip := interpreter.New(&parser.Program{}, en, "")
-		return ip.EvalExpr(e)
-	})
-	if err != nil {
-		return nil, false
-	}
-	var elems []Expr
-	for _, r := range results {
-		ex := anyToExpr(r)
-		if ex == nil {
-			return nil, false
-		}
-		elems = append(elems, ex)
-	}
-	return &ListLit{Elems: elems}, true
+       results, err := data.RunQuery(q, env, data.MemoryEngine{}, func(en *types.Env, e *parser.Expr) (any, error) {
+               ip := interpreter.New(&parser.Program{}, en, "")
+               return ip.EvalExpr(e)
+       })
+       if err == nil {
+               var elems []Expr
+               for _, r := range results {
+                       ex := anyToExpr(r)
+                       if ex == nil {
+                               return nil, false
+                       }
+                       elems = append(elems, ex)
+               }
+               return &ListLit{Elems: elems}, true
+       }
+
+       if q.Where == nil && q.Group == nil && len(q.Froms) == 0 && len(q.Joins) == 0 && q.Select != nil {
+               srcList, ok := convertListExpr(q.Source)
+               if !ok {
+                       return nil, false
+               }
+               vals := make([]map[string]any, len(srcList))
+               for i, ex := range srcList {
+                       v, ok := valueFromExpr(ex)
+                       if !ok {
+                               return nil, false
+                       }
+                       m, ok := v.(map[string]any)
+                       if !ok {
+                               return nil, false
+                       }
+                       vals[i] = m
+               }
+
+               sortField := ""
+               desc := false
+               if s := q.Sort; s != nil && s.Binary != nil && s.Binary.Left != nil {
+                       u := s.Binary.Left
+                       if len(u.Ops) == 1 && u.Ops[0] == "-" {
+                               desc = true
+                       }
+                       tgt := u.Value.Target
+                       if tgt != nil && tgt.Selector != nil && tgt.Selector.Root == q.Var && len(tgt.Selector.Tail) == 1 {
+                               sortField = tgt.Selector.Tail[0]
+                       }
+               }
+               if sortField != "" {
+                       sort.Slice(vals, func(i, j int) bool {
+                               ai, _ := vals[i][sortField].(int)
+                               aj, _ := vals[j][sortField].(int)
+                               if desc {
+                                       return ai > aj
+                               }
+                               return ai < aj
+                       })
+               }
+               skipN := 0
+               if q.Skip != nil {
+                       if n, ok := evalInt(convertExpr(q.Skip)); ok {
+                               skipN = n
+                       }
+               }
+               takeN := len(vals)
+               if q.Take != nil {
+                       if n, ok := evalInt(convertExpr(q.Take)); ok && n < takeN {
+                               takeN = n
+                       }
+               }
+               if skipN < len(vals) {
+                       vals = vals[skipN:]
+               } else {
+                       vals = []map[string]any{}
+               }
+               if takeN < len(vals) {
+                       vals = vals[:takeN]
+               }
+               var elems []Expr
+               for _, v := range vals {
+                       ex := anyToExpr(v)
+                       if ex == nil {
+                               return nil, false
+                       }
+                       elems = append(elems, ex)
+               }
+               return &ListLit{Elems: elems}, true
+       }
+
+       return nil, false
 }
 
 func valueFromExpr(e Expr) (any, bool) {
