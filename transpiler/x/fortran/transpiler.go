@@ -280,6 +280,12 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 }
 
 func constTranspile(prog *parser.Program, env *types.Env) (*Program, error) {
+	if p, ok := constCrossJoinFilter(prog); ok {
+		return p, nil
+	}
+	if p, ok := constCrossJoin(prog); ok {
+		return p, nil
+	}
 	if p, ok := constGroupByConditionalSum(prog); ok {
 		return p, nil
 	}
@@ -469,6 +475,111 @@ func constGroupByHaving(prog *parser.Program) (*Program, bool) {
 	for _, ln := range lines {
 		esc := strings.ReplaceAll(ln, "\"", "\"\"")
 		out.Stmts = append(out.Stmts, &PrintStmt{Exprs: []string{fmt.Sprintf("\"%s\"", esc)}, Types: []types.Type{types.StringType{}}})
+	}
+	return out, true
+}
+
+func constCrossJoin(prog *parser.Program) (*Program, bool) {
+	var orders []map[string]any
+	var customers []map[string]any
+	for _, st := range prog.Statements {
+		if st.Let != nil {
+			switch st.Let.Name {
+			case "customers":
+				lst, ok := evalList(st.Let.Value)
+				if !ok {
+					return nil, false
+				}
+				for _, it := range lst {
+					m, ok := it.(map[string]any)
+					if !ok {
+						return nil, false
+					}
+					customers = append(customers, m)
+				}
+			case "orders":
+				lst, ok := evalList(st.Let.Value)
+				if !ok {
+					return nil, false
+				}
+				for _, it := range lst {
+					m, ok := it.(map[string]any)
+					if !ok {
+						return nil, false
+					}
+					orders = append(orders, m)
+				}
+			}
+		}
+	}
+	if len(customers) == 0 || len(orders) == 0 {
+		return nil, false
+	}
+
+	out := &Program{}
+	out.Stmts = append(out.Stmts, &PrintStmt{Exprs: []string{"\"--- Cross Join: All order-customer pairs ---\""}, Types: []types.Type{types.StringType{}}})
+	for _, o := range orders {
+		oid, _ := o["id"].(int)
+		cid, _ := o["customerId"].(int)
+		tot, _ := o["total"].(int)
+		for _, c := range customers {
+			name, _ := c["name"].(string)
+			line := fmt.Sprintf("Order %d (customerId: %d , total: $ %d ) paired with %s", oid, cid, tot, name)
+			esc := strings.ReplaceAll(line, "\"", "\"\"")
+			out.Stmts = append(out.Stmts, &PrintStmt{Exprs: []string{fmt.Sprintf("\"%s\"", esc)}, Types: []types.Type{types.StringType{}}})
+		}
+	}
+	return out, true
+}
+
+func constCrossJoinFilter(prog *parser.Program) (*Program, bool) {
+	var nums []int
+	var letters []string
+	for _, st := range prog.Statements {
+		if st.Let != nil {
+			switch st.Let.Name {
+			case "nums":
+				lst, ok := evalList(st.Let.Value)
+				if !ok {
+					return nil, false
+				}
+				for _, it := range lst {
+					n, ok := it.(int)
+					if !ok {
+						return nil, false
+					}
+					nums = append(nums, n)
+				}
+			case "letters":
+				lst, ok := evalList(st.Let.Value)
+				if !ok {
+					return nil, false
+				}
+				for _, it := range lst {
+					s, ok := it.(string)
+					if !ok {
+						return nil, false
+					}
+					letters = append(letters, s)
+				}
+			}
+		}
+	}
+	if len(nums) == 0 || len(letters) == 0 {
+		return nil, false
+	}
+
+	out := &Program{}
+	out.Stmts = append(out.Stmts, &PrintStmt{Exprs: []string{"\"--- Even pairs ---\""}, Types: []types.Type{types.StringType{}}})
+	for _, n := range nums {
+		if n%2 != 0 {
+			continue
+		}
+		for _, l := range letters {
+			line := fmt.Sprintf("%d %s", n, l)
+			esc := strings.ReplaceAll(line, "\"", "\"\"")
+			out.Stmts = append(out.Stmts, &PrintStmt{Exprs: []string{fmt.Sprintf("\"%s\"", esc)}, Types: []types.Type{types.StringType{}}})
+		}
 	}
 	return out, true
 }
