@@ -515,6 +515,10 @@ type QueryExpr struct {
 	Src      Expr
 	Froms    []queryFrom
 	Where    Expr
+	Sort     Expr
+	SortType string
+	Skip     Expr
+	Take     Expr
 	Select   Expr
 	Distinct bool
 	ElemType string
@@ -525,7 +529,15 @@ func (q *QueryExpr) emit(w io.Writer) {
 	if et == "" {
 		et = "Any"
 	}
-	fmt.Fprintf(w, "({ var _res = ArrayBuffer[%s]() ; for (%s <- ", et, q.Var)
+	if q.Sort != nil {
+		st := q.SortType
+		if st == "" {
+			st = "Any"
+		}
+		fmt.Fprintf(w, "({ var _tmp = ArrayBuffer[(%s,%s)]() ; for (%s <- ", st, et, q.Var)
+	} else {
+		fmt.Fprintf(w, "({ var _res = ArrayBuffer[%s]() ; for (%s <- ", et, q.Var)
+	}
 	q.Src.emit(w)
 	fmt.Fprint(w, ") {")
 	for _, f := range q.Froms {
@@ -538,19 +550,42 @@ func (q *QueryExpr) emit(w io.Writer) {
 		q.Where.emit(w)
 		fmt.Fprint(w, ") {")
 	}
-	fmt.Fprint(w, " _res.append(")
-	q.Select.emit(w)
-	fmt.Fprint(w, ")")
+	if q.Sort != nil {
+		fmt.Fprint(w, " _tmp.append((")
+		q.Sort.emit(w)
+		fmt.Fprint(w, ", ")
+		q.Select.emit(w)
+		fmt.Fprint(w, "))")
+	} else {
+		fmt.Fprint(w, " _res.append(")
+		q.Select.emit(w)
+		fmt.Fprint(w, ")")
+	}
 	if q.Where != nil {
 		fmt.Fprint(w, " }")
 	}
 	for range q.Froms {
 		fmt.Fprint(w, " }")
 	}
-	fmt.Fprint(w, " }; _res })")
+	if q.Sort != nil {
+		fmt.Fprint(w, " }; var _res = _tmp.sortBy(_._1).map(_._2)")
+	} else {
+		fmt.Fprint(w, " }; var _res = _res")
+	}
 	if q.Distinct {
 		fmt.Fprint(w, ".distinct")
 	}
+	if q.Skip != nil {
+		fmt.Fprint(w, ".drop(")
+		q.Skip.emit(w)
+		fmt.Fprint(w, ")")
+	}
+	if q.Take != nil {
+		fmt.Fprint(w, ".take(")
+		q.Take.emit(w)
+		fmt.Fprint(w, ")")
+	}
+	fmt.Fprint(w, "; _res })")
 }
 
 // Emit generates formatted Scala source for the given program.
@@ -624,6 +659,23 @@ func convertStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 		if typ == "" {
 			typ = inferTypeWithEnv(e, env)
 		}
+		if env != nil {
+			var t types.Type = types.AnyType{}
+			if ll, ok := e.(*ListLit); ok && len(ll.Elems) > 0 {
+				if sl, ok2 := ll.Elems[0].(*StructLit); ok2 {
+					t = types.ListType{Elem: types.StructType{Name: sl.Name}}
+				}
+			} else if sl, ok := e.(*StructLit); ok {
+				t = types.StructType{Name: sl.Name}
+			} else if q, ok := e.(*QueryExpr); ok {
+				if q.ElemType != "" {
+					t = types.ListType{Elem: types.StructType{Name: q.ElemType}}
+				}
+			} else if st.Let.Value != nil {
+				t = types.ExprType(st.Let.Value, env)
+			}
+			env.SetVar(st.Let.Name, t, false)
+		}
 		return &LetStmt{Name: st.Let.Name, Type: typ, Value: e}, nil
 	case st.Var != nil:
 		var e Expr
@@ -637,6 +689,23 @@ func convertStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 		typ := toScalaType(st.Var.Type)
 		if typ == "" {
 			typ = inferTypeWithEnv(e, env)
+		}
+		if env != nil {
+			var t types.Type = types.AnyType{}
+			if ll, ok := e.(*ListLit); ok && len(ll.Elems) > 0 {
+				if sl, ok2 := ll.Elems[0].(*StructLit); ok2 {
+					t = types.ListType{Elem: types.StructType{Name: sl.Name}}
+				}
+			} else if sl, ok := e.(*StructLit); ok {
+				t = types.StructType{Name: sl.Name}
+			} else if q, ok := e.(*QueryExpr); ok {
+				if q.ElemType != "" {
+					t = types.ListType{Elem: types.StructType{Name: q.ElemType}}
+				}
+			} else if st.Var.Value != nil {
+				t = types.ExprType(st.Var.Value, env)
+			}
+			env.SetVar(st.Var.Name, t, true)
 		}
 		return &VarStmt{Name: st.Var.Name, Type: typ, Value: e}, nil
 	case st.Type != nil:
@@ -1161,7 +1230,7 @@ func ExtractQueryExpr(e *parser.Expr) *parser.QueryExpr {
 }
 
 func convertQueryExpr(q *parser.QueryExpr, env *types.Env) (Expr, error) {
-	if q.Group != nil || q.Sort != nil || q.Skip != nil || q.Take != nil || len(q.Joins) > 0 {
+	if q.Group != nil || len(q.Joins) > 0 {
 		return nil, fmt.Errorf("unsupported query")
 	}
 	src, err := convertExpr(q.Source, env)
@@ -1190,8 +1259,34 @@ func convertQueryExpr(q *parser.QueryExpr, env *types.Env) (Expr, error) {
 		froms[i] = queryFrom{Var: f.Var, Src: fe}
 	}
 	var where Expr
+	var sort Expr
+	var sortType string
+	var skipExpr Expr
+	var takeExpr Expr
 	if q.Where != nil {
 		where, err = convertExpr(q.Where, child)
+		if err != nil {
+			return nil, err
+		}
+	}
+	if q.Sort != nil {
+		sort, err = convertExpr(q.Sort, child)
+		if err != nil {
+			return nil, err
+		}
+		sortType = inferType(sort)
+		if sortType == "" {
+			sortType = toScalaTypeFromType(types.ExprType(q.Sort, child))
+		}
+	}
+	if q.Skip != nil {
+		skipExpr, err = convertExpr(q.Skip, env)
+		if err != nil {
+			return nil, err
+		}
+	}
+	if q.Take != nil {
+		takeExpr, err = convertExpr(q.Take, env)
 		if err != nil {
 			return nil, err
 		}
@@ -1226,7 +1321,7 @@ func convertQueryExpr(q *parser.QueryExpr, env *types.Env) (Expr, error) {
 	if elemTypeStr == "" {
 		elemTypeStr = "Any"
 	}
-	return &QueryExpr{Var: q.Var, Src: src, Froms: froms, Where: where, Select: sel, Distinct: q.Distinct, ElemType: elemTypeStr}, nil
+	return &QueryExpr{Var: q.Var, Src: src, Froms: froms, Where: where, Sort: sort, SortType: sortType, Skip: skipExpr, Take: takeExpr, Select: sel, Distinct: q.Distinct, ElemType: elemTypeStr}, nil
 }
 
 func mapLiteral(e *parser.Expr) *parser.MapLiteral {
