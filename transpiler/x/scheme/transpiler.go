@@ -237,85 +237,29 @@ func convertWhileStmt(ws *parser.WhileStmt) (Node, error) {
 }
 
 func convertForStmt(fs *parser.ForStmt) (Node, error) {
-	loopSym := gensym("loop")
-	breakSym := gensym("break")
-	contSym := gensym("cont")
-
 	prevEnv := currentEnv
 	currentEnv = types.NewEnv(currentEnv)
 	currentEnv.SetVar(fs.Name, types.AnyType{}, true)
 
-	pushLoop(breakSym, contSym)
-
-	if fs.RangeEnd != nil {
-		start, err := convertParserExpr(fs.Source)
-		if err != nil {
-			popLoop()
-			currentEnv = prevEnv
-			return nil, err
-		}
-		end, err := convertParserExpr(fs.RangeEnd)
-		if err != nil {
-			popLoop()
-			currentEnv = prevEnv
-			return nil, err
-		}
-		body, err := convertStmts(fs.Body)
-		if err != nil {
-			popLoop()
-			currentEnv = prevEnv
-			return nil, err
-		}
-		inc := &List{Elems: []Node{Symbol("set!"), Symbol(fs.Name), &List{Elems: []Node{Symbol("+"), Symbol(fs.Name), IntLit(1)}}}}
-		loopCall := &List{Elems: []Node{loopSym}}
-		contDef := &List{Elems: []Node{Symbol("define"), contSym, &List{Elems: []Node{Symbol("lambda"), &List{Elems: []Node{}}, &List{Elems: []Node{inc, loopCall}}}}}}
-		bodyNode := &List{Elems: append([]Node{Symbol("begin")}, append(body, inc, loopCall)...)}
-		cond := &List{Elems: []Node{Symbol("<"), Symbol(fs.Name), end}}
-		res := &List{Elems: []Node{
-			Symbol("begin"),
-			&List{Elems: []Node{Symbol("define"), Symbol(fs.Name), start}},
-			&List{Elems: []Node{Symbol("let/ec"), breakSym,
-				&List{Elems: []Node{Symbol("let"), loopSym, &List{Elems: []Node{}}, contDef, &List{Elems: []Node{Symbol("if"), cond, bodyNode, voidSym()}}}}}},
-		}}
-		popLoop()
-		currentEnv = prevEnv
-		return res, nil
-	}
-
 	iter, err := convertParserExpr(fs.Source)
 	if err != nil {
-		popLoop()
 		currentEnv = prevEnv
 		return nil, err
 	}
 	if _, ok := types.ExprType(fs.Source, prevEnv).(types.MapType); ok {
 		iter = &List{Elems: []Node{Symbol("hash-table-keys"), iter}}
 	}
-	iterSym := gensym("iter")
 	body, err := convertStmts(fs.Body)
+	currentEnv = prevEnv
 	if err != nil {
-		popLoop()
-		currentEnv = prevEnv
 		return nil, err
 	}
-	elemSym := Symbol(fs.Name)
-	inc := &List{Elems: []Node{Symbol("set!"), iterSym, &List{Elems: []Node{Symbol("cdr"), iterSym}}}}
-	loopCall := &List{Elems: []Node{loopSym}}
-	contDef := &List{Elems: []Node{Symbol("define"), contSym, &List{Elems: []Node{Symbol("lambda"), &List{Elems: []Node{}}, &List{Elems: []Node{inc, loopCall}}}}}}
-	bodyNode := &List{Elems: append([]Node{Symbol("begin")}, append(body, inc, loopCall)...)}
-	loopBody := &List{Elems: []Node{Symbol("if"),
-		&List{Elems: []Node{Symbol("null?"), iterSym}},
-		voidSym(),
-		&List{Elems: []Node{Symbol("let"), &List{Elems: []Node{&List{Elems: []Node{elemSym, &List{Elems: []Node{Symbol("car"), iterSym}}}}}}, bodyNode}}}}
-	res := &List{Elems: []Node{
-		Symbol("begin"),
-		&List{Elems: []Node{Symbol("define"), iterSym, iter}},
-		&List{Elems: []Node{Symbol("let/ec"), breakSym,
-			&List{Elems: []Node{Symbol("let"), loopSym, &List{Elems: []Node{}}, contDef, loopBody}}}},
-	}}
-	popLoop()
-	currentEnv = prevEnv
-	return res, nil
+	bodyNode := &List{Elems: append([]Node{Symbol("begin")}, body...)}
+	return &List{Elems: []Node{
+		Symbol("for-each"),
+		&List{Elems: []Node{Symbol("lambda"), &List{Elems: []Node{Symbol(fs.Name)}}, bodyNode}},
+		iter,
+	}}, nil
 }
 
 func convertStmt(st *parser.Statement) (Node, error) {
@@ -685,6 +629,9 @@ func convertParserPrimary(p *parser.Primary) (Node, error) {
 		}
 		return &List{Elems: []Node{Symbol("alist->hash-table"), &List{Elems: pairs}}}, nil
 	case p.Query != nil:
+		if n, err := convertRightJoinQuery(p.Query); err == nil {
+			return n, nil
+		}
 		return convertQueryExpr(p.Query)
 	case p.FunExpr != nil:
 		return convertFunExpr(p.FunExpr)
@@ -742,6 +689,79 @@ func convertFunExpr(fe *parser.FunExpr) (Node, error) {
 		}
 	}
 	return &List{Elems: []Node{Symbol("lambda"), &List{Elems: params}, body}}, nil
+}
+
+func convertRightJoinQuery(q *parser.QueryExpr) (Node, error) {
+	if q == nil || len(q.Joins) != 1 || q.Distinct || q.Group != nil || q.Sort != nil || q.Skip != nil || q.Take != nil || q.Where != nil || len(q.Froms) > 0 {
+		return nil, fmt.Errorf("unsupported query")
+	}
+	j := q.Joins[0]
+	if j.Side == nil || *j.Side != "right" {
+		return nil, fmt.Errorf("unsupported query")
+	}
+	leftSrc, err := convertParserExpr(q.Source)
+	if err != nil {
+		return nil, err
+	}
+	rightSrc, err := convertParserExpr(j.Src)
+	if err != nil {
+		return nil, err
+	}
+	prevEnv := currentEnv
+	child := types.NewEnv(currentEnv)
+	child.SetVar(q.Var, types.AnyType{}, true)
+	child.SetVar(j.Var, types.AnyType{}, true)
+	currentEnv = child
+	cond, err := convertParserExpr(j.On)
+	if err != nil {
+		currentEnv = prevEnv
+		return nil, err
+	}
+	sel, err := convertParserExpr(q.Select)
+	currentEnv = prevEnv
+	if err != nil {
+		return nil, err
+	}
+	resSym := gensym("res")
+	matchedSym := gensym("matched")
+	appendNode := &List{Elems: []Node{
+		Symbol("set!"), resSym,
+		&List{Elems: []Node{Symbol("append"), resSym, &List{Elems: []Node{Symbol("list"), sel}}}},
+	}}
+	innerBody := &List{Elems: []Node{
+		Symbol("if"), cond,
+		&List{Elems: []Node{
+			Symbol("begin"),
+			&List{Elems: []Node{Symbol("set!"), matchedSym, BoolLit(true)}},
+			appendNode,
+		}},
+		voidSym(),
+	}}
+	innerLoop := &List{Elems: []Node{
+		Symbol("for-each"),
+		&List{Elems: []Node{Symbol("lambda"), &List{Elems: []Node{Symbol(q.Var)}}, innerBody}},
+		leftSrc,
+	}}
+	notMatched := &List{Elems: []Node{Symbol("not"), matchedSym}}
+	unmatchedBody := &List{Elems: []Node{
+		Symbol("let"), &List{Elems: []Node{&List{Elems: []Node{Symbol(q.Var), voidSym()}}}},
+		appendNode,
+	}}
+	afterLoop := &List{Elems: []Node{Symbol("if"), notMatched, unmatchedBody, voidSym()}}
+	outerBody := &List{Elems: []Node{
+		Symbol("let"), &List{Elems: []Node{&List{Elems: []Node{matchedSym, BoolLit(false)}}}},
+		&List{Elems: []Node{Symbol("begin"), innerLoop, afterLoop}},
+	}}
+	outerLoop := &List{Elems: []Node{
+		Symbol("for-each"),
+		&List{Elems: []Node{Symbol("lambda"), &List{Elems: []Node{Symbol(j.Var)}}, outerBody}},
+		rightSrc,
+	}}
+	return &List{Elems: []Node{
+		Symbol("let"),
+		&List{Elems: []Node{&List{Elems: []Node{resSym, &List{Elems: []Node{Symbol("list")}}}}}},
+		&List{Elems: []Node{Symbol("begin"), outerLoop, resSym}},
+	}}, nil
 }
 
 func convertQueryExpr(q *parser.QueryExpr) (Node, error) {
