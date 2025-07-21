@@ -225,6 +225,16 @@ type AssignIndexStmt struct {
 	Value  Expr
 }
 
+// ExprStmt represents a bare expression used as a statement.
+type ExprStmt struct{ Expr Expr }
+
+// AssignFieldStmt represents assignment to a field like obj.f = v.
+type AssignFieldStmt struct {
+	Target Expr
+	Field  string
+	Value  Expr
+}
+
 type ForStmt struct {
 	Var        string
 	Start, End Expr
@@ -926,6 +936,26 @@ func (a *AssignIndexStmt) emit(w io.Writer, indent int) {
 	io.WriteString(w, ";\n")
 }
 
+func (a *AssignFieldStmt) emit(w io.Writer, indent int) {
+	for i := 0; i < indent; i++ {
+		io.WriteString(w, "    ")
+	}
+	a.Target.emit(w)
+	io.WriteString(w, ".")
+	io.WriteString(w, a.Field)
+	io.WriteString(w, " = ")
+	a.Value.emit(w)
+	io.WriteString(w, ";\n")
+}
+
+func (e *ExprStmt) emit(w io.Writer, indent int) {
+	for i := 0; i < indent; i++ {
+		io.WriteString(w, "    ")
+	}
+	e.Expr.emit(w)
+	io.WriteString(w, ";\n")
+}
+
 func (r *ReturnStmt) emit(w io.Writer, indent int) {
 	for i := 0; i < indent; i++ {
 		io.WriteString(w, "    ")
@@ -1067,7 +1097,11 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 				}
 				body = append(body, &PrintStmt{Values: args})
 			} else {
-				return nil, fmt.Errorf("unsupported expression")
+				expr, err := convertExpr(stmt.Expr.Expr)
+				if err != nil {
+					return nil, err
+				}
+				body = append(body, &ExprStmt{Expr: expr})
 			}
 		case stmt.Let != nil:
 			var val Expr
@@ -1179,6 +1213,13 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 					target = &IndexExpr{Target: target, Index: id}
 				}
 				body = append(body, &AssignIndexStmt{Target: target, Index: idx, Value: val})
+			} else if len(stmt.Assign.Field) > 0 {
+				var target Expr = &VarRef{Name: stmt.Assign.Name}
+				for _, f := range stmt.Assign.Field[:len(stmt.Assign.Field)-1] {
+					target = &SelectorExpr{Target: target, Field: f.Name}
+				}
+				fld := stmt.Assign.Field[len(stmt.Assign.Field)-1].Name
+				body = append(body, &AssignFieldStmt{Target: target, Field: fld, Value: val})
 			} else {
 				body = append(body, &AssignStmt{Name: stmt.Assign.Name, Value: val})
 			}
@@ -1273,6 +1314,11 @@ func convertStmt(s *parser.Statement) (Stmt, error) {
 			}
 			return &PrintStmt{Values: args}, nil
 		}
+		expr, err := convertExpr(s.Expr.Expr)
+		if err != nil {
+			return nil, err
+		}
+		return &ExprStmt{Expr: expr}, nil
 	case s.Let != nil:
 		var val Expr
 		var err error
@@ -1331,6 +1377,14 @@ func convertStmt(s *parser.Statement) (Stmt, error) {
 				target = &IndexExpr{Target: target, Index: id}
 			}
 			return &AssignIndexStmt{Target: target, Index: idx, Value: val}, nil
+		}
+		if len(s.Assign.Field) > 0 {
+			var target Expr = &VarRef{Name: s.Assign.Name}
+			for _, f := range s.Assign.Field[:len(s.Assign.Field)-1] {
+				target = &SelectorExpr{Target: target, Field: f.Name}
+			}
+			fld := s.Assign.Field[len(s.Assign.Field)-1].Name
+			return &AssignFieldStmt{Target: target, Field: fld, Value: val}, nil
 		}
 		return &AssignStmt{Name: s.Assign.Name, Value: val}, nil
 	case s.For != nil:

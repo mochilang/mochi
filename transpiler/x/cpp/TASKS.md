@@ -1,3 +1,58 @@
+## Progress (2025-07-21 07:20 +0700)
+- cpp transpiler: fix precedence and bool output
+- Generated C++ for 81/100 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-21 07:20 +0700)
+- cpp transpiler: fix precedence and bool output
+- Generated C++ for 80/100 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-21 07:20 +0700)
+- cpp transpiler: fix precedence and bool output
+- Generated C++ for 80/100 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-21 07:20 +0700)
+- cpp transpiler: fix precedence and bool output
+- Generated C++ for 80/100 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-21 07:20 +0700)
+- cpp transpiler: fix precedence and bool output
+- Generated C++ for 80/100 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-21 07:20 +0700)
+- cpp transpiler: fix precedence and bool output
+- Generated C++ for 80/100 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-21 07:20 +0700)
+- cpp transpiler: fix precedence and bool output
+- Generated C++ for 80/100 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-21 07:20 +0700)
+- cpp transpiler: fix precedence and bool output
+- Generated C++ for 80/100 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-21 07:20 +0700)
+- cpp transpiler: fix precedence and bool output
+- Generated C++ for 80/100 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-21 07:20 +0700)
+- cpp transpiler: fix precedence and bool output
+- Generated C++ for 80/100 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-21 07:20 +0700)
+- cpp transpiler: fix precedence and bool output
+- Generated C++ for 80/100 programs
+- Updated README checklist and outputs
+
 ## Progress (2025-07-21 07:04 +0700)
 - ts transpiler: pretty json output
 - Generated C++ for 80/100 programs
