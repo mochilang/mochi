@@ -969,7 +969,8 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 
 // Emit writes the Prolog source for the given program.
 func Emit(w io.Writer, p *Program) error {
-	io.WriteString(w, ":- initialization(main).\n\n")
+	io.WriteString(w, ":- initialization(main).\n")
+	io.WriteString(w, ":- style_check(-singleton).\n\n")
 	for _, fn := range p.Funcs {
 		fn.emit(w)
 	}

@@ -1,5 +1,5 @@
-:- style_check(-singleton).
 :- initialization(main).
+:- style_check(-singleton).
 
 main :-
     Nums = [1, 2],

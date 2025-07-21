@@ -1,5 +1,5 @@
-:- style_check(-singleton).
 :- initialization(main).
+:- style_check(-singleton).
 
 main :-
     People = [{name: "Alice", age: 30, city: "Paris"}, {name: "Bob", age: 15, city: "Hanoi"}, {name: "Charlie", age: 65, city: "Paris"}, {name: "Diana", age: 45, city: "Hanoi"}, {name: "Eve", age: 70, city: "Paris"}, {name: "Frank", age: 22, city: "Hanoi"}],

@@ -1,5 +1,5 @@
-:- style_check(-singleton).
 :- initialization(main).
+:- style_check(-singleton).
 
 main :-
     Items = [{cat: "a", val: 10, flag: true}, {cat: "a", val: 5, flag: false}, {cat: "b", val: 20, flag: true}],
