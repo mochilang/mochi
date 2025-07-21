@@ -817,6 +817,21 @@ type GroupQueryExpr struct {
 	ItemType string
 }
 
+// GroupJoinQueryExpr represents a `group by` query that may include joins.
+type GroupJoinQueryExpr struct {
+	Var      string
+	Src      Expr
+	Froms    []queryFrom
+	Joins    []queryJoin
+	Where    Expr
+	Key      Expr
+	GroupVar string
+	Select   Expr
+	Having   Expr
+	ElemType string
+	Vars     []string
+}
+
 func (q *QueryExpr) emit(w io.Writer) {
 	fmt.Fprintf(w, "func() []%s { ", q.ElemType)
 	if q.Sort != nil {
@@ -940,6 +955,78 @@ func (g *GroupQueryExpr) emit(w io.Writer) {
 		fmt.Fprint(w, "}\n")
 	}
 	fmt.Fprint(w, "}\n")
+	fmt.Fprintf(w, "res := []%s{}\n", g.ElemType)
+	fmt.Fprint(w, "for _, k := range order {\n")
+	fmt.Fprintf(w, "%s := groups[k]\n", g.GroupVar)
+	if g.Having != nil {
+		fmt.Fprint(w, "if ")
+		g.Having.emit(w)
+		fmt.Fprint(w, " {\n    res = append(res, ")
+		g.Select.emit(w)
+		fmt.Fprint(w, ")\n}\n")
+	} else {
+		fmt.Fprint(w, "    res = append(res, ")
+		g.Select.emit(w)
+		fmt.Fprint(w, ")\n")
+	}
+	fmt.Fprint(w, "}\n")
+	fmt.Fprint(w, "return res }()")
+}
+
+func (g *GroupJoinQueryExpr) emit(w io.Writer) {
+	fmt.Fprintf(w, "func() []%s {\n", g.ElemType)
+	fmt.Fprint(w, "groups := map[string]struct{Key any; Items []map[string]any}{}\n")
+	fmt.Fprint(w, "order := []string{}\n")
+	fmt.Fprintf(w, "for _, %s := range ", g.Var)
+	g.Src.emit(w)
+	fmt.Fprint(w, " {")
+	for _, f := range g.Froms {
+		fmt.Fprintf(w, " for _, %s := range ", f.Var)
+		f.Src.emit(w)
+		fmt.Fprint(w, " {")
+	}
+	for _, j := range g.Joins {
+		fmt.Fprintf(w, " for _, %s := range ", j.Var)
+		j.Src.emit(w)
+		fmt.Fprint(w, " {")
+		fmt.Fprint(w, " if ")
+		if j.On != nil {
+			j.On.emit(w)
+		} else {
+			fmt.Fprint(w, "true")
+		}
+		fmt.Fprint(w, " {")
+	}
+	if g.Where != nil {
+		fmt.Fprint(w, " if ")
+		g.Where.emit(w)
+		fmt.Fprint(w, " {")
+	}
+	fmt.Fprint(w, "k := fmt.Sprint(")
+	g.Key.emit(w)
+	fmt.Fprint(w, ")\n")
+	fmt.Fprint(w, "grp, ok := groups[k]\nif !ok {\n    grp = struct{Key any; Items []map[string]any}{Key: ")
+	g.Key.emit(w)
+	fmt.Fprint(w, ", Items: []map[string]any{}}\n    groups[k] = grp\n    order = append(order, k)\n}\n")
+	fmt.Fprint(w, "grp.Items = append(grp.Items, map[string]any{")
+	for i, v := range g.Vars {
+		if i > 0 {
+			fmt.Fprint(w, ", ")
+		}
+		fmt.Fprintf(w, "\"%s\": %s", v, v)
+	}
+	fmt.Fprint(w, "})\ngroups[k] = grp")
+	if g.Where != nil {
+		fmt.Fprint(w, " }")
+	}
+	for range g.Joins {
+		fmt.Fprint(w, " }")
+		fmt.Fprint(w, " }")
+	}
+	for range g.Froms {
+		fmt.Fprint(w, " }")
+	}
+	fmt.Fprint(w, " }\n")
 	fmt.Fprintf(w, "res := []%s{}\n", g.ElemType)
 	fmt.Fprint(w, "for _, k := range order {\n")
 	fmt.Fprintf(w, "%s := groups[k]\n", g.GroupVar)
@@ -1100,8 +1187,8 @@ func compileStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 			if gq, ok := e.(*GroupQueryExpr); ok && gq.ElemType != "" {
 				typ = "[]" + gq.ElemType
 			}
-			if gq, ok := e.(*GroupQueryExpr); ok && gq.ElemType != "" {
-				typ = "[]" + gq.ElemType
+			if gj, ok := e.(*GroupJoinQueryExpr); ok && gj.ElemType != "" {
+				typ = "[]" + gj.ElemType
 			}
 			return &VarDecl{Name: st.Let.Name, Type: typ, Value: e, Global: env == topEnv}, nil
 		}
@@ -1138,6 +1225,9 @@ func compileStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 			}
 			if qe, ok := e.(*QueryExpr); ok && qe.ElemType != "" {
 				typ = "[]" + qe.ElemType
+			}
+			if gj, ok := e.(*GroupJoinQueryExpr); ok && gj.ElemType != "" {
+				typ = "[]" + gj.ElemType
 			}
 			return &VarDecl{Name: st.Var.Name, Type: typ, Value: e, Global: env == topEnv}, nil
 		}
@@ -1402,7 +1492,134 @@ func compileQueryExpr(q *parser.QueryExpr, env *types.Env, base string) (Expr, e
 		return &GroupQueryExpr{Var: q.Var, Src: src, Key: keyExpr, GroupVar: q.Group.Name, Cond: nil, Select: sel, Having: having, ElemType: et, ItemType: itemType}, nil
 	}
 	if q.Group != nil {
-		return nil, fmt.Errorf("unsupported query features")
+		src, err := compileExpr(q.Source, env, "")
+		if err != nil {
+			return nil, err
+		}
+		srcT := types.ExprType(q.Source, env)
+		var elemT types.Type
+		switch t := srcT.(type) {
+		case types.ListType:
+			elemT = t.Elem
+		case types.GroupType:
+			elemT = t.Elem
+			src = &FieldExpr{X: src, Name: "Items"}
+		default:
+			elemT = types.AnyType{}
+		}
+		child := types.NewEnv(env)
+		child.SetVar(q.Var, elemT, true)
+		froms := make([]queryFrom, len(q.Froms))
+		varNames := []string{q.Var}
+		for i, f := range q.Froms {
+			fe, err := compileExpr(f.Src, child, "")
+			if err != nil {
+				return nil, err
+			}
+			ft := types.ExprType(f.Src, child)
+			var felem types.Type
+			switch t := ft.(type) {
+			case types.ListType:
+				felem = t.Elem
+			case types.GroupType:
+				felem = t.Elem
+				fe = &FieldExpr{X: fe, Name: "Items"}
+			default:
+				felem = types.AnyType{}
+			}
+			child.SetVar(f.Var, felem, true)
+			froms[i] = queryFrom{Var: f.Var, Src: fe}
+			varNames = append(varNames, f.Var)
+		}
+		joins := make([]queryJoin, len(q.Joins))
+		for i, j := range q.Joins {
+			je, err := compileExpr(j.Src, child, "")
+			if err != nil {
+				return nil, err
+			}
+			jt := types.ExprType(j.Src, child)
+			var jelem types.Type
+			switch t := jt.(type) {
+			case types.ListType:
+				jelem = t.Elem
+			case types.GroupType:
+				jelem = t.Elem
+				je = &FieldExpr{X: je, Name: "Items"}
+			default:
+				jelem = types.AnyType{}
+			}
+			child.SetVar(j.Var, jelem, true)
+			onExpr, err := compileExpr(j.On, child, "")
+			if err != nil {
+				return nil, err
+			}
+			side := ""
+			if j.Side != nil {
+				side = *j.Side
+			}
+			joins[i] = queryJoin{Var: j.Var, Src: je, On: onExpr, Side: side}
+			varNames = append(varNames, j.Var)
+		}
+		keyExpr, err := compileExpr(q.Group.Exprs[0], child, "")
+		if err != nil {
+			return nil, err
+		}
+		var where Expr
+		if q.Where != nil {
+			where, err = compileExpr(q.Where, child, "")
+			if err != nil {
+				return nil, err
+			}
+		}
+		genv := types.NewEnv(child)
+		genv.SetVar(q.Group.Name, types.GroupType{Key: types.AnyType{}, Elem: types.MapType{Key: types.StringType{}, Value: types.AnyType{}}}, true)
+		sel, err := compileExpr(q.Select, genv, "")
+		if err != nil {
+			return nil, err
+		}
+		var having Expr
+		if q.Group.Having != nil {
+			having, err = compileExpr(q.Group.Having, genv, "")
+			if err != nil {
+				return nil, err
+			}
+		}
+		et := ""
+		if ml := mapLiteral(q.Select); ml != nil {
+			if st, ok := types.InferStructFromMapEnv(ml, genv); ok {
+				structCount++
+				baseName := fmt.Sprintf("Result%d", structCount)
+				if base != "" {
+					baseName = structNameFromVar(base)
+				}
+				name := types.UniqueStructName(baseName, topEnv, nil)
+				st.Name = name
+				if topEnv != nil {
+					topEnv.SetStruct(name, st)
+				}
+				fieldsDecl := make([]ParamDecl, len(st.Order))
+				vals := make([]Expr, len(st.Order))
+				for i, it := range ml.Items {
+					fieldsDecl[i] = ParamDecl{Name: st.Order[i], Type: toGoTypeFromType(st.Fields[st.Order[i]])}
+					v, err := compileExpr(it.Value, genv, "")
+					if err != nil {
+						return nil, err
+					}
+					vals[i] = v
+				}
+				extraDecls = append(extraDecls, &TypeDeclStmt{Name: name, Fields: fieldsDecl})
+				sel = &StructLit{Name: name, Fields: vals, Names: st.Order}
+				et = name
+			}
+		}
+		if et == "" {
+			et = toGoTypeFromType(types.ExprType(q.Select, genv))
+		}
+		if et == "" {
+			et = "any"
+		}
+		usesPrint = true
+		return &GroupJoinQueryExpr{Var: q.Var, Src: src, Froms: froms, Joins: joins, Where: where, Key: keyExpr, GroupVar: q.Group.Name, Select: sel, Having: having, ElemType: et, Vars: varNames}, nil
 	}
 	src, err := compileExpr(q.Source, env, "")
 	if err != nil {
@@ -2695,6 +2912,31 @@ func toNodeExpr(e Expr) *ast.Node {
 	case *GroupQueryExpr:
 		n := &ast.Node{Kind: "group_by"}
 		n.Children = append(n.Children, toNodeExpr(ex.Src), toNodeExpr(ex.Key), &ast.Node{Kind: "name", Value: ex.GroupVar}, &ast.Node{Kind: "select", Children: []*ast.Node{toNodeExpr(ex.Select)}})
+		if ex.Having != nil {
+			n.Children = append(n.Children, &ast.Node{Kind: "having", Children: []*ast.Node{toNodeExpr(ex.Having)}})
+		}
+		return n
+	case *GroupJoinQueryExpr:
+		n := &ast.Node{Kind: "group_join"}
+		n.Children = append(n.Children, toNodeExpr(ex.Src))
+		for _, f := range ex.Froms {
+			n.Children = append(n.Children, &ast.Node{Kind: "from", Value: f.Var, Children: []*ast.Node{toNodeExpr(f.Src)}})
+		}
+		for _, j := range ex.Joins {
+			jn := &ast.Node{Kind: "join", Value: j.Var}
+			jn.Children = append(jn.Children, toNodeExpr(j.Src))
+			if j.On != nil {
+				jn.Children = append(jn.Children, &ast.Node{Kind: "on", Children: []*ast.Node{toNodeExpr(j.On)}})
+			}
+			if j.Side != "" {
+				jn.Children = append(jn.Children, &ast.Node{Kind: j.Side})
+			}
+			n.Children = append(n.Children, jn)
+		}
+		if ex.Where != nil {
+			n.Children = append(n.Children, &ast.Node{Kind: "where", Children: []*ast.Node{toNodeExpr(ex.Where)}})
+		}
+		n.Children = append(n.Children, toNodeExpr(ex.Key), &ast.Node{Kind: "name", Value: ex.GroupVar}, &ast.Node{Kind: "select", Children: []*ast.Node{toNodeExpr(ex.Select)}})
 		if ex.Having != nil {
 			n.Children = append(n.Children, &ast.Node{Kind: "having", Children: []*ast.Node{toNodeExpr(ex.Having)}})
 		}

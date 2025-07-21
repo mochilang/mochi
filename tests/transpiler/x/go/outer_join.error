@@ -1,0 +1,4 @@
+exit status 1
+# command-line-arguments
+../../../tests/transpiler/x/go/outer_join.go:76:13: invalid operation: cannot index row (variable of struct type Result)
+../../../tests/transpiler/x/go/outer_join.go:77:14: invalid operation: cannot index row (variable of struct type Result)

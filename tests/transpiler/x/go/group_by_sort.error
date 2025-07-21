@@ -1,0 +1,5 @@
+exit status 1
+# command-line-arguments
+../../../tests/transpiler/x/go/group_by_sort.go:55:11: cannot use func() int {…}() (value of type int) as float64 value in struct literal
+../../../tests/transpiler/x/go/group_by_sort.go:60:27: x.Val undefined (type map[string]any has no field or method Val)
+../../../tests/transpiler/x/go/group_by_sort.go:64:6: invalid operation: s += n (mismatched types int and any)

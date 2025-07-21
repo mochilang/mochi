@@ -1,0 +1,8 @@
+exit status 1
+# command-line-arguments
+../../../tests/transpiler/x/go/group_by_conditional_sum.go:56:11: cannot use (func() int {…}() / func() int {…}()) (value of type int) as float64 value in struct literal
+../../../tests/transpiler/x/go/group_by_conditional_sum.go:62:13: x.Flag undefined (type map[string]any has no field or method Flag)
+../../../tests/transpiler/x/go/group_by_conditional_sum.go:63:18: x.Val undefined (type map[string]any has no field or method Val)
+../../../tests/transpiler/x/go/group_by_conditional_sum.go:71:6: invalid operation: s += n (mismatched types int and any)
+../../../tests/transpiler/x/go/group_by_conditional_sum.go:79:27: x.Val undefined (type map[string]any has no field or method Val)
+../../../tests/transpiler/x/go/group_by_conditional_sum.go:83:6: invalid operation: s += n (mismatched types int and any)
