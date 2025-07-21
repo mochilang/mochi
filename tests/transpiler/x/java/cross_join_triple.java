@@ -3,17 +3,6 @@ public class Main {
     static String[] letters = new String[]{"A", "B"};
     static boolean[] bools = new boolean[]{true, false};
     static java.util.List<Result2> combos = new java.util.ArrayList<Result2>() {{ for (var n : nums) { for (var l : letters) { for (var b : bools) { add(new Result2(n, l, b)); } } }}};
-    static class Data1 {
-         n;
-         l;
-         b;
-        Data1( n,  l,  b) {
-            this.n = n;
-            this.l = l;
-            this.b = b;
-        }
-    }
-
     static class Result2 {
         int n;
         String l;

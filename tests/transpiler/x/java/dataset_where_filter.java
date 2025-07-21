@@ -10,22 +10,11 @@ public class Main {
     }
 
     static java.util.List<Result3> adults = new java.util.ArrayList<Result3>() {{ for (var person : people) { if (person.age >= 18) { add(new Result3(person.name, person.age, person.age >= 60)); } }}};
-    static class Data2 {
-         name;
-         age;
-        boolean is_senior;
-        Data2( name,  age, boolean is_senior) {
-            this.name = name;
-            this.age = age;
-            this.is_senior = is_senior;
-        }
-    }
-
     static class Result3 {
-         name;
-         age;
+        String name;
+        int age;
         int is_senior;
-        Result3( name,  age, int is_senior) {
+        Result3(String name, int age, int is_senior) {
             this.name = name;
             this.age = age;
             this.is_senior = is_senior;
