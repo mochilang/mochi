@@ -338,12 +338,7 @@ func (t *TypeDeclStmt) emit(w io.Writer, indent string) {
 		fmt.Fprintf(w, indent+"        this.%s = %s;\n", f.Name, f.Name)
 	}
 	fmt.Fprint(w, indent+"    }\n")
-	fmt.Fprint(w, indent+"    boolean containsKey(String k) {\n")
-	for _, f := range t.Fields {
-		fmt.Fprintf(w, indent+"        if (k.equals(\"%s\")) return true;\n", f.Name)
-	}
-	fmt.Fprint(w, indent+"        return false;\n")
-	fmt.Fprint(w, indent+"    }\n")
+	// no helper methods emitted
 	fmt.Fprint(w, indent+"}\n")
 }
 
@@ -1199,12 +1194,6 @@ func isMapExpr(e Expr) bool {
 			if t == "map" || strings.Contains(t, "Map") {
 				return true
 			}
-			if topEnv != nil {
-				base := strings.TrimSuffix(t, "[]")
-				if _, ok2 := topEnv.GetStruct(base); ok2 {
-					return true
-				}
-			}
 		}
 	}
 	if inferType(e) == "map" {
@@ -1287,6 +1276,11 @@ func isNumericBool(e Expr) bool {
 		}
 	case *GroupExpr:
 		return isNumericBool(ex.Expr)
+	case *MethodCallExpr:
+		switch ex.Name {
+		case "contains", "containsKey", "anyMatch":
+			return true
+		}
 	}
 	return false
 }
@@ -1424,6 +1418,15 @@ func compileStmt(s *parser.Statement) (Stmt, error) {
 			varTypes[s.Var.Name] = t
 		}
 		return &VarStmt{Name: s.Var.Name, Type: t}, nil
+	case s.Type != nil:
+		if st, ok := topEnv.GetStruct(s.Type.Name); ok {
+			fields := make([]Param, len(st.Order))
+			for i, n := range st.Order {
+				fields[i] = Param{Name: n, Type: toJavaTypeFromType(st.Fields[n])}
+			}
+			return &TypeDeclStmt{Name: s.Type.Name, Fields: fields}, nil
+		}
+		return nil, nil
 	case s.Fun != nil:
 		expr, err := compileFunExpr(&parser.FunExpr{Params: s.Fun.Params, Return: s.Fun.Return, BlockBody: s.Fun.Body})
 		if err != nil {
@@ -1727,11 +1730,14 @@ func compilePostfix(pf *parser.PostfixExpr) (Expr, error) {
 				return nil, fmt.Errorf("unsupported call")
 			}
 		case op.Cast != nil && op.Cast.Type != nil && op.Cast.Type.Simple != nil:
-			switch *op.Cast.Type.Simple {
+			ctype := *op.Cast.Type.Simple
+			switch ctype {
 			case "int":
 				expr = &CallExpr{Func: "Integer.parseInt", Args: []Expr{expr}}
 			default:
-				// ignore other casts
+				if st, ok := expr.(*StructLit); ok {
+					st.Name = ctype
+				}
 			}
 		default:
 			return nil, fmt.Errorf("unsupported postfix")
