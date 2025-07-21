@@ -1,3 +1,18 @@
+## Progress (2025-07-21 12:53 +0700)
+- pl transpiler: basic map and query support (progress 50/100)
+
+## Progress (2025-07-21 06:05 UTC)
+- pascal: improve group_by average (progress 50/100)
+
+## Progress (2025-07-21 12:53 +0700)
+- pl transpiler: basic map and query support (progress 50/100)
+
+## Progress (2025-07-21 12:53 +0700)
+- pl transpiler: basic map and query support (progress 50/100)
+
+## Progress (2025-07-21 12:53 +0700)
+- pl transpiler: basic map and query support (progress 50/100)
+
 ## Progress (2025-07-21 12:24 +0700)
 - transpiler/cs: support grouping with left join (progress 50/100)
 

@@ -22,8 +22,8 @@ var
   i3: integer;
   sum4: integer;
   stats: array of Anon3;
-  person: Anon1;
   s: integer;
+  person: Anon1;
 begin
   people := [(name: 'Alice'; age: 30; city: 'Paris'), (name: 'Bob'; age: 15; city: 'Hanoi'), (name: 'Charlie'; age: 65; city: 'Paris'), (name: 'Diana'; age: 45; city: 'Hanoi'), (name: 'Eve'; age: 70; city: 'Paris'), (name: 'Frank'; age: 22; city: 'Hanoi')];
   grp1 := [];
@@ -48,7 +48,7 @@ end;
   for person in g.items do begin
   sum4 := sum4 + person.age;
 end;
-  stats := concat(stats, [(city: g.city; count: g.count; avg_age: sum4 div Length(g.items))]);
+  stats := concat(stats, [(city: g.city; count: g.count; avg_age: sum4 / Length(g.items))]);
 end;
   writeln('--- People grouped by city ---');
   for s in stats do begin
