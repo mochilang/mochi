@@ -1,29 +1,29 @@
 {$mode objfpc}
 program Main;
-type Anon1 = record
+type Anon10 = record
   name: string;
   age: integer;
   city: string;
 end;
-type Anon2 = record
+type Anon11 = record
   city: string;
   count: integer;
   sumAge: integer;
 end;
-type Anon3 = record
+type Anon12 = record
   city: string;
   count: integer;
   avg_age: real;
 end;
 var
-  people: array of Anon1;
-  grp1: array of Anon2;
+  people: array of Anon10;
+  grp1: array of Anon11;
   idx2: integer;
   i3: integer;
   sum4: integer;
-  stats: array of Anon3;
+  stats: array of Anon12;
+  person: Anon10;
   s: integer;
-  person: Anon1;
 begin
   people := [(name: 'Alice'; age: 30; city: 'Paris'), (name: 'Bob'; age: 15; city: 'Hanoi'), (name: 'Charlie'; age: 65; city: 'Paris'), (name: 'Diana'; age: 45; city: 'Hanoi'), (name: 'Eve'; age: 70; city: 'Paris'), (name: 'Frank'; age: 22; city: 'Hanoi')];
   grp1 := [];

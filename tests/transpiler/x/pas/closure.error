@@ -1,0 +1,11 @@
+compile: exit status 1
+Free Pascal Compiler version 3.2.2+dfsg-32 [2024/01/05] for x86_64
+Copyright (c) 1993-2021 by Florian Klaempfl and others
+Target OS: Linux for x86-64
+Compiling /workspace/mochi/tests/transpiler/x/pas/closure.pas
+closure.pas(5,12) Error: Identifier not found "n"
+closure.pas(9,8) Error: Wrong number of parameters specified for call to "anon0"
+closure.pas(3,10) Error: Found declaration: anon0(LongInt):LongInt;
+closure.pas(15,16) Fatal: Syntax error, ")" expected but "(" found
+Fatal: Compilation aborted
+Error: /usr/bin/ppcx64 returned an error exitcode

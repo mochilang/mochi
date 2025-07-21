@@ -1,0 +1,10 @@
+compile: exit status 1
+Free Pascal Compiler version 3.2.2+dfsg-32 [2024/01/05] for x86_64
+Copyright (c) 1993-2021 by Florian Klaempfl and others
+Target OS: Linux for x86-64
+Compiling /workspace/mochi/tests/transpiler/x/pas/map_literal_dynamic.pas
+map_literal_dynamic.pas(4,6) Error: Illegal expression
+map_literal_dynamic.pas(5,3) Error: Error in type definition
+map_literal_dynamic.pas(5,3) Fatal: Syntax error, ";" expected but "identifier B" found
+Fatal: Compilation aborted
+Error: /usr/bin/ppcx64 returned an error exitcode

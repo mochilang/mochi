@@ -1,0 +1,10 @@
+compile: exit status 1
+Free Pascal Compiler version 3.2.2+dfsg-32 [2024/01/05] for x86_64
+Copyright (c) 1993-2021 by Florian Klaempfl and others
+Target OS: Linux for x86-64
+Compiling /workspace/mochi/tests/transpiler/x/pas/if_then_else_nested.pas
+if_then_else_nested.pas(9,10) Error: Generics without specialization cannot be used as a type for a variable
+if_then_else_nested.pas(9,32) Error: Generics without specialization cannot be used as a type for a variable
+if_then_else_nested.pas(12) Fatal: There were 2 errors compiling module, stopping
+Fatal: Compilation aborted
+Error: /usr/bin/ppcx64 returned an error exitcode
