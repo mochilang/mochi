@@ -338,6 +338,12 @@ func (t *TypeDeclStmt) emit(w io.Writer, indent string) {
 		fmt.Fprintf(w, indent+"        this.%s = %s;\n", f.Name, f.Name)
 	}
 	fmt.Fprint(w, indent+"    }\n")
+	fmt.Fprint(w, indent+"    boolean containsKey(String k) {\n")
+	for _, f := range t.Fields {
+		fmt.Fprintf(w, indent+"        if (k.equals(\"%s\")) return true;\n", f.Name)
+	}
+	fmt.Fprint(w, indent+"        return false;\n")
+	fmt.Fprint(w, indent+"    }\n")
 	fmt.Fprint(w, indent+"}\n")
 }
 
@@ -1189,9 +1195,20 @@ func isMapExpr(e Expr) bool {
 	case *MapLit:
 		return true
 	case *VarExpr:
-		if t, ok := varTypes[ex.Name]; ok && t == "map" {
-			return true
+		if t, ok := varTypes[ex.Name]; ok {
+			if t == "map" || strings.Contains(t, "Map") {
+				return true
+			}
+			if topEnv != nil {
+				base := strings.TrimSuffix(t, "[]")
+				if _, ok2 := topEnv.GetStruct(base); ok2 {
+					return true
+				}
+			}
 		}
+	}
+	if inferType(e) == "map" {
+		return true
 	}
 	return false
 }
@@ -1621,7 +1638,7 @@ func compileExpr(e *parser.Expr) (Expr, error) {
 				}
 			} else if isListExpr(r) {
 				expr = &MethodCallExpr{Target: r, Name: "contains", Args: []Expr{expr}}
-			} else if isMapExpr(r) {
+			} else if isMapExpr(r) || inferType(r) == "map" {
 				expr = &MethodCallExpr{Target: r, Name: "containsKey", Args: []Expr{expr}}
 			} else {
 				return nil, fmt.Errorf("unsupported binary op: %s", op.Op)

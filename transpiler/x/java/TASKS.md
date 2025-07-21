@@ -1,5 +1,5 @@
-## Progress (2025-07-21 16:57 +0700)
-- fortran: support inner join and bool folding (1dad0b0fb)
+## Progress (2025-07-21 17:38 +0700)
+- java transpiler: support map membership (1ef3f2d59)
 
 Recent tasks:
 - ctrans: add map iteration support (b88d08eca)
