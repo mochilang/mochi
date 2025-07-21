@@ -2767,6 +2767,11 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 					case types.BoolType:
 						outArgs[i] = &RawExpr{Code: fmt.Sprintf("(1 if %s else 0)", exprString(a))}
 						continue
+					case types.FloatType:
+						expr := exprString(a)
+						code := fmt.Sprintf("(int(%[1]s) if float(%[1]s).is_integer() else %[1]s)", expr)
+						outArgs[i] = &RawExpr{Code: code}
+						continue
 					}
 				}
 				outArgs[i] = a
@@ -2781,7 +2786,11 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 				sumCall := &CallExpr{Func: &Name{Name: "sum"}, Args: []Expr{args[0]}}
 				lenCall := &CallExpr{Func: &Name{Name: "len"}, Args: []Expr{args[0]}}
 				div := &BinaryExpr{Left: sumCall, Op: "/", Right: lenCall}
-				return &CondExpr{Cond: args[0], Then: div, Else: &FloatLit{Value: "0.0"}}, nil
+				floatDiv := &CallExpr{Func: &Name{Name: "float"}, Args: []Expr{div}}
+				isInt := &CallExpr{Func: &FieldExpr{Target: floatDiv, Name: "is_integer"}, Args: nil}
+				cast := &CallExpr{Func: &Name{Name: "int"}, Args: []Expr{div}}
+				body := &CondExpr{Cond: isInt, Then: cast, Else: div}
+				return &CondExpr{Cond: args[0], Then: body, Else: &IntLit{Value: "0"}}, nil
 			}
 		case "count":
 			if len(args) == 1 {
@@ -3170,6 +3179,9 @@ func convertQueryExpr(q *parser.QueryExpr) (Expr, error) {
 		}
 		comp := &MultiListComp{Vars: vars, Iters: iters, Expr: arg, Cond: cond, Parens: true}
 		aggList := Expr(comp)
+		if q.Group != nil {
+			aggList = replaceGroup(aggList, q.Group.Name)
+		}
 		if q.Sort != nil {
 			aggList = &SortedExpr{List: aggList, Var: q.Var, Key: keyExpr, Reverse: reverse}
 		}
