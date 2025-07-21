@@ -333,6 +333,9 @@ func convertStmt(st *parser.Statement) (Node, error) {
 			}
 			forms := []Node{Symbol("begin")}
 			for i, a := range args {
+				if _, ok := types.ExprType(call.Args[i], currentEnv).(types.BoolType); ok {
+					a = &List{Elems: []Node{Symbol("if"), a, IntLit(1), IntLit(0)}}
+				}
 				forms = append(forms, &List{Elems: []Node{Symbol("display"), a}})
 				if i < len(args)-1 {
 					forms = append(forms, &List{Elems: []Node{Symbol("display"), StringLit(" ")}})
@@ -404,10 +407,18 @@ func convertStmt(st *parser.Statement) (Node, error) {
 		return &List{Elems: []Node{Symbol("list-set!"), target, idxNode, val}}, nil
 	case st.Fun != nil:
 		params := []Node{}
+		prevEnv := currentEnv
+		currentEnv = types.NewEnv(currentEnv)
 		for _, p := range st.Fun.Params {
 			params = append(params, Symbol(p.Name))
+			var pt types.Type = types.AnyType{}
+			if p.Type != nil {
+				pt = types.ResolveTypeRef(p.Type, prevEnv)
+			}
+			currentEnv.SetVar(p.Name, pt, true)
 		}
 		bodyForms, err := convertStmts(st.Fun.Body)
+		currentEnv = prevEnv
 		if err != nil {
 			return nil, err
 		}
@@ -868,8 +879,7 @@ func makeBinary(op string, left, right Node) Node {
 	case "-", "*":
 		return &List{Elems: []Node{Symbol(op), left, right}}
 	case "/":
-		div := &List{Elems: []Node{Symbol("/"), left, right}}
-		return &List{Elems: []Node{Symbol("exact->inexact"), div}}
+		return &List{Elems: []Node{Symbol("quotient"), left, right}}
 	case "%":
 		return &List{Elems: []Node{Symbol("modulo"), left, right}}
 	case "<":
