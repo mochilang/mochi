@@ -1,3 +1,15 @@
+## Progress (2025-07-21 13:50 +0700)
+- Generated Zig for 70/100 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-21 13:50 +0700)
+- Generated Zig for 69/100 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-21 13:50 +0700)
+- Generated Zig for 69/100 programs
+- Updated README checklist and outputs
+
 ## Progress (2025-07-21 12:53 +0700)
 - Added group_by query support and runtime avg
 - Generated golden file for group_by.mochi (69/100 tests passing)

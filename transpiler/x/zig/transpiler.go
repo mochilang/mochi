@@ -209,6 +209,10 @@ type QueryComp struct {
 	Elem     Expr
 	ElemType string
 	Filter   Expr
+	Sort     Expr
+	Desc     bool
+	Skip     Expr
+	Take     Expr
 }
 
 type GroupByExpr struct {
@@ -221,10 +225,19 @@ type GroupByExpr struct {
 	KeyType    string
 	SrcElem    string
 	StructName string
+	Sort       Expr
+	Desc       bool
 }
 
 func (qc *QueryComp) emit(w io.Writer) {
-	fmt.Fprintf(w, "blk: {\n    var arr = std.ArrayList(%s).init(std.heap.page_allocator);\n", qc.ElemType)
+	elemType := qc.ElemType
+	sortType := ""
+	if qc.Sort != nil {
+		sortType = zigTypeFromExpr(qc.Sort)
+		fmt.Fprintf(w, "blk: {\n    var arr = std.ArrayList(struct{key: %s, val: %s}).init(std.heap.page_allocator);\n", sortType, elemType)
+	} else {
+		fmt.Fprintf(w, "blk: {\n    var arr = std.ArrayList(%s).init(std.heap.page_allocator);\n", elemType)
+	}
 	indent := 1
 	for i, src := range qc.Sources {
 		writeIndent(w, indent)
@@ -244,7 +257,15 @@ func (qc *QueryComp) emit(w io.Writer) {
 	}
 	writeIndent(w, indent)
 	io.WriteString(w, "arr.append(")
-	qc.Elem.emit(w)
+	if qc.Sort != nil {
+		io.WriteString(w, ".{ .key = ")
+		qc.Sort.emit(w)
+		io.WriteString(w, ", .val = ")
+		qc.Elem.emit(w)
+		io.WriteString(w, " }")
+	} else {
+		qc.Elem.emit(w)
+	}
 	io.WriteString(w, ") catch unreachable;\n")
 	if qc.Filter != nil {
 		indent--
@@ -257,7 +278,55 @@ func (qc *QueryComp) emit(w io.Writer) {
 		io.WriteString(w, "}\n")
 	}
 	writeIndent(w, 1)
-	io.WriteString(w, "const tmp = arr.toOwnedSlice() catch unreachable;\n")
+	io.WriteString(w, "var tmp = arr.toOwnedSlice() catch unreachable;\n")
+	if qc.Sort != nil {
+		writeIndent(w, 1)
+		io.WriteString(w, "std.sort.sort(struct{key: ")
+		io.WriteString(w, sortType)
+		io.WriteString(w, ", val: ")
+		io.WriteString(w, elemType)
+		io.WriteString(w, "}, tmp, {}, struct{fn lt(ctx: void, a: struct{key: ")
+		io.WriteString(w, sortType)
+		io.WriteString(w, ", val: ")
+		io.WriteString(w, elemType)
+		io.WriteString(w, "}, b: struct{key: ")
+		io.WriteString(w, sortType)
+		io.WriteString(w, ", val: ")
+		io.WriteString(w, elemType)
+		io.WriteString(w, "}) bool { return ")
+		if qc.Desc {
+			io.WriteString(w, "a.key > b.key")
+		} else {
+			io.WriteString(w, "a.key < b.key")
+		}
+		io.WriteString(w, "; } }.lt);\n")
+		writeIndent(w, 1)
+		fmt.Fprintf(w, "var result = std.ArrayList(%s).init(std.heap.page_allocator);\n", elemType)
+		writeIndent(w, 1)
+		io.WriteString(w, "for (tmp) |it| { result.append(it.val) catch unreachable; }\n")
+		writeIndent(w, 1)
+		io.WriteString(w, "tmp = result.toOwnedSlice() catch unreachable;\n")
+	}
+	if qc.Skip != nil || qc.Take != nil {
+		writeIndent(w, 1)
+		io.WriteString(w, "var start: usize = 0;\n")
+		if qc.Skip != nil {
+			writeIndent(w, 1)
+			io.WriteString(w, "start = @intCast(usize, ")
+			qc.Skip.emit(w)
+			io.WriteString(w, ");\n")
+		}
+		writeIndent(w, 1)
+		io.WriteString(w, "var end: usize = tmp.len;\n")
+		if qc.Take != nil {
+			writeIndent(w, 1)
+			io.WriteString(w, "end = @min(tmp.len, start + @intCast(usize, ")
+			qc.Take.emit(w)
+			io.WriteString(w, "));\n")
+		}
+		writeIndent(w, 1)
+		io.WriteString(w, "tmp = tmp[start..end];\n")
+	}
 	writeIndent(w, 1)
 	io.WriteString(w, "break :blk tmp;\n}")
 }
@@ -313,7 +382,27 @@ func (gq *GroupByExpr) emit(w io.Writer) {
 	writeIndent(w, 1)
 	io.WriteString(w, "}\n")
 	writeIndent(w, 1)
-	io.WriteString(w, "const tmp = result.toOwnedSlice() catch unreachable;\n")
+	io.WriteString(w, "var tmp = result.toOwnedSlice() catch unreachable;\n")
+	if gq.Sort != nil {
+		if fe, ok := gq.Sort.(*FieldExpr); ok {
+			if vr, ok2 := fe.Target.(*VarRef); ok2 && vr.Name == gq.GroupVar && fe.Name == "key" {
+				writeIndent(w, 1)
+				io.WriteString(w, "std.sort.sort(")
+				io.WriteString(w, gq.StructName)
+				io.WriteString(w, ", tmp, {}, struct{fn lt(ctx: void, a: ")
+				io.WriteString(w, gq.StructName)
+				io.WriteString(w, ", b: ")
+				io.WriteString(w, gq.StructName)
+				io.WriteString(w, ") bool { return ")
+				if gq.Desc {
+					io.WriteString(w, "a.key > b.key")
+				} else {
+					io.WriteString(w, "a.key < b.key")
+				}
+				io.WriteString(w, "; } }.lt);\n")
+			}
+		}
+	}
 	writeIndent(w, 1)
 	io.WriteString(w, "break :blk tmp;\n}")
 }
@@ -1613,10 +1702,16 @@ func inferListStruct(varName string, list *ListLit) string {
 	return structName
 }
 
-func compileQueryExpr(q *parser.QueryExpr) (Expr, error) {
-	if q.Sort != nil || q.Skip != nil || q.Take != nil {
-		return nil, fmt.Errorf("unsupported query features")
+func unwrapDesc(e Expr) (Expr, bool) {
+	if b, ok := e.(*BinaryExpr); ok && b.Op == "-" {
+		if l, ok2 := b.Left.(*IntLit); ok2 && l.Value == 0 {
+			return b.Right, true
+		}
 	}
+	return e, false
+}
+
+func compileQueryExpr(q *parser.QueryExpr) (Expr, error) {
 	vars := []string{q.Var}
 	sources := []Expr{}
 	src, err := compileExpr(q.Source)
@@ -1691,7 +1786,16 @@ func compileQueryExpr(q *parser.QueryExpr) (Expr, error) {
 			varTypes[q.Group.Name] = prevG
 		}
 		elemType := zigTypeFromExpr(elem)
-		return &GroupByExpr{Var: q.Var, Source: src, Key: keyExpr, GroupVar: q.Group.Name, SelectExpr: elem, ElemType: elemType, KeyType: keyType, SrcElem: srcElem, StructName: structName}, nil
+		var sortExpr Expr
+		var desc bool
+		if q.Sort != nil {
+			sortExpr, err = compileExpr(q.Sort)
+			if err != nil {
+				return nil, err
+			}
+			sortExpr, desc = unwrapDesc(sortExpr)
+		}
+		return &GroupByExpr{Var: q.Var, Source: src, Key: keyExpr, GroupVar: q.Group.Name, SelectExpr: elem, ElemType: elemType, KeyType: keyType, SrcElem: srcElem, StructName: structName, Sort: sortExpr, Desc: desc}, nil
 	}
 
 	elem, err := compileExpr(q.Select)
@@ -1720,7 +1824,30 @@ func compileQueryExpr(q *parser.QueryExpr) (Expr, error) {
 		ml.StructName = structName
 		elemType = structName
 	}
-	return &QueryComp{Vars: vars, Sources: sources, Elem: elem, ElemType: elemType, Filter: filter}, nil
+	var sortExpr Expr
+	var desc bool
+	if q.Sort != nil {
+		sortExpr, err = compileExpr(q.Sort)
+		if err != nil {
+			return nil, err
+		}
+		sortExpr, desc = unwrapDesc(sortExpr)
+	}
+	var skipExpr Expr
+	if q.Skip != nil {
+		skipExpr, err = compileExpr(q.Skip)
+		if err != nil {
+			return nil, err
+		}
+	}
+	var takeExpr Expr
+	if q.Take != nil {
+		takeExpr, err = compileExpr(q.Take)
+		if err != nil {
+			return nil, err
+		}
+	}
+	return &QueryComp{Vars: vars, Sources: sources, Elem: elem, ElemType: elemType, Filter: filter, Sort: sortExpr, Desc: desc, Skip: skipExpr, Take: takeExpr}, nil
 }
 
 func toZigType(t *parser.TypeRef) string {
