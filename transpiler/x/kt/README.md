@@ -2,11 +2,11 @@
 
 Generated Kotlin sources for golden tests are stored in `tests/transpiler/x/kt`.
 
-Last updated: 2025-07-21 23:08 +0700
+Last updated: 2025-07-22 04:52 +0700
 
 The transpiler currently supports expression programs with `print`, integer and list literals, mutable variables and built-ins `count`, `sum`, `avg`, `len`, `str`, `append`, `min`, `max`, `substring` and `values`.
 
-Completed golden tests: **88/100** (auto-generated)
+Completed golden tests: **91/101** (auto-generated)
 
 ### Golden test checklist
 - [x] append_builtin.mochi
@@ -31,7 +31,7 @@ Completed golden tests: **88/100** (auto-generated)
 - [x] fun_call.mochi
 - [x] fun_expr_in_let.mochi
 - [x] fun_three_args.mochi
-- [ ] go_auto.mochi
+- [x] go_auto.mochi
 - [x] group_by.mochi
 - [x] group_by_conditional_sum.mochi
 - [x] group_by_having.mochi
@@ -39,6 +39,7 @@ Completed golden tests: **88/100** (auto-generated)
 - [x] group_by_left_join.mochi
 - [x] group_by_multi_join.mochi
 - [x] group_by_multi_join_sort.mochi
+- [ ] group_by_multi_sort.mochi
 - [x] group_by_sort.mochi
 - [x] group_items_iteration.mochi
 - [x] if_else.mochi
@@ -79,8 +80,8 @@ Completed golden tests: **88/100** (auto-generated)
 - [x] print_hello.mochi
 - [x] pure_fold.mochi
 - [x] pure_global_fold.mochi
-- [ ] python_auto.mochi
-- [ ] python_math.mochi
+- [x] python_auto.mochi
+- [x] python_math.mochi
 - [x] query_sum_select.mochi
 - [ ] record_assign.mochi
 - [x] right_join.mochi
