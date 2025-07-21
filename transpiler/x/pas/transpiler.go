@@ -1541,14 +1541,18 @@ func inferType(e Expr) string {
 		}
 		return rt
 	case *CallExpr:
-		switch v.Name {
-		case "Length", "Pos":
-			return "integer"
-		case "IntToStr":
-			return "string"
-		default:
-			return ""
-		}
+               switch v.Name {
+               case "Length", "Pos":
+                       return "integer"
+               case "IntToStr":
+                       return "string"
+               case "avg":
+                       return "real"
+               case "min", "max":
+                       return "integer"
+               default:
+                       return ""
+               }
 	case *IfExpr:
 		thenT := inferType(v.Then)
 		elseT := ""
