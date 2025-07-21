@@ -1858,6 +1858,8 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 		return expr, nil
 	case p.If != nil:
 		return convertIfExpr(p.If)
+	case p.Match != nil:
+		return convertMatchExpr(p.Match)
 	case p.Struct != nil:
 		var fields []FieldLit
 		for _, f := range p.Struct.Fields {
@@ -1966,6 +1968,35 @@ func convertIfExpr(ie *parser.IfExpr) (*IfExpr, error) {
 		}
 	}
 	return &IfExpr{Cond: cond, Then: thenExpr, ElseIf: elseIf, Else: elseExpr}, nil
+}
+
+func convertMatchExpr(me *parser.MatchExpr) (Expr, error) {
+	target, err := convertExpr(me.Target)
+	if err != nil {
+		return nil, err
+	}
+	var expr Expr
+	for i := len(me.Cases) - 1; i >= 0; i-- {
+		c := me.Cases[i]
+		res, err := convertExpr(c.Result)
+		if err != nil {
+			return nil, err
+		}
+		pat, err := convertExpr(c.Pattern)
+		if err != nil {
+			return nil, err
+		}
+		if vr, ok := pat.(*VarRef); ok && vr.Name == "_" {
+			expr = res
+			continue
+		}
+		cond := &BinaryExpr{Left: target, Op: "==", Right: pat}
+		expr = &IfExpr{Cond: cond, Then: res, Else: expr}
+	}
+	if expr == nil {
+		expr = &IntLit{Value: 0}
+	}
+	return expr, nil
 }
 
 func convertSimpleQuery(q *parser.QueryExpr, target string) (Expr, *StructDef, string, error) {
