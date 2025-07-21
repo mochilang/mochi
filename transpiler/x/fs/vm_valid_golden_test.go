@@ -149,10 +149,19 @@ func updateTasks() {
 	msg := strings.TrimSpace(string(msgRaw))
 
 	var buf bytes.Buffer
-	buf.WriteString(fmt.Sprintf("## Progress (%s)\n", ts))
+	header := fmt.Sprintf("## Progress (%s)", ts)
+	data, _ := os.ReadFile(taskFile)
+	if len(data) > 0 {
+		if i := bytes.IndexByte(data, '\n'); i != -1 {
+			if string(data[:i]) == header {
+				return
+			}
+		}
+	}
+	buf.WriteString(header + "\n")
 	fmt.Fprintf(&buf, "- %s\n", msg)
-	fmt.Fprintf(&buf, "- Generated F# for %d/%d programs (%d passing)\n\n", total, total, compiled)
-	if data, err := os.ReadFile(taskFile); err == nil {
+	fmt.Fprintf(&buf, "- Generated F# for %d/%d programs (%d passing)\n\n", compiled, total, compiled)
+	if len(data) > 0 {
 		buf.Write(data)
 	}
 	_ = os.WriteFile(taskFile, buf.Bytes(), 0o644)
