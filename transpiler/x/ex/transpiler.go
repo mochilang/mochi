@@ -16,7 +16,6 @@ import (
 )
 
 var funcDepth int
-var needsJSON bool
 
 // Program represents a sequence of Elixir statements.
 type Program struct {
@@ -824,17 +823,18 @@ type LeftJoinExpr struct {
 }
 
 func (g *GroupByExpr) emit(w io.Writer) {
-	io.WriteString(w, "Enum.map(Enum.group_by(")
+	io.WriteString(w, "Enum.group_by(")
 	g.Source.emit(w)
 	io.WriteString(w, ", fn ")
 	io.WriteString(w, g.Var)
 	io.WriteString(w, " -> ")
 	g.Key.emit(w)
-	io.WriteString(w, " end), fn {key, items} ->\n  ")
+	io.WriteString(w, " end)\n  |> Enum.map(fn {key, items} ->\n    ")
 	io.WriteString(w, g.Name)
-	io.WriteString(w, " = %{key: key, items: items}\n  ")
+	io.WriteString(w, " = %{key: key, items: items}\n    ")
 	g.Select.emit(w)
-	io.WriteString(w, "\nend)")
+	io.WriteString(w, "\n  end")
+	io.WriteString(w, ")")
 }
 
 func (g *GroupBySortExpr) emit(w io.Writer) {
@@ -844,13 +844,14 @@ func (g *GroupBySortExpr) emit(w io.Writer) {
 	io.WriteString(w, g.Var)
 	io.WriteString(w, " -> ")
 	g.Key.emit(w)
-	io.WriteString(w, " end) |> Enum.map(fn {key, items} -> %{key: key, items: items} end) |> Enum.sort_by(fn g -> ")
+	io.WriteString(w, " end)\n  |> Enum.map(fn {key, items} -> %{key: key, items: items} end)\n  |> Enum.sort_by(fn g -> ")
 	g.Sort.emit(w)
-	io.WriteString(w, " end) |> Enum.map(fn g ->\n  ")
+	io.WriteString(w, " end)\n  |> Enum.map(fn g ->\n    ")
 	io.WriteString(w, g.Name)
-	io.WriteString(w, " = g\n  ")
+	io.WriteString(w, " = g\n    ")
 	g.Select.emit(w)
-	io.WriteString(w, "\nend)")
+	io.WriteString(w, "\n  end")
+	io.WriteString(w, ")")
 }
 
 func (g *GroupByHavingExpr) emit(w io.Writer) {
@@ -860,13 +861,14 @@ func (g *GroupByHavingExpr) emit(w io.Writer) {
 	io.WriteString(w, g.Var)
 	io.WriteString(w, " -> ")
 	g.Key.emit(w)
-	io.WriteString(w, " end) |> Enum.map(fn {key, items} -> %{key: key, items: items} end) |> Enum.filter(fn g -> ")
+	io.WriteString(w, " end)\n  |> Enum.map(fn {key, items} -> %{key: key, items: items} end)\n  |> Enum.filter(fn g -> ")
 	g.Having.emit(w)
-	io.WriteString(w, " end) |> Enum.map(fn g ->\n  ")
+	io.WriteString(w, " end)\n  |> Enum.map(fn g ->\n    ")
 	io.WriteString(w, g.Name)
-	io.WriteString(w, " = g\n  ")
+	io.WriteString(w, " = g\n    ")
 	g.Select.emit(w)
-	io.WriteString(w, "\nend)")
+	io.WriteString(w, "\n  end")
+	io.WriteString(w, ")")
 }
 
 func (n *NilLit) emit(w io.Writer) { io.WriteString(w, "nil") }
@@ -917,7 +919,7 @@ func Emit(p *Program) []byte {
 			break
 		}
 	}
-	hasFunc := funcsExist || needsJSON
+	hasFunc := funcsExist
 	if hasFunc {
 		buf.WriteString("defmodule Main do\n")
 		var globals []Stmt
@@ -947,16 +949,6 @@ func Emit(p *Program) []byte {
 		for _, st := range funcs {
 			st.emit(&buf, 1)
 			buf.WriteString("\n")
-		}
-		if needsJSON {
-			buf.WriteString("  defp json_encode(v) when is_list(v) do\n")
-			buf.WriteString("    \"[\" <> Enum.map_join(v, \", \", &json_encode/1) <> \"]\"\n")
-			buf.WriteString("  end\n")
-			buf.WriteString("  defp json_encode(v) when is_map(v) do\n")
-			buf.WriteString("    \"{\" <> Enum.map_join(v, \", \", fn {k, val} -> \"\\\"\" <> to_string(k) <> \"\\\": \" <> json_encode(val) end) <> \"}\"\n")
-			buf.WriteString("  end\n")
-			buf.WriteString("  defp json_encode(v) when is_binary(v), do: inspect(v)\n")
-			buf.WriteString("  defp json_encode(v), do: to_string(v)\n")
 		}
 		buf.WriteString("  def main() do\n")
 		for _, st := range main {
@@ -1545,7 +1537,7 @@ func compileQueryExpr(q *parser.QueryExpr, env *types.Env) (Expr, error) {
 		return &GroupByExpr{Var: pattern, Source: joinExpr, Key: key, Name: q.Group.Name, Select: sel}, nil
 	}
 
-	if q.Group != nil && len(q.Group.Exprs) == 1 && (len(q.Froms) > 0 || len(q.Joins) > 0) && q.Sort == nil && q.Skip == nil && q.Take == nil && !q.Distinct {
+	if q.Group != nil && len(q.Group.Exprs) == 1 && (len(q.Froms) > 0 || len(q.Joins) > 0) && q.Skip == nil && q.Take == nil && !q.Distinct {
 		gens := []CompGen{{Var: q.Var, Src: src}}
 		child := types.NewEnv(env)
 		child.SetVar(q.Var, elemTypeOfExpr(q.Source, env), true)
@@ -1608,12 +1600,25 @@ func compileQueryExpr(q *parser.QueryExpr, env *types.Env) (Expr, error) {
 		if err != nil {
 			return nil, err
 		}
+		used := map[string]struct{}{}
+		gatherVarsExpr(q.Group.Exprs[0], used)
 		patParts := make([]string, len(varNames))
 		for i, n := range varNames {
-			patParts[i] = fmt.Sprintf("%s: %s", n, n)
+			if _, ok := used[n]; ok {
+				patParts[i] = fmt.Sprintf("%s: %s", n, n)
+			} else {
+				patParts[i] = fmt.Sprintf("%s: _%s", n, n)
+			}
 		}
 		pattern := fmt.Sprintf("%%{%s}", strings.Join(patParts, ", "))
-		return &GroupByExpr{Var: pattern, Source: comp, Key: key, Name: q.Group.Name, Select: sel}, nil
+		if q.Sort == nil {
+			return &GroupByExpr{Var: pattern, Source: comp, Key: key, Name: q.Group.Name, Select: sel}, nil
+		}
+		sortExpr, err := compileExpr(q.Sort, genv)
+		if err != nil {
+			return nil, err
+		}
+		return &GroupBySortExpr{Var: pattern, Source: comp, Key: key, Name: q.Group.Name, Sort: sortExpr, Select: sel}, nil
 	}
 	if len(q.Joins) == 1 && q.Joins[0].Side != nil && *q.Joins[0].Side == "left" && len(q.Froms) == 0 && q.Group == nil && q.Sort == nil && q.Skip == nil && q.Take == nil && q.Where == nil && !q.Distinct {
 		child := types.NewEnv(env)
@@ -2055,8 +2060,7 @@ func compilePrimary(p *parser.Primary, env *types.Env) (Expr, error) {
 			}
 		case "json":
 			if len(args) == 1 {
-				needsJSON = true
-				enc := &CallExpr{Func: "json_encode", Args: []Expr{args[0]}}
+				enc := &CallExpr{Func: "Jason.encode!", Args: []Expr{args[0]}}
 				return &CallExpr{Func: "IO.puts", Args: []Expr{enc}}, nil
 			}
 		}
@@ -2219,4 +2223,68 @@ func isSimpleIdent(e *parser.Expr) (string, bool) {
 		return p.Target.Selector.Root, true
 	}
 	return "", false
+}
+
+func gatherVarsExpr(e *parser.Expr, set map[string]struct{}) {
+	if e == nil || e.Binary == nil {
+		return
+	}
+	gatherVarsUnary(e.Binary.Left, set)
+	for _, op := range e.Binary.Right {
+		gatherVarsPostfix(op.Right, set)
+	}
+}
+
+func gatherVarsUnary(u *parser.Unary, set map[string]struct{}) {
+	if u == nil {
+		return
+	}
+	gatherVarsPostfix(u.Value, set)
+}
+
+func gatherVarsPostfix(pf *parser.PostfixExpr, set map[string]struct{}) {
+	if pf == nil {
+		return
+	}
+	gatherVarsPrimary(pf.Target, set)
+	for _, op := range pf.Ops {
+		if op.Call != nil {
+			for _, a := range op.Call.Args {
+				gatherVarsExpr(a, set)
+			}
+		} else if op.Index != nil {
+			gatherVarsExpr(op.Index.Start, set)
+			gatherVarsExpr(op.Index.End, set)
+			gatherVarsExpr(op.Index.Step, set)
+		}
+	}
+}
+
+func gatherVarsPrimary(p *parser.Primary, set map[string]struct{}) {
+	if p == nil {
+		return
+	}
+	switch {
+	case p.Selector != nil:
+		set[p.Selector.Root] = struct{}{}
+	case p.Call != nil:
+		for _, a := range p.Call.Args {
+			gatherVarsExpr(a, set)
+		}
+	case p.List != nil:
+		for _, el := range p.List.Elems {
+			gatherVarsExpr(el, set)
+		}
+	case p.Map != nil:
+		for _, it := range p.Map.Items {
+			gatherVarsExpr(it.Key, set)
+			gatherVarsExpr(it.Value, set)
+		}
+	case p.Struct != nil:
+		for _, f := range p.Struct.Fields {
+			gatherVarsExpr(f.Value, set)
+		}
+	case p.Group != nil:
+		gatherVarsExpr(p.Group, set)
+	}
 }

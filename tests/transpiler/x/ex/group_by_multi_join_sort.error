@@ -1,6 +1,0 @@
-run: exit status 1
-warning: variable "g" does not exist and is being expanded to "g()", please use parentheses to remove the ambiguity or change the variable name
-  /workspace/mochi/tests/transpiler/x/ex/group_by_multi_join_sort.exs:10
-
-** (CompileError) /workspace/mochi/tests/transpiler/x/ex/group_by_multi_join_sort.exs:10: undefined function g/0 (there is no such import)
-
