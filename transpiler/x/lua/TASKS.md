@@ -1,3 +1,7 @@
+## Progress (2025-07-21 07:33 GMT+7)
+- 71/100 VM tests passing
+- Implemented join condition filtering and right join support
+
 ## Progress (2025-07-21 07:08 GMT+7)
 - 71/100 VM tests passing
 - Added query filtering and `exists` builtin support

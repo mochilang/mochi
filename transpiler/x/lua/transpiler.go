@@ -124,6 +124,7 @@ type BinaryExpr struct {
 type QueryComp struct {
 	Vars    []string
 	Sources []Expr
+	Sides   []string
 	Body    Expr
 	Where   Expr
 }
@@ -234,20 +235,20 @@ func (c *CallExpr) emit(w io.Writer) {
 			c.Args[0].emit(w)
 		}
 		io.WriteString(w, ")")
-        case "sum":
-                io.WriteString(w, "(function(lst)\n  local s = 0\n  for _, v in ipairs(lst) do\n    s = s + v\n  end\n  return s\nend)(")
-                if len(c.Args) > 0 {
-                        c.Args[0].emit(w)
-                }
-                io.WriteString(w, ")")
-        case "exists":
-                io.WriteString(w, "(#(")
-                if len(c.Args) > 0 {
-                        c.Args[0].emit(w)
-                }
-                io.WriteString(w, ") > 0)")
-        case "contains":
-                if len(c.Args) > 0 && isMapExpr(c.Args[0]) {
+	case "sum":
+		io.WriteString(w, "(function(lst)\n  local s = 0\n  for _, v in ipairs(lst) do\n    s = s + v\n  end\n  return s\nend)(")
+		if len(c.Args) > 0 {
+			c.Args[0].emit(w)
+		}
+		io.WriteString(w, ")")
+	case "exists":
+		io.WriteString(w, "(#(")
+		if len(c.Args) > 0 {
+			c.Args[0].emit(w)
+		}
+		io.WriteString(w, ") > 0)")
+	case "contains":
+		if len(c.Args) > 0 && isMapExpr(c.Args[0]) {
 			io.WriteString(w, "(function(m, k)\n  return m[k] ~= nil\nend)(")
 			c.Args[0].emit(w)
 			io.WriteString(w, ", ")
@@ -298,35 +299,50 @@ func (a *AssignStmt) emit(w io.Writer) {
 }
 
 func (qa *QueryAssignStmt) emit(w io.Writer) {
-        io.WriteString(w, qa.Name)
-        io.WriteString(w, " = {}\n")
-        for i, v := range qa.Query.Vars {
-                io.WriteString(w, "for _, ")
-                io.WriteString(w, v)
-                io.WriteString(w, " in ipairs(")
-                qa.Query.Sources[i].emit(w)
-                io.WriteString(w, ") do\n")
-        }
-        if qa.Query.Where != nil {
-                io.WriteString(w, "  if ")
-                qa.Query.Where.emit(w)
-                io.WriteString(w, " then\n")
-        }
-        io.WriteString(w, "  table.insert(")
-        io.WriteString(w, qa.Name)
-        io.WriteString(w, ", ")
-        if qa.Query.Body != nil {
-                qa.Query.Body.emit(w)
-        } else {
-                io.WriteString(w, "nil")
-        }
-        io.WriteString(w, ")\n")
-        if qa.Query.Where != nil {
-                io.WriteString(w, "  end\n")
-        }
-        for range qa.Query.Vars {
-                io.WriteString(w, "end\n")
-        }
+	io.WriteString(w, qa.Name)
+	io.WriteString(w, " = {}\n")
+	order := make([]int, len(qa.Query.Vars))
+	idx := 0
+	for i := range qa.Query.Vars {
+		if i < len(qa.Query.Sides) && qa.Query.Sides[i] == "right" {
+			order[idx] = i
+			idx++
+		}
+	}
+	for i := range qa.Query.Vars {
+		if i >= len(qa.Query.Sides) || qa.Query.Sides[i] != "right" {
+			order[idx] = i
+			idx++
+		}
+	}
+	for _, i := range order {
+		v := qa.Query.Vars[i]
+		io.WriteString(w, "for _, ")
+		io.WriteString(w, v)
+		io.WriteString(w, " in ipairs(")
+		qa.Query.Sources[i].emit(w)
+		io.WriteString(w, ") do\n")
+	}
+	if qa.Query.Where != nil {
+		io.WriteString(w, "  if ")
+		qa.Query.Where.emit(w)
+		io.WriteString(w, " then\n")
+	}
+	io.WriteString(w, "  table.insert(")
+	io.WriteString(w, qa.Name)
+	io.WriteString(w, ", ")
+	if qa.Query.Body != nil {
+		qa.Query.Body.emit(w)
+	} else {
+		io.WriteString(w, "nil")
+	}
+	io.WriteString(w, ")\n")
+	if qa.Query.Where != nil {
+		io.WriteString(w, "  end\n")
+	}
+	for range qa.Query.Vars {
+		io.WriteString(w, "end\n")
+	}
 }
 
 func (a *IndexAssignStmt) emit(w io.Writer) {
@@ -785,7 +801,22 @@ func (b *BinaryExpr) emit(w io.Writer) {
 
 func (qc *QueryComp) emit(w io.Writer) {
 	io.WriteString(w, "(function()\n  local _res = {}\n")
-	for i, v := range qc.Vars {
+	order := make([]int, len(qc.Vars))
+	idx := 0
+	for i := range qc.Vars {
+		if i < len(qc.Sides) && qc.Sides[i] == "right" {
+			order[idx] = i
+			idx++
+		}
+	}
+	for i := range qc.Vars {
+		if i >= len(qc.Sides) || qc.Sides[i] != "right" {
+			order[idx] = i
+			idx++
+		}
+	}
+	for _, i := range order {
+		v := qc.Vars[i]
 		io.WriteString(w, "  for _, ")
 		io.WriteString(w, v)
 		io.WriteString(w, " in ipairs(")
@@ -1258,6 +1289,7 @@ func convertQueryExpr(q *parser.QueryExpr) (Expr, error) {
 	}
 	vars := []string{q.Var}
 	sources := []Expr{}
+	sides := []string{""}
 	first, err := convertExpr(q.Source)
 	if err != nil {
 		return nil, err
@@ -1270,6 +1302,7 @@ func convertQueryExpr(q *parser.QueryExpr) (Expr, error) {
 		}
 		vars = append(vars, fc.Var)
 		sources = append(sources, expr)
+		sides = append(sides, "")
 	}
 
 	var where Expr
@@ -1280,6 +1313,11 @@ func convertQueryExpr(q *parser.QueryExpr) (Expr, error) {
 		}
 		vars = append(vars, jc.Var)
 		sources = append(sources, expr)
+		side := ""
+		if jc.Side != nil {
+			side = *jc.Side
+		}
+		sides = append(sides, side)
 		cond, err := convertExpr(jc.On)
 		if err != nil {
 			return nil, err
@@ -1307,7 +1345,7 @@ func convertQueryExpr(q *parser.QueryExpr) (Expr, error) {
 	if err != nil {
 		return nil, err
 	}
-	return &QueryComp{Vars: vars, Sources: sources, Body: body, Where: where}, nil
+	return &QueryComp{Vars: vars, Sources: sources, Sides: sides, Body: body, Where: where}, nil
 }
 
 func convertIfStmt(is *parser.IfStmt) (Stmt, error) {
@@ -1712,6 +1750,9 @@ func exprNode(e Expr) *ast.Node {
 		for i, v := range ex.Vars {
 			clause := &ast.Node{Kind: "from", Value: v}
 			clause.Children = append(clause.Children, exprNode(ex.Sources[i]))
+			if i < len(ex.Sides) && ex.Sides[i] != "" {
+				clause.Children = append(clause.Children, &ast.Node{Kind: ex.Sides[i]})
+			}
 			n.Children = append(n.Children, clause)
 		}
 		if ex.Where != nil {
