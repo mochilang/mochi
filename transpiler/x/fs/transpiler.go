@@ -248,27 +248,30 @@ type queryFrom struct {
 }
 
 type queryJoin struct {
-        Var string
-        Src Expr
-        On  Expr
+	Var string
+	Src Expr
+	On  Expr
 }
 
 type QueryExpr struct {
-        Var    string
-        Src    Expr
-        Froms  []queryFrom
-        Joins  []queryJoin
-        Where  Expr
-        Select Expr
+	Var    string
+	Src    Expr
+	Froms  []queryFrom
+	Joins  []queryJoin
+	Where  Expr
+	Sort   Expr
+	Skip   Expr
+	Take   Expr
+	Select Expr
 }
 
 // GroupQueryExpr models `group by` queries.
 type GroupQueryExpr struct {
-        Var      string
-        Src      Expr
-        Key      Expr
-        GroupVar string
-        Select   Expr
+	Var      string
+	Src      Expr
+	Key      Expr
+	GroupVar string
+	Select   Expr
 }
 
 type StructLit struct{ Fields []StructFieldExpr }
@@ -295,7 +298,17 @@ func (q *QueryExpr) emit(w io.Writer) {
 	io.WriteString(w, "[ for ")
 	io.WriteString(w, q.Var)
 	io.WriteString(w, " in ")
-	q.Src.emit(w)
+	src := q.Src
+	if q.Sort != nil {
+		src = &CallExpr{Func: "List.sortBy", Args: []Expr{&LambdaExpr{Params: []string{q.Var}, Expr: q.Sort}, src}}
+	}
+	if q.Skip != nil {
+		src = &CallExpr{Func: "List.skip", Args: []Expr{q.Skip, src}}
+	}
+	if q.Take != nil {
+		src = &CallExpr{Func: "List.take", Args: []Expr{q.Take, src}}
+	}
+	src.emit(w)
 	io.WriteString(w, " do")
 	for _, j := range q.Joins {
 		io.WriteString(w, " for ")
@@ -321,23 +334,23 @@ func (q *QueryExpr) emit(w io.Writer) {
 		q.Where.emit(w)
 		io.WriteString(w, " then")
 	}
-        io.WriteString(w, " yield ")
-        q.Select.emit(w)
-        io.WriteString(w, " ]")
+	io.WriteString(w, " yield ")
+	q.Select.emit(w)
+	io.WriteString(w, " ]")
 }
 
 func (g *GroupQueryExpr) emit(w io.Writer) {
-        io.WriteString(w, "[ for (key, items) in List.groupBy (fun ")
-        io.WriteString(w, g.Var)
-        io.WriteString(w, " -> ")
-        g.Key.emit(w)
-        io.WriteString(w, ") ")
-        g.Src.emit(w)
-        io.WriteString(w, " do\n    let ")
-        io.WriteString(w, g.GroupVar)
-        io.WriteString(w, " = {| key = key; items = items |}\n    yield ")
-        g.Select.emit(w)
-        io.WriteString(w, " ]")
+	io.WriteString(w, "[ for (key, items) in List.groupBy (fun ")
+	io.WriteString(w, g.Var)
+	io.WriteString(w, " -> ")
+	g.Key.emit(w)
+	io.WriteString(w, ") ")
+	g.Src.emit(w)
+	io.WriteString(w, " do\n    let ")
+	io.WriteString(w, g.GroupVar)
+	io.WriteString(w, " = {| key = key; items = items |}\n    yield ")
+	g.Select.emit(w)
+	io.WriteString(w, " ]")
 }
 
 func (a *AppendExpr) emit(w io.Writer) {
@@ -720,8 +733,8 @@ func inferType(e Expr) string {
 		return "map"
 	case *StructLit:
 		return "struct"
-       case *QueryExpr, *GroupQueryExpr:
-               return "list"
+	case *QueryExpr, *GroupQueryExpr:
+		return "list"
 	case *IdentExpr:
 		if t, ok := varTypes[v.Name]; ok {
 			if strings.HasSuffix(t, " list") {
@@ -1327,24 +1340,24 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 			list := &ListLit{Elems: elems}
 			concat := &CallExpr{Func: "String.concat", Args: []Expr{&StringLit{Value: " "}, list}}
 			return &CallExpr{Func: "printfn \"%s\"", Args: []Expr{concat}}, nil
-               case "count", "len":
-                       fn := "Seq.length"
-                       if len(args) == 1 {
-                               switch inferType(args[0]) {
-                               case "list":
-                                       fn = "List.length"
-                               case "string":
-                                       fn = "String.length"
-                               case "map":
-                                       fn = "Seq.length"
-                               case "group":
-                                       if id, ok := args[0].(*IdentExpr); ok {
-                                               field := &FieldExpr{Target: id, Name: "items"}
-                                               return &CallExpr{Func: "List.length", Args: []Expr{field}}, nil
-                                       }
-                               }
-                       }
-                       return &CallExpr{Func: fn, Args: args}, nil
+		case "count", "len":
+			fn := "Seq.length"
+			if len(args) == 1 {
+				switch inferType(args[0]) {
+				case "list":
+					fn = "List.length"
+				case "string":
+					fn = "String.length"
+				case "map":
+					fn = "Seq.length"
+				case "group":
+					if id, ok := args[0].(*IdentExpr); ok {
+						field := &FieldExpr{Target: id, Name: "items"}
+						return &CallExpr{Func: "List.length", Args: []Expr{field}}, nil
+					}
+				}
+			}
+			return &CallExpr{Func: fn, Args: args}, nil
 		case "str":
 			return &CallExpr{Func: "string", Args: args}, nil
 		case "sum":
@@ -1399,6 +1412,32 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 	case p.Lit != nil && p.Lit.Bool != nil:
 		return &BoolLit{Value: bool(*p.Lit.Bool)}, nil
 	case p.List != nil:
+		if st, ok := types.InferStructFromList(p.List, transpileEnv); ok {
+			structCount++
+			name := fmt.Sprintf("Anon%d", structCount)
+			addStructDef(name, st)
+			elems := make([]Expr, len(p.List.Elems))
+			for i, el := range p.List.Elems {
+				ml := el.Binary.Left.Value.Target.Map
+				fields := make([]StructFieldExpr, len(ml.Items))
+				for j, it := range ml.Items {
+					val, err := convertExpr(it.Value)
+					if err != nil {
+						return nil, err
+					}
+					key := ""
+					tgt := it.Key.Binary.Left.Value.Target
+					if tgt.Selector != nil && len(tgt.Selector.Tail) == 0 {
+						key = tgt.Selector.Root
+					} else if tgt.Lit != nil && tgt.Lit.Str != nil {
+						key = *tgt.Lit.Str
+					}
+					fields[j] = StructFieldExpr{Name: key, Value: val}
+				}
+				elems[i] = &StructLit{Fields: fields}
+			}
+			return &ListLit{Elems: elems}, nil
+		}
 		elems := make([]Expr, len(p.List.Elems))
 		for i, e := range p.List.Elems {
 			ex, err := convertExpr(e)
@@ -1569,20 +1608,20 @@ func buildMapUpdate(m Expr, keys []Expr, val Expr) Expr {
 }
 
 func convertQueryExpr(q *parser.QueryExpr) (Expr, error) {
-        src, err := convertExpr(q.Source)
-        if err != nil {
-                return nil, err
-        }
-       if id, ok := src.(*IdentExpr); ok {
-               if varTypes[id.Name] == "group" {
-                       src = &FieldExpr{Target: id, Name: "items"}
-               }
-       }
-        froms := make([]queryFrom, len(q.Froms))
-        for i, f := range q.Froms {
-                e, err := convertExpr(f.Src)
-                if err != nil {
-                        return nil, err
+	src, err := convertExpr(q.Source)
+	if err != nil {
+		return nil, err
+	}
+	if id, ok := src.(*IdentExpr); ok {
+		if varTypes[id.Name] == "group" {
+			src = &FieldExpr{Target: id, Name: "items"}
+		}
+	}
+	froms := make([]queryFrom, len(q.Froms))
+	for i, f := range q.Froms {
+		e, err := convertExpr(f.Src)
+		if err != nil {
+			return nil, err
 		}
 		froms[i] = queryFrom{Var: f.Var, Src: e}
 	}
@@ -1600,31 +1639,50 @@ func convertQueryExpr(q *parser.QueryExpr) (Expr, error) {
 			}
 		}
 		joins[i] = queryJoin{Var: j.Var, Src: src, On: on}
-        }
-        var where Expr
-        if q.Where != nil {
-                where, err = convertExpr(q.Where)
-                if err != nil {
-                        return nil, err
-                }
-        }
-       if q.Group != nil && len(q.Group.Exprs) == 1 && len(froms) == 0 && len(joins) == 0 && where == nil {
-               key, err := convertExpr(q.Group.Exprs[0])
-               if err != nil {
-                       return nil, err
-               }
-               save := copyMap(varTypes)
-               varTypes[q.Group.Name] = "group"
-               sel, err := convertExpr(q.Select)
-               varTypes = save
-               if err != nil {
-                       return nil, err
-               }
-               return &GroupQueryExpr{Var: q.Var, Src: src, Key: key, GroupVar: q.Group.Name, Select: sel}, nil
-       }
-       sel, err := convertExpr(q.Select)
-       if err != nil {
-               return nil, err
-       }
-       return &QueryExpr{Var: q.Var, Src: src, Froms: froms, Joins: joins, Where: where, Select: sel}, nil
+	}
+	var where Expr
+	if q.Where != nil {
+		where, err = convertExpr(q.Where)
+		if err != nil {
+			return nil, err
+		}
+	}
+	var sort, skip, take Expr
+	if q.Sort != nil {
+		sort, err = convertExpr(q.Sort)
+		if err != nil {
+			return nil, err
+		}
+	}
+	if q.Skip != nil {
+		skip, err = convertExpr(q.Skip)
+		if err != nil {
+			return nil, err
+		}
+	}
+	if q.Take != nil {
+		take, err = convertExpr(q.Take)
+		if err != nil {
+			return nil, err
+		}
+	}
+	if q.Group != nil && len(q.Group.Exprs) == 1 && len(froms) == 0 && len(joins) == 0 && where == nil {
+		key, err := convertExpr(q.Group.Exprs[0])
+		if err != nil {
+			return nil, err
+		}
+		save := copyMap(varTypes)
+		varTypes[q.Group.Name] = "group"
+		sel, err := convertExpr(q.Select)
+		varTypes = save
+		if err != nil {
+			return nil, err
+		}
+		return &GroupQueryExpr{Var: q.Var, Src: src, Key: key, GroupVar: q.Group.Name, Select: sel}, nil
+	}
+	sel, err := convertExpr(q.Select)
+	if err != nil {
+		return nil, err
+	}
+	return &QueryExpr{Var: q.Var, Src: src, Froms: froms, Joins: joins, Where: where, Sort: sort, Skip: skip, Take: take, Select: sel}, nil
 }
