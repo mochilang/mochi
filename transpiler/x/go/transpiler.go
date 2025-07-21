@@ -762,9 +762,9 @@ type UnionExpr struct {
 func (u *UnionExpr) emit(w io.Writer) {
 	fmt.Fprintf(w, "func() []%s { m := map[%s]struct{}{}; res := []%s{}; for _, v := range ", u.ElemType, u.ElemType, u.ElemType)
 	u.Left.emit(w)
-	fmt.Fprint(w, " { if _, ok := m[v]; !ok { m[v] = struct{}{}; res = append(res, v) } } for _, v := range ")
+	fmt.Fprint(w, " { if _, ok := m[v]; !ok { m[v] = struct{}{}; res = append(res, v) } }; for _, v := range ")
 	u.Right.emit(w)
-	fmt.Fprint(w, " { if _, ok := m[v]; !ok { m[v] = struct{}{}; res = append(res, v) } } return res }()")
+	fmt.Fprint(w, " { if _, ok := m[v]; !ok { m[v] = struct{}{}; res = append(res, v) } }; return res }()")
 }
 
 type UnionAllExpr struct {
@@ -775,7 +775,7 @@ type UnionAllExpr struct {
 func (u *UnionAllExpr) emit(w io.Writer) {
 	fmt.Fprintf(w, "func() []%s { res := make([]%s, len(", u.ElemType, u.ElemType)
 	u.Left.emit(w)
-	fmt.Fprint(w, "); copy(res, ")
+	fmt.Fprint(w, ")); copy(res, ")
 	u.Left.emit(w)
 	fmt.Fprint(w, "); res = append(res, ")
 	u.Right.emit(w)
@@ -791,11 +791,11 @@ func (e *ExceptExpr) emit(w io.Writer) {
 	fmt.Fprintf(w, "func() []%s { m := map[%s]struct{}{}; ", e.ElemType, e.ElemType)
 	fmt.Fprint(w, "for _, v := range ")
 	e.Right.emit(w)
-	fmt.Fprint(w, " { m[v] = struct{}{} } res := []")
+	fmt.Fprint(w, " { m[v] = struct{}{} }; res := []")
 	fmt.Fprint(w, e.ElemType)
 	fmt.Fprint(w, "{}; for _, v := range ")
 	e.Left.emit(w)
-	fmt.Fprint(w, " { if _, ok := m[v]; !ok { res = append(res, v) } } return res }()")
+	fmt.Fprint(w, " { if _, ok := m[v]; !ok { res = append(res, v) } }; return res }()")
 }
 
 type IntersectExpr struct {
@@ -806,11 +806,11 @@ type IntersectExpr struct {
 func (i *IntersectExpr) emit(w io.Writer) {
 	fmt.Fprintf(w, "func() []%s { m := map[%s]struct{}{}; for _, v := range ", i.ElemType, i.ElemType)
 	i.Left.emit(w)
-	fmt.Fprint(w, " { m[v] = struct{}{} } res := []")
+	fmt.Fprint(w, " { m[v] = struct{}{} }; res := []")
 	fmt.Fprint(w, i.ElemType)
 	fmt.Fprint(w, "{}; for _, v := range ")
 	i.Right.emit(w)
-	fmt.Fprint(w, " { if _, ok := m[v]; ok { res = append(res, v) } } return res }()")
+	fmt.Fprint(w, " { if _, ok := m[v]; ok { res = append(res, v) } }; return res }()")
 }
 
 type queryFrom struct {
