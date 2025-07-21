@@ -249,14 +249,14 @@ func (a *AssignStmt) emit(w io.Writer) {
 type PrintStmt struct{ Exprs []Expr }
 
 func (p *PrintStmt) emit(w io.Writer) {
-	io.WriteString(w, "  print_endline (String.concat \" \" (List.filter (fun s -> s <> \"\") [")
+	io.WriteString(w, "  print_endline (String.concat \" \" [")
 	for i, e := range p.Exprs {
 		if i > 0 {
 			io.WriteString(w, "; ")
 		}
 		e.emitPrint(w)
 	}
-	io.WriteString(w, "]));\n")
+	io.WriteString(w, "]);\n")
 }
 
 // IfStmt represents a basic if/else statement.

@@ -1,8 +1,8 @@
 # Transpiler Golden Test Checklist
 
-The following Mochi programs under `tests/vm/valid` are used as golden inputs for transpiler implementations.  Tick a box once the OCaml transpiler can successfully generate code that matches the VM output.
+The following Mochi programs under `tests/vm/valid` are used as golden inputs for transpiler implementations. Tick a box once the OCaml transpiler can successfully generate code that matches the VM output.
 
-Completed: 10/100
+Completed: 9/100
 
 - [x] append_builtin
 - [ ] avg_builtin
@@ -18,7 +18,7 @@ Completed: 10/100
 - [x] cross_join_filter
 - [x] cross_join_triple
 - [x] dataset_sort_take_limit
-- [x] dataset_where_filter
+- [ ] dataset_where_filter
 - [ ] exists_builtin
 - [ ] for_list_collection
 - [ ] for_loop
