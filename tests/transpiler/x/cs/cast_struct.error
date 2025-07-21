@@ -1,0 +1,5 @@
+dotnet run: exit status 1
+/tmp/TestCSTranspiler_VMValid_Golden3245023897/008/Program.cs(9,8): error CS0101: The namespace '<global namespace>' already contains a definition for 'Todo' [/tmp/TestCSTranspiler_VMValid_Golden3245023897/008/app.csproj]
+/tmp/TestCSTranspiler_VMValid_Golden3245023897/008/Program.cs(11,28): error CS0111: Type 'Todo' already defines a member called 'ToString' with the same parameter types [/tmp/TestCSTranspiler_VMValid_Golden3245023897/008/app.csproj]
+
+The build failed. Fix the build errors and run again.

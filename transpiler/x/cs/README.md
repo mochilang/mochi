@@ -2,62 +2,62 @@
 
 Generated C# code for programs in `tests/vm/valid`. Each program has a `.cs` file produced by the transpiler and a `.out` file containing its runtime output. Compilation or execution errors are captured in a `.error` file placed next to the source.
 
-Compiled programs: 3/100
+Compiled programs: 44/100
 
 ## Checklist
-- [ ] append_builtin
-- [ ] avg_builtin
-- [ ] basic_compare
-- [ ] binary_precedence
-- [ ] bool_chain
-- [ ] break_continue
-- [ ] cast_string_to_int
+- [x] append_builtin
+- [x] avg_builtin
+- [x] basic_compare
+- [x] binary_precedence
+- [x] bool_chain
+- [x] break_continue
+- [x] cast_string_to_int
 - [ ] cast_struct
 - [ ] closure
-- [ ] count_builtin
-- [ ] cross_join
-- [ ] cross_join_filter
+- [x] count_builtin
+- [x] cross_join
+- [x] cross_join_filter
 - [x] cross_join_triple
-- [ ] dataset_sort_take_limit
-- [ ] dataset_where_filter
-- [ ] exists_builtin
-- [ ] for_list_collection
-- [ ] for_loop
+- [x] dataset_sort_take_limit
+- [x] dataset_where_filter
+- [x] exists_builtin
+- [x] for_list_collection
+- [x] for_loop
 - [ ] for_map_collection
-- [ ] fun_call
-- [ ] fun_expr_in_let
-- [ ] fun_three_args
+- [x] fun_call
+- [x] fun_expr_in_let
+- [x] fun_three_args
 - [ ] go_auto
-- [ ] group_by
-- [ ] group_by_conditional_sum
-- [ ] group_by_having
-- [ ] group_by_join
+- [x] group_by
+- [x] group_by_conditional_sum
+- [x] group_by_having
+- [x] group_by_join
 - [ ] group_by_left_join
-- [ ] group_by_multi_join
+- [x] group_by_multi_join
 - [x] group_by_multi_join_sort
-- [ ] group_by_sort
+- [x] group_by_sort
 - [ ] group_items_iteration
-- [ ] if_else
-- [ ] if_then_else
-- [ ] if_then_else_nested
-- [ ] in_operator
+- [x] if_else
+- [x] if_then_else
+- [x] if_then_else_nested
+- [x] in_operator
 - [ ] in_operator_extended
-- [ ] inner_join
-- [ ] join_multi
-- [ ] json_builtin
-- [ ] left_join
+- [x] inner_join
+- [x] join_multi
+- [x] json_builtin
+- [x] left_join
 - [x] left_join_multi
-- [ ] len_builtin
-- [ ] len_map
-- [ ] len_string
-- [ ] let_and_print
-- [ ] list_assign
-- [ ] list_index
-- [ ] list_nested_assign
-- [ ] list_set_ops
+- [x] len_builtin
+- [x] len_map
+- [x] len_string
+- [x] let_and_print
+- [x] list_assign
+- [x] list_index
+- [x] list_nested_assign
+- [x] list_set_ops
 - [ ] load_yaml
 - [ ] map_assign
-- [ ] map_in_operator
+- [x] map_in_operator
 - [ ] map_index
 - [ ] map_int_key
 - [ ] map_literal_dynamic

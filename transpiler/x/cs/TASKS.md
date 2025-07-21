@@ -1,5 +1,5 @@
-## Progress (2025-07-21 17:26 +0700)
-- cs transpiler: 3/100 golden tests passing after fixing bool output for cross joins
+## Progress (2025-07-21 18:06 +0700)
+- cs transpiler: regenerated golden tests (progress 44/100)
 
 ## Recent Enhancements
 - Improved bool printing for lists
@@ -7,3 +7,4 @@
 
 ## Remaining Work
 - Support map and list mutation operations
+

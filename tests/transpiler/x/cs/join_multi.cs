@@ -19,20 +19,19 @@ struct Item {
     public override string ToString() => $"{{\"orderId\": {orderId}, \"sku\": \"{sku}\"}}";
 }
 struct OResult {
-    public int orderId;
     public string name;
-    public Item item;
-    public override string ToString() => $"{{\"orderId\": {orderId}, \"name\": \"{name}\", \"item\": {item}}}";
+    public string sku;
+    public override string ToString() => $"{{\"name\": \"{name}\", \"sku\": \"{sku}\"}}";
 }
 class Program {
     static Customer[] customers = new Customer[]{new Customer{id = 1, name = "Alice"}, new Customer{id = 2, name = "Bob"}};
     static Order[] orders = new Order[]{new Order{id = 100, customerId = 1}, new Order{id = 101, customerId = 2}};
-    static Item[] items = new Item[]{new Item{orderId = 100, sku = "a"}};
-    static OResult[] result = (from o in orders join c in customers on o.customerId equals c.id join i in items on o.id equals i.orderId into iTmp from i in iTmp.DefaultIfEmpty() select new OResult{orderId = o.id, name = c.name, item = i}).ToArray();
+    static Item[] items = new Item[]{new Item{orderId = 100, sku = "a"}, new Item{orderId = 101, sku = "b"}};
+    static OResult[] result = (from o in orders join c in customers on o.customerId equals c.id join i in items on o.id equals i.orderId select new OResult{name = c.name, sku = i.sku}).ToArray();
     static void Main() {
-        Console.WriteLine("--- Left Join Multi ---");
+        Console.WriteLine("--- Multi Join ---");
         foreach (var r in result) {
-    Console.WriteLine(string.Join(" ", new object[]{r.orderId, r.name, r.item}).TrimEnd());
+    Console.WriteLine(string.Join(" ", new string[]{r.name, "bought item", r.sku}).TrimEnd());
 }
     }
 }
