@@ -17,9 +17,15 @@ func ExecPlan(plan Plan, env *types.Env, eval func(*parser.Expr) (any, error)) (
 				if k == "__join__" {
 					continue
 				}
+				if _, err := env.GetVar(k); err != nil {
+					env.SetVarDeep(k, types.AnyType{}, true)
+				}
 				env.SetValue(k, v, true)
 			}
 		} else if alias != "" {
+			if _, err := env.GetVar(alias); err != nil {
+				env.SetVarDeep(alias, types.AnyType{}, true)
+			}
 			env.SetValue(alias, item, true)
 		}
 	}
