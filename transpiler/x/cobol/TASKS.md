@@ -1,3 +1,8 @@
+## Progress (2025-07-21 07:20 +0700)
+- cpp transpiler: fix precedence and bool output
+- Generated COBOL for 36/100 programs
+- Updated README checklist and outputs
+
 ## Progress (2025-07-20 16:45 +0700)
 - release: v0.10.32
 - Generated COBOL for 35/100 programs
