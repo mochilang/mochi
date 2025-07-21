@@ -1,0 +1,9 @@
+exit status 2
+File "/workspace/mochi/tests/transpiler/x/ocaml/group_by_join.ml", line 25, characters 138-139:
+25 |   print_endline (String.concat " " (List.filter (fun s -> s <> "") [(List.assoc "name" s); "orders:"; string_of_int (List.assoc "count" s))]));
+                                                                                                                                               ^
+Error: Syntax error: ']' expected
+File "/workspace/mochi/tests/transpiler/x/ocaml/group_by_join.ml", line 25, characters 67-68:
+25 |   print_endline (String.concat " " (List.filter (fun s -> s <> "") [(List.assoc "name" s); "orders:"; string_of_int (List.assoc "count" s))]));
+                                                                        ^
+  This '[' might be unmatched

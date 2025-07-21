@@ -1,0 +1,6 @@
+exit status 2
+File "/workspace/mochi/tests/transpiler/x/ocaml/for_loop.ml", line 7, characters 9-17:
+7 |     with Continue -> ()
+             ^^^^^^^^
+Error: This variant pattern is expected to have type exn
+       There is no constructor Continue within type exn

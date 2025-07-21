@@ -1,0 +1,9 @@
+exit status 2
+File "/workspace/mochi/tests/transpiler/x/ocaml/cross_join_filter.ml", line 10, characters 100-101:
+10 |   print_endline (String.concat " " (List.filter (fun s -> s <> "") [string_of_int (List.assoc "n" p)); (List.assoc "l" p)]));
+                                                                                                         ^
+Error: Syntax error: ']' expected
+File "/workspace/mochi/tests/transpiler/x/ocaml/cross_join_filter.ml", line 10, characters 67-68:
+10 |   print_endline (String.concat " " (List.filter (fun s -> s <> "") [string_of_int (List.assoc "n" p)); (List.assoc "l" p)]));
+                                                                        ^
+  This '[' might be unmatched

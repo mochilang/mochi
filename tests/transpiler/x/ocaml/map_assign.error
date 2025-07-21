@@ -1,0 +1,9 @@
+exit status 2
+File "/workspace/mochi/tests/transpiler/x/ocaml/map_assign.ml", line 6, characters 108-109:
+6 |   print_endline (String.concat " " (List.filter (fun s -> s <> "") [string_of_int (List.assoc "bob" !scores))]));
+                                                                                                                ^
+Error: Syntax error: ']' expected
+File "/workspace/mochi/tests/transpiler/x/ocaml/map_assign.ml", line 6, characters 67-68:
+6 |   print_endline (String.concat " " (List.filter (fun s -> s <> "") [string_of_int (List.assoc "bob" !scores))]));
+                                                                       ^
+  This '[' might be unmatched

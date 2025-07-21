@@ -1,0 +1,6 @@
+exit status 2
+File "/workspace/mochi/tests/transpiler/x/ocaml/slice.ml", line 4, characters 79-88:
+4 |   print_endline (String.concat " " (List.filter (fun s -> s <> "") [String.sub [1; 2; 3] 1 (3 - 1)]));
+                                                                                   ^^^^^^^^^
+Error: This expression has type 'a list
+       but an expression was expected of type string

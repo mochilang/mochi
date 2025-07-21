@@ -1,0 +1,9 @@
+exit status 2
+File "/workspace/mochi/tests/transpiler/x/ocaml/cross_join.ml", line 10, characters 119-120:
+10 |   print_endline (String.concat " " (List.filter (fun s -> s <> "") ["Order"; string_of_int (List.assoc "orderId" entry)); "(customerId:"; string_of_int (List.assoc "orderCustomerId" entry)); ", total: $"; string_of_int (List.assoc "o
+                                                                                                                            ^
+Error: Syntax error: ']' expected
+File "/workspace/mochi/tests/transpiler/x/ocaml/cross_join.ml", line 10, characters 67-68:
+10 |   print_endline (String.concat " " (List.filter (fun s -> s <> "") ["Order"; string_of_int (List.assoc "orderId" entry)); "(customerId:"; string_of_int (List.assoc "orderCustomerId" entry)); ", total: $"; string_of_int (List.assoc "o
+                                                                        ^
+  This '[' might be unmatched

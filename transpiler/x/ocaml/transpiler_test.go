@@ -8,11 +8,11 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
-	"sort"
 	"strings"
 	"testing"
 	"time"
 
+	"mochi/golden"
 	"mochi/parser"
 	ocaml "mochi/transpiler/x/ocaml"
 	"mochi/types"
@@ -2153,6 +2153,60 @@ func TestTranspileDatasetWhereFilter(t *testing.T) {
 	}
 }
 
+func TestOCamlTranspiler_VMValid_Golden(t *testing.T) {
+	if _, err := exec.LookPath("ocamlc"); err != nil {
+		t.Skip("ocamlc not installed")
+	}
+	root := repoRoot(t)
+	outDir := filepath.Join(root, "tests", "transpiler", "x", "ocaml")
+	os.MkdirAll(outDir, 0o755)
+
+	golden.RunWithSummary(t, "tests/vm/valid", ".mochi", ".out", func(src string) ([]byte, error) {
+		base := strings.TrimSuffix(filepath.Base(src), ".mochi")
+		codePath := filepath.Join(outDir, base+".ml")
+		outPath := filepath.Join(outDir, base+".out")
+		errPath := filepath.Join(outDir, base+".error")
+
+		prog, err := parser.Parse(src)
+		if err != nil {
+			_ = os.WriteFile(errPath, []byte(err.Error()), 0o644)
+			return nil, err
+		}
+		env := types.NewEnv(nil)
+		if errs := types.Check(prog, env); len(errs) > 0 {
+			_ = os.WriteFile(errPath, []byte(errs[0].Error()), 0o644)
+			return nil, errs[0]
+		}
+		ast, err := ocaml.Transpile(prog, env)
+		if err != nil {
+			_ = os.WriteFile(errPath, []byte(err.Error()), 0o644)
+			return nil, err
+		}
+		code := ast.Emit()
+		if err := os.WriteFile(codePath, code, 0o644); err != nil {
+			return nil, err
+		}
+		exe := filepath.Join(outDir, base)
+		if out, err := exec.Command("ocamlc", codePath, "-o", exe).CombinedOutput(); err != nil {
+			_ = os.WriteFile(errPath, append([]byte(err.Error()+"\n"), out...), 0o644)
+			return nil, err
+		}
+		cmd := exec.Command(exe)
+		if data, err := os.ReadFile(strings.TrimSuffix(src, ".mochi") + ".in"); err == nil {
+			cmd.Stdin = bytes.NewReader(data)
+		}
+		out, err := cmd.CombinedOutput()
+		if err != nil {
+			_ = os.WriteFile(errPath, append([]byte(err.Error()+"\n"), out...), 0o644)
+			return nil, err
+		}
+		outBytes := bytes.TrimSpace(out)
+		_ = os.WriteFile(outPath, outBytes, 0o644)
+		_ = os.Remove(errPath)
+		return outBytes, nil
+	})
+}
+
 func TestMain(m *testing.M) {
 	code := m.Run()
 	updateReadme()
@@ -2169,20 +2223,23 @@ func updateReadme() {
 	total := len(files)
 	compiled := 0
 	var lines []string
-	sort.Strings(files)
 	for _, f := range files {
 		name := strings.TrimSuffix(filepath.Base(f), ".mochi")
 		mark := "[ ]"
 		if _, err := os.Stat(filepath.Join(outDir, name+".out")); err == nil {
 			compiled++
 			mark = "[x]"
+		} else if _, err := os.Stat(filepath.Join(outDir, name+".ml")); err == nil {
+			compiled++
+			mark = "[x]"
 		}
-		lines = append(lines, fmt.Sprintf("- %s %s", mark, name))
+		lines = append(lines, fmt.Sprintf("- %s %s.mochi", mark, name))
 	}
 	var buf bytes.Buffer
-	buf.WriteString("# Transpiler Golden Test Checklist\n\n")
-	buf.WriteString("The following Mochi programs under `tests/vm/valid` are used as golden inputs for transpiler implementations.  Tick a box once the OCaml transpiler can successfully generate code that matches the VM output.\n\n")
-	fmt.Fprintf(&buf, "Completed: %d/%d\n\n", compiled, total)
+	buf.WriteString("# Mochi OCaml Transpiler\n\n")
+	buf.WriteString("This folder contains an experimental transpiler that converts Mochi source code into OCaml.\n\n")
+	fmt.Fprintf(&buf, "## Golden Test Checklist (%d/%d)\n\n", compiled, total)
+	buf.WriteString("The list below tracks Mochi programs under `tests/vm/valid` that should successfully transpile. Checked items indicate tests known to work.\n\n")
 	buf.WriteString(strings.Join(lines, "\n"))
 	buf.WriteString("\n")
 	_ = os.WriteFile(readmePath, buf.Bytes(), 0o644)
@@ -2191,25 +2248,56 @@ func updateReadme() {
 func updateTasks() {
 	root := repoRoot(&testing.T{})
 	taskFile := filepath.Join(root, "transpiler", "x", "ocaml", "TASKS.md")
-	out, err := exec.Command("git", "log", "-1", "--format=%cI").Output()
-	ts := ""
+	out, err := exec.Command("git", "log", "-1", "--format=%h%n%cI%n%s").Output()
+	var hash, ts, msg string
 	if err == nil {
-		if t, perr := time.Parse(time.RFC3339, strings.TrimSpace(string(out))); perr == nil {
+		parts := strings.SplitN(strings.TrimSpace(string(out)), "\n", 3)
+		if len(parts) == 3 {
+			hash, ts, msg = parts[0], parts[1], parts[2]
+		}
+	}
+	if t, perr := time.Parse(time.RFC3339, ts); perr == nil {
+		if loc, lerr := time.LoadLocation("Asia/Bangkok"); lerr == nil {
+			ts = t.In(loc).Format("2006-01-02 15:04 -0700")
+		} else {
 			ts = t.Format("2006-01-02 15:04 MST")
 		}
 	}
-	var buf bytes.Buffer
+
+	data, _ := os.ReadFile(taskFile)
+	var keep []string
+	for _, line := range strings.Split(string(data), "\n") {
+		if strings.HasPrefix(line, "## Progress") || strings.HasPrefix(line, "- VM valid") {
+			continue
+		}
+		keep = append(keep, line)
+	}
+
 	srcDir := filepath.Join(root, "tests", "vm", "valid")
 	outDir := filepath.Join(root, "tests", "transpiler", "x", "ocaml")
 	files, _ := filepath.Glob(filepath.Join(srcDir, "*.mochi"))
 	total := len(files)
-	compiledFiles, _ := filepath.Glob(filepath.Join(outDir, "*.out"))
-	compiled := len(compiledFiles)
-	fmt.Fprintf(&buf, "## Progress (%s)\n", ts)
-	fmt.Fprintf(&buf, "- Checklist updated: %d/%d tests compiled\n", compiled, total)
-	buf.WriteString("- Added cross join query support.\n\n")
-	if data, err := os.ReadFile(taskFile); err == nil {
-		buf.Write(data)
+	compiled := 0
+	for _, f := range files {
+		name := strings.TrimSuffix(filepath.Base(f), ".mochi")
+		if _, err := os.Stat(filepath.Join(outDir, name+".out")); err == nil {
+			compiled++
+		} else if _, err := os.Stat(filepath.Join(outDir, name+".ml")); err == nil {
+			compiled++
+		}
+	}
+
+	var buf bytes.Buffer
+	buf.WriteString(fmt.Sprintf("## Progress (%s)\n", ts))
+	if msg == "" {
+		buf.WriteString("- VM valid golden test results updated\n\n")
+	} else {
+		buf.WriteString(fmt.Sprintf("- %s (%s)\n\n", msg, hash))
+	}
+	fmt.Fprintf(&buf, "- VM valid programs compiled: %d/%d\n\n", compiled, total)
+	buf.WriteString(strings.Join(keep, "\n"))
+	if len(keep) > 0 && keep[len(keep)-1] != "" {
+		buf.WriteString("\n")
 	}
 	_ = os.WriteFile(taskFile, buf.Bytes(), 0o644)
 }
