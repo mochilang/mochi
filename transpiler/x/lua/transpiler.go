@@ -94,6 +94,7 @@ type CallExpr struct {
 
 type StringLit struct{ Value string }
 type IntLit struct{ Value int }
+type FloatLit struct{ Value float64 }
 type BoolLit struct{ Value bool }
 type Ident struct{ Name string }
 type ListLit struct{ Elems []Expr }
@@ -153,10 +154,8 @@ func (s *ExprStmt) emit(w io.Writer) { s.Expr.emit(w) }
 func (c *CallExpr) emit(w io.Writer) {
 	switch c.Func {
 	case "print":
-		if len(c.Args) == 1 && isListExpr(c.Args[0]) {
-			io.WriteString(w, "print(table.concat(")
-			c.Args[0].emit(w)
-			io.WriteString(w, ", \" \"))")
+		if len(c.Args) == 1 && (isListExpr(c.Args[0]) || isMapExpr(c.Args[0])) {
+			(&CallExpr{Func: "json", Args: c.Args}).emit(w)
 			return
 		}
 
@@ -663,6 +662,7 @@ func (ie *IfExpr) emit(w io.Writer) {
 
 func (s *StringLit) emit(w io.Writer) { fmt.Fprintf(w, "%q", s.Value) }
 func (i *IntLit) emit(w io.Writer)    { fmt.Fprintf(w, "%d", i.Value) }
+func (f *FloatLit) emit(w io.Writer)  { fmt.Fprintf(w, "%g", f.Value) }
 func (b *BoolLit) emit(w io.Writer) {
 	if b.Value {
 		io.WriteString(w, "true")
@@ -1484,6 +1484,8 @@ func convertLiteral(l *parser.Literal) (Expr, error) {
 	switch {
 	case l.Int != nil:
 		return &IntLit{Value: int(*l.Int)}, nil
+	case l.Float != nil:
+		return &FloatLit{Value: *l.Float}, nil
 	case l.Str != nil:
 		return &StringLit{Value: *l.Str}, nil
 	case l.Bool != nil:
