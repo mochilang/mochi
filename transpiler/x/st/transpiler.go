@@ -163,6 +163,53 @@ func isTruthy(v value) bool {
 	}
 }
 
+func compareValues(a, b value) int {
+	switch {
+	case a.kind == valInt && b.kind == valInt:
+		if a.i < b.i {
+			return -1
+		}
+		if a.i > b.i {
+			return 1
+		}
+		return 0
+	case a.kind == valFloat && b.kind == valFloat:
+		if a.f < b.f {
+			return -1
+		}
+		if a.f > b.f {
+			return 1
+		}
+		return 0
+	case a.kind == valString && b.kind == valString:
+		if a.s < b.s {
+			return -1
+		}
+		if a.s > b.s {
+			return 1
+		}
+		return 0
+	case a.kind == valBool && b.kind == valBool:
+		if !a.b && b.b {
+			return -1
+		}
+		if a.b && !b.b {
+			return 1
+		}
+		return 0
+	default:
+		sa := a.String()
+		sb := b.String()
+		if sa < sb {
+			return -1
+		}
+		if sa > sb {
+			return 1
+		}
+		return 0
+	}
+}
+
 // Emit writes the Smalltalk source code to w with a generated header.
 func Emit(w io.Writer, prog *Program) error {
 	if prog == nil {
@@ -835,7 +882,7 @@ func identName(e *parser.Expr) (string, bool) {
 
 func evalQueryExpr(q *parser.QueryExpr, vars map[string]value) (value, error) {
 	// handle group by form: FROM <src> GROUP BY <expr> INTO g SELECT ...
-	if q.Group != nil && len(q.Group.Exprs) == 1 && len(q.Froms) == 0 && len(q.Joins) == 0 && q.Sort == nil && q.Skip == nil && q.Take == nil && !q.Distinct {
+	if q.Group != nil && len(q.Group.Exprs) == 1 && len(q.Froms) == 0 && len(q.Joins) == 0 && q.Skip == nil && q.Take == nil && !q.Distinct {
 		src, err := evalExpr(q.Source, vars)
 		if err != nil {
 			return value{}, err
@@ -874,7 +921,8 @@ func evalQueryExpr(q *parser.QueryExpr, vars map[string]value) (value, error) {
 		}
 		sort.Strings(keys)
 
-		var results []value
+		type pair struct{ key, val value }
+		var pairs []pair
 		for _, k := range keys {
 			g := groups[k]
 			gv := value{kind: valMap, kv: map[string]value{
@@ -905,7 +953,23 @@ func evalQueryExpr(q *parser.QueryExpr, vars map[string]value) (value, error) {
 			if err != nil {
 				return value{}, err
 			}
-			results = append(results, v)
+			k2 := value{}
+			if q.Sort != nil {
+				k2, err = evalExpr(q.Sort, local)
+				if err != nil {
+					return value{}, err
+				}
+			}
+			pairs = append(pairs, pair{key: k2, val: v})
+		}
+		if q.Sort != nil {
+			sort.Slice(pairs, func(i, j int) bool {
+				return compareValues(pairs[i].key, pairs[j].key) < 0
+			})
+		}
+		results := make([]value, len(pairs))
+		for i, p := range pairs {
+			results[i] = p.val
 		}
 		return value{kind: valList, list: results}, nil
 	}
@@ -1017,7 +1081,8 @@ func evalQueryExpr(q *parser.QueryExpr, vars map[string]value) (value, error) {
 		clauses = append(clauses, clause{f.Var, f.Src})
 	}
 
-	var results []value
+	type pair struct{ key, val value }
+	var pairs []pair
 	var iter func(int, map[string]value) error
 	iter = func(i int, local map[string]value) error {
 		if i == len(clauses) {
@@ -1034,7 +1099,14 @@ func evalQueryExpr(q *parser.QueryExpr, vars map[string]value) (value, error) {
 			if err != nil {
 				return err
 			}
-			results = append(results, v)
+			k := value{}
+			if q.Sort != nil {
+				k, err = evalExpr(q.Sort, local)
+				if err != nil {
+					return err
+				}
+			}
+			pairs = append(pairs, pair{key: k, val: v})
 			return nil
 		}
 		cl := clauses[i]
@@ -1061,6 +1133,15 @@ func evalQueryExpr(q *parser.QueryExpr, vars map[string]value) (value, error) {
 	}
 	if err := iter(0, copyVars(vars)); err != nil {
 		return value{}, err
+	}
+	if q.Sort != nil {
+		sort.Slice(pairs, func(i, j int) bool {
+			return compareValues(pairs[i].key, pairs[j].key) < 0
+		})
+	}
+	results := make([]value, len(pairs))
+	for i, p := range pairs {
+		results[i] = p.val
 	}
 	return value{kind: valList, list: results}, nil
 }
