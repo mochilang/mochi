@@ -1,0 +1,21 @@
+/workspace/mochi/tests/transpiler/x/rb/group_by_left_join.rb: --> /workspace/mochi/tests/transpiler/x/rb/group_by_left_join.rb
+Unmatched `end', missing keyword (`do', `def`, `if`, etc.) ?
+>  2  CustomersItem = Struct.new(:id, :name, keyword_init: true)
+>  3  customers = [CustomersItem.new(id: 1, name: "Alice"), CustomersItem.new(id: 2, name: "Bob"), CustomersItem.new(id: 3, name: "Charlie")]
+>  4  OrdersItem = Struct.new(:id, :customerId, keyword_init: true)
+>  5  orders = [OrdersItem.new(id: 100, customerId: 1), OrdersItem.new(id: 101, customerId: 1), OrdersItem.new(id: 102, customerId: 2)]
+>  6  StatsItem = Struct.new(:name, :count, keyword_init: true)
+>  7  stats = (begin
+>  8    groups = {}
+> 26    pairs = groups.to_a
+> 27    result = []
+> 28    pairs.each do |k, items|
+> 29      g = { "key" => k, "items" => items }
+> 30      result << StatsItem.new(name: g["key"], count: (begin
+> 37      _res
+> 38    end).length)
+> 39  end
+> 40  result
+> 41  end
+> 42  end)
+/workspace/mochi/tests/transpiler/x/rb/group_by_left_join.rb:42: syntax error, unexpected `end', expecting ')' (SyntaxError)
