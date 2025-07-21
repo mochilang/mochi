@@ -1,3 +1,6 @@
+## Progress (2025-07-21 07:08 +0700)
+- VM valid golden test results updated to 35/100
+
 ## Progress (2025-07-20 22:11 +0700)
 - docs(pl): tidy tasks list
 - 34/100 VM programs transpiled successfully
