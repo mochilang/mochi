@@ -257,6 +257,8 @@ var groupVars map[string]bool
 var structCount int
 var currentProgram *Program
 var funDepth int
+var funParamsStack [][]string
+var nestedFunArgs map[string][]string
 
 // Transpile converts a Mochi program into a Clojure AST. The implementation
 // is intentionally minimal and currently only supports very small programs used
@@ -269,9 +271,17 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	transpileEnv = env
 	groupVars = make(map[string]bool)
 	structCount = 0
+	funParamsStack = nil
+	nestedFunArgs = make(map[string][]string)
 	pr := &Program{}
 	currentProgram = pr
-	defer func() { transpileEnv = nil; groupVars = nil; currentProgram = nil }()
+	defer func() {
+		transpileEnv = nil
+		groupVars = nil
+		currentProgram = nil
+		nestedFunArgs = nil
+		funParamsStack = nil
+	}()
 
 	// emit (ns main)
 	pr.Forms = append(pr.Forms, &List{Elems: []Node{Symbol("ns"), Symbol("main")}})
@@ -423,12 +433,15 @@ func transpileStmt(s *parser.Statement) (Node, error) {
 
 func transpileFunStmt(f *parser.FunStmt) (Node, error) {
 	funDepth++
-	defer func() { funDepth-- }()
+	defer func() { funDepth--; funParamsStack = funParamsStack[:len(funParamsStack)-1] }()
 
 	params := []Node{}
+	names := []string{}
 	for _, p := range f.Params {
 		params = append(params, Symbol(p.Name))
+		names = append(names, p.Name)
 	}
+	funParamsStack = append(funParamsStack, names)
 	body := []Node{}
 	for i := 0; i < len(f.Body); i++ {
 		st := f.Body[i]
@@ -461,6 +474,16 @@ func transpileFunStmt(f *parser.FunStmt) (Node, error) {
 	}
 	defn := &Defn{Name: f.Name, Params: params, Body: body}
 	if funDepth > 1 && currentProgram != nil {
+		captured := []string{}
+		for i := 0; i < len(funParamsStack)-1; i++ {
+			captured = append(captured, funParamsStack[i]...)
+		}
+		newParams := []Node{}
+		for _, n := range captured {
+			newParams = append(newParams, Symbol(n))
+		}
+		defn.Params = append(newParams, defn.Params...)
+		nestedFunArgs[f.Name] = captured
 		currentProgram.Forms = append(currentProgram.Forms, defn)
 		return nil, nil
 	}
@@ -1006,6 +1029,11 @@ func transpileCall(c *parser.CallExpr) (Node, error) {
 		elems = append(elems, Symbol("vals"))
 	default:
 		elems = append(elems, Symbol(c.Func))
+		if extra, ok := nestedFunArgs[c.Func]; ok {
+			for _, v := range extra {
+				elems = append(elems, Symbol(v))
+			}
+		}
 	}
 	for _, arg := range c.Args {
 		a, err := transpileExpr(arg)

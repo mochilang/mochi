@@ -1,3 +1,39 @@
+## Progress (2025-07-21 11:33 +0700)
+- clj transpiler: support nested function closures
+- Regenerated golden files - 86/100 vm valid programs passing
+
+## Progress (2025-07-21 11:16 +0700)
+ - clj transpiler: hoist nested functions
+ - Regenerated golden files - 85/100 vm valid programs passing
+
+## Progress (2025-07-21 11:16 +0700)
+- clj transpiler: hoist nested functions
+- Regenerated golden files - 85/100 vm valid programs passing
+
+## Progress (2025-07-21 11:16 +0700)
+- clj transpiler: hoist nested functions
+- Regenerated golden files - 85/100 vm valid programs passing
+
+## Progress (2025-07-21 11:16 +0700)
+- clj transpiler: hoist nested functions
+- Regenerated golden files - 85/100 vm valid programs passing
+
+## Progress (2025-07-21 11:16 +0700)
+- clj transpiler: hoist nested functions
+- Regenerated golden files - 85/100 vm valid programs passing
+
+## Progress (2025-07-21 11:16 +0700)
+- clj transpiler: hoist nested functions
+- Regenerated golden files - 85/100 vm valid programs passing
+
+## Progress (2025-07-21 11:16 +0700)
+- clj transpiler: hoist nested functions
+- Regenerated golden files - 85/100 vm valid programs passing
+
+## Progress (2025-07-21 11:16 +0700)
+- clj transpiler: hoist nested functions
+- Regenerated golden files - 85/100 vm valid programs passing
+
 ## Progress (2025-07-21 11:04 +0700)
 - clj transpiler: add sort skip take
 - Regenerated golden files - 85/100 vm valid programs passing
