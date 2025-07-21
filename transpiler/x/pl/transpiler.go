@@ -1912,9 +1912,227 @@ func evalQueryExpr(q *parser.QueryExpr, env *compileEnv) (Expr, error) {
 		delete(env.vars, q.Var)
 		return &ListLit{Elems: outElems}, nil
 	}
+	if len(q.Froms) > 0 && len(q.Joins) == 0 && q.Group == nil && q.Sort == nil && q.Skip == nil && q.Take == nil {
+		src, err := toExpr(q.Source, env)
+		if err != nil {
+			return nil, err
+		}
+		first, ok := constList(src, env)
+		if !ok {
+			return nil, fmt.Errorf("unsupported query source")
+		}
+		type clause struct {
+			name string
+			list *ListLit
+		}
+		clauses := []clause{{q.Var, first}}
+		for _, f := range q.Froms {
+			ex, err := toExpr(f.Src, env)
+			if err != nil {
+				return nil, err
+			}
+			l, ok := constList(ex, env)
+			if !ok {
+				return nil, fmt.Errorf("unsupported query source")
+			}
+			clauses = append(clauses, clause{f.Var, l})
+		}
+		out := &ListLit{}
+		var iter func(int) error
+		iter = func(i int) error {
+			if i == len(clauses) {
+				if q.Where != nil {
+					cond, err := toExpr(q.Where, env)
+					if err != nil {
+						return err
+					}
+					b, ok := cond.(*BoolLit)
+					if !ok || !b.Value {
+						return nil
+					}
+				}
+				val, err := toExpr(q.Select, env)
+				if err != nil {
+					return err
+				}
+				out.Elems = append(out.Elems, val)
+				return nil
+			}
+			cl := clauses[i]
+			env.vars[cl.name] = 0
+			for _, it := range cl.list.Elems {
+				env.consts[env.current(cl.name)] = it
+				if err := iter(i + 1); err != nil {
+					return err
+				}
+			}
+			delete(env.consts, env.current(cl.name))
+			delete(env.vars, cl.name)
+			return nil
+		}
+		if err := iter(0); err != nil {
+			return nil, err
+		}
+		return out, nil
+	}
+
+	if len(q.Joins) == 1 && len(q.Froms) == 0 && q.Group == nil && q.Sort == nil && q.Skip == nil && q.Take == nil {
+		j := q.Joins[0]
+		leftSrc, err := toExpr(q.Source, env)
+		if err != nil {
+			return nil, err
+		}
+		left, ok := constList(leftSrc, env)
+		if !ok {
+			return nil, fmt.Errorf("unsupported query source")
+		}
+		rightSrc, err := toExpr(j.Src, env)
+		if err != nil {
+			return nil, err
+		}
+		right, ok := constList(rightSrc, env)
+		if !ok {
+			return nil, fmt.Errorf("unsupported join source")
+		}
+		out := &ListLit{}
+		env.vars[q.Var] = 0
+		env.vars[j.Var] = 0
+		for _, l := range left.Elems {
+			env.consts[env.current(q.Var)] = l
+			for _, r := range right.Elems {
+				env.consts[env.current(j.Var)] = r
+				cond, err := toExpr(j.On, env)
+				if err != nil {
+					return nil, err
+				}
+				b, ok := cond.(*BoolLit)
+				if !ok || !b.Value {
+					continue
+				}
+				if q.Where != nil {
+					wc, err := toExpr(q.Where, env)
+					if err != nil {
+						return nil, err
+					}
+					wb, ok := wc.(*BoolLit)
+					if !ok || !wb.Value {
+						continue
+					}
+				}
+				val, err := toExpr(q.Select, env)
+				if err != nil {
+					return nil, err
+				}
+				out.Elems = append(out.Elems, val)
+			}
+		}
+		delete(env.consts, env.current(q.Var))
+		delete(env.vars, q.Var)
+		delete(env.consts, env.current(j.Var))
+		delete(env.vars, j.Var)
+		return out, nil
+	}
+
+	if q.Group != nil && len(q.Joins) == 1 && len(q.Froms) == 0 && q.Sort == nil && q.Skip == nil && q.Take == nil {
+		j := q.Joins[0]
+		leftSrc, err := toExpr(q.Source, env)
+		if err != nil {
+			return nil, err
+		}
+		left, ok := constList(leftSrc, env)
+		if !ok {
+			return nil, fmt.Errorf("unsupported query source")
+		}
+		rightSrc, err := toExpr(j.Src, env)
+		if err != nil {
+			return nil, err
+		}
+		right, ok := constList(rightSrc, env)
+		if !ok {
+			return nil, fmt.Errorf("unsupported join source")
+		}
+		groups := map[string]*ListLit{}
+		order := []string{}
+		env.vars[q.Var] = 0
+		env.vars[j.Var] = 0
+		for _, l := range left.Elems {
+			env.consts[env.current(q.Var)] = l
+			for _, r := range right.Elems {
+				env.consts[env.current(j.Var)] = r
+				cond, err := toExpr(j.On, env)
+				if err != nil {
+					return nil, err
+				}
+				b, ok := cond.(*BoolLit)
+				if !ok || !b.Value {
+					continue
+				}
+				keyEx, err := toExpr(q.Group.Exprs[0], env)
+				if err != nil {
+					return nil, err
+				}
+				keyLit, ok := keyEx.(*StringLit)
+				if !ok {
+					return nil, fmt.Errorf("non-string key")
+				}
+				gl, ok := groups[keyLit.Value]
+				if !ok {
+					gl = &ListLit{}
+					groups[keyLit.Value] = gl
+					order = append(order, keyLit.Value)
+				}
+				item := &MapLit{Items: []MapItem{{Key: q.Var, Value: l}, {Key: j.Var, Value: r}}}
+				gl.Elems = append(gl.Elems, item)
+			}
+		}
+		delete(env.consts, env.current(q.Var))
+		delete(env.vars, q.Var)
+		delete(env.consts, env.current(j.Var))
+		delete(env.vars, j.Var)
+		results := []Expr{}
+		for _, k := range order {
+			gMap := &MapLit{Items: []MapItem{{Key: "key", Value: &StringLit{Value: k}}, {Key: "items", Value: groups[k]}}}
+			env.vars[q.Group.Name] = 0
+			env.consts[env.current(q.Group.Name)] = gMap
+			if q.Group.Having != nil {
+				hv, err := toExpr(q.Group.Having, env)
+				if err != nil {
+					return nil, err
+				}
+				hb, ok := hv.(*BoolLit)
+				if !ok || !hb.Value {
+					delete(env.consts, env.current(q.Group.Name))
+					delete(env.vars, q.Group.Name)
+					continue
+				}
+			}
+			if q.Where != nil {
+				wc, err := toExpr(q.Where, env)
+				if err != nil {
+					return nil, err
+				}
+				wb, ok := wc.(*BoolLit)
+				if !ok || !wb.Value {
+					delete(env.consts, env.current(q.Group.Name))
+					delete(env.vars, q.Group.Name)
+					continue
+				}
+			}
+			val, err := toExpr(q.Select, env)
+			if err != nil {
+				return nil, err
+			}
+			results = append(results, val)
+			delete(env.consts, env.current(q.Group.Name))
+			delete(env.vars, q.Group.Name)
+		}
+		return &ListLit{Elems: results}, nil
+	}
+
 	if len(q.Froms) > 0 || len(q.Joins) > 0 || q.Sort != nil || q.Skip != nil || q.Take != nil {
 		return nil, fmt.Errorf("unsupported query features")
 	}
+
 	src, err := toExpr(q.Source, env)
 	if err != nil {
 		return nil, err
@@ -1933,10 +2151,7 @@ func evalQueryExpr(q *parser.QueryExpr, env *compileEnv) (Expr, error) {
 				return nil, err
 			}
 			b, ok := cond.(*BoolLit)
-			if !ok {
-				return nil, fmt.Errorf("unsupported query where")
-			}
-			if !b.Value {
+			if !ok || !b.Value {
 				continue
 			}
 		}
