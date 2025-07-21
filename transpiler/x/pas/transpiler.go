@@ -711,7 +711,23 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 				}
 			}
 			if st.Let.Value != nil {
-				if q := queryFromExpr(st.Let.Value); q != nil {
+				if call := callFromExpr(st.Let.Value); call != nil && call.Func == "exists" && len(call.Args) == 1 {
+					if q := queryFromExpr(call.Args[0]); q != nil {
+						tmp := fmt.Sprintf("tmp%d", len(pr.Vars))
+						stmts, typ, err := buildQuery(env, q, tmp, varTypes)
+						if err != nil {
+							return nil, err
+						}
+						pr.Vars = append(pr.Vars, VarDecl{Name: tmp, Type: typ})
+						pr.Stmts = append(pr.Stmts, stmts...)
+						cond := &BinaryExpr{Op: ">", Left: &CallExpr{Name: "Length", Args: []Expr{&VarRef{Name: tmp}}}, Right: &IntLit{Value: 0}, Bool: true}
+						pr.Stmts = append(pr.Stmts, &AssignStmt{Name: st.Let.Name, Expr: cond})
+						vd.Type = "boolean"
+						varTypes[st.Let.Name] = "boolean"
+					} else {
+						return nil, fmt.Errorf("unsupported exists arg")
+					}
+				} else if q := queryFromExpr(st.Let.Value); q != nil {
 					if len(q.Joins) == 1 && q.Joins[0].Side != nil && *q.Joins[0].Side == "left" &&
 						len(q.Froms) == 0 && q.Group == nil && q.Sort == nil && q.Skip == nil && q.Take == nil && !q.Distinct {
 						stmts, typ, err := buildLeftJoinQuery(env, q, st.Let.Name, varTypes)
@@ -1267,6 +1283,24 @@ func queryFromExpr(e *parser.Expr) *parser.QueryExpr {
 	}
 	if pf.Target != nil {
 		return pf.Target.Query
+	}
+	return nil
+}
+
+func callFromExpr(e *parser.Expr) *parser.CallExpr {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) > 0 {
+		return nil
+	}
+	u := e.Binary.Left
+	if u == nil || len(u.Ops) > 0 {
+		return nil
+	}
+	pf := u.Value
+	if pf == nil || len(pf.Ops) > 0 {
+		return nil
+	}
+	if pf.Target != nil {
+		return pf.Target.Call
 	}
 	return nil
 }
