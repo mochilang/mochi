@@ -155,23 +155,24 @@ func header() []byte {
 		}
 	}
 	loc, _ := time.LoadLocation("Asia/Bangkok")
-	prelude := `(begin
+        prelude := `(begin
   (current-error-port (open-output-string))
   (import (scheme base) (srfi 69) (scheme sort) (chibi string)))
 (define (to-str x)
   (cond ((and (list? x) (pair? x)
               (pair? (car x)) (string? (car (car x))))
          (string-append "{" (string-join (map (lambda (kv)
-                                              (string-append "'" (car kv) "': " (to-str (cdr kv))))
+                                              (string-append "\"" (car kv) "\": " (to-str (cdr kv))))
                                             x) ", ") "}"))
         ((hash-table? x)
          (let ((pairs (hash-table->alist x)))
            (string-append "{" (string-join (map (lambda (kv)
-                                                  (string-append "'" (car kv) "': " (to-str (cdr kv))))
+                                                  (string-append "\"" (car kv) "\": " (to-str (cdr kv))))
                                                 pairs) ", ") "}")))
         ((list? x)
          (string-append "[" (string-join (map to-str x) ", ") "]"))
-        ((string? x) (string-append "'" x "'"))
+        ((string? x) (string-append "\"" x "\""))
+        ((boolean? x) (if x "true" "false"))
         (else (number->string x))))
 `
 	return []byte(fmt.Sprintf(";; Generated on %s\n%s\n",
@@ -335,32 +336,43 @@ func convertForStmt(fs *parser.ForStmt) (Node, error) {
 
 func convertStmt(st *parser.Statement) (Node, error) {
 	switch {
-	case st.Expr != nil:
-		call := st.Expr.Expr.Binary.Left.Value.Target.Call
-		if call != nil && call.Func == "print" && len(st.Expr.Expr.Binary.Right) == 0 {
-			args := make([]Node, len(call.Args))
-			for i, a := range call.Args {
-				n, err := convertParserExpr(a)
-				if err != nil {
-					return nil, err
-				}
-				args[i] = n
-			}
-			forms := []Node{Symbol("begin")}
-			for i, a := range args {
-				if _, ok := types.ExprType(call.Args[i], currentEnv).(types.BoolType); ok {
-					a = &List{Elems: []Node{Symbol("if"), a, IntLit(1), IntLit(0)}}
-				}
-				a = &List{Elems: []Node{Symbol("to-str"), a}}
-				forms = append(forms, &List{Elems: []Node{Symbol("display"), a}})
-				if i < len(args)-1 {
-					forms = append(forms, &List{Elems: []Node{Symbol("display"), StringLit(" ")}})
-				}
-			}
-			forms = append(forms, &List{Elems: []Node{Symbol("newline")}})
-			return &List{Elems: forms}, nil
-		}
-		return nil, fmt.Errorf("unsupported expression statement")
+        case st.Expr != nil:
+                call := st.Expr.Expr.Binary.Left.Value.Target.Call
+                if call != nil && len(st.Expr.Expr.Binary.Right) == 0 {
+                        args := make([]Node, len(call.Args))
+                        for i, a := range call.Args {
+                                n, err := convertParserExpr(a)
+                                if err != nil {
+                                        return nil, err
+                                }
+                                args[i] = n
+                        }
+                        switch call.Func {
+                        case "print":
+                                forms := []Node{Symbol("begin")}
+                                for i, a := range args {
+                                        if _, ok := types.ExprType(call.Args[i], currentEnv).(types.BoolType); ok {
+                                                a = &List{Elems: []Node{Symbol("if"), a, IntLit(1), IntLit(0)}}
+                                        }
+                                        forms = append(forms, &List{Elems: []Node{Symbol("display"), a}})
+                                        if i < len(args)-1 {
+                                                forms = append(forms, &List{Elems: []Node{Symbol("display"), StringLit(" ")}})
+                                        }
+                                }
+                                forms = append(forms, &List{Elems: []Node{Symbol("newline")}})
+                                return &List{Elems: forms}, nil
+                        case "json":
+                                if len(args) != 1 {
+                                        return nil, fmt.Errorf("json expects 1 arg")
+                                }
+                                forms := []Node{Symbol("begin"),
+                                        &List{Elems: []Node{Symbol("display"), &List{Elems: []Node{Symbol("to-str"), args[0]}}}},
+                                        &List{Elems: []Node{Symbol("newline")}},
+                                }
+                                return &List{Elems: forms}, nil
+                        }
+                }
+                return nil, fmt.Errorf("unsupported expression statement")
 	case st.Let != nil:
 		name := st.Let.Name
 		var val Node
