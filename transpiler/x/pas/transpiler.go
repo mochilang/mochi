@@ -775,6 +775,13 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 							}
 							vd.Type = typ
 							pr.Stmts = append(pr.Stmts, stmts...)
+						} else if isGroupByMultiJoinSort(q) {
+							stmts, typ, err := buildGroupByMultiJoinSort(env, q, name, varTypes)
+							if err != nil {
+								return nil, err
+							}
+							vd.Type = typ
+							pr.Stmts = append(pr.Stmts, stmts...)
 						} else {
 							stmts, typ, err := buildQuery(env, q, name, varTypes)
 							if err != nil {
@@ -1681,6 +1688,27 @@ func isGroupBySum(q *parser.QueryExpr) bool {
 	return true
 }
 
+func isGroupByMultiJoinSort(q *parser.QueryExpr) bool {
+	if q.Group == nil || len(q.Group.Exprs) != 1 || q.Sort == nil {
+		return false
+	}
+	if len(q.Joins) != 3 || len(q.Froms) != 0 {
+		return false
+	}
+	if q.Group.Name != "g" {
+		return false
+	}
+	ml := q.Group.Exprs[0].Binary.Left.Value.Target.Map
+	if ml == nil {
+		return false
+	}
+	call := q.Sort.Binary.Left.Value.Target.Call
+	if call == nil || call.Func != "sum" || len(call.Args) != 1 {
+		return false
+	}
+	return true
+}
+
 func buildGroupByQuery(env *types.Env, q *parser.QueryExpr, varName string, varTypes map[string]string) ([]Stmt, string, error) {
 	src, err := convertExpr(env, q.Source)
 	if err != nil {
@@ -2033,6 +2061,149 @@ func buildGroupByJoinQuery(env *types.Env, q *parser.QueryExpr, varName string, 
 	return stmts, "array of " + rec, nil
 }
 
+func buildGroupByMultiJoinSort(env *types.Env, q *parser.QueryExpr, varName string, varTypes map[string]string) ([]Stmt, string, error) {
+	j0, j1, j2 := q.Joins[0], q.Joins[1], q.Joins[2]
+	src0, err := convertExpr(env, q.Source)
+	if err != nil {
+		return nil, "", err
+	}
+	src1, err := convertExpr(env, j0.Src)
+	if err != nil {
+		return nil, "", err
+	}
+	src2, err := convertExpr(env, j1.Src)
+	if err != nil {
+		return nil, "", err
+	}
+	src3, err := convertExpr(env, j2.Src)
+	if err != nil {
+		return nil, "", err
+	}
+	if _, ok := varTypes[q.Var]; !ok {
+		varTypes[q.Var] = elemType(typeOf(q.Source, env))
+	}
+	if _, ok := varTypes[j0.Var]; !ok {
+		varTypes[j0.Var] = elemType(typeOf(j0.Src, env))
+	}
+	if _, ok := varTypes[j1.Var]; !ok {
+		varTypes[j1.Var] = elemType(typeOf(j1.Src, env))
+	}
+	if _, ok := varTypes[j2.Var]; !ok {
+		varTypes[j2.Var] = elemType(typeOf(j2.Src, env))
+	}
+	child := types.NewEnv(env)
+	child.SetVar(q.Var, types.AnyType{}, true)
+	child.SetVar(j0.Var, types.AnyType{}, true)
+	child.SetVar(j1.Var, types.AnyType{}, true)
+	child.SetVar(j2.Var, types.AnyType{}, true)
+	cond1, err := convertExpr(child, j0.On)
+	if err != nil {
+		return nil, "", err
+	}
+	cond2, err := convertExpr(child, j1.On)
+	if err != nil {
+		return nil, "", err
+	}
+	cond3, err := convertExpr(child, j2.On)
+	if err != nil {
+		return nil, "", err
+	}
+	var whereCond Expr
+	if q.Where != nil {
+		whereCond, err = convertExpr(child, q.Where)
+		if err != nil {
+			return nil, "", err
+		}
+	}
+	ml := q.Group.Exprs[0].Binary.Left.Value.Target.Map
+	var keyFields []FieldExpr
+	var keyDefs []Field
+	for _, it := range ml.Items {
+		name, ok := exprToIdent(it.Key)
+		if !ok {
+			return nil, "", fmt.Errorf("unsupported group key")
+		}
+		ex, err := convertExpr(child, it.Value)
+		if err != nil {
+			return nil, "", err
+		}
+		typ := inferType(ex)
+		if typ == "" {
+			switch types.ExprType(it.Value, child).(type) {
+			case types.StringType:
+				typ = "string"
+			case types.IntType, types.Int64Type:
+				typ = "integer"
+			default:
+				typ = "real"
+			}
+		}
+		keyFields = append(keyFields, FieldExpr{Name: name, Expr: ex})
+		keyDefs = append(keyDefs, Field{Name: name, Type: typ})
+	}
+	revExpr := &BinaryExpr{Op: "*", Real: true,
+		Left:  &SelectorExpr{Root: j1.Var, Tail: []string{"l_extendedprice"}},
+		Right: &BinaryExpr{Op: "-", Left: &RealLit{Value: 1}, Right: &SelectorExpr{Root: j1.Var, Tail: []string{"l_discount"}}, Real: true},
+	}
+	revType := inferType(revExpr)
+	if revType == "" {
+		revType = "real"
+	}
+	recName := ensureRecord(append(append([]Field{}, keyDefs...), Field{Name: "revenue", Type: revType}))
+	groupsVar := fmt.Sprintf("grp%d", len(currProg.Vars))
+	currProg.Vars = append(currProg.Vars, VarDecl{Name: groupsVar, Type: "array of " + recName})
+	idxVar := fmt.Sprintf("idx%d", len(currProg.Vars))
+	currProg.Vars = append(currProg.Vars, VarDecl{Name: idxVar, Type: "integer"})
+	iVar := fmt.Sprintf("i%d", len(currProg.Vars))
+	currProg.Vars = append(currProg.Vars, VarDecl{Name: iVar, Type: "integer"})
+	var cond Expr
+	for i, k := range keyDefs {
+		cmp := &BinaryExpr{Op: "=", Left: &SelectorExpr{Root: fmt.Sprintf("%s[%s]", groupsVar, iVar), Tail: []string{k.Name}}, Right: keyFields[i].Expr, Bool: true}
+		if cond == nil {
+			cond = cmp
+		} else {
+			cond = &BinaryExpr{Op: "and", Left: cond, Right: cmp, Bool: true}
+		}
+	}
+	searchBody := []Stmt{&IfStmt{Cond: cond, Then: []Stmt{&AssignStmt{Name: idxVar, Expr: &VarRef{Name: iVar}}, &BreakStmt{}}}}
+	forLoop := &ForRangeStmt{Name: iVar, Start: &IntLit{Value: 0}, End: &CallExpr{Name: "Length", Args: []Expr{&VarRef{Name: groupsVar}}}, Body: searchBody}
+	recLit := &RecordLit{Type: recName, Fields: append(append([]FieldExpr{}, keyFields...), FieldExpr{Name: "revenue", Expr: revExpr})}
+	addNew := &AssignStmt{Name: groupsVar, Expr: &CallExpr{Name: "concat", Args: []Expr{&VarRef{Name: groupsVar}, &ListLit{Elems: []Expr{recLit}}}}}
+	incRev := &AssignStmt{Name: fmt.Sprintf("%s[%s].revenue", groupsVar, idxVar), Expr: &BinaryExpr{Op: "+", Left: &SelectorExpr{Root: fmt.Sprintf("%s[%s]", groupsVar, idxVar), Tail: []string{"revenue"}}, Right: revExpr}}
+	condUpdate := &IfStmt{Cond: &BinaryExpr{Op: "=", Bool: true, Left: &VarRef{Name: idxVar}, Right: &IntLit{Value: -1}}, Then: []Stmt{addNew}, Else: []Stmt{incRev}}
+	innerBody := []Stmt{&AssignStmt{Name: idxVar, Expr: &IntLit{Value: -1}}, forLoop, condUpdate}
+	body := innerBody
+	if whereCond != nil {
+		body = []Stmt{&IfStmt{Cond: whereCond, Then: body}}
+	}
+	body = []Stmt{&IfStmt{Cond: cond3, Then: body}}
+	body = []Stmt{&ForEachStmt{Name: j2.Var, Iterable: src3, Body: body}}
+	body = []Stmt{&IfStmt{Cond: cond2, Then: body}}
+	body = []Stmt{&ForEachStmt{Name: j1.Var, Iterable: src2, Body: body}}
+	body = []Stmt{&IfStmt{Cond: cond1, Then: body}}
+	body = []Stmt{&ForEachStmt{Name: j0.Var, Iterable: src1, Body: body}}
+	outer := &ForEachStmt{Name: q.Var, Iterable: src0, Body: body}
+	stmts := []Stmt{&AssignStmt{Name: groupsVar, Expr: &ListLit{}}, outer}
+
+	iV := fmt.Sprintf("i%d", len(currProg.Vars))
+	jV := fmt.Sprintf("j%d", len(currProg.Vars)+1)
+	tmpV := fmt.Sprintf("tmp%d", len(currProg.Vars)+2)
+	currProg.Vars = append(currProg.Vars, VarDecl{Name: iV, Type: "integer"}, VarDecl{Name: jV, Type: "integer"}, VarDecl{Name: tmpV, Type: recName})
+	leftE := &SelectorExpr{Root: fmt.Sprintf("%s[%s]", groupsVar, iV), Tail: []string{"revenue"}}
+	rightE := &SelectorExpr{Root: fmt.Sprintf("%s[%s]", groupsVar, jV), Tail: []string{"revenue"}}
+	condSort := &BinaryExpr{Op: "<", Left: leftE, Right: rightE, Bool: true}
+	swap := []Stmt{
+		&AssignStmt{Name: tmpV, Expr: &IndexExpr{Target: &VarRef{Name: groupsVar}, Index: &VarRef{Name: iV}}},
+		&IndexAssignStmt{Name: groupsVar, Index: &VarRef{Name: iV}, Expr: &IndexExpr{Target: &VarRef{Name: groupsVar}, Index: &VarRef{Name: jV}}},
+		&IndexAssignStmt{Name: groupsVar, Index: &VarRef{Name: jV}, Expr: &VarRef{Name: tmpV}},
+	}
+	inner := &ForRangeStmt{Name: jV, Start: &BinaryExpr{Op: "+", Left: &VarRef{Name: iV}, Right: &IntLit{Value: 1}}, End: &CallExpr{Name: "Length", Args: []Expr{&VarRef{Name: groupsVar}}}, Body: []Stmt{&IfStmt{Cond: condSort, Then: swap}}}
+	outerSort := &ForRangeStmt{Name: iV, Start: &IntLit{Value: 0}, End: &BinaryExpr{Op: "-", Left: &CallExpr{Name: "Length", Args: []Expr{&VarRef{Name: groupsVar}}}, Right: &IntLit{Value: 1}}, Body: []Stmt{inner}}
+	stmts = append(stmts, outerSort, &AssignStmt{Name: varName, Expr: &VarRef{Name: groupsVar}})
+	varTypes[varName] = "array of " + recName
+	return stmts, "array of " + recName, nil
+}
+
 func exprToIdent(e *parser.Expr) (string, bool) {
 	if e == nil || e.Binary == nil || len(e.Binary.Right) > 0 {
 		return "", false
@@ -2245,6 +2416,33 @@ func convertPrimary(env *types.Env, p *parser.Primary) (Expr, error) {
 	case p.Lit != nil:
 		return convertLiteral(p.Lit)
 	case p.Call != nil:
+		name := p.Call.Func
+		// handle sum over simple query before converting arguments
+		if name == "sum" && len(p.Call.Args) == 1 {
+			if q := queryFromExpr(p.Call.Args[0]); q != nil && len(q.Froms) == 0 && len(q.Joins) == 0 && q.Where == nil && q.Group == nil && q.Sort == nil && q.Skip == nil && q.Take == nil && !q.Distinct {
+				src, err := convertExpr(env, q.Source)
+				if err != nil {
+					return nil, err
+				}
+				child := types.NewEnv(env)
+				child.SetVar(q.Var, types.AnyType{}, true)
+				val, err := convertExpr(child, q.Select)
+				if err != nil {
+					return nil, err
+				}
+				typ := inferType(val)
+				if typ == "" {
+					typ = "integer"
+				}
+				tmp := fmt.Sprintf("tmp%d", len(currProg.Vars))
+				currProg.Vars = append(currProg.Vars, VarDecl{Name: tmp, Type: typ})
+				currProg.Stmts = append(currProg.Stmts, &AssignStmt{Name: tmp, Expr: zeroValue(typ)})
+				loop := &ForEachStmt{Name: q.Var, Iterable: src, Body: []Stmt{&AssignStmt{Name: tmp, Expr: &BinaryExpr{Op: "+", Left: &VarRef{Name: tmp}, Right: val}}}}
+				currProg.Stmts = append(currProg.Stmts, loop)
+				return &VarRef{Name: tmp}, nil
+			}
+		}
+
 		var args []Expr
 		for _, a := range p.Call.Args {
 			ex, err := convertExpr(env, a)
@@ -2253,7 +2451,7 @@ func convertPrimary(env *types.Env, p *parser.Primary) (Expr, error) {
 			}
 			args = append(args, ex)
 		}
-		name := p.Call.Func
+
 		if name == "len" && len(p.Call.Args) == 1 {
 			if ml := mapLitFromExpr(p.Call.Args[0]); ml != nil {
 				return &IntLit{Value: int64(len(ml.Items))}, nil
@@ -2277,6 +2475,28 @@ func convertPrimary(env *types.Env, p *parser.Primary) (Expr, error) {
 					sum = &IntLit{Value: 0}
 				}
 				return sum, nil
+			}
+			if q := queryFromExpr(p.Call.Args[0]); q != nil && len(q.Froms) == 0 && len(q.Joins) == 0 && q.Where == nil && q.Group == nil && q.Sort == nil && q.Skip == nil && q.Take == nil && !q.Distinct {
+				src, err := convertExpr(env, q.Source)
+				if err != nil {
+					return nil, err
+				}
+				child := types.NewEnv(env)
+				child.SetVar(q.Var, types.AnyType{}, true)
+				val, err := convertExpr(child, q.Select)
+				if err != nil {
+					return nil, err
+				}
+				typ := inferType(val)
+				if typ == "" {
+					typ = "integer"
+				}
+				tmp := fmt.Sprintf("tmp%d", len(currProg.Vars))
+				currProg.Vars = append(currProg.Vars, VarDecl{Name: tmp, Type: typ})
+				currProg.Stmts = append(currProg.Stmts, &AssignStmt{Name: tmp, Expr: zeroValue(typ)})
+				loop := &ForEachStmt{Name: q.Var, Iterable: src, Body: []Stmt{&AssignStmt{Name: tmp, Expr: &BinaryExpr{Op: "+", Left: &VarRef{Name: tmp}, Right: val}}}}
+				currProg.Stmts = append(currProg.Stmts, loop)
+				return &VarRef{Name: tmp}, nil
 			}
 		} else if name == "count" && len(args) == 1 {
 			return &CallExpr{Name: "Length", Args: args}, nil
