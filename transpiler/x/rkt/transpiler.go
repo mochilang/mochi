@@ -1884,61 +1884,61 @@ func convertCrossJoinQuery(q *parser.QueryExpr, env *types.Env) (Expr, error) {
 }
 
 func convertMultiJoinQuery(q *parser.QueryExpr, env *types.Env) (Expr, error) {
-        if q == nil || len(q.Joins) < 2 || q.Distinct || q.Group != nil || q.Sort != nil || q.Skip != nil || q.Take != nil || len(q.Froms) != 0 {
-                return nil, fmt.Errorf("unsupported query")
-        }
-        for _, j := range q.Joins {
-                if j.Side != nil {
-                        return nil, fmt.Errorf("unsupported query")
-                }
-        }
-        vars := []string{q.Var}
-        srcs := []*parser.Expr{q.Source}
-        for _, j := range q.Joins {
-                vars = append(vars, j.Var)
-                srcs = append(srcs, j.Src)
-        }
-        var exprs []Expr
-        for _, s := range srcs {
-                e, err := convertExpr(s, env)
-                if err != nil {
-                        return nil, err
-                }
-                exprs = append(exprs, e)
-        }
-        child := types.NewEnv(env)
-        child.SetVar(q.Var, types.AnyType{}, true)
-        for _, j := range q.Joins {
-                child.SetVar(j.Var, types.AnyType{}, true)
-        }
-        sel, err := convertExpr(q.Select, child)
-        if err != nil {
-                return nil, err
-        }
-        var cond Expr
-        for _, j := range q.Joins {
-                c, err := convertExpr(j.On, child)
-                if err != nil {
-                        return nil, err
-                }
-                if cond == nil {
-                        cond = c
-                } else {
-                        cond = &BinaryExpr{Op: "and", Left: cond, Right: c}
-                }
-        }
-        if q.Where != nil {
-                w, err := convertExpr(q.Where, child)
-                if err != nil {
-                        return nil, err
-                }
-                if cond == nil {
-                        cond = w
-                } else {
-                        cond = &BinaryExpr{Op: "and", Left: cond, Right: w}
-                }
-        }
-        return &CrossJoinExpr{Vars: vars, Sources: exprs, Where: cond, Select: sel}, nil
+	if q == nil || len(q.Joins) < 2 || q.Distinct || q.Group != nil || q.Sort != nil || q.Skip != nil || q.Take != nil || len(q.Froms) != 0 {
+		return nil, fmt.Errorf("unsupported query")
+	}
+	for _, j := range q.Joins {
+		if j.Side != nil {
+			return nil, fmt.Errorf("unsupported query")
+		}
+	}
+	vars := []string{q.Var}
+	srcs := []*parser.Expr{q.Source}
+	for _, j := range q.Joins {
+		vars = append(vars, j.Var)
+		srcs = append(srcs, j.Src)
+	}
+	var exprs []Expr
+	for _, s := range srcs {
+		e, err := convertExpr(s, env)
+		if err != nil {
+			return nil, err
+		}
+		exprs = append(exprs, e)
+	}
+	child := types.NewEnv(env)
+	child.SetVar(q.Var, types.AnyType{}, true)
+	for _, j := range q.Joins {
+		child.SetVar(j.Var, types.AnyType{}, true)
+	}
+	sel, err := convertExpr(q.Select, child)
+	if err != nil {
+		return nil, err
+	}
+	var cond Expr
+	for _, j := range q.Joins {
+		c, err := convertExpr(j.On, child)
+		if err != nil {
+			return nil, err
+		}
+		if cond == nil {
+			cond = c
+		} else {
+			cond = &BinaryExpr{Op: "and", Left: cond, Right: c}
+		}
+	}
+	if q.Where != nil {
+		w, err := convertExpr(q.Where, child)
+		if err != nil {
+			return nil, err
+		}
+		if cond == nil {
+			cond = w
+		} else {
+			cond = &BinaryExpr{Op: "and", Left: cond, Right: w}
+		}
+	}
+	return &CrossJoinExpr{Vars: vars, Sources: exprs, Where: cond, Select: sel}, nil
 }
 
 func (o *OuterJoinExpr) emit(w io.Writer) {
@@ -2035,6 +2035,9 @@ type GroupByExpr struct {
 	Where  Expr
 	Select Expr
 	Having Expr
+	Sort   Expr
+	Skip   Expr
+	Take   Expr
 }
 
 type GroupJoinExpr struct {
@@ -2048,6 +2051,9 @@ type GroupJoinExpr struct {
 	Name     string
 	Select   Expr
 	Having   Expr
+	Sort     Expr
+	Skip     Expr
+	Take     Expr
 }
 
 func (g *GroupJoinExpr) emit(w io.Writer) {
@@ -2077,15 +2083,53 @@ func (g *GroupJoinExpr) emit(w io.Writer) {
 	if g.Having != nil {
 		io.WriteString(w, "    (when ")
 		g.Having.emit(w)
-		io.WriteString(w, "\n      (set! _res (append _res (list ")
+		io.WriteString(w, "\n      (let ([val ")
 		g.Select.emit(w)
-		io.WriteString(w, ")))\n    )\n")
+		io.WriteString(w, "]")
+		if g.Sort != nil {
+			io.WriteString(w, " [key ")
+			g.Sort.emit(w)
+			io.WriteString(w, "]")
+		}
+		io.WriteString(w, ")\n        (set! _res (append _res (list ")
+		if g.Sort != nil {
+			io.WriteString(w, "(cons key val)")
+		} else {
+			io.WriteString(w, "val")
+		}
+		io.WriteString(w, "))))\n    )\n")
 	} else {
-		io.WriteString(w, "    (set! _res (append _res (list ")
+		io.WriteString(w, "    (let ([val ")
 		g.Select.emit(w)
-		io.WriteString(w, ")))\n")
+		io.WriteString(w, "]")
+		if g.Sort != nil {
+			io.WriteString(w, " [key ")
+			g.Sort.emit(w)
+			io.WriteString(w, "]")
+		}
+		io.WriteString(w, ")\n      (set! _res (append _res (list ")
+		if g.Sort != nil {
+			io.WriteString(w, "(cons key val)")
+		} else {
+			io.WriteString(w, "val")
+		}
+		io.WriteString(w, "))))\n")
 	}
-	io.WriteString(w, "  )\n  _res)")
+	io.WriteString(w, "  )\n")
+	if g.Sort != nil {
+		io.WriteString(w, "  (set! _res (sort _res < #:key car))\n  (set! _res (map cdr _res))\n")
+	}
+	if g.Skip != nil {
+		io.WriteString(w, "  (set! _res (drop _res ")
+		g.Skip.emit(w)
+		io.WriteString(w, "))\n")
+	}
+	if g.Take != nil {
+		io.WriteString(w, "  (set! _res (take _res ")
+		g.Take.emit(w)
+		io.WriteString(w, "))\n")
+	}
+	io.WriteString(w, "  _res)")
 }
 
 func (g *GroupByExpr) emit(w io.Writer) {
@@ -2116,19 +2160,57 @@ func (g *GroupByExpr) emit(w io.Writer) {
 	if g.Having != nil {
 		io.WriteString(w, "    (when ")
 		g.Having.emit(w)
-		io.WriteString(w, "\n      (set! _res (append _res (list ")
+		io.WriteString(w, "\n      (let ([val ")
 		g.Select.emit(w)
-		io.WriteString(w, ")))\n    )\n")
+		io.WriteString(w, "])")
+		if g.Sort != nil {
+			io.WriteString(w, " [key ")
+			g.Sort.emit(w)
+			io.WriteString(w, "]")
+		}
+		io.WriteString(w, ")\n        (set! _res (append _res (list ")
+		if g.Sort != nil {
+			io.WriteString(w, "(cons key val)")
+		} else {
+			io.WriteString(w, "val")
+		}
+		io.WriteString(w, "))))\n    )\n")
 	} else {
-		io.WriteString(w, "    (set! _res (append _res (list ")
+		io.WriteString(w, "    (let ([val ")
 		g.Select.emit(w)
-		io.WriteString(w, ")))\n")
+		io.WriteString(w, "]")
+		if g.Sort != nil {
+			io.WriteString(w, " [key ")
+			g.Sort.emit(w)
+			io.WriteString(w, "]")
+		}
+		io.WriteString(w, ")\n      (set! _res (append _res (list ")
+		if g.Sort != nil {
+			io.WriteString(w, "(cons key val)")
+		} else {
+			io.WriteString(w, "val")
+		}
+		io.WriteString(w, "))))\n")
 	}
-	io.WriteString(w, "  )\n  _res)")
+	io.WriteString(w, "  )\n")
+	if g.Sort != nil {
+		io.WriteString(w, "  (set! _res (sort _res < #:key car))\n  (set! _res (map cdr _res))\n")
+	}
+	if g.Skip != nil {
+		io.WriteString(w, "  (set! _res (drop _res ")
+		g.Skip.emit(w)
+		io.WriteString(w, "))\n")
+	}
+	if g.Take != nil {
+		io.WriteString(w, "  (set! _res (take _res ")
+		g.Take.emit(w)
+		io.WriteString(w, "))\n")
+	}
+	io.WriteString(w, "  _res)")
 }
 
 func convertGroupQuery(q *parser.QueryExpr, env *types.Env) (Expr, error) {
-	if q.Group == nil || len(q.Joins) != 0 || len(q.Froms) != 0 || q.Distinct || q.Sort != nil || q.Skip != nil || q.Take != nil {
+	if q.Group == nil || len(q.Joins) != 0 || len(q.Froms) != 0 || q.Distinct {
 		return nil, fmt.Errorf("unsupported query")
 	}
 	child := types.NewEnv(env)
@@ -2162,11 +2244,30 @@ func convertGroupQuery(q *parser.QueryExpr, env *types.Env) (Expr, error) {
 			return nil, err
 		}
 	}
-	return &GroupByExpr{Var: q.Var, Source: src, Key: key, Name: q.Group.Name, Where: where, Select: sel, Having: having}, nil
+	var sortExpr, skipExpr, takeExpr Expr
+	if q.Sort != nil {
+		sortExpr, err = convertExpr(q.Sort, genv)
+		if err != nil {
+			return nil, err
+		}
+	}
+	if q.Skip != nil {
+		skipExpr, err = convertExpr(q.Skip, genv)
+		if err != nil {
+			return nil, err
+		}
+	}
+	if q.Take != nil {
+		takeExpr, err = convertExpr(q.Take, genv)
+		if err != nil {
+			return nil, err
+		}
+	}
+	return &GroupByExpr{Var: q.Var, Source: src, Key: key, Name: q.Group.Name, Where: where, Select: sel, Having: having, Sort: sortExpr, Skip: skipExpr, Take: takeExpr}, nil
 }
 
 func convertGroupJoinQuery(q *parser.QueryExpr, env *types.Env) (Expr, error) {
-	if q.Group == nil || len(q.Group.Exprs) != 1 || len(q.Joins) != 1 || len(q.Froms) != 0 || q.Distinct || q.Sort != nil || q.Skip != nil || q.Take != nil {
+	if q.Group == nil || len(q.Group.Exprs) != 1 || len(q.Joins) != 1 || len(q.Froms) != 0 || q.Distinct {
 		return nil, fmt.Errorf("unsupported query")
 	}
 	j := q.Joins[0]
@@ -2211,12 +2312,31 @@ func convertGroupJoinQuery(q *parser.QueryExpr, env *types.Env) (Expr, error) {
 			return nil, err
 		}
 	}
-	return &GroupJoinExpr{LeftVar: q.Var, LeftSrc: leftSrc, RightVar: j.Var, RightSrc: rightSrc, Cond: cond, Key: key, Row: row, Name: q.Group.Name, Select: sel, Having: having}, nil
+	var sortExpr, skipExpr, takeExpr Expr
+	if q.Sort != nil {
+		sortExpr, err = convertExpr(q.Sort, genv)
+		if err != nil {
+			return nil, err
+		}
+	}
+	if q.Skip != nil {
+		skipExpr, err = convertExpr(q.Skip, genv)
+		if err != nil {
+			return nil, err
+		}
+	}
+	if q.Take != nil {
+		takeExpr, err = convertExpr(q.Take, genv)
+		if err != nil {
+			return nil, err
+		}
+	}
+	return &GroupJoinExpr{LeftVar: q.Var, LeftSrc: leftSrc, RightVar: j.Var, RightSrc: rightSrc, Cond: cond, Key: key, Row: row, Name: q.Group.Name, Select: sel, Having: having, Sort: sortExpr, Skip: skipExpr, Take: takeExpr}, nil
 }
 
 func convertQueryExpr(q *parser.QueryExpr, env *types.Env) (Expr, error) {
 	if q.Group != nil {
-		if len(q.Joins) == 0 && len(q.Froms) == 0 && q.Skip == nil && q.Take == nil {
+		if len(q.Joins) == 0 && len(q.Froms) == 0 {
 			return convertGroupQuery(q, env)
 		}
 		return convertGroupJoinQuery(q, env)
@@ -2241,20 +2361,20 @@ func convertQueryExpr(q *parser.QueryExpr, env *types.Env) (Expr, error) {
 			return convertInnerJoinQuery(q, env)
 		}
 	}
-        if len(q.Joins) >= 2 {
-                allInner := true
-                for _, j := range q.Joins {
-                        if j.Side != nil {
-                                allInner = false
-                                break
-                        }
-                }
-                if allInner {
-                        return convertMultiJoinQuery(q, env)
-                }
-                if len(q.Joins) == 2 && q.Joins[0].Side == nil && q.Joins[1].Side != nil && *q.Joins[1].Side == "left" {
-                        return convertLeftJoinMultiQuery(q, env)
-                }
-        }
-        return nil, fmt.Errorf("unsupported query")
+	if len(q.Joins) >= 2 {
+		allInner := true
+		for _, j := range q.Joins {
+			if j.Side != nil {
+				allInner = false
+				break
+			}
+		}
+		if allInner {
+			return convertMultiJoinQuery(q, env)
+		}
+		if len(q.Joins) == 2 && q.Joins[0].Side == nil && q.Joins[1].Side != nil && *q.Joins[1].Side == "left" {
+			return convertLeftJoinMultiQuery(q, env)
+		}
+	}
+	return nil, fmt.Errorf("unsupported query")
 }
