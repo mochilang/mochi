@@ -516,9 +516,6 @@ func (b *BinaryExpr) emit(w io.Writer) error {
 		_, err := io.WriteString(w, ")"+cmp)
 		return err
 	}
-	if _, err := io.WriteString(w, "("); err != nil {
-		return err
-	}
 	if err := b.Left.emit(w); err != nil {
 		return err
 	}
@@ -529,11 +526,7 @@ func (b *BinaryExpr) emit(w io.Writer) error {
 	if _, err := io.WriteString(w, " "+op+" "); err != nil {
 		return err
 	}
-	if err := b.Right.emit(w); err != nil {
-		return err
-	}
-	_, err := io.WriteString(w, ")")
-	return err
+	return b.Right.emit(w)
 }
 
 // CondExpr represents a conditional expression like `cond ? a : b`.
