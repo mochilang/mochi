@@ -38,6 +38,9 @@ var needDataMap bool
 // needGroupBy reports whether group by helpers are required.
 var needGroupBy bool
 
+// needJSON reports whether JSON helpers are required.
+var needJSON bool
+
 // groupVars tracks variables that represent groups.
 var groupVars map[string]bool
 
@@ -319,6 +322,10 @@ type PrintStmt struct {
 	Expr   Expr
 	String bool
 }
+
+type JSONStmt struct {
+	Expr Expr
+}
 type LetStmt struct {
 	Name string
 	Expr Expr
@@ -378,6 +385,12 @@ func (p *PrintStmt) emit(w io.Writer) {
 
 	io.WriteString(w, "print (")
 	p.Expr.emit(w)
+	io.WriteString(w, ")")
+}
+
+func (j *JSONStmt) emit(w io.Writer) {
+	io.WriteString(w, "BSL.putStrLn (Aeson.encode ")
+	j.Expr.emit(w)
 	io.WriteString(w, ")")
 }
 
@@ -1119,7 +1132,7 @@ func inferVarFromSource(name string, src Expr) {
 	}
 }
 
-func header(withList bool, withMap bool) string {
+func header(withList, withMap, withJSON bool) string {
 	out, err := exec.Command("git", "log", "-1", "--date=iso-strict", "--format=%cd").Output()
 	ts := time.Now()
 	if err == nil {
@@ -1146,13 +1159,17 @@ func header(withList bool, withMap bool) string {
 	if withMap {
 		h += "import qualified Data.Map as Map\n"
 	}
+	if withJSON {
+		h += "import qualified Data.Aeson as Aeson\n"
+		h += "import qualified Data.ByteString.Lazy.Char8 as BSL\n"
+	}
 	return h
 }
 
 // Emit generates formatted Haskell code.
 func Emit(p *Program) []byte {
 	var buf bytes.Buffer
-	buf.WriteString(header(needDataList, needDataMap))
+	buf.WriteString(header(needDataList, needDataMap, needJSON))
 	if needGroupBy {
 		buf.WriteString(groupPrelude())
 		buf.WriteByte('\n')
@@ -1199,6 +1216,7 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	needDataList = false
 	needDataMap = false
 	needGroupBy = false
+	needJSON = false
 	groupVars = map[string]bool{}
 	groupKeyStruct = map[string]string{}
 	groupItemType = map[string]string{}
@@ -1283,6 +1301,15 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 				}
 				continue
 			}
+			if call != nil && call.Func == "json" && len(call.Args) == 1 {
+				arg, err := convertExpr(call.Args[0])
+				if err != nil {
+					return nil, err
+				}
+				needJSON = true
+				h.Stmts = append(h.Stmts, &JSONStmt{Expr: arg})
+				continue
+			}
 			return nil, fmt.Errorf("unsupported expression")
 		default:
 			if st.Test == nil && st.Import == nil && st.Type == nil {
@@ -1322,6 +1349,8 @@ func stmtNode(s Stmt) *ast.Node {
 	switch st := s.(type) {
 	case *PrintStmt:
 		return &ast.Node{Kind: "print", Children: []*ast.Node{exprNode(st.Expr)}}
+	case *JSONStmt:
+		return &ast.Node{Kind: "json", Children: []*ast.Node{exprNode(st.Expr)}}
 	case *LetStmt:
 		return &ast.Node{Kind: "let", Value: st.Name, Children: []*ast.Node{exprNode(st.Expr)}}
 	case *AssignStmt:
@@ -1754,7 +1783,15 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 			groupRec := &RecordLit{Name: "MGroup", Names: []string{"key", "items"}, Fields: []Expr{&NameRef{Name: "k"}, items}}
 			groups := &ComprExpr{Vars: []string{"k"}, Sources: []Expr{keys}, Cond: nil, Body: groupRec}
 			varTypes[p.Query.Group.Name] = "list"
-			var result Expr = &ComprExpr{Vars: []string{p.Query.Group.Name}, Sources: []Expr{groups}, Cond: nil, Body: body}
+			var having Expr
+			if p.Query.Group.Having != nil {
+				var err error
+				having, err = convertExpr(p.Query.Group.Having)
+				if err != nil {
+					return nil, err
+				}
+			}
+			var result Expr = &ComprExpr{Vars: []string{p.Query.Group.Name}, Sources: []Expr{groups}, Cond: having, Body: body}
 			if p.Query.Sort != nil {
 				sortExpr, err := convertExpr(p.Query.Sort)
 				if err != nil {
