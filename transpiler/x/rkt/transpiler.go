@@ -1883,6 +1883,64 @@ func convertCrossJoinQuery(q *parser.QueryExpr, env *types.Env) (Expr, error) {
 	return &CrossJoinExpr{Vars: vars, Sources: exprs, Where: cond, Select: sel}, nil
 }
 
+func convertMultiJoinQuery(q *parser.QueryExpr, env *types.Env) (Expr, error) {
+        if q == nil || len(q.Joins) < 2 || q.Distinct || q.Group != nil || q.Sort != nil || q.Skip != nil || q.Take != nil || len(q.Froms) != 0 {
+                return nil, fmt.Errorf("unsupported query")
+        }
+        for _, j := range q.Joins {
+                if j.Side != nil {
+                        return nil, fmt.Errorf("unsupported query")
+                }
+        }
+        vars := []string{q.Var}
+        srcs := []*parser.Expr{q.Source}
+        for _, j := range q.Joins {
+                vars = append(vars, j.Var)
+                srcs = append(srcs, j.Src)
+        }
+        var exprs []Expr
+        for _, s := range srcs {
+                e, err := convertExpr(s, env)
+                if err != nil {
+                        return nil, err
+                }
+                exprs = append(exprs, e)
+        }
+        child := types.NewEnv(env)
+        child.SetVar(q.Var, types.AnyType{}, true)
+        for _, j := range q.Joins {
+                child.SetVar(j.Var, types.AnyType{}, true)
+        }
+        sel, err := convertExpr(q.Select, child)
+        if err != nil {
+                return nil, err
+        }
+        var cond Expr
+        for _, j := range q.Joins {
+                c, err := convertExpr(j.On, child)
+                if err != nil {
+                        return nil, err
+                }
+                if cond == nil {
+                        cond = c
+                } else {
+                        cond = &BinaryExpr{Op: "and", Left: cond, Right: c}
+                }
+        }
+        if q.Where != nil {
+                w, err := convertExpr(q.Where, child)
+                if err != nil {
+                        return nil, err
+                }
+                if cond == nil {
+                        cond = w
+                } else {
+                        cond = &BinaryExpr{Op: "and", Left: cond, Right: w}
+                }
+        }
+        return &CrossJoinExpr{Vars: vars, Sources: exprs, Where: cond, Select: sel}, nil
+}
+
 func (o *OuterJoinExpr) emit(w io.Writer) {
 	io.WriteString(w, "(let ([_res '()])\n")
 	io.WriteString(w, "  (for ([")
@@ -2183,10 +2241,20 @@ func convertQueryExpr(q *parser.QueryExpr, env *types.Env) (Expr, error) {
 			return convertInnerJoinQuery(q, env)
 		}
 	}
-	if len(q.Joins) == 2 {
-		if q.Joins[0].Side == nil && q.Joins[1].Side != nil && *q.Joins[1].Side == "left" {
-			return convertLeftJoinMultiQuery(q, env)
-		}
-	}
-	return nil, fmt.Errorf("unsupported query")
+        if len(q.Joins) >= 2 {
+                allInner := true
+                for _, j := range q.Joins {
+                        if j.Side != nil {
+                                allInner = false
+                                break
+                        }
+                }
+                if allInner {
+                        return convertMultiJoinQuery(q, env)
+                }
+                if len(q.Joins) == 2 && q.Joins[0].Side == nil && q.Joins[1].Side != nil && *q.Joins[1].Side == "left" {
+                        return convertLeftJoinMultiQuery(q, env)
+                }
+        }
+        return nil, fmt.Errorf("unsupported query")
 }

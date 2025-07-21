@@ -1,3 +1,13 @@
+## Progress (2025-07-21 19:25 +0700)
+- Commit f6eb8eafc: rkt: support multi joins
+- Generated Racket for 75/100 programs
+- Updated README checklist
+
+## Progress (2025-07-21 19:10 +0700)
+- Commit 88ad9915a: docs: refresh generated pas files
+- Generated Racket for 75/100 programs
+- Updated README checklist
+
 ## Progress (2025-07-21 18:06 +0700)
 - Commit 9f2177b9e: zig transpiler: regenerate golden tests
 - Generated Racket for 74/100 programs
