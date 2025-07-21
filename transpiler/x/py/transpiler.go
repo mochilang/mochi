@@ -1346,7 +1346,7 @@ func inferPyType(e Expr, env *types.Env) types.Type {
 		lt := inferPyType(ex.Left, env)
 		rt := inferPyType(ex.Right, env)
 		switch ex.Op {
-		case "+", "-", "*":
+		case "+", "-", "*", "%":
 			if isNumeric(lt) && isNumeric(rt) {
 				if lt.String() == (types.FloatType{}).String() || rt.String() == (types.FloatType{}).String() {
 					return types.FloatType{}
@@ -1359,6 +1359,8 @@ func inferPyType(e Expr, env *types.Env) types.Type {
 				return types.FloatType{}
 			}
 			return types.AnyType{}
+		case "==", "!=", "<", "<=", ">", ">=", "&&", "||":
+			return types.BoolType{}
 		default:
 			return types.AnyType{}
 		}
@@ -1574,7 +1576,7 @@ func inferTypeFromExpr(e *parser.Expr) types.Type {
 			rt := inferTypeFromExpr(exprFromPostfix(r.Right))
 			switch r.Op {
 			case "&&", "||", "==", "!=", "<", "<=", ">", ">=":
-				lt = types.IntType{}
+				lt = types.BoolType{}
 			case "+", "-", "*", "/", "%":
 				if lt.String() == (types.FloatType{}).String() || rt.String() == (types.FloatType{}).String() {
 					lt = types.FloatType{}
