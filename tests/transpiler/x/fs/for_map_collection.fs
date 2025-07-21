@@ -1,9 +1,5 @@
-// Generated 2025-07-21 18:37 +0700
+// Generated 2025-07-22 06:19 +0700
 
-type Anon1 = {
-    mutable a: int
-    mutable b: int
-}
-let mutable m: Anon1 = { a = 1; b = 2 }
+let mutable m = Map.ofList [("a", 1); ("b", 2)]
 for k in m do
 printfn "%s" (string k)
