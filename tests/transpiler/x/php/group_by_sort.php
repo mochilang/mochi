@@ -29,5 +29,5 @@ $grouped = (function() use ($items) {
   $result = array_map(fn($r) => $r[1], $result);
   return $result;
 })();
-echo rtrim(implode(" ", array_map("json_encode", $grouped))), PHP_EOL;
+echo rtrim(str_replace(":", ": ", str_replace(",", ", ", json_encode($grouped, 320)))), PHP_EOL;
 ?>

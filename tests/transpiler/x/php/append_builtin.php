@@ -1,4 +1,4 @@
 <?php
 $a = [1, 2];
-echo rtrim(implode(" ", array_map("json_encode", array_merge($a, [3])))), PHP_EOL;
+echo rtrim(str_replace(":", ": ", str_replace(",", ", ", json_encode(array_merge($a, [3]), 320)))), PHP_EOL;
 ?>

@@ -1230,10 +1230,11 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 		if name == "print" {
 			name = "echo"
 			for i := range args {
-				if isListExpr(args[i]) {
-					mapped := &CallExpr{Func: "array_map", Args: []Expr{&StringLit{Value: "json_encode"}, args[i]}}
-					join := &CallExpr{Func: "implode", Args: []Expr{&StringLit{Value: " "}, mapped}}
-					args[i] = join
+				if isListExpr(args[i]) || isMapExpr(args[i]) || isGroupArg(args[i]) {
+					enc := &CallExpr{Func: "json_encode", Args: []Expr{args[i], &IntLit{Value: 320}}}
+					spaced := &CallExpr{Func: "str_replace", Args: []Expr{&StringLit{Value: ","}, &StringLit{Value: ", "}, enc}}
+					spaced = &CallExpr{Func: "str_replace", Args: []Expr{&StringLit{Value: ":"}, &StringLit{Value: ": "}, spaced}}
+					args[i] = spaced
 				} else {
 					arg := maybeBoolString(args[i])
 					if !isStringExpr(arg) {
@@ -2117,12 +2118,7 @@ func isBoolExpr(e Expr) bool {
 
 func maybeBoolString(e Expr) Expr {
 	if isBoolExpr(e) {
-		switch e.(type) {
-		case *BoolLit, *Var, *IndexExpr:
-			return &CondExpr{Cond: e, Then: &StringLit{Value: "true"}, Else: &StringLit{Value: "false"}}
-		default:
-			return &CondExpr{Cond: e, Then: &IntLit{Value: 1}, Else: &IntLit{Value: 0}}
-		}
+		return &CondExpr{Cond: e, Then: &StringLit{Value: "true"}, Else: &StringLit{Value: "false"}}
 	}
 	return e
 }

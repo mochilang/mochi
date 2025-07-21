@@ -28,5 +28,5 @@ foreach ($tmp as $r) {
   $result[] = $r;
 }
 
-echo rtrim(implode(" ", array_map("json_encode", $result))), PHP_EOL;
+echo rtrim(str_replace(":", ": ", str_replace(",", ", ", json_encode($result, 320)))), PHP_EOL;
 ?>
