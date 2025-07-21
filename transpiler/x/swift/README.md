@@ -2,8 +2,8 @@
 
 Generated Swift code for programs in `tests/vm/valid`. Each program has a `.swift` file produced by the transpiler and a `.out` file with its runtime output. Compilation or execution errors are captured in `.error` files.
 
-Transpiled programs: 89/100
-Last updated: 2025-07-21 20:48 +0700
+Transpiled programs: 90/100
+Last updated: 2025-07-21 22:29 +0700
 
 Checklist:
 - [x] append_builtin
@@ -37,7 +37,7 @@ Checklist:
 - [x] group_by_multi_join
 - [x] group_by_multi_join_sort
 - [x] group_by_sort
-- [x] group_items_iteration
+- [ ] group_items_iteration
 - [x] if_else
 - [x] if_then_else
 - [x] if_then_else_nested
@@ -84,7 +84,7 @@ Checklist:
 - [ ] save_jsonl_stdout
 - [x] short_circuit
 - [x] slice
-- [x] sort_stable
+- [ ] sort_stable
 - [x] str_builtin
 - [x] string_compare
 - [x] string_concat
@@ -95,14 +95,14 @@ Checklist:
 - [x] substring_builtin
 - [x] sum_builtin
 - [x] tail_recursion
-- [ ] test_block
-- [ ] tree_sum
+- [x] test_block
+- [x] tree_sum
 - [x] two-sum
 - [x] typed_let
 - [x] typed_var
 - [x] unary_neg
 - [ ] update_stmt
-- [ ] user_type_literal
+- [x] user_type_literal
 - [x] values_builtin
 - [x] var_assignment
 - [x] while_loop

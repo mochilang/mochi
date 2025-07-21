@@ -212,6 +212,24 @@ func (ia *IndexAssignStmt) emit(w io.Writer) {
 	fmt.Fprint(w, "\n")
 }
 
+// ExpectStmt represents an expectation check within a test block.
+type ExpectStmt struct{ Cond Expr }
+
+func (e *ExpectStmt) emit(w io.Writer) {
+	fmt.Fprint(w, "assert(")
+	e.Cond.emit(w)
+	fmt.Fprint(w, ")\n")
+}
+
+// BlockStmt groups a list of statements without additional syntax.
+type BlockStmt struct{ Stmts []Stmt }
+
+func (b *BlockStmt) emit(w io.Writer) {
+	for _, s := range b.Stmts {
+		s.emit(w)
+	}
+}
+
 type LitExpr struct {
 	Value    string
 	IsString bool
@@ -1009,13 +1027,28 @@ func convertStmt(env *types.Env, st *parser.Statement) (Stmt, error) {
 			typ = toSwiftType(st.Var.Type)
 		}
 		return &VarDecl{Name: st.Var.Name, Const: false, Type: typ, Expr: ex}, nil
+	case st.Type != nil:
+		// type declarations do not emit Swift code
+		return &BlockStmt{}, nil
+	case st.Test != nil:
+		body, err := convertStmts(env, st.Test.Body)
+		if err != nil {
+			return nil, err
+		}
+		return &BlockStmt{Stmts: body}, nil
+	case st.Expect != nil:
+		cond, err := convertExpr(env, st.Expect.Value)
+		if err != nil {
+			return nil, err
+		}
+		return &ExpectStmt{Cond: cond}, nil
 	case st.Assign != nil && len(st.Assign.Index) == 0 && len(st.Assign.Field) == 0:
 		ex, err := convertExpr(env, st.Assign.Value)
 		if err != nil {
 			return nil, err
 		}
 		return &AssignStmt{Name: st.Assign.Name, Expr: ex}, nil
-	case st.Assign != nil && len(st.Assign.Index) > 0 && len(st.Assign.Field) == 0:
+	case st.Assign != nil && (len(st.Assign.Index) > 0 || len(st.Assign.Field) > 0):
 		lhs := Expr(&NameExpr{Name: st.Assign.Name})
 		var cur types.Type
 		if env != nil {
@@ -1037,6 +1070,9 @@ func convertStmt(env *types.Env, st *parser.Statement) (Stmt, error) {
 				cur = lt.Elem
 			}
 			lhs = &IndexExpr{Base: lhs, Index: ix}
+		}
+		for _, f := range st.Assign.Field {
+			lhs = &IndexExpr{Base: lhs, Index: &LitExpr{Value: f.Name, IsString: true}, Force: true}
 		}
 		val, err := convertExpr(env, st.Assign.Value)
 		if err != nil {
@@ -1996,6 +2032,8 @@ func convertPrimary(env *types.Env, pr *parser.Primary) (Expr, error) {
 			vals = append(vals, v)
 		}
 		return &MapLit{Keys: keys, Values: vals}, nil
+	case pr.Struct != nil:
+		return convertStructLiteral(env, pr.Struct)
 	case pr.Call != nil:
 		if pr.Call.Func == "len" && len(pr.Call.Args) == 1 {
 			if n, ok := evalLenConst(pr.Call.Args[0]); ok {
@@ -2041,6 +2079,20 @@ func convertPrimary(env *types.Env, pr *parser.Primary) (Expr, error) {
 		return &NameExpr{Name: pr.Selector.Root}, nil
 	}
 	return nil, fmt.Errorf("unsupported primary")
+}
+
+func convertStructLiteral(env *types.Env, sl *parser.StructLiteral) (Expr, error) {
+	var keys []Expr
+	var vals []Expr
+	for _, f := range sl.Fields {
+		v, err := convertExpr(env, f.Value)
+		if err != nil {
+			return nil, err
+		}
+		keys = append(keys, &LitExpr{Value: f.Name, IsString: true})
+		vals = append(vals, v)
+	}
+	return &MapLit{Keys: keys, Values: vals}, nil
 }
 
 func evalLenConst(e *parser.Expr) (int, bool) {
