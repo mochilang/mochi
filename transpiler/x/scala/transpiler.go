@@ -571,6 +571,20 @@ func (q *QueryExpr) emit(w io.Writer) {
 	if et == "" {
 		et = "Any"
 	}
+	if q.Sort == nil && !q.Distinct && q.Skip == nil && q.Take == nil && len(q.Froms) == 0 {
+		fmt.Fprintf(w, "(for (%s <- ", q.Var)
+		q.Src.emit(w)
+		fmt.Fprint(w, ")")
+		if q.Where != nil {
+			fmt.Fprint(w, " if (")
+			q.Where.emit(w)
+			fmt.Fprint(w, ")")
+		}
+		fmt.Fprint(w, " yield ")
+		q.Select.emit(w)
+		fmt.Fprint(w, ")")
+		return
+	}
 	if q.Sort != nil {
 		st := q.SortType
 		if st == "" {
