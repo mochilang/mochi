@@ -1,0 +1,6 @@
+exit status 2
+File "/workspace/mochi/tests/transpiler/x/ocaml/group_by_sort.ml", line 4, characters 38-39:
+4 |   let items = [[("cat", "a"); ("val", 3)]; [("cat", "a"); ("val", 1)]; [("cat", "b"); ("val", 5)]; [("cat", "b"); ("val", 2)]] in
+                                          ^
+Error: This expression has type int but an expression was expected of type
+         string

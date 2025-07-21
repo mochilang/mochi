@@ -1,1 +1,5 @@
-compile error
+exit status 2
+File "/workspace/mochi/tests/transpiler/x/ocaml/group_items_iteration.ml", line 29, characters 10-12:
+29 |   __tmp0) in
+               ^^
+Error: Syntax error

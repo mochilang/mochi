@@ -1,0 +1,6 @@
+exit status 2
+File "/workspace/mochi/tests/transpiler/x/ocaml/sort_stable.ml", line 4, characters 32-35:
+4 |   let items = [[("n", 1); ("v", "a")]; [("n", 1); ("v", "b")]; [("n", 2); ("v", "c")]] in
+                                    ^^^
+Error: This expression has type string but an expression was expected of type
+         int

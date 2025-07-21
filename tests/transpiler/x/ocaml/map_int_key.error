@@ -1,0 +1,9 @@
+exit status 2
+File "/workspace/mochi/tests/transpiler/x/ocaml/map_int_key.ml", line 5, characters 98-99:
+5 |   print_endline (String.concat " " (List.filter (fun s -> s <> "") [string_of_int (List.assoc 1 m))]));
+                                                                                                      ^
+Error: Syntax error: ']' expected
+File "/workspace/mochi/tests/transpiler/x/ocaml/map_int_key.ml", line 5, characters 67-68:
+5 |   print_endline (String.concat " " (List.filter (fun s -> s <> "") [string_of_int (List.assoc 1 m))]));
+                                                                       ^
+  This '[' might be unmatched

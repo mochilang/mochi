@@ -1,1 +1,9 @@
-runtime error
+exit status 2
+File "/workspace/mochi/tests/transpiler/x/ocaml/dataset_sort_take_limit.ml", line 15, characters 144-145:
+15 |   print_endline (String.concat " " (List.filter (fun s -> s <> "") [(List.assoc "name" item); "costs $"; string_of_int (List.assoc "price" item))]));
+                                                                                                                                                     ^
+Error: Syntax error: ']' expected
+File "/workspace/mochi/tests/transpiler/x/ocaml/dataset_sort_take_limit.ml", line 15, characters 67-68:
+15 |   print_endline (String.concat " " (List.filter (fun s -> s <> "") [(List.assoc "name" item); "costs $"; string_of_int (List.assoc "price" item))]));
+                                                                        ^
+  This '[' might be unmatched

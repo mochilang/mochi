@@ -1,0 +1,9 @@
+exit status 2
+File "/workspace/mochi/tests/transpiler/x/ocaml/dataset_where_filter.ml", line 9, characters 141-142:
+9 |   print_endline (String.concat " " (List.filter (fun s -> s <> "") [(List.assoc "name" person); "is"; string_of_int (List.assoc "age" person)); if (List.assoc "is_senior" person) then " (senior)" else ""]));
+                                                                                                                                                 ^
+Error: Syntax error: ']' expected
+File "/workspace/mochi/tests/transpiler/x/ocaml/dataset_where_filter.ml", line 9, characters 67-68:
+9 |   print_endline (String.concat " " (List.filter (fun s -> s <> "") [(List.assoc "name" person); "is"; string_of_int (List.assoc "age" person)); if (List.assoc "is_senior" person) then " (senior)" else ""]));
+                                                                       ^
+  This '[' might be unmatched

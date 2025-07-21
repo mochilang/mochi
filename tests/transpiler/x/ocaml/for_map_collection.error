@@ -1,0 +1,6 @@
+exit status 2
+File "/workspace/mochi/tests/transpiler/x/ocaml/for_map_collection.ml", line 8, characters 9-17:
+8 |     with Continue -> ()) !m with Break -> ())
+             ^^^^^^^^
+Error: This variant pattern is expected to have type exn
+       There is no constructor Continue within type exn

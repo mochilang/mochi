@@ -1,0 +1,9 @@
+exit status 2
+File "/workspace/mochi/tests/transpiler/x/ocaml/left_join_multi.ml", line 11, characters 106-107:
+11 |   print_endline (String.concat " " (List.filter (fun s -> s <> "") [string_of_int (List.assoc "orderId" r)); (List.assoc "name" r); (List.assoc "item" r)]));
+                                                                                                               ^
+Error: Syntax error: ']' expected
+File "/workspace/mochi/tests/transpiler/x/ocaml/left_join_multi.ml", line 11, characters 67-68:
+11 |   print_endline (String.concat " " (List.filter (fun s -> s <> "") [string_of_int (List.assoc "orderId" r)); (List.assoc "name" r); (List.assoc "item" r)]));
+                                                                        ^
+  This '[' might be unmatched

@@ -1,0 +1,9 @@
+exit status 2
+File "/workspace/mochi/tests/transpiler/x/ocaml/outer_join.ml", line 12, characters 133-134:
+12 |   print_endline (String.concat " " (List.filter (fun s -> s <> "") ["Order"; string_of_int (List.assoc "id" (List.assoc "order" row))); "by"; str
+                                                                                                                                          ^
+Error: Syntax error: ']' expected
+File "/workspace/mochi/tests/transpiler/x/ocaml/outer_join.ml", line 12, characters 67-68:
+12 |   print_endline (String.concat " " (List.filter (fun s -> s <> "") ["Order"; string_of_int (List.assoc "id" (List.assoc "order" row))); "by"; str
+                                                                        ^
+  This '[' might be unmatched

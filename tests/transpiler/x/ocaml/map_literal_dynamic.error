@@ -1,0 +1,9 @@
+exit status 2
+File "/workspace/mochi/tests/transpiler/x/ocaml/map_literal_dynamic.ml", line 7, characters 101-102:
+7 |   print_endline (String.concat " " (List.filter (fun s -> s <> "") [string_of_int (List.assoc "a" !m)); string_of_int (List.assoc "b" !m))]));
+                                                                                                         ^
+Error: Syntax error: ']' expected
+File "/workspace/mochi/tests/transpiler/x/ocaml/map_literal_dynamic.ml", line 7, characters 67-68:
+7 |   print_endline (String.concat " " (List.filter (fun s -> s <> "") [string_of_int (List.assoc "a" !m)); string_of_int (List.assoc "b" !m))]));
+                                                                       ^
+  This '[' might be unmatched

@@ -701,9 +701,7 @@ func (m *MapLit) emit(w io.Writer) {
 		io.WriteString(w, "(")
 		it.Key.emit(w)
 		io.WriteString(w, ", ")
-		io.WriteString(w, "Obj.repr (")
 		it.Value.emit(w)
-		io.WriteString(w, ")")
 		io.WriteString(w, ")")
 	}
 	io.WriteString(w, "]")
@@ -719,17 +717,17 @@ type MapIndexExpr struct {
 }
 
 func (mi *MapIndexExpr) emit(w io.Writer) {
-	io.WriteString(w, "(Obj.magic (List.assoc ")
+	io.WriteString(w, "(List.assoc ")
 	mi.Key.emit(w)
 	io.WriteString(w, " ")
 	mi.Map.emit(w)
-	io.WriteString(w, "))")
+	io.WriteString(w, ")")
 }
 
 func (mi *MapIndexExpr) emitPrint(w io.Writer) {
 	switch mi.Typ {
 	case "int":
-		io.WriteString(w, "string_of_int (Obj.magic (List.assoc ")
+		io.WriteString(w, "string_of_int (List.assoc ")
 		mi.Key.emit(w)
 		io.WriteString(w, " ")
 		mi.Map.emit(w)

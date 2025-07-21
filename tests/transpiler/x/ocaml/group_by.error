@@ -1,0 +1,9 @@
+exit status 2
+File "/workspace/mochi/tests/transpiler/x/ocaml/group_by.ml", line 20, characters 140-141:
+20 |   print_endline (String.concat " " (List.filter (fun s -> s <> "") [(List.assoc "city" s); ": count ="; string_of_int (List.assoc "count" s)); ", avg_age ="; string_of_int (List.assoc "avg_age" s))]));
+                                                                                                                                                 ^
+Error: Syntax error: ']' expected
+File "/workspace/mochi/tests/transpiler/x/ocaml/group_by.ml", line 20, characters 67-68:
+20 |   print_endline (String.concat " " (List.filter (fun s -> s <> "") [(List.assoc "city" s); ": count ="; string_of_int (List.assoc "count" s)); ", avg_age ="; string_of_int (List.assoc "avg_age" s))]));
+                                                                        ^
+  This '[' might be unmatched

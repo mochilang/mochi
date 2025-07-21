@@ -1,3 +1,7 @@
+## Progress (2025-07-21 18:38 +0700)
+- kt transpiler: regenerate golden outputs (502de0299)
+- VM valid programs compiled: 75/100
+
 ## Progress (2025-07-21 10:26 UTC)
 - Checklist updated: 10/100 tests compiled
 - Added print_hello example and updated transpiler code generation.

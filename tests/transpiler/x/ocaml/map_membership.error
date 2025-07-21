@@ -1,0 +1,7 @@
+exit status 2
+File "/workspace/mochi/tests/transpiler/x/ocaml/map_membership.ml", line 5, characters 98-99:
+5 |   print_endline (String.concat " " (List.filter (fun s -> s <> "") [string_of_bool ((List.mem "a" m))]));
+                                                                                                      ^
+Error: This expression has type (string * int) list
+       but an expression was expected of type string list
+       Type string * int is not compatible with type string 

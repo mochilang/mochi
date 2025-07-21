@@ -1,0 +1,6 @@
+exit status 2
+File "/workspace/mochi/tests/transpiler/x/ocaml/join_multi.ml", line 4, characters 40-47:
+4 |   let customers = [[("id", 1); ("name", "Alice")]; [("id", 2); ("name", "Bob")]] in
+                                            ^^^^^^^
+Error: This expression has type string but an expression was expected of type
+         int
