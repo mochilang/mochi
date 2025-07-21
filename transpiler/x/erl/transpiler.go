@@ -912,14 +912,24 @@ func (q *QueryExpr) emit(w io.Writer) {
 	io.WriteString(w, q.Var)
 	io.WriteString(w, " <- ")
 	q.Src.emit(w)
+	newline := len(q.Froms) > 0 || q.Where != nil
 	for _, f := range q.Froms {
-		io.WriteString(w, ", ")
+		if newline {
+			io.WriteString(w, ",\n    ")
+		} else {
+			io.WriteString(w, ", ")
+		}
+		newline = true
 		io.WriteString(w, f.Var)
 		io.WriteString(w, " <- ")
 		f.Src.emit(w)
 	}
 	if q.Where != nil {
-		io.WriteString(w, ", ")
+		if newline {
+			io.WriteString(w, ",\n    ")
+		} else {
+			io.WriteString(w, ", ")
+		}
 		q.Where.emit(w)
 	}
 	io.WriteString(w, "]")

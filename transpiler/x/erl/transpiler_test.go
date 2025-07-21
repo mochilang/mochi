@@ -221,6 +221,7 @@ func TestTranspileCrossJoin(t *testing.T)       { runGolden(t, "cross_join") }
 func TestTranspileCrossJoinFilter(t *testing.T) { runGolden(t, "cross_join_filter") }
 func TestTranspileCrossJoinTriple(t *testing.T) { runGolden(t, "cross_join_triple") }
 func TestTranspileInnerJoin(t *testing.T)       { runGolden(t, "inner_join") }
+func TestTranspileJoinMulti(t *testing.T)       { runGolden(t, "join_multi") }
 
 func TestTranspileExistsBuiltin(t *testing.T) { runGolden(t, "exists_builtin") }
 
