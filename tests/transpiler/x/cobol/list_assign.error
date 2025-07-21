@@ -1,0 +1,2 @@
+compile: exit status 1
+/workspace/mochi/tests/transpiler/x/cobol/list_assign.cob:10: error: 'NUMS' is not a numeric or numeric-edited name

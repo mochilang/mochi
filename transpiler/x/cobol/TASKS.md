@@ -1,3 +1,38 @@
+## Progress (2025-07-21 18:06 +0700)
+- zig transpiler: regenerate golden tests
+- Generated COBOL for 37/100 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-21 18:06 +0700)
+- zig transpiler: regenerate golden tests
+- Generated COBOL for 37/100 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-21 18:06 +0700)
+- zig transpiler: regenerate golden tests
+- Generated COBOL for 37/100 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-21 18:06 +0700)
+- zig transpiler: regenerate golden tests
+- Generated COBOL for 37/100 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-21 18:06 +0700)
+- zig transpiler: regenerate golden tests
+- Generated COBOL for 37/100 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-21 18:06 +0700)
+- zig transpiler: regenerate golden tests
+- Generated COBOL for 37/100 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-21 18:06 +0700)
+- zig transpiler: regenerate golden tests
+- Generated COBOL for 37/100 programs
+- Updated README checklist and outputs
+
 ## Progress (2025-07-21 17:24 +0700)
 - Simplified display logic; removed TMP helper vars
 - Enabled constant evaluation for join and group_by queries

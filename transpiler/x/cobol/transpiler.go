@@ -200,6 +200,10 @@ func (b *BinaryExpr) emitExpr(w io.Writer) {
 			io.WriteString(w, "(")
 			l.emitExpr(w)
 			io.WriteString(w, ")")
+		} else if u, ok := b.Left.(*UnaryExpr); ok && strings.TrimSpace(u.Op) == "-" {
+			io.WriteString(w, "(")
+			u.emitExpr(w)
+			io.WriteString(w, ")")
 		} else {
 			b.Left.emitExpr(w)
 		}
@@ -212,6 +216,10 @@ func (b *BinaryExpr) emitExpr(w io.Writer) {
 			io.WriteString(w, "(")
 			r.emitExpr(w)
 			io.WriteString(w, ")")
+		} else if u, ok := b.Right.(*UnaryExpr); ok && strings.TrimSpace(u.Op) == "-" {
+			io.WriteString(w, "(")
+			u.emitExpr(w)
+			io.WriteString(w, ")")
 		} else {
 			b.Right.emitExpr(w)
 		}
@@ -220,6 +228,10 @@ func (b *BinaryExpr) emitExpr(w io.Writer) {
 	if l, ok := b.Left.(*BinaryExpr); ok && binaryPrec(l.Op) < binaryPrec(b.Op) {
 		io.WriteString(w, "(")
 		l.emitExpr(w)
+		io.WriteString(w, ")")
+	} else if u, ok := b.Left.(*UnaryExpr); ok && strings.TrimSpace(u.Op) == "-" {
+		io.WriteString(w, "(")
+		u.emitExpr(w)
 		io.WriteString(w, ")")
 	} else {
 		b.Left.emitExpr(w)
@@ -235,6 +247,10 @@ func (b *BinaryExpr) emitExpr(w io.Writer) {
 	if r, ok := b.Right.(*BinaryExpr); ok && binaryPrec(r.Op) < binaryPrec(b.Op) {
 		io.WriteString(w, "(")
 		r.emitExpr(w)
+		io.WriteString(w, ")")
+	} else if u, ok := b.Right.(*UnaryExpr); ok && strings.TrimSpace(u.Op) == "-" {
+		io.WriteString(w, "(")
+		u.emitExpr(w)
 		io.WriteString(w, ")")
 	} else {
 		b.Right.emitExpr(w)
@@ -305,6 +321,41 @@ func isDirectNumber(e Expr) bool {
 		}
 	}
 	return false
+}
+
+func evalInt(e Expr) (int, bool) {
+	switch v := e.(type) {
+	case *IntLit:
+		return v.Value, true
+	case *UnaryExpr:
+		if strings.TrimSpace(v.Op) == "-" {
+			if n, ok := evalInt(v.Expr); ok {
+				return -n, true
+			}
+		}
+	case *BinaryExpr:
+		a, ok1 := evalInt(v.Left)
+		b, ok2 := evalInt(v.Right)
+		if ok1 && ok2 {
+			switch v.Op {
+			case "+":
+				return a + b, true
+			case "-":
+				return a - b, true
+			case "*":
+				return a * b, true
+			case "/":
+				if b != 0 {
+					return a / b, true
+				}
+			case "%":
+				if b != 0 {
+					return a % b, true
+				}
+			}
+		}
+	}
+	return 0, false
 }
 
 func relOpExpr(e Expr) (*BinaryExpr, bool) {
@@ -1415,7 +1466,11 @@ func convertExpr(e *parser.Expr, env *types.Env) (Expr, error) {
 			}
 		}
 	}
-	return operands[0], nil
+	res := operands[0]
+	if v, ok := evalInt(res); ok {
+		return &IntLit{Value: v}, nil
+	}
+	return res, nil
 }
 
 func convertUnary(u *parser.Unary, env *types.Env) (Expr, error) {

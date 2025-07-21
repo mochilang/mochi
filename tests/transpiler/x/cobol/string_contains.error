@@ -1,0 +1,3 @@
+compile: exit status 1
+/workspace/mochi/tests/transpiler/x/cobol/string_contains.cob:10: error: FUNCTION 'POSITION' unknown
+/workspace/mochi/tests/transpiler/x/cobol/string_contains.cob:15: error: FUNCTION 'POSITION' unknown
