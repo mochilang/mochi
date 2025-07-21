@@ -114,7 +114,16 @@ func updateReadme() {
 	var buf bytes.Buffer
 	buf.WriteString("# Mochi Transpiler\n\n")
 	buf.WriteString("This package contains experimental transpilers that convert Mochi bytecode to other programming languages. The Haskell backend currently supports a tiny subset of the language.\n\n")
-	fmt.Fprintf(&buf, "Compiled programs: %d/%d\n\n", compiled, total)
+	out, err := exec.Command("git", "log", "-1", "--date=iso-strict", "--format=%cd").Output()
+	ts := time.Now()
+	if err == nil {
+		if t, perr := time.Parse(time.RFC3339, strings.TrimSpace(string(out))); perr == nil {
+			ts = t
+		}
+	}
+	loc := time.FixedZone("GMT+7", 7*3600)
+	fmt.Fprintf(&buf, "Compiled programs: %d/%d\n", compiled, total)
+	fmt.Fprintf(&buf, "Last updated: %s\n\n", ts.In(loc).Format("2006-01-02 15:04 MST"))
 	buf.WriteString("## Golden test checklist\n")
 	buf.WriteString(strings.Join(lines, "\n"))
 	buf.WriteString("\n")

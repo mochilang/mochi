@@ -131,6 +131,35 @@ func recordType(name string, ex Expr) {
 	}
 }
 
+func guessHsType(ex Expr) string {
+	if _, ok := ex.(*IntLit); ok {
+		return "Int"
+	}
+	if fe, ok := ex.(*FieldExpr); ok && envInfo != nil {
+		if n, ok2 := fe.Target.(*NameRef); ok2 {
+			if vt, err := envInfo.GetVar(n.Name); err == nil {
+				if st, ok3 := vt.(types.StructType); ok3 {
+					if ft, ok4 := st.Fields[fe.Field]; ok4 {
+						return toHsType(ft)
+					}
+				}
+			}
+		}
+	}
+	switch {
+	case isStringExpr(ex):
+		return "String"
+	case isBoolExpr(ex):
+		return "Bool"
+	case isFloatExpr(ex):
+		return "Double"
+	case isListExpr(ex):
+		return "[String]"
+	default:
+		return "String"
+	}
+}
+
 type Stmt interface{ emit(io.Writer) }
 
 type Expr interface{ emit(io.Writer) }
@@ -210,15 +239,15 @@ type IndexExpr struct {
 }
 
 func (p *PrintStmt) emit(w io.Writer) {
-        if p.String {
-                io.WriteString(w, "putStrLn ")
-                p.Expr.emit(w)
-                return
-        }
+	if p.String {
+		io.WriteString(w, "putStrLn ")
+		p.Expr.emit(w)
+		return
+	}
 
-        io.WriteString(w, "print (")
-        p.Expr.emit(w)
-        io.WriteString(w, ")")
+	io.WriteString(w, "print (")
+	p.Expr.emit(w)
+	io.WriteString(w, ")")
 }
 
 func (l *LetStmt) emit(w io.Writer) {
@@ -417,7 +446,11 @@ func (m *MapLit) emit(w io.Writer) {
 			io.WriteString(w, ", ")
 		}
 		io.WriteString(w, "(")
-		m.Keys[i].emit(w)
+		if k, ok := m.Keys[i].(*NameRef); ok {
+			fmt.Fprintf(w, "%q", k.Name)
+		} else {
+			m.Keys[i].emit(w)
+		}
 		io.WriteString(w, ", ")
 		m.Values[i].emit(w)
 		io.WriteString(w, ")")
@@ -529,18 +562,18 @@ func isBoolExpr(e Expr) bool {
 }
 
 func isListExpr(e Expr) bool {
-        switch ex := e.(type) {
-        case *ListLit:
-                return true
-        case *NameRef:
-                return varTypes[ex.Name] == "list"
-        case *ComprExpr:
-                return true
-        case *BinaryExpr:
-                if len(ex.Ops) > 0 {
-                        switch ex.Ops[0].Op {
-                        case "++", "union", "except", "intersect":
-                                return true
+	switch ex := e.(type) {
+	case *ListLit:
+		return true
+	case *NameRef:
+		return varTypes[ex.Name] == "list"
+	case *ComprExpr:
+		return true
+	case *BinaryExpr:
+		if len(ex.Ops) > 0 {
+			switch ex.Ops[0].Op {
+			case "++", "union", "except", "intersect":
+				return true
 			}
 		}
 	case *CallExpr:
@@ -1243,22 +1276,28 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 		}
 		return &ListLit{Elems: elems}, nil
 	case p.Map != nil:
-		if len(p.Map.Items) >= 3 && envInfo != nil {
-			if st, ok := types.InferStructFromMapEnv(p.Map, envInfo); ok {
+		if len(p.Map.Items) >= 2 {
+			allConst := true
+			fields := make([]string, len(p.Map.Items))
+			typestr := make([]string, len(p.Map.Items))
+			vals := make([]Expr, len(p.Map.Items))
+			for i, it := range p.Map.Items {
+				key, ok := types.SimpleStringKey(it.Key)
+				if !ok {
+					allConst = false
+					break
+				}
+				fields[i] = key
+				ve, err := convertExpr(it.Value)
+				if err != nil {
+					return nil, err
+				}
+				vals[i] = ve
+				typestr[i] = guessHsType(ve)
+			}
+			if allConst {
 				structCount++
 				name := fmt.Sprintf("GenType%d", structCount)
-				fields := make([]string, len(st.Order))
-				typestr := make([]string, len(st.Order))
-				vals := make([]Expr, len(st.Order))
-				for i, it := range p.Map.Items {
-					fields[i] = st.Order[i]
-					typestr[i] = toHsType(st.Fields[st.Order[i]])
-					ve, err := convertExpr(it.Value)
-					if err != nil {
-						return nil, err
-					}
-					vals[i] = ve
-				}
 				structDefs[name] = &TypeDecl{Name: name, Fields: fields, Types: typestr}
 				for _, f := range fields {
 					preludeHide[f] = true
