@@ -26,6 +26,7 @@ var topEnv *types.Env
 var groupItems map[string]string
 var needLoadYaml bool
 var needSaveJsonl bool
+var pyMathAliases map[string]bool
 
 func javaType(t string) string {
 	switch t {
@@ -1572,6 +1573,7 @@ func Transpile(p *parser.Program, env *types.Env) (*Program, error) {
 	structCount = 0
 	topEnv = env
 	groupItems = map[string]string{}
+	pyMathAliases = map[string]bool{}
 	for _, s := range p.Statements {
 		if s.Fun != nil {
 			body, err := compileStmts(s.Fun.Body)
@@ -1905,6 +1907,19 @@ func compileStmt(s *parser.Statement) (Stmt, error) {
 		return &BreakStmt{}, nil
 	case s.Continue != nil:
 		return &ContinueStmt{}, nil
+	case s.Import != nil:
+		alias := s.Import.As
+		if alias == "" {
+			alias = parser.AliasFromPath(s.Import.Path)
+		}
+		if s.Import.Lang != nil && *s.Import.Lang == "python" && strings.Trim(s.Import.Path, "\"") == "math" {
+			pyMathAliases[alias] = true
+			varTypes[alias] = "module"
+			return nil, nil
+		}
+		return nil, fmt.Errorf("unsupported import")
+	case s.ExternVar != nil, s.ExternFun != nil, s.ExternType != nil, s.ExternObject != nil:
+		return nil, nil
 	case s.Test == nil && s.Import == nil && s.Type == nil:
 		return nil, fmt.Errorf("unsupported statement at %d:%d", s.Pos.Line, s.Pos.Column)
 	}
@@ -2079,7 +2094,20 @@ func compilePostfix(pf *parser.PostfixExpr) (Expr, error) {
 			}
 			expr = &SliceExpr{Value: expr, Start: start, End: end}
 		case op.Field != nil:
-			expr = &FieldExpr{Target: expr, Name: op.Field.Name}
+			name := op.Field.Name
+			if v, ok := expr.(*VarExpr); ok {
+				if pyMathAliases[v.Name] {
+					mapped := name
+					if name == "pi" {
+						mapped = "PI"
+					} else if name == "e" {
+						mapped = "E"
+					}
+					expr = &FieldExpr{Target: &VarExpr{Name: "Math"}, Name: mapped}
+					break
+				}
+			}
+			expr = &FieldExpr{Target: expr, Name: name}
 		case op.Call != nil:
 			args := make([]Expr, len(op.Call.Args))
 			for j, a := range op.Call.Args {
@@ -2090,7 +2118,11 @@ func compilePostfix(pf *parser.PostfixExpr) (Expr, error) {
 				args[j] = ex
 			}
 			if fe, ok := expr.(*FieldExpr); ok {
-				expr = &MethodCallExpr{Target: fe.Target, Name: fe.Name, Args: args}
+				if v, ok2 := fe.Target.(*VarExpr); ok2 && pyMathAliases[v.Name] {
+					expr = &CallExpr{Func: "Math." + fe.Name, Args: args}
+				} else {
+					expr = &MethodCallExpr{Target: fe.Target, Name: fe.Name, Args: args}
+				}
 			} else if v, ok := expr.(*VarExpr); ok {
 				if t, ok := varTypes[v.Name]; ok && t == "fn" {
 					expr = &MethodCallExpr{Target: expr, Name: "applyAsInt", Args: args}
@@ -2201,6 +2233,16 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 	case p.Lit != nil && p.Lit.Bool != nil:
 		return &BoolLit{Value: bool(*p.Lit.Bool)}, nil
 	case p.Selector != nil:
+		if pyMathAliases[p.Selector.Root] && len(p.Selector.Tail) == 1 {
+			name := p.Selector.Tail[0]
+			mapped := name
+			if name == "pi" {
+				mapped = "PI"
+			} else if name == "e" {
+				mapped = "E"
+			}
+			return &FieldExpr{Target: &VarExpr{Name: "Math"}, Name: mapped}, nil
+		}
 		expr := Expr(&VarExpr{Name: p.Selector.Root})
 		for _, name := range p.Selector.Tail {
 			expr = &FieldExpr{Target: expr, Name: name}
