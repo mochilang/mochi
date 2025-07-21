@@ -109,6 +109,41 @@ func formatValue(v value, indent int) string {
 	}
 }
 
+func jsonString(v value) string {
+	switch v.kind {
+	case valInt:
+		return fmt.Sprintf("%d", v.i)
+	case valBool:
+		if v.b {
+			return "true"
+		}
+		return "false"
+	case valString:
+		return fmt.Sprintf("\"%s\"", escape(v.s))
+	case valFloat:
+		return fmt.Sprintf("%.1f", v.f)
+	case valList:
+		parts := make([]string, len(v.list))
+		for i, it := range v.list {
+			parts[i] = jsonString(it)
+		}
+		return "[" + strings.Join(parts, ", ") + "]"
+	case valMap:
+		keys := make([]string, 0, len(v.kv))
+		for k := range v.kv {
+			keys = append(keys, k)
+		}
+		sort.Strings(keys)
+		parts := make([]string, len(keys))
+		for i, k := range keys {
+			parts[i] = fmt.Sprintf("\"%s\": %s", escape(k), jsonString(v.kv[k]))
+		}
+		return "{" + strings.Join(parts, ", ") + "}"
+	default:
+		return "null"
+	}
+}
+
 func isTruthy(v value) bool {
 	switch v.kind {
 	case valBool:
@@ -575,6 +610,9 @@ func evalPrimary(p *parser.Primary, vars map[string]value) (value, error) {
 			case valList:
 				return value{kind: valInt, i: len(v.list)}, nil
 			case valMap:
+				if items, ok := v.kv["items"]; ok && items.kind == valList {
+					return value{kind: valInt, i: len(items.list)}, nil
+				}
 				return value{kind: valInt, i: len(v.kv)}, nil
 			}
 		case "values":
@@ -1209,26 +1247,41 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 			return nil
 		case st.Expr != nil:
 			call := st.Expr.Expr.Binary.Left.Value.Target.Call
-			if call == nil || call.Func != "print" {
+			if call == nil {
 				return fmt.Errorf("unsupported expression")
 			}
-			if len(call.Args) == 0 {
-				return fmt.Errorf("print with no args")
-			}
-			parts := make([]string, len(call.Args))
-			for i, a := range call.Args {
-				v, err := evalExpr(a, vars)
+			switch call.Func {
+			case "print":
+				if len(call.Args) == 0 {
+					return fmt.Errorf("print with no args")
+				}
+				parts := make([]string, len(call.Args))
+				for i, a := range call.Args {
+					v, err := evalExpr(a, vars)
+					if err != nil {
+						return err
+					}
+					parts[i] = v.String()
+				}
+				line := "Transcript show:" + parts[0]
+				for _, part := range parts[1:] {
+					line += "; show:' '; show:" + part
+				}
+				line += "; cr"
+				p.Lines = append(p.Lines, line)
+			case "json":
+				if len(call.Args) != 1 {
+					return fmt.Errorf("json expects one arg")
+				}
+				v, err := evalExpr(call.Args[0], vars)
 				if err != nil {
 					return err
 				}
-				parts[i] = v.String()
+				line := "Transcript show:" + fmt.Sprintf("'%s'", escape(jsonString(v))) + "; cr"
+				p.Lines = append(p.Lines, line)
+			default:
+				return fmt.Errorf("unsupported expression")
 			}
-			line := "Transcript show:" + parts[0]
-			for _, part := range parts[1:] {
-				line += "; show:' '; show:" + part
-			}
-			line += "; cr"
-			p.Lines = append(p.Lines, line)
 		default:
 			return fmt.Errorf("unsupported statement")
 		}
