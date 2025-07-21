@@ -1,3 +1,63 @@
+## Progress (2025-07-21 19:40 +0700)
+- cobol: improve bool handling and add values builtin
+- Generated Ruby for 79/100 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-21 19:40 +0700)
+- cobol: improve bool handling and add values builtin
+- Generated Ruby for 79/100 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-21 19:40 +0700)
+- cobol: improve bool handling and add values builtin
+- Generated Ruby for 79/100 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-21 19:40 +0700)
+- cobol: improve bool handling and add values builtin
+- Generated Ruby for 79/100 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-21 19:40 +0700)
+- cobol: improve bool handling and add values builtin
+- Generated Ruby for 79/100 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-21 19:40 +0700)
+- cobol: improve bool handling and add values builtin
+- Generated Ruby for 79/100 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-21 19:40 +0700)
+- cobol: improve bool handling and add values builtin
+- Generated Ruby for 79/100 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-21 19:40 +0700)
+- cobol: improve bool handling and add values builtin
+- Generated Ruby for 79/100 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-21 19:40 +0700)
+- cobol: improve bool handling and add values builtin
+- Generated Ruby for 79/100 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-21 19:40 +0700)
+- cobol: improve bool handling and add values builtin
+- Generated Ruby for 79/100 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-21 19:40 +0700)
+- cobol: improve bool handling and add values builtin
+- Generated Ruby for 79/100 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-21 19:40 +0700)
+- cobol: improve bool handling and add values builtin
+- Generated Ruby for 79/100 programs
+- Updated README checklist and outputs
+
 ## Progress (2025-07-21 18:42 +0700)
 - pascal transpiler: regenerate golden tests
 - Generated Ruby for 78/100 programs

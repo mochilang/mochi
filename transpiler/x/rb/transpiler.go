@@ -413,7 +413,7 @@ func (gq *GroupQueryExpr) emit(e *emitter) {
 	e.indent++
 	e.writeIndent()
 	io.WriteString(e.w, gq.GroupVar)
-	io.WriteString(e.w, " = { key: k, items: items }")
+	io.WriteString(e.w, " = { \"key\" => k, \"items\" => items }")
 	e.nl()
 	e.writeIndent()
 	io.WriteString(e.w, "result << ")
@@ -651,6 +651,10 @@ func (s *StringLit) emit(e *emitter) { fmt.Fprintf(e.w, "%q", s.Value) }
 type IntLit struct{ Value int }
 
 func (i *IntLit) emit(e *emitter) { fmt.Fprintf(e.w, "%d", i.Value) }
+
+type FloatLit struct{ Value float64 }
+
+func (f *FloatLit) emit(e *emitter) { fmt.Fprintf(e.w, "%g", f.Value) }
 
 type BoolLit struct{ Value bool }
 
@@ -980,7 +984,16 @@ type FormatList struct{ List Expr }
 func (f *FormatList) emit(e *emitter) {
 	io.WriteString(e.w, "\"[\" + (")
 	f.List.emit(e)
-	io.WriteString(e.w, ").join(', ') + \"]\"")
+	io.WriteString(e.w, ").join(',') + \"]\"")
+}
+
+// FormatBool renders a boolean as "True" or "False" for printing.
+type FormatBool struct{ Value Expr }
+
+func (f *FormatBool) emit(e *emitter) {
+	io.WriteString(e.w, "(")
+	f.Value.emit(e)
+	io.WriteString(e.w, " ? 'True' : 'False')")
 }
 
 // MethodCallExpr represents calling a method on a target expression.
@@ -1146,7 +1159,7 @@ func zeroValueExpr(t types.Type) Expr {
 	case types.IntType, types.Int64Type:
 		return &IntLit{Value: 0}
 	case types.FloatType:
-		return &IntLit{Value: 0}
+		return &FloatLit{Value: 0}
 	case types.StringType:
 		return &StringLit{Value: ""}
 	case types.BoolType:
@@ -2098,6 +2111,9 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 		if p.Lit.Int != nil {
 			return &IntLit{Value: int(*p.Lit.Int)}, nil
 		}
+		if p.Lit.Float != nil {
+			return &FloatLit{Value: *p.Lit.Float}, nil
+		}
 		if p.Lit.Bool != nil {
 			return &BoolLit{Value: bool(*p.Lit.Bool)}, nil
 		}
@@ -2209,15 +2225,9 @@ func convertPrintCall(args []Expr, orig []*parser.Expr) (Expr, error) {
 		t := types.ExprType(orig[0], currentEnv)
 		switch t.(type) {
 		case types.ListType:
-			if isValuesCall(orig[0]) {
-				ex = &JoinExpr{List: ex}
-			} else {
-				ex = &FormatList{List: ex}
-			}
+			ex = &FormatList{List: ex}
 		case types.BoolType:
-			if !isMembershipExpr(orig[0]) && !isExistsCall(orig[0]) {
-				ex = &CondExpr{Cond: ex, Then: &IntLit{Value: 1}, Else: &IntLit{Value: 0}}
-			}
+			ex = &FormatBool{Value: ex}
 		}
 		return &CallExpr{Func: "puts", Args: []Expr{ex}}, nil
 	}
@@ -2226,35 +2236,15 @@ func convertPrintCall(args []Expr, orig []*parser.Expr) (Expr, error) {
 		ex := a
 		switch types.ExprType(orig[i], currentEnv).(type) {
 		case types.ListType:
-			if isValuesCall(orig[i]) {
-				ex = &JoinExpr{List: ex}
-			} else {
-				ex = &FormatList{List: ex}
-			}
+			ex = &FormatList{List: ex}
 		case types.BoolType:
-			if !isMembershipExpr(orig[i]) && !isExistsCall(orig[i]) {
-				ex = &CondExpr{Cond: ex, Then: &IntLit{Value: 1}, Else: &IntLit{Value: 0}}
-			}
+			ex = &FormatBool{Value: ex}
 		}
 		conv[i] = ex
 	}
 	list := &ListLit{Elems: conv}
 	joined := &JoinExpr{List: list}
 	return &CallExpr{Func: "puts", Args: []Expr{&MethodCallExpr{Target: joined, Method: "rstrip"}}}, nil
-}
-
-func isValuesCall(e *parser.Expr) bool {
-	if e == nil || e.Binary == nil || len(e.Binary.Right) != 0 {
-		return false
-	}
-	u := e.Binary.Left
-	if u == nil || u.Value == nil || u.Value.Target == nil {
-		return false
-	}
-	if u.Value.Target.Call != nil && u.Value.Target.Call.Func == "values" {
-		return true
-	}
-	return false
 }
 
 func isExistsCall(e *parser.Expr) bool {
@@ -2295,15 +2285,32 @@ func convertQueryExpr(q *parser.QueryExpr) (Expr, error) {
 	if err != nil {
 		return nil, err
 	}
+	if id, ok := src.(*Ident); ok && id.Name == "g" && len(q.Froms) == 0 && len(q.Joins) == 0 && q.Where == nil {
+		src = &IndexExpr{Target: src, Index: &StringLit{Value: "items"}}
+	}
 	froms := make([]queryFrom, len(q.Froms))
 	child := types.NewEnv(currentEnv)
-	child.SetVar(q.Var, types.AnyType{}, true)
+	var srcElem types.Type = types.AnyType{}
+	if currentEnv != nil {
+		st := types.ExprType(q.Source, currentEnv)
+		if lt, ok := st.(types.ListType); ok {
+			srcElem = lt.Elem
+		}
+	}
+	child.SetVar(q.Var, srcElem, true)
 	for i, f := range q.Froms {
 		fe, err := convertExpr(f.Src)
 		if err != nil {
 			return nil, err
 		}
-		child.SetVar(f.Var, types.AnyType{}, true)
+		var felem types.Type = types.AnyType{}
+		if currentEnv != nil {
+			ft := types.ExprType(f.Src, child)
+			if lt, ok := ft.(types.ListType); ok {
+				felem = lt.Elem
+			}
+		}
+		child.SetVar(f.Var, felem, true)
 		froms[i] = queryFrom{Var: f.Var, Src: fe}
 	}
 	joins := make([]queryJoin, len(q.Joins))
@@ -2312,7 +2319,14 @@ func convertQueryExpr(q *parser.QueryExpr) (Expr, error) {
 		if err != nil {
 			return nil, err
 		}
-		child.SetVar(j.Var, types.AnyType{}, true)
+		var jelem types.Type = types.AnyType{}
+		if currentEnv != nil {
+			jt := types.ExprType(j.Src, child)
+			if lt, ok := jt.(types.ListType); ok {
+				jelem = lt.Elem
+			}
+		}
+		child.SetVar(j.Var, jelem, true)
 		var onExpr Expr
 		if j.On != nil {
 			onExpr, err = convertExpr(j.On)
