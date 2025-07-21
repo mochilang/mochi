@@ -1,5 +1,0 @@
-dotnet run: exit status 1
-/tmp/TestCSTranspiler_VMValid_Golden3245023897/036/Program.cs(18,43): error CS1503: Argument 1: cannot convert from 'M' to 'System.Array' [/tmp/TestCSTranspiler_VMValid_Golden3245023897/036/app.csproj]
-/tmp/TestCSTranspiler_VMValid_Golden3245023897/036/Program.cs(19,43): error CS1503: Argument 1: cannot convert from 'M' to 'System.Array' [/tmp/TestCSTranspiler_VMValid_Golden3245023897/036/app.csproj]
-
-The build failed. Fix the build errors and run again.

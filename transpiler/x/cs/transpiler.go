@@ -1687,8 +1687,10 @@ func compileStmt(prog *Program, s *parser.Statement) (Stmt, error) {
 			}
 		}
 		if mp, ok := val.(*MapLit); ok {
-			if res, changed := inferStructMap(s.Let.Name, prog, mp); changed {
-				val = res
+			if len(mp.Items) > 2 {
+				if res, changed := inferStructMap(s.Let.Name, prog, mp); changed {
+					val = res
+				}
 			}
 		}
 		if isStringExpr(val) {
@@ -1777,8 +1779,10 @@ func compileStmt(prog *Program, s *parser.Statement) (Stmt, error) {
 				if vt, ok2 := varTypes[s.Assign.Name]; ok2 && (vt == "" || vt == "object[]") {
 					item := app.Item
 					if mp, ok3 := item.(*MapLit); ok3 {
-						if res, changed := inferStructMap(s.Assign.Name, prog, mp); changed {
-							item = res
+						if len(mp.Items) > 2 {
+							if res, changed := inferStructMap(s.Assign.Name, prog, mp); changed {
+								item = res
+							}
 						}
 					}
 					t := typeOfExpr(item)
@@ -1797,8 +1801,10 @@ func compileStmt(prog *Program, s *parser.Statement) (Stmt, error) {
 			if isMapExpr(val) {
 				mapVars[s.Assign.Name] = true
 				if mp, ok := val.(*MapLit); ok {
-					if res, changed := inferStructMap(s.Assign.Name, prog, mp); changed {
-						val = res
+					if len(mp.Items) > 2 {
+						if res, changed := inferStructMap(s.Assign.Name, prog, mp); changed {
+							val = res
+						}
 					}
 				}
 			}
