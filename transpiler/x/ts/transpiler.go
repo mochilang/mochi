@@ -2407,6 +2407,11 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 			if len(args) != 1 {
 				return nil, fmt.Errorf("len expects one argument")
 			}
+			if transpileEnv != nil {
+				if _, ok := types.ExprType(p.Call.Args[0], transpileEnv).(types.GroupType); ok {
+					args[0] = &IndexExpr{Target: args[0], Index: &StringLit{Value: "items"}}
+				}
+			}
 			return &LenExpr{Value: args[0]}, nil
 		case "append":
 			if len(args) != 2 {
@@ -2421,6 +2426,11 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 		case "count":
 			if len(args) != 1 {
 				return nil, fmt.Errorf("count expects one argument")
+			}
+			if transpileEnv != nil {
+				if _, ok := types.ExprType(p.Call.Args[0], transpileEnv).(types.GroupType); ok {
+					args[0] = &IndexExpr{Target: args[0], Index: &StringLit{Value: "items"}}
+				}
 			}
 			return &LenExpr{Value: args[0]}, nil
 		case "sum":
