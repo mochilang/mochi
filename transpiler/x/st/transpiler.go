@@ -981,10 +981,32 @@ func evalPrimary(p *parser.Primary, vars map[string]value) (value, error) {
 		return value{}, fmt.Errorf("unsupported call")
 	case p.If != nil:
 		return evalIfExpr(p.If, vars)
+	case p.Match != nil:
+		return evalMatchExpr(p.Match, vars)
 	case p.Group != nil:
 		return evalExpr(p.Group, vars)
 	}
 	return value{}, fmt.Errorf("unsupported primary")
+}
+
+func evalMatchExpr(m *parser.MatchExpr, vars map[string]value) (value, error) {
+	target, err := evalExpr(m.Target, vars)
+	if err != nil {
+		return value{}, err
+	}
+	for _, c := range m.Cases {
+		if wild, ok := identName(c.Pattern); ok && wild == "_" {
+			return evalExpr(c.Result, vars)
+		}
+		pv, err := evalExpr(c.Pattern, vars)
+		if err != nil {
+			return value{}, err
+		}
+		if compareValues(target, pv) == 0 {
+			return evalExpr(c.Result, vars)
+		}
+	}
+	return value{}, fmt.Errorf("no match")
 }
 
 func evalIfExpr(ie *parser.IfExpr, vars map[string]value) (value, error) {
