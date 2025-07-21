@@ -446,6 +446,8 @@ func (g *GroupByExpr) emit(w io.Writer) {
 		fmt.Fprint(w, "let _kb = ")
 		g.Sort.emit(w)
 		fmt.Fprint(w, "\nreturn String(describing: _ka) < String(describing: _kb)\n}\n")
+	} else {
+		fmt.Fprint(w, "_list.sort { a, b in String(describing: a[\"key\"]) < String(describing: b[\"key\"]) }\n")
 	}
 	fmt.Fprintf(w, "for %s in _list {\n", g.Name)
 	if g.Having != nil {

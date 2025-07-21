@@ -1,5 +1,5 @@
-## Progress (2025-07-21 15:46 +0700)
-- swifttrans: improve query type inference
+## Progress (2025-07-21 15:59 +0700)
+- swifttrans: deterministic group order
 - Generated golden tests for 79/100 programs
 - Updated README checklist and output artifacts
 
