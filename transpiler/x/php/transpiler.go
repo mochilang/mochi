@@ -16,7 +16,7 @@ var transpileEnv *types.Env
 var funcStack [][]string
 var builtinNames = map[string]struct{}{
 	"print": {}, "len": {}, "substring": {}, "count": {}, "sum": {}, "avg": {},
-	"str": {}, "min": {}, "max": {}, "append": {},
+	"str": {}, "min": {}, "max": {}, "append": {}, "json": {},
 }
 var closureNames = map[string]bool{}
 var globalNames []string
@@ -24,6 +24,7 @@ var globalNames []string
 // --- Simple PHP AST ---
 
 type Program struct {
+	Env   *types.Env
 	Stmts []Stmt
 }
 
@@ -656,6 +657,8 @@ func (b *BoolLit) emit(w io.Writer) {
 
 // Emit writes formatted PHP source to w.
 func Emit(w io.Writer, p *Program) error {
+	transpileEnv = p.Env
+	defer func() { transpileEnv = nil }()
 	if _, err := io.WriteString(w, "<?php\n"); err != nil {
 		return err
 	}
@@ -682,7 +685,7 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	globalNames = nil
 	closureNames = map[string]bool{}
 	defer func() { transpileEnv = nil }()
-	p := &Program{}
+	p := &Program{Env: env}
 	for _, st := range prog.Statements {
 		conv, err := convertStmt(st)
 		if err != nil {
@@ -692,7 +695,6 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 			p.Stmts = append(p.Stmts, conv)
 		}
 	}
-	_ = env
 	return p, nil
 }
 
@@ -999,6 +1001,13 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 			}
 			tmp := &ListLit{Elems: []Expr{args[1]}}
 			return &CallExpr{Func: "array_merge", Args: []Expr{args[0], tmp}}, nil
+		} else if name == "json" {
+			if len(args) != 1 {
+				return nil, fmt.Errorf("json expects 1 arg")
+			}
+			pretty := &CallExpr{Func: "json_encode", Args: []Expr{args[0], &IntLit{Value: 128}}}
+			inner := &CallExpr{Func: "str_replace", Args: []Expr{&StringLit{Value: "    "}, &StringLit{Value: "  "}, pretty}}
+			return &CallExpr{Func: "echo", Args: []Expr{inner}}, nil
 		}
 		return &CallExpr{Func: name, Args: args}, nil
 	case p.Lit != nil:
