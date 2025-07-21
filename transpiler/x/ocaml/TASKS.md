@@ -1,7 +1,13 @@
-## Progress (2025-07-22 00:01 +0700)
+## Progress (2025-07-22 04:52 +0700)
+- Improve Python group_by (58a01bf82)
+
+- VM valid programs compiled: 82/101
+
+- Improve Python group_by (58a01bf82)
+
+
 - fs transpiler: support yaml load and jsonl save (e5b95edb2)
 
-- VM valid programs compiled: 78/100
 
 - fs transpiler: support yaml load and jsonl save (e5b95edb2)
 

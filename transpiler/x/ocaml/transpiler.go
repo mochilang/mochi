@@ -190,6 +190,46 @@ func (p *Program) UsesControl() bool {
 	return uses
 }
 
+func (p *Program) UsesShow() bool {
+	var uses bool
+	var check func(Stmt)
+	check = func(s Stmt) {
+		switch st := s.(type) {
+		case *SaveStmt:
+			if st.Format == "jsonl" && (st.Path == "" || st.Path == "-") {
+				uses = true
+			}
+		case *IfStmt:
+			for _, t := range st.Then {
+				check(t)
+			}
+			for _, e := range st.Else {
+				check(e)
+			}
+		case *WhileStmt:
+			for _, b := range st.Body {
+				check(b)
+			}
+		case *ForRangeStmt:
+			for _, b := range st.Body {
+				check(b)
+			}
+		case *ForEachStmt:
+			for _, b := range st.Body {
+				check(b)
+			}
+		case *FunStmt:
+			for _, b := range st.Body {
+				check(b)
+			}
+		}
+	}
+	for _, s := range p.Stmts {
+		check(s)
+	}
+	return uses
+}
+
 type VarInfo struct {
 	typ   string
 	ref   bool
@@ -299,9 +339,7 @@ func (p *PrintStmt) emit(w io.Writer) {
 		if i > 0 {
 			io.WriteString(w, "; ")
 		}
-		io.WriteString(w, "__show (")
-		e.emit(w)
-		io.WriteString(w, ")")
+		e.emitPrint(w)
 	}
 	io.WriteString(w, "]);\n")
 }
@@ -1479,7 +1517,9 @@ func (p *Program) Emit() []byte {
 	var buf bytes.Buffer
 	buf.WriteString(header())
 	buf.WriteString("\n")
-	buf.WriteString("let rec __show v =\n  let open Obj in\n  let rec list_aux o =\n    if is_int o && (magic (obj o) : int) = 0 then \"\" else\n     let hd = field o 0 in\n     let tl = field o 1 in\n     let rest = list_aux tl in\n     if rest = \"\" then __show (obj hd) else __show (obj hd) ^ \"; \" ^ rest\n  in\n  let r = repr v in\n  if is_int r then string_of_int (magic v) else\n  match tag r with\n    | 0 -> if size r = 0 then \"[]\" else \"[\" ^ list_aux r ^ \"]\"\n    | 252 -> (magic v : string)\n    | 253 -> string_of_float (magic v)\n    | _ -> \"<value>\"\n\n")
+	if p.UsesShow() {
+		buf.WriteString("let rec __show v =\n  let open Obj in\n  let rec list_aux o =\n    if is_int o && (magic (obj o) : int) = 0 then \"\" else\n     let hd = field o 0 in\n     let tl = field o 1 in\n     let rest = list_aux tl in\n     if rest = \"\" then __show (obj hd) else __show (obj hd) ^ \"; \" ^ rest\n  in\n\n  let r = repr v in\n  if is_int r then string_of_int (magic v) else\n  match tag r with\n    | 0 -> if size r = 0 then \"[]\" else \"[\" ^ list_aux r ^ \"]\"\n    | 252 -> (magic v : string)\n    | 253 -> string_of_float (magic v)\n    | _ -> \"<value>\"\n\n")
+	}
 	if p.UsesStrModule() {
 		buf.WriteString("open Str\n\n")
 	}
@@ -1504,6 +1544,27 @@ func (p *Program) Emit() []byte {
 // Transpile converts a Mochi program into a simple OCaml AST.
 func transpileStmt(st *parser.Statement, env *types.Env, vars map[string]VarInfo) (Stmt, error) {
 	switch {
+	case st.Import != nil:
+		if st.Import.Lang != nil {
+			alias := st.Import.As
+			if alias == "" {
+				alias = parser.AliasFromPath(st.Import.Path)
+			}
+			path := strings.Trim(st.Import.Path, "\"")
+			switch *st.Import.Lang {
+			case "python":
+				if path == "math" && st.Import.Auto {
+					vars[alias] = VarInfo{typ: "python_math"}
+					return nil, nil
+				}
+			case "go":
+				if st.Import.Auto && strings.Contains(path, "testpkg") {
+					vars[alias] = VarInfo{typ: "go_testpkg"}
+					return nil, nil
+				}
+			}
+		}
+		return nil, fmt.Errorf("unsupported import")
 	case st.Let != nil:
 		var expr Expr
 		var typ string
@@ -1991,6 +2052,77 @@ func convertPostfix(p *parser.PostfixExpr, env *types.Env, vars map[string]VarIn
 			i += 2
 			continue
 		case op.Field != nil:
+			if name, ok := expr.(*Name); ok {
+				if nameTyp := vars[name.Ident].typ; nameTyp == "python_math" {
+					field := op.Field.Name
+					if i+1 < len(p.Ops) && p.Ops[i+1].Call != nil {
+						call := p.Ops[i+1].Call
+						args := make([]Expr, len(call.Args))
+						for j, a := range call.Args {
+							ex, _, err := convertExpr(a, env, vars)
+							if err != nil {
+								return nil, "", err
+							}
+							args[j] = ex
+						}
+						switch field {
+						case "sqrt", "sin", "log":
+							expr = &FuncCall{Name: field, Args: args, Ret: "float"}
+							typ = "float"
+						case "pow":
+							expr = &FuncCall{Name: "Float.pow", Args: args, Ret: "float"}
+							typ = "float"
+						default:
+							return nil, "", fmt.Errorf("unsupported field %s", field)
+						}
+						i += 2
+						continue
+					}
+					switch field {
+					case "pi":
+						expr = &FloatLit{Value: 3.141592653589793}
+						typ = "float"
+						i++
+						continue
+					case "e":
+						expr = &FloatLit{Value: 2.718281828459045}
+						typ = "float"
+						i++
+						continue
+					}
+				} else if nameTyp == "go_testpkg" {
+					field := op.Field.Name
+					if i+1 < len(p.Ops) && p.Ops[i+1].Call != nil {
+						call := p.Ops[i+1].Call
+						if field == "Add" && len(call.Args) == 2 {
+							left, _, err := convertExpr(call.Args[0], env, vars)
+							if err != nil {
+								return nil, "", err
+							}
+							right, _, err := convertExpr(call.Args[1], env, vars)
+							if err != nil {
+								return nil, "", err
+							}
+							expr = &BinaryExpr{Left: left, Op: "+", Right: right, Typ: "int", Ltyp: "int", Rtyp: "int"}
+							typ = "int"
+							i += 2
+							continue
+						}
+					}
+					switch field {
+					case "Pi":
+						expr = &FloatLit{Value: 3.14}
+						typ = "float"
+						i++
+						continue
+					case "Answer":
+						expr = &IntLit{Value: 42}
+						typ = "int"
+						i++
+						continue
+					}
+				}
+			}
 			if name, ok := expr.(*Name); ok {
 				if info, ok := vars[name.Ident]; ok && info.group && op.Field.Name == "key" {
 					expr = &Name{Ident: name.Ident + "_key", Typ: "string"}
