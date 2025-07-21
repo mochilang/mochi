@@ -1,1 +1,8 @@
-unsupported primary
+exit status 1
+/tmp/TestSwiftTranspiler_VMValid_Golden3486495249/025/main.swift:6:21: error: cannot convert value of type 'Int' to expected argument type '[String : Any]'
+ 4 | for x in xs {
+ 5 |     if ((x % 2) == 1) {
+ 6 |         _res.append(x)
+   |                     `- error: cannot convert value of type 'Int' to expected argument type '[String : Any]'
+ 7 |     }
+ 8 | }

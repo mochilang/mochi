@@ -1,6 +1,6 @@
-## Progress (2025-07-20 23:02 +0700)
-- swift transpiler: basic query and join support
-- Generated golden tests for 54/100 programs
+## Progress (2025-07-21 07:21 +0700)
+- swift transpiler: improve bool and avg handling
+- Generated golden tests for 72/100 programs
 - Updated README checklist and output artifacts
 
 # Swift Transpiler Tasks
