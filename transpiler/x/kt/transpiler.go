@@ -352,20 +352,76 @@ func (f *FieldExpr) emit(w io.Writer) {
 
 // CastExpr represents value as type conversions like "\"123\" as int".
 type CastExpr struct {
-	Value Expr
-	Type  string
+        Value Expr
+        Type  string
 }
 
 func (c *CastExpr) emit(w io.Writer) {
-	c.Value.emit(w)
-	switch c.Type {
-	case "int":
-		io.WriteString(w, ".toInt()")
-	case "float":
-		io.WriteString(w, ".toDouble()")
-	case "string":
-		io.WriteString(w, ".toString()")
-	}
+        c.Value.emit(w)
+        switch c.Type {
+        case "int":
+                io.WriteString(w, ".toInt()")
+        case "float":
+                io.WriteString(w, ".toDouble()")
+        case "string":
+                io.WriteString(w, ".toString()")
+        default:
+                io.WriteString(w, " as "+c.Type)
+        }
+}
+
+type UnionExpr struct{ Left, Right Expr }
+
+func (u *UnionExpr) emit(w io.Writer) {
+        io.WriteString(w, "(")
+        if u.Left != nil {
+                u.Left.emit(w)
+        }
+        io.WriteString(w, " + ")
+        if u.Right != nil {
+                u.Right.emit(w)
+        }
+        io.WriteString(w, ").distinct()")
+}
+
+type UnionAllExpr struct{ Left, Right Expr }
+
+func (u *UnionAllExpr) emit(w io.Writer) {
+        io.WriteString(w, "(")
+        if u.Left != nil {
+                u.Left.emit(w)
+        }
+        io.WriteString(w, " + ")
+        if u.Right != nil {
+                u.Right.emit(w)
+        }
+        io.WriteString(w, ")")
+}
+
+type ExceptExpr struct{ Left, Right Expr }
+
+func (e *ExceptExpr) emit(w io.Writer) {
+        if e.Left != nil {
+                e.Left.emit(w)
+        }
+        io.WriteString(w, ".filter { it !in ")
+        if e.Right != nil {
+                e.Right.emit(w)
+        }
+        io.WriteString(w, " }")
+}
+
+type IntersectExpr struct{ Left, Right Expr }
+
+func (i *IntersectExpr) emit(w io.Writer) {
+        if i.Left != nil {
+                i.Left.emit(w)
+        }
+        io.WriteString(w, ".filter { it in ")
+        if i.Right != nil {
+                i.Right.emit(w)
+        }
+        io.WriteString(w, " }")
 }
 
 type BinaryExpr struct {
@@ -1361,13 +1417,21 @@ func guessType(e Expr) string {
 			return v.Type
 		}
 		return "Any"
-	case *StructLit:
-		return v.Name
-	case *ExistsExpr:
-		return "Boolean"
-	case *FuncLit:
-		return ""
-	}
+       case *StructLit:
+               return v.Name
+       case *UnionExpr:
+               return guessType(v.Left)
+       case *UnionAllExpr:
+               return guessType(v.Left)
+       case *ExceptExpr:
+               return guessType(v.Left)
+       case *IntersectExpr:
+               return guessType(v.Left)
+       case *ExistsExpr:
+               return "Boolean"
+       case *FuncLit:
+               return ""
+       }
 	return ""
 }
 
@@ -1497,19 +1561,36 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 				return nil, err
 			}
 			p.Stmts = append(p.Stmts, stmt)
-		case st.For != nil:
-			stmt, err := convertForStmt(env, st.For)
-			if err != nil {
-				return nil, err
-			}
-			p.Stmts = append(p.Stmts, stmt)
-		case st.Break != nil:
-			p.Stmts = append(p.Stmts, &BreakStmt{})
-		case st.Continue != nil:
-			p.Stmts = append(p.Stmts, &ContinueStmt{})
-		default:
-			return nil, fmt.Errorf("unsupported statement")
-		}
+               case st.For != nil:
+                       stmt, err := convertForStmt(env, st.For)
+                       if err != nil {
+                               return nil, err
+                       }
+                       p.Stmts = append(p.Stmts, stmt)
+               case st.Break != nil:
+                       p.Stmts = append(p.Stmts, &BreakStmt{})
+               case st.Continue != nil:
+                       p.Stmts = append(p.Stmts, &ContinueStmt{})
+               case st.Type != nil:
+                       var fields []ParamDecl
+                       fieldMap := map[string]types.Type{}
+                       var order []string
+                       for _, m := range st.Type.Members {
+                               if m.Field == nil {
+                                       continue
+                               }
+                               ft := types.ResolveTypeRef(m.Field.Type, env)
+                               fields = append(fields, ParamDecl{Name: m.Field.Name, Type: kotlinTypeFromType(ft)})
+                               fieldMap[m.Field.Name] = ft
+                               order = append(order, m.Field.Name)
+                       }
+                       extraDecls = append(extraDecls, &DataClass{Name: st.Type.Name, Fields: fields})
+                       if env != nil {
+                               env.SetStruct(st.Type.Name, types.StructType{Name: st.Type.Name, Fields: fieldMap, Order: order})
+                       }
+               default:
+                       return nil, fmt.Errorf("unsupported statement")
+               }
 	}
 	p.Structs = extraDecls
 	return p, nil
@@ -1611,13 +1692,30 @@ func convertStmts(env *types.Env, list []*parser.Statement) ([]Stmt, error) {
 				return nil, err
 			}
 			out = append(out, st)
-		case s.Break != nil:
-			out = append(out, &BreakStmt{})
-		case s.Continue != nil:
-			out = append(out, &ContinueStmt{})
-		default:
-			return nil, fmt.Errorf("unsupported statement")
-		}
+               case s.Break != nil:
+                       out = append(out, &BreakStmt{})
+               case s.Continue != nil:
+                       out = append(out, &ContinueStmt{})
+               case s.Type != nil:
+                       var fields []ParamDecl
+                       fieldMap := map[string]types.Type{}
+                       var order []string
+                       for _, m := range s.Type.Members {
+                               if m.Field == nil {
+                                       continue
+                               }
+                               ft := types.ResolveTypeRef(m.Field.Type, env)
+                               fields = append(fields, ParamDecl{Name: m.Field.Name, Type: kotlinTypeFromType(ft)})
+                               fieldMap[m.Field.Name] = ft
+                               order = append(order, m.Field.Name)
+                       }
+                       extraDecls = append(extraDecls, &DataClass{Name: s.Type.Name, Fields: fields})
+                       if env != nil {
+                               env.SetStruct(s.Type.Name, types.StructType{Name: s.Type.Name, Fields: fieldMap, Order: order})
+                       }
+               default:
+                       return nil, fmt.Errorf("unsupported statement")
+               }
 	}
 	return out, nil
 }
@@ -2124,17 +2222,21 @@ func convertExpr(env *types.Env, e *parser.Expr) (Expr, error) {
 	if err != nil {
 		return nil, err
 	}
-	operands := []Expr{first}
-	ops := []string{}
-	for _, part := range e.Binary.Right {
-		r, err := convertPostfix(env, part.Right)
-		if err != nil {
-			return nil, err
-		}
-		operands = append(operands, r)
-		ops = append(ops, part.Op)
-	}
-	prec := [][]string{{"*", "/", "%"}, {"+", "-"}, {"<", "<=", ">", ">="}, {"==", "!=", "in"}, {"&&"}, {"||"}}
+       operands := []Expr{first}
+       ops := []string{}
+       for _, part := range e.Binary.Right {
+               r, err := convertPostfix(env, part.Right)
+               if err != nil {
+                       return nil, err
+               }
+               operands = append(operands, r)
+               op := part.Op
+               if part.Op == "union" && part.All {
+                       op = "union_all"
+               }
+               ops = append(ops, op)
+       }
+       prec := [][]string{{"*", "/", "%"}, {"+", "-"}, {"<", "<=", ">", ">="}, {"==", "!=", "in"}, {"&&"}, {"||"}, {"union", "union_all", "except", "intersect"}}
 	contains := func(list []string, s string) bool {
 		for _, v := range list {
 			if v == s {
@@ -2145,15 +2247,26 @@ func convertExpr(env *types.Env, e *parser.Expr) (Expr, error) {
 	}
 	for _, level := range prec {
 		for i := 0; i < len(ops); {
-			if contains(level, ops[i]) {
-				l := operands[i]
-				r := operands[i+1]
-				operands[i] = &BinaryExpr{Left: l, Op: ops[i], Right: r}
-				operands = append(operands[:i+1], operands[i+2:]...)
-				ops = append(ops[:i], ops[i+1:]...)
-			} else {
-				i++
-			}
+                       if contains(level, ops[i]) {
+                               l := operands[i]
+                               r := operands[i+1]
+                               switch ops[i] {
+                               case "union":
+                                       operands[i] = &UnionExpr{Left: l, Right: r}
+                               case "union_all":
+                                       operands[i] = &UnionAllExpr{Left: l, Right: r}
+                               case "except":
+                                       operands[i] = &ExceptExpr{Left: l, Right: r}
+                               case "intersect":
+                                       operands[i] = &IntersectExpr{Left: l, Right: r}
+                               default:
+                                       operands[i] = &BinaryExpr{Left: l, Op: ops[i], Right: r}
+                               }
+                               operands = append(operands[:i+1], operands[i+2:]...)
+                               ops = append(ops[:i], ops[i+1:]...)
+                       } else {
+                               i++
+                       }
 		}
 	}
 	if len(operands) != 1 {
@@ -2293,12 +2406,32 @@ func convertPostfix(env *types.Env, p *parser.PostfixExpr) (Expr, error) {
 				}
 				expr = &FieldExpr{Receiver: expr, Name: op.Field.Name}
 			}
-		case op.Cast != nil:
-			if op.Cast.Type != nil && op.Cast.Type.Simple != nil {
-				expr = &CastExpr{Value: expr, Type: *op.Cast.Type.Simple}
-			} else {
-				return nil, fmt.Errorf("unsupported cast")
-			}
+               case op.Cast != nil:
+                       if op.Cast.Type != nil && op.Cast.Type.Simple != nil {
+                               ctype := *op.Cast.Type.Simple
+                               switch ctype {
+                               case "int", "float", "string":
+                                       expr = &CastExpr{Value: expr, Type: ctype}
+                               default:
+                                       if ml, ok := expr.(*MapLit); ok {
+                                               names := make([]string, len(ml.Items))
+                                               vals := make([]Expr, len(ml.Items))
+                                               for i, it := range ml.Items {
+                                                       if s, ok := it.Key.(*StringLit); ok {
+                                                               names[i] = s.Value
+                                                       } else {
+                                                               return nil, fmt.Errorf("unsupported cast")
+                                                       }
+                                                       vals[i] = it.Value
+                                               }
+                                               expr = &StructLit{Name: ctype, Fields: vals, Names: names}
+                                       } else {
+                                               expr = &CastExpr{Value: expr, Type: ctype}
+                                       }
+                               }
+                       } else {
+                               return nil, fmt.Errorf("unsupported cast")
+                       }
 		case op.Call != nil:
 			args := make([]Expr, len(op.Call.Args))
 			for i, a := range op.Call.Args {
