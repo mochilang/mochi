@@ -1,3 +1,9 @@
+## Progress (21 Jul 2025 13:50 +0700)
+- VM valid golden test results updated
+- Added support for float literals and numeric operations
+- Sum builtin now handles floats
+- Implemented multi-join queries; join_multi, left_join_multi and group_by_multi_join pass (67/100)
+
 ## Progress (21 Jul 2025 13:27 +0700)
 - VM valid golden test results updated
 - Added support for identifier keys in map literals so queries can "select{n: n}"

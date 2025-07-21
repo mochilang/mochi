@@ -43,6 +43,17 @@ type value struct {
 	kv   map[string]value
 }
 
+func toFloat(v value) float64 {
+	switch v.kind {
+	case valFloat:
+		return v.f
+	case valInt:
+		return float64(v.i)
+	default:
+		return 0
+	}
+}
+
 func keyString(v value) (string, error) {
 	switch v.kind {
 	case valString:
@@ -342,17 +353,29 @@ func applyOp(a value, op string, b value) (value, error) {
 		if a.kind == valInt && b.kind == valInt {
 			return value{kind: valInt, i: a.i + b.i}, nil
 		}
+		if (a.kind == valFloat || a.kind == valInt) && (b.kind == valFloat || b.kind == valInt) {
+			return value{kind: valFloat, f: toFloat(a) + toFloat(b)}, nil
+		}
 	case "-":
 		if a.kind == valInt && b.kind == valInt {
 			return value{kind: valInt, i: a.i - b.i}, nil
+		}
+		if (a.kind == valFloat || a.kind == valInt) && (b.kind == valFloat || b.kind == valInt) {
+			return value{kind: valFloat, f: toFloat(a) - toFloat(b)}, nil
 		}
 	case "*":
 		if a.kind == valInt && b.kind == valInt {
 			return value{kind: valInt, i: a.i * b.i}, nil
 		}
+		if (a.kind == valFloat || a.kind == valInt) && (b.kind == valFloat || b.kind == valInt) {
+			return value{kind: valFloat, f: toFloat(a) * toFloat(b)}, nil
+		}
 	case "/":
 		if a.kind == valInt && b.kind == valInt && b.i != 0 {
 			return value{kind: valInt, i: a.i / b.i}, nil
+		}
+		if (a.kind == valFloat || a.kind == valInt) && (b.kind == valFloat || b.kind == valInt) && toFloat(b) != 0 {
+			return value{kind: valFloat, f: toFloat(a) / toFloat(b)}, nil
 		}
 	case "%":
 		if a.kind == valInt && b.kind == valInt && b.i != 0 {
@@ -580,6 +603,9 @@ func evalPrimary(p *parser.Primary, vars map[string]value) (value, error) {
 		if p.Lit.Int != nil {
 			return value{kind: valInt, i: int(*p.Lit.Int)}, nil
 		}
+		if p.Lit.Float != nil {
+			return value{kind: valFloat, f: *p.Lit.Float}, nil
+		}
 		if p.Lit.Bool != nil {
 			return value{kind: valBool, b: bool(*p.Lit.Bool)}, nil
 		}
@@ -726,14 +752,24 @@ func evalPrimary(p *parser.Primary, vars map[string]value) (value, error) {
 				return value{}, err
 			}
 			if listv.kind == valList {
-				total := 0
+				intTotal := 0
+				floatTotal := 0.0
+				hasFloat := false
 				for _, it := range listv.list {
-					if it.kind != valInt {
-						return value{}, fmt.Errorf("sum supports int list")
+					switch it.kind {
+					case valInt:
+						intTotal += it.i
+					case valFloat:
+						hasFloat = true
+						floatTotal += it.f
+					default:
+						return value{}, fmt.Errorf("sum supports numeric list")
 					}
-					total += it.i
 				}
-				return value{kind: valInt, i: total}, nil
+				if hasFloat {
+					return value{kind: valFloat, f: floatTotal + float64(intTotal)}, nil
+				}
+				return value{kind: valInt, i: intTotal}, nil
 			}
 		case "avg":
 			if len(p.Call.Args) != 1 {
@@ -1077,6 +1113,211 @@ func evalQueryExpr(q *parser.QueryExpr, vars map[string]value) (value, error) {
 				}
 			}
 			pairs = append(pairs, pair{key: k2, val: v})
+		}
+		if q.Sort != nil {
+			sort.Slice(pairs, func(i, j int) bool {
+				return compareValues(pairs[i].key, pairs[j].key) < 0
+			})
+		}
+		results := make([]value, len(pairs))
+		for i, p := range pairs {
+			results[i] = p.val
+		}
+		return value{kind: valList, list: results}, nil
+	}
+
+	// handle queries with multiple joins (inner join only)
+	if len(q.Joins) > 1 && len(q.Froms) == 0 && q.Skip == nil && q.Take == nil && !q.Distinct {
+		type clause struct {
+			name string
+			src  *parser.Expr
+			on   *parser.Expr
+		}
+		clauses := []clause{{q.Var, q.Source, nil}}
+		for _, j := range q.Joins {
+			clauses = append(clauses, clause{j.Var, j.Src, j.On})
+		}
+
+		type pair struct{ key, val value }
+
+		if q.Group != nil && len(q.Group.Exprs) == 1 {
+			type grp struct {
+				key   value
+				items []value
+			}
+			groups := map[string]*grp{}
+			var iter func(int, map[string]value) error
+			iter = func(i int, local map[string]value) error {
+				if i == len(clauses) {
+					item := value{kind: valMap, kv: map[string]value{}}
+					for k, v := range local {
+						item.kv[k] = v
+					}
+					kVal, err := evalExpr(q.Group.Exprs[0], local)
+					if err != nil {
+						return err
+					}
+					kStr, err := keyString(kVal)
+					if err != nil {
+						return err
+					}
+					g, ok := groups[kStr]
+					if !ok {
+						g = &grp{key: kVal}
+						groups[kStr] = g
+					}
+					g.items = append(g.items, item)
+					return nil
+				}
+				cl := clauses[i]
+				listv, err := evalExpr(cl.src, local)
+				if err != nil {
+					return err
+				}
+				if listv.kind != valList {
+					return fmt.Errorf("query source must be list")
+				}
+				for _, elem := range listv.list {
+					next := copyVars(local)
+					next[cl.name] = elem
+					if cl.on != nil {
+						cond, err := evalExpr(cl.on, next)
+						if err != nil {
+							return err
+						}
+						if cond.kind != valBool {
+							return fmt.Errorf("non-bool join condition")
+						}
+						if !cond.b {
+							continue
+						}
+					}
+					if err := iter(i+1, next); err != nil {
+						return err
+					}
+				}
+				return nil
+			}
+			if err := iter(0, copyVars(vars)); err != nil {
+				return value{}, err
+			}
+
+			keys := make([]string, 0, len(groups))
+			for k := range groups {
+				keys = append(keys, k)
+			}
+			sort.Strings(keys)
+
+			var pairs []pair
+			for _, k := range keys {
+				g := groups[k]
+				gv := value{kind: valMap, kv: map[string]value{
+					"key":   g.key,
+					"items": {kind: valList, list: g.items},
+				}}
+				local := copyVars(vars)
+				local[q.Group.Name] = gv
+				if q.Group.Having != nil {
+					cond, err := evalExpr(q.Group.Having, local)
+					if err != nil {
+						return value{}, err
+					}
+					if cond.kind != valBool || !cond.b {
+						continue
+					}
+				}
+				if q.Where != nil {
+					cond, err := evalExpr(q.Where, local)
+					if err != nil {
+						return value{}, err
+					}
+					if cond.kind != valBool || !cond.b {
+						continue
+					}
+				}
+				v, err := evalExpr(q.Select, local)
+				if err != nil {
+					return value{}, err
+				}
+				k2 := value{}
+				if q.Sort != nil {
+					k2, err = evalExpr(q.Sort, local)
+					if err != nil {
+						return value{}, err
+					}
+				}
+				pairs = append(pairs, pair{key: k2, val: v})
+			}
+			if q.Sort != nil {
+				sort.Slice(pairs, func(i, j int) bool {
+					return compareValues(pairs[i].key, pairs[j].key) < 0
+				})
+			}
+			results := make([]value, len(pairs))
+			for i, p := range pairs {
+				results[i] = p.val
+			}
+			return value{kind: valList, list: results}, nil
+		}
+
+		var pairs []pair
+		var iter func(int, map[string]value) error
+		iter = func(i int, local map[string]value) error {
+			if i == len(clauses) {
+				if q.Where != nil {
+					cond, err := evalExpr(q.Where, local)
+					if err != nil {
+						return err
+					}
+					if cond.kind != valBool || !cond.b {
+						return nil
+					}
+				}
+				v, err := evalExpr(q.Select, local)
+				if err != nil {
+					return err
+				}
+				k := value{}
+				if q.Sort != nil {
+					k, err = evalExpr(q.Sort, local)
+					if err != nil {
+						return err
+					}
+				}
+				pairs = append(pairs, pair{key: k, val: v})
+				return nil
+			}
+			cl := clauses[i]
+			listv, err := evalExpr(cl.src, local)
+			if err != nil {
+				return err
+			}
+			if listv.kind != valList {
+				return fmt.Errorf("query source must be list")
+			}
+			for _, elem := range listv.list {
+				next := copyVars(local)
+				next[cl.name] = elem
+				if cl.on != nil {
+					cond, err := evalExpr(cl.on, next)
+					if err != nil {
+						return err
+					}
+					if cond.kind != valBool {
+						return fmt.Errorf("non-bool join condition")
+					}
+					if !cond.b {
+						continue
+					}
+				}
+				if err := iter(i+1, next); err != nil {
+					return err
+				}
+			}
+			return nil
+		}
+		if err := iter(0, copyVars(vars)); err != nil {
+			return value{}, err
 		}
 		if q.Sort != nil {
 			sort.Slice(pairs, func(i, j int) bool {
