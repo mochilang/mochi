@@ -891,6 +891,54 @@ func (lj *LeftJoinExpr) emit(w io.Writer) {
 	io.WriteString(w, " end)\nend)")
 }
 
+// OuterJoinExpr represents a simple full outer join without additional clauses.
+type OuterJoinExpr struct {
+	LeftVar  string
+	LeftSrc  Expr
+	RightVar string
+	RightSrc Expr
+	On       Expr
+	Select   Expr
+}
+
+func (oj *OuterJoinExpr) emit(w io.Writer) {
+	io.WriteString(w, "Enum.concat([")
+	// left side with possible nil right rows
+	io.WriteString(w, "Enum.flat_map(")
+	oj.LeftSrc.emit(w)
+	io.WriteString(w, ", fn ")
+	io.WriteString(w, oj.LeftVar)
+	io.WriteString(w, " ->\n  matches = Enum.filter(")
+	oj.RightSrc.emit(w)
+	io.WriteString(w, ", fn ")
+	io.WriteString(w, oj.RightVar)
+	io.WriteString(w, " -> ")
+	oj.On.emit(w)
+	io.WriteString(w, " end)\n  list = if Enum.empty?(matches), do: [nil], else: matches\n  Enum.map(list, fn ")
+	io.WriteString(w, oj.RightVar)
+	io.WriteString(w, " -> ")
+	oj.Select.emit(w)
+	io.WriteString(w, " end)\nend)")
+	io.WriteString(w, ", ")
+	// right side with rows not matched on left
+	io.WriteString(w, "Enum.flat_map(")
+	oj.RightSrc.emit(w)
+	io.WriteString(w, ", fn ")
+	io.WriteString(w, oj.RightVar)
+	io.WriteString(w, " ->\n  exists = Enum.any?(")
+	oj.LeftSrc.emit(w)
+	io.WriteString(w, ", fn ")
+	io.WriteString(w, oj.LeftVar)
+	io.WriteString(w, " -> ")
+	oj.On.emit(w)
+	io.WriteString(w, " end)\n  if exists do\n    []\n  else\n    ")
+	io.WriteString(w, oj.LeftVar)
+	io.WriteString(w, " = nil\n    [")
+	oj.Select.emit(w)
+	io.WriteString(w, "]\n  end\nend)")
+	io.WriteString(w, "])")
+}
+
 // CastExpr represents a simple cast like expr as int.
 type CastExpr struct {
 	Expr Expr
@@ -1658,6 +1706,25 @@ func compileQueryExpr(q *parser.QueryExpr, env *types.Env) (Expr, error) {
 		innerFlat := &CallExpr{Func: "Enum.flat_map", Args: []Expr{filter0, innerFun}}
 		outerFun := &AnonFun{Params: []string{q.Var}, Body: []Stmt{&ReturnStmt{Value: innerFlat}}}
 		return &CallExpr{Func: "Enum.flat_map", Args: []Expr{src, outerFun}}, nil
+	}
+	if len(q.Joins) == 1 && q.Joins[0].Side != nil && *q.Joins[0].Side == "outer" && len(q.Froms) == 0 && q.Group == nil && q.Sort == nil && q.Skip == nil && q.Take == nil && q.Where == nil && !q.Distinct {
+		child := types.NewEnv(env)
+		child.SetVar(q.Var, elemTypeOfExpr(q.Source, env), true)
+		j := q.Joins[0]
+		je, err := compileExpr(j.Src, child)
+		if err != nil {
+			return nil, err
+		}
+		child.SetVar(j.Var, elemTypeOfExpr(j.Src, child), true)
+		onExpr, err := compileExpr(j.On, child)
+		if err != nil {
+			return nil, err
+		}
+		sel, err := compileExpr(q.Select, child)
+		if err != nil {
+			return nil, err
+		}
+		return &OuterJoinExpr{LeftVar: q.Var, LeftSrc: src, RightVar: j.Var, RightSrc: je, On: onExpr, Select: sel}, nil
 	}
 	if len(q.Joins) == 1 && q.Joins[0].Side != nil && *q.Joins[0].Side == "left" && len(q.Froms) == 0 && q.Group == nil && q.Sort == nil && q.Skip == nil && q.Take == nil && q.Where == nil && !q.Distinct {
 		child := types.NewEnv(env)
