@@ -1,3 +1,7 @@
+## Progress (2025-07-21 07:16 +0700)
+- Generated Zig for 65/100 programs
+- Updated README checklist and outputs
+
 ## Progress (2025-07-21 06:55 +0700)
 - Added selector field handling and variable type inference for queries.
 - Generated golden file for `cross_join_triple` and updated README checklist (64/100 tests passing).

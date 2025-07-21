@@ -1234,6 +1234,10 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 			if err != nil {
 				return nil, err
 			}
+			// treat identifiers as string keys for maps
+			if vr, ok := k.(*VarRef); ok {
+				k = &StringLit{Value: vr.Name}
+			}
 			v, err := compileExpr(it.Value)
 			if err != nil {
 				return nil, err
