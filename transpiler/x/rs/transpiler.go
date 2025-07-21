@@ -540,7 +540,11 @@ func (v *VarDecl) emit(w io.Writer) {
 		v.Expr.emit(w)
 	} else if v.Type != "" {
 		io.WriteString(w, " = ")
-		io.WriteString(w, defaultValueForType(v.Type))
+		if v.Type == "String" {
+			io.WriteString(w, "String::new()")
+		} else {
+			io.WriteString(w, "Default::default()")
+		}
 	}
 }
 
@@ -2164,20 +2168,6 @@ func listLiteral(e *parser.Expr) *parser.ListLiteral {
 		return nil
 	}
 	return p.Target.List
-}
-
-func defaultValueForType(t string) string {
-	switch t {
-	case "i64":
-		return "0"
-	case "f64":
-		return "0.0"
-	case "bool":
-		return "false"
-	case "String":
-		return "String::new()"
-	}
-	return "Default::default()"
 }
 
 func writeStmt(buf *bytes.Buffer, s Stmt, indent int) {
