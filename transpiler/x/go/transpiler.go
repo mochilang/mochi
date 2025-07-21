@@ -1850,6 +1850,8 @@ func zeroValueExpr(goType string) Expr {
 		return &StringLit{Value: ""}
 	case strings.HasPrefix(goType, "[]"):
 		return &VarRef{Name: "nil"}
+	case strings.HasPrefix(goType, "*"):
+		return &VarRef{Name: "nil"}
 	default:
 		if _, ok := topEnv.GetStruct(goType); ok {
 			return &StructLit{Name: goType}
@@ -2556,6 +2558,10 @@ func toGoType(t *parser.TypeRef, env *types.Env) string {
 			if len(t.Generic.Args) == 2 {
 				return fmt.Sprintf("map[%s]%s", toGoType(t.Generic.Args[0], env), toGoType(t.Generic.Args[1], env))
 			}
+		case "option":
+			if len(t.Generic.Args) == 1 {
+				return "*" + toGoType(t.Generic.Args[0], env)
+			}
 		}
 	}
 	if t.Struct != nil {
@@ -2611,7 +2617,9 @@ func toGoTypeFromType(t types.Type) string {
 			return fmt.Sprintf("func(%s) %s", strings.Join(params, ", "), ret)
 		}
 		return fmt.Sprintf("func(%s)", strings.Join(params, ", "))
-	case types.VoidType:
+	case types.OptionType:
+		return "*" + toGoTypeFromType(tt.Elem)
+	case types.AnyType, types.VoidType:
 		return ""
 	}
 	return "any"
