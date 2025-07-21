@@ -1,3 +1,7 @@
+## Progress (2025-07-21 07:52 +0700)
+- dart transpiler: add right join support
+- 48/100 VM programs transpiled successfully
+
 ## Progress (2025-07-21 00:19 UTC)
 - pascal transpiler: support triple cross join (progress 47/100)
 

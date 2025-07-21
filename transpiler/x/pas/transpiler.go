@@ -1150,6 +1150,17 @@ func buildQuery(env *types.Env, q *parser.QueryExpr, varName string, varTypes ma
 			typ  string
 		}{f.Var, ex, typeOf(f.Src, env)})
 	}
+	for _, j := range q.Joins {
+		ex, err := convertExpr(env, j.Src)
+		if err != nil {
+			return nil, "", err
+		}
+		loops = append(loops, struct {
+			name string
+			src  Expr
+			typ  string
+		}{j.Var, ex, typeOf(j.Src, env)})
+	}
 	for _, l := range loops {
 		if _, ok := varTypes[l.name]; !ok {
 			elem := elemType(l.typ)
@@ -1159,7 +1170,11 @@ func buildQuery(env *types.Env, q *parser.QueryExpr, varName string, varTypes ma
 			varTypes[l.name] = elem
 		}
 	}
-	sel, err := convertExpr(env, q.Select)
+	child := types.NewEnv(env)
+	for _, l := range loops {
+		child.SetVar(l.name, types.AnyType{}, true)
+	}
+	sel, err := convertExpr(child, q.Select)
 	if err != nil {
 		return nil, "", err
 	}
@@ -1167,11 +1182,30 @@ func buildQuery(env *types.Env, q *parser.QueryExpr, varName string, varTypes ma
 	stmts := []Stmt{&AssignStmt{Name: varName, Expr: &ListLit{}}}
 	appendExpr := &AssignStmt{Name: varName, Expr: &CallExpr{Name: "concat", Args: []Expr{&VarRef{Name: varName}, &ListLit{Elems: []Expr{sel}}}}}
 	body := []Stmt{appendExpr}
-	if q.Where != nil {
-		cond, err := convertExpr(env, q.Where)
+	var cond Expr
+	for _, j := range q.Joins {
+		c, err := convertExpr(child, j.On)
 		if err != nil {
 			return nil, "", err
 		}
+		if cond == nil {
+			cond = c
+		} else {
+			cond = &BinaryExpr{Op: "and", Left: cond, Right: c, Bool: true}
+		}
+	}
+	if q.Where != nil {
+		c, err := convertExpr(child, q.Where)
+		if err != nil {
+			return nil, "", err
+		}
+		if cond == nil {
+			cond = c
+		} else {
+			cond = &BinaryExpr{Op: "and", Left: cond, Right: c, Bool: true}
+		}
+	}
+	if cond != nil {
 		body = []Stmt{&IfStmt{Cond: cond, Then: body}}
 	}
 	for i := len(loops) - 1; i >= 0; i-- {
@@ -1541,18 +1575,18 @@ func inferType(e Expr) string {
 		}
 		return rt
 	case *CallExpr:
-               switch v.Name {
-               case "Length", "Pos":
-                       return "integer"
-               case "IntToStr":
-                       return "string"
-               case "avg":
-                       return "real"
-               case "min", "max":
-                       return "integer"
-               default:
-                       return ""
-               }
+		switch v.Name {
+		case "Length", "Pos":
+			return "integer"
+		case "IntToStr":
+			return "string"
+		case "avg":
+			return "real"
+		case "min", "max":
+			return "integer"
+		default:
+			return ""
+		}
 	case *IfExpr:
 		thenT := inferType(v.Then)
 		elseT := ""
