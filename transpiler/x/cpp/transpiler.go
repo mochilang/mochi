@@ -421,26 +421,26 @@ func (s *PrintStmt) emit(w io.Writer, indent int) {
 			}
 			io.WriteString(w, "([&]{ std::ostringstream ss; auto tmp = ")
 			ex.emit(w)
-			io.WriteString(w, "; for(size_t i=0;i<tmp.size();++i){ if(i>0) ss<<\" \"; ss<<tmp[i]; } return ss.str(); }())")
+			io.WriteString(w, "; ss<<\"[\"; for(size_t i=0;i<tmp.size();++i){ if(i>0) ss<<\", \"; ss<<tmp[i]; } ss<<\"]\"; return ss.str(); }())")
 		case *SliceExpr:
 			if currentProgram != nil {
 				currentProgram.addInclude("<sstream>")
 			}
 			io.WriteString(w, "([&]{ auto tmp = ")
 			ex.emit(w)
-			io.WriteString(w, "; if constexpr(std::is_same_v<std::decay_t<decltype(tmp)>, std::string>) return tmp; std::ostringstream ss; for(size_t i=0;i<tmp.size();++i){ if(i>0) ss<<\" \"; ss<<tmp[i]; } return ss.str(); }())")
+			io.WriteString(w, "; if constexpr(std::is_same_v<std::decay_t<decltype(tmp)>, std::string>) return tmp; std::ostringstream ss; ss<<\"[\"; for(size_t i=0;i<tmp.size();++i){ if(i>0) ss<<\", \"; ss<<tmp[i]; } ss<<\"]\"; return ss.str(); }())")
 		case *AppendExpr:
 			if currentProgram != nil {
 				currentProgram.addInclude("<sstream>")
 			}
 			io.WriteString(w, "([&]{ std::ostringstream ss; auto tmp = ")
 			ex.emit(w)
-			io.WriteString(w, "; for(size_t i=0;i<tmp.size();++i){ if(i>0) ss<<\" \"; ss<<tmp[i]; } return ss.str(); }())")
+			io.WriteString(w, "; ss<<\"[\"; for(size_t i=0;i<tmp.size();++i){ if(i>0) ss<<\", \"; ss<<tmp[i]; } ss<<\"]\"; return ss.str(); }())")
 		case *AvgExpr:
 			if currentProgram != nil {
 				currentProgram.addInclude("<sstream>")
 			}
-			io.WriteString(w, "([&]{ std::ostringstream ss; ss<<std::fixed<<std::setprecision(1)<<")
+			io.WriteString(w, "([&]{ std::ostringstream ss; ss<<")
 			ex.emit(w)
 			io.WriteString(w, "; return ss.str(); }())")
 		case *ValuesExpr:
@@ -449,7 +449,7 @@ func (s *PrintStmt) emit(w io.Writer, indent int) {
 			}
 			io.WriteString(w, "([&]{ std::ostringstream ss; auto tmp = ")
 			ex.emit(w)
-			io.WriteString(w, "; for(size_t i=0;i<tmp.size();++i){ if(i>0) ss<<\" \"; ss<<tmp[i]; } return ss.str(); }())")
+			io.WriteString(w, "; ss<<\"[\"; for(size_t i=0;i<tmp.size();++i){ if(i>0) ss<<\", \"; ss<<tmp[i]; } ss<<\"]\"; return ss.str(); }())")
 		default:
 			v.emit(w)
 		}
@@ -745,7 +745,7 @@ func (l *BlockLambda) emit(w io.Writer) {
 }
 
 func (lc *MultiListComp) emit(w io.Writer) {
-	io.WriteString(w, "([]{ std::vector<"+lc.ElemType+"> __items;\n")
+	io.WriteString(w, "([&]{ std::vector<"+lc.ElemType+"> __items;\n")
 	for i, v := range lc.Vars {
 		io.WriteString(w, "for (auto ")
 		io.WriteString(w, v)
@@ -2051,7 +2051,7 @@ func convertSimpleQuery(q *parser.QueryExpr, target string) (Expr, *StructDef, s
 	if err != nil {
 		return nil, nil, "", err
 	}
-	elemType := guessType(q.Select)
+	elemType := exprType(body)
 	var def *StructDef
 	if ml, ok := body.(*MapLit); ok {
 		if keys := make([]string, len(ml.Keys)); true {
@@ -2110,7 +2110,7 @@ func convertSimpleQuery(q *parser.QueryExpr, target string) (Expr, *StructDef, s
 		if err != nil {
 			return nil, nil, "", err
 		}
-		elemType = guessType(q.Select)
+		elemType = exprType(body)
 		if ml, ok := body.(*MapLit); ok {
 			if keys := make([]string, len(ml.Keys)); true {
 				for i, k := range ml.Keys {
@@ -2316,6 +2316,17 @@ func guessType(e *parser.Expr) string {
 func elementTypeFromListType(t string) string {
 	if strings.HasPrefix(t, "std::vector<") && strings.HasSuffix(t, ">") {
 		return strings.TrimSuffix(strings.TrimPrefix(t, "std::vector<"), ">")
+	}
+	if strings.HasSuffix(t, "Group") && currentProgram != nil {
+		for _, st := range currentProgram.Structs {
+			if st.Name == t {
+				for _, f := range st.Fields {
+					if f.Name == "items" && strings.HasPrefix(f.Type, "std::vector<") {
+						return strings.TrimSuffix(strings.TrimPrefix(f.Type, "std::vector<"), ">")
+					}
+				}
+			}
+		}
 	}
 	return "auto"
 }
