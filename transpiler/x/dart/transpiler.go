@@ -1233,6 +1233,19 @@ type LeftJoinExpr struct {
 	Select   Expr
 }
 
+// LeftJoinMultiExpr handles a join followed by a left join.
+type LeftJoinMultiExpr struct {
+	Var1   string
+	Src1   Expr
+	Var2   string
+	Src2   Expr
+	Cond2  Expr
+	Var3   string
+	Src3   Expr
+	Cond3  Expr
+	Select Expr
+}
+
 func (l *LeftJoinExpr) emit(w io.Writer) error {
 	if _, err := io.WriteString(w, "(() {\n"); err != nil {
 		return err
@@ -1271,6 +1284,61 @@ func (l *LeftJoinExpr) emit(w io.Writer) error {
 		return err
 	}
 	if _, err := io.WriteString(w, ");\n    }\n  }\n  return results;\n})()"); err != nil {
+		return err
+	}
+	return nil
+}
+
+func (l *LeftJoinMultiExpr) emit(w io.Writer) error {
+	if _, err := io.WriteString(w, "(() {\n"); err != nil {
+		return err
+	}
+	if _, err := io.WriteString(w, "  var results = [];\n"); err != nil {
+		return err
+	}
+	if _, err := io.WriteString(w, "  for (var "+l.Var1+" in "); err != nil {
+		return err
+	}
+	if err := l.Src1.emit(w); err != nil {
+		return err
+	}
+	if _, err := io.WriteString(w, ") {\n    for (var "+l.Var2+" in "); err != nil {
+		return err
+	}
+	if err := l.Src2.emit(w); err != nil {
+		return err
+	}
+	if _, err := io.WriteString(w, ") {\n      if (!("); err != nil {
+		return err
+	}
+	if err := l.Cond2.emit(w); err != nil {
+		return err
+	}
+	if _, err := io.WriteString(w, ")) continue;\n      var matched = false;\n      for (var "+l.Var3+" in "); err != nil {
+		return err
+	}
+	if err := l.Src3.emit(w); err != nil {
+		return err
+	}
+	if _, err := io.WriteString(w, ") {\n        if (!("); err != nil {
+		return err
+	}
+	if err := l.Cond3.emit(w); err != nil {
+		return err
+	}
+	if _, err := io.WriteString(w, ")) continue;\n        matched = true;\n        results.add("); err != nil {
+		return err
+	}
+	if err := l.Select.emit(w); err != nil {
+		return err
+	}
+	if _, err := io.WriteString(w, ");\n      }\n      if (!matched) {\n        var "+l.Var3+" = null;\n        results.add("); err != nil {
+		return err
+	}
+	if err := l.Select.emit(w); err != nil {
+		return err
+	}
+	if _, err := io.WriteString(w, ");\n      }\n    }\n  }\n  return results;\n})();"); err != nil {
 		return err
 	}
 	return nil
@@ -3044,6 +3112,9 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 	case p.Match != nil:
 		return convertMatchExpr(p.Match)
 	case p.Query != nil:
+		if ex, err := convertLeftJoinMultiQuery(p.Query); err == nil {
+			return ex, nil
+		}
 		if ex, err := convertLeftJoinQuery(p.Query); err == nil {
 			return ex, nil
 		}
@@ -3461,6 +3532,55 @@ func convertLeftJoinQuery(q *parser.QueryExpr) (Expr, error) {
 		return nil, err
 	}
 	return &LeftJoinExpr{LeftVar: q.Var, LeftSrc: leftSrc, RightVar: j.Var, RightSrc: rightSrc, Cond: cond, Select: sel}, nil
+}
+
+func convertLeftJoinMultiQuery(q *parser.QueryExpr) (Expr, error) {
+	if q == nil || len(q.Joins) != 2 || len(q.Froms) > 0 || q.Group != nil || q.Sort != nil || q.Skip != nil || q.Take != nil || q.Where != nil || q.Distinct {
+		return nil, fmt.Errorf("unsupported query")
+	}
+	j1 := q.Joins[0]
+	j2 := q.Joins[1]
+	if j1.Side != nil || j2.Side == nil || *j2.Side != "left" {
+		return nil, fmt.Errorf("unsupported query")
+	}
+	src1, err := convertExpr(q.Source)
+	if err != nil {
+		return nil, err
+	}
+	src1 = groupIter(src1)
+	src2, err := convertExpr(j1.Src)
+	if err != nil {
+		return nil, err
+	}
+	src2 = groupIter(src2)
+	child := types.NewEnv(currentEnv)
+	child.SetVar(q.Var, types.AnyType{}, true)
+	child.SetVar(j1.Var, types.AnyType{}, true)
+	saved := currentEnv
+	currentEnv = child
+	cond2, err := convertExpr(j1.On)
+	if err != nil {
+		currentEnv = saved
+		return nil, err
+	}
+	child.SetVar(j2.Var, types.AnyType{}, true)
+	src3, err := convertExpr(j2.Src)
+	if err != nil {
+		currentEnv = saved
+		return nil, err
+	}
+	src3 = groupIter(src3)
+	cond3, err := convertExpr(j2.On)
+	if err != nil {
+		currentEnv = saved
+		return nil, err
+	}
+	sel, err := convertExpr(q.Select)
+	currentEnv = saved
+	if err != nil {
+		return nil, err
+	}
+	return &LeftJoinMultiExpr{Var1: q.Var, Src1: src1, Var2: j1.Var, Src2: src2, Cond2: cond2, Var3: j2.Var, Src3: src3, Cond3: cond3, Select: sel}, nil
 }
 
 func convertRightJoinQuery(q *parser.QueryExpr) (Expr, error) {
