@@ -634,14 +634,29 @@ func (a *AssignStmt) emit(w io.Writer, indent int) {
 func (a *IndexAssignStmt) emit(w io.Writer, indent int) {
 	writeIndent(w, indent)
 	if idx, ok := a.Target.(*IndexExpr); ok && idx.Map {
-		emitMapPut(w, idx, a.Value)
-		io.WriteString(w, "\n")
-	} else {
-		a.Target.emit(w)
-		io.WriteString(w, " = ")
+		var emitPath func(*IndexExpr)
+		emitPath = func(ix *IndexExpr) {
+			if inner, ok2 := ix.Target.(*IndexExpr); ok2 && inner.Map {
+				emitPath(inner)
+				io.WriteString(w, ".get(")
+				ix.Index.emit(w)
+				io.WriteString(w, ").?")
+			} else {
+				ix.Target.emit(w)
+			}
+		}
+		emitPath(idx)
+		io.WriteString(w, ".put(")
+		idx.Index.emit(w)
+		io.WriteString(w, ", ")
 		a.Value.emit(w)
-		io.WriteString(w, ";\n")
+		io.WriteString(w, ") catch unreachable;\n")
+		return
 	}
+	a.Target.emit(w)
+	io.WriteString(w, " = ")
+	a.Value.emit(w)
+	io.WriteString(w, ";\n")
 }
 
 func (e *ExprStmt) emit(w io.Writer, indent int) {
@@ -772,38 +787,6 @@ func (i *IndexExpr) emit(w io.Writer) {
 		i.Index.emit(w)
 		io.WriteString(w, "]")
 	}
-}
-
-func emitMapPut(w io.Writer, idx *IndexExpr, val Expr) {
-	if inner, ok := idx.Target.(*IndexExpr); ok && inner.Map {
-		emitMapGet(w, inner)
-		io.WriteString(w, ".put(")
-		idx.Index.emit(w)
-		io.WriteString(w, ", ")
-		val.emit(w)
-		io.WriteString(w, ") catch unreachable;")
-		return
-	}
-	idx.Target.emit(w)
-	io.WriteString(w, ".put(")
-	idx.Index.emit(w)
-	io.WriteString(w, ", ")
-	val.emit(w)
-	io.WriteString(w, ") catch unreachable;")
-}
-
-func emitMapGet(w io.Writer, idx *IndexExpr) {
-	if inner, ok := idx.Target.(*IndexExpr); ok && inner.Map {
-		emitMapGet(w, inner)
-		io.WriteString(w, ".get(")
-		idx.Index.emit(w)
-		io.WriteString(w, ").?")
-		return
-	}
-	idx.Target.emit(w)
-	io.WriteString(w, ".get(")
-	idx.Index.emit(w)
-	io.WriteString(w, ").?")
 }
 
 func (sli *SliceExpr) emit(w io.Writer) {
