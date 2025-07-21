@@ -610,7 +610,7 @@ func (f *FormatListExpr) emit(w io.Writer) {
 	io.WriteString(w, "\"[\" + ")
 	if f.Value != nil {
 		f.Value.emit(w)
-		io.WriteString(w, `.map(v => { if (typeof v === 'string') return '\'' + v + '\''; if (typeof v === 'number') return (Number.isInteger(v) ? v.toFixed(1) : String(v)); if (typeof v === 'boolean') return v ? 'True' : 'False'; if (typeof v === 'object') { let s = JSON.stringify(v).replace(/"/g, '\'' ).replace(/:/g, ': ').replace(/,/g, ', '); s = s.replace(/: (-?[0-9]+)([,}])/g, ': $1.0$2'); return s } return String(v); }).join(', ')`)
+		io.WriteString(w, `.map(v => { if (typeof v === 'string') return '"' + v + '"'; if (typeof v === 'number') return String(v); if (typeof v === 'boolean') return v ? 'True' : 'False'; if (typeof v === 'object') { let s = JSON.stringify(v).replace(/"/g, '"').replace(/:/g, ': ').replace(/,/g, ', '); return s } return String(v); }).join(', ')`)
 	} else {
 		io.WriteString(w, "\"\"")
 	}
@@ -643,7 +643,7 @@ func (p *PrintExpr) emit(w io.Writer) {
 			io.WriteString(w, "null")
 		}
 	}
-	io.WriteString(w, `].map(v => { if (v === null) return 'nil'; if (typeof v === 'boolean') return v ? 'True' : 'False'; if (typeof v === 'number') return Number.isInteger(v) ? v.toFixed(1) : String(v); if (typeof v === 'object') return JSON.stringify(v).replace(/:/g, ': ').replace(/,/g, ', '); if (typeof v === 'string') return '\'' + v + '\''; return String(v); }).join(' ').trimEnd())`)
+	io.WriteString(w, `].map(v => { if (v === null) return 'nil'; if (typeof v === 'boolean') return v ? 'True' : 'False'; if (typeof v === 'number') return String(v); if (typeof v === 'object') return JSON.stringify(v).replace(/:/g, ': ').replace(/,/g, ', '); if (typeof v === 'string') return '"' + v + '"'; return String(v); }).join(' ').trimEnd())`)
 }
 
 func (s *SubstringExpr) emit(w io.Writer) {

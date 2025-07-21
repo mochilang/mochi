@@ -126,6 +126,16 @@ func updateReadme() {
 		}
 		lines = append(lines, fmt.Sprintf("- %s %s", mark, name))
 	}
+	tsOut, _ := exec.Command("git", "log", "-1", "--format=%cI").Output()
+	ts := strings.TrimSpace(string(tsOut))
+	if t, err := time.Parse(time.RFC3339, ts); err == nil {
+		if loc, lerr := time.LoadLocation("Asia/Bangkok"); lerr == nil {
+			ts = t.In(loc).Format("2006-01-02 15:04 -0700")
+		} else {
+			ts = t.Format("2006-01-02 15:04 MST")
+		}
+	}
+
 	var buf bytes.Buffer
 	buf.WriteString("# Mochi \u2192 TypeScript Transpiler\n\n")
 	buf.WriteString("This directory contains the experimental TypeScript transpiler.\n")
@@ -133,23 +143,24 @@ func updateReadme() {
 	fmt.Fprintf(&buf, "## VM Golden Test Checklist (%d/%d)\n", passed, total)
 	buf.WriteString(strings.Join(lines, "\n"))
 	buf.WriteString("\n")
+	fmt.Fprintf(&buf, "Last updated: %s\n", ts)
 	_ = os.WriteFile(readmePath, buf.Bytes(), 0o644)
 }
 
 func updateTasks() {
 	root := repoRoot(&testing.T{})
 	taskFile := filepath.Join(root, "transpiler", "x", "ts", "TASKS.md")
-	out, err := exec.Command("git", "log", "-1", "--format=%cI").Output()
-	ts := ""
-	if err == nil {
-		if t, perr := time.Parse(time.RFC3339, strings.TrimSpace(string(out))); perr == nil {
-			if loc, lerr := time.LoadLocation("Asia/Bangkok"); lerr == nil {
-				ts = t.In(loc).Format("2006-01-02 15:04 -0700")
-			} else {
-				ts = t.Format("2006-01-02 15:04 MST")
-			}
+	tsRaw, _ := exec.Command("git", "log", "-1", "--format=%cI").Output()
+	msgRaw, _ := exec.Command("git", "log", "-1", "--format=%s").Output()
+	ts := strings.TrimSpace(string(tsRaw))
+	if t, err := time.Parse(time.RFC3339, ts); err == nil {
+		if loc, lerr := time.LoadLocation("Asia/Bangkok"); lerr == nil {
+			ts = t.In(loc).Format("2006-01-02 15:04 -0700")
+		} else {
+			ts = t.Format("2006-01-02 15:04 MST")
 		}
 	}
+	msg := strings.TrimSpace(string(msgRaw))
 	srcDir := filepath.Join(root, "tests", "vm", "valid")
 	outDir := filepath.Join(root, "tests", "transpiler", "x", "ts")
 	files, _ := filepath.Glob(filepath.Join(srcDir, "*.mochi"))
@@ -180,6 +191,9 @@ func updateTasks() {
 	var buf bytes.Buffer
 	buf.WriteString(fmt.Sprintf("## Progress (%s)\n", ts))
 	fmt.Fprintf(&buf, "- Generated TypeScript for %d/%d programs (%d passing)\n", compiled, total, passed)
+	if msg != "" {
+		buf.WriteString("- Commit: " + msg + "\n")
+	}
 	buf.WriteString("- Updated README checklist and outputs\n")
 	buf.WriteString("- Enhanced readability and type inference\n")
 	buf.WriteString("- Removed runtime helper functions\n\n")
