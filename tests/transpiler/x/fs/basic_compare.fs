@@ -1,5 +1,4 @@
-// Generated 2025-07-21 15:37 +0700
-open System
+// Generated 2025-07-21 18:37 +0700
 
 let a: int = 10 - 3
 let b: int = 2 + 2

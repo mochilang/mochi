@@ -1,0 +1,37 @@
+exit status 1
+F# Compiler for F# 4.0 (Open Source Edition)
+Freely distributed under the Apache 2.0 Open Source License
+
+/workspace/mochi/tests/transpiler/x/fs/group_by.fs(32,5): warning FS0058: Possible incorrect indentation: this token is offside of context started at position (31:27). Try indenting this token further or using standard formatting conventions.
+
+/workspace/mochi/tests/transpiler/x/fs/group_by.fs(32,5): warning FS0058: Possible incorrect indentation: this token is offside of context started at position (31:27). Try indenting this token further or using standard formatting conventions.
+
+/workspace/mochi/tests/transpiler/x/fs/group_by.fs(33,5): warning FS0058: Possible incorrect indentation: this token is offside of context started at position (31:27). Try indenting this token further or using standard formatting conventions.
+
+/workspace/mochi/tests/transpiler/x/fs/group_by.fs(33,5): warning FS0058: Possible incorrect indentation: this token is offside of context started at position (31:27). Try indenting this token further or using standard formatting conventions.
+
+/workspace/mochi/tests/transpiler/x/fs/group_by.fs(33,13): warning FS0058: Possible incorrect indentation: this token is offside of context started at position (31:27). Try indenting this token further or using standard formatting conventions.
+
+/workspace/mochi/tests/transpiler/x/fs/group_by.fs(33,13): warning FS0058: Possible incorrect indentation: this token is offside of context started at position (31:27). Try indenting this token further or using standard formatting conventions.
+
+/workspace/mochi/tests/transpiler/x/fs/group_by.fs(33,20): warning FS0058: Possible incorrect indentation: this token is offside of context started at position (31:27). Try indenting this token further or using standard formatting conventions.
+
+/workspace/mochi/tests/transpiler/x/fs/group_by.fs(33,20): warning FS0058: Possible incorrect indentation: this token is offside of context started at position (31:27). Try indenting this token further or using standard formatting conventions.
+
+/workspace/mochi/tests/transpiler/x/fs/group_by.fs(31,88): error FS0001: Type mismatch. Expecting a
+    Anon6 list    
+but given a
+    Anon2 list    
+The type 'Anon6' does not match the type 'Anon2'
+
+/workspace/mochi/tests/transpiler/x/fs/group_by.fs(32,42): error FS0001: Type mismatch. Expecting a
+    Anon4 list    
+but given a
+    Anon6 list    
+The type 'Anon4' does not match the type 'Anon6'
+
+/workspace/mochi/tests/transpiler/x/fs/group_by.fs(33,117): error FS0193: Type constraint mismatch. The type 
+    Anon4    
+is not compatible with type
+    Anon2    
+The type 'Anon4' is not compatible with the type 'Anon2'

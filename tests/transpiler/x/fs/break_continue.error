@@ -1,0 +1,27 @@
+exit status 1
+F# Compiler for F# 4.0 (Open Source Edition)
+Freely distributed under the Apache 2.0 Open Source License
+
+/workspace/mochi/tests/transpiler/x/fs/break_continue.fs(6,1): warning FS0046: The identifier 'continue' is reserved for future use by F#
+
+/workspace/mochi/tests/transpiler/x/fs/break_continue.fs(6,1): warning FS0058: Possible incorrect indentation: this token is offside of context started at position (5:1). Try indenting this token further or using standard formatting conventions.
+
+/workspace/mochi/tests/transpiler/x/fs/break_continue.fs(6,1): warning FS0058: Possible incorrect indentation: this token is offside of context started at position (5:1). Try indenting this token further or using standard formatting conventions.
+
+/workspace/mochi/tests/transpiler/x/fs/break_continue.fs(7,1): warning FS0058: Possible incorrect indentation: this token is offside of context started at position (5:1). Try indenting this token further or using standard formatting conventions.
+
+/workspace/mochi/tests/transpiler/x/fs/break_continue.fs(7,1): warning FS0058: Possible incorrect indentation: this token is offside of context started at position (5:1). Try indenting this token further or using standard formatting conventions.
+
+/workspace/mochi/tests/transpiler/x/fs/break_continue.fs(8,1): warning FS0046: The identifier 'break' is reserved for future use by F#
+
+/workspace/mochi/tests/transpiler/x/fs/break_continue.fs(8,1): warning FS0058: Possible incorrect indentation: this token is offside of context started at position (7:1). Try indenting this token further or using standard formatting conventions.
+
+/workspace/mochi/tests/transpiler/x/fs/break_continue.fs(8,1): warning FS0058: Possible incorrect indentation: this token is offside of context started at position (7:1). Try indenting this token further or using standard formatting conventions.
+
+/workspace/mochi/tests/transpiler/x/fs/break_continue.fs(9,1): warning FS0058: Possible incorrect indentation: this token is offside of context started at position (7:1). Try indenting this token further or using standard formatting conventions.
+
+/workspace/mochi/tests/transpiler/x/fs/break_continue.fs(9,1): warning FS0058: Possible incorrect indentation: this token is offside of context started at position (7:1). Try indenting this token further or using standard formatting conventions.
+
+/workspace/mochi/tests/transpiler/x/fs/break_continue.fs(6,1): error FS0039: The value or constructor 'continue' is not defined
+
+/workspace/mochi/tests/transpiler/x/fs/break_continue.fs(8,1): error FS0039: The value or constructor 'break' is not defined

@@ -1,5 +1,4 @@
-// Generated 2025-07-21 15:37 +0700
-open System
+// Generated 2025-07-21 18:37 +0700
 
 type Anon1 = {
     mutable cat: string
@@ -16,11 +15,18 @@ type Anon3 = {
     mutable share: float
 }
 type Anon4 = {
+    mutable i: obj
+}
+type Anon5 = {
+    mutable key: obj
+    mutable items: Anon4 list
+}
+type Anon6 = {
     mutable cat: obj
     mutable share: float
 }
 let items: Anon2 list = [{ cat = "a"; val = 10; flag = true }; { cat = "a"; val = 5; flag = false }; { cat = "b"; val = 20; flag = true }]
-let result: Anon4 list = [ for (key, items) in List.groupBy (fun i -> i.cat) items do
-    let g = {| key = key; items = items |}
+let result: Anon6 list = [ for (key, items) in List.groupBy (fun i -> i.cat) items do
+    let g : Anon5 = { key = key; items = items }
     yield { cat = g.key; share = (List.sum [ for x in g.items do yield if x.flag then (x.val) else 0 ]) / (List.sum [ for x in g.items do yield x.val ]) } ]
 printfn "%s" (("[" + (String.concat ", " (List.map string result))) + "]")

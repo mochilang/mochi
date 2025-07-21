@@ -1,5 +1,4 @@
-// Generated 2025-07-21 15:37 +0700
-open System
+// Generated 2025-07-21 18:37 +0700
 
 type Anon1 = {
     mutable name: string
@@ -17,13 +16,20 @@ type Anon3 = {
     mutable avg_age: float
 }
 type Anon4 = {
+    mutable person: obj
+}
+type Anon5 = {
+    mutable key: obj
+    mutable items: Anon4 list
+}
+type Anon6 = {
     mutable city: obj
     mutable count: int
     mutable avg_age: float
 }
 let people: Anon2 list = [{ name = "Alice"; age = 30; city = "Paris" }; { name = "Bob"; age = 15; city = "Hanoi" }; { name = "Charlie"; age = 65; city = "Paris" }; { name = "Diana"; age = 45; city = "Hanoi" }; { name = "Eve"; age = 70; city = "Paris" }; { name = "Frank"; age = 22; city = "Hanoi" }]
-let stats: Anon4 list = [ for (key, items) in List.groupBy (fun person -> person.city) people do
-    let g = {| key = key; items = items |}
+let stats: Anon6 list = [ for (key, items) in List.groupBy (fun person -> person.city) people do
+    let g : Anon5 = { key = key; items = items }
     yield { city = g.key; count = List.length (g.items); avg_age = List.averageBy float [ for p in g.items do yield p.age ] } ]
 printfn "%s" (string "--- People grouped by city ---")
 for s in stats do

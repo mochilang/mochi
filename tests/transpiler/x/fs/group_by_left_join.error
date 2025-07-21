@@ -1,0 +1,34 @@
+exit status 1
+F# Compiler for F# 4.0 (Open Source Edition)
+Freely distributed under the Apache 2.0 Open Source License
+
+/workspace/mochi/tests/transpiler/x/fs/group_by_left_join.fs(38,5): warning FS0058: Possible incorrect indentation: this token is offside of context started at position (37:27). Try indenting this token further or using standard formatting conventions.
+
+/workspace/mochi/tests/transpiler/x/fs/group_by_left_join.fs(38,5): warning FS0058: Possible incorrect indentation: this token is offside of context started at position (37:27). Try indenting this token further or using standard formatting conventions.
+
+/workspace/mochi/tests/transpiler/x/fs/group_by_left_join.fs(39,5): warning FS0058: Possible incorrect indentation: this token is offside of context started at position (37:27). Try indenting this token further or using standard formatting conventions.
+
+/workspace/mochi/tests/transpiler/x/fs/group_by_left_join.fs(39,5): warning FS0058: Possible incorrect indentation: this token is offside of context started at position (37:27). Try indenting this token further or using standard formatting conventions.
+
+/workspace/mochi/tests/transpiler/x/fs/group_by_left_join.fs(39,13): warning FS0058: Possible incorrect indentation: this token is offside of context started at position (37:27). Try indenting this token further or using standard formatting conventions.
+
+/workspace/mochi/tests/transpiler/x/fs/group_by_left_join.fs(39,13): warning FS0058: Possible incorrect indentation: this token is offside of context started at position (37:27). Try indenting this token further or using standard formatting conventions.
+
+/workspace/mochi/tests/transpiler/x/fs/group_by_left_join.fs(39,20): warning FS0058: Possible incorrect indentation: this token is offside of context started at position (37:27). Try indenting this token further or using standard formatting conventions.
+
+/workspace/mochi/tests/transpiler/x/fs/group_by_left_join.fs(39,20): warning FS0058: Possible incorrect indentation: this token is offside of context started at position (37:27). Try indenting this token further or using standard formatting conventions.
+
+/workspace/mochi/tests/transpiler/x/fs/group_by_left_join.fs(37,85): error FS0193: Type constraint mismatch. The type 
+    obj    
+is not compatible with type
+    Anon8    
+The type 'obj' is not compatible with the type 'Anon8'
+
+/workspace/mochi/tests/transpiler/x/fs/group_by_left_join.fs(37,168): error FS0747: This construct may only be used within list, array and sequence expressions, e.g. expressions of the form 'seq { ... }', '[ ... ]' or '[| ... |]'. These use the syntax 'for ... in ... do ... yield...' to generate elements
+
+/workspace/mochi/tests/transpiler/x/fs/group_by_left_join.fs(37,168): warning FS0020: This expression should have type 'unit', but has type 'Anon6'. Use 'ignore' to discard the result of the expression, or 'let' to bind the result to a name.
+
+/workspace/mochi/tests/transpiler/x/fs/group_by_left_join.fs(39,72): error FS0001: This expression was expected to have type
+    bool    
+but here has type
+    obj    
