@@ -1,0 +1,6 @@
+run: exit status 1
+Traceback (most recent call last):
+  File "/workspace/mochi/tests/transpiler/x/py/group_items_iteration.py", line 7, in <module>
+    _groups_groups[d["tag"]] += d.value
+                                ^^^^^^^
+AttributeError: 'dict' object has no attribute 'value'. Did you mean: 'values'?
