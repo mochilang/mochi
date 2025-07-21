@@ -1080,6 +1080,59 @@ func (l *LeftJoinExpr) emit(w io.Writer) error {
 	return nil
 }
 
+// RightJoinExpr represents a simple right join query.
+type RightJoinExpr struct {
+	LeftVar  string
+	LeftSrc  Expr
+	RightVar string
+	RightSrc Expr
+	Cond     Expr
+	Select   Expr
+}
+
+func (r *RightJoinExpr) emit(w io.Writer) error {
+	if _, err := io.WriteString(w, "(() {\n"); err != nil {
+		return err
+	}
+	if _, err := io.WriteString(w, "  var _res = [];\n"); err != nil {
+		return err
+	}
+	if _, err := io.WriteString(w, "  for (var "+r.RightVar+" in "); err != nil {
+		return err
+	}
+	if err := r.RightSrc.emit(w); err != nil {
+		return err
+	}
+	if _, err := io.WriteString(w, ") {\n    var matched = false;\n    for (var "+r.LeftVar+" in "); err != nil {
+		return err
+	}
+	if err := r.LeftSrc.emit(w); err != nil {
+		return err
+	}
+	if _, err := io.WriteString(w, ") {\n      if (!("); err != nil {
+		return err
+	}
+	if err := r.Cond.emit(w); err != nil {
+		return err
+	}
+	if _, err := io.WriteString(w, ")) continue;\n      matched = true;\n      _res.add("); err != nil {
+		return err
+	}
+	if err := r.Select.emit(w); err != nil {
+		return err
+	}
+	if _, err := io.WriteString(w, ");\n    }\n    if (!matched) {\n      var "+r.LeftVar+" = null;\n      _res.add("); err != nil {
+		return err
+	}
+	if err := r.Select.emit(w); err != nil {
+		return err
+	}
+	if _, err := io.WriteString(w, ");\n    }\n  }\n  return _res;\n})()"); err != nil {
+		return err
+	}
+	return nil
+}
+
 func (lc *MultiListComp) emit(w io.Writer) error {
 	if _, err := io.WriteString(w, "[for (var "); err != nil {
 		return err
@@ -1365,6 +1418,58 @@ func inferType(e Expr) string {
 			} else {
 				delete(compVarTypes, v)
 			}
+		}
+		return "List<" + et + ">"
+	case *LeftJoinExpr:
+		ltype := inferType(ex.LeftSrc)
+		rtype := inferType(ex.RightSrc)
+		lelem := "dynamic"
+		relem := "dynamic"
+		if strings.HasPrefix(ltype, "List<") && strings.HasSuffix(ltype, ">") {
+			lelem = strings.TrimSuffix(strings.TrimPrefix(ltype, "List<"), ">")
+		}
+		if strings.HasPrefix(rtype, "List<") && strings.HasSuffix(rtype, ">") {
+			relem = strings.TrimSuffix(strings.TrimPrefix(rtype, "List<"), ">")
+		}
+		savedL, savedR := compVarTypes[ex.LeftVar], compVarTypes[ex.RightVar]
+		compVarTypes[ex.LeftVar] = lelem
+		compVarTypes[ex.RightVar] = relem
+		et := inferType(ex.Select)
+		if savedL != "" {
+			compVarTypes[ex.LeftVar] = savedL
+		} else {
+			delete(compVarTypes, ex.LeftVar)
+		}
+		if savedR != "" {
+			compVarTypes[ex.RightVar] = savedR
+		} else {
+			delete(compVarTypes, ex.RightVar)
+		}
+		return "List<" + et + ">"
+	case *RightJoinExpr:
+		ltype := inferType(ex.LeftSrc)
+		rtype := inferType(ex.RightSrc)
+		lelem := "dynamic"
+		relem := "dynamic"
+		if strings.HasPrefix(ltype, "List<") && strings.HasSuffix(ltype, ">") {
+			lelem = strings.TrimSuffix(strings.TrimPrefix(ltype, "List<"), ">")
+		}
+		if strings.HasPrefix(rtype, "List<") && strings.HasSuffix(rtype, ">") {
+			relem = strings.TrimSuffix(strings.TrimPrefix(rtype, "List<"), ">")
+		}
+		savedL, savedR := compVarTypes[ex.LeftVar], compVarTypes[ex.RightVar]
+		compVarTypes[ex.LeftVar] = lelem
+		compVarTypes[ex.RightVar] = relem
+		et := inferType(ex.Select)
+		if savedL != "" {
+			compVarTypes[ex.LeftVar] = savedL
+		} else {
+			delete(compVarTypes, ex.LeftVar)
+		}
+		if savedR != "" {
+			compVarTypes[ex.RightVar] = savedR
+		} else {
+			delete(compVarTypes, ex.RightVar)
 		}
 		return "List<" + et + ">"
 	case *SortExpr:
@@ -2215,6 +2320,9 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 		if ex, err := convertLeftJoinQuery(p.Query); err == nil {
 			return ex, nil
 		}
+		if ex, err := convertRightJoinQuery(p.Query); err == nil {
+			return ex, nil
+		}
 		return convertQueryExpr(p.Query)
 	case p.FunExpr != nil && p.FunExpr.ExprBody != nil:
 		var params []string
@@ -2429,6 +2537,40 @@ func convertLeftJoinQuery(q *parser.QueryExpr) (Expr, error) {
 		return nil, err
 	}
 	return &LeftJoinExpr{LeftVar: q.Var, LeftSrc: leftSrc, RightVar: j.Var, RightSrc: rightSrc, Cond: cond, Select: sel}, nil
+}
+
+func convertRightJoinQuery(q *parser.QueryExpr) (Expr, error) {
+	if q == nil || len(q.Joins) != 1 || len(q.Froms) > 0 || q.Group != nil || q.Sort != nil || q.Skip != nil || q.Take != nil || q.Where != nil || q.Distinct {
+		return nil, fmt.Errorf("unsupported query")
+	}
+	j := q.Joins[0]
+	if j.Side == nil || *j.Side != "right" {
+		return nil, fmt.Errorf("unsupported query")
+	}
+	leftSrc, err := convertExpr(q.Source)
+	if err != nil {
+		return nil, err
+	}
+	rightSrc, err := convertExpr(j.Src)
+	if err != nil {
+		return nil, err
+	}
+	child := types.NewEnv(currentEnv)
+	child.SetVar(q.Var, types.AnyType{}, true)
+	child.SetVar(j.Var, types.AnyType{}, true)
+	saved := currentEnv
+	currentEnv = child
+	cond, err := convertExpr(j.On)
+	if err != nil {
+		currentEnv = saved
+		return nil, err
+	}
+	sel, err := convertExpr(q.Select)
+	currentEnv = saved
+	if err != nil {
+		return nil, err
+	}
+	return &RightJoinExpr{LeftVar: q.Var, LeftSrc: leftSrc, RightVar: j.Var, RightSrc: rightSrc, Cond: cond, Select: sel}, nil
 }
 
 func convertQueryExpr(q *parser.QueryExpr) (Expr, error) {
