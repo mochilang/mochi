@@ -1,9 +1,0 @@
-run: exit status 1
-[0m[1m[31merror[0m: Uncaught (in promise) TypeError: g is not iterable
-  for (const x of g) {
-[0m[31m                  ^[0m
-    at [0m[36mfile:///workspace/mochi/tests/transpiler/x/ts/group_by_sort.ts[0m:[0m[33m19[0m:[0m[33m19[0m
-    at [0m[36mfile:///workspace/mochi/tests/transpiler/x/ts/group_by_sort.ts[0m:[0m[33m24[0m:[0m[33m2[0m
-    at [0m[1m[3mArray.map[0m ([0m[36m<anonymous>[0m)
-    at [0m[36mfile:///workspace/mochi/tests/transpiler/x/ts/group_by_sort.ts[0m:[0m[33m17[0m:[0m[33m25[0m
-    at [0m[36mfile:///workspace/mochi/tests/transpiler/x/ts/group_by_sort.ts[0m:[0m[33m38[0m:[0m[33m2[0m
