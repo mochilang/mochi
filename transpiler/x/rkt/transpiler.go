@@ -35,12 +35,22 @@ func (r *RawStmt) emit(w io.Writer) {
 	io.WriteString(w, "\n")
 }
 
-type PrintStmt struct{ Expr Expr }
+type PrintStmt struct{ Parts []Expr }
 
 func (p *PrintStmt) emit(w io.Writer) {
-	io.WriteString(w, "(displayln ")
-	p.Expr.emit(w)
-	io.WriteString(w, ")\n")
+	if len(p.Parts) == 1 {
+		io.WriteString(w, "(displayln ")
+		p.Parts[0].emit(w)
+		io.WriteString(w, ")\n")
+		return
+	}
+	io.WriteString(w, "(displayln (string-join (filter (lambda (s) (not (str"+
+		"ing=? s \"\"))) (list")
+	for _, part := range p.Parts {
+		io.WriteString(w, " ")
+		(&StrExpr{Arg: part}).emit(w)
+	}
+	io.WriteString(w, ")) \" \"))\n")
 }
 
 type LetStmt struct {
@@ -209,12 +219,11 @@ func (f *ForInStmt) emit(w io.Writer) {
 	if f.Keys {
 		io.WriteString(w, "(in-hash-keys ")
 		f.Iterable.emit(w)
-		io.WriteString(w, ")])")
+		io.WriteString(w, ")")
 	} else {
-		io.WriteString(w, "")
 		f.Iterable.emit(w)
-		io.WriteString(w, "])")
 	}
+	io.WriteString(w, "]")
 	if f.Break != nil {
 		io.WriteString(w, " #:break ")
 		f.Break.emit(w)
@@ -223,7 +232,7 @@ func (f *ForInStmt) emit(w io.Writer) {
 		io.WriteString(w, " #:unless ")
 		f.Unless.emit(w)
 	}
-	io.WriteString(w, "\n")
+	io.WriteString(w, ")\n")
 	for _, st := range f.Body {
 		st.emit(w)
 	}
@@ -919,13 +928,7 @@ func convertStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 				}
 				parts = append(parts, pe)
 			}
-			if len(parts) == 1 {
-				return &PrintStmt{Expr: parts[0]}, nil
-			}
-			fmtStr := strings.TrimSpace(strings.Repeat("~a ", len(parts)))
-			args := []Expr{&StringLit{Value: fmtStr}}
-			args = append(args, parts...)
-			return &PrintStmt{Expr: &CallExpr{Func: "format", Args: args}}, nil
+			return &PrintStmt{Parts: parts}, nil
 		}
 		return nil, fmt.Errorf("unsupported expression statement")
 	case st.Update != nil:
