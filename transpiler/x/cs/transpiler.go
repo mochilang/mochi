@@ -948,6 +948,9 @@ func inferStructMap(varName string, prog *Program, m *MapLit) (Expr, bool) {
 	}
 
 	sname := toStructName(varName)
+	if _, exists := structTypes[sname]; exists {
+		return m, false
+	}
 	fields := make([]StructField, len(keys))
 	typeFields := make(map[string]types.Type)
 	for i, k := range keys {
@@ -998,6 +1001,9 @@ func inferStructList(varName string, prog *Program, l *ListLit) (Expr, bool) {
 		}
 	}
 	sname := toStructName(varName)
+	if _, exists := structTypes[sname]; exists {
+		return l, false
+	}
 	fields := make([]StructField, len(keys))
 	typeFields := make(map[string]types.Type)
 	for i, k := range keys {
@@ -2551,28 +2557,34 @@ func Emit(prog *Program) []byte {
 		for _, f := range st.Fields {
 			fmt.Fprintf(&buf, "    public %s %s;\n", f.Type, f.Name)
 		}
-                buf.WriteString("    public override string ToString() => $\"{{")
-                for i, f := range st.Fields {
-                        if i > 0 {
-                                buf.WriteString(", ")
-                        }
-                        fmt.Fprintf(&buf, "'%s': ", f.Name)
-                        if f.Type == "string" {
-                                fmt.Fprintf(&buf, "'{%s}'", f.Name)
-                        } else if f.Type == "double" {
-                                fmt.Fprintf(&buf, "{%s.ToString(\"0.0\")}", f.Name)
-                        } else {
-                                fmt.Fprintf(&buf, "{%s}", f.Name)
-                        }
-                }
-                buf.WriteString("}}\";\n")
-                buf.WriteString("}\n")
+		buf.WriteString("    public override string ToString() => $\"{{")
+		for i, f := range st.Fields {
+			if i > 0 {
+				buf.WriteString(", ")
+			}
+			fmt.Fprintf(&buf, "'%s': ", f.Name)
+			if f.Type == "string" {
+				fmt.Fprintf(&buf, "'{%s}'", f.Name)
+			} else if f.Type == "double" {
+				fmt.Fprintf(&buf, "{%s.ToString(\"0.0\")}", f.Name)
+			} else {
+				fmt.Fprintf(&buf, "{%s}", f.Name)
+			}
+		}
+		buf.WriteString("}}\";\n")
+		buf.WriteString("}\n")
 	}
 
 	buf.WriteString("class Program {\n")
 	for _, g := range prog.Globals {
 		buf.WriteString("\tstatic ")
-		if t, ok := varTypes[g.Name]; ok && t != "" {
+		t := typeOfExpr(g.Value)
+		if t == "" {
+			if vt, ok := varTypes[g.Name]; ok && vt != "" {
+				t = vt
+			}
+		}
+		if t != "" && t != "object" {
 			fmt.Fprintf(&buf, "%s %s = ", t, g.Name)
 		} else {
 			fmt.Fprintf(&buf, "var %s = ", g.Name)
