@@ -234,9 +234,10 @@ func TestTranspileCastStruct(t *testing.T) { runGolden(t, "cast_struct") }
 
 func TestTranspileUserTypeLiteral(t *testing.T) { runGolden(t, "user_type_literal") }
 
-func TestTranspileRightJoin(t *testing.T)  { runGolden(t, "right_join") }
-func TestTranspileOrderByMap(t *testing.T) { runGolden(t, "order_by_map") }
-func TestTranspileGroupBy(t *testing.T)    { runGolden(t, "group_by") }
+func TestTranspileRightJoin(t *testing.T)             { runGolden(t, "right_join") }
+func TestTranspileOrderByMap(t *testing.T)            { runGolden(t, "order_by_map") }
+func TestTranspileGroupBy(t *testing.T)               { runGolden(t, "group_by") }
+func TestTranspileGroupByConditionalSum(t *testing.T) { runGolden(t, "group_by_conditional_sum") }
 
 func updateEnabled() bool { return *update }
 
