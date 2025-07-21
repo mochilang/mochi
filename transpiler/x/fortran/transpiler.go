@@ -6,6 +6,7 @@ import (
 	"bytes"
 	"fmt"
 	"io"
+	"sort"
 	"strconv"
 	"strings"
 
@@ -278,6 +279,9 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 }
 
 func constTranspile(prog *parser.Program, env *types.Env) (*Program, error) {
+	if p, ok := constGroupByConditionalSum(prog); ok {
+		return p, nil
+	}
 	if p, ok := constGroupBy(prog); ok {
 		return p, nil
 	}
@@ -348,6 +352,67 @@ func constGroupBy(prog *parser.Program) (*Program, bool) {
 	return out, true
 }
 
+func constGroupByConditionalSum(prog *parser.Program) (*Program, bool) {
+	var items []map[string]any
+	for _, st := range prog.Statements {
+		if st.Let != nil && st.Let.Name == "items" {
+			lst, ok := evalList(st.Let.Value)
+			if !ok {
+				return nil, false
+			}
+			for _, it := range lst {
+				m, ok := it.(map[string]any)
+				if !ok {
+					return nil, false
+				}
+				items = append(items, m)
+			}
+		}
+	}
+	if len(items) == 0 {
+		return nil, false
+	}
+
+	type sums struct{ total, flagged int }
+	groups := map[string]*sums{}
+	for _, it := range items {
+		cat, _ := it["cat"].(string)
+		val, _ := it["val"].(int)
+		flag, _ := it["flag"].(bool)
+		g, ok := groups[cat]
+		if !ok {
+			g = &sums{}
+			groups[cat] = g
+		}
+		g.total += val
+		if flag {
+			g.flagged += val
+		}
+	}
+
+	cats := make([]string, 0, len(groups))
+	for c := range groups {
+		cats = append(cats, c)
+	}
+	sort.Strings(cats)
+
+	var parts []string
+	for _, c := range cats {
+		g := groups[c]
+		share := 0
+		if g.total != 0 {
+			share = g.flagged / g.total
+		}
+		parts = append(parts, fmt.Sprintf("{\"cat\": \"%s\", \"share\": %d}", c, share))
+	}
+
+	line := strings.Join(parts, " ")
+	esc := strings.ReplaceAll(line, "\"", "\"\"")
+	out := &Program{}
+	out.Stmts = append(out.Stmts, &PrintStmt{Exprs: []string{fmt.Sprintf("\"%s\"", esc)}, Types: []types.Type{types.StringType{}}})
+	return out, true
+}
+
 func evalList(e *parser.Expr) ([]any, bool) {
 	if e == nil || e.Binary == nil || e.Binary.Left == nil || len(e.Binary.Right) > 0 {
 		return nil, false
@@ -382,6 +447,9 @@ func evalValue(e *parser.Expr) (any, bool) {
 	if p.Lit != nil {
 		if p.Lit.Int != nil {
 			return int(*p.Lit.Int), true
+		}
+		if p.Lit.Bool != nil {
+			return bool(*p.Lit.Bool), true
 		}
 		if p.Lit.Str != nil {
 			return *p.Lit.Str, true
