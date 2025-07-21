@@ -1439,16 +1439,19 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 		}
 		return &CallExpr{Func: p.Call.Func, Args: args}, nil
 	case p.Lit != nil:
-		if p.Lit.Str != nil {
-			return &StringLit{Value: *p.Lit.Str}, nil
-		}
-		if p.Lit.Int != nil {
-			return &IntLit{Value: int(*p.Lit.Int)}, nil
-		}
-		if p.Lit.Bool != nil {
-			return &BoolLit{Value: bool(*p.Lit.Bool)}, nil
-		}
-		return nil, fmt.Errorf("unsupported literal")
+               if p.Lit.Str != nil {
+                       return &StringLit{Value: *p.Lit.Str}, nil
+               }
+               if p.Lit.Int != nil {
+                       return &IntLit{Value: int(*p.Lit.Int)}, nil
+               }
+               if p.Lit.Float != nil {
+                       return &FloatLit{Value: *p.Lit.Float}, nil
+               }
+               if p.Lit.Bool != nil {
+                       return &BoolLit{Value: bool(*p.Lit.Bool)}, nil
+               }
+               return nil, fmt.Errorf("unsupported literal")
 	case p.List != nil:
 		elems := make([]Expr, len(p.List.Elems))
 		for i, e := range p.List.Elems {
@@ -1704,13 +1707,13 @@ func inferListStruct(varName string, list *ListLit) string {
 		if len(ml.Entries) != len(first.Entries) {
 			return ""
 		}
-		for i, e := range ml.Entries {
-			k, ok := e.Key.(*StringLit)
-			if !ok || k.Value != fields[i].Name {
-				return ""
-			}
-		}
-	}
+               for i, e := range ml.Entries {
+                       k, ok := e.Key.(*StringLit)
+                       if !ok || toSnakeCase(k.Value) != fields[i].Name {
+                               return ""
+                       }
+               }
+       }
 	base := strings.TrimSuffix(varName, "s")
 	structName := strings.Title(base)
 	if _, ok := structDefs[structName]; !ok {
