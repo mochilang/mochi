@@ -385,18 +385,18 @@ func (s *PrintStmt) emit(w io.Writer, indent int) {
 				io.WriteString(w, "static_cast<int>(")
 				ex.emit(w)
 				io.WriteString(w, ")")
-				continue
+			} else {
+				ex.emit(w)
 			}
-			ex.emit(w)
 			continue
 		case *BinaryExpr:
-			if ex.Op == "&&" || ex.Op == "||" {
+			if ex.Op == "&&" || ex.Op == "||" || ex.Op == "==" || ex.Op == "!=" || ex.Op == "<" || ex.Op == "<=" || ex.Op == ">" || ex.Op == ">=" || ex.Op == "in" {
 				io.WriteString(w, "static_cast<int>(")
 				ex.emit(w)
 				io.WriteString(w, ")")
-				continue
+			} else {
+				ex.emit(w)
 			}
-			ex.emit(w)
 			continue
 		case *ListLit:
 			if currentProgram != nil {
@@ -859,11 +859,21 @@ func (e *ExistsExpr) emit(w io.Writer) {
 
 func (b *BinaryExpr) emit(w io.Writer) {
 	if b.Op == "/" {
-		io.WriteString(w, "((double)(")
-		b.Left.emit(w)
-		io.WriteString(w, ") / (")
-		b.Right.emit(w)
-		io.WriteString(w, "))")
+		lt := exprType(b.Left)
+		rt := exprType(b.Right)
+		if lt == "double" || rt == "double" {
+			io.WriteString(w, "((double)(")
+			b.Left.emit(w)
+			io.WriteString(w, ") / (")
+			b.Right.emit(w)
+			io.WriteString(w, "))")
+		} else {
+			io.WriteString(w, "(")
+			b.Left.emit(w)
+			io.WriteString(w, " / ")
+			b.Right.emit(w)
+			io.WriteString(w, ")")
+		}
 		return
 	}
 	io.WriteString(w, "(")
@@ -1388,23 +1398,60 @@ func convertBinary(b *parser.BinaryExpr) (Expr, error) {
 	if len(b.Right) == 0 {
 		return left, nil
 	}
-	expr := left
-	for _, op := range b.Right {
-		right, err := convertPostfix(op.Right)
+	operands := []Expr{left}
+	ops := []string{}
+	for _, part := range b.Right {
+		right, err := convertPostfix(part.Right)
 		if err != nil {
 			return nil, err
 		}
-		if op.Op == "in" {
-			if currentProgram != nil {
-				currentProgram.addInclude("<algorithm>")
-				currentProgram.addInclude("<type_traits>")
+		ops = append(ops, part.Op)
+		operands = append(operands, right)
+	}
+	levels := [][]string{
+		{"*", "/", "%"},
+		{"+", "-"},
+		{"<", "<=", ">", ">="},
+		{"==", "!=", "in"},
+		{"&&"},
+		{"||"},
+		{"union", "union_all", "except", "intersect"},
+	}
+	containsOp := func(arr []string, op string) bool {
+		for _, v := range arr {
+			if v == op {
+				return true
 			}
-			expr = &InExpr{Value: expr, Coll: right}
-		} else {
-			expr = &BinaryExpr{Left: expr, Op: op.Op, Right: right}
+		}
+		return false
+	}
+	for _, level := range levels {
+		for i := 0; i < len(ops); {
+			if containsOp(level, ops[i]) {
+				l := operands[i]
+				r := operands[i+1]
+				var ex Expr
+				if ops[i] == "in" {
+					if currentProgram != nil {
+						currentProgram.addInclude("<algorithm>")
+						currentProgram.addInclude("<type_traits>")
+					}
+					ex = &InExpr{Value: l, Coll: r}
+				} else {
+					ex = &BinaryExpr{Left: l, Op: ops[i], Right: r}
+				}
+				operands[i] = ex
+				operands = append(operands[:i+1], operands[i+2:]...)
+				ops = append(ops[:i], ops[i+1:]...)
+			} else {
+				i++
+			}
 		}
 	}
-	return expr, nil
+	if len(operands) != 1 {
+		return nil, fmt.Errorf("unexpected binary expression")
+	}
+	return operands[0], nil
 }
 
 func convertUnary(u *parser.Unary) (Expr, error) {

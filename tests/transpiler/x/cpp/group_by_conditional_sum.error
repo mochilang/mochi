@@ -3,16 +3,16 @@ compile: exit status 1
    24 |     auto share;
       |     ^~~~
 /workspace/mochi/tests/transpiler/x/cpp/group_by_conditional_sum.cpp: In lambda function:
-/workspace/mochi/tests/transpiler/x/cpp/group_by_conditional_sum.cpp:35:104: error: template argument 1 is invalid
-   35 |     __items.push_back(ResultItem{.cat = g.key, .share = ((double)(std::accumulate(([]{ std::vector<auto> __items;
-      |                                                                                                        ^
-/workspace/mochi/tests/transpiler/x/cpp/group_by_conditional_sum.cpp:35:104: error: template argument 2 is invalid
+/workspace/mochi/tests/transpiler/x/cpp/group_by_conditional_sum.cpp:35:95: error: template argument 1 is invalid
+   35 |     __items.push_back(ResultItem{.cat = g.key, .share = (std::accumulate(([]{ std::vector<auto> __items;
+      |                                                                                               ^
+/workspace/mochi/tests/transpiler/x/cpp/group_by_conditional_sum.cpp:35:95: error: template argument 2 is invalid
 /workspace/mochi/tests/transpiler/x/cpp/group_by_conditional_sum.cpp:36:15: error: ‘g’ is not captured
    36 | for (auto x : g) {
       |               ^
-/workspace/mochi/tests/transpiler/x/cpp/group_by_conditional_sum.cpp:35:85: note: the lambda has no capture-default
-   35 |     __items.push_back(ResultItem{.cat = g.key, .share = ((double)(std::accumulate(([]{ std::vector<auto> __items;
-      |                                                                                     ^
+/workspace/mochi/tests/transpiler/x/cpp/group_by_conditional_sum.cpp:35:76: note: the lambda has no capture-default
+   35 |     __items.push_back(ResultItem{.cat = g.key, .share = (std::accumulate(([]{ std::vector<auto> __items;
+      |                                                                            ^
 /workspace/mochi/tests/transpiler/x/cpp/group_by_conditional_sum.cpp:34:12: note: ‘GGroup g’ declared here
    34 |     GGroup g{__kv.first, __kv.second};
       |            ^
@@ -42,19 +42,19 @@ compile: exit status 1
       |                 ^~~~~~~~~
 /workspace/mochi/tests/transpiler/x/cpp/group_by_conditional_sum.cpp: In lambda function:
 /workspace/mochi/tests/transpiler/x/cpp/group_by_conditional_sum.cpp:43:22: error: request for member ‘end’ in ‘<lambda closure object><lambda()>::<lambda()>().<lambda()>::<lambda()>()’, which is of non-class type ‘int’
-   43 | return __items; }()).end(), 0)) / (std::accumulate(([]{ std::vector<auto> __items;
+   43 | return __items; }()).end(), 0) / std::accumulate(([]{ std::vector<auto> __items;
       |                      ^~~
 /workspace/mochi/tests/transpiler/x/cpp/group_by_conditional_sum.cpp: In lambda function:
-/workspace/mochi/tests/transpiler/x/cpp/group_by_conditional_sum.cpp:43:73: error: template argument 1 is invalid
-   43 | return __items; }()).end(), 0)) / (std::accumulate(([]{ std::vector<auto> __items;
-      |                                                                         ^
-/workspace/mochi/tests/transpiler/x/cpp/group_by_conditional_sum.cpp:43:73: error: template argument 2 is invalid
+/workspace/mochi/tests/transpiler/x/cpp/group_by_conditional_sum.cpp:43:71: error: template argument 1 is invalid
+   43 | return __items; }()).end(), 0) / std::accumulate(([]{ std::vector<auto> __items;
+      |                                                                       ^
+/workspace/mochi/tests/transpiler/x/cpp/group_by_conditional_sum.cpp:43:71: error: template argument 2 is invalid
 /workspace/mochi/tests/transpiler/x/cpp/group_by_conditional_sum.cpp:44:15: error: ‘g’ is not captured
    44 | for (auto x : g) {
       |               ^
-/workspace/mochi/tests/transpiler/x/cpp/group_by_conditional_sum.cpp:43:54: note: the lambda has no capture-default
-   43 | return __items; }()).end(), 0)) / (std::accumulate(([]{ std::vector<auto> __items;
-      |                                                      ^
+/workspace/mochi/tests/transpiler/x/cpp/group_by_conditional_sum.cpp:43:52: note: the lambda has no capture-default
+   43 | return __items; }()).end(), 0) / std::accumulate(([]{ std::vector<auto> __items;
+      |                                                    ^
 /workspace/mochi/tests/transpiler/x/cpp/group_by_conditional_sum.cpp:34:12: note: ‘GGroup g’ declared here
    34 |     GGroup g{__kv.first, __kv.second};
       |            ^
@@ -84,7 +84,7 @@ compile: exit status 1
       |                 ^~~~~~~~~
 /workspace/mochi/tests/transpiler/x/cpp/group_by_conditional_sum.cpp: In lambda function:
 /workspace/mochi/tests/transpiler/x/cpp/group_by_conditional_sum.cpp:51:22: error: request for member ‘end’ in ‘<lambda closure object><lambda()>::<lambda()>().<lambda()>::<lambda()>()’, which is of non-class type ‘int’
-   51 | return __items; }()).end(), 0)))});
+   51 | return __items; }()).end(), 0))});
       |                      ^~~
 /workspace/mochi/tests/transpiler/x/cpp/group_by_conditional_sum.cpp: In function ‘int main()’:
 /workspace/mochi/tests/transpiler/x/cpp/group_by_conditional_sum.cpp:56:33: error: no match for ‘operator<<’ (operand types are ‘std::basic_ostream<char>::__ostream_type’ {aka ‘std::basic_ostream<char>’} and ‘std::vector<ResultItem>’)
