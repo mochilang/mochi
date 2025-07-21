@@ -1,3 +1,45 @@
+## Progress (2025-07-21 08:34 +0000)
+- Checklist updated: 55/100 tests compiled
+- Added `where` filters and group `having` support.
+- Generated dataset_where_filter golden output.
+
+## Progress (2025-07-21 15:18 +0700)
+- Checklist updated: 55/100 tests compiled
+- Added cross join query support.
+
+## Progress (2025-07-21 15:18 +0700)
+- Checklist updated: 55/100 tests compiled
+- Added cross join query support.
+
+## Progress (2025-07-21 15:18 +0700)
+- Checklist updated: 55/100 tests compiled
+- Added cross join query support.
+
+## Progress (2025-07-21 15:18 +0700)
+- Checklist updated: 55/100 tests compiled
+- Added cross join query support.
+
+## Progress (2025-07-21 15:18 +0700)
+- Checklist updated: 54/100 tests compiled
+- Added cross join query support.
+
+## Progress (2025-07-21 15:18 +0700)
+- Checklist updated: 54/100 tests compiled
+- Added cross join query support.
+
+## Progress (2025-07-21 08:23 +0000)
+- Checklist updated: 55/100 tests compiled
+- Added query filtering with `where` clauses and group `having` support.
+- Generated dataset_where_filter golden output.
+
+## Progress (2025-07-21 15:18 +0700)
+- Checklist updated: 54/100 tests compiled
+- Added cross join query support.
+
+## Progress (2025-07-21 15:18 +0700)
+- Checklist updated: 54/100 tests compiled
+- Added cross join query support.
+
 ## Progress (2025-07-21 13:50 +0700)
 - Checklist updated: 54/100 tests compiled
 - Implemented typed lists and maps for better inference.
