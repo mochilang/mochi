@@ -1385,6 +1385,43 @@ func compileQueryExpr(q *parser.QueryExpr, env *types.Env) (Expr, error) {
 		return &GroupBySortExpr{Var: q.Var, Source: src, Key: key, Name: q.Group.Name, Sort: sortExpr, Select: sel}, nil
 	}
 
+	if q.Group != nil && len(q.Group.Exprs) == 1 && len(q.Froms) == 0 && len(q.Joins) == 1 && q.Joins[0].Side != nil && *q.Joins[0].Side == "left" && q.Where == nil && q.Sort == nil && q.Skip == nil && q.Take == nil && !q.Distinct {
+		lj := q.Joins[0]
+		child := types.NewEnv(env)
+		child.SetVar(q.Var, elemTypeOfExpr(q.Source, env), true)
+		je, err := compileExpr(lj.Src, child)
+		if err != nil {
+			return nil, err
+		}
+		child.SetVar(lj.Var, elemTypeOfExpr(lj.Src, child), true)
+		onExpr, err := compileExpr(lj.On, child)
+		if err != nil {
+			return nil, err
+		}
+		items := []MapItem{
+			{Key: &AtomLit{Name: q.Var}, Value: &VarRef{Name: q.Var}},
+			{Key: &AtomLit{Name: lj.Var}, Value: &VarRef{Name: lj.Var}},
+		}
+		selRow := &MapLit{Items: items}
+		joinExpr := &LeftJoinExpr{LeftVar: q.Var, LeftSrc: src, RightVar: lj.Var, RightSrc: je, On: onExpr, Select: selRow}
+
+		child2 := types.NewEnv(env)
+		child2.SetVar(q.Var, types.AnyType{}, true)
+		child2.SetVar(lj.Var, types.AnyType{}, true)
+		key, err := compileExpr(q.Group.Exprs[0], child2)
+		if err != nil {
+			return nil, err
+		}
+		genv := types.NewEnv(env)
+		genv.SetVar(q.Group.Name, types.GroupType{Key: types.AnyType{}, Elem: types.AnyType{}}, true)
+		sel, err := compileExpr(q.Select, genv)
+		if err != nil {
+			return nil, err
+		}
+		pattern := fmt.Sprintf("%%{%s: %s, %s: %s}", q.Var, q.Var, lj.Var, lj.Var)
+		return &GroupByExpr{Var: pattern, Source: joinExpr, Key: key, Name: q.Group.Name, Select: sel}, nil
+	}
+
 	if q.Group != nil && len(q.Group.Exprs) == 1 && (len(q.Froms) > 0 || len(q.Joins) > 0) && q.Sort == nil && q.Skip == nil && q.Take == nil && !q.Distinct {
 		gens := []CompGen{{Var: q.Var, Src: src}}
 		child := types.NewEnv(env)
