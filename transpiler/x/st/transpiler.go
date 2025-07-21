@@ -319,6 +319,9 @@ func applyOp(a value, op string, b value) (value, error) {
 			_, ok := b.kv[key]
 			return value{kind: valBool, b: ok}, nil
 		}
+		if a.kind == valString && b.kind == valString {
+			return value{kind: valBool, b: strings.Contains(b.s, a.s)}, nil
+		}
 	case "&&":
 		if a.kind == valBool && b.kind == valBool {
 			return value{kind: valBool, b: a.b && b.b}, nil
@@ -949,6 +952,25 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 			for _, s := range st.If.Else {
 				if err := processStmt(s); err != nil {
 					return err
+				}
+			}
+			return nil
+		case st.While != nil:
+			for {
+				cond, err := evalExpr(st.While.Cond, vars)
+				if err != nil {
+					return err
+				}
+				if cond.kind != valBool {
+					return fmt.Errorf("non-bool condition")
+				}
+				if !cond.b {
+					break
+				}
+				for _, b := range st.While.Body {
+					if err := processStmt(b); err != nil {
+						return err
+					}
 				}
 			}
 			return nil
