@@ -30,6 +30,7 @@ type context struct {
 	alias     map[string]string
 	orig      map[string]string
 	counter   map[string]int
+	strVar    map[string]bool
 	strField  map[string]map[string]bool
 	boolField map[string]map[string]bool
 	groups    map[string]groupInfo
@@ -38,7 +39,7 @@ type context struct {
 type groupInfo struct{ key, items string }
 
 func newContext() *context {
-	return &context{alias: map[string]string{}, orig: map[string]string{}, counter: map[string]int{}, strField: map[string]map[string]bool{}, boolField: map[string]map[string]bool{}, groups: map[string]groupInfo{}}
+	return &context{alias: map[string]string{}, orig: map[string]string{}, counter: map[string]int{}, strVar: map[string]bool{}, strField: map[string]map[string]bool{}, boolField: map[string]map[string]bool{}, groups: map[string]groupInfo{}}
 }
 
 func (c *context) clone() *context {
@@ -74,7 +75,11 @@ func (c *context) clone() *context {
 	for k, v := range c.groups {
 		groups[k] = v
 	}
-	return &context{alias: alias, orig: orig, counter: counter, strField: fields, boolField: bfields, groups: groups}
+	strVar := make(map[string]bool, len(c.strVar))
+	for k, v := range c.strVar {
+		strVar[k] = v
+	}
+	return &context{alias: alias, orig: orig, counter: counter, strVar: strVar, strField: fields, boolField: bfields, groups: groups}
 }
 
 func (c *context) newAlias(name string) string {
@@ -127,6 +132,20 @@ func (c *context) setGroup(name, keyVar, itemsVar string) {
 		c.groups = map[string]groupInfo{}
 	}
 	c.groups[name] = groupInfo{key: keyVar, items: itemsVar}
+}
+
+func (c *context) setStringVar(name string, isStr bool) {
+	if !isStr {
+		return
+	}
+	if c.strVar == nil {
+		c.strVar = map[string]bool{}
+	}
+	c.strVar[name] = true
+}
+
+func (c *context) isStringVar(name string) bool {
+	return c.strVar[name]
 }
 
 func (c *context) getGroup(name string) (groupInfo, bool) {
@@ -1186,67 +1205,67 @@ func (ma *MapAssignStmt) emit(w io.Writer) {
 }
 
 func (q *QueryExpr) emit(w io.Writer) {
-        if q.Right != nil {
-                base := &bytes.Buffer{}
-                io.WriteString(base, "[")
-                if q.SortKey != nil {
-                        io.WriteString(base, "{")
-                        q.SortKey.emit(base)
-                        io.WriteString(base, ", ")
-                }
-                q.Select.emit(base)
-                if q.SortKey != nil {
-                        io.WriteString(base, "}")
-                }
-                io.WriteString(base, " ||\n        ")
-                io.WriteString(base, q.Right.Var)
-                io.WriteString(base, " <- ")
-                q.Right.Src.emit(base)
-                io.WriteString(base, ",\n        ")
-                io.WriteString(base, q.Var)
-                io.WriteString(base, " <- ")
-                q.Src.emit(base)
-                for _, f := range q.Froms {
-                        io.WriteString(base, ",\n        ")
-                        io.WriteString(base, f.Var)
-                        io.WriteString(base, " <- ")
-                        f.Src.emit(base)
-                }
-                if q.Right.On != nil {
-                        io.WriteString(base, ",\n        ")
-                        q.Right.On.emit(base)
-                }
-                if q.Where != nil {
-                        io.WriteString(base, ",\n        ")
-                        q.Where.emit(base)
-                }
-                io.WriteString(base, "]")
+	if q.Right != nil {
+		base := &bytes.Buffer{}
+		io.WriteString(base, "[")
+		if q.SortKey != nil {
+			io.WriteString(base, "{")
+			q.SortKey.emit(base)
+			io.WriteString(base, ", ")
+		}
+		q.Select.emit(base)
+		if q.SortKey != nil {
+			io.WriteString(base, "}")
+		}
+		io.WriteString(base, " ||\n        ")
+		io.WriteString(base, q.Right.Var)
+		io.WriteString(base, " <- ")
+		q.Right.Src.emit(base)
+		io.WriteString(base, ",\n        ")
+		io.WriteString(base, q.Var)
+		io.WriteString(base, " <- ")
+		q.Src.emit(base)
+		for _, f := range q.Froms {
+			io.WriteString(base, ",\n        ")
+			io.WriteString(base, f.Var)
+			io.WriteString(base, " <- ")
+			f.Src.emit(base)
+		}
+		if q.Right.On != nil {
+			io.WriteString(base, ",\n        ")
+			q.Right.On.emit(base)
+		}
+		if q.Where != nil {
+			io.WriteString(base, ",\n        ")
+			q.Where.emit(base)
+		}
+		io.WriteString(base, "]")
 
-                expr := base.String()
-                if q.SortKey != nil {
-                        io.WriteString(w, "lists:map(fun({_,V}) -> V end, ")
-                        if q.Take != nil {
-                                io.WriteString(w, "lists:sublist(")
-                        }
-                        if q.Skip != nil {
-                                io.WriteString(w, "lists:nthtail(")
-                                q.Skip.emit(w)
-                                io.WriteString(w, ", ")
-                        }
-                        io.WriteString(w, "lists:sort(fun({K1,_},{K2,_}) -> K1 =< K2 end, ")
-                        io.WriteString(w, expr)
-                        io.WriteString(w, ")")
-                        if q.Skip != nil {
-                                io.WriteString(w, ")")
-                        }
-                        if q.Take != nil {
-                                io.WriteString(w, ", ")
-                                q.Take.emit(w)
-                                io.WriteString(w, ")")
-                        }
-                        io.WriteString(w, ")")
-                        return
-                }
+		expr := base.String()
+		if q.SortKey != nil {
+			io.WriteString(w, "lists:map(fun({_,V}) -> V end, ")
+			if q.Take != nil {
+				io.WriteString(w, "lists:sublist(")
+			}
+			if q.Skip != nil {
+				io.WriteString(w, "lists:nthtail(")
+				q.Skip.emit(w)
+				io.WriteString(w, ", ")
+			}
+			io.WriteString(w, "lists:sort(fun({K1,_},{K2,_}) -> K1 =< K2 end, ")
+			io.WriteString(w, expr)
+			io.WriteString(w, ")")
+			if q.Skip != nil {
+				io.WriteString(w, ")")
+			}
+			if q.Take != nil {
+				io.WriteString(w, ", ")
+				q.Take.emit(w)
+				io.WriteString(w, ")")
+			}
+			io.WriteString(w, ")")
+			return
+		}
 		if q.Take != nil {
 			io.WriteString(w, "lists:sublist(")
 		}
@@ -1266,32 +1285,32 @@ func (q *QueryExpr) emit(w io.Writer) {
 		}
 		return
 	}
-        base := &bytes.Buffer{}
-        io.WriteString(base, "[")
-        if q.SortKey != nil {
-                io.WriteString(base, "{")
-                q.SortKey.emit(base)
-                io.WriteString(base, ", ")
-        }
-        q.Select.emit(base)
-        if q.SortKey != nil {
-                io.WriteString(base, "}")
-        }
-        io.WriteString(base, " ||\n        ")
-        io.WriteString(base, q.Var)
-        io.WriteString(base, " <- ")
-        q.Src.emit(base)
-        for _, f := range q.Froms {
-                io.WriteString(base, ",\n        ")
-                io.WriteString(base, f.Var)
-                io.WriteString(base, " <- ")
-                f.Src.emit(base)
-        }
-        if q.Where != nil {
-                io.WriteString(base, ",\n        ")
-                q.Where.emit(base)
-        }
-        io.WriteString(base, "]")
+	base := &bytes.Buffer{}
+	io.WriteString(base, "[")
+	if q.SortKey != nil {
+		io.WriteString(base, "{")
+		q.SortKey.emit(base)
+		io.WriteString(base, ", ")
+	}
+	q.Select.emit(base)
+	if q.SortKey != nil {
+		io.WriteString(base, "}")
+	}
+	io.WriteString(base, " ||\n        ")
+	io.WriteString(base, q.Var)
+	io.WriteString(base, " <- ")
+	q.Src.emit(base)
+	for _, f := range q.Froms {
+		io.WriteString(base, ",\n        ")
+		io.WriteString(base, f.Var)
+		io.WriteString(base, " <- ")
+		f.Src.emit(base)
+	}
+	if q.Where != nil {
+		io.WriteString(base, ",\n        ")
+		q.Where.emit(base)
+	}
+	io.WriteString(base, "]")
 
 	expr := base.String()
 	if q.SortKey != nil {
@@ -1456,6 +1475,7 @@ func convertStmt(st *parser.Statement, env *types.Env, ctx *context) ([]Stmt, er
 		alias := ctx.newAlias(st.Let.Name)
 		ctx.setStrFields(st.Let.Name, stringFields(e))
 		ctx.setBoolFields(st.Let.Name, boolFields(e))
+		ctx.setStringVar(st.Let.Name, isStringExpr(e))
 		return []Stmt{&LetStmt{Name: alias, Expr: e}}, nil
 	case st.Var != nil:
 		var e Expr
@@ -1471,6 +1491,7 @@ func convertStmt(st *parser.Statement, env *types.Env, ctx *context) ([]Stmt, er
 		alias := ctx.newAlias(st.Var.Name)
 		ctx.setStrFields(st.Var.Name, stringFields(e))
 		ctx.setBoolFields(st.Var.Name, boolFields(e))
+		ctx.setStringVar(st.Var.Name, isStringExpr(e))
 		return []Stmt{&LetStmt{Name: alias, Expr: e}}, nil
 	case st.Assign != nil && len(st.Assign.Index) == 0 && len(st.Assign.Field) == 0:
 		val, err := convertExpr(st.Assign.Value, env, ctx)
@@ -1480,6 +1501,7 @@ func convertStmt(st *parser.Statement, env *types.Env, ctx *context) ([]Stmt, er
 		alias := ctx.newAlias(st.Assign.Name)
 		ctx.setStrFields(st.Assign.Name, stringFields(val))
 		ctx.setBoolFields(st.Assign.Name, boolFields(val))
+		ctx.setStringVar(st.Assign.Name, isStringExpr(val))
 		return []Stmt{&LetStmt{Name: alias, Expr: val}}, nil
 	case st.Assign != nil && len(st.Assign.Index) == 1 && len(st.Assign.Field) == 0:
 		idx, err := convertExpr(st.Assign.Index[0].Start, env, ctx)
@@ -1590,6 +1612,7 @@ func convertStmt(st *parser.Statement, env *types.Env, ctx *context) ([]Stmt, er
 		}
 		loopCtx.setStrFields(st.For.Name, stringFields(src))
 		loopCtx.setBoolFields(st.For.Name, boolFields(src))
+		loopCtx.setStringVar(st.For.Name, isStringExpr(src))
 		kind := "list"
 		if isMapExpr(src, env, ctx) {
 			kind = "map"
@@ -1914,6 +1937,9 @@ func convertPrimary(p *parser.Primary, env *types.Env, ctx *context) (Expr, erro
 			if _, ok := t.(types.StringType); ok {
 				nr.IsString = true
 			}
+		}
+		if !nr.IsString && ctx.isStringVar(p.Selector.Root) {
+			nr.IsString = true
 		}
 		return nr, nil
 	case p.Selector != nil && len(p.Selector.Tail) > 0:
@@ -2415,6 +2441,7 @@ func convertGroupQuery(q *parser.QueryExpr, env *types.Env, ctx *context) (Expr,
 	itemsLet := &LetStmt{Name: itemsVar, Expr: &CallExpr{Func: "element", Args: []Expr{&IntLit{Value: 2}, &NameRef{Name: pair}}}}
 	ctx.setStrFields(itemsVar, ctx.strField[q.Var])
 	ctx.setBoolFields(itemsVar, ctx.boolField[q.Var])
+	ctx.setStringVar(itemsVar, ctx.isStringVar(q.Var))
 	mapFun := &AnonFunc{Params: []string{pair}, Body: []Stmt{keyLet, itemsLet}, Return: selExpr}
 	toList := &CallExpr{Func: "maps:to_list", Args: []Expr{groupsMap}}
 	if q.Group.Having != nil {
