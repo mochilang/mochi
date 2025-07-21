@@ -1,3 +1,8 @@
+## Progress (2025-07-21 16:16 +0700)
+- cpp: improve transpiler and query support
+- Generated C++ for 1/100 programs
+- Updated README checklist and outputs
+
 ## Progress (2025-07-21 15:41 +0700)
 - cpp transpiler: improve values builtin printing
 - Generated C++ for 85/100 programs
