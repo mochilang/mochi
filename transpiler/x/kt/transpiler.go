@@ -1196,6 +1196,16 @@ func newVarRef(env *types.Env, name string) *VarRef {
 	return &VarRef{Name: name, Type: typ}
 }
 
+func envTypeName(env *types.Env, name string) string {
+	if env == nil {
+		return ""
+	}
+	if t, err := env.GetVar(name); err == nil {
+		return kotlinTypeFromType(t)
+	}
+	return ""
+}
+
 // Transpile converts a Mochi program to a simple Kotlin AST.
 func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 	extraDecls = nil
@@ -1221,7 +1231,7 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 			}
 			typ := kotlinType(st.Let.Type)
 			if st.Let.Type == nil {
-				typ = ""
+				typ = envTypeName(env, st.Let.Name)
 			}
 			p.Stmts = append(p.Stmts, &LetStmt{Name: st.Let.Name, Type: typ, Value: val})
 		case st.Var != nil:
@@ -1237,7 +1247,7 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 			}
 			typ := kotlinType(st.Var.Type)
 			if st.Var.Type == nil {
-				typ = ""
+				typ = envTypeName(env, st.Var.Name)
 			}
 			p.Stmts = append(p.Stmts, &VarStmt{Name: st.Var.Name, Type: typ, Value: val})
 		case st.Assign != nil && len(st.Assign.Index) == 0 && len(st.Assign.Field) == 0:
@@ -1335,7 +1345,7 @@ func convertStmts(env *types.Env, list []*parser.Statement) ([]Stmt, error) {
 			}
 			typ := kotlinType(s.Let.Type)
 			if s.Let.Type == nil {
-				typ = ""
+				typ = envTypeName(env, s.Let.Name)
 			}
 			out = append(out, &LetStmt{Name: s.Let.Name, Type: typ, Value: v})
 		case s.Var != nil:
@@ -1345,7 +1355,7 @@ func convertStmts(env *types.Env, list []*parser.Statement) ([]Stmt, error) {
 			}
 			typ := kotlinType(s.Var.Type)
 			if s.Var.Type == nil {
-				typ = ""
+				typ = envTypeName(env, s.Var.Name)
 			}
 			out = append(out, &VarStmt{Name: s.Var.Name, Type: typ, Value: v})
 		case s.Assign != nil && len(s.Assign.Index) == 0 && len(s.Assign.Field) == 0:
