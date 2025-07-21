@@ -839,10 +839,8 @@ func (b *BinaryExpr) emit(w io.Writer) {
 		io.WriteString(w, ")")
 		return
 	}
-	io.WriteString(w, "(")
-	b.Left.emit(w)
-	io.WriteString(w, " ")
 	op := b.Op
+	numeric := false
 	if op == "!=" {
 		op = "~="
 	}
@@ -850,14 +848,47 @@ func (b *BinaryExpr) emit(w io.Writer) {
 		op = ".."
 	} else if op == "&&" {
 		op = "and"
+		numeric = true
 	} else if op == "||" {
 		op = "or"
+		numeric = true
 	} else if op == "/" {
 		op = "//"
+	} else if op == "==" || op == "<" || op == ">" || op == "<=" || op == ">=" {
+		numeric = true
 	}
-	io.WriteString(w, op)
-	io.WriteString(w, " ")
-	b.Right.emit(w)
+	io.WriteString(w, "(")
+	if b.Op == "&&" || b.Op == "||" {
+		emitCond := func(e Expr) {
+			if bl, ok := e.(*BoolLit); ok {
+				if bl.Value {
+					io.WriteString(w, "true")
+				} else {
+					io.WriteString(w, "false")
+				}
+			} else {
+				io.WriteString(w, "(")
+				e.emit(w)
+				io.WriteString(w, " ~= 0)")
+			}
+		}
+		io.WriteString(w, "(")
+		emitCond(b.Left)
+		io.WriteString(w, " ")
+		io.WriteString(w, op)
+		io.WriteString(w, " ")
+		emitCond(b.Right)
+		io.WriteString(w, ")")
+	} else {
+		b.Left.emit(w)
+		io.WriteString(w, " ")
+		io.WriteString(w, op)
+		io.WriteString(w, " ")
+		b.Right.emit(w)
+	}
+	if numeric {
+		io.WriteString(w, " and 1 or 0")
+	}
 	io.WriteString(w, ")")
 }
 
