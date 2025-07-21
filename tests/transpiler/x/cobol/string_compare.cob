@@ -4,23 +4,23 @@ PROGRAM-ID. MAIN.
 
 PROCEDURE DIVISION.
     IF "a" < "b"
-        DISPLAY "true"
+        DISPLAY "True"
     ELSE
-        DISPLAY "false"
+        DISPLAY "False"
     END-IF
     IF "a" <= "a"
-        DISPLAY "true"
+        DISPLAY "True"
     ELSE
-        DISPLAY "false"
+        DISPLAY "False"
     END-IF
     IF "b" > "a"
-        DISPLAY "true"
+        DISPLAY "True"
     ELSE
-        DISPLAY "false"
+        DISPLAY "False"
     END-IF
     IF "b" >= "b"
-        DISPLAY "true"
+        DISPLAY "True"
     ELSE
-        DISPLAY "false"
+        DISPLAY "False"
     END-IF
     STOP RUN.
