@@ -1,16 +1,21 @@
 exit status 1
 Main.java:3: error: unexpected type
-    static java.util.List<int> result = new java.util.ArrayList<int>() {{ for (var n : nums) { if (n > 1) { add(sum(n)); } }}};
+    static java.util.List<int> result = new java.util.ArrayList<int>() {{ for (var n : nums) { if (n > 1) { add((((n.stream().mapToDouble(v -> ((Number)v).doubleValue()).sum()) % 1 == 0) ? (Object)(int)(n.stream().mapToDouble(v -> ((Number)v).doubleValue()).sum()) : (Object)(n.stream().mapToDouble(v -> ((Number)v).doubleValue()).sum()))); } }}};
                           ^
   required: reference
   found:    int
 Main.java:3: error: unexpected type
-    static java.util.List<int> result = new java.util.ArrayList<int>() {{ for (var n : nums) { if (n > 1) { add(sum(n)); } }}};
+    static java.util.List<int> result = new java.util.ArrayList<int>() {{ for (var n : nums) { if (n > 1) { add((((n.stream().mapToDouble(v -> ((Number)v).doubleValue()).sum()) % 1 == 0) ? (Object)(int)(n.stream().mapToDouble(v -> ((Number)v).doubleValue()).sum()) : (Object)(n.stream().mapToDouble(v -> ((Number)v).doubleValue()).sum()))); } }}};
                                                                 ^
   required: reference
   found:    int
-Main.java:3: error: cannot find symbol
-    static java.util.List<int> result = new java.util.ArrayList<int>() {{ for (var n : nums) { if (n > 1) { add(sum(n)); } }}};
-                                                                                                                ^
-  symbol: method sum(int)
-3 errors
+Main.java:3: error: int cannot be dereferenced
+    static java.util.List<int> result = new java.util.ArrayList<int>() {{ for (var n : nums) { if (n > 1) { add((((n.stream().mapToDouble(v -> ((Number)v).doubleValue()).sum()) % 1 == 0) ? (Object)(int)(n.stream().mapToDouble(v -> ((Number)v).doubleValue()).sum()) : (Object)(n.stream().mapToDouble(v -> ((Number)v).doubleValue()).sum()))); } }}};
+                                                                                                                    ^
+Main.java:3: error: int cannot be dereferenced
+    static java.util.List<int> result = new java.util.ArrayList<int>() {{ for (var n : nums) { if (n > 1) { add((((n.stream().mapToDouble(v -> ((Number)v).doubleValue()).sum()) % 1 == 0) ? (Object)(int)(n.stream().mapToDouble(v -> ((Number)v).doubleValue()).sum()) : (Object)(n.stream().mapToDouble(v -> ((Number)v).doubleValue()).sum()))); } }}};
+                                                                                                                                                                                                            ^
+Main.java:3: error: int cannot be dereferenced
+    static java.util.List<int> result = new java.util.ArrayList<int>() {{ for (var n : nums) { if (n > 1) { add((((n.stream().mapToDouble(v -> ((Number)v).doubleValue()).sum()) % 1 == 0) ? (Object)(int)(n.stream().mapToDouble(v -> ((Number)v).doubleValue()).sum()) : (Object)(n.stream().mapToDouble(v -> ((Number)v).doubleValue()).sum()))); } }}};
+                                                                                                                                                                                                                                                                                     ^
+5 errors

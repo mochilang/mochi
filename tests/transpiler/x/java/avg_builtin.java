@@ -1,6 +1,6 @@
 public class Main {
 
     public static void main(String[] args) {
-        System.out.println(((new int[]{1, 2, 3}.stream().mapToDouble(v -> ((Number)v).doubleValue()).average().orElse(0)) % 1 == 0 ? (int)(new int[]{1, 2, 3}.stream().mapToDouble(v -> ((Number)v).doubleValue()).average().orElse(0)) : (new int[]{1, 2, 3}.stream().mapToDouble(v -> ((Number)v).doubleValue()).average().orElse(0))));
+        System.out.println((((java.util.Arrays.stream(new int[]{1, 2, 3}).average().orElse(0)) % 1 == 0) ? (Object)(int)(java.util.Arrays.stream(new int[]{1, 2, 3}).average().orElse(0)) : (Object)(java.util.Arrays.stream(new int[]{1, 2, 3}).average().orElse(0))));
     }
 }
