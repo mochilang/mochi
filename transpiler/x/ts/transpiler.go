@@ -237,9 +237,9 @@ type UnionAllExpr struct{ Left, Right Expr }
 type ExceptExpr struct{ Left, Right Expr }
 type IntersectExpr struct{ Left, Right Expr }
 
-type FormatListExpr struct{
-        Value       Expr
-        FloatFields []string
+type FormatListExpr struct {
+	Value       Expr
+	FloatFields []string
 }
 
 // PrintExpr represents a call to the builtin print function. The arguments are
@@ -610,20 +610,20 @@ func (e *IntersectExpr) emit(w io.Writer) {
 }
 
 func (f *FormatListExpr) emit(w io.Writer) {
-        io.WriteString(w, "\"[\" + ")
-        if f.Value != nil {
-                f.Value.emit(w)
-                io.WriteString(w, `.map(v => { if (typeof v === 'string') return '\'' + v + '\''; if (typeof v === 'number') return Number.isInteger(v) ? String(v) : String(v); if (typeof v === 'boolean') return v ? 'True' : 'False'; if (typeof v === 'object') { let s = JSON.stringify(v).replace(/"/g, '\'' ).replace(/:/g, ': ').replace(/,/g, ', ');`)
-                if len(f.FloatFields) > 0 {
-                        io.WriteString(w, ` s = s.replace(/'(`)
-                        io.WriteString(w, strings.Join(f.FloatFields, "|"))
-                        io.WriteString(w, `)'\s*: (-?[0-9]+)([,}])/g, '$1': $2.0$3');`)
-                }
-                io.WriteString(w, ` s = s.replace(/('[^']*(?:id|key)'\s*: )(-?[0-9]+)\.0([,}])/g, '$1$2$3'); return s } return String(v); }).join(', ')`)
-        } else {
-                io.WriteString(w, "\"\"")
-        }
-        io.WriteString(w, " + \"]\"")
+	io.WriteString(w, "\"[\" + ")
+	if f.Value != nil {
+		f.Value.emit(w)
+		io.WriteString(w, `.map(v => { if (typeof v === 'string') return '\'' + v + '\''; if (typeof v === 'number') return Number.isInteger(v) ? String(v) : String(v); if (typeof v === 'boolean') return v ? 'True' : 'False'; if (typeof v === 'object') { let s = JSON.stringify(v).replace(/"/g, '\'' ).replace(/:/g, ': ').replace(/,/g, ', ');`)
+		if len(f.FloatFields) > 0 {
+			io.WriteString(w, ` s = s.replace(/'(`)
+			io.WriteString(w, strings.Join(f.FloatFields, "|"))
+			io.WriteString(w, `)'\s*: (-?[0-9]+)([,}])/g, '$1': $2.0$3');`)
+		}
+		io.WriteString(w, ` s = s.replace(/('[^']*(?:id|key)'\s*: )(-?[0-9]+)\.0([,}])/g, '$1$2$3'); return s } return String(v); }).join(', ')`)
+	} else {
+		io.WriteString(w, "\"\"")
+	}
+	io.WriteString(w, " + \"]\"")
 }
 
 func (p *PrintExpr) emit(w io.Writer) {
@@ -1037,8 +1037,8 @@ func (q *QueryExprJS) emit(w io.Writer) {
 func (gq *GroupQueryExpr) emit(w io.Writer) {
 	iw := &indentWriter{w: w, indent: "  "}
 	io.WriteString(iw, "(() => {\n")
-	io.WriteString(iw, "  const _groups: Record<string, {key: any; items: any[]}> = {}\n")
-	io.WriteString(iw, "  const _order: string[] = []\n")
+	io.WriteString(iw, "  const groups: Record<string, {key: any; items: any[]}> = {}\n")
+	io.WriteString(iw, "  const order: string[] = []\n")
 	io.WriteString(iw, "  for (const ")
 	io.WriteString(iw, gq.Var)
 	io.WriteString(iw, " of ")
@@ -1049,9 +1049,9 @@ func (gq *GroupQueryExpr) emit(w io.Writer) {
 		gq.Cond.emit(iw)
 		io.WriteString(iw, ")) continue\n")
 	}
-	io.WriteString(iw, "    const _k = ")
+	io.WriteString(iw, "    const k = ")
 	gq.Key.emit(iw)
-	io.WriteString(iw, "\n    const _ks = JSON.stringify(_k)\n    let _g = _groups[_ks]\n    if (!_g) { _g = {key: _k, items: []}; _groups[_ks] = _g; _order.push(_ks) }\n    _g.items.push(")
+	io.WriteString(iw, "\n    const ks = JSON.stringify(k)\n    let g = groups[ks]\n    if (!g) { g = {key: k, items: []}; groups[ks] = g; order.push(ks) }\n    g.items.push(")
 	gq.Row.emit(iw)
 	io.WriteString(iw, ")\n  }\n")
 	io.WriteString(iw, "  const result")
@@ -1062,21 +1062,21 @@ func (gq *GroupQueryExpr) emit(w io.Writer) {
 	}
 	io.WriteString(iw, " = []\n")
 	if gq.Sort != nil {
-		io.WriteString(iw, "  const _pairs = _order.map(ks => { const ")
+		io.WriteString(iw, "  const pairs = order.map(ks => { const ")
 		io.WriteString(iw, gq.GroupVar)
-		io.WriteString(iw, " = _groups[ks]; return {g: ")
+		io.WriteString(iw, " = groups[ks]; return {g: ")
 		io.WriteString(iw, gq.GroupVar)
 		io.WriteString(iw, ", key: ")
 		gq.Sort.emit(iw)
 		io.WriteString(iw, "} })\n")
-		io.WriteString(iw, "  _pairs.sort((a,b)=>{const ak=a.key;const bk=b.key;if(ak<bk)return -1;if(ak>bk)return 1;const sak=JSON.stringify(ak);const sbk=JSON.stringify(bk);return sak<sbk?-1:sak>sbk?1:0})\n")
-		io.WriteString(iw, "  for (const p of _pairs) {\n    const ")
+		io.WriteString(iw, "  pairs.sort((a,b)=>{const ak=a.key;const bk=b.key;if(ak<bk)return -1;if(ak>bk)return 1;const sak=JSON.stringify(ak);const sbk=JSON.stringify(bk);return sak<sbk?-1:sak>sbk?1:0})\n")
+		io.WriteString(iw, "  for (const p of pairs) {\n    const ")
 		io.WriteString(iw, gq.GroupVar)
 		io.WriteString(iw, " = p.g\n")
 	} else {
-		io.WriteString(iw, "  for (const ks of _order) {\n    const ")
+		io.WriteString(iw, "  for (const ks of order) {\n    const ")
 		io.WriteString(iw, gq.GroupVar)
-		io.WriteString(iw, " = _groups[ks]\n")
+		io.WriteString(iw, " = groups[ks]\n")
 	}
 	if gq.Having != nil {
 		io.WriteString(iw, "    if (")
@@ -1096,9 +1096,9 @@ func (gq *GroupQueryExpr) emit(w io.Writer) {
 func (gq *GroupJoinQueryExpr) emit(w io.Writer) {
 	iw := &indentWriter{w: w, indent: "  "}
 	io.WriteString(iw, "(() => {\n")
-	io.WriteString(iw, "  const _groups: Record<string, {key: any; items: any[]}> = {}\n")
-	io.WriteString(iw, "  const _order: string[] = []\n")
-	io.WriteString(iw, "  let _items = ")
+	io.WriteString(iw, "  const groups: Record<string, {key: any; items: any[]}> = {}\n")
+	io.WriteString(iw, "  const order: string[] = []\n")
+	io.WriteString(iw, "  let rows = ")
 	if len(gq.Loops) > 0 {
 		gq.Loops[0].Source.emit(iw)
 	} else {
@@ -1111,103 +1111,103 @@ func (gq *GroupJoinQueryExpr) emit(w io.Writer) {
 	}
 	for i := 1; i < len(gq.Loops); i++ {
 		loop := gq.Loops[i]
-		io.WriteString(iw, "  { const _next = []\n")
-		io.WriteString(iw, "    for (const it of _items) {\n")
+		io.WriteString(iw, "  { const next = []\n")
+		io.WriteString(iw, "    for (const it of rows) {\n")
 		io.WriteString(iw, "      for (const ")
 		io.WriteString(iw, loop.Name)
 		io.WriteString(iw, " of ")
 		loop.Source.emit(iw)
-		io.WriteString(iw, ") { _next.push([...it, ")
+		io.WriteString(iw, ") { next.push([...it, ")
 		io.WriteString(iw, loop.Name)
 		io.WriteString(iw, "]) }\n")
 		io.WriteString(iw, "    }\n")
-		io.WriteString(iw, "    _items = _next }\n")
+		io.WriteString(iw, "    rows = next }\n")
 		names = append(names, loop.Name)
 	}
 	for _, j := range gq.Joins {
-		io.WriteString(iw, "  { const _joined = []\n")
-		io.WriteString(iw, "    const _arr = ")
+		io.WriteString(iw, "  { const joined = []\n")
+		io.WriteString(iw, "    const arr = ")
 		j.Source.emit(iw)
 		io.WriteString(iw, "\n")
 		if j.Side == "right" {
-			io.WriteString(iw, "    for (let _ri=0; _ri < _arr.length; _ri++) {\n")
+			io.WriteString(iw, "    for (let ri=0; ri < arr.length; ri++) {\n")
 			io.WriteString(iw, "      const ")
 			io.WriteString(iw, j.Name)
-			io.WriteString(iw, " = _arr[_ri];\n")
-			io.WriteString(iw, "      let _m = false;\n")
-			io.WriteString(iw, "      for (const _left of _items) {\n")
+			io.WriteString(iw, " = arr[ri];\n")
+			io.WriteString(iw, "      let m = false;\n")
+			io.WriteString(iw, "      for (const left of rows) {\n")
 			if len(names) > 0 {
 				io.WriteString(iw, "        const [")
 				io.WriteString(iw, strings.Join(names, ", "))
-				io.WriteString(iw, "] = _left;\n")
+				io.WriteString(iw, "] = left;\n")
 			}
 			if j.On != nil {
 				io.WriteString(iw, "        if (!(")
 				j.On.emit(iw)
 				io.WriteString(iw, ")) continue;\n")
 			}
-			io.WriteString(iw, "        _m = true; _joined.push([..._left, ")
+			io.WriteString(iw, "        m = true; joined.push([...left, ")
 			io.WriteString(iw, j.Name)
 			io.WriteString(iw, "]) }\n")
-			io.WriteString(iw, "      if (!_m) { const _undef = Array(_items[0]?.length || 0).fill(null); _joined.push([..._undef, ")
+			io.WriteString(iw, "      if (!m) { const undef = Array(rows[0]?.length || 0).fill(null); joined.push([...undef, ")
 			io.WriteString(iw, j.Name)
 			io.WriteString(iw, "]) }\n")
 			io.WriteString(iw, "    }\n")
 		} else {
 			if j.Side == "right" || j.Side == "outer" {
-				io.WriteString(iw, "    const _matched = new Array(_arr.length).fill(false)\n")
+				io.WriteString(iw, "    const matched = new Array(arr.length).fill(false)\n")
 			}
-			io.WriteString(iw, "    for (const _left of _items) {\n")
+			io.WriteString(iw, "    for (const left of rows) {\n")
 			if len(names) > 0 {
 				io.WriteString(iw, "      const [")
 				io.WriteString(iw, strings.Join(names, ", "))
-				io.WriteString(iw, "] = _left;\n")
+				io.WriteString(iw, "] = left;\n")
 			}
-			io.WriteString(iw, "      let _m = false;\n")
-			io.WriteString(iw, "      for (let _ri=0; _ri < _arr.length; _ri++) {\n")
+			io.WriteString(iw, "      let m = false;\n")
+			io.WriteString(iw, "      for (let ri=0; ri < arr.length; ri++) {\n")
 			io.WriteString(iw, "        const ")
 			io.WriteString(iw, j.Name)
-			io.WriteString(iw, " = _arr[_ri];\n")
+			io.WriteString(iw, " = arr[ri];\n")
 			if j.On != nil {
 				io.WriteString(iw, "        if (!(")
 				j.On.emit(iw)
 				io.WriteString(iw, ")) continue;\n")
 			}
-			io.WriteString(iw, "        _m = true;")
+			io.WriteString(iw, "        m = true;")
 			if j.Side == "right" || j.Side == "outer" {
-				io.WriteString(iw, " _matched[_ri] = true;")
+				io.WriteString(iw, " matched[ri] = true;")
 			}
-			io.WriteString(iw, " _joined.push([..._left, ")
+			io.WriteString(iw, " joined.push([...left, ")
 			io.WriteString(iw, j.Name)
 			io.WriteString(iw, "]) }\n")
 			if j.Side == "left" || j.Side == "outer" {
-				io.WriteString(iw, "      if (!_m) _joined.push([..._left, null])\n")
+				io.WriteString(iw, "      if (!m) joined.push([...left, null])\n")
 			}
 			io.WriteString(iw, "    }\n")
 			if j.Side == "right" || j.Side == "outer" {
-				io.WriteString(iw, "    for (let _ri=0; _ri < _arr.length; _ri++) { if (!_matched[_ri]) {\n")
-				io.WriteString(iw, "      const _undef = Array(_items[0]?.length || 0).fill(null);\n")
-				io.WriteString(iw, "      _joined.push([..._undef, _arr[_ri]]) } }\n")
+				io.WriteString(iw, "    for (let ri=0; ri < arr.length; ri++) { if (!matched[ri]) {\n")
+				io.WriteString(iw, "      const undef = Array(rows[0]?.length || 0).fill(null);\n")
+				io.WriteString(iw, "      joined.push([...undef, arr[ri]]) } }\n")
 			}
 		}
-		io.WriteString(iw, "    _items = _joined;\n")
+		io.WriteString(iw, "    rows = joined;\n")
 		io.WriteString(iw, "  }\n")
 		names = append(names, j.Name)
 	}
-	io.WriteString(iw, "  for (const _it of _items) {\n")
+	io.WriteString(iw, "  for (const it of rows) {\n")
 	if len(names) > 0 {
 		io.WriteString(iw, "    const [")
 		io.WriteString(iw, strings.Join(names, ", "))
-		io.WriteString(iw, "] = _it;\n")
+		io.WriteString(iw, "] = it;\n")
 	}
 	if gq.Where != nil {
 		io.WriteString(iw, "    if (!(")
 		gq.Where.emit(iw)
 		io.WriteString(iw, ")) continue\n")
 	}
-	io.WriteString(iw, "    const _k = ")
+	io.WriteString(iw, "    const k = ")
 	gq.Key.emit(iw)
-	io.WriteString(iw, "\n    const _ks = JSON.stringify(_k)\n    let _g = _groups[_ks]\n    if (!_g) { _g = {key: _k, items: []}; _groups[_ks] = _g; _order.push(_ks) }\n    _g.items.push(")
+	io.WriteString(iw, "\n    const ks = JSON.stringify(k)\n    let g = groups[ks]\n    if (!g) { g = {key: k, items: []}; groups[ks] = g; order.push(ks) }\n    g.items.push(")
 	gq.Row.emit(iw)
 	io.WriteString(iw, ")\n  }\n")
 	io.WriteString(iw, "  const result")
@@ -1218,21 +1218,21 @@ func (gq *GroupJoinQueryExpr) emit(w io.Writer) {
 	}
 	io.WriteString(iw, " = []\n")
 	if gq.Sort != nil {
-		io.WriteString(iw, "  const _pairs = _order.map(ks => { const ")
+		io.WriteString(iw, "  const pairs = order.map(ks => { const ")
 		io.WriteString(iw, gq.GroupVar)
-		io.WriteString(iw, " = _groups[ks]; return {g: ")
+		io.WriteString(iw, " = groups[ks]; return {g: ")
 		io.WriteString(iw, gq.GroupVar)
 		io.WriteString(iw, ", key: ")
 		gq.Sort.emit(iw)
 		io.WriteString(iw, "} })\n")
-		io.WriteString(iw, "  _pairs.sort((a,b)=>{const ak=a.key;const bk=b.key;if(ak<bk)return -1;if(ak>bk)return 1;const sak=JSON.stringify(ak);const sbk=JSON.stringify(bk);return sak<sbk?-1:sak>sbk?1:0})\n")
-		io.WriteString(iw, "  for (const p of _pairs) {\n    const ")
+		io.WriteString(iw, "  pairs.sort((a,b)=>{const ak=a.key;const bk=b.key;if(ak<bk)return -1;if(ak>bk)return 1;const sak=JSON.stringify(ak);const sbk=JSON.stringify(bk);return sak<sbk?-1:sak>sbk?1:0})\n")
+		io.WriteString(iw, "  for (const p of pairs) {\n    const ")
 		io.WriteString(iw, gq.GroupVar)
 		io.WriteString(iw, " = p.g\n")
 	} else {
-		io.WriteString(iw, "  for (const ks of _order) {\n    const ")
+		io.WriteString(iw, "  for (const ks of order) {\n    const ")
 		io.WriteString(iw, gq.GroupVar)
-		io.WriteString(iw, " = _groups[ks]\n")
+		io.WriteString(iw, " = groups[ks]\n")
 	}
 	if gq.Having != nil {
 		io.WriteString(iw, "    if (")
@@ -2690,16 +2690,16 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 						switch lt.Elem.(type) {
 						case types.StringType:
 							args[0] = &MethodCallExpr{Target: args[0], Method: "join", Args: []Expr{&StringLit{Value: " "}}}
-                                               case types.MapType, types.StructType:
-                                                        var floats []string
-                                                        if st, ok := lt.Elem.(types.StructType); ok {
-                                                                for _, name := range st.Order {
-                                                                        if _, ok := st.Fields[name].(types.FloatType); ok {
-                                                                                floats = append(floats, name)
-                                                                        }
-                                                                }
-                                                        }
-                                                        args[0] = &FormatListExpr{Value: args[0], FloatFields: floats}
+						case types.MapType, types.StructType:
+							var floats []string
+							if st, ok := lt.Elem.(types.StructType); ok {
+								for _, name := range st.Order {
+									if _, ok := st.Fields[name].(types.FloatType); ok {
+										floats = append(floats, name)
+									}
+								}
+							}
+							args[0] = &FormatListExpr{Value: args[0], FloatFields: floats}
 						case types.AnyType:
 							// Fallback for lists of unknown element types. Mimic the
 							// interpreter by stringifying objects as JSON and other
@@ -2709,10 +2709,10 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 							rep2 := &MethodCallExpr{Target: rep1, Method: "replace", Args: []Expr{&CallExpr{Func: "RegExp", Args: []Expr{&StringLit{Value: ","}, &StringLit{Value: "g"}}}, &StringLit{Value: ", "}}}
 							rep3 := &MethodCallExpr{Target: rep2, Method: "replace", Args: []Expr{&CallExpr{Func: "RegExp", Args: []Expr{&StringLit{Value: ": ([0-9]+)([,}])"}, &StringLit{Value: "g"}}}, &StringLit{Value: ": $1.0$2"}}}
 							cond := &IfExpr{Cond: &BinaryExpr{Left: &UnaryExpr{Op: "typeof", Expr: &NameRef{Name: "x"}}, Op: "===", Right: &StringLit{Value: "object"}}, Then: rep3, Else: &CallExpr{Func: "String", Args: []Expr{&NameRef{Name: "x"}}}}
-                                                        m := &MethodCallExpr{Target: args[0], Method: "map", Args: []Expr{&FunExpr{Params: []string{"x"}, Expr: cond}}}
-                                                        args[0] = &FormatListExpr{Value: m}
-                                               default:
-                                                        args = []Expr{&FormatListExpr{Value: args[0]}}
+							m := &MethodCallExpr{Target: args[0], Method: "map", Args: []Expr{&FunExpr{Params: []string{"x"}, Expr: cond}}}
+							args[0] = &FormatListExpr{Value: m}
+						default:
+							args = []Expr{&FormatListExpr{Value: args[0]}}
 						}
 					}
 				}
