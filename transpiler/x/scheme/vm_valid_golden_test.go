@@ -159,7 +159,18 @@ func updateTasks() {
 	fmt.Fprintf(&buf, "- Generated Scheme for %d/%d programs\n", compiled, total)
 	buf.WriteString("- Updated README checklist and outputs\n\n")
 	if data, err := os.ReadFile(taskFile); err == nil {
-		buf.Write(data)
+		parts := bytes.Split(data, []byte("## Progress"))
+		if len(parts) > 1 {
+			// Reattach the prefix before the first split section
+			rest := parts[1:]
+			if len(rest) > 9 {
+				rest = rest[:9]
+			}
+			for _, p := range rest {
+				buf.WriteString("## Progress")
+				buf.Write(p)
+			}
+		}
 	}
 	_ = os.WriteFile(taskFile, buf.Bytes(), 0o644)
 }
