@@ -137,6 +137,13 @@ func (s *ExprStmt) emit(w io.Writer) { s.Expr.emit(w) }
 func (c *CallExpr) emit(w io.Writer) {
 	switch c.Func {
 	case "print":
+		if len(c.Args) == 1 && isListExpr(c.Args[0]) {
+			io.WriteString(w, "print(table.concat(")
+			c.Args[0].emit(w)
+			io.WriteString(w, ", \" \"))")
+			return
+		}
+
 		var fmtBuf strings.Builder
 		var exprs []Expr
 		for i, a := range c.Args {

@@ -1,3 +1,7 @@
+## Progress (2025-07-21 13:27 GMT+7)
+- 74/100 VM tests passing
+- Improved list printing in generated Lua code
+
 ## Progress (2025-07-21 12:53 GMT+7)
 - 74/100 VM tests passing
 - Added map literals and index assignments
