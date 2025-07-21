@@ -526,6 +526,21 @@ func (ie *InExpr) emit(w io.Writer) {
 		fmt.Fprint(w, ".ContainsKey(")
 		ie.Item.emit(w)
 		fmt.Fprint(w, ")")
+	} else if isStructExpr(ie.Collection) {
+		if lit, ok := ie.Item.(*StringLit); ok {
+			if t := typeOfExpr(ie.Collection); t != "" {
+				if st, ok2 := structTypes[t]; ok2 {
+					if _, ok3 := st.Fields[lit.Value]; ok3 {
+						fmt.Fprint(w, "true")
+					} else {
+						fmt.Fprint(w, "false")
+					}
+					fmt.Fprint(w, ")")
+					return
+				}
+			}
+		}
+		fmt.Fprint(w, "false")
 	} else {
 		fmt.Fprint(w, "Array.IndexOf(")
 		ie.Collection.emit(w)
@@ -1815,6 +1830,16 @@ func compileStmt(prog *Program, s *parser.Statement) (Stmt, error) {
 				if err != nil {
 					return nil, err
 				}
+				if lit, ok := idx.(*StringLit); ok && isStructExpr(target) {
+					if t := typeOfExpr(target); t != "" {
+						if st, ok2 := structTypes[t]; ok2 {
+							if _, ok3 := st.Fields[lit.Value]; ok3 {
+								target = &FieldExpr{Target: target, Name: lit.Value}
+								continue
+							}
+						}
+					}
+				}
 				target = &IndexExpr{Target: target, Index: idx}
 			}
 			idx, err := compileExpr(s.Assign.Index[len(s.Assign.Index)-1].Start)
@@ -1824,6 +1849,15 @@ func compileStmt(prog *Program, s *parser.Statement) (Stmt, error) {
 			val, err := compileExpr(s.Assign.Value)
 			if err != nil {
 				return nil, err
+			}
+			if lit, ok := idx.(*StringLit); ok && isStructExpr(target) {
+				if t := typeOfExpr(target); t != "" {
+					if st, ok2 := structTypes[t]; ok2 {
+						if _, ok3 := st.Fields[lit.Value]; ok3 {
+							return &AssignFieldStmt{Target: target, Name: lit.Value, Value: val}, nil
+						}
+					}
+				}
 			}
 			return &AssignIndexStmt{Target: target, Index: idx, Value: val}, nil
 		}
