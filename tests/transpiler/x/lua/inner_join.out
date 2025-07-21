@@ -1,13 +1,4 @@
 --- Orders with customer info ---
 Order 100 by Alice - $ 250
-Order 100 by Bob - $ 250
-Order 100 by Charlie - $ 250
-Order 101 by Alice - $ 125
 Order 101 by Bob - $ 125
-Order 101 by Charlie - $ 125
 Order 102 by Alice - $ 300
-Order 102 by Bob - $ 300
-Order 102 by Charlie - $ 300
-Order 103 by Alice - $ 80
-Order 103 by Bob - $ 80
-Order 103 by Charlie - $ 80
