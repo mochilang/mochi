@@ -974,6 +974,18 @@ type AppendExpr struct {
 	Value Expr
 }
 
+// UnionExpr concatenates two arrays removing duplicate elements.
+type UnionExpr struct{ Left, Right Expr }
+
+// UnionAllExpr concatenates two arrays keeping duplicates.
+type UnionAllExpr struct{ Left, Right Expr }
+
+// ExceptExpr returns elements of Left not present in Right.
+type ExceptExpr struct{ Left, Right Expr }
+
+// IntersectExpr returns common elements of Left and Right.
+type IntersectExpr struct{ Left, Right Expr }
+
 func (v *ValuesExpr) emit(w io.Writer) {
 	if ve, ok := v.Map.(*VarExpr); ok {
 		if t, ok2 := varTypes[ve.Name]; ok2 {
@@ -1017,6 +1029,142 @@ func (a *AppendExpr) emit(w io.Writer) {
 	fmt.Fprint(w, "), java.util.stream.Stream.of(")
 	a.Value.emit(w)
 	fmt.Fprint(w, ")).toArray(")
+	switch elem {
+	case "string", "String":
+		fmt.Fprint(w, "String[]::new")
+	default:
+		fmt.Fprintf(w, "%s[]::new", jt)
+	}
+	fmt.Fprint(w, ")")
+}
+
+func (u *UnionExpr) emit(w io.Writer) {
+	elem := arrayElemType(u.Left)
+	if elem == "" {
+		elem = arrayElemType(u.Right)
+	}
+	if elem == "" {
+		elem = "Object"
+	}
+	jt := javaType(elem)
+	if jt == "" {
+		jt = elem
+	}
+	if elem == "int" {
+		fmt.Fprint(w, "java.util.stream.IntStream.concat(java.util.Arrays.stream(")
+		u.Left.emit(w)
+		fmt.Fprint(w, "), java.util.Arrays.stream(")
+		u.Right.emit(w)
+		fmt.Fprint(w, ")).distinct().toArray()")
+		return
+	}
+	fmt.Fprint(w, "java.util.stream.Stream.concat(java.util.Arrays.stream(")
+	u.Left.emit(w)
+	fmt.Fprint(w, "), java.util.Arrays.stream(")
+	u.Right.emit(w)
+	fmt.Fprint(w, ")).distinct().toArray(")
+	switch elem {
+	case "string", "String":
+		fmt.Fprint(w, "String[]::new")
+	default:
+		fmt.Fprintf(w, "%s[]::new", jt)
+	}
+	fmt.Fprint(w, ")")
+}
+
+func (u *UnionAllExpr) emit(w io.Writer) {
+	elem := arrayElemType(u.Left)
+	if elem == "" {
+		elem = arrayElemType(u.Right)
+	}
+	if elem == "" {
+		elem = "Object"
+	}
+	jt := javaType(elem)
+	if jt == "" {
+		jt = elem
+	}
+	if elem == "int" {
+		fmt.Fprint(w, "java.util.stream.IntStream.concat(java.util.Arrays.stream(")
+		u.Left.emit(w)
+		fmt.Fprint(w, "), java.util.Arrays.stream(")
+		u.Right.emit(w)
+		fmt.Fprint(w, ")).toArray()")
+		return
+	}
+	fmt.Fprint(w, "java.util.stream.Stream.concat(java.util.Arrays.stream(")
+	u.Left.emit(w)
+	fmt.Fprint(w, "), java.util.Arrays.stream(")
+	u.Right.emit(w)
+	fmt.Fprint(w, ")).toArray(")
+	switch elem {
+	case "string", "String":
+		fmt.Fprint(w, "String[]::new")
+	default:
+		fmt.Fprintf(w, "%s[]::new", jt)
+	}
+	fmt.Fprint(w, ")")
+}
+
+func (e *ExceptExpr) emit(w io.Writer) {
+	elem := arrayElemType(e.Left)
+	if elem == "" {
+		elem = arrayElemType(e.Right)
+	}
+	if elem == "" {
+		elem = "Object"
+	}
+	jt := javaType(elem)
+	if jt == "" {
+		jt = elem
+	}
+	if elem == "int" {
+		fmt.Fprint(w, "java.util.Arrays.stream(")
+		e.Left.emit(w)
+		fmt.Fprint(w, ").filter(v -> java.util.Arrays.stream(")
+		e.Right.emit(w)
+		fmt.Fprint(w, ").noneMatch(x -> x == v)).toArray()")
+		return
+	}
+	fmt.Fprint(w, "java.util.Arrays.stream(")
+	e.Left.emit(w)
+	fmt.Fprint(w, ").filter(v -> !java.util.Arrays.asList(")
+	e.Right.emit(w)
+	fmt.Fprint(w, ").contains(v)).toArray(")
+	switch elem {
+	case "string", "String":
+		fmt.Fprint(w, "String[]::new")
+	default:
+		fmt.Fprintf(w, "%s[]::new", jt)
+	}
+	fmt.Fprint(w, ")")
+}
+
+func (i *IntersectExpr) emit(w io.Writer) {
+	elem := arrayElemType(i.Left)
+	if elem == "" {
+		elem = arrayElemType(i.Right)
+	}
+	if elem == "" {
+		elem = "Object"
+	}
+	jt := javaType(elem)
+	if jt == "" {
+		jt = elem
+	}
+	if elem == "int" {
+		fmt.Fprint(w, "java.util.Arrays.stream(")
+		i.Left.emit(w)
+		fmt.Fprint(w, ").filter(v -> java.util.Arrays.stream(")
+		i.Right.emit(w)
+		fmt.Fprint(w, ").anyMatch(x -> x == v)).toArray()")
+		return
+	}
+	fmt.Fprint(w, "java.util.Arrays.stream(")
+	i.Left.emit(w)
+	fmt.Fprint(w, ").filter(v -> java.util.Arrays.asList(")
+	i.Right.emit(w)
+	fmt.Fprint(w, ").contains(v)).toArray(")
 	switch elem {
 	case "string", "String":
 		fmt.Fprint(w, "String[]::new")
@@ -1235,6 +1383,8 @@ func isArrayExpr(e Expr) bool {
 		return true
 	case *AppendExpr:
 		return true
+	case *UnionExpr, *UnionAllExpr, *ExceptExpr, *IntersectExpr:
+		return true
 	case *SliceExpr:
 		if !isStringExpr(ex.Value) {
 			return true
@@ -1258,6 +1408,30 @@ func arrayElemType(e Expr) string {
 		}
 	case *AppendExpr:
 		return arrayElemType(ex.List)
+	case *UnionExpr:
+		t := arrayElemType(ex.Left)
+		if t == "" {
+			t = arrayElemType(ex.Right)
+		}
+		return t
+	case *UnionAllExpr:
+		t := arrayElemType(ex.Left)
+		if t == "" {
+			t = arrayElemType(ex.Right)
+		}
+		return t
+	case *ExceptExpr:
+		t := arrayElemType(ex.Left)
+		if t == "" {
+			t = arrayElemType(ex.Right)
+		}
+		return t
+	case *IntersectExpr:
+		t := arrayElemType(ex.Left)
+		if t == "" {
+			t = arrayElemType(ex.Right)
+		}
+		return t
 	case *VarExpr:
 		if t, ok := varTypes[ex.Name]; ok && strings.HasSuffix(t, "[]") {
 			return strings.TrimSuffix(t, "[]")
@@ -1673,6 +1847,16 @@ func compileExpr(e *parser.Expr) (Expr, error) {
 			} else {
 				return nil, fmt.Errorf("unsupported binary op: %s", op.Op)
 			}
+		case "union":
+			if op.All {
+				expr = &UnionAllExpr{Left: expr, Right: r}
+			} else {
+				expr = &UnionExpr{Left: expr, Right: r}
+			}
+		case "except":
+			expr = &ExceptExpr{Left: expr, Right: r}
+		case "intersect":
+			expr = &IntersectExpr{Left: expr, Right: r}
 		default:
 			return nil, fmt.Errorf("unsupported binary op: %s", op.Op)
 		}
