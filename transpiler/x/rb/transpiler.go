@@ -396,6 +396,21 @@ type GroupQueryExpr struct {
 	Key      Expr
 	GroupVar string
 	Select   Expr
+	Sort     Expr
+}
+
+// GroupJoinQueryExpr handles queries with joins and grouping.
+type GroupJoinQueryExpr struct {
+	Var      string
+	Src      Expr
+	Froms    []queryFrom
+	Joins    []queryJoin
+	Where    Expr
+	Row      Expr
+	Key      Expr
+	GroupVar string
+	Select   Expr
+	Sort     Expr
 }
 
 func (q *QueryExpr) emit(e *emitter) {
@@ -554,6 +569,148 @@ func (gq *GroupQueryExpr) emit(e *emitter) {
 	e.writeIndent()
 	io.WriteString(e.w, gq.GroupVar)
 	io.WriteString(e.w, " = { \"key\" => k, \"items\" => items }")
+	e.nl()
+	e.writeIndent()
+	io.WriteString(e.w, "result << ")
+	gq.Select.emit(e)
+	e.nl()
+	e.indent--
+	e.writeIndent()
+	io.WriteString(e.w, "end")
+	e.nl()
+	e.writeIndent()
+	if gq.Sort != nil {
+		io.WriteString(e.w, "result = result.each_with_index.sort_by do |"+gq.GroupVar+", __i|")
+		e.nl()
+		e.indent++
+		e.writeIndent()
+		io.WriteString(e.w, "[")
+		gq.Sort.emit(e)
+		io.WriteString(e.w, ", __i]")
+		e.nl()
+		e.indent--
+		e.writeIndent()
+		io.WriteString(e.w, "end.map{ |x, _| x }")
+		e.nl()
+	}
+	e.writeIndent()
+	io.WriteString(e.w, "result")
+	e.nl()
+	e.indent--
+	e.writeIndent()
+	io.WriteString(e.w, "end)")
+}
+
+func (gq *GroupJoinQueryExpr) emit(e *emitter) {
+	io.WriteString(e.w, "(begin")
+	e.indent++
+	e.nl()
+	e.writeIndent()
+	io.WriteString(e.w, "groups = {}")
+	e.nl()
+	e.writeIndent()
+	gq.Src.emit(e)
+	io.WriteString(e.w, ".each do |"+gq.Var+"|")
+	e.nl()
+	e.indent++
+	for _, f := range gq.Froms {
+		e.writeIndent()
+		f.Src.emit(e)
+		io.WriteString(e.w, ".each do |"+f.Var+"|")
+		e.nl()
+		e.indent++
+	}
+	for _, j := range gq.Joins {
+		e.writeIndent()
+		j.Src.emit(e)
+		io.WriteString(e.w, ".each do |"+j.Var+"|")
+		e.nl()
+		e.indent++
+		if j.On != nil {
+			e.writeIndent()
+			io.WriteString(e.w, "if ")
+			j.On.emit(e)
+			e.nl()
+			e.indent++
+		}
+	}
+	if gq.Where != nil {
+		e.writeIndent()
+		io.WriteString(e.w, "if ")
+		gq.Where.emit(e)
+		e.nl()
+		e.indent++
+	}
+	e.writeIndent()
+	io.WriteString(e.w, "k = ")
+	gq.Key.emit(e)
+	e.nl()
+	e.writeIndent()
+	io.WriteString(e.w, "groups[k] ||= []")
+	e.nl()
+	e.writeIndent()
+	io.WriteString(e.w, "groups[k] << ")
+	gq.Row.emit(e)
+	e.nl()
+	if gq.Where != nil {
+		e.indent--
+		e.writeIndent()
+		io.WriteString(e.w, "end")
+		e.nl()
+	}
+	for i := len(gq.Joins) - 1; i >= 0; i-- {
+		j := gq.Joins[i]
+		if j.On != nil {
+			e.indent--
+			e.writeIndent()
+			io.WriteString(e.w, "end")
+			e.nl()
+		}
+		e.indent--
+		e.writeIndent()
+		io.WriteString(e.w, "end")
+		e.nl()
+	}
+	for range gq.Froms {
+		e.indent--
+		e.writeIndent()
+		io.WriteString(e.w, "end")
+		e.nl()
+	}
+	e.indent--
+	e.writeIndent()
+	io.WriteString(e.w, "end")
+	e.nl()
+	e.writeIndent()
+	io.WriteString(e.w, "pairs = groups.to_a")
+	e.nl()
+	if gq.Sort != nil {
+		e.writeIndent()
+		io.WriteString(e.w, "pairs = pairs.each_with_index.sort_by do |(k, items), __i|")
+		e.nl()
+		e.indent++
+		e.writeIndent()
+		io.WriteString(e.w, gq.GroupVar+" = { \"key\" => k, \"items\" => items }")
+		e.nl()
+		e.writeIndent()
+		io.WriteString(e.w, "[")
+		gq.Sort.emit(e)
+		io.WriteString(e.w, ", __i]")
+		e.nl()
+		e.indent--
+		e.writeIndent()
+		io.WriteString(e.w, "end.map{ |x, _| x }")
+		e.nl()
+	}
+	e.writeIndent()
+	io.WriteString(e.w, "result = []")
+	e.nl()
+	e.writeIndent()
+	io.WriteString(e.w, "pairs.each do |k, items|")
+	e.nl()
+	e.indent++
+	e.writeIndent()
+	io.WriteString(e.w, gq.GroupVar+" = { \"key\" => k, \"items\" => items }")
 	e.nl()
 	e.writeIndent()
 	io.WriteString(e.w, "result << ")
@@ -2642,7 +2799,7 @@ func convertOuterJoinQuery(q *parser.QueryExpr) (Expr, error) {
 }
 
 func convertGroupQuery(q *parser.QueryExpr) (Expr, error) {
-	if q == nil || q.Group == nil || len(q.Group.Exprs) != 1 || len(q.Froms) > 0 || len(q.Joins) > 0 || q.Sort != nil || q.Skip != nil || q.Take != nil || q.Distinct {
+	if q == nil || q.Group == nil || len(q.Group.Exprs) != 1 || len(q.Froms) > 0 || len(q.Joins) > 0 || q.Skip != nil || q.Take != nil || q.Distinct {
 		return nil, fmt.Errorf("unsupported query")
 	}
 	src, err := convertExpr(q.Source)
@@ -2666,7 +2823,118 @@ func convertGroupQuery(q *parser.QueryExpr) (Expr, error) {
 	if err != nil {
 		return nil, err
 	}
-	return &GroupQueryExpr{Var: q.Var, Src: src, Key: keyExpr, GroupVar: q.Group.Name, Select: sel}, nil
+	var sort Expr
+	if q.Sort != nil {
+		currentEnv = child
+		sort, err = convertExpr(q.Sort)
+		currentEnv = saved
+		if err != nil {
+			return nil, err
+		}
+	}
+	return &GroupQueryExpr{Var: q.Var, Src: src, Key: keyExpr, GroupVar: q.Group.Name, Select: sel, Sort: sort}, nil
+}
+
+func convertGroupJoinQuery(q *parser.QueryExpr) (Expr, error) {
+	if q == nil || q.Group == nil || len(q.Group.Exprs) != 1 || q.Distinct {
+		return nil, fmt.Errorf("unsupported query")
+	}
+	src, err := convertExpr(q.Source)
+	if err != nil {
+		return nil, err
+	}
+	child := types.NewEnv(currentEnv)
+	var srcElem types.Type = types.AnyType{}
+	if currentEnv != nil {
+		st := types.ExprType(q.Source, currentEnv)
+		if lt, ok := st.(types.ListType); ok {
+			srcElem = lt.Elem
+		}
+	}
+	child.SetVar(q.Var, srcElem, true)
+	froms := make([]queryFrom, len(q.Froms))
+	for i, f := range q.Froms {
+		fe, err := convertExpr(f.Src)
+		if err != nil {
+			return nil, err
+		}
+		var ft types.Type = types.AnyType{}
+		if currentEnv != nil {
+			t := types.ExprType(f.Src, child)
+			if lt, ok := t.(types.ListType); ok {
+				ft = lt.Elem
+			}
+		}
+		child.SetVar(f.Var, ft, true)
+		froms[i] = queryFrom{Var: f.Var, Src: fe}
+	}
+	joins := make([]queryJoin, len(q.Joins))
+	for i, j := range q.Joins {
+		je, err := convertExpr(j.Src)
+		if err != nil {
+			return nil, err
+		}
+		var jt types.Type = types.AnyType{}
+		if currentEnv != nil {
+			t := types.ExprType(j.Src, child)
+			if lt, ok := t.(types.ListType); ok {
+				jt = lt.Elem
+			}
+		}
+		child.SetVar(j.Var, jt, true)
+		var on Expr
+		if j.On != nil {
+			on, err = convertExpr(j.On)
+			if err != nil {
+				return nil, err
+			}
+		}
+		side := ""
+		if j.Side != nil {
+			side = *j.Side
+		}
+		joins[i] = queryJoin{Var: j.Var, Src: je, On: on, Side: side}
+	}
+	var where Expr
+	if q.Where != nil {
+		w, err := convertExpr(q.Where)
+		if err != nil {
+			return nil, err
+		}
+		where = w
+	}
+	// build row map storing all vars
+	items := []MapItem{{Key: &StringLit{Value: q.Var}, Value: &Ident{Name: q.Var}}}
+	for _, f := range q.Froms {
+		items = append(items, MapItem{Key: &StringLit{Value: f.Var}, Value: &Ident{Name: f.Var}})
+	}
+	for _, j := range q.Joins {
+		items = append(items, MapItem{Key: &StringLit{Value: j.Var}, Value: &Ident{Name: j.Var}})
+	}
+	row := &MapLit{Items: items}
+
+	saved := currentEnv
+	currentEnv = child
+	keyExpr, err := convertExpr(q.Group.Exprs[0])
+	if err != nil {
+		currentEnv = saved
+		return nil, err
+	}
+	sel, err := convertExpr(q.Select)
+	if err != nil {
+		currentEnv = saved
+		return nil, err
+	}
+	var sort Expr
+	if q.Sort != nil {
+		sort, err = convertExpr(q.Sort)
+		if err != nil {
+			currentEnv = saved
+			return nil, err
+		}
+	}
+	currentEnv = saved
+	return &GroupJoinQueryExpr{Var: q.Var, Src: src, Froms: froms, Joins: joins, Where: where, Row: row, Key: keyExpr, GroupVar: q.Group.Name, Select: sel, Sort: sort}, nil
 }
 
 func convertQueryForLet(q *parser.QueryExpr, name string) (Expr, Stmt, error) {
@@ -2686,7 +2954,12 @@ func convertQueryForLet(q *parser.QueryExpr, name string) (Expr, Stmt, error) {
 		}
 		var qe Expr
 		var err error
-		if ex, err2 := convertGroupQuery(q); err2 == nil {
+		if ex, err2 := convertGroupJoinQuery(q); err2 == nil {
+			qe = ex
+			if gq, ok := qe.(*GroupJoinQueryExpr); ok {
+				gq.Select = &StructNewExpr{Name: structName, Fields: fields}
+			}
+		} else if ex, err2 := convertGroupQuery(q); err2 == nil {
 			qe = ex
 			if gq, ok := qe.(*GroupQueryExpr); ok {
 				gq.Select = &StructNewExpr{Name: structName, Fields: fields}
@@ -2727,6 +3000,9 @@ func convertQueryForLet(q *parser.QueryExpr, name string) (Expr, Stmt, error) {
 		return ex, nil, nil
 	}
 	if ex, err := convertOuterJoinQuery(q); err == nil {
+		return ex, nil, nil
+	}
+	if ex, err := convertGroupJoinQuery(q); err == nil {
 		return ex, nil, nil
 	}
 	if ex, err := convertGroupQuery(q); err == nil {

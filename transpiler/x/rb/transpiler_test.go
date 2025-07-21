@@ -119,6 +119,7 @@ func TestTranspilePrograms(t *testing.T) {
 		"in_operator_extended",
 		"right_join",
 		"group_by_multi_join",
+		"group_by_multi_join_sort",
 	}
 	root := repoRoot(t)
 	outDir := filepath.Join(root, "tests", "transpiler", "x", "rb")
