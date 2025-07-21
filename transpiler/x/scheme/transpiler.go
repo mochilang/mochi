@@ -112,20 +112,19 @@ func Format(src []byte) []byte {
 		ch := src[i]
 		switch ch {
 		case '(':
-			buf.WriteByte(ch)
-			indent++
-		case ')':
-			buf.WriteByte(ch)
-			if i+1 < len(src) && src[i+1] != '\n' {
-				buf.WriteByte('\n')
-				buf.WriteString(strings.Repeat("  ", indent-1))
-			}
-			indent--
-		case '\n':
-			buf.WriteByte('\n')
-			if i+1 < len(src) && src[i+1] != ')' {
+			if i > 0 && src[i-1] == '\n' {
 				buf.WriteString(strings.Repeat("  ", indent))
 			}
+			buf.WriteByte('(')
+			indent++
+		case ')':
+			indent--
+			buf.WriteByte(')')
+			if i+1 < len(src) && src[i+1] != '\n' {
+				buf.WriteByte('\n')
+			}
+		case '\n':
+			buf.WriteByte('\n')
 		default:
 			buf.WriteByte(ch)
 		}
@@ -144,7 +143,7 @@ func header() []byte {
 		}
 	}
 	loc, _ := time.LoadLocation("Asia/Bangkok")
-	return []byte(fmt.Sprintf(";; Generated on %s\n(import (srfi 1) (srfi 69) (chibi string))\n", ts.In(loc).Format("2006-01-02 15:04 -0700")))
+	return []byte(fmt.Sprintf(";; Generated on %s\n", ts.In(loc).Format("2006-01-02 15:04 -0700")))
 }
 
 func voidSym() Node { return &List{Elems: []Node{Symbol("quote"), Symbol("nil")}} }
