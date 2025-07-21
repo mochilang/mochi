@@ -2,8 +2,8 @@
 
 This directory contains a minimal transpiler that converts a very small subset of Mochi into Elixir source code. The generated files live in `tests/transpiler/x/ex`.
 
-## VM Golden Test Checklist (94/100)
-_Last updated: 2025-07-21 23:34 +0700_
+## VM Golden Test Checklist (96/101)
+_Last updated: 2025-07-22 04:52 +0700_
 - [x] append_builtin
 - [x] avg_builtin
 - [x] basic_compare
@@ -34,6 +34,7 @@ _Last updated: 2025-07-21 23:34 +0700_
 - [x] group_by_left_join
 - [x] group_by_multi_join
 - [x] group_by_multi_join_sort
+- [ ] group_by_multi_sort
 - [x] group_by_sort
 - [x] group_items_iteration
 - [x] if_else
@@ -73,7 +74,7 @@ _Last updated: 2025-07-21 23:34 +0700_
 - [x] partial_application
 - [x] print_hello
 - [x] pure_fold
-- [ ] pure_global_fold
+- [x] pure_global_fold
 - [x] python_auto
 - [x] python_math
 - [x] query_sum_select
@@ -95,7 +96,7 @@ _Last updated: 2025-07-21 23:34 +0700_
 - [x] tail_recursion
 - [x] test_block
 - [ ] tree_sum
-- [ ] two-sum
+- [x] two-sum
 - [x] typed_let
 - [x] typed_var
 - [x] unary_neg
