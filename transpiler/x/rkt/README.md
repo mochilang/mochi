@@ -1,7 +1,7 @@
 # Mochi Racket Transpiler
 This directory contains the experimental Racket transpiler. Golden tests under `tests/vm/valid` check the generated code and its runtime output.
 
-## Golden Test Checklist (51/100)
+## Golden Test Checklist (52/100)
 
 - [x] append_builtin
 - [x] avg_builtin
@@ -26,7 +26,7 @@ This directory contains the experimental Racket transpiler. Golden tests under `
 - [ ] fun_expr_in_let
 - [x] fun_three_args
 - [ ] go_auto
-- [ ] group_by
+- [x] group_by
 - [ ] group_by_conditional_sum
 - [ ] group_by_having
 - [ ] group_by_join
