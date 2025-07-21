@@ -623,16 +623,26 @@ func (m *MapLit) emit(w io.Writer) {
 		}
 		switch k := e.Key.(type) {
 		case *StringLit:
+			if v, ok := e.Value.(*NameRef); ok && v.Name == k.Value {
+				io.WriteString(w, k.Value)
+				continue
+			}
 			fmt.Fprintf(w, "%q: ", k.Value)
+			e.Value.emit(w)
 		case *NameRef:
+			if v, ok := e.Value.(*NameRef); ok && v.Name == k.Name {
+				io.WriteString(w, k.Name)
+				continue
+			}
 			io.WriteString(w, k.Name)
 			io.WriteString(w, ": ")
+			e.Value.emit(w)
 		default:
 			io.WriteString(w, "[")
 			e.Key.emit(w)
 			io.WriteString(w, "]: ")
+			e.Value.emit(w)
 		}
-		e.Value.emit(w)
 	}
 	io.WriteString(w, "}")
 }
