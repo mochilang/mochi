@@ -35,9 +35,6 @@ var needDataList bool
 // needDataMap reports whether Data.Map functions are required.
 var needDataMap bool
 
-// needUnsafe reports whether unsafePerformIO is required.
-var needUnsafe bool
-
 // needGroupBy reports whether group by helpers are required.
 var needGroupBy bool
 
@@ -409,9 +406,8 @@ type ComprExpr struct {
 	Body    Expr
 }
 type CallExpr struct {
-	Fun    Expr
-	Args   []Expr
-	Impure bool
+	Fun  Expr
+	Args []Expr
 }
 type LambdaExpr struct {
 	Params []string
@@ -712,17 +708,10 @@ func (g *GroupExpr) emit(w io.Writer) {
 	io.WriteString(w, ")")
 }
 func (c *CallExpr) emit(w io.Writer) {
-	if c.Impure {
-		needUnsafe = true
-		io.WriteString(w, "unsafePerformIO (")
-	}
 	c.Fun.emit(w)
 	for _, a := range c.Args {
 		io.WriteString(w, " ")
 		a.emit(w)
-	}
-	if c.Impure {
-		io.WriteString(w, ")")
 	}
 }
 func (l *LambdaExpr) emit(w io.Writer) {
@@ -799,7 +788,7 @@ func toHsType(t types.Type) string {
 	}
 }
 
-func header(withList bool, withMap bool, withUnsafe bool) string {
+func header(withList bool, withMap bool) string {
 	out, err := exec.Command("git", "log", "-1", "--date=iso-strict", "--format=%cd").Output()
 	ts := time.Now()
 	if err == nil {
@@ -826,16 +815,13 @@ func header(withList bool, withMap bool, withUnsafe bool) string {
 	if withMap {
 		h += "import qualified Data.Map as Map\n"
 	}
-	if withUnsafe {
-		h += "import System.IO.Unsafe (unsafePerformIO)\n"
-	}
 	return h
 }
 
 // Emit generates formatted Haskell code.
 func Emit(p *Program) []byte {
 	var buf bytes.Buffer
-	buf.WriteString(header(needDataList, needDataMap, needUnsafe))
+	buf.WriteString(header(needDataList, needDataMap))
 	if needGroupBy {
 		buf.WriteString(groupPrelude())
 		buf.WriteByte('\n')
@@ -880,7 +866,6 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	varTypes = map[string]string{}
 	needDataList = false
 	needDataMap = false
-	needUnsafe = false
 	needGroupBy = false
 	groupVars = map[string]bool{}
 	structDefs = map[string]*TypeDecl{}
@@ -1344,14 +1329,16 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 			}
 			vars = append(vars, j.Var)
 			srcs = append(srcs, je)
-			jc, err := convertExpr(j.On)
-			if err != nil {
-				return nil, err
-			}
-			if cond == nil {
-				cond = jc
-			} else {
-				cond = &BinaryExpr{Left: cond, Ops: []BinaryOp{{Op: "&&", Right: jc}}}
+			if j.On != nil {
+				jc, err := convertExpr(j.On)
+				if err != nil {
+					return nil, err
+				}
+				if cond == nil {
+					cond = jc
+				} else {
+					cond = &BinaryExpr{Left: cond, Ops: []BinaryOp{{Op: "&&", Right: jc}}}
+				}
 			}
 		}
 		if p.Query.Where != nil {
@@ -1513,18 +1500,7 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 			}
 			args = append(args, ex)
 		}
-		impure := false
-		if envInfo != nil {
-			if t, err := envInfo.GetVar(p.Call.Func); err == nil {
-				if ft, ok := t.(types.FuncType); ok && !ft.Pure {
-					if _, ok := ft.Return.(types.BoolType); ok {
-						impure = true
-						needUnsafe = true
-					}
-				}
-			}
-		}
-		return &CallExpr{Fun: fun, Args: args, Impure: impure}, nil
+		return &CallExpr{Fun: fun, Args: args}, nil
 	default:
 		return nil, fmt.Errorf("unsupported primary")
 	}
