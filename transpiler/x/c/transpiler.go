@@ -1037,6 +1037,23 @@ func compileStmt(env *types.Env, s *parser.Statement) (Stmt, error) {
 			return &ForStmt{Var: s.For.Name, Start: start, End: end, Body: body}, nil
 		}
 		list, ok := convertListExpr(s.For.Source)
+		if !ok {
+			ex := convertExpr(s.For.Source)
+			if val, ok2 := valueFromExpr(ex); ok2 {
+				if arr, ok3 := val.([]any); ok3 {
+					var elems []Expr
+					for _, it := range arr {
+						e := anyToExpr(it)
+						if e == nil {
+							return nil, fmt.Errorf("unsupported for-loop")
+						}
+						elems = append(elems, e)
+					}
+					list = elems
+					ok = true
+				}
+			}
+		}
 		if ok {
 			elemType := "int"
 			if len(list) > 0 {
