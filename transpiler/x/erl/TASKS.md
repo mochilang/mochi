@@ -1,3 +1,15 @@
+## Progress (2025-07-21 12:12 +0700)
+- add in_operator_extended test
+- Regenerated golden files - 75/100 vm valid programs passing
+
+## Progress (2025-07-21 12:03 +0700)
+- erl transpiler: support in_operator_extended
+- Regenerated golden files - 75/100 vm valid programs passing
+
+## Progress (2025-07-21 11:54 +0700)
+- docs: update swift tasks
+- Regenerated golden files - 75/100 vm valid programs passing
+
 ## Progress (2025-07-21 11:05 +0700)
 - erl transpiler: update docs
 - Regenerated golden files - 74/100 vm valid programs passing
