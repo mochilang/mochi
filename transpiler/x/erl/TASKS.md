@@ -1,3 +1,23 @@
+## Progress (2025-07-21 23:34 +0700)
+- lua transpiler: support group iter and sorting (c1850ebb5)
+- Regenerated golden files - 68/100 vm valid programs passing
+
+## Progress (2025-07-21 23:34 +0700)
+- lua transpiler: support group iter and sorting (c1850ebb5)
+- Regenerated golden files - 68/100 vm valid programs passing
+
+## Progress (2025-07-21 23:34 +0700)
+- lua transpiler: support group iter and sorting (c1850ebb5)
+- Regenerated golden files - 68/100 vm valid programs passing
+
+## Progress (2025-07-21 23:34 +0700)
+- lua transpiler: support group iter and sorting (c1850ebb5)
+- Regenerated golden files - 68/100 vm valid programs passing
+
+## Progress (2025-07-21 23:34 +0700)
+- lua transpiler: support group iter and sorting (c1850ebb5)
+- Regenerated golden files - 68/100 vm valid programs passing
+
 ## Progress (2025-07-21 21:58 +0700)
 - erl: support multi join group sorting (89c2d21b5)
 - Regenerated golden files - 64/100 vm valid programs passing
