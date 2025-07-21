@@ -1,3 +1,0 @@
-exit status 1
-# command-line-arguments
-../../../tests/transpiler/x/go/left_join_multi.go:57:17: cannot use i (variable of struct type Item) as map[string]any value in struct literal

@@ -1,3 +1,63 @@
+## Progress (2025-07-21 11:02 +0700)
+- go transpiler: simplify prints and queries
+- Regenerated golden files - 81/100 vm valid programs passing
+
+## Progress (2025-07-21 10:52 +0700)
+- scheme transpiler: add right join and simplify loops
+- Regenerated golden files - 81/100 vm valid programs passing
+
+## Progress (2025-07-21 10:52 +0700)
+- scheme transpiler: add right join and simplify loops
+- Regenerated golden files - 79/100 vm valid programs passing
+
+## Progress (2025-07-21 10:52 +0700)
+- scheme transpiler: add right join and simplify loops
+- Regenerated golden files - 79/100 vm valid programs passing
+
+## Progress (2025-07-21 10:52 +0700)
+- scheme transpiler: add right join and simplify loops
+- Regenerated golden files - 79/100 vm valid programs passing
+
+## Progress (2025-07-21 10:52 +0700)
+- scheme transpiler: add right join and simplify loops
+- Regenerated golden files - 79/100 vm valid programs passing
+
+## Progress (2025-07-21 10:52 +0700)
+- scheme transpiler: add right join and simplify loops
+- Regenerated golden files - 79/100 vm valid programs passing
+
+## Progress (2025-07-21 10:52 +0700)
+- scheme transpiler: add right join and simplify loops
+- Regenerated golden files - 79/100 vm valid programs passing
+
+## Progress (2025-07-21 10:52 +0700)
+- scheme transpiler: add right join and simplify loops
+- Regenerated golden files - 79/100 vm valid programs passing
+
+## Progress (2025-07-21 10:52 +0700)
+- scheme transpiler: add right join and simplify loops
+- Regenerated golden files - 79/100 vm valid programs passing
+
+## Progress (2025-07-21 10:52 +0700)
+- scheme transpiler: add right join and simplify loops
+- Regenerated golden files - 79/100 vm valid programs passing
+
+## Progress (2025-07-21 10:52 +0700)
+- scheme transpiler: add right join and simplify loops
+- Regenerated golden files - 79/100 vm valid programs passing
+
+## Progress (2025-07-21 10:52 +0700)
+- scheme transpiler: add right join and simplify loops
+- Regenerated golden files - 79/100 vm valid programs passing
+
+## Progress (2025-07-21 10:52 +0700)
+- scheme transpiler: add right join and simplify loops
+- Regenerated golden files - 79/100 vm valid programs passing
+
+## Progress (2025-07-21 10:52 +0700)
+- scheme transpiler: add right join and simplify loops
+- Regenerated golden files - 79/100 vm valid programs passing
+
 ## Progress (2025-07-21 08:09 +0700)
 - go transpiler: improve boolean handling
 - Regenerated golden files - 81/100 vm valid programs passing
