@@ -9,5 +9,4 @@ $flag = count((function() use ($data) {
   }
   return $result;
 })()) > 0;
-echo rtrim(($flag ? "true" : "false")), PHP_EOL;
-?>
+echo ($flag ? "True" : "False"), PHP_EOL;

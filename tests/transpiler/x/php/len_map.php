@@ -1,3 +1,2 @@
 <?php
-echo rtrim((is_float(count(["a" => 1, "b" => 2])) ? sprintf("%.15f", count(["a" => 1, "b" => 2])) : count(["a" => 1, "b" => 2]))), PHP_EOL;
-?>
+echo (is_float(count(["a" => 1, "b" => 2])) ? json_encode(count(["a" => 1, "b" => 2]), 1344) : count(["a" => 1, "b" => 2])), PHP_EOL;

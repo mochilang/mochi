@@ -1,7 +1,7 @@
 <?php
 $nations = [["id" => 1, "name" => "A"], ["id" => 2, "name" => "B"]];
 $suppliers = [["id" => 1, "nation" => 1], ["id" => 2, "nation" => 2]];
-$partsupp = [["part" => 100, "supplier" => 1, "cost" => 10, "qty" => 2], ["part" => 100, "supplier" => 2, "cost" => 20, "qty" => 1], ["part" => 200, "supplier" => 1, "cost" => 5, "qty" => 3]];
+$partsupp = [["part" => 100, "supplier" => 1, "cost" => 10.0, "qty" => 2], ["part" => 100, "supplier" => 2, "cost" => 20.0, "qty" => 1], ["part" => 200, "supplier" => 1, "cost" => 5.0, "qty" => 3]];
 $filtered = [];
 foreach ($partsupp as $ps) {
   foreach ($suppliers as $s) {
@@ -17,10 +17,11 @@ $grouped = (function() use ($nations, $suppliers, $partsupp, $filtered) {
   $groups = [];
   foreach ($filtered as $x) {
     $key = $x["part"];
-    if (!array_key_exists($key, $groups)) {
-      $groups[$key] = ['key' => $key, 'items' => []];
+    $k = json_encode($key);
+    if (!array_key_exists($k, $groups)) {
+      $groups[$k] = ['key' => $key, 'items' => []];
     }
-    $groups[$key]['items'][] = $x;
+    $groups[$k]['items'][] = $x;
   }
   $result = [];
   foreach ($groups as $g) {
@@ -34,5 +35,4 @@ $grouped = (function() use ($nations, $suppliers, $partsupp, $filtered) {
   }
   return $result;
 })();
-echo rtrim(str_replace(":", ": ", str_replace(",", ", ", json_encode($grouped, 320)))), PHP_EOL;
-?>
+echo str_replace("false", "False", str_replace("true", "True", str_replace("\"", "'", str_replace(":", ": ", str_replace(",", ", ", json_encode($grouped, 1344)))))), PHP_EOL;

@@ -4,10 +4,11 @@ $groups = (function() use ($data) {
   $groups = [];
   foreach ($data as $d) {
     $key = $d["tag"];
-    if (!array_key_exists($key, $groups)) {
-      $groups[$key] = ['key' => $key, 'items' => []];
+    $k = json_encode($key);
+    if (!array_key_exists($k, $groups)) {
+      $groups[$k] = ['key' => $key, 'items' => []];
     }
-    $groups[$key]['items'][] = $d;
+    $groups[$k]['items'][] = $d;
   }
   $result = [];
   foreach ($groups as $g) {
@@ -28,5 +29,4 @@ foreach ($tmp as $r) {
   $result[] = $r;
 }
 
-echo rtrim(str_replace(":", ": ", str_replace(",", ", ", json_encode($result, 320)))), PHP_EOL;
-?>
+echo str_replace("false", "False", str_replace("true", "True", str_replace("\"", "'", str_replace(":", ": ", str_replace(",", ", ", json_encode($result, 1344)))))), PHP_EOL;

@@ -1,4 +1,3 @@
 <?php
 $todo = ["title" => "hi"];
-echo rtrim((is_float($todo["title"]) ? sprintf("%.15f", $todo["title"]) : $todo["title"])), PHP_EOL;
-?>
+echo (is_float($todo["title"]) ? json_encode($todo["title"], 1344) : $todo["title"]), PHP_EOL;

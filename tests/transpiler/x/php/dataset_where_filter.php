@@ -7,8 +7,7 @@ foreach ($people as $person) {
   }
 }
 
-echo rtrim("--- Adults ---"), PHP_EOL;
+echo "--- Adults ---", PHP_EOL;
 foreach ($adults as $person) {
-  echo rtrim((is_float($person["name"]) ? sprintf("%.15f", $person["name"]) : $person["name"]) . " " . "is" . " " . (is_float($person["age"]) ? sprintf("%.15f", $person["age"]) : $person["age"]) . " " . ($person["is_senior"] ? " (senior)" : "")), PHP_EOL;
+  echo (is_float($person["name"]) ? json_encode($person["name"], 1344) : $person["name"]) . " " . "is" . " " . (is_float($person["age"]) ? json_encode($person["age"], 1344) : $person["age"]) . " " . ($person["is_senior"] ? " (senior)" : ""), PHP_EOL;
 }
-?>

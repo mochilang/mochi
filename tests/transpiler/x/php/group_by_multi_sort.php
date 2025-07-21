@@ -1,9 +1,9 @@
 <?php
-$items = [["cat" => "a", "val" => 3], ["cat" => "a", "val" => 1], ["cat" => "b", "val" => 5], ["cat" => "b", "val" => 2]];
+$items = [["a" => "x", "b" => 1, "val" => 2], ["a" => "x", "b" => 2, "val" => 3], ["a" => "y", "b" => 1, "val" => 4], ["a" => "y", "b" => 2, "val" => 1]];
 $grouped = (function() use ($items) {
   $groups = [];
   foreach ($items as $i) {
-    $key = $i["cat"];
+    $key = ["a" => $i["a"], "b" => $i["b"]];
     $k = json_encode($key);
     if (!array_key_exists($k, $groups)) {
       $groups[$k] = ['key' => $key, 'items' => []];
@@ -18,7 +18,7 @@ $grouped = (function() use ($items) {
     $result[] = $x["val"];
   }
   return $result;
-})()), ["cat" => $g["key"], "total" => array_sum((function() use ($i, $g) {
+})()), ["a" => $g["key"]["a"], "b" => $g["key"]["b"], "total" => array_sum((function() use ($i, $g) {
   $result = [];
   foreach ($g["items"] as $x) {
     $result[] = $x["val"];

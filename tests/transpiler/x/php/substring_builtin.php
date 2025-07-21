@@ -1,3 +1,2 @@
 <?php
-echo rtrim((is_float(substr("mochi", 1, 4 - 1)) ? sprintf("%.15f", substr("mochi", 1, 4 - 1)) : substr("mochi", 1, 4 - 1))), PHP_EOL;
-?>
+echo (is_float(substr("mochi", 1, 4 - 1)) ? json_encode(substr("mochi", 1, 4 - 1), 1344) : substr("mochi", 1, 4 - 1)), PHP_EOL;

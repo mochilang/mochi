@@ -608,14 +608,14 @@ func (m *MatchExpr) emit(w io.Writer) {
 
 func (c *CallExpr) emit(w io.Writer) {
 	if c.Func == "echo" {
-		fmt.Fprint(w, "echo rtrim(")
+		io.WriteString(w, "echo ")
 		for i, a := range c.Args {
 			if i > 0 {
-				fmt.Fprint(w, " . \" \" . ")
+				io.WriteString(w, " . \" \" . ")
 			}
 			a.emit(w)
 		}
-		fmt.Fprint(w, "), PHP_EOL")
+		io.WriteString(w, ", PHP_EOL")
 		return
 	}
 	fmt.Fprint(w, c.Func)
@@ -1161,8 +1161,7 @@ func Emit(w io.Writer, p *Program) error {
 			}
 		}
 	}
-	_, err := io.WriteString(w, "?>\n")
-	return err
+	return nil
 }
 
 // Transpile converts a Mochi program into our PHP AST.

@@ -9,18 +9,20 @@ $stats = (function() use ($customers, $orders) {
       if (!($o["customerId"] == $c["id"])) continue;
       $matched = true;
       $key = $c["name"];
-      if (!array_key_exists($key, $groups)) {
-        $groups[$key] = ['key' => $key, 'items' => []];
+      $k = json_encode($key);
+      if (!array_key_exists($k, $groups)) {
+        $groups[$k] = ['key' => $key, 'items' => []];
       }
-      $groups[$key]['items'][] = ['c' => $c, 'o' => $o];
+      $groups[$k]['items'][] = ['c' => $c, 'o' => $o];
     }
     if (!$matched) {
       $o = null;
       $key = $c["name"];
-      if (!array_key_exists($key, $groups)) {
-        $groups[$key] = ['key' => $key, 'items' => []];
+      $k = json_encode($key);
+      if (!array_key_exists($k, $groups)) {
+        $groups[$k] = ['key' => $key, 'items' => []];
       }
-      $groups[$key]['items'][] = ['c' => $c, 'o' => $o];
+      $groups[$k]['items'][] = ['c' => $c, 'o' => $o];
     }
   }
   $result = [];
@@ -37,8 +39,7 @@ $stats = (function() use ($customers, $orders) {
   }
   return $result;
 })();
-echo rtrim("--- Group Left Join ---"), PHP_EOL;
+echo "--- Group Left Join ---", PHP_EOL;
 foreach ($stats as $s) {
-  echo rtrim((is_float($s["name"]) ? sprintf("%.15f", $s["name"]) : $s["name"]) . " " . "orders:" . " " . (is_float($s["count"]) ? sprintf("%.15f", $s["count"]) : $s["count"])), PHP_EOL;
+  echo (is_float($s["name"]) ? json_encode($s["name"], 1344) : $s["name"]) . " " . "orders:" . " " . (is_float($s["count"]) ? json_encode($s["count"], 1344) : $s["count"]), PHP_EOL;
 }
-?>

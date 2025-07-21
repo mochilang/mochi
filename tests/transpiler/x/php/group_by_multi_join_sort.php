@@ -43,5 +43,4 @@ $result = (function() use ($nation, $customer, $orders, $lineitem, $start_date, 
   $result = array_map(fn($r) => $r[1], $result);
   return $result;
 })();
-echo rtrim(str_replace("false", "False", str_replace("true", "True", str_replace("\"", "'", str_replace(":", ": ", str_replace(",", ", ", json_encode($result, 1344))))))), PHP_EOL;
-?>
+echo str_replace("false", "False", str_replace("true", "True", str_replace("\"", "'", str_replace(":", ": ", str_replace(",", ", ", json_encode($result, 1344)))))), PHP_EOL;

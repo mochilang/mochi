@@ -1,3 +1,2 @@
 <?php
-echo rtrim("ok"), PHP_EOL;
-?>
+echo "ok", PHP_EOL;

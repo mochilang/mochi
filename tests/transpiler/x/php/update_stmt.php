@@ -7,5 +7,4 @@ foreach ($people as $idx => $item) {
   }
   $people[$idx] = $item;
 };
-echo rtrim("ok"), PHP_EOL;
-?>
+echo "ok", PHP_EOL;

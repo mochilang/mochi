@@ -11,8 +11,7 @@ foreach ($nums as $n) {
   }
 }
 
-echo rtrim("--- Cross Join of three lists ---"), PHP_EOL;
+echo "--- Cross Join of three lists ---", PHP_EOL;
 foreach ($combos as $c) {
-  echo rtrim((is_float($c["n"]) ? sprintf("%.15f", $c["n"]) : $c["n"]) . " " . (is_float($c["l"]) ? sprintf("%.15f", $c["l"]) : $c["l"]) . " " . (is_float($c["b"]) ? sprintf("%.15f", $c["b"]) : $c["b"])), PHP_EOL;
+  echo (is_float($c["n"]) ? json_encode($c["n"], 1344) : $c["n"]) . " " . (is_float($c["l"]) ? json_encode($c["l"], 1344) : $c["l"]) . " " . (is_float($c["b"]) ? json_encode($c["b"], 1344) : $c["b"]), PHP_EOL;
 }
-?>

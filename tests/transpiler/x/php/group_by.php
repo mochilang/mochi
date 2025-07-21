@@ -4,10 +4,11 @@ $stats = (function() use ($people) {
   $groups = [];
   foreach ($people as $person) {
     $key = $person["city"];
-    if (!array_key_exists($key, $groups)) {
-      $groups[$key] = ['key' => $key, 'items' => []];
+    $k = json_encode($key);
+    if (!array_key_exists($k, $groups)) {
+      $groups[$k] = ['key' => $key, 'items' => []];
     }
-    $groups[$key]['items'][] = $person;
+    $groups[$k]['items'][] = $person;
   }
   $result = [];
   foreach ($groups as $g) {
@@ -27,8 +28,7 @@ $stats = (function() use ($people) {
   }
   return $result;
 })();
-echo rtrim("--- People grouped by city ---"), PHP_EOL;
+echo "--- People grouped by city ---", PHP_EOL;
 foreach ($stats as $s) {
-  echo rtrim((is_float($s["city"]) ? sprintf("%.15f", $s["city"]) : $s["city"]) . " " . ": count =" . " " . (is_float($s["count"]) ? sprintf("%.15f", $s["count"]) : $s["count"]) . " " . ", avg_age =" . " " . (is_float($s["avg_age"]) ? sprintf("%.15f", $s["avg_age"]) : $s["avg_age"])), PHP_EOL;
+  echo (is_float($s["city"]) ? json_encode($s["city"], 1344) : $s["city"]) . " " . ": count =" . " " . (is_float($s["count"]) ? json_encode($s["count"], 1344) : $s["count"]) . " " . ", avg_age =" . " " . (is_float($s["avg_age"]) ? json_encode($s["avg_age"], 1344) : $s["avg_age"]), PHP_EOL;
 }
-?>

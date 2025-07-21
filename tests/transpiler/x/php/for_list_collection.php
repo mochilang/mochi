@@ -1,5 +1,4 @@
 <?php
 foreach ([1, 2, 3] as $n) {
-  echo rtrim((is_float($n) ? sprintf("%.15f", $n) : $n)), PHP_EOL;
+  echo (is_float($n) ? json_encode($n, 1344) : $n), PHP_EOL;
 }
-?>
