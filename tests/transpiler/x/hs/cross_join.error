@@ -1,0 +1,52 @@
+run: exit status 1
+
+/workspace/mochi/tests/transpiler/x/hs/cross_join.hs:31:31: error:
+    • Couldn't match type ‘Int’ with ‘[Char]’
+        arising from selecting the field ‘id’
+    • In the ‘orderId’ field of a record
+      In the expression:
+        GenType3
+          {orderId = o.id, orderCustomerId = o.customerId,
+           pairedCustomerName = c.name, orderTotal = o.total}
+      In the expression:
+        [GenType3
+           {orderId = o.id, orderCustomerId = o.customerId,
+            pairedCustomerName = c.name, orderTotal = o.total} |
+           o <- orders, c <- customers]
+   |
+31 | result = [GenType3 {orderId = o.id, orderCustomerId = o.customerId, pairedCustomerName = c.name, orderTotal = o.total} | o <- orders, c <- customers]
+   |                               ^^^^
+
+/workspace/mochi/tests/transpiler/x/hs/cross_join.hs:31:55: error:
+    • Couldn't match type ‘Int’ with ‘[Char]’
+        arising from selecting the field ‘customerId’
+    • In the ‘orderCustomerId’ field of a record
+      In the expression:
+        GenType3
+          {orderId = o.id, orderCustomerId = o.customerId,
+           pairedCustomerName = c.name, orderTotal = o.total}
+      In the expression:
+        [GenType3
+           {orderId = o.id, orderCustomerId = o.customerId,
+            pairedCustomerName = c.name, orderTotal = o.total} |
+           o <- orders, c <- customers]
+   |
+31 | result = [GenType3 {orderId = o.id, orderCustomerId = o.customerId, pairedCustomerName = c.name, orderTotal = o.total} | o <- orders, c <- customers]
+   |                                                       ^^^^^^^^^^^^
+
+/workspace/mochi/tests/transpiler/x/hs/cross_join.hs:31:111: error:
+    • Couldn't match type ‘Int’ with ‘[Char]’
+        arising from selecting the field ‘total’
+    • In the ‘orderTotal’ field of a record
+      In the expression:
+        GenType3
+          {orderId = o.id, orderCustomerId = o.customerId,
+           pairedCustomerName = c.name, orderTotal = o.total}
+      In the expression:
+        [GenType3
+           {orderId = o.id, orderCustomerId = o.customerId,
+            pairedCustomerName = c.name, orderTotal = o.total} |
+           o <- orders, c <- customers]
+   |
+31 | result = [GenType3 {orderId = o.id, orderCustomerId = o.customerId, pairedCustomerName = c.name, orderTotal = o.total} | o <- orders, c <- customers]
+   |                                                                                                               ^^^^^^^

@@ -1,0 +1,14 @@
+run: exit status 1
+
+/workspace/mochi/tests/transpiler/x/hs/cross_join_triple.hs:15:39: error:
+    • Couldn't match type ‘Bool’ with ‘[Char]’
+      Expected: String
+        Actual: Bool
+    • In the ‘b’ field of a record
+      In the expression: GenType1 {n = n, l = l, b = b}
+      In the expression:
+        [GenType1 {n = n, l = l, b = b} |
+           n <- nums, l <- letters, b <- bools]
+   |
+15 | combos = [GenType1 {n = n, l = l, b = b} | n <- nums, l <- letters, b <- bools]
+   |                                       ^

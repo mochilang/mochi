@@ -1,0 +1,16 @@
+run: exit status 1
+
+/workspace/mochi/tests/transpiler/x/hs/group_by_join.hs:25:25: error:
+    Variable not in scope: name
+    Suggested fix:
+      Notice that ‘name’ is a field selector belonging to the type ‘GenType1’
+      that has been suppressed by NoFieldSelectors.
+   |
+25 | stats = [Map.fromList [(name, g.key), (count, length g.items)] | g <- [MGroup {key = k, items = [[o, c] | o <- orders, c <- customers, o.customerId == c.id && c.name == k]} | k <- nub (map (\o c -> c.name) [[o, c] | o <- orders, c <- customers, o.customerId == c.id])]]
+   |                         ^^^^
+
+/workspace/mochi/tests/transpiler/x/hs/group_by_join.hs:25:40: error:
+    Variable not in scope: count
+   |
+25 | stats = [Map.fromList [(name, g.key), (count, length g.items)] | g <- [MGroup {key = k, items = [[o, c] | o <- orders, c <- customers, o.customerId == c.id && c.name == k]} | k <- nub (map (\o c -> c.name) [[o, c] | o <- orders, c <- customers, o.customerId == c.id])]]
+   |                                        ^^^^^

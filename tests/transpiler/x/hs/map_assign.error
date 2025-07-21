@@ -1,0 +1,10 @@
+run: exit status 1
+
+/workspace/mochi/tests/transpiler/x/hs/map_assign.hs:6:10: error:
+    • No instance for (Num (Map.Map String String))
+        arising from the literal ‘2’
+    • In the expression: 2
+      In an equation for ‘scores’: scores = 2
+  |
+6 | scores = 2
+  |          ^

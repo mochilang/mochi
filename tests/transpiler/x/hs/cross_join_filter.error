@@ -1,0 +1,96 @@
+run: exit status 1
+
+/workspace/mochi/tests/transpiler/x/hs/cross_join_filter.hs:8:9: error:
+    • No instance for (Num String) arising from the literal ‘1’
+    • In the expression: 1
+      In the expression: [1, 2, 3]
+      In an equation for ‘nums’: nums = [1, 2, 3]
+  |
+8 | nums = [1, 2, 3]
+  |         ^
+
+/workspace/mochi/tests/transpiler/x/hs/cross_join_filter.hs:10:69: error:
+    • No instance for (Integral String) arising from a use of ‘mod’
+    • In the first argument of ‘(==)’, namely ‘n `mod` 2’
+      In the expression: n `mod` 2 == 0
+      In a stmt of a list comprehension: n `mod` 2 == 0
+   |
+10 | pairs = [Map.fromList [(n, n), (l, l)] | n <- nums, l <- letters, n `mod` 2 == 0]
+   |                                                                     ^^^^^
+
+/workspace/mochi/tests/transpiler/x/hs/cross_join_filter.hs:10:75: error:
+    • No instance for (Num String) arising from the literal ‘2’
+    • In the second argument of ‘mod’, namely ‘2’
+      In the first argument of ‘(==)’, namely ‘n `mod` 2’
+      In the expression: n `mod` 2 == 0
+   |
+10 | pairs = [Map.fromList [(n, n), (l, l)] | n <- nums, l <- letters, n `mod` 2 == 0]
+   |                                                                           ^
+
+/workspace/mochi/tests/transpiler/x/hs/cross_join_filter.hs:16:19: error:
+    • Ambiguous type variable ‘a0’ arising from a use of ‘show’
+      prevents the constraint ‘(Show a0)’ from being solved.
+      Probable fix: use a type annotation to specify what ‘a0’ should be.
+      Potentially matching instances:
+        instance (Show k, Show a) => Show (Map.Map k a)
+          -- Defined in ‘Data.Map.Internal’
+        instance Show Ordering -- Defined in ‘GHC.Show’
+        ...plus 26 others
+        ...plus 14 instances involving out-of-scope types
+        (use -fprint-potential-instances to see them all)
+    • In the first argument of ‘(+)’, namely ‘show p.n’
+      In the first argument of ‘putStrLn’, namely ‘(show p.n + show p.l)’
+      In a stmt of a 'do' block: putStrLn (show p.n + show p.l)
+   |
+16 |         putStrLn (show p.n + show p.l)
+   |                   ^^^^
+
+/workspace/mochi/tests/transpiler/x/hs/cross_join_filter.hs:16:24: error:
+    • No instance for (GHC.Records.HasField
+                         "n" (Map.Map String String) a0)
+        arising from selecting the field ‘n’
+    • In the first argument of ‘show’, namely ‘p.n’
+      In the first argument of ‘(+)’, namely ‘show p.n’
+      In the first argument of ‘putStrLn’, namely ‘(show p.n + show p.l)’
+   |
+16 |         putStrLn (show p.n + show p.l)
+   |                        ^^^
+
+/workspace/mochi/tests/transpiler/x/hs/cross_join_filter.hs:16:28: error:
+    • No instance for (Num String) arising from a use of ‘+’
+    • In the first argument of ‘putStrLn’, namely
+        ‘(show p.n + show p.l)’
+      In a stmt of a 'do' block: putStrLn (show p.n + show p.l)
+      In the expression: do putStrLn (show p.n + show p.l)
+   |
+16 |         putStrLn (show p.n + show p.l)
+   |                            ^
+
+/workspace/mochi/tests/transpiler/x/hs/cross_join_filter.hs:16:30: error:
+    • Ambiguous type variable ‘a1’ arising from a use of ‘show’
+      prevents the constraint ‘(Show a1)’ from being solved.
+      Probable fix: use a type annotation to specify what ‘a1’ should be.
+      Potentially matching instances:
+        instance (Show k, Show a) => Show (Map.Map k a)
+          -- Defined in ‘Data.Map.Internal’
+        instance Show Ordering -- Defined in ‘GHC.Show’
+        ...plus 26 others
+        ...plus 14 instances involving out-of-scope types
+        (use -fprint-potential-instances to see them all)
+    • In the second argument of ‘(+)’, namely ‘show p.l’
+      In the first argument of ‘putStrLn’, namely ‘(show p.n + show p.l)’
+      In a stmt of a 'do' block: putStrLn (show p.n + show p.l)
+   |
+16 |         putStrLn (show p.n + show p.l)
+   |                              ^^^^
+
+/workspace/mochi/tests/transpiler/x/hs/cross_join_filter.hs:16:35: error:
+    • No instance for (GHC.Records.HasField
+                         "l" (Map.Map String String) a1)
+        arising from selecting the field ‘l’
+    • In the first argument of ‘show’, namely ‘p.l’
+      In the second argument of ‘(+)’, namely ‘show p.l’
+      In the first argument of ‘putStrLn’, namely ‘(show p.n + show p.l)’
+   |
+16 |         putStrLn (show p.n + show p.l)
+   |                                   ^^^

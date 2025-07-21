@@ -1,0 +1,29 @@
+run: exit status 1
+
+/workspace/mochi/tests/transpiler/x/hs/inner_join.hs:30:31: error:
+    • Couldn't match type ‘Int’ with ‘[Char]’
+        arising from selecting the field ‘id’
+    • In the ‘orderId’ field of a record
+      In the expression:
+        GenType3 {orderId = o.id, customerName = c.name, total = o.total}
+      In the expression:
+        [GenType3
+           {orderId = o.id, customerName = c.name, total = o.total} |
+           o <- orders, c <- customers, o.customerId == c.id]
+   |
+30 | result = [GenType3 {orderId = o.id, customerName = c.name, total = o.total} | o <- orders, c <- customers, o.customerId == c.id]
+   |                               ^^^^
+
+/workspace/mochi/tests/transpiler/x/hs/inner_join.hs:30:68: error:
+    • Couldn't match type ‘Int’ with ‘[Char]’
+        arising from selecting the field ‘total’
+    • In the ‘total’ field of a record
+      In the expression:
+        GenType3 {orderId = o.id, customerName = c.name, total = o.total}
+      In the expression:
+        [GenType3
+           {orderId = o.id, customerName = c.name, total = o.total} |
+           o <- orders, c <- customers, o.customerId == c.id]
+   |
+30 | result = [GenType3 {orderId = o.id, customerName = c.name, total = o.total} | o <- orders, c <- customers, o.customerId == c.id]
+   |                                                                    ^^^^^^^
