@@ -383,12 +383,19 @@ func (s *PrintStmt) emit(w io.Writer, indent int) {
 	for i := 0; i < indent; i++ {
 		io.WriteString(w, "    ")
 	}
-	io.WriteString(w, "std::cout << std::boolalpha")
+	if currentProgram != nil {
+		currentProgram.addInclude("<sstream>")
+	}
+	io.WriteString(w, "{ std::ostringstream __ss; __ss << std::boolalpha")
 	for i, v := range s.Values {
-		io.WriteString(w, " << ")
+		io.WriteString(w, "; if(")
 		if i > 0 {
-			io.WriteString(w, " \" \" << ")
+			io.WriteString(w, "true")
+		} else {
+			io.WriteString(w, "false")
 		}
+		io.WriteString(w, ") __ss << \" \";")
+		io.WriteString(w, " __ss << ")
 		switch ex := v.(type) {
 		case *UnaryExpr:
 			if ex.Op == "!" {
@@ -447,7 +454,7 @@ func (s *PrintStmt) emit(w io.Writer, indent int) {
 			v.emit(w)
 		}
 	}
-	io.WriteString(w, " << std::endl;\n")
+	io.WriteString(w, "; auto __line = __ss.str(); if(!__line.empty() && __line.back() == ' ') __line.pop_back(); std::cout << __line << std::endl; }\n")
 }
 
 func (wst *WhileStmt) emit(w io.Writer, indent int) {
@@ -1087,6 +1094,9 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 			cp.Functions = append(cp.Functions, fn)
 		case stmt.Expr != nil:
 			if call := extractCall(stmt.Expr.Expr); call != nil && call.Func == "print" {
+				if cp != nil {
+					cp.addInclude("<sstream>")
+				}
 				var args []Expr
 				for _, a := range call.Args {
 					ce, err := convertExpr(a)
@@ -1304,6 +1314,9 @@ func convertStmt(s *parser.Statement) (Stmt, error) {
 		return &LetStmt{Name: s.Fun.Name, Type: "", Value: lam}, nil
 	case s.Expr != nil:
 		if call := extractCall(s.Expr.Expr); call != nil && call.Func == "print" {
+			if currentProgram != nil {
+				currentProgram.addInclude("<sstream>")
+			}
 			var args []Expr
 			for _, a := range call.Args {
 				ce, err := convertExpr(a)
