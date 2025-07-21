@@ -1,7 +1,7 @@
-## Progress (2025-07-21 20:42 +0700)
-- Implemented compact list printing for arrays
-- Regenerated golden outputs for append_builtin
-- Updated README and tasks
+## Progress (2025-07-21 20:48 +0700)
+- docs: update swift progress
+- Generated golden tests for 89/100 programs
+- Updated README checklist and output artifacts
 
 # Swift Transpiler Tasks
 
@@ -9,3 +9,4 @@
 - Added README checklist generated from tests/vm/valid.
 - Set up golden test harness to transpile all VM programs and record outputs.
 - Implemented constant expression support for string concatenation, comparison, and casting string literals to int.
+
