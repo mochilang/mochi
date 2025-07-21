@@ -1,0 +1,16 @@
+rustc: exit status 1
+error[E0308]: mismatched types
+  --> /workspace/mochi/tests/transpiler/x/rs/group_by_sort.rs:37:552
+   |
+37 | ...h((-{ let mut _q: Vec<i64> = Vec::new(); for x in g.items.clone() { _q.push(x.val); } _q }.iter().map(|x| *x as f64).sum::<f64>(), Que...
+   |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ expected `i64`, found `f64`
+
+error[E0308]: mismatched types
+  --> /workspace/mochi/tests/transpiler/x/rs/group_by_sort.rs:37:732
+   |
+37 | ...l: { let mut _q: Vec<i64> = Vec::new(); for x in g.items.clone() { _q.push(x.val); } _q }.iter().map(|x| *x as f64).sum::<f64>()})); }...
+   |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ expected `i64`, found `f64`
+
+error: aborting due to 2 previous errors
+
+For more information about this error, try `rustc --explain E0308`.

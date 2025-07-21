@@ -2202,6 +2202,9 @@ func compileLiteral(l *parser.Literal) (Expr, error) {
 func inferType(e Expr) string {
 	switch ex := e.(type) {
 	case *NumberLit:
+		if strings.ContainsAny(ex.Value, ".eE") {
+			return "f64"
+		}
 		return "i64"
 	case *BoolLit:
 		return "bool"
