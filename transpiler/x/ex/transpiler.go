@@ -727,21 +727,15 @@ type GroupByExpr struct {
 }
 
 func (g *GroupByExpr) emit(w io.Writer) {
-	io.WriteString(w, "Enum.map(Enum.uniq(Enum.map(")
+	io.WriteString(w, "Enum.map(Enum.group_by(")
 	g.Source.emit(w)
 	io.WriteString(w, ", fn ")
 	io.WriteString(w, g.Var)
 	io.WriteString(w, " -> ")
 	g.Key.emit(w)
-	io.WriteString(w, " end)), fn key ->\n  ")
+	io.WriteString(w, " end), fn {key, items} ->\n  ")
 	io.WriteString(w, g.Name)
-	io.WriteString(w, " = %{key: key, items: Map.fetch!(Enum.group_by(")
-	g.Source.emit(w)
-	io.WriteString(w, ", fn ")
-	io.WriteString(w, g.Var)
-	io.WriteString(w, " -> ")
-	g.Key.emit(w)
-	io.WriteString(w, " end), key)}\n  ")
+	io.WriteString(w, " = %{key: key, items: items}\n  ")
 	g.Select.emit(w)
 	io.WriteString(w, "\nend)")
 }
