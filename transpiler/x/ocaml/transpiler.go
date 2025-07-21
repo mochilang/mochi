@@ -705,6 +705,42 @@ type MapUpdateExpr struct {
 	Value Expr
 }
 
+// queryLoop is one iteration variable and its source list.
+type queryLoop struct {
+	Name string
+	Src  Expr
+}
+
+// QueryExpr represents a basic cross join query without filtering.
+type QueryExpr struct {
+	Loops  []queryLoop
+	Select Expr
+}
+
+func emitQueryLoop(w io.Writer, loops []queryLoop, sel Expr, idx int) {
+	loop := loops[idx]
+	if idx == len(loops)-1 {
+		io.WriteString(w, "(List.map (fun ")
+		io.WriteString(w, loop.Name)
+		io.WriteString(w, " -> ")
+		sel.emit(w)
+		io.WriteString(w, ") ")
+		loop.Src.emit(w)
+		io.WriteString(w, ")")
+		return
+	}
+	io.WriteString(w, "(List.concat (List.map (fun ")
+	io.WriteString(w, loop.Name)
+	io.WriteString(w, " -> ")
+	emitQueryLoop(w, loops, sel, idx+1)
+	io.WriteString(w, ") ")
+	loop.Src.emit(w)
+	io.WriteString(w, "))")
+}
+
+func (q *QueryExpr) emit(w io.Writer)      { emitQueryLoop(w, q.Loops, q.Select, 0) }
+func (q *QueryExpr) emitPrint(w io.Writer) { q.emit(w) }
+
 // InExpr represents `item in collection`.
 type InExpr struct {
 	Item Expr
@@ -1538,6 +1574,11 @@ func convertPostfix(p *parser.PostfixExpr, env *types.Env, vars map[string]VarIn
 			typ = "bool"
 			i += 2
 			continue
+		case op.Field != nil:
+			key := &StringLit{Value: op.Field.Name}
+			expr = &MapIndexExpr{Map: expr, Key: key, Typ: "int"}
+			typ = "int"
+			i++
 		case op.Index != nil && op.Index.Colon == nil && op.Index.Colon2 == nil && op.Index.End == nil && op.Index.Step == nil:
 			idxExpr, _, err := convertExpr(op.Index.Start, env, vars)
 			if err != nil {
@@ -1614,25 +1655,24 @@ func convertPrimary(p *parser.Primary, env *types.Env, vars map[string]VarInfo) 
 		return &ListLit{Elems: elems}, "list", nil
 	case p.Map != nil:
 		items := make([]MapEntry, len(p.Map.Items))
-		keyTyp := "int"
-		valTyp := "int"
 		for i, it := range p.Map.Items {
-			k, kt, err := convertExpr(it.Key, env, vars)
+			k, _, err := convertExpr(it.Key, env, vars)
 			if err != nil {
 				return nil, "", err
 			}
-			v, vt, err := convertExpr(it.Value, env, vars)
+			v, _, err := convertExpr(it.Value, env, vars)
 			if err != nil {
 				return nil, "", err
-			}
-			if i == 0 {
-				keyTyp = kt
-				valTyp = vt
 			}
 			items[i] = MapEntry{Key: k, Value: v}
 		}
-		typStr := fmt.Sprintf("map-%s-%s", keyTyp, valTyp)
-		return &MapLit{Items: items}, typStr, nil
+		return &MapLit{Items: items}, "map", nil
+	case p.Query != nil:
+		qe, err := convertQueryExpr(p.Query, env, vars)
+		if err != nil {
+			return nil, "", err
+		}
+		return qe, "list", nil
 	case p.FunExpr != nil:
 		return convertFunExpr(p.FunExpr, env, vars)
 	case p.Selector != nil:
@@ -1753,6 +1793,33 @@ func convertFunExpr(fn *parser.FunExpr, env *types.Env, vars map[string]VarInfo)
 		return &FuncExpr{Params: params, Body: body, Ret: ret}, "func", nil
 	}
 	return &FuncExpr{Params: params, Body: nil, Ret: retExpr}, "func", nil
+}
+
+func convertQueryExpr(q *parser.QueryExpr, env *types.Env, vars map[string]VarInfo) (Expr, error) {
+	loops := []queryLoop{}
+	src, _, err := convertExpr(q.Source, env, vars)
+	if err != nil {
+		return nil, err
+	}
+	loops = append(loops, queryLoop{Name: q.Var, Src: src})
+	qVars := map[string]VarInfo{}
+	for k, v := range vars {
+		qVars[k] = v
+	}
+	qVars[q.Var] = VarInfo{typ: "map"}
+	for _, f := range q.Froms {
+		fs, _, err := convertExpr(f.Src, env, vars)
+		if err != nil {
+			return nil, err
+		}
+		loops = append(loops, queryLoop{Name: f.Var, Src: fs})
+		qVars[f.Var] = VarInfo{typ: "map"}
+	}
+	sel, _, err := convertExpr(q.Select, env, qVars)
+	if err != nil {
+		return nil, err
+	}
+	return &QueryExpr{Loops: loops, Select: sel}, nil
 }
 
 func convertCall(c *parser.CallExpr, env *types.Env, vars map[string]VarInfo) (Expr, string, error) {
