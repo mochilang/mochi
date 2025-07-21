@@ -234,14 +234,20 @@ func (c *CallExpr) emit(w io.Writer) {
 			c.Args[0].emit(w)
 		}
 		io.WriteString(w, ")")
-	case "sum":
-		io.WriteString(w, "(function(lst)\n  local s = 0\n  for _, v in ipairs(lst) do\n    s = s + v\n  end\n  return s\nend)(")
-		if len(c.Args) > 0 {
-			c.Args[0].emit(w)
-		}
-		io.WriteString(w, ")")
-	case "contains":
-		if len(c.Args) > 0 && isMapExpr(c.Args[0]) {
+        case "sum":
+                io.WriteString(w, "(function(lst)\n  local s = 0\n  for _, v in ipairs(lst) do\n    s = s + v\n  end\n  return s\nend)(")
+                if len(c.Args) > 0 {
+                        c.Args[0].emit(w)
+                }
+                io.WriteString(w, ")")
+        case "exists":
+                io.WriteString(w, "(#(")
+                if len(c.Args) > 0 {
+                        c.Args[0].emit(w)
+                }
+                io.WriteString(w, ") > 0)")
+        case "contains":
+                if len(c.Args) > 0 && isMapExpr(c.Args[0]) {
 			io.WriteString(w, "(function(m, k)\n  return m[k] ~= nil\nend)(")
 			c.Args[0].emit(w)
 			io.WriteString(w, ", ")
@@ -292,27 +298,35 @@ func (a *AssignStmt) emit(w io.Writer) {
 }
 
 func (qa *QueryAssignStmt) emit(w io.Writer) {
-	io.WriteString(w, qa.Name)
-	io.WriteString(w, " = {}\n")
-	for i, v := range qa.Query.Vars {
-		io.WriteString(w, "for _, ")
-		io.WriteString(w, v)
-		io.WriteString(w, " in ipairs(")
-		qa.Query.Sources[i].emit(w)
-		io.WriteString(w, ") do\n")
-	}
-	io.WriteString(w, "  table.insert(")
-	io.WriteString(w, qa.Name)
-	io.WriteString(w, ", ")
-	if qa.Query.Body != nil {
-		qa.Query.Body.emit(w)
-	} else {
-		io.WriteString(w, "nil")
-	}
-	io.WriteString(w, ")\n")
-	for range qa.Query.Vars {
-		io.WriteString(w, "end\n")
-	}
+        io.WriteString(w, qa.Name)
+        io.WriteString(w, " = {}\n")
+        for i, v := range qa.Query.Vars {
+                io.WriteString(w, "for _, ")
+                io.WriteString(w, v)
+                io.WriteString(w, " in ipairs(")
+                qa.Query.Sources[i].emit(w)
+                io.WriteString(w, ") do\n")
+        }
+        if qa.Query.Where != nil {
+                io.WriteString(w, "  if ")
+                qa.Query.Where.emit(w)
+                io.WriteString(w, " then\n")
+        }
+        io.WriteString(w, "  table.insert(")
+        io.WriteString(w, qa.Name)
+        io.WriteString(w, ", ")
+        if qa.Query.Body != nil {
+                qa.Query.Body.emit(w)
+        } else {
+                io.WriteString(w, "nil")
+        }
+        io.WriteString(w, ")\n")
+        if qa.Query.Where != nil {
+                io.WriteString(w, "  end\n")
+        }
+        for range qa.Query.Vars {
+                io.WriteString(w, "end\n")
+        }
 }
 
 func (a *IndexAssignStmt) emit(w io.Writer) {
