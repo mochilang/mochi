@@ -1,3 +1,6 @@
+## Progress (2025-07-21 10:46 +0700)
+- pascal: add right join and update docs (progress 48/100)
+
 ## Progress (2025-07-21 07:52 +0700)
 - dart transpiler: add right join support
 - 48/100 VM programs transpiled successfully
