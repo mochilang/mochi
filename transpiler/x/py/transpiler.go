@@ -1073,6 +1073,25 @@ func aggregatorCall(e *parser.Expr) (string, *parser.Expr, bool) {
 	}
 }
 
+func lenCallArg(e *parser.Expr) (*parser.Expr, bool) {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) > 0 {
+		return nil, false
+	}
+	u := e.Binary.Left
+	if len(u.Ops) > 0 || u.Value == nil {
+		return nil, false
+	}
+	p := u.Value
+	if len(p.Ops) > 0 || p.Target == nil || p.Target.Call == nil {
+		return nil, false
+	}
+	call := p.Target.Call
+	if call.Func == "len" && len(call.Args) == 1 {
+		return call.Args[0], true
+	}
+	return nil, false
+}
+
 func isSumUnary(u *parser.Unary) bool {
 	if u == nil || len(u.Ops) > 0 || u.Value == nil {
 		return false
@@ -1284,6 +1303,23 @@ func dataExprFromFile(path, format string) (Expr, error) {
 }
 
 func inferTypeFromExpr(e *parser.Expr) types.Type {
+	if name, arg, ok := aggregatorCall(e); ok {
+		switch name {
+		case "count":
+			return types.IntType{}
+		case "sum", "min", "max":
+			t := inferTypeFromExpr(arg)
+			if isNumeric(t) {
+				return t
+			}
+			return types.AnyType{}
+		case "avg":
+			return types.FloatType{}
+		}
+	}
+	if _, ok := lenCallArg(e); ok {
+		return types.IntType{}
+	}
 	if e == nil || e.Binary == nil {
 		return types.AnyType{}
 	}
