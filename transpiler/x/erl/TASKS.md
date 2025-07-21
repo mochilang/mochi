@@ -1,3 +1,7 @@
+## Progress (2025-07-21 19:40 +0700)
+- erl: refined string length detection for `len` builtin
+- Regenerated golden files - 56/100 vm valid programs passing
+
 ## Progress (2025-07-21 18:35 +0700)
 - erl: improve query formatting
 - Regenerated golden files - 9/100 vm valid programs passing
