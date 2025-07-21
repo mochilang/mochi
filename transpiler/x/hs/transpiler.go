@@ -112,6 +112,19 @@ func recordType(name string, ex Expr) {
 		varTypes[name] = "bool"
 	} else if isListExpr(ex) {
 		varTypes[name] = "list"
+	} else if ml, ok := ex.(*MapLit); ok {
+		allStr := true
+		for _, v := range ml.Values {
+			if !isStringExpr(v) {
+				allStr = false
+				break
+			}
+		}
+		if allStr {
+			varTypes[name] = "map_string"
+		} else {
+			varTypes[name] = "map"
+		}
 	} else if isMapExpr(ex) {
 		varTypes[name] = "map"
 	}
@@ -499,7 +512,11 @@ func isStringExpr(e Expr) bool {
 	case *NameRef:
 		return varTypes[ex.Name] == "string"
 	case *IndexExpr:
-		if isMapExpr(ex.Target) {
+		if n, ok := ex.Target.(*NameRef); ok {
+			return varTypes[n.Name] == "map_string"
+		}
+	case *CallExpr:
+		if n, ok := ex.Fun.(*NameRef); ok && n.Name == "show" && len(ex.Args) == 1 {
 			return true
 		}
 	case *BinaryExpr:
@@ -581,7 +598,8 @@ func isMapExpr(e Expr) bool {
 	case *RecordLit:
 		return false
 	case *NameRef:
-		return varTypes[ex.Name] == "map"
+		t := varTypes[ex.Name]
+		return strings.HasPrefix(t, "map")
 	case *CallExpr:
 		if n, ok := ex.Fun.(*NameRef); ok {
 			switch n.Name {
@@ -620,7 +638,10 @@ func joinPrintArgs(args []Expr) Expr {
 	}
 	ex := toStringExpr(args[0])
 	for _, a := range args[1:] {
-		ex = &BinaryExpr{Left: ex, Ops: []BinaryOp{{Op: "+", Right: toStringExpr(a)}}}
+		ex = &BinaryExpr{Left: ex, Ops: []BinaryOp{
+			{Op: "+", Right: &StringLit{Value: " "}},
+			{Op: "+", Right: toStringExpr(a)},
+		}}
 	}
 	return ex
 }
