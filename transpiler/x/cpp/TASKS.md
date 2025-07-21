@@ -1,3 +1,118 @@
+## Progress (2025-07-21 16:38 +0700)
+- cpp transpiler: improve queries and formatting
+- Generated C++ for 86/100 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-21 16:20 +0700)
+- cpp: update golden outputs
+- Generated C++ for 8/100 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-21 16:20 +0700)
+- cpp: update golden outputs
+- Generated C++ for 8/100 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-21 16:20 +0700)
+- cpp: update golden outputs
+- Generated C++ for 8/100 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-21 16:20 +0700)
+- cpp: update golden outputs
+- Generated C++ for 5/100 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-21 16:20 +0700)
+- cpp: update golden outputs
+- Generated C++ for 2/100 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-21 16:20 +0700)
+- cpp: update golden outputs
+- Generated C++ for 86/100 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-21 16:20 +0700)
+- cpp: update golden outputs
+- Generated C++ for 86/100 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-21 16:20 +0700)
+- cpp: update golden outputs
+- Generated C++ for 86/100 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-21 16:20 +0700)
+- cpp: update golden outputs
+- Generated C++ for 86/100 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-21 16:20 +0700)
+- cpp: update golden outputs
+- Generated C++ for 86/100 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-21 16:20 +0700)
+- cpp: update golden outputs
+- Generated C++ for 86/100 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-21 16:20 +0700)
+- cpp: update golden outputs
+- Generated C++ for 86/100 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-21 16:20 +0700)
+- cpp: update golden outputs
+- Generated C++ for 86/100 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-21 16:20 +0700)
+- cpp: update golden outputs
+- Generated C++ for 86/100 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-21 16:20 +0700)
+- cpp: update golden outputs
+- Generated C++ for 86/100 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-21 16:20 +0700)
+- cpp: update golden outputs
+- Generated C++ for 86/100 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-21 16:20 +0700)
+- cpp: update golden outputs
+- Generated C++ for 86/100 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-21 16:20 +0700)
+- cpp: update golden outputs
+- Generated C++ for 86/100 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-21 16:20 +0700)
+- cpp: update golden outputs
+- Generated C++ for 86/100 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-21 16:20 +0700)
+- cpp: update golden outputs
+- Generated C++ for 86/100 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-21 16:20 +0700)
+- cpp: update golden outputs
+- Generated C++ for 86/100 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-21 16:20 +0700)
+- cpp: update golden outputs
+- Generated C++ for 86/100 programs
+- Updated README checklist and outputs
+
 ## Progress (2025-07-21 16:16 +0700)
 - cpp: improve transpiler and query support
 - Generated C++ for 1/100 programs
