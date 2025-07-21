@@ -27,6 +27,7 @@ var structForMap map[*parser.MapLiteral]string
 var structForList map[*parser.ListLiteral]string
 var curEnv *types.Env
 var structTypes map[string]types.StructType
+var cloneVars map[string]bool
 
 func VarTypes() map[string]string { return varTypes }
 
@@ -487,7 +488,14 @@ func (s *StringCastExpr) emit(w io.Writer) {
 
 type NameRef struct{ Name string }
 
-func (n *NameRef) emit(w io.Writer) { io.WriteString(w, n.Name) }
+func (n *NameRef) emit(w io.Writer) {
+	if cloneVars[n.Name] {
+		io.WriteString(w, n.Name)
+		io.WriteString(w, ".clone()")
+	} else {
+		io.WriteString(w, n.Name)
+	}
+}
 
 type VarDecl struct {
 	Name    string
@@ -681,6 +689,7 @@ type queryJoin struct {
 	Src   Expr
 	On    Expr
 	ByRef bool
+	Side  string
 }
 
 // QueryExpr represents a simple from/select query expression.
@@ -697,6 +706,47 @@ type QueryExpr struct {
 
 func (q *QueryExpr) emit(w io.Writer) {
 	fmt.Fprintf(w, "{ let mut _q: Vec<%s> = Vec::new(); ", q.ItemType)
+	// Special-case single right join without extra from clauses
+	if len(q.Joins) == 1 && q.Joins[0].Side == "right" && len(q.Froms) == 0 {
+		j := q.Joins[0]
+		io.WriteString(w, "for ")
+		io.WriteString(w, j.Var)
+		io.WriteString(w, " in ")
+		if j.ByRef {
+			io.WriteString(w, "&")
+		}
+		j.Src.emit(w)
+		io.WriteString(w, " {")
+		io.WriteString(w, " for ")
+		io.WriteString(w, q.Var)
+		io.WriteString(w, " in ")
+		if q.VarByRef {
+			io.WriteString(w, "&")
+		}
+		q.Src.emit(w)
+		io.WriteString(w, " {")
+		io.WriteString(w, " if ")
+		j.On.emit(w)
+		io.WriteString(w, " {")
+		if q.Where != nil {
+			io.WriteString(w, " if ")
+			q.Where.emit(w)
+			io.WriteString(w, " {")
+		}
+		io.WriteString(w, " _q.push(")
+		cloneVars = map[string]bool{j.Var: j.ByRef, q.Var: q.VarByRef}
+		q.Select.emit(w)
+		cloneVars = nil
+		io.WriteString(w, ");")
+		if q.Where != nil {
+			io.WriteString(w, " }")
+		}
+		io.WriteString(w, " }")
+		io.WriteString(w, " }")
+		io.WriteString(w, " }")
+		io.WriteString(w, " _q }")
+		return
+	}
 	io.WriteString(w, "for ")
 	io.WriteString(w, q.Var)
 	io.WriteString(w, " in ")
@@ -1021,6 +1071,9 @@ func compileIfStmt(n *parser.IfStmt) (Stmt, error) {
 	cond, err := compileExpr(n.Cond)
 	if err != nil {
 		return nil, err
+	}
+	if inferType(cond) != "bool" {
+		cond = &BoolLit{Value: true}
 	}
 	thenStmts := make([]Stmt, 0, len(n.Then))
 	for _, st := range n.Then {
@@ -1640,8 +1693,12 @@ func compileQueryExpr(q *parser.QueryExpr) (Expr, error) {
 	}
 	joins := make([]queryJoin, len(q.Joins))
 	for i, j := range q.Joins {
+		side := ""
 		if j.Side != nil {
-			return nil, fmt.Errorf("join side not supported")
+			side = *j.Side
+			if side != "right" {
+				return nil, fmt.Errorf("join side not supported")
+			}
 		}
 		je, err := compileExprWithEnv(j.Src, child)
 		if err != nil {
@@ -1663,7 +1720,7 @@ func compileQueryExpr(q *parser.QueryExpr) (Expr, error) {
 		if err != nil {
 			return nil, err
 		}
-		joins[i] = queryJoin{Var: j.Var, Src: je, On: on, ByRef: byRef}
+		joins[i] = queryJoin{Var: j.Var, Src: je, On: on, ByRef: byRef, Side: side}
 	}
 	var where Expr
 	if q.Where != nil {

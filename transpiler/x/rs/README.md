@@ -3,7 +3,7 @@
 This experimental transpiler converts a subset of Mochi into readable Rust code.
 Generated sources for the golden tests live under `tests/transpiler/x/rs`.
 
-## VM Golden Test Checklist (77/100)
+## VM Golden Test Checklist (71/100)
 - [x] append_builtin.mochi
 - [x] avg_builtin.mochi
 - [x] basic_compare.mochi
@@ -16,9 +16,9 @@ Generated sources for the golden tests live under `tests/transpiler/x/rs`.
 - [x] count_builtin.mochi
 - [x] cross_join.mochi
 - [x] cross_join_filter.mochi
-- [x] cross_join_triple.mochi
+- [ ] cross_join_triple.mochi
 - [ ] dataset_sort_take_limit.mochi
-- [x] dataset_where_filter.mochi
+- [ ] dataset_where_filter.mochi
 - [x] exists_builtin.mochi
 - [x] for_list_collection.mochi
 - [x] for_loop.mochi
@@ -26,7 +26,7 @@ Generated sources for the golden tests live under `tests/transpiler/x/rs`.
 - [x] fun_call.mochi
 - [x] fun_expr_in_let.mochi
 - [x] fun_three_args.mochi
-- [x] go_auto.mochi
+- [ ] go_auto.mochi
 - [ ] group_by.mochi
 - [ ] group_by_conditional_sum.mochi
 - [ ] group_by_having.mochi
@@ -40,9 +40,9 @@ Generated sources for the golden tests live under `tests/transpiler/x/rs`.
 - [x] if_then_else.mochi
 - [x] if_then_else_nested.mochi
 - [x] in_operator.mochi
-- [x] in_operator_extended.mochi
+- [ ] in_operator_extended.mochi
 - [x] inner_join.mochi
-- [x] join_multi.mochi
+- [ ] join_multi.mochi
 - [x] json_builtin.mochi
 - [ ] left_join.mochi
 - [ ] left_join_multi.mochi
@@ -74,11 +74,11 @@ Generated sources for the golden tests live under `tests/transpiler/x/rs`.
 - [x] print_hello.mochi
 - [x] pure_fold.mochi
 - [x] pure_global_fold.mochi
-- [x] python_auto.mochi
+- [ ] python_auto.mochi
 - [ ] python_math.mochi
-- [x] query_sum_select.mochi
+- [ ] query_sum_select.mochi
 - [ ] record_assign.mochi
-- [ ] right_join.mochi
+- [x] right_join.mochi
 - [ ] save_jsonl_stdout.mochi
 - [x] short_circuit.mochi
 - [x] slice.mochi
