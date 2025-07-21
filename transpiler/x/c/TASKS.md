@@ -1,3 +1,7 @@
+## Progress (2025-07-21 06:48 +0700)
+- Added fallback loop handling for constant lists stored in variables.
+- VM valid golden test results updated to 57/100
+
 ## Progress (2025-07-20 22:54 +0700)
 - Added constant map indexing and new golden file `map_index`.
 - VM valid golden test results updated to 57/100
