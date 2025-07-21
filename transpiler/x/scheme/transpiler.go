@@ -155,17 +155,23 @@ func header() []byte {
 		}
 	}
 	loc, _ := time.LoadLocation("Asia/Bangkok")
-	prelude := `(import (scheme base) (srfi 69) (scheme sort) (chibi string))
+	prelude := `(begin
+  (current-error-port (open-output-string))
+  (import (scheme base) (srfi 69) (scheme sort) (chibi string)))
 (define (to-str x)
-  (cond ((hash-table? x)
-         (let* ((pairs (hash-table->alist x))
-                (pairs (list-sort (lambda (a b) (string<? (car a) (car b))) pairs)))
+  (cond ((and (list? x) (pair? x)
+              (pair? (car x)) (string? (car (car x))))
+         (string-append "{" (string-join (map (lambda (kv)
+                                              (string-append "'" (car kv) "': " (to-str (cdr kv))))
+                                            x) ", ") "}"))
+        ((hash-table? x)
+         (let ((pairs (hash-table->alist x)))
            (string-append "{" (string-join (map (lambda (kv)
                                                   (string-append "'" (car kv) "': " (to-str (cdr kv))))
                                                 pairs) ", ") "}")))
         ((list? x)
          (string-append "[" (string-join (map to-str x) ", ") "]"))
-        ((string? x) (string-append "\"" x "\""))
+        ((string? x) (string-append "'" x "'"))
         (else (number->string x))))
 `
 	return []byte(fmt.Sprintf(";; Generated on %s\n%s\n",
@@ -496,41 +502,69 @@ func convertParserExpr(e *parser.Expr) (Node, error) {
 	if e == nil || e.Binary == nil {
 		return nil, fmt.Errorf("unsupported expression")
 	}
+
 	left, err := convertParserUnary(e.Binary.Left)
 	if err != nil {
 		return nil, err
 	}
+	leftType := types.ExprType(&parser.Expr{Binary: &parser.BinaryExpr{Left: e.Binary.Left}}, currentEnv)
+
 	exprs := []Node{left}
+	typesStack := []types.Type{leftType}
 	ops := []string{}
-	for _, op := range e.Binary.Right {
-		right, err := convertParserPostfix(op.Right)
+
+	for _, part := range e.Binary.Right {
+		right, err := convertParserPostfix(part.Right)
 		if err != nil {
 			return nil, err
 		}
-		for len(ops) > 0 && precedence(ops[len(ops)-1]) >= precedence(op.Op) {
+		rightType := types.ExprType(&parser.Expr{Binary: &parser.BinaryExpr{Left: &parser.Unary{Value: part.Right}}}, currentEnv)
+
+		for len(ops) > 0 && precedence(ops[len(ops)-1]) >= precedence(part.Op) {
 			r := exprs[len(exprs)-1]
 			exprs = exprs[:len(exprs)-1]
+			rt := typesStack[len(typesStack)-1]
+			typesStack = typesStack[:len(typesStack)-1]
+
 			l := exprs[len(exprs)-1]
 			exprs = exprs[:len(exprs)-1]
+			lt := typesStack[len(typesStack)-1]
+			typesStack = typesStack[:len(typesStack)-1]
+
 			o := ops[len(ops)-1]
 			ops = ops[:len(ops)-1]
-			exprs = append(exprs, makeBinary(o, l, r))
+
+			exprs = append(exprs, makeBinaryTyped(o, l, r, lt, rt))
+			typesStack = append(typesStack, types.AnyType{})
 		}
-		ops = append(ops, op.Op)
+
+		ops = append(ops, part.Op)
 		exprs = append(exprs, right)
+		typesStack = append(typesStack, rightType)
 	}
+
 	for len(ops) > 0 {
 		r := exprs[len(exprs)-1]
 		exprs = exprs[:len(exprs)-1]
+		rt := typesStack[len(typesStack)-1]
+		typesStack = typesStack[:len(typesStack)-1]
+
 		l := exprs[len(exprs)-1]
 		exprs = exprs[:len(exprs)-1]
+		lt := typesStack[len(typesStack)-1]
+		typesStack = typesStack[:len(typesStack)-1]
+
 		o := ops[len(ops)-1]
 		ops = ops[:len(ops)-1]
-		exprs = append(exprs, makeBinary(o, l, r))
+
+		exprs = append(exprs, makeBinaryTyped(o, l, r, lt, rt))
+		typesStack = append(typesStack, types.AnyType{})
 	}
+
 	if len(exprs) != 1 {
 		return nil, fmt.Errorf("expr reduce error")
 	}
+
 	return exprs[0], nil
 }
 
@@ -839,7 +873,7 @@ func convertRightJoinQuery(q *parser.QueryExpr) (Node, error) {
 }
 
 func convertGroupByJoinQuery(q *parser.QueryExpr) (Node, error) {
-	if q == nil || q.Group == nil || len(q.Group.Exprs) != 1 || q.Distinct || q.Sort != nil || q.Skip != nil || q.Take != nil {
+	if q == nil || q.Group == nil || len(q.Group.Exprs) != 1 || q.Distinct || q.Skip != nil || q.Take != nil {
 		return nil, fmt.Errorf("unsupported query")
 	}
 
@@ -883,6 +917,15 @@ func convertGroupByJoinQuery(q *parser.QueryExpr) (Node, error) {
 	if err != nil {
 		currentEnv = prevEnv
 		return nil, err
+	}
+	sel = mapToAlist(sel)
+	var sortExpr Node
+	if q.Sort != nil {
+		sortExpr, err = convertParserExpr(q.Sort)
+		if err != nil {
+			currentEnv = prevEnv
+			return nil, err
+		}
 	}
 
 	loops := []struct {
@@ -1033,6 +1076,23 @@ func convertGroupByJoinQuery(q *parser.QueryExpr) (Node, error) {
 		&List{Elems: []Node{Symbol("hash-table-values"), Symbol(groups)}},
 	}}
 
+	var sortCall Node
+	if sortExpr != nil {
+		a := gensym("a")
+		b := gensym("b")
+		keyA := replaceSymbol(sortExpr, gParam, a)
+		keyB := replaceSymbol(sortExpr, gParam, b)
+		cmp := &List{Elems: []Node{
+			Symbol("lambda"),
+			&List{Elems: []Node{a, b}},
+			&List{Elems: []Node{Symbol("<"), keyA, keyB}},
+		}}
+		sortCall = &List{Elems: []Node{
+			Symbol("set!"), Symbol(res),
+			&List{Elems: []Node{Symbol("list-sort"), cmp, Symbol(res)}},
+		}}
+	}
+
 	currentEnv = prevEnv
 	return &List{Elems: []Node{
 		Symbol("let"),
@@ -1040,7 +1100,7 @@ func convertGroupByJoinQuery(q *parser.QueryExpr) (Node, error) {
 			&List{Elems: []Node{Symbol(groups), &List{Elems: []Node{Symbol("make-hash-table")}}}},
 			&List{Elems: []Node{Symbol(res), &List{Elems: []Node{Symbol("list")}}}},
 		}},
-		&List{Elems: []Node{Symbol("begin"), loopBody, buildRes, Symbol(res)}},
+		&List{Elems: []Node{Symbol("begin"), loopBody, buildRes, sortCall, Symbol(res)}},
 	}}, nil
 }
 
@@ -1345,6 +1405,64 @@ func makeBinary(op string, left, right Node) Node {
 	default:
 		return &List{Elems: []Node{Symbol(op), left, right}}
 	}
+}
+
+func makeBinaryTyped(op string, left, right Node, lt, rt types.Type) Node {
+	isStrType := func(t types.Type) bool {
+		_, ok := t.(types.StringType)
+		return ok
+	}
+	if isStrType(lt) || isStrType(rt) {
+		switch op {
+		case "+":
+			return &List{Elems: []Node{Symbol("string-append"), left, right}}
+		case "<":
+			return &List{Elems: []Node{Symbol("string<?"), left, right}}
+		case "<=":
+			return &List{Elems: []Node{Symbol("string<=?"), left, right}}
+		case ">":
+			return &List{Elems: []Node{Symbol("string>?"), left, right}}
+		case ">=":
+			return &List{Elems: []Node{Symbol("string>=?"), left, right}}
+		case "==":
+			return &List{Elems: []Node{Symbol("string=?"), left, right}}
+		case "!=":
+			return &List{Elems: []Node{Symbol("not"), &List{Elems: []Node{Symbol("string=?"), left, right}}}}
+		}
+	}
+	return makeBinary(op, left, right)
+}
+
+func replaceSymbol(n Node, old, new Symbol) Node {
+	switch t := n.(type) {
+	case Symbol:
+		if t == old {
+			return new
+		}
+		return t
+	case *List:
+		elems := make([]Node, len(t.Elems))
+		for i, e := range t.Elems {
+			elems[i] = replaceSymbol(e, old, new)
+		}
+		return &List{Elems: elems}
+	default:
+		return n
+	}
+}
+
+func mapToAlist(n Node) Node {
+	lst, ok := n.(*List)
+	if !ok || len(lst.Elems) != 2 {
+		return n
+	}
+	if sym, ok := lst.Elems[0].(Symbol); !ok || sym != "alist->hash-table" {
+		return n
+	}
+	if inner, ok := lst.Elems[1].(*List); ok {
+		return inner
+	}
+	return n
 }
 
 func precedence(op string) int {
