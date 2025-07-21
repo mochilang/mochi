@@ -1,12 +1,40 @@
 compile: exit status 1
-/workspace/mochi/tests/transpiler/x/cpp/in_operator_extended.cpp:17:28: error: wrong number of template arguments (1, should be at least 2)
-   17 | auto m = std::map<auto, int>{{a, 1}};
-      |                            ^
+/workspace/mochi/tests/transpiler/x/cpp/in_operator_extended.cpp:17:19: error: wrong number of template arguments (1, should be at least 2)
+   17 | std::map<auto, int> m = std::map<auto, int>{{a, 1}};
+      |                   ^
 In file included from /usr/include/c++/13/map:63,
                  from /workspace/mochi/tests/transpiler/x/cpp/in_operator_extended.cpp:7:
 /usr/include/c++/13/bits/stl_map.h:102:11: note: provided for ‘template<class _Key, class _Tp, class _Compare, class _Alloc> class std::map’
   102 |     class map
       |           ^~~
-/workspace/mochi/tests/transpiler/x/cpp/in_operator_extended.cpp:17:31: error: ‘a’ was not declared in this scope
-   17 | auto m = std::map<auto, int>{{a, 1}};
-      |                               ^
+/workspace/mochi/tests/transpiler/x/cpp/in_operator_extended.cpp:17:43: error: wrong number of template arguments (1, should be at least 2)
+   17 | std::map<auto, int> m = std::map<auto, int>{{a, 1}};
+      |                                           ^
+/usr/include/c++/13/bits/stl_map.h:102:11: note: provided for ‘template<class _Key, class _Tp, class _Compare, class _Alloc> class std::map’
+  102 |     class map
+      |           ^~~
+/workspace/mochi/tests/transpiler/x/cpp/in_operator_extended.cpp:17:46: error: ‘a’ was not declared in this scope
+   17 | std::map<auto, int> m = std::map<auto, int>{{a, 1}};
+      |                                              ^
+/workspace/mochi/tests/transpiler/x/cpp/in_operator_extended.cpp: In instantiation of ‘main()::<lambda(const auto:23&, const auto:24&)> [with auto:23 = int; auto:24 = std::__cxx11::basic_string<char>]’:
+/workspace/mochi/tests/transpiler/x/cpp/in_operator_extended.cpp:23:305:   required from here
+/workspace/mochi/tests/transpiler/x/cpp/in_operator_extended.cpp:23:268: error: request for member ‘begin’ in ‘c’, which is of non-class type ‘const int’
+   23 |     std::cout << ([&](const auto& c, const auto& v){ if constexpr(std::is_same_v<std::decay_t<decltype(c)>, std::string>) { return c.find(v) != std::string::npos; } else if constexpr(requires { c.find(v); }) { return c.find(v) != c.end(); } else { return std::find(c.begin(), c.end(), v) != c.end(); } })(m, std::string("a")) << std::endl;
+      |                                                                                                                                                                                                                                                                          ~~^~~~~
+/workspace/mochi/tests/transpiler/x/cpp/in_operator_extended.cpp:23:279: error: request for member ‘end’ in ‘c’, which is of non-class type ‘const int’
+   23 |     std::cout << ([&](const auto& c, const auto& v){ if constexpr(std::is_same_v<std::decay_t<decltype(c)>, std::string>) { return c.find(v) != std::string::npos; } else if constexpr(requires { c.find(v); }) { return c.find(v) != c.end(); } else { return std::find(c.begin(), c.end(), v) != c.end(); } })(m, std::string("a")) << std::endl;
+      |                                                                                                                                                                                                                                                                                     ~~^~~
+/workspace/mochi/tests/transpiler/x/cpp/in_operator_extended.cpp:23:294: error: request for member ‘end’ in ‘c’, which is of non-class type ‘const int’
+   23 |     std::cout << ([&](const auto& c, const auto& v){ if constexpr(std::is_same_v<std::decay_t<decltype(c)>, std::string>) { return c.find(v) != std::string::npos; } else if constexpr(requires { c.find(v); }) { return c.find(v) != c.end(); } else { return std::find(c.begin(), c.end(), v) != c.end(); } })(m, std::string("a")) << std::endl;
+      |                                                                                                                                                                                                                                                                                                    ~~^~~
+/workspace/mochi/tests/transpiler/x/cpp/in_operator_extended.cpp: In instantiation of ‘main()::<lambda(const auto:25&, const auto:26&)> [with auto:25 = int; auto:26 = std::__cxx11::basic_string<char>]’:
+/workspace/mochi/tests/transpiler/x/cpp/in_operator_extended.cpp:24:305:   required from here
+/workspace/mochi/tests/transpiler/x/cpp/in_operator_extended.cpp:24:268: error: request for member ‘begin’ in ‘c’, which is of non-class type ‘const int’
+   24 |     std::cout << ([&](const auto& c, const auto& v){ if constexpr(std::is_same_v<std::decay_t<decltype(c)>, std::string>) { return c.find(v) != std::string::npos; } else if constexpr(requires { c.find(v); }) { return c.find(v) != c.end(); } else { return std::find(c.begin(), c.end(), v) != c.end(); } })(m, std::string("b")) << std::endl;
+      |                                                                                                                                                                                                                                                                          ~~^~~~~
+/workspace/mochi/tests/transpiler/x/cpp/in_operator_extended.cpp:24:279: error: request for member ‘end’ in ‘c’, which is of non-class type ‘const int’
+   24 |     std::cout << ([&](const auto& c, const auto& v){ if constexpr(std::is_same_v<std::decay_t<decltype(c)>, std::string>) { return c.find(v) != std::string::npos; } else if constexpr(requires { c.find(v); }) { return c.find(v) != c.end(); } else { return std::find(c.begin(), c.end(), v) != c.end(); } })(m, std::string("b")) << std::endl;
+      |                                                                                                                                                                                                                                                                                     ~~^~~
+/workspace/mochi/tests/transpiler/x/cpp/in_operator_extended.cpp:24:294: error: request for member ‘end’ in ‘c’, which is of non-class type ‘const int’
+   24 |     std::cout << ([&](const auto& c, const auto& v){ if constexpr(std::is_same_v<std::decay_t<decltype(c)>, std::string>) { return c.find(v) != std::string::npos; } else if constexpr(requires { c.find(v); }) { return c.find(v) != c.end(); } else { return std::find(c.begin(), c.end(), v) != c.end(); } })(m, std::string("b")) << std::endl;
+      |                                                                                                                                                                                                                                                                                                    ~~^~~

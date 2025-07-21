@@ -383,7 +383,7 @@ func (s *PrintStmt) emit(w io.Writer, indent int) {
 	for i := 0; i < indent; i++ {
 		io.WriteString(w, "    ")
 	}
-	io.WriteString(w, "std::cout << std::boolalpha")
+	io.WriteString(w, "std::cout")
 	for i, v := range s.Values {
 		io.WriteString(w, " << ")
 		if i > 0 {
@@ -391,22 +391,10 @@ func (s *PrintStmt) emit(w io.Writer, indent int) {
 		}
 		switch ex := v.(type) {
 		case *UnaryExpr:
-			if ex.Op == "!" {
-				io.WriteString(w, "static_cast<int>(")
-				ex.emit(w)
-				io.WriteString(w, ")")
-			} else {
-				ex.emit(w)
-			}
+			ex.emit(w)
 			continue
 		case *BinaryExpr:
-			if ex.Op == "&&" || ex.Op == "||" || ex.Op == "==" || ex.Op == "!=" || ex.Op == "<" || ex.Op == "<=" || ex.Op == ">" || ex.Op == ">=" || ex.Op == "in" {
-				io.WriteString(w, "static_cast<int>(")
-				ex.emit(w)
-				io.WriteString(w, ")")
-			} else {
-				ex.emit(w)
-			}
+			ex.emit(w)
 			continue
 		case *ListLit:
 			if currentProgram != nil {
@@ -1139,6 +1127,8 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 					typ = fmt.Sprintf("std::vector<%s>", scomp.ElemType)
 				} else if gcomp, ok := val.(*GroupComp); ok {
 					typ = fmt.Sprintf("std::vector<%s>", gcomp.ElemType)
+				} else {
+					typ = exprType(val)
 				}
 			}
 			globals = append(globals, &LetStmt{Name: stmt.Let.Name, Type: typ, Value: val})
@@ -1178,6 +1168,8 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 					typ = fmt.Sprintf("std::vector<%s>", scomp.ElemType)
 				} else if gcomp, ok := val.(*GroupComp); ok {
 					typ = fmt.Sprintf("std::vector<%s>", gcomp.ElemType)
+				} else {
+					typ = exprType(val)
 				}
 			}
 			globals = append(globals, &LetStmt{Name: stmt.Var.Name, Type: typ, Value: val})
