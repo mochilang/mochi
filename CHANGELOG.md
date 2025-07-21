@@ -1,4 +1,21 @@
 # 📦 CHANGELOG.md
+## [0.10.34] – 2025-07-21T19:10:17+07:00
+
+### Added
+
+* Struct casts for the Java transpiler
+* More join operations across language backends
+
+### Changed
+
+* Golden outputs regenerated for multiple transpilers
+* Boolean, float and map handling improved
+* Progress logs refreshed across languages
+
+### Fixed
+
+* Assorted formatting and build issues
+
 ## [0.10.33] – 2025-07-21T15:42:34+07:00
 
 ### Added
