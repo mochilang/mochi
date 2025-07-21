@@ -778,6 +778,7 @@ type GroupQueryExpr struct {
 	GroupType string
 	Select    Expr
 	Having    Expr
+	Sort      Expr
 	ResType   string
 }
 
@@ -831,6 +832,16 @@ func (gq *GroupQueryExpr) emit(w io.Writer) {
 		resType = "Any"
 	}
 	fmt.Fprintf(w, "val _res = mutableListOf<%s>()\n", resType)
+	var useTmp bool
+	var sortType string
+	if gq.Sort != nil {
+		useTmp = true
+		sortType = guessType(gq.Sort)
+		if sortType == "" {
+			sortType = "Any"
+		}
+		fmt.Fprintf(w, "val _tmp = mutableListOf<Pair<%s, %s>>()\n", sortType, resType)
+	}
 	indent(w, 1)
 	io.WriteString(w, "for ((key, items) in _groups) {\n")
 	indent(w, 2)
@@ -841,19 +852,39 @@ func (gq *GroupQueryExpr) emit(w io.Writer) {
 		gq.Having.emit(w)
 		io.WriteString(w, ") {\n")
 		indent(w, 3)
-		io.WriteString(w, "_res.add(")
-		gq.Select.emit(w)
-		io.WriteString(w, ")\n")
+		if useTmp {
+			io.WriteString(w, "_tmp.add(Pair(")
+			gq.Sort.emit(w)
+			io.WriteString(w, ", ")
+			gq.Select.emit(w)
+			io.WriteString(w, "))\n")
+		} else {
+			io.WriteString(w, "_res.add(")
+			gq.Select.emit(w)
+			io.WriteString(w, ")\n")
+		}
 		indent(w, 2)
 		io.WriteString(w, "}\n")
 	} else {
 		indent(w, 2)
-		io.WriteString(w, "_res.add(")
-		gq.Select.emit(w)
-		io.WriteString(w, ")\n")
+		if useTmp {
+			io.WriteString(w, "_tmp.add(Pair(")
+			gq.Sort.emit(w)
+			io.WriteString(w, ", ")
+			gq.Select.emit(w)
+			io.WriteString(w, "))\n")
+		} else {
+			io.WriteString(w, "_res.add(")
+			gq.Select.emit(w)
+			io.WriteString(w, ")\n")
+		}
 	}
 	indent(w, 1)
 	io.WriteString(w, "}\n")
+	if useTmp {
+		indent(w, 1)
+		io.WriteString(w, "_tmp.sortBy { it.first }.map { it.second }.toMutableList().also { _res.addAll(it) }\n")
+	}
 	indent(w, 1)
 	io.WriteString(w, "_res\n")
 	io.WriteString(w, "}")
@@ -1615,7 +1646,10 @@ func convertRightJoinQuery(env *types.Env, q *parser.QueryExpr) (Expr, error) {
 }
 
 func convertQueryExpr(env *types.Env, q *parser.QueryExpr) (Expr, error) {
-	if q.Sort != nil || q.Skip != nil || q.Take != nil {
+	if q.Skip != nil || q.Take != nil {
+		return nil, fmt.Errorf("unsupported query")
+	}
+	if q.Sort != nil && q.Group == nil {
 		return nil, fmt.Errorf("unsupported query")
 	}
 	if len(q.Joins) == 1 && q.Joins[0].Side != nil && *q.Joins[0].Side == "right" && q.Group == nil && len(q.Froms) == 0 && q.Where == nil {
@@ -1716,6 +1750,13 @@ func convertQueryExpr(env *types.Env, q *parser.QueryExpr) (Expr, error) {
 		if err != nil {
 			return nil, err
 		}
+		var sortExpr Expr
+		if q.Sort != nil {
+			sortExpr, err = convertExpr(genv, q.Sort)
+			if err != nil {
+				return nil, err
+			}
+		}
 		gtype := strings.Title(q.Group.Name) + "Group"
 		extraDecls = append(extraDecls, &DataClass{Name: gtype, Fields: []ParamDecl{
 			{Name: "key", Type: guessType(key)},
@@ -1732,6 +1773,7 @@ func convertQueryExpr(env *types.Env, q *parser.QueryExpr) (Expr, error) {
 			GroupType: gtype,
 			Select:    sel2,
 			Having:    having,
+			Sort:      sortExpr,
 			ResType:   guessType(sel2),
 		}, nil
 	}

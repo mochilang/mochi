@@ -1,3 +1,7 @@
+## VM Golden Progress (2025-07-21 15:13 +0700)
+- Added `sort by` support for group-by queries.
+- Regenerated Kotlin golden files and README.
+
 ## VM Golden Progress (2025-07-21 13:50 +0700)
 - Added support for cross join queries with where clause.
 - Regenerated Kotlin golden files and README.
