@@ -2235,6 +2235,23 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 							p.Stmts = append(p.Stmts, dc)
 							list.Elems = elems
 							e = list
+							if env != nil {
+								fields := map[string]types.Type{}
+								for _, f := range dc.Fields {
+									switch f.Type {
+									case "int":
+										fields[f.Name] = types.IntType{}
+									case "float":
+										fields[f.Name] = types.FloatType{}
+									case "str":
+										fields[f.Name] = types.StringType{}
+									default:
+										fields[f.Name] = types.AnyType{}
+									}
+								}
+								typ = types.ListType{Elem: types.StructType{Fields: fields}}
+								env.SetVar(st.Let.Name, typ, false)
+							}
 						}
 					} else if q := ExtractQueryExpr(st.Let.Value); q != nil && q.Group == nil {
 						selExpr, serr := convertExpr(q.Select)
@@ -2286,6 +2303,23 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 							p.Stmts = append(p.Stmts, dc)
 							list.Elems = elems
 							e = list
+							if env != nil {
+								fields := map[string]types.Type{}
+								for _, f := range dc.Fields {
+									switch f.Type {
+									case "int":
+										fields[f.Name] = types.IntType{}
+									case "float":
+										fields[f.Name] = types.FloatType{}
+									case "str":
+										fields[f.Name] = types.StringType{}
+									default:
+										fields[f.Name] = types.AnyType{}
+									}
+								}
+								typ = types.ListType{Elem: types.StructType{Fields: fields}}
+								env.SetVar(st.Var.Name, typ, true)
+							}
 						}
 					} else if q := ExtractQueryExpr(st.Var.Value); q != nil && q.Group == nil {
 						selExpr, serr := convertExpr(q.Select)
@@ -2333,6 +2367,14 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 					return nil, err
 				}
 				iter = &CallExpr{Func: &Name{Name: "range"}, Args: []Expr{iter, end}}
+			}
+			if env != nil {
+				t := inferTypeFromExpr(st.For.Source)
+				if lt, ok := t.(types.ListType); ok {
+					env.SetVar(st.For.Name, lt.Elem, true)
+				} else {
+					env.SetVar(st.For.Name, types.AnyType{}, true)
+				}
 			}
 			body, err := convertStmts(st.For.Body, env)
 			if err != nil {
@@ -3091,7 +3133,20 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 				} else if _, ok := t.(types.BoolType); ok {
 					outArgs[i] = &RawExpr{Code: fmt.Sprintf("(\"true\" if %s else \"false\")", exprString(a))}
 				} else {
-					outArgs[i] = a
+					_, isLit := literalString(p.Call.Args[i])
+					if !isLit {
+						switch a.(type) {
+						case *FieldExpr, *Name:
+							if currentImports != nil {
+								currentImports["json"] = true
+							}
+							outArgs[i] = &RawExpr{Code: fmt.Sprintf("json.dumps(%s)", exprString(a))}
+						default:
+							outArgs[i] = a
+						}
+					} else {
+						outArgs[i] = a
+					}
 				}
 			}
 			if len(outArgs) == 1 {
@@ -3389,6 +3444,29 @@ func convertQueryExpr(q *parser.QueryExpr) (Expr, error) {
 		vars = append(vars, f.Var)
 		iters = append(iters, e)
 	}
+	child := types.NewEnv(currentEnv)
+	if t := inferTypeFromExpr(q.Source); t != nil {
+		if lt, ok := t.(types.ListType); ok {
+			child.SetVar(q.Var, lt.Elem, true)
+		}
+	}
+	for _, f := range q.Froms {
+		if t := inferTypeFromExpr(f.Src); t != nil {
+			if lt, ok := t.(types.ListType); ok {
+				child.SetVar(f.Var, lt.Elem, true)
+			}
+		}
+	}
+	for _, j := range q.Joins {
+		if t := inferTypeFromExpr(j.Src); t != nil {
+			if lt, ok := t.(types.ListType); ok {
+				child.SetVar(j.Var, lt.Elem, true)
+			}
+		}
+	}
+	prevEnv := currentEnv
+	currentEnv = child
+	defer func() { currentEnv = prevEnv }()
 	var cond Expr
 	for _, j := range q.Joins {
 		if j.Side != nil {
@@ -3669,8 +3747,34 @@ func convertGroupQuery(q *parser.QueryExpr, env *types.Env, target string) ([]St
 		iters = append(iters, e)
 	}
 
+	// infer element types to improve field access
+	child := types.NewEnv(env)
+	if t := inferTypeFromExpr(q.Source); t != nil {
+		if lt, ok := t.(types.ListType); ok {
+			child.SetVar(q.Var, lt.Elem, true)
+		}
+	}
+	for idx, f := range q.Froms {
+		if t := inferTypeFromExpr(f.Src); t != nil {
+			if lt, ok := t.(types.ListType); ok {
+				child.SetVar(f.Var, lt.Elem, true)
+			}
+		}
+		_ = idx
+	}
+	for _, j := range q.Joins {
+		if t := inferTypeFromExpr(j.Src); t != nil {
+			if lt, ok := t.(types.ListType); ok {
+				child.SetVar(j.Var, lt.Elem, true)
+			}
+		}
+	}
+
+	prevEnv := currentEnv
+	currentEnv = child
 	keyVal, err := convertExpr(q.Group.Exprs[0])
 	if err != nil {
+		currentEnv = prevEnv
 		return nil, err
 	}
 	keyExpr := keyVal
@@ -3684,14 +3788,20 @@ func convertGroupQuery(q *parser.QueryExpr, env *types.Env, target string) ([]St
 	if q.Where != nil {
 		where, err = convertExpr(q.Where)
 		if err != nil {
+			currentEnv = prevEnv
 			return nil, err
 		}
 	}
+	currentEnv = prevEnv
 
 	prev := currentEnv
 	selIdent, selIsIdent := isSimpleIdent(q.Select)
-	genv := types.NewEnv(env)
-	genv.SetVar(q.Group.Name, types.AnyType{}, true)
+	genv := types.NewEnv(child)
+	elemTyp, _ := child.GetVar(q.Var)
+	if elemTyp == nil {
+		elemTyp = types.AnyType{}
+	}
+	genv.SetVar(q.Group.Name, types.ListType{Elem: elemTyp}, true)
 	currentEnv = genv
 	sel, err := convertExpr(q.Select)
 	if err != nil {
@@ -3720,13 +3830,9 @@ func convertGroupQuery(q *parser.QueryExpr, env *types.Env, target string) ([]St
 		&LetStmt{Name: groupsVar, Expr: &DictLit{}},
 	}
 
-	valExpr := &FieldExpr{Target: &Name{Name: q.Var}, Name: "value"}
 	inner := []Stmt{
-		&IfStmt{
-			Cond: &RawExpr{Code: fmt.Sprintf("%s not in %s", exprString(keyExpr), groupsVar)},
-			Then: []Stmt{&IndexAssignStmt{Target: &Name{Name: groupsVar}, Index: keyExpr, Value: &IntLit{Value: "0"}}},
-		},
-		&ExprStmt{Expr: &RawExpr{Code: fmt.Sprintf("%s[%s] += %s", groupsVar, exprString(keyExpr), exprString(valExpr))}},
+		&ExprStmt{Expr: &RawExpr{Code: fmt.Sprintf("_g = %s.setdefault(%s, {\"key\": %s, \"items\": []})", groupsVar, exprString(keyExpr), exprString(keyExpr))}},
+		&ExprStmt{Expr: &RawExpr{Code: fmt.Sprintf("_g[\"items\"].append(%s)", q.Var)}},
 	}
 	if where != nil {
 		inner = []Stmt{&IfStmt{Cond: where, Then: inner}}
@@ -3738,16 +3844,34 @@ func convertGroupQuery(q *parser.QueryExpr, env *types.Env, target string) ([]St
 	}
 	stmts = append(stmts, bodyLoop...)
 
+	var elemType types.Type = types.AnyType{}
 	if d, ok := sel.(*DictLit); ok {
 		dc, args := dataClassFromDict(target, d)
 		if dc != nil {
 			stmts = append(stmts, dc)
 			sel = &CallExpr{Func: &Name{Name: dc.Name}, Args: args}
+			fields := map[string]types.Type{}
+			for _, f := range dc.Fields {
+				switch f.Type {
+				case "int":
+					fields[f.Name] = types.IntType{}
+				case "float":
+					fields[f.Name] = types.FloatType{}
+				case "str":
+					fields[f.Name] = types.StringType{}
+				default:
+					fields[f.Name] = types.AnyType{}
+				}
+			}
+			elemType = types.StructType{Fields: fields}
 		}
 	}
-	iterPairs := &CallExpr{Func: &FieldExpr{Target: &Name{Name: groupsVar}, Name: "items"}, Args: nil}
-	listComp := &ListComp{Var: "_p", Iter: iterPairs, Expr: sel}
+	iterVals := &CallExpr{Func: &FieldExpr{Target: &Name{Name: groupsVar}, Name: "values"}, Args: nil}
+	listComp := &ListComp{Var: "g", Iter: iterVals, Expr: sel}
 	stmts = append(stmts, &LetStmt{Name: target, Expr: listComp})
+	if env != nil {
+		env.SetVar(target, types.ListType{Elem: elemType}, false)
+	}
 
 	return stmts, nil
 }
