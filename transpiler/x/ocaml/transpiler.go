@@ -148,19 +148,22 @@ func (p *Program) UsesControl() bool {
 	var check func(Stmt)
 	check = func(s Stmt) {
 		switch st := s.(type) {
-		case *BreakStmt, *ContinueStmt:
+		case *BreakStmt, *ContinueStmt, *WhileStmt, *ForRangeStmt, *ForEachStmt:
 			uses = true
-		case *WhileStmt:
-			for _, b := range st.Body {
-				check(b)
-			}
-		case *ForRangeStmt:
-			for _, b := range st.Body {
-				check(b)
-			}
-		case *ForEachStmt:
-			for _, b := range st.Body {
-				check(b)
+			// walk the body if available
+			switch t := st.(type) {
+			case *WhileStmt:
+				for _, b := range t.Body {
+					check(b)
+				}
+			case *ForRangeStmt:
+				for _, b := range t.Body {
+					check(b)
+				}
+			case *ForEachStmt:
+				for _, b := range t.Body {
+					check(b)
+				}
 			}
 		case *IfStmt:
 			for _, t := range st.Then {
@@ -754,7 +757,7 @@ func (mi *MapIndexExpr) emitPrint(w io.Writer) {
 		mi.Key.emit(w)
 		io.WriteString(w, " ")
 		mi.Map.emit(w)
-		io.WriteString(w, "))")
+		io.WriteString(w, ")")
 	default:
 		mi.emit(w)
 	}
@@ -897,6 +900,8 @@ type GroupByQueryExpr struct {
 	Into   string
 	Having Expr
 	Select Expr
+	Sort   Expr
+	Desc   bool
 }
 
 func emitGroupLoop(w io.Writer, loops []queryLoop, key Expr, item string, where Expr, idx int) {
@@ -937,16 +942,39 @@ func (g *GroupByQueryExpr) emit(w io.Writer) {
 	if g.Having != nil {
 		io.WriteString(w, "    if ")
 		g.Having.emit(w)
-		io.WriteString(w, " then (\n      __res0 := ")
+		io.WriteString(w, " then (\n      __res0 := (")
+		if g.Sort != nil {
+			g.Sort.emit(w)
+		} else {
+			io.WriteString(w, "0")
+		}
+		io.WriteString(w, ", ")
 		g.Select.emit(w)
-		io.WriteString(w, " :: !__res0)\n    else ()\n")
+		io.WriteString(w, ") :: !__res0)\n    else ()\n")
 	} else {
-		io.WriteString(w, "    __res0 := ")
+		io.WriteString(w, "    __res0 := (")
+		if g.Sort != nil {
+			g.Sort.emit(w)
+		} else {
+			io.WriteString(w, "0")
+		}
+		io.WriteString(w, ", ")
 		g.Select.emit(w)
-		io.WriteString(w, " :: !__res0\n")
+		io.WriteString(w, ") :: !__res0\n")
 	}
 	io.WriteString(w, "  ) !__groups0;\n")
-	io.WriteString(w, "  List.rev !__res0)")
+	if g.Sort != nil {
+		io.WriteString(w, "  let __sorted = List.sort (fun a b -> compare ")
+		if g.Desc {
+			io.WriteString(w, "(fst b) (fst a)")
+		} else {
+			io.WriteString(w, "(fst a) (fst b)")
+		}
+		io.WriteString(w, ") !__res0 in\n")
+		io.WriteString(w, "  List.rev (List.map snd __sorted))")
+	} else {
+		io.WriteString(w, "  List.rev (List.map snd !__res0))")
+	}
 }
 
 func (g *GroupByQueryExpr) emitPrint(w io.Writer) { g.emit(w) }
@@ -2190,6 +2218,20 @@ func convertQueryExpr(q *parser.QueryExpr, env *types.Env, vars map[string]VarIn
 		if err != nil {
 			return nil, "", err
 		}
+		var sortExpr Expr
+		var desc bool
+		if q.Sort != nil {
+			sx, _, err := convertExpr(q.Sort, env, qVars)
+			if err != nil {
+				return nil, "", err
+			}
+			if um, ok := sx.(*UnaryMinus); ok {
+				sortExpr = um.Expr
+				desc = true
+			} else {
+				sortExpr = sx
+			}
+		}
 		gVars := map[string]VarInfo{}
 		for k, v := range qVars {
 			gVars[k] = v
@@ -2213,7 +2255,7 @@ func convertQueryExpr(q *parser.QueryExpr, env *types.Env, vars map[string]VarIn
 		if selTyp != "" {
 			retTyp = "list-" + selTyp
 		}
-		return &GroupByQueryExpr{Loops: loops, Where: whereExpr, Key: keyExpr, Into: q.Group.Name, Having: havingExpr, Select: sel}, retTyp, nil
+		return &GroupByQueryExpr{Loops: loops, Where: whereExpr, Key: keyExpr, Into: q.Group.Name, Having: havingExpr, Select: sel, Sort: sortExpr, Desc: desc}, retTyp, nil
 	}
 	var sortExpr Expr
 	var desc bool
