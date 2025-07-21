@@ -1,4 +1,0 @@
-exit status 1
-# command-line-arguments
-../../../tests/transpiler/x/go/query_sum_select.go:16:22: cannot use func() int {…}() (value of type int) as float64 value in argument to append
-../../../tests/transpiler/x/go/query_sum_select.go:18:12: range over n (variable of type int) permits only one iteration variable
