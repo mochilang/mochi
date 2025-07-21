@@ -3,7 +3,7 @@
 This checklist is auto-generated.
 Generated Python code from programs in `tests/vm/valid` lives in `tests/transpiler/x/py`.
 
-## VM Golden Test Checklist (100/100)
+## VM Golden Test Checklist (93/100)
 - [x] append_builtin
 - [x] avg_builtin
 - [x] basic_compare
@@ -11,7 +11,7 @@ Generated Python code from programs in `tests/vm/valid` lives in `tests/transpil
 - [x] bool_chain
 - [x] break_continue
 - [x] cast_string_to_int
-- [x] cast_struct
+- [ ] cast_struct
 - [x] closure
 - [x] count_builtin
 - [x] cross_join
@@ -26,7 +26,7 @@ Generated Python code from programs in `tests/vm/valid` lives in `tests/transpil
 - [x] fun_call
 - [x] fun_expr_in_let
 - [x] fun_three_args
-- [x] go_auto
+- [ ] go_auto
 - [x] group_by
 - [x] group_by_conditional_sum
 - [x] group_by_having
@@ -54,7 +54,7 @@ Generated Python code from programs in `tests/vm/valid` lives in `tests/transpil
 - [x] list_index
 - [x] list_nested_assign
 - [x] list_set_ops
-- [x] load_yaml
+- [ ] load_yaml
 - [x] map_assign
 - [x] map_in_operator
 - [x] map_index
@@ -77,7 +77,7 @@ Generated Python code from programs in `tests/vm/valid` lives in `tests/transpil
 - [x] python_auto
 - [x] python_math
 - [x] query_sum_select
-- [x] record_assign
+- [ ] record_assign
 - [x] right_join
 - [x] save_jsonl_stdout
 - [x] short_circuit
@@ -94,13 +94,13 @@ Generated Python code from programs in `tests/vm/valid` lives in `tests/transpil
 - [x] sum_builtin
 - [x] tail_recursion
 - [x] test_block
-- [x] tree_sum
+- [ ] tree_sum
 - [x] two-sum
 - [x] typed_let
 - [x] typed_var
 - [x] unary_neg
-- [x] update_stmt
-- [x] user_type_literal
+- [ ] update_stmt
+- [ ] user_type_literal
 - [x] values_builtin
 - [x] var_assignment
 - [x] while_loop
