@@ -30,9 +30,23 @@ func UpdateReadmeForTests() {
 		}
 		lines = append(lines, fmt.Sprintf("- %s %s.mochi", mark, name))
 	}
+	out, err := exec.Command("git", "log", "-1", "--date=iso-strict", "--format=%cd").Output()
+	ts := ""
+	if err == nil {
+		if t, perr := time.Parse(time.RFC3339, strings.TrimSpace(string(out))); perr == nil {
+			if loc, lerr := time.LoadLocation("Asia/Bangkok"); lerr == nil {
+				ts = t.In(loc).Format("2006-01-02 15:04 -0700")
+			} else {
+				ts = t.Format("2006-01-02 15:04 MST")
+			}
+		}
+	}
 	var buf bytes.Buffer
 	buf.WriteString("# Kotlin Transpiler\n\n")
 	buf.WriteString("Generated Kotlin sources for golden tests are stored in `tests/transpiler/x/kt`.\n\n")
+	if ts != "" {
+		buf.WriteString("Last updated: " + ts + "\n\n")
+	}
 	buf.WriteString("The transpiler currently supports expression programs with `print`, integer and list literals, mutable variables and built-ins `count`, `sum`, `avg`, `len`, `str`, `append`, `min`, `max`, `substring` and `values`.\n\n")
 	fmt.Fprintf(&buf, "Completed golden tests: **%d/%d** (auto-generated)\n\n", compiled, total)
 	buf.WriteString("### Golden test checklist\n")
