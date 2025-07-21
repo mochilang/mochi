@@ -875,23 +875,42 @@ func emitStmtIndent(w io.Writer, s Stmt, indent string) error {
 			}
 		}
 		return nil
-	case *SaveStmt:
-		if st.Format == "jsonl" && (st.Path == "" || st.Path == "-") {
-			if _, err := io.WriteString(w, indent+"for _row in "); err != nil {
-				return err
-			}
-			if err := emitExpr(w, st.Src); err != nil {
-				return err
-			}
-			if _, err := io.WriteString(w, ":\n"); err != nil {
-				return err
-			}
-			if _, err := io.WriteString(w, indent+"    print(json.dumps(_row))\n"); err != nil {
-				return err
-			}
-			return nil
-		}
-		return fmt.Errorf("unsupported save format")
+       case *SaveStmt:
+               if st.Format == "jsonl" {
+                       if st.Path == "" || st.Path == "-" {
+                               if _, err := io.WriteString(w, indent+"for _row in "); err != nil {
+                                       return err
+                               }
+                               if err := emitExpr(w, st.Src); err != nil {
+                                       return err
+                               }
+                               if _, err := io.WriteString(w, ":\n"); err != nil {
+                                       return err
+                               }
+                               if _, err := io.WriteString(w, indent+"    print(json.dumps(_row))\n"); err != nil {
+                                       return err
+                               }
+                               return nil
+                       }
+                       if _, err := fmt.Fprintf(w, "%swith open(%q, 'w', encoding='utf-8') as f:\n", indent, st.Path); err != nil {
+                               return err
+                       }
+                       inner := indent + "    "
+                       if _, err := io.WriteString(w, inner+"for _row in "); err != nil {
+                               return err
+                       }
+                       if err := emitExpr(w, st.Src); err != nil {
+                               return err
+                       }
+                       if _, err := io.WriteString(w, ":\n"); err != nil {
+                               return err
+                       }
+                       if _, err := io.WriteString(w, inner+"    f.write(json.dumps(_row)+\"\\n\")\n"); err != nil {
+                               return err
+                       }
+                       return nil
+               }
+               return fmt.Errorf("unsupported save format")
 	case *UpdateStmt:
 		idx := "idx"
 		it := "item"
@@ -1071,9 +1090,18 @@ func zeroValueExpr(t types.Type) Expr {
 		return &ListLit{}
 	case types.MapType, types.StructType:
 		return &DictLit{}
-	default:
-		return &Name{Name: "None"}
-	}
+        default:
+                return &Name{Name: "None"}
+        }
+}
+
+func isNumeric(t types.Type) bool {
+       switch t.(type) {
+       case types.IntType, types.Int64Type, types.FloatType, types.BigIntType, types.BigRatType:
+               return true
+       default:
+               return false
+       }
 }
 
 func inferTypeFromData(path, format string) types.Type {
@@ -1127,20 +1155,24 @@ func inferTypeFromValue(v interface{}) types.Type {
 			fields[k] = inferTypeFromValue(vv)
 		}
 		return types.StructType{Fields: fields}
-	case []interface{}:
-		var elem types.Type
-		for _, it := range val {
-			et := inferTypeFromValue(it)
-			if elem == nil {
-				elem = et
-			} else if elem.String() != et.String() {
-				elem = types.AnyType{}
-			}
-		}
-		if elem == nil {
-			elem = types.AnyType{}
-		}
-		return types.ListType{Elem: elem}
+       case []interface{}:
+               var elem types.Type
+               for _, it := range val {
+                       et := inferTypeFromValue(it)
+                       if elem == nil {
+                               elem = et
+                       } else if elem.String() != et.String() {
+                               if isNumeric(elem) && isNumeric(et) {
+                                       elem = types.FloatType{}
+                               } else {
+                                       elem = types.AnyType{}
+                               }
+                       }
+               }
+               if elem == nil {
+                       elem = types.AnyType{}
+               }
+               return types.ListType{Elem: elem}
 	case string:
 		return types.StringType{}
 	case bool:
