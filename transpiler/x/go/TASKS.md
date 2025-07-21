@@ -1,3 +1,7 @@
+## Progress (2025-07-21 23:54 +0700)
+- erl transpiler: add break/continue support
+- Regenerated golden files - 89/100 vm valid programs passing
+
 ## Progress (2025-07-21 21:13 +0700)
 - update hs golden files
 - Regenerated golden files - 88/100 vm valid programs passing
