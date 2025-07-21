@@ -1,8 +1,6 @@
 :- style_check(-singleton).
     main :-
     A = [1, 2],
-    call(Append, A, 3, _V0),
-    write(_V0),
-    nl
+    append(A, [3], R0), writeln(R0)
     .
 :- initialization(main, main).
