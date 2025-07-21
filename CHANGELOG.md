@@ -1,4 +1,21 @@
 # 📦 CHANGELOG.md
+## [0.10.33] – 2025-07-21T15:42:34+07:00
+
+### Added
+
+* Query operations including group by, joins and sorting across transpilers
+* JSON and map builtins with typed struct inference
+
+### Changed
+
+* Membership operators and numeric inference refined
+* Documentation and task logs updated across languages
+
+### Fixed
+
+* Group counting and join ordering bugs
+* Duplicate task entries removed
+
 ## [0.10.32] – 2025-07-20T15:13:08+07:00
 
 ### Added
