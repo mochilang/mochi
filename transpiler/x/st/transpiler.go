@@ -50,7 +50,10 @@ type value struct {
 // currentFuncs holds function declarations available during constant
 // evaluation. It is set by Transpile for the duration of a single
 // transpilation run.
-var currentFuncs map[string]*parser.FunStmt
+var (
+	currentFuncs map[string]*parser.FunStmt
+	currentEnv   *types.Env
+)
 
 type breakErr struct{}
 
@@ -1128,6 +1131,37 @@ func evalPrimary(p *parser.Primary, vars map[string]value) (value, error) {
 			res, _, err := evalFunction(fn, args, vars)
 			return res, err
 		}
+		if currentEnv != nil {
+			if st, ok := currentEnv.GetStruct(p.Call.Func); ok {
+				if len(p.Call.Args) != len(st.Order) {
+					return value{}, fmt.Errorf("bad args")
+				}
+				kv := make(map[string]value, len(st.Order))
+				for i, arg := range p.Call.Args {
+					v, err := evalExpr(arg, vars)
+					if err != nil {
+						return value{}, err
+					}
+					kv[st.Order[i]] = v
+				}
+				return value{kind: valMap, kv: kv, typ: p.Call.Func}, nil
+			}
+			if ut, ok := currentEnv.FindUnionByVariant(p.Call.Func); ok {
+				st := ut.Variants[p.Call.Func]
+				if len(p.Call.Args) != len(st.Order) {
+					return value{}, fmt.Errorf("bad args")
+				}
+				kv := make(map[string]value, len(st.Order))
+				for i, arg := range p.Call.Args {
+					v, err := evalExpr(arg, vars)
+					if err != nil {
+						return value{}, err
+					}
+					kv[st.Order[i]] = v
+				}
+				return value{kind: valMap, kv: kv, typ: p.Call.Func}, nil
+			}
+		}
 		return value{}, fmt.Errorf("unsupported call")
 	case p.If != nil:
 		return evalIfExpr(p.If, vars)
@@ -1145,8 +1179,50 @@ func evalMatchExpr(m *parser.MatchExpr, vars map[string]value) (value, error) {
 		return value{}, err
 	}
 	for _, c := range m.Cases {
-		if wild, ok := identName(c.Pattern); ok && wild == "_" {
-			return evalExpr(c.Result, vars)
+		if wild, ok := identName(c.Pattern); ok {
+			if wild == "_" {
+				return evalExpr(c.Result, vars)
+			}
+			if currentEnv != nil {
+				if st, ok := currentEnv.GetStruct(wild); ok {
+					if target.typ == wild {
+						if len(st.Order) == 0 {
+							return evalExpr(c.Result, vars)
+						}
+					}
+				}
+				if ut, ok := currentEnv.FindUnionByVariant(wild); ok {
+					st := ut.Variants[wild]
+					if target.typ == wild && len(st.Order) == 0 {
+						return evalExpr(c.Result, vars)
+					}
+				}
+			}
+		}
+		if call, ok := callPattern(c.Pattern); ok && currentEnv != nil {
+			if st, ok := currentEnv.GetStruct(call.Func); ok {
+				if target.typ == call.Func && len(call.Args) == len(st.Order) {
+					local := copyVars(vars)
+					for i, arg := range call.Args {
+						if name, ok := identName(arg); ok {
+							local[name] = target.kv[st.Order[i]]
+						}
+					}
+					return evalExpr(c.Result, local)
+				}
+			}
+			if ut, ok := currentEnv.FindUnionByVariant(call.Func); ok {
+				st := ut.Variants[call.Func]
+				if target.typ == call.Func && len(call.Args) == len(st.Order) {
+					local := copyVars(vars)
+					for i, arg := range call.Args {
+						if name, ok := identName(arg); ok {
+							local[name] = target.kv[st.Order[i]]
+						}
+					}
+					return evalExpr(c.Result, local)
+				}
+			}
 		}
 		pv, err := evalExpr(c.Pattern, vars)
 		if err != nil {
@@ -1214,7 +1290,9 @@ func evalFunction(fn *parser.FunStmt, args []value, captured map[string]value) (
 	}
 
 	var ret *parser.Expr
-	for _, st := range fn.Body {
+
+	var process func(*parser.Statement) error
+	process = func(st *parser.Statement) error {
 		switch {
 		case st.Fun != nil:
 			locals[st.Fun.Name] = st.Fun
@@ -1224,7 +1302,7 @@ func evalFunction(fn *parser.FunStmt, args []value, captured map[string]value) (
 				var err error
 				v, err = evalExpr(st.Let.Value, vars)
 				if err != nil {
-					return value{}, nil, err
+					return err
 				}
 			} else if st.Let.Type != nil {
 				v = zeroValue(st.Let.Type)
@@ -1236,7 +1314,7 @@ func evalFunction(fn *parser.FunStmt, args []value, captured map[string]value) (
 				var err error
 				v, err = evalExpr(st.Var.Value, vars)
 				if err != nil {
-					return value{}, nil, err
+					return err
 				}
 			} else if st.Var.Type != nil {
 				v = zeroValue(st.Var.Type)
@@ -1244,16 +1322,16 @@ func evalFunction(fn *parser.FunStmt, args []value, captured map[string]value) (
 			vars[st.Var.Name] = v
 		case st.Assign != nil:
 			if len(st.Assign.Index) > 0 {
-				return value{}, nil, fmt.Errorf("unsupported assign")
+				return fmt.Errorf("unsupported assign")
 			}
 			v, err := evalExpr(st.Assign.Value, vars)
 			if err != nil {
-				return value{}, nil, err
+				return err
 			}
 			if len(st.Assign.Field) > 0 {
 				target, ok := vars[st.Assign.Name]
 				if !ok {
-					return value{}, nil, fmt.Errorf("assign to unknown var")
+					return fmt.Errorf("assign to unknown var")
 				}
 				names := make([]string, len(st.Assign.Field))
 				for i, f := range st.Assign.Field {
@@ -1261,16 +1339,179 @@ func evalFunction(fn *parser.FunStmt, args []value, captured map[string]value) (
 				}
 				nt, err := setFieldValue(target, names, v)
 				if err != nil {
-					return value{}, nil, err
+					return err
 				}
 				vars[st.Assign.Name] = nt
 			} else {
 				vars[st.Assign.Name] = v
 			}
+		case st.If != nil:
+			cond, err := evalExpr(st.If.Cond, vars)
+			if err != nil {
+				return err
+			}
+			if isTruthy(cond) {
+				for _, s := range st.If.Then {
+					if err := process(s); err != nil {
+						return err
+					}
+				}
+				return nil
+			}
+			if st.If.ElseIf != nil {
+				return process(&parser.Statement{If: st.If.ElseIf})
+			}
+			for _, s := range st.If.Else {
+				if err := process(s); err != nil {
+					return err
+				}
+			}
+		case st.While != nil:
+			for {
+				cond, err := evalExpr(st.While.Cond, vars)
+				if err != nil {
+					return err
+				}
+				if !isTruthy(cond) {
+					break
+				}
+				for _, b := range st.While.Body {
+					if err := process(b); err != nil {
+						switch err.(type) {
+						case breakErr:
+							return nil
+						case continueErr:
+							goto contWhile
+						default:
+							return err
+						}
+					}
+				}
+			contWhile:
+				continue
+			}
+		case st.For != nil:
+			src, err := evalExpr(st.For.Source, vars)
+			if err != nil {
+				return err
+			}
+			var items []value
+			if st.For.RangeEnd != nil {
+				endv, err := evalExpr(st.For.RangeEnd, vars)
+				if err != nil {
+					return err
+				}
+				if src.kind != valInt || endv.kind != valInt {
+					return fmt.Errorf("range must be int")
+				}
+				for i := src.i; i < endv.i; i++ {
+					items = append(items, value{kind: valInt, i: i})
+				}
+			} else {
+				switch src.kind {
+				case valList:
+					items = src.list
+				case valMap:
+					keys := make([]string, 0, len(src.kv))
+					for k := range src.kv {
+						keys = append(keys, k)
+					}
+					sort.Strings(keys)
+					for _, k := range keys {
+						items = append(items, value{kind: valString, s: k})
+					}
+				default:
+					return fmt.Errorf("for over unsupported type")
+				}
+			}
+			for _, it := range items {
+				vars[st.For.Name] = it
+				for _, b := range st.For.Body {
+					if err := process(b); err != nil {
+						switch err.(type) {
+						case breakErr:
+							goto endFor
+						case continueErr:
+							goto contFor
+						default:
+							delete(vars, st.For.Name)
+							return err
+						}
+					}
+				}
+			contFor:
+				continue
+			}
+		endFor:
+			delete(vars, st.For.Name)
+		case st.Break != nil:
+			return breakErr{}
+		case st.Continue != nil:
+			return continueErr{}
+		case st.Expr != nil:
+			call := st.Expr.Expr.Binary.Left.Value.Target.Call
+			if call == nil {
+				return fmt.Errorf("unsupported expression")
+			}
+			if fn, ok := locals[call.Func]; ok {
+				args := make([]value, len(call.Args))
+				for i, a := range call.Args {
+					av, err := evalExpr(a, vars)
+					if err != nil {
+						return err
+					}
+					args[i] = av
+				}
+				res, newArgs, err := evalFunction(fn, args, vars)
+				if err != nil {
+					return err
+				}
+				// update by-value params
+				for i, p := range fn.Params {
+					vars[p.Name] = newArgs[i]
+				}
+				_ = res
+				return nil
+			}
+			switch call.Func {
+			case "print":
+				if len(call.Args) == 0 {
+					return fmt.Errorf("print with no args")
+				}
+				// ignore prints inside functions
+				return nil
+			default:
+				return fmt.Errorf("unsupported expression")
+			}
 		case st.Return != nil:
 			ret = st.Return.Value
+			return nil
+		case st.Test != nil:
+			for _, b := range st.Test.Body {
+				if err := process(b); err != nil {
+					return err
+				}
+			}
+		case st.Expect != nil:
+			v, err := evalExpr(st.Expect.Value, vars)
+			if err != nil {
+				return err
+			}
+			if v.kind != valBool || !v.b {
+				return fmt.Errorf("expect failed")
+			}
 		default:
-			return value{}, nil, fmt.Errorf("unsupported function body")
+			return fmt.Errorf("unsupported function body")
+		}
+		return nil
+	}
+
+	for _, st := range fn.Body {
+		if err := process(st); err != nil {
+			return value{}, nil, err
+		}
+		if ret != nil {
+			break
 		}
 	}
 	var out value
@@ -1311,6 +1552,21 @@ func identName(e *parser.Expr) (string, bool) {
 		return "", false
 	}
 	return p.Selector.Root, true
+}
+
+func callPattern(e *parser.Expr) (*parser.CallExpr, bool) {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) != 0 {
+		return nil, false
+	}
+	u := e.Binary.Left
+	if len(u.Ops) != 0 || u.Value == nil {
+		return nil, false
+	}
+	p := u.Value
+	if len(p.Ops) != 0 || p.Target.Call == nil {
+		return nil, false
+	}
+	return p.Target.Call, true
 }
 
 func callName(e *parser.Expr) (string, []*parser.Expr, bool) {
@@ -1966,7 +2222,11 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	vars := map[string]value{}
 	funcs := map[string]*parser.FunStmt{}
 	currentFuncs = funcs
-	defer func() { currentFuncs = nil }()
+	currentEnv = env
+	defer func() {
+		currentFuncs = nil
+		currentEnv = nil
+	}()
 	p := &Program{}
 
 	var processStmt func(*parser.Statement) error
@@ -2002,6 +2262,22 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 			funcs[st.Fun.Name] = st.Fun
 			return nil
 		case st.Type != nil:
+			return nil
+		case st.Test != nil:
+			for _, b := range st.Test.Body {
+				if err := processStmt(b); err != nil {
+					return err
+				}
+			}
+			return nil
+		case st.Expect != nil:
+			v, err := evalExpr(st.Expect.Value, vars)
+			if err != nil {
+				return err
+			}
+			if v.kind != valBool || !v.b {
+				return fmt.Errorf("expect failed")
+			}
 			return nil
 		case st.Assign != nil:
 			if len(st.Assign.Index) > 0 {
