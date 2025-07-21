@@ -1,7 +1,0 @@
-exit status 1
-# command-line-arguments
-../../../tests/transpiler/x/go/group_by_multi_join_sort.go:85:25: syntax error: unexpected ], expected type
-../../../tests/transpiler/x/go/group_by_multi_join_sort.go:88:60: syntax error: unexpected ], expected type
-../../../tests/transpiler/x/go/group_by_multi_join_sort.go:89:9: syntax error: non-declaration statement outside function body
-../../../tests/transpiler/x/go/group_by_multi_join_sort.go:100:21: method has no receiver
-../../../tests/transpiler/x/go/group_by_multi_join_sort.go:100:29: syntax error: unexpected {, expected (
