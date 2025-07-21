@@ -1,0 +1,6 @@
+run: exit status 1
+Traceback (most recent call last):
+  File "/workspace/mochi/tests/transpiler/x/py/group_by_conditional_sum.py", line 10, in <module>
+    _result_groups[i["cat"]] += i.value
+                                ^^^^^^^
+AttributeError: 'dict' object has no attribute 'value'. Did you mean: 'values'?

@@ -28,9 +28,8 @@ type Program struct {
 }
 
 var (
-	currentImports   map[string]bool
-	currentEnv       *types.Env
-	needsDefaultDict bool
+	currentImports map[string]bool
+	currentEnv     *types.Env
 )
 
 type Stmt interface{ isStmt() }
@@ -1936,9 +1935,6 @@ func Emit(w io.Writer, p *Program) error {
 			imports = append(imports, "import json")
 		}
 	}
-	if needsDefaultDict {
-		imports = append(imports, "from collections import defaultdict")
-	}
 	for _, s := range p.Stmts {
 		if _, ok := s.(*DataClassDef); ok {
 			needDC = true
@@ -3676,13 +3672,16 @@ func convertGroupQuery(q *parser.QueryExpr, env *types.Env, target string) ([]St
 
 	groupsVar := "_" + target + "_groups"
 
-	needsDefaultDict = true
 	stmts := []Stmt{
-		&LetStmt{Name: groupsVar, Expr: &CallExpr{Func: &Name{Name: "defaultdict"}, Args: []Expr{&Name{Name: "float"}}}},
+		&LetStmt{Name: groupsVar, Expr: &DictLit{}},
 	}
 
 	valExpr := &FieldExpr{Target: &Name{Name: q.Var}, Name: "value"}
 	inner := []Stmt{
+		&IfStmt{
+			Cond: &RawExpr{Code: fmt.Sprintf("%s not in %s", exprString(keyExpr), groupsVar)},
+			Then: []Stmt{&IndexAssignStmt{Target: &Name{Name: groupsVar}, Index: keyExpr, Value: &IntLit{Value: "0"}}},
+		},
 		&ExprStmt{Expr: &RawExpr{Code: fmt.Sprintf("%s[%s] += %s", groupsVar, exprString(keyExpr), exprString(valExpr))}},
 	}
 	if where != nil {
@@ -3695,10 +3694,12 @@ func convertGroupQuery(q *parser.QueryExpr, env *types.Env, target string) ([]St
 	}
 	stmts = append(stmts, bodyLoop...)
 
-	dc, args := dataClassFromDict(target, sel.(*DictLit))
-	if dc != nil {
-		stmts = append(stmts, dc)
-		sel = &CallExpr{Func: &Name{Name: dc.Name}, Args: args}
+	if d, ok := sel.(*DictLit); ok {
+		dc, args := dataClassFromDict(target, d)
+		if dc != nil {
+			stmts = append(stmts, dc)
+			sel = &CallExpr{Func: &Name{Name: dc.Name}, Args: args}
+		}
 	}
 	iterPairs := &CallExpr{Func: &FieldExpr{Target: &Name{Name: groupsVar}, Name: "items"}, Args: nil}
 	listComp := &ListComp{Var: "_p", Iter: iterPairs, Expr: sel}

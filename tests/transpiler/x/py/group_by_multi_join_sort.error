@@ -1,0 +1,6 @@
+run: exit status 1
+Traceback (most recent call last):
+  File "/workspace/mochi/tests/transpiler/x/py/group_by_multi_join_sort.py", line 19, in <module>
+    _result_groups[tuple([c["c_custkey"], c["c_name"], c["c_acctbal"], c["c_address"], c["c_phone"], c["c_comment"], n["n_name"]])] += c.value
+                                                                                                                                       ^^^^^^^
+AttributeError: 'dict' object has no attribute 'value'. Did you mean: 'values'?

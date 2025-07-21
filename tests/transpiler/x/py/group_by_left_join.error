@@ -1,0 +1,6 @@
+run: exit status 1
+Traceback (most recent call last):
+  File "/workspace/mochi/tests/transpiler/x/py/group_by_left_join.py", line 12, in <module>
+    _stats_groups[c["name"]] += c.value
+                                ^^^^^^^
+AttributeError: 'dict' object has no attribute 'value'. Did you mean: 'values'?

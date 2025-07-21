@@ -124,7 +124,8 @@ func updateReadme() {
 	var buf bytes.Buffer
 	buf.WriteString("# Transpiler Progress\n\n")
 	buf.WriteString("This checklist is auto-generated.\n")
-	buf.WriteString("Generated Python code from programs in `tests/vm/valid` lives in `tests/transpiler/x/py`.\n\n")
+	buf.WriteString("Generated Python code from programs in `tests/vm/valid` lives in `tests/transpiler/x/py`.\n")
+	buf.WriteString("Last updated: " + time.Now().UTC().Format("2006-01-02 15:04 MST") + "\n\n")
 	fmt.Fprintf(&buf, "## VM Golden Test Checklist (%d/%d)\n", compiled, total)
 	buf.WriteString(strings.Join(lines, "\n"))
 	buf.WriteString("\n")
