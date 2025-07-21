@@ -2235,6 +2235,10 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 							p.Stmts = append(p.Stmts, dc)
 							list.Elems = elems
 							e = list
+							if env != nil {
+								env.SetStruct(dc.Name, types.StructType{Name: dc.Name})
+								env.SetVar(st.Let.Name, types.ListType{Elem: types.StructType{Name: dc.Name}}, false)
+							}
 						}
 					} else if q := ExtractQueryExpr(st.Let.Value); q != nil && q.Group == nil {
 						selExpr, serr := convertExpr(q.Select)
@@ -2286,6 +2290,10 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 							p.Stmts = append(p.Stmts, dc)
 							list.Elems = elems
 							e = list
+							if env != nil {
+								env.SetStruct(dc.Name, types.StructType{Name: dc.Name})
+								env.SetVar(st.Var.Name, types.ListType{Elem: types.StructType{Name: dc.Name}}, true)
+							}
 						}
 					} else if q := ExtractQueryExpr(st.Var.Value); q != nil && q.Group == nil {
 						selExpr, serr := convertExpr(q.Select)
@@ -2581,6 +2589,10 @@ func convertStmts(list []*parser.Statement, env *types.Env) ([]Stmt, error) {
 							out = append(out, dc)
 							list.Elems = elems
 							e = list
+							if env != nil {
+								env.SetStruct(dc.Name, types.StructType{Name: dc.Name})
+								env.SetVar(s.Let.Name, types.ListType{Elem: types.StructType{Name: dc.Name}}, false)
+							}
 						}
 					} else if q := ExtractQueryExpr(s.Let.Value); q != nil && q.Group == nil {
 						selExpr, serr := convertExpr(q.Select)
@@ -2630,6 +2642,10 @@ func convertStmts(list []*parser.Statement, env *types.Env) ([]Stmt, error) {
 							out = append(out, dc)
 							list.Elems = elems
 							e = list
+							if env != nil {
+								env.SetStruct(dc.Name, types.StructType{Name: dc.Name})
+								env.SetVar(s.Var.Name, types.ListType{Elem: types.StructType{Name: dc.Name}}, true)
+							}
 						}
 					} else if q := ExtractQueryExpr(s.Var.Value); q != nil && q.Group == nil {
 						selExpr, serr := convertExpr(q.Select)
@@ -3641,6 +3657,11 @@ func convertGroupQuery(q *parser.QueryExpr, env *types.Env, target string) ([]St
 	if err != nil {
 		return nil, err
 	}
+	if env != nil {
+		if lt, ok := inferTypeFromExpr(q.Source).(types.ListType); ok {
+			env.SetVar(q.Var, lt.Elem, true)
+		}
+	}
 	iters = append(iters, src)
 	for _, f := range q.Froms {
 		e, err := convertExpr(f.Src)
@@ -3654,6 +3675,11 @@ func convertGroupQuery(q *parser.QueryExpr, env *types.Env, target string) ([]St
 		e, err := convertExpr(j.Src)
 		if err != nil {
 			return nil, err
+		}
+		if env != nil {
+			if lt, ok := inferTypeFromExpr(j.Src).(types.ListType); ok {
+				env.SetVar(j.Var, lt.Elem, true)
+			}
 		}
 		cond, err := convertExpr(j.On)
 		if err != nil {
@@ -3720,13 +3746,30 @@ func convertGroupQuery(q *parser.QueryExpr, env *types.Env, target string) ([]St
 		&LetStmt{Name: groupsVar, Expr: &DictLit{}},
 	}
 
-	valExpr := &FieldExpr{Target: &Name{Name: q.Var}, Name: "value"}
-	inner := []Stmt{
-		&IfStmt{
-			Cond: &RawExpr{Code: fmt.Sprintf("%s not in %s", exprString(keyExpr), groupsVar)},
-			Then: []Stmt{&IndexAssignStmt{Target: &Name{Name: groupsVar}, Index: keyExpr, Value: &IntLit{Value: "0"}}},
-		},
-		&ExprStmt{Expr: &RawExpr{Code: fmt.Sprintf("%s[%s] += %s", groupsVar, exprString(keyExpr), exprString(valExpr))}},
+	var inner []Stmt
+	if ft, err := env.GetVar(q.Var); err == nil {
+		if st, ok := ft.(types.StructType); ok {
+			if vt, ok := st.Fields["value"]; ok && isNumeric(vt) {
+				valExpr := &FieldExpr{Target: &Name{Name: q.Var}, Name: "value"}
+				inner = []Stmt{
+					&IfStmt{
+						Cond: &RawExpr{Code: fmt.Sprintf("%s not in %s", exprString(keyExpr), groupsVar)},
+						Then: []Stmt{&IndexAssignStmt{Target: &Name{Name: groupsVar}, Index: keyExpr, Value: &IntLit{Value: "0"}}},
+					},
+					&ExprStmt{Expr: &RawExpr{Code: fmt.Sprintf("%s[%s] += %s", groupsVar, exprString(keyExpr), exprString(valExpr))}},
+				}
+			}
+		}
+	}
+	if inner == nil {
+		row := &Name{Name: q.Var}
+		inner = []Stmt{
+			&IfStmt{
+				Cond: &RawExpr{Code: fmt.Sprintf("%s not in %s", exprString(keyExpr), groupsVar)},
+				Then: []Stmt{&IndexAssignStmt{Target: &Name{Name: groupsVar}, Index: keyExpr, Value: &ListLit{}}},
+			},
+			&ExprStmt{Expr: &CallExpr{Func: &FieldExpr{Target: &IndexExpr{Target: &Name{Name: groupsVar}, Index: keyExpr}, Name: "append"}, Args: []Expr{row}}},
+		}
 	}
 	if where != nil {
 		inner = []Stmt{&IfStmt{Cond: where, Then: inner}}
