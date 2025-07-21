@@ -2,7 +2,7 @@
 
 Generated PHP code from programs in `tests/vm/valid` lives in `tests/transpiler/x/php`.
 
-## VM Golden Test Checklist (91/100)
+## VM Golden Test Checklist (68/100)
 - [x] append_builtin
 - [x] avg_builtin
 - [x] basic_compare
@@ -14,11 +14,11 @@ Generated PHP code from programs in `tests/vm/valid` lives in `tests/transpiler/
 - [x] closure
 - [x] count_builtin
 - [x] cross_join
-- [x] cross_join_filter
-- [x] cross_join_triple
-- [x] dataset_sort_take_limit
-- [x] dataset_where_filter
-- [x] exists_builtin
+- [ ] cross_join_filter
+- [ ] cross_join_triple
+- [ ] dataset_sort_take_limit
+- [ ] dataset_where_filter
+- [ ] exists_builtin
 - [x] for_list_collection
 - [x] for_loop
 - [x] for_map_collection
@@ -26,25 +26,25 @@ Generated PHP code from programs in `tests/vm/valid` lives in `tests/transpiler/
 - [x] fun_expr_in_let
 - [x] fun_three_args
 - [ ] go_auto
-- [x] group_by
-- [x] group_by_conditional_sum
-- [x] group_by_having
-- [x] group_by_join
-- [x] group_by_left_join
+- [ ] group_by
+- [ ] group_by_conditional_sum
+- [ ] group_by_having
+- [ ] group_by_join
+- [ ] group_by_left_join
 - [ ] group_by_multi_join
 - [ ] group_by_multi_join_sort
-- [x] group_by_sort
-- [x] group_items_iteration
+- [ ] group_by_sort
+- [ ] group_items_iteration
 - [x] if_else
 - [x] if_then_else
 - [x] if_then_else_nested
 - [x] in_operator
-- [x] in_operator_extended
-- [x] inner_join
-- [x] join_multi
+- [ ] in_operator_extended
+- [ ] inner_join
+- [ ] join_multi
 - [x] json_builtin
-- [x] left_join
-- [x] left_join_multi
+- [ ] left_join
+- [ ] left_join_multi
 - [x] len_builtin
 - [x] len_map
 - [x] len_string
@@ -62,26 +62,26 @@ Generated PHP code from programs in `tests/vm/valid` lives in `tests/transpiler/
 - [x] map_membership
 - [x] map_nested_assign
 - [x] match_expr
-- [x] match_full
+- [ ] match_full
 - [x] math_ops
 - [x] membership
 - [x] min_max_builtin
 - [x] nested_function
-- [x] order_by_map
-- [x] outer_join
+- [ ] order_by_map
+- [ ] outer_join
 - [x] partial_application
 - [x] print_hello
 - [x] pure_fold
 - [x] pure_global_fold
 - [ ] python_auto
 - [ ] python_math
-- [x] query_sum_select
+- [ ] query_sum_select
 - [x] record_assign
 - [x] right_join
 - [ ] save_jsonl_stdout
 - [x] short_circuit
 - [x] slice
-- [x] sort_stable
+- [ ] sort_stable
 - [x] str_builtin
 - [x] string_compare
 - [x] string_concat
@@ -93,7 +93,7 @@ Generated PHP code from programs in `tests/vm/valid` lives in `tests/transpiler/
 - [x] sum_builtin
 - [x] tail_recursion
 - [ ] test_block
-- [x] tree_sum
+- [ ] tree_sum
 - [x] two-sum
 - [x] typed_let
 - [x] typed_var

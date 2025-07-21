@@ -379,6 +379,18 @@ type QueryExpr struct {
 	Uses   []string
 }
 
+// RightJoinExpr represents a simple right join query with one join clause and
+// no additional query modifiers.
+type RightJoinExpr struct {
+	LeftVar  string
+	LeftSrc  Expr
+	RightVar string
+	RightSrc Expr
+	Cond     Expr
+	Select   Expr
+	Uses     []string
+}
+
 // emitInto expands the query into nested foreach loops and appends the
 // selected value into the provided result variable.
 func (q *QueryExpr) emitInto(w io.Writer, res string, level int) {
@@ -523,6 +535,44 @@ func (q *QueryExpr) emit(w io.Writer) {
 	}
 	emitLoops(0, 1)
 	io.WriteString(w, "  return $result;\n")
+	io.WriteString(w, "})()")
+}
+
+func (r *RightJoinExpr) emit(w io.Writer) {
+	io.WriteString(w, "(function()")
+	if len(r.Uses) > 0 {
+		io.WriteString(w, " use (")
+		for i, u := range r.Uses {
+			if i > 0 {
+				io.WriteString(w, ", ")
+			}
+			fmt.Fprintf(w, "$%s", u)
+		}
+		io.WriteString(w, ")")
+	}
+	io.WriteString(w, " {\n")
+	io.WriteString(w, "  $result = [];\n")
+	io.WriteString(w, "  foreach (")
+	r.RightSrc.emit(w)
+	fmt.Fprintf(w, " as $%s) {\n", r.RightVar)
+	io.WriteString(w, "    $matched = false;\n")
+	io.WriteString(w, "    foreach (")
+	r.LeftSrc.emit(w)
+	fmt.Fprintf(w, " as $%s) {\n", r.LeftVar)
+	io.WriteString(w, "      if (!(")
+	r.Cond.emit(w)
+	io.WriteString(w, ")) continue;\n")
+	io.WriteString(w, "      $matched = true;\n")
+	io.WriteString(w, "      $result[] = ")
+	r.Select.emit(w)
+	io.WriteString(w, ";\n")
+	io.WriteString(w, "    }\n")
+	io.WriteString(w, "    if (!$matched) {\n")
+	fmt.Fprintf(w, "      $%s = null;\n", r.LeftVar)
+	io.WriteString(w, "      $result[] = ")
+	r.Select.emit(w)
+	io.WriteString(w, ";\n")
+	io.WriteString(w, "    }\n  }\n  return $result;\n")
 	io.WriteString(w, "})()")
 }
 
@@ -1388,6 +1438,40 @@ func convertMatchExpr(me *parser.MatchExpr) (Expr, error) {
 }
 
 func convertQueryExpr(q *parser.QueryExpr) (Expr, error) {
+	if len(q.Froms) == 0 && len(q.Joins) == 1 && q.Joins[0].Side != nil && *q.Joins[0].Side == "right" && q.Group == nil && q.Sort == nil && q.Skip == nil && q.Take == nil && !q.Distinct && q.Where == nil {
+		j := q.Joins[0]
+		leftSrc, err := convertExpr(q.Source)
+		if err != nil {
+			return nil, err
+		}
+		rightSrc, err := convertExpr(j.Src)
+		if err != nil {
+			return nil, err
+		}
+		saved := funcStack
+		funcStack = append(funcStack, []string{q.Var, j.Var})
+		cond, err := convertExpr(j.On)
+		if err != nil {
+			funcStack = saved
+			return nil, err
+		}
+		sel, err := convertExpr(q.Select)
+		if err != nil {
+			funcStack = saved
+			return nil, err
+		}
+		funcStack = saved
+		uses := []string{}
+		for _, frame := range funcStack {
+			uses = append(uses, frame...)
+		}
+		if len(funcStack) == 0 {
+			uses = append(uses, globalNames...)
+		}
+		rj := &RightJoinExpr{LeftVar: q.Var, LeftSrc: leftSrc, RightVar: j.Var, RightSrc: rightSrc, Cond: cond, Select: sel, Uses: uses}
+		return rj, nil
+	}
+
 	loops := []QueryLoop{{Name: q.Var}}
 	src, err := convertExpr(q.Source)
 	if err != nil {
@@ -1708,6 +1792,16 @@ func exprNode(e Expr) *ast.Node {
 		return &ast.Node{Kind: "index", Children: []*ast.Node{exprNode(ex.X), exprNode(ex.Index)}}
 	case *SliceExpr:
 		return &ast.Node{Kind: "slice", Children: []*ast.Node{exprNode(ex.X), exprNode(ex.Start), exprNode(ex.End)}}
+	case *RightJoinExpr:
+		n := &ast.Node{Kind: "right_join"}
+		n.Children = append(n.Children,
+			&ast.Node{Kind: "left_var", Value: ex.LeftVar},
+			exprNode(ex.LeftSrc),
+			&ast.Node{Kind: "right_var", Value: ex.RightVar},
+			exprNode(ex.RightSrc),
+			exprNode(ex.Cond),
+			exprNode(ex.Select))
+		return n
 	default:
 		return &ast.Node{Kind: "unknown"}
 	}
