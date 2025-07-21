@@ -1,0 +1,12 @@
+run: exit status 1
+Traceback (most recent call last):
+  File "/workspace/mochi/tests/transpiler/x/py/left_join_multi.py", line 29, in <module>
+    result = [Result(o.id, c["name"], i) for o in orders for c in customers for i in [i for i in items if o.id == i["orderId"]] or [None] if o.customerId == c["id"]]
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/mochi/tests/transpiler/x/py/left_join_multi.py", line 29, in <listcomp>
+    result = [Result(o.id, c["name"], i) for o in orders for c in customers for i in [i for i in items if o.id == i["orderId"]] or [None] if o.customerId == c["id"]]
+                                                                                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/mochi/tests/transpiler/x/py/left_join_multi.py", line 29, in <listcomp>
+    result = [Result(o.id, c["name"], i) for o in orders for c in customers for i in [i for i in items if o.id == i["orderId"]] or [None] if o.customerId == c["id"]]
+                                                                                                                  ~^^^^^^^^^^^
+TypeError: 'Item' object is not subscriptable

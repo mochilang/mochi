@@ -1,0 +1,9 @@
+run: exit status 1
+Traceback (most recent call last):
+  File "/workspace/mochi/tests/transpiler/x/py/group_by_multi_sort.py", line 28, in <module>
+    grouped = [Grouped(g.key["a"], g.key["b"], sum([x.val for x in g.items])) for g in _grouped_groups.values()]
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/mochi/tests/transpiler/x/py/group_by_multi_sort.py", line 28, in <listcomp>
+    grouped = [Grouped(g.key["a"], g.key["b"], sum([x.val for x in g.items])) for g in _grouped_groups.values()]
+                       ~~~~~^^^^^
+TypeError: tuple indices must be integers or slices, not str

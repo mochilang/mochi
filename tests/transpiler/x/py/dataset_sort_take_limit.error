@@ -1,0 +1,7 @@
+run: exit status 1
+--- Top products (excluding most expensive) ---
+Traceback (most recent call last):
+  File "/workspace/mochi/tests/transpiler/x/py/dataset_sort_take_limit.py", line 14, in <module>
+    print(" ".join(str(x) for x in [item["name"], "costs $", item["price"]]).rstrip())
+                                    ~~~~^^^^^^^^
+TypeError: 'Product' object is not subscriptable
