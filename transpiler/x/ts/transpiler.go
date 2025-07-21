@@ -320,6 +320,7 @@ type GroupQueryExpr struct {
 	Cond     Expr
 	Select   Expr
 	Having   Expr
+	Sort     Expr
 	ElemType string
 }
 
@@ -1013,9 +1014,23 @@ func (gq *GroupQueryExpr) emit(w io.Writer) {
 		io.WriteString(iw, "[]")
 	}
 	io.WriteString(iw, " = []\n")
-	io.WriteString(iw, "  for (const ks of _order) {\n    const ")
-	io.WriteString(iw, gq.GroupVar)
-	io.WriteString(iw, " = _groups[ks]\n")
+	if gq.Sort != nil {
+		io.WriteString(iw, "  const _pairs = _order.map(ks => { const ")
+		io.WriteString(iw, gq.GroupVar)
+		io.WriteString(iw, " = _groups[ks]; return {g: ")
+		io.WriteString(iw, gq.GroupVar)
+		io.WriteString(iw, ", key: ")
+		gq.Sort.emit(iw)
+		io.WriteString(iw, "} })\n")
+		io.WriteString(iw, "  _pairs.sort((a,b)=>{const ak=a.key;const bk=b.key;if(ak<bk)return -1;if(ak>bk)return 1;const sak=JSON.stringify(ak);const sbk=JSON.stringify(bk);return sak<sbk?-1:sak>sbk?1:0})\n")
+		io.WriteString(iw, "  for (const p of _pairs) {\n    const ")
+		io.WriteString(iw, gq.GroupVar)
+		io.WriteString(iw, " = p.g\n")
+	} else {
+		io.WriteString(iw, "  for (const ks of _order) {\n    const ")
+		io.WriteString(iw, gq.GroupVar)
+		io.WriteString(iw, " = _groups[ks]\n")
+	}
 	if gq.Having != nil {
 		io.WriteString(iw, "    if (")
 		gq.Having.emit(iw)
@@ -1963,7 +1978,7 @@ func convertQueryExpr(q *parser.QueryExpr) (Expr, error) {
 		}
 	}
 
-	if q.Group != nil && len(q.Group.Exprs) == 1 && len(q.Froms) == 0 && len(q.Joins) == 0 && q.Sort == nil && q.Skip == nil && q.Take == nil {
+	if q.Group != nil && len(q.Group.Exprs) == 1 && len(q.Froms) == 0 && len(q.Joins) == 0 && q.Skip == nil && q.Take == nil {
 		key, err := convertExpr(q.Group.Exprs[0])
 		if err != nil {
 			return nil, err
@@ -1998,7 +2013,7 @@ func convertQueryExpr(q *parser.QueryExpr) (Expr, error) {
 			}
 		}
 		transpileEnv = prev
-		return &GroupQueryExpr{Var: q.Var, Source: src, Key: key, Row: &NameRef{Name: q.Var}, GroupVar: q.Group.Name, Cond: where, Select: sel, Having: having, ElemType: elemType}, nil
+		return &GroupQueryExpr{Var: q.Var, Source: src, Key: key, Row: &NameRef{Name: q.Var}, GroupVar: q.Group.Name, Cond: where, Select: sel, Having: having, Sort: sort, ElemType: elemType}, nil
 	}
 	if q.Group == nil && q.Sort == nil && q.Skip == nil && q.Take == nil && len(loops) == 1 {
 		if s, ok := sel.(*SumExpr); ok {
