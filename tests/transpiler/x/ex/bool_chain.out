@@ -1,0 +1,12 @@
+warning: this check/guard will always yield the same result
+  /workspace/mochi/tests/transpiler/x/ex/bool_chain.exs:8
+
+warning: this check/guard will always yield the same result
+  /workspace/mochi/tests/transpiler/x/ex/bool_chain.exs:9
+
+warning: this check/guard will always yield the same result
+  /workspace/mochi/tests/transpiler/x/ex/bool_chain.exs:10
+
+true
+false
+false

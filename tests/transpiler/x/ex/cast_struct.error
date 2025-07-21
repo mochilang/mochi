@@ -1,0 +1,4 @@
+run: exit status 1
+** (KeyError) key :title not found in: %{"title" => "hi"}
+    /workspace/mochi/tests/transpiler/x/ex/cast_struct.exs:3: (file)
+    (elixir 1.14.0) lib/code.ex:1245: Code.require_file/2
