@@ -2129,6 +2129,109 @@ type GroupJoinExpr struct {
 	Take     Expr
 }
 
+// GroupMultiJoinExpr handles grouping after multiple inner joins.
+type GroupMultiJoinExpr struct {
+	Vars    []string
+	Sources []Expr
+	Cond    Expr
+	Key     Expr
+	Row     Expr
+	Name    string
+	Select  Expr
+	Having  Expr
+	Sort    Expr
+	Skip    Expr
+	Take    Expr
+}
+
+func (g *GroupMultiJoinExpr) emit(w io.Writer) {
+	io.WriteString(w, "(let ([_groups (make-hash)] [_res '()])\n")
+	for i := range g.Vars {
+		io.WriteString(w, strings.Repeat("  ", i+1))
+		io.WriteString(w, "(for ([")
+		io.WriteString(w, g.Vars[i])
+		io.WriteString(w, " ")
+		g.Sources[i].emit(w)
+		io.WriteString(w, "])\n")
+	}
+	io.WriteString(w, strings.Repeat("  ", len(g.Vars)+1))
+	if g.Cond != nil {
+		io.WriteString(w, "(when ")
+		g.Cond.emit(w)
+		io.WriteString(w, "\n")
+	}
+	io.WriteString(w, strings.Repeat("  ", len(g.Vars)+2))
+	io.WriteString(w, "(let* ([_key ")
+	g.Key.emit(w)
+	io.WriteString(w, "][_g (hash-ref _groups _key (lambda () (let ([h (make-hash)]) (hash-set! h \"key\" _key) (hash-set! h \"items\" '()) (hash-set! _groups _key h) h)))])\n")
+	io.WriteString(w, strings.Repeat("  ", len(g.Vars)+2))
+	io.WriteString(w, "  (hash-set! _g \"items\" (append (hash-ref _g \"items\") (list ")
+	g.Row.emit(w)
+	io.WriteString(w, ")))\n")
+	io.WriteString(w, strings.Repeat("  ", len(g.Vars)+1))
+	if g.Cond != nil {
+		io.WriteString(w, ")")
+	}
+	io.WriteString(w, "\n")
+	for i := len(g.Vars); i >= 1; i-- {
+		io.WriteString(w, strings.Repeat("  ", i))
+		io.WriteString(w, ")\n")
+	}
+	io.WriteString(w, "  (for ([")
+	io.WriteString(w, g.Name)
+	io.WriteString(w, " (hash-values _groups)])\n")
+	if g.Having != nil {
+		io.WriteString(w, "    (when ")
+		g.Having.emit(w)
+		io.WriteString(w, "\n      (let ([val ")
+		g.Select.emit(w)
+		io.WriteString(w, "]")
+		if g.Sort != nil {
+			io.WriteString(w, " [key ")
+			g.Sort.emit(w)
+			io.WriteString(w, "]")
+		}
+		io.WriteString(w, ")\n        (set! _res (append _res (list ")
+		if g.Sort != nil {
+			io.WriteString(w, "(cons key val)")
+		} else {
+			io.WriteString(w, "val")
+		}
+		io.WriteString(w, "))))\n    )\n")
+	} else {
+		io.WriteString(w, "    (let ([val ")
+		g.Select.emit(w)
+		io.WriteString(w, "]")
+		if g.Sort != nil {
+			io.WriteString(w, " [key ")
+			g.Sort.emit(w)
+			io.WriteString(w, "]")
+		}
+		io.WriteString(w, ")\n      (set! _res (append _res (list ")
+		if g.Sort != nil {
+			io.WriteString(w, "(cons key val)")
+		} else {
+			io.WriteString(w, "val")
+		}
+		io.WriteString(w, "))))\n")
+	}
+	io.WriteString(w, "  )\n")
+	if g.Sort != nil {
+		io.WriteString(w, "  (set! _res (sort _res < #:key car))\n  (set! _res (map cdr _res))\n")
+	}
+	if g.Skip != nil {
+		io.WriteString(w, "  (set! _res (drop _res ")
+		g.Skip.emit(w)
+		io.WriteString(w, "))\n")
+	}
+	if g.Take != nil {
+		io.WriteString(w, "  (set! _res (take _res ")
+		g.Take.emit(w)
+		io.WriteString(w, "))\n")
+	}
+	io.WriteString(w, "  _res)")
+}
+
 func (g *GroupJoinExpr) emit(w io.Writer) {
 	io.WriteString(w, "(let ([_groups (make-hash)] [_res '()])\n")
 	io.WriteString(w, "  (for ([")
@@ -2407,12 +2510,111 @@ func convertGroupJoinQuery(q *parser.QueryExpr, env *types.Env) (Expr, error) {
 	return &GroupJoinExpr{LeftVar: q.Var, LeftSrc: leftSrc, RightVar: j.Var, RightSrc: rightSrc, Cond: cond, Key: key, Row: row, Name: q.Group.Name, Select: sel, Having: having, Sort: sortExpr, Skip: skipExpr, Take: takeExpr}, nil
 }
 
+func convertGroupMultiJoinQuery(q *parser.QueryExpr, env *types.Env) (Expr, error) {
+	if q.Group == nil || len(q.Group.Exprs) != 1 || len(q.Joins) < 2 || len(q.Froms) != 0 || q.Distinct {
+		return nil, fmt.Errorf("unsupported query")
+	}
+	for _, j := range q.Joins {
+		if j.Side != nil {
+			return nil, fmt.Errorf("unsupported query")
+		}
+	}
+	vars := []string{q.Var}
+	srcs := []*parser.Expr{q.Source}
+	for _, j := range q.Joins {
+		vars = append(vars, j.Var)
+		srcs = append(srcs, j.Src)
+	}
+	var exprs []Expr
+	for _, s := range srcs {
+		e, err := convertExpr(s, env)
+		if err != nil {
+			return nil, err
+		}
+		exprs = append(exprs, e)
+	}
+	child := types.NewEnv(env)
+	child.SetVar(q.Var, types.AnyType{}, true)
+	for _, j := range q.Joins {
+		child.SetVar(j.Var, types.AnyType{}, true)
+	}
+	var cond Expr
+	for _, j := range q.Joins {
+		c, err := convertExpr(j.On, child)
+		if err != nil {
+			return nil, err
+		}
+		if cond == nil {
+			cond = c
+		} else {
+			cond = &BinaryExpr{Op: "and", Left: cond, Right: c}
+		}
+	}
+	if q.Where != nil {
+		w, err := convertExpr(q.Where, child)
+		if err != nil {
+			return nil, err
+		}
+		if cond == nil {
+			cond = w
+		} else {
+			cond = &BinaryExpr{Op: "and", Left: cond, Right: w}
+		}
+	}
+	key, err := convertExpr(q.Group.Exprs[0], child)
+	if err != nil {
+		return nil, err
+	}
+	var entries []Expr
+	for _, v := range vars {
+		entries = append(entries, &StringLit{Value: v}, &Name{Name: v})
+	}
+	row := &CallExpr{Func: "hash", Args: entries}
+	genv := types.NewEnv(env)
+	genv.SetVar(q.Group.Name, types.AnyType{}, true)
+	groupVars[q.Group.Name] = true
+	sel, err := convertExpr(q.Select, genv)
+	if err != nil {
+		return nil, err
+	}
+	var having Expr
+	if q.Group.Having != nil {
+		having, err = convertExpr(q.Group.Having, genv)
+		if err != nil {
+			return nil, err
+		}
+	}
+	var sortExpr, skipExpr, takeExpr Expr
+	if q.Sort != nil {
+		sortExpr, err = convertExpr(q.Sort, genv)
+		if err != nil {
+			return nil, err
+		}
+	}
+	if q.Skip != nil {
+		skipExpr, err = convertExpr(q.Skip, genv)
+		if err != nil {
+			return nil, err
+		}
+	}
+	if q.Take != nil {
+		takeExpr, err = convertExpr(q.Take, genv)
+		if err != nil {
+			return nil, err
+		}
+	}
+	return &GroupMultiJoinExpr{Vars: vars, Sources: exprs, Cond: cond, Key: key, Row: row, Name: q.Group.Name, Select: sel, Having: having, Sort: sortExpr, Skip: skipExpr, Take: takeExpr}, nil
+}
+
 func convertQueryExpr(q *parser.QueryExpr, env *types.Env) (Expr, error) {
 	if q.Group != nil {
 		if len(q.Joins) == 0 && len(q.Froms) == 0 {
 			return convertGroupQuery(q, env)
 		}
-		return convertGroupJoinQuery(q, env)
+		if len(q.Joins) == 1 {
+			return convertGroupJoinQuery(q, env)
+		}
+		return convertGroupMultiJoinQuery(q, env)
 	}
 	if len(q.Joins) == 0 {
 		return convertCrossJoinQuery(q, env)
