@@ -1156,7 +1156,7 @@ type AvgExpr struct{ Arg Expr }
 func (a *AvgExpr) emit(w io.Writer) {
 	fmt.Fprint(w, "(")
 	a.Arg.emit(w)
-	fmt.Fprint(w, ".Average()).ToString(\"0.0\")")
+	fmt.Fprint(w, ".Average())")
 }
 
 type LenExpr struct{ Arg Expr }
