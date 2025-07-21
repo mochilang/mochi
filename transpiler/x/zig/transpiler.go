@@ -140,6 +140,13 @@ type IndexAssignStmt struct {
 	Value  Expr
 }
 
+// FieldAssignStmt assigns to a field expression like `obj.x = val`.
+type FieldAssignStmt struct {
+	Target Expr
+	Name   string
+	Value  Expr
+}
+
 // ExprStmt allows top-level expressions.
 type ExprStmt struct{ Expr Expr }
 
@@ -634,7 +641,7 @@ func writeIndent(w io.Writer, n int) {
 func (s *PrintStmt) emit(w io.Writer, indent int) {
 	writeIndent(w, indent)
 	if len(s.Values) == 0 {
-		io.WriteString(w, "try std.io.getStdOut().writer().print(\"\\n\", .{});\n")
+		io.WriteString(w, "std.io.getStdOut().writer().print(\"\\n\", .{}) catch unreachable;\n")
 		return
 	}
 	fmtSpec := make([]string, len(s.Values))
@@ -649,10 +656,14 @@ func (s *PrintStmt) emit(w io.Writer, indent int) {
 		case *StringLit:
 			fmtSpec[i] = "{s}"
 		default:
-			fmtSpec[i] = "{any}"
+			if zigTypeFromExpr(v) == "[]const u8" {
+				fmtSpec[i] = "{s}"
+			} else {
+				fmtSpec[i] = "{any}"
+			}
 		}
 	}
-	io.WriteString(w, "try std.io.getStdOut().writer().print(\"")
+	io.WriteString(w, "std.io.getStdOut().writer().print(\"")
 	io.WriteString(w, strings.Join(fmtSpec, " "))
 	io.WriteString(w, "\\n\", .{")
 	for i, v := range s.Values {
@@ -661,7 +672,7 @@ func (s *PrintStmt) emit(w io.Writer, indent int) {
 		}
 		v.emit(w)
 	}
-	io.WriteString(w, "});\n")
+	io.WriteString(w, "}) catch unreachable;\n")
 }
 
 func (v *VarDecl) emit(w io.Writer, indent int) {
@@ -718,6 +729,14 @@ func (a *IndexAssignStmt) emit(w io.Writer, indent int) {
 	}
 	a.Target.emit(w)
 	io.WriteString(w, " = ")
+	a.Value.emit(w)
+	io.WriteString(w, ";\n")
+}
+
+func (a *FieldAssignStmt) emit(w io.Writer, indent int) {
+	writeIndent(w, indent)
+	a.Target.emit(w)
+	fmt.Fprintf(w, ".%s = ", toSnakeCase(a.Name))
 	a.Value.emit(w)
 	io.WriteString(w, ";\n")
 }
@@ -1519,6 +1538,21 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 			entries[i] = MapEntry{Key: k, Value: v}
 		}
 		return &MapLit{Entries: entries}, nil
+	case p.Struct != nil:
+		entries := make([]MapEntry, len(p.Struct.Fields))
+		fields := make([]Field, len(p.Struct.Fields))
+		for i, f := range p.Struct.Fields {
+			v, err := compileExpr(f.Value)
+			if err != nil {
+				return nil, err
+			}
+			entries[i] = MapEntry{Key: &StringLit{Value: f.Name}, Value: v}
+			fields[i] = Field{Name: toSnakeCase(f.Name), Type: zigTypeFromExpr(v)}
+		}
+		if _, ok := structDefs[p.Struct.Name]; !ok {
+			structDefs[p.Struct.Name] = &StructDef{Name: p.Struct.Name, Fields: fields}
+		}
+		return &MapLit{Entries: entries, StructName: p.Struct.Name}, nil
 	case p.Query != nil:
 		return compileQueryExpr(p.Query)
 	case p.If != nil:
@@ -1999,6 +2033,9 @@ func compileStmt(s *parser.Statement, prog *parser.Program) (Stmt, error) {
 		if qc, ok := expr.(*QueryComp); ok {
 			vd.Type = "[]" + qc.ElemType
 		}
+		if vd.Type != "" {
+			varTypes[s.Let.Name] = vd.Type
+		}
 		return vd, nil
 	case s.Var != nil:
 		var expr Expr
@@ -2026,6 +2063,9 @@ func compileStmt(s *parser.Statement, prog *parser.Program) (Stmt, error) {
 		if qc, ok := expr.(*QueryComp); ok {
 			vd.Type = "[]" + qc.ElemType
 		}
+		if vd.Type != "" {
+			varTypes[s.Var.Name] = vd.Type
+		}
 		return vd, nil
 	case s.Assign != nil && len(s.Assign.Index) == 0 && len(s.Assign.Field) == 0:
 		expr, err := compileExpr(s.Assign.Value)
@@ -2036,6 +2076,17 @@ func compileStmt(s *parser.Statement, prog *parser.Program) (Stmt, error) {
 			mapVars[s.Assign.Name] = true
 		}
 		return &AssignStmt{Name: s.Assign.Name, Value: expr}, nil
+	case s.Assign != nil && len(s.Assign.Field) > 0:
+		var target Expr = &VarRef{Name: s.Assign.Name}
+		for _, f := range s.Assign.Field[:len(s.Assign.Field)-1] {
+			target = &FieldExpr{Target: target, Name: f.Name}
+		}
+		fieldName := s.Assign.Field[len(s.Assign.Field)-1].Name
+		val, err := compileExpr(s.Assign.Value)
+		if err != nil {
+			return nil, err
+		}
+		return &FieldAssignStmt{Target: target, Name: fieldName, Value: val}, nil
 	case s.Assign != nil && len(s.Assign.Index) > 0 && len(s.Assign.Field) == 0:
 		target := Expr(&VarRef{Name: s.Assign.Name, Map: mapVars[s.Assign.Name]})
 		for _, idx := range s.Assign.Index {
