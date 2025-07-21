@@ -1,3 +1,7 @@
+## Progress (2025-07-21 12:53 +0700)
+- Added basic group-by translation using Enum.group_by
+- VM valid golden test results updated
+
 ## Progress (2025-07-21 12:27 +0700)
 - VM valid golden test results updated
 

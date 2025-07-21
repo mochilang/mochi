@@ -415,6 +415,15 @@ func (ce *CaseExpr) emit(w io.Writer) {
 	io.WriteString(w, "end")
 }
 
+// GroupExpr wraps another expression in parentheses.
+type GroupExpr struct{ Expr Expr }
+
+func (g *GroupExpr) emit(w io.Writer) {
+	io.WriteString(w, "(")
+	g.Expr.emit(w)
+	io.WriteString(w, ")")
+}
+
 // BinaryExpr represents a binary operation such as 1 + 2.
 type BinaryExpr struct {
 	Left  Expr
@@ -706,6 +715,35 @@ func (c *Comprehension) emit(w io.Writer) {
 		c.Body.emit(w)
 	}
 	io.WriteString(w, "\nend")
+}
+
+// GroupByExpr represents a basic group by query without joins or sorting.
+type GroupByExpr struct {
+	Var    string
+	Source Expr
+	Key    Expr
+	Name   string
+	Select Expr
+}
+
+func (g *GroupByExpr) emit(w io.Writer) {
+	io.WriteString(w, "Enum.map(Enum.uniq(Enum.map(")
+	g.Source.emit(w)
+	io.WriteString(w, ", fn ")
+	io.WriteString(w, g.Var)
+	io.WriteString(w, " -> ")
+	g.Key.emit(w)
+	io.WriteString(w, " end)), fn key ->\n  ")
+	io.WriteString(w, g.Name)
+	io.WriteString(w, " = %{key: key, items: Map.fetch!(Enum.group_by(")
+	g.Source.emit(w)
+	io.WriteString(w, ", fn ")
+	io.WriteString(w, g.Var)
+	io.WriteString(w, " -> ")
+	g.Key.emit(w)
+	io.WriteString(w, " end), key)}\n  ")
+	g.Select.emit(w)
+	io.WriteString(w, "\nend)")
 }
 
 // CastExpr represents a simple cast like expr as int.
@@ -1209,6 +1247,28 @@ func compileQueryExpr(q *parser.QueryExpr, env *types.Env) (Expr, error) {
 	if err != nil {
 		return nil, err
 	}
+	if name, ok := isSimpleIdent(q.Source); ok {
+		if t, err := env.GetVar(name); err == nil {
+			if _, ok := t.(types.GroupType); ok {
+				src = &IndexExpr{Target: &VarRef{Name: name}, Index: &AtomLit{Name: "items"}, UseMapSyntax: true}
+			}
+		}
+	}
+	if q.Group != nil && len(q.Group.Exprs) == 1 && len(q.Froms) == 0 && len(q.Joins) == 0 && q.Where == nil && q.Sort == nil && q.Skip == nil && q.Take == nil && !q.Distinct {
+		child := types.NewEnv(env)
+		child.SetVar(q.Var, types.AnyType{}, true)
+		key, err := compileExpr(q.Group.Exprs[0], child)
+		if err != nil {
+			return nil, err
+		}
+		genv := types.NewEnv(env)
+		genv.SetVar(q.Group.Name, types.GroupType{Key: types.AnyType{}, Elem: types.AnyType{}}, true)
+		sel, err := compileExpr(q.Select, genv)
+		if err != nil {
+			return nil, err
+		}
+		return &GroupByExpr{Var: q.Var, Source: src, Key: key, Name: q.Group.Name, Select: sel}, nil
+	}
 	gens := []CompGen{{Var: q.Var, Src: src}}
 	child := types.NewEnv(env)
 	child.SetVar(q.Var, types.AnyType{}, true)
@@ -1515,6 +1575,16 @@ func compilePrimary(p *parser.Primary, env *types.Env) (Expr, error) {
 			}
 		case "count":
 			name = "Enum.count"
+			if len(args) == 1 {
+				if v, ok := isSimpleIdent(p.Call.Args[0]); ok {
+					if t, err := env.GetVar(v); err == nil {
+						if _, ok := t.(types.GroupType); ok {
+							arg := &IndexExpr{Target: &VarRef{Name: v}, Index: &AtomLit{Name: "items"}, UseMapSyntax: true}
+							return &CallExpr{Func: name, Args: []Expr{arg}}, nil
+						}
+					}
+				}
+			}
 		case "len":
 			name = "length"
 			if len(args) == 1 {
@@ -1535,7 +1605,12 @@ func compilePrimary(p *parser.Primary, env *types.Env) (Expr, error) {
 			if len(args) == 1 {
 				sumCall := &CallExpr{Func: "Enum.sum", Args: []Expr{args[0]}}
 				countCall := &CallExpr{Func: "Enum.count", Args: []Expr{args[0]}}
-				return &BinaryExpr{Left: sumCall, Op: "/", Right: countCall}, nil
+				remCall := &BinaryExpr{Left: sumCall, Op: "%", Right: countCall}
+				cond := &BinaryExpr{Left: remCall, Op: "==", Right: &NumberLit{Value: "0"}}
+				intDiv := &CallExpr{Func: "div", Args: []Expr{sumCall, countCall}}
+				divExpr := &BinaryExpr{Left: sumCall, Op: "/", Right: countCall}
+				cexpr := &CondExpr{Cond: cond, Then: intDiv, Else: divExpr}
+				return &GroupExpr{Expr: cexpr}, nil
 			}
 		case "str":
 			name = "to_string"
@@ -1637,7 +1712,11 @@ func compilePrimary(p *parser.Primary, env *types.Env) (Expr, error) {
 	case p.Match != nil:
 		return compileMatchExpr(p.Match, env)
 	case p.Group != nil:
-		return compileExpr(p.Group, env)
+		ex, err := compileExpr(p.Group, env)
+		if err != nil {
+			return nil, err
+		}
+		return &GroupExpr{Expr: ex}, nil
 	}
 	return nil, fmt.Errorf("unsupported primary")
 }
