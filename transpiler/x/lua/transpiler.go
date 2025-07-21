@@ -126,6 +126,16 @@ type UnaryExpr struct {
 	Value Expr
 }
 
+type MatchArm struct {
+	Pattern Expr // nil means wildcard
+	Result  Expr
+}
+
+type MatchExpr struct {
+	Target Expr
+	Arms   []MatchArm
+}
+
 type QueryComp struct {
 	Vars     []string
 	Sources  []Expr
@@ -936,6 +946,29 @@ func (u *UnaryExpr) emit(w io.Writer) {
 	}
 }
 
+func (m *MatchExpr) emit(w io.Writer) {
+	io.WriteString(w, "(function(_m)\n")
+	for i, a := range m.Arms {
+		if i == 0 {
+			io.WriteString(w, "  if ")
+		} else {
+			io.WriteString(w, "  elseif ")
+		}
+		if a.Pattern != nil {
+			io.WriteString(w, "_m == ")
+			a.Pattern.emit(w)
+		} else {
+			io.WriteString(w, "true")
+		}
+		io.WriteString(w, " then\n    return ")
+		a.Result.emit(w)
+		io.WriteString(w, "\n")
+	}
+	io.WriteString(w, "  end\nend)(")
+	m.Target.emit(w)
+	io.WriteString(w, ")")
+}
+
 func (qc *QueryComp) emit(w io.Writer) {
 	io.WriteString(w, "(function()\n  local _res = {}\n")
 	order := make([]int, len(qc.Vars))
@@ -1366,6 +1399,8 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 			fe.Body = append(fe.Body, s)
 		}
 		return fe, nil
+	case p.Match != nil:
+		return convertMatchExpr(p.Match)
 	case p.Selector != nil:
 		expr := Expr(&Ident{Name: p.Selector.Root})
 		for _, name := range p.Selector.Tail {
@@ -1418,6 +1453,29 @@ func convertIfExpr(ie *parser.IfExpr) (Expr, error) {
 		elseExpr = &Ident{Name: "nil"}
 	}
 	return &IfExpr{Cond: cond, Then: thenExpr, Else: elseExpr}, nil
+}
+
+func convertMatchExpr(me *parser.MatchExpr) (Expr, error) {
+	target, err := convertExpr(me.Target)
+	if err != nil {
+		return nil, err
+	}
+	arms := make([]MatchArm, len(me.Cases))
+	for i, c := range me.Cases {
+		pat, err := convertExpr(c.Pattern)
+		if err != nil {
+			return nil, err
+		}
+		if id, ok := pat.(*Ident); ok && id.Name == "_" {
+			pat = nil
+		}
+		res, err := convertExpr(c.Result)
+		if err != nil {
+			return nil, err
+		}
+		arms[i] = MatchArm{Pattern: pat, Result: res}
+	}
+	return &MatchExpr{Target: target, Arms: arms}, nil
 }
 
 func convertQueryExpr(q *parser.QueryExpr) (Expr, error) {
@@ -1931,6 +1989,20 @@ func exprNode(e Expr) *ast.Node {
 	case *IfExpr:
 		n := &ast.Node{Kind: "cond"}
 		n.Children = append(n.Children, exprNode(ex.Cond), exprNode(ex.Then), exprNode(ex.Else))
+		return n
+	case *MatchExpr:
+		n := &ast.Node{Kind: "match"}
+		n.Children = append(n.Children, exprNode(ex.Target))
+		for _, a := range ex.Arms {
+			arm := &ast.Node{Kind: "case"}
+			if a.Pattern != nil {
+				arm.Children = append(arm.Children, exprNode(a.Pattern))
+			} else {
+				arm.Children = append(arm.Children, &ast.Node{Kind: "wild"})
+			}
+			arm.Children = append(arm.Children, exprNode(a.Result))
+			n.Children = append(n.Children, arm)
+		}
 		return n
 	case *QueryComp:
 		n := &ast.Node{Kind: "query"}
