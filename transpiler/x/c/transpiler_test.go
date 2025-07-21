@@ -162,6 +162,7 @@ func TestTranspilerGolden(t *testing.T) {
 		filepath.Join(srcDir, "values_builtin.mochi"),
 		filepath.Join(srcDir, "map_index.mochi"),
 		filepath.Join(srcDir, "cross_join.mochi"),
+		filepath.Join(srcDir, "cross_join_filter.mochi"),
 		filepath.Join(srcDir, "group_by.mochi"),
 		filepath.Join(srcDir, "group_by_conditional_sum.mochi"),
 		filepath.Join(srcDir, "group_by_join.mochi"),
