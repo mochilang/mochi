@@ -2376,6 +2376,11 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 									} else if mc, ok := e.(*MultiListComp); ok {
 										mc.Expr = &CallExpr{Func: &Name{Name: dc.Name}, Args: args}
 									}
+									if env != nil {
+										stType := structFromDataClass(dc, env)
+										env.SetStruct(dc.Name, stType)
+										env.SetVar(st.Let.Name, types.ListType{Elem: stType}, false)
+									}
 								}
 							}
 						}
@@ -2430,6 +2435,11 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 										lc.Expr = &CallExpr{Func: &Name{Name: dc.Name}, Args: args}
 									} else if mc, ok := e.(*MultiListComp); ok {
 										mc.Expr = &CallExpr{Func: &Name{Name: dc.Name}, Args: args}
+									}
+									if env != nil {
+										stType := structFromDataClass(dc, env)
+										env.SetStruct(dc.Name, stType)
+										env.SetVar(st.Var.Name, types.ListType{Elem: stType}, true)
 									}
 								}
 							}
@@ -3253,15 +3263,7 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 					outArgs[i] = a
 				}
 			}
-			if len(outArgs) == 1 {
-				return &CallExpr{Func: &Name{Name: "print"}, Args: outArgs}, nil
-			}
-			var parts []string
-			for _, a := range outArgs {
-				parts = append(parts, exprString(a))
-			}
-			code := fmt.Sprintf("print(\" \".join(str(x) for x in [%s]).rstrip())", strings.Join(parts, ", "))
-			return &RawExpr{Code: code}, nil
+			return &CallExpr{Func: &Name{Name: "print"}, Args: outArgs}, nil
 		case "append":
 			if len(args) == 2 {
 				return &BinaryExpr{Left: args[0], Op: "+", Right: &ListLit{Elems: []Expr{args[1]}}}, nil
@@ -3556,6 +3558,11 @@ func convertQueryExpr(q *parser.QueryExpr) (Expr, error) {
 		e, err := convertExpr(f.Src)
 		if err != nil {
 			return nil, err
+		}
+		if currentEnv != nil {
+			if lt, ok := inferTypeFromExpr(f.Src).(types.ListType); ok {
+				currentEnv.SetVar(f.Var, lt.Elem, true)
+			}
 		}
 		vars = append(vars, f.Var)
 		iters = append(iters, e)
