@@ -72,12 +72,70 @@ func fsType(t types.Type) string {
 	return "obj"
 }
 
+func fsTypeFromString(s string) string {
+	switch s {
+	case "int", "int64":
+		return "int"
+	case "float":
+		return "float"
+	case "bool":
+		return "bool"
+	case "string":
+		return "string"
+	default:
+		if strings.HasSuffix(s, " list") || strings.HasPrefix(s, "Map<") || s == "obj" {
+			return "obj"
+		}
+		return s
+	}
+}
+
+func inferStructFromMapVars(ml *parser.MapLiteral) ([]StructField, bool) {
+	fields := make([]StructField, len(ml.Items))
+	for i, it := range ml.Items {
+		key, ok := types.SimpleStringKey(it.Key)
+		if !ok {
+			return nil, false
+		}
+		if it.Value == nil || it.Value.Binary == nil || len(it.Value.Binary.Right) != 0 {
+			return nil, false
+		}
+		tgt := it.Value.Binary.Left.Value.Target
+		if tgt.Selector == nil || len(tgt.Selector.Tail) != 0 {
+			return nil, false
+		}
+		vname := tgt.Selector.Root
+		vtype, ok := varTypes[vname]
+		if !ok {
+			return nil, false
+		}
+		fields[i] = StructField{Name: key, Type: fsTypeFromString(vtype), Mut: true}
+	}
+	return fields, true
+}
+
 func addStructDef(name string, st types.StructType) {
 	def := StructDef{Name: name}
 	for _, f := range st.Order {
 		def.Fields = append(def.Fields, StructField{Name: f, Type: fsType(st.Fields[f]), Mut: true})
 	}
 	structDefs = append(structDefs, def)
+}
+
+func simpleListType(l *ListLit) string {
+	if l == nil || len(l.Elems) == 0 {
+		return ""
+	}
+	first := inferType(l.Elems[0])
+	if first == "" {
+		return ""
+	}
+	for _, e := range l.Elems[1:] {
+		if inferType(e) != first {
+			return ""
+		}
+	}
+	return first + " list"
 }
 
 func inferLiteralType(e *parser.Expr) string {
@@ -95,6 +153,14 @@ func inferLiteralType(e *parser.Expr) string {
 			addStructDef(name, st)
 			return name + " list"
 		}
+		if len(ll.Elems) > 0 && ll.Elems[0].Binary != nil && ll.Elems[0].Binary.Left.Value.Target.Map != nil {
+			if fields, ok := inferStructFromMapVars(ll.Elems[0].Binary.Left.Value.Target.Map); ok {
+				structCount++
+				name := fmt.Sprintf("Anon%d", structCount)
+				structDefs = append(structDefs, StructDef{Name: name, Fields: fields})
+				return name + " list"
+			}
+		}
 	}
 	return ""
 }
@@ -110,6 +176,12 @@ func inferQueryType(q *parser.QueryExpr) string {
 					structCount++
 					name := fmt.Sprintf("Anon%d", structCount)
 					addStructDef(name, st)
+					return name + " list"
+				}
+				if fields, ok := inferStructFromMapVars(ml); ok {
+					structCount++
+					name := fmt.Sprintf("Anon%d", structCount)
+					structDefs = append(structDefs, StructDef{Name: name, Fields: fields})
 					return name + " list"
 				}
 			}
@@ -1112,6 +1184,13 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 		if sl, ok := e.(*StructLit); ok && sl.Name != "" {
 			declared = sl.Name
 		}
+		if declared == "list" {
+			if ll, ok := e.(*ListLit); ok {
+				if t := simpleListType(ll); t != "" {
+					declared = t
+				}
+			}
+		}
 		varTypes[st.Let.Name] = declared
 		typ := declared
 		if typ == "list" || typ == "map" {
@@ -1139,6 +1218,13 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 		}
 		if sl, ok := e.(*StructLit); ok && sl.Name != "" {
 			declared = sl.Name
+		}
+		if declared == "list" {
+			if ll, ok := e.(*ListLit); ok {
+				if t := simpleListType(ll); t != "" {
+					declared = t
+				}
+			}
 		}
 		varTypes[st.Var.Name] = declared
 		typ := declared
@@ -1551,6 +1637,28 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 			}
 			return &ListLit{Elems: elems}, nil
 		}
+		if len(p.List.Elems) > 0 && p.List.Elems[0].Binary != nil && p.List.Elems[0].Binary.Left.Value.Target.Map != nil {
+			if fields, ok := inferStructFromMapVars(p.List.Elems[0].Binary.Left.Value.Target.Map); ok {
+				structCount++
+				name := fmt.Sprintf("Anon%d", structCount)
+				structDefs = append(structDefs, StructDef{Name: name, Fields: fields})
+				elems := make([]Expr, len(p.List.Elems))
+				for i, el := range p.List.Elems {
+					ml := el.Binary.Left.Value.Target.Map
+					vals := make([]StructFieldExpr, len(ml.Items))
+					for j, it := range ml.Items {
+						v, err := convertExpr(it.Value)
+						if err != nil {
+							return nil, err
+						}
+						key, _ := types.SimpleStringKey(it.Key)
+						vals[j] = StructFieldExpr{Name: key, Value: v}
+					}
+					elems[i] = &StructLit{Name: name, Fields: vals}
+				}
+				return &ListLit{Elems: elems}, nil
+			}
+		}
 		elems := make([]Expr, len(p.List.Elems))
 		for i, e := range p.List.Elems {
 			ex, err := convertExpr(e)
@@ -1585,6 +1693,21 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 				fields[i] = StructFieldExpr{Name: key, Value: val}
 			}
 			return &StructLit{Name: name, Fields: fields}, nil
+		}
+		if fields, ok := inferStructFromMapVars(p.Map); ok {
+			structCount++
+			name := fmt.Sprintf("Anon%d", structCount)
+			structDefs = append(structDefs, StructDef{Name: name, Fields: fields})
+			vals := make([]StructFieldExpr, len(p.Map.Items))
+			for i, it := range p.Map.Items {
+				val, err := convertExpr(it.Value)
+				if err != nil {
+					return nil, err
+				}
+				key, _ := types.SimpleStringKey(it.Key)
+				vals[i] = StructFieldExpr{Name: key, Value: val}
+			}
+			return &StructLit{Name: name, Fields: vals}, nil
 		}
 		items := make([][2]Expr, len(p.Map.Items))
 		for i, it := range p.Map.Items {

@@ -1,5 +1,10 @@
-// Generated 2025-07-21 11:54 +0700
+// Generated 2025-07-21 15:37 +0700
 open System
 
-let m = Map.ofList [("a", 1); ("b", 2); ("c", 3)]
-printfn "%s" (string (List.map snd (Map.toList m)))
+type Anon1 = {
+    mutable a: int
+    mutable b: int
+    mutable c: int
+}
+let m: Anon1 = { a = 1; b = 2; c = 3 }
+printfn "%s" (string (Seq.map snd m))

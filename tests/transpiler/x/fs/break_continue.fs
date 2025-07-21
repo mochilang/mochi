@@ -1,7 +1,7 @@
-// Generated 2025-07-20 21:29 +0700
+// Generated 2025-07-21 15:37 +0700
 open System
 
-let numbers = [1; 2; 3; 4; 5; 6; 7; 8; 9]
+let numbers: int list = [1; 2; 3; 4; 5; 6; 7; 8; 9]
 for n in numbers do
 if (n % 2) = 0 then
 continue

@@ -1,5 +1,5 @@
-// Mochi 0.10.31 - generated 2025-07-19 13:09:42 UTC
+// Generated 2025-07-21 15:37 +0700
 open System
 
-printfn "%s" (string (-3))
-printfn "%s" (string (5 + (-2)))
+printfn "%d" (-3)
+printfn "%d" (5 + (-2))

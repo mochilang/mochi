@@ -2,7 +2,7 @@
 
 This folder contains an experimental transpiler that converts Mochi source code into F#.
 
-## Golden Test Checklist (68/100)
+## Golden Test Checklist (74/100)
 
 The list below tracks Mochi programs under `tests/vm/valid` that should successfully transpile. Checked items indicate tests known to work.
 
@@ -13,7 +13,7 @@ The list below tracks Mochi programs under `tests/vm/valid` that should successf
 - [x] bool_chain.mochi
 - [x] break_continue.mochi
 - [x] cast_string_to_int.mochi
-- [ ] cast_struct.mochi
+- [x] cast_struct.mochi
 - [x] closure.mochi
 - [x] count_builtin.mochi
 - [x] cross_join.mochi
@@ -43,11 +43,11 @@ The list below tracks Mochi programs under `tests/vm/valid` that should successf
 - [x] if_then_else_nested.mochi
 - [x] in_operator.mochi
 - [ ] in_operator_extended.mochi
-- [ ] inner_join.mochi
-- [ ] join_multi.mochi
+- [x] inner_join.mochi
+- [x] join_multi.mochi
 - [ ] json_builtin.mochi
-- [ ] left_join.mochi
-- [ ] left_join_multi.mochi
+- [x] left_join.mochi
+- [x] left_join_multi.mochi
 - [x] len_builtin.mochi
 - [x] len_map.mochi
 - [x] len_string.mochi
@@ -102,7 +102,7 @@ The list below tracks Mochi programs under `tests/vm/valid` that should successf
 - [x] typed_var.mochi
 - [x] unary_neg.mochi
 - [ ] update_stmt.mochi
-- [ ] user_type_literal.mochi
+- [x] user_type_literal.mochi
 - [x] values_builtin.mochi
 - [x] var_assignment.mochi
 - [x] while_loop.mochi

@@ -1,4 +1,8 @@
-// Generated 2025-07-20 12:19 +0700
+// Generated 2025-07-21 15:37 +0700
 open System
 
-printfn "%d" (Seq.length (Map.ofList [("a", 1); ("b", 2)]))
+type Anon1 = {
+    mutable a: int
+    mutable b: int
+}
+printfn "%d" (Seq.length { a = 1; b = 2 })
