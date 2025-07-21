@@ -10,9 +10,9 @@ void main() {
   final List<People> people = [People(name: "Alice", age: 17, status: "minor"), People(name: "Bob", age: 25, status: "unknown"), People(name: "Charlie", age: 18, status: "unknown"), People(name: "Diana", age: 16, status: "minor")];
   for (var i = 0; i < people.length; i++) {
   var item = people[i];
-  if ((item["age"] >= 18)) {
+  if (item["age"] >= 18) {
     item["status"] = "adult";
-    item["age"] = (item["age"] + 1);
+    item["age"] = item["age"] + 1;
   }
   people[i] = item;
 }

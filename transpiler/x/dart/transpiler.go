@@ -1824,8 +1824,23 @@ func inferType(e Expr) string {
 			if lt == "String" || rt == "String" {
 				return "String"
 			}
+			if lt == "int" && rt == "int" {
+				return "int"
+			}
 			return "num"
-		case "-", "*", "/", "%":
+		case "-", "*", "%":
+			lt := inferType(ex.Left)
+			rt := inferType(ex.Right)
+			if lt == "int" && rt == "int" {
+				return "int"
+			}
+			return "num"
+		case "/":
+			lt := inferType(ex.Left)
+			rt := inferType(ex.Right)
+			if lt == "int" && rt == "int" {
+				return "int"
+			}
 			return "num"
 		case "<", "<=", ">", ">=", "==", "!=", "&&", "||":
 			return "bool"
@@ -1864,6 +1879,14 @@ func inferType(e Expr) string {
 			case "append":
 				if len(ex.Args) > 0 {
 					return inferType(ex.Args[0])
+				}
+			default:
+				if currentEnv != nil {
+					if t, err := currentEnv.GetVar(n.Name); err == nil {
+						if ft, ok := t.(types.FuncType); ok {
+							return dartType(ft.Return)
+						}
+					}
 				}
 			}
 		}

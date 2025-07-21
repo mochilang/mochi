@@ -8,7 +8,7 @@ class Pair {
 void main() {
   final List<int> nums = [1, 2, 3];
   final List<String> letters = ["A", "B"];
-  final List<Pair> pairs = [for (var n in nums) for (var l in letters) if (((n % 2) == 0)) Pair(n: n, l: l)];
+  final List<Pair> pairs = [for (var n in nums) for (var l in letters) if (n % 2 == 0) Pair(n: n, l: l)];
   print("--- Even pairs ---");
   for (var p in pairs) {
     print([p.n, p.l].join(" "));

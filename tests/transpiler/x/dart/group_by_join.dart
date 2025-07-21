@@ -24,7 +24,7 @@ void main() {
   var groups = <String, Map<String, dynamic>>{};
   for (var o in orders) {
   for (var c in customers) {
-      if (!((o.customerId == c.id))) continue;
+      if (!(o.customerId == c.id)) continue;
       var key = c.name;
       var ks = key.toString();
       var g = groups[ks];
@@ -47,4 +47,3 @@ void main() {
     print([s.name, "orders:", s.count].join(" "));
   }
 }
-

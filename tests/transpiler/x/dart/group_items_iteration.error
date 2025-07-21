@@ -1,0 +1,19 @@
+run: exit status 254
+../../../tests/transpiler/x/dart/group_items_iteration.dart:28:3: Error: A value of type 'List<dynamic>' can't be assigned to a variable of type 'List<Map<String, dynamic>>'.
+ - 'List' is from 'dart:core'.
+ - 'Map' is from 'dart:core'.
+})();;
+  ^
+../../../tests/transpiler/x/dart/group_items_iteration.dart:32:21: Error: The getter 'items' isn't defined for the class 'Map<String, dynamic>'.
+ - 'Map' is from 'dart:core'.
+Try correcting the name to the name of an existing getter, or defining a getter or field named 'items'.
+    for (var x in g.items) {
+                    ^^^^^
+../../../tests/transpiler/x/dart/group_items_iteration.dart:33:19: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    total = total + x.val;
+                  ^
+../../../tests/transpiler/x/dart/group_items_iteration.dart:35:30: Error: The getter 'key' isn't defined for the class 'Map<String, dynamic>'.
+ - 'Map' is from 'dart:core'.
+Try correcting the name to the name of an existing getter, or defining a getter or field named 'key'.
+    tmp = [...tmp, {"tag": g.key, "total": total}];
+                             ^^^

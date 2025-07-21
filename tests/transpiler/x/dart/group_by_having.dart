@@ -28,7 +28,7 @@ void main() {
   var _list = groups.values.toList();
   var res = <dynamic>[];
   for (var g in _list) {
-    if ((g.items.length >= 4)) {
+    if (g.items.length >= 4) {
       res.add(Big(city: g.key, num: g.items.length));
     }
   }
