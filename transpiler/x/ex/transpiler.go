@@ -1308,6 +1308,77 @@ func compileQueryExpr(q *parser.QueryExpr, env *types.Env) (Expr, error) {
 		}
 		return &GroupBySortExpr{Var: q.Var, Source: src, Key: key, Name: q.Group.Name, Sort: sortExpr, Select: sel}, nil
 	}
+
+	if q.Group != nil && len(q.Group.Exprs) == 1 && (len(q.Froms) > 0 || len(q.Joins) > 0) && q.Sort == nil && q.Skip == nil && q.Take == nil && !q.Distinct {
+		gens := []CompGen{{Var: q.Var, Src: src}}
+		child := types.NewEnv(env)
+		child.SetVar(q.Var, types.AnyType{}, true)
+		varNames := []string{q.Var}
+		var filt Expr
+		for _, f := range q.Froms {
+			fe, err := compileExpr(f.Src, child)
+			if err != nil {
+				return nil, err
+			}
+			child.SetVar(f.Var, types.AnyType{}, true)
+			varNames = append(varNames, f.Var)
+			gens = append(gens, CompGen{Var: f.Var, Src: fe})
+		}
+		for _, j := range q.Joins {
+			if j.Side != nil {
+				return nil, fmt.Errorf("join side not supported")
+			}
+			je, err := compileExpr(j.Src, child)
+			if err != nil {
+				return nil, err
+			}
+			child.SetVar(j.Var, types.AnyType{}, true)
+			varNames = append(varNames, j.Var)
+			gens = append(gens, CompGen{Var: j.Var, Src: je})
+			if j.On != nil {
+				onExpr, err := compileExpr(j.On, child)
+				if err != nil {
+					return nil, err
+				}
+				if onExpr != nil {
+					if filt == nil {
+						filt = onExpr
+					} else {
+						filt = &BinaryExpr{Left: filt, Op: "&&", Right: onExpr}
+					}
+				}
+			}
+		}
+		if q.Where != nil {
+			filt, err = compileExpr(q.Where, child)
+			if err != nil {
+				return nil, err
+			}
+		}
+		items := make([]MapItem, len(varNames))
+		for i, name := range varNames {
+			items[i] = MapItem{Key: &AtomLit{Name: name}, Value: &VarRef{Name: name}}
+		}
+		body := &MapLit{Items: items}
+		comp := &Comprehension{Gens: gens, Filter: filt, Body: body}
+
+		key, err := compileExpr(q.Group.Exprs[0], child)
+		if err != nil {
+			return nil, err
+		}
+		genv := types.NewEnv(env)
+		genv.SetVar(q.Group.Name, types.GroupType{Key: types.AnyType{}, Elem: types.AnyType{}}, true)
+		sel, err := compileExpr(q.Select, genv)
+		if err != nil {
+			return nil, err
+		}
+		patParts := make([]string, len(varNames))
+		for i, n := range varNames {
+			patParts[i] = fmt.Sprintf("%s: %s", n, n)
+		}
+		pattern := fmt.Sprintf("%%{%s}", strings.Join(patParts, ", "))
+		return &GroupByExpr{Var: pattern, Source: comp, Key: key, Name: q.Group.Name, Select: sel}, nil
+	}
 	gens := []CompGen{{Var: q.Var, Src: src}}
 	child := types.NewEnv(env)
 	child.SetVar(q.Var, types.AnyType{}, true)
