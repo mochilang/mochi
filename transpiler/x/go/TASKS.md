@@ -1,3 +1,12 @@
+## Progress (2025-07-22 05:19 +0700)
+- Commit 2357fb0f4: transpiler: improve go and python outputs
+- Regenerated golden files - 92/101 vm valid programs passing
+- Added go_auto support and updated README
+
+## Progress (2025-07-22 04:52 +0700)
+- Improve Python group_by
+- Regenerated golden files - 92/101 vm valid programs passing
+
 ## Progress (2025-07-22 00:28 +0700)
 - go transpiler: support group query sorting
 - Regenerated golden files - 92/101 vm valid programs passing

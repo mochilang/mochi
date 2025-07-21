@@ -3239,15 +3239,7 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 					outArgs[i] = a
 				}
 			}
-			if len(outArgs) == 1 {
-				return &CallExpr{Func: &Name{Name: "print"}, Args: outArgs}, nil
-			}
-			var parts []string
-			for _, a := range outArgs {
-				parts = append(parts, exprString(a))
-			}
-			code := fmt.Sprintf("print(\" \".join(str(x) for x in [%s]).rstrip())", strings.Join(parts, ", "))
-			return &RawExpr{Code: code}, nil
+			return &CallExpr{Func: &Name{Name: "print"}, Args: outArgs}, nil
 		case "append":
 			if len(args) == 2 {
 				return &BinaryExpr{Left: args[0], Op: "+", Right: &ListLit{Elems: []Expr{args[1]}}}, nil

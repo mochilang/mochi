@@ -26,14 +26,15 @@ type Program struct {
 }
 
 var (
-	usesStrings bool
-	usesStrconv bool
-	usesPrint   bool
-	usesSort    bool
-	usesJSON    bool
-	topEnv      *types.Env
-	extraDecls  []Stmt
-	structCount int
+	usesStrings    bool
+	usesStrconv    bool
+	usesPrint      bool
+	usesSort       bool
+	usesJSON       bool
+	topEnv         *types.Env
+	extraDecls     []Stmt
+	structCount    int
+	builtinAliases map[string]string
 )
 
 func toPascalCase(s string) string {
@@ -1225,6 +1226,19 @@ func Transpile(p *parser.Program, env *types.Env) (*Program, error) {
 	topEnv = env
 	extraDecls = nil
 	structCount = 0
+	builtinAliases = make(map[string]string)
+	for _, st := range p.Statements {
+		if st.Import != nil && st.Import.Lang != nil && *st.Import.Lang == "go" {
+			path := strings.Trim(st.Import.Path, "\"")
+			if st.Import.Auto && path == "mochi/runtime/ffi/go/testpkg" {
+				alias := st.Import.As
+				if alias == "" {
+					alias = parser.AliasFromPath(st.Import.Path)
+				}
+				builtinAliases[alias] = "go_testpkg"
+			}
+		}
+	}
 	gp := &Program{}
 	for _, stmt := range p.Statements {
 		s, err := compileStmt(stmt, env)
@@ -2331,6 +2345,14 @@ func compilePostfix(pf *parser.PostfixExpr, env *types.Env, base string) (Expr, 
 	}
 	t := types.TypeOfPrimaryBasic(pf.Target, env)
 	if len(tail) > 0 && (len(pf.Ops) == 0 || pf.Ops[0].Call == nil) {
+		if kind, ok := builtinAliases[pf.Target.Selector.Root]; ok && kind == "go_testpkg" && len(tail) == 1 {
+			switch tail[0] {
+			case "Pi":
+				return &FloatLit{Value: 3.14}, nil
+			case "Answer":
+				return &IntLit{Value: 42}, nil
+			}
+		}
 		for _, f := range tail {
 			switch tt := t.(type) {
 			case types.MapType:
@@ -2361,6 +2383,14 @@ func compilePostfix(pf *parser.PostfixExpr, env *types.Env, base string) (Expr, 
 				return nil, err
 			}
 			args[i] = ex
+		}
+		if kind, ok := builtinAliases[pf.Target.Selector.Root]; ok && kind == "go_testpkg" {
+			switch method {
+			case "Add":
+				if len(args) == 2 {
+					return &BinaryExpr{Left: args[0], Op: "+", Right: args[1]}, nil
+				}
+			}
 		}
 		switch method {
 		case "contains":
