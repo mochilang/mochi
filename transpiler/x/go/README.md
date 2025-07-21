@@ -32,7 +32,7 @@ Checklist:
 - [x] group_by
 - [ ] group_by_conditional_sum
 - [x] group_by_having
-- [ ] group_by_join
+- [x] group_by_join
 - [ ] group_by_left_join
 - [ ] group_by_multi_join
 - [ ] group_by_multi_join_sort
@@ -55,7 +55,7 @@ Checklist:
 - [x] list_assign
 - [x] list_index
 - [x] list_nested_assign
-- [x] list_set_ops
+- [ ] list_set_ops
 - [ ] load_yaml
 - [x] map_assign
 - [x] map_in_operator

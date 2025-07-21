@@ -1,0 +1,3 @@
+exit status 1
+# command-line-arguments
+../../../tests/transpiler/x/go/group_by_left_join.go:74:11: r.O undefined (type map[string]any has no field or method O)
