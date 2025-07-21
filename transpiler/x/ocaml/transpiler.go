@@ -143,8 +143,9 @@ func (p *Program) UsesStrModule() bool {
 }
 
 type VarInfo struct {
-	typ string
-	ref bool
+	typ   string
+	ref   bool
+	group bool
 }
 
 // Stmt can emit itself as OCaml code.
@@ -740,6 +741,42 @@ func emitQueryLoop(w io.Writer, loops []queryLoop, sel Expr, idx int) {
 
 func (q *QueryExpr) emit(w io.Writer)      { emitQueryLoop(w, q.Loops, q.Select, 0) }
 func (q *QueryExpr) emitPrint(w io.Writer) { q.emit(w) }
+
+// GroupByQueryExpr represents a query with a grouping step.
+type GroupByQueryExpr struct {
+	Source Expr
+	Var    string
+	Key    Expr
+	Into   string
+	Select Expr
+}
+
+func (g *GroupByQueryExpr) emit(w io.Writer) {
+	io.WriteString(w, "(let __groups0 = ref [] in\n")
+	io.WriteString(w, "  List.iter (fun ")
+	io.WriteString(w, g.Var)
+	io.WriteString(w, " ->\n")
+	io.WriteString(w, "    let key = ")
+	g.Key.emit(w)
+	io.WriteString(w, " in\n")
+	io.WriteString(w, "    let cur = try List.assoc key !__groups0 with Not_found -> [] in\n")
+	fmt.Fprintf(w, "    __groups0 := (key, %s :: cur) :: List.remove_assoc key !__groups0;\n", g.Var)
+	io.WriteString(w, "  ) ")
+	g.Source.emit(w)
+	io.WriteString(w, ";\n")
+	io.WriteString(w, "  let __res0 = ref [] in\n")
+	io.WriteString(w, "  List.iter (fun (")
+	io.WriteString(w, g.Into+"_key, "+g.Into+"_items")
+	io.WriteString(w, ") ->\n")
+	fmt.Fprintf(w, "    let %s = List.rev %s_items in\n", g.Into, g.Into)
+	io.WriteString(w, "    __res0 := ")
+	g.Select.emit(w)
+	io.WriteString(w, " :: !__res0\n")
+	io.WriteString(w, "  ) !__groups0;\n")
+	io.WriteString(w, "  List.rev !__res0)")
+}
+
+func (g *GroupByQueryExpr) emitPrint(w io.Writer) { g.emit(w) }
 
 // InExpr represents `item in collection`.
 type InExpr struct {
@@ -1548,9 +1585,19 @@ func convertPostfix(p *parser.PostfixExpr, env *types.Env, vars map[string]VarIn
 		root := &Name{Ident: p.Target.Selector.Root, Typ: info.typ, Ref: info.ref}
 		return &StringContainsBuiltin{Str: root, Sub: arg}, "bool", nil
 	}
-	expr, typ, err := convertPrimary(p.Target, env, vars)
-	if err != nil {
-		return nil, "", err
+	var expr Expr
+	var typ string
+	var err error
+	if p.Target.Selector != nil {
+		expr, typ, err = convertSelector(p.Target.Selector, env, vars)
+		if err != nil {
+			return nil, "", err
+		}
+	} else {
+		expr, typ, err = convertPrimary(p.Target, env, vars)
+		if err != nil {
+			return nil, "", err
+		}
 	}
 	for i := 0; i < len(p.Ops); {
 		op := p.Ops[i]
@@ -1575,6 +1622,14 @@ func convertPostfix(p *parser.PostfixExpr, env *types.Env, vars map[string]VarIn
 			i += 2
 			continue
 		case op.Field != nil:
+			if name, ok := expr.(*Name); ok {
+				if info, ok := vars[name.Ident]; ok && info.group && op.Field.Name == "key" {
+					expr = &Name{Ident: name.Ident + "_key", Typ: "string"}
+					typ = "string"
+					i++
+					continue
+				}
+			}
 			key := &StringLit{Value: op.Field.Name}
 			expr = &MapIndexExpr{Map: expr, Key: key, Typ: "int"}
 			typ = "int"
@@ -1631,6 +1686,23 @@ func convertPostfix(p *parser.PostfixExpr, env *types.Env, vars map[string]VarIn
 	return expr, typ, nil
 }
 
+func convertSelector(sel *parser.SelectorExpr, env *types.Env, vars map[string]VarInfo) (Expr, string, error) {
+	info := vars[sel.Root]
+	expr := Expr(&Name{Ident: sel.Root, Typ: info.typ, Ref: info.ref})
+	typ := info.typ
+	for _, t := range sel.Tail {
+		if info.group && t == "key" {
+			expr = &Name{Ident: sel.Root + "_key", Typ: "string"}
+			typ = "string"
+			continue
+		}
+		key := &StringLit{Value: t}
+		expr = &MapIndexExpr{Map: expr, Key: key, Typ: "int"}
+		typ = "int"
+	}
+	return expr, typ, nil
+}
+
 func convertPrimary(p *parser.Primary, env *types.Env, vars map[string]VarInfo) (Expr, string, error) {
 	switch {
 	case p.Lit != nil:
@@ -1660,6 +1732,9 @@ func convertPrimary(p *parser.Primary, env *types.Env, vars map[string]VarInfo) 
 			if err != nil {
 				return nil, "", err
 			}
+			if n, ok := k.(*Name); ok {
+				k = &StringLit{Value: n.Ident}
+			}
 			v, _, err := convertExpr(it.Value, env, vars)
 			if err != nil {
 				return nil, "", err
@@ -1680,6 +1755,7 @@ func convertPrimary(p *parser.Primary, env *types.Env, vars map[string]VarInfo) 
 			info := vars[p.Selector.Root]
 			return &Name{Ident: p.Selector.Root, Typ: info.typ, Ref: info.ref}, info.typ, nil
 		}
+		return convertSelector(p.Selector, env, vars)
 	}
 	return nil, "", fmt.Errorf("unsupported expression")
 }
@@ -1807,6 +1883,26 @@ func convertQueryExpr(q *parser.QueryExpr, env *types.Env, vars map[string]VarIn
 		qVars[k] = v
 	}
 	qVars[q.Var] = VarInfo{typ: "map"}
+	if q.Group != nil {
+		if len(q.Froms) > 0 || len(q.Joins) > 0 || q.Where != nil || q.Sort != nil || q.Skip != nil || q.Take != nil {
+			return nil, fmt.Errorf("group by: unsupported query form")
+		}
+		keyExpr, _, err := convertExpr(q.Group.Exprs[0], env, qVars)
+		if err != nil {
+			return nil, err
+		}
+		gVars := map[string]VarInfo{}
+		for k, v := range qVars {
+			gVars[k] = v
+		}
+		gVars[q.Group.Name] = VarInfo{typ: "list", group: true}
+		gVars[q.Group.Name+"Key"] = VarInfo{typ: "string"}
+		sel, _, err := convertExpr(q.Select, env, gVars)
+		if err != nil {
+			return nil, err
+		}
+		return &GroupByQueryExpr{Source: src, Var: q.Var, Key: keyExpr, Into: q.Group.Name, Select: sel}, nil
+	}
 	for _, f := range q.Froms {
 		fs, _, err := convertExpr(f.Src, env, vars)
 		if err != nil {
