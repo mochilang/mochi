@@ -2,9 +2,9 @@
 
 This experimental transpiler converts a subset of Mochi into readable Rust code.
 Generated sources for the golden tests live under `tests/transpiler/x/rs`.
-Last updated: 2025-07-21 23:34 +0700
+Last updated: 2025-07-22 05:36 +0700
 
-## VM Golden Test Checklist (97/100)
+## VM Golden Test Checklist (99/101)
 - [x] append_builtin.mochi
 - [x] avg_builtin.mochi
 - [x] basic_compare.mochi
@@ -35,6 +35,7 @@ Last updated: 2025-07-21 23:34 +0700
 - [x] group_by_left_join.mochi
 - [x] group_by_multi_join.mochi
 - [x] group_by_multi_join_sort.mochi
+- [ ] group_by_multi_sort.mochi
 - [x] group_by_sort.mochi
 - [x] group_items_iteration.mochi
 - [x] if_else.mochi
@@ -76,7 +77,7 @@ Last updated: 2025-07-21 23:34 +0700
 - [x] pure_fold.mochi
 - [x] pure_global_fold.mochi
 - [x] python_auto.mochi
-- [ ] python_math.mochi
+- [x] python_math.mochi
 - [x] query_sum_select.mochi
 - [x] record_assign.mochi
 - [x] right_join.mochi
@@ -100,7 +101,7 @@ Last updated: 2025-07-21 23:34 +0700
 - [x] typed_let.mochi
 - [x] typed_var.mochi
 - [x] unary_neg.mochi
-- [ ] update_stmt.mochi
+- [x] update_stmt.mochi
 - [x] user_type_literal.mochi
 - [x] values_builtin.mochi
 - [x] var_assignment.mochi

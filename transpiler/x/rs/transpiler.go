@@ -11,6 +11,7 @@ import (
 	"os/exec"
 	"path/filepath"
 	"sort"
+	"strconv"
 	"strings"
 	"time"
 
@@ -34,6 +35,7 @@ var structForList map[*parser.ListLiteral]string
 var curEnv *types.Env
 var structTypes map[string]types.StructType
 var cloneVars map[string]bool
+var useMath bool
 
 func VarTypes() map[string]string { return varTypes }
 
@@ -46,6 +48,15 @@ type Program struct {
 }
 
 type Stmt interface{ emit(io.Writer) }
+
+type MultiStmt struct{ Stmts []Stmt }
+
+func (m *MultiStmt) emit(w io.Writer) {
+	for _, s := range m.Stmts {
+		s.emit(w)
+		io.WriteString(w, "\n")
+	}
+}
 
 // Expr represents an expression node.
 type Expr interface{ emit(io.Writer) }
@@ -98,7 +109,13 @@ func (p *PrintExpr) emit(w io.Writer) {
 			a.emit(w)
 			io.WriteString(w, " { 1 } else { 0 }")
 		} else {
-			a.emit(w)
+			if inferType(a) == "f64" {
+				io.WriteString(w, "format!(\"{:?}\", ")
+				a.emit(w)
+				io.WriteString(w, ")")
+			} else {
+				a.emit(w)
+			}
 		}
 	}
 	if p.Trim {
@@ -402,6 +419,11 @@ type FieldExpr struct {
 }
 
 func (f *FieldExpr) emit(w io.Writer) {
+	if nr, ok := f.Receiver.(*NameRef); ok && nr.Name == "math" {
+		io.WriteString(w, "math::")
+		io.WriteString(w, f.Name)
+		return
+	}
 	if strings.HasPrefix(inferType(f.Receiver), "HashMap<") {
 		f.Receiver.emit(w)
 		fmt.Fprintf(w, "[\"%s\"]", f.Name)
@@ -437,9 +459,14 @@ type MethodCallExpr struct {
 }
 
 func (m *MethodCallExpr) emit(w io.Writer) {
-	m.Receiver.emit(w)
-	io.WriteString(w, ".")
-	io.WriteString(w, m.Name)
+	if nr, ok := m.Receiver.(*NameRef); ok && nr.Name == "math" {
+		io.WriteString(w, "math::")
+		io.WriteString(w, m.Name)
+	} else {
+		m.Receiver.emit(w)
+		io.WriteString(w, ".")
+		io.WriteString(w, m.Name)
+	}
 	io.WriteString(w, "(")
 	for i, a := range m.Args {
 		if i > 0 {
@@ -1234,6 +1261,7 @@ func (fs *ForStmt) emit(w io.Writer) {}
 func Transpile(p *parser.Program, env *types.Env) (*Program, error) {
 	usesHashMap = false
 	usesGroup = false
+	useMath = false
 	mapVars = make(map[string]bool)
 	stringVars = make(map[string]bool)
 	groupVars = make(map[string]bool)
@@ -1481,10 +1509,22 @@ func compileStmt(stmt *parser.Statement) (Stmt, error) {
 		return compileWhileStmt(stmt.While)
 	case stmt.For != nil:
 		return compileForStmt(stmt.For)
+	case stmt.Update != nil:
+		return compileUpdateStmt(stmt.Update)
 	case stmt.Break != nil:
 		return &BreakStmt{}, nil
 	case stmt.Continue != nil:
 		return &ContinueStmt{}, nil
+	case stmt.ExternVar != nil:
+		if stmt.ExternVar.Root == "math" {
+			useMath = true
+		}
+		return nil, nil
+	case stmt.ExternFun != nil:
+		if stmt.ExternFun.Root == "math" {
+			useMath = true
+		}
+		return nil, nil
 	case stmt.Type != nil:
 		return compileTypeStmt(stmt.Type)
 	case stmt.Test == nil && stmt.Import == nil && stmt.Type == nil:
@@ -1607,6 +1647,81 @@ func compileForStmt(n *parser.ForStmt) (Stmt, error) {
 		}
 	}
 	return &ForStmt{Var: n.Name, Iter: iter, End: end, Body: body, ByRef: byRef}, nil
+}
+
+func compileUpdateStmt(u *parser.UpdateStmt) (Stmt, error) {
+	idxVar := "_i"
+	start := &NumberLit{Value: "0"}
+	end := &LenExpr{Arg: &NameRef{Name: u.Target}}
+
+	var st types.StructType
+	if curEnv != nil {
+		if t, err := curEnv.GetVar(u.Target); err == nil {
+			if lt, ok := t.(types.ListType); ok {
+				if s, ok := lt.Elem.(types.StructType); ok {
+					st = s
+				}
+			}
+		}
+	}
+	orig := curEnv
+	var fieldDecls []Stmt
+	if st.Name != "" {
+		child := types.NewEnv(curEnv)
+		for _, f := range st.Order {
+			child.SetVar(f, st.Fields[f], true)
+			varTypes[f] = rustTypeFromType(st.Fields[f])
+			expr := Expr(&FieldExpr{Receiver: &IndexExpr{Target: &NameRef{Name: u.Target}, Index: &NameRef{Name: idxVar}}, Name: f})
+			vt := rustTypeFromType(st.Fields[f])
+			if vt == "String" {
+				expr = &MethodCallExpr{Receiver: expr, Name: "clone"}
+			}
+			fieldDecls = append(fieldDecls, &VarDecl{Name: f, Expr: expr, Type: vt})
+		}
+		curEnv = child
+	}
+
+	updates := make([]Stmt, 0, len(u.Set.Items))
+	for _, it := range u.Set.Items {
+		field, _ := identName(it.Key)
+		val, err := compileExpr(it.Value)
+		if err != nil {
+			curEnv = orig
+			return nil, err
+		}
+		if st.Name != "" {
+			if ft, ok := st.Fields[field]; ok {
+				if rustTypeFromType(ft) == "String" {
+					val = &StringCastExpr{Expr: val}
+				}
+			}
+		}
+		target := &FieldExpr{Receiver: &IndexExpr{Target: &NameRef{Name: u.Target}, Index: &NameRef{Name: idxVar}}, Name: field}
+		updates = append(updates, &IndexAssignStmt{Target: target, Value: val})
+	}
+
+	var cond Expr
+	var err error
+	if u.Where != nil {
+		cond, err = compileExpr(u.Where)
+		if err != nil {
+			curEnv = orig
+			return nil, err
+		}
+	}
+
+	curEnv = orig
+
+	var body []Stmt
+	body = append(body, fieldDecls...)
+	if cond != nil {
+		body = append(body, &IfStmt{Cond: cond, Then: updates})
+	} else {
+		body = append(body, updates...)
+	}
+	loop := &ForStmt{Var: idxVar, Iter: start, End: end, Body: body}
+	decl := &VarDecl{Name: u.Target, Expr: &NameRef{Name: u.Target}, Mutable: true}
+	return &MultiStmt{Stmts: []Stmt{decl, loop}}, nil
 }
 
 func compileTypeStmt(t *parser.TypeDecl) (Stmt, error) {
@@ -2393,7 +2508,11 @@ func compileLiteral(l *parser.Literal) (Expr, error) {
 	case l.Int != nil:
 		return &NumberLit{Value: fmt.Sprintf("%d", *l.Int)}, nil
 	case l.Float != nil:
-		return &NumberLit{Value: fmt.Sprintf("%g", *l.Float)}, nil
+		val := strconv.FormatFloat(*l.Float, 'f', -1, 64)
+		if !strings.ContainsAny(val, ".eE") {
+			val += ".0"
+		}
+		return &NumberLit{Value: val}, nil
 	case l.Bool != nil:
 		return &BoolLit{Value: bool(*l.Bool)}, nil
 	default:
@@ -2531,7 +2650,13 @@ func inferType(e Expr) string {
 		case "contains":
 			return "bool"
 		}
+		if nr, ok := ex.Receiver.(*NameRef); ok && nr.Name == "math" {
+			return "f64"
+		}
 	case *FieldExpr:
+		if nr, ok := ex.Receiver.(*NameRef); ok && nr.Name == "math" {
+			return "f64"
+		}
 		rt := inferType(ex.Receiver)
 		if st, ok := structTypes[rt]; ok {
 			if ft, okf := st.Fields[ex.Name]; okf {
@@ -2555,6 +2680,9 @@ func rustType(t string) string {
 		return "bool"
 	case "string":
 		return "String"
+	}
+	if _, ok := structTypes[t]; ok {
+		return t
 	}
 	return "i64"
 }
@@ -2791,6 +2919,10 @@ func writeStmt(buf *bytes.Buffer, s Stmt, indent int) {
 		writeWhileStmt(buf, st, indent)
 	case *ForStmt:
 		writeForStmt(buf, st, indent)
+	case *MultiStmt:
+		for _, ms := range st.Stmts {
+			writeStmt(buf, ms, indent)
+		}
 	case *SaveStmt:
 		st.emit(buf)
 	case *BreakStmt, *ContinueStmt:
@@ -2877,6 +3009,16 @@ func Emit(prog *Program) []byte {
 	buf.WriteString(header())
 	if prog.UsesHashMap {
 		buf.WriteString("use std::collections::HashMap;\n")
+	}
+	if useMath {
+		buf.WriteString("mod math {\n")
+		buf.WriteString("    pub const pi: f64 = std::f64::consts::PI;\n")
+		buf.WriteString("    pub const e: f64 = std::f64::consts::E;\n")
+		buf.WriteString("    pub fn sqrt(x: f64) -> f64 { x.sqrt() }\n")
+		buf.WriteString("    pub fn pow(x: f64, y: f64) -> f64 { x.powf(y) }\n")
+		buf.WriteString("    pub fn sin(x: f64) -> f64 { x.sin() }\n")
+		buf.WriteString("    pub fn log(x: f64) -> f64 { x.ln() }\n")
+		buf.WriteString("}\n")
 	}
 	if prog.UsesGroup {
 		buf.WriteString("#[derive(Clone)]\nstruct Group<K, V> { key: K, items: Vec<V> }\n")
@@ -3126,4 +3268,25 @@ func extractSaveExpr(e *parser.Expr) *parser.SaveExpr {
 		return nil
 	}
 	return p.Target.Save
+}
+
+func identName(e *parser.Expr) (string, bool) {
+	if e == nil {
+		return "", false
+	}
+	if len(e.Binary.Right) != 0 {
+		return "", false
+	}
+	u := e.Binary.Left
+	if len(u.Ops) != 0 {
+		return "", false
+	}
+	p := u.Value
+	if len(p.Ops) != 0 {
+		return "", false
+	}
+	if p.Target.Selector != nil && len(p.Target.Selector.Tail) == 0 {
+		return p.Target.Selector.Root, true
+	}
+	return "", false
 }
