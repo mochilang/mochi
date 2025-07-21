@@ -1,91 +1,91 @@
-// Generated 2025-07-21 18:37 +0700
+// Generated 2025-07-21 19:34 +0700
 
 type Anon1 = {
-    mutable n_nationkey: int
-    mutable n_name: string
+    n_nationkey: int
+    n_name: string
 }
 type Anon2 = {
-    mutable n_nationkey: int
-    mutable n_name: string
+    n_nationkey: int
+    n_name: string
 }
 type Anon3 = {
-    mutable c_custkey: int
-    mutable c_name: string
-    mutable c_acctbal: float
-    mutable c_nationkey: int
-    mutable c_address: string
-    mutable c_phone: string
-    mutable c_comment: string
+    c_custkey: int
+    c_name: string
+    c_acctbal: float
+    c_nationkey: int
+    c_address: string
+    c_phone: string
+    c_comment: string
 }
 type Anon4 = {
-    mutable c_custkey: int
-    mutable c_name: string
-    mutable c_acctbal: float
-    mutable c_nationkey: int
-    mutable c_address: string
-    mutable c_phone: string
-    mutable c_comment: string
+    c_custkey: int
+    c_name: string
+    c_acctbal: float
+    c_nationkey: int
+    c_address: string
+    c_phone: string
+    c_comment: string
 }
 type Anon5 = {
-    mutable o_orderkey: int
-    mutable o_custkey: int
-    mutable o_orderdate: string
+    o_orderkey: int
+    o_custkey: int
+    o_orderdate: string
 }
 type Anon6 = {
-    mutable o_orderkey: int
-    mutable o_custkey: int
-    mutable o_orderdate: string
+    o_orderkey: int
+    o_custkey: int
+    o_orderdate: string
 }
 type Anon7 = {
-    mutable l_orderkey: int
-    mutable l_returnflag: string
-    mutable l_extendedprice: float
-    mutable l_discount: float
+    l_orderkey: int
+    l_returnflag: string
+    l_extendedprice: float
+    l_discount: float
 }
 type Anon8 = {
-    mutable l_orderkey: int
-    mutable l_returnflag: string
-    mutable l_extendedprice: float
-    mutable l_discount: float
+    l_orderkey: int
+    l_returnflag: string
+    l_extendedprice: float
+    l_discount: float
 }
 type Anon9 = {
-    mutable c_custkey: obj
-    mutable c_name: obj
-    mutable c_acctbal: obj
-    mutable c_address: obj
-    mutable c_phone: obj
-    mutable c_comment: obj
-    mutable n_name: obj
+    c_custkey: obj
+    c_name: obj
+    c_acctbal: obj
+    c_address: obj
+    c_phone: obj
+    c_comment: obj
+    n_name: obj
 }
 type Anon10 = {
-    mutable c_custkey: obj
-    mutable c_name: obj
-    mutable revenue: float
-    mutable c_acctbal: obj
-    mutable n_name: obj
-    mutable c_address: obj
-    mutable c_phone: obj
-    mutable c_comment: obj
+    c_custkey: obj
+    c_name: obj
+    revenue: float
+    c_acctbal: obj
+    n_name: obj
+    c_address: obj
+    c_phone: obj
+    c_comment: obj
 }
 type Anon11 = {
-    mutable c: obj
-    mutable o: obj
-    mutable l: obj
-    mutable n: obj
+    c: Anon4
+    o: Anon6
+    l: Anon8
+    n: Anon2
 }
 type Anon12 = {
-    mutable key: obj
-    mutable items: Anon11 list
+    key: Anon9
+    items: Anon11 list
 }
 type Anon13 = {
-    mutable c_custkey: obj
-    mutable c_name: obj
-    mutable revenue: float
-    mutable c_acctbal: obj
-    mutable n_name: obj
-    mutable c_address: obj
-    mutable c_phone: obj
-    mutable c_comment: obj
+    c_custkey: obj
+    c_name: obj
+    revenue: float
+    c_acctbal: obj
+    n_name: obj
+    c_address: obj
+    c_phone: obj
+    c_comment: obj
 }
 let nation: Anon2 list = [{ n_nationkey = 1; n_name = "BRAZIL" }]
 let customer: Anon4 list = [{ c_custkey = 1; c_name = "Alice"; c_acctbal = 100.0; c_nationkey = 1; c_address = "123 St"; c_phone = "123-456"; c_comment = "Loyal" }]
