@@ -1816,34 +1816,42 @@ func convertPostfix(env *types.Env, pf *parser.PostfixExpr) (Expr, error) {
 				}
 				expr = &CallExpr{Name: t.Name, Args: args}
 			case *SelectorExpr:
-				if len(t.Tail) == 1 && t.Tail[0] == "contains" {
-					if len(op.Call.Args) != 1 {
-						return nil, fmt.Errorf("contains expects 1 arg")
-					}
-					arg, err := convertExpr(env, op.Call.Args[0])
-					if err != nil {
-						return nil, err
-					}
-					currProg.NeedContains = true
-					expr = &ContainsExpr{Collection: &VarRef{Name: t.Root}, Value: arg, Kind: "list"}
-				} else {
-					return nil, fmt.Errorf("unsupported call target")
-				}
+                                if len(t.Tail) == 1 && t.Tail[0] == "contains" {
+                                        if len(op.Call.Args) != 1 {
+                                                return nil, fmt.Errorf("contains expects 1 arg")
+                                        }
+                                        arg, err := convertExpr(env, op.Call.Args[0])
+                                        if err != nil {
+                                                return nil, err
+                                        }
+                                        if typ, ok := currentVarTypes[t.Root]; ok && typ == "string" {
+                                                expr = &ContainsExpr{Collection: &VarRef{Name: t.Root}, Value: arg, Kind: "string"}
+                                        } else {
+                                                currProg.NeedContains = true
+                                                expr = &ContainsExpr{Collection: &VarRef{Name: t.Root}, Value: arg, Kind: "list"}
+                                        }
+                                } else {
+                                        return nil, fmt.Errorf("unsupported call target")
+                                }
 			default:
 				return nil, fmt.Errorf("unsupported call target")
 			}
-		case op.Field != nil && op.Field.Name == "contains" && i+1 < len(pf.Ops) && pf.Ops[i+1].Call != nil:
-			call := pf.Ops[i+1].Call
-			if len(call.Args) != 1 {
-				return nil, fmt.Errorf("contains expects 1 arg")
-			}
-			arg, err := convertExpr(env, call.Args[0])
-			if err != nil {
-				return nil, err
-			}
-			currProg.NeedContains = true
-			expr = &ContainsExpr{Collection: expr, Value: arg, Kind: "list"}
-			i++
+                case op.Field != nil && op.Field.Name == "contains" && i+1 < len(pf.Ops) && pf.Ops[i+1].Call != nil:
+                        call := pf.Ops[i+1].Call
+                        if len(call.Args) != 1 {
+                                return nil, fmt.Errorf("contains expects 1 arg")
+                        }
+                        arg, err := convertExpr(env, call.Args[0])
+                        if err != nil {
+                                return nil, err
+                        }
+                        if typ := inferType(expr); typ == "string" {
+                                expr = &ContainsExpr{Collection: expr, Value: arg, Kind: "string"}
+                        } else {
+                                currProg.NeedContains = true
+                                expr = &ContainsExpr{Collection: expr, Value: arg, Kind: "list"}
+                        }
+                        i++
 		case op.Index != nil && op.Index.Colon == nil && op.Index.Colon2 == nil:
 			idx, err := convertExpr(env, op.Index.Start)
 			if err != nil {
