@@ -28,6 +28,8 @@ var transpileEnv *types.Env
 var generatedTypes map[string]bool
 var prelude []Stmt
 var pythonMathAliases map[string]bool
+var structCounter int
+var structGenName map[string]string
 
 type Stmt interface {
 	emit(io.Writer)
@@ -249,7 +251,8 @@ type PrintExpr struct{ Args []Expr }
 
 // MapLit represents a map/object literal.
 type MapLit struct {
-	Entries []MapEntry
+	Entries  []MapEntry
+	TypeName string
 }
 
 // MapEntry is a key/value pair inside a MapLit.
@@ -613,7 +616,7 @@ func (f *FormatListExpr) emit(w io.Writer) {
 	io.WriteString(w, "\"[\" + ")
 	if f.Value != nil {
 		f.Value.emit(w)
-		io.WriteString(w, `.map(v => { if (typeof v === 'string') return '\'' + v + '\''; if (typeof v === 'number') return Number.isInteger(v) ? String(v) : String(v); if (typeof v === 'boolean') return v ? 'True' : 'False'; if (typeof v === 'object') { let s = JSON.stringify(v).replace(/"/g, '\'' ).replace(/:/g, ': ').replace(/,/g, ', ');`)
+		io.WriteString(w, `.map(v => { if (typeof v === 'string') return '\'' + v + '\''; if (typeof v === 'number') return Number.isInteger(v) ? String(v) : String(v); if (typeof v === 'boolean') return v ? 'True' : 'False'; if (typeof v === 'object') { if (v && v.__name) { const entries = Object.entries(v).filter(([k]) => k !== '__name'); return v.__name + ' {' + entries.map(([k,val]) => { if (typeof val === 'string') return k + ' = ' + '\'' + val + '\''; if (typeof val === 'number') return k + ' = ' + (Number.isInteger(val) ? String(val) : String(val)); if (typeof val === 'boolean') return k + ' = ' + (val ? 'True' : 'False'); return k + ' = ' + String(val); }).join(', ') + '}'; } let s = JSON.stringify(v).replace(/"/g, '\'' ).replace(/:/g, ': ').replace(/,/g, ', ');`)
 		if len(f.FloatFields) > 0 {
 			io.WriteString(w, ` s = s.replace(/'(`)
 			io.WriteString(w, strings.Join(f.FloatFields, "|"))
@@ -673,6 +676,12 @@ func (s *SubstringExpr) emit(w io.Writer) {
 
 func (m *MapLit) emit(w io.Writer) {
 	io.WriteString(w, "{")
+	if m.TypeName != "" {
+		fmt.Fprintf(w, "\"__name\": %q", m.TypeName)
+		if len(m.Entries) > 0 {
+			io.WriteString(w, ", ")
+		}
+	}
 	for i, e := range m.Entries {
 		if i > 0 {
 			io.WriteString(w, ", ")
@@ -1782,6 +1791,8 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	generatedTypes = map[string]bool{}
 	prelude = nil
 	pythonMathAliases = map[string]bool{}
+	structCounter = 0
+	structGenName = map[string]string{}
 	defer func() { transpileEnv = nil; generatedTypes = nil; prelude = nil; pythonMathAliases = nil }()
 	tsProg := &Program{}
 
@@ -2949,7 +2960,15 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 			}
 			entries[i] = MapEntry{Key: k, Value: v}
 		}
-		return &MapLit{Entries: entries}, nil
+		tname := ""
+		if transpileEnv != nil {
+			if st, ok := types.InferStructFromMapEnv(p.Map, transpileEnv); ok {
+				name := ensureNamedStruct(st, "Result")
+				st.Name = name
+				tname = structGenName[name]
+			}
+		}
+		return &MapLit{Entries: entries, TypeName: tname}, nil
 	case p.Load != nil:
 		format := parseFormat(p.Load.With)
 		path := ""
@@ -3153,6 +3172,12 @@ func tsType(t types.Type) string {
 
 func ensureNamedStruct(st types.StructType, hint string) string {
 	if st.Name != "" {
+		if structGenName != nil {
+			if _, ok := structGenName[st.Name]; !ok {
+				structCounter++
+				structGenName[st.Name] = fmt.Sprintf("GenType%d", structCounter)
+			}
+		}
 		return st.Name
 	}
 	name := types.UniqueStructName(strings.Title(hint), transpileEnv, nil)
@@ -3166,6 +3191,12 @@ func ensureNamedStruct(st types.StructType, hint string) string {
 		}
 		prelude = append(prelude, &InterfaceDecl{Name: name, Fields: fields})
 		generatedTypes[name] = true
+	}
+	if structGenName != nil {
+		if _, ok := structGenName[name]; !ok {
+			structCounter++
+			structGenName[name] = fmt.Sprintf("GenType%d", structCounter)
+		}
 	}
 	return name
 }
