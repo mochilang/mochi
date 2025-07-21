@@ -1,0 +1,9 @@
+run: exit status 254
+../../../tests/transpiler/x/dart/sort_stable.dart:10:87: Error: The getter 'n' isn't defined for the class 'String'.
+Try correcting the name to the name of an existing getter, or defining a getter or field named 'n'.
+  final List<String> result = (List.of([for (var i in items) i.v])..sort(((a, b) => a.n.compareTo(b.n))));
+                                                                                      ^
+../../../tests/transpiler/x/dart/sort_stable.dart:10:101: Error: The getter 'n' isn't defined for the class 'String'.
+Try correcting the name to the name of an existing getter, or defining a getter or field named 'n'.
+  final List<String> result = (List.of([for (var i in items) i.v])..sort(((a, b) => a.n.compareTo(b.n))));
+                                                                                                    ^

@@ -1,1 +1,21 @@
-run: exec: "dart": executable file not found in $PATH
+run: exit status 254
+../../../tests/transpiler/x/dart/update_stmt.dart:13:11: Error: The operator '[]' isn't defined for the class 'People'.
+ - 'People' is from '../../../tests/transpiler/x/dart/update_stmt.dart'.
+Try correcting the operator to an existing operator, or defining a '[]' operator.
+  if (item["age"] >= 18) {
+          ^
+../../../tests/transpiler/x/dart/update_stmt.dart:14:9: Error: The operator '[]=' isn't defined for the class 'People'.
+ - 'People' is from '../../../tests/transpiler/x/dart/update_stmt.dart'.
+Try correcting the operator to an existing operator, or defining a '[]=' operator.
+    item["status"] = "adult";
+        ^
+../../../tests/transpiler/x/dart/update_stmt.dart:15:23: Error: The operator '[]' isn't defined for the class 'People'.
+ - 'People' is from '../../../tests/transpiler/x/dart/update_stmt.dart'.
+Try correcting the operator to an existing operator, or defining a '[]' operator.
+    item["age"] = item["age"] + 1;
+                      ^
+../../../tests/transpiler/x/dart/update_stmt.dart:15:9: Error: The operator '[]=' isn't defined for the class 'People'.
+ - 'People' is from '../../../tests/transpiler/x/dart/update_stmt.dart'.
+Try correcting the operator to an existing operator, or defining a '[]=' operator.
+    item["age"] = item["age"] + 1;
+        ^

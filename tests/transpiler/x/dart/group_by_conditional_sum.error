@@ -1,0 +1,41 @@
+run: exit status 254
+../../../tests/transpiler/x/dart/group_by_conditional_sum.dart:30:27: Error: The getter 'key' isn't defined for the class 'Map<String, dynamic>'.
+ - 'Map' is from 'dart:core'.
+Try correcting the name to the name of an existing getter, or defining a getter or field named 'key'.
+  _list.sort(((a, b) => a.key.compareTo(b.key)));
+                          ^^^
+../../../tests/transpiler/x/dart/group_by_conditional_sum.dart:30:43: Error: The getter 'key' isn't defined for the class 'Map<String, dynamic>'.
+ - 'Map' is from 'dart:core'.
+Try correcting the name to the name of an existing getter, or defining a getter or field named 'key'.
+  _list.sort(((a, b) => a.key.compareTo(b.key)));
+                                          ^^^
+../../../tests/transpiler/x/dart/group_by_conditional_sum.dart:33:27: Error: The getter 'key' isn't defined for the class 'Map<String, dynamic>'.
+ - 'Map' is from 'dart:core'.
+Try correcting the name to the name of an existing getter, or defining a getter or field named 'key'.
+    res.add(Result(cat: g.key, share: [for (var x in g) x.flag ? x.val : 0].isEmpty ? 0 : ([for (var x in g) x.flag ? x.val : 0].reduce((a, b) => a + b)) / [for (var x in g) x.val].isEmpty ? 0 : ([for (var x in g) x.val].reduce((a, b) => a + b))));
+                          ^^^
+../../../tests/transpiler/x/dart/group_by_conditional_sum.dart:33:54: Error: The type 'Map<String, dynamic>' used in the 'for' loop must implement 'Iterable<dynamic>'.
+ - 'Map' is from 'dart:core'.
+ - 'Iterable' is from 'dart:core'.
+    res.add(Result(cat: g.key, share: [for (var x in g) x.flag ? x.val : 0].isEmpty ? 0 : ([for (var x in g) x.flag ? x.val : 0].reduce((a, b) => a + b)) / [for (var x in g) x.val].isEmpty ? 0 : ([for (var x in g) x.val].reduce((a, b) => a + b))));
+                                                     ^
+../../../tests/transpiler/x/dart/group_by_conditional_sum.dart:33:107: Error: The type 'Map<String, dynamic>' used in the 'for' loop must implement 'Iterable<dynamic>'.
+ - 'Map' is from 'dart:core'.
+ - 'Iterable' is from 'dart:core'.
+    res.add(Result(cat: g.key, share: [for (var x in g) x.flag ? x.val : 0].isEmpty ? 0 : ([for (var x in g) x.flag ? x.val : 0].reduce((a, b) => a + b)) / [for (var x in g) x.val].isEmpty ? 0 : ([for (var x in g) x.val].reduce((a, b) => a + b))));
+                                                                                                          ^
+../../../tests/transpiler/x/dart/group_by_conditional_sum.dart:33:172: Error: The type 'Map<String, dynamic>' used in the 'for' loop must implement 'Iterable<dynamic>'.
+ - 'Map' is from 'dart:core'.
+ - 'Iterable' is from 'dart:core'.
+    res.add(Result(cat: g.key, share: [for (var x in g) x.flag ? x.val : 0].isEmpty ? 0 : ([for (var x in g) x.flag ? x.val : 0].reduce((a, b) => a + b)) / [for (var x in g) x.val].isEmpty ? 0 : ([for (var x in g) x.val].reduce((a, b) => a + b))));
+                                                                                                                                                                           ^
+../../../tests/transpiler/x/dart/group_by_conditional_sum.dart:33:212: Error: The type 'Map<String, dynamic>' used in the 'for' loop must implement 'Iterable<dynamic>'.
+ - 'Map' is from 'dart:core'.
+ - 'Iterable' is from 'dart:core'.
+    res.add(Result(cat: g.key, share: [for (var x in g) x.flag ? x.val : 0].isEmpty ? 0 : ([for (var x in g) x.flag ? x.val : 0].reduce((a, b) => a + b)) / [for (var x in g) x.val].isEmpty ? 0 : ([for (var x in g) x.val].reduce((a, b) => a + b))));
+                                                                                                                                                                                                                   ^
+../../../tests/transpiler/x/dart/group_by_conditional_sum.dart:36:3: Error: A value of type 'List<dynamic>' can't be assigned to a variable of type 'List<Result>'.
+ - 'List' is from 'dart:core'.
+ - 'Result' is from '../../../tests/transpiler/x/dart/group_by_conditional_sum.dart'.
+})();;
+  ^

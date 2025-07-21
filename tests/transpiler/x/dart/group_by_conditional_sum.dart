@@ -30,7 +30,7 @@ void main() {
   _list.sort(((a, b) => a.key.compareTo(b.key)));
   var res = <dynamic>[];
   for (var g in _list) {
-    res.add(Result(cat: g.key, share: ([for (var x in g) x.flag ? x.val : 0].isEmpty ? 0 : ([for (var x in g) x.flag ? x.val : 0].reduce((a, b) => a + b)) / [for (var x in g) x.val].isEmpty ? 0 : ([for (var x in g) x.val].reduce((a, b) => a + b)))));
+    res.add(Result(cat: g.key, share: [for (var x in g) x.flag ? x.val : 0].isEmpty ? 0 : ([for (var x in g) x.flag ? x.val : 0].reduce((a, b) => a + b)) / [for (var x in g) x.val].isEmpty ? 0 : ([for (var x in g) x.val].reduce((a, b) => a + b))));
   }
   return res;
 })();;

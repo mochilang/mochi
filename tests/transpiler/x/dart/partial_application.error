@@ -1,0 +1,11 @@
+run: exit status 254
+../../../tests/transpiler/x/dart/partial_application.dart:7:23: Error: Too few positional arguments: 2 required, 1 given.
+  final int add5 = add(5);
+                      ^
+../../../tests/transpiler/x/dart/partial_application.dart:2:5: Context: Found this candidate, but the arguments don't match.
+num add(a, b) {
+    ^^^
+../../../tests/transpiler/x/dart/partial_application.dart:8:13: Error: The method 'call' isn't defined for the class 'int'.
+Try correcting the name to the name of an existing method, or defining a method named 'call'.
+  print(add5(3));
+            ^
