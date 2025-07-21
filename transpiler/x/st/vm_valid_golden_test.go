@@ -136,6 +136,8 @@ func updateReadme() {
 func updateTasks() {
 	root := repoRootDir(&testing.T{})
 	taskFile := filepath.Join(root, "transpiler", "x", "st", "TASKS.md")
+	srcDir := filepath.Join(root, "tests", "vm", "valid")
+	outDir := filepath.Join(root, "tests", "transpiler", "x", "st")
 	out, err := exec.Command("git", "log", "-1", "--format=%cI").Output()
 	ts := ""
 	if err == nil {
@@ -143,11 +145,22 @@ func updateTasks() {
 			ts = t.Format("02 Jan 2006 15:04 MST")
 		}
 	}
+	files, _ := filepath.Glob(filepath.Join(srcDir, "*.mochi"))
+	total := len(files)
+	compiled := 0
+	for _, f := range files {
+		name := strings.TrimSuffix(filepath.Base(f), ".mochi")
+		if _, err := os.Stat(filepath.Join(outDir, name+".out")); err == nil {
+			compiled++
+		}
+	}
+
 	var buf bytes.Buffer
 	buf.WriteString(fmt.Sprintf("## Progress (%s)\n", ts))
 	buf.WriteString("- VM valid golden test results updated\n")
-	buf.WriteString("- Added support for identifier keys in map literals so queries can \"select{n: n}\"\n")
-	buf.WriteString("- Implemented join queries with grouping; group_by_join and group_by_left_join now pass (64/100)\n\n")
+	buf.WriteString("- Grouping keys now allow maps and floats\n")
+	buf.WriteString("- Unary minus supports floats\n")
+	buf.WriteString(fmt.Sprintf("- group_by_multi_join_sort now passes (%d/%d)\n\n", compiled, total))
 	if data, err := os.ReadFile(taskFile); err == nil {
 		buf.Write(data)
 	}

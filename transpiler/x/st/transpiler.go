@@ -60,6 +60,15 @@ func keyString(v value) (string, error) {
 		return v.s, nil
 	case valInt:
 		return fmt.Sprintf("%d", v.i), nil
+	case valFloat:
+		return fmt.Sprintf("%g", v.f), nil
+	case valBool:
+		if v.b {
+			return "true", nil
+		}
+		return "false", nil
+	case valList, valMap:
+		return jsonString(v), nil
 	default:
 		return "", fmt.Errorf("invalid key type")
 	}
@@ -466,9 +475,12 @@ func evalUnary(u *parser.Unary, vars map[string]value) (value, error) {
 	for i := len(u.Ops) - 1; i >= 0; i-- {
 		switch u.Ops[i] {
 		case "-":
-			if v.kind == valInt {
+			switch v.kind {
+			case valInt:
 				v.i = -v.i
-			} else {
+			case valFloat:
+				v.f = -v.f
+			default:
 				return value{}, fmt.Errorf("bad unary")
 			}
 		case "!":
@@ -916,7 +928,86 @@ func identName(e *parser.Expr) (string, bool) {
 	return p.Selector.Root, true
 }
 
+func callName(e *parser.Expr) (string, []*parser.Expr, bool) {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) != 0 {
+		return "", nil, false
+	}
+	u := e.Binary.Left
+	if len(u.Ops) != 0 || u.Value == nil || u.Value.Target == nil || u.Value.Target.Call == nil {
+		return "", nil, false
+	}
+	c := u.Value.Target.Call
+	return c.Func, c.Args, true
+}
+
 func evalQueryExpr(q *parser.QueryExpr, vars map[string]value) (value, error) {
+	// handle simple aggregation without grouping
+	if q.Group == nil && len(q.Joins) == 0 && len(q.Froms) == 0 && q.Sort == nil && q.Skip == nil && q.Take == nil && !q.Distinct {
+		if name, args, ok := callName(q.Select); ok && len(args) == 1 {
+			src, err := evalExpr(q.Source, vars)
+			if err != nil {
+				return value{}, err
+			}
+			if src.kind != valList {
+				return value{}, fmt.Errorf("query source must be list")
+			}
+			var vals []value
+			for _, it := range src.list {
+				local := copyVars(vars)
+				local[q.Var] = it
+				if q.Where != nil {
+					cond, err := evalExpr(q.Where, local)
+					if err != nil {
+						return value{}, err
+					}
+					if cond.kind != valBool || !cond.b {
+						continue
+					}
+				}
+				v, err := evalExpr(args[0], local)
+				if err != nil {
+					return value{}, err
+				}
+				vals = append(vals, v)
+			}
+			switch name {
+			case "sum":
+				intTotal := 0
+				floatTotal := 0.0
+				hasFloat := false
+				for _, v := range vals {
+					switch v.kind {
+					case valInt:
+						intTotal += v.i
+					case valFloat:
+						hasFloat = true
+						floatTotal += v.f
+					default:
+						return value{}, fmt.Errorf("sum supports numeric list")
+					}
+				}
+				if hasFloat {
+					return value{kind: valFloat, f: floatTotal + float64(intTotal)}, nil
+				}
+				return value{kind: valInt, i: intTotal}, nil
+			case "count":
+				return value{kind: valInt, i: len(vals)}, nil
+			case "avg":
+				if len(vals) == 0 {
+					return value{kind: valFloat, f: 0}, nil
+				}
+				total := 0
+				for _, v := range vals {
+					if v.kind != valInt {
+						return value{}, fmt.Errorf("avg supports int list")
+					}
+					total += v.i
+				}
+				return value{kind: valFloat, f: float64(total) / float64(len(vals))}, nil
+			}
+		}
+	}
+
 	// handle group by form: FROM <src> GROUP BY <expr> INTO g SELECT ...
 	if q.Group != nil && len(q.Group.Exprs) == 1 && len(q.Froms) == 0 && len(q.Joins) == 0 && q.Skip == nil && q.Take == nil && !q.Distinct {
 		src, err := evalExpr(q.Source, vars)
