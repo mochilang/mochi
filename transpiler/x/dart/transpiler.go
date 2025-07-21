@@ -1605,23 +1605,27 @@ func isBlockStmt(s Stmt) bool {
 }
 
 func gatherTypes(p *Program) {
-	for _, st := range p.Stmts {
-		walkTypes(st)
-	}
+        for _, st := range p.Stmts {
+                walkTypes(st)
+        }
 }
 
 func walkTypes(s Stmt) {
 	switch st := s.(type) {
-	case *LetStmt:
-		nextStructHint = st.Name
-		inferType(st.Value)
-		nextStructHint = ""
-	case *VarStmt:
-		if st.Value != nil {
-			nextStructHint = st.Name
-			inferType(st.Value)
-			nextStructHint = ""
-		}
+       case *LetStmt:
+               nextStructHint = st.Name
+               typ := inferType(st.Value)
+               nextStructHint = ""
+               localVarTypes[st.Name] = typ
+       case *VarStmt:
+               if st.Value != nil {
+                       nextStructHint = st.Name
+                       typ := inferType(st.Value)
+                       nextStructHint = ""
+                       localVarTypes[st.Name] = typ
+               } else {
+                       localVarTypes[st.Name] = "var"
+               }
 	case *AssignStmt:
 		inferType(st.Value)
 		inferType(st.Target)
