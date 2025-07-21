@@ -1728,9 +1728,15 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 		}
 		entries := make([]MapEntry, len(p.Map.Items))
 		for i, it := range p.Map.Items {
-			k, err := compileExpr(it.Key)
-			if err != nil {
-				return nil, err
+			var k Expr
+			if ks, ok := types.SimpleStringKey(it.Key); ok {
+				k = &StringLit{Value: ks}
+			} else {
+				var err error
+				k, err = compileExpr(it.Key)
+				if err != nil {
+					return nil, err
+				}
 			}
 			v, err := compileExpr(it.Value)
 			if err != nil {
