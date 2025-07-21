@@ -105,6 +105,13 @@ func updateReadme() {
 	files, _ := filepath.Glob(filepath.Join(srcDir, "*.mochi"))
 	total := len(files)
 	compiled := 0
+	out, err := exec.Command("git", "log", "-1", "--format=%cI").Output()
+	ts := ""
+	if err == nil {
+		if t, perr := time.Parse(time.RFC3339, strings.TrimSpace(string(out))); perr == nil {
+			ts = t.Format("2006-01-02 15:04 MST")
+		}
+	}
 	var lines []string
 	for _, f := range files {
 		name := filepath.Base(f)
@@ -118,7 +125,7 @@ func updateReadme() {
 	var buf bytes.Buffer
 	buf.WriteString("# PHP Transpiler Output\n\n")
 	buf.WriteString("Generated PHP code from programs in `tests/vm/valid` lives in `tests/transpiler/x/php`.\n\n")
-	fmt.Fprintf(&buf, "## VM Golden Test Checklist (%d/%d)\n", compiled, total)
+	fmt.Fprintf(&buf, "## VM Golden Test Checklist (%d/%d) - updated %s\n", compiled, total, ts)
 	buf.WriteString(strings.Join(lines, "\n"))
 	buf.WriteString("\n")
 	_ = os.WriteFile(readmePath, buf.Bytes(), 0o644)
