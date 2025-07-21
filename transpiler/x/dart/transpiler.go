@@ -5,6 +5,7 @@ package dartt
 import (
 	"fmt"
 	"io"
+	"strconv"
 	"strings"
 
 	"mochi/ast"
@@ -663,6 +664,18 @@ func (s *StringLit) emit(w io.Writer) error {
 type IntLit struct{ Value int }
 
 func (i *IntLit) emit(w io.Writer) error { _, err := fmt.Fprintf(w, "%d", i.Value); return err }
+
+// FloatLit represents a floating point literal.
+type FloatLit struct{ Value float64 }
+
+func (f *FloatLit) emit(w io.Writer) error {
+	s := strconv.FormatFloat(f.Value, 'f', -1, 64)
+	if !strings.ContainsAny(s, ".eE") {
+		s += ".0"
+	}
+	_, err := io.WriteString(w, s)
+	return err
+}
 
 // BoolLit represents a boolean literal.
 type BoolLit struct{ Value bool }
@@ -1563,6 +1576,8 @@ func inferType(e Expr) string {
 	switch ex := e.(type) {
 	case *IntLit:
 		return "int"
+	case *FloatLit:
+		return "num"
 	case *BoolLit:
 		return "bool"
 	case *StringLit:
@@ -2743,6 +2758,8 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 		return &StringLit{Value: *p.Lit.Str}, nil
 	case p.Lit != nil && p.Lit.Int != nil:
 		return &IntLit{Value: int(*p.Lit.Int)}, nil
+	case p.Lit != nil && p.Lit.Float != nil:
+		return &FloatLit{Value: *p.Lit.Float}, nil
 	case p.List != nil:
 		var elems []Expr
 		for _, e := range p.List.Elems {
