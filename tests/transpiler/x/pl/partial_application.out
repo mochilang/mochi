@@ -1,0 +1,4 @@
+ERROR: /workspace/mochi/tests/transpiler/x/pl/partial_application.pl:2: Initialization goal raised exception:
+ERROR: main/0: Unknown procedure: add/2
+ERROR:   However, there are definitions for:
+ERROR:         add/3

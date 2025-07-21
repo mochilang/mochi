@@ -1,0 +1,4 @@
+false
+false
+ERROR: /workspace/mochi/tests/transpiler/x/pl/in_operator_extended.pl:2: Initialization goal raised exception:
+ERROR: get_dict/3: Type error: `dict' expected, found `{a:1}' (a compound)

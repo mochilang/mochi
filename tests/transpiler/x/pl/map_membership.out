@@ -1,0 +1,2 @@
+ERROR: /workspace/mochi/tests/transpiler/x/pl/map_membership.pl:2: Initialization goal raised exception:
+ERROR: get_dict/3: Type error: `dict' expected, found `{a:1,b:2}' (a compound)

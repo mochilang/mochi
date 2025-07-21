@@ -1,0 +1,2 @@
+ERROR: /workspace/mochi/tests/transpiler/x/pl/len_map.pl:2: Initialization goal raised exception:
+ERROR: length/2: Type error: `list' expected, found `{a:1,b:2}' (a compound)

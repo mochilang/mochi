@@ -1,0 +1,7 @@
+:- style_check(-singleton).
+:- initialization(main).
+
+main :-
+    A is 10,
+    B is 20,
+    R2 is A + B, writeln(R2).
