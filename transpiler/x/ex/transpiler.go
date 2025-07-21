@@ -1620,6 +1620,45 @@ func compileQueryExpr(q *parser.QueryExpr, env *types.Env) (Expr, error) {
 		}
 		return &GroupBySortExpr{Var: pattern, Source: comp, Key: key, Name: q.Group.Name, Sort: sortExpr, Select: sel}, nil
 	}
+	if len(q.Joins) == 2 && q.Joins[0].Side == nil && q.Joins[1].Side != nil && *q.Joins[1].Side == "left" && len(q.Froms) == 0 && q.Group == nil && q.Sort == nil && q.Skip == nil && q.Take == nil && q.Where == nil && !q.Distinct {
+		child := types.NewEnv(env)
+		child.SetVar(q.Var, elemTypeOfExpr(q.Source, env), true)
+		j0 := q.Joins[0]
+		js0, err := compileExpr(j0.Src, child)
+		if err != nil {
+			return nil, err
+		}
+		child.SetVar(j0.Var, elemTypeOfExpr(j0.Src, child), true)
+		on0, err := compileExpr(j0.On, child)
+		if err != nil {
+			return nil, err
+		}
+		j1 := q.Joins[1]
+		js1, err := compileExpr(j1.Src, child)
+		if err != nil {
+			return nil, err
+		}
+		child.SetVar(j1.Var, elemTypeOfExpr(j1.Src, child), true)
+		on1, err := compileExpr(j1.On, child)
+		if err != nil {
+			return nil, err
+		}
+		sel, err := compileExpr(q.Select, child)
+		if err != nil {
+			return nil, err
+		}
+		filter0 := &CallExpr{Func: "Enum.filter", Args: []Expr{js0, &AnonFun{Params: []string{j0.Var}, Body: []Stmt{&ReturnStmt{Value: on0}}}}}
+		letMatches := &LetStmt{Name: "matches", Value: &CallExpr{Func: "Enum.filter", Args: []Expr{js1, &AnonFun{Params: []string{j1.Var}, Body: []Stmt{&ReturnStmt{Value: on1}}}}}}
+		condEmpty := &CallExpr{Func: "Enum.empty?", Args: []Expr{&VarRef{Name: "matches"}}}
+		listExpr := &CondExpr{Cond: condEmpty, Then: &ListLit{Elems: []Expr{&NilLit{}}}, Else: &VarRef{Name: "matches"}}
+		letList := &LetStmt{Name: "list", Value: listExpr}
+		mapFn := &AnonFun{Params: []string{j1.Var}, Body: []Stmt{&ReturnStmt{Value: sel}}}
+		mapCall := &CallExpr{Func: "Enum.map", Args: []Expr{&VarRef{Name: "list"}, mapFn}}
+		innerFun := &AnonFun{Params: []string{j0.Var}, Body: []Stmt{letMatches, letList, &ReturnStmt{Value: mapCall}}}
+		innerFlat := &CallExpr{Func: "Enum.flat_map", Args: []Expr{filter0, innerFun}}
+		outerFun := &AnonFun{Params: []string{q.Var}, Body: []Stmt{&ReturnStmt{Value: innerFlat}}}
+		return &CallExpr{Func: "Enum.flat_map", Args: []Expr{src, outerFun}}, nil
+	}
 	if len(q.Joins) == 1 && q.Joins[0].Side != nil && *q.Joins[0].Side == "left" && len(q.Froms) == 0 && q.Group == nil && q.Sort == nil && q.Skip == nil && q.Take == nil && q.Where == nil && !q.Distinct {
 		child := types.NewEnv(env)
 		child.SetVar(q.Var, elemTypeOfExpr(q.Source, env), true)

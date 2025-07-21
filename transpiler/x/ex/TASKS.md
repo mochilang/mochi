@@ -1,3 +1,9 @@
+## Progress (2025-07-21 22:05 +0700)
+- Commit ce62dc81e: ex transpiler: support left join after join
+- Generated Elixir for 88/100 programs
+- Updated README checklist and outputs
+- Improved code emission and type inference
+
 ## Progress (2025-07-21 21:13 +0700)
 - Commit 174cba038: update hs golden files
 - Generated Elixir for 87/100 programs
