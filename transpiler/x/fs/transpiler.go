@@ -973,6 +973,13 @@ func inferType(e Expr) string {
 			return t
 		}
 		return ""
+	case *FieldExpr:
+		t := inferType(v.Target)
+		name := strings.TrimSuffix(t, " list")
+		if ft, ok := structFieldType(name, v.Name); ok {
+			return ft
+		}
+		return ""
 	case *UnaryExpr:
 		if v.Op == "not" {
 			return "bool"
@@ -2095,6 +2102,8 @@ func convertQueryExpr(q *parser.QueryExpr) (Expr, error) {
 		keyType := "obj"
 		if sl, ok := key.(*StructLit); ok && sl.Name != "" {
 			keyType = sl.Name
+		} else if kt := inferType(key); kt != "" {
+			keyType = fsTypeFromString(strings.TrimSuffix(kt, " list"))
 		}
 		groupFields := []StructField{{Name: "key", Type: keyType, Mut: false}, {Name: "items", Type: itemName + " list", Mut: false}}
 		structCount++
