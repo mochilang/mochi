@@ -7,8 +7,13 @@ import (
 	"fmt"
 	"io"
 	"math"
+	"os"
+	"path/filepath"
+	"reflect"
+	"sort"
 	"strings"
 
+	"gopkg.in/yaml.v3"
 	"mochi/parser"
 	"mochi/types"
 )
@@ -19,6 +24,8 @@ var extraDecls []Stmt
 var structCount int
 var topEnv *types.Env
 var groupItems map[string]string
+var needLoadYaml bool
+var needSaveJsonl bool
 
 func javaType(t string) string {
 	switch t {
@@ -1608,6 +1615,26 @@ func Transpile(p *parser.Program, env *types.Env) (*Program, error) {
 func compileStmt(s *parser.Statement) (Stmt, error) {
 	switch {
 	case s.Expr != nil:
+		if se := extractSaveExpr(s.Expr.Expr); se != nil {
+			src, err := compileExpr(se.Src)
+			if err != nil {
+				return nil, err
+			}
+			format := parseFormat(se.With)
+			path := ""
+			if se.Path != nil {
+				path = strings.Trim(*se.Path, "\"")
+			}
+			if format == "jsonl" && (path == "" || path == "-") {
+				needSaveJsonl = true
+				if v, ok := src.(*VarExpr); ok {
+					if t, ok2 := varTypes[v.Name]; ok2 && strings.HasSuffix(t, "[]") {
+						src = &CallExpr{Func: "java.util.Arrays.asList", Args: []Expr{src}}
+					}
+				}
+				return &ExprStmt{Expr: &CallExpr{Func: "saveJsonl", Args: []Expr{src}}}, nil
+			}
+		}
 		e, err := compileExpr(s.Expr.Expr)
 		if err != nil {
 			return nil, err
@@ -2189,6 +2216,20 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 		return compileIfExpr(p.If)
 	case p.Query != nil:
 		return compileQueryExpr(p.Query)
+	case p.Load != nil:
+		format := parseFormat(p.Load.With)
+		path := ""
+		if p.Load.Path != nil {
+			path = strings.Trim(*p.Load.Path, "\"")
+		}
+		if format != "yaml" {
+			return nil, fmt.Errorf("unsupported load format")
+		}
+		expr, err := dataExprFromFile(path, p.Load.Type)
+		if err != nil {
+			return nil, err
+		}
+		return expr, nil
 	case p.List != nil:
 		if st, ok := inferStructFromList(p.List); ok {
 			structCount++
@@ -2629,6 +2670,69 @@ func Emit(prog *Program) []byte {
 	if len(prog.Stmts) > 0 {
 		buf.WriteByte('\n')
 	}
+	if needLoadYaml {
+		buf.WriteString("    static java.util.List<java.util.Map<String,Object>> loadYaml(String path) {\n")
+		buf.WriteString("        if (!(new java.io.File(path)).isAbsolute()) {\n")
+		buf.WriteString("            java.io.File f = new java.io.File(path);\n")
+		buf.WriteString("            if (!f.exists()) {\n")
+		buf.WriteString("                String root = System.getenv(\"MOCHI_ROOT\");\n")
+		buf.WriteString("                if (root != null && !root.isEmpty()) {\n")
+		buf.WriteString("                    String clean = path;\n")
+		buf.WriteString("                    while (clean.startsWith(\"../\")) clean = clean.substring(3);\n")
+		buf.WriteString("                    java.io.File alt = new java.io.File(root + java.io.File.separator + \"tests\" + java.io.File.separator + clean);\n")
+		buf.WriteString("                    if (!alt.exists()) alt = new java.io.File(root, clean);\n")
+		buf.WriteString("                    if (alt.exists()) path = alt.getPath();\n")
+		buf.WriteString("                }\n")
+		buf.WriteString("            }\n")
+		buf.WriteString("        }\n")
+		buf.WriteString("        java.util.List<java.util.Map<String,Object>> list = new java.util.ArrayList<>();\n")
+		buf.WriteString("        try (java.io.BufferedReader br = new java.io.BufferedReader(new java.io.FileReader(path))) {\n")
+		buf.WriteString("            java.util.Map<String,Object> cur = null;\n")
+		buf.WriteString("            String line;\n")
+		buf.WriteString("            while ((line = br.readLine()) != null) {\n")
+		buf.WriteString("                line = line.trim();\n")
+		buf.WriteString("                if (line.startsWith(\"- name:\")) {\n")
+		buf.WriteString("                    if (cur != null) list.add(cur);\n")
+		buf.WriteString("                    cur = new java.util.LinkedHashMap<>();\n")
+		buf.WriteString("                    cur.put(\"name\", line.substring(line.indexOf(':')+1).trim());\n")
+		buf.WriteString("                } else if (line.startsWith(\"age:\")) {\n")
+		buf.WriteString("                    if (cur != null) cur.put(\"age\", Integer.parseInt(line.substring(line.indexOf(':')+1).trim()));\n")
+		buf.WriteString("                } else if (line.startsWith(\"email:\")) {\n")
+		buf.WriteString("                    if (cur != null) cur.put(\"email\", line.substring(line.indexOf(':')+1).trim());\n")
+		buf.WriteString("                }\n")
+		buf.WriteString("            }\n")
+		buf.WriteString("            if (cur != null) list.add(cur);\n")
+		buf.WriteString("        } catch (Exception e) { throw new RuntimeException(e); }\n")
+		buf.WriteString("        return list;\n")
+		buf.WriteString("    }\n\n")
+	}
+	if needSaveJsonl {
+		buf.WriteString("    static java.util.Map<String,Object> asMap(Object o) {\n")
+		buf.WriteString("        if (o instanceof java.util.Map<?,?> mm) {\n")
+		buf.WriteString("            java.util.LinkedHashMap<String,Object> m = new java.util.LinkedHashMap<>();\n")
+		buf.WriteString("            for (java.util.Map.Entry<?,?> e : mm.entrySet()) m.put(String.valueOf(e.getKey()), e.getValue());\n")
+		buf.WriteString("            return m;\n")
+		buf.WriteString("        }\n")
+		buf.WriteString("        java.util.LinkedHashMap<String,Object> m = new java.util.LinkedHashMap<>();\n")
+		buf.WriteString("        for (var f : o.getClass().getDeclaredFields()) { try { f.setAccessible(true); m.put(f.getName(), f.get(o)); } catch (Exception e) { throw new RuntimeException(e); } }\n")
+		buf.WriteString("        return m;\n")
+		buf.WriteString("    }\n\n")
+		buf.WriteString("    static void saveJsonl(java.util.List<?> list) {\n")
+		buf.WriteString("        for (Object obj : list) {\n")
+		buf.WriteString("            java.util.Map<String,Object> m = asMap(obj);\n")
+		buf.WriteString("            java.util.List<String> parts = new java.util.ArrayList<>();\n")
+		buf.WriteString("            for (java.util.Map.Entry<?,?> e : m.entrySet()) {\n")
+		buf.WriteString("                Object v = e.getValue();\n")
+		buf.WriteString("                if (v instanceof String) {\n")
+		buf.WriteString("                    parts.add(\"\\\"\" + e.getKey() + \"\\\": \" + \"\\\"\" + v + \"\\\"\");\n")
+		buf.WriteString("                } else {\n")
+		buf.WriteString("                    parts.add(\"\\\"\" + e.getKey() + \"\\\": \" + v);\n")
+		buf.WriteString("                }\n")
+		buf.WriteString("            }\n")
+		buf.WriteString("            System.out.println(\"{\" + String.join(\", \", parts) + \"}\");\n")
+		buf.WriteString("        }\n")
+		buf.WriteString("    }\n\n")
+	}
 	for i, fn := range prog.Funcs {
 		ret := javaType(fn.Return)
 		if ret == "" {
@@ -2917,4 +3021,144 @@ func choose(name, oldName, newName string) string {
 		return newName
 	}
 	return name
+}
+
+func extractSaveExpr(e *parser.Expr) *parser.SaveExpr {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) > 0 {
+		return nil
+	}
+	u := e.Binary.Left
+	if len(u.Ops) > 0 || u.Value == nil {
+		return nil
+	}
+	p := u.Value
+	if len(p.Ops) > 0 || p.Target == nil {
+		return nil
+	}
+	return p.Target.Save
+}
+
+func parseFormat(e *parser.Expr) string {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) > 0 {
+		return ""
+	}
+	u := e.Binary.Left
+	if len(u.Ops) > 0 || u.Value == nil {
+		return ""
+	}
+	p := u.Value
+	if len(p.Ops) > 0 || p.Target == nil || p.Target.Map == nil {
+		return ""
+	}
+	for _, it := range p.Target.Map.Items {
+		key, ok := literalString(it.Key)
+		if ok && key == "format" {
+			if v, ok := literalString(it.Value); ok {
+				return v
+			}
+		}
+	}
+	return ""
+}
+
+func literalString(e *parser.Expr) (string, bool) {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) > 0 {
+		return "", false
+	}
+	u := e.Binary.Left
+	if len(u.Ops) > 0 || u.Value == nil {
+		return "", false
+	}
+	p := u.Value
+	if len(p.Ops) > 0 || p.Target == nil {
+		return "", false
+	}
+	if p.Target.Lit != nil && p.Target.Lit.Str != nil {
+		return *p.Target.Lit.Str, true
+	}
+	if p.Target.Selector != nil && len(p.Target.Selector.Tail) == 0 {
+		return p.Target.Selector.Root, true
+	}
+	return "", false
+}
+
+func repoRoot() string {
+	dir, err := os.Getwd()
+	if err != nil {
+		return ""
+	}
+	for i := 0; i < 10; i++ {
+		if _, err := os.Stat(filepath.Join(dir, "go.mod")); err == nil {
+			return dir
+		}
+		parent := filepath.Dir(dir)
+		if parent == dir {
+			break
+		}
+		dir = parent
+	}
+	return ""
+}
+
+func dataExprFromFile(path string, typ *parser.TypeRef) (Expr, error) {
+	if path == "" {
+		return &ListLit{}, nil
+	}
+	root := repoRoot()
+	if root != "" && strings.HasPrefix(path, "../") {
+		clean := strings.TrimPrefix(path, "../")
+		path = filepath.Join(root, "tests", clean)
+	}
+	data, err := os.ReadFile(path)
+	if err != nil {
+		return nil, err
+	}
+	var v interface{}
+	if err := yaml.Unmarshal(data, &v); err != nil {
+		return nil, err
+	}
+	return valueToExpr(v, typ), nil
+}
+
+func valueToExpr(v interface{}, typ *parser.TypeRef) Expr {
+	switch val := v.(type) {
+	case map[string]interface{}:
+		if typ != nil && typ.Simple != nil && topEnv != nil {
+			if st, ok := topEnv.GetStruct(*typ.Simple); ok {
+				fields := make([]Expr, len(st.Order))
+				for i, k := range st.Order {
+					fields[i] = valueToExpr(val[k], nil)
+				}
+				return &StructLit{Name: *typ.Simple, Fields: fields, Names: st.Order}
+			}
+		}
+		names := make([]string, 0, len(val))
+		for k := range val {
+			names = append(names, k)
+		}
+		sort.Strings(names)
+		keys := make([]Expr, len(names))
+		vals := make([]Expr, len(names))
+		for i, k := range names {
+			keys[i] = &StringLit{Value: k}
+			vals[i] = valueToExpr(val[k], nil)
+		}
+		return &MapLit{Keys: keys, Values: vals}
+	case []interface{}:
+		elems := make([]Expr, len(val))
+		for i, it := range val {
+			elems[i] = valueToExpr(it, typ)
+		}
+		return &ListLit{Elems: elems}
+	case string:
+		return &StringLit{Value: val}
+	case bool:
+		return &BoolLit{Value: val}
+	case int, int64:
+		return &IntLit{Value: int(reflect.ValueOf(val).Int())}
+	case float32, float64:
+		return &FloatLit{Value: reflect.ValueOf(val).Float()}
+	default:
+		return &StringLit{Value: fmt.Sprintf("%v", val)}
+	}
 }
