@@ -2,5 +2,4 @@
 $x = 3;
 $y = 4;
 $m = ["a" => $x, "b" => $y];
-echo rtrim((is_float($m["a"]) ? sprintf("%.15f", $m["a"]) : $m["a"]) . " " . (is_float($m["b"]) ? sprintf("%.15f", $m["b"]) : $m["b"])), PHP_EOL;
-?>
+echo (is_float($m["a"]) ? json_encode($m["a"], 1344) : $m["a"]) . " " . (is_float($m["b"]) ? json_encode($m["b"], 1344) : $m["b"]), PHP_EOL;

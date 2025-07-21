@@ -10,8 +10,7 @@ foreach ($nums as $n) {
   }
 }
 
-echo rtrim("--- Even pairs ---"), PHP_EOL;
+echo "--- Even pairs ---", PHP_EOL;
 foreach ($pairs as $p) {
-  echo rtrim((is_float($p["n"]) ? sprintf("%.15f", $p["n"]) : $p["n"]) . " " . (is_float($p["l"]) ? sprintf("%.15f", $p["l"]) : $p["l"])), PHP_EOL;
+  echo (is_float($p["n"]) ? json_encode($p["n"], 1344) : $p["n"]) . " " . (is_float($p["l"]) ? json_encode($p["l"], 1344) : $p["l"]), PHP_EOL;
 }
-?>

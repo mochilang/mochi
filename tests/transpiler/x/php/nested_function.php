@@ -5,5 +5,4 @@ function outer($x) {
 };
   return $inner(5);
 }
-echo rtrim((is_float(outer(3)) ? sprintf("%.15f", outer(3)) : outer(3))), PHP_EOL;
-?>
+echo (is_float(outer(3)) ? json_encode(outer(3), 1344) : outer(3)), PHP_EOL;

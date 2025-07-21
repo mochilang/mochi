@@ -29,16 +29,15 @@ $result = (function() use ($customers, $orders) {
   }
   return $result;
 })();
-echo rtrim("--- Outer Join using syntax ---"), PHP_EOL;
+echo "--- Outer Join using syntax ---", PHP_EOL;
 foreach ($result as $row) {
   if ($row["order"]) {
   if ($row["customer"]) {
-  echo rtrim("Order" . " " . (is_float($row["order"]["id"]) ? sprintf("%.15f", $row["order"]["id"]) : $row["order"]["id"]) . " " . "by" . " " . (is_float($row["customer"]["name"]) ? sprintf("%.15f", $row["customer"]["name"]) : $row["customer"]["name"]) . " " . "- $" . " " . (is_float($row["order"]["total"]) ? sprintf("%.15f", $row["order"]["total"]) : $row["order"]["total"])), PHP_EOL;
+  echo "Order" . " " . (is_float($row["order"]["id"]) ? json_encode($row["order"]["id"], 1344) : $row["order"]["id"]) . " " . "by" . " " . (is_float($row["customer"]["name"]) ? json_encode($row["customer"]["name"], 1344) : $row["customer"]["name"]) . " " . "- $" . " " . (is_float($row["order"]["total"]) ? json_encode($row["order"]["total"], 1344) : $row["order"]["total"]), PHP_EOL;
 } else {
-  echo rtrim("Order" . " " . (is_float($row["order"]["id"]) ? sprintf("%.15f", $row["order"]["id"]) : $row["order"]["id"]) . " " . "by" . " " . "Unknown" . " " . "- $" . " " . (is_float($row["order"]["total"]) ? sprintf("%.15f", $row["order"]["total"]) : $row["order"]["total"])), PHP_EOL;
+  echo "Order" . " " . (is_float($row["order"]["id"]) ? json_encode($row["order"]["id"], 1344) : $row["order"]["id"]) . " " . "by" . " " . "Unknown" . " " . "- $" . " " . (is_float($row["order"]["total"]) ? json_encode($row["order"]["total"], 1344) : $row["order"]["total"]), PHP_EOL;
 };
 } else {
-  echo rtrim("Customer" . " " . (is_float($row["customer"]["name"]) ? sprintf("%.15f", $row["customer"]["name"]) : $row["customer"]["name"]) . " " . "has no orders"), PHP_EOL;
+  echo "Customer" . " " . (is_float($row["customer"]["name"]) ? json_encode($row["customer"]["name"], 1344) : $row["customer"]["name"]) . " " . "has no orders", PHP_EOL;
 }
 }
-?>

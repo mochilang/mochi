@@ -4,5 +4,4 @@ function inc($c) {
 }
 $c = ["n" => 0];
 inc($c);
-echo rtrim((is_float($c["n"]) ? sprintf("%.15f", $c["n"]) : $c["n"])), PHP_EOL;
-?>
+echo (is_float($c["n"]) ? json_encode($c["n"], 1344) : $c["n"]), PHP_EOL;

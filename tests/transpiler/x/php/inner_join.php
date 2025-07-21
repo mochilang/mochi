@@ -10,8 +10,7 @@ foreach ($orders as $o) {
   }
 }
 
-echo rtrim("--- Orders with customer info ---"), PHP_EOL;
+echo "--- Orders with customer info ---", PHP_EOL;
 foreach ($result as $entry) {
-  echo rtrim("Order" . " " . (is_float($entry["orderId"]) ? sprintf("%.15f", $entry["orderId"]) : $entry["orderId"]) . " " . "by" . " " . (is_float($entry["customerName"]) ? sprintf("%.15f", $entry["customerName"]) : $entry["customerName"]) . " " . "- $" . " " . (is_float($entry["total"]) ? sprintf("%.15f", $entry["total"]) : $entry["total"])), PHP_EOL;
+  echo "Order" . " " . (is_float($entry["orderId"]) ? json_encode($entry["orderId"], 1344) : $entry["orderId"]) . " " . "by" . " " . (is_float($entry["customerName"]) ? json_encode($entry["customerName"], 1344) : $entry["customerName"]) . " " . "- $" . " " . (is_float($entry["total"]) ? json_encode($entry["total"], 1344) : $entry["total"]), PHP_EOL;
 }
-?>

@@ -8,6 +8,5 @@ foreach ($people as $p) {
 }
 
 foreach ($adults as $a) {
-  echo rtrim((is_float($a["name"]) ? sprintf("%.15f", $a["name"]) : $a["name"]) . " " . (is_float($a["email"]) ? sprintf("%.15f", $a["email"]) : $a["email"])), PHP_EOL;
+  echo (is_float($a["name"]) ? json_encode($a["name"], 1344) : $a["name"]) . " " . (is_float($a["email"]) ? json_encode($a["email"], 1344) : $a["email"]), PHP_EOL;
 }
-?>

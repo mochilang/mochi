@@ -11,6 +11,5 @@ function twoSum($nums, $target) {
   return [-1, -1];
 }
 $result = twoSum([2, 7, 11, 15], 9);
-echo rtrim((is_float($result[0]) ? sprintf("%.15f", $result[0]) : $result[0])), PHP_EOL;
-echo rtrim((is_float($result[1]) ? sprintf("%.15f", $result[1]) : $result[1])), PHP_EOL;
-?>
+echo (is_float($result[0]) ? json_encode($result[0], 1344) : $result[0]), PHP_EOL;
+echo (is_float($result[1]) ? json_encode($result[1], 1344) : $result[1]), PHP_EOL;

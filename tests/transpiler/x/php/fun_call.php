@@ -2,5 +2,4 @@
 function add($a, $b) {
   return $a + $b;
 }
-echo rtrim((is_float(add(2, 3)) ? sprintf("%.15f", add(2, 3)) : add(2, 3))), PHP_EOL;
-?>
+echo (is_float(add(2, 3)) ? json_encode(add(2, 3), 1344) : add(2, 3)), PHP_EOL;

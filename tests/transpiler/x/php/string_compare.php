@@ -1,6 +1,5 @@
 <?php
-echo rtrim(("a" < "b" ? "true" : "false")), PHP_EOL;
-echo rtrim(("a" <= "a" ? "true" : "false")), PHP_EOL;
-echo rtrim(("b" > "a" ? "true" : "false")), PHP_EOL;
-echo rtrim(("b" >= "b" ? "true" : "false")), PHP_EOL;
-?>
+echo ("a" < "b" ? "True" : "False"), PHP_EOL;
+echo ("a" <= "a" ? "True" : "False"), PHP_EOL;
+echo ("b" > "a" ? "True" : "False"), PHP_EOL;
+echo ("b" >= "b" ? "True" : "False"), PHP_EOL;

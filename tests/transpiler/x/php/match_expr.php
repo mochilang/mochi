@@ -6,5 +6,4 @@ $label = match($x) {
     3 => "three",
     default => "unknown",
 };
-echo rtrim($label), PHP_EOL;
-?>
+echo $label, PHP_EOL;

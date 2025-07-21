@@ -1,5 +1,4 @@
 <?php
 $matrix = [[1, 2], [3, 4]];
 $matrix[1][0] = 5;
-echo rtrim((is_float($matrix[1][0]) ? sprintf("%.15f", $matrix[1][0]) : $matrix[1][0])), PHP_EOL;
-?>
+echo (is_float($matrix[1][0]) ? json_encode($matrix[1][0], 1344) : $matrix[1][0]), PHP_EOL;

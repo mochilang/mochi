@@ -1,4 +1,3 @@
 <?php
 $m = ["a" => 1, "b" => 2, "c" => 3];
-echo rtrim((is_float(values($m)) ? sprintf("%.15f", values($m)) : values($m))), PHP_EOL;
-?>
+echo (is_float(values($m)) ? json_encode(values($m), 1344) : values($m)), PHP_EOL;

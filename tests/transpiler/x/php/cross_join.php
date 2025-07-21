@@ -8,8 +8,7 @@ foreach ($orders as $o) {
   }
 }
 
-echo rtrim("--- Cross Join: All order-customer pairs ---"), PHP_EOL;
+echo "--- Cross Join: All order-customer pairs ---", PHP_EOL;
 foreach ($result as $entry) {
-  echo rtrim("Order" . " " . (is_float($entry["orderId"]) ? sprintf("%.15f", $entry["orderId"]) : $entry["orderId"]) . " " . "(customerId:" . " " . (is_float($entry["orderCustomerId"]) ? sprintf("%.15f", $entry["orderCustomerId"]) : $entry["orderCustomerId"]) . " " . ", total: $" . " " . (is_float($entry["orderTotal"]) ? sprintf("%.15f", $entry["orderTotal"]) : $entry["orderTotal"]) . " " . ") paired with" . " " . (is_float($entry["pairedCustomerName"]) ? sprintf("%.15f", $entry["pairedCustomerName"]) : $entry["pairedCustomerName"])), PHP_EOL;
+  echo "Order" . " " . (is_float($entry["orderId"]) ? json_encode($entry["orderId"], 1344) : $entry["orderId"]) . " " . "(customerId:" . " " . (is_float($entry["orderCustomerId"]) ? json_encode($entry["orderCustomerId"], 1344) : $entry["orderCustomerId"]) . " " . ", total: $" . " " . (is_float($entry["orderTotal"]) ? json_encode($entry["orderTotal"], 1344) : $entry["orderTotal"]) . " " . ") paired with" . " " . (is_float($entry["pairedCustomerName"]) ? json_encode($entry["pairedCustomerName"], 1344) : $entry["pairedCustomerName"]), PHP_EOL;
 }
-?>

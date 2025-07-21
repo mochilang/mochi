@@ -7,12 +7,11 @@ foreach ($xs as $x) {
   }
 }
 
-echo rtrim((in_array(1, $ys) ? "true" : "false")), PHP_EOL;
-echo rtrim((in_array(2, $ys) ? "true" : "false")), PHP_EOL;
+echo (in_array(1, $ys) ? "True" : "False"), PHP_EOL;
+echo (in_array(2, $ys) ? "True" : "False"), PHP_EOL;
 $m = ["a" => 1];
-echo rtrim((array_key_exists("a", $m) ? "true" : "false")), PHP_EOL;
-echo rtrim((array_key_exists("b", $m) ? "true" : "false")), PHP_EOL;
+echo (array_key_exists("a", $m) ? "True" : "False"), PHP_EOL;
+echo (array_key_exists("b", $m) ? "True" : "False"), PHP_EOL;
 $s = "hello";
-echo rtrim((str_contains($s, "ell") ? "true" : "false")), PHP_EOL;
-echo rtrim((str_contains($s, "foo") ? "true" : "false")), PHP_EOL;
-?>
+echo (str_contains($s, "ell") ? "True" : "False"), PHP_EOL;
+echo (str_contains($s, "foo") ? "True" : "False"), PHP_EOL;

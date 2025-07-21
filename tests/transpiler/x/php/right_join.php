@@ -17,12 +17,11 @@ $result = (function() use ($customers, $orders) {
   }
   return $result;
 })();
-echo rtrim("--- Right Join using syntax ---"), PHP_EOL;
+echo "--- Right Join using syntax ---", PHP_EOL;
 foreach ($result as $entry) {
   if ($entry["order"]) {
-  echo rtrim("Customer" . " " . (is_float($entry["customerName"]) ? sprintf("%.15f", $entry["customerName"]) : $entry["customerName"]) . " " . "has order" . " " . (is_float($entry["order"]["id"]) ? sprintf("%.15f", $entry["order"]["id"]) : $entry["order"]["id"]) . " " . "- $" . " " . (is_float($entry["order"]["total"]) ? sprintf("%.15f", $entry["order"]["total"]) : $entry["order"]["total"])), PHP_EOL;
+  echo "Customer" . " " . (is_float($entry["customerName"]) ? json_encode($entry["customerName"], 1344) : $entry["customerName"]) . " " . "has order" . " " . (is_float($entry["order"]["id"]) ? json_encode($entry["order"]["id"], 1344) : $entry["order"]["id"]) . " " . "- $" . " " . (is_float($entry["order"]["total"]) ? json_encode($entry["order"]["total"], 1344) : $entry["order"]["total"]), PHP_EOL;
 } else {
-  echo rtrim("Customer" . " " . (is_float($entry["customerName"]) ? sprintf("%.15f", $entry["customerName"]) : $entry["customerName"]) . " " . "has no orders"), PHP_EOL;
+  echo "Customer" . " " . (is_float($entry["customerName"]) ? json_encode($entry["customerName"], 1344) : $entry["customerName"]) . " " . "has no orders", PHP_EOL;
 }
 }
-?>

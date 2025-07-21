@@ -5,5 +5,4 @@ function makeAdder($n) {
 };
 }
 $add10 = makeAdder(10);
-echo rtrim((is_float($add10(7)) ? sprintf("%.15f", $add10(7)) : $add10(7))), PHP_EOL;
-?>
+echo (is_float($add10(7)) ? json_encode($add10(7), 1344) : $add10(7)), PHP_EOL;

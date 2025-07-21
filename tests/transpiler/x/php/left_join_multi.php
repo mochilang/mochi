@@ -22,8 +22,7 @@ foreach ($orders as $o) {
   }
 }
 
-echo rtrim("--- Left Join Multi ---"), PHP_EOL;
+echo "--- Left Join Multi ---", PHP_EOL;
 foreach ($result as $r) {
-  echo rtrim((is_float($r["orderId"]) ? sprintf("%.15f", $r["orderId"]) : $r["orderId"]) . " " . (is_float($r["name"]) ? sprintf("%.15f", $r["name"]) : $r["name"]) . " " . (is_float($r["item"]) ? sprintf("%.15f", $r["item"]) : $r["item"])), PHP_EOL;
+  echo (is_float($r["orderId"]) ? json_encode($r["orderId"], 1344) : $r["orderId"]) . " " . (is_float($r["name"]) ? json_encode($r["name"], 1344) : $r["name"]) . " " . (is_float($r["item"]) ? json_encode($r["item"], 1344) : $r["item"]), PHP_EOL;
 }
-?>

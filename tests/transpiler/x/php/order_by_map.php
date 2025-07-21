@@ -5,5 +5,4 @@ foreach ($data as $x) {
   $sorted[] = $x;
 }
 
-echo rtrim(str_replace(":", ": ", str_replace(",", ", ", json_encode($sorted, 320)))), PHP_EOL;
-?>
+echo str_replace("false", "False", str_replace("true", "True", str_replace("\"", "'", str_replace(":", ": ", str_replace(",", ", ", json_encode($sorted, 1344)))))), PHP_EOL;

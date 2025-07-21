@@ -7,5 +7,4 @@ foreach ($nums as $n) {
   }
 }
 
-echo rtrim((is_float($result) ? sprintf("%.15f", $result) : $result)), PHP_EOL;
-?>
+echo (is_float($result) ? json_encode($result, 1344) : $result), PHP_EOL;

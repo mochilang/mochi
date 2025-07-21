@@ -7,4 +7,3 @@ foreach ($people as $_row) {
   echo $j . PHP_EOL;
 }
 ;
-?>

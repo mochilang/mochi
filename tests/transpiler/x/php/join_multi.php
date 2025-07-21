@@ -13,8 +13,7 @@ foreach ($orders as $o) {
   }
 }
 
-echo rtrim("--- Multi Join ---"), PHP_EOL;
+echo "--- Multi Join ---", PHP_EOL;
 foreach ($result as $r) {
-  echo rtrim((is_float($r["name"]) ? sprintf("%.15f", $r["name"]) : $r["name"]) . " " . "bought item" . " " . (is_float($r["sku"]) ? sprintf("%.15f", $r["sku"]) : $r["sku"])), PHP_EOL;
+  echo (is_float($r["name"]) ? json_encode($r["name"], 1344) : $r["name"]) . " " . "bought item" . " " . (is_float($r["sku"]) ? json_encode($r["sku"], 1344) : $r["sku"]), PHP_EOL;
 }
-?>

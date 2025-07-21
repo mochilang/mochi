@@ -4,10 +4,11 @@ $big = (function() use ($people) {
   $groups = [];
   foreach ($people as $p) {
     $key = $p["city"];
-    if (!array_key_exists($key, $groups)) {
-      $groups[$key] = ['key' => $key, 'items' => []];
+    $k = json_encode($key);
+    if (!array_key_exists($k, $groups)) {
+      $groups[$k] = ['key' => $key, 'items' => []];
     }
-    $groups[$key]['items'][] = $p;
+    $groups[$k]['items'][] = $p;
   }
   $result = [];
   foreach ($groups as $g) {
@@ -17,5 +18,4 @@ $big = (function() use ($people) {
   }
   return $result;
 })();
-echo rtrim(str_replace("    ", "  ", json_encode($big, 128))), PHP_EOL;
-?>
+echo str_replace("    ", "  ", json_encode($big, 128)), PHP_EOL;

@@ -6,5 +6,4 @@ function sum_tree($t) {
 };
 }
 $t = ["left" => $Leaf, "value" => 1, "right" => ["left" => $Leaf, "value" => 2, "right" => $Leaf]];
-echo rtrim((is_float(sum_tree($t)) ? sprintf("%.15f", sum_tree($t)) : sum_tree($t))), PHP_EOL;
-?>
+echo (is_float(sum_tree($t)) ? json_encode(sum_tree($t), 1344) : sum_tree($t)), PHP_EOL;
