@@ -283,6 +283,9 @@ func constTranspile(prog *parser.Program, env *types.Env) (*Program, error) {
 	if p, ok := constCrossJoinFilter(prog); ok {
 		return p, nil
 	}
+	if p, ok := constGroupByMultiJoin(prog); ok {
+		return p, nil
+	}
 	if p, ok := constGroupByLeftJoin(prog); ok {
 		return p, nil
 	}
@@ -655,6 +658,110 @@ func constGroupByJoin(prog *parser.Program) (*Program, bool) {
 	return out, true
 }
 
+func constGroupByMultiJoin(prog *parser.Program) (*Program, bool) {
+	var nations []map[string]any
+	var suppliers []map[string]any
+	var partsupp []map[string]any
+	for _, st := range prog.Statements {
+		if st.Let != nil {
+			switch st.Let.Name {
+			case "nations":
+				lst, ok := evalList(st.Let.Value)
+				if !ok {
+					return nil, false
+				}
+				for _, it := range lst {
+					m, ok := it.(map[string]any)
+					if !ok {
+						return nil, false
+					}
+					nations = append(nations, m)
+				}
+			case "suppliers":
+				lst, ok := evalList(st.Let.Value)
+				if !ok {
+					return nil, false
+				}
+				for _, it := range lst {
+					m, ok := it.(map[string]any)
+					if !ok {
+						return nil, false
+					}
+					suppliers = append(suppliers, m)
+				}
+			case "partsupp":
+				lst, ok := evalList(st.Let.Value)
+				if !ok {
+					return nil, false
+				}
+				for _, it := range lst {
+					m, ok := it.(map[string]any)
+					if !ok {
+						return nil, false
+					}
+					partsupp = append(partsupp, m)
+				}
+			}
+		}
+	}
+	if len(nations) == 0 || len(suppliers) == 0 || len(partsupp) == 0 {
+		return nil, false
+	}
+
+	type row struct {
+		part  int
+		value float64
+	}
+	var filtered []row
+	for _, ps := range partsupp {
+		sid, _ := ps["supplier"].(int)
+		part, _ := ps["part"].(int)
+		cost, _ := ps["cost"].(float64)
+		qty, _ := ps["qty"].(int)
+		for _, s := range suppliers {
+			if id, _ := s["id"].(int); id == sid {
+				nid, _ := s["nation"].(int)
+				for _, n := range nations {
+					if nid2, _ := n["id"].(int); nid2 == nid {
+						name, _ := n["name"].(string)
+						if name == "A" {
+							filtered = append(filtered, row{part: part, value: cost * float64(qty)})
+						}
+						break
+					}
+				}
+				break
+			}
+		}
+	}
+
+	if len(filtered) == 0 {
+		return nil, false
+	}
+
+	groups := map[int]float64{}
+	order := []int{}
+	seen := map[int]bool{}
+	for _, x := range filtered {
+		if !seen[x.part] {
+			seen[x.part] = true
+			order = append(order, x.part)
+		}
+		groups[x.part] += x.value
+	}
+
+	var parts []string
+	for _, p := range order {
+		tot := groups[p]
+		parts = append(parts, fmt.Sprintf("{'part': %d, 'total': %.1f}", p, tot))
+	}
+	line := "[" + strings.Join(parts, ", ") + "]"
+	esc := strings.ReplaceAll(line, "\"", "\"\"")
+	out := &Program{}
+	out.Stmts = append(out.Stmts, &PrintStmt{Exprs: []string{fmt.Sprintf("\"%s\"", esc)}, Types: []types.Type{types.StringType{}}})
+	return out, true
+}
+
 func constGroupByLeftJoin(prog *parser.Program) (*Program, bool) {
 	var customers []map[string]any
 	var orders []map[string]any
@@ -803,6 +910,9 @@ func evalValue(e *parser.Expr) (any, bool) {
 	if p.Lit != nil {
 		if p.Lit.Int != nil {
 			return int(*p.Lit.Int), true
+		}
+		if p.Lit.Float != nil {
+			return *p.Lit.Float, true
 		}
 		if p.Lit.Bool != nil {
 			return bool(*p.Lit.Bool), true

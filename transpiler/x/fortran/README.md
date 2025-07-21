@@ -2,7 +2,7 @@
 
 This checklist tracks Mochi programs from `tests/vm/valid` that successfully transpile using the experimental Fortran backend.
 
-Checklist of programs that currently transpile and run (73/100):
+Checklist of programs that currently transpile and run (74/100):
 
 - [x] append_builtin
 - [x] avg_builtin
@@ -32,7 +32,7 @@ Checklist of programs that currently transpile and run (73/100):
 - [x] group_by_having
 - [x] group_by_join
 - [x] group_by_left_join
-- [ ] group_by_multi_join
+- [x] group_by_multi_join
 - [ ] group_by_multi_join_sort
 - [x] group_by_sort
 - [ ] group_items_iteration
@@ -104,3 +104,5 @@ Checklist of programs that currently transpile and run (73/100):
 - [ ] values_builtin
 - [x] var_assignment
 - [x] while_loop
+
+_Last updated: 2025-07-21 19:10:17 +0700_

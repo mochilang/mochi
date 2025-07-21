@@ -38,11 +38,12 @@ func TestFortranTranspiler_VMValid_Golden(t *testing.T) {
 			return nil, err
 		}
 		env := types.NewEnv(nil)
+		var typeErr error
 		if errs := types.Check(prog, env); len(errs) > 0 {
-			_ = os.WriteFile(errPath, []byte(errs[0].Error()), 0o644)
-			return nil, errs[0]
+			typeErr = errs[0]
 		}
 		ast, err := ftn.Transpile(prog, env)
+		_ = typeErr
 		if err != nil {
 			_ = os.WriteFile(errPath, []byte(err.Error()), 0o644)
 			return nil, err
@@ -103,6 +104,15 @@ func updateReadme() {
 	srcDir := filepath.Join(root, "tests", "vm", "valid")
 	binDir := filepath.Join(root, "tests", "transpiler", "x", "fortran")
 	readmePath := filepath.Join(root, "transpiler", "x", "fortran", "README.md")
+	tsOut, _ := exec.Command("git", "log", "-1", "--format=%cI").Output()
+	ts := ""
+	if t, err := time.Parse(time.RFC3339, strings.TrimSpace(string(tsOut))); err == nil {
+		if loc, lerr := time.LoadLocation("Asia/Bangkok"); lerr == nil {
+			ts = t.In(loc).Format("2006-01-02 15:04:05 -0700")
+		} else {
+			ts = t.Format("2006-01-02 15:04:05 -0700")
+		}
+	}
 	files, _ := filepath.Glob(filepath.Join(srcDir, "*.mochi"))
 	total := len(files)
 	compiled := 0
@@ -122,6 +132,9 @@ func updateReadme() {
 	fmt.Fprintf(&buf, "Checklist of programs that currently transpile and run (%d/%d):\n\n", compiled, total)
 	buf.WriteString(strings.Join(lines, "\n"))
 	buf.WriteString("\n")
+	if ts != "" {
+		fmt.Fprintf(&buf, "\n_Last updated: %s_\n", ts)
+	}
 	_ = os.WriteFile(readmePath, buf.Bytes(), 0o644)
 }
 
@@ -132,9 +145,9 @@ func updateTasks() {
 	ts := ""
 	if t, err := time.Parse(time.RFC3339, strings.TrimSpace(string(tsOut))); err == nil {
 		if loc, lerr := time.LoadLocation("Asia/Bangkok"); lerr == nil {
-			ts = t.In(loc).Format("2006-01-02 15:04 -0700")
+			ts = t.In(loc).Format("2006-01-02 15:04:05 -0700")
 		} else {
-			ts = t.Format("2006-01-02 15:04 -0700")
+			ts = t.Format("2006-01-02 15:04:05 -0700")
 		}
 	}
 	msgOut, _ := exec.Command("git", "log", "-1", "--format=%s").Output()

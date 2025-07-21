@@ -1,8 +1,0 @@
-error[I008]: cannot apply operator '==' to types null and null
-  --> /workspace/mochi/tests/vm/valid/group_by_multi_join.mochi:16:31
-
- 16 |   join s in suppliers on s.id == ps.supplier
-    |                               ^
-
-help:
-  Use compatible types for the operator.
