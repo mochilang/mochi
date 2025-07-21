@@ -1,3 +1,7 @@
+## Progress (2025-07-21 18:20 +0700)
+- erl transpiler: regenerate golden tests
+- Regenerated golden files - 78/100 vm valid programs passing
+
 ## Progress (2025-07-21 17:26 +0700)
 - erl: add group-by query support
 - Regenerated golden files - 8/100 vm valid programs passing
