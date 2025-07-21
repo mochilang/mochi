@@ -1,3 +1,67 @@
+## Progress (2025-07-21 12:32 +0700)
+- clj: fix group-by counting and sorting
+- Regenerated golden files - 88/100 vm valid programs passing
+
+## Progress (2025-07-21 12:05 +0700)
+- transpiler/c: support group_by
+- Regenerated golden files - 88/100 vm valid programs passing
+
+## Progress (2025-07-21 12:05 +0700)
+- transpiler/c: support group_by
+- Regenerated golden files - 88/100 vm valid programs passing
+
+## Progress (2025-07-21 12:05 +0700)
+- transpiler/c: support group_by
+- Regenerated golden files - 88/100 vm valid programs passing
+
+## Progress (2025-07-21 12:05 +0700)
+- transpiler/c: support group_by
+- Regenerated golden files - 88/100 vm valid programs passing
+
+## Progress (2025-07-21 12:05 +0700)
+- transpiler/c: support group_by
+- Regenerated golden files - 88/100 vm valid programs passing
+
+## Progress (2025-07-21 12:05 +0700)
+- transpiler/c: support group_by
+- Regenerated golden files - 88/100 vm valid programs passing
+
+## Progress (2025-07-21 12:05 +0700)
+- transpiler/c: support group_by
+- Regenerated golden files - 88/100 vm valid programs passing
+
+## Progress (2025-07-21 12:05 +0700)
+- transpiler/c: support group_by
+- Regenerated golden files - 88/100 vm valid programs passing
+
+## Progress (2025-07-21 12:05 +0700)
+- transpiler/c: support group_by
+- Regenerated golden files - 88/100 vm valid programs passing
+
+## Progress (2025-07-21 12:05 +0700)
+- transpiler/c: support group_by
+- Regenerated golden files - 85/100 vm valid programs passing
+
+## Progress (2025-07-21 12:05 +0700)
+- transpiler/c: support group_by
+- Regenerated golden files - 85/100 vm valid programs passing
+
+## Progress (2025-07-21 12:05 +0700)
+- transpiler/c: support group_by
+- Regenerated golden files - 85/100 vm valid programs passing
+
+## Progress (2025-07-21 12:05 +0700)
+- transpiler/c: support group_by
+- Regenerated golden files - 85/100 vm valid programs passing
+
+## Progress (2025-07-21 12:05 +0700)
+- transpiler/c: support group_by
+- Regenerated golden files - 85/100 vm valid programs passing
+
+## Progress (2025-07-21 12:05 +0700)
+- transpiler/c: support group_by
+- Regenerated golden files - 85/100 vm valid programs passing
+
 ## Progress (2025-07-21 11:33 +0700)
 - clj transpiler: support nested function closures
 - Regenerated golden files - 86/100 vm valid programs passing

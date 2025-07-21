@@ -970,7 +970,17 @@ func transpileCall(c *parser.CallExpr) (Node, error) {
 	case "len":
 		elems = append(elems, Symbol("count"))
 	case "count":
-		elems = append(elems, Symbol("count"))
+		if len(c.Args) != 1 {
+			return nil, fmt.Errorf("count expects 1 arg")
+		}
+		arg, err := transpileExpr(c.Args[0])
+		if err != nil {
+			return nil, err
+		}
+		if sym, ok := arg.(Symbol); ok && groupVars != nil && groupVars[string(sym)] {
+			arg = &List{Elems: []Node{Keyword("items"), sym}}
+		}
+		return &List{Elems: []Node{Symbol("count"), arg}}, nil
 	case "min":
 		elems = append(elems, Symbol("apply"), Symbol("min"))
 	case "max":
@@ -1171,7 +1181,7 @@ func transpileQueryExpr(q *parser.QueryExpr) (Node, error) {
 	if name, ok := identName(q.Source); ok && groupVars != nil && groupVars[name] {
 		src = &List{Elems: []Node{Keyword("items"), Symbol(name)}}
 	}
-	if q.Sort != nil {
+	if q.Sort != nil && q.Group == nil {
 		key, err := transpileExpr(q.Sort)
 		if err != nil {
 			return nil, err
@@ -1338,6 +1348,18 @@ func transpileQueryExpr(q *parser.QueryExpr) (Node, error) {
 	sel, err := transpileExpr(q.Select)
 	if err != nil {
 		return nil, err
+	}
+	if q.Sort != nil {
+		groupsComp := &List{Elems: []Node{Symbol("for"), &Vector{Elems: vec2}, Symbol(q.Group.Name)}}
+		sortExpr, err := transpileExpr(q.Sort)
+		if err != nil {
+			return nil, err
+		}
+		sortFn := &List{Elems: []Node{Symbol("fn"), &Vector{Elems: []Node{Symbol(q.Group.Name)}}, sortExpr}}
+		groupsVar := q.Group.Name + "_groups"
+		sorted := &List{Elems: []Node{Symbol("sort-by"), sortFn, Symbol(groupsVar)}}
+		forVec := &List{Elems: []Node{Symbol("for"), &Vector{Elems: []Node{Symbol(q.Group.Name), sorted}}, sel}}
+		return &List{Elems: []Node{Symbol("let"), &Vector{Elems: []Node{Symbol(groupsVar), groupsComp}}, forVec}}, nil
 	}
 	return &List{Elems: []Node{Symbol("for"), &Vector{Elems: vec2}, sel}}, nil
 }
