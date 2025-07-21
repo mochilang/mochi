@@ -4,7 +4,7 @@ This directory contains a minimal transpiler that converts a subset of Mochi int
 It currently supports print statements with integer or string expressions, variable declarations and assignments, unary negation and simple addition.
 
 ## Golden tests
-Programs under `tests/vm/valid` that have generated Zig code (63/100 completed):
+Programs under `tests/vm/valid` that have generated Zig code (64/100 completed):
 - [x] append_builtin
 - [x] avg_builtin
 - [x] basic_compare
@@ -17,7 +17,7 @@ Programs under `tests/vm/valid` that have generated Zig code (63/100 completed):
 - [x] count_builtin
 - [x] cross_join
 - [x] cross_join_filter
-- [ ] cross_join_triple
+ - [x] cross_join_triple
 - [ ] dataset_sort_take_limit
 - [ ] dataset_where_filter
 - [x] exists_builtin
