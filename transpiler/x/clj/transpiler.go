@@ -218,6 +218,28 @@ func addRecordDef(p *Program, name string, fields []string) {
 	}
 }
 
+func addJSONDef(p *Program) {
+	kvVec := &Vector{Elems: []Node{&Vector{Elems: []Node{Symbol("k"), Symbol("v")}}}}
+	strInner := &List{Elems: []Node{Symbol("str"), StringLit("\""), &List{Elems: []Node{Symbol("name"), Symbol("k")}}, StringLit("\":"), &List{Elems: []Node{Symbol("json-str"), Symbol("v")}}}}
+	mapFn := &List{Elems: []Node{Symbol("fn"), kvVec, strInner}}
+	mapJoin := &List{Elems: []Node{Symbol("clojure.string/join"), StringLit(","), &List{Elems: []Node{Symbol("map"), mapFn, Symbol("x")}}}}
+	mapBody := &List{Elems: []Node{Symbol("str"), StringLit("{"), mapJoin, StringLit("}")}}
+	seqJoin := &List{Elems: []Node{Symbol("clojure.string/join"), StringLit(","), &List{Elems: []Node{Symbol("map"), Symbol("json-str"), Symbol("x")}}}}
+	seqBody := &List{Elems: []Node{Symbol("str"), StringLit("["), seqJoin, StringLit("]")}}
+	condForm := &List{Elems: []Node{Symbol("cond"),
+		&List{Elems: []Node{Symbol("map?"), Symbol("x")}}, mapBody,
+		&List{Elems: []Node{Symbol("sequential?"), Symbol("x")}}, seqBody,
+		&List{Elems: []Node{Symbol("string?"), Symbol("x")}}, &List{Elems: []Node{Symbol("pr-str"), Symbol("x")}},
+		Keyword("else"), &List{Elems: []Node{Symbol("str"), Symbol("x")}},
+	}}
+	defn := &Defn{Name: "json-str", Params: []Node{Symbol("x")}, Body: []Node{condForm}}
+	if len(p.Forms) > 2 {
+		p.Forms = append(p.Forms[:2], append([]Node{defn}, p.Forms[2:]...)...)
+	} else {
+		p.Forms = append(p.Forms, defn)
+	}
+}
+
 // Program is a sequence of top-level forms.
 type Program struct {
 	Forms []Node
@@ -432,6 +454,7 @@ var currentProgram *Program
 var funDepth int
 var funParamsStack [][]string
 var nestedFunArgs map[string][]string
+var needsJSONFunc bool
 
 // Transpile converts a Mochi program into a Clojure AST. The implementation
 // is intentionally minimal and currently only supports very small programs used
@@ -446,6 +469,7 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	structCount = 0
 	funParamsStack = nil
 	nestedFunArgs = make(map[string][]string)
+	needsJSONFunc = false
 	pr := &Program{}
 	currentProgram = pr
 	defer func() {
@@ -495,6 +519,10 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 		if n != nil {
 			body = append(body, n)
 		}
+	}
+
+	if needsJSONFunc {
+		addJSONDef(pr)
 	}
 
 	pr.Forms = append(pr.Forms, &Defn{Name: "-main", Params: nil, Body: body})
@@ -1172,19 +1200,9 @@ func transpilePrimary(p *parser.Primary) (Node, error) {
 		if err != nil {
 			return nil, err
 		}
-		mapJoin := &List{Elems: []Node{Symbol("clojure.string/join"), StringLit(","), &List{Elems: []Node{Symbol("map"), &List{Elems: []Node{Symbol("fn"), &Vector{Elems: []Node{&Vector{Elems: []Node{Symbol("k"), Symbol("v")}}}}, &List{Elems: []Node{Symbol("str"), StringLit("\""), &List{Elems: []Node{Symbol("name"), Symbol("k")}}, StringLit("\":"), &List{Elems: []Node{Symbol("json_str"), Symbol("v")}}}}}}, Symbol("x")}}}}
-		mapBody := &List{Elems: []Node{Symbol("str"), StringLit("{"), mapJoin, StringLit("}")}}
-		seqJoin := &List{Elems: []Node{Symbol("clojure.string/join"), StringLit(","), &List{Elems: []Node{Symbol("map"), Symbol("json_str"), Symbol("x")}}}}
-		seqBody := &List{Elems: []Node{Symbol("str"), StringLit("["), seqJoin, StringLit("]")}}
-		condForm := &List{Elems: []Node{Symbol("cond"),
-			&List{Elems: []Node{Symbol("map?"), Symbol("x")}}, mapBody,
-			&List{Elems: []Node{Symbol("sequential?"), Symbol("x")}}, seqBody,
-			&List{Elems: []Node{Symbol("string?"), Symbol("x")}}, &List{Elems: []Node{Symbol("pr-str"), Symbol("x")}},
-			Keyword("else"), &List{Elems: []Node{Symbol("str"), Symbol("x")}},
-		}}
-		jsonFn := &List{Elems: []Node{Symbol("fn"), Symbol("json_str"), &Vector{Elems: []Node{Symbol("x")}}, condForm}}
+		needsJSONFunc = true
 		binding := &Vector{Elems: []Node{Symbol("item"), src}}
-		line := &List{Elems: []Node{jsonFn, Symbol("item")}}
+		line := &List{Elems: []Node{Symbol("json-str"), Symbol("item")}}
 		printExpr := &List{Elems: []Node{Symbol("println"), line}}
 		return &List{Elems: []Node{Symbol("doseq"), binding, printExpr}}, nil
 	case p.Selector != nil && len(p.Selector.Tail) == 0:
@@ -1255,18 +1273,8 @@ func transpileCall(c *parser.CallExpr) (Node, error) {
 		if err != nil {
 			return nil, err
 		}
-		mapJoin := &List{Elems: []Node{Symbol("clojure.string/join"), StringLit(","), &List{Elems: []Node{Symbol("map"), &List{Elems: []Node{Symbol("fn"), &Vector{Elems: []Node{&Vector{Elems: []Node{Symbol("k"), Symbol("v")}}}}, &List{Elems: []Node{Symbol("str"), StringLit("\""), &List{Elems: []Node{Symbol("name"), Symbol("k")}}, StringLit("\":"), &List{Elems: []Node{Symbol("json_str"), Symbol("v")}}}}}}, Symbol("x")}}}}
-		mapBody := &List{Elems: []Node{Symbol("str"), StringLit("{"), mapJoin, StringLit("}")}}
-		seqJoin := &List{Elems: []Node{Symbol("clojure.string/join"), StringLit(","), &List{Elems: []Node{Symbol("map"), Symbol("json_str"), Symbol("x")}}}}
-		seqBody := &List{Elems: []Node{Symbol("str"), StringLit("["), seqJoin, StringLit("]")}}
-		condForm := &List{Elems: []Node{Symbol("cond"),
-			&List{Elems: []Node{Symbol("map?"), Symbol("x")}}, mapBody,
-			&List{Elems: []Node{Symbol("sequential?"), Symbol("x")}}, seqBody,
-			&List{Elems: []Node{Symbol("string?"), Symbol("x")}}, &List{Elems: []Node{Symbol("pr-str"), Symbol("x")}},
-			Keyword("else"), &List{Elems: []Node{Symbol("str"), Symbol("x")}},
-		}}
-		jsonFn := &List{Elems: []Node{Symbol("fn"), Symbol("json_str"), &Vector{Elems: []Node{Symbol("x")}}, condForm}}
-		call := &List{Elems: []Node{jsonFn, arg}}
+		needsJSONFunc = true
+		call := &List{Elems: []Node{Symbol("json-str"), arg}}
 		return &List{Elems: []Node{Symbol("println"), call}}, nil
 	case "exists":
 		if len(c.Args) != 1 {
