@@ -515,6 +515,12 @@ type queryFrom struct {
 	Src Expr
 }
 
+type queryJoin struct {
+	Var  string
+	Src  Expr
+	Cond Expr
+}
+
 // GroupByExpr represents a query with grouping support.
 type GroupByExpr struct {
 	Var      string
@@ -527,6 +533,7 @@ type GroupByExpr struct {
 	Sort     Expr
 	SortType string
 	Froms    []queryFrom
+	Joins    []queryJoin
 	ElemType string
 }
 
@@ -689,21 +696,47 @@ func (g *GroupByExpr) emit(w io.Writer) {
 	if elem == "" {
 		elem = "Any"
 	}
-	fmt.Fprint(w, "ArrayBuffer.from(")
+	fmt.Fprintf(w, "({ var _tmp = ArrayBuffer[(Any, Map[String,Any])]() ; for (%s <- ", g.Var)
 	g.Source.emit(w)
-	fmt.Fprintf(w, ".groupBy(%s => ", g.Var)
-	g.Key.emit(w)
-	fmt.Fprint(w, ")")
+	fmt.Fprint(w, ") {")
 	for _, f := range g.Froms {
-		_ = f
+		fmt.Fprintf(w, " for (%s <- ", f.Var)
+		f.Src.emit(w)
+		fmt.Fprint(w, ") {")
+	}
+	for _, j := range g.Joins {
+		fmt.Fprintf(w, " for (%s <- ", j.Var)
+		j.Src.emit(w)
+		fmt.Fprint(w, ") { if (")
+		j.Cond.emit(w)
+		fmt.Fprint(w, ") {")
 	}
 	if g.Where != nil {
-		fmt.Fprint(w, ".filter(")
-		fmt.Fprintf(w, "%s => ", g.Var)
+		fmt.Fprint(w, " if (")
 		g.Where.emit(w)
-		fmt.Fprint(w, ")")
+		fmt.Fprint(w, ") {")
 	}
-	fmt.Fprintf(w, ".map{ case (k, %s) => Map(\"key\" -> k, \"items\" -> ArrayBuffer.from(%s)) }", g.Name, g.Name)
+	fmt.Fprint(w, " _tmp.append((")
+	g.Key.emit(w)
+	fmt.Fprint(w, ", Map(")
+	fmt.Fprintf(w, "\"%s\" -> %s", g.Var, g.Var)
+	for _, f := range g.Froms {
+		fmt.Fprintf(w, ", \"%s\" -> %s", f.Var, f.Var)
+	}
+	for _, j := range g.Joins {
+		fmt.Fprintf(w, ", \"%s\" -> %s", j.Var, j.Var)
+	}
+	fmt.Fprint(w, ")))")
+	if g.Where != nil {
+		fmt.Fprint(w, " }")
+	}
+	for range g.Joins {
+		fmt.Fprint(w, " }}")
+	}
+	for range g.Froms {
+		fmt.Fprint(w, " }")
+	}
+	fmt.Fprint(w, " }; ArrayBuffer(_tmp.groupBy(_._1).map{ case (k, arr) => Map(\"key\" -> k, \"items\" -> ArrayBuffer(arr.map(_._2).toSeq: _*)) }.toSeq: _*)")
 	if g.Having != nil {
 		fmt.Fprint(w, ".filter(")
 		fmt.Fprintf(w, "%s => ", g.Name)
@@ -719,7 +752,7 @@ func (g *GroupByExpr) emit(w io.Writer) {
 	fmt.Fprint(w, ".map(")
 	fmt.Fprintf(w, "%s => ", g.Name)
 	g.Select.emit(w)
-	fmt.Fprint(w, "))")
+	fmt.Fprint(w, ") })")
 }
 
 // Emit generates formatted Scala source for the given program.
@@ -1033,7 +1066,8 @@ func convertPostfix(pf *parser.PostfixExpr, env *types.Env) (Expr, error) {
 		case op.Field != nil:
 			if n, ok := expr.(*Name); ok && env != nil {
 				if typ, err := env.GetVar(n.Name); err == nil {
-					if _, ok := typ.(types.GroupType); ok {
+					switch typ.(type) {
+					case types.GroupType, types.MapType:
 						expr = &IndexExpr{Value: expr, Index: &StringLit{Value: op.Field.Name}}
 						continue
 					}
@@ -1572,7 +1606,8 @@ func convertGroupQuery(q *parser.QueryExpr, env *types.Env) (Expr, error) {
 		elemT = gt.Elem
 	}
 	child.SetVar(q.Var, elemT, true)
-	froms := make([]queryFrom, 0, len(q.Froms)+len(q.Joins))
+	froms := make([]queryFrom, 0, len(q.Froms))
+	joins := make([]queryJoin, 0, len(q.Joins))
 	var where Expr
 	for _, f := range q.Froms {
 		fe, err := convertExpr(f.Src, child)
@@ -1601,16 +1636,11 @@ func convertGroupQuery(q *parser.QueryExpr, env *types.Env) (Expr, error) {
 			jelem = lt.Elem
 		}
 		child.SetVar(j.Var, jelem, true)
-		froms = append(froms, queryFrom{Var: j.Var, Src: je})
 		cond, err := convertExpr(j.On, child)
 		if err != nil {
 			return nil, err
 		}
-		if where == nil {
-			where = cond
-		} else {
-			where = &BinaryExpr{Left: where, Op: "&&", Right: cond}
-		}
+		joins = append(joins, queryJoin{Var: j.Var, Src: je, Cond: cond})
 	}
 	if q.Where != nil {
 		cond, err := convertExpr(q.Where, child)
@@ -1622,6 +1652,9 @@ func convertGroupQuery(q *parser.QueryExpr, env *types.Env) (Expr, error) {
 		} else {
 			where = &BinaryExpr{Left: where, Op: "&&", Right: cond}
 		}
+	}
+	if len(q.Joins) > 0 || len(q.Froms) > 0 {
+		elemT = types.MapType{Key: types.AnyType{}, Value: types.AnyType{}}
 	}
 	key, err := convertExpr(q.Group.Exprs[0], child)
 	if err != nil {
@@ -1656,7 +1689,7 @@ func convertGroupQuery(q *parser.QueryExpr, env *types.Env) (Expr, error) {
 	if elemTypeStr == "" {
 		elemTypeStr = "Any"
 	}
-	return &GroupByExpr{Var: q.Var, Source: src, Key: key, Name: q.Group.Name, Where: where, Select: sel, Having: having, Sort: sortExpr, SortType: sortType, Froms: froms, ElemType: elemTypeStr}, nil
+	return &GroupByExpr{Var: q.Var, Source: src, Key: key, Name: q.Group.Name, Where: where, Select: sel, Having: having, Sort: sortExpr, SortType: sortType, Froms: froms, Joins: joins, ElemType: elemTypeStr}, nil
 }
 
 func convertQueryExpr(q *parser.QueryExpr, env *types.Env) (Expr, error) {

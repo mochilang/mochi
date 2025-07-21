@@ -1,14 +1,11 @@
 exit status 1
-/workspace/mochi/tests/transpiler/x/scala/group_by_join.scala:9: error: ';' expected but 'for' found.
-    val stats: ArrayBuffer[Map[String,Any]] = ({ var _groups = Map[Any, Map[String, Any]]() ; var _res = ArrayBuffer[Map[String,Any]]() ; for (o <- orders) { for (c <- customers) { if (o.customerId == c.id) { val _key = c.name ; val _g = _groups.getOrElseUpdate(_key, Map("key" -> _key, "items" -> ArrayBuffer[Any]())) ; _g("items").asInstanceOf[ArrayBuffer[Any]].append(o) } } for (g <- _groups.values) { _res.append(Map("name" -> g("key"), "count" -> g("items").size)) } ; _res })
-                                                                                                                                                                                                                                                                                                                                                                                          ^
-/workspace/mochi/tests/transpiler/x/scala/group_by_join.scala:9: error: ';' expected but ')' found.
-    val stats: ArrayBuffer[Map[String,Any]] = ({ var _groups = Map[Any, Map[String, Any]]() ; var _res = ArrayBuffer[Map[String,Any]]() ; for (o <- orders) { for (c <- customers) { if (o.customerId == c.id) { val _key = c.name ; val _g = _groups.getOrElseUpdate(_key, Map("key" -> _key, "items" -> ArrayBuffer[Any]())) ; _g("items").asInstanceOf[ArrayBuffer[Any]].append(o) } } for (g <- _groups.values) { _res.append(Map("name" -> g("key"), "count" -> g("items").size)) } ; _res })
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 ^
-/workspace/mochi/tests/transpiler/x/scala/group_by_join.scala:12: error: Missing closing brace `}' assumed here
-    println(List(s.name, "orders:", s.count).mkString(" "))
-    ^
-/workspace/mochi/tests/transpiler/x/scala/group_by_join.scala:14: error: ')' expected but '}' found.
-  }
-  ^
-four errors found
+/workspace/mochi/tests/transpiler/x/scala/group_by_join.scala:9: error: value size is not a member of Any
+    val stats: ArrayBuffer[Any] = ({ var _tmp = ArrayBuffer[(Any, Map[String,Any])]() ; for (o <- orders) { for (c <- customers) { if (o.customerId == c.id) { _tmp.append((c.name, Map("o" -> o, "c" -> c))) }} }; ArrayBuffer(_tmp.groupBy(_._1).map{ case (k, arr) => Map("key" -> k, "items" -> ArrayBuffer(arr.map(_._2).toSeq: _*)) }.toSeq: _*).map(g => Map("name" -> g("key"), "count" -> g("items").size)) })
+                                                                                                                                                                                                                                                                                                                                                                                                              ^
+/workspace/mochi/tests/transpiler/x/scala/group_by_join.scala:12: error: value name is not a member of Any
+      println(List(s.name, "orders:", s.count).mkString(" "))
+                     ^
+/workspace/mochi/tests/transpiler/x/scala/group_by_join.scala:12: error: value count is not a member of Any
+      println(List(s.name, "orders:", s.count).mkString(" "))
+                                        ^
+three errors found
