@@ -1,3 +1,7 @@
+## Progress (2025-07-21 16:34 +0000)
+- fs: add yaml/jsonl load/save support
+- Generated F# for 100/100 programs (98 passing)
+
 ## Progress (2025-07-21 22:29 +0700)
 - update docs
 - Generated F# for 100/100 programs (98 passing)
