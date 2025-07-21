@@ -250,22 +250,28 @@ func (b *BoolLit) emit(w io.Writer) {
 
 // IndexExpr represents a[i].
 type IndexExpr struct {
-	Target Expr
-	Index  Expr
-	Type   string
+	Target    Expr
+	Index     Expr
+	Type      string
+	ForceBang bool
 }
 
 func (ix *IndexExpr) emit(w io.Writer) {
+	isMap := strings.HasPrefix(guessType(ix.Target), "MutableMap<") || ix.ForceBang
+	if isMap {
+		io.WriteString(w, "(")
+	}
 	ix.Target.emit(w)
 	io.WriteString(w, "[")
 	ix.Index.emit(w)
 	io.WriteString(w, "]")
-	if strings.HasPrefix(guessType(ix.Target), "MutableMap<") {
+	if isMap {
 		if ix.Type != "" {
 			io.WriteString(w, " as "+ix.Type)
 		} else {
 			io.WriteString(w, "!!")
 		}
+		io.WriteString(w, ")")
 	}
 }
 
@@ -370,13 +376,37 @@ type BinaryExpr struct {
 
 func (b *BinaryExpr) emit(w io.Writer) {
 	numOp := b.Op == "+" || b.Op == "-" || b.Op == "*" || b.Op == "/" || b.Op == "%"
-	emitOperand := func(e Expr) {
+	cmpOp := b.Op == ">" || b.Op == "<" || b.Op == ">=" || b.Op == "<="
+	cast := func(e Expr, typ string) {
+		if typ == "Double" {
+			io.WriteString(w, "(")
+			e.emit(w)
+			io.WriteString(w, " as Number).toDouble()")
+		} else if typ == "String" {
+			io.WriteString(w, "(")
+			e.emit(w)
+			io.WriteString(w, ").toString()")
+		} else {
+			e.emit(w)
+		}
+	}
+	emitOperand := func(e Expr, other Expr) {
 		if numOp {
 			t := guessType(e)
 			if t == "" || t == "Any" {
-				io.WriteString(w, "(")
-				e.emit(w)
-				io.WriteString(w, " as Number).toDouble()")
+				cast(e, "Double")
+				return
+			}
+		}
+		if cmpOp {
+			lt := guessType(e)
+			rt := guessType(other)
+			if (lt == "" || lt == "Any") && rt == "String" {
+				cast(e, "String")
+				return
+			}
+			if (lt == "" || lt == "Any") && (rt == "Double" || rt == "Int") {
+				cast(e, "Double")
 				return
 			}
 		}
@@ -384,18 +414,18 @@ func (b *BinaryExpr) emit(w io.Writer) {
 	}
 	if _, ok := b.Left.(*BinaryExpr); ok {
 		io.WriteString(w, "(")
-		emitOperand(b.Left)
+		emitOperand(b.Left, b.Right)
 		io.WriteString(w, ")")
 	} else {
-		emitOperand(b.Left)
+		emitOperand(b.Left, b.Right)
 	}
 	io.WriteString(w, " "+b.Op+" ")
 	if _, ok := b.Right.(*BinaryExpr); ok {
 		io.WriteString(w, "(")
-		emitOperand(b.Right)
+		emitOperand(b.Right, b.Left)
 		io.WriteString(w, ")")
 	} else {
-		emitOperand(b.Right)
+		emitOperand(b.Right, b.Left)
 	}
 }
 
@@ -943,7 +973,6 @@ func (gq *GroupQueryExpr) emit(w io.Writer) {
 	indent(w, 1+len(gq.Vars))
 	io.WriteString(w, "val _list = _groups.getOrPut(")
 	gq.Key.emit(w)
-	io.WriteString(w, " as Any")
 	io.WriteString(w, ") { mutableListOf<"+rowType+">() }\n")
 	indent(w, 1+len(gq.Vars))
 	io.WriteString(w, "_list.add(")
@@ -1014,7 +1043,7 @@ func (gq *GroupQueryExpr) emit(w io.Writer) {
 	io.WriteString(w, "}\n")
 	if useTmp {
 		indent(w, 1)
-		io.WriteString(w, "_tmp.sortBy { it.first }.map { it.second }.toMutableList().also { _res.addAll(it) }\n")
+		io.WriteString(w, "_tmp.sortedBy { it.first }.map { it.second }.toMutableList().also { _res.addAll(it) }\n")
 	}
 	indent(w, 1)
 	io.WriteString(w, "_res\n")
@@ -1314,6 +1343,14 @@ func guessType(e Expr) string {
 			elem = "Any"
 		}
 		return "MutableList<" + elem + ">"
+	case *BinaryExpr:
+		if v.Op == "+" || v.Op == "-" || v.Op == "*" || v.Op == "/" || v.Op == "%" {
+			return "Double"
+		}
+		if v.Op == "==" || v.Op == "!=" || v.Op == ">" || v.Op == "<" || v.Op == ">=" || v.Op == "<=" {
+			return "Boolean"
+		}
+		return ""
 	case *IndexExpr:
 		if v.Type != "" {
 			return v.Type
@@ -1695,7 +1732,7 @@ func buildIndexTarget(env *types.Env, name string, idx []*parser.IndexOp) (Expr,
 				curType = tt.Value
 			}
 		}
-		target = &IndexExpr{Target: target, Index: idxExpr, Type: tname}
+		target = &IndexExpr{Target: target, Index: idxExpr, Type: tname, ForceBang: true}
 	}
 	return target, nil
 }
@@ -2192,7 +2229,7 @@ func convertPostfix(env *types.Env, p *parser.PostfixExpr) (Expr, error) {
 					}
 				}
 			}
-			expr = &IndexExpr{Target: expr, Index: idx, Type: tname}
+			expr = &IndexExpr{Target: expr, Index: idx, Type: tname, ForceBang: true}
 		case op.Index != nil && op.Index.Colon != nil && op.Index.Colon2 == nil && op.Index.Step == nil:
 			var startExpr Expr
 			if op.Index.Start != nil {
@@ -2236,9 +2273,18 @@ func convertPostfix(env *types.Env, p *parser.PostfixExpr) (Expr, error) {
 			i++ // skip call op
 		case op.Field != nil:
 			if baseIsMap || strings.HasPrefix(guessType(expr), "MutableMap<") {
-				expr = &IndexExpr{Target: expr, Index: &StringLit{Value: op.Field.Name}}
+				expr = &IndexExpr{Target: expr, Index: &StringLit{Value: op.Field.Name}, ForceBang: true}
 				baseIsMap = false
 			} else {
+				if vr, ok := expr.(*VarRef); ok && env != nil {
+					if t, err := env.GetVar(vr.Name); err == nil {
+						if _, ok := t.(types.GroupType); ok && op.Field.Name == "key" {
+							expr = &FieldExpr{Receiver: expr, Name: op.Field.Name}
+							baseIsMap = true
+							break
+						}
+					}
+				}
 				expr = &FieldExpr{Receiver: expr, Name: op.Field.Name}
 			}
 		case op.Cast != nil:
@@ -2424,15 +2470,28 @@ func convertPrimary(env *types.Env, p *parser.Primary) (Expr, error) {
 				}
 			}
 		}
-		for _, name := range p.Selector.Tail {
+		for i, name := range p.Selector.Tail {
 			if baseIsMap {
 				typ := envTypeName(env, name)
-				expr = &IndexExpr{Target: expr, Index: &StringLit{Value: name}, Type: typ}
-			} else {
-				expr = &FieldExpr{Receiver: expr, Name: name}
+				expr = &IndexExpr{Target: expr, Index: &StringLit{Value: name}, Type: typ, ForceBang: true}
+				t := guessType(expr)
+				baseIsMap = strings.HasPrefix(t, "MutableMap<")
+				continue
+			}
+			expr = &FieldExpr{Receiver: expr, Name: name}
+			if i == 0 {
+				if vr, ok := expr.(*FieldExpr); ok {
+					if vref, ok2 := vr.Receiver.(*VarRef); ok2 && env != nil {
+						if t, err := env.GetVar(vref.Name); err == nil {
+							if _, ok := t.(types.GroupType); ok && name == "key" {
+								baseIsMap = true
+							}
+						}
+					}
+				}
 			}
 			t := guessType(expr)
-			baseIsMap = strings.HasPrefix(t, "MutableMap<")
+			baseIsMap = strings.HasPrefix(t, "MutableMap<") || baseIsMap
 		}
 		return expr, nil
 	case p.List != nil:
