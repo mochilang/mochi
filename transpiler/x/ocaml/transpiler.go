@@ -737,31 +737,44 @@ type queryLoop struct {
 // QueryExpr represents a basic cross join query without filtering.
 type QueryExpr struct {
 	Loops  []queryLoop
+	Where  Expr
 	Select Expr
 }
 
-func emitQueryLoop(w io.Writer, loops []queryLoop, sel Expr, idx int) {
+func emitQueryLoop(w io.Writer, loops []queryLoop, sel Expr, where Expr, idx int) {
 	loop := loops[idx]
 	if idx == len(loops)-1 {
-		io.WriteString(w, "(List.map (fun ")
-		io.WriteString(w, loop.Name)
-		io.WriteString(w, " -> ")
-		sel.emit(w)
-		io.WriteString(w, ") ")
-		loop.Src.emit(w)
-		io.WriteString(w, ")")
+		if where != nil {
+			io.WriteString(w, "(List.filter_map (fun ")
+			io.WriteString(w, loop.Name)
+			io.WriteString(w, " -> if ")
+			where.emit(w)
+			io.WriteString(w, " then Some (")
+			sel.emit(w)
+			io.WriteString(w, ") else None) ")
+			loop.Src.emit(w)
+			io.WriteString(w, ")")
+		} else {
+			io.WriteString(w, "(List.map (fun ")
+			io.WriteString(w, loop.Name)
+			io.WriteString(w, " -> ")
+			sel.emit(w)
+			io.WriteString(w, ") ")
+			loop.Src.emit(w)
+			io.WriteString(w, ")")
+		}
 		return
 	}
 	io.WriteString(w, "(List.concat (List.map (fun ")
 	io.WriteString(w, loop.Name)
 	io.WriteString(w, " -> ")
-	emitQueryLoop(w, loops, sel, idx+1)
+	emitQueryLoop(w, loops, sel, where, idx+1)
 	io.WriteString(w, ") ")
 	loop.Src.emit(w)
 	io.WriteString(w, "))")
 }
 
-func (q *QueryExpr) emit(w io.Writer)      { emitQueryLoop(w, q.Loops, q.Select, 0) }
+func (q *QueryExpr) emit(w io.Writer)      { emitQueryLoop(w, q.Loops, q.Select, q.Where, 0) }
 func (q *QueryExpr) emitPrint(w io.Writer) { q.emit(w) }
 
 // GroupByQueryExpr represents a query with a grouping step.
@@ -770,6 +783,7 @@ type GroupByQueryExpr struct {
 	Var    string
 	Key    Expr
 	Into   string
+	Having Expr
 	Select Expr
 }
 
@@ -791,9 +805,17 @@ func (g *GroupByQueryExpr) emit(w io.Writer) {
 	io.WriteString(w, g.Into+"_key, "+g.Into+"_items")
 	io.WriteString(w, ") ->\n")
 	fmt.Fprintf(w, "    let %s = List.rev %s_items in\n", g.Into, g.Into)
-	io.WriteString(w, "    __res0 := ")
-	g.Select.emit(w)
-	io.WriteString(w, " :: !__res0\n")
+	if g.Having != nil {
+		io.WriteString(w, "    if ")
+		g.Having.emit(w)
+		io.WriteString(w, " then (\n      __res0 := ")
+		g.Select.emit(w)
+		io.WriteString(w, " :: !__res0)\n    else ()\n")
+	} else {
+		io.WriteString(w, "    __res0 := ")
+		g.Select.emit(w)
+		io.WriteString(w, " :: !__res0\n")
+	}
 	io.WriteString(w, "  ) !__groups0;\n")
 	io.WriteString(w, "  List.rev !__res0)")
 }
@@ -1759,14 +1781,22 @@ func convertPrimary(p *parser.Primary, env *types.Env, vars map[string]VarInfo) 
 		return convertMatch(p.Match, env, vars)
 	case p.List != nil:
 		elems := make([]Expr, len(p.List.Elems))
+		elemTyp := ""
 		for i, e := range p.List.Elems {
-			ex, _, err := convertExpr(e, env, vars)
+			ex, t, err := convertExpr(e, env, vars)
 			if err != nil {
 				return nil, "", err
 			}
+			if i == 0 {
+				elemTyp = t
+			}
 			elems[i] = ex
 		}
-		return &ListLit{Elems: elems}, "list", nil
+		listTyp := "list"
+		if elemTyp != "" {
+			listTyp = "list-" + elemTyp
+		}
+		return &ListLit{Elems: elems}, listTyp, nil
 	case p.Map != nil:
 		items := make([]MapEntry, len(p.Map.Items))
 		fieldTypes := []string{}
@@ -1925,7 +1955,7 @@ func convertFunExpr(fn *parser.FunExpr, env *types.Env, vars map[string]VarInfo)
 
 func convertQueryExpr(q *parser.QueryExpr, env *types.Env, vars map[string]VarInfo) (Expr, string, error) {
 	loops := []queryLoop{}
-	src, _, err := convertExpr(q.Source, env, vars)
+	src, srcTyp, err := convertExpr(q.Source, env, vars)
 	if err != nil {
 		return nil, "", err
 	}
@@ -1934,7 +1964,11 @@ func convertQueryExpr(q *parser.QueryExpr, env *types.Env, vars map[string]VarIn
 	for k, v := range vars {
 		qVars[k] = v
 	}
-	qVars[q.Var] = VarInfo{typ: "map"}
+	vtyp := "map"
+	if strings.HasPrefix(srcTyp, "list-") {
+		vtyp = strings.TrimPrefix(srcTyp, "list-")
+	}
+	qVars[q.Var] = VarInfo{typ: vtyp}
 	if q.Group != nil {
 		if len(q.Froms) > 0 || len(q.Joins) > 0 || q.Where != nil || q.Sort != nil || q.Skip != nil || q.Take != nil {
 			return nil, "", fmt.Errorf("group by: unsupported query form")
@@ -1949,6 +1983,14 @@ func convertQueryExpr(q *parser.QueryExpr, env *types.Env, vars map[string]VarIn
 		}
 		gVars[q.Group.Name] = VarInfo{typ: "list", group: true}
 		gVars[q.Group.Name+"Key"] = VarInfo{typ: "string"}
+		var havingExpr Expr
+		if q.Group.Having != nil {
+			var err error
+			havingExpr, _, err = convertExpr(q.Group.Having, env, gVars)
+			if err != nil {
+				return nil, "", err
+			}
+		}
 		sel, selTyp, err := convertExpr(q.Select, env, gVars)
 		if err != nil {
 			return nil, "", err
@@ -1957,15 +1999,27 @@ func convertQueryExpr(q *parser.QueryExpr, env *types.Env, vars map[string]VarIn
 		if selTyp != "" {
 			retTyp = "list-" + selTyp
 		}
-		return &GroupByQueryExpr{Source: src, Var: q.Var, Key: keyExpr, Into: q.Group.Name, Select: sel}, retTyp, nil
+		return &GroupByQueryExpr{Source: src, Var: q.Var, Key: keyExpr, Into: q.Group.Name, Having: havingExpr, Select: sel}, retTyp, nil
 	}
 	for _, f := range q.Froms {
-		fs, _, err := convertExpr(f.Src, env, vars)
+		fs, fsTyp, err := convertExpr(f.Src, env, vars)
 		if err != nil {
 			return nil, "", err
 		}
 		loops = append(loops, queryLoop{Name: f.Var, Src: fs})
-		qVars[f.Var] = VarInfo{typ: "map"}
+		ftyp := "map"
+		if strings.HasPrefix(fsTyp, "list-") {
+			ftyp = strings.TrimPrefix(fsTyp, "list-")
+		}
+		qVars[f.Var] = VarInfo{typ: ftyp}
+	}
+	var whereExpr Expr
+	if q.Where != nil {
+		var err error
+		whereExpr, _, err = convertExpr(q.Where, env, qVars)
+		if err != nil {
+			return nil, "", err
+		}
 	}
 	sel, selTyp, err := convertExpr(q.Select, env, qVars)
 	if err != nil {
@@ -1975,7 +2029,7 @@ func convertQueryExpr(q *parser.QueryExpr, env *types.Env, vars map[string]VarIn
 	if selTyp != "" {
 		retTyp = "list-" + selTyp
 	}
-	return &QueryExpr{Loops: loops, Select: sel}, retTyp, nil
+	return &QueryExpr{Loops: loops, Where: whereExpr, Select: sel}, retTyp, nil
 }
 
 func convertCall(c *parser.CallExpr, env *types.Env, vars map[string]VarInfo) (Expr, string, error) {
