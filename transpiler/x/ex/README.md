@@ -2,107 +2,104 @@
 
 This directory contains a minimal transpiler that converts a very small subset of Mochi into Elixir source code. The generated files live in `tests/transpiler/x/ex`.
 
-Currently 6 of 100 programs transpile and run.
-Last updated: 2025-07-21 18:35 +0700
-
-The table below tracks which programs from `tests/vm/valid` successfully transpile and run. Checked items have generated `.exs` code and matching `.out` files in `tests/transpiler/x/ex`.
-- [ ] append_builtin.mochi
-- [ ] avg_builtin.mochi
-- [x] basic_compare.mochi
-- [ ] binary_precedence.mochi
-- [ ] bool_chain.mochi
-- [ ] break_continue.mochi
-- [ ] cast_string_to_int.mochi
-- [ ] cast_struct.mochi
-- [ ] closure.mochi
-- [ ] count_builtin.mochi
-- [ ] cross_join.mochi
-- [ ] cross_join_filter.mochi
-- [ ] cross_join_triple.mochi
-- [ ] dataset_sort_take_limit.mochi
-- [ ] dataset_where_filter.mochi
-- [ ] exists_builtin.mochi
-- [ ] for_list_collection.mochi
-- [ ] for_loop.mochi
-- [ ] for_map_collection.mochi
-- [ ] fun_call.mochi
-- [ ] fun_expr_in_let.mochi
-- [ ] fun_three_args.mochi
-- [ ] go_auto.mochi
-- [ ] group_by.mochi
-- [ ] group_by_conditional_sum.mochi
-- [ ] group_by_having.mochi
-- [x] group_by_join.mochi
-- [x] group_by_left_join.mochi
-- [ ] group_by_multi_join.mochi
-- [ ] group_by_multi_join_sort.mochi
-- [ ] group_by_sort.mochi
-- [ ] group_items_iteration.mochi
-- [ ] if_else.mochi
-- [ ] if_then_else.mochi
-- [ ] if_then_else_nested.mochi
-- [ ] in_operator.mochi
-- [ ] in_operator_extended.mochi
-- [x] inner_join.mochi
-- [ ] join_multi.mochi
-- [ ] json_builtin.mochi
-- [x] left_join.mochi
-- [ ] left_join_multi.mochi
-- [ ] len_builtin.mochi
-- [ ] len_map.mochi
-- [ ] len_string.mochi
-- [ ] let_and_print.mochi
-- [ ] list_assign.mochi
-- [ ] list_index.mochi
-- [ ] list_nested_assign.mochi
-- [ ] list_set_ops.mochi
-- [ ] load_yaml.mochi
-- [ ] map_assign.mochi
-- [ ] map_in_operator.mochi
-- [ ] map_index.mochi
-- [ ] map_int_key.mochi
-- [ ] map_literal_dynamic.mochi
-- [ ] map_membership.mochi
-- [ ] map_nested_assign.mochi
-- [ ] match_expr.mochi
-- [ ] match_full.mochi
-- [ ] math_ops.mochi
-- [ ] membership.mochi
-- [ ] min_max_builtin.mochi
-- [ ] nested_function.mochi
-- [ ] order_by_map.mochi
-- [ ] outer_join.mochi
-- [ ] partial_application.mochi
-- [ ] print_hello.mochi
-- [ ] pure_fold.mochi
-- [ ] pure_global_fold.mochi
-- [ ] python_auto.mochi
-- [ ] python_math.mochi
-- [ ] query_sum_select.mochi
-- [ ] record_assign.mochi
-- [x] right_join.mochi
-- [ ] save_jsonl_stdout.mochi
-- [ ] short_circuit.mochi
-- [ ] slice.mochi
-- [ ] sort_stable.mochi
-- [ ] str_builtin.mochi
-- [ ] string_compare.mochi
-- [ ] string_concat.mochi
-- [ ] string_contains.mochi
-- [ ] string_in_operator.mochi
-- [ ] string_index.mochi
-- [ ] string_prefix_slice.mochi
-- [ ] substring_builtin.mochi
-- [ ] sum_builtin.mochi
-- [ ] tail_recursion.mochi
-- [ ] test_block.mochi
-- [ ] tree_sum.mochi
-- [ ] two-sum.mochi
-- [ ] typed_let.mochi
-- [ ] typed_var.mochi
-- [ ] unary_neg.mochi
-- [ ] update_stmt.mochi
-- [ ] user_type_literal.mochi
-- [ ] values_builtin.mochi
-- [ ] var_assignment.mochi
-- [ ] while_loop.mochi
+## VM Golden Test Checklist (83/100)
+- [x] append_builtin
+- [x] avg_builtin
+- [x] basic_compare
+- [x] binary_precedence
+- [x] bool_chain
+- [x] break_continue
+- [x] cast_string_to_int
+- [ ] cast_struct
+- [x] closure
+- [x] count_builtin
+- [x] cross_join
+- [x] cross_join_filter
+- [x] cross_join_triple
+- [x] dataset_sort_take_limit
+- [x] dataset_where_filter
+- [x] exists_builtin
+- [x] for_list_collection
+- [x] for_loop
+- [x] for_map_collection
+- [x] fun_call
+- [x] fun_expr_in_let
+- [x] fun_three_args
+- [ ] go_auto
+- [x] group_by
+- [x] group_by_conditional_sum
+- [ ] group_by_having
+- [x] group_by_join
+- [x] group_by_left_join
+- [x] group_by_multi_join
+- [ ] group_by_multi_join_sort
+- [x] group_by_sort
+- [x] group_items_iteration
+- [x] if_else
+- [x] if_then_else
+- [x] if_then_else_nested
+- [x] in_operator
+- [x] in_operator_extended
+- [x] inner_join
+- [x] join_multi
+- [ ] json_builtin
+- [x] left_join
+- [ ] left_join_multi
+- [x] len_builtin
+- [x] len_map
+- [x] len_string
+- [x] let_and_print
+- [x] list_assign
+- [x] list_index
+- [x] list_nested_assign
+- [x] list_set_ops
+- [ ] load_yaml
+- [x] map_assign
+- [x] map_in_operator
+- [x] map_index
+- [x] map_int_key
+- [x] map_literal_dynamic
+- [x] map_membership
+- [x] map_nested_assign
+- [x] match_expr
+- [x] match_full
+- [x] math_ops
+- [x] membership
+- [x] min_max_builtin
+- [x] nested_function
+- [x] order_by_map
+- [ ] outer_join
+- [x] partial_application
+- [x] print_hello
+- [x] pure_fold
+- [ ] pure_global_fold
+- [ ] python_auto
+- [ ] python_math
+- [ ] query_sum_select
+- [x] record_assign
+- [x] right_join
+- [ ] save_jsonl_stdout
+- [x] short_circuit
+- [x] slice
+- [x] sort_stable
+- [x] str_builtin
+- [x] string_compare
+- [x] string_concat
+- [x] string_contains
+- [x] string_in_operator
+- [x] string_index
+- [x] string_prefix_slice
+- [x] substring_builtin
+- [x] sum_builtin
+- [x] tail_recursion
+- [x] test_block
+- [ ] tree_sum
+- [ ] two-sum
+- [x] typed_let
+- [x] typed_var
+- [x] unary_neg
+- [ ] update_stmt
+- [x] user_type_literal
+- [x] values_builtin
+- [x] var_assignment
+- [ ] while_loop

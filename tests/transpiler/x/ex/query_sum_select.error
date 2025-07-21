@@ -1,0 +1,8 @@
+run: exit status 1
+** (Protocol.UndefinedError) protocol Enumerable not implemented for 2 of type Integer
+    (elixir 1.14.0) lib/enum.ex:1: Enumerable.impl_for!/1
+    (elixir 1.14.0) lib/enum.ex:166: Enumerable.reduce/3
+    (elixir 1.14.0) lib/enum.ex:4307: Enum.sum/1
+    /workspace/mochi/tests/transpiler/x/ex/query_sum_select.exs:4: anonymous fn/2 in :elixir_compiler_0.__FILE__/1
+    (elixir 1.14.0) lib/enum.ex:2468: Enum."-reduce/3-lists^foldl/2-0-"/3
+    /workspace/mochi/tests/transpiler/x/ex/query_sum_select.exs:3: (file)

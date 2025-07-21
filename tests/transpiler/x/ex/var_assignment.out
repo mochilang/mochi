@@ -1,0 +1,4 @@
+warning: variable "x" is unused (if the variable is not meant to be used, prefix it with an underscore)
+  /workspace/mochi/tests/transpiler/x/ex/var_assignment.exs:2
+
+2

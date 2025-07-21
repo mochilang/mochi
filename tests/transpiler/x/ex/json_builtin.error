@@ -1,0 +1,5 @@
+run: exit status 1
+** (UndefinedFunctionError) function Jason.encode!/1 is undefined (module Jason is not available)
+    Jason.encode!(%{a: 1, b: 2})
+    /workspace/mochi/tests/transpiler/x/ex/json_builtin.exs:3: (file)
+    (elixir 1.14.0) lib/code.ex:1245: Code.require_file/2

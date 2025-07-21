@@ -4,13 +4,11 @@ package ex_test
 
 import (
 	"bytes"
-	"fmt"
 	"os"
 	"os/exec"
 	"path/filepath"
 	"strings"
 	"testing"
-	"time"
 
 	"mochi/parser"
 	ex "mochi/transpiler/x/ex"
@@ -95,62 +93,4 @@ func TestElixirTranspiler_VMValid_Golden(t *testing.T) {
 			}
 		})
 	}
-}
-
-func TestMain(m *testing.M) {
-	code := m.Run()
-	updateReadme()
-	updateTasks()
-	os.Exit(code)
-}
-
-func updateReadme() {
-	root := findRepoRoot(&testing.T{})
-	srcDir := filepath.Join(root, "tests", "vm", "valid")
-	outDir := filepath.Join(root, "tests", "transpiler", "x", "ex")
-	readmePath := filepath.Join(root, "transpiler", "x", "ex", "README.md")
-	files, _ := filepath.Glob(filepath.Join(srcDir, "*.mochi"))
-	total := len(files)
-	compiled := 0
-	var lines []string
-	for _, f := range files {
-		name := strings.TrimSuffix(filepath.Base(f), ".mochi")
-		mark := "[ ]"
-		if _, err := os.Stat(filepath.Join(outDir, name+".out")); err == nil {
-			compiled++
-			mark = "[x]"
-		}
-		lines = append(lines, fmt.Sprintf("- %s %s.mochi", mark, name))
-	}
-	var buf bytes.Buffer
-	buf.WriteString("# Elixir Transpiler\n\n")
-	buf.WriteString("This directory contains a minimal transpiler that converts a very small subset of Mochi into Elixir source code. The generated files live in `tests/transpiler/x/ex`.\n\n")
-	fmt.Fprintf(&buf, "Currently %d of %d programs transpile and run.\n\n", compiled, total)
-	buf.WriteString("The table below tracks which programs from `tests/vm/valid` successfully transpile and run. Checked items have generated `.exs` code and matching `.out` files in `tests/transpiler/x/ex`.\n")
-	buf.WriteString(strings.Join(lines, "\n"))
-	buf.WriteString("\n")
-	_ = os.WriteFile(readmePath, buf.Bytes(), 0o644)
-}
-
-func updateTasks() {
-	root := findRepoRoot(&testing.T{})
-	taskFile := filepath.Join(root, "transpiler", "x", "ex", "TASKS.md")
-	out, err := exec.Command("git", "log", "-1", "--format=%cI").Output()
-	ts := ""
-	if err == nil {
-		if t, perr := time.Parse(time.RFC3339, strings.TrimSpace(string(out))); perr == nil {
-			if loc, lerr := time.LoadLocation("Asia/Bangkok"); lerr == nil {
-				ts = t.In(loc).Format("2006-01-02 15:04 -0700")
-			} else {
-				ts = t.Format("2006-01-02 15:04 MST")
-			}
-		}
-	}
-	var buf bytes.Buffer
-	buf.WriteString(fmt.Sprintf("## Progress (%s)\n", ts))
-	buf.WriteString("- VM valid golden test results updated\n\n")
-	if data, err := os.ReadFile(taskFile); err == nil {
-		buf.Write(data)
-	}
-	_ = os.WriteFile(taskFile, buf.Bytes(), 0o644)
 }

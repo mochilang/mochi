@@ -1,0 +1,5 @@
+run: exit status 1
+** (UndefinedFunctionError) function Jason.encode!/1 is undefined (module Jason is not available)
+    Jason.encode!([%{city: "Paris", num: 4}])
+    /workspace/mochi/tests/transpiler/x/ex/group_by_having.exs:7: (file)
+    (elixir 1.14.0) lib/code.ex:1245: Code.require_file/2

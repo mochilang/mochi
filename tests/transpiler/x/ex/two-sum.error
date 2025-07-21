@@ -1,0 +1,10 @@
+run: exit status 1
+** (ArithmeticError) bad argument in arithmetic expression: 15 + nil
+    :erlang.+(15, nil)
+    /workspace/mochi/tests/transpiler/x/ex/two-sum.exs:7: anonymous fn/4 in Main.twoSum/2
+    (elixir 1.14.0) lib/enum.ex:980: anonymous fn/3 in Enum.each/2
+    (elixir 1.14.0) lib/enum.ex:4299: Enum.reduce_range/5
+    (elixir 1.14.0) lib/enum.ex:2472: Enum.each/2
+    (elixir 1.14.0) lib/enum.ex:980: anonymous fn/3 in Enum.each/2
+    (elixir 1.14.0) lib/enum.ex:4299: Enum.reduce_range/5
+    (elixir 1.14.0) lib/enum.ex:2472: Enum.each/2

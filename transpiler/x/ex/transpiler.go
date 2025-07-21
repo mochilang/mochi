@@ -163,7 +163,7 @@ func (wst *WhileStmt) emit(w io.Writer, indent int) {
 	for i := 0; i < indent; i++ {
 		io.WriteString(w, "  ")
 	}
-	io.WriteString(w, "while = fn while ->\n")
+	io.WriteString(w, "while_fun = fn while_fun ->\n")
 	for i := 0; i < indent+1; i++ {
 		io.WriteString(w, "  ")
 	}
@@ -193,7 +193,7 @@ func (wst *WhileStmt) emit(w io.Writer, indent int) {
 	for i := 0; i < indent+2; i++ {
 		io.WriteString(w, "  ")
 	}
-	io.WriteString(w, "while.(while)\n")
+	io.WriteString(w, "while_fun.(while_fun)\n")
 	for i := 0; i < indent+1; i++ {
 		io.WriteString(w, "  ")
 	}
@@ -213,7 +213,7 @@ func (wst *WhileStmt) emit(w io.Writer, indent int) {
 	for i := 0; i < indent; i++ {
 		io.WriteString(w, "  ")
 	}
-	io.WriteString(w, "while.(while)")
+	io.WriteString(w, "while_fun.(while_fun)")
 }
 
 // ForStmt represents a basic for loop over a collection or range.
