@@ -1,4 +1,2 @@
 run: exit status 1
 /workspace/mochi/tests/transpiler/x/zig/group_by_conditional_sum.zig:16:19: error: unable to infer array size
-    const items: [_]Item = [_]Item{.{ .cat = "a", .val = 10, .flag = true }, .{ .cat = "a", .val = 5, .flag = false }, .{ .cat = "b", .val = 20, .flag = true }};
-                  ^

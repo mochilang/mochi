@@ -1,7 +1,3 @@
 run: exit status 1
 /workspace/mochi/tests/transpiler/x/zig/map_nested_assign.zig:5:119: error: redefinition of label 'blk'
-    var data = blk: { var m = std.StringHashMap(std.StringHashMap(i64)).init(std.heap.page_allocator); m.put("outer", blk: { var m = std.StringHashMap(i64).init(std.heap.page_allocator); m.put("inner", 1) catch unreachable; break :blk m; }) catch unreachable; break :blk m; };
-                                                                                                                      ^~~
 /workspace/mochi/tests/transpiler/x/zig/map_nested_assign.zig:5:16: note: previous definition here
-    var data = blk: { var m = std.StringHashMap(std.StringHashMap(i64)).init(std.heap.page_allocator); m.put("outer", blk: { var m = std.StringHashMap(i64).init(std.heap.page_allocator); m.put("inner", 1) catch unreachable; break :blk m; }) catch unreachable; break :blk m; };
-               ^~~

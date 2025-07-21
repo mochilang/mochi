@@ -1,4 +1,2 @@
 run: exit status 1
 /workspace/mochi/tests/transpiler/x/zig/group_by_join.zig:15:23: error: unable to infer array size
-    const customers: [_]Customer = [_]Customer{.{ .id = 1, .name = "Alice" }, .{ .id = 2, .name = "Bob" }};
-                      ^

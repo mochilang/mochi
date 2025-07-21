@@ -1,12 +1,3 @@
 run: exit status 1
-/workspace/mochi/tests/transpiler/x/zig/string_prefix_slice.zig:7:15: error: root source file struct 'Io' has no member named 'getStdOut'
-    try std.io.getStdOut().writer().print("{any}\n", .{s1[0..std.mem.len(prefix)] == prefix});
-        ~~~~~~^~~~~~~~~~
-/workspace/mochi/zig-x86_64-linux-0.15.0-dev.1160+e43617e68/lib/std/Io.zig:1:1: note: struct declared here
-const std = @import("std.zig");
-^~~~~
-referenced by:
-    callMain [inlined]: /workspace/mochi/zig-x86_64-linux-0.15.0-dev.1160+e43617e68/lib/std/start.zig:668:22
-    callMainWithArgs [inlined]: /workspace/mochi/zig-x86_64-linux-0.15.0-dev.1160+e43617e68/lib/std/start.zig:637:20
-    posixCallMainAndExit: /workspace/mochi/zig-x86_64-linux-0.15.0-dev.1160+e43617e68/lib/std/start.zig:592:36
-    2 reference(s) hidden; use '-freference-trace=5' to see all references
+/workspace/mochi/tests/transpiler/x/zig/string_prefix_slice.zig:7:83: error: operator == not allowed for type '[]const u8'
+/root/.local/share/mise/installs/zig/0.12.0/lib/std/mem.zig:1018:21: error: invalid type given to std.mem.len: *const [4:0]u8
