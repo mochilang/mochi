@@ -1,3 +1,8 @@
+## Progress (2025-07-21 13:50 +0700)
+- Checklist updated: 54/100 tests compiled
+- Implemented typed lists and maps for better inference.
+- Added group_by query support and removed runtime helpers.
+
 ## Progress (2025-07-21 12:53 +0700)
 - Checklist updated: 54/100 tests compiled
 - Added initial support for `group_by` queries without runtime helpers.

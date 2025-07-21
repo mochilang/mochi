@@ -148,6 +148,26 @@ type VarInfo struct {
 	group bool
 }
 
+func mapFieldType(typ, field string) (string, bool) {
+	if strings.HasPrefix(typ, "map{") && strings.HasSuffix(typ, "}") {
+		inner := strings.TrimSuffix(strings.TrimPrefix(typ, "map{"), "}")
+		parts := strings.Split(inner, ",")
+		for _, p := range parts {
+			kv := strings.SplitN(p, ":", 2)
+			if len(kv) == 2 && kv[0] == field {
+				return kv[1], true
+			}
+		}
+	}
+	if strings.HasPrefix(typ, "map-") {
+		elems := strings.Split(typ, "-")
+		if len(elems) >= 3 {
+			return elems[2], true
+		}
+	}
+	return "", false
+}
+
 // Stmt can emit itself as OCaml code.
 type Stmt interface{ emit(io.Writer) }
 
@@ -629,7 +649,9 @@ func (m *MapLit) emit(w io.Writer) {
 		io.WriteString(w, "(")
 		it.Key.emit(w)
 		io.WriteString(w, ", ")
+		io.WriteString(w, "Obj.repr (")
 		it.Value.emit(w)
+		io.WriteString(w, ")")
 		io.WriteString(w, ")")
 	}
 	io.WriteString(w, "]")
@@ -645,21 +667,21 @@ type MapIndexExpr struct {
 }
 
 func (mi *MapIndexExpr) emit(w io.Writer) {
-	io.WriteString(w, "(List.assoc ")
+	io.WriteString(w, "(Obj.magic (List.assoc ")
 	mi.Key.emit(w)
 	io.WriteString(w, " ")
 	mi.Map.emit(w)
-	io.WriteString(w, ")")
+	io.WriteString(w, "))")
 }
 
 func (mi *MapIndexExpr) emitPrint(w io.Writer) {
 	switch mi.Typ {
 	case "int":
-		io.WriteString(w, "string_of_int (List.assoc ")
+		io.WriteString(w, "string_of_int (Obj.magic (List.assoc ")
 		mi.Key.emit(w)
 		io.WriteString(w, " ")
 		mi.Map.emit(w)
-		io.WriteString(w, ")")
+		io.WriteString(w, "))")
 	default:
 		mi.emit(w)
 	}
@@ -1319,7 +1341,9 @@ func transpileStmt(st *parser.Statement, env *types.Env, vars map[string]VarInfo
 			return nil, err
 		}
 		vtyp := "int"
-		if strings.HasPrefix(iterTyp, "list") {
+		if strings.HasPrefix(iterTyp, "list-") {
+			vtyp = strings.TrimPrefix(iterTyp, "list-")
+		} else if strings.HasPrefix(iterTyp, "list") {
 			vtyp = "int"
 		}
 		if strings.HasPrefix(iterTyp, "map-") {
@@ -1631,15 +1655,28 @@ func convertPostfix(p *parser.PostfixExpr, env *types.Env, vars map[string]VarIn
 				}
 			}
 			key := &StringLit{Value: op.Field.Name}
-			expr = &MapIndexExpr{Map: expr, Key: key, Typ: "int"}
-			typ = "int"
+			if ft, ok := mapFieldType(typ, op.Field.Name); ok {
+				expr = &MapIndexExpr{Map: expr, Key: key, Typ: ft}
+				typ = ft
+			} else {
+				expr = &MapIndexExpr{Map: expr, Key: key, Typ: "int"}
+				typ = "int"
+			}
 			i++
 		case op.Index != nil && op.Index.Colon == nil && op.Index.Colon2 == nil && op.Index.End == nil && op.Index.Step == nil:
 			idxExpr, _, err := convertExpr(op.Index.Start, env, vars)
 			if err != nil {
 				return nil, "", err
 			}
-			if strings.HasPrefix(typ, "map-") {
+			if sl, ok := idxExpr.(*StringLit); ok {
+				if ft, ok := mapFieldType(typ, sl.Value); ok {
+					expr = &MapIndexExpr{Map: expr, Key: idxExpr, Typ: ft}
+					typ = ft
+				} else {
+					expr = &MapIndexExpr{Map: expr, Key: idxExpr, Typ: "int"}
+					typ = "int"
+				}
+			} else if strings.HasPrefix(typ, "map-") {
 				parts := strings.Split(typ, "-")
 				valTyp := "int"
 				if len(parts) >= 3 {
@@ -1647,7 +1684,7 @@ func convertPostfix(p *parser.PostfixExpr, env *types.Env, vars map[string]VarIn
 				}
 				expr = &MapIndexExpr{Map: expr, Key: idxExpr, Typ: valTyp}
 				typ = valTyp
-			} else if typ == "map" {
+			} else if typ == "map" || strings.HasPrefix(typ, "map{") {
 				expr = &MapIndexExpr{Map: expr, Key: idxExpr, Typ: "int"}
 				typ = "int"
 			} else {
@@ -1697,8 +1734,13 @@ func convertSelector(sel *parser.SelectorExpr, env *types.Env, vars map[string]V
 			continue
 		}
 		key := &StringLit{Value: t}
-		expr = &MapIndexExpr{Map: expr, Key: key, Typ: "int"}
-		typ = "int"
+		if ft, ok := mapFieldType(typ, t); ok {
+			expr = &MapIndexExpr{Map: expr, Key: key, Typ: ft}
+			typ = ft
+		} else {
+			expr = &MapIndexExpr{Map: expr, Key: key, Typ: "int"}
+			typ = "int"
+		}
 	}
 	return expr, typ, nil
 }
@@ -1727,6 +1769,7 @@ func convertPrimary(p *parser.Primary, env *types.Env, vars map[string]VarInfo) 
 		return &ListLit{Elems: elems}, "list", nil
 	case p.Map != nil:
 		items := make([]MapEntry, len(p.Map.Items))
+		fieldTypes := []string{}
 		for i, it := range p.Map.Items {
 			k, _, err := convertExpr(it.Key, env, vars)
 			if err != nil {
@@ -1735,19 +1778,28 @@ func convertPrimary(p *parser.Primary, env *types.Env, vars map[string]VarInfo) 
 			if n, ok := k.(*Name); ok {
 				k = &StringLit{Value: n.Ident}
 			}
-			v, _, err := convertExpr(it.Value, env, vars)
+			v, vt, err := convertExpr(it.Value, env, vars)
 			if err != nil {
 				return nil, "", err
 			}
+			if ks, ok := k.(*StringLit); ok {
+				fieldTypes = append(fieldTypes, ks.Value+":"+vt)
+			} else {
+				fieldTypes = nil
+			}
 			items[i] = MapEntry{Key: k, Value: v}
 		}
-		return &MapLit{Items: items}, "map", nil
+		typ := "map"
+		if fieldTypes != nil {
+			typ = "map{" + strings.Join(fieldTypes, ",") + "}"
+		}
+		return &MapLit{Items: items}, typ, nil
 	case p.Query != nil:
-		qe, err := convertQueryExpr(p.Query, env, vars)
+		qe, qtyp, err := convertQueryExpr(p.Query, env, vars)
 		if err != nil {
 			return nil, "", err
 		}
-		return qe, "list", nil
+		return qe, qtyp, nil
 	case p.FunExpr != nil:
 		return convertFunExpr(p.FunExpr, env, vars)
 	case p.Selector != nil:
@@ -1871,11 +1923,11 @@ func convertFunExpr(fn *parser.FunExpr, env *types.Env, vars map[string]VarInfo)
 	return &FuncExpr{Params: params, Body: nil, Ret: retExpr}, "func", nil
 }
 
-func convertQueryExpr(q *parser.QueryExpr, env *types.Env, vars map[string]VarInfo) (Expr, error) {
+func convertQueryExpr(q *parser.QueryExpr, env *types.Env, vars map[string]VarInfo) (Expr, string, error) {
 	loops := []queryLoop{}
 	src, _, err := convertExpr(q.Source, env, vars)
 	if err != nil {
-		return nil, err
+		return nil, "", err
 	}
 	loops = append(loops, queryLoop{Name: q.Var, Src: src})
 	qVars := map[string]VarInfo{}
@@ -1885,11 +1937,11 @@ func convertQueryExpr(q *parser.QueryExpr, env *types.Env, vars map[string]VarIn
 	qVars[q.Var] = VarInfo{typ: "map"}
 	if q.Group != nil {
 		if len(q.Froms) > 0 || len(q.Joins) > 0 || q.Where != nil || q.Sort != nil || q.Skip != nil || q.Take != nil {
-			return nil, fmt.Errorf("group by: unsupported query form")
+			return nil, "", fmt.Errorf("group by: unsupported query form")
 		}
 		keyExpr, _, err := convertExpr(q.Group.Exprs[0], env, qVars)
 		if err != nil {
-			return nil, err
+			return nil, "", err
 		}
 		gVars := map[string]VarInfo{}
 		for k, v := range qVars {
@@ -1897,25 +1949,33 @@ func convertQueryExpr(q *parser.QueryExpr, env *types.Env, vars map[string]VarIn
 		}
 		gVars[q.Group.Name] = VarInfo{typ: "list", group: true}
 		gVars[q.Group.Name+"Key"] = VarInfo{typ: "string"}
-		sel, _, err := convertExpr(q.Select, env, gVars)
+		sel, selTyp, err := convertExpr(q.Select, env, gVars)
 		if err != nil {
-			return nil, err
+			return nil, "", err
 		}
-		return &GroupByQueryExpr{Source: src, Var: q.Var, Key: keyExpr, Into: q.Group.Name, Select: sel}, nil
+		retTyp := "list"
+		if selTyp != "" {
+			retTyp = "list-" + selTyp
+		}
+		return &GroupByQueryExpr{Source: src, Var: q.Var, Key: keyExpr, Into: q.Group.Name, Select: sel}, retTyp, nil
 	}
 	for _, f := range q.Froms {
 		fs, _, err := convertExpr(f.Src, env, vars)
 		if err != nil {
-			return nil, err
+			return nil, "", err
 		}
 		loops = append(loops, queryLoop{Name: f.Var, Src: fs})
 		qVars[f.Var] = VarInfo{typ: "map"}
 	}
-	sel, _, err := convertExpr(q.Select, env, qVars)
+	sel, selTyp, err := convertExpr(q.Select, env, qVars)
 	if err != nil {
-		return nil, err
+		return nil, "", err
 	}
-	return &QueryExpr{Loops: loops, Select: sel}, nil
+	retTyp := "list"
+	if selTyp != "" {
+		retTyp = "list-" + selTyp
+	}
+	return &QueryExpr{Loops: loops, Select: sel}, retTyp, nil
 }
 
 func convertCall(c *parser.CallExpr, env *types.Env, vars map[string]VarInfo) (Expr, string, error) {
@@ -1970,7 +2030,7 @@ func convertCall(c *parser.CallExpr, env *types.Env, vars map[string]VarInfo) (E
 		if err != nil {
 			return nil, "", err
 		}
-		if typ != "list" {
+		if !strings.HasPrefix(typ, "list") {
 			return nil, "", fmt.Errorf("append expects list")
 		}
 		valArg, _, err := convertExpr(c.Args[1], env, vars)
@@ -1984,7 +2044,7 @@ func convertCall(c *parser.CallExpr, env *types.Env, vars map[string]VarInfo) (E
 		if err != nil {
 			return nil, "", err
 		}
-		if typ != "list" {
+		if !strings.HasPrefix(typ, "list") {
 			return nil, "", fmt.Errorf("sum expects list")
 		}
 		return &SumBuiltin{List: listArg}, "int", nil
@@ -1994,7 +2054,7 @@ func convertCall(c *parser.CallExpr, env *types.Env, vars map[string]VarInfo) (E
 		if err != nil {
 			return nil, "", err
 		}
-		if typ != "list" {
+		if !strings.HasPrefix(typ, "list") {
 			return nil, "", fmt.Errorf("count expects list")
 		}
 		return &CountBuiltin{List: listArg}, "int", nil
@@ -2004,7 +2064,7 @@ func convertCall(c *parser.CallExpr, env *types.Env, vars map[string]VarInfo) (E
 		if err != nil {
 			return nil, "", err
 		}
-		if typ != "list" {
+		if !strings.HasPrefix(typ, "list") {
 			return nil, "", fmt.Errorf("avg expects list")
 		}
 		return &AvgBuiltin{List: listArg}, "int", nil
@@ -2014,7 +2074,7 @@ func convertCall(c *parser.CallExpr, env *types.Env, vars map[string]VarInfo) (E
 		if err != nil {
 			return nil, "", err
 		}
-		if typ != "list" {
+		if !strings.HasPrefix(typ, "list") {
 			return nil, "", fmt.Errorf("min expects list")
 		}
 		return &MinBuiltin{List: listArg}, "int", nil
@@ -2024,7 +2084,7 @@ func convertCall(c *parser.CallExpr, env *types.Env, vars map[string]VarInfo) (E
 		if err != nil {
 			return nil, "", err
 		}
-		if typ != "list" {
+		if !strings.HasPrefix(typ, "list") {
 			return nil, "", fmt.Errorf("max expects list")
 		}
 		return &MaxBuiltin{List: listArg}, "int", nil
