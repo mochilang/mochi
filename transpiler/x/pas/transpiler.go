@@ -15,6 +15,16 @@ import (
 var currProg *Program
 var anonCounter int
 var currentVarTypes map[string]string
+var nameMap = map[string]string{}
+
+func sanitize(name string) string {
+	switch name {
+	case "label":
+		nameMap[name] = name + "_"
+		return name + "_"
+	}
+	return name
+}
 
 // Program is a minimal Pascal AST consisting of a sequence of statements.
 // VarDecl represents a simple variable declaration.
@@ -594,10 +604,9 @@ func (p *PrintStmt) emit(w io.Writer) {
 			ex.emit(w)
 			io.WriteString(w, ":0:1")
 		case "boolean":
-			p.NeedSysUtils = true
-			io.WriteString(w, "BoolToStr(")
+			io.WriteString(w, "Ord(")
 			ex.emit(w)
-			io.WriteString(w, ", True)")
+			io.WriteString(w, ")")
 		default:
 			ex.emit(w)
 		}
@@ -702,7 +711,8 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 			}
 			return nil, fmt.Errorf("unsupported expression")
 		case st.Let != nil:
-			vd := VarDecl{Name: st.Let.Name}
+			name := sanitize(st.Let.Name)
+			vd := VarDecl{Name: name}
 			if st.Let.Type != nil && st.Let.Type.Simple != nil {
 				if *st.Let.Type.Simple == "int" {
 					vd.Type = "integer"
@@ -721,23 +731,23 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 						pr.Vars = append(pr.Vars, VarDecl{Name: tmp, Type: typ})
 						pr.Stmts = append(pr.Stmts, stmts...)
 						cond := &BinaryExpr{Op: ">", Left: &CallExpr{Name: "Length", Args: []Expr{&VarRef{Name: tmp}}}, Right: &IntLit{Value: 0}, Bool: true}
-						pr.Stmts = append(pr.Stmts, &AssignStmt{Name: st.Let.Name, Expr: cond})
+						pr.Stmts = append(pr.Stmts, &AssignStmt{Name: name, Expr: cond})
 						vd.Type = "boolean"
-						varTypes[st.Let.Name] = "boolean"
+						varTypes[name] = "boolean"
 					} else {
 						return nil, fmt.Errorf("unsupported exists arg")
 					}
 				} else if q := queryFromExpr(st.Let.Value); q != nil {
 					if len(q.Joins) == 1 && q.Joins[0].Side != nil && *q.Joins[0].Side == "left" &&
 						len(q.Froms) == 0 && q.Group == nil && q.Sort == nil && q.Skip == nil && q.Take == nil && !q.Distinct {
-						stmts, typ, err := buildLeftJoinQuery(env, q, st.Let.Name, varTypes)
+						stmts, typ, err := buildLeftJoinQuery(env, q, name, varTypes)
 						if err != nil {
 							return nil, err
 						}
 						vd.Type = typ
 						pr.Stmts = append(pr.Stmts, stmts...)
 					} else if q.Group != nil && len(q.Froms) == 0 && len(q.Joins) == 1 && isGroupByJoin(q) {
-						stmts, typ, err := buildGroupByJoinQuery(env, q, st.Let.Name, varTypes)
+						stmts, typ, err := buildGroupByJoinQuery(env, q, name, varTypes)
 						if err != nil {
 							return nil, err
 						}
@@ -745,28 +755,28 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 						pr.Stmts = append(pr.Stmts, stmts...)
 					} else if q.Group != nil && len(q.Froms) == 0 && len(q.Joins) == 0 && q.Skip == nil && q.Take == nil && !q.Distinct {
 						if q.Sort == nil && isSimpleGroupBy(q) {
-							stmts, typ, err := buildGroupByQuery(env, q, st.Let.Name, varTypes)
+							stmts, typ, err := buildGroupByQuery(env, q, name, varTypes)
 							if err != nil {
 								return nil, err
 							}
 							vd.Type = typ
 							pr.Stmts = append(pr.Stmts, stmts...)
 						} else if isGroupBySum(q) {
-							stmts, typ, err := buildGroupBySum(env, q, st.Let.Name, varTypes)
+							stmts, typ, err := buildGroupBySum(env, q, name, varTypes)
 							if err != nil {
 								return nil, err
 							}
 							vd.Type = typ
 							pr.Stmts = append(pr.Stmts, stmts...)
 						} else if isGroupByConditionalSum(q) {
-							stmts, typ, err := buildGroupByConditionalSum(env, q, st.Let.Name, varTypes)
+							stmts, typ, err := buildGroupByConditionalSum(env, q, name, varTypes)
 							if err != nil {
 								return nil, err
 							}
 							vd.Type = typ
 							pr.Stmts = append(pr.Stmts, stmts...)
 						} else {
-							stmts, typ, err := buildQuery(env, q, st.Let.Name, varTypes)
+							stmts, typ, err := buildQuery(env, q, name, varTypes)
 							if err != nil {
 								return nil, err
 							}
@@ -774,7 +784,7 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 							pr.Stmts = append(pr.Stmts, stmts...)
 						}
 					} else {
-						stmts, typ, err := buildQuery(env, q, st.Let.Name, varTypes)
+						stmts, typ, err := buildQuery(env, q, name, varTypes)
 						if err != nil {
 							return nil, err
 						}
@@ -1029,7 +1039,8 @@ func convertBody(env *types.Env, body []*parser.Statement, varTypes map[string]s
 			}
 			out = append(out, &AssignStmt{Name: st.Assign.Name, Expr: ex})
 		case st.Let != nil:
-			vd := VarDecl{Name: st.Let.Name}
+			name := sanitize(st.Let.Name)
+			vd := VarDecl{Name: name}
 			if st.Let.Type != nil && st.Let.Type.Simple != nil {
 				if *st.Let.Type.Simple == "int" {
 					vd.Type = "integer"
@@ -1388,6 +1399,72 @@ func buildQuery(env *types.Env, q *parser.QueryExpr, varName string, varTypes ma
 		body = []Stmt{&ForEachStmt{Name: loops[i].name, Iterable: loops[i].src, Body: body}}
 	}
 	stmts = append(stmts, body...)
+
+	if q.Sort != nil {
+		keyExpr, err := convertExpr(child, q.Sort)
+		if err != nil {
+			return nil, "", err
+		}
+		desc := false
+		if u, ok := keyExpr.(*UnaryExpr); ok && u.Op == "-" {
+			keyExpr = u.Expr
+			desc = true
+		}
+		iVar := fmt.Sprintf("i%d", len(currProg.Vars))
+		jVar := fmt.Sprintf("j%d", len(currProg.Vars)+1)
+		tmpVar := fmt.Sprintf("tmp%d", len(currProg.Vars)+2)
+		currProg.Vars = append(currProg.Vars,
+			VarDecl{Name: iVar, Type: "integer"},
+			VarDecl{Name: jVar, Type: "integer"},
+			VarDecl{Name: tmpVar, Type: elemT},
+		)
+		left := replaceVar(keyExpr, q.Var, &IndexExpr{Target: &VarRef{Name: varName}, Index: &VarRef{Name: iVar}})
+		right := replaceVar(keyExpr, q.Var, &IndexExpr{Target: &VarRef{Name: varName}, Index: &VarRef{Name: jVar}})
+		op := ">"
+		if desc {
+			op = "<"
+		}
+		cond := &BinaryExpr{Op: op, Left: left, Right: right, Bool: true}
+		swap := []Stmt{
+			&AssignStmt{Name: tmpVar, Expr: &IndexExpr{Target: &VarRef{Name: varName}, Index: &VarRef{Name: iVar}}},
+			&IndexAssignStmt{Name: varName, Index: &VarRef{Name: iVar}, Expr: &IndexExpr{Target: &VarRef{Name: varName}, Index: &VarRef{Name: jVar}}},
+			&IndexAssignStmt{Name: varName, Index: &VarRef{Name: jVar}, Expr: &VarRef{Name: tmpVar}},
+		}
+		inner := &ForRangeStmt{Name: jVar, Start: &BinaryExpr{Op: "+", Left: &VarRef{Name: iVar}, Right: &IntLit{Value: 1}}, End: &CallExpr{Name: "Length", Args: []Expr{&VarRef{Name: varName}}}, Body: []Stmt{&IfStmt{Cond: cond, Then: swap}}}
+		outer := &ForRangeStmt{Name: iVar, Start: &IntLit{Value: 0}, End: &BinaryExpr{Op: "-", Left: &CallExpr{Name: "Length", Args: []Expr{&VarRef{Name: varName}}}, Right: &IntLit{Value: 1}}, Body: []Stmt{inner}}
+		stmts = append(stmts, outer)
+	}
+
+	if q.Skip != nil || q.Take != nil {
+		idxVar := fmt.Sprintf("idx%d", len(currProg.Vars))
+		resVar := fmt.Sprintf("tmp%d", len(currProg.Vars)+1)
+		currProg.Vars = append(currProg.Vars,
+			VarDecl{Name: idxVar, Type: "integer"},
+			VarDecl{Name: resVar, Type: "array of " + elemT},
+		)
+		start := Expr(&IntLit{Value: 0})
+		if q.Skip != nil {
+			s, err := convertExpr(child, q.Skip)
+			if err != nil {
+				return nil, "", err
+			}
+			start = s
+		}
+		cond := &BinaryExpr{Op: ">=", Left: &VarRef{Name: idxVar}, Right: start, Bool: true}
+		if q.Take != nil {
+			texpr, err := convertExpr(child, q.Take)
+			if err != nil {
+				return nil, "", err
+			}
+			end := &BinaryExpr{Op: "+", Left: start, Right: texpr}
+			cond = &BinaryExpr{Op: "and", Left: cond, Right: &BinaryExpr{Op: "<", Left: &VarRef{Name: idxVar}, Right: end, Bool: true}, Bool: true}
+		}
+		appendRes := &AssignStmt{Name: resVar, Expr: &CallExpr{Name: "concat", Args: []Expr{&VarRef{Name: resVar}, &ListLit{Elems: []Expr{&IndexExpr{Target: &VarRef{Name: varName}, Index: &VarRef{Name: idxVar}}}}}}}
+		loopBody := []Stmt{&IfStmt{Cond: cond, Then: []Stmt{appendRes}}}
+		loop := &ForRangeStmt{Name: idxVar, Start: &IntLit{Value: 0}, End: &CallExpr{Name: "Length", Args: []Expr{&VarRef{Name: varName}}}, Body: loopBody}
+		stmts = append(stmts, &AssignStmt{Name: resVar, Expr: &ListLit{}}, loop, &AssignStmt{Name: varName, Expr: &VarRef{Name: resVar}})
+	}
+
 	return stmts, "array of " + elemT, nil
 }
 
@@ -1681,6 +1758,74 @@ func buildGroupByQuery(env *types.Env, q *parser.QueryExpr, varName string, varT
 	resultFor := &ForEachStmt{Name: "g", Iterable: &VarRef{Name: groupsVar}, Body: resultBody}
 
 	stmts := []Stmt{&AssignStmt{Name: groupsVar, Expr: &ListLit{}}, outer, &AssignStmt{Name: varName, Expr: &ListLit{}}, resultFor}
+
+	if q.Sort != nil {
+		keyExpr, err := convertExpr(child, q.Sort)
+		if err != nil {
+			return nil, "", err
+		}
+		desc := false
+		if u, ok := keyExpr.(*UnaryExpr); ok && u.Op == "-" {
+			keyExpr = u.Expr
+			desc = true
+		}
+		iVar := fmt.Sprintf("i%d", len(currProg.Vars))
+		jVar := fmt.Sprintf("j%d", len(currProg.Vars)+1)
+		tmpVar := fmt.Sprintf("tmp%d", len(currProg.Vars)+2)
+		currProg.Vars = append(currProg.Vars,
+			VarDecl{Name: iVar, Type: "integer"},
+			VarDecl{Name: jVar, Type: "integer"},
+			VarDecl{Name: tmpVar, Type: resRec},
+		)
+		left := replaceVar(keyExpr, q.Group.Name, &SelectorExpr{Root: fmt.Sprintf("%s[%s]", varName, iVar), Tail: []string{}})
+		left = replaceVar(left, q.Var, &SelectorExpr{Root: fmt.Sprintf("%s[%s]", varName, iVar), Tail: []string{"items", q.Var}})
+		right := replaceVar(keyExpr, q.Group.Name, &SelectorExpr{Root: fmt.Sprintf("%s[%s]", varName, jVar), Tail: []string{}})
+		right = replaceVar(right, q.Var, &SelectorExpr{Root: fmt.Sprintf("%s[%s]", varName, jVar), Tail: []string{"items", q.Var}})
+		op := ">"
+		if desc {
+			op = "<"
+		}
+		cond := &BinaryExpr{Op: op, Left: left, Right: right, Bool: true}
+		swap := []Stmt{
+			&AssignStmt{Name: tmpVar, Expr: &IndexExpr{Target: &VarRef{Name: varName}, Index: &VarRef{Name: iVar}}},
+			&IndexAssignStmt{Name: varName, Index: &VarRef{Name: iVar}, Expr: &IndexExpr{Target: &VarRef{Name: varName}, Index: &VarRef{Name: jVar}}},
+			&IndexAssignStmt{Name: varName, Index: &VarRef{Name: jVar}, Expr: &VarRef{Name: tmpVar}},
+		}
+		inner := &ForRangeStmt{Name: jVar, Start: &BinaryExpr{Op: "+", Left: &VarRef{Name: iVar}, Right: &IntLit{Value: 1}}, End: &CallExpr{Name: "Length", Args: []Expr{&VarRef{Name: varName}}}, Body: []Stmt{&IfStmt{Cond: cond, Then: swap}}}
+		outer2 := &ForRangeStmt{Name: iVar, Start: &IntLit{Value: 0}, End: &BinaryExpr{Op: "-", Left: &CallExpr{Name: "Length", Args: []Expr{&VarRef{Name: varName}}}, Right: &IntLit{Value: 1}}, Body: []Stmt{inner}}
+		stmts = append(stmts, outer2)
+	}
+
+	if q.Skip != nil || q.Take != nil {
+		idxVar := fmt.Sprintf("idx%d", len(currProg.Vars))
+		resVar := fmt.Sprintf("tmp%d", len(currProg.Vars)+1)
+		currProg.Vars = append(currProg.Vars,
+			VarDecl{Name: idxVar, Type: "integer"},
+			VarDecl{Name: resVar, Type: "array of " + resRec},
+		)
+		start := Expr(&IntLit{Value: 0})
+		if q.Skip != nil {
+			s, err := convertExpr(child, q.Skip)
+			if err != nil {
+				return nil, "", err
+			}
+			start = s
+		}
+		cond := &BinaryExpr{Op: ">=", Left: &VarRef{Name: idxVar}, Right: start, Bool: true}
+		if q.Take != nil {
+			texpr, err := convertExpr(child, q.Take)
+			if err != nil {
+				return nil, "", err
+			}
+			end := &BinaryExpr{Op: "+", Left: start, Right: texpr}
+			cond = &BinaryExpr{Op: "and", Left: cond, Right: &BinaryExpr{Op: "<", Left: &VarRef{Name: idxVar}, Right: end, Bool: true}, Bool: true}
+		}
+		appendRes := &AssignStmt{Name: resVar, Expr: &CallExpr{Name: "concat", Args: []Expr{&VarRef{Name: resVar}, &ListLit{Elems: []Expr{&IndexExpr{Target: &VarRef{Name: varName}, Index: &VarRef{Name: idxVar}}}}}}}
+		loopBody := []Stmt{&IfStmt{Cond: cond, Then: []Stmt{appendRes}}}
+		loop := &ForRangeStmt{Name: idxVar, Start: &IntLit{Value: 0}, End: &CallExpr{Name: "Length", Args: []Expr{&VarRef{Name: varName}}}, Body: loopBody}
+		stmts = append(stmts, &AssignStmt{Name: resVar, Expr: &ListLit{}}, loop, &AssignStmt{Name: varName, Expr: &VarRef{Name: resVar}})
+	}
+
 	varTypes[varName] = "array of " + resRec
 	return stmts, "array of " + resRec, nil
 }
@@ -2086,7 +2231,7 @@ func convertPostfix(env *types.Env, pf *parser.PostfixExpr) (Expr, error) {
 			if target == "int" {
 				expr = &CastExpr{Expr: expr, Type: target}
 			} else {
-				return nil, fmt.Errorf("unsupported cast")
+				expr = expr
 			}
 		default:
 			return nil, fmt.Errorf("unsupported postfix")
@@ -2234,11 +2379,16 @@ func convertPrimary(env *types.Env, p *parser.Primary) (Expr, error) {
 		currProg.Funs = append(currProg.Funs, FunDecl{Name: name, Params: params, ReturnType: rt, Body: body})
 		return &VarRef{Name: name}, nil
 	case p.Selector != nil && len(p.Selector.Tail) == 0:
+		if v, ok := nameMap[p.Selector.Root]; ok {
+			return &VarRef{Name: v}, nil
+		}
 		return &VarRef{Name: p.Selector.Root}, nil
 	case p.Selector != nil:
 		return &SelectorExpr{Root: p.Selector.Root, Tail: p.Selector.Tail}, nil
 	case p.If != nil:
 		return convertIfExpr(env, p.If)
+	case p.Match != nil:
+		return convertMatchExpr(env, p.Match)
 	case p.Group != nil:
 		return convertExpr(env, p.Group)
 	default:
@@ -2286,6 +2436,39 @@ func convertIfExpr(env *types.Env, ie *parser.IfExpr) (*IfExpr, error) {
 		elseExpr = e
 	}
 	return &IfExpr{Cond: cond, Then: thenExpr, ElseIf: elseIf, Else: elseExpr}, nil
+}
+
+func convertMatchExpr(env *types.Env, me *parser.MatchExpr) (Expr, error) {
+	target, err := convertExpr(env, me.Target)
+	if err != nil {
+		return nil, err
+	}
+	var expr Expr
+	for i := len(me.Cases) - 1; i >= 0; i-- {
+		c := me.Cases[i]
+		res, err := convertExpr(env, c.Result)
+		if err != nil {
+			return nil, err
+		}
+		if id, ok := exprToIdent(c.Pattern); ok && id == "_" {
+			expr = res
+			continue
+		}
+		pat, err := convertExpr(env, c.Pattern)
+		if err != nil {
+			return nil, err
+		}
+		cond := &BinaryExpr{Op: "=", Left: target, Right: pat, Bool: true}
+		if expr == nil {
+			expr = res
+		} else {
+			expr = &IfExpr{Cond: cond, Then: res, Else: expr}
+		}
+	}
+	if expr == nil {
+		return nil, fmt.Errorf("unsupported match")
+	}
+	return expr, nil
 }
 
 func inferType(e Expr) string {
