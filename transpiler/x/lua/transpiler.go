@@ -129,6 +129,9 @@ type UnaryExpr struct {
 
 type MatchArm struct {
 	Pattern Expr // nil means wildcard
+	Variant string
+	Vars    []string
+	Fields  []string
 	Result  Expr
 }
 
@@ -150,6 +153,13 @@ type QueryComp struct {
 	SortKey  Expr
 	Skip     Expr
 	Take     Expr
+}
+
+type UpdateStmt struct {
+	Target string
+	Fields []string
+	Values []Expr
+	Cond   Expr
 }
 
 func (s *ExprStmt) emit(w io.Writer) { s.Expr.emit(w) }
@@ -511,6 +521,49 @@ func (fi *ForInStmt) emit(w io.Writer) {
 		io.WriteString(w, "::\n")
 		continueLabels = continueLabels[:len(continueLabels)-1]
 	}
+	io.WriteString(w, "end")
+}
+
+func (u *UpdateStmt) emit(w io.Writer) {
+	idx := loopCounter
+	loopCounter++
+	item := fmt.Sprintf("_it%d", idx)
+	io.WriteString(w, "for _i")
+	fmt.Fprintf(w, "%d = 1, #", idx)
+	io.WriteString(w, u.Target)
+	io.WriteString(w, " do\n")
+	io.WriteString(w, "  local ")
+	io.WriteString(w, item)
+	io.WriteString(w, " = ")
+	io.WriteString(w, u.Target)
+	io.WriteString(w, "[_i")
+	fmt.Fprintf(w, "%d]", idx)
+	io.WriteString(w, "\n")
+	if u.Cond != nil {
+		io.WriteString(w, "  if ")
+		u.Cond.emit(w)
+		io.WriteString(w, " then\n")
+	}
+	pad := "  "
+	if u.Cond != nil {
+		pad = "    "
+	}
+	for i, f := range u.Fields {
+		io.WriteString(w, pad)
+		io.WriteString(w, item)
+		io.WriteString(w, "[")
+		fmt.Fprintf(w, "%q", f)
+		io.WriteString(w, "] = ")
+		u.Values[i].emit(w)
+		io.WriteString(w, "\n")
+	}
+	if u.Cond != nil {
+		io.WriteString(w, "  end\n")
+	}
+	io.WriteString(w, "  ")
+	io.WriteString(w, u.Target)
+	io.WriteString(w, "[_i")
+	fmt.Fprintf(w, "%d] = %s\n", idx, item)
 	io.WriteString(w, "end")
 }
 
@@ -925,13 +978,24 @@ func (m *MatchExpr) emit(w io.Writer) {
 		} else {
 			io.WriteString(w, "  elseif ")
 		}
-		if a.Pattern != nil {
+		if a.Variant != "" {
+			io.WriteString(w, "_m['__name'] == ")
+			fmt.Fprintf(w, "%q", a.Variant)
+		} else if a.Pattern != nil {
 			io.WriteString(w, "_m == ")
 			a.Pattern.emit(w)
 		} else {
 			io.WriteString(w, "true")
 		}
-		io.WriteString(w, " then\n    return ")
+		io.WriteString(w, " then\n")
+		for i, v := range a.Vars {
+			io.WriteString(w, "    local ")
+			io.WriteString(w, v)
+			io.WriteString(w, " = _m[")
+			fmt.Fprintf(w, "%q", a.Fields[i])
+			io.WriteString(w, "]\n")
+		}
+		io.WriteString(w, "    return ")
 		a.Result.emit(w)
 		io.WriteString(w, "\n")
 	}
@@ -1188,6 +1252,89 @@ func hasContinue(stmts []Stmt) bool {
 		}
 	}
 	return false
+}
+
+func callPattern(e *parser.Expr) (*parser.CallExpr, bool) {
+	if e == nil || len(e.Binary.Right) != 0 {
+		return nil, false
+	}
+	u := e.Binary.Left
+	if len(u.Ops) != 0 || u.Value == nil {
+		return nil, false
+	}
+	p := u.Value
+	if len(p.Ops) != 0 || p.Target == nil || p.Target.Call == nil {
+		return nil, false
+	}
+	return p.Target.Call, true
+}
+
+func identName(e *parser.Expr) (string, bool) {
+	if e == nil || len(e.Binary.Right) != 0 {
+		return "", false
+	}
+	u := e.Binary.Left
+	if len(u.Ops) != 0 || u.Value == nil {
+		return "", false
+	}
+	p := u.Value
+	if len(p.Ops) != 0 || p.Target == nil || p.Target.Selector == nil || len(p.Target.Selector.Tail) != 0 {
+		return "", false
+	}
+	return p.Target.Selector.Root, true
+}
+
+func replaceFields(e Expr, target Expr, fields map[string]bool) Expr {
+	switch ex := e.(type) {
+	case *Ident:
+		if fields[ex.Name] {
+			return &IndexExpr{Target: target, Index: &StringLit{Value: ex.Name}, Kind: "map"}
+		}
+		return ex
+	case *BinaryExpr:
+		ex.Left = replaceFields(ex.Left, target, fields)
+		ex.Right = replaceFields(ex.Right, target, fields)
+		return ex
+	case *UnaryExpr:
+		ex.Value = replaceFields(ex.Value, target, fields)
+		return ex
+	case *CallExpr:
+		for i := range ex.Args {
+			ex.Args[i] = replaceFields(ex.Args[i], target, fields)
+		}
+		return ex
+	case *IndexExpr:
+		ex.Target = replaceFields(ex.Target, target, fields)
+		ex.Index = replaceFields(ex.Index, target, fields)
+		return ex
+	case *SliceExpr:
+		ex.Target = replaceFields(ex.Target, target, fields)
+		if ex.Start != nil {
+			ex.Start = replaceFields(ex.Start, target, fields)
+		}
+		if ex.End != nil {
+			ex.End = replaceFields(ex.End, target, fields)
+		}
+		return ex
+	case *IfExpr:
+		ex.Cond = replaceFields(ex.Cond, target, fields)
+		ex.Then = replaceFields(ex.Then, target, fields)
+		ex.Else = replaceFields(ex.Else, target, fields)
+		return ex
+	case *ListLit:
+		for i := range ex.Elems {
+			ex.Elems[i] = replaceFields(ex.Elems[i], target, fields)
+		}
+		return ex
+	case *MapLit:
+		for i := range ex.Keys {
+			ex.Keys[i] = replaceFields(ex.Keys[i], target, fields)
+			ex.Values[i] = replaceFields(ex.Values[i], target, fields)
+		}
+		return ex
+	default:
+		return ex
+	}
 }
 
 func repoRoot() string {
@@ -1513,6 +1660,26 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 			}
 		}
 		return ce, nil
+	case p.Struct != nil:
+		var keys []Expr
+		var values []Expr
+		if currentEnv != nil {
+			if _, ok := currentEnv.FindUnionByVariant(p.Struct.Name); ok {
+				keys = append(keys, &StringLit{Value: "__name"})
+				values = append(values, &StringLit{Value: p.Struct.Name})
+			} else if _, ok := currentEnv.GetStruct(p.Struct.Name); !ok {
+				return nil, fmt.Errorf("unknown struct %s", p.Struct.Name)
+			}
+		}
+		for _, f := range p.Struct.Fields {
+			v, err := convertExpr(f.Value)
+			if err != nil {
+				return nil, err
+			}
+			keys = append(keys, &StringLit{Value: f.Name})
+			values = append(values, v)
+		}
+		return &MapLit{Keys: keys, Values: values}, nil
 	case p.List != nil:
 		var elems []Expr
 		for _, e := range p.List.Elems {
@@ -1629,18 +1796,41 @@ func convertMatchExpr(me *parser.MatchExpr) (Expr, error) {
 	}
 	arms := make([]MatchArm, len(me.Cases))
 	for i, c := range me.Cases {
-		pat, err := convertExpr(c.Pattern)
-		if err != nil {
-			return nil, err
+		var variant string
+		var vars []string
+		var fields []string
+		var pat Expr
+		if call, ok := callPattern(c.Pattern); ok && currentEnv != nil {
+			if ut, ok := currentEnv.FindUnionByVariant(call.Func); ok {
+				variant = call.Func
+				st := ut.Variants[call.Func]
+				fields = st.Order
+				for _, a := range call.Args {
+					if name, ok := identName(a); ok {
+						vars = append(vars, name)
+					}
+				}
+			}
+		} else if name, ok := identName(c.Pattern); ok {
+			if _, ok := currentEnv.FindUnionByVariant(name); ok {
+				variant = name
+			}
 		}
-		if id, ok := pat.(*Ident); ok && id.Name == "_" {
-			pat = nil
+		if variant == "" {
+			var err error
+			pat, err = convertExpr(c.Pattern)
+			if err != nil {
+				return nil, err
+			}
+			if id, ok := pat.(*Ident); ok && id.Name == "_" {
+				pat = nil
+			}
 		}
 		res, err := convertExpr(c.Result)
 		if err != nil {
 			return nil, err
 		}
-		arms[i] = MatchArm{Pattern: pat, Result: res}
+		arms[i] = MatchArm{Pattern: pat, Variant: variant, Vars: vars, Fields: fields, Result: res}
 	}
 	return &MatchExpr{Target: target, Arms: arms}, nil
 }
@@ -1885,6 +2075,56 @@ func convertForStmt(fs *parser.ForStmt) (Stmt, error) {
 	return &ForInStmt{Name: fs.Name, Iterable: iter, Body: body}, nil
 }
 
+func convertUpdateStmt(u *parser.UpdateStmt) (Stmt, error) {
+	if currentEnv == nil {
+		return nil, fmt.Errorf("missing env")
+	}
+	t, err := currentEnv.GetVar(u.Target)
+	if err != nil {
+		return nil, err
+	}
+	lt, ok := t.(types.ListType)
+	if !ok {
+		return nil, fmt.Errorf("update target not list")
+	}
+	st, ok := lt.Elem.(types.StructType)
+	if !ok {
+		return nil, fmt.Errorf("update element not struct")
+	}
+	child := types.NewEnv(currentEnv)
+	fields := map[string]bool{}
+	for name, ft := range st.Fields {
+		child.SetVar(name, ft, true)
+		fields[name] = true
+	}
+	prev := currentEnv
+	currentEnv = child
+	var fNames []string
+	var vals []Expr
+	for _, it := range u.Set.Items {
+		key, _ := identName(it.Key)
+		val, err := convertExpr(it.Value)
+		if err != nil {
+			currentEnv = prev
+			return nil, err
+		}
+		val = replaceFields(val, &Ident{Name: "item"}, fields)
+		fNames = append(fNames, key)
+		vals = append(vals, val)
+	}
+	var cond Expr
+	if u.Where != nil {
+		c, err := convertExpr(u.Where)
+		if err != nil {
+			currentEnv = prev
+			return nil, err
+		}
+		cond = replaceFields(c, &Ident{Name: "item"}, fields)
+	}
+	currentEnv = prev
+	return &UpdateStmt{Target: u.Target, Fields: fNames, Values: vals, Cond: cond}, nil
+}
+
 func convertFunStmt(fs *parser.FunStmt) (Stmt, error) {
 	f := &FunStmt{Name: fs.Name}
 	for _, p := range fs.Params {
@@ -1979,7 +2219,11 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 			return &IndexAssignStmt{Target: target, Value: expr}, nil
 		}
 		if len(st.Assign.Field) > 0 {
-			return nil, fmt.Errorf("unsupported assignment")
+			target := Expr(&Ident{Name: st.Assign.Name})
+			for _, f := range st.Assign.Field {
+				target = &IndexExpr{Target: target, Index: &StringLit{Value: f.Name}, Kind: "map"}
+			}
+			return &IndexAssignStmt{Target: target, Value: expr}, nil
 		}
 		if qc, ok := expr.(*QueryComp); ok {
 			return &QueryAssignStmt{Name: st.Assign.Name, Query: qc}, nil
@@ -1995,6 +2239,8 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 		return convertWhileStmt(st.While)
 	case st.For != nil:
 		return convertForStmt(st.For)
+	case st.Update != nil:
+		return convertUpdateStmt(st.Update)
 	case st.Break != nil:
 		return &BreakStmt{}, nil
 	case st.Continue != nil:
@@ -2136,6 +2382,16 @@ func stmtNode(s Stmt) *ast.Node {
 			n.Children = append(n.Children, body)
 			return n
 		}
+	case *UpdateStmt:
+		n := &ast.Node{Kind: "update", Value: st.Target}
+		for i, f := range st.Fields {
+			assign := &ast.Node{Kind: "field", Value: f, Children: []*ast.Node{exprNode(st.Values[i])}}
+			n.Children = append(n.Children, assign)
+		}
+		if st.Cond != nil {
+			n.Children = append(n.Children, &ast.Node{Kind: "where", Children: []*ast.Node{exprNode(st.Cond)}})
+		}
+		return n
 	case *BreakStmt:
 		return &ast.Node{Kind: "break"}
 	case *ContinueStmt:
