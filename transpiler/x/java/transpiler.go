@@ -6,6 +6,7 @@ import (
 	"bytes"
 	"fmt"
 	"io"
+	"math"
 	"strings"
 
 	"mochi/parser"
@@ -31,6 +32,8 @@ func javaType(t string) string {
 		return "String"
 	case "void":
 		return "void"
+	case "float", "float64", "double":
+		return "double"
 	case "int[]":
 		return "int[]"
 	case "string[]":
@@ -53,6 +56,8 @@ func javaBoxType(t string) string {
 	switch t {
 	case "int":
 		return "Integer"
+	case "float", "float64", "double":
+		return "Double"
 	case "bool", "boolean":
 		return "Boolean"
 	case "string", "String":
@@ -84,6 +89,8 @@ func inferType(e Expr) string {
 	switch ex := e.(type) {
 	case *IntLit:
 		return "int"
+	case *FloatLit:
+		return "double"
 	case *BoolLit:
 		return "boolean"
 	case *StringLit:
@@ -142,8 +149,18 @@ func inferType(e Expr) string {
 			if isStringExpr(ex.Left) || isStringExpr(ex.Right) {
 				return "String"
 			}
+			lt := inferType(ex.Left)
+			rt := inferType(ex.Right)
+			if lt == "double" || rt == "double" {
+				return "double"
+			}
 			return "int"
 		case "-", "*", "/", "%":
+			lt := inferType(ex.Left)
+			rt := inferType(ex.Right)
+			if lt == "double" || rt == "double" {
+				return "double"
+			}
 			return "int"
 		case "==", "!=", "<", "<=", ">", ">=":
 			if isStringExpr(ex.Left) || isStringExpr(ex.Right) {
@@ -852,6 +869,16 @@ func (b *BinaryExpr) emit(w io.Writer) {
 type IntLit struct{ Value int }
 
 func (i *IntLit) emit(w io.Writer) { fmt.Fprint(w, i.Value) }
+
+type FloatLit struct{ Value float64 }
+
+func (f *FloatLit) emit(w io.Writer) {
+	if math.Trunc(f.Value) == f.Value {
+		fmt.Fprintf(w, "%.1f", f.Value)
+	} else {
+		fmt.Fprint(w, f.Value)
+	}
+}
 
 type VarExpr struct{ Name string }
 
@@ -1823,6 +1850,8 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 		return &StringLit{Value: *p.Lit.Str}, nil
 	case p.Lit != nil && p.Lit.Int != nil:
 		return &IntLit{Value: int(*p.Lit.Int)}, nil
+	case p.Lit != nil && p.Lit.Float != nil:
+		return &FloatLit{Value: *p.Lit.Float}, nil
 	case p.Lit != nil && p.Lit.Bool != nil:
 		return &BoolLit{Value: bool(*p.Lit.Bool)}, nil
 	case p.Selector != nil:
@@ -2319,6 +2348,8 @@ func toJavaTypeFromType(t types.Type) string {
 	switch tt := t.(type) {
 	case types.IntType, types.Int64Type:
 		return "int"
+	case types.FloatType:
+		return "double"
 	case types.BoolType:
 		return "boolean"
 	case types.StringType:
