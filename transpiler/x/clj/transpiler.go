@@ -332,12 +332,12 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 }
 
 func transpileStmt(s *parser.Statement) (Node, error) {
-        switch {
-       case s.Test != nil:
-               // test blocks are ignored by the transpiler
-               return nil, nil
-       case s.Expr != nil:
-               return transpileExpr(s.Expr.Expr)
+	switch {
+	case s.Test != nil:
+		// test blocks are ignored by the transpiler
+		return nil, nil
+	case s.Expr != nil:
+		return transpileExpr(s.Expr.Expr)
 	case s.If != nil:
 		return transpileIfStmt(s.If)
 	case s.Let != nil:
@@ -1144,9 +1144,66 @@ func transpileQueryExpr(q *parser.QueryExpr) (Node, error) {
 		return nil, fmt.Errorf("unsupported query features")
 	}
 
-	// handle a single right join without additional clauses by swapping
+	// handle a single outer or right join without additional clauses
 	if len(q.Froms) == 0 && len(q.Joins) == 1 && q.Group == nil {
 		j := q.Joins[0]
+		if j.Side != nil && *j.Side == "outer" && j.On != nil {
+			leftSrc, err := transpileExpr(q.Source)
+			if err != nil {
+				return nil, err
+			}
+			if name, ok := identName(q.Source); ok && groupVars != nil && groupVars[name] {
+				leftSrc = &List{Elems: []Node{Keyword("items"), Symbol(name)}}
+			}
+			rightSrc, err := transpileExpr(j.Src)
+			if err != nil {
+				return nil, err
+			}
+			if name, ok := identName(j.Src); ok && groupVars != nil && groupVars[name] {
+				rightSrc = &List{Elems: []Node{Keyword("items"), Symbol(name)}}
+			}
+			onExpr, err := transpileExpr(j.On)
+			if err != nil {
+				return nil, err
+			}
+
+			tmp := j.Var + "_tmp"
+			filterFn := &List{Elems: []Node{Symbol("fn"), &Vector{Elems: []Node{Symbol(j.Var)}}, onExpr}}
+			filtered := &List{Elems: []Node{Symbol("filter"), filterFn, rightSrc}}
+			joinSeq := &List{Elems: []Node{Symbol("let"), &Vector{Elems: []Node{Symbol(tmp), filtered}},
+				&List{Elems: []Node{Symbol("if"), &List{Elems: []Node{Symbol("seq"), Symbol(tmp)}}, Symbol(tmp), &Vector{Elems: []Node{Symbol("nil")}}}}}}
+
+			bindings := []Node{Symbol(q.Var), leftSrc, Symbol(j.Var), joinSeq}
+			conds := []Node{}
+			if q.Where != nil {
+				ce, err := transpileExpr(q.Where)
+				if err != nil {
+					return nil, err
+				}
+				conds = append(conds, ce)
+			}
+			sel, err := transpileExpr(q.Select)
+			if err != nil {
+				return nil, err
+			}
+			vecElems := bindings
+			if len(conds) == 1 {
+				vecElems = append(vecElems, Keyword("when"), conds[0])
+			} else if len(conds) > 1 {
+				andForm := []Node{Symbol("and")}
+				andForm = append(andForm, conds...)
+				vecElems = append(vecElems, Keyword("when"), &List{Elems: andForm})
+			}
+			leftFor := &List{Elems: []Node{Symbol("for"), &Vector{Elems: vecElems}, sel}}
+
+			filterFn2 := &List{Elems: []Node{Symbol("fn"), &Vector{Elems: []Node{Symbol(q.Var)}}, onExpr}}
+			filtered2 := &List{Elems: []Node{Symbol("filter"), filterFn2, leftSrc}}
+			rightCond := &List{Elems: []Node{Symbol("empty?"), filtered2}}
+			rightVec := []Node{Symbol(j.Var), rightSrc, Keyword("when"), rightCond, Symbol(q.Var), &Vector{Elems: []Node{Symbol("nil")}}}
+			rightFor := &List{Elems: []Node{Symbol("for"), &Vector{Elems: rightVec}, sel}}
+
+			return &List{Elems: []Node{Symbol("concat"), leftFor, rightFor}}, nil
+		}
 		if j.Side != nil && *j.Side == "right" && j.On != nil {
 			leftSrc, err := transpileExpr(q.Source)
 			if err != nil {
