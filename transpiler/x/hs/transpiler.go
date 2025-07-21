@@ -41,6 +41,12 @@ var needGroupBy bool
 // groupVars tracks variables that represent groups.
 var groupVars map[string]bool
 
+// groupKeyStruct stores the struct type name of each group's key.
+var groupKeyStruct map[string]string
+
+// groupItemType stores the struct type name of each group's items.
+var groupItemType map[string]string
+
 // vars holds the last computed expression of each variable at the top level.
 var vars map[string]Expr
 
@@ -165,6 +171,16 @@ func guessHsType(ex Expr) string {
 	}
 	if fe, ok := ex.(*FieldExpr); ok {
 		if n, ok2 := fe.Target.(*NameRef); ok2 {
+			if fe.Field == "key" {
+				if kt := groupKeyStruct[n.Name]; kt != "" {
+					return kt
+				}
+			}
+			if fe.Field == "items" {
+				if it := groupItemType[n.Name]; it != "" {
+					return "[" + it + "]"
+				}
+			}
 			if sname := varStruct[n.Name]; sname != "" {
 				if st, ok3 := structDefs[sname]; ok3 {
 					for i, f := range st.Fields {
@@ -179,6 +195,30 @@ func guessHsType(ex Expr) string {
 					if st, ok3 := vt.(types.StructType); ok3 {
 						if ft, ok4 := st.Fields[fe.Field]; ok4 {
 							return toHsType(ft)
+						}
+					}
+				}
+			}
+		}
+		if inner, ok2 := fe.Target.(*FieldExpr); ok2 {
+			if n, ok3 := inner.Target.(*NameRef); ok3 && inner.Field == "key" {
+				if kt := groupKeyStruct[n.Name]; kt != "" {
+					if st, ok4 := structDefs[kt]; ok4 {
+						for i, f := range st.Fields {
+							if f == fe.Field {
+								return st.Types[i]
+							}
+						}
+					}
+				}
+			}
+			if n, ok3 := inner.Target.(*NameRef); ok3 && inner.Field == "items" {
+				if it := groupItemType[n.Name]; it != "" {
+					if st, ok4 := structDefs[it]; ok4 {
+						for i, f := range st.Fields {
+							if f == fe.Field {
+								return st.Types[i]
+							}
 						}
 					}
 				}
@@ -962,6 +1002,14 @@ func inferVarFromSource(name string, src Expr) {
 				}
 			}
 		}
+		if fe, ok := src.(*FieldExpr); ok {
+			if n, ok2 := fe.Target.(*NameRef); ok2 && fe.Field == "items" {
+				if it := groupItemType[n.Name]; it != "" {
+					varStruct[name] = it
+					varTypes[name] = "record"
+				}
+			}
+		}
 	}
 }
 
@@ -1046,6 +1094,8 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	needDataMap = false
 	needGroupBy = false
 	groupVars = map[string]bool{}
+	groupKeyStruct = map[string]string{}
+	groupItemType = map[string]string{}
 	structDefs = map[string]*TypeDecl{}
 	structCount = 0
 	preludeHide = map[string]bool{}
@@ -1554,13 +1604,40 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 				varsExpr[i] = &NameRef{Name: v}
 			}
 			row := varsExpr[0]
+			rowType := ""
 			if len(varsExpr) > 1 {
-				row = &ListLit{Elems: varsExpr}
+				structCount++
+				rowType = fmt.Sprintf("GenType%d", structCount)
+				fields := make([]string, len(vars))
+				typestr := make([]string, len(vars))
+				for i, v := range vars {
+					fields[i] = v
+					if s := varStruct[v]; s != "" {
+						typestr[i] = s
+					} else {
+						typestr[i] = guessHsType(varsExpr[i])
+					}
+				}
+				structDefs[rowType] = &TypeDecl{Name: rowType, Fields: fields, Types: typestr}
+				for _, f := range fields {
+					preludeHide[f] = true
+				}
+				row = &RecordLit{Name: rowType, Names: fields, Fields: varsExpr}
 			}
 			list := &ComprExpr{Vars: vars, Sources: srcs, Cond: cond, Body: row}
 			keyExpr, err := convertExpr(p.Query.Group.Exprs[0])
 			if err != nil {
 				return nil, err
+			}
+			keyType := guessHsType(keyExpr)
+			if rl, ok := keyExpr.(*RecordLit); ok {
+				keyType = rl.Name
+			}
+			if rowType != "" {
+				groupItemType[p.Query.Group.Name] = rowType
+			}
+			if keyType != "" {
+				groupKeyStruct[p.Query.Group.Name] = keyType
 			}
 			mapKeys := &CallExpr{Fun: &NameRef{Name: "map"}, Args: []Expr{&GroupExpr{Expr: &LambdaExpr{Params: vars, Body: keyExpr}}, list}}
 			keys := &CallExpr{Fun: &NameRef{Name: "nub"}, Args: []Expr{&GroupExpr{Expr: mapKeys}}}
