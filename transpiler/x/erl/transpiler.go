@@ -514,7 +514,7 @@ func (fd *FuncDecl) emit(w io.Writer) {
 	} else {
 		io.WriteString(w, "nil")
 	}
-	io.WriteString(w, "\n    catch\n        {return, V} -> V\n    end.\n\n")
+	io.WriteString(w, "\n    catch\n        {return, _V} -> _V\n    end.\n\n")
 }
 
 func (af *AnonFunc) emit(w io.Writer) {
@@ -537,7 +537,7 @@ func (af *AnonFunc) emit(w io.Writer) {
 	} else {
 		io.WriteString(w, "nil")
 	}
-	io.WriteString(w, "\n    catch\n        {return, V} -> V\n    end end")
+	io.WriteString(w, "\n    catch\n        {return, _V} -> _V\n    end end")
 }
 
 func isStringExpr(e Expr) bool {
@@ -2208,29 +2208,106 @@ func convertQueryExpr(q *parser.QueryExpr, env *types.Env, ctx *context) (Expr, 
 }
 
 func convertGroupQuery(q *parser.QueryExpr, env *types.Env, ctx *context) (Expr, error) {
-	if len(q.Group.Exprs) != 1 || len(q.Froms) > 0 || len(q.Joins) > 0 || q.Where != nil || q.Distinct || q.Skip != nil || q.Take != nil {
+	if len(q.Group.Exprs) != 1 || q.Distinct || q.Skip != nil || q.Take != nil {
 		return nil, fmt.Errorf("unsupported group query")
 	}
+
+	loopCtx := ctx.clone()
 	src, err := convertExpr(q.Source, env, ctx)
 	if err != nil {
 		return nil, err
 	}
-	// Build fold function
-	param := "X"
-	foldCtx := ctx.clone()
-	foldCtx.alias[q.Var] = param
-	foldCtx.orig[param] = q.Var
+	alias := loopCtx.newAlias(q.Var)
+	loopCtx.setStrFields(q.Var, stringFields(src))
+	loopCtx.setBoolFields(q.Var, boolFields(src))
+
 	child := types.NewEnv(env)
 	child.SetVar(q.Var, types.AnyType{}, true)
-	keyExpr, err := convertExpr(q.Group.Exprs[0], child, foldCtx)
+
+	froms := []queryFrom{}
+	var rjoin *rightJoin
+	var cond Expr
+	joins := q.Joins
+	if len(q.Joins) == 1 && q.Joins[0].Side != nil && *q.Joins[0].Side == "right" {
+		j := q.Joins[0]
+		js, err := convertExpr(j.Src, env, ctx)
+		if err != nil {
+			return nil, err
+		}
+		ralias := loopCtx.newAlias(j.Var)
+		loopCtx.setStrFields(j.Var, stringFields(js))
+		loopCtx.setBoolFields(j.Var, boolFields(js))
+		child.SetVar(j.Var, types.AnyType{}, true)
+		onExpr, err := convertExpr(j.On, child, loopCtx)
+		if err != nil {
+			return nil, err
+		}
+		rjoin = &rightJoin{Var: ralias, Src: js, On: onExpr}
+		cond = onExpr
+		joins = nil
+	}
+	for _, f := range q.Froms {
+		fe, err := convertExpr(f.Src, env, ctx)
+		if err != nil {
+			return nil, err
+		}
+		av := loopCtx.newAlias(f.Var)
+		loopCtx.setStrFields(f.Var, stringFields(fe))
+		loopCtx.setBoolFields(f.Var, boolFields(fe))
+		child.SetVar(f.Var, types.AnyType{}, true)
+		froms = append(froms, queryFrom{Var: av, Src: fe})
+	}
+	for _, j := range joins {
+		if j.Side != nil {
+			return nil, fmt.Errorf("unsupported join side")
+		}
+		je, err := convertExpr(j.Src, env, ctx)
+		if err != nil {
+			return nil, err
+		}
+		jv := loopCtx.newAlias(j.Var)
+		loopCtx.setStrFields(j.Var, stringFields(je))
+		loopCtx.setBoolFields(j.Var, boolFields(je))
+		child.SetVar(j.Var, types.AnyType{}, true)
+		froms = append(froms, queryFrom{Var: jv, Src: je})
+		jc, err := convertExpr(j.On, child, loopCtx)
+		if err != nil {
+			return nil, err
+		}
+		if cond == nil {
+			cond = jc
+		} else {
+			cond = &BinaryExpr{Left: cond, Op: "&&", Right: jc}
+		}
+	}
+	if q.Where != nil {
+		w, err := convertExpr(q.Where, child, loopCtx)
+		if err != nil {
+			return nil, err
+		}
+		if cond == nil {
+			cond = w
+		} else {
+			cond = &BinaryExpr{Left: cond, Op: "&&", Right: w}
+		}
+	}
+
+	keyExpr, err := convertExpr(q.Group.Exprs[0], child, loopCtx)
 	if err != nil {
 		return nil, err
 	}
-	getItems := &CallExpr{Func: "maps:get", Args: []Expr{keyExpr, &NameRef{Name: "Acc"}, &ListLit{}}}
-	appendItem := &BinaryExpr{Left: getItems, Op: "++", Right: &ListLit{Elems: []Expr{&NameRef{Name: param}}}}
-	putCall := &CallExpr{Func: "maps:put", Args: []Expr{keyExpr, appendItem, &NameRef{Name: "Acc"}}}
-	foldFun := &AnonFunc{Params: []string{param, "Acc"}, Return: putCall}
-	groupsMap := &CallExpr{Func: "lists:foldl", Args: []Expr{foldFun, &MapLit{}, src}}
+
+	pairSelect := &TupleExpr{A: keyExpr, B: &NameRef{Name: alias}}
+	pairQuery := &QueryExpr{Var: alias, Src: src, Froms: froms, Right: rjoin, Where: cond, Select: pairSelect}
+
+	pairKV := "P"
+	kLet := &LetStmt{Name: "K", Expr: &CallExpr{Func: "element", Args: []Expr{&IntLit{Value: 1}, &NameRef{Name: pairKV}}}}
+	vLet := &LetStmt{Name: "V", Expr: &CallExpr{Func: "element", Args: []Expr{&IntLit{Value: 2}, &NameRef{Name: pairKV}}}}
+	getItems := &CallExpr{Func: "maps:get", Args: []Expr{&NameRef{Name: "K"}, &NameRef{Name: "Acc"}, &ListLit{}}}
+	appendItem := &BinaryExpr{Left: getItems, Op: "++", Right: &ListLit{Elems: []Expr{&NameRef{Name: "V"}}}}
+	putCall := &CallExpr{Func: "maps:put", Args: []Expr{&NameRef{Name: "K"}, appendItem, &NameRef{Name: "Acc"}}}
+	foldFun := &AnonFunc{Params: []string{pairKV, "Acc"}, Body: []Stmt{kLet, vLet}, Return: putCall}
+	groupsMap := &CallExpr{Func: "lists:foldl", Args: []Expr{foldFun, &MapLit{}, pairQuery}}
 
 	// Build mapping over groups
 	pair := "P"
@@ -2250,8 +2327,8 @@ func convertGroupQuery(q *parser.QueryExpr, env *types.Env, ctx *context) (Expr,
 
 	keyLet := &LetStmt{Name: keyVar, Expr: &CallExpr{Func: "element", Args: []Expr{&IntLit{Value: 1}, &NameRef{Name: pair}}}}
 	itemsLet := &LetStmt{Name: itemsVar, Expr: &CallExpr{Func: "element", Args: []Expr{&IntLit{Value: 2}, &NameRef{Name: pair}}}}
-	ctx.setStrFields(itemsVar, stringFields(src))
-	ctx.setBoolFields(itemsVar, boolFields(src))
+	ctx.setStrFields(itemsVar, ctx.strField[q.Var])
+	ctx.setBoolFields(itemsVar, ctx.boolField[q.Var])
 	mapFun := &AnonFunc{Params: []string{pair}, Body: []Stmt{keyLet, itemsLet}, Return: selExpr}
 	toList := &CallExpr{Func: "maps:to_list", Args: []Expr{groupsMap}}
 	if q.Group.Having != nil {
