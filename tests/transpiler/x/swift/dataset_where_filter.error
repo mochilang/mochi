@@ -1,5 +1,5 @@
 exit status 1
-/tmp/TestSwiftTranspiler_VMValid_Golden2036420806/013/main.swift:12:71: error: cannot convert value of type 'Any' to expected condition type 'Bool'
+/tmp/TestSwiftTranspiler_VMValid_Golden2524844172/013/main.swift:12:71: error: cannot convert value of type 'Any' to expected condition type 'Bool'
 10 | print("--- Adults ---")
 11 | for person in adults {
 12 |     print(person["name"]!, "is", person["age"]!, ((person["is_senior"]! ? " (senior)" : "") as! String))
@@ -7,7 +7,7 @@ exit status 1
 13 | }
 14 | 
 
-/tmp/TestSwiftTranspiler_VMValid_Golden2036420806/013/main.swift:12:93: warning: forced cast of 'String' to same type has no effect
+/tmp/TestSwiftTranspiler_VMValid_Golden2524844172/013/main.swift:12:93: warning: forced cast of 'String' to same type has no effect
 10 | print("--- Adults ---")
 11 | for person in adults {
 12 |     print(person["name"]!, "is", person["age"]!, ((person["is_senior"]! ? " (senior)" : "") as! String))

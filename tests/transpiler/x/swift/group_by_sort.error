@@ -1,5 +1,5 @@
 exit status 1
-/tmp/TestSwiftTranspiler_VMValid_Golden2036420806/026/main.swift:21:27: error: cannot convert value of type '(Int) -> Int' to expected argument type '(Int, Any) throws -> Int'
+/tmp/TestSwiftTranspiler_VMValid_Golden2524844172/026/main.swift:21:27: error: cannot convert value of type '(Int) -> Int' to expected argument type '(Int, Any) throws -> Int'
 19 |     _res.append(x["val"]!)
 20 | }
 21 | return _res })().reduce(0,+)) as! Double)
@@ -7,7 +7,7 @@ exit status 1
 22 | let g = b
 23 | let _kb = -((({ var _res: [Any] = []
 
-/tmp/TestSwiftTranspiler_VMValid_Golden2036420806/026/main.swift:21:31: warning: cast from 'Int' to unrelated type 'Double' always fails
+/tmp/TestSwiftTranspiler_VMValid_Golden2524844172/026/main.swift:21:31: warning: cast from 'Int' to unrelated type 'Double' always fails
 19 |     _res.append(x["val"]!)
 20 | }
 21 | return _res })().reduce(0,+)) as! Double)
