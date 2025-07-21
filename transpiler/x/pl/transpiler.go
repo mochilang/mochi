@@ -709,6 +709,7 @@ func (c *CallExpr) emit(w io.Writer) {
 
 func escape(s string) string {
 	s = strings.ReplaceAll(s, "'", "''")
+	s = strings.ReplaceAll(s, "\"", "\\\"")
 	return s
 }
 
@@ -951,20 +952,11 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 			}
 			p.Stmts = append(p.Stmts, loopStmts...)
 		case st.Expr != nil:
-			call := st.Expr.Expr.Binary.Left.Value.Target.Call
-			if call == nil || call.Func != "print" || len(call.Args) != 1 {
-				return nil, fmt.Errorf("unsupported expression")
-			}
-			arg, err := toExpr(call.Args[0], ce)
+			exprStmts, err := compileStmts([]*parser.Statement{st}, ce)
 			if err != nil {
 				return nil, err
 			}
-			if v, ok := arg.(*Var); ok {
-				if c := ce.constExpr(v.Name); c != nil {
-					arg = c
-				}
-			}
-			p.Stmts = append(p.Stmts, &PrintStmt{Expr: arg})
+			p.Stmts = append(p.Stmts, exprStmts...)
 		default:
 			return nil, fmt.Errorf("unsupported statement")
 		}
@@ -2008,7 +2000,7 @@ func evalQueryExpr(q *parser.QueryExpr, env *compileEnv) (Expr, error) {
 			isNum bool
 			val   Expr
 		}
-		sort.Strings(order)
+		// preserve input order of groups
 		results := []result{}
 		for _, k := range order {
 			keyLit := &StringLit{Value: k}
@@ -2308,7 +2300,7 @@ func evalQueryExpr(q *parser.QueryExpr, env *compileEnv) (Expr, error) {
 		delete(env.vars, q.Var)
 		delete(env.consts, env.current(j.Var))
 		delete(env.vars, j.Var)
-		sort.Strings(order)
+		// preserve input order of groups
 		results := []Expr{}
 		for _, k := range order {
 			gMap := &MapLit{Items: []MapItem{{Key: "key", Value: &StringLit{Value: k}}, {Key: "items", Value: groups[k]}}}
