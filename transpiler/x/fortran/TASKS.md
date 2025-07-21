@@ -1,3 +1,60 @@
+## Progress (2025-07-21 20:59:38 +0700)
+- fortran: improve bool printing and add str builtin
+
+## Progress (2025-07-21 20:53:33 +0700)
+- fortran: refine const detection and interpreter
+
+## Progress (2025-07-21 20:53:33 +0700)
+- fortran: refine const detection and interpreter
+
+## Progress (2025-07-21 20:53:33 +0700)
+- fortran: refine const detection and interpreter
+
+## Progress (2025-07-21 20:53:33 +0700)
+- fortran: refine const detection and interpreter
+
+## Progress (2025-07-21 20:53:33 +0700)
+- fortran: refine const detection and interpreter
+
+## Progress (2025-07-21 20:53:33 +0700)
+- fortran: refine const detection and interpreter
+
+## Progress (2025-07-21 20:53:33 +0700)
+- fortran: refine const detection and interpreter
+
+## Progress (2025-07-21 20:53:33 +0700)
+- fortran: refine const detection and interpreter
+
+## Progress (2025-07-21 20:53:33 +0700)
+- fortran: refine const detection and interpreter
+
+## Progress (2025-07-21 20:53:33 +0700)
+- fortran: refine const detection and interpreter
+
+## Progress (2025-07-21 20:40:21 +0700)
+- fortran: support count builtin
+
+## Progress (2025-07-21 20:40:21 +0700)
+- fortran: support count builtin
+
+## Progress (2025-07-21 20:40:21 +0700)
+- fortran: support count builtin
+
+## Progress (2025-07-21 20:40:21 +0700)
+- fortran: support count builtin
+
+## Progress (2025-07-21 20:40:21 +0700)
+- fortran: support count builtin
+
+## Progress (2025-07-21 20:40:21 +0700)
+- fortran: support count builtin
+
+## Progress (2025-07-21 20:40:21 +0700)
+- fortran: support count builtin
+
+## Progress (2025-07-21 20:40:21 +0700)
+- fortran: support count builtin
+
 ## Progress (2025-07-21 20:06:59 +0700)
 - update py docs
 
