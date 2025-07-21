@@ -2660,7 +2660,7 @@ func convertMatchExpr(me *parser.MatchExpr) (Expr, error) {
 }
 
 func cloneReplace(e Expr, old, new string) Expr {
-	switch ex := e.(type) {
+        switch ex := e.(type) {
 	case *Name:
 		if ex.Name == old {
 			return &Name{Name: new}
@@ -2686,15 +2686,51 @@ func cloneReplace(e Expr, old, new string) Expr {
 			elems[i] = cloneReplace(a, old, new)
 		}
 		return &ListLit{Elems: elems}
-	case *MapLit:
-		ents := make([]MapEntry, len(ex.Entries))
-		for i, m := range ex.Entries {
-			ents[i] = MapEntry{Key: cloneReplace(m.Key, old, new), Value: cloneReplace(m.Value, old, new)}
-		}
-		return &MapLit{Entries: ents}
-	default:
-		return ex
-	}
+       case *MapLit:
+               ents := make([]MapEntry, len(ex.Entries))
+               for i, m := range ex.Entries {
+                       ents[i] = MapEntry{Key: cloneReplace(m.Key, old, new), Value: cloneReplace(m.Value, old, new)}
+               }
+               return &MapLit{Entries: ents}
+       case *AvgExpr:
+               return &AvgExpr{List: cloneReplace(ex.List, old, new)}
+       case *SumExpr:
+               return &SumExpr{List: cloneReplace(ex.List, old, new)}
+       case *MinExpr:
+               return &MinExpr{List: cloneReplace(ex.List, old, new)}
+       case *MaxExpr:
+               return &MaxExpr{List: cloneReplace(ex.List, old, new)}
+       case *MultiListComp:
+               iters := make([]Expr, len(ex.Iters))
+               for i, it := range ex.Iters {
+                       iters[i] = cloneReplace(it, old, new)
+               }
+               var cond Expr
+               if ex.Cond != nil {
+                       cond = cloneReplace(ex.Cond, old, new)
+               }
+               return &MultiListComp{Vars: append([]string(nil), ex.Vars...), Iters: iters, Expr: cloneReplace(ex.Expr, old, new), Cond: cond}
+       case *GroupQueryExpr:
+               iters := make([]Expr, len(ex.Iters))
+               for i, it := range ex.Iters {
+                       iters[i] = cloneReplace(it, old, new)
+               }
+               var cond Expr
+               if ex.Cond != nil {
+                       cond = cloneReplace(ex.Cond, old, new)
+               }
+               var having Expr
+               if ex.Having != nil {
+                       having = cloneReplace(ex.Having, old, new)
+               }
+               var sort *LambdaExpr
+               if ex.Sort != nil {
+                       sort = &LambdaExpr{Params: append([]string(nil), ex.Sort.Params...), Body: cloneReplace(ex.Sort.Body, old, new)}
+               }
+               return &GroupQueryExpr{Vars: append([]string(nil), ex.Vars...), Iters: iters, Cond: cond, Key: cloneReplace(ex.Key, old, new), Row: cloneReplace(ex.Row, old, new), GroupVar: ex.GroupVar, Select: cloneReplace(ex.Select, old, new), Having: having, Sort: sort}
+        default:
+                return ex
+        }
 }
 
 func convertLeftJoinQuery(q *parser.QueryExpr) (Expr, error) {
