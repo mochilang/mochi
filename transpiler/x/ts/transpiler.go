@@ -795,6 +795,63 @@ func (e *IfExpr) emit(w io.Writer) {
 func (q *QueryExprJS) emit(w io.Writer) {
 	iw := &indentWriter{w: w, indent: "  "}
 	io.WriteString(iw, "(() => {\n")
+	simple := len(q.Loops) == 1 && len(q.Joins) > 0 && q.Sort == nil && q.Skip == nil && q.Take == nil
+	if simple {
+		for _, j := range q.Joins {
+			if j.Side != "" {
+				simple = false
+				break
+			}
+		}
+	}
+	if simple {
+		io.WriteString(iw, "  const result")
+		if q.ElemType != "" {
+			io.WriteString(iw, ": ")
+			io.WriteString(iw, q.ElemType)
+			io.WriteString(iw, "[]")
+		}
+		io.WriteString(iw, " = []\n")
+		io.WriteString(iw, "  for (const ")
+		io.WriteString(iw, q.Loops[0].Name)
+		io.WriteString(iw, " of ")
+		q.Loops[0].Source.emit(iw)
+		io.WriteString(iw, ") {\n")
+		var emitJoin func(int, int)
+		emitJoin = func(idx, level int) {
+			if idx >= len(q.Joins) {
+				if q.Where != nil {
+					io.WriteString(iw, strings.Repeat(iw.indent, level))
+					io.WriteString(iw, "if (!(")
+					q.Where.emit(iw)
+					io.WriteString(iw, ")) continue\n")
+				}
+				io.WriteString(iw, strings.Repeat(iw.indent, level))
+				io.WriteString(iw, "result.push(")
+				q.Select.emit(iw)
+				io.WriteString(iw, ")\n")
+				return
+			}
+			j := q.Joins[idx]
+			io.WriteString(iw, strings.Repeat(iw.indent, level))
+			io.WriteString(iw, "for (const ")
+			io.WriteString(iw, j.Name)
+			io.WriteString(iw, " of ")
+			j.Source.emit(iw)
+			io.WriteString(iw, ") {\n")
+			io.WriteString(iw, strings.Repeat(iw.indent, level+1))
+			io.WriteString(iw, "if (!(")
+			j.On.emit(iw)
+			io.WriteString(iw, ")) continue\n")
+			emitJoin(idx+1, level+1)
+			io.WriteString(iw, strings.Repeat(iw.indent, level))
+			io.WriteString(iw, "}\n")
+		}
+		emitJoin(0, 1)
+		io.WriteString(iw, "  }\n  return result\n")
+		io.WriteString(iw, "})()")
+		return
+	}
 	if len(q.Joins) == 0 && len(q.Loops) <= 1 {
 		io.WriteString(iw, "  const result")
 		if q.ElemType != "" {
@@ -2153,6 +2210,39 @@ func convertQueryExpr(q *parser.QueryExpr) (Expr, error) {
 		}
 		joins = append(joins, JoinSpec{Name: j.Var, Source: src, Side: side, On: on})
 	}
+
+	// build a child environment with loop and join variables for type inference
+	prevEnv := transpileEnv
+	child := types.NewEnv(transpileEnv)
+	elemT := types.ExprType(q.Source, transpileEnv)
+	if lt, ok := elemT.(types.ListType); ok {
+		elemT = lt.Elem
+	} else if gt, ok := elemT.(types.GroupType); ok {
+		elemT = gt.Elem
+	}
+	child.SetVar(q.Var, elemT, true)
+	for i, f := range q.Froms {
+		t := types.ExprType(f.Src, transpileEnv)
+		if lt, ok := t.(types.ListType); ok {
+			t = lt.Elem
+		} else if gt, ok := t.(types.GroupType); ok {
+			t = gt.Elem
+		}
+		if i+1 < len(loops) {
+			child.SetVar(f.Var, t, true)
+		}
+	}
+	for _, j := range q.Joins {
+		t := types.ExprType(j.Src, transpileEnv)
+		if lt, ok := t.(types.ListType); ok {
+			t = lt.Elem
+		} else if gt, ok := t.(types.GroupType); ok {
+			t = gt.Elem
+		}
+		child.SetVar(j.Var, t, true)
+	}
+	transpileEnv = child
+	defer func() { transpileEnv = prevEnv }()
 	var where Expr
 	if q.Where != nil {
 		where, err = convertExpr(q.Where)
