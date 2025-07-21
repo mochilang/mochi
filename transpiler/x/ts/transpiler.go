@@ -26,6 +26,7 @@ type Program struct {
 var transpileEnv *types.Env
 var generatedTypes map[string]bool
 var prelude []Stmt
+var pythonMathAliases map[string]bool
 
 type Stmt interface {
 	emit(io.Writer)
@@ -1691,7 +1692,8 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	transpileEnv = env
 	generatedTypes = map[string]bool{}
 	prelude = nil
-	defer func() { transpileEnv = nil; generatedTypes = nil; prelude = nil }()
+	pythonMathAliases = map[string]bool{}
+	defer func() { transpileEnv = nil; generatedTypes = nil; prelude = nil; pythonMathAliases = nil }()
 	tsProg := &Program{}
 
 	for _, st := range prog.Statements {
@@ -1757,8 +1759,14 @@ func convertStmt(s *parser.Statement) (Stmt, error) {
 		} else if s.Var.Type != nil {
 			e = zeroValue(s.Var.Type, transpileEnv)
 		}
-		mutable, _ := transpileEnv.IsMutable(s.Var.Name)
-		t, _ := transpileEnv.GetVar(s.Var.Name)
+		var mutable bool = true
+		var t types.Type
+		if transpileEnv != nil {
+			if m, err := transpileEnv.IsMutable(s.Var.Name); err == nil {
+				mutable = m
+			}
+			t, _ = transpileEnv.GetVar(s.Var.Name)
+		}
 		if it, ok := inferLiteralType(s.Var.Value, transpileEnv); ok {
 			t = it
 		}
@@ -1827,6 +1835,9 @@ func convertStmt(s *parser.Statement) (Stmt, error) {
 			alias = parser.AliasFromPath(s.Import.Path)
 		}
 		if s.Import.Lang != nil && *s.Import.Lang == "python" && strings.Trim(s.Import.Path, "\"") == "math" {
+			if pythonMathAliases != nil {
+				pythonMathAliases[alias] = true
+			}
 			return &VarDecl{Name: alias, Expr: &NameRef{Name: "Math"}, Const: true}, nil
 		}
 		if s.Import.Lang != nil && *s.Import.Lang == "go" && strings.Trim(s.Import.Path, "\"") == "mochi/runtime/ffi/go/testpkg" {
@@ -2538,7 +2549,12 @@ func convertPostfix(p *parser.PostfixExpr) (Expr, error) {
 				expr = &InvokeExpr{Callee: expr, Args: args}
 			}
 		case op.Field != nil:
-			expr = &IndexExpr{Target: expr, Index: &StringLit{Value: op.Field.Name}}
+			if nr, ok := expr.(*NameRef); ok && pythonMathAliases != nil && pythonMathAliases[nr.Name] {
+				up := strings.ToUpper(op.Field.Name)
+				expr = &IndexExpr{Target: expr, Index: &StringLit{Value: up}}
+			} else {
+				expr = &IndexExpr{Target: expr, Index: &StringLit{Value: op.Field.Name}}
+			}
 		case op.Cast != nil:
 			// ignore casts
 		default:
@@ -2625,7 +2641,7 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 						args[0] = &MethodCallExpr{Target: sortCall, Method: "join", Args: []Expr{&StringLit{Value: " "}}}
 					} else if lt, ok := types.ExprType(p.Call.Args[0], transpileEnv).(types.ListType); ok {
 						switch lt.Elem.(type) {
-						case types.StringType, types.AnyType:
+						case types.StringType:
 							args[0] = &MethodCallExpr{Target: args[0], Method: "join", Args: []Expr{&StringLit{Value: " "}}}
 						case types.MapType, types.StructType:
 							js := &CallExpr{Func: "JSON.stringify", Args: []Expr{&NameRef{Name: "x"}}}
@@ -2637,6 +2653,8 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 								Args:   []Expr{&FunExpr{Params: []string{"x"}, Expr: rep2}},
 							}
 							args[0] = &MethodCallExpr{Target: m, Method: "join", Args: []Expr{&StringLit{Value: " "}}}
+						case types.AnyType:
+							args = []Expr{&FormatListExpr{Value: args[0]}}
 						default:
 							args = []Expr{&FormatListExpr{Value: args[0]}}
 						}
@@ -3321,6 +3339,13 @@ func identName(e *parser.Expr) (string, bool) {
 func selectorToExpr(sel *parser.SelectorExpr) Expr {
 	expr := Expr(&NameRef{Name: sel.Root})
 	for _, part := range sel.Tail {
+		if pythonMathAliases != nil {
+			if nr, ok := expr.(*NameRef); ok && pythonMathAliases[nr.Name] {
+				if part == "pi" || part == "e" {
+					part = strings.ToUpper(part)
+				}
+			}
+		}
 		expr = &IndexExpr{Target: expr, Index: &StringLit{Value: part}}
 	}
 	return expr
