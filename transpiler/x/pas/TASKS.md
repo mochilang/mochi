@@ -1,3 +1,18 @@
+## Progress (2025-07-21 12:24 +0700)
+- transpiler/cs: support grouping with left join (progress 50/100)
+
+## Progress (2025-07-21 12:24 +0700)
+- transpiler/cs: support grouping with left join (progress 49/100)
+
+## Progress (2025-07-21 12:24 +0700)
+- transpiler/cs: support grouping with left join (progress 49/100)
+
+## Progress (2025-07-21 12:24 +0700)
+- transpiler/cs: support grouping with left join (progress 49/100)
+
+## Progress (2025-07-21 12:24 +0700)
+- transpiler/cs: support grouping with left join (progress 49/100)
+
 ## Progress (2025-07-21 11:02 +0700)
 - docs(pas): update progress (progress 49/100)
 
