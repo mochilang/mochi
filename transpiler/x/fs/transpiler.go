@@ -1187,14 +1187,14 @@ func Emit(prog *Program) []byte {
 }
 
 func header() string {
-	out, err := exec.Command("git", "log", "-1", "--format=%cI").Output()
-	ts := time.Now()
-	if err == nil {
-		if t, perr := time.Parse(time.RFC3339, strings.TrimSpace(string(out))); perr == nil {
-			ts = t
-		}
+	out, _ := exec.Command("git", "log", "-1", "--format=%cI").Output()
+	ts := strings.TrimSpace(string(out))
+	if t, err := time.Parse(time.RFC3339, ts); err == nil {
+		ts = t.Format("2006-01-02 15:04 -0700")
+	} else {
+		ts = time.Now().Format("2006-01-02 15:04 -0700")
 	}
-	return fmt.Sprintf("// Generated %s\n\n", ts.Format("2006-01-02 15:04 MST"))
+	return fmt.Sprintf("// Generated %s\n\n", ts)
 }
 
 // Transpile converts a Mochi program to a simple F# AST.
@@ -1611,8 +1611,13 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 					concat := &CallExpr{Func: "String.concat", Args: []Expr{&StringLit{Value: ", "}, mapped}}
 					wrapped := &BinaryExpr{Left: &BinaryExpr{Left: &StringLit{Value: "["}, Op: "+", Right: concat}, Op: "+", Right: &StringLit{Value: "]"}}
 					return &CallExpr{Func: "printfn \"%s\"", Args: []Expr{wrapped}}, nil
+				case "string":
+					return &CallExpr{Func: "printfn \"%s\"", Args: []Expr{args[0]}}, nil
 				default:
-					arg := &CallExpr{Func: "string", Args: []Expr{args[0]}}
+					arg := args[0]
+					if _, ok := args[0].(*StringLit); !ok {
+						arg = &CallExpr{Func: "string", Args: []Expr{args[0]}}
+					}
 					return &CallExpr{Func: "printfn \"%s\"", Args: []Expr{arg}}, nil
 				}
 			}

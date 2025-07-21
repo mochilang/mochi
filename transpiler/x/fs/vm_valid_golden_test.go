@@ -105,13 +105,20 @@ func updateReadme() {
 		}
 		lines = append(lines, fmt.Sprintf("- %s %s.mochi", mark, name))
 	}
+	tsRaw, _ := exec.Command("git", "log", "-1", "--format=%cI").Output()
+	ts := strings.TrimSpace(string(tsRaw))
+	if t, err := time.Parse(time.RFC3339, ts); err == nil {
+		ts = t.Format("2006-01-02 15:04 -0700")
+	}
+
 	var buf bytes.Buffer
 	buf.WriteString("# Mochi F# Transpiler\n\n")
 	buf.WriteString("This folder contains an experimental transpiler that converts Mochi source code into F#.\n\n")
 	fmt.Fprintf(&buf, "## Golden Test Checklist (%d/%d)\n\n", compiled, total)
 	buf.WriteString("The list below tracks Mochi programs under `tests/vm/valid` that should successfully transpile. Checked items indicate tests known to work.\n\n")
 	buf.WriteString(strings.Join(lines, "\n"))
-	buf.WriteString("\n")
+	buf.WriteString("\n\n")
+	fmt.Fprintf(&buf, "Last updated: %s\n", ts)
 	_ = os.WriteFile(readmePath, buf.Bytes(), 0o644)
 }
 
@@ -133,16 +140,17 @@ func updateTasks() {
 		}
 	}
 
-	out, err := exec.Command("git", "log", "-1", "--format=%cI").Output()
-	ts := ""
-	if err == nil {
-		if t, perr := time.Parse(time.RFC3339, strings.TrimSpace(string(out))); perr == nil {
-			ts = t.Format("2006-01-02 15:04 MST")
-		}
+	tsRaw, _ := exec.Command("git", "log", "-1", "--format=%cI").Output()
+	msgRaw, _ := exec.Command("git", "log", "-1", "--format=%s").Output()
+	ts := strings.TrimSpace(string(tsRaw))
+	if t, err := time.Parse(time.RFC3339, ts); err == nil {
+		ts = t.Format("2006-01-02 15:04 -0700")
 	}
+	msg := strings.TrimSpace(string(msgRaw))
 
 	var buf bytes.Buffer
 	buf.WriteString(fmt.Sprintf("## Progress (%s)\n", ts))
+	fmt.Fprintf(&buf, "- %s\n", msg)
 	fmt.Fprintf(&buf, "- Generated F# for %d/%d programs (%d passing)\n\n", total, total, compiled)
 	if data, err := os.ReadFile(taskFile); err == nil {
 		buf.Write(data)
