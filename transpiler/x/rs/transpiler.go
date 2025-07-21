@@ -148,6 +148,23 @@ type ContinueStmt struct{}
 
 func (c *ContinueStmt) emit(w io.Writer) { io.WriteString(w, "continue") }
 
+// SaveStmt saves a list of structs or maps to stdout in JSONL format.
+type SaveStmt struct {
+	Src    Expr
+	Path   string
+	Format string
+}
+
+func (s *SaveStmt) emit(w io.Writer) {
+	if s.Format == "jsonl" && (s.Path == "" || s.Path == "-") {
+		io.WriteString(w, "for _row in &")
+		s.Src.emit(w)
+		io.WriteString(w, " {\n        println!(\"{}\", _row);\n    }")
+		return
+	}
+	io.WriteString(w, "// unsupported save")
+}
+
 type ReturnStmt struct{ Value Expr }
 
 func (r *ReturnStmt) emit(w io.Writer) {
@@ -1247,6 +1264,18 @@ func Transpile(p *parser.Program, env *types.Env) (*Program, error) {
 func compileStmt(stmt *parser.Statement) (Stmt, error) {
 	switch {
 	case stmt.Expr != nil:
+		if se := extractSaveExpr(stmt.Expr.Expr); se != nil {
+			src, err := compileExpr(se.Src)
+			if err != nil {
+				return nil, err
+			}
+			format := parseFormat(se.With)
+			path := ""
+			if se.Path != nil {
+				path = strings.Trim(*se.Path, "\"")
+			}
+			return &SaveStmt{Src: src, Path: path, Format: format}, nil
+		}
 		e, err := compileExpr(stmt.Expr.Expr)
 		if err != nil {
 			return nil, err
@@ -2762,6 +2791,8 @@ func writeStmt(buf *bytes.Buffer, s Stmt, indent int) {
 		writeWhileStmt(buf, st, indent)
 	case *ForStmt:
 		writeForStmt(buf, st, indent)
+	case *SaveStmt:
+		st.emit(buf)
 	case *BreakStmt, *ContinueStmt:
 		st.emit(buf)
 	case *ReturnStmt:
@@ -3080,4 +3111,19 @@ func exprNode(e Expr) *ast.Node {
 	default:
 		return &ast.Node{Kind: "unknown"}
 	}
+}
+
+func extractSaveExpr(e *parser.Expr) *parser.SaveExpr {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) > 0 {
+		return nil
+	}
+	u := e.Binary.Left
+	if len(u.Ops) > 0 || u.Value == nil {
+		return nil
+	}
+	p := u.Value
+	if len(p.Ops) > 0 || p.Target == nil {
+		return nil
+	}
+	return p.Target.Save
 }
