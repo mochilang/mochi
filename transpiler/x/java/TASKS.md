@@ -1,5 +1,6 @@
-## Progress (2025-07-21 17:38 +0700)
-- java transpiler: support map membership (1ef3f2d59)
+## Progress (2025-07-21 18:06 +0700)
+- java transpiler: regenerate VM valid outputs (9f2177b9e)
+- 50/100 VM valid programs compiled
 
 Recent tasks:
 - ctrans: add map iteration support (b88d08eca)

@@ -1,0 +1,17 @@
+exit status 1
+Main.java:35: error: cannot find symbol
+    static java.util.List<Result4> result = new java.util.ArrayList<Result4>() {{ java.util.ArrayList<Result4> _tmp = new java.util.ArrayList<>(); for (var o : orders) { for (var c : customers) { if (((Integer) (o.get("customerId"))) == c.id) { _tmp.add(new Result4(((Integer) (o.get("id"))), c, ((Integer) (o.get("total"))))); } } } java.util.ArrayList<Result4> list = _tmp; int skip = 0; int take = -1; for (int i = 0; i < list.size(); i++) { if (i < skip) continue; if (take >= 0 && i >= skip + take) break; _tmp.add((Result4)list.get(i)); } addAll(_tmp);}};
+                                                                                                                                                                                                                     ^
+  symbol:   method get(String)
+  location: variable o of type Data2
+Main.java:35: error: cannot find symbol
+    static java.util.List<Result4> result = new java.util.ArrayList<Result4>() {{ java.util.ArrayList<Result4> _tmp = new java.util.ArrayList<>(); for (var o : orders) { for (var c : customers) { if (((Integer) (o.get("customerId"))) == c.id) { _tmp.add(new Result4(((Integer) (o.get("id"))), c, ((Integer) (o.get("total"))))); } } } java.util.ArrayList<Result4> list = _tmp; int skip = 0; int take = -1; for (int i = 0; i < list.size(); i++) { if (i < skip) continue; if (take >= 0 && i >= skip + take) break; _tmp.add((Result4)list.get(i)); } addAll(_tmp);}};
+                                                                                                                                                                                                                                                                                       ^
+  symbol:   method get(String)
+  location: variable o of type Data2
+Main.java:35: error: cannot find symbol
+    static java.util.List<Result4> result = new java.util.ArrayList<Result4>() {{ java.util.ArrayList<Result4> _tmp = new java.util.ArrayList<>(); for (var o : orders) { for (var c : customers) { if (((Integer) (o.get("customerId"))) == c.id) { _tmp.add(new Result4(((Integer) (o.get("id"))), c, ((Integer) (o.get("total"))))); } } } java.util.ArrayList<Result4> list = _tmp; int skip = 0; int take = -1; for (int i = 0; i < list.size(); i++) { if (i < skip) continue; if (take >= 0 && i >= skip + take) break; _tmp.add((Result4)list.get(i)); } addAll(_tmp);}};
+                                                                                                                                                                                                                                                                                                                     ^
+  symbol:   method get(String)
+  location: variable o of type Data2
+3 errors

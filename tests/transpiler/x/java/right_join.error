@@ -1,0 +1,29 @@
+exit status 1
+Main.java:35: error: cannot find symbol
+    static java.util.List<Result4> result = new java.util.ArrayList<Result4>() {{ java.util.ArrayList<Result4> _tmp = new java.util.ArrayList<>(); for (var c : customers) { for (var o : orders) { if (o.customerId == ((Integer) (c.get("id")))) { _tmp.add(new Result4(((Integer) (c.get("name"))), o)); } } } java.util.ArrayList<Result4> list = _tmp; int skip = 0; int take = -1; for (int i = 0; i < list.size(); i++) { if (i < skip) continue; if (take >= 0 && i >= skip + take) break; _tmp.add((Result4)list.get(i)); } addAll(_tmp);}};
+                                                                                                                                                                                                                                     ^
+  symbol:   method get(String)
+  location: variable c of type Data1
+Main.java:35: error: incompatible types: Integer cannot be converted to String
+    static java.util.List<Result4> result = new java.util.ArrayList<Result4>() {{ java.util.ArrayList<Result4> _tmp = new java.util.ArrayList<>(); for (var c : customers) { for (var o : orders) { if (o.customerId == ((Integer) (c.get("id")))) { _tmp.add(new Result4(((Integer) (c.get("name"))), o)); } } } java.util.ArrayList<Result4> list = _tmp; int skip = 0; int take = -1; for (int i = 0; i < list.size(); i++) { if (i < skip) continue; if (take >= 0 && i >= skip + take) break; _tmp.add((Result4)list.get(i)); } addAll(_tmp);}};
+                                                                                                                                                                                                                                                                           ^
+Main.java:35: error: cannot find symbol
+    static java.util.List<Result4> result = new java.util.ArrayList<Result4>() {{ java.util.ArrayList<Result4> _tmp = new java.util.ArrayList<>(); for (var c : customers) { for (var o : orders) { if (o.customerId == ((Integer) (c.get("id")))) { _tmp.add(new Result4(((Integer) (c.get("name"))), o)); } } } java.util.ArrayList<Result4> list = _tmp; int skip = 0; int take = -1; for (int i = 0; i < list.size(); i++) { if (i < skip) continue; if (take >= 0 && i >= skip + take) break; _tmp.add((Result4)list.get(i)); } addAll(_tmp);}};
+                                                                                                                                                                                                                                                                                       ^
+  symbol:   method get(String)
+  location: variable c of type Data1
+Main.java:54: error: incompatible types: Object cannot be converted to boolean
+            if (entry.order) {
+                     ^
+Main.java:55: error: cannot find symbol
+                System.out.println("Customer" + " " + entry.customerName + " " + "has order" + " " + entry.order.id + " " + "- $" + " " + entry.order.total);
+                                                                                                                ^
+  symbol:   variable id
+  location: variable order of type Object
+Main.java:55: error: cannot find symbol
+                System.out.println("Customer" + " " + entry.customerName + " " + "has order" + " " + entry.order.id + " " + "- $" + " " + entry.order.total);
+                                                                                                                                                     ^
+  symbol:   variable total
+  location: variable order of type Object
+Note: Some messages have been simplified; recompile with -Xdiags:verbose to get full output
+6 errors

@@ -1,0 +1,10 @@
+exit status 1
+Exception in thread "main" java.lang.ExceptionInInitializerError
+Caused by: java.lang.ClassCastException: class Main$Data2 cannot be cast to class java.lang.Comparable (Main$Data2 is in unnamed module of loader 'app'; java.lang.Comparable is in module java.base of loader 'bootstrap')
+	at Main$1.lambda$new$0(Main.java:17)
+	at java.base/java.util.TimSort.countRunAndMakeAscending(TimSort.java:355)
+	at java.base/java.util.TimSort.sort(TimSort.java:220)
+	at java.base/java.util.Arrays.sort(Arrays.java:1308)
+	at java.base/java.util.ArrayList.sort(ArrayList.java:1804)
+	at Main$1.<init>(Main.java:17)
+	at Main.<clinit>(Main.java:17)
