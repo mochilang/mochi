@@ -183,8 +183,10 @@ type ForStmt struct {
 
 // WhileStmt repeats a block while a condition is true.
 type WhileStmt struct {
+	Var  string
 	Cond Expr
 	Body []Stmt
+	Next Expr
 }
 
 // IndexExpr accesses a single element of a list or map.
@@ -298,18 +300,38 @@ func (f *ForStmt) emit(w io.Writer) {
 }
 
 func (wst *WhileStmt) emit(w io.Writer) {
-	io.WriteString(w, "let loop = do\n")
-	io.WriteString(w, "        if ")
+	name := "loop"
+	io.WriteString(w, "let ")
+	io.WriteString(w, name)
+	if wst.Var != "" {
+		io.WriteString(w, " ")
+		io.WriteString(w, safeName(wst.Var))
+	}
+	io.WriteString(w, " = do\n")
+	io.WriteString(w, "            if ")
 	wst.Cond.emit(w)
 	io.WriteString(w, " then do\n")
 	for _, st := range wst.Body {
-		io.WriteString(w, "            ")
+		io.WriteString(w, "                ")
 		st.emit(w)
 		io.WriteString(w, "\n")
 	}
-	io.WriteString(w, "            loop\n")
-	io.WriteString(w, "        else return ()\n")
-	io.WriteString(w, "    in loop")
+	io.WriteString(w, "                ")
+	io.WriteString(w, name)
+	if wst.Var != "" && wst.Next != nil {
+		io.WriteString(w, " (")
+		wst.Next.emit(w)
+		io.WriteString(w, ")\n")
+	} else {
+		io.WriteString(w, "\n")
+	}
+	io.WriteString(w, "            else return ()\n")
+	io.WriteString(w, "    ")
+	io.WriteString(w, name)
+	if wst.Var != "" {
+		io.WriteString(w, " ")
+		io.WriteString(w, safeName(wst.Var))
+	}
 }
 
 func (idx *IndexExpr) emit(w io.Writer) {
@@ -1525,7 +1547,19 @@ func convertWhileStmt(w *parser.WhileStmt) (Stmt, error) {
 	if err != nil {
 		return nil, err
 	}
-	return &WhileStmt{Cond: cond, Body: body}, nil
+	ws := &WhileStmt{Cond: cond, Body: body}
+	if len(w.Body) > 0 {
+		if as := w.Body[len(w.Body)-1].Assign; as != nil && len(as.Index) == 0 {
+			ex, err := convertExpr(as.Value)
+			if err != nil {
+				return nil, err
+			}
+			ws.Var = safeName(as.Name)
+			ws.Next = ex
+			ws.Body = ws.Body[:len(ws.Body)-1]
+		}
+	}
+	return ws, nil
 }
 
 func convertStmtList(list []*parser.Statement) ([]Stmt, error) {
