@@ -1114,10 +1114,25 @@ func convertPostfix(env *types.Env, p *parser.PostfixExpr) (Expr, error) {
 	if p.Target != nil && p.Target.Selector != nil {
 		tail = p.Target.Selector.Tail
 	}
+
+	// handle `.contains(x)` as `x in expr`
+	if len(p.Ops) == 1 && p.Ops[0].Call != nil && len(tail) > 0 && tail[len(tail)-1] == "contains" {
+		for _, f := range tail[:len(tail)-1] {
+			expr = &IndexExpr{Base: expr, Index: &LitExpr{Value: f, IsString: true}, Force: true}
+		}
+		arg, err := convertExpr(env, p.Ops[0].Call.Args[0])
+		if err != nil {
+			return nil, err
+		}
+		return &BinaryExpr{Left: arg, Op: "in", Right: expr}, nil
+	}
+
 	for _, f := range tail {
 		expr = &IndexExpr{Base: expr, Index: &LitExpr{Value: f, IsString: true}, Force: true}
 	}
-	for _, op := range p.Ops {
+
+	for i := 0; i < len(p.Ops); i++ {
+		op := p.Ops[i]
 		if op.Index != nil {
 			if op.Index.Start == nil || op.Index.Colon != nil || op.Index.End != nil || op.Index.Colon2 != nil || op.Index.Step != nil {
 				return nil, fmt.Errorf("unsupported index")
@@ -1137,6 +1152,15 @@ func convertPostfix(env *types.Env, p *parser.PostfixExpr) (Expr, error) {
 				}
 			}
 			expr = &IndexExpr{Base: expr, Index: idx, AsString: isStr, Force: force}
+			continue
+		}
+		if op.Field != nil && i+1 < len(p.Ops) && p.Ops[i+1].Call != nil && op.Field.Name == "contains" {
+			arg, err := convertExpr(env, p.Ops[i+1].Call.Args[0])
+			if err != nil {
+				return nil, err
+			}
+			expr = &BinaryExpr{Left: arg, Op: "in", Right: expr}
+			i++
 			continue
 		}
 		return nil, fmt.Errorf("unsupported postfix")

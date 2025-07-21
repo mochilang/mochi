@@ -1,6 +1,6 @@
-## Progress (2025-07-21 07:21 +0700)
-- swift transpiler: improve bool and avg handling
-- Generated golden tests for 72/100 programs
+## Progress (2025-07-21 10:56 +0700)
+- swift transpiler: handle contains method
+- Generated golden tests for 73/100 programs
 - Updated README checklist and output artifacts
 
 # Swift Transpiler Tasks
