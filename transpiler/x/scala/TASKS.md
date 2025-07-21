@@ -1,3 +1,27 @@
+## Progress (2025-07-21 10:51 +0700)
+- docs: update scala progress
+- Regenerated golden files - 62/100 vm valid programs passing
+
+## Progress (2025-07-21 10:51 +0700)
+- docs: update scala progress
+- Regenerated golden files - 78/100 vm valid programs passing
+
+## Progress (2025-07-21 10:51 +0700)
+- docs: update scala progress
+- Regenerated golden files - 78/100 vm valid programs passing
+
+## Progress (2025-07-21 10:51 +0700)
+- docs: update scala progress
+- Regenerated golden files - 78/100 vm valid programs passing
+
+## Progress (2025-07-21 10:51 +0700)
+- docs: update scala progress
+- Regenerated golden files - 78/100 vm valid programs passing
+
+## Progress (2025-07-21 10:51 +0700)
+- docs: update scala progress
+- Regenerated golden files - 78/100 vm valid programs passing
+
 ## Progress (2025-07-21 08:00 +0700)
 - scala transpiler: add right join support
 - Regenerated golden files - 61/100 vm valid programs passing
