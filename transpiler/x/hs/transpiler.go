@@ -101,6 +101,7 @@ func (t *TypeDecl) emit(w io.Writer) {
 var structDefs map[string]*TypeDecl
 var structCount int
 var preludeHide map[string]bool
+var varStruct map[string]string
 
 func recordType(name string, ex Expr) {
 	if isStringExpr(ex) {
@@ -113,6 +114,14 @@ func recordType(name string, ex Expr) {
 		varTypes[name] = "int"
 	} else if isListExpr(ex) {
 		varTypes[name] = "list"
+		if ll, ok := ex.(*ListLit); ok && len(ll.Elems) > 0 {
+			if rl, ok2 := ll.Elems[0].(*RecordLit); ok2 {
+				varStruct[name] = rl.Name
+			}
+		}
+	} else if rl, ok := ex.(*RecordLit); ok {
+		varTypes[name] = "record"
+		varStruct[name] = rl.Name
 	} else if ml, ok := ex.(*MapLit); ok {
 		allStr := true
 		for _, v := range ml.Values {
@@ -135,12 +144,23 @@ func guessHsType(ex Expr) string {
 	if _, ok := ex.(*IntLit); ok {
 		return "Int"
 	}
-	if fe, ok := ex.(*FieldExpr); ok && envInfo != nil {
+	if fe, ok := ex.(*FieldExpr); ok {
 		if n, ok2 := fe.Target.(*NameRef); ok2 {
-			if vt, err := envInfo.GetVar(n.Name); err == nil {
-				if st, ok3 := vt.(types.StructType); ok3 {
-					if ft, ok4 := st.Fields[fe.Field]; ok4 {
-						return toHsType(ft)
+			if sname := varStruct[n.Name]; sname != "" {
+				if st, ok3 := structDefs[sname]; ok3 {
+					for i, f := range st.Fields {
+						if f == fe.Field {
+							return st.Types[i]
+						}
+					}
+				}
+			}
+			if envInfo != nil {
+				if vt, err := envInfo.GetVar(n.Name); err == nil {
+					if st, ok3 := vt.(types.StructType); ok3 {
+						if ft, ok4 := st.Fields[fe.Field]; ok4 {
+							return toHsType(ft)
+						}
 					}
 				}
 			}
@@ -241,7 +261,14 @@ type IndexExpr struct {
 func (p *PrintStmt) emit(w io.Writer) {
 	if p.String {
 		io.WriteString(w, "putStrLn ")
-		p.Expr.emit(w)
+		switch p.Expr.(type) {
+		case *StringLit, *NameRef:
+			p.Expr.emit(w)
+		default:
+			io.WriteString(w, "(")
+			p.Expr.emit(w)
+			io.WriteString(w, ")")
+		}
 		return
 	}
 
@@ -511,6 +538,27 @@ func isStringExpr(e Expr) bool {
 		return true
 	case *NameRef:
 		return varTypes[ex.Name] == "string"
+	case *FieldExpr:
+		if n, ok := ex.Target.(*NameRef); ok {
+			if s := varStruct[n.Name]; s != "" {
+				if st, ok2 := structDefs[s]; ok2 {
+					for i, f := range st.Fields {
+						if f == ex.Field {
+							return st.Types[i] == "String"
+						}
+					}
+				}
+			}
+			if envInfo != nil {
+				if vt, err := envInfo.GetVar(n.Name); err == nil {
+					if st, ok3 := vt.(types.StructType); ok3 {
+						if ft, ok4 := st.Fields[ex.Field]; ok4 {
+							return toHsType(ft) == "String"
+						}
+					}
+				}
+			}
+		}
 	case *IndexExpr:
 		if n, ok := ex.Target.(*NameRef); ok {
 			return varTypes[n.Name] == "map_string"
@@ -537,6 +585,27 @@ func isBoolExpr(e Expr) bool {
 		return true
 	case *NameRef:
 		return varTypes[ex.Name] == "bool"
+	case *FieldExpr:
+		if n, ok := ex.Target.(*NameRef); ok {
+			if s := varStruct[n.Name]; s != "" {
+				if st, ok2 := structDefs[s]; ok2 {
+					for i, f := range st.Fields {
+						if f == ex.Field {
+							return st.Types[i] == "Bool"
+						}
+					}
+				}
+			}
+			if envInfo != nil {
+				if vt, err := envInfo.GetVar(n.Name); err == nil {
+					if st, ok3 := vt.(types.StructType); ok3 {
+						if ft, ok4 := st.Fields[ex.Field]; ok4 {
+							return toHsType(ft) == "Bool"
+						}
+					}
+				}
+			}
+		}
 	case *UnaryExpr:
 		if ex.Op == "!" {
 			return true
@@ -627,6 +696,27 @@ func isFloatExpr(e Expr) bool {
 		}
 	case *NameRef:
 		return varTypes[ex.Name] == "float"
+	case *FieldExpr:
+		if n, ok := ex.Target.(*NameRef); ok {
+			if s := varStruct[n.Name]; s != "" {
+				if st, ok2 := structDefs[s]; ok2 {
+					for i, f := range st.Fields {
+						if f == ex.Field {
+							return st.Types[i] == "Double"
+						}
+					}
+				}
+			}
+			if envInfo != nil {
+				if vt, err := envInfo.GetVar(n.Name); err == nil {
+					if st, ok3 := vt.(types.StructType); ok3 {
+						if ft, ok4 := st.Fields[ex.Field]; ok4 {
+							return toHsType(ft) == "Double"
+						}
+					}
+				}
+			}
+		}
 	}
 	return false
 }
@@ -874,6 +964,7 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	h := &Program{}
 	vars = map[string]Expr{}
 	varTypes = map[string]string{}
+	varStruct = map[string]string{}
 	needDataList = false
 	needDataMap = false
 	needGroupBy = false
@@ -1329,6 +1420,11 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 			return nil, err
 		}
 		srcs = append(srcs, se)
+		if r, ok := se.(*NameRef); ok {
+			if s := varStruct[r.Name]; s != "" {
+				varStruct[p.Query.Var] = s
+			}
+		}
 		for _, f := range p.Query.Froms {
 			fe, err := convertExpr(f.Src)
 			if err != nil {
@@ -1336,6 +1432,11 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 			}
 			vars = append(vars, f.Var)
 			srcs = append(srcs, fe)
+			if r, ok := fe.(*NameRef); ok {
+				if s := varStruct[r.Name]; s != "" {
+					varStruct[f.Var] = s
+				}
+			}
 		}
 		var cond Expr
 		for _, j := range p.Query.Joins {
@@ -1345,6 +1446,11 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 			}
 			vars = append(vars, j.Var)
 			srcs = append(srcs, je)
+			if r, ok := je.(*NameRef); ok {
+				if s := varStruct[r.Name]; s != "" {
+					varStruct[j.Var] = s
+				}
+			}
 			if j.On != nil {
 				jc, err := convertExpr(j.On)
 				if err != nil {
