@@ -760,6 +760,39 @@ type ContinueStmt struct{}
 
 func (c *ContinueStmt) emit(w io.Writer, indent string) { fmt.Fprint(w, indent+"continue;\n") }
 
+// UpdateStmt represents an `update` statement on a list of structs.
+type UpdateStmt struct {
+	Target string
+	Fields []string
+	Values []Expr
+	Cond   Expr
+}
+
+func (u *UpdateStmt) emit(w io.Writer, indent string) {
+	fmt.Fprintf(w, indent+"for (int i = 0; i < %s.length; i++) {\n", u.Target)
+	fmt.Fprintf(w, indent+"    var item = %s[i];\n", u.Target)
+	if u.Cond != nil {
+		fmt.Fprint(w, indent+"    if (")
+		u.Cond.emit(w)
+		fmt.Fprint(w, ") {\n")
+		inner := indent + "        "
+		for i, f := range u.Fields {
+			fmt.Fprintf(w, inner+"item.%s = ", f)
+			u.Values[i].emit(w)
+			fmt.Fprint(w, ";\n")
+		}
+		fmt.Fprint(w, indent+"    }\n")
+	} else {
+		for i, f := range u.Fields {
+			fmt.Fprintf(w, indent+"    item.%s = ", f)
+			u.Values[i].emit(w)
+			fmt.Fprint(w, ";\n")
+		}
+	}
+	fmt.Fprintf(w, indent+"    %s[i] = item;\n", u.Target)
+	fmt.Fprint(w, indent+"}\n")
+}
+
 // ListLit represents a list literal.
 type ListLit struct {
 	ElemType string
@@ -891,6 +924,13 @@ type FieldExpr struct {
 }
 
 func (f *FieldExpr) emit(w io.Writer) {
+	if v, ok := f.Target.(*VarExpr); ok {
+		if t, ok2 := varTypes[v.Name]; ok2 && t != "map" && !strings.Contains(t, "Map") {
+			f.Target.emit(w)
+			fmt.Fprint(w, "."+f.Name)
+			return
+		}
+	}
 	if isMapExpr(f.Target) {
 		fmt.Fprint(w, "((Integer) (")
 		f.Target.emit(w)
@@ -1550,6 +1590,9 @@ func compileStmt(s *parser.Statement) (Stmt, error) {
 				return nil, err
 			}
 			t := typeRefString(s.Let.Type)
+			if t == "list" && topEnv != nil {
+				t = toJavaTypeFromType(types.ExprType(s.Let.Value, topEnv))
+			}
 			if t == "" {
 				switch ex := e.(type) {
 				case *QueryExpr:
@@ -1588,6 +1631,9 @@ func compileStmt(s *parser.Statement) (Stmt, error) {
 				return nil, err
 			}
 			t := typeRefString(s.Var.Type)
+			if t == "list" && topEnv != nil {
+				t = toJavaTypeFromType(types.ExprType(s.Var.Value, topEnv))
+			}
 			if t == "" {
 				switch ex := e.(type) {
 				case *QueryExpr:
@@ -1786,6 +1832,12 @@ func compileStmt(s *parser.Statement) (Stmt, error) {
 			}
 		}
 		return &ForEachStmt{Name: s.For.Name, Iterable: iter, Body: body, IsMap: isMap}, nil
+	case s.Update != nil:
+		up, err := compileUpdateStmt(s.Update)
+		if err != nil {
+			return nil, err
+		}
+		return up, nil
 	case s.Break != nil:
 		return &BreakStmt{}, nil
 	case s.Continue != nil:
@@ -1808,6 +1860,53 @@ func compileStmts(list []*parser.Statement) ([]Stmt, error) {
 		}
 	}
 	return out, nil
+}
+
+func compileUpdateStmt(u *parser.UpdateStmt) (Stmt, error) {
+	if topEnv == nil {
+		return nil, fmt.Errorf("missing env")
+	}
+	t, err := topEnv.GetVar(u.Target)
+	if err != nil {
+		return nil, err
+	}
+	lt, ok := t.(types.ListType)
+	if !ok {
+		return nil, fmt.Errorf("update target not list")
+	}
+	st, ok := lt.Elem.(types.StructType)
+	if !ok {
+		return nil, fmt.Errorf("update element not struct")
+	}
+	fieldSet := map[string]bool{}
+	for name, ft := range st.Fields {
+		fieldSet[name] = true
+		varTypes[name] = toJavaTypeFromType(ft)
+	}
+	fields := make([]string, len(u.Set.Items))
+	values := make([]Expr, len(u.Set.Items))
+	for i, it := range u.Set.Items {
+		key, ok := types.SimpleStringKey(it.Key)
+		if !ok {
+			return nil, fmt.Errorf("unsupported update key")
+		}
+		val, err := compileExpr(it.Value)
+		if err != nil {
+			return nil, err
+		}
+		val = substituteFieldVars(val, fieldSet)
+		fields[i] = key
+		values[i] = val
+	}
+	var cond Expr
+	if u.Where != nil {
+		c, err := compileExpr(u.Where)
+		if err != nil {
+			return nil, err
+		}
+		cond = substituteFieldVars(c, fieldSet)
+	}
+	return &UpdateStmt{Target: u.Target, Fields: fields, Values: values, Cond: cond}, nil
 }
 
 func compileExpr(e *parser.Expr) (Expr, error) {
@@ -2690,6 +2789,48 @@ func renameVar(e Expr, oldName, newName string) Expr {
 			Select:   renameVar(ex.Select, oldName, newName),
 			ElemType: ex.ElemType,
 		}
+	default:
+		return ex
+	}
+}
+
+func substituteFieldVars(e Expr, fields map[string]bool) Expr {
+	switch ex := e.(type) {
+	case *VarExpr:
+		if fields[ex.Name] {
+			return &FieldExpr{Target: &VarExpr{Name: "item"}, Name: ex.Name}
+		}
+		return ex
+	case *BinaryExpr:
+		return &BinaryExpr{Left: substituteFieldVars(ex.Left, fields), Op: ex.Op, Right: substituteFieldVars(ex.Right, fields)}
+	case *UnaryExpr:
+		return &UnaryExpr{Op: ex.Op, Value: substituteFieldVars(ex.Value, fields)}
+	case *TernaryExpr:
+		return &TernaryExpr{Cond: substituteFieldVars(ex.Cond, fields), Then: substituteFieldVars(ex.Then, fields), Else: substituteFieldVars(ex.Else, fields)}
+	case *CallExpr:
+		args := make([]Expr, len(ex.Args))
+		for i, a := range ex.Args {
+			args[i] = substituteFieldVars(a, fields)
+		}
+		return &CallExpr{Func: ex.Func, Args: args}
+	case *MethodCallExpr:
+		args := make([]Expr, len(ex.Args))
+		for i, a := range ex.Args {
+			args[i] = substituteFieldVars(a, fields)
+		}
+		return &MethodCallExpr{Target: substituteFieldVars(ex.Target, fields), Name: ex.Name, Args: args}
+	case *FieldExpr:
+		return &FieldExpr{Target: substituteFieldVars(ex.Target, fields), Name: ex.Name}
+	case *IndexExpr:
+		return &IndexExpr{Target: substituteFieldVars(ex.Target, fields), Index: substituteFieldVars(ex.Index, fields)}
+	case *SliceExpr:
+		return &SliceExpr{Value: substituteFieldVars(ex.Value, fields), Start: substituteFieldVars(ex.Start, fields), End: substituteFieldVars(ex.End, fields)}
+	case *ListLit:
+		elems := make([]Expr, len(ex.Elems))
+		for i, el := range ex.Elems {
+			elems[i] = substituteFieldVars(el, fields)
+		}
+		return &ListLit{ElemType: ex.ElemType, Elems: elems}
 	default:
 		return ex
 	}
