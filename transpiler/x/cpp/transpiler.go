@@ -247,6 +247,7 @@ type ForStmt struct {
 	Start, End Expr
 	Body       []Stmt
 	IsMap      bool
+	ElemType   string
 }
 
 type IfStmt struct {
@@ -335,6 +336,21 @@ type JoinLeftJoinComp struct {
 	Cond      Expr
 	Body      Expr
 	ElemType  string
+}
+
+// OuterJoinComp represents a simple full outer join between two lists.
+type OuterJoinComp struct {
+	LeftVar        string
+	LeftIter       Expr
+	RightVar       string
+	RightIter      Expr
+	LeftType       string
+	LeftInnerType  string
+	RightType      string
+	RightInnerType string
+	Cond           Expr
+	Body           Expr
+	ElemType       string
 }
 
 // SortComp represents a query with optional sorting and slicing.
@@ -610,11 +626,16 @@ func (u *UnaryExpr) emit(w io.Writer) {
 }
 
 func (s *SelectorExpr) emit(w io.Writer) {
-	if strings.HasPrefix(exprType(s.Target), "std::map<") {
+	typ := exprType(s.Target)
+	if strings.HasPrefix(typ, "std::map<") {
 		s.Target.emit(w)
 		io.WriteString(w, "[\"")
 		io.WriteString(w, s.Field)
 		io.WriteString(w, "\"]")
+	} else if strings.HasPrefix(typ, "std::optional<") {
+		s.Target.emit(w)
+		io.WriteString(w, "->")
+		io.WriteString(w, s.Field)
 	} else {
 		s.Target.emit(w)
 		io.WriteString(w, ".")
@@ -1063,6 +1084,68 @@ func (c *JoinLeftJoinComp) emit(w io.Writer) {
 	inLambda--
 }
 
+func (o *OuterJoinComp) emit(w io.Writer) {
+	cap := "[]"
+	if inFunction || inLambda > 0 {
+		cap = "[&]"
+	}
+	io.WriteString(w, "("+cap+"{ std::vector<"+o.ElemType+"> __items;\n")
+	inLambda++
+	io.WriteString(w, "for (auto __"+o.LeftVar+" : ")
+	o.LeftIter.emit(w)
+	io.WriteString(w, ") {\n")
+	io.WriteString(w, "    bool __matched = false;\n")
+	io.WriteString(w, "    for (auto __"+o.RightVar+" : ")
+	o.RightIter.emit(w)
+	io.WriteString(w, ") {\n")
+	io.WriteString(w, "        auto "+o.LeftVar+" = __"+o.LeftVar+";\n")
+	io.WriteString(w, "        auto "+o.RightVar+" = __"+o.RightVar+";\n")
+	io.WriteString(w, "        if(")
+	o.Cond.emit(w)
+	io.WriteString(w, ") {\n")
+	io.WriteString(w, "            __matched = true;\n")
+	io.WriteString(w, "            { std::optional<"+o.LeftInnerType+"> "+o.LeftVar+"_opt(__"+o.LeftVar+");\n")
+	io.WriteString(w, "            std::optional<"+o.RightInnerType+"> "+o.RightVar+"_opt(__"+o.RightVar+");\n")
+	io.WriteString(w, "            auto "+o.LeftVar+" = "+o.LeftVar+"_opt;\n")
+	io.WriteString(w, "            auto "+o.RightVar+" = "+o.RightVar+"_opt;\n")
+	io.WriteString(w, "            __items.push_back(")
+	o.Body.emit(w)
+	io.WriteString(w, "); }\n")
+	io.WriteString(w, "        }\n")
+	io.WriteString(w, "    }\n")
+	io.WriteString(w, "    if(!__matched) {\n")
+	io.WriteString(w, "        std::optional<"+o.LeftInnerType+"> "+o.LeftVar+"(__"+o.LeftVar+");\n")
+	io.WriteString(w, "        std::optional<"+o.RightInnerType+"> "+o.RightVar+" = std::nullopt;\n")
+	io.WriteString(w, "        __items.push_back(")
+	o.Body.emit(w)
+	io.WriteString(w, ");\n")
+	io.WriteString(w, "    }\n")
+	io.WriteString(w, "}\n")
+	io.WriteString(w, "for (auto __"+o.RightVar+" : ")
+	o.RightIter.emit(w)
+	io.WriteString(w, ") {\n")
+	io.WriteString(w, "    bool __matched = false;\n")
+	io.WriteString(w, "    for (auto __"+o.LeftVar+" : ")
+	o.LeftIter.emit(w)
+	io.WriteString(w, ") {\n")
+	io.WriteString(w, "        auto "+o.LeftVar+" = __"+o.LeftVar+";\n")
+	io.WriteString(w, "        auto "+o.RightVar+" = __"+o.RightVar+";\n")
+	io.WriteString(w, "        if(")
+	o.Cond.emit(w)
+	io.WriteString(w, ") { __matched = true; break; }\n")
+	io.WriteString(w, "    }\n")
+	io.WriteString(w, "    if(!__matched) {\n")
+	io.WriteString(w, "        std::optional<"+o.LeftInnerType+"> "+o.LeftVar+" = std::nullopt;\n")
+	io.WriteString(w, "        std::optional<"+o.RightInnerType+"> "+o.RightVar+"(__"+o.RightVar+");\n")
+	io.WriteString(w, "        __items.push_back(")
+	o.Body.emit(w)
+	io.WriteString(w, ");\n")
+	io.WriteString(w, "    }\n")
+	io.WriteString(w, "}\n")
+	io.WriteString(w, "return __items; }())")
+	inLambda--
+}
+
 func (sc *SortComp) emit(w io.Writer) {
 	cap := "[]"
 	if inFunction || inLambda > 0 {
@@ -1268,7 +1351,11 @@ func (f *ForStmt) emit(w io.Writer, indent int) {
 			io.WriteString(w, f.Var)
 			io.WriteString(w, " = __p.first;\n")
 		} else {
-			io.WriteString(w, "for (auto ")
+			typ := "auto"
+			if f.ElemType != "" {
+				typ = f.ElemType
+			}
+			io.WriteString(w, "for ("+typ+" ")
 			io.WriteString(w, f.Var)
 			io.WriteString(w, " : ")
 			f.Start.emit(w)
@@ -1287,8 +1374,24 @@ func (f *ForStmt) emit(w io.Writer, indent int) {
 		io.WriteString(w, f.Var)
 		io.WriteString(w, "++ ) {\n")
 	}
-	for _, st := range f.Body {
-		st.emit(w, indent+1)
+	if f.ElemType != "" {
+		old := localTypes
+		if old == nil {
+			old = map[string]string{}
+		}
+		localTypes = map[string]string{}
+		for k, v := range old {
+			localTypes[k] = v
+		}
+		localTypes[f.Var] = f.ElemType
+		for _, st := range f.Body {
+			st.emit(w, indent+1)
+		}
+		localTypes = old
+	} else {
+		for _, st := range f.Body {
+			st.emit(w, indent+1)
+		}
 	}
 	for i := 0; i < indent; i++ {
 		io.WriteString(w, "    ")
@@ -1389,6 +1492,8 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 						} else {
 							val, def, _, err = convertLeftJoinQuery(q, stmt.Let.Name)
 						}
+					} else if len(q.Joins) == 1 && q.Joins[0].Side != nil && *q.Joins[0].Side == "outer" {
+						val, def, _, err = convertOuterJoinQuery(q, stmt.Let.Name)
 					} else if len(q.Joins) == 2 && q.Joins[1].Side != nil && *q.Joins[1].Side == "left" && (q.Joins[0].Side == nil) {
 						val, def, _, err = convertJoinLeftJoinQuery(q, stmt.Let.Name)
 					} else {
@@ -1457,6 +1562,12 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 						cp.ListTypes = map[string]string{}
 					}
 					cp.ListTypes[stmt.Let.Name] = jl.ElemType
+				} else if oj, ok := val.(*OuterJoinComp); ok {
+					typ = fmt.Sprintf("std::vector<%s>", oj.ElemType)
+					if cp.ListTypes == nil {
+						cp.ListTypes = map[string]string{}
+					}
+					cp.ListTypes[stmt.Let.Name] = oj.ElemType
 				}
 			}
 			globals = append(globals, &LetStmt{Name: stmt.Let.Name, Type: typ, Value: val})
@@ -1472,6 +1583,8 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 						} else {
 							val, def, _, err = convertLeftJoinQuery(q, stmt.Var.Name)
 						}
+					} else if len(q.Joins) == 1 && q.Joins[0].Side != nil && *q.Joins[0].Side == "outer" {
+						val, def, _, err = convertOuterJoinQuery(q, stmt.Var.Name)
 					} else if len(q.Joins) == 2 && q.Joins[1].Side != nil && *q.Joins[1].Side == "left" && (q.Joins[0].Side == nil) {
 						val, def, _, err = convertJoinLeftJoinQuery(q, stmt.Var.Name)
 					} else {
@@ -1540,6 +1653,12 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 						cp.ListTypes = map[string]string{}
 					}
 					cp.ListTypes[stmt.Var.Name] = jl.ElemType
+				} else if oj, ok := val.(*OuterJoinComp); ok {
+					typ = fmt.Sprintf("std::vector<%s>", oj.ElemType)
+					if cp.ListTypes == nil {
+						cp.ListTypes = map[string]string{}
+					}
+					cp.ListTypes[stmt.Var.Name] = oj.ElemType
 				}
 			}
 			globals = append(globals, &LetStmt{Name: stmt.Var.Name, Type: typ, Value: val})
@@ -1600,9 +1719,21 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 			fs := &ForStmt{Var: stmt.For.Name, Start: start, End: end}
 			if currentEnv != nil {
 				if t := types.TypeOfExpr(stmt.For.Source, currentEnv); t != nil {
-					if _, ok := t.(types.MapType); ok {
-						fs.IsMap = true
+					if lt, ok := t.(types.ListType); ok {
+						fs.ElemType = cppTypeFrom(lt.Elem)
 					}
+				}
+			}
+			if fs.ElemType == "" {
+				et := elementTypeFromListType(guessType(stmt.For.Source))
+				if vr, ok := start.(*VarRef); ok {
+					if t, ok2 := currentProgram.ListTypes[vr.Name]; ok2 {
+						fs.ElemType = t
+					} else {
+						fs.ElemType = et
+					}
+				} else {
+					fs.ElemType = et
 				}
 			}
 			for _, s := range stmt.For.Body {
@@ -1777,9 +1908,21 @@ func convertStmt(s *parser.Statement) (Stmt, error) {
 		fs := &ForStmt{Var: s.For.Name, Start: start, End: end}
 		if currentEnv != nil {
 			if t := types.TypeOfExpr(s.For.Source, currentEnv); t != nil {
-				if _, ok := t.(types.MapType); ok {
-					fs.IsMap = true
+				if lt, ok := t.(types.ListType); ok {
+					fs.ElemType = cppTypeFrom(lt.Elem)
 				}
+			}
+		}
+		if fs.ElemType == "" {
+			et := elementTypeFromListType(guessType(s.For.Source))
+			if vr, ok := start.(*VarRef); ok {
+				if t, ok2 := currentProgram.ListTypes[vr.Name]; ok2 {
+					fs.ElemType = t
+				} else {
+					fs.ElemType = et
+				}
+			} else {
+				fs.ElemType = et
 			}
 		}
 		for _, st := range s.For.Body {
@@ -2975,6 +3118,98 @@ func convertJoinLeftJoinQuery(q *parser.QueryExpr, target string) (Expr, *Struct
 	return &JoinLeftJoinComp{LeftVar: q.Var, LeftIter: leftIter, JoinVar: j1.Var, JoinIter: joinIter, JoinCond: joinCond, RightVar: j2.Var, RightIter: rightIter, RightType: optRightType, InnerType: rightType, Cond: cond, Body: body, ElemType: elemType}, def, elemType, nil
 }
 
+func convertOuterJoinQuery(q *parser.QueryExpr, target string) (Expr, *StructDef, string, error) {
+	if q == nil || len(q.Joins) != 1 || q.Group != nil || q.Distinct || q.Sort != nil || q.Skip != nil || q.Take != nil {
+		return nil, nil, "", fmt.Errorf("unsupported query")
+	}
+	j := q.Joins[0]
+	if j.Side == nil || *j.Side != "outer" {
+		return nil, nil, "", fmt.Errorf("unsupported query")
+	}
+	leftIter, err := convertExpr(q.Source)
+	if err != nil {
+		return nil, nil, "", err
+	}
+	rightIter, err := convertExpr(j.Src)
+	if err != nil {
+		return nil, nil, "", err
+	}
+	leftType := elementTypeFromListType(guessType(q.Source))
+	if vr, ok := leftIter.(*VarRef); ok {
+		if t, ok2 := currentProgram.ListTypes[vr.Name]; ok2 {
+			leftType = t
+		}
+	}
+	rightType := elementTypeFromListType(guessType(j.Src))
+	if vr, ok := rightIter.(*VarRef); ok {
+		if t, ok2 := currentProgram.ListTypes[vr.Name]; ok2 {
+			rightType = t
+		}
+	}
+	optLeftType := fmt.Sprintf("std::optional<%s>", leftType)
+	optRightType := fmt.Sprintf("std::optional<%s>", rightType)
+	qTypes := map[string]string{q.Var: leftType, j.Var: rightType}
+	oldTypes := localTypes
+	localTypes = qTypes
+	cond, err := convertExpr(j.On)
+	if err != nil {
+		localTypes = oldTypes
+		return nil, nil, "", err
+	}
+	qTypes[q.Var] = optLeftType
+	qTypes[j.Var] = optRightType
+	localTypes = qTypes
+	body, err := convertExpr(q.Select)
+	if err != nil {
+		localTypes = oldTypes
+		return nil, nil, "", err
+	}
+	elemType := exprType(body)
+	var def *StructDef
+	if ml, ok := body.(*MapLit); ok {
+		if keys := make([]string, len(ml.Keys)); true {
+			for i, k := range ml.Keys {
+				n, ok := keyName(k)
+				if !ok {
+					keys = nil
+					break
+				}
+				keys[i] = n
+			}
+			if keys != nil {
+				structName := strings.Title(target) + "Item"
+				fields := make([]Param, len(keys))
+				flds := make([]FieldLit, len(keys))
+				for i, k := range keys {
+					typ := exprType(ml.Values[i])
+					if sel, ok := ml.Values[i].(*SelectorExpr); ok {
+						if vr, ok2 := sel.Target.(*VarRef); ok2 {
+							if s, ok3 := qTypes[vr.Name]; ok3 {
+								typ = structFieldType(s, sel.Field)
+							}
+						}
+					} else if vr, ok := ml.Values[i].(*VarRef); ok {
+						if t, ok2 := qTypes[vr.Name]; ok2 {
+							typ = t
+						}
+					}
+					fields[i] = Param{Name: k, Type: typ}
+					flds[i] = FieldLit{Name: k, Value: ml.Values[i]}
+				}
+				body = &StructLit{Name: structName, Fields: flds}
+				def = &StructDef{Name: structName, Fields: fields}
+				elemType = structName
+			}
+		}
+	}
+	localTypes = oldTypes
+	if currentProgram != nil {
+		currentProgram.addInclude("<vector>")
+		currentProgram.addInclude("<optional>")
+	}
+	return &OuterJoinComp{LeftVar: q.Var, LeftIter: leftIter, RightVar: j.Var, RightIter: rightIter, LeftType: optLeftType, LeftInnerType: leftType, RightType: optRightType, RightInnerType: rightType, Cond: cond, Body: body, ElemType: elemType}, def, elemType, nil
+}
+
 func cppType(t string) string {
 	switch t {
 	case "int":
@@ -3237,6 +3472,8 @@ func exprType(e Expr) string {
 	case *LeftJoinComp:
 		return fmt.Sprintf("std::vector<%s>", v.ElemType)
 	case *JoinLeftJoinComp:
+		return fmt.Sprintf("std::vector<%s>", v.ElemType)
+	case *OuterJoinComp:
 		return fmt.Sprintf("std::vector<%s>", v.ElemType)
 	case *SortComp:
 		return fmt.Sprintf("std::vector<%s>", v.ElemType)

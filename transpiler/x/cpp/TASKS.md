@@ -1,3 +1,8 @@
+## Progress (2025-07-22 05:36 +0700)
+- docs(rkt): record progress
+- Generated C++ for 92/101 programs
+- Updated README checklist and outputs
+
 ## Progress (2025-07-21 23:34 +0700)
 - lua transpiler: support group iter and sorting
 - Generated C++ for 90/100 programs
