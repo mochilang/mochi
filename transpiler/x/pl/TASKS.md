@@ -1,3 +1,22 @@
+## Progress (2025-07-21 12:53 +0700)
+- VM valid golden test results updated to 35/100
+
+## Progress (2025-07-21 12:53 +0700)
+- VM valid golden test results updated to 35/100
+
+## Progress (2025-07-21 06:09 +0000)
+- group_by query folded at compile time, runtime helpers removed
+- VM valid golden test results updated to 86/100
+
+## Progress (2025-07-21 12:53 +0700)
+- VM valid golden test results updated to 35/100
+
+## Progress (2025-07-21 12:53 +0700)
+- VM valid golden test results updated to 35/100
+
+## Progress (2025-07-21 12:53 +0700)
+- VM valid golden test results updated to 35/100
+
 ## Progress (2025-07-21 12:05 +0700)
 - VM valid golden test results updated to 35/100
 
