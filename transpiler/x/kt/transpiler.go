@@ -247,15 +247,6 @@ func (ix *IndexExpr) emit(w io.Writer) {
 	io.WriteString(w, "[")
 	ix.Index.emit(w)
 	io.WriteString(w, "]")
-	io.WriteString(w, "!!")
-}
-
-// NonNullExpr appends `!!` to force unwrap a nullable value.
-type NonNullExpr struct{ Value Expr }
-
-func (n *NonNullExpr) emit(w io.Writer) {
-	n.Value.emit(w)
-	io.WriteString(w, "!!")
 }
 
 // MapLit represents a Kotlin map literal.
@@ -276,7 +267,7 @@ func (m *MapLit) emit(w io.Writer) {
 		io.WriteString(w, " to ")
 		it.Value.emit(w)
 	}
-	io.WriteString(w, ") as MutableMap<String, Any>")
+	io.WriteString(w, ")")
 }
 
 // ContainsExpr represents s.contains(sub).
@@ -1525,7 +1516,7 @@ func buildIndexTarget(env *types.Env, name string, idx []*parser.IndexOp) (Expr,
 			curType = t
 		}
 	}
-	for j, op := range idx {
+	for _, op := range idx {
 		if op.Colon != nil || op.Colon2 != nil {
 			return nil, fmt.Errorf("slice assign unsupported")
 		}
@@ -1545,9 +1536,6 @@ func buildIndexTarget(env *types.Env, name string, idx []*parser.IndexOp) (Expr,
 			}
 		}
 		target = &IndexExpr{Target: target, Index: idxExpr, Type: tname}
-		if j < len(idx)-1 {
-			target = &NonNullExpr{Value: target}
-		}
 	}
 	return target, nil
 }
@@ -1990,9 +1978,6 @@ func convertPostfix(env *types.Env, p *parser.PostfixExpr) (Expr, error) {
 				}
 			}
 			expr = &IndexExpr{Target: expr, Index: idx, Type: tname}
-			if baseIsMap || i+1 < len(p.Ops) {
-				expr = &NonNullExpr{Value: expr}
-			}
 		case op.Index != nil && op.Index.Colon != nil && op.Index.Colon2 == nil && op.Index.Step == nil:
 			var startExpr Expr
 			if op.Index.Start != nil {
