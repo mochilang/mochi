@@ -1,3 +1,9 @@
+## Progress (2025-07-21 13:50 +0700)
+- ctrans: add map iteration support
+
+## Progress (2025-07-21 13:50 +0700)
+- ctrans: add map iteration support
+
 ## Progress (2025-07-21 05:53 +0000)
 - pl transpiler: basic map and query support
 
