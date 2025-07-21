@@ -21,6 +21,91 @@ import (
 var currentEnv *types.Env
 var loopCounter int
 var continueLabels []string
+var loadUsed bool
+var saveUsed bool
+
+const helperLoad = `function __load(path, opts)
+  local fmt = 'json'
+  if opts and opts['format'] then fmt = opts['format'] end
+  local f
+  if not path or path == '' or path == '-' then
+    f = io.stdin
+  else
+    local err; f, err = io.open(path, 'r'); if not f then error(err) end
+  end
+  local data = f:read('*a')
+  if f ~= io.stdin then f:close() end
+  local res
+  if fmt == 'json' then
+    local ok, json = pcall(require, 'json')
+    if not ok then error('json library not found') end
+    res = json.decode(data)
+  elseif fmt == 'yaml' then
+    local ok, yaml = pcall(require, 'yaml')
+    if not ok then ok, yaml = pcall(require, 'lyaml') end
+    if not ok then error('yaml library not found') end
+    res = yaml.load(data)
+  elseif fmt == 'jsonl' then
+    local ok, json = pcall(require, 'json')
+    if not ok then error('json library not found') end
+    res = {}
+    for line in string.gmatch(data, '[^\n]+') do
+      if line ~= '' then table.insert(res, json.decode(line)) end
+    end
+  elseif fmt == 'csv' then
+    res = {}
+    for line in string.gmatch(data, '[^\n]+') do
+      local row = {}
+      for field in string.gmatch(line, '[^,]+') do table.insert(row, field) end
+      table.insert(res, row)
+    end
+  else
+    error('unsupported format: '..fmt)
+  end
+  if type(res) ~= 'table' then return {} end
+  if res[1] then return res end
+  return {res}
+end`
+
+const helperSave = `function __save(rows, path, opts)
+  local fmt = 'json'
+  if opts and opts['format'] then fmt = opts['format'] end
+  local data
+  if fmt == 'json' then
+    local ok, json = pcall(require, 'json')
+    if not ok then error('json library not found') end
+    data = json.encode(rows)
+  elseif fmt == 'yaml' then
+    local ok, yaml = pcall(require, 'yaml')
+    if not ok then ok, yaml = pcall(require, 'lyaml') end
+    if not ok then error('yaml library not found') end
+    if yaml.dump then data = yaml.dump(rows) else data = yaml.encode(rows) end
+  elseif fmt == 'jsonl' then
+    local ok, json = pcall(require, 'json')
+    if not ok then error('json library not found') end
+    local lines = {}
+    for _, row in ipairs(rows) do
+      table.insert(lines, json.encode(row))
+    end
+    data = table.concat(lines, '\n')
+  elseif fmt == 'csv' then
+    local lines = {}
+    for _, row in ipairs(rows) do
+      table.insert(lines, table.concat(row, ','))
+    end
+    data = table.concat(lines, '\n')
+  else
+    error('unsupported format: '..fmt)
+  end
+  local f
+  if not path or path == '' or path == '-' then
+    f = io.stdout
+  else
+    local err; f, err = io.open(path, 'w'); if not f then error(err) end
+  end
+  f:write(data)
+  if f ~= io.stdout then f:close() end
+end`
 
 // Program represents a simple Lua program consisting of a sequence of
 // statements.
@@ -46,6 +131,7 @@ type IndexAssignStmt struct {
 	Target Expr
 	Value  Expr
 }
+type RawStmt struct{ Code string }
 type FunStmt struct {
 	Name   string
 	Params []string
@@ -153,6 +239,7 @@ type QueryComp struct {
 }
 
 func (s *ExprStmt) emit(w io.Writer) { s.Expr.emit(w) }
+func (rs *RawStmt) emit(w io.Writer) { io.WriteString(w, rs.Code) }
 
 func (c *CallExpr) emit(w io.Writer) {
 	switch c.Func {
@@ -1488,6 +1575,41 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 		return expr, nil
 	case p.Group != nil:
 		return convertExpr(p.Group)
+	case p.Load != nil:
+		var path Expr
+		if p.Load.Path != nil {
+			path = &StringLit{Value: *p.Load.Path}
+		}
+		var opts Expr
+		var err error
+		if p.Load.With != nil {
+			opts, err = convertExpr(p.Load.With)
+			if err != nil {
+				return nil, err
+			}
+		}
+		loadUsed = true
+		args := []Expr{path, opts}
+		return &CallExpr{Func: "__load", Args: args}, nil
+	case p.Save != nil:
+		src, err := convertExpr(p.Save.Src)
+		if err != nil {
+			return nil, err
+		}
+		var path Expr
+		if p.Save.Path != nil {
+			path = &StringLit{Value: *p.Save.Path}
+		}
+		var opts Expr
+		if p.Save.With != nil {
+			opts, err = convertExpr(p.Save.With)
+			if err != nil {
+				return nil, err
+			}
+		}
+		saveUsed = true
+		args := []Expr{src, path, opts}
+		return &CallExpr{Func: "__save", Args: args}, nil
 	case p.If != nil:
 		return convertIfExpr(p.If)
 	default:
@@ -1924,6 +2046,8 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 // boolean operators.
 func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	currentEnv = env
+	loadUsed = false
+	saveUsed = false
 	lp := &Program{Env: env}
 	for _, st := range prog.Statements {
 		s, err := convertStmt(st)
@@ -1933,6 +2057,16 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 		if s != nil {
 			lp.Stmts = append(lp.Stmts, s)
 		}
+	}
+	var helpers []Stmt
+	if loadUsed {
+		helpers = append(helpers, &RawStmt{Code: helperLoad})
+	}
+	if saveUsed {
+		helpers = append(helpers, &RawStmt{Code: helperSave})
+	}
+	if len(helpers) > 0 {
+		lp.Stmts = append(helpers, lp.Stmts...)
 	}
 	currentEnv = nil
 	return lp, nil
