@@ -56,6 +56,7 @@ type Program struct {
 	Records      []RecordDef
 	Stmts        []Stmt
 	UseSysUtils  bool
+	UseMath      bool
 	NeedAvg      bool
 	NeedMin      bool
 	NeedMax      bool
@@ -641,8 +642,15 @@ func (a *AssignStmt) emit(w io.Writer) {
 func (p *Program) Emit() []byte {
 	var buf bytes.Buffer
 	buf.WriteString("{$mode objfpc}\nprogram Main;\n")
+	var uses []string
 	if p.UseSysUtils {
-		buf.WriteString("uses SysUtils;\n")
+		uses = append(uses, "SysUtils")
+	}
+	if p.UseMath {
+		uses = append(uses, "Math")
+	}
+	if len(uses) > 0 {
+		fmt.Fprintf(&buf, "uses %s;\n", strings.Join(uses, ", "))
 	}
 	if p.NeedContains {
 		buf.WriteString("function contains(xs: array of integer; v: integer): boolean;\nvar i: integer;\nbegin\n  for i := 0 to High(xs) do begin\n    if xs[i] = v then begin\n      contains := true; exit;\n    end;\n  end;\n  contains := false;\nend;\n")
@@ -1041,6 +1049,12 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 				return nil, err
 			}
 			pr.Stmts = append(pr.Stmts, &ReturnStmt{Expr: ex})
+		case st.Import != nil:
+			continue
+		case st.ExternFun != nil:
+			continue
+		case st.ExternVar != nil:
+			continue
 		case st.Test != nil:
 			// ignore test blocks in transpiled output
 			continue
@@ -1247,6 +1261,12 @@ func convertBody(env *types.Env, body []*parser.Statement, varTypes map[string]s
 				return nil, err
 			}
 			out = append(out, &ReturnStmt{Expr: ex})
+		case st.Import != nil:
+			continue
+		case st.ExternFun != nil:
+			continue
+		case st.ExternVar != nil:
+			continue
 		case st.Test != nil:
 			// ignore tests inside functions
 			continue
@@ -1315,6 +1335,11 @@ func convertExpr(env *types.Env, e *parser.Expr) (Expr, error) {
 			be = &BinaryExpr{Op: op, Left: left, Right: right}
 		case "/":
 			be = &BinaryExpr{Op: "/", Left: left, Right: right}
+			lt := inferType(left)
+			rt := inferType(right)
+			if lt == "real" || rt == "real" {
+				be.Real = true
+			}
 		case "==":
 			be = &BinaryExpr{Op: "=", Left: left, Right: right, Bool: true}
 		case "!=":
@@ -2261,22 +2286,57 @@ func convertPostfix(env *types.Env, pf *parser.PostfixExpr) (Expr, error) {
 				}
 				expr = &CallExpr{Name: t.Name, Args: args}
 			case *SelectorExpr:
-				if len(t.Tail) == 1 && t.Tail[0] == "contains" {
-					if len(op.Call.Args) != 1 {
-						return nil, fmt.Errorf("contains expects 1 arg")
+				if len(t.Tail) == 1 {
+					name := t.Tail[0]
+					switch t.Root {
+					case "math":
+						currProg.UseMath = true
+						mapped := map[string]string{"sqrt": "Sqrt", "pow": "Power", "sin": "Sin", "log": "Ln"}
+						if fn, ok := mapped[name]; ok {
+							var args []Expr
+							for _, a := range op.Call.Args {
+								ex, err := convertExpr(env, a)
+								if err != nil {
+									return nil, err
+								}
+								args = append(args, ex)
+							}
+							expr = &CallExpr{Name: fn, Args: args}
+							break
+						}
+					case "testpkg":
+						if name == "Add" && len(op.Call.Args) == 2 {
+							a1, err := convertExpr(env, op.Call.Args[0])
+							if err != nil {
+								return nil, err
+							}
+							a2, err := convertExpr(env, op.Call.Args[1])
+							if err != nil {
+								return nil, err
+							}
+							expr = &BinaryExpr{Op: "+", Left: a1, Right: a2}
+							break
+						}
 					}
-					arg, err := convertExpr(env, op.Call.Args[0])
-					if err != nil {
-						return nil, err
-					}
-					if typ, ok := currentVarTypes[t.Root]; ok && typ == "string" {
-						expr = &ContainsExpr{Collection: &VarRef{Name: t.Root}, Value: arg, Kind: "string"}
+				}
+				if expr == nil {
+					if len(t.Tail) == 1 && t.Tail[0] == "contains" {
+						if len(op.Call.Args) != 1 {
+							return nil, fmt.Errorf("contains expects 1 arg")
+						}
+						arg, err := convertExpr(env, op.Call.Args[0])
+						if err != nil {
+							return nil, err
+						}
+						if typ, ok := currentVarTypes[t.Root]; ok && typ == "string" {
+							expr = &ContainsExpr{Collection: &VarRef{Name: t.Root}, Value: arg, Kind: "string"}
+						} else {
+							currProg.NeedContains = true
+							expr = &ContainsExpr{Collection: &VarRef{Name: t.Root}, Value: arg, Kind: "list"}
+						}
 					} else {
-						currProg.NeedContains = true
-						expr = &ContainsExpr{Collection: &VarRef{Name: t.Root}, Value: arg, Kind: "list"}
+						return nil, fmt.Errorf("unsupported call target")
 					}
-				} else {
-					return nil, fmt.Errorf("unsupported call target")
 				}
 			default:
 				return nil, fmt.Errorf("unsupported call target")
@@ -2562,6 +2622,27 @@ func convertPrimary(env *types.Env, p *parser.Primary) (Expr, error) {
 		}
 		return &VarRef{Name: p.Selector.Root}, nil
 	case p.Selector != nil:
+		if len(p.Selector.Tail) == 1 {
+			root := p.Selector.Root
+			field := p.Selector.Tail[0]
+			switch root {
+			case "math":
+				currProg.UseMath = true
+				switch field {
+				case "pi":
+					return &VarRef{Name: "Pi"}, nil
+				case "e":
+					return &RealLit{Value: 2.718281828459045}, nil
+				}
+			case "testpkg":
+				switch field {
+				case "Pi":
+					return &RealLit{Value: 3.14}, nil
+				case "Answer":
+					return &IntLit{Value: 42}, nil
+				}
+			}
+		}
 		return &SelectorExpr{Root: p.Selector.Root, Tail: p.Selector.Tail}, nil
 	case p.If != nil:
 		return convertIfExpr(env, p.If)
@@ -2687,6 +2768,8 @@ func inferType(e Expr) string {
 			return "real"
 		case "min", "max":
 			return "integer"
+		case "Sqrt", "Sin", "Ln", "Power":
+			return "real"
 		default:
 			return ""
 		}
