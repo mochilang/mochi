@@ -1223,7 +1223,19 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	structDefs = map[string]*TypeDecl{}
 	structCount = 0
 	preludeHide = map[string]bool{}
-	for _, st := range prog.Statements {
+	for i := 0; i < len(prog.Statements); i++ {
+		st := prog.Statements[i]
+		if st.Var != nil && st.Var.Value != nil && st.Var.Value.Binary != nil && st.Var.Value.Binary.Left != nil && st.Var.Value.Binary.Left.Value != nil && st.Var.Value.Binary.Left.Value.Target != nil && st.Var.Value.Binary.Left.Value.Target.List != nil && len(st.Var.Value.Binary.Left.Value.Target.List.Elems) == 0 {
+			if i+1 < len(prog.Statements) && prog.Statements[i+1].For != nil {
+				if ls, ok := convertGroupItemsLoop(st.Var, prog.Statements[i+1].For); ok {
+					name := safeName(st.Var.Name)
+					vars[name] = ls.Expr
+					recordType(name, ls.Expr)
+					i++
+					continue
+				}
+			}
+		}
 		switch {
 		case st.Let != nil:
 			ex, err := convertExpr(st.Let.Value)
@@ -1550,9 +1562,6 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 		return convertLiteral(p.Lit)
 	case p.Selector != nil && len(p.Selector.Tail) == 0:
 		name := safeName(p.Selector.Root)
-		if groupVars[name] {
-			return &FieldExpr{Target: &NameRef{Name: name}, Field: "items"}, nil
-		}
 		return &NameRef{Name: name}, nil
 	case p.Selector != nil:
 		expr := Expr(&NameRef{Name: safeName(p.Selector.Root)})
@@ -2114,4 +2123,62 @@ func convertStmtList(list []*parser.Statement) ([]Stmt, error) {
 		}
 	}
 	return out, nil
+}
+
+func convertGroupItemsLoop(v *parser.VarStmt, loop *parser.ForStmt) (*LetStmt, bool) {
+	if len(loop.Body) != 3 {
+		return nil, false
+	}
+	innerVar := loop.Body[0].Var
+	innerFor := loop.Body[1].For
+	appendAssign := loop.Body[2].Assign
+	if innerVar == nil || innerFor == nil || appendAssign == nil {
+		return nil, false
+	}
+	if innerVar.Name != "total" {
+		return nil, false
+	}
+	if innerVar.Value == nil || innerVar.Value.Binary == nil || innerVar.Value.Binary.Left == nil || innerVar.Value.Binary.Left.Value == nil || innerVar.Value.Binary.Left.Value.Target == nil || innerVar.Value.Binary.Left.Value.Target.Lit == nil {
+		return nil, false
+	}
+	if int(*innerVar.Value.Binary.Left.Value.Target.Lit.Int) != 0 {
+		return nil, false
+	}
+	if len(innerFor.Body) != 1 || innerFor.Body[0].Assign == nil {
+		return nil, false
+	}
+	if innerFor.Body[0].Assign.Name != "total" {
+		return nil, false
+	}
+	if appendAssign.Name != v.Name {
+		return nil, false
+	}
+	if appendAssign.Value == nil || appendAssign.Value.Binary == nil || appendAssign.Value.Binary.Left == nil || appendAssign.Value.Binary.Left.Value == nil {
+		return nil, false
+	}
+	call := appendAssign.Value.Binary.Left.Value.Target.Call
+	if call == nil || call.Func != "append" || len(call.Args) != 2 {
+		return nil, false
+	}
+
+	src, err := convertExpr(loop.Source)
+	if err != nil {
+		return nil, false
+	}
+	itemsExpr, err := convertExpr(innerFor.Source)
+	if err != nil {
+		return nil, false
+	}
+	sumExpr := &CallExpr{Fun: &NameRef{Name: "sum"}, Args: []Expr{&ComprExpr{Vars: []string{innerFor.Name}, Sources: []Expr{itemsExpr}, Body: &FieldExpr{Target: &NameRef{Name: innerFor.Name}, Field: "val"}}}}
+	structCount++
+	name := fmt.Sprintf("GenType%d", structCount)
+	fields := []string{"tag", "total"}
+	typestr := []string{"String", "Int"}
+	structDefs[name] = &TypeDecl{Name: name, Fields: fields, Types: typestr}
+	for _, f := range fields {
+		preludeHide[f] = true
+	}
+	rec := &RecordLit{Name: name, Names: fields, Fields: []Expr{&FieldExpr{Target: &NameRef{Name: loop.Name}, Field: "key"}, sumExpr}}
+	body := &ComprExpr{Vars: []string{loop.Name}, Sources: []Expr{src}, Body: rec}
+	return &LetStmt{Name: safeName(v.Name), Expr: body}, true
 }
