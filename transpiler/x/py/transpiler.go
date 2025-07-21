@@ -4,6 +4,7 @@ package py
 
 import (
 	"bytes"
+	"encoding/csv"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -11,6 +12,7 @@ import (
 	"os/exec"
 	"path/filepath"
 	"sort"
+	"strconv"
 	"strings"
 	"time"
 
@@ -1291,6 +1293,22 @@ func isNumeric(t types.Type) bool {
 	}
 }
 
+func parseScalar(s string) interface{} {
+	if i, err := strconv.ParseInt(s, 10, 64); err == nil {
+		return int(i)
+	}
+	if f, err := strconv.ParseFloat(s, 64); err == nil {
+		return f
+	}
+	if s == "true" {
+		return true
+	}
+	if s == "false" {
+		return false
+	}
+	return s
+}
+
 func inferPyType(e Expr, env *types.Env) types.Type {
 	switch ex := e.(type) {
 	case *IntLit:
@@ -1419,6 +1437,30 @@ func inferTypeFromData(path, format string) types.Type {
 			}
 		}
 		v = arr
+	case "csv", "tsv":
+		delim := ','
+		if format == "tsv" {
+			delim = '\t'
+		}
+		r := csv.NewReader(bytes.NewReader(data))
+		r.Comma = delim
+		records, err := r.ReadAll()
+		if err != nil || len(records) == 0 {
+			return types.AnyType{}
+		}
+		header := records[0]
+		var arr []interface{}
+		for _, row := range records[1:] {
+			obj := map[string]interface{}{}
+			for i, col := range row {
+				if i >= len(header) {
+					break
+				}
+				obj[header[i]] = parseScalar(col)
+			}
+			arr = append(arr, obj)
+		}
+		v = arr
 	default:
 		return types.AnyType{}
 	}
@@ -1538,6 +1580,30 @@ func dataExprFromFile(path, format string) (Expr, error) {
 			if err := json.Unmarshal(line, &item); err == nil {
 				arr = append(arr, item)
 			}
+		}
+		v = arr
+	case "csv", "tsv":
+		delim := ','
+		if format == "tsv" {
+			delim = '\t'
+		}
+		r := csv.NewReader(bytes.NewReader(data))
+		r.Comma = delim
+		records, err := r.ReadAll()
+		if err != nil || len(records) == 0 {
+			return nil, err
+		}
+		header := records[0]
+		var arr []interface{}
+		for _, row := range records[1:] {
+			obj := map[string]interface{}{}
+			for i, col := range row {
+				if i >= len(header) {
+					break
+				}
+				obj[header[i]] = parseScalar(col)
+			}
+			arr = append(arr, obj)
 		}
 		v = arr
 	default:
@@ -3408,6 +3474,16 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 				return &RawExpr{Code: fmt.Sprintf("json.load(open(%s))", pathExpr)}, nil
 			}
 			code := fmt.Sprintf("[json.loads(line) for line in open(%s)]", pathExpr)
+			return &RawExpr{Code: code}, nil
+		case "csv", "tsv":
+			if currentImports != nil {
+				currentImports["csv"] = true
+			}
+			if format == "tsv" {
+				code := fmt.Sprintf("list(csv.DictReader(open(%s), delimiter='\t'))", pathExpr)
+				return &RawExpr{Code: code}, nil
+			}
+			code := fmt.Sprintf("list(csv.DictReader(open(%s)))", pathExpr)
 			return &RawExpr{Code: code}, nil
 		case "yaml":
 			return nil, err
