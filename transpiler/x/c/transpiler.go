@@ -1963,16 +1963,38 @@ func convertListExpr(e *parser.Expr) ([]Expr, bool) {
 	// Fallback to evaluating the expression which may resolve to a
 	// constant list via a previously declared variable.
 	ex := convertExpr(e)
-	if ex == nil {
+	if ex != nil {
+		if l, ok := evalList(ex); ok {
+			var out []Expr
+			for _, item := range l.Elems {
+				out = append(out, item)
+			}
+			return out, true
+		}
+	}
+	if lst, ok := interpretList(e); ok {
+		return lst, true
+	}
+	return nil, false
+}
+
+func interpretList(e *parser.Expr) ([]Expr, bool) {
+	ip := interpreter.New(&parser.Program{}, currentEnv, "")
+	val, err := ip.EvalExpr(e)
+	if err != nil {
 		return nil, false
 	}
-	l, ok := evalList(ex)
+	arr, ok := val.([]any)
 	if !ok {
 		return nil, false
 	}
 	var out []Expr
-	for _, item := range l.Elems {
-		out = append(out, item)
+	for _, it := range arr {
+		ex := anyToExpr(it)
+		if ex == nil {
+			return nil, false
+		}
+		out = append(out, ex)
 	}
 	return out, true
 }
