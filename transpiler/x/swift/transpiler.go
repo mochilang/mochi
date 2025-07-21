@@ -72,6 +72,12 @@ type BreakStmt struct{}
 
 type ContinueStmt struct{}
 
+// EmptyStmt is a placeholder for statements that do not emit code
+// such as type declarations which are ignored by the Swift transpiler.
+type EmptyStmt struct{}
+
+func (e *EmptyStmt) emit(w io.Writer) {}
+
 type IfStmt struct {
 	Cond   Expr
 	Then   []Stmt
@@ -1049,6 +1055,9 @@ func convertStmt(env *types.Env, st *parser.Statement) (Stmt, error) {
 		return &ContinueStmt{}, nil
 	case st.If != nil:
 		return convertIfStmt(env, st.If)
+	case st.Type != nil:
+		// Type declarations are ignored during transpilation
+		return &EmptyStmt{}, nil
 	default:
 		return nil, fmt.Errorf("unsupported statement")
 	}
@@ -1524,6 +1533,10 @@ func convertPostfix(env *types.Env, p *parser.PostfixExpr) (Expr, error) {
 			expr = &IndexExpr{Base: expr, Index: idx, AsString: isStr, Force: force}
 			continue
 		}
+		if op.Cast != nil {
+			expr = &CastExpr{Expr: expr, Type: toSwiftType(op.Cast.Type)}
+			continue
+		}
 		if op.Field != nil && i+1 < len(p.Ops) && p.Ops[i+1].Call != nil && op.Field.Name == "contains" {
 			arg, err := convertExpr(env, p.Ops[i+1].Call.Args[0])
 			if err != nil {
@@ -1989,7 +2002,7 @@ func zeroValue(t *parser.TypeRef) Expr {
 	case "bool":
 		return &LitExpr{Value: "false", IsString: false}
 	default:
-		return &LitExpr{Value: "nil", IsString: false}
+		return &MapLit{}
 	}
 }
 
@@ -2018,7 +2031,7 @@ func toSwiftType(t *parser.TypeRef) string {
 	case "bool":
 		return "Bool"
 	default:
-		return "Any"
+		return "[String: Any]"
 	}
 }
 
@@ -2047,7 +2060,7 @@ func toSwiftOptionalType(t *parser.TypeRef) string {
 	case "bool":
 		return "Bool?"
 	default:
-		return "Any?"
+		return "[String: Any]?"
 	}
 }
 
@@ -2070,7 +2083,7 @@ func swiftTypeOf(t types.Type) string {
 	case types.OptionType:
 		return swiftTypeOf(tt.Elem) + "?"
 	default:
-		return "Any"
+		return "[String: Any]"
 	}
 }
 
