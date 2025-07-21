@@ -1269,9 +1269,19 @@ func dataExprFromFile(path, format string) (Expr, error) {
 }
 
 func inferTypeFromExpr(e *parser.Expr) types.Type {
-	if e == nil || e.Binary == nil || len(e.Binary.Right) > 0 {
-		return types.AnyType{}
-	}
+       if e == nil || e.Binary == nil {
+               return types.AnyType{}
+       }
+       if len(e.Binary.Right) > 0 {
+               op := e.Binary.Right[0].Op
+               switch op {
+               case "&&", "||", "==", "!=", "<", "<=", ">", ">=":
+                       return types.BoolType{}
+               case "+", "-", "*", "/", "%":
+                       return types.IntType{}
+               }
+               return types.AnyType{}
+       }
 	u := e.Binary.Left
 	if len(u.Ops) > 0 || u.Value == nil {
 		return types.AnyType{}
@@ -2709,43 +2719,30 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 				}
 			}
 		}
-		switch p.Call.Func {
-		case "print":
-			outArgs := make([]Expr, len(args))
-			for i, a := range args {
-				if currentEnv != nil {
-					t := types.ExprType(p.Call.Args[i], currentEnv)
-					switch tt := t.(type) {
-					case types.MapType, types.StructType:
-						if currentImports != nil {
-							currentImports["json"] = true
-						}
-						code := fmt.Sprintf("json.dumps(%s, indent=2)", exprString(a))
-						outArgs[i] = &RawExpr{Code: code}
-						continue
-					case types.ListType:
-						if _, ok := tt.Elem.(types.MapType); ok {
-							if currentImports != nil {
-								currentImports["json"] = true
-							}
-							code := fmt.Sprintf("json.dumps(%s, indent=2)", exprString(a))
-							outArgs[i] = &RawExpr{Code: code}
-							continue
-						}
-						if _, ok := tt.Elem.(types.StructType); ok {
-							if currentImports != nil {
-								currentImports["json"] = true
-							}
-							code := fmt.Sprintf("json.dumps(%s, indent=2)", exprString(a))
-							outArgs[i] = &RawExpr{Code: code}
-							continue
-						}
-					}
-				}
-				code := fmt.Sprintf("(str(%s).lower() if isinstance(%s, bool) else %s)", exprString(a), exprString(a), exprString(a))
-				outArgs[i] = &RawExpr{Code: code}
-			}
-			return &CallExpr{Func: &Name{Name: "print"}, Args: outArgs}, nil
+               switch p.Call.Func {
+               case "print":
+                       outArgs := make([]Expr, len(args))
+                       for i, a := range args {
+                               if currentEnv != nil {
+                                       switch types.ExprType(p.Call.Args[i], currentEnv).(type) {
+                                       case types.MapType, types.StructType:
+                                               if currentImports != nil {
+                                                       currentImports["json"] = true
+                                               }
+                                               outArgs[i] = &RawExpr{Code: fmt.Sprintf("json.dumps(%s, indent=2)", exprString(a))}
+                                               continue
+                                       case types.ListType:
+                                               code := fmt.Sprintf("' '.join(str(int(x)) if isinstance(x, bool) else str(x) for x in %s)", exprString(a))
+                                               outArgs[i] = &RawExpr{Code: code}
+                                               continue
+                                       case types.BoolType:
+                                               outArgs[i] = &RawExpr{Code: fmt.Sprintf("(1 if %s else 0)", exprString(a))}
+                                               continue
+                                       }
+                               }
+                               outArgs[i] = a
+                       }
+                       return &CallExpr{Func: &Name{Name: "print"}, Args: outArgs}, nil
 		case "append":
 			if len(args) == 2 {
 				return &BinaryExpr{Left: args[0], Op: "+", Right: &ListLit{Elems: []Expr{args[1]}}}, nil
