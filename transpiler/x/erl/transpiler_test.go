@@ -238,6 +238,7 @@ func TestTranspileRightJoin(t *testing.T)             { runGolden(t, "right_join
 func TestTranspileOrderByMap(t *testing.T)            { runGolden(t, "order_by_map") }
 func TestTranspileGroupBy(t *testing.T)               { runGolden(t, "group_by") }
 func TestTranspileGroupByConditionalSum(t *testing.T) { runGolden(t, "group_by_conditional_sum") }
+func TestTranspileGroupBySort(t *testing.T)           { runGolden(t, "group_by_sort") }
 
 func updateEnabled() bool { return *update }
 

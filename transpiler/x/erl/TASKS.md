@@ -1,3 +1,71 @@
+## Progress (2025-07-21 14:20 +0700)
+- erl transpiler: support group sort
+- Regenerated golden files - 78/100 vm valid programs passing
+
+## Progress (2025-07-21 13:50 +0700)
+- ctrans: add map iteration support
+- Regenerated golden files - 78/100 vm valid programs passing
+
+## Progress (2025-07-21 13:50 +0700)
+- ctrans: add map iteration support
+- Regenerated golden files - 78/100 vm valid programs passing
+
+## Progress (2025-07-21 13:50 +0700)
+- ctrans: add map iteration support
+- Regenerated golden files - 77/100 vm valid programs passing
+
+## Progress (2025-07-21 13:50 +0700)
+- ctrans: add map iteration support
+- Regenerated golden files - 77/100 vm valid programs passing
+
+## Progress (2025-07-21 13:50 +0700)
+- ctrans: add map iteration support
+- Regenerated golden files - 77/100 vm valid programs passing
+
+## Progress (2025-07-21 13:50 +0700)
+- ctrans: add map iteration support
+- Regenerated golden files - 77/100 vm valid programs passing
+
+## Progress (2025-07-21 13:50 +0700)
+- ctrans: add map iteration support
+- Regenerated golden files - 77/100 vm valid programs passing
+
+## Progress (2025-07-21 13:50 +0700)
+- ctrans: add map iteration support
+- Regenerated golden files - 77/100 vm valid programs passing
+
+## Progress (2025-07-21 13:50 +0700)
+- ctrans: add map iteration support
+- Regenerated golden files - 77/100 vm valid programs passing
+
+## Progress (2025-07-21 13:50 +0700)
+- ctrans: add map iteration support
+- Regenerated golden files - 77/100 vm valid programs passing
+
+## Progress (2025-07-21 13:50 +0700)
+- ctrans: add map iteration support
+- Regenerated golden files - 77/100 vm valid programs passing
+
+## Progress (2025-07-21 13:50 +0700)
+- ctrans: add map iteration support
+- Regenerated golden files - 77/100 vm valid programs passing
+
+## Progress (2025-07-21 13:50 +0700)
+- ctrans: add map iteration support
+- Regenerated golden files - 77/100 vm valid programs passing
+
+## Progress (2025-07-21 13:50 +0700)
+- ctrans: add map iteration support
+- Regenerated golden files - 77/100 vm valid programs passing
+
+## Progress (2025-07-21 13:50 +0700)
+- ctrans: add map iteration support
+- Regenerated golden files - 77/100 vm valid programs passing
+
+## Progress (2025-07-21 13:50 +0700)
+- ctrans: add map iteration support
+- Regenerated golden files - 77/100 vm valid programs passing
+
 ## Progress (2025-07-21 13:23 +0700)
 - erl transpiler: update tasks
 - Regenerated golden files - 77/100 vm valid programs passing

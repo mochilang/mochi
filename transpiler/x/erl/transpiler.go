@@ -393,6 +393,9 @@ type StringLit struct{ Value string }
 // AtomLit represents a simple atom like 'nil'.
 type AtomLit struct{ Name string }
 
+// TupleExpr represents {A, B} pair used for sorting.
+type TupleExpr struct{ A, B Expr }
+
 // IfStmt represents a simple if statement with optional else branch.
 type IfStmt struct {
 	Cond Expr
@@ -912,6 +915,14 @@ func (m *MapLit) emit(w io.Writer) {
 		io.WriteString(w, " => ")
 		it.Value.emit(w)
 	}
+	io.WriteString(w, "}")
+}
+
+func (t *TupleExpr) emit(w io.Writer) {
+	io.WriteString(w, "{")
+	t.A.emit(w)
+	io.WriteString(w, ", ")
+	t.B.emit(w)
 	io.WriteString(w, "}")
 }
 
@@ -2197,7 +2208,7 @@ func convertQueryExpr(q *parser.QueryExpr, env *types.Env, ctx *context) (Expr, 
 }
 
 func convertGroupQuery(q *parser.QueryExpr, env *types.Env, ctx *context) (Expr, error) {
-	if len(q.Group.Exprs) != 1 || len(q.Froms) > 0 || len(q.Joins) > 0 || q.Where != nil || q.Group.Having != nil || q.Distinct || q.Skip != nil || q.Take != nil {
+	if len(q.Group.Exprs) != 1 || len(q.Froms) > 0 || len(q.Joins) > 0 || q.Where != nil || q.Distinct || q.Skip != nil || q.Take != nil {
 		return nil, fmt.Errorf("unsupported group query")
 	}
 	src, err := convertExpr(q.Source, env, ctx)
@@ -2243,14 +2254,39 @@ func convertGroupQuery(q *parser.QueryExpr, env *types.Env, ctx *context) (Expr,
 	ctx.setBoolFields(itemsVar, boolFields(src))
 	mapFun := &AnonFunc{Params: []string{pair}, Body: []Stmt{keyLet, itemsLet}, Return: selExpr}
 	toList := &CallExpr{Func: "maps:to_list", Args: []Expr{groupsMap}}
-	if q.Sort != nil {
-		if isGroupKeyExpr(q.Sort, q.Group.Name) {
-			toList = &CallExpr{Func: "lists:keysort", Args: []Expr{&IntLit{Value: 1}, toList}}
-		} else {
-			return nil, fmt.Errorf("unsupported group sort")
+	if q.Group.Having != nil {
+		haveEnv := types.NewEnv(env)
+		haveEnv.SetVar(q.Group.Name, types.AnyType{}, true)
+		haveCtx := ctx.clone()
+		haveCtx.alias[q.Group.Name] = "G"
+		haveCtx.orig["G"] = q.Group.Name
+		haveExpr, err := convertExpr(q.Group.Having, haveEnv, haveCtx)
+		if err != nil {
+			return nil, err
 		}
+		haveExpr = replaceGroupExpr(haveExpr, "G", keyVar, itemsVar)
+		filterFun := &AnonFunc{Params: []string{pair}, Body: []Stmt{keyLet, itemsLet}, Return: haveExpr}
+		toList = &CallExpr{Func: "lists:filter", Args: []Expr{filterFun, toList}}
 	}
-	return &CallExpr{Func: "lists:map", Args: []Expr{mapFun, toList}}, nil
+	var result Expr = &CallExpr{Func: "lists:map", Args: []Expr{mapFun, toList}}
+	if q.Sort != nil {
+		sortEnv := types.NewEnv(env)
+		sortEnv.SetVar(q.Group.Name, types.AnyType{}, true)
+		sortCtx := ctx.clone()
+		sortCtx.alias[q.Group.Name] = "G"
+		sortCtx.orig["G"] = q.Group.Name
+		sortExpr, err := convertExpr(q.Sort, sortEnv, sortCtx)
+		if err != nil {
+			return nil, err
+		}
+		sortExpr = replaceGroupExpr(sortExpr, "G", keyVar, itemsVar)
+		sortMapFun := &AnonFunc{Params: []string{pair}, Body: []Stmt{keyLet, itemsLet}, Return: &TupleExpr{A: sortExpr, B: selExpr}}
+		mapped := &CallExpr{Func: "lists:map", Args: []Expr{sortMapFun, toList}}
+		sortFun := &AnonFunc{Params: []string{"A", "B"}, Return: &BinaryExpr{Left: &CallExpr{Func: "element", Args: []Expr{&IntLit{Value: 1}, &NameRef{Name: "A"}}}, Op: "=<", Right: &CallExpr{Func: "element", Args: []Expr{&IntLit{Value: 1}, &NameRef{Name: "B"}}}}}
+		sorted := &CallExpr{Func: "lists:sort", Args: []Expr{sortFun, mapped}}
+		result = &CallExpr{Func: "lists:map", Args: []Expr{&AnonFunc{Params: []string{"T"}, Return: &CallExpr{Func: "element", Args: []Expr{&IntLit{Value: 2}, &NameRef{Name: "T"}}}}, sorted}}
+	}
+	return result, nil
 }
 
 func convertLiteral(l *parser.Literal) (Expr, error) {
