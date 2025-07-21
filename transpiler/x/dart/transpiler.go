@@ -1019,12 +1019,35 @@ func (f *FormatList) emit(w io.Writer) error {
 	return nil
 }
 
+// CountExpr represents count(list) or count(group).
+type CountExpr struct{ X Expr }
+
+func (c *CountExpr) emit(w io.Writer) error {
+	if err := c.X.emit(w); err != nil {
+		return err
+	}
+	_, err := io.WriteString(w, ".length")
+	return err
+}
+
 // MultiListComp represents a list comprehension with multiple input iterators.
 type MultiListComp struct {
 	Vars  []string
 	Iters []Expr
 	Expr  Expr
 	Cond  Expr
+}
+
+// GroupQueryExpr represents a query with grouping support.
+type GroupQueryExpr struct {
+	Vars     []string
+	Iters    []Expr
+	Cond     Expr
+	Key      Expr
+	Row      Expr
+	GroupVar string
+	Select   Expr
+	Having   Expr
 }
 
 // LeftJoinExpr represents a simple left join query.
@@ -1128,6 +1151,95 @@ func (r *RightJoinExpr) emit(w io.Writer) error {
 		return err
 	}
 	if _, err := io.WriteString(w, ");\n    }\n  }\n  return _res;\n})()"); err != nil {
+		return err
+	}
+	return nil
+}
+
+func (gq *GroupQueryExpr) emit(w io.Writer) error {
+	if _, err := io.WriteString(w, "(() {\n"); err != nil {
+		return err
+	}
+	if _, err := io.WriteString(w, "  var _groups = <String, Map<String, dynamic>>{};\n"); err != nil {
+		return err
+	}
+	if _, err := io.WriteString(w, "  var _order = <String>[];\n"); err != nil {
+		return err
+	}
+	for i, v := range gq.Vars {
+		if _, err := io.WriteString(w, "  for (var "+v+" in "); err != nil {
+			return err
+		}
+		if err := gq.Iters[i].emit(w); err != nil {
+			return err
+		}
+		if _, err := io.WriteString(w, ") {\n"); err != nil {
+			return err
+		}
+	}
+	if gq.Cond != nil {
+		if _, err := io.WriteString(w, strings.Repeat("  ", len(gq.Vars)+1)+"if (!("); err != nil {
+			return err
+		}
+		if err := gq.Cond.emit(w); err != nil {
+			return err
+		}
+		if _, err := io.WriteString(w, ")) { continue; }\n"); err != nil {
+			return err
+		}
+	}
+	indent := strings.Repeat("  ", len(gq.Vars)+1)
+	if _, err := io.WriteString(w, indent+"var _key = "); err != nil {
+		return err
+	}
+	if err := gq.Key.emit(w); err != nil {
+		return err
+	}
+	if _, err := io.WriteString(w, ";\n"+indent+"var _ks = _key.toString();\n"+indent+"var _g = _groups[_ks];\n"+indent+"if (_g == null) {\n"+indent+"  _g = {'key': _key, 'items': []};\n"+indent+"  _groups[_ks] = _g;\n"+indent+"  _order.add(_ks);\n"+indent+"}\n"+indent+"(_g['items'] as List).add("); err != nil {
+		return err
+	}
+	if err := gq.Row.emit(w); err != nil {
+		return err
+	}
+	if _, err := io.WriteString(w, ");\n"); err != nil {
+		return err
+	}
+	for i := len(gq.Vars); i > 0; i-- {
+		if _, err := io.WriteString(w, strings.Repeat("  ", i)+"}\n"); err != nil {
+			return err
+		}
+	}
+	if _, err := io.WriteString(w, "  var _res = [];\n  for (var ks in _order) {\n    var "+gq.GroupVar+" = _groups[ks]!;\n"); err != nil {
+		return err
+	}
+	if gq.Having != nil {
+		if _, err := io.WriteString(w, "    if ("); err != nil {
+			return err
+		}
+		if err := gq.Having.emit(w); err != nil {
+			return err
+		}
+		if _, err := io.WriteString(w, ") {\n      _res.add("); err != nil {
+			return err
+		}
+		if err := gq.Select.emit(w); err != nil {
+			return err
+		}
+		if _, err := io.WriteString(w, ");\n    }\n"); err != nil {
+			return err
+		}
+	} else {
+		if _, err := io.WriteString(w, "    _res.add("); err != nil {
+			return err
+		}
+		if err := gq.Select.emit(w); err != nil {
+			return err
+		}
+		if _, err := io.WriteString(w, ");\n"); err != nil {
+			return err
+		}
+	}
+	if _, err := io.WriteString(w, "  }\n  return _res;\n})();"); err != nil {
 		return err
 	}
 	return nil
@@ -1420,6 +1532,26 @@ func inferType(e Expr) string {
 			}
 		}
 		return "List<" + et + ">"
+	case *GroupQueryExpr:
+		saved := map[string]string{}
+		for i, v := range ex.Vars {
+			t := inferType(ex.Iters[i])
+			elem := "dynamic"
+			if strings.HasPrefix(t, "List<") && strings.HasSuffix(t, ">") {
+				elem = strings.TrimSuffix(strings.TrimPrefix(t, "List<"), ">")
+			}
+			saved[v] = compVarTypes[v]
+			compVarTypes[v] = elem
+		}
+		et := inferType(ex.Select)
+		for _, v := range ex.Vars {
+			if old, ok := saved[v]; ok && old != "" {
+				compVarTypes[v] = old
+			} else {
+				delete(compVarTypes, v)
+			}
+		}
+		return "List<" + et + ">"
 	case *LeftJoinExpr:
 		ltype := inferType(ex.LeftSrc)
 		rtype := inferType(ex.RightSrc)
@@ -1552,6 +1684,8 @@ func inferType(e Expr) string {
 		return "bool"
 	case *LenExpr:
 		return "int"
+	case *CountExpr:
+		return "int"
 	case *SubstringExpr:
 		return "String"
 	case *SliceExpr:
@@ -1605,27 +1739,27 @@ func isBlockStmt(s Stmt) bool {
 }
 
 func gatherTypes(p *Program) {
-        for _, st := range p.Stmts {
-                walkTypes(st)
-        }
+	for _, st := range p.Stmts {
+		walkTypes(st)
+	}
 }
 
 func walkTypes(s Stmt) {
 	switch st := s.(type) {
-       case *LetStmt:
-               nextStructHint = st.Name
-               typ := inferType(st.Value)
-               nextStructHint = ""
-               localVarTypes[st.Name] = typ
-       case *VarStmt:
-               if st.Value != nil {
-                       nextStructHint = st.Name
-                       typ := inferType(st.Value)
-                       nextStructHint = ""
-                       localVarTypes[st.Name] = typ
-               } else {
-                       localVarTypes[st.Name] = "var"
-               }
+	case *LetStmt:
+		nextStructHint = st.Name
+		typ := inferType(st.Value)
+		nextStructHint = ""
+		localVarTypes[st.Name] = typ
+	case *VarStmt:
+		if st.Value != nil {
+			nextStructHint = st.Name
+			typ := inferType(st.Value)
+			nextStructHint = ""
+			localVarTypes[st.Name] = typ
+		} else {
+			localVarTypes[st.Name] = "var"
+		}
 	case *AssignStmt:
 		inferType(st.Value)
 		inferType(st.Target)
@@ -2224,7 +2358,12 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 			if err != nil {
 				return nil, err
 			}
-			return &LenExpr{X: arg}, nil
+			if t := types.ExprType(p.Call.Args[0], currentEnv); t != nil {
+				if _, ok := t.(types.GroupType); ok {
+					arg = &SelectorExpr{Receiver: arg, Field: "items"}
+				}
+			}
+			return &CountExpr{X: arg}, nil
 		}
 		if p.Call.Func == "exists" && len(p.Call.Args) == 1 {
 			if q := extractQuery(p.Call.Args[0]); q != nil {
@@ -2326,6 +2465,11 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 		}
 		if ex, err := convertRightJoinQuery(p.Query); err == nil {
 			return ex, nil
+		}
+		if p.Query.Group != nil {
+			if ex, err := convertGroupQuery(p.Query); err == nil {
+				return ex, nil
+			}
 		}
 		return convertQueryExpr(p.Query)
 	case p.FunExpr != nil && p.FunExpr.ExprBody != nil:
@@ -2577,6 +2721,52 @@ func convertRightJoinQuery(q *parser.QueryExpr) (Expr, error) {
 	return &RightJoinExpr{LeftVar: q.Var, LeftSrc: leftSrc, RightVar: j.Var, RightSrc: rightSrc, Cond: cond, Select: sel}, nil
 }
 
+func convertGroupQuery(q *parser.QueryExpr) (Expr, error) {
+	if q == nil || q.Group == nil || len(q.Group.Exprs) != 1 || len(q.Froms) > 0 || len(q.Joins) > 0 || q.Sort != nil || q.Skip != nil || q.Take != nil || q.Distinct {
+		return nil, fmt.Errorf("unsupported query")
+	}
+	src, err := convertExpr(q.Source)
+	if err != nil {
+		return nil, err
+	}
+	vars := []string{q.Var}
+	iters := []Expr{src}
+	var cond Expr
+	if q.Where != nil {
+		c, err := convertExpr(q.Where)
+		if err != nil {
+			return nil, err
+		}
+		cond = c
+	}
+	key, err := convertExpr(q.Group.Exprs[0])
+	if err != nil {
+		return nil, err
+	}
+	row := Expr(&Name{Name: q.Var})
+	saved := currentEnv
+	child := types.NewEnv(currentEnv)
+	child.SetVar(q.Var, types.AnyType{}, true)
+	genv := types.NewEnv(child)
+	genv.SetVar(q.Group.Name, types.GroupType{Key: types.AnyType{}, Elem: types.AnyType{}}, true)
+	currentEnv = genv
+	sel, err := convertExpr(q.Select)
+	if err != nil {
+		currentEnv = saved
+		return nil, err
+	}
+	var having Expr
+	if q.Group.Having != nil {
+		having, err = convertExpr(q.Group.Having)
+		if err != nil {
+			currentEnv = saved
+			return nil, err
+		}
+	}
+	currentEnv = saved
+	return &GroupQueryExpr{Vars: vars, Iters: iters, Cond: cond, Key: key, Row: row, GroupVar: q.Group.Name, Select: sel, Having: having}, nil
+}
+
 func convertQueryExpr(q *parser.QueryExpr) (Expr, error) {
 	if q.Group != nil || q.Distinct {
 		return nil, fmt.Errorf("unsupported query")
@@ -2823,6 +3013,23 @@ func exprNode(e Expr) *ast.Node {
 		return &ast.Node{Kind: "str", Children: []*ast.Node{exprNode(ex.Value)}}
 	case *FormatList:
 		return &ast.Node{Kind: "format-list", Children: []*ast.Node{exprNode(ex.List)}}
+	case *CountExpr:
+		return &ast.Node{Kind: "count", Children: []*ast.Node{exprNode(ex.X)}}
+	case *GroupQueryExpr:
+		n := &ast.Node{Kind: "group-query"}
+		for i, v := range ex.Vars {
+			n.Children = append(n.Children, &ast.Node{Kind: "for", Value: v, Children: []*ast.Node{exprNode(ex.Iters[i])}})
+		}
+		if ex.Cond != nil {
+			n.Children = append(n.Children, &ast.Node{Kind: "if", Children: []*ast.Node{exprNode(ex.Cond)}})
+		}
+		n.Children = append(n.Children, exprNode(ex.Key))
+		n.Children = append(n.Children, exprNode(ex.Row))
+		if ex.Having != nil {
+			n.Children = append(n.Children, &ast.Node{Kind: "having", Children: []*ast.Node{exprNode(ex.Having)}})
+		}
+		n.Children = append(n.Children, exprNode(ex.Select))
+		return n
 	case *SortExpr:
 		return &ast.Node{Kind: "sort", Children: []*ast.Node{exprNode(ex.List), exprNode(ex.Compare)}}
 	case *MultiListComp:
