@@ -2551,20 +2551,22 @@ func Emit(prog *Program) []byte {
 		for _, f := range st.Fields {
 			fmt.Fprintf(&buf, "    public %s %s;\n", f.Type, f.Name)
 		}
-		buf.WriteString("    public override string ToString() => $\"{{")
-		for i, f := range st.Fields {
-			if i > 0 {
-				buf.WriteString(", ")
-			}
-			fmt.Fprintf(&buf, "\\\"%s\\\": ", f.Name)
-			if f.Type == "string" {
-				fmt.Fprintf(&buf, "\\\"{%s}\\\"", f.Name)
-			} else {
-				fmt.Fprintf(&buf, "{%s}", f.Name)
-			}
-		}
-		buf.WriteString("}}\";\n")
-		buf.WriteString("}\n")
+                buf.WriteString("    public override string ToString() => $\"{{")
+                for i, f := range st.Fields {
+                        if i > 0 {
+                                buf.WriteString(", ")
+                        }
+                        fmt.Fprintf(&buf, "'%s': ", f.Name)
+                        if f.Type == "string" {
+                                fmt.Fprintf(&buf, "'{%s}'", f.Name)
+                        } else if f.Type == "double" {
+                                fmt.Fprintf(&buf, "{%s.ToString(\"0.0\")}", f.Name)
+                        } else {
+                                fmt.Fprintf(&buf, "{%s}", f.Name)
+                        }
+                }
+                buf.WriteString("}}\";\n")
+                buf.WriteString("}\n")
 	}
 
 	buf.WriteString("class Program {\n")

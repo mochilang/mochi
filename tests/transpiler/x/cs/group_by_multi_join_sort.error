@@ -1,5 +1,0 @@
-dotnet run: exit status 1
-/tmp/TestCSTranspiler_VMValid_Golden3245023897/029/Program.cs(67,635): error CS1061: 'Customer' does not contain a definition for 'l' and no accessible extension method 'l' accepting a first argument of type 'Customer' could be found (are you missing a using directive or an assembly reference?) [/tmp/TestCSTranspiler_VMValid_Golden3245023897/029/app.csproj]
-/tmp/TestCSTranspiler_VMValid_Golden3245023897/029/Program.cs(67,662): error CS1061: 'Customer' does not contain a definition for 'l' and no accessible extension method 'l' accepting a first argument of type 'Customer' could be found (are you missing a using directive or an assembly reference?) [/tmp/TestCSTranspiler_VMValid_Golden3245023897/029/app.csproj]
-
-The build failed. Fix the build errors and run again.

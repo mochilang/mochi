@@ -201,7 +201,13 @@ func updateReadme() {
 	var buf bytes.Buffer
 	buf.WriteString("# C# Transpiler Output\n\n")
 	buf.WriteString("Generated C# code for programs in `tests/vm/valid`. Each program has a `.cs` file produced by the transpiler and a `.out` file containing its runtime output. Compilation or execution errors are captured in a `.error` file placed next to the source.\n\n")
-	fmt.Fprintf(&buf, "Compiled programs: %d/%d\n\n", compiled, total)
+	fmt.Fprintf(&buf, "Compiled programs: %d/%d\n", compiled, total)
+	if out, err := exec.Command("git", "log", "-1", "--format=%cI").Output(); err == nil {
+		if t, perr := time.Parse(time.RFC3339, strings.TrimSpace(string(out))); perr == nil {
+			fmt.Fprintf(&buf, "Last updated: %s\n", t.Format("2006-01-02 15:04 MST"))
+		}
+	}
+	buf.WriteString("\n")
 	buf.WriteString("## Checklist\n")
 	buf.WriteString(strings.Join(lines, "\n"))
 	buf.WriteString("\n")
