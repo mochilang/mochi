@@ -1046,7 +1046,7 @@ func evalPrimary(p *parser.Primary, vars map[string]value) (value, error) {
 				}
 				args[i] = av
 			}
-			return evalFunction(fn, args)
+			return evalFunction(fn, args, vars)
 		}
 		return value{}, fmt.Errorf("unsupported call")
 	case p.If != nil:
@@ -1107,21 +1107,80 @@ func copyVars(vars map[string]value) map[string]value {
 // evalFunction evaluates a user-defined function with the provided argument
 // values. Only very simple functions containing a single return statement are
 // supported as this transpiler performs aggressive constant folding.
-func evalFunction(fn *parser.FunStmt, args []value) (value, error) {
+// evalFunction evaluates a user-defined function using constant folding. It
+// now supports a mix of local function declarations, simple variable
+// assignments and a final return statement.
+func evalFunction(fn *parser.FunStmt, args []value, captured map[string]value) (value, error) {
 	if fn == nil {
 		return value{}, fmt.Errorf("undefined function")
-	}
-	if len(fn.Body) != 1 || fn.Body[0].Return == nil {
-		return value{}, fmt.Errorf("unsupported function body")
 	}
 	if len(args) != len(fn.Params) {
 		return value{}, fmt.Errorf("argument count mismatch")
 	}
-	local := map[string]value{}
-	for i, p := range fn.Params {
-		local[p.Name] = args[i]
+
+	// copy current functions so that nested functions are visible during
+	// evaluation
+	saved := currentFuncs
+	locals := make(map[string]*parser.FunStmt, len(saved))
+	for k, v := range saved {
+		locals[k] = v
 	}
-	return evalExpr(fn.Body[0].Return.Value, local)
+	currentFuncs = locals
+	defer func() { currentFuncs = saved }()
+
+	vars := copyVars(captured)
+	for i, p := range fn.Params {
+		vars[p.Name] = args[i]
+	}
+
+	var ret *parser.Expr
+	for _, st := range fn.Body {
+		switch {
+		case st.Fun != nil:
+			locals[st.Fun.Name] = st.Fun
+		case st.Let != nil:
+			v := value{}
+			if st.Let.Value != nil {
+				var err error
+				v, err = evalExpr(st.Let.Value, vars)
+				if err != nil {
+					return value{}, err
+				}
+			} else if st.Let.Type != nil {
+				v = zeroValue(st.Let.Type)
+			}
+			vars[st.Let.Name] = v
+		case st.Var != nil:
+			v := value{}
+			if st.Var.Value != nil {
+				var err error
+				v, err = evalExpr(st.Var.Value, vars)
+				if err != nil {
+					return value{}, err
+				}
+			} else if st.Var.Type != nil {
+				v = zeroValue(st.Var.Type)
+			}
+			vars[st.Var.Name] = v
+		case st.Assign != nil:
+			if len(st.Assign.Field) > 0 || len(st.Assign.Index) > 0 {
+				return value{}, fmt.Errorf("unsupported assign")
+			}
+			v, err := evalExpr(st.Assign.Value, vars)
+			if err != nil {
+				return value{}, err
+			}
+			vars[st.Assign.Name] = v
+		case st.Return != nil:
+			ret = st.Return.Value
+		default:
+			return value{}, fmt.Errorf("unsupported function body")
+		}
+	}
+	if ret == nil {
+		return value{}, fmt.Errorf("missing return")
+	}
+	return evalExpr(ret, vars)
 }
 
 func identName(e *parser.Expr) (string, bool) {
