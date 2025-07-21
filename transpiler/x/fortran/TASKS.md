@@ -1,3 +1,6 @@
+## Progress (2025-07-21 17:15 +0700)
+- ftn: add group_by join
+
 # Transpiler Tasks
 ## Recent Enhancements
 - 2025-07-21 16:26  - fortran: add const join support
