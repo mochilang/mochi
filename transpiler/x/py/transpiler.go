@@ -1228,6 +1228,8 @@ func maybeDataClassList(name string, list *ListLit) (*DataClassDef, []Expr) {
 			typ = "float"
 		case *StringLit:
 			typ = "str"
+		case *BoolLit:
+			typ = "bool"
 		}
 		fields = append(fields, DataClassField{Name: k, Type: typ})
 	}
@@ -1261,6 +1263,8 @@ func dataClassFromDict(name string, d *DictLit) (*DataClassDef, []Expr) {
 			typ = "float"
 		case *StringLit:
 			typ = "str"
+		case *BoolLit:
+			typ = "bool"
 		}
 		fields = append(fields, DataClassField{Name: k, Type: typ})
 	}
@@ -2838,11 +2842,10 @@ func convertBinary(b *parser.BinaryExpr) (Expr, error) {
 		operands = append(operands, o)
 	}
 
-	if len(ops) == 1 && ops[0] == "/" {
-		if isSumUnary(b.Left) && isSumPostfix(b.Right[0].Right) {
-			ops[0] = "//"
-		}
-	}
+	// Always use true division. Older heuristic replaced """/""" with
+	// floor division when both sides looked like sums of integers. This
+	// broke calculations such as conditional averages which require
+	// floating point results.
 
 	levels := [][]string{
 		{"*", "/", "//", "%"},
@@ -3676,13 +3679,11 @@ func convertGroupQuery(q *parser.QueryExpr, env *types.Env, target string) ([]St
 		&LetStmt{Name: groupsVar, Expr: &DictLit{}},
 	}
 
-	valExpr := &FieldExpr{Target: &Name{Name: q.Var}, Name: "value"}
+	init := fmt.Sprintf("_g = %s.setdefault(%s, {\"key\": %s, \"items\": []})", groupsVar, exprString(keyExpr), exprString(keyExpr))
+	appendItem := fmt.Sprintf("_g[\"items\"].append(%s)", q.Var)
 	inner := []Stmt{
-		&IfStmt{
-			Cond: &RawExpr{Code: fmt.Sprintf("%s not in %s", exprString(keyExpr), groupsVar)},
-			Then: []Stmt{&IndexAssignStmt{Target: &Name{Name: groupsVar}, Index: keyExpr, Value: &IntLit{Value: "0"}}},
-		},
-		&ExprStmt{Expr: &RawExpr{Code: fmt.Sprintf("%s[%s] += %s", groupsVar, exprString(keyExpr), exprString(valExpr))}},
+		&ExprStmt{Expr: &RawExpr{Code: init}},
+		&ExprStmt{Expr: &RawExpr{Code: appendItem}},
 	}
 	if where != nil {
 		inner = []Stmt{&IfStmt{Cond: where, Then: inner}}
@@ -3701,8 +3702,8 @@ func convertGroupQuery(q *parser.QueryExpr, env *types.Env, target string) ([]St
 			sel = &CallExpr{Func: &Name{Name: dc.Name}, Args: args}
 		}
 	}
-	iterPairs := &CallExpr{Func: &FieldExpr{Target: &Name{Name: groupsVar}, Name: "items"}, Args: nil}
-	listComp := &ListComp{Var: "_p", Iter: iterPairs, Expr: sel}
+	iterVals := &CallExpr{Func: &FieldExpr{Target: &Name{Name: groupsVar}, Name: "values"}, Args: nil}
+	listComp := &ListComp{Var: q.Group.Name, Iter: iterVals, Expr: sel, Cond: having}
 	stmts = append(stmts, &LetStmt{Name: target, Expr: listComp})
 
 	return stmts, nil
