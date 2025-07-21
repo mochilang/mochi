@@ -1,3 +1,31 @@
+## Progress (2025-07-21 19:35 +0700)
+- lua transpiler: support float literals and group by multi join
+- Regenerated golden files - 86/100 vm valid programs passing
+
+## Progress (2025-07-21 19:35 +0700)
+- lua transpiler: support float literals and group by multi join
+- Regenerated golden files - 86/100 vm valid programs passing
+
+## Progress (2025-07-21 19:35 +0700)
+- lua transpiler: support float literals and group by multi join
+- Regenerated golden files - 86/100 vm valid programs passing
+
+## Progress (2025-07-21 19:35 +0700)
+- lua transpiler: support float literals and group by multi join
+- Regenerated golden files - 86/100 vm valid programs passing
+
+## Progress (2025-07-21 19:35 +0700)
+- lua transpiler: support float literals and group by multi join
+- Regenerated golden files - 86/100 vm valid programs passing
+
+## Progress (2025-07-21 19:35 +0700)
+- lua transpiler: support float literals and group by multi join
+- Regenerated golden files - 86/100 vm valid programs passing
+
+## Progress (2025-07-21 19:35 +0700)
+- lua transpiler: support float literals and group by multi join
+- Regenerated golden files - 86/100 vm valid programs passing
+
 ## Progress (2025-07-21 18:42 +0700)
 - go transpiler: fix list set ops
 - Regenerated golden files - 86/100 vm valid programs passing

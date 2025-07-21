@@ -325,6 +325,17 @@ type IntLit struct{ Value int }
 
 func (i *IntLit) emit(w io.Writer) { fmt.Fprintf(w, "%d", i.Value) }
 
+// FloatLit represents a floating point literal.
+type FloatLit struct{ Value float64 }
+
+func (f *FloatLit) emit(w io.Writer) {
+	if f.Value == float64(int(f.Value)) {
+		fmt.Fprintf(w, "%.1f", f.Value)
+	} else {
+		fmt.Fprintf(w, "%g", f.Value)
+	}
+}
+
 type BoolLit struct{ Value bool }
 
 func (b *BoolLit) emit(w io.Writer) { fmt.Fprintf(w, "%t", b.Value) }
@@ -1540,7 +1551,7 @@ func compileQueryExpr(q *parser.QueryExpr, env *types.Env, base string) (Expr, e
 		if et == "" {
 			et = "any"
 		}
-		itemType := toGoTypeFromType(elemT)
+		itemType := "any"
 		usesPrint = true
 		return &GroupQueryExpr{Var: q.Var, Src: src, Key: keyExpr, GroupVar: q.Group.Name, Cond: nil, Select: sel, Having: having, ElemType: et, ItemType: itemType}, nil
 	}
@@ -2104,6 +2115,19 @@ func compileBinary(b *parser.BinaryExpr, env *types.Env, base string) (Expr, err
 					}
 					newExpr = &IntersectExpr{Left: left, Right: right, ElemType: et}
 				default:
+					// auto cast int to float64 when mixed with float
+					if ops[i].Op == "+" || ops[i].Op == "-" || ops[i].Op == "*" || ops[i].Op == "/" {
+						if _, ok := typesList[i].(types.FloatType); ok {
+							if _, ok2 := typesList[i+1].(types.IntType); ok2 {
+								right = &CallExpr{Func: "float64", Args: []Expr{right}}
+							}
+						}
+						if _, ok := typesList[i+1].(types.FloatType); ok {
+							if _, ok2 := typesList[i].(types.IntType); ok2 {
+								left = &CallExpr{Func: "float64", Args: []Expr{left}}
+							}
+						}
+					}
 					newExpr = &BinaryExpr{Left: left, Op: ops[i].Op, Right: right}
 				}
 				operands[i] = newExpr
@@ -2508,6 +2532,9 @@ func compilePrimary(p *parser.Primary, env *types.Env, base string) (Expr, error
 		if p.Lit.Int != nil {
 			return &IntLit{Value: int(*p.Lit.Int)}, nil
 		}
+		if p.Lit.Float != nil {
+			return &FloatLit{Value: *p.Lit.Float}, nil
+		}
 		if p.Lit.Bool != nil {
 			return &BoolLit{Value: bool(*p.Lit.Bool)}, nil
 		}
@@ -2594,7 +2621,15 @@ func toGoTypeFromType(t types.Type) string {
 	case types.ListType:
 		return "[]" + toGoTypeFromType(tt.Elem)
 	case types.MapType:
-		return fmt.Sprintf("map[%s]%s", toGoTypeFromType(tt.Key), toGoTypeFromType(tt.Value))
+		key := toGoTypeFromType(tt.Key)
+		if key == "" {
+			key = "any"
+		}
+		val := toGoTypeFromType(tt.Value)
+		if val == "" {
+			val = "any"
+		}
+		return fmt.Sprintf("map[%s]%s", key, val)
 	case types.GroupType:
 		key := toGoTypeFromType(tt.Key)
 		if key == "" {
@@ -2900,6 +2935,8 @@ func toNodeExpr(e Expr) *ast.Node {
 		return &ast.Node{Kind: "string", Value: ex.Value}
 	case *IntLit:
 		return &ast.Node{Kind: "int"}
+	case *FloatLit:
+		return &ast.Node{Kind: "float"}
 	case *BoolLit:
 		return &ast.Node{Kind: "bool"}
 	case *VarRef:
