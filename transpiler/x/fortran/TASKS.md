@@ -1,3 +1,18 @@
+## Progress (2025-07-21 15:51 +0700)
+- fortran: support len on map literals
+
+## Progress (2025-07-21 15:37 +0700)
+- fs transpiler: infer structs from map literals
+
+## Progress (2025-07-21 15:37 +0700)
+- fs transpiler: infer structs from map literals
+
+## Progress (2025-07-21 15:37 +0700)
+- fs transpiler: infer structs from map literals
+
+## Progress (2025-07-21 15:37 +0700)
+- fs transpiler: infer structs from map literals
+
 ## Progress (2025-07-21 14:55 +0700)
 - fortran: support conditional group by
 
