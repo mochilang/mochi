@@ -1,3 +1,30 @@
+## Progress (2025-07-21 17:24 +0700)
+- Simplified display logic; removed TMP helper vars
+- Enabled constant evaluation for join and group_by queries
+- Generated COBOL for 1/100 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-21 17:24 +0700)
+- docs(pas): update progress
+- Generated COBOL for 1/100 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-21 17:24 +0700)
+- Simplified display logic; removed TMP helper vars
+- Enabled constant evaluation for join and group_by queries
+- Generated COBOL for 1/100 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-21 17:24 +0700)
+- docs(pas): update progress
+- Generated COBOL for 1/100 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-21 17:24 +0700)
+- docs(pas): update progress
+- Generated COBOL for 1/100 programs
+- Updated README checklist and outputs
+
 ## Progress (2025-07-21 16:07 +0700)
 - Clean up transpiler/x
 - Generated COBOL for 36/100 programs
