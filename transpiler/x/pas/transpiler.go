@@ -343,11 +343,11 @@ func (u *UnaryExpr) emit(w io.Writer) {
 
 // BinaryExpr represents a binary arithmetic operation.
 type BinaryExpr struct {
-        Op    string
-        Left  Expr
-        Right Expr
-        Bool  bool
-        Real  bool // use real division for '/'
+	Op    string
+	Left  Expr
+	Right Expr
+	Bool  bool
+	Real  bool // use real division for '/'
 }
 
 type ContainsExpr struct {
@@ -473,15 +473,15 @@ func (b *BinaryExpr) emit(w io.Writer) {
 	} else {
 		b.Left.emit(w)
 	}
-        op := b.Op
-        switch op {
-        case "%":
-                op = "mod"
-        case "/":
-                if !b.Real {
-                        op = "div"
-                }
-        }
+	op := b.Op
+	switch op {
+	case "%":
+		op = "mod"
+	case "/":
+		if !b.Real {
+			op = "div"
+		}
+	}
 	fmt.Fprintf(w, " %s ", op)
 	if _, ok := b.Right.(*BinaryExpr); ok {
 		io.WriteString(w, "(")
@@ -875,6 +875,9 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 				return nil, err
 			}
 			pr.Stmts = append(pr.Stmts, &ReturnStmt{Expr: ex})
+		case st.Test != nil:
+			// ignore test blocks in transpiled output
+			continue
 		default:
 			return nil, fmt.Errorf("unsupported statement")
 		}
@@ -937,6 +940,32 @@ func convertBody(env *types.Env, body []*parser.Statement, varTypes map[string]s
 				}
 			}
 			out = append(out, &AssignStmt{Name: st.Assign.Name, Expr: ex})
+		case st.Let != nil:
+			vd := VarDecl{Name: st.Let.Name}
+			if st.Let.Type != nil && st.Let.Type.Simple != nil {
+				if *st.Let.Type.Simple == "int" {
+					vd.Type = "integer"
+				} else if *st.Let.Type.Simple == "string" {
+					vd.Type = "string"
+				}
+			}
+			if st.Let.Value != nil {
+				ex, err := convertExpr(env, st.Let.Value)
+				if err != nil {
+					return nil, err
+				}
+				vd.Init = ex
+				if vd.Type == "" {
+					if t := inferType(ex); t != "" {
+						vd.Type = t
+					}
+				}
+				out = append(out, &AssignStmt{Name: st.Let.Name, Expr: ex})
+			}
+			currProg.Vars = append(currProg.Vars, vd)
+			if vd.Type != "" {
+				varTypes[vd.Name] = vd.Type
+			}
 		case st.For != nil:
 			start, err := convertExpr(env, st.For.Source)
 			if err != nil {
@@ -1009,6 +1038,9 @@ func convertBody(env *types.Env, body []*parser.Statement, varTypes map[string]s
 				return nil, err
 			}
 			out = append(out, &ReturnStmt{Expr: ex})
+		case st.Test != nil:
+			// ignore tests inside functions
+			continue
 		default:
 			return nil, fmt.Errorf("unsupported statement")
 		}
@@ -1070,10 +1102,10 @@ func convertExpr(env *types.Env, e *parser.Expr) (Expr, error) {
 		exprs = exprs[:len(exprs)-1]
 		var be *BinaryExpr
 		switch op {
-                case "+", "-", "*", "%":
-                        be = &BinaryExpr{Op: op, Left: left, Right: right}
-                case "/":
-                        be = &BinaryExpr{Op: "/", Left: left, Right: right}
+		case "+", "-", "*", "%":
+			be = &BinaryExpr{Op: op, Left: left, Right: right}
+		case "/":
+			be = &BinaryExpr{Op: "/", Left: left, Right: right}
 		case "==":
 			be = &BinaryExpr{Op: "=", Left: left, Right: right, Bool: true}
 		case "!=":
@@ -1452,7 +1484,7 @@ func buildGroupByQuery(env *types.Env, q *parser.QueryExpr, varName string, varT
 		&AssignStmt{Name: sumVar, Expr: &BinaryExpr{Op: "+", Left: &VarRef{Name: sumVar}, Right: &SelectorExpr{Root: q.Var, Tail: []string{"age"}}}},
 	}
 	inner := &ForEachStmt{Name: q.Var, Iterable: &SelectorExpr{Root: "g", Tail: []string{"items"}}, Body: sumLoopBody}
-        avgExpr := &BinaryExpr{Op: "/", Left: &VarRef{Name: sumVar}, Right: &CallExpr{Name: "Length", Args: []Expr{&SelectorExpr{Root: "g", Tail: []string{"items"}}}}, Real: true}
+	avgExpr := &BinaryExpr{Op: "/", Left: &VarRef{Name: sumVar}, Right: &CallExpr{Name: "Length", Args: []Expr{&SelectorExpr{Root: "g", Tail: []string{"items"}}}}, Real: true}
 	rec := &RecordLit{Type: resRec, Fields: []FieldExpr{{Name: "city", Expr: &SelectorExpr{Root: "g", Tail: []string{"city"}}}, {Name: "count", Expr: &SelectorExpr{Root: "g", Tail: []string{"count"}}}, {Name: "avg_age", Expr: avgExpr}}}
 	appendRes := &AssignStmt{Name: varName, Expr: &CallExpr{Name: "concat", Args: []Expr{&VarRef{Name: varName}, &ListLit{Elems: []Expr{rec}}}}}
 	resultBody := []Stmt{sumInit, inner, appendRes}
@@ -1743,6 +1775,43 @@ func convertPrimary(env *types.Env, p *parser.Primary) (Expr, error) {
 		}
 		name := ensureRecord(rec)
 		return &RecordLit{Type: name, Fields: fields}, nil
+	case p.FunExpr != nil:
+		name := fmt.Sprintf("anon%d", len(currProg.Funs))
+		var params []string
+		child := types.NewEnv(env)
+		for _, pa := range p.FunExpr.Params {
+			params = append(params, pa.Name)
+			child.SetVar(pa.Name, types.AnyType{}, true)
+		}
+		var body []Stmt
+		if p.FunExpr.ExprBody != nil {
+			ex, err := convertExpr(child, p.FunExpr.ExprBody)
+			if err != nil {
+				return nil, err
+			}
+			body = []Stmt{&ReturnStmt{Expr: ex}}
+		} else if len(p.FunExpr.BlockBody) > 0 {
+			varTypes := map[string]string{}
+			b, err := convertBody(child, p.FunExpr.BlockBody, varTypes)
+			if err != nil {
+				return nil, err
+			}
+			body = b
+			for n, t := range varTypes {
+				child.SetVar(n, types.AnyType{}, true)
+				_ = t
+			}
+		}
+		rt := ""
+		if p.FunExpr.Return != nil && p.FunExpr.Return.Simple != nil {
+			if *p.FunExpr.Return.Simple == "int" {
+				rt = "integer"
+			} else if *p.FunExpr.Return.Simple == "string" {
+				rt = "string"
+			}
+		}
+		currProg.Funs = append(currProg.Funs, FunDecl{Name: name, Params: params, ReturnType: rt, Body: body})
+		return &VarRef{Name: name}, nil
 	case p.Selector != nil && len(p.Selector.Tail) == 0:
 		return &VarRef{Name: p.Selector.Root}, nil
 	case p.Selector != nil:

@@ -1,3 +1,6 @@
+## Progress (2025-07-21 06:38 +0000)
+- pascal transpiler: add six more tests and improve type inference (progress 58/100)
+
 ## Progress (2025-07-21 13:07 +0700)
 - docs(pas): update tasks (progress 51/100)
 
