@@ -241,6 +241,8 @@ func TestTranspileGroupByConditionalSum(t *testing.T) { runGolden(t, "group_by_c
 func TestTranspileGroupBySort(t *testing.T)           { runGolden(t, "group_by_sort") }
 func TestTranspileGroupByJoin(t *testing.T)           { runGolden(t, "group_by_join") }
 
+func TestTranspileJsonBuiltin(t *testing.T) { runGolden(t, "json_builtin") }
+
 func updateEnabled() bool { return *update }
 
 func countCompiled() (int, int) {
