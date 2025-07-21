@@ -1,0 +1,5 @@
+/workspace/mochi/tests/transpiler/x/rb/group_by.rb:22:in `+': nil can't be coerced into Integer (TypeError)
+	from /workspace/mochi/tests/transpiler/x/rb/group_by.rb:22:in `sum'
+	from /workspace/mochi/tests/transpiler/x/rb/group_by.rb:22:in `block in <main>'
+	from /workspace/mochi/tests/transpiler/x/rb/group_by.rb:14:in `each'
+	from /workspace/mochi/tests/transpiler/x/rb/group_by.rb:14:in `<main>'

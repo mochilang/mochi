@@ -1,3 +1,8 @@
+## Progress (2025-07-21 21:57 +0700)
+- Commit 0e640eb7e: rb transpiler: support group join sort
+- Generated Ruby for 87/100 programs
+- Updated README checklist and outputs
+
 ## Progress (2025-07-21 21:13 +0700)
 - update hs golden files
 - Generated Ruby for 82/100 programs
