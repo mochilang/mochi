@@ -3,6 +3,7 @@
 package main
 
 import (
+	"bytes"
 	"context"
 	"encoding/json"
 	"errors"
@@ -32,36 +33,35 @@ import (
 	ffiinfo "mochi/runtime/ffi/infer"
 	python "mochi/runtime/ffi/python"
 
-	ccode "mochi/compiler/x/c"
-	cljcode "mochi/compiler/x/clj"
-	cobolcode "mochi/compiler/x/cobol"
-	cppcode "mochi/compiler/x/cpp"
-	cscode "mochi/compiler/x/cs"
-	dartcode "mochi/compiler/x/dart"
-	erlangcode "mochi/compiler/x/erlang"
-	excode "mochi/compiler/x/ex"
-	ftncode "mochi/compiler/x/fortran"
-	fscode "mochi/compiler/x/fs"
-	gocode "mochi/compiler/x/go"
-	hscode "mochi/compiler/x/hs"
-	javacode "mochi/compiler/x/java"
-	kotlincode "mochi/compiler/x/kotlin"
-	luacode "mochi/compiler/x/lua"
-	ocamlcode "mochi/compiler/x/ocaml"
-	pascode "mochi/compiler/x/pascal"
-	phpcode "mochi/compiler/x/php"
-	plcode "mochi/compiler/x/pl"
-	pycode "mochi/compiler/x/python"
-	racketcode "mochi/compiler/x/racket"
-	rbcode "mochi/compiler/x/rb"
-	rustcode "mochi/compiler/x/rust"
-	scalacode "mochi/compiler/x/scala"
-	schemecode "mochi/compiler/x/scheme"
-	smalltalkcode "mochi/compiler/x/smalltalk"
-	stcode "mochi/compiler/x/st"
-	swiftcode "mochi/compiler/x/swift"
-	tscode "mochi/compiler/x/ts"
-	zigcode "mochi/compiler/x/zig"
+	ctrans "mochi/transpiler/x/c"
+	cljt "mochi/transpiler/x/clj"
+	cobol "mochi/transpiler/x/cobol"
+	cpp "mochi/transpiler/x/cpp"
+	cstranspiler "mochi/transpiler/x/cs"
+	dartt "mochi/transpiler/x/dart"
+	erl "mochi/transpiler/x/erl"
+	ex "mochi/transpiler/x/ex"
+	fortran "mochi/transpiler/x/fortran"
+	fstrans "mochi/transpiler/x/fs"
+	gotrans "mochi/transpiler/x/go"
+	hs "mochi/transpiler/x/hs"
+	javatr "mochi/transpiler/x/java"
+	kt "mochi/transpiler/x/kt"
+	lua "mochi/transpiler/x/lua"
+	ocaml "mochi/transpiler/x/ocaml"
+	pas "mochi/transpiler/x/pas"
+	php "mochi/transpiler/x/php"
+	pl "mochi/transpiler/x/pl"
+	py "mochi/transpiler/x/py"
+	rb "mochi/transpiler/x/rb"
+	rkt "mochi/transpiler/x/rkt"
+	rs "mochi/transpiler/x/rs"
+	scalat "mochi/transpiler/x/scala"
+	scheme "mochi/transpiler/x/scheme"
+	st "mochi/transpiler/x/st"
+	swifttrans "mochi/transpiler/x/swift"
+	tstranspiler "mochi/transpiler/x/ts"
+	zigt "mochi/transpiler/x/zig"
 
 	"mochi/ast"
 	"mochi/interpreter"
@@ -507,16 +507,9 @@ func runBuild(cmd *BuildCmd) error {
 	if lang == "" && cmd.Out != "" {
 		lang = strings.TrimPrefix(filepath.Ext(cmd.Out), ".")
 	}
-	var data []byte
-	var compileErr error
-	if lang == "py" || lang == "python" {
-		c := pycode.New(env)
-		data, compileErr = c.Compile(prog)
-	} else {
-		data, compileErr = compileProgram(lang, env, prog, modRoot, cmd.File)
-	}
-	if compileErr != nil {
-		return compileErr
+	data, err := transpileProgram(lang, env, prog, modRoot, cmd.File)
+	if err != nil {
+		return err
 	}
 	if cmd.Out != "" {
 		return os.WriteFile(cmd.Out, data, 0644)
@@ -543,7 +536,7 @@ func runBuildX(cmd *BuildXCmd) error {
 		return fmt.Errorf("aborted due to type errors")
 	}
 	lang := strings.ToLower(cmd.Target)
-	data, err := compileProgram(lang, env, prog, modRoot, cmd.File)
+	data, err := transpileProgram(lang, env, prog, modRoot, cmd.File)
 	if err != nil {
 		return err
 	}
@@ -696,68 +689,210 @@ func normalizeType(t string) string {
 	return t
 }
 
-func compileProgram(lang string, env *types.Env, prog *parser.Program, root, src string) ([]byte, error) {
+func transpileProgram(lang string, env *types.Env, prog *parser.Program, root, src string) ([]byte, error) {
 	switch lang {
 	case "go":
-		return gocode.New(env).Compile(prog)
+		p, err := gotrans.Transpile(prog, env)
+		if err != nil {
+			return nil, err
+		}
+		return gotrans.Emit(p), nil
 	case "ts":
-		return tscode.New(env, root).Compile(prog)
+		p, err := tstranspiler.Transpile(prog, env)
+		if err != nil {
+			return nil, err
+		}
+		return tstranspiler.Emit(p), nil
 	case "py", "python":
-		return pycode.New(env).Compile(prog)
+		p, err := py.Transpile(prog, env)
+		if err != nil {
+			return nil, err
+		}
+		var buf bytes.Buffer
+		if err := py.Emit(&buf, p); err != nil {
+			return nil, err
+		}
+		return buf.Bytes(), nil
 	case "clj":
-		return cljcode.New(env).Compile(prog)
+		p, err := cljt.Transpile(prog, env)
+		if err != nil {
+			return nil, err
+		}
+		return cljt.Format(cljt.EmitString(p)), nil
 	case "dart":
-		return dartcode.New(env).Compile(prog)
+		p, err := dartt.Transpile(prog, env)
+		if err != nil {
+			return nil, err
+		}
+		var buf bytes.Buffer
+		if err := dartt.Emit(&buf, p); err != nil {
+			return nil, err
+		}
+		return buf.Bytes(), nil
 	case "c":
-		return ccode.New(env).Compile(prog)
+		p, err := ctrans.Transpile(env, prog)
+		if err != nil {
+			return nil, err
+		}
+		return p.Emit(), nil
 	case "cobol":
-		return cobolcode.New(env).Compile(prog)
+		p, err := cobol.Transpile(prog, env)
+		if err != nil {
+			return nil, err
+		}
+		return cobol.Emit(p), nil
 	case "cpp", "c++":
-		return cppcode.New().Compile(prog)
+		p, err := cpp.Transpile(prog, env)
+		if err != nil {
+			return nil, err
+		}
+		return p.Emit(), nil
 	case "cs", "csharp":
-		return cscode.New(env).Compile(prog)
+		p, err := cstranspiler.Transpile(prog, env)
+		if err != nil {
+			return nil, err
+		}
+		return cstranspiler.Emit(p), nil
 	case "erlang", "erl":
-		return erlangcode.New(src).Compile(prog)
+		p, err := erl.Transpile(prog, env)
+		if err != nil {
+			return nil, err
+		}
+		return p.Emit(), nil
 	case "ex", "elixir":
-		return excode.New(env).Compile(prog)
+		p, err := ex.Transpile(prog, env)
+		if err != nil {
+			return nil, err
+		}
+		return ex.Emit(p), nil
 	case "fortran", "ftn":
-		return ftncode.New(env).Compile(prog)
+		p, err := fortran.Transpile(prog, env)
+		if err != nil {
+			return nil, err
+		}
+		return p.Emit(), nil
 	case "fs", "fsharp":
-		return fscode.New().Compile(prog)
+		p, err := fstrans.Transpile(prog, env)
+		if err != nil {
+			return nil, err
+		}
+		return fstrans.Emit(p), nil
 	case "hs", "haskell":
-		return hscode.New(env).Compile(prog)
+		p, err := hs.Transpile(prog, env)
+		if err != nil {
+			return nil, err
+		}
+		return hs.Emit(p), nil
 	case "java":
-		return javacode.New().Compile(prog)
+		p, err := javatr.Transpile(prog, env)
+		if err != nil {
+			return nil, err
+		}
+		return javatr.Emit(p), nil
 	case "kotlin", "kt":
-		return kotlincode.New(env, root).Compile(prog)
+		p, err := kt.Transpile(env, prog)
+		if err != nil {
+			return nil, err
+		}
+		return kt.Emit(p), nil
 	case "lua":
-		return luacode.New(env).Compile(prog)
+		p, err := lua.Transpile(prog, env)
+		if err != nil {
+			return nil, err
+		}
+		return lua.Emit(p), nil
 	case "ocaml":
-		return ocamlcode.New(env).Compile(prog, src)
+		p, err := ocaml.Transpile(prog, env)
+		if err != nil {
+			return nil, err
+		}
+		return p.Emit(), nil
 	case "pas", "pascal":
-		return pascode.New(env).Compile(prog)
+		p, err := pas.Transpile(env, prog)
+		if err != nil {
+			return nil, err
+		}
+		return p.Emit(), nil
 	case "php":
-		return phpcode.New(env).Compile(prog)
+		p, err := php.Transpile(prog, env)
+		if err != nil {
+			return nil, err
+		}
+		var buf bytes.Buffer
+		if err := php.Emit(&buf, p); err != nil {
+			return nil, err
+		}
+		return buf.Bytes(), nil
 	case "pl", "prolog":
-		return plcode.New(env).Compile(prog)
+		p, err := pl.Transpile(prog, env)
+		if err != nil {
+			return nil, err
+		}
+		var buf bytes.Buffer
+		if err := pl.Emit(&buf, p); err != nil {
+			return nil, err
+		}
+		return buf.Bytes(), nil
 	case "racket", "rkt":
-		return racketcode.New().Compile(prog)
+		p, err := rkt.Transpile(prog, env)
+		if err != nil {
+			return nil, err
+		}
+		var buf bytes.Buffer
+		if err := rkt.Emit(&buf, p); err != nil {
+			return nil, err
+		}
+		return buf.Bytes(), nil
 	case "rb", "ruby":
-		return rbcode.New(env).Compile(prog)
+		p, err := rb.Transpile(prog, env)
+		if err != nil {
+			return nil, err
+		}
+		var buf bytes.Buffer
+		if err := rb.Emit(&buf, p); err != nil {
+			return nil, err
+		}
+		return buf.Bytes(), nil
 	case "rust":
-		return rustcode.New(env).Compile(prog)
+		p, err := rs.Transpile(prog, env)
+		if err != nil {
+			return nil, err
+		}
+		return rs.Emit(p), nil
 	case "scala":
-		return scalacode.New(env).Compile(prog)
+		p, err := scalat.Transpile(prog, env)
+		if err != nil {
+			return nil, err
+		}
+		return scalat.Emit(p), nil
 	case "scheme":
-		return schemecode.New(env).Compile(prog)
-	case "smalltalk":
-		return smalltalkcode.New().Compile(prog)
+		p, err := scheme.Transpile(prog, env)
+		if err != nil {
+			return nil, err
+		}
+		return scheme.Format(scheme.EmitString(p)), nil
 	case "st":
-		return stcode.New(env).Compile(prog)
+		p, err := st.Transpile(prog, env)
+		if err != nil {
+			return nil, err
+		}
+		var buf bytes.Buffer
+		if err := st.Emit(&buf, p); err != nil {
+			return nil, err
+		}
+		return buf.Bytes(), nil
 	case "swift":
-		return swiftcode.New(env).Compile(prog)
+		p, err := swifttrans.Transpile(env, prog)
+		if err != nil {
+			return nil, err
+		}
+		return p.Emit(), nil
 	case "zig":
-		return zigcode.New(env).Compile(prog)
+		p, err := zigt.Transpile(prog, env)
+		if err != nil {
+			return nil, err
+		}
+		return p.Emit(), nil
 	default:
 		return nil, fmt.Errorf("unsupported language: %s", lang)
 	}
