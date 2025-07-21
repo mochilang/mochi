@@ -3,10 +3,17 @@
 package dartt
 
 import (
+	"bytes"
+	"encoding/json"
 	"fmt"
 	"io"
+	"os"
+	"path/filepath"
+	"sort"
 	"strconv"
 	"strings"
+
+	yaml "gopkg.in/yaml.v3"
 
 	"mochi/ast"
 	"mochi/parser"
@@ -2678,7 +2685,17 @@ func convertStmtInternal(st *parser.Statement) (Stmt, error) {
 	case st.Expect != nil:
 		return nil, nil
 	case st.Type != nil:
-		// ignore type declarations
+		if currentEnv != nil {
+			if stt, ok := currentEnv.GetStruct(st.Type.Name); ok {
+				var fields []StructField
+				for _, name := range stt.Order {
+					ft := stt.Fields[name]
+					fields = append(fields, StructField{Name: name, Type: dartType(ft)})
+				}
+				structFields[stt.Name] = fields
+				structOrder = append(structOrder, stt.Name)
+			}
+		}
 		return nil, nil
 	case st.ExternType != nil:
 		return nil, nil
@@ -3166,6 +3183,17 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 			entries = append(entries, MapEntry{Key: k, Value: v})
 		}
 		return &MapLit{Entries: entries}, nil
+	case p.Load != nil:
+		format := parseFormat(p.Load.With)
+		path := ""
+		if p.Load.Path != nil {
+			path = strings.Trim(*p.Load.Path, "\"")
+		}
+		expr, err := dataExprFromFile(path, format, p.Load.Type)
+		if err == nil {
+			return expr, nil
+		}
+		return nil, err
 	case p.Struct != nil:
 		return convertStructLiteral(p.Struct)
 	case p.If != nil:
@@ -3488,6 +3516,109 @@ func parseFormat(e *parser.Expr) string {
 		}
 	}
 	return ""
+}
+
+func repoRoot() string {
+	dir, _ := os.Getwd()
+	for i := 0; i < 10; i++ {
+		if _, err := os.Stat(filepath.Join(dir, "go.mod")); err == nil {
+			return dir
+		}
+		parent := filepath.Dir(dir)
+		if parent == dir {
+			break
+		}
+		dir = parent
+	}
+	return ""
+}
+
+func valueToExpr(v interface{}, typ *parser.TypeRef) Expr {
+	switch val := v.(type) {
+	case map[string]interface{}:
+		keys := make([]string, 0, len(val))
+		for k := range val {
+			keys = append(keys, k)
+		}
+		sort.Strings(keys)
+		if typ != nil && typ.Simple != nil {
+			st, ok := currentEnv.GetStruct(*typ.Simple)
+			if ok {
+				args := make([]Expr, len(st.Order))
+				for i, name := range st.Order {
+					args[i] = valueToExpr(val[name], nil)
+				}
+				return &CallExpr{Func: &Name{Name: *typ.Simple}, Args: args}
+			}
+		}
+		entries := make([]MapEntry, len(keys))
+		for i, k := range keys {
+			entries[i] = MapEntry{Key: &StringLit{Value: k}, Value: valueToExpr(val[k], nil)}
+		}
+		return &MapLit{Entries: entries}
+	case []interface{}:
+		elems := make([]Expr, len(val))
+		for i, it := range val {
+			elems[i] = valueToExpr(it, typ)
+		}
+		return &ListLit{Elems: elems}
+	case string:
+		return &StringLit{Value: val}
+	case bool:
+		return &BoolLit{Value: val}
+	case int:
+		return &IntLit{Value: val}
+	case int64:
+		return &IntLit{Value: int(val)}
+	case float64:
+		return &FloatLit{Value: val}
+	case float32:
+		return &FloatLit{Value: float64(val)}
+	default:
+		return &Name{Name: "null"}
+	}
+}
+
+func dataExprFromFile(path, format string, typ *parser.TypeRef) (Expr, error) {
+	if path == "" {
+		return &ListLit{}, nil
+	}
+	root := repoRoot()
+	if root != "" && strings.HasPrefix(path, "../") {
+		clean := strings.TrimPrefix(path, "../")
+		path = filepath.Join(root, "tests", clean)
+	}
+	data, err := os.ReadFile(path)
+	if err != nil {
+		return nil, err
+	}
+	var v interface{}
+	switch format {
+	case "yaml":
+		if err := yaml.Unmarshal(data, &v); err != nil {
+			return nil, err
+		}
+	case "json":
+		if err := json.Unmarshal(data, &v); err != nil {
+			return nil, err
+		}
+	case "jsonl":
+		var arr []interface{}
+		for _, line := range bytes.Split(data, []byte{'\n'}) {
+			line = bytes.TrimSpace(line)
+			if len(line) == 0 {
+				continue
+			}
+			var item interface{}
+			if err := json.Unmarshal(line, &item); err == nil {
+				arr = append(arr, item)
+			}
+		}
+		v = arr
+	default:
+		return nil, fmt.Errorf("unsupported load format")
+	}
+	return valueToExpr(v, typ), nil
 }
 
 func extractSaveExpr(e *parser.Expr) *parser.SaveExpr {
