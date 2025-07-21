@@ -1,0 +1,6 @@
+/workspace/mochi/tests/transpiler/x/rkt/left_join_multi.rkt:8:0: read-syntax: expected a `)` to close `(`
+  possible cause: indentation suggests a missing `)` before line 28
+  context...:
+   /usr/share/racket/collects/syntax/module-reader.rkt:214:17: body
+   /usr/share/racket/collects/syntax/module-reader.rkt:211:2: wrap-internal
+   /usr/share/racket/collects/racket/../syntax/module-reader.rkt:76:9: wrap-internal/wrapper
