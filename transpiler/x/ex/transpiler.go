@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"io"
 	"os/exec"
+	"sort"
 	"strings"
 	"time"
 
@@ -156,45 +157,64 @@ func (s *IfStmt) emit(w io.Writer, indent int) {
 
 // WhileStmt represents a simple while loop.
 type WhileStmt struct {
-	Cond Expr
-	Body []Stmt
+	Cond   Expr
+	Body   []Stmt
+	Vars   []string
+	Simple bool
 }
 
 func (wst *WhileStmt) emit(w io.Writer, indent int) {
 	for i := 0; i < indent; i++ {
 		io.WriteString(w, "  ")
 	}
-	io.WriteString(w, "while_fun = fn while_fun ->\n")
+	io.WriteString(w, "while_fun = fn while_fun")
+	for _, v := range wst.Vars {
+		io.WriteString(w, ", ")
+		io.WriteString(w, v)
+	}
+	io.WriteString(w, " ->\n")
 	for i := 0; i < indent+1; i++ {
 		io.WriteString(w, "  ")
 	}
 	io.WriteString(w, "if ")
 	wst.Cond.emit(w)
 	io.WriteString(w, " do\n")
+	if wst.Simple {
+		for _, st := range wst.Body {
+			st.emit(w, indent+2)
+			io.WriteString(w, "\n")
+		}
+	} else {
+		for i := 0; i < indent+2; i++ {
+			io.WriteString(w, "  ")
+		}
+		io.WriteString(w, "try do\n")
+		for _, st := range wst.Body {
+			st.emit(w, indent+3)
+			io.WriteString(w, "\n")
+		}
+		for i := 0; i < indent+2; i++ {
+			io.WriteString(w, "  ")
+		}
+		io.WriteString(w, "catch\n")
+		for i := 0; i < indent+3; i++ {
+			io.WriteString(w, "  ")
+		}
+		io.WriteString(w, ":continue -> nil\n")
+		for i := 0; i < indent+2; i++ {
+			io.WriteString(w, "  ")
+		}
+		io.WriteString(w, "end\n")
+	}
 	for i := 0; i < indent+2; i++ {
 		io.WriteString(w, "  ")
 	}
-	io.WriteString(w, "try do\n")
-	for _, st := range wst.Body {
-		st.emit(w, indent+3)
-		io.WriteString(w, "\n")
+	io.WriteString(w, "while_fun.(while_fun")
+	for _, v := range wst.Vars {
+		io.WriteString(w, ", ")
+		io.WriteString(w, v)
 	}
-	for i := 0; i < indent+2; i++ {
-		io.WriteString(w, "  ")
-	}
-	io.WriteString(w, "catch\n")
-	for i := 0; i < indent+3; i++ {
-		io.WriteString(w, "  ")
-	}
-	io.WriteString(w, ":continue -> nil\n")
-	for i := 0; i < indent+2; i++ {
-		io.WriteString(w, "  ")
-	}
-	io.WriteString(w, "end\n")
-	for i := 0; i < indent+2; i++ {
-		io.WriteString(w, "  ")
-	}
-	io.WriteString(w, "while_fun.(while_fun)\n")
+	io.WriteString(w, ")\n")
 	for i := 0; i < indent+1; i++ {
 		io.WriteString(w, "  ")
 	}
@@ -202,7 +222,21 @@ func (wst *WhileStmt) emit(w io.Writer, indent int) {
 	for i := 0; i < indent+2; i++ {
 		io.WriteString(w, "  ")
 	}
-	io.WriteString(w, "nil\n")
+	if len(wst.Vars) == 0 {
+		io.WriteString(w, "nil\n")
+	} else if len(wst.Vars) == 1 {
+		io.WriteString(w, wst.Vars[0])
+		io.WriteString(w, "\n")
+	} else {
+		io.WriteString(w, "{")
+		for i, v := range wst.Vars {
+			if i > 0 {
+				io.WriteString(w, ", ")
+			}
+			io.WriteString(w, v)
+		}
+		io.WriteString(w, "}\n")
+	}
 	for i := 0; i < indent+1; i++ {
 		io.WriteString(w, "  ")
 	}
@@ -214,7 +248,28 @@ func (wst *WhileStmt) emit(w io.Writer, indent int) {
 	for i := 0; i < indent; i++ {
 		io.WriteString(w, "  ")
 	}
-	io.WriteString(w, "while_fun.(while_fun)")
+	if len(wst.Vars) == 0 {
+		io.WriteString(w, "while_fun.(while_fun)")
+	} else if len(wst.Vars) == 1 {
+		io.WriteString(w, wst.Vars[0])
+		io.WriteString(w, " = while_fun.(while_fun, ")
+		io.WriteString(w, wst.Vars[0])
+		io.WriteString(w, ")")
+	} else {
+		io.WriteString(w, "{")
+		for i, v := range wst.Vars {
+			if i > 0 {
+				io.WriteString(w, ", ")
+			}
+			io.WriteString(w, v)
+		}
+		io.WriteString(w, "} = while_fun.(while_fun")
+		for _, v := range wst.Vars {
+			io.WriteString(w, ", ")
+			io.WriteString(w, v)
+		}
+		io.WriteString(w, ")")
+	}
 }
 
 // ForStmt represents a basic for loop over a collection or range.
@@ -1196,7 +1251,55 @@ func compileWhileStmt(ws *parser.WhileStmt, env *types.Env) (Stmt, error) {
 			body = append(body, st)
 		}
 	}
-	return &WhileStmt{Cond: cond, Body: body}, nil
+	vars := gatherMutVars(body, env)
+	simple := true
+	var check func([]Stmt)
+	check = func(sts []Stmt) {
+		for _, st := range sts {
+			switch t := st.(type) {
+			case *BreakStmt, *ContinueStmt:
+				simple = false
+			case *IfStmt:
+				check(t.Then)
+				check(t.Else)
+			case *ForStmt:
+				check(t.Body)
+			case *WhileStmt:
+				check(t.Body)
+			}
+		}
+	}
+	check(body)
+	return &WhileStmt{Cond: cond, Body: body, Vars: vars, Simple: simple}, nil
+}
+
+func gatherMutVars(stmts []Stmt, env *types.Env) []string {
+	set := map[string]struct{}{}
+	var walk func([]Stmt)
+	walk = func(ss []Stmt) {
+		for _, s := range ss {
+			switch t := s.(type) {
+			case *AssignStmt:
+				if _, err := env.GetVar(t.Name); err == nil {
+					set[t.Name] = struct{}{}
+				}
+			case *IfStmt:
+				walk(t.Then)
+				walk(t.Else)
+			case *ForStmt:
+				walk(t.Body)
+			case *WhileStmt:
+				walk(t.Body)
+			}
+		}
+	}
+	walk(stmts)
+	vars := make([]string, 0, len(set))
+	for v := range set {
+		vars = append(vars, v)
+	}
+	sort.Strings(vars)
+	return vars
 }
 
 func compileForStmt(fs *parser.ForStmt, env *types.Env) (Stmt, error) {
