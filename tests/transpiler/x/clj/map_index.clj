@@ -2,7 +2,7 @@
 
 (require 'clojure.set)
 
-(defrecord Anon1 [a b])
+(defrecord M [a b])
 
 (def m {"a" 1 "b" 2})
 

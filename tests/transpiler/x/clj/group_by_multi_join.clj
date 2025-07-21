@@ -2,11 +2,11 @@
 
 (require 'clojure.set)
 
-(defrecord Anon3 [part supplier cost qty])
+(defrecord Partsupp [part supplier cost qty])
 
-(defrecord Anon2 [id nation])
+(defrecord Suppliers [id nation])
 
-(defrecord Anon1 [id name])
+(defrecord Nations [id name])
 
 (def nations [{:id 1 :name "A"} {:id 2 :name "B"}])
 

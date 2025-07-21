@@ -2,7 +2,7 @@
 
 (require 'clojure.set)
 
-(defrecord Anon1 [a b])
+(defrecord Data [a b])
 
 (def data [{:a 1 :b 2} {:a 1 :b 1} {:a 0 :b 5}])
 

@@ -2,7 +2,7 @@
 
 (require 'clojure.set)
 
-(defrecord Anon1 [title])
+(defrecord Todo1 [title])
 
 (def todo {:title "hi"})
 

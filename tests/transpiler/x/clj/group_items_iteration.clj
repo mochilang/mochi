@@ -2,7 +2,7 @@
 
 (require 'clojure.set)
 
-(defrecord Anon1 [tag val])
+(defrecord Data [tag val])
 
 (def data [{:tag "a" :val 1} {:tag "a" :val 2} {:tag "b" :val 3}])
 

@@ -1,3 +1,11 @@
+## Progress (2025-07-21 19:38 +0700)
+- ex transpiler: add golden outputs and update docs
+- Regenerated golden files - 100/100 vm valid programs passing
+
+## Progress (2025-07-21 19:38 +0700)
+- ex transpiler: add golden outputs and update docs
+- Regenerated golden files - 100/100 vm valid programs passing
+
 ## Progress (2025-07-21 19:31 +0700)
 - clj: add basic ffi stubs
 - Regenerated golden files - 100/100 vm valid programs passing

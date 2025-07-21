@@ -2,9 +2,9 @@
 
 (require 'clojure.set)
 
-(defrecord Anon2 [id customerId total])
+(defrecord Orders [id customerId total])
 
-(defrecord Anon1 [id name])
+(defrecord Customers [id name])
 
 (def customers [{:id 1 :name "Alice"} {:id 2 :name "Bob"} {:id 3 :name "Charlie"}])
 

@@ -2,7 +2,7 @@
 
 (require 'clojure.set)
 
-(defrecord Anon1 [alice])
+(defrecord Scores [alice])
 
 (def scores {"alice" 1})
 

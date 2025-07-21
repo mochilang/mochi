@@ -2,13 +2,13 @@
 
 (require 'clojure.set)
 
-(defrecord Anon4 [l_orderkey l_returnflag l_extendedprice l_discount])
+(defrecord Lineitem [l_orderkey l_returnflag l_extendedprice l_discount])
 
-(defrecord Anon3 [o_orderkey o_custkey o_orderdate])
+(defrecord Orders [o_orderkey o_custkey o_orderdate])
 
-(defrecord Anon2 [c_custkey c_name c_acctbal c_nationkey c_address c_phone c_comment])
+(defrecord Customer [c_custkey c_name c_acctbal c_nationkey c_address c_phone c_comment])
 
-(defrecord Anon1 [n_nationkey n_name])
+(defrecord Nation [n_nationkey n_name])
 
 (def nation [{:n_nationkey 1 :n_name "BRAZIL"}])
 

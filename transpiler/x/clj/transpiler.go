@@ -274,6 +274,22 @@ func repoRoot() string {
 	return ""
 }
 
+func pascalCase(name string) string {
+	if name == "" {
+		return ""
+	}
+	parts := strings.FieldsFunc(name, func(r rune) bool {
+		return r == '_' || r == '-'
+	})
+	for i, p := range parts {
+		if len(p) == 0 {
+			continue
+		}
+		parts[i] = strings.ToUpper(p[:1]) + p[1:]
+	}
+	return strings.Join(parts, "")
+}
+
 func parseFormat(e *parser.Expr) string {
 	if e == nil || e.Binary == nil || len(e.Binary.Right) > 0 {
 		return ""
@@ -527,8 +543,8 @@ func transpileStmt(s *parser.Statement) (Node, error) {
 				return nil, err
 			}
 			if st, ok := inferStructLiteral(s.Let.Value, transpileEnv); ok {
-				structCount++
-				name := fmt.Sprintf("Anon%d", structCount)
+				base := pascalCase(s.Let.Name)
+				name := types.UniqueStructName(base, transpileEnv, nil)
 				if currentProgram != nil {
 					addRecordDef(currentProgram, name, st.Order)
 				}
@@ -554,8 +570,8 @@ func transpileStmt(s *parser.Statement) (Node, error) {
 				return nil, err
 			}
 			if st, ok := inferStructLiteral(s.Var.Value, transpileEnv); ok {
-				structCount++
-				name := fmt.Sprintf("Anon%d", structCount)
+				base := pascalCase(s.Var.Name)
+				name := types.UniqueStructName(base, transpileEnv, nil)
 				if currentProgram != nil {
 					addRecordDef(currentProgram, name, st.Order)
 				}
