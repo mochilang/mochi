@@ -1,3 +1,3 @@
 <?php
-var_dump("hello from mochix");
+echo rtrim("hello from mochix"), PHP_EOL;
 ?>

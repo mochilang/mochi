@@ -1,7 +1,8 @@
 (ns main)
 
+(require 'clojure.set)
+
 (defn -main []
-  (println "hello from mochix")
-)
+  (println "hello from mochix"))
 
 (-main)
