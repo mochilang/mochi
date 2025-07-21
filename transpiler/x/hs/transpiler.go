@@ -157,6 +157,9 @@ func guessHsType(ex Expr) string {
 	if _, ok := ex.(*IntLit); ok {
 		return "Int"
 	}
+	if _, ok := ex.(*LenExpr); ok {
+		return "Int"
+	}
 	if nr, ok := ex.(*NameRef); ok {
 		switch varTypes[nr.Name] {
 		case "int":
@@ -1624,7 +1627,6 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 				}
 				row = &RecordLit{Name: rowType, Names: fields, Fields: varsExpr}
 			}
-			list := &ComprExpr{Vars: vars, Sources: srcs, Cond: cond, Body: row}
 			keyExpr, err := convertExpr(p.Query.Group.Exprs[0])
 			if err != nil {
 				return nil, err
@@ -1639,8 +1641,8 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 			if keyType != "" {
 				groupKeyStruct[p.Query.Group.Name] = keyType
 			}
-			mapKeys := &CallExpr{Fun: &NameRef{Name: "map"}, Args: []Expr{&GroupExpr{Expr: &LambdaExpr{Params: vars, Body: keyExpr}}, list}}
-			keys := &CallExpr{Fun: &NameRef{Name: "nub"}, Args: []Expr{&GroupExpr{Expr: mapKeys}}}
+			keysExpr := &ComprExpr{Vars: vars, Sources: srcs, Cond: cond, Body: keyExpr}
+			keys := &CallExpr{Fun: &NameRef{Name: "nub"}, Args: []Expr{&GroupExpr{Expr: keysExpr}}}
 			condKey := &BinaryExpr{Left: keyExpr, Ops: []BinaryOp{{Op: "==", Right: &NameRef{Name: "k"}}}}
 			if cond != nil {
 				condKey = &BinaryExpr{Left: cond, Ops: []BinaryOp{{Op: "&&", Right: condKey}}}
