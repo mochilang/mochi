@@ -20,22 +20,14 @@ import (
 
 // Program contains variable declarations and a sequence of statements.
 type Program struct {
-	Vars    []VarDecl
-	Stmts   []Stmt
-	NeedTmp bool
-	NeedStr bool
+	Vars  []VarDecl
+	Stmts []Stmt
 }
 
 var constVars map[string]interface{}
 
 func (p *Program) addStmt(s Stmt) {
 	p.Stmts = append(p.Stmts, s)
-	if stmtNeedsTmp(s) {
-		p.NeedTmp = true
-	}
-	if needsStr(s) {
-		p.NeedStr = true
-	}
 }
 
 func (p *Program) ensureIntVar(name string) {
@@ -46,80 +38,6 @@ func (p *Program) ensureIntVar(name string) {
 		}
 	}
 	p.Vars = append(p.Vars, VarDecl{Name: name, Pic: "PIC 9"})
-}
-
-func stmtNeedsTmp(s Stmt) bool {
-	switch st := s.(type) {
-	case *DisplayStmt:
-		if st.IsString {
-			return st.Temp
-		}
-		if st.Temp || !isDirectNumber(st.Expr) {
-			return true
-		}
-		return false
-	case *IfStmt:
-		for _, t := range st.Then {
-			if stmtNeedsTmp(t) {
-				return true
-			}
-		}
-		for _, e := range st.Else {
-			if stmtNeedsTmp(e) {
-				return true
-			}
-		}
-	case *WhileStmt:
-		for _, b := range st.Body {
-			if stmtNeedsTmp(b) {
-				return true
-			}
-		}
-	case *ForRangeStmt:
-		for _, b := range st.Body {
-			if stmtNeedsTmp(b) {
-				return true
-			}
-		}
-	}
-	return false
-}
-
-func needsStr(s Stmt) bool {
-	switch st := s.(type) {
-	case *DisplayStmt:
-		if st.IsString {
-			return false
-		}
-		if st.Temp {
-			return true
-		}
-		return !isDirectNumber(st.Expr)
-	case *IfStmt:
-		for _, t := range st.Then {
-			if needsStr(t) {
-				return true
-			}
-		}
-		for _, e := range st.Else {
-			if needsStr(e) {
-				return true
-			}
-		}
-	case *WhileStmt:
-		for _, b := range st.Body {
-			if needsStr(b) {
-				return true
-			}
-		}
-	case *ForRangeStmt:
-		for _, b := range st.Body {
-			if needsStr(b) {
-				return true
-			}
-		}
-	}
-	return false
 }
 
 type VarDecl struct {
@@ -137,7 +55,6 @@ type Expr interface{ emitExpr(io.Writer) }
 // DisplayStmt prints the value of an expression.
 type DisplayStmt struct {
 	Expr     Expr
-	Temp     bool
 	IsString bool
 }
 
@@ -455,11 +372,9 @@ func emitCondExpr(w io.Writer, e Expr) {
 
 func (d *DisplayStmt) emit(w io.Writer) {
 	if ce, ok := d.Expr.(*ContainsExpr); ok {
-		io.WriteString(w, "MOVE 0 TO TMP\n    INSPECT ")
-		ce.Str.emitExpr(w)
-		io.WriteString(w, " TALLYING TMP FOR ALL ")
-		ce.Sub.emitExpr(w)
-		io.WriteString(w, "\n    IF TMP > 0\n        DISPLAY \"true\"\n    ELSE\n        DISPLAY \"false\"\n    END-IF")
+		io.WriteString(w, "IF ")
+		ce.emitExpr(w)
+		io.WriteString(w, " THEN\n        DISPLAY \"true\"\n    ELSE\n        DISPLAY \"false\"\n    END-IF")
 		return
 	}
 	if isBoolExpr(d.Expr) {
@@ -468,44 +383,8 @@ func (d *DisplayStmt) emit(w io.Writer) {
 		io.WriteString(w, "\n        DISPLAY \"true\"\n    ELSE\n        DISPLAY \"false\"\n    END-IF")
 		return
 	}
-	if d.IsString {
-		if d.Temp {
-			io.WriteString(w, "COMPUTE TMP = ")
-			d.Expr.emitExpr(w)
-			io.WriteString(w, "\n    DISPLAY TMP")
-		} else {
-			io.WriteString(w, "DISPLAY ")
-			d.Expr.emitExpr(w)
-		}
-		return
-	}
-	if !d.Temp && isDirectNumber(d.Expr) {
-		if il, ok := d.Expr.(*IntLit); ok {
-			fmt.Fprintf(w, "DISPLAY %d", il.Value)
-			return
-		}
-		if ue, ok := d.Expr.(*UnaryExpr); ok && ue.Op == "-" {
-			if il, ok := ue.Expr.(*IntLit); ok {
-				fmt.Fprintf(w, "DISPLAY -%d", il.Value)
-				return
-			}
-		}
-		if vr, ok := d.Expr.(*VarRef); ok {
-			io.WriteString(w, "DISPLAY ")
-			vr.emitExpr(w)
-			return
-		}
-	}
-	if d.Temp {
-		io.WriteString(w, "COMPUTE TMP = ")
-		d.Expr.emitExpr(w)
-		io.WriteString(w, "\n    MOVE TMP TO TMP-STR")
-	} else {
-		io.WriteString(w, "MOVE ")
-		d.Expr.emitExpr(w)
-		io.WriteString(w, " TO TMP-STR")
-	}
-	io.WriteString(w, "\n    DISPLAY FUNCTION TRIM(TMP-STR)")
+	io.WriteString(w, "DISPLAY ")
+	d.Expr.emitExpr(w)
 }
 
 func (a *AssignStmt) emit(w io.Writer) {
@@ -588,7 +467,7 @@ func Emit(p *Program) []byte {
 	buf.WriteString(">>SOURCE FORMAT FREE\n")
 	buf.WriteString("IDENTIFICATION DIVISION.\n")
 	buf.WriteString("PROGRAM-ID. MAIN.\n")
-	if len(p.Vars) > 0 || p.NeedTmp || p.NeedStr {
+	if len(p.Vars) > 0 {
 		buf.WriteString("\nDATA DIVISION.\n")
 		buf.WriteString("WORKING-STORAGE SECTION.\n")
 		for _, v := range p.Vars {
@@ -600,12 +479,6 @@ func Emit(p *Program) []byte {
 				buf.WriteString(" VALUE 0")
 			}
 			buf.WriteString(".\n")
-		}
-		if p.NeedTmp {
-			buf.WriteString("01 TMP PIC S9(9) VALUE 0.\n")
-		}
-		if p.NeedStr {
-			buf.WriteString("01 TMP-STR PIC Z(18).\n")
 		}
 	}
 	buf.WriteString("\nPROCEDURE DIVISION.\n")
@@ -665,22 +538,14 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 				if err != nil {
 					return nil, err
 				}
-				temp := !isSimpleExpr(ex)
-				t := types.TypeOfExpr(call.Args[0], env)
 				isStr := false
-				if _, ok := t.(types.StringType); ok {
+				if _, ok := types.TypeOfExpr(call.Args[0], env).(types.StringType); ok {
 					isStr = true
 				}
 				if _, ok := ex.(*StringLit); ok {
 					isStr = true
 				}
-				if _, ok := ex.(*StringLit); ok {
-					isStr = true
-				}
-				if temp {
-					pr.NeedTmp = true
-				}
-				pr.addStmt(&DisplayStmt{Expr: ex, Temp: temp, IsString: isStr})
+				pr.addStmt(&DisplayStmt{Expr: ex, IsString: isStr})
 			} else {
 				return nil, fmt.Errorf("unsupported expression")
 			}
@@ -839,13 +704,11 @@ func transpileStmts(list []*parser.Statement, env *types.Env) ([]Stmt, error) {
 				if err != nil {
 					return nil, err
 				}
-				temp := !isSimpleExpr(ex)
-				t := types.TypeOfExpr(call.Args[0], env)
 				isStr := false
-				if _, ok := t.(types.StringType); ok {
+				if _, ok := types.TypeOfExpr(call.Args[0], env).(types.StringType); ok {
 					isStr = true
 				}
-				out = append(out, &DisplayStmt{Expr: ex, Temp: temp, IsString: isStr})
+				out = append(out, &DisplayStmt{Expr: ex, IsString: isStr})
 			} else {
 				return nil, fmt.Errorf("unsupported expression")
 			}
