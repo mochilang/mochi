@@ -1,3 +1,87 @@
+## Progress (2025-07-21 12:53 GMT+7)
+- 74/100 VM tests passing
+- Added map literals and index assignments
+
+## Progress (2025-07-21 12:53 GMT+7)
+- 74/100 VM tests passing
+- Added map literals and index assignments
+
+## Progress (2025-07-21 12:53 GMT+7)
+- 74/100 VM tests passing
+- Added map literals and index assignments
+
+## Progress (2025-07-21 12:53 GMT+7)
+- 74/100 VM tests passing
+- Added map literals and index assignments
+
+## Progress (2025-07-21 12:53 GMT+7)
+- 74/100 VM tests passing
+- Added map literals and index assignments
+
+## Progress (2025-07-21 12:53 GMT+7)
+- 74/100 VM tests passing
+- Added map literals and index assignments
+
+## Progress (2025-07-21 12:53 GMT+7)
+- 74/100 VM tests passing
+- Added map literals and index assignments
+
+## Progress (2025-07-21 12:53 GMT+7)
+- 74/100 VM tests passing
+- Added map literals and index assignments
+
+## Progress (2025-07-21 12:53 GMT+7)
+- 74/100 VM tests passing
+- Added map literals and index assignments
+
+## Progress (2025-07-21 12:53 GMT+7)
+- 74/100 VM tests passing
+- Added map literals and index assignments
+
+## Progress (2025-07-21 12:53 GMT+7)
+- 74/100 VM tests passing
+- Added map literals and index assignments
+
+## Progress (2025-07-21 12:53 GMT+7)
+- 74/100 VM tests passing
+- Added map literals and index assignments
+
+## Progress (2025-07-21 12:53 GMT+7)
+- 74/100 VM tests passing
+- Added map literals and index assignments
+
+## Progress (2025-07-21 12:53 GMT+7)
+- 74/100 VM tests passing
+- Added map literals and index assignments
+
+## Progress (2025-07-21 12:53 GMT+7)
+- 74/100 VM tests passing
+- Added map literals and index assignments
+
+## Progress (2025-07-21 12:53 GMT+7)
+- 74/100 VM tests passing
+- Added map literals and index assignments
+
+## Progress (2025-07-21 12:53 GMT+7)
+- 74/100 VM tests passing
+- Added map literals and index assignments
+
+## Progress (2025-07-21 12:53 GMT+7)
+- 71/100 VM tests passing
+- Added map literals and index assignments
+
+## Progress (2025-07-21 12:53 GMT+7)
+- 71/100 VM tests passing
+- Added map literals and index assignments
+
+## Progress (2025-07-21 12:53 GMT+7)
+- 71/100 VM tests passing
+- Added map literals and index assignments
+
+## Progress (2025-07-21 12:53 GMT+7)
+- 71/100 VM tests passing
+- Added map literals and index assignments
+
 ## Progress (2025-07-21 07:33 GMT+7)
 - 71/100 VM tests passing
 - Implemented join condition filtering and right join support
