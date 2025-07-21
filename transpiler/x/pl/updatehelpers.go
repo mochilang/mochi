@@ -33,10 +33,22 @@ func UpdateReadmeForTests() {
 		}
 		lines = append(lines, fmt.Sprintf("- %s `%s`", mark, name))
 	}
+	out, err := exec.Command("git", "log", "-1", "--date=iso-strict", "--format=%cd").Output()
+	ts := ""
+	if err == nil {
+		if t, perr := time.Parse(time.RFC3339, strings.TrimSpace(string(out))); perr == nil {
+			if loc, lerr := time.LoadLocation("Asia/Bangkok"); lerr == nil {
+				ts = t.In(loc).Format("2006-01-02 15:04 -0700")
+			} else {
+				ts = t.Format("2006-01-02 15:04 MST")
+			}
+		}
+	}
 	var buf bytes.Buffer
 	buf.WriteString("# Prolog Transpiler\n\n")
 	buf.WriteString("This directory contains a tiny transpiler that converts a restricted subset of Mochi programs to SWI-Prolog. It is mainly used for experimentation and golden tests.\n\n")
 	fmt.Fprintf(&buf, "## VM Golden Test Checklist (%d/%d)\n", compiled, total)
+	fmt.Fprintf(&buf, "Last updated: %s\n", ts)
 	buf.WriteString(strings.Join(lines, "\n"))
 	buf.WriteString("\n\n*Checklist generated automatically from tests/vm/valid*")
 	_ = os.WriteFile(readme, buf.Bytes(), 0o644)
@@ -60,7 +72,8 @@ func UpdateTasksForTests() {
 	}
 	var buf bytes.Buffer
 	fmt.Fprintf(&buf, "## Progress (%s)\n", ts)
-	fmt.Fprintf(&buf, "- VM valid golden test results updated to %d/%d\n\n", compiled, total)
+	fmt.Fprintf(&buf, "- VM valid golden test results updated to %d/%d\n", compiled, total)
+	buf.WriteString("- Regenerated README checklist and outputs\n\n")
 	if data, err := os.ReadFile(taskFile); err == nil {
 		buf.Write(data)
 	}

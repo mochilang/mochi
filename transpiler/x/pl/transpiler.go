@@ -180,9 +180,17 @@ func (p *PrintStmt) emit(w io.Writer, idx int) {
 	case *LenExpr:
 		if _, ok := e.Value.(*StringLit); ok {
 			fmt.Fprintf(w, "    string_length(")
-		} else {
-			fmt.Fprintf(w, "    length(")
+			e.Value.emit(w)
+			fmt.Fprintf(w, ", R%d), writeln(R%d)", idx, idx)
+			return
 		}
+		if _, ok := e.Value.(*MapLit); ok {
+			fmt.Fprintf(w, "    dict_pairs(")
+			e.Value.emit(w)
+			fmt.Fprintf(w, ", _, P%d), length(P%d, R%d), writeln(R%d)", idx, idx, idx, idx)
+			return
+		}
+		fmt.Fprintf(w, "    length(")
 		e.Value.emit(w)
 		fmt.Fprintf(w, ", R%d), writeln(R%d)", idx, idx)
 		return
@@ -725,6 +733,8 @@ func needsIs(e Expr) bool {
 		return needsIs(ex.Expr)
 	case *CastExpr:
 		return ex.Type == "int"
+	case *LenExpr:
+		return true
 	case *UnaryNot:
 		return false
 	default:
@@ -916,7 +926,6 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 
 // Emit writes the Prolog source for the given program.
 func Emit(w io.Writer, p *Program) error {
-	io.WriteString(w, ":- style_check(-singleton).\n")
 	io.WriteString(w, ":- initialization(main).\n\n")
 	for _, fn := range p.Funcs {
 		fn.emit(w)
@@ -1532,15 +1541,23 @@ func toPrimary(p *parser.Primary, env *compileEnv) (Expr, error) {
 					return &IntLit{Value: len(a.Value)}, nil
 				case *ListLit:
 					return &IntLit{Value: len(a.Elems)}, nil
+				case *MapLit:
+					return &IntLit{Value: len(a.Items)}, nil
 				case *Var:
 					if c, ok := env.constExpr(a.Name).(*StringLit); ok {
 						return &IntLit{Value: len(c.Value)}, nil
+					}
+					if l, ok := env.constExpr(a.Name).(*ListLit); ok {
+						return &IntLit{Value: len(l.Elems)}, nil
+					}
+					if m, ok := env.constExpr(a.Name).(*MapLit); ok {
+						return &IntLit{Value: len(m.Items)}, nil
 					}
 				}
 				if isStringLike(arg, env) {
 					return &CallExpr{Name: "string_length", Args: []Expr{arg}}, nil
 				}
-				return &CallExpr{Name: "length", Args: []Expr{arg}}, nil
+				return &LenExpr{Value: arg}, nil
 			case "str":
 				return &StrExpr{Value: arg}, nil
 			case "count":
