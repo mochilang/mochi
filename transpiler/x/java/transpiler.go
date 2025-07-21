@@ -170,6 +170,10 @@ func inferType(e Expr) string {
 		return "int"
 	case *AvgExpr:
 		return "Object"
+	case *SumExpr:
+		return "Object"
+	case *ValuesExpr:
+		return "java.util.List"
 	case *CallExpr:
 		switch ex.Func {
 		case "String.valueOf", "substring":
@@ -825,12 +829,78 @@ type AvgExpr struct{ Value Expr }
 
 func (a *AvgExpr) emit(w io.Writer) {
 	fmt.Fprint(w, "(((")
-	a.Value.emit(w)
-	fmt.Fprint(w, ".stream().mapToDouble(v -> ((Number)v).doubleValue()).average().orElse(0)) % 1 == 0) ? (Object)(int)(")
-	a.Value.emit(w)
-	fmt.Fprint(w, ".stream().mapToDouble(v -> ((Number)v).doubleValue()).average().orElse(0)) : (Object)(")
-	a.Value.emit(w)
-	fmt.Fprint(w, ".stream().mapToDouble(v -> ((Number)v).doubleValue()).average().orElse(0)))")
+	if isArrayExpr(a.Value) {
+		fmt.Fprint(w, "java.util.Arrays.stream(")
+		a.Value.emit(w)
+		fmt.Fprint(w, ").average().orElse(0)) % 1 == 0) ? (Object)(int)(java.util.Arrays.stream(")
+		a.Value.emit(w)
+		fmt.Fprint(w, ").average().orElse(0)) : (Object)(java.util.Arrays.stream(")
+		a.Value.emit(w)
+		fmt.Fprint(w, ").average().orElse(0)))")
+	} else {
+		a.Value.emit(w)
+		fmt.Fprint(w, ".stream().mapToDouble(v -> ((Number)v).doubleValue()).average().orElse(0)) % 1 == 0) ? (Object)(int)(")
+		a.Value.emit(w)
+		fmt.Fprint(w, ".stream().mapToDouble(v -> ((Number)v).doubleValue()).average().orElse(0)) : (Object)(")
+		a.Value.emit(w)
+		fmt.Fprint(w, ".stream().mapToDouble(v -> ((Number)v).doubleValue()).average().orElse(0)))")
+	}
+}
+
+// SumExpr represents summing a list of numbers.
+type SumExpr struct{ Value Expr }
+
+func (s *SumExpr) emit(w io.Writer) {
+	fmt.Fprint(w, "(((")
+	if isArrayExpr(s.Value) {
+		fmt.Fprint(w, "java.util.Arrays.stream(")
+		s.Value.emit(w)
+		fmt.Fprint(w, ").sum()) % 1 == 0) ? (Object)(int)(java.util.Arrays.stream(")
+		s.Value.emit(w)
+		fmt.Fprint(w, ").sum()) : (Object)(java.util.Arrays.stream(")
+		s.Value.emit(w)
+		fmt.Fprint(w, ").sum()))")
+	} else {
+		s.Value.emit(w)
+		fmt.Fprint(w, ".stream().mapToDouble(v -> ((Number)v).doubleValue()).sum()) % 1 == 0) ? (Object)(int)(")
+		s.Value.emit(w)
+		fmt.Fprint(w, ".stream().mapToDouble(v -> ((Number)v).doubleValue()).sum()) : (Object)(")
+		s.Value.emit(w)
+		fmt.Fprint(w, ".stream().mapToDouble(v -> ((Number)v).doubleValue()).sum()))")
+	}
+}
+
+// ValuesExpr collects map values into a list.
+type ValuesExpr struct{ Map Expr }
+
+func (v *ValuesExpr) emit(w io.Writer) {
+	if ve, ok := v.Map.(*VarExpr); ok {
+		if t, ok2 := varTypes[ve.Name]; ok2 {
+			if st, ok3 := topEnv.GetStruct(strings.TrimSuffix(t, "[]")); ok3 {
+				fmt.Fprint(w, "java.util.Arrays.asList(")
+				for i, fn := range st.Order {
+					if i > 0 {
+						fmt.Fprint(w, ", ")
+					}
+					fmt.Fprintf(w, "%s.%s", ve.Name, fn)
+				}
+				fmt.Fprint(w, ")")
+				return
+			}
+		}
+	}
+	fmt.Fprint(w, "new java.util.ArrayList<>(")
+	v.Map.emit(w)
+	fmt.Fprint(w, ".values())")
+}
+
+// ListStrExpr converts a list to a space-separated string.
+type ListStrExpr struct{ List Expr }
+
+func (ls *ListStrExpr) emit(w io.Writer) {
+	fmt.Fprint(w, "((java.util.List<?>)")
+	ls.List.emit(w)
+	fmt.Fprint(w, ").stream().map(String::valueOf).collect(java.util.stream.Collectors.joining(\" \"))")
 }
 
 type UnaryExpr struct {
@@ -1032,6 +1102,18 @@ func isArrayExpr(e Expr) bool {
 		}
 	case *VarExpr:
 		if t, ok := varTypes[ex.Name]; ok && strings.HasSuffix(t, "[]") {
+			return true
+		}
+	}
+	return false
+}
+
+func isListExpr(e Expr) bool {
+	switch ex := e.(type) {
+	case *QueryExpr, *ListLit, *ValuesExpr:
+		return true
+	case *VarExpr:
+		if t, ok := varTypes[ex.Name]; ok && strings.HasPrefix(t, "java.util.List") {
 			return true
 		}
 	}
@@ -1524,6 +1606,8 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 					args[i] = &TernaryExpr{Cond: a, Then: &IntLit{Value: 1}, Else: &IntLit{Value: 0}}
 				} else if isArrayExpr(a) {
 					args[i] = &CallExpr{Func: "java.util.Arrays.toString", Args: []Expr{a}}
+				} else if isListExpr(a) {
+					args[i] = &ListStrExpr{List: a}
 				}
 			}
 			if len(args) > 1 {
@@ -1543,6 +1627,12 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 		}
 		if name == "avg" && len(args) == 1 {
 			return &AvgExpr{Value: args[0]}, nil
+		}
+		if name == "sum" && len(args) == 1 {
+			return &SumExpr{Value: args[0]}, nil
+		}
+		if name == "values" && len(args) == 1 {
+			return &ValuesExpr{Map: args[0]}, nil
 		}
 		if name == "str" && len(args) == 1 {
 			return &CallExpr{Func: "String.valueOf", Args: args}, nil
