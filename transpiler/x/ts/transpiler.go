@@ -1103,8 +1103,7 @@ func (q *QueryExprJS) emit(w io.Writer) {
 func (gq *GroupQueryExpr) emit(w io.Writer) {
 	iw := &indentWriter{w: w, indent: "  "}
 	io.WriteString(iw, "(() => {\n")
-	io.WriteString(iw, "  const groups: Record<string, {key: any; items: any[]}> = {}\n")
-	io.WriteString(iw, "  const order: string[] = []\n")
+	io.WriteString(iw, "  const groups = new Map<string, {key: any; items: any[]}>()\n")
 	io.WriteString(iw, "  for (const ")
 	io.WriteString(iw, gq.Var)
 	io.WriteString(iw, " of ")
@@ -1117,9 +1116,10 @@ func (gq *GroupQueryExpr) emit(w io.Writer) {
 	}
 	io.WriteString(iw, "    const k = ")
 	gq.Key.emit(iw)
-	io.WriteString(iw, "\n    const ks = JSON.stringify(k)\n    let g = groups[ks]\n    if (!g) { g = {key: k, items: []}; groups[ks] = g; order.push(ks) }\n    g.items.push(")
+	io.WriteString(iw, "\n    const ks = JSON.stringify(k)\n    let g = groups.get(ks)\n    if (!g) { g = {key: k, items: []}; groups.set(ks, g) }\n    g.items.push(")
 	gq.Row.emit(iw)
 	io.WriteString(iw, ")\n  }\n")
+	io.WriteString(iw, "  let ordered = Array.from(groups.values())\n")
 	io.WriteString(iw, "  const result")
 	if gq.ElemType != "" {
 		io.WriteString(iw, ": ")
@@ -1128,22 +1128,17 @@ func (gq *GroupQueryExpr) emit(w io.Writer) {
 	}
 	io.WriteString(iw, " = []\n")
 	if gq.Sort != nil {
-		io.WriteString(iw, "  const pairs = order.map(ks => { const ")
+		io.WriteString(iw, "  const pairs = ordered.map(g => { const ")
 		io.WriteString(iw, gq.GroupVar)
-		io.WriteString(iw, " = groups[ks]; return {g: ")
-		io.WriteString(iw, gq.GroupVar)
-		io.WriteString(iw, ", key: ")
+		io.WriteString(iw, " = g; return {g, key: ")
 		gq.Sort.emit(iw)
 		io.WriteString(iw, "} })\n")
 		io.WriteString(iw, "  pairs.sort((a,b)=>{const ak=a.key;const bk=b.key;if(ak<bk)return -1;if(ak>bk)return 1;const sak=JSON.stringify(ak);const sbk=JSON.stringify(bk);return sak<sbk?-1:sak>sbk?1:0})\n")
-		io.WriteString(iw, "  for (const p of pairs) {\n    const ")
-		io.WriteString(iw, gq.GroupVar)
-		io.WriteString(iw, " = p.g\n")
-	} else {
-		io.WriteString(iw, "  for (const ks of order) {\n    const ")
-		io.WriteString(iw, gq.GroupVar)
-		io.WriteString(iw, " = groups[ks]\n")
+		io.WriteString(iw, "  ordered = pairs.map(p => p.g)\n")
 	}
+	io.WriteString(iw, "  for (const ")
+	io.WriteString(iw, gq.GroupVar)
+	io.WriteString(iw, " of ordered) {\n")
 	if gq.Having != nil {
 		io.WriteString(iw, "    if (")
 		gq.Having.emit(iw)
@@ -1162,8 +1157,7 @@ func (gq *GroupQueryExpr) emit(w io.Writer) {
 func (gq *GroupJoinQueryExpr) emit(w io.Writer) {
 	iw := &indentWriter{w: w, indent: "  "}
 	io.WriteString(iw, "(() => {\n")
-	io.WriteString(iw, "  const groups: Record<string, {key: any; items: any[]}> = {}\n")
-	io.WriteString(iw, "  const order: string[] = []\n")
+	io.WriteString(iw, "  const groups = new Map<string, {key: any; items: any[]}>()\n")
 	io.WriteString(iw, "  let rows = ")
 	if len(gq.Loops) > 0 {
 		gq.Loops[0].Source.emit(iw)
@@ -1273,9 +1267,10 @@ func (gq *GroupJoinQueryExpr) emit(w io.Writer) {
 	}
 	io.WriteString(iw, "    const k = ")
 	gq.Key.emit(iw)
-	io.WriteString(iw, "\n    const ks = JSON.stringify(k)\n    let g = groups[ks]\n    if (!g) { g = {key: k, items: []}; groups[ks] = g; order.push(ks) }\n    g.items.push(")
+	io.WriteString(iw, "\n    const ks = JSON.stringify(k)\n    let g = groups.get(ks)\n    if (!g) { g = {key: k, items: []}; groups.set(ks, g) }\n    g.items.push(")
 	gq.Row.emit(iw)
 	io.WriteString(iw, ")\n  }\n")
+	io.WriteString(iw, "  let ordered = Array.from(groups.values())\n")
 	io.WriteString(iw, "  const result")
 	if gq.ElemType != "" {
 		io.WriteString(iw, ": ")
@@ -1284,22 +1279,17 @@ func (gq *GroupJoinQueryExpr) emit(w io.Writer) {
 	}
 	io.WriteString(iw, " = []\n")
 	if gq.Sort != nil {
-		io.WriteString(iw, "  const pairs = order.map(ks => { const ")
+		io.WriteString(iw, "  const pairs = ordered.map(g => { const ")
 		io.WriteString(iw, gq.GroupVar)
-		io.WriteString(iw, " = groups[ks]; return {g: ")
-		io.WriteString(iw, gq.GroupVar)
-		io.WriteString(iw, ", key: ")
+		io.WriteString(iw, " = g; return {g, key: ")
 		gq.Sort.emit(iw)
 		io.WriteString(iw, "} })\n")
 		io.WriteString(iw, "  pairs.sort((a,b)=>{const ak=a.key;const bk=b.key;if(ak<bk)return -1;if(ak>bk)return 1;const sak=JSON.stringify(ak);const sbk=JSON.stringify(bk);return sak<sbk?-1:sak>sbk?1:0})\n")
-		io.WriteString(iw, "  for (const p of pairs) {\n    const ")
-		io.WriteString(iw, gq.GroupVar)
-		io.WriteString(iw, " = p.g\n")
-	} else {
-		io.WriteString(iw, "  for (const ks of order) {\n    const ")
-		io.WriteString(iw, gq.GroupVar)
-		io.WriteString(iw, " = groups[ks]\n")
+		io.WriteString(iw, "  ordered = pairs.map(p => p.g)\n")
 	}
+	io.WriteString(iw, "  for (const ")
+	io.WriteString(iw, gq.GroupVar)
+	io.WriteString(iw, " of ordered) {\n")
 	if gq.Having != nil {
 		io.WriteString(iw, "    if (")
 		gq.Having.emit(iw)
