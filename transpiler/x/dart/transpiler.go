@@ -1139,7 +1139,7 @@ func (l *LeftJoinExpr) emit(w io.Writer) error {
 	if _, err := io.WriteString(w, "(() {\n"); err != nil {
 		return err
 	}
-	if _, err := io.WriteString(w, "  var _res = [];\n"); err != nil {
+	if _, err := io.WriteString(w, "  var results = [];\n"); err != nil {
 		return err
 	}
 	if _, err := io.WriteString(w, "  for (var "+l.LeftVar+" in "); err != nil {
@@ -1160,19 +1160,19 @@ func (l *LeftJoinExpr) emit(w io.Writer) error {
 	if err := l.Cond.emit(w); err != nil {
 		return err
 	}
-	if _, err := io.WriteString(w, ")) continue;\n      matched = true;\n      _res.add("); err != nil {
+	if _, err := io.WriteString(w, ")) continue;\n      matched = true;\n      results.add("); err != nil {
 		return err
 	}
 	if err := l.Select.emit(w); err != nil {
 		return err
 	}
-	if _, err := io.WriteString(w, ");\n    }\n    if (!matched) {\n      var "+l.RightVar+" = null;\n      _res.add("); err != nil {
+	if _, err := io.WriteString(w, ");\n    }\n    if (!matched) {\n      var "+l.RightVar+" = null;\n      results.add("); err != nil {
 		return err
 	}
 	if err := l.Select.emit(w); err != nil {
 		return err
 	}
-	if _, err := io.WriteString(w, ");\n    }\n  }\n  return _res;\n})()"); err != nil {
+	if _, err := io.WriteString(w, ");\n    }\n  }\n  return results;\n})()"); err != nil {
 		return err
 	}
 	return nil
@@ -1192,7 +1192,7 @@ func (r *RightJoinExpr) emit(w io.Writer) error {
 	if _, err := io.WriteString(w, "(() {\n"); err != nil {
 		return err
 	}
-	if _, err := io.WriteString(w, "  var _res = [];\n"); err != nil {
+	if _, err := io.WriteString(w, "  var results = [];\n"); err != nil {
 		return err
 	}
 	if _, err := io.WriteString(w, "  for (var "+r.RightVar+" in "); err != nil {
@@ -1213,19 +1213,19 @@ func (r *RightJoinExpr) emit(w io.Writer) error {
 	if err := r.Cond.emit(w); err != nil {
 		return err
 	}
-	if _, err := io.WriteString(w, ")) continue;\n      matched = true;\n      _res.add("); err != nil {
+	if _, err := io.WriteString(w, ")) continue;\n      matched = true;\n      results.add("); err != nil {
 		return err
 	}
 	if err := r.Select.emit(w); err != nil {
 		return err
 	}
-	if _, err := io.WriteString(w, ");\n    }\n    if (!matched) {\n      var "+r.LeftVar+" = null;\n      _res.add("); err != nil {
+	if _, err := io.WriteString(w, ");\n    }\n    if (!matched) {\n      var "+r.LeftVar+" = null;\n      results.add("); err != nil {
 		return err
 	}
 	if err := r.Select.emit(w); err != nil {
 		return err
 	}
-	if _, err := io.WriteString(w, ");\n    }\n  }\n  return _res;\n})()"); err != nil {
+	if _, err := io.WriteString(w, ");\n    }\n  }\n  return results;\n})()"); err != nil {
 		return err
 	}
 	return nil
@@ -1245,7 +1245,7 @@ func (o *OuterJoinExpr) emit(w io.Writer) error {
 	if _, err := io.WriteString(w, "(() {\n"); err != nil {
 		return err
 	}
-	if _, err := io.WriteString(w, "  var _res = [];\n"); err != nil {
+	if _, err := io.WriteString(w, "  var results = [];\n"); err != nil {
 		return err
 	}
 	if _, err := io.WriteString(w, "  for (var "+o.LeftVar+" in "); err != nil {
@@ -1266,13 +1266,13 @@ func (o *OuterJoinExpr) emit(w io.Writer) error {
 	if err := o.Cond.emit(w); err != nil {
 		return err
 	}
-	if _, err := io.WriteString(w, ")) continue;\n      matched = true;\n      _res.add("); err != nil {
+	if _, err := io.WriteString(w, ")) continue;\n      matched = true;\n      results.add("); err != nil {
 		return err
 	}
 	if err := o.Select.emit(w); err != nil {
 		return err
 	}
-	if _, err := io.WriteString(w, ");\n    }\n    if (!matched) {\n      var "+o.RightVar+" = null;\n      _res.add("); err != nil {
+	if _, err := io.WriteString(w, ");\n    }\n    if (!matched) {\n      var "+o.RightVar+" = null;\n      results.add("); err != nil {
 		return err
 	}
 	if err := o.Select.emit(w); err != nil {
@@ -1296,13 +1296,13 @@ func (o *OuterJoinExpr) emit(w io.Writer) error {
 	if err := o.Cond.emit(w); err != nil {
 		return err
 	}
-	if _, err := io.WriteString(w, ") { exists = true; break; }\n    }\n    if (!exists) {\n      var "+o.LeftVar+" = null;\n      _res.add("); err != nil {
+	if _, err := io.WriteString(w, ") { exists = true; break; }\n    }\n    if (!exists) {\n      var "+o.LeftVar+" = null;\n      results.add("); err != nil {
 		return err
 	}
 	if err := o.Select.emit(w); err != nil {
 		return err
 	}
-	if _, err := io.WriteString(w, ");\n    }\n  }\n  return _res;\n})()"); err != nil {
+	if _, err := io.WriteString(w, ");\n    }\n  }\n  return results;\n})()"); err != nil {
 		return err
 	}
 	return nil

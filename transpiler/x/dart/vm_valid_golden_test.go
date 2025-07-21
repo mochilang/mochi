@@ -106,6 +106,17 @@ func updateReadme() {
 	srcDir := filepath.Join(root, "tests", "vm", "valid")
 	outDir := filepath.Join(root, "tests", "transpiler", "x", "dart")
 	readmePath := filepath.Join(root, "transpiler", "x", "dart", "README.md")
+	out, err := exec.Command("git", "log", "-1", "--format=%cI").Output()
+	ts := ""
+	if err == nil {
+		if t, perr := time.Parse(time.RFC3339, strings.TrimSpace(string(out))); perr == nil {
+			if loc, lerr := time.LoadLocation("Asia/Bangkok"); lerr == nil {
+				ts = t.In(loc).Format("2006-01-02 15:04 -0700")
+			} else {
+				ts = t.Format("2006-01-02 15:04 MST")
+			}
+		}
+	}
 	files, _ := filepath.Glob(filepath.Join(srcDir, "*.mochi"))
 	total := len(files)
 	compiled := 0
@@ -125,6 +136,9 @@ func updateReadme() {
 	fmt.Fprintf(&buf, "## VM Golden Test Checklist (%d/%d)\n", compiled, total)
 	buf.WriteString(strings.Join(lines, "\n"))
 	buf.WriteString("\n")
+	if ts != "" {
+		buf.WriteString(fmt.Sprintf("\n_Last updated: %s_\n", ts))
+	}
 	_ = os.WriteFile(readmePath, buf.Bytes(), 0o644)
 }
 
@@ -175,6 +189,7 @@ func updateTasks() {
 	buf.WriteString(fmt.Sprintf("## Recent Enhancements (%s)\n", ts))
 	buf.WriteString("- Added query cross join support using collection `for` loops.\n")
 	buf.WriteString("- Removed `where`/`map` helpers for cleaner output.\n")
+	buf.WriteString("- Simplified join result collection for readability.\n")
 	buf.WriteString("- Enhanced type inference for query results.\n\n")
 	buf.WriteString(fmt.Sprintf("## Progress (%s)\n", ts))
 	buf.WriteString(fmt.Sprintf("- VM valid %d/%d\n\n", compiled, total))
