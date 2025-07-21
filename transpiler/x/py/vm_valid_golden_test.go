@@ -134,11 +134,22 @@ func updateReadme() {
 func updateTasks() {
 	root := repoRoot(&testing.T{})
 	taskFile := filepath.Join(root, "transpiler", "x", "py", "TASKS.md")
-	out, err := exec.Command("git", "log", "-1", "--format=%cI").Output()
+	out, err := exec.Command("git", "log", "-1", "--format=%cI%n%h%n%s").Output()
 	ts := ""
+	hash := ""
+	msg := ""
 	if err == nil {
-		if t, perr := time.Parse(time.RFC3339, strings.TrimSpace(string(out))); perr == nil {
-			ts = t.Format("2006-01-02 15:04 -0700")
+		parts := strings.SplitN(strings.TrimSpace(string(out)), "\n", 3)
+		if len(parts) == 3 {
+			if t, perr := time.Parse(time.RFC3339, parts[0]); perr == nil {
+				if loc, lerr := time.LoadLocation("Asia/Bangkok"); lerr == nil {
+					ts = t.In(loc).Format("2006-01-02 15:04 -0700")
+				} else {
+					ts = t.Format("2006-01-02 15:04 -0700")
+				}
+			}
+			hash = parts[1]
+			msg = parts[2]
 		}
 	}
 	srcDir := filepath.Join(root, "tests", "vm", "valid")
@@ -155,6 +166,7 @@ func updateTasks() {
 	}
 	var buf bytes.Buffer
 	buf.WriteString(fmt.Sprintf("## Progress (%s)\n", ts))
+	fmt.Fprintf(&buf, "- Commit %s: %s\n", hash, msg)
 	fmt.Fprintf(&buf, "- Generated Python for %d/%d programs\n", compiled, total)
 	buf.WriteString("- Updated README checklist and outputs\n")
 	buf.WriteString("- Refactored join handling and improved type inference from loaded data\n\n")
