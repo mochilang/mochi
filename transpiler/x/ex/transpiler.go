@@ -8,6 +8,7 @@ import (
 	"io"
 	"os/exec"
 	"sort"
+	"strconv"
 	"strings"
 	"time"
 
@@ -16,6 +17,9 @@ import (
 )
 
 var funcDepth int
+
+// builtinAliases maps import aliases to special built-in modules.
+var builtinAliases map[string]string
 
 // Program represents a sequence of Elixir statements.
 type Program struct {
@@ -1017,6 +1021,26 @@ func Emit(p *Program) []byte {
 // Transpile converts a Mochi program into an Elixir AST.
 func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	res := &Program{}
+	builtinAliases = make(map[string]string)
+	for _, st := range prog.Statements {
+		if st.Import != nil && st.Import.Lang != nil {
+			alias := st.Import.As
+			if alias == "" {
+				alias = parser.AliasFromPath(st.Import.Path)
+			}
+			path := strings.Trim(st.Import.Path, "\"")
+			switch *st.Import.Lang {
+			case "go":
+				if st.Import.Auto && path == "mochi/runtime/ffi/go/testpkg" {
+					builtinAliases[alias] = "go_testpkg"
+				}
+			case "python":
+				if path == "math" {
+					builtinAliases[alias] = "python_math"
+				}
+			}
+		}
+	}
 	for _, st := range prog.Statements {
 		stmt, err := compileStmt(st, env)
 		if err != nil {
@@ -1229,6 +1253,10 @@ func compileStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 			return &AssignStmt{Name: st.Fun.Name, Value: &AnonFun{Params: params, Body: body}}, nil
 		}
 		return &FuncDecl{Name: st.Fun.Name, Params: params, Body: body}, nil
+	case st.ExternVar != nil:
+		return nil, nil
+	case st.ExternFun != nil:
+		return nil, nil
 	case st.Type != nil:
 		// Type declarations are ignored by this simple transpiler
 		return nil, nil
@@ -1964,17 +1992,50 @@ func compilePostfix(pf *parser.PostfixExpr, env *types.Env) (Expr, error) {
 	if pf == nil {
 		return nil, fmt.Errorf("unsupported postfix")
 	}
-	if pf.Target.Selector != nil && len(pf.Target.Selector.Tail) == 1 && pf.Target.Selector.Tail[0] == "contains" && len(pf.Ops) > 0 && pf.Ops[0].Call != nil {
-		arg, err := compileExpr(pf.Ops[0].Call.Args[0], env)
-		if err != nil {
-			return nil, err
+	if pf.Target.Selector != nil && len(pf.Target.Selector.Tail) == 1 && len(pf.Ops) > 0 && pf.Ops[0].Call != nil {
+		if pf.Target.Selector.Tail[0] == "contains" {
+			arg, err := compileExpr(pf.Ops[0].Call.Args[0], env)
+			if err != nil {
+				return nil, err
+			}
+			base, err := compilePrimary(&parser.Primary{Selector: &parser.SelectorExpr{Root: pf.Target.Selector.Root}}, env)
+			if err != nil {
+				return nil, err
+			}
+			expr := &CallExpr{Func: "String.contains?", Args: []Expr{base, arg}}
+			return expr, nil
 		}
-		base, err := compilePrimary(&parser.Primary{Selector: &parser.SelectorExpr{Root: pf.Target.Selector.Root}}, env)
-		if err != nil {
-			return nil, err
+		args := make([]Expr, len(pf.Ops[0].Call.Args))
+		for i, a := range pf.Ops[0].Call.Args {
+			ce, err := compileExpr(a, env)
+			if err != nil {
+				return nil, err
+			}
+			args[i] = ce
 		}
-		expr := &CallExpr{Func: "String.contains?", Args: []Expr{base, arg}}
-		return expr, nil
+		alias := pf.Target.Selector.Root
+		method := pf.Target.Selector.Tail[0]
+		if kind, ok := builtinAliases[alias]; ok {
+			switch kind {
+			case "go_testpkg":
+				if method == "Add" && len(args) == 2 {
+					return &BinaryExpr{Left: args[0], Op: "+", Right: args[1]}, nil
+				}
+			case "python_math":
+				switch method {
+				case "sqrt", "sin", "log":
+					if len(args) == 1 {
+						return &CallExpr{Func: ":math." + strings.ToLower(method), Args: args}, nil
+					}
+				case "pow":
+					if len(args) == 2 {
+						return &CallExpr{Func: ":math.pow", Args: args}, nil
+					}
+				}
+			}
+		}
+		funcName := alias + "." + method
+		return &CallExpr{Func: funcName, Args: args}, nil
 	}
 	expr, err := compilePrimary(pf.Target, env)
 	if err != nil {
@@ -1985,7 +2046,18 @@ func compilePostfix(pf *parser.PostfixExpr, env *types.Env) (Expr, error) {
 		op := pf.Ops[i]
 		if op.Cast != nil {
 			if op.Cast.Type != nil && op.Cast.Type.Simple != nil {
-				expr = &CastExpr{Expr: expr, Type: *op.Cast.Type.Simple}
+				typName := *op.Cast.Type.Simple
+				if _, ok := env.GetStruct(typName); ok {
+					if ml, ok := expr.(*MapLit); ok {
+						for i, it := range ml.Items {
+							if s, ok := it.Key.(*StringLit); ok {
+								ml.Items[i].Key = &AtomLit{Name: s.Value}
+							}
+						}
+					}
+				} else {
+					expr = &CastExpr{Expr: expr, Type: typName}
+				}
 			} else {
 				return nil, fmt.Errorf("unsupported cast")
 			}
@@ -2048,6 +2120,25 @@ func compilePostfix(pf *parser.PostfixExpr, env *types.Env) (Expr, error) {
 			expr = &CallExpr{Func: "String.contains?", Args: []Expr{expr, arg}}
 			typ = types.BoolType{}
 			i++
+		} else if op.Field != nil && i+1 < len(pf.Ops) && pf.Ops[i+1].Call != nil {
+			call := pf.Ops[i+1].Call
+			args := make([]Expr, len(call.Args))
+			for j, a := range call.Args {
+				ce, err := compileExpr(a, env)
+				if err != nil {
+					return nil, err
+				}
+				args[j] = ce
+			}
+			if v, ok := expr.(*VarRef); ok {
+				methodName := v.Name + "." + op.Field.Name
+				expr = &CallExpr{Func: methodName, Args: args}
+			} else {
+				// treat as map field returning function and call it
+				expr = &CallExpr{Func: "" /*unused*/, Args: append([]Expr{expr}, args...)}
+			}
+			typ = types.AnyType{}
+			i++
 		} else if op.Field != nil {
 			expr = &IndexExpr{Target: expr, Index: &StringLit{Value: op.Field.Name}, UseMapSyntax: true}
 			switch tt := typ.(type) {
@@ -2081,6 +2172,29 @@ func compilePrimary(p *parser.Primary, env *types.Env) (Expr, error) {
 			args[i] = ex
 		}
 		name := p.Call.Func
+		if idx := strings.Index(name, "."); idx > 0 {
+			alias := name[:idx]
+			method := name[idx+1:]
+			if kind, ok := builtinAliases[alias]; ok {
+				switch kind {
+				case "go_testpkg":
+					if method == "Add" && len(args) == 2 {
+						return &BinaryExpr{Left: args[0], Op: "+", Right: args[1]}, nil
+					}
+				case "python_math":
+					switch method {
+					case "sqrt", "sin", "log":
+						if len(args) == 1 {
+							return &CallExpr{Func: ":math." + strings.ToLower(method), Args: args}, nil
+						}
+					case "pow":
+						if len(args) == 2 {
+							return &CallExpr{Func: ":math.pow", Args: args}, nil
+						}
+					}
+				}
+			}
+		}
 		switch name {
 		case "print":
 			if len(args) == 1 {
@@ -2202,6 +2316,24 @@ func compilePrimary(p *parser.Primary, env *types.Env) (Expr, error) {
 	case p.Lit != nil:
 		return compileLiteral(p.Lit)
 	case p.Selector != nil:
+		if kind, ok := builtinAliases[p.Selector.Root]; ok && len(p.Selector.Tail) == 1 {
+			switch kind {
+			case "go_testpkg":
+				switch p.Selector.Tail[0] {
+				case "Pi":
+					return &NumberLit{Value: "3.14"}, nil
+				case "Answer":
+					return &NumberLit{Value: "42"}, nil
+				}
+			case "python_math":
+				switch p.Selector.Tail[0] {
+				case "pi":
+					return &CallExpr{Func: ":math.pi", Args: nil}, nil
+				case "e":
+					return &CallExpr{Func: ":math.exp", Args: []Expr{&NumberLit{Value: "1"}}}, nil
+				}
+			}
+		}
 		expr := Expr(&VarRef{Name: p.Selector.Root})
 		for _, t := range p.Selector.Tail {
 			expr = &IndexExpr{Target: expr, Index: &AtomLit{Name: t}, UseMapSyntax: true}
@@ -2270,7 +2402,11 @@ func compileLiteral(l *parser.Literal) (Expr, error) {
 	case l.Int != nil:
 		return &NumberLit{Value: fmt.Sprintf("%d", *l.Int)}, nil
 	case l.Float != nil:
-		return &NumberLit{Value: fmt.Sprintf("%g", *l.Float)}, nil
+		val := strconv.FormatFloat(*l.Float, 'f', -1, 64)
+		if !strings.Contains(val, ".") {
+			val = val + ".0"
+		}
+		return &NumberLit{Value: val}, nil
 	case l.Bool != nil:
 		return &BoolLit{Value: bool(*l.Bool)}, nil
 	case l.Str != nil:

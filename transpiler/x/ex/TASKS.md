@@ -1,6 +1,6 @@
-## Progress (2025-07-21 23:06 +0700)
-- Commit ca0c7321b: fs transpiler: add basic FFI modules
-- Generated Elixir for 90/100 programs
+## Progress (2025-07-21 23:34 +0700)
+- Commit c1850ebb5: lua transpiler: support group iter and sorting
+- Generated Elixir for 94/100 programs
 - Updated README checklist and outputs
 - Improved code emission and type inference
 
