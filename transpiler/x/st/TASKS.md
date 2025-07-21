@@ -1,3 +1,8 @@
+## Progress (21 Jul 2025 12:53 +0700)
+- VM valid golden test results updated
+- Added support for identifier keys in map literals so queries can "select{n: n}"
+- Implemented basic join handling and truthy checks; right_join.mochi now passes
+
 ## Progress (21 Jul 2025 12:05 +0700)
 - VM valid golden test results updated
 - Added basic `group_by` query handling and iteration over group items
