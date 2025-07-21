@@ -38,6 +38,12 @@ var needDataMap bool
 // needUnsafe reports whether unsafePerformIO is required.
 var needUnsafe bool
 
+// needGroupBy reports whether group by helpers are required.
+var needGroupBy bool
+
+// groupVars tracks variables that represent groups.
+var groupVars map[string]bool
+
 // vars holds the last computed expression of each variable at the top level.
 var vars map[string]Expr
 
@@ -78,6 +84,22 @@ type TypeDecl struct {
 	Name   string
 	Fields []string
 	Types  []string
+}
+
+func groupPrelude() string {
+	return `data MGroup k a = MGroup {key :: k, items :: [a]} deriving (Show)
+
+_group_by :: Ord k => [a] -> (a -> k) -> [MGroup k a]
+_group_by src keyfn =
+  let go [] m order = (m, order)
+      go (x:xs) m order =
+        let k = keyfn x
+         in case Map.lookup k m of
+              Just is -> go xs (Map.insert k (is ++ [x]) m) order
+              Nothing -> go xs (Map.insert k [x] m) (order ++ [k])
+      (m, order) = go src Map.empty []
+   in [MGroup k (fromMaybe [] (Map.lookup k m)) | k <- order]
+`
 }
 
 func (t *TypeDecl) emit(w io.Writer) {
@@ -716,11 +738,11 @@ func toHsType(t types.Type) string {
 	case types.VoidType:
 		return "()"
 	default:
-		return "()"
+		return "String"
 	}
 }
 
-func header(withList bool, withMap bool, withUnsafe bool) string {
+func header(withList bool, withMap bool, withUnsafe bool, withMaybe bool) string {
 	out, err := exec.Command("git", "log", "-1", "--date=iso-strict", "--format=%cd").Output()
 	ts := time.Now()
 	if err == nil {
@@ -747,6 +769,9 @@ func header(withList bool, withMap bool, withUnsafe bool) string {
 	if withMap {
 		h += "import qualified Data.Map as Map\n"
 	}
+	if withMaybe {
+		h += "import Data.Maybe (fromMaybe)\n"
+	}
 	if withUnsafe {
 		h += "import System.IO.Unsafe (unsafePerformIO)\n"
 	}
@@ -756,7 +781,11 @@ func header(withList bool, withMap bool, withUnsafe bool) string {
 // Emit generates formatted Haskell code.
 func Emit(p *Program) []byte {
 	var buf bytes.Buffer
-	buf.WriteString(header(needDataList, needDataMap, needUnsafe))
+	buf.WriteString(header(needDataList, needDataMap, needUnsafe, needGroupBy))
+	if needGroupBy {
+		buf.WriteString(groupPrelude())
+		buf.WriteByte('\n')
+	}
 	for _, t := range p.Types {
 		t.emit(&buf)
 		buf.WriteByte('\n')
@@ -798,6 +827,8 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	needDataList = false
 	needDataMap = false
 	needUnsafe = false
+	needGroupBy = false
+	groupVars = map[string]bool{}
 	structDefs = map[string]*TypeDecl{}
 	structCount = 0
 	preludeHide = map[string]bool{}
@@ -1099,7 +1130,11 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 	case p.Lit != nil:
 		return convertLiteral(p.Lit)
 	case p.Selector != nil && len(p.Selector.Tail) == 0:
-		return &NameRef{Name: safeName(p.Selector.Root)}, nil
+		name := safeName(p.Selector.Root)
+		if groupVars[name] {
+			return &FieldExpr{Target: &NameRef{Name: name}, Field: "items"}, nil
+		}
+		return &NameRef{Name: name}, nil
 	case p.Selector != nil:
 		expr := Expr(&NameRef{Name: safeName(p.Selector.Root)})
 		for _, fld := range p.Selector.Tail {
@@ -1259,9 +1294,32 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 				cond = &BinaryExpr{Left: cond, Ops: []BinaryOp{{Op: "&&", Right: wcond}}}
 			}
 		}
+		if p.Query.Group != nil && len(p.Query.Group.Exprs) > 0 {
+			groupVars[p.Query.Group.Name] = true
+		}
 		body, err := convertExpr(p.Query.Select)
 		if err != nil {
 			return nil, err
+		}
+		if p.Query.Group != nil && len(p.Query.Group.Exprs) > 0 {
+			needGroupBy = true
+			needDataMap = true
+			varsExpr := make([]Expr, len(vars))
+			for i, v := range vars {
+				varsExpr[i] = &NameRef{Name: v}
+			}
+			row := varsExpr[0]
+			if len(varsExpr) > 1 {
+				row = &ListLit{Elems: varsExpr}
+			}
+			list := &ComprExpr{Vars: vars, Sources: srcs, Cond: cond, Body: row}
+			keyExpr, err := convertExpr(p.Query.Group.Exprs[0])
+			if err != nil {
+				return nil, err
+			}
+			group := &CallExpr{Fun: &NameRef{Name: "_group_by"}, Args: []Expr{list, &GroupExpr{Expr: &LambdaExpr{Params: vars, Body: keyExpr}}}}
+			varTypes[p.Query.Group.Name] = "list"
+			return &ComprExpr{Vars: []string{p.Query.Group.Name}, Sources: []Expr{group}, Cond: nil, Body: body}, nil
 		}
 		return &ComprExpr{Vars: vars, Sources: srcs, Cond: cond, Body: body}, nil
 	case p.FunExpr != nil && p.FunExpr.ExprBody != nil:
