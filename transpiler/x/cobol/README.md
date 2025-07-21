@@ -104,3 +104,4 @@ Each program is transpiled and the resulting `.cob` sources are compiled with `c
 - [ ] values_builtin
 - [x] var_assignment
 - [x] while_loop
+Last updated: 2025-07-21 18:33 +0700

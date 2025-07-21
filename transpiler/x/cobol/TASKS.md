@@ -1,3 +1,8 @@
+## Progress (2025-07-21 18:33 +0700)
+- clj: simplify Format and record progress
+- Generated COBOL for 37/100 programs
+- Updated README checklist and outputs
+
 ## Progress (2025-07-21 18:06 +0700)
 - zig transpiler: regenerate golden tests
 - Generated COBOL for 37/100 programs

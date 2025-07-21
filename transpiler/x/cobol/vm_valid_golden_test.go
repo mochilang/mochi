@@ -113,6 +113,15 @@ func updateReadme() {
 		}
 		lines = append(lines, fmt.Sprintf("- %s %s", mark, name))
 	}
+	tsRaw, _ := exec.Command("git", "log", "-1", "--format=%cI").Output()
+	ts := strings.TrimSpace(string(tsRaw))
+	if t, err := time.Parse(time.RFC3339, ts); err == nil {
+		if loc, lerr := time.LoadLocation("Asia/Bangkok"); lerr == nil {
+			ts = t.In(loc).Format("2006-01-02 15:04 -0700")
+		} else {
+			ts = t.Format("2006-01-02 15:04 MST")
+		}
+	}
 	var buf bytes.Buffer
 	buf.WriteString("# COBOL Transpiler\n\n")
 	buf.WriteString("This directory stores COBOL code generated from Mochi programs in `tests/vm/valid`.\n")
@@ -120,6 +129,7 @@ func updateReadme() {
 	fmt.Fprintf(&buf, "## VM Golden Test Checklist (%d/%d)\n", compiled, total)
 	buf.WriteString(strings.Join(lines, "\n"))
 	buf.WriteString("\n")
+	buf.WriteString(fmt.Sprintf("Last updated: %s\n", ts))
 	_ = os.WriteFile(readmePath, buf.Bytes(), 0o644)
 }
 
