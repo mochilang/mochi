@@ -1,3 +1,8 @@
+## Progress (21 Jul 2025 18:06 +0700)
+- VM valid golden test results updated
+- Added simple user-defined function evaluation
+- fun_call and fun_three_args now pass (79/100)
+
 ## Progress (21 Jul 2025 17:26 +0700)
 - VM valid golden test results updated
 - Added short-circuit boolean operators
