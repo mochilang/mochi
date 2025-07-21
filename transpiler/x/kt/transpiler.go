@@ -108,7 +108,7 @@ func (d *DataClass) emit(w io.Writer, indentLevel int) {
 		if typ == "" {
 			typ = "Any"
 		}
-		io.WriteString(w, "val "+f.Name+": "+typ)
+		io.WriteString(w, "var "+f.Name+": "+typ)
 	}
 	io.WriteString(w, ")")
 }
@@ -124,7 +124,7 @@ func (f *FuncDef) emit(w io.Writer, indentLevel int) {
 	}
 	ret := f.Ret
 	if ret == "" {
-		ret = "Any"
+		ret = "Unit"
 	}
 	io.WriteString(w, "): "+ret+" {\n")
 	for _, s := range f.Body {
@@ -344,6 +344,7 @@ func (v *VarRef) emit(w io.Writer) { io.WriteString(w, v.Name) }
 type FieldExpr struct {
 	Receiver Expr
 	Name     string
+	Type     string
 }
 
 func (f *FieldExpr) emit(w io.Writer) {
@@ -1244,8 +1245,9 @@ func kotlinType(t *parser.TypeRef) string {
 			return "Boolean"
 		case "string":
 			return "String"
+		default:
+			return *t.Simple
 		}
-		return "Any"
 	}
 	if t.Generic != nil {
 		switch t.Generic.Name {
@@ -1325,6 +1327,8 @@ func kotlinTypeFromType(t types.Type) string {
 			ret = "Any"
 		}
 		return "(" + strings.Join(params, ", ") + ") -> " + ret
+	case types.StructType:
+		return tt.Name
 	}
 	return ""
 }
@@ -1418,6 +1422,11 @@ func guessType(e Expr) string {
 			return v.Type
 		}
 		return "Any"
+	case *FieldExpr:
+		if v.Type != "" {
+			return v.Type
+		}
+		return ""
 	case *StructLit:
 		return v.Name
 	case *UnionExpr:
@@ -1558,8 +1567,8 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 				return nil, err
 			}
 			p.Stmts = append(p.Stmts, &AssignStmt{Name: st.Assign.Name, Value: e})
-		case st.Assign != nil && len(st.Assign.Index) > 0 && len(st.Assign.Field) == 0:
-			target, err := buildIndexTarget(env, st.Assign.Name, st.Assign.Index)
+		case st.Assign != nil && (len(st.Assign.Index) > 0 || len(st.Assign.Field) > 0):
+			target, err := buildAccessTarget(env, st.Assign.Name, st.Assign.Index, st.Assign.Field)
 			if err != nil {
 				return nil, err
 			}
@@ -1688,8 +1697,8 @@ func convertStmts(env *types.Env, list []*parser.Statement) ([]Stmt, error) {
 				return nil, err
 			}
 			out = append(out, &AssignStmt{Name: s.Assign.Name, Value: v})
-		case s.Assign != nil && len(s.Assign.Index) > 0 && len(s.Assign.Field) == 0:
-			target, err := buildIndexTarget(env, s.Assign.Name, s.Assign.Index)
+		case s.Assign != nil && (len(s.Assign.Index) > 0 || len(s.Assign.Field) > 0):
+			target, err := buildAccessTarget(env, s.Assign.Name, s.Assign.Index, s.Assign.Field)
 			if err != nil {
 				return nil, err
 			}
@@ -1893,6 +1902,52 @@ func buildIndexTarget(env *types.Env, name string, idx []*parser.IndexOp) (Expr,
 			}
 		}
 		target = &IndexExpr{Target: target, Index: idxExpr, Type: tname, ForceBang: true}
+	}
+	return target, nil
+}
+
+func buildAccessTarget(env *types.Env, name string, idx []*parser.IndexOp, fields []*parser.FieldOp) (Expr, error) {
+	var target Expr = newVarRef(env, name)
+	var curType types.Type
+	if env != nil {
+		if t, err := env.GetVar(name); err == nil {
+			curType = t
+		}
+	}
+	for _, op := range idx {
+		if op.Colon != nil || op.Colon2 != nil {
+			return nil, fmt.Errorf("slice assign unsupported")
+		}
+		idxExpr, err := convertExpr(env, op.Start)
+		if err != nil {
+			return nil, err
+		}
+		tname := ""
+		if curType != nil {
+			switch tt := curType.(type) {
+			case types.ListType:
+				tname = kotlinTypeFromType(tt.Elem)
+				curType = tt.Elem
+			case types.MapType:
+				tname = kotlinTypeFromType(tt.Value)
+				curType = tt.Value
+			}
+		}
+		target = &IndexExpr{Target: target, Index: idxExpr, Type: tname, ForceBang: true}
+	}
+	for _, f := range fields {
+		ftype := ""
+		if st, ok := curType.(types.StructType); ok {
+			if ft, ok2 := st.Fields[f.Name]; ok2 {
+				ftype = kotlinTypeFromType(ft)
+				curType = ft
+			} else {
+				curType = nil
+			}
+		} else {
+			curType = nil
+		}
+		target = &FieldExpr{Receiver: target, Name: f.Name, Type: ftype}
 	}
 	return target, nil
 }
@@ -2212,6 +2267,20 @@ func convertMapRecord(env *types.Env, m *parser.MapLiteral) (Expr, error) {
 		items[i] = MapItem{Key: k, Value: v}
 	}
 	return &MapLit{Items: items}, nil
+}
+
+func convertStructLiteral(env *types.Env, sl *parser.StructLiteral) (Expr, error) {
+	names := make([]string, len(sl.Fields))
+	vals := make([]Expr, len(sl.Fields))
+	for i, f := range sl.Fields {
+		v, err := convertExpr(env, f.Value)
+		if err != nil {
+			return nil, err
+		}
+		names[i] = f.Name
+		vals[i] = v
+	}
+	return &StructLit{Name: sl.Name, Fields: vals, Names: names}, nil
 }
 
 func isUnderscore(e *parser.Expr) bool {
@@ -2674,6 +2743,8 @@ func convertPrimary(env *types.Env, p *parser.Primary) (Expr, error) {
 			}
 			return &CallExpr{Func: name, Args: args}, nil
 		}
+	case p.Struct != nil:
+		return convertStructLiteral(env, p.Struct)
 	case p.If != nil:
 		return convertIfExpr(env, p.If)
 	case p.Lit != nil && p.Lit.Str != nil:
@@ -2708,8 +2779,10 @@ func convertPrimary(env *types.Env, p *parser.Primary) (Expr, error) {
 		}
 		var expr Expr = newVarRef(env, p.Selector.Root)
 		baseIsMap := false
+		var curType types.Type
 		if env != nil {
 			if t, err := env.GetVar(p.Selector.Root); err == nil {
+				curType = t
 				if _, ok := t.(types.MapType); ok {
 					baseIsMap = true
 				}
@@ -2719,11 +2792,25 @@ func convertPrimary(env *types.Env, p *parser.Primary) (Expr, error) {
 			if baseIsMap {
 				typ := envTypeName(env, name)
 				expr = &IndexExpr{Target: expr, Index: &StringLit{Value: name}, Type: typ, ForceBang: true}
+				if mt, ok := curType.(types.MapType); ok {
+					curType = mt.Value
+				}
 				t := guessType(expr)
 				baseIsMap = strings.HasPrefix(t, "MutableMap<")
 				continue
 			}
-			expr = &FieldExpr{Receiver: expr, Name: name}
+			ftype := ""
+			if st, ok := curType.(types.StructType); ok {
+				if ft, ok2 := st.Fields[name]; ok2 {
+					ftype = kotlinTypeFromType(ft)
+					curType = ft
+				} else {
+					curType = nil
+				}
+			} else {
+				curType = nil
+			}
+			expr = &FieldExpr{Receiver: expr, Name: name, Type: ftype}
 			if i == 0 {
 				if vr, ok := expr.(*FieldExpr); ok {
 					if vref, ok2 := vr.Receiver.(*VarRef); ok2 && env != nil {
