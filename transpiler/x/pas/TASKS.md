@@ -1,3 +1,6 @@
+## Progress (2025-07-21 00:19 UTC)
+- pascal transpiler: support triple cross join (progress 47/100)
+
 ## Progress (2025-07-20 15:21 UTC)
 - pascal: support query filtering (progress 46/100)
 
