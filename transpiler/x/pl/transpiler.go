@@ -1612,7 +1612,11 @@ func toPrimary(p *parser.Primary, env *compileEnv) (Expr, error) {
 		}
 	case p.Selector != nil:
 		if len(p.Selector.Tail) == 0 {
-			return &Var{Name: env.current(p.Selector.Root)}, nil
+			name := env.current(p.Selector.Root)
+			if c := env.constExpr(name); c != nil {
+				return c, nil
+			}
+			return &Var{Name: name}, nil
 		}
 		if len(p.Selector.Tail) == 1 {
 			if c, ok := env.constExpr(env.current(p.Selector.Root)).(*MapLit); ok {
