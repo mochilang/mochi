@@ -629,6 +629,9 @@ func convertParserPrimary(p *parser.Primary) (Node, error) {
 		}
 		return &List{Elems: []Node{Symbol("alist->hash-table"), &List{Elems: pairs}}}, nil
 	case p.Query != nil:
+		if n, err := convertGroupByJoinQuery(p.Query); err == nil {
+			return n, nil
+		}
 		if n, err := convertGroupByQuery(p.Query); err == nil {
 			return n, nil
 		}
@@ -764,6 +767,201 @@ func convertRightJoinQuery(q *parser.QueryExpr) (Node, error) {
 		Symbol("let"),
 		&List{Elems: []Node{&List{Elems: []Node{resSym, &List{Elems: []Node{Symbol("list")}}}}}},
 		&List{Elems: []Node{Symbol("begin"), outerLoop, resSym}},
+	}}, nil
+}
+
+func convertGroupByJoinQuery(q *parser.QueryExpr) (Node, error) {
+	if q == nil || q.Group == nil || len(q.Group.Exprs) != 1 || q.Distinct || q.Sort != nil || q.Skip != nil || q.Take != nil {
+		return nil, fmt.Errorf("unsupported query")
+	}
+
+	prevEnv := currentEnv
+	env := types.NewEnv(currentEnv)
+
+	srcType := types.ExprType(q.Source, currentEnv)
+	var elem types.Type = types.AnyType{}
+	if lt, ok := srcType.(types.ListType); ok {
+		elem = lt.Elem
+	} else if gt, ok := srcType.(types.GroupType); ok {
+		elem = gt.Elem
+	}
+	env.SetVar(q.Var, elem, true)
+	for _, f := range q.Froms {
+		ft := types.ExprType(f.Src, currentEnv)
+		var fe types.Type = types.AnyType{}
+		if lt, ok := ft.(types.ListType); ok {
+			fe = lt.Elem
+		}
+		env.SetVar(f.Var, fe, true)
+	}
+	for _, j := range q.Joins {
+		jt := types.ExprType(j.Src, currentEnv)
+		var je types.Type = types.AnyType{}
+		if lt, ok := jt.(types.ListType); ok {
+			je = lt.Elem
+		}
+		env.SetVar(j.Var, je, true)
+	}
+	currentEnv = env
+
+	key, err := convertParserExpr(q.Group.Exprs[0])
+	if err != nil {
+		currentEnv = prevEnv
+		return nil, err
+	}
+
+	env.SetVar(q.Group.Name, types.GroupType{Key: types.AnyType{}, Elem: elem}, true)
+	sel, err := convertParserExpr(q.Select)
+	if err != nil {
+		currentEnv = prevEnv
+		return nil, err
+	}
+
+	loops := []struct {
+		name   string
+		source Node
+	}{}
+	src, err := convertParserExpr(q.Source)
+	if err != nil {
+		currentEnv = prevEnv
+		return nil, err
+	}
+	if _, ok := srcType.(types.GroupType); ok {
+		src = &List{Elems: []Node{Symbol("hash-table-ref"), src, StringLit("items")}}
+	}
+	loops = append(loops, struct {
+		name   string
+		source Node
+	}{q.Var, src})
+	for _, j := range q.Joins {
+		src, err := convertParserExpr(j.Src)
+		if err != nil {
+			currentEnv = prevEnv
+			return nil, err
+		}
+		if _, ok := types.ExprType(j.Src, currentEnv).(types.GroupType); ok {
+			src = &List{Elems: []Node{Symbol("hash-table-ref"), src, StringLit("items")}}
+		}
+		loops = append(loops, struct {
+			name   string
+			source Node
+		}{j.Var, src})
+	}
+	for _, f := range q.Froms {
+		src, err := convertParserExpr(f.Src)
+		if err != nil {
+			currentEnv = prevEnv
+			return nil, err
+		}
+		if _, ok := types.ExprType(f.Src, currentEnv).(types.GroupType); ok {
+			src = &List{Elems: []Node{Symbol("hash-table-ref"), src, StringLit("items")}}
+		}
+		loops = append(loops, struct {
+			name   string
+			source Node
+		}{f.Var, src})
+	}
+
+	var cond Node
+	if q.Where != nil {
+		cond, err = convertParserExpr(q.Where)
+		if err != nil {
+			currentEnv = prevEnv
+			return nil, err
+		}
+	}
+	for _, j := range q.Joins {
+		jc, err := convertParserExpr(j.On)
+		if err != nil {
+			currentEnv = prevEnv
+			return nil, err
+		}
+		if cond == nil {
+			cond = jc
+		} else {
+			cond = makeBinary("&&", cond, jc)
+		}
+	}
+
+	groups := gensym("groups")
+	g := gensym("g")
+	gParam := Symbol(q.Group.Name)
+	k := gensym("k")
+	res := gensym("res")
+
+	lookup := &List{Elems: []Node{Symbol("hash-table-ref/default"), Symbol(groups), Symbol(k), Symbol("#f")}}
+	newGrp := &List{Elems: []Node{
+		Symbol("begin"),
+		&List{Elems: []Node{
+			Symbol("set!"), Symbol(g),
+			&List{Elems: []Node{
+				Symbol("alist->hash-table"),
+				&List{Elems: []Node{
+					Symbol("list"),
+					&List{Elems: []Node{Symbol("cons"), StringLit("key"), Symbol(k)}},
+					&List{Elems: []Node{Symbol("cons"), StringLit("items"), &List{Elems: []Node{Symbol("list")}}}},
+				}},
+			}},
+		}},
+		&List{Elems: []Node{Symbol("hash-table-set!"), Symbol(groups), Symbol(k), Symbol(g)}},
+	}}
+
+	appendItem := &List{Elems: []Node{
+		Symbol("hash-table-set!"), Symbol(g), StringLit("items"),
+		&List{Elems: []Node{
+			Symbol("append"),
+			&List{Elems: []Node{Symbol("hash-table-ref"), Symbol(g), StringLit("items")}},
+			&List{Elems: []Node{Symbol("list"), Symbol(q.Var)}},
+		}},
+	}}
+
+	body := &List{Elems: []Node{
+		Symbol("let*"),
+		&List{Elems: []Node{
+			&List{Elems: []Node{Symbol(k), key}},
+			&List{Elems: []Node{Symbol(g), lookup}},
+		}},
+		&List{Elems: []Node{
+			Symbol("begin"),
+			&List{Elems: []Node{Symbol("if"), &List{Elems: []Node{Symbol("not"), Symbol(g)}}, newGrp, voidSym()}},
+			appendItem,
+		}},
+	}}
+
+	if cond != nil {
+		body = &List{Elems: []Node{Symbol("if"), cond, body, voidSym()}}
+	}
+
+	loopBody := body
+	for i := len(loops) - 1; i >= 0; i-- {
+		l := loops[i]
+		loopBody = &List{Elems: []Node{
+			Symbol("for-each"),
+			&List{Elems: []Node{Symbol("lambda"), &List{Elems: []Node{Symbol(l.name)}}, loopBody}},
+			l.source,
+		}}
+	}
+	buildRes := &List{Elems: []Node{
+		Symbol("for-each"),
+		&List{Elems: []Node{
+			Symbol("lambda"),
+			&List{Elems: []Node{gParam}},
+			&List{Elems: []Node{
+				Symbol("set!"), Symbol(res),
+				&List{Elems: []Node{Symbol("append"), Symbol(res), &List{Elems: []Node{Symbol("list"), sel}}}},
+			}},
+		}},
+		&List{Elems: []Node{Symbol("hash-table-values"), Symbol(groups)}},
+	}}
+
+	currentEnv = prevEnv
+	return &List{Elems: []Node{
+		Symbol("let"),
+		&List{Elems: []Node{
+			&List{Elems: []Node{Symbol(groups), &List{Elems: []Node{Symbol("make-hash-table")}}}},
+			&List{Elems: []Node{Symbol(res), &List{Elems: []Node{Symbol("list")}}}},
+		}},
+		&List{Elems: []Node{Symbol("begin"), loopBody, buildRes, Symbol(res)}},
 	}}, nil
 }
 
@@ -1101,6 +1299,8 @@ func convertCall(target Node, call *parser.CallOp) (Node, error) {
 			return &List{Elems: []Node{Symbol("length"), args[0]}}, nil
 		case types.MapType:
 			return &List{Elems: []Node{Symbol("hash-table-size"), args[0]}}, nil
+		case types.GroupType:
+			return &List{Elems: []Node{Symbol("length"), &List{Elems: []Node{Symbol("hash-table-ref"), args[0], StringLit("items")}}}}, nil
 		default:
 			return &List{Elems: []Node{
 				Symbol("cond"),
