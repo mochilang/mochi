@@ -52,6 +52,6 @@ end;
 end;
   writeln('--- People grouped by city ---');
   for s in stats do begin
-  writeln(s.city, ': count =', s.count, ', avg_age =', s.avg_age);
+  writeln(s.city, ' ', ': count =', ' ', s.count, ' ', ', avg_age =', ' ', s.avg_age);
 end;
 end.

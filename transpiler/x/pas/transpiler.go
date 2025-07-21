@@ -290,6 +290,23 @@ type RecordLit struct {
 	Fields []FieldExpr
 }
 
+type ValuesExpr struct {
+	Elems []Expr
+}
+
+func (v *ValuesExpr) emit(w io.Writer) {
+	io.WriteString(w, "[")
+	for i, e := range v.Elems {
+		if i > 0 {
+			io.WriteString(w, ", ")
+		}
+		if e != nil {
+			e.emit(w)
+		}
+	}
+	io.WriteString(w, "]")
+}
+
 func (r *RecordLit) emit(w io.Writer) {
 	io.WriteString(w, "(")
 	for i, f := range r.Fields {
@@ -493,7 +510,11 @@ func (b *BinaryExpr) emit(w io.Writer) {
 }
 
 // PrintStmt prints one or more expressions using writeln.
-type PrintStmt struct{ Exprs []Expr }
+type PrintStmt struct {
+	Exprs        []Expr
+	Types        []string
+	NeedSysUtils bool
+}
 
 // AssignStmt assigns the result of an expression to a variable.
 type AssignStmt struct {
@@ -548,13 +569,31 @@ func (p *PrintStmt) emit(w io.Writer) {
 	io.WriteString(w, "writeln(")
 	for i, ex := range p.Exprs {
 		if i > 0 {
-			io.WriteString(w, ", ")
+			io.WriteString(w, ", ' ', ")
 		}
-		if be, ok := ex.(boolExpr); ok && be.isBool() {
-			io.WriteString(w, "ord(")
+		if ve, ok := ex.(*ValuesExpr); ok {
+			for j, el := range ve.Elems {
+				if j > 0 {
+					io.WriteString(w, ", ' ', ")
+				}
+				el.emit(w)
+			}
+			continue
+		}
+		typ := ""
+		if i < len(p.Types) {
+			typ = p.Types[i]
+		}
+		switch typ {
+		case "real":
 			ex.emit(w)
-			io.WriteString(w, ")")
-		} else {
+			io.WriteString(w, ":0:1")
+		case "boolean":
+			p.NeedSysUtils = true
+			io.WriteString(w, "BoolToStr(")
+			ex.emit(w)
+			io.WriteString(w, ", True)")
+		default:
 			ex.emit(w)
 		}
 	}
@@ -639,14 +678,21 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 			call := st.Expr.Expr.Binary.Left.Value.Target.Call
 			if call != nil && call.Func == "print" && len(st.Expr.Expr.Binary.Right) == 0 {
 				var parts []Expr
+				var typesList []string
+				needSys := false
 				for _, a := range call.Args {
 					ex, err := convertExpr(env, a)
 					if err != nil {
 						return nil, err
 					}
 					parts = append(parts, ex)
+					t := inferType(ex)
+					typesList = append(typesList, t)
+					if t == "boolean" {
+						needSys = true
+					}
 				}
-				pr.Stmts = append(pr.Stmts, &PrintStmt{Exprs: parts})
+				pr.Stmts = append(pr.Stmts, &PrintStmt{Exprs: parts, Types: typesList, NeedSysUtils: needSys})
 				continue
 			}
 			return nil, fmt.Errorf("unsupported expression")
@@ -1021,14 +1067,21 @@ func convertBody(env *types.Env, body []*parser.Statement, varTypes map[string]s
 			call := st.Expr.Expr.Binary.Left.Value.Target.Call
 			if call != nil && call.Func == "print" && len(st.Expr.Expr.Binary.Right) == 0 {
 				var parts []Expr
+				var typesList []string
+				needSys := false
 				for _, a := range call.Args {
 					ex, err := convertExpr(env, a)
 					if err != nil {
 						return nil, err
 					}
 					parts = append(parts, ex)
+					t := inferType(ex)
+					typesList = append(typesList, t)
+					if t == "boolean" {
+						needSys = true
+					}
 				}
-				out = append(out, &PrintStmt{Exprs: parts})
+				out = append(out, &PrintStmt{Exprs: parts, Types: typesList, NeedSysUtils: needSys})
 				continue
 			}
 			return nil, fmt.Errorf("unsupported expression")
@@ -1816,42 +1869,42 @@ func convertPostfix(env *types.Env, pf *parser.PostfixExpr) (Expr, error) {
 				}
 				expr = &CallExpr{Name: t.Name, Args: args}
 			case *SelectorExpr:
-                                if len(t.Tail) == 1 && t.Tail[0] == "contains" {
-                                        if len(op.Call.Args) != 1 {
-                                                return nil, fmt.Errorf("contains expects 1 arg")
-                                        }
-                                        arg, err := convertExpr(env, op.Call.Args[0])
-                                        if err != nil {
-                                                return nil, err
-                                        }
-                                        if typ, ok := currentVarTypes[t.Root]; ok && typ == "string" {
-                                                expr = &ContainsExpr{Collection: &VarRef{Name: t.Root}, Value: arg, Kind: "string"}
-                                        } else {
-                                                currProg.NeedContains = true
-                                                expr = &ContainsExpr{Collection: &VarRef{Name: t.Root}, Value: arg, Kind: "list"}
-                                        }
-                                } else {
-                                        return nil, fmt.Errorf("unsupported call target")
-                                }
+				if len(t.Tail) == 1 && t.Tail[0] == "contains" {
+					if len(op.Call.Args) != 1 {
+						return nil, fmt.Errorf("contains expects 1 arg")
+					}
+					arg, err := convertExpr(env, op.Call.Args[0])
+					if err != nil {
+						return nil, err
+					}
+					if typ, ok := currentVarTypes[t.Root]; ok && typ == "string" {
+						expr = &ContainsExpr{Collection: &VarRef{Name: t.Root}, Value: arg, Kind: "string"}
+					} else {
+						currProg.NeedContains = true
+						expr = &ContainsExpr{Collection: &VarRef{Name: t.Root}, Value: arg, Kind: "list"}
+					}
+				} else {
+					return nil, fmt.Errorf("unsupported call target")
+				}
 			default:
 				return nil, fmt.Errorf("unsupported call target")
 			}
-                case op.Field != nil && op.Field.Name == "contains" && i+1 < len(pf.Ops) && pf.Ops[i+1].Call != nil:
-                        call := pf.Ops[i+1].Call
-                        if len(call.Args) != 1 {
-                                return nil, fmt.Errorf("contains expects 1 arg")
-                        }
-                        arg, err := convertExpr(env, call.Args[0])
-                        if err != nil {
-                                return nil, err
-                        }
-                        if typ := inferType(expr); typ == "string" {
-                                expr = &ContainsExpr{Collection: expr, Value: arg, Kind: "string"}
-                        } else {
-                                currProg.NeedContains = true
-                                expr = &ContainsExpr{Collection: expr, Value: arg, Kind: "list"}
-                        }
-                        i++
+		case op.Field != nil && op.Field.Name == "contains" && i+1 < len(pf.Ops) && pf.Ops[i+1].Call != nil:
+			call := pf.Ops[i+1].Call
+			if len(call.Args) != 1 {
+				return nil, fmt.Errorf("contains expects 1 arg")
+			}
+			arg, err := convertExpr(env, call.Args[0])
+			if err != nil {
+				return nil, err
+			}
+			if typ := inferType(expr); typ == "string" {
+				expr = &ContainsExpr{Collection: expr, Value: arg, Kind: "string"}
+			} else {
+				currProg.NeedContains = true
+				expr = &ContainsExpr{Collection: expr, Value: arg, Kind: "list"}
+			}
+			i++
 		case op.Index != nil && op.Index.Colon == nil && op.Index.Colon2 == nil:
 			idx, err := convertExpr(env, op.Index.Start)
 			if err != nil {
@@ -1947,6 +2000,26 @@ func convertPrimary(env *types.Env, p *parser.Primary) (Expr, error) {
 		} else if name == "max" && len(args) == 1 {
 			currProg.NeedMax = true
 			return &CallExpr{Name: "max", Args: args}, nil
+		} else if name == "values" && len(args) == 1 {
+			if vr, ok := args[0].(*VarRef); ok {
+				if t, ok := currentVarTypes[vr.Name]; ok {
+					for _, r := range currProg.Records {
+						if r.Name == t {
+							var elems []Expr
+							for _, f := range r.Fields {
+								elems = append(elems, &SelectorExpr{Root: vr.Name, Tail: []string{f.Name}})
+							}
+							return &ValuesExpr{Elems: elems}, nil
+						}
+					}
+				}
+			} else if rec, ok := args[0].(*RecordLit); ok {
+				var elems []Expr
+				for _, f := range rec.Fields {
+					elems = append(elems, f.Expr)
+				}
+				return &ValuesExpr{Elems: elems}, nil
+			}
 		} else if name == "append" && len(args) == 2 {
 			return &CallExpr{Name: "concat", Args: []Expr{args[0], &ListLit{Elems: []Expr{args[1]}}}}, nil
 		}
@@ -2227,6 +2300,9 @@ func usesSysUtilsExpr(e Expr) bool {
 func usesSysUtilsStmt(s Stmt) bool {
 	switch v := s.(type) {
 	case *PrintStmt:
+		if v.NeedSysUtils {
+			return true
+		}
 		for _, ex := range v.Exprs {
 			if usesSysUtilsExpr(ex) {
 				return true

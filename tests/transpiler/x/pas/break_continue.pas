@@ -12,6 +12,6 @@ end;
   if n > 7 then begin
   break;
 end;
-  writeln('odd number:', n);
+  writeln('odd number:', ' ', n);
 end;
 end.

@@ -15,8 +15,8 @@ end;
 var
   n: integer;
   result: array of integer;
-  i: integer;
   j: integer;
+  i: integer;
 begin
   n := Length(nums);
   result := twoSum([2, 7, 11, 15], 9);

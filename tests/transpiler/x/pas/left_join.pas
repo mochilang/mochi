@@ -40,6 +40,6 @@ end;
 end;
   writeln('--- Left Join ---');
   for entry in result do begin
-  writeln('Order', entry.orderId, 'customer', entry.customer, 'total', entry.total);
+  writeln('Order', ' ', entry.orderId, ' ', 'customer', ' ', entry.customer, ' ', 'total', ' ', entry.total);
 end;
 end.

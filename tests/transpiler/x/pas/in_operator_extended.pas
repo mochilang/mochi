@@ -1,5 +1,6 @@
 {$mode objfpc}
 program Main;
+uses SysUtils;
 function contains(xs: array of integer; v: integer): boolean;
 var i: integer;
 begin
@@ -29,10 +30,10 @@ begin
   ys := concat(ys, [x]);
 end;
 end;
-  writeln(ord(contains(ys, 1)));
-  writeln(ord(contains(ys, 2)));
-  writeln(ord(Pos('a', m) <> 0));
-  writeln(ord(Pos('b', m) <> 0));
-  writeln(ord(Pos('ell', s) <> 0));
-  writeln(ord(Pos('foo', s) <> 0));
+  writeln(BoolToStr(contains(ys, 1), True));
+  writeln(BoolToStr(contains(ys, 2), True));
+  writeln(BoolToStr(Pos('a', m) <> 0, True));
+  writeln(BoolToStr(Pos('b', m) <> 0, True));
+  writeln(BoolToStr(Pos('ell', s) <> 0, True));
+  writeln(BoolToStr(Pos('foo', s) <> 0, True));
 end.

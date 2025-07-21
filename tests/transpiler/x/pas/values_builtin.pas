@@ -9,5 +9,5 @@ var
   m: Anon61;
 begin
   m := (a: 1; b: 2; c: 3);
-  writeln(values(m));
+  writeln(m.a, ' ', m.b, ' ', m.c);
 end.

@@ -33,6 +33,6 @@ end;
 end;
   writeln('--- Cross Join: All order-customer pairs ---');
   for entry in result do begin
-  writeln('Order', entry.orderId, '(customerId:', entry.orderCustomerId, ', total: $', entry.orderTotal, ') paired with', entry.pairedCustomerName);
+  writeln('Order', ' ', entry.orderId, ' ', '(customerId:', ' ', entry.orderCustomerId, ' ', ', total: $', ' ', entry.orderTotal, ' ', ') paired with', ' ', entry.pairedCustomerName);
 end;
 end.

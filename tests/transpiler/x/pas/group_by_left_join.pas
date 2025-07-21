@@ -47,6 +47,6 @@ end;
   stats := grp2;
   writeln('--- Group Left Join ---');
   for s in stats do begin
-  writeln(s.name, 'orders:', s.count);
+  writeln(s.name, ' ', 'orders:', ' ', s.count);
 end;
 end.

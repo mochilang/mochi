@@ -10,10 +10,10 @@ var
   letters: array of string;
   bools: array of boolean;
   combos: array of Anon5;
+  c: integer;
   n: integer;
   l: string;
   b: boolean;
-  c: integer;
 begin
   nums := [1, 2];
   letters := ['A', 'B'];
@@ -28,6 +28,6 @@ end;
 end;
   writeln('--- Cross Join of three lists ---');
   for c in combos do begin
-  writeln(c.n, c.l, c.b);
+  writeln(c.n, ' ', c.l, ' ', c.b);
 end;
 end.
