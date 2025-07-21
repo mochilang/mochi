@@ -1,6 +1,6 @@
-## Progress (2025-07-21 22:29 +0700)
-- update docs
-- Generated golden tests for 90/100 programs
+## Progress (2025-07-22 00:10 +0700)
+- swift transpiler: handle groups
+- Generated golden tests for 91/100 programs
 - Updated README checklist and output artifacts
 
 # Swift Transpiler Tasks
