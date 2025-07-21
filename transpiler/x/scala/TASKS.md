@@ -1,3 +1,11 @@
+## Progress (2025-07-21 13:37 +0700)
+- scala transpiler: add group_by support
+- Regenerated golden files - 63/100 vm valid programs passing
+
+## Progress (2025-07-21 13:24 +0700)
+- pascal: add dataset where filter support
+- Regenerated golden files - 63/100 vm valid programs passing
+
 ## Progress (2025-07-21 10:51 +0700)
 - docs: update scala progress
 - Regenerated golden files - 62/100 vm valid programs passing
