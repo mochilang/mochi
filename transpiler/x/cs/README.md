@@ -2,7 +2,7 @@
 
 Generated C# code for programs in `tests/vm/valid`. Each program has a `.cs` file produced by the transpiler and a `.out` file containing its runtime output. Compilation or execution errors are captured in a `.error` file placed next to the source.
 
-Compiled programs: 85/100
+Compiled programs: 87/100
 
 ## Checklist
 - [x] append_builtin
@@ -45,8 +45,8 @@ Compiled programs: 85/100
 - [x] inner_join
 - [x] join_multi
 - [x] json_builtin
-- [ ] left_join
-- [ ] left_join_multi
+- [x] left_join
+- [x] left_join_multi
 - [x] len_builtin
 - [x] len_map
 - [x] len_string
