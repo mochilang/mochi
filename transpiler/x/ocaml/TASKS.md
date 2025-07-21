@@ -1,3 +1,8 @@
+## Progress (2025-07-21 12:53 +0700)
+- Checklist updated: 54/100 tests compiled
+- Added initial support for `group_by` queries without runtime helpers.
+- Implemented simple grouping logic and group key field access.
+
 ## Progress (2025-07-21 07:08 +0700)
 - Checklist updated: 53/100 tests compiled
 - Added cross join query support.
