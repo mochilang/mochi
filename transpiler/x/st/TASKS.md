@@ -1,8 +1,8 @@
-## Progress (2025-07-21 22:04 +0700)
-- Commit 8c9d2b448: st: add closure support
-- Generated Smalltalk for 87/100 programs
+## Progress (2025-07-21 23:34 +0700)
+- Commit c1850ebb5: lua transpiler: support group iter and sorting
+- Generated Smalltalk for 91/100 programs
 - Updated README checklist and outputs
-- Added closure and lambda handling
+- Added support for break and continue statements
 
 ## Progress (21 Jul 2025 19:10 +0700)
 - VM valid golden test results updated
