@@ -2,7 +2,7 @@
 
 Generated Java code for programs in `tests/vm/valid`. Each program has a `.java` file produced by the transpiler and a `.out` file with its runtime output. Compilation or execution errors are captured in `.error` files.
 
-## VM Golden Test Checklist (85/100)
+## VM Golden Test Checklist (90/100)
 - [x] append_builtin.mochi
 - [x] avg_builtin.mochi
 - [x] basic_compare.mochi
@@ -16,7 +16,7 @@ Generated Java code for programs in `tests/vm/valid`. Each program has a `.java`
 - [x] cross_join.mochi
 - [x] cross_join_filter.mochi
 - [x] cross_join_triple.mochi
-- [ ] dataset_sort_take_limit.mochi
+- [x] dataset_sort_take_limit.mochi
 - [x] dataset_where_filter.mochi
 - [x] exists_builtin.mochi
 - [x] for_list_collection.mochi
@@ -27,14 +27,14 @@ Generated Java code for programs in `tests/vm/valid`. Each program has a `.java`
 - [x] fun_three_args.mochi
 - [x] go_auto.mochi
 - [x] group_by.mochi
-- [ ] group_by_conditional_sum.mochi
+- [x] group_by_conditional_sum.mochi
 - [x] group_by_having.mochi
 - [x] group_by_join.mochi
 - [x] group_by_left_join.mochi
 - [ ] group_by_multi_join.mochi
 - [ ] group_by_multi_join_sort.mochi
-- [ ] group_by_sort.mochi
-- [ ] group_items_iteration.mochi
+- [x] group_by_sort.mochi
+- [x] group_items_iteration.mochi
 - [x] if_else.mochi
 - [x] if_then_else.mochi
 - [x] if_then_else_nested.mochi
@@ -59,7 +59,7 @@ Generated Java code for programs in `tests/vm/valid`. Each program has a `.java`
 - [x] map_index.mochi
 - [x] map_int_key.mochi
 - [x] map_literal_dynamic.mochi
-- [x] map_membership.mochi
+- [ ] map_membership.mochi
 - [x] map_nested_assign.mochi
 - [x] match_expr.mochi
 - [x] match_full.mochi
@@ -67,7 +67,7 @@ Generated Java code for programs in `tests/vm/valid`. Each program has a `.java`
 - [x] membership.mochi
 - [x] min_max_builtin.mochi
 - [x] nested_function.mochi
-- [ ] order_by_map.mochi
+- [x] order_by_map.mochi
 - [x] outer_join.mochi
 - [x] partial_application.mochi
 - [x] print_hello.mochi
@@ -81,7 +81,7 @@ Generated Java code for programs in `tests/vm/valid`. Each program has a `.java`
 - [ ] save_jsonl_stdout.mochi
 - [x] short_circuit.mochi
 - [x] slice.mochi
-- [ ] sort_stable.mochi
+- [x] sort_stable.mochi
 - [x] str_builtin.mochi
 - [x] string_compare.mochi
 - [x] string_concat.mochi
