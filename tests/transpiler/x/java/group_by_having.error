@@ -1,20 +1,7 @@
 exit status 1
-Main.java:14: error: <identifier> expected
-         city;
-             ^
-Main.java:16: error: <identifier> expected
-        Data2( city, int num) {
-                   ^
-Main.java:23: error: <identifier> expected
-         city;
-             ^
-Main.java:25: error: <identifier> expected
-        Result3( city, int num) {
-                     ^
-Main.java:39: error: <identifier> expected
-         key;
-            ^
-Main.java:41: error: <identifier> expected
-        Group4( key, java.util.List<Item4> items) {
-                   ^
-6 errors
+Main.java:33: error: cannot find symbol
+        json(big);
+        ^
+  symbol:   method json(List<Result4>)
+  location: class Main
+1 error

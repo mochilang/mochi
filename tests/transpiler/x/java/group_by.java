@@ -11,42 +11,24 @@ public class Main {
         }
     }
 
-    static java.util.List<Result3> stats = new java.util.ArrayList<Result3>() {{ java.util.LinkedHashMap<String,Group4> _groups = new java.util.LinkedHashMap<>(); for (var person : people) { var _k = person.city; String _ks = String.valueOf(_k); Group4 g = _groups.get(_ks); if (g == null) { g = new Group4(_k, new java.util.ArrayList<>()); _groups.put(_ks, g); } g.items.add(new Item4(person)); } for (var g : _groups.values()) { Group4 g = g; add(new Result3(g.key, count(g), avg(new java.util.ArrayList<java.util.Map>() {{ for (var p : g) { add(p.age); }}}))); }}};
-    static class Data2 {
-         city;
-        int count;
-         avg_age;
-        Data2( city, int count,  avg_age) {
-            this.city = city;
-            this.count = count;
-            this.avg_age = avg_age;
-        }
-    }
-
-    static class Result3 {
-         city;
-        int count;
-         avg_age;
-        Result3( city, int count,  avg_age) {
-            this.city = city;
-            this.count = count;
-            this.avg_age = avg_age;
-        }
-    }
-
-    static class Item4 {
-        java.util.Map person;
-        Item4(java.util.Map person) {
-            this.person = person;
-        }
-    }
-
-    static class Group4 {
-         key;
-        java.util.List<Item4> items;
-        Group4( key, java.util.List<Item4> items) {
+    static java.util.List<Result4> stats = new java.util.ArrayList<Result4>() {{ java.util.LinkedHashMap<String,Group2> _groups = new java.util.LinkedHashMap<>(); for (var person : people) { var _k = person.city; String _ks = String.valueOf(_k); Group2 g = _groups.get(_ks); if (g == null) { g = new Group2(_k, new java.util.ArrayList<>()); _groups.put(_ks, g); } g.items.add(person); } for (var g : _groups.values()) { add(new Result4(g.key, g.items.size(), ((new java.util.ArrayList<Integer>() {{ for (var p : g.items) { add(p.age); }}}.stream().mapToDouble(v -> ((Number)v).doubleValue()).average().orElse(0)) % 1 == 0 ? (int)(new java.util.ArrayList<Integer>() {{ for (var p : g.items) { add(p.age); }}}.stream().mapToDouble(v -> ((Number)v).doubleValue()).average().orElse(0)) : (new java.util.ArrayList<Integer>() {{ for (var p : g.items) { add(p.age); }}}.stream().mapToDouble(v -> ((Number)v).doubleValue()).average().orElse(0))))); }}};
+    static class Group2 {
+        String key;
+        java.util.List<Data1> items;
+        Group2(String key, java.util.List<Data1> items) {
             this.key = key;
             this.items = items;
+        }
+    }
+
+    static class Result4 {
+        Object city;
+        int count;
+        Object avg_age;
+        Result4(Object city, int count, Object avg_age) {
+            this.city = city;
+            this.count = count;
+            this.avg_age = avg_age;
         }
     }
 

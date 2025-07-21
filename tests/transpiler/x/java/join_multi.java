@@ -30,19 +30,10 @@ public class Main {
     }
 
     static java.util.List<Result5> result = new java.util.ArrayList<Result5>() {{ for (var o : orders) { for (var c : customers) { if (o.customerId == c.id) { for (var i : items) { if (o.id == i.orderId) { add(new Result5(c.name, i.sku)); } } } } }}};
-    static class Data4 {
-         name;
-         sku;
-        Data4( name,  sku) {
-            this.name = name;
-            this.sku = sku;
-        }
-    }
-
     static class Result5 {
-         name;
-         sku;
-        Result5( name,  sku) {
+        Object name;
+        Object sku;
+        Result5(Object name, Object sku) {
             this.name = name;
             this.sku = sku;
         }

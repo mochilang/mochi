@@ -22,19 +22,10 @@ public class Main {
     }
 
     static java.util.List<Result4> result = new java.util.ArrayList<Result4>() {{ for (var o : orders) { for (var c : customers) { if (o.customerId == c.id) { add(new Result4(o, c)); } } }}};
-    static class Data3 {
-         order;
-         customer;
-        Data3( order,  customer) {
-            this.order = order;
-            this.customer = customer;
-        }
-    }
-
     static class Result4 {
-        java.util.Map order;
-         customer;
-        Result4(java.util.Map order,  customer) {
+        Data2 order;
+        Object customer;
+        Result4(Data2 order, Object customer) {
             this.order = order;
             this.customer = customer;
         }

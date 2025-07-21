@@ -1,26 +1,15 @@
 exit status 1
-Main.java:26: error: <identifier> expected
-         customerName;
+Main.java:38: error: incompatible types: Object cannot be converted to boolean
+            if (entry.order) {
                      ^
-Main.java:27: error: <identifier> expected
-         order;
-              ^
-Main.java:28: error: <identifier> expected
-        Data3( customerName,  order) {
-                           ^
-Main.java:28: error: <identifier> expected
-        Data3( customerName,  order) {
-                                   ^
-Main.java:35: error: <identifier> expected
-         customerName;
-                     ^
-Main.java:36: error: <identifier> expected
-         order;
-              ^
-Main.java:37: error: <identifier> expected
-        Result4( customerName,  order) {
-                             ^
-Main.java:37: error: <identifier> expected
-        Result4( customerName,  order) {
-                                     ^
-8 errors
+Main.java:39: error: cannot find symbol
+                System.out.println("Customer" + " " + entry.customerName + " " + "has order" + " " + entry.order.id + " " + "- $" + " " + entry.order.total);
+                                                                                                                ^
+  symbol:   variable id
+  location: variable order of type Object
+Main.java:39: error: cannot find symbol
+                System.out.println("Customer" + " " + entry.customerName + " " + "has order" + " " + entry.order.id + " " + "- $" + " " + entry.order.total);
+                                                                                                                                                     ^
+  symbol:   variable total
+  location: variable order of type Object
+3 errors

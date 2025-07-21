@@ -1,20 +1,18 @@
 exit status 1
-Main.java:26: error: <identifier> expected
-         order;
-              ^
-Main.java:27: error: <identifier> expected
-         customer;
-                 ^
-Main.java:28: error: <identifier> expected
-        Data3( order,  customer) {
-                    ^
-Main.java:28: error: <identifier> expected
-        Data3( order,  customer) {
-                               ^
-Main.java:36: error: <identifier> expected
-         customer;
-                 ^
-Main.java:37: error: <identifier> expected
-        Result4(java.util.Map order,  customer) {
-                                              ^
-6 errors
+Main.java:38: error: incompatible types: Data2 cannot be converted to boolean
+            if (row.order) {
+                   ^
+Main.java:39: error: incompatible types: Object cannot be converted to boolean
+                if (row.customer) {
+                       ^
+Main.java:40: error: cannot find symbol
+                    System.out.println("Order" + " " + row.order.id + " " + "by" + " " + row.customer.name + " " + "- $" + " " + row.order.total);
+                                                                                                     ^
+  symbol:   variable name
+  location: variable customer of type Object
+Main.java:45: error: cannot find symbol
+                System.out.println("Customer" + " " + row.customer.name + " " + "has no orders");
+                                                                  ^
+  symbol:   variable name
+  location: variable customer of type Object
+4 errors

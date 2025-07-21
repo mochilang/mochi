@@ -22,22 +22,11 @@ public class Main {
     }
 
     static java.util.List<Result4> result = new java.util.ArrayList<Result4>() {{ for (var o : orders) { for (var c : customers) { if (o.customerId == c.id) { add(new Result4(o.id, c, o.total)); } } }}};
-    static class Data3 {
-         orderId;
-         customer;
-         total;
-        Data3( orderId,  customer,  total) {
-            this.orderId = orderId;
-            this.customer = customer;
-            this.total = total;
-        }
-    }
-
     static class Result4 {
-         orderId;
-         customer;
-         total;
-        Result4( orderId,  customer,  total) {
+        int orderId;
+        Object customer;
+        int total;
+        Result4(int orderId, Object customer, int total) {
             this.orderId = orderId;
             this.customer = customer;
             this.total = total;
