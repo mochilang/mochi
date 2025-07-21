@@ -370,6 +370,41 @@ func (s *ContinueStmt) emit(w io.Writer) error {
 	return err
 }
 
+// UpdateStmt represents an `update` statement on a list of structs.
+type UpdateStmt struct {
+	Target string
+	Fields []string
+	Values []Expr
+	Cond   Expr
+}
+
+func (u *UpdateStmt) emit(w io.Writer) error {
+	fmt.Fprintf(w, "for (var i = 0; i < %s.length; i++) {\n", u.Target)
+	fmt.Fprintf(w, "  var item = %s[i];\n", u.Target)
+	pad := "  "
+	if u.Cond != nil {
+		fmt.Fprintf(w, "  if (")
+		if err := u.Cond.emit(w); err != nil {
+			return err
+		}
+		fmt.Fprintf(w, ") {\n")
+		pad = "    "
+	}
+	for i, f := range u.Fields {
+		fmt.Fprintf(w, "%sitem[%q] = ", pad, f)
+		if err := u.Values[i].emit(w); err != nil {
+			return err
+		}
+		fmt.Fprintf(w, ";\n")
+	}
+	if u.Cond != nil {
+		fmt.Fprintf(w, "  }\n")
+	}
+	fmt.Fprintf(w, "  %s[i] = item;\n", u.Target)
+	fmt.Fprintf(w, "}\n")
+	return nil
+}
+
 // FuncDecl represents a function definition.
 type FuncDecl struct {
 	Name   string
@@ -1867,7 +1902,7 @@ func emitExpr(w io.Writer, e Expr) error { return e.emit(w) }
 
 func isBlockStmt(s Stmt) bool {
 	switch s.(type) {
-	case *IfStmt, *WhileStmt, *ForRangeStmt, *ForInStmt, *FuncDecl:
+	case *IfStmt, *WhileStmt, *ForRangeStmt, *ForInStmt, *FuncDecl, *UpdateStmt:
 		return true
 	default:
 		return false
@@ -1939,6 +1974,13 @@ func walkTypes(s Stmt) {
 			compVarTypes[st.Name] = saved
 		} else {
 			delete(compVarTypes, st.Name)
+		}
+	case *UpdateStmt:
+		if st.Cond != nil {
+			inferType(st.Cond)
+		}
+		for _, v := range st.Values {
+			inferType(v)
 		}
 	case *FuncDecl:
 		for _, b := range st.Body {
@@ -2110,6 +2152,63 @@ func convertForStmt(fst *parser.ForStmt) (Stmt, error) {
 	return &ForInStmt{Name: fst.Name, Iterable: iter, Body: body}, nil
 }
 
+func convertUpdate(u *parser.UpdateStmt) (Stmt, error) {
+	if currentEnv == nil {
+		return nil, fmt.Errorf("missing env")
+	}
+	t, err := currentEnv.GetVar(u.Target)
+	if err != nil {
+		return nil, err
+	}
+	lt, ok := t.(types.ListType)
+	if !ok {
+		return nil, fmt.Errorf("update target not list")
+	}
+	st, ok := lt.Elem.(types.StructType)
+	if !ok {
+		return nil, fmt.Errorf("update element not struct")
+	}
+	child := types.NewEnv(currentEnv)
+	fieldSet := map[string]bool{}
+	for name, ft := range st.Fields {
+		child.SetVar(name, ft, true)
+		fieldSet[name] = true
+	}
+	saved := currentEnv
+	currentEnv = child
+	var fields []string
+	var values []Expr
+	for _, it := range u.Set.Items {
+		key, ok := isSimpleIdent(it.Key)
+		if !ok {
+			key, ok = literalString(it.Key)
+			if !ok {
+				currentEnv = saved
+				return nil, fmt.Errorf("unsupported update key")
+			}
+		}
+		val, err := convertExpr(it.Value)
+		if err != nil {
+			currentEnv = saved
+			return nil, err
+		}
+		val = substituteFields(val, "item", fieldSet)
+		fields = append(fields, key)
+		values = append(values, val)
+	}
+	var cond Expr
+	if u.Where != nil {
+		cond, err = convertExpr(u.Where)
+		if err != nil {
+			currentEnv = saved
+			return nil, err
+		}
+		cond = substituteFields(cond, "item", fieldSet)
+	}
+	currentEnv = saved
+	return &UpdateStmt{Target: u.Target, Fields: fields, Values: values, Cond: cond}, nil
+}
+
 func convertIfExpr(ie *parser.IfExpr) (Expr, error) {
 	cond, err := convertExpr(ie.Cond)
 	if err != nil {
@@ -2236,6 +2335,12 @@ func convertStmtInternal(st *parser.Statement) (Stmt, error) {
 		return convertForStmt(st.For)
 	case st.If != nil:
 		return convertIfStmt(st.If)
+	case st.Update != nil:
+		up, err := convertUpdate(st.Update)
+		if err != nil {
+			return nil, err
+		}
+		return up, nil
 	default:
 		return nil, fmt.Errorf("unsupported statement")
 	}
@@ -2834,6 +2939,99 @@ func cloneReplace(e Expr, old, new string) Expr {
 			sort = &LambdaExpr{Params: append([]string(nil), ex.Sort.Params...), Body: cloneReplace(ex.Sort.Body, old, new)}
 		}
 		return &GroupQueryExpr{Vars: append([]string(nil), ex.Vars...), Iters: iters, Cond: cond, Key: cloneReplace(ex.Key, old, new), Row: cloneReplace(ex.Row, old, new), GroupVar: ex.GroupVar, Select: cloneReplace(ex.Select, old, new), Having: having, Sort: sort}
+	default:
+		return ex
+	}
+}
+
+func isSimpleIdent(e *parser.Expr) (string, bool) {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) > 0 {
+		return "", false
+	}
+	u := e.Binary.Left
+	if len(u.Ops) > 0 || u.Value == nil {
+		return "", false
+	}
+	p := u.Value
+	if len(p.Ops) > 0 || p.Target == nil {
+		return "", false
+	}
+	if p.Target.Selector != nil && len(p.Target.Selector.Tail) == 0 {
+		return p.Target.Selector.Root, true
+	}
+	return "", false
+}
+
+func literalString(e *parser.Expr) (string, bool) {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) > 0 {
+		return "", false
+	}
+	u := e.Binary.Left
+	if len(u.Ops) > 0 || u.Value == nil {
+		return "", false
+	}
+	p := u.Value
+	if len(p.Ops) > 0 || p.Target == nil {
+		return "", false
+	}
+	if p.Target.Lit != nil && p.Target.Lit.Str != nil {
+		return *p.Target.Lit.Str, true
+	}
+	if p.Target.Selector != nil && len(p.Target.Selector.Tail) == 0 {
+		return p.Target.Selector.Root, true
+	}
+	return "", false
+}
+
+func substituteFields(e Expr, varName string, fields map[string]bool) Expr {
+	switch ex := e.(type) {
+	case *Name:
+		if fields[ex.Name] {
+			return &IndexExpr{Target: &Name{Name: varName}, Index: &StringLit{Value: ex.Name}}
+		}
+		return ex
+	case *BinaryExpr:
+		ex.Left = substituteFields(ex.Left, varName, fields)
+		ex.Right = substituteFields(ex.Right, varName, fields)
+		return ex
+	case *UnaryExpr:
+		ex.X = substituteFields(ex.X, varName, fields)
+		return ex
+	case *CallExpr:
+		for i := range ex.Args {
+			ex.Args[i] = substituteFields(ex.Args[i], varName, fields)
+		}
+		ex.Func = substituteFields(ex.Func, varName, fields)
+		return ex
+	case *IndexExpr:
+		ex.Target = substituteFields(ex.Target, varName, fields)
+		ex.Index = substituteFields(ex.Index, varName, fields)
+		return ex
+	case *SliceExpr:
+		ex.Target = substituteFields(ex.Target, varName, fields)
+		if ex.Start != nil {
+			ex.Start = substituteFields(ex.Start, varName, fields)
+		}
+		if ex.End != nil {
+			ex.End = substituteFields(ex.End, varName, fields)
+		}
+		return ex
+	case *ListLit:
+		for i := range ex.Elems {
+			ex.Elems[i] = substituteFields(ex.Elems[i], varName, fields)
+		}
+		return ex
+	case *MapLit:
+		for i := range ex.Entries {
+			ex.Entries[i].Key = substituteFields(ex.Entries[i].Key, varName, fields)
+			ex.Entries[i].Value = substituteFields(ex.Entries[i].Value, varName, fields)
+		}
+		return ex
+	case *CondExpr:
+		ex.Cond = substituteFields(ex.Cond, varName, fields)
+		ex.Then = substituteFields(ex.Then, varName, fields)
+		ex.Else = substituteFields(ex.Else, varName, fields)
+		return ex
 	default:
 		return ex
 	}
