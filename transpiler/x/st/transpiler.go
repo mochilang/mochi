@@ -109,6 +109,25 @@ func formatValue(v value, indent int) string {
 	}
 }
 
+func isTruthy(v value) bool {
+	switch v.kind {
+	case valBool:
+		return v.b
+	case valInt:
+		return v.i != 0
+	case valFloat:
+		return v.f != 0
+	case valString:
+		return v.s != ""
+	case valList:
+		return len(v.list) > 0
+	case valMap:
+		return len(v.kv) > 0
+	default:
+		return false
+	}
+}
+
 // Emit writes the Smalltalk source code to w with a generated header.
 func Emit(w io.Writer, prog *Program) error {
 	if prog == nil {
@@ -741,10 +760,7 @@ func evalIfExpr(ie *parser.IfExpr, vars map[string]value) (value, error) {
 	if err != nil {
 		return value{}, err
 	}
-	if cond.kind != valBool {
-		return value{}, fmt.Errorf("non-bool condition")
-	}
-	if cond.b {
+	if isTruthy(cond) {
 		return evalExpr(ie.Then, vars)
 	}
 	if ie.ElseIf != nil {
@@ -780,6 +796,104 @@ func identName(e *parser.Expr) (string, bool) {
 }
 
 func evalQueryExpr(q *parser.QueryExpr, vars map[string]value) (value, error) {
+	// handle simple join form: FROM <src> [JOIN ...] SELECT ...
+	if len(q.Joins) == 1 && len(q.Froms) == 0 && q.Group == nil && q.Sort == nil && q.Skip == nil && q.Take == nil && !q.Distinct {
+		j := q.Joins[0]
+
+		left, err := evalExpr(q.Source, vars)
+		if err != nil {
+			return value{}, err
+		}
+		right, err := evalExpr(j.Src, vars)
+		if err != nil {
+			return value{}, err
+		}
+		if left.kind != valList || right.kind != valList {
+			return value{}, fmt.Errorf("join sources must be list")
+		}
+
+		leftMatched := make([]bool, len(left.list))
+		var results []value
+		for _, r := range right.list {
+			match := false
+			for li, l := range left.list {
+				local := copyVars(vars)
+				local[q.Var] = l
+				local[j.Var] = r
+				cond, err := evalExpr(j.On, local)
+				if err != nil {
+					return value{}, err
+				}
+				if cond.kind != valBool {
+					return value{}, fmt.Errorf("non-bool join condition")
+				}
+				if cond.b {
+					match = true
+					leftMatched[li] = true
+					if q.Where != nil {
+						wc, err := evalExpr(q.Where, local)
+						if err != nil {
+							return value{}, err
+						}
+						if wc.kind != valBool || !wc.b {
+							continue
+						}
+					}
+					v, err := evalExpr(q.Select, local)
+					if err != nil {
+						return value{}, err
+					}
+					results = append(results, v)
+				}
+			}
+			if !match && j.Side != nil && (*j.Side == "right" || *j.Side == "outer") {
+				local := copyVars(vars)
+				local[q.Var] = value{}
+				local[j.Var] = r
+				if q.Where != nil {
+					wc, err := evalExpr(q.Where, local)
+					if err != nil {
+						return value{}, err
+					}
+					if wc.kind != valBool || !wc.b {
+						continue
+					}
+				}
+				v, err := evalExpr(q.Select, local)
+				if err != nil {
+					return value{}, err
+				}
+				results = append(results, v)
+			}
+		}
+		if j.Side != nil && (*j.Side == "left" || *j.Side == "outer") {
+			for li, l := range left.list {
+				if leftMatched[li] {
+					continue
+				}
+				local := copyVars(vars)
+				local[q.Var] = l
+				local[j.Var] = value{}
+				if q.Where != nil {
+					wc, err := evalExpr(q.Where, local)
+					if err != nil {
+						return value{}, err
+					}
+					if wc.kind != valBool || !wc.b {
+						continue
+					}
+				}
+				v, err := evalExpr(q.Select, local)
+				if err != nil {
+					return value{}, err
+				}
+				results = append(results, v)
+			}
+		}
+		return value{kind: valList, list: results}, nil
+	}
+
+	// fallback: simple cross join for multiple FROM clauses
 	type clause struct {
 		name string
 		src  *parser.Expr
@@ -935,10 +1049,7 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 			if err != nil {
 				return err
 			}
-			if cond.kind != valBool {
-				return fmt.Errorf("non-bool condition")
-			}
-			if cond.b {
+			if isTruthy(cond) {
 				for _, s := range st.If.Then {
 					if err := processStmt(s); err != nil {
 						return err
@@ -961,10 +1072,7 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 				if err != nil {
 					return err
 				}
-				if cond.kind != valBool {
-					return fmt.Errorf("non-bool condition")
-				}
-				if !cond.b {
+				if !isTruthy(cond) {
 					break
 				}
 				for _, b := range st.While.Body {
