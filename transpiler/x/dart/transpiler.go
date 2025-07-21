@@ -1061,7 +1061,7 @@ func (a *AvgExpr) emit(w io.Writer) error {
 	if err := a.List.emit(w); err != nil {
 		return err
 	}
-	if _, err := io.WriteString(w, ".reduce((a, b) => a + b) / "); err != nil {
+	if _, err := io.WriteString(w, ".fold(0, (a, b) => a + b) / "); err != nil {
 		return err
 	}
 	if err := a.List.emit(w); err != nil {
@@ -1078,13 +1078,7 @@ func (s *SumExpr) emit(w io.Writer) error {
 	if err := s.List.emit(w); err != nil {
 		return err
 	}
-	if _, err := io.WriteString(w, ".isEmpty ? 0 : ("); err != nil {
-		return err
-	}
-	if err := s.List.emit(w); err != nil {
-		return err
-	}
-	if _, err := io.WriteString(w, ".reduce((a, b) => a + b))"); err != nil {
+	if _, err := io.WriteString(w, ".fold(0, (a, b) => a + b)"); err != nil {
 		return err
 	}
 	return nil
