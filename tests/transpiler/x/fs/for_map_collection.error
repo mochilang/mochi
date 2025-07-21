@@ -1,5 +1,0 @@
-exit status 1
-F# Compiler for F# 4.0 (Open Source Edition)
-Freely distributed under the Apache 2.0 Open Source License
-
-/workspace/mochi/tests/transpiler/x/fs/for_map_collection.fs(8,10): error FS0693: The type 'Anon1' is not a type whose values can be enumerated with this syntax, i.e. is not compatible with either seq<_>, IEnumerable<_> or IEnumerable and does not have a GetEnumerator method
