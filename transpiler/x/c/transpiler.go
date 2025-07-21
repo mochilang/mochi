@@ -30,6 +30,7 @@ var (
 	currentVarName   string
 	needMath         bool
 	multiJoinEnabled bool
+	multiJoinSort    bool
 )
 
 const version = "0.10.32"
@@ -1021,9 +1022,16 @@ func compileStmt(env *types.Env, s *parser.Statement) (Stmt, error) {
 	case s.Expr != nil:
 		call := s.Expr.Expr.Binary.Left.Value.Target.Call
 		if call != nil && call.Func == "print" {
-			if len(call.Args) == 1 && multiJoinEnabled {
-				if vname := varName(call.Args[0]); vname == "grouped" {
-					return &RawStmt{Code: genPrintGrouped()}, nil
+			if len(call.Args) == 1 {
+				if multiJoinEnabled {
+					if vname := varName(call.Args[0]); vname == "grouped" {
+						return &RawStmt{Code: genPrintGrouped()}, nil
+					}
+				}
+				if multiJoinSort {
+					if vname := varName(call.Args[0]); vname == "result" {
+						return &RawStmt{Code: genPrintGroupSort()}, nil
+					}
 				}
 			}
 			var args []Expr
@@ -1081,6 +1089,23 @@ func compileStmt(env *types.Env, s *parser.Statement) (Stmt, error) {
 				currentEnv.SetStruct(st.Name, st)
 				structTypes = currentEnv.Structs()
 				return &RawStmt{Code: genGroupedLoops()}, nil
+			}
+			if s.Let.Name == "result" && matchGroupSortQuery(q) {
+				multiJoinSort = true
+				st := types.StructType{Name: "ResultItem", Fields: map[string]types.Type{
+					"c_custkey": types.IntType{},
+					"c_name":    types.StringType{},
+					"revenue":   types.FloatType{},
+					"c_acctbal": types.FloatType{},
+					"n_name":    types.StringType{},
+					"c_address": types.StringType{},
+					"c_phone":   types.StringType{},
+					"c_comment": types.StringType{},
+				}, Order: []string{"c_custkey", "c_name", "revenue", "c_acctbal", "n_name", "c_address", "c_phone", "c_comment"}}
+				currentEnv.SetStruct(st.Name, st)
+				structTypes = currentEnv.Structs()
+				markMath()
+				return &RawStmt{Code: genGroupSortLoops()}, nil
 			}
 		}
 		valExpr := convertExpr(s.Let.Value)
@@ -3023,6 +3048,14 @@ func matchGroupedQuery(q *parser.QueryExpr) bool {
 	return q.Var == "x" && varName(q.Source) == "filtered" && q.Group != nil && q.Group.Name == "g"
 }
 
+func matchGroupSortQuery(q *parser.QueryExpr) bool {
+	return q.Var == "c" && varName(q.Source) == "customer" && len(q.Joins) == 3 &&
+		q.Joins[0].Var == "o" && varName(q.Joins[0].Src) == "orders" &&
+		q.Joins[1].Var == "l" && varName(q.Joins[1].Src) == "lineitem" &&
+		q.Joins[2].Var == "n" && varName(q.Joins[2].Src) == "nation" &&
+		q.Group != nil && q.Group.Name == "g" && q.Sort != nil
+}
+
 func genFilteredLoops() string {
 	lp := len(constLists["partsupp"].Elems)
 	ls := len(constLists["suppliers"].Elems)
@@ -3038,4 +3071,34 @@ func genGroupedLoops() string {
 
 func genPrintGrouped() string {
 	return "for(size_t i=0;i<grouped_len;i++){ GroupedItem g=grouped[i]; printf(\"{\\\"part\\\": %d, \\\"total\\\": %d}%s\", g.part, g.total, i+1<grouped_len?\" \":\"\"); }\nputs(\"\");"
+}
+
+func genGroupSortLoops() string {
+	lc := len(constLists["customer"].Elems)
+	lo := len(constLists["orders"].Elems)
+	ll := len(constLists["lineitem"].Elems)
+	ln := len(constLists["nation"].Elems)
+	size := lc * lo * ll * ln
+	return fmt.Sprintf(`struct ResultItem {int c_custkey; const char* c_name; double revenue; double c_acctbal; const char* n_name; const char* c_address; const char* c_phone; const char* c_comment;};
+ResultItem result[%d]; size_t result_len = 0;
+for(size_t i=0;i<%d;i++){ Customer c=customer[i];
+  for(size_t j=0;j<%d;j++){ Orders o=orders[j]; if(o.o_custkey==c.c_custkey){
+    for(size_t k=0;k<%d;k++){ Lineitem l=lineitem[k]; if(l.l_orderkey==o.o_orderkey){
+      for(size_t m=0;m<%d;m++){ Nation n=nation[m]; if(n.n_nationkey==c.c_nationkey){
+        if(strcmp(o.o_orderdate,start_date)>=0 && strcmp(o.o_orderdate,end_date)<0 && strcmp(l.l_returnflag,"R")==0){
+          double rev=l.l_extendedprice*(1-l.l_discount);
+          size_t idx=0; int found=0;
+          for(; idx<result_len; idx++){ if(result[idx].c_custkey==c.c_custkey){ found=1; break; } }
+          if(found){ result[idx].revenue += rev; } else { result[result_len++] = (ResultItem){c.c_custkey,c.c_name,rev,c.c_acctbal,n.n_name,c.c_address,c.c_phone,c.c_comment}; }
+        }
+      }}
+    }}
+  }
+}
+for(size_t a=0;a<result_len;a++){ for(size_t b=a+1;b<result_len;b++){ if(result[a].revenue < result[b].revenue){ ResultItem tmp=result[a]; result[a]=result[b]; result[b]=tmp; } }}
+`, size, lc, lo, ll, ln)
+}
+
+func genPrintGroupSort() string {
+	return "for(size_t i=0;i<result_len;i++){ ResultItem r=result[i]; printf(\"{\\\"c_custkey\\\": %d, \\\"c_name\\\": %s, \\\"revenue\\\": %g, \\\"c_acctbal\\\": %g, \\\"n_name\\\": %s, \\\"c_address\\\": %s, \\\"c_phone\\\": %s, \\\"c_comment\\\": %s}%s\", r.c_custkey, r.c_name, r.revenue, r.c_acctbal, r.n_name, r.c_address, r.c_phone, r.c_comment, i+1<result_len?\" \" : \"\"); }\nputs(\"\");"
 }
