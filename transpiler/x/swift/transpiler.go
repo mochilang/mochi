@@ -64,6 +64,7 @@ type ForEachStmt struct {
 	Expr    Expr
 	Body    []Stmt
 	CastMap bool
+	Keys    bool
 }
 
 type BreakStmt struct{}
@@ -769,6 +770,9 @@ func (fe *ForEachStmt) emit(w io.Writer) {
 	} else {
 		fmt.Fprintf(w, "for %s in ", fe.Name)
 		fe.Expr.emit(w)
+		if fe.Keys {
+			fmt.Fprint(w, ".keys.sorted()")
+		}
 		fmt.Fprint(w, " {\n")
 	}
 	for _, st := range fe.Body {
@@ -1074,14 +1078,18 @@ func convertForStmt(env *types.Env, fs *parser.ForStmt) (Stmt, error) {
 		return nil, err
 	}
 	castMap := false
+	keysOnly := false
 	if env != nil {
 		if t := types.TypeOfExpr(fs.Source, env); t != nil {
-			if _, ok := t.(types.GroupType); ok {
+			switch t.(type) {
+			case types.GroupType:
 				castMap = true
+			case types.MapType:
+				keysOnly = true
 			}
 		}
 	}
-	return &ForEachStmt{Name: fs.Name, Expr: expr, Body: body, CastMap: castMap}, nil
+	return &ForEachStmt{Name: fs.Name, Expr: expr, Body: body, CastMap: castMap, Keys: keysOnly}, nil
 }
 
 func evalPrintArg(arg *parser.Expr) (val string, isString bool, ok bool) {
