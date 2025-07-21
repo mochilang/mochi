@@ -227,33 +227,33 @@ type ForStmt struct {
 }
 
 func (fs *ForStmt) emit(w io.Writer, indent int) {
-        if fs.Simple {
-                for i := 0; i < indent; i++ {
-                        io.WriteString(w, "  ")
-                }
-                io.WriteString(w, "Enum.each(")
-                if fs.End != nil {
-                        io.WriteString(w, "(")
-                        fs.Start.emit(w)
-                        io.WriteString(w, "..(")
-                        fs.End.emit(w)
-                        io.WriteString(w, " - 1))")
-                } else {
-                        fs.Source.emit(w)
-                }
-                io.WriteString(w, ", fn ")
-                io.WriteString(w, fs.Name)
-                io.WriteString(w, " ->\n")
-                for _, st := range fs.Body {
-                        st.emit(w, indent+1)
-                        io.WriteString(w, "\n")
-                }
-                for i := 0; i < indent; i++ {
-                        io.WriteString(w, "  ")
-                }
-                io.WriteString(w, "end)")
-                return
-        }
+	if fs.Simple {
+		for i := 0; i < indent; i++ {
+			io.WriteString(w, "  ")
+		}
+		io.WriteString(w, "Enum.each(")
+		if fs.End != nil {
+			io.WriteString(w, "(")
+			fs.Start.emit(w)
+			io.WriteString(w, "..(")
+			fs.End.emit(w)
+			io.WriteString(w, " - 1))")
+		} else {
+			fs.Source.emit(w)
+		}
+		io.WriteString(w, ", fn ")
+		io.WriteString(w, fs.Name)
+		io.WriteString(w, " ->\n")
+		for _, st := range fs.Body {
+			st.emit(w, indent+1)
+			io.WriteString(w, "\n")
+		}
+		for i := 0; i < indent; i++ {
+			io.WriteString(w, "  ")
+		}
+		io.WriteString(w, "end)")
+		return
+	}
 	for i := 0; i < indent; i++ {
 		io.WriteString(w, "  ")
 	}
@@ -1851,10 +1851,9 @@ func compilePrimary(p *parser.Primary, env *types.Env) (Expr, error) {
 				t := types.TypeOfExprBasic(p.Call.Args[0], env)
 				switch t.(type) {
 				case types.StringType, types.IntType, types.FloatType, types.BoolType:
-					name = "IO.puts"
+					return &CallExpr{Func: "IO.puts", Args: []Expr{args[0]}}, nil
 				default:
-					inner := &CallExpr{Func: "Kernel.inspect", Args: []Expr{args[0]}}
-					return &CallExpr{Func: "IO.puts", Args: []Expr{inner}}, nil
+					return &CallExpr{Func: "IO.inspect", Args: []Expr{args[0]}}, nil
 				}
 			} else {
 				parts := make([]interface{}, 0, len(args)*2-1)
