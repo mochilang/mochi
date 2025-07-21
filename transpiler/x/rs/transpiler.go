@@ -1502,6 +1502,9 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 				}
 			}
 			if len(args) == 1 {
+				if strings.HasPrefix(inferType(args[0]), "Vec<") {
+					args[0] = &JoinExpr{List: args[0]}
+				}
 				fmtStr := "{}"
 				switch a := args[0].(type) {
 				case *MapLit, *ValuesExpr, *AppendExpr, *ListLit:
