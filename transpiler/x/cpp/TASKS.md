@@ -1,3 +1,38 @@
+## Progress (2025-07-21 11:04 +0700)
+- cpp transpiler: improve print handling
+- Generated C++ for 83/100 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-21 10:52 +0700)
+- scheme transpiler: add right join and simplify loops
+- Generated C++ for 83/100 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-21 10:52 +0700)
+- scheme transpiler: add right join and simplify loops
+- Generated C++ for 83/100 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-21 10:52 +0700)
+- scheme transpiler: add right join and simplify loops
+- Generated C++ for 83/100 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-21 10:52 +0700)
+- scheme transpiler: add right join and simplify loops
+- Generated C++ for 83/100 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-21 10:52 +0700)
+- scheme transpiler: add right join and simplify loops
+- Generated C++ for 81/100 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-21 10:52 +0700)
+- scheme transpiler: add right join and simplify loops
+- Generated C++ for 81/100 programs
+- Updated README checklist and outputs
+
 ## Progress (2025-07-21 07:20 +0700)
 - cpp transpiler: fix precedence and bool output
 - Generated C++ for 81/100 programs
