@@ -1789,6 +1789,20 @@ func convertUnary(u *parser.Unary) Expr {
 				return l
 			}
 		}
+		if call.Func == "exists" && len(call.Args) == 1 {
+			if l, ok := evalList(convertExpr(call.Args[0])); ok {
+				if len(l.Elems) > 0 {
+					return &IntLit{Value: 1}
+				}
+				return &IntLit{Value: 0}
+			}
+			if list, ok := convertListExpr(call.Args[0]); ok {
+				if len(list) > 0 {
+					return &IntLit{Value: 1}
+				}
+				return &IntLit{Value: 0}
+			}
+		}
 		if call.Func == "contains" && len(call.Args) == 2 {
 			hay, ok1 := evalString(convertExpr(call.Args[0]))
 			needle, ok2 := evalString(convertExpr(call.Args[1]))
