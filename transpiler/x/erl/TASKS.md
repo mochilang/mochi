@@ -1,3 +1,7 @@
+## Progress (2025-07-21 18:35 +0700)
+- erl: improve query formatting
+- Regenerated golden files - 9/100 vm valid programs passing
+
 ## Progress (2025-07-21 11:06 +0000)
 - erl transpiler: improve readability, remove helpers
 - Regenerated golden files - 8/100 vm valid programs passing
