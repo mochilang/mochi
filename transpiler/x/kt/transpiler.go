@@ -617,7 +617,7 @@ func (s *StrExpr) emit(w io.Writer) {
 type NotExpr struct{ Value Expr }
 
 func (n *NotExpr) emit(w io.Writer) {
-        io.WriteString(w, "!")
+	io.WriteString(w, "!")
 	switch n.Value.(type) {
 	case *BoolLit, *VarRef, *CallExpr, *IndexExpr, *FieldExpr:
 		n.Value.emit(w)
@@ -632,16 +632,16 @@ func (n *NotExpr) emit(w io.Writer) {
 type NotNullCheck struct{ Value Expr }
 
 func (n *NotNullCheck) emit(w io.Writer) {
-        n.Value.emit(w)
-        io.WriteString(w, " != null")
+	n.Value.emit(w)
+	io.WriteString(w, " != null")
 }
 
 func isBoolExpr(e Expr) bool {
-        switch e.(type) {
-        case *BoolLit, *BinaryExpr, *ContainsExpr, *ExistsExpr, *NotExpr, *WhenExpr:
-                return true
-        }
-        return false
+	switch e.(type) {
+	case *BoolLit, *BinaryExpr, *ContainsExpr, *ExistsExpr, *NotExpr, *WhenExpr:
+		return true
+	}
+	return false
 }
 
 type AppendExpr struct {
@@ -1132,12 +1132,8 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 				val = &IntLit{Value: 0}
 			}
 			typ := kotlinType(st.Let.Type)
-			if typ == "" {
-				if t0, err := env.GetVar(st.Let.Name); err == nil {
-					typ = kotlinTypeFromType(t0)
-				} else {
-					typ = guessType(val)
-				}
+			if st.Let.Type == nil {
+				typ = ""
 			}
 			p.Stmts = append(p.Stmts, &LetStmt{Name: st.Let.Name, Type: typ, Value: val})
 		case st.Var != nil:
@@ -1152,12 +1148,8 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 				val = &IntLit{Value: 0}
 			}
 			typ := kotlinType(st.Var.Type)
-			if typ == "" {
-				if t0, err := env.GetVar(st.Var.Name); err == nil {
-					typ = kotlinTypeFromType(t0)
-				} else {
-					typ = guessType(val)
-				}
+			if st.Var.Type == nil {
+				typ = ""
 			}
 			p.Stmts = append(p.Stmts, &VarStmt{Name: st.Var.Name, Type: typ, Value: val})
 		case st.Assign != nil && len(st.Assign.Index) == 0 && len(st.Assign.Field) == 0:
@@ -1254,10 +1246,8 @@ func convertStmts(env *types.Env, list []*parser.Statement) ([]Stmt, error) {
 				return nil, err
 			}
 			typ := kotlinType(s.Let.Type)
-			if typ == "" {
-				if t0, err := env.GetVar(s.Let.Name); err == nil {
-					typ = kotlinTypeFromType(t0)
-				}
+			if s.Let.Type == nil {
+				typ = ""
 			}
 			out = append(out, &LetStmt{Name: s.Let.Name, Type: typ, Value: v})
 		case s.Var != nil:
@@ -1266,10 +1256,8 @@ func convertStmts(env *types.Env, list []*parser.Statement) ([]Stmt, error) {
 				return nil, err
 			}
 			typ := kotlinType(s.Var.Type)
-			if typ == "" {
-				if t0, err := env.GetVar(s.Var.Name); err == nil {
-					typ = kotlinTypeFromType(t0)
-				}
+			if s.Var.Type == nil {
+				typ = ""
 			}
 			out = append(out, &VarStmt{Name: s.Var.Name, Type: typ, Value: v})
 		case s.Assign != nil && len(s.Assign.Index) == 0 && len(s.Assign.Field) == 0:
@@ -1350,13 +1338,13 @@ func convertStmts(env *types.Env, list []*parser.Statement) ([]Stmt, error) {
 }
 
 func convertIfStmt(env *types.Env, is *parser.IfStmt) (Stmt, error) {
-        cond, err := convertExpr(env, is.Cond)
-        if err != nil {
-                return nil, err
-        }
-        if !isBoolExpr(cond) {
-                cond = &NotNullCheck{Value: cond}
-        }
+	cond, err := convertExpr(env, is.Cond)
+	if err != nil {
+		return nil, err
+	}
+	if !isBoolExpr(cond) {
+		cond = &NotNullCheck{Value: cond}
+	}
 	thenStmts, err := convertStmts(env, is.Then)
 	if err != nil {
 		return nil, err
@@ -1378,18 +1366,18 @@ func convertIfStmt(env *types.Env, is *parser.IfStmt) (Stmt, error) {
 }
 
 func convertWhileStmt(env *types.Env, ws *parser.WhileStmt) (Stmt, error) {
-        cond, err := convertExpr(env, ws.Cond)
-        if err != nil {
-                return nil, err
-        }
-        if !isBoolExpr(cond) {
-                cond = &NotNullCheck{Value: cond}
-        }
-        body, err := convertStmts(env, ws.Body)
-        if err != nil {
-                return nil, err
-        }
-        return &WhileStmt{Cond: cond, Body: body}, nil
+	cond, err := convertExpr(env, ws.Cond)
+	if err != nil {
+		return nil, err
+	}
+	if !isBoolExpr(cond) {
+		cond = &NotNullCheck{Value: cond}
+	}
+	body, err := convertStmts(env, ws.Body)
+	if err != nil {
+		return nil, err
+	}
+	return &WhileStmt{Cond: cond, Body: body}, nil
 }
 
 func convertForStmt(env *types.Env, fs *parser.ForStmt) (Stmt, error) {
@@ -1441,17 +1429,17 @@ func buildIndexTarget(env *types.Env, name string, idx []*parser.IndexOp) (Expr,
 }
 
 func convertIfExpr(env *types.Env, ie *parser.IfExpr) (Expr, error) {
-        cond, err := convertExpr(env, ie.Cond)
-        if err != nil {
-                return nil, err
-        }
-        if !isBoolExpr(cond) {
-                cond = &NotNullCheck{Value: cond}
-        }
-        thenExpr, err := convertExpr(env, ie.Then)
-        if err != nil {
-                return nil, err
-        }
+	cond, err := convertExpr(env, ie.Cond)
+	if err != nil {
+		return nil, err
+	}
+	if !isBoolExpr(cond) {
+		cond = &NotNullCheck{Value: cond}
+	}
+	thenExpr, err := convertExpr(env, ie.Then)
+	if err != nil {
+		return nil, err
+	}
 	var elseExpr Expr
 	if ie.ElseIf != nil {
 		elseExpr, err = convertIfExpr(env, ie.ElseIf)
@@ -1518,7 +1506,15 @@ func convertRightJoinQuery(env *types.Env, q *parser.QueryExpr) (Expr, error) {
 		return nil, err
 	}
 	child := types.NewEnv(env)
-	child.SetVar(q.Var, types.AnyType{}, true)
+	var elemType types.Type = types.AnyType{}
+	if name := simpleVarName(q.Source); name != "" {
+		if t, err := env.GetVar(name); err == nil {
+			if lt, ok := t.(types.ListType); ok {
+				elemType = lt.Elem
+			}
+		}
+	}
+	child.SetVar(q.Var, elemType, true)
 	child.SetVar(j.Var, types.AnyType{}, true)
 	cond, err := convertExpr(child, j.On)
 	if err != nil {
@@ -1550,7 +1546,15 @@ func convertQueryExpr(env *types.Env, q *parser.QueryExpr) (Expr, error) {
 		if err != nil {
 			return nil, err
 		}
-		child.SetVar(f.Var, types.AnyType{}, true)
+		var elem types.Type = types.AnyType{}
+		if name := simpleVarName(f.Src); name != "" {
+			if t, err := env.GetVar(name); err == nil {
+				if lt, ok := t.(types.ListType); ok {
+					elem = lt.Elem
+				}
+			}
+		}
+		child.SetVar(f.Var, elem, true)
 		froms[i] = queryFrom{Var: f.Var, Src: fe}
 	}
 	var cond Expr
@@ -1565,8 +1569,16 @@ func convertQueryExpr(env *types.Env, q *parser.QueryExpr) (Expr, error) {
 		if err != nil {
 			return nil, err
 		}
+		var elem types.Type = types.AnyType{}
+		if name := simpleVarName(j.Src); name != "" {
+			if t, err := env.GetVar(name); err == nil {
+				if lt, ok := t.(types.ListType); ok {
+					elem = lt.Elem
+				}
+			}
+		}
 		froms = append(froms, queryFrom{Var: j.Var, Src: je})
-		child.SetVar(j.Var, types.AnyType{}, true)
+		child.SetVar(j.Var, elem, true)
 		jc, err := convertExpr(child, j.On)
 		if err != nil {
 			return nil, err
@@ -1634,25 +1646,25 @@ func exprsFromFroms(f []queryFrom) []Expr {
 }
 
 func convertMapRecord(env *types.Env, m *parser.MapLiteral) (Expr, error) {
-	names := make([]string, len(m.Items))
-	fields := make([]Expr, len(m.Items))
-	decls := make([]ParamDecl, len(m.Items))
+	items := make([]MapItem, len(m.Items))
 	for i, it := range m.Items {
-		key, ok := types.SimpleStringKey(it.Key)
-		if !ok {
-			return nil, fmt.Errorf("unsupported map key")
+		var k Expr
+		if s, ok := types.SimpleStringKey(it.Key); ok {
+			k = &StringLit{Value: s}
+		} else {
+			var err error
+			k, err = convertExpr(env, it.Key)
+			if err != nil {
+				return nil, err
+			}
 		}
-		val, err := convertExpr(env, it.Value)
+		v, err := convertExpr(env, it.Value)
 		if err != nil {
 			return nil, err
 		}
-		names[i] = key
-		fields[i] = val
-		decls[i] = ParamDecl{Name: key, Type: guessType(val)}
+		items[i] = MapItem{Key: k, Value: v}
 	}
-	name := fmt.Sprintf("Record%d", len(extraDecls)+1)
-	extraDecls = append(extraDecls, &DataClass{Name: name, Fields: decls})
-	return &StructLit{Name: name, Fields: fields, Names: names}, nil
+	return &MapLit{Items: items}, nil
 }
 
 func isUnderscore(e *parser.Expr) bool {
@@ -1668,6 +1680,21 @@ func isUnderscore(e *parser.Expr) bool {
 		return false
 	}
 	return p.Target.Selector.Root == "_" && len(p.Target.Selector.Tail) == 0
+}
+
+func simpleVarName(e *parser.Expr) string {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) != 0 {
+		return ""
+	}
+	u := e.Binary.Left
+	if len(u.Ops) != 0 {
+		return ""
+	}
+	p := u.Value
+	if p.Target != nil && p.Target.Selector != nil && len(p.Target.Selector.Tail) == 0 {
+		return p.Target.Selector.Root
+	}
+	return ""
 }
 
 func convertFunExpr(env *types.Env, f *parser.FunExpr) (Expr, error) {
@@ -1785,6 +1812,7 @@ func convertPostfix(env *types.Env, p *parser.PostfixExpr) (Expr, error) {
 	if err != nil {
 		return nil, err
 	}
+	baseIsMap := types.IsMapPrimary(p.Target, env)
 	for i := 0; i < len(p.Ops); i++ {
 		op := p.Ops[i]
 		switch {
@@ -1839,7 +1867,11 @@ func convertPostfix(env *types.Env, p *parser.PostfixExpr) (Expr, error) {
 			expr = &ContainsExpr{Str: expr, Sub: arg}
 			i++ // skip call op
 		case op.Field != nil:
-			expr = &FieldExpr{Receiver: expr, Name: op.Field.Name}
+			if baseIsMap {
+				expr = &IndexExpr{Target: expr, Index: &StringLit{Value: op.Field.Name}}
+			} else {
+				expr = &FieldExpr{Receiver: expr, Name: op.Field.Name}
+			}
 		case op.Cast != nil:
 			if op.Cast.Type != nil && op.Cast.Type.Simple != nil {
 				expr = &CastExpr{Value: expr, Type: *op.Cast.Type.Simple}
@@ -1989,6 +2021,25 @@ func convertPrimary(env *types.Env, p *parser.Primary) (Expr, error) {
 		return &BoolLit{Value: bool(*p.Lit.Bool)}, nil
 	case p.Selector != nil && len(p.Selector.Tail) == 0:
 		return &VarRef{Name: p.Selector.Root}, nil
+	case p.Selector != nil && len(p.Selector.Tail) > 0:
+		var expr Expr = &VarRef{Name: p.Selector.Root}
+		baseIsMap := false
+		if env != nil {
+			if t, err := env.GetVar(p.Selector.Root); err == nil {
+				if _, ok := t.(types.MapType); ok {
+					baseIsMap = true
+				}
+			}
+		}
+		for _, name := range p.Selector.Tail {
+			if baseIsMap {
+				expr = &IndexExpr{Target: expr, Index: &StringLit{Value: name}}
+				baseIsMap = false
+			} else {
+				expr = &FieldExpr{Receiver: expr, Name: name}
+			}
+		}
+		return expr, nil
 	case p.List != nil:
 		elems := make([]Expr, len(p.List.Elems))
 		for i, e := range p.List.Elems {
