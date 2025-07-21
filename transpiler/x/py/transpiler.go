@@ -1110,6 +1110,20 @@ func isSumPostfix(p *parser.PostfixExpr) bool {
 	return p.Target.Call.Func == "sum"
 }
 
+func exprFromUnary(u *parser.Unary) *parser.Expr {
+	if u == nil {
+		return &parser.Expr{}
+	}
+	return &parser.Expr{Binary: &parser.BinaryExpr{Left: u}}
+}
+
+func exprFromPostfix(p *parser.PostfixExpr) *parser.Expr {
+	if p == nil {
+		return &parser.Expr{}
+	}
+	return exprFromUnary(&parser.Unary{Value: p})
+}
+
 func zeroValueExpr(t types.Type) Expr {
 	switch t.(type) {
 	case types.IntType, types.Int64Type:
@@ -1324,14 +1338,25 @@ func inferTypeFromExpr(e *parser.Expr) types.Type {
 		return types.AnyType{}
 	}
 	if len(e.Binary.Right) > 0 {
-		op := e.Binary.Right[0].Op
-		switch op {
-		case "&&", "||", "==", "!=", "<", "<=", ">", ">=":
-			return types.BoolType{}
-		case "+", "-", "*", "/", "%":
-			return types.IntType{}
+		lt := inferTypeFromExpr(exprFromUnary(e.Binary.Left))
+		for _, r := range e.Binary.Right {
+			rt := inferTypeFromExpr(exprFromPostfix(r.Right))
+			switch r.Op {
+			case "&&", "||", "==", "!=", "<", "<=", ">", ">=":
+				lt = types.BoolType{}
+			case "+", "-", "*", "/", "%":
+				if lt.String() == (types.FloatType{}).String() || rt.String() == (types.FloatType{}).String() {
+					lt = types.FloatType{}
+				} else if isNumeric(lt) && isNumeric(rt) {
+					lt = types.IntType{}
+				} else {
+					lt = types.AnyType{}
+				}
+			default:
+				lt = types.AnyType{}
+			}
 		}
-		return types.AnyType{}
+		return lt
 	}
 	u := e.Binary.Left
 	if len(u.Ops) > 0 || u.Value == nil {
