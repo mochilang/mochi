@@ -129,6 +129,9 @@ type MapLit struct {
 	ValueType string
 }
 
+// TupleExpr represents a std::tuple initialization.
+type TupleExpr struct{ Elems []Expr }
+
 type SliceExpr struct {
 	Target Expr
 	Start  Expr
@@ -403,78 +406,36 @@ func (s *PrintStmt) emit(w io.Writer, indent int) {
 		io.WriteString(w, "    ")
 	}
 	if currentProgram != nil {
-		currentProgram.addInclude("<sstream>")
 		currentProgram.addInclude("<iomanip>")
 	}
-	io.WriteString(w, "{ std::ostringstream __ss; __ss << std::boolalpha << std::setprecision(17)")
+	io.WriteString(w, "std::cout << std::boolalpha")
 	for i, v := range s.Values {
-		io.WriteString(w, "; if(")
+		io.WriteString(w, " << ")
 		if i > 0 {
-			io.WriteString(w, "true")
-		} else {
-			io.WriteString(w, "false")
+			io.WriteString(w, "\" \" << ")
 		}
-		io.WriteString(w, ") __ss << \" \";")
-		io.WriteString(w, " __ss << ")
 		switch ex := v.(type) {
 		case *UnaryExpr:
 			if ex.Op == "!" {
-				io.WriteString(w, "static_cast<int>(")
+				io.WriteString(w, "(")
 				ex.emit(w)
-				io.WriteString(w, ")")
+				io.WriteString(w, " ? 0 : 1)")
 			} else {
 				ex.emit(w)
 			}
-			continue
 		case *BinaryExpr:
 			if ex.Op == "&&" || ex.Op == "||" || ex.Op == "==" || ex.Op == "!=" || ex.Op == "<" || ex.Op == "<=" || ex.Op == ">" || ex.Op == ">=" || ex.Op == "in" {
-				io.WriteString(w, "static_cast<int>(")
+				io.WriteString(w, "(")
 				ex.emit(w)
-				io.WriteString(w, ")")
+				io.WriteString(w, " ? 1 : 0)")
 			} else {
 				ex.emit(w)
 			}
-			continue
-		case *ListLit:
-			if currentProgram != nil {
-				currentProgram.addInclude("<sstream>")
-			}
-			io.WriteString(w, "([&]{ std::ostringstream ss; auto tmp = ")
-			ex.emit(w)
-			io.WriteString(w, "; ss<<\"[\"; for(size_t i=0;i<tmp.size();++i){ if(i>0) ss<<\", \"; ss<<tmp[i]; } ss<<\"]\"; return ss.str(); }())")
-		case *SliceExpr:
-			if currentProgram != nil {
-				currentProgram.addInclude("<sstream>")
-			}
-			io.WriteString(w, "([&]{ auto tmp = ")
-			ex.emit(w)
-			io.WriteString(w, "; if constexpr(std::is_same_v<std::decay_t<decltype(tmp)>, std::string>) return tmp; std::ostringstream ss; ss<<\"[\"; for(size_t i=0;i<tmp.size();++i){ if(i>0) ss<<\", \"; ss<<tmp[i]; } ss<<\"]\"; return ss.str(); }())")
-		case *AppendExpr:
-			if currentProgram != nil {
-				currentProgram.addInclude("<sstream>")
-			}
-			io.WriteString(w, "([&]{ std::ostringstream ss; auto tmp = ")
-			ex.emit(w)
-			io.WriteString(w, "; ss<<\"[\"; for(size_t i=0;i<tmp.size();++i){ if(i>0) ss<<\", \"; ss<<tmp[i]; } ss<<\"]\"; return ss.str(); }())")
-		case *AvgExpr:
-			if currentProgram != nil {
-				currentProgram.addInclude("<sstream>")
-			}
-			io.WriteString(w, "([&]{ std::ostringstream ss; ss<<")
-			ex.emit(w)
-			io.WriteString(w, "; return ss.str(); }())")
-               case *ValuesExpr:
-                       if currentProgram != nil {
-                               currentProgram.addInclude("<sstream>")
-                       }
-                       io.WriteString(w, "([&]{ std::ostringstream ss; auto tmp = ")
-                       ex.emit(w)
-                       io.WriteString(w, "; for(size_t i=0;i<tmp.size();++i){ if(i) ss<<\" \"; ss<<tmp[i]; } return ss.str(); }())")
 		default:
 			v.emit(w)
 		}
 	}
-	io.WriteString(w, "; auto __line = __ss.str(); if(!__line.empty() && __line.back() == ' ') __line.pop_back(); std::cout << __line << std::endl; }\n")
+	io.WriteString(w, " << std::endl;\n")
 }
 
 func (wst *WhileStmt) emit(w io.Writer, indent int) {
@@ -520,6 +481,17 @@ func (m *MapLit) emit(w io.Writer) {
 		io.WriteString(w, ", ")
 		m.Values[i].emit(w)
 		io.WriteString(w, "}")
+	}
+	io.WriteString(w, "}")
+}
+
+func (t *TupleExpr) emit(w io.Writer) {
+	io.WriteString(w, "std::tuple{")
+	for i, e := range t.Elems {
+		if i > 0 {
+			io.WriteString(w, ", ")
+		}
+		e.emit(w)
 	}
 	io.WriteString(w, "}")
 }
@@ -2234,14 +2206,28 @@ func convertSimpleQuery(q *parser.QueryExpr, target string) (Expr, *StructDef, s
 		}
 	}
 	if q.Group != nil {
-		if len(q.Group.Exprs) != 1 {
-			return nil, nil, "", fmt.Errorf("unsupported group")
+		keyExprs := make([]Expr, len(q.Group.Exprs))
+		keyTypes := make([]string, len(q.Group.Exprs))
+		for i, g := range q.Group.Exprs {
+			ke, err := convertExpr(g)
+			if err != nil {
+				return nil, nil, "", err
+			}
+			keyExprs[i] = ke
+			keyTypes[i] = exprType(ke)
 		}
-		keyExpr, err := convertExpr(q.Group.Exprs[0])
-		if err != nil {
-			return nil, nil, "", err
+		var keyExpr Expr
+		var keyType string
+		if len(keyExprs) == 1 {
+			keyExpr = keyExprs[0]
+			keyType = keyTypes[0]
+		} else {
+			keyExpr = &TupleExpr{Elems: keyExprs}
+			keyType = fmt.Sprintf("std::tuple<%s>", strings.Join(keyTypes, ", "))
+			if currentProgram != nil {
+				currentProgram.addInclude("<tuple>")
+			}
 		}
-		keyType := exprType(keyExpr)
 		itemVar := vars[len(vars)-1]
 		itemType := qTypes[itemVar]
 		structName := strings.Title(q.Group.Name) + "Group"
@@ -2338,7 +2324,7 @@ func convertSimpleQuery(q *parser.QueryExpr, target string) (Expr, *StructDef, s
 }
 
 func convertLeftJoinGroupQuery(q *parser.QueryExpr, target string) (Expr, *StructDef, string, error) {
-	if q == nil || len(q.Joins) != 1 || q.Group == nil || len(q.Group.Exprs) != 1 || q.Distinct || q.Sort != nil || q.Skip != nil || q.Take != nil {
+	if q == nil || len(q.Joins) != 1 || q.Group == nil || len(q.Group.Exprs) == 0 || q.Distinct || q.Sort != nil || q.Skip != nil || q.Take != nil {
 		return nil, nil, "", fmt.Errorf("unsupported query")
 	}
 	j := q.Joins[0]
@@ -2374,12 +2360,29 @@ func convertLeftJoinGroupQuery(q *parser.QueryExpr, target string) (Expr, *Struc
 		localTypes = oldTypes
 		return nil, nil, "", err
 	}
-	keyExpr, err := convertExpr(q.Group.Exprs[0])
-	if err != nil {
-		localTypes = oldTypes
-		return nil, nil, "", err
+	keyExprs := make([]Expr, len(q.Group.Exprs))
+	keyTypes := make([]string, len(q.Group.Exprs))
+	for i, g := range q.Group.Exprs {
+		ke, err := convertExpr(g)
+		if err != nil {
+			localTypes = oldTypes
+			return nil, nil, "", err
+		}
+		keyExprs[i] = ke
+		keyTypes[i] = exprType(ke)
 	}
-	keyType := exprType(keyExpr)
+	var keyExpr Expr
+	var keyType string
+	if len(keyExprs) == 1 {
+		keyExpr = keyExprs[0]
+		keyType = keyTypes[0]
+	} else {
+		keyExpr = &TupleExpr{Elems: keyExprs}
+		keyType = fmt.Sprintf("std::tuple<%s>", strings.Join(keyTypes, ", "))
+		if currentProgram != nil {
+			currentProgram.addInclude("<tuple>")
+		}
+	}
 	pairName := strings.Title(target) + "Pair"
 	pairDef := &StructDef{Name: pairName, Fields: []Param{{Name: q.Var, Type: leftType}, {Name: j.Var, Type: optRightType}}}
 	groupName := strings.Title(q.Group.Name) + "Group"
@@ -2529,6 +2532,19 @@ func guessType(e *parser.Expr) string {
 			}
 		}
 		return "std::map<auto, auto>"
+	}
+	if e.Binary != nil && e.Binary.Left != nil && e.Binary.Left.Value != nil {
+		if call := e.Binary.Left.Value.Target.Call; call != nil {
+			switch call.Func {
+			case "len":
+				return "int"
+			case "exists":
+				return "bool"
+			case "values":
+				t := guessType(call.Args[0])
+				return fmt.Sprintf("std::vector<%s>", elementTypeFromListType(t))
+			}
+		}
 	}
 	if e.Binary == nil || e.Binary.Left == nil || e.Binary.Left.Value == nil || e.Binary.Left.Value.Target == nil {
 		return "auto"
