@@ -1151,19 +1151,24 @@ func compileStmt(env *types.Env, s *parser.Statement) (Stmt, error) {
 		}
 		list, ok := convertListExpr(s.For.Source)
 		if !ok {
-			ex := convertExpr(s.For.Source)
-			if val, ok2 := valueFromExpr(ex); ok2 {
-				if arr, ok3 := val.([]any); ok3 {
-					var elems []Expr
-					for _, it := range arr {
-						e := anyToExpr(it)
-						if e == nil {
-							return nil, fmt.Errorf("unsupported for-loop")
+			if keys, ok2 := convertMapKeysExpr(s.For.Source); ok2 {
+				list = keys
+				ok = true
+			} else {
+				ex := convertExpr(s.For.Source)
+				if val, ok2 := valueFromExpr(ex); ok2 {
+					if arr, ok3 := val.([]any); ok3 {
+						var elems []Expr
+						for _, it := range arr {
+							e := anyToExpr(it)
+							if e == nil {
+								return nil, fmt.Errorf("unsupported for-loop")
+							}
+							elems = append(elems, e)
 						}
-						elems = append(elems, e)
+						list = elems
+						ok = true
 					}
-					list = elems
-					ok = true
 				}
 			}
 		}
@@ -1975,6 +1980,9 @@ func convertListExpr(e *parser.Expr) ([]Expr, bool) {
 	if lst, ok := interpretList(e); ok {
 		return lst, true
 	}
+	if keys, ok := convertMapKeysExpr(e); ok {
+		return keys, true
+	}
 	return nil, false
 }
 
@@ -1997,6 +2005,30 @@ func interpretList(e *parser.Expr) ([]Expr, bool) {
 		out = append(out, ex)
 	}
 	return out, true
+}
+
+func convertMapKeysExpr(e *parser.Expr) ([]Expr, bool) {
+	if ml := mapLiteral(e); ml != nil {
+		var out []Expr
+		for _, it := range ml.Items {
+			ex := convertExpr(it.Key)
+			if ex == nil {
+				return nil, false
+			}
+			out = append(out, ex)
+		}
+		return out, true
+	}
+	ex := convertExpr(e)
+	if ex != nil {
+		if l, ok := evalMapKeys(ex); ok {
+			return l.Elems, true
+		}
+	}
+	if lst, ok := interpretMapKeys(e); ok {
+		return lst, true
+	}
+	return nil, false
 }
 
 func evalInt(e Expr) (int, bool) {
@@ -2803,6 +2835,55 @@ func evalMap(e Expr) (*ListLit, bool) {
 		}
 	}
 	return nil, false
+}
+
+func evalMapKeys(e Expr) (*ListLit, bool) {
+	switch v := e.(type) {
+	case *MapLit:
+		var elems []Expr
+		for _, it := range v.Items {
+			elems = append(elems, it.Key)
+		}
+		return &ListLit{Elems: elems}, true
+	case *VarRef:
+		if val, err := currentEnv.GetValue(v.Name); err == nil {
+			if m, ok := val.(map[string]any); ok {
+				keys := make([]string, 0, len(m))
+				for k := range m {
+					keys = append(keys, k)
+				}
+				sort.Strings(keys)
+				var elems []Expr
+				for _, k := range keys {
+					elems = append(elems, &StringLit{Value: k})
+				}
+				return &ListLit{Elems: elems}, true
+			}
+		}
+	}
+	return nil, false
+}
+
+func interpretMapKeys(e *parser.Expr) ([]Expr, bool) {
+	ip := interpreter.New(&parser.Program{}, currentEnv, "")
+	val, err := ip.EvalExpr(e)
+	if err != nil {
+		return nil, false
+	}
+	m, ok := val.(map[string]any)
+	if !ok {
+		return nil, false
+	}
+	keys := make([]string, 0, len(m))
+	for k := range m {
+		keys = append(keys, k)
+	}
+	sort.Strings(keys)
+	var out []Expr
+	for _, k := range keys {
+		out = append(out, &StringLit{Value: k})
+	}
+	return out, true
 }
 
 func evalMapEntry(target Expr, key Expr) (Expr, bool) {
