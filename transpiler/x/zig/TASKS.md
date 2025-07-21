@@ -1,3 +1,7 @@
+## Progress (2025-07-21 12:53 +0700)
+- Added group_by query support and runtime avg
+- Generated golden file for group_by.mochi (69/100 tests passing)
+
 ## Progress (2025-07-21 11:17 +0700)
 - Generated Zig for 68/100 programs
 - Added inner_join support with improved type inference

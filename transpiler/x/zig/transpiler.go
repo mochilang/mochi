@@ -21,6 +21,8 @@ var structDefs map[string]*StructDef
 var extraFuncs []*Func
 var funcCounter int
 var varTypes map[string]string
+var groupCounter int
+var groupItemTypes map[string]string
 
 func toSnakeCase(s string) string {
 	var buf strings.Builder
@@ -209,6 +211,18 @@ type QueryComp struct {
 	Filter   Expr
 }
 
+type GroupByExpr struct {
+	Var        string
+	Source     Expr
+	Key        Expr
+	GroupVar   string
+	SelectExpr Expr
+	ElemType   string
+	KeyType    string
+	SrcElem    string
+	StructName string
+}
+
 func (qc *QueryComp) emit(w io.Writer) {
 	fmt.Fprintf(w, "blk: {\n    var arr = std.ArrayList(%s).init(std.heap.page_allocator);\n", qc.ElemType)
 	indent := 1
@@ -244,6 +258,62 @@ func (qc *QueryComp) emit(w io.Writer) {
 	}
 	writeIndent(w, 1)
 	io.WriteString(w, "const tmp = arr.toOwnedSlice() catch unreachable;\n")
+	writeIndent(w, 1)
+	io.WriteString(w, "break :blk tmp;\n}")
+}
+
+func (gq *GroupByExpr) emit(w io.Writer) {
+	fmt.Fprintf(w, "blk: {\n    var groups_map = std.AutoHashMap(%s, std.ArrayList(%s)).init(std.heap.page_allocator);\n", gq.KeyType, gq.SrcElem)
+	writeIndent(w, 1)
+	io.WriteString(w, "for (")
+	gq.Source.emit(w)
+	fmt.Fprintf(w, ") |%s| {\n", gq.Var)
+	writeIndent(w, 2)
+	io.WriteString(w, "const k = ")
+	gq.Key.emit(w)
+	io.WriteString(w, ";\n")
+	writeIndent(w, 2)
+	io.WriteString(w, "if (groups_map.getPtr(k)) |arr| {\n")
+	writeIndent(w, 3)
+	fmt.Fprintf(w, "arr.*.append(%s) catch unreachable;\n", gq.Var)
+	writeIndent(w, 2)
+	io.WriteString(w, "} else {\n")
+	writeIndent(w, 3)
+	fmt.Fprintf(w, "var tmp_arr = std.ArrayList(%s).init(std.heap.page_allocator);\n", gq.SrcElem)
+	writeIndent(w, 3)
+	fmt.Fprintf(w, "tmp_arr.append(%s) catch unreachable;\n", gq.Var)
+	writeIndent(w, 3)
+	io.WriteString(w, "groups_map.put(k, tmp_arr) catch unreachable;\n")
+	writeIndent(w, 2)
+	io.WriteString(w, "}\n")
+	writeIndent(w, 1)
+	io.WriteString(w, "}\n")
+	writeIndent(w, 1)
+	fmt.Fprintf(w, "var groups = std.ArrayList(%s).init(std.heap.page_allocator);\n", gq.StructName)
+	writeIndent(w, 1)
+	io.WriteString(w, "var it = groups_map.iterator();\n")
+	writeIndent(w, 1)
+	io.WriteString(w, "while (it.next()) |kv| {\n")
+	writeIndent(w, 2)
+	fmt.Fprintf(w, "groups.append(.{ .key = kv.key.*, .items = kv.value.toOwnedSlice() catch unreachable }) catch unreachable;\n")
+	writeIndent(w, 1)
+	io.WriteString(w, "}\n")
+	writeIndent(w, 1)
+	io.WriteString(w, "const arr = groups.toOwnedSlice() catch unreachable;\n")
+	writeIndent(w, 1)
+	fmt.Fprintf(w, "var result = std.ArrayList(%s).init(std.heap.page_allocator);\n", gq.ElemType)
+	writeIndent(w, 1)
+	io.WriteString(w, "for (arr) |")
+	io.WriteString(w, gq.GroupVar)
+	io.WriteString(w, "| {\n")
+	writeIndent(w, 2)
+	io.WriteString(w, "result.append(")
+	gq.SelectExpr.emit(w)
+	io.WriteString(w, ") catch unreachable;\n")
+	writeIndent(w, 1)
+	io.WriteString(w, "}\n")
+	writeIndent(w, 1)
+	io.WriteString(w, "const tmp = result.toOwnedSlice() catch unreachable;\n")
 	writeIndent(w, 1)
 	io.WriteString(w, "break :blk tmp;\n}")
 }
@@ -789,14 +859,50 @@ func (c *CallExpr) emit(w io.Writer) {
 				fmt.Fprintf(w, "%q.len", s.Value)
 			} else if l, ok := c.Args[0].(*ListLit); ok {
 				fmt.Fprintf(w, "%d", len(l.Elems))
-			} else if v, ok := c.Args[0].(*VarRef); ok && mapVars[v.Name] {
-				v.emit(w)
-				io.WriteString(w, ".count()")
+			} else if v, ok := c.Args[0].(*VarRef); ok {
+				if mapVars[v.Name] {
+					v.emit(w)
+					io.WriteString(w, ".count()")
+				} else if t, ok2 := varTypes[v.Name]; ok2 {
+					if _, ok3 := groupItemTypes[t]; ok3 {
+						v.emit(w)
+						io.WriteString(w, ".items.len")
+					} else {
+						io.WriteString(w, "std.mem.len(")
+						v.emit(w)
+						io.WriteString(w, ")")
+					}
+				} else {
+					io.WriteString(w, "std.mem.len(")
+					v.emit(w)
+					io.WriteString(w, ")")
+				}
 			} else {
 				io.WriteString(w, "std.mem.len(")
 				c.Args[0].emit(w)
 				io.WriteString(w, ")")
 			}
+		} else {
+			io.WriteString(w, "0")
+		}
+	case "avg":
+		if len(c.Args) == 1 {
+			io.WriteString(w, "blk: { var arr = ")
+			if v, ok := c.Args[0].(*VarRef); ok {
+				if t, ok2 := varTypes[v.Name]; ok2 {
+					if _, ok3 := groupItemTypes[t]; ok3 {
+						v.emit(w)
+						io.WriteString(w, ".items")
+					} else {
+						v.emit(w)
+					}
+				} else {
+					v.emit(w)
+				}
+			} else {
+				c.Args[0].emit(w)
+			}
+			io.WriteString(w, "; if (arr.len == 0) break :blk 0; var sum: f64 = 0; for (arr) |v| { sum += @as(f64, v); } break :blk sum / @as(f64, arr.len); }")
 		} else {
 			io.WriteString(w, "0")
 		}
@@ -864,6 +970,8 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	extraFuncs = nil
 	funcCounter = 0
 	varTypes = map[string]string{}
+	groupCounter = 0
+	groupItemTypes = map[string]string{}
 	mutables := map[string]bool{}
 	collectMutables(prog.Statements, mutables)
 	constLists = map[string]*ListLit{}
@@ -1438,6 +1546,11 @@ func elemTypeFromExpr(e *parser.Expr) string {
 				return lst.ElemType
 			}
 		}
+		if t, ok := varTypes[pf.Selector.Root]; ok {
+			if elem, ok2 := groupItemTypes[t]; ok2 {
+				return elem
+			}
+		}
 	}
 	if pf.List != nil && len(pf.List.Elems) > 0 {
 		elem := pf.List.Elems[0]
@@ -1501,7 +1614,7 @@ func inferListStruct(varName string, list *ListLit) string {
 }
 
 func compileQueryExpr(q *parser.QueryExpr) (Expr, error) {
-	if q.Group != nil || q.Sort != nil || q.Skip != nil || q.Take != nil {
+	if q.Sort != nil || q.Skip != nil || q.Take != nil {
 		return nil, fmt.Errorf("unsupported query features")
 	}
 	vars := []string{q.Var}
@@ -1548,6 +1661,39 @@ func compileQueryExpr(q *parser.QueryExpr) (Expr, error) {
 			}
 		}
 	}
+	if q.Group != nil {
+		prev := varTypes[q.Var]
+		varTypes[q.Var] = elemTypeFromExpr(q.Source)
+		keyExpr, err := compileExpr(q.Group.Exprs[0])
+		if err != nil {
+			return nil, err
+		}
+		if prev == "" {
+			delete(varTypes, q.Var)
+		} else {
+			varTypes[q.Var] = prev
+		}
+		keyType := zigTypeFromExpr(keyExpr)
+		srcElem := elemTypeFromExpr(q.Source)
+		structName := fmt.Sprintf("Group%d", groupCounter)
+		groupCounter++
+		structDefs[structName] = &StructDef{Name: structName, Fields: []Field{{Name: "key", Type: keyType}, {Name: "items", Type: "[]" + srcElem}}}
+		groupItemTypes[structName] = srcElem
+		prevG := varTypes[q.Group.Name]
+		varTypes[q.Group.Name] = structName
+		elem, err := compileExpr(q.Select)
+		if err != nil {
+			return nil, err
+		}
+		if prevG == "" {
+			delete(varTypes, q.Group.Name)
+		} else {
+			varTypes[q.Group.Name] = prevG
+		}
+		elemType := zigTypeFromExpr(elem)
+		return &GroupByExpr{Var: q.Var, Source: src, Key: keyExpr, GroupVar: q.Group.Name, SelectExpr: elem, ElemType: elemType, KeyType: keyType, SrcElem: srcElem, StructName: structName}, nil
+	}
+
 	elem, err := compileExpr(q.Select)
 	if err != nil {
 		return nil, err
