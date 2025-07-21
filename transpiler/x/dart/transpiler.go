@@ -1048,6 +1048,7 @@ type GroupQueryExpr struct {
 	GroupVar string
 	Select   Expr
 	Having   Expr
+	Sort     *LambdaExpr
 }
 
 // LeftJoinExpr represents a simple left join query.
@@ -1192,9 +1193,14 @@ func (gq *GroupQueryExpr) emit(w io.Writer) error {
 	if err := gq.Key.emit(w); err != nil {
 		return err
 	}
-	if _, err := io.WriteString(w, ";\n"+indent+"var ks = key.toString();\n"+indent+"var g = groups[ks];\n"+indent+"if (g == null) {\n"+indent+"  g = {'key': key, 'items': []};\n"+indent+"  groups[ks] = g;\n"+indent+"}\n"+indent+"(g['items'] as List).add("); err != nil {
+	if _, err := io.WriteString(w, ";\n"+indent+"var ks = key.toString();\n"+indent+"var g = groups[ks];\n"+indent+"if (g == null) {\n"); err != nil {
 		return err
 	}
+	nextStructHint = "group"
+	if _, err := io.WriteString(w, indent+"  g = {'key': key, 'items': []};\n"+indent+"  groups[ks] = g;\n"+indent+"}\n"+indent+"(g['items'] as List).add("); err != nil {
+		return err
+	}
+	nextStructHint = ""
 	if err := gq.Row.emit(w); err != nil {
 		return err
 	}
@@ -1206,7 +1212,21 @@ func (gq *GroupQueryExpr) emit(w io.Writer) error {
 			return err
 		}
 	}
-	if _, err := io.WriteString(w, "  var res = [];\n  for (var g in groups.values) {\n"); err != nil {
+	if _, err := io.WriteString(w, "  var _list = groups.values.toList();\n"); err != nil {
+		return err
+	}
+	if gq.Sort != nil {
+		if _, err := io.WriteString(w, "  _list.sort("); err != nil {
+			return err
+		}
+		if err := gq.Sort.emit(w); err != nil {
+			return err
+		}
+		if _, err := io.WriteString(w, ");\n"); err != nil {
+			return err
+		}
+	}
+	if _, err := io.WriteString(w, "  var res = <dynamic>[];\n  for (var g in _list) {\n"); err != nil {
 		return err
 	}
 	if gq.Having != nil {
@@ -1379,6 +1399,8 @@ func dartType(t types.Type) string {
 		return "List<" + dartType(v.Elem) + ">"
 	case types.MapType:
 		return "Map<" + dartType(v.Key) + ", " + dartType(v.Value) + ">"
+	case types.GroupType:
+		return "Map<String, dynamic>"
 	case types.StructType:
 		return "Map<String, dynamic>"
 	default:
@@ -1521,6 +1543,9 @@ func inferType(e Expr) string {
 			compVarTypes[v] = elem
 		}
 		et := inferType(ex.Expr)
+		if et == "var" {
+			et = "dynamic"
+		}
 		for _, v := range ex.Vars {
 			if old, ok := saved[v]; ok && old != "" {
 				compVarTypes[v] = old
@@ -1540,12 +1565,23 @@ func inferType(e Expr) string {
 			saved[v] = compVarTypes[v]
 			compVarTypes[v] = elem
 		}
+		if ex.GroupVar != "" {
+			saved[ex.GroupVar] = compVarTypes[ex.GroupVar]
+			compVarTypes[ex.GroupVar] = "Map<String, dynamic>"
+		}
 		et := inferType(ex.Select)
 		for _, v := range ex.Vars {
 			if old, ok := saved[v]; ok && old != "" {
 				compVarTypes[v] = old
 			} else {
 				delete(compVarTypes, v)
+			}
+		}
+		if ex.GroupVar != "" {
+			if old, ok := saved[ex.GroupVar]; ok && old != "" {
+				compVarTypes[ex.GroupVar] = old
+			} else {
+				delete(compVarTypes, ex.GroupVar)
 			}
 		}
 		return "List<" + et + ">"
@@ -1786,9 +1822,20 @@ func walkTypes(s Stmt) {
 			walkTypes(b)
 		}
 	case *ForInStmt:
-		inferType(st.Iterable)
+		t := inferType(st.Iterable)
+		elem := "dynamic"
+		if strings.HasPrefix(t, "List<") && strings.HasSuffix(t, ">") {
+			elem = strings.TrimSuffix(strings.TrimPrefix(t, "List<"), ">")
+		}
+		saved := compVarTypes[st.Name]
+		compVarTypes[st.Name] = elem
 		for _, b := range st.Body {
 			walkTypes(b)
+		}
+		if saved != "" {
+			compVarTypes[st.Name] = saved
+		} else {
+			delete(compVarTypes, st.Name)
 		}
 	case *FuncDecl:
 		for _, b := range st.Body {
@@ -2719,7 +2766,7 @@ func convertRightJoinQuery(q *parser.QueryExpr) (Expr, error) {
 }
 
 func convertGroupQuery(q *parser.QueryExpr) (Expr, error) {
-	if q == nil || q.Group == nil || len(q.Group.Exprs) != 1 || len(q.Froms) > 0 || len(q.Joins) > 0 || q.Sort != nil || q.Skip != nil || q.Take != nil || q.Distinct {
+	if q == nil || q.Group == nil || len(q.Group.Exprs) != 1 || len(q.Froms) > 0 || len(q.Joins) > 0 || q.Skip != nil || q.Take != nil || q.Distinct {
 		return nil, fmt.Errorf("unsupported query")
 	}
 	src, err := convertExpr(q.Source)
@@ -2753,6 +2800,7 @@ func convertGroupQuery(q *parser.QueryExpr) (Expr, error) {
 		return nil, err
 	}
 	var having Expr
+	var sort *LambdaExpr
 	if q.Group.Having != nil {
 		having, err = convertExpr(q.Group.Having)
 		if err != nil {
@@ -2760,8 +2808,27 @@ func convertGroupQuery(q *parser.QueryExpr) (Expr, error) {
 			return nil, err
 		}
 	}
+	if q.Sort != nil {
+		s, err := convertExpr(q.Sort)
+		if err != nil {
+			currentEnv = saved
+			return nil, err
+		}
+		desc := false
+		if ue, ok := s.(*UnaryExpr); ok && ue.Op == "-" {
+			desc = true
+			s = ue.X
+		}
+		a := cloneReplace(s, q.Group.Name, "a")
+		b := cloneReplace(s, q.Group.Name, "b")
+		if desc {
+			a, b = b, a
+		}
+		cmp := &CallExpr{Func: &SelectorExpr{Receiver: a, Field: "compareTo"}, Args: []Expr{b}}
+		sort = &LambdaExpr{Params: []string{"a", "b"}, Body: cmp}
+	}
 	currentEnv = saved
-	return &GroupQueryExpr{Vars: vars, Iters: iters, Cond: cond, Key: key, Row: row, GroupVar: q.Group.Name, Select: sel, Having: having}, nil
+	return &GroupQueryExpr{Vars: vars, Iters: iters, Cond: cond, Key: key, Row: row, GroupVar: q.Group.Name, Select: sel, Having: having, Sort: sort}, nil
 }
 
 func convertQueryExpr(q *parser.QueryExpr) (Expr, error) {
@@ -3024,6 +3091,9 @@ func exprNode(e Expr) *ast.Node {
 		n.Children = append(n.Children, exprNode(ex.Row))
 		if ex.Having != nil {
 			n.Children = append(n.Children, &ast.Node{Kind: "having", Children: []*ast.Node{exprNode(ex.Having)}})
+		}
+		if ex.Sort != nil {
+			n.Children = append(n.Children, &ast.Node{Kind: "sort-lambda", Children: []*ast.Node{exprNode(ex.Sort)}})
 		}
 		n.Children = append(n.Children, exprNode(ex.Select))
 		return n
