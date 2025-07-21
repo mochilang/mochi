@@ -1683,9 +1683,10 @@ func emitStmt(w *indentWriter, s Stmt, level int) {
 	}
 }
 
-// Transpile converts a Mochi program into a TypeScript AST. Only a very
-// small subset of the language is supported: programs consisting of a single
-// call to the builtin `print` with a string literal argument.
+// Transpile converts a Mochi program into a TypeScript AST. The resulting
+// code aims to be idiomatic and readable TypeScript without depending on
+// runtime helper libraries. Most Mochi features are supported including
+// joins and grouping in query expressions.
 func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	transpileEnv = env
 	generatedTypes = map[string]bool{}
