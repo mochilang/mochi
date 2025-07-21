@@ -1,3 +1,3 @@
 <?php
 $m = ["a" => 1, "b" => 2, "c" => 3];
-echo (is_float(values($m)) ? json_encode(values($m), 1344) : values($m)), PHP_EOL;
+echo str_replace("false", "False", str_replace("true", "True", str_replace("\"", "'", str_replace(":", ": ", str_replace(",", ", ", json_encode(array_values($m), 1344)))))), PHP_EOL;

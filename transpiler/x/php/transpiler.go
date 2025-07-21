@@ -20,7 +20,7 @@ var funcStack [][]string
 var builtinNames = map[string]struct{}{
 	"print": {}, "len": {}, "substring": {}, "count": {}, "sum": {}, "avg": {},
 	"str": {}, "min": {}, "max": {}, "append": {}, "json": {}, "exists": {},
-	"load": {}, "save": {},
+	"values": {}, "load": {}, "save": {},
 }
 var closureNames = map[string]bool{}
 var groupStack []string
@@ -1526,6 +1526,15 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 			}
 			count := &CallExpr{Func: "count", Args: []Expr{args[0]}}
 			return &BinaryExpr{Left: count, Op: ">", Right: &IntLit{Value: 0}}, nil
+		} else if name == "values" {
+			if len(args) != 1 {
+				return nil, fmt.Errorf("values expects 1 arg")
+			}
+			var target Expr = args[0]
+			if isGroupArg(args[0]) {
+				target = &IndexExpr{X: args[0], Index: &StringLit{Value: "items"}}
+			}
+			return &CallExpr{Func: "array_values", Args: []Expr{target}}, nil
 		}
 		if transpileEnv != nil {
 			if t, err := transpileEnv.GetVar(name); err == nil {
