@@ -1,3 +1,19 @@
+## Progress (2025-07-21 15:48 +0700)
+- feat(erl): add json builtin
+- Regenerated golden files - 80/100 vm valid programs passing
+
+## Progress (2025-07-21 15:48 +0700)
+- feat(erl): add json builtin
+- Regenerated golden files - 79/100 vm valid programs passing
+
+## Progress (2025-07-21 15:48 +0700)
+- feat(erl): add json builtin
+- Regenerated golden files - 79/100 vm valid programs passing
+
+## Progress (2025-07-21 15:48 +0700)
+- feat(erl): add json builtin
+- Regenerated golden files - 79/100 vm valid programs passing
+
 ## Progress (2025-07-21 15:03 +0700)
 - feat(erl): support group by join queries
 - Regenerated golden files - 79/100 vm valid programs passing
