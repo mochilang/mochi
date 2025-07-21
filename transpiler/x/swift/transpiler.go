@@ -893,6 +893,9 @@ func convertStmt(env *types.Env, st *parser.Statement) (Stmt, error) {
 				if err != nil {
 					return nil, err
 				}
+				if env != nil && types.IsBoolType(types.TypeOfExpr(a, env)) && boolAsInt(a) {
+					ex = &CondExpr{Cond: ex, Then: &LitExpr{Value: "1", IsString: false}, Else: &LitExpr{Value: "0", IsString: false}}
+				}
 				args = append(args, ex)
 			}
 			return &PrintStmt{Exprs: args}, nil
@@ -1275,6 +1278,21 @@ func evalIntConstPrimary(pr *parser.Primary) (int, bool) {
 	return 0, false
 }
 
+func boolAsInt(e *parser.Expr) bool {
+	if e == nil || e.Binary == nil {
+		return false
+	}
+	for _, op := range e.Binary.Right {
+		switch op.Op {
+		case "in":
+			return false
+		case "&&", "||", "<", "<=", ">", ">=", "==", "!=":
+			return true
+		}
+	}
+	return false
+}
+
 func convertExpr(env *types.Env, e *parser.Expr) (Expr, error) {
 	if e == nil || e.Binary == nil {
 		return nil, fmt.Errorf("unsupported expression")
@@ -1476,6 +1494,32 @@ func convertIfExpr(env *types.Env, i *parser.IfExpr) (Expr, error) {
 		elseExpr = &LitExpr{Value: "0", IsString: false}
 	}
 	return &CondExpr{Cond: cond, Then: thenExpr, Else: elseExpr}, nil
+}
+
+func convertMatchExpr(env *types.Env, me *parser.MatchExpr) (Expr, error) {
+	target, err := convertExpr(env, me.Target)
+	if err != nil {
+		return nil, err
+	}
+	var expr Expr = &LitExpr{Value: "nil", IsString: false}
+	for i := len(me.Cases) - 1; i >= 0; i-- {
+		c := me.Cases[i]
+		res, err := convertExpr(env, c.Result)
+		if err != nil {
+			return nil, err
+		}
+		pat, err := convertExpr(env, c.Pattern)
+		if err != nil {
+			return nil, err
+		}
+		if n, ok := pat.(*NameExpr); ok && n.Name == "_" {
+			expr = res
+			continue
+		}
+		cond := &BinaryExpr{Left: target, Op: "==", Right: pat}
+		expr = &CondExpr{Cond: cond, Then: res, Else: expr}
+	}
+	return expr, nil
 }
 
 func convertQueryExpr(env *types.Env, q *parser.QueryExpr) (Expr, error) {
@@ -1772,6 +1816,8 @@ func convertPrimary(env *types.Env, pr *parser.Primary) (Expr, error) {
 		return convertExpr(env, pr.Group)
 	case pr.If != nil:
 		return convertIfExpr(env, pr.If)
+	case pr.Match != nil:
+		return convertMatchExpr(env, pr.Match)
 	case pr.Query != nil:
 		return convertQueryExpr(env, pr.Query)
 	case pr.Selector != nil && len(pr.Selector.Tail) == 0:

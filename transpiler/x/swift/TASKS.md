@@ -1,6 +1,6 @@
-## Progress (2025-07-21 16:17 +0700)
-- swifttrans: support slice indexing
-- Generated golden tests for 81/100 programs
+## Progress (2025-07-21 16:28 +0700)
+- swifttrans: update golden outputs
+- Generated golden tests for 83/100 programs
 - Updated README checklist and output artifacts
 
 # Swift Transpiler Tasks
