@@ -2739,6 +2739,9 @@ func convertCall(c *parser.CallExpr, env *types.Env, vars map[string]VarInfo) (E
 			}
 			args[i] = ex
 		}
+		if len(args) < len(fn.Params) {
+			ret = "func"
+		}
 		return &FuncCall{Name: c.Func, Args: args, Ret: ret}, ret, nil
 	}
 	if v, ok := vars[c.Func]; ok && v.typ == "func" {

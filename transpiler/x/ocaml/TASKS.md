@@ -1,7 +1,19 @@
-## Progress (2025-07-22 04:52 +0700)
+## Progress (2025-07-22 06:19 +0700)
+- cs transpiler: support outer join (85aa12994)
+
+- VM valid programs compiled: 79/101
+
+- cs transpiler: support outer join (85aa12994)
+
+
+- cs transpiler: support outer join (85aa12994)
+
+
+- cs transpiler: support outer join (85aa12994)
+
+
 - Improve Python group_by (58a01bf82)
 
-- VM valid programs compiled: 82/101
 
 - Improve Python group_by (58a01bf82)
 
