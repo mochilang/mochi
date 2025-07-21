@@ -1,0 +1,11 @@
+;; Generated on 2025-07-21 17:26 +0700
+(import (srfi 1) (srfi 69) (chibi string))
+(define x 5)
+(if (> x 3)
+   (begin (display "big")
+     (newline)
+    )
+   (begin (display "small")
+     (newline)
+    )
+  )

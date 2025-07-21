@@ -1,0 +1,8 @@
+exit status 70
+ERROR: hash-table-ref: key not found: "val"
+  called from <anonymous> on line 65 of file /workspace/mochi/tests/transpiler/x/scheme/group_items_iteration.scm
+  called from for1 on line 75 of file /usr/share/chibi/init-7.scm
+  called from <anonymous> on line 64 of file /workspace/mochi/tests/transpiler/x/scheme/group_items_iteration.scm
+  called from for1 on line 75 of file /usr/share/chibi/init-7.scm
+  called from <anonymous> on line 1292 of file /usr/share/chibi/init-7.scm
+  called from <anonymous> on line 821 of file /usr/share/chibi/init-7.scm

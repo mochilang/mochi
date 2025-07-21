@@ -1,0 +1,12 @@
+;; Generated on 2025-07-21 17:26 +0700
+(import (srfi 1) (srfi 69) (chibi string))
+(define (makeAdder n)
+   (lambda (x)
+     (string-append "x" n)
+    )
+  )
+(define add10 (makeAdder 10)
+  )
+(display (add10 7)
+  )
+(newline)

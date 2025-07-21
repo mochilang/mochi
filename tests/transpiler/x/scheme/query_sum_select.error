@@ -1,0 +1,7 @@
+exit status 70
+ERROR on line 10 of file /workspace/mochi/tests/transpiler/x/scheme/query_sum_select.scm: apply: improper args list: 2
+  called from for1 on line 75 of file /usr/share/chibi/init-7.scm
+  called from <anonymous> on line 8 of file /workspace/mochi/tests/transpiler/x/scheme/query_sum_select.scm
+  called from <anonymous> on line 5 of file /workspace/mochi/tests/transpiler/x/scheme/query_sum_select.scm
+  called from <anonymous> on line 1292 of file /usr/share/chibi/init-7.scm
+  called from <anonymous> on line 821 of file /usr/share/chibi/init-7.scm
