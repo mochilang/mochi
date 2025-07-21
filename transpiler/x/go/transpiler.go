@@ -90,15 +90,14 @@ func (p *PrintStmt) emit(w io.Writer) {
 			return
 		}
 	}
-	usesStrings = true
-	io.WriteString(w, "fmt.Println(strings.TrimSpace(fmt.Sprint(")
+	io.WriteString(w, "fmt.Println(")
 	for i, e := range p.Args {
 		if i > 0 {
-			io.WriteString(w, ", \" \", ")
+			io.WriteString(w, ", ")
 		}
 		e.emit(w)
 	}
-	io.WriteString(w, ")))")
+	io.WriteString(w, ")")
 }
 
 type VarDecl struct {
@@ -808,9 +807,9 @@ type QueryExpr struct {
 func (q *QueryExpr) emit(w io.Writer) {
 	fmt.Fprintf(w, "func() []%s { ", q.ElemType)
 	if q.Sort != nil {
-		fmt.Fprintf(w, "type _pair struct { Key %s; Val %s }; _tmp := []_pair{}; ", q.SortType, q.ElemType)
+		fmt.Fprintf(w, "type pair struct { Key %s; Val %s }; tmp := []pair{}; ", q.SortType, q.ElemType)
 	} else {
-		fmt.Fprintf(w, "_res := []%s{}; ", q.ElemType)
+		fmt.Fprintf(w, "res := []%s{}; ", q.ElemType)
 	}
 	if len(q.Joins) == 1 && q.Joins[0].Side == "right" && len(q.Froms) == 0 {
 		j := q.Joins[0]
@@ -855,13 +854,13 @@ func (q *QueryExpr) emit(w io.Writer) {
 		fmt.Fprint(w, " {")
 	}
 	if q.Sort != nil {
-		fmt.Fprint(w, " _tmp = append(_tmp, _pair{")
+		fmt.Fprint(w, " tmp = append(tmp, pair{")
 		q.Sort.emit(w)
 		fmt.Fprint(w, ", ")
 		q.Select.emit(w)
 		fmt.Fprint(w, "})")
 	} else {
-		fmt.Fprint(w, " _res = append(_res, ")
+		fmt.Fprint(w, " res = append(res, ")
 		q.Select.emit(w)
 		fmt.Fprint(w, ")")
 	}
@@ -883,26 +882,26 @@ func (q *QueryExpr) emit(w io.Writer) {
 		fmt.Fprint(w, " }")
 	}
 	if q.Sort != nil {
-		fmt.Fprint(w, " ; sort.Slice(_tmp, func(i,j int) bool { return _tmp[i].Key < _tmp[j].Key })")
-		fmt.Fprintf(w, "; _res := make([]%s, len(_tmp)); for i, p := range _tmp { _res[i] = p.Val }", q.ElemType)
+		fmt.Fprint(w, " ; sort.Slice(tmp, func(i,j int) bool { return tmp[i].Key < tmp[j].Key })")
+		fmt.Fprintf(w, "; res := make([]%s, len(tmp)); for i, p := range tmp { res[i] = p.Val }", q.ElemType)
 	}
 	if q.Skip != nil {
 		fmt.Fprint(w, "; if ")
 		q.Skip.emit(w)
-		fmt.Fprint(w, " < len(_res) { _res = _res[")
+		fmt.Fprint(w, " < len(res) { res = res[")
 		q.Skip.emit(w)
-		fmt.Fprint(w, ":] } else { _res = []")
+		fmt.Fprint(w, ":] } else { res = []")
 		fmt.Fprint(w, q.ElemType)
 		fmt.Fprint(w, "{} }")
 	}
 	if q.Take != nil {
 		fmt.Fprint(w, "; if ")
 		q.Take.emit(w)
-		fmt.Fprint(w, " < len(_res) { _res = _res[:")
+		fmt.Fprint(w, " < len(res) { res = res[:")
 		q.Take.emit(w)
 		fmt.Fprint(w, "] }")
 	}
-	fmt.Fprint(w, "; return _res }()")
+	fmt.Fprint(w, "; return res }()")
 }
 
 type AtoiExpr struct{ Expr Expr }
@@ -972,19 +971,20 @@ func compileStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 	case st.Expr != nil:
 		if call := extractCall(st.Expr.Expr); call != nil && call.Func == "print" {
 			args := make([]Expr, len(call.Args))
+			needStrings := false
 			for i, a := range call.Args {
 				ex, err := compileExpr(a, env, "")
 				if err != nil {
 					return nil, err
 				}
 				if _, ok := ex.(*ValuesExpr); ok {
-					usesStrings = true
+					needStrings = true
 					usesSort = true
 				} else {
 					t := types.TypeOfExpr(a, env)
 					switch t.(type) {
 					case types.ListType:
-						usesStrings = true
+						needStrings = true
 						ex = &ListStringExpr{List: ex}
 					case types.FloatType:
 						ex = &FloatStringExpr{Value: ex}
@@ -1000,7 +1000,9 @@ func compileStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 				args[i] = ex
 			}
 			usesPrint = true
-			usesStrings = true
+			if needStrings {
+				usesStrings = true
+			}
 			return &PrintStmt{Args: args}, nil
 		}
 		e, err := compileExpr(st.Expr.Expr, env, "")
