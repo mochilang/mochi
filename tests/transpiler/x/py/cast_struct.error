@@ -1,8 +1,0 @@
-run: exit status 1
-Traceback (most recent call last):
-  File "/workspace/mochi/tests/transpiler/x/py/cast_struct.py", line 5, in <module>
-    class Todo:
-  File "/workspace/mochi/tests/transpiler/x/py/cast_struct.py", line 6, in Todo
-    title: string
-           ^^^^^^
-NameError: name 'string' is not defined

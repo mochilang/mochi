@@ -1003,6 +1003,21 @@ func header() string {
 		version(), t.Format("2006-01-02 15:04 -0700"))
 }
 
+func pyTypeName(name string) string {
+	switch name {
+	case "string":
+		return "str"
+	case "int", "int64":
+		return "int"
+	case "float":
+		return "float"
+	case "bool":
+		return "bool"
+	default:
+		return name
+	}
+}
+
 func typeRefSimpleName(t *parser.TypeRef) string {
 	if t == nil {
 		return ""
@@ -1772,7 +1787,7 @@ func Emit(w io.Writer, p *Program) error {
 				continue
 			}
 			for _, f := range st.Fields {
-				line := fmt.Sprintf("    %s: %s\n", f.Name, f.Type)
+				line := fmt.Sprintf("    %s: %s\n", f.Name, pyTypeName(f.Type))
 				if _, err := io.WriteString(w, line); err != nil {
 					return err
 				}
@@ -2111,7 +2126,12 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 				mapIndex := true
 				if currentEnv != nil {
 					if t, err := currentEnv.GetVar(st.Assign.Name); err == nil {
-						if _, ok := t.(types.StructType); ok {
+						switch t.(type) {
+						case types.StructType:
+							mapIndex = false
+						case types.MapType:
+							mapIndex = true
+						default:
 							mapIndex = false
 						}
 					}
@@ -2222,6 +2242,16 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 			for _, v := range st.Type.Variants {
 				if len(v.Fields) == 0 {
 					p.Stmts = append(p.Stmts, &LetStmt{Name: v.Name, Expr: &Name{Name: "None"}})
+				} else {
+					var vf []DataClassField
+					for _, f := range v.Fields {
+						typ := "any"
+						if f.Type != nil {
+							typ = types.ResolveTypeRef(f.Type, env).String()
+						}
+						vf = append(vf, DataClassField{Name: f.Name, Type: typ})
+					}
+					p.Stmts = append(p.Stmts, &DataClassDef{Name: v.Name, Fields: vf})
 				}
 			}
 			continue
@@ -2489,6 +2519,16 @@ func convertStmts(list []*parser.Statement, env *types.Env) ([]Stmt, error) {
 			for _, v := range s.Type.Variants {
 				if len(v.Fields) == 0 {
 					out = append(out, &LetStmt{Name: v.Name, Expr: &Name{Name: "None"}})
+				} else {
+					var vf []DataClassField
+					for _, f := range v.Fields {
+						typ := "any"
+						if f.Type != nil {
+							typ = types.ResolveTypeRef(f.Type, env).String()
+						}
+						vf = append(vf, DataClassField{Name: f.Name, Type: typ})
+					}
+					out = append(out, &DataClassDef{Name: v.Name, Fields: vf})
 				}
 			}
 			continue

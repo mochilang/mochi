@@ -1,8 +1,6 @@
 run: exit status 1
 Traceback (most recent call last):
-  File "/workspace/mochi/tests/transpiler/x/py/update_stmt.py", line 5, in <module>
-    class Person:
-  File "/workspace/mochi/tests/transpiler/x/py/update_stmt.py", line 6, in Person
-    name: string
-          ^^^^^^
-NameError: name 'string' is not defined
+  File "/workspace/mochi/tests/transpiler/x/py/update_stmt.py", line 12, in <module>
+    if item["age"] >= 18:
+       ~~~~^^^^^^^
+TypeError: 'Person' object is not subscriptable
