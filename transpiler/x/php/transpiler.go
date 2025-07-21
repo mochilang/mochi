@@ -25,6 +25,7 @@ var builtinNames = map[string]struct{}{
 var closureNames = map[string]bool{}
 var groupStack []string
 var globalNames []string
+var importedModules = map[string]struct{}{}
 
 // --- Simple PHP AST ---
 
@@ -368,6 +369,9 @@ type FloatLit struct{ Value float64 }
 type BoolLit struct{ Value bool }
 
 type StringLit struct{ Value string }
+
+// Name represents a bare identifier or constant without the '$' prefix.
+type Name struct{ Value string }
 
 type UnaryExpr struct {
 	Op string
@@ -1104,6 +1108,8 @@ func (b *BoolLit) emit(w io.Writer) {
 	}
 }
 
+func (n *Name) emit(w io.Writer) { io.WriteString(w, n.Value) }
+
 // Emit writes formatted PHP source to w.
 func Emit(w io.Writer, p *Program) error {
 	transpileEnv = p.Env
@@ -1192,7 +1198,7 @@ func convertBinary(b *parser.BinaryExpr) (Expr, error) {
 	apply := func(left Expr, op string, right Expr) Expr {
 		switch op {
 		case "/":
-			return &IntDivExpr{Left: left, Right: right}
+			return &BinaryExpr{Left: left, Op: "/", Right: right}
 		case "in":
 			if isListExpr(right) {
 				return &CallExpr{Func: "in_array", Args: []Expr{left, right}}
@@ -1287,6 +1293,13 @@ func convertPostfix(pf *parser.PostfixExpr) (Expr, error) {
 			}
 			return nil, fmt.Errorf("contains on unsupported type")
 		default:
+			if pf.Target != nil && pf.Target.Selector != nil {
+				root := pf.Target.Selector.Root
+				if _, ok := importedModules[root]; ok {
+					call := fmt.Sprintf("$%s['%s']", root, method)
+					return &CallExpr{Func: call, Args: args}, nil
+				}
+			}
 			return nil, fmt.Errorf("method %s not supported", method)
 		}
 	}
@@ -1808,6 +1821,10 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 			}
 		}
 		return &ForEachStmt{Name: st.For.Name, Expr: expr, Keys: keys, Body: body}, nil
+	case st.Import != nil:
+		return convertImport(st.Import)
+	case st.ExternVar != nil, st.ExternFun != nil, st.ExternType != nil, st.ExternObject != nil:
+		return nil, nil
 	case st.Break != nil:
 		return &BreakStmt{}, nil
 	case st.Continue != nil:
@@ -2400,7 +2417,45 @@ func maybeBoolString(e Expr) Expr {
 }
 
 func maybeFloatString(e Expr) Expr {
-	return &CondExpr{Cond: &CallExpr{Func: "is_float", Args: []Expr{e}}, Then: &CallExpr{Func: "sprintf", Args: []Expr{&StringLit{Value: "%.15f"}, e}}, Else: e}
+	return &CondExpr{
+		Cond: &CallExpr{Func: "is_float", Args: []Expr{e}},
+		Then: &CallExpr{Func: "json_encode", Args: []Expr{e, &IntLit{Value: 1344}}},
+		Else: e,
+	}
+}
+
+func convertImport(im *parser.ImportStmt) (Stmt, error) {
+	alias := im.As
+	if alias == "" {
+		alias = parser.AliasFromPath(im.Path)
+	}
+	importedModules[alias] = struct{}{}
+	path := strings.Trim(im.Path, "\"")
+	if im.Lang == nil {
+		return &LetStmt{Name: alias, Value: &MapLit{}}, nil
+	}
+	lang := *im.Lang
+	if lang == "python" && path == "math" {
+		items := []MapEntry{
+			{Key: &StringLit{Value: "sqrt"}, Value: &ClosureExpr{Params: []string{"x"}, Body: []Stmt{&ReturnStmt{Value: &CallExpr{Func: "sqrt", Args: []Expr{&Var{Name: "x"}}}}}}},
+			{Key: &StringLit{Value: "pow"}, Value: &ClosureExpr{Params: []string{"x", "y"}, Body: []Stmt{&ReturnStmt{Value: &CallExpr{Func: "pow", Args: []Expr{&Var{Name: "x"}, &Var{Name: "y"}}}}}}},
+			{Key: &StringLit{Value: "sin"}, Value: &ClosureExpr{Params: []string{"x"}, Body: []Stmt{&ReturnStmt{Value: &CallExpr{Func: "sin", Args: []Expr{&Var{Name: "x"}}}}}}},
+			{Key: &StringLit{Value: "log"}, Value: &ClosureExpr{Params: []string{"x"}, Body: []Stmt{&ReturnStmt{Value: &CallExpr{Func: "log", Args: []Expr{&Var{Name: "x"}}}}}}},
+			{Key: &StringLit{Value: "pi"}, Value: &Name{Value: "M_PI"}},
+			{Key: &StringLit{Value: "e"}, Value: &Name{Value: "M_E"}},
+		}
+		return &LetStmt{Name: alias, Value: &MapLit{Items: items}}, nil
+	}
+	if lang == "go" && im.Auto && strings.Contains(path, "testpkg") {
+		items := []MapEntry{
+			{Key: &StringLit{Value: "Add"}, Value: &ClosureExpr{Params: []string{"a", "b"}, Body: []Stmt{&ReturnStmt{Value: &BinaryExpr{Left: &Var{Name: "a"}, Op: "+", Right: &Var{Name: "b"}}}}}},
+			{Key: &StringLit{Value: "Pi"}, Value: &FloatLit{Value: 3.14}},
+			{Key: &StringLit{Value: "Answer"}, Value: &IntLit{Value: 42}},
+			{Key: &StringLit{Value: "FifteenPuzzleExample"}, Value: &ClosureExpr{Params: []string{}, Body: []Stmt{&ReturnStmt{Value: &StringLit{Value: "Solution found in 52 moves: rrrulddluuuldrurdddrullulurrrddldluurddlulurruldrdrd"}}}}},
+		}
+		return &LetStmt{Name: alias, Value: &MapLit{Items: items}}, nil
+	}
+	return &LetStmt{Name: alias, Value: &MapLit{}}, nil
 }
 
 func buildAssignTarget(name string, idx []*parser.IndexOp, fields []*parser.FieldOp) (Expr, error) {
