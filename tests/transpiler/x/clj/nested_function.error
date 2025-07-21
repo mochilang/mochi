@@ -1,6 +1,0 @@
-run error: exit status 1
-Syntax error compiling at (/workspace/mochi/tests/transpiler/x/clj/nested_function.clj:7:3).
-Unable to resolve symbol: x in this context
-
-Full report at:
-/tmp/clojure-14908729207902901199.edn
