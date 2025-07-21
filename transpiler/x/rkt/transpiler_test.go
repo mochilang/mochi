@@ -162,10 +162,21 @@ func updateReadme() {
 		}
 		lines = append(lines, "- "+mark+" "+name)
 	}
+	out, err := exec.Command("git", "log", "-1", "--format=%cI").Output()
+	ts := time.Now()
+	if err == nil {
+		if t, perr := time.Parse(time.RFC3339, strings.TrimSpace(string(out))); perr == nil {
+			ts = t
+		}
+	}
+	if loc, err := time.LoadLocation("Asia/Bangkok"); err == nil {
+		ts = ts.In(loc)
+	}
 	var buf bytes.Buffer
 	buf.WriteString("# Mochi Racket Transpiler\n")
 	buf.WriteString("This directory contains the experimental Racket transpiler. Golden tests under `tests/vm/valid` check the generated code and its runtime output.\n")
-	fmt.Fprintf(&buf, "\n## Golden Test Checklist (%d/%d)\n\n", compiled, total)
+	fmt.Fprintf(&buf, "\n## Golden Test Checklist (%d/%d)\n", compiled, total)
+	fmt.Fprintf(&buf, "Last updated: %s\n\n", ts.Format("2006-01-02 15:04 -0700"))
 	buf.WriteString(strings.Join(lines, "\n"))
 	buf.WriteString("\n")
 	_ = os.WriteFile(readmePath, buf.Bytes(), 0o644)
