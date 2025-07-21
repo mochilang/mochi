@@ -208,7 +208,7 @@ func (p *PrintStmt) emit(w io.Writer) {
 	if isBoolExpr(p.Expr) {
 		io.WriteString(w, "putStrLn (if ")
 		p.Expr.emit(w)
-		io.WriteString(w, " then \"1\" else \"0\")")
+		io.WriteString(w, " then \"true\" else \"false\")")
 		return
 	}
 
@@ -236,14 +236,14 @@ func (a *AssignStmt) emit(w io.Writer) {
 func (i *IfStmt) emit(w io.Writer) {
 	io.WriteString(w, "if ")
 	i.Cond.emit(w)
-	io.WriteString(w, " then\n")
+	io.WriteString(w, " then do\n")
 	for _, st := range i.Then {
 		io.WriteString(w, "        ")
 		st.emit(w)
 		io.WriteString(w, "\n")
 	}
 	if len(i.Else) > 0 {
-		io.WriteString(w, "    else\n")
+		io.WriteString(w, "    else do\n")
 		for _, st := range i.Else {
 			io.WriteString(w, "        ")
 			st.emit(w)
@@ -1231,10 +1231,32 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 			srcs = append(srcs, fe)
 		}
 		var cond Expr
-		if p.Query.Where != nil {
-			cond, err = convertExpr(p.Query.Where)
+		for _, j := range p.Query.Joins {
+			je, err := convertExpr(j.Src)
 			if err != nil {
 				return nil, err
+			}
+			vars = append(vars, j.Var)
+			srcs = append(srcs, je)
+			jc, err := convertExpr(j.On)
+			if err != nil {
+				return nil, err
+			}
+			if cond == nil {
+				cond = jc
+			} else {
+				cond = &BinaryExpr{Left: cond, Ops: []BinaryOp{{Op: "&&", Right: jc}}}
+			}
+		}
+		if p.Query.Where != nil {
+			wcond, err := convertExpr(p.Query.Where)
+			if err != nil {
+				return nil, err
+			}
+			if cond == nil {
+				cond = wcond
+			} else {
+				cond = &BinaryExpr{Left: cond, Ops: []BinaryOp{{Op: "&&", Right: wcond}}}
 			}
 		}
 		body, err := convertExpr(p.Query.Select)

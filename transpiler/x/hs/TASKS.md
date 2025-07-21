@@ -1,3 +1,17 @@
+## Progress (2025-07-21 07:34 +0700)
+- VM valid golden test results updated
+- Added escaping for Haskell reserved keywords
+- Regenerated README checklist from golden tests
+
+## Progress (2025-07-21 07:08 +0700)
+- VM valid golden test results updated
+- Added list struct inference and OverloadedRecordDot generation
+- Replaced `.error` with generated `.hs` for `list_index`
+- Regenerated README checklist from golden tests
+- VM valid golden test results updated
+- Added escaping for Haskell reserved keywords
+- Regenerated README checklist from golden tests
+
 ## Progress (2025-07-21 07:08 +0700)
 - VM valid golden test results updated
 - Added list struct inference and OverloadedRecordDot generation
