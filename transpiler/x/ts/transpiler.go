@@ -324,6 +324,20 @@ type GroupQueryExpr struct {
 	ElemType string
 }
 
+// GroupJoinQueryExpr handles queries with joins and grouping.
+type GroupJoinQueryExpr struct {
+	Loops    []QueryLoop
+	Joins    []JoinSpec
+	Where    Expr
+	Key      Expr
+	Row      Expr
+	GroupVar string
+	Select   Expr
+	Having   Expr
+	Sort     Expr
+	ElemType string
+}
+
 // AggQueryExpr represents simple aggregation queries like
 // `from x in xs where ... select sum(x)`.
 type AggQueryExpr struct {
@@ -1000,6 +1014,162 @@ func (gq *GroupQueryExpr) emit(w io.Writer) {
 	if gq.Cond != nil {
 		io.WriteString(iw, "    if (!(")
 		gq.Cond.emit(iw)
+		io.WriteString(iw, ")) continue\n")
+	}
+	io.WriteString(iw, "    const _k = ")
+	gq.Key.emit(iw)
+	io.WriteString(iw, "\n    const _ks = JSON.stringify(_k)\n    let _g = _groups[_ks]\n    if (!_g) { _g = {key: _k, items: []}; _groups[_ks] = _g; _order.push(_ks) }\n    _g.items.push(")
+	gq.Row.emit(iw)
+	io.WriteString(iw, ")\n  }\n")
+	io.WriteString(iw, "  const result")
+	if gq.ElemType != "" {
+		io.WriteString(iw, ": ")
+		io.WriteString(iw, gq.ElemType)
+		io.WriteString(iw, "[]")
+	}
+	io.WriteString(iw, " = []\n")
+	if gq.Sort != nil {
+		io.WriteString(iw, "  const _pairs = _order.map(ks => { const ")
+		io.WriteString(iw, gq.GroupVar)
+		io.WriteString(iw, " = _groups[ks]; return {g: ")
+		io.WriteString(iw, gq.GroupVar)
+		io.WriteString(iw, ", key: ")
+		gq.Sort.emit(iw)
+		io.WriteString(iw, "} })\n")
+		io.WriteString(iw, "  _pairs.sort((a,b)=>{const ak=a.key;const bk=b.key;if(ak<bk)return -1;if(ak>bk)return 1;const sak=JSON.stringify(ak);const sbk=JSON.stringify(bk);return sak<sbk?-1:sak>sbk?1:0})\n")
+		io.WriteString(iw, "  for (const p of _pairs) {\n    const ")
+		io.WriteString(iw, gq.GroupVar)
+		io.WriteString(iw, " = p.g\n")
+	} else {
+		io.WriteString(iw, "  for (const ks of _order) {\n    const ")
+		io.WriteString(iw, gq.GroupVar)
+		io.WriteString(iw, " = _groups[ks]\n")
+	}
+	if gq.Having != nil {
+		io.WriteString(iw, "    if (")
+		gq.Having.emit(iw)
+		io.WriteString(iw, ") {\n      result.push(")
+		gq.Select.emit(iw)
+		io.WriteString(iw, ")\n    }\n")
+	} else {
+		io.WriteString(iw, "    result.push(")
+		gq.Select.emit(iw)
+		io.WriteString(iw, ")\n")
+	}
+	io.WriteString(iw, "  }\n  return result\n")
+	io.WriteString(iw, "})()")
+}
+
+func (gq *GroupJoinQueryExpr) emit(w io.Writer) {
+	iw := &indentWriter{w: w, indent: "  "}
+	io.WriteString(iw, "(() => {\n")
+	io.WriteString(iw, "  const _groups: Record<string, {key: any; items: any[]}> = {}\n")
+	io.WriteString(iw, "  const _order: string[] = []\n")
+	io.WriteString(iw, "  let _items = ")
+	if len(gq.Loops) > 0 {
+		gq.Loops[0].Source.emit(iw)
+	} else {
+		io.WriteString(iw, "[]")
+	}
+	io.WriteString(iw, ".map(v => [v])\n")
+	names := []string{}
+	if len(gq.Loops) > 0 {
+		names = append(names, gq.Loops[0].Name)
+	}
+	for i := 1; i < len(gq.Loops); i++ {
+		loop := gq.Loops[i]
+		io.WriteString(iw, "  { const _next = []\n")
+		io.WriteString(iw, "    for (const it of _items) {\n")
+		io.WriteString(iw, "      for (const ")
+		io.WriteString(iw, loop.Name)
+		io.WriteString(iw, " of ")
+		loop.Source.emit(iw)
+		io.WriteString(iw, ") { _next.push([...it, ")
+		io.WriteString(iw, loop.Name)
+		io.WriteString(iw, "]) }\n")
+		io.WriteString(iw, "    }\n")
+		io.WriteString(iw, "    _items = _next }\n")
+		names = append(names, loop.Name)
+	}
+	for _, j := range gq.Joins {
+		io.WriteString(iw, "  { const _joined = []\n")
+		io.WriteString(iw, "    const _arr = ")
+		j.Source.emit(iw)
+		io.WriteString(iw, "\n")
+		if j.Side == "right" {
+			io.WriteString(iw, "    for (let _ri=0; _ri < _arr.length; _ri++) {\n")
+			io.WriteString(iw, "      const ")
+			io.WriteString(iw, j.Name)
+			io.WriteString(iw, " = _arr[_ri];\n")
+			io.WriteString(iw, "      let _m = false;\n")
+			io.WriteString(iw, "      for (const _left of _items) {\n")
+			if len(names) > 0 {
+				io.WriteString(iw, "        const [")
+				io.WriteString(iw, strings.Join(names, ", "))
+				io.WriteString(iw, "] = _left;\n")
+			}
+			if j.On != nil {
+				io.WriteString(iw, "        if (!(")
+				j.On.emit(iw)
+				io.WriteString(iw, ")) continue;\n")
+			}
+			io.WriteString(iw, "        _m = true; _joined.push([..._left, ")
+			io.WriteString(iw, j.Name)
+			io.WriteString(iw, "]) }\n")
+			io.WriteString(iw, "      if (!_m) { const _undef = Array(_items[0]?.length || 0).fill(null); _joined.push([..._undef, ")
+			io.WriteString(iw, j.Name)
+			io.WriteString(iw, "]) }\n")
+			io.WriteString(iw, "    }\n")
+		} else {
+			if j.Side == "right" || j.Side == "outer" {
+				io.WriteString(iw, "    const _matched = new Array(_arr.length).fill(false)\n")
+			}
+			io.WriteString(iw, "    for (const _left of _items) {\n")
+			if len(names) > 0 {
+				io.WriteString(iw, "      const [")
+				io.WriteString(iw, strings.Join(names, ", "))
+				io.WriteString(iw, "] = _left;\n")
+			}
+			io.WriteString(iw, "      let _m = false;\n")
+			io.WriteString(iw, "      for (let _ri=0; _ri < _arr.length; _ri++) {\n")
+			io.WriteString(iw, "        const ")
+			io.WriteString(iw, j.Name)
+			io.WriteString(iw, " = _arr[_ri];\n")
+			if j.On != nil {
+				io.WriteString(iw, "        if (!(")
+				j.On.emit(iw)
+				io.WriteString(iw, ")) continue;\n")
+			}
+			io.WriteString(iw, "        _m = true;")
+			if j.Side == "right" || j.Side == "outer" {
+				io.WriteString(iw, " _matched[_ri] = true;")
+			}
+			io.WriteString(iw, " _joined.push([..._left, ")
+			io.WriteString(iw, j.Name)
+			io.WriteString(iw, "]) }\n")
+			if j.Side == "left" || j.Side == "outer" {
+				io.WriteString(iw, "      if (!_m) _joined.push([..._left, null])\n")
+			}
+			io.WriteString(iw, "    }\n")
+			if j.Side == "right" || j.Side == "outer" {
+				io.WriteString(iw, "    for (let _ri=0; _ri < _arr.length; _ri++) { if (!_matched[_ri]) {\n")
+				io.WriteString(iw, "      const _undef = Array(_items[0]?.length || 0).fill(null);\n")
+				io.WriteString(iw, "      _joined.push([..._undef, _arr[_ri]]) } }\n")
+			}
+		}
+		io.WriteString(iw, "    _items = _joined;\n")
+		io.WriteString(iw, "  }\n")
+		names = append(names, j.Name)
+	}
+	io.WriteString(iw, "  for (const _it of _items) {\n")
+	if len(names) > 0 {
+		io.WriteString(iw, "    const [")
+		io.WriteString(iw, strings.Join(names, ", "))
+		io.WriteString(iw, "] = _it;\n")
+	}
+	if gq.Where != nil {
+		io.WriteString(iw, "    if (!(")
+		gq.Where.emit(iw)
 		io.WriteString(iw, ")) continue\n")
 	}
 	io.WriteString(iw, "    const _k = ")
@@ -1976,6 +2146,52 @@ func convertQueryExpr(q *parser.QueryExpr) (Expr, error) {
 			st.Name = name
 			elemType = name
 		}
+	}
+
+	if q.Group != nil && len(q.Group.Exprs) == 1 && (len(q.Froms) != 0 || len(q.Joins) != 0 || q.Skip != nil || q.Take != nil) {
+		key, err := convertExpr(q.Group.Exprs[0])
+		if err != nil {
+			return nil, err
+		}
+		names := []string{q.Var}
+		for _, f := range q.Froms {
+			names = append(names, f.Var)
+		}
+		for _, j := range q.Joins {
+			names = append(names, j.Var)
+		}
+		entries := make([]MapEntry, len(names))
+		for i, n := range names {
+			entries[i] = MapEntry{Key: &StringLit{Value: n}, Value: &NameRef{Name: n}}
+		}
+		row := &MapLit{Entries: entries}
+		prev := transpileEnv
+		child := types.NewEnv(transpileEnv)
+		child.SetVar(q.Group.Name, types.GroupType{Key: types.AnyType{}, Elem: types.AnyType{}}, true)
+		transpileEnv = child
+		sel, err = convertExpr(q.Select)
+		if err != nil {
+			transpileEnv = prev
+			return nil, err
+		}
+		var having Expr
+		if q.Group.Having != nil {
+			having, err = convertExpr(q.Group.Having)
+			if err != nil {
+				transpileEnv = prev
+				return nil, err
+			}
+		}
+		elemType = ""
+		if ml := mapLiteral(q.Select); ml != nil {
+			if st, ok := types.InferStructFromMapEnv(ml, transpileEnv); ok {
+				name := ensureNamedStruct(st, "Result")
+				st.Name = name
+				elemType = name
+			}
+		}
+		transpileEnv = prev
+		return &GroupJoinQueryExpr{Loops: loops, Joins: joins, Where: where, Key: key, Row: row, GroupVar: q.Group.Name, Select: sel, Having: having, Sort: sort, ElemType: elemType}, nil
 	}
 
 	if q.Group != nil && len(q.Group.Exprs) == 1 && len(q.Froms) == 0 && len(q.Joins) == 0 && q.Skip == nil && q.Take == nil {
@@ -3342,6 +3558,27 @@ func exprToNode(e Expr) *ast.Node {
 		n := &ast.Node{Kind: "group-query"}
 		n.Children = append(n.Children, &ast.Node{Kind: "var", Value: ex.Var})
 		n.Children = append(n.Children, exprToNode(ex.Source))
+		n.Children = append(n.Children, &ast.Node{Kind: "key", Children: []*ast.Node{exprToNode(ex.Key)}})
+		if ex.Having != nil {
+			n.Children = append(n.Children, &ast.Node{Kind: "having", Children: []*ast.Node{exprToNode(ex.Having)}})
+		}
+		n.Children = append(n.Children, &ast.Node{Kind: "select", Children: []*ast.Node{exprToNode(ex.Select)}})
+		return n
+	case *GroupJoinQueryExpr:
+		n := &ast.Node{Kind: "group-query"}
+		for _, l := range ex.Loops {
+			n.Children = append(n.Children, &ast.Node{Kind: "for", Value: l.Name, Children: []*ast.Node{exprToNode(l.Source)}})
+		}
+		for _, j := range ex.Joins {
+			jc := &ast.Node{Kind: "join", Value: j.Name, Children: []*ast.Node{exprToNode(j.Source), exprToNode(j.On)}}
+			if j.Side != "" {
+				jc.Value = j.Side + " " + j.Name
+			}
+			n.Children = append(n.Children, jc)
+		}
+		if ex.Where != nil {
+			n.Children = append(n.Children, &ast.Node{Kind: "where", Children: []*ast.Node{exprToNode(ex.Where)}})
+		}
 		n.Children = append(n.Children, &ast.Node{Kind: "key", Children: []*ast.Node{exprToNode(ex.Key)}})
 		if ex.Having != nil {
 			n.Children = append(n.Children, &ast.Node{Kind: "having", Children: []*ast.Node{exprToNode(ex.Having)}})
