@@ -1,3 +1,7 @@
+## Progress (2025-07-21 15:41 +0700)
+- Checklist updated: 61/100 tests compiled
+- Added cross join query support.
+
 ## Progress (2025-07-21 08:34 +0000)
 - Checklist updated: 55/100 tests compiled
 - Added `where` filters and group `having` support.

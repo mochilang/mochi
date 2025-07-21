@@ -142,6 +142,44 @@ func (p *Program) UsesStrModule() bool {
 	return false
 }
 
+func (p *Program) UsesControl() bool {
+	var uses bool
+	var check func(Stmt)
+	check = func(s Stmt) {
+		switch st := s.(type) {
+		case *BreakStmt, *ContinueStmt:
+			uses = true
+		case *WhileStmt:
+			for _, b := range st.Body {
+				check(b)
+			}
+		case *ForRangeStmt:
+			for _, b := range st.Body {
+				check(b)
+			}
+		case *ForEachStmt:
+			for _, b := range st.Body {
+				check(b)
+			}
+		case *IfStmt:
+			for _, t := range st.Then {
+				check(t)
+			}
+			for _, e := range st.Else {
+				check(e)
+			}
+		case *FunStmt:
+			for _, b := range st.Body {
+				check(b)
+			}
+		}
+	}
+	for _, s := range p.Stmts {
+		check(s)
+	}
+	return uses
+}
+
 type VarInfo struct {
 	typ   string
 	ref   bool
@@ -253,13 +291,13 @@ type WhileStmt struct {
 }
 
 func (ws *WhileStmt) emit(w io.Writer) {
-	io.WriteString(w, "  while ")
+	io.WriteString(w, "  (try while ")
 	ws.Cond.emit(w)
-	io.WriteString(w, " do\n")
+	io.WriteString(w, " do\n    try\n")
 	for _, st := range ws.Body {
 		st.emit(w)
 	}
-	io.WriteString(w, "  done;\n")
+	io.WriteString(w, "    with Continue -> ()\n  done with Break -> ())\n")
 }
 
 // ForRangeStmt represents a numeric for-loop like `for i in a..b {}`.
@@ -271,7 +309,7 @@ type ForRangeStmt struct {
 }
 
 func (fr *ForRangeStmt) emit(w io.Writer) {
-	io.WriteString(w, "  for ")
+	io.WriteString(w, "  (try for ")
 	io.WriteString(w, fr.Name)
 	io.WriteString(w, " = ")
 	if fr.Start != nil {
@@ -281,11 +319,11 @@ func (fr *ForRangeStmt) emit(w io.Writer) {
 	}
 	io.WriteString(w, " to (")
 	fr.End.emit(w)
-	io.WriteString(w, " - 1) do\n")
+	io.WriteString(w, " - 1) do\n    try\n")
 	for _, st := range fr.Body {
 		st.emit(w)
 	}
-	io.WriteString(w, "  done;\n")
+	io.WriteString(w, "    with Continue -> ()\n  done with Break -> ())\n")
 }
 
 // ForEachStmt represents iteration over a collection.
@@ -298,26 +336,40 @@ type ForEachStmt struct {
 
 func (fe *ForEachStmt) emit(w io.Writer) {
 	if strings.HasPrefix(fe.Typ, "map") {
-		io.WriteString(w, "  List.iter (fun (")
+		io.WriteString(w, "  (try List.iter (fun (")
 		io.WriteString(w, fe.Name)
-		io.WriteString(w, ", _) ->\n")
+		io.WriteString(w, ", _) ->\n    try\n")
 		for _, st := range fe.Body {
 			st.emit(w)
 		}
-		io.WriteString(w, "  ) ")
+		io.WriteString(w, "    with Continue -> ()) ")
 		fe.Iterable.emit(w)
-		io.WriteString(w, ";\n")
+		io.WriteString(w, " with Break -> ())\n")
 		return
 	}
-	io.WriteString(w, "  List.iter (fun ")
+	io.WriteString(w, "  (try List.iter (fun ")
 	io.WriteString(w, fe.Name)
-	io.WriteString(w, " ->\n")
+	io.WriteString(w, " ->\n    try\n")
 	for _, st := range fe.Body {
 		st.emit(w)
 	}
-	io.WriteString(w, "  ) ")
+	io.WriteString(w, "    with Continue -> ()) ")
 	fe.Iterable.emit(w)
-	io.WriteString(w, ";\n")
+	io.WriteString(w, " with Break -> ())\n")
+}
+
+// BreakStmt exits the nearest loop.
+type BreakStmt struct{}
+
+func (b *BreakStmt) emit(w io.Writer) {
+	io.WriteString(w, "  raise Break;\n")
+}
+
+// ContinueStmt skips to the next loop iteration.
+type ContinueStmt struct{}
+
+func (c *ContinueStmt) emit(w io.Writer) {
+	io.WriteString(w, "  raise Continue;\n")
 }
 
 // FunStmt represents a simple function declaration with no parameters.
@@ -738,6 +790,10 @@ type queryLoop struct {
 type QueryExpr struct {
 	Loops  []queryLoop
 	Where  Expr
+	Sort   Expr
+	Desc   bool
+	Skip   Expr
+	Take   Expr
 	Select Expr
 }
 
@@ -774,7 +830,42 @@ func emitQueryLoop(w io.Writer, loops []queryLoop, sel Expr, where Expr, idx int
 	io.WriteString(w, "))")
 }
 
-func (q *QueryExpr) emit(w io.Writer)      { emitQueryLoop(w, q.Loops, q.Select, q.Where, 0) }
+func (q *QueryExpr) emit(w io.Writer) {
+	if q.Sort == nil && q.Skip == nil && q.Take == nil {
+		emitQueryLoop(w, q.Loops, q.Select, q.Where, 0)
+		return
+	}
+	io.WriteString(w, "(let __tmp0 = ")
+	emitQueryLoop(w, q.Loops, q.Select, q.Where, 0)
+	io.WriteString(w, " in\n")
+	if q.Sort != nil {
+		keyA := strings.ReplaceAll(renderExpr(q.Sort), q.Loops[0].Name, "a")
+		keyB := strings.ReplaceAll(renderExpr(q.Sort), q.Loops[0].Name, "b")
+		io.WriteString(w, "  let __tmp0 = List.sort (fun a b -> compare ")
+		if q.Desc {
+			io.WriteString(w, keyB+" "+keyA)
+		} else {
+			io.WriteString(w, keyA+" "+keyB)
+		}
+		io.WriteString(w, ") __tmp0 in\n")
+	}
+	if q.Skip != nil || q.Take != nil {
+		io.WriteString(w, "  let rec drop n l = if n <= 0 then l else match l with [] -> [] | _::t -> drop (n-1) t in\n")
+		io.WriteString(w, "  let rec take n l = if n <= 0 then [] else match l with [] -> [] | x::xs -> x :: take (n-1) xs in\n")
+		if q.Skip != nil {
+			io.WriteString(w, "  let __tmp0 = drop (")
+			q.Skip.emit(w)
+			io.WriteString(w, ") __tmp0 in\n")
+		}
+		if q.Take != nil {
+			io.WriteString(w, "  let __tmp0 = take (")
+			q.Take.emit(w)
+			io.WriteString(w, ") __tmp0 in\n")
+		}
+	}
+	io.WriteString(w, "  __tmp0)")
+}
+
 func (q *QueryExpr) emitPrint(w io.Writer) { q.emit(w) }
 
 // GroupByQueryExpr represents a query with a grouping step.
@@ -1184,6 +1275,7 @@ func (p *Program) Emit() []byte {
 	if p.UsesStrModule() {
 		// no external modules required
 	}
+	buf.WriteString("exception Break\nexception Continue\n\n")
 	for _, s := range p.Stmts {
 		if _, ok := s.(*FunStmt); ok {
 			s.emit(&buf)
@@ -1381,6 +1473,10 @@ func transpileStmt(st *parser.Statement, env *types.Env, vars map[string]VarInfo
 		}
 		delete(vars, st.For.Name)
 		return &ForEachStmt{Name: st.For.Name, Iterable: iter, Body: body, Typ: iterTyp}, nil
+	case st.Break != nil:
+		return &BreakStmt{}, nil
+	case st.Continue != nil:
+		return &ContinueStmt{}, nil
 	case st.Fun != nil:
 		child := types.NewEnv(env)
 		fnVars := map[string]VarInfo{}
@@ -1970,7 +2066,7 @@ func convertQueryExpr(q *parser.QueryExpr, env *types.Env, vars map[string]VarIn
 	}
 	qVars[q.Var] = VarInfo{typ: vtyp}
 	if q.Group != nil {
-		if len(q.Froms) > 0 || len(q.Joins) > 0 || q.Where != nil || q.Sort != nil || q.Skip != nil || q.Take != nil {
+		if len(q.Froms) > 0 || len(q.Joins) > 0 || q.Where != nil {
 			return nil, "", fmt.Errorf("group by: unsupported query form")
 		}
 		keyExpr, _, err := convertExpr(q.Group.Exprs[0], env, qVars)
@@ -2021,6 +2117,36 @@ func convertQueryExpr(q *parser.QueryExpr, env *types.Env, vars map[string]VarIn
 			return nil, "", err
 		}
 	}
+	var sortExpr Expr
+	var desc bool
+	if q.Sort != nil {
+		sx, _, err := convertExpr(q.Sort, env, qVars)
+		if err != nil {
+			return nil, "", err
+		}
+		if um, ok := sx.(*UnaryMinus); ok {
+			sortExpr = um.Expr
+			desc = true
+		} else {
+			sortExpr = sx
+		}
+	}
+	var skipExpr Expr
+	if q.Skip != nil {
+		var err error
+		skipExpr, _, err = convertExpr(q.Skip, env, qVars)
+		if err != nil {
+			return nil, "", err
+		}
+	}
+	var takeExpr Expr
+	if q.Take != nil {
+		var err error
+		takeExpr, _, err = convertExpr(q.Take, env, qVars)
+		if err != nil {
+			return nil, "", err
+		}
+	}
 	sel, selTyp, err := convertExpr(q.Select, env, qVars)
 	if err != nil {
 		return nil, "", err
@@ -2029,7 +2155,7 @@ func convertQueryExpr(q *parser.QueryExpr, env *types.Env, vars map[string]VarIn
 	if selTyp != "" {
 		retTyp = "list-" + selTyp
 	}
-	return &QueryExpr{Loops: loops, Where: whereExpr, Select: sel}, retTyp, nil
+	return &QueryExpr{Loops: loops, Where: whereExpr, Sort: sortExpr, Desc: desc, Skip: skipExpr, Take: takeExpr, Select: sel}, retTyp, nil
 }
 
 func convertCall(c *parser.CallExpr, env *types.Env, vars map[string]VarInfo) (Expr, string, error) {
@@ -2202,4 +2328,10 @@ func buildMapUpdate(mp Expr, keys []Expr, val Expr) Expr {
 	}
 	inner := buildMapUpdate(&MapIndexExpr{Map: mp, Key: key, Typ: "map"}, keys[1:], val)
 	return &MapUpdateExpr{Map: mp, Key: key, Value: inner}
+}
+
+func renderExpr(e Expr) string {
+	var b bytes.Buffer
+	e.emit(&b)
+	return b.String()
 }
