@@ -145,6 +145,7 @@ type QueryComp struct {
 	GroupKey Expr
 	GroupVar string
 	Having   Expr
+	Agg      string
 }
 
 func (s *ExprStmt) emit(w io.Writer) { s.Expr.emit(w) }
@@ -447,8 +448,13 @@ func (qa *QueryAssignStmt) emit(w io.Writer) {
 		return
 	}
 
-	io.WriteString(w, qa.Name)
-	io.WriteString(w, " = {}\n")
+	if qa.Query.Agg != "" {
+		io.WriteString(w, qa.Name)
+		io.WriteString(w, " = (function()\n  local _tmp = {}\n")
+	} else {
+		io.WriteString(w, qa.Name)
+		io.WriteString(w, " = {}\n")
+	}
 	for _, i := range order {
 		v := qa.Query.Vars[i]
 		io.WriteString(w, "for _, ")
@@ -462,9 +468,14 @@ func (qa *QueryAssignStmt) emit(w io.Writer) {
 		qa.Query.Where.emit(w)
 		io.WriteString(w, " then\n")
 	}
-	io.WriteString(w, "  table.insert(")
-	io.WriteString(w, qa.Name)
-	io.WriteString(w, ", ")
+	io.WriteString(w, "  ")
+	if qa.Query.Agg != "" {
+		io.WriteString(w, "table.insert(_tmp, ")
+	} else {
+		io.WriteString(w, "table.insert(")
+		io.WriteString(w, qa.Name)
+		io.WriteString(w, ", ")
+	}
 	if qa.Query.Body != nil {
 		qa.Query.Body.emit(w)
 	} else {
@@ -476,6 +487,11 @@ func (qa *QueryAssignStmt) emit(w io.Writer) {
 	}
 	for range qa.Query.Vars {
 		io.WriteString(w, "end\n")
+	}
+	if qa.Query.Agg != "" {
+		io.WriteString(w, "  return ")
+		(&CallExpr{Func: qa.Query.Agg, Args: []Expr{&Ident{Name: "_tmp"}}}).emit(w)
+		io.WriteString(w, "\nend)()\n")
 	}
 }
 
@@ -1001,7 +1017,11 @@ func (m *MatchExpr) emit(w io.Writer) {
 }
 
 func (qc *QueryComp) emit(w io.Writer) {
-	io.WriteString(w, "(function()\n  local _res = {}\n")
+	if qc.Agg != "" && qc.GroupKey == nil {
+		io.WriteString(w, "(function()\n  local _tmp = {}\n")
+	} else {
+		io.WriteString(w, "(function()\n  local _res = {}\n")
+	}
 	order := make([]int, len(qc.Vars))
 	idx := 0
 	for i := range qc.Vars {
@@ -1029,7 +1049,12 @@ func (qc *QueryComp) emit(w io.Writer) {
 		qc.Where.emit(w)
 		io.WriteString(w, " then\n")
 	}
-	io.WriteString(w, "    table.insert(_res, ")
+	io.WriteString(w, "    ")
+	if qc.Agg != "" && qc.GroupKey == nil {
+		io.WriteString(w, "table.insert(_tmp, ")
+	} else {
+		io.WriteString(w, "table.insert(_res, ")
+	}
 	if qc.Body != nil {
 		qc.Body.emit(w)
 	} else {
@@ -1042,7 +1067,13 @@ func (qc *QueryComp) emit(w io.Writer) {
 	for range qc.Vars {
 		io.WriteString(w, "  end\n")
 	}
-	io.WriteString(w, "  return _res\nend)()")
+	if qc.Agg != "" && qc.GroupKey == nil {
+		io.WriteString(w, "  return ")
+		(&CallExpr{Func: qc.Agg, Args: []Expr{&Ident{Name: "_tmp"}}}).emit(w)
+		io.WriteString(w, "\nend)()")
+	} else {
+		io.WriteString(w, "  return _res\nend)()")
+	}
 }
 
 func newContinueLabel() string {
@@ -1620,8 +1651,18 @@ func convertQueryExpr(q *parser.QueryExpr) (Expr, error) {
 	if err != nil {
 		return nil, err
 	}
+	agg := ""
+	if call, ok := body.(*CallExpr); ok && groupExpr == nil {
+		switch call.Func {
+		case "sum", "count", "avg", "min", "max":
+			if len(call.Args) == 1 {
+				agg = call.Func
+				body = call.Args[0]
+			}
+		}
+	}
 	currentEnv = prevEnv
-	return &QueryComp{Vars: vars, Sources: sources, Sides: sides, Body: body, Where: where, GroupKey: groupExpr, GroupVar: groupVar, Having: having}, nil
+	return &QueryComp{Vars: vars, Sources: sources, Sides: sides, Body: body, Where: where, GroupKey: groupExpr, GroupVar: groupVar, Having: having, Agg: agg}, nil
 }
 
 func convertIfStmt(is *parser.IfStmt) (Stmt, error) {

@@ -2,7 +2,7 @@
 
 Generated Lua code for programs in `tests/vm/valid`. Each program has a `.lua` file produced by the transpiler and a `.out` file with its runtime output. Compilation or execution errors are captured in `.error` files.
 
-Transpiled programs: 79/100
+Transpiled programs: 80/100
 
 Checklist:
 
@@ -78,7 +78,7 @@ Checklist:
 - [x] pure_global_fold
 - [ ] python_auto
 - [ ] python_math
-- [ ] query_sum_select
+- [x] query_sum_select
 - [ ] record_assign
 - [x] right_join
 - [ ] save_jsonl_stdout
