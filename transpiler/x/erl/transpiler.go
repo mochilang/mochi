@@ -31,10 +31,13 @@ type context struct {
 	orig     map[string]string
 	counter  map[string]int
 	strField map[string]map[string]bool
+	groups   map[string]groupInfo
 }
 
+type groupInfo struct{ key, items string }
+
 func newContext() *context {
-	return &context{alias: map[string]string{}, orig: map[string]string{}, counter: map[string]int{}, strField: map[string]map[string]bool{}}
+	return &context{alias: map[string]string{}, orig: map[string]string{}, counter: map[string]int{}, strField: map[string]map[string]bool{}, groups: map[string]groupInfo{}}
 }
 
 func (c *context) clone() *context {
@@ -58,7 +61,11 @@ func (c *context) clone() *context {
 		}
 		fields[k] = fm
 	}
-	return &context{alias: alias, orig: orig, counter: counter, strField: fields}
+	groups := make(map[string]groupInfo, len(c.groups))
+	for k, v := range c.groups {
+		groups[k] = v
+	}
+	return &context{alias: alias, orig: orig, counter: counter, strField: fields, groups: groups}
 }
 
 func (c *context) newAlias(name string) string {
@@ -96,6 +103,18 @@ func (c *context) setStrFields(name string, fields map[string]bool) {
 	c.strField[name] = fields
 }
 
+func (c *context) setGroup(name, keyVar, itemsVar string) {
+	if c.groups == nil {
+		c.groups = map[string]groupInfo{}
+	}
+	c.groups[name] = groupInfo{key: keyVar, items: itemsVar}
+}
+
+func (c *context) getGroup(name string) (groupInfo, bool) {
+	g, ok := c.groups[name]
+	return g, ok
+}
+
 func (c *context) isStrField(name, field string) bool {
 	if m, ok := c.strField[name]; ok {
 		return m[field]
@@ -116,6 +135,101 @@ func simpleIdent(e *parser.Expr) (string, bool) {
 		return "", false
 	}
 	return pf.Target.Selector.Root, true
+}
+
+func replaceGroupExpr(e Expr, groupVar, keyVar, itemsVar string) Expr {
+	switch v := e.(type) {
+	case *NameRef:
+		if v.Name == groupVar {
+			return &NameRef{Name: itemsVar, IsString: v.IsString}
+		}
+		return v
+	case *BinaryExpr:
+		v.Left = replaceGroupExpr(v.Left, groupVar, keyVar, itemsVar)
+		v.Right = replaceGroupExpr(v.Right, groupVar, keyVar, itemsVar)
+		return v
+	case *UnaryExpr:
+		v.Expr = replaceGroupExpr(v.Expr, groupVar, keyVar, itemsVar)
+		return v
+	case *CallExpr:
+		for i := range v.Args {
+			v.Args[i] = replaceGroupExpr(v.Args[i], groupVar, keyVar, itemsVar)
+		}
+		return v
+	case *ListLit:
+		for i := range v.Elems {
+			v.Elems[i] = replaceGroupExpr(v.Elems[i], groupVar, keyVar, itemsVar)
+		}
+		return v
+	case *MapLit:
+		for i := range v.Items {
+			v.Items[i].Key = replaceGroupExpr(v.Items[i].Key, groupVar, keyVar, itemsVar)
+			v.Items[i].Value = replaceGroupExpr(v.Items[i].Value, groupVar, keyVar, itemsVar)
+		}
+		return v
+	case *IndexExpr:
+		if nr, ok := v.Target.(*NameRef); ok && nr.Name == groupVar {
+			if lit, ok := v.Index.(*StringLit); ok {
+				if lit.Value == "key" {
+					return &NameRef{Name: keyVar}
+				}
+				if lit.Value == "items" {
+					return &NameRef{Name: itemsVar}
+				}
+			}
+		}
+		v.Target = replaceGroupExpr(v.Target, groupVar, keyVar, itemsVar)
+		v.Index = replaceGroupExpr(v.Index, groupVar, keyVar, itemsVar)
+		return v
+	case *IfExpr:
+		v.Cond = replaceGroupExpr(v.Cond, groupVar, keyVar, itemsVar)
+		v.Then = replaceGroupExpr(v.Then, groupVar, keyVar, itemsVar)
+		v.Else = replaceGroupExpr(v.Else, groupVar, keyVar, itemsVar)
+		return v
+	case *ContainsExpr:
+		v.Str = replaceGroupExpr(v.Str, groupVar, keyVar, itemsVar)
+		v.Sub = replaceGroupExpr(v.Sub, groupVar, keyVar, itemsVar)
+		return v
+	case *SliceExpr:
+		v.Target = replaceGroupExpr(v.Target, groupVar, keyVar, itemsVar)
+		if v.Start != nil {
+			v.Start = replaceGroupExpr(v.Start, groupVar, keyVar, itemsVar)
+		}
+		if v.End != nil {
+			v.End = replaceGroupExpr(v.End, groupVar, keyVar, itemsVar)
+		}
+		return v
+	case *SubstringExpr:
+		v.Str = replaceGroupExpr(v.Str, groupVar, keyVar, itemsVar)
+		v.Start = replaceGroupExpr(v.Start, groupVar, keyVar, itemsVar)
+		v.End = replaceGroupExpr(v.End, groupVar, keyVar, itemsVar)
+		return v
+	case *QueryExpr:
+		v.Src = replaceGroupExpr(v.Src, groupVar, keyVar, itemsVar)
+		for i := range v.Froms {
+			v.Froms[i].Src = replaceGroupExpr(v.Froms[i].Src, groupVar, keyVar, itemsVar)
+		}
+		if v.Right != nil {
+			v.Right.Src = replaceGroupExpr(v.Right.Src, groupVar, keyVar, itemsVar)
+			v.Right.On = replaceGroupExpr(v.Right.On, groupVar, keyVar, itemsVar)
+		}
+		if v.Where != nil {
+			v.Where = replaceGroupExpr(v.Where, groupVar, keyVar, itemsVar)
+		}
+		v.Select = replaceGroupExpr(v.Select, groupVar, keyVar, itemsVar)
+		if v.SortKey != nil {
+			v.SortKey = replaceGroupExpr(v.SortKey, groupVar, keyVar, itemsVar)
+		}
+		if v.Skip != nil {
+			v.Skip = replaceGroupExpr(v.Skip, groupVar, keyVar, itemsVar)
+		}
+		if v.Take != nil {
+			v.Take = replaceGroupExpr(v.Take, groupVar, keyVar, itemsVar)
+		}
+		return v
+	default:
+		return v
+	}
 }
 
 type Stmt interface{ emit(io.Writer) }
@@ -1842,7 +1956,13 @@ func convertMatch(me *parser.MatchExpr, env *types.Env, ctx *context) (Expr, err
 }
 
 func convertQueryExpr(q *parser.QueryExpr, env *types.Env, ctx *context) (Expr, error) {
-	if q == nil || q.Group != nil || q.Distinct {
+	if q == nil {
+		return nil, fmt.Errorf("unsupported query")
+	}
+	if q.Group != nil {
+		return convertGroupQuery(q, env, ctx)
+	}
+	if q.Distinct {
 		return nil, fmt.Errorf("unsupported query")
 	}
 	loopCtx := ctx.clone()
@@ -1944,6 +2064,53 @@ func convertQueryExpr(q *parser.QueryExpr, env *types.Env, ctx *context) (Expr, 
 		}
 	}
 	return &QueryExpr{Var: alias, Src: src, Froms: froms, Right: rjoin, Where: cond, Select: sel, SortKey: sortKey, Skip: skipExpr, Take: takeExpr}, nil
+}
+
+func convertGroupQuery(q *parser.QueryExpr, env *types.Env, ctx *context) (Expr, error) {
+	if len(q.Group.Exprs) != 1 || len(q.Froms) > 0 || len(q.Joins) > 0 || q.Where != nil || q.Group.Having != nil || q.Sort != nil || q.Distinct || q.Skip != nil || q.Take != nil {
+		return nil, fmt.Errorf("unsupported group query")
+	}
+	src, err := convertExpr(q.Source, env, ctx)
+	if err != nil {
+		return nil, err
+	}
+	// Build fold function
+	param := "X"
+	foldCtx := ctx.clone()
+	foldCtx.alias[q.Var] = param
+	foldCtx.orig[param] = q.Var
+	child := types.NewEnv(env)
+	child.SetVar(q.Var, types.AnyType{}, true)
+	keyExpr, err := convertExpr(q.Group.Exprs[0], child, foldCtx)
+	if err != nil {
+		return nil, err
+	}
+	getItems := &CallExpr{Func: "maps:get", Args: []Expr{keyExpr, &NameRef{Name: "Acc"}, &ListLit{}}}
+	appendItem := &BinaryExpr{Left: getItems, Op: "++", Right: &ListLit{Elems: []Expr{&NameRef{Name: param}}}}
+	putCall := &CallExpr{Func: "maps:put", Args: []Expr{keyExpr, appendItem, &NameRef{Name: "Acc"}}}
+	foldFun := &AnonFunc{Params: []string{param, "Acc"}, Return: putCall}
+	groupsMap := &CallExpr{Func: "lists:foldl", Args: []Expr{foldFun, &MapLit{}, src}}
+
+	// Build mapping over groups
+	pair := "P"
+	keyVar := ctx.newAlias("key")
+	itemsVar := ctx.newAlias("items")
+	mapCtx := ctx.clone()
+	selEnv := types.NewEnv(env)
+	selEnv.SetVar(q.Group.Name, types.AnyType{}, true)
+	mapCtx.alias[q.Group.Name] = "G"
+	mapCtx.orig["G"] = q.Group.Name
+	selExpr, err := convertExpr(q.Select, selEnv, mapCtx)
+	if err != nil {
+		return nil, err
+	}
+	selExpr = replaceGroupExpr(selExpr, "G", keyVar, itemsVar)
+
+	keyLet := &LetStmt{Name: keyVar, Expr: &CallExpr{Func: "element", Args: []Expr{&IntLit{Value: 1}, &NameRef{Name: pair}}}}
+	itemsLet := &LetStmt{Name: itemsVar, Expr: &CallExpr{Func: "element", Args: []Expr{&IntLit{Value: 2}, &NameRef{Name: pair}}}}
+	mapFun := &AnonFunc{Params: []string{pair}, Body: []Stmt{keyLet, itemsLet}, Return: selExpr}
+	toList := &CallExpr{Func: "maps:to_list", Args: []Expr{groupsMap}}
+	return &CallExpr{Func: "lists:map", Args: []Expr{mapFun, toList}}, nil
 }
 
 func convertLiteral(l *parser.Literal) (Expr, error) {
