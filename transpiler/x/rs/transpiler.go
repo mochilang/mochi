@@ -187,7 +187,7 @@ type FunLit struct {
 }
 
 func (f *FunLit) emit(w io.Writer) {
-	io.WriteString(w, "|")
+	io.WriteString(w, "move |")
 	for i, p := range f.Params {
 		if i > 0 {
 			io.WriteString(w, ", ")
@@ -398,6 +398,33 @@ func (a *AppendExpr) emit(w io.Writer) {
 	io.WriteString(w, ".clone(); v.push(")
 	a.Elem.emit(w)
 	io.WriteString(w, "); v }")
+}
+
+// PrintCall represents a call to the `print` builtin without trailing spaces.
+type PrintCall struct{ Args []Expr }
+
+func (p *PrintCall) emit(w io.Writer) {
+	io.WriteString(w, "println!(\"{}\", { let v = vec![")
+	for i, a := range p.Args {
+		if i > 0 {
+			io.WriteString(w, ", ")
+		}
+		fmt := "{}"
+		switch a.(type) {
+		case *MapLit, *ValuesExpr, *AppendExpr, *ListLit:
+			fmt = "{:?}"
+		case *SliceExpr:
+			if inferType(a.(*SliceExpr)) != "String" {
+				fmt = "{:?}"
+			}
+		}
+		io.WriteString(w, "format!(\"")
+		io.WriteString(w, fmt)
+		io.WriteString(w, "\", ")
+		a.emit(w)
+		io.WriteString(w, ")")
+	}
+	io.WriteString(w, "]; v.into_iter().filter(|s| !s.is_empty()).collect::<Vec<_>>().join(\" \") })")
 }
 
 // JoinExpr converts a list of integers into a space separated string.
@@ -1436,28 +1463,7 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 					args[i] = &BoolIntExpr{Expr: a}
 				}
 			}
-			if len(args) == 1 {
-				fmtStr := "{}"
-				switch a := args[0].(type) {
-				case *MapLit, *ValuesExpr, *AppendExpr, *ListLit:
-					fmtStr = "{:?}"
-				case *SliceExpr:
-					if inferType(a) != "String" {
-						fmtStr = "{:?}"
-					}
-				case *StringLit:
-					// no format needed
-				}
-				args = append([]Expr{&StringLit{Value: fmtStr}}, args...)
-			} else {
-				fmtStr := "{}"
-				for i := 1; i < len(args); i++ {
-					fmtStr += " {}"
-				}
-				args = append([]Expr{&StringLit{Value: fmtStr}}, args...)
-			}
-			name = "println!"
-			return &CallExpr{Func: name, Args: args}, nil
+			return &PrintCall{Args: args}, nil
 		}
 		if name == "len" && len(args) == 1 {
 			return &LenExpr{Arg: args[0]}, nil
@@ -1809,6 +1815,8 @@ func inferType(e Expr) string {
 		return "Vec<i64>"
 	case *AppendExpr:
 		return inferType(e.(*AppendExpr).List)
+	case *PrintCall:
+		return ""
 	case *ExistsExpr:
 		return "bool"
 	case *BinaryExpr:
