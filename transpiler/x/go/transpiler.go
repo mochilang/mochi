@@ -80,16 +80,7 @@ func (s *ExprStmt) emit(w io.Writer) { s.Expr.emit(w) }
 type PrintStmt struct{ Args []Expr }
 
 func (p *PrintStmt) emit(w io.Writer) {
-	// special handling for values() builtin to match expected output
-	if len(p.Args) == 1 {
-		if ve, ok := p.Args[0].(*ValuesExpr); ok {
-			usesStrings = true
-			io.WriteString(w, "fmt.Println(strings.Join(func() []string { list := ")
-			ve.emit(w)
-			io.WriteString(w, "; out := make([]string, len(list)); for i, v := range list { out[i] = fmt.Sprint(v) }; return out }(), \" \"))")
-			return
-		}
-	}
+	// straightforward fmt.Println for all arguments
 	io.WriteString(w, "fmt.Println(")
 	for i, e := range p.Args {
 		if i > 0 {
@@ -670,11 +661,11 @@ func (v *ValuesExpr) emit(w io.Writer) {
 type ListStringExpr struct{ List Expr }
 
 func (ls *ListStringExpr) emit(w io.Writer) {
-        usesJSON = true
-        usesStrings = true
-        io.WriteString(w, "func() string { b, _ := json.Marshal(")
-        ls.List.emit(w)
-        io.WriteString(w, `); s := string(b); s = strings.ReplaceAll(s, ":", ": "); s = strings.ReplaceAll(s, ",", ", "); s = strings.ReplaceAll(s, "\"", "'"); return s }()`)
+	usesJSON = true
+	usesStrings = true
+	io.WriteString(w, "func() string { b, _ := json.Marshal(")
+	ls.List.emit(w)
+	io.WriteString(w, `); s := string(b); s = strings.ReplaceAll(s, ":", ": "); s = strings.ReplaceAll(s, ",", ", "); s = strings.ReplaceAll(s, "\"", "'"); return s }()`)
 }
 
 // StringJoinExpr joins a list of strings with spaces.
@@ -854,34 +845,34 @@ type QueryExpr struct {
 
 // GroupQueryExpr represents a simple `group by` query without joins or sorting.
 type GroupQueryExpr struct {
-        Var      string
-        Src      Expr
-        Key      Expr
-        GroupVar string
-        Cond     Expr
-        Select   Expr
-        Having   Expr
-        ElemType string
-        ItemType string
-        KeyType  string
+	Var      string
+	Src      Expr
+	Key      Expr
+	GroupVar string
+	Cond     Expr
+	Select   Expr
+	Having   Expr
+	ElemType string
+	ItemType string
+	KeyType  string
 }
 
 // GroupJoinQueryExpr represents a `group by` query that may include joins.
 type GroupJoinQueryExpr struct {
-	Var      string
-	Src      Expr
-	Froms    []queryFrom
-	Joins    []queryJoin
-	Where    Expr
-	Key      Expr
-	GroupVar string
-	Select   Expr
-	Having   Expr
-        ElemType string
-        ItemType string
-        KeyType  string
-        Vars     []string
-        SimpleItem bool
+	Var        string
+	Src        Expr
+	Froms      []queryFrom
+	Joins      []queryJoin
+	Where      Expr
+	Key        Expr
+	GroupVar   string
+	Select     Expr
+	Having     Expr
+	ElemType   string
+	ItemType   string
+	KeyType    string
+	Vars       []string
+	SimpleItem bool
 }
 
 func (q *QueryExpr) emit(w io.Writer) {
@@ -986,7 +977,7 @@ func (q *QueryExpr) emit(w io.Writer) {
 
 func (g *GroupQueryExpr) emit(w io.Writer) {
 	fmt.Fprintf(w, "func() []%s {\n", g.ElemType)
-        fmt.Fprintf(w, "groups := map[string]struct{Key %s; Items []%s}{}\n", g.KeyType, g.ItemType)
+	fmt.Fprintf(w, "groups := map[string]struct{Key %s; Items []%s}{}\n", g.KeyType, g.ItemType)
 	fmt.Fprint(w, "order := []string{}\n")
 	fmt.Fprintf(w, "for _, %s := range ", g.Var)
 	g.Src.emit(w)
@@ -999,9 +990,9 @@ func (g *GroupQueryExpr) emit(w io.Writer) {
 	fmt.Fprint(w, "k := fmt.Sprint(")
 	g.Key.emit(w)
 	fmt.Fprint(w, ")\n")
-        fmt.Fprintf(w, "grp, ok := groups[k]\nif !ok {\n    grp = struct{Key %s; Items []%s}{Key: ", g.KeyType, g.ItemType)
+	fmt.Fprintf(w, "grp, ok := groups[k]\nif !ok {\n    grp = struct{Key %s; Items []%s}{Key: ", g.KeyType, g.ItemType)
 	g.Key.emit(w)
-        fmt.Fprintf(w, ", Items: []%s{}}\n    groups[k] = grp\n    order = append(order, k)\n}\n", g.ItemType)
+	fmt.Fprintf(w, ", Items: []%s{}}\n    groups[k] = grp\n    order = append(order, k)\n}\n", g.ItemType)
 	fmt.Fprintf(w, "grp.Items = append(grp.Items, %s)\ngroups[k] = grp\n", g.Var)
 	if g.Cond != nil {
 		fmt.Fprint(w, "}\n")
@@ -1027,7 +1018,7 @@ func (g *GroupQueryExpr) emit(w io.Writer) {
 
 func (g *GroupJoinQueryExpr) emit(w io.Writer) {
 	fmt.Fprintf(w, "func() []%s {\n", g.ElemType)
-fmt.Fprintf(w, "groups := map[string]struct{Key %s; Items []%s}{}\n", g.KeyType, g.ItemType)
+	fmt.Fprintf(w, "groups := map[string]struct{Key %s; Items []%s}{}\n", g.KeyType, g.ItemType)
 	fmt.Fprint(w, "order := []string{}\n")
 	fmt.Fprintf(w, "for _, %s := range ", g.Var)
 	g.Src.emit(w)
@@ -1035,7 +1026,7 @@ fmt.Fprintf(w, "groups := map[string]struct{Key %s; Items []%s}{}\n", g.KeyType,
 	fmt.Fprint(w, "\n    k := fmt.Sprint(")
 	g.Key.emit(w)
 	fmt.Fprint(w, ")\n")
-        fmt.Fprintf(w, "    grp, ok := groups[k]\n    if !ok {\n        grp = struct{Key %s; Items []%s}{Key: ", g.KeyType, g.ItemType)
+	fmt.Fprintf(w, "    grp, ok := groups[k]\n    if !ok {\n        grp = struct{Key %s; Items []%s}{Key: ", g.KeyType, g.ItemType)
 	g.Key.emit(w)
 	fmt.Fprintf(w, ", Items: []%s{}}\n        groups[k] = grp\n        order = append(order, k)\n    }\n", g.ItemType)
 	if len(g.Joins) == 1 && g.Joins[0].Side == "left" && len(g.Froms) == 0 {
@@ -1066,20 +1057,20 @@ fmt.Fprintf(w, "groups := map[string]struct{Key %s; Items []%s}{}\n", g.KeyType,
 		g.Where.emit(w)
 		fmt.Fprint(w, " {")
 	}
-        if g.SimpleItem {
-                fmt.Fprintf(w, "grp.Items = append(grp.Items, %s)\n", g.Vars[0])
-                fmt.Fprint(w, "groups[k] = grp")
-        } else {
-                fmt.Fprintf(w, "grp.Items = append(grp.Items, %s{", g.ItemType)
-                for i, v := range g.Vars {
-                        if i > 0 {
-                                fmt.Fprint(w, ", ")
-                        }
-                        fmt.Fprintf(w, "%s: %s", toGoFieldName(v), v)
-                }
-                fmt.Fprint(w, "})\n")
-                fmt.Fprint(w, "groups[k] = grp")
-        }
+	if g.SimpleItem {
+		fmt.Fprintf(w, "grp.Items = append(grp.Items, %s)\n", g.Vars[0])
+		fmt.Fprint(w, "groups[k] = grp")
+	} else {
+		fmt.Fprintf(w, "grp.Items = append(grp.Items, %s{", g.ItemType)
+		for i, v := range g.Vars {
+			if i > 0 {
+				fmt.Fprint(w, ", ")
+			}
+			fmt.Fprintf(w, "%s: %s", toGoFieldName(v), v)
+		}
+		fmt.Fprint(w, "})\n")
+		fmt.Fprint(w, "groups[k] = grp")
+	}
 	if len(g.Joins) == 1 && g.Joins[0].Side == "left" && len(g.Froms) == 0 {
 		fmt.Fprintf(w, "\n    if !matched { grp.Items = append(grp.Items, %s{}) }", g.ItemType)
 	}
@@ -1185,33 +1176,28 @@ func compileStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 				if err != nil {
 					return nil, err
 				}
-				if _, ok := ex.(*ValuesExpr); ok {
+				t := types.TypeOfExpr(a, env)
+				switch tt := t.(type) {
+				case types.ListType:
 					needStrings = true
-					usesSort = true
-				} else {
-					t := types.TypeOfExpr(a, env)
-					switch tt := t.(type) {
-                                        case types.ListType:
-                                                needStrings = true
-                                                if _, ok2 := tt.Elem.(types.StringType); ok2 {
-                                                        ex = &StringJoinExpr{List: ex}
-                                                } else {
-                                                        usesJSON = true
-                                                        ex = &ListStringExpr{List: ex}
-                                                }
-					case types.StructType:
-						needStrings = true
+					if _, ok2 := tt.Elem.(types.StringType); ok2 {
+						ex = &StringJoinExpr{List: ex}
+					} else {
 						usesJSON = true
-						ex = &StructJSONExpr{Value: ex}
-					case types.FloatType:
-						ex = &FloatStringExpr{Value: ex}
-					case types.BoolType:
-						switch ex.(type) {
-						case *ContainsExpr, *ExistsExpr, *VarRef, *BoolLit:
-							// keep boolean text
-						default:
-							ex = &BoolIntExpr{Expr: ex}
-						}
+						ex = &ListStringExpr{List: ex}
+					}
+				case types.StructType:
+					needStrings = true
+					usesJSON = true
+					ex = &StructJSONExpr{Value: ex}
+				case types.FloatType:
+					ex = &FloatStringExpr{Value: ex}
+				case types.BoolType:
+					switch ex.(type) {
+					case *ContainsExpr, *ExistsExpr, *VarRef, *BoolLit:
+						// keep boolean text
+					default:
+						ex = &BoolIntExpr{Expr: ex}
 					}
 				}
 				args[i] = ex
@@ -1517,8 +1503,8 @@ func compileQueryExpr(q *parser.QueryExpr, env *types.Env, base string) (Expr, e
 			return nil, err
 		}
 		genv := types.NewEnv(child)
-                keyType := types.ExprType(q.Group.Exprs[0], child)
-                genv.SetVar(q.Group.Name, types.GroupType{Key: keyType, Elem: elemT}, true)
+		keyType := types.ExprType(q.Group.Exprs[0], child)
+		genv.SetVar(q.Group.Name, types.GroupType{Key: keyType, Elem: elemT}, true)
 		sel, err := compileExpr(q.Select, genv, "")
 		if err != nil {
 			return nil, err
@@ -1564,16 +1550,16 @@ func compileQueryExpr(q *parser.QueryExpr, env *types.Env, base string) (Expr, e
 		if et == "" {
 			et = "any"
 		}
-                itemType := toGoTypeFromType(elemT)
-                if itemType == "" {
-                        itemType = "any"
-                }
-                keyGoType := toGoTypeFromType(keyType)
-                if keyGoType == "" {
-                        keyGoType = "any"
-                }
-                usesPrint = true
-                return &GroupQueryExpr{Var: q.Var, Src: src, Key: keyExpr, GroupVar: q.Group.Name, Cond: nil, Select: sel, Having: having, ElemType: et, ItemType: itemType, KeyType: keyGoType}, nil
+		itemType := toGoTypeFromType(elemT)
+		if itemType == "" {
+			itemType = "any"
+		}
+		keyGoType := toGoTypeFromType(keyType)
+		if keyGoType == "" {
+			keyGoType = "any"
+		}
+		usesPrint = true
+		return &GroupQueryExpr{Var: q.Var, Src: src, Key: keyExpr, GroupVar: q.Group.Name, Cond: nil, Select: sel, Having: having, ElemType: et, ItemType: itemType, KeyType: keyGoType}, nil
 	}
 	if q.Group != nil {
 		src, err := compileExpr(q.Source, env, "")
@@ -1656,33 +1642,33 @@ func compileQueryExpr(q *parser.QueryExpr, env *types.Env, base string) (Expr, e
 			}
 			where = boolExprFor(where, types.ExprType(q.Where, child))
 		}
-                genv := types.NewEnv(child)
-                var itemName string
-                if len(varNames) == 1 && len(q.Froms) == 0 && len(q.Joins) == 0 {
-                        itemName = toGoTypeFromType(elemT)
-                        if itemName == "" {
-                                itemName = "any"
-                        }
-                        keyType := types.ExprType(q.Group.Exprs[0], child)
-                        genv.SetVar(q.Group.Name, types.GroupType{Key: keyType, Elem: elemT}, true)
-                } else {
-                        fieldTypes := make(map[string]types.Type, len(varNames))
-                        fieldsDecl := make([]ParamDecl, len(varNames))
-                        for i, v := range varNames {
-                                if t, err := child.GetVar(v); err == nil {
-                                        fieldTypes[v] = t
-                                        fieldsDecl[i] = ParamDecl{Name: v, Type: toGoTypeFromType(t)}
-                                } else {
-                                        fieldTypes[v] = types.AnyType{}
-                                        fieldsDecl[i] = ParamDecl{Name: v, Type: "any"}
-                                }
-                        }
-                        structCount++
-                        itemName = fmt.Sprintf("GroupItem%d", structCount)
-                        extraDecls = append(extraDecls, &TypeDeclStmt{Name: itemName, Fields: fieldsDecl})
-                        keyType := types.ExprType(q.Group.Exprs[0], child)
-                        genv.SetVar(q.Group.Name, types.GroupType{Key: keyType, Elem: types.StructType{Name: itemName, Fields: fieldTypes, Order: varNames}}, true)
-                }
+		genv := types.NewEnv(child)
+		var itemName string
+		if len(varNames) == 1 && len(q.Froms) == 0 && len(q.Joins) == 0 {
+			itemName = toGoTypeFromType(elemT)
+			if itemName == "" {
+				itemName = "any"
+			}
+			keyType := types.ExprType(q.Group.Exprs[0], child)
+			genv.SetVar(q.Group.Name, types.GroupType{Key: keyType, Elem: elemT}, true)
+		} else {
+			fieldTypes := make(map[string]types.Type, len(varNames))
+			fieldsDecl := make([]ParamDecl, len(varNames))
+			for i, v := range varNames {
+				if t, err := child.GetVar(v); err == nil {
+					fieldTypes[v] = t
+					fieldsDecl[i] = ParamDecl{Name: v, Type: toGoTypeFromType(t)}
+				} else {
+					fieldTypes[v] = types.AnyType{}
+					fieldsDecl[i] = ParamDecl{Name: v, Type: "any"}
+				}
+			}
+			structCount++
+			itemName = fmt.Sprintf("GroupItem%d", structCount)
+			extraDecls = append(extraDecls, &TypeDeclStmt{Name: itemName, Fields: fieldsDecl})
+			keyType := types.ExprType(q.Group.Exprs[0], child)
+			genv.SetVar(q.Group.Name, types.GroupType{Key: keyType, Elem: types.StructType{Name: itemName, Fields: fieldTypes, Order: varNames}}, true)
+		}
 		sel, err := compileExpr(q.Select, genv, "")
 		if err != nil {
 			return nil, err
@@ -1728,13 +1714,13 @@ func compileQueryExpr(q *parser.QueryExpr, env *types.Env, base string) (Expr, e
 		if et == "" {
 			et = "any"
 		}
-                usesPrint = true
-                keyGoType := toGoTypeFromType(types.ExprType(q.Group.Exprs[0], child))
-                if keyGoType == "" {
-                        keyGoType = "any"
-                }
-                return &GroupJoinQueryExpr{Var: q.Var, Src: src, Froms: froms, Joins: joins, Where: where, Key: keyExpr, GroupVar: q.Group.Name, Select: sel, Having: having, ElemType: et, ItemType: itemName, KeyType: keyGoType, Vars: varNames, SimpleItem: len(varNames) == 1 && len(q.Froms) == 0 && len(q.Joins) == 0}, nil
-        }
+		usesPrint = true
+		keyGoType := toGoTypeFromType(types.ExprType(q.Group.Exprs[0], child))
+		if keyGoType == "" {
+			keyGoType = "any"
+		}
+		return &GroupJoinQueryExpr{Var: q.Var, Src: src, Froms: froms, Joins: joins, Where: where, Key: keyExpr, GroupVar: q.Group.Name, Select: sel, Having: having, ElemType: et, ItemType: itemName, KeyType: keyGoType, Vars: varNames, SimpleItem: len(varNames) == 1 && len(q.Froms) == 0 && len(q.Joins) == 0}, nil
+	}
 	src, err := compileExpr(q.Source, env, "")
 	if err != nil {
 		return nil, err
@@ -2418,6 +2404,7 @@ func compilePrimary(p *parser.Primary, env *types.Env, base string) (Expr, error
 			return &MaxExpr{List: args[0]}, nil
 		case "values":
 			mt, _ := types.TypeOfExpr(p.Call.Args[0], env).(types.MapType)
+			usesSort = true
 			return &ValuesExpr{Map: args[0], ValueType: toGoTypeFromType(mt.Value)}, nil
 		case "exists":
 			bexpr := &BinaryExpr{Left: &CallExpr{Func: "len", Args: []Expr{args[0]}}, Op: ">", Right: &IntLit{Value: 0}}
