@@ -1,3 +1,27 @@
+## Progress (2025-07-21 18:42 +0700)
+- go transpiler: fix list set ops
+- Regenerated golden files - 86/100 vm valid programs passing
+
+## Progress (2025-07-21 18:25 +0700)
+- go transpiler: update tasks
+- Regenerated golden files - 86/100 vm valid programs passing
+
+## Progress (2025-07-21 18:25 +0700)
+- go transpiler: update tasks
+- Regenerated golden files - 86/100 vm valid programs passing
+
+## Progress (2025-07-21 18:25 +0700)
+- go transpiler: update tasks
+- Regenerated golden files - 86/100 vm valid programs passing
+
+## Progress (2025-07-21 18:25 +0700)
+- go transpiler: update tasks
+- Regenerated golden files - 85/100 vm valid programs passing
+
+## Progress (2025-07-21 18:25 +0700)
+- go transpiler: update tasks
+- Regenerated golden files - 85/100 vm valid programs passing
+
 ## Progress (2025-07-21 18:22 +0700)
 - go transpiler: improve type inference
 - Regenerated golden files - 85/100 vm valid programs passing
