@@ -1,3 +1,23 @@
+## Progress (2025-07-21 21:55 +0700)
+- Commit 79a3f1a78: rkt: support grouping with multi joins
+- Generated Racket for 78/100 programs
+- Updated README checklist
+
+## Progress (2025-07-21 21:44 +0700)
+- Commit 9fd58adaf: fs docs: refresh progress and checklist
+- Generated Racket for 78/100 programs
+- Updated README checklist
+
+## Progress (2025-07-21 21:44 +0700)
+- Commit 9fd58adaf: fs docs: refresh progress and checklist
+- Generated Racket for 77/100 programs
+- Updated README checklist
+
+## Progress (2025-07-21 21:44 +0700)
+- Commit 9fd58adaf: fs docs: refresh progress and checklist
+- Generated Racket for 77/100 programs
+- Updated README checklist
+
 ## Progress (2025-07-21 20:45 +0700)
 - Commit 0774c158c: remove obsolete error file
 - Generated Racket for 77/100 programs
