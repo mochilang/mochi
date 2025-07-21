@@ -30,6 +30,7 @@ type Program struct {
 var (
 	currentImports map[string]bool
 	currentEnv     *types.Env
+	dataclassVars  map[string]bool
 )
 
 type Stmt interface{ isStmt() }
@@ -1047,6 +1048,25 @@ func isSimpleIdent(e *parser.Expr) (string, bool) {
 	return "", false
 }
 
+func isSimpleSelect(e *parser.Expr) (string, string, bool) {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) > 0 {
+		return "", "", false
+	}
+	u := e.Binary.Left
+	if len(u.Ops) > 0 || u.Value == nil {
+		return "", "", false
+	}
+	p := u.Value
+	if len(p.Ops) > 0 || p.Target == nil || p.Target.Selector == nil {
+		return "", "", false
+	}
+	sel := p.Target.Selector
+	if len(sel.Tail) != 1 {
+		return "", "", false
+	}
+	return sel.Root, sel.Tail[0], true
+}
+
 func aggregatorCall(e *parser.Expr) (string, *parser.Expr, bool) {
 	if e == nil || e.Binary == nil || len(e.Binary.Right) > 0 {
 		return "", nil, false
@@ -1233,6 +1253,9 @@ func maybeDataClassList(name string, list *ListLit) (*DataClassDef, []Expr) {
 	}
 	var elems []Expr
 	className := toClassName(name)
+	if dataclassVars != nil {
+		dataclassVars[name] = true
+	}
 	for _, el := range list.Elems {
 		d := el.(*DictLit)
 		args := make([]Expr, len(d.Values))
@@ -1265,6 +1288,9 @@ func dataClassFromDict(name string, d *DictLit) (*DataClassDef, []Expr) {
 		fields = append(fields, DataClassField{Name: k, Type: typ})
 	}
 	className := toClassName(name)
+	if dataclassVars != nil {
+		dataclassVars[name] = true
+	}
 	args := make([]Expr, len(d.Values))
 	copy(args, d.Values)
 	return &DataClassDef{Name: className, Fields: fields}, args
@@ -1739,7 +1765,11 @@ func replaceGroup(e Expr, name string) Expr {
 	switch ex := e.(type) {
 	case *Name:
 		if ex.Name == name {
-			return &FieldExpr{Target: &Name{Name: name}, Name: "items", MapIndex: true}
+			mi := true
+			if dataclassVars != nil && dataclassVars[name] {
+				mi = false
+			}
+			return &FieldExpr{Target: &Name{Name: name}, Name: "items", MapIndex: mi}
 		}
 		return ex
 	case *BinaryExpr:
@@ -1757,13 +1787,22 @@ func replaceGroup(e Expr, name string) Expr {
 		return ex
 	case *FieldExpr:
 		if n, ok := ex.Target.(*Name); ok && n.Name == name {
+			if dataclassVars != nil && dataclassVars[name] {
+				ex.MapIndex = false
+			} else {
+				ex.MapIndex = true
+			}
 			return ex
 		}
 		ex.Target = replaceGroup(ex.Target, name)
 		return ex
 	case *IndexExpr:
 		if n, ok := ex.Target.(*Name); ok && n.Name == name {
-			return &FieldExpr{Target: n, Name: "items", MapIndex: true}
+			mi := true
+			if dataclassVars != nil && dataclassVars[name] {
+				mi = false
+			}
+			return &FieldExpr{Target: n, Name: "items", MapIndex: mi}
 		}
 		ex.Target = replaceGroup(ex.Target, name)
 		ex.Index = replaceGroup(ex.Index, name)
@@ -2184,6 +2223,7 @@ func Emit(w io.Writer, p *Program) error {
 // Transpile converts a Mochi program to a Python AST.
 func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	currentImports = map[string]bool{}
+	dataclassVars = map[string]bool{}
 	currentEnv = env
 	p := &Program{}
 	for _, st := range prog.Statements {
@@ -2947,7 +2987,9 @@ func convertSelector(sel *parser.SelectorExpr, method bool) Expr {
 	if currentImports != nil && currentImports[sel.Root] {
 		mapIndex = false
 	}
-	if currentEnv != nil {
+	if dataclassVars != nil && dataclassVars[sel.Root] {
+		mapIndex = false
+	} else if currentEnv != nil {
 		if t, err := currentEnv.GetVar(sel.Root); err == nil {
 			if _, ok := t.(types.StructType); ok {
 				mapIndex = false
@@ -3380,6 +3422,20 @@ func convertQueryExpr(q *parser.QueryExpr) (Expr, error) {
 	if err != nil {
 		return nil, err
 	}
+	if currentEnv != nil {
+		if t := inferTypeFromExpr(q.Source); t != nil {
+			if lt, ok := t.(types.ListType); ok {
+				currentEnv.SetVar(q.Var, lt.Elem, true)
+			}
+		}
+	}
+	if dataclassVars != nil {
+		if name, ok := isSimpleIdent(q.Source); ok && dataclassVars[name] {
+			dataclassVars[q.Var] = true
+		} else if root, field, ok := isSimpleSelect(q.Source); ok && field == "items" && dataclassVars[root] {
+			dataclassVars[q.Var] = true
+		}
+	}
 	iters = append(iters, firstIter)
 	for _, f := range q.Froms {
 		e, err := convertExpr(f.Src)
@@ -3388,6 +3444,20 @@ func convertQueryExpr(q *parser.QueryExpr) (Expr, error) {
 		}
 		vars = append(vars, f.Var)
 		iters = append(iters, e)
+		if currentEnv != nil {
+			if t := inferTypeFromExpr(f.Src); t != nil {
+				if lt, ok := t.(types.ListType); ok {
+					currentEnv.SetVar(f.Var, lt.Elem, true)
+				}
+			}
+		}
+		if dataclassVars != nil {
+			if name, ok := isSimpleIdent(f.Src); ok && dataclassVars[name] {
+				dataclassVars[f.Var] = true
+			} else if root, field, ok := isSimpleSelect(f.Src); ok && field == "items" && dataclassVars[root] {
+				dataclassVars[f.Var] = true
+			}
+		}
 	}
 	var cond Expr
 	for _, j := range q.Joins {
@@ -3415,6 +3485,20 @@ func convertQueryExpr(q *parser.QueryExpr) (Expr, error) {
 		}
 		vars = append(vars, j.Var)
 		iters = append(iters, e)
+		if currentEnv != nil {
+			if t := inferTypeFromExpr(j.Src); t != nil {
+				if lt, ok := t.(types.ListType); ok {
+					currentEnv.SetVar(j.Var, lt.Elem, true)
+				}
+			}
+		}
+		if dataclassVars != nil {
+			if name, ok := isSimpleIdent(j.Src); ok && dataclassVars[name] {
+				dataclassVars[j.Var] = true
+			} else if root, field, ok := isSimpleSelect(j.Src); ok && field == "items" && dataclassVars[root] {
+				dataclassVars[j.Var] = true
+			}
+		}
 		jc, err := convertExpr(j.On)
 		if err != nil {
 			return nil, err
@@ -3641,6 +3725,18 @@ func convertGroupQuery(q *parser.QueryExpr, env *types.Env, target string) ([]St
 	if err != nil {
 		return nil, err
 	}
+	if env != nil {
+		if t := inferTypeFromExpr(q.Source); t != nil {
+			if lt, ok := t.(types.ListType); ok {
+				env.SetVar(q.Var, lt.Elem, true)
+			}
+		}
+	}
+	if dataclassVars != nil {
+		if name, ok := isSimpleIdent(q.Source); ok && dataclassVars[name] {
+			dataclassVars[q.Var] = true
+		}
+	}
 	iters = append(iters, src)
 	for _, f := range q.Froms {
 		e, err := convertExpr(f.Src)
@@ -3649,6 +3745,20 @@ func convertGroupQuery(q *parser.QueryExpr, env *types.Env, target string) ([]St
 		}
 		vars = append(vars, f.Var)
 		iters = append(iters, e)
+		if env != nil {
+			if t := inferTypeFromExpr(f.Src); t != nil {
+				if lt, ok := t.(types.ListType); ok {
+					env.SetVar(f.Var, lt.Elem, true)
+				}
+			}
+		}
+		if dataclassVars != nil {
+			if name, ok := isSimpleIdent(f.Src); ok && dataclassVars[name] {
+				dataclassVars[f.Var] = true
+			} else if root, field, ok := isSimpleSelect(f.Src); ok && field == "items" && dataclassVars[root] {
+				dataclassVars[f.Var] = true
+			}
+		}
 	}
 	for _, j := range q.Joins {
 		e, err := convertExpr(j.Src)
@@ -3667,6 +3777,18 @@ func convertGroupQuery(q *parser.QueryExpr, env *types.Env, target string) ([]St
 		}
 		vars = append(vars, j.Var)
 		iters = append(iters, e)
+		if env != nil {
+			if t := inferTypeFromExpr(j.Src); t != nil {
+				if lt, ok := t.(types.ListType); ok {
+					env.SetVar(j.Var, lt.Elem, true)
+				}
+			}
+		}
+		if dataclassVars != nil {
+			if name, ok := isSimpleIdent(j.Src); ok && dataclassVars[name] {
+				dataclassVars[j.Var] = true
+			}
+		}
 	}
 
 	keyVal, err := convertExpr(q.Group.Exprs[0])
@@ -3686,6 +3808,11 @@ func convertGroupQuery(q *parser.QueryExpr, env *types.Env, target string) ([]St
 		if err != nil {
 			return nil, err
 		}
+	}
+
+	groupClass := &DataClassDef{Name: toClassName(q.Group.Name), Fields: []DataClassField{{Name: "key", Type: "any"}, {Name: "items", Type: "list"}}}
+	if dataclassVars != nil {
+		dataclassVars[q.Group.Name] = true
 	}
 
 	prev := currentEnv
@@ -3717,17 +3844,23 @@ func convertGroupQuery(q *parser.QueryExpr, env *types.Env, target string) ([]St
 	groupsVar := "_" + target + "_groups"
 
 	stmts := []Stmt{
+		groupClass,
 		&LetStmt{Name: groupsVar, Expr: &DictLit{}},
 	}
 
-	valExpr := &FieldExpr{Target: &Name{Name: q.Var}, Name: "value"}
-	inner := []Stmt{
-		&IfStmt{
-			Cond: &RawExpr{Code: fmt.Sprintf("%s not in %s", exprString(keyExpr), groupsVar)},
-			Then: []Stmt{&IndexAssignStmt{Target: &Name{Name: groupsVar}, Index: keyExpr, Value: &IntLit{Value: "0"}}},
+	setdefaultCall := &CallExpr{
+		Func: &FieldExpr{Target: &Name{Name: groupsVar}, Name: "setdefault"},
+		Args: []Expr{
+			keyExpr,
+			&CallExpr{Func: &Name{Name: groupClass.Name}, Args: []Expr{keyExpr, &ListLit{}}},
 		},
-		&ExprStmt{Expr: &RawExpr{Code: fmt.Sprintf("%s[%s] += %s", groupsVar, exprString(keyExpr), exprString(valExpr))}},
 	}
+	assign := &AssignStmt{Name: "_g", Expr: setdefaultCall}
+	appendItem := &CallExpr{
+		Func: &FieldExpr{Target: &FieldExpr{Target: &Name{Name: "_g"}, Name: "items", MapIndex: false}, Name: "append"},
+		Args: []Expr{&Name{Name: q.Var}},
+	}
+	inner := []Stmt{assign, &ExprStmt{Expr: appendItem}}
 	if where != nil {
 		inner = []Stmt{&IfStmt{Cond: where, Then: inner}}
 	}
@@ -3738,16 +3871,16 @@ func convertGroupQuery(q *parser.QueryExpr, env *types.Env, target string) ([]St
 	}
 	stmts = append(stmts, bodyLoop...)
 
-	if d, ok := sel.(*DictLit); ok {
-		dc, args := dataClassFromDict(target, d)
-		if dc != nil {
-			stmts = append(stmts, dc)
-			sel = &CallExpr{Func: &Name{Name: dc.Name}, Args: args}
-		}
+	iterVals := &CallExpr{Func: &FieldExpr{Target: &Name{Name: groupsVar}, Name: "values"}, Args: nil}
+	stmts = append(stmts, &LetStmt{Name: target, Expr: &ListLit{}})
+	assignG := &AssignStmt{Name: q.Group.Name, Expr: &Name{Name: "_g"}}
+	appendCall := &CallExpr{Func: &FieldExpr{Target: &Name{Name: target}, Name: "append"}, Args: []Expr{sel}}
+	loopBody := []Stmt{assignG, &ExprStmt{Expr: appendCall}}
+	if having != nil {
+		loopBody = []Stmt{assignG, &IfStmt{Cond: having, Then: []Stmt{&ExprStmt{Expr: appendCall}}}}
 	}
-	iterPairs := &CallExpr{Func: &FieldExpr{Target: &Name{Name: groupsVar}, Name: "items"}, Args: nil}
-	listComp := &ListComp{Var: "_p", Iter: iterPairs, Expr: sel}
-	stmts = append(stmts, &LetStmt{Name: target, Expr: listComp})
+	loop := &ForStmt{Var: "_g", Iter: iterVals, Body: loopBody}
+	stmts = append(stmts, loop)
 
 	return stmts, nil
 }
