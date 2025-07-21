@@ -1,5 +1,5 @@
-## Progress (2025-07-21 14:31 +0700)
-- swifttrans: support joins in group_by
+## Progress (2025-07-21 15:46 +0700)
+- swifttrans: improve query type inference
 - Generated golden tests for 79/100 programs
 - Updated README checklist and output artifacts
 

@@ -1,8 +1,0 @@
-exit status 1
-/tmp/TestSwiftTranspiler_VMValid_Golden3486495249/027/main.swift:8:40: error: cannot convert value of type 'Any' to expected argument type 'Int'
- 6 | for o in orders {
- 7 |     for c in customers {
- 8 |         if (o["customerId"]! == c["id"]!) {
-   |                                        `- error: cannot convert value of type 'Any' to expected argument type 'Int'
- 9 |             for i in items {
-10 |                 if (o["id"]! == i["orderId"]!) {
