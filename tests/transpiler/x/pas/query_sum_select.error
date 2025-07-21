@@ -1,0 +1,10 @@
+compile: exit status 1
+Free Pascal Compiler version 3.2.2+dfsg-32 [2024/01/05] for x86_64
+Copyright (c) 1993-2021 by Florian Klaempfl and others
+Target OS: Linux for x86-64
+Compiling /workspace/mochi/tests/transpiler/x/pas/query_sum_select.pas
+query_sum_select.pas(5,20) Error: Illegal expression
+query_sum_select.pas(6,3) Error: Error in type definition
+query_sum_select.pas(6,3) Fatal: Syntax error, ";" expected but "identifier N" found
+Fatal: Compilation aborted
+Error: /usr/bin/ppcx64 returned an error exitcode

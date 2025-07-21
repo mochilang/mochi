@@ -1,0 +1,9 @@
+compile: exit status 1
+Free Pascal Compiler version 3.2.2+dfsg-32 [2024/01/05] for x86_64
+Copyright (c) 1993-2021 by Florian Klaempfl and others
+Target OS: Linux for x86-64
+Compiling /workspace/mochi/tests/transpiler/x/pas/group_by_conditional_sum.pas
+group_by_conditional_sum.pas(25,14) Error: Identifier not found "cat"
+group_by_conditional_sum.pas(25,17) Fatal: Syntax error, ")" expected but ":" found
+Fatal: Compilation aborted
+Error: /usr/bin/ppcx64 returned an error exitcode

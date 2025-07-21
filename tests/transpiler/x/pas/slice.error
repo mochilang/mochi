@@ -1,0 +1,10 @@
+compile: exit status 1
+Free Pascal Compiler version 3.2.2+dfsg-32 [2024/01/05] for x86_64
+Copyright (c) 1993-2021 by Florian Klaempfl and others
+Target OS: Linux for x86-64
+Compiling /workspace/mochi/tests/transpiler/x/pas/slice.pas
+slice.pas(4,25) Error: Incompatible type for arg no. 1: Got "{Array Of Const/Constant Open} Array of ShortInt", expected "ShortString"
+slice.pas(5,25) Error: Incompatible type for arg no. 1: Got "{Array Of Const/Constant Open} Array of ShortInt", expected "ShortString"
+slice.pas(8) Fatal: There were 2 errors compiling module, stopping
+Fatal: Compilation aborted
+Error: /usr/bin/ppcx64 returned an error exitcode

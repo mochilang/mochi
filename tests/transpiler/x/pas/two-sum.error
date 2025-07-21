@@ -1,0 +1,31 @@
+compile: exit status 1
+Free Pascal Compiler version 3.2.2+dfsg-32 [2024/01/05] for x86_64
+Copyright (c) 1993-2021 by Florian Klaempfl and others
+Target OS: Linux for x86-64
+Compiling /workspace/mochi/tests/transpiler/x/pas/two-sum.pas
+two-sum.pas(5,3) Error: Identifier not found "n"
+two-sum.pas(5,8) Error: Type mismatch
+two-sum.pas(6,7) Error: Identifier not found "i"
+two-sum.pas(6,7) Error: Ordinal expression expected
+two-sum.pas(6,7) Error: Illegal counter variable
+two-sum.pas(6,18) Error: Identifier not found "n"
+two-sum.pas(7,7) Error: Identifier not found "j"
+two-sum.pas(7,7) Error: Ordinal expression expected
+two-sum.pas(7,7) Error: Illegal counter variable
+two-sum.pas(7,12) Error: Identifier not found "i"
+two-sum.pas(7,22) Error: Identifier not found "n"
+two-sum.pas(8,12) Error: Illegal qualifier
+two-sum.pas(8,12) Error: Identifier not found "i"
+two-sum.pas(8,22) Error: Illegal qualifier
+two-sum.pas(8,22) Error: Identifier not found "j"
+two-sum.pas(9,9) Error: Identifier not found "i"
+two-sum.pas(9,12) Error: Identifier not found "j"
+two-sum.pas(13,9) Warning: range check error while evaluating constants (-1 must be between 0 and 255)
+two-sum.pas(13,13) Warning: range check error while evaluating constants (-1 must be between 0 and 255)
+two-sum.pas(13,13) Error: range check error in set constructor or duplicate set element
+two-sum.pas(13,8) Error: Incompatible types: got "Set Of Byte" expected "LongInt"
+two-sum.pas(21,15) Error: Identifier not found "nums"
+two-sum.pas(22,34) Error: Incompatible type for arg no. 1: Got "{Array Of Const/Constant Open} Array of ShortInt", expected "LongInt"
+two-sum.pas(26) Fatal: There were 21 errors compiling module, stopping
+Fatal: Compilation aborted
+Error: /usr/bin/ppcx64 returned an error exitcode
