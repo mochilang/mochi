@@ -2766,13 +2766,19 @@ func valueFromExpr(e Expr) (any, bool) {
 	case *MapLit:
 		m := map[string]any{}
 		for _, it := range v.Items {
-			keyVal, ok := valueFromExpr(it.Key)
-			if !ok {
-				return nil, false
-			}
-			ks, ok := keyVal.(string)
-			if !ok {
-				return nil, false
+			var ks string
+			if id, ok := it.Key.(*VarRef); ok {
+				ks = id.Name
+			} else {
+				keyVal, ok := valueFromExpr(it.Key)
+				if !ok {
+					return nil, false
+				}
+				str, ok := keyVal.(string)
+				if !ok {
+					return nil, false
+				}
+				ks = str
 			}
 			val, ok := valueFromExpr(it.Value)
 			if !ok {

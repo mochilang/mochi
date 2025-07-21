@@ -135,6 +135,7 @@ func TestTranspilerGolden(t *testing.T) {
 		filepath.Join(srcDir, "append_builtin.mochi"),
 		filepath.Join(srcDir, "avg_builtin.mochi"),
 		filepath.Join(srcDir, "substring_builtin.mochi"),
+		filepath.Join(srcDir, "json_builtin.mochi"),
 		filepath.Join(srcDir, "sum_builtin.mochi"),
 		filepath.Join(srcDir, "string_contains.mochi"),
 		filepath.Join(srcDir, "string_in_operator.mochi"),
@@ -162,11 +163,11 @@ func TestTranspilerGolden(t *testing.T) {
 		filepath.Join(srcDir, "cross_join.mochi"),
 		filepath.Join(srcDir, "group_by.mochi"),
 		filepath.Join(srcDir, "group_by_conditional_sum.mochi"),
-                filepath.Join(srcDir, "group_by_join.mochi"),
-                filepath.Join(srcDir, "group_by_having.mochi"),
-                filepath.Join(srcDir, "group_by_sort.mochi"),
-                // dataset_sort_take_limit currently unsupported
-        }
+		filepath.Join(srcDir, "group_by_join.mochi"),
+		filepath.Join(srcDir, "group_by_having.mochi"),
+		filepath.Join(srcDir, "group_by_sort.mochi"),
+		// dataset_sort_take_limit currently unsupported
+	}
 	if err := os.MkdirAll(goldenDir, 0o755); err != nil {
 		t.Fatalf("mkdir: %v", err)
 	}
