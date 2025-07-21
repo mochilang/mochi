@@ -1780,32 +1780,42 @@ func compileQueryExpr(q *parser.QueryExpr) (Expr, error) {
 			return nil, err
 		}
 	}
-	sel, err := compileExpr(q.Select)
-	if err != nil {
-		return nil, err
-	}
-	if ml := mapLiteral(q.Select); ml != nil {
-		if st, ok := types.InferStructFromMapEnv(ml, topEnv); ok {
+        idx := len(extraDecls)
+        sel, err := compileExpr(q.Select)
+        if err != nil {
+                return nil, err
+        }
+        if ml := mapLiteral(q.Select); ml != nil {
+                extraDecls = extraDecls[:idx]
+                if st, ok := types.InferStructFromMapEnv(ml, topEnv); ok {
 			structCount++
 			name := fmt.Sprintf("Result%d", structCount)
 			st.Name = name
 			if topEnv != nil {
 				topEnv.SetStruct(name, st)
 			}
-			fieldsDecl := make([]Param, len(st.Order))
-			vals := make([]Expr, len(st.Order))
-			for i, it := range ml.Items {
-				v, err := compileExpr(it.Value)
-				if err != nil {
-					return nil, err
-				}
-				tname := inferType(v)
-				if tname == "" {
-					tname = toJavaTypeFromType(st.Fields[st.Order[i]])
-				}
-				fieldsDecl[i] = Param{Name: st.Order[i], Type: tname}
-				vals[i] = v
-			}
+        fieldsDecl := make([]Param, len(st.Order))
+        vals := make([]Expr, len(st.Order))
+        for i, it := range ml.Items {
+                v, err := compileExpr(it.Value)
+                if err != nil {
+                        return nil, err
+                }
+                tname := ""
+                if fe, ok := v.(*FieldExpr); ok {
+                        if ft, ok2 := fieldTypeFromVar(fe.Target, fe.Name); ok2 {
+                                tname = ft
+                        }
+                }
+                if tname == "" {
+                        tname = inferType(v)
+                }
+                if tname == "" {
+                        tname = "Object"
+                }
+                fieldsDecl[i] = Param{Name: st.Order[i], Type: tname}
+                vals[i] = v
+        }
 			extraDecls = append(extraDecls, &TypeDeclStmt{Name: name, Fields: fieldsDecl})
 			sel = &StructLit{Name: name, Fields: vals, Names: st.Order}
 			elemType = name
