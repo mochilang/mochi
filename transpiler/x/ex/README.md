@@ -2,7 +2,7 @@
 
 This directory contains a minimal transpiler that converts a very small subset of Mochi into Elixir source code. The generated files live in `tests/transpiler/x/ex`.
 
-Currently 72 of 100 programs transpile and run.
+Currently 78 of 100 programs transpile and run.
 
 The table below tracks which programs from `tests/vm/valid` successfully transpile and run. Checked items have generated `.exs` code and matching `.out` files in `tests/transpiler/x/ex`.
 - [x] append_builtin.mochi
@@ -18,7 +18,7 @@ The table below tracks which programs from `tests/vm/valid` successfully transpi
 - [x] cross_join.mochi
 - [x] cross_join_filter.mochi
 - [x] cross_join_triple.mochi
-- [ ] dataset_sort_take_limit.mochi
+- [x] dataset_sort_take_limit.mochi
 - [x] dataset_where_filter.mochi
 - [x] exists_builtin.mochi
 - [x] for_list_collection.mochi
@@ -36,12 +36,12 @@ The table below tracks which programs from `tests/vm/valid` successfully transpi
 - [ ] group_by_multi_join.mochi
 - [ ] group_by_multi_join_sort.mochi
 - [x] group_by_sort.mochi
-- [ ] group_items_iteration.mochi
+- [x] group_items_iteration.mochi
 - [x] if_else.mochi
 - [x] if_then_else.mochi
 - [x] if_then_else_nested.mochi
 - [x] in_operator.mochi
-- [ ] in_operator_extended.mochi
+- [x] in_operator_extended.mochi
 - [x] inner_join.mochi
 - [ ] join_multi.mochi
 - [ ] json_builtin.mochi
@@ -69,7 +69,7 @@ The table below tracks which programs from `tests/vm/valid` successfully transpi
 - [x] membership.mochi
 - [x] min_max_builtin.mochi
 - [x] nested_function.mochi
-- [ ] order_by_map.mochi
+- [x] order_by_map.mochi
 - [ ] outer_join.mochi
 - [x] partial_application.mochi
 - [x] print_hello.mochi
@@ -78,12 +78,12 @@ The table below tracks which programs from `tests/vm/valid` successfully transpi
 - [ ] python_auto.mochi
 - [ ] python_math.mochi
 - [ ] query_sum_select.mochi
-- [ ] record_assign.mochi
+- [x] record_assign.mochi
 - [x] right_join.mochi
 - [ ] save_jsonl_stdout.mochi
 - [x] short_circuit.mochi
 - [x] slice.mochi
-- [ ] sort_stable.mochi
+- [x] sort_stable.mochi
 - [x] str_builtin.mochi
 - [x] string_compare.mochi
 - [x] string_concat.mochi
