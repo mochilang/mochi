@@ -179,7 +179,7 @@ func (v *VarDecl) emit(w io.Writer) {
 		kw = "let"
 	}
 	fmt.Fprint(w, kw+" "+v.Name)
-	if v.Type != "" && v.Expr == nil {
+	if v.Type != "" {
 		fmt.Fprintf(w, ": %s", v.Type)
 	}
 	if v.Expr != nil {
@@ -490,7 +490,7 @@ func (g *GroupByExpr) emit(w io.Writer) {
 	for _, j := range g.Joins {
 		fmt.Fprintf(w, "_item[\"%s\"] = %s\n", j.Var, j.Var)
 	}
-	fmt.Fprint(w, "_g[\"items\"] = (_g[\"items\"] as! [Any]) + [_item]\n")
+	fmt.Fprint(w, "_g[\"items\"] = (_g[\"items\"] as! [[String: Any]]) + [_item]\n")
 	fmt.Fprint(w, "_groups[_ks] = _g\n")
 	if g.Where != nil {
 		fmt.Fprint(w, "}\n")
@@ -836,7 +836,7 @@ func (fe *ForEachStmt) emit(w io.Writer) {
 	if fe.CastMap {
 		fmt.Fprint(w, "for _item in ")
 		fe.Expr.emit(w)
-		fmt.Fprint(w, " {\n")
+		fmt.Fprint(w, " as! [[String: Any]] {\n")
 		fmt.Fprintf(w, "let %s = _item as! [String: Any]\n", fe.Name)
 	} else {
 		fmt.Fprintf(w, "for %s in ", fe.Name)
@@ -1003,6 +1003,9 @@ func convertStmt(env *types.Env, st *parser.Statement) (Stmt, error) {
 			if env != nil {
 				t := types.TypeOfExpr(st.Let.Value, env)
 				typ = swiftTypeOf(t)
+				if !types.IsEmptyListLiteral(st.Let.Value) && !isEmptyMapLiteral(st.Let.Value) {
+					typ = ""
+				}
 			}
 		} else if st.Let.Type != nil {
 			ex = zeroValue(st.Let.Type)
@@ -1021,6 +1024,9 @@ func convertStmt(env *types.Env, st *parser.Statement) (Stmt, error) {
 			if env != nil {
 				t := types.TypeOfExpr(st.Var.Value, env)
 				typ = swiftTypeOf(t)
+				if !types.IsEmptyListLiteral(st.Var.Value) && !isEmptyMapLiteral(st.Var.Value) {
+					typ = ""
+				}
 			}
 		} else if st.Var.Type != nil {
 			ex = zeroValue(st.Var.Type)
@@ -1186,9 +1192,17 @@ func convertForStmt(env *types.Env, fs *parser.ForStmt) (Stmt, error) {
 	keysOnly := false
 	if env != nil {
 		if t := types.TypeOfExpr(fs.Source, env); t != nil {
-			switch t.(type) {
+			switch tt := t.(type) {
 			case types.GroupType:
 				castMap = true
+			case types.ListType:
+				switch tt2 := tt.Elem.(type) {
+				case types.GroupType:
+					castMap = true
+				case types.MapType:
+					castMap = true
+					_ = tt2
+				}
 			case types.MapType:
 				keysOnly = true
 			}
@@ -1687,6 +1701,8 @@ func convertPostfix(env *types.Env, p *parser.PostfixExpr) (Expr, error) {
 			expr = &CastExpr{Expr: expr, Type: "String"}
 		case types.IsBoolType(t):
 			expr = &CastExpr{Expr: expr, Type: "Bool"}
+		case types.IsListType(t), types.IsMapType(t):
+			expr = &CastExpr{Expr: expr, Type: swiftTypeOf(t)}
 		}
 	}
 	return expr, nil
@@ -2069,13 +2085,6 @@ func convertPrimary(env *types.Env, pr *parser.Primary) (Expr, error) {
 	case pr.Query != nil:
 		return convertQueryExpr(env, pr.Query)
 	case pr.Selector != nil && len(pr.Selector.Tail) == 0:
-		if env != nil {
-			if t, err := env.GetVar(pr.Selector.Root); err == nil {
-				if _, ok := t.(types.GroupType); ok {
-					return &NameExpr{Name: pr.Selector.Root, AsItems: true}, nil
-				}
-			}
-		}
 		return &NameExpr{Name: pr.Selector.Root}, nil
 	}
 	return nil, fmt.Errorf("unsupported primary")
@@ -2143,6 +2152,16 @@ func zeroValue(t *parser.TypeRef) Expr {
 	default:
 		return &LitExpr{Value: "nil", IsString: false}
 	}
+}
+
+func isEmptyMapLiteral(e *parser.Expr) bool {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) != 0 {
+		return false
+	}
+	if ml := e.Binary.Left.Value.Target.Map; ml != nil {
+		return len(ml.Items) == 0
+	}
+	return false
 }
 
 func toSwiftType(t *parser.TypeRef) string {

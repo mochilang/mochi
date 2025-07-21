@@ -1,1 +1,56 @@
-unsupported query
+exit status 1
+/tmp/swift3466054178/main.swift:21:18: warning: forced cast from '[[String : Any]]' to '[Any]' always succeeds; did you mean to use 'as'?
+19 |     _res.append(g)
+20 | }
+21 | return _res })() as! [Any])
+   |                  `- warning: forced cast from '[[String : Any]]' to '[Any]' always succeeds; did you mean to use 'as'?
+22 | var tmp: [Any] = ([] as! [Any])
+23 | for _item in (groups as! [Any]) as! [[String: Any]] {
+
+/tmp/swift3466054178/main.swift:23:22: warning: forced cast of '[Any]' to same type has no effect
+21 | return _res })() as! [Any])
+22 | var tmp: [Any] = ([] as! [Any])
+23 | for _item in (groups as! [Any]) as! [[String: Any]] {
+   |                      `- warning: forced cast of '[Any]' to same type has no effect
+24 |     let g = _item as! [String: Any]
+25 |     var total = 0
+
+/tmp/swift3466054178/main.swift:24:19: warning: forced cast of '[String : Any]' to same type has no effect
+22 | var tmp: [Any] = ([] as! [Any])
+23 | for _item in (groups as! [Any]) as! [[String: Any]] {
+24 |     let g = _item as! [String: Any]
+   |                   `- warning: forced cast of '[String : Any]' to same type has no effect
+25 |     var total = 0
+26 |     for x in g["items"]! {
+
+/tmp/swift3466054178/main.swift:26:24: error: for-in loop requires 'Any' to conform to 'Sequence'
+24 |     let g = _item as! [String: Any]
+25 |     var total = 0
+26 |     for x in g["items"]! {
+   |                        `- error: for-in loop requires 'Any' to conform to 'Sequence'
+27 |         total = ((total as! Double) + (x["val"]! as! Double))
+28 |     }
+
+/tmp/swift3466054178/main.swift:29:18: warning: forced cast of '[Any]' to same type has no effect
+27 |         total = ((total as! Double) + (x["val"]! as! Double))
+28 |     }
+29 |     tmp = (((tmp as! [Any]) + [["tag": g["key"]!, "total": total]]) as! [Any])
+   |                  `- warning: forced cast of '[Any]' to same type has no effect
+30 | }
+31 | let result = (({ var _res: [Any] = []
+
+/tmp/swift3466054178/main.swift:32:15: warning: forced cast of '[Any]' to same type has no effect
+30 | }
+31 | let result = (({ var _res: [Any] = []
+32 | for r in (tmp as! [Any]) {
+   |               `- warning: forced cast of '[Any]' to same type has no effect
+33 |     _res.append(r)
+34 | }
+
+/tmp/swift3466054178/main.swift:38:12: error: value of type 'Any' has no subscripts
+36 | _list.sort { left, right in
+37 | var r = left
+38 | let _ka = r["tag"]!
+   |            `- error: value of type 'Any' has no subscripts
+39 | r = right
+40 | let _kb = r["tag"]!
