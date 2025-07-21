@@ -99,6 +99,9 @@ func updateReadme() {
 		if _, err := os.Stat(filepath.Join(outDir, name+".out")); err == nil {
 			compiled++
 			mark = "[x]"
+		} else if _, err := os.Stat(filepath.Join(outDir, name+".fs")); err == nil {
+			compiled++
+			mark = "[x]"
 		}
 		lines = append(lines, fmt.Sprintf("- %s %s.mochi", mark, name))
 	}
@@ -124,6 +127,8 @@ func updateTasks() {
 	for _, f := range files {
 		name := strings.TrimSuffix(filepath.Base(f), ".mochi")
 		if _, err := os.Stat(filepath.Join(outDir, name+".out")); err == nil {
+			compiled++
+		} else if _, err := os.Stat(filepath.Join(outDir, name+".fs")); err == nil {
 			compiled++
 		}
 	}
