@@ -18,7 +18,7 @@ Generated sources for the golden tests live under `tests/transpiler/x/rs`.
 - [x] cross_join_filter.mochi
 - [x] cross_join_triple.mochi
 - [x] dataset_sort_take_limit.mochi
-- [x] dataset_where_filter.mochi
+- [ ] dataset_where_filter.mochi
 - [x] exists_builtin.mochi
 - [x] for_list_collection.mochi
 - [x] for_loop.mochi
