@@ -1,6 +1,6 @@
-## Progress (2025-07-22 05:33 +0700)
-- Commit cf9bc79d4: ex: improve type inference
-- Generated Elixir for 96/101 programs
+## Progress (2025-07-22 06:31 +0700)
+- Commit e04a6e708: ex transpiler: support group_by_multi_sort
+- Generated Elixir for 97/101 programs
 - Updated README checklist and outputs
 - Improved code emission and type inference
 
