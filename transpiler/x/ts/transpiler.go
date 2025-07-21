@@ -64,20 +64,15 @@ type InterfaceDecl struct {
 }
 
 func (i *InterfaceDecl) emit(w io.Writer) {
-	io.WriteString(w, "interface ")
+	io.WriteString(w, "export interface ")
 	io.WriteString(w, i.Name)
 	io.WriteString(w, " { ")
 	io.WriteString(w, strings.Join(i.Fields, "; "))
 	io.WriteString(w, " }")
-	if b, ok := w.(interface{ WriteByte(byte) error }); ok {
-		b.WriteByte(';')
-	} else {
-		io.WriteString(w, ";")
-	}
 }
 
 func (t *TypeAlias) emit(w io.Writer) {
-	io.WriteString(w, "type ")
+	io.WriteString(w, "export type ")
 	io.WriteString(w, t.Name)
 	io.WriteString(w, " = ")
 	io.WriteString(w, t.Type)
