@@ -102,6 +102,17 @@ func updateReadme() {
 	srcDir := filepath.Join(root, "tests", "vm", "valid")
 	outDir := filepath.Join(root, "tests", "transpiler", "x", "php")
 	readmePath := filepath.Join(root, "transpiler", "x", "php", "README.md")
+	out, err := exec.Command("git", "log", "-1", "--format=%cI").Output()
+	ts := ""
+	if err == nil {
+		if t, perr := time.Parse(time.RFC3339, strings.TrimSpace(string(out))); perr == nil {
+			if loc, lerr := time.LoadLocation("Asia/Bangkok"); lerr == nil {
+				ts = t.In(loc).Format("2006-01-02 15:04 -0700")
+			} else {
+				ts = t.Format("2006-01-02 15:04 MST")
+			}
+		}
+	}
 	files, _ := filepath.Glob(filepath.Join(srcDir, "*.mochi"))
 	total := len(files)
 	compiled := 0
@@ -118,6 +129,9 @@ func updateReadme() {
 	var buf bytes.Buffer
 	buf.WriteString("# PHP Transpiler Output\n\n")
 	buf.WriteString("Generated PHP code from programs in `tests/vm/valid` lives in `tests/transpiler/x/php`.\n\n")
+	if ts != "" {
+		fmt.Fprintf(&buf, "Last updated: %s\n\n", ts)
+	}
 	fmt.Fprintf(&buf, "## VM Golden Test Checklist (%d/%d)\n", compiled, total)
 	buf.WriteString(strings.Join(lines, "\n"))
 	buf.WriteString("\n")
@@ -152,7 +166,8 @@ func updateTasks() {
 	var buf bytes.Buffer
 	buf.WriteString(fmt.Sprintf("## Progress (%s)\n", ts))
 	fmt.Fprintf(&buf, "- Generated PHP for %d/%d programs\n", compiled, total)
-	buf.WriteString("- Updated README checklist and outputs\n\n")
+	buf.WriteString("- Updated README checklist and outputs\n")
+	buf.WriteString("- Enhanced printing to match golden format\n\n")
 	if data, err := os.ReadFile(taskFile); err == nil {
 		parts := strings.Split(string(data), "\n## Progress ")
 		for i := 1; i < len(parts) && i <= 3; i++ {

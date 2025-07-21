@@ -1045,7 +1045,11 @@ func (v *Var) emit(w io.Writer) { fmt.Fprintf(w, "$%s", v.Name) }
 func (i *IntLit) emit(w io.Writer) { fmt.Fprint(w, i.Value) }
 
 func (f *FloatLit) emit(w io.Writer) {
-	fmt.Fprint(w, strconv.FormatFloat(f.Value, 'f', -1, 64))
+	s := strconv.FormatFloat(f.Value, 'f', -1, 64)
+	if !strings.Contains(s, ".") {
+		s += ".0"
+	}
+	fmt.Fprint(w, s)
 }
 
 func (b *BoolLit) emit(w io.Writer) {
@@ -1350,10 +1354,13 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 			callName = "echo"
 			for i := range args {
 				if isListExpr(args[i]) || isMapExpr(args[i]) || isGroupArg(args[i]) {
-					enc := &CallExpr{Func: "json_encode", Args: []Expr{args[i], &IntLit{Value: 320}}}
+					enc := &CallExpr{Func: "json_encode", Args: []Expr{args[i], &IntLit{Value: 1344}}}
 					spaced := &CallExpr{Func: "str_replace", Args: []Expr{&StringLit{Value: ","}, &StringLit{Value: ", "}, enc}}
 					spaced = &CallExpr{Func: "str_replace", Args: []Expr{&StringLit{Value: ":"}, &StringLit{Value: ": "}, spaced}}
-					args[i] = spaced
+					quoted := &CallExpr{Func: "str_replace", Args: []Expr{&StringLit{Value: "\""}, &StringLit{Value: "'"}, spaced}}
+					boolTrue := &CallExpr{Func: "str_replace", Args: []Expr{&StringLit{Value: "true"}, &StringLit{Value: "True"}, quoted}}
+					boolFalse := &CallExpr{Func: "str_replace", Args: []Expr{&StringLit{Value: "false"}, &StringLit{Value: "False"}, boolTrue}}
+					args[i] = boolFalse
 				} else {
 					arg := maybeBoolString(args[i])
 					if !isStringExpr(arg) {
@@ -2314,7 +2321,7 @@ func isBoolExpr(e Expr) bool {
 
 func maybeBoolString(e Expr) Expr {
 	if isBoolExpr(e) {
-		return &CondExpr{Cond: e, Then: &StringLit{Value: "true"}, Else: &StringLit{Value: "false"}}
+		return &CondExpr{Cond: e, Then: &StringLit{Value: "True"}, Else: &StringLit{Value: "False"}}
 	}
 	return e
 }
