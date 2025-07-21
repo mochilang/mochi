@@ -656,13 +656,15 @@ func (g *GroupByExpr) emit(w io.Writer) {
 			g.Key.emit(w)
 			io.WriteString(w, ";\n")
 			io.WriteString(w, indent)
-			io.WriteString(w, "if (!array_key_exists($key, $groups)) {\n")
+			io.WriteString(w, "$k = json_encode($key);\n")
 			io.WriteString(w, indent)
-			io.WriteString(w, "  $groups[$key] = ['key' => $key, 'items' => []];\n")
+			io.WriteString(w, "if (!array_key_exists($k, $groups)) {\n")
+			io.WriteString(w, indent)
+			io.WriteString(w, "  $groups[$k] = ['key' => $key, 'items' => []];\n")
 			io.WriteString(w, indent)
 			io.WriteString(w, "}\n")
 			io.WriteString(w, indent)
-			io.WriteString(w, "$groups[$key]['items'][] = ")
+			io.WriteString(w, "$groups[$k]['items'][] = ")
 			if len(g.Loops) == 1 {
 				if ql, ok := g.Loops[0].(QueryLoop); ok {
 					fmt.Fprintf(w, "$%s;\n", ql.Name)

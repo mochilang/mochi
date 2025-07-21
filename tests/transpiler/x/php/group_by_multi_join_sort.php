@@ -13,10 +13,11 @@ $result = (function() use ($nation, $customer, $orders, $lineitem, $start_date, 
         foreach ($nation as $n) {
           if ($o["o_custkey"] == $c["c_custkey"] && $l["l_orderkey"] == $o["o_orderkey"] && $n["n_nationkey"] == $c["c_nationkey"] && $o["o_orderdate"] >= $start_date && $o["o_orderdate"] < $end_date && $l["l_returnflag"] == "R") {
             $key = ["c_custkey" => $c["c_custkey"], "c_name" => $c["c_name"], "c_acctbal" => $c["c_acctbal"], "c_address" => $c["c_address"], "c_phone" => $c["c_phone"], "c_comment" => $c["c_comment"], "n_name" => $n["n_name"]];
-            if (!array_key_exists($key, $groups)) {
-              $groups[$key] = ['key' => $key, 'items' => []];
+            $k = json_encode($key);
+            if (!array_key_exists($k, $groups)) {
+              $groups[$k] = ['key' => $key, 'items' => []];
             }
-            $groups[$key]['items'][] = ['c' => $c, 'o' => $o, 'l' => $l, 'n' => $n];
+            $groups[$k]['items'][] = ['c' => $c, 'o' => $o, 'l' => $l, 'n' => $n];
           }
         }
       }
