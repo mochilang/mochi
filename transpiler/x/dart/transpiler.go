@@ -1160,10 +1160,7 @@ func (gq *GroupQueryExpr) emit(w io.Writer) error {
 	if _, err := io.WriteString(w, "(() {\n"); err != nil {
 		return err
 	}
-	if _, err := io.WriteString(w, "  var _groups = <String, Map<String, dynamic>>{};\n"); err != nil {
-		return err
-	}
-	if _, err := io.WriteString(w, "  var _order = <String>[];\n"); err != nil {
+	if _, err := io.WriteString(w, "  var groups = <String, Map<String, dynamic>>{};\n"); err != nil {
 		return err
 	}
 	for i, v := range gq.Vars {
@@ -1184,18 +1181,18 @@ func (gq *GroupQueryExpr) emit(w io.Writer) error {
 		if err := gq.Cond.emit(w); err != nil {
 			return err
 		}
-		if _, err := io.WriteString(w, ")) { continue; }\n"); err != nil {
+		if _, err := io.WriteString(w, ")) continue;\n"); err != nil {
 			return err
 		}
 	}
 	indent := strings.Repeat("  ", len(gq.Vars)+1)
-	if _, err := io.WriteString(w, indent+"var _key = "); err != nil {
+	if _, err := io.WriteString(w, indent+"var key = "); err != nil {
 		return err
 	}
 	if err := gq.Key.emit(w); err != nil {
 		return err
 	}
-	if _, err := io.WriteString(w, ";\n"+indent+"var _ks = _key.toString();\n"+indent+"var _g = _groups[_ks];\n"+indent+"if (_g == null) {\n"+indent+"  _g = {'key': _key, 'items': []};\n"+indent+"  _groups[_ks] = _g;\n"+indent+"  _order.add(_ks);\n"+indent+"}\n"+indent+"(_g['items'] as List).add("); err != nil {
+	if _, err := io.WriteString(w, ";\n"+indent+"var ks = key.toString();\n"+indent+"var g = groups[ks];\n"+indent+"if (g == null) {\n"+indent+"  g = {'key': key, 'items': []};\n"+indent+"  groups[ks] = g;\n"+indent+"}\n"+indent+"(g['items'] as List).add("); err != nil {
 		return err
 	}
 	if err := gq.Row.emit(w); err != nil {
@@ -1209,7 +1206,7 @@ func (gq *GroupQueryExpr) emit(w io.Writer) error {
 			return err
 		}
 	}
-	if _, err := io.WriteString(w, "  var _res = [];\n  for (var ks in _order) {\n    var "+gq.GroupVar+" = _groups[ks]!;\n"); err != nil {
+	if _, err := io.WriteString(w, "  var res = [];\n  for (var g in groups.values) {\n"); err != nil {
 		return err
 	}
 	if gq.Having != nil {
@@ -1219,7 +1216,7 @@ func (gq *GroupQueryExpr) emit(w io.Writer) error {
 		if err := gq.Having.emit(w); err != nil {
 			return err
 		}
-		if _, err := io.WriteString(w, ") {\n      _res.add("); err != nil {
+		if _, err := io.WriteString(w, ") {\n      res.add("); err != nil {
 			return err
 		}
 		if err := gq.Select.emit(w); err != nil {
@@ -1229,7 +1226,7 @@ func (gq *GroupQueryExpr) emit(w io.Writer) error {
 			return err
 		}
 	} else {
-		if _, err := io.WriteString(w, "    _res.add("); err != nil {
+		if _, err := io.WriteString(w, "    res.add("); err != nil {
 			return err
 		}
 		if err := gq.Select.emit(w); err != nil {
@@ -1239,7 +1236,7 @@ func (gq *GroupQueryExpr) emit(w io.Writer) error {
 			return err
 		}
 	}
-	if _, err := io.WriteString(w, "  }\n  return _res;\n})();"); err != nil {
+	if _, err := io.WriteString(w, "  }\n  return res;\n})();"); err != nil {
 		return err
 	}
 	return nil
