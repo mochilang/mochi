@@ -6,5 +6,5 @@ $sum_tree = function($t) {
 };
 };
 $t = ["left" => $Leaf, "value" => 1, "right" => ["left" => $Leaf, "value" => 2, "right" => $Leaf]];
-echo rtrim((is_float($sum_tree($t)) ? sprintf("%.15f", $sum_tree($t)) : $sum_tree($t))), PHP_EOL;
+echo rtrim($sum_tree($t)), PHP_EOL;
 ?>

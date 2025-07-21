@@ -28,6 +28,6 @@ $classify = function($n) use ($x, $label, $day, $mood, $ok, $status) {
     default => "many",
 };
 };
-echo rtrim((is_float($classify(0)) ? sprintf("%.15f", $classify(0)) : $classify(0))), PHP_EOL;
-echo rtrim((is_float($classify(5)) ? sprintf("%.15f", $classify(5)) : $classify(5))), PHP_EOL;
+echo rtrim($classify(0)), PHP_EOL;
+echo rtrim($classify(5)), PHP_EOL;
 ?>

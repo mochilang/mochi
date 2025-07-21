@@ -9,6 +9,6 @@ foreach ($people as $person) {
 
 echo rtrim("--- Adults ---"), PHP_EOL;
 foreach ($adults as $person) {
-  echo rtrim((is_float($person["name"]) ? sprintf("%.15f", $person["name"]) : $person["name"]) . " " . "is" . " " . (is_float($person["age"]) ? sprintf("%.15f", $person["age"]) : $person["age"]) . " " . ($person["is_senior"] ? " (senior)" : "")), PHP_EOL;
+  echo rtrim($person["name"] . " " . "is" . " " . $person["age"] . " " . ($person["is_senior"] ? " (senior)" : "")), PHP_EOL;
 }
 ?>

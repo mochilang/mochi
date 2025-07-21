@@ -19,6 +19,6 @@ $result = (function() use ($customers, $orders) {
 })();
 echo rtrim("--- Left Join ---"), PHP_EOL;
 foreach ($result as $entry) {
-  echo rtrim("Order" . " " . (is_float($entry["orderId"]) ? sprintf("%.15f", $entry["orderId"]) : $entry["orderId"]) . " " . "customer" . " " . (is_float($entry["customer"]) ? sprintf("%.15f", $entry["customer"]) : $entry["customer"]) . " " . "total" . " " . (is_float($entry["total"]) ? sprintf("%.15f", $entry["total"]) : $entry["total"])), PHP_EOL;
+  echo rtrim("Order" . " " . $entry["orderId"] . " " . "customer" . " " . $entry["customer"] . " " . "total" . " " . $entry["total"]), PHP_EOL;
 }
 ?>

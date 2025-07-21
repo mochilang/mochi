@@ -10,6 +10,6 @@ foreach ($orders as $o) {
 
 echo rtrim("--- Cross Join: All order-customer pairs ---"), PHP_EOL;
 foreach ($result as $entry) {
-  echo rtrim("Order" . " " . (is_float($entry["orderId"]) ? sprintf("%.15f", $entry["orderId"]) : $entry["orderId"]) . " " . "(customerId:" . " " . (is_float($entry["orderCustomerId"]) ? sprintf("%.15f", $entry["orderCustomerId"]) : $entry["orderCustomerId"]) . " " . ", total: $" . " " . (is_float($entry["orderTotal"]) ? sprintf("%.15f", $entry["orderTotal"]) : $entry["orderTotal"]) . " " . ") paired with" . " " . (is_float($entry["pairedCustomerName"]) ? sprintf("%.15f", $entry["pairedCustomerName"]) : $entry["pairedCustomerName"])), PHP_EOL;
+  echo rtrim("Order" . " " . $entry["orderId"] . " " . "(customerId:" . " " . $entry["orderCustomerId"] . " " . ", total: $" . " " . $entry["orderTotal"] . " " . ") paired with" . " " . $entry["pairedCustomerName"]), PHP_EOL;
 }
 ?>

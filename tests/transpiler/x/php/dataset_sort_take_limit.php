@@ -7,6 +7,6 @@ foreach ($products as $p) {
 
 echo rtrim("--- Top products (excluding most expensive) ---"), PHP_EOL;
 foreach ($expensive as $item) {
-  echo rtrim((is_float($item["name"]) ? sprintf("%.15f", $item["name"]) : $item["name"]) . " " . "costs $" . " " . (is_float($item["price"]) ? sprintf("%.15f", $item["price"]) : $item["price"])), PHP_EOL;
+  echo rtrim($item["name"] . " " . "costs $" . " " . $item["price"]), PHP_EOL;
 }
 ?>

@@ -15,6 +15,6 @@ foreach ($orders as $o) {
 
 echo rtrim("--- Multi Join ---"), PHP_EOL;
 foreach ($result as $r) {
-  echo rtrim((is_float($r["name"]) ? sprintf("%.15f", $r["name"]) : $r["name"]) . " " . "bought item" . " " . (is_float($r["sku"]) ? sprintf("%.15f", $r["sku"]) : $r["sku"])), PHP_EOL;
+  echo rtrim($r["name"] . " " . "bought item" . " " . $r["sku"]), PHP_EOL;
 }
 ?>

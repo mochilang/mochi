@@ -1304,11 +1304,7 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 					spaced = &CallExpr{Func: "str_replace", Args: []Expr{&StringLit{Value: ":"}, &StringLit{Value: ": "}, spaced}}
 					args[i] = spaced
 				} else {
-					arg := maybeBoolString(args[i])
-					if !isStringExpr(arg) {
-						arg = maybeFloatString(arg)
-					}
-					args[i] = arg
+					args[i] = maybeBoolString(args[i])
 				}
 			}
 		} else if name == "len" {
@@ -2223,10 +2219,6 @@ func maybeBoolString(e Expr) Expr {
 		return &CondExpr{Cond: e, Then: &StringLit{Value: "true"}, Else: &StringLit{Value: "false"}}
 	}
 	return e
-}
-
-func maybeFloatString(e Expr) Expr {
-	return &CondExpr{Cond: &CallExpr{Func: "is_float", Args: []Expr{e}}, Then: &CallExpr{Func: "sprintf", Args: []Expr{&StringLit{Value: "%.15f"}, e}}, Else: e}
 }
 
 func buildAssignTarget(name string, idx []*parser.IndexOp, fields []*parser.FieldOp) (Expr, error) {

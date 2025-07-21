@@ -13,6 +13,6 @@ foreach ($nums as $n) {
 
 echo rtrim("--- Cross Join of three lists ---"), PHP_EOL;
 foreach ($combos as $c) {
-  echo rtrim((is_float($c["n"]) ? sprintf("%.15f", $c["n"]) : $c["n"]) . " " . (is_float($c["l"]) ? sprintf("%.15f", $c["l"]) : $c["l"]) . " " . (is_float($c["b"]) ? sprintf("%.15f", $c["b"]) : $c["b"])), PHP_EOL;
+  echo rtrim($c["n"] . " " . $c["l"] . " " . $c["b"]), PHP_EOL;
 }
 ?>

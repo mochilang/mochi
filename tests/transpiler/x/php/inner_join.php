@@ -12,6 +12,6 @@ foreach ($orders as $o) {
 
 echo rtrim("--- Orders with customer info ---"), PHP_EOL;
 foreach ($result as $entry) {
-  echo rtrim("Order" . " " . (is_float($entry["orderId"]) ? sprintf("%.15f", $entry["orderId"]) : $entry["orderId"]) . " " . "by" . " " . (is_float($entry["customerName"]) ? sprintf("%.15f", $entry["customerName"]) : $entry["customerName"]) . " " . "- $" . " " . (is_float($entry["total"]) ? sprintf("%.15f", $entry["total"]) : $entry["total"])), PHP_EOL;
+  echo rtrim("Order" . " " . $entry["orderId"] . " " . "by" . " " . $entry["customerName"] . " " . "- $" . " " . $entry["total"]), PHP_EOL;
 }
 ?>

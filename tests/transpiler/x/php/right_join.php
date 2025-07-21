@@ -20,9 +20,9 @@ $result = (function() use ($customers, $orders) {
 echo rtrim("--- Right Join using syntax ---"), PHP_EOL;
 foreach ($result as $entry) {
   if ($entry["order"]) {
-  echo rtrim("Customer" . " " . (is_float($entry["customerName"]) ? sprintf("%.15f", $entry["customerName"]) : $entry["customerName"]) . " " . "has order" . " " . (is_float($entry["order"]["id"]) ? sprintf("%.15f", $entry["order"]["id"]) : $entry["order"]["id"]) . " " . "- $" . " " . (is_float($entry["order"]["total"]) ? sprintf("%.15f", $entry["order"]["total"]) : $entry["order"]["total"])), PHP_EOL;
+  echo rtrim("Customer" . " " . $entry["customerName"] . " " . "has order" . " " . $entry["order"]["id"] . " " . "- $" . " " . $entry["order"]["total"]), PHP_EOL;
 } else {
-  echo rtrim("Customer" . " " . (is_float($entry["customerName"]) ? sprintf("%.15f", $entry["customerName"]) : $entry["customerName"]) . " " . "has no orders"), PHP_EOL;
+  echo rtrim("Customer" . " " . $entry["customerName"] . " " . "has no orders"), PHP_EOL;
 }
 }
 ?>

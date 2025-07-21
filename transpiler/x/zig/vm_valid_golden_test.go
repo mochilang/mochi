@@ -103,9 +103,9 @@ func updateReadme() {
 	compiled := 0
 	var lines []string
 	for _, f := range files {
-		name := filepath.Base(f)
+		name := strings.TrimSuffix(filepath.Base(f), ".mochi")
 		mark := "[ ]"
-		if _, err := os.Stat(filepath.Join(outDir, strings.TrimSuffix(name, ".mochi")+".zig")); err == nil {
+		if _, err := os.Stat(filepath.Join(outDir, name+".zig")); err == nil {
 			compiled++
 			mark = "[x]"
 		}
@@ -147,8 +147,8 @@ func updateTasks() {
 	total := len(files)
 	compiled := 0
 	for _, f := range files {
-		name := filepath.Base(f)
-		if _, err := os.Stat(filepath.Join(outDir, strings.TrimSuffix(name, ".mochi")+".zig")); err == nil {
+		name := strings.TrimSuffix(filepath.Base(f), ".mochi")
+		if _, err := os.Stat(filepath.Join(outDir, name+".zig")); err == nil {
 			compiled++
 		}
 	}

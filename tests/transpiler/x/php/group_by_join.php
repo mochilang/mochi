@@ -22,6 +22,6 @@ $stats = (function() use ($customers, $orders) {
 })();
 echo rtrim("--- Orders per customer ---"), PHP_EOL;
 foreach ($stats as $s) {
-  echo rtrim((is_float($s["name"]) ? sprintf("%.15f", $s["name"]) : $s["name"]) . " " . "orders:" . " " . (is_float($s["count"]) ? sprintf("%.15f", $s["count"]) : $s["count"])), PHP_EOL;
+  echo rtrim($s["name"] . " " . "orders:" . " " . $s["count"]), PHP_EOL;
 }
 ?>

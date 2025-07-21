@@ -7,6 +7,6 @@ foreach ($numbers as $n) {
   if ($n > 7) {
   break;
 }
-  echo rtrim("odd number:" . " " . (is_float($n) ? sprintf("%.15f", $n) : $n)), PHP_EOL;
+  echo rtrim("odd number:" . " " . $n), PHP_EOL;
 }
 ?>

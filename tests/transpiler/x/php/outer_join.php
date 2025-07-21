@@ -33,12 +33,12 @@ echo rtrim("--- Outer Join using syntax ---"), PHP_EOL;
 foreach ($result as $row) {
   if ($row["order"]) {
   if ($row["customer"]) {
-  echo rtrim("Order" . " " . (is_float($row["order"]["id"]) ? sprintf("%.15f", $row["order"]["id"]) : $row["order"]["id"]) . " " . "by" . " " . (is_float($row["customer"]["name"]) ? sprintf("%.15f", $row["customer"]["name"]) : $row["customer"]["name"]) . " " . "- $" . " " . (is_float($row["order"]["total"]) ? sprintf("%.15f", $row["order"]["total"]) : $row["order"]["total"])), PHP_EOL;
+  echo rtrim("Order" . " " . $row["order"]["id"] . " " . "by" . " " . $row["customer"]["name"] . " " . "- $" . " " . $row["order"]["total"]), PHP_EOL;
 } else {
-  echo rtrim("Order" . " " . (is_float($row["order"]["id"]) ? sprintf("%.15f", $row["order"]["id"]) : $row["order"]["id"]) . " " . "by" . " " . "Unknown" . " " . "- $" . " " . (is_float($row["order"]["total"]) ? sprintf("%.15f", $row["order"]["total"]) : $row["order"]["total"])), PHP_EOL;
+  echo rtrim("Order" . " " . $row["order"]["id"] . " " . "by" . " " . "Unknown" . " " . "- $" . " " . $row["order"]["total"]), PHP_EOL;
 };
 } else {
-  echo rtrim("Customer" . " " . (is_float($row["customer"]["name"]) ? sprintf("%.15f", $row["customer"]["name"]) : $row["customer"]["name"]) . " " . "has no orders"), PHP_EOL;
+  echo rtrim("Customer" . " " . $row["customer"]["name"] . " " . "has no orders"), PHP_EOL;
 }
 }
 ?>

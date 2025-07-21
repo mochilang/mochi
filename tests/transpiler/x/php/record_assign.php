@@ -4,5 +4,5 @@ $inc = function($c) {
 };
 $c = ["n" => 0];
 $inc($c);
-echo rtrim((is_float($c["n"]) ? sprintf("%.15f", $c["n"]) : $c["n"])), PHP_EOL;
+echo rtrim($c["n"]), PHP_EOL;
 ?>
