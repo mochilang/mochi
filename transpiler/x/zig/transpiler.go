@@ -439,6 +439,12 @@ func zigTypeFromExpr(e Expr) string {
 			return "[]" + l.ElemType
 		}
 		return "[]i64"
+	case *QueryComp:
+		qc := e.(*QueryComp)
+		if qc.ElemType != "" {
+			return "[]" + qc.ElemType
+		}
+		return "[]i64"
 	case *FieldExpr:
 		if fe := e.(*FieldExpr); fe != nil {
 			if vr, ok := fe.Target.(*VarRef); ok {
@@ -455,10 +461,16 @@ func zigTypeFromExpr(e Expr) string {
 		}
 		return "i64"
 	case *BinaryExpr:
-		switch e.(*BinaryExpr).Op {
+		be := e.(*BinaryExpr)
+		switch be.Op {
 		case "==", "!=", "<", "<=", ">", ">=", "&&", "||", "in":
 			return "bool"
 		default:
+			lt := zigTypeFromExpr(be.Left)
+			rt := zigTypeFromExpr(be.Right)
+			if lt == "f64" || rt == "f64" {
+				return "f64"
+			}
 			return "i64"
 		}
 	case *CastExpr:
@@ -485,7 +497,18 @@ func zigTypeFromExpr(e Expr) string {
 	case *CallExpr:
 		ce := e.(*CallExpr)
 		switch ce.Func {
-		case "len", "sum", "count", "exists":
+		case "len", "count", "exists":
+			return "i64"
+		case "sum":
+			if len(ce.Args) > 0 {
+				t := zigTypeFromExpr(ce.Args[0])
+				if strings.HasPrefix(t, "[]") {
+					t = t[2:]
+				}
+				if t == "f64" {
+					return "f64"
+				}
+			}
 			return "i64"
 		case "avg":
 			return "f64"
@@ -788,7 +811,13 @@ func (b *BinaryExpr) emit(w io.Writer) {
 		return
 	}
 	b.Left.emit(w)
-	fmt.Fprintf(w, " %s ", b.Op)
+	op := b.Op
+	if op == "&&" {
+		op = "and"
+	} else if op == "||" {
+		op = "or"
+	}
+	fmt.Fprintf(w, " %s ", op)
 	b.Right.emit(w)
 }
 
@@ -1444,6 +1473,9 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 		}
 		if p.Lit.Int != nil {
 			return &IntLit{Value: int(*p.Lit.Int)}, nil
+		}
+		if p.Lit.Float != nil {
+			return &FloatLit{Value: *p.Lit.Float}, nil
 		}
 		if p.Lit.Bool != nil {
 			return &BoolLit{Value: bool(*p.Lit.Bool)}, nil
