@@ -385,8 +385,9 @@ func (s *PrintStmt) emit(w io.Writer, indent int) {
 	}
 	if currentProgram != nil {
 		currentProgram.addInclude("<sstream>")
+		currentProgram.addInclude("<iomanip>")
 	}
-	io.WriteString(w, "{ std::ostringstream __ss; __ss << std::boolalpha")
+	io.WriteString(w, "{ std::ostringstream __ss; __ss << std::boolalpha << std::setprecision(17)")
 	for i, v := range s.Values {
 		io.WriteString(w, "; if(")
 		if i > 0 {
@@ -772,7 +773,8 @@ func (lc *MultiListComp) emit(w io.Writer) {
 
 func (gc *GroupComp) emit(w io.Writer) {
 	io.WriteString(w, "([]{ std::vector<"+gc.ElemType+"> __items;\n")
-	io.WriteString(w, "std::map<"+gc.KeyType+", std::vector<"+gc.ItemType+">> __groups;\n")
+	io.WriteString(w, "std::vector<"+gc.GroupStruct+"> __groups;\n")
+	io.WriteString(w, "std::unordered_map<"+gc.KeyType+", size_t> __idx;\n")
 	for i, v := range gc.Vars {
 		io.WriteString(w, "for (auto ")
 		io.WriteString(w, v)
@@ -785,20 +787,31 @@ func (gc *GroupComp) emit(w io.Writer) {
 		gc.Cond.emit(w)
 		io.WriteString(w, ") {\n")
 	}
-	io.WriteString(w, "        __groups[")
+	io.WriteString(w, "        auto __key = ")
 	gc.Key.emit(w)
-	io.WriteString(w, "].push_back(")
+	io.WriteString(w, ";\n")
+	io.WriteString(w, "        auto it = __idx.find(__key);\n")
+	io.WriteString(w, "        if(it == __idx.end()) {\n")
+	io.WriteString(w, "            "+gc.GroupStruct+" __g{__key, {}};\n")
+	io.WriteString(w, "            __g.items.push_back(")
 	io.WriteString(w, gc.ItemVar)
 	io.WriteString(w, ");\n")
+	io.WriteString(w, "            __idx[__key] = __groups.size();\n")
+	io.WriteString(w, "            __groups.push_back(__g);\n")
+	io.WriteString(w, "        } else {\n")
+	io.WriteString(w, "            __groups[it->second].items.push_back(")
+	io.WriteString(w, gc.ItemVar)
+	io.WriteString(w, ");\n")
+	io.WriteString(w, "        }\n")
 	if gc.Cond != nil {
 		io.WriteString(w, "    }\n")
 	}
 	for range gc.Vars {
 		io.WriteString(w, "}\n")
 	}
-	io.WriteString(w, "for(auto &__kv : __groups) {\n")
+	io.WriteString(w, "for(auto &__g : __groups) {\n")
 	io.WriteString(w, "    ")
-	io.WriteString(w, gc.GroupStruct+" "+gc.GroupName+"{__kv.first, __kv.second};\n")
+	io.WriteString(w, gc.GroupStruct+" "+gc.GroupName+" = __g;\n")
 	io.WriteString(w, "    __items.push_back(")
 	gc.Body.emit(w)
 	io.WriteString(w, ");\n")
@@ -1096,6 +1109,7 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 			if call := extractCall(stmt.Expr.Expr); call != nil && call.Func == "print" {
 				if cp != nil {
 					cp.addInclude("<sstream>")
+					cp.addInclude("<iomanip>")
 				}
 				var args []Expr
 				for _, a := range call.Args {
@@ -2180,7 +2194,7 @@ func convertSimpleQuery(q *parser.QueryExpr, target string) (Expr, *StructDef, s
 		}
 		if currentProgram != nil {
 			currentProgram.addInclude("<vector>")
-			currentProgram.addInclude("<map>")
+			currentProgram.addInclude("<unordered_map>")
 		}
 		return &GroupComp{Vars: vars, Iters: iters, Cond: cond, Key: keyExpr, ItemVar: itemVar, GroupName: q.Group.Name, GroupStruct: structName, Body: body, ElemType: elemType, KeyType: keyType, ItemType: itemType}, def, elemType, nil
 	}
