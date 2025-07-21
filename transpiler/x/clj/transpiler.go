@@ -332,12 +332,12 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 }
 
 func transpileStmt(s *parser.Statement) (Node, error) {
-        switch {
-       case s.Test != nil:
-               // test blocks are ignored by the transpiler
-               return nil, nil
-       case s.Expr != nil:
-               return transpileExpr(s.Expr.Expr)
+	switch {
+	case s.Test != nil:
+		// test blocks are ignored by the transpiler
+		return nil, nil
+	case s.Expr != nil:
+		return transpileExpr(s.Expr.Expr)
 	case s.If != nil:
 		return transpileIfStmt(s.If)
 	case s.Let != nil:
@@ -1035,19 +1035,18 @@ func transpileCall(c *parser.CallExpr) (Node, error) {
 		if err != nil {
 			return nil, err
 		}
-		pairFn := &List{Elems: []Node{
-			Symbol("fn"),
-			&Vector{Elems: []Node{&Vector{Elems: []Node{Symbol("k"), Symbol("v")}}}},
-			&List{Elems: []Node{Symbol("str"), StringLit("\""), &List{Elems: []Node{Symbol("name"), Symbol("k")}}, StringLit("\":"), Symbol("v")}},
+		mapJoin := &List{Elems: []Node{Symbol("clojure.string/join"), StringLit(","), &List{Elems: []Node{Symbol("map"), &List{Elems: []Node{Symbol("fn"), &Vector{Elems: []Node{&Vector{Elems: []Node{Symbol("k"), Symbol("v")}}}}, &List{Elems: []Node{Symbol("str"), StringLit("\""), &List{Elems: []Node{Symbol("name"), Symbol("k")}}, StringLit("\":"), &List{Elems: []Node{Symbol("json_str"), Symbol("v")}}}}}}, Symbol("x")}}}}
+		mapBody := &List{Elems: []Node{Symbol("str"), StringLit("{"), mapJoin, StringLit("}")}}
+		seqJoin := &List{Elems: []Node{Symbol("clojure.string/join"), StringLit(","), &List{Elems: []Node{Symbol("map"), Symbol("json_str"), Symbol("x")}}}}
+		seqBody := &List{Elems: []Node{Symbol("str"), StringLit("["), seqJoin, StringLit("]")}}
+		condForm := &List{Elems: []Node{Symbol("cond"),
+			&List{Elems: []Node{Symbol("map?"), Symbol("x")}}, mapBody,
+			&List{Elems: []Node{Symbol("sequential?"), Symbol("x")}}, seqBody,
+			&List{Elems: []Node{Symbol("string?"), Symbol("x")}}, &List{Elems: []Node{Symbol("pr-str"), Symbol("x")}},
+			Keyword("else"), &List{Elems: []Node{Symbol("str"), Symbol("x")}},
 		}}
-		joinPairs := &List{Elems: []Node{
-			Symbol("clojure.string/join"),
-			StringLit(","),
-			&List{Elems: []Node{Symbol("map"), pairFn, Symbol("m")}},
-		}}
-		body := &List{Elems: []Node{Symbol("str"), StringLit("{"), joinPairs, StringLit("}")}}
-		lambda := &List{Elems: []Node{Symbol("fn"), &Vector{Elems: []Node{Symbol("m")}}, body}}
-		call := &List{Elems: []Node{lambda, arg}}
+		jsonFn := &List{Elems: []Node{Symbol("fn"), Symbol("json_str"), &Vector{Elems: []Node{Symbol("x")}}, condForm}}
+		call := &List{Elems: []Node{jsonFn, arg}}
 		return &List{Elems: []Node{Symbol("println"), call}}, nil
 	case "exists":
 		if len(c.Args) != 1 {
