@@ -505,16 +505,29 @@ type ForEachStmt struct {
 	Iterable Expr
 	Body     []Stmt
 	IsMap    bool
+	KeyType  string
 }
 
 func (fe *ForEachStmt) emit(w io.Writer) {
 	if fe.IsMap {
-		fmt.Fprintf(w, "for %s := range ", fe.Name)
+		usesSort = true
+		fmt.Fprintf(w, "for _, %s := range func() []%s { keys := make([]%s, 0, len(", fe.Name, fe.KeyType, fe.KeyType)
+		if fe.Iterable != nil {
+			fe.Iterable.emit(w)
+		}
+		fmt.Fprint(w, "))\n")
+		fmt.Fprint(w, "        for k := range ")
+		if fe.Iterable != nil {
+			fe.Iterable.emit(w)
+		}
+		fmt.Fprint(w, " { keys = append(keys, k) }\n")
+		fmt.Fprint(w, "        sort.Slice(keys, func(i, j int) bool { return fmt.Sprint(keys[i]) < fmt.Sprint(keys[j]) })\n")
+		fmt.Fprint(w, "        return keys }()")
 	} else {
 		fmt.Fprintf(w, "for _, %s := range ", fe.Name)
-	}
-	if fe.Iterable != nil {
-		fe.Iterable.emit(w)
+		if fe.Iterable != nil {
+			fe.Iterable.emit(w)
+		}
 	}
 	fmt.Fprint(w, " {\n")
 	for _, st := range fe.Body {
@@ -649,6 +662,28 @@ func (ls *ListStringExpr) emit(w io.Writer) {
 	io.WriteString(w, "func() string { var sb strings.Builder; sb.WriteByte('['); for i, v := range ")
 	ls.List.emit(w)
 	io.WriteString(w, " { if i > 0 { sb.WriteString(\", \") }; sb.WriteString(fmt.Sprint(v)) }; sb.WriteByte(']'); return sb.String() }()")
+}
+
+// StringJoinExpr joins a list of strings with spaces.
+type StringJoinExpr struct{ List Expr }
+
+func (sj *StringJoinExpr) emit(w io.Writer) {
+	usesStrings = true
+	io.WriteString(w, "strings.Join(")
+	sj.List.emit(w)
+	io.WriteString(w, ", \" \"")
+	io.WriteString(w, ")")
+}
+
+// StructJSONExpr renders a struct as a JSON-like string.
+type StructJSONExpr struct{ Value Expr }
+
+func (se *StructJSONExpr) emit(w io.Writer) {
+	usesJSON = true
+	usesStrings = true
+	io.WriteString(w, "func() string { b, _ := json.Marshal(")
+	se.Value.emit(w)
+	io.WriteString(w, `); s := string(b); s = strings.ReplaceAll(s, ":", ": "); s = strings.ReplaceAll(s, ",", ", "); return s }()`)
 }
 
 // FloatStringExpr formats a float with a trailing decimal.
@@ -1123,10 +1158,18 @@ func compileStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 					usesSort = true
 				} else {
 					t := types.TypeOfExpr(a, env)
-					switch t.(type) {
+					switch tt := t.(type) {
 					case types.ListType:
 						needStrings = true
-						ex = &ListStringExpr{List: ex}
+						if _, ok2 := tt.Elem.(types.StringType); ok2 {
+							ex = &StringJoinExpr{List: ex}
+						} else {
+							ex = &ListStringExpr{List: ex}
+						}
+					case types.StructType:
+						needStrings = true
+						usesJSON = true
+						ex = &StructJSONExpr{Value: ex}
 					case types.FloatType:
 						ex = &FloatStringExpr{Value: ex}
 					case types.BoolType:
@@ -1845,10 +1888,12 @@ func compileForStmt(fs *parser.ForStmt, env *types.Env) (Stmt, error) {
 	t := types.TypeOfExpr(fs.Source, env)
 	child := types.NewEnv(env)
 	var isMap bool
+	var keyType string
 	switch tt := t.(type) {
 	case types.MapType:
 		isMap = true
 		child.SetVar(fs.Name, tt.Key, true)
+		keyType = toGoTypeFromType(tt.Key)
 	case types.ListType:
 		child.SetVar(fs.Name, tt.Elem, true)
 	default:
@@ -1858,7 +1903,7 @@ func compileForStmt(fs *parser.ForStmt, env *types.Env) (Stmt, error) {
 	if err != nil {
 		return nil, err
 	}
-	return &ForEachStmt{Name: fs.Name, Iterable: iter, Body: body, IsMap: isMap}, nil
+	return &ForEachStmt{Name: fs.Name, Iterable: iter, Body: body, IsMap: isMap, KeyType: keyType}, nil
 }
 
 func compileReturnStmt(rs *parser.ReturnStmt, env *types.Env) (Stmt, error) {
