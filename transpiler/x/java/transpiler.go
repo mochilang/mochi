@@ -17,6 +17,7 @@ var funcRet map[string]string
 var extraDecls []Stmt
 var structCount int
 var topEnv *types.Env
+var groupItems map[string]string
 
 func javaType(t string) string {
 	switch t {
@@ -338,7 +339,15 @@ func (q *QueryExpr) emit(w io.Writer) {
 		fmt.Fprintf(w, " java.util.LinkedHashMap<String,%s> _groups = new java.util.LinkedHashMap<>();", q.Group.GroupType)
 	}
 	fmt.Fprintf(w, " for (var %s : ", q.Var)
-	q.Src.emit(w)
+	if v, ok := q.Src.(*VarExpr); ok {
+		if _, ok2 := groupItems[varTypes[v.Name]]; ok2 {
+			fmt.Fprint(w, v.Name+".items")
+		} else {
+			q.Src.emit(w)
+		}
+	} else {
+		q.Src.emit(w)
+	}
 	fmt.Fprint(w, ") {")
 	for _, f := range q.Froms {
 		fmt.Fprintf(w, " for (var %s : ", f.Var)
@@ -368,14 +377,20 @@ func (q *QueryExpr) emit(w io.Writer) {
 		fmt.Fprint(w, "; String _ks = String.valueOf(_k);")
 		fmt.Fprintf(w, " %s g = _groups.get(_ks);", q.Group.GroupType)
 		fmt.Fprintf(w, " if (g == null) { g = new %s(_k, new java.util.ArrayList<>()); _groups.put(_ks, g); }", q.Group.GroupType)
-		fmt.Fprintf(w, " g.items.add(new %s(", q.Group.ItemType)
-		for i, fld := range q.Group.Fields {
-			if i > 0 {
-				fmt.Fprint(w, ", ")
+		if len(q.Group.Fields) == 1 && !strings.HasPrefix(q.Group.ItemType, "Item") {
+			fmt.Fprint(w, " g.items.add(")
+			fmt.Fprint(w, q.Group.Fields[0])
+			fmt.Fprint(w, ");")
+		} else {
+			fmt.Fprintf(w, " g.items.add(new %s(", q.Group.ItemType)
+			for i, fld := range q.Group.Fields {
+				if i > 0 {
+					fmt.Fprint(w, ", ")
+				}
+				fmt.Fprint(w, fld)
 			}
-			fmt.Fprint(w, fld)
+			fmt.Fprint(w, "));")
 		}
-		fmt.Fprint(w, "));")
 	} else {
 		fmt.Fprint(w, " add(")
 		q.Select.emit(w)
@@ -393,8 +408,7 @@ func (q *QueryExpr) emit(w io.Writer) {
 	}
 	fmt.Fprint(w, " }")
 	if q.Group != nil {
-		fmt.Fprint(w, " for (var g : _groups.values()) {")
-		fmt.Fprintf(w, " %s %s = g;", q.Group.GroupType, q.Group.Name)
+		fmt.Fprintf(w, " for (var %s : _groups.values()) {", q.Group.Name)
 		if q.Group.Having != nil {
 			fmt.Fprint(w, " if (")
 			q.Group.Having.emit(w)
@@ -793,6 +807,8 @@ type LenExpr struct{ Value Expr }
 func (l *LenExpr) emit(w io.Writer) {
 	l.Value.emit(w)
 	switch {
+	case isGroupExpr(l.Value):
+		fmt.Fprint(w, ".items.size()")
 	case isStringExpr(l.Value):
 		fmt.Fprint(w, ".length()")
 	case isMapExpr(l.Value):
@@ -800,6 +816,20 @@ func (l *LenExpr) emit(w io.Writer) {
 	default:
 		fmt.Fprint(w, ".length")
 	}
+}
+
+// AvgExpr represents averaging a list of numbers.
+type AvgExpr struct{ Value Expr }
+
+func (a *AvgExpr) emit(w io.Writer) {
+	fmt.Fprint(w, "((")
+	a.Value.emit(w)
+	fmt.Fprint(w, ".stream().mapToDouble(v -> ((Number)v).doubleValue()).average().orElse(0))")
+	fmt.Fprint(w, " % 1 == 0 ? (int)(")
+	a.Value.emit(w)
+	fmt.Fprint(w, ".stream().mapToDouble(v -> ((Number)v).doubleValue()).average().orElse(0)) : (")
+	a.Value.emit(w)
+	fmt.Fprint(w, ".stream().mapToDouble(v -> ((Number)v).doubleValue()).average().orElse(0)))")
 }
 
 type UnaryExpr struct {
@@ -1007,6 +1037,15 @@ func isArrayExpr(e Expr) bool {
 	return false
 }
 
+func isGroupExpr(e Expr) bool {
+	if v, ok := e.(*VarExpr); ok {
+		if _, ok2 := groupItems[varTypes[v.Name]]; ok2 {
+			return true
+		}
+	}
+	return false
+}
+
 func isNumericBool(e Expr) bool {
 	switch ex := e.(type) {
 	case *BinaryExpr:
@@ -1030,6 +1069,7 @@ func Transpile(p *parser.Program, env *types.Env) (*Program, error) {
 	extraDecls = nil
 	structCount = 0
 	topEnv = env
+	groupItems = map[string]string{}
 	for _, s := range p.Statements {
 		if s.Fun != nil {
 			body, err := compileStmts(s.Fun.Body)
@@ -1497,6 +1537,12 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 		if name == "len" && len(args) == 1 {
 			return &LenExpr{Value: args[0]}, nil
 		}
+		if name == "count" && len(args) == 1 {
+			return &LenExpr{Value: args[0]}, nil
+		}
+		if name == "avg" && len(args) == 1 {
+			return &AvgExpr{Value: args[0]}, nil
+		}
 		if name == "str" && len(args) == 1 {
 			return &CallExpr{Func: "String.valueOf", Args: args}, nil
 		}
@@ -1716,9 +1762,25 @@ func compileQueryExpr(q *parser.QueryExpr) (Expr, error) {
 		return nil, err
 	}
 	var elemType string
+	if v, ok := src.(*VarExpr); ok {
+		if it, ok2 := groupItems[varTypes[v.Name]]; ok2 {
+			src = &FieldExpr{Target: src, Name: "items"}
+			elemType = it
+		}
+	}
 	if topEnv != nil {
 		if lt, ok := types.ExprType(q.Source, topEnv).(types.ListType); ok {
 			elemType = toJavaTypeFromType(lt.Elem)
+		}
+	}
+	if elemType == "" {
+		switch s := src.(type) {
+		case *VarExpr:
+			if vt, ok := varTypes[s.Name]; ok {
+				elemType = strings.TrimSuffix(vt, "[]")
+			}
+		case *ListLit:
+			elemType = s.ElemType
 		}
 	}
 	if elemType == "" {
@@ -1780,46 +1842,55 @@ func compileQueryExpr(q *parser.QueryExpr) (Expr, error) {
 			return nil, err
 		}
 	}
-        idx := len(extraDecls)
-        sel, err := compileExpr(q.Select)
-        if err != nil {
-                return nil, err
-        }
-        if ml := mapLiteral(q.Select); ml != nil {
-                extraDecls = extraDecls[:idx]
-                if st, ok := types.InferStructFromMapEnv(ml, topEnv); ok {
+	idx := len(extraDecls)
+	sel, err := compileExpr(q.Select)
+	if err != nil {
+		return nil, err
+	}
+	if ml := mapLiteral(q.Select); ml != nil {
+		extraDecls = extraDecls[:idx]
+		if st, ok := types.InferStructFromMapEnv(ml, topEnv); ok {
 			structCount++
 			name := fmt.Sprintf("Result%d", structCount)
 			st.Name = name
 			if topEnv != nil {
 				topEnv.SetStruct(name, st)
 			}
-        fieldsDecl := make([]Param, len(st.Order))
-        vals := make([]Expr, len(st.Order))
-        for i, it := range ml.Items {
-                v, err := compileExpr(it.Value)
-                if err != nil {
-                        return nil, err
-                }
-                tname := ""
-                if fe, ok := v.(*FieldExpr); ok {
-                        if ft, ok2 := fieldTypeFromVar(fe.Target, fe.Name); ok2 {
-                                tname = ft
-                        }
-                }
-                if tname == "" {
-                        tname = inferType(v)
-                }
-                if tname == "" {
-                        tname = "Object"
-                }
-                fieldsDecl[i] = Param{Name: st.Order[i], Type: tname}
-                vals[i] = v
-        }
+			fieldsDecl := make([]Param, len(st.Order))
+			vals := make([]Expr, len(st.Order))
+			for i, it := range ml.Items {
+				v, err := compileExpr(it.Value)
+				if err != nil {
+					return nil, err
+				}
+				tname := ""
+				if fe, ok := v.(*FieldExpr); ok {
+					if ft, ok2 := fieldTypeFromVar(fe.Target, fe.Name); ok2 {
+						tname = ft
+					}
+				}
+				if tname == "" {
+					tname = inferType(v)
+				}
+				if tname == "" {
+					tname = "Object"
+				}
+				fieldsDecl[i] = Param{Name: st.Order[i], Type: tname}
+				vals[i] = v
+			}
 			extraDecls = append(extraDecls, &TypeDeclStmt{Name: name, Fields: fieldsDecl})
 			sel = &StructLit{Name: name, Fields: vals, Names: st.Order}
 			elemType = name
 		}
+	}
+	tsel := javaBoxType(inferType(sel))
+	if elemType == "" || elemType == "java.util.Map" {
+		if tsel != "" {
+			elemType = tsel
+		}
+	}
+	if elemType == "" {
+		elemType = "Object"
 	}
 
 	var group *queryGroup
@@ -1835,6 +1906,9 @@ func compileQueryExpr(q *parser.QueryExpr) (Expr, error) {
 		if keyType == "" {
 			keyType = inferType(keyExpr)
 		}
+		if keyType == "" {
+			keyType = "Object"
+		}
 		itemFields := append([]string{q.Var}, make([]string, 0, len(q.Froms)+len(q.Joins))...)
 		for _, f := range q.Froms {
 			itemFields = append(itemFields, f.Var)
@@ -1842,12 +1916,17 @@ func compileQueryExpr(q *parser.QueryExpr) (Expr, error) {
 		for _, j := range q.Joins {
 			itemFields = append(itemFields, j.Var)
 		}
-		itemName := fmt.Sprintf("Item%d", structCount+1)
-		itemDecl := make([]Param, len(itemFields))
-		for i, n := range itemFields {
-			itemDecl[i] = Param{Name: n, Type: varTypes[n]}
+		var itemName string
+		if len(itemFields) == 1 {
+			itemName = varTypes[itemFields[0]]
+		} else {
+			itemName = fmt.Sprintf("Item%d", structCount+1)
+			itemDecl := make([]Param, len(itemFields))
+			for i, n := range itemFields {
+				itemDecl[i] = Param{Name: n, Type: varTypes[n]}
+			}
+			extraDecls = append(extraDecls, &TypeDeclStmt{Name: itemName, Fields: itemDecl})
 		}
-		extraDecls = append(extraDecls, &TypeDeclStmt{Name: itemName, Fields: itemDecl})
 
 		groupName := fmt.Sprintf("Group%d", structCount+1)
 		structCount++
@@ -1856,6 +1935,7 @@ func compileQueryExpr(q *parser.QueryExpr) (Expr, error) {
 			{Name: "items", Type: fmt.Sprintf("java.util.List<%s>", itemName)},
 		}
 		extraDecls = append(extraDecls, &TypeDeclStmt{Name: groupName, Fields: gfields})
+		groupItems[groupName] = itemName
 		var having Expr
 		if q.Group.Having != nil {
 			having, err = compileExpr(q.Group.Having)
