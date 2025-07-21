@@ -1,4 +1,4 @@
-;; Generated on 2025-07-21 15:47 +0700
+;; Generated on 2025-07-21 16:07 +0700
 (import (srfi 1) (srfi 69) (chibi string))
 (define customers (list (alist->hash-table (list (cons "id" 1)
          (cons "name" "Alice")
@@ -51,7 +51,11 @@
                        (quote nil)
                       )
                      (hash-table-set! g20 "items" (append (hash-table-ref g20 "items")
-                         (list o)
+                         (list (alist->hash-table (list (cons "o" o)
+                               (cons "c" c)
+                              )
+                            )
+                          )
                         )
                       )
                     )

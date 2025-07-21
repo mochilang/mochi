@@ -906,12 +906,18 @@ func convertGroupByJoinQuery(q *parser.QueryExpr) (Node, error) {
 		&List{Elems: []Node{Symbol("hash-table-set!"), Symbol(groups), Symbol(k), Symbol(g)}},
 	}}
 
+	itemPairs := []Node{Symbol("list")}
+	for _, l := range loops {
+		itemPairs = append(itemPairs, &List{Elems: []Node{Symbol("cons"), StringLit(l.name), Symbol(l.name)}})
+	}
+	item := &List{Elems: []Node{Symbol("alist->hash-table"), &List{Elems: itemPairs}}}
+
 	appendItem := &List{Elems: []Node{
 		Symbol("hash-table-set!"), Symbol(g), StringLit("items"),
 		&List{Elems: []Node{
 			Symbol("append"),
 			&List{Elems: []Node{Symbol("hash-table-ref"), Symbol(g), StringLit("items")}},
-			&List{Elems: []Node{Symbol("list"), Symbol(q.Var)}},
+			&List{Elems: []Node{Symbol("list"), item}},
 		}},
 	}}
 

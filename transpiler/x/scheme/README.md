@@ -2,7 +2,7 @@
 
 Generated Scheme code for programs in `tests/vm/valid`. Each program has a `.scm` file produced by the transpiler and a `.out` file with its runtime output. Compilation or execution errors are captured in `.error` files.
 
-Transpiled programs: 71/100
+Transpiled programs: 66/100
 
 Checklist:
 
@@ -14,7 +14,7 @@ Checklist:
 - [ ] break_continue
 - [x] cast_string_to_int
 - [x] cast_struct
-- [x] closure
+- [ ] closure
 - [x] count_builtin
 - [x] cross_join
 - [x] cross_join_filter
@@ -26,7 +26,7 @@ Checklist:
 - [x] for_loop
 - [x] for_map_collection
 - [x] fun_call
-- [x] fun_expr_in_let
+- [ ] fun_expr_in_let
 - [x] fun_three_args
 - [ ] go_auto
 - [x] group_by
@@ -74,8 +74,8 @@ Checklist:
 - [x] outer_join
 - [ ] partial_application
 - [x] print_hello
-- [ ] pure_fold
-- [ ] pure_global_fold
+- [x] pure_fold
+- [x] pure_global_fold
 - [ ] python_auto
 - [ ] python_math
 - [ ] query_sum_select
@@ -98,11 +98,11 @@ Checklist:
 - [ ] test_block
 - [ ] tree_sum
 - [ ] two-sum
-- [x] typed_let
-- [x] typed_var
-- [x] unary_neg
+- [ ] typed_let
+- [ ] typed_var
+- [ ] unary_neg
 - [ ] update_stmt
 - [ ] user_type_literal
-- [x] values_builtin
-- [x] var_assignment
-- [x] while_loop
+- [ ] values_builtin
+- [ ] var_assignment
+- [ ] while_loop
