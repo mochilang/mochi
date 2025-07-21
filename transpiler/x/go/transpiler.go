@@ -86,9 +86,33 @@ func (p *PrintStmt) emit(w io.Writer) {
 		if i > 0 {
 			io.WriteString(w, ", ")
 		}
-		e.emit(w)
+		if base, idx, ok := isStringIndexCall(e); ok {
+			io.WriteString(w, "fmt.Sprintf(\"%q\", []rune(")
+			base.emit(w)
+			io.WriteString(w, ")[")
+			idx.emit(w)
+			io.WriteString(w, "])")
+		} else {
+			e.emit(w)
+		}
 	}
 	io.WriteString(w, ")")
+}
+
+func isStringIndexCall(e Expr) (Expr, Expr, bool) {
+	ce, ok := e.(*CallExpr)
+	if !ok || ce.Func != "string" || len(ce.Args) != 1 {
+		return nil, nil, false
+	}
+	ix, ok := ce.Args[0].(*IndexExpr)
+	if !ok {
+		return nil, nil, false
+	}
+	rs, ok := ix.X.(*RuneSliceExpr)
+	if !ok || ix.Index == nil {
+		return nil, nil, false
+	}
+	return rs.Expr, ix.Index, true
 }
 
 type VarDecl struct {
