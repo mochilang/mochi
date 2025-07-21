@@ -1167,6 +1167,12 @@ func guessType(e Expr) string {
 			elem = "Any"
 		}
 		return "MutableList<" + elem + ">"
+	case *RightJoinExpr:
+		elem := guessType(v.Select)
+		if elem == "" {
+			elem = "Any"
+		}
+		return "MutableList<" + elem + ">"
 	case *IndexExpr:
 		if v.Type != "" {
 			return v.Type
