@@ -16,11 +16,12 @@ type Compiler struct {
 	indent  int
 	imports map[string]bool
 	env     *types.Env
+	helpers map[string]bool
 }
 
 // New creates a new Go compiler instance.
 func New(env *types.Env) *Compiler {
-	return &Compiler{imports: make(map[string]bool), env: env}
+	return &Compiler{imports: make(map[string]bool), env: env, helpers: make(map[string]bool)}
 }
 
 // Compile returns Go source code implementing prog.
@@ -97,7 +98,7 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	c.indent--
 	c.writeln("}")
 	c.writeln("")
-	c.writeln(runtimeHelpers)
+	c.writeRuntimeHelpers()
 
 	return c.buf.Bytes(), nil
 }
@@ -247,6 +248,7 @@ func (c *Compiler) compileFor(stmt *parser.ForStmt) error {
 	if err != nil {
 		return err
 	}
+	c.useHelper("_iter")
 	c.writeIndent()
 	c.buf.WriteString(fmt.Sprintf("for _, %s := range _iter(%s) {\n", name, src))
 	c.indent++
@@ -324,21 +326,25 @@ func (c *Compiler) compileBinaryExpr(b *parser.BinaryExpr) (string, error) {
 				if _, ok := rightType.(types.IntType); ok {
 					expr = fmt.Sprintf("(%s + %s)", expr, right)
 				} else {
+					c.useHelper("_add")
 					expr = fmt.Sprintf("_add(%s, %s)", expr, right)
 				}
 			} else if _, ok := leftType.(types.FloatType); ok {
 				if _, ok := rightType.(types.FloatType); ok {
 					expr = fmt.Sprintf("(%s + %s)", expr, right)
 				} else {
+					c.useHelper("_add")
 					expr = fmt.Sprintf("_add(%s, %s)", expr, right)
 				}
 			} else if _, ok := leftType.(types.StringType); ok {
 				if _, ok := rightType.(types.StringType); ok {
 					expr = fmt.Sprintf("%s + %s", expr, right)
 				} else {
+					c.useHelper("_add")
 					expr = fmt.Sprintf("_add(%s, %s)", expr, right)
 				}
 			} else {
+				c.useHelper("_add")
 				expr = fmt.Sprintf("_add(%s, %s)", expr, right)
 			}
 		case "-":
@@ -346,15 +352,18 @@ func (c *Compiler) compileBinaryExpr(b *parser.BinaryExpr) (string, error) {
 				if _, ok := rightType.(types.IntType); ok {
 					expr = fmt.Sprintf("(%s - %s)", expr, right)
 				} else {
+					c.useHelper("_sub")
 					expr = fmt.Sprintf("_sub(%s, %s)", expr, right)
 				}
 			} else if _, ok := leftType.(types.FloatType); ok {
 				if _, ok := rightType.(types.FloatType); ok {
 					expr = fmt.Sprintf("(%s - %s)", expr, right)
 				} else {
+					c.useHelper("_sub")
 					expr = fmt.Sprintf("_sub(%s, %s)", expr, right)
 				}
 			} else {
+				c.useHelper("_sub")
 				expr = fmt.Sprintf("_sub(%s, %s)", expr, right)
 			}
 		case "*":
@@ -362,15 +371,18 @@ func (c *Compiler) compileBinaryExpr(b *parser.BinaryExpr) (string, error) {
 				if _, ok := rightType.(types.IntType); ok {
 					expr = fmt.Sprintf("(%s * %s)", expr, right)
 				} else {
+					c.useHelper("_mul")
 					expr = fmt.Sprintf("_mul(%s, %s)", expr, right)
 				}
 			} else if _, ok := leftType.(types.FloatType); ok {
 				if _, ok := rightType.(types.FloatType); ok {
 					expr = fmt.Sprintf("(%s * %s)", expr, right)
 				} else {
+					c.useHelper("_mul")
 					expr = fmt.Sprintf("_mul(%s, %s)", expr, right)
 				}
 			} else {
+				c.useHelper("_mul")
 				expr = fmt.Sprintf("_mul(%s, %s)", expr, right)
 			}
 		case "/":
@@ -378,15 +390,18 @@ func (c *Compiler) compileBinaryExpr(b *parser.BinaryExpr) (string, error) {
 				if _, ok := rightType.(types.IntType); ok {
 					expr = fmt.Sprintf("(%s / %s)", expr, right)
 				} else {
+					c.useHelper("_div")
 					expr = fmt.Sprintf("_div(%s, %s)", expr, right)
 				}
 			} else if _, ok := leftType.(types.FloatType); ok {
 				if _, ok := rightType.(types.FloatType); ok {
 					expr = fmt.Sprintf("(%s / %s)", expr, right)
 				} else {
+					c.useHelper("_div")
 					expr = fmt.Sprintf("_div(%s, %s)", expr, right)
 				}
 			} else {
+				c.useHelper("_div")
 				expr = fmt.Sprintf("_div(%s, %s)", expr, right)
 			}
 		case "%":
@@ -394,9 +409,11 @@ func (c *Compiler) compileBinaryExpr(b *parser.BinaryExpr) (string, error) {
 				if _, ok := rightType.(types.IntType); ok {
 					expr = fmt.Sprintf("(%s %% %s)", expr, right)
 				} else {
+					c.useHelper("_mod")
 					expr = fmt.Sprintf("_mod(%s, %s)", expr, right)
 				}
 			} else {
+				c.useHelper("_mod")
 				expr = fmt.Sprintf("_mod(%s, %s)", expr, right)
 			}
 		case "==":
@@ -443,8 +460,10 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 			if err != nil {
 				return "", err
 			}
+			c.useHelper("_index")
 			val = fmt.Sprintf("_index(%s, %s)", val, key)
 		} else {
+			c.useHelper("_slice")
 			start := "0"
 			if op.Start != nil {
 				s, err := c.compileExpr(op.Start)
@@ -981,8 +1000,7 @@ func (c *Compiler) scanPrimaryImports(p *parser.Primary) {
 }
 
 // runtimeHelpers contains helper functions injected into generated programs.
-const runtimeHelpers = `
-func _index(v any, k any) any {
+const helperIndex = `func _index(v any, k any) any {
     switch s := v.(type) {
     case []any:
         i, ok := k.(int)
@@ -1019,8 +1037,9 @@ func _index(v any, k any) any {
         panic("invalid index target")
     }
 }
+`
 
-func _slice(v any, start, end int) any {
+const helperSlice = `func _slice(v any, start, end int) any {
     switch s := v.(type) {
     case []any:
         l := len(s)
@@ -1051,8 +1070,9 @@ func _slice(v any, start, end int) any {
         panic("invalid slice target")
     }
 }
+`
 
-func _iter(v any) []any {
+const helperIter = `func _iter(v any) []any {
     switch s := v.(type) {
     case []any:
         return s
@@ -1073,16 +1093,56 @@ func _iter(v any) []any {
         return nil
     }
 }
-
-func _add(a, b any) any { return a.(int) + b.(int) }
-func _sub(a, b any) any { return a.(int) - b.(int) }
-func _mul(a, b any) any { return a.(int) * b.(int) }
-func _div(a, b any) any { return a.(int) / b.(int) }
-func _mod(a, b any) any { return a.(int) % b.(int) }
-func _eq(a, b any) bool { return a == b }
-func _neq(a, b any) bool { return a != b }
-func _lt(a, b any) bool { return a.(int) < b.(int) }
-func _le(a, b any) bool { return a.(int) <= b.(int) }
-func _gt(a, b any) bool { return a.(int) > b.(int) }
-func _ge(a, b any) bool { return a.(int) >= b.(int) }
 `
+
+const helperAdd = `func _add(a, b any) any { return a.(int) + b.(int) }`
+const helperSub = `func _sub(a, b any) any { return a.(int) - b.(int) }`
+const helperMul = `func _mul(a, b any) any { return a.(int) * b.(int) }`
+const helperDiv = `func _div(a, b any) any { return a.(int) / b.(int) }`
+const helperMod = `func _mod(a, b any) any { return a.(int) % b.(int) }`
+const helperEq = `func _eq(a, b any) bool { return a == b }`
+const helperNeq = `func _neq(a, b any) bool { return a != b }`
+const helperLt = `func _lt(a, b any) bool { return a.(int) < b.(int) }`
+const helperLe = `func _le(a, b any) bool { return a.(int) <= b.(int) }`
+const helperGt = `func _gt(a, b any) bool { return a.(int) > b.(int) }`
+const helperGe = `func _ge(a, b any) bool { return a.(int) >= b.(int) }`
+
+var runtimeHelpers = map[string]string{
+	"_index": helperIndex,
+	"_slice": helperSlice,
+	"_iter":  helperIter,
+	"_add":   helperAdd,
+	"_sub":   helperSub,
+	"_mul":   helperMul,
+	"_div":   helperDiv,
+	"_mod":   helperMod,
+	"_eq":    helperEq,
+	"_neq":   helperNeq,
+	"_lt":    helperLt,
+	"_le":    helperLe,
+	"_gt":    helperGt,
+	"_ge":    helperGe,
+}
+
+func (c *Compiler) useHelper(name string) {
+	if c.helpers != nil {
+		c.helpers[name] = true
+	}
+}
+
+func (c *Compiler) writeRuntimeHelpers() {
+	if len(c.helpers) == 0 {
+		return
+	}
+	keys := make([]string, 0, len(c.helpers))
+	for k := range c.helpers {
+		keys = append(keys, k)
+	}
+	sort.Strings(keys)
+	for _, k := range keys {
+		if code, ok := runtimeHelpers[k]; ok {
+			c.writeln(code)
+			c.writeln("")
+		}
+	}
+}

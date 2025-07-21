@@ -3,6 +3,7 @@ package tscode
 import (
 	"bytes"
 	"fmt"
+	"sort"
 	"strings"
 
 	"mochi/parser"
@@ -10,13 +11,14 @@ import (
 
 // Compiler translates a Mochi AST into TypeScript source code that can be run with Deno.
 type Compiler struct {
-	buf    bytes.Buffer
-	indent int
+	buf     bytes.Buffer
+	indent  int
+	helpers map[string]bool
 }
 
 // New creates a new TypeScript compiler instance.
 func New() *Compiler {
-	return &Compiler{}
+	return &Compiler{helpers: make(map[string]bool)}
 }
 
 // Compile generates TypeScript source code for the given program.
@@ -48,7 +50,7 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	c.writeln("}")
 	c.writeln("main()")
 	c.writeln("")
-	c.writeln(runtimeHelpers)
+	c.writeRuntimeHelpers()
 	return c.buf.Bytes(), nil
 }
 
@@ -190,6 +192,7 @@ func (c *Compiler) compileFor(stmt *parser.ForStmt) error {
 	if err != nil {
 		return err
 	}
+	c.useHelper("_iter")
 	c.writeIndent()
 	c.buf.WriteString(fmt.Sprintf("for (const %s of _iter(%s)) {\n", name, src))
 	c.indent++
@@ -282,12 +285,14 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 					return "", err
 				}
 			}
+			c.useHelper("_slice")
 			expr = fmt.Sprintf("_slice(%s, %s, %s)", expr, start, end)
 		} else {
 			idxExpr, err := c.compileExpr(idx.Start)
 			if err != nil {
 				return "", err
 			}
+			c.useHelper("_index")
 			expr = fmt.Sprintf("_index(%s, %s)", expr, idxExpr)
 		}
 	}
@@ -337,6 +342,7 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 	case "print":
 		return fmt.Sprintf("console.log(%s)", argStr), nil
 	case "len":
+		c.useHelper("_len")
 		return fmt.Sprintf("_len(%s)", argStr), nil
 	case "now":
 		// performance.now() returns milliseconds as a float. Multiply
@@ -463,16 +469,15 @@ func sanitizeName(name string) string {
 }
 
 // runtimeHelpers contains helper functions injected into generated programs.
-const runtimeHelpers = `
-function _index(v: any, k: any): any {
+const helperIndex = `function _index(v: any, k: any): any {
   if (Array.isArray(v) || typeof v === "string") {
     const l = (v as any).length;
     if (typeof k === "number" && k < 0) k = l + k;
   }
   return (v as any)[k];
-}
+}`
 
-function _slice(v: any, start: number, end: number): any {
+const helperSlice = `function _slice(v: any, start: number, end: number): any {
   if (typeof v === "string" || Array.isArray(v)) {
     const l = (v as any).length;
     if (start < 0) start = l + start;
@@ -480,18 +485,47 @@ function _slice(v: any, start: number, end: number): any {
     return (v as any).slice(start, end);
   }
   throw new Error("invalid slice target");
-}
+}`
 
-function _iter(v: any): any[] {
+const helperIter = `function _iter(v: any): any[] {
   if (Array.isArray(v)) return v;
   if (typeof v === "string") return Array.from(v);
   if (v && typeof v === "object") return Object.keys(v);
   return [];
-}
+}`
 
-function _len(v: any): number {
+const helperLen = `function _len(v: any): number {
   if (Array.isArray(v) || typeof v === "string") return (v as any).length;
   if (v && typeof v === "object") return Object.keys(v).length;
   return 0;
+}`
+
+var runtimeHelpers = map[string]string{
+	"_index": helperIndex,
+	"_slice": helperSlice,
+	"_iter":  helperIter,
+	"_len":   helperLen,
 }
-`
+
+func (c *Compiler) useHelper(name string) {
+	if c.helpers != nil {
+		c.helpers[name] = true
+	}
+}
+
+func (c *Compiler) writeRuntimeHelpers() {
+	if len(c.helpers) == 0 {
+		return
+	}
+	keys := make([]string, 0, len(c.helpers))
+	for k := range c.helpers {
+		keys = append(keys, k)
+	}
+	sort.Strings(keys)
+	for _, k := range keys {
+		if code, ok := runtimeHelpers[k]; ok {
+			c.writeln(code)
+			c.writeln("")
+		}
+	}
+}
