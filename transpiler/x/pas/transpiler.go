@@ -2245,6 +2245,35 @@ func convertPrimary(env *types.Env, p *parser.Primary) (Expr, error) {
 	case p.Lit != nil:
 		return convertLiteral(p.Lit)
 	case p.Call != nil:
+		name := p.Call.Func
+		if name == "sum" && len(p.Call.Args) == 1 {
+			if q := queryFromExpr(p.Call.Args[0]); q != nil && len(q.Froms) == 0 && len(q.Joins) == 0 && q.Group == nil && q.Sort == nil && q.Skip == nil && q.Take == nil && q.Where == nil && !q.Distinct {
+				src, err := convertExpr(env, q.Source)
+				if err != nil {
+					return nil, err
+				}
+				child := types.NewEnv(env)
+				child.SetVar(q.Var, types.AnyType{}, true)
+				bodyExpr, err := convertExpr(child, q.Select)
+				if err != nil {
+					return nil, err
+				}
+				ret := inferType(bodyExpr)
+				if ret == "" {
+					ret = "integer"
+				}
+				fun := fmt.Sprintf("sumq%d", len(currProg.Funs))
+				param := "arr" + fmt.Sprintf("%d", len(currProg.Funs))
+				fnBody := []Stmt{
+					&AssignStmt{Name: "Result", Expr: zeroValue(ret)},
+					&ForEachStmt{Name: q.Var, Iterable: &VarRef{Name: param}, Body: []Stmt{
+						&AssignStmt{Name: "Result", Expr: &BinaryExpr{Op: "+", Left: &VarRef{Name: "Result"}, Right: bodyExpr}},
+					}},
+				}
+				currProg.Funs = append(currProg.Funs, FunDecl{Name: fun, Params: []string{param}, ReturnType: ret, Body: fnBody})
+				return &CallExpr{Name: fun, Args: []Expr{src}}, nil
+			}
+		}
 		var args []Expr
 		for _, a := range p.Call.Args {
 			ex, err := convertExpr(env, a)
@@ -2253,7 +2282,6 @@ func convertPrimary(env *types.Env, p *parser.Primary) (Expr, error) {
 			}
 			args = append(args, ex)
 		}
-		name := p.Call.Func
 		if name == "len" && len(p.Call.Args) == 1 {
 			if ml := mapLitFromExpr(p.Call.Args[0]); ml != nil {
 				return &IntLit{Value: int64(len(ml.Items))}, nil
