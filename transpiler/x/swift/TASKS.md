@@ -1,6 +1,6 @@
-## Progress (2025-07-21 12:27 +0700)
-- transpiler/ex: add inner_join support
-- Generated golden tests for 75/100 programs
+## Progress (2025-07-21 13:27 +0700)
+- swift transpiler: support basic group_by
+- Generated golden tests for 74/100 programs
 - Updated README checklist and output artifacts
 
 # Swift Transpiler Tasks
