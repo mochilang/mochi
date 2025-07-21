@@ -1,3 +1,16 @@
+## Progress (2025-07-21 16:07 +0700)
+- scala transpiler: add multi-join and group-by join support, improved type inference
+- Removed runtime header helper and updated README automation
+- Regenerated golden files - 4/100 vm valid programs passing
+
+## Progress (2025-07-21 16:07 +0700)
+- Clean up transpiler/x
+- Regenerated golden files - 0/100 vm valid programs passing
+
+## Progress (2025-07-21 16:07 +0700)
+- Clean up transpiler/x
+- Regenerated golden files - 0/100 vm valid programs passing
+
 ## Progress (2025-07-21 13:50 +0700)
 - ctrans: add map iteration support
 - Regenerated golden files - 64/100 vm valid programs passing
