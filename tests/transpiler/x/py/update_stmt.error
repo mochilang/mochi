@@ -1,0 +1,6 @@
+run: exit status 1
+Traceback (most recent call last):
+  File "/workspace/mochi/tests/transpiler/x/py/update_stmt.py", line 12, in <module>
+    if item["age"] >= 18:
+       ~~~~^^^^^^^
+TypeError: 'Person' object is not subscriptable

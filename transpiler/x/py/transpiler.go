@@ -1073,6 +1073,35 @@ func aggregatorCall(e *parser.Expr) (string, *parser.Expr, bool) {
 	}
 }
 
+func isExistsCall(e *parser.Expr) bool {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) > 0 {
+		return false
+	}
+	u := e.Binary.Left
+	if len(u.Ops) > 0 || u.Value == nil {
+		return false
+	}
+	p := u.Value
+	if len(p.Ops) > 0 || p.Target == nil || p.Target.Call == nil {
+		return false
+	}
+	call := p.Target.Call
+	return call.Func == "exists" && len(call.Args) == 1
+}
+
+func isBoolOp(e *parser.Expr) bool {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) == 0 {
+		return false
+	}
+	for _, r := range e.Binary.Right {
+		switch r.Op {
+		case "&&", "||", "==", "!=", "<", "<=", ">", ">=":
+			return true
+		}
+	}
+	return false
+}
+
 func lenCallArg(e *parser.Expr) (*parser.Expr, bool) {
 	if e == nil || e.Binary == nil || len(e.Binary.Right) > 0 {
 		return nil, false
@@ -1317,6 +1346,9 @@ func dataExprFromFile(path, format string) (Expr, error) {
 }
 
 func inferTypeFromExpr(e *parser.Expr) types.Type {
+	if isExistsCall(e) {
+		return types.BoolType{}
+	}
 	if name, arg, ok := aggregatorCall(e); ok {
 		switch name {
 		case "count":
@@ -1343,7 +1375,7 @@ func inferTypeFromExpr(e *parser.Expr) types.Type {
 			rt := inferTypeFromExpr(exprFromPostfix(r.Right))
 			switch r.Op {
 			case "&&", "||", "==", "!=", "<", "<=", ">", ">=":
-				lt = types.BoolType{}
+				lt = types.IntType{}
 			case "+", "-", "*", "/", "%":
 				if lt.String() == (types.FloatType{}).String() || rt.String() == (types.FloatType{}).String() {
 					lt = types.FloatType{}
@@ -2853,19 +2885,27 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 		case "print":
 			outArgs := make([]Expr, len(args))
 			for i, a := range args {
+				var t types.Type = types.AnyType{}
 				if currentEnv != nil {
-					switch types.ExprType(p.Call.Args[i], currentEnv).(type) {
-					case types.BoolType:
-						outArgs[i] = &RawExpr{Code: fmt.Sprintf("(1 if %s else 0)", exprString(a))}
-						continue
-					default:
-						outArgs[i] = a
-						continue
-					}
+					t = inferTypeFromExpr(p.Call.Args[i])
 				}
-				outArgs[i] = a
+				if isBoolOp(p.Call.Args[i]) {
+					outArgs[i] = &RawExpr{Code: fmt.Sprintf("(1 if %s else 0)", exprString(a))}
+				} else if _, ok := t.(types.BoolType); ok {
+					outArgs[i] = &RawExpr{Code: fmt.Sprintf("(\"true\" if %s else \"false\")", exprString(a))}
+				} else {
+					outArgs[i] = a
+				}
 			}
-			return &CallExpr{Func: &Name{Name: "print"}, Args: outArgs}, nil
+			if len(outArgs) == 1 {
+				return &CallExpr{Func: &Name{Name: "print"}, Args: outArgs}, nil
+			}
+			var parts []string
+			for _, a := range outArgs {
+				parts = append(parts, exprString(a))
+			}
+			code := fmt.Sprintf("print(\" \".join(str(x) for x in [%s]).rstrip())", strings.Join(parts, ", "))
+			return &RawExpr{Code: code}, nil
 		case "append":
 			if len(args) == 2 {
 				return &BinaryExpr{Left: args[0], Op: "+", Right: &ListLit{Elems: []Expr{args[1]}}}, nil
