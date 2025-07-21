@@ -616,10 +616,10 @@ func (p *PrintExpr) emit(w io.Writer) {
 				a.emit(w)
 			}
 		} else {
-			io.WriteString(w, "\"\"")
+			io.WriteString(w, "null")
 		}
 	}
-	io.WriteString(w, "].join(' ').trimEnd())")
+	io.WriteString(w, "].map(v=>v===null?'nil':typeof v==='object'?JSON.stringify(v).replace(/:/g, ': ').replace(/,/g, ', '):v).join(' ').trimEnd())")
 }
 
 func (s *SubstringExpr) emit(w io.Writer) {
@@ -2115,7 +2115,7 @@ func convertQueryExpr(q *parser.QueryExpr) (Expr, error) {
 		}
 	}
 	var sort Expr
-	if q.Sort != nil {
+	if q.Sort != nil && q.Group == nil {
 		sort, err = convertExpr(q.Sort)
 		if err != nil {
 			return nil, err
@@ -2170,6 +2170,13 @@ func convertQueryExpr(q *parser.QueryExpr) (Expr, error) {
 		child := types.NewEnv(transpileEnv)
 		child.SetVar(q.Group.Name, types.GroupType{Key: types.AnyType{}, Elem: types.AnyType{}}, true)
 		transpileEnv = child
+		if q.Sort != nil {
+			sort, err = convertExpr(q.Sort)
+			if err != nil {
+				transpileEnv = prev
+				return nil, err
+			}
+		}
 		sel, err = convertExpr(q.Select)
 		if err != nil {
 			transpileEnv = prev
@@ -2208,6 +2215,13 @@ func convertQueryExpr(q *parser.QueryExpr) (Expr, error) {
 		child := types.NewEnv(transpileEnv)
 		child.SetVar(q.Group.Name, types.GroupType{Key: types.AnyType{}, Elem: elemT}, true)
 		transpileEnv = child
+		if q.Sort != nil {
+			sort, err = convertExpr(q.Sort)
+			if err != nil {
+				transpileEnv = prev
+				return nil, err
+			}
+		}
 		sel, err = convertExpr(q.Select)
 		if err != nil {
 			transpileEnv = prev
