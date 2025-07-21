@@ -821,18 +821,20 @@ func compileStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 				val = &MapLit{}
 			}
 		}
-		if funcDepth == 0 {
-			if _, ok := val.(*AnonFun); ok {
-				env.SetVar(st.Let.Name, types.FuncType{}, false)
-			} else {
-				env.SetVar(st.Let.Name, types.AnyType{}, false)
-			}
-		}
-		return &LetStmt{Name: st.Let.Name, Value: val}, nil
-	case st.Var != nil:
-		var val Expr
-		if st.Var.Value != nil {
-			var err error
+               if funcDepth == 0 {
+                       if _, err := env.GetVar(st.Let.Name); err != nil {
+                               if _, ok := val.(*AnonFun); ok {
+                                       env.SetVar(st.Let.Name, types.FuncType{}, false)
+                               } else {
+                                       env.SetVar(st.Let.Name, inferStaticType(val), false)
+                               }
+                       }
+               }
+               return &LetStmt{Name: st.Let.Name, Value: val}, nil
+       case st.Var != nil:
+               var val Expr
+               if st.Var.Value != nil {
+                       var err error
 			val, err = compileExpr(st.Var.Value, env)
 			if err != nil {
 				return nil, err
@@ -851,13 +853,15 @@ func compileStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 				val = &MapLit{}
 			}
 		}
-		if funcDepth == 0 {
-			if _, ok := val.(*AnonFun); ok {
-				env.SetVar(st.Var.Name, types.FuncType{}, false)
-			} else {
-				env.SetVar(st.Var.Name, types.AnyType{}, false)
-			}
-		}
+               if funcDepth == 0 {
+                       if _, err := env.GetVar(st.Var.Name); err != nil {
+                               if _, ok := val.(*AnonFun); ok {
+                                       env.SetVar(st.Var.Name, types.FuncType{}, false)
+                               } else {
+                                       env.SetVar(st.Var.Name, inferStaticType(val), false)
+                               }
+                       }
+               }
 		return &LetStmt{Name: st.Var.Name, Value: val}, nil
 	case st.Assign != nil:
 		if len(st.Assign.Index) == 0 && len(st.Assign.Field) == 0 {
@@ -1194,33 +1198,57 @@ func compileMatchExpr(me *parser.MatchExpr, env *types.Env) (Expr, error) {
 }
 
 func compileQueryExpr(q *parser.QueryExpr, env *types.Env) (Expr, error) {
-	src, err := compileExpr(q.Source, env)
-	if err != nil {
-		return nil, err
-	}
-	gens := []CompGen{{Var: q.Var, Src: src}}
-	child := types.NewEnv(env)
-	child.SetVar(q.Var, types.AnyType{}, true)
-	for _, f := range q.Froms {
-		fe, err := compileExpr(f.Src, child)
-		if err != nil {
-			return nil, err
-		}
-		child.SetVar(f.Var, types.AnyType{}, true)
-		gens = append(gens, CompGen{Var: f.Var, Src: fe})
-	}
-	var filt Expr
-	if q.Where != nil {
-		filt, err = compileExpr(q.Where, child)
-		if err != nil {
-			return nil, err
-		}
-	}
-	sel, err := compileExpr(q.Select, child)
-	if err != nil {
-		return nil, err
-	}
-	return &Comprehension{Gens: gens, Filter: filt, Body: sel}, nil
+       src, err := compileExpr(q.Source, env)
+       if err != nil {
+               return nil, err
+       }
+       gens := []CompGen{{Var: q.Var, Src: src}}
+       child := types.NewEnv(env)
+       child.SetVar(q.Var, types.AnyType{}, true)
+       var filt Expr
+       for _, f := range q.Froms {
+               fe, err := compileExpr(f.Src, child)
+               if err != nil {
+                       return nil, err
+               }
+               child.SetVar(f.Var, types.AnyType{}, true)
+               gens = append(gens, CompGen{Var: f.Var, Src: fe})
+       }
+       for _, j := range q.Joins {
+               if j.Side != nil {
+                       return nil, fmt.Errorf("join side not supported")
+               }
+               je, err := compileExpr(j.Src, child)
+               if err != nil {
+                       return nil, err
+               }
+               child.SetVar(j.Var, types.AnyType{}, true)
+               gens = append(gens, CompGen{Var: j.Var, Src: je})
+               if j.On != nil {
+                       onExpr, err := compileExpr(j.On, child)
+                       if err != nil {
+                               return nil, err
+                       }
+                       if onExpr != nil {
+                               if filt == nil {
+                                       filt = onExpr
+                               } else {
+                                       filt = &BinaryExpr{Left: filt, Op: "&&", Right: onExpr}
+                               }
+                       }
+               }
+       }
+       if q.Where != nil {
+               filt, err = compileExpr(q.Where, child)
+               if err != nil {
+                       return nil, err
+               }
+       }
+       sel, err := compileExpr(q.Select, child)
+       if err != nil {
+               return nil, err
+       }
+       return &Comprehension{Gens: gens, Filter: filt, Body: sel}, nil
 }
 
 func compileUnary(u *parser.Unary, env *types.Env) (Expr, error) {
@@ -1598,6 +1626,23 @@ func compileLiteral(l *parser.Literal) (Expr, error) {
 	default:
 		return nil, fmt.Errorf("unsupported literal")
 	}
+}
+
+func inferStaticType(e Expr) types.Type {
+       switch e.(type) {
+       case *NumberLit:
+               return types.IntType{}
+       case *StringLit, *InterpString:
+               return types.StringType{}
+       case *BoolLit:
+               return types.BoolType{}
+       case *ListLit:
+               return types.ListType{Elem: types.AnyType{}}
+       case *MapLit:
+               return types.MapType{Key: types.AnyType{}, Value: types.AnyType{}}
+       default:
+               return types.AnyType{}
+       }
 }
 
 func header() string {
