@@ -140,12 +140,13 @@ func updateTasks() {
 	ts := ""
 	if err == nil {
 		if t, perr := time.Parse(time.RFC3339, strings.TrimSpace(string(out))); perr == nil {
-			ts = t.Format("2006-01-02 15:04 MST")
+			ts = t.Format("02 Jan 2006 15:04 MST")
 		}
 	}
 	var buf bytes.Buffer
 	buf.WriteString(fmt.Sprintf("## Progress (%s)\n", ts))
-	buf.WriteString("- VM valid golden test results updated\n\n")
+	buf.WriteString("- VM valid golden test results updated\n")
+	buf.WriteString("- Added support for identifier keys in map literals so queries can \"select{n: n}\"\n\n")
 	if data, err := os.ReadFile(taskFile); err == nil {
 		buf.Write(data)
 	}
