@@ -1,3 +1,28 @@
+## Progress (2025-07-21 16:07 +0700)
+- Clean up transpiler/x
+- Generated Ruby for 76/100 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-21 16:07 +0700)
+- Clean up transpiler/x
+- Generated Ruby for 76/100 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-21 16:07 +0700)
+- Clean up transpiler/x
+- Generated Ruby for 76/100 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-21 16:07 +0700)
+- Clean up transpiler/x
+- Generated Ruby for 76/100 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-21 16:07 +0700)
+- Clean up transpiler/x
+- Generated Ruby for 75/100 programs
+- Updated README checklist and outputs
+
 ## Progress (2025-07-21 15:42 +0700)
 - rb transpiler: support sort/skip/take queries
 - Generated Ruby for 76/100 programs
