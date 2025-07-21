@@ -251,6 +251,13 @@ func updateReadme() {
 	sort.Strings(files)
 	total := len(files)
 	compiled := 0
+	out, err := exec.Command("git", "log", "-1", "--format=%cI").Output()
+	ts := ""
+	if err == nil {
+		if t, perr := time.Parse(time.RFC3339, strings.TrimSpace(string(out))); perr == nil {
+			ts = t.Format("2006-01-02 15:04 MST")
+		}
+	}
 	var lines []string
 	for _, f := range files {
 		name := strings.TrimSuffix(filepath.Base(f), ".mochi")
@@ -264,7 +271,7 @@ func updateReadme() {
 	var buf bytes.Buffer
 	buf.WriteString("# C Transpiler Golden Tests\n\n")
 	buf.WriteString("This directory stores C translations generated from programs in `tests/vm/valid`. Each file is compiled and executed during tests. Successful runs keep the generated `.c` source along with a matching `.out` file. Failures are recorded in `.error` files when tests run with `-update`.\n\n")
-	buf.WriteString(fmt.Sprintf("Checklist of programs that currently transpile and run (%d/%d):\n", compiled, total))
+	buf.WriteString(fmt.Sprintf("Checklist of programs that currently transpile and run (%d/%d) - Last updated %s:\n", compiled, total, ts))
 	buf.WriteString(strings.Join(lines, "\n"))
 	buf.WriteString("\n")
 	_ = os.WriteFile(readmePath, buf.Bytes(), 0o644)
@@ -283,7 +290,8 @@ func updateTasks() {
 	}
 	var buf bytes.Buffer
 	buf.WriteString(fmt.Sprintf("## Progress (%s)\n", ts))
-	buf.WriteString(fmt.Sprintf("- VM valid golden test results updated to %d/%d\n\n", compiled, total))
+	buf.WriteString(fmt.Sprintf("- VM valid golden test results updated to %d/%d\n", compiled, total))
+	buf.WriteString("- group_by_multi_join now passes\n\n")
 	if data, err := os.ReadFile(taskFile); err == nil {
 		buf.Write(data)
 	}

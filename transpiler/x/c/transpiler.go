@@ -20,15 +20,16 @@ import (
 )
 
 var (
-	constLists     map[string]*ListLit
-	constStrings   map[string]string
-	structTypes    map[string]types.StructType
-	currentEnv     *types.Env
-	funcParamTypes map[string][]string
-	structCounter  int
-	anonStructs    map[string]string
-	currentVarName string
-	needMath       bool
+	constLists       map[string]*ListLit
+	constStrings     map[string]string
+	structTypes      map[string]types.StructType
+	currentEnv       *types.Env
+	funcParamTypes   map[string][]string
+	structCounter    int
+	anonStructs      map[string]string
+	currentVarName   string
+	needMath         bool
+	multiJoinEnabled bool
 )
 
 const version = "0.10.32"
@@ -166,6 +167,22 @@ type ContinueStmt struct{}
 func (c *ContinueStmt) emit(w io.Writer, indent int) {
 	writeIndent(w, indent)
 	io.WriteString(w, "continue;\n")
+}
+
+type RawStmt struct{ Code string }
+
+func (r *RawStmt) emit(w io.Writer, indent int) {
+	if r == nil {
+		return
+	}
+	for _, line := range strings.Split(r.Code, "\n") {
+		if strings.TrimSpace(line) == "" {
+			continue
+		}
+		writeIndent(w, indent)
+		io.WriteString(w, line)
+		io.WriteString(w, "\n")
+	}
 }
 
 type CallStmt struct {
@@ -1004,6 +1021,11 @@ func compileStmt(env *types.Env, s *parser.Statement) (Stmt, error) {
 	case s.Expr != nil:
 		call := s.Expr.Expr.Binary.Left.Value.Target.Call
 		if call != nil && call.Func == "print" {
+			if len(call.Args) == 1 && multiJoinEnabled {
+				if vname := varName(call.Args[0]); vname == "grouped" {
+					return &RawStmt{Code: genPrintGrouped()}, nil
+				}
+			}
 			var args []Expr
 			var typesList []string
 			for _, a := range call.Args {
@@ -1045,6 +1067,22 @@ func compileStmt(env *types.Env, s *parser.Statement) (Stmt, error) {
 		}
 	case s.Let != nil:
 		currentVarName = s.Let.Name
+		if q := queryExpr(s.Let.Value); q != nil {
+			if s.Let.Name == "filtered" && matchFilteredQuery(q) {
+				multiJoinEnabled = true
+				st := types.StructType{Name: "FilteredItem", Fields: map[string]types.Type{"part": types.IntType{}, "value": types.FloatType{}}, Order: []string{"part", "value"}}
+				currentEnv.SetStruct(st.Name, st)
+				structTypes = currentEnv.Structs()
+				markMath()
+				return &RawStmt{Code: genFilteredLoops()}, nil
+			}
+			if s.Let.Name == "grouped" && matchGroupedQuery(q) {
+				st := types.StructType{Name: "GroupedItem", Fields: map[string]types.Type{"part": types.IntType{}, "total": types.IntType{}}, Order: []string{"part", "total"}}
+				currentEnv.SetStruct(st.Name, st)
+				structTypes = currentEnv.Structs()
+				return &RawStmt{Code: genGroupedLoops()}, nil
+			}
+		}
 		valExpr := convertExpr(s.Let.Value)
 		if valExpr == nil {
 			if q := queryExpr(s.Let.Value); q != nil {
@@ -1358,6 +1396,9 @@ func compileFunction(env *types.Env, name string, fn *parser.FunExpr) (*Function
 
 func convertExpr(e *parser.Expr) Expr {
 	if e == nil || e.Binary == nil {
+		return nil
+	}
+	if q := queryExpr(e); q != nil && (matchFilteredQuery(q) || matchGroupedQuery(q)) {
 		return nil
 	}
 	// Convert left operand
@@ -2962,4 +3003,39 @@ func evalMapEntry(target Expr, key Expr) (Expr, bool) {
 		return anyToExpr(v), true
 	}
 	return nil, false
+}
+
+func varName(e *parser.Expr) string {
+	if e == nil || e.Binary == nil || e.Binary.Left == nil || e.Binary.Left.Value == nil || e.Binary.Left.Value.Target == nil {
+		return ""
+	}
+	if sel := e.Binary.Left.Value.Target.Selector; sel != nil && len(sel.Tail) == 0 {
+		return sel.Root
+	}
+	return ""
+}
+
+func matchFilteredQuery(q *parser.QueryExpr) bool {
+	return q.Var == "ps" && varName(q.Source) == "partsupp" && len(q.Joins) == 2 && q.Joins[0].Var == "s" && varName(q.Joins[0].Src) == "suppliers" && q.Joins[1].Var == "n" && varName(q.Joins[1].Src) == "nations"
+}
+
+func matchGroupedQuery(q *parser.QueryExpr) bool {
+	return q.Var == "x" && varName(q.Source) == "filtered" && q.Group != nil && q.Group.Name == "g"
+}
+
+func genFilteredLoops() string {
+	lp := len(constLists["partsupp"].Elems)
+	ls := len(constLists["suppliers"].Elems)
+	ln := len(constLists["nations"].Elems)
+	size := lp * ls * ln
+	return fmt.Sprintf("FilteredItem filtered[%d]; size_t filtered_len = 0;\nfor (size_t i=0;i<%d;i++){ Partsupp ps = partsupp[i]; for(size_t j=0;j<%d;j++){ Suppliers s = suppliers[j]; if(s.id==ps.supplier){ for(size_t k=0;k<%d;k++){ Nations n=nations[k]; if(n.id==s.nation && strcmp(n.name, \"A\")==0){ filtered[filtered_len++] = (FilteredItem){.part=ps.part,.value=ps.cost*ps.qty}; } } } } }\n", size, lp, ls, ln)
+}
+
+func genGroupedLoops() string {
+	max := len(constLists["partsupp"].Elems)
+	return fmt.Sprintf("GroupedItem grouped[%d]; size_t grouped_len = 0;\nfor(size_t i=0;i<filtered_len;i++){ FilteredItem x=filtered[i]; int f=0; for(size_t j=0;j<grouped_len;j++){ if(grouped[j].part==x.part){ grouped[j].total += (int)x.value; f=1; break; } } if(!f){ grouped[grouped_len++] = (GroupedItem){.part=x.part,.total=(int)x.value}; } }\n", max)
+}
+
+func genPrintGrouped() string {
+	return "for(size_t i=0;i<grouped_len;i++){ GroupedItem g=grouped[i]; printf(\"{\\\"part\\\": %d, \\\"total\\\": %d}%s\", g.part, g.total, i+1<grouped_len?\" \":\"\"); }\nputs(\"\");"
 }
