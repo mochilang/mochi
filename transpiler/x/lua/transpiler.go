@@ -305,25 +305,14 @@ func (c *CallExpr) emit(w io.Writer) {
 	case "json":
 		io.WriteString(w, `;
 (function(v)
-  local function is_array(t)
-    local i = 1
-    for k, _ in pairs(t) do
-      if k ~= i then return false end
-      i = i + 1
-    end
-    return true
-  end
-  local function encode(x, ind)
-    ind = ind or 0
-    local pad = string.rep("  ", ind)
+  local function encode(x)
     if type(x) == "table" then
-      if is_array(x) then
+      if #x > 0 then
         local parts = {"["}
         for i, val in ipairs(x) do
-          parts[#parts+1] = "\n" .. string.rep("  ", ind+1) .. encode(val, ind+1)
-          if i < #x then parts[#parts+1] = "," end
+          parts[#parts+1] = encode(val)
+          if i < #x then parts[#parts+1] = ", " end
         end
-        if #x > 0 then parts[#parts+1] = "\n" .. pad end
         parts[#parts+1] = "]"
         return table.concat(parts)
       else
@@ -332,24 +321,19 @@ func (c *CallExpr) emit(w io.Writer) {
         table.sort(keys, function(a,b) return tostring(a) < tostring(b) end)
         local parts = {"{"}
         for i, k in ipairs(keys) do
-          parts[#parts+1] = "\n" .. string.rep("  ", ind+1) .. string.format("%q", k) .. ": " .. encode(x[k], ind+1)
-          if i < #keys then parts[#parts+1] = "," end
+          parts[#parts+1] = "'" .. tostring(k) .. "': " .. encode(x[k])
+          if i < #keys then parts[#parts+1] = ", " end
         end
-        if #keys > 0 then parts[#parts+1] = "\n" .. pad end
         parts[#parts+1] = "}"
         return table.concat(parts)
       end
     elseif type(x) == "string" then
-      return string.format("%q", x)
-    elseif type(x) == "boolean" or type(x) == "number" then
-      return tostring(x)
-    elseif x == nil then
-      return "null"
+      return "'" .. x .. "'"
     else
-      return "null"
+      return tostring(x)
     end
   end
-  print(encode(v, 0))
+  print(encode(v))
 end)(`)
 		if len(c.Args) > 0 {
 			c.Args[0].emit(w)
@@ -910,6 +894,42 @@ func (m *MatchExpr) emit(w io.Writer) {
 }
 
 func (qc *QueryComp) emit(w io.Writer) {
+	if qc.GroupKey != nil {
+		// simplified group by implementation
+		io.WriteString(w, "(function()\n")
+		io.WriteString(w, "local groups = {}\nlocal orderKeys = {}\n")
+		if len(qc.Vars) > 0 {
+			io.WriteString(w, "for _, ")
+			io.WriteString(w, qc.Vars[0])
+			io.WriteString(w, " in ipairs(")
+			qc.Sources[0].emit(w)
+			io.WriteString(w, ") do\n")
+		}
+		if qc.Where != nil {
+			io.WriteString(w, "  if ")
+			qc.Where.emit(w)
+			io.WriteString(w, " then\n")
+		}
+		io.WriteString(w, "    local key = ")
+		qc.GroupKey.emit(w)
+		io.WriteString(w, "\n    local ks = tostring(key)\n    local g = groups[ks]\n    if g == nil then\n      g = {key = key, items = {}}\n      groups[ks] = g\n      table.insert(orderKeys, ks)\n    end\n    table.insert(g.items, ")
+		io.WriteString(w, qc.Vars[0])
+		io.WriteString(w, ")\n")
+		if qc.Where != nil {
+			io.WriteString(w, "  end\n")
+		}
+		if len(qc.Vars) > 0 {
+			io.WriteString(w, "end\n")
+		}
+		io.WriteString(w, "local _res = {}\nfor _, ks in ipairs(orderKeys) do\n  local g = groups[ks]\n  table.insert(_res, ")
+		if qc.Body != nil {
+			qc.Body.emit(w)
+		} else {
+			io.WriteString(w, "nil")
+		}
+		io.WriteString(w, ")\nend\nreturn _res\nend)()")
+		return
+	}
 	if qc.Agg != "" && qc.GroupKey == nil {
 		io.WriteString(w, "(function()\n  local _tmp = {}\n")
 	} else if qc.SortKey != nil {
