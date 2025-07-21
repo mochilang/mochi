@@ -1,17 +1,13 @@
 OpenJDK 64-Bit Server VM warning: Options -Xverify:none and -noverify were deprecated in JDK 13 and will likely be removed in a future release.
-tests/transpiler/x/kt/group_by.kt:7:29: error: type inference failed: Cannot infer type parameter K in inline fun <K, V> MutableMap<K, V>.getOrPut(key: K, defaultValue: () -> V): V
-None of the following substitutions
-receiver: MutableMap<Any, MutableList<MutableMap<String, Any>>>  arguments: (Any,() -> MutableList<MutableMap<String, Any>>)
-receiver: MutableMap<Any?, MutableList<MutableMap<String, Any>>>  arguments: (Any?,() -> MutableList<MutableMap<String, Any>>)
-can be applied to
-receiver: MutableMap<Any, MutableList<MutableMap<String, Any>>>  arguments: (Any?,() -> MutableList<MutableMap<String, Any>>)
-
-        val _list = _groups.getOrPut(person["city"]) { mutableListOf<MutableMap<String, Any>>() }
-                            ^
-tests/transpiler/x/kt/group_by.kt:16:18: error: type mismatch: inferred type is Any? but Any was expected
-        _res.add(p["age"])
-                 ^
-tests/transpiler/x/kt/group_by.kt:25:34: error: unresolved reference. None of the following candidates is applicable because of receiver type mismatch: 
+tests/transpiler/x/kt/dataset_where_filter.kt:6:27: error: unresolved reference. None of the following candidates is applicable because of receiver type mismatch: 
+public fun String.compareTo(other: String, ignoreCase: Boolean = ...): Int defined in kotlin.text
+        if (person["age"] >= 18) {
+                          ^
+tests/transpiler/x/kt/dataset_where_filter.kt:7:114: error: unresolved reference. None of the following candidates is applicable because of receiver type mismatch: 
+public fun String.compareTo(other: String, ignoreCase: Boolean = ...): Int defined in kotlin.text
+            _res.add(mutableMapOf("name" to person["name"], "age" to person["age"], "is_senior" to person["age"] >= 60) as MutableMap<String, Any>)
+                                                                                                                 ^
+tests/transpiler/x/kt/dataset_where_filter.kt:14:37: error: unresolved reference. None of the following candidates is applicable because of receiver type mismatch: 
 @InlineOnly public inline operator fun BigDecimal.plus(other: BigDecimal): BigDecimal defined in kotlin
 @InlineOnly public inline operator fun BigInteger.plus(other: BigInteger): BigInteger defined in kotlin
 public operator fun <T> Array<???>.plus(elements: Array<out ???>): Array<???> defined in kotlin.collections
@@ -76,5 +72,5 @@ public operator fun <T> Sequence<???>.plus(elements: Array<out ???>): Sequence<?
 public operator fun <T> Sequence<???>.plus(elements: Iterable<???>): Sequence<???> defined in kotlin.sequences
 public operator fun <T> Sequence<???>.plus(elements: Sequence<???>): Sequence<???> defined in kotlin.sequences
 public operator fun <T> Sequence<String>.plus(element: String): Sequence<String> defined in kotlin.sequences
-        println((((((((s["city"] + " ") + ": count =") + " ") + s["count"]) + " ") + ", avg_age =") + " ") + s["avg_age"])
-                                 ^
+        println((((((person["name"] + " ") + "is") + " ") + person["age"]) + " ") + if (person["is_senior"] != null) " (senior)" else "")
+                                    ^

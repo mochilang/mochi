@@ -1,0 +1,7 @@
+OpenJDK 64-Bit Server VM warning: Options -Xverify:none and -noverify were deprecated in JDK 13 and will likely be removed in a future release.
+tests/transpiler/x/kt/partial_application.kt:6:21: error: no value passed for parameter 'b'
+    val add5 = add(5)
+                    ^
+tests/transpiler/x/kt/partial_application.kt:7:13: error: expression 'add5' of type 'Int' cannot be invoked as a function. The function 'invoke()' is not found
+    println(add5(3))
+            ^
