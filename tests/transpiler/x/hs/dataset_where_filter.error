@@ -1,0 +1,18 @@
+run: exit status 1
+
+/workspace/mochi/tests/transpiler/x/hs/dataset_where_filter.hs:19:47: error:
+    • Couldn't match type ‘Int’ with ‘[Char]’
+        arising from selecting the field ‘age’
+    • In the ‘age’ field of a record
+      In the expression:
+        GenType2
+          {name = person.name, age = person.age,
+           is_senior = person.age >= 60}
+      In the expression:
+        [GenType2
+           {name = person.name, age = person.age,
+            is_senior = person.age >= 60} |
+           person <- people, person.age >= 18]
+   |
+19 | adults = [GenType2 {name = person.name, age = person.age, is_senior = person.age >= 60} | person <- people, person.age >= 18]
+   |                                               ^^^^^^^^^^

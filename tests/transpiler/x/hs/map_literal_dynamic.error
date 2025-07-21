@@ -1,0 +1,17 @@
+run: exit status 1
+
+/workspace/mochi/tests/transpiler/x/hs/map_literal_dynamic.hs:8:5: error:
+    • No instance for (Num [Char]) arising from the literal ‘3’
+    • In the expression: 3
+      In an equation for ‘x’: x = 3
+  |
+8 | x = 3
+  |     ^
+
+/workspace/mochi/tests/transpiler/x/hs/map_literal_dynamic.hs:10:5: error:
+    • No instance for (Num [Char]) arising from the literal ‘4’
+    • In the expression: 4
+      In an equation for ‘y’: y = 4
+   |
+10 | y = 4
+   |     ^

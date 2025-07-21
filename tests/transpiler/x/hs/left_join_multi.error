@@ -1,0 +1,34 @@
+run: exit status 1
+
+/workspace/mochi/tests/transpiler/x/hs/left_join_multi.hs:37:31: error:
+    • Couldn't match type ‘Int’ with ‘[Char]’
+        arising from selecting the field ‘id’
+    • In the ‘orderId’ field of a record
+      In the expression:
+        GenType4 {orderId = o.id, name = c.name, item = i}
+      In the expression:
+        [GenType4 {orderId = o.id, name = c.name, item = i} |
+           o <- orders,
+           c <- customers,
+           i <- items,
+           o.customerId == c.id && o.id == i.orderId]
+   |
+37 | result = [GenType4 {orderId = o.id, name = c.name, item = i} | o <- orders, c <- customers, i <- items, o.customerId == c.id && o.id == i.orderId]
+   |                               ^^^^
+
+/workspace/mochi/tests/transpiler/x/hs/left_join_multi.hs:37:59: error:
+    • Couldn't match type ‘GenType3’ with ‘[Char]’
+      Expected: String
+        Actual: GenType3
+    • In the ‘item’ field of a record
+      In the expression:
+        GenType4 {orderId = o.id, name = c.name, item = i}
+      In the expression:
+        [GenType4 {orderId = o.id, name = c.name, item = i} |
+           o <- orders,
+           c <- customers,
+           i <- items,
+           o.customerId == c.id && o.id == i.orderId]
+   |
+37 | result = [GenType4 {orderId = o.id, name = c.name, item = i} | o <- orders, c <- customers, i <- items, o.customerId == c.id && o.id == i.orderId]
+   |                                                           ^

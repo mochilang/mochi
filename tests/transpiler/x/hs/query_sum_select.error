@@ -1,0 +1,80 @@
+run: exit status 1
+
+/workspace/mochi/tests/transpiler/x/hs/query_sum_select.hs:5:9: error:
+    • No instance for (Num (t0 a0)) arising from the literal ‘1’
+    • In the expression: 1
+      In the expression: [1, 2, 3]
+      In an equation for ‘nums’: nums = [1, 2, 3]
+  |
+5 | nums = [1, 2, 3]
+  |         ^
+
+/workspace/mochi/tests/transpiler/x/hs/query_sum_select.hs:7:11: error:
+    • Ambiguous type variable ‘t0’ arising from a use of ‘sum’
+      prevents the constraint ‘(Foldable t0)’ from being solved.
+      Relevant bindings include
+        n :: t0 a0
+          (bound at /workspace/mochi/tests/transpiler/x/hs/query_sum_select.hs:7:19)
+      Probable fix: use a type annotation to specify what ‘t0’ should be.
+      Potentially matching instances:
+        instance Foldable (Either a) -- Defined in ‘Data.Foldable’
+        instance Foldable Maybe -- Defined in ‘Data.Foldable’
+        ...plus three others
+        ...plus 26 instances involving out-of-scope types
+        (use -fprint-potential-instances to see them all)
+    • In the expression: sum n
+      In the expression: [sum n | n <- nums, n > 1]
+      In an equation for ‘result’: result = [sum n | n <- nums, n > 1]
+  |
+7 | result = [sum n | n <- nums, n > 1]
+  |           ^^^
+
+/workspace/mochi/tests/transpiler/x/hs/query_sum_select.hs:7:32: error:
+    • Ambiguous type variables ‘t0’, ‘a0’ arising from a use of ‘>’
+      prevents the constraint ‘(Ord (t0 a0))’ from being solved.
+      Relevant bindings include
+        n :: t0 a0
+          (bound at /workspace/mochi/tests/transpiler/x/hs/query_sum_select.hs:7:19)
+        result :: [a0]
+          (bound at /workspace/mochi/tests/transpiler/x/hs/query_sum_select.hs:7:1)
+      Probable fix: use a type annotation to specify what ‘t0’,
+                                                          ‘a0’ should be.
+      Potentially matching instances:
+        instance (Ord a, Ord b) => Ord (a, b) -- Defined in ‘GHC.Classes’
+        instance (Ord a, Ord b, Ord c) => Ord (a, b, c)
+          -- Defined in ‘GHC.Classes’
+        ...plus 14 others
+        ...plus one instance involving out-of-scope types
+        (use -fprint-potential-instances to see them all)
+    • In the expression: n > 1
+      In a stmt of a list comprehension: n > 1
+      In the expression: [sum n | n <- nums, n > 1]
+  |
+7 | result = [sum n | n <- nums, n > 1]
+  |                                ^
+
+/workspace/mochi/tests/transpiler/x/hs/query_sum_select.hs:7:34: error:
+    • No instance for (Num (t0 a0)) arising from the literal ‘1’
+    • In the second argument of ‘(>)’, namely ‘1’
+      In the expression: n > 1
+      In a stmt of a list comprehension: n > 1
+  |
+7 | result = [sum n | n <- nums, n > 1]
+  |                                  ^
+
+/workspace/mochi/tests/transpiler/x/hs/query_sum_select.hs:11:5: error:
+    • Ambiguous type variable ‘a0’ arising from a use of ‘print’
+      prevents the constraint ‘(Show a0)’ from being solved.
+      Probable fix: use a type annotation to specify what ‘a0’ should be.
+      Potentially matching instances:
+        instance Show Ordering -- Defined in ‘GHC.Show’
+        instance Show a => Show (Maybe a) -- Defined in ‘GHC.Show’
+        ...plus 25 others
+        ...plus 12 instances involving out-of-scope types
+        (use -fprint-potential-instances to see them all)
+    • In a stmt of a 'do' block: print (result)
+      In the expression: do print (result)
+      In an equation for ‘main’: main = do print (result)
+   |
+11 |     print (result)
+   |     ^^^^^

@@ -1,0 +1,41 @@
+run: exit status 1
+
+/workspace/mochi/tests/transpiler/x/hs/left_join.hs:30:31: error:
+    • Couldn't match type ‘Int’ with ‘[Char]’
+        arising from selecting the field ‘id’
+    • In the ‘orderId’ field of a record
+      In the expression:
+        GenType3 {orderId = o.id, customer = c, total = o.total}
+      In the expression:
+        [GenType3 {orderId = o.id, customer = c, total = o.total} |
+           o <- orders, c <- customers, o.customerId == c.id]
+   |
+30 | result = [GenType3 {orderId = o.id, customer = c, total = o.total} | o <- orders, c <- customers, o.customerId == c.id]
+   |                               ^^^^
+
+/workspace/mochi/tests/transpiler/x/hs/left_join.hs:30:48: error:
+    • Couldn't match type ‘GenType1’ with ‘[Char]’
+      Expected: String
+        Actual: GenType1
+    • In the ‘customer’ field of a record
+      In the expression:
+        GenType3 {orderId = o.id, customer = c, total = o.total}
+      In the expression:
+        [GenType3 {orderId = o.id, customer = c, total = o.total} |
+           o <- orders, c <- customers, o.customerId == c.id]
+   |
+30 | result = [GenType3 {orderId = o.id, customer = c, total = o.total} | o <- orders, c <- customers, o.customerId == c.id]
+   |                                                ^
+
+/workspace/mochi/tests/transpiler/x/hs/left_join.hs:30:59: error:
+    • Couldn't match type ‘Int’ with ‘[Char]’
+        arising from selecting the field ‘total’
+    • In the ‘total’ field of a record
+      In the expression:
+        GenType3 {orderId = o.id, customer = c, total = o.total}
+      In the expression:
+        [GenType3 {orderId = o.id, customer = c, total = o.total} |
+           o <- orders, c <- customers, o.customerId == c.id]
+   |
+30 | result = [GenType3 {orderId = o.id, customer = c, total = o.total} | o <- orders, c <- customers, o.customerId == c.id]
+   |                                                           ^^^^^^^

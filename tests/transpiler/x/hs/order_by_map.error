@@ -1,0 +1,19 @@
+run: exit status 1
+
+/workspace/mochi/tests/transpiler/x/hs/order_by_map.hs:16:39: error:
+    Variable not in scope: a
+    Suggested fix:
+      Notice that ‘a’ is a field selector belonging to the type ‘GenType1’
+      that has been suppressed by NoFieldSelectors.
+   |
+16 | sorted = sortOn (\x -> Map.fromList [(a, x.a), (b, x.b)]) [x | x <- _data]
+   |                                       ^
+
+/workspace/mochi/tests/transpiler/x/hs/order_by_map.hs:16:49: error:
+    Variable not in scope: b
+    Suggested fix:
+      Notice that ‘b’ is a field selector belonging to the type ‘GenType1’
+      that has been suppressed by NoFieldSelectors.
+   |
+16 | sorted = sortOn (\x -> Map.fromList [(a, x.a), (b, x.b)]) [x | x <- _data]
+   |                                                 ^
