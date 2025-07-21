@@ -155,9 +155,9 @@ func (p *PrintStmt) emit(w io.Writer, idx int) {
 				se.Start.emit(w)
 				fmt.Fprintf(w, ", L%d, _, T%d), ", idx, idx)
 				if be.Op == "=" {
-					fmt.Fprintf(w, "(T%d = ", idx)
+					fmt.Fprintf(w, "((T%d = ", idx)
 				} else {
-					fmt.Fprintf(w, "(T%d \\= ", idx)
+					fmt.Fprintf(w, "((T%d \\= ", idx)
 				}
 				be.Right.emit(w)
 				io.WriteString(w, ") -> writeln(true) ; writeln(false))")
@@ -448,7 +448,7 @@ type InExpr struct {
 
 func (i *IntLit) emit(w io.Writer)    { fmt.Fprintf(w, "%d", i.Value) }
 func (b *BoolLit) emit(w io.Writer)   { fmt.Fprintf(w, "%v", b.Value) }
-func (s *StringLit) emit(w io.Writer) { fmt.Fprintf(w, "'%s'", escape(s.Value)) }
+func (s *StringLit) emit(w io.Writer) { fmt.Fprintf(w, "\"%s\"", escape(s.Value)) }
 func (v *Var) emit(w io.Writer)       { io.WriteString(w, v.Name) }
 func (b *BinaryExpr) emit(w io.Writer) {
 	if b.Op == "+" {
@@ -1300,7 +1300,10 @@ func toPrimary(p *parser.Primary, env *compileEnv) (Expr, error) {
 						return &IntLit{Value: len(c.Value)}, nil
 					}
 				}
-				return &LenExpr{Value: arg}, nil
+				if isStringLike(arg, env) {
+					return &CallExpr{Name: "string_length", Args: []Expr{arg}}, nil
+				}
+				return &CallExpr{Name: "length", Args: []Expr{arg}}, nil
 			case "str":
 				return &StrExpr{Value: arg}, nil
 			case "count":
