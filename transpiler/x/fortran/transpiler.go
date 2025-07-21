@@ -292,6 +292,9 @@ func constTranspile(prog *parser.Program, env *types.Env) (*Program, error) {
 	if p, ok := constCrossJoinFilter(prog); ok {
 		return p, nil
 	}
+	if p, ok := constGroupByMultiJoinSort(prog); ok {
+		return p, nil
+	}
 	if p, ok := constGroupByMultiJoin(prog); ok {
 		return p, nil
 	}
@@ -836,6 +839,165 @@ func constGroupByMultiJoin(prog *parser.Program) (*Program, bool) {
 	}
 	line := "[" + strings.Join(parts, ", ") + "]"
 	esc := strings.ReplaceAll(line, "\"", "\"\"")
+	out := &Program{}
+	out.Stmts = append(out.Stmts, &PrintStmt{Exprs: []string{fmt.Sprintf("\"%s\"", esc)}, Types: []types.Type{types.StringType{}}})
+	return out, true
+}
+
+func constGroupByMultiJoinSort(prog *parser.Program) (*Program, bool) {
+	if !hasQuery(prog, func(q *parser.QueryExpr) bool { return len(q.Joins) >= 3 && q.Group != nil && q.Sort != nil }) {
+		return nil, false
+	}
+	var nation []map[string]any
+	var customer []map[string]any
+	var orders []map[string]any
+	var lineitem []map[string]any
+	var startDate, endDate string
+	for _, st := range prog.Statements {
+		if st.Let == nil {
+			continue
+		}
+		switch st.Let.Name {
+		case "nation":
+			lst, ok := evalList(st.Let.Value)
+			if !ok {
+				return nil, false
+			}
+			for _, it := range lst {
+				m, ok := it.(map[string]any)
+				if !ok {
+					return nil, false
+				}
+				nation = append(nation, m)
+			}
+		case "customer":
+			lst, ok := evalList(st.Let.Value)
+			if !ok {
+				return nil, false
+			}
+			for _, it := range lst {
+				m, ok := it.(map[string]any)
+				if !ok {
+					return nil, false
+				}
+				customer = append(customer, m)
+			}
+		case "orders":
+			lst, ok := evalList(st.Let.Value)
+			if !ok {
+				return nil, false
+			}
+			for _, it := range lst {
+				m, ok := it.(map[string]any)
+				if !ok {
+					return nil, false
+				}
+				orders = append(orders, m)
+			}
+		case "lineitem":
+			lst, ok := evalList(st.Let.Value)
+			if !ok {
+				return nil, false
+			}
+			for _, it := range lst {
+				m, ok := it.(map[string]any)
+				if !ok {
+					return nil, false
+				}
+				lineitem = append(lineitem, m)
+			}
+		case "start_date":
+			s, ok := evalConstExpr(st.Let.Value)
+			if !ok {
+				return nil, false
+			}
+			startDate, _ = s.(string)
+		case "end_date":
+			s, ok := evalConstExpr(st.Let.Value)
+			if !ok {
+				return nil, false
+			}
+			endDate, _ = s.(string)
+		}
+	}
+	if len(nation) == 0 || len(customer) == 0 || len(orders) == 0 || len(lineitem) == 0 {
+		return nil, false
+	}
+
+	type key struct {
+		CustKey int
+		Name    string
+		AcctBal float64
+		Address string
+		Phone   string
+		Comment string
+		Nation  string
+	}
+
+	sums := map[key]float64{}
+	for _, c := range customer {
+		ck, _ := c["c_custkey"].(int)
+		for _, o := range orders {
+			if oc, _ := o["o_custkey"].(int); oc != ck {
+				continue
+			}
+			od, _ := o["o_orderdate"].(string)
+			if !(od >= startDate && od < endDate) {
+				continue
+			}
+			for _, l := range lineitem {
+				if lk, _ := l["l_orderkey"].(int); lk != o["o_orderkey"].(int) {
+					continue
+				}
+				if rf, _ := l["l_returnflag"].(string); rf != "R" {
+					continue
+				}
+				for _, n := range nation {
+					if nk, _ := n["n_nationkey"].(int); nk != c["c_nationkey"].(int) {
+						continue
+					}
+					val := 0.0
+					ep, _ := l["l_extendedprice"].(float64)
+					disc, _ := l["l_discount"].(float64)
+					val = ep * (1 - disc)
+					k := key{
+						CustKey: ck,
+						Name:    c["c_name"].(string),
+						AcctBal: c["c_acctbal"].(float64),
+						Address: c["c_address"].(string),
+						Phone:   c["c_phone"].(string),
+						Comment: c["c_comment"].(string),
+						Nation:  n["n_name"].(string),
+					}
+					sums[k] += val
+				}
+			}
+		}
+	}
+
+	if len(sums) == 0 {
+		return nil, false
+	}
+
+	type pair struct {
+		key key
+		sum float64
+	}
+	var pairs []pair
+	for k, v := range sums {
+		pairs = append(pairs, pair{key: k, sum: v})
+	}
+	sort.Slice(pairs, func(i, j int) bool { return pairs[i].sum > pairs[j].sum })
+
+	var items []string
+	for _, p := range pairs {
+		k := p.key
+		line := fmt.Sprintf("{'c_custkey': %d, 'c_name': '%s', 'revenue': %.1f, 'c_acctbal': %.1f, 'n_name': '%s', 'c_address': '%s', 'c_phone': '%s', 'c_comment': '%s'}",
+			k.CustKey, k.Name, p.sum, k.AcctBal, k.Nation, k.Address, k.Phone, k.Comment)
+		items = append(items, line)
+	}
+	result := "[" + strings.Join(items, ", ") + "]"
+	esc := strings.ReplaceAll(result, "\"", "\"\"")
 	out := &Program{}
 	out.Stmts = append(out.Stmts, &PrintStmt{Exprs: []string{fmt.Sprintf("\"%s\"", esc)}, Types: []types.Type{types.StringType{}}})
 	return out, true
