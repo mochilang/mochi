@@ -610,7 +610,7 @@ func (f *FormatListExpr) emit(w io.Writer) {
 	io.WriteString(w, "\"[\" + ")
 	if f.Value != nil {
 		f.Value.emit(w)
-		io.WriteString(w, ".join(\", \")")
+		io.WriteString(w, ".join(\",\")")
 	} else {
 		io.WriteString(w, "\"\"")
 	}
@@ -636,7 +636,12 @@ func (p *PrintExpr) emit(w io.Writer) {
 			io.WriteString(w, "null")
 		}
 	}
-	io.WriteString(w, "].map(v => v === null ? 'nil' : typeof v === 'object' ? JSON.stringify(v).replace(/:/g, ': ').replace(/,/g, ', ') : v).join(' ').trimEnd())")
+	io.WriteString(w, "].map(v => {")
+	io.WriteString(w, " if (v === null) return 'nil';")
+	io.WriteString(w, " if (Array.isArray(v)) return JSON.stringify(v);")
+	io.WriteString(w, " if (typeof v === 'object') return JSON.stringify(v).replace(/:/g, ': ').replace(/,/g, ', ');")
+	io.WriteString(w, " return String(v);")
+	io.WriteString(w, " }).join(' ').trimEnd())")
 }
 
 func (s *SubstringExpr) emit(w io.Writer) {
