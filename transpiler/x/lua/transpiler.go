@@ -167,9 +167,13 @@ func (c *CallExpr) emit(w io.Writer) {
 			}
 			if s, ok := a.(*StringLit); ok {
 				fmtBuf.WriteString(s.Value)
-			} else if isIntExpr(a) {
+			} else if isIntExpr(a) || isBoolExpr(a) {
 				fmtBuf.WriteString("%d")
-				exprs = append(exprs, a)
+				if isBoolExpr(a) && !isIntExpr(a) {
+					exprs = append(exprs, &IfExpr{Cond: a, Then: &IntLit{Value: 1}, Else: &IntLit{Value: 0}})
+				} else {
+					exprs = append(exprs, a)
+				}
 			} else {
 				fmtBuf.WriteString("%s")
 				exprs = append(exprs, a)
@@ -834,6 +838,33 @@ func isIntExpr(e Expr) bool {
 		case "+", "-", "*", "/", "%", "<", "<=", ">", ">=", "==", "!=":
 			return isIntExpr(ex.Left) && isIntExpr(ex.Right)
 		}
+	}
+	return false
+}
+
+func isBoolExpr(e Expr) bool {
+	switch ex := e.(type) {
+	case *BoolLit:
+		return false
+	case *Ident:
+		if currentEnv != nil {
+			if t, err := currentEnv.GetVar(ex.Name); err == nil {
+				if _, ok := t.(types.BoolType); ok {
+					return false
+				}
+			}
+		}
+	case *BinaryExpr:
+		switch ex.Op {
+		case "&&", "||":
+			return true
+		}
+	case *UnaryExpr:
+		if ex.Op == "!" {
+			return true
+		}
+	case *IfExpr:
+		return isBoolExpr(ex.Then) && isBoolExpr(ex.Else)
 	}
 	return false
 }
