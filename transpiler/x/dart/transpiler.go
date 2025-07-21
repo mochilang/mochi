@@ -1259,7 +1259,7 @@ func (l *LeftJoinExpr) emit(w io.Writer) error {
 	if _, err := io.WriteString(w, "(() {\n"); err != nil {
 		return err
 	}
-	if _, err := io.WriteString(w, "  var results = [];\n"); err != nil {
+	if _, err := io.WriteString(w, "  final results = [];\n"); err != nil {
 		return err
 	}
 	if _, err := io.WriteString(w, "  for (var "+l.LeftVar+" in "); err != nil {
@@ -1302,7 +1302,7 @@ func (l *LeftJoinMultiExpr) emit(w io.Writer) error {
 	if _, err := io.WriteString(w, "(() {\n"); err != nil {
 		return err
 	}
-	if _, err := io.WriteString(w, "  var results = [];\n"); err != nil {
+	if _, err := io.WriteString(w, "  final results = [];\n"); err != nil {
 		return err
 	}
 	if _, err := io.WriteString(w, "  for (var "+l.Var1+" in "); err != nil {
@@ -1367,7 +1367,7 @@ func (r *RightJoinExpr) emit(w io.Writer) error {
 	if _, err := io.WriteString(w, "(() {\n"); err != nil {
 		return err
 	}
-	if _, err := io.WriteString(w, "  var results = [];\n"); err != nil {
+	if _, err := io.WriteString(w, "  final results = [];\n"); err != nil {
 		return err
 	}
 	if _, err := io.WriteString(w, "  for (var "+r.RightVar+" in "); err != nil {
@@ -1420,7 +1420,7 @@ func (o *OuterJoinExpr) emit(w io.Writer) error {
 	if _, err := io.WriteString(w, "(() {\n"); err != nil {
 		return err
 	}
-	if _, err := io.WriteString(w, "  var results = [];\n"); err != nil {
+	if _, err := io.WriteString(w, "  final results = [];\n"); err != nil {
 		return err
 	}
 	if _, err := io.WriteString(w, "  for (var "+o.LeftVar+" in "); err != nil {
@@ -1487,7 +1487,7 @@ func (gq *GroupQueryExpr) emit(w io.Writer) error {
 	if _, err := io.WriteString(w, "(() {\n"); err != nil {
 		return err
 	}
-	if _, err := io.WriteString(w, "  var groups = <String, Map<String, dynamic>>{};\n"); err != nil {
+	if _, err := io.WriteString(w, "  final groups = <String, Map<String, dynamic>>{};\n"); err != nil {
 		return err
 	}
 	for i, v := range gq.Vars {
@@ -1538,7 +1538,7 @@ func (gq *GroupQueryExpr) emit(w io.Writer) error {
 			return err
 		}
 	}
-	if _, err := io.WriteString(w, "  var _list = groups.values.toList();\n"); err != nil {
+	if _, err := io.WriteString(w, "  final _list = groups.values.toList();\n"); err != nil {
 		return err
 	}
 	if gq.Sort != nil {
@@ -1552,7 +1552,7 @@ func (gq *GroupQueryExpr) emit(w io.Writer) error {
 			return err
 		}
 	}
-	if _, err := io.WriteString(w, "  var res = <"+gq.ElemType+">[];\n  for (var g in _list) {\n"); err != nil {
+	if _, err := io.WriteString(w, "  final res = <"+gq.ElemType+">[];\n  for (var g in _list) {\n"); err != nil {
 		return err
 	}
 	localVarTypes[gq.GroupVar] = "Map<String, dynamic>"
@@ -1594,7 +1594,7 @@ func (g *GroupLeftJoinExpr) emit(w io.Writer) error {
 	if _, err := io.WriteString(w, "(() {\n"); err != nil {
 		return err
 	}
-	if _, err := io.WriteString(w, "  var groups = <String, Map<String, dynamic>>{};\n"); err != nil {
+	if _, err := io.WriteString(w, "  final groups = <String, Map<String, dynamic>>{};\n"); err != nil {
 		return err
 	}
 	if _, err := io.WriteString(w, "  for (var "+g.LeftVar+" in "); err != nil {
@@ -1627,7 +1627,7 @@ func (g *GroupLeftJoinExpr) emit(w io.Writer) error {
 	if err := emitGroupAdd(w, "      ", g.Key, g.Row); err != nil {
 		return err
 	}
-	if _, err := io.WriteString(w, "    }\n  }\n  var _list = groups.values.toList();\n"); err != nil {
+	if _, err := io.WriteString(w, "    }\n  }\n  final _list = groups.values.toList();\n"); err != nil {
 		return err
 	}
 	if g.Sort != nil {
@@ -1641,7 +1641,7 @@ func (g *GroupLeftJoinExpr) emit(w io.Writer) error {
 			return err
 		}
 	}
-	if _, err := io.WriteString(w, "  var res = <"+g.ElemType+">[];\n  for (var "+g.GroupVar+" in _list) {\n"); err != nil {
+	if _, err := io.WriteString(w, "  final res = <"+g.ElemType+">[];\n  for (var "+g.GroupVar+" in _list) {\n"); err != nil {
 		return err
 	}
 	localVarTypes[g.GroupVar] = "Map<String, dynamic>"
