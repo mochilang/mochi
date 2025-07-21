@@ -2761,7 +2761,7 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 						outArgs[i] = &RawExpr{Code: fmt.Sprintf("json.dumps(%s, indent=2)", exprString(a))}
 						continue
 					case types.ListType:
-						code := fmt.Sprintf("' '.join(str(int(x)) if isinstance(x, bool) else str(x) for x in %s)", exprString(a))
+                                               code := fmt.Sprintf("' '.join(str(x).lower() if isinstance(x, bool) else str(x) for x in %s)", exprString(a))
 						outArgs[i] = &RawExpr{Code: code}
 						continue
 					case types.BoolType:
@@ -2769,7 +2769,8 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 						continue
 					}
 				}
-				outArgs[i] = a
+                               expr := exprString(a)
+                               outArgs[i] = &RawExpr{Code: fmt.Sprintf("str(%s).lower() if isinstance(%s, bool) else %s", expr, expr, expr)}
 			}
 			return &CallExpr{Func: &Name{Name: "print"}, Args: outArgs}, nil
 		case "append":
