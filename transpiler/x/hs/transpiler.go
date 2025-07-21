@@ -93,7 +93,7 @@ type TypeDecl struct {
 }
 
 func groupPrelude() string {
-	return `data MGroup k a = MGroup {key :: k, items :: [a]} deriving (Show)`
+	return `data MGroup k a = MGroup {key :: k, items :: [a]} deriving (Show, Eq)`
 }
 
 func (t *TypeDecl) emit(w io.Writer) {
@@ -104,7 +104,7 @@ func (t *TypeDecl) emit(w io.Writer) {
 		}
 		fmt.Fprintf(w, "%s :: %s", f, t.Types[i])
 	}
-	io.WriteString(w, "\n  } deriving (Show)\n")
+	io.WriteString(w, "\n  } deriving (Show, Eq)\n")
 }
 
 var structDefs map[string]*TypeDecl
@@ -750,6 +750,8 @@ func isBoolExpr(e Expr) bool {
 				return true
 			}
 		}
+	case *ComprExpr:
+		return isIntExpr(ex.Body)
 	}
 	return false
 }
@@ -802,6 +804,8 @@ func isMapExpr(e Expr) bool {
 				return true
 			}
 		}
+	case *ComprExpr:
+		return isIntExpr(ex.Body)
 	}
 	return false
 }
@@ -837,6 +841,8 @@ func isIntExpr(e Expr) bool {
 				}
 			}
 		}
+	case *ComprExpr:
+		return isIntExpr(ex.Body)
 	}
 	return false
 }
@@ -1690,12 +1696,18 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 		if err != nil {
 			return nil, err
 		}
+		if nr, ok := se.(*NameRef); ok && groupVars[nr.Name] {
+			se = &FieldExpr{Target: nr, Field: "items"}
+		}
 		srcs = append(srcs, se)
 		inferVarFromSource(p.Query.Var, se)
 		for _, f := range p.Query.Froms {
 			fe, err := convertExpr(f.Src)
 			if err != nil {
 				return nil, err
+			}
+			if nr, ok := fe.(*NameRef); ok && groupVars[nr.Name] {
+				fe = &FieldExpr{Target: nr, Field: "items"}
 			}
 			vars = append(vars, f.Var)
 			srcs = append(srcs, fe)
@@ -1706,6 +1718,9 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 			je, err := convertExpr(j.Src)
 			if err != nil {
 				return nil, err
+			}
+			if nr, ok := je.(*NameRef); ok && groupVars[nr.Name] {
+				je = &FieldExpr{Target: nr, Field: "items"}
 			}
 			vars = append(vars, j.Var)
 			srcs = append(srcs, je)
@@ -1800,15 +1815,16 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 					return nil, err
 				}
 			}
-			var result Expr = &ComprExpr{Vars: []string{p.Query.Group.Name}, Sources: []Expr{groups}, Cond: having, Body: body}
+			var srcGroups Expr = groups
 			if p.Query.Sort != nil {
 				sortExpr, err := convertExpr(p.Query.Sort)
 				if err != nil {
 					return nil, err
 				}
 				needDataList = true
-				result = &CallExpr{Fun: &NameRef{Name: "sortOn"}, Args: []Expr{&GroupExpr{Expr: &LambdaExpr{Params: []string{p.Query.Group.Name}, Body: sortExpr}}, result}}
+				srcGroups = &CallExpr{Fun: &NameRef{Name: "sortOn"}, Args: []Expr{&GroupExpr{Expr: &LambdaExpr{Params: []string{p.Query.Group.Name}, Body: sortExpr}}, groups}}
 			}
+			result := &ComprExpr{Vars: []string{p.Query.Group.Name}, Sources: []Expr{srcGroups}, Cond: having, Body: body}
 			return result, nil
 		}
 		body, err := convertExpr(p.Query.Select)
@@ -1995,6 +2011,9 @@ func convertForStmt(f *parser.ForStmt) (Stmt, error) {
 	src, err := convertExpr(f.Source)
 	if err != nil {
 		return nil, err
+	}
+	if nr, ok := src.(*NameRef); ok && groupVars[nr.Name] {
+		src = &FieldExpr{Target: nr, Field: "items"}
 	}
 	name := safeName(f.Name)
 	if isMapExpr(src) {
