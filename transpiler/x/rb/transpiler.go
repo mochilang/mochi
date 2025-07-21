@@ -3,13 +3,17 @@
 package rb
 
 import (
+	"encoding/json"
 	"fmt"
 	"io"
 	"os"
 	"os/exec"
 	"path/filepath"
+	"sort"
 	"strings"
 	"time"
+
+	"gopkg.in/yaml.v3"
 
 	"mochi/ast"
 	"mochi/parser"
@@ -1743,6 +1747,78 @@ func zeroValueExpr(t types.Type) Expr {
 	}
 }
 
+func valueToExpr(v interface{}, typ *parser.TypeRef) Expr {
+	switch val := v.(type) {
+	case map[string]interface{}:
+		names := make([]string, 0, len(val))
+		for k := range val {
+			names = append(names, k)
+		}
+		sort.Strings(names)
+		fields := make([]StructField, len(names))
+		items := make([]MapItem, len(names))
+		for i, k := range names {
+			expr := valueToExpr(val[k], nil)
+			fields[i] = StructField{Name: k, Value: expr}
+			items[i] = MapItem{Key: &StringLit{Value: k}, Value: expr}
+		}
+		if typ != nil && typ.Simple != nil {
+			return &StructNewExpr{Name: *typ.Simple, Fields: fields}
+		}
+		return &MapLit{Items: items}
+	case []interface{}:
+		elems := make([]Expr, len(val))
+		for i, it := range val {
+			elems[i] = valueToExpr(it, typ)
+		}
+		return &ListLit{Elems: elems}
+	case string:
+		return &StringLit{Value: val}
+	case bool:
+		return &BoolLit{Value: val}
+	case int:
+		return &IntLit{Value: val}
+	case int64:
+		return &IntLit{Value: int(val)}
+	case float64:
+		if float64(int(val)) == val {
+			return &IntLit{Value: int(val)}
+		}
+		return &FloatLit{Value: val}
+	default:
+		return &StringLit{Value: fmt.Sprintf("%v", val)}
+	}
+}
+
+func dataExprFromFile(path, format string, typ *parser.TypeRef) (Expr, error) {
+	if path == "" {
+		return &ListLit{}, nil
+	}
+	root := repoRoot()
+	if root != "" && strings.HasPrefix(path, "../") {
+		clean := strings.TrimPrefix(path, "../")
+		path = filepath.Join(root, "tests", clean)
+	}
+	data, err := os.ReadFile(path)
+	if err != nil {
+		return nil, err
+	}
+	var v interface{}
+	switch format {
+	case "yaml":
+		if err := yaml.Unmarshal(data, &v); err != nil {
+			return nil, err
+		}
+	case "json":
+		if err := json.Unmarshal(data, &v); err != nil {
+			return nil, err
+		}
+	default:
+		return nil, fmt.Errorf("unsupported load format")
+	}
+	return valueToExpr(v, typ), nil
+}
+
 func exprFromPrimary(p *parser.Primary) *parser.Expr {
 	return &parser.Expr{Binary: &parser.BinaryExpr{Left: &parser.Unary{Value: &parser.PostfixExpr{Target: p}}}}
 }
@@ -1866,6 +1942,32 @@ func literalString(e *parser.Expr) (string, bool) {
 		return p.Target.Selector.Root, true
 	}
 	return "", false
+}
+
+func parseFormat(e *parser.Expr) string {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) > 0 {
+		return ""
+	}
+	u := e.Binary.Left
+	if len(u.Ops) > 0 || u.Value == nil {
+		return ""
+	}
+	p := u.Value
+	if len(p.Ops) > 0 || p.Target == nil || p.Target.Map == nil {
+		return ""
+	}
+	for _, it := range p.Target.Map.Items {
+		key, ok := literalString(it.Key)
+		if !ok {
+			continue
+		}
+		if key == "format" {
+			if s, ok := literalString(it.Value); ok {
+				return s
+			}
+		}
+	}
+	return ""
 }
 
 func extractMapLiteral(e *parser.Expr) ([]string, []*parser.Expr, bool) {
@@ -2751,6 +2853,13 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 			items[i] = MapItem{Key: k, Value: v}
 		}
 		return &MapLit{Items: items}, nil
+	case p.Load != nil:
+		format := parseFormat(p.Load.With)
+		path := ""
+		if p.Load.Path != nil {
+			path = strings.Trim(*p.Load.Path, "\"")
+		}
+		return dataExprFromFile(path, format, p.Load.Type)
 	case p.Struct != nil:
 		fields := make([]StructField, len(p.Struct.Fields))
 		for i, f := range p.Struct.Fields {
