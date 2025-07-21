@@ -1,0 +1,2 @@
+compile: exit status 1
+/workspace/mochi/tests/transpiler/x/cobol/let_and_print.cob:11: error: syntax error, unexpected +
