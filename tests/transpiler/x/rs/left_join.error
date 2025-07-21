@@ -1,0 +1,43 @@
+rustc: exit status 1
+warning: unnecessary parentheses around `if` condition
+  --> /workspace/mochi/tests/transpiler/x/rs/left_join.rs:56:147
+   |
+56 | ...rs { let mut _matched = false; for c in &customers { if (o.customerId == c.id) { _matched = true; let c: Option<CustomersItem> = Some(...
+   |                                                            ^                    ^
+   |
+   = note: `#[warn(unused_parens)]` on by default
+help: remove these parentheses
+   |
+56 -     let result: Vec<QueryItem> = { let mut _q: Vec<QueryItem> = Vec::new(); for o in &orders { let mut _matched = false; for c in &customers { if (o.customerId == c.id) { _matched = true; let c: Option<CustomersItem> = Some(c.clone()); _q.push(QueryItem {orderId: o.clone().id, customer: c.clone(), total: o.clone().total}); } } if !_matched { let c: Option<CustomersItem> = None; _q.push(QueryItem {orderId: o.clone().id, customer: c, total: o.clone().total}); } } _q };
+56 +     let result: Vec<QueryItem> = { let mut _q: Vec<QueryItem> = Vec::new(); for o in &orders { let mut _matched = false; for c in &customers { if o.customerId == c.id { _matched = true; let c: Option<CustomersItem> = Some(c.clone()); _q.push(QueryItem {orderId: o.clone().id, customer: c.clone(), total: o.clone().total}); } } if !_matched { let c: Option<CustomersItem> = None; _q.push(QueryItem {orderId: o.clone().id, customer: c, total: o.clone().total}); } } _q };
+   |
+
+error[E0308]: mismatched types
+  --> /workspace/mochi/tests/transpiler/x/rs/left_join.rs:56:289
+   |
+56 | ...{orderId: o.clone().id, customer: c.clone(), total: o.clone().total}); } } if !_matched { let c: Option<CustomersItem> = None; _q.push...
+   |                                      ^^^^^^^^^ expected `CustomersItem`, found `Option<CustomersItem>`
+   |
+   = note: expected struct `CustomersItem`
+                found enum `Option<CustomersItem>`
+help: consider using `Option::expect` to unwrap the `Option<CustomersItem>` value, panicking if the value is an `Option::None`
+   |
+56 |     let result: Vec<QueryItem> = { let mut _q: Vec<QueryItem> = Vec::new(); for o in &orders { let mut _matched = false; for c in &customers { if (o.customerId == c.id) { _matched = true; let c: Option<CustomersItem> = Some(c.clone()); _q.push(QueryItem {orderId: o.clone().id, customer: c.clone().expect("REASON"), total: o.clone().total}); } } if !_matched { let c: Option<CustomersItem> = None; _q.push(QueryItem {orderId: o.clone().id, customer: c, total: o.clone().total}); } } _q };
+   |                                                                                                                                                                                                                                                                                                          +++++++++++++++++
+
+error[E0308]: mismatched types
+  --> /workspace/mochi/tests/transpiler/x/rs/left_join.rs:56:434
+   |
+56 | ...tem {orderId: o.clone().id, customer: c, total: o.clone().total}); } } _q };
+   |                                          ^ expected `CustomersItem`, found `Option<CustomersItem>`
+   |
+   = note: expected struct `CustomersItem`
+                found enum `Option<CustomersItem>`
+help: consider using `Option::expect` to unwrap the `Option<CustomersItem>` value, panicking if the value is an `Option::None`
+   |
+56 |     let result: Vec<QueryItem> = { let mut _q: Vec<QueryItem> = Vec::new(); for o in &orders { let mut _matched = false; for c in &customers { if (o.customerId == c.id) { _matched = true; let c: Option<CustomersItem> = Some(c.clone()); _q.push(QueryItem {orderId: o.clone().id, customer: c.clone(), total: o.clone().total}); } } if !_matched { let c: Option<CustomersItem> = None; _q.push(QueryItem {orderId: o.clone().id, customer: c.expect("REASON"), total: o.clone().total}); } } _q };
+   |                                                                                                                                                                                                                                                                                                                                                                                                                                                   +++++++++++++++++
+
+error: aborting due to 2 previous errors; 1 warning emitted
+
+For more information about this error, try `rustc --explain E0308`.

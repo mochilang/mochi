@@ -766,11 +766,12 @@ type queryFrom struct {
 }
 
 type queryJoin struct {
-	Var   string
-	Src   Expr
-	On    Expr
-	ByRef bool
-	Side  string
+        Var   string
+        Src   Expr
+        On    Expr
+        ByRef bool
+        Side  string
+       Typ   string
 }
 
 // QueryExpr represents a simple from/select query expression.
@@ -801,8 +802,8 @@ func (q *QueryExpr) emit(w io.Writer) {
 		fmt.Fprintf(w, "let mut _groups: HashMap<String, %s> = HashMap::new(); ", q.GroupType)
 		io.WriteString(w, "let mut _order: Vec<String> = Vec::new(); ")
 	}
-	// Special-case single right join without extra from clauses
-	if len(q.Joins) == 1 && q.Joins[0].Side == "right" && len(q.Froms) == 0 {
+       // Special-case single right join without extra from clauses
+       if len(q.Joins) == 1 && q.Joins[0].Side == "right" && len(q.Froms) == 0 {
 		j := q.Joins[0]
 		io.WriteString(w, "for ")
 		io.WriteString(w, j.Var)
@@ -839,9 +840,55 @@ func (q *QueryExpr) emit(w io.Writer) {
 		io.WriteString(w, " }")
 		io.WriteString(w, " }")
 		io.WriteString(w, " }")
-		io.WriteString(w, " _q }")
-		return
-	}
+               io.WriteString(w, " _q }")
+               return
+       }
+       // Special-case single left join without extra from clauses and no grouping or sorting
+       if len(q.Joins) == 1 && q.Joins[0].Side == "left" && len(q.Froms) == 0 && q.GroupVar == "" && q.Sort == nil && q.Skip == nil && q.Take == nil && q.Where == nil {
+               j := q.Joins[0]
+               io.WriteString(w, "for ")
+               io.WriteString(w, q.Var)
+               io.WriteString(w, " in ")
+               if q.VarByRef {
+                       io.WriteString(w, "&")
+               }
+               q.Src.emit(w)
+               io.WriteString(w, " {")
+               io.WriteString(w, " let mut _matched = false;")
+               io.WriteString(w, " for ")
+               io.WriteString(w, j.Var)
+               io.WriteString(w, " in ")
+               if j.ByRef {
+                       io.WriteString(w, "&")
+               }
+               j.Src.emit(w)
+               io.WriteString(w, " {")
+               io.WriteString(w, " if ")
+               j.On.emit(w)
+               io.WriteString(w, " {")
+               io.WriteString(w, " _matched = true; let ")
+               io.WriteString(w, j.Var)
+               fmt.Fprintf(w, ": Option<%s> = Some(", j.Typ)
+               cloneVars = map[string]bool{j.Var: j.ByRef}
+               (&NameRef{Name: j.Var}).emit(w)
+               cloneVars = nil
+               io.WriteString(w, "); _q.push(")
+               cloneVars = map[string]bool{q.Var: q.VarByRef, j.Var: true}
+               q.Select.emit(w)
+               cloneVars = nil
+               io.WriteString(w, "); }")
+               io.WriteString(w, " }")
+               io.WriteString(w, " if !_matched { let ")
+               io.WriteString(w, j.Var)
+               fmt.Fprintf(w, ": Option<%s> = None; _q.push(", j.Typ)
+               cloneVars = map[string]bool{q.Var: q.VarByRef}
+               q.Select.emit(w)
+               cloneVars = nil
+               io.WriteString(w, "); }")
+               io.WriteString(w, " }")
+               io.WriteString(w, " _q }")
+               return
+       }
 	io.WriteString(w, "for ")
 	io.WriteString(w, q.Var)
 	io.WriteString(w, " in ")
@@ -1918,40 +1965,41 @@ func compileQueryExpr(q *parser.QueryExpr) (Expr, error) {
 		}
 		froms[i] = queryFrom{Var: f.Var, Src: fe, ByRef: byRef}
 	}
-	joins := make([]queryJoin, len(q.Joins))
-	for i, j := range q.Joins {
-		side := ""
-		if j.Side != nil {
-			side = *j.Side
-			if side != "right" {
-				return nil, fmt.Errorf("join side not supported")
-			}
-		}
-		je, err := compileExprWithEnv(j.Src, child)
-		if nr, ok := je.(*NameRef); ok && groupVars[nr.Name] {
-			je = &FieldExpr{Receiver: je, Name: "items"}
-		}
-		if err != nil {
-			return nil, err
-		}
-		jt := types.ExprType(j.Src, child)
-		var jelem types.Type = types.AnyType{}
-		if lt, ok := jt.(types.ListType); ok {
-			jelem = lt.Elem
-		}
-		child.SetVar(j.Var, jelem, true)
-		varTypes[j.Var] = rustTypeFromType(jelem)
-		byRef := false
-		et := rustTypeFromType(jelem)
-		if et != "i64" && et != "" {
-			byRef = true
-		}
-		on, err := compileExprWithEnv(j.On, child)
-		if err != nil {
-			return nil, err
-		}
-		joins[i] = queryJoin{Var: j.Var, Src: je, On: on, ByRef: byRef, Side: side}
-	}
+       joins := make([]queryJoin, len(q.Joins))
+       for i, j := range q.Joins {
+               side := ""
+               if j.Side != nil {
+                       side = *j.Side
+                       if side != "right" && side != "left" {
+                               return nil, fmt.Errorf("join side not supported")
+                       }
+               }
+               je, err := compileExprWithEnv(j.Src, child)
+               if nr, ok := je.(*NameRef); ok && groupVars[nr.Name] {
+                       je = &FieldExpr{Receiver: je, Name: "items"}
+               }
+               if err != nil {
+                       return nil, err
+               }
+               jt := types.ExprType(j.Src, child)
+               var jelem types.Type = types.AnyType{}
+               if lt, ok := jt.(types.ListType); ok {
+                       jelem = lt.Elem
+               }
+               child.SetVar(j.Var, jelem, true)
+               baseType := rustTypeFromType(jelem)
+               varTypes[j.Var] = baseType
+               byRef := false
+               et := rustTypeFromType(jelem)
+               if et != "i64" && et != "" {
+                       byRef = true
+               }
+               on, err := compileExprWithEnv(j.On, child)
+               if err != nil {
+                       return nil, err
+               }
+               joins[i] = queryJoin{Var: j.Var, Src: je, On: on, ByRef: byRef, Side: side, Typ: baseType}
+       }
 
 	var groupKey Expr
 	groupVar := ""
