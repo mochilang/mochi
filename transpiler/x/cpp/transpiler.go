@@ -2408,14 +2408,45 @@ func exprType(e Expr) string {
 		return "int"
 	case *AvgExpr:
 		return "double"
+	case *SumExpr:
+		elem := elementTypeFromListType(exprType(v.Arg))
+		if elem == "double" {
+			return "double"
+		}
+		if elem == "int" {
+			return "int"
+		}
+		return "auto"
+	case *AppendExpr:
+		return exprType(v.List)
+	case *ContainsExpr, *InExpr, *ExistsExpr:
+		return "bool"
+	case *SubstringExpr:
+		return "std::string"
+	case *SliceExpr:
+		return exprType(v.Target)
+	case *StrExpr:
+		return "std::string"
+	case *ValuesExpr:
+		mt := exprType(v.Map)
+		vt := "auto"
+		if strings.HasPrefix(mt, "std::map<") && strings.HasSuffix(mt, ">") {
+			parts := strings.Split(strings.TrimSuffix(strings.TrimPrefix(mt, "std::map<"), ">"), ",")
+			if len(parts) == 2 {
+				vt = strings.TrimSpace(parts[1])
+			}
+		}
+		return fmt.Sprintf("std::vector<%s>", vt)
+	case *MinExpr:
+		return elementTypeFromListType(exprType(v.List))
+	case *MaxExpr:
+		return elementTypeFromListType(exprType(v.List))
 	case *MultiListComp:
 		return fmt.Sprintf("std::vector<%s>", v.ElemType)
 	case *GroupComp:
 		return fmt.Sprintf("std::vector<%s>", v.ElemType)
 	case *SortComp:
 		return fmt.Sprintf("std::vector<%s>", v.ElemType)
-	case *ExistsExpr:
-		return "bool"
 	}
 	return "auto"
 }

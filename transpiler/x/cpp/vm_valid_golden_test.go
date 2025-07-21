@@ -134,11 +134,7 @@ func updateTasks() {
 	msgRaw, _ := exec.Command("git", "log", "-1", "--format=%s").Output()
 	ts := strings.TrimSpace(string(tsRaw))
 	if t, err := time.Parse(time.RFC3339, ts); err == nil {
-		if loc, lerr := time.LoadLocation("Asia/Bangkok"); lerr == nil {
-			ts = t.In(loc).Format("2006-01-02 15:04 -0700")
-		} else {
-			ts = t.Format("2006-01-02 15:04 MST")
-		}
+		ts = t.Format("2006-01-02 15:04 -07:00")
 	}
 	msg := strings.TrimSpace(string(msgRaw))
 	files, _ := filepath.Glob(filepath.Join(root, "tests", "transpiler", "x", "cpp", "*.cpp"))
@@ -146,15 +142,19 @@ func updateTasks() {
 	srcFiles, _ := filepath.Glob(filepath.Join(root, "tests", "vm", "valid", "*.mochi"))
 	total := len(srcFiles)
 
-	var buf bytes.Buffer
-	buf.WriteString(fmt.Sprintf("## Progress (%s)\n", ts))
+	newEntry := &bytes.Buffer{}
+	fmt.Fprintf(newEntry, "## Progress (%s)\n", ts)
 	if msg != "" {
-		buf.WriteString("- " + msg + "\n")
+		newEntry.WriteString("- " + msg + "\n")
 	}
-	fmt.Fprintf(&buf, "- Generated C++ for %d/%d programs\n", compiled, total)
-	buf.WriteString("- Updated README checklist and outputs\n\n")
+	fmt.Fprintf(newEntry, "- Generated C++ for %d/%d programs\n", compiled, total)
+	newEntry.WriteString("- Updated README checklist and outputs\n\n")
+
 	if data, err := os.ReadFile(taskFile); err == nil {
-		buf.Write(data)
+		if bytes.HasPrefix(data, newEntry.Bytes()) {
+			return
+		}
+		newEntry.Write(data)
 	}
-	_ = os.WriteFile(taskFile, buf.Bytes(), 0o644)
+	_ = os.WriteFile(taskFile, newEntry.Bytes(), 0o644)
 }

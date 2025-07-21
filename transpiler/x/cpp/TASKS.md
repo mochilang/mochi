@@ -1,3 +1,8 @@
+## Progress (2025-07-21 11:17 +07:00)
+- update dart tasks progress
+- Generated C++ for 83/100 programs
+- Updated README checklist and outputs
+
 ## Progress (2025-07-21 11:04 +0700)
 - cpp transpiler: improve print handling
 - Generated C++ for 83/100 programs
