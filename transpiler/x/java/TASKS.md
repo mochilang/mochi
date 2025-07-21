@@ -1,4 +1,30 @@
-## Progress (2025-07-20 22:35 +0700)
+## Progress (2025-07-21 07:08 +0700)
+- st transpiler: handle identifier map keys (4b6015555)
+
+- st transpiler: handle identifier map keys (4b6015555)
+
+- st transpiler: handle identifier map keys (4b6015555)
+
+- st transpiler: handle identifier map keys (4b6015555)
+
+- st transpiler: handle identifier map keys (4b6015555)
+
+- st transpiler: handle identifier map keys (4b6015555)
+
+- st transpiler: handle identifier map keys (4b6015555)
+
+- st transpiler: handle identifier map keys (4b6015555)
+
+- st transpiler: handle identifier map keys (4b6015555)
+
+- st transpiler: handle identifier map keys (4b6015555)
+
+- st transpiler: handle identifier map keys (4b6015555)
+
+- st transpiler: handle identifier map keys (4b6015555)
+
+- st transpiler: handle identifier map keys (4b6015555)
+
 - java transpiler: improve inference and queries (295162628)
 
 - cleanup removed error files (2917ce39d)

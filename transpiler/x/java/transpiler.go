@@ -928,14 +928,23 @@ type SliceExpr struct {
 }
 
 func (sli *SliceExpr) emit(w io.Writer) {
-	if isStringExpr(sli.Value) {
+	switch {
+	case isStringExpr(sli.Value):
 		sli.Value.emit(w)
 		fmt.Fprint(w, ".substring(")
 		sli.Start.emit(w)
 		fmt.Fprint(w, ", ")
 		sli.End.emit(w)
 		fmt.Fprint(w, ")")
-	} else {
+	case isArrayExpr(sli.Value):
+		fmt.Fprint(w, "java.util.Arrays.copyOfRange(")
+		sli.Value.emit(w)
+		fmt.Fprint(w, ", ")
+		sli.Start.emit(w)
+		fmt.Fprint(w, ", ")
+		sli.End.emit(w)
+		fmt.Fprint(w, ")")
+	default:
 		sli.Value.emit(w)
 	}
 }
@@ -986,6 +995,10 @@ func isArrayExpr(e Expr) bool {
 	switch ex := e.(type) {
 	case *ListLit:
 		return true
+	case *SliceExpr:
+		if !isStringExpr(ex.Value) {
+			return true
+		}
 	case *VarExpr:
 		if t, ok := varTypes[ex.Name]; ok && strings.HasSuffix(t, "[]") {
 			return true
@@ -999,7 +1012,7 @@ func isNumericBool(e Expr) bool {
 	case *BinaryExpr:
 		switch ex.Op {
 		case "&&", "||", "==", "!=", "<", "<=", ">", ">=":
-			return !isStringExpr(ex.Left) && !isStringExpr(ex.Right)
+			return true
 		}
 	case *UnaryExpr:
 		if ex.Op == "!" {
