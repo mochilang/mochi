@@ -1171,7 +1171,7 @@ func transpileQueryExpr(q *parser.QueryExpr) (Node, error) {
 	if name, ok := identName(q.Source); ok && groupVars != nil && groupVars[name] {
 		src = &List{Elems: []Node{Keyword("items"), Symbol(name)}}
 	}
-	if q.Sort != nil {
+	if q.Sort != nil && q.Group == nil {
 		key, err := transpileExpr(q.Sort)
 		if err != nil {
 			return nil, err
@@ -1335,11 +1335,37 @@ func transpileQueryExpr(q *parser.QueryExpr) (Node, error) {
 		}
 		vec2 = append(vec2, Keyword("when"), hav)
 	}
+
+	groupsFor := &List{Elems: []Node{Symbol("for"), &Vector{Elems: vec2}, Symbol(q.Group.Name)}}
+	seq := Node(groupsFor)
+	if q.Sort != nil {
+		key, err := transpileExpr(q.Sort)
+		if err != nil {
+			return nil, err
+		}
+		fn := &List{Elems: []Node{Symbol("fn"), &Vector{Elems: []Node{Symbol(q.Group.Name)}}, key}}
+		seq = &List{Elems: []Node{Symbol("sort-by"), fn, seq}}
+	}
+	if q.Skip != nil {
+		sk, err := transpileExpr(q.Skip)
+		if err != nil {
+			return nil, err
+		}
+		seq = &List{Elems: []Node{Symbol("drop"), sk, seq}}
+	}
+	if q.Take != nil {
+		tk, err := transpileExpr(q.Take)
+		if err != nil {
+			return nil, err
+		}
+		seq = &List{Elems: []Node{Symbol("take"), tk, seq}}
+	}
+
 	sel, err := transpileExpr(q.Select)
 	if err != nil {
 		return nil, err
 	}
-	return &List{Elems: []Node{Symbol("for"), &Vector{Elems: vec2}, sel}}, nil
+	return &List{Elems: []Node{Symbol("for"), &Vector{Elems: []Node{Symbol(q.Group.Name), seq}}, sel}}, nil
 }
 
 func identName(e *parser.Expr) (string, bool) {

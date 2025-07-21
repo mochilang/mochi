@@ -2,7 +2,7 @@
 
 This directory contains experimental source translators for generating Clojure code. Each program in `tests/vm/valid` is transpiled and executed with `clojure`.
 
-Compiled programs: 86/100
+Compiled programs: 88/100
 
 - [x] append_builtin
 - [x] avg_builtin
@@ -28,13 +28,13 @@ Compiled programs: 86/100
 - [x] fun_three_args
 - [ ] go_auto
 - [x] group_by
-- [ ] group_by_conditional_sum
+- [x] group_by_conditional_sum
 - [x] group_by_having
 - [x] group_by_join
 - [x] group_by_left_join
 - [x] group_by_multi_join
-- [ ] group_by_multi_join_sort
-- [ ] group_by_sort
+- [x] group_by_multi_join_sort
+- [x] group_by_sort
 - [x] group_items_iteration
 - [x] if_else
 - [x] if_then_else
