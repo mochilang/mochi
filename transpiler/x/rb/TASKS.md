@@ -1,3 +1,13 @@
+## Progress (2025-07-21 20:45 +0700)
+- rkt: update progress
+- Generated Ruby for 81/100 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-21 20:45 +0700)
+- rkt: update progress
+- Generated Ruby for 80/100 programs
+- Updated README checklist and outputs
+
 ## Progress (2025-07-21 20:06 +0700)
 - update py docs
 - Generated Ruby for 80/100 programs

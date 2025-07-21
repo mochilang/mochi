@@ -95,6 +95,16 @@ type LeftJoinExpr struct {
 	Select   Expr
 }
 
+// OuterJoinExpr represents a simple full outer join query.
+type OuterJoinExpr struct {
+	LeftVar  string
+	LeftSrc  Expr
+	RightVar string
+	RightSrc Expr
+	Cond     Expr
+	Select   Expr
+}
+
 func (r *RightJoinExpr) emit(e *emitter) {
 	io.WriteString(e.w, "(begin")
 	e.indent++
@@ -221,6 +231,134 @@ func (l *LeftJoinExpr) emit(e *emitter) {
 	e.writeIndent()
 	io.WriteString(e.w, "_res << ")
 	l.Select.emit(e)
+	e.nl()
+	e.indent--
+	e.writeIndent()
+	io.WriteString(e.w, "end")
+	e.nl()
+	e.indent--
+	e.writeIndent()
+	io.WriteString(e.w, "end")
+	e.nl()
+	e.indent--
+	e.writeIndent()
+	io.WriteString(e.w, "_res")
+	e.nl()
+	e.indent--
+	e.writeIndent()
+	io.WriteString(e.w, "end)")
+}
+
+func (o *OuterJoinExpr) emit(e *emitter) {
+	io.WriteString(e.w, "(begin")
+	e.indent++
+	e.nl()
+	e.writeIndent()
+	io.WriteString(e.w, "_res = []")
+	e.nl()
+	e.writeIndent()
+	o.LeftSrc.emit(e)
+	io.WriteString(e.w, ".each do |")
+	io.WriteString(e.w, o.LeftVar)
+	io.WriteString(e.w, "|")
+	e.nl()
+	e.indent++
+	e.writeIndent()
+	io.WriteString(e.w, "matched = false")
+	e.nl()
+	e.writeIndent()
+	o.RightSrc.emit(e)
+	io.WriteString(e.w, ".each do |")
+	io.WriteString(e.w, o.RightVar)
+	io.WriteString(e.w, "|")
+	e.nl()
+	e.indent++
+	e.writeIndent()
+	io.WriteString(e.w, "if ")
+	o.Cond.emit(e)
+	e.nl()
+	e.indent++
+	e.writeIndent()
+	io.WriteString(e.w, "matched = true")
+	e.nl()
+	e.writeIndent()
+	io.WriteString(e.w, "_res << ")
+	o.Select.emit(e)
+	e.nl()
+	e.indent--
+	e.writeIndent()
+	io.WriteString(e.w, "end")
+	e.nl()
+	e.indent--
+	e.writeIndent()
+	io.WriteString(e.w, "end")
+	e.nl()
+	e.writeIndent()
+	io.WriteString(e.w, "unless matched")
+	e.nl()
+	e.indent++
+	e.writeIndent()
+	io.WriteString(e.w, o.RightVar+" = nil")
+	e.nl()
+	e.writeIndent()
+	io.WriteString(e.w, "_res << ")
+	o.Select.emit(e)
+	e.nl()
+	e.indent--
+	e.writeIndent()
+	io.WriteString(e.w, "end")
+	e.nl()
+	e.indent--
+	e.writeIndent()
+	io.WriteString(e.w, "end")
+	e.nl()
+	e.writeIndent()
+	o.RightSrc.emit(e)
+	io.WriteString(e.w, ".each do |")
+	io.WriteString(e.w, o.RightVar)
+	io.WriteString(e.w, "|")
+	e.nl()
+	e.indent++
+	e.writeIndent()
+	io.WriteString(e.w, "matched = false")
+	e.nl()
+	e.writeIndent()
+	o.LeftSrc.emit(e)
+	io.WriteString(e.w, ".each do |")
+	io.WriteString(e.w, o.LeftVar)
+	io.WriteString(e.w, "|")
+	e.nl()
+	e.indent++
+	e.writeIndent()
+	io.WriteString(e.w, "if ")
+	o.Cond.emit(e)
+	io.WriteString(e.w, "")
+	e.nl()
+	e.indent++
+	e.writeIndent()
+	io.WriteString(e.w, "matched = true")
+	e.nl()
+	e.writeIndent()
+	io.WriteString(e.w, "break")
+	e.nl()
+	e.indent--
+	e.writeIndent()
+	io.WriteString(e.w, "end")
+	e.nl()
+	e.indent--
+	e.writeIndent()
+	io.WriteString(e.w, "end")
+	e.nl()
+	e.writeIndent()
+	io.WriteString(e.w, "unless matched")
+	e.nl()
+	e.indent++
+	e.writeIndent()
+	io.WriteString(e.w, o.LeftVar+" = nil")
+	e.nl()
+	e.writeIndent()
+	io.WriteString(e.w, "_res << ")
+	o.Select.emit(e)
 	e.nl()
 	e.indent--
 	e.writeIndent()
@@ -977,7 +1115,7 @@ func (j *JoinExpr) emit(e *emitter) {
 	io.WriteString(e.w, "(")
 	j.List.emit(e)
 	io.WriteString(e.w, ")")
-	io.WriteString(e.w, ".join(' ')")
+	io.WriteString(e.w, ".map{ |x| x == true ? 'True' : x == false ? 'False' : x }.join(' ')")
 }
 
 // FormatList renders a list as "[a b]" for printing.
@@ -1786,14 +1924,35 @@ func convertWhile(ws *parser.WhileStmt) (Stmt, error) {
 }
 
 func convertFor(f *parser.ForStmt) (Stmt, error) {
+	var elemType types.Type = types.AnyType{}
+	if currentEnv != nil {
+		t := types.ExprType(f.Source, currentEnv)
+		switch tt := t.(type) {
+		case types.ListType:
+			elemType = tt.Elem
+		case types.MapType:
+			elemType = tt.Key
+		}
+	}
+	if f.RangeEnd != nil {
+		elemType = types.IntType{}
+	}
+	saved := currentEnv
+	if saved != nil {
+		child := types.NewEnv(saved)
+		child.SetVar(f.Name, elemType, true)
+		currentEnv = child
+	}
 	body := make([]Stmt, len(f.Body))
 	for i, s := range f.Body {
 		st, err := convertStmt(s)
 		if err != nil {
+			currentEnv = saved
 			return nil, err
 		}
 		body[i] = st
 	}
+	currentEnv = saved
 	if f.RangeEnd != nil {
 		start, err := convertExpr(f.Source)
 		if err != nil {
@@ -2191,6 +2350,9 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 		if ex, err := convertLeftJoinQuery(p.Query); err == nil {
 			return ex, nil
 		}
+		if ex, err := convertOuterJoinQuery(p.Query); err == nil {
+			return ex, nil
+		}
 		return convertQueryExpr(p.Query)
 	default:
 		if p.FunExpr != nil {
@@ -2445,6 +2607,40 @@ func convertLeftJoinQuery(q *parser.QueryExpr) (Expr, error) {
 	return &LeftJoinExpr{LeftVar: q.Var, LeftSrc: leftSrc, RightVar: j.Var, RightSrc: rightSrc, Cond: cond, Select: sel}, nil
 }
 
+func convertOuterJoinQuery(q *parser.QueryExpr) (Expr, error) {
+	if q == nil || len(q.Joins) != 1 || len(q.Froms) > 0 || q.Group != nil || q.Sort != nil || q.Skip != nil || q.Take != nil || q.Where != nil {
+		return nil, fmt.Errorf("unsupported query")
+	}
+	j := q.Joins[0]
+	if j.Side == nil || *j.Side != "outer" {
+		return nil, fmt.Errorf("unsupported query")
+	}
+	leftSrc, err := convertExpr(q.Source)
+	if err != nil {
+		return nil, err
+	}
+	rightSrc, err := convertExpr(j.Src)
+	if err != nil {
+		return nil, err
+	}
+	child := types.NewEnv(currentEnv)
+	child.SetVar(q.Var, types.AnyType{}, true)
+	child.SetVar(j.Var, types.AnyType{}, true)
+	saved := currentEnv
+	currentEnv = child
+	cond, err := convertExpr(j.On)
+	if err != nil {
+		currentEnv = saved
+		return nil, err
+	}
+	sel, err := convertExpr(q.Select)
+	currentEnv = saved
+	if err != nil {
+		return nil, err
+	}
+	return &OuterJoinExpr{LeftVar: q.Var, LeftSrc: leftSrc, RightVar: j.Var, RightSrc: rightSrc, Cond: cond, Select: sel}, nil
+}
+
 func convertGroupQuery(q *parser.QueryExpr) (Expr, error) {
 	if q == nil || q.Group == nil || len(q.Group.Exprs) != 1 || len(q.Froms) > 0 || len(q.Joins) > 0 || q.Sort != nil || q.Skip != nil || q.Take != nil || q.Distinct {
 		return nil, fmt.Errorf("unsupported query")
@@ -2505,6 +2701,11 @@ func convertQueryForLet(q *parser.QueryExpr, name string) (Expr, Stmt, error) {
 			if lj, ok := qe.(*LeftJoinExpr); ok {
 				lj.Select = &StructNewExpr{Name: structName, Fields: fields}
 			}
+		} else if ex, err2 := convertOuterJoinQuery(q); err2 == nil {
+			qe = ex
+			if oj, ok := qe.(*OuterJoinExpr); ok {
+				oj.Select = &StructNewExpr{Name: structName, Fields: fields}
+			}
 		} else {
 			qe, err = convertQueryExpr(q)
 			if err != nil {
@@ -2523,6 +2724,9 @@ func convertQueryForLet(q *parser.QueryExpr, name string) (Expr, Stmt, error) {
 		return ex, nil, nil
 	}
 	if ex, err := convertLeftJoinQuery(q); err == nil {
+		return ex, nil, nil
+	}
+	if ex, err := convertOuterJoinQuery(q); err == nil {
 		return ex, nil, nil
 	}
 	if ex, err := convertGroupQuery(q); err == nil {
@@ -2751,6 +2955,15 @@ func exprNode(e Expr) *ast.Node {
 		return n
 	case *LeftJoinExpr:
 		n := &ast.Node{Kind: "left_join"}
+		n.Children = append(n.Children, &ast.Node{Kind: "left_var", Value: ex.LeftVar})
+		n.Children = append(n.Children, exprNode(ex.LeftSrc))
+		n.Children = append(n.Children, &ast.Node{Kind: "right_var", Value: ex.RightVar})
+		n.Children = append(n.Children, exprNode(ex.RightSrc))
+		n.Children = append(n.Children, exprNode(ex.Cond))
+		n.Children = append(n.Children, exprNode(ex.Select))
+		return n
+	case *OuterJoinExpr:
+		n := &ast.Node{Kind: "outer_join"}
 		n.Children = append(n.Children, &ast.Node{Kind: "left_var", Value: ex.LeftVar})
 		n.Children = append(n.Children, exprNode(ex.LeftSrc))
 		n.Children = append(n.Children, &ast.Node{Kind: "right_var", Value: ex.RightVar})
