@@ -516,8 +516,22 @@ func (b *BinaryExpr) emit(w io.Writer) error {
 		_, err := io.WriteString(w, ")"+cmp)
 		return err
 	}
-	if err := b.Left.emit(w); err != nil {
-		return err
+	lp := precedence(b.Left)
+	bp := precedence(b)
+	if lp > bp {
+		if _, err := io.WriteString(w, "("); err != nil {
+			return err
+		}
+		if err := b.Left.emit(w); err != nil {
+			return err
+		}
+		if _, err := io.WriteString(w, ")"); err != nil {
+			return err
+		}
+	} else {
+		if err := b.Left.emit(w); err != nil {
+			return err
+		}
 	}
 	op := b.Op
 	if b.Op == "/" && lt == "int" && rt == "int" {
@@ -526,7 +540,39 @@ func (b *BinaryExpr) emit(w io.Writer) error {
 	if _, err := io.WriteString(w, " "+op+" "); err != nil {
 		return err
 	}
+	rp := precedence(b.Right)
+	if rp > bp {
+		if _, err := io.WriteString(w, "("); err != nil {
+			return err
+		}
+		if err := b.Right.emit(w); err != nil {
+			return err
+		}
+		_, err := io.WriteString(w, ")")
+		return err
+	}
 	return b.Right.emit(w)
+}
+
+func precedence(e Expr) int {
+	switch ex := e.(type) {
+	case *BinaryExpr:
+		switch ex.Op {
+		case "*", "/", "%":
+			return 1
+		case "+", "-":
+			return 2
+		case "<", "<=", ">", ">=":
+			return 3
+		case "==", "!=", "in":
+			return 4
+		case "&&":
+			return 5
+		case "||":
+			return 6
+		}
+	}
+	return 0
 }
 
 // CondExpr represents a conditional expression like `cond ? a : b`.
