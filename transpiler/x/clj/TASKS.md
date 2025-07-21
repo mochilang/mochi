@@ -1,3 +1,27 @@
+## Progress (2025-07-21 13:48 +0000)
+- clj transpiler: support right joins
+- 100/100 VM programs transpiled successfully
+
+## Progress (2025-07-21 20:06 +0700)
+- update py docs
+- 100/100 VM programs transpiled successfully
+
+## Progress (2025-07-21 20:06 +0700)
+- update py docs
+- Regenerated golden files - 100/100 vm valid programs passing
+
+## Progress (2025-07-21 20:06 +0700)
+- update py docs
+- Regenerated golden files - 100/100 vm valid programs passing
+
+## Progress (2025-07-21 20:06 +0700)
+- update py docs
+- 100/100 VM programs transpiled successfully
+
+## Progress (2025-07-21 20:06 +0700)
+- update py docs
+- Regenerated golden files - 100/100 vm valid programs passing
+
 ## Progress (2025-07-21 19:38 +0700)
 - ex transpiler: add golden outputs and update docs
 - Regenerated golden files - 100/100 vm valid programs passing
