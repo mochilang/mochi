@@ -1,3 +1,31 @@
+## Progress (2025-07-21 15:57 +0700)
+- clj transpiler: handle simple union patterns
+- Regenerated golden files - 94/100 vm valid programs passing
+
+## Progress (2025-07-21 15:36 +0700)
+- ex transpiler: support group by join
+- Regenerated golden files - 94/100 vm valid programs passing
+
+## Progress (2025-07-21 15:36 +0700)
+- ex transpiler: support group by join
+- Regenerated golden files - 94/100 vm valid programs passing
+
+## Progress (2025-07-21 15:36 +0700)
+- ex transpiler: support group by join
+- Regenerated golden files - 94/100 vm valid programs passing
+
+## Progress (2025-07-21 15:36 +0700)
+- ex transpiler: support group by join
+- Regenerated golden files - 93/100 vm valid programs passing
+
+## Progress (2025-07-21 15:36 +0700)
+- ex transpiler: support group by join
+- Regenerated golden files - 93/100 vm valid programs passing
+
+## Progress (2025-07-21 15:36 +0700)
+- ex transpiler: support group by join
+- Regenerated golden files - 93/100 vm valid programs passing
+
 ## Progress (2025-07-21 14:52 +0700)
 - clj: support outer join
 - Regenerated golden files - 93/100 vm valid programs passing

@@ -976,7 +976,15 @@ func transpilePrimary(p *parser.Primary) (Node, error) {
 	case p.Query != nil:
 		return transpileQueryExpr(p.Query)
 	case p.Selector != nil && len(p.Selector.Tail) == 0:
-		return Symbol(p.Selector.Root), nil
+		name := p.Selector.Root
+		if transpileEnv != nil {
+			if st, ok := transpileEnv.GetStruct(name); ok && len(st.Order) == 0 {
+				if _, ok2 := transpileEnv.FindUnionByVariant(name); ok2 {
+					return Keyword(name), nil
+				}
+			}
+		}
+		return Symbol(name), nil
 	case p.Selector != nil && len(p.Selector.Tail) > 0:
 		pf := &parser.PostfixExpr{Target: &parser.Primary{Selector: &parser.SelectorExpr{Root: p.Selector.Root}}}
 		for _, t := range p.Selector.Tail {
@@ -1112,11 +1120,8 @@ func transpileMatchExpr(m *parser.MatchExpr) (Node, error) {
 	}
 	elems := []Node{Symbol("cond")}
 	for _, c := range m.Cases {
-		pat, err := transpileExpr(c.Pattern)
-		if err != nil {
-			return nil, err
-		}
-		if sym, ok := pat.(Symbol); ok && string(sym) == "_" {
+		// wildcard pattern
+		if name, ok := identName(c.Pattern); ok && name == "_" {
 			elems = append(elems, Symbol("true"))
 			res, err := transpileExpr(c.Result)
 			if err != nil {
@@ -1124,6 +1129,28 @@ func transpileMatchExpr(m *parser.MatchExpr) (Node, error) {
 			}
 			elems = append(elems, res)
 			continue
+		}
+
+		// variant pattern of form Node(x y z)
+		if name, vars, ok := callPattern(c.Pattern); ok {
+			if st, ok := transpileEnv.GetStruct(name); ok && len(vars) == len(st.Order) {
+				res, err := transpileExpr(c.Result)
+				if err != nil {
+					return nil, err
+				}
+				binds := []Node{}
+				for i, v := range vars {
+					binds = append(binds, Symbol(v), &List{Elems: []Node{Keyword(st.Order[i]), target}})
+				}
+				body := &List{Elems: []Node{Symbol("let"), &Vector{Elems: binds}, res}}
+				elems = append(elems, Symbol("true"), body)
+				continue
+			}
+		}
+
+		pat, err := transpileExpr(c.Pattern)
+		if err != nil {
+			return nil, err
 		}
 		eq := &List{Elems: []Node{Symbol("="), target, pat}}
 		res, err := transpileExpr(c.Result)
@@ -1192,40 +1219,40 @@ func transpileQueryExpr(q *parser.QueryExpr) (Node, error) {
 				andForm = append(andForm, conds...)
 				vecElems = append(vecElems, Keyword("when"), &List{Elems: andForm})
 			}
-                        return &List{Elems: []Node{Symbol("for"), &Vector{Elems: vecElems}, sel}}, nil
-                }
-                if j.Side != nil && *j.Side == "outer" && j.On != nil {
-                        leftSrc, err := transpileExpr(q.Source)
-                        if err != nil {
-                                return nil, err
-                        }
-                        rightSrc, err := transpileExpr(j.Src)
-                        if err != nil {
-                                return nil, err
-                        }
-                        onExpr, err := transpileExpr(j.On)
-                        if err != nil {
-                                return nil, err
-                        }
-                        someFn := &List{Elems: []Node{Symbol("fn"), &Vector{Elems: []Node{Symbol(j.Var)}}, &List{Elems: []Node{Symbol("when"), onExpr, Symbol(j.Var)}}}}
-                        someExpr := &List{Elems: []Node{Symbol("some"), someFn, rightSrc}}
-                        sel1, err := transpileExpr(q.Select)
-                        if err != nil {
-                                return nil, err
-                        }
-                        bind1 := []Node{Symbol(q.Var), leftSrc, Keyword("let"), &Vector{Elems: []Node{Symbol(j.Var), someExpr}}}
-                        seq1 := &List{Elems: []Node{Symbol("for"), &Vector{Elems: bind1}, sel1}}
-                        notAnyFn := &List{Elems: []Node{Symbol("fn"), &Vector{Elems: []Node{Symbol(q.Var)}}, onExpr}}
-                        notAny := &List{Elems: []Node{Symbol("not-any?"), notAnyFn, leftSrc}}
-                        sel2, err := transpileExpr(q.Select)
-                        if err != nil {
-                                return nil, err
-                        }
-                        bind2 := []Node{Symbol(j.Var), rightSrc, Keyword("when"), notAny, Keyword("let"), &Vector{Elems: []Node{Symbol(q.Var), Symbol("nil")}}}
-                        seq2 := &List{Elems: []Node{Symbol("for"), &Vector{Elems: bind2}, sel2}}
-                        return &List{Elems: []Node{Symbol("concat"), seq1, seq2}}, nil
-                }
-        }
+			return &List{Elems: []Node{Symbol("for"), &Vector{Elems: vecElems}, sel}}, nil
+		}
+		if j.Side != nil && *j.Side == "outer" && j.On != nil {
+			leftSrc, err := transpileExpr(q.Source)
+			if err != nil {
+				return nil, err
+			}
+			rightSrc, err := transpileExpr(j.Src)
+			if err != nil {
+				return nil, err
+			}
+			onExpr, err := transpileExpr(j.On)
+			if err != nil {
+				return nil, err
+			}
+			someFn := &List{Elems: []Node{Symbol("fn"), &Vector{Elems: []Node{Symbol(j.Var)}}, &List{Elems: []Node{Symbol("when"), onExpr, Symbol(j.Var)}}}}
+			someExpr := &List{Elems: []Node{Symbol("some"), someFn, rightSrc}}
+			sel1, err := transpileExpr(q.Select)
+			if err != nil {
+				return nil, err
+			}
+			bind1 := []Node{Symbol(q.Var), leftSrc, Keyword("let"), &Vector{Elems: []Node{Symbol(j.Var), someExpr}}}
+			seq1 := &List{Elems: []Node{Symbol("for"), &Vector{Elems: bind1}, sel1}}
+			notAnyFn := &List{Elems: []Node{Symbol("fn"), &Vector{Elems: []Node{Symbol(q.Var)}}, onExpr}}
+			notAny := &List{Elems: []Node{Symbol("not-any?"), notAnyFn, leftSrc}}
+			sel2, err := transpileExpr(q.Select)
+			if err != nil {
+				return nil, err
+			}
+			bind2 := []Node{Symbol(j.Var), rightSrc, Keyword("when"), notAny, Keyword("let"), &Vector{Elems: []Node{Symbol(q.Var), Symbol("nil")}}}
+			seq2 := &List{Elems: []Node{Symbol("for"), &Vector{Elems: bind2}, sel2}}
+			return &List{Elems: []Node{Symbol("concat"), seq1, seq2}}, nil
+		}
+	}
 
 	bindings := []Node{}
 	src, err := transpileExpr(q.Source)
@@ -1452,6 +1479,30 @@ func identName(e *parser.Expr) (string, bool) {
 		return "", false
 	}
 	return p.Selector.Root, true
+}
+
+func callPattern(e *parser.Expr) (string, []string, bool) {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) > 0 {
+		return "", nil, false
+	}
+	u := e.Binary.Left
+	if u == nil || len(u.Ops) > 0 || u.Value == nil {
+		return "", nil, false
+	}
+	p := u.Value.Target
+	if p == nil || p.Call == nil {
+		return "", nil, false
+	}
+	name := p.Call.Func
+	args := []string{}
+	for _, a := range p.Call.Args {
+		v, ok := identName(a)
+		if !ok {
+			return "", nil, false
+		}
+		args = append(args, v)
+	}
+	return name, args, true
 }
 
 func defaultValue(t *parser.TypeRef) Node {
