@@ -1,4 +1,18 @@
-## Progress (2025-07-22 05:52 +0700)
+## Progress (2025-07-22 06:36 +0700)
+- java transpiler: improve bool handling (4528b4fd3)
+
+- cs transpiler: support outer join (85aa12994)
+
+- cs transpiler: support outer join (85aa12994)
+
+- cs transpiler: support outer join (85aa12994)
+
+- cs transpiler: support outer join (85aa12994)
+
+- cs transpiler: support outer join (85aa12994)
+
+- cs transpiler: support outer join (85aa12994)
+
 - java transpiler: support group_by_multi_sort (632b4357d)
 
 - java transpiler: add python math support (1a709ba3e)

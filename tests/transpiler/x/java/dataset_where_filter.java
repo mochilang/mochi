@@ -7,36 +7,36 @@ public class Main {
             this.name = name;
             this.age = age;
         }
-        boolean containsKey(String k) {
-            if (k.equals("name")) return true;
-            if (k.equals("age")) return true;
-            return false;
+        @Override public String toString() {
+            return String.format("{'name': '%s', 'age': %s}", q(name), q(age));
         }
     }
 
-    static java.util.List<Result3> adults = new java.util.ArrayList<Result3>() {{ java.util.ArrayList<Result3> _tmp = new java.util.ArrayList<>(); for (var person : people) { if (((Integer) (person.get("age"))) >= 18) { _tmp.add(new Result3(((Integer) (person.get("name"))), ((Integer) (person.get("age"))), ((Integer) (person.get("age"))) >= 60)); } } java.util.ArrayList<Result3> list = _tmp; int skip = 0; int take = -1; for (int i = 0; i < list.size(); i++) { if (i < skip) continue; if (take >= 0 && i >= skip + take) break; _tmp.add((Result3)list.get(i)); } addAll(_tmp);}};
+    static java.util.List<Result3> adults = new java.util.ArrayList<Result3>() {{ java.util.ArrayList<Result3> _tmp = new java.util.ArrayList<>(); for (var person : people) { if (person.age >= 18) { _tmp.add(new Result3(person.name, person.age, person.age >= 60)); } } java.util.ArrayList<Result3> list = _tmp; java.util.ArrayList<Result3> _res = new java.util.ArrayList<>(); int skip = 0; int take = -1; for (int i = 0; i < list.size(); i++) { if (i < skip) continue; if (take >= 0 && i >= skip + take) break; _res.add((Result3)list.get(i)); } addAll(_res);}};
     static class Result3 {
         String name;
         int age;
-        int is_senior;
-        Result3(String name, int age, int is_senior) {
+        boolean is_senior;
+        Result3(String name, int age, boolean is_senior) {
             this.name = name;
             this.age = age;
             this.is_senior = is_senior;
         }
-        boolean containsKey(String k) {
-            if (k.equals("name")) return true;
-            if (k.equals("age")) return true;
-            if (k.equals("is_senior")) return true;
-            return false;
+        @Override public String toString() {
+            return String.format("{'name': '%s', 'age': %s, 'is_senior': %s}", q(name), q(age), q(is_senior));
         }
     }
 
 
+    static String q(Object v) {
+        if (v instanceof String) return "'" + v.toString() + "'";
+        return String.valueOf(v);
+    }
+
     public static void main(String[] args) {
         System.out.println("--- Adults ---");
         for (var person : adults) {
-            System.out.println(((Integer) (person.get("name"))) + " " + "is" + " " + ((Integer) (person.get("age"))) + " " + ((Integer) (person.get("is_senior"))) ? " (senior)" : "");
+            System.out.println(person.name + " " + "is" + " " + person.age + " " + (person.is_senior ? " (senior)" : ""));
         }
     }
 }
