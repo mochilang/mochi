@@ -35,6 +35,7 @@ const (
 
 type value struct {
 	kind valKind
+	typ  string
 	i    int
 	b    bool
 	s    string
@@ -119,6 +120,9 @@ func formatValue(v value, indent int) string {
 		return strings.Join(lines, "\n")
 	case valMap:
 		if len(v.kv) == 0 {
+			if v.typ != "" {
+				return fmt.Sprintf("%s new", v.typ)
+			}
 			return "Dictionary newFrom: {}"
 		}
 		keys := make([]string, 0, len(v.kv))
@@ -126,7 +130,11 @@ func formatValue(v value, indent int) string {
 			keys = append(keys, k)
 		}
 		sort.Strings(keys)
-		lines := []string{"Dictionary newFrom: {"}
+		prefix := "Dictionary newFrom: {"
+		if v.typ != "" {
+			prefix = fmt.Sprintf("%s newFrom: {", v.typ)
+		}
+		lines := []string{prefix}
 		for i, k := range keys {
 			val := v.kv[k]
 			line := pad(indent+2) + fmt.Sprintf("'%s'->%s", escape(k), formatValue(val, indent+2))
@@ -343,6 +351,25 @@ func setIndexedValue(target value, idxVals []value, val value) (value, error) {
 	default:
 		return value{}, fmt.Errorf("index assign only for list or map")
 	}
+}
+
+func setFieldValue(target value, fields []string, val value) (value, error) {
+	if len(fields) == 0 {
+		return val, nil
+	}
+	if target.kind != valMap {
+		return value{}, fmt.Errorf("field assign only for map")
+	}
+	if target.kv == nil {
+		target.kv = map[string]value{}
+	}
+	child := target.kv[fields[0]]
+	updated, err := setFieldValue(child, fields[1:], val)
+	if err != nil {
+		return value{}, err
+	}
+	target.kv[fields[0]] = updated
+	return target, nil
 }
 
 func evalExpr(e *parser.Expr, vars map[string]value) (value, error) {
@@ -809,6 +836,16 @@ func evalPrimary(p *parser.Primary, vars map[string]value) (value, error) {
 			elems[i] = v
 		}
 		return value{kind: valList, list: elems}, nil
+	case p.Struct != nil:
+		m := make(map[string]value)
+		for _, f := range p.Struct.Fields {
+			v, err := evalExpr(f.Value, vars)
+			if err != nil {
+				return value{}, err
+			}
+			m[f.Name] = v
+		}
+		return value{kind: valMap, kv: m, typ: p.Struct.Name}, nil
 	case p.Map != nil:
 		m := make(map[string]value)
 		for _, it := range p.Map.Items {
@@ -1046,7 +1083,8 @@ func evalPrimary(p *parser.Primary, vars map[string]value) (value, error) {
 				}
 				args[i] = av
 			}
-			return evalFunction(fn, args, vars)
+			res, _, err := evalFunction(fn, args, vars)
+			return res, err
 		}
 		return value{}, fmt.Errorf("unsupported call")
 	case p.If != nil:
@@ -1110,12 +1148,12 @@ func copyVars(vars map[string]value) map[string]value {
 // evalFunction evaluates a user-defined function using constant folding. It
 // now supports a mix of local function declarations, simple variable
 // assignments and a final return statement.
-func evalFunction(fn *parser.FunStmt, args []value, captured map[string]value) (value, error) {
+func evalFunction(fn *parser.FunStmt, args []value, captured map[string]value) (value, []value, error) {
 	if fn == nil {
-		return value{}, fmt.Errorf("undefined function")
+		return value{}, nil, fmt.Errorf("undefined function")
 	}
 	if len(args) != len(fn.Params) {
-		return value{}, fmt.Errorf("argument count mismatch")
+		return value{}, nil, fmt.Errorf("argument count mismatch")
 	}
 
 	// copy current functions so that nested functions are visible during
@@ -1144,7 +1182,7 @@ func evalFunction(fn *parser.FunStmt, args []value, captured map[string]value) (
 				var err error
 				v, err = evalExpr(st.Let.Value, vars)
 				if err != nil {
-					return value{}, err
+					return value{}, nil, err
 				}
 			} else if st.Let.Type != nil {
 				v = zeroValue(st.Let.Type)
@@ -1156,31 +1194,56 @@ func evalFunction(fn *parser.FunStmt, args []value, captured map[string]value) (
 				var err error
 				v, err = evalExpr(st.Var.Value, vars)
 				if err != nil {
-					return value{}, err
+					return value{}, nil, err
 				}
 			} else if st.Var.Type != nil {
 				v = zeroValue(st.Var.Type)
 			}
 			vars[st.Var.Name] = v
 		case st.Assign != nil:
-			if len(st.Assign.Field) > 0 || len(st.Assign.Index) > 0 {
-				return value{}, fmt.Errorf("unsupported assign")
+			if len(st.Assign.Index) > 0 {
+				return value{}, nil, fmt.Errorf("unsupported assign")
 			}
 			v, err := evalExpr(st.Assign.Value, vars)
 			if err != nil {
-				return value{}, err
+				return value{}, nil, err
 			}
-			vars[st.Assign.Name] = v
+			if len(st.Assign.Field) > 0 {
+				target, ok := vars[st.Assign.Name]
+				if !ok {
+					return value{}, nil, fmt.Errorf("assign to unknown var")
+				}
+				names := make([]string, len(st.Assign.Field))
+				for i, f := range st.Assign.Field {
+					names[i] = f.Name
+				}
+				nt, err := setFieldValue(target, names, v)
+				if err != nil {
+					return value{}, nil, err
+				}
+				vars[st.Assign.Name] = nt
+			} else {
+				vars[st.Assign.Name] = v
+			}
 		case st.Return != nil:
 			ret = st.Return.Value
 		default:
-			return value{}, fmt.Errorf("unsupported function body")
+			return value{}, nil, fmt.Errorf("unsupported function body")
 		}
 	}
-	if ret == nil {
-		return value{}, fmt.Errorf("missing return")
+	var out value
+	var err error
+	if ret != nil {
+		out, err = evalExpr(ret, vars)
+		if err != nil {
+			return value{}, nil, err
+		}
 	}
-	return evalExpr(ret, vars)
+	newArgs := make([]value, len(fn.Params))
+	for i, p := range fn.Params {
+		newArgs[i] = vars[p.Name]
+	}
+	return out, newArgs, nil
 }
 
 func identName(e *parser.Expr) (string, bool) {
@@ -1904,10 +1967,9 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 		case st.Fun != nil:
 			funcs[st.Fun.Name] = st.Fun
 			return nil
+		case st.Type != nil:
+			return nil
 		case st.Assign != nil:
-			if len(st.Assign.Field) > 0 {
-				return fmt.Errorf("unsupported assign")
-			}
 			if len(st.Assign.Index) > 0 {
 				target, ok := vars[st.Assign.Name]
 				if !ok {
@@ -1978,8 +2040,21 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 				if _, ok := vars[st.Assign.Name]; !ok {
 					return fmt.Errorf("assign to unknown var")
 				}
-				vars[st.Assign.Name] = v
-				appendAssign(&p.Lines, st.Assign.Name, v)
+				if len(st.Assign.Field) > 0 {
+					target := vars[st.Assign.Name]
+					names := make([]string, len(st.Assign.Field))
+					for i, f := range st.Assign.Field {
+						names[i] = f.Name
+					}
+					nt, err := setFieldValue(target, names, v)
+					if err != nil {
+						return err
+					}
+					vars[st.Assign.Name] = nt
+				} else {
+					vars[st.Assign.Name] = v
+				}
+				appendAssign(&p.Lines, st.Assign.Name, vars[st.Assign.Name])
 			}
 		case st.If != nil:
 			cond, err := evalExpr(st.If.Cond, vars)
@@ -2097,6 +2172,30 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 			call := st.Expr.Expr.Binary.Left.Value.Target.Call
 			if call == nil {
 				return fmt.Errorf("unsupported expression")
+			}
+			if fn, ok := funcs[call.Func]; ok {
+				args := make([]value, len(call.Args))
+				argNames := make([]string, len(call.Args))
+				for i, a := range call.Args {
+					av, err := evalExpr(a, vars)
+					if err != nil {
+						return err
+					}
+					args[i] = av
+					if n, ok := identName(a); ok {
+						argNames[i] = n
+					}
+				}
+				_, newArgs, err := evalFunction(fn, args, vars)
+				if err != nil {
+					return err
+				}
+				for i, n := range argNames {
+					if n != "" {
+						vars[n] = newArgs[i]
+					}
+				}
+				break
 			}
 			switch call.Func {
 			case "print":
