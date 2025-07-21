@@ -1728,6 +1728,9 @@ func elemTypeFromExpr(e *parser.Expr) string {
 			if elem, ok2 := groupItemTypes[t]; ok2 {
 				return elem
 			}
+			if strings.HasPrefix(t, "[]") {
+				return t[2:]
+			}
 		}
 	}
 	if pf.List != nil && len(pf.List.Elems) > 0 {
@@ -1875,6 +1878,20 @@ func compileQueryExpr(q *parser.QueryExpr) (Expr, error) {
 			varTypes[q.Group.Name] = prevG
 		}
 		elemType := zigTypeFromExpr(elem)
+		if ml, ok := elem.(*MapLit); ok {
+			if ml.StructName == "" {
+				if fields, ok2 := mapFields(ml); ok2 {
+					structName := fmt.Sprintf("Entry%d", len(structDefs))
+					if _, exists := structDefs[structName]; !exists {
+						structDefs[structName] = &StructDef{Name: structName, Fields: fields}
+					}
+					ml.StructName = structName
+					elemType = structName
+				}
+			} else {
+				elemType = ml.StructName
+			}
+		}
 		var sortExpr Expr
 		var desc bool
 		if q.Sort != nil {
@@ -1893,7 +1910,7 @@ func compileQueryExpr(q *parser.QueryExpr) (Expr, error) {
 	}
 	elemType := zigTypeFromExpr(elem)
 	if ml, ok := elem.(*MapLit); ok {
-		structName := "Entry"
+		structName := fmt.Sprintf("Entry%d", len(structDefs))
 		if _, exists := structDefs[structName]; !exists {
 			fields := make([]Field, len(ml.Entries))
 			for i, e := range ml.Entries {
