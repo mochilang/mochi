@@ -1810,6 +1810,10 @@ type CrossJoinExpr struct {
 	Vars    []string
 	Sources []Expr
 	Where   Expr
+	Sort    Expr
+	Desc    bool
+	Skip    Expr
+	Take    Expr
 	Select  Expr
 }
 
@@ -1830,9 +1834,17 @@ func (c *CrossJoinExpr) emit(w io.Writer) {
 		io.WriteString(w, "\n")
 	}
 	io.WriteString(w, strings.Repeat("  ", len(c.Vars)+1))
-	io.WriteString(w, "(set! _res (append _res (list ")
-	c.Select.emit(w)
-	io.WriteString(w, ")))\n")
+	if c.Sort != nil {
+		io.WriteString(w, "(set! _res (append _res (list (cons ")
+		c.Sort.emit(w)
+		io.WriteString(w, " ")
+		c.Select.emit(w)
+		io.WriteString(w, ")))\n")
+	} else {
+		io.WriteString(w, "(set! _res (append _res (list ")
+		c.Select.emit(w)
+		io.WriteString(w, ")))\n")
+	}
 	if c.Where != nil {
 		io.WriteString(w, strings.Repeat("  ", len(c.Vars)+1))
 		io.WriteString(w, ")\n")
@@ -1841,11 +1853,30 @@ func (c *CrossJoinExpr) emit(w io.Writer) {
 		io.WriteString(w, strings.Repeat("  ", i))
 		io.WriteString(w, ")\n")
 	}
+	if c.Sort != nil {
+		io.WriteString(w, "  (set! _res (sort _res ")
+		if c.Desc {
+			io.WriteString(w, ">")
+		} else {
+			io.WriteString(w, "<")
+		}
+		io.WriteString(w, " #:key car))\n  (set! _res (map cdr _res))\n")
+	}
+	if c.Skip != nil {
+		io.WriteString(w, "  (set! _res (drop _res ")
+		c.Skip.emit(w)
+		io.WriteString(w, "))\n")
+	}
+	if c.Take != nil {
+		io.WriteString(w, "  (set! _res (take _res ")
+		c.Take.emit(w)
+		io.WriteString(w, "))\n")
+	}
 	io.WriteString(w, "  _res)")
 }
 
 func convertCrossJoinQuery(q *parser.QueryExpr, env *types.Env) (Expr, error) {
-	if q == nil || len(q.Joins) != 0 || q.Distinct || q.Group != nil || q.Sort != nil || q.Skip != nil || q.Take != nil {
+	if q == nil || len(q.Joins) != 0 || q.Distinct || q.Group != nil {
 		return nil, fmt.Errorf("unsupported query")
 	}
 	vars := []string{q.Var}
@@ -1880,7 +1911,32 @@ func convertCrossJoinQuery(q *parser.QueryExpr, env *types.Env) (Expr, error) {
 			return nil, err
 		}
 	}
-	return &CrossJoinExpr{Vars: vars, Sources: exprs, Where: cond, Select: sel}, nil
+	var sortExpr Expr
+	var desc bool
+	if q.Sort != nil {
+		sortExpr, err = convertExpr(q.Sort, child)
+		if err != nil {
+			return nil, err
+		}
+		if u, ok := sortExpr.(*UnaryExpr); ok && u.Op == "-" {
+			sortExpr = u.Expr
+			desc = true
+		}
+	}
+	var skipExpr, takeExpr Expr
+	if q.Skip != nil {
+		skipExpr, err = convertExpr(q.Skip, child)
+		if err != nil {
+			return nil, err
+		}
+	}
+	if q.Take != nil {
+		takeExpr, err = convertExpr(q.Take, child)
+		if err != nil {
+			return nil, err
+		}
+	}
+	return &CrossJoinExpr{Vars: vars, Sources: exprs, Where: cond, Sort: sortExpr, Desc: desc, Skip: skipExpr, Take: takeExpr, Select: sel}, nil
 }
 
 func convertMultiJoinQuery(q *parser.QueryExpr, env *types.Env) (Expr, error) {

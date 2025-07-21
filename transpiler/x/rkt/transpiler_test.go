@@ -81,6 +81,7 @@ func TestTranspile_Golden(t *testing.T) {
 		"list_assign",
 		"cross_join",
 		"dataset_where_filter",
+		"dataset_sort_take_limit",
 		"break_continue",
 		"left_join_multi",
 		"outer_join",
