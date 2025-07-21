@@ -1095,7 +1095,7 @@ func isBoolOp(e *parser.Expr) bool {
 	}
 	for _, r := range e.Binary.Right {
 		switch r.Op {
-		case "&&", "||", "==", "!=", "<", "<=", ">", ">=":
+		case "&&", "||", "==", "!=", "<", "<=", ">", ">=", "in":
 			return true
 		}
 	}
