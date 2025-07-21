@@ -1,3 +1,11 @@
+## Progress (2025-07-21 07:29 +0700)
+- update erl checklist
+- Regenerated golden files - 73/100 vm valid programs passing
+
+## Progress (2025-07-21 07:29 +0700)
+- update erl checklist
+- Regenerated golden files - 73/100 vm valid programs passing
+
 ## Progress (2025-07-21 07:13 +0700)
 - erl transpiler: support query sort skip take
 - Regenerated golden files - 72/100 vm valid programs passing
