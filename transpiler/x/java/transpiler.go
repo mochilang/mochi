@@ -27,6 +27,7 @@ var groupItems map[string]string
 var needLoadYaml bool
 var needSaveJsonl bool
 var pyMathAliases map[string]bool
+var structDefs map[string]map[string]string
 
 func javaType(t string) string {
 	switch t {
@@ -75,19 +76,59 @@ func javaBoxType(t string) string {
 	}
 }
 
+func typeFromName(n string) types.Type {
+	switch n {
+	case "int", "Integer":
+		return types.IntType{}
+	case "double", "float", "float64":
+		return types.FloatType{}
+	case "bool", "boolean":
+		return types.BoolType{}
+	case "string", "String":
+		return types.StringType{}
+	default:
+		return types.AnyType{}
+	}
+}
+
 func fieldTypeFromVar(target Expr, name string) (string, bool) {
-	v, ok := target.(*VarExpr)
-	if !ok || topEnv == nil {
+	if topEnv == nil && structDefs == nil {
 		return "", false
 	}
-	tname, ok := varTypes[v.Name]
-	if !ok {
-		return "", false
-	}
-	base := strings.TrimSuffix(tname, "[]")
-	if st, ok := topEnv.GetStruct(base); ok {
-		if ft, ok2 := st.Fields[name]; ok2 {
-			return toJavaTypeFromType(ft), true
+	switch v := target.(type) {
+	case *VarExpr:
+		tname, ok := varTypes[v.Name]
+		if !ok {
+			return "", false
+		}
+		base := strings.TrimSuffix(tname, "[]")
+		if topEnv != nil {
+			if st, ok := topEnv.GetStruct(base); ok {
+				if ft, ok2 := st.Fields[name]; ok2 {
+					return toJavaTypeFromType(ft), true
+				}
+			}
+		}
+		if structDefs != nil {
+			if f, ok := structDefs[base][name]; ok {
+				return f, true
+			}
+		}
+	case *FieldExpr:
+		if typ, ok := fieldTypeFromVar(v.Target, v.Name); ok {
+			base := strings.TrimSuffix(typ, "[]")
+			if topEnv != nil {
+				if st, ok2 := topEnv.GetStruct(base); ok2 {
+					if ft, ok3 := st.Fields[name]; ok3 {
+						return toJavaTypeFromType(ft), true
+					}
+				}
+			}
+			if structDefs != nil {
+				if f, ok := structDefs[base][name]; ok {
+					return f, true
+				}
+			}
 		}
 	}
 	return "", false
@@ -370,14 +411,22 @@ func (t *TypeDeclStmt) emit(w io.Writer, indent string) {
 		if i > 0 {
 			fmt.Fprint(w, ", ")
 		}
-		fmt.Fprintf(w, "'%s': %%s", f.Name)
+		typ := javaType(f.Type)
+		if typ == "" {
+			typ = f.Type
+		}
+		if typ == "String" {
+			fmt.Fprintf(w, "'%s': '%%s'", f.Name)
+		} else {
+			fmt.Fprintf(w, "'%s': %%s", f.Name)
+		}
 	}
 	fmt.Fprint(w, "}\", ")
 	for i, f := range t.Fields {
 		if i > 0 {
 			fmt.Fprint(w, ", ")
 		}
-		fmt.Fprint(w, f.Name)
+		fmt.Fprintf(w, "q(%s)", f.Name)
 	}
 	fmt.Fprint(w, ");\n")
 	fmt.Fprint(w, indent+"    }\n")
@@ -1574,6 +1623,7 @@ func Transpile(p *parser.Program, env *types.Env) (*Program, error) {
 	topEnv = env
 	groupItems = map[string]string{}
 	pyMathAliases = map[string]bool{}
+	structDefs = map[string]map[string]string{}
 	for _, s := range p.Statements {
 		if s.Fun != nil {
 			body, err := compileStmts(s.Fun.Body)
@@ -2298,6 +2348,13 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 				elems[i] = &StructLit{Name: name, Fields: vals, Names: st.Order}
 			}
 			extraDecls = append(extraDecls, &TypeDeclStmt{Name: name, Fields: fields})
+			if structDefs != nil {
+				sf := make(map[string]string)
+				for _, f := range fields {
+					sf[f.Name] = f.Type
+				}
+				structDefs[name] = sf
+			}
 			return &ListLit{ElemType: name, Elems: elems}, nil
 		}
 		elems := make([]Expr, len(p.List.Elems))
@@ -2336,6 +2393,13 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 				fields[i] = Param{Name: st.Order[i], Type: tname}
 			}
 			extraDecls = append(extraDecls, &TypeDeclStmt{Name: name, Fields: fields})
+			if structDefs != nil {
+				sf := make(map[string]string)
+				for _, f := range fields {
+					sf[f.Name] = f.Type
+				}
+				structDefs[name] = sf
+			}
 			return &StructLit{Name: name, Fields: vals, Names: st.Order}, nil
 		}
 		keys := make([]Expr, len(ml.Items))
@@ -2603,6 +2667,21 @@ func compileQueryExpr(q *parser.QueryExpr) (Expr, error) {
 				itemDecl[i] = Param{Name: n, Type: varTypes[n]}
 			}
 			extraDecls = append(extraDecls, &TypeDeclStmt{Name: itemName, Fields: itemDecl})
+			if structDefs != nil {
+				sf := make(map[string]string)
+				for _, p := range itemDecl {
+					sf[p.Name] = p.Type
+				}
+				structDefs[itemName] = sf
+			}
+			if topEnv != nil {
+				st := types.StructType{Fields: map[string]types.Type{}, Order: make([]string, len(itemFields))}
+				for i, p := range itemDecl {
+					st.Fields[p.Name] = typeFromName(p.Type)
+					st.Order[i] = p.Name
+				}
+				topEnv.SetStruct(itemName, st)
+			}
 		}
 
 		groupName := fmt.Sprintf("Group%d", structCount+1)
@@ -2612,6 +2691,14 @@ func compileQueryExpr(q *parser.QueryExpr) (Expr, error) {
 			{Name: "items", Type: fmt.Sprintf("java.util.List<%s>", itemName)},
 		}
 		extraDecls = append(extraDecls, &TypeDeclStmt{Name: groupName, Fields: gfields})
+		if structDefs != nil {
+			sf := map[string]string{"key": keyType, "items": fmt.Sprintf("java.util.List<%s>", itemName)}
+			structDefs[groupName] = sf
+		}
+		if topEnv != nil {
+			st := types.StructType{Fields: map[string]types.Type{"key": typeFromName(keyType), "items": types.ListType{Elem: typeFromName(itemName)}}, Order: []string{"key", "items"}}
+			topEnv.SetStruct(groupName, st)
+		}
 		groupItems[groupName] = itemName
 		var having Expr
 		if q.Group.Having != nil {
@@ -2661,6 +2748,13 @@ func compileQueryExpr(q *parser.QueryExpr) (Expr, error) {
 				vals[i] = v
 			}
 			extraDecls = append(extraDecls, &TypeDeclStmt{Name: name, Fields: fieldsDecl})
+			if structDefs != nil {
+				sf := make(map[string]string)
+				for _, f := range fieldsDecl {
+					sf[f.Name] = f.Type
+				}
+				structDefs[name] = sf
+			}
 			sel = &StructLit{Name: name, Fields: vals, Names: st.Order}
 			elemType = name
 		}
@@ -2775,6 +2869,10 @@ func Emit(prog *Program) []byte {
 		buf.WriteString("        }\n")
 		buf.WriteString("    }\n\n")
 	}
+	buf.WriteString("    static String q(Object v) {\n")
+	buf.WriteString("        if (v instanceof String) return \"'\" + v.toString() + \"'\";\n")
+	buf.WriteString("        return String.valueOf(v);\n")
+	buf.WriteString("    }\n\n")
 	for i, fn := range prog.Funcs {
 		ret := javaType(fn.Return)
 		if ret == "" {
