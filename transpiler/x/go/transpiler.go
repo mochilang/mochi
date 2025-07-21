@@ -395,7 +395,15 @@ func updateMapLitTypes(ml *MapLit, t types.Type) {
 }
 
 func (m *MapLit) emit(w io.Writer) {
-	fmt.Fprintf(w, "map[%s]%s{", m.KeyType, m.ValueType)
+	key := m.KeyType
+	if key == "" {
+		key = "string"
+	}
+	val := m.ValueType
+	if val == "" {
+		val = "any"
+	}
+	fmt.Fprintf(w, "map[%s]%s{", key, val)
 	for i := range m.Keys {
 		if i > 0 {
 			fmt.Fprint(w, ", ")
@@ -915,7 +923,7 @@ type GroupJoinQueryExpr struct {
 func (q *QueryExpr) emit(w io.Writer) {
 	fmt.Fprintf(w, "func() []%s { ", q.ElemType)
 	if q.Sort != nil {
-		fmt.Fprintf(w, "type pair struct { Key %s; Val %s }; tmp := []pair{}; ", q.SortType, q.ElemType)
+		fmt.Fprintf(w, "type pair struct { Key %s; Val %s }; pairs := []pair{}; ", q.SortType, q.ElemType)
 	} else {
 		fmt.Fprintf(w, "res := []%s{}; ", q.ElemType)
 	}
@@ -962,7 +970,7 @@ func (q *QueryExpr) emit(w io.Writer) {
 		fmt.Fprint(w, " {")
 	}
 	if q.Sort != nil {
-		fmt.Fprint(w, " tmp = append(tmp, pair{")
+		fmt.Fprint(w, " pairs = append(pairs, pair{")
 		q.Sort.emit(w)
 		fmt.Fprint(w, ", ")
 		q.Select.emit(w)
@@ -990,8 +998,8 @@ func (q *QueryExpr) emit(w io.Writer) {
 		fmt.Fprint(w, " }")
 	}
 	if q.Sort != nil {
-		fmt.Fprint(w, " ; sort.Slice(tmp, func(i,j int) bool { return tmp[i].Key < tmp[j].Key })")
-		fmt.Fprintf(w, "; res := make([]%s, len(tmp)); for i, p := range tmp { res[i] = p.Val }", q.ElemType)
+		fmt.Fprint(w, " ; sort.Slice(pairs, func(i,j int) bool { return pairs[i].Key < pairs[j].Key })")
+		fmt.Fprintf(w, "; res := make([]%s, len(pairs)); for i, p := range pairs { res[i] = p.Val }", q.ElemType)
 	}
 	if q.Skip != nil {
 		fmt.Fprint(w, "; if ")
@@ -1037,7 +1045,7 @@ func (g *GroupQueryExpr) emit(w io.Writer) {
 	fmt.Fprint(w, "}\n")
 	if g.Sort != nil {
 		fmt.Fprintf(w, "type pair struct { Key %s; Val %s }\n", g.SortType, g.ElemType)
-		fmt.Fprint(w, "tmp := []pair{}\n")
+		fmt.Fprint(w, "pairs := []pair{}\n")
 	} else {
 		fmt.Fprintf(w, "res := []%s{}\n", g.ElemType)
 	}
@@ -1048,7 +1056,7 @@ func (g *GroupQueryExpr) emit(w io.Writer) {
 		g.Having.emit(w)
 		fmt.Fprint(w, " {\n    ")
 		if g.Sort != nil {
-			fmt.Fprint(w, "tmp = append(tmp, pair{")
+			fmt.Fprint(w, "pairs = append(pairs, pair{")
 			g.Sort.emit(w)
 			fmt.Fprint(w, ", ")
 			g.Select.emit(w)
@@ -1061,7 +1069,7 @@ func (g *GroupQueryExpr) emit(w io.Writer) {
 		fmt.Fprint(w, "}\n")
 	} else {
 		if g.Sort != nil {
-			fmt.Fprint(w, "    tmp = append(tmp, pair{")
+			fmt.Fprint(w, "    pairs = append(pairs, pair{")
 			g.Sort.emit(w)
 			fmt.Fprint(w, ", ")
 			g.Select.emit(w)
@@ -1074,9 +1082,9 @@ func (g *GroupQueryExpr) emit(w io.Writer) {
 	}
 	fmt.Fprint(w, "}\n")
 	if g.Sort != nil {
-		fmt.Fprint(w, "sort.Slice(tmp, func(i,j int) bool { return tmp[i].Key < tmp[j].Key })\n")
-		fmt.Fprintf(w, "res := make([]%s, len(tmp))\n", g.ElemType)
-		fmt.Fprint(w, "for i, p := range tmp { res[i] = p.Val }\n")
+		fmt.Fprint(w, "sort.Slice(pairs, func(i,j int) bool { return pairs[i].Key < pairs[j].Key })\n")
+		fmt.Fprintf(w, "res := make([]%s, len(pairs))\n", g.ElemType)
+		fmt.Fprint(w, "for i, p := range pairs { res[i] = p.Val }\n")
 	}
 	fmt.Fprint(w, "return res }()")
 }
@@ -1152,7 +1160,7 @@ func (g *GroupJoinQueryExpr) emit(w io.Writer) {
 	fmt.Fprint(w, " }\n")
 	if g.Sort != nil {
 		fmt.Fprintf(w, "type pair struct { Key %s; Val %s }\n", g.SortType, g.ElemType)
-		fmt.Fprint(w, "tmp := []pair{}\n")
+		fmt.Fprint(w, "pairs := []pair{}\n")
 	} else {
 		fmt.Fprintf(w, "res := []%s{}\n", g.ElemType)
 	}
@@ -1163,7 +1171,7 @@ func (g *GroupJoinQueryExpr) emit(w io.Writer) {
 		g.Having.emit(w)
 		fmt.Fprint(w, " {\n    ")
 		if g.Sort != nil {
-			fmt.Fprint(w, "tmp = append(tmp, pair{")
+			fmt.Fprint(w, "pairs = append(pairs, pair{")
 			g.Sort.emit(w)
 			fmt.Fprint(w, ", ")
 			g.Select.emit(w)
@@ -1176,7 +1184,7 @@ func (g *GroupJoinQueryExpr) emit(w io.Writer) {
 		fmt.Fprint(w, "}\n")
 	} else {
 		if g.Sort != nil {
-			fmt.Fprint(w, "    tmp = append(tmp, pair{")
+			fmt.Fprint(w, "    pairs = append(pairs, pair{")
 			g.Sort.emit(w)
 			fmt.Fprint(w, ", ")
 			g.Select.emit(w)
@@ -1189,9 +1197,9 @@ func (g *GroupJoinQueryExpr) emit(w io.Writer) {
 	}
 	fmt.Fprint(w, "}\n")
 	if g.Sort != nil {
-		fmt.Fprint(w, "sort.Slice(tmp, func(i,j int) bool { return tmp[i].Key < tmp[j].Key })\n")
-		fmt.Fprintf(w, "res := make([]%s, len(tmp))\n", g.ElemType)
-		fmt.Fprint(w, "for i, p := range tmp { res[i] = p.Val }\n")
+		fmt.Fprint(w, "sort.Slice(pairs, func(i,j int) bool { return pairs[i].Key < pairs[j].Key })\n")
+		fmt.Fprintf(w, "res := make([]%s, len(pairs))\n", g.ElemType)
+		fmt.Fprint(w, "for i, p := range pairs { res[i] = p.Val }\n")
 	}
 	fmt.Fprint(w, "return res }()")
 }
@@ -1673,6 +1681,9 @@ func compileQueryExpr(q *parser.QueryExpr, env *types.Env, base string) (Expr, e
 				return nil, err
 			}
 			sortType = toGoTypeFromType(types.ExprType(q.Sort, genv))
+			if sortType == "" {
+				sortType = "any"
+			}
 			usesSort = true
 		}
 		usesPrint = true
@@ -1842,6 +1853,9 @@ func compileQueryExpr(q *parser.QueryExpr, env *types.Env, base string) (Expr, e
 				return nil, err
 			}
 			sortType = toGoTypeFromType(types.ExprType(q.Sort, genv))
+			if sortType == "" {
+				sortType = "any"
+			}
 			usesSort = true
 		}
 		return &GroupJoinQueryExpr{Var: q.Var, Src: src, Froms: froms, Joins: joins, Where: where, Key: keyExpr, GroupVar: q.Group.Name, Select: sel, Having: having, ElemType: et, ItemType: itemName, KeyType: keyGoType, Sort: sortExpr, SortType: sortType, Vars: varNames, SimpleItem: len(varNames) == 1 && len(q.Froms) == 0 && len(q.Joins) == 0}, nil
@@ -1976,6 +1990,9 @@ func compileQueryExpr(q *parser.QueryExpr, env *types.Env, base string) (Expr, e
 			return nil, err
 		}
 		sortType = toGoTypeFromType(types.ExprType(q.Sort, child))
+		if sortType == "" {
+			sortType = "any"
+		}
 		usesSort = true
 	}
 	var skipExpr Expr
@@ -2071,6 +2088,9 @@ func compileForStmt(fs *parser.ForStmt, env *types.Env) (Stmt, error) {
 		return nil, err
 	}
 	t := types.TypeOfExpr(fs.Source, env)
+	if types.IsAnyType(t) {
+		t = types.TypeOfExprBasic(fs.Source, env)
+	}
 	child := types.NewEnv(env)
 	var isMap bool
 	var keyType string
@@ -2337,14 +2357,29 @@ func compilePostfix(pf *parser.PostfixExpr, env *types.Env, base string) (Expr, 
 				expr = &IndexExpr{X: expr, Index: &StringLit{Value: f}}
 				t = tt.Value
 			case types.StructType:
-				expr = &FieldExpr{X: expr, Name: f}
+				expr = &FieldExpr{X: expr, Name: toGoFieldName(f)}
 				if ft, ok := tt.Fields[f]; ok {
 					t = ft
 				} else {
 					t = types.AnyType{}
 				}
+			case types.GroupType:
+				if f == "key" {
+					expr = &FieldExpr{X: expr, Name: "Key"}
+					t = tt.Key
+				} else if f == "items" {
+					expr = &FieldExpr{X: expr, Name: "Items"}
+					t = types.ListType{Elem: tt.Elem}
+				} else {
+					expr = &FieldExpr{X: expr, Name: toGoFieldName(f)}
+					t = types.AnyType{}
+				}
 			default:
-				expr = &FieldExpr{X: expr, Name: f}
+				if types.IsAnyType(t) {
+					expr = &IndexExpr{X: &CallExpr{Func: "_cast[map[string]any]", Args: []Expr{expr}}, Index: &StringLit{Value: f}}
+				} else {
+					expr = &FieldExpr{X: expr, Name: f}
+				}
 				t = types.AnyType{}
 			}
 		}
