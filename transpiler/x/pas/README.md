@@ -3,7 +3,7 @@
 This folder contains the experimental Pascal transpiler.
 Generated sources for the golden tests live under `tests/transpiler/x/pas`.
 
-## VM Golden Test Checklist (58/100)
+## VM Golden Test Checklist (59/100)
 - [x] append_builtin
 - [x] avg_builtin
 - [x] basic_compare
@@ -19,16 +19,16 @@ Generated sources for the golden tests live under `tests/transpiler/x/pas`.
 - [x] cross_join_triple
 - [ ] dataset_sort_take_limit
 - [x] dataset_where_filter
- - [x] exists_builtin
+- [x] exists_builtin
 - [x] for_list_collection
 - [x] for_loop
 - [ ] for_map_collection
 - [x] fun_call
- - [x] fun_expr_in_let
+- [x] fun_expr_in_let
 - [x] fun_three_args
 - [ ] go_auto
 - [x] group_by
-- [ ] group_by_conditional_sum
+- [x] group_by_conditional_sum
 - [ ] group_by_having
 - [ ] group_by_join
 - [ ] group_by_left_join
@@ -72,8 +72,8 @@ Generated sources for the golden tests live under `tests/transpiler/x/pas`.
 - [ ] outer_join
 - [ ] partial_application
 - [x] print_hello
- - [x] pure_fold
- - [x] pure_global_fold
+- [x] pure_fold
+- [x] pure_global_fold
 - [ ] python_auto
 - [ ] python_math
 - [ ] query_sum_select
@@ -93,14 +93,14 @@ Generated sources for the golden tests live under `tests/transpiler/x/pas`.
 - [x] substring_builtin
 - [x] sum_builtin
 - [x] tail_recursion
- - [x] test_block
+- [x] test_block
 - [ ] tree_sum
- - [x] two-sum
+- [x] two-sum
 - [x] typed_let
 - [x] typed_var
 - [x] unary_neg
 - [ ] update_stmt
 - [ ] user_type_literal
- - [x] values_builtin
+- [x] values_builtin
 - [x] var_assignment
 - [x] while_loop
