@@ -1,3 +1,8 @@
+## Progress (2025-07-21 18:35 +0700)
+- Added IO.inspect printing for non-primitive values
+- Generated basic_compare golden files
+- Updated README test checklist
+
 ## Progress (2025-07-21 18:21 +0700)
 - Updated golden tests after refining range `for` loops
 - VM valid golden test results updated
