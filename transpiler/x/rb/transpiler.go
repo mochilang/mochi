@@ -3432,7 +3432,20 @@ func convertQueryForLet(q *parser.QueryExpr, name string) (Expr, Stmt, error) {
 			if err != nil {
 				return nil, nil, err
 			}
-			qe.(*QueryExpr).Select = &StructNewExpr{Name: structName, Fields: fields}
+			if qe != nil {
+				if qq, ok := qe.(*QueryExpr); ok {
+					qq.Select = &StructNewExpr{Name: structName, Fields: fields}
+				}
+			}
+		}
+		if qe == nil {
+			qe, err = convertQueryExpr(q)
+			if err != nil {
+				return nil, nil, err
+			}
+			if qq, ok := qe.(*QueryExpr); ok {
+				qq.Select = &StructNewExpr{Name: structName, Fields: fields}
+			}
 		}
 		if currentEnv != nil {
 			st := types.StructType{Name: structName, Fields: fieldTypes, Order: keys}
