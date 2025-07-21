@@ -463,13 +463,13 @@ func (s *PrintStmt) emit(w io.Writer, indent int) {
 			io.WriteString(w, "([&]{ std::ostringstream ss; ss<<")
 			ex.emit(w)
 			io.WriteString(w, "; return ss.str(); }())")
-		case *ValuesExpr:
-			if currentProgram != nil {
-				currentProgram.addInclude("<sstream>")
-			}
-			io.WriteString(w, "([&]{ std::ostringstream ss; auto tmp = ")
-			ex.emit(w)
-			io.WriteString(w, "; ss<<\"[\"; for(size_t i=0;i<tmp.size();++i){ if(i>0) ss<<\", \"; ss<<tmp[i]; } ss<<\"]\"; return ss.str(); }())")
+               case *ValuesExpr:
+                       if currentProgram != nil {
+                               currentProgram.addInclude("<sstream>")
+                       }
+                       io.WriteString(w, "([&]{ std::ostringstream ss; auto tmp = ")
+                       ex.emit(w)
+                       io.WriteString(w, "; for(size_t i=0;i<tmp.size();++i){ if(i) ss<<\" \"; ss<<tmp[i]; } return ss.str(); }())")
 		default:
 			v.emit(w)
 		}
