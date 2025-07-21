@@ -265,7 +265,7 @@ func (s *VarStmt) emit(w io.Writer) error {
 	typ := inferType(s.Value)
 	nextStructHint = ""
 	localVarTypes[s.Name] = typ
-	if typ == "var" {
+	if typ == "dynamic" {
 		if _, err := io.WriteString(w, "var "+s.Name); err != nil {
 			return err
 		}
@@ -322,7 +322,7 @@ func (s *LetStmt) emit(w io.Writer) error {
 	typ := inferType(s.Value)
 	nextStructHint = ""
 	localVarTypes[s.Name] = typ
-	if typ == "var" {
+	if typ == "dynamic" {
 		if _, err := io.WriteString(w, "final "+s.Name+" = "); err != nil {
 			return err
 		}
@@ -1579,7 +1579,7 @@ func inferType(e Expr) string {
 		if t, ok := compVarTypes[ex.Name]; ok {
 			return t
 		}
-		return "var"
+		return "dynamic"
 	case *ListLit:
 		if len(ex.Elems) == 0 {
 			return "List<dynamic>"
@@ -1655,7 +1655,7 @@ func inferType(e Expr) string {
 		}
 
 		kt := inferType(ex.Entries[0].Key)
-		if kt == "var" {
+		if kt == "dynamic" {
 			if _, ok := ex.Entries[0].Key.(*Name); ok {
 				kt = "String"
 			}
@@ -1663,7 +1663,7 @@ func inferType(e Expr) string {
 		vt := inferType(ex.Entries[0].Value)
 		for _, it := range ex.Entries[1:] {
 			t := inferType(it.Key)
-			if t == "var" {
+			if t == "dynamic" {
 				if _, ok := it.Key.(*Name); ok {
 					t = "String"
 				}
@@ -1675,10 +1675,10 @@ func inferType(e Expr) string {
 				vt = "dynamic"
 			}
 		}
-		if kt == "var" {
+		if kt == "dynamic" {
 			kt = "dynamic"
 		}
-		if vt == "var" {
+		if vt == "dynamic" {
 			vt = "dynamic"
 		}
 		return "Map<" + kt + ", " + vt + ">"
@@ -1694,7 +1694,7 @@ func inferType(e Expr) string {
 			compVarTypes[v] = elem
 		}
 		et := inferType(ex.Expr)
-		if et == "var" {
+		if et == "dynamic" {
 			et = "dynamic"
 		}
 		for _, v := range ex.Vars {
@@ -1914,9 +1914,9 @@ func inferType(e Expr) string {
 		return "String"
 	default:
 		if e == nil {
-			return "var"
+			return "dynamic"
 		}
-		return "var"
+		return "dynamic"
 	}
 }
 
@@ -1929,7 +1929,7 @@ func inferReturnType(body []Stmt) string {
 			return "void"
 		}
 		t := inferType(ret.Value)
-		if t == "var" {
+		if t == "dynamic" {
 			return "dynamic"
 		}
 		return t
@@ -1968,7 +1968,7 @@ func walkTypes(s Stmt) {
 			nextStructHint = ""
 			localVarTypes[st.Name] = typ
 		} else {
-			localVarTypes[st.Name] = "var"
+			localVarTypes[st.Name] = "dynamic"
 		}
 	case *AssignStmt:
 		inferType(st.Value)
