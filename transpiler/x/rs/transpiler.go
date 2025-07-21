@@ -86,15 +86,6 @@ func (b *BoolLit) emit(w io.Writer) {
 	}
 }
 
-// BoolIntExpr converts a boolean expression to 1 or 0.
-type BoolIntExpr struct{ Expr Expr }
-
-func (b *BoolIntExpr) emit(w io.Writer) {
-	io.WriteString(w, "if ")
-	b.Expr.emit(w)
-	io.WriteString(w, " { 1 } else { 0 }")
-}
-
 // BreakStmt represents a `break` statement.
 type BreakStmt struct{}
 
@@ -1496,15 +1487,12 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 		}
 		name := p.Call.Func
 		if name == "print" {
-			for i, a := range args {
-				if inferType(a) == "bool" {
-					args[i] = &BoolIntExpr{Expr: a}
-				}
-			}
 			if len(args) == 1 {
 				fmtStr := "{}"
 				switch a := args[0].(type) {
-				case *MapLit, *ValuesExpr, *AppendExpr, *ListLit:
+				case *ValuesExpr:
+					args[0] = &JoinExpr{List: a}
+				case *MapLit, *AppendExpr, *ListLit:
 					fmtStr = "{:?}"
 				case *SliceExpr:
 					if inferType(a) != "String" {
