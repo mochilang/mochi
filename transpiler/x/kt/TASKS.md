@@ -1,3 +1,5 @@
+## VM Golden Progress (2025-07-21 16:57 +0700)
+- Regenerated Kotlin golden files and README
 
 ## VM Golden Progress (2025-07-21 16:21 +0700)
 - Added join and group-by query support without runtime helpers.
