@@ -721,6 +721,10 @@ type QueryExpr struct {
 	Froms     []queryFrom
 	Joins     []queryJoin
 	Where     Expr
+	Sort      Expr
+	SortType  string
+	Skip      Expr
+	Take      Expr
 	GroupKey  Expr
 	GroupVar  string
 	GroupType string
@@ -730,6 +734,9 @@ type QueryExpr struct {
 
 func (q *QueryExpr) emit(w io.Writer) {
 	fmt.Fprintf(w, "{ let mut _q: Vec<%s> = Vec::new(); ", q.ItemType)
+	if q.Sort != nil {
+		fmt.Fprintf(w, "let mut _tmp: Vec<(%s, %s)> = Vec::new(); ", q.SortType, q.ItemType)
+	}
 	if q.GroupVar != "" {
 		fmt.Fprintf(w, "let mut _groups: HashMap<String, %s> = HashMap::new(); ", q.GroupType)
 		io.WriteString(w, "let mut _order: Vec<String> = Vec::new(); ")
@@ -822,6 +829,20 @@ func (q *QueryExpr) emit(w io.Writer) {
 		(&NameRef{Name: q.Var}).emit(w)
 		cloneVars = nil
 		io.WriteString(w, ");")
+	} else if q.Sort != nil {
+		io.WriteString(w, " _tmp.push((")
+		q.Sort.emit(w)
+		io.WriteString(w, ", ")
+		cloneVars = map[string]bool{q.Var: q.VarByRef}
+		for _, f := range q.Froms {
+			cloneVars[f.Var] = f.ByRef
+		}
+		for _, j := range q.Joins {
+			cloneVars[j.Var] = j.ByRef
+		}
+		q.Select.emit(w)
+		cloneVars = nil
+		io.WriteString(w, "));")
 	} else {
 		io.WriteString(w, " _q.push(")
 		cloneVars = map[string]bool{q.Var: q.VarByRef}
@@ -850,6 +871,23 @@ func (q *QueryExpr) emit(w io.Writer) {
 		fmt.Fprintf(w, " for ks in _order { let %s = &_groups[&ks]; _q.push(", q.GroupVar)
 		q.Select.emit(w)
 		io.WriteString(w, "); }")
+	}
+	if q.Sort != nil {
+		io.WriteString(w, " _tmp.sort_by(|a,b| a.0.partial_cmp(&b.0).unwrap()); for (_,v) in _tmp { _q.push(v); }")
+	}
+	if q.Skip != nil {
+		io.WriteString(w, " if (")
+		q.Skip.emit(w)
+		io.WriteString(w, " as usize) < _q.len() { _q = _q[(")
+		q.Skip.emit(w)
+		io.WriteString(w, " as usize)..].to_vec(); } else { _q = Vec::new(); }")
+	}
+	if q.Take != nil {
+		io.WriteString(w, " if (")
+		q.Take.emit(w)
+		io.WriteString(w, " as usize) < _q.len() { _q = _q[..(")
+		q.Take.emit(w)
+		io.WriteString(w, " as usize)].to_vec(); }")
 	}
 	io.WriteString(w, " _q }")
 }
@@ -1700,9 +1738,6 @@ func compileMatchExpr(me *parser.MatchExpr) (Expr, error) {
 }
 
 func compileQueryExpr(q *parser.QueryExpr) (Expr, error) {
-	if q.Sort != nil || q.Skip != nil || q.Take != nil {
-		return nil, fmt.Errorf("unsupported query")
-	}
 	src, err := compileExpr(q.Source)
 	if nr, ok := src.(*NameRef); ok && groupVars[nr.Name] {
 		src = &FieldExpr{Receiver: src, Name: "items"}
@@ -1793,6 +1828,36 @@ func compileQueryExpr(q *parser.QueryExpr) (Expr, error) {
 		where = w
 	}
 
+	var sortExpr Expr
+	sortType := ""
+	if q.Sort != nil {
+		se, err := compileExprWithEnv(q.Sort, child)
+		if err != nil {
+			return nil, err
+		}
+		sortExpr = se
+		sortType = inferType(se)
+		if sortType == "" {
+			sortType = "i64"
+		}
+	}
+	var skipExpr Expr
+	if q.Skip != nil {
+		se, err := compileExprWithEnv(q.Skip, child)
+		if err != nil {
+			return nil, err
+		}
+		skipExpr = se
+	}
+	var takeExpr Expr
+	if q.Take != nil {
+		te, err := compileExprWithEnv(q.Take, child)
+		if err != nil {
+			return nil, err
+		}
+		takeExpr = te
+	}
+
 	var groupKey Expr
 	groupVar := ""
 	groupType := ""
@@ -1842,7 +1907,7 @@ func compileQueryExpr(q *parser.QueryExpr) (Expr, error) {
 			itemType = t
 		}
 	}
-	return &QueryExpr{Var: q.Var, Src: src, VarByRef: varByRef, Froms: froms, Joins: joins, Where: where, GroupKey: groupKey, GroupVar: groupVar, GroupType: groupType, Select: sel, ItemType: itemType}, nil
+	return &QueryExpr{Var: q.Var, Src: src, VarByRef: varByRef, Froms: froms, Joins: joins, Where: where, Sort: sortExpr, SortType: sortType, Skip: skipExpr, Take: takeExpr, GroupKey: groupKey, GroupVar: groupVar, GroupType: groupType, Select: sel, ItemType: itemType}, nil
 }
 
 func compileExprWithEnv(e *parser.Expr, env *types.Env) (Expr, error) {

@@ -1,3 +1,15 @@
+## Progress (2025-07-21 12:01 +0700)
+- Generated Rust for 74/100 programs
+- Added support for sort/skip/take queries
+- Updated README checklist and outputs
+
+## Progress (2025-07-21 12:01 +0700)
+- Updated README checklist and outputs
+
+## Progress (2025-07-21 12:01 +0700)
+- Generated Rust for 73/100 programs
+- Updated README checklist and outputs
+
 ## Progress (2025-07-21 11:50 +0700)
 - Generated Rust for 81/100 programs
 - Updated README checklist and outputs
