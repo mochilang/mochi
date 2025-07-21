@@ -1,12 +1,11 @@
 run: exit status 1
 
-/workspace/mochi/tests/transpiler/x/hs/values_builtin.hs:19:52: error:
+/workspace/mochi/tests/transpiler/x/hs/values_builtin.hs:19:22: error:
     • Couldn't match expected type ‘Map.Map k0 a0’
                   with actual type ‘GenType1’
     • In the first argument of ‘Map.elems’, namely ‘m’
-      In the second argument of ‘map’, namely ‘(Map.elems m)’
-      In the second argument of ‘intercalate’, namely
-        ‘(map show (Map.elems m))’
+      In the first argument of ‘print’, namely ‘(Map.elems m)’
+      In a stmt of a 'do' block: print (Map.elems m)
    |
-19 |     putStrLn (intercalate " " (map show (Map.elems m)))
-   |                                                    ^
+19 |     print (Map.elems m)
+   |                      ^

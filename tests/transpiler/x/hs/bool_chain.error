@@ -1,0 +1,21 @@
+run: exit status 1
+
+/workspace/mochi/tests/transpiler/x/hs/bool_chain.hs:13:34: error:
+    • Couldn't match expected type ‘Bool’ with actual type ‘IO Bool’
+    • In the second argument of ‘(&&)’, namely ‘boom’
+      In the second argument of ‘(&&)’, namely ‘(2 > 3) && boom’
+      In the first argument of ‘print’, namely
+        ‘((1 < 2) && (2 > 3) && boom)’
+   |
+13 |     print ((1 < 2) && (2 > 3) && boom)
+   |                                  ^^^^
+
+/workspace/mochi/tests/transpiler/x/hs/bool_chain.hs:14:45: error:
+    • Couldn't match expected type ‘Bool’ with actual type ‘IO Bool’
+    • In the second argument of ‘(&&)’, namely ‘boom’
+      In the second argument of ‘(&&)’, namely ‘(3 > 4) && boom’
+      In the second argument of ‘(&&)’, namely
+        ‘(2 < 3) && (3 > 4) && boom’
+   |
+14 |     print ((1 < 2) && (2 < 3) && (3 > 4) && boom)
+   |                                             ^^^^

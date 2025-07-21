@@ -1,0 +1,34 @@
+run: exit status 1
+
+/workspace/mochi/tests/transpiler/x/hs/dataset_sort_take_limit.hs:21:9: error:
+    • Couldn't match type ‘[]’ with ‘IO’
+      Expected: IO Char
+        Actual: [Char]
+    • In a stmt of a 'do' block:
+        putStrLn show item.name
+          ++ " " ++ "costs $" ++ " " ++ show item.price
+      In the expression:
+        do putStrLn show item.name
+             ++ " " ++ "costs $" ++ " " ++ show item.price
+      In the first argument of ‘mapM_’, namely
+        ‘(\ item
+            -> do putStrLn show item.name
+                    ++ " " ++ "costs $" ++ " " ++ show item.price)’
+   |
+21 |         putStrLn show item.name ++ " " ++ "costs $" ++ " " ++ show item.price
+   |         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+/workspace/mochi/tests/transpiler/x/hs/dataset_sort_take_limit.hs:21:18: error:
+    • Couldn't match type: a0 -> String
+                     with: [Char]
+      Expected: String
+        Actual: a0 -> String
+    • Probable cause: ‘show’ is applied to too few arguments
+      In the first argument of ‘putStrLn’, namely ‘show’
+      In the first argument of ‘(++)’, namely ‘putStrLn show item.name’
+      In a stmt of a 'do' block:
+        putStrLn show item.name
+          ++ " " ++ "costs $" ++ " " ++ show item.price
+   |
+21 |         putStrLn show item.name ++ " " ++ "costs $" ++ " " ++ show item.price
+   |                  ^^^^

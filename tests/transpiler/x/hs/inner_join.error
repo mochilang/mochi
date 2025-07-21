@@ -27,3 +27,56 @@ run: exit status 1
    |
 30 | result = [GenType3 {orderId = o.id, customerName = c.name, total = o.total} | o <- orders, c <- customers, o.customerId == c.id]
    |                                                                    ^^^^^^^
+
+/workspace/mochi/tests/transpiler/x/hs/inner_join.hs:36:9: error:
+    • Couldn't match type ‘[]’ with ‘IO’
+      Expected: IO Char
+        Actual: [Char]
+    • In a stmt of a 'do' block:
+        putStrLn "Order"
+          ++
+            " "
+              ++
+                show entry.orderId
+                  ++
+                    " "
+                      ++
+                        "by"
+                          ++
+                            " "
+                              ++
+                                show entry.customerName ++ " " ++ "- $" ++ " " ++ show entry.total
+      In the expression:
+        do putStrLn "Order"
+             ++
+               " "
+                 ++
+                   show entry.orderId
+                     ++
+                       " "
+                         ++
+                           "by"
+                             ++
+                               " "
+                                 ++
+                                   show entry.customerName
+                                     ++ " " ++ "- $" ++ " " ++ show entry.total
+      In the first argument of ‘mapM_’, namely
+        ‘(\ entry
+            -> do putStrLn "Order"
+                    ++
+                      " "
+                        ++
+                          show entry.orderId
+                            ++
+                              " "
+                                ++
+                                  "by"
+                                    ++
+                                      " "
+                                        ++
+                                          show entry.customerName
+                                            ++ " " ++ "- $" ++ " " ++ show entry.total)’
+   |
+36 |         putStrLn "Order" ++ " " ++ show entry.orderId ++ " " ++ "by" ++ " " ++ show entry.customerName ++ " " ++ "- $" ++ " " ++ show entry.total
+   |         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^

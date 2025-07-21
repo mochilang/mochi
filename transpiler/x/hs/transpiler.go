@@ -210,50 +210,15 @@ type IndexExpr struct {
 }
 
 func (p *PrintStmt) emit(w io.Writer) {
-	if p.String {
-		io.WriteString(w, "putStrLn (")
-		p.Expr.emit(w)
-		io.WriteString(w, ")")
-		return
-	}
+        if p.String {
+                io.WriteString(w, "putStrLn ")
+                p.Expr.emit(w)
+                return
+        }
 
-	if isListExpr(p.Expr) {
-		needDataList = true
-		if isMapElemsExpr(p.Expr) {
-			io.WriteString(w, "putStrLn (intercalate \" \" (map show (")
-			p.Expr.emit(w)
-			io.WriteString(w, ")))")
-		} else {
-			io.WriteString(w, "putStrLn (\"[\" ++ intercalate \", \" (map show (")
-			p.Expr.emit(w)
-			io.WriteString(w, ")) ++ \"]\")")
-		}
-		return
-	}
-
-	if isBoolExpr(p.Expr) {
-		io.WriteString(w, "putStrLn (")
-		switch p.Expr.(type) {
-		case *BoolLit, *NameRef:
-			io.WriteString(w, "if ")
-			p.Expr.emit(w)
-			io.WriteString(w, " then \"true\" else \"false\"")
-		default:
-			io.WriteString(w, "if ")
-			p.Expr.emit(w)
-			io.WriteString(w, " then \"1\" else \"0\"")
-		}
-		io.WriteString(w, ")")
-		return
-	}
-
-	if _, ok := p.Expr.(*StringLit); ok {
-		io.WriteString(w, "putStrLn (")
-	} else {
-		io.WriteString(w, "print (")
-	}
-	p.Expr.emit(w)
-	io.WriteString(w, ")")
+        io.WriteString(w, "print (")
+        p.Expr.emit(w)
+        io.WriteString(w, ")")
 }
 
 func (l *LetStmt) emit(w io.Writer) {
@@ -564,16 +529,18 @@ func isBoolExpr(e Expr) bool {
 }
 
 func isListExpr(e Expr) bool {
-	switch ex := e.(type) {
-	case *ListLit:
-		return true
-	case *NameRef:
-		return varTypes[ex.Name] == "list"
-	case *BinaryExpr:
-		if len(ex.Ops) > 0 {
-			switch ex.Ops[0].Op {
-			case "++", "union", "except", "intersect":
-				return true
+        switch ex := e.(type) {
+        case *ListLit:
+                return true
+        case *NameRef:
+                return varTypes[ex.Name] == "list"
+        case *ComprExpr:
+                return true
+        case *BinaryExpr:
+                if len(ex.Ops) > 0 {
+                        switch ex.Ops[0].Op {
+                        case "++", "union", "except", "intersect":
+                                return true
 			}
 		}
 	case *CallExpr:
