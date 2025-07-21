@@ -2,7 +2,8 @@
 
 This directory contains a minimal transpiler that converts a very small subset of Mochi into Elixir source code. The generated files live in `tests/transpiler/x/ex`.
 
-## VM Golden Test Checklist (85/100)
+## VM Golden Test Checklist (86/100)
+_Last updated: 2025-07-21 14:07 +0000_
 - [x] append_builtin
 - [x] avg_builtin
 - [x] basic_compare
@@ -102,4 +103,4 @@ This directory contains a minimal transpiler that converts a very small subset o
 - [x] user_type_literal
 - [x] values_builtin
 - [x] var_assignment
-- [ ] while_loop
+- [x] while_loop
