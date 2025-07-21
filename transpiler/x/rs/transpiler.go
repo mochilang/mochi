@@ -28,6 +28,8 @@ var structForList map[*parser.ListLiteral]string
 var curEnv *types.Env
 var structTypes map[string]types.StructType
 
+func VarTypes() map[string]string { return varTypes }
+
 // Program represents a Rust program consisting of a list of statements.
 type Program struct {
 	Stmts       []Stmt
@@ -467,6 +469,17 @@ func (s *SubstringExpr) emit(w io.Writer) {
 type StringCastExpr struct{ Expr Expr }
 
 func (s *StringCastExpr) emit(w io.Writer) {
+	if inferType(s.Expr) == "String" {
+		if _, ok := s.Expr.(*StringLit); ok {
+			io.WriteString(w, "String::from(")
+			s.Expr.emit(w)
+			io.WriteString(w, ")")
+			return
+		}
+		s.Expr.emit(w)
+		io.WriteString(w, ".clone()")
+		return
+	}
 	io.WriteString(w, "String::from(")
 	s.Expr.emit(w)
 	io.WriteString(w, ")")
@@ -663,12 +676,20 @@ type queryFrom struct {
 	ByRef bool
 }
 
+type queryJoin struct {
+	Var   string
+	Src   Expr
+	On    Expr
+	ByRef bool
+}
+
 // QueryExpr represents a simple from/select query expression.
 type QueryExpr struct {
 	Var      string
 	Src      Expr
 	VarByRef bool
 	Froms    []queryFrom
+	Joins    []queryJoin
 	Where    Expr
 	Select   Expr
 	ItemType string
@@ -694,6 +715,19 @@ func (q *QueryExpr) emit(w io.Writer) {
 		f.Src.emit(w)
 		io.WriteString(w, " {")
 	}
+	for _, j := range q.Joins {
+		io.WriteString(w, " for ")
+		io.WriteString(w, j.Var)
+		io.WriteString(w, " in ")
+		if j.ByRef {
+			io.WriteString(w, "&")
+		}
+		j.Src.emit(w)
+		io.WriteString(w, " {")
+		io.WriteString(w, " if ")
+		j.On.emit(w)
+		io.WriteString(w, " {")
+	}
 	if q.Where != nil {
 		io.WriteString(w, " if ")
 		q.Where.emit(w)
@@ -703,6 +737,10 @@ func (q *QueryExpr) emit(w io.Writer) {
 	q.Select.emit(w)
 	io.WriteString(w, ");")
 	if q.Where != nil {
+		io.WriteString(w, " }")
+	}
+	for range q.Joins {
+		io.WriteString(w, " }")
 		io.WriteString(w, " }")
 	}
 	for range q.Froms {
@@ -786,6 +824,7 @@ func compileStmt(stmt *parser.Statement) (Stmt, error) {
 			if ll := listLiteral(stmt.Let.Value); ll != nil {
 				if st, ok := types.InferStructFromList(ll, curEnv); ok {
 					name := types.UniqueStructName(strings.Title(stmt.Let.Name)+"Item", curEnv, nil)
+					st.Name = name
 					curEnv.SetStruct(name, st)
 					fields := make([]Param, len(st.Order))
 					for i, n := range st.Order {
@@ -794,6 +833,8 @@ func compileStmt(stmt *parser.Statement) (Stmt, error) {
 					typeDecls = append(typeDecls, &StructDecl{Name: name, Fields: fields})
 					structTypes[name] = st
 					structForList[ll] = name
+					curEnv.SetStruct(name, st)
+					curEnv.SetVar(stmt.Let.Name, types.ListType{Elem: st}, true)
 					for _, el := range ll.Elems {
 						if ml := mapLiteralExpr(el); ml != nil {
 							structForMap[ml] = name
@@ -866,6 +907,9 @@ func compileStmt(stmt *parser.Statement) (Stmt, error) {
 					typeDecls = append(typeDecls, &StructDecl{Name: name, Fields: fields})
 					structTypes[name] = st
 					structForList[ll] = name
+					st.Name = name
+					curEnv.SetStruct(name, st)
+					curEnv.SetVar(stmt.Var.Name, types.ListType{Elem: st}, true)
 					for _, el := range ll.Elems {
 						if ml := mapLiteralExpr(el); ml != nil {
 							structForMap[ml] = name
@@ -1550,7 +1594,7 @@ func compileMatchExpr(me *parser.MatchExpr) (Expr, error) {
 }
 
 func compileQueryExpr(q *parser.QueryExpr) (Expr, error) {
-	if q.Group != nil || q.Sort != nil || q.Skip != nil || q.Take != nil || len(q.Joins) > 0 {
+	if q.Group != nil || q.Sort != nil || q.Skip != nil || q.Take != nil {
 		return nil, fmt.Errorf("unsupported query")
 	}
 	src, err := compileExpr(q.Source)
@@ -1594,6 +1638,33 @@ func compileQueryExpr(q *parser.QueryExpr) (Expr, error) {
 		}
 		froms[i] = queryFrom{Var: f.Var, Src: fe, ByRef: byRef}
 	}
+	joins := make([]queryJoin, len(q.Joins))
+	for i, j := range q.Joins {
+		if j.Side != nil {
+			return nil, fmt.Errorf("join side not supported")
+		}
+		je, err := compileExprWithEnv(j.Src, child)
+		if err != nil {
+			return nil, err
+		}
+		jt := types.ExprType(j.Src, child)
+		var jelem types.Type = types.AnyType{}
+		if lt, ok := jt.(types.ListType); ok {
+			jelem = lt.Elem
+		}
+		child.SetVar(j.Var, jelem, true)
+		varTypes[j.Var] = rustTypeFromType(jelem)
+		byRef := false
+		et := rustTypeFromType(jelem)
+		if et != "i64" && et != "bool" && et != "" {
+			byRef = true
+		}
+		on, err := compileExprWithEnv(j.On, child)
+		if err != nil {
+			return nil, err
+		}
+		joins[i] = queryJoin{Var: j.Var, Src: je, On: on, ByRef: byRef}
+	}
 	var where Expr
 	if q.Where != nil {
 		w, err := compileExprWithEnv(q.Where, child)
@@ -1607,6 +1678,7 @@ func compileQueryExpr(q *parser.QueryExpr) (Expr, error) {
 	if ml != nil {
 		if st, ok := types.InferStructFromMapEnv(ml, child); ok {
 			name := types.UniqueStructName("QueryItem", curEnv, nil)
+			st.Name = name
 			curEnv.SetStruct(name, st)
 			fields := make([]Param, len(st.Order))
 			for i, n := range st.Order {
@@ -1627,7 +1699,7 @@ func compileQueryExpr(q *parser.QueryExpr) (Expr, error) {
 			itemType = t
 		}
 	}
-	return &QueryExpr{Var: q.Var, Src: src, VarByRef: varByRef, Froms: froms, Where: where, Select: sel, ItemType: itemType}, nil
+	return &QueryExpr{Var: q.Var, Src: src, VarByRef: varByRef, Froms: froms, Joins: joins, Where: where, Select: sel, ItemType: itemType}, nil
 }
 
 func compileExprWithEnv(e *parser.Expr, env *types.Env) (Expr, error) {
@@ -1778,6 +1850,12 @@ func inferType(e Expr) string {
 			return "bool"
 		}
 	case *FieldExpr:
+		rt := inferType(ex.Receiver)
+		if st, ok := structTypes[rt]; ok {
+			if ft, okf := st.Fields[ex.Name]; okf {
+				return rustTypeFromType(ft)
+			}
+		}
 		return inferType(ex.Receiver)
 	case *FunLit:
 		return ""
