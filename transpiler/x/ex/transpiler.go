@@ -15,6 +15,7 @@ import (
 )
 
 var funcDepth int
+var needsJSON bool
 
 // Program represents a sequence of Elixir statements.
 type Program struct {
@@ -854,13 +855,14 @@ func (c *CastExpr) emit(w io.Writer) {
 func Emit(p *Program) []byte {
 	var buf bytes.Buffer
 	buf.WriteString(header())
-	hasFunc := false
+	funcsExist := false
 	for _, st := range p.Stmts {
 		if _, ok := st.(*FuncDecl); ok {
-			hasFunc = true
+			funcsExist = true
 			break
 		}
 	}
+	hasFunc := funcsExist || needsJSON
 	if hasFunc {
 		buf.WriteString("defmodule Main do\n")
 		var globals []Stmt
@@ -873,7 +875,7 @@ func Emit(p *Program) []byte {
 				funcs = append(funcs, st)
 				continue
 			}
-			if !foundFunc {
+			if funcsExist && !foundFunc {
 				globals = append(globals, st)
 			} else {
 				main = append(main, st)
@@ -890,6 +892,16 @@ func Emit(p *Program) []byte {
 		for _, st := range funcs {
 			st.emit(&buf, 1)
 			buf.WriteString("\n")
+		}
+		if needsJSON {
+			buf.WriteString("  defp json_encode(v) when is_list(v) do\n")
+			buf.WriteString("    \"[\" <> Enum.map_join(v, \", \", &json_encode/1) <> \"]\"\n")
+			buf.WriteString("  end\n")
+			buf.WriteString("  defp json_encode(v) when is_map(v) do\n")
+			buf.WriteString("    \"{\" <> Enum.map_join(v, \", \", fn {k, val} -> \"\\\"\" <> to_string(k) <> \"\\\": \" <> json_encode(val) end) <> \"}\"\n")
+			buf.WriteString("  end\n")
+			buf.WriteString("  defp json_encode(v) when is_binary(v), do: inspect(v)\n")
+			buf.WriteString("  defp json_encode(v), do: to_string(v)\n")
 		}
 		buf.WriteString("  def main() do\n")
 		for _, st := range main {
@@ -1940,7 +1952,8 @@ func compilePrimary(p *parser.Primary, env *types.Env) (Expr, error) {
 			}
 		case "json":
 			if len(args) == 1 {
-				enc := &CallExpr{Func: "Jason.encode!", Args: []Expr{args[0]}}
+				needsJSON = true
+				enc := &CallExpr{Func: "json_encode", Args: []Expr{args[0]}}
 				return &CallExpr{Func: "IO.puts", Args: []Expr{enc}}, nil
 			}
 		}
