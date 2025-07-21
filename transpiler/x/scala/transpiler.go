@@ -575,14 +575,14 @@ func (q *QueryExpr) emit(w io.Writer) {
 	if q.Where != nil {
 		fmt.Fprint(w, " }")
 	}
-	for range q.Froms {
-		fmt.Fprint(w, " }")
-	}
-	if q.Sort != nil {
-		fmt.Fprint(w, " }; var _res = _tmp.sortBy(_._1).map(_._2)")
-	} else {
-		fmt.Fprint(w, " }; var _res = _res")
-	}
+        for range q.Froms {
+                fmt.Fprint(w, " }")
+        }
+        if q.Sort != nil {
+                fmt.Fprint(w, " }; var _res = _tmp.sortBy(_._1).map(_._2)")
+        } else {
+                fmt.Fprint(w, " }")
+        }
 	if q.Distinct {
 		fmt.Fprint(w, ".distinct")
 	}
@@ -1059,11 +1059,14 @@ func convertPrimary(p *parser.Primary, env *types.Env) (Expr, error) {
 			entries[i] = MapEntry{Key: k, Value: v}
 		}
 		return &MapLit{Items: entries}, nil
-	case p.Query != nil:
-		if rj, err := convertRightJoinQuery(p.Query, env); err == nil {
-			return rj, nil
-		}
-		return convertQueryExpr(p.Query, env)
+        case p.Query != nil:
+                if rj, err := convertRightJoinQuery(p.Query, env); err == nil {
+                        return rj, nil
+                }
+                if ij, err := convertInnerJoinQuery(p.Query, env); err == nil {
+                        return ij, nil
+                }
+                return convertQueryExpr(p.Query, env)
 	case p.Struct != nil:
 		return convertStructLiteral(p.Struct, env)
 	case p.If != nil:
@@ -1301,6 +1304,73 @@ func convertRightJoinQuery(q *parser.QueryExpr, env *types.Env) (Expr, error) {
 		elemTypeStr = "Any"
 	}
 	return &RightJoinExpr{LeftVar: q.Var, LeftSrc: leftSrc, RightVar: j.Var, RightSrc: rightSrc, Cond: cond, Select: sel, ElemType: elemTypeStr}, nil
+}
+
+func convertInnerJoinQuery(q *parser.QueryExpr, env *types.Env) (Expr, error) {
+        if q == nil || len(q.Joins) != 1 || q.Group != nil || q.Sort != nil || q.Skip != nil || q.Take != nil || len(q.Froms) > 0 {
+                return nil, fmt.Errorf("unsupported query")
+        }
+        j := q.Joins[0]
+        if j.Side != nil {
+                return nil, fmt.Errorf("unsupported query")
+        }
+        src, err := convertExpr(q.Source, env)
+        if err != nil {
+                return nil, err
+        }
+        joinSrc, err := convertExpr(j.Src, env)
+        if err != nil {
+                return nil, err
+        }
+        srcType := types.ExprType(q.Source, env)
+        var elemT types.Type = types.AnyType{}
+        if lt, ok := srcType.(types.ListType); ok {
+                elemT = lt.Elem
+        }
+        child := types.NewEnv(env)
+        child.SetVar(q.Var, elemT, true)
+        jt := types.ExprType(j.Src, env)
+        var jelem types.Type = types.AnyType{}
+        if lt, ok := jt.(types.ListType); ok {
+                jelem = lt.Elem
+        }
+        child.SetVar(j.Var, jelem, true)
+        cond, err := convertExpr(j.On, child)
+        if err != nil {
+                return nil, err
+        }
+        if ml := mapLiteral(q.Select); ml != nil {
+                if st, ok := types.InferStructFromMapEnv(ml, child); ok {
+                        name := types.UniqueStructName("QueryItem", env, nil)
+                        st.Name = name
+                        env.SetStruct(name, st)
+                        fields := make([]Param, len(st.Order))
+                        for i, n := range st.Order {
+                                fields[i] = Param{Name: n, Type: toScalaTypeFromType(st.Fields[n])}
+                        }
+                        typeDecls = append(typeDecls, &TypeDeclStmt{Name: name, Fields: fields})
+                        sl := &parser.StructLiteral{Name: name}
+                        for _, n := range st.Order {
+                                for _, it := range ml.Items {
+                                        if key, _ := types.SimpleStringKey(it.Key); key == n {
+                                                sl.Fields = append(sl.Fields, &parser.StructLitField{Name: n, Value: it.Value})
+                                                break
+                                        }
+                                }
+                        }
+                        q.Select = &parser.Expr{Binary: &parser.BinaryExpr{Left: &parser.Unary{Value: &parser.PostfixExpr{Target: &parser.Primary{Struct: sl}}}}}
+                }
+        }
+        sel, err := convertExpr(q.Select, child)
+        if err != nil {
+                return nil, err
+        }
+        elemTypeStr := toScalaTypeFromType(types.ExprType(q.Select, child))
+        if elemTypeStr == "" {
+                elemTypeStr = "Any"
+        }
+        froms := []queryFrom{{Var: j.Var, Src: joinSrc}}
+        return &QueryExpr{Var: q.Var, Src: src, Froms: froms, Where: cond, Select: sel, Distinct: q.Distinct, ElemType: elemTypeStr}, nil
 }
 
 func convertQueryExpr(q *parser.QueryExpr, env *types.Env) (Expr, error) {
