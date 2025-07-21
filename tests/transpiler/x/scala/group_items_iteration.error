@@ -1,0 +1,11 @@
+exit status 1
+/workspace/mochi/tests/transpiler/x/scala/group_items_iteration.scala:5: error: identifier expected but ':' found.
+    case class Item(tag: String, val: Int)
+                                    ^
+/workspace/mochi/tests/transpiler/x/scala/group_items_iteration.scala:12: error: Missing closing brace `}' assumed here
+    total = total + x.val
+    ^
+/workspace/mochi/tests/transpiler/x/scala/group_items_iteration.scala:18: error: ':' expected but '}' found.
+  }
+  ^
+three errors found

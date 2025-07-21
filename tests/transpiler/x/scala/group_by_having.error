@@ -1,0 +1,14 @@
+exit status 1
+/workspace/mochi/tests/transpiler/x/scala/group_by_having.scala:7: error: ';' expected but 'for' found.
+    val big: ArrayBuffer[Map[String,Any]] = ({ var _groups = Map[Any, Map[String, Any]]() ; var _res = ArrayBuffer[Map[String,Any]]() ; for (p <- people) { val _key = p.city ; val _g = _groups.getOrElseUpdate(_key, Map("key" -> _key, "items" -> ArrayBuffer[Any]())) ; _g("items").asInstanceOf[ArrayBuffer[Any]].append(p) for (g <- _groups.values) { if (g("items").size >= 4) { _res.append(Map("city" -> g("key"), "num" -> g("items").size)) } } ; _res })
+                                                                                                                                                                                                                                                                                                                                 ^
+/workspace/mochi/tests/transpiler/x/scala/group_by_having.scala:7: error: ';' expected but ')' found.
+    val big: ArrayBuffer[Map[String,Any]] = ({ var _groups = Map[Any, Map[String, Any]]() ; var _res = ArrayBuffer[Map[String,Any]]() ; for (p <- people) { val _key = p.city ; val _g = _groups.getOrElseUpdate(_key, Map("key" -> _key, "items" -> ArrayBuffer[Any]())) ; _g("items").asInstanceOf[ArrayBuffer[Any]].append(p) for (g <- _groups.values) { if (g("items").size >= 4) { _res.append(Map("city" -> g("key"), "num" -> g("items").size)) } } ; _res })
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                    ^
+/workspace/mochi/tests/transpiler/x/scala/group_by_having.scala:8: error: Missing closing brace `}' assumed here
+    json(big)
+    ^
+/workspace/mochi/tests/transpiler/x/scala/group_by_having.scala:9: error: ')' expected but '}' found.
+  }
+  ^
+four errors found

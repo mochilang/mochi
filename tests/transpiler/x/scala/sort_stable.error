@@ -1,0 +1,5 @@
+exit status 1
+/workspace/mochi/tests/transpiler/x/scala/sort_stable.scala:7: error: No implicit Ordering defined for Any.
+    val result: ArrayBuffer[Any] = ({ var _tmp = ArrayBuffer[(Any,Any)]() ; for (i <- items) { _tmp.append((i.n, i.v)) }; var _res = _tmp.sortBy(_._1).map(_._2); _res })
+                                                                                                                                                ^
+one error found
