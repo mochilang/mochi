@@ -60,9 +60,10 @@ type ForRangeStmt struct {
 
 // ForEachStmt represents iteration over a collection.
 type ForEachStmt struct {
-	Name string
-	Expr Expr
-	Body []Stmt
+	Name    string
+	Expr    Expr
+	Body    []Stmt
+	CastMap bool
 }
 
 type BreakStmt struct{}
@@ -229,7 +230,7 @@ type NameExpr struct {
 
 func (n *NameExpr) emit(w io.Writer) {
 	if n.AsItems {
-		fmt.Fprintf(w, "%s[\"items\"] as! [Any]", n.Name)
+		fmt.Fprintf(w, "%s[\"items\"] as! [[String: Any]]", n.Name)
 	} else {
 		fmt.Fprint(w, n.Name)
 	}
@@ -284,8 +285,11 @@ type queryJoin struct {
 type GroupByExpr struct {
 	Var    string
 	Source Expr
+	Froms  []queryFrom
+	Joins  []queryJoin
 	Key    Expr
 	Name   string
+	Sort   Expr
 	Where  Expr
 	Select Expr
 	Having Expr
@@ -383,6 +387,22 @@ func (g *GroupByExpr) emit(w io.Writer) {
 	fmt.Fprintf(w, "for %s in ", g.Var)
 	g.Source.emit(w)
 	fmt.Fprint(w, " {\n")
+	for _, f := range g.Froms {
+		fmt.Fprintf(w, "for %s in ", f.Var)
+		f.Src.emit(w)
+		fmt.Fprint(w, " {\n")
+	}
+	for _, j := range g.Joins {
+		fmt.Fprintf(w, "for %s in ", j.Var)
+		j.Src.emit(w)
+		fmt.Fprint(w, " {\nif ")
+		if j.On != nil {
+			j.On.emit(w)
+		} else {
+			fmt.Fprint(w, "true")
+		}
+		fmt.Fprint(w, " {\n")
+	}
 	if g.Where != nil {
 		fmt.Fprint(w, "if ")
 		g.Where.emit(w)
@@ -391,13 +411,40 @@ func (g *GroupByExpr) emit(w io.Writer) {
 	fmt.Fprint(w, "let _key = ")
 	g.Key.emit(w)
 	fmt.Fprint(w, "\nlet _ks = String(describing: _key)\nvar _g = _groups[_ks] ?? [\"key\": _key, \"items\": []]\n")
-	fmt.Fprintf(w, "_g[\"items\"] = (_g[\"items\"] as! [Any]) + [%s]\n", g.Var)
+	fmt.Fprint(w, "var _item: [String: Any] = [\"__join__\": true]\n")
+	fmt.Fprintf(w, "_item[\"%s\"] = %s\n", g.Var, g.Var)
+	for _, f := range g.Froms {
+		fmt.Fprintf(w, "_item[\"%s\"] = %s\n", f.Var, f.Var)
+	}
+	for _, j := range g.Joins {
+		fmt.Fprintf(w, "_item[\"%s\"] = %s\n", j.Var, j.Var)
+	}
+	fmt.Fprint(w, "_g[\"items\"] = (_g[\"items\"] as! [Any]) + [_item]\n")
 	fmt.Fprint(w, "_groups[_ks] = _g\n")
 	if g.Where != nil {
 		fmt.Fprint(w, "}\n")
 	}
+	for range g.Joins {
+		fmt.Fprint(w, "}\n")
+		fmt.Fprint(w, "}\n")
+	}
+	for range g.Froms {
+		fmt.Fprint(w, "}\n")
+	}
 	fmt.Fprint(w, "}\n")
-	fmt.Fprintf(w, "for %s in _groups.values {\n", g.Name)
+	fmt.Fprint(w, "var _list = Array(_groups.values)\n")
+	if g.Sort != nil {
+		fmt.Fprint(w, "_list.sort { a, b in\n")
+		fmt.Fprintf(w, "let %s = a\n", g.Name)
+		fmt.Fprint(w, "let _ka = ")
+		g.Sort.emit(w)
+		fmt.Fprint(w, "\n")
+		fmt.Fprintf(w, "let %s = b\n", g.Name)
+		fmt.Fprint(w, "let _kb = ")
+		g.Sort.emit(w)
+		fmt.Fprint(w, "\nreturn String(describing: _ka) < String(describing: _kb)\n}\n")
+	}
+	fmt.Fprintf(w, "for %s in _list {\n", g.Name)
 	if g.Having != nil {
 		fmt.Fprint(w, "if ")
 		g.Having.emit(w)
@@ -661,9 +708,16 @@ func (fr *ForRangeStmt) emit(w io.Writer) {
 }
 
 func (fe *ForEachStmt) emit(w io.Writer) {
-	fmt.Fprintf(w, "for %s in ", fe.Name)
-	fe.Expr.emit(w)
-	fmt.Fprint(w, " {\n")
+	if fe.CastMap {
+		fmt.Fprint(w, "for _item in ")
+		fe.Expr.emit(w)
+		fmt.Fprint(w, " {\n")
+		fmt.Fprintf(w, "let %s = _item as! [String: Any]\n", fe.Name)
+	} else {
+		fmt.Fprintf(w, "for %s in ", fe.Name)
+		fe.Expr.emit(w)
+		fmt.Fprint(w, " {\n")
+	}
 	for _, st := range fe.Body {
 		st.emit(w)
 	}
@@ -963,7 +1017,15 @@ func convertForStmt(env *types.Env, fs *parser.ForStmt) (Stmt, error) {
 	if err != nil {
 		return nil, err
 	}
-	return &ForEachStmt{Name: fs.Name, Expr: expr, Body: body}, nil
+	castMap := false
+	if env != nil {
+		if t := types.TypeOfExpr(fs.Source, env); t != nil {
+			if _, ok := t.(types.GroupType); ok {
+				castMap = true
+			}
+		}
+	}
+	return &ForEachStmt{Name: fs.Name, Expr: expr, Body: body, CastMap: castMap}, nil
 }
 
 func evalPrintArg(arg *parser.Expr) (val string, isString bool, ok bool) {
@@ -1451,7 +1513,7 @@ func convertLeftJoinQuery(env *types.Env, q *parser.QueryExpr) (Expr, error) {
 }
 
 func convertGroupQuery(env *types.Env, q *parser.QueryExpr) (Expr, error) {
-	if q.Group == nil || len(q.Froms) != 0 || len(q.Joins) != 0 || q.Sort != nil || q.Skip != nil || q.Take != nil || q.Distinct {
+	if q.Group == nil || q.Skip != nil || q.Take != nil || q.Distinct {
 		return nil, fmt.Errorf("unsupported query")
 	}
 	src, err := convertExpr(env, q.Source)
@@ -1467,6 +1529,46 @@ func convertGroupQuery(env *types.Env, q *parser.QueryExpr) (Expr, error) {
 		elemT = gt.Elem
 	}
 	child.SetVar(q.Var, elemT, true)
+
+	froms := make([]queryFrom, len(q.Froms))
+	for i, f := range q.Froms {
+		fe, err := convertExpr(child, f.Src)
+		if err != nil {
+			return nil, err
+		}
+		ft := types.TypeOfExpr(f.Src, child)
+		if lt, ok := ft.(types.ListType); ok {
+			ft = lt.Elem
+		} else if gt, ok := ft.(types.GroupType); ok {
+			ft = gt.Elem
+		}
+		child.SetVar(f.Var, ft, true)
+		froms[i] = queryFrom{Var: f.Var, Src: fe}
+	}
+
+	joins := make([]queryJoin, len(q.Joins))
+	for i, j := range q.Joins {
+		je, err := convertExpr(child, j.Src)
+		if err != nil {
+			return nil, err
+		}
+		jt := types.TypeOfExpr(j.Src, child)
+		if lt, ok := jt.(types.ListType); ok {
+			jt = lt.Elem
+		} else if gt, ok := jt.(types.GroupType); ok {
+			jt = gt.Elem
+		}
+		child.SetVar(j.Var, jt, true)
+		var on Expr
+		if j.On != nil {
+			on, err = convertExpr(child, j.On)
+			if err != nil {
+				return nil, err
+			}
+		}
+		joins[i] = queryJoin{Var: j.Var, Src: je, On: on}
+	}
+
 	key, err := convertExpr(child, q.Group.Exprs[0])
 	if err != nil {
 		return nil, err
@@ -1482,11 +1584,23 @@ func convertGroupQuery(env *types.Env, q *parser.QueryExpr) (Expr, error) {
 			return nil, err
 		}
 	}
+
+	if len(q.Joins) > 0 || len(q.Froms) > 0 {
+		elemT = types.MapType{Key: types.AnyType{}, Value: types.AnyType{}}
+	}
+
 	genv := types.NewEnv(env)
 	genv.SetVar(q.Group.Name, types.GroupType{Key: keyT, Elem: elemT}, true)
 	sel, err := convertExpr(genv, q.Select)
 	if err != nil {
 		return nil, err
+	}
+	var sortExpr Expr
+	if q.Sort != nil {
+		sortExpr, err = convertExpr(genv, q.Sort)
+		if err != nil {
+			return nil, err
+		}
 	}
 	var having Expr
 	if q.Group.Having != nil {
@@ -1495,7 +1609,7 @@ func convertGroupQuery(env *types.Env, q *parser.QueryExpr) (Expr, error) {
 			return nil, err
 		}
 	}
-	return &GroupByExpr{Var: q.Var, Source: src, Key: key, Name: q.Group.Name, Where: where, Select: sel, Having: having}, nil
+	return &GroupByExpr{Var: q.Var, Source: src, Froms: froms, Joins: joins, Key: key, Name: q.Group.Name, Sort: sortExpr, Where: where, Select: sel, Having: having}, nil
 }
 
 func convertPrimary(env *types.Env, pr *parser.Primary) (Expr, error) {
