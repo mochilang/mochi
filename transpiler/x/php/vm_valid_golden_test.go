@@ -154,7 +154,10 @@ func updateTasks() {
 	fmt.Fprintf(&buf, "- Generated PHP for %d/%d programs\n", compiled, total)
 	buf.WriteString("- Updated README checklist and outputs\n\n")
 	if data, err := os.ReadFile(taskFile); err == nil {
-		buf.Write(data)
+		parts := strings.Split(string(data), "\n## Progress ")
+		for i := 1; i < len(parts) && i <= 3; i++ {
+			buf.WriteString("\n## Progress " + strings.TrimSpace(parts[i]))
+		}
 	}
 	_ = os.WriteFile(taskFile, buf.Bytes(), 0o644)
 }
