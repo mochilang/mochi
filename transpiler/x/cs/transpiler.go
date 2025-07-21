@@ -2069,6 +2069,13 @@ func compileQueryExpr(q *parser.QueryExpr) (Expr, error) {
 			return nil, err
 		}
 		fmt.Fprintf(builder, " from %s in %s", f.Var, exprString(s))
+		vt := strings.TrimSuffix(typeOfExpr(s), "[]")
+		if vt != "" {
+			varTypes[f.Var] = vt
+			if strings.HasPrefix(vt, "Dictionary<") {
+				mapVars[f.Var] = true
+			}
+		}
 	}
 
 	for _, j := range q.Joins {

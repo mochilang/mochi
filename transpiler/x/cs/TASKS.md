@@ -1,5 +1,5 @@
-## Progress (2025-07-21 00:38 UTC)
-- transpiler/cs: improve struct handling (progress 85/100)
+## Progress (2025-07-21 10:52 +0700)
+- scheme transpiler: add right join and simplify loops (progress 87/100)
 
 # C# Transpiler Tasks
 
@@ -15,5 +15,3 @@
 
 ## Remaining Work
 - Support map and list mutation operations
-
-
