@@ -2,7 +2,7 @@
 
 This folder contains an experimental transpiler that converts Mochi source code into F#.
 
-## Golden Test Checklist (63/100)
+## Golden Test Checklist (64/100)
 
 The list below tracks Mochi programs under `tests/vm/valid` that should successfully transpile. Checked items indicate tests known to work.
 
@@ -29,7 +29,7 @@ The list below tracks Mochi programs under `tests/vm/valid` that should successf
 - [x] fun_expr_in_let.mochi
 - [x] fun_three_args.mochi
 - [ ] go_auto.mochi
-- [ ] group_by.mochi
+- [x] group_by.mochi
 - [ ] group_by_conditional_sum.mochi
 - [ ] group_by_having.mochi
 - [ ] group_by_join.mochi
