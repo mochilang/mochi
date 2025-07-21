@@ -21,6 +21,7 @@ type Program struct {
 	Vars    []VarDecl
 	Stmts   []Stmt
 	NeedTmp bool
+	NeedStr bool
 }
 
 var constVars map[string]interface{}
@@ -29,6 +30,9 @@ func (p *Program) addStmt(s Stmt) {
 	p.Stmts = append(p.Stmts, s)
 	if stmtNeedsTmp(s) {
 		p.NeedTmp = true
+	}
+	if needsStr(s) {
+		p.NeedStr = true
 	}
 }
 
@@ -72,6 +76,43 @@ func stmtNeedsTmp(s Stmt) bool {
 	case *ForRangeStmt:
 		for _, b := range st.Body {
 			if stmtNeedsTmp(b) {
+				return true
+			}
+		}
+	}
+	return false
+}
+
+func needsStr(s Stmt) bool {
+	switch st := s.(type) {
+	case *DisplayStmt:
+		if st.IsString {
+			return false
+		}
+		if st.Temp {
+			return true
+		}
+		return !isDirectNumber(st.Expr)
+	case *IfStmt:
+		for _, t := range st.Then {
+			if needsStr(t) {
+				return true
+			}
+		}
+		for _, e := range st.Else {
+			if needsStr(e) {
+				return true
+			}
+		}
+	case *WhileStmt:
+		for _, b := range st.Body {
+			if needsStr(b) {
+				return true
+			}
+		}
+	case *ForRangeStmt:
+		for _, b := range st.Body {
+			if needsStr(b) {
 				return true
 			}
 		}
@@ -453,9 +494,16 @@ func (d *DisplayStmt) emit(w io.Writer) {
 			return
 		}
 	}
-	io.WriteString(w, "COMPUTE TMP = ")
-	d.Expr.emitExpr(w)
-	io.WriteString(w, "\n    DISPLAY TMP")
+	if d.Temp {
+		io.WriteString(w, "COMPUTE TMP = ")
+		d.Expr.emitExpr(w)
+		io.WriteString(w, "\n    MOVE TMP TO TMP-STR")
+	} else {
+		io.WriteString(w, "MOVE ")
+		d.Expr.emitExpr(w)
+		io.WriteString(w, " TO TMP-STR")
+	}
+	io.WriteString(w, "\n    DISPLAY FUNCTION TRIM(TMP-STR)")
 }
 
 func (a *AssignStmt) emit(w io.Writer) {
@@ -538,7 +586,7 @@ func Emit(p *Program) []byte {
 	buf.WriteString(">>SOURCE FORMAT FREE\n")
 	buf.WriteString("IDENTIFICATION DIVISION.\n")
 	buf.WriteString("PROGRAM-ID. MAIN.\n")
-	if len(p.Vars) > 0 || p.NeedTmp {
+	if len(p.Vars) > 0 || p.NeedTmp || p.NeedStr {
 		buf.WriteString("\nDATA DIVISION.\n")
 		buf.WriteString("WORKING-STORAGE SECTION.\n")
 		for _, v := range p.Vars {
@@ -553,6 +601,9 @@ func Emit(p *Program) []byte {
 		}
 		if p.NeedTmp {
 			buf.WriteString("01 TMP PIC S9(9) VALUE 0.\n")
+		}
+		if p.NeedStr {
+			buf.WriteString("01 TMP-STR PIC Z(18).\n")
 		}
 	}
 	buf.WriteString("\nPROCEDURE DIVISION.\n")
