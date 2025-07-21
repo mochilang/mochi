@@ -1,3 +1,7 @@
+## Progress (2025-07-21 21:58 +0700)
+- erl: support multi join group sorting (89c2d21b5)
+- Regenerated golden files - 64/100 vm valid programs passing
+
 ## Progress (2025-07-21 21:13 +0700)
 - update hs golden files (174cba038)
 - Regenerated golden files - 63/100 vm valid programs passing
