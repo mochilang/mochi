@@ -122,11 +122,14 @@ type BinaryExpr struct {
 }
 
 type QueryComp struct {
-	Vars    []string
-	Sources []Expr
-	Sides   []string
-	Body    Expr
-	Where   Expr
+	Vars     []string
+	Sources  []Expr
+	Sides    []string
+	Body     Expr
+	Where    Expr
+	GroupKey Expr
+	GroupVar string
+	Having   Expr
 }
 
 func (s *ExprStmt) emit(w io.Writer) { s.Expr.emit(w) }
@@ -171,16 +174,11 @@ func (c *CallExpr) emit(w io.Writer) {
 		}
 		return
 	case "len", "count":
-		if len(c.Args) > 0 && isMapExpr(c.Args[0]) {
-			io.WriteString(w, "(function(m)\n  local c = 0\n  for _ in pairs(m) do\n    c = c + 1\n  end\n  return c\nend)(")
+		io.WriteString(w, "(function(v)\n  if type(v) == 'table' and v.items ~= nil then\n    return #v.items\n  elseif type(v) == 'table' and (v[1] == nil) then\n    local c = 0\n    for _ in pairs(v) do c = c + 1 end\n    return c\n  else\n    return #v\n  end\nend)(")
+		if len(c.Args) > 0 {
 			c.Args[0].emit(w)
-			io.WriteString(w, ")")
-		} else {
-			io.WriteString(w, "#")
-			if len(c.Args) > 0 {
-				c.Args[0].emit(w)
-			}
 		}
+		io.WriteString(w, ")")
 	case "str":
 		io.WriteString(w, "tostring(")
 		if len(c.Args) > 0 {
@@ -230,7 +228,7 @@ func (c *CallExpr) emit(w io.Writer) {
 		}
 		io.WriteString(w, ")")
 	case "avg":
-		io.WriteString(w, "(function(lst)\n  local sum = 0\n  for _, v in ipairs(lst) do\n    sum = sum + v\n  end\n  if #lst == 0 then\n    return 0\n  end\n  return sum / #lst\nend)(")
+		io.WriteString(w, "(function(lst)\n  local sum = 0\n  for _, v in ipairs(lst) do\n    sum = sum + v\n  end\n  if #lst == 0 then\n    return 0\n  end\n  local r = sum / #lst\n  if r == math.floor(r) then return math.floor(r) end\n  return string.format('%.15f', r)\nend)(")
 		if len(c.Args) > 0 {
 			c.Args[0].emit(w)
 		}
@@ -299,8 +297,6 @@ func (a *AssignStmt) emit(w io.Writer) {
 }
 
 func (qa *QueryAssignStmt) emit(w io.Writer) {
-	io.WriteString(w, qa.Name)
-	io.WriteString(w, " = {}\n")
 	order := make([]int, len(qa.Query.Vars))
 	idx := 0
 	for i := range qa.Query.Vars {
@@ -315,6 +311,65 @@ func (qa *QueryAssignStmt) emit(w io.Writer) {
 			idx++
 		}
 	}
+	if qa.Query.GroupKey != nil {
+		io.WriteString(w, qa.Name)
+		io.WriteString(w, " = (function()\n")
+		io.WriteString(w, "  local groups = {}\n  local orderKeys = {}\n")
+		for _, i := range order {
+			v := qa.Query.Vars[i]
+			io.WriteString(w, "  for _, ")
+			io.WriteString(w, v)
+			io.WriteString(w, " in ipairs(")
+			if id, ok := qa.Query.Sources[i].(*Ident); ok && qa.Query.GroupVar != "" && id.Name == qa.Query.GroupVar {
+				io.WriteString(w, id.Name)
+				io.WriteString(w, ".items")
+			} else {
+				qa.Query.Sources[i].emit(w)
+			}
+			io.WriteString(w, ") do\n")
+		}
+		if qa.Query.Where != nil {
+			io.WriteString(w, "    if ")
+			qa.Query.Where.emit(w)
+			io.WriteString(w, " then\n")
+		}
+		io.WriteString(w, "      local key = ")
+		qa.Query.GroupKey.emit(w)
+		io.WriteString(w, "\n      local ks = tostring(key)\n      local g = groups[ks]\n      if g == nil then\n        g = {key = ")
+		qa.Query.GroupKey.emit(w)
+		io.WriteString(w, ", items = {}}\n        groups[ks] = g\n        table.insert(orderKeys, ks)\n      end\n      table.insert(g.items, ")
+		io.WriteString(w, qa.Query.Vars[0])
+		io.WriteString(w, ")\n")
+		if qa.Query.Where != nil {
+			io.WriteString(w, "    end\n")
+		}
+		for range qa.Query.Vars {
+			io.WriteString(w, "  end\n")
+		}
+		io.WriteString(w, "  local res = {}\n  for _, ks in ipairs(orderKeys) do\n    local ")
+		io.WriteString(w, qa.Query.GroupVar)
+		io.WriteString(w, " = groups[ks]\n")
+		if qa.Query.Having != nil {
+			io.WriteString(w, "    if ")
+			qa.Query.Having.emit(w)
+			io.WriteString(w, " then\n")
+		}
+		io.WriteString(w, "    table.insert(res, ")
+		if qa.Query.Body != nil {
+			qa.Query.Body.emit(w)
+		} else {
+			io.WriteString(w, "nil")
+		}
+		io.WriteString(w, ")\n")
+		if qa.Query.Having != nil {
+			io.WriteString(w, "    end\n")
+		}
+		io.WriteString(w, "  end\n  return res\nend)()\n")
+		return
+	}
+
+	io.WriteString(w, qa.Name)
+	io.WriteString(w, " = {}\n")
 	for _, i := range order {
 		v := qa.Query.Vars[i]
 		io.WriteString(w, "for _, ")
@@ -1193,11 +1248,7 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 				return nil, err
 			}
 			if id, ok := ke.(*Ident); ok {
-				if currentEnv == nil {
-					ke = &StringLit{Value: id.Name}
-				} else if _, err := currentEnv.GetVar(id.Name); err != nil {
-					ke = &StringLit{Value: id.Name}
-				}
+				ke = &StringLit{Value: id.Name}
 			}
 			ve, err := convertExpr(it.Value)
 			if err != nil {
@@ -1284,7 +1335,7 @@ func convertIfExpr(ie *parser.IfExpr) (Expr, error) {
 }
 
 func convertQueryExpr(q *parser.QueryExpr) (Expr, error) {
-	if q.Group != nil || q.Sort != nil || q.Skip != nil || q.Take != nil || q.Distinct {
+	if q.Sort != nil || q.Skip != nil || q.Take != nil || q.Distinct {
 		return nil, fmt.Errorf("unsupported query")
 	}
 	vars := []string{q.Var}
@@ -1294,11 +1345,25 @@ func convertQueryExpr(q *parser.QueryExpr) (Expr, error) {
 	if err != nil {
 		return nil, err
 	}
+	if id, ok := first.(*Ident); ok && currentEnv != nil {
+		if t, err := currentEnv.GetVar(id.Name); err == nil {
+			if _, ok := t.(types.GroupType); ok {
+				first = &IndexExpr{Target: first, Index: &StringLit{Value: "items"}, Kind: "map"}
+			}
+		}
+	}
 	sources = append(sources, first)
 	for _, fc := range q.Froms {
 		expr, err := convertExpr(fc.Src)
 		if err != nil {
 			return nil, err
+		}
+		if id, ok := expr.(*Ident); ok && currentEnv != nil {
+			if t, err := currentEnv.GetVar(id.Name); err == nil {
+				if _, ok := t.(types.GroupType); ok {
+					expr = &IndexExpr{Target: expr, Index: &StringLit{Value: "items"}, Kind: "map"}
+				}
+			}
 		}
 		vars = append(vars, fc.Var)
 		sources = append(sources, expr)
@@ -1310,6 +1375,13 @@ func convertQueryExpr(q *parser.QueryExpr) (Expr, error) {
 		expr, err := convertExpr(jc.Src)
 		if err != nil {
 			return nil, err
+		}
+		if id, ok := expr.(*Ident); ok && currentEnv != nil {
+			if t, err := currentEnv.GetVar(id.Name); err == nil {
+				if _, ok := t.(types.GroupType); ok {
+					expr = &IndexExpr{Target: expr, Index: &StringLit{Value: "items"}, Kind: "map"}
+				}
+			}
 		}
 		vars = append(vars, jc.Var)
 		sources = append(sources, expr)
@@ -1341,11 +1413,40 @@ func convertQueryExpr(q *parser.QueryExpr) (Expr, error) {
 		}
 	}
 
+	var groupExpr Expr
+	var groupVar string
+	var having Expr
+	if q.Group != nil {
+		if len(q.Group.Exprs) != 1 {
+			return nil, fmt.Errorf("unsupported query")
+		}
+		var err error
+		groupExpr, err = convertExpr(q.Group.Exprs[0])
+		if err != nil {
+			return nil, err
+		}
+		groupVar = q.Group.Name
+		if q.Group.Having != nil {
+			having, err = convertExpr(q.Group.Having)
+			if err != nil {
+				return nil, err
+			}
+		}
+	}
+
+	env := currentEnv
+	if groupVar != "" {
+		env = types.NewEnv(currentEnv)
+		env.SetVar(groupVar, types.GroupType{}, false)
+	}
+	prevEnv := currentEnv
+	currentEnv = env
 	body, err := convertExpr(q.Select)
 	if err != nil {
 		return nil, err
 	}
-	return &QueryComp{Vars: vars, Sources: sources, Sides: sides, Body: body, Where: where}, nil
+	currentEnv = prevEnv
+	return &QueryComp{Vars: vars, Sources: sources, Sides: sides, Body: body, Where: where, GroupKey: groupExpr, GroupVar: groupVar, Having: having}, nil
 }
 
 func convertIfStmt(is *parser.IfStmt) (Stmt, error) {
