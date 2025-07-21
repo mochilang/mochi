@@ -1,8 +1,0 @@
-exit status 1
-/tmp/TestSwiftTranspiler_VMValid_Golden3486495249/013/main.swift:5:22: error: cannot convert value of type 'Any' to expected argument type 'Int'
- 3 | let adults = ({ var _res: [[String: Any]] = []
- 4 | for person in people {
- 5 |     if (person["age"]! >= 18) {
-   |                      `- error: cannot convert value of type 'Any' to expected argument type 'Int'
- 6 |         _res.append(["name": person["name"]!, "age": person["age"]!, "is_senior": (person["age"]! >= 60)])
- 7 |     }

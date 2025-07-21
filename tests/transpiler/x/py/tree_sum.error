@@ -1,8 +1,0 @@
-run: exit status 1
-Traceback (most recent call last):
-  File "/workspace/mochi/tests/transpiler/x/py/tree_sum.py", line 6, in <module>
-    class Node:
-  File "/workspace/mochi/tests/transpiler/x/py/tree_sum.py", line 7, in Node
-    left: Tree
-          ^^^^
-NameError: name 'Tree' is not defined. Did you mean: 'True'?

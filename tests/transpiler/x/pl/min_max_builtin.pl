@@ -1,7 +1,0 @@
-:- style_check(-singleton).
-:- initialization(main).
-
-main :-
-    Nums = [3, 1, 4],
-    min_list(Nums, R1), writeln(R1),
-    max_list(Nums, R2), writeln(R2).

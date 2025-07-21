@@ -1,2 +1,0 @@
-exit status 1
-lua: /workspace/mochi/tests/transpiler/x/lua/list_set_ops.lua:2: ')' expected near 'union'

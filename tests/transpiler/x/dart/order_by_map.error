@@ -1,4 +1,0 @@
-run: exit status 254
-../../../tests/transpiler/x/dart/order_by_map.dart:10:80: Error: Method not found: 'S1'.
-  final List<Data> sorted = (List.of([for (var x in data) x])..sort(((a, b) => S1(a: a.a, b: a.b).compareTo({"a": b.a, "b": b.b}))));
-                                                                               ^^

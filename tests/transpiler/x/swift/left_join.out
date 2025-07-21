@@ -1,3 +1,0 @@
---- Left Join ---
-Order 100 customer ["name": "Alice", "id": 1] total 250
-Order 101 customer nil total 80

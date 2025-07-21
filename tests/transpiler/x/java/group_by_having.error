@@ -1,7 +1,0 @@
-exit status 1
-Main.java:33: error: cannot find symbol
-        json(big);
-        ^
-  symbol:   method json(List<Result4>)
-  location: class Main
-1 error

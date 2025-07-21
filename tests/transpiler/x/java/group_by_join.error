@@ -1,8 +1,0 @@
-exit status 1
-Main.java:25: error: <identifier> expected
-         c;
-          ^
-Main.java:26: error: <identifier> expected
-        Item3(Data2 o,  c) {
-                         ^
-2 errors

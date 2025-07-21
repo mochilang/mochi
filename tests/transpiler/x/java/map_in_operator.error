@@ -1,9 +1,0 @@
-exit status 1
-Main.java:2: error: incompatible types: int cannot be converted to String
-    static java.util.Map m = new java.util.LinkedHashMap<String, String>() {{ put(1, "a"); put(2, "b"); }};
-                                                                                  ^
-Main.java:2: error: incompatible types: int cannot be converted to String
-    static java.util.Map m = new java.util.LinkedHashMap<String, String>() {{ put(1, "a"); put(2, "b"); }};
-                                                                                               ^
-Note: Some messages have been simplified; recompile with -Xdiags:verbose to get full output
-2 errors

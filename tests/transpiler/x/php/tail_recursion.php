@@ -1,9 +1,0 @@
-<?php
-$sum_rec = function($n, $acc) {
-  if ($n == 0) {
-  return $acc;
-}
-  return sum_rec($n - 1, $acc + $n);
-};
-echo $sum_rec(10, 0), PHP_EOL;
-?>

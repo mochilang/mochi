@@ -1,7 +1,0 @@
-run: exit status 255
-
-Fatal error: Uncaught TypeError: strlen(): Argument #1 ($string) must be of type string, array given in /workspace/mochi/tests/transpiler/x/php/two-sum.php:3
-Stack trace:
-#0 /workspace/mochi/tests/transpiler/x/php/two-sum.php(13): {closure:/workspace/mochi/tests/transpiler/x/php/two-sum.php:2}(Array, 9)
-#1 {main}
-  thrown in /workspace/mochi/tests/transpiler/x/php/two-sum.php on line 3

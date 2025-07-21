@@ -1,4 +1,0 @@
-compile: exit status 1
-/workspace/mochi/tests/transpiler/x/cpp/fun_expr_in_let.cpp:6:16: error: non-local lambda expression cannot have a capture-default
-    6 | auto square = [=](int x) { return (x * x); };
-      |                ^

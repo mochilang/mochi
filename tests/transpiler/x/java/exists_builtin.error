@@ -1,7 +1,0 @@
-exit status 1
-Main.java:3: error: cannot find symbol
-    static boolean flag = exists(new java.util.ArrayList<Integer>() {{ for (var x : data) { if (x == 1) { add(x); } }}});
-                          ^
-  symbol:   method exists(<anonymous ArrayList<Integer>>)
-  location: class Main
-1 error

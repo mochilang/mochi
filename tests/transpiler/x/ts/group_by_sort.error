@@ -1,7 +1,0 @@
-run: exit status 1
-[0m[1m[31merror[0m: Uncaught (in promise) ReferenceError: g is not defined
-  for (const x of g) {
-[0m[31m                  ^[0m
-    at [0m[36mfile:///workspace/mochi/tests/transpiler/x/ts/group_by_sort.ts[0m:[0m[33m11[0m:[0m[33m19[0m
-    at [0m[36mfile:///workspace/mochi/tests/transpiler/x/ts/group_by_sort.ts[0m:[0m[33m16[0m:[0m[33m2[0m
-    at [0m[36mfile:///workspace/mochi/tests/transpiler/x/ts/group_by_sort.ts[0m:[0m[33m28[0m:[0m[33m2[0m
