@@ -1,3 +1,35 @@
+## Progress (2025-07-21 07:31 +0700)
+- clj: support simple right join
+- Regenerated golden files - 82/100 vm valid programs passing
+
+## Progress (2025-07-21 07:22 +0700)
+- update clj tasks
+- Regenerated golden files - 82/100 vm valid programs passing
+
+## Progress (2025-07-21 07:22 +0700)
+- update clj tasks
+- Regenerated golden files - 81/100 vm valid programs passing
+
+## Progress (2025-07-21 07:22 +0700)
+- update clj tasks
+- Regenerated golden files - 81/100 vm valid programs passing
+
+## Progress (2025-07-21 07:22 +0700)
+- update clj tasks
+- Regenerated golden files - 81/100 vm valid programs passing
+
+## Progress (2025-07-21 07:22 +0700)
+- update clj tasks
+- Regenerated golden files - 81/100 vm valid programs passing
+
+## Progress (2025-07-21 07:22 +0700)
+- update clj tasks
+- Regenerated golden files - 81/100 vm valid programs passing
+
+## Progress (2025-07-21 07:22 +0700)
+- update clj tasks
+- Regenerated golden files - 81/100 vm valid programs passing
+
 ## Progress (2025-07-21 07:20 +0700)
 - clj transpiler: support aggregate select
 - Regenerated golden files - 81/100 vm valid programs passing
