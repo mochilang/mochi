@@ -99,6 +99,17 @@ func updateReadme() {
 	outDir := filepath.Join(root, "tests", "transpiler", "x", "zig")
 	readmePath := filepath.Join(root, "transpiler", "x", "zig", "README.md")
 	files, _ := filepath.Glob(filepath.Join(srcDir, "*.mochi"))
+	out, err := exec.Command("git", "log", "-1", "--format=%cI").Output()
+	ts := ""
+	if err == nil {
+		if t, perr := time.Parse(time.RFC3339, strings.TrimSpace(string(out))); perr == nil {
+			if loc, lerr := time.LoadLocation("Asia/Bangkok"); lerr == nil {
+				ts = t.In(loc).Format("2006-01-02 15:04 -0700")
+			} else {
+				ts = t.Format("2006-01-02 15:04 MST")
+			}
+		}
+	}
 	total := len(files)
 	compiled := 0
 	var lines []string
@@ -114,6 +125,9 @@ func updateReadme() {
 	var buf bytes.Buffer
 	buf.WriteString("# Zig Transpiler\n\n")
 	buf.WriteString("Generated Zig code for the Mochi VM valid tests lives under `tests/transpiler/x/zig`.\n\n")
+	if ts != "" {
+		fmt.Fprintf(&buf, "Last updated: %s\n\n", ts)
+	}
 	fmt.Fprintf(&buf, "## VM Golden Test Checklist (%d/%d)\n", compiled, total)
 	buf.WriteString(strings.Join(lines, "\n"))
 	buf.WriteString("\n")

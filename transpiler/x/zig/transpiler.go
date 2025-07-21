@@ -842,14 +842,14 @@ func (b *BinaryExpr) emit(w io.Writer) {
 
 func (l *ListLit) emit(w io.Writer) {
 	if l.ElemType != "" {
-		fmt.Fprintf(w, "[_]%s{", l.ElemType)
+		fmt.Fprintf(w, "[%d]%s{", len(l.Elems), l.ElemType)
 	} else if len(l.Elems) > 0 {
 		if _, ok := l.Elems[0].(*ListLit); ok {
 			if sub, ok := l.Elems[0].(*ListLit); ok {
-				fmt.Fprintf(w, "[_][%d]i64{", len(sub.Elems))
+				fmt.Fprintf(w, "[%d][%d]i64{", len(l.Elems), len(sub.Elems))
 			}
 		} else {
-			io.WriteString(w, "[_]i64{")
+			fmt.Fprintf(w, "[%d]i64{", len(l.Elems))
 		}
 	} else {
 		io.WriteString(w, "[_]i64{")
@@ -2021,7 +2021,8 @@ func compileStmt(s *parser.Statement, prog *parser.Program) (Stmt, error) {
 		vd := &VarDecl{Name: s.Let.Name, Value: expr}
 		if lst, ok := expr.(*ListLit); ok {
 			if inferListStruct(s.Let.Name, lst) != "" {
-				vd.Type = "[_]" + lst.ElemType
+				vd.Type = fmt.Sprintf("[%d]%s", len(lst.Elems), lst.ElemType)
+				varTypes[s.Let.Name] = "[]" + lst.ElemType
 			}
 		}
 		if ml, ok := expr.(*MapLit); ok {
@@ -2033,7 +2034,7 @@ func compileStmt(s *parser.Statement, prog *parser.Program) (Stmt, error) {
 		if qc, ok := expr.(*QueryComp); ok {
 			vd.Type = "[]" + qc.ElemType
 		}
-		if vd.Type != "" {
+		if vd.Type != "" && varTypes[s.Let.Name] == "" {
 			varTypes[s.Let.Name] = vd.Type
 		}
 		return vd, nil
@@ -2051,7 +2052,8 @@ func compileStmt(s *parser.Statement, prog *parser.Program) (Stmt, error) {
 		vd := &VarDecl{Name: s.Var.Name, Value: expr, Mutable: true}
 		if lst, ok := expr.(*ListLit); ok {
 			if inferListStruct(s.Var.Name, lst) != "" {
-				vd.Type = "[_]" + lst.ElemType
+				vd.Type = fmt.Sprintf("[%d]%s", len(lst.Elems), lst.ElemType)
+				varTypes[s.Var.Name] = "[]" + lst.ElemType
 			}
 		}
 		if ml, ok := expr.(*MapLit); ok {
@@ -2063,7 +2065,7 @@ func compileStmt(s *parser.Statement, prog *parser.Program) (Stmt, error) {
 		if qc, ok := expr.(*QueryComp); ok {
 			vd.Type = "[]" + qc.ElemType
 		}
-		if vd.Type != "" {
+		if vd.Type != "" && varTypes[s.Var.Name] == "" {
 			varTypes[s.Var.Name] = vd.Type
 		}
 		return vd, nil
