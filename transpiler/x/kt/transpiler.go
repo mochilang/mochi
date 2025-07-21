@@ -237,8 +237,9 @@ func (b *BoolLit) emit(w io.Writer) {
 
 // IndexExpr represents a[i].
 type IndexExpr struct {
-	Target Expr
-	Index  Expr
+        Target Expr
+        Index  Expr
+       Type   string
 }
 
 func (ix *IndexExpr) emit(w io.Writer) {
@@ -290,7 +291,11 @@ func (c *ContainsExpr) emit(w io.Writer) {
 	io.WriteString(w, ")")
 }
 
-type VarRef struct{ Name string }
+// VarRef references a variable by name with optional type information.
+type VarRef struct {
+    Name string
+    Type string
+}
 
 func (v *VarRef) emit(w io.Writer) { io.WriteString(w, v.Name) }
 
@@ -582,15 +587,29 @@ func (c *CountExpr) emit(w io.Writer) {
 type SumExpr struct{ Value Expr }
 
 func (s *SumExpr) emit(w io.Writer) {
-	s.Value.emit(w)
-	io.WriteString(w, ".sum()")
+       if guessType(s.Value) == "MutableList<Any>" {
+               io.WriteString(w, "(")
+               s.Value.emit(w)
+               io.WriteString(w, ".map{(it as Number).toDouble()})")
+               io.WriteString(w, ".sum()")
+       } else {
+               s.Value.emit(w)
+               io.WriteString(w, ".sum()")
+       }
 }
 
 type AvgExpr struct{ Value Expr }
 
 func (a *AvgExpr) emit(w io.Writer) {
-	a.Value.emit(w)
-	io.WriteString(w, ".average()")
+       if guessType(a.Value) == "MutableList<Any>" {
+               io.WriteString(w, "(")
+               a.Value.emit(w)
+               io.WriteString(w, ".map{(it as Number).toDouble()})")
+               io.WriteString(w, ".average()")
+       } else {
+               a.Value.emit(w)
+               io.WriteString(w, ".average()")
+       }
 }
 
 type LenExpr struct {
@@ -748,16 +767,17 @@ func (lc *MultiListComp) emit(w io.Writer) {
 
 // GroupQueryExpr represents a query with grouping.
 type GroupQueryExpr struct {
-	Vars      []string
-	Iters     []Expr
-	Cond      Expr
-	Key       Expr
-	Row       Expr
-	GroupVar  string
-	GroupType string
-	Select    Expr
-	Having    Expr
-	ResType   string
+        Vars      []string
+        Iters     []Expr
+        Cond      Expr
+        Key       Expr
+        Row       Expr
+       RowType   string
+        GroupVar  string
+        GroupType string
+        Select    Expr
+        Having    Expr
+        ResType   string
 }
 
 func (gq *GroupQueryExpr) emit(w io.Writer) {
@@ -767,11 +787,14 @@ func (gq *GroupQueryExpr) emit(w io.Writer) {
 	if keyType == "" {
 		keyType = "Any"
 	}
-	rowType := guessType(gq.Row)
-	if rowType == "" {
-		rowType = "Any"
-	}
-	fmt.Fprintf(w, "val _groups = mutableMapOf<%s, MutableList<%s>>()\n", keyType, rowType)
+       rowType := gq.RowType
+       if rowType == "" {
+               rowType = guessType(gq.Row)
+               if rowType == "" {
+                       rowType = "Any"
+               }
+       }
+       fmt.Fprintf(w, "val _groups = mutableMapOf<%s, MutableList<%s>>()\n", keyType, rowType)
 	for i, v := range gq.Vars {
 		indent(w, 1+i)
 		fmt.Fprintf(w, "for (%s in ", v)
@@ -785,11 +808,10 @@ func (gq *GroupQueryExpr) emit(w io.Writer) {
 		io.WriteString(w, ") {\n")
 	}
 	indent(w, 1+len(gq.Vars))
-	io.WriteString(w, "val _list = _groups.getOrPut(")
-	io.WriteString(w, "(")
-	gq.Key.emit(w)
-	io.WriteString(w, ") as Any")
-	io.WriteString(w, ") { mutableListOf() }\n")
+       io.WriteString(w, "val _list = _groups.getOrPut(")
+       gq.Key.emit(w)
+       io.WriteString(w, " as Any")
+       io.WriteString(w, ") { mutableListOf<"+rowType+">() }\n")
 	indent(w, 1+len(gq.Vars))
 	io.WriteString(w, "_list.add(")
 	gq.Row.emit(w)
@@ -1094,22 +1116,42 @@ func guessType(e Expr) string {
 			elem = "Any"
 		}
 		return "MutableList<" + elem + ">"
-	case *GroupQueryExpr:
-		elem := guessType(v.Select)
-		if elem == "" {
-			elem = "Any"
-		}
-		return "MutableList<" + elem + ">"
-	case *VarRef:
-		return "Any"
+       case *GroupQueryExpr:
+               elem := guessType(v.Select)
+               if elem == "" {
+                       elem = "Any"
+               }
+               return "MutableList<" + elem + ">"
+       case *IndexExpr:
+               if v.Type != "" {
+                       return v.Type
+               }
+               return "Any"
+       case *VarRef:
+               if v.Type != "" {
+                       return v.Type
+               }
+               return "Any"
 	case *StructLit:
 		return v.Name
 	case *ExistsExpr:
 		return "Boolean"
-	case *FuncLit:
-		return ""
-	}
-	return ""
+       case *FuncLit:
+               return ""
+       }
+       return ""
+}
+
+// newVarRef creates a VarRef with the type looked up in the environment when
+// available.
+func newVarRef(env *types.Env, name string) *VarRef {
+    typ := ""
+    if env != nil {
+        if t, err := env.GetVar(name); err == nil {
+            typ = kotlinTypeFromType(t)
+        }
+    }
+    return &VarRef{Name: name, Type: typ}
 }
 
 // Transpile converts a Mochi program to a simple Kotlin AST.
@@ -1425,7 +1467,7 @@ func convertForStmt(env *types.Env, fs *parser.ForStmt) (Stmt, error) {
 }
 
 func buildIndexTarget(env *types.Env, name string, idx []*parser.IndexOp) (Expr, error) {
-	var target Expr = &VarRef{Name: name}
+       var target Expr = newVarRef(env, name)
 	for j, op := range idx {
 		if op.Colon != nil || op.Colon2 != nil {
 			return nil, fmt.Errorf("slice assign unsupported")
@@ -1628,7 +1670,7 @@ func convertQueryExpr(env *types.Env, q *parser.QueryExpr) (Expr, error) {
 		}
 		// Items in each group should be the original row value,
 		// not the final select expression.
-		rowExpr := Expr(&VarRef{Name: q.Var})
+               rowExpr := Expr(newVarRef(child, q.Var))
 		rowTypeStr := kotlinTypeFromType(elem)
 		if rowTypeStr == "" {
 			rowTypeStr = "Any"
@@ -1648,18 +1690,19 @@ func convertQueryExpr(env *types.Env, q *parser.QueryExpr) (Expr, error) {
 			{Name: "key", Type: guessType(key)},
 			{Name: "items", Type: "MutableList<" + rowTypeStr + ">"},
 		}})
-		return &GroupQueryExpr{
-			Vars:      append([]string{q.Var}, namesFromFroms(froms)...),
-			Iters:     append([]Expr{src}, exprsFromFroms(froms)...),
-			Cond:      cond,
-			Key:       key,
-			Row:       rowExpr,
-			GroupVar:  q.Group.Name,
-			GroupType: gtype,
-			Select:    sel2,
-			Having:    having,
-			ResType:   guessType(sel2),
-		}, nil
+               return &GroupQueryExpr{
+                       Vars:      append([]string{q.Var}, namesFromFroms(froms)...),
+                       Iters:     append([]Expr{src}, exprsFromFroms(froms)...),
+                       Cond:      cond,
+                       Key:       key,
+                       Row:       rowExpr,
+                       RowType:   rowTypeStr,
+                       GroupVar:  q.Group.Name,
+                       GroupType: gtype,
+                       Select:    sel2,
+                       Having:    having,
+                       ResType:   guessType(sel2),
+               }, nil
 	}
 	return &MultiListComp{Vars: append([]string{q.Var}, namesFromFroms(froms)...), Iters: append([]Expr{src}, exprsFromFroms(froms)...), Expr: sel, Cond: cond}, nil
 }
@@ -2061,10 +2104,10 @@ func convertPrimary(env *types.Env, p *parser.Primary) (Expr, error) {
 		return &IntLit{Value: int64(*p.Lit.Int)}, nil
 	case p.Lit != nil && p.Lit.Bool != nil:
 		return &BoolLit{Value: bool(*p.Lit.Bool)}, nil
-	case p.Selector != nil && len(p.Selector.Tail) == 0:
-		return &VarRef{Name: p.Selector.Root}, nil
-	case p.Selector != nil && len(p.Selector.Tail) > 0:
-		var expr Expr = &VarRef{Name: p.Selector.Root}
+       case p.Selector != nil && len(p.Selector.Tail) == 0:
+               return newVarRef(env, p.Selector.Root), nil
+       case p.Selector != nil && len(p.Selector.Tail) > 0:
+               var expr Expr = newVarRef(env, p.Selector.Root)
 		baseIsMap := false
 		if env != nil {
 			if t, err := env.GetVar(p.Selector.Root); err == nil {
