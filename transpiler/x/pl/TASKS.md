@@ -1,3 +1,7 @@
+## Progress (2025-07-21 18:06 +0700)
+- zig transpiler: regenerate golden tests
+- 60/100 VM programs transpiled successfully
+
 ## Progress (2025-07-21 17:26 +0700)
 - VM valid golden test results updated to 98/100
 - Implemented join/group-by support and improved append builtin

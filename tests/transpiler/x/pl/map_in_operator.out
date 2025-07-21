@@ -1,0 +1,2 @@
+ERROR: /workspace/mochi/tests/transpiler/x/pl/map_in_operator.pl:2: Initialization goal raised exception:
+ERROR: get_dict/3: Type error: `dict' expected, found `{1:"a",2:"b"}' (a compound)
