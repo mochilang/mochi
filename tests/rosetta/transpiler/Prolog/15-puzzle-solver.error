@@ -1,0 +1,6 @@
+ERROR: /workspace/mochi/tests/rosetta/transpiler/Prolog/15-puzzle-solver.pl:5:31: Syntax error: Operator expected
+ERROR: /workspace/mochi/tests/rosetta/transpiler/Prolog/15-puzzle-solver.pl:1: Initialization goal raised exception:
+ERROR: catch/3: Unknown procedure: main/1
+ERROR:   However, there are definitions for:
+ERROR:         main/0
+

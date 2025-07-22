@@ -841,11 +841,20 @@ func (l *LenExpr) emit(w io.Writer) {
 }
 
 func (s *StrExpr) emit(w io.Writer) {
-	if lit, ok := s.Value.(*IntLit); ok {
-		fmt.Fprintf(w, "'%d'", lit.Value)
-		return
+	switch v := s.Value.(type) {
+	case *IntLit:
+		fmt.Fprintf(w, "\"%d\"", v.Value)
+	case *FloatLit:
+		fmt.Fprintf(w, "\"%g\"", v.Value)
+	case *BoolLit:
+		if v.Value {
+			io.WriteString(w, "\"true\"")
+		} else {
+			io.WriteString(w, "\"false\"")
+		}
+	default:
+		s.Value.emit(w)
 	}
-	s.Value.emit(w)
 }
 
 func (c *CountExpr) emit(w io.Writer) {
@@ -2236,6 +2245,12 @@ func toBinary(b *parser.BinaryExpr, env *compileEnv) (Expr, error) {
 				}
 			}
 		}
+		if ls, lok := left.(*StringLit); lok && opStr == "+" {
+			if rs, rok := right.(*StringLit); rok {
+				left = &StringLit{Value: ls.Value + rs.Value}
+				continue
+			}
+		}
 		if opStr == "in" {
 			if list, ok := right.(*ListLit); ok {
 				if lit, ok2 := left.(*IntLit); ok2 {
@@ -2563,6 +2578,21 @@ func toPrimary(p *parser.Primary, env *compileEnv) (Expr, error) {
 				}
 				return &LenExpr{Value: arg}, nil
 			case "str":
+				if i, ok := intValue(arg); ok {
+					return &StringLit{Value: strconv.Itoa(i)}, nil
+				}
+				if f, ok := arg.(*FloatLit); ok {
+					return &StringLit{Value: strconv.FormatFloat(f.Value, 'f', -1, 64)}, nil
+				}
+				if b, ok := arg.(*BoolLit); ok {
+					if b.Value {
+						return &StringLit{Value: "true"}, nil
+					}
+					return &StringLit{Value: "false"}, nil
+				}
+				if s, ok := stringValue(arg, env); ok {
+					return &StringLit{Value: s}, nil
+				}
 				return &StrExpr{Value: arg}, nil
 			case "count":
 				if l, ok := constList(arg, env); ok {
