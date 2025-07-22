@@ -350,7 +350,22 @@ func (f *FieldExpr) emit(w io.Writer) error {
 	if err := emitExpr(w, f.Target); err != nil {
 		return err
 	}
-	if f.MapIndex {
+	useIndex := f.MapIndex
+	if useIndex && currentEnv != nil {
+		if st, ok := inferPyType(f.Target, currentEnv).(types.StructType); ok {
+			if _, ok := st.Fields[f.Name]; ok {
+				useIndex = false
+			}
+		} else {
+			for _, st := range currentEnv.Structs() {
+				if _, ok := st.Fields[f.Name]; ok {
+					useIndex = false
+					break
+				}
+			}
+		}
+	}
+	if useIndex {
 		_, err := fmt.Fprintf(w, "[%q]", f.Name)
 		return err
 	}
@@ -1293,21 +1308,21 @@ func dataClassFromDict(name string, d *DictLit, env *types.Env) (*DataClassDef, 
 }
 
 func isNumeric(t types.Type) bool {
-        switch t.(type) {
-        case types.IntType, types.Int64Type, types.FloatType, types.BigIntType, types.BigRatType:
-                return true
-        default:
-                return false
-        }
+	switch t.(type) {
+	case types.IntType, types.Int64Type, types.FloatType, types.BigIntType, types.BigRatType:
+		return true
+	default:
+		return false
+	}
 }
 
 func isIntLike(t types.Type) bool {
-        switch t.(type) {
-        case types.IntType, types.Int64Type, types.BigIntType:
-                return true
-        default:
-                return false
-        }
+	switch t.(type) {
+	case types.IntType, types.Int64Type, types.BigIntType:
+		return true
+	default:
+		return false
+	}
 }
 
 func parseScalar(s string) interface{} {
@@ -2220,6 +2235,7 @@ func Emit(w io.Writer, p *Program) error {
 		}
 	}
 	if needDC {
+		imports = append(imports, "from __future__ import annotations")
 		imports = append(imports, "from dataclasses import dataclass")
 		imports = append(imports, "from typing import List, Dict")
 	}
@@ -2490,6 +2506,9 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 					}
 					if env != nil {
 						typ = inferTypeFromExpr(st.Let.Value)
+						if _, ok := typ.(types.AnyType); ok {
+							typ = inferPyType(e, env)
+						}
 						env.SetVar(st.Let.Name, typ, false)
 					}
 					if list, ok := e.(*ListLit); ok {
@@ -2549,6 +2568,9 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 					}
 					if env != nil {
 						typ = inferTypeFromExpr(st.Var.Value)
+						if _, ok := typ.(types.AnyType); ok {
+							typ = inferPyType(e, env)
+						}
 						env.SetVar(st.Var.Name, typ, true)
 					}
 					if list, ok := e.(*ListLit); ok {
@@ -2608,6 +2630,8 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 			if env != nil {
 				if lt, ok := inferTypeFromExpr(st.For.Source).(types.ListType); ok {
 					env.SetVar(st.For.Name, lt.Elem, true)
+				} else if lt, ok := inferPyType(iter, env).(types.ListType); ok {
+					env.SetVar(st.For.Name, lt.Elem, true)
 				}
 			}
 			if st.For.RangeEnd != nil {
@@ -2662,6 +2686,13 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 							mapIndex = true
 						default:
 							mapIndex = false
+						}
+					} else {
+						for _, stt := range currentEnv.Structs() {
+							if _, ok := stt.Fields[st.Assign.Field[0].Name]; ok {
+								mapIndex = false
+								break
+							}
 						}
 					}
 				}
@@ -2766,7 +2797,11 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 						fields = append(fields, DataClassField{Name: m.Field.Name, Type: typ})
 					}
 				}
-				p.Stmts = append(p.Stmts, &DataClassDef{Name: st.Type.Name, Fields: fields})
+				dc := &DataClassDef{Name: st.Type.Name, Fields: fields}
+				p.Stmts = append(p.Stmts, dc)
+				if env != nil {
+					env.SetStruct(dc.Name, structFromDataClass(dc, env))
+				}
 			}
 			for _, v := range st.Type.Variants {
 				if len(v.Fields) == 0 {
@@ -2780,7 +2815,11 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 						}
 						vf = append(vf, DataClassField{Name: f.Name, Type: typ})
 					}
-					p.Stmts = append(p.Stmts, &DataClassDef{Name: v.Name, Fields: vf})
+					dc := &DataClassDef{Name: v.Name, Fields: vf}
+					p.Stmts = append(p.Stmts, dc)
+					if env != nil {
+						env.SetStruct(dc.Name, structFromDataClass(dc, env))
+					}
 				}
 			}
 			continue
@@ -2964,6 +3003,8 @@ func convertStmts(list []*parser.Statement, env *types.Env) ([]Stmt, error) {
 			}
 			if env != nil {
 				if lt, ok := inferTypeFromExpr(s.For.Source).(types.ListType); ok {
+					env.SetVar(s.For.Name, lt.Elem, true)
+				} else if lt, ok := inferPyType(iter, env).(types.ListType); ok {
 					env.SetVar(s.For.Name, lt.Elem, true)
 				}
 			}
@@ -3178,13 +3219,13 @@ func convertBinary(b *parser.BinaryExpr) (Expr, error) {
 		operands = append(operands, o)
 	}
 
-       if len(ops) == 1 && ops[0] == "/" {
-               if isSumUnary(b.Left) && isSumPostfix(b.Right[0].Right) {
-                       ops[0] = "//"
-               } else if isIntLike(inferPyType(operands[0], currentEnv)) && isIntLike(inferPyType(operands[1], currentEnv)) {
-                       ops[0] = "//"
-               }
-       }
+	if len(ops) == 1 && ops[0] == "/" {
+		if isSumUnary(b.Left) && isSumPostfix(b.Right[0].Right) {
+			ops[0] = "//"
+		} else if isIntLike(inferPyType(operands[0], currentEnv)) && isIntLike(inferPyType(operands[1], currentEnv)) {
+			ops[0] = "//"
+		}
+	}
 
 	levels := [][]string{
 		{"*", "/", "//", "%"},
@@ -3413,6 +3454,18 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 				} else {
 					outArgs[i] = a
 				}
+			}
+			if len(outArgs) > 1 {
+				var buf strings.Builder
+				buf.WriteString("print(\" \".join(str(x) for x in [")
+				for i, a := range outArgs {
+					if i > 0 {
+						buf.WriteString(", ")
+					}
+					buf.WriteString(exprString(a))
+				}
+				buf.WriteString("]).rstrip())")
+				return &RawExpr{Code: buf.String()}, nil
 			}
 			return &CallExpr{Func: &Name{Name: "print"}, Args: outArgs}, nil
 		case "append":
