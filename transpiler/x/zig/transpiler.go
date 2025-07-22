@@ -1182,6 +1182,10 @@ func (b *BinaryExpr) emit(w io.Writer) {
 
 func (l *ListLit) emit(w io.Writer) {
 	if l.ElemType != "" {
+		if len(l.Elems) == 0 {
+			fmt.Fprintf(w, "&[_]%s{}", l.ElemType)
+			return
+		}
 		fmt.Fprintf(w, "[%d]%s{", len(l.Elems), l.ElemType)
 	} else if len(l.Elems) > 0 {
 		if _, ok := l.Elems[0].(*ListLit); ok {
@@ -1192,7 +1196,8 @@ func (l *ListLit) emit(w io.Writer) {
 			fmt.Fprintf(w, "[%d]i64{", len(l.Elems))
 		}
 	} else {
-		io.WriteString(w, "[_]i64{")
+		io.WriteString(w, "&[_]i64{}")
+		return
 	}
 	for i, e := range l.Elems {
 		if i > 0 {
