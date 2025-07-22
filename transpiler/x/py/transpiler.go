@@ -2235,9 +2235,7 @@ func Emit(w io.Writer, p *Program) error {
 		}
 	}
 	if needDC {
-		imports = append(imports, "from __future__ import annotations")
 		imports = append(imports, "from dataclasses import dataclass")
-		imports = append(imports, "from typing import List, Dict")
 	}
 	sort.Strings(imports)
 	for _, line := range imports {
