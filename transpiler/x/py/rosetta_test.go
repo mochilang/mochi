@@ -4,6 +4,7 @@ package py_test
 
 import (
 	"bytes"
+	"flag"
 	"fmt"
 	"os"
 	"os/exec"
@@ -19,6 +20,10 @@ import (
 	"mochi/types"
 )
 
+var update = flag.Bool("update-rosetta-py", false, "update golden files")
+
+func updateEnabled() bool { return *update }
+
 func runRosettaCase(t *testing.T, name string) {
 	t.Helper()
 	ensurePython(t)
@@ -32,9 +37,12 @@ func runRosettaCase(t *testing.T, name string) {
 
 	want, err := os.ReadFile(outPath)
 	if err != nil {
-		t.Fatalf("read want: %v", err)
+		if !updateEnabled() {
+			t.Fatalf("read want: %v", err)
+		}
+	} else {
+		want = bytes.TrimSpace(want)
 	}
-	want = bytes.TrimSpace(want)
 
 	prog, err := parser.Parse(src)
 	if err != nil {
@@ -67,13 +75,23 @@ func runRosettaCase(t *testing.T, name string) {
 	out, err := cmd.CombinedOutput()
 	got := bytes.TrimSpace(out)
 	if err != nil {
-		_ = os.WriteFile(errPath, append([]byte("run: "+err.Error()+"\n"), out...), 0o644)
-		t.Fatalf("run: %v", err)
+		if updateEnabled() {
+			_ = os.WriteFile(errPath, append([]byte("run: "+err.Error()+"\n"), out...), 0o644)
+		} else {
+			_ = os.WriteFile(errPath, append([]byte("run: "+err.Error()+"\n"), out...), 0o644)
+			t.Fatalf("run: %v", err)
+		}
+	} else {
+		_ = os.Remove(errPath)
 	}
-	_ = os.Remove(errPath)
+
+	if updateEnabled() {
+		_ = os.WriteFile(outPath, got, 0o644)
+		return
+	}
 
 	if !bytes.Equal(got, want) {
-		t.Errorf("output mismatch for %s\n\n--- Got ---\n%s\n\n--- Want ---\n%s", name, got, want)
+		t.Errorf("output mismatch for %s\n\n--- Got ---\n%s\n\n--- Want---\n%s", name, got, want)
 	}
 }
 
