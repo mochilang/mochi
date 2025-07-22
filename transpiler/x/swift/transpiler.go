@@ -1873,11 +1873,20 @@ func convertExpr(env *types.Env, e *parser.Expr) (Expr, error) {
 				left = &CastExpr{Expr: left, Type: "String"}
 			}
 		case "+", "-", "*", "/", "%":
-			if types.IsAnyType(ltyp) {
-				left = &CastExpr{Expr: left, Type: "Double"}
-			}
-			if types.IsAnyType(rtyp) {
-				right = &CastExpr{Expr: right, Type: "Double"}
+			if op == "+" && (types.IsStringType(ltyp) || types.IsStringType(rtyp)) {
+				if types.IsAnyType(ltyp) {
+					left = &CastExpr{Expr: left, Type: "String"}
+				}
+				if types.IsAnyType(rtyp) {
+					right = &CastExpr{Expr: right, Type: "String"}
+				}
+			} else {
+				if types.IsAnyType(ltyp) {
+					left = &CastExpr{Expr: left, Type: "Double"}
+				}
+				if types.IsAnyType(rtyp) {
+					right = &CastExpr{Expr: right, Type: "Double"}
+				}
 			}
 		}
 

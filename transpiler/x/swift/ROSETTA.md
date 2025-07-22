@@ -2,56 +2,56 @@
 
 Generated Swift code for Mochi Rosetta programs in `tests/rosetta/x/Mochi`. Outputs are stored in `tests/rosetta/transpiler/Swift`. Errors are captured in `.error` files.
 
-Completed: 45/284
-Last updated: 2025-07-22 17:27 +0700
+Completed: 1/284
+Last updated: 2025-07-22 20:54 +0700
 
 Checklist:
 - [x] 100-doors-2
-- [x] 100-doors-3
-- [x] 100-doors
-- [x] 100-prisoners
-- [x] 15-puzzle-game
-- [x] 15-puzzle-solver
-- [x] 2048
-- [x] 21-game
-- [x] 24-game-solve
-- [x] 24-game
-- [x] 4-rings-or-4-squares-puzzle
-- [x] 9-billion-names-of-god-the-integer
-- [x] 99-bottles-of-beer-2
-- [x] 99-bottles-of-beer
-- [x] DNS-query
-- [x] a+b
-- [x] abbreviations-automatic
-- [x] abbreviations-easy
-- [x] abbreviations-simple
-- [x] abc-problem
-- [x] abelian-sandpile-model-identity
-- [x] abelian-sandpile-model
-- [x] abstract-type
-- [x] abundant-deficient-and-perfect-number-classifications
-- [x] abundant-odd-numbers
-- [x] accumulator-factory
-- [x] achilles-numbers
-- [x] ackermann-function-2
-- [x] ackermann-function-3
-- [x] ackermann-function
-- [x] active-directory-connect
-- [x] active-directory-search-for-a-user
-- [x] active-object
-- [x] add-a-variable-to-a-class-instance-at-runtime
-- [x] additive-primes
-- [x] address-of-a-variable
-- [x] adfgvx-cipher
-- [x] aks-test-for-primes
-- [x] algebraic-data-types
-- [x] align-columns
-- [x] aliquot-sequence-classifications
+- [ ] 100-doors-3
+- [ ] 100-doors
+- [ ] 100-prisoners
+- [ ] 15-puzzle-game
+- [ ] 15-puzzle-solver
+- [ ] 2048
+- [ ] 21-game
+- [ ] 24-game-solve
+- [ ] 24-game
+- [ ] 4-rings-or-4-squares-puzzle
+- [ ] 9-billion-names-of-god-the-integer
+- [ ] 99-bottles-of-beer-2
+- [ ] 99-bottles-of-beer
+- [ ] DNS-query
+- [ ] a+b
+- [ ] abbreviations-automatic
+- [ ] abbreviations-easy
+- [ ] abbreviations-simple
+- [ ] abc-problem
+- [ ] abelian-sandpile-model-identity
+- [ ] abelian-sandpile-model
+- [ ] abstract-type
+- [ ] abundant-deficient-and-perfect-number-classifications
+- [ ] abundant-odd-numbers
+- [ ] accumulator-factory
+- [ ] achilles-numbers
+- [ ] ackermann-function-2
+- [ ] ackermann-function-3
+- [ ] ackermann-function
+- [ ] active-directory-connect
+- [ ] active-directory-search-for-a-user
+- [ ] active-object
+- [ ] add-a-variable-to-a-class-instance-at-runtime
+- [ ] additive-primes
+- [ ] address-of-a-variable
+- [ ] adfgvx-cipher
+- [ ] aks-test-for-primes
+- [ ] algebraic-data-types
+- [ ] align-columns
+- [ ] aliquot-sequence-classifications
 - [ ] almkvist-giullera-formula-for-pi
-- [x] almost-prime
-- [x] amb
-- [x] amicable-pairs
-- [x] anagrams-deranged-anagrams
+- [ ] almost-prime
+- [ ] amb
+- [ ] amicable-pairs
+- [ ] anagrams-deranged-anagrams
 - [ ] anagrams
 - [ ] angle-difference-between-two-bearings-1
 - [ ] angle-difference-between-two-bearings-2
