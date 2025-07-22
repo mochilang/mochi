@@ -1,5 +1,5 @@
-## Progress (2025-07-22 17:46 +0700)
-- Commit fc4b1cb87: transpiler(py): support special joins
+## Progress (2025-07-22 21:17 +0700)
+- Commit 29d8646d7: lua transpiler: fix boolean not and add int builtin
 - Generated Python for 103/103 programs
 - Updated README checklist and outputs
 - Removed runtime helpers and improved boolean type inference
