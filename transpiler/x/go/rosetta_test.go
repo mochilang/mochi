@@ -3,22 +3,42 @@
 package gotranspiler_test
 
 import (
-	"bytes"
-	"flag"
-	"fmt"
-	"os"
-	"os/exec"
-	"path/filepath"
-	"sort"
-	"strconv"
-	"strings"
-	"testing"
-	"time"
+       "bufio"
+       "bytes"
+       "flag"
+       "fmt"
+       "os"
+       "os/exec"
+       "path/filepath"
+       "strconv"
+       "strings"
+       "testing"
+       "time"
 
 	"mochi/parser"
 	gotrans "mochi/transpiler/x/go"
-	"mochi/types"
+       "mochi/types"
 )
+
+func readIndex(path string) ([]string, error) {
+       f, err := os.Open(path)
+       if err != nil {
+               return nil, err
+       }
+       defer f.Close()
+       var names []string
+       scanner := bufio.NewScanner(f)
+       for scanner.Scan() {
+               parts := strings.Fields(scanner.Text())
+               if len(parts) == 2 {
+                       names = append(names, parts[1])
+               }
+       }
+       if err := scanner.Err(); err != nil {
+               return nil, err
+       }
+       return names, nil
+}
 
 func TestGoTranspiler_Rosetta_Golden(t *testing.T) {
 	if _, err := exec.LookPath("go"); err != nil {
@@ -29,14 +49,18 @@ func TestGoTranspiler_Rosetta_Golden(t *testing.T) {
 	outDir := filepath.Join(root, "tests", "rosetta", "transpiler", "Go")
 	os.MkdirAll(outDir, 0o755)
 
-	files, err := filepath.Glob(filepath.Join(srcDir, "*.mochi"))
-	if err != nil {
-		t.Fatalf("list sources: %v", err)
-	}
-	if len(files) == 0 {
-		t.Fatalf("no mochi files in %s", srcDir)
-	}
-	sort.Strings(files)
+       names, err := readIndex(filepath.Join(srcDir, "index.txt"))
+       if err != nil {
+               t.Fatalf("read index: %v", err)
+       }
+       if len(names) == 0 {
+               t.Fatalf("no mochi files in %s", srcDir)
+       }
+
+       files := make([]string, len(names))
+       for i, n := range names {
+               files[i] = filepath.Join(srcDir, n)
+       }
 
 	if idxStr := os.Getenv("MOCHI_ROSETTA_INDEX"); idxStr != "" {
 		idx, err := strconv.Atoi(idxStr)
@@ -124,17 +148,17 @@ func updateRosettaChecklist() {
 	srcDir := filepath.Join(root, "tests", "rosetta", "x", "Mochi")
 	outDir := filepath.Join(root, "tests", "rosetta", "transpiler", "Go")
 	readmePath := filepath.Join(root, "transpiler", "x", "go", "ROSETTA.md")
-	files, _ := filepath.Glob(filepath.Join(srcDir, "*.mochi"))
-	total := len(files)
-	compiled := 0
-	var lines []string
-	for i, f := range files {
-		name := strings.TrimSuffix(filepath.Base(f), ".mochi")
-		mark := "[ ]"
-		if _, err := os.Stat(filepath.Join(outDir, name+".out")); err == nil {
-			compiled++
-			mark = "[x]"
-		}
+       names, _ := readIndex(filepath.Join(srcDir, "index.txt"))
+       total := len(names)
+       compiled := 0
+       var lines []string
+       for i, f := range names {
+               name := strings.TrimSuffix(f, ".mochi")
+               mark := "[ ]"
+               if _, err := os.Stat(filepath.Join(outDir, name+".out")); err == nil {
+                       compiled++
+                       mark = "[x]"
+               }
 		lines = append(lines, fmt.Sprintf("%d. %s %s", i+1, mark, name))
 	}
 	tsRaw, _ := exec.Command("git", "log", "-1", "--format=%cI").Output()
