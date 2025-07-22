@@ -1461,12 +1461,11 @@ func compileStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 			t, _ := env.GetVar(st.Assign.Name)
 			var call *CallExpr
 			switch t.(type) {
-			case types.ListType:
-				call = &CallExpr{Func: "List.replace_at", Args: []Expr{&VarRef{Name: st.Assign.Name}, idx, val}}
 			case types.MapType:
 				call = &CallExpr{Func: "Map.put", Args: []Expr{&VarRef{Name: st.Assign.Name}, idx, val}}
 			default:
-				return nil, fmt.Errorf("unsupported indexed assignment at %d:%d", st.Pos.Line, st.Pos.Column)
+				// Assume list for unknown types
+				call = &CallExpr{Func: "List.replace_at", Args: []Expr{&VarRef{Name: st.Assign.Name}, idx, val}}
 			}
 			return &AssignStmt{Name: st.Assign.Name, Value: call}, nil
 		}
