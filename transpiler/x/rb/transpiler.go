@@ -1068,6 +1068,14 @@ type emitter struct {
 	indent int
 }
 
+func (e *emitter) name(n string) {
+	if topVars != nil && topVars[n] {
+		io.WriteString(e.w, "$"+n)
+	} else {
+		io.WriteString(e.w, n)
+	}
+}
+
 func (e *emitter) writeIndent() {
 	for i := 0; i < e.indent; i++ {
 		io.WriteString(e.w, "  ")
@@ -1143,6 +1151,7 @@ func (i *ImportStmt) emit(e *emitter) {
 		io.WriteString(e.w, "  def self.Pi; 3.14; end\n")
 		io.WriteString(e.w, "  def self.Answer; 42; end\n")
 		io.WriteString(e.w, "  def self.Add(a, b); a + b; end\n")
+		io.WriteString(e.w, "  def self.FifteenPuzzleExample; 'Solution found in 52 moves: rrrulddluuuldrurdddrullulurrrddldluurddlulurruldrdrd'; end\n")
 		io.WriteString(e.w, "end\n")
 		io.WriteString(e.w, i.Alias+" = Testpkg")
 	case "go_strings":
@@ -1204,7 +1213,7 @@ type VarStmt struct {
 }
 
 func (s *VarStmt) emit(e *emitter) {
-	io.WriteString(e.w, s.Name)
+	e.name(s.Name)
 	io.WriteString(e.w, " = ")
 	s.Value.emit(e)
 }
@@ -1216,7 +1225,7 @@ type AssignStmt struct {
 }
 
 func (s *AssignStmt) emit(e *emitter) {
-	io.WriteString(e.w, s.Name)
+	e.name(s.Name)
 	io.WriteString(e.w, " = ")
 	s.Value.emit(e)
 }
@@ -1247,7 +1256,7 @@ type UpdateStmt struct {
 }
 
 func (u *UpdateStmt) emit(e *emitter) {
-	io.WriteString(e.w, u.Target)
+	e.name(u.Target)
 	io.WriteString(e.w, ".each_with_index do |item, idx|")
 	e.nl()
 	e.indent++
@@ -1335,7 +1344,7 @@ type LetStmt struct {
 }
 
 func (s *LetStmt) emit(e *emitter) {
-	io.WriteString(e.w, s.Name)
+	e.name(s.Name)
 	io.WriteString(e.w, " = ")
 	s.Value.emit(e)
 }
@@ -1387,7 +1396,7 @@ func (b *BoolLit) emit(e *emitter) {
 
 type Ident struct{ Name string }
 
-func (id *Ident) emit(e *emitter) { io.WriteString(e.w, id.Name) }
+func (id *Ident) emit(e *emitter) { e.name(id.Name) }
 
 // WhileStmt represents a while loop.
 type WhileStmt struct {
@@ -1731,6 +1740,11 @@ func (s *SaveJSONLExpr) emit(e *emitter) {
 	e.writeIndent()
 	io.WriteString(e.w, "end)")
 }
+
+// NowExpr returns the current Unix timestamp.
+type NowExpr struct{}
+
+func (n *NowExpr) emit(e *emitter) { io.WriteString(e.w, "Time.now.to_i") }
 
 // MethodCallExpr represents calling a method on a target expression.
 type MethodCallExpr struct {
@@ -2236,6 +2250,7 @@ func toStructName(varName string) string {
 // global environment used for type inference during conversion
 var currentEnv *types.Env
 var funcDepth int
+var topVars map[string]bool
 
 // Emit writes Ruby code for program p to w.
 func Emit(w io.Writer, p *Program) error {
@@ -2260,6 +2275,7 @@ func Emit(w io.Writer, p *Program) error {
 func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	needsJSON = false
 	currentEnv = env
+	topVars = map[string]bool{}
 	rbProg := &Program{}
 	for _, st := range prog.Statements {
 		conv, err := convertStmt(st)
@@ -2379,6 +2395,11 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 				currentEnv.SetVar(st.Let.Name, types.AnyType{}, false)
 			}
 		}
+		if funcDepth == 0 {
+			if topVars != nil {
+				topVars[st.Let.Name] = true
+			}
+		}
 		return &LetStmt{Name: st.Let.Name, Value: v}, nil
 	case st.Var != nil:
 		var v Expr
@@ -2400,6 +2421,11 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 			v = &Ident{Name: "nil"}
 			if currentEnv != nil {
 				currentEnv.SetVar(st.Var.Name, types.AnyType{}, true)
+			}
+		}
+		if funcDepth == 0 {
+			if topVars != nil {
+				topVars[st.Var.Name] = true
 			}
 		}
 		return &VarStmt{Name: st.Var.Name, Value: v}, nil
@@ -2789,9 +2815,10 @@ func convertImport(im *parser.ImportStmt) (Stmt, error) {
 		if im.Auto && path == "mochi/runtime/ffi/go/testpkg" {
 			if currentEnv != nil {
 				fields := map[string]types.Type{
-					"Add":    types.FuncType{Params: []types.Type{types.IntType{}, types.IntType{}}, Return: types.IntType{}},
-					"Pi":     types.FloatType{},
-					"Answer": types.IntType{},
+					"Add":                  types.FuncType{Params: []types.Type{types.IntType{}, types.IntType{}}, Return: types.IntType{}},
+					"Pi":                   types.FloatType{},
+					"Answer":               types.IntType{},
+					"FifteenPuzzleExample": types.FuncType{Params: []types.Type{}, Return: types.StringType{}},
 				}
 				currentEnv.SetVar(alias, types.StructType{Name: "GoTestpkg", Fields: fields}, false)
 			}
@@ -3046,6 +3073,11 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 				return nil, fmt.Errorf("max takes one arg")
 			}
 			return &MethodCallExpr{Target: args[0], Method: "max"}, nil
+		case "int":
+			if len(args) != 1 {
+				return nil, fmt.Errorf("int takes one arg")
+			}
+			return &CastExpr{Value: args[0], Type: "int"}, nil
 		case "str":
 			if len(args) != 1 {
 				return nil, fmt.Errorf("str takes one arg")
@@ -3073,6 +3105,11 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 				return nil, fmt.Errorf("substring expects 3 args")
 			}
 			return &SliceExpr{Target: args[0], Start: args[1], End: args[2]}, nil
+		case "now":
+			if len(args) != 0 {
+				return nil, fmt.Errorf("now takes no args")
+			}
+			return &NowExpr{}, nil
 		case "json":
 			if len(args) != 1 {
 				return nil, fmt.Errorf("json expects 1 arg")
