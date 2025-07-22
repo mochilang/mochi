@@ -1,6 +1,6 @@
-## Progress (2025-07-22 11:38 +0700)
-- swift transpiler: support load yaml and jsonl
-- Generated golden tests for 100/102 programs
+## Progress (2025-07-22 16:48 +0700)
+- swift transpiler: add save jsonl and update stmt support
+- Generated golden tests for 103/103 programs
 - Updated README checklist and output artifacts
 
 # Swift Transpiler Tasks

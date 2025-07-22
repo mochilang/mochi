@@ -259,6 +259,58 @@ func (ia *IndexAssignStmt) emit(w io.Writer) {
 	fmt.Fprint(w, "\n")
 }
 
+// SaveStmt writes a collection of values to stdout in JSONL format.
+type SaveStmt struct {
+	Src Expr
+}
+
+func (s *SaveStmt) emit(w io.Writer) {
+	fmt.Fprint(w, "for _item in ")
+	s.Src.emit(w)
+	fmt.Fprint(w, " {\n")
+	fmt.Fprint(w, "    let obj = toJsonObj(_item)\n")
+	fmt.Fprint(w, "    if let data = try? JSONSerialization.data(withJSONObject: obj) {\n")
+	fmt.Fprint(w, "        print(String(data: data, encoding: .utf8)!)\n")
+	fmt.Fprint(w, "    }\n")
+	fmt.Fprint(w, "}\n")
+}
+
+// UpdateStmt updates elements in a list of structs in place.
+type UpdateStmt struct {
+	Target string
+	Fields []string
+	Values []Expr
+	Cond   Expr
+	Locals []string
+}
+
+func (u *UpdateStmt) emit(w io.Writer) {
+	fmt.Fprintf(w, "for i in 0..<%s.count {\n", u.Target)
+	fmt.Fprintf(w, "    var item = %s[i]\n", u.Target)
+	for _, name := range u.Locals {
+		fmt.Fprintf(w, "    var %s = item.%s\n", name, name)
+	}
+	if u.Cond != nil {
+		fmt.Fprint(w, "    if ")
+		u.Cond.emit(w)
+		fmt.Fprint(w, " {\n")
+		for i, f := range u.Fields {
+			fmt.Fprintf(w, "        item.%s = ", f)
+			u.Values[i].emit(w)
+			fmt.Fprint(w, "\n")
+		}
+		fmt.Fprint(w, "    }\n")
+	} else {
+		for i, f := range u.Fields {
+			fmt.Fprintf(w, "    item.%s = ", f)
+			u.Values[i].emit(w)
+			fmt.Fprint(w, "\n")
+		}
+	}
+	fmt.Fprintf(w, "    %s[i] = item\n", u.Target)
+	fmt.Fprint(w, "}\n")
+}
+
 // ExpectStmt represents an expectation check within a test block.
 type ExpectStmt struct{ Cond Expr }
 
@@ -1003,6 +1055,23 @@ func isAnyType(t types.Type) bool {
 func (p *Program) Emit() []byte {
 	var buf bytes.Buffer
 	buf.WriteString(header())
+	needJSON := false
+	for _, st := range p.Stmts {
+		if _, ok := st.(*SaveStmt); ok {
+			needJSON = true
+			break
+		}
+	}
+	if needJSON {
+		buf.WriteString("func toJsonObj(_ v: Any) -> Any {\n")
+		buf.WriteString("    if let m = v as? [String: Any] { return m }\n")
+		buf.WriteString("    if let a = v as? [Any] { return a }\n")
+		buf.WriteString("    var d: [String: Any] = [:]\n")
+		buf.WriteString("    for c in Mirror(reflecting: v).children {\n")
+		buf.WriteString("        if let k = c.label { d[k] = c.value }\n")
+		buf.WriteString("    }\n")
+		buf.WriteString("    return d\n}\n")
+	}
 	for _, s := range p.Stmts {
 		s.emit(&buf)
 	}
@@ -1023,12 +1092,44 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 	return p, nil
 }
 
+func findUpdatedVars(list []*parser.Statement, vars map[string]bool) {
+	for _, st := range list {
+		switch {
+		case st.Update != nil:
+			vars[st.Update.Target] = true
+		case st.If != nil:
+			findUpdatedVars(st.If.Then, vars)
+			if st.If.Else != nil {
+				findUpdatedVars(st.If.Else, vars)
+			}
+			if st.If.ElseIf != nil {
+				child := &parser.Statement{If: st.If.ElseIf}
+				findUpdatedVars([]*parser.Statement{child}, vars)
+			}
+		case st.For != nil:
+			findUpdatedVars(st.For.Body, vars)
+		case st.While != nil:
+			findUpdatedVars(st.While.Body, vars)
+		case st.Test != nil:
+			findUpdatedVars(st.Test.Body, vars)
+		case st.Fun != nil:
+			findUpdatedVars(st.Fun.Body, vars)
+		}
+	}
+}
+
 func convertStmts(env *types.Env, list []*parser.Statement) ([]Stmt, error) {
+	updated := map[string]bool{}
+	findUpdatedVars(list, updated)
 	var out []Stmt
 	for _, st := range list {
 		cs, err := convertStmt(env, st)
 		if err != nil {
 			return nil, err
+		}
+		// adjust var mutability for let statements
+		if vd, ok := cs.(*VarDecl); ok && updated[vd.Name] {
+			vd.Const = false
 		}
 		out = append(out, cs)
 	}
@@ -1045,6 +1146,9 @@ func convertStmt(env *types.Env, st *parser.Statement) (Stmt, error) {
 		return convertExternFun(st.ExternFun), nil
 	case st.Expr != nil:
 		call := st.Expr.Expr.Binary.Left.Value.Target.Call
+		if se := extractSaveExpr(st.Expr.Expr); se != nil {
+			return convertSaveStmt(env, se)
+		}
 		if call != nil && call.Func == "print" {
 			if len(call.Args) == 1 {
 				arg := call.Args[0]
@@ -1197,6 +1301,8 @@ func convertStmt(env *types.Env, st *parser.Statement) (Stmt, error) {
 		return convertWhileStmt(env, st.While)
 	case st.For != nil:
 		return convertForStmt(env, st.For)
+	case st.Update != nil:
+		return convertUpdateStmt(env, st.Update)
 	case st.Break != nil:
 		return &BreakStmt{}, nil
 	case st.Continue != nil:
@@ -1368,6 +1474,72 @@ func convertForStmt(env *types.Env, fs *parser.ForStmt) (Stmt, error) {
 		}
 	}
 	return &ForEachStmt{Name: fs.Name, Expr: expr, Body: body, CastMap: castMap, Keys: keysOnly}, nil
+}
+
+func convertSaveStmt(env *types.Env, se *parser.SaveExpr) (Stmt, error) {
+	src, err := convertExpr(env, se.Src)
+	if err != nil {
+		return nil, err
+	}
+	format := parseFormat(se.With)
+	path := ""
+	if se.Path != nil {
+		path = strings.Trim(*se.Path, "\"")
+	}
+	if format != "jsonl" || (path != "" && path != "-") {
+		return nil, fmt.Errorf("unsupported save")
+	}
+	return &SaveStmt{Src: src}, nil
+}
+
+func convertUpdateStmt(env *types.Env, us *parser.UpdateStmt) (Stmt, error) {
+	if env == nil {
+		return nil, fmt.Errorf("missing env")
+	}
+	t, err := env.GetVar(us.Target)
+	if err != nil {
+		return nil, err
+	}
+	lt, ok := t.(types.ListType)
+	if !ok {
+		return nil, fmt.Errorf("update target not list")
+	}
+	st, ok := lt.Elem.(types.StructType)
+	if !ok {
+		return nil, fmt.Errorf("update element not struct")
+	}
+	child := types.NewEnv(env)
+	child.SetVar("item", st, true)
+	for name, ft := range st.Fields {
+		child.SetVar(name, ft, true)
+	}
+	var fields []string
+	var values []Expr
+	locals := make([]string, len(st.Order))
+	copy(locals, st.Order)
+	for _, it := range us.Set.Items {
+		key, ok := isSimpleIdent(it.Key)
+		if !ok {
+			key, ok = literalString(it.Key)
+			if !ok {
+				return nil, fmt.Errorf("unsupported update key")
+			}
+		}
+		val, err := convertExpr(child, it.Value)
+		if err != nil {
+			return nil, err
+		}
+		fields = append(fields, key)
+		values = append(values, val)
+	}
+	var cond Expr
+	if us.Where != nil {
+		cond, err = convertExpr(child, us.Where)
+		if err != nil {
+			return nil, err
+		}
+	}
+	return &UpdateStmt{Target: us.Target, Fields: fields, Values: values, Cond: cond, Locals: locals}, nil
 }
 
 func convertTypeDecl(env *types.Env, td *parser.TypeDecl) (Stmt, error) {
@@ -1678,6 +1850,11 @@ func convertExpr(env *types.Env, e *parser.Expr) (Expr, error) {
 			if types.IsAnyType(ltyp) && types.IsAnyType(rtyp) {
 				left = &CastExpr{Expr: left, Type: "String"}
 				right = &CastExpr{Expr: right, Type: "String"}
+			} else if (types.IsStructType(ltyp) || types.IsStructType(rtyp)) ||
+				(types.IsListType(ltyp) && types.IsStructType(ltyp.(types.ListType).Elem)) ||
+				(types.IsListType(rtyp) && types.IsStructType(rtyp.(types.ListType).Elem)) {
+				left = &RawStmt{Code: fmt.Sprintf("String(describing: %s)", exprString(left))}
+				right = &RawStmt{Code: fmt.Sprintf("String(describing: %s)", exprString(right))}
 			} else if types.IsIntType(ltyp) && types.IsAnyType(rtyp) {
 				right = &CastExpr{Expr: right, Type: "Int"}
 			} else if types.IsIntType(rtyp) && types.IsAnyType(ltyp) {
@@ -2591,6 +2768,24 @@ func literalString(e *parser.Expr) (string, bool) {
 	return "", false
 }
 
+func isSimpleIdent(e *parser.Expr) (string, bool) {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) > 0 {
+		return "", false
+	}
+	u := e.Binary.Left
+	if len(u.Ops) > 0 || u.Value == nil {
+		return "", false
+	}
+	p := u.Value
+	if len(p.Ops) > 0 || p.Target == nil {
+		return "", false
+	}
+	if p.Target.Selector != nil && len(p.Target.Selector.Tail) == 0 {
+		return p.Target.Selector.Root, true
+	}
+	return "", false
+}
+
 func parseFormat(e *parser.Expr) string {
 	if e == nil || e.Binary == nil || len(e.Binary.Right) > 0 {
 		return ""
@@ -2609,6 +2804,21 @@ func parseFormat(e *parser.Expr) string {
 		}
 	}
 	return ""
+}
+
+func extractSaveExpr(e *parser.Expr) *parser.SaveExpr {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) > 0 {
+		return nil
+	}
+	u := e.Binary.Left
+	if len(u.Ops) > 0 || u.Value == nil {
+		return nil
+	}
+	p := u.Value
+	if len(p.Ops) > 0 || p.Target == nil {
+		return nil
+	}
+	return p.Target.Save
 }
 
 func valueToExpr(env *types.Env, v interface{}, typ *parser.TypeRef) Expr {
