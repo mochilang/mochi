@@ -731,7 +731,6 @@ func (s *SliceExpr) emit(w io.Writer) {
 		fmt.Fprint(w, ".count")
 	}
 	fmt.Fprint(w, "])")
-	fmt.Fprint(w, ")")
 }
 
 func (c *CastExpr) emit(w io.Writer) {
@@ -883,6 +882,11 @@ func (c *CallExpr) emit(w io.Writer) {
 			fmt.Fprint(w, "..<")
 			c.Args[2].emit(w)
 			fmt.Fprint(w, "])")
+			return
+		}
+	case "now":
+		if len(c.Args) == 0 {
+			fmt.Fprint(w, "Int64(Date().timeIntervalSince1970)")
 			return
 		}
 	}
@@ -1884,6 +1888,13 @@ func convertExpr(env *types.Env, e *parser.Expr) (Expr, error) {
 		case "+", "-", "*", "/", "%":
 			if types.IsStringType(ltyp) || types.IsStringType(rtyp) {
 				resType = types.StringType{}
+			} else if (types.IsIntType(ltyp) || types.IsInt64Type(ltyp)) &&
+				(types.IsIntType(rtyp) || types.IsInt64Type(rtyp)) {
+				if types.IsInt64Type(ltyp) || types.IsInt64Type(rtyp) {
+					resType = types.Int64Type{}
+				} else {
+					resType = types.IntType{}
+				}
 			} else {
 				resType = types.FloatType{}
 			}
@@ -2649,6 +2660,8 @@ func toSwiftType(t *parser.TypeRef) string {
 		return "String"
 	case "bool":
 		return "Bool"
+	case "any":
+		return "Any"
 	default:
 		return *t.Simple
 	}
@@ -2678,6 +2691,8 @@ func toSwiftOptionalType(t *parser.TypeRef) string {
 		return "String?"
 	case "bool":
 		return "Bool?"
+	case "any":
+		return "Any?"
 	default:
 		return *t.Simple + "?"
 	}
