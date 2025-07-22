@@ -308,10 +308,64 @@ type ForStmt struct {
 	End    Expr // optional, when non-nil compile as range
 	Source Expr // used when End is nil
 	Body   []Stmt
+	Vars   []string
 	Simple bool
 }
 
 func (fs *ForStmt) emit(w io.Writer, indent int) {
+	if len(fs.Vars) > 0 && fs.End != nil {
+		for i := 0; i < indent; i++ {
+			io.WriteString(w, "  ")
+		}
+		io.WriteString(w, "{")
+		for i, v := range fs.Vars {
+			if i > 0 {
+				io.WriteString(w, ", ")
+			}
+			io.WriteString(w, v)
+		}
+		io.WriteString(w, "} = Enum.reduce((")
+		fs.Start.emit(w)
+		io.WriteString(w, "..(")
+		fs.End.emit(w)
+		io.WriteString(w, " - 1)), {")
+		for i, v := range fs.Vars {
+			if i > 0 {
+				io.WriteString(w, ", ")
+			}
+			io.WriteString(w, v)
+		}
+		io.WriteString(w, "}, fn ")
+		io.WriteString(w, fs.Name)
+		io.WriteString(w, ", {")
+		for i, v := range fs.Vars {
+			if i > 0 {
+				io.WriteString(w, ", ")
+			}
+			io.WriteString(w, v)
+		}
+		io.WriteString(w, "} ->\n")
+		for _, st := range fs.Body {
+			st.emit(w, indent+1)
+			io.WriteString(w, "\n")
+		}
+		for i := 0; i < indent+1; i++ {
+			io.WriteString(w, "  ")
+		}
+		io.WriteString(w, "{")
+		for i, v := range fs.Vars {
+			if i > 0 {
+				io.WriteString(w, ", ")
+			}
+			io.WriteString(w, v)
+		}
+		io.WriteString(w, "}\n")
+		for i := 0; i < indent; i++ {
+			io.WriteString(w, "  ")
+		}
+		io.WriteString(w, "end)")
+		return
+	}
 	if fs.Simple {
 		for i := 0; i < indent; i++ {
 			io.WriteString(w, "  ")
@@ -1136,6 +1190,9 @@ func Emit(p *Program) []byte {
 			break
 		}
 	}
+	if !funcsExist {
+		globalVars = map[string]struct{}{}
+	}
 	moduleMode = true
 	buf.WriteString("defmodule Main do\n")
 	buf.WriteString(nowHelper(1))
@@ -1585,9 +1642,10 @@ func compileForStmt(fs *parser.ForStmt, env *types.Env) (Stmt, error) {
 			return nil, err
 		}
 	}
+	bodyEnv := types.NewEnv(env)
 	body := make([]Stmt, 0, len(fs.Body))
 	for _, s := range fs.Body {
-		st, err := compileStmt(s, env)
+		st, err := compileStmt(s, bodyEnv)
 		if err != nil {
 			return nil, err
 		}
@@ -1622,7 +1680,8 @@ func compileForStmt(fs *parser.ForStmt, env *types.Env) (Stmt, error) {
 		}
 	}
 	check(body)
-	res := &ForStmt{Name: fs.Name, Start: start, End: end, Source: src, Body: body, Simple: simple}
+	vars := gatherMutVars(body, env)
+	res := &ForStmt{Name: fs.Name, Start: start, End: end, Source: src, Body: body, Vars: vars, Simple: simple}
 	return res, nil
 }
 
