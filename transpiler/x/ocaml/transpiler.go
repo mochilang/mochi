@@ -275,8 +275,13 @@ type VarInfo struct {
 }
 
 func mapFieldType(typ, field string) (string, bool) {
-	if strings.HasPrefix(typ, "map{") && strings.HasSuffix(typ, "}") {
-		inner := strings.TrimSuffix(strings.TrimPrefix(typ, "map{"), "}")
+	if (strings.HasPrefix(typ, "map{") || strings.HasPrefix(typ, "map-dyn{")) && strings.HasSuffix(typ, "}") {
+		inner := strings.TrimSuffix(typ, "}")
+		if strings.HasPrefix(inner, "map-dyn{") {
+			inner = strings.TrimPrefix(inner, "map-dyn{")
+		} else {
+			inner = strings.TrimPrefix(inner, "map{")
+		}
 		parts := strings.Split(inner, ",")
 		for _, p := range parts {
 			kv := strings.SplitN(p, ":", 2)
@@ -295,7 +300,7 @@ func mapFieldType(typ, field string) (string, bool) {
 }
 
 func isDynamicMapType(typ string) bool {
-	return false
+	return strings.HasPrefix(typ, "map-dyn")
 }
 
 func ocamlType(t string) string {
@@ -309,7 +314,7 @@ func ocamlType(t string) string {
 	case "bool":
 		return "bool"
 	default:
-		return "int"
+		return "Obj.t"
 	}
 }
 
@@ -847,7 +852,8 @@ type MapEntry struct {
 }
 
 // MapLit represents a simple map literal implemented as a list of
-// key/value tuples. Only string keys and int values are currently supported.
+// key/value tuples. When Dynamic is true, values may have mixed types
+// and are boxed using Obj.repr.
 type MapLit struct {
 	Items   []MapEntry
 	Dynamic bool
@@ -2285,8 +2291,9 @@ func convertSelector(sel *parser.SelectorExpr, env *types.Env, vars map[string]V
 	typ := info.typ
 	for _, t := range sel.Tail {
 		if info.group && t == "key" {
-			expr = &Name{Ident: sel.Root + "_key", Typ: "string"}
-			typ = "string"
+			keyInfo := vars[sel.Root+"Key"]
+			expr = &Name{Ident: sel.Root + "_key", Typ: keyInfo.typ}
+			typ = keyInfo.typ
 			continue
 		}
 		key := &StringLit{Value: t}
@@ -2346,6 +2353,7 @@ func convertPrimary(p *parser.Primary, env *types.Env, vars map[string]VarInfo) 
 	case p.Map != nil:
 		items := make([]MapEntry, len(p.Map.Items))
 		fieldTypes := []string{}
+		dynamic := false
 		for i, it := range p.Map.Items {
 			k, _, err := convertExpr(it.Key, env, vars)
 			if err != nil {
@@ -2358,7 +2366,9 @@ func convertPrimary(p *parser.Primary, env *types.Env, vars map[string]VarInfo) 
 			if err != nil {
 				return nil, "", err
 			}
-			_ = vt
+			if vt != "int" {
+				dynamic = true
+			}
 			if ks, ok := k.(*StringLit); ok {
 				fieldTypes = append(fieldTypes, ks.Value+":"+vt)
 			} else {
@@ -2367,10 +2377,16 @@ func convertPrimary(p *parser.Primary, env *types.Env, vars map[string]VarInfo) 
 			items[i] = MapEntry{Key: k, Value: v}
 		}
 		typ := "map"
-		if fieldTypes != nil {
+		if dynamic {
+			if fieldTypes != nil {
+				typ = "map-dyn{" + strings.Join(fieldTypes, ",") + "}"
+			} else {
+				typ = "map-dyn"
+			}
+		} else if fieldTypes != nil {
 			typ = "map{" + strings.Join(fieldTypes, ",") + "}"
 		}
-		return &MapLit{Items: items}, typ, nil
+		return &MapLit{Items: items, Dynamic: dynamic}, typ, nil
 	case p.Query != nil:
 		qe, qtyp, err := convertQueryExpr(p.Query, env, vars)
 		if err != nil {
@@ -2569,14 +2585,21 @@ func convertQueryExpr(q *parser.QueryExpr, env *types.Env, vars map[string]VarIn
 		}
 	}
 	if q.Group != nil {
-		keyExpr, _, err := convertExpr(q.Group.Exprs[0], env, qVars)
+		keyExpr, keyTyp, err := convertExpr(q.Group.Exprs[0], env, qVars)
 		if err != nil {
 			return nil, "", err
 		}
+		gVars := map[string]VarInfo{}
+		for k, v := range qVars {
+			gVars[k] = v
+		}
+		elemTyp := qVars[q.Var].typ
+		gVars[q.Group.Name] = VarInfo{typ: "list-" + elemTyp, group: true}
+		gVars[q.Group.Name+"Key"] = VarInfo{typ: keyTyp}
 		var sortExpr Expr
 		var desc bool
 		if q.Sort != nil {
-			sx, _, err := convertExpr(q.Sort, env, qVars)
+			sx, _, err := convertExpr(q.Sort, env, gVars)
 			if err != nil {
 				return nil, "", err
 			}
@@ -2587,13 +2610,6 @@ func convertQueryExpr(q *parser.QueryExpr, env *types.Env, vars map[string]VarIn
 				sortExpr = sx
 			}
 		}
-		gVars := map[string]VarInfo{}
-		for k, v := range qVars {
-			gVars[k] = v
-		}
-		elemTyp := qVars[q.Var].typ
-		gVars[q.Group.Name] = VarInfo{typ: "list-" + elemTyp, group: true}
-		gVars[q.Group.Name+"Key"] = VarInfo{typ: "string"}
 		var havingExpr Expr
 		if q.Group.Having != nil {
 			var err error
