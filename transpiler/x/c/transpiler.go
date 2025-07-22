@@ -34,6 +34,8 @@ var (
 	anonStructs          map[string]string
 	currentVarName       string
 	needMath             bool
+	needContainsInt      bool
+	needContainsStr      bool
 	multiJoinEnabled     bool
 	multiJoinSort        bool
 	groupLeftJoinEnabled bool
@@ -696,6 +698,7 @@ func (b *BinaryExpr) emitExpr(w io.Writer) {
 						if t, ok2 := varTypes[vr.Name]; ok2 && strings.HasSuffix(t, "[]") {
 							elem := strings.TrimSuffix(t, "[]")
 							if elem == "int" {
+								needContainsInt = true
 								io.WriteString(w, "contains_int(")
 								io.WriteString(w, vr.Name)
 								fmt.Fprintf(w, ", sizeof(%s)/sizeof(%s[0]), ", vr.Name, vr.Name)
@@ -704,6 +707,7 @@ func (b *BinaryExpr) emitExpr(w io.Writer) {
 								return
 							}
 							if elem == "const char*" {
+								needContainsStr = true
 								io.WriteString(w, "contains_str(")
 								io.WriteString(w, vr.Name)
 								fmt.Fprintf(w, ", sizeof(%s)/sizeof(%s[0]), ", vr.Name, vr.Name)
@@ -819,18 +823,22 @@ func (p *Program) Emit() []byte {
 		buf.WriteString("#include <math.h>\n")
 	}
 	buf.WriteString("\n")
-	buf.WriteString("static int contains_int(const int arr[], size_t len, int val) {\n")
-	buf.WriteString("    for (size_t i = 0; i < len; i++) {\n")
-	buf.WriteString("        if (arr[i] == val) return 1;\n")
-	buf.WriteString("    }\n")
-	buf.WriteString("    return 0;\n")
-	buf.WriteString("}\n\n")
-	buf.WriteString("static int contains_str(const char *arr[], size_t len, const char *val) {\n")
-	buf.WriteString("    for (size_t i = 0; i < len; i++) {\n")
-	buf.WriteString("        if (strcmp(arr[i], val) == 0) return 1;\n")
-	buf.WriteString("    }\n")
-	buf.WriteString("    return 0;\n")
-	buf.WriteString("}\n\n")
+	if needContainsInt {
+		buf.WriteString("static int contains_int(const int arr[], size_t len, int val) {\n")
+		buf.WriteString("    for (size_t i = 0; i < len; i++) {\n")
+		buf.WriteString("        if (arr[i] == val) return 1;\n")
+		buf.WriteString("    }\n")
+		buf.WriteString("    return 0;\n")
+		buf.WriteString("}\n\n")
+	}
+	if needContainsStr {
+		buf.WriteString("static int contains_str(const char *arr[], size_t len, const char *val) {\n")
+		buf.WriteString("    for (size_t i = 0; i < len; i++) {\n")
+		buf.WriteString("        if (strcmp(arr[i], val) == 0) return 1;\n")
+		buf.WriteString("    }\n")
+		buf.WriteString("    return 0;\n")
+		buf.WriteString("}\n\n")
+	}
 	names := make([]string, 0, len(structTypes))
 	for name := range structTypes {
 		names = append(names, name)
@@ -964,6 +972,8 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 	extraFuncs = nil
 	structCounter = 0
 	needMath = false
+	needContainsInt = false
+	needContainsStr = false
 	p := &Program{}
 	mainFn := &Function{Name: "main"}
 	var globals []Stmt
@@ -3008,6 +3018,21 @@ func anyToExpr(v any) Expr {
 			elems = append(elems, ex)
 		}
 		return &ListLit{Elems: elems}
+	case map[int]any:
+		keys := make([]int, 0, len(t))
+		for k := range t {
+			keys = append(keys, k)
+		}
+		sort.Ints(keys)
+		var items []MapItem
+		for _, k := range keys {
+			ex := anyToExpr(t[k])
+			if ex == nil {
+				return nil
+			}
+			items = append(items, MapItem{Key: &IntLit{Value: k}, Value: ex})
+		}
+		return &MapLit{Items: items}
 	case map[string]any:
 		var fields []StructField
 		keys := make([]string, 0, len(t))
@@ -3220,6 +3245,27 @@ func valueFromExpr(e Expr) (any, bool) {
 		}
 		return m, true
 	case *MapLit:
+		// support both string-keyed and int-keyed constant maps
+		intMap := true
+		for _, it := range v.Items {
+			if _, ok := evalInt(it.Key); !ok {
+				intMap = false
+				break
+			}
+		}
+		if intMap {
+			m := map[int]any{}
+			for _, it := range v.Items {
+				k, _ := evalInt(it.Key)
+				val, ok := valueFromExpr(it.Value)
+				if !ok {
+					return nil, false
+				}
+				m[k] = val
+			}
+			return m, true
+		}
+
 		m := map[string]any{}
 		for _, it := range v.Items {
 			var ks string
@@ -3293,6 +3339,21 @@ func evalMap(e Expr) (*ListLit, bool) {
 					elems = append(elems, ex)
 				}
 				return &ListLit{Elems: elems}, true
+			} else if im, ok := val.(map[int]any); ok {
+				keys := make([]int, 0, len(im))
+				for k := range im {
+					keys = append(keys, k)
+				}
+				sort.Ints(keys)
+				var elems []Expr
+				for _, k := range keys {
+					ex := anyToExpr(im[k])
+					if ex == nil {
+						return nil, false
+					}
+					elems = append(elems, ex)
+				}
+				return &ListLit{Elems: elems}, true
 			}
 		}
 	}
@@ -3320,6 +3381,17 @@ func evalMapKeys(e Expr) (*ListLit, bool) {
 					elems = append(elems, &StringLit{Value: k})
 				}
 				return &ListLit{Elems: elems}, true
+			} else if im, ok := val.(map[int]any); ok {
+				keys := make([]int, 0, len(im))
+				for k := range im {
+					keys = append(keys, k)
+				}
+				sort.Ints(keys)
+				var elems []Expr
+				for _, k := range keys {
+					elems = append(elems, &IntLit{Value: k})
+				}
+				return &ListLit{Elems: elems}, true
 			}
 		}
 	}
@@ -3332,20 +3404,30 @@ func interpretMapKeys(e *parser.Expr) ([]Expr, bool) {
 	if err != nil {
 		return nil, false
 	}
-	m, ok := val.(map[string]any)
-	if !ok {
-		return nil, false
+	if m, ok := val.(map[string]any); ok {
+		keys := make([]string, 0, len(m))
+		for k := range m {
+			keys = append(keys, k)
+		}
+		sort.Strings(keys)
+		var out []Expr
+		for _, k := range keys {
+			out = append(out, &StringLit{Value: k})
+		}
+		return out, true
+	} else if im, ok := val.(map[int]any); ok {
+		keys := make([]int, 0, len(im))
+		for k := range im {
+			keys = append(keys, k)
+		}
+		sort.Ints(keys)
+		var out []Expr
+		for _, k := range keys {
+			out = append(out, &IntLit{Value: k})
+		}
+		return out, true
 	}
-	keys := make([]string, 0, len(m))
-	for k := range m {
-		keys = append(keys, k)
-	}
-	sort.Strings(keys)
-	var out []Expr
-	for _, k := range keys {
-		out = append(out, &StringLit{Value: k})
-	}
-	return out, true
+	return nil, false
 }
 
 func evalMapEntry(target Expr, key Expr) (Expr, bool) {
@@ -3353,16 +3435,24 @@ func evalMapEntry(target Expr, key Expr) (Expr, bool) {
 	if !ok {
 		return nil, false
 	}
-	m, ok := val.(map[string]any)
-	if !ok {
+	if m, ok := val.(map[string]any); ok {
+		ks, ok := evalString(key)
+		if !ok {
+			return nil, false
+		}
+		if v, ok := m[ks]; ok {
+			return anyToExpr(v), true
+		}
 		return nil, false
-	}
-	ks, ok := evalString(key)
-	if !ok {
+	} else if im, ok := val.(map[int]any); ok {
+		ki, ok := evalInt(key)
+		if !ok {
+			return nil, false
+		}
+		if v, ok := im[ki]; ok {
+			return anyToExpr(v), true
+		}
 		return nil, false
-	}
-	if v, ok := m[ks]; ok {
-		return anyToExpr(v), true
 	}
 	return nil, false
 }
