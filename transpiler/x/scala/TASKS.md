@@ -1,3 +1,23 @@
+## Progress (2025-07-22 13:21 +0700)
+- docs: refresh scala checklist
+- Regenerated golden files - 73/102 vm valid programs passing
+
+## Progress (2025-07-22 13:15 +0700)
+- scala transpiler: simplify left join emission
+- Regenerated golden files - 72/102 vm valid programs passing
+
+## Progress (2025-07-22 13:15 +0700)
+- scala transpiler: simplify left join emission
+- Regenerated golden files - 72/102 vm valid programs passing
+
+## Progress (2025-07-22 13:15 +0700)
+- scala transpiler: simplify left join emission
+- Regenerated golden files - 72/102 vm valid programs passing
+
+## Progress (2025-07-22 13:15 +0700)
+- scala transpiler: simplify left join emission
+- Regenerated golden files - 72/102 vm valid programs passing
+
 ## Progress (2025-07-22 11:37 +0700)
 - scala transpiler: support break/continue and json builtin
 - Regenerated golden files - 72/102 vm valid programs passing
