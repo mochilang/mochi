@@ -1,3 +1,13 @@
+## Progress (2025-07-22 12:36 +0700)
+- Update outer join generation
+- Generated C++ for 92/102 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-22 12:36 +0700)
+- Update outer join generation
+- Generated C++ for 92/102 programs
+- Updated README checklist and outputs
+
 ## Progress (2025-07-22 12:31 +0700)
 - attempted outer join fixes
 - Generated C++ for 72/102 programs

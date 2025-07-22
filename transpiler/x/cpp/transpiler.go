@@ -401,12 +401,6 @@ func (p *Program) write(w io.Writer) {
 	}
 	fmt.Fprintln(w)
 	fmt.Fprintln(w)
-	fmt.Fprintln(w, "template<typename T>")
-	fmt.Fprintln(w, "std::ostream& operator<<(std::ostream& os, const std::optional<T>& v) {")
-	fmt.Fprintln(w, "    if(v) os << *v; else os << \"None\";")
-	fmt.Fprintln(w, "    return os;")
-	fmt.Fprintln(w, "}")
-	fmt.Fprintln(w)
 	for _, st := range p.Structs {
 		fmt.Fprintf(w, "struct %s {\n", st.Name)
 		for _, f := range st.Fields {
@@ -680,16 +674,9 @@ func (s *SelectorExpr) emit(w io.Writer) {
 		io.WriteString(w, "[\"")
 		io.WriteString(w, s.Field)
 		io.WriteString(w, "\"]")
-	} else if ft := structFieldType(t, s.Field); strings.HasPrefix(ft, "std::optional<") {
-		s.Target.emit(w)
-		io.WriteString(w, ".")
-		io.WriteString(w, s.Field)
-		io.WriteString(w, ".value()")
 	} else if strings.HasPrefix(t, "std::optional<") {
-		io.WriteString(w, "(")
 		s.Target.emit(w)
-		io.WriteString(w, ".value())")
-		io.WriteString(w, ".")
+		io.WriteString(w, "->")
 		io.WriteString(w, s.Field)
 	} else {
 		s.Target.emit(w)
@@ -1205,9 +1192,18 @@ func (ojc *OuterJoinComp) emit(w io.Writer) {
 	io.WriteString(w, "            { std::optional<"+ojc.LeftInner+"> "+ojc.LeftVar+"_opt("+ojc.LeftVar+"); std::optional<"+ojc.RightInner+"> "+ojc.RightVar+"_opt("+ojc.RightVar+");\n")
 	io.WriteString(w, "            auto "+ojc.LeftVar+" = "+ojc.LeftVar+"_opt;\n")
 	io.WriteString(w, "            auto "+ojc.RightVar+" = "+ojc.RightVar+"_opt;\n")
+	old := localTypes
+	nt := map[string]string{}
+	for k, v := range old {
+		nt[k] = v
+	}
+	nt[ojc.LeftVar] = fmt.Sprintf("std::optional<%s>", ojc.LeftInner)
+	nt[ojc.RightVar] = fmt.Sprintf("std::optional<%s>", ojc.RightInner)
+	localTypes = nt
 	io.WriteString(w, "            __items.push_back(")
 	ojc.Body.emit(w)
 	io.WriteString(w, "); }\n")
+	localTypes = old
 	io.WriteString(w, "        }\n")
 	io.WriteString(w, "    }\n")
 	io.WriteString(w, "    if(!__matched) {\n")
@@ -1232,9 +1228,18 @@ func (ojc *OuterJoinComp) emit(w io.Writer) {
 	io.WriteString(w, "        std::optional<"+ojc.LeftInner+"> "+ojc.LeftVar+" = std::nullopt;\n")
 	io.WriteString(w, "        std::optional<"+ojc.RightInner+"> "+ojc.RightVar+"_opt("+ojc.RightVar+");\n")
 	io.WriteString(w, "        auto "+ojc.RightVar+" = "+ojc.RightVar+"_opt;\n")
+	old2 := localTypes
+	nt2 := map[string]string{}
+	for k, v := range old2 {
+		nt2[k] = v
+	}
+	nt2[ojc.LeftVar] = fmt.Sprintf("std::optional<%s>", ojc.LeftInner)
+	nt2[ojc.RightVar] = fmt.Sprintf("std::optional<%s>", ojc.RightInner)
+	localTypes = nt2
 	io.WriteString(w, "        __items.push_back(")
 	ojc.Body.emit(w)
 	io.WriteString(w, ");\n")
+	localTypes = old2
 	io.WriteString(w, "    }\n")
 	io.WriteString(w, "}\n")
 	io.WriteString(w, "return __items; }())")
@@ -1471,9 +1476,21 @@ func (f *ForStmt) emit(w io.Writer, indent int) {
 		io.WriteString(w, f.Var)
 		io.WriteString(w, "++ ) {\n")
 	}
+	old := localTypes
+	newTypes := map[string]string{}
+	for k, v := range old {
+		newTypes[k] = v
+	}
+	if f.ElemType != "" {
+		newTypes[f.Var] = f.ElemType
+	} else {
+		newTypes[f.Var] = "auto"
+	}
+	localTypes = newTypes
 	for _, st := range f.Body {
 		st.emit(w, indent+1)
 	}
+	localTypes = old
 	for i := 0; i < indent; i++ {
 		io.WriteString(w, "    ")
 	}
