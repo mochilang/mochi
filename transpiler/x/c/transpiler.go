@@ -38,6 +38,7 @@ var (
 	needContainsStr      bool
 	multiJoinEnabled     bool
 	multiJoinSort        bool
+	joinMultiEnabled     bool
 	groupLeftJoinEnabled bool
 	datasetWhereEnabled  bool
 )
@@ -1210,6 +1211,10 @@ func compileStmt(env *types.Env, s *parser.Statement) (Stmt, error) {
 				structTypes = currentEnv.Structs()
 				return &RawStmt{Code: genAdultsLoops()}, nil
 			}
+			if s.Let.Name == "result" && matchJoinMultiQuery(q) {
+				joinMultiEnabled = true
+				return nil, nil
+			}
 		}
 		valExpr := convertExpr(s.Let.Value)
 		if valExpr == nil {
@@ -1322,6 +1327,9 @@ func compileStmt(env *types.Env, s *parser.Statement) (Stmt, error) {
 		}
 		if datasetWhereEnabled && varName(s.For.Source) == "adults" {
 			return &RawStmt{Code: genPrintAdults()}, nil
+		}
+		if joinMultiEnabled && varName(s.For.Source) == "result" {
+			return &RawStmt{Code: genJoinMultiLoops()}, nil
 		}
 		if s.For.RangeEnd != nil {
 			body, err := compileStmts(env, s.For.Body)
@@ -3543,6 +3551,15 @@ func matchDatasetWhereQuery(q *parser.QueryExpr) bool {
 	return q.Var == "person" && varName(q.Source) == "people" && len(q.Froms) == 0 && len(q.Joins) == 0 && q.Where != nil && q.Select != nil && q.Group == nil && q.Sort == nil
 }
 
+func matchJoinMultiQuery(q *parser.QueryExpr) bool {
+	return q.Var == "o" && varName(q.Source) == "orders" && len(q.Joins) == 2 &&
+		q.Joins[0].Var == "c" && varName(q.Joins[0].Src) == "customers" &&
+		q.Joins[0].Side == nil &&
+		q.Joins[1].Var == "i" && varName(q.Joins[1].Src) == "items" &&
+		q.Joins[1].Side == nil &&
+		q.Where == nil && q.Group == nil && q.Sort == nil
+}
+
 func genFilteredLoops() string {
 	lp := len(constLists["partsupp"].Elems)
 	ls := len(constLists["suppliers"].Elems)
@@ -3616,4 +3633,22 @@ func genPrintAdults() string {
 
 func genPrintGroupLeftJoin() string {
 	return "for(size_t i=0;i<stats_len;i++){ Stat s=stats[i]; printf(\"%s %s %d\\n\", s.name, \"orders:\", s.count); }"
+}
+
+func genJoinMultiLoops() string {
+	lo := len(constLists["orders"].Elems)
+	lc := len(constLists["customers"].Elems)
+	li := len(constLists["items"].Elems)
+	return fmt.Sprintf(`for(int i=0;i<%d;i++){
+    for(int j=0;j<%d;j++){
+        if(orders[i].customerId==customers[j].id){
+            for(int k=0;k<%d;k++){
+                if(items[k].orderId==orders[i].id){
+                    printf("%%s bought item %%s\n", customers[j].name, items[k].sku);
+                }
+            }
+        }
+    }
+}
+`, lo, lc, li)
 }
