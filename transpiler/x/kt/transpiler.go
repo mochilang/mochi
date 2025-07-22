@@ -602,8 +602,9 @@ type BinaryExpr struct {
 }
 
 func (b *BinaryExpr) emit(w io.Writer) {
-	numOp := b.Op == "+" || b.Op == "-" || b.Op == "*" || b.Op == "/" || b.Op == "%"
+	numOp := (b.Op == "+" || b.Op == "-" || b.Op == "*" || b.Op == "/" || b.Op == "%")
 	cmpOp := b.Op == ">" || b.Op == "<" || b.Op == ">=" || b.Op == "<="
+	strOp := b.Op == "+" && (guessType(b.Left) == "String" || guessType(b.Right) == "String")
 	cast := func(e Expr, typ string) {
 		if typ == "Double" {
 			io.WriteString(w, "(")
@@ -618,7 +619,13 @@ func (b *BinaryExpr) emit(w io.Writer) {
 		}
 	}
 	emitOperand := func(e Expr, other Expr) {
-		if numOp {
+		if strOp {
+			t := guessType(e)
+			if t != "String" {
+				cast(e, "String")
+				return
+			}
+		} else if numOp {
 			t := guessType(e)
 			if t == "" || t == "Any" {
 				cast(e, "Double")
@@ -1634,7 +1641,15 @@ func guessType(e Expr) string {
 		}
 		return "MutableList<" + elem + ">"
 	case *BinaryExpr:
-		if v.Op == "+" || v.Op == "-" || v.Op == "*" || v.Op == "/" || v.Op == "%" {
+		if v.Op == "+" {
+			lt := guessType(v.Left)
+			rt := guessType(v.Right)
+			if lt == "String" || rt == "String" {
+				return "String"
+			}
+			return "Double"
+		}
+		if v.Op == "-" || v.Op == "*" || v.Op == "/" || v.Op == "%" {
 			return "Double"
 		}
 		if v.Op == "==" || v.Op == "!=" || v.Op == ">" || v.Op == "<" || v.Op == ">=" || v.Op == "<=" {
@@ -1954,8 +1969,31 @@ func convertStmts(env *types.Env, list []*parser.Statement) ([]Stmt, error) {
 			typ := kotlinType(s.Let.Type)
 			if s.Let.Type == nil {
 				typ = envTypeName(env, s.Let.Name)
+				if typ == "" {
+					typ = guessType(v)
+				}
 			}
 			out = append(out, &LetStmt{Name: s.Let.Name, Type: typ, Value: v})
+			if env != nil {
+				var tt types.Type
+				if s.Let.Type != nil {
+					tt = types.ResolveTypeRef(s.Let.Type, env)
+				} else {
+					switch typ {
+					case "Int":
+						tt = types.IntType{}
+					case "Double":
+						tt = types.FloatType{}
+					case "Boolean":
+						tt = types.BoolType{}
+					case "String":
+						tt = types.StringType{}
+					default:
+						tt = types.AnyType{}
+					}
+				}
+				env.SetVar(s.Let.Name, tt, false)
+			}
 		case s.Var != nil:
 			v, err := convertExpr(env, s.Var.Value)
 			if err != nil {
@@ -1964,8 +2002,31 @@ func convertStmts(env *types.Env, list []*parser.Statement) ([]Stmt, error) {
 			typ := kotlinType(s.Var.Type)
 			if s.Var.Type == nil {
 				typ = envTypeName(env, s.Var.Name)
+				if typ == "" {
+					typ = guessType(v)
+				}
 			}
 			out = append(out, &VarStmt{Name: s.Var.Name, Type: typ, Value: v})
+			if env != nil {
+				var tt types.Type
+				if s.Var.Type != nil {
+					tt = types.ResolveTypeRef(s.Var.Type, env)
+				} else {
+					switch typ {
+					case "Int":
+						tt = types.IntType{}
+					case "Double":
+						tt = types.FloatType{}
+					case "Boolean":
+						tt = types.BoolType{}
+					case "String":
+						tt = types.StringType{}
+					default:
+						tt = types.AnyType{}
+					}
+				}
+				env.SetVar(s.Var.Name, tt, true)
+			}
 		case s.Assign != nil && len(s.Assign.Index) == 0 && len(s.Assign.Field) == 0:
 			v, err := convertExpr(env, s.Assign.Value)
 			if err != nil {
@@ -1989,7 +2050,12 @@ func convertStmts(env *types.Env, list []*parser.Statement) ([]Stmt, error) {
 			}
 			out = append(out, st)
 		case s.Fun != nil:
-			body, err := convertStmts(env, s.Fun.Body)
+			bodyEnv := types.NewEnv(env)
+			for _, p0 := range s.Fun.Params {
+				pt := types.ResolveTypeRef(p0.Type, env)
+				bodyEnv.SetVar(p0.Name, pt, true)
+			}
+			body, err := convertStmts(bodyEnv, s.Fun.Body)
 			if err != nil {
 				return nil, err
 			}
@@ -2801,16 +2867,21 @@ func convertFunExpr(env *types.Env, f *parser.FunExpr) (Expr, error) {
 		}
 		params[i] = fmt.Sprintf("%s: %s", p.Name, typ)
 	}
+	bodyEnv := types.NewEnv(env)
+	for _, p := range f.Params {
+		pt := types.ResolveTypeRef(p.Type, env)
+		bodyEnv.SetVar(p.Name, pt, true)
+	}
 	var body []Stmt
 	if f.ExprBody != nil {
-		expr, err := convertExpr(env, f.ExprBody)
+		expr, err := convertExpr(bodyEnv, f.ExprBody)
 		if err != nil {
 			return nil, err
 		}
 		body = []Stmt{&ReturnStmt{Value: expr}}
 	} else {
 		var err error
-		body, err = convertStmts(env, f.BlockBody)
+		body, err = convertStmts(bodyEnv, f.BlockBody)
 		if err != nil {
 			return nil, err
 		}
