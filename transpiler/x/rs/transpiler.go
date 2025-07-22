@@ -29,22 +29,26 @@ var stringVars map[string]bool
 var groupVars map[string]bool
 var varTypes map[string]string
 var funParams map[string]int
-var typeDecls []*StructDecl
+var typeDecls []TypeDecl
 var structForMap map[*parser.MapLiteral]string
 var structForList map[*parser.ListLiteral]string
 var curEnv *types.Env
 var structTypes map[string]types.StructType
 var cloneVars map[string]bool
 var useMath bool
+var patternMode bool
+var boxVars map[string]bool
 
 func VarTypes() map[string]string { return varTypes }
 
 // Program represents a Rust program consisting of a list of statements.
+type TypeDecl interface{ emit(io.Writer) }
+
 type Program struct {
 	Stmts       []Stmt
 	UsesHashMap bool
 	UsesGroup   bool
-	Types       []*StructDecl
+	Types       []TypeDecl
 }
 
 type Stmt interface{ emit(io.Writer) }
@@ -228,6 +232,35 @@ func (s *StructDecl) emit(w io.Writer) {
 	io.WriteString(w, "        write!(f, \"}}\")\n    }\n}\n")
 }
 
+type EnumVariant struct {
+	Name   string
+	Fields []Param
+}
+
+type EnumDecl struct {
+	Name     string
+	Variants []EnumVariant
+}
+
+func (e *EnumDecl) emit(w io.Writer) {
+	fmt.Fprintf(w, "#[derive(Debug, Clone)]\nenum %s {\n", e.Name)
+	for _, v := range e.Variants {
+		if len(v.Fields) == 0 {
+			fmt.Fprintf(w, "    %s,\n", v.Name)
+			continue
+		}
+		fmt.Fprintf(w, "    %s { ", v.Name)
+		for i, f := range v.Fields {
+			if i > 0 {
+				io.WriteString(w, ", ")
+			}
+			fmt.Fprintf(w, "%s: %s", f.Name, f.Type)
+		}
+		io.WriteString(w, " },\n")
+	}
+	io.WriteString(w, "}\n")
+}
+
 // StructLit represents instantiation of a struct value.
 type StructLit struct {
 	Name   string
@@ -245,6 +278,34 @@ func (s *StructLit) emit(w io.Writer) {
 		f.emit(w)
 	}
 	io.WriteString(w, "}")
+}
+
+type EnumLit struct {
+	Union     string
+	Variant   string
+	Fields    []Expr
+	Names     []string
+	Types     []string
+	IsPattern bool
+}
+
+func (e *EnumLit) emit(w io.Writer) {
+	fmt.Fprintf(w, "%s::%s", e.Union, e.Variant)
+	if len(e.Fields) == 0 {
+		return
+	}
+	io.WriteString(w, " { ")
+	old := patternMode
+	patternMode = e.IsPattern
+	for i, f := range e.Fields {
+		if i > 0 {
+			io.WriteString(w, ", ")
+		}
+		fmt.Fprintf(w, "%s: ", e.Names[i])
+		f.emit(w)
+	}
+	patternMode = old
+	io.WriteString(w, " }")
 }
 
 type FuncDecl struct {
@@ -667,9 +728,18 @@ func (n *NameRef) emit(w io.Writer) {
 			io.WriteString(w, n.Name)
 			io.WriteString(w, ".clone()")
 		}
-	} else {
-		io.WriteString(w, n.Name)
+		return
 	}
+	if boxVars[n.Name] && !patternMode {
+		io.WriteString(w, "*")
+		io.WriteString(w, n.Name)
+		return
+	}
+	if ut, ok := curEnv.FindUnionByVariant(n.Name); ok && varTypes[n.Name] == "" {
+		fmt.Fprintf(w, "%s::%s", ut.Name, n.Name)
+		return
+	}
+	io.WriteString(w, n.Name)
 }
 
 type VarDecl struct {
@@ -1267,6 +1337,7 @@ func Transpile(p *parser.Program, env *types.Env) (*Program, error) {
 	groupVars = make(map[string]bool)
 	varTypes = make(map[string]string)
 	funParams = make(map[string]int)
+	boxVars = make(map[string]bool)
 	typeDecls = nil
 	structForMap = make(map[*parser.MapLiteral]string)
 	structForList = make(map[*parser.ListLiteral]string)
@@ -1726,7 +1797,30 @@ func compileUpdateStmt(u *parser.UpdateStmt) (Stmt, error) {
 
 func compileTypeStmt(t *parser.TypeDecl) (Stmt, error) {
 	if len(t.Variants) > 0 {
-		return nil, fmt.Errorf("union types not supported")
+		ut, ok := curEnv.GetUnion(t.Name)
+		if !ok {
+			return nil, nil
+		}
+		ed := &EnumDecl{Name: t.Name}
+		for _, v := range t.Variants {
+			st, ok := curEnv.GetStruct(v.Name)
+			if !ok {
+				continue
+			}
+			fields := make([]Param, len(st.Order))
+			for i, name := range st.Order {
+				typ := rustTypeFromType(st.Fields[name])
+				if typ == t.Name {
+					typ = fmt.Sprintf("Box<%s>", typ)
+				}
+				fields[i] = Param{Name: name, Type: typ}
+			}
+			ed.Variants = append(ed.Variants, EnumVariant{Name: v.Name, Fields: fields})
+		}
+		typeDecls = append(typeDecls, ed)
+		structTypes[t.Name] = types.StructType{}
+		_ = ut
+		return nil, nil
 	}
 	st, ok := curEnv.GetStruct(t.Name)
 	if !ok {
@@ -2005,6 +2099,39 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 			args[i] = ex
 		}
 		name := p.Call.Func
+		if ut, ok := curEnv.FindUnionByVariant(name); ok {
+			st, _ := curEnv.GetStruct(name)
+			fields := make([]Expr, len(args))
+			names := make([]string, len(args))
+			for i, a := range args {
+				if i < len(st.Order) {
+					names[i] = st.Order[i]
+				} else {
+					names[i] = fmt.Sprintf("f%d", i)
+				}
+				if !patternMode {
+					if stf, ok := st.Fields[names[i]]; ok {
+						rt := rustTypeFromType(stf)
+						if rt == ut.Name {
+							a = &CallExpr{Func: "Box::new", Args: []Expr{a}}
+						}
+					}
+				}
+				fields[i] = a
+			}
+			types := make([]string, len(names))
+			for i, n := range names {
+				if stf, ok := st.Fields[n]; ok {
+					typ := rustTypeFromType(stf)
+					if typ == ut.Name {
+						types[i] = fmt.Sprintf("Box<%s>", typ)
+					} else {
+						types[i] = typ
+					}
+				}
+			}
+			return &EnumLit{Union: ut.Name, Variant: name, Fields: fields, Names: names, Types: types, IsPattern: patternMode}, nil
+		}
 		if name == "print" {
 			if len(args) == 1 {
 				fmtStr := "{}"
@@ -2158,6 +2285,43 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 		}
 		return nil, err
 	case p.Struct != nil:
+		if ut, ok := curEnv.FindUnionByVariant(p.Struct.Name); ok {
+			st, _ := curEnv.GetStruct(p.Struct.Name)
+			fields := make([]Expr, len(p.Struct.Fields))
+			names := make([]string, len(p.Struct.Fields))
+			for i, f := range p.Struct.Fields {
+				names[i] = f.Name
+				v, err := compileExpr(f.Value)
+				if err != nil {
+					return nil, err
+				}
+				if !patternMode {
+					if stf, ok := st.Fields[f.Name]; ok {
+						rt := rustTypeFromType(stf)
+						if rt == ut.Name {
+							v = &CallExpr{Func: "Box::new", Args: []Expr{v}}
+						} else if rt == "String" {
+							v = &StringCastExpr{Expr: v}
+						} else if rt == "f64" && inferType(v) == "i64" {
+							v = &FloatCastExpr{Expr: v}
+						}
+					}
+				}
+				fields[i] = v
+			}
+			types := make([]string, len(names))
+			for i, n := range names {
+				if stf, ok := st.Fields[n]; ok {
+					typ := rustTypeFromType(stf)
+					if typ == ut.Name {
+						types[i] = fmt.Sprintf("Box<%s>", typ)
+					} else {
+						types[i] = typ
+					}
+				}
+			}
+			return &EnumLit{Union: ut.Name, Variant: p.Struct.Name, Fields: fields, Names: names, Types: types, IsPattern: patternMode}, nil
+		}
 		st, ok := structTypes[p.Struct.Name]
 		if !ok {
 			st, _ = curEnv.GetStruct(p.Struct.Name)
@@ -2257,7 +2421,7 @@ func compileMatchExpr(me *parser.MatchExpr) (Expr, error) {
 	}
 	arms := make([]MatchArm, len(me.Cases))
 	for i, c := range me.Cases {
-		pat, err := compileExpr(c.Pattern)
+		pat, err := compilePattern(c.Pattern)
 		if err != nil {
 			return nil, err
 		}
@@ -2271,6 +2435,20 @@ func compileMatchExpr(me *parser.MatchExpr) (Expr, error) {
 		arms[i] = MatchArm{Pattern: pat, Result: res}
 	}
 	return &MatchExpr{Target: target, Arms: arms}, nil
+}
+
+func compilePattern(e *parser.Expr) (Expr, error) {
+	patternMode = true
+	ex, err := compileExpr(e)
+	patternMode = false
+	if el, ok := ex.(*EnumLit); ok {
+		for i, t := range el.Types {
+			if strings.HasPrefix(t, "Box<") {
+				boxVars[el.Names[i]] = true
+			}
+		}
+	}
+	return ex, err
 }
 
 func compileQueryExpr(q *parser.QueryExpr) (Expr, error) {
@@ -2627,6 +2805,9 @@ func inferType(e Expr) string {
 		if mapVars[ex.Name] {
 			return "HashMap<String, i64>"
 		}
+		if ut, ok := curEnv.FindUnionByVariant(ex.Name); ok {
+			return ut.Name
+		}
 		return "i64"
 	case *SliceExpr:
 		ct := inferType(ex.Target)
@@ -2639,6 +2820,8 @@ func inferType(e Expr) string {
 		return ct
 	case *StructLit:
 		return ex.Name
+	case *EnumLit:
+		return ex.Union
 	case *QueryExpr:
 		return fmt.Sprintf("Vec<%s>", ex.ItemType)
 	case *OuterJoinExpr:
@@ -2753,6 +2936,8 @@ func rustTypeFromType(t types.Type) string {
 	case types.OptionType:
 		return fmt.Sprintf("Option<%s>", rustTypeFromType(tt.Elem))
 	case types.StructType:
+		return tt.Name
+	case types.UnionType:
 		return tt.Name
 	case types.VoidType:
 		return "()"
