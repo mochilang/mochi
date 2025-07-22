@@ -3,13 +3,13 @@
 package lua_test
 
 import (
+	"bufio"
 	"bytes"
 	"flag"
 	"fmt"
 	"os"
 	"os/exec"
 	"path/filepath"
-	"sort"
 	"strconv"
 	"strings"
 	"testing"
@@ -28,6 +28,26 @@ func shouldUpdate() bool {
 
 // rosettaIndex optionally selects a single program by 1-based index.
 var rosettaIndex = flag.Int("index", 0, "run only the N-th Rosetta program (1-based)")
+
+func readIndex(path string) ([]string, error) {
+	f, err := os.Open(path)
+	if err != nil {
+		return nil, err
+	}
+	defer f.Close()
+	var names []string
+	scanner := bufio.NewScanner(f)
+	for scanner.Scan() {
+		parts := strings.Fields(scanner.Text())
+		if len(parts) == 2 {
+			names = append(names, parts[1])
+		}
+	}
+	if err := scanner.Err(); err != nil {
+		return nil, err
+	}
+	return names, nil
+}
 
 func runCase(src, outDir string) ([]byte, error) {
 	base := strings.TrimSuffix(filepath.Base(src), ".mochi")
@@ -77,15 +97,17 @@ func TestLuaTranspiler_Rosetta(t *testing.T) {
 	os.MkdirAll(outDir, 0o755)
 	t.Cleanup(updateRosettaReadme)
 
-	pattern := filepath.Join(srcDir, "*.mochi")
-	files, err := filepath.Glob(pattern)
+	names, err := readIndex(filepath.Join(srcDir, "index.txt"))
 	if err != nil {
-		t.Fatalf("glob: %v", err)
+		t.Fatalf("read index: %v", err)
 	}
-	if len(files) == 0 {
-		t.Fatalf("no Mochi Rosetta tests found: %s", pattern)
+	if len(names) == 0 {
+		t.Fatalf("no Mochi Rosetta tests found")
 	}
-	sort.Strings(files)
+	var files []string
+	for _, n := range names {
+		files = append(files, filepath.Join(srcDir, n))
+	}
 	if *rosettaIndex > 0 {
 		idx := *rosettaIndex
 		if idx < 1 || idx > len(files) {
@@ -152,8 +174,11 @@ func updateRosettaReadme() {
 	outDir := filepath.Join(root, "tests", "rosetta", "transpiler", "Lua")
 	readmePath := filepath.Join(root, "transpiler", "x", "lua", "ROSETTA.md")
 
-	files, _ := filepath.Glob(filepath.Join(srcDir, "*.mochi"))
-	sort.Strings(files)
+	names, _ := readIndex(filepath.Join(srcDir, "index.txt"))
+	files := make([]string, len(names))
+	for i, n := range names {
+		files[i] = filepath.Join(srcDir, n)
+	}
 	total := len(files)
 	compiled := 0
 	var lines []string
