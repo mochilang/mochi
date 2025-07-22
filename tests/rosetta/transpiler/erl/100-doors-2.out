@@ -1,9 +1,9 @@
-/workspace/mochi/tests/rosetta/transpiler/erl/100-doors-2.erl:20:13: Warning: variable 'Incrementer2' is unused
-%   20|             Incrementer2 = Incrementer,
+/workspace/mochi/tests/rosetta/transpiler/erl/100-doors-2.erl:20:13: Warning: variable 'Door2' is unused
+%   20|             Door2 = Door,
 %     |             ^
 
-/workspace/mochi/tests/rosetta/transpiler/erl/100-doors-2.erl:22:13: Warning: variable 'Door2' is unused
-%   22|             Door2 = Door
+/workspace/mochi/tests/rosetta/transpiler/erl/100-doors-2.erl:21:13: Warning: variable 'Incrementer2' is unused
+%   21|             Incrementer2 = Incrementer,
 %     |             ^
 
 Door 1 Open
