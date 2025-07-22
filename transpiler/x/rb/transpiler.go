@@ -21,6 +21,27 @@ import (
 	"mochi/types"
 )
 
+const helperNow = `
+$now_seed = 0
+$now_seeded = false
+s = ENV['MOCHI_NOW_SEED']
+if s && s != ''
+  begin
+    $now_seed = Integer(s)
+    $now_seeded = true
+  rescue StandardError
+  end
+end
+def _now()
+  if $now_seeded
+    $now_seed = ($now_seed * 1664525 + 1013904223) % 2147483647
+    $now_seed
+  else
+    Process.clock_gettime(Process::CLOCK_MONOTONIC, :nanosecond)
+  end
+end
+`
+
 // --- Ruby AST ---
 
 type Program struct {
@@ -1060,7 +1081,10 @@ func (gq *GroupLeftJoinQueryExpr) emit(e *emitter) {
 	io.WriteString(e.w, "end)")
 }
 
-var needsJSON bool
+var (
+	needsJSON bool
+	usesNow   bool
+)
 
 // emitter maintains the current indentation level while emitting Ruby code.
 type emitter struct {
@@ -1741,11 +1765,6 @@ func (s *SaveJSONLExpr) emit(e *emitter) {
 	io.WriteString(e.w, "end)")
 }
 
-// NowExpr returns the current Unix timestamp.
-type NowExpr struct{}
-
-func (n *NowExpr) emit(e *emitter) { io.WriteString(e.w, "Time.now.to_i") }
-
 // MethodCallExpr represents calling a method on a target expression.
 type MethodCallExpr struct {
 	Target Expr
@@ -2263,6 +2282,11 @@ func Emit(w io.Writer, p *Program) error {
 			return err
 		}
 	}
+	if usesNow {
+		if _, err := io.WriteString(w, helperNow+"\n"); err != nil {
+			return err
+		}
+	}
 	for _, s := range p.Stmts {
 		e.writeIndent()
 		s.emit(e)
@@ -2274,6 +2298,7 @@ func Emit(w io.Writer, p *Program) error {
 // Transpile converts a Mochi program into a Ruby AST.
 func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	needsJSON = false
+	usesNow = false
 	currentEnv = env
 	topVars = map[string]bool{}
 	rbProg := &Program{}
@@ -3109,7 +3134,8 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 			if len(args) != 0 {
 				return nil, fmt.Errorf("now takes no args")
 			}
-			return &NowExpr{}, nil
+			usesNow = true
+			return &CallExpr{Func: "_now"}, nil
 		case "json":
 			if len(args) != 1 {
 				return nil, fmt.Errorf("json expects 1 arg")
