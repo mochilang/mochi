@@ -233,6 +233,7 @@ func TestMain(m *testing.M) {
 	code := m.Run()
 	updateReadme()
 	updateTasks()
+	updateRosettaReadme()
 	os.Exit(code)
 }
 
