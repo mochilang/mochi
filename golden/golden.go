@@ -37,6 +37,7 @@ func Run(t *testing.T, dir, srcExt, goldenExt string, fn Runner) {
 	if len(files) == 0 {
 		t.Fatalf("no test files found: %s", pattern)
 	}
+	sort.Strings(files)
 
 	for _, src := range files {
 		name := strings.TrimSuffix(filepath.Base(src), srcExt)
@@ -211,6 +212,7 @@ func RunWithSummary(t *testing.T, dir, srcExt, goldenExt string, fn Runner) {
 			passed++
 		} else {
 			failed++
+			break
 		}
 	}
 
