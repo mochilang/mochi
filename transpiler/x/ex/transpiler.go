@@ -1136,53 +1136,44 @@ func Emit(p *Program) []byte {
 			break
 		}
 	}
-	hasFunc := funcsExist
-	moduleMode = hasFunc
-	if hasFunc {
-		buf.WriteString("defmodule Main do\n")
-		buf.WriteString(nowHelper(1))
-		var globals []Stmt
-		var funcs []Stmt
-		var main []Stmt
-		foundFunc := false
-		for _, st := range p.Stmts {
-			if _, ok := st.(*FuncDecl); ok {
-				foundFunc = true
-				funcs = append(funcs, st)
-				continue
-			}
-			if funcsExist && !foundFunc {
-				globals = append(globals, st)
-			} else {
-				main = append(main, st)
-			}
+	moduleMode = true
+	buf.WriteString("defmodule Main do\n")
+	buf.WriteString(nowHelper(1))
+	var globals []Stmt
+	var funcs []Stmt
+	var main []Stmt
+	foundFunc := false
+	for _, st := range p.Stmts {
+		if _, ok := st.(*FuncDecl); ok {
+			foundFunc = true
+			funcs = append(funcs, st)
+			continue
 		}
-		for _, st := range globals {
-			if ls, ok := st.(*LetStmt); ok {
-				ls.emitGlobal(&buf, 1)
-			} else {
-				st.emit(&buf, 1)
-			}
-			buf.WriteString("\n")
-		}
-		for _, st := range funcs {
-			st.emit(&buf, 1)
-			buf.WriteString("\n")
-		}
-		buf.WriteString("  def main() do\n")
-		for _, st := range main {
-			st.emit(&buf, 2)
-			buf.WriteString("\n")
-		}
-		buf.WriteString("  end\nend\n")
-		buf.WriteString("Main.main()\n")
-	} else {
-		buf.WriteString(nowHelper(0))
-		for _, st := range p.Stmts {
-			st.emit(&buf, 0)
-			buf.WriteString("\n")
+		if funcsExist && !foundFunc {
+			globals = append(globals, st)
+		} else {
+			main = append(main, st)
 		}
 	}
+	for _, st := range globals {
+		if ls, ok := st.(*LetStmt); ok {
+			ls.emitGlobal(&buf, 1)
+		} else {
+			st.emit(&buf, 1)
+		}
+		buf.WriteString("\n")
+	}
+	for _, st := range funcs {
+		st.emit(&buf, 1)
+		buf.WriteString("\n")
+	}
+	buf.WriteString("  def main() do\n")
+	for _, st := range main {
+		st.emit(&buf, 2)
+		buf.WriteString("\n")
+	}
+	buf.WriteString("  end\nend\n")
+	buf.WriteString("Main.main()\n")
 	moduleMode = false
 	return buf.Bytes()
 }
