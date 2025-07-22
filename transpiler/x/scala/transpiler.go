@@ -1397,6 +1397,70 @@ func applyIndexOps(base Expr, ops []*parser.IndexOp) (Expr, error) {
 	return base, nil
 }
 
+func substituteFieldVars(e Expr, fields map[string]bool) Expr {
+	switch ex := e.(type) {
+	case *Name:
+		if fields[ex.Name] {
+			return &FieldExpr{Receiver: &Name{Name: "item"}, Name: ex.Name}
+		}
+		return ex
+	case *BinaryExpr:
+		ex.Left = substituteFieldVars(ex.Left, fields)
+		ex.Right = substituteFieldVars(ex.Right, fields)
+		return ex
+	case *CallExpr:
+		ex.Fn = substituteFieldVars(ex.Fn, fields)
+		for i := range ex.Args {
+			ex.Args[i] = substituteFieldVars(ex.Args[i], fields)
+		}
+		return ex
+	case *FieldExpr:
+		ex.Receiver = substituteFieldVars(ex.Receiver, fields)
+		return ex
+	case *IndexExpr:
+		ex.Value = substituteFieldVars(ex.Value, fields)
+		ex.Index = substituteFieldVars(ex.Index, fields)
+		return ex
+	case *UnaryExpr:
+		ex.Expr = substituteFieldVars(ex.Expr, fields)
+		return ex
+	case *IfExpr:
+		ex.Cond = substituteFieldVars(ex.Cond, fields)
+		ex.Then = substituteFieldVars(ex.Then, fields)
+		if ex.Else != nil {
+			ex.Else = substituteFieldVars(ex.Else, fields)
+		}
+		return ex
+	case *ListLit:
+		for i := range ex.Elems {
+			ex.Elems[i] = substituteFieldVars(ex.Elems[i], fields)
+		}
+		return ex
+	case *MapLit:
+		for i := range ex.Items {
+			ex.Items[i].Key = substituteFieldVars(ex.Items[i].Key, fields)
+			ex.Items[i].Value = substituteFieldVars(ex.Items[i].Value, fields)
+		}
+		return ex
+	case *StructLit:
+		for i := range ex.Fields {
+			ex.Fields[i] = substituteFieldVars(ex.Fields[i], fields)
+		}
+		return ex
+	case *SliceExpr:
+		ex.Value = substituteFieldVars(ex.Value, fields)
+		if ex.Start != nil {
+			ex.Start = substituteFieldVars(ex.Start, fields)
+		}
+		if ex.End != nil {
+			ex.End = substituteFieldVars(ex.End, fields)
+		}
+		return ex
+	default:
+		return ex
+	}
+}
+
 func convertUnary(u *parser.Unary, env *types.Env) (Expr, error) {
 	expr, err := convertPostfix(u.Value, env)
 	if err != nil {
@@ -1852,7 +1916,7 @@ func convertCall(c *parser.CallExpr, env *types.Env) (Expr, error) {
 	case "values":
 		if len(args) == 1 {
 			vals := &FieldExpr{Receiver: args[0], Name: "values"}
-			return &CallExpr{Fn: &FieldExpr{Receiver: vals, Name: "toList"}}, nil
+			return &FieldExpr{Receiver: vals, Name: "toList"}, nil
 		}
 	case "exists":
 		if len(c.Args) == 1 {
@@ -2634,6 +2698,7 @@ func convertUpdateStmt(us *parser.UpdateStmt, env *types.Env) (Stmt, error) {
 		if err != nil {
 			return nil, err
 		}
+		val = substituteFieldVars(val, fieldSet)
 		fields = append(fields, key)
 		values = append(values, val)
 	}
@@ -2643,6 +2708,7 @@ func convertUpdateStmt(us *parser.UpdateStmt, env *types.Env) (Stmt, error) {
 		if err != nil {
 			return nil, err
 		}
+		cond = substituteFieldVars(cond, fieldSet)
 	}
 	return &UpdateStmt{Target: us.Target, Fields: fields, Values: values, Cond: cond}, nil
 }

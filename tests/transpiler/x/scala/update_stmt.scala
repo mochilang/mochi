@@ -8,9 +8,9 @@ object Main {
   def main(args: Array[String]): Unit = {
     for (i <- 0 until people.length) {
       var item = people(i)
-      if (age >= 18) {
+      if (item.age >= 18) {
         item = item.copy(status = "adult")
-        item = item.copy(age = age + 1)
+        item = item.copy(age = item.age + 1)
       }
       people(i) = item
     }

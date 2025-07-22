@@ -1,3 +1,7 @@
+## Progress (2025-07-22 17:47 +0700)
+- scala transpiler: add global vars, save/update stmt
+- Regenerated golden files - 92/103 vm valid programs passing
+
 ## Progress (2025-07-22 17:22 +0700)
 - remove obsolete scala error logs
 - Regenerated golden files - 87/103 vm valid programs passing

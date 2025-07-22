@@ -1,5 +1,0 @@
-exit status 1
-/workspace/mochi/tests/transpiler/x/scala/user_type_literal.scala:8: error: value name is not a member of Any
-    println(book.author.name)
-                        ^
-one error found
