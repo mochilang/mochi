@@ -1,0 +1,62 @@
+signal: illegal instruction
+main/main.swift:21: Fatal error: Unexpectedly found nil while unwrapping an Optional value
+
+*** Signal 4: Backtracing from 0x7f066177e895... done ***
+
+*** Program crashed: Illegal instruction at 0x00007f066177e895 ***
+
+Thread 0 "main" crashed:
+
+ 0              0x00007f066177e895 closure #1 in closure #1 in closure #1 in _assertionFailure(_:_:file:line:flags:) + 309 in libswiftCore.so
+ 1 [ra]         0x00007f066177e685 closure #1 in closure #1 in _assertionFailure(_:_:file:line:flags:) + 324 in libswiftCore.so
+ 2 [ra]         0x00007f066177e4fc closure #1 in _assertionFailure(_:_:file:line:flags:) + 379 in libswiftCore.so
+ 3 [ra]         0x00007f06618f49e5 _assertionFailure(_:_:file:line:flags:) + 276 in libswiftCore.so
+ 4 [ra]         0x000055b4e94e4b09 closure #1 in closure #1 in closure #1 in  + 728 in main
+ 5 [ra]         0x000055b4e94e45d1 closure #1 in closure #1 in  + 112 in main
+ 6 [ra]         0x00007f066199d242 MutableCollection<>._insertionSort(within:sortedEnd:by:) + 657 in libswiftCore.so
+ 7 [ra]         0x00007f066199c694 UnsafeMutableBufferPointer._stableSortImpl(by:) + 1875 in libswiftCore.so
+ 8 [ra]         0x00007f066180efe8 closure #1 in MutableCollection<>.sort(by:) + 87 in libswiftCore.so
+ 9 [ra] [thunk] 0x00007f06618aedcd partial apply for closure #1 in MutableCollection<>.sort(by:) + 28 in libswiftCore.so
+10 [ra]         0x00007f0661773f54 Array._withUnsafeMutableBufferPointerIfSupported<A>(_:) + 115 in libswiftCore.so
+11 [ra]         0x00007f06618e8999 Array.withContiguousMutableStorageIfAvailable<A>(_:) + 8 in libswiftCore.so
+12 [ra] [thunk] 0x00007f0661773ed2 protocol witness for MutableCollection.withContiguousMutableStorageIfAvailable<A>(_:) in conformance [A] + 17 in libswiftCore.so
+13 [ra]         0x00007f066198b381 MutableCollection<>.sort(by:) + 768 in libswiftCore.so
+14 [ra]         0x000055b4e94e35d5 closure #1 in  + 660 in main
+15 [ra]         0x000055b4e94e6860 main + 1535 in main
+16 [ra]         0x00007f06602231ca <unknown> in libc.so.6
+17 [ra]         0x00007f066022328b <unknown> in libc.so.6
+
+
+Registers:
+
+rax 0x0000000000000003  3
+rdx 0x0000000000000001  1
+rcx 0x0000000000000001  1
+rbx 0x000000055b513416  23006884886
+rsi 0x0000000000000000  0
+rdi 0x000055b513416910  00 00 00 00 00 00 00 00 51 00 00 00 00 00 00 00  ········Q·······
+rbp 0x00007ffe8d882170  b0 21 88 8d fe 7f 00 00 85 e6 77 61 06 7f 00 00  °!··þ····æwa····
+rsp 0x00007ffe8d882160  39 00 00 00 00 00 00 00 15 00 00 00 00 00 00 00  9···············
+ r8 0x000055b513401010  01 00 01 00 03 00 01 00 02 00 01 00 01 00 01 00  ················
+ r9 0x0000000000000007  7
+r10 0x000055b513416920  16 34 51 5b 05 00 00 00 33 f6 a6 4d 0f 8e 20 f2  ·4Q[····3ö¦M·· ò
+r11 0xf2208e0f4da6f633  17447101152811742771
+r12 0x0000000000000000  0
+r13 0x00007ffe8d882418  b0 4d 41 13 b5 55 00 00 01 00 00 00 00 00 00 00  °MA·µU··········
+r14 0x0000000000000001  1
+r15 0x000000000000000b  11
+rip 0x00007f066177e895  0f 0b 48 83 ec 08 48 8d 05 1e 09 46 00 48 8d 3d  ··H·ì·H····F·H·=
+
+rflags 0x0000000000010206  PF
+
+cs 0x0033  fs 0x0000  gs 0x0000
+
+
+Images (17 omitted):
+
+0x000055b4e94e1000–0x000055b4e94e70a8 ac84ec65acac4f79e22da1fb245dcdcc38f38bf0 main            /tmp/TestSwiftTranspiler_VMValid_Golden1716861918/001/main
+0x00007f06601f9000–0x00007f06603a8cb9 42c84c92e6f98126b3e2230ebfdead22c235b667 libc.so.6       /usr/lib/x86_64-linux-gnu/libc.so.6
+0x00007f0661618000–0x00007f0661ba7e98 232fee014ccd83c728c6425419c9bd65129d237b libswiftCore.so /root/.local/share/swiftly/toolchains/6.1.2/usr/lib/swift/linux/libswiftCore.so
+
+Backtrace took 0.07s
+
