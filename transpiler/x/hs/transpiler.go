@@ -4,6 +4,7 @@ package hs
 
 import (
 	"bytes"
+	"encoding/json"
 	"fmt"
 	"io"
 	"os"
@@ -13,8 +14,11 @@ import (
 	"strings"
 	"time"
 
+	"gopkg.in/yaml.v3"
+
 	"mochi/ast"
 	"mochi/parser"
+	"mochi/transpiler/meta"
 	"mochi/types"
 )
 
@@ -2383,6 +2387,17 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 			result = &CallExpr{Fun: &NameRef{Name: "sortOn"}, Args: []Expr{&GroupExpr{Expr: &LambdaExpr{Params: []string{vars[0]}, Body: sortExpr}}, result}}
 		}
 		return result, nil
+	case p.Load != nil:
+		format := parseFormat(p.Load.With)
+		path := ""
+		if p.Load.Path != nil {
+			path = strings.Trim(*p.Load.Path, "\"")
+		}
+		expr, err := dataExprFromFile(path, format, p.Load.Type)
+		if err != nil {
+			return nil, err
+		}
+		return expr, nil
 	case p.FunExpr != nil && p.FunExpr.ExprBody != nil:
 		var params []string
 		for _, pa := range p.FunExpr.Params {
@@ -2524,6 +2539,171 @@ func convertLiteral(l *parser.Literal) (Expr, error) {
 	default:
 		return nil, fmt.Errorf("unsupported literal")
 	}
+}
+
+func mapLiteralExpr(e *parser.Expr) *parser.MapLiteral {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) != 0 {
+		return nil
+	}
+	u := e.Binary.Left
+	if len(u.Ops) > 0 || u.Value == nil {
+		return nil
+	}
+	p := u.Value
+	if len(p.Ops) > 0 || p.Target == nil {
+		return nil
+	}
+	return p.Target.Map
+}
+
+func literalString(e *parser.Expr) (string, bool) {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) > 0 {
+		return "", false
+	}
+	u := e.Binary.Left
+	if len(u.Ops) > 0 || u.Value == nil {
+		return "", false
+	}
+	p := u.Value
+	if len(p.Ops) > 0 || p.Target == nil {
+		return "", false
+	}
+	if p.Target.Lit != nil && p.Target.Lit.Str != nil {
+		return *p.Target.Lit.Str, true
+	}
+	if p.Target.Selector != nil && len(p.Target.Selector.Tail) == 0 {
+		return p.Target.Selector.Root, true
+	}
+	return "", false
+}
+
+func isSimpleIdent(e *parser.Expr) (string, bool) {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) > 0 {
+		return "", false
+	}
+	u := e.Binary.Left
+	if len(u.Ops) > 0 || u.Value == nil {
+		return "", false
+	}
+	p := u.Value
+	if len(p.Ops) > 0 || p.Target == nil {
+		return "", false
+	}
+	if p.Target.Selector != nil && len(p.Target.Selector.Tail) == 0 {
+		return p.Target.Selector.Root, true
+	}
+	return "", false
+}
+
+func parseFormat(e *parser.Expr) string {
+	ml := mapLiteralExpr(e)
+	if ml == nil {
+		return ""
+	}
+	for _, it := range ml.Items {
+		key, ok := isSimpleIdent(it.Key)
+		if !ok {
+			key, ok = literalString(it.Key)
+		}
+		if key == "format" {
+			if s, ok := literalString(it.Value); ok {
+				return s
+			}
+		}
+	}
+	return ""
+}
+
+func valueToExpr(v interface{}, typ *parser.TypeRef) Expr {
+	switch val := v.(type) {
+	case map[string]interface{}:
+		names := make([]string, 0, len(val))
+		for k := range val {
+			names = append(names, k)
+		}
+		sort.Strings(names)
+		fields := make([]Expr, len(names))
+		for i, k := range names {
+			fields[i] = valueToExpr(val[k], nil)
+		}
+		if typ != nil && typ.Simple != nil {
+			return &RecordLit{Name: *typ.Simple, Names: names, Fields: fields}
+		}
+		keys := make([]Expr, len(names))
+		for i, k := range names {
+			keys[i] = &StringLit{Value: k}
+		}
+		return &MapLit{Keys: keys, Values: fields}
+	case []interface{}:
+		elems := make([]Expr, len(val))
+		var et *parser.TypeRef
+		if typ != nil {
+			if typ.Generic != nil && typ.Generic.Name == "list" && len(typ.Generic.Args) == 1 {
+				et = typ.Generic.Args[0]
+			} else {
+				et = typ
+			}
+		}
+		for i, it := range val {
+			elems[i] = valueToExpr(it, et)
+		}
+		return &ListLit{Elems: elems}
+	case string:
+		return &StringLit{Value: val}
+	case bool:
+		return &BoolLit{Value: val}
+	case float64:
+		if val == float64(int(val)) {
+			return &IntLit{Value: fmt.Sprintf("%d", int(val))}
+		}
+		return &FloatLit{Value: fmt.Sprintf("%g", val)}
+	case int, int64:
+		return &IntLit{Value: fmt.Sprintf("%d", val)}
+	default:
+		return &StringLit{Value: fmt.Sprintf("%v", val)}
+	}
+}
+
+func dataExprFromFile(path, format string, typ *parser.TypeRef) (Expr, error) {
+	if path == "" {
+		return &ListLit{}, nil
+	}
+	root := meta.RepoRoot()
+	if root != "" && strings.HasPrefix(path, "../") {
+		clean := strings.TrimPrefix(path, "../")
+		path = filepath.Join(root, "tests", clean)
+	}
+	data, err := os.ReadFile(path)
+	if err != nil {
+		return nil, err
+	}
+	var v interface{}
+	switch format {
+	case "yaml":
+		if err := yaml.Unmarshal(data, &v); err != nil {
+			return nil, err
+		}
+	case "json":
+		if err := json.Unmarshal(data, &v); err != nil {
+			return nil, err
+		}
+	case "jsonl":
+		var arr []interface{}
+		for _, line := range bytes.Split(data, []byte{'\n'}) {
+			line = bytes.TrimSpace(line)
+			if len(line) == 0 {
+				continue
+			}
+			var item interface{}
+			if err := json.Unmarshal(line, &item); err == nil {
+				arr = append(arr, item)
+			}
+		}
+		v = arr
+	default:
+		return nil, fmt.Errorf("unsupported load format")
+	}
+	return valueToExpr(v, typ), nil
 }
 
 func convertIfStmt(s *parser.IfStmt) (Stmt, error) {
