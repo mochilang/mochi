@@ -192,6 +192,12 @@ type MinExpr struct{ List Expr }
 // MaxExpr represents the `max` builtin for lists of numbers.
 type MaxExpr struct{ List Expr }
 
+// ToUpperExpr represents strings.ToUpper for Go strings package.
+type ToUpperExpr struct{ Value Expr }
+
+// TrimSpaceExpr represents strings.TrimSpace for Go strings package.
+type TrimSpaceExpr struct{ Value Expr }
+
 type CastExpr struct {
 	Value Expr
 	Type  string
@@ -565,12 +571,21 @@ func emitToStream(w io.Writer, stream string, e Expr, indent int) {
 		io.WriteString(w, "; "+stream+" << \"{\"; bool first=true; for(const auto& __p : __tmp){ if(!first) "+stream+" << \", \"; first=false; "+stream+" << __p.first << ': ' << __p.second; } "+stream+" << \"}\"; }")
 		io.WriteString(w, "\n")
 	default:
-		io.WriteString(w, ind+stream+" << ")
 		if typ == "double" {
-			io.WriteString(w, "std::fixed << std::setprecision(1) << ")
+			if currentProgram != nil {
+				currentProgram.addInclude("<cmath>")
+				currentProgram.addInclude("<sstream>")
+				currentProgram.addInclude("<iomanip>")
+			}
+			io.WriteString(w, ind+"{")
+			io.WriteString(w, " std::ostringstream __ss; double __dv = ")
+			e.emit(w)
+			io.WriteString(w, "; if(std::floor(__dv) == __dv) { __ss<<std::fixed<<std::setprecision(1)<<__dv; } else { __ss<<std::defaultfloat<<std::setprecision(17)<<__dv; } "+stream+" << __ss.str(); }\n")
+		} else {
+			io.WriteString(w, ind+stream+" << ")
+			e.emit(w)
+			io.WriteString(w, ";\n")
 		}
-		e.emit(w)
-		io.WriteString(w, ";\n")
 	}
 }
 
@@ -829,6 +844,24 @@ func (m *MaxExpr) emit(w io.Writer) {
 	io.WriteString(w, ".begin(), ")
 	m.List.emit(w)
 	io.WriteString(w, ".end()))")
+}
+
+func (u *ToUpperExpr) emit(w io.Writer) {
+	if currentProgram != nil {
+		currentProgram.addInclude("<cctype>")
+	}
+	io.WriteString(w, "([]{ std::string __s = ")
+	u.Value.emit(w)
+	io.WriteString(w, "; for(auto &__c : __s){ __c = std::toupper(static_cast<unsigned char>(__c)); } return __s; }())")
+}
+
+func (t *TrimSpaceExpr) emit(w io.Writer) {
+	if currentProgram != nil {
+		currentProgram.addInclude("<cctype>")
+	}
+	io.WriteString(w, "([]{ std::string __s = ")
+	t.Value.emit(w)
+	io.WriteString(w, "; size_t __b = 0; while(__b < __s.size() && std::isspace(static_cast<unsigned char>(__s[__b]))) ++__b; size_t __e = __s.size(); while(__e > __b && std::isspace(static_cast<unsigned char>(__s[__e-1]))) --__e; return __s.substr(__b, __e-__b); }())")
 }
 
 func (c *CastExpr) emit(w io.Writer) {
@@ -1777,6 +1810,9 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 					cp.ListTypes[stmt.Let.Name] = ojc.ElemType
 				}
 			}
+			if typ == "" && val != nil {
+				typ = exprType(val)
+			}
 			globals = append(globals, &LetStmt{Name: stmt.Let.Name, Type: typ, Value: val})
 			if cp.GlobalTypes != nil {
 				cp.GlobalTypes[stmt.Let.Name] = typ
@@ -1881,6 +1917,9 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 					}
 					cp.ListTypes[stmt.Var.Name] = ojc.ElemType
 				}
+			}
+			if typ == "" && val != nil {
+				typ = exprType(val)
 			}
 			globals = append(globals, &LetStmt{Name: stmt.Var.Name, Type: typ, Value: val})
 			if cp.GlobalTypes != nil {
@@ -2268,6 +2307,13 @@ func convertStmt(s *parser.Statement) (Stmt, error) {
 					return nil, nil
 				}
 			case "go":
+				if path == "strings" {
+					builtinAliases[alias] = "go_strings"
+					if currentProgram != nil {
+						currentProgram.addInclude("<cctype>")
+					}
+					return nil, nil
+				}
 				if s.Import.Auto && path == "mochi/runtime/ffi/go/testpkg" {
 					builtinAliases[alias] = "go_testpkg"
 					return nil, nil
@@ -2438,6 +2484,19 @@ func convertPostfix(p *parser.PostfixExpr) (Expr, error) {
 								expr = &CallExpr{Name: "std::pow", Args: args}
 								break
 							}
+						case "go_strings":
+							switch sel.Field {
+							case "ToUpper":
+								if len(args) == 1 {
+									expr = &ToUpperExpr{Value: args[0]}
+									break
+								}
+							case "TrimSpace":
+								if len(args) == 1 {
+									expr = &TrimSpaceExpr{Value: args[0]}
+									break
+								}
+							}
 						}
 					}
 				}
@@ -2445,6 +2504,10 @@ func convertPostfix(p *parser.PostfixExpr) (Expr, error) {
 					// already handled
 				} else if _, ok4 := expr.(*BinaryExpr); ok4 {
 					// already handled
+				} else if _, ok4 := expr.(*ToUpperExpr); ok4 {
+					// builtin handled
+				} else if _, ok4 := expr.(*TrimSpaceExpr); ok4 {
+					// builtin handled
 				} else {
 					return nil, fmt.Errorf("unsupported call")
 				}
@@ -3990,6 +4053,8 @@ func exprType(e Expr) string {
 		return "int"
 	case *AvgExpr:
 		return "double"
+	case *ToUpperExpr, *TrimSpaceExpr:
+		return "std::string"
 	case *SumExpr:
 		return "double"
 	case *MultiListComp:

@@ -1,3 +1,58 @@
+## Progress (2025-07-22 16:38 +0700)
+- docs: update cpp golden progress
+- Generated C++ for 101/103 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-22 16:38 +0700)
+- docs: update cpp golden progress
+- Generated C++ for 101/103 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-22 16:38 +0700)
+- docs: update cpp golden progress
+- Generated C++ for 101/103 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-22 16:38 +0700)
+- docs: update cpp golden progress
+- Generated C++ for 101/103 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-22 16:38 +0700)
+- docs: update cpp golden progress
+- Generated C++ for 101/103 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-22 16:38 +0700)
+- docs: update cpp golden progress
+- Generated C++ for 101/103 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-22 16:38 +0700)
+- docs: update cpp golden progress
+- Generated C++ for 101/103 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-22 16:38 +0700)
+- docs: update cpp golden progress
+- Generated C++ for 100/103 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-22 16:38 +0700)
+- docs: update cpp golden progress
+- Generated C++ for 100/103 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-22 16:38 +0700)
+- docs: update cpp golden progress
+- Generated C++ for 100/103 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-22 16:38 +0700)
+- docs: update cpp golden progress
+- Generated C++ for 100/103 programs
+- Updated README checklist and outputs
+
 ## Progress (2025-07-22 16:27 +0700)
 - cpp transpiler: support load jsonl/yaml
 - Generated C++ for 100/103 programs
