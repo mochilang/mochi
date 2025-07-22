@@ -98,13 +98,22 @@ func TestPrologTranspiler_Rosetta(t *testing.T) {
 		t.Fatalf("glob: %v", err)
 	}
 	sort.Strings(files)
-	max := len(files)
-	if v := os.Getenv("ROSETTA_MAX"); v != "" {
-		if n, err := strconv.Atoi(v); err == nil && n < max {
-			max = n
+
+	if v := os.Getenv("ROSETTA_INDEX"); v != "" {
+		idx, err := strconv.Atoi(v)
+		if err != nil || idx < 1 || idx > len(files) {
+			t.Fatalf("invalid ROSETTA_INDEX: %s", v)
 		}
+		files = files[idx-1 : idx]
+	} else {
+		max := len(files)
+		if v := os.Getenv("ROSETTA_MAX"); v != "" {
+			if n, err := strconv.Atoi(v); err == nil && n < max {
+				max = n
+			}
+		}
+		files = files[:max]
 	}
-	files = files[:max]
 
 	var firstFail string
 	for _, f := range files {
