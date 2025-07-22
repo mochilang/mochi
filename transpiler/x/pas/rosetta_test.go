@@ -172,7 +172,7 @@ func updateRosettaChecklist() {
 	total := len(names)
 	completed := 0
 	var lines []string
-	for _, name := range names {
+	for i, name := range names {
 		mark := "[ ]"
 		if _, err := os.Stat(filepath.Join(outDir, name+".out")); err == nil {
 			if _, err2 := os.Stat(filepath.Join(outDir, name+".error")); os.IsNotExist(err2) {
@@ -180,7 +180,7 @@ func updateRosettaChecklist() {
 				mark = "[x]"
 			}
 		}
-		lines = append(lines, fmt.Sprintf("- %s %s", mark, name))
+		lines = append(lines, fmt.Sprintf("- %s (%d) %s", mark, i+1, name))
 	}
 	var buf bytes.Buffer
 	buf.WriteString("# Pascal Rosetta Transpiler\n\n")

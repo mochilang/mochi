@@ -983,11 +983,29 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 			}
 		case st.Var != nil:
 			vd := VarDecl{Name: st.Var.Name}
-			if st.Var.Type != nil && st.Var.Type.Simple != nil {
-				if *st.Var.Type.Simple == "int" {
-					vd.Type = "integer"
-				} else if *st.Var.Type.Simple == "string" {
-					vd.Type = "string"
+			if st.Var.Type != nil {
+				if st.Var.Type.Simple != nil {
+					if *st.Var.Type.Simple == "int" {
+						vd.Type = "integer"
+					} else if *st.Var.Type.Simple == "string" {
+						vd.Type = "string"
+					}
+				} else if st.Var.Type.Generic != nil && st.Var.Type.Generic.Name == "list" && len(st.Var.Type.Generic.Args) == 1 {
+					arg := st.Var.Type.Generic.Args[0]
+					elem := "integer"
+					if arg.Simple != nil {
+						switch *arg.Simple {
+						case "int":
+							elem = "integer"
+						case "string":
+							elem = "string"
+						case "bool":
+							elem = "boolean"
+						default:
+							elem = *arg.Simple
+						}
+					}
+					vd.Type = "array of " + elem
 				}
 			}
 			if st.Var.Value != nil {
@@ -1149,24 +1167,60 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 			var params []string
 			for _, p := range st.Fun.Params {
 				typ := "integer"
-				if p.Type != nil && p.Type.Simple != nil {
-					switch *p.Type.Simple {
-					case "int":
-						typ = "integer"
-					case "string":
-						typ = "string"
-					default:
-						typ = *p.Type.Simple
+				if p.Type != nil {
+					if p.Type.Simple != nil {
+						switch *p.Type.Simple {
+						case "int":
+							typ = "integer"
+						case "string":
+							typ = "string"
+						default:
+							typ = *p.Type.Simple
+						}
+					} else if p.Type.Generic != nil && p.Type.Generic.Name == "list" && len(p.Type.Generic.Args) == 1 {
+						arg := p.Type.Generic.Args[0]
+						elem := "integer"
+						if arg.Simple != nil {
+							switch *arg.Simple {
+							case "int":
+								elem = "integer"
+							case "string":
+								elem = "string"
+							case "bool":
+								elem = "boolean"
+							default:
+								elem = *arg.Simple
+							}
+						}
+						typ = "array of " + elem
 					}
 				}
 				params = append(params, fmt.Sprintf("%s: %s", p.Name, typ))
 			}
 			rt := ""
-			if st.Fun.Return != nil && st.Fun.Return.Simple != nil {
-				if *st.Fun.Return.Simple == "bool" {
-					rt = "boolean"
-				} else if *st.Fun.Return.Simple == "int" {
-					rt = "integer"
+			if st.Fun.Return != nil {
+				if st.Fun.Return.Simple != nil {
+					if *st.Fun.Return.Simple == "bool" {
+						rt = "boolean"
+					} else if *st.Fun.Return.Simple == "int" {
+						rt = "integer"
+					}
+				} else if st.Fun.Return.Generic != nil && st.Fun.Return.Generic.Name == "list" && len(st.Fun.Return.Generic.Args) == 1 {
+					arg := st.Fun.Return.Generic.Args[0]
+					elem := "integer"
+					if arg.Simple != nil {
+						switch *arg.Simple {
+						case "int":
+							elem = "integer"
+						case "string":
+							elem = "string"
+						case "bool":
+							elem = "boolean"
+						default:
+							elem = *arg.Simple
+						}
+					}
+					rt = "array of " + elem
 				}
 			}
 			pr.Funs = append(pr.Funs, FunDecl{Name: st.Fun.Name, Params: params, ReturnType: rt, Body: fnBody})
@@ -1286,11 +1340,29 @@ func convertBody(env *types.Env, body []*parser.Statement, varTypes map[string]s
 			}
 		case st.Var != nil:
 			vd := VarDecl{Name: st.Var.Name}
-			if st.Var.Type != nil && st.Var.Type.Simple != nil {
-				if *st.Var.Type.Simple == "int" {
-					vd.Type = "integer"
-				} else if *st.Var.Type.Simple == "string" {
-					vd.Type = "string"
+			if st.Var.Type != nil {
+				if st.Var.Type.Simple != nil {
+					if *st.Var.Type.Simple == "int" {
+						vd.Type = "integer"
+					} else if *st.Var.Type.Simple == "string" {
+						vd.Type = "string"
+					}
+				} else if st.Var.Type.Generic != nil && st.Var.Type.Generic.Name == "list" && len(st.Var.Type.Generic.Args) == 1 {
+					arg := st.Var.Type.Generic.Args[0]
+					elem := "integer"
+					if arg.Simple != nil {
+						switch *arg.Simple {
+						case "int":
+							elem = "integer"
+						case "string":
+							elem = "string"
+						case "bool":
+							elem = "boolean"
+						default:
+							elem = *arg.Simple
+						}
+					}
+					vd.Type = "array of " + elem
 				}
 			}
 			if st.Var.Value != nil {
