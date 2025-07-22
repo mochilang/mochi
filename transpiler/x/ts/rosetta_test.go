@@ -9,11 +9,11 @@ import (
 	"os/exec"
 	"path/filepath"
 	"sort"
+	"strconv"
 	"strings"
 	"testing"
 	"time"
 
-	"mochi/golden"
 	"mochi/parser"
 	meta "mochi/transpiler/meta"
 	tstranspiler "mochi/transpiler/x/ts"
@@ -25,63 +25,90 @@ func TestTSTranspiler_Rosetta_Golden(t *testing.T) {
 		t.Skipf("deno not installed: %v", err)
 	}
 	root := repoRoot(t)
+	srcDir := filepath.Join(root, "tests", "rosetta", "x", "Mochi")
 	outDir := filepath.Join(root, "tests", "rosetta", "transpiler", "TypeScript")
 	os.MkdirAll(outDir, 0o755)
 
-	golden.RunWithSummary(t, "tests/rosetta/x/Mochi", ".mochi", ".out", func(src string) ([]byte, error) {
-		name := strings.TrimSuffix(filepath.Base(src), ".mochi")
-		codePath := filepath.Join(outDir, name+".ts")
-		outPath := filepath.Join(outDir, name+".out")
-		errPath := filepath.Join(outDir, name+".error")
+	files, err := filepath.Glob(filepath.Join(srcDir, "*.mochi"))
+	if err != nil {
+		t.Fatalf("glob: %v", err)
+	}
+	sort.Strings(files)
+	if len(files) == 0 {
+		t.Fatal("no Mochi Rosetta tests found")
+	}
 
-		want, err := os.ReadFile(outPath)
-		if err != nil {
-			srcOut := strings.TrimSuffix(src, ".mochi") + ".out"
-			want, err = os.ReadFile(srcOut)
-			if err != nil {
-				return nil, fmt.Errorf("read want: %v", err)
-			}
+	idx := 1
+	if s := os.Getenv("ROSETTA_INDEX"); s != "" {
+		if v, err := strconv.Atoi(s); err == nil && v >= 1 {
+			idx = v
 		}
-		want = bytes.TrimSpace(want)
+	}
+	if idx < 1 || idx > len(files) {
+		t.Fatalf("index %d out of range 1..%d", idx, len(files))
+	}
 
-		prog, err := parser.Parse(src)
-		if err != nil {
-			_ = os.WriteFile(errPath, []byte("parse: "+err.Error()), 0o644)
-			return nil, err
-		}
-		env := types.NewEnv(nil)
-		if errs := types.Check(prog, env); len(errs) > 0 {
-			_ = os.WriteFile(errPath, []byte("type: "+errs[0].Error()), 0o644)
-			return nil, errs[0]
-		}
-		tsprog, err := tstranspiler.Transpile(prog, env)
-		if err != nil {
-			_ = os.WriteFile(errPath, []byte("transpile: "+err.Error()), 0o644)
-			return nil, err
-		}
-		code := tstranspiler.Emit(tsprog)
-		if err := os.WriteFile(codePath, code, 0o644); err != nil {
-			return nil, err
-		}
-		cmd := exec.Command("deno", "run", "--quiet", "--allow-net", "--allow-read", "--allow-env", codePath)
-		cmd.Env = append(os.Environ(), "DENO_TLS_CA_STORE=system")
-		if data, err := os.ReadFile(strings.TrimSuffix(src, ".mochi") + ".in"); err == nil {
-			cmd.Stdin = bytes.NewReader(data)
-		}
-		out, err := cmd.CombinedOutput()
-		got := bytes.TrimSpace(out)
-		if err != nil {
-			_ = os.WriteFile(errPath, append([]byte("run: "+err.Error()+"\n"), out...), 0o644)
-			return nil, err
-		}
-		_ = os.Remove(errPath)
-		_ = os.WriteFile(outPath, got, 0o644)
+	src := files[idx-1]
+	name := strings.TrimSuffix(filepath.Base(src), ".mochi")
 
-		if !bytes.Equal(got, want) {
-			return nil, fmt.Errorf("output mismatch")
+	t.Logf("running %s (%d/%d)", name, idx, len(files))
+	if _, err := runTSCase(src, name, outDir); err != nil {
+		t.Fatalf("%v", err)
+	}
+}
+
+func runTSCase(src, name, outDir string) ([]byte, error) {
+	codePath := filepath.Join(outDir, name+".ts")
+	outPath := filepath.Join(outDir, name+".out")
+	errPath := filepath.Join(outDir, name+".error")
+
+	want, err := os.ReadFile(outPath)
+	if err != nil {
+		srcOut := strings.TrimSuffix(src, ".mochi") + ".out"
+		want, err = os.ReadFile(srcOut)
+		if err != nil {
+			return nil, fmt.Errorf("read want: %v", err)
 		}
-		return got, nil
-	})
+	}
+	want = bytes.TrimSpace(want)
+
+	prog, err := parser.Parse(src)
+	if err != nil {
+		_ = os.WriteFile(errPath, []byte("parse: "+err.Error()), 0o644)
+		return nil, err
+	}
+	env := types.NewEnv(nil)
+	if errs := types.Check(prog, env); len(errs) > 0 {
+		_ = os.WriteFile(errPath, []byte("type: "+errs[0].Error()), 0o644)
+		return nil, errs[0]
+	}
+	tsprog, err := tstranspiler.Transpile(prog, env)
+	if err != nil {
+		_ = os.WriteFile(errPath, []byte("transpile: "+err.Error()), 0o644)
+		return nil, err
+	}
+	code := tstranspiler.Emit(tsprog)
+	if err := os.WriteFile(codePath, code, 0o644); err != nil {
+		return nil, err
+	}
+	cmd := exec.Command("deno", "run", "--quiet", "--allow-net", "--allow-read", "--allow-env", codePath)
+	cmd.Env = append(os.Environ(), "DENO_TLS_CA_STORE=system")
+	if data, err := os.ReadFile(strings.TrimSuffix(src, ".mochi") + ".in"); err == nil {
+		cmd.Stdin = bytes.NewReader(data)
+	}
+	out, err := cmd.CombinedOutput()
+	got := bytes.TrimSpace(out)
+	if err != nil {
+		_ = os.WriteFile(errPath, append([]byte("run: "+err.Error()+"\n"), out...), 0o644)
+		return nil, err
+	}
+	_ = os.Remove(errPath)
+	_ = os.WriteFile(outPath, got, 0o644)
+
+	if !bytes.Equal(got, want) {
+		return nil, fmt.Errorf("output mismatch")
+	}
+	return got, nil
 }
 
 func updateRosettaChecklist() {
@@ -94,7 +121,7 @@ func updateRosettaChecklist() {
 	total := len(files)
 	compiled := 0
 	var lines []string
-	for _, f := range files {
+	for i, f := range files {
 		name := strings.TrimSuffix(filepath.Base(f), ".out")
 		mark := "[ ]"
 		if _, err := os.Stat(filepath.Join(outDir, name+".error")); err == nil {
@@ -103,7 +130,7 @@ func updateRosettaChecklist() {
 			compiled++
 			mark = "[x]"
 		}
-		lines = append(lines, fmt.Sprintf("- %s %s", mark, name))
+		lines = append(lines, fmt.Sprintf("%d. %s %s", i+1, mark, name))
 	}
 	ts := time.Now().UTC().Format("2006-01-02 15:04 MST")
 	var buf bytes.Buffer
