@@ -16,6 +16,10 @@ import (
 
 var typeDecls []*TypeDeclStmt
 
+var needsBreaks bool
+var needsJSON bool
+var replaceContinue bool
+
 var scalaKeywords = map[string]bool{
 	"val":  true,
 	"var":  true,
@@ -38,6 +42,61 @@ type Program struct {
 type Stmt interface{ emit(io.Writer) }
 
 type Expr interface{ emit(io.Writer) }
+
+func containsBreak(stmts []Stmt) bool {
+	for _, st := range stmts {
+		switch s := st.(type) {
+		case *BreakStmt:
+			return true
+		case *IfStmt:
+			if containsBreak(s.Then) || containsBreak(s.Else) {
+				return true
+			}
+		case *ForEachStmt:
+			if containsBreak(s.Body) {
+				return true
+			}
+		case *ForRangeStmt:
+			if containsBreak(s.Body) {
+				return true
+			}
+		case *WhileStmt:
+			if containsBreak(s.Body) {
+				return true
+			}
+		}
+	}
+	return false
+}
+
+func containsContinue(stmts []Stmt) bool {
+	for _, st := range stmts {
+		switch s := st.(type) {
+		case *ContinueStmt:
+			return true
+		case *IfStmt:
+			if containsContinue(s.Then) || containsContinue(s.Else) {
+				return true
+			}
+		case *ForEachStmt:
+			if containsContinue(s.Body) {
+				return true
+			}
+		case *ForRangeStmt:
+			if containsContinue(s.Body) {
+				return true
+			}
+		case *WhileStmt:
+			if containsContinue(s.Body) {
+				return true
+			}
+		}
+	}
+	return false
+}
+
+func ContainsBreak(stmts []Stmt) bool    { return containsBreak(stmts) }
+func ContainsContinue(stmts []Stmt) bool { return containsContinue(stmts) }
 
 type ExprStmt struct{ Expr Expr }
 
@@ -86,7 +145,13 @@ func (b *BreakStmt) emit(w io.Writer) { fmt.Fprint(w, "break") }
 // ContinueStmt represents a continue statement.
 type ContinueStmt struct{}
 
-func (c *ContinueStmt) emit(w io.Writer) { fmt.Fprint(w, "continue") }
+func (c *ContinueStmt) emit(w io.Writer) {
+	if replaceContinue {
+		fmt.Fprint(w, "break")
+	} else {
+		fmt.Fprint(w, "continue")
+	}
+}
 
 type IfStmt struct {
 	Cond Expr
@@ -283,15 +348,45 @@ func (fr *ForRangeStmt) emit(w io.Writer) {
 }
 
 func (fe *ForEachStmt) emit(w io.Writer) {
-	fmt.Fprintf(w, "for (%s <- ", fe.Name)
+	hasBr := containsBreak(fe.Body)
+	hasCont := containsContinue(fe.Body)
+	if hasBr || hasCont {
+		needsBreaks = true
+	}
+	if hasBr {
+		fmt.Fprint(w, "breakable {\n")
+	}
+	fmt.Fprintf(w, "  for (%s <- ", fe.Name)
 	fe.Iterable.emit(w)
 	fmt.Fprint(w, ") {\n")
+	if hasCont {
+		fmt.Fprint(w, "    breakable {\n")
+		replaceContinue = true
+	}
 	for _, st := range fe.Body {
 		fmt.Fprint(w, "    ")
-		st.emit(w)
+		switch s := st.(type) {
+		case *BreakStmt:
+			if hasBr {
+				fmt.Fprint(w, "break")
+			}
+		case *ContinueStmt:
+			if hasCont {
+				fmt.Fprint(w, "break")
+			}
+		default:
+			s.emit(w)
+		}
 		fmt.Fprint(w, "\n")
 	}
+	if hasCont {
+		replaceContinue = false
+		fmt.Fprint(w, "    }\n")
+	}
 	fmt.Fprint(w, "  }")
+	if hasBr {
+		fmt.Fprint(w, "\n}")
+	}
 }
 
 func (i *IfStmt) emit(w io.Writer) {
@@ -809,7 +904,25 @@ func Emit(p *Program) []byte {
 	var buf bytes.Buffer
 	buf.Write(meta.Header("//"))
 	buf.WriteString("import scala.collection.mutable.{ArrayBuffer, Map}\n")
+	if needsJSON {
+		buf.WriteString("import scala.collection.immutable.ListMap\n")
+	}
+	if needsBreaks {
+		buf.WriteString("import scala.util.control.Breaks._\n")
+	}
 	buf.WriteString("object Main {\n")
+	if needsJSON {
+		buf.WriteString("  def toJson(value: Any, indent: Int = 0): String = value match {\n")
+		buf.WriteString("    case m: scala.collection.Map[_, _] =>\n")
+		buf.WriteString("      val items = ListMap(m.toSeq.sortBy(_._1.toString): _*).toSeq.map{ case (k,v) => \"  \"*(indent+1)+\"\\\"\"+k.toString+\"\\\": \"+toJson(v, indent+1) }\n")
+		buf.WriteString("      \"{\\n\"+items.mkString(\",\\n\")+\"\\n\"+\"  \"*indent+\"}\"\n")
+		buf.WriteString("    case s: Seq[_] =>\n")
+		buf.WriteString("      val items = s.map(x => \"  \"*(indent+1)+toJson(x, indent+1))\n")
+		buf.WriteString("      \"[\\n\"+items.mkString(\",\\n\")+\"\\n\"+\"  \"*indent+\"]\"\n")
+		buf.WriteString("    case s: String => \"\\\"\"+s+\"\\\"\"\n")
+		buf.WriteString("    case other => other.toString\n")
+		buf.WriteString("  }\n\n")
+	}
 
 	for _, st := range p.Stmts {
 		switch s := st.(type) {
@@ -845,6 +958,8 @@ func Emit(p *Program) []byte {
 func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	sc := &Program{}
 	typeDecls = nil
+	needsBreaks = false
+	needsJSON = false
 	for _, st := range prog.Statements {
 		s, err := convertStmt(st, env)
 		if err != nil {
@@ -858,6 +973,12 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 			stmts = append(stmts, d)
 		}
 		sc.Stmts = append(stmts, sc.Stmts...)
+	}
+	if containsBreak(sc.Stmts) || containsContinue(sc.Stmts) {
+		needsBreaks = true
+	}
+	if needsJSON {
+		// flag already set during conversion
 	}
 	return sc, nil
 }
@@ -1362,6 +1483,12 @@ func convertCall(c *parser.CallExpr, env *types.Env) (Expr, error) {
 		list := &CallExpr{Fn: &Name{Name: "List"}, Args: args}
 		join := &CallExpr{Fn: &FieldExpr{Receiver: list, Name: "mkString"}, Args: []Expr{&StringLit{Value: " "}}}
 		return &CallExpr{Fn: &Name{Name: "println"}, Args: []Expr{join}}, nil
+	case "json":
+		if len(args) == 1 {
+			needsJSON = true
+			jsonCall := &CallExpr{Fn: &Name{Name: "toJson"}, Args: []Expr{args[0]}}
+			return &CallExpr{Fn: &Name{Name: "println"}, Args: []Expr{jsonCall}}, nil
+		}
 	case "str":
 		if len(args) == 1 {
 			name = "String.valueOf"
