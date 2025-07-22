@@ -131,7 +131,9 @@ func Format(src []byte) []byte {
 			buf.WriteByte('(')
 			indent++
 		case ')':
-			indent--
+			if indent > 0 {
+				indent--
+			}
 			buf.WriteByte(')')
 			if i+1 < len(src) && src[i+1] != '\n' {
 				buf.WriteByte('\n')
@@ -363,9 +365,19 @@ func convertStmt(st *parser.Statement) (Node, error) {
 					&List{Elems: []Node{Symbol("newline")}},
 				}
 				return &List{Elems: forms}, nil
+			default:
+				expr, err := convertCall(Symbol(call.Func), &parser.CallOp{Args: call.Args})
+				if err != nil {
+					return nil, err
+				}
+				return expr, nil
 			}
 		}
-		return nil, fmt.Errorf("unsupported expression statement")
+		expr, err := convertParserExpr(st.Expr.Expr)
+		if err != nil {
+			return nil, err
+		}
+		return expr, nil
 	case st.Let != nil:
 		name := st.Let.Name
 		var val Node
