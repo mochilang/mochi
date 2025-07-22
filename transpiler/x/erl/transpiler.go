@@ -531,6 +531,16 @@ type OuterJoinExpr struct {
 	Select   Expr
 }
 
+// RightJoinExpr represents a basic right join between two sources.
+type RightJoinExpr struct {
+	LeftVar  string
+	LeftSrc  Expr
+	RightVar string
+	RightSrc Expr
+	On       Expr
+	Select   Expr
+}
+
 type rightJoin struct {
 	Var string
 	Src Expr
@@ -1610,6 +1620,30 @@ func (o *OuterJoinExpr) emit(w io.Writer) {
 	io.WriteString(w, "))")
 }
 
+func (r *RightJoinExpr) emit(w io.Writer) {
+	io.WriteString(w, "lists:reverse(lists:foldl(fun(")
+	io.WriteString(w, r.RightVar)
+	io.WriteString(w, ", Acc0) ->\n    {Matched,Acc} = lists:foldl(fun(")
+	io.WriteString(w, r.LeftVar)
+	io.WriteString(w, ", {M,A}) ->\n        case ")
+	if r.On != nil {
+		r.On.emit(w)
+	} else {
+		io.WriteString(w, "true")
+	}
+	io.WriteString(w, " of\n            true -> {true, [")
+	r.Select.emit(w)
+	io.WriteString(w, "|A]};\n            _ -> {M,A}\n        end\n    end, {false, Acc0}, ")
+	r.LeftSrc.emit(w)
+	io.WriteString(w, "),\n    case Matched of\n        true -> Acc;\n  false -> [(fun() -> ")
+	io.WriteString(w, r.LeftVar)
+	io.WriteString(w, " = nil, ")
+	r.Select.emit(w)
+	io.WriteString(w, " end())|Acc]\n    end\nend, [], ")
+	r.RightSrc.emit(w)
+	io.WriteString(w, "))")
+}
+
 func mapOp(op string) string {
 	switch op {
 	case "&&":
@@ -2654,6 +2688,9 @@ func convertQueryExpr(q *parser.QueryExpr, env *types.Env, ctx *context) (Expr, 
 		if side == "outer" && len(q.Froms) == 0 && q.Where == nil && q.Sort == nil && q.Skip == nil && q.Take == nil {
 			return convertOuterJoinQuery(q, env, ctx)
 		}
+		if side == "right" && len(q.Froms) == 0 && q.Where == nil && q.Sort == nil && q.Skip == nil && q.Take == nil {
+			return convertRightJoinQuery(q, env, ctx)
+		}
 	}
 	if len(q.Joins) > 1 {
 		last := q.Joins[len(q.Joins)-1]
@@ -2826,6 +2863,37 @@ func convertOuterJoinQuery(q *parser.QueryExpr, env *types.Env, ctx *context) (E
 		return nil, err
 	}
 	return &OuterJoinExpr{LeftVar: leftVar, LeftSrc: leftSrc, RightVar: rightVar, RightSrc: rightSrc, On: cond, Select: sel}, nil
+}
+
+func convertRightJoinQuery(q *parser.QueryExpr, env *types.Env, ctx *context) (Expr, error) {
+	j := q.Joins[0]
+	loopCtx := ctx.clone()
+	leftSrc, err := convertExpr(q.Source, env, ctx)
+	if err != nil {
+		return nil, err
+	}
+	leftVar := loopCtx.newAlias(q.Var)
+	loopCtx.setStrFields(q.Var, stringFields(leftSrc))
+	loopCtx.setBoolFields(q.Var, boolFields(leftSrc))
+	rightSrc, err := convertExpr(j.Src, env, ctx)
+	if err != nil {
+		return nil, err
+	}
+	rightVar := loopCtx.newAlias(j.Var)
+	loopCtx.setStrFields(j.Var, stringFields(rightSrc))
+	loopCtx.setBoolFields(j.Var, boolFields(rightSrc))
+	child := types.NewEnv(env)
+	child.SetVar(q.Var, types.AnyType{}, true)
+	child.SetVar(j.Var, types.AnyType{}, true)
+	cond, err := convertExpr(j.On, child, loopCtx)
+	if err != nil {
+		return nil, err
+	}
+	sel, err := convertExpr(q.Select, child, loopCtx)
+	if err != nil {
+		return nil, err
+	}
+	return &RightJoinExpr{LeftVar: leftVar, LeftSrc: leftSrc, RightVar: rightVar, RightSrc: rightSrc, On: cond, Select: sel}, nil
 }
 
 func replaceVars(e Expr, repl map[string]Expr) Expr {
