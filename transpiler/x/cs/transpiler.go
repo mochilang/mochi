@@ -3,18 +3,22 @@
 package cstranspiler
 
 import (
+	"bufio"
 	"bytes"
+	"encoding/json"
 	"fmt"
 	"io"
 	"os"
 	"os/exec"
 	"path/filepath"
+	"reflect"
 	"runtime"
 	"sort"
 	"strconv"
 	"strings"
 	"time"
 
+	yaml "gopkg.in/yaml.v3"
 	"mochi/parser"
 	"mochi/types"
 )
@@ -184,6 +188,38 @@ func (b *BreakStmt) emit(w io.Writer) { fmt.Fprint(w, "break") }
 type ContinueStmt struct{}
 
 func (c *ContinueStmt) emit(w io.Writer) { fmt.Fprint(w, "continue") }
+
+// UpdateStmt updates fields of items in a list of structs.
+type UpdateStmt struct {
+	Target string
+	Fields []string
+	Values []Expr
+	Cond   Expr
+}
+
+func (u *UpdateStmt) emit(w io.Writer) {
+	fmt.Fprintf(w, "for (int i = 0; i < %s.Length; i++) {\n", u.Target)
+	fmt.Fprintf(w, "    var item = %s[i];\n", u.Target)
+	if u.Cond != nil {
+		fmt.Fprint(w, "    if (")
+		u.Cond.emit(w)
+		fmt.Fprint(w, ") {\n")
+		for i, f := range u.Fields {
+			fmt.Fprintf(w, "        item.%s = ", f)
+			u.Values[i].emit(w)
+			fmt.Fprint(w, ";\n")
+		}
+		fmt.Fprint(w, "    }\n")
+	} else {
+		for i, f := range u.Fields {
+			fmt.Fprintf(w, "    item.%s = ", f)
+			u.Values[i].emit(w)
+			fmt.Fprint(w, ";\n")
+		}
+	}
+	fmt.Fprintf(w, "    %s[i] = item;\n", u.Target)
+	fmt.Fprint(w, "}\n")
+}
 
 // SaveStmt saves a list of maps to stdout in JSONL format.
 type SaveStmt struct {
@@ -2019,6 +2055,8 @@ func compileStmt(prog *Program, s *parser.Statement) (Stmt, error) {
 		return &WhileStmt{Cond: cond, Body: body}, nil
 	case s.If != nil:
 		return compileIfStmt(prog, s.If)
+	case s.Update != nil:
+		return compileUpdateStmt(s.Update)
 	case s.Import != nil:
 		if prog != nil && s.Import.Auto && s.Import.Lang != nil && *s.Import.Lang == "python" {
 			if s.Import.Path == "\"math\"" || s.Import.Path == "math" {
@@ -2026,7 +2064,12 @@ func compileStmt(prog *Program, s *parser.Statement) (Stmt, error) {
 				importAliases[s.Import.As] = "math"
 				return nil, nil
 			}
+		} else if prog != nil && s.Import.Auto && s.Import.Lang != nil && *s.Import.Lang == "go" {
+			varTypes[s.Import.As] = "dynamic"
+			return nil, nil
 		}
+	case s.ExternVar != nil, s.ExternFun != nil, s.ExternType != nil, s.ExternObject != nil:
+		return nil, nil
 	case s.Test == nil && s.Import == nil && s.Type == nil:
 		return nil, fmt.Errorf("unsupported statement at %d:%d", s.Pos.Line, s.Pos.Column)
 	}
@@ -2071,6 +2114,35 @@ func compileIfStmt(prog *Program, i *parser.IfStmt) (Stmt, error) {
 		blockDepth--
 	}
 	return &IfStmt{Cond: cond, Then: thenStmts, Else: elseStmts}, nil
+}
+
+func compileUpdateStmt(u *parser.UpdateStmt) (Stmt, error) {
+	fields := make([]string, len(u.Set.Items))
+	values := make([]Expr, len(u.Set.Items))
+	for i, it := range u.Set.Items {
+		key, ok := simpleIdent(it.Key)
+		if !ok {
+			key, ok = literalString(it.Key)
+			if !ok {
+				return nil, fmt.Errorf("unsupported update key")
+			}
+		}
+		val, err := compileExpr(it.Value)
+		if err != nil {
+			return nil, err
+		}
+		fields[i] = key
+		values[i] = val
+	}
+	var cond Expr
+	if u.Where != nil {
+		var err error
+		cond, err = compileExpr(u.Where)
+		if err != nil {
+			return nil, err
+		}
+	}
+	return &UpdateStmt{Target: u.Target, Fields: fields, Values: values, Cond: cond}, nil
 }
 
 func compilePrimary(p *parser.Primary) (Expr, error) {
@@ -2267,6 +2339,23 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 		return &StructLit{Name: st.Name, Fields: fields}, nil
 	case p.Query != nil:
 		return compileQueryExpr(p.Query)
+	case p.Load != nil:
+		format := parseFormat(p.Load.With)
+		path := ""
+		if p.Load.Path != nil {
+			path = strings.Trim(*p.Load.Path, "\"")
+		}
+		if format == "" {
+			format = "yaml"
+		}
+		if format != "yaml" && format != "jsonl" {
+			return nil, fmt.Errorf("unsupported load format")
+		}
+		expr, err := dataExprFromFile(path, format, p.Load.Type)
+		if err != nil {
+			return nil, err
+		}
+		return expr, nil
 	case p.Match != nil:
 		return compileMatchExpr(p.Match)
 	case p.Selector != nil:
@@ -2897,6 +2986,132 @@ func parseFormat(e *parser.Expr) string {
 		}
 	}
 	return ""
+}
+
+func repoRoot() string {
+	dir, _ := os.Getwd()
+	for i := 0; i < 10; i++ {
+		if _, err := os.Stat(filepath.Join(dir, "go.mod")); err == nil {
+			return dir
+		}
+		parent := filepath.Dir(dir)
+		if parent == dir {
+			break
+		}
+		dir = parent
+	}
+	return ""
+}
+
+func dataExprFromFile(path, format string, typ *parser.TypeRef) (Expr, error) {
+	if path == "" {
+		return &ListLit{}, nil
+	}
+	root := repoRoot()
+	if root != "" && strings.HasPrefix(path, "../") {
+		clean := strings.TrimPrefix(path, "../")
+		path = filepath.Join(root, "tests", clean)
+	}
+	data, err := os.ReadFile(path)
+	if err != nil {
+		return nil, err
+	}
+	var v interface{}
+	switch format {
+	case "yaml":
+		if err := yaml.Unmarshal(data, &v); err != nil {
+			return nil, err
+		}
+	case "jsonl":
+		var list []interface{}
+		scanner := bufio.NewScanner(bytes.NewReader(data))
+		for scanner.Scan() {
+			line := strings.TrimSpace(scanner.Text())
+			if line == "" {
+				continue
+			}
+			var item interface{}
+			if err := json.Unmarshal([]byte(line), &item); err != nil {
+				return nil, err
+			}
+			list = append(list, item)
+		}
+		if err := scanner.Err(); err != nil {
+			return nil, err
+		}
+		v = list
+	default:
+		return nil, fmt.Errorf("unsupported format")
+	}
+	return valueToExpr(v, typ), nil
+}
+
+func valueToExpr(v interface{}, typ *parser.TypeRef) Expr {
+	switch val := v.(type) {
+	case map[string]interface{}:
+		if typ != nil && typ.Simple != nil {
+			if st, ok := structTypes[*typ.Simple]; ok {
+				fields := make([]StructFieldValue, len(st.Order))
+				for i, k := range st.Order {
+					ft := parserTypeRefFromType(st.Fields[k])
+					fields[i] = StructFieldValue{Name: k, Value: valueToExpr(val[k], ft)}
+				}
+				return &StructLit{Name: st.Name, Fields: fields}
+			}
+		}
+		names := make([]string, 0, len(val))
+		for k := range val {
+			names = append(names, k)
+		}
+		sort.Strings(names)
+		items := make([]MapItem, len(names))
+		for i, k := range names {
+			items[i] = MapItem{Key: &StringLit{Value: k}, Value: valueToExpr(val[k], nil)}
+		}
+		return &MapLit{Items: items}
+	case []interface{}:
+		elems := make([]Expr, len(val))
+		for i, it := range val {
+			elems[i] = valueToExpr(it, typ)
+		}
+		return &ListLit{Elems: elems}
+	case string:
+		return &StringLit{Value: val}
+	case bool:
+		return &BoolLit{Value: val}
+	case float64:
+		if typ != nil && typ.Simple != nil && *typ.Simple == "int" {
+			return &IntLit{Value: int(val)}
+		}
+		return &FloatLit{Value: val}
+	case int, int64:
+		return &IntLit{Value: int(reflect.ValueOf(val).Int())}
+	default:
+		return &StringLit{Value: fmt.Sprintf("%v", val)}
+	}
+}
+
+func parserTypeRefFromType(t types.Type) *parser.TypeRef {
+	switch tt := t.(type) {
+	case types.IntType, types.Int64Type:
+		s := "int"
+		return &parser.TypeRef{Simple: &s}
+	case types.FloatType:
+		s := "double"
+		return &parser.TypeRef{Simple: &s}
+	case types.BoolType:
+		s := "bool"
+		return &parser.TypeRef{Simple: &s}
+	case types.StringType:
+		s := "string"
+		return &parser.TypeRef{Simple: &s}
+	case types.StructType:
+		if tt.Name != "" {
+			s := tt.Name
+			return &parser.TypeRef{Simple: &s}
+		}
+	}
+	return nil
 }
 
 func extractSaveExpr(e *parser.Expr) *parser.SaveExpr {
