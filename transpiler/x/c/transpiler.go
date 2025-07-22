@@ -791,6 +791,24 @@ func formatConst(e Expr) string {
 	}
 }
 
+func formatMapString(m map[string]any) string {
+	keys := make([]string, 0, len(m))
+	for k := range m {
+		keys = append(keys, k)
+	}
+	sort.Strings(keys)
+	parts := make([]string, len(keys))
+	for i, k := range keys {
+		switch v := m[k].(type) {
+		case string:
+			parts[i] = fmt.Sprintf("'%s': '%s'", k, v)
+		default:
+			parts[i] = fmt.Sprintf("'%s': %v", k, v)
+		}
+	}
+	return "{" + strings.Join(parts, ", ") + "}"
+}
+
 func markMath() {
 	needMath = true
 }
@@ -3015,6 +3033,8 @@ func inferCType(env *types.Env, name string, e Expr) string {
 
 func anyToExpr(v any) Expr {
 	switch t := v.(type) {
+	case nil:
+		return &StringLit{Value: "None"}
 	case int:
 		return &IntLit{Value: t}
 	case int64:
@@ -3149,6 +3169,15 @@ func evalQueryConst(q *parser.QueryExpr) (*ListLit, bool) {
 	if err == nil {
 		var elems []Expr
 		for _, r := range results {
+			if m, ok := r.(map[string]any); ok {
+				for k, v := range m {
+					if v == nil {
+						m[k] = "None"
+					} else if mv, ok2 := v.(map[string]any); ok2 {
+						m[k] = formatMapString(mv)
+					}
+				}
+			}
 			ex := anyToExpr(r)
 			if ex == nil {
 				return nil, false
