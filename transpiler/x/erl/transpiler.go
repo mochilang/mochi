@@ -2290,31 +2290,36 @@ func convertIfStmt(n *parser.IfStmt, env *types.Env, ctx *context) (*IfStmt, err
 		}
 	}
 
-	changed := map[string]bool{}
-	for k, v := range thenCtx.alias {
-		if base.alias[k] != v {
-			changed[k] = true
-		}
-	}
-	for k, v := range elseCtx.alias {
-		if base.alias[k] != v {
-			changed[k] = true
-		}
-	}
-	for name := range changed {
-		newA := ctx.newAlias(name)
-		tVal := base.alias[name]
-		if a, ok := thenCtx.alias[name]; ok {
-			tVal = a
-		}
-		thenStmts = append(thenStmts, &LetStmt{Name: newA, Expr: &NameRef{Name: tVal}})
-		eVal := base.alias[name]
-		if a, ok := elseCtx.alias[name]; ok {
-			eVal = a
-		}
-		elseStmts = append(elseStmts, &LetStmt{Name: newA, Expr: &NameRef{Name: eVal}})
-		ctx.alias[name] = newA
-	}
+       changed := map[string]bool{}
+       for k, v := range thenCtx.alias {
+               if base.alias[k] != v {
+                       changed[k] = true
+               }
+       }
+       for k, v := range elseCtx.alias {
+               if base.alias[k] != v {
+                       changed[k] = true
+               }
+       }
+       var names []string
+       for name := range changed {
+               names = append(names, name)
+       }
+       sort.Strings(names)
+       for _, name := range names {
+               newA := ctx.newAlias(name)
+               tVal := base.alias[name]
+               if a, ok := thenCtx.alias[name]; ok {
+                       tVal = a
+               }
+               thenStmts = append(thenStmts, &LetStmt{Name: newA, Expr: &NameRef{Name: tVal}})
+               eVal := base.alias[name]
+               if a, ok := elseCtx.alias[name]; ok {
+                       eVal = a
+               }
+               elseStmts = append(elseStmts, &LetStmt{Name: newA, Expr: &NameRef{Name: eVal}})
+               ctx.alias[name] = newA
+       }
 
 	return &IfStmt{Cond: cond, Then: thenStmts, Else: elseStmts}, nil
 }
