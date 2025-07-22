@@ -2,8 +2,8 @@
 
 Generated Scheme code for programs in `tests/vm/valid`. Each program has a `.scm` file produced by the transpiler and a `.out` file with its runtime output. Compilation or execution errors are captured in `.error` files.
 
-## VM Golden Test Checklist (79/102)
-Last updated: 2025-07-22 03:01 UTC
+## VM Golden Test Checklist (79/103)
+Last updated: 2025-07-22 16:33 UTC
 
 - [x] append_builtin
 - [x] avg_builtin
@@ -70,6 +70,7 @@ Last updated: 2025-07-22 03:01 UTC
 - [x] math_ops
 - [x] membership
 - [x] min_max_builtin
+- [ ] mix_go_python
 - [x] nested_function
 - [x] order_by_map
 - [x] outer_join
