@@ -3,12 +3,12 @@
 package ocaml_test
 
 import (
+	"bufio"
 	"bytes"
 	"fmt"
 	"os"
 	"os/exec"
 	"path/filepath"
-	"sort"
 	"strconv"
 	"strings"
 	"testing"
@@ -84,39 +84,59 @@ func runCase(src, outDir string) ([]byte, error) {
 	return outBytes, nil
 }
 
+func readIndex(path string) ([]string, error) {
+	f, err := os.Open(path)
+	if err != nil {
+		return nil, err
+	}
+	defer f.Close()
+	var names []string
+	scanner := bufio.NewScanner(f)
+	for scanner.Scan() {
+		parts := strings.Fields(scanner.Text())
+		if len(parts) == 2 {
+			names = append(names, parts[1])
+		}
+	}
+	if err := scanner.Err(); err != nil {
+		return nil, err
+	}
+	return names, nil
+}
+
 func TestOCamlTranspiler_Rosetta_Golden(t *testing.T) {
 	if _, err := exec.LookPath("ocamlc"); err != nil {
 		t.Skip("ocamlc not installed")
 	}
 	root := repoRootDir(t)
+	srcDir := filepath.Join(root, "tests", "rosetta", "x", "Mochi")
 	outDir := filepath.Join(root, "tests", "rosetta", "transpiler", "OCaml")
 	os.MkdirAll(outDir, 0o755)
 
-	files, err := filepath.Glob(filepath.Join(root, "tests", "rosetta", "x", "Mochi", "*.mochi"))
-	if err != nil {
-		t.Fatalf("glob: %v", err)
-	}
-	sort.Strings(files)
+	idx := 1
 	if v := os.Getenv("ROSETTA_INDEX"); v != "" {
-		if idx, err := strconv.Atoi(v); err == nil && idx >= 1 && idx <= len(files) {
-			files = files[idx-1 : idx]
-		} else {
-			t.Fatalf("invalid ROSETTA_INDEX %s", v)
+		if n, err := strconv.Atoi(v); err == nil && n > 0 {
+			idx = n
 		}
 	}
-	var passed int
-	for _, src := range files {
-		name := strings.TrimSuffix(filepath.Base(src), ".mochi")
-		if ok := t.Run(name, func(t *testing.T) {
-			if _, err := runCase(src, outDir); err != nil {
-				t.Fatalf("%v", err)
-			}
-		}); !ok {
-			t.Fatalf("first failing program: %s", name)
-		}
-		passed++
+	names, err := readIndex(filepath.Join(srcDir, "index.txt"))
+	if err != nil {
+		t.Fatalf("read index: %v", err)
 	}
-	t.Logf("Summary: %d passed, %d failed", passed, len(files)-passed)
+	if idx > len(names) {
+		t.Fatalf("index %d out of range", idx)
+	}
+	nameFile := names[idx-1]
+	name := strings.TrimSuffix(nameFile, ".mochi")
+	src := filepath.Join(srcDir, nameFile)
+
+	if ok := t.Run(fmt.Sprintf("%03d_%s", idx, name), func(t *testing.T) {
+		if _, err := runCase(src, outDir); err != nil {
+			t.Fatalf("%v", err)
+		}
+	}); !ok {
+		t.Fatalf("program failed: %s", name)
+	}
 }
 
 func TestMain(m *testing.M) {
@@ -131,13 +151,15 @@ func updateRosettaReadme() {
 	outDir := filepath.Join(root, "tests", "rosetta", "transpiler", "OCaml")
 	readmePath := filepath.Join(root, "transpiler", "x", "ocaml", "ROSETTA.md")
 
-	files, _ := filepath.Glob(filepath.Join(srcDir, "*.mochi"))
-	sort.Strings(files)
-	total := len(files)
+	names, err := readIndex(filepath.Join(srcDir, "index.txt"))
+	if err != nil {
+		return
+	}
+	total := len(names)
 	completed := 0
 	var lines []string
-	for i, f := range files {
-		name := strings.TrimSuffix(filepath.Base(f), ".mochi")
+	for i, nameFile := range names {
+		name := strings.TrimSuffix(nameFile, ".mochi")
 		mark := "[ ]"
 		if _, err := os.Stat(filepath.Join(outDir, name+".out")); err == nil {
 			completed++
