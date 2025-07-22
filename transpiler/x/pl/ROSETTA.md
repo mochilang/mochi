@@ -1,10 +1,10 @@
 # Rosetta Prolog Transpiler
 
-## Rosetta Golden Test Checklist (2/284)
-Last updated: 2025-07-22 22:33 +0700
+## Rosetta Golden Test Checklist (3/284)
+Last updated: 2025-07-22 22:49 +0700
 1. [x] `100-doors-2`
 2. [x] `100-doors-3`
-3. [ ] `100-doors`
+3. [x] `100-doors`
 4. [ ] `100-prisoners`
 5. [ ] `15-puzzle-game`
 6. [ ] `15-puzzle-solver`
