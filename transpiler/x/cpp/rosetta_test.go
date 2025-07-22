@@ -29,13 +29,24 @@ func TestCPPTranspiler_Rosetta_Golden(t *testing.T) {
 
 	files, _ := filepath.Glob(filepath.Join(root, "tests", "rosetta", "x", "Mochi", "*.mochi"))
 	sort.Strings(files)
+
+	startIdx := 1
 	if v := os.Getenv("ROSETTA_INDEX"); v != "" {
 		if n, err := strconv.Atoi(v); err == nil && n > 0 && n <= len(files) {
+			startIdx = n
 			files = files[n-1 : n]
 		} else {
 			t.Fatalf("invalid ROSETTA_INDEX %s", v)
 		}
+	} else if v := os.Getenv("MOCHI_ROSETTA_INDEX"); v != "" {
+		if n, err := strconv.Atoi(v); err == nil && n > 0 && n <= len(files) {
+			startIdx = n
+			files = files[n-1 : n]
+		} else {
+			t.Fatalf("invalid MOCHI_ROSETTA_INDEX %s", v)
+		}
 	}
+	t.Cleanup(updateRosettaReadme)
 	var firstErr string
 	runOne := func(src string) error {
 		base := strings.TrimSuffix(filepath.Base(src), ".mochi")
@@ -83,9 +94,11 @@ func TestCPPTranspiler_Rosetta_Golden(t *testing.T) {
 		return nil
 	}
 
-	for _, src := range files {
+	for i, src := range files {
+		idx := startIdx + i
 		name := strings.TrimSuffix(filepath.Base(src), ".mochi")
-		ok := t.Run(name, func(t *testing.T) {
+		tname := fmt.Sprintf("%03d_%s", idx, name)
+		ok := t.Run(tname, func(t *testing.T) {
 			if err := runOne(src); err != nil {
 				firstErr = name
 				t.Fail()

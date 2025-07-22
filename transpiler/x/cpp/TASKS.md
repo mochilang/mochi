@@ -1,3 +1,33 @@
+## Progress (2025-07-22 22:22 +0700)
+- cpp transpiler: add index-based rosetta run
+- Generated C++ for 102/103 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-22 22:15 +0700)
+- cpp transpiler: run rosetta tasks by index
+- Generated C++ for 102/103 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-22 22:15 +0700)
+- cpp transpiler: run rosetta tasks by index
+- Generated C++ for 102/103 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-22 22:15 +0700)
+- cpp transpiler: run rosetta tasks by index
+- Generated C++ for 102/103 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-22 22:15 +0700)
+- cpp transpiler: run rosetta tasks by index
+- Generated C++ for 102/103 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-22 22:15 +0700)
+- cpp transpiler: run rosetta tasks by index
+- Generated C++ for 102/103 programs
+- Updated README checklist and outputs
+
 ## Progress (2025-07-22 20:30 +0700)
 - cpp transpiler: support update statements
 - Generated C++ for 102/103 programs
