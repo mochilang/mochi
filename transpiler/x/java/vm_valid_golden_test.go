@@ -137,40 +137,34 @@ func updateReadme() {
 func updateTasks() {
 	root := repoRootDir(&testing.T{})
 	taskFile := filepath.Join(root, "transpiler", "x", "java", "TASKS.md")
+
 	out, err := exec.Command("git", "log", "-1", "--format=%h%n%cI%n%s").Output()
-	var hash, ts, msg string
-	if err == nil {
-		parts := strings.SplitN(strings.TrimSpace(string(out)), "\n", 3)
-		if len(parts) == 3 {
-			hash, ts, msg = parts[0], parts[1], parts[2]
-		}
+	if err != nil {
+		return
 	}
-	if t, perr := time.Parse(time.RFC3339, ts); perr == nil {
-		if loc, lerr := time.LoadLocation("Asia/Bangkok"); lerr == nil {
-			ts = t.In(loc).Format("2006-01-02 15:04 -0700")
-		} else {
-			ts = t.Format("2006-01-02 15:04 MST")
-		}
+	parts := strings.SplitN(strings.TrimSpace(string(out)), "\n", 3)
+	if len(parts) != 3 {
+		return
+	}
+	hash, ts, msg := parts[0], parts[1], parts[2]
+	if t, err := time.Parse(time.RFC3339, ts); err == nil {
+		ts = t.Format("2006-01-02 15:04 MST")
 	}
 
 	data, _ := os.ReadFile(taskFile)
-	var keep []string
+	var rest []string
 	for _, line := range strings.Split(string(data), "\n") {
-		if strings.HasPrefix(line, "## Progress") || strings.HasPrefix(line, "- VM valid") {
+		if strings.HasPrefix(line, "## Progress") {
 			continue
 		}
-		keep = append(keep, line)
+		rest = append(rest, line)
 	}
 
 	var buf bytes.Buffer
 	buf.WriteString(fmt.Sprintf("## Progress (%s)\n", ts))
-	if msg == "" {
-		buf.WriteString("- VM valid golden test results updated\n\n")
-	} else {
-		buf.WriteString(fmt.Sprintf("- %s (%s)\n\n", msg, hash))
-	}
-	buf.WriteString(strings.Join(keep, "\n"))
-	if len(keep) > 0 && keep[len(keep)-1] != "" {
+	buf.WriteString(fmt.Sprintf("- %s (%s)\n\n", msg, hash))
+	buf.WriteString(strings.Join(rest, "\n"))
+	if len(rest) > 0 && rest[len(rest)-1] != "" {
 		buf.WriteString("\n")
 	}
 	_ = os.WriteFile(taskFile, buf.Bytes(), 0o644)
