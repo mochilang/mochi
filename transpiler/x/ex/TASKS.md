@@ -1,6 +1,6 @@
-## Progress (2025-07-22 08:51 +0700)
-- Commit 2d41d78d3: ex transpiler: handle variant patterns
-- Generated Elixir for 99/101 programs
+## Progress (2025-07-22 09:06 +0700)
+- Commit aee7c5875: ex transpiler: add yaml loader
+- Generated Elixir for 100/102 programs
 - Updated README checklist and outputs
 - Improved code emission and type inference
 

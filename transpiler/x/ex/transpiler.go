@@ -394,6 +394,46 @@ func (fs *ForStmt) emit(w io.Writer, indent int) {
 	io.WriteString(w, "end")
 }
 
+// SaveStmt writes a list of maps or structs in JSONL format.
+type SaveStmt struct {
+	Src    Expr
+	Path   string
+	Format string
+}
+
+func (s *SaveStmt) emit(w io.Writer, indent int) {
+	for i := 0; i < indent; i++ {
+		io.WriteString(w, "  ")
+	}
+	if s.Format == "jsonl" && (s.Path == "" || s.Path == "-") {
+		io.WriteString(w, "Enum.each(")
+		s.Src.emit(w)
+		io.WriteString(w, ", fn row ->\n")
+		for i := 0; i < indent+1; i++ {
+			io.WriteString(w, "  ")
+		}
+		io.WriteString(w, "row = if is_map(row) and Map.has_key?(row, :__struct__), do: Map.from_struct(row), else: row\n")
+		for i := 0; i < indent+1; i++ {
+			io.WriteString(w, "  ")
+		}
+		io.WriteString(w, "keys = Map.keys(row) |> Enum.sort()\n")
+		for i := 0; i < indent+1; i++ {
+			io.WriteString(w, "  ")
+		}
+		io.WriteString(w, "json = Enum.map_join(keys, \",\", fn k -> v = Map.get(row, k); val = if is_binary(v), do: \"\\\"\"<>v<>\"\\\"\", else: to_string(v); \"\\\"\"<>to_string(k)<>\"\\\": \"<>val end)\n")
+		for i := 0; i < indent+1; i++ {
+			io.WriteString(w, "  ")
+		}
+		io.WriteString(w, "IO.puts(\"{\" <> json <> \"}\")\n")
+		for i := 0; i < indent; i++ {
+			io.WriteString(w, "  ")
+		}
+		io.WriteString(w, "end)")
+		return
+	}
+	io.WriteString(w, "# unsupported save")
+}
+
 // FuncDecl defines a simple function.
 type FuncDecl struct {
 	Name   string
@@ -1139,6 +1179,18 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 func compileStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 	switch {
 	case st.Expr != nil:
+		if se := extractSaveExpr(st.Expr.Expr); se != nil {
+			src, err := compileExpr(se.Src, env)
+			if err != nil {
+				return nil, err
+			}
+			format := parseFormat(se.With)
+			path := ""
+			if se.Path != nil {
+				path = strings.Trim(*se.Path, "\"")
+			}
+			return &SaveStmt{Src: src, Path: path, Format: format}, nil
+		}
 		e, err := compileExpr(st.Expr.Expr, env)
 		if err != nil {
 			return nil, err
@@ -2750,6 +2802,21 @@ func literalString(e *parser.Expr) (string, bool) {
 		return p.Target.Selector.Root, true
 	}
 	return "", false
+}
+
+func extractSaveExpr(e *parser.Expr) *parser.SaveExpr {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) > 0 {
+		return nil
+	}
+	u := e.Binary.Left
+	if len(u.Ops) > 0 || u.Value == nil {
+		return nil
+	}
+	p := u.Value
+	if len(p.Ops) > 0 || p.Target == nil {
+		return nil
+	}
+	return p.Target.Save
 }
 
 func parseFormat(e *parser.Expr) string {
