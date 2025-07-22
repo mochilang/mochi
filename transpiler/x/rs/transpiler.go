@@ -95,27 +95,27 @@ func (p *PrintExpr) emit(w io.Writer) {
 		if inferType(a) == "bool" {
 			switch ex := a.(type) {
 			case *BinaryExpr:
-				if ex.Op == "in" && inferType(ex.Right) == "String" {
+				if ex.Op == "in" {
+					io.WriteString(w, "if ")
 					a.emit(w)
+					io.WriteString(w, " { 1 } else { 0 }")
 					return
 				}
 			case *MethodCallExpr:
 				if ex.Name == "contains" {
+					io.WriteString(w, "if ")
 					a.emit(w)
+					io.WriteString(w, " { 1 } else { 0 }")
 					return
 				}
 			}
-			io.WriteString(w, "if ")
+		}
+		if inferType(a) == "f64" {
+			io.WriteString(w, "format!(\"{:?}\", ")
 			a.emit(w)
-			io.WriteString(w, " { 1 } else { 0 }")
+			io.WriteString(w, ")")
 		} else {
-			if inferType(a) == "f64" {
-				io.WriteString(w, "format!(\"{:?}\", ")
-				a.emit(w)
-				io.WriteString(w, ")")
-			} else {
-				a.emit(w)
-			}
+			a.emit(w)
 		}
 	}
 	if p.Trim {
@@ -135,6 +135,24 @@ func (p *PrintExpr) emit(w io.Writer) {
 		}
 		io.WriteString(w, ")")
 	}
+}
+
+// JsonExpr prints a value as pretty JSON.
+type JsonExpr struct{ Arg Expr }
+
+func (j *JsonExpr) emit(w io.Writer) {
+	io.WriteString(w, "{ let mut __pairs: Vec<_> = ")
+	j.Arg.emit(w)
+	io.WriteString(w, ".iter().collect(); __pairs.sort_by(|a,b| a.0.cmp(b.0));\n")
+	io.WriteString(w, "println!(\"{{\");\n")
+	io.WriteString(w, "for (i, (k, v)) in __pairs.iter().enumerate() {\n")
+	io.WriteString(w, "    if i + 1 == __pairs.len() {\n")
+	io.WriteString(w, "        println!(\"  \\\"{}\\\": {}\", k, v);\n")
+	io.WriteString(w, "    } else {\n")
+	io.WriteString(w, "        println!(\"  \\\"{}\\\": {},\", k, v);\n")
+	io.WriteString(w, "    }\n")
+	io.WriteString(w, "}\n")
+	io.WriteString(w, "println!(\"}}\"); }")
 }
 
 type StringLit struct{ Value string }
@@ -1985,7 +2003,43 @@ func compilePostfix(p *parser.PostfixExpr) (Expr, error) {
 				expr = &MethodCallExpr{Receiver: expr, Name: "apply", Args: args}
 			}
 		case op.Cast != nil:
-			// ignore casts
+			name := ""
+			if op.Cast.Type != nil && op.Cast.Type.Simple != nil {
+				name = *op.Cast.Type.Simple
+			}
+			switch name {
+			case "int":
+				expr = &CallExpr{Func: "i64::from", Args: []Expr{expr}}
+			case "float":
+				expr = &CallExpr{Func: "f64::from", Args: []Expr{expr}}
+			case "string":
+				expr = &CallExpr{Func: "String::from", Args: []Expr{expr}}
+			default:
+				if m, ok := expr.(*MapLit); ok && name != "" {
+					fields := make([]Expr, len(m.Items))
+					names := make([]string, len(m.Items))
+					for i, it := range m.Items {
+						if s, ok := it.Key.(*StringLit); ok {
+							names[i] = s.Value
+						} else {
+							names[i] = fmt.Sprintf("f%d", i)
+						}
+						v := it.Value
+						if st, ok := structTypes[name]; ok {
+							if ft, okf := st.Fields[names[i]]; okf {
+								rt := rustTypeFromType(ft)
+								if rt == "String" {
+									v = &StringCastExpr{Expr: v}
+								} else if rt == "f64" && inferType(v) == "i64" {
+									v = &FloatCastExpr{Expr: v}
+								}
+							}
+						}
+						fields[i] = v
+					}
+					expr = &StructLit{Name: name, Fields: fields, Names: names}
+				}
+			}
 		default:
 			return nil, fmt.Errorf("unsupported postfix")
 		}
@@ -2066,6 +2120,9 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 		if name == "exists" && len(args) == 1 {
 			return &ExistsExpr{List: args[0]}, nil
 		}
+		if name == "json" && len(args) == 1 {
+			return &JsonExpr{Arg: args[0]}, nil
+		}
 		if name == "min" && len(args) == 1 {
 			return &MinExpr{List: args[0]}, nil
 		}
@@ -2134,9 +2191,15 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 		}
 		entries := make([]MapEntry, len(p.Map.Items))
 		for i, it := range p.Map.Items {
-			k, err := compileExpr(it.Key)
-			if err != nil {
-				return nil, err
+			var k Expr
+			if s, ok := literalString(it.Key); ok {
+				k = &StringLit{Value: s}
+			} else {
+				var err error
+				k, err = compileExpr(it.Key)
+				if err != nil {
+					return nil, err
+				}
 			}
 			v, err := compileExpr(it.Value)
 			if err != nil {
