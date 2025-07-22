@@ -1,3 +1,7 @@
+## Progress (2025-07-22 10:54 +0700)
+- release: v0.10.35 (d025bc223)
+- Regenerated golden files - 89/102 vm valid programs passing
+
 ## Progress (2025-07-22 03:27 +0000)
 - erl: add case expression and match tests (50459c218)
 - Regenerated golden files - 88/102 vm valid programs passing
