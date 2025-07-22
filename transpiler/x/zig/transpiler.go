@@ -231,6 +231,25 @@ type MapLit struct {
 	StructName string
 }
 
+type AppendExpr struct {
+	List     Expr
+	Value    Expr
+	ElemType string
+}
+
+func (ae *AppendExpr) emit(w io.Writer) {
+	elem := ae.ElemType
+	if elem == "" {
+		elem = zigTypeFromExpr(ae.Value)
+	}
+	fmt.Fprintf(w, "blk: { var _tmp = std.ArrayList(%s).init(std.heap.page_allocator); ", elem)
+	io.WriteString(w, "defer _tmp.deinit(); _tmp.appendSlice(")
+	ae.List.emit(w)
+	io.WriteString(w, ") catch unreachable; _tmp.append(")
+	ae.Value.emit(w)
+	io.WriteString(w, ") catch unreachable; const res = _tmp.toOwnedSlice() catch unreachable; break :blk res; }")
+}
+
 type FieldExpr struct {
 	Target Expr
 	Name   string
@@ -1908,6 +1927,7 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 						return &ListLit{Elems: elems}, nil
 					}
 				}
+				return &AppendExpr{List: args[0], Value: args[1], ElemType: zigTypeFromExpr(args[1])}, nil
 			}
 		}
 		if extra, ok := nestedFunArgs[p.Call.Func]; ok {
