@@ -1,9 +1,14 @@
-## Progress (2025-07-22 17:00 +0700)
-- Commit 9f11f0f17: st transpiler: update docs
+## Progress (2025-07-22 18:14 +0700)
+- Commit 5077c75ed: release: v0.10.37
 - Generated Smalltalk for 103/103 programs
 - Updated README checklist and outputs
 - Added support for break and continue statements
 
+## Progress (2025-07-22 18:20 +0700)
+- Commit 5077c75ed: st transpiler: add now builtin
+- Generated Smalltalk for 103/103 programs
+- Updated README checklist
+- Added support for now() builtin
 ## Progress (2025-07-22 10:54 +0700)
 - Commit d025bc223: release: v0.10.35
 - Generated Smalltalk for 99/102 programs
