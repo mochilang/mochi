@@ -1,0 +1,14 @@
+exit status 1
+/workspace/mochi/tests/rosetta/transpiler/Scala/a+b.scala:5: error: not found: value int
+    val a = int(input())
+            ^
+/workspace/mochi/tests/rosetta/transpiler/Scala/a+b.scala:5: error: not found: value input
+    val a = int(input())
+                ^
+/workspace/mochi/tests/rosetta/transpiler/Scala/a+b.scala:6: error: not found: value int
+    val b = int(input())
+            ^
+/workspace/mochi/tests/rosetta/transpiler/Scala/a+b.scala:6: error: not found: value input
+    val b = int(input())
+                ^
+four errors found

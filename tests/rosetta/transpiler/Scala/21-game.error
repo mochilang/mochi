@@ -1,0 +1,23 @@
+exit status 1
+/workspace/mochi/tests/rosetta/transpiler/Scala/21-game.scala:25: error: not found: value now
+    var computer: Boolean = now() % 2 == 0
+                            ^
+/workspace/mochi/tests/rosetta/transpiler/Scala/21-game.scala:42: error: not found: value now
+            choice = now() % 3 + 1
+                     ^
+/workspace/mochi/tests/rosetta/transpiler/Scala/21-game.scala:56: error: not found: value input
+            val line = input()
+                       ^
+/workspace/mochi/tests/rosetta/transpiler/Scala/21-game.scala:60: error: not found: value break
+              break
+              ^
+/workspace/mochi/tests/rosetta/transpiler/Scala/21-game.scala:69: error: not found: value continue
+              continue
+              ^
+/workspace/mochi/tests/rosetta/transpiler/Scala/21-game.scala:73: error: not found: value continue
+              continue
+              ^
+/workspace/mochi/tests/rosetta/transpiler/Scala/21-game.scala:77: error: not found: value break
+            break
+            ^
+7 errors found

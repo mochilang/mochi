@@ -1,0 +1,5 @@
+exit status 1
+/workspace/mochi/tests/rosetta/transpiler/Scala/15-puzzle-solver.scala:5: error: not found: value testpkg
+    println(testpkg.FifteenPuzzleExample())
+            ^
+one error found

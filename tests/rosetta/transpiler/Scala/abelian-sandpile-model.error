@@ -1,0 +1,25 @@
+exit status 1
+/workspace/mochi/tests/rosetta/transpiler/Scala/abelian-sandpile-model.scala:26: error: reassignment to val
+          pile = handlePile(pile, x, y - 1)
+               ^
+/workspace/mochi/tests/rosetta/transpiler/Scala/abelian-sandpile-model.scala:32: error: reassignment to val
+          pile = handlePile(pile, x - 1, y)
+               ^
+/workspace/mochi/tests/rosetta/transpiler/Scala/abelian-sandpile-model.scala:38: error: reassignment to val
+          pile = handlePile(pile, x, y + 1)
+               ^
+/workspace/mochi/tests/rosetta/transpiler/Scala/abelian-sandpile-model.scala:44: error: reassignment to val
+          pile = handlePile(pile, x + 1, y)
+               ^
+/workspace/mochi/tests/rosetta/transpiler/Scala/abelian-sandpile-model.scala:47: error: reassignment to val
+      pile = handlePile(pile, x, y)
+           ^
+/workspace/mochi/tests/rosetta/transpiler/Scala/abelian-sandpile-model.scala:60: error: value > is not a member of Any
+        if (v > 3) {
+              ^
+/workspace/mochi/tests/rosetta/transpiler/Scala/abelian-sandpile-model.scala:63: error: type mismatch;
+ found   : Any
+ required: Int
+        line = line + chars(v)
+                            ^
+7 errors found

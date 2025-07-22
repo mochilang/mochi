@@ -669,6 +669,8 @@ func (c *CastExpr) emit(w io.Writer) {
 		fmt.Fprint(w, ".toDouble")
 	case "string":
 		fmt.Fprint(w, ".toString")
+	case "bool":
+		fmt.Fprint(w, ".asInstanceOf[Boolean]")
 	}
 }
 
@@ -1471,6 +1473,9 @@ func convertUnary(u *parser.Unary, env *types.Env) (Expr, error) {
 		case "-":
 			expr = &BinaryExpr{Left: &IntLit{Value: 0}, Op: "-", Right: expr}
 		case "!":
+			if inferTypeWithEnv(expr, env) != "Boolean" {
+				expr = &CastExpr{Value: expr, Type: "bool"}
+			}
 			expr = &UnaryExpr{Op: "!", Expr: expr}
 		default:
 			return nil, fmt.Errorf("unsupported unary")
@@ -2726,6 +2731,9 @@ func convertIfStmt(is *parser.IfStmt, env *types.Env) (Stmt, error) {
 	cond, err := convertExpr(is.Cond, env)
 	if err != nil {
 		return nil, err
+	}
+	if inferTypeWithEnv(cond, env) != "Boolean" {
+		cond = &CastExpr{Value: cond, Type: "bool"}
 	}
 	var thenStmts []Stmt
 	for _, st := range is.Then {

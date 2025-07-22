@@ -1,0 +1,12 @@
+exit status 1
+/workspace/mochi/tests/rosetta/transpiler/Scala/99-bottles-of-beer-2.scala:54: error: type mismatch;
+ found   : Any
+ required: String
+      return t
+             ^
+/workspace/mochi/tests/rosetta/transpiler/Scala/99-bottles-of-beer-2.scala:93: error: type mismatch;
+ found   : Any
+ required: String
+        a(j) = tmp
+               ^
+two errors found

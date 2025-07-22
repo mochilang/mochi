@@ -1,0 +1,14 @@
+exit status 1
+/workspace/mochi/tests/rosetta/transpiler/Scala/2048.scala:126: error: illegal start of simple pattern
+      val new: Any = r("row")
+          ^
+/workspace/mochi/tests/rosetta/transpiler/Scala/2048.scala:127: error: '=' expected but ';' found.
+      score = score + r("gain")
+^
+/workspace/mochi/tests/rosetta/transpiler/Scala/2048.scala:187: error: illegal start of simple pattern
+      val new: Any = r("row")
+          ^
+/workspace/mochi/tests/rosetta/transpiler/Scala/2048.scala:188: error: '=' expected but ';' found.
+      score = score + r("gain")
+^
+four errors found
