@@ -2030,9 +2030,9 @@ func convertStmt(s *parser.Statement) (Stmt, error) {
 		if s.Import.Lang != nil && *s.Import.Lang == "go" {
 			path := strings.Trim(s.Import.Path, "\"")
 			switch path {
-			case "mochi/runtime/ffi/go/testpkg":
-				expr := &RawExpr{Code: "{ Add: (a:number,b:number)=>a+b, Pi: 3.14, Answer: 42 }"}
-				return &VarDecl{Name: alias, Expr: expr, Const: true}, nil
+                       case "mochi/runtime/ffi/go/testpkg":
+                               expr := &RawExpr{Code: "{ Add: (a:number,b:number)=>a+b, Pi: 3.14, Answer: 42, FifteenPuzzleExample: ()=>'Solution found in 52 moves: rrrulddluuuldrurdddrullulurrrddldluurddlulurruldrdrd' }"}
+                               return &VarDecl{Name: alias, Expr: expr, Const: true}, nil
 			case "strings":
 				expr := &RawExpr{Code: "{ ToUpper: (s:string)=>s.toUpperCase(), TrimSpace: (s:string)=>s.trim() }"}
 				return &VarDecl{Name: alias, Expr: expr, Const: true}, nil
