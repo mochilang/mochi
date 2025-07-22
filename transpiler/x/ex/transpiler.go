@@ -7,6 +7,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"math"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -1277,6 +1278,11 @@ func compileStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 			if _, err := env.GetVar(st.Let.Name); err != nil {
 				if _, ok := val.(*AnonFun); ok {
 					env.SetVar(st.Let.Name, types.FuncType{}, false)
+				} else if st.Let.Type != nil {
+					env.SetVar(st.Let.Name, types.ResolveTypeRef(st.Let.Type, env), false)
+				} else if ld := extractLoadExpr(st.Let.Value); ld != nil && ld.Type != nil {
+					t := types.ResolveTypeRef(ld.Type, env)
+					env.SetVar(st.Let.Name, types.ListType{Elem: t}, false)
 				} else {
 					env.SetVar(st.Let.Name, inferStaticType(val), false)
 				}
@@ -1309,6 +1315,11 @@ func compileStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 			if _, err := env.GetVar(st.Var.Name); err != nil {
 				if _, ok := val.(*AnonFun); ok {
 					env.SetVar(st.Var.Name, types.FuncType{}, false)
+				} else if st.Var.Type != nil {
+					env.SetVar(st.Var.Name, types.ResolveTypeRef(st.Var.Type, env), false)
+				} else if ld := extractLoadExpr(st.Var.Value); ld != nil && ld.Type != nil {
+					t := types.ResolveTypeRef(ld.Type, env)
+					env.SetVar(st.Var.Name, types.ListType{Elem: t}, false)
 				} else {
 					env.SetVar(st.Var.Name, inferStaticType(val), false)
 				}
@@ -2930,6 +2941,21 @@ func extractSaveExpr(e *parser.Expr) *parser.SaveExpr {
 	return p.Target.Save
 }
 
+func extractLoadExpr(e *parser.Expr) *parser.LoadExpr {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) > 0 {
+		return nil
+	}
+	u := e.Binary.Left
+	if len(u.Ops) > 0 || u.Value == nil {
+		return nil
+	}
+	p := u.Value
+	if len(p.Ops) > 0 || p.Target == nil {
+		return nil
+	}
+	return p.Target.Load
+}
+
 func parseFormat(e *parser.Expr) string {
 	if e == nil || e.Binary == nil || len(e.Binary.Right) > 0 {
 		return ""
@@ -2995,6 +3021,9 @@ func valueToExpr(v interface{}) Expr {
 	case bool:
 		return &BoolLit{Value: val}
 	case float64:
+		if math.Trunc(val) == val {
+			return &NumberLit{Value: fmt.Sprintf("%d", int64(val))}
+		}
 		s := strconv.FormatFloat(val, 'f', -1, 64)
 		if !strings.ContainsAny(s, ".eE") && !strings.Contains(s, ".") {
 			s += ".0"
