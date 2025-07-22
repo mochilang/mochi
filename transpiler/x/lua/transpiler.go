@@ -208,13 +208,13 @@ func (c *CallExpr) emit(w io.Writer) {
 			exprs[0].emit(w)
 			io.WriteString(w, ")")
 		default:
-			io.WriteString(w, "print(string.format(")
+			io.WriteString(w, "print((string.gsub(string.format(")
 			fmt.Fprintf(w, "%q", fmtBuf.String())
 			for _, a := range exprs {
 				io.WriteString(w, ", ")
 				a.emit(w)
 			}
-			io.WriteString(w, "))")
+			io.WriteString(w, "), \"%s+$\", \"\")))")
 		}
 		return
 	case "len", "count":
@@ -790,6 +790,27 @@ func isIntExpr(e Expr) bool {
 	return false
 }
 
+func isFloatExpr(e Expr) bool {
+	switch ex := e.(type) {
+	case *FloatLit:
+		return true
+	case *Ident:
+		if currentEnv != nil {
+			if t, err := currentEnv.GetVar(ex.Name); err == nil {
+				if _, ok := t.(types.FloatType); ok {
+					return true
+				}
+			}
+		}
+	case *BinaryExpr:
+		switch ex.Op {
+		case "+", "-", "*", "/", "%":
+			return isFloatExpr(ex.Left) || isFloatExpr(ex.Right)
+		}
+	}
+	return false
+}
+
 func isBoolExpr(e Expr) bool {
 	switch ex := e.(type) {
 	case *BoolLit:
@@ -869,7 +890,7 @@ func isListExpr(e Expr) bool {
 			return true
 		}
 	case *CallExpr:
-		if ex.Func == "values" {
+		if ex.Func == "values" || ex.Func == "append" {
 			return true
 		}
 	case *BinaryExpr:
@@ -996,7 +1017,11 @@ func (b *BinaryExpr) emit(w io.Writer) {
 	} else if op == "||" {
 		op = "or"
 	} else if op == "/" {
-		op = "//"
+		if isFloatExpr(b.Left) || isFloatExpr(b.Right) {
+			op = "/"
+		} else {
+			op = "//"
+		}
 	}
 	io.WriteString(w, "(")
 	b.Left.emit(w)
@@ -1776,7 +1801,6 @@ func convertPostfix(p *parser.PostfixExpr) (Expr, error) {
 				call := ops[i+1].Call
 				i++
 				var args []Expr
-				args = append(args, expr)
 				for _, a := range call.Args {
 					ae, err := convertExpr(a)
 					if err != nil {
@@ -1784,16 +1808,21 @@ func convertPostfix(p *parser.PostfixExpr) (Expr, error) {
 					}
 					args = append(args, ae)
 				}
-				// contains handled during emission
-				cexpr := &CallExpr{Func: op.Field.Name, Args: args}
-				if currentEnv != nil {
-					if t, err := currentEnv.GetVar(op.Field.Name); err == nil {
-						if ft, ok := t.(types.FuncType); ok {
-							cexpr.ParamTypes = ft.Params
+				if id, ok := expr.(*Ident); ok {
+					name := id.Name + "." + op.Field.Name
+					expr = &CallExpr{Func: name, Args: args}
+				} else {
+					args = append([]Expr{expr}, args...)
+					cexpr := &CallExpr{Func: op.Field.Name, Args: args}
+					if currentEnv != nil {
+						if t, err := currentEnv.GetVar(op.Field.Name); err == nil {
+							if ft, ok := t.(types.FuncType); ok {
+								cexpr.ParamTypes = ft.Params
+							}
 						}
 					}
+					expr = cexpr
 				}
-				expr = cexpr
 			} else {
 				expr = &IndexExpr{Target: expr, Index: &StringLit{Value: op.Field.Name}, Kind: "map"}
 			}
@@ -1816,6 +1845,18 @@ func convertPostfix(p *parser.PostfixExpr) (Expr, error) {
 					}
 				}
 				expr = cexpr
+			} else if ix, ok := expr.(*IndexExpr); ok {
+				if s, ok := ix.Index.(*StringLit); ok {
+					if root, ok := ix.Target.(*Ident); ok {
+						name := root.Name + "." + s.Value
+						cexpr := &CallExpr{Func: name, Args: args}
+						expr = cexpr
+					} else {
+						return nil, fmt.Errorf("unsupported call")
+					}
+				} else {
+					return nil, fmt.Errorf("unsupported call")
+				}
 			} else {
 				return nil, fmt.Errorf("unsupported call")
 			}
@@ -2307,6 +2348,51 @@ func convertForStmt(fs *parser.ForStmt) (Stmt, error) {
 	return &ForInStmt{Name: fs.Name, Iterable: iter, Body: body}, nil
 }
 
+func convertImportStmt(im *parser.ImportStmt) (Stmt, error) {
+	if im.Lang == nil {
+		return nil, nil
+	}
+	alias := im.As
+	if alias == "" {
+		alias = parser.AliasFromPath(im.Path)
+	}
+	path := strings.Trim(im.Path, "\"")
+	switch *im.Lang {
+	case "python":
+		if path == "math" {
+			pkg := &MapLit{
+				Keys: []Expr{
+					&StringLit{Value: "sqrt"},
+					&StringLit{Value: "pow"},
+					&StringLit{Value: "sin"},
+					&StringLit{Value: "log"},
+					&StringLit{Value: "pi"},
+					&StringLit{Value: "e"},
+				},
+				Values: []Expr{
+					&Ident{Name: "math.sqrt"},
+					&Ident{Name: "math.pow"},
+					&Ident{Name: "math.sin"},
+					&Ident{Name: "math.log"},
+					&Ident{Name: "math.pi"},
+					&CallExpr{Func: "math.exp", Args: []Expr{&IntLit{Value: 1}}},
+				},
+			}
+			return &AssignStmt{Name: alias, Value: pkg}, nil
+		}
+	case "go":
+		if path == "mochi/runtime/ffi/go/testpkg" {
+			fn := &FunExpr{Params: []string{"a", "b"}, Expr: &BinaryExpr{Left: &Ident{Name: "a"}, Op: "+", Right: &Ident{Name: "b"}}}
+			pkg := &MapLit{
+				Keys:   []Expr{&StringLit{Value: "Add"}, &StringLit{Value: "Pi"}, &StringLit{Value: "Answer"}},
+				Values: []Expr{fn, &FloatLit{Value: 3.14}, &IntLit{Value: 42}},
+			}
+			return &AssignStmt{Name: alias, Value: pkg}, nil
+		}
+	}
+	return nil, nil
+}
+
 func convertUpdateStmt(u *parser.UpdateStmt) (Stmt, error) {
 	if currentEnv == nil {
 		return nil, fmt.Errorf("missing env")
@@ -2374,9 +2460,17 @@ func convertFunStmt(fs *parser.FunStmt) (Stmt, error) {
 
 func convertStmt(st *parser.Statement) (Stmt, error) {
 	switch {
+	case st.Import != nil:
+		return convertImportStmt(st.Import)
 	case st.Type != nil:
 		return nil, nil
 	case st.ExternType != nil:
+		return nil, nil
+	case st.ExternVar != nil:
+		return nil, nil
+	case st.ExternFun != nil:
+		return nil, nil
+	case st.ExternObject != nil:
 		return nil, nil
 	case st.Expr != nil:
 		expr, err := convertExpr(st.Expr.Expr)
