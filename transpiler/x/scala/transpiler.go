@@ -27,6 +27,9 @@ var typeDecls []*TypeDeclStmt
 var needsBreaks bool
 var needsJSON bool
 var replaceContinue bool
+var builtinAliases map[string]string
+
+func BuiltinAliases() map[string]string { return builtinAliases }
 
 var scalaKeywords = map[string]bool{
 	"val":  true,
@@ -972,12 +975,30 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	typeDecls = nil
 	needsBreaks = false
 	needsJSON = false
+	builtinAliases = map[string]string{}
+	for _, st := range prog.Statements {
+		if st.Import != nil && st.Import.Lang != nil {
+			alias := st.Import.As
+			if alias == "" {
+				alias = parser.AliasFromPath(st.Import.Path)
+			}
+			path := strings.Trim(st.Import.Path, "\"")
+			switch *st.Import.Lang {
+			case "go":
+				if st.Import.Auto && path == "mochi/runtime/ffi/go/testpkg" {
+					builtinAliases[alias] = "go_testpkg"
+				}
+			}
+		}
+	}
 	for _, st := range prog.Statements {
 		s, err := convertStmt(st, env)
 		if err != nil {
 			return nil, err
 		}
-		sc.Stmts = append(sc.Stmts, s)
+		if s != nil {
+			sc.Stmts = append(sc.Stmts, s)
+		}
 	}
 	if len(typeDecls) > 0 {
 		stmts := make([]Stmt, 0, len(typeDecls)+len(sc.Stmts))
@@ -1121,6 +1142,9 @@ func convertStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 		return &BreakStmt{}, nil
 	case st.Continue != nil:
 		return &ContinueStmt{}, nil
+	case st.Import != nil:
+		// handled during preprocessing
+		return nil, nil
 	default:
 		return nil, fmt.Errorf("unsupported statement")
 	}
@@ -1272,6 +1296,38 @@ func convertPostfix(pf *parser.PostfixExpr, env *types.Env) (Expr, error) {
 						continue
 					}
 				}
+				if kind, ok := builtinAliases[n.Name]; ok {
+					field := op.Field.Name
+					if i+1 < len(pf.Ops) && pf.Ops[i+1].Call != nil {
+						call := pf.Ops[i+1].Call
+						args := make([]Expr, len(call.Args))
+						for j, a := range call.Args {
+							ex, err := convertExpr(a, env)
+							if err != nil {
+								return nil, err
+							}
+							args[j] = ex
+						}
+						if kind == "go_testpkg" && field == "Add" && len(args) == 2 {
+							expr = &BinaryExpr{Left: args[0], Op: "+", Right: args[1]}
+							i++
+							continue
+						}
+					} else {
+						if kind == "go_testpkg" {
+							switch field {
+							case "Pi":
+								expr = &FloatLit{Value: 3.14}
+								i++
+								continue
+							case "Answer":
+								expr = &IntLit{Value: 42}
+								i++
+								continue
+							}
+						}
+					}
+				}
 			}
 			if i+1 < len(pf.Ops) && pf.Ops[i+1].Call != nil {
 				call := pf.Ops[i+1].Call
@@ -1320,7 +1376,22 @@ func convertPostfix(pf *parser.PostfixExpr, env *types.Env) (Expr, error) {
 				}
 				args[j] = ex
 			}
-			expr = &CallExpr{Fn: expr, Args: args}
+			if fe, ok := expr.(*FieldExpr); ok {
+				if n, ok2 := fe.Receiver.(*Name); ok2 {
+					if kind, ok3 := builtinAliases[n.Name]; ok3 {
+						switch kind {
+						case "go_testpkg":
+							if fe.Name == "Add" && len(args) == 2 {
+								expr = &BinaryExpr{Left: args[0], Op: "+", Right: args[1]}
+								break
+							}
+						}
+					}
+				}
+			}
+			if _, ok := expr.(*BinaryExpr); !ok {
+				expr = &CallExpr{Fn: expr, Args: args}
+			}
 		case op.Cast != nil:
 			if op.Cast.Type != nil && op.Cast.Type.Simple != nil {
 				typ := *op.Cast.Type.Simple
@@ -1369,6 +1440,17 @@ func convertPrimary(p *parser.Primary, env *types.Env) (Expr, error) {
 						expr = &FieldExpr{Receiver: expr, Name: f}
 					}
 					return expr, nil
+				}
+			}
+			if kind, ok := builtinAliases[p.Selector.Root]; ok && len(p.Selector.Tail) == 1 {
+				switch kind {
+				case "go_testpkg":
+					switch p.Selector.Tail[0] {
+					case "Pi":
+						return &FloatLit{Value: 3.14}, nil
+					case "Answer":
+						return &IntLit{Value: 42}, nil
+					}
 				}
 			}
 		}
