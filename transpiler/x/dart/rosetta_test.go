@@ -9,6 +9,7 @@ import (
 	"os/exec"
 	"path/filepath"
 	"sort"
+	"strconv"
 	"strings"
 	"testing"
 	"time"
@@ -27,8 +28,21 @@ func TestDartTranspiler_Rosetta_Golden(t *testing.T) {
 	os.MkdirAll(outDir, 0o755)
 
 	srcDir := filepath.Join(root, "tests", "rosetta", "x", "Mochi")
-	files, _ := filepath.Glob(filepath.Join(srcDir, "*.mochi"))
+	pattern := filepath.Join(srcDir, "*.mochi")
+	if only := os.Getenv("MOCHI_ROSETTA_ONLY"); only != "" {
+		pattern = filepath.Join(srcDir, only+".mochi")
+	}
+	files, _ := filepath.Glob(pattern)
 	sort.Strings(files)
+
+	if idxStr := os.Getenv("MOCHI_ROSETTA_INDEX"); idxStr != "" {
+		if idx, err := strconv.Atoi(idxStr); err == nil && idx > 0 && idx <= len(files) {
+			files = files[idx-1 : idx]
+		} else {
+			t.Fatalf("invalid MOCHI_ROSETTA_INDEX: %s", idxStr)
+		}
+	}
+
 	for _, src := range files {
 		name := strings.TrimSuffix(filepath.Base(src), ".mochi")
 		ok := t.Run(name, func(t *testing.T) {
@@ -101,7 +115,7 @@ func updateRosetta() {
 	total := len(files)
 	completed := 0
 	var lines []string
-	for _, f := range files {
+	for i, f := range files {
 		name := strings.TrimSuffix(filepath.Base(f), ".mochi")
 		mark := "[ ]"
 		if _, err := os.Stat(filepath.Join(outDir, name+".out")); err == nil {
@@ -110,7 +124,7 @@ func updateRosetta() {
 				mark = "[x]"
 			}
 		}
-		lines = append(lines, fmt.Sprintf("- %s %s", mark, name))
+		lines = append(lines, fmt.Sprintf("%d. %s %s", i+1, mark, name))
 	}
 
 	var buf bytes.Buffer
