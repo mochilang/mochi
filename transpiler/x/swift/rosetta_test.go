@@ -8,12 +8,13 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"sort"
+	"strconv"
 	"strings"
 	"testing"
 	"time"
 
 	"mochi/compiler/x/testutil"
-	"mochi/golden"
 	"mochi/parser"
 	swifttrans "mochi/transpiler/x/swift"
 	"mochi/types"
@@ -25,7 +26,21 @@ func TestSwiftTranspiler_Rosetta_Golden(t *testing.T) {
 	outDir := filepath.Join(root, "tests", "rosetta", "transpiler", "Swift")
 	os.MkdirAll(outDir, 0o755)
 
-	golden.RunWithSummary(t, "tests/rosetta/x/Mochi", ".mochi", ".out", func(src string) ([]byte, error) {
+	pattern := filepath.Join(root, "tests", "rosetta", "x", "Mochi", "*.mochi")
+	files, err := filepath.Glob(pattern)
+	if err != nil {
+		t.Fatalf("glob: %v", err)
+	}
+	sort.Strings(files)
+	max := len(files)
+	if v := os.Getenv("ROSETTA_MAX"); v != "" {
+		if n, err := strconv.Atoi(v); err == nil && n < max {
+			max = n
+		}
+	}
+	files = files[:max]
+
+	runCase := func(src string) error {
 		base := strings.TrimSuffix(filepath.Base(src), ".mochi")
 		codePath := filepath.Join(outDir, base+".swift")
 		outPath := filepath.Join(outDir, base+".out")
@@ -34,32 +49,44 @@ func TestSwiftTranspiler_Rosetta_Golden(t *testing.T) {
 		prog, err := parser.Parse(src)
 		if err != nil {
 			_ = os.WriteFile(errPath, []byte(err.Error()), 0o644)
-			return nil, err
+			return fmt.Errorf("parse: %w", err)
 		}
 		env := types.NewEnv(nil)
 		if errs := types.Check(prog, env); len(errs) > 0 {
 			_ = os.WriteFile(errPath, []byte(errs[0].Error()), 0o644)
-			return nil, errs[0]
+			return fmt.Errorf("type: %v", errs[0])
 		}
 		ast, err := swifttrans.Transpile(env, prog)
 		if err != nil {
 			_ = os.WriteFile(errPath, []byte(err.Error()), 0o644)
-			return nil, err
+			return fmt.Errorf("transpile: %w", err)
 		}
 		code := ast.Emit()
 		if err := os.WriteFile(codePath, code, 0o644); err != nil {
-			return nil, err
+			return fmt.Errorf("write code: %w", err)
 		}
 		out, err := compileAndRunSwiftSrc(t, swiftExe, code)
 		if err != nil {
 			_ = os.WriteFile(errPath, append([]byte(err.Error()+"\n"), out...), 0o644)
-			return nil, err
+			return fmt.Errorf("run: %v", err)
 		}
 		outBytes := bytes.TrimSpace(out)
 		_ = os.WriteFile(outPath, outBytes, 0o644)
 		_ = os.Remove(errPath)
-		return outBytes, nil
-	})
+		return nil
+	}
+
+	for _, src := range files {
+		name := strings.TrimSuffix(filepath.Base(src), ".mochi")
+		ok := t.Run(name, func(t *testing.T) {
+			if err := runCase(src); err != nil {
+				t.Fatal(err)
+			}
+		})
+		if !ok {
+			break
+		}
+	}
 }
 
 func updateRosetta() {
