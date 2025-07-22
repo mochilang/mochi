@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"go/format"
 	"io"
+	"sort"
 	"strings"
 
 	"mochi/ast"
@@ -18,6 +19,7 @@ import (
 // Program represents a Go program consisting of a sequence of statements.
 type Program struct {
 	Stmts      []Stmt
+	Imports    map[string]string
 	UseStrings bool
 	UseStrconv bool
 	UsePrint   bool
@@ -34,6 +36,7 @@ var (
 	topEnv      *types.Env
 	extraDecls  []Stmt
 	structCount int
+	imports     map[string]string
 )
 
 func toPascalCase(s string) string {
@@ -1305,6 +1308,7 @@ func Transpile(p *parser.Program, env *types.Env) (*Program, error) {
 	topEnv = env
 	extraDecls = nil
 	structCount = 0
+	imports = map[string]string{}
 	gp := &Program{}
 	for _, stmt := range p.Statements {
 		s, err := compileStmt(stmt, env)
@@ -1325,6 +1329,7 @@ func Transpile(p *parser.Program, env *types.Env) (*Program, error) {
 	gp.UsePrint = usesPrint
 	gp.UseSort = usesSort
 	gp.UseJSON = usesJSON
+	gp.Imports = imports
 	return gp, nil
 }
 
@@ -1566,6 +1571,17 @@ func compileStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 		return compileReturnStmt(st.Return, env)
 	case st.Fun != nil:
 		return compileFunStmt(st.Fun, env)
+	case st.Import != nil:
+		if st.Import.Lang != nil && *st.Import.Lang == "go" && st.Import.Auto {
+			alias := st.Import.As
+			if alias == "" {
+				alias = parser.AliasFromPath(st.Import.Path)
+			}
+			if imports != nil {
+				imports[alias] = strings.Trim(st.Import.Path, "\"")
+			}
+		}
+		return nil, nil
 	case st.Break != nil:
 		return &BreakStmt{}, nil
 	case st.Continue != nil:
@@ -2591,6 +2607,9 @@ func compilePostfix(pf *parser.PostfixExpr, env *types.Env, base string) (Expr, 
 			}
 			args[i] = ex
 		}
+		if _, ok := imports[pf.Target.Selector.Root]; ok {
+			return &CallExpr{Func: pf.Target.Selector.Root + "." + method, Args: args}, nil
+		}
 		switch method {
 		case "contains":
 			rec := pf.Target
@@ -3171,6 +3190,16 @@ func Emit(prog *Program) []byte {
 	buf.Write(meta.Header("//"))
 	buf.WriteString("package main\n\n")
 	buf.WriteString("import (\n    \"fmt\"\n")
+	if prog.Imports != nil {
+		aliases := make([]string, 0, len(prog.Imports))
+		for a := range prog.Imports {
+			aliases = append(aliases, a)
+		}
+		sort.Strings(aliases)
+		for _, a := range aliases {
+			fmt.Fprintf(&buf, "    %s \"%s\"\n", a, prog.Imports[a])
+		}
+	}
 	if prog.UseStrings {
 		buf.WriteString("    \"strings\"\n")
 	}
