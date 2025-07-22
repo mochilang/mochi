@@ -1714,6 +1714,8 @@ func guessType(e Expr) string {
 			return v.Type
 		}
 		return "Any"
+	case *NowExpr:
+		return "Int"
 	case *VarRef:
 		if v.Type != "" {
 			return v.Type
@@ -1912,7 +1914,12 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 			}
 			p.Stmts = append(p.Stmts, &ReturnStmt{Value: val})
 		case st.Fun != nil:
-			body, err := convertStmts(env, st.Fun.Body)
+			bodyEnv := types.NewEnv(env)
+			for _, p0 := range st.Fun.Params {
+				pt := types.ResolveTypeRef(p0.Type, env)
+				bodyEnv.SetVar(p0.Name, pt, true)
+			}
+			body, err := convertStmts(bodyEnv, st.Fun.Body)
 			if err != nil {
 				return nil, err
 			}
@@ -2049,7 +2056,25 @@ func convertStmts(env *types.Env, list []*parser.Statement) ([]Stmt, error) {
 					case "String":
 						tt = types.StringType{}
 					default:
-						tt = types.AnyType{}
+						if strings.HasPrefix(typ, "MutableList<") {
+							elem := strings.TrimSuffix(strings.TrimPrefix(typ, "MutableList<"), ">")
+							var et types.Type = types.AnyType{}
+							switch elem {
+							case "Int":
+								et = types.IntType{}
+							case "Double":
+								et = types.FloatType{}
+							case "Boolean":
+								et = types.BoolType{}
+							case "String":
+								et = types.StringType{}
+							}
+							tt = types.ListType{Elem: et}
+						} else if strings.HasPrefix(typ, "MutableMap<") {
+							tt = types.MapType{Key: types.AnyType{}, Value: types.AnyType{}}
+						} else {
+							tt = types.AnyType{}
+						}
 					}
 				}
 				env.SetVar(s.Let.Name, tt, false)
@@ -2082,7 +2107,25 @@ func convertStmts(env *types.Env, list []*parser.Statement) ([]Stmt, error) {
 					case "String":
 						tt = types.StringType{}
 					default:
-						tt = types.AnyType{}
+						if strings.HasPrefix(typ, "MutableList<") {
+							elem := strings.TrimSuffix(strings.TrimPrefix(typ, "MutableList<"), ">")
+							var et types.Type = types.AnyType{}
+							switch elem {
+							case "Int":
+								et = types.IntType{}
+							case "Double":
+								et = types.FloatType{}
+							case "Boolean":
+								et = types.BoolType{}
+							case "String":
+								et = types.StringType{}
+							}
+							tt = types.ListType{Elem: et}
+						} else if strings.HasPrefix(typ, "MutableMap<") {
+							tt = types.MapType{Key: types.AnyType{}, Value: types.AnyType{}}
+						} else {
+							tt = types.AnyType{}
+						}
 					}
 				}
 				env.SetVar(s.Var.Name, tt, true)
