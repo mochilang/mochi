@@ -3330,27 +3330,27 @@ func convertSelector(sel *parser.SelectorExpr, method bool) Expr {
 			}
 		}
 	}
-        for i, t := range sel.Tail {
-                idx := i == len(sel.Tail)-1 && method
-                useMap := mapIndex && !idx
-                if useMap && currentEnv != nil {
-                        if st, ok := inferPyType(expr, currentEnv).(types.StructType); ok {
-                                if _, ok := st.Fields[t]; ok {
-                                        useMap = false
-                                }
-                        }
-                        if useMap {
-                                for _, st := range currentEnv.Structs() {
-                                        if _, ok := st.Fields[t]; ok {
-                                                useMap = false
-                                                break
-                                        }
-                                }
-                        }
-                }
-                expr = &FieldExpr{Target: expr, Name: t, MapIndex: useMap}
-                mapIndex = true
-        }
+	for i, t := range sel.Tail {
+		idx := i == len(sel.Tail)-1 && method
+		useMap := mapIndex && !idx
+		if useMap && currentEnv != nil {
+			if st, ok := inferPyType(expr, currentEnv).(types.StructType); ok {
+				if _, ok := st.Fields[t]; ok {
+					useMap = false
+				}
+			}
+			if useMap {
+				for _, st := range currentEnv.Structs() {
+					if _, ok := st.Fields[t]; ok {
+						useMap = false
+						break
+					}
+				}
+			}
+		}
+		expr = &FieldExpr{Target: expr, Name: t, MapIndex: useMap}
+		mapIndex = true
+	}
 	return expr
 }
 
@@ -4170,10 +4170,21 @@ func convertGroupQuery(q *parser.QueryExpr, env *types.Env, target string) ([]St
 		return nil, err
 	}
 	keyExpr := keyVal
+	keyMapExpr := keyVal
+	var keyDC *DataClassDef
 	if dl, ok := keyVal.(*DictLit); ok {
-		vals := make([]Expr, len(dl.Values))
-		copy(vals, dl.Values)
-		keyExpr = &CallExpr{Func: &Name{Name: "tuple"}, Args: []Expr{&ListLit{Elems: vals}}}
+		if dc, args := dataClassFromDict(q.Group.Name+"_key", dl, env); dc != nil {
+			keyDC = dc
+			keyExpr = &CallExpr{Func: &Name{Name: dc.Name}, Args: args}
+			vals := make([]Expr, len(dl.Values))
+			copy(vals, dl.Values)
+			keyMapExpr = &CallExpr{Func: &Name{Name: "tuple"}, Args: []Expr{&ListLit{Elems: vals}}}
+		} else {
+			vals := make([]Expr, len(dl.Values))
+			copy(vals, dl.Values)
+			keyExpr = &CallExpr{Func: &Name{Name: "tuple"}, Args: []Expr{&ListLit{Elems: vals}}}
+			keyMapExpr = keyExpr
+		}
 	}
 
 	var where Expr
@@ -4186,15 +4197,18 @@ func convertGroupQuery(q *parser.QueryExpr, env *types.Env, target string) ([]St
 
 	prev := currentEnv
 	genv := types.NewEnv(env)
-    var itemType types.Type = types.AnyType{}
-    if env != nil {
-            if t, err := env.GetVar(q.Var); err == nil {
-                    itemType = t
-            } else if lt, ok := inferTypeFromExpr(q.Source).(types.ListType); ok {
-                    itemType = lt.Elem
-            }
-    }
+	var itemType types.Type = types.AnyType{}
+	if env != nil {
+		if t, err := env.GetVar(q.Var); err == nil {
+			itemType = t
+		} else if lt, ok := inferTypeFromExpr(q.Source).(types.ListType); ok {
+			itemType = lt.Elem
+		}
+	}
 	keyType := inferPyType(keyVal, env)
+	if keyDC != nil {
+		keyType = structFromDataClass(keyDC, env)
+	}
 	genv.SetVar(q.Group.Name, types.StructType{Fields: map[string]types.Type{"key": keyType, "items": types.ListType{Elem: itemType}}}, true)
 	currentEnv = genv
 	sel, err := convertExpr(q.Select)
@@ -4272,6 +4286,9 @@ func convertGroupQuery(q *parser.QueryExpr, env *types.Env, target string) ([]St
 		Fields: []DataClassField{{Name: "key", Type: keyType.String()}, {Name: "items", Type: "list"}},
 	}
 	if env != nil {
+		if keyDC != nil {
+			env.SetStruct(keyDC.Name, structFromDataClass(keyDC, env))
+		}
 		env.SetStruct(groupDC.Name, types.StructType{Fields: map[string]types.Type{"key": keyType, "items": types.ListType{Elem: itemType}}})
 	}
 
@@ -4294,13 +4311,17 @@ func convertGroupQuery(q *parser.QueryExpr, env *types.Env, target string) ([]St
 		rowDC = &DataClassDef{Name: toClassName(target + "_row"), Fields: fields}
 		row = &CallExpr{Func: &Name{Name: rowDC.Name}, Args: args}
 	}
-	stmts := []Stmt{groupDC}
+	stmts := []Stmt{}
+	if keyDC != nil {
+		stmts = append(stmts, keyDC)
+	}
+	stmts = append(stmts, groupDC)
 	if rowDC != nil {
 		stmts = append(stmts, rowDC)
 	}
 	stmts = append(stmts, &LetStmt{Name: groupsVar, Expr: &DictLit{}})
 	inner := []Stmt{
-		&LetStmt{Name: "_g", Expr: &CallExpr{Func: &FieldExpr{Target: &Name{Name: groupsVar}, Name: "setdefault"}, Args: []Expr{keyExpr, &CallExpr{Func: &Name{Name: groupDC.Name}, Args: []Expr{keyExpr, &ListLit{}}}}}},
+		&LetStmt{Name: "_g", Expr: &CallExpr{Func: &FieldExpr{Target: &Name{Name: groupsVar}, Name: "setdefault"}, Args: []Expr{keyMapExpr, &CallExpr{Func: &Name{Name: groupDC.Name}, Args: []Expr{keyExpr, &ListLit{}}}}}},
 		&ExprStmt{Expr: &CallExpr{Func: &FieldExpr{Target: &FieldExpr{Target: &Name{Name: "_g"}, Name: "items"}, Name: "append"}, Args: []Expr{row}}},
 	}
 	if where != nil {
