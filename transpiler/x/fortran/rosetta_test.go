@@ -68,35 +68,47 @@ func TestFortranTranspiler_Rosetta(t *testing.T) {
 		t.Skip("gfortran not installed")
 	}
 	root := repoRoot(t)
-	files, err := filepath.Glob(filepath.Join(root, "tests", "rosetta", "x", "Mochi", "*.mochi"))
+
+	names, err := listPrograms(root)
 	if err != nil {
-		t.Fatalf("glob: %v", err)
+		t.Fatalf("list programs: %v", err)
 	}
-	sort.Strings(files)
-	max := 3
-	if v := os.Getenv("ROSETTA_MAX"); v != "" {
+
+	idx := 1
+	if v := os.Getenv("ROSETTA_INDEX"); v != "" {
 		if n, err := strconv.Atoi(v); err == nil {
-			max = n
+			idx = n
 		}
 	}
-	if len(files) < max {
-		max = len(files)
+	if idx < 1 || idx > len(names) {
+		t.Fatalf("index %d out of range (1-%d)", idx, len(names))
 	}
-	for _, f := range files[:max] {
-		name := strings.TrimSuffix(filepath.Base(f), ".mochi")
-		t.Run(name, func(t *testing.T) {
-			got, err := runTask(name)
-			if err != nil {
-				t.Fatalf("%v", err)
-			}
-			wantPath := filepath.Join(root, "tests", "rosetta", "x", "Mochi", name+".out")
-			if want, err := os.ReadFile(wantPath); err == nil {
-				if !bytes.Equal(got, bytes.TrimSpace(want)) {
-					t.Errorf("output mismatch for %s\n\n--- Got ---\n%s\n\n--- Want ---\n%s", name, got, bytes.TrimSpace(want))
-				}
-			}
-		})
+	name := names[idx-1]
+	t.Logf("running #%d: %s", idx, name)
+
+	got, err := runTask(name)
+	if err != nil {
+		t.Fatalf("%v", err)
 	}
+	wantPath := filepath.Join(root, "tests", "rosetta", "x", "Mochi", name+".out")
+	if want, err := os.ReadFile(wantPath); err == nil {
+		if !bytes.Equal(got, bytes.TrimSpace(want)) {
+			t.Errorf("output mismatch for %s\n\n--- Got ---\n%s\n\n--- Want ---\n%s", name, got, bytes.TrimSpace(want))
+		}
+	}
+}
+
+func listPrograms(root string) ([]string, error) {
+	files, err := filepath.Glob(filepath.Join(root, "tests", "rosetta", "x", "Mochi", "*.mochi"))
+	if err != nil {
+		return nil, err
+	}
+	sort.Strings(files)
+	names := make([]string, len(files))
+	for i, f := range files {
+		names[i] = strings.TrimSuffix(filepath.Base(f), ".mochi")
+	}
+	return names, nil
 }
 
 func updateChecklist() {
@@ -109,14 +121,14 @@ func updateChecklist() {
 	total := len(files)
 	compiled := 0
 	var lines []string
-	for _, f := range files {
+	for i, f := range files {
 		name := strings.TrimSuffix(filepath.Base(f), ".mochi")
 		mark := "[ ]"
 		if _, err := os.Stat(filepath.Join(outDir, name+".out")); err == nil {
 			compiled++
 			mark = "[x]"
 		}
-		lines = append(lines, fmt.Sprintf("- %s %s", mark, name))
+		lines = append(lines, fmt.Sprintf("%d. %s %s", i+1, mark, name))
 	}
 	ts := ""
 	if out, err := exec.Command("git", "log", "-1", "--format=%cI").Output(); err == nil {

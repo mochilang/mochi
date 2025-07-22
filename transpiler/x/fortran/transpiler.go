@@ -2413,6 +2413,13 @@ func toPrimary(p *parser.Primary, env *types.Env) (string, error) {
 		}
 		return name, nil
 	case p.Call != nil:
+		if p.Call.Func == "str" && len(p.Call.Args) == 1 {
+			argExpr, err := toExpr(p.Call.Args[0], env)
+			if err != nil {
+				return "", err
+			}
+			return fmt.Sprintf("trim(adjustl(to_string(%s)))", argExpr), nil
+		}
 		if p.Call.Func == "len" && len(p.Call.Args) == 1 {
 			if n, ok := constMapSize(p.Call.Args[0]); ok {
 				return strconv.Itoa(n), nil
