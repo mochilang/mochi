@@ -411,14 +411,40 @@ func (p *PrintStmt) emit(w io.Writer) {
 		return
 	}
 
-	io.WriteString(w, "print (")
 	if isBoolExpr(p.Expr) {
-		io.WriteString(w, "fromEnum (")
+		if call, ok := p.Expr.(*CallExpr); ok {
+			if n, ok2 := call.Fun.(*NameRef); ok2 && n.Name == "exists" {
+				io.WriteString(w, "putStrLn (if ")
+				p.Expr.emit(w)
+				io.WriteString(w, " then \"true\" else \"false\")")
+				return
+			}
+		}
+		if nr, ok := p.Expr.(*NameRef); ok {
+			if call, ok2 := vars[nr.Name].(*CallExpr); ok2 {
+				if n, ok3 := call.Fun.(*NameRef); ok3 && n.Name == "exists" {
+					io.WriteString(w, "putStrLn (if ")
+					p.Expr.emit(w)
+					io.WriteString(w, " then \"true\" else \"false\")")
+					return
+				}
+			}
+		}
+		io.WriteString(w, "print (fromEnum (")
 		p.Expr.emit(w)
-		io.WriteString(w, ")")
-	} else {
-		p.Expr.emit(w)
+		io.WriteString(w, "))")
+		return
 	}
+
+	if isCharExpr(p.Expr) {
+		io.WriteString(w, "putStrLn [")
+		p.Expr.emit(w)
+		io.WriteString(w, "]")
+		return
+	}
+
+	io.WriteString(w, "print (")
+	p.Expr.emit(w)
 	io.WriteString(w, ")")
 }
 
@@ -805,7 +831,7 @@ func isStringExpr(e Expr) bool {
 		}
 	case *IndexExpr:
 		if n, ok := ex.Target.(*NameRef); ok {
-			return varTypes[n.Name] == "map_string"
+			return isStringMapVar(n.Name)
 		}
 	case *CallExpr:
 		if n, ok := ex.Fun.(*NameRef); ok && n.Name == "show" && len(ex.Args) == 1 {
@@ -876,6 +902,17 @@ func isBoolExpr(e Expr) bool {
 	return false
 }
 
+func isCharExpr(e Expr) bool {
+	idx, ok := e.(*IndexExpr)
+	if !ok {
+		return false
+	}
+	if n, ok := idx.Target.(*NameRef); ok {
+		return varTypes[n.Name] == "string"
+	}
+	return false
+}
+
 func isListExpr(e Expr) bool {
 	switch ex := e.(type) {
 	case *ListLit:
@@ -926,6 +963,39 @@ func isMapExpr(e Expr) bool {
 		}
 	case *ComprExpr:
 		return isIntExpr(ex.Body)
+	}
+	return false
+}
+
+func isStringMapVar(name string) bool {
+	if varTypes[name] == "map_string" {
+		return true
+	}
+	if vars != nil {
+		if ex, ok := vars[name]; ok {
+			switch v := ex.(type) {
+			case *MapLit:
+				allStr := true
+				for _, val := range v.Values {
+					if !isStringExpr(val) {
+						allStr = false
+						break
+					}
+				}
+				return allStr
+			case *ComprExpr:
+				if ml, ok2 := v.Body.(*MapLit); ok2 {
+					allStr := true
+					for _, val := range ml.Values {
+						if !isStringExpr(val) {
+							allStr = false
+							break
+						}
+					}
+					return allStr
+				}
+			}
+		}
 	}
 	return false
 }
@@ -1012,6 +1082,14 @@ func toStringExpr(e Expr) Expr {
 	if isStringExpr(e) {
 		return e
 	}
+	if isCharExpr(e) {
+		return &ListLit{Elems: []Expr{e}}
+	}
+	if idx, ok := e.(*IndexExpr); ok {
+		if n, ok2 := idx.Target.(*NameRef); ok2 && isStringMapVar(n.Name) {
+			return idx
+		}
+	}
 	return &CallExpr{Fun: &NameRef{Name: "show"}, Args: []Expr{e}}
 }
 
@@ -1065,11 +1143,7 @@ func (b *BinaryExpr) emit(w io.Writer) {
 		case "%":
 			io.WriteString(w, "`mod`")
 		case "/":
-			if isFloatExpr(left) || isFloatExpr(op.Right) {
-				io.WriteString(w, "/")
-			} else {
-				io.WriteString(w, "`div`")
-			}
+			io.WriteString(w, "/")
 		case "in":
 			if isMapExpr(op.Right) {
 				needDataMap = true
@@ -1239,6 +1313,24 @@ func inferVarFromSource(name string, src Expr) {
 		if s := varStruct[n.Name]; s != "" {
 			varStruct[name] = s
 			varTypes[name] = "record"
+		}
+		if vars != nil {
+			if ce, ok2 := vars[n.Name].(*ComprExpr); ok2 {
+				if ml, ok3 := ce.Body.(*MapLit); ok3 {
+					allStr := true
+					for _, v := range ml.Values {
+						if !isStringExpr(v) {
+							allStr = false
+							break
+						}
+					}
+					if allStr {
+						varTypes[name] = "map_string"
+					} else {
+						varTypes[name] = "map"
+					}
+				}
+			}
 		}
 		if envInfo != nil {
 			if vt, err := envInfo.GetVar(n.Name); err == nil {
