@@ -1,4 +1,22 @@
-## Progress (2025-07-22 06:36 +0700)
+## Progress (2025-07-21 23:51 UTC)
+- java transpiler: simplify avg handling (6a6d5558c)
+
+- docs: update java transpiler progress (52a94e25e)
+
+- docs: update java transpiler progress (52a94e25e)
+
+- docs: update java transpiler progress (52a94e25e)
+
+- docs: update java transpiler progress (52a94e25e)
+
+- docs: update java transpiler progress (52a94e25e)
+
+- docs: update java transpiler progress (52a94e25e)
+
+- docs: update java transpiler progress (52a94e25e)
+
+- docs: update java transpiler progress (52a94e25e)
+
 - java transpiler: improve bool handling (4528b4fd3)
 
 - cs transpiler: support outer join (85aa12994)

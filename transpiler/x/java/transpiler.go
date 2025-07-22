@@ -1047,23 +1047,16 @@ func (l *LenExpr) emit(w io.Writer) {
 type AvgExpr struct{ Value Expr }
 
 func (a *AvgExpr) emit(w io.Writer) {
-	fmt.Fprint(w, "(((")
+	fmt.Fprint(w, "(")
 	if isArrayExpr(a.Value) {
 		fmt.Fprint(w, "java.util.Arrays.stream(")
 		a.Value.emit(w)
-		fmt.Fprint(w, ").average().orElse(0)) % 1 == 0) ? (Object)(int)(java.util.Arrays.stream(")
-		a.Value.emit(w)
-		fmt.Fprint(w, ").average().orElse(0)) : (Object)(java.util.Arrays.stream(")
-		a.Value.emit(w)
-		fmt.Fprint(w, ").average().orElse(0)))")
+		fmt.Fprint(w, ").average().orElse(0)")
 	} else {
 		a.Value.emit(w)
-		fmt.Fprint(w, ".stream().mapToDouble(v -> ((Number)v).doubleValue()).average().orElse(0)) % 1 == 0) ? (Object)(int)(")
-		a.Value.emit(w)
-		fmt.Fprint(w, ".stream().mapToDouble(v -> ((Number)v).doubleValue()).average().orElse(0)) : (Object)(")
-		a.Value.emit(w)
-		fmt.Fprint(w, ".stream().mapToDouble(v -> ((Number)v).doubleValue()).average().orElse(0)))")
+		fmt.Fprint(w, ".stream().mapToDouble(v -> ((Number)v).doubleValue()).average().orElse(0)")
 	}
+	fmt.Fprint(w, ")")
 }
 
 // SumExpr represents summing a list of numbers.
