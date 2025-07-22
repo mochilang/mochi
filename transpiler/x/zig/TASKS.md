@@ -1,3 +1,23 @@
+## Progress (2025-07-22 18:14 +0700)
+- Commit 5077c75ed: release: v0.10.37
+- Generated Zig for 99/103 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-22 18:14 +0700)
+- Commit 5077c75ed: release: v0.10.37
+- Generated Zig for 99/103 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-22 18:14 +0700)
+- Commit 5077c75ed: release: v0.10.37
+- Generated Zig for 98/103 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-22 18:14 +0700)
+- Commit 5077c75ed: release: v0.10.37
+- Generated Zig for 98/103 programs
+- Updated README checklist and outputs
+
 ## Progress (2025-07-22 16:36 +0700)
 - Commit 5191c3431: zig transpiler: support save to stdout
 - Generated Zig for 98/103 programs
