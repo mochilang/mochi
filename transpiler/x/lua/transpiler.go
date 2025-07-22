@@ -4,14 +4,18 @@ package lua
 
 import (
 	"bytes"
+	"encoding/json"
 	"fmt"
 	"io"
 	"os"
 	"os/exec"
 	"path/filepath"
+	"sort"
 	"strings"
 	"time"
 	"unicode"
+
+	"gopkg.in/yaml.v3"
 
 	"mochi/ast"
 	"mochi/parser"
@@ -1465,6 +1469,141 @@ func formatLua(b []byte) []byte {
 	return []byte(out)
 }
 
+func mapLiteralExpr(e *parser.Expr) *parser.MapLiteral {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) != 0 {
+		return nil
+	}
+	u := e.Binary.Left
+	if len(u.Ops) > 0 || u.Value == nil {
+		return nil
+	}
+	p := u.Value
+	if len(p.Ops) > 0 || p.Target == nil {
+		return nil
+	}
+	return p.Target.Map
+}
+
+func literalString(e *parser.Expr) (string, bool) {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) > 0 {
+		return "", false
+	}
+	u := e.Binary.Left
+	if len(u.Ops) > 0 || u.Value == nil {
+		return "", false
+	}
+	p := u.Value
+	if len(p.Ops) > 0 || p.Target == nil {
+		return "", false
+	}
+	if p.Target.Lit != nil && p.Target.Lit.Str != nil {
+		return *p.Target.Lit.Str, true
+	}
+	if p.Target.Selector != nil && len(p.Target.Selector.Tail) == 0 {
+		return p.Target.Selector.Root, true
+	}
+	return "", false
+}
+
+func parseFormat(e *parser.Expr) string {
+	ml := mapLiteralExpr(e)
+	if ml == nil {
+		return ""
+	}
+	for _, it := range ml.Items {
+		key, ok := literalString(it.Key)
+		if !ok {
+			continue
+		}
+		if key == "format" {
+			if s, ok := literalString(it.Value); ok {
+				return s
+			}
+		}
+	}
+	return ""
+}
+
+func valueToExpr(v interface{}, typ *parser.TypeRef) Expr {
+	switch val := v.(type) {
+	case map[string]interface{}:
+		names := make([]string, 0, len(val))
+		for k := range val {
+			names = append(names, k)
+		}
+		sort.Strings(names)
+		keys := make([]Expr, len(names))
+		vals := make([]Expr, len(names))
+		for i, k := range names {
+			keys[i] = &StringLit{Value: k}
+			vals[i] = valueToExpr(val[k], nil)
+		}
+		return &MapLit{Keys: keys, Values: vals}
+	case []interface{}:
+		elems := make([]Expr, len(val))
+		for i, it := range val {
+			elems[i] = valueToExpr(it, typ)
+		}
+		return &ListLit{Elems: elems}
+	case string:
+		return &StringLit{Value: val}
+	case bool:
+		return &BoolLit{Value: val}
+	case int64:
+		return &IntLit{Value: int(val)}
+	case int:
+		return &IntLit{Value: val}
+	case float64:
+		return &FloatLit{Value: val}
+	case float32:
+		return &FloatLit{Value: float64(val)}
+	default:
+		return &StringLit{Value: fmt.Sprintf("%v", val)}
+	}
+}
+
+func dataExprFromFile(path, format string, typ *parser.TypeRef) (Expr, error) {
+	if path == "" {
+		return &ListLit{}, nil
+	}
+	root := repoRoot()
+	if root != "" && strings.HasPrefix(path, "../") {
+		clean := strings.TrimPrefix(path, "../")
+		path = filepath.Join(root, "tests", clean)
+	}
+	data, err := os.ReadFile(path)
+	if err != nil {
+		return nil, err
+	}
+	var v interface{}
+	switch format {
+	case "yaml":
+		if err := yaml.Unmarshal(data, &v); err != nil {
+			return nil, err
+		}
+	case "jsonl":
+		var arr []interface{}
+		for _, line := range bytes.Split(data, []byte{'\n'}) {
+			line = bytes.TrimSpace(line)
+			if len(line) == 0 {
+				continue
+			}
+			var item interface{}
+			if err := json.Unmarshal(line, &item); err == nil {
+				arr = append(arr, item)
+			}
+		}
+		v = arr
+	case "json", "":
+		if err := json.Unmarshal(data, &v); err != nil {
+			return nil, err
+		}
+	default:
+		return nil, fmt.Errorf("unsupported load format")
+	}
+	return valueToExpr(v, typ), nil
+}
+
 // Emit converts the AST back into Lua source code with a standard header.
 func Emit(p *Program) []byte {
 	var b bytes.Buffer
@@ -1693,6 +1832,13 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 	switch {
 	case p.Lit != nil:
 		return convertLiteral(p.Lit)
+	case p.Load != nil:
+		format := parseFormat(p.Load.With)
+		path := ""
+		if p.Load.Path != nil {
+			path = strings.Trim(*p.Load.Path, "\"")
+		}
+		return dataExprFromFile(path, format, p.Load.Type)
 	case p.Call != nil:
 		ce := &CallExpr{Func: p.Call.Func}
 		var ft types.FuncType
