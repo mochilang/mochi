@@ -1,0 +1,9 @@
+run: exit status 1
+Traceback (most recent call last):
+  File "/workspace/mochi/tests/transpiler/x/py/group_by_multi_join_sort.py", line 66, in <module>
+    result = [Result(g.key.c_custkey, g.key.c_name, sum([x.l.l_extendedprice * (1 - x.l.l_discount) for x in g.items]), g.key.c_acctbal, g.key.n_name, g.key.c_address, g.key.c_phone, g.key.c_comment) for g in _result_groups.values()]
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/mochi/tests/transpiler/x/py/group_by_multi_join_sort.py", line 66, in <listcomp>
+    result = [Result(g.key.c_custkey, g.key.c_name, sum([x.l.l_extendedprice * (1 - x.l.l_discount) for x in g.items]), g.key.c_acctbal, g.key.n_name, g.key.c_address, g.key.c_phone, g.key.c_comment) for g in _result_groups.values()]
+                     ^^^^^^^^^^^^^^^
+AttributeError: 'tuple' object has no attribute 'c_custkey'

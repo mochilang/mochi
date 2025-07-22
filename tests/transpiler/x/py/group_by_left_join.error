@@ -1,0 +1,12 @@
+run: exit status 1
+Traceback (most recent call last):
+  File "/workspace/mochi/tests/transpiler/x/py/group_by_left_join.py", line 34, in <module>
+    stats = [Stat(g.key, len([r for r in g.items if r.o])) for g in _stats_groups.values()]
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/mochi/tests/transpiler/x/py/group_by_left_join.py", line 34, in <listcomp>
+    stats = [Stat(g.key, len([r for r in g.items if r.o])) for g in _stats_groups.values()]
+                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/mochi/tests/transpiler/x/py/group_by_left_join.py", line 34, in <listcomp>
+    stats = [Stat(g.key, len([r for r in g.items if r.o])) for g in _stats_groups.values()]
+                                                    ^^^
+AttributeError: 'Customer' object has no attribute 'o'
