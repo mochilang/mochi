@@ -30,6 +30,7 @@ type Program struct {
 	UsePrint   bool
 	UseSort    bool
 	UseJSON    bool
+	UseTime    bool
 }
 
 var (
@@ -38,11 +39,13 @@ var (
 	usesPrint      bool
 	usesSort       bool
 	usesJSON       bool
+	usesTime       bool
 	topEnv         *types.Env
 	extraDecls     []Stmt
 	structCount    int
 	imports        map[string]string
 	currentRetType string
+	mainFuncName   string
 )
 
 func toPascalCase(s string) string {
@@ -895,6 +898,13 @@ func (fs *FloatStringExpr) emit(w io.Writer) {
 	io.WriteString(w, "); if f == float64(int(f)) { return fmt.Sprintf(\"%.1f\", f) }; return fmt.Sprint(f) }()")
 }
 
+// NowExpr expands to a deterministic timestamp similar to the VM's now() builtin.
+type NowExpr struct{}
+
+func (n *NowExpr) emit(w io.Writer) {
+	io.WriteString(w, "_now()")
+}
+
 // JsonExpr prints a value as pretty JSON.
 type JsonExpr struct{ Value Expr }
 
@@ -1458,9 +1468,11 @@ func Transpile(p *parser.Program, env *types.Env) (*Program, error) {
 	usesPrint = false
 	usesSort = false
 	usesJSON = false
+	usesTime = false
 	topEnv = env
 	extraDecls = nil
 	structCount = 0
+	mainFuncName = ""
 	imports = map[string]string{}
 	gp := &Program{}
 	for _, stmt := range p.Statements {
@@ -1482,6 +1494,7 @@ func Transpile(p *parser.Program, env *types.Env) (*Program, error) {
 	gp.UsePrint = usesPrint
 	gp.UseSort = usesSort
 	gp.UseJSON = usesJSON
+	gp.UseTime = usesTime
 	gp.Imports = imports
 	return gp, nil
 }
@@ -2869,7 +2882,12 @@ func compileFunStmt(fn *parser.FunStmt, env *types.Env) (Stmt, error) {
 		lit := &FuncLit{Params: params, Return: ret, Body: body}
 		return &VarDecl{Name: fn.Name, Value: lit}, nil
 	}
-	return &FuncDecl{Name: fn.Name, Params: params, Return: ret, Body: body}, nil
+	name := fn.Name
+	if name == "main" {
+		mainFuncName = "mochiMain"
+		name = mainFuncName
+	}
+	return &FuncDecl{Name: name, Params: params, Return: ret, Body: body}, nil
 }
 
 func compileFunExpr(fn *parser.FunExpr, env *types.Env) (Expr, error) {
@@ -3222,6 +3240,8 @@ func compilePostfix(pf *parser.PostfixExpr, env *types.Env, base string) (Expr, 
 				if name == "int" {
 					usesStrconv = true
 					expr = &AtoiExpr{Expr: expr}
+				} else if name == "float" {
+					expr = &CallExpr{Func: "float64", Args: []Expr{expr}}
 				} else if st, ok := env.GetStruct(name); ok {
 					if ml, ok := expr.(*MapLit); ok {
 						fields := make([]Expr, len(st.Order))
@@ -3295,6 +3315,9 @@ func compilePrimary(p *parser.Primary, env *types.Env, base string) (Expr, error
 			args[i] = ex
 		}
 		name := p.Call.Func
+		if name == "main" && mainFuncName != "" {
+			name = mainFuncName
+		}
 		switch name {
 		case "avg":
 			return &AvgExpr{List: args[0]}, nil
@@ -3339,6 +3362,9 @@ func compilePrimary(p *parser.Primary, env *types.Env, base string) (Expr, error
 			return &ExistsExpr{Expr: bexpr}, nil
 		case "substring":
 			return &CallExpr{Func: "string", Args: []Expr{&SliceExpr{X: &RuneSliceExpr{Expr: args[0]}, Start: args[1], End: args[2]}}}, nil
+		case "now":
+			usesTime = true
+			return &NowExpr{}, nil
 		case "json":
 			usesJSON = true
 			return &JsonExpr{Value: args[0]}, nil
@@ -3796,6 +3822,11 @@ func Emit(prog *Program) []byte {
 	if prog.UseStrconv {
 		buf.WriteString("    \"strconv\"\n")
 	}
+	if prog.UseTime {
+		buf.WriteString("    \"time\"\n")
+		buf.WriteString("    \"os\"\n")
+		buf.WriteString("    \"strconv\"\n")
+	}
 	if prog.UseJSON {
 		buf.WriteString("    \"encoding/json\"\n")
 	}
@@ -3803,6 +3834,26 @@ func Emit(prog *Program) []byte {
 		buf.WriteString("    \"sort\"\n")
 	}
 	buf.WriteString(")\n\n")
+
+	if prog.UseTime {
+		buf.WriteString("var seededNow bool\n")
+		buf.WriteString("var nowSeed int64\n")
+		buf.WriteString("func init() {\n")
+		buf.WriteString("    if s := os.Getenv(\"MOCHI_NOW_SEED\"); s != \"\" {\n")
+		buf.WriteString("        if v, err := strconv.ParseInt(s, 10, 64); err == nil {\n")
+		buf.WriteString("            nowSeed = v\n")
+		buf.WriteString("            seededNow = true\n")
+		buf.WriteString("        }\n")
+		buf.WriteString("    }\n")
+		buf.WriteString("}\n")
+		buf.WriteString("func _now() int {\n")
+		buf.WriteString("    if seededNow {\n")
+		buf.WriteString("        nowSeed = (nowSeed*1664525 + 1013904223) % 2147483647\n")
+		buf.WriteString("        return int(nowSeed)\n")
+		buf.WriteString("    }\n")
+		buf.WriteString("    return int(time.Now().UnixNano())\n")
+		buf.WriteString("}\n\n")
+	}
 
 	// no runtime helper functions needed
 	for _, s := range prog.Stmts {

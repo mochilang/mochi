@@ -94,11 +94,9 @@ func TestGoTranspiler_Rosetta_Golden(t *testing.T) {
 	t.Logf("Summary: %d passed, %d failed", passed, failed)
 }
 
-func TestMain(m *testing.M) {
-	code := m.Run()
-	updateRosettaChecklist()
-	os.Exit(code)
-}
+// TestMain is defined in vm_valid_golden_test.go. That TestMain updates
+// README and TASKS files after the test run. We hook the rosetta checklist
+// update there as well, so we don't need a separate TestMain in this file.
 
 func updateRosettaChecklist() {
 	root := findRepoRoot(&testing.T{})
@@ -137,24 +135,7 @@ func updateRosettaChecklist() {
 	_ = os.WriteFile(readmePath, buf.Bytes(), 0o644)
 }
 
-func findRepoRoot(t *testing.T) string {
-	dir, err := os.Getwd()
-	if err != nil {
-		t.Fatal("cannot determine working directory")
-	}
-	for i := 0; i < 10; i++ {
-		if _, err := os.Stat(filepath.Join(dir, "go.mod")); err == nil {
-			return dir
-		}
-		parent := filepath.Dir(dir)
-		if parent == dir {
-			break
-		}
-		dir = parent
-	}
-	t.Fatal("go.mod not found")
-	return ""
-}
+// findRepoRoot is declared in vm_valid_golden_test.go and shared across tests.
 
 func updating() bool {
 	f := flag.Lookup("update")
