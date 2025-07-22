@@ -2981,13 +2981,10 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 			}
 			entries[i] = MapEntry{Key: k, Value: v}
 		}
-		if transpileEnv != nil {
-			if st, ok := types.InferStructFromMapEnv(p.Map, transpileEnv); ok {
-				name := ensureNamedStruct(st, "Result")
-				st.Name = name
-				_ = name
-			}
-		}
+                // Avoid generating unused type declarations for simple map
+                // literals. Struct interfaces are emitted when a variable or
+                // query explicitly requires one, so map literals on their own
+                // can remain anonymous objects.
 		return &MapLit{Entries: entries}, nil
 	case p.Load != nil:
 		format := parseFormat(p.Load.With)
