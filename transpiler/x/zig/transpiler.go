@@ -390,38 +390,60 @@ func (gq *GroupByExpr) emit(w io.Writer) {
 	writeIndent(w, 1)
 	io.WriteString(w, "const arr = groups.toOwnedSlice() catch unreachable;\n")
 	writeIndent(w, 1)
-	fmt.Fprintf(w, "var result = std.ArrayList(%s).init(std.heap.page_allocator);\n", gq.ElemType)
+	sortType := ""
+	if gq.Sort != nil {
+		sortType = zigTypeFromExpr(gq.Sort)
+		fmt.Fprintf(w, "var result = std.ArrayList(struct{key: %s, val: %s}).init(std.heap.page_allocator);\n", sortType, gq.ElemType)
+	} else {
+		fmt.Fprintf(w, "var result = std.ArrayList(%s).init(std.heap.page_allocator);\n", gq.ElemType)
+	}
 	writeIndent(w, 1)
 	io.WriteString(w, "for (arr) |")
 	io.WriteString(w, gq.GroupVar)
 	io.WriteString(w, "| {\n")
 	writeIndent(w, 2)
 	io.WriteString(w, "result.append(")
-	gq.SelectExpr.emit(w)
+	if gq.Sort != nil {
+		io.WriteString(w, ".{ .key = ")
+		gq.Sort.emit(w)
+		io.WriteString(w, ", .val = ")
+		gq.SelectExpr.emit(w)
+		io.WriteString(w, " }")
+	} else {
+		gq.SelectExpr.emit(w)
+	}
 	io.WriteString(w, ") catch unreachable;\n")
 	writeIndent(w, 1)
 	io.WriteString(w, "}\n")
 	writeIndent(w, 1)
 	io.WriteString(w, "var tmp = result.toOwnedSlice() catch unreachable;\n")
 	if gq.Sort != nil {
-		if fe, ok := gq.Sort.(*FieldExpr); ok {
-			if vr, ok2 := fe.Target.(*VarRef); ok2 && vr.Name == gq.GroupVar && fe.Name == "key" {
-				writeIndent(w, 1)
-				io.WriteString(w, "std.sort.sort(")
-				io.WriteString(w, gq.StructName)
-				io.WriteString(w, ", tmp, {}, struct{fn lt(ctx: void, a: ")
-				io.WriteString(w, gq.StructName)
-				io.WriteString(w, ", b: ")
-				io.WriteString(w, gq.StructName)
-				io.WriteString(w, ") bool { return ")
-				if gq.Desc {
-					io.WriteString(w, "a.key > b.key")
-				} else {
-					io.WriteString(w, "a.key < b.key")
-				}
-				io.WriteString(w, "; } }.lt);\n")
-			}
+		writeIndent(w, 1)
+		io.WriteString(w, "std.sort.sort(struct{key: ")
+		io.WriteString(w, sortType)
+		io.WriteString(w, ", val: ")
+		io.WriteString(w, gq.ElemType)
+		io.WriteString(w, "}, tmp, {}, struct{fn lt(ctx: void, a: struct{key: ")
+		io.WriteString(w, sortType)
+		io.WriteString(w, ", val: ")
+		io.WriteString(w, gq.ElemType)
+		io.WriteString(w, "}, b: struct{key: ")
+		io.WriteString(w, sortType)
+		io.WriteString(w, ", val: ")
+		io.WriteString(w, gq.ElemType)
+		io.WriteString(w, "}) bool { return ")
+		if gq.Desc {
+			io.WriteString(w, "a.key > b.key")
+		} else {
+			io.WriteString(w, "a.key < b.key")
 		}
+		io.WriteString(w, "; } }.lt);\n")
+		writeIndent(w, 1)
+		fmt.Fprintf(w, "var arr2 = std.ArrayList(%s).init(std.heap.page_allocator);\n", gq.ElemType)
+		writeIndent(w, 1)
+		io.WriteString(w, "for (tmp) |it| { arr2.append(it.val) catch unreachable; }\n")
+		writeIndent(w, 1)
+		io.WriteString(w, "tmp = arr2.toOwnedSlice() catch unreachable;\n")
 	}
 	writeIndent(w, 1)
 	io.WriteString(w, "break :blk tmp;\n}")
@@ -2318,6 +2340,54 @@ func literalString(e *parser.Expr) (string, bool) {
 }
 
 func compileUpdateStmt(u *parser.UpdateStmt) (Stmt, error) {
+	itemType := ""
+	if t, ok := varTypes[u.Target]; ok && strings.HasPrefix(t, "[]") {
+		itemType = t[2:]
+	}
+	fieldMap := map[string]bool{}
+	if sd, ok := structDefs[itemType]; ok {
+		for _, f := range sd.Fields {
+			fieldMap[f.Name] = true
+		}
+	}
+	rewrite := func(e Expr) Expr {
+		var walk func(Expr) Expr
+		walk = func(x Expr) Expr {
+			switch v := x.(type) {
+			case *VarRef:
+				if fieldMap[v.Name] {
+					return &FieldExpr{Target: &VarRef{Name: "item"}, Name: v.Name}
+				}
+				return v
+			case *BinaryExpr:
+				v.Left = walk(v.Left)
+				v.Right = walk(v.Right)
+				return v
+			case *CallExpr:
+				for i := range v.Args {
+					v.Args[i] = walk(v.Args[i])
+				}
+				return v
+			case *IndexExpr:
+				v.Target = walk(v.Target)
+				v.Index = walk(v.Index)
+				return v
+			case *FieldExpr:
+				v.Target = walk(v.Target)
+				return v
+			case *NotExpr:
+				v.Expr = walk(v.Expr)
+				return v
+			case *IfExpr:
+				v.Cond = walk(v.Cond)
+				v.Then = walk(v.Then)
+				v.Else = walk(v.Else)
+				return v
+			}
+			return x
+		}
+		return walk(e)
+	}
 	fields := make([]string, len(u.Set.Items))
 	values := make([]Expr, len(u.Set.Items))
 	for i, it := range u.Set.Items {
@@ -2332,8 +2402,8 @@ func compileUpdateStmt(u *parser.UpdateStmt) (Stmt, error) {
 		if err != nil {
 			return nil, err
 		}
+		values[i] = rewrite(val)
 		fields[i] = key
-		values[i] = val
 	}
 	var cond Expr
 	if u.Where != nil {
@@ -2342,6 +2412,7 @@ func compileUpdateStmt(u *parser.UpdateStmt) (Stmt, error) {
 		if err != nil {
 			return nil, err
 		}
+		cond = rewrite(cond)
 	}
 	return &UpdateStmt{Target: u.Target, Fields: fields, Values: values, Cond: cond}, nil
 }
