@@ -56,6 +56,9 @@ var groupItemType map[string]string
 // vars holds the last computed expression of each variable at the top level.
 var vars map[string]Expr
 
+// indent tracks the current indentation when emitting code.
+var indent string
+
 // reserved lists Haskell reserved keywords that cannot be used as identifiers.
 var reserved = map[string]bool{
 	"case":     true,
@@ -88,6 +91,14 @@ func safeName(n string) string {
 	}
 	return n
 }
+
+func pushIndent() { indent += "    " }
+func popIndent() {
+	if len(indent) >= 4 {
+		indent = indent[:len(indent)-4]
+	}
+}
+func writeIndent(w io.Writer) { io.WriteString(w, indent) }
 
 type TypeDecl struct {
 	Name   string
@@ -333,11 +344,13 @@ func (f *Func) emit(w io.Writer) {
 		}
 	}
 	io.WriteString(w, "do\n")
+	prev := indent
+	indent += "    "
 	for _, st := range f.Body {
-		io.WriteString(w, "    ")
 		st.emit(w)
 		io.WriteString(w, "\n")
 	}
+	indent = prev
 }
 
 type PrintStmt struct {
@@ -396,6 +409,7 @@ type IndexExpr struct {
 }
 
 func (p *PrintStmt) emit(w io.Writer) {
+	writeIndent(w)
 	if p.String {
 		io.WriteString(w, "putStrLn (")
 		p.Expr.emit(w)
@@ -449,64 +463,154 @@ func (p *PrintStmt) emit(w io.Writer) {
 }
 
 func (j *JSONStmt) emit(w io.Writer) {
+	writeIndent(w)
 	io.WriteString(w, "BSL.putStrLn (Aeson.encode ")
 	j.Expr.emit(w)
 	io.WriteString(w, ")")
 }
 
 func (l *LetStmt) emit(w io.Writer) {
+	writeIndent(w)
 	io.WriteString(w, safeName(l.Name))
 	io.WriteString(w, " = ")
 	l.Expr.emit(w)
 }
 
 func (a *AssignStmt) emit(w io.Writer) {
+	writeIndent(w)
 	io.WriteString(w, safeName(a.Name))
 	io.WriteString(w, " = ")
 	a.Expr.emit(w)
 }
 
 func (i *IfStmt) emit(w io.Writer) {
+	writeIndent(w)
 	io.WriteString(w, "if ")
 	i.Cond.emit(w)
 	io.WriteString(w, " then do\n")
+	pushIndent()
 	for _, st := range i.Then {
-		io.WriteString(w, "        ")
 		st.emit(w)
 		io.WriteString(w, "\n")
 	}
+	popIndent()
 	if len(i.Else) > 0 {
-		io.WriteString(w, "    else do\n")
+		writeIndent(w)
+		io.WriteString(w, "else do\n")
+		pushIndent()
 		for _, st := range i.Else {
-			io.WriteString(w, "        ")
 			st.emit(w)
 			io.WriteString(w, "\n")
 		}
+		popIndent()
 	} else {
-		io.WriteString(w, "    else return ()\n")
+		writeIndent(w)
+		io.WriteString(w, "else return ()\n")
 	}
 }
 func (r *ReturnStmt) emit(w io.Writer) {
+	writeIndent(w)
 	io.WriteString(w, "return (")
 	r.Expr.emit(w)
 	io.WriteString(w, ")")
 }
 
-func (b *BreakStmt) emit(w io.Writer)    { io.WriteString(w, "return ()") }
-func (c *ContinueStmt) emit(w io.Writer) { io.WriteString(w, currentLoop+" xs") }
+func (b *BreakStmt) emit(w io.Writer)    { writeIndent(w); io.WriteString(w, "return ()") }
+func (c *ContinueStmt) emit(w io.Writer) { writeIndent(w); io.WriteString(w, currentLoop+" xs") }
 
 func (f *ForStmt) emit(w io.Writer) {
 	if f.WithBreak {
 		loop := "loop"
 		prevLoop := currentLoop
 		currentLoop = loop
-		io.WriteString(w, "let\n        ")
+		type guard struct {
+			cond   Expr
+			action string
+		}
+		var guards []guard
+		var rest []Stmt
+		for _, st := range f.Body {
+			if is, ok := st.(*IfStmt); ok && len(is.Then) == 1 && len(is.Else) == 0 {
+				switch is.Then[0].(type) {
+				case *ContinueStmt:
+					guards = append(guards, guard{cond: is.Cond, action: loop + " xs"})
+					continue
+				case *BreakStmt:
+					guards = append(guards, guard{cond: is.Cond, action: "return ()"})
+					continue
+				}
+			}
+			rest = append(rest, st)
+		}
+		if len(guards) > 0 {
+			writeIndent(w)
+			io.WriteString(w, "let\n")
+			pushIndent()
+			writeIndent(w)
+			io.WriteString(w, loop+" [] = return ()\n")
+			writeIndent(w)
+			io.WriteString(w, loop+" ("+safeName(f.Name)+":xs)")
+			for i, g := range guards {
+				if i == 0 {
+					io.WriteString(w, " | ")
+				} else {
+					io.WriteString(w, "\n")
+					writeIndent(w)
+					io.WriteString(w, "    | ")
+				}
+				g.cond.emit(w)
+				io.WriteString(w, " = ")
+				io.WriteString(w, g.action)
+			}
+			if len(rest) > 0 {
+				io.WriteString(w, "\n")
+				writeIndent(w)
+				io.WriteString(w, "    | otherwise = do\n")
+				pushIndent()
+				for _, st := range rest {
+					st.emit(w)
+					io.WriteString(w, "\n")
+				}
+				writeIndent(w)
+				io.WriteString(w, loop+" xs\n")
+				popIndent()
+			} else {
+				io.WriteString(w, "\n")
+				writeIndent(w)
+				io.WriteString(w, "    | otherwise = "+loop+" xs\n")
+			}
+			popIndent()
+			writeIndent(w)
+			io.WriteString(w, loop+" ")
+			if f.To != nil {
+				io.WriteString(w, "[")
+				f.From.emit(w)
+				io.WriteString(w, " .. (")
+				f.To.emit(w)
+				io.WriteString(w, " - 1)]")
+			} else if isMapExpr(f.From) {
+				needDataMap = true
+				io.WriteString(w, "(Map.keys ")
+				f.From.emit(w)
+				io.WriteString(w, ")")
+			} else {
+				f.From.emit(w)
+			}
+			currentLoop = prevLoop
+			return
+		}
+		writeIndent(w)
+		io.WriteString(w, "let\n")
+		pushIndent()
+		writeIndent(w)
 		io.WriteString(w, loop)
-		io.WriteString(w, " [] = return ()\n        ")
+		io.WriteString(w, " [] = return ()\n")
+		writeIndent(w)
 		io.WriteString(w, loop)
 		io.WriteString(w, " (")
 		io.WriteString(w, safeName(f.Name))
 		io.WriteString(w, ":xs) = do\n")
+		pushIndent()
 		stop := false
 		for _, st := range f.Body {
 			if stop {
@@ -514,21 +618,25 @@ func (f *ForStmt) emit(w io.Writer) {
 			}
 			switch st.(type) {
 			case *BreakStmt:
-				io.WriteString(w, "            return ()\n")
+				st.emit(w)
+				io.WriteString(w, "\n")
 				stop = true
 			case *ContinueStmt:
-				io.WriteString(w, "            "+loop+" xs\n")
+				st.emit(w)
+				io.WriteString(w, "\n")
 				stop = true
 			default:
-				io.WriteString(w, "            ")
 				st.emit(w)
 				io.WriteString(w, "\n")
 			}
 		}
 		if !stop {
-			io.WriteString(w, "            "+loop+" xs\n")
+			writeIndent(w)
+			io.WriteString(w, loop+" xs\n")
 		}
-		io.WriteString(w, "    in ")
+		popIndent()
+		popIndent()
+		writeIndent(w)
 		io.WriteString(w, loop)
 		io.WriteString(w, " ")
 		if f.To != nil {
@@ -548,15 +656,18 @@ func (f *ForStmt) emit(w io.Writer) {
 		currentLoop = prevLoop
 		return
 	}
+	writeIndent(w)
 	io.WriteString(w, "mapM_ (\\")
 	io.WriteString(w, safeName(f.Name))
 	io.WriteString(w, " -> do\n")
+	pushIndent()
 	for _, st := range f.Body {
-		io.WriteString(w, "        ")
 		st.emit(w)
 		io.WriteString(w, "\n")
 	}
-	io.WriteString(w, "        ) ")
+	popIndent()
+	writeIndent(w)
+	io.WriteString(w, ") ")
 	if f.To != nil {
 		io.WriteString(w, "[")
 		f.From.emit(w)
@@ -577,6 +688,7 @@ func (f *ForStmt) emit(w io.Writer) {
 
 func (wst *WhileStmt) emit(w io.Writer) {
 	name := "loop"
+	writeIndent(w)
 	io.WriteString(w, "let ")
 	io.WriteString(w, name)
 	if wst.Var != "" {
@@ -584,15 +696,17 @@ func (wst *WhileStmt) emit(w io.Writer) {
 		io.WriteString(w, safeName(wst.Var))
 	}
 	io.WriteString(w, " = do\n")
-	io.WriteString(w, "            if ")
+	pushIndent()
+	writeIndent(w)
+	io.WriteString(w, "if ")
 	wst.Cond.emit(w)
 	io.WriteString(w, " then do\n")
+	pushIndent()
 	for _, st := range wst.Body {
-		io.WriteString(w, "                ")
 		st.emit(w)
 		io.WriteString(w, "\n")
 	}
-	io.WriteString(w, "                ")
+	writeIndent(w)
 	io.WriteString(w, name)
 	if wst.Var != "" && wst.Next != nil {
 		io.WriteString(w, " (")
@@ -601,8 +715,11 @@ func (wst *WhileStmt) emit(w io.Writer) {
 	} else {
 		io.WriteString(w, "\n")
 	}
-	io.WriteString(w, "            else return ()\n")
-	io.WriteString(w, "    ")
+	popIndent()
+	writeIndent(w)
+	io.WriteString(w, "else return ()\n")
+	popIndent()
+	writeIndent(w)
 	io.WriteString(w, name)
 	if wst.Var != "" {
 		io.WriteString(w, " ")
@@ -1424,14 +1541,16 @@ func Emit(p *Program) []byte {
 	}
 	buf.WriteString("main :: IO ()\n")
 	buf.WriteString("main = do\n")
+	prev := indent
+	indent += "    "
 	for _, s := range p.Stmts {
 		if _, ok := s.(*LetStmt); ok {
 			continue
 		}
-		buf.WriteString("    ")
 		s.emit(&buf)
 		buf.WriteByte('\n')
 	}
+	indent = prev
 	return buf.Bytes()
 }
 
