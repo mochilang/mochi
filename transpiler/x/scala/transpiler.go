@@ -1799,7 +1799,7 @@ func convertRightJoinQuery(q *parser.QueryExpr, env *types.Env) (Expr, error) {
 		return nil, err
 	}
 	if ml := mapLiteral(q.Select); ml != nil {
-		if st, ok := types.InferStructFromMapEnv(ml, genv); ok {
+		if st, ok := types.InferStructFromMapEnv(ml, child); ok {
 			name := types.UniqueStructName("QueryItem", env, nil)
 			st.Name = name
 			env.SetStruct(name, st)
@@ -1820,11 +1820,11 @@ func convertRightJoinQuery(q *parser.QueryExpr, env *types.Env) (Expr, error) {
 			q.Select = &parser.Expr{Binary: &parser.BinaryExpr{Left: &parser.Unary{Value: &parser.PostfixExpr{Target: &parser.Primary{Struct: sl}}}}}
 		}
 	}
-	sel, err := convertExpr(q.Select, genv)
+	sel, err := convertExpr(q.Select, child)
 	if err != nil {
 		return nil, err
 	}
-	elemTypeStr := toScalaTypeFromType(types.ExprType(q.Select, genv))
+	elemTypeStr := toScalaTypeFromType(types.ExprType(q.Select, child))
 	if elemTypeStr == "" {
 		elemTypeStr = "Any"
 	}
