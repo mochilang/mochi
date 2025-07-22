@@ -26,6 +26,9 @@ func shouldUpdate() bool {
 	return f != nil && f.Value.String() == "true"
 }
 
+// rosettaIndex optionally selects a single program by 1-based index.
+var rosettaIndex = flag.Int("index", 0, "run only the N-th Rosetta program (1-based)")
+
 func runCase(src, outDir string) ([]byte, error) {
 	base := strings.TrimSuffix(filepath.Base(src), ".mochi")
 	codePath := filepath.Join(outDir, base+".lua")
@@ -83,7 +86,13 @@ func TestLuaTranspiler_Rosetta(t *testing.T) {
 		t.Fatalf("no Mochi Rosetta tests found: %s", pattern)
 	}
 	sort.Strings(files)
-	if only := os.Getenv("MOCHI_ROSETTA_ONLY"); only != "" {
+	if *rosettaIndex > 0 {
+		idx := *rosettaIndex
+		if idx < 1 || idx > len(files) {
+			t.Fatalf("invalid -index: %d", idx)
+		}
+		files = []string{files[idx-1]}
+	} else if only := os.Getenv("MOCHI_ROSETTA_ONLY"); only != "" {
 		files = []string{filepath.Join(srcDir, only+".mochi")}
 	} else if idxStr := os.Getenv("MOCHI_ROSETTA_INDEX"); idxStr != "" {
 		idx, err := strconv.Atoi(idxStr)
