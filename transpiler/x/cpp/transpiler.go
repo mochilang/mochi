@@ -2251,6 +2251,14 @@ func convertStmt(s *parser.Statement) (Stmt, error) {
 				}
 			}
 		}
+		if localTypes == nil {
+			localTypes = map[string]string{}
+		}
+		if typ != "" {
+			localTypes[s.Let.Name] = typ
+		} else {
+			localTypes[s.Let.Name] = "auto"
+		}
 		return &LetStmt{Name: s.Let.Name, Type: typ, Value: val}, nil
 	case s.Var != nil:
 		var val Expr
@@ -2271,6 +2279,14 @@ func convertStmt(s *parser.Statement) (Stmt, error) {
 					typ = "std::string"
 				}
 			}
+		}
+		if localTypes == nil {
+			localTypes = map[string]string{}
+		}
+		if typ != "" {
+			localTypes[s.Var.Name] = typ
+		} else {
+			localTypes[s.Var.Name] = "auto"
 		}
 		return &LetStmt{Name: s.Var.Name, Type: typ, Value: val}, nil
 	case s.Assign != nil:
@@ -2677,6 +2693,14 @@ func convertWhileStmt(ws *parser.WhileStmt) (*WhileStmt, error) {
 func convertFun(fn *parser.FunStmt) (*Func, error) {
 	prev := inFunction
 	inFunction = true
+	prevLocals := localTypes
+	localTypes = map[string]string{}
+	for _, p := range fn.Params {
+		if p.Type != nil && p.Type.Simple != nil {
+			localTypes[p.Name] = cppType(*p.Type.Simple)
+		}
+	}
+	defer func() { localTypes = prevLocals }()
 	var body []Stmt
 	for _, st := range fn.Body {
 		s, err := convertStmt(st)
@@ -2714,6 +2738,14 @@ func convertFun(fn *parser.FunStmt) (*Func, error) {
 func convertFunLambda(fn *parser.FunStmt) (*BlockLambda, error) {
 	prev := inFunction
 	inFunction = true
+	prevLocals := localTypes
+	localTypes = map[string]string{}
+	for _, p := range fn.Params {
+		if p.Type != nil && p.Type.Simple != nil {
+			localTypes[p.Name] = cppType(*p.Type.Simple)
+		}
+	}
+	defer func() { localTypes = prevLocals }()
 	var body []Stmt
 	for _, st := range fn.Body {
 		s, err := convertStmt(st)
