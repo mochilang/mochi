@@ -29,6 +29,7 @@ var stringVars map[string]bool
 var groupVars map[string]bool
 var varTypes map[string]string
 var funParams map[string]int
+var funParamTypes map[string][]string
 var typeDecls []TypeDecl
 var structForMap map[*parser.MapLiteral]string
 var structForList map[*parser.ListLiteral]string
@@ -731,7 +732,6 @@ func (n *NameRef) emit(w io.Writer) {
 		return
 	}
 	if boxVars[n.Name] && !patternMode {
-		io.WriteString(w, "*")
 		io.WriteString(w, n.Name)
 		return
 	}
@@ -1363,6 +1363,7 @@ func Transpile(p *parser.Program, env *types.Env) (*Program, error) {
 	groupVars = make(map[string]bool)
 	varTypes = make(map[string]string)
 	funParams = make(map[string]int)
+	funParamTypes = make(map[string][]string)
 	boxVars = make(map[string]bool)
 	typeDecls = nil
 	structForMap = make(map[*parser.MapLiteral]string)
@@ -1862,6 +1863,23 @@ func compileTypeStmt(t *parser.TypeDecl) (Stmt, error) {
 }
 
 func compileFunStmt(fn *parser.FunStmt) (Stmt, error) {
+	params := make([]Param, len(fn.Params))
+	typList := make([]string, len(fn.Params))
+	for i, p := range fn.Params {
+		typ := ""
+		if p.Type != nil {
+			typ = rustTypeRef(p.Type)
+			if _, ok := curEnv.GetStruct(typ); ok {
+				typ = "&" + typ
+			} else if _, ok := curEnv.GetUnion(typ); ok {
+				typ = "&" + typ
+			}
+		}
+		params[i] = Param{Name: p.Name, Type: typ}
+		typList[i] = typ
+	}
+	funParams[fn.Name] = len(fn.Params)
+	funParamTypes[fn.Name] = typList
 	body := make([]Stmt, 0, len(fn.Body))
 	for _, st := range fn.Body {
 		cs, err := compileStmt(st)
@@ -1872,15 +1890,6 @@ func compileFunStmt(fn *parser.FunStmt) (Stmt, error) {
 			body = append(body, cs)
 		}
 	}
-	params := make([]Param, len(fn.Params))
-	for i, p := range fn.Params {
-		typ := ""
-		if p.Type != nil {
-			typ = rustTypeRef(p.Type)
-		}
-		params[i] = Param{Name: p.Name, Type: typ}
-	}
-	funParams[fn.Name] = len(fn.Params)
 	ret := ""
 	if fn.Return != nil {
 		if fn.Return.Simple != nil || fn.Return.Generic != nil {
@@ -2227,6 +2236,15 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 		}
 		if name == "substring" && len(args) == 3 {
 			return &SubstringExpr{Str: args[0], Start: args[1], End: args[2]}, nil
+		}
+		if pts, ok := funParamTypes[name]; ok {
+			for i := 0; i < len(args) && i < len(pts); i++ {
+				if strings.HasPrefix(pts[i], "&") {
+					if _, isUnary := args[i].(*UnaryExpr); !isUnary {
+						args[i] = &UnaryExpr{Op: "&", Expr: args[i]}
+					}
+				}
+			}
 		}
 		if cnt, ok := funParams[name]; ok && len(args) < cnt {
 			missing := cnt - len(args)
