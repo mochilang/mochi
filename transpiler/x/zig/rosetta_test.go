@@ -3,25 +3,45 @@
 package zigt_test
 
 import (
+	"bufio"
 	"bytes"
 	"flag"
 	"fmt"
 	"os"
 	"os/exec"
 	"path/filepath"
-	"sort"
 	"strconv"
 	"strings"
 	"testing"
 	"time"
 
-	"mochi/golden"
 	"mochi/parser"
 	zigt "mochi/transpiler/x/zig"
 	"mochi/types"
 )
 
 var updateRosetta = flag.Bool("update-rosetta-zig", false, "update rosetta golden files")
+
+func readIndex(dir string) ([]string, error) {
+	path := filepath.Join(dir, "index.txt")
+	f, err := os.Open(path)
+	if err != nil {
+		return nil, err
+	}
+	defer f.Close()
+	scanner := bufio.NewScanner(f)
+	var names []string
+	for scanner.Scan() {
+		fields := strings.Fields(scanner.Text())
+		if len(fields) == 2 {
+			names = append(names, fields[1])
+		}
+	}
+	if err := scanner.Err(); err != nil {
+		return nil, err
+	}
+	return names, nil
+}
 
 func TestZigTranspiler_Rosetta(t *testing.T) {
 	t.Cleanup(updateRosettaReadme)
@@ -33,29 +53,42 @@ func TestZigTranspiler_Rosetta(t *testing.T) {
 	outDir := filepath.Join(root, "tests", "rosetta", "out", "Zig")
 	os.MkdirAll(outDir, 0o755)
 
+	names, err := readIndex(srcDir)
+	if err != nil {
+		t.Fatalf("read index: %v", err)
+	}
+
 	if idxStr := os.Getenv("MOCHI_ROSETTA_INDEX"); idxStr != "" {
 		idx, err := strconv.Atoi(idxStr)
-		if err != nil || idx < 1 {
+		if err != nil || idx < 1 || idx > len(names) {
 			t.Fatalf("invalid MOCHI_ROSETTA_INDEX: %s", idxStr)
 		}
-		files, err := filepath.Glob(filepath.Join(srcDir, "*.mochi"))
-		if err != nil {
-			t.Fatalf("glob: %v", err)
-		}
-		sort.Strings(files)
-		if idx > len(files) {
-			t.Fatalf("index %d out of range (%d files)", idx, len(files))
-		}
-		src := files[idx-1]
+		name := names[idx-1]
+		src := filepath.Join(srcDir, name)
 		if _, err := runCase(src, outDir); err != nil {
-			t.Fatalf("%s: %v", filepath.Base(src), err)
+			t.Fatalf("%s: %v", name, err)
 		}
 		return
 	}
 
-	golden.RunFirstFailure(t, "tests/rosetta/x/Mochi", ".mochi", ".out", func(src string) ([]byte, error) {
-		return runCase(src, outDir)
-	})
+	var firstFail string
+	for _, name := range names {
+		src := filepath.Join(srcDir, name)
+		base := strings.TrimSuffix(name, ".mochi")
+		ok := t.Run(base, func(t *testing.T) {
+			if _, err := runCase(src, outDir); err != nil {
+				t.Fatalf("%v", err)
+			}
+		})
+		if !ok {
+			firstFail = base
+			break
+		}
+	}
+	if firstFail != "" {
+		t.Fatalf("first failing program: %s", firstFail)
+	}
+	return
 }
 
 func runCase(src, outDir string) ([]byte, error) {
@@ -133,21 +166,23 @@ func updateRosettaReadme() {
 	outDir := filepath.Join(root, "tests", "rosetta", "out", "Zig")
 	readme := filepath.Join(root, "transpiler", "x", "zig", "ROSETTA.md")
 
-	files, _ := filepath.Glob(filepath.Join(srcDir, "*.mochi"))
-	sort.Strings(files)
-	total := len(files)
+	names, err := readIndex(srcDir)
+	if err != nil {
+		return
+	}
+	total := len(names)
 	compiled := 0
 	var lines []string
-	for i, f := range files {
-		name := strings.TrimSuffix(filepath.Base(f), ".mochi")
+	for i, name := range names {
+		base := strings.TrimSuffix(name, ".mochi")
 		mark := "[ ]"
-		if _, err := os.Stat(filepath.Join(outDir, name+".out")); err == nil {
-			if _, err2 := os.Stat(filepath.Join(outDir, name+".error")); os.IsNotExist(err2) {
+		if _, err := os.Stat(filepath.Join(outDir, base+".out")); err == nil {
+			if _, err2 := os.Stat(filepath.Join(outDir, base+".error")); os.IsNotExist(err2) {
 				mark = "[x]"
 				compiled++
 			}
 		}
-		lines = append(lines, fmt.Sprintf("%d. %s %s", i+1, mark, name))
+		lines = append(lines, fmt.Sprintf("%d. %s %s", i+1, mark, base))
 	}
 	out, err := exec.Command("git", "log", "-1", "--format=%cI").Output()
 	ts := ""
