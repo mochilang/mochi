@@ -2081,6 +2081,12 @@ func compileIfStmt(prog *Program, i *parser.IfStmt) (Stmt, error) {
 	if err != nil {
 		return nil, err
 	}
+	if !isBoolExpr(cond) {
+		t := typeOfExpr(cond)
+		expr := exprString(cond)
+		code := fmt.Sprintf("!EqualityComparer<%s>.Default.Equals(%s, default(%s))", t, expr, t)
+		cond = &RawExpr{Code: code, Type: "bool"}
+	}
 	var thenStmts []Stmt
 	blockDepth++
 	for _, st := range i.Then {
@@ -2219,14 +2225,22 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 				}
 				return &CallExpr{Func: name, Args: []Expr{arg}}, nil
 			}
-			elems := make([]Expr, len(args))
+			var sb strings.Builder
+			sb.WriteString("$\"")
 			for i, a := range args {
-				elems[i] = a
+				if i > 0 {
+					sb.WriteString(" ")
+				}
+				if lit, ok := a.(*StringLit); ok {
+					sb.WriteString(strings.ReplaceAll(lit.Value, "\"", "\\\""))
+				} else {
+					sb.WriteString("{")
+					sb.WriteString(exprString(a))
+					sb.WriteString("}")
+				}
 			}
-			list := &ListLit{Elems: elems}
-			join := &CallExpr{Func: "string.Join", Args: []Expr{&StringLit{Value: ", "}, list}}
-			wrapped := &BinaryExpr{Left: &StringLit{Value: "["}, Op: "+", Right: &BinaryExpr{Left: join, Op: "+", Right: &StringLit{Value: "]"}}}
-			return &CallExpr{Func: name, Args: []Expr{wrapped}}, nil
+			sb.WriteString("\"")
+			return &CallExpr{Func: name, Args: []Expr{&RawExpr{Code: sb.String()}}}, nil
 		case "append":
 			if len(args) == 2 {
 				usesLinq = true
@@ -2605,8 +2619,8 @@ func compileQueryExpr(q *parser.QueryExpr) (Expr, error) {
 				builder.Reset()
 				fmt.Fprintf(builder, "from %s in %s", j.Var, exprString(js))
 				tmp := curVar + "Tmp"
-				left := exprString(cmp.Right)
-				right := exprString(cmp.Left)
+				left := exprString(cmp.Left)
+				right := exprString(cmp.Right)
 				fmt.Fprintf(builder, " join %s in %s on %s equals %s into %s", curVar, srcExpr, left, right, tmp)
 				fmt.Fprintf(builder, " from %s in %s.DefaultIfEmpty()", curVar, tmp)
 				varTypes[j.Var] = strings.TrimSuffix(typeOfExpr(js), "[]")
@@ -2616,7 +2630,7 @@ func compileQueryExpr(q *parser.QueryExpr) (Expr, error) {
 				curVar = j.Var
 			} else {
 				tmp := j.Var + "Tmp"
-				fmt.Fprintf(builder, " join %s in %s on %s equals %s into %s", curVar, exprString(js), right, left, tmp)
+				fmt.Fprintf(builder, " join %s in %s on %s equals %s into %s", curVar, exprString(js), exprString(cmp.Left), exprString(cmp.Right), tmp)
 				fmt.Fprintf(builder, " from %s in %s.DefaultIfEmpty()", curVar, tmp)
 				curVar = j.Var
 			}
