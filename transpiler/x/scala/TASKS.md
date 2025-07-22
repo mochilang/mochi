@@ -1,3 +1,43 @@
+## Progress (2025-07-22 14:37 +0700)
+- erl transpiler: add update stmt support
+- Regenerated golden files - 79/102 vm valid programs passing
+
+## Progress (2025-07-22 14:37 +0700)
+- erl transpiler: add update stmt support
+- Regenerated golden files - 78/102 vm valid programs passing
+
+## Progress (2025-07-22 14:37 +0700)
+- erl transpiler: add update stmt support
+- Regenerated golden files - 78/102 vm valid programs passing
+
+## Progress (2025-07-22 14:37 +0700)
+- erl transpiler: add update stmt support
+- Regenerated golden files - 78/102 vm valid programs passing
+
+## Progress (2025-07-22 14:37 +0700)
+- erl transpiler: add update stmt support
+- Regenerated golden files - 78/102 vm valid programs passing
+
+## Progress (2025-07-22 14:37 +0700)
+- erl transpiler: add update stmt support
+- Regenerated golden files - 78/102 vm valid programs passing
+
+## Progress (2025-07-22 14:37 +0700)
+- erl transpiler: add update stmt support
+- Regenerated golden files - 78/102 vm valid programs passing
+
+## Progress (2025-07-22 14:37 +0700)
+- erl transpiler: add update stmt support
+- Regenerated golden files - 77/102 vm valid programs passing
+
+## Progress (2025-07-22 14:37 +0700)
+- erl transpiler: add update stmt support
+- Regenerated golden files - 77/102 vm valid programs passing
+
+## Progress (2025-07-22 14:37 +0700)
+- erl transpiler: add update stmt support
+- Regenerated golden files - 77/102 vm valid programs passing
+
 ## Progress (2025-07-22 14:25 +0700)
 - scala transpiler: fix group_by queries
 - Regenerated golden files - 77/102 vm valid programs passing
