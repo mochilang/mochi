@@ -1,3 +1,9 @@
+## Progress (2025-07-22 17:01 +0700)
+- Commit f1f9744a0: transpiler(py): fix struct field assignment and update outputs
+- Generated Python for 98/103 programs
+- Updated README checklist and outputs
+- Refactored join handling and improved type inference from loaded data
+
 ## Progress (2025-07-22 14:44 +0700)
 - Commit 75825c5ea: transpiler(py): fix group_by_conditional_sum output
 - Generated Python for 96/102 programs
