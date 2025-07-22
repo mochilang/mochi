@@ -1,4 +1,28 @@
 # 📦 CHANGELOG.md
+## [0.10.37] – 2025-07-22T17:53:32+07:00
+
+### Added
+
+* Rosetta golden tests for C, Go, Python and Clojure
+* Global variables with save/update statements in the Scala transpiler
+* Union support started for the C++ `tree_sum` example
+* JSONL load/save and update features for Ruby
+* Nested list and map assignments across Prolog and Haskell
+* Basic map support in the C backend with a `load_file` helper for Racket
+* Save and update capabilities added to Swift
+* Special join logic and mix import handling for Python
+
+### Changed
+
+* Partial application and query sorting improved in Scala
+* Map literal inference and boolean `in` operator fixes in TypeScript
+* Golden outputs refreshed with progress logs updated across languages
+
+### Fixed
+
+* Environment variable path bug in the Scala transpiler
+* Formatting cleanup and obsolete error files removed
+
 ## [0.10.36] – 2025-07-22T16:14:06+07:00
 
 ### Added
