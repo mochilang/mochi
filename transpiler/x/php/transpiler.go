@@ -24,6 +24,20 @@ var builtinNames = map[string]struct{}{
 	"values": {}, "load": {}, "save": {}, "now": {}, "input": {},
 }
 
+const helperLookupHost = `function _lookup_host($host) {
+    $res = dns_get_record($host, DNS_A);
+    if ($res === false) {
+        return [[], "lookup failed"];
+    }
+    $ips = [];
+    foreach ($res as $r) {
+        if (isset($r['ip'])) { $ips[] = $r['ip']; }
+    }
+    return [$ips, null];
+}`
+
+var usesLookupHost bool
+
 // Some PHP built-in functions cannot be redefined. When a Mochi program
 // defines a function with one of these names we rename the function and all
 // call sites to avoid redeclaration errors.
@@ -1205,6 +1219,10 @@ func (s *SliceExpr) emit(w io.Writer) {
 }
 
 func (v *Var) emit(w io.Writer) {
+	if v.Name == "nil" {
+		io.WriteString(w, "null")
+		return
+	}
 	fmt.Fprintf(w, "$%s", sanitizeVarName(v.Name))
 }
 
@@ -1235,6 +1253,11 @@ func Emit(w io.Writer, p *Program) error {
 	if _, err := io.WriteString(w, "<?php\n"); err != nil {
 		return err
 	}
+	if usesLookupHost {
+		if _, err := io.WriteString(w, helperLookupHost+"\n"); err != nil {
+			return err
+		}
+	}
 	for _, s := range p.Stmts {
 		s.emit(w)
 		switch s.(type) {
@@ -1257,6 +1280,7 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	globalNames = nil
 	closureNames = map[string]bool{}
 	renameMap = map[string]string{}
+	usesLookupHost = false
 	defer func() { transpileEnv = nil }()
 	p := &Program{Env: env}
 	for _, st := range prog.Statements {
@@ -1331,6 +1355,9 @@ func convertBinary(b *parser.BinaryExpr) (Expr, error) {
 	apply := func(left Expr, ls bool, op string, right Expr, rs bool) (Expr, bool) {
 		switch op {
 		case "/":
+			if isIntExpr(left) && isIntExpr(right) {
+				return &IntDivExpr{Left: left, Right: right}, false
+			}
 			return &BinaryExpr{Left: left, Op: "/", Right: right}, false
 		case "in":
 			if isListExpr(right) {
@@ -1623,7 +1650,7 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 			if len(args) != 1 {
 				return nil, fmt.Errorf("str expects 1 arg")
 			}
-			return &CallExpr{Func: "strval", Args: args}, nil
+			return &CallExpr{Func: "json_encode", Args: []Expr{args[0], &IntLit{Value: 1344}}}, nil
 		} else if name == "min" || name == "max" {
 			if len(args) != 1 {
 				return nil, fmt.Errorf("%s expects 1 arg", name)
@@ -2708,6 +2735,31 @@ func isBoolExpr(e Expr) bool {
 	return false
 }
 
+func isIntExpr(e Expr) bool {
+	switch v := e.(type) {
+	case *IntLit:
+		return true
+	case *Var:
+		if transpileEnv != nil {
+			if t, err := transpileEnv.GetVar(v.Name); err == nil {
+				if _, ok := t.(types.IntType); ok {
+					return true
+				}
+			}
+		}
+	case *BinaryExpr:
+		switch v.Op {
+		case "+", "-", "*", "/", "%":
+			return isIntExpr(v.Left) && isIntExpr(v.Right)
+		}
+	case *IntDivExpr:
+		return isIntExpr(v.Left) && isIntExpr(v.Right)
+	case *CondExpr:
+		return isIntExpr(v.Then) && isIntExpr(v.Else)
+	}
+	return false
+}
+
 func convertUpdate(u *parser.UpdateStmt) (*UpdateStmt, error) {
 	if transpileEnv == nil {
 		return nil, fmt.Errorf("missing env")
@@ -2804,6 +2856,13 @@ func convertImport(im *parser.ImportStmt) (Stmt, error) {
 			{Key: &StringLit{Value: "Pi"}, Value: &FloatLit{Value: 3.14}},
 			{Key: &StringLit{Value: "Answer"}, Value: &IntLit{Value: 42}},
 			{Key: &StringLit{Value: "FifteenPuzzleExample"}, Value: &ClosureExpr{Params: []string{}, Body: []Stmt{&ReturnStmt{Value: &StringLit{Value: "Solution found in 52 moves: rrrulddluuuldrurdddrullulurrrddldluurddlulurruldrdrd"}}}}},
+		}
+		return &LetStmt{Name: alias, Value: &MapLit{Items: items}}, nil
+	}
+	if lang == "go" && im.Auto && path == "net" {
+		usesLookupHost = true
+		items := []MapEntry{
+			{Key: &StringLit{Value: "LookupHost"}, Value: &StringLit{Value: "_lookup_host"}},
 		}
 		return &LetStmt{Name: alias, Value: &MapLit{Items: items}}, nil
 	}
