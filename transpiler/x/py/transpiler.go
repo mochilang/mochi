@@ -141,9 +141,10 @@ type ReturnStmt struct {
 func (*ReturnStmt) isStmt() {}
 
 type FuncDef struct {
-	Name   string
-	Params []string
-	Body   []Stmt
+	Name    string
+	Params  []string
+	Globals []string
+	Body    []Stmt
 }
 
 func (*FuncDef) isStmt() {}
@@ -944,6 +945,11 @@ func emitStmtIndent(w io.Writer, s Stmt, indent string) error {
 		}
 		if _, err := io.WriteString(w, "):\n"); err != nil {
 			return err
+		}
+		if len(st.Globals) > 0 {
+			if _, err := io.WriteString(w, indent+"    global "+strings.Join(st.Globals, ", ")+"\n"); err != nil {
+				return err
+			}
 		}
 		for _, bs := range st.Body {
 			if err := emitStmtIndent(w, bs, indent+"    "); err != nil {
@@ -2652,6 +2658,11 @@ func Emit(w io.Writer, p *Program) error {
 			if _, err := io.WriteString(w, "):\n"); err != nil {
 				return err
 			}
+			if len(st.Globals) > 0 {
+				if _, err := io.WriteString(w, "    global "+strings.Join(st.Globals, ", ")+"\n"); err != nil {
+					return err
+				}
+			}
 			for _, bs := range st.Body {
 				if err := emitStmtIndent(w, bs, "    "); err != nil {
 					return err
@@ -3086,7 +3097,8 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 			for _, p := range st.Fun.Params {
 				params = append(params, p.Name)
 			}
-			p.Stmts = append(p.Stmts, &FuncDef{Name: st.Fun.Name, Params: params, Body: body})
+			globals := detectGlobals(body, fenv, env)
+			p.Stmts = append(p.Stmts, &FuncDef{Name: st.Fun.Name, Params: params, Globals: globals, Body: body})
 		default:
 			return nil, fmt.Errorf("unsupported statement")
 		}
@@ -3458,12 +3470,51 @@ func convertStmts(list []*parser.Statement, env *types.Env) ([]Stmt, error) {
 			for _, p := range s.Fun.Params {
 				params = append(params, p.Name)
 			}
-			out = append(out, &FuncDef{Name: s.Fun.Name, Params: params, Body: b})
+			globals := detectGlobals(b, fenv, env)
+			out = append(out, &FuncDef{Name: s.Fun.Name, Params: params, Globals: globals, Body: b})
 		default:
 			return nil, fmt.Errorf("unsupported statement")
 		}
 	}
 	return out, nil
+}
+
+func detectGlobals(stmts []Stmt, local, global *types.Env) []string {
+	if global == nil {
+		return nil
+	}
+	names := map[string]bool{}
+	var walk func([]Stmt)
+	walk = func(list []Stmt) {
+		for _, s := range list {
+			switch st := s.(type) {
+			case *AssignStmt:
+				if _, ok := local.Types()[st.Name]; ok {
+					continue
+				}
+				if _, err := global.GetVar(st.Name); err == nil {
+					names[st.Name] = true
+				}
+			case *WhileStmt:
+				walk(st.Body)
+			case *ForStmt:
+				walk(st.Body)
+			case *IfStmt:
+				walk(st.Then)
+				walk(st.Else)
+			}
+		}
+	}
+	walk(stmts)
+	if len(names) == 0 {
+		return nil
+	}
+	out := make([]string, 0, len(names))
+	for n := range names {
+		out = append(out, safeName(n))
+	}
+	sort.Strings(out)
+	return out
 }
 
 func convertExpr(e *parser.Expr) (Expr, error) {
@@ -4832,6 +4883,13 @@ func stmtNode(s Stmt) *ast.Node {
 		n := &ast.Node{Kind: "func", Value: st.Name}
 		for _, p := range st.Params {
 			n.Children = append(n.Children, &ast.Node{Kind: "param", Value: p})
+		}
+		if len(st.Globals) > 0 {
+			g := &ast.Node{Kind: "globals"}
+			for _, name := range st.Globals {
+				g.Children = append(g.Children, &ast.Node{Kind: "name", Value: name})
+			}
+			n.Children = append(n.Children, g)
 		}
 		for _, b := range st.Body {
 			n.Children = append(n.Children, stmtNode(b))
