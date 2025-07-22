@@ -1,4 +1,0 @@
-exit status 1
-# command-line-arguments
-../../../tests/transpiler/x/go/group_items_iteration.go:67:28: r.Tag undefined (type pair has no field or method Tag)
-../../../tests/transpiler/x/go/group_items_iteration.go:69:47: invalid operation: tmp[i].Key < tmp[j].Key (operator < not defined on interface)
