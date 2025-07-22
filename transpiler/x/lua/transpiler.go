@@ -25,6 +25,7 @@ import (
 var currentEnv *types.Env
 var loopCounter int
 var continueLabels []string
+var structCount int
 
 // Program represents a simple Lua program consisting of a sequence of
 // statements.
@@ -368,7 +369,15 @@ end)(`)
 (function(v)
   local function encode(x)
     if type(x) == "table" then
-      if #x > 0 then
+      if x.__name and x.__order then
+        local parts = {x.__name, " {"}
+        for i, k in ipairs(x.__order) do
+          if i > 1 then parts[#parts+1] = ", " end
+          parts[#parts+1] = k .. " = " .. encode(x[k])
+        end
+        parts[#parts+1] = "}"
+        return table.concat(parts)
+      elseif #x > 0 then
         local parts = {"["}
         for i, val in ipairs(x) do
           parts[#parts+1] = encode(val)
@@ -378,7 +387,7 @@ end)(`)
         return table.concat(parts)
       else
         local keys = {}
-        for k in pairs(x) do table.insert(keys, k) end
+        for k in pairs(x) do if k ~= "__name" and k ~= "__order" then table.insert(keys, k) end end
         table.sort(keys, function(a,b) return tostring(a) > tostring(b) end)
         local parts = {"{"}
         for i, k in ipairs(keys) do
@@ -389,7 +398,7 @@ end)(`)
         return table.concat(parts)
       end
     elseif type(x) == "string" then
-      return "'" .. x .. "'"
+      return '"' .. x .. '"'
     else
       return tostring(x)
     end
@@ -2014,6 +2023,40 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 		}
 		return &MapLit{Keys: keys, Values: values}, nil
 	case p.List != nil:
+		if st, ok := types.InferStructFromList(p.List, currentEnv); ok {
+			structCount++
+			name := fmt.Sprintf("GenType%d", structCount)
+			currentEnv.SetStruct(name, st)
+			var elems []Expr
+			for _, e := range p.List.Elems {
+				ml := e.Binary.Left.Value.Target.Map
+				keys := []Expr{&StringLit{Value: "__name"}, &StringLit{Value: "__order"}}
+				values := []Expr{&StringLit{Value: name}}
+				orderVals := make([]Expr, len(st.Order))
+				for i, f := range st.Order {
+					orderVals[i] = &StringLit{Value: f}
+				}
+				values = append(values, &ListLit{Elems: orderVals})
+				for _, it := range ml.Items {
+					ve, err := convertExpr(it.Value)
+					if err != nil {
+						return nil, err
+					}
+					if s, ok := literalString(it.Key); ok {
+						keys = append(keys, &StringLit{Value: s})
+					} else {
+						k, err := convertExpr(it.Key)
+						if err != nil {
+							return nil, err
+						}
+						keys = append(keys, k)
+					}
+					values = append(values, ve)
+				}
+				elems = append(elems, &MapLit{Keys: keys, Values: values})
+			}
+			return &ListLit{Elems: elems}, nil
+		}
 		var elems []Expr
 		for _, e := range p.List.Elems {
 			ce, err := convertExpr(e)
@@ -2024,6 +2067,34 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 		}
 		return &ListLit{Elems: elems}, nil
 	case p.Map != nil:
+		if st, ok := types.InferStructFromMapEnv(p.Map, currentEnv); ok {
+			structCount++
+			name := fmt.Sprintf("GenType%d", structCount)
+			currentEnv.SetStruct(name, st)
+			keys := []Expr{&StringLit{Value: "__name"}, &StringLit{Value: "__order"}}
+			values := []Expr{&StringLit{Value: name}}
+			orderVals := make([]Expr, len(st.Order))
+			for i, f := range st.Order {
+				orderVals[i] = &StringLit{Value: f}
+			}
+			values = append(values, &ListLit{Elems: orderVals})
+			for _, it := range p.Map.Items {
+				ke, err := convertExpr(it.Key)
+				if err != nil {
+					return nil, err
+				}
+				if id, ok := ke.(*Ident); ok {
+					ke = &StringLit{Value: id.Name}
+				}
+				ve, err := convertExpr(it.Value)
+				if err != nil {
+					return nil, err
+				}
+				keys = append(keys, ke)
+				values = append(values, ve)
+			}
+			return &MapLit{Keys: keys, Values: values}, nil
+		}
 		var keys []Expr
 		var values []Expr
 		for _, it := range p.Map.Items {
