@@ -1,3 +1,59 @@
+## Progress (2025-07-22 17:10 +0700)
+- Added support for nested map assignments
+- Updated map expression inference
+- Generated golden outputs for map_nested_assign
+- Regenerated README checklist
+
+## Progress (2025-07-22 17:10 +0700)
+- VM valid golden test results updated
+- Added escaping for Haskell reserved keywords
+- Regenerated README checklist from golden tests
+
+## Progress (2025-07-22 17:10 +0700)
+- VM valid golden test results updated
+- Added escaping for Haskell reserved keywords
+- Regenerated README checklist from golden tests
+
+## Progress (2025-07-22 17:10 +0700)
+- VM valid golden test results updated
+- Added escaping for Haskell reserved keywords
+- Regenerated README checklist from golden tests
+
+## Progress (2025-07-22 17:10 +0700)
+- VM valid golden test results updated
+- Added escaping for Haskell reserved keywords
+- Regenerated README checklist from golden tests
+
+## Progress (2025-07-22 17:10 +0700)
+- VM valid golden test results updated
+- Added escaping for Haskell reserved keywords
+- Regenerated README checklist from golden tests
+
+## Progress (2025-07-22 17:10 +0700)
+- VM valid golden test results updated
+- Added escaping for Haskell reserved keywords
+- Regenerated README checklist from golden tests
+
+## Progress (2025-07-22 17:10 +0700)
+- VM valid golden test results updated
+- Added escaping for Haskell reserved keywords
+- Regenerated README checklist from golden tests
+
+## Progress (2025-07-22 17:10 +0700)
+- VM valid golden test results updated
+- Added escaping for Haskell reserved keywords
+- Regenerated README checklist from golden tests
+
+## Progress (2025-07-22 17:10 +0700)
+- VM valid golden test results updated
+- Added escaping for Haskell reserved keywords
+- Regenerated README checklist from golden tests
+
+## Progress (2025-07-22 17:10 +0700)
+- VM valid golden test results updated
+- Added escaping for Haskell reserved keywords
+- Regenerated README checklist from golden tests
+
 ## Progress (2025-07-22 16:14 +0700)
 - VM valid golden test results updated
 - Added support for `load` expressions with YAML and JSONL data

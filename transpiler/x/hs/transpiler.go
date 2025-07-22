@@ -790,6 +790,15 @@ func listAssign(list Expr, idxs []Expr, val Expr) Expr {
 	return &BinaryExpr{Left: left, Ops: []BinaryOp{{Op: "++", Right: &CallExpr{Fun: &NameRef{Name: "drop"}, Args: []Expr{idxPlusOne, list}}}}}
 }
 
+func mapAssign(base Expr, idxs []Expr, val Expr) Expr {
+	needDataMap = true
+	if len(idxs) == 1 {
+		return &CallExpr{Fun: &NameRef{Name: "Map.insert"}, Args: []Expr{idxs[0], val, base}}
+	}
+	inner := mapAssign(&NameRef{Name: "m"}, idxs[1:], val)
+	return &CallExpr{Fun: &NameRef{Name: "Map.adjust"}, Args: []Expr{&LambdaExpr{Params: []string{"m"}, Body: inner}, idxs[0], base}}
+}
+
 type IntLit struct{ Value string }
 type FloatLit struct{ Value string }
 type StringLit struct{ Value string }
@@ -1151,10 +1160,12 @@ func isMapExpr(e Expr) bool {
 	case *NameRef:
 		t := varTypes[ex.Name]
 		return strings.HasPrefix(t, "map")
+	case *IndexExpr:
+		return isMapExpr(ex.Target) && !isIntExpr(ex.Index)
 	case *CallExpr:
 		if n, ok := ex.Fun.(*NameRef); ok {
 			switch n.Name {
-			case "Map.insert", "Map.fromList", "Map.delete", "Map.union":
+			case "Map.insert", "Map.fromList", "Map.delete", "Map.union", "Map.adjust":
 				return true
 			}
 		}
@@ -1728,8 +1739,7 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 			}
 			var expr Expr
 			if isMapExpr(prev) {
-				needDataMap = true
-				expr = &CallExpr{Fun: &NameRef{Name: "Map.insert"}, Args: []Expr{idxExprs[0], val, prev}}
+				expr = mapAssign(prev, idxExprs, val)
 			} else {
 				expr = listAssign(prev, idxExprs, val)
 			}
@@ -2947,8 +2957,7 @@ func convertStmtList(list []*parser.Statement) ([]Stmt, error) {
 			}
 			var expr Expr
 			if isMapExpr(prev) {
-				needDataMap = true
-				expr = &CallExpr{Fun: &NameRef{Name: "Map.insert"}, Args: []Expr{idxExprs[0], val, prev}}
+				expr = mapAssign(prev, idxExprs, val)
 			} else {
 				expr = listAssign(prev, idxExprs, val)
 			}
