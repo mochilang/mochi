@@ -444,7 +444,7 @@ func (ws *WhileStmt) emit(w io.Writer) {
 	for _, st := range ws.Body {
 		st.emit(w)
 	}
-	io.WriteString(w, "    with Continue -> ()\n  done with Break -> ())\n")
+	io.WriteString(w, "    with Continue -> ()\n  done with Break -> ());\n")
 }
 
 // ForRangeStmt represents a numeric for-loop like `for i in a..b {}`.
@@ -470,7 +470,7 @@ func (fr *ForRangeStmt) emit(w io.Writer) {
 	for _, st := range fr.Body {
 		st.emit(w)
 	}
-	io.WriteString(w, "    with Continue -> ()\n  done with Break -> ())\n")
+	io.WriteString(w, "    with Continue -> ()\n  done with Break -> ());\n")
 }
 
 // ForEachStmt represents iteration over a collection.
@@ -491,7 +491,7 @@ func (fe *ForEachStmt) emit(w io.Writer) {
 		}
 		io.WriteString(w, "    with Continue -> ()) ")
 		fe.Iterable.emit(w)
-		io.WriteString(w, " with Break -> ())\n")
+		io.WriteString(w, " with Break -> ());\n")
 		return
 	}
 	io.WriteString(w, "  (try List.iter (fun ")
@@ -502,7 +502,7 @@ func (fe *ForEachStmt) emit(w io.Writer) {
 	}
 	io.WriteString(w, "    with Continue -> ()) ")
 	fe.Iterable.emit(w)
-	io.WriteString(w, " with Break -> ())\n")
+	io.WriteString(w, " with Break -> ());\n")
 }
 
 // UpdateStmt updates fields of items in a list of structs.
@@ -1450,8 +1450,9 @@ func (u *UnaryMinus) emitPrint(w io.Writer) {
 type UnaryNot struct{ Expr Expr }
 
 func (u *UnaryNot) emit(w io.Writer) {
-	io.WriteString(w, "not ")
+	io.WriteString(w, "not (")
 	u.Expr.emit(w)
+	io.WriteString(w, ")")
 }
 
 func (u *UnaryNot) emitPrint(w io.Writer) {
@@ -1868,7 +1869,7 @@ func transpileStmt(st *parser.Statement, env *types.Env, vars map[string]VarInfo
 		if !ok || !info.ref {
 			return nil, fmt.Errorf("assignment to unknown or immutable variable")
 		}
-		valExpr, _, err := convertExpr(st.Assign.Value, env, vars)
+		valExpr, valTyp, err := convertExpr(st.Assign.Value, env, vars)
 		if err != nil {
 			return nil, err
 		}
@@ -1921,7 +1922,15 @@ func transpileStmt(st *parser.Statement, env *types.Env, vars map[string]VarInfo
 			}
 			listExpr := Expr(&Name{Ident: st.Assign.Name, Typ: info.typ, Ref: true})
 			upd := buildListUpdate(listExpr, indices, valExpr)
+			if valTyp != "" {
+				info.typ = valTyp
+				vars[st.Assign.Name] = info
+			}
 			return &AssignStmt{Name: st.Assign.Name, Expr: upd}, nil
+		}
+		if valTyp != "" {
+			info.typ = valTyp
+			vars[st.Assign.Name] = info
 		}
 		return &AssignStmt{Name: st.Assign.Name, Expr: valExpr}, nil
 	case st.Expr != nil:
@@ -2585,6 +2594,10 @@ func convertPostfix(p *parser.PostfixExpr, env *types.Env, vars map[string]VarIn
 			} else if typ == "map" || strings.HasPrefix(typ, "map{") {
 				expr = &MapIndexExpr{Map: expr, Key: idxExpr, Typ: "int", Dyn: dyn}
 				typ = "int"
+			} else if strings.HasPrefix(typ, "list-") {
+				elemTyp := strings.TrimPrefix(typ, "list-")
+				expr = &IndexExpr{Col: expr, Index: idxExpr, Typ: elemTyp}
+				typ = elemTyp
 			} else {
 				expr = &IndexExpr{Col: expr, Index: idxExpr, Typ: typ}
 				if typ == "string" {
@@ -3239,11 +3252,15 @@ func convertCall(c *parser.CallExpr, env *types.Env, vars map[string]VarInfo) (E
 		if !strings.HasPrefix(typ, "list") {
 			return nil, "", fmt.Errorf("append expects list")
 		}
-		valArg, _, err := convertExpr(c.Args[1], env, vars)
+		valArg, vtyp, err := convertExpr(c.Args[1], env, vars)
 		if err != nil {
 			return nil, "", err
 		}
-		return &AppendBuiltin{List: listArg, Value: valArg}, "list", nil
+		resTyp := typ
+		if typ == "list" && vtyp != "" {
+			resTyp = "list-" + vtyp
+		}
+		return &AppendBuiltin{List: listArg, Value: valArg}, resTyp, nil
 	}
 	if c.Func == "sum" && len(c.Args) == 1 {
 		listArg, typ, err := convertExpr(c.Args[0], env, vars)
