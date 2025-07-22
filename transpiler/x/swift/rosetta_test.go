@@ -122,12 +122,12 @@ func updateRosetta() {
 	srcDir := filepath.Join(root, "tests", "rosetta", "x", "Mochi")
 	binDir := filepath.Join(root, "tests", "rosetta", "transpiler", "Swift")
 	docPath := filepath.Join(root, "transpiler", "x", "swift", "ROSETTA.md")
-	files, _ := filepath.Glob(filepath.Join(srcDir, "*.mochi"))
-	total := len(files)
+	names, _ := readIndex(filepath.Join(srcDir, "index.txt"))
+	total := len(names)
 	compiled := 0
 	var lines []string
-	for _, f := range files {
-		name := strings.TrimSuffix(filepath.Base(f), ".mochi")
+	for i, f := range names {
+		name := strings.TrimSuffix(f, ".mochi")
 		mark := "[ ]"
 		if _, err := os.Stat(filepath.Join(binDir, name+".swift")); err == nil {
 			if _, err2 := os.Stat(filepath.Join(binDir, name+".error")); os.IsNotExist(err2) {
@@ -135,7 +135,7 @@ func updateRosetta() {
 				mark = "[x]"
 			}
 		}
-		lines = append(lines, "- "+mark+" "+name)
+		lines = append(lines, fmt.Sprintf("%d. %s %s", i+1, mark, name))
 	}
 	tsRaw, _ := exec.Command("git", "log", "-1", "--format=%cI").Output()
 	tsStr := strings.TrimSpace(string(tsRaw))
