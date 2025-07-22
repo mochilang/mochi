@@ -1,3 +1,23 @@
+## Progress (2025-07-22 06:37 +0700)
+- scala transpiler: support union types
+- Regenerated golden files - 69/101 vm valid programs passing
+
+## Progress (2025-07-22 06:19 +0700)
+- cs transpiler: support outer join
+- Regenerated golden files - 69/101 vm valid programs passing
+
+## Progress (2025-07-22 06:19 +0700)
+- cs transpiler: support outer join
+- Regenerated golden files - 69/101 vm valid programs passing
+
+## Progress (2025-07-22 06:19 +0700)
+- cs transpiler: support outer join
+- Regenerated golden files - 68/101 vm valid programs passing
+
+## Progress (2025-07-22 06:19 +0700)
+- cs transpiler: support outer join
+- Regenerated golden files - 68/101 vm valid programs passing
+
 ## Progress (2025-07-21 22:29 +0700)
 - update docs
 - Regenerated golden files - 68/100 vm valid programs passing

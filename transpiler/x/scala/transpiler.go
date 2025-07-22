@@ -137,12 +137,41 @@ type VarStmt struct {
 }
 
 // TypeDeclStmt represents a case class declaration.
-type TypeDeclStmt struct {
+type Variant struct {
 	Name   string
 	Fields []Param
 }
 
+// TypeDeclStmt represents a case class or algebraic data type declaration.
+type TypeDeclStmt struct {
+	Name     string
+	Fields   []Param
+	Variants []Variant
+}
+
 func (t *TypeDeclStmt) emit(w io.Writer) {
+	if len(t.Variants) > 0 {
+		fmt.Fprintf(w, "sealed trait %s\n", t.Name)
+		for _, v := range t.Variants {
+			if len(v.Fields) == 0 {
+				fmt.Fprintf(w, "case object %s extends %s\n", v.Name, t.Name)
+				continue
+			}
+			fmt.Fprintf(w, "case class %s(", v.Name)
+			for i, f := range v.Fields {
+				if i > 0 {
+					fmt.Fprint(w, ", ")
+				}
+				typ := f.Type
+				if typ == "" {
+					typ = "Any"
+				}
+				fmt.Fprintf(w, "%s: %s", f.Name, typ)
+			}
+			fmt.Fprintf(w, ") extends %s\n", t.Name)
+		}
+		return
+	}
 	fmt.Fprintf(w, "case class %s(", t.Name)
 	for i, f := range t.Fields {
 		if i > 0 {
@@ -763,9 +792,15 @@ func Emit(p *Program) []byte {
 	buf.WriteString("object Main {\n")
 
 	for _, st := range p.Stmts {
-		if fn, ok := st.(*FunStmt); ok {
+		switch s := st.(type) {
+		case *FunStmt:
 			buf.WriteString("  ")
-			fn.emit(&buf)
+			s.emit(&buf)
+			buf.WriteByte('\n')
+			buf.WriteByte('\n')
+		case *TypeDeclStmt:
+			buf.WriteString("  ")
+			s.emit(&buf)
 			buf.WriteByte('\n')
 			buf.WriteByte('\n')
 		}
@@ -773,7 +808,8 @@ func Emit(p *Program) []byte {
 
 	buf.WriteString("  def main(args: Array[String]): Unit = {\n")
 	for _, st := range p.Stmts {
-		if _, ok := st.(*FunStmt); ok {
+		switch st.(type) {
+		case *FunStmt, *TypeDeclStmt:
 			continue
 		}
 		buf.WriteString("    ")
@@ -883,6 +919,17 @@ func convertStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 		}
 		return &VarStmt{Name: st.Var.Name, Type: typ, Value: e}, nil
 	case st.Type != nil:
+		if len(st.Type.Variants) > 0 {
+			var variants []Variant
+			for _, v := range st.Type.Variants {
+				var fields []Param
+				for _, f := range v.Fields {
+					fields = append(fields, Param{Name: f.Name, Type: toScalaType(f.Type)})
+				}
+				variants = append(variants, Variant{Name: v.Name, Fields: fields})
+			}
+			return &TypeDeclStmt{Name: st.Type.Name, Variants: variants}, nil
+		}
 		td := &TypeDeclStmt{Name: st.Type.Name}
 		for _, m := range st.Type.Members {
 			if m.Field != nil {
