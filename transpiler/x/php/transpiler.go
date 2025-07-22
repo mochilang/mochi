@@ -34,6 +34,19 @@ var phpReserved = map[string]struct{}{
 	"abs":     {},
 }
 
+// phpReservedVar lists variable names that cannot be used directly in PHP
+// programs. The transpiler renames these variables to avoid runtime errors.
+var phpReservedVar = map[string]struct{}{
+	"this": {},
+}
+
+func sanitizeVarName(name string) string {
+	if _, ok := phpReservedVar[name]; ok {
+		return "mochi_" + name
+	}
+	return name
+}
+
 // renameMap tracks function names that were renamed due to conflicts with
 // PHP built-ins. The key is the original Mochi name and the value is the name
 // used in the generated PHP code.
@@ -111,11 +124,12 @@ type ForRangeStmt struct {
 }
 
 func (fr *ForRangeStmt) emit(w io.Writer) {
-	fmt.Fprintf(w, "for ($%s = ", fr.Name)
+	name := sanitizeVarName(fr.Name)
+	fmt.Fprintf(w, "for ($%s = ", name)
 	fr.Start.emit(w)
-	fmt.Fprintf(w, "; $%s < ", fr.Name)
+	fmt.Fprintf(w, "; $%s < ", name)
 	fr.End.emit(w)
-	fmt.Fprintf(w, "; $%s++) {\n", fr.Name)
+	fmt.Fprintf(w, "; $%s++) {\n", name)
 	for _, st := range fr.Body {
 		io.WriteString(w, "  ")
 		st.emit(w)
@@ -141,10 +155,10 @@ func (fe *ForEachStmt) emit(w io.Writer) {
 	if fe.Keys {
 		io.WriteString(w, "array_keys(")
 		fe.Expr.emit(w)
-		fmt.Fprintf(w, ") as $%s) {\n", fe.Name)
+		fmt.Fprintf(w, ") as $%s) {\n", sanitizeVarName(fe.Name))
 	} else {
 		fe.Expr.emit(w)
-		fmt.Fprintf(w, " as $%s) {\n", fe.Name)
+		fmt.Fprintf(w, " as $%s) {\n", sanitizeVarName(fe.Name))
 	}
 	for _, st := range fe.Body {
 		io.WriteString(w, "  ")
@@ -168,7 +182,7 @@ type LetStmt struct {
 }
 
 func (s *LetStmt) emit(w io.Writer) {
-	fmt.Fprintf(w, "$%s = ", s.Name)
+	fmt.Fprintf(w, "$%s = ", sanitizeVarName(s.Name))
 	if s.Value != nil {
 		s.Value.emit(w)
 	} else {
@@ -182,7 +196,7 @@ type VarStmt struct {
 }
 
 func (s *VarStmt) emit(w io.Writer) {
-	fmt.Fprintf(w, "$%s = ", s.Name)
+	fmt.Fprintf(w, "$%s = ", sanitizeVarName(s.Name))
 	if s.Value != nil {
 		s.Value.emit(w)
 	} else {
@@ -199,8 +213,9 @@ type QueryLetStmt struct {
 }
 
 func (s *QueryLetStmt) emit(w io.Writer) {
-	fmt.Fprintf(w, "$%s = [];%s", s.Name, "\n")
-	s.Query.emitInto(w, s.Name, 0)
+	name := sanitizeVarName(s.Name)
+	fmt.Fprintf(w, "$%s = [];%s", name, "\n")
+	s.Query.emitInto(w, name, 0)
 }
 
 // FuncDecl represents a simple function declaration.
@@ -216,9 +231,31 @@ func (f *FuncDecl) emit(w io.Writer) {
 		if i > 0 {
 			fmt.Fprint(w, ", ")
 		}
-		fmt.Fprintf(w, "$%s", p)
+		fmt.Fprintf(w, "$%s", sanitizeVarName(p))
 	}
 	fmt.Fprint(w, ") {\n")
+	if len(globalNames) > 0 {
+		var vars []string
+		for _, g := range globalNames {
+			if g == f.Name {
+				continue
+			}
+			skip := false
+			for _, p := range f.Params {
+				if g == p {
+					skip = true
+					break
+				}
+			}
+			if skip {
+				continue
+			}
+			vars = append(vars, "$"+sanitizeVarName(g))
+		}
+		if len(vars) > 0 {
+			fmt.Fprintf(w, "  global %s;\n", strings.Join(vars, ", "))
+		}
+	}
 	for _, st := range f.Body {
 		fmt.Fprint(w, "  ")
 		st.emit(w)
@@ -244,7 +281,7 @@ func (c *ClosureExpr) emit(w io.Writer) {
 		if i > 0 {
 			fmt.Fprint(w, ", ")
 		}
-		fmt.Fprintf(w, "$%s", p)
+		fmt.Fprintf(w, "$%s", sanitizeVarName(p))
 	}
 	fmt.Fprint(w, ")")
 	if len(c.Uses) > 0 {
@@ -253,7 +290,7 @@ func (c *ClosureExpr) emit(w io.Writer) {
 			if i > 0 {
 				fmt.Fprint(w, ", ")
 			}
-			fmt.Fprintf(w, "$%s", u)
+			fmt.Fprintf(w, "$%s", sanitizeVarName(u))
 		}
 		fmt.Fprint(w, ")")
 	}
@@ -287,7 +324,7 @@ type AssignStmt struct {
 }
 
 func (s *AssignStmt) emit(w io.Writer) {
-	fmt.Fprintf(w, "$%s = ", s.Name)
+	fmt.Fprintf(w, "$%s = ", sanitizeVarName(s.Name))
 	s.Value.emit(w)
 }
 
@@ -388,7 +425,7 @@ func (u *UpdateStmt) emit(w io.Writer) {
 		inner = inner[:len(inner)-2]
 		io.WriteString(w, inner+"}\n")
 	}
-	fmt.Fprintf(w, "  $%s[$idx] = $item;\n", u.Target)
+	fmt.Fprintf(w, "  $%s[$idx] = $item;\n", sanitizeVarName(u.Target))
 	io.WriteString(w, "}")
 }
 
@@ -562,7 +599,7 @@ func (q *QueryExpr) emitInto(w io.Writer, res string, level int) {
 				lvl++
 				ind = strings.Repeat("  ", lvl)
 			}
-			fmt.Fprintf(w, "%s$%s[] = ", ind, res)
+			fmt.Fprintf(w, "%s$%s[] = ", ind, sanitizeVarName(res))
 			q.Select.emit(w)
 			fmt.Fprint(w, ";\n")
 			if q.Where != nil {
@@ -577,14 +614,14 @@ func (q *QueryExpr) emitInto(w io.Writer, res string, level int) {
 		case QueryLoop:
 			fmt.Fprintf(w, "%sforeach (", ind)
 			lp.Source.emit(w)
-			fmt.Fprintf(w, " as $%s) {\n", lp.Name)
+			fmt.Fprintf(w, " as $%s) {\n", sanitizeVarName(lp.Name))
 			emitLoops(idx+1, lvl+1)
 			fmt.Fprintf(w, "%s}\n", ind)
 		case LeftJoinLoop:
 			fmt.Fprintf(w, "%s$matched = false;\n", ind)
 			fmt.Fprintf(w, "%sforeach (", ind)
 			lp.Source.emit(w)
-			fmt.Fprintf(w, " as $%s) {\n", lp.Name)
+			fmt.Fprintf(w, " as $%s) {\n", sanitizeVarName(lp.Name))
 			fmt.Fprintf(w, "%s  if (!(", ind)
 			lp.Cond.emit(w)
 			fmt.Fprint(w, ")) continue;\n")
@@ -592,7 +629,7 @@ func (q *QueryExpr) emitInto(w io.Writer, res string, level int) {
 			emitLoops(idx+1, lvl+1)
 			fmt.Fprintf(w, "%s}\n", ind)
 			fmt.Fprintf(w, "%sif (!$matched) {\n", ind)
-			fmt.Fprintf(w, "%s  $%s = null;\n", ind, lp.Name)
+			fmt.Fprintf(w, "%s  $%s = null;\n", ind, sanitizeVarName(lp.Name))
 			emitLoops(idx+1, lvl+1)
 			fmt.Fprintf(w, "%s}\n", ind)
 		}
@@ -666,7 +703,7 @@ func (q *QueryExpr) emit(w io.Writer) {
 			if i > 0 {
 				io.WriteString(w, ", ")
 			}
-			fmt.Fprintf(w, "$%s", u)
+			fmt.Fprintf(w, "$%s", sanitizeVarName(u))
 		}
 		io.WriteString(w, ")")
 	}
@@ -702,7 +739,7 @@ func (q *QueryExpr) emit(w io.Writer) {
 			io.WriteString(w, indent)
 			io.WriteString(w, "foreach (")
 			lp.Source.emit(w)
-			fmt.Fprintf(w, " as $%s) {\n", lp.Name)
+			fmt.Fprintf(w, " as $%s) {\n", sanitizeVarName(lp.Name))
 			emitLoops(idx+1, level+1)
 			io.WriteString(w, indent)
 			io.WriteString(w, "}\n")
@@ -712,7 +749,7 @@ func (q *QueryExpr) emit(w io.Writer) {
 			io.WriteString(w, indent)
 			io.WriteString(w, "foreach (")
 			lp.Source.emit(w)
-			fmt.Fprintf(w, " as $%s) {\n", lp.Name)
+			fmt.Fprintf(w, " as $%s) {\n", sanitizeVarName(lp.Name))
 			io.WriteString(w, indent+"  if (!(")
 			lp.Cond.emit(w)
 			io.WriteString(w, ")) continue;\n")
@@ -722,7 +759,7 @@ func (q *QueryExpr) emit(w io.Writer) {
 			io.WriteString(w, "}\n")
 			io.WriteString(w, indent)
 			io.WriteString(w, "if (!$matched) {\n")
-			fmt.Fprintf(w, indent+"  $%s = null;\n", lp.Name)
+			fmt.Fprintf(w, indent+"  $%s = null;\n", sanitizeVarName(lp.Name))
 			emitLoops(idx+1, level+1)
 			io.WriteString(w, indent)
 			io.WriteString(w, "}\n")
@@ -741,7 +778,7 @@ func (g *GroupByExpr) emit(w io.Writer) {
 			if i > 0 {
 				io.WriteString(w, ", ")
 			}
-			fmt.Fprintf(w, "$%s", u)
+			fmt.Fprintf(w, "$%s", sanitizeVarName(u))
 		}
 		io.WriteString(w, ")")
 	}
@@ -775,9 +812,9 @@ func (g *GroupByExpr) emit(w io.Writer) {
 			io.WriteString(w, "$groups[$k]['items'][] = ")
 			if len(g.Loops) == 1 {
 				if ql, ok := g.Loops[0].(QueryLoop); ok {
-					fmt.Fprintf(w, "$%s;\n", ql.Name)
+					fmt.Fprintf(w, "$%s;\n", sanitizeVarName(ql.Name))
 				} else if ll, ok := g.Loops[0].(LeftJoinLoop); ok {
-					fmt.Fprintf(w, "$%s;\n", ll.Name)
+					fmt.Fprintf(w, "$%s;\n", sanitizeVarName(ll.Name))
 				}
 			} else {
 				io.WriteString(w, "[")
@@ -787,9 +824,9 @@ func (g *GroupByExpr) emit(w io.Writer) {
 					}
 					switch l := lp.(type) {
 					case QueryLoop:
-						fmt.Fprintf(w, "'%s' => $%s", l.Name, l.Name)
+						fmt.Fprintf(w, "'%s' => $%s", l.Name, sanitizeVarName(l.Name))
 					case LeftJoinLoop:
-						fmt.Fprintf(w, "'%s' => $%s", l.Name, l.Name)
+						fmt.Fprintf(w, "'%s' => $%s", l.Name, sanitizeVarName(l.Name))
 					}
 				}
 				io.WriteString(w, "];\n")
@@ -808,7 +845,7 @@ func (g *GroupByExpr) emit(w io.Writer) {
 			io.WriteString(w, indent)
 			io.WriteString(w, "foreach (")
 			lp.Source.emit(w)
-			fmt.Fprintf(w, " as $%s) {\n", lp.Name)
+			fmt.Fprintf(w, " as $%s) {\n", sanitizeVarName(lp.Name))
 			emitLoops(idx+1, level+1)
 			io.WriteString(w, indent)
 			io.WriteString(w, "}\n")
@@ -818,7 +855,7 @@ func (g *GroupByExpr) emit(w io.Writer) {
 			io.WriteString(w, indent)
 			io.WriteString(w, "foreach (")
 			lp.Source.emit(w)
-			fmt.Fprintf(w, " as $%s) {\n", lp.Name)
+			fmt.Fprintf(w, " as $%s) {\n", sanitizeVarName(lp.Name))
 			io.WriteString(w, indent+"  if (!(")
 			lp.Cond.emit(w)
 			io.WriteString(w, ")) continue;\n")
@@ -828,7 +865,7 @@ func (g *GroupByExpr) emit(w io.Writer) {
 			io.WriteString(w, "}\n")
 			io.WriteString(w, indent)
 			io.WriteString(w, "if (!$matched) {\n")
-			fmt.Fprintf(w, indent+"  $%s = null;\n", lp.Name)
+			fmt.Fprintf(w, indent+"  $%s = null;\n", sanitizeVarName(lp.Name))
 			emitLoops(idx+1, level+1)
 			io.WriteString(w, indent)
 			io.WriteString(w, "}\n")
@@ -878,7 +915,7 @@ func (r *RightJoinExpr) emit(w io.Writer) {
 			if i > 0 {
 				io.WriteString(w, ", ")
 			}
-			fmt.Fprintf(w, "$%s", u)
+			fmt.Fprintf(w, "$%s", sanitizeVarName(u))
 		}
 		io.WriteString(w, ")")
 	}
@@ -916,7 +953,7 @@ func (l *LeftJoinExpr) emit(w io.Writer) {
 			if i > 0 {
 				io.WriteString(w, ", ")
 			}
-			fmt.Fprintf(w, "$%s", u)
+			fmt.Fprintf(w, "$%s", sanitizeVarName(u))
 		}
 		io.WriteString(w, ")")
 	}
@@ -954,7 +991,7 @@ func (o *OuterJoinExpr) emit(w io.Writer) {
 			if i > 0 {
 				io.WriteString(w, ", ")
 			}
-			fmt.Fprintf(w, "$%s", u)
+			fmt.Fprintf(w, "$%s", sanitizeVarName(u))
 		}
 		io.WriteString(w, ")")
 	}
@@ -1098,7 +1135,7 @@ func (s *SumExpr) emit(w io.Writer) {
 			if i > 0 {
 				io.WriteString(w, ", ")
 			}
-			fmt.Fprintf(w, "$%s", u)
+			fmt.Fprintf(w, "$%s", sanitizeVarName(u))
 		}
 		io.WriteString(w, ")")
 	}
@@ -1163,7 +1200,9 @@ func (s *SliceExpr) emit(w io.Writer) {
 	fmt.Fprint(w, ")")
 }
 
-func (v *Var) emit(w io.Writer) { fmt.Fprintf(w, "$%s", v.Name) }
+func (v *Var) emit(w io.Writer) {
+	fmt.Fprintf(w, "$%s", sanitizeVarName(v.Name))
+}
 
 func (i *IntLit) emit(w io.Writer) { fmt.Fprint(w, i.Value) }
 
@@ -1518,6 +1557,11 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 				return nil, fmt.Errorf("substring expects 3 args")
 			}
 			return &SubstringExpr{Str: args[0], Start: args[1], End: args[2]}, nil
+		} else if name == "int" {
+			if len(args) != 1 {
+				return nil, fmt.Errorf("int expects 1 arg")
+			}
+			return &CallExpr{Func: "intval", Args: args}, nil
 		} else if name == "count" {
 			if len(args) != 1 {
 				return nil, fmt.Errorf("count expects 1 arg")

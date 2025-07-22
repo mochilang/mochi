@@ -40,13 +40,13 @@ func TestPHPTranspiler_Rosetta_Golden(t *testing.T) {
 	}
 	for _, src := range files[:limit] {
 		name := strings.TrimSuffix(filepath.Base(src), ".mochi")
-		t.Run(name, func(t *testing.T) {
-			runRosettaPHP(t, src, outDir)
-		})
+		if err := runRosettaPHP(src, outDir); err != nil {
+			t.Fatalf("%s: %v", name, err)
+		}
 	}
 }
 
-func runRosettaPHP(t *testing.T, src string, outDir string) {
+func runRosettaPHP(src string, outDir string) error {
 	name := strings.TrimSuffix(filepath.Base(src), ".mochi")
 	codePath := filepath.Join(outDir, name+".php")
 	outPath := filepath.Join(outDir, name+".out")
@@ -55,25 +55,25 @@ func runRosettaPHP(t *testing.T, src string, outDir string) {
 	prog, err := parser.Parse(src)
 	if err != nil {
 		_ = os.WriteFile(errPath, []byte("parse: "+err.Error()), 0o644)
-		return
+		return fmt.Errorf("parse: %w", err)
 	}
 	env := types.NewEnv(nil)
 	if errs := types.Check(prog, env); len(errs) > 0 {
 		_ = os.WriteFile(errPath, []byte("type: "+errs[0].Error()), 0o644)
-		return
+		return fmt.Errorf("type: %w", errs[0])
 	}
 	ast, err := php.Transpile(prog, env)
 	if err != nil {
 		_ = os.WriteFile(errPath, []byte("transpile: "+err.Error()), 0o644)
-		return
+		return fmt.Errorf("transpile: %w", err)
 	}
 	var buf bytes.Buffer
 	if err := php.Emit(&buf, ast); err != nil {
 		_ = os.WriteFile(errPath, []byte("emit: "+err.Error()), 0o644)
-		return
+		return fmt.Errorf("emit: %w", err)
 	}
 	if err := os.WriteFile(codePath, buf.Bytes(), 0o644); err != nil {
-		t.Fatalf("write code: %v", err)
+		return fmt.Errorf("write code: %w", err)
 	}
 	cmd := exec.Command("php", codePath)
 	if data, err := os.ReadFile(strings.TrimSuffix(src, ".mochi") + ".in"); err == nil {
@@ -83,16 +83,17 @@ func runRosettaPHP(t *testing.T, src string, outDir string) {
 	got := bytes.TrimSpace(out)
 	if err != nil {
 		_ = os.WriteFile(errPath, append([]byte("run: "+err.Error()+"\n"), out...), 0o644)
-		return
+		return fmt.Errorf("run: %w", err)
 	}
 	_ = os.Remove(errPath)
 	_ = os.WriteFile(outPath, got, 0o644)
 	if want, err := os.ReadFile(outPath); err == nil {
 		want = bytes.TrimSpace(want)
 		if !bytes.Equal(got, want) {
-			t.Errorf("output mismatch:\nGot: %s\nWant: %s", got, want)
+			return fmt.Errorf("output mismatch: got %s want %s", got, want)
 		}
 	}
+	return nil
 }
 
 func updateRosettaReadme() {
