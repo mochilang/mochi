@@ -1,9 +1,5 @@
-// Generated 2025-07-21 18:37 +0700
+// Generated 2025-07-22 09:07 +0700
 
-type Anon1 = {
-    mutable a: int
-    mutable b: int
-}
-let m: Anon1 = { a = 1; b = 2 }
-printfn "%b" (Seq.contains "a" m)
-printfn "%b" (Seq.contains "c" m)
+let m = Map.ofList [("a", 1); ("b", 2)]
+printfn "%d" (if Map.containsKey "a" m then 1 else 0)
+printfn "%d" (if Map.containsKey "c" m then 1 else 0)

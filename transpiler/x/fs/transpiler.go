@@ -790,7 +790,13 @@ type ForStmt struct {
 
 func (fst *ForStmt) emit(w io.Writer) {
 	io.WriteString(w, "for ")
-	io.WriteString(w, fsIdent(fst.Name))
+	if fst.End == nil && inferType(fst.Start) == "map" {
+		io.WriteString(w, "KeyValue(")
+		io.WriteString(w, fsIdent(fst.Name))
+		io.WriteString(w, ", _)")
+	} else {
+		io.WriteString(w, fsIdent(fst.Name))
+	}
 	io.WriteString(w, " in ")
 	if fst.End != nil {
 		fst.Start.emit(w)
@@ -1843,7 +1849,8 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 			if len(args) == 1 {
 				switch inferType(args[0]) {
 				case "bool":
-					return &CallExpr{Func: "printfn \"%b\"", Args: []Expr{args[0]}}, nil
+					b := &IfExpr{Cond: args[0], Then: &IntLit{Value: 1}, Else: &IntLit{Value: 0}}
+					return &CallExpr{Func: "printfn \"%d\"", Args: []Expr{b}}, nil
 				case "int":
 					return &CallExpr{Func: "printfn \"%d\"", Args: []Expr{args[0]}}, nil
 				case "float":
@@ -2046,35 +2053,37 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 		return &StructLit{Name: p.Struct.Name, Fields: fields}, nil
 	case p.Map != nil:
 		if transpileEnv != nil {
-			if st, ok := types.InferStructFromMapEnv(p.Map, transpileEnv); ok {
-				structCount++
-				name := fmt.Sprintf("Anon%d", structCount)
-				addStructDef(name, st)
-				fields := make([]StructFieldExpr, len(p.Map.Items))
-				for i, it := range p.Map.Items {
-					v, err := convertExpr(it.Value)
-					if err != nil {
-						return nil, err
+			if _, ok := types.InferSimpleMap(p.Map, transpileEnv); !ok {
+				if st, ok := types.InferStructFromMapEnv(p.Map, transpileEnv); ok {
+					structCount++
+					name := fmt.Sprintf("Anon%d", structCount)
+					addStructDef(name, st)
+					fields := make([]StructFieldExpr, len(p.Map.Items))
+					for i, it := range p.Map.Items {
+						v, err := convertExpr(it.Value)
+						if err != nil {
+							return nil, err
+						}
+						key, _ := types.SimpleStringKey(it.Key)
+						fields[i] = StructFieldExpr{Name: key, Value: v}
 					}
-					key, _ := types.SimpleStringKey(it.Key)
-					fields[i] = StructFieldExpr{Name: key, Value: v}
+					return &StructLit{Name: name, Fields: fields}, nil
 				}
-				return &StructLit{Name: name, Fields: fields}, nil
-			}
-			if fields, ok := inferStructFromMapVars(p.Map); ok {
-				structCount++
-				name := fmt.Sprintf("Anon%d", structCount)
-				structDefs = append(structDefs, StructDef{Name: name, Fields: fields})
-				vals := make([]StructFieldExpr, len(p.Map.Items))
-				for i, it := range p.Map.Items {
-					v, err := convertExpr(it.Value)
-					if err != nil {
-						return nil, err
+				if fields, ok := inferStructFromMapVars(p.Map); ok {
+					structCount++
+					name := fmt.Sprintf("Anon%d", structCount)
+					structDefs = append(structDefs, StructDef{Name: name, Fields: fields})
+					vals := make([]StructFieldExpr, len(p.Map.Items))
+					for i, it := range p.Map.Items {
+						v, err := convertExpr(it.Value)
+						if err != nil {
+							return nil, err
+						}
+						key, _ := types.SimpleStringKey(it.Key)
+						vals[i] = StructFieldExpr{Name: key, Value: v}
 					}
-					key, _ := types.SimpleStringKey(it.Key)
-					vals[i] = StructFieldExpr{Name: key, Value: v}
+					return &StructLit{Name: name, Fields: vals}, nil
 				}
-				return &StructLit{Name: name, Fields: vals}, nil
 			}
 		}
 		items := make([][2]Expr, len(p.Map.Items))

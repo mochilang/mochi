@@ -1,3 +1,7 @@
+## Progress (2025-07-22 09:07 +0700)
+- fs transpiler: improve map handling and boolean printing
+- Generated F# for 102/102 programs (102 passing)
+
 ## Progress (2025-07-22 08:52 +0700)
 - fs transpiler: support jsonl load and refine records
 - Generated F# for 102/102 programs (102 passing)

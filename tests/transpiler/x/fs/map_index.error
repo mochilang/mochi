@@ -1,5 +1,0 @@
-exit status 1
-F# Compiler for F# 4.0 (Open Source Edition)
-Freely distributed under the Apache 2.0 Open Source License
-
-/workspace/mochi/tests/transpiler/x/fs/map_index.fs(8,23): error FS0039: The field, constructor or member 'Item' is not defined
