@@ -39,46 +39,49 @@ func TestRacketTranspiler_Rosetta(t *testing.T) {
 		t.Fatal("no Mochi Rosetta tests found")
 	}
 
+	var firstErr error
+	var firstName string
 	for _, outPath := range outs {
 		name := strings.TrimSuffix(filepath.Base(outPath), ".out")
 		srcPath := filepath.Join(srcDir, name+".mochi")
 		if _, err := os.Stat(srcPath); err != nil {
 			t.Fatalf("missing source for %s", name)
 		}
-		t.Run(name, func(t *testing.T) {
-			transpileAndRunRacket(t, root, srcPath, outPath, outDir, name)
-		})
+		if err := transpileAndRunRacket(root, srcPath, outPath, outDir, name); err != nil {
+			firstErr = err
+			firstName = name
+			break
+		}
+	}
+	if firstErr != nil {
+		t.Fatalf("%s: %v", firstName, firstErr)
 	}
 }
 
-func transpileAndRunRacket(t *testing.T, root, srcPath, wantPath, outDir, name string) {
+func transpileAndRunRacket(root, srcPath, wantPath, outDir, name string) error {
 	prog, err := parser.Parse(srcPath)
 	if err != nil {
 		writeRacketError(outDir, name, fmt.Errorf("parse error: %w", err))
-		t.Skip("parse error")
-		return
+		return err
 	}
 	env := types.NewEnv(nil)
 	if errs := types.Check(prog, env); len(errs) > 0 {
 		writeRacketError(outDir, name, fmt.Errorf("type error: %v", errs[0]))
-		t.Skip("type error")
-		return
+		return errs[0]
 	}
 	ast, err := rkt.Transpile(prog, env)
 	if err != nil {
 		writeRacketError(outDir, name, fmt.Errorf("transpile error: %w", err))
-		t.Skip("transpile error")
-		return
+		return err
 	}
 	var buf bytes.Buffer
 	if err := rkt.Emit(&buf, ast); err != nil {
 		writeRacketError(outDir, name, fmt.Errorf("emit error: %w", err))
-		t.Skip("emit error")
-		return
+		return err
 	}
 	rktFile := filepath.Join(outDir, name+".rkt")
 	if err := os.WriteFile(rktFile, buf.Bytes(), 0o644); err != nil {
-		t.Fatalf("write rkt: %v", err)
+		return fmt.Errorf("write rkt: %w", err)
 	}
 	cmd := exec.Command("racket", rktFile)
 	cmd.Env = append(os.Environ(), "MOCHI_ROOT="+root, "MOCHI_NOW_SEED=1")
@@ -89,21 +92,22 @@ func transpileAndRunRacket(t *testing.T, root, srcPath, wantPath, outDir, name s
 	got := bytes.TrimSpace(out)
 	if err != nil {
 		writeRacketError(outDir, name, fmt.Errorf("run error: %v\n%s", err, out))
-		return
+		return err
 	}
 	want, err := os.ReadFile(wantPath)
 	if err != nil {
-		t.Fatalf("read golden: %v", err)
+		return fmt.Errorf("read golden: %w", err)
 	}
 	want = bytes.TrimSpace(want)
 	if !bytes.Equal(got, want) {
 		writeRacketError(outDir, name, fmt.Errorf("output mismatch\n-- got --\n%s\n-- want --\n%s", got, want))
-		return
+		return fmt.Errorf("output mismatch")
 	}
 	if err := os.WriteFile(filepath.Join(outDir, name+".out"), got, 0o644); err != nil {
-		t.Fatalf("write out: %v", err)
+		return fmt.Errorf("write out: %w", err)
 	}
 	_ = os.Remove(filepath.Join(outDir, name+".error"))
+	return nil
 }
 
 func writeRacketError(dir, name string, err error) {
