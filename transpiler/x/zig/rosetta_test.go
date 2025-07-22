@@ -9,12 +9,11 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
-	"sort"
-	"strconv"
 	"strings"
 	"testing"
 	"time"
 
+	"mochi/golden"
 	"mochi/parser"
 	zigt "mochi/transpiler/x/zig"
 	"mochi/types"
@@ -27,64 +26,37 @@ func TestZigTranspiler_Rosetta(t *testing.T) {
 		t.Skip("zig not installed")
 	}
 	root := rosettaRepoRoot(t)
-	srcDir := filepath.Join(root, "tests", "rosetta", "x", "Mochi")
 	outDir := filepath.Join(root, "tests", "rosetta", "transpiler", "Zig")
 	os.MkdirAll(outDir, 0o755)
+	t.Cleanup(updateRosettaReadme)
 
-	files, err := filepath.Glob(filepath.Join(srcDir, "*.mochi"))
-	if err != nil {
-		t.Fatalf("glob: %v", err)
-	}
-	sort.Strings(files)
-	max := len(files)
-	if v := os.Getenv("ROSETTA_MAX"); v != "" {
-		if n, err := strconv.Atoi(v); err == nil && n < max {
-			max = n
-		}
-	}
-	files = files[:max]
-
-	var firstFail string
-	for _, src := range files {
+	golden.RunFirstFailure(t, "tests/rosetta/x/Mochi", ".mochi", ".out", func(src string) ([]byte, error) {
 		name := strings.TrimSuffix(filepath.Base(src), ".mochi")
-		ok := t.Run(name, func(t *testing.T) {
-			runRosettaTask(t, srcDir, outDir, name)
-		})
-		if !ok && firstFail == "" {
-			firstFail = name
-			break
-		}
-	}
-	updateRosettaReadme()
-	if firstFail != "" {
-		t.Fatalf("first failing program: %s", firstFail)
-	}
+		return runCase(src, outDir, name)
+	})
 }
 
-func runRosettaTask(t *testing.T, srcDir, outDir, name string) {
+func runCase(srcDir, outDir, name string) ([]byte, error) {
 	src := filepath.Join(srcDir, name+".mochi")
 	prog, err := parser.Parse(src)
 	if err != nil {
 		writeErr(outDir, name, fmt.Errorf("parse: %w", err))
-		t.Skipf("parse error: %v", err)
-		return
+		return nil, err
 	}
 	env := types.NewEnv(nil)
 	if errs := types.Check(prog, env); len(errs) > 0 {
 		writeErr(outDir, name, fmt.Errorf("type: %v", errs[0]))
-		t.Skipf("type error: %v", errs[0])
-		return
+		return nil, errs[0]
 	}
 	ast, err := zigt.Transpile(prog, env)
 	if err != nil {
 		writeErr(outDir, name, fmt.Errorf("transpile: %v", err))
-		t.Skipf("transpile error: %v", err)
-		return
+		return nil, err
 	}
 	code := ast.Emit()
 	codePath := filepath.Join(outDir, name+".zig")
 	if err := os.WriteFile(codePath, code, 0o644); err != nil {
-		t.Fatalf("write code: %v", err)
+		return nil, err
 	}
 	cmd := exec.Command("zig", "run", codePath)
 	if data, err := os.ReadFile(filepath.Join(srcDir, name+".in")); err == nil {
@@ -94,20 +66,20 @@ func runRosettaTask(t *testing.T, srcDir, outDir, name string) {
 	got := bytes.TrimSpace(out)
 	if err != nil {
 		writeErr(outDir, name, fmt.Errorf("run: %v\n%s", err, out))
-		t.Skipf("run error: %v", err)
-		return
+		return nil, err
 	}
 	os.Remove(filepath.Join(outDir, name+".error"))
 	outPath := filepath.Join(outDir, name+".out")
 	if *updateRosetta {
 		if err := os.WriteFile(outPath, append(got, '\n'), 0o644); err != nil {
-			t.Fatalf("write out: %v", err)
+			return nil, err
 		}
 	} else if want, err := os.ReadFile(outPath); err == nil {
 		if !bytes.Equal(got, bytes.TrimSpace(want)) {
-			t.Errorf("output mismatch for %s\n\n--- Got ---\n%s\n\n--- Want ---\n%s\n", name, got, bytes.TrimSpace(want))
+			return got, fmt.Errorf("output mismatch for %s", name)
 		}
 	}
+	return got, nil
 }
 
 func writeErr(dir, name string, err error) {
