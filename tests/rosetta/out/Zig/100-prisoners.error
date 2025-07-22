@@ -1,2 +1,0 @@
-zig build: exit status 1
-/tmp/100-prisoners.zig:36:43: error: no member named 'items' in '[]i32'

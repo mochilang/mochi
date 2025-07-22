@@ -2,13 +2,13 @@
 
 Generated Zig code for Rosetta tasks lives under `tests/rosetta/out/Zig`.
 
-Last updated: 2025-07-22 23:35 +0700
+Last updated: 2025-07-22 23:51 +0700
 
 ## Program Checklist (14/284)
 1. [x] 100-doors-2
 2. [x] 100-doors-3
-3. [x] 100-doors
-4. [ ] 100-prisoners
+3. [ ] 100-doors
+4. [x] 100-prisoners
 5. [ ] 15-puzzle-game
 6. [ ] 15-puzzle-solver
 7. [ ] 2048

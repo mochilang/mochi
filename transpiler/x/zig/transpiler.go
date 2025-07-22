@@ -36,6 +36,10 @@ var funParamsStack [][]string
 var nestedFunArgs map[string][]string
 var builtinAliases map[string]string
 var transEnv *types.Env
+var mainFuncName string
+var useNow bool
+var useStr bool
+var useConcat bool
 
 func toSnakeCase(s string) string {
 	var buf strings.Builder
@@ -596,6 +600,10 @@ func zigTypeFromExpr(e Expr) string {
 				return zigTypeFromExpr(ce.Args[0])
 			}
 			return "i64"
+		case "_str", "_concat_string":
+			return "[]const u8"
+		case "_now":
+			return "i64"
 		default:
 			if strings.HasPrefix(ce.Func, "std.math.") {
 				return "f64"
@@ -863,6 +871,38 @@ func (p *Program) Emit() []byte {
 		}
 		fn.emit(&buf)
 	}
+	if useNow {
+		buf.WriteString("\nvar _now_seed: i64 = 0;\n")
+		buf.WriteString("var _now_seeded: bool = false;\n")
+		buf.WriteString("fn _now() i64 {\n")
+		buf.WriteString("    if (_now_seeded) {\n")
+		buf.WriteString("        _now_seed = @mod(_now_seed * 1664525 + 1013904223, 2147483647);\n")
+		buf.WriteString("        return _now_seed;\n")
+		buf.WriteString("    }\n")
+		buf.WriteString("    if (! _now_seeded) {\n")
+		buf.WriteString("        if (std.process.getEnvVarOwned(std.heap.page_allocator, \"MOCHI_NOW_SEED\")) |s| {\n")
+		buf.WriteString("            defer std.heap.page_allocator.free(s);\n")
+		buf.WriteString("            if (std.fmt.parseInt(i64, s, 10)) |v| {\n")
+		buf.WriteString("                _now_seed = v;\n")
+		buf.WriteString("                _now_seeded = true;\n")
+		buf.WriteString("                return _now_seed;\n")
+		buf.WriteString("            } else |_| {}\n")
+		buf.WriteString("        } else |_| {}\n")
+		buf.WriteString("    }\n")
+		buf.WriteString("    return @as(i64, @intCast(std.time.nanoTimestamp()));\n")
+		buf.WriteString("}\n")
+	}
+	if useStr {
+		buf.WriteString("\nfn _str(v: anytype) []const u8 {\n")
+		buf.WriteString("    return std.fmt.allocPrint(std.heap.page_allocator, \"{any}\", .{v}) catch unreachable;\n")
+		buf.WriteString("}\n")
+	}
+	if useConcat {
+		buf.WriteString("\nfn _concat_string(a: []const u8, b: []const u8) []const u8 {\n")
+		buf.WriteString("    const alloc = std.heap.page_allocator;\n")
+		buf.WriteString("    return std.mem.concat(alloc, u8, &[_][]const u8{ a, b }) catch unreachable;\n")
+		buf.WriteString("}\n")
+	}
 	return buf.Bytes()
 }
 
@@ -1081,6 +1121,7 @@ func (e *ExprStmt) emit(w io.Writer, indent int) {
 	writeIndent(w, indent)
 	if e.Expr != nil {
 		e.Expr.emit(w)
+		io.WriteString(w, ";")
 	}
 	io.WriteString(w, "\n")
 }
@@ -1101,6 +1142,17 @@ func (v *VarRef) emit(w io.Writer) { io.WriteString(w, v.Name) }
 
 func (b *BinaryExpr) emit(w io.Writer) {
 	if b.Op == "+" {
+		lt := zigTypeFromExpr(b.Left)
+		rt := zigTypeFromExpr(b.Right)
+		if lt == "[]const u8" || rt == "[]const u8" {
+			useConcat = true
+			io.WriteString(w, "_concat_string(")
+			b.Left.emit(w)
+			io.WriteString(w, ", ")
+			b.Right.emit(w)
+			io.WriteString(w, ")")
+			return
+		}
 		if l, ok := b.Left.(*StringLit); ok {
 			if r, ok2 := b.Right.(*StringLit); ok2 {
 				fmt.Fprintf(w, "%q", l.Value+r.Value)
@@ -1108,38 +1160,49 @@ func (b *BinaryExpr) emit(w io.Writer) {
 			}
 		}
 	}
-	if _, ok := b.Left.(*StringLit); ok {
-		if _, ok2 := b.Right.(*StringLit); ok2 {
-			switch b.Op {
-			case "<":
-				io.WriteString(w, "std.mem.order(u8, ")
-				b.Left.emit(w)
-				io.WriteString(w, ", ")
-				b.Right.emit(w)
-				io.WriteString(w, ") == .lt")
-				return
-			case "<=":
-				io.WriteString(w, "std.mem.order(u8, ")
-				b.Left.emit(w)
-				io.WriteString(w, ", ")
-				b.Right.emit(w)
-				io.WriteString(w, ") != .gt")
-				return
-			case ">":
-				io.WriteString(w, "std.mem.order(u8, ")
-				b.Left.emit(w)
-				io.WriteString(w, ", ")
-				b.Right.emit(w)
-				io.WriteString(w, ") == .gt")
-				return
-			case ">=":
-				io.WriteString(w, "std.mem.order(u8, ")
-				b.Left.emit(w)
-				io.WriteString(w, ", ")
-				b.Right.emit(w)
-				io.WriteString(w, ") != .lt")
-				return
+	lt := zigTypeFromExpr(b.Left)
+	rt := zigTypeFromExpr(b.Right)
+	if lt == "[]const u8" && rt == "[]const u8" {
+		switch b.Op {
+		case "==", "!=":
+			if b.Op == "==" {
+				io.WriteString(w, "std.mem.eql(u8, ")
+			} else {
+				io.WriteString(w, "!std.mem.eql(u8, ")
 			}
+			b.Left.emit(w)
+			io.WriteString(w, ", ")
+			b.Right.emit(w)
+			io.WriteString(w, ")")
+			return
+		case "<":
+			io.WriteString(w, "std.mem.order(u8, ")
+			b.Left.emit(w)
+			io.WriteString(w, ", ")
+			b.Right.emit(w)
+			io.WriteString(w, ") == .lt")
+			return
+		case "<=":
+			io.WriteString(w, "std.mem.order(u8, ")
+			b.Left.emit(w)
+			io.WriteString(w, ", ")
+			b.Right.emit(w)
+			io.WriteString(w, ") != .gt")
+			return
+		case ">":
+			io.WriteString(w, "std.mem.order(u8, ")
+			b.Left.emit(w)
+			io.WriteString(w, ", ")
+			b.Right.emit(w)
+			io.WriteString(w, ") == .gt")
+			return
+		case ">=":
+			io.WriteString(w, "std.mem.order(u8, ")
+			b.Left.emit(w)
+			io.WriteString(w, ", ")
+			b.Right.emit(w)
+			io.WriteString(w, ") != .lt")
+			return
 		}
 	}
 	if b.Op == "in" {
@@ -1169,8 +1232,16 @@ func (b *BinaryExpr) emit(w io.Writer) {
 		}
 		return
 	}
-	b.Left.emit(w)
 	op := b.Op
+	if op == "%" {
+		io.WriteString(w, "@mod(")
+		b.Left.emit(w)
+		io.WriteString(w, ", ")
+		b.Right.emit(w)
+		io.WriteString(w, ")")
+		return
+	}
+	b.Left.emit(w)
 	if op == "&&" {
 		op = "and"
 	} else if op == "||" {
@@ -1216,9 +1287,9 @@ func (i *IndexExpr) emit(w io.Writer) {
 		io.WriteString(w, ").?")
 	} else {
 		i.Target.emit(w)
-		io.WriteString(w, "[")
+		io.WriteString(w, "[@as(usize, @intCast(")
 		i.Index.emit(w)
-		io.WriteString(w, "]")
+		io.WriteString(w, "))]")
 	}
 }
 
@@ -1241,6 +1312,10 @@ func (c *CastExpr) emit(w io.Writer) {
 		io.WriteString(w, "std.fmt.parseInt(i64, ")
 		c.Value.emit(w)
 		io.WriteString(w, ", 10) catch 0")
+	case "float":
+		io.WriteString(w, "@as(f64, @floatFromInt(")
+		c.Value.emit(w)
+		io.WriteString(w, "))")
 	default:
 		c.Value.emit(w)
 	}
@@ -1484,6 +1559,10 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	funParamsStack = nil
 	nestedFunArgs = map[string][]string{}
 	builtinAliases = map[string]string{}
+	mainFuncName = ""
+	useNow = false
+	useStr = false
+	useConcat = false
 	mutables := map[string]bool{}
 	collectMutables(prog.Statements, mutables)
 	constLists = map[string]*ListLit{}
@@ -1851,12 +1930,21 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 			args[i] = ex
 		}
 		switch p.Call.Func {
-		case "str":
-			if len(args) == 1 {
-				if lit, ok := args[0].(*IntLit); ok {
-					return &StringLit{Value: fmt.Sprintf("%d", lit.Value)}, nil
-				}
+		case "now":
+			if len(args) != 0 {
+				return nil, fmt.Errorf("now expects no arguments")
 			}
+			useNow = true
+			return &CallExpr{Func: "_now"}, nil
+		case "str":
+			if len(args) != 1 {
+				return nil, fmt.Errorf("str expects one argument")
+			}
+			useStr = true
+			if lit, ok := args[0].(*IntLit); ok {
+				return &StringLit{Value: fmt.Sprintf("%d", lit.Value)}, nil
+			}
+			return &CallExpr{Func: "_str", Args: args}, nil
 		case "substring":
 			if len(args) == 3 {
 				if s, ok := args[0].(*StringLit); ok {
@@ -1935,14 +2023,18 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 				return &AppendExpr{List: args[0], Value: args[1], ElemType: zigTypeFromExpr(args[1])}, nil
 			}
 		}
-		if extra, ok := nestedFunArgs[p.Call.Func]; ok {
+		name := p.Call.Func
+		if name == "main" && mainFuncName != "" {
+			name = mainFuncName
+		}
+		if extra, ok := nestedFunArgs[name]; ok {
 			pre := make([]Expr, len(extra))
 			for i, n := range extra {
 				pre[i] = &VarRef{Name: n}
 			}
 			args = append(pre, args...)
 		}
-		return &CallExpr{Func: p.Call.Func, Args: args}, nil
+		return &CallExpr{Func: name, Args: args}, nil
 	case p.Lit != nil:
 		if p.Lit.Str != nil {
 			return &StringLit{Value: *p.Lit.Str}, nil
@@ -2491,7 +2583,12 @@ func compileFunStmt(fn *parser.FunStmt, prog *parser.Program) (*Func, error) {
 			body = append(body, s)
 		}
 	}
-	f := &Func{Name: fn.Name, Params: params, ReturnType: ret, Body: body}
+	name := fn.Name
+	if funDepth == 1 && fn.Name == "main" {
+		mainFuncName = "mochi_main"
+		name = mainFuncName
+	}
+	f := &Func{Name: name, Params: params, ReturnType: ret, Body: body}
 	if funDepth > 1 {
 		captured := []string{}
 		for i := 0; i < len(funParamsStack)-1; i++ {
@@ -2507,7 +2604,7 @@ func compileFunStmt(fn *parser.FunStmt, prog *parser.Program) (*Func, error) {
 		}
 		newParams = append(newParams, f.Params...)
 		f.Params = newParams
-		nestedFunArgs[fn.Name] = captured
+		nestedFunArgs[name] = captured
 		extraFuncs = append(extraFuncs, f)
 		return nil, nil
 	}
