@@ -7,6 +7,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"sort"
 	"strings"
 	"testing"
 
@@ -23,6 +24,13 @@ func TestPascalTranspiler_VMValid_Golden(t *testing.T) {
 	root := repoRoot(t)
 	outDir := filepath.Join(root, "tests", "transpiler", "x", "pas")
 	os.MkdirAll(outDir, 0o755)
+
+	// clean previous error markers
+	if files, _ := filepath.Glob(filepath.Join(outDir, "*.error")); len(files) > 0 {
+		for _, f := range files {
+			_ = os.Remove(f)
+		}
+	}
 
 	golden.RunWithSummary(t, "tests/vm/valid", ".mochi", ".out", func(src string) ([]byte, error) {
 		base := strings.TrimSuffix(filepath.Base(src), ".mochi")
@@ -68,4 +76,9 @@ func TestPascalTranspiler_VMValid_Golden(t *testing.T) {
 		_ = os.WriteFile(outPath, got, 0o644)
 		return got, nil
 	})
+
+	if errs, _ := filepath.Glob(filepath.Join(outDir, "*.error")); len(errs) > 0 {
+		sort.Strings(errs)
+		t.Fatalf("first failing program: %s", strings.TrimSuffix(filepath.Base(errs[0]), ".error"))
+	}
 }

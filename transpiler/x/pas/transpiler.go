@@ -61,6 +61,7 @@ type Program struct {
 	NeedMin      bool
 	NeedMax      bool
 	NeedContains bool
+	NeedShowList bool
 }
 
 // Stmt represents a Pascal statement.
@@ -636,6 +637,13 @@ func (s *SetStmt) emit(w io.Writer) {
 }
 
 func (p *PrintStmt) emit(w io.Writer) {
+	if len(p.Exprs) == 1 && len(p.Types) == 1 && strings.HasPrefix(p.Types[0], "array of ") {
+		io.WriteString(w, "show_list(")
+		p.Exprs[0].emit(w)
+		io.WriteString(w, ");")
+		return
+	}
+
 	io.WriteString(w, "writeln(")
 	for i, ex := range p.Exprs {
 		if i > 0 {
@@ -702,6 +710,9 @@ func (p *Program) Emit() []byte {
 	}
 	if p.NeedMax {
 		buf.WriteString("function max(xs: array of integer): integer;\nvar i, m: integer;\nbegin\n  if Length(xs) = 0 then begin max := 0; exit; end;\n  m := xs[0];\n  for i := 1 to High(xs) do if xs[i] > m then m := xs[i];\n  max := m;\nend;\n")
+	}
+	if p.NeedShowList {
+		buf.WriteString("procedure show_list(xs: array of integer);\nvar i: integer;\nbegin\n  write('[');\n  for i := 0 to High(xs) do begin\n    write(xs[i]);\n    if i < High(xs) then write(', ');\n  end;\n  writeln(']');\nend;\n")
 	}
 	for _, r := range p.Records {
 		fmt.Fprintf(&buf, "type %s = record\n", r.Name)
@@ -801,6 +812,8 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 					typesList = append(typesList, t)
 					if t == "boolean" {
 						needSys = true
+					} else if strings.HasPrefix(t, "array of ") {
+						pr.NeedShowList = true
 					}
 				}
 				pr.Stmts = append(pr.Stmts, &PrintStmt{Exprs: parts, Types: typesList, NeedSysUtils: needSys})
@@ -3097,6 +3110,14 @@ func inferType(e Expr) string {
 			return "integer"
 		case "Sqrt", "Sin", "Ln", "Power":
 			return "real"
+		case "concat":
+			if len(v.Args) > 0 {
+				t := inferType(v.Args[0])
+				if strings.HasPrefix(t, "array of ") {
+					return t
+				}
+			}
+			return ""
 		default:
 			return ""
 		}
