@@ -31,6 +31,7 @@ func TestRosettaTranspilerGolden(t *testing.T) {
 		t.Fatalf("glob: %v", err)
 	}
 	sort.Strings(files)
+	var firstFail string
 	for _, src := range files {
 		if _, err := os.Stat(strings.TrimSuffix(src, ".mochi") + ".in"); err == nil {
 			continue
@@ -38,9 +39,13 @@ func TestRosettaTranspilerGolden(t *testing.T) {
 		name := strings.TrimSuffix(filepath.Base(src), ".mochi")
 		wantOut := filepath.Join(outDir, name+".out")
 		t.Run(name, func(t *testing.T) {
+			if firstFail != "" {
+				t.Skip("skipping after first failure")
+			}
 			code, err := transpileFile(src)
 			if err != nil {
-				t.Fatalf("transpile: %v", err)
+				firstFail = name
+				return
 			}
 			if updateEnabled() {
 				norm := normalize(root, code)
@@ -56,7 +61,8 @@ func TestRosettaTranspilerGolden(t *testing.T) {
 						t.Fatalf("write error file: %v (run error: %v)", werr, runErr)
 					}
 				}
-				t.Fatalf("run: %v", runErr)
+				firstFail = name
+				return
 			}
 			if updateEnabled() {
 				_ = os.Remove(filepath.Join(outDir, name+".error"))
@@ -75,9 +81,12 @@ func TestRosettaTranspilerGolden(t *testing.T) {
 				t.Errorf("output mismatch for %s: got %q want %q", name, trimmed, wantData)
 			}
 		})
-		if t.Failed() {
+		if firstFail != "" {
 			break
 		}
+	}
+	if firstFail != "" {
+		t.Fatalf("first failing program: %s", firstFail)
 	}
 }
 

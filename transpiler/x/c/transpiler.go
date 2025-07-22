@@ -16,6 +16,7 @@ import (
 	"mochi/interpreter"
 	"mochi/parser"
 	"mochi/runtime/data"
+	testpkg "mochi/runtime/ffi/go/testpkg"
 	"mochi/types"
 )
 
@@ -2410,6 +2411,9 @@ func convertUnary(u *parser.Unary) Expr {
 			case "go_testpkg":
 				if method == "Add" && len(args) == 2 {
 					return &BinaryExpr{Left: args[0], Op: "+", Right: args[1]}
+				}
+				if method == "FifteenPuzzleExample" && len(args) == 0 {
+					return &StringLit{Value: testpkg.FifteenPuzzleExample()}
 				}
 			case "python_math":
 				switch method {

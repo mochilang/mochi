@@ -1,6 +1,0 @@
-compile failed: exit status 1: /tmp/ctranspile2714296261/15-puzzle-solver.mochi.c: In function ‘main’:
-/tmp/ctranspile2714296261/15-puzzle-solver.mochi.c:6:20: error: ‘testpkg’ undeclared (first use in this function)
-    6 |     printf("%d\n", testpkg.FifteenPuzzleExample);
-      |                    ^~~~~~~
-/tmp/ctranspile2714296261/15-puzzle-solver.mochi.c:6:20: note: each undeclared identifier is reported only once for each function it appears in
-
