@@ -1137,7 +1137,7 @@ func (q *QueryExpr) emit(w io.Writer) {
 	}
 	if q.Sort != nil {
 		cmp := "pairs[i].Key < pairs[j].Key"
-		if q.SortType == "any" {
+		if !isOrderableType(q.SortType) {
 			cmp = "fmt.Sprint(pairs[i].Key) < fmt.Sprint(pairs[j].Key)"
 		}
 		fmt.Fprintf(w, " ; sort.Slice(pairs, func(i,j int) bool { return %s })", cmp)
@@ -1225,7 +1225,7 @@ func (g *GroupQueryExpr) emit(w io.Writer) {
 	fmt.Fprint(w, "}\n")
 	if g.Sort != nil {
 		cmp := "pairs[i].Key < pairs[j].Key"
-		if g.SortType == "any" {
+		if !isOrderableType(g.SortType) {
 			cmp = "fmt.Sprint(pairs[i].Key) < fmt.Sprint(pairs[j].Key)"
 		}
 		fmt.Fprintf(w, "sort.Slice(pairs, func(i,j int) bool { return %s })\n", cmp)
@@ -1344,7 +1344,7 @@ func (g *GroupJoinQueryExpr) emit(w io.Writer) {
 	fmt.Fprint(w, "}\n")
 	if g.Sort != nil {
 		cmp := "pairs[i].Key < pairs[j].Key"
-		if g.SortType == "any" {
+		if !isOrderableType(g.SortType) {
 			cmp = "fmt.Sprint(pairs[i].Key) < fmt.Sprint(pairs[j].Key)"
 		}
 		fmt.Fprintf(w, "sort.Slice(pairs, func(i,j int) bool { return %s })\n", cmp)
@@ -2216,11 +2216,10 @@ func compileQueryExpr(q *parser.QueryExpr, env *types.Env, base string) (Expr, e
 		var sortExpr Expr
 		var sortType string
 		if q.Sort != nil {
-			sortExpr, err = compileExpr(q.Sort, genv, "")
+			sortExpr, sortType, err = compileSortKey(q.Sort, genv, "")
 			if err != nil {
 				return nil, err
 			}
-			sortType = toGoTypeFromType(types.ExprType(q.Sort, genv))
 			if sortType == "" {
 				sortType = "any"
 			}
@@ -2388,11 +2387,10 @@ func compileQueryExpr(q *parser.QueryExpr, env *types.Env, base string) (Expr, e
 		var sortExpr Expr
 		var sortType string
 		if q.Sort != nil {
-			sortExpr, err = compileExpr(q.Sort, genv, "")
+			sortExpr, sortType, err = compileSortKey(q.Sort, genv, "")
 			if err != nil {
 				return nil, err
 			}
-			sortType = toGoTypeFromType(types.ExprType(q.Sort, genv))
 			if sortType == "" {
 				sortType = "any"
 			}
@@ -2525,11 +2523,10 @@ func compileQueryExpr(q *parser.QueryExpr, env *types.Env, base string) (Expr, e
 	var sortExpr Expr
 	var sortType string
 	if q.Sort != nil {
-		sortExpr, err = compileExpr(q.Sort, child, "")
+		sortExpr, sortType, err = compileSortKey(q.Sort, child, "")
 		if err != nil {
 			return nil, err
 		}
-		sortType = toGoTypeFromType(types.ExprType(q.Sort, child))
 		if sortType == "" {
 			sortType = "any"
 		}
@@ -3571,6 +3568,14 @@ func toGoTypeFromType(t types.Type) string {
 	return "any"
 }
 
+func isOrderableType(goType string) bool {
+	switch goType {
+	case "int", "float64", "string":
+		return true
+	}
+	return false
+}
+
 func isBoolExpr(e *parser.Expr) bool { return isBoolBinary(e.Binary) }
 
 func isBoolBinary(b *parser.BinaryExpr) bool {
@@ -4211,4 +4216,43 @@ func compileGroupKey(e *parser.Expr, env *types.Env, base string) (Expr, types.T
 		}
 	}
 	return keyExpr, keyType, nil
+}
+
+func compileSortKey(e *parser.Expr, env *types.Env, base string) (Expr, string, error) {
+	keyExpr, err := compileExpr(e, env, base)
+	if err != nil {
+		return nil, "", err
+	}
+	goType := toGoTypeFromType(types.ExprType(e, env))
+	if ml := mapLiteral(e); ml != nil {
+		if st, ok := types.InferStructFromMapEnv(ml, env); ok {
+			structCount++
+			baseName := fmt.Sprintf("Key%d", structCount)
+			if base != "" {
+				baseName = structNameFromVar(base) + "Key"
+			}
+			name := types.UniqueStructName(baseName, topEnv, nil)
+			st.Name = name
+			if topEnv != nil {
+				topEnv.SetStruct(name, st)
+			}
+			fieldsDecl := make([]ParamDecl, len(st.Order))
+			vals := make([]Expr, len(st.Order))
+			for i, it := range ml.Items {
+				fieldsDecl[i] = ParamDecl{Name: st.Order[i], Type: toGoTypeFromType(st.Fields[st.Order[i]])}
+				v, err := compileExpr(it.Value, env, "")
+				if err != nil {
+					return nil, "", err
+				}
+				vals[i] = v
+			}
+			extraDecls = append(extraDecls, &TypeDeclStmt{Name: name, Fields: fieldsDecl})
+			keyExpr = &StructLit{Name: name, Fields: vals, Names: st.Order}
+			goType = name
+		}
+	}
+	if goType == "" {
+		goType = "any"
+	}
+	return keyExpr, goType, nil
 }
