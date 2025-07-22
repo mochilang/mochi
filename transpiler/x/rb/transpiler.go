@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"math"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -1119,6 +1120,40 @@ func (cmt *CommentStmt) emit(e *emitter) {
 	io.WriteString(e.w, cmt.Text)
 }
 
+// ImportStmt represents an import of a builtin module.
+type ImportStmt struct {
+	Alias  string
+	Module string
+}
+
+func (i *ImportStmt) emit(e *emitter) {
+	switch i.Module {
+	case "python_math":
+		io.WriteString(e.w, "module PythonMath\n")
+		io.WriteString(e.w, "  def self.pi; Math::PI; end\n")
+		io.WriteString(e.w, "  def self.e; Math::E; end\n")
+		io.WriteString(e.w, "  def self.sqrt(x); Math.sqrt(x); end\n")
+		io.WriteString(e.w, "  def self.pow(x, y); x ** y; end\n")
+		io.WriteString(e.w, "  def self.sin(x); Math.sin(x); end\n")
+		io.WriteString(e.w, "  def self.log(x); Math.log(x); end\n")
+		io.WriteString(e.w, "end\n")
+		io.WriteString(e.w, i.Alias+" = PythonMath")
+	case "go_testpkg":
+		io.WriteString(e.w, "module Testpkg\n")
+		io.WriteString(e.w, "  def self.Pi; 3.14; end\n")
+		io.WriteString(e.w, "  def self.Answer; 42; end\n")
+		io.WriteString(e.w, "  def self.Add(a, b); a + b; end\n")
+		io.WriteString(e.w, "end\n")
+		io.WriteString(e.w, i.Alias+" = Testpkg")
+	case "go_strings":
+		io.WriteString(e.w, "module GoStrings\n")
+		io.WriteString(e.w, "  def self.ToUpper(s); s.upcase; end\n")
+		io.WriteString(e.w, "  def self.TrimSpace(s); s.strip; end\n")
+		io.WriteString(e.w, "end\n")
+		io.WriteString(e.w, i.Alias+" = GoStrings")
+	}
+}
+
 // BlockStmt is a sequence of statements.
 type BlockStmt struct{ Stmts []Stmt }
 
@@ -1282,7 +1317,13 @@ func (i *IntLit) emit(e *emitter) { fmt.Fprintf(e.w, "%d", i.Value) }
 
 type FloatLit struct{ Value float64 }
 
-func (f *FloatLit) emit(e *emitter) { fmt.Fprintf(e.w, "%g", f.Value) }
+func (f *FloatLit) emit(e *emitter) {
+	if f.Value == math.Trunc(f.Value) {
+		fmt.Fprintf(e.w, "%.1f", f.Value)
+	} else {
+		fmt.Fprintf(e.w, "%g", f.Value)
+	}
+}
 
 type BoolLit struct{ Value bool }
 
@@ -1619,26 +1660,26 @@ func (f *FormatList) emit(e *emitter) {
 type FormatBool struct{ Value Expr }
 
 func (f *FormatBool) emit(e *emitter) {
-        io.WriteString(e.w, "(")
-        f.Value.emit(e)
-        io.WriteString(e.w, " ? 'True' : 'False')")
+	io.WriteString(e.w, "(")
+	f.Value.emit(e)
+	io.WriteString(e.w, " ? 'True' : 'False')")
 }
 
 // SaveJSONLExpr writes a list of records to stdout as JSON lines.
 type SaveJSONLExpr struct{ Src Expr }
 
 func (s *SaveJSONLExpr) emit(e *emitter) {
-        io.WriteString(e.w, "(")
-        s.Src.emit(e)
-        io.WriteString(e.w, ".each do |row|")
-        e.nl()
-        e.indent++
-        e.writeIndent()
-        io.WriteString(e.w, "puts(JSON.generate(row.to_h, space: ' ', object_nl: '', array_nl: '', indent: '').gsub(/,/, ', '))")
-        e.nl()
-        e.indent--
-        e.writeIndent()
-        io.WriteString(e.w, "end)")
+	io.WriteString(e.w, "(")
+	s.Src.emit(e)
+	io.WriteString(e.w, ".each do |row|")
+	e.nl()
+	e.indent++
+	e.writeIndent()
+	io.WriteString(e.w, "puts(JSON.generate(row.to_h, space: ' ', object_nl: '', array_nl: '', indent: '').gsub(/,/, ', '))")
+	e.nl()
+	e.indent--
+	e.writeIndent()
+	io.WriteString(e.w, "end)")
 }
 
 // MethodCallExpr represents calling a method on a target expression.
@@ -1875,34 +1916,34 @@ func dataExprFromFile(path, format string, typ *parser.TypeRef) (Expr, error) {
 		return nil, err
 	}
 	var v interface{}
-       switch format {
-       case "yaml":
-               if err := yaml.Unmarshal(data, &v); err != nil {
-                       return nil, err
-               }
-       case "json":
-               if err := json.Unmarshal(data, &v); err != nil {
-                       return nil, err
-               }
-       case "jsonl":
-               lines := strings.Split(strings.TrimSpace(string(data)), "\n")
-               arr := make([]interface{}, 0, len(lines))
-               for _, line := range lines {
-                       line = strings.TrimSpace(line)
-                       if line == "" {
-                               continue
-                       }
-                       var obj interface{}
-                       if err := json.Unmarshal([]byte(line), &obj); err != nil {
-                               return nil, err
-                       }
-                       arr = append(arr, obj)
-               }
-               v = arr
-       default:
-               return nil, fmt.Errorf("unsupported load format")
-       }
-       return valueToExpr(v, typ), nil
+	switch format {
+	case "yaml":
+		if err := yaml.Unmarshal(data, &v); err != nil {
+			return nil, err
+		}
+	case "json":
+		if err := json.Unmarshal(data, &v); err != nil {
+			return nil, err
+		}
+	case "jsonl":
+		lines := strings.Split(strings.TrimSpace(string(data)), "\n")
+		arr := make([]interface{}, 0, len(lines))
+		for _, line := range lines {
+			line = strings.TrimSpace(line)
+			if line == "" {
+				continue
+			}
+			var obj interface{}
+			if err := json.Unmarshal([]byte(line), &obj); err != nil {
+				return nil, err
+			}
+			arr = append(arr, obj)
+		}
+		v = arr
+	default:
+		return nil, fmt.Errorf("unsupported load format")
+	}
+	return valueToExpr(v, typ), nil
 }
 
 func exprFromPrimary(p *parser.Primary) *parser.Expr {
@@ -2184,6 +2225,10 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 
 func convertStmt(st *parser.Statement) (Stmt, error) {
 	switch {
+	case st.Import != nil:
+		return convertImport(st.Import)
+	case st.ExternVar != nil, st.ExternFun != nil, st.ExternType != nil, st.ExternObject != nil:
+		return nil, nil
 	case st.Expr != nil:
 		e, err := convertExpr(st.Expr.Expr)
 		if err != nil {
@@ -2606,6 +2651,57 @@ func convertFor(f *parser.ForStmt) (Stmt, error) {
 	return &ForInStmt{Name: f.Name, Iterable: iterable, Body: body}, nil
 }
 
+func convertImport(im *parser.ImportStmt) (Stmt, error) {
+	if im.Lang == nil {
+		return nil, nil
+	}
+	alias := im.As
+	if alias == "" {
+		alias = parser.AliasFromPath(im.Path)
+	}
+	path := strings.Trim(im.Path, "\"")
+	switch *im.Lang {
+	case "python":
+		if path == "math" {
+			if currentEnv != nil {
+				fields := map[string]types.Type{
+					"pi":   types.FloatType{},
+					"e":    types.FloatType{},
+					"sqrt": types.FuncType{Params: []types.Type{types.FloatType{}}, Return: types.FloatType{}},
+					"pow":  types.FuncType{Params: []types.Type{types.FloatType{}, types.FloatType{}}, Return: types.FloatType{}},
+					"sin":  types.FuncType{Params: []types.Type{types.FloatType{}}, Return: types.FloatType{}},
+					"log":  types.FuncType{Params: []types.Type{types.FloatType{}}, Return: types.FloatType{}},
+				}
+				currentEnv.SetVar(alias, types.StructType{Name: "PythonMath", Fields: fields}, false)
+			}
+			return &ImportStmt{Alias: alias, Module: "python_math"}, nil
+		}
+	case "go":
+		if im.Auto && path == "mochi/runtime/ffi/go/testpkg" {
+			if currentEnv != nil {
+				fields := map[string]types.Type{
+					"Add":    types.FuncType{Params: []types.Type{types.IntType{}, types.IntType{}}, Return: types.IntType{}},
+					"Pi":     types.FloatType{},
+					"Answer": types.IntType{},
+				}
+				currentEnv.SetVar(alias, types.StructType{Name: "GoTestpkg", Fields: fields}, false)
+			}
+			return &ImportStmt{Alias: alias, Module: "go_testpkg"}, nil
+		}
+		if im.Auto && path == "strings" {
+			if currentEnv != nil {
+				fields := map[string]types.Type{
+					"ToUpper":   types.FuncType{Params: []types.Type{types.StringType{}}, Return: types.StringType{}},
+					"TrimSpace": types.FuncType{Params: []types.Type{types.StringType{}}, Return: types.StringType{}},
+				}
+				currentEnv.SetVar(alias, types.StructType{Name: "GoStrings", Fields: fields}, false)
+			}
+			return &ImportStmt{Alias: alias, Module: "go_strings"}, nil
+		}
+	}
+	return nil, fmt.Errorf("unsupported import")
+}
+
 func convertExpr(e *parser.Expr) (Expr, error) {
 	if e == nil || e.Binary == nil {
 		return nil, fmt.Errorf("unsupported expression")
@@ -2939,27 +3035,27 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 			items[i] = MapItem{Key: k, Value: v}
 		}
 		return &MapLit{Items: items}, nil
-       case p.Load != nil:
-               format := parseFormat(p.Load.With)
-               path := ""
-               if p.Load.Path != nil {
-                       path = strings.Trim(*p.Load.Path, "\"")
-               }
-               return dataExprFromFile(path, format, p.Load.Type)
-       case p.Save != nil:
-               if p.Save.Path != nil && p.Save.With != nil {
-                       format := parseFormat(p.Save.With)
-                       if format == "jsonl" && strings.Trim(*p.Save.Path, "\"") == "-" {
-                               src, err := convertExpr(p.Save.Src)
-                               if err != nil {
-                                       return nil, err
-                               }
-                               needsJSON = true
-                               return &SaveJSONLExpr{Src: src}, nil
-                       }
-               }
-               return nil, fmt.Errorf("unsupported save expression")
-       case p.Struct != nil:
+	case p.Load != nil:
+		format := parseFormat(p.Load.With)
+		path := ""
+		if p.Load.Path != nil {
+			path = strings.Trim(*p.Load.Path, "\"")
+		}
+		return dataExprFromFile(path, format, p.Load.Type)
+	case p.Save != nil:
+		if p.Save.Path != nil && p.Save.With != nil {
+			format := parseFormat(p.Save.With)
+			if format == "jsonl" && strings.Trim(*p.Save.Path, "\"") == "-" {
+				src, err := convertExpr(p.Save.Src)
+				if err != nil {
+					return nil, err
+				}
+				needsJSON = true
+				return &SaveJSONLExpr{Src: src}, nil
+			}
+		}
+		return nil, fmt.Errorf("unsupported save expression")
+	case p.Struct != nil:
 		fields := make([]StructField, len(p.Struct.Fields))
 		for i, f := range p.Struct.Fields {
 			v, err := convertExpr(f.Value)

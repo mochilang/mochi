@@ -1,3 +1,13 @@
+## Progress (2025-07-22 17:09 +0700)
+- Commit 03fd6a33b: rb transpiler: add builtin ffi stubs
+- Generated Ruby for 101/103 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-22 16:44 +0700)
+- Commit 70ee5828b: rb transpiler: support jsonl load and save
+- Generated Ruby for 101/103 programs
+- Updated README checklist and outputs
+
 ## Progress (2025-07-22 16:14 +0700)
 - Commit a650a0dae: scala transpiler: improve group query typing
 - Generated Ruby for 97/103 programs
