@@ -20,6 +20,7 @@ var version string
 var currentProgram *Program
 var currentEnv *types.Env
 var localTypes map[string]string
+var globalTypes map[string]string
 var inFunction bool
 var inLambda int
 var builtinAliases map[string]string
@@ -45,6 +46,8 @@ type Program struct {
 	Globals   []Stmt
 	Functions []*Func
 	ListTypes map[string]string
+	// collected types of top-level variables
+	GlobalTypes map[string]string
 }
 
 func (p *Program) addInclude(inc string) {
@@ -409,6 +412,21 @@ func (p *Program) write(w io.Writer) {
 		fmt.Fprintf(w, "#include %s\n", inc)
 	}
 	fmt.Fprintln(w)
+	fmt.Fprintln(w)
+	fmt.Fprintln(w, "template<typename T>")
+	fmt.Fprintln(w, "std::ostream& operator<<(std::ostream& os, const std::optional<T>& v) {")
+	fmt.Fprintln(w, "    if(v) os << *v; else os << \"None\";")
+	fmt.Fprintln(w, "    return os;")
+	fmt.Fprintln(w, "}")
+	fmt.Fprintln(w)
+	fmt.Fprintln(w, "template<typename T>")
+	fmt.Fprintln(w, "std::ostream& operator<<(std::ostream& os, const std::vector<T>& v) {")
+	fmt.Fprintln(w, "    os << '[';")
+	fmt.Fprintln(w, "    bool first = true;")
+	fmt.Fprintln(w, "    for(const auto& x : v) { if(!first) os << \", \"; first = false; os << x; }")
+	fmt.Fprintln(w, "    os << ']';")
+	fmt.Fprintln(w, "    return os;")
+	fmt.Fprintln(w, "}")
 	fmt.Fprintln(w)
 	for _, st := range p.Structs {
 		fmt.Fprintf(w, "struct %s {\n", st.Name)
@@ -1610,11 +1628,12 @@ func (i *IfExpr) emit(w io.Writer) {
 }
 
 func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
-	cp := &Program{Includes: []string{"<iostream>", "<string>"}, ListTypes: map[string]string{}}
+	cp := &Program{Includes: []string{"<iostream>", "<string>"}, ListTypes: map[string]string{}, GlobalTypes: map[string]string{}}
 	currentProgram = cp
 	currentEnv = env
 	builtinAliases = map[string]string{}
-	defer func() { currentProgram = nil; currentEnv = nil }()
+	globalTypes = cp.GlobalTypes
+	defer func() { currentProgram = nil; currentEnv = nil; globalTypes = nil }()
 	var body []Stmt
 	var globals []Stmt
 	for _, stmt := range prog.Statements {
@@ -1771,6 +1790,9 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 				}
 			}
 			globals = append(globals, &LetStmt{Name: stmt.Let.Name, Type: typ, Value: val})
+			if cp.GlobalTypes != nil {
+				cp.GlobalTypes[stmt.Let.Name] = typ
+			}
 		case stmt.Var != nil:
 			var val Expr
 			var err error
@@ -1873,6 +1895,9 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 				}
 			}
 			globals = append(globals, &LetStmt{Name: stmt.Var.Name, Type: typ, Value: val})
+			if cp.GlobalTypes != nil {
+				cp.GlobalTypes[stmt.Var.Name] = typ
+			}
 		case stmt.Type != nil:
 			st, err := convertTypeDecl(stmt.Type)
 			if err != nil {
@@ -3102,14 +3127,19 @@ func convertSimpleQuery(q *parser.QueryExpr, target string) (Expr, *StructDef, s
 			}
 		}
 		pairName := strings.Title(q.Group.Name) + "Row"
-		pfields := make([]Param, len(vars))
-		for i, v := range vars {
-			pfields[i] = Param{Name: v, Type: qTypes[v]}
+		itemType := ""
+		if len(vars) == 1 {
+			itemType = qTypes[vars[0]]
+		} else {
+			pfields := make([]Param, len(vars))
+			for i, v := range vars {
+				pfields[i] = Param{Name: v, Type: qTypes[v]}
+			}
+			if currentProgram != nil {
+				currentProgram.Structs = append(currentProgram.Structs, StructDef{Name: pairName, Fields: pfields})
+			}
+			itemType = pairName
 		}
-		if currentProgram != nil {
-			currentProgram.Structs = append(currentProgram.Structs, StructDef{Name: pairName, Fields: pfields})
-		}
-		itemType := pairName
 		structName := strings.Title(q.Group.Name) + "Group"
 		gdef := &StructDef{Name: structName, Fields: []Param{{Name: "key", Type: keyType}, {Name: "items", Type: fmt.Sprintf("std::vector<%s>", itemType)}}}
 		if currentProgram != nil {
@@ -3765,6 +3795,9 @@ func guessType(e *parser.Expr) string {
 			if t, ok := localTypes[sel.Root]; ok {
 				return t
 			}
+			if t, ok := globalTypes[sel.Root]; ok {
+				return t
+			}
 			if currentEnv != nil {
 				if _, err := currentEnv.GetVar(sel.Root); err != nil {
 					return "std::string"
@@ -3895,6 +3928,8 @@ func exprType(e Expr) string {
 			}
 		}
 		if t, ok := localTypes[v.Name]; ok {
+			return t
+		} else if t, ok := globalTypes[v.Name]; ok {
 			return t
 		}
 		return "auto"
