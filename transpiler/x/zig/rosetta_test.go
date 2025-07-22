@@ -44,11 +44,21 @@ func TestZigTranspiler_Rosetta(t *testing.T) {
 	}
 	files = files[:max]
 
+	var firstFail string
 	for _, src := range files {
 		name := strings.TrimSuffix(filepath.Base(src), ".mochi")
-		t.Run(name, func(t *testing.T) { runRosettaTask(t, srcDir, outDir, name) })
+		ok := t.Run(name, func(t *testing.T) {
+			runRosettaTask(t, srcDir, outDir, name)
+		})
+		if !ok && firstFail == "" {
+			firstFail = name
+			break
+		}
 	}
 	updateRosettaReadme()
+	if firstFail != "" {
+		t.Fatalf("first failing program: %s", firstFail)
+	}
 }
 
 func runRosettaTask(t *testing.T, srcDir, outDir, name string) {

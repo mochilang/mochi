@@ -27,6 +27,7 @@ var structDefs map[string]*StructDef
 var extraFuncs []*Func
 var funcCounter int
 var varTypes map[string]string
+var varDecls map[string]*VarDecl
 var groupCounter int
 var groupItemTypes map[string]string
 var typeAliases map[string]string
@@ -1451,6 +1452,7 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	extraFuncs = nil
 	funcCounter = 0
 	varTypes = map[string]string{}
+	varDecls = map[string]*VarDecl{}
 	groupCounter = 0
 	groupItemTypes = map[string]string{}
 	typeAliases = map[string]string{}
@@ -1887,6 +1889,16 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 					return &ListLit{Elems: elems}, nil
 				}
 				if v, ok := args[0].(*VarRef); ok {
+					if vt, ok2 := varTypes[v.Name]; ok2 && vt == "[]i64" {
+						elemT := zigTypeFromExpr(args[1])
+						varTypes[v.Name] = "[]" + elemT
+						if vd, ok3 := varDecls[v.Name]; ok3 {
+							vd.Type = "[]" + elemT
+							if lst, ok4 := vd.Value.(*ListLit); ok4 {
+								lst.ElemType = elemT
+							}
+						}
+					}
 					if lst, ok2 := constLists[v.Name]; ok2 {
 						elems := make([]Expr, 0, len(lst.Elems)+1)
 						for i := range lst.Elems {
@@ -2522,6 +2534,7 @@ func compileStmt(s *parser.Statement, prog *parser.Program) (Stmt, error) {
 			expr = &IntLit{Value: 0}
 		}
 		vd := &VarDecl{Name: s.Let.Name, Value: expr}
+		varDecls[s.Let.Name] = vd
 		if lst, ok := expr.(*ListLit); ok {
 			if inferListStruct(s.Let.Name, lst) != "" {
 				vd.Type = fmt.Sprintf("[%d]%s", len(lst.Elems), lst.ElemType)
@@ -2555,6 +2568,7 @@ func compileStmt(s *parser.Statement, prog *parser.Program) (Stmt, error) {
 			expr = &IntLit{Value: 0}
 		}
 		vd := &VarDecl{Name: s.Var.Name, Value: expr, Mutable: true}
+		varDecls[s.Var.Name] = vd
 		if lst, ok := expr.(*ListLit); ok {
 			if inferListStruct(s.Var.Name, lst) != "" {
 				vd.Type = fmt.Sprintf("[%d]%s", len(lst.Elems), lst.ElemType)
