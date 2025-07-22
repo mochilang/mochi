@@ -9,6 +9,7 @@ import (
 	"math"
 	"sort"
 	"strings"
+	"unicode"
 
 	"mochi/ast"
 	"mochi/parser"
@@ -28,7 +29,6 @@ var transpileEnv *types.Env
 var generatedTypes map[string]bool
 var prelude []Stmt
 var pythonMathAliases map[string]bool
-var showHelperAdded bool
 
 type Stmt interface {
 	emit(io.Writer)
@@ -243,6 +243,9 @@ type FormatListExpr struct {
 	FloatFields []string
 	Compact     bool
 }
+
+// BoolStringExpr renders a boolean value as "True" or "False" for output.
+type BoolStringExpr struct{ Value Expr }
 
 // PrintExpr represents a call to the builtin print function. The arguments are
 // joined with a space and trailing whitespace is trimmed to avoid mismatches
@@ -625,7 +628,7 @@ func (f *FormatListExpr) emit(w io.Writer) {
 }
 
 func (p *PrintExpr) emit(w io.Writer) {
-	io.WriteString(w, "console.log([")
+	io.WriteString(w, "console.log(")
 	for i, a := range p.Args {
 		if i > 0 {
 			io.WriteString(w, ", ")
@@ -636,7 +639,15 @@ func (p *PrintExpr) emit(w io.Writer) {
 			io.WriteString(w, "null")
 		}
 	}
-	io.WriteString(w, "].map(v => __show(v)).join(\" \"))")
+	io.WriteString(w, ")")
+}
+
+func (b *BoolStringExpr) emit(w io.Writer) {
+	io.WriteString(w, "(")
+	if b.Value != nil {
+		b.Value.emit(w)
+	}
+	io.WriteString(w, " ? \"True\" : \"False\")")
 }
 
 func (s *SubstringExpr) emit(w io.Writer) {
@@ -688,6 +699,12 @@ func (m *MapLit) emit(w io.Writer) {
 }
 
 func (i *IndexExpr) emit(w io.Writer) {
+	if s, ok := i.Index.(*StringLit); ok && isIdent(s.Value) {
+		i.Target.emit(w)
+		io.WriteString(w, ".")
+		io.WriteString(w, s.Value)
+		return
+	}
 	i.Target.emit(w)
 	io.WriteString(w, "[")
 	if i.Index != nil {
@@ -1805,13 +1822,11 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	generatedTypes = map[string]bool{}
 	prelude = nil
 	pythonMathAliases = map[string]bool{}
-	showHelperAdded = false
 	defer func() {
 		transpileEnv = nil
 		generatedTypes = nil
 		prelude = nil
 		pythonMathAliases = nil
-		showHelperAdded = false
 	}()
 	tsProg := &Program{}
 
@@ -2805,12 +2820,15 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 						args[i] = &FormatListExpr{Value: a}
 						continue
 					}
+					if isBoolExpr(p.Call.Args[i]) {
+						args[i] = &BoolStringExpr{Value: a}
+						continue
+					}
 				}
 				if isNumericBool(a) {
 					args[i] = &UnaryExpr{Op: "+", Expr: a}
 				}
 			}
-			ensureShowHelper()
 			return &PrintExpr{Args: args}, nil
 		case "len":
 			if len(args) != 1 {
@@ -3176,21 +3194,6 @@ func ensureNamedStruct(st types.StructType, hint string) string {
 	return name
 }
 
-func ensureShowHelper() {
-	if showHelperAdded {
-		return
-	}
-	code := "function __show(v:any, nest?:boolean){\n" +
-		"  if (v === null || v === undefined) return 'None';\n" +
-		"  if (Array.isArray(v)) return '[' + v.map(x => __show(x, true)).join(', ') + ']';\n" +
-		"  if (typeof v === 'object') return '{' + Object.keys(v).map(k => \"'\" + k + \"': \" + __show(v[k], true)).join(', ') + '}';\n" +
-		"  if (typeof v === 'string') return nest ? \"'\" + v + \"'\" : v;\n" +
-		"  return String(v);\n" +
-		"}\n"
-	prelude = append(prelude, &RawStmt{Code: code})
-	showHelperAdded = true
-}
-
 func mapLiteral(e *parser.Expr) *parser.MapLiteral {
 	if e == nil || e.Binary == nil || len(e.Binary.Right) != 0 {
 		return nil
@@ -3237,6 +3240,24 @@ func isListType(t types.Type) bool {
 	}
 }
 
+func isBoolType(t types.Type) bool {
+	switch tt := t.(type) {
+	case types.BoolType:
+		return true
+	case types.OptionType:
+		return isBoolType(tt.Elem)
+	default:
+		return false
+	}
+}
+
+func isBoolExpr(e *parser.Expr) bool {
+	if transpileEnv == nil {
+		return false
+	}
+	return isBoolType(types.CheckExprType(e, transpileEnv))
+}
+
 func isSimpleIdent(e *parser.Expr) (string, bool) {
 	if e == nil || e.Binary == nil || len(e.Binary.Right) > 0 {
 		return "", false
@@ -3253,6 +3274,24 @@ func isSimpleIdent(e *parser.Expr) (string, bool) {
 		return p.Target.Selector.Root, true
 	}
 	return "", false
+}
+
+func isIdent(s string) bool {
+	if s == "" {
+		return false
+	}
+	for i, r := range s {
+		if i == 0 {
+			if !(unicode.IsLetter(r) || r == '_') {
+				return false
+			}
+		} else {
+			if !(unicode.IsLetter(r) || unicode.IsDigit(r) || r == '_') {
+				return false
+			}
+		}
+	}
+	return true
 }
 
 func literalString(e *parser.Expr) (string, bool) {
