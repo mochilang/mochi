@@ -8,11 +8,11 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"sort"
 	"strings"
 	"testing"
 	"time"
 
-	"mochi/golden"
 	"mochi/parser"
 	cs "mochi/transpiler/x/cs"
 	"mochi/types"
@@ -21,13 +21,28 @@ import (
 func TestCSTranspiler_Rosetta_Golden(t *testing.T) {
 	root := repoRoot(t)
 	outDir := filepath.Join(root, "tests", "rosetta", "transpiler", "CS")
+	srcDir := filepath.Join(root, "tests", "rosetta", "x", "Mochi")
 	os.MkdirAll(outDir, 0o755)
 
 	if _, err := exec.LookPath("dotnet"); err != nil {
 		t.Skip("dotnet not installed")
 	}
 
-	golden.RunWithSummary(t, "tests/rosetta/x/Mochi", ".mochi", ".out", func(src string) ([]byte, error) {
+	pattern := filepath.Join(srcDir, "*.mochi")
+	if only := os.Getenv("MOCHI_ROSETTA_ONLY"); only != "" {
+		pattern = filepath.Join(srcDir, only+".mochi")
+	}
+	files, err := filepath.Glob(pattern)
+	if err != nil {
+		t.Fatalf("glob: %v", err)
+	}
+	if len(files) == 0 {
+		t.Fatalf("no Mochi Rosetta tests found: %s", pattern)
+	}
+	sort.Strings(files)
+	firstOnly := os.Getenv("MOCHI_FIRST_ERROR") == "1"
+
+	runCase := func(src string) ([]byte, error) {
 		base := strings.TrimSuffix(filepath.Base(src), ".mochi")
 		codePath := filepath.Join(outDir, base+".cs")
 		outPath := filepath.Join(outDir, base+".out")
@@ -73,7 +88,19 @@ func TestCSTranspiler_Rosetta_Golden(t *testing.T) {
 		outBytes := bytes.TrimSpace(out)
 		_ = os.WriteFile(outPath, outBytes, 0o644)
 		return outBytes, nil
-	})
+	}
+
+	for _, src := range files {
+		name := strings.TrimSuffix(filepath.Base(src), ".mochi")
+		ok := t.Run(name, func(t *testing.T) {
+			if _, err := runCase(src); err != nil {
+				t.Fatalf("%v", err)
+			}
+		})
+		if firstOnly && !ok {
+			break
+		}
+	}
 }
 
 func updateRosetta() {

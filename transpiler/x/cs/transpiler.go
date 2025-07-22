@@ -70,10 +70,41 @@ var funParams map[string][]string
 var usesDict bool
 var usesLinq bool
 var usesJson bool
+var usesNow bool
 var globalDecls map[string]*Global
 var mutatedVars map[string]bool
 var blockDepth int
 var importAliases map[string]string
+
+// reserved lists C# reserved keywords that cannot be used as identifiers.
+var reserved = map[string]bool{
+	"abstract": true, "as": true, "base": true, "bool": true, "break": true,
+	"byte": true, "case": true, "catch": true, "char": true, "checked": true,
+	"class": true, "const": true, "continue": true, "decimal": true,
+	"default": true, "delegate": true, "do": true, "double": true,
+	"else": true, "enum": true, "event": true, "explicit": true,
+	"extern": true, "false": true, "finally": true, "fixed": true,
+	"float": true, "for": true, "foreach": true, "goto": true, "if": true,
+	"implicit": true, "in": true, "int": true, "interface": true,
+	"internal": true, "is": true, "lock": true, "long": true,
+	"namespace": true, "new": true, "null": true, "object": true,
+	"operator": true, "out": true, "override": true, "params": true,
+	"private": true, "protected": true, "public": true, "readonly": true,
+	"ref": true, "return": true, "sbyte": true, "sealed": true,
+	"short": true, "sizeof": true, "stackalloc": true, "static": true,
+	"string": true, "struct": true, "switch": true, "this": true,
+	"throw": true, "true": true, "try": true, "typeof": true, "uint": true,
+	"ulong": true, "unchecked": true, "unsafe": true, "ushort": true,
+	"using": true, "virtual": true, "void": true, "volatile": true,
+	"while": true,
+}
+
+func safeName(n string) string {
+	if reserved[n] {
+		return "_" + n
+	}
+	return n
+}
 
 func gitTimestamp() string {
 	out, err := exec.Command("git", "log", "-1", "--format=%cI").Output()
@@ -103,10 +134,11 @@ type LetStmt struct {
 }
 
 func (s *LetStmt) emit(w io.Writer) {
+	name := safeName(s.Name)
 	if t, ok := varTypes[s.Name]; ok && t != "" {
-		fmt.Fprintf(w, "%s %s = ", t, s.Name)
+		fmt.Fprintf(w, "%s %s = ", t, name)
 	} else {
-		fmt.Fprintf(w, "var %s = ", s.Name)
+		fmt.Fprintf(w, "var %s = ", name)
 	}
 	s.Value.emit(w)
 }
@@ -118,10 +150,11 @@ type VarStmt struct {
 }
 
 func (s *VarStmt) emit(w io.Writer) {
+	name := safeName(s.Name)
 	if t, ok := varTypes[s.Name]; ok && t != "" {
-		fmt.Fprintf(w, "%s %s", t, s.Name)
+		fmt.Fprintf(w, "%s %s", t, name)
 	} else {
-		fmt.Fprintf(w, "var %s", s.Name)
+		fmt.Fprintf(w, "var %s", name)
 	}
 	if s.Value != nil {
 		fmt.Fprint(w, " = ")
@@ -136,7 +169,7 @@ type AssignStmt struct {
 }
 
 func (s *AssignStmt) emit(w io.Writer) {
-	fmt.Fprintf(w, "%s = ", s.Name)
+	fmt.Fprintf(w, "%s = ", safeName(s.Name))
 	s.Value.emit(w)
 }
 
@@ -264,19 +297,20 @@ type ForRangeStmt struct {
 }
 
 func (f *ForRangeStmt) emit(w io.Writer) {
-	fmt.Fprintf(w, "for (var %s = ", f.Var)
+	v := safeName(f.Var)
+	fmt.Fprintf(w, "for (var %s = ", v)
 	if f.Start != nil {
 		f.Start.emit(w)
 	} else {
 		fmt.Fprint(w, "0")
 	}
 	fmt.Fprint(w, "; ")
-	fmt.Fprintf(w, "%s < ", f.Var)
+	fmt.Fprintf(w, "%s < ", v)
 	if f.End != nil {
 		f.End.emit(w)
 	}
 	fmt.Fprint(w, "; ")
-	fmt.Fprintf(w, "%s++) {\n", f.Var)
+	fmt.Fprintf(w, "%s++) {\n", v)
 	for _, st := range f.Body {
 		fmt.Fprint(w, "    ")
 		st.emit(w)
@@ -297,7 +331,8 @@ type ForInStmt struct {
 }
 
 func (f *ForInStmt) emit(w io.Writer) {
-	fmt.Fprintf(w, "foreach (var %s in ", f.Var)
+	v := safeName(f.Var)
+	fmt.Fprintf(w, "foreach (var %s in ", v)
 	if isMapExpr(f.Iterable) {
 		f.Iterable.emit(w)
 		fmt.Fprint(w, ".Keys")
@@ -331,7 +366,7 @@ func (f *Function) emit(w io.Writer) {
 	if ret == "" {
 		ret = "void"
 	}
-	fmt.Fprintf(w, "static %s %s(", ret, f.Name)
+	fmt.Fprintf(w, "static %s %s(", ret, safeName(f.Name))
 	for i, p := range f.Params {
 		if i > 0 {
 			fmt.Fprint(w, ", ")
@@ -340,7 +375,7 @@ func (f *Function) emit(w io.Writer) {
 		if len(f.ParamTypes) > i && f.ParamTypes[i] != "" {
 			typ = f.ParamTypes[i]
 		}
-		fmt.Fprintf(w, "%s %s", typ, p)
+		fmt.Fprintf(w, "%s %s", typ, safeName(p))
 	}
 	fmt.Fprint(w, ") {\n")
 	for _, st := range f.Body {
@@ -435,7 +470,7 @@ type Expr interface{ emit(io.Writer) }
 // VarRef references a variable by name.
 type VarRef struct{ Name string }
 
-func (v *VarRef) emit(w io.Writer) { fmt.Fprint(w, v.Name) }
+func (v *VarRef) emit(w io.Writer) { fmt.Fprint(w, safeName(v.Name)) }
 
 // BinaryExpr represents a binary operation like addition or comparison.
 type BinaryExpr struct {
@@ -1313,10 +1348,16 @@ func (ix *IndexExpr) emit(w io.Writer) {
 	fmt.Fprint(w, "]")
 }
 
-type ListLit struct{ Elems []Expr }
+type ListLit struct {
+	Elems    []Expr
+	ElemType string // optional element type when list is empty
+}
 
 func (l *ListLit) emit(w io.Writer) {
-	t := listType(l)
+	t := l.ElemType
+	if t == "" {
+		t = listType(l)
+	}
 	fmt.Fprintf(w, "new %s{", t)
 	for i, e := range l.Elems {
 		if i > 0 {
@@ -1529,6 +1570,7 @@ func Transpile(p *parser.Program, env *types.Env) (*Program, error) {
 	usesDict = false
 	usesLinq = false
 	usesJson = false
+	usesNow = false
 	globalDecls = make(map[string]*Global)
 	mutatedVars = make(map[string]bool)
 	importAliases = make(map[string]string)
@@ -1774,6 +1816,9 @@ func compileStmt(prog *Program, s *parser.Statement) (Stmt, error) {
 			if res, changed := inferStructList(s.Let.Name, prog, list); changed {
 				val = res
 			}
+			if len(list.Elems) == 0 && s.Let.Type != nil && s.Let.Type.Generic != nil && s.Let.Type.Generic.Name == "list" && len(s.Let.Type.Generic.Args) == 1 {
+				list.ElemType = fmt.Sprintf("%s[]", csType(s.Let.Type.Generic.Args[0]))
+			}
 		}
 		if mp, ok := val.(*MapLit); ok {
 			if len(mp.Items) > 2 {
@@ -1826,6 +1871,9 @@ func compileStmt(prog *Program, s *parser.Statement) (Stmt, error) {
 			varTypes[s.Var.Name] = csType(s.Var.Type)
 		}
 		if list, ok := val.(*ListLit); ok {
+			if len(list.Elems) == 0 && s.Var.Type != nil && s.Var.Type.Generic != nil && s.Var.Type.Generic.Name == "list" && len(s.Var.Type.Generic.Args) == 1 {
+				list.ElemType = fmt.Sprintf("%s[]", csType(s.Var.Type.Generic.Args[0]))
+			}
 			_ = list // do not convert mutable vars to structs
 		}
 		if mp, ok := val.(*MapLit); ok {
@@ -2163,6 +2211,10 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 			args[i] = ex
 		}
 		name := p.Call.Func
+		if name == "now" && len(args) == 0 {
+			usesNow = true
+			return &RawExpr{Code: "_now()", Type: "int"}, nil
+		}
 		if sig, ok := varTypes[name]; ok && strings.HasPrefix(sig, "fn/") {
 			n, err := strconv.Atoi(strings.TrimPrefix(sig, "fn/"))
 			if err == nil && len(args) < n {
@@ -2854,6 +2906,24 @@ func Emit(prog *Program) []byte {
 	}
 
 	buf.WriteString("class Program {\n")
+	if usesNow {
+		buf.WriteString("\tstatic bool seededNow = false;\n")
+		buf.WriteString("\tstatic int nowSeed = 0;\n")
+		buf.WriteString("\tstatic int _now() {\n")
+		buf.WriteString("\t\tif (!seededNow) {\n")
+		buf.WriteString("\t\t\tvar s = Environment.GetEnvironmentVariable(\"MOCHI_NOW_SEED\");\n")
+		buf.WriteString("\t\t\tif (int.TryParse(s, out var v)) {\n")
+		buf.WriteString("\t\t\t\tnowSeed = v;\n")
+		buf.WriteString("\t\t\t\tseededNow = true;\n")
+		buf.WriteString("\t\t\t}\n")
+		buf.WriteString("\t\t}\n")
+		buf.WriteString("\t\tif (seededNow) {\n")
+		buf.WriteString("\t\t\tnowSeed = (nowSeed*1664525 + 1013904223) % 2147483647;\n")
+		buf.WriteString("\t\t\treturn nowSeed;\n")
+		buf.WriteString("\t\t}\n")
+		buf.WriteString("\t\treturn (int)(DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() % int.MaxValue);\n")
+		buf.WriteString("\t}\n")
+	}
 	for _, g := range prog.Globals {
 		buf.WriteString("\tstatic ")
 		t := typeOfExpr(g.Value)
