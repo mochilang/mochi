@@ -1,3 +1,8 @@
+## Progress (2025-07-22 10:54 +0700)
+- Commit d025bc223: release: v0.10.35
+- Generated Ruby for 95/102 programs
+- Updated README checklist and outputs
+
 ## Progress (2025-07-22 10:29 +0700)
 - Commit e0ed85914: rb transpiler: support group_by multi sort
 - Generated Ruby for 91/102 programs

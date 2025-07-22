@@ -533,6 +533,40 @@ type GroupLeftJoinQueryExpr struct {
 }
 
 func (q *QueryExpr) emit(e *emitter) {
+	// simple sort or sum without joins
+	if len(q.Froms) == 0 && len(q.Joins) == 0 && q.Skip == nil && q.Take == nil {
+		if q.Sort != nil && q.Where == nil {
+			if id, ok := q.Select.(*Ident); ok && id.Name == q.Var {
+				if m, ok2 := q.Sort.(*MapLit); ok2 {
+					q.Src.emit(e)
+					io.WriteString(e.w, ".sort_by { |"+q.Var+"| [")
+					for i, it := range m.Items {
+						if i > 0 {
+							io.WriteString(e.w, ", ")
+						}
+						it.Value.emit(e)
+					}
+					io.WriteString(e.w, "] }")
+					return
+				}
+			}
+		}
+		if q.Sort == nil {
+			if se, ok := q.Select.(*SumExpr); ok {
+				if id, ok2 := se.Value.(*Ident); ok2 && id.Name == q.Var {
+					q.Src.emit(e)
+					if q.Where != nil {
+						io.WriteString(e.w, ".select { |"+q.Var+"| ")
+						q.Where.emit(e)
+						io.WriteString(e.w, " }")
+					}
+					io.WriteString(e.w, ".sum")
+					return
+				}
+			}
+		}
+	}
+
 	io.WriteString(e.w, "(begin")
 	e.indent++
 	e.nl()
@@ -692,32 +726,32 @@ func (gq *GroupQueryExpr) emit(e *emitter) {
 	e.writeIndent()
 	io.WriteString(e.w, "end")
 	e.nl()
-        e.writeIndent()
-        io.WriteString(e.w, "pairs = groups.to_a")
-        e.nl()
-        if gq.Sort != nil {
-                e.writeIndent()
-                io.WriteString(e.w, "pairs = pairs.each_with_index.sort_by do |(k, items), __i|")
-                e.nl()
-                e.indent++
-                e.writeIndent()
-                io.WriteString(e.w, gq.GroupVar+" = { \"key\" => k, \"items\" => items }")
-                e.nl()
-                e.writeIndent()
-                io.WriteString(e.w, "[")
-                gq.Sort.emit(e)
-                io.WriteString(e.w, ", __i]")
-                e.nl()
-                e.indent--
-                e.writeIndent()
-                io.WriteString(e.w, "end.map{ |x, _| x }")
-                e.nl()
-        }
-        e.writeIndent()
-        io.WriteString(e.w, "result = []")
-        e.nl()
-        e.writeIndent()
-        io.WriteString(e.w, "pairs.each do |k, items|")
+	e.writeIndent()
+	io.WriteString(e.w, "pairs = groups.to_a")
+	e.nl()
+	if gq.Sort != nil {
+		e.writeIndent()
+		io.WriteString(e.w, "pairs = pairs.each_with_index.sort_by do |(k, items), __i|")
+		e.nl()
+		e.indent++
+		e.writeIndent()
+		io.WriteString(e.w, gq.GroupVar+" = { \"key\" => k, \"items\" => items }")
+		e.nl()
+		e.writeIndent()
+		io.WriteString(e.w, "[")
+		gq.Sort.emit(e)
+		io.WriteString(e.w, ", __i]")
+		e.nl()
+		e.indent--
+		e.writeIndent()
+		io.WriteString(e.w, "end.map{ |x, _| x }")
+		e.nl()
+	}
+	e.writeIndent()
+	io.WriteString(e.w, "result = []")
+	e.nl()
+	e.writeIndent()
+	io.WriteString(e.w, "pairs.each do |k, items|")
 	e.nl()
 	e.indent++
 	e.writeIndent()
