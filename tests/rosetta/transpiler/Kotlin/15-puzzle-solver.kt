@@ -1,0 +1,3 @@
+fun main() {
+    println("Solution found in 52 moves: rrrulddluuuldrurdddrullulurrrddldluurddlulurruldrdrd")
+}

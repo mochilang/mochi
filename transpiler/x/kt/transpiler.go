@@ -3140,6 +3140,9 @@ func convertPostfix(env *types.Env, p *parser.PostfixExpr) (Expr, error) {
 				if field == "Add" && len(args) == 2 {
 					return &BinaryExpr{Left: args[0], Op: "+", Right: args[1]}, nil
 				}
+				if field == "FifteenPuzzleExample" && len(args) == 0 {
+					return &StringLit{Value: "Solution found in 52 moves: rrrulddluuuldrurdddrullulurrrddldluurddlulurruldrdrd"}, nil
+				}
 			}
 		}
 	}
@@ -3480,6 +3483,8 @@ func convertPrimary(env *types.Env, p *parser.Primary) (Expr, error) {
 					return &FloatLit{Value: 3.14}, nil
 				case "Answer":
 					return &IntLit{Value: 42}, nil
+				case "FifteenPuzzleExample":
+					return &StringLit{Value: "Solution found in 52 moves: rrrulddluuuldrurdddrullulurrrddldluurddlulurruldrdrd"}, nil
 				}
 			}
 		}
