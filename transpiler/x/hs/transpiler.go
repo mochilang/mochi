@@ -374,15 +374,9 @@ type IndexExpr struct {
 
 func (p *PrintStmt) emit(w io.Writer) {
 	if p.String {
-		io.WriteString(w, "putStrLn ")
-		switch p.Expr.(type) {
-		case *StringLit, *NameRef:
-			p.Expr.emit(w)
-		default:
-			io.WriteString(w, "(")
-			p.Expr.emit(w)
-			io.WriteString(w, ")")
-		}
+		io.WriteString(w, "putStrLn (")
+		p.Expr.emit(w)
+		io.WriteString(w, ")")
 		return
 	}
 
@@ -515,6 +509,19 @@ func (idx *IndexExpr) emit(w io.Writer) {
 	}
 	idx.Index.emit(w)
 	io.WriteString(w, ")")
+}
+
+func listAssign(list Expr, idxs []Expr, val Expr) Expr {
+	if len(idxs) == 0 {
+		return val
+	}
+	idx := idxs[0]
+	rest := idxs[1:]
+	inner := listAssign(&IndexExpr{Target: list, Index: idx}, rest, val)
+	idxPlusOne := &BinaryExpr{Left: idx, Ops: []BinaryOp{{Op: "+", Right: &IntLit{Value: "1"}}}}
+	left := &BinaryExpr{Left: &CallExpr{Fun: &NameRef{Name: "take"}, Args: []Expr{idx, list}},
+		Ops: []BinaryOp{{Op: "++", Right: &ListLit{Elems: []Expr{inner}}}}}
+	return &BinaryExpr{Left: left, Ops: []BinaryOp{{Op: "++", Right: &CallExpr{Fun: &NameRef{Name: "drop"}, Args: []Expr{idxPlusOne, list}}}}}
 }
 
 type IntLit struct{ Value string }
@@ -960,7 +967,10 @@ func (b *BinaryExpr) emit(w io.Writer) {
 				io.WriteString(w, "`div`")
 			}
 		case "in":
-			if isStringExpr(left) || isStringExpr(op.Right) {
+			if isMapExpr(op.Right) {
+				needDataMap = true
+				io.WriteString(w, "`Map.member`")
+			} else if isStringExpr(left) || isStringExpr(op.Right) {
 				io.WriteString(w, "`isInfixOf`")
 			} else {
 				io.WriteString(w, "`elem`")
@@ -1011,7 +1021,14 @@ func (c *CallExpr) emit(w io.Writer) {
 	c.Fun.emit(w)
 	for _, a := range c.Args {
 		io.WriteString(w, " ")
-		a.emit(w)
+		switch a.(type) {
+		case *IntLit, *FloatLit, *StringLit, *NameRef:
+			a.emit(w)
+		default:
+			io.WriteString(w, "(")
+			a.emit(w)
+			io.WriteString(w, ")")
+		}
 	}
 }
 func (l *LambdaExpr) emit(w io.Writer) {
@@ -1273,13 +1290,37 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 			vars[name] = ex
 			recordType(name, ex)
 		case st.Assign != nil:
-			ex, err := convertExpr(st.Assign.Value)
+			val, err := convertExpr(st.Assign.Value)
 			if err != nil {
 				return nil, err
 			}
 			name := safeName(st.Assign.Name)
-			vars[name] = ex
-			recordType(name, ex)
+			if len(st.Assign.Index) == 0 {
+				vars[name] = val
+				recordType(name, val)
+				break
+			}
+			var idxExprs []Expr
+			for _, idx := range st.Assign.Index {
+				ex, err := convertExpr(idx.Start)
+				if err != nil {
+					return nil, err
+				}
+				idxExprs = append(idxExprs, ex)
+			}
+			prev := vars[name]
+			if prev == nil {
+				prev = &NameRef{Name: name}
+			}
+			var expr Expr
+			if isMapExpr(prev) {
+				needDataMap = true
+				expr = &CallExpr{Fun: &NameRef{Name: "Map.insert"}, Args: []Expr{idxExprs[0], val, prev}}
+			} else {
+				expr = listAssign(prev, idxExprs, val)
+			}
+			vars[name] = expr
+			recordType(name, expr)
 		case st.Fun != nil:
 			fn, err := convertFunStmt(st.Fun)
 			if err != nil {
@@ -1676,7 +1717,7 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 				vals[i] = ve
 				typestr[i] = guessHsType(ve)
 			}
-			if allConst {
+			if allConst && false {
 				structCount++
 				name := fmt.Sprintf("GenType%d", structCount)
 				structDefs[name] = &TypeDecl{Name: name, Fields: fields, Types: typestr}
@@ -2140,13 +2181,38 @@ func convertStmtList(list []*parser.Statement) ([]Stmt, error) {
 			}
 			recordType(safeName(st.Var.Name), ex)
 			out = append(out, &LetStmt{Name: safeName(st.Var.Name), Expr: ex})
-		case st.Assign != nil && len(st.Assign.Index) == 0:
-			ex, err := convertExpr(st.Assign.Value)
+		case st.Assign != nil:
+			val, err := convertExpr(st.Assign.Value)
 			if err != nil {
 				return nil, err
 			}
-			recordType(safeName(st.Assign.Name), ex)
-			out = append(out, &AssignStmt{Name: safeName(st.Assign.Name), Expr: ex})
+			name := safeName(st.Assign.Name)
+			if len(st.Assign.Index) == 0 {
+				recordType(name, val)
+				out = append(out, &AssignStmt{Name: name, Expr: val})
+				break
+			}
+			var idxExprs []Expr
+			for _, idx := range st.Assign.Index {
+				ex, err := convertExpr(idx.Start)
+				if err != nil {
+					return nil, err
+				}
+				idxExprs = append(idxExprs, ex)
+			}
+			prev := vars[name]
+			if prev == nil {
+				prev = &NameRef{Name: name}
+			}
+			var expr Expr
+			if isMapExpr(prev) {
+				needDataMap = true
+				expr = &CallExpr{Fun: &NameRef{Name: "Map.insert"}, Args: []Expr{idxExprs[0], val, prev}}
+			} else {
+				expr = listAssign(prev, idxExprs, val)
+			}
+			recordType(name, expr)
+			out = append(out, &AssignStmt{Name: name, Expr: expr})
 		case st.While != nil:
 			s, err := convertWhileStmt(st.While)
 			if err != nil {
