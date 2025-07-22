@@ -1617,6 +1617,31 @@ func isNumericBool(e Expr) bool {
 	return false
 }
 
+func isBoolExpr(e Expr) bool {
+	if inferType(e) == "boolean" {
+		return true
+	}
+	switch ex := e.(type) {
+	case *BoolLit:
+		return true
+	case *UnaryExpr:
+		if ex.Op == "!" {
+			return true
+		}
+	case *BinaryExpr:
+		switch ex.Op {
+		case "&&", "||", "==", "!=", "<", "<=", ">", ">=", "in":
+			return true
+		}
+	case *MethodCallExpr:
+		switch ex.Name {
+		case "contains", "containsKey", "anyMatch":
+			return true
+		}
+	}
+	return false
+}
+
 // Transpile converts a Mochi AST into a simple Java AST.
 func Transpile(p *parser.Program, env *types.Env) (*Program, error) {
 	var prog Program
@@ -1931,6 +1956,10 @@ func compileStmt(s *parser.Statement) (Stmt, error) {
 		if err != nil {
 			return nil, err
 		}
+		elem := arrayElemType(iter)
+		if elem != "" {
+			varTypes[s.For.Name] = elem
+		}
 		var body []Stmt
 		for _, b := range s.For.Body {
 			st, err := compileStmt(b)
@@ -2243,6 +2272,7 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 				} else if isListExpr(a) {
 					args[i] = &ListStrExpr{List: a}
 				}
+				args[i] = &CallExpr{Func: "boolStr", Args: []Expr{args[i]}}
 			}
 			if len(args) > 1 {
 				expr := args[0]
@@ -2878,6 +2908,11 @@ func Emit(prog *Program) []byte {
 	}
 	buf.WriteString("    static String q(Object v) {\n")
 	buf.WriteString("        if (v instanceof String) return \"'\" + v.toString() + \"'\";\n")
+	buf.WriteString("        return String.valueOf(v);\n")
+	buf.WriteString("    }\n\n")
+
+	buf.WriteString("    static String boolStr(Object v) {\n")
+	buf.WriteString("        if (v instanceof Boolean b) return b ? \"True\" : \"False\";\n")
 	buf.WriteString("        return String.valueOf(v);\n")
 	buf.WriteString("    }\n\n")
 	for i, fn := range prog.Funcs {
