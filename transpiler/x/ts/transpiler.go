@@ -2611,6 +2611,14 @@ func isMapExpr(p *parser.PostfixExpr) bool {
 	return false
 }
 
+func isIntType(t types.Type) bool {
+	switch t.(type) {
+	case types.IntType, types.Int64Type:
+		return true
+	}
+	return false
+}
+
 func convertBinary(b *parser.BinaryExpr) (Expr, error) {
 	if b == nil {
 		return nil, fmt.Errorf("nil binary")
@@ -2684,18 +2692,25 @@ func convertBinary(b *parser.BinaryExpr) (Expr, error) {
 		case "intersect":
 			operands[i] = &IntersectExpr{Left: operands[i], Right: operands[i+1]}
 		default:
-			// Mochi's `/` operator always performs floating point
-			// division even when both operands are integers. Avoid
-			// emitting `Math.trunc` so the generated code matches
-			// the VM semantics.
-			operands[i] = &BinaryExpr{Left: operands[i], Op: ops[i], Right: operands[i+1]}
-			switch ops[i] {
-			case "+", "-", "*", "/", "%":
-				typesArr[i] = types.FloatType{}
-			case "==", "!=", "<", "<=", ">", ">=", "&&", "||", "in":
-				typesArr[i] = types.BoolType{}
-			default:
-				typesArr[i] = typesArr[i]
+			if ops[i] == "/" && isIntType(typesArr[i]) && isIntType(typesArr[i+1]) {
+				operands[i] = &IntDivExpr{Left: operands[i], Right: operands[i+1]}
+				typesArr[i] = types.IntType{}
+			} else {
+				operands[i] = &BinaryExpr{Left: operands[i], Op: ops[i], Right: operands[i+1]}
+				switch ops[i] {
+				case "+", "-", "*", "%":
+					if isIntType(typesArr[i]) && isIntType(typesArr[i+1]) {
+						typesArr[i] = types.IntType{}
+					} else {
+						typesArr[i] = types.FloatType{}
+					}
+				case "/":
+					typesArr[i] = types.FloatType{}
+				case "==", "!=", "<", "<=", ">", ">=", "&&", "||", "in":
+					typesArr[i] = types.BoolType{}
+				default:
+					typesArr[i] = typesArr[i]
+				}
 			}
 		}
 		operands = append(operands[:i+1], operands[i+2:]...)
