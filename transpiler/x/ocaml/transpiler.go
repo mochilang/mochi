@@ -1043,7 +1043,11 @@ func (mi *MapIndexExpr) emit(w io.Writer) {
 		io.WriteString(w, " ")
 		mi.Map.emit(w)
 		io.WriteString(w, ") : ")
-		io.WriteString(w, ocamlType(mi.Typ))
+		if strings.HasPrefix(mi.Typ, "map") {
+			io.WriteString(w, "(string * Obj.t) list")
+		} else {
+			io.WriteString(w, ocamlType(mi.Typ))
+		}
 		io.WriteString(w, ")")
 	} else {
 		io.WriteString(w, "(List.assoc ")
@@ -1225,7 +1229,7 @@ type GroupByQueryExpr struct {
 	Desc   bool
 }
 
-func emitGroupLoop(w io.Writer, loops []queryLoop, key Expr, item string, where Expr, idx int) {
+func emitGroupLoop(w io.Writer, loops []queryLoop, key Expr, where Expr, idx int) {
 	loop := loops[idx]
 	io.WriteString(w, "  List.iter (fun ")
 	io.WriteString(w, loop.Name)
@@ -1239,13 +1243,26 @@ func emitGroupLoop(w io.Writer, loops []queryLoop, key Expr, item string, where 
 		io.WriteString(w, "    let key = ")
 		key.emit(w)
 		io.WriteString(w, " in\n")
-		io.WriteString(w, "    let cur = try List.assoc key !__groups0 with Not_found -> [] in\n")
-		fmt.Fprintf(w, "    __groups0 := (key, %s :: cur) :: List.remove_assoc key !__groups0;\n", item)
+		if len(loops) == 1 {
+			io.WriteString(w, "    let cur = try List.assoc key !__groups0 with Not_found -> [] in\n")
+			fmt.Fprintf(w, "    __groups0 := (key, %s :: cur) :: List.remove_assoc key !__groups0;\n", loop.Name)
+		} else {
+			io.WriteString(w, "    let item = [")
+			for i, lp := range loops {
+				if i > 0 {
+					io.WriteString(w, "; ")
+				}
+				fmt.Fprintf(w, "(\"%s\", Obj.repr %s)", lp.Name, lp.Name)
+			}
+			io.WriteString(w, "] in\n")
+			io.WriteString(w, "    let cur = try List.assoc key !__groups0 with Not_found -> [] in\n")
+			io.WriteString(w, "    __groups0 := (key, item :: cur) :: List.remove_assoc key !__groups0;\n")
+		}
 		if where != nil {
 			io.WriteString(w, "    )\n")
 		}
 	} else {
-		emitGroupLoop(w, loops, key, item, where, idx+1)
+		emitGroupLoop(w, loops, key, where, idx+1)
 	}
 	io.WriteString(w, "  ) ")
 	loop.Src.emit(w)
@@ -1254,7 +1271,7 @@ func emitGroupLoop(w io.Writer, loops []queryLoop, key Expr, item string, where 
 
 func (g *GroupByQueryExpr) emit(w io.Writer) {
 	io.WriteString(w, "(let __groups0 = ref [] in\n")
-	emitGroupLoop(w, g.Loops, g.Key, g.Loops[0].Name, g.Where, 0)
+	emitGroupLoop(w, g.Loops, g.Key, g.Where, 0)
 	io.WriteString(w, "  let __res0 = ref [] in\n")
 	io.WriteString(w, "  List.iter (fun (")
 	io.WriteString(w, g.Into+"_key, "+g.Into+"_items")
@@ -3020,6 +3037,19 @@ func convertQueryExpr(q *parser.QueryExpr, env *types.Env, vars map[string]VarIn
 			gVars[k] = v
 		}
 		elemTyp := qVars[q.Var].typ
+		if len(loops) > 1 {
+			parts := make([]string, 0, len(loops))
+			for _, lp := range loops {
+				if t, ok := qVars[lp.Name]; ok {
+					parts = append(parts, lp.Name+":"+t.typ)
+				}
+			}
+			if len(parts) > 0 {
+				elemTyp = "map-dyn{" + strings.Join(parts, ",") + "}"
+			} else {
+				elemTyp = "map-dyn"
+			}
+		}
 		gVars[q.Group.Name] = VarInfo{typ: "list-" + elemTyp, group: true}
 		gVars[q.Group.Name+"Key"] = VarInfo{typ: keyTyp}
 		var sortExpr Expr

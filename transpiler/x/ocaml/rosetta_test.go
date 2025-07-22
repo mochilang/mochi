@@ -1,4 +1,4 @@
-//go:build slow
+//go:build rosetta
 
 package ocaml_test
 
