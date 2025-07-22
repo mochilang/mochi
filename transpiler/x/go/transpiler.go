@@ -200,7 +200,21 @@ func (t *TypeDeclStmt) emit(w io.Writer) {
 	for _, f := range t.Fields {
 		fmt.Fprintf(w, "    %s %s `json:%q`\n", toGoFieldName(f.Name), f.Type, f.Name)
 	}
-	fmt.Fprint(w, "}")
+	fmt.Fprint(w, "}\n")
+	fmt.Fprintf(w, "func (v %s) String() string {\n", t.Name)
+	fmt.Fprintf(w, "    return fmt.Sprintf(\"%s(", t.Name)
+	for i, f := range t.Fields {
+		if i > 0 {
+			fmt.Fprint(w, ", ")
+		}
+		fmt.Fprintf(w, "%s=%%v", f.Name)
+	}
+	fmt.Fprint(w, ")\"")
+	for _, f := range t.Fields {
+		fmt.Fprintf(w, ", v.%s", toGoFieldName(f.Name))
+	}
+	fmt.Fprint(w, ")\n")
+	fmt.Fprint(w, "}\n")
 }
 
 type FuncDecl struct {
@@ -707,6 +721,16 @@ func (ls *ListStringExpr) emit(w io.Writer) {
 	io.WriteString(w, "func() string { b, _ := json.Marshal(")
 	ls.List.emit(w)
 	io.WriteString(w, `); s := string(b); s = strings.ReplaceAll(s, ":", ": "); s = strings.ReplaceAll(s, ",", ", "); s = strings.ReplaceAll(s, "}, {", "},{"); s = strings.ReplaceAll(s, "\"", "'"); return s }()`)
+}
+
+// ListSprintExpr renders a list using fmt.Sprint on each element.
+type ListSprintExpr struct{ List Expr }
+
+func (ls *ListSprintExpr) emit(w io.Writer) {
+	usesStrings = true
+	io.WriteString(w, `func() string { var sb strings.Builder; sb.WriteByte('['); for i, v := range `)
+	ls.List.emit(w)
+	io.WriteString(w, ` { if i > 0 { sb.WriteString(", ") }; sb.WriteString(fmt.Sprint(v)) }; sb.WriteByte(']'); return sb.String() }()`)
 }
 
 // StringJoinExpr joins a list of strings with spaces.
@@ -1295,6 +1319,8 @@ func compileStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 					needStrings = true
 					if _, ok2 := tt.Elem.(types.StringType); ok2 {
 						ex = &StringJoinExpr{List: ex}
+					} else if _, ok2 := tt.Elem.(types.StructType); ok2 {
+						ex = &ListSprintExpr{List: ex}
 					} else {
 						usesJSON = true
 						ex = &ListStringExpr{List: ex}

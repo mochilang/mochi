@@ -1,3 +1,39 @@
+## Progress (2025-07-22 09:30 +0700)
+- test(go): update golden for order_by_map
+- Regenerated golden files - 93/102 vm valid programs passing
+
+## Progress (2025-07-22 09:07 +0700)
+- fs transpiler: handle values for records
+- Regenerated golden files - 93/102 vm valid programs passing
+
+## Progress (2025-07-22 09:07 +0700)
+- fs transpiler: handle values for records
+- Regenerated golden files - 93/102 vm valid programs passing
+
+## Progress (2025-07-22 09:07 +0700)
+- fs transpiler: handle values for records
+- Regenerated golden files - 93/102 vm valid programs passing
+
+## Progress (2025-07-22 09:07 +0700)
+- fs transpiler: handle values for records
+- Regenerated golden files - 93/102 vm valid programs passing
+
+## Progress (2025-07-22 09:07 +0700)
+- fs transpiler: handle values for records
+- Regenerated golden files - 93/102 vm valid programs passing
+
+## Progress (2025-07-22 09:07 +0700)
+- fs transpiler: handle values for records
+- Regenerated golden files - 93/102 vm valid programs passing
+
+## Progress (2025-07-22 09:07 +0700)
+- fs transpiler: handle values for records
+- Regenerated golden files - 93/102 vm valid programs passing
+
+## Progress (2025-07-22 09:07 +0700)
+- fs transpiler: handle values for records
+- Regenerated golden files - 93/102 vm valid programs passing
+
 ## Progress (2025-07-22 06:29 +0700)
 - go transpiler WIP
 - Regenerated golden files - 92/101 vm valid programs passing
