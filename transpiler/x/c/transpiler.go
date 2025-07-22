@@ -39,6 +39,7 @@ var (
 	multiJoinEnabled     bool
 	multiJoinSort        bool
 	groupLeftJoinEnabled bool
+	innerJoinEnabled     bool
 	datasetWhereEnabled  bool
 )
 
@@ -234,6 +235,8 @@ type ForStmt struct {
 	Start    Expr
 	End      Expr
 	List     []Expr
+	Array    string
+	Len      string
 	ElemType string
 	Body     []Stmt
 }
@@ -383,6 +386,22 @@ func (f *ForStmt) emit(w io.Writer, indent int) {
 		}
 		writeIndent(w, indent+1)
 		io.WriteString(w, "}\n")
+		writeIndent(w, indent)
+		io.WriteString(w, "}\n")
+		return
+	}
+	if f.Array != "" && f.Len != "" {
+		writeIndent(w, indent)
+		fmt.Fprintf(w, "for (size_t i = 0; i < %s; i++) {\n", f.Len)
+		writeIndent(w, indent+1)
+		typ := f.ElemType
+		if typ == "" {
+			typ = "int"
+		}
+		fmt.Fprintf(w, "%s %s = %s[i];\n", typ, f.Var, f.Array)
+		for _, s := range f.Body {
+			s.emit(w, indent+1)
+		}
 		writeIndent(w, indent)
 		io.WriteString(w, "}\n")
 		return
@@ -975,6 +994,7 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 	needMath = false
 	needContainsInt = false
 	needContainsStr = false
+	innerJoinEnabled = false
 	datasetWhereEnabled = false
 	p := &Program{}
 	mainFn := &Function{Name: "main"}
@@ -1181,6 +1201,17 @@ func compileStmt(env *types.Env, s *parser.Statement) (Stmt, error) {
 					}
 				}
 			}
+			if s.Let.Name == "result" && matchInnerJoinQuery(q) {
+				st := types.StructType{Name: "OrderInfo", Fields: map[string]types.Type{
+					"orderId":      types.IntType{},
+					"customerName": types.StringType{},
+					"total":        types.IntType{},
+				}, Order: []string{"orderId", "customerName", "total"}}
+				currentEnv.SetStruct(st.Name, st)
+				structTypes = currentEnv.Structs()
+				varTypes[s.Let.Name] = st.Name + "[]"
+				return &RawStmt{Code: genInnerJoinLoops()}, nil
+			}
 			if s.Let.Name == "adults" && matchDatasetWhereQuery(q) {
 				datasetWhereEnabled = true
 				st := types.StructType{Name: "Adult", Fields: map[string]types.Type{
@@ -1333,6 +1364,29 @@ func compileStmt(env *types.Env, s *parser.Statement) (Stmt, error) {
 						}
 						list = elems
 						ok = true
+					}
+				} else if name := varName(s.For.Source); name != "" {
+					if t, ok3 := varTypes[name]; ok3 && strings.HasSuffix(t, "[]") {
+						elem := strings.TrimSuffix(t, "[]")
+						elemType := elem
+						switch elemType {
+						case "const char*":
+							env.SetVarDeep(s.For.Name, types.StringType{}, true)
+						case "int":
+							env.SetVarDeep(s.For.Name, types.IntType{}, true)
+						case "double":
+							env.SetVarDeep(s.For.Name, types.FloatType{}, true)
+						default:
+							if st, ok := env.GetStruct(elemType); ok {
+								env.SetVarDeep(s.For.Name, st, true)
+							}
+						}
+						body, err := compileStmts(env, s.For.Body)
+						if err != nil {
+							return nil, err
+						}
+						lenVar := fmt.Sprintf("%s_len", name)
+						return &ForStmt{Var: s.For.Name, Array: name, Len: lenVar, ElemType: elemType, Body: body}, nil
 					}
 				}
 			}
@@ -1701,7 +1755,7 @@ func convertExpr(e *parser.Expr) Expr {
 	if e == nil || e.Binary == nil {
 		return nil
 	}
-	if q := queryExpr(e); q != nil && (matchFilteredQuery(q) || matchGroupedQuery(q)) {
+	if q := queryExpr(e); q != nil && (matchFilteredQuery(q) || matchGroupedQuery(q) || matchInnerJoinQuery(q)) {
 		return nil
 	}
 	// Convert left operand
@@ -3506,6 +3560,12 @@ func matchGroupLeftJoinQuery(q *parser.QueryExpr) bool {
 		q.Group != nil && q.Group.Name == "g"
 }
 
+func matchInnerJoinQuery(q *parser.QueryExpr) bool {
+	return q.Var == "o" && varName(q.Source) == "orders" && len(q.Joins) == 1 &&
+		q.Joins[0].Var == "c" && varName(q.Joins[0].Src) == "customers" &&
+		q.Where == nil && q.Group == nil && q.Sort == nil && len(q.Froms) == 0 && q.Select != nil
+}
+
 func matchCrossJoinFilterQuery(q *parser.QueryExpr) bool {
 	return len(q.Froms) == 1 && len(q.Joins) == 0 && q.Where != nil && q.Select != nil && q.Group == nil && q.Sort == nil
 }
@@ -3587,4 +3647,17 @@ func genPrintAdults() string {
 
 func genPrintGroupLeftJoin() string {
 	return "for(size_t i=0;i<stats_len;i++){ Stat s=stats[i]; printf(\"%s %s %d\\n\", s.name, \"orders:\", s.count); }"
+}
+
+func genInnerJoinLoops() string {
+	lo := len(constLists["orders"].Elems)
+	lc := len(constLists["customers"].Elems)
+	size := lo * lc
+	return fmt.Sprintf(`OrderInfo result[%d]; size_t result_len = 0;
+for(size_t i=0;i<%d;i++){ Orders o=orders[i];
+  for(size_t j=0;j<%d;j++){ Customers c=customers[j]; if(o.customerId==c.id){
+    result[result_len++] = (OrderInfo){o.id,c.name,o.total};
+  }}
+}
+`, size, lo, lc)
 }

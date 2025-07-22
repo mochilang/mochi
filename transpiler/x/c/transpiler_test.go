@@ -174,6 +174,7 @@ func TestTranspilerGolden(t *testing.T) {
 		filepath.Join(srcDir, "group_by_having.mochi"),
 		filepath.Join(srcDir, "group_by_sort.mochi"),
 		filepath.Join(srcDir, "group_by_multi_join_sort.mochi"),
+		filepath.Join(srcDir, "inner_join.mochi"),
 		// dataset_sort_take_limit currently unsupported
 	}
 	if err := os.MkdirAll(goldenDir, 0o755); err != nil {
@@ -260,7 +261,7 @@ func updateReadme() {
 	ts := ""
 	if err == nil {
 		if t, perr := time.Parse(time.RFC3339, strings.TrimSpace(string(out))); perr == nil {
-			ts = t.Format("2006-01-02 15:04 MST")
+			ts = t.Format("2006-01-02 15:04 -0700")
 		}
 	}
 	var lines []string
@@ -290,13 +291,13 @@ func updateTasks() {
 	ts := ""
 	if err == nil {
 		if t, perr := time.Parse(time.RFC3339, strings.TrimSpace(string(out))); perr == nil {
-			ts = t.Format("2006-01-02 15:04 MST")
+			ts = t.Format("2006-01-02 15:04 -0700")
 		}
 	}
 	var buf bytes.Buffer
 	buf.WriteString(fmt.Sprintf("## Progress (%s)\n", ts))
 	buf.WriteString(fmt.Sprintf("- VM valid golden test results updated to %d/%d\n", compiled, total))
-	buf.WriteString("- group_by_multi_join now passes\n\n")
+	buf.WriteString("- inner_join now passes\n\n")
 	if data, err := os.ReadFile(taskFile); err == nil {
 		buf.Write(data)
 	}
