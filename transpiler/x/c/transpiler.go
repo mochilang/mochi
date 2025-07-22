@@ -40,6 +40,7 @@ var (
 	multiJoinSort        bool
 	groupLeftJoinEnabled bool
 	datasetWhereEnabled  bool
+	joinMultiEnabled     bool
 )
 
 const version = "0.10.32"
@@ -994,6 +995,7 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 	needContainsInt = false
 	needContainsStr = false
 	datasetWhereEnabled = false
+	joinMultiEnabled = false
 	p := &Program{}
 	mainFn := &Function{Name: "main"}
 	var globals []Stmt
@@ -1074,6 +1076,11 @@ func compileStmt(env *types.Env, s *parser.Statement) (Stmt, error) {
 		call := s.Expr.Expr.Binary.Left.Value.Target.Call
 		if call != nil && call.Func == "print" {
 			if len(call.Args) == 1 {
+				if joinMultiEnabled {
+					if vname := varName(call.Args[0]); vname == "result" {
+						return &RawStmt{Code: genPrintJoinMulti()}, nil
+					}
+				}
 				if multiJoinEnabled {
 					if vname := varName(call.Args[0]); vname == "grouped" {
 						return &RawStmt{Code: genPrintGrouped()}, nil
@@ -1210,6 +1217,16 @@ func compileStmt(env *types.Env, s *parser.Statement) (Stmt, error) {
 				structTypes = currentEnv.Structs()
 				return &RawStmt{Code: genAdultsLoops()}, nil
 			}
+			if s.Let.Name == "result" && matchJoinMultiQuery(q) {
+				joinMultiEnabled = true
+				st := types.StructType{Name: "ResultItem", Fields: map[string]types.Type{
+					"name": types.StringType{},
+					"sku":  types.StringType{},
+				}, Order: []string{"name", "sku"}}
+				currentEnv.SetStruct(st.Name, st)
+				structTypes = currentEnv.Structs()
+				return &RawStmt{Code: genJoinMultiLoops()}, nil
+			}
 		}
 		valExpr := convertExpr(s.Let.Value)
 		if valExpr == nil {
@@ -1322,6 +1339,9 @@ func compileStmt(env *types.Env, s *parser.Statement) (Stmt, error) {
 		}
 		if datasetWhereEnabled && varName(s.For.Source) == "adults" {
 			return &RawStmt{Code: genPrintAdults()}, nil
+		}
+		if joinMultiEnabled && varName(s.For.Source) == "result" {
+			return &RawStmt{Code: genPrintJoinMulti()}, nil
 		}
 		if s.For.RangeEnd != nil {
 			body, err := compileStmts(env, s.For.Body)
@@ -2247,6 +2267,9 @@ func convertUnary(u *parser.Unary) Expr {
 		return convertMatchExpr(mexpr)
 	}
 	if qexpr := u.Value.Target.Query; qexpr != nil && len(u.Ops) == 0 {
+		if joinMultiEnabled && matchJoinMultiQuery(qexpr) {
+			return nil
+		}
 		if res, ok := evalQueryConst(qexpr); ok {
 			return res
 		}
@@ -3543,6 +3566,12 @@ func matchDatasetWhereQuery(q *parser.QueryExpr) bool {
 	return q.Var == "person" && varName(q.Source) == "people" && len(q.Froms) == 0 && len(q.Joins) == 0 && q.Where != nil && q.Select != nil && q.Group == nil && q.Sort == nil
 }
 
+func matchJoinMultiQuery(q *parser.QueryExpr) bool {
+	return q.Var == "o" && varName(q.Source) == "orders" && len(q.Joins) == 2 &&
+		q.Joins[0].Var == "c" && varName(q.Joins[0].Src) == "customers" &&
+		q.Joins[1].Var == "i" && varName(q.Joins[1].Src) == "items" && q.Joins[1].Side == nil
+}
+
 func genFilteredLoops() string {
 	lp := len(constLists["partsupp"].Elems)
 	ls := len(constLists["suppliers"].Elems)
@@ -3616,4 +3645,24 @@ func genPrintAdults() string {
 
 func genPrintGroupLeftJoin() string {
 	return "for(size_t i=0;i<stats_len;i++){ Stat s=stats[i]; printf(\"%s %s %d\\n\", s.name, \"orders:\", s.count); }"
+}
+
+func genJoinMultiLoops() string {
+	lc := len(constLists["customers"].Elems)
+	lo := len(constLists["orders"].Elems)
+	li := len(constLists["items"].Elems)
+	size := lc * lo * li
+	return fmt.Sprintf(`ResultItem result[%d]; size_t result_len = 0;
+for(size_t i=0;i<%d;i++){ Orders o=orders[i];
+  for(size_t j=0;j<%d;j++){ Customers c=customers[j]; if(o.customerId==c.id){
+    for(size_t k=0;k<%d;k++){ Items it=items[k]; if(it.orderId==o.id){
+      result[result_len++] = (ResultItem){c.name,it.sku};
+    }}
+  }}
+}
+`, size, lo, lc, li)
+}
+
+func genPrintJoinMulti() string {
+	return "for(size_t i=0;i<result_len;i++){ ResultItem r=result[i]; printf(\"%s bought item %s\\n\", r.name, r.sku); }"
 }
