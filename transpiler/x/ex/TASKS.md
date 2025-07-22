@@ -1,5 +1,5 @@
-## Progress (2025-07-22 09:59 +0700)
-- Commit 53f679251: transpiler/hs: improve output handling and update tests
+## Progress (2025-07-22 10:22 +0700)
+- Commit c5ded03f6: erl: support left join with preceding joins
 - Generated Elixir for 102/102 programs
 - Updated README checklist and outputs
 - Improved code emission and type inference
