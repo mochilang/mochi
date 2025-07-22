@@ -110,7 +110,9 @@ func TestPyTranspiler_Rosetta_Golden(t *testing.T) {
 	sort.Strings(files)
 	for _, f := range files[:max] {
 		name := strings.TrimSuffix(filepath.Base(f), ".mochi")
-		t.Run(name, func(t *testing.T) { runRosettaCase(t, name) })
+		if ok := t.Run(name, func(t *testing.T) { runRosettaCase(t, name) }); !ok {
+			t.Fatalf("first failing program: %s", name)
+		}
 	}
 }
 

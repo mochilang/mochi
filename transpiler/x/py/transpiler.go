@@ -34,7 +34,27 @@ var (
 	currentImportLang map[string]string
 	currentEnv        *types.Env
 	structCounter     int
+	usesNow           bool
 )
+
+const helperNow = `
+_now_seed = 0
+_now_seeded = False
+s = os.getenv("MOCHI_NOW_SEED")
+if s and s != "":
+    try:
+        _now_seed = int(s)
+        _now_seeded = True
+    except Exception:
+        pass
+
+def _now():
+    global _now_seed
+    if _now_seeded:
+        _now_seed = (_now_seed * 1664525 + 1013904223) % 2147483647
+        return _now_seed
+    return int(time.time_ns())
+`
 
 var pyKeywords = map[string]bool{
 	"False":    true,
@@ -2401,6 +2421,12 @@ func Emit(w io.Writer, p *Program) error {
 		if currentImports["dataclasses"] && !hasImport(p, "dataclasses") {
 			imports = append(imports, "import dataclasses")
 		}
+		if currentImports["os"] && !hasImport(p, "os") {
+			imports = append(imports, "import os")
+		}
+		if currentImports["time"] && !hasImport(p, "time") {
+			imports = append(imports, "import time")
+		}
 	}
 	for _, s := range p.Stmts {
 		if _, ok := s.(*DataClassDef); ok {
@@ -2427,6 +2453,11 @@ func Emit(w io.Writer, p *Program) error {
 	}
 	if len(imports) > 0 {
 		if _, err := io.WriteString(w, "\n"); err != nil {
+			return err
+		}
+	}
+	if usesNow {
+		if _, err := io.WriteString(w, helperNow+"\n"); err != nil {
 			return err
 		}
 	}
@@ -2645,6 +2676,7 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	currentImportLang = map[string]string{}
 	currentEnv = env
 	structCounter = 0
+	usesNow = false
 	p := &Program{}
 	for _, st := range prog.Statements {
 		switch {
@@ -3802,6 +3834,15 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 		case "substring":
 			if len(args) == 3 {
 				return &SliceExpr{Target: args[0], Start: args[1], End: args[2]}, nil
+			}
+		case "now":
+			if len(args) == 0 {
+				usesNow = true
+				if currentImports != nil {
+					currentImports["os"] = true
+					currentImports["time"] = true
+				}
+				return &CallExpr{Func: &Name{Name: "_now"}, Args: nil}, nil
 			}
 		case "json":
 			if len(args) == 1 {
