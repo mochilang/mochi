@@ -76,6 +76,7 @@ func TestFortranTranspiler_VMValid_Golden(t *testing.T) {
 func TestMain(m *testing.M) {
 	code := m.Run()
 	updateReadme()
+	updateChecklist()
 	updateTasks()
 	os.Exit(code)
 }
