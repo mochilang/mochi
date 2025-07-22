@@ -1,3 +1,11 @@
+## Progress (2025-07-22 14:14 +0700)
+- erl: support tree_sum union (49a578848)
+- Regenerated golden files - 100/102 vm valid programs passing
+
+## Progress (2025-07-22 14:03 +0700)
+- erl: support user_type literal (826981370)
+- Regenerated golden files - 100/102 vm valid programs passing
+
 ## Progress (2025-07-22 13:41 +0700)
 - test(erl): regenerate order_by_map (5d21c8482)
 - Regenerated golden files - 99/102 vm valid programs passing

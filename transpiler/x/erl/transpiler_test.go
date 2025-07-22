@@ -211,6 +211,8 @@ func TestTranspileTailRecursion(t *testing.T) { runGolden(t, "tail_recursion") }
 
 func TestTranspileTwoSum(t *testing.T) { runGolden(t, "two-sum") }
 
+func TestTranspileTreeSum(t *testing.T) { runGolden(t, "tree_sum") }
+
 func TestTranspileListAssign(t *testing.T)        { runGolden(t, "list_assign") }
 func TestTranspileMapAssign(t *testing.T)         { runGolden(t, "map_assign") }
 func TestTranspileListNestedAssign(t *testing.T)  { runGolden(t, "list_nested_assign") }
