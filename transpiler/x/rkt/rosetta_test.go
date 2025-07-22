@@ -81,7 +81,7 @@ func transpileAndRunRacket(t *testing.T, root, srcPath, wantPath, outDir, name s
 		t.Fatalf("write rkt: %v", err)
 	}
 	cmd := exec.Command("racket", rktFile)
-	cmd.Env = append(os.Environ(), "MOCHI_ROOT="+root)
+	cmd.Env = append(os.Environ(), "MOCHI_ROOT="+root, "MOCHI_NOW_SEED=1")
 	if data, err := os.ReadFile(strings.TrimSuffix(srcPath, ".mochi") + ".in"); err == nil {
 		cmd.Stdin = bytes.NewReader(data)
 	}
