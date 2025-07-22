@@ -934,9 +934,15 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 							case types.ListType:
 								if _, ok := tt.Elem.(types.StringType); ok {
 									vd.Type = "array of string"
+								} else if _, ok := tt.Elem.(types.BoolType); ok {
+									vd.Type = "array of boolean"
+								} else if _, ok := tt.Elem.(types.AnyType); ok {
+									vd.Type = "array of boolean"
 								} else {
 									vd.Type = "array of integer"
 								}
+							case types.BoolType:
+								vd.Type = "boolean"
 							}
 						}
 					}
@@ -987,9 +993,15 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 						case types.ListType:
 							if _, ok := t.Elem.(types.StringType); ok {
 								vd.Type = "array of string"
+							} else if _, ok := t.Elem.(types.BoolType); ok {
+								vd.Type = "array of boolean"
+							} else if _, ok := t.Elem.(types.AnyType); ok {
+								vd.Type = "array of boolean"
 							} else {
 								vd.Type = "array of integer"
 							}
+						case types.BoolType:
+							vd.Type = "boolean"
 						}
 					}
 				}
@@ -1072,6 +1084,8 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 					if lt, ok := t.(types.ListType); ok {
 						if _, ok := lt.Elem.(types.StringType); ok {
 							varTypes[st.For.Name] = "string"
+						} else if _, ok := lt.Elem.(types.BoolType); ok {
+							varTypes[st.For.Name] = "boolean"
 						} else {
 							varTypes[st.For.Name] = "integer"
 						}
@@ -1302,6 +1316,8 @@ func convertBody(env *types.Env, body []*parser.Statement, varTypes map[string]s
 					if lt, ok := t.(types.ListType); ok {
 						if _, ok := lt.Elem.(types.StringType); ok {
 							varTypes[st.For.Name] = "string"
+						} else if _, ok := lt.Elem.(types.BoolType); ok {
+							varTypes[st.For.Name] = "boolean"
 						} else {
 							varTypes[st.For.Name] = "integer"
 						}
@@ -2517,12 +2533,16 @@ func typeOf(e *parser.Expr, env *types.Env) string {
 		}
 		if _, ok := v.Elem.(types.StringType); ok {
 			return "array of string"
+		} else if _, ok := v.Elem.(types.BoolType); ok {
+			return "array of boolean"
 		}
 		return "array of integer"
 	case types.StructType:
 		return v.Name
 	case types.StringType:
 		return "string"
+	case types.BoolType:
+		return "boolean"
 	case types.IntType, types.Int64Type:
 		return "integer"
 	}
