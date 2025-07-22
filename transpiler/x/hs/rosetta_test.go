@@ -90,6 +90,7 @@ func TestHSTranspiler_Rosetta_Golden(t *testing.T) {
 	if _, err := exec.LookPath("runhaskell"); err != nil {
 		t.Skip("runhaskell not installed")
 	}
+	t.Cleanup(updateChecklist)
 	root := repoRootDir(t)
 	files, err := filepath.Glob(filepath.Join(root, "tests", "rosetta", "x", "Mochi", "*.mochi"))
 	if err != nil {
@@ -97,9 +98,15 @@ func TestHSTranspiler_Rosetta_Golden(t *testing.T) {
 	}
 	sort.Strings(files)
 
-	if idxStr := os.Getenv("ROSETTA_INDEX"); idxStr != "" {
+	if idxStr := os.Getenv("MOCHI_ROSETTA_INDEX"); idxStr != "" {
 		idx, err := strconv.Atoi(idxStr)
-		if err != nil || idx <= 0 || idx > len(files) {
+		if err != nil || idx < 1 || idx > len(files) {
+			t.Fatalf("invalid MOCHI_ROSETTA_INDEX %s", idxStr)
+		}
+		files = files[idx-1 : idx]
+	} else if idxStr := os.Getenv("ROSETTA_INDEX"); idxStr != "" {
+		idx, err := strconv.Atoi(idxStr)
+		if err != nil || idx < 1 || idx > len(files) {
 			t.Fatalf("invalid ROSETTA_INDEX %s", idxStr)
 		}
 		files = files[idx-1 : idx]
@@ -146,14 +153,14 @@ func updateChecklist() {
 	total := len(files)
 	compiled := 0
 	var lines []string
-	for _, f := range files {
+	for i, f := range files {
 		name := strings.TrimSuffix(filepath.Base(f), ".mochi")
 		mark := "[ ]"
 		if _, err := os.Stat(filepath.Join(outDir, name+".out")); err == nil {
 			compiled++
 			mark = "[x]"
 		}
-		lines = append(lines, fmt.Sprintf("- %s %s", mark, name))
+		lines = append(lines, fmt.Sprintf("%d. %s %s", i+1, mark, name))
 	}
 	var buf bytes.Buffer
 	fmt.Fprintf(&buf, "# Rosetta Haskell Transpiler (%d/%d succeeded)\n\n", compiled, total)
