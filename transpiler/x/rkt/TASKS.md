@@ -1,3 +1,28 @@
+## Progress (2025-07-22 17:23 +0700)
+- Commit d6d2c54cb: rkt transpiler: add save support and new tests
+- Generated Racket for 100/100 programs
+- Updated README checklist
+
+## Progress (2025-07-22 17:10 +0700)
+- Commit ef7dddea4: fmt: gofmt rkt
+- Generated Racket for 100/100 programs
+- Updated README checklist
+
+## Progress (2025-07-22 17:10:10)
+- Added cast expressions and function declarations
+- Removed _div helper and improved type-based division
+- Updated golden tests and README
+
+## Progress (2025-07-22 17:10 +0700)
+- Commit ef7dddea4: fmt: gofmt rkt
+- Generated Racket for 95/100 programs
+- Updated README checklist
+
+## Progress (2025-07-22 17:10 +0700)
+- Commit ef7dddea4: fmt: gofmt rkt
+- Generated Racket for 95/100 programs
+- Updated README checklist
+
 ## Progress (2025-07-22 17:05 +0700)
 - Commit 97a864fa3: rkt transpiler: support go/python imports
 - Generated Racket for 95/100 programs
