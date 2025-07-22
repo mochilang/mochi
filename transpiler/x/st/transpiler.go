@@ -2572,6 +2572,28 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 		case st.Continue != nil:
 			return continueErr{}
 		case st.Expr != nil:
+			if se := extractSaveExpr(st.Expr.Expr); se != nil {
+				format := parseFormatExpr(se.With)
+				path := ""
+				if se.Path != nil {
+					path = strings.Trim(*se.Path, "\"")
+				}
+				if format == "jsonl" && (path == "" || path == "-") {
+					src, err := evalExpr(se.Src, vars)
+					if err != nil {
+						return err
+					}
+					if src.kind != valList {
+						return fmt.Errorf("save expects list")
+					}
+					for _, row := range src.list {
+						line := "Transcript show:'" + escape(jsonString(row)) + "'; cr"
+						p.Lines = append(p.Lines, line)
+					}
+					return nil
+				}
+				return fmt.Errorf("unsupported expression")
+			}
 			call := st.Expr.Expr.Binary.Left.Value.Target.Call
 			if call == nil {
 				return fmt.Errorf("unsupported expression")
@@ -2678,6 +2700,21 @@ func parseFormatExpr(e *parser.Expr) string {
 		return f.s
 	}
 	return ""
+}
+
+func extractSaveExpr(e *parser.Expr) *parser.SaveExpr {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) > 0 {
+		return nil
+	}
+	u := e.Binary.Left
+	if len(u.Ops) > 0 || u.Value == nil {
+		return nil
+	}
+	p := u.Value
+	if len(p.Ops) > 0 || p.Target == nil {
+		return nil
+	}
+	return p.Target.Save
 }
 
 func anyToValue(x interface{}, typ string) value {
