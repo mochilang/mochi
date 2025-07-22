@@ -1,3 +1,27 @@
+## Progress (2025-07-22 17:04 +0700)
+- go transpiler: improve jsonl list formatting
+- Regenerated golden files - 103/103 vm valid programs passing
+
+## Progress (2025-07-22 16:51 +0700)
+- pl transpiler: add nested list assign and set ops
+- Regenerated golden files - 103/103 vm valid programs passing
+
+## Progress (2025-07-22 16:51 +0700)
+- pl transpiler: add nested list assign and set ops
+- Regenerated golden files - 103/103 vm valid programs passing
+
+## Progress (2025-07-22 16:51 +0700)
+- pl transpiler: add nested list assign and set ops
+- Regenerated golden files - 103/103 vm valid programs passing
+
+## Progress (2025-07-22 16:51 +0700)
+- pl transpiler: add nested list assign and set ops
+- Regenerated golden files - 103/103 vm valid programs passing
+
+## Progress (2025-07-22 16:51 +0700)
+- pl transpiler: add nested list assign and set ops
+- Regenerated golden files - 103/103 vm valid programs passing
+
 ## Progress (2025-07-22 15:28 +0700)
 - docs(go): update progress
 - Regenerated golden files - 103/103 vm valid programs passing

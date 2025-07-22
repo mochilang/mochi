@@ -504,6 +504,16 @@ func (s *StructLit) emit(w io.Writer) {
 	fmt.Fprint(w, "}")
 }
 
+func (s *StructLit) emitBare(w io.Writer) {
+	fmt.Fprint(w, "{\n")
+	for i, f := range s.Fields {
+		fmt.Fprintf(w, "    %s: ", toGoFieldName(s.Names[i]))
+		f.emit(w)
+		fmt.Fprint(w, ",\n")
+	}
+	fmt.Fprint(w, "}")
+}
+
 // IndexExpr represents `X[i]`.
 type IndexExpr struct {
 	X     Expr
@@ -718,6 +728,7 @@ func (s *SaveStmt) emit(w io.Writer) {
 type ListLit struct {
 	ElemType string
 	Elems    []Expr
+	Pretty   bool
 }
 
 func (l *ListLit) emit(w io.Writer) {
@@ -725,11 +736,26 @@ func (l *ListLit) emit(w io.Writer) {
 		l.ElemType = "any"
 	}
 	fmt.Fprintf(w, "[]%s{", l.ElemType)
+	if l.Pretty && len(l.Elems) > 0 {
+		fmt.Fprint(w, "\n")
+	}
 	for i, e := range l.Elems {
-		if i > 0 {
+		if l.Pretty {
+			io.WriteString(w, "    ")
+		} else if i > 0 {
 			fmt.Fprint(w, ", ")
 		}
-		e.emit(w)
+		if sl, ok := e.(*StructLit); ok && l.Pretty && sl.Name == l.ElemType {
+			sl.emitBare(w)
+		} else {
+			e.emit(w)
+		}
+		if l.Pretty {
+			fmt.Fprint(w, ",\n")
+		}
+	}
+	if l.Pretty && len(l.Elems) > 0 {
+		fmt.Fprint(w, "\n")
 	}
 	fmt.Fprint(w, "}")
 }
@@ -1979,7 +2005,13 @@ func dataExprFromFile(path, format string, typ *parser.TypeRef, env *types.Env) 
 	default:
 		return nil, fmt.Errorf("unsupported load format")
 	}
-	return valueToExpr(v, typ, env), nil
+	expr := valueToExpr(v, typ, env)
+	if format == "jsonl" {
+		if ll, ok := expr.(*ListLit); ok {
+			ll.Pretty = true
+		}
+	}
+	return expr, nil
 }
 
 func compileIfStmt(is *parser.IfStmt, env *types.Env) (Stmt, error) {
