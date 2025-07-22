@@ -17,6 +17,7 @@ import (
 
 	"mochi/ast"
 	"mochi/parser"
+	testpkg "mochi/runtime/ffi/go/testpkg"
 	"mochi/types"
 )
 
@@ -41,6 +42,7 @@ var (
 	useNow           bool
 	useInput         bool
 	imports          []string
+	testpkgAliases   map[string]struct{}
 )
 
 // GetStructOrder returns the generated struct names (for testing).
@@ -2635,6 +2637,7 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	useNow = false
 	useInput = false
 	imports = nil
+	testpkgAliases = map[string]struct{}{}
 	p := &Program{}
 	for _, st := range prog.Statements {
 		s, err := convertStmtInternal(st)
@@ -2850,6 +2853,7 @@ func convertStmtInternal(st *parser.Statement) (Stmt, error) {
 			return nil, nil
 		}
 		if st.Import.Lang != nil && *st.Import.Lang == "go" && strings.Trim(st.Import.Path, "\"") == "mochi/runtime/ffi/go/testpkg" {
+			testpkgAliases[alias] = struct{}{}
 			return nil, nil
 		}
 		return nil, fmt.Errorf("unsupported import")
@@ -3115,6 +3119,18 @@ func convertPostfix(pf *parser.PostfixExpr) (Expr, error) {
 			// method call if next op is call
 			if i+1 < len(pf.Ops) && pf.Ops[i+1].Call != nil {
 				call := pf.Ops[i+1]
+				if n, ok := expr.(*Name); ok {
+					if _, ok := testpkgAliases[n.Name]; ok {
+						switch op.Field.Name {
+						case "FifteenPuzzleExample":
+							if len(call.Call.Args) == 0 {
+								expr = &StringLit{Value: testpkg.FifteenPuzzleExample()}
+								i++
+								continue
+							}
+						}
+					}
+				}
 				var args []Expr
 				for _, a := range call.Call.Args {
 					ex, err := convertExpr(a)
@@ -3137,7 +3153,22 @@ func convertPostfix(pf *parser.PostfixExpr) (Expr, error) {
 				}
 				args = append(args, ex)
 			}
-			expr = &CallExpr{Func: expr, Args: args}
+			if sel, ok := expr.(*SelectorExpr); ok {
+				if n, ok := sel.Receiver.(*Name); ok {
+					if _, ok := testpkgAliases[n.Name]; ok {
+						switch sel.Field {
+						case "FifteenPuzzleExample":
+							if len(args) == 0 {
+								expr = &StringLit{Value: testpkg.FifteenPuzzleExample()}
+								break
+							}
+						}
+					}
+				}
+			}
+			if _, ok := expr.(*StringLit); !ok {
+				expr = &CallExpr{Func: expr, Args: args}
+			}
 		case op.Cast != nil:
 			// ignore casts
 		default:
