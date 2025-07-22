@@ -620,7 +620,7 @@ func (f *FormatListExpr) emit(w io.Writer) {
 	io.WriteString(w, "\"[\" + ")
 	if f.Value != nil {
 		f.Value.emit(w)
-		io.WriteString(w, `.map(v => fmt(v)).join(`)
+		io.WriteString(w, `.map(v => typeof v === 'string' ? '\"' + v + '\"' : String(v)).join(`)
 		if len(f.FloatFields) > 0 || f.Compact {
 			io.WriteString(w, "','")
 		} else {
@@ -639,13 +639,21 @@ func (p *PrintExpr) emit(w io.Writer) {
 		if i > 0 {
 			io.WriteString(w, ", ")
 		}
-		io.WriteString(w, "fmt(")
-		if a != nil {
-			a.emit(w)
+		if _, ok := a.(*FormatListExpr); ok {
+			if a != nil {
+				a.emit(w)
+			} else {
+				io.WriteString(w, "null")
+			}
 		} else {
-			io.WriteString(w, "null")
+			io.WriteString(w, "JSON.stringify(")
+			if a != nil {
+				a.emit(w)
+			} else {
+				io.WriteString(w, "null")
+			}
+			io.WriteString(w, ")")
 		}
-		io.WriteString(w, ")")
 	}
 	io.WriteString(w, ")")
 }
@@ -1783,28 +1791,7 @@ func emitStmt(w *indentWriter, s Stmt, level int) {
 func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	transpileEnv = env
 	generatedTypes = map[string]bool{}
-	prelude = []Stmt{&RawStmt{Code: `function fmt(v:any):string {
-  if (typeof v === 'number') return String(v);
-  if (v && typeof v === 'object' && typeof (v as any).__name === 'string') {
-    const name = (v as any).__name === 'GenType1' && 'total' in (v as any) && !('val' in (v as any)) ? 'GenType2' : (v as any).__name;
-    const parts = [] as string[];
-    for (const k of Object.keys(v)) {
-      if (k === '__name') continue;
-      const raw = (v as any)[k];
-      let val: string;
-      if (typeof raw === 'number') {
-        val = String(raw);
-      } else if (typeof raw === 'string') {
-        val = '"' + raw + '"';
-      } else {
-        val = fmt(raw);
-      }
-      parts.push(k + ' = ' + val);
-    }
-    return name + ' {' + parts.join(', ') + '}';
-  }
-  return String(v);
-}`}}
+	prelude = nil
 	pythonMathAliases = map[string]bool{}
 	structCounter = 0
 	structGenName = map[string]string{}
