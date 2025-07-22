@@ -1,0 +1,5 @@
+ERROR: /workspace/mochi/tests/transpiler/x/pl/fun_expr_in_let.pl:5:13: Syntax error: Operator expected
+ERROR: /workspace/mochi/tests/transpiler/x/pl/fun_expr_in_let.pl:1: Initialization goal raised exception:
+ERROR: catch/3: Unknown procedure: main/1
+ERROR:   However, there are definitions for:
+ERROR:         main/0

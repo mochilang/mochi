@@ -1,0 +1,6 @@
+ERROR: /workspace/mochi/tests/transpiler/x/pl/closure.pl:5:14: Syntax error: Operator expected
+ERROR: /workspace/mochi/tests/transpiler/x/pl/closure.pl:9:12: Syntax error: Operator expected
+ERROR: /workspace/mochi/tests/transpiler/x/pl/closure.pl:1: Initialization goal raised exception:
+ERROR: catch/3: Unknown procedure: main/1
+ERROR:   However, there are definitions for:
+ERROR:         main/0
