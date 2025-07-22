@@ -45,7 +45,7 @@ local function _now()
     _now_seed = (_now_seed * 1664525 + 1013904223) % 2147483647
     return _now_seed
   end
-  return os.time() * 1000000000
+  return os.time() * 1000000000 + math.floor(os.clock() * 1000000000)
 end
 `
 
