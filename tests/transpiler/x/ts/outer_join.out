@@ -1,7 +1,0 @@
---- Outer Join using syntax ---
-Order 100.0 by Alice - $ 250.0
-Order 101.0 by Bob - $ 125.0
-Order 102.0 by Alice - $ 300.0
-Order 103.0 by Unknown - $ 80.0
-Customer Charlie has no orders
-Customer Diana has no orders

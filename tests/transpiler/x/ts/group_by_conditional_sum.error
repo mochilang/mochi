@@ -1,5 +1,0 @@
-run: exit status 1
-[0m[1m[31merror[0m: Uncaught SyntaxError: Identifier 'g' has already been declared
-  const pairs = ordered.map(g => { const g = g; return {g, key: g["key"]} })
-[0m[31m                                         ^[0m
-    at [0m[1m[3m<anonymous>[0m ([0m[36mfile:///workspace/mochi/tests/transpiler/x/ts/group_by_conditional_sum.ts[0m:[0m[33m17[0m:[0m[33m42[0m)
