@@ -1,3 +1,13 @@
+## Progress (2025-07-22 09:43 +0700)
+- cpp transpiler: handle test blocks
+- Generated C++ for 91/102 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-22 09:32 +0700)
+- cpp transpiler: add right and outer joins
+- Generated C++ for 92/102 programs
+- Updated README checklist and outputs
+
 ## Progress (2025-07-22 09:11 +0700)
 - Added right and outer join support
 - Removed runtime print helpers
