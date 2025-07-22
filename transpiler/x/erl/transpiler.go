@@ -421,6 +421,18 @@ type IfExpr struct {
 	Else Expr
 }
 
+// CaseExpr represents a case expression with one or more clauses.
+type CaseExpr struct {
+	Target  Expr
+	Clauses []CaseClause
+}
+
+// CaseClause is a single pattern/result pair within a CaseExpr.
+type CaseClause struct {
+	Pattern Expr
+	Result  Expr
+}
+
 // NameRef refers to a variable.
 type NameRef struct {
 	Name     string
@@ -1175,6 +1187,22 @@ func (i *IfExpr) emit(w io.Writer) {
 	i.Then.emit(w)
 	io.WriteString(w, ";\n    _ -> ")
 	i.Else.emit(w)
+	io.WriteString(w, "\nend)")
+}
+
+func (c *CaseExpr) emit(w io.Writer) {
+	io.WriteString(w, "(case ")
+	c.Target.emit(w)
+	io.WriteString(w, " of")
+	for idx, cl := range c.Clauses {
+		io.WriteString(w, "\n    ")
+		cl.Pattern.emit(w)
+		io.WriteString(w, " -> ")
+		cl.Result.emit(w)
+		if idx < len(c.Clauses)-1 {
+			io.WriteString(w, ";")
+		}
+	}
 	io.WriteString(w, "\nend)")
 }
 
@@ -2374,9 +2402,8 @@ func convertMatch(me *parser.MatchExpr, env *types.Env, ctx *context) (Expr, err
 	if err != nil {
 		return nil, err
 	}
-	var expr Expr = &AtomLit{Name: "nil"}
-	for i := len(me.Cases) - 1; i >= 0; i-- {
-		c := me.Cases[i]
+	clauses := make([]CaseClause, len(me.Cases))
+	for i, c := range me.Cases {
 		res, err := convertExpr(c.Result, env, ctx)
 		if err != nil {
 			return nil, err
@@ -2385,14 +2412,9 @@ func convertMatch(me *parser.MatchExpr, env *types.Env, ctx *context) (Expr, err
 		if err != nil {
 			return nil, err
 		}
-		if n, ok := pat.(*NameRef); ok && n.Name == "_" {
-			expr = res
-			continue
-		}
-		cond := &BinaryExpr{Left: target, Op: "==", Right: pat}
-		expr = &IfExpr{Cond: cond, Then: res, Else: expr}
+		clauses[i] = CaseClause{Pattern: pat, Result: res}
 	}
-	return expr, nil
+	return &CaseExpr{Target: target, Clauses: clauses}, nil
 }
 
 func convertQueryExpr(q *parser.QueryExpr, env *types.Env, ctx *context) (Expr, error) {
