@@ -230,6 +230,44 @@ func (p *Program) UsesShow() bool {
 	return uses
 }
 
+func (p *Program) UsesJSON() bool {
+	var uses bool
+	var check func(Stmt)
+	check = func(s Stmt) {
+		switch st := s.(type) {
+		case *JSONStmt:
+			uses = true
+		case *IfStmt:
+			for _, t := range st.Then {
+				check(t)
+			}
+			for _, e := range st.Else {
+				check(e)
+			}
+		case *WhileStmt:
+			for _, b := range st.Body {
+				check(b)
+			}
+		case *ForRangeStmt:
+			for _, b := range st.Body {
+				check(b)
+			}
+		case *ForEachStmt:
+			for _, b := range st.Body {
+				check(b)
+			}
+		case *FunStmt:
+			for _, b := range st.Body {
+				check(b)
+			}
+		}
+	}
+	for _, s := range p.Stmts {
+		check(s)
+	}
+	return uses
+}
+
 type VarInfo struct {
 	typ   string
 	ref   bool
@@ -326,6 +364,15 @@ func (p *PrintStmt) emit(w io.Writer) {
 		e.emitPrint(w)
 	}
 	io.WriteString(w, "]);\n")
+}
+
+// JSONStmt prints a value as JSON on its own line.
+type JSONStmt struct{ Expr Expr }
+
+func (j *JSONStmt) emit(w io.Writer) {
+	io.WriteString(w, "  print_endline (__to_json ")
+	j.Expr.emit(w)
+	io.WriteString(w, ");\n")
 }
 
 // IfStmt represents a basic if/else statement.
@@ -1502,7 +1549,46 @@ func (p *Program) Emit() []byte {
 	buf.WriteString(header())
 	buf.WriteString("\n")
 	if p.UsesShow() {
-		buf.WriteString("let rec __show v =\n  let open Obj in\n  let rec list_aux o =\n    if is_int o && (magic (obj o) : int) = 0 then \"\" else\n     let hd = field o 0 in\n     let tl = field o 1 in\n     let rest = list_aux tl in\n     if rest = \"\" then __show (obj hd) else __show (obj hd) ^ \"; \" ^ rest\n  in\n\n  let r = repr v in\n  if is_int r then string_of_int (magic v) else\n  match tag r with\n    | 0 -> if size r = 0 then \"[]\" else \"[\" ^ list_aux r ^ \"]\"\n    | 252 -> (magic v : string)\n    | 253 -> string_of_float (magic v)\n    | _ -> \"<value>\"\n\n")
+		buf.WriteString(`let rec __show v =
+  let open Obj in
+  let rec list_aux o =
+    if is_int o && (magic (obj o) : int) = 0 then "" else
+     let hd = field o 0 in
+     let tl = field o 1 in
+     let rest = list_aux tl in
+     if rest = "" then __show (obj hd) else __show (obj hd) ^ "; " ^ rest
+  in
+
+  let r = repr v in
+  if is_int r then string_of_int (magic v) else
+  match tag r with
+    | 0 -> if size r = 0 then "[]" else "[" ^ list_aux r ^ "]"
+    | 252 -> (magic v : string)
+    | 253 -> string_of_float (magic v)
+    | _ -> "<value>"
+
+`)
+	}
+	if p.UsesJSON() {
+		buf.WriteString(`let rec __to_json v =
+  let open Obj in
+  let rec list_aux o =
+    if is_int o && (magic (obj o) : int) = 0 then "" else
+     let hd = field o 0 in
+     let tl = field o 1 in
+     let rest = list_aux tl in
+     let cur = __to_json (obj hd) in
+     if rest = "" then cur else cur ^ "," ^ rest
+  in
+  let r = repr v in
+  if is_int r then string_of_int (magic v) else
+  match tag r with
+    | 0 -> if size r = 0 then "[]" else "[" ^ list_aux r ^ "]"
+    | 252 -> Printf.sprintf "%S" (magic v : string)
+    | 253 -> string_of_float (magic v)
+    | _ -> "null"
+
+`)
 	}
 	if p.UsesStrModule() {
 		buf.WriteString("open Str\n\n")
@@ -1650,6 +1736,13 @@ func transpileStmt(st *parser.Statement, env *types.Env, vars map[string]VarInfo
 				args[i] = ex
 			}
 			return &PrintStmt{Exprs: args}, nil
+		}
+		if call != nil && call.Func == "json" && len(call.Args) == 1 {
+			arg, _, err := convertExpr(call.Args[0], env, vars)
+			if err != nil {
+				return nil, err
+			}
+			return &JSONStmt{Expr: arg}, nil
 		}
 		if se := extractSaveExpr(st.Expr.Expr); se != nil {
 			src, _, err := convertExpr(se.Src, env, vars)
