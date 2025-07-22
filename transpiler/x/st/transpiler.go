@@ -952,6 +952,15 @@ func evalPostfix(p *parser.PostfixExpr, vars map[string]value) (value, error) {
 				default:
 					return value{}, fmt.Errorf("bad cast")
 				}
+			case "float":
+				switch v.kind {
+				case valInt:
+					v = value{kind: valFloat, f: float64(v.i)}
+				case valFloat:
+					// no-op
+				default:
+					return value{}, fmt.Errorf("bad cast")
+				}
 			default:
 				if v.kind != valMap {
 					return value{}, fmt.Errorf("bad cast")
@@ -1532,8 +1541,36 @@ func evalFunction(fn *parser.FunStmt, args []value, captured map[string]value) (
 			vars[st.Var.Name] = v
 		case st.Assign != nil:
 			if len(st.Assign.Index) > 0 {
-				return fmt.Errorf("unsupported assign")
+				target, ok := vars[st.Assign.Name]
+				if !ok {
+					return fmt.Errorf("assign to unknown var")
+				}
+
+				idxVals := make([]value, len(st.Assign.Index))
+				for i, idx := range st.Assign.Index {
+					if idx.Colon != nil || idx.End != nil || idx.Colon2 != nil || idx.Step != nil {
+						return fmt.Errorf("slicing not supported")
+					}
+					iv, err := evalExpr(idx.Start, vars)
+					if err != nil {
+						return err
+					}
+					idxVals[i] = iv
+				}
+
+				val, err := evalExpr(st.Assign.Value, vars)
+				if err != nil {
+					return err
+				}
+
+				newTarget, err := setIndexedValue(target, idxVals, val)
+				if err != nil {
+					return err
+				}
+				vars[st.Assign.Name] = newTarget
+				break
 			}
+
 			v, err := evalExpr(st.Assign.Value, vars)
 			if err != nil {
 				return err
