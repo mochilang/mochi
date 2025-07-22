@@ -2,13 +2,13 @@
 
 Generated Scala code for Rosetta tasks in `tests/rosetta/x/Mochi`. Each program has a `.scala` file produced by the transpiler and a `.out` file with its runtime output. Compilation or execution errors are captured in `.error` files.
 
-## Golden Test Checklist (4/284)
-_Last updated: 2025-07-22 20:26 +0700_
+## Golden Test Checklist (31/284)
+_Last updated: 2025-07-22 21:16 +0700_
 
 - [x] 100-doors-2
 - [x] 100-doors-3
 - [x] 100-doors
-- [ ] 100-prisoners
+- [x] 100-prisoners
 - [ ] 15-puzzle-game
 - [ ] 15-puzzle-solver
 - [ ] 2048
@@ -27,22 +27,22 @@ _Last updated: 2025-07-22 20:26 +0700_
 - [ ] abc-problem
 - [ ] abelian-sandpile-model-identity
 - [ ] abelian-sandpile-model
-- [ ] abstract-type
-- [ ] abundant-deficient-and-perfect-number-classifications
+- [x] abstract-type
+- [x] abundant-deficient-and-perfect-number-classifications
 - [ ] abundant-odd-numbers
 - [ ] accumulator-factory
 - [ ] achilles-numbers
-- [ ] ackermann-function-2
+- [x] ackermann-function-2
 - [ ] ackermann-function-3
-- [ ] ackermann-function
-- [ ] active-directory-connect
-- [ ] active-directory-search-for-a-user
-- [ ] active-object
+- [x] ackermann-function
+- [x] active-directory-connect
+- [x] active-directory-search-for-a-user
+- [x] active-object
 - [ ] add-a-variable-to-a-class-instance-at-runtime
-- [ ] additive-primes
-- [ ] address-of-a-variable
+- [x] additive-primes
+- [x] address-of-a-variable
 - [ ] adfgvx-cipher
-- [ ] aks-test-for-primes
+- [x] aks-test-for-primes
 - [ ] algebraic-data-types
 - [ ] align-columns
 - [ ] aliquot-sequence-classifications
@@ -52,30 +52,30 @@ _Last updated: 2025-07-22 20:26 +0700_
 - [ ] amicable-pairs
 - [ ] anagrams-deranged-anagrams
 - [ ] anagrams
-- [ ] angle-difference-between-two-bearings-1
-- [ ] angle-difference-between-two-bearings-2
-- [ ] angles-geometric-normalization-and-conversion
+- [x] angle-difference-between-two-bearings-1
+- [x] angle-difference-between-two-bearings-2
+- [x] angles-geometric-normalization-and-conversion
 - [ ] animate-a-pendulum
-- [ ] animation
-- [ ] anonymous-recursion-1
-- [ ] anonymous-recursion-2
-- [ ] anonymous-recursion
-- [ ] anti-primes
+- [x] animation
+- [x] anonymous-recursion-1
+- [x] anonymous-recursion-2
+- [x] anonymous-recursion
+- [x] anti-primes
 - [ ] append-a-record-to-the-end-of-a-text-file
-- [ ] apply-a-callback-to-an-array-1
-- [ ] apply-a-callback-to-an-array-2
-- [ ] apply-a-digital-filter-direct-form-ii-transposed-
+- [x] apply-a-callback-to-an-array-1
+- [x] apply-a-callback-to-an-array-2
+- [x] apply-a-digital-filter-direct-form-ii-transposed-
 - [ ] approximate-equality
 - [ ] arbitrary-precision-integers-included-
-- [ ] archimedean-spiral
+- [x] archimedean-spiral
 - [ ] arena-storage-pool
-- [ ] arithmetic-complex
+- [x] arithmetic-complex
 - [ ] arithmetic-derivative
 - [ ] arithmetic-evaluation
-- [ ] arithmetic-geometric-mean-calculate-pi
+- [x] arithmetic-geometric-mean-calculate-pi
 - [ ] arithmetic-geometric-mean
-- [ ] arithmetic-integer-1
-- [ ] arithmetic-integer-2
+- [x] arithmetic-integer-1
+- [x] arithmetic-integer-2
 - [ ] arithmetic-numbers
 - [ ] arithmetic-rational
 - [ ] array-concatenation

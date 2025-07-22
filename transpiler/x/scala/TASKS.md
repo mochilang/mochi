@@ -1,3 +1,39 @@
+## Progress (2025-07-22 20:44 +0700)
+- scala transpiler: cast bool in unary and if
+- Regenerated golden files - 92/103 vm valid programs passing
+
+## Progress (2025-07-22 20:44 +0700)
+- scala transpiler: cast bool in unary and if
+- Regenerated golden files - 92/103 vm valid programs passing
+
+## Progress (2025-07-22 20:44 +0700)
+- scala transpiler: cast bool in unary and if
+- Regenerated golden files - 92/103 vm valid programs passing
+
+## Progress (2025-07-22 20:44 +0700)
+- scala transpiler: cast bool in unary and if
+- Regenerated golden files - 92/103 vm valid programs passing
+
+## Progress (2025-07-22 20:44 +0700)
+- scala transpiler: cast bool in unary and if
+- Regenerated golden files - 92/103 vm valid programs passing
+
+## Progress (2025-07-22 20:44 +0700)
+- scala transpiler: cast bool in unary and if
+- Regenerated golden files - 92/103 vm valid programs passing
+
+## Progress (2025-07-22 20:44 +0700)
+- scala transpiler: cast bool in unary and if
+- Regenerated golden files - 92/103 vm valid programs passing
+
+## Progress (2025-07-22 20:44 +0700)
+- scala transpiler: cast bool in unary and if
+- Regenerated golden files - 92/103 vm valid programs passing
+
+## Progress (2025-07-22 20:44 +0700)
+- scala transpiler: cast bool in unary and if
+- Regenerated golden files - 92/103 vm valid programs passing
+
 ## Progress (2025-07-22 20:18 +0700)
 - scala transpiler: support slicing with implicit bounds
 - Regenerated golden files - 92/103 vm valid programs passing

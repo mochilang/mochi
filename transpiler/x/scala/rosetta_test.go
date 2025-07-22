@@ -35,7 +35,7 @@ func TestScalaTranspiler_Rosetta_Golden(t *testing.T) {
 	var passed, failed int
 	for _, f := range files {
 		name := strings.TrimSuffix(filepath.Base(f), ".mochi")
-		t.Run(name, func(t *testing.T) {
+		ok := t.Run(name, func(t *testing.T) {
 			codePath := filepath.Join(outDir, name+".scala")
 			outPath := filepath.Join(outDir, name+".out")
 			errPath := filepath.Join(outDir, name+".error")
@@ -43,30 +43,25 @@ func TestScalaTranspiler_Rosetta_Golden(t *testing.T) {
 			prog, err := parser.Parse(f)
 			if err != nil {
 				_ = os.WriteFile(errPath, []byte(err.Error()), 0o644)
-				failed++
 				t.Fatalf("parse: %v", err)
 			}
 			env := types.NewEnv(nil)
 			if errs := types.Check(prog, env); len(errs) > 0 {
 				_ = os.WriteFile(errPath, []byte(errs[0].Error()), 0o644)
-				failed++
 				t.Fatalf("type: %v", errs[0])
 			}
 			ast, err := scalat.Transpile(prog, env)
 			if err != nil {
 				_ = os.WriteFile(errPath, []byte(err.Error()), 0o644)
-				failed++
 				t.Fatalf("transpile: %v", err)
 			}
 			code := scalat.Emit(ast)
 			if err := os.WriteFile(codePath, code, 0o644); err != nil {
-				failed++
 				t.Fatalf("write: %v", err)
 			}
 			tmp := t.TempDir()
 			if out, err := exec.Command("scalac", "-d", tmp, codePath).CombinedOutput(); err != nil {
 				_ = os.WriteFile(errPath, append([]byte(err.Error()+"\n"), out...), 0o644)
-				failed++
 				t.Fatalf("compile: %v", err)
 			}
 			cmd := exec.Command("scala", "-cp", tmp, "Main")
@@ -74,24 +69,25 @@ func TestScalaTranspiler_Rosetta_Golden(t *testing.T) {
 			got := bytes.TrimSpace(out)
 			if err != nil {
 				_ = os.WriteFile(errPath, append([]byte(err.Error()+"\n"), out...), 0o644)
-				failed++
 				t.Fatalf("run: %v", err)
 			}
 			_ = os.Remove(errPath)
 			_ = os.WriteFile(outPath, got, 0o644)
 			want, err := os.ReadFile(outPath)
 			if err != nil {
-				failed++
 				t.Fatalf("read want: %v", err)
 			}
 			want = bytes.TrimSpace(want)
 			if !bytes.Equal(got, want) {
-				failed++
 				t.Errorf("output mismatch:\nGot: %s\nWant: %s", got, want)
-			} else {
-				passed++
 			}
 		})
+		if ok {
+			passed++
+		} else {
+			failed++
+			break
+		}
 	}
 	t.Logf("Summary: %d passed, %d failed", passed, failed)
 }
