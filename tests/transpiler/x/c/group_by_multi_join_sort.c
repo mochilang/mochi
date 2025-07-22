@@ -138,6 +138,7 @@ int main(void) {
     }
     }
     for(size_t a=0;a<result_len;a++){ for(size_t b=a+1;b<result_len;b++){ if(result[a].revenue < result[b].revenue){ ResultItem tmp=result[a]; result[a]=result[b]; result[b]=tmp; } }}
+    }
     for(size_t i=0;i<result_len;i++){ ResultItem r=result[i]; printf("{\"c_custkey\": %d, \"c_name\": %s, \"revenue\": %g, \"c_acctbal\": %g, \"n_name\": %s, \"c_address\": %s, \"c_phone\": %s, \"c_comment\": %s}%s", r.c_custkey, r.c_name, r.revenue, r.c_acctbal, r.n_name, r.c_address, r.c_phone, r.c_comment, i+1<result_len?" " : ""); }
     puts("");
     return 0;

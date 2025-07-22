@@ -3553,8 +3553,8 @@ for(size_t i=0;i<%d;i++){ Customer c=customer[i];
     }}
   }
 }
-for(size_t a=0;a<result_len;a++){ for(size_t b=a+1;b<result_len;b++){ if(result[a].revenue < result[b].revenue){ ResultItem tmp=result[a]; result[a]=result[b]; result[b]=tmp; } }}
-`, size, lc, lo, ll, ln)
+ for(size_t a=0;a<result_len;a++){ for(size_t b=a+1;b<result_len;b++){ if(result[a].revenue < result[b].revenue){ ResultItem tmp=result[a]; result[a]=result[b]; result[b]=tmp; } }}
+}`, size, lc, lo, ll, ln)
 }
 
 func genPrintGroupSort() string {
