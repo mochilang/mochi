@@ -38,9 +38,11 @@ type UnionDef struct {
 }
 
 type Program struct {
-	Structs []StructDef
-	Unions  []UnionDef
-	Stmts   []Stmt
+	Structs  []StructDef
+	Unions   []UnionDef
+	Stmts    []Stmt
+	UseNow   bool
+	UseBreak bool
 }
 
 // varTypes holds the inferred type for each variable defined during
@@ -53,6 +55,8 @@ var (
 	transpileEnv *types.Env
 	neededOpens  map[string]bool
 	indentLevel  int
+	usesNow      bool
+	usesBreak    bool
 )
 
 func copyMap(src map[string]string) map[string]string {
@@ -63,10 +67,74 @@ func copyMap(src map[string]string) map[string]string {
 	return dst
 }
 
+const helperNow = `let mutable _nowSeed = 0
+let mutable _nowSeeded = false
+let _initNow () =
+    let s = System.Environment.GetEnvironmentVariable("MOCHI_NOW_SEED")
+    if System.String.IsNullOrEmpty(s) |> not then
+        match System.Int32.TryParse(s) with
+        | true, v ->
+            _nowSeed <- v
+            _nowSeeded <- true
+        | _ -> ()
+let _now () =
+    if _nowSeeded then
+        _nowSeed <- (_nowSeed * 1664525 + 1013904223) % 2147483647
+        _nowSeed
+    else
+        int (System.DateTime.UtcNow.Ticks % 2147483647L)
+`
+
 func writeIndent(w io.Writer) {
 	for i := 0; i < indentLevel; i++ {
 		io.WriteString(w, "    ")
 	}
+}
+
+func stmtUsesBreak(s Stmt) bool {
+	switch st := s.(type) {
+	case *BreakStmt, *ContinueStmt:
+		return true
+	case *IfStmt:
+		for _, t := range st.Then {
+			if stmtUsesBreak(t) {
+				return true
+			}
+		}
+		for _, e := range st.Else {
+			if stmtUsesBreak(e) {
+				return true
+			}
+		}
+	case *WhileStmt:
+		for _, b := range st.Body {
+			if stmtUsesBreak(b) {
+				return true
+			}
+		}
+	case *ForStmt:
+		for _, b := range st.Body {
+			if stmtUsesBreak(b) {
+				return true
+			}
+		}
+	case *FunDef:
+		for _, b := range st.Body {
+			if stmtUsesBreak(b) {
+				return true
+			}
+		}
+	}
+	return false
+}
+
+func bodyUsesBreak(body []Stmt) bool {
+	for _, st := range body {
+		if stmtUsesBreak(st) {
+			return true
+		}
+	}
+	return false
 }
 
 func fsType(t types.Type) string {
@@ -380,14 +448,14 @@ type BreakStmt struct{}
 
 func (b *BreakStmt) emit(w io.Writer) {
 	writeIndent(w)
-	io.WriteString(w, "break")
+	io.WriteString(w, "raise Break")
 }
 
 type ContinueStmt struct{}
 
 func (c *ContinueStmt) emit(w io.Writer) {
 	writeIndent(w)
-	io.WriteString(w, "continue")
+	io.WriteString(w, "raise Continue")
 }
 
 // ListLit represents an F# list literal.
@@ -753,6 +821,23 @@ type IndexAssignStmt struct {
 }
 
 func (s *IndexAssignStmt) emit(w io.Writer) {
+	if idx, ok := s.Target.(*IndexExpr); ok {
+		if id, ok2 := idx.Target.(*IdentExpr); ok2 {
+			t := inferType(idx.Target)
+			if t == "list" || strings.HasSuffix(t, " list") || strings.HasPrefix(t, "list<") || t == "" {
+				writeIndent(w)
+				name := fsIdent(id.Name)
+				io.WriteString(w, name)
+				io.WriteString(w, " <- List.mapi (fun k x -> if k = ")
+				idx.Index.emit(w)
+				io.WriteString(w, " then ")
+				s.Value.emit(w)
+				io.WriteString(w, " else x) ")
+				io.WriteString(w, name)
+				return
+			}
+		}
+	}
 	writeIndent(w)
 	s.Target.emit(w)
 	io.WriteString(w, " <- ")
@@ -776,11 +861,17 @@ func (s *StructUpdateExpr) emit(w io.Writer) {
 }
 
 type WhileStmt struct {
-	Cond Expr
-	Body []Stmt
+	Cond      Expr
+	Body      []Stmt
+	WithBreak bool
 }
 
 func (wst *WhileStmt) emit(w io.Writer) {
+	if wst.WithBreak {
+		writeIndent(w)
+		io.WriteString(w, "try\n")
+		indentLevel++
+	}
 	writeIndent(w)
 	io.WriteString(w, "while ")
 	wst.Cond.emit(w)
@@ -793,6 +884,13 @@ func (wst *WhileStmt) emit(w io.Writer) {
 		}
 	}
 	indentLevel--
+	if wst.WithBreak {
+		indentLevel--
+		writeIndent(w)
+		io.WriteString(w, "with\n")
+		writeIndent(w)
+		io.WriteString(w, "| Break -> ()")
+	}
 }
 
 type UpdateStmt struct {
@@ -818,13 +916,19 @@ func (u *UpdateStmt) emit(w io.Writer) {
 }
 
 type ForStmt struct {
-	Name  string
-	Start Expr
-	End   Expr
-	Body  []Stmt
+	Name      string
+	Start     Expr
+	End       Expr
+	Body      []Stmt
+	WithBreak bool
 }
 
 func (fst *ForStmt) emit(w io.Writer) {
+	if fst.WithBreak {
+		writeIndent(w)
+		io.WriteString(w, "try\n")
+		indentLevel++
+	}
 	writeIndent(w)
 	io.WriteString(w, "for ")
 	if fst.End == nil && inferType(fst.Start) == "map" {
@@ -852,6 +956,13 @@ func (fst *ForStmt) emit(w io.Writer) {
 		}
 	}
 	indentLevel--
+	if fst.WithBreak {
+		indentLevel--
+		writeIndent(w)
+		io.WriteString(w, "with\n")
+		writeIndent(w)
+		io.WriteString(w, "| Break -> ()")
+	}
 }
 
 type LetStmt struct {
@@ -1160,7 +1271,7 @@ func inferType(e Expr) string {
 		return "list"
 	case *IdentExpr:
 		if t, ok := varTypes[v.Name]; ok {
-			if strings.HasSuffix(t, " list") {
+			if strings.HasSuffix(t, " list") || strings.HasPrefix(t, "list<") {
 				return "list"
 			}
 			if strings.HasPrefix(t, "Map<") {
@@ -1172,6 +1283,9 @@ func inferType(e Expr) string {
 	case *FieldExpr:
 		t := inferType(v.Target)
 		name := strings.TrimSuffix(t, " list")
+		if strings.HasPrefix(name, "list<") {
+			name = strings.TrimSuffix(strings.TrimPrefix(name, "list<"), ">")
+		}
 		if ft, ok := structFieldType(name, v.Name); ok {
 			return ft
 		}
@@ -1269,6 +1383,21 @@ type IndexExpr struct {
 }
 
 func (i *IndexExpr) emit(w io.Writer) {
+	t := inferType(i.Target)
+	if t == "list" || strings.HasSuffix(t, " list") || strings.HasPrefix(t, "list<") || t == "" {
+		io.WriteString(w, "List.item ")
+		i.Index.emit(w)
+		io.WriteString(w, " ")
+		i.Target.emit(w)
+		return
+	}
+	if strings.HasPrefix(t, "Map<") {
+		io.WriteString(w, "Map.find ")
+		i.Index.emit(w)
+		io.WriteString(w, " ")
+		i.Target.emit(w)
+		return
+	}
 	i.Target.emit(w)
 	io.WriteString(w, ".[")
 	i.Index.emit(w)
@@ -1350,6 +1479,15 @@ func (c *CastExpr) emit(w io.Writer) {
 		} else {
 			c.Expr.emit(w)
 		}
+	case "float":
+		io.WriteString(w, "float ")
+		if needsParen(c.Expr) {
+			io.WriteString(w, "(")
+			c.Expr.emit(w)
+			io.WriteString(w, ")")
+		} else {
+			c.Expr.emit(w)
+		}
 	default:
 		c.Expr.emit(w)
 	}
@@ -1360,6 +1498,13 @@ func Emit(prog *Program) []byte {
 	var buf bytes.Buffer
 	indentLevel = 0
 	buf.WriteString(header())
+	if prog.UseBreak {
+		buf.WriteString("exception Break\nexception Continue\n\n")
+	}
+	if prog.UseNow {
+		buf.WriteString(helperNow)
+		buf.WriteString("\n_initNow()\n")
+	}
 	for _, u := range prog.Unions {
 		fmt.Fprintf(&buf, "type %s =\n", u.Name)
 		for i, c := range u.Cases {
@@ -1423,6 +1568,8 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	unionDefs = nil
 	structCount = 0
 	neededOpens = map[string]bool{}
+	usesNow = false
+	usesBreak = false
 	p := &Program{}
 	for _, st := range prog.Statements {
 		conv, err := convertStmt(st)
@@ -1443,6 +1590,8 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 		p.Stmts = append(opens, p.Stmts...)
 	}
 	transpileEnv = nil
+	p.UseNow = usesNow
+	p.UseBreak = usesBreak
 	return p, nil
 }
 
@@ -1612,11 +1761,13 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 			if err != nil {
 				return nil, err
 			}
-			if t := varTypes[st.Assign.Name]; t == "map" && len(st.Assign.Index) == 1 {
-				upd := &CallExpr{Func: "Map.add", Args: []Expr{target.(*IndexExpr).Index, val, &IdentExpr{Name: st.Assign.Name}}}
-				return &AssignStmt{Name: st.Assign.Name, Expr: upd}, nil
+			if t := varTypes[st.Assign.Name]; strings.HasPrefix(t, "Map<") {
+				if len(st.Assign.Index) == 1 {
+					upd := &CallExpr{Func: "Map.add", Args: []Expr{target.(*IndexExpr).Index, val, &IdentExpr{Name: st.Assign.Name}}}
+					return &AssignStmt{Name: st.Assign.Name, Expr: upd}, nil
+				}
 			}
-			if t := varTypes[st.Assign.Name]; t == "list" {
+			if t := varTypes[st.Assign.Name]; t == "list" || strings.HasSuffix(t, " list") || strings.HasPrefix(t, "list<") {
 				indices := make([]Expr, len(st.Assign.Index))
 				for i, ix := range st.Assign.Index {
 					idx, err := convertExpr(ix.Start)
@@ -1629,7 +1780,7 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 				upd := buildListUpdate(list, indices, val)
 				return &AssignStmt{Name: st.Assign.Name, Expr: upd}, nil
 			}
-			if t := varTypes[st.Assign.Name]; t == "map" && len(st.Assign.Index) > 1 {
+			if t := varTypes[st.Assign.Name]; strings.HasPrefix(t, "Map<") && len(st.Assign.Index) > 1 {
 				indices := make([]Expr, len(st.Assign.Index))
 				for i, ix := range st.Assign.Index {
 					idx, err := convertExpr(ix.Start)
@@ -1698,7 +1849,11 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 			}
 			body[i] = cs
 		}
-		return &WhileStmt{Cond: cond, Body: body}, nil
+		wb := bodyUsesBreak(body)
+		if wb {
+			usesBreak = true
+		}
+		return &WhileStmt{Cond: cond, Body: body, WithBreak: wb}, nil
 	case st.For != nil:
 		start, err := convertExpr(st.For.Source)
 		if err != nil {
@@ -1719,7 +1874,11 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 			}
 			body[i] = cs
 		}
-		return &ForStmt{Name: st.For.Name, Start: start, End: end, Body: body}, nil
+		wb := bodyUsesBreak(body)
+		if wb {
+			usesBreak = true
+		}
+		return &ForStmt{Name: st.For.Name, Start: start, End: end, Body: body, WithBreak: wb}, nil
 	case st.Update != nil:
 		up, err := convertUpdateStmt(st.Update)
 		if err != nil {
@@ -1976,6 +2135,12 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 				return nil, fmt.Errorf("append expects 2 args")
 			}
 			return &AppendExpr{List: args[0], Elem: args[1]}, nil
+		case "now":
+			if len(args) == 0 {
+				usesNow = true
+				neededOpens["System"] = true
+				return &CallExpr{Func: "_now", Args: nil}, nil
+			}
 		case "substring":
 			if len(args) != 3 {
 				return nil, fmt.Errorf("substring expects 3 args")
@@ -2464,8 +2629,12 @@ func convertQueryExpr(q *parser.QueryExpr) (Expr, error) {
 		if varTypes[id.Name] == "group" {
 			src = &FieldExpr{Target: id, Name: "items"}
 		}
-		if t, ok := varTypes[id.Name]; ok && strings.HasSuffix(t, " list") {
-			varTypes[q.Var] = strings.TrimSuffix(t, " list")
+		if t, ok := varTypes[id.Name]; ok {
+			if strings.HasSuffix(t, " list") {
+				varTypes[q.Var] = strings.TrimSuffix(t, " list")
+			} else if strings.HasPrefix(t, "list<") {
+				varTypes[q.Var] = strings.TrimSuffix(strings.TrimPrefix(t, "list<"), ">")
+			}
 		}
 	}
 	froms := make([]queryFrom, len(q.Froms))
@@ -2476,8 +2645,12 @@ func convertQueryExpr(q *parser.QueryExpr) (Expr, error) {
 		}
 		froms[i] = queryFrom{Var: f.Var, Src: e}
 		if id, ok := e.(*IdentExpr); ok {
-			if t, ok := varTypes[id.Name]; ok && strings.HasSuffix(t, " list") {
-				varTypes[f.Var] = strings.TrimSuffix(t, " list")
+			if t, ok := varTypes[id.Name]; ok {
+				if strings.HasSuffix(t, " list") {
+					varTypes[f.Var] = strings.TrimSuffix(t, " list")
+				} else if strings.HasPrefix(t, "list<") {
+					varTypes[f.Var] = strings.TrimSuffix(strings.TrimPrefix(t, "list<"), ">")
+				}
 			}
 		}
 	}
@@ -2496,8 +2669,12 @@ func convertQueryExpr(q *parser.QueryExpr) (Expr, error) {
 		}
 		joins[i] = queryJoin{Var: j.Var, Src: src, On: on}
 		if id, ok := src.(*IdentExpr); ok {
-			if t, ok := varTypes[id.Name]; ok && strings.HasSuffix(t, " list") {
-				varTypes[j.Var] = strings.TrimSuffix(t, " list")
+			if t, ok := varTypes[id.Name]; ok {
+				if strings.HasSuffix(t, " list") {
+					varTypes[j.Var] = strings.TrimSuffix(t, " list")
+				} else if strings.HasPrefix(t, "list<") {
+					varTypes[j.Var] = strings.TrimSuffix(strings.TrimPrefix(t, "list<"), ">")
+				}
 			}
 		}
 	}
@@ -2550,7 +2727,7 @@ func convertQueryExpr(q *parser.QueryExpr) (Expr, error) {
 		for i, n := range names {
 			typ := "obj"
 			if t, ok := varTypes[n]; ok {
-				typ = fsTypeFromString(strings.TrimSuffix(t, " list"))
+				typ = fsTypeFromString(strings.TrimSuffix(strings.TrimPrefix(strings.TrimSuffix(t, " list"), "list<"), ">"))
 			}
 			itemFields[i] = StructField{Name: n, Type: typ, Mut: false}
 		}
