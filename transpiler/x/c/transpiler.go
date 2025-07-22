@@ -2208,7 +2208,43 @@ func compileFunction(env *types.Env, name string, fn *parser.FunExpr) (*Function
 		}
 		body = append(body, &ReturnStmt{Expr: expr})
 	}
+	if ret == "int" {
+		if fn.Return != nil && fn.Return.Simple == nil && fn.Return.Generic == nil {
+			if t := detectReturnType(body, localEnv); t != "" && t != "int" {
+				ret = t
+			}
+		}
+	}
 	return &Function{Name: name, Params: params, Body: body, Return: ret}, nil
+}
+
+func detectReturnType(stmts []Stmt, env *types.Env) string {
+	for _, st := range stmts {
+		switch s := st.(type) {
+		case *ReturnStmt:
+			if s.Expr != nil {
+				if t := inferExprType(env, s.Expr); t != "" {
+					return t
+				}
+			}
+		case *IfStmt:
+			if t := detectReturnType(s.Then, env); t != "" {
+				return t
+			}
+			if t := detectReturnType(s.Else, env); t != "" {
+				return t
+			}
+		case *WhileStmt:
+			if t := detectReturnType(s.Body, env); t != "" {
+				return t
+			}
+		case *ForStmt:
+			if t := detectReturnType(s.Body, env); t != "" {
+				return t
+			}
+		}
+	}
+	return ""
 }
 
 func convertExpr(e *parser.Expr) Expr {
@@ -2374,6 +2410,9 @@ func convertUnary(u *parser.Unary) Expr {
 	}
 	if ml := u.Value.Target.Map; ml != nil && len(u.Ops) == 0 && len(u.Value.Ops) == 0 {
 		var items []MapItem
+		allStr := true
+		var fields []StructField
+		var names []string
 		for _, it := range ml.Items {
 			key := convertExpr(it.Key)
 			if key == nil {
@@ -2384,6 +2423,62 @@ func convertUnary(u *parser.Unary) Expr {
 				return nil
 			}
 			items = append(items, MapItem{Key: key, Value: val})
+			if s, ok := evalString(key); ok {
+				fields = append(fields, StructField{Name: s, Value: val})
+				names = append(names, s)
+			} else if vr, ok := key.(*VarRef); ok {
+				fields = append(fields, StructField{Name: vr.Name, Value: val})
+				names = append(names, vr.Name)
+			} else {
+				allStr = false
+			}
+		}
+		if allStr {
+			key := strings.Join(names, ",")
+			name, ok := anonStructs[key]
+			if !ok {
+				structCounter++
+				name = fmt.Sprintf("Anon%d", structCounter)
+				anonStructs[key] = name
+			}
+			stFields := map[string]types.Type{}
+			for _, f := range fields {
+				tname := inferExprType(currentEnv, f.Value)
+				var tt types.Type = types.AnyType{}
+				switch tname {
+				case "int":
+					tt = types.IntType{}
+				case "double":
+					tt = types.FloatType{}
+				case "const char*":
+					tt = types.StringType{}
+				case "int[]":
+					tt = types.ListType{Elem: types.IntType{}}
+				case "double[]":
+					tt = types.ListType{Elem: types.FloatType{}}
+				case "const char*[]":
+					tt = types.ListType{Elem: types.StringType{}}
+				default:
+					if strings.HasSuffix(tname, "[]") {
+						base := strings.TrimSuffix(tname, "[]")
+						if base == "const char*" {
+							tt = types.ListType{Elem: types.StringType{}}
+						} else if base == "int" {
+							tt = types.ListType{Elem: types.IntType{}}
+						} else if base == "double" {
+							tt = types.ListType{Elem: types.FloatType{}}
+						} else if st, ok := currentEnv.GetStruct(base); ok {
+							tt = types.ListType{Elem: st}
+						}
+					} else if st, ok := currentEnv.GetStruct(tname); ok {
+						tt = st
+					}
+				}
+				stFields[f.Name] = tt
+			}
+			currentEnv.SetStruct(name, types.StructType{Name: name, Fields: stFields, Order: names})
+			structTypes = currentEnv.Structs()
+			return &StructLit{Name: name, Fields: fields}
 		}
 		return &MapLit{Items: items}
 	}
@@ -2463,6 +2558,15 @@ func convertUnary(u *parser.Unary) Expr {
 				idx := convertExpr(op.Index.Start)
 				if idx == nil {
 					return nil
+				}
+				if str, ok := evalString(idx); ok {
+					tname := inferExprType(currentEnv, current)
+					if st, ok2 := currentEnv.GetStruct(tname); ok2 {
+						if _, ok3 := st.Fields[str]; ok3 {
+							current = &FieldExpr{Target: current, Name: str}
+							continue
+						}
+					}
 				}
 				current = &IndexExpr{Target: current, Index: idx}
 				continue

@@ -9,12 +9,12 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"sort"
 	"strconv"
 	"strings"
 	"testing"
 	"time"
 
-	"mochi/golden"
 	ctrans "mochi/transpiler/x/c"
 )
 
@@ -23,49 +23,70 @@ func TestRosettaTranspilerGolden(t *testing.T) {
 		t.Skipf("C compiler not installed: %v", err)
 	}
 	root := repoRoot(t)
+	srcDir := filepath.Join(root, "tests", "rosetta", "x", "Mochi")
 	outDir := filepath.Join(root, "tests", "rosetta", "transpiler", "C")
 	os.MkdirAll(outDir, 0o755)
-
-	// Allow running a specific Rosetta program by numeric index.
-	if idxStr := os.Getenv("MOCHI_ROSETTA_INDEX"); idxStr != "" {
-		srcDir := filepath.Join(root, "tests", "rosetta", "x", "Mochi")
-		names, err := readIndex(filepath.Join(srcDir, "index.txt"))
-		if err == nil {
-			if idx, err2 := strconv.Atoi(idxStr); err2 == nil && idx >= 1 && idx <= len(names) {
-				name := strings.TrimSuffix(filepath.Base(names[idx-1]), ".mochi")
-				t.Setenv("MOCHI_ROSETTA_ONLY", name)
-			}
-		}
-	}
-
 	t.Cleanup(updateRosettaReadme)
 
-	golden.RunFirstFailure(t, "tests/rosetta/x/Mochi", ".mochi", ".out", func(src string) ([]byte, error) {
-		name := strings.TrimSuffix(filepath.Base(src), ".mochi")
-		codePath := filepath.Join(outDir, name+".c")
-		errPath := filepath.Join(outDir, name+".error")
+	_ = updateIndex(srcDir)
+	names, err := readIndex(filepath.Join(srcDir, "index.txt"))
+	if err != nil {
+		t.Fatalf("read index: %v", err)
+	}
+	if only := os.Getenv("MOCHI_ROSETTA_ONLY"); only != "" {
+		names = []string{only + ".mochi"}
+	}
+	start := 0
+	if idxStr := os.Getenv("MOCHI_ROSETTA_INDEX"); idxStr != "" {
+		idx, err := strconv.Atoi(idxStr)
+		if err != nil || idx < 1 || idx > len(names) {
+			t.Fatalf("invalid MOCHI_ROSETTA_INDEX: %s", idxStr)
+		}
+		start = idx - 1
+		names = names[start : start+1]
+	}
+	for i, nameFile := range names {
+		name := strings.TrimSuffix(nameFile, ".mochi")
+		idx := start + i + 1
+		if ok := t.Run(fmt.Sprintf("%03d_%s", idx, name), func(t *testing.T) {
+			src := filepath.Join(srcDir, nameFile)
+			codePath := filepath.Join(outDir, name+".c")
+			errPath := filepath.Join(outDir, name+".error")
 
-		code, err := transpileFile(src)
-		if err != nil {
-			_ = os.WriteFile(errPath, []byte(err.Error()), 0o644)
-			return nil, err
+			code, err := transpileFile(src)
+			if err != nil {
+				_ = os.WriteFile(errPath, []byte(err.Error()), 0o644)
+				t.Fatalf("%v", err)
+			}
+			if updateEnabled() {
+				norm := normalize(root, code)
+				_ = os.WriteFile(codePath, norm, 0o644)
+			}
+			out, runErr := transpileAndRun(src)
+			if runErr != nil {
+				_ = os.WriteFile(errPath, []byte(runErr.Error()+"\n"), 0o644)
+				t.Fatalf("%v", runErr)
+			}
+			_ = os.Remove(errPath)
+			if updateEnabled() {
+				trimmed := bytes.TrimSpace(out)
+				_ = os.WriteFile(filepath.Join(outDir, name+".out"), trimmed, 0o644)
+				return
+			}
+			wantPath := filepath.Join(outDir, name+".out")
+			want, err := os.ReadFile(wantPath)
+			if err != nil {
+				t.Fatalf("read want: %v", err)
+			}
+			want = bytes.TrimSpace(want)
+			got := bytes.TrimSpace(out)
+			if !bytes.Equal(got, want) {
+				t.Fatalf("output mismatch\nGot: %s\nWant: %s", got, want)
+			}
+		}); !ok {
+			t.Fatalf("first failing program: %s", name)
 		}
-		if updateEnabled() {
-			norm := normalize(root, code)
-			_ = os.WriteFile(codePath, norm, 0o644)
-		}
-		out, runErr := transpileAndRun(src)
-		if runErr != nil {
-			_ = os.WriteFile(errPath, []byte(runErr.Error()+"\n"), 0o644)
-			return nil, runErr
-		}
-		_ = os.Remove(errPath)
-		if updateEnabled() {
-			trimmed := bytes.TrimSpace(out)
-			_ = os.WriteFile(filepath.Join(outDir, name+".out"), trimmed, 0o644)
-		}
-		return bytes.TrimSpace(out), nil
-	})
+	}
 }
 
 func updateRosettaReadme() {
@@ -73,6 +94,7 @@ func updateRosettaReadme() {
 	srcDir := filepath.Join(root, "tests", "rosetta", "x", "Mochi")
 	outDir := filepath.Join(root, "tests", "rosetta", "transpiler", "C")
 	readmePath := filepath.Join(root, "transpiler", "x", "c", "ROSETTA.md")
+	_ = updateIndex(srcDir)
 	names, err := readIndex(filepath.Join(srcDir, "index.txt"))
 	if err != nil {
 		return
@@ -127,4 +149,18 @@ func readIndex(path string) ([]string, error) {
 		return nil, err
 	}
 	return names, nil
+}
+
+func updateIndex(dir string) error {
+	pattern := filepath.Join(dir, "*.mochi")
+	files, err := filepath.Glob(pattern)
+	if err != nil {
+		return err
+	}
+	sort.Strings(files)
+	var buf bytes.Buffer
+	for i, f := range files {
+		fmt.Fprintf(&buf, "%d %s\n", i+1, filepath.Base(f))
+	}
+	return os.WriteFile(filepath.Join(dir, "index.txt"), buf.Bytes(), 0o644)
 }
