@@ -200,7 +200,24 @@ func inferUnaryType(env *Env, u *parser.Unary) Type {
 	if u == nil {
 		return AnyType{}
 	}
-	return inferPostfixType(env, u.Value)
+	t := inferPostfixType(env, u.Value)
+	for i := len(u.Ops) - 1; i >= 0; i-- {
+		op := u.Ops[i]
+		switch op {
+		case "!":
+			// logical negation always yields a boolean result
+			t = BoolType{}
+		case "-":
+			// numeric negation preserves numeric type when known
+			switch t.(type) {
+			case IntType, Int64Type, BigIntType, FloatType, BigRatType:
+				// keep t as is
+			default:
+				t = AnyType{}
+			}
+		}
+	}
+	return t
 }
 
 func inferPostfixType(env *Env, p *parser.PostfixExpr) Type {

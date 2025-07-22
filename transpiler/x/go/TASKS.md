@@ -1,3 +1,7 @@
+## Progress (2025-07-22 23:26 +0700)
+- update zig rosetta checklist
+- Regenerated golden files - 103/103 vm valid programs passing
+
 ## Progress (2025-07-22 22:04 +0700)
 - go: add rosetta index support
 - Regenerated golden files - 103/103 vm valid programs passing
