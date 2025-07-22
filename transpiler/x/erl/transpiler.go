@@ -555,7 +555,7 @@ func (p *PrintStmt) emit(w io.Writer) {
 	}
 	parts := make([]string, len(p.Args))
 	for i, a := range p.Args {
-		if isStringExpr(a) {
+		if isStringExpr(a) || isStringField(a) {
 			parts[i] = "~s"
 		} else {
 			parts[i] = "~p"
@@ -569,6 +569,23 @@ func (p *PrintStmt) emit(w io.Writer) {
 		a.emit(w)
 	}
 	io.WriteString(w, "])")
+}
+
+func isStringField(e Expr) bool {
+	if idx, ok := e.(*IndexExpr); ok {
+		if idx.Kind == "map" {
+			if idx.IsString {
+				return true
+			}
+			switch k := idx.Index.(type) {
+			case *StringLit:
+				return k.Value == "name"
+			case *AtomLit:
+				return k.Name == "name"
+			}
+		}
+	}
+	return false
 }
 
 func (j *JsonStmt) emit(w io.Writer) {
@@ -702,6 +719,13 @@ func mapValueIsString(e Expr, env *types.Env, ctx *context) bool {
 		name := nr.Name
 		if ctx != nil {
 			name = ctx.original(nr.Name)
+			if fields, ok := ctx.strField[name]; ok {
+				for _, b := range fields {
+					if b {
+						return true
+					}
+				}
+			}
 		}
 		if t, err := env.GetVar(name); err == nil {
 			if mt, ok := t.(types.MapType); ok {
@@ -727,9 +751,14 @@ func stringFields(e Expr) map[string]bool {
 	case *MapLit:
 		fields := map[string]bool{}
 		for _, it := range v.Items {
-			if k, ok := it.Key.(*AtomLit); ok {
+			switch k := it.Key.(type) {
+			case *AtomLit:
 				if isStringExpr(it.Value) {
 					fields[k.Name] = true
+				}
+			case *StringLit:
+				if isStringExpr(it.Value) {
+					fields[k.Value] = true
 				}
 			}
 		}
@@ -752,9 +781,31 @@ func stringFields(e Expr) map[string]bool {
 			return accum
 		}
 	case *QueryExpr:
+		if nr, ok := v.Select.(*NameRef); ok && nr.Name == v.Var {
+			return stringFields(v.Src)
+		}
 		return stringFields(v.Select)
 	}
 	return nil
+}
+
+func stringFieldsCtx(e Expr, ctx *context) map[string]bool {
+	if nr, ok := e.(*NameRef); ok {
+		if ctx != nil {
+			name := ctx.original(nr.Name)
+			if fields, ok := ctx.strField[name]; ok {
+				return fields
+			}
+		}
+		return nil
+	}
+	if q, ok := e.(*QueryExpr); ok {
+		if nr, ok2 := q.Select.(*NameRef); ok2 && nr.Name == q.Var {
+			return stringFieldsCtx(q.Src, ctx)
+		}
+		return stringFieldsCtx(q.Select, ctx)
+	}
+	return stringFields(e)
 }
 
 func boolFields(e Expr) map[string]bool {
@@ -762,9 +813,14 @@ func boolFields(e Expr) map[string]bool {
 	case *MapLit:
 		fields := map[string]bool{}
 		for _, it := range v.Items {
-			if k, ok := it.Key.(*AtomLit); ok {
+			switch k := it.Key.(type) {
+			case *AtomLit:
 				if isBoolExpr(it.Value) {
 					fields[k.Name] = true
+				}
+			case *StringLit:
+				if isBoolExpr(it.Value) {
+					fields[k.Value] = true
 				}
 			}
 		}
@@ -792,19 +848,69 @@ func boolFields(e Expr) map[string]bool {
 	return nil
 }
 
+func boolFieldsCtx(e Expr, ctx *context) map[string]bool {
+	if nr, ok := e.(*NameRef); ok {
+		if ctx != nil {
+			name := ctx.original(nr.Name)
+			if fields, ok := ctx.boolField[name]; ok {
+				return fields
+			}
+		}
+		return nil
+	}
+	if q, ok := e.(*QueryExpr); ok {
+		if nr, ok2 := q.Select.(*NameRef); ok2 && nr.Name == q.Var {
+			return boolFieldsCtx(q.Src, ctx)
+		}
+		return boolFieldsCtx(q.Select, ctx)
+	}
+	return boolFields(e)
+}
+
 func fieldIsString(target Expr, key Expr, env *types.Env, ctx *context) bool {
-	if a, ok := key.(*AtomLit); ok {
+	switch k := key.(type) {
+	case *AtomLit:
 		switch t := target.(type) {
 		case *MapLit:
 			for _, it := range t.Items {
-				if ak, ok2 := it.Key.(*AtomLit); ok2 && ak.Name == a.Name {
-					return isStringExpr(it.Value)
+				switch kk := it.Key.(type) {
+				case *AtomLit:
+					if kk.Name == k.Name {
+						return isStringExpr(it.Value)
+					}
+				case *StringLit:
+					if kk.Value == k.Name {
+						return isStringExpr(it.Value)
+					}
 				}
 			}
 		case *NameRef:
 			if ctx != nil {
 				name := ctx.original(t.Name)
-				if ctx.isStrField(name, a.Name) {
+				if ctx.isStrField(name, k.Name) {
+					return true
+				}
+			}
+		}
+	case *StringLit:
+		switch t := target.(type) {
+		case *MapLit:
+			for _, it := range t.Items {
+				switch kk := it.Key.(type) {
+				case *StringLit:
+					if kk.Value == k.Value {
+						return isStringExpr(it.Value)
+					}
+				case *AtomLit:
+					if kk.Name == k.Value {
+						return isStringExpr(it.Value)
+					}
+				}
+			}
+		case *NameRef:
+			if ctx != nil {
+				name := ctx.original(t.Name)
+				if ctx.isStrField(name, k.Value) {
 					return true
 				}
 			}
@@ -814,18 +920,49 @@ func fieldIsString(target Expr, key Expr, env *types.Env, ctx *context) bool {
 }
 
 func fieldIsBool(target Expr, key Expr, env *types.Env, ctx *context) bool {
-	if a, ok := key.(*AtomLit); ok {
+	switch k := key.(type) {
+	case *AtomLit:
 		switch t := target.(type) {
 		case *MapLit:
 			for _, it := range t.Items {
-				if ak, ok2 := it.Key.(*AtomLit); ok2 && ak.Name == a.Name {
-					return isBoolExpr(it.Value)
+				switch kk := it.Key.(type) {
+				case *AtomLit:
+					if kk.Name == k.Name {
+						return isBoolExpr(it.Value)
+					}
+				case *StringLit:
+					if kk.Value == k.Name {
+						return isBoolExpr(it.Value)
+					}
 				}
 			}
 		case *NameRef:
 			if ctx != nil {
 				name := ctx.original(t.Name)
-				if ctx.isBoolField(name, a.Name) {
+				if ctx.isBoolField(name, k.Name) {
+					return true
+				}
+			}
+		}
+	case *StringLit:
+		switch t := target.(type) {
+		case *MapLit:
+			for _, it := range t.Items {
+				switch kk := it.Key.(type) {
+				case *StringLit:
+					if kk.Value == k.Value {
+						return isBoolExpr(it.Value)
+					}
+				case *AtomLit:
+					if kk.Name == k.Value {
+						return isBoolExpr(it.Value)
+					}
+				}
+			}
+		case *NameRef:
+			if ctx != nil {
+				name := ctx.original(t.Name)
+				if ctx.isBoolField(name, k.Value) {
 					return true
 				}
 			}
@@ -1604,8 +1741,8 @@ func convertStmt(st *parser.Statement, env *types.Env, ctx *context) ([]Stmt, er
 			e = &AtomLit{Name: "nil"}
 		}
 		alias := ctx.newAlias(st.Let.Name)
-		ctx.setStrFields(st.Let.Name, stringFields(e))
-		ctx.setBoolFields(st.Let.Name, boolFields(e))
+		ctx.setStrFields(st.Let.Name, stringFieldsCtx(e, ctx))
+		ctx.setBoolFields(st.Let.Name, boolFieldsCtx(e, ctx))
 		ctx.setStringVar(st.Let.Name, isStringExpr(e))
 		switch e.(type) {
 		case *IntLit, *FloatLit, *BoolLit, *StringLit, *AtomLit:
@@ -1624,8 +1761,8 @@ func convertStmt(st *parser.Statement, env *types.Env, ctx *context) ([]Stmt, er
 			e = &AtomLit{Name: "nil"}
 		}
 		alias := ctx.newAlias(st.Var.Name)
-		ctx.setStrFields(st.Var.Name, stringFields(e))
-		ctx.setBoolFields(st.Var.Name, boolFields(e))
+		ctx.setStrFields(st.Var.Name, stringFieldsCtx(e, ctx))
+		ctx.setBoolFields(st.Var.Name, boolFieldsCtx(e, ctx))
 		ctx.setStringVar(st.Var.Name, isStringExpr(e))
 		switch e.(type) {
 		case *IntLit, *FloatLit, *BoolLit, *StringLit, *AtomLit:
@@ -1638,8 +1775,8 @@ func convertStmt(st *parser.Statement, env *types.Env, ctx *context) ([]Stmt, er
 			return nil, err
 		}
 		alias := ctx.newAlias(st.Assign.Name)
-		ctx.setStrFields(st.Assign.Name, stringFields(val))
-		ctx.setBoolFields(st.Assign.Name, boolFields(val))
+		ctx.setStrFields(st.Assign.Name, stringFieldsCtx(val, ctx))
+		ctx.setBoolFields(st.Assign.Name, boolFieldsCtx(val, ctx))
 		ctx.setStringVar(st.Assign.Name, isStringExpr(val))
 		return []Stmt{&LetStmt{Name: alias, Expr: val}}, nil
 	case st.Assign != nil && len(st.Assign.Index) == 0 && len(st.Assign.Field) == 1:
@@ -1764,8 +1901,8 @@ func convertStmt(st *parser.Statement, env *types.Env, ctx *context) ([]Stmt, er
 		if err != nil {
 			return nil, err
 		}
-		loopCtx.setStrFields(st.For.Name, stringFields(src))
-		loopCtx.setBoolFields(st.For.Name, boolFields(src))
+		loopCtx.setStrFields(st.For.Name, stringFieldsCtx(src, ctx))
+		loopCtx.setBoolFields(st.For.Name, boolFieldsCtx(src, ctx))
 		loopCtx.setStringVar(st.For.Name, isStringExpr(src))
 		kind := "list"
 		if isMapExpr(src, env, ctx) {
@@ -2411,8 +2548,8 @@ func convertQueryExpr(q *parser.QueryExpr, env *types.Env, ctx *context) (Expr, 
 		return nil, err
 	}
 	alias := loopCtx.newAlias(q.Var)
-	loopCtx.setStrFields(q.Var, stringFields(src))
-	loopCtx.setBoolFields(q.Var, boolFields(src))
+	loopCtx.setStrFields(q.Var, stringFieldsCtx(src, ctx))
+	loopCtx.setBoolFields(q.Var, boolFieldsCtx(src, ctx))
 	child := types.NewEnv(env)
 	child.SetVar(q.Var, types.AnyType{}, true)
 	froms := []queryFrom{}
@@ -2429,8 +2566,8 @@ func convertQueryExpr(q *parser.QueryExpr, env *types.Env, ctx *context) (Expr, 
 			return nil, err
 		}
 		ralias := loopCtx.newAlias(j.Var)
-		loopCtx.setStrFields(j.Var, stringFields(js))
-		loopCtx.setBoolFields(j.Var, boolFields(js))
+		loopCtx.setStrFields(j.Var, stringFieldsCtx(js, ctx))
+		loopCtx.setBoolFields(j.Var, boolFieldsCtx(js, ctx))
 		child.SetVar(j.Var, types.AnyType{}, true)
 		onExpr, err := convertExpr(j.On, child, loopCtx)
 		if err != nil {
@@ -2446,8 +2583,8 @@ func convertQueryExpr(q *parser.QueryExpr, env *types.Env, ctx *context) (Expr, 
 			return nil, err
 		}
 		av := loopCtx.newAlias(f.Var)
-		loopCtx.setStrFields(f.Var, stringFields(fe))
-		loopCtx.setBoolFields(f.Var, boolFields(fe))
+		loopCtx.setStrFields(f.Var, stringFieldsCtx(fe, ctx))
+		loopCtx.setBoolFields(f.Var, boolFieldsCtx(fe, ctx))
 		child.SetVar(f.Var, types.AnyType{}, true)
 		froms = append(froms, queryFrom{Var: av, Src: fe})
 	}
@@ -2460,8 +2597,8 @@ func convertQueryExpr(q *parser.QueryExpr, env *types.Env, ctx *context) (Expr, 
 			return nil, err
 		}
 		jv := loopCtx.newAlias(j.Var)
-		loopCtx.setStrFields(j.Var, stringFields(je))
-		loopCtx.setBoolFields(j.Var, boolFields(je))
+		loopCtx.setStrFields(j.Var, stringFieldsCtx(je, ctx))
+		loopCtx.setBoolFields(j.Var, boolFieldsCtx(je, ctx))
 		child.SetVar(j.Var, types.AnyType{}, true)
 		froms = append(froms, queryFrom{Var: jv, Src: je})
 		jc, err := convertExpr(j.On, child, loopCtx)
@@ -2535,15 +2672,15 @@ func convertLeftJoinQuery(q *parser.QueryExpr, env *types.Env, ctx *context) (Ex
 		return nil, err
 	}
 	leftVar := loopCtx.newAlias(q.Var)
-	loopCtx.setStrFields(q.Var, stringFields(leftSrc))
-	loopCtx.setBoolFields(q.Var, boolFields(leftSrc))
+	loopCtx.setStrFields(q.Var, stringFieldsCtx(leftSrc, ctx))
+	loopCtx.setBoolFields(q.Var, boolFieldsCtx(leftSrc, ctx))
 	rightSrc, err := convertExpr(j.Src, env, ctx)
 	if err != nil {
 		return nil, err
 	}
 	rightVar := loopCtx.newAlias(j.Var)
-	loopCtx.setStrFields(j.Var, stringFields(rightSrc))
-	loopCtx.setBoolFields(j.Var, boolFields(rightSrc))
+	loopCtx.setStrFields(j.Var, stringFieldsCtx(rightSrc, ctx))
+	loopCtx.setBoolFields(j.Var, boolFieldsCtx(rightSrc, ctx))
 	child := types.NewEnv(env)
 	child.SetVar(q.Var, types.AnyType{}, true)
 	child.SetVar(j.Var, types.AnyType{}, true)
@@ -2566,15 +2703,15 @@ func convertGroupLeftJoinQuery(q *parser.QueryExpr, env *types.Env, ctx *context
 		return nil, err
 	}
 	leftVar := loopCtx.newAlias(q.Var)
-	loopCtx.setStrFields(q.Var, stringFields(leftSrc))
-	loopCtx.setBoolFields(q.Var, boolFields(leftSrc))
+	loopCtx.setStrFields(q.Var, stringFieldsCtx(leftSrc, ctx))
+	loopCtx.setBoolFields(q.Var, boolFieldsCtx(leftSrc, ctx))
 	rightSrc, err := convertExpr(j.Src, env, ctx)
 	if err != nil {
 		return nil, err
 	}
 	rightVar := loopCtx.newAlias(j.Var)
-	loopCtx.setStrFields(j.Var, stringFields(rightSrc))
-	loopCtx.setBoolFields(j.Var, boolFields(rightSrc))
+	loopCtx.setStrFields(j.Var, stringFieldsCtx(rightSrc, ctx))
+	loopCtx.setBoolFields(j.Var, boolFieldsCtx(rightSrc, ctx))
 	child := types.NewEnv(env)
 	child.SetVar(q.Var, types.AnyType{}, true)
 	child.SetVar(j.Var, types.AnyType{}, true)
@@ -2706,8 +2843,8 @@ func convertGroupQuery(q *parser.QueryExpr, env *types.Env, ctx *context) (Expr,
 		return nil, err
 	}
 	alias := loopCtx.newAlias(q.Var)
-	loopCtx.setStrFields(q.Var, stringFields(src))
-	loopCtx.setBoolFields(q.Var, boolFields(src))
+	loopCtx.setStrFields(q.Var, stringFieldsCtx(src, ctx))
+	loopCtx.setBoolFields(q.Var, boolFieldsCtx(src, ctx))
 
 	child := types.NewEnv(env)
 	child.SetVar(q.Var, types.AnyType{}, true)
@@ -2724,8 +2861,8 @@ func convertGroupQuery(q *parser.QueryExpr, env *types.Env, ctx *context) (Expr,
 			return nil, err
 		}
 		ralias := loopCtx.newAlias(j.Var)
-		loopCtx.setStrFields(j.Var, stringFields(js))
-		loopCtx.setBoolFields(j.Var, boolFields(js))
+		loopCtx.setStrFields(j.Var, stringFieldsCtx(js, ctx))
+		loopCtx.setBoolFields(j.Var, boolFieldsCtx(js, ctx))
 		child.SetVar(j.Var, types.AnyType{}, true)
 		onExpr, err := convertExpr(j.On, child, loopCtx)
 		if err != nil {
@@ -2742,8 +2879,8 @@ func convertGroupQuery(q *parser.QueryExpr, env *types.Env, ctx *context) (Expr,
 			return nil, err
 		}
 		av := loopCtx.newAlias(f.Var)
-		loopCtx.setStrFields(f.Var, stringFields(fe))
-		loopCtx.setBoolFields(f.Var, boolFields(fe))
+		loopCtx.setStrFields(f.Var, stringFieldsCtx(fe, ctx))
+		loopCtx.setBoolFields(f.Var, boolFieldsCtx(fe, ctx))
 		child.SetVar(f.Var, types.AnyType{}, true)
 		froms = append(froms, queryFrom{Var: av, Src: fe})
 	}
@@ -2756,8 +2893,8 @@ func convertGroupQuery(q *parser.QueryExpr, env *types.Env, ctx *context) (Expr,
 			return nil, err
 		}
 		jv := loopCtx.newAlias(j.Var)
-		loopCtx.setStrFields(j.Var, stringFields(je))
-		loopCtx.setBoolFields(j.Var, boolFields(je))
+		loopCtx.setStrFields(j.Var, stringFieldsCtx(je, ctx))
+		loopCtx.setBoolFields(j.Var, boolFieldsCtx(je, ctx))
 		child.SetVar(j.Var, types.AnyType{}, true)
 		froms = append(froms, queryFrom{Var: jv, Src: je})
 		vars = append(vars, struct{ name, alias string }{j.Var, jv})
