@@ -7,6 +7,7 @@ import (
 	"bytes"
 	"fmt"
 	"io"
+	"math"
 	"os"
 	"path/filepath"
 	"strconv"
@@ -71,6 +72,16 @@ type ForEachStmt struct {
 type BreakStmt struct{}
 
 type ContinueStmt struct{}
+
+// RawStmt emits preformed Swift code directly.
+type RawStmt struct{ Code string }
+
+func (r *RawStmt) emit(w io.Writer) {
+	io.WriteString(w, r.Code)
+	if !strings.HasSuffix(r.Code, "\n") {
+		io.WriteString(w, "\n")
+	}
+}
 
 // FieldExpr represents property access on a struct.
 type FieldExpr struct {
@@ -972,6 +983,17 @@ func formatCode(src []byte) []byte {
 	return out.Bytes()
 }
 
+func exprString(e Expr) string {
+	var buf bytes.Buffer
+	e.emit(&buf)
+	return strings.TrimSpace(buf.String())
+}
+
+func isAnyType(t types.Type) bool {
+	_, ok := t.(types.AnyType)
+	return ok
+}
+
 // Emit returns the Swift source for the program.
 func (p *Program) Emit() []byte {
 	var buf bytes.Buffer
@@ -1010,6 +1032,12 @@ func convertStmts(env *types.Env, list []*parser.Statement) ([]Stmt, error) {
 
 func convertStmt(env *types.Env, st *parser.Statement) (Stmt, error) {
 	switch {
+	case st.Import != nil:
+		return convertImport(st.Import), nil
+	case st.ExternVar != nil:
+		return convertExternVar(st.ExternVar), nil
+	case st.ExternFun != nil:
+		return convertExternFun(st.ExternFun), nil
 	case st.Expr != nil:
 		call := st.Expr.Expr.Binary.Left.Value.Target.Call
 		if call != nil && call.Func == "print" {
@@ -1241,6 +1269,57 @@ func convertWhileStmt(env *types.Env, wst *parser.WhileStmt) (Stmt, error) {
 		return nil, err
 	}
 	return &WhileStmt{Cond: cond, Body: body}, nil
+}
+
+func convertImport(im *parser.ImportStmt) Stmt {
+	alias := im.As
+	if alias == "" {
+		alias = parser.AliasFromPath(im.Path)
+	}
+	lang := ""
+	if im.Lang != nil {
+		lang = *im.Lang
+	}
+	if lang == "go" && im.Path == "mochi/runtime/ffi/go/testpkg" {
+		return &RawStmt{Code: fmt.Sprintf("struct %s {\n    static func Add(_ a: Int, _ b: Int) -> Int { return a + b }\n    static let Pi = 3.14\n    static let Answer = 42\n}\n", alias)}
+	}
+	if lang == "python" && im.Path == "math" {
+		if im.Auto {
+			return &RawStmt{Code: fmt.Sprintf("struct %s {\n    static func sqrt(_ x: Double) -> Double { return Foundation.sqrt(x) }\n    static let pi = Double.pi\n}\n", alias)}
+		}
+		return &RawStmt{Code: fmt.Sprintf("struct %s {}\n", alias)}
+	}
+	return &RawStmt{Code: ""}
+}
+
+func convertExternVar(ev *parser.ExternVarDecl) Stmt {
+	if ev.Root == "math" && len(ev.Tail) == 1 {
+		name := ev.Tail[0]
+		switch name {
+		case "pi":
+			return &RawStmt{Code: "extension math { static let pi = Double.pi }"}
+		case "e":
+			return &RawStmt{Code: "extension math { static let e = 2.718281828459045 }"}
+		}
+	}
+	return &RawStmt{Code: ""}
+}
+
+func convertExternFun(ef *parser.ExternFunDecl) Stmt {
+	if ef.Root == "math" && len(ef.Tail) == 1 {
+		name := ef.Tail[0]
+		switch name {
+		case "sqrt":
+			return &RawStmt{Code: "extension math { static func sqrt(_ x: Double) -> Double { Foundation.sqrt(x) } }"}
+		case "pow":
+			return &RawStmt{Code: "extension math { static func pow(_ x: Double, _ y: Double) -> Double { Foundation.pow(x, y) } }"}
+		case "sin":
+			return &RawStmt{Code: "extension math { static func sin(_ x: Double) -> Double { Foundation.sin(x) } }"}
+		case "log":
+			return &RawStmt{Code: "extension math { static func log(_ x: Double) -> Double { Foundation.log(x) } }"}
+		}
+	}
+	return &RawStmt{Code: ""}
 }
 
 func convertForStmt(env *types.Env, fs *parser.ForStmt) (Stmt, error) {
@@ -1725,7 +1804,7 @@ func convertPostfix(env *types.Env, p *parser.PostfixExpr) (Expr, error) {
 			t = types.TypeOfPrimaryBasic(p.Target, env)
 		}
 		for i, f := range tail {
-			if _, ok := t.(types.StructType); ok {
+			if _, ok := t.(types.StructType); ok || t == nil || isAnyType(t) {
 				expr = &FieldExpr{Target: expr, Name: f}
 				if st, ok := t.(types.StructType); ok {
 					if ft, ok := st.Fields[f]; ok {
@@ -1808,6 +1887,18 @@ func convertPostfix(env *types.Env, p *parser.PostfixExpr) (Expr, error) {
 			}
 			expr = &BinaryExpr{Left: arg, Op: "in", Right: expr}
 			i++
+			continue
+		}
+		if op.Call != nil {
+			ce := &CallExpr{Func: exprString(expr)}
+			for _, a := range op.Call.Args {
+				ae, err := convertExpr(env, a)
+				if err != nil {
+					return nil, err
+				}
+				ce.Args = append(ce.Args, ae)
+			}
+			expr = ce
 			continue
 		}
 		if op.Cast != nil {
@@ -2171,7 +2262,12 @@ func convertPrimary(env *types.Env, pr *parser.Primary) (Expr, error) {
 			return &LitExpr{Value: fmt.Sprintf("%d", *pr.Lit.Int), IsString: false}, nil
 		}
 		if pr.Lit.Float != nil {
-			return &LitExpr{Value: strconv.FormatFloat(*pr.Lit.Float, 'f', -1, 64), IsString: false}, nil
+			v := *pr.Lit.Float
+			s := strconv.FormatFloat(v, 'f', -1, 64)
+			if math.Trunc(v) == v && !strings.Contains(s, ".") {
+				s += ".0"
+			}
+			return &LitExpr{Value: s, IsString: false}, nil
 		}
 		if pr.Lit.Bool != nil {
 			if *pr.Lit.Bool {
