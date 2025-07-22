@@ -1219,7 +1219,9 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 				}
 			}
 		}
-		main.Body = append(main.Body, s)
+		if s != nil {
+			main.Body = append(main.Body, s)
+		}
 	}
 	_ = env
 	funcs = append(funcs, extraFuncs...)
@@ -2091,7 +2093,10 @@ func compileFunStmt(fn *parser.FunStmt, prog *parser.Program) (*Func, error) {
 		funDepth--
 		funParamsStack = funParamsStack[:len(funParamsStack)-1]
 	}()
-	ret := toZigType(fn.Return)
+	ret := ""
+	if fn.Return != nil {
+		ret = toZigType(fn.Return)
+	}
 	body := make([]Stmt, 0, len(fn.Body))
 	for _, st := range fn.Body {
 		s, err := compileStmt(st, prog)
@@ -2142,19 +2147,14 @@ func compileReturnStmt(rs *parser.ReturnStmt) (Stmt, error) {
 func compileStmt(s *parser.Statement, prog *parser.Program) (Stmt, error) {
 	switch {
 	case s.Expr != nil:
-		call := s.Expr.Expr.Binary.Left.Value.Target.Call
-		if call == nil || call.Func != "print" || len(call.Args) == 0 {
-			return nil, fmt.Errorf("unsupported expression")
+		expr, err := compileExpr(s.Expr.Expr)
+		if err != nil {
+			return nil, err
 		}
-		args := make([]Expr, len(call.Args))
-		for i, a := range call.Args {
-			ex, err := compileExpr(a)
-			if err != nil {
-				return nil, err
-			}
-			args[i] = ex
+		if call, ok := expr.(*CallExpr); ok && call.Func == "print" && len(call.Args) > 0 {
+			return &PrintStmt{Values: call.Args}, nil
 		}
-		return &PrintStmt{Values: args}, nil
+		return &ExprStmt{Expr: expr}, nil
 	case s.Let != nil:
 		var expr Expr
 		var err error
