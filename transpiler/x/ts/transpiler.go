@@ -1786,7 +1786,10 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	prelude = []Stmt{&RawStmt{Code: `function fmt(v:any):string {
   if (typeof v === 'number') return String(v);
   if (v && typeof v === 'object' && typeof (v as any).__name === 'string') {
-    const name = (v as any).__name === 'GenType1' && 'total' in (v as any) && !('val' in (v as any)) ? 'GenType2' : (v as any).__name;
+    let name = (v as any).__name;
+    if (name === 'GenType1' && 'total' in (v as any) && !('val' in (v as any))) {
+      name = ('a' in v && 'b' in v) ? 'GenType3' : 'GenType2';
+    }
     const parts = [] as string[];
     for (const k of Object.keys(v)) {
       if (k === '__name') continue;
