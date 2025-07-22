@@ -521,7 +521,7 @@ func (e *AvgExpr) emit(w io.Writer) {
 	if e.Value != nil {
 		e.Value.emit(w)
 	}
-	io.WriteString(w, "; return arr.reduce((a, b) => a + b, 0.0) / arr.length; })()")
+	io.WriteString(w, "; return (arr.reduce((a, b) => a + b, 0.0) / arr.length).toFixed(1); })()")
 }
 
 func (e *SumExpr) emit(w io.Writer) {
@@ -639,20 +639,10 @@ func (p *PrintExpr) emit(w io.Writer) {
 		if i > 0 {
 			io.WriteString(w, ", ")
 		}
-		if _, ok := a.(*FormatListExpr); ok {
-			if a != nil {
-				a.emit(w)
-			} else {
-				io.WriteString(w, "null")
-			}
+		if a != nil {
+			a.emit(w)
 		} else {
-			io.WriteString(w, "JSON.stringify(")
-			if a != nil {
-				a.emit(w)
-			} else {
-				io.WriteString(w, "null")
-			}
-			io.WriteString(w, ")")
+			io.WriteString(w, "null")
 		}
 	}
 	io.WriteString(w, ")")
@@ -2815,7 +2805,7 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 							m := &MethodCallExpr{Target: args[0], Method: "map", Args: []Expr{&FunExpr{Params: []string{"x"}, Expr: cond}}}
 							args[0] = &FormatListExpr{Value: m, Compact: true}
 						default:
-							args = []Expr{&FormatListExpr{Value: args[0], Compact: true}}
+							args = []Expr{&FormatListExpr{Value: args[0]}}
 						}
 					}
 				}
