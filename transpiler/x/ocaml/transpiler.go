@@ -2702,7 +2702,8 @@ func convertCall(c *parser.CallExpr, env *types.Env, vars map[string]VarInfo) (E
 			return nil, "", err
 		}
 		switch {
-		case typ == "string" || typ == "list" || strings.HasPrefix(typ, "list") || typ == "map" || strings.HasPrefix(typ, "map-"):
+		case typ == "string" || typ == "list" || strings.HasPrefix(typ, "list") ||
+			typ == "map" || strings.HasPrefix(typ, "map-") || strings.HasPrefix(typ, "map{"):
 			return &LenBuiltin{Arg: arg, Typ: typ}, "int", nil
 		default:
 			return nil, "", fmt.Errorf("len unsupported for %s", typ)
@@ -2817,7 +2818,7 @@ func convertCall(c *parser.CallExpr, env *types.Env, vars map[string]VarInfo) (E
 		if err != nil {
 			return nil, "", err
 		}
-		if typ != "map" && !strings.HasPrefix(typ, "map-") {
+		if typ != "map" && !strings.HasPrefix(typ, "map-") && !strings.HasPrefix(typ, "map{") {
 			return nil, "", fmt.Errorf("values expects map")
 		}
 		return &ValuesBuiltin{Map: mapArg}, "list", nil

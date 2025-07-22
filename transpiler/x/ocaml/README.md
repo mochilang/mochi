@@ -2,7 +2,7 @@
 
 This folder contains an experimental transpiler that converts Mochi source code into OCaml.
 
-## Golden Test Checklist (82/102)
+## Golden Test Checklist (85/102)
 
 The list below tracks Mochi programs under `tests/vm/valid` that should successfully transpile. Checked items indicate tests known to work.
 
@@ -46,11 +46,11 @@ The list below tracks Mochi programs under `tests/vm/valid` that should successf
 - [x] in_operator_extended.mochi
 - [x] inner_join.mochi
 - [x] join_multi.mochi
-- [ ] json_builtin.mochi
+- [x] json_builtin.mochi
 - [x] left_join.mochi
 - [x] left_join_multi.mochi
 - [x] len_builtin.mochi
-- [ ] len_map.mochi
+- [x] len_map.mochi
 - [x] len_string.mochi
 - [x] let_and_print.mochi
 - [x] list_assign.mochi
@@ -105,8 +105,8 @@ The list below tracks Mochi programs under `tests/vm/valid` that should successf
 - [x] unary_neg.mochi
 - [ ] update_stmt.mochi
 - [ ] user_type_literal.mochi
-- [ ] values_builtin.mochi
+- [x] values_builtin.mochi
 - [x] var_assignment.mochi
 - [x] while_loop.mochi
 
-Last updated 2025-07-22 13:54 +0700
+Last updated 2025-07-22 14:18 +0700
