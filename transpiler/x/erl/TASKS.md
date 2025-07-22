@@ -1,3 +1,35 @@
+## Progress (2025-07-22 13:00 +0700)
+- go transpiler: support simple union types (01c796413)
+- Regenerated golden files - 98/102 vm valid programs passing
+
+## Progress (2025-07-22 13:00 +0700)
+- go transpiler: support simple union types (01c796413)
+- Regenerated golden files - 98/102 vm valid programs passing
+
+## Progress (2025-07-22 13:00 +0700)
+- go transpiler: support simple union types (01c796413)
+- Regenerated golden files - 97/102 vm valid programs passing
+
+## Progress (2025-07-22 13:00 +0700)
+- go transpiler: support simple union types (01c796413)
+- Regenerated golden files - 97/102 vm valid programs passing
+
+## Progress (2025-07-22 13:00 +0700)
+- go transpiler: support simple union types (01c796413)
+- Regenerated golden files - 97/102 vm valid programs passing
+
+## Progress (2025-07-22 13:00 +0700)
+- go transpiler: support simple union types (01c796413)
+- Regenerated golden files - 97/102 vm valid programs passing
+
+## Progress (2025-07-22 13:00 +0700)
+- go transpiler: support simple union types (01c796413)
+- Regenerated golden files - 97/102 vm valid programs passing
+
+## Progress (2025-07-22 13:00 +0700)
+- go transpiler: support simple union types (01c796413)
+- Regenerated golden files - 96/102 vm valid programs passing
+
 ## Progress (2025-07-22 12:33 +0700)
 - docs: update erl progress (d37eb1c7e)
 - Regenerated golden files - 95/102 vm valid programs passing

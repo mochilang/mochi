@@ -576,6 +576,15 @@ type MapAssignStmt struct {
 	Value Expr
 }
 
+// UpdateStmt updates items of a list of structs.
+type UpdateStmt struct {
+	Name   string
+	Old    string
+	Fields []string
+	Values []Expr
+	Cond   Expr
+}
+
 // BreakStmt represents a `break` statement.
 type BreakStmt struct{}
 
@@ -1392,6 +1401,31 @@ func (ma *MapAssignStmt) emit(w io.Writer) {
 	fmt.Fprintf(w, ", %s)", ma.Old)
 }
 
+func (u *UpdateStmt) emit(w io.Writer) {
+	fmt.Fprintf(w, "%s = lists:map(fun(Item) ->\n    ", u.Name)
+	if u.Cond != nil {
+		io.WriteString(w, "case ")
+		u.Cond.emit(w)
+		io.WriteString(w, " of\n        true -> Item#{")
+	} else {
+		io.WriteString(w, "Item#{")
+	}
+	for i, f := range u.Fields {
+		if i > 0 {
+			io.WriteString(w, ", ")
+		}
+		fmt.Fprintf(w, "\"%s\" => ", f)
+		u.Values[i].emit(w)
+	}
+	io.WriteString(w, "}")
+	if u.Cond != nil {
+		io.WriteString(w, ";\n        _ -> Item\n    end")
+	}
+	io.WriteString(w, " end, ")
+	io.WriteString(w, u.Old)
+	io.WriteString(w, ")")
+}
+
 func (b *BreakStmt) emit(w io.Writer)    { io.WriteString(w, "throw(break)") }
 func (c *ContinueStmt) emit(w io.Writer) { io.WriteString(w, "throw(continue)") }
 
@@ -1951,6 +1985,12 @@ func convertStmt(st *parser.Statement, env *types.Env, ctx *context) ([]Stmt, er
 			return []Stmt{&CallStmt{Call: c}}, nil
 		}
 		return nil, fmt.Errorf("unsupported expression")
+	case st.Update != nil:
+		up, err := convertUpdateStmt(st.Update, env, ctx)
+		if err != nil {
+			return nil, err
+		}
+		return []Stmt{up}, nil
 	case st.Break != nil:
 		return []Stmt{&BreakStmt{}}, nil
 	case st.Continue != nil:
@@ -2045,6 +2085,58 @@ func convertStmt(st *parser.Statement, env *types.Env, ctx *context) ([]Stmt, er
 	default:
 		return nil, fmt.Errorf("unsupported statement")
 	}
+}
+
+func convertUpdateStmt(u *parser.UpdateStmt, env *types.Env, ctx *context) (Stmt, error) {
+	old := ctx.current(u.Target)
+	alias := ctx.newAlias(u.Target)
+
+	var st types.StructType
+	if env != nil {
+		if t, err := env.GetVar(u.Target); err == nil {
+			if lt, ok := t.(types.ListType); ok {
+				if s, ok := lt.Elem.(types.StructType); ok {
+					st = s
+				}
+			}
+		}
+	}
+	child := types.NewEnv(env)
+	fieldSet := map[string]bool{}
+	for name, ft := range st.Fields {
+		child.SetVar(name, ft, true)
+		fieldSet[name] = true
+	}
+	loopCtx := ctx.clone()
+	for name := range fieldSet {
+		loopCtx.alias[name] = name
+	}
+	repl := fieldReplacements(fieldSet)
+
+	fields := make([]string, len(u.Set.Items))
+	values := make([]Expr, len(u.Set.Items))
+	for i, it := range u.Set.Items {
+		key, ok := types.SimpleStringKey(it.Key)
+		if !ok {
+			return nil, fmt.Errorf("unsupported update key")
+		}
+		v, err := convertExpr(it.Value, child, loopCtx)
+		if err != nil {
+			return nil, err
+		}
+		v = replaceVars(v, repl)
+		fields[i] = key
+		values[i] = v
+	}
+	var cond Expr
+	if u.Where != nil {
+		c, err := convertExpr(u.Where, child, loopCtx)
+		if err != nil {
+			return nil, err
+		}
+		cond = replaceVars(c, repl)
+	}
+	return &UpdateStmt{Name: alias, Old: old, Fields: fields, Values: values, Cond: cond}, nil
 }
 
 func convertIfStmt(n *parser.IfStmt, env *types.Env, ctx *context) (*IfStmt, error) {
@@ -3029,6 +3121,14 @@ func replaceVars(e Expr, repl map[string]Expr) Expr {
 	default:
 		return v
 	}
+}
+
+func fieldReplacements(fields map[string]bool) map[string]Expr {
+	repl := make(map[string]Expr, len(fields))
+	for f := range fields {
+		repl[f] = &IndexExpr{Target: &NameRef{Name: "Item"}, Index: &StringLit{Value: f}, Kind: "map"}
+	}
+	return repl
 }
 
 func convertLeftJoinMultiQuery(q *parser.QueryExpr, env *types.Env, ctx *context) (Expr, error) {

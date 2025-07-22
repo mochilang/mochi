@@ -1,5 +1,5 @@
-# Erlang Transpiler Output (95/102 generated and run)
-Last updated: 2025-07-22 12:33 +0700
+# Erlang Transpiler Output (98/102 generated and run)
+Last updated: 2025-07-22 13:00 +0700
 
 This directory contains a minimal transpiler that converts a very small
 subset of Mochi into Erlang. Generated programs are executed with
@@ -77,7 +77,7 @@ that produces the same output as the Mochi VM.
 - [x] membership
 - [x] min_max_builtin
 - [x] nested_function
-- [ ] order_by_map
+- [x] order_by_map
 - [x] outer_join
 - [x] partial_application
 - [x] print_hello
@@ -108,8 +108,8 @@ that produces the same output as the Mochi VM.
 - [x] typed_let
 - [x] typed_var
 - [x] unary_neg
-- [ ] update_stmt
-- [ ] user_type_literal
+- [x] update_stmt
+- [x] user_type_literal
 - [x] values_builtin
 - [x] var_assignment
 - [x] while_loop
