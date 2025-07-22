@@ -1342,6 +1342,17 @@ type InputExpr struct{}
 func (in *InputExpr) emit(w io.Writer) { fmt.Fprint(w, "_scanner.nextLine()") }
 
 func (u *UnaryExpr) emit(w io.Writer) {
+	if u.Op == "!" && !isBoolExpr(u.Value) {
+		fmt.Fprint(w, "!(Boolean)")
+		if _, ok := u.Value.(*BinaryExpr); ok {
+			fmt.Fprint(w, "(")
+			u.Value.emit(w)
+			fmt.Fprint(w, ")")
+		} else {
+			u.Value.emit(w)
+		}
+		return
+	}
 	fmt.Fprint(w, u.Op)
 	if _, ok := u.Value.(*BinaryExpr); ok {
 		fmt.Fprint(w, "(")
@@ -1639,6 +1650,10 @@ func isBoolExpr(e Expr) bool {
 	case *BinaryExpr:
 		switch ex.Op {
 		case "&&", "||", "==", "!=", "<", "<=", ">", ">=", "in":
+			return true
+		}
+	case *IndexExpr:
+		if arrayElemType(ex.Target) == "boolean" {
 			return true
 		}
 	case *MethodCallExpr:
@@ -2216,7 +2231,9 @@ func compilePostfix(pf *parser.PostfixExpr) (Expr, error) {
 					expr = &MethodCallExpr{Target: fe.Target, Name: fe.Name, Args: args}
 				}
 			} else if v, ok := expr.(*VarExpr); ok {
-				if t, ok := varTypes[v.Name]; ok && t == "fn" {
+				if v.Name == "int" && len(args) == 1 {
+					expr = &CallExpr{Func: "Integer.parseInt", Args: args}
+				} else if t, ok := varTypes[v.Name]; ok && t == "fn" {
 					expr = &MethodCallExpr{Target: expr, Name: "applyAsInt", Args: args}
 				} else {
 					expr = &CallExpr{Func: v.Name, Args: args}
@@ -2310,6 +2327,9 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 		}
 		if name == "sum" && len(args) == 1 {
 			return &SumExpr{Value: args[0]}, nil
+		}
+		if name == "int" && len(args) == 1 {
+			return &CallExpr{Func: "Integer.parseInt", Args: args}, nil
 		}
 		if name == "values" && len(args) == 1 {
 			return &ValuesExpr{Map: args[0]}, nil

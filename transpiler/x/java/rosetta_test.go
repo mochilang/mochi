@@ -24,28 +24,6 @@ func shouldUpdateRosetta() bool {
 	return false
 }
 
-func classNameFromVar(s string) string {
-	if s == "" {
-		return ""
-	}
-	parts := strings.FieldsFunc(s, func(r rune) bool {
-		return r == '_' || r == '-' || r == ' ' || r == '.' || r == '+'
-	})
-	for i, p := range parts {
-		if p == "" {
-			continue
-		}
-		parts[i] = strings.ToUpper(p[:1]) + p[1:]
-	}
-	name := strings.Join(parts, "")
-	if name != "" {
-		if c := name[0]; c >= '0' && c <= '9' {
-			name = "M" + name
-		}
-	}
-	return name
-}
-
 func runRosettaTask(t *testing.T, name string) {
 	root := repoRootDir(t)
 	src := filepath.Join(root, "tests", "rosetta", "x", "Mochi", name+".mochi")
@@ -74,10 +52,7 @@ func runRosettaTask(t *testing.T, name string) {
 		t.Fatalf("write code %s: %v", name, err)
 	}
 
-	className := classNameFromVar(name)
-	if className == "" {
-		className = "Main"
-	}
+	className := "Main"
 	tmp := t.TempDir()
 	srcTmp := filepath.Join(tmp, className+".java")
 	if err := os.WriteFile(srcTmp, code, 0644); err != nil {
