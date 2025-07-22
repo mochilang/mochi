@@ -25,4 +25,3 @@ main = do
     mapM_ (\a ->
         putStrLn (a.name ++ " " ++ a.email)
     ) adults
-
