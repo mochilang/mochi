@@ -60,15 +60,25 @@ func TestRosettaTranspile(t *testing.T) {
 		t.Fatal("no Mochi Rosetta tests found")
 	}
 	sort.Strings(files)
-	max := len(files)
-	if v := os.Getenv("ROSETTA_MAX"); v != "" {
-		if n, err := strconv.Atoi(v); err == nil && n < max {
-			max = n
+
+	if idxStr := os.Getenv("MOCHI_ROSETTA_INDEX"); idxStr != "" {
+		idx, err := strconv.Atoi(idxStr)
+		if err != nil || idx < 1 || idx > len(files) {
+			t.Fatalf("invalid MOCHI_ROSETTA_INDEX: %s", idxStr)
 		}
+		files = files[idx-1 : idx]
+	} else {
+		max := len(files)
+		if v := os.Getenv("ROSETTA_MAX"); v != "" {
+			if n, err := strconv.Atoi(v); err == nil && n < max {
+				max = n
+			}
+		}
+		files = files[:max]
 	}
 
 	var firstFail string
-	for _, src := range files[:max] {
+	for _, src := range files {
 		name := strings.TrimSuffix(filepath.Base(src), ".mochi")
 		ok := t.Run(name, func(t *testing.T) { runRosetta(t, src, name, outDir) })
 		if !ok && firstFail == "" {
@@ -166,14 +176,14 @@ func updateRosettaReadme() {
 	total := len(files)
 	compiled := 0
 	var lines []string
-	for _, f := range files {
+	for i, f := range files {
 		name := strings.TrimSuffix(filepath.Base(f), ".mochi")
 		mark := "[ ]"
 		if _, err := os.Stat(filepath.Join(outDir, name+".out")); err == nil {
 			compiled++
 			mark = "[x]"
 		}
-		lines = append(lines, fmt.Sprintf("- %s %s", mark, name))
+		lines = append(lines, fmt.Sprintf("%d. %s %s", i+1, mark, name))
 	}
 	tsRaw, _ := exec.Command("git", "log", "-1", "--format=%cI").Output()
 	ts := strings.TrimSpace(string(tsRaw))
