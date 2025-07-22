@@ -4304,7 +4304,7 @@ func convertGroupQuery(q *parser.QueryExpr, env *types.Env, target string) ([]St
 			break
 		}
 	}
-	if leftJoin {
+	if len(vars) > 1 || leftJoin {
 		var fields []DataClassField
 		var args []Expr
 		for _, v := range vars {
@@ -4313,6 +4313,9 @@ func convertGroupQuery(q *parser.QueryExpr, env *types.Env, target string) ([]St
 		}
 		rowDC = &DataClassDef{Name: toClassName(target + "_row"), Fields: fields}
 		row = &CallExpr{Func: &Name{Name: rowDC.Name}, Args: args}
+		if env != nil {
+			env.SetStruct(rowDC.Name, structFromDataClass(rowDC, env))
+		}
 	}
 	stmts := []Stmt{}
 	if keyDC != nil {
