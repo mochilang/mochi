@@ -42,8 +42,10 @@ func init() {
 }
 
 type StructDef struct {
-	Name   string
-	Fields []Param
+	Name     string
+	Base     string
+	Abstract bool
+	Fields   []Param
 }
 
 type Program struct {
@@ -225,6 +227,37 @@ type LambdaExpr struct {
 type BlockLambda struct {
 	Params []Param
 	Body   []Stmt
+}
+
+// MatchBlock represents a simple switch implemented with dynamic_cast.
+type MatchBlock struct{ Body []Stmt }
+
+func (m *MatchBlock) emit(w io.Writer) {
+	cap := "[]"
+	if inFunction || inLambda > 0 {
+		cap = "[&]"
+	}
+	io.WriteString(w, "("+cap+"{\n")
+	inLambda++
+	for _, st := range m.Body {
+		st.emit(w, 1)
+	}
+	inLambda--
+	io.WriteString(w, "}())")
+}
+
+// DynCastExpr represents a C++ dynamic_cast expression.
+type DynCastExpr struct {
+	Type string
+	Expr Expr
+}
+
+// PtrGetExpr represents calling .get() on a smart pointer.
+type PtrGetExpr struct{ Target Expr }
+
+type FieldPtrExpr struct {
+	Target Expr
+	Field  string
 }
 
 type ReturnStmt struct{ Value Expr }
@@ -428,22 +461,42 @@ func (p *Program) write(w io.Writer) {
 	}
 	fmt.Fprintln(w)
 	fmt.Fprintln(w)
+	for _, st := range p.Structs {
+		if st.Abstract {
+			fmt.Fprintf(w, "struct %s;\n", st.Name)
+		}
+	}
+	if len(p.Structs) > 0 {
+		fmt.Fprintln(w)
+	}
 	fmt.Fprintln(w)
 	for _, st := range p.Structs {
-		fmt.Fprintf(w, "struct %s {\n", st.Name)
+		fmt.Fprintf(w, "struct %s", st.Name)
+		if st.Base != "" {
+			fmt.Fprintf(w, " : %s", st.Base)
+		}
+		fmt.Fprintln(w, " {")
+		if st.Abstract {
+			fmt.Fprintf(w, "    virtual ~%s() = default;\n", st.Name)
+		}
 		for _, f := range st.Fields {
 			fmt.Fprintf(w, "    %s %s;\n", f.Type, f.Name)
 		}
-		fmt.Fprintf(w, "    auto operator<=>(const %s&) const = default;\n", st.Name)
-		if strings.HasSuffix(st.Name, "Group") && len(st.Fields) == 2 && st.Fields[1].Name == "items" {
-			fmt.Fprintln(w, "    auto begin() { return items.begin(); }")
-			fmt.Fprintln(w, "    auto end() { return items.end(); }")
-			fmt.Fprintln(w, "    size_t size() const { return items.size(); }")
+		if !st.Abstract {
+			fmt.Fprintf(w, "    auto operator<=>(const %s&) const = default;\n", st.Name)
+			if strings.HasSuffix(st.Name, "Group") && len(st.Fields) == 2 && st.Fields[1].Name == "items" {
+				fmt.Fprintln(w, "    auto begin() { return items.begin(); }")
+				fmt.Fprintln(w, "    auto end() { return items.end(); }")
+				fmt.Fprintln(w, "    size_t size() const { return items.size(); }")
+			}
 		}
 		fmt.Fprintln(w, "};")
 		fmt.Fprintln(w)
 	}
 	for _, st := range p.Structs {
+		if st.Abstract {
+			continue
+		}
 		fmt.Fprintf(w, "std::ostream& operator<<(std::ostream& os, const %s& v) {\n", st.Name)
 		fmt.Fprint(w, "    os << '{'")
 		for i, f := range st.Fields {
@@ -711,7 +764,7 @@ func (s *SelectorExpr) emit(w io.Writer) {
 		io.WriteString(w, "[\"")
 		io.WriteString(w, s.Field)
 		io.WriteString(w, "\"]")
-	} else if strings.HasPrefix(t, "std::optional<") {
+	} else if strings.HasPrefix(t, "std::optional<") || strings.HasSuffix(t, "*") || strings.HasPrefix(t, "std::unique_ptr<") {
 		s.Target.emit(w)
 		io.WriteString(w, "->")
 		io.WriteString(w, s.Field)
@@ -947,6 +1000,25 @@ func (l *BlockLambda) emit(w io.Writer) {
 		st.emit(w, 1)
 	}
 	io.WriteString(w, "}")
+}
+
+func (d *DynCastExpr) emit(w io.Writer) {
+	io.WriteString(w, "dynamic_cast<const ")
+	io.WriteString(w, d.Type)
+	io.WriteString(w, "*>(")
+	d.Expr.emit(w)
+	io.WriteString(w, ")")
+}
+
+func (p *PtrGetExpr) emit(w io.Writer) {
+	p.Target.emit(w)
+	io.WriteString(w, ".get()")
+}
+
+func (f *FieldPtrExpr) emit(w io.Writer) {
+	f.Target.emit(w)
+	io.WriteString(w, "->")
+	io.WriteString(w, f.Field)
 }
 
 func (lc *MultiListComp) emit(w io.Writer) {
@@ -1926,11 +1998,20 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 				cp.GlobalTypes[stmt.Var.Name] = typ
 			}
 		case stmt.Type != nil:
-			st, err := convertTypeDecl(stmt.Type)
-			if err != nil {
-				return nil, err
+			if len(stmt.Type.Variants) > 0 {
+				base, vars, err := convertUnionDecl(stmt.Type)
+				if err != nil {
+					return nil, err
+				}
+				cp.Structs = append(cp.Structs, base)
+				cp.Structs = append(cp.Structs, vars...)
+			} else {
+				st, err := convertTypeDecl(stmt.Type)
+				if err != nil {
+					return nil, err
+				}
+				cp.Structs = append(cp.Structs, *st)
 			}
-			cp.Structs = append(cp.Structs, *st)
 		case stmt.Assign != nil:
 			val, err := convertExpr(stmt.Assign.Value)
 			if err != nil {
@@ -2610,6 +2691,9 @@ func convertFun(fn *parser.FunStmt) (*Func, error) {
 		typ := ""
 		if p.Type != nil && p.Type.Simple != nil {
 			typ = cppType(*p.Type.Simple)
+			if _, ok := currentEnv.GetUnion(*p.Type.Simple); ok {
+				typ = fmt.Sprintf("const %s*", *p.Type.Simple)
+			}
 		}
 		inFunction = prev
 		params = append(params, Param{Name: p.Name, Type: typ})
@@ -2980,33 +3064,82 @@ func convertIfExpr(ie *parser.IfExpr) (*IfExpr, error) {
 	return &IfExpr{Cond: cond, Then: thenExpr, ElseIf: elseIf, Else: elseExpr}, nil
 }
 
+func extractVariantPattern(e *parser.Expr) (string, []string, bool) {
+	if e == nil || e.Binary == nil || e.Binary.Left == nil || e.Binary.Left.Value == nil {
+		return "", nil, false
+	}
+	pf := e.Binary.Left.Value
+	prim := pf.Target
+	if prim != nil && prim.Call != nil && len(pf.Ops) == 0 {
+		if _, ok := currentEnv.FindUnionByVariant(prim.Call.Func); ok {
+			vars := make([]string, len(prim.Call.Args))
+			for i, a := range prim.Call.Args {
+				if a.Binary != nil && a.Binary.Left != nil && a.Binary.Left.Value != nil && a.Binary.Left.Value.Target != nil && a.Binary.Left.Value.Target.Selector != nil && len(a.Binary.Left.Value.Target.Selector.Tail) == 0 {
+					vars[i] = a.Binary.Left.Value.Target.Selector.Root
+				} else {
+					return "", nil, false
+				}
+			}
+			return prim.Call.Func, vars, true
+		}
+	} else if prim != nil && prim.Selector != nil && len(prim.Selector.Tail) == 0 && len(pf.Ops) == 0 {
+		if _, ok := currentEnv.FindUnionByVariant(prim.Selector.Root); ok {
+			return prim.Selector.Root, nil, true
+		}
+	}
+	return "", nil, false
+}
+
 func convertMatchExpr(me *parser.MatchExpr) (Expr, error) {
 	target, err := convertExpr(me.Target)
 	if err != nil {
 		return nil, err
 	}
-	var expr Expr
-	for i := len(me.Cases) - 1; i >= 0; i-- {
-		c := me.Cases[i]
-		res, err := convertExpr(c.Result)
-		if err != nil {
-			return nil, err
+	var body []Stmt
+	for _, c := range me.Cases {
+		if v, vars, ok := extractVariantPattern(c.Pattern); ok {
+			tmp := "__" + strings.ToLower(v)
+			cast := &DynCastExpr{Type: v, Expr: target}
+			body = append(body, &LetStmt{Name: tmp, Type: fmt.Sprintf("const %s*", v), Value: cast})
+			old := localTypes
+			nt := map[string]string{}
+			for k, val := range old {
+				nt[k] = val
+			}
+			nt[tmp] = fmt.Sprintf("const %s*", v)
+			st, _ := currentEnv.GetStruct(v)
+			then := []Stmt{}
+			if len(vars) > 0 {
+				for i, name := range vars {
+					field := st.Order[i]
+					ft := cppTypeFrom(st.Fields[field])
+					val := Expr(&FieldPtrExpr{Target: &VarRef{Name: tmp}, Field: field})
+					if strings.HasPrefix(ft, "std::unique_ptr<") {
+						val = &PtrGetExpr{Target: val}
+						ft = strings.TrimSuffix(strings.TrimPrefix(ft, "std::unique_ptr<"), ">") + "*"
+					}
+					then = append(then, &LetStmt{Name: name, Type: ft, Value: val})
+					nt[name] = ft
+				}
+			}
+			localTypes = nt
+			res, err := convertExpr(c.Result)
+			if err != nil {
+				return nil, err
+			}
+			localTypes = old
+			then = append(then, &ReturnStmt{Value: res})
+			body = append(body, &IfStmt{Cond: &VarRef{Name: tmp}, Then: then})
+		} else {
+			res, err := convertExpr(c.Result)
+			if err != nil {
+				return nil, err
+			}
+			body = append(body, &ReturnStmt{Value: res})
 		}
-		pat, err := convertExpr(c.Pattern)
-		if err != nil {
-			return nil, err
-		}
-		if vr, ok := pat.(*VarRef); ok && vr.Name == "_" {
-			expr = res
-			continue
-		}
-		cond := &BinaryExpr{Left: target, Op: "==", Right: pat}
-		expr = &IfExpr{Cond: cond, Then: res, Else: expr}
 	}
-	if expr == nil {
-		expr = &IntLit{Value: 0}
-	}
-	return expr, nil
+	body = append(body, &ReturnStmt{Value: &IntLit{Value: 0}})
+	return &MatchBlock{Body: body}, nil
 }
 
 func convertSimpleQuery(q *parser.QueryExpr, target string) (Expr, *StructDef, string, error) {
@@ -3812,6 +3945,12 @@ func cppType(t string) string {
 		if st, ok := currentEnv.GetStruct(t); ok {
 			return st.Name
 		}
+		if _, ok := currentEnv.GetUnion(t); ok {
+			if currentProgram != nil {
+				currentProgram.addInclude("<memory>")
+			}
+			return fmt.Sprintf("std::unique_ptr<%s>", t)
+		}
 	}
 	return "auto"
 }
@@ -3834,6 +3973,11 @@ func cppTypeFrom(tp types.Type) string {
 		return fmt.Sprintf("std::map<%s, %s>", cppTypeFrom(t.Key), cppTypeFrom(t.Value))
 	case types.StructType:
 		return t.Name
+	case types.UnionType:
+		if currentProgram != nil {
+			currentProgram.addInclude("<memory>")
+		}
+		return fmt.Sprintf("std::unique_ptr<%s>", t.Name)
 	default:
 		return "auto"
 	}
@@ -4196,6 +4340,29 @@ func convertTypeDecl(td *parser.TypeDecl) (*StructDef, error) {
 		st.Fields = append(st.Fields, Param{Name: m.Field.Name, Type: typ})
 	}
 	return st, nil
+}
+
+func convertUnionDecl(td *parser.TypeDecl) (StructDef, []StructDef, error) {
+	base := StructDef{Name: td.Name, Abstract: true}
+	variants := make([]StructDef, 0, len(td.Variants))
+	for _, v := range td.Variants {
+		st := StructDef{Name: v.Name, Base: td.Name}
+		for _, f := range v.Fields {
+			typ := "auto"
+			if f.Type != nil {
+				typ = cppTypeFrom(types.ResolveTypeRef(f.Type, currentEnv))
+				if typ == td.Name {
+					typ = fmt.Sprintf("std::unique_ptr<%s>", td.Name)
+					if currentProgram != nil {
+						currentProgram.addInclude("<memory>")
+					}
+				}
+			}
+			st.Fields = append(st.Fields, Param{Name: f.Name, Type: typ})
+		}
+		variants = append(variants, st)
+	}
+	return base, variants, nil
 }
 
 func valueToExpr(v interface{}, typ *parser.TypeRef) Expr {
