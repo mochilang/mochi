@@ -100,10 +100,11 @@ func TestPascalTranspiler(t *testing.T) {
 }
 
 func TestMain(m *testing.M) {
-	code := m.Run()
-	updateReadme()
-	updateTasks()
-	os.Exit(code)
+        code := m.Run()
+        updateReadme()
+        updateTasks()
+        updateRosettaChecklist()
+        os.Exit(code)
 }
 
 func countCompiled() (int, int) {
