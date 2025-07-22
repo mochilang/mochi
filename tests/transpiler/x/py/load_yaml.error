@@ -1,6 +1,0 @@
-run: exit status 1
-Traceback (most recent call last):
-  File "/workspace/mochi/tests/transpiler/x/py/load_yaml.py", line 25, in <module>
-    print(" ".join(str(x) for x in [a["name"], a["email"]]).rstrip())
-                                    ~^^^^^^^^
-TypeError: 'Adult' object is not subscriptable

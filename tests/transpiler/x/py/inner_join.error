@@ -1,9 +1,0 @@
-run: exit status 1
-Traceback (most recent call last):
-  File "/workspace/mochi/tests/transpiler/x/py/inner_join.py", line 24, in <module>
-    result = [Result(o.id, c["name"], o.total) for o in orders for c in customers if o.customerId == c["id"]]
-             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/workspace/mochi/tests/transpiler/x/py/inner_join.py", line 24, in <listcomp>
-    result = [Result(o.id, c["name"], o.total) for o in orders for c in customers if o.customerId == c["id"]]
-                                                                                                     ~^^^^^^
-TypeError: 'Customer' object is not subscriptable
