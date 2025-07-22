@@ -1,3 +1,23 @@
+## Progress (2025-07-22 13:00 +0700)
+- go transpiler: support simple union types
+- Regenerated golden files - 97/102 vm valid programs passing
+
+## Progress (2025-07-22 13:00 +0700)
+- go transpiler: support simple union types
+- Regenerated golden files - 97/102 vm valid programs passing
+
+## Progress (2025-07-22 13:00 +0700)
+- go transpiler: support simple union types
+- Regenerated golden files - 95/102 vm valid programs passing
+
+## Progress (2025-07-22 13:00 +0700)
+- go transpiler: support simple union types
+- Regenerated golden files - 95/102 vm valid programs passing
+
+## Progress (2025-07-22 13:00 +0700)
+- go transpiler: support simple union types
+- Regenerated golden files - 95/102 vm valid programs passing
+
 ## Progress (2025-07-22 12:52 +0700)
 - Implement basic union support; tree_sum transpiles successfully
 - Regenerated golden files - 95/102 vm valid programs passing

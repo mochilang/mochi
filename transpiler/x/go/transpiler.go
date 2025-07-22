@@ -649,6 +649,37 @@ func (ias *IndexAssignStmt) emit(w io.Writer) {
 	ias.Value.emit(w)
 }
 
+// UpdateStmt updates fields of items in a list of structs.
+type UpdateStmt struct {
+	Target string
+	Fields []string
+	Values []Expr
+	Cond   Expr
+}
+
+func (u *UpdateStmt) emit(w io.Writer) {
+	fmt.Fprintf(w, "for i, item := range %s {\n", u.Target)
+	if u.Cond != nil {
+		fmt.Fprint(w, "    if ")
+		u.Cond.emit(w)
+		fmt.Fprint(w, " {\n")
+	}
+	indent := "    "
+	if u.Cond != nil {
+		indent = "        "
+	}
+	for i, f := range u.Fields {
+		fmt.Fprintf(w, "%sitem.%s = ", indent, toGoFieldName(f))
+		u.Values[i].emit(w)
+		fmt.Fprint(w, "\n")
+	}
+	if u.Cond != nil {
+		fmt.Fprint(w, "    }\n")
+	}
+	fmt.Fprintf(w, "    %s[i] = item\n", u.Target)
+	fmt.Fprint(w, "}\n")
+}
+
 type ListLit struct {
 	ElemType string
 	Elems    []Expr
@@ -1642,6 +1673,8 @@ func compileStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 		return compileWhileStmt(st.While, env)
 	case st.For != nil:
 		return compileForStmt(st.For, env)
+	case st.Update != nil:
+		return compileUpdateStmt(st.Update, env)
 	case st.Return != nil:
 		return compileReturnStmt(st.Return, env)
 	case st.Fun != nil:
@@ -2445,6 +2478,54 @@ func compileForStmt(fs *parser.ForStmt, env *types.Env) (Stmt, error) {
 		return nil, err
 	}
 	return &ForEachStmt{Name: fs.Name, Iterable: iter, Body: body, IsMap: isMap, KeyType: keyType}, nil
+}
+
+func compileUpdateStmt(u *parser.UpdateStmt, env *types.Env) (Stmt, error) {
+	if env == nil {
+		return nil, fmt.Errorf("missing env")
+	}
+	t, err := env.GetVar(u.Target)
+	if err != nil {
+		return nil, err
+	}
+	lt, ok := t.(types.ListType)
+	if !ok {
+		return nil, fmt.Errorf("update target not list")
+	}
+	st, ok := lt.Elem.(types.StructType)
+	if !ok {
+		return nil, fmt.Errorf("update element not struct")
+	}
+	child := types.NewEnv(env)
+	fieldSet := map[string]bool{}
+	for n, ft := range st.Fields {
+		child.SetVar(n, ft, true)
+		fieldSet[n] = true
+	}
+	fields := make([]string, len(u.Set.Items))
+	values := make([]Expr, len(u.Set.Items))
+	for i, it := range u.Set.Items {
+		key, ok := types.SimpleStringKey(it.Key)
+		if !ok {
+			return nil, fmt.Errorf("unsupported update key")
+		}
+		val, err := compileExpr(it.Value, child, "")
+		if err != nil {
+			return nil, err
+		}
+		values[i] = substituteFieldVars(val, fieldSet)
+		fields[i] = key
+	}
+	var cond Expr
+	if u.Where != nil {
+		c, err := compileExpr(u.Where, child, "")
+		if err != nil {
+			return nil, err
+		}
+		cond = substituteFieldVars(c, fieldSet)
+		cond = boolExprFor(cond, types.ExprType(u.Where, child))
+	}
+	return &UpdateStmt{Target: u.Target, Fields: fields, Values: values, Cond: cond}, nil
 }
 
 func compileReturnStmt(rs *parser.ReturnStmt, env *types.Env) (Stmt, error) {
@@ -3517,6 +3598,15 @@ func toNodeStmt(s Stmt) *ast.Node {
 		return n
 	case *IndexAssignStmt:
 		return &ast.Node{Kind: "indexassign", Value: st.Name, Children: []*ast.Node{toNodeExpr(st.Index), toNodeExpr(st.Value)}}
+	case *UpdateStmt:
+		n := &ast.Node{Kind: "update", Value: st.Target}
+		for i, f := range st.Fields {
+			n.Children = append(n.Children, &ast.Node{Kind: "field", Value: f, Children: []*ast.Node{toNodeExpr(st.Values[i])}})
+		}
+		if st.Cond != nil {
+			n.Children = append(n.Children, &ast.Node{Kind: "where", Children: []*ast.Node{toNodeExpr(st.Cond)}})
+		}
+		return n
 	case *SetStmt:
 		return &ast.Node{Kind: "set", Children: []*ast.Node{toNodeExpr(st.Target), toNodeExpr(st.Value)}}
 	default:
@@ -3727,6 +3817,80 @@ func isVarRef(e *parser.Expr, name string) bool {
 	}
 	sel := v.Target.Selector
 	return sel != nil && sel.Root == name && len(sel.Tail) == 0
+}
+
+func substituteFieldVars(e Expr, fields map[string]bool) Expr {
+	switch ex := e.(type) {
+	case *VarRef:
+		if fields[ex.Name] {
+			return &FieldExpr{X: &VarRef{Name: "item"}, Name: ex.Name}
+		}
+		return ex
+	case *BinaryExpr:
+		ex.Left = substituteFieldVars(ex.Left, fields)
+		ex.Right = substituteFieldVars(ex.Right, fields)
+		return ex
+	case *CallExpr:
+		for i := range ex.Args {
+			ex.Args[i] = substituteFieldVars(ex.Args[i], fields)
+		}
+		return ex
+	case *FieldExpr:
+		ex.X = substituteFieldVars(ex.X, fields)
+		return ex
+	case *IndexExpr:
+		ex.X = substituteFieldVars(ex.X, fields)
+		ex.Index = substituteFieldVars(ex.Index, fields)
+		return ex
+	case *NotExpr:
+		ex.Expr = substituteFieldVars(ex.Expr, fields)
+		return ex
+	case *IfExpr:
+		ex.Cond = substituteFieldVars(ex.Cond, fields)
+		ex.Then = substituteFieldVars(ex.Then, fields)
+		if ex.Else != nil {
+			ex.Else = substituteFieldVars(ex.Else, fields)
+		}
+		return ex
+	case *ListLit:
+		for i := range ex.Elems {
+			ex.Elems[i] = substituteFieldVars(ex.Elems[i], fields)
+		}
+		return ex
+	case *SliceExpr:
+		ex.X = substituteFieldVars(ex.X, fields)
+		if ex.Start != nil {
+			ex.Start = substituteFieldVars(ex.Start, fields)
+		}
+		if ex.End != nil {
+			ex.End = substituteFieldVars(ex.End, fields)
+		}
+		return ex
+	case *UnionExpr:
+		ex.Left = substituteFieldVars(ex.Left, fields)
+		ex.Right = substituteFieldVars(ex.Right, fields)
+		return ex
+	case *UnionAllExpr:
+		ex.Left = substituteFieldVars(ex.Left, fields)
+		ex.Right = substituteFieldVars(ex.Right, fields)
+		return ex
+	case *ExceptExpr:
+		ex.Left = substituteFieldVars(ex.Left, fields)
+		ex.Right = substituteFieldVars(ex.Right, fields)
+		return ex
+	case *IntersectExpr:
+		ex.Left = substituteFieldVars(ex.Left, fields)
+		ex.Right = substituteFieldVars(ex.Right, fields)
+		return ex
+	case *AtoiExpr:
+		ex.Expr = substituteFieldVars(ex.Expr, fields)
+		return ex
+	case *AssertExpr:
+		ex.Expr = substituteFieldVars(ex.Expr, fields)
+		return ex
+	default:
+		return ex
+	}
 }
 
 func compileGroupKey(e *parser.Expr, env *types.Env, base string) (Expr, types.Type, error) {
