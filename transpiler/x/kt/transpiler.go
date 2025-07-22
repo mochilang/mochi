@@ -224,7 +224,7 @@ func (d *DataClass) emit(w io.Writer, indentLevel int) {
 		if typ == "" {
 			typ = "Any"
 		}
-		io.WriteString(w, "var "+f.Name+": "+typ)
+		io.WriteString(w, "val "+f.Name+": "+typ)
 	}
 	io.WriteString(w, ")")
 	if d.Extends != "" {
@@ -841,7 +841,41 @@ func (c *CountExpr) emit(w io.Writer) {
 type SumExpr struct{ Value Expr }
 
 func (s *SumExpr) emit(w io.Writer) {
-	if guessType(s.Value) == "MutableList<Any>" {
+	if lc, ok := s.Value.(*MultiListComp); ok {
+		io.WriteString(w, "run {\n")
+		indent(w, 1)
+		io.WriteString(w, "var _acc = 0.0\n")
+		for i, v := range lc.Vars {
+			indent(w, 1+i)
+			fmt.Fprintf(w, "for (%s in ", v)
+			lc.Iters[i].emit(w)
+			io.WriteString(w, ") {\n")
+		}
+		if lc.Cond != nil {
+			indent(w, 1+len(lc.Vars))
+			io.WriteString(w, "if (")
+			lc.Cond.emit(w)
+			io.WriteString(w, ") {\n")
+			indent(w, 2+len(lc.Vars))
+			io.WriteString(w, "_acc += (")
+			lc.Expr.emit(w)
+			io.WriteString(w, " as Number).toDouble()\n")
+			indent(w, 1+len(lc.Vars))
+			io.WriteString(w, "}\n")
+		} else {
+			indent(w, 1+len(lc.Vars))
+			io.WriteString(w, "_acc += (")
+			lc.Expr.emit(w)
+			io.WriteString(w, " as Number).toDouble()\n")
+		}
+		for i := len(lc.Vars); i > 0; i-- {
+			indent(w, i)
+			io.WriteString(w, "}\n")
+		}
+		indent(w, 1)
+		io.WriteString(w, "_acc\n")
+		io.WriteString(w, "}")
+	} else if guessType(s.Value) == "MutableList<Any>" {
 		io.WriteString(w, "(")
 		s.Value.emit(w)
 		io.WriteString(w, ".map{(it as Number).toDouble()})")
