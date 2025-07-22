@@ -163,6 +163,29 @@ func (s *SetStmt) emit(w io.Writer) {
 	s.Value.emit(w)
 }
 
+// SaveStmt writes a list of structs or maps in JSONL format to stdout.
+type SaveStmt struct {
+	Src    Expr
+	Path   string
+	Format string
+}
+
+func (s *SaveStmt) emit(w io.Writer) {
+	if s.Format == "jsonl" && (s.Path == "" || s.Path == "-") {
+		usesStrings = true
+		fmt.Fprint(w, "for _, _row := range ")
+		s.Src.emit(w)
+		io.WriteString(w, " {\n")
+		io.WriteString(w, "    b, _ := json.Marshal(_row)\n")
+		io.WriteString(w, "    s := strings.ReplaceAll(string(b), \":\", \": \" )\n")
+		io.WriteString(w, "    s = strings.ReplaceAll(s, \",\", \", \" )\n")
+		io.WriteString(w, "    fmt.Println(s)\n")
+		io.WriteString(w, "}\n")
+		return
+	}
+	fmt.Fprint(w, "// unsupported save")
+}
+
 // IfStmt represents a simple if/else statement.
 type IfStmt struct {
 	Cond Expr
@@ -1477,6 +1500,22 @@ func compileStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 			}
 			return &PrintStmt{Args: args}, nil
 		}
+		if se := extractSaveExpr(st.Expr.Expr); se != nil {
+			src, err := compileExpr(se.Src, env, "")
+			if err != nil {
+				return nil, err
+			}
+			format := parseFormat(se.With)
+			path := ""
+			if se.Path != nil {
+				path = strings.Trim(*se.Path, "\"")
+			}
+			if format == "jsonl" {
+				usesJSON = true
+				usesStrings = true
+			}
+			return &SaveStmt{Src: src, Path: path, Format: format}, nil
+		}
 		e, err := compileExpr(st.Expr.Expr, env, "")
 		if err != nil {
 			return nil, err
@@ -1725,6 +1764,65 @@ func extractCall(e *parser.Expr) *parser.CallExpr {
 		return nil
 	}
 	return u.Value.Target.Call
+}
+
+func extractSaveExpr(e *parser.Expr) *parser.SaveExpr {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) > 0 {
+		return nil
+	}
+	u := e.Binary.Left
+	if len(u.Ops) > 0 || u.Value == nil {
+		return nil
+	}
+	p := u.Value
+	if len(p.Ops) > 0 || p.Target == nil {
+		return nil
+	}
+	return p.Target.Save
+}
+
+func literalString(e *parser.Expr) (string, bool) {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) > 0 {
+		return "", false
+	}
+	u := e.Binary.Left
+	if len(u.Ops) > 0 || u.Value == nil {
+		return "", false
+	}
+	p := u.Value
+	if len(p.Ops) > 0 || p.Target == nil {
+		return "", false
+	}
+	if p.Target.Lit != nil && p.Target.Lit.Str != nil {
+		return *p.Target.Lit.Str, true
+	}
+	if p.Target.Selector != nil && len(p.Target.Selector.Tail) == 0 {
+		return p.Target.Selector.Root, true
+	}
+	return "", false
+}
+
+func parseFormat(e *parser.Expr) string {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) > 0 {
+		return ""
+	}
+	u := e.Binary.Left
+	if len(u.Ops) > 0 || u.Value == nil {
+		return ""
+	}
+	p := u.Value
+	if len(p.Ops) > 0 || p.Target == nil || p.Target.Map == nil {
+		return ""
+	}
+	for _, it := range p.Target.Map.Items {
+		key, ok := literalString(it.Key)
+		if ok && key == "format" {
+			if v, ok := literalString(it.Value); ok {
+				return v
+			}
+		}
+	}
+	return ""
 }
 
 func compileIfStmt(is *parser.IfStmt, env *types.Env) (Stmt, error) {
@@ -2466,6 +2564,7 @@ func compileForStmt(fs *parser.ForStmt, env *types.Env) (Stmt, error) {
 	switch tt := t.(type) {
 	case types.MapType:
 		isMap = true
+		usesSort = true
 		child.SetVar(fs.Name, tt.Key, true)
 		keyType = toGoTypeFromType(tt.Key)
 	case types.ListType:
@@ -3605,6 +3704,13 @@ func toNodeStmt(s Stmt) *ast.Node {
 		}
 		if st.Cond != nil {
 			n.Children = append(n.Children, &ast.Node{Kind: "where", Children: []*ast.Node{toNodeExpr(st.Cond)}})
+		}
+		return n
+	case *SaveStmt:
+		n := &ast.Node{Kind: "save", Value: st.Format}
+		n.Children = append(n.Children, toNodeExpr(st.Src))
+		if st.Path != "" {
+			n.Children = append(n.Children, &ast.Node{Kind: "path", Value: st.Path})
 		}
 		return n
 	case *SetStmt:
