@@ -1,3 +1,7 @@
+## Progress (2025-07-22 09:22 +0700)
+- docs: refresh rkt checklist
+- Regenerated golden files - 69/102 vm valid programs passing
+
 ## Progress (2025-07-22 06:37 +0700)
 - scala transpiler: support union types
 - Regenerated golden files - 69/101 vm valid programs passing
