@@ -1,6 +1,6 @@
-## Progress (2025-07-22 12:56 +0700)
-- Commit 21c6ff303: transpiler(py): improve group join handling
-- Generated Python for 88/102 programs
+## Progress (2025-07-22 13:13 +0700)
+- Commit 14c5e01e5: docs(py): update progress
+- Generated Python for 91/102 programs
 - Updated README checklist and outputs
 - Refactored join handling and improved type inference from loaded data
 

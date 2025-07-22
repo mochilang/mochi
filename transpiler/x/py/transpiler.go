@@ -3871,6 +3871,11 @@ func convertQueryExpr(q *parser.QueryExpr) (Expr, error) {
 		if err != nil {
 			return nil, err
 		}
+		if currentEnv != nil {
+			if lt, ok := inferTypeFromExpr(j.Src).(types.ListType); ok {
+				currentEnv.SetVar(j.Var, lt.Elem, true)
+			}
+		}
 		vars = append(vars, j.Var)
 		iters = append(iters, e)
 		jc, err := convertExpr(j.On)
