@@ -2513,7 +2513,7 @@ func convertUpdate(u *parser.UpdateStmt) (*UpdateStmt, error) {
 
 func maybeBoolString(e Expr) Expr {
 	if isBoolExpr(e) {
-		return &CondExpr{Cond: e, Then: &StringLit{Value: "True"}, Else: &StringLit{Value: "False"}}
+		return &CondExpr{Cond: e, Then: &IntLit{Value: 1}, Else: &IntLit{Value: 0}}
 	}
 	return e
 }
