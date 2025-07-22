@@ -995,6 +995,44 @@ func hasStruct(e Expr) bool {
 	}
 	return false
 }
+
+// fieldType attempts to determine the Haskell type name of a field access
+// expression. It walks nested field expressions using known struct
+// definitions and type information from the environment.
+func fieldType(fe *FieldExpr) string {
+	switch t := fe.Target.(type) {
+	case *NameRef:
+		if s := varStruct[t.Name]; s != "" {
+			if st, ok := structDefs[s]; ok {
+				for i, f := range st.Fields {
+					if f == fe.Field {
+						return st.Types[i]
+					}
+				}
+			}
+		}
+		if envInfo != nil {
+			if vt, err := envInfo.GetVar(t.Name); err == nil {
+				if st, ok := vt.(types.StructType); ok {
+					if ft, ok2 := st.Fields[fe.Field]; ok2 {
+						return toHsType(ft)
+					}
+				}
+			}
+		}
+	case *FieldExpr:
+		if base := fieldType(t); base != "" {
+			if st, ok := structDefs[base]; ok {
+				for i, f := range st.Fields {
+					if f == fe.Field {
+						return st.Types[i]
+					}
+				}
+			}
+		}
+	}
+	return ""
+}
 func (c *ComprExpr) emit(w io.Writer) {
 	io.WriteString(w, "[")
 	c.Body.emit(w)
@@ -1050,25 +1088,8 @@ func isStringExpr(e Expr) bool {
 	case *NameRef:
 		return varTypes[ex.Name] == "string"
 	case *FieldExpr:
-		if n, ok := ex.Target.(*NameRef); ok {
-			if s := varStruct[n.Name]; s != "" {
-				if st, ok2 := structDefs[s]; ok2 {
-					for i, f := range st.Fields {
-						if f == ex.Field {
-							return st.Types[i] == "String"
-						}
-					}
-				}
-			}
-			if envInfo != nil {
-				if vt, err := envInfo.GetVar(n.Name); err == nil {
-					if st, ok3 := vt.(types.StructType); ok3 {
-						if ft, ok4 := st.Fields[ex.Field]; ok4 {
-							return toHsType(ft) == "String"
-						}
-					}
-				}
-			}
+		if t := fieldType(ex); t != "" {
+			return t == "String"
 		}
 	case *IndexExpr:
 		if n, ok := ex.Target.(*NameRef); ok {
@@ -1102,25 +1123,8 @@ func isBoolExpr(e Expr) bool {
 	case *NameRef:
 		return varTypes[ex.Name] == "bool"
 	case *FieldExpr:
-		if n, ok := ex.Target.(*NameRef); ok {
-			if s := varStruct[n.Name]; s != "" {
-				if st, ok2 := structDefs[s]; ok2 {
-					for i, f := range st.Fields {
-						if f == ex.Field {
-							return st.Types[i] == "Bool"
-						}
-					}
-				}
-			}
-			if envInfo != nil {
-				if vt, err := envInfo.GetVar(n.Name); err == nil {
-					if st, ok3 := vt.(types.StructType); ok3 {
-						if ft, ok4 := st.Fields[ex.Field]; ok4 {
-							return toHsType(ft) == "Bool"
-						}
-					}
-				}
-			}
+		if t := fieldType(ex); t != "" {
+			return t == "Bool"
 		}
 	case *UnaryExpr:
 		if ex.Op == "!" {
@@ -1274,25 +1278,8 @@ func isIntExpr(e Expr) bool {
 	case *NameRef:
 		return varTypes[ex.Name] == "int"
 	case *FieldExpr:
-		if n, ok := ex.Target.(*NameRef); ok {
-			if s := varStruct[n.Name]; s != "" {
-				if st, ok2 := structDefs[s]; ok2 {
-					for i, f := range st.Fields {
-						if f == ex.Field {
-							return st.Types[i] == "Int"
-						}
-					}
-				}
-			}
-			if envInfo != nil {
-				if vt, err := envInfo.GetVar(n.Name); err == nil {
-					if st, ok3 := vt.(types.StructType); ok3 {
-						if ft, ok4 := st.Fields[ex.Field]; ok4 {
-							return toHsType(ft) == "Int"
-						}
-					}
-				}
-			}
+		if t := fieldType(ex); t != "" {
+			return t == "Int"
 		}
 	case *ComprExpr:
 		return isIntExpr(ex.Body)
@@ -1317,25 +1304,8 @@ func isFloatExpr(e Expr) bool {
 	case *NameRef:
 		return varTypes[ex.Name] == "float"
 	case *FieldExpr:
-		if n, ok := ex.Target.(*NameRef); ok {
-			if s := varStruct[n.Name]; s != "" {
-				if st, ok2 := structDefs[s]; ok2 {
-					for i, f := range st.Fields {
-						if f == ex.Field {
-							return st.Types[i] == "Double"
-						}
-					}
-				}
-			}
-			if envInfo != nil {
-				if vt, err := envInfo.GetVar(n.Name); err == nil {
-					if st, ok3 := vt.(types.StructType); ok3 {
-						if ft, ok4 := st.Fields[ex.Field]; ok4 {
-							return toHsType(ft) == "Double"
-						}
-					}
-				}
-			}
+		if t := fieldType(ex); t != "" {
+			return t == "Double"
 		}
 	}
 	return false
