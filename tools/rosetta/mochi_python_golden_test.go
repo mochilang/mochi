@@ -6,11 +6,13 @@ import (
 	"bytes"
 	"fmt"
 	"os"
+	"os/exec"
 	"path/filepath"
 	"strings"
 	"testing"
 
 	pycode "mochi/compiler/x/python"
+	"mochi/golden"
 	"mochi/parser"
 	"mochi/types"
 )
@@ -27,67 +29,46 @@ func stripHeader(b []byte) []byte {
 // matches the golden files in tests/rosetta/out/Python.
 func TestMochiPythonGolden(t *testing.T) {
 	root := findRepoRoot(t)
-	srcDir := filepath.Join(root, "tests/rosetta/x/Mochi")
 	outDir := filepath.Join(root, "tests/rosetta/out/Python")
 
 	if err := os.MkdirAll(outDir, 0o755); err != nil {
 		t.Fatalf("mkout: %v", err)
 	}
 
-	outs, err := filepath.Glob(filepath.Join(srcDir, "*.out"))
-	if err != nil {
-		t.Fatalf("glob: %v", err)
-	}
-	if len(outs) == 0 {
-		t.Fatal("no Mochi Rosetta tests found")
-	}
-
-	for _, out := range outs {
-		name := strings.TrimSuffix(filepath.Base(out), ".out")
-		srcPath := filepath.Join(srcDir, name+".mochi")
+	golden.RunFirstFailure(t, "tests/rosetta/x/Mochi", ".mochi", ".out", func(src string) ([]byte, error) {
+		name := strings.TrimSuffix(filepath.Base(src), ".mochi")
 		pyPath := filepath.Join(outDir, name+".py")
-		if _, err := os.Stat(srcPath); err != nil {
-			t.Fatalf("missing source for %s", name)
+
+		prog, err := parser.Parse(src)
+		if err != nil {
+			writePythonError(outDir, name, fmt.Errorf("parse error: %w", err))
+			return nil, err
+		}
+		env := types.NewEnv(nil)
+		if errs := types.Check(prog, env); len(errs) > 0 {
+			writePythonError(outDir, name, fmt.Errorf("type error: %v", errs[0]))
+			return nil, errs[0]
+		}
+		code, err := pycode.New(env).Compile(prog)
+		if err != nil {
+			writePythonError(outDir, name, fmt.Errorf("compile error: %w", err))
+			return nil, err
+		}
+		srcCode := stripHeader(bytes.TrimSpace(code))
+		if err := os.WriteFile(pyPath, append(srcCode, '\n'), 0o644); err != nil {
+			return nil, err
 		}
 
-		t.Run(name, func(t *testing.T) {
-			prog, err := parser.Parse(srcPath)
-			if err != nil {
-				writePythonError(outDir, name, fmt.Errorf("parse error: %w", err))
-				t.Skip("parse error")
-				return
-			}
-			env := types.NewEnv(nil)
-			if errs := types.Check(prog, env); len(errs) > 0 {
-				writePythonError(outDir, name, fmt.Errorf("type error: %v", errs[0]))
-				t.Skip("type error")
-				return
-			}
-			code, err := pycode.New(env).Compile(prog)
-			if err != nil {
-				writePythonError(outDir, name, fmt.Errorf("compile error: %w", err))
-				t.Skip("compile error")
-				return
-			}
-			got := stripHeader(bytes.TrimSpace(code))
+		cmd := exec.Command("python3", pyPath)
+		cmd.Env = append(os.Environ(), "MOCHI_NOW_SEED=1")
+		out, err := cmd.CombinedOutput()
+		got := bytes.TrimSpace(out)
+		if err != nil {
+			writePythonError(outDir, name, fmt.Errorf("run error: %v\n%s", err, out))
+			return nil, err
+		}
+		_ = os.Remove(filepath.Join(outDir, name+".error"))
 
-			if shouldUpdate() {
-				if err := os.WriteFile(pyPath, append(got, '\n'), 0o644); err != nil {
-					t.Fatalf("write py: %v", err)
-				}
-				t.Logf("updated: %s", pyPath)
-				return
-			}
-
-			wantData, err := os.ReadFile(pyPath)
-			if err != nil {
-				t.Fatalf("read py golden: %v", err)
-			}
-			want := stripHeader(bytes.TrimSpace(wantData))
-			if !bytes.Equal(got, want) {
-				t.Errorf("%s Python\n\n--- Got ---\n%s\n\n--- Want ---\n%s\n", name, got, want)
-			}
-			_ = os.Remove(filepath.Join(outDir, name+".error"))
-		})
-	}
+		return got, nil
+	})
 }
