@@ -1,3 +1,33 @@
+## Progress (2025-07-22 16:27 +0700)
+- cpp transpiler: support load jsonl/yaml
+- Generated C++ for 100/103 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-22 16:27 +0700)
+- cpp transpiler: support load jsonl/yaml
+- Generated C++ for 100/103 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-22 16:14 +0700)
+- scala transpiler: improve group query typing
+- Generated C++ for 100/103 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-22 16:14 +0700)
+- scala transpiler: improve group query typing
+- Generated C++ for 99/103 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-22 16:14 +0700)
+- scala transpiler: improve group query typing
+- Generated C++ for 99/103 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-22 16:14 +0700)
+- scala transpiler: improve group query typing
+- Generated C++ for 98/103 programs
+- Updated README checklist and outputs
+
 ## Progress (2025-07-22 14:58 +0700)
 - cpp transpiler: remove helper templates, use std::map for grouping
 - Generated C++ for 98/102 programs
