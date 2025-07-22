@@ -3,12 +3,12 @@
 package fstrans_test
 
 import (
+	"bufio"
 	"bytes"
 	"fmt"
 	"os"
 	"os/exec"
 	"path/filepath"
-	"sort"
 	"strconv"
 	"strings"
 	"testing"
@@ -55,18 +55,30 @@ func TestFSTranspiler_Rosetta_Golden(t *testing.T) {
 	os.MkdirAll(outDir, 0o755)
 	t.Cleanup(updateRosettaReadme)
 
-	pattern := filepath.Join(srcDir, "*.mochi")
+	var files []string
 	if only := os.Getenv("MOCHI_ROSETTA_ONLY"); only != "" {
-		pattern = filepath.Join(srcDir, only+".mochi")
-	}
-	files, err := filepath.Glob(pattern)
-	if err != nil {
-		t.Fatalf("glob: %v", err)
+		files = append(files, filepath.Join(srcDir, only+".mochi"))
+	} else {
+		idxPath := filepath.Join(srcDir, "index.txt")
+		f, err := os.Open(idxPath)
+		if err != nil {
+			t.Fatalf("open index: %v", err)
+		}
+		scanner := bufio.NewScanner(f)
+		for scanner.Scan() {
+			parts := strings.Fields(scanner.Text())
+			if len(parts) == 2 {
+				files = append(files, filepath.Join(srcDir, parts[1]))
+			}
+		}
+		if err := scanner.Err(); err != nil {
+			t.Fatalf("scan index: %v", err)
+		}
+		f.Close()
 	}
 	if len(files) == 0 {
-		t.Fatalf("no Mochi Rosetta tests found: %s", pattern)
+		t.Fatal("no Mochi Rosetta tests found")
 	}
-	sort.Strings(files)
 	if idxStr := os.Getenv("MOCHI_ROSETTA_INDEX"); idxStr != "" {
 		idx, err := strconv.Atoi(idxStr)
 		if err != nil || idx < 1 || idx > len(files) {
@@ -157,13 +169,19 @@ func updateRosetta() {
 	outDir := filepath.Join(root, "tests", "rosetta", "transpiler", "FS")
 	readmePath := filepath.Join(root, "transpiler", "x", "fs", "ROSETTA.md")
 
-	files, _ := filepath.Glob(filepath.Join(srcDir, "*.mochi"))
-	sort.Strings(files)
+	idxPath := filepath.Join(srcDir, "index.txt")
+	data, _ := os.ReadFile(idxPath)
+	var files []string
+	for _, line := range strings.Split(strings.TrimSpace(string(data)), "\n") {
+		fields := strings.Fields(line)
+		if len(fields) >= 2 {
+			files = append(files, strings.TrimSuffix(fields[1], ".mochi"))
+		}
+	}
 	total := len(files)
 	compiled := 0
 	var lines []string
-	for i, f := range files {
-		name := strings.TrimSuffix(filepath.Base(f), ".mochi")
+	for i, name := range files {
 		mark := "[ ]"
 		if _, err := os.Stat(filepath.Join(outDir, name+".out")); err == nil {
 			if _, err2 := os.Stat(filepath.Join(outDir, name+".error")); os.IsNotExist(err2) {
