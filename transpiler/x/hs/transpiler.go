@@ -206,6 +206,11 @@ func guessHsType(ex Expr) string {
 			return "Bool"
 		case "string":
 			return "String"
+		case "maybe_record":
+			if s := varStruct[nr.Name]; s != "" {
+				return "Maybe " + s
+			}
+			return "Maybe String"
 		}
 	}
 	if fe, ok := ex.(*FieldExpr); ok {
@@ -813,12 +818,28 @@ type IfExpr struct {
 	Else Expr
 }
 
+// LetInExpr represents a simple "let x = a in b" expression.
+type LetInExpr struct {
+	Name  string
+	Value Expr
+	Body  Expr
+}
+
 func (c *CastExpr) emit(w io.Writer) {
 	io.WriteString(w, "(")
 	c.Expr.emit(w)
 	io.WriteString(w, " :: ")
 	io.WriteString(w, c.Type)
 	io.WriteString(w, ")")
+}
+
+func (l *LetInExpr) emit(w io.Writer) {
+	io.WriteString(w, "let ")
+	io.WriteString(w, safeName(l.Name))
+	io.WriteString(w, " = ")
+	l.Value.emit(w)
+	io.WriteString(w, " in ")
+	l.Body.emit(w)
 }
 
 func (i *IntLit) emit(w io.Writer)    { io.WriteString(w, i.Value) }
@@ -2106,7 +2127,7 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 				vals[i] = ve
 				typestr[i] = guessHsType(ve)
 			}
-			if allConst && false {
+			if allConst {
 				structCount++
 				name := fmt.Sprintf("GenType%d", structCount)
 				structDefs[name] = &TypeDecl{Name: name, Fields: fields, Types: typestr}
@@ -2144,6 +2165,53 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 		}
 		srcs = append(srcs, se)
 		inferVarFromSource(p.Query.Var, se)
+
+		// simple left join without additional from clauses or grouping
+		if len(p.Query.Froms) == 0 && len(p.Query.Joins) == 1 && p.Query.Group == nil {
+			j := p.Query.Joins[0]
+			if j.Side != nil && *j.Side == "left" {
+				je, err := convertExpr(j.Src)
+				if err != nil {
+					return nil, err
+				}
+				if nr, ok := je.(*NameRef); ok && groupVars[nr.Name] {
+					je = &FieldExpr{Target: nr, Field: "items"}
+				}
+				condExpr, err := convertExpr(j.On)
+				if err != nil {
+					return nil, err
+				}
+				matches := &ComprExpr{Vars: []string{j.Var}, Sources: []Expr{je}, Cond: condExpr, Body: &NameRef{Name: j.Var}}
+				msName := "_ms0"
+				joinList := &LetInExpr{Name: msName, Value: matches,
+					Body: &IfExpr{Cond: &CallExpr{Fun: &NameRef{Name: "null"}, Args: []Expr{&NameRef{Name: msName}}},
+						Then: &ListLit{Elems: []Expr{&NameRef{Name: "Nothing"}}},
+						Else: &CallExpr{Fun: &NameRef{Name: "map"}, Args: []Expr{&NameRef{Name: "Just"}, &NameRef{Name: msName}}}}}
+				vars = append(vars, j.Var)
+				srcs = append(srcs, joinList)
+				if n, ok := je.(*NameRef); ok {
+					if s := varStruct[n.Name]; s != "" {
+						varStruct[j.Var] = s
+					}
+				}
+				varTypes[j.Var] = "maybe_record"
+				body, err := convertExpr(p.Query.Select)
+				if err != nil {
+					return nil, err
+				}
+				var result Expr = &ComprExpr{Vars: []string{p.Query.Var, j.Var}, Sources: srcs, Cond: nil, Body: body}
+				if p.Query.Sort != nil {
+					sortExpr, err := convertExpr(p.Query.Sort)
+					if err != nil {
+						return nil, err
+					}
+					needDataList = true
+					result = &CallExpr{Fun: &NameRef{Name: "sortOn"}, Args: []Expr{&GroupExpr{Expr: &LambdaExpr{Params: []string{p.Query.Var}, Body: sortExpr}}, result}}
+				}
+				return result, nil
+			}
+		}
+
 		for _, f := range p.Query.Froms {
 			fe, err := convertExpr(f.Src)
 			if err != nil {
