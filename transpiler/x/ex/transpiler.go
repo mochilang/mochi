@@ -6,7 +6,9 @@ import (
 	"bytes"
 	"fmt"
 	"io"
+	"os"
 	"os/exec"
+	"path/filepath"
 	"sort"
 	"strconv"
 	"strings"
@@ -851,6 +853,39 @@ type GroupByHavingExpr struct {
 
 // NilLit represents a `nil` literal.
 type NilLit struct{}
+
+// LoadExpr loads a YAML file into a list of maps.
+type LoadExpr struct {
+	Path   string
+	Format string
+}
+
+func (l *LoadExpr) emit(w io.Writer) {
+	if l.Format == "yaml" {
+		io.WriteString(w, "(fn ->\n")
+		fmt.Fprintf(w, "  lines = File.read!(%q) |> String.split(\"\\n\", trim: true)\n", l.Path)
+		io.WriteString(w, "  {rows, curr} = Enum.reduce(lines, {[], %{}}, fn line, {rows, curr} ->\n")
+		io.WriteString(w, "    line = String.trim(line)\n")
+		io.WriteString(w, "    if String.starts_with?(line, \"-\") do\n")
+		io.WriteString(w, "      rows = if map_size(curr) > 0, do: rows ++ [curr], else: rows\n")
+		io.WriteString(w, "      curr = %{}\n")
+		io.WriteString(w, "      line = line |> String.trim_leading(\"-\") |> String.trim()\n")
+		io.WriteString(w, "      if line != \"\" do\n")
+		io.WriteString(w, "        [k, v] = line |> String.split(\":\", parts: 2) |> Enum.map(&String.trim/1)\n")
+		io.WriteString(w, "        v = if Regex.match?(~r/^[-]?\\d+$/, v), do: String.to_integer(v), else: v\n")
+		io.WriteString(w, "        {rows, Map.put(curr, String.to_atom(k), v)}\n")
+		io.WriteString(w, "      else\n")
+		io.WriteString(w, "        {rows, curr}\n")
+		io.WriteString(w, "      end\n")
+		io.WriteString(w, "    else\n")
+		io.WriteString(w, "      [k, v] = line |> String.split(\":\", parts: 2) |> Enum.map(&String.trim/1)\n")
+		io.WriteString(w, "      v = if Regex.match?(~r/^[-]?\\d+$/, v), do: String.to_integer(v), else: v\n")
+		io.WriteString(w, "      {rows, Map.put(curr, String.to_atom(k), v)}\n")
+		io.WriteString(w, "    end\n  end)\n")
+		io.WriteString(w, "  rows = if map_size(curr) > 0, do: rows ++ [curr], else: rows\n")
+		io.WriteString(w, "  rows\nend).()")
+	}
+}
 
 // LeftJoinExpr represents a simple left join without additional clauses.
 type LeftJoinExpr struct {
@@ -2291,7 +2326,7 @@ func compilePrimary(p *parser.Primary, env *types.Env) (Expr, error) {
 						case types.StringType, types.IntType, types.FloatType, types.BoolType:
 							parts = append(parts, a)
 						default:
-							parts = append(parts, &CallExpr{Func: "Kernel.inspect", Args: []Expr{a}})
+							parts = append(parts, &CallExpr{Func: "Kernel.to_string", Args: []Expr{a}})
 						}
 					}
 				}
@@ -2458,6 +2493,21 @@ func compilePrimary(p *parser.Primary, env *types.Env) (Expr, error) {
 			items[i] = MapItem{Key: &AtomLit{Name: f.Name}, Value: v}
 		}
 		return &MapLit{Items: items}, nil
+	case p.Load != nil:
+		format := parseFormat(p.Load.With)
+		path := ""
+		if p.Load.Path != nil {
+			path = strings.Trim(*p.Load.Path, "\"")
+		}
+		clean := path
+		for strings.HasPrefix(clean, "../") {
+			clean = strings.TrimPrefix(clean, "../")
+		}
+		if path != "" && strings.HasPrefix(path, "../") {
+			root := repoRoot()
+			path = filepath.ToSlash(filepath.Join(root, "tests", clean))
+		}
+		return &LoadExpr{Path: path, Format: format}, nil
 	case p.Query != nil:
 		return compileQueryExpr(p.Query, env)
 	case p.FunExpr != nil:
@@ -2533,6 +2583,8 @@ func inferStaticType(e Expr) types.Type {
 			}
 		}
 		return types.MapType{Key: kt, Value: vt}
+	case *LoadExpr:
+		return types.ListType{Elem: types.MapType{Key: types.StringType{}, Value: types.AnyType{}}}
 	case *NilLit:
 		return types.AnyType{}
 	default:
@@ -2677,4 +2729,66 @@ func gatherVarsPrimary(p *parser.Primary, set map[string]struct{}) {
 	case p.Group != nil:
 		gatherVarsExpr(p.Group, set)
 	}
+}
+
+func literalString(e *parser.Expr) (string, bool) {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) > 0 {
+		return "", false
+	}
+	u := e.Binary.Left
+	if len(u.Ops) > 0 || u.Value == nil {
+		return "", false
+	}
+	p := u.Value
+	if len(p.Ops) > 0 || p.Target == nil {
+		return "", false
+	}
+	if p.Target.Lit != nil && p.Target.Lit.Str != nil {
+		return *p.Target.Lit.Str, true
+	}
+	if p.Target.Selector != nil && len(p.Target.Selector.Tail) == 0 {
+		return p.Target.Selector.Root, true
+	}
+	return "", false
+}
+
+func parseFormat(e *parser.Expr) string {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) > 0 {
+		return ""
+	}
+	u := e.Binary.Left
+	if len(u.Ops) > 0 || u.Value == nil {
+		return ""
+	}
+	p := u.Value
+	if len(p.Ops) > 0 || p.Target == nil || p.Target.Map == nil {
+		return ""
+	}
+	for _, it := range p.Target.Map.Items {
+		key, ok := literalString(it.Key)
+		if ok && key == "format" {
+			if v, ok := literalString(it.Value); ok {
+				return v
+			}
+		}
+	}
+	return ""
+}
+
+func repoRoot() string {
+	dir, err := os.Getwd()
+	if err != nil {
+		return ""
+	}
+	for i := 0; i < 10; i++ {
+		if _, err := os.Stat(filepath.Join(dir, "go.mod")); err == nil {
+			return dir
+		}
+		parent := filepath.Dir(dir)
+		if parent == dir {
+			break
+		}
+		dir = parent
+	}
+	return ""
 }
