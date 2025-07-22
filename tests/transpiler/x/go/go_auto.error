@@ -1,0 +1,3 @@
+# command-line-arguments
+tests/transpiler/x/go/go_auto.go:13:14: use of package testpkg not in selector
+tests/transpiler/x/go/go_auto.go:14:14: use of package testpkg not in selector

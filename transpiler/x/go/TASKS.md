@@ -1,3 +1,7 @@
+## Progress (2025-07-22 18:00 +0700)
+- go transpiler: simplify print and improve map field inference
+- Regenerated golden files - 103/103 vm valid programs passing
+
 ## Progress (2025-07-22 17:04 +0700)
 - go transpiler: improve jsonl list formatting
 - Regenerated golden files - 103/103 vm valid programs passing

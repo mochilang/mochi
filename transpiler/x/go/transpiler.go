@@ -89,39 +89,14 @@ func (s *ExprStmt) emit(w io.Writer) { s.Expr.emit(w) }
 type PrintStmt struct{ Args []Expr }
 
 func (p *PrintStmt) emit(w io.Writer) {
-	// straightforward fmt.Println for all arguments
 	io.WriteString(w, "fmt.Println(")
 	for i, e := range p.Args {
 		if i > 0 {
 			io.WriteString(w, ", ")
 		}
-		if base, idx, ok := isStringIndexCall(e); ok {
-			io.WriteString(w, "fmt.Sprintf(\"%q\", []rune(")
-			base.emit(w)
-			io.WriteString(w, ")[")
-			idx.emit(w)
-			io.WriteString(w, "])")
-		} else {
-			e.emit(w)
-		}
+		e.emit(w)
 	}
 	io.WriteString(w, ")")
-}
-
-func isStringIndexCall(e Expr) (Expr, Expr, bool) {
-	ce, ok := e.(*CallExpr)
-	if !ok || ce.Func != "string" || len(ce.Args) != 1 {
-		return nil, nil, false
-	}
-	ix, ok := ce.Args[0].(*IndexExpr)
-	if !ok {
-		return nil, nil, false
-	}
-	rs, ok := ix.X.(*RuneSliceExpr)
-	if !ok || ix.Index == nil {
-		return nil, nil, false
-	}
-	return rs.Expr, ix.Index, true
 }
 
 type VarDecl struct {
@@ -3097,7 +3072,11 @@ func compilePostfix(pf *parser.PostfixExpr, env *types.Env, base string) (Expr, 
 					t = types.AnyType{}
 				}
 			default:
-				expr = &FieldExpr{X: expr, Name: toGoFieldName(f)}
+				if types.IsAnyType(t) {
+					expr = &IndexExpr{X: &AssertExpr{Expr: expr, Type: "map[string]any"}, Index: &StringLit{Value: f}}
+				} else {
+					expr = &FieldExpr{X: expr, Name: toGoFieldName(f)}
+				}
 				t = types.AnyType{}
 			}
 		}

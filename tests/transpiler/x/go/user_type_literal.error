@@ -1,0 +1,2 @@
+# command-line-arguments
+tests/transpiler/x/go/user_type_literal.go:29:14: invalid operation: book.Author (variable of struct type Person) is not an interface
