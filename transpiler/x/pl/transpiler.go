@@ -81,10 +81,11 @@ type compileEnv struct {
 	vars   map[string]int
 	consts map[string]Expr
 	funcs  map[string]Expr
+	fnMap  map[string]*parser.FunStmt
 }
 
 func newCompileEnv(funcs map[string]Expr) *compileEnv {
-	return &compileEnv{vars: make(map[string]int), consts: make(map[string]Expr), funcs: funcs}
+	return &compileEnv{vars: make(map[string]int), consts: make(map[string]Expr), funcs: funcs, fnMap: make(map[string]*parser.FunStmt)}
 }
 
 func (e *compileEnv) fresh(name string) string {
@@ -107,7 +108,7 @@ func (e *compileEnv) current(name string) string {
 
 func (e *compileEnv) setConst(name string, ex Expr) {
 	switch ex.(type) {
-	case *IntLit, *FloatLit, *BoolLit, *StringLit, *ListLit, *MapLit:
+	case *IntLit, *FloatLit, *BoolLit, *StringLit, *ListLit, *MapLit, *FunLit:
 		e.consts[name] = ex
 	default:
 		delete(e.consts, name)
@@ -264,7 +265,11 @@ func (p *PrintStmt) emit(w io.Writer, idx int) {
 	case *IndexExpr:
 		if e.IsMap {
 			io.WriteString(w, "    get_dict(")
-			e.Index.emit(w)
+			if s, ok := e.Index.(*StringLit); ok {
+				io.WriteString(w, s.Value)
+			} else {
+				e.Index.emit(w)
+			}
 			io.WriteString(w, ", ")
 			e.Target.emit(w)
 			fmt.Fprintf(w, ", V%d), writeln(V%d)", idx, idx)
@@ -349,7 +354,11 @@ func (p *MultiPrintStmt) emit(w io.Writer, idx int) {
 		}
 		if ie, ok := ex.(*IndexExpr); ok && ie.IsMap {
 			fmt.Fprintf(w, "get_dict(")
-			ie.Index.emit(w)
+			if s, ok2 := ie.Index.(*StringLit); ok2 {
+				io.WriteString(w, s.Value)
+			} else {
+				ie.Index.emit(w)
+			}
 			io.WriteString(w, ", ")
 			ie.Target.emit(w)
 			fmt.Fprintf(w, ", V%d)", idx)
@@ -478,6 +487,20 @@ type AppendExpr struct {
 	List Expr
 	Elem Expr
 }
+
+// FunLit represents a simple anonymous function with a captured
+// constant environment. It is only used for constant folding of
+// trivial closures.
+type FunLit struct {
+	Params []string
+	Body   *parser.Expr
+	Env    map[string]Expr
+}
+
+func (f *FunLit) emit(w io.Writer) {
+	io.WriteString(w, "<fun>")
+}
+
 type IndexExpr struct {
 	Target   Expr
 	Index    Expr
@@ -645,7 +668,11 @@ func (a *AppendExpr) emit(w io.Writer) {
 func (i *IndexExpr) emit(w io.Writer) {
 	if i.IsMap {
 		io.WriteString(w, "get_dict(")
-		i.Index.emit(w)
+		if s, ok := i.Index.(*StringLit); ok {
+			io.WriteString(w, s.Value)
+		} else {
+			i.Index.emit(w)
+		}
 		io.WriteString(w, ", ")
 		i.Target.emit(w)
 		io.WriteString(w, ", R)")
@@ -941,11 +968,45 @@ func nextSimpleAssign(sts []*parser.Statement, idx int, name string) bool {
 	return n.Assign != nil && n.Assign.Name == name && len(n.Assign.Index) == 0 && len(n.Assign.Field) == 0
 }
 
+func evalFunCallResult(fn *parser.FunStmt, args []Expr, env *compileEnv) (*FunLit, error) {
+	if len(fn.Body) == 0 {
+		return nil, fmt.Errorf("unsupported call")
+	}
+	ret := fn.Body[len(fn.Body)-1].Return
+	if ret == nil || ret.Value == nil {
+		return nil, fmt.Errorf("unsupported call")
+	}
+	fe := ret.Value.Binary.Left.Value.Target.FunExpr
+	if fe.ExprBody == nil || len(fe.BlockBody) != 0 {
+		return nil, fmt.Errorf("unsupported call")
+	}
+	if len(args) != len(fn.Params) {
+		return nil, fmt.Errorf("unsupported call")
+	}
+	envMap := map[string]Expr{}
+	for k, v := range env.consts {
+		envMap[k] = v
+	}
+	for i, p := range fn.Params {
+		envMap[p.Name] = args[i]
+	}
+	params := make([]string, len(fe.Params))
+	for i, p := range fe.Params {
+		params[i] = p.Name
+	}
+	return &FunLit{Params: params, Body: fe.ExprBody, Env: envMap}, nil
+}
+
 // Transpile converts a Mochi program to a Prolog AST.
 func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	_ = env
 	constFuncs := collectConstFuncs(prog)
 	ce := newCompileEnv(constFuncs)
+	for _, st := range prog.Statements {
+		if st.Fun != nil {
+			ce.fnMap[st.Fun.Name] = st.Fun
+		}
+	}
 	p := &Program{}
 	for i, st := range prog.Statements {
 		switch {
@@ -967,6 +1028,21 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 				if err != nil {
 					return nil, err
 				}
+				if call := st.Let.Value.Binary.Left.Value.Target.Call; call != nil {
+					if fn, ok := ce.fnMap[call.Func]; ok {
+						args := make([]Expr, len(call.Args))
+						for i, a := range call.Args {
+							ex, err2 := toExpr(a, ce)
+							if err2 != nil {
+								return nil, err2
+							}
+							args[i] = ex
+						}
+						if fl, err2 := evalFunCallResult(fn, args, ce); err2 == nil {
+							expr = fl
+						}
+					}
+				}
 			} else {
 				expr = &IntLit{Value: 0}
 			}
@@ -983,6 +1059,21 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 				expr, err = toExpr(st.Var.Value, ce)
 				if err != nil {
 					return nil, err
+				}
+				if call := st.Var.Value.Binary.Left.Value.Target.Call; call != nil {
+					if fn, ok := ce.fnMap[call.Func]; ok {
+						args := make([]Expr, len(call.Args))
+						for i, a := range call.Args {
+							ex, err2 := toExpr(a, ce)
+							if err2 != nil {
+								return nil, err2
+							}
+							args[i] = ex
+						}
+						if fl, err2 := evalFunCallResult(fn, args, ce); err2 == nil {
+							expr = fl
+						}
+					}
 				}
 			} else {
 				expr = &IntLit{Value: 0}
@@ -1049,6 +1140,9 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 				return nil, err
 			}
 			p.Stmts = append(p.Stmts, exprStmts...)
+		case st.Type != nil:
+			// ignore type declarations
+			continue
 		default:
 			return nil, fmt.Errorf("unsupported statement")
 		}
@@ -1168,6 +1262,21 @@ func compileStmts(sts []*parser.Statement, env *compileEnv) ([]Stmt, error) {
 				if err != nil {
 					return nil, err
 				}
+				if call := s.Let.Value.Binary.Left.Value.Target.Call; call != nil {
+					if fn, ok := env.fnMap[call.Func]; ok {
+						args := make([]Expr, len(call.Args))
+						for i, a := range call.Args {
+							ex, err2 := toExpr(a, env)
+							if err2 != nil {
+								return nil, err2
+							}
+							args[i] = ex
+						}
+						if fl, err2 := evalFunCallResult(fn, args, env); err2 == nil {
+							expr = fl
+						}
+					}
+				}
 			} else {
 				expr = &IntLit{Value: 0}
 			}
@@ -1184,6 +1293,21 @@ func compileStmts(sts []*parser.Statement, env *compileEnv) ([]Stmt, error) {
 				expr, err = toExpr(s.Var.Value, env)
 				if err != nil {
 					return nil, err
+				}
+				if call := s.Var.Value.Binary.Left.Value.Target.Call; call != nil {
+					if fn, ok := env.fnMap[call.Func]; ok {
+						args := make([]Expr, len(call.Args))
+						for i, a := range call.Args {
+							ex, err2 := toExpr(a, env)
+							if err2 != nil {
+								return nil, err2
+							}
+							args[i] = ex
+						}
+						if fl, err2 := evalFunCallResult(fn, args, env); err2 == nil {
+							expr = fl
+						}
+					}
 				}
 			} else {
 				expr = &IntLit{Value: 0}
@@ -1438,6 +1562,8 @@ func compileStmts(sts []*parser.Statement, env *compileEnv) ([]Stmt, error) {
 		breakWhile:
 			{
 			}
+		case s.Type != nil:
+			continue
 		default:
 			return nil, fmt.Errorf("unsupported statement")
 		}
@@ -1795,10 +1921,17 @@ func toPostfix(pf *parser.PostfixExpr, env *compileEnv) (Expr, error) {
 				}
 				args[i] = ex
 			}
-			if v, ok := expr.(*Var); ok {
-				return &CallExpr{Name: v.Name, Args: args}, nil
+			switch e := expr.(type) {
+			case *Var:
+				if fl, ok := env.constExpr(e.Name).(*FunLit); ok {
+					return evalFunCall(fl, args, env)
+				}
+				return &CallExpr{Name: e.Name, Args: args}, nil
+			case *FunLit:
+				return evalFunCall(e, args, env)
+			default:
+				return nil, fmt.Errorf("unsupported call")
 			}
-			return nil, fmt.Errorf("unsupported call")
 		default:
 			return nil, fmt.Errorf("unsupported postfix")
 		}
@@ -2032,6 +2165,19 @@ func toPrimary(p *parser.Primary, env *compileEnv) (Expr, error) {
 			items[i] = MapItem{Key: keyStr, Value: val}
 		}
 		return &MapLit{Items: items}, nil
+	case p.FunExpr != nil:
+		if p.FunExpr.ExprBody == nil || len(p.FunExpr.BlockBody) != 0 {
+			return nil, fmt.Errorf("unsupported funexpr")
+		}
+		params := make([]string, len(p.FunExpr.Params))
+		for i, pa := range p.FunExpr.Params {
+			params[i] = pa.Name
+		}
+		envMap := map[string]Expr{}
+		for k, v := range env.consts {
+			envMap[k] = v
+		}
+		return &FunLit{Params: params, Body: p.FunExpr.ExprBody, Env: envMap}, nil
 	case p.Query != nil:
 		return evalQueryExpr(p.Query, env)
 	case p.Group != nil:
@@ -2105,6 +2251,22 @@ func exprNode(e Expr) *ast.Node {
 	default:
 		return &ast.Node{Kind: "expr"}
 	}
+}
+
+// evalFunCall attempts to evaluate a FunLit with constant arguments.
+// It returns an error if evaluation is not possible.
+func evalFunCall(f *FunLit, args []Expr, env *compileEnv) (Expr, error) {
+	if len(args) != len(f.Params) {
+		return nil, fmt.Errorf("unsupported call")
+	}
+	newEnv := newCompileEnv(env.funcs)
+	for k, v := range f.Env {
+		newEnv.consts[k] = v
+	}
+	for i, p := range f.Params {
+		newEnv.consts[p] = args[i]
+	}
+	return toExpr(f.Body, newEnv)
 }
 
 func compileFunction(fn *parser.FunStmt, env *compileEnv) (*Function, error) {
