@@ -1,3 +1,23 @@
+## Progress (2025-07-22 13:39 +0700)
+- erl: support order_by_map and simplify query sort (05628dc1c)
+- Regenerated golden files - 98/102 vm valid programs passing
+
+## Progress (2025-07-22 13:30 +0700)
+- erl: support go_auto (9300c70f7)
+- Regenerated golden files - 98/102 vm valid programs passing
+
+## Progress (2025-07-22 13:30 +0700)
+- erl: support go_auto (9300c70f7)
+- Regenerated golden files - 98/102 vm valid programs passing
+
+## Progress (2025-07-22 13:30 +0700)
+- erl: support go_auto (9300c70f7)
+- Regenerated golden files - 97/102 vm valid programs passing
+
+## Progress (2025-07-22 13:30 +0700)
+- erl: support go_auto (9300c70f7)
+- Regenerated golden files - 97/102 vm valid programs passing
+
 ## Progress (2025-07-22 13:12 +0700)
 - erl transpiler: support save jsonl to stdout (f4cc7ef56)
 - Regenerated golden files - 97/102 vm valid programs passing
