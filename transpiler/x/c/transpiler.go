@@ -55,6 +55,7 @@ var (
 	needListAppendInt    bool
 	needListAppendStr    bool
 	needNow              bool
+	needInput            bool
 )
 
 const version = "0.10.32"
@@ -1086,6 +1087,15 @@ func (p *Program) Emit() []byte {
 		buf.WriteString("    return (int)(ts.tv_sec * 1000 + ts.tv_nsec / 1000000);\n")
 		buf.WriteString("}\n\n")
 	}
+	if needInput {
+		buf.WriteString("static char* _input(void) {\n")
+		buf.WriteString("    char buf[1024];\n")
+		buf.WriteString("    if (!fgets(buf, sizeof(buf), stdin)) return strdup(\"\");\n")
+		buf.WriteString("    size_t len = strlen(buf);\n")
+		buf.WriteString("    if (len > 0 && buf[len-1] == '\\n') buf[len-1] = 0;\n")
+		buf.WriteString("    return strdup(buf);\n")
+		buf.WriteString("}\n\n")
+	}
 	names := make([]string, 0, len(structTypes))
 	for name := range structTypes {
 		names = append(names, name)
@@ -1250,6 +1260,7 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 	needListAppendInt = false
 	needListAppendStr = false
 	needNow = false
+	needInput = false
 	datasetWhereEnabled = false
 	joinMultiEnabled = false
 	builtinAliases = make(map[string]string)
@@ -2157,6 +2168,7 @@ func compileFunction(env *types.Env, name string, fn *parser.FunExpr) (*Function
 	}
 	funcParamTypes[name] = paramTypes
 	ret := "int"
+	inferRetFromBody := false
 	if fn.Return != nil {
 		if fn.Return.Simple != nil {
 			switch *fn.Return.Simple {
@@ -2185,6 +2197,8 @@ func compileFunction(env *types.Env, name string, fn *parser.FunExpr) (*Function
 				}
 			}
 			ret = elemT + "[]"
+		} else if g := fn.Return.Generic; g != nil && g.Name == "map" {
+			inferRetFromBody = true
 		}
 	}
 	if ret == "double" {
@@ -2208,11 +2222,9 @@ func compileFunction(env *types.Env, name string, fn *parser.FunExpr) (*Function
 		}
 		body = append(body, &ReturnStmt{Expr: expr})
 	}
-	if ret == "int" {
-		if fn.Return != nil && fn.Return.Simple == nil && fn.Return.Generic == nil {
-			if t := detectReturnType(body, localEnv); t != "" && t != "int" {
-				ret = t
-			}
+	if ret == "int" || inferRetFromBody {
+		if t := detectReturnType(body, localEnv); t != "" && t != "int" {
+			ret = t
 		}
 	}
 	return &Function{Name: name, Params: params, Body: body, Return: ret}, nil
@@ -2848,6 +2860,15 @@ func convertUnary(u *parser.Unary) Expr {
 		if call.Func == "now" && len(call.Args) == 0 {
 			needNow = true
 			return &CallExpr{Func: "_now"}
+		}
+		if call.Func == "input" && len(call.Args) == 0 {
+			needInput = true
+			funcReturnTypes["_input"] = "const char*"
+			return &CallExpr{Func: "_input"}
+		}
+		if call.Func == "int" && len(call.Args) == 1 {
+			arg := convertExpr(call.Args[0])
+			return &UnaryExpr{Op: "(int)", Expr: arg}
 		}
 		if call.Func == "str" && len(call.Args) == 1 {
 			arg := convertExpr(call.Args[0])
@@ -3574,6 +3595,9 @@ func inferExprType(env *types.Env, e Expr) string {
 			case types.StructType:
 				return tt.Name
 			}
+		}
+		if t, ok := varTypes[v.Name]; ok {
+			return t
 		}
 		if _, ok := constStrings[v.Name]; ok {
 			return "const char*"
