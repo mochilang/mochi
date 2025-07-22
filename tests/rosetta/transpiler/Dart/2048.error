@@ -1,0 +1,24 @@
+run: exit status 254
+../../../tests/rosetta/transpiler/Dart/2048.dart:128:10: Error: A value of type 'List<dynamic>' can't be returned from a function with return type 'String'.
+ - 'List' is from 'dart:core'.
+  return out;
+         ^
+../../../tests/rosetta/transpiler/Dart/2048.dart:146:17: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    gain = gain + v;
+                ^
+../../../tests/rosetta/transpiler/Dart/2048.dart:184:25: Error: A value of type 'String' can't be assigned to a variable of type 'List<dynamic>'.
+ - 'List' is from 'dart:core'.
+    List<dynamic> rev = reverseRow(b[y]);
+                        ^
+../../../tests/rosetta/transpiler/Dart/2048.dart:188:11: Error: A value of type 'String' can't be assigned to a variable of type 'List<dynamic>'.
+ - 'List' is from 'dart:core'.
+    rev = reverseRow(rev);
+          ^
+../../../tests/rosetta/transpiler/Dart/2048.dart:245:25: Error: A value of type 'String' can't be assigned to a variable of type 'List<dynamic>'.
+ - 'List' is from 'dart:core'.
+    List<dynamic> col = reverseRow(getCol(b, x));
+                        ^
+../../../tests/rosetta/transpiler/Dart/2048.dart:249:11: Error: A value of type 'String' can't be assigned to a variable of type 'List<dynamic>'.
+ - 'List' is from 'dart:core'.
+    col = reverseRow(col);
+          ^
