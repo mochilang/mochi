@@ -15,6 +15,7 @@ import (
 
 var (
 	extraDecls     []*DataClass
+	extraUnions    []*SumType
 	helperSnippets map[string]string
 	extraHelpers   []string
 	helpersUsed    map[string]bool
@@ -118,6 +119,7 @@ func init() {
     is Iterable<*> -> v.joinToString(prefix = "[", postfix = "]") { toJson(it) }
     else -> toJson(v.toString())
 }`,
+		"expect": `fun expect(cond: Boolean) { if (!cond) throw RuntimeException("expect failed") }`,
 	}
 	extraHelpers = nil
 	helpersUsed = map[string]bool{}
@@ -127,6 +129,7 @@ func init() {
 // Program contains top level functions and statements executed in `main`.
 type Program struct {
 	Structs []*DataClass
+	Unions  []*SumType
 	Funcs   []*FuncDef
 	Stmts   []Stmt
 	Helpers []string
@@ -163,6 +166,18 @@ func (s *IndexAssignStmt) emit(w io.Writer, indentLevel int) {
 	s.Value.emit(w)
 }
 
+// ExpectStmt asserts that a condition holds.
+type ExpectStmt struct{ Cond Expr }
+
+func (s *ExpectStmt) emit(w io.Writer, indentLevel int) {
+	indent(w, indentLevel)
+	io.WriteString(w, "expect(")
+	if s.Cond != nil {
+		s.Cond.emit(w)
+	}
+	io.WriteString(w, ")")
+}
+
 // ReturnStmt is a return statement inside a function.
 type ReturnStmt struct{ Value Expr }
 
@@ -189,6 +204,22 @@ type DataClass struct {
 	Fields   []ParamDecl
 	Extends  string
 	IsObject bool
+}
+
+// SumType represents a simple sealed interface with variants.
+type SumType struct {
+	Name     string
+	Variants []*DataClass
+}
+
+func (u *SumType) emit(w io.Writer, indentLevel int) {
+	indent(w, indentLevel)
+	io.WriteString(w, "sealed interface "+u.Name+"\n")
+	for _, v := range u.Variants {
+		v.Extends = u.Name
+		v.emit(w, indentLevel)
+		io.WriteString(w, "\n")
+	}
 }
 
 type ParamDecl struct {
@@ -480,7 +511,13 @@ type FieldExpr struct {
 }
 
 func (f *FieldExpr) emit(w io.Writer) {
-	f.Receiver.emit(w)
+	if _, ok := f.Receiver.(*CastExpr); ok {
+		io.WriteString(w, "(")
+		f.Receiver.emit(w)
+		io.WriteString(w, ")")
+	} else {
+		f.Receiver.emit(w)
+	}
 	io.WriteString(w, "."+f.Name)
 }
 
@@ -1344,6 +1381,30 @@ type WhenCase struct {
 	Result  Expr
 }
 
+// TypePattern matches a value using Kotlin 'is' check.
+type TypePattern struct{ Type string }
+
+func (tp *TypePattern) emit(w io.Writer) { io.WriteString(w, "is "+tp.Type) }
+
+// RunExpr emits a `run { ... }` block returning the last expression.
+type RunExpr struct {
+	Stmts  []Stmt
+	Result Expr
+}
+
+func (re *RunExpr) emit(w io.Writer) {
+	io.WriteString(w, "run {\n")
+	for _, s := range re.Stmts {
+		s.emit(w, 1)
+		io.WriteString(w, "\n")
+	}
+	indent(w, 1)
+	if re.Result != nil {
+		re.Result.emit(w)
+	}
+	io.WriteString(w, "\n}")
+}
+
 func (wex *WhenExpr) emit(w io.Writer) {
 	io.WriteString(w, "when (")
 	wex.Target.emit(w)
@@ -1494,6 +1555,8 @@ func kotlinTypeFromType(t types.Type) string {
 		}
 		return "(" + strings.Join(params, ", ") + ") -> " + ret
 	case types.StructType:
+		return tt.Name
+	case types.UnionType:
 		return tt.Name
 	}
 	return ""
@@ -1678,6 +1741,7 @@ func handleImport(env *types.Env, im *parser.ImportStmt) bool {
 // Transpile converts a Mochi program to a simple Kotlin AST.
 func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 	extraDecls = nil
+	extraUnions = nil
 	extraHelpers = nil
 	helpersUsed = map[string]bool{}
 	p := &Program{}
@@ -1691,12 +1755,27 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 		case st.ExternVar != nil, st.ExternFun != nil, st.ExternObject != nil, st.ExternType != nil:
 			// extern declarations have no direct effect
 			continue
+		case st.Test != nil:
+			body, err := convertStmts(types.NewEnv(env), st.Test.Body)
+			if err != nil {
+				return nil, err
+			}
+			fname := "test_" + strings.ReplaceAll(strings.Trim(st.Test.Name, "\""), " ", "_")
+			p.Funcs = append(p.Funcs, &FuncDef{Name: fname, Body: body})
+			p.Stmts = append(p.Stmts, &ExprStmt{Expr: &CallExpr{Func: fname}})
 		case st.Expr != nil:
 			e, err := convertExpr(env, st.Expr.Expr)
 			if err != nil {
 				return nil, err
 			}
 			p.Stmts = append(p.Stmts, &ExprStmt{Expr: e})
+		case st.Expect != nil:
+			useHelper("expect")
+			cond, err := convertExpr(env, st.Expect.Value)
+			if err != nil {
+				return nil, err
+			}
+			p.Stmts = append(p.Stmts, &ExpectStmt{Cond: cond})
 		case st.Let != nil:
 			var val Expr
 			if st.Let.Value != nil {
@@ -1806,27 +1885,41 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 		case st.Continue != nil:
 			p.Stmts = append(p.Stmts, &ContinueStmt{})
 		case st.Type != nil:
-			var fields []ParamDecl
-			fieldMap := map[string]types.Type{}
-			var order []string
-			for _, m := range st.Type.Members {
-				if m.Field == nil {
-					continue
+			if len(st.Type.Variants) > 0 {
+				var variants []*DataClass
+				for _, v := range st.Type.Variants {
+					stv, _ := env.GetStruct(v.Name)
+					var fields []ParamDecl
+					for _, n := range stv.Order {
+						fields = append(fields, ParamDecl{Name: n, Type: kotlinTypeFromType(stv.Fields[n])})
+					}
+					variants = append(variants, &DataClass{Name: v.Name, Fields: fields, IsObject: len(fields) == 0})
 				}
-				ft := types.ResolveTypeRef(m.Field.Type, env)
-				fields = append(fields, ParamDecl{Name: m.Field.Name, Type: kotlinTypeFromType(ft)})
-				fieldMap[m.Field.Name] = ft
-				order = append(order, m.Field.Name)
-			}
-			extraDecls = append(extraDecls, &DataClass{Name: st.Type.Name, Fields: fields})
-			if env != nil {
-				env.SetStruct(st.Type.Name, types.StructType{Name: st.Type.Name, Fields: fieldMap, Order: order})
+				extraUnions = append(extraUnions, &SumType{Name: st.Type.Name, Variants: variants})
+			} else {
+				var fields []ParamDecl
+				fieldMap := map[string]types.Type{}
+				var order []string
+				for _, m := range st.Type.Members {
+					if m.Field == nil {
+						continue
+					}
+					ft := types.ResolveTypeRef(m.Field.Type, env)
+					fields = append(fields, ParamDecl{Name: m.Field.Name, Type: kotlinTypeFromType(ft)})
+					fieldMap[m.Field.Name] = ft
+					order = append(order, m.Field.Name)
+				}
+				extraDecls = append(extraDecls, &DataClass{Name: st.Type.Name, Fields: fields})
+				if env != nil {
+					env.SetStruct(st.Type.Name, types.StructType{Name: st.Type.Name, Fields: fieldMap, Order: order})
+				}
 			}
 		default:
 			return nil, fmt.Errorf("unsupported statement")
 		}
 	}
 	p.Structs = extraDecls
+	p.Unions = extraUnions
 	p.Helpers = extraHelpers
 	return p, nil
 }
@@ -1846,6 +1939,13 @@ func convertStmts(env *types.Env, list []*parser.Statement) ([]Stmt, error) {
 				return nil, err
 			}
 			out = append(out, &ExprStmt{Expr: e})
+		case s.Expect != nil:
+			useHelper("expect")
+			cond, err := convertExpr(env, s.Expect.Value)
+			if err != nil {
+				return nil, err
+			}
+			out = append(out, &ExpectStmt{Cond: cond})
 		case s.Let != nil:
 			v, err := convertExpr(env, s.Let.Value)
 			if err != nil {
@@ -1943,21 +2043,34 @@ func convertStmts(env *types.Env, list []*parser.Statement) ([]Stmt, error) {
 		case s.Continue != nil:
 			out = append(out, &ContinueStmt{})
 		case s.Type != nil:
-			var fields []ParamDecl
-			fieldMap := map[string]types.Type{}
-			var order []string
-			for _, m := range s.Type.Members {
-				if m.Field == nil {
-					continue
+			if len(s.Type.Variants) > 0 {
+				var variants []*DataClass
+				for _, v := range s.Type.Variants {
+					st, _ := env.GetStruct(v.Name)
+					var fields []ParamDecl
+					for _, n := range st.Order {
+						fields = append(fields, ParamDecl{Name: n, Type: kotlinTypeFromType(st.Fields[n])})
+					}
+					variants = append(variants, &DataClass{Name: v.Name, Fields: fields, IsObject: len(fields) == 0})
 				}
-				ft := types.ResolveTypeRef(m.Field.Type, env)
-				fields = append(fields, ParamDecl{Name: m.Field.Name, Type: kotlinTypeFromType(ft)})
-				fieldMap[m.Field.Name] = ft
-				order = append(order, m.Field.Name)
-			}
-			extraDecls = append(extraDecls, &DataClass{Name: s.Type.Name, Fields: fields})
-			if env != nil {
-				env.SetStruct(s.Type.Name, types.StructType{Name: s.Type.Name, Fields: fieldMap, Order: order})
+				extraUnions = append(extraUnions, &SumType{Name: s.Type.Name, Variants: variants})
+			} else {
+				var fields []ParamDecl
+				fieldMap := map[string]types.Type{}
+				var order []string
+				for _, m := range s.Type.Members {
+					if m.Field == nil {
+						continue
+					}
+					ft := types.ResolveTypeRef(m.Field.Type, env)
+					fields = append(fields, ParamDecl{Name: m.Field.Name, Type: kotlinTypeFromType(ft)})
+					fieldMap[m.Field.Name] = ft
+					order = append(order, m.Field.Name)
+				}
+				extraDecls = append(extraDecls, &DataClass{Name: s.Type.Name, Fields: fields})
+				if env != nil {
+					env.SetStruct(s.Type.Name, types.StructType{Name: s.Type.Name, Fields: fieldMap, Order: order})
+				}
 			}
 		default:
 			return nil, fmt.Errorf("unsupported statement")
@@ -2232,6 +2345,37 @@ func convertMatchExpr(env *types.Env, me *parser.MatchExpr) (Expr, error) {
 	}
 	cases := make([]WhenCase, 0, len(me.Cases))
 	for _, c := range me.Cases {
+		if call, ok := callPattern(c.Pattern); ok {
+			if ut, ok := env.FindUnionByVariant(call.Func); ok {
+				st := ut.Variants[call.Func]
+				child := types.NewEnv(env)
+				var stmts []Stmt
+				for idx, arg := range call.Args {
+					if name, ok := identName(arg); ok {
+						ft := st.Fields[st.Order[idx]]
+						child.SetVar(name, ft, true)
+						field := &FieldExpr{Receiver: &CastExpr{Value: target, Type: call.Func}, Name: st.Order[idx], Type: kotlinTypeFromType(ft)}
+						stmts = append(stmts, &LetStmt{Name: name, Type: kotlinTypeFromType(ft), Value: field})
+					}
+				}
+				res, err := convertExpr(child, c.Result)
+				if err != nil {
+					return nil, err
+				}
+				cases = append(cases, WhenCase{Pattern: &TypePattern{Type: call.Func}, Result: &RunExpr{Stmts: stmts, Result: res}})
+				continue
+			}
+		}
+		if ident, ok := identName(c.Pattern); ok {
+			if _, ok := env.FindUnionByVariant(ident); ok {
+				res, err := convertExpr(env, c.Result)
+				if err != nil {
+					return nil, err
+				}
+				cases = append(cases, WhenCase{Pattern: &TypePattern{Type: ident}, Result: res})
+				continue
+			}
+		}
 		res, err := convertExpr(env, c.Result)
 		if err != nil {
 			return nil, err
@@ -2613,6 +2757,39 @@ func simpleVarName(e *parser.Expr) string {
 		return p.Target.Selector.Root
 	}
 	return ""
+}
+
+func identName(e *parser.Expr) (string, bool) {
+	if e == nil || len(e.Binary.Right) != 0 {
+		return "", false
+	}
+	u := e.Binary.Left
+	if len(u.Ops) != 0 {
+		return "", false
+	}
+	p := u.Value
+	if len(p.Ops) != 0 {
+		return "", false
+	}
+	if p.Target.Selector != nil && len(p.Target.Selector.Tail) == 0 {
+		return p.Target.Selector.Root, true
+	}
+	return "", false
+}
+
+func callPattern(e *parser.Expr) (*parser.CallExpr, bool) {
+	if e == nil || len(e.Binary.Right) != 0 {
+		return nil, false
+	}
+	u := e.Binary.Left
+	if len(u.Ops) != 0 {
+		return nil, false
+	}
+	p := u.Value
+	if len(p.Ops) != 0 || p.Target.Call == nil {
+		return nil, false
+	}
+	return p.Target.Call, true
 }
 
 func convertFunExpr(env *types.Env, f *parser.FunExpr) (Expr, error) {
@@ -3194,6 +3371,9 @@ func Emit(prog *Program) []byte {
 			buf.WriteString("\n")
 		}
 		buf.WriteString("\n")
+	}
+	for _, u := range prog.Unions {
+		u.emit(&buf, 0)
 	}
 	for _, d := range prog.Structs {
 		d.emit(&buf, 0)
