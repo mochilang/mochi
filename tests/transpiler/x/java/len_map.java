@@ -1,20 +1,16 @@
 public class Main {
-    static class Data1 {
-        int a;
-        int b;
-        Data1(int a, int b) {
-            this.a = a;
-            this.b = b;
-        }
-        boolean containsKey(String k) {
-            if (k.equals("a")) return true;
-            if (k.equals("b")) return true;
-            return false;
-        }
+
+    static String q(Object v) {
+        if (v instanceof String) return "'" + v.toString() + "'";
+        return String.valueOf(v);
     }
 
+    static String boolStr(Object v) {
+        if (v instanceof Boolean b) return b ? "True" : "False";
+        return String.valueOf(v);
+    }
 
     public static void main(String[] args) {
-        System.out.println(new Data1(1, 2).length);
+        System.out.println(boolStr(new java.util.LinkedHashMap<String, Integer>() {{ put("a", 1); put("b", 2); }}.size()));
     }
 }
