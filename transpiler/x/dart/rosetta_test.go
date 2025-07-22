@@ -3,12 +3,12 @@
 package dartt_test
 
 import (
+	"bufio"
 	"bytes"
 	"fmt"
 	"os"
 	"os/exec"
 	"path/filepath"
-	"sort"
 	"strconv"
 	"strings"
 	"testing"
@@ -19,6 +19,26 @@ import (
 	"mochi/types"
 )
 
+func readIndex(path string) ([]string, error) {
+	f, err := os.Open(path)
+	if err != nil {
+		return nil, err
+	}
+	defer f.Close()
+	var names []string
+	scanner := bufio.NewScanner(f)
+	for scanner.Scan() {
+		parts := strings.Fields(scanner.Text())
+		if len(parts) == 2 {
+			names = append(names, parts[1])
+		}
+	}
+	if err := scanner.Err(); err != nil {
+		return nil, err
+	}
+	return names, nil
+}
+
 func TestDartTranspiler_Rosetta_Golden(t *testing.T) {
 	if _, err := exec.LookPath("dart"); err != nil {
 		t.Skip("dart not installed")
@@ -28,22 +48,28 @@ func TestDartTranspiler_Rosetta_Golden(t *testing.T) {
 	os.MkdirAll(outDir, 0o755)
 
 	srcDir := filepath.Join(root, "tests", "rosetta", "x", "Mochi")
-	files, _ := filepath.Glob(filepath.Join(srcDir, "*.mochi"))
-	sort.Strings(files)
+	names, err := readIndex(filepath.Join(srcDir, "index.txt"))
+	if err != nil {
+		t.Fatalf("read index: %v", err)
+	}
+	start := 1
+	list := names
 	if idxStr := os.Getenv("MOCHI_ROSETTA_INDEX"); idxStr != "" {
 		idx, err := strconv.Atoi(idxStr)
-		if err != nil || idx < 1 || idx > len(files) {
+		if err != nil || idx < 1 || idx > len(names) {
 			t.Fatalf("invalid MOCHI_ROSETTA_INDEX: %s", idxStr)
 		}
-		files = files[idx-1 : idx]
+		start = idx
+		list = names[idx-1 : idx]
 	}
-	for _, src := range files {
-		name := strings.TrimSuffix(filepath.Base(src), ".mochi")
-		ok := t.Run(name, func(t *testing.T) {
-			base := strings.TrimSuffix(filepath.Base(src), ".mochi")
-			codePath := filepath.Join(outDir, base+".dart")
-			outPath := filepath.Join(outDir, base+".out")
-			errPath := filepath.Join(outDir, base+".error")
+	for i, fname := range list {
+		name := strings.TrimSuffix(fname, ".mochi")
+		src := filepath.Join(srcDir, fname)
+		idxNum := start + i
+		ok := t.Run(fmt.Sprintf("%03d_%s", idxNum, name), func(t *testing.T) {
+			codePath := filepath.Join(outDir, name+".dart")
+			outPath := filepath.Join(outDir, name+".out")
+			errPath := filepath.Join(outDir, name+".error")
 
 			prog, err := parser.Parse(src)
 			if err != nil {
@@ -105,12 +131,15 @@ func updateRosetta() {
 		}
 	}
 
-	files, _ := filepath.Glob(filepath.Join(srcDir, "*.mochi"))
-	total := len(files)
+	names, err := readIndex(filepath.Join(srcDir, "index.txt"))
+	if err != nil {
+		return
+	}
+	total := len(names)
 	completed := 0
 	var lines []string
-	for i, f := range files {
-		name := strings.TrimSuffix(filepath.Base(f), ".mochi")
+	for i, fname := range names {
+		name := strings.TrimSuffix(fname, ".mochi")
 		mark := "[ ]"
 		if _, err := os.Stat(filepath.Join(outDir, name+".out")); err == nil {
 			if _, err2 := os.Stat(filepath.Join(outDir, name+".error")); os.IsNotExist(err2) {
