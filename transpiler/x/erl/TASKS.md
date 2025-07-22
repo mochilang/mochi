@@ -1,3 +1,7 @@
+## Progress (2025-07-22 10:17 +0700)
+- erl: add golden outputs for more tests (6d5b60f28)
+- Regenerated golden files - 90/102 vm valid programs passing
+
 ## Progress (2025-07-22 09:21 +0700)
 - erl: support more features (94dce0814)
 - Regenerated golden files - 85/102 vm valid programs passing

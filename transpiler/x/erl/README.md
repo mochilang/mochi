@@ -1,5 +1,5 @@
-# Erlang Transpiler Output (85/102 generated and run)
-Last updated: 2025-07-22 09:21 +0700
+# Erlang Transpiler Output (90/102 generated and run)
+Last updated: 2025-07-22 10:17 +0700
 
 This directory contains a minimal transpiler that converts a very small
 subset of Mochi into Erlang. Generated programs are executed with
@@ -71,13 +71,13 @@ that produces the same output as the Mochi VM.
 - [x] map_literal_dynamic
 - [x] map_membership
 - [x] map_nested_assign
-- [ ] match_expr
-- [ ] match_full
+- [x] match_expr
+- [x] match_full
 - [x] math_ops
 - [x] membership
 - [x] min_max_builtin
 - [x] nested_function
-- [ ] order_by_map
+- [x] order_by_map
 - [ ] outer_join
 - [x] partial_application
 - [x] print_hello
@@ -87,7 +87,7 @@ that produces the same output as the Mochi VM.
 - [ ] python_math
 - [x] query_sum_select
 - [x] record_assign
-- [ ] right_join
+- [x] right_join
 - [ ] save_jsonl_stdout
 - [x] short_circuit
 - [x] slice
@@ -102,7 +102,7 @@ that produces the same output as the Mochi VM.
 - [x] substring_builtin
 - [x] sum_builtin
 - [x] tail_recursion
-- [ ] test_block
+- [x] test_block
 - [ ] tree_sum
 - [ ] two-sum
 - [x] typed_let
