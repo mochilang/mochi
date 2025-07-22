@@ -267,6 +267,9 @@ func TestTranspileGroupByMultiSort(t *testing.T) { runGolden(t, "group_by_multi_
 func TestTranspileLoadJSONL(t *testing.T) { runGolden(t, "load_jsonl") }
 func TestTranspileLoadYAML(t *testing.T)  { runGolden(t, "load_yaml") }
 
+func TestTranspilePythonAuto(t *testing.T) { runGolden(t, "python_auto") }
+func TestTranspilePythonMath(t *testing.T) { runGolden(t, "python_math") }
+
 func updateEnabled() bool { return *update }
 
 func countCompiled() (int, int) {

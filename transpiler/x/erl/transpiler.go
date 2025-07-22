@@ -592,7 +592,7 @@ func (p *PrintStmt) emit(w io.Writer) {
 	parts := make([]string, len(p.Args))
 	for i, a := range p.Args {
 		if isStringExpr(a) {
-			parts[i] = "~s"
+			parts[i] = "~ts"
 		} else {
 			parts[i] = "~p"
 		}
@@ -1655,7 +1655,7 @@ func mapOp(op string) string {
 	case "<=":
 		return "=<"
 	case "/":
-		return "div"
+		return "/"
 	case "%":
 		return "rem"
 	default:
@@ -2034,6 +2034,12 @@ func convertStmt(st *parser.Statement, env *types.Env, ctx *context) ([]Stmt, er
 			ctx.alias[n] = loopCtx.alias[n]
 		}
 		return []Stmt{&WhileStmt{Params: params, Cond: cond, Body: body, Next: next}}, nil
+	case st.Import != nil:
+		// ignore import statements in the minimal transpiler
+		return nil, nil
+	case st.ExternVar != nil, st.ExternFun != nil, st.ExternType != nil, st.ExternObject != nil:
+		// extern declarations have no effect
+		return nil, nil
 	default:
 		return nil, fmt.Errorf("unsupported statement")
 	}
@@ -2292,6 +2298,24 @@ func convertPostfix(pf *parser.PostfixExpr, env *types.Env, ctx *context) (Expr,
 	for i := 0; i < len(pf.Ops); i++ {
 		op := pf.Ops[i]
 		switch {
+		case op.Call != nil:
+			ce := &CallExpr{}
+			if nr, ok := expr.(*NameRef); ok {
+				ce.Func = nr.Name
+			} else if c, ok := expr.(*CallExpr); ok {
+				ce.Func = c.Func
+				ce.Args = append(ce.Args, c.Args...)
+			} else {
+				return nil, fmt.Errorf("unsupported postfix")
+			}
+			for _, a := range op.Call.Args {
+				ae, err := convertExpr(a, env, ctx)
+				if err != nil {
+					return nil, err
+				}
+				ce.Args = append(ce.Args, ae)
+			}
+			expr = ce
 		case op.Cast != nil && op.Cast.Type.Simple != nil:
 			if *op.Cast.Type.Simple == "int" {
 				expr = &CallExpr{Func: "list_to_integer", Args: []Expr{expr}}
@@ -2360,6 +2384,19 @@ func convertPostfix(pf *parser.PostfixExpr, env *types.Env, ctx *context) (Expr,
 						continue
 					}
 				}
+				if nr.Name == "math" {
+					switch field {
+					case "pi":
+						expr = &CallExpr{Func: "math:pi"}
+						continue
+					case "e":
+						expr = &CallExpr{Func: "math:exp", Args: []Expr{&IntLit{Value: 1}}}
+						continue
+					case "sqrt", "pow", "sin", "log":
+						expr = &NameRef{Name: fmt.Sprintf("math:%s", field)}
+						continue
+					}
+				}
 			}
 			keyLit := &StringLit{Value: field}
 			isStr := fieldIsString(expr, keyLit, env, ctx)
@@ -2390,6 +2427,17 @@ func convertPrimary(p *parser.Primary, env *types.Env, ctx *context) (Expr, erro
 		}
 		return nr, nil
 	case p.Selector != nil && len(p.Selector.Tail) > 0:
+		if p.Selector.Root == "math" && len(p.Selector.Tail) == 1 {
+			f := p.Selector.Tail[0]
+			switch f {
+			case "pi":
+				return &CallExpr{Func: "math:pi"}, nil
+			case "e":
+				return &CallExpr{Func: "math:exp", Args: []Expr{&IntLit{Value: 1}}}, nil
+			case "sqrt", "pow", "sin", "log":
+				return &NameRef{Name: fmt.Sprintf("math:%s", f)}, nil
+			}
+		}
 		expr := Expr(&NameRef{Name: ctx.current(p.Selector.Root)})
 		for i, f := range p.Selector.Tail {
 			key := &StringLit{Value: f}
