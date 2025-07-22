@@ -114,10 +114,14 @@ func updateReadme() {
 	var lines []string
 	for _, f := range files {
 		name := strings.TrimSuffix(filepath.Base(f), ".mochi")
+		outPath := filepath.Join(outDir, name+".out")
+		errPath := filepath.Join(outDir, name+".error")
 		mark := "[ ]"
-		if _, err := os.Stat(filepath.Join(outDir, name+".py")); err == nil {
-			compiled++
-			mark = "[x]"
+		if _, err := os.Stat(outPath); err == nil {
+			if _, err2 := os.Stat(errPath); os.IsNotExist(err2) {
+				compiled++
+				mark = "[x]"
+			}
 		}
 		lines = append(lines, fmt.Sprintf("- %s %s", mark, name))
 	}
@@ -161,8 +165,12 @@ func updateTasks() {
 	compiled := 0
 	for _, f := range files {
 		name := strings.TrimSuffix(filepath.Base(f), ".mochi")
-		if _, err := os.Stat(filepath.Join(outDir, name+".py")); err == nil {
-			compiled++
+		outPath := filepath.Join(outDir, name+".out")
+		errPath := filepath.Join(outDir, name+".error")
+		if _, err := os.Stat(outPath); err == nil {
+			if _, err2 := os.Stat(errPath); os.IsNotExist(err2) {
+				compiled++
+			}
 		}
 	}
 	var buf bytes.Buffer
