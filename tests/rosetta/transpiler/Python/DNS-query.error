@@ -1,0 +1,6 @@
+run: exit status 1
+Traceback (most recent call last):
+  File "/workspace/mochi/tests/rosetta/transpiler/Python/DNS-query.py", line 3, in <module>
+    res = net.LookupHost("www.kame.net")
+          ^^^
+NameError: name 'net' is not defined. Did you mean: 'next'?
