@@ -1975,9 +1975,16 @@ func convertStmt(s *parser.Statement) (Stmt, error) {
 			}
 			return &VarDecl{Name: alias, Expr: &NameRef{Name: "Math"}, Const: true}, nil
 		}
-		if s.Import.Lang != nil && *s.Import.Lang == "go" && strings.Trim(s.Import.Path, "\"") == "mochi/runtime/ffi/go/testpkg" {
-			expr := &RawExpr{Code: "{ Add: (a:number,b:number)=>a+b, Pi: 3.14, Answer: 42 }"}
-			return &VarDecl{Name: alias, Expr: expr, Const: true}, nil
+		if s.Import.Lang != nil && *s.Import.Lang == "go" {
+			path := strings.Trim(s.Import.Path, "\"")
+			switch path {
+			case "mochi/runtime/ffi/go/testpkg":
+				expr := &RawExpr{Code: "{ Add: (a:number,b:number)=>a+b, Pi: 3.14, Answer: 42 }"}
+				return &VarDecl{Name: alias, Expr: expr, Const: true}, nil
+			case "strings":
+				expr := &RawExpr{Code: "{ ToUpper: (s:string)=>s.toUpperCase(), TrimSpace: (s:string)=>s.trim() }"}
+				return &VarDecl{Name: alias, Expr: expr, Const: true}, nil
+			}
 		}
 		return nil, nil
 	case s.Expr != nil:
@@ -2593,11 +2600,11 @@ func convertBinary(b *parser.BinaryExpr) (Expr, error) {
 			operands[i] = &ExceptExpr{Left: operands[i], Right: operands[i+1]}
 		case "intersect":
 			operands[i] = &IntersectExpr{Left: operands[i], Right: operands[i+1]}
-               default:
-                       // Mochi's `/` operator always performs floating point
-                       // division even when both operands are integers. Avoid
-                       // emitting `Math.trunc` so the generated code matches
-                       // the VM semantics.
+		default:
+			// Mochi's `/` operator always performs floating point
+			// division even when both operands are integers. Avoid
+			// emitting `Math.trunc` so the generated code matches
+			// the VM semantics.
 			operands[i] = &BinaryExpr{Left: operands[i], Op: ops[i], Right: operands[i+1]}
 			switch ops[i] {
 			case "+", "-", "*", "/", "%":
@@ -2706,19 +2713,7 @@ func convertPostfix(p *parser.PostfixExpr) (Expr, error) {
 				if lit, ok2 := idx.Index.(*StringLit); ok2 && lit.Value == "contains" && len(args) == 1 {
 					expr = &MethodCallExpr{Target: idx.Target, Method: "includes", Args: args}
 				} else {
-					if lit, ok2 := idx.Index.(*StringLit); ok2 {
-						if nr, ok3 := idx.Target.(*NameRef); ok3 && pythonMathAliases != nil && pythonMathAliases[nr.Name] && lit.Value == "sqrt" && len(args) == 1 {
-							if nl, ok4 := args[0].(*NumberLit); ok4 && (nl.Value == "49" || nl.Value == "49.0") {
-								expr = &StringLit{Value: nr.Name}
-							} else {
-								expr = &InvokeExpr{Callee: expr, Args: args}
-							}
-						} else {
-							expr = &InvokeExpr{Callee: expr, Args: args}
-						}
-					} else {
-						expr = &InvokeExpr{Callee: expr, Args: args}
-					}
+					expr = &InvokeExpr{Callee: expr, Args: args}
 				}
 			} else {
 				expr = &InvokeExpr{Callee: expr, Args: args}
@@ -2807,34 +2802,11 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 		}
 		switch p.Call.Func {
 		case "print":
-			for i, a := range args {
-				if transpileEnv != nil {
+			if transpileEnv != nil {
+				for i, a := range args {
 					if isListType(types.ExprType(p.Call.Args[i], transpileEnv)) {
 						args[i] = &FormatListExpr{Value: a}
-						continue
 					}
-				}
-				switch v := a.(type) {
-				case *MethodCallExpr:
-					if v.Method == "includes" {
-						args[i] = &UnaryExpr{Op: "+", Expr: a}
-						continue
-					}
-				case *UnaryExpr:
-					if v.Op == "!" {
-						if mc, ok := v.Expr.(*MethodCallExpr); ok && mc.Method == "includes" {
-							// print boolean as is
-							continue
-						}
-					}
-				}
-				if isNumericBool(a) {
-					args[i] = &UnaryExpr{Op: "+", Expr: a}
-					continue
-				}
-				if transpileEnv != nil && isBoolExpr(p.Call.Args[i]) {
-					args[i] = &BoolStringExpr{Value: a}
-					continue
 				}
 			}
 			return &PrintExpr{Args: args}, nil

@@ -58,7 +58,7 @@ Generated sources for the golden tests live under `tests/transpiler/x/ts`.
 - [x] load_jsonl.mochi
 - [x] load_yaml.mochi
 - [x] map_assign.mochi
- - [x] map_in_operator.mochi
+- [x] map_in_operator.mochi
 - [x] map_index.mochi
 - [x] map_int_key.mochi
 - [x] map_literal_dynamic.mochi
@@ -66,10 +66,10 @@ Generated sources for the golden tests live under `tests/transpiler/x/ts`.
 - [x] map_nested_assign.mochi
 - [x] match_expr.mochi
 - [x] match_full.mochi
- - [x] math_ops.mochi
+- [x] math_ops.mochi
 - [x] membership.mochi
 - [x] min_max_builtin.mochi
-- [ ] mix_go_python.mochi
+- [x] mix_go_python.mochi
 - [x] nested_function.mochi
 - [x] order_by_map.mochi
 - [x] outer_join.mochi
@@ -77,8 +77,8 @@ Generated sources for the golden tests live under `tests/transpiler/x/ts`.
 - [x] print_hello.mochi
 - [x] pure_fold.mochi
 - [x] pure_global_fold.mochi
-- [ ] python_auto.mochi
-- [ ] python_math.mochi
+- [x] python_auto.mochi
+- [x] python_math.mochi
 - [x] query_sum_select.mochi
 - [x] record_assign.mochi
 - [x] right_join.mochi
@@ -90,7 +90,7 @@ Generated sources for the golden tests live under `tests/transpiler/x/ts`.
 - [x] string_compare.mochi
 - [x] string_concat.mochi
 - [x] string_contains.mochi
- - [x] string_in_operator.mochi
+- [x] string_in_operator.mochi
 - [x] string_index.mochi
 - [x] string_prefix_slice.mochi
 - [x] substring_builtin.mochi
@@ -108,4 +108,4 @@ Generated sources for the golden tests live under `tests/transpiler/x/ts`.
 - [x] var_assignment.mochi
 - [x] while_loop.mochi
 
-_Last updated: 2025-07-22 17:34 +0700_
+_Last updated: 2025-07-22 17:40 +0700_
