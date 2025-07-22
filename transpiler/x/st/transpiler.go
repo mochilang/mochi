@@ -3,13 +3,20 @@
 package st
 
 import (
+	"bytes"
+	"encoding/json"
 	"fmt"
 	"io"
+	"os"
 	"os/exec"
+	"path/filepath"
+	"reflect"
 	"sort"
 	"strconv"
 	"strings"
 	"time"
+
+	"gopkg.in/yaml.v3"
 
 	"mochi/parser"
 	"mochi/types"
@@ -536,34 +543,37 @@ func applyOp(a value, op string, b value) (value, error) {
 			return value{kind: valInt, i: a.i % b.i}, nil
 		}
 	case "<":
-		if a.kind == valInt && b.kind == valInt {
-			return value{kind: valBool, b: a.i < b.i}, nil
+		if (a.kind == valInt || a.kind == valFloat) && (b.kind == valInt || b.kind == valFloat) {
+			return value{kind: valBool, b: toFloat(a) < toFloat(b)}, nil
 		}
 		if a.kind == valString && b.kind == valString {
 			return value{kind: valBool, b: a.s < b.s}, nil
 		}
 	case "<=":
-		if a.kind == valInt && b.kind == valInt {
-			return value{kind: valBool, b: a.i <= b.i}, nil
+		if (a.kind == valInt || a.kind == valFloat) && (b.kind == valInt || b.kind == valFloat) {
+			return value{kind: valBool, b: toFloat(a) <= toFloat(b)}, nil
 		}
 		if a.kind == valString && b.kind == valString {
 			return value{kind: valBool, b: a.s <= b.s}, nil
 		}
 	case ">":
-		if a.kind == valInt && b.kind == valInt {
-			return value{kind: valBool, b: a.i > b.i}, nil
+		if (a.kind == valInt || a.kind == valFloat) && (b.kind == valInt || b.kind == valFloat) {
+			return value{kind: valBool, b: toFloat(a) > toFloat(b)}, nil
 		}
 		if a.kind == valString && b.kind == valString {
 			return value{kind: valBool, b: a.s > b.s}, nil
 		}
 	case ">=":
-		if a.kind == valInt && b.kind == valInt {
-			return value{kind: valBool, b: a.i >= b.i}, nil
+		if (a.kind == valInt || a.kind == valFloat) && (b.kind == valInt || b.kind == valFloat) {
+			return value{kind: valBool, b: toFloat(a) >= toFloat(b)}, nil
 		}
 		if a.kind == valString && b.kind == valString {
 			return value{kind: valBool, b: a.s >= b.s}, nil
 		}
 	case "==":
+		if (a.kind == valInt || a.kind == valFloat) && (b.kind == valInt || b.kind == valFloat) {
+			return value{kind: valBool, b: toFloat(a) == toFloat(b)}, nil
+		}
 		if a.kind == valInt && b.kind == valInt {
 			return value{kind: valBool, b: a.i == b.i}, nil
 		}
@@ -949,6 +959,8 @@ func evalPrimary(p *parser.Primary, vars map[string]value) (value, error) {
 			m[f.Name] = v
 		}
 		return value{kind: valMap, kv: m, typ: p.Struct.Name}, nil
+	case p.Load != nil:
+		return evalLoadExpr(p.Load)
 	case p.Map != nil:
 		m := make(map[string]value)
 		for _, it := range p.Map.Items {
@@ -2634,6 +2646,146 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 
 	_ = env
 	return p, nil
+}
+
+func repoRoot() string {
+	dir, err := os.Getwd()
+	if err != nil {
+		return ""
+	}
+	for i := 0; i < 10; i++ {
+		if _, err := os.Stat(filepath.Join(dir, "go.mod")); err == nil {
+			return dir
+		}
+		parent := filepath.Dir(dir)
+		if parent == dir {
+			break
+		}
+		dir = parent
+	}
+	return ""
+}
+
+func parseFormatExpr(e *parser.Expr) string {
+	if e == nil {
+		return ""
+	}
+	v, err := evalExpr(e, map[string]value{})
+	if err != nil || v.kind != valMap {
+		return ""
+	}
+	if f, ok := v.kv["format"]; ok && f.kind == valString {
+		return f.s
+	}
+	return ""
+}
+
+func anyToValue(x interface{}, typ string) value {
+	switch v := x.(type) {
+	case map[string]interface{}:
+		kv := make(map[string]value, len(v))
+		for k, val := range v {
+			kv[k] = anyToValue(val, "")
+		}
+		return value{kind: valMap, kv: kv, typ: typ}
+	case []interface{}:
+		list := make([]value, len(v))
+		for i, it := range v {
+			list[i] = anyToValue(it, "")
+		}
+		return value{kind: valList, list: list}
+	case string:
+		return value{kind: valString, s: v}
+	case int, int64:
+		return value{kind: valInt, i: int(reflect.ValueOf(v).Int())}
+	case float64, float32:
+		return value{kind: valFloat, f: reflect.ValueOf(v).Float()}
+	case bool:
+		return value{kind: valBool, b: v}
+	default:
+		return value{}
+	}
+}
+
+func evalLoadExpr(l *parser.LoadExpr) (value, error) {
+	path := ""
+	if l.Path != nil {
+		path = *l.Path
+	}
+	if strings.HasPrefix(path, "../") {
+		clean := strings.TrimPrefix(path, "../")
+		root := repoRoot()
+		if root != "" {
+			path = filepath.Join(root, "tests", clean)
+		}
+	}
+	format := parseFormatExpr(l.With)
+	if format == "" {
+		if strings.HasSuffix(path, ".yaml") {
+			format = "yaml"
+		} else if strings.HasSuffix(path, ".jsonl") {
+			format = "jsonl"
+		} else if strings.HasSuffix(path, ".json") {
+			format = "json"
+		}
+	}
+	if path == "" {
+		return value{kind: valList}, nil
+	}
+	data, err := os.ReadFile(path)
+	if err != nil {
+		return value{}, err
+	}
+	switch format {
+	case "jsonl":
+		lines := bytes.Split(data, []byte{'\n'})
+		var list []value
+		for _, line := range lines {
+			line = bytes.TrimSpace(line)
+			if len(line) == 0 {
+				continue
+			}
+			var m map[string]interface{}
+			if err := json.Unmarshal(line, &m); err != nil {
+				return value{}, err
+			}
+			list = append(list, anyToValue(m, ""))
+		}
+		if l.Type != nil && l.Type.Simple != nil {
+			for i := range list {
+				list[i].typ = *l.Type.Simple
+			}
+		}
+		return value{kind: valList, list: list}, nil
+	case "yaml":
+		var arr []map[string]interface{}
+		if err := yaml.Unmarshal(data, &arr); err != nil {
+			return value{}, err
+		}
+		list := make([]value, len(arr))
+		for i, obj := range arr {
+			list[i] = anyToValue(obj, "")
+			if l.Type != nil && l.Type.Simple != nil {
+				list[i].typ = *l.Type.Simple
+			}
+		}
+		return value{kind: valList, list: list}, nil
+	case "json":
+		var arr []map[string]interface{}
+		if err := json.Unmarshal(data, &arr); err != nil {
+			return value{}, err
+		}
+		list := make([]value, len(arr))
+		for i, obj := range arr {
+			list[i] = anyToValue(obj, "")
+			if l.Type != nil && l.Type.Simple != nil {
+				list[i].typ = *l.Type.Simple
+			}
+		}
+		return value{kind: valList, list: list}, nil
+	default:
+		return value{}, fmt.Errorf("unsupported load format")
+	}
 }
 
 func header() string {
