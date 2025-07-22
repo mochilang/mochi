@@ -3,40 +3,49 @@
 package rkt_test
 
 import (
-	"bytes"
-	"fmt"
-	"os"
-	"os/exec"
-	"path/filepath"
-	"strconv"
-	"strings"
-	"testing"
-	"time"
+    "bytes"
+    "fmt"
+    "os"
+    "os/exec"
+    "path/filepath"
+    "sort"
+    "strconv"
+    "strings"
+    "testing"
+    "time"
 
-	"mochi/parser"
-	rkt "mochi/transpiler/x/rkt"
-	"mochi/types"
+    "mochi/parser"
+    rkt "mochi/transpiler/x/rkt"
+    "mochi/types"
 )
 
 func TestRacketTranspiler_Rosetta(t *testing.T) {
-	t.Cleanup(updateRosettaChecklist)
-	if _, err := exec.LookPath("racket"); err != nil {
-		t.Skip("racket not installed")
-	}
+    t.Cleanup(updateRosettaChecklist)
+    if _, err := exec.LookPath("racket"); err != nil {
+            t.Skip("racket not installed")
+    }
 
-	root := repoRoot(t)
-	srcDir := filepath.Join(root, "tests", "rosetta", "x", "Mochi")
-	outDir := filepath.Join(root, "tests", "rosetta", "transpiler", "Racket")
-	os.MkdirAll(outDir, 0o755)
-	t.Cleanup(updateRosettaChecklist)
+    root := repoRoot(t)
+    outDir := filepath.Join(root, "tests", "rosetta", "transpiler", "Racket")
+    os.MkdirAll(outDir, 0o755)
+    t.Cleanup(updateRosettaChecklist)
 
-	index := 1
-	if s := os.Getenv("ROSETTA_INDEX"); s != "" {
-		if n, err := strconv.Atoi(s); err == nil && n >= 1 && n <= len(rkt.RosettaPrograms) {
-			index = n
-		}
-	}
-	name := rkt.RosettaPrograms[index-1]
+    programs := listRosettaPrograms(t)
+    if len(programs) == 0 {
+            t.Fatalf("no rosetta programs found")
+    }
+
+    index := 1
+    if s := os.Getenv("ROSETTA_INDEX"); s != "" {
+            if n, err := strconv.Atoi(s); err == nil {
+                    index = n
+            }
+    }
+    if index < 1 || index > len(programs) {
+            t.Fatalf("index %d out of range (1-%d)", index, len(programs))
+    }
+    name := programs[index-1]
+    srcDir := filepath.Join(root, "tests", "rosetta", "x", "Mochi")
 	srcPath := filepath.Join(srcDir, name+".mochi")
 	outPath := filepath.Join(srcDir, name+".out")
 	if _, err := os.Stat(srcPath); err != nil {
@@ -100,34 +109,51 @@ func transpileAndRunRacket(root, srcPath, wantPath, outDir, name string) error {
 }
 
 func writeRacketError(dir, name string, err error) {
-	_ = os.WriteFile(filepath.Join(dir, name+".error"), []byte(err.Error()), 0o644)
+        _ = os.WriteFile(filepath.Join(dir, name+".error"), []byte(err.Error()), 0o644)
+}
+
+func listRosettaPrograms(t *testing.T) []string {
+        t.Helper()
+        root := repoRoot(t)
+        pattern := filepath.Join(root, "tests", "rosetta", "x", "Mochi", "*.mochi")
+        files, err := filepath.Glob(pattern)
+        if err != nil {
+                t.Fatalf("glob: %v", err)
+        }
+        sort.Strings(files)
+        programs := make([]string, len(files))
+        for i, f := range files {
+                programs[i] = strings.TrimSuffix(filepath.Base(f), ".mochi")
+        }
+        return programs
 }
 
 func updateRosettaChecklist() {
-	root := repoRoot(&testing.T{})
-	outDir := filepath.Join(root, "tests", "rosetta", "transpiler", "Racket")
-	readmePath := filepath.Join(root, "transpiler", "x", "rkt", "ROSETTA.md")
+        root := repoRoot(&testing.T{})
+        outDir := filepath.Join(root, "tests", "rosetta", "transpiler", "Racket")
+        readmePath := filepath.Join(root, "transpiler", "x", "rkt", "ROSETTA.md")
 
-	total := len(rkt.RosettaPrograms)
-	compiled := 0
-	var lines []string
-	for _, name := range rkt.RosettaPrograms {
-		mark := "[ ]"
-		if _, err := os.Stat(filepath.Join(outDir, name+".out")); err == nil {
-			if _, err2 := os.Stat(filepath.Join(outDir, name+".error")); os.IsNotExist(err2) {
-				compiled++
-			}
+        programs := listRosettaPrograms(&testing.T{})
+        total := len(programs)
+        compiled := 0
+        var lines []string
+        for _, name := range programs {
+                mark := "[ ]"
+                if _, err := os.Stat(filepath.Join(outDir, name+".out")); err == nil {
+                        if _, err2 := os.Stat(filepath.Join(outDir, name+".error")); os.IsNotExist(err2) {
+                                compiled++
+                        }
 			mark = "[x]"
 		}
 		lines = append(lines, "- "+mark+" "+name)
 	}
-	out, err := exec.Command("git", "log", "-1", "--format=%cI").Output()
-	ts := time.Now()
-	if err == nil {
-		if t, perr := time.Parse(time.RFC3339, strings.TrimSpace(string(out))); perr == nil {
-			ts = t
-		}
-	}
+        out, err := exec.Command("git", "log", "-1", "--format=%cI").Output()
+        ts := time.Now()
+        if err == nil {
+                if t, perr := time.Parse(time.RFC3339, strings.TrimSpace(string(out))); perr == nil {
+                        ts = t
+                }
+        }
 	if loc, err := time.LoadLocation("Asia/Bangkok"); err == nil {
 		ts = ts.In(loc)
 	}
