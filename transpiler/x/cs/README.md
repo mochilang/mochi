@@ -2,8 +2,8 @@
 
 Generated C# code for programs in `tests/vm/valid`. Each program has a `.cs` file produced by the transpiler and a `.out` file containing its runtime output. Compilation or execution errors are captured in a `.error` file placed next to the source.
 
-Compiled programs: 100/102
-Last updated: 2025-07-22 03:14 +0000
+Compiled programs: 101/102
+Last updated: 2025-07-22 10:24 +0700
 
 ## Checklist
 - [x] append_builtin
@@ -36,7 +36,7 @@ Last updated: 2025-07-22 03:14 +0000
 - [x] group_by_left_join
 - [x] group_by_multi_join
 - [x] group_by_multi_join_sort
-- [ ] group_by_multi_sort
+- [x] group_by_multi_sort
 - [x] group_by_sort
 - [x] group_items_iteration
 - [x] if_else
