@@ -2422,6 +2422,12 @@ func convertQueryExpr(q *parser.QueryExpr, env *types.Env, ctx *context) (Expr, 
 	if len(q.Joins) == 1 && q.Joins[0].Side != nil && *q.Joins[0].Side == "left" && len(q.Froms) == 0 && q.Where == nil && q.Sort == nil && q.Skip == nil && q.Take == nil {
 		return convertLeftJoinQuery(q, env, ctx)
 	}
+	if len(q.Joins) > 1 {
+		last := q.Joins[len(q.Joins)-1]
+		if last.Side != nil && *last.Side == "left" && q.Sort == nil && q.Skip == nil && q.Take == nil && q.Group == nil {
+			return convertLeftJoinMultiQuery(q, env, ctx)
+		}
+	}
 	if len(q.Joins) == 1 && q.Joins[0].Side != nil && *q.Joins[0].Side == "right" {
 		j := q.Joins[0]
 		js, err := convertExpr(j.Src, env, ctx)
@@ -2556,6 +2562,209 @@ func convertLeftJoinQuery(q *parser.QueryExpr, env *types.Env, ctx *context) (Ex
 		return nil, err
 	}
 	return &LeftJoinExpr{LeftVar: leftVar, LeftSrc: leftSrc, RightVar: rightVar, RightSrc: rightSrc, On: cond, Select: sel}, nil
+}
+
+func replaceVars(e Expr, repl map[string]Expr) Expr {
+	switch v := e.(type) {
+	case *NameRef:
+		if r, ok := repl[v.Name]; ok {
+			return r
+		}
+		return v
+	case *BinaryExpr:
+		v.Left = replaceVars(v.Left, repl)
+		v.Right = replaceVars(v.Right, repl)
+		return v
+	case *UnaryExpr:
+		v.Expr = replaceVars(v.Expr, repl)
+		return v
+	case *CallExpr:
+		for i := range v.Args {
+			v.Args[i] = replaceVars(v.Args[i], repl)
+		}
+		return v
+	case *ListLit:
+		for i := range v.Elems {
+			v.Elems[i] = replaceVars(v.Elems[i], repl)
+		}
+		return v
+	case *MapLit:
+		for i := range v.Items {
+			v.Items[i].Key = replaceVars(v.Items[i].Key, repl)
+			v.Items[i].Value = replaceVars(v.Items[i].Value, repl)
+		}
+		return v
+	case *IndexExpr:
+		v.Target = replaceVars(v.Target, repl)
+		v.Index = replaceVars(v.Index, repl)
+		return v
+	case *IfExpr:
+		v.Cond = replaceVars(v.Cond, repl)
+		v.Then = replaceVars(v.Then, repl)
+		v.Else = replaceVars(v.Else, repl)
+		return v
+	case *ContainsExpr:
+		v.Str = replaceVars(v.Str, repl)
+		v.Sub = replaceVars(v.Sub, repl)
+		return v
+	case *SliceExpr:
+		v.Target = replaceVars(v.Target, repl)
+		if v.Start != nil {
+			v.Start = replaceVars(v.Start, repl)
+		}
+		if v.End != nil {
+			v.End = replaceVars(v.End, repl)
+		}
+		return v
+	case *SubstringExpr:
+		v.Str = replaceVars(v.Str, repl)
+		v.Start = replaceVars(v.Start, repl)
+		v.End = replaceVars(v.End, repl)
+		return v
+	case *QueryExpr:
+		v.Src = replaceVars(v.Src, repl)
+		for i := range v.Froms {
+			v.Froms[i].Src = replaceVars(v.Froms[i].Src, repl)
+		}
+		if v.Right != nil {
+			v.Right.Src = replaceVars(v.Right.Src, repl)
+			v.Right.On = replaceVars(v.Right.On, repl)
+		}
+		if v.Where != nil {
+			v.Where = replaceVars(v.Where, repl)
+		}
+		v.Select = replaceVars(v.Select, repl)
+		if v.SortKey != nil {
+			v.SortKey = replaceVars(v.SortKey, repl)
+		}
+		if v.Skip != nil {
+			v.Skip = replaceVars(v.Skip, repl)
+		}
+		if v.Take != nil {
+			v.Take = replaceVars(v.Take, repl)
+		}
+		return v
+	default:
+		return v
+	}
+}
+
+func convertLeftJoinMultiQuery(q *parser.QueryExpr, env *types.Env, ctx *context) (Expr, error) {
+	last := q.Joins[len(q.Joins)-1]
+	loopCtx := ctx.clone()
+
+	leftSrc, err := convertExpr(q.Source, env, ctx)
+	if err != nil {
+		return nil, err
+	}
+	leftVar := loopCtx.newAlias(q.Var)
+	loopCtx.setStrFields(q.Var, stringFields(leftSrc))
+	loopCtx.setBoolFields(q.Var, boolFields(leftSrc))
+
+	child := types.NewEnv(env)
+	child.SetVar(q.Var, types.AnyType{}, true)
+
+	froms := []queryFrom{}
+	vars := []struct{ name, alias string }{{q.Var, leftVar}}
+	var cond Expr
+	for _, j := range q.Joins[:len(q.Joins)-1] {
+		if j.Side != nil {
+			return nil, fmt.Errorf("unsupported join side")
+		}
+		js, err := convertExpr(j.Src, env, ctx)
+		if err != nil {
+			return nil, err
+		}
+		jalias := loopCtx.newAlias(j.Var)
+		loopCtx.setStrFields(j.Var, stringFields(js))
+		loopCtx.setBoolFields(j.Var, boolFields(js))
+		child.SetVar(j.Var, types.AnyType{}, true)
+		froms = append(froms, queryFrom{Var: jalias, Src: js})
+		vars = append(vars, struct{ name, alias string }{j.Var, jalias})
+		jc, err := convertExpr(j.On, child, loopCtx)
+		if err != nil {
+			return nil, err
+		}
+		if cond == nil {
+			cond = jc
+		} else {
+			cond = &BinaryExpr{Left: cond, Op: "&&", Right: jc}
+		}
+	}
+	if q.Where != nil {
+		w, err := convertExpr(q.Where, child, loopCtx)
+		if err != nil {
+			return nil, err
+		}
+		if !isBoolExpr(w) {
+			w = &BinaryExpr{Left: w, Op: "/=", Right: &AtomLit{Name: "nil"}}
+		}
+		if cond == nil {
+			cond = w
+		} else {
+			cond = &BinaryExpr{Left: cond, Op: "&&", Right: w}
+		}
+	}
+
+	items := make([]MapItem, len(vars))
+	for i, v := range vars {
+		items[i] = MapItem{Key: &StringLit{Value: v.name}, Value: &NameRef{Name: v.alias}}
+	}
+	pairSelect := &MapLit{Items: items}
+	baseQuery := &QueryExpr{Var: leftVar, Src: leftSrc, Froms: froms, Where: cond, Select: pairSelect}
+
+	strUnion := map[string]bool{}
+	boolUnion := map[string]bool{}
+	for _, v := range vars {
+		if m, ok := loopCtx.strField[v.name]; ok {
+			for k, b := range m {
+				if b {
+					strUnion[k] = true
+				}
+			}
+		}
+		if m, ok := loopCtx.boolField[v.name]; ok {
+			for k, b := range m {
+				if b {
+					boolUnion[k] = true
+				}
+			}
+		}
+	}
+	ctx.setStrFields(leftVar, strUnion)
+	ctx.setBoolFields(leftVar, boolUnion)
+
+	rightSrc, err := convertExpr(last.Src, env, ctx)
+	if err != nil {
+		return nil, err
+	}
+	rightVar := loopCtx.newAlias(last.Var)
+	loopCtx.setStrFields(last.Var, stringFields(rightSrc))
+	loopCtx.setBoolFields(last.Var, boolFields(rightSrc))
+
+	finalEnv := types.NewEnv(env)
+	for _, v := range vars {
+		finalEnv.SetVar(v.name, types.AnyType{}, true)
+	}
+	finalEnv.SetVar(last.Var, types.AnyType{}, true)
+
+	onExpr, err := convertExpr(last.On, finalEnv, loopCtx)
+	if err != nil {
+		return nil, err
+	}
+	rep := map[string]Expr{}
+	for _, v := range vars {
+		rep[v.alias] = &IndexExpr{Target: &NameRef{Name: leftVar}, Index: &StringLit{Value: v.name}, Kind: "map", IsString: loopCtx.isStringVar(v.alias)}
+	}
+	onExpr = replaceVars(onExpr, rep)
+
+	sel, err := convertExpr(q.Select, finalEnv, loopCtx)
+	if err != nil {
+		return nil, err
+	}
+	sel = replaceVars(sel, rep)
+
+	return &LeftJoinExpr{LeftVar: leftVar, LeftSrc: baseQuery, RightVar: rightVar, RightSrc: rightSrc, On: onExpr, Select: sel}, nil
 }
 
 func convertGroupLeftJoinQuery(q *parser.QueryExpr, env *types.Env, ctx *context) (Expr, error) {
