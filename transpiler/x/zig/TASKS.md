@@ -1,3 +1,43 @@
+## Progress (2025-07-22 16:36 +0700)
+- Commit 5191c3431: zig transpiler: support save to stdout
+- Generated Zig for 98/103 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-22 16:14 +0700)
+- Commit a650a0dae: scala transpiler: improve group query typing
+- Generated Zig for 98/103 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-22 16:14 +0700)
+- Commit a650a0dae: scala transpiler: improve group query typing
+- Generated Zig for 98/103 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-22 16:14 +0700)
+- Commit a650a0dae: scala transpiler: improve group query typing
+- Generated Zig for 98/103 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-22 16:14 +0700)
+- Commit a650a0dae: scala transpiler: improve group query typing
+- Generated Zig for 98/103 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-22 16:14 +0700)
+- Commit a650a0dae: scala transpiler: improve group query typing
+- Generated Zig for 97/103 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-22 16:14 +0700)
+- Commit a650a0dae: scala transpiler: improve group query typing
+- Generated Zig for 97/103 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-22 16:14 +0700)
+- Commit a650a0dae: scala transpiler: improve group query typing
+- Generated Zig for 97/103 programs
+- Updated README checklist and outputs
+
 ## Progress (2025-07-22 11:32 +0700)
 - Commit 130aeea34: zig transpiler: support load jsonl and yaml
 - Generated Zig for 101/102 programs

@@ -167,6 +167,13 @@ type UpdateStmt struct {
 	Cond   Expr
 }
 
+// SaveStmt writes a list of structs or maps to stdout as JSON lines.
+type SaveStmt struct {
+	Src    Expr
+	Path   string
+	Format string
+}
+
 // ExprStmt allows top-level expressions.
 type ExprStmt struct{ Expr Expr }
 
@@ -1000,6 +1007,36 @@ func (u *UpdateStmt) emit(w io.Writer, indent int) {
 	fmt.Fprintf(w, "%s[idx] = item;\n", u.Target)
 	writeIndent(w, indent)
 	io.WriteString(w, "}\n")
+}
+
+func (s *SaveStmt) emit(w io.Writer, indent int) {
+	if s.Format == "jsonl" && (s.Path == "" || s.Path == "-") {
+		writeIndent(w, indent)
+		io.WriteString(w, "for (")
+		if s.Src != nil {
+			s.Src.emit(w)
+		}
+		io.WriteString(w, ") |row| {\n")
+		writeIndent(w, indent+1)
+		io.WriteString(w, "const __j = std.json.stringifyAlloc(std.heap.page_allocator, row, .{}) catch unreachable;\n")
+		writeIndent(w, indent+1)
+		fmt.Fprintf(w, "const _tmp = std.mem.replaceOwned(u8, std.heap.page_allocator, __j, %q, %q) catch unreachable;\n", ":", ": ")
+		writeIndent(w, indent+1)
+		io.WriteString(w, "defer std.heap.page_allocator.free(_tmp);\n")
+		writeIndent(w, indent+1)
+		fmt.Fprintf(w, "const _line = std.mem.replaceOwned(u8, std.heap.page_allocator, _tmp, %q, %q) catch unreachable;\n", ",", ", ")
+		writeIndent(w, indent+1)
+		io.WriteString(w, "defer std.heap.page_allocator.free(_line);\n")
+		writeIndent(w, indent+1)
+		io.WriteString(w, "std.heap.page_allocator.free(__j);\n")
+		writeIndent(w, indent+1)
+		io.WriteString(w, "std.io.getStdOut().writer().print(\"{s}\\n\", .{_line}) catch unreachable;\n")
+		writeIndent(w, indent)
+		io.WriteString(w, "}\n")
+		return
+	}
+	writeIndent(w, indent)
+	io.WriteString(w, "// unsupported save\n")
 }
 
 func (e *ExprStmt) emit(w io.Writer, indent int) {
@@ -2439,6 +2476,9 @@ func compileReturnStmt(rs *parser.ReturnStmt) (Stmt, error) {
 func compileStmt(s *parser.Statement, prog *parser.Program) (Stmt, error) {
 	switch {
 	case s.Expr != nil:
+		if se := extractSaveExpr(s.Expr.Expr); se != nil {
+			return compileSaveStmt(se)
+		}
 		expr, err := compileExpr(s.Expr.Expr)
 		if err != nil {
 			return nil, err
@@ -2617,6 +2657,21 @@ func literalString(e *parser.Expr) (string, bool) {
 	return "", false
 }
 
+func extractSaveExpr(e *parser.Expr) *parser.SaveExpr {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) > 0 {
+		return nil
+	}
+	u := e.Binary.Left
+	if len(u.Ops) > 0 || u.Value == nil {
+		return nil
+	}
+	p := u.Value
+	if len(p.Ops) > 0 || p.Target == nil {
+		return nil
+	}
+	return p.Target.Save
+}
+
 func compileUpdateStmt(u *parser.UpdateStmt) (Stmt, error) {
 	itemType := ""
 	if t, ok := varTypes[u.Target]; ok && strings.HasPrefix(t, "[]") {
@@ -2693,6 +2748,28 @@ func compileUpdateStmt(u *parser.UpdateStmt) (Stmt, error) {
 		cond = rewrite(cond)
 	}
 	return &UpdateStmt{Target: u.Target, Fields: fields, Values: values, Cond: cond}, nil
+}
+
+func compileSaveStmt(se *parser.SaveExpr) (Stmt, error) {
+	src, err := compileExpr(se.Src)
+	if err != nil {
+		return nil, err
+	}
+	path := ""
+	if se.Path != nil {
+		path = strings.Trim(*se.Path, "\"")
+	}
+	format := "jsonl"
+	if se.With != nil {
+		if v, ok := constValue(se.With); ok {
+			if m, ok2 := v.(map[string]any); ok2 {
+				if f, ok3 := m["format"].(string); ok3 {
+					format = f
+				}
+			}
+		}
+	}
+	return &SaveStmt{Src: src, Path: path, Format: format}, nil
 }
 
 func compileTypeDecl(td *parser.TypeDecl) error {
