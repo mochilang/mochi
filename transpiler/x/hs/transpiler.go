@@ -917,7 +917,14 @@ func (c *ComprExpr) emit(w io.Writer) {
 }
 func (l *LenExpr) emit(w io.Writer) {
 	io.WriteString(w, "length ")
-	l.Arg.emit(w)
+	switch l.Arg.(type) {
+	case *NameRef, *ListLit, *CallExpr:
+		l.Arg.emit(w)
+	default:
+		io.WriteString(w, "(")
+		l.Arg.emit(w)
+		io.WriteString(w, ")")
+	}
 }
 func isStringExpr(e Expr) bool {
 	switch ex := e.(type) {
@@ -951,8 +958,13 @@ func isStringExpr(e Expr) bool {
 			return isStringMapVar(n.Name)
 		}
 	case *CallExpr:
-		if n, ok := ex.Fun.(*NameRef); ok && n.Name == "show" && len(ex.Args) == 1 {
-			return true
+		if n, ok := ex.Fun.(*NameRef); ok {
+			if n.Name == "show" && len(ex.Args) == 1 {
+				return true
+			}
+			if n.Name == "take" || n.Name == "drop" || n.Name == "substring" {
+				return true
+			}
 		}
 	case *BinaryExpr:
 		if len(ex.Ops) > 0 && ex.Ops[0].Op == "+" {
@@ -1028,6 +1040,21 @@ func isCharExpr(e Expr) bool {
 		return varTypes[n.Name] == "string"
 	}
 	return false
+}
+
+func isUnderscoreExpr(e *parser.Expr) bool {
+	if e == nil || len(e.Binary.Right) != 0 {
+		return false
+	}
+	u := e.Binary.Left
+	if len(u.Ops) != 0 || u.Value == nil {
+		return false
+	}
+	p := u.Value
+	if len(p.Ops) != 0 || p.Target == nil || p.Target.Selector == nil {
+		return false
+	}
+	return p.Target.Selector.Root == "_" && len(p.Target.Selector.Tail) == 0
 }
 
 func isListExpr(e Expr) bool {
@@ -2017,6 +2044,8 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 			return nil, err
 		}
 		return &GroupExpr{Expr: e}, nil
+	case p.Match != nil:
+		return convertMatchExpr(p.Match)
 	case p.List != nil:
 		if envInfo != nil {
 			if st, ok := types.InferStructFromList(p.List, envInfo); ok {
@@ -2354,6 +2383,23 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 			}
 			return call, nil
 		}
+		if p.Call.Func == "substring" && len(p.Call.Args) == 3 {
+			arg0, err := convertExpr(p.Call.Args[0])
+			if err != nil {
+				return nil, err
+			}
+			start, err := convertExpr(p.Call.Args[1])
+			if err != nil {
+				return nil, err
+			}
+			end, err := convertExpr(p.Call.Args[2])
+			if err != nil {
+				return nil, err
+			}
+			diff := &BinaryExpr{Left: end, Ops: []BinaryOp{{Op: "-", Right: start}}}
+			dropCall := &CallExpr{Fun: &NameRef{Name: "drop"}, Args: []Expr{start, arg0}}
+			return &CallExpr{Fun: &NameRef{Name: "take"}, Args: []Expr{diff, dropCall}}, nil
+		}
 		fun := &NameRef{Name: p.Call.Func}
 		var args []Expr
 		for _, a := range p.Call.Args {
@@ -2407,6 +2453,39 @@ func convertIfStmt(s *parser.IfStmt) (Stmt, error) {
 		}
 	}
 	return &IfStmt{Cond: cond, Then: thenStmts, Else: elseStmts}, nil
+}
+
+func convertMatchExpr(m *parser.MatchExpr) (Expr, error) {
+	target, err := convertExpr(m.Target)
+	if err != nil {
+		return nil, err
+	}
+	var expr Expr
+	for i := len(m.Cases) - 1; i >= 0; i-- {
+		c := m.Cases[i]
+		res, err := convertExpr(c.Result)
+		if err != nil {
+			return nil, err
+		}
+		if isUnderscoreExpr(c.Pattern) {
+			expr = res
+			continue
+		}
+		pat, err := convertExpr(c.Pattern)
+		if err != nil {
+			return nil, err
+		}
+		cond := &BinaryExpr{Left: target, Ops: []BinaryOp{{Op: "==", Right: pat}}}
+		if expr == nil {
+			expr = &IfExpr{Cond: cond, Then: res, Else: &IntLit{Value: "0"}}
+		} else {
+			expr = &IfExpr{Cond: cond, Then: res, Else: expr}
+		}
+	}
+	if expr == nil {
+		expr = &IntLit{Value: "0"}
+	}
+	return expr, nil
 }
 
 func convertFunStmt(f *parser.FunStmt) (*Func, error) {
