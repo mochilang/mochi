@@ -195,6 +195,44 @@ func (p *Program) UsesControl() bool {
 	return uses
 }
 
+func (p *Program) UsesReturn() bool {
+	var uses bool
+	var check func(Stmt)
+	check = func(s Stmt) {
+		switch st := s.(type) {
+		case *ReturnStmt:
+			uses = true
+		case *IfStmt:
+			for _, t := range st.Then {
+				check(t)
+			}
+			for _, e := range st.Else {
+				check(e)
+			}
+		case *WhileStmt:
+			for _, b := range st.Body {
+				check(b)
+			}
+		case *ForRangeStmt:
+			for _, b := range st.Body {
+				check(b)
+			}
+		case *ForEachStmt:
+			for _, b := range st.Body {
+				check(b)
+			}
+		case *FunStmt:
+			for _, b := range st.Body {
+				check(b)
+			}
+		}
+	}
+	for _, s := range p.Stmts {
+		check(s)
+	}
+	return uses
+}
+
 func (p *Program) UsesShow() bool {
 	var uses bool
 	var check func(Stmt)
@@ -311,6 +349,14 @@ func mapFieldType(typ, field string) (string, bool) {
 			}
 		}
 	}
+	if typ == "map-dyn" {
+		switch field {
+		case "ok", "success":
+			return "bool", true
+		case "idx", "id", "index":
+			return "int", true
+		}
+	}
 	if strings.HasPrefix(typ, "map-") {
 		elems := strings.Split(typ, "-")
 		if len(elems) >= 3 {
@@ -339,6 +385,47 @@ func ocamlType(t string) string {
 	}
 }
 
+func typeString(t types.Type) string {
+	switch tt := t.(type) {
+	case types.IntType, types.Int64Type:
+		return "int"
+	case types.FloatType:
+		return "float"
+	case types.StringType:
+		return "string"
+	case types.BoolType:
+		return "bool"
+	case types.ListType:
+		elem := typeString(tt.Elem)
+		if elem == "" {
+			return "list"
+		}
+		return "list-" + elem
+	case types.MapType:
+		val := typeString(tt.Value)
+		if val == "" {
+			return "map"
+		}
+		return "map-" + val
+	default:
+		return ""
+	}
+}
+
+var ocamlReserved = map[string]bool{
+	"and": true, "as": true, "assert": true, "begin": true, "class": true,
+	"end": true, "exception": true, "external": true, "fun": true, "function": true,
+	"let": true, "in": true, "match": true, "mod": true, "module": true, "open": true,
+	"rec": true, "try": true, "type": true, "val": true, "when": true, "with": true,
+}
+
+func sanitizeIdent(s string) string {
+	if ocamlReserved[s] {
+		return s + "_"
+	}
+	return s
+}
+
 // Stmt can emit itself as OCaml code.
 type Stmt interface{ emit(io.Writer) }
 
@@ -349,9 +436,15 @@ type LetStmt struct {
 }
 
 func (l *LetStmt) emit(w io.Writer) {
-	fmt.Fprintf(w, "  let %s = ", l.Name)
+	fmt.Fprintf(w, "  let %s = ", sanitizeIdent(l.Name))
 	l.Expr.emit(w)
 	io.WriteString(w, " in\n")
+}
+
+func (l *LetStmt) emitTop(w io.Writer) {
+	fmt.Fprintf(w, "let %s = ", sanitizeIdent(l.Name))
+	l.Expr.emit(w)
+	io.WriteString(w, "\n")
 }
 
 // VarStmt represents a mutable variable binding using OCaml references.
@@ -361,9 +454,15 @@ type VarStmt struct {
 }
 
 func (v *VarStmt) emit(w io.Writer) {
-	fmt.Fprintf(w, "  let %s = ref ", v.Name)
+	fmt.Fprintf(w, "  let %s = ref ", sanitizeIdent(v.Name))
 	v.Expr.emit(w)
 	io.WriteString(w, " in\n")
+}
+
+func (v *VarStmt) emitTop(w io.Writer) {
+	fmt.Fprintf(w, "let %s = ref ", sanitizeIdent(v.Name))
+	v.Expr.emit(w)
+	io.WriteString(w, "\n")
 }
 
 // AssignStmt represents an update to a mutable variable.
@@ -373,7 +472,7 @@ type AssignStmt struct {
 }
 
 func (a *AssignStmt) emit(w io.Writer) {
-	fmt.Fprintf(w, "  %s := ", a.Name)
+	fmt.Fprintf(w, "  %s := ", sanitizeIdent(a.Name))
 	a.Expr.emit(w)
 	io.WriteString(w, ";\n")
 }
@@ -458,7 +557,7 @@ type ForRangeStmt struct {
 
 func (fr *ForRangeStmt) emit(w io.Writer) {
 	io.WriteString(w, "  (try for ")
-	io.WriteString(w, fr.Name)
+	io.WriteString(w, sanitizeIdent(fr.Name))
 	io.WriteString(w, " = ")
 	if fr.Start != nil {
 		fr.Start.emit(w)
@@ -485,7 +584,7 @@ type ForEachStmt struct {
 func (fe *ForEachStmt) emit(w io.Writer) {
 	if strings.HasPrefix(fe.Typ, "map") {
 		io.WriteString(w, "  (try List.iter (fun (")
-		io.WriteString(w, fe.Name)
+		io.WriteString(w, sanitizeIdent(fe.Name))
 		io.WriteString(w, ", _) ->\n    try\n")
 		for _, st := range fe.Body {
 			st.emit(w)
@@ -496,7 +595,7 @@ func (fe *ForEachStmt) emit(w io.Writer) {
 		return
 	}
 	io.WriteString(w, "  (try List.iter (fun ")
-	io.WriteString(w, fe.Name)
+	io.WriteString(w, sanitizeIdent(fe.Name))
 	io.WriteString(w, " ->\n    try\n")
 	for _, st := range fe.Body {
 		st.emit(w)
@@ -557,6 +656,19 @@ func (c *ContinueStmt) emit(w io.Writer) {
 	io.WriteString(w, "  raise Continue;\n")
 }
 
+// ReturnStmt exits the current function with a value.
+type ReturnStmt struct{ Expr Expr }
+
+func (r *ReturnStmt) emit(w io.Writer) {
+	io.WriteString(w, "  __ret := ")
+	if r.Expr != nil {
+		r.Expr.emit(w)
+	} else {
+		io.WriteString(w, "()")
+	}
+	io.WriteString(w, "; raise Return;\n")
+}
+
 // SaveStmt writes rows to stdout in JSONL format.
 type SaveStmt struct {
 	Src    Expr
@@ -595,16 +707,18 @@ func (f *FunStmt) emit(w io.Writer) {
 		}
 	}
 	io.WriteString(w, " =\n")
-	for _, st := range f.Body {
-		st.emit(w)
-	}
-	io.WriteString(w, "  ")
+	io.WriteString(w, "  let __ret = ref ")
 	if f.Ret != nil {
 		f.Ret.emit(w)
 	} else {
 		io.WriteString(w, "()")
 	}
-	io.WriteString(w, "\n\n")
+	io.WriteString(w, " in\n")
+	io.WriteString(w, "  (try\n")
+	for _, st := range f.Body {
+		st.emit(w)
+	}
+	io.WriteString(w, "    !__ret\n  with Return -> !__ret)\n\n")
 }
 
 // Expr is any OCaml expression that can emit itself.
@@ -661,6 +775,15 @@ func (l *LenBuiltin) emitPrint(w io.Writer) {
 	l.emit(w)
 	io.WriteString(w, ")")
 }
+
+// InputBuiltin represents a call to input() returning a string.
+type InputBuiltin struct{}
+
+func (i *InputBuiltin) emit(w io.Writer) {
+	io.WriteString(w, "read_line ()")
+}
+
+func (i *InputBuiltin) emitPrint(w io.Writer) { i.emit(w) }
 
 // SubstringBuiltin represents substring(str, start, end).
 type SubstringBuiltin struct {
@@ -1479,8 +1602,11 @@ type CastExpr struct {
 
 func (c *CastExpr) emit(w io.Writer) {
 	switch c.Type {
-	case "int":
+	case "str_to_int":
 		io.WriteString(w, "int_of_string ")
+		c.Expr.emit(w)
+	case "float_to_int":
+		io.WriteString(w, "int_of_float ")
 		c.Expr.emit(w)
 	default:
 		c.Expr.emit(w)
@@ -1489,8 +1615,12 @@ func (c *CastExpr) emit(w io.Writer) {
 
 func (c *CastExpr) emitPrint(w io.Writer) {
 	switch c.Type {
-	case "int":
+	case "str_to_int":
 		io.WriteString(w, "string_of_int (int_of_string ")
+		c.Expr.emit(w)
+		io.WriteString(w, ")")
+	case "float_to_int":
+		io.WriteString(w, "string_of_int (int_of_float ")
 		c.Expr.emit(w)
 		io.WriteString(w, ")")
 	default:
@@ -1583,14 +1713,15 @@ type Name struct {
 }
 
 func (n *Name) emit(w io.Writer) {
+	ident := sanitizeIdent(n.Ident)
 	if n.Ref {
-		fmt.Fprintf(w, "!%s", n.Ident)
+		fmt.Fprintf(w, "!%s", ident)
 	} else {
-		io.WriteString(w, n.Ident)
+		io.WriteString(w, ident)
 	}
 }
 func (n *Name) emitPrint(w io.Writer) {
-	ident := n.Ident
+	ident := sanitizeIdent(n.Ident)
 	if n.Ref {
 		ident = "!" + n.Ident
 	}
@@ -1802,14 +1933,23 @@ func (p *Program) Emit() []byte {
 	if p.UsesControl() {
 		buf.WriteString("exception Break\nexception Continue\n\n")
 	}
+	if p.UsesReturn() {
+		buf.WriteString("exception Return\n\n")
+	}
 	for _, s := range p.Stmts {
-		if _, ok := s.(*FunStmt); ok {
-			s.emit(&buf)
+		switch st := s.(type) {
+		case *FunStmt:
+			st.emit(&buf)
+		case *VarStmt:
+			st.emitTop(&buf)
+		case *LetStmt:
+			st.emitTop(&buf)
 		}
 	}
 	buf.WriteString("let () =\n")
 	for _, s := range p.Stmts {
-		if _, ok := s.(*FunStmt); ok {
+		switch s.(type) {
+		case *FunStmt, *VarStmt, *LetStmt:
 			continue
 		}
 		s.emit(&buf)
@@ -1896,7 +2036,13 @@ func transpileStmt(st *parser.Statement, env *types.Env, vars map[string]VarInfo
 		return &VarStmt{Name: st.Var.Name, Expr: expr}, nil
 	case st.Assign != nil:
 		info, ok := vars[st.Assign.Name]
-		if !ok || !info.ref {
+		if !ok {
+			if t, err := env.GetVar(st.Assign.Name); err == nil {
+				vars[st.Assign.Name] = VarInfo{typ: typeString(t), ref: true}
+				info = vars[st.Assign.Name]
+			}
+		}
+		if !info.ref {
 			return nil, fmt.Errorf("assignment to unknown or immutable variable")
 		}
 		valExpr, valTyp, err := convertExpr(st.Assign.Value, env, vars)
@@ -2142,9 +2288,22 @@ func transpileStmt(st *parser.Statement, env *types.Env, vars map[string]VarInfo
 		return &BreakStmt{}, nil
 	case st.Continue != nil:
 		return &ContinueStmt{}, nil
+	case st.Return != nil:
+		var expr Expr
+		if st.Return.Value != nil {
+			var err error
+			expr, _, err = convertExpr(st.Return.Value, env, vars)
+			if err != nil {
+				return nil, err
+			}
+		}
+		return &ReturnStmt{Expr: expr}, nil
 	case st.Fun != nil:
 		child := types.NewEnv(env)
 		fnVars := map[string]VarInfo{}
+		for k, v := range vars {
+			fnVars[k] = v
+		}
 		params := make([]string, len(st.Fun.Params))
 		for i, p := range st.Fun.Params {
 			params[i] = p.Name
@@ -2921,7 +3080,11 @@ func convertPrimary(p *parser.Primary, env *types.Env, vars map[string]VarInfo) 
 		if len(p.Selector.Tail) == 0 {
 			info, ok := vars[p.Selector.Root]
 			if !ok {
-				info.typ = guessTypeFromName(p.Selector.Root)
+				if t, err := env.GetVar(p.Selector.Root); err == nil {
+					info.typ = typeString(t)
+				} else {
+					info.typ = guessTypeFromName(p.Selector.Root)
+				}
 				vars[p.Selector.Root] = info
 			}
 			return &Name{Ident: p.Selector.Root, Typ: info.typ, Ref: info.ref}, info.typ, nil
@@ -3333,6 +3496,25 @@ func convertCall(c *parser.CallExpr, env *types.Env, vars map[string]VarInfo) (E
 		}
 		return &ExistsBuiltin{List: listArg}, "bool", nil
 	}
+	if c.Func == "int" && len(c.Args) == 1 {
+		arg, typ, err := convertExpr(c.Args[0], env, vars)
+		if err != nil {
+			return nil, "", err
+		}
+		castType := ""
+		switch typ {
+		case "string":
+			castType = "str_to_int"
+		case "float":
+			castType = "float_to_int"
+		default:
+			return arg, "int", nil
+		}
+		return &CastExpr{Expr: arg, Type: castType}, "int", nil
+	}
+	if c.Func == "input" && len(c.Args) == 0 {
+		return &InputBuiltin{}, "string", nil
+	}
 	if c.Func == "now" && len(c.Args) == 0 {
 		usesNow = true
 		return &FuncCall{Name: "_now", Args: nil, Ret: "int"}, "int", nil
@@ -3390,6 +3572,31 @@ func convertCall(c *parser.CallExpr, env *types.Env, vars map[string]VarInfo) (E
 		if fn.Return != nil {
 			if fn.Return.Simple != nil {
 				ret = *fn.Return.Simple
+			} else if fn.Return.Generic != nil {
+				switch fn.Return.Generic.Name {
+				case "list":
+					if len(fn.Return.Generic.Args) == 1 {
+						elem := typeRefString(fn.Return.Generic.Args[0])
+						if elem != "" {
+							ret = "list-" + elem
+						} else {
+							ret = "list"
+						}
+					} else {
+						ret = "list"
+					}
+				case "map":
+					if len(fn.Return.Generic.Args) == 2 {
+						val := typeRefString(fn.Return.Generic.Args[1])
+						if val == "any" || val == "" {
+							ret = "map-dyn"
+						} else {
+							ret = "map-" + val
+						}
+					} else {
+						ret = "map"
+					}
+				}
 			} else if fn.Return.Fun != nil {
 				ret = "func"
 			}
