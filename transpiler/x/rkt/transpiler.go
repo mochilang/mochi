@@ -2354,6 +2354,7 @@ type GroupByExpr struct {
 	Having  Expr
 	Sort    Expr
 	SortCmp string
+	Desc    bool
 	Skip    Expr
 	Take    Expr
 }
@@ -2371,6 +2372,7 @@ type GroupJoinExpr struct {
 	Having   Expr
 	Sort     Expr
 	SortCmp  string
+	Desc     bool
 	Skip     Expr
 	Take     Expr
 }
@@ -2388,6 +2390,7 @@ type GroupLeftJoinExpr struct {
 	Having   Expr
 	Sort     Expr
 	SortCmp  string
+	Desc     bool
 	Skip     Expr
 	Take     Expr
 }
@@ -2404,6 +2407,7 @@ type GroupMultiJoinExpr struct {
 	Having  Expr
 	Sort    Expr
 	SortCmp string
+	Desc    bool
 	Skip    Expr
 	Take    Expr
 }
@@ -2484,6 +2488,8 @@ func (g *GroupMultiJoinExpr) emit(w io.Writer) {
 		io.WriteString(w, "  (set! _res (sort _res ")
 		if g.SortCmp != "" {
 			io.WriteString(w, g.SortCmp)
+		} else if g.Desc {
+			io.WriteString(w, ">")
 		} else {
 			io.WriteString(w, "<")
 		}
@@ -2566,6 +2572,8 @@ func (g *GroupJoinExpr) emit(w io.Writer) {
 		io.WriteString(w, "  (set! _res (sort _res ")
 		if g.SortCmp != "" {
 			io.WriteString(w, g.SortCmp)
+		} else if g.Desc {
+			io.WriteString(w, ">")
 		} else {
 			io.WriteString(w, "<")
 		}
@@ -2654,6 +2662,8 @@ func (g *GroupLeftJoinExpr) emit(w io.Writer) {
 		io.WriteString(w, "  (set! _res (sort _res ")
 		if g.SortCmp != "" {
 			io.WriteString(w, g.SortCmp)
+		} else if g.Desc {
+			io.WriteString(w, ">")
 		} else {
 			io.WriteString(w, "<")
 		}
@@ -2737,6 +2747,8 @@ func (g *GroupByExpr) emit(w io.Writer) {
 		io.WriteString(w, "  (set! _res (sort _res ")
 		if g.SortCmp != "" {
 			io.WriteString(w, g.SortCmp)
+		} else if g.Desc {
+			io.WriteString(w, ">")
 		} else {
 			io.WriteString(w, "<")
 		}
@@ -2792,10 +2804,15 @@ func convertGroupQuery(q *parser.QueryExpr, env *types.Env) (Expr, error) {
 	}
 	var sortExpr Expr
 	var sortCmp string
+	var desc bool
 	if q.Sort != nil {
 		sortExpr, err = convertExpr(q.Sort, genv)
 		if err != nil {
 			return nil, err
+		}
+		if u, ok := sortExpr.(*UnaryExpr); ok && u.Op == "-" {
+			sortExpr = u.Expr
+			desc = true
 		}
 		t := types.TypeOfExprBasic(q.Sort, genv)
 		if types.IsStringType(t) {
@@ -2817,7 +2834,7 @@ func convertGroupQuery(q *parser.QueryExpr, env *types.Env) (Expr, error) {
 			return nil, err
 		}
 	}
-	return &GroupByExpr{Var: q.Var, Source: src, Key: key, Name: q.Group.Name, Where: where, Select: sel, Having: having, Sort: sortExpr, SortCmp: sortCmp, Skip: skipExpr, Take: takeExpr}, nil
+	return &GroupByExpr{Var: q.Var, Source: src, Key: key, Name: q.Group.Name, Where: where, Select: sel, Having: having, Sort: sortExpr, SortCmp: sortCmp, Desc: desc, Skip: skipExpr, Take: takeExpr}, nil
 }
 
 func convertGroupJoinQuery(q *parser.QueryExpr, env *types.Env) (Expr, error) {
@@ -2868,10 +2885,15 @@ func convertGroupJoinQuery(q *parser.QueryExpr, env *types.Env) (Expr, error) {
 	}
 	var sortExpr Expr
 	var sortCmp string
+	var desc bool
 	if q.Sort != nil {
 		sortExpr, err = convertExpr(q.Sort, genv)
 		if err != nil {
 			return nil, err
+		}
+		if u, ok := sortExpr.(*UnaryExpr); ok && u.Op == "-" {
+			sortExpr = u.Expr
+			desc = true
 		}
 		t := types.TypeOfExprBasic(q.Sort, genv)
 		if types.IsStringType(t) {
@@ -2893,7 +2915,7 @@ func convertGroupJoinQuery(q *parser.QueryExpr, env *types.Env) (Expr, error) {
 			return nil, err
 		}
 	}
-	return &GroupJoinExpr{LeftVar: q.Var, LeftSrc: leftSrc, RightVar: j.Var, RightSrc: rightSrc, Cond: cond, Key: key, Row: row, Name: q.Group.Name, Select: sel, Having: having, Sort: sortExpr, SortCmp: sortCmp, Skip: skipExpr, Take: takeExpr}, nil
+	return &GroupJoinExpr{LeftVar: q.Var, LeftSrc: leftSrc, RightVar: j.Var, RightSrc: rightSrc, Cond: cond, Key: key, Row: row, Name: q.Group.Name, Select: sel, Having: having, Sort: sortExpr, SortCmp: sortCmp, Desc: desc, Skip: skipExpr, Take: takeExpr}, nil
 }
 
 func convertGroupLeftJoinQuery(q *parser.QueryExpr, env *types.Env) (Expr, error) {
@@ -2944,11 +2966,16 @@ func convertGroupLeftJoinQuery(q *parser.QueryExpr, env *types.Env) (Expr, error
 	}
 	var sortExpr Expr
 	var sortCmp string
+	var desc bool
 	var skipExpr, takeExpr Expr
 	if q.Sort != nil {
 		sortExpr, err = convertExpr(q.Sort, genv)
 		if err != nil {
 			return nil, err
+		}
+		if u, ok := sortExpr.(*UnaryExpr); ok && u.Op == "-" {
+			sortExpr = u.Expr
+			desc = true
 		}
 		t := types.TypeOfExprBasic(q.Sort, genv)
 		if types.IsStringType(t) {
@@ -2969,7 +2996,7 @@ func convertGroupLeftJoinQuery(q *parser.QueryExpr, env *types.Env) (Expr, error
 			return nil, err
 		}
 	}
-	return &GroupLeftJoinExpr{LeftVar: q.Var, LeftSrc: leftSrc, RightVar: j.Var, RightSrc: rightSrc, Cond: cond, Key: key, Row: row, Name: q.Group.Name, Select: sel, Having: having, Sort: sortExpr, SortCmp: sortCmp, Skip: skipExpr, Take: takeExpr}, nil
+	return &GroupLeftJoinExpr{LeftVar: q.Var, LeftSrc: leftSrc, RightVar: j.Var, RightSrc: rightSrc, Cond: cond, Key: key, Row: row, Name: q.Group.Name, Select: sel, Having: having, Sort: sortExpr, SortCmp: sortCmp, Desc: desc, Skip: skipExpr, Take: takeExpr}, nil
 }
 
 func convertGroupMultiJoinQuery(q *parser.QueryExpr, env *types.Env) (Expr, error) {
@@ -3048,11 +3075,16 @@ func convertGroupMultiJoinQuery(q *parser.QueryExpr, env *types.Env) (Expr, erro
 	}
 	var sortExpr Expr
 	var sortCmp string
+	var desc bool
 	var skipExpr, takeExpr Expr
 	if q.Sort != nil {
 		sortExpr, err = convertExpr(q.Sort, genv)
 		if err != nil {
 			return nil, err
+		}
+		if u, ok := sortExpr.(*UnaryExpr); ok && u.Op == "-" {
+			sortExpr = u.Expr
+			desc = true
 		}
 		t := types.TypeOfExprBasic(q.Sort, genv)
 		if types.IsStringType(t) {
@@ -3073,7 +3105,7 @@ func convertGroupMultiJoinQuery(q *parser.QueryExpr, env *types.Env) (Expr, erro
 			return nil, err
 		}
 	}
-	return &GroupMultiJoinExpr{Vars: vars, Sources: exprs, Cond: cond, Key: key, Row: row, Name: q.Group.Name, Select: sel, Having: having, Sort: sortExpr, SortCmp: sortCmp, Skip: skipExpr, Take: takeExpr}, nil
+	return &GroupMultiJoinExpr{Vars: vars, Sources: exprs, Cond: cond, Key: key, Row: row, Name: q.Group.Name, Select: sel, Having: having, Sort: sortExpr, SortCmp: sortCmp, Desc: desc, Skip: skipExpr, Take: takeExpr}, nil
 }
 
 func convertQueryExpr(q *parser.QueryExpr, env *types.Env) (Expr, error) {
