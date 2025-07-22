@@ -13,7 +13,6 @@ import (
 	"testing"
 	"time"
 
-	"mochi/golden"
 	"mochi/parser"
 	cpp "mochi/transpiler/x/cpp"
 	"mochi/types"
@@ -27,7 +26,10 @@ func TestCPPTranspiler_Rosetta_Golden(t *testing.T) {
 	outDir := filepath.Join(root, "tests", "rosetta", "transpiler", "CPP")
 	os.MkdirAll(outDir, 0o755)
 
-	golden.RunWithSummary(t, "tests/rosetta/x/Mochi", ".mochi", ".out", func(src string) ([]byte, error) {
+	files, _ := filepath.Glob(filepath.Join(root, "tests", "rosetta", "x", "Mochi", "*.mochi"))
+	sort.Strings(files)
+	var firstErr string
+	runOne := func(src string) error {
 		base := strings.TrimSuffix(filepath.Base(src), ".mochi")
 		codePath := filepath.Join(outDir, base+".cpp")
 		outPath := filepath.Join(outDir, base+".out")
@@ -36,26 +38,26 @@ func TestCPPTranspiler_Rosetta_Golden(t *testing.T) {
 		prog, err := parser.Parse(src)
 		if err != nil {
 			_ = os.WriteFile(errPath, []byte("parse: "+err.Error()), 0o644)
-			return nil, err
+			return err
 		}
 		env := types.NewEnv(nil)
 		if errs := types.Check(prog, env); len(errs) > 0 {
 			_ = os.WriteFile(errPath, []byte("type: "+errs[0].Error()), 0o644)
-			return nil, errs[0]
+			return errs[0]
 		}
 		ast, err := cpp.Transpile(prog, env)
 		if err != nil {
 			_ = os.WriteFile(errPath, []byte("transpile: "+err.Error()), 0o644)
-			return nil, err
+			return err
 		}
 		code := ast.Emit()
 		if err := os.WriteFile(codePath, code, 0o644); err != nil {
-			return nil, err
+			return err
 		}
 		bin := filepath.Join(outDir, base)
 		if out, err := exec.Command("g++", codePath, "-std=c++20", "-o", bin).CombinedOutput(); err != nil {
 			_ = os.WriteFile(errPath, append([]byte("compile: "+err.Error()+"\n"), out...), 0o644)
-			return nil, err
+			return err
 		}
 		defer os.Remove(bin)
 		cmd := exec.Command(bin)
@@ -65,13 +67,29 @@ func TestCPPTranspiler_Rosetta_Golden(t *testing.T) {
 		out, err := cmd.CombinedOutput()
 		if err != nil {
 			_ = os.WriteFile(errPath, append([]byte("run: "+err.Error()+"\n"), out...), 0o644)
-			return nil, err
+			return err
 		}
 		_ = os.Remove(errPath)
 		outBytes := bytes.TrimSpace(out)
 		_ = os.WriteFile(outPath, outBytes, 0o644)
-		return outBytes, nil
-	})
+		return nil
+	}
+
+	for _, src := range files {
+		name := strings.TrimSuffix(filepath.Base(src), ".mochi")
+		ok := t.Run(name, func(t *testing.T) {
+			if err := runOne(src); err != nil {
+				firstErr = name
+				t.Fatalf("%v", err)
+			}
+		})
+		if !ok {
+			break
+		}
+	}
+	if firstErr != "" {
+		t.Fatalf("failed program: %s", firstErr)
+	}
 }
 
 func updateRosettaReadme() {

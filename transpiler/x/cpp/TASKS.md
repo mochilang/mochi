@@ -1,3 +1,33 @@
+## Progress (2025-07-22 20:30 +0700)
+- cpp transpiler: support update statements
+- Generated C++ for 102/103 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-22 20:30 +0700)
+- cpp transpiler: support update statements
+- Generated C++ for 102/103 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-22 20:30 +0700)
+- cpp transpiler: support update statements
+- Generated C++ for 102/103 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-22 20:30 +0700)
+- cpp transpiler: support update statements
+- Generated C++ for 102/103 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-22 20:30 +0700)
+- cpp transpiler: support update statements
+- Generated C++ for 102/103 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-22 20:30 +0700)
+- cpp transpiler: support update statements
+- Generated C++ for 102/103 programs
+- Updated README checklist and outputs
+
 ## Progress (2025-07-22 17:24 +0700)
 - update docs and golden for in_operator_extended
 - Generated C++ for 102/103 programs
