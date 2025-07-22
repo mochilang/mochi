@@ -1302,6 +1302,11 @@ func evalPrimary(p *parser.Primary, vars map[string]value) (value, error) {
 			if v.kind == valList {
 				return value{kind: valBool, b: len(v.list) > 0}, nil
 			}
+		case "now":
+			if len(p.Call.Args) != 0 {
+				return value{}, fmt.Errorf("bad args")
+			}
+			return value{kind: valInt, i: int(time.Now().UnixNano())}, nil
 		}
 		if fv, ok := vars[p.Call.Func]; ok && fv.kind == valFunc {
 			args := make([]value, len(p.Call.Args))
