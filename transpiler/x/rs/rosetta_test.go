@@ -10,6 +10,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"sort"
 	"strconv"
 	"strings"
 	"testing"
@@ -45,6 +46,20 @@ func readIndex(dir string) ([]string, error) {
 		return nil, err
 	}
 	return names, nil
+}
+
+func updateIndex(dir string) error {
+	pattern := filepath.Join(dir, "*.mochi")
+	files, err := filepath.Glob(pattern)
+	if err != nil {
+		return err
+	}
+	sort.Strings(files)
+	var buf bytes.Buffer
+	for i, f := range files {
+		fmt.Fprintf(&buf, "%d %s\n", i+1, filepath.Base(f))
+	}
+	return os.WriteFile(filepath.Join(dir, "index.txt"), buf.Bytes(), 0o644)
 }
 
 func runRosetta(t *testing.T, src, outDir string) ([]byte, error) {
@@ -166,6 +181,7 @@ func updateRosetta() {
 	srcDir := filepath.Join(root, "tests", "rosetta", "x", "Mochi")
 	outDir := filepath.Join(root, "tests", "rosetta", "transpiler", "Rust")
 	readmePath := filepath.Join(root, "transpiler", "x", "rs", "ROSETTA.md")
+	_ = updateIndex(srcDir)
 	names, _ := readIndex(srcDir)
 	total := len(names)
 	compiled := 0
