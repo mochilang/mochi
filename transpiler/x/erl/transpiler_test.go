@@ -255,6 +255,12 @@ func TestTranspileGroupByLeftJoin(t *testing.T)       { runGolden(t, "group_by_l
 
 func TestTranspileJsonBuiltin(t *testing.T) { runGolden(t, "json_builtin") }
 
+func TestTranspileRecordAssign(t *testing.T)     { runGolden(t, "record_assign") }
+func TestTranspileSortStable(t *testing.T)       { runGolden(t, "sort_stable") }
+func TestTranspilePureGlobalFold(t *testing.T)   { runGolden(t, "pure_global_fold") }
+func TestTranspileQuerySumSelect(t *testing.T)   { runGolden(t, "query_sum_select") }
+func TestTranspileGroupByMultiSort(t *testing.T) { runGolden(t, "group_by_multi_sort") }
+
 func updateEnabled() bool { return *update }
 
 func countCompiled() (int, int) {
