@@ -7,6 +7,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"math"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -64,8 +65,9 @@ type partial struct {
 // evaluation. It is set by Transpile for the duration of a single
 // transpilation run.
 var (
-	currentFuncs map[string]*parser.FunStmt
-	currentEnv   *types.Env
+	currentFuncs      map[string]*parser.FunStmt
+	currentEnv        *types.Env
+	pythonMathAliases map[string]bool
 )
 
 type breakErr struct{}
@@ -747,6 +749,52 @@ func evalPostfix(p *parser.PostfixExpr, vars map[string]value) (value, error) {
 			}
 			return value{}, fmt.Errorf("bad args")
 		}
+		if pythonMathAliases[p.Target.Selector.Root] {
+			call := p.Ops[0].Call
+			name := p.Target.Selector.Tail[0]
+			switch name {
+			case "sqrt":
+				if len(call.Args) != 1 {
+					return value{}, fmt.Errorf("bad args")
+				}
+				x, err := evalExpr(call.Args[0], vars)
+				if err != nil {
+					return value{}, err
+				}
+				return value{kind: valFloat, f: math.Sqrt(toFloat(x))}, nil
+			case "pow":
+				if len(call.Args) != 2 {
+					return value{}, fmt.Errorf("bad args")
+				}
+				x, err := evalExpr(call.Args[0], vars)
+				if err != nil {
+					return value{}, err
+				}
+				y, err := evalExpr(call.Args[1], vars)
+				if err != nil {
+					return value{}, err
+				}
+				return value{kind: valFloat, f: math.Pow(toFloat(x), toFloat(y))}, nil
+			case "sin":
+				if len(call.Args) != 1 {
+					return value{}, fmt.Errorf("bad args")
+				}
+				x, err := evalExpr(call.Args[0], vars)
+				if err != nil {
+					return value{}, err
+				}
+				return value{kind: valFloat, f: math.Sin(toFloat(x))}, nil
+			case "log":
+				if len(call.Args) != 1 {
+					return value{}, fmt.Errorf("bad args")
+				}
+				x, err := evalExpr(call.Args[0], vars)
+				if err != nil {
+					return value{}, err
+				}
+				return value{kind: valFloat, f: math.Log(toFloat(x))}, nil
+			}
+		}
 	}
 
 	v, err := evalPrimary(p.Target, vars)
@@ -963,6 +1011,14 @@ func evalPrimary(p *parser.Primary, vars map[string]value) (value, error) {
 				return value{kind: valFloat, f: 3.14}, nil
 			case "Answer":
 				return value{kind: valInt, i: 42}, nil
+			}
+		}
+		if pythonMathAliases[p.Selector.Root] && len(p.Selector.Tail) == 1 {
+			switch p.Selector.Tail[0] {
+			case "pi":
+				return value{kind: valFloat, f: math.Pi}, nil
+			case "e":
+				return value{kind: valFloat, f: math.E}, nil
 			}
 		}
 	case p.List != nil:
@@ -2363,9 +2419,11 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	funcs := map[string]*parser.FunStmt{}
 	currentFuncs = funcs
 	currentEnv = env
+	pythonMathAliases = map[string]bool{}
 	defer func() {
 		currentFuncs = nil
 		currentEnv = nil
+		pythonMathAliases = nil
 	}()
 	p := &Program{}
 
@@ -2373,7 +2431,18 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	processStmt = func(st *parser.Statement) error {
 		switch {
 		case st.Import != nil:
-			// imports are handled implicitly
+			if st.Import.Lang != nil && *st.Import.Lang == "python" && strings.Trim(st.Import.Path, "\"") == "math" {
+				alias := st.Import.As
+				if alias == "" {
+					alias = parser.AliasFromPath(st.Import.Path)
+				}
+				pythonMathAliases[alias] = true
+				return nil
+			}
+			// other imports are ignored
+			return nil
+		case st.ExternVar != nil, st.ExternFun != nil, st.ExternType != nil, st.ExternObject != nil:
+			// extern declarations are ignored
 			return nil
 		case st.Let != nil:
 			v := value{}
