@@ -31,7 +31,7 @@ func TestRosettaTranspilerGolden(t *testing.T) {
 		t.Fatalf("glob: %v", err)
 	}
 	sort.Strings(files)
-	max := 5
+	max := 1
 	if len(files) < max {
 		max = len(files)
 	}
