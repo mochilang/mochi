@@ -1952,25 +1952,11 @@ func compileStmts(sts []*parser.Statement, env *compileEnv) ([]Stmt, error) {
 			env.setConst(name, nil)
 			out = append(out, &IndexAssignStmt{Name: name, Target: target, Index: idx, Value: val})
 		case s.If != nil:
-			cond, err := toExpr(s.If.Cond, env)
+			ifStmt, err := compileIfStmt(s.If, env)
 			if err != nil {
 				return nil, err
 			}
-			if s.If.ElseIf != nil {
-				return nil, fmt.Errorf("unsupported elseif")
-			}
-			thenStmts, err := compileStmts(s.If.Then, env)
-			if err != nil {
-				return nil, err
-			}
-			var elseStmts []Stmt
-			if s.If.Else != nil {
-				elseStmts, err = compileStmts(s.If.Else, env)
-				if err != nil {
-					return nil, err
-				}
-			}
-			out = append(out, &IfStmt{Cond: cond, Then: thenStmts, Else: elseStmts})
+			out = append(out, ifStmt)
 		case s.Return != nil:
 			if s.Return.Value == nil {
 				return nil, fmt.Errorf("unsupported return")
@@ -2953,6 +2939,33 @@ func compileFunction(fn *parser.FunStmt, env *compileEnv) (*Function, error) {
 	}
 	ret := fenv.current("return")
 	return &Function{Name: fn.Name, Params: params, Body: body, Return: &Var{Name: ret}}, nil
+}
+
+func compileIfStmt(ifp *parser.IfStmt, env *compileEnv) (*IfStmt, error) {
+	cond, err := toExpr(ifp.Cond, env)
+	if err != nil {
+		return nil, err
+	}
+	thenStmts, err := compileStmts(ifp.Then, env)
+	if err != nil {
+		return nil, err
+	}
+	var elseStmts []Stmt
+	if ifp.ElseIf != nil {
+		nested, err := compileIfStmt(ifp.ElseIf, env)
+		if err != nil {
+			return nil, err
+		}
+		elseStmts = append(elseStmts, nested)
+	}
+	if ifp.Else != nil {
+		es, err := compileStmts(ifp.Else, env)
+		if err != nil {
+			return nil, err
+		}
+		elseStmts = append(elseStmts, es...)
+	}
+	return &IfStmt{Cond: cond, Then: thenStmts, Else: elseStmts}, nil
 }
 
 func toIfExpr(ifp *parser.IfExpr, env *compileEnv) (Expr, error) {
