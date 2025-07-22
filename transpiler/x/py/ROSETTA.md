@@ -2,13 +2,13 @@
 
 This checklist is auto-generated.
 Generated Python code from programs in `tests/rosetta/x/Mochi` lives in `tests/rosetta/transpiler/Python`.
-Last updated: 2025-07-22 10:45 UTC
+Last updated: 2025-07-22 13:36 UTC
 
-## Rosetta Golden Test Checklist (1/284)
+## Rosetta Golden Test Checklist (4/284)
 - [x] 100-doors-2
-- [ ] 100-doors-3
-- [ ] 100-doors
-- [ ] 100-prisoners
+- [x] 100-doors-3
+- [x] 100-doors
+- [x] 100-prisoners
 - [ ] 15-puzzle-game
 - [ ] 15-puzzle-solver
 - [ ] 2048
