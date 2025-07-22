@@ -3,12 +3,12 @@
 package ctrans_test
 
 import (
+	"bufio"
 	"bytes"
 	"fmt"
 	"os"
 	"os/exec"
 	"path/filepath"
-	"sort"
 	"strconv"
 	"strings"
 	"testing"
@@ -29,11 +29,12 @@ func TestRosettaTranspilerGolden(t *testing.T) {
 	// Allow running a specific Rosetta program by numeric index.
 	if idxStr := os.Getenv("MOCHI_ROSETTA_INDEX"); idxStr != "" {
 		srcDir := filepath.Join(root, "tests", "rosetta", "x", "Mochi")
-		files, _ := filepath.Glob(filepath.Join(srcDir, "*.mochi"))
-		sort.Strings(files)
-		if idx, err := strconv.Atoi(idxStr); err == nil && idx >= 1 && idx <= len(files) {
-			name := strings.TrimSuffix(filepath.Base(files[idx-1]), ".mochi")
-			t.Setenv("MOCHI_ROSETTA_ONLY", name)
+		names, err := readIndex(filepath.Join(srcDir, "index.txt"))
+		if err == nil {
+			if idx, err2 := strconv.Atoi(idxStr); err2 == nil && idx >= 1 && idx <= len(names) {
+				name := strings.TrimSuffix(filepath.Base(names[idx-1]), ".mochi")
+				t.Setenv("MOCHI_ROSETTA_ONLY", name)
+			}
 		}
 	}
 
@@ -72,9 +73,11 @@ func updateRosettaReadme() {
 	srcDir := filepath.Join(root, "tests", "rosetta", "x", "Mochi")
 	outDir := filepath.Join(root, "tests", "rosetta", "transpiler", "C")
 	readmePath := filepath.Join(root, "transpiler", "x", "c", "ROSETTA.md")
-	files, _ := filepath.Glob(filepath.Join(srcDir, "*.mochi"))
-	sort.Strings(files)
-	total := len(files)
+	names, err := readIndex(filepath.Join(srcDir, "index.txt"))
+	if err != nil {
+		return
+	}
+	total := len(names)
 	compiled := 0
 	out, err := exec.Command("git", "log", "-1", "--format=%cI").Output()
 	ts := ""
@@ -88,7 +91,7 @@ func updateRosettaReadme() {
 		}
 	}
 	var lines []string
-	for i, f := range files {
+	for i, f := range names {
 		name := strings.TrimSuffix(filepath.Base(f), ".mochi")
 		mark := "[ ]"
 		if _, err := os.Stat(filepath.Join(outDir, name+".out")); err == nil {
@@ -104,4 +107,24 @@ func updateRosettaReadme() {
 	buf.WriteString(strings.Join(lines, "\n"))
 	buf.WriteString("\n")
 	_ = os.WriteFile(readmePath, buf.Bytes(), 0o644)
+}
+
+func readIndex(path string) ([]string, error) {
+	f, err := os.Open(path)
+	if err != nil {
+		return nil, err
+	}
+	defer f.Close()
+	var names []string
+	scanner := bufio.NewScanner(f)
+	for scanner.Scan() {
+		parts := strings.Fields(scanner.Text())
+		if len(parts) == 2 {
+			names = append(names, parts[1])
+		}
+	}
+	if err := scanner.Err(); err != nil {
+		return nil, err
+	}
+	return names, nil
 }
