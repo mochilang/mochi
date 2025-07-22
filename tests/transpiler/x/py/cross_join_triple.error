@@ -1,7 +1,0 @@
-run: exit status 1
---- Cross Join of three lists ---
-Traceback (most recent call last):
-  File "/workspace/mochi/tests/transpiler/x/py/cross_join_triple.py", line 17, in <module>
-    print(" ".join(str(x) for x in [c["n"], c["l"], c["b"]]).rstrip())
-                                    ~^^^^^
-TypeError: 'Combo' object is not subscriptable

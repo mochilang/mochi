@@ -177,6 +177,7 @@ type UpdateStmt struct {
 	Fields []string
 	Values []Expr
 	Cond   Expr
+	Struct bool
 }
 
 func (*UpdateStmt) isStmt() {}
@@ -933,8 +934,14 @@ func emitStmtIndent(w io.Writer, s Stmt, indent string) error {
 			inner += "    "
 		}
 		for i, f := range st.Fields {
-			if _, err := fmt.Fprintf(w, "%s%s[%q] = ", inner, it, f); err != nil {
-				return err
+			if st.Struct {
+				if _, err := fmt.Fprintf(w, "%s%s.%s = ", inner, it, f); err != nil {
+					return err
+				}
+			} else {
+				if _, err := fmt.Fprintf(w, "%s%s[%q] = ", inner, it, f); err != nil {
+					return err
+				}
 			}
 			if err := emitExpr(w, st.Values[i]); err != nil {
 				return err
@@ -1840,7 +1847,7 @@ func substituteFields(e Expr, varName string, fields map[string]bool) Expr {
 	switch ex := e.(type) {
 	case *Name:
 		if fields[ex.Name] {
-			return &FieldExpr{Target: &Name{Name: varName}, Name: ex.Name, MapIndex: true}
+			return &FieldExpr{Target: &Name{Name: varName}, Name: ex.Name}
 		}
 		return ex
 	case *BinaryExpr:
@@ -2498,6 +2505,10 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 									} else if mc, ok := e.(*MultiListComp); ok {
 										mc.Expr = &CallExpr{Func: &Name{Name: dc.Name}, Args: args}
 									}
+									if env != nil {
+										env.SetStruct(dc.Name, structFromDataClass(dc, env))
+										env.SetVar(st.Let.Name, types.ListType{Elem: structFromDataClass(dc, env)}, false)
+									}
 								}
 							}
 						}
@@ -2552,6 +2563,10 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 										lc.Expr = &CallExpr{Func: &Name{Name: dc.Name}, Args: args}
 									} else if mc, ok := e.(*MultiListComp); ok {
 										mc.Expr = &CallExpr{Func: &Name{Name: dc.Name}, Args: args}
+									}
+									if env != nil {
+										env.SetStruct(dc.Name, structFromDataClass(dc, env))
+										env.SetVar(st.Var.Name, types.ListType{Elem: structFromDataClass(dc, env)}, true)
 									}
 								}
 							}
@@ -3228,7 +3243,15 @@ func convertSelector(sel *parser.SelectorExpr, method bool) Expr {
 	}
 	for i, t := range sel.Tail {
 		idx := i == len(sel.Tail)-1 && method
-		expr = &FieldExpr{Target: expr, Name: t, MapIndex: mapIndex && !idx}
+		useMap := mapIndex && !idx
+		if useMap && currentEnv != nil {
+			if st, ok := inferPyType(expr, currentEnv).(types.StructType); ok {
+				if _, ok := st.Fields[t]; ok {
+					useMap = false
+				}
+			}
+		}
+		expr = &FieldExpr{Target: expr, Name: t, MapIndex: useMap}
 		mapIndex = true
 	}
 	return expr
@@ -3283,12 +3306,17 @@ func convertPostfix(p *parser.PostfixExpr) (Expr, error) {
 				expr = &IndexExpr{Target: expr, Index: idx}
 			}
 		case op.Field != nil:
-			// use attribute access for method calls, otherwise treat as map lookup
+			mapIndex := true
 			if i+1 < len(p.Ops) && p.Ops[i+1].Call != nil {
-				expr = &FieldExpr{Target: expr, Name: op.Field.Name}
+				mapIndex = false
 			} else {
-				expr = &FieldExpr{Target: expr, Name: op.Field.Name, MapIndex: true}
+				if t, ok := inferPyType(expr, currentEnv).(types.StructType); ok {
+					if _, ok := t.Fields[op.Field.Name]; ok {
+						mapIndex = false
+					}
+				}
 			}
+			expr = &FieldExpr{Target: expr, Name: op.Field.Name, MapIndex: mapIndex}
 		case op.Call != nil:
 			var args []Expr
 			for _, a := range op.Call.Args {
@@ -3375,15 +3403,7 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 					outArgs[i] = a
 				}
 			}
-			if len(outArgs) == 1 {
-				return &CallExpr{Func: &Name{Name: "print"}, Args: outArgs}, nil
-			}
-			var parts []string
-			for _, a := range outArgs {
-				parts = append(parts, exprString(a))
-			}
-			code := fmt.Sprintf("print(\" \".join(str(x) for x in [%s]).rstrip())", strings.Join(parts, ", "))
-			return &RawExpr{Code: code}, nil
+			return &CallExpr{Func: &Name{Name: "print"}, Args: outArgs}, nil
 		case "append":
 			if len(args) == 2 {
 				return &BinaryExpr{Left: args[0], Op: "+", Right: &ListLit{Elems: []Expr{args[1]}}}, nil
@@ -3689,6 +3709,11 @@ func convertQueryExpr(q *parser.QueryExpr) (Expr, error) {
 		if err != nil {
 			return nil, err
 		}
+		if currentEnv != nil {
+			if lt, ok := inferTypeFromExpr(f.Src).(types.ListType); ok {
+				currentEnv.SetVar(f.Var, lt.Elem, true)
+			}
+		}
 		vars = append(vars, f.Var)
 		iters = append(iters, e)
 	}
@@ -3930,7 +3955,7 @@ func convertUpdate(u *parser.UpdateStmt, env *types.Env) (*UpdateStmt, error) {
 		cond = substituteFields(cond, "item", fieldSet)
 	}
 	currentEnv = prev
-	return &UpdateStmt{Target: u.Target, Fields: fields, Values: values, Cond: cond}, nil
+	return &UpdateStmt{Target: u.Target, Fields: fields, Values: values, Cond: cond, Struct: true}, nil
 }
 
 func convertGroupQuery(q *parser.QueryExpr, env *types.Env, target string) ([]Stmt, error) {
