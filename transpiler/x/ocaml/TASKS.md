@@ -1,7 +1,7 @@
-## Progress (2025-07-22 14:18 +0700)
-- ocaml transpiler: handle map printing (88d3fe897)
+## Progress (2025-07-22 14:41 +0700)
+- ocaml transpiler: remove runtime helpers and improve type inference (04f5e984c)
 
-- VM valid programs compiled: 85/102
+- VM valid programs compiled: 99/102
 
 - ocaml transpiler: start dynamic map support (93ff08478)
 

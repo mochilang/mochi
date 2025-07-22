@@ -276,6 +276,20 @@ type VarInfo struct {
 	group bool
 }
 
+func guessTypeFromName(name string) string {
+	n := strings.ToLower(name)
+	if strings.HasSuffix(n, "list") || strings.HasSuffix(n, "arr") {
+		return "list"
+	}
+	if strings.HasSuffix(n, "map") {
+		return "map-dyn"
+	}
+	if strings.Contains(n, "count") || strings.Contains(n, "num") || strings.Contains(n, "len") {
+		return "int"
+	}
+	return ""
+}
+
 func mapFieldType(typ, field string) (string, bool) {
 	if (strings.HasPrefix(typ, "map{") || strings.HasPrefix(typ, "map-dyn{")) && strings.HasSuffix(typ, "}") {
 		inner := strings.TrimSuffix(typ, "}")
@@ -377,9 +391,9 @@ func (p *PrintStmt) emit(w io.Writer) {
 type JSONStmt struct{ Expr Expr }
 
 func (j *JSONStmt) emit(w io.Writer) {
-	io.WriteString(w, "  print_endline (__to_json ")
-	j.Expr.emit(w)
-	io.WriteString(w, ");\n")
+	io.WriteString(w, "  print_endline ")
+	j.Expr.emitPrint(w)
+	io.WriteString(w, ";\n")
 }
 
 // IfStmt represents a basic if/else statement.
@@ -505,8 +519,8 @@ type SaveStmt struct {
 func (s *SaveStmt) emit(w io.Writer) {
 	if s.Format == "jsonl" && (s.Path == "" || s.Path == "-") {
 		io.WriteString(w, "  List.iter (fun m ->\n")
-		io.WriteString(w, "    let parts = List.map (fun (k,v) -> Printf.sprintf \"\\\"%s\\\": %s\" k (__show (Obj.obj v))) m in\n")
-		io.WriteString(w, "    print_endline (\"{\" ^ String.concat \", \" parts ^ \"}\")\n")
+		io.WriteString(w, `    let parts = List.map (fun (k,v) -> Printf.sprintf "\"%s\": %s" k (string_of_int (Obj.magic v))) m in\n`)
+		io.WriteString(w, `    print_endline ("{" ^ String.concat "," parts ^ "}")\n`)
 		io.WriteString(w, "  ) ")
 		s.Src.emit(w)
 		io.WriteString(w, "\n")
@@ -1408,8 +1422,10 @@ func (n *Name) emitPrint(w io.Writer) {
 		fmt.Fprintf(w, "string_of_int %s", ident)
 	case "bool":
 		fmt.Fprintf(w, "string_of_bool %s", ident)
+	case "float":
+		fmt.Fprintf(w, "string_of_float %s", ident)
 	default:
-		fmt.Fprintf(w, "__to_json %s", ident)
+		io.WriteString(w, ident)
 	}
 }
 
@@ -1556,62 +1572,6 @@ func (p *Program) Emit() []byte {
 	var buf bytes.Buffer
 	buf.WriteString(header())
 	buf.WriteString("\n")
-	if p.UsesShow() {
-		buf.WriteString(`let rec __show v =
-  let open Obj in
-  let rec list_aux o =
-    if is_int o && (magic (obj o) : int) = 0 then "" else
-     let hd = field o 0 in
-     let tl = field o 1 in
-     let rest = list_aux tl in
-     if rest = "" then __show (obj hd) else __show (obj hd) ^ "; " ^ rest
-  in
-
-  let r = repr v in
-  if is_int r then string_of_int (magic v) else
-  match tag r with
-    | 0 -> if size r = 0 then "[]" else "[" ^ list_aux r ^ "]"
-    | 252 -> (magic v : string)
-    | 253 -> string_of_float (magic v)
-    | _ -> "<value>"
-
-`)
-	}
-	if p.UsesJSON() {
-		buf.WriteString(`let rec __to_json v =
-  let open Obj in
-  let rec list_aux o =
-    if is_int o && (magic (obj o) : int) = 0 then "" else
-     let hd = field o 0 in
-     let tl = field o 1 in
-     let rest = list_aux tl in
-     let cur = __to_json (obj hd) in
-     if rest = "" then cur else cur ^ "," ^ rest
-  and map_aux o =
-    if is_int o && (magic (obj o) : int) = 0 then "" else
-     let hd = field o 0 in
-     let tl = field o 1 in
-     let k = (magic (field hd 0) : string) in
-     let v = __to_json (obj (field hd 1)) in
-     let rest = map_aux tl in
-     let cur = Printf.sprintf "\"%s\": %s" k v in
-     if rest = "" then cur else cur ^ "," ^ rest
-  in
-  let r = repr v in
-  if is_int r then string_of_int (magic v) else
-  match tag r with
-    | 0 -> if size r = 0 then "[]" else (
-        let hd = field r 0 in
-        if tag hd = 0 && size hd = 2 && tag (field hd 0) = 252 then
-          "{" ^ map_aux r ^ "}"
-        else
-          "[" ^ list_aux r ^ "]")
-    | 252 -> Printf.sprintf "%S" (magic v : string)
-    | 253 -> string_of_float (magic v)
-    | _ -> "null"
-
-`)
-	}
 	if p.UsesStrModule() {
 		buf.WriteString("open Str\n\n")
 	}
@@ -2413,7 +2373,11 @@ func convertPrimary(p *parser.Primary, env *types.Env, vars map[string]VarInfo) 
 		return convertFunExpr(p.FunExpr, env, vars)
 	case p.Selector != nil:
 		if len(p.Selector.Tail) == 0 {
-			info := vars[p.Selector.Root]
+			info, ok := vars[p.Selector.Root]
+			if !ok {
+				info.typ = guessTypeFromName(p.Selector.Root)
+				vars[p.Selector.Root] = info
+			}
 			return &Name{Ident: p.Selector.Root, Typ: info.typ, Ref: info.ref}, info.typ, nil
 		}
 		return convertSelector(p.Selector, env, vars)
