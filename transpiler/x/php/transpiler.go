@@ -488,7 +488,7 @@ type MapLit struct{ Items []MapEntry }
 type SubstringExpr struct {
 	Str   Expr
 	Start Expr
-	End   Expr
+	End   Expr // nil for open-ended
 }
 
 // IndexExpr represents array indexing: x[i].
@@ -501,7 +501,7 @@ type IndexExpr struct {
 type SliceExpr struct {
 	X     Expr
 	Start Expr
-	End   Expr
+	End   Expr // nil for open-ended
 }
 
 // MatchArm represents one arm of a match expression.
@@ -1178,8 +1178,10 @@ func (s *SubstringExpr) emit(w io.Writer) {
 	s.Str.emit(w)
 	fmt.Fprint(w, ", ")
 	s.Start.emit(w)
-	fmt.Fprint(w, ", ")
-	(&BinaryExpr{Left: s.End, Op: "-", Right: s.Start}).emit(w)
+	if s.End != nil {
+		fmt.Fprint(w, ", ")
+		(&BinaryExpr{Left: s.End, Op: "-", Right: s.Start}).emit(w)
+	}
 	fmt.Fprint(w, ")")
 }
 
@@ -1195,8 +1197,10 @@ func (s *SliceExpr) emit(w io.Writer) {
 	s.X.emit(w)
 	fmt.Fprint(w, ", ")
 	s.Start.emit(w)
-	fmt.Fprint(w, ", ")
-	(&BinaryExpr{Left: s.End, Op: "-", Right: s.Start}).emit(w)
+	if s.End != nil {
+		fmt.Fprint(w, ", ")
+		(&BinaryExpr{Left: s.End, Op: "-", Right: s.Start}).emit(w)
+	}
 	fmt.Fprint(w, ")")
 }
 
@@ -1280,12 +1284,20 @@ func convertBinary(b *parser.BinaryExpr) (Expr, error) {
 	}
 	operands := []Expr{}
 	ops := []string{}
+	strFlags := []bool{}
 
 	first, err := convertUnary(b.Left)
 	if err != nil {
 		return nil, err
 	}
 	operands = append(operands, first)
+	if transpileEnv != nil {
+		t := types.TypeOfUnary(b.Left, transpileEnv)
+		_, ok := t.(types.StringType)
+		strFlags = append(strFlags, ok)
+	} else {
+		strFlags = append(strFlags, false)
+	}
 	for _, p := range b.Right {
 		r, err := convertPostfix(p.Right)
 		if err != nil {
@@ -1297,6 +1309,13 @@ func convertBinary(b *parser.BinaryExpr) (Expr, error) {
 		}
 		ops = append(ops, op)
 		operands = append(operands, r)
+		if transpileEnv != nil {
+			t := types.TypeOfPostfix(p.Right, transpileEnv)
+			_, ok := t.(types.StringType)
+			strFlags = append(strFlags, ok)
+		} else {
+			strFlags = append(strFlags, false)
+		}
 	}
 
 	levels := [][]string{
@@ -1309,20 +1328,25 @@ func convertBinary(b *parser.BinaryExpr) (Expr, error) {
 		{"union", "union_all", "except", "intersect"},
 	}
 
-	apply := func(left Expr, op string, right Expr) Expr {
+	apply := func(left Expr, ls bool, op string, right Expr, rs bool) (Expr, bool) {
 		switch op {
 		case "/":
-			return &BinaryExpr{Left: left, Op: "/", Right: right}
+			return &BinaryExpr{Left: left, Op: "/", Right: right}, false
 		case "in":
 			if isListExpr(right) {
-				return &CallExpr{Func: "in_array", Args: []Expr{left, right}}
+				return &CallExpr{Func: "in_array", Args: []Expr{left, right}}, false
 			}
 			if isStringExpr(right) {
 				cmp := &CallExpr{Func: "strpos", Args: []Expr{right, left}}
-				return &BinaryExpr{Left: cmp, Op: "!==", Right: &BoolLit{Value: false}}
+				return &BinaryExpr{Left: cmp, Op: "!==", Right: &BoolLit{Value: false}}, false
 			}
+		case "+":
+			if ls || rs {
+				return &BinaryExpr{Left: left, Op: ".", Right: right}, true
+			}
+			return &BinaryExpr{Left: left, Op: "+", Right: right}, false
 		}
-		return &BinaryExpr{Left: left, Op: op, Right: right}
+		return &BinaryExpr{Left: left, Op: op, Right: right}, false
 	}
 
 	for _, level := range levels {
@@ -1330,9 +1354,11 @@ func convertBinary(b *parser.BinaryExpr) (Expr, error) {
 			matched := false
 			for _, t := range level {
 				if ops[i] == t {
-					expr := apply(operands[i], ops[i], operands[i+1])
+					expr, sf := apply(operands[i], strFlags[i], ops[i], operands[i+1], strFlags[i+1])
 					operands[i] = expr
+					strFlags[i] = sf
 					operands = append(operands[:i+1], operands[i+2:]...)
+					strFlags = append(strFlags[:i+1], strFlags[i+2:]...)
 					ops = append(ops[:i], ops[i+1:]...)
 					matched = true
 					break
@@ -1482,12 +1508,15 @@ func convertPostfix(pf *parser.PostfixExpr) (Expr, error) {
 					e = &IndexExpr{X: e, Index: start}
 				}
 			} else {
-				if op.Index.End == nil || op.Index.Step != nil || op.Index.Colon2 != nil {
+				if op.Index.Step != nil || op.Index.Colon2 != nil {
 					return nil, fmt.Errorf("unsupported slice expression")
 				}
-				end, err := convertExpr(op.Index.End)
-				if err != nil {
-					return nil, err
+				var end Expr
+				if op.Index.End != nil {
+					end, err = convertExpr(op.Index.End)
+					if err != nil {
+						return nil, err
+					}
 				}
 				if isStringExpr(e) {
 					e = &SubstringExpr{Str: e, Start: start, End: end}
@@ -2625,6 +2654,9 @@ func isStringExpr(e Expr) bool {
 			return true
 		}
 	case *BinaryExpr:
+		if v.Op == "." {
+			return true
+		}
 		if v.Op == "+" {
 			if isStringExpr(v.Left) || isStringExpr(v.Right) {
 				return true
