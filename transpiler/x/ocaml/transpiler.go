@@ -483,7 +483,7 @@ type ExprStmt struct{ Expr Expr }
 func (e *ExprStmt) emit(w io.Writer) {
 	io.WriteString(w, "  ")
 	e.Expr.emit(w)
-	io.WriteString(w, "\n")
+	io.WriteString(w, ";\n")
 }
 
 // PrintStmt represents a call to print_endline with one or more values.
@@ -780,7 +780,7 @@ func (l *LenBuiltin) emitPrint(w io.Writer) {
 type InputBuiltin struct{}
 
 func (i *InputBuiltin) emit(w io.Writer) {
-	io.WriteString(w, "read_line ()")
+	io.WriteString(w, "(try read_line () with End_of_file -> \"\")")
 }
 
 func (i *InputBuiltin) emitPrint(w io.Writer) { i.emit(w) }
@@ -1792,6 +1792,11 @@ func (b *BinaryExpr) emit(w io.Writer) {
 	op := b.Op
 	if b.Op == "%" {
 		op = "mod"
+	}
+	if b.Op == "==" {
+		op = "="
+	} else if b.Op == "!=" {
+		op = "<>"
 	}
 	if b.Op == "+" && b.Typ == "string" {
 		op = "^"
