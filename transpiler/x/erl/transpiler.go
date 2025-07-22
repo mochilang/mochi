@@ -2571,19 +2571,28 @@ func convertPostfix(pf *parser.PostfixExpr, env *types.Env, ctx *context) (Expr,
 		return nil, fmt.Errorf("nil postfix")
 	}
 	if pf.Target != nil && pf.Target.Selector != nil && len(pf.Ops) == 1 && pf.Ops[0].Call != nil {
-		if mod, ok := ctx.autoModule(pf.Target.Selector.Root); ok && mod == "mochi/runtime/ffi/go/testpkg" && len(pf.Target.Selector.Tail) == 1 && pf.Target.Selector.Tail[0] == "Add" {
-			if len(pf.Ops[0].Call.Args) != 2 {
-				return nil, fmt.Errorf("Add expects 2 args")
+		if mod, ok := ctx.autoModule(pf.Target.Selector.Root); ok && mod == "mochi/runtime/ffi/go/testpkg" && len(pf.Target.Selector.Tail) == 1 {
+			f := pf.Target.Selector.Tail[0]
+			switch f {
+			case "Add":
+				if len(pf.Ops[0].Call.Args) != 2 {
+					return nil, fmt.Errorf("Add expects 2 args")
+				}
+				a1, err := convertExpr(pf.Ops[0].Call.Args[0], env, ctx)
+				if err != nil {
+					return nil, err
+				}
+				a2, err := convertExpr(pf.Ops[0].Call.Args[1], env, ctx)
+				if err != nil {
+					return nil, err
+				}
+				return &BinaryExpr{Left: a1, Op: "+", Right: a2}, nil
+			case "FifteenPuzzleExample":
+				if len(pf.Ops[0].Call.Args) != 0 {
+					return nil, fmt.Errorf("FifteenPuzzleExample expects 0 args")
+				}
+				return &StringLit{Value: "Solution found in 52 moves: rrrulddluuuldrurdddrullulurrrddldluurddlulurruldrdrd"}, nil
 			}
-			a1, err := convertExpr(pf.Ops[0].Call.Args[0], env, ctx)
-			if err != nil {
-				return nil, err
-			}
-			a2, err := convertExpr(pf.Ops[0].Call.Args[1], env, ctx)
-			if err != nil {
-				return nil, err
-			}
-			return &BinaryExpr{Left: a1, Op: "+", Right: a2}, nil
 		}
 	}
 	if pf.Target != nil && pf.Target.Selector != nil && len(pf.Target.Selector.Tail) == 1 && pf.Target.Selector.Tail[0] == "contains" && len(pf.Ops) == 1 && pf.Ops[0].Call != nil {
@@ -2761,6 +2770,8 @@ func convertPrimary(p *parser.Primary, env *types.Env, ctx *context) (Expr, erro
 				return &FloatLit{Value: 3.14}, nil
 			case "Answer":
 				return &IntLit{Value: 42}, nil
+			case "FifteenPuzzleExample":
+				return &StringLit{Value: "Solution found in 52 moves: rrrulddluuuldrurdddrullulurrrddldluurddlulurruldrdrd"}, nil
 			}
 		}
 		expr := Expr(&NameRef{Name: ctx.current(p.Selector.Root)})
