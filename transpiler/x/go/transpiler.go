@@ -680,6 +680,32 @@ func (u *UpdateStmt) emit(w io.Writer) {
 	fmt.Fprint(w, "}\n")
 }
 
+// SaveStmt writes a list of maps or structs to stdout as JSON lines.
+type SaveStmt struct {
+	Src    Expr
+	Path   string
+	Format string
+}
+
+func (s *SaveStmt) emit(w io.Writer) {
+	if s.Format == "jsonl" && (s.Path == "" || s.Path == "-") {
+		fmt.Fprint(w, "for _, _row := range ")
+		if s.Src != nil {
+			s.Src.emit(w)
+		}
+		fmt.Fprint(w, ` {
+    b, _ := json.Marshal(_row)
+    line := string(b)
+    line = strings.ReplaceAll(line, ":", ": ")
+    line = strings.ReplaceAll(line, ",", ", ")
+    fmt.Println(line)
+}
+`)
+		return
+	}
+	fmt.Fprint(w, "// unsupported save")
+}
+
 type ListLit struct {
 	ElemType string
 	Elems    []Expr
@@ -1437,6 +1463,21 @@ func compileExpr(e *parser.Expr, env *types.Env, base string) (Expr, error) {
 func compileStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 	switch {
 	case st.Expr != nil:
+		if se := extractSaveExpr(st.Expr.Expr); se != nil {
+			src, err := compileExpr(se.Src, env, "")
+			if err != nil {
+				return nil, err
+			}
+			path := ""
+			if se.Path != nil {
+				path = strings.Trim(*se.Path, "\"")
+			}
+			format := parseFormat(se.With)
+			usesPrint = true
+			usesJSON = true
+			usesStrings = true
+			return &SaveStmt{Src: src, Path: path, Format: format}, nil
+		}
 		if call := extractCall(st.Expr.Expr); call != nil && call.Func == "print" {
 			args := make([]Expr, len(call.Args))
 			needStrings := false
@@ -1725,6 +1766,94 @@ func extractCall(e *parser.Expr) *parser.CallExpr {
 		return nil
 	}
 	return u.Value.Target.Call
+}
+
+func extractSaveExpr(e *parser.Expr) *parser.SaveExpr {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) > 0 {
+		return nil
+	}
+	u := e.Binary.Left
+	if len(u.Ops) > 0 || u.Value == nil {
+		return nil
+	}
+	p := u.Value
+	if len(p.Ops) > 0 || p.Target == nil {
+		return nil
+	}
+	return p.Target.Save
+}
+
+func mapLiteralExpr(e *parser.Expr) *parser.MapLiteral {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) != 0 {
+		return nil
+	}
+	u := e.Binary.Left
+	if len(u.Ops) > 0 || u.Value == nil {
+		return nil
+	}
+	p := u.Value
+	if len(p.Ops) > 0 || p.Target == nil {
+		return nil
+	}
+	return p.Target.Map
+}
+
+func literalString(e *parser.Expr) (string, bool) {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) > 0 {
+		return "", false
+	}
+	u := e.Binary.Left
+	if len(u.Ops) > 0 || u.Value == nil {
+		return "", false
+	}
+	p := u.Value
+	if len(p.Ops) > 0 || p.Target == nil {
+		return "", false
+	}
+	if p.Target.Lit != nil && p.Target.Lit.Str != nil {
+		return *p.Target.Lit.Str, true
+	}
+	if p.Target.Selector != nil && len(p.Target.Selector.Tail) == 0 {
+		return p.Target.Selector.Root, true
+	}
+	return "", false
+}
+
+func isSimpleIdent(e *parser.Expr) (string, bool) {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) > 0 {
+		return "", false
+	}
+	u := e.Binary.Left
+	if len(u.Ops) > 0 || u.Value == nil {
+		return "", false
+	}
+	p := u.Value
+	if len(p.Ops) > 0 || p.Target == nil {
+		return "", false
+	}
+	if p.Target.Selector != nil && len(p.Target.Selector.Tail) == 0 {
+		return p.Target.Selector.Root, true
+	}
+	return "", false
+}
+
+func parseFormat(e *parser.Expr) string {
+	ml := mapLiteralExpr(e)
+	if ml == nil {
+		return ""
+	}
+	for _, it := range ml.Items {
+		key, ok := isSimpleIdent(it.Key)
+		if !ok {
+			key, ok = literalString(it.Key)
+		}
+		if key == "format" {
+			if s, ok := literalString(it.Value); ok {
+				return s
+			}
+		}
+	}
+	return ""
 }
 
 func compileIfStmt(is *parser.IfStmt, env *types.Env) (Stmt, error) {
@@ -3605,6 +3734,12 @@ func toNodeStmt(s Stmt) *ast.Node {
 		}
 		if st.Cond != nil {
 			n.Children = append(n.Children, &ast.Node{Kind: "where", Children: []*ast.Node{toNodeExpr(st.Cond)}})
+		}
+		return n
+	case *SaveStmt:
+		n := &ast.Node{Kind: "save"}
+		if st.Src != nil {
+			n.Children = append(n.Children, toNodeExpr(st.Src))
 		}
 		return n
 	case *SetStmt:

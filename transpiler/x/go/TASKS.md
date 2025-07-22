@@ -1,3 +1,39 @@
+## Progress (2025-07-22 13:48 +0700)
+- go transpiler: support save_jsonl_stdout
+- Regenerated golden files - 97/102 vm valid programs passing
+
+## Progress (2025-07-22 13:35 +0700)
+- ocaml: support json builtin and group by having
+- Regenerated golden files - 97/102 vm valid programs passing
+
+## Progress (2025-07-22 13:35 +0700)
+- ocaml: support json builtin and group by having
+- Regenerated golden files - 96/102 vm valid programs passing
+
+## Progress (2025-07-22 13:35 +0700)
+- ocaml: support json builtin and group by having
+- Regenerated golden files - 96/102 vm valid programs passing
+
+## Progress (2025-07-22 13:35 +0700)
+- ocaml: support json builtin and group by having
+- Regenerated golden files - 96/102 vm valid programs passing
+
+## Progress (2025-07-22 13:35 +0700)
+- ocaml: support json builtin and group by having
+- Regenerated golden files - 98/102 vm valid programs passing
+
+## Progress (2025-07-22 13:35 +0700)
+- ocaml: support json builtin and group by having
+- Regenerated golden files - 98/102 vm valid programs passing
+
+## Progress (2025-07-22 13:35 +0700)
+- ocaml: support json builtin and group by having
+- Regenerated golden files - 96/102 vm valid programs passing
+
+## Progress (2025-07-22 13:35 +0700)
+- ocaml: support json builtin and group by having
+- Regenerated golden files - 96/102 vm valid programs passing
+
 ## Progress (2025-07-22 13:00 +0700)
 - go transpiler: support simple union types
 - Regenerated golden files - 97/102 vm valid programs passing
