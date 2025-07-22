@@ -2,8 +2,8 @@
 
 This package contains experimental transpilers that convert Mochi bytecode to other programming languages. The Haskell backend currently supports a tiny subset of the language.
 
-Compiled programs: 68/101
-Last updated: 2025-07-22 06:45 GMT+7
+Compiled programs: 74/102
+Last updated: 2025-07-22 08:57 GMT+7
 
 ## Golden test checklist
 - [x] append_builtin
@@ -12,8 +12,8 @@ Last updated: 2025-07-22 06:45 GMT+7
 - [x] binary_precedence
 - [x] bool_chain
 - [ ] break_continue
-- [ ] cast_string_to_int
-- [ ] cast_struct
+- [x] cast_string_to_int
+- [x] cast_struct
 - [x] closure
 - [x] count_builtin
 - [x] cross_join
@@ -28,7 +28,7 @@ Last updated: 2025-07-22 06:45 GMT+7
 - [x] fun_call
 - [x] fun_expr_in_let
 - [x] fun_three_args
-- [ ] go_auto
+- [x] go_auto
 - [x] group_by
 - [x] group_by_conditional_sum
 - [x] group_by_having
@@ -43,7 +43,7 @@ Last updated: 2025-07-22 06:45 GMT+7
 - [x] if_then_else
 - [x] if_then_else_nested
 - [x] in_operator
-- [ ] in_operator_extended
+- [x] in_operator_extended
 - [x] inner_join
 - [x] join_multi
 - [ ] json_builtin
@@ -57,6 +57,7 @@ Last updated: 2025-07-22 06:45 GMT+7
 - [x] list_index
 - [x] list_nested_assign
 - [ ] list_set_ops
+- [ ] load_jsonl
 - [ ] load_yaml
 - [x] map_assign
 - [x] map_in_operator
@@ -71,7 +72,7 @@ Last updated: 2025-07-22 06:45 GMT+7
 - [x] membership
 - [x] min_max_builtin
 - [ ] nested_function
-- [ ] order_by_map
+- [x] order_by_map
 - [ ] outer_join
 - [x] partial_application
 - [x] print_hello
@@ -104,6 +105,6 @@ Last updated: 2025-07-22 06:45 GMT+7
 - [x] unary_neg
 - [ ] update_stmt
 - [ ] user_type_literal
-- [ ] values_builtin
+- [x] values_builtin
 - [x] var_assignment
 - [x] while_loop

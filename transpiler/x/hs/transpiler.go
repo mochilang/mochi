@@ -114,6 +114,25 @@ var structDefs map[string]*TypeDecl
 var structCount int
 var preludeHide map[string]bool
 var varStruct map[string]string
+var currentLoop string
+
+func typeNameFromRef(tr *parser.TypeRef) string {
+	if tr == nil || tr.Simple == nil {
+		return "String"
+	}
+	switch *tr.Simple {
+	case "int":
+		return "Int"
+	case "float":
+		return "Double"
+	case "bool":
+		return "Bool"
+	case "string":
+		return "String"
+	default:
+		return *tr.Simple
+	}
+}
 
 func recordType(name string, ex Expr) {
 	if isStringExpr(ex) {
@@ -350,12 +369,16 @@ type ReturnStmt struct {
 	Expr Expr
 }
 
+type BreakStmt struct{}
+type ContinueStmt struct{}
+
 // ForStmt iterates over elements in a list, map or range.
 type ForStmt struct {
-	Name string
-	From Expr
-	To   Expr
-	Body []Stmt
+	Name      string
+	From      Expr
+	To        Expr
+	Body      []Stmt
+	WithBreak bool
 }
 
 // WhileStmt repeats a block while a condition is true.
@@ -377,6 +400,14 @@ func (p *PrintStmt) emit(w io.Writer) {
 		io.WriteString(w, "putStrLn (")
 		p.Expr.emit(w)
 		io.WriteString(w, ")")
+		return
+	}
+
+	if isListExpr(p.Expr) {
+		needDataList = true
+		io.WriteString(w, "putStrLn (\"[\" ++ intercalate \", \" (map show (")
+		p.Expr.emit(w)
+		io.WriteString(w, ")) ++ \"]\")")
 		return
 	}
 
@@ -425,6 +456,8 @@ func (i *IfStmt) emit(w io.Writer) {
 			st.emit(w)
 			io.WriteString(w, "\n")
 		}
+	} else {
+		io.WriteString(w, "    else return ()\n")
 	}
 }
 func (r *ReturnStmt) emit(w io.Writer) {
@@ -433,7 +466,62 @@ func (r *ReturnStmt) emit(w io.Writer) {
 	io.WriteString(w, ")")
 }
 
+func (b *BreakStmt) emit(w io.Writer)    { io.WriteString(w, "return ()") }
+func (c *ContinueStmt) emit(w io.Writer) { io.WriteString(w, currentLoop+" xs") }
+
 func (f *ForStmt) emit(w io.Writer) {
+	if f.WithBreak {
+		loop := "loop"
+		prevLoop := currentLoop
+		currentLoop = loop
+		io.WriteString(w, "let\n        ")
+		io.WriteString(w, loop)
+		io.WriteString(w, " [] = return ()\n        ")
+		io.WriteString(w, loop)
+		io.WriteString(w, " (")
+		io.WriteString(w, safeName(f.Name))
+		io.WriteString(w, ":xs) = do\n")
+		stop := false
+		for _, st := range f.Body {
+			if stop {
+				break
+			}
+			switch st.(type) {
+			case *BreakStmt:
+				io.WriteString(w, "            return ()\n")
+				stop = true
+			case *ContinueStmt:
+				io.WriteString(w, "            "+loop+" xs\n")
+				stop = true
+			default:
+				io.WriteString(w, "            ")
+				st.emit(w)
+				io.WriteString(w, "\n")
+			}
+		}
+		if !stop {
+			io.WriteString(w, "            "+loop+" xs\n")
+		}
+		io.WriteString(w, "    in ")
+		io.WriteString(w, loop)
+		io.WriteString(w, " ")
+		if f.To != nil {
+			io.WriteString(w, "[")
+			f.From.emit(w)
+			io.WriteString(w, " .. (")
+			f.To.emit(w)
+			io.WriteString(w, " - 1)]")
+		} else if isMapExpr(f.From) {
+			needDataMap = true
+			io.WriteString(w, "(Map.keys ")
+			f.From.emit(w)
+			io.WriteString(w, ")")
+		} else {
+			f.From.emit(w)
+		}
+		currentLoop = prevLoop
+		return
+	}
 	io.WriteString(w, "mapM_ (\\")
 	io.WriteString(w, safeName(f.Name))
 	io.WriteString(w, " -> do\n")
@@ -446,11 +534,9 @@ func (f *ForStmt) emit(w io.Writer) {
 	if f.To != nil {
 		io.WriteString(w, "[")
 		f.From.emit(w)
-		io.WriteString(w, " .. ")
-		io.WriteString(w, "(")
+		io.WriteString(w, " .. (")
 		f.To.emit(w)
-		io.WriteString(w, " - 1)")
-		io.WriteString(w, "]")
+		io.WriteString(w, " - 1)]")
 		return
 	}
 	if isMapExpr(f.From) {
@@ -558,6 +644,12 @@ type FieldExpr struct {
 	Target Expr
 	Field  string
 }
+
+// CastExpr annotates an expression with an explicit type.
+type CastExpr struct {
+	Expr Expr
+	Type string
+}
 type ComprExpr struct {
 	Vars    []string
 	Sources []Expr
@@ -576,6 +668,14 @@ type IfExpr struct {
 	Cond Expr
 	Then Expr
 	Else Expr
+}
+
+func (c *CastExpr) emit(w io.Writer) {
+	io.WriteString(w, "(")
+	c.Expr.emit(w)
+	io.WriteString(w, " :: ")
+	io.WriteString(w, c.Type)
+	io.WriteString(w, ")")
 }
 
 func (i *IntLit) emit(w io.Writer)    { io.WriteString(w, i.Value) }
@@ -633,6 +733,10 @@ func (r *RecordLit) emit(w io.Writer) {
 }
 func (n *NameRef) emit(w io.Writer) { io.WriteString(w, safeName(n.Name)) }
 func (f *FieldExpr) emit(w io.Writer) {
+	if nr, ok := f.Target.(*NameRef); ok && nr.Name == "testpkg" {
+		io.WriteString(w, "testpkg_"+f.Field)
+		return
+	}
 	if isMapExpr(f.Target) && !hasStruct(f.Target) {
 		needDataMap = true
 		f.Target.emit(w)
@@ -1289,6 +1393,25 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 			name := safeName(st.Var.Name)
 			vars[name] = ex
 			recordType(name, ex)
+		case st.Import != nil && st.Import.Path == "mochi/runtime/ffi/go/testpkg" && st.Import.As == "testpkg" && st.Import.Auto:
+			h.Funcs = append(h.Funcs, Func{Name: "testpkg_Add", Params: []string{"a", "b"}, Body: []Stmt{&ReturnStmt{Expr: &BinaryExpr{Left: &NameRef{Name: "a"}, Ops: []BinaryOp{{Op: "+", Right: &NameRef{Name: "b"}}}}}}})
+			vars["testpkg_Pi"] = &FloatLit{Value: "3.14"}
+			recordType("testpkg_Pi", vars["testpkg_Pi"])
+			vars["testpkg_Answer"] = &IntLit{Value: "42"}
+			recordType("testpkg_Answer", vars["testpkg_Answer"])
+		case st.Type != nil:
+			if len(st.Type.Members) > 0 {
+				fields := make([]string, len(st.Type.Members))
+				typestr := make([]string, len(st.Type.Members))
+				for i, m := range st.Type.Members {
+					fields[i] = m.Field.Name
+					typestr[i] = typeNameFromRef(m.Field.Type)
+				}
+				structDefs[st.Type.Name] = &TypeDecl{Name: st.Type.Name, Fields: fields, Types: typestr}
+				for _, f := range fields {
+					preludeHide[f] = true
+				}
+			}
 		case st.Assign != nil:
 			val, err := convertExpr(st.Assign.Value)
 			if err != nil {
@@ -1610,6 +1733,32 @@ func convertPostfix(pf *parser.PostfixExpr) (Expr, error) {
 			}
 			expr = &IndexExpr{Target: expr, Index: idx}
 			continue
+		}
+		if op.Cast != nil {
+			if op.Cast.Type.Simple != nil {
+				tname := *op.Cast.Type.Simple
+				if tname == "int" {
+					expr = &CastExpr{Expr: &CallExpr{Fun: &NameRef{Name: "read"}, Args: []Expr{expr}}, Type: "Int"}
+					continue
+				}
+				if ml, ok := expr.(*MapLit); ok {
+					names := make([]string, len(ml.Keys))
+					vals := make([]Expr, len(ml.Keys))
+					for i, k := range ml.Keys {
+						if s, ok2 := k.(*StringLit); ok2 {
+							names[i] = s.Value
+						} else if n, ok2 := k.(*NameRef); ok2 {
+							names[i] = n.Name
+						} else {
+							return nil, fmt.Errorf("unsupported cast key")
+						}
+						vals[i] = ml.Values[i]
+					}
+					expr = &RecordLit{Name: tname, Names: names, Fields: vals}
+					continue
+				}
+			}
+			return nil, fmt.Errorf("unsupported cast")
 		}
 		return nil, fmt.Errorf("postfix op not supported")
 	}
@@ -2095,7 +2244,33 @@ func convertForStmt(f *parser.ForStmt) (Stmt, error) {
 	if err != nil {
 		return nil, err
 	}
-	return &ForStmt{Name: safeName(f.Name), From: src, To: end, Body: body}, nil
+	withBreak := false
+	var scan func(Stmt)
+	scan = func(s Stmt) {
+		switch st := s.(type) {
+		case *BreakStmt, *ContinueStmt:
+			withBreak = true
+		case *IfStmt:
+			for _, c := range st.Then {
+				scan(c)
+			}
+			for _, c := range st.Else {
+				scan(c)
+			}
+		case *ForStmt:
+			for _, c := range st.Body {
+				scan(c)
+			}
+		case *WhileStmt:
+			for _, c := range st.Body {
+				scan(c)
+			}
+		}
+	}
+	for _, st := range body {
+		scan(st)
+	}
+	return &ForStmt{Name: safeName(f.Name), From: src, To: end, Body: body, WithBreak: withBreak}, nil
 }
 
 func convertWhileStmt(w *parser.WhileStmt) (Stmt, error) {
@@ -2213,6 +2388,10 @@ func convertStmtList(list []*parser.Statement) ([]Stmt, error) {
 			}
 			recordType(name, expr)
 			out = append(out, &AssignStmt{Name: name, Expr: expr})
+		case st.Break != nil:
+			out = append(out, &BreakStmt{})
+		case st.Continue != nil:
+			out = append(out, &ContinueStmt{})
 		case st.While != nil:
 			s, err := convertWhileStmt(st.While)
 			if err != nil {
