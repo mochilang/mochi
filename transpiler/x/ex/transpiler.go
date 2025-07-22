@@ -1140,6 +1140,7 @@ func Emit(p *Program) []byte {
 	moduleMode = hasFunc
 	if hasFunc {
 		buf.WriteString("defmodule Main do\n")
+		buf.WriteString(nowHelper(1))
 		var globals []Stmt
 		var funcs []Stmt
 		var main []Stmt
@@ -1176,6 +1177,7 @@ func Emit(p *Program) []byte {
 		buf.WriteString("  end\nend\n")
 		buf.WriteString("Main.main()\n")
 	} else {
+		buf.WriteString(nowHelper(0))
 		for _, st := range p.Stmts {
 			st.emit(&buf, 0)
 			buf.WriteString("\n")
@@ -1274,18 +1276,18 @@ func compileStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 				val = &MapLit{}
 			}
 		}
-		if funcDepth == 0 {
-			if _, err := env.GetVar(st.Let.Name); err != nil {
-				if _, ok := val.(*AnonFun); ok {
-					env.SetVar(st.Let.Name, types.FuncType{}, false)
-				} else if st.Let.Type != nil {
-					env.SetVar(st.Let.Name, types.ResolveTypeRef(st.Let.Type, env), false)
-				} else if ld := extractLoadExpr(st.Let.Value); ld != nil && ld.Type != nil {
-					t := types.ResolveTypeRef(ld.Type, env)
-					env.SetVar(st.Let.Name, types.ListType{Elem: t}, false)
-				} else {
-					env.SetVar(st.Let.Name, inferStaticType(val), false)
-				}
+		if _, err := env.GetVar(st.Let.Name); err != nil {
+			if _, ok := val.(*AnonFun); ok {
+				env.SetVar(st.Let.Name, types.FuncType{}, false)
+			} else if st.Let.Type != nil {
+				env.SetVar(st.Let.Name, types.ResolveTypeRef(st.Let.Type, env), false)
+			} else if ld := extractLoadExpr(st.Let.Value); ld != nil && ld.Type != nil {
+				t := types.ResolveTypeRef(ld.Type, env)
+				env.SetVar(st.Let.Name, types.ListType{Elem: t}, false)
+			} else if st.Let.Value != nil {
+				env.SetVar(st.Let.Name, types.TypeOfExprBasic(st.Let.Value, env), false)
+			} else {
+				env.SetVar(st.Let.Name, inferStaticType(val), false)
 			}
 		}
 		return &LetStmt{Name: st.Let.Name, Value: val}, nil
@@ -1311,18 +1313,18 @@ func compileStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 				val = &MapLit{}
 			}
 		}
-		if funcDepth == 0 {
-			if _, err := env.GetVar(st.Var.Name); err != nil {
-				if _, ok := val.(*AnonFun); ok {
-					env.SetVar(st.Var.Name, types.FuncType{}, false)
-				} else if st.Var.Type != nil {
-					env.SetVar(st.Var.Name, types.ResolveTypeRef(st.Var.Type, env), false)
-				} else if ld := extractLoadExpr(st.Var.Value); ld != nil && ld.Type != nil {
-					t := types.ResolveTypeRef(ld.Type, env)
-					env.SetVar(st.Var.Name, types.ListType{Elem: t}, false)
-				} else {
-					env.SetVar(st.Var.Name, inferStaticType(val), false)
-				}
+		if _, err := env.GetVar(st.Var.Name); err != nil {
+			if _, ok := val.(*AnonFun); ok {
+				env.SetVar(st.Var.Name, types.FuncType{}, false)
+			} else if st.Var.Type != nil {
+				env.SetVar(st.Var.Name, types.ResolveTypeRef(st.Var.Type, env), false)
+			} else if ld := extractLoadExpr(st.Var.Value); ld != nil && ld.Type != nil {
+				t := types.ResolveTypeRef(ld.Type, env)
+				env.SetVar(st.Var.Name, types.ListType{Elem: t}, false)
+			} else if st.Var.Value != nil {
+				env.SetVar(st.Var.Name, types.TypeOfExprBasic(st.Var.Value, env), false)
+			} else {
+				env.SetVar(st.Var.Name, inferStaticType(val), false)
 			}
 		}
 		return &LetStmt{Name: st.Var.Name, Value: val}, nil
@@ -1420,10 +1422,18 @@ func compileStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 		}
 		return &ReturnStmt{Value: val}, nil
 	case st.Fun != nil:
+		child := types.NewEnv(env)
+		for _, p := range st.Fun.Params {
+			if p.Type != nil {
+				child.SetVar(p.Name, types.ResolveTypeRef(p.Type, env), false)
+			} else {
+				child.SetVar(p.Name, types.AnyType{}, false)
+			}
+		}
 		funcDepth++
 		body := make([]Stmt, 0, len(st.Fun.Body))
 		for _, b := range st.Fun.Body {
-			bs, err := compileStmt(b, env)
+			bs, err := compileStmt(b, child)
 			if err != nil {
 				funcDepth--
 				return nil, err
@@ -1681,7 +1691,11 @@ func compileFunExpr(fn *parser.FunExpr, env *types.Env) (Expr, error) {
 	params := make([]string, len(fn.Params))
 	for i, p := range fn.Params {
 		params[i] = p.Name
-		child.SetVar(p.Name, types.AnyType{}, false)
+		if p.Type != nil {
+			child.SetVar(p.Name, types.ResolveTypeRef(p.Type, env), false)
+		} else {
+			child.SetVar(p.Name, types.AnyType{}, false)
+		}
 	}
 	var body []Stmt
 	if fn.ExprBody != nil {
@@ -2367,23 +2381,37 @@ func compilePostfix(pf *parser.PostfixExpr, env *types.Env) (Expr, error) {
 				}
 				start = s
 			}
-			if op.Index.End == nil {
-				return nil, fmt.Errorf("unsupported slice without end")
+			var end Expr
+			var diff Expr
+			base := expr
+			if op.Index.End != nil {
+				var err error
+				end, err = compileExpr(op.Index.End, env)
+				if err != nil {
+					return nil, err
+				}
+				diff = &BinaryExpr{Left: end, Op: "-", Right: start}
+			} else {
+				var lengthCall *CallExpr
+				switch typ.(type) {
+				case types.StringType:
+					lengthCall = &CallExpr{Func: "String.length", Args: []Expr{base}}
+				case types.ListType:
+					lengthCall = &CallExpr{Func: "length", Args: []Expr{base}}
+				default:
+					lengthCall = &CallExpr{Func: "Enum.count", Args: []Expr{base}}
+				}
+				diff = &BinaryExpr{Left: lengthCall, Op: "-", Right: start}
 			}
-			end, err := compileExpr(op.Index.End, env)
-			if err != nil {
-				return nil, err
-			}
-			diff := &BinaryExpr{Left: end, Op: "-", Right: start}
 			switch tt := typ.(type) {
 			case types.StringType:
-				expr = &CallExpr{Func: "String.slice", Args: []Expr{expr, start, diff}}
+				expr = &CallExpr{Func: "String.slice", Args: []Expr{base, start, diff}}
 				typ = types.StringType{}
 			case types.ListType:
-				expr = &CallExpr{Func: "Enum.slice", Args: []Expr{expr, start, diff}}
+				expr = &CallExpr{Func: "Enum.slice", Args: []Expr{base, start, diff}}
 				typ = tt.Elem
 			default:
-				expr = &CallExpr{Func: "Enum.slice", Args: []Expr{expr, start, diff}}
+				expr = &CallExpr{Func: "Enum.slice", Args: []Expr{base, start, diff}}
 				typ = types.AnyType{}
 			}
 		} else if op.Field != nil && op.Field.Name == "contains" && i+1 < len(pf.Ops) && pf.Ops[i+1].Call != nil {
@@ -2550,6 +2578,10 @@ func compilePrimary(p *parser.Primary, env *types.Env) (Expr, error) {
 				list := args[0]
 				elemList := &ListLit{Elems: []Expr{args[1]}}
 				return &BinaryExpr{Left: list, Op: "++", Right: elemList}, nil
+			}
+		case "now":
+			if len(args) == 0 {
+				return &CallExpr{Func: "_now", Args: nil}, nil
 			}
 		case "values":
 			if len(args) == 1 {
@@ -2778,6 +2810,37 @@ func header() string {
 		ts = ts.In(loc)
 	}
 	return fmt.Sprintf("# Code generated by Mochi transpiler %s\n", ts.Format("2006-01-02 15:04 -0700"))
+}
+
+func nowHelper(indent int) string {
+	var buf bytes.Buffer
+	pad := strings.Repeat("  ", indent)
+	buf.WriteString(pad + "defp _now() do\n")
+	buf.WriteString(pad + "  seeded = Process.get(:_now_seeded, false)\n")
+	buf.WriteString(pad + "  seed = Process.get(:_now_seed, 0)\n")
+	buf.WriteString(pad + "  if !seeded do\n")
+	buf.WriteString(pad + "    case System.get_env(\"MOCHI_NOW_SEED\") do\n")
+	buf.WriteString(pad + "      nil -> :ok\n")
+	buf.WriteString(pad + "      s ->\n")
+	buf.WriteString(pad + "        case Integer.parse(s) do\n")
+	buf.WriteString(pad + "          {v, \"\"} ->\n")
+	buf.WriteString(pad + "            Process.put(:_now_seed, v)\n")
+	buf.WriteString(pad + "            Process.put(:_now_seeded, true)\n")
+	buf.WriteString(pad + "            seed = v\n")
+	buf.WriteString(pad + "            seeded = true\n")
+	buf.WriteString(pad + "          _ -> :ok\n")
+	buf.WriteString(pad + "        end\n")
+	buf.WriteString(pad + "    end\n")
+	buf.WriteString(pad + "  end\n")
+	buf.WriteString(pad + "  if seeded do\n")
+	buf.WriteString(pad + "    seed = rem(seed * 1664525 + 1013904223, 2147483647)\n")
+	buf.WriteString(pad + "    Process.put(:_now_seed, seed)\n")
+	buf.WriteString(pad + "    seed\n")
+	buf.WriteString(pad + "  else\n")
+	buf.WriteString(pad + "    System.os_time(:nanosecond)\n")
+	buf.WriteString(pad + "  end\n")
+	buf.WriteString(pad + "end\n")
+	return buf.String()
 }
 
 func elemTypeOfExpr(e *parser.Expr, env *types.Env) types.Type {
