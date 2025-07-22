@@ -30,7 +30,17 @@ var globalTypes map[string]string
 var inFunction bool
 var inLambda int
 var builtinAliases map[string]string
+var funcAliases map[string]string
 var useNow bool
+
+func safeName(name string) string {
+	switch name {
+	case "this":
+		return "this_"
+	default:
+		return name
+	}
+}
 
 func init() {
 	_, file, _, _ := runtime.Caller(0)
@@ -479,8 +489,8 @@ func (p *Program) write(w io.Writer) {
 	fmt.Fprintln(w)
 	fmt.Fprintln(w)
 	if p.UseNow {
-		fmt.Fprintln(w, "static int _now() {")
-		fmt.Fprintln(w, "    static int seed = 0;")
+		fmt.Fprintln(w, "static int64_t _now() {")
+		fmt.Fprintln(w, "    static int64_t seed = 0;")
 		fmt.Fprintln(w, "    static bool seeded = false;")
 		fmt.Fprintln(w, "    if (!seeded) {")
 		fmt.Fprintln(w, "        const char* s = std::getenv(\"MOCHI_NOW_SEED\");")
@@ -490,7 +500,7 @@ func (p *Program) write(w io.Writer) {
 		fmt.Fprintln(w, "        seed = (seed * 1664525 + 1013904223) % 2147483647;")
 		fmt.Fprintln(w, "        return seed;")
 		fmt.Fprintln(w, "    }")
-		fmt.Fprintln(w, "    return (int)std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::system_clock::now().time_since_epoch()).count();")
+		fmt.Fprintln(w, "    return (int64_t)std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::system_clock::now().time_since_epoch()).count();")
 		fmt.Fprintln(w, "}")
 	}
 	for _, st := range p.Structs {
@@ -1811,6 +1821,7 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	currentProgram = cp
 	currentEnv = env
 	builtinAliases = map[string]string{}
+	funcAliases = map[string]string{}
 	globalTypes = cp.GlobalTypes
 	defer func() { currentProgram = nil; currentEnv = nil; globalTypes = nil }()
 	var body []Stmt
@@ -2120,7 +2131,7 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 				if err != nil {
 					return nil, err
 				}
-				var target Expr = &VarRef{Name: stmt.Assign.Name}
+				var target Expr = &VarRef{Name: safeName(stmt.Assign.Name)}
 				for _, sp := range parts[:len(parts)-1] {
 					if sp.Colon != nil {
 						return nil, fmt.Errorf("unsupported index assignment")
@@ -2133,14 +2144,14 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 				}
 				body = append(body, &AssignIndexStmt{Target: target, Index: idx, Value: val})
 			} else if len(stmt.Assign.Field) > 0 {
-				var target Expr = &VarRef{Name: stmt.Assign.Name}
+				var target Expr = &VarRef{Name: safeName(stmt.Assign.Name)}
 				for _, f := range stmt.Assign.Field[:len(stmt.Assign.Field)-1] {
 					target = &SelectorExpr{Target: target, Field: f.Name}
 				}
 				fld := stmt.Assign.Field[len(stmt.Assign.Field)-1].Name
 				body = append(body, &AssignFieldStmt{Target: target, Field: fld, Value: val})
 			} else {
-				body = append(body, &AssignStmt{Name: stmt.Assign.Name, Value: val})
+				body = append(body, &AssignStmt{Name: safeName(stmt.Assign.Name), Value: val})
 			}
 		case stmt.Update != nil:
 			us, err := convertUpdateStmt(stmt.Update)
@@ -2342,8 +2353,12 @@ func convertStmt(s *parser.Statement) (Stmt, error) {
 			}
 		}
 		typ := ""
-		if s.Let.Type != nil && s.Let.Type.Simple != nil {
-			typ = cppType(*s.Let.Type.Simple)
+		if s.Let.Type != nil {
+			if s.Let.Type.Simple != nil {
+				typ = cppType(*s.Let.Type.Simple)
+			} else if s.Let.Type.Generic != nil {
+				typ = cppType(typeRefString(&parser.TypeRef{Generic: s.Let.Type.Generic}))
+			}
 		} else if s.Let.Value != nil {
 			typ = guessType(s.Let.Value)
 			if typ == "" {
@@ -2355,12 +2370,13 @@ func convertStmt(s *parser.Statement) (Stmt, error) {
 		if localTypes == nil {
 			localTypes = map[string]string{}
 		}
+		name := safeName(s.Let.Name)
 		if typ != "" {
-			localTypes[s.Let.Name] = typ
+			localTypes[name] = typ
 		} else {
-			localTypes[s.Let.Name] = "auto"
+			localTypes[name] = "auto"
 		}
-		return &LetStmt{Name: s.Let.Name, Type: typ, Value: val}, nil
+		return &LetStmt{Name: name, Type: typ, Value: val}, nil
 	case s.Var != nil:
 		var val Expr
 		var err error
@@ -2371,8 +2387,12 @@ func convertStmt(s *parser.Statement) (Stmt, error) {
 			}
 		}
 		typ := ""
-		if s.Var.Type != nil && s.Var.Type.Simple != nil {
-			typ = cppType(*s.Var.Type.Simple)
+		if s.Var.Type != nil {
+			if s.Var.Type.Simple != nil {
+				typ = cppType(*s.Var.Type.Simple)
+			} else if s.Var.Type.Generic != nil {
+				typ = cppType(typeRefString(&parser.TypeRef{Generic: s.Var.Type.Generic}))
+			}
 		} else if s.Var.Value != nil {
 			typ = guessType(s.Var.Value)
 			if typ == "" {
@@ -2384,12 +2404,13 @@ func convertStmt(s *parser.Statement) (Stmt, error) {
 		if localTypes == nil {
 			localTypes = map[string]string{}
 		}
+		name := safeName(s.Var.Name)
 		if typ != "" {
-			localTypes[s.Var.Name] = typ
+			localTypes[name] = typ
 		} else {
-			localTypes[s.Var.Name] = "auto"
+			localTypes[name] = "auto"
 		}
-		return &LetStmt{Name: s.Var.Name, Type: typ, Value: val}, nil
+		return &LetStmt{Name: name, Type: typ, Value: val}, nil
 	case s.Assign != nil:
 		val, err := convertExpr(s.Assign.Value)
 		if err != nil {
@@ -2404,7 +2425,7 @@ func convertStmt(s *parser.Statement) (Stmt, error) {
 			if err != nil {
 				return nil, err
 			}
-			var target Expr = &VarRef{Name: s.Assign.Name}
+			var target Expr = &VarRef{Name: safeName(s.Assign.Name)}
 			for _, sp := range parts[:len(parts)-1] {
 				if sp.Colon != nil {
 					return nil, fmt.Errorf("unsupported index assignment")
@@ -2418,14 +2439,14 @@ func convertStmt(s *parser.Statement) (Stmt, error) {
 			return &AssignIndexStmt{Target: target, Index: idx, Value: val}, nil
 		}
 		if len(s.Assign.Field) > 0 {
-			var target Expr = &VarRef{Name: s.Assign.Name}
+			var target Expr = &VarRef{Name: safeName(s.Assign.Name)}
 			for _, f := range s.Assign.Field[:len(s.Assign.Field)-1] {
 				target = &SelectorExpr{Target: target, Field: f.Name}
 			}
 			fld := s.Assign.Field[len(s.Assign.Field)-1].Name
 			return &AssignFieldStmt{Target: target, Field: fld, Value: val}, nil
 		}
-		return &AssignStmt{Name: s.Assign.Name, Value: val}, nil
+		return &AssignStmt{Name: safeName(s.Assign.Name), Value: val}, nil
 	case s.Update != nil:
 		us, err := convertUpdateStmt(s.Update)
 		if err != nil {
@@ -2444,7 +2465,8 @@ func convertStmt(s *parser.Statement) (Stmt, error) {
 				return nil, err
 			}
 		}
-		fs := &ForStmt{Var: s.For.Name, Start: start, End: end}
+		name := safeName(s.For.Name)
+		fs := &ForStmt{Var: name, Start: start, End: end}
 		if currentEnv != nil {
 			if t := types.TypeOfExpr(s.For.Source, currentEnv); t != nil {
 				if _, ok := t.(types.MapType); ok {
@@ -2464,7 +2486,7 @@ func convertStmt(s *parser.Statement) (Stmt, error) {
 		for k, v := range oldTypes2 {
 			newTypes[k] = v
 		}
-		newTypes[s.For.Name] = varType
+		newTypes[name] = varType
 		localTypes = newTypes
 		for _, st := range s.For.Body {
 			cs, err := convertStmt(st)
@@ -2838,7 +2860,15 @@ func convertFun(fn *parser.FunStmt) (*Func, error) {
 		// allow the compiler to deduce the concrete closure type
 		ret = "auto"
 	}
-	return &Func{Name: fn.Name, Params: params, ReturnType: ret, Body: body}, nil
+	name := fn.Name
+	if name == "main" {
+		name = "user_main"
+		if funcAliases == nil {
+			funcAliases = map[string]string{}
+		}
+		funcAliases["main"] = "user_main"
+	}
+	return &Func{Name: name, Params: params, ReturnType: ret, Body: body}, nil
 }
 
 func convertFunLambda(fn *parser.FunStmt) (*BlockLambda, error) {
@@ -3030,12 +3060,20 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 					for _, pa := range params {
 						callArgs = append(callArgs, &VarRef{Name: pa.Name})
 					}
-					call := &CallExpr{Name: p.Call.Func, Args: callArgs}
+					name := p.Call.Func
+					if alt, ok := funcAliases[name]; ok {
+						name = alt
+					}
+					call := &CallExpr{Name: name, Args: callArgs}
 					return &LambdaExpr{Params: params, Body: call}, nil
 				}
 			}
 		}
-		return &CallExpr{Name: p.Call.Func, Args: args}, nil
+		name := p.Call.Func
+		if alt, ok := funcAliases[name]; ok {
+			name = alt
+		}
+		return &CallExpr{Name: name, Args: args}, nil
 	case p.Selector != nil:
 		alias := p.Selector.Root
 		if kind, ok := builtinAliases[alias]; ok && len(p.Selector.Tail) == 1 {
@@ -3057,7 +3095,7 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 				}
 			}
 		}
-		expr := Expr(&VarRef{Name: alias})
+		expr := Expr(&VarRef{Name: safeName(alias)})
 		for _, f := range p.Selector.Tail {
 			expr = &SelectorExpr{Target: expr, Field: f}
 		}
@@ -4154,18 +4192,25 @@ func guessType(e *parser.Expr) string {
 	if e.Binary != nil && e.Binary.Left != nil && e.Binary.Left.Value != nil {
 		pf := e.Binary.Left.Value
 		if sel := pf.Target.Selector; sel != nil && len(sel.Tail) == 0 {
-			if t, ok := localTypes[sel.Root]; ok {
-				return t
-			}
-			if t, ok := globalTypes[sel.Root]; ok {
-				return t
-			}
-			if currentEnv != nil {
+			base := safeName(sel.Root)
+			baseType := ""
+			if t, ok := localTypes[base]; ok {
+				baseType = t
+			} else if t, ok := globalTypes[base]; ok {
+				baseType = t
+			} else if currentEnv != nil {
 				if _, err := currentEnv.GetVar(sel.Root); err != nil {
 					return "std::string"
 				}
-			} else {
-				return "std::string"
+			}
+			if baseType != "" {
+				cur := baseType
+				for _, op := range pf.Ops {
+					if op.Index != nil && op.Index.Colon == nil {
+						cur = elementTypeFromListType(cur)
+					}
+				}
+				return cur
 			}
 		}
 	}
