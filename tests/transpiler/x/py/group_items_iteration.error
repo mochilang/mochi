@@ -1,6 +1,6 @@
 run: exit status 1
 Traceback (most recent call last):
-  File "/workspace/mochi/tests/transpiler/x/py/group_items_iteration.py", line 27, in <module>
-    for x in g.items:
-             ^^^^^^^
-AttributeError: 'list' object has no attribute 'items'
+  File "/workspace/mochi/tests/transpiler/x/py/group_items_iteration.py", line 28, in <module>
+    total = total + x["val"]
+                    ~^^^^^^^
+TypeError: 'GenType1' object is not subscriptable

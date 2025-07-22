@@ -357,13 +357,6 @@ func (f *FieldExpr) emit(w io.Writer) error {
 			if _, ok := st.Fields[f.Name]; ok {
 				useIndex = false
 			}
-		} else {
-			for _, st := range currentEnv.Structs() {
-				if _, ok := st.Fields[f.Name]; ok {
-					useIndex = false
-					break
-				}
-			}
 		}
 	}
 	if useIndex {
@@ -3891,6 +3884,21 @@ func convertQueryExpr(q *parser.QueryExpr) (Expr, error) {
 		if err != nil {
 			return nil, err
 		}
+		if fe, ok := keyExpr.(*FieldExpr); ok {
+			if n, ok2 := fe.Target.(*Name); ok2 {
+				if currentEnv != nil {
+					if t, err := currentEnv.GetVar(n.Name); err == nil {
+						if _, ok := t.(types.StructType); !ok {
+							fe.MapIndex = true
+						}
+					} else {
+						fe.MapIndex = true
+					}
+				} else {
+					fe.MapIndex = true
+				}
+			}
+		}
 		if u, ok := keyExpr.(*UnaryExpr); ok && u.Op == "-" {
 			keyExpr = u.Expr
 			reverse = true
@@ -4165,6 +4173,21 @@ func convertGroupQuery(q *parser.QueryExpr, env *types.Env, target string) ([]St
 			currentEnv = prev
 			return nil, err
 		}
+		if fe, ok := sortExpr.(*FieldExpr); ok {
+			if n, ok2 := fe.Target.(*Name); ok2 {
+				if currentEnv != nil {
+					if t, err := currentEnv.GetVar(n.Name); err == nil {
+						if _, ok := t.(types.StructType); !ok {
+							fe.MapIndex = true
+						}
+					} else {
+						fe.MapIndex = true
+					}
+				} else {
+					fe.MapIndex = true
+				}
+			}
+		}
 		if u, ok := sortExpr.(*UnaryExpr); ok && u.Op == "-" {
 			sortExpr = u.Expr
 			reverse = true
@@ -4176,12 +4199,25 @@ func convertGroupQuery(q *parser.QueryExpr, env *types.Env, target string) ([]St
 		}
 	}
 	currentEnv = prev
-	sel = replaceGroup(sel, q.Group.Name)
-	if having != nil {
-		having = replaceGroup(having, q.Group.Name)
+	selIsGroup := false
+	if n, ok := sel.(*Name); ok && n.Name == q.Group.Name {
+		selIsGroup = true
 	}
-	if sortExpr != nil {
-		sortExpr = replaceGroup(sortExpr, q.Group.Name)
+	if !selIsGroup {
+		sel = replaceGroup(sel, q.Group.Name)
+		if having != nil {
+			having = replaceGroup(having, q.Group.Name)
+		}
+		if sortExpr != nil {
+			sortExpr = replaceGroup(sortExpr, q.Group.Name)
+		}
+	} else {
+		if having != nil {
+			having = replaceGroup(having, q.Group.Name)
+		}
+		if sortExpr != nil {
+			sortExpr = replaceGroup(sortExpr, q.Group.Name)
+		}
 	}
 
 	groupsVar := "_" + target + "_groups"
@@ -4194,9 +4230,31 @@ func convertGroupQuery(q *parser.QueryExpr, env *types.Env, target string) ([]St
 		env.SetStruct(groupDC.Name, types.StructType{Fields: map[string]types.Type{"key": keyType, "items": types.ListType{Elem: itemType}}})
 	}
 
-	stmts := []Stmt{groupDC, &LetStmt{Name: groupsVar, Expr: &DictLit{}}}
-
-	row := &Name{Name: q.Var}
+	var rowDC *DataClassDef
+	row := Expr(&Name{Name: q.Var})
+	leftJoin := false
+	for _, j := range q.Joins {
+		if j.Side != nil && *j.Side == "left" {
+			leftJoin = true
+			break
+		}
+	}
+	if leftJoin {
+		var fields []DataClassField
+		var args []Expr
+		for _, v := range vars {
+			fields = append(fields, DataClassField{Name: v, Type: "any"})
+			args = append(args, &Name{Name: v})
+		}
+		structCounter++
+		rowDC = &DataClassDef{Name: fmt.Sprintf("GenType%d", structCounter), Fields: fields}
+		row = &CallExpr{Func: &Name{Name: rowDC.Name}, Args: args}
+	}
+	stmts := []Stmt{groupDC}
+	if rowDC != nil {
+		stmts = append(stmts, rowDC)
+	}
+	stmts = append(stmts, &LetStmt{Name: groupsVar, Expr: &DictLit{}})
 	inner := []Stmt{
 		&LetStmt{Name: "_g", Expr: &CallExpr{Func: &FieldExpr{Target: &Name{Name: groupsVar}, Name: "setdefault"}, Args: []Expr{keyExpr, &CallExpr{Func: &Name{Name: groupDC.Name}, Args: []Expr{keyExpr, &ListLit{}}}}}},
 		&ExprStmt{Expr: &CallExpr{Func: &FieldExpr{Target: &FieldExpr{Target: &Name{Name: "_g"}, Name: "items"}, Name: "append"}, Args: []Expr{row}}},
@@ -4250,6 +4308,9 @@ func convertGroupQuery(q *parser.QueryExpr, env *types.Env, target string) ([]St
 		if resultDC != nil {
 			env.SetStruct(resultDC.Name, structFromDataClass(resultDC, env))
 			env.SetVar(target, types.ListType{Elem: structFromDataClass(resultDC, env)}, false)
+		} else if selIsGroup {
+			env.SetStruct(groupDC.Name, structFromDataClass(groupDC, env))
+			env.SetVar(target, types.ListType{Elem: structFromDataClass(groupDC, env)}, false)
 		} else {
 			env.SetVar(target, types.ListType{Elem: types.AnyType{}}, false)
 		}
