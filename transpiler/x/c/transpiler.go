@@ -50,6 +50,8 @@ var (
 	needMapGetSI         bool
 	needMapSetSI         bool
 	needMapGetIS         bool
+	needListAppendInt    bool
+	needListAppendStr    bool
 )
 
 const version = "0.10.32"
@@ -306,10 +308,28 @@ func (d *DeclStmt) emit(w io.Writer, indent int) {
 		}
 		fmt.Fprintf(w, "%s %s[%d][%d]", base, d.Name, rows, cols)
 	} else if strings.HasSuffix(typ, "[]") {
-		io.WriteString(w, strings.TrimSuffix(typ, "[]"))
-		io.WriteString(w, " ")
-		io.WriteString(w, d.Name)
-		io.WriteString(w, "[]")
+		base := strings.TrimSuffix(typ, "[]")
+		if lst, ok := d.Value.(*ListLit); ok && len(lst.Elems) > 0 {
+			io.WriteString(w, base)
+			io.WriteString(w, " ")
+			io.WriteString(w, d.Name)
+			io.WriteString(w, "[]")
+			io.WriteString(w, " = {")
+			for i, e := range lst.Elems {
+				if i > 0 {
+					io.WriteString(w, ", ")
+				}
+				e.emitExpr(w)
+			}
+			io.WriteString(w, "};\n")
+			writeIndent(w, indent)
+			fmt.Fprintf(w, "size_t %s_len = %d;\n", d.Name, len(lst.Elems))
+			return
+		}
+		fmt.Fprintf(w, "%s *%s = NULL;\n", base, d.Name)
+		writeIndent(w, indent)
+		fmt.Fprintf(w, "size_t %s_len = 0;\n", d.Name)
+		return
 	} else {
 		io.WriteString(w, typ)
 		io.WriteString(w, " ")
@@ -329,6 +349,29 @@ func (d *DeclStmt) emit(w io.Writer, indent int) {
 }
 
 func (a *AssignStmt) emit(w io.Writer, indent int) {
+	if call, ok := a.Value.(*CallExpr); ok && call.Func == "append" && len(call.Args) == 2 {
+		if vr, ok2 := call.Args[0].(*VarRef); ok2 && vr.Name == a.Name && len(a.Indexes) == 0 && len(a.Fields) == 0 {
+			base := strings.TrimSuffix(varTypes[a.Name], "[]")
+			if base == "" {
+				base = "int"
+			}
+			writeIndent(w, indent)
+			switch base {
+			case "int":
+				needListAppendInt = true
+				fmt.Fprintf(w, "%s = list_append_int(%s, &%s_len, ", a.Name, a.Name, a.Name)
+				call.Args[1].emitExpr(w)
+				io.WriteString(w, ");\n")
+				return
+			case "const char*":
+				needListAppendStr = true
+				fmt.Fprintf(w, "%s = list_append_str(%s, &%s_len, ", a.Name, a.Name, a.Name)
+				call.Args[1].emitExpr(w)
+				io.WriteString(w, ");\n")
+				return
+			}
+		}
+	}
 	writeIndent(w, indent)
 	io.WriteString(w, a.Name)
 	for _, idx := range a.Indexes {
@@ -1010,6 +1053,22 @@ func (p *Program) Emit() []byte {
 		buf.WriteString("    return \"\";\n")
 		buf.WriteString("}\n\n")
 	}
+	if needListAppendInt {
+		buf.WriteString("static int* list_append_int(int *arr, size_t *len, int val) {\n")
+		buf.WriteString("    arr = realloc(arr, (*len + 1) * sizeof(int));\n")
+		buf.WriteString("    arr[*len] = val;\n")
+		buf.WriteString("    (*len)++;\n")
+		buf.WriteString("    return arr;\n")
+		buf.WriteString("}\n\n")
+	}
+	if needListAppendStr {
+		buf.WriteString("static const char** list_append_str(const char **arr, size_t *len, const char *val) {\n")
+		buf.WriteString("    arr = realloc((void*)arr, (*len + 1) * sizeof(char*));\n")
+		buf.WriteString("    arr[*len] = val;\n")
+		buf.WriteString("    (*len)++;\n")
+		buf.WriteString("    return arr;\n")
+		buf.WriteString("}\n\n")
+	}
 	names := make([]string, 0, len(structTypes))
 	for name := range structTypes {
 		names = append(names, name)
@@ -1153,6 +1212,8 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 	needMapGetSI = false
 	needMapSetSI = false
 	needMapGetIS = false
+	needListAppendInt = false
+	needListAppendStr = false
 	datasetWhereEnabled = false
 	joinMultiEnabled = false
 	builtinAliases = make(map[string]string)
@@ -1457,8 +1518,12 @@ func compileStmt(env *types.Env, s *parser.Statement) (Stmt, error) {
 			markMath()
 		}
 		if list, ok := convertListExpr(s.Let.Value); ok {
-			constLists[s.Let.Name] = &ListLit{Elems: list}
-		} else if lst, ok2 := valExpr.(*ListLit); ok2 {
+			if len(list) > 0 {
+				constLists[s.Let.Name] = &ListLit{Elems: list}
+			} else {
+				delete(constLists, s.Let.Name)
+			}
+		} else if lst, ok2 := valExpr.(*ListLit); ok2 && len(lst.Elems) > 0 {
 			constLists[s.Let.Name] = lst
 		} else {
 			delete(constLists, s.Let.Name)
@@ -1469,7 +1534,9 @@ func compileStmt(env *types.Env, s *parser.Statement) (Stmt, error) {
 			delete(constStrings, s.Let.Name)
 		}
 		if val, ok := valueFromExpr(valExpr); ok {
-			env.SetValue(s.Let.Name, val, true)
+			if arr, ok2 := val.([]any); !ok2 || len(arr) > 0 {
+				env.SetValue(s.Let.Name, val, true)
+			}
 		}
 		varTypes[s.Let.Name] = declType
 		if m, isMap := valExpr.(*MapLit); isMap {
@@ -1526,7 +1593,11 @@ func compileStmt(env *types.Env, s *parser.Statement) (Stmt, error) {
 			markMath()
 		}
 		if list, ok := convertListExpr(s.Var.Value); ok {
-			constLists[s.Var.Name] = &ListLit{Elems: list}
+			if len(list) > 0 {
+				constLists[s.Var.Name] = &ListLit{Elems: list}
+			} else {
+				delete(constLists, s.Var.Name)
+			}
 		} else {
 			delete(constLists, s.Var.Name)
 		}
@@ -1536,7 +1607,9 @@ func compileStmt(env *types.Env, s *parser.Statement) (Stmt, error) {
 			delete(constStrings, s.Var.Name)
 		}
 		if val, ok := valueFromExpr(valExpr); ok {
-			env.SetValue(s.Var.Name, val, true)
+			if arr, ok2 := val.([]any); !ok2 || len(arr) > 0 {
+				env.SetValue(s.Var.Name, val, true)
+			}
 		}
 		varTypes[s.Var.Name] = declType
 		if m, isMap := valExpr.(*MapLit); isMap {
@@ -1585,17 +1658,9 @@ func compileStmt(env *types.Env, s *parser.Statement) (Stmt, error) {
 		}
 		return &DeclStmt{Name: s.Var.Name, Value: valExpr, Type: declType}, nil
 	case s.Assign != nil:
+		delete(constLists, s.Assign.Name)
+		delete(constStrings, s.Assign.Name)
 		valExpr := convertExpr(s.Assign.Value)
-		if list, ok := convertListExpr(s.Assign.Value); ok {
-			constLists[s.Assign.Name] = &ListLit{Elems: list}
-		} else {
-			delete(constLists, s.Assign.Name)
-		}
-		if strVal, ok := evalString(valExpr); ok {
-			constStrings[s.Assign.Name] = strVal
-		} else {
-			delete(constStrings, s.Assign.Name)
-		}
 		var idxs []Expr
 		var fields []string
 		simple := true
@@ -1618,7 +1683,9 @@ func compileStmt(env *types.Env, s *parser.Statement) (Stmt, error) {
 			return nil, fmt.Errorf("unsupported assignment")
 		}
 		if val, ok := valueFromExpr(valExpr); ok && len(idxs) == 0 && len(fields) == 0 {
-			env.SetValue(s.Assign.Name, val, true)
+			if arr, ok2 := val.([]any); !ok2 || len(arr) > 0 {
+				env.SetValue(s.Assign.Name, val, true)
+			}
 		}
 		if isMapVar(s.Assign.Name) && len(idxs) == 1 && len(fields) == 0 {
 			keyT := mapKeyTypes[s.Assign.Name]
@@ -2377,9 +2444,14 @@ func convertUnary(u *parser.Unary) Expr {
 			if list, ok := convertListExpr(call.Args[0]); ok {
 				return &IntLit{Value: len(list)}
 			}
-			arg := call.Args[0]
-			if arg != nil && arg.Binary != nil && arg.Binary.Left != nil && arg.Binary.Left.Value != nil {
-				t := arg.Binary.Left.Value.Target
+			arg := convertExpr(call.Args[0])
+			if vr, ok := arg.(*VarRef); ok {
+				if t, ok2 := varTypes[vr.Name]; ok2 && strings.HasSuffix(t, "[]") {
+					return &VarRef{Name: vr.Name + "_len"}
+				}
+			}
+			if arg0 := call.Args[0]; arg0 != nil && arg0.Binary != nil && arg0.Binary.Left != nil && arg0.Binary.Left.Value != nil {
+				t := arg0.Binary.Left.Value.Target
 				if t != nil {
 					if t.Map != nil {
 						return &IntLit{Value: len(t.Map.Items)}
@@ -3257,6 +3329,8 @@ func inferExprType(env *types.Env, e Expr) string {
 				}
 				return elemType + "[]"
 			}
+		} else {
+			return "int[]"
 		}
 		allStr := true
 		for _, it := range v.Elems {
