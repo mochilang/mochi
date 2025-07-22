@@ -1150,6 +1150,8 @@ func typeOfExpr(e Expr) string {
 			}
 		}
 		return ""
+	case *SliceExpr:
+		return typeOfExpr(ex.Value)
 	case *ListLit:
 		return listType(ex)
 	case *MapLit:
@@ -2082,7 +2084,14 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 					inner := &CallExpr{Func: "JsonSerializer.Serialize", Args: []Expr{arg}}
 					return &CallExpr{Func: name, Args: []Expr{inner}}, nil
 				}
-				if strings.HasSuffix(typeOfExpr(arg), "[]") {
+				if t := typeOfExpr(arg); strings.HasSuffix(t, "[]") {
+					if t == "string[]" {
+						usesLinq = true
+						sel := &MethodCallExpr{Target: arg, Name: "Select", Args: []Expr{&FunLit{Params: []string{"x"}, ParamTypes: []string{"string"}, ReturnType: "string", ExprBody: &BinaryExpr{Left: &StringLit{Value: "'"}, Op: "+", Right: &BinaryExpr{Left: &VarRef{Name: "x"}, Op: "+", Right: &StringLit{Value: "'"}}}}}}
+						join := &CallExpr{Func: "string.Join", Args: []Expr{&StringLit{Value: ", "}, sel}}
+						wrapped := &BinaryExpr{Left: &StringLit{Value: "["}, Op: "+", Right: &BinaryExpr{Left: join, Op: "+", Right: &StringLit{Value: "]"}}}
+						return &CallExpr{Func: name, Args: []Expr{wrapped}}, nil
+					}
 					join := &CallExpr{Func: "string.Join", Args: []Expr{&StringLit{Value: ", "}, arg}}
 					wrapped := &BinaryExpr{Left: &StringLit{Value: "["}, Op: "+", Right: &BinaryExpr{Left: join, Op: "+", Right: &StringLit{Value: "]"}}}
 					return &CallExpr{Func: name, Args: []Expr{wrapped}}, nil

@@ -2,8 +2,8 @@
 
 Generated C# code for programs in `tests/vm/valid`. Each program has a `.cs` file produced by the transpiler and a `.out` file containing its runtime output. Compilation or execution errors are captured in a `.error` file placed next to the source.
 
-Compiled programs: 76/101
-Last updated: 2025-07-22 08:49 +0700
+Compiled programs: 86/102
+Last updated: 2025-07-22 09:11 +0700
 
 ## Checklist
 - [x] append_builtin
@@ -36,7 +36,7 @@ Last updated: 2025-07-22 08:49 +0700
 - [x] group_by_left_join
 - [x] group_by_multi_join
 - [x] group_by_multi_join_sort
-- [x] group_by_multi_sort
+- [ ] group_by_multi_sort
 - [x] group_by_sort
 - [x] group_items_iteration
 - [x] if_else
@@ -57,6 +57,7 @@ Last updated: 2025-07-22 08:49 +0700
 - [x] list_index
 - [x] list_nested_assign
 - [x] list_set_ops
+- [ ] load_jsonl
 - [ ] load_yaml
 - [x] map_assign
 - [x] map_in_operator
@@ -80,10 +81,10 @@ Last updated: 2025-07-22 08:49 +0700
 - [ ] python_auto
 - [ ] python_math
 - [ ] query_sum_select
-- [x] record_assign
+- [ ] record_assign
 - [ ] right_join
-- [x] save_jsonl_stdout
-- [x] short_circuit
+- [ ] save_jsonl_stdout
+- [ ] short_circuit
 - [x] slice
 - [x] sort_stable
 - [x] str_builtin
@@ -92,7 +93,7 @@ Last updated: 2025-07-22 08:49 +0700
 - [x] string_contains
 - [x] string_in_operator
 - [x] string_index
-- [x] string_prefix_slice
+- [ ] string_prefix_slice
 - [x] substring_builtin
 - [x] sum_builtin
 - [x] tail_recursion
