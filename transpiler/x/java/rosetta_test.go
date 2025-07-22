@@ -101,10 +101,10 @@ func TestJavaTranspiler_Rosetta_Golden(t *testing.T) {
 	}
 	sort.Strings(files)
 
-	if v := os.Getenv("ROSETTA_INDEX"); v != "" {
+	if v := os.Getenv("MOCHI_ROSETTA_INDEX"); v != "" {
 		idx, err := strconv.Atoi(v)
 		if err != nil || idx < 1 || idx > len(files) {
-			t.Fatalf("invalid ROSETTA_INDEX %s", v)
+			t.Fatalf("invalid MOCHI_ROSETTA_INDEX %s", v)
 		}
 		files = files[idx-1 : idx]
 	} else if v := os.Getenv("ROSETTA_MAX"); v != "" {
@@ -139,7 +139,7 @@ func updateRosetta() {
 	total := len(files)
 	compiled := 0
 	var lines []string
-	for _, f := range files {
+	for i, f := range files {
 		name := strings.TrimSuffix(filepath.Base(f), ".mochi")
 		mark := "[ ]"
 		if _, err := os.Stat(filepath.Join(outDir, name+".out")); err == nil {
@@ -148,7 +148,7 @@ func updateRosetta() {
 				mark = "[x]"
 			}
 		}
-		lines = append(lines, fmt.Sprintf("- %s %s", mark, name))
+		lines = append(lines, fmt.Sprintf("%d. %s %s", i+1, mark, name))
 	}
 	ts := time.Now().Format("2006-01-02 15:04 MST")
 	var buf bytes.Buffer
