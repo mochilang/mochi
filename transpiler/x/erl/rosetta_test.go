@@ -1,4 +1,4 @@
-//go:build slow
+//go:build rosetta
 
 package erl_test
 
@@ -67,9 +67,17 @@ func TestRosettaTranspile(t *testing.T) {
 		}
 	}
 
+	var firstFail string
 	for _, src := range files[:max] {
 		name := strings.TrimSuffix(filepath.Base(src), ".mochi")
-		t.Run(name, func(t *testing.T) { runRosetta(t, src, name, outDir) })
+		ok := t.Run(name, func(t *testing.T) { runRosetta(t, src, name, outDir) })
+		if !ok && firstFail == "" {
+			firstFail = name
+			break
+		}
+	}
+	if firstFail != "" {
+		t.Fatalf("first failing program: %s", firstFail)
 	}
 }
 
