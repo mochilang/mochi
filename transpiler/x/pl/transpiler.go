@@ -20,6 +20,33 @@ import (
 	"mochi/types"
 )
 
+var usesNow bool
+
+const helperNow = `
+:- dynamic _now_seed/1.
+:- dynamic _now_seeded/1.
+
+init_now :-
+    ( getenv('MOCHI_NOW_SEED', S), S \= '' ->
+        atom_number(S, V),
+        assertz(_now_seed(V)),
+        assertz(_now_seeded(true))
+    ;
+        assertz(_now_seed(0)),
+        assertz(_now_seeded(false))
+    ).
+
+_now(T) :-
+    ( _now_seeded(true) ->
+        retract(_now_seed(S)),
+        NS is (S*1664525 + 1013904223) mod 2147483647,
+        assertz(_now_seed(NS)),
+        T = NS
+    ;
+        get_time(Time), T is floor(Time*1000000000)
+    ).
+`
+
 // Program represents a simple Prolog program.
 type Program struct {
 	Funcs []*Function
@@ -176,6 +203,11 @@ func builtinCall(env *compileEnv, name string, args []Expr) (Expr, bool) {
 			if fl, ok := args[0].(*FloatLit); ok {
 				return &FloatLit{Value: math.Log(fl.Value)}, true
 			}
+		}
+	case "now":
+		if len(args) == 0 {
+			usesNow = true
+			return &CallExpr{Name: "_now"}, true
 		}
 	}
 	return nil, false
@@ -1694,6 +1726,10 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 
 // Emit writes the Prolog source for the given program.
 func Emit(w io.Writer, p *Program) error {
+	if usesNow {
+		io.WriteString(w, helperNow+"\n")
+		io.WriteString(w, ":- initialization(init_now).\n")
+	}
 	io.WriteString(w, ":- initialization(main).\n")
 	io.WriteString(w, ":- style_check(-singleton).\n\n")
 	for _, fn := range p.Funcs {

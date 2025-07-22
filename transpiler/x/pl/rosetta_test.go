@@ -8,6 +8,7 @@ import (
 	"os/exec"
 	"path/filepath"
 	"sort"
+	"strconv"
 	"strings"
 	"testing"
 
@@ -97,13 +98,25 @@ func TestPrologTranspiler_Rosetta(t *testing.T) {
 		t.Fatalf("glob: %v", err)
 	}
 	sort.Strings(files)
-	max := 20
-	if len(files) < max {
-		max = len(files)
+	max := len(files)
+	if v := os.Getenv("ROSETTA_MAX"); v != "" {
+		if n, err := strconv.Atoi(v); err == nil && n < max {
+			max = n
+		}
 	}
-	for _, f := range files[:max] {
+	files = files[:max]
+
+	var firstFail string
+	for _, f := range files {
 		name := strings.TrimSuffix(filepath.Base(f), ".mochi")
-		runRosettaTask(t, name)
+		ok := t.Run(name, func(t *testing.T) { runRosettaTask(t, name) })
+		if !ok {
+			firstFail = name
+			break
+		}
 	}
 	pl.UpdateRosettaReadme()
+	if firstFail != "" {
+		t.Fatalf("first failing program: %s", firstFail)
+	}
 }
