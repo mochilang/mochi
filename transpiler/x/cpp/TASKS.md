@@ -1,3 +1,43 @@
+## Progress (2025-07-22 13:21 +0700)
+- cpp transpiler: support right joins
+- Generated C++ for 93/102 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-22 13:08 +0700)
+- cpp transpiler: improve optional handling
+- Generated C++ for 94/102 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-22 13:08 +0700)
+- cpp transpiler: improve optional handling
+- Generated C++ for 94/102 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-22 13:08 +0700)
+- cpp transpiler: improve optional handling
+- Generated C++ for 94/102 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-22 13:08 +0700)
+- cpp transpiler: improve optional handling
+- Generated C++ for 94/102 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-22 13:08 +0700)
+- cpp transpiler: improve optional handling
+- Generated C++ for 94/102 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-22 13:08 +0700)
+- cpp transpiler: improve optional handling
+- Generated C++ for 94/102 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-22 13:08 +0700)
+- cpp transpiler: improve optional handling
+- Generated C++ for 92/102 programs
+- Updated README checklist and outputs
+
 ## Progress (2025-07-22 12:36 +0700)
 - Update outer join generation
 - Generated C++ for 92/102 programs
