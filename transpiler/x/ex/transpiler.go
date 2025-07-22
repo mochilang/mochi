@@ -953,7 +953,8 @@ type LoadExpr struct {
 }
 
 func (l *LoadExpr) emit(w io.Writer) {
-	if l.Format == "yaml" {
+	switch l.Format {
+	case "yaml":
 		io.WriteString(w, "(fn ->\n")
 		fmt.Fprintf(w, "  lines = File.read!(%q) |> String.split(\"\\n\", trim: true)\n", l.Path)
 		io.WriteString(w, "  {rows, curr} = Enum.reduce(lines, {[], %{}}, fn line, {rows, curr} ->\n")
@@ -976,6 +977,25 @@ func (l *LoadExpr) emit(w io.Writer) {
 		io.WriteString(w, "    end\n  end)\n")
 		io.WriteString(w, "  rows = if map_size(curr) > 0, do: rows ++ [curr], else: rows\n")
 		io.WriteString(w, "  rows\nend).()")
+	case "jsonl":
+		io.WriteString(w, "(fn ->\n")
+		fmt.Fprintf(w, "  File.stream!(%q)\n", l.Path)
+		io.WriteString(w, "  |> Stream.map(&String.trim/1)\n")
+		io.WriteString(w, "  |> Stream.reject(&(&1 == \"\"))\n")
+		io.WriteString(w, "  |> Enum.map(fn line ->\n")
+		io.WriteString(w, "    line = line |> String.trim_leading(\"{\") |> String.trim_trailing(\"}\")\n")
+		io.WriteString(w, "    parts = String.split(line, \",\")\n")
+		io.WriteString(w, "    Enum.reduce(parts, %{}, fn item, acc ->\n")
+		io.WriteString(w, "      [k, v] = String.split(item, \":\", parts: 2)\n")
+		io.WriteString(w, "      k = k |> String.trim() |> String.trim(\"\\\"\") |> String.to_atom()\n")
+		io.WriteString(w, "      v = String.trim(v)\n")
+		io.WriteString(w, "      val = case Integer.parse(v) do\n")
+		io.WriteString(w, "        {n, \"\"} -> n\n")
+		io.WriteString(w, "        _ -> String.trim(v, \"\\\"\")\n")
+		io.WriteString(w, "      end\n")
+		io.WriteString(w, "      Map.put(acc, k, val)\n")
+		io.WriteString(w, "    end)\n")
+		io.WriteString(w, "  end)\nend).()")
 	}
 }
 
