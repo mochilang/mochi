@@ -28,6 +28,27 @@ import (
 
 var version string
 var currentProg *Program
+var nameMap = map[string]string{}
+var reserved = map[string]bool{
+	"this":   true,
+	"base":   true,
+	"object": true,
+	"string": true,
+	"int":    true,
+	"bool":   true,
+	"params": true,
+}
+
+func sanitize(name string) string {
+	if v, ok := nameMap[name]; ok {
+		return v
+	}
+	if reserved[name] {
+		nameMap[name] = name + "_"
+		return name + "_"
+	}
+	return name
+}
 
 func init() {
 	_, file, _, _ := runtime.Caller(0)
@@ -242,7 +263,15 @@ func (s *LetStmt) emit(w io.Writer) {
 	} else {
 		fmt.Fprintf(w, "var %s = ", name)
 	}
-	s.Value.emit(w)
+	if list, ok := s.Value.(*ListLit); ok && len(list.Elems) == 0 {
+		if t, ok2 := varTypes[s.Name]; ok2 && t != "" {
+			fmt.Fprintf(w, "new %s{}", t)
+		} else {
+			s.Value.emit(w)
+		}
+	} else {
+		s.Value.emit(w)
+	}
 }
 
 // VarStmt represents a mutable variable declaration.
@@ -302,7 +331,15 @@ func (s *VarStmt) emit(w io.Writer) {
 	}
 	if s.Value != nil {
 		fmt.Fprint(w, " = ")
-		s.Value.emit(w)
+		if list, ok := s.Value.(*ListLit); ok && len(list.Elems) == 0 {
+			if t, ok2 := varTypes[s.Name]; ok2 && t != "" {
+				fmt.Fprintf(w, "new %s{}", t)
+			} else {
+				s.Value.emit(w)
+			}
+		} else {
+			s.Value.emit(w)
+		}
 	}
 }
 
@@ -3291,12 +3328,12 @@ func compileStmt(prog *Program, s *parser.Statement) (Stmt, error) {
 			default:
 				return nil, fmt.Errorf("unsupported let type")
 			}
-			varTypes[s.Let.Name] = csType(s.Let.Type)
+			varTypes[name] = csType(s.Let.Type)
 		} else {
 			return nil, fmt.Errorf("unsupported let")
 		}
 		if list, ok := val.(*ListLit); ok {
-			if res, changed := inferStructList(s.Let.Name, prog, list); changed {
+			if res, changed := inferStructList(name, prog, list); changed {
 				val = res
 			}
 			if s.Let.Type != nil && s.Let.Type.Generic != nil && s.Let.Type.Generic.Name == "list" && len(s.Let.Type.Generic.Args) == 1 {
@@ -3332,10 +3369,10 @@ func compileStmt(prog *Program, s *parser.Statement) (Stmt, error) {
 			}
 		}
 		if isStringExpr(val) {
-			stringVars[s.Let.Name] = true
+			stringVars[name] = true
 		}
 		if isMapExpr(val) {
-			mapVars[s.Let.Name] = true
+			mapVars[name] = true
 		}
 		if t := typeOfExpr(val); t != "" {
 			if s.Let.Type == nil {
@@ -3360,7 +3397,7 @@ func compileStmt(prog *Program, s *parser.Statement) (Stmt, error) {
 			}
 			g := &Global{Name: alias, Value: val}
 			prog.Globals = append(prog.Globals, g)
-			globalDecls[s.Let.Name] = g
+			globalDecls[name] = g
 			return nil, nil
 		}
 		return &LetStmt{Name: alias, Value: val}, nil
@@ -3400,7 +3437,7 @@ func compileStmt(prog *Program, s *parser.Statement) (Stmt, error) {
 			if isStringExpr(val) {
 				stringVars[s.Var.Name] = true
 			}
-			varTypes[s.Var.Name] = csType(s.Var.Type)
+			varTypes[name] = csType(s.Var.Type)
 		}
 		if list, ok := val.(*ListLit); ok {
 			if s.Var.Type != nil && s.Var.Type.Generic != nil && s.Var.Type.Generic.Name == "list" && len(s.Var.Type.Generic.Args) == 1 {
@@ -3446,10 +3483,10 @@ func compileStmt(prog *Program, s *parser.Statement) (Stmt, error) {
 			_ = mp // keep as dictionary for mutable vars
 		}
 		if isStringExpr(val) {
-			stringVars[s.Var.Name] = true
+			stringVars[name] = true
 		}
 		if isMapExpr(val) {
-			mapVars[s.Var.Name] = true
+			mapVars[name] = true
 		}
 		if t := typeOfExpr(val); t != "" {
 			if s.Var.Type == nil {
@@ -3480,7 +3517,7 @@ func compileStmt(prog *Program, s *parser.Statement) (Stmt, error) {
 			}
 			g := &Global{Name: alias, Value: val}
 			prog.Globals = append(prog.Globals, g)
-			globalDecls[s.Var.Name] = g
+			globalDecls[name] = g
 			return nil, nil
 		}
 		return &VarStmt{Name: alias, Value: val}, nil
@@ -4728,7 +4765,7 @@ func compileFunExpr(f *parser.FunExpr) (Expr, error) {
 	params := make([]string, len(f.Params))
 	ptypes := make([]string, len(f.Params))
 	for i, p := range f.Params {
-		params[i] = p.Name
+		params[i] = sanitize(p.Name)
 		ptypes[i] = csType(p.Type)
 	}
 	var body []Stmt
