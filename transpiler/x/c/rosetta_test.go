@@ -9,6 +9,7 @@ import (
 	"os/exec"
 	"path/filepath"
 	"sort"
+	"strconv"
 	"strings"
 	"testing"
 	"time"
@@ -24,6 +25,19 @@ func TestRosettaTranspilerGolden(t *testing.T) {
 	root := repoRoot(t)
 	outDir := filepath.Join(root, "tests", "rosetta", "transpiler", "C")
 	os.MkdirAll(outDir, 0o755)
+
+	// Allow running a specific Rosetta program by numeric index.
+	if idxStr := os.Getenv("MOCHI_ROSETTA_INDEX"); idxStr != "" {
+		srcDir := filepath.Join(root, "tests", "rosetta", "x", "Mochi")
+		files, _ := filepath.Glob(filepath.Join(srcDir, "*.mochi"))
+		sort.Strings(files)
+		if idx, err := strconv.Atoi(idxStr); err == nil && idx >= 1 && idx <= len(files) {
+			name := strings.TrimSuffix(filepath.Base(files[idx-1]), ".mochi")
+			t.Setenv("MOCHI_ROSETTA_ONLY", name)
+		}
+	}
+
+	t.Cleanup(updateRosettaReadme)
 
 	golden.RunFirstFailure(t, "tests/rosetta/x/Mochi", ".mochi", ".out", func(src string) ([]byte, error) {
 		name := strings.TrimSuffix(filepath.Base(src), ".mochi")
@@ -74,14 +88,14 @@ func updateRosettaReadme() {
 		}
 	}
 	var lines []string
-	for _, f := range files {
+	for i, f := range files {
 		name := strings.TrimSuffix(filepath.Base(f), ".mochi")
 		mark := "[ ]"
 		if _, err := os.Stat(filepath.Join(outDir, name+".out")); err == nil {
 			mark = "[x]"
 			compiled++
 		}
-		lines = append(lines, fmt.Sprintf("- %s %s", mark, name))
+		lines = append(lines, fmt.Sprintf("%d. %s %s", i+1, mark, name))
 	}
 	var buf bytes.Buffer
 	buf.WriteString("# C Transpiler Rosetta Output\n\n")
