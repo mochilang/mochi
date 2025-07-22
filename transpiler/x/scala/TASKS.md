@@ -1,3 +1,27 @@
+## Progress (2025-07-22 16:14 +0700)
+- scala transpiler: improve group query typing
+- Regenerated golden files - 80/103 vm valid programs passing
+
+## Progress (2025-07-22 16:14 +0700)
+- scala transpiler: improve group query typing
+- Regenerated golden files - 82/103 vm valid programs passing
+
+## Progress (2025-07-22 16:14 +0700)
+- scala transpiler: improve group query typing
+- Regenerated golden files - 82/103 vm valid programs passing
+
+## Progress (2025-07-22 16:14 +0700)
+- scala transpiler: improve group query typing
+- Regenerated golden files - 82/103 vm valid programs passing
+
+## Progress (2025-07-22 16:14 +0700)
+- scala transpiler: improve group query typing
+- Regenerated golden files - 82/103 vm valid programs passing
+
+## Progress (2025-07-22 16:14 +0700)
+- scala transpiler: improve group query typing
+- Regenerated golden files - 82/103 vm valid programs passing
+
 ## Progress (2025-07-22 15:41 +0700)
 - scala transpiler: support load_jsonl and yaml
 - Regenerated golden files - 82/102 vm valid programs passing
