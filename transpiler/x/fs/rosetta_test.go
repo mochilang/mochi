@@ -13,7 +13,6 @@ import (
 	"testing"
 	"time"
 
-	"mochi/golden"
 	"mochi/parser"
 	fstrans "mochi/transpiler/x/fs"
 	"mochi/types"
@@ -28,7 +27,7 @@ func ensureFSharp(t *testing.T) {
 	}
 }
 
-func repoRoot(t *testing.T) string {
+func repoRootRosetta(t *testing.T) string {
 	dir, err := os.Getwd()
 	if err != nil {
 		t.Fatal(err)
@@ -49,65 +48,95 @@ func repoRoot(t *testing.T) string {
 
 func TestFSTranspiler_Rosetta_Golden(t *testing.T) {
 	ensureFSharp(t)
-	root := repoRoot(t)
+	root := repoRootRosetta(t)
 	outDir := filepath.Join(root, "tests", "rosetta", "transpiler", "FS")
+	srcDir := filepath.Join(root, "tests", "rosetta", "x", "Mochi")
 	os.MkdirAll(outDir, 0o755)
+	t.Cleanup(updateRosettaReadme)
 
-	golden.RunWithSummary(t, "tests/rosetta/x/Mochi", ".mochi", ".out", func(src string) ([]byte, error) {
+	pattern := filepath.Join(srcDir, "*.mochi")
+	if only := os.Getenv("MOCHI_ROSETTA_ONLY"); only != "" {
+		pattern = filepath.Join(srcDir, only+".mochi")
+	}
+	files, err := filepath.Glob(pattern)
+	if err != nil {
+		t.Fatalf("glob: %v", err)
+	}
+	if len(files) == 0 {
+		t.Fatalf("no Mochi Rosetta tests found: %s", pattern)
+	}
+	sort.Strings(files)
+
+	var passed, failed int
+	for _, src := range files {
 		base := strings.TrimSuffix(filepath.Base(src), ".mochi")
-		codePath := filepath.Join(outDir, base+".fs")
-		outPath := filepath.Join(outDir, base+".out")
-		errPath := filepath.Join(outDir, base+".error")
-		exePath := filepath.Join(outDir, base+".exe")
+		ok := t.Run(base, func(t *testing.T) {
+			codePath := filepath.Join(outDir, base+".fs")
+			outPath := filepath.Join(outDir, base+".out")
+			errPath := filepath.Join(outDir, base+".error")
+			exePath := filepath.Join(outDir, base+".exe")
 
-		prog, err := parser.Parse(src)
-		if err != nil {
-			_ = os.WriteFile(errPath, []byte("parse: "+err.Error()), 0o644)
-			return nil, err
+			prog, err := parser.Parse(src)
+			if err != nil {
+				_ = os.WriteFile(errPath, []byte("parse: "+err.Error()), 0o644)
+				t.Fatalf("parse error: %v", err)
+			}
+			env := types.NewEnv(nil)
+			if errs := types.Check(prog, env); len(errs) > 0 {
+				_ = os.WriteFile(errPath, []byte("type: "+errs[0].Error()), 0o644)
+				t.Fatalf("type error: %v", errs[0])
+			}
+			ast, err := fstrans.Transpile(prog, env)
+			if err != nil {
+				_ = os.WriteFile(errPath, []byte("transpile: "+err.Error()), 0o644)
+				t.Fatalf("transpile error: %v", err)
+			}
+			code := fstrans.Emit(ast)
+			if err := os.WriteFile(codePath, code, 0o644); err != nil {
+				t.Fatalf("write code: %v", err)
+			}
+			cmd := exec.Command("fsharpc", "--target:exe", "--out:"+exePath, codePath)
+			if out, err := cmd.CombinedOutput(); err != nil {
+				_ = os.WriteFile(errPath, append([]byte("compile: "+err.Error()+"\n"), out...), 0o644)
+				t.Fatalf("compile: %v", err)
+			}
+			run := exec.Command("mono", exePath)
+			if data, err := os.ReadFile(strings.TrimSuffix(src, ".mochi") + ".in"); err == nil {
+				run.Stdin = bytes.NewReader(data)
+			}
+			out, err := run.CombinedOutput()
+			got := bytes.TrimSpace(out)
+			if err != nil {
+				_ = os.WriteFile(errPath, append([]byte("run: "+err.Error()+"\n"), out...), 0o644)
+				t.Fatalf("run: %v", err)
+			}
+			_ = os.Remove(errPath)
+			if shouldUpdate := os.Getenv("UPDATE"); shouldUpdate == "1" || shouldUpdate == "true" {
+				_ = os.WriteFile(outPath, append(got, '\n'), 0o644)
+				return
+			}
+			_ = os.WriteFile(outPath, got, 0o644)
+			if want, err := os.ReadFile(outPath); err == nil {
+				want = bytes.TrimSpace(want)
+				if !bytes.Equal(got, want) {
+					t.Errorf("output mismatch\nGot: %s\nWant: %s", got, want)
+				}
+			}
+		})
+		if ok {
+			passed++
+		} else {
+			failed++
 		}
-		env := types.NewEnv(nil)
-		if errs := types.Check(prog, env); len(errs) > 0 {
-			_ = os.WriteFile(errPath, []byte("type: "+errs[0].Error()), 0o644)
-			return nil, errs[0]
-		}
-		ast, err := fstrans.Transpile(prog, env)
-		if err != nil {
-			_ = os.WriteFile(errPath, []byte("transpile: "+err.Error()), 0o644)
-			return nil, err
-		}
-		code := fstrans.Emit(ast)
-		if err := os.WriteFile(codePath, code, 0o644); err != nil {
-			return nil, err
-		}
-		cmd := exec.Command("fsharpc", "--target:exe", "--out:"+exePath, codePath)
-		if out, err := cmd.CombinedOutput(); err != nil {
-			_ = os.WriteFile(errPath, append([]byte("compile: "+err.Error()+"\n"), out...), 0o644)
-			return nil, err
-		}
-		run := exec.Command("mono", exePath)
-		if data, err := os.ReadFile(strings.TrimSuffix(src, ".mochi") + ".in"); err == nil {
-			run.Stdin = bytes.NewReader(data)
-		}
-		out, err := run.CombinedOutput()
-		got := bytes.TrimSpace(out)
-		if err != nil {
-			_ = os.WriteFile(errPath, append([]byte("run: "+err.Error()+"\n"), out...), 0o644)
-			return nil, err
-		}
-		_ = os.Remove(errPath)
-		_ = os.WriteFile(outPath, got, 0o644)
-		return got, nil
-	})
+	}
+	t.Logf("Summary: %d passed, %d failed", passed, failed)
 }
 
-func TestMain(m *testing.M) {
-	code := m.Run()
-	updateRosetta()
-	os.Exit(code)
-}
+// updateRosettaReadme is registered via t.Cleanup to regenerate ROSETTA.md.
+func updateRosettaReadme() { updateRosetta() }
 
 func updateRosetta() {
-	root := repoRoot(&testing.T{})
+	root := repoRootRosetta(&testing.T{})
 	srcDir := filepath.Join(root, "tests", "rosetta", "x", "Mochi")
 	outDir := filepath.Join(root, "tests", "rosetta", "transpiler", "FS")
 	readmePath := filepath.Join(root, "transpiler", "x", "fs", "ROSETTA.md")
