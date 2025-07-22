@@ -34,12 +34,13 @@ type context struct {
 	strField  map[string]map[string]bool
 	boolField map[string]map[string]bool
 	groups    map[string]groupInfo
+	constVal  map[string]Expr
 }
 
 type groupInfo struct{ key, items string }
 
 func newContext() *context {
-	return &context{alias: map[string]string{}, orig: map[string]string{}, counter: map[string]int{}, strVar: map[string]bool{}, strField: map[string]map[string]bool{}, boolField: map[string]map[string]bool{}, groups: map[string]groupInfo{}}
+	return &context{alias: map[string]string{}, orig: map[string]string{}, counter: map[string]int{}, strVar: map[string]bool{}, strField: map[string]map[string]bool{}, boolField: map[string]map[string]bool{}, groups: map[string]groupInfo{}, constVal: map[string]Expr{}}
 }
 
 func (c *context) clone() *context {
@@ -79,7 +80,11 @@ func (c *context) clone() *context {
 	for k, v := range c.strVar {
 		strVar[k] = v
 	}
-	return &context{alias: alias, orig: orig, counter: counter, strVar: strVar, strField: fields, boolField: bfields, groups: groups}
+	consts := make(map[string]Expr, len(c.constVal))
+	for k, v := range c.constVal {
+		consts[k] = v
+	}
+	return &context{alias: alias, orig: orig, counter: counter, strVar: strVar, strField: fields, boolField: bfields, groups: groups, constVal: consts}
 }
 
 func (c *context) newAlias(name string) string {
@@ -142,6 +147,18 @@ func (c *context) setStringVar(name string, isStr bool) {
 		c.strVar = map[string]bool{}
 	}
 	c.strVar[name] = true
+}
+
+func (c *context) setConst(name string, val Expr) {
+	if c.constVal == nil {
+		c.constVal = map[string]Expr{}
+	}
+	c.constVal[name] = val
+}
+
+func (c *context) constValue(name string) (Expr, bool) {
+	v, ok := c.constVal[name]
+	return v, ok
 }
 
 func (c *context) isStringVar(name string) bool {
@@ -528,6 +545,9 @@ type BreakStmt struct{}
 
 // ContinueStmt represents a `continue` statement.
 type ContinueStmt struct{}
+
+// CallStmt represents a standalone function call.
+type CallStmt struct{ Call *CallExpr }
 
 func (p *PrintStmt) emit(w io.Writer) {
 	if len(p.Args) == 0 {
@@ -1306,6 +1326,15 @@ func (ma *MapAssignStmt) emit(w io.Writer) {
 func (b *BreakStmt) emit(w io.Writer)    { io.WriteString(w, "throw(break)") }
 func (c *ContinueStmt) emit(w io.Writer) { io.WriteString(w, "throw(continue)") }
 
+func (cs *CallStmt) emit(w io.Writer) { cs.Call.emit(w) }
+
+func isNameRef(e Expr, name string) bool {
+	if n, ok := e.(*NameRef); ok {
+		return n.Name == name
+	}
+	return false
+}
+
 func (q *QueryExpr) emit(w io.Writer) {
 	if q.Right != nil {
 		base := &bytes.Buffer{}
@@ -1578,6 +1607,10 @@ func convertStmt(st *parser.Statement, env *types.Env, ctx *context) ([]Stmt, er
 		ctx.setStrFields(st.Let.Name, stringFields(e))
 		ctx.setBoolFields(st.Let.Name, boolFields(e))
 		ctx.setStringVar(st.Let.Name, isStringExpr(e))
+		switch e.(type) {
+		case *IntLit, *FloatLit, *BoolLit, *StringLit, *AtomLit:
+			ctx.setConst(st.Let.Name, e)
+		}
 		return []Stmt{&LetStmt{Name: alias, Expr: e}}, nil
 	case st.Var != nil:
 		var e Expr
@@ -1594,6 +1627,10 @@ func convertStmt(st *parser.Statement, env *types.Env, ctx *context) ([]Stmt, er
 		ctx.setStrFields(st.Var.Name, stringFields(e))
 		ctx.setBoolFields(st.Var.Name, boolFields(e))
 		ctx.setStringVar(st.Var.Name, isStringExpr(e))
+		switch e.(type) {
+		case *IntLit, *FloatLit, *BoolLit, *StringLit, *AtomLit:
+			ctx.setConst(st.Var.Name, e)
+		}
 		return []Stmt{&LetStmt{Name: alias, Expr: e}}, nil
 	case st.Assign != nil && len(st.Assign.Index) == 0 && len(st.Assign.Field) == 0:
 		val, err := convertExpr(st.Assign.Value, env, ctx)
@@ -1605,6 +1642,15 @@ func convertStmt(st *parser.Statement, env *types.Env, ctx *context) ([]Stmt, er
 		ctx.setBoolFields(st.Assign.Name, boolFields(val))
 		ctx.setStringVar(st.Assign.Name, isStringExpr(val))
 		return []Stmt{&LetStmt{Name: alias, Expr: val}}, nil
+	case st.Assign != nil && len(st.Assign.Index) == 0 && len(st.Assign.Field) == 1:
+		val, err := convertExpr(st.Assign.Value, env, ctx)
+		if err != nil {
+			return nil, err
+		}
+		old := ctx.current(st.Assign.Name)
+		alias := ctx.newAlias(st.Assign.Name)
+		key := &StringLit{Value: st.Assign.Field[0].Name}
+		return []Stmt{&MapAssignStmt{Name: alias, Old: old, Key: key, Value: val}}, nil
 	case st.Assign != nil && len(st.Assign.Index) == 1 && len(st.Assign.Field) == 0:
 		idx, err := convertExpr(st.Assign.Index[0].Start, env, ctx)
 		if err != nil {
@@ -1678,6 +1724,7 @@ func convertStmt(st *parser.Statement, env *types.Env, ctx *context) ([]Stmt, er
 			if c.Func == "json" && len(c.Args) == 1 {
 				return []Stmt{&JsonStmt{Value: c.Args[0]}}, nil
 			}
+			return []Stmt{&CallStmt{Call: c}}, nil
 		}
 		return nil, fmt.Errorf("unsupported expression")
 	case st.Break != nil:
@@ -2107,6 +2154,9 @@ func convertPrimary(p *parser.Primary, env *types.Env, ctx *context) (Expr, erro
 	case p.Lit != nil:
 		return convertLiteral(p.Lit)
 	case p.Selector != nil && len(p.Selector.Tail) == 0:
+		if v, ok := ctx.constValue(p.Selector.Root); ok {
+			return v, nil
+		}
 		nr := &NameRef{Name: ctx.current(p.Selector.Root)}
 		if t, err := env.GetVar(p.Selector.Root); err == nil {
 			if _, ok := t.(types.StringType); ok {
@@ -2463,7 +2513,18 @@ func convertQueryExpr(q *parser.QueryExpr, env *types.Env, ctx *context) (Expr, 
 			return nil, err
 		}
 	}
-	return &QueryExpr{Var: alias, Src: src, Froms: froms, Right: rjoin, Where: cond, Select: sel, SortKey: sortKey, Skip: skipExpr, Take: takeExpr}, nil
+	qexpr := &QueryExpr{Var: alias, Src: src, Froms: froms, Right: rjoin, Where: cond, Select: sel, SortKey: sortKey, Skip: skipExpr, Take: takeExpr}
+	if call, ok := sel.(*CallExpr); ok && len(call.Args) == 1 && isNameRef(call.Args[0], alias) {
+		switch call.Func {
+		case "sum":
+			qexpr.Select = call.Args[0]
+			return &CallExpr{Func: "lists:sum", Args: []Expr{qexpr}}, nil
+		case "count":
+			qexpr.Select = call.Args[0]
+			return &CallExpr{Func: "length", Args: []Expr{qexpr}}, nil
+		}
+	}
+	return qexpr, nil
 }
 
 func convertLeftJoinQuery(q *parser.QueryExpr, env *types.Env, ctx *context) (Expr, error) {
