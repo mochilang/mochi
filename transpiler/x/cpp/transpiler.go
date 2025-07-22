@@ -107,6 +107,13 @@ type BreakStmt struct{}
 // ContinueStmt represents a continue statement.
 type ContinueStmt struct{}
 
+// SaveStmt emits each element of a list as JSON lines to stdout.
+type SaveStmt struct {
+	Src    Expr
+	Path   string
+	Format string
+}
+
 // ListLit represents a list literal converted to std::vector.
 type ListLit struct{ Elems []Expr }
 
@@ -1455,6 +1462,47 @@ func (c *ContinueStmt) emit(w io.Writer, indent int) {
 	io.WriteString(w, "continue;\n")
 }
 
+func (s *SaveStmt) emit(w io.Writer, indent int) {
+	if currentProgram != nil {
+		currentProgram.addInclude("<iostream>")
+		currentProgram.addInclude("<iomanip>")
+		currentProgram.addInclude("<sstream>")
+	}
+	for i := 0; i < indent; i++ {
+		io.WriteString(w, "    ")
+	}
+	if s.Format == "jsonl" && (s.Path == "" || s.Path == "-") {
+		io.WriteString(w, "for (const auto& _row : ")
+		if s.Src != nil {
+			s.Src.emit(w)
+		}
+		io.WriteString(w, ") {\n")
+		for i := 0; i < indent+1; i++ {
+			io.WriteString(w, "    ")
+		}
+		io.WriteString(w, "std::ostringstream __buf;\n")
+		emitToStream(w, "__buf", &VarRef{Name: "_row"}, indent+1)
+		for i := 0; i < indent+1; i++ {
+			io.WriteString(w, "    ")
+		}
+		io.WriteString(w, "auto __line = __buf.str();\n")
+		for i := 0; i < indent+1; i++ {
+			io.WriteString(w, "    ")
+		}
+		io.WriteString(w, `for(auto& ch: __line) if(ch=='\'') ch='"';`+"\n")
+		for i := 0; i < indent+1; i++ {
+			io.WriteString(w, "    ")
+		}
+		io.WriteString(w, "std::cout << __line << std::endl;\n")
+		for i := 0; i < indent; i++ {
+			io.WriteString(w, "    ")
+		}
+		io.WriteString(w, "}\n")
+		return
+	}
+	io.WriteString(w, "// unsupported save\n")
+}
+
 func (f *ForStmt) emit(w io.Writer, indent int) {
 	for i := 0; i < indent; i++ {
 		io.WriteString(w, "    ")
@@ -1589,7 +1637,18 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 				return nil, err
 			}
 		case stmt.Expr != nil:
-			if call := extractCall(stmt.Expr.Expr); call != nil && call.Func == "print" {
+			if se := extractSaveExpr(stmt.Expr.Expr); se != nil {
+				src, err := convertExpr(se.Src)
+				if err != nil {
+					return nil, err
+				}
+				format := parseFormat(se.With)
+				path := ""
+				if se.Path != nil {
+					path = strings.Trim(*se.Path, "\"")
+				}
+				body = append(body, &SaveStmt{Src: src, Path: path, Format: format})
+			} else if call := extractCall(stmt.Expr.Expr); call != nil && call.Func == "print" {
 				if cp != nil {
 					cp.addInclude("<sstream>")
 					cp.addInclude("<iomanip>")
@@ -1943,6 +2002,62 @@ func extractQuery(e *parser.Expr) *parser.QueryExpr {
 	return u.Value.Target.Query
 }
 
+func literalString(e *parser.Expr) (string, bool) {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) > 0 {
+		return "", false
+	}
+	u := e.Binary.Left
+	if len(u.Ops) > 0 || u.Value == nil {
+		return "", false
+	}
+	p := u.Value
+	if len(p.Ops) > 0 || p.Target == nil {
+		return "", false
+	}
+	if p.Target.Lit != nil && p.Target.Lit.Str != nil {
+		return *p.Target.Lit.Str, true
+	}
+	if p.Target.Selector != nil && len(p.Target.Selector.Tail) == 0 {
+		return p.Target.Selector.Root, true
+	}
+	return "", false
+}
+
+func parseFormat(e *parser.Expr) string {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) > 0 {
+		return ""
+	}
+	u := e.Binary.Left
+	if len(u.Ops) > 0 || u.Value == nil || u.Value.Target == nil || u.Value.Target.Map == nil {
+		return ""
+	}
+	for _, it := range u.Value.Target.Map.Items {
+		key, ok := literalString(it.Key)
+		if !ok || key != "format" {
+			continue
+		}
+		if v, ok := literalString(it.Value); ok {
+			return v
+		}
+	}
+	return ""
+}
+
+func extractSaveExpr(e *parser.Expr) *parser.SaveExpr {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) > 0 {
+		return nil
+	}
+	u := e.Binary.Left
+	if len(u.Ops) > 0 || u.Value == nil {
+		return nil
+	}
+	p := u.Value
+	if len(p.Ops) > 0 || p.Target == nil {
+		return nil
+	}
+	return p.Target.Save
+}
+
 func convertStmt(s *parser.Statement) (Stmt, error) {
 	switch {
 	case s.Fun != nil:
@@ -1952,6 +2067,18 @@ func convertStmt(s *parser.Statement) (Stmt, error) {
 		}
 		return &LetStmt{Name: s.Fun.Name, Type: "", Value: lam}, nil
 	case s.Expr != nil:
+		if se := extractSaveExpr(s.Expr.Expr); se != nil {
+			src, err := convertExpr(se.Src)
+			if err != nil {
+				return nil, err
+			}
+			format := parseFormat(se.With)
+			path := ""
+			if se.Path != nil {
+				path = strings.Trim(*se.Path, "\"")
+			}
+			return &SaveStmt{Src: src, Path: path, Format: format}, nil
+		}
 		if call := extractCall(s.Expr.Expr); call != nil && call.Func == "print" {
 			if currentProgram != nil {
 				currentProgram.addInclude("<sstream>")

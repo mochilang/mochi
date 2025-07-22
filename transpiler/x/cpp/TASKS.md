@@ -1,3 +1,8 @@
+## Progress (2025-07-22 14:10 +0700)
+- cpp transpiler: support jsonl save
+- Generated C++ for 97/102 programs
+- Updated README checklist and outputs
+
 ## Progress (2025-07-22 13:26 +0700)
 - docs: update scala progress
 - Generated C++ for 97/102 programs
