@@ -1,4 +1,23 @@
 # 📦 CHANGELOG.md
+## [0.10.36] – 2025-07-22T16:14:06+07:00
+
+### Added
+
+* Advanced group query typing for Scala with JSONL and YAML support
+* Update statements in Go and enhanced dataset joins in C and C++
+* Dynamic maps, JSON builtins and struct features across OCaml and Pascal
+* FFI integration for Zig with dataset loading and right join support in Erlang
+
+### Changed
+
+* Join inference and optional handling refined across Python, TypeScript and C++
+* Documentation checklists and progress logs refreshed across languages
+
+### Fixed
+
+* Nested loop closure bug in the C transpiler
+* Various join and query issues with regenerated golden outputs
+
 ## [0.10.35] – 2025-07-22T10:43:45+07:00
 
 ### Added
