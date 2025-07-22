@@ -1,7 +1,0 @@
-run: exit status 255
-
-Fatal error: Uncaught TypeError: array_sum(): Argument #1 ($array) must be of type array, int given in /workspace/mochi/tests/transpiler/x/php/query_sum_select.php:6
-Stack trace:
-#0 /workspace/mochi/tests/transpiler/x/php/query_sum_select.php(6): array_sum(2)
-#1 {main}
-  thrown in /workspace/mochi/tests/transpiler/x/php/query_sum_select.php on line 6
