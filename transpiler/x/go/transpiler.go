@@ -48,6 +48,7 @@ var (
 	imports        map[string]string
 	currentRetType string
 	mainFuncName   string
+	fieldTypeGuess map[string]string
 )
 
 func toPascalCase(s string) string {
@@ -1458,6 +1459,7 @@ func Transpile(p *parser.Program, env *types.Env) (*Program, error) {
 	extraDecls = nil
 	structCount = 0
 	mainFuncName = ""
+	fieldTypeGuess = map[string]string{}
 	imports = map[string]string{}
 	gp := &Program{}
 	for _, stmt := range p.Statements {
@@ -1565,8 +1567,10 @@ func compileStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 			typ = toGoType(st.Let.Type, env)
 			declaredType = types.ResolveTypeRef(st.Let.Type, env)
 		} else if t, err := env.GetVar(st.Let.Name); err == nil {
-			typ = toGoTypeFromType(t)
-			declaredType = t
+			if _, ok := t.(types.FuncType); !ok {
+				typ = toGoTypeFromType(t)
+				declaredType = t
+			}
 		}
 		if st.Let.Value != nil {
 			e, err := compileExpr(st.Let.Value, env, st.Let.Name)
@@ -1645,8 +1649,10 @@ func compileStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 			typ = toGoType(st.Var.Type, env)
 			declaredType = types.ResolveTypeRef(st.Var.Type, env)
 		} else if t, err := env.GetVar(st.Var.Name); err == nil {
-			typ = toGoTypeFromType(t)
-			declaredType = t
+			if _, ok := t.(types.FuncType); !ok {
+				typ = toGoTypeFromType(t)
+				declaredType = t
+			}
 		}
 		if st.Var.Value != nil {
 			e, err := compileExpr(st.Var.Value, env, st.Var.Name)
@@ -2742,6 +2748,19 @@ func boolExprFor(e Expr, t types.Type) Expr {
 	if _, ok := t.(types.BoolType); ok {
 		return e
 	}
+	switch ex := e.(type) {
+	case *AssertExpr:
+		if ex.Type == "bool" {
+			return e
+		}
+	case *BinaryExpr:
+		switch ex.Op {
+		case "&&", "||", "==", "!=", "<", "<=", ">", ">=":
+			return e
+		}
+	case *NotExpr:
+		return e
+	}
 	switch t.(type) {
 	case types.OptionType:
 		return &BinaryExpr{Left: e, Op: "!=", Right: &VarRef{Name: "nil"}}
@@ -3224,6 +3243,17 @@ func compilePostfix(pf *parser.PostfixExpr, env *types.Env, base string) (Expr, 
 				case types.MapType:
 					expr = &IndexExpr{X: expr, Index: iex}
 					t = tt.Value
+					if _, ok := tt.Value.(types.AnyType); ok {
+						key := ""
+						if sl, ok2 := iex.(*StringLit); ok2 {
+							key = sl.Value
+						} else if s, ok2 := literalString(idx.Start); ok2 {
+							key = s
+						}
+						if gt, ok3 := fieldTypeGuess[key]; key != "" && ok3 && gt != "" && gt != "any" {
+							expr = &AssertExpr{Expr: expr, Type: gt}
+						}
+					}
 				default:
 					expr = &IndexExpr{X: expr, Index: iex}
 					t = types.AnyType{}
@@ -3512,6 +3542,15 @@ func compilePrimary(p *parser.Primary, env *types.Env, base string) (Expr, error
 			var ke Expr
 			if k, ok := types.SimpleStringKey(it.Key); ok {
 				ke = &StringLit{Value: k}
+				if _, exists := fieldTypeGuess[k]; !exists {
+					vtype := types.ExprType(it.Value, env)
+					if ml := mapLiteralExpr(it.Value); ml != nil {
+						if sm, ok := types.InferSimpleMap(ml, env); ok {
+							vtype = sm
+						}
+					}
+					fieldTypeGuess[k] = toGoTypeFromType(vtype)
+				}
 			} else {
 				var err error
 				ke, err = compileExpr(it.Key, env, "")
@@ -3527,6 +3566,9 @@ func compilePrimary(p *parser.Primary, env *types.Env, base string) (Expr, error
 			vals[i] = ve
 		}
 		mt, _ := types.TypeOfPrimaryBasic(p, env).(types.MapType)
+		if sm, ok := types.InferSimpleMap(p.Map, env); ok {
+			mt = sm
+		}
 		return &MapLit{KeyType: toGoTypeFromType(mt.Key), ValueType: toGoTypeFromType(mt.Value), Keys: keys, Values: vals}, nil
 	case p.Struct != nil:
 		st, ok := env.GetStruct(p.Struct.Name)
