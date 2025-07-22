@@ -16,6 +16,20 @@ import (
 
 var typeDecls []*TypeDeclStmt
 
+var scalaKeywords = map[string]bool{
+	"val":  true,
+	"var":  true,
+	"type": true,
+	"def":  true,
+}
+
+func escapeName(name string) string {
+	if scalaKeywords[name] {
+		return "`" + name + "`"
+	}
+	return name
+}
+
 // Program represents a simple Scala program consisting of statements in main.
 type Program struct {
 	Stmts []Stmt
@@ -120,7 +134,7 @@ type LetStmt struct {
 }
 
 func (s *LetStmt) emit(w io.Writer) {
-	fmt.Fprintf(w, "val %s", s.Name)
+	fmt.Fprintf(w, "val %s", escapeName(s.Name))
 	if s.Type != "" {
 		fmt.Fprintf(w, ": %s", s.Type)
 	}
@@ -151,13 +165,13 @@ type TypeDeclStmt struct {
 
 func (t *TypeDeclStmt) emit(w io.Writer) {
 	if len(t.Variants) > 0 {
-		fmt.Fprintf(w, "sealed trait %s\n", t.Name)
+		fmt.Fprintf(w, "sealed trait %s\n", escapeName(t.Name))
 		for _, v := range t.Variants {
 			if len(v.Fields) == 0 {
-				fmt.Fprintf(w, "case object %s extends %s\n", v.Name, t.Name)
+				fmt.Fprintf(w, "case object %s extends %s\n", escapeName(v.Name), escapeName(t.Name))
 				continue
 			}
-			fmt.Fprintf(w, "case class %s(", v.Name)
+			fmt.Fprintf(w, "case class %s(", escapeName(v.Name))
 			for i, f := range v.Fields {
 				if i > 0 {
 					fmt.Fprint(w, ", ")
@@ -166,13 +180,13 @@ func (t *TypeDeclStmt) emit(w io.Writer) {
 				if typ == "" {
 					typ = "Any"
 				}
-				fmt.Fprintf(w, "%s: %s", f.Name, typ)
+				fmt.Fprintf(w, "%s: %s", escapeName(f.Name), typ)
 			}
-			fmt.Fprintf(w, ") extends %s\n", t.Name)
+			fmt.Fprintf(w, ") extends %s\n", escapeName(t.Name))
 		}
 		return
 	}
-	fmt.Fprintf(w, "case class %s(", t.Name)
+	fmt.Fprintf(w, "case class %s(", escapeName(t.Name))
 	for i, f := range t.Fields {
 		if i > 0 {
 			fmt.Fprint(w, ", ")
@@ -181,13 +195,13 @@ func (t *TypeDeclStmt) emit(w io.Writer) {
 		if typ == "" {
 			typ = "Any"
 		}
-		fmt.Fprintf(w, "%s: %s", f.Name, typ)
+		fmt.Fprintf(w, "%s: %s", escapeName(f.Name), typ)
 	}
 	fmt.Fprint(w, ")")
 }
 
 func (s *VarStmt) emit(w io.Writer) {
-	fmt.Fprintf(w, "var %s", s.Name)
+	fmt.Fprintf(w, "var %s", escapeName(s.Name))
 	if s.Type != "" {
 		fmt.Fprintf(w, ": %s", s.Type)
 	}
@@ -340,6 +354,12 @@ type CallExpr struct {
 type LenExpr struct{ Value Expr }
 
 func (l *LenExpr) emit(w io.Writer) {
+	if _, ok := l.Value.(*BinaryExpr); ok {
+		fmt.Fprint(w, "(")
+		l.Value.emit(w)
+		fmt.Fprint(w, ").size")
+		return
+	}
 	l.Value.emit(w)
 	fmt.Fprint(w, ".size")
 }
@@ -375,7 +395,7 @@ func (f *FloatLit) emit(w io.Writer) { fmt.Fprintf(w, "%g", f.Value) }
 
 type Name struct{ Name string }
 
-func (n *Name) emit(w io.Writer) { fmt.Fprint(w, n.Name) }
+func (n *Name) emit(w io.Writer) { fmt.Fprint(w, escapeName(n.Name)) }
 
 // ListLit represents a mutable list using ArrayBuffer.
 type ListLit struct{ Elems []Expr }
@@ -420,7 +440,7 @@ type StructLit struct {
 }
 
 func (s *StructLit) emit(w io.Writer) {
-	fmt.Fprintf(w, "%s(", s.Name)
+	fmt.Fprintf(w, "%s(", escapeName(s.Name))
 	for i, f := range s.Fields {
 		if i > 0 {
 			fmt.Fprint(w, ", ")
@@ -497,7 +517,7 @@ type FieldExpr struct {
 
 func (f *FieldExpr) emit(w io.Writer) {
 	f.Receiver.emit(w)
-	fmt.Fprintf(w, ".%s", f.Name)
+	fmt.Fprintf(w, ".%s", escapeName(f.Name))
 }
 
 // SubstringExpr represents substring(s, i, j) which becomes s.substring(i, j).
@@ -1170,7 +1190,28 @@ func convertPostfix(pf *parser.PostfixExpr, env *types.Env) (Expr, error) {
 			expr = &CallExpr{Fn: expr, Args: args}
 		case op.Cast != nil:
 			if op.Cast.Type != nil && op.Cast.Type.Simple != nil {
-				expr = &CastExpr{Value: expr, Type: *op.Cast.Type.Simple}
+				typ := *op.Cast.Type.Simple
+				converted := false
+				if env != nil {
+					if st, ok := env.GetStruct(typ); ok {
+						if ml, ok2 := expr.(*MapLit); ok2 {
+							fields := make([]Expr, len(st.Order))
+							for i, n := range st.Order {
+								for _, it := range ml.Items {
+									if s, ok := it.Key.(*StringLit); ok && s.Value == n {
+										fields[i] = it.Value
+										break
+									}
+								}
+							}
+							expr = &StructLit{Name: typ, Fields: fields}
+							converted = true
+						}
+					}
+				}
+				if !converted {
+					expr = &CastExpr{Value: expr, Type: typ}
+				}
 			} else {
 				return nil, fmt.Errorf("unsupported cast")
 			}
@@ -1353,8 +1394,8 @@ func convertCall(c *parser.CallExpr, env *types.Env) (Expr, error) {
 		}
 	case "values":
 		if len(args) == 1 {
-			valCall := &CallExpr{Fn: &FieldExpr{Receiver: args[0], Name: "values"}}
-			return &CallExpr{Fn: &FieldExpr{Receiver: valCall, Name: "toList"}}, nil
+			vals := &FieldExpr{Receiver: args[0], Name: "values"}
+			return &CallExpr{Fn: &FieldExpr{Receiver: vals, Name: "toList"}}, nil
 		}
 	case "exists":
 		if len(c.Args) == 1 {
@@ -2034,8 +2075,9 @@ func toScalaType(t *parser.TypeRef) string {
 			return "Boolean"
 		case "float":
 			return "Double"
+		default:
+			return *t.Simple
 		}
-		return "Any"
 	}
 	if t.Fun != nil {
 		parts := make([]string, len(t.Fun.Params))
