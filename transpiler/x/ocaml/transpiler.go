@@ -804,6 +804,10 @@ func (f *FuncCall) emitPrint(w io.Writer) {
 		io.WriteString(w, "string_of_int (")
 		f.emit(w)
 		io.WriteString(w, ")")
+	case "float":
+		io.WriteString(w, "string_of_float (")
+		f.emit(w)
+		io.WriteString(w, ")")
 	case "bool":
 		io.WriteString(w, "string_of_bool (")
 		f.emit(w)
@@ -1605,18 +1609,27 @@ func transpileStmt(st *parser.Statement, env *types.Env, vars map[string]VarInfo
 			path := strings.Trim(st.Import.Path, "\"")
 			switch *st.Import.Lang {
 			case "python":
-				if path == "math" && st.Import.Auto {
+				if path == "math" {
 					vars[alias] = VarInfo{typ: "python_math"}
 					return nil, nil
 				}
 			case "go":
-				if st.Import.Auto && strings.Contains(path, "testpkg") {
+				if strings.Contains(path, "testpkg") && st.Import.Auto {
 					vars[alias] = VarInfo{typ: "go_testpkg"}
 					return nil, nil
 				}
 			}
 		}
 		return nil, fmt.Errorf("unsupported import")
+	case st.ExternVar != nil:
+		if st.ExternVar.Type != nil && st.ExternVar.Type.Simple != nil {
+			vars[st.ExternVar.Name()] = VarInfo{typ: *st.ExternVar.Type.Simple}
+		} else {
+			vars[st.ExternVar.Name()] = VarInfo{}
+		}
+		return nil, nil
+	case st.ExternFun != nil:
+		return nil, nil
 	case st.Let != nil:
 		var expr Expr
 		var typ string
@@ -2245,6 +2258,55 @@ func convertPostfix(p *parser.PostfixExpr, env *types.Env, vars map[string]VarIn
 			}
 			expr = &SliceExpr{Col: expr, Start: startExpr, End: endExpr, Typ: typ}
 			i++
+		case op.Call != nil:
+			if idx, ok := expr.(*MapIndexExpr); ok {
+				if root, ok := idx.Map.(*Name); ok {
+					if info := vars[root.Ident]; info.typ == "python_math" {
+						if key, ok := idx.Key.(*StringLit); ok {
+							args := make([]Expr, len(op.Call.Args))
+							for j, a := range op.Call.Args {
+								ex, _, err := convertExpr(a, env, vars)
+								if err != nil {
+									return nil, "", err
+								}
+								args[j] = ex
+							}
+							field := key.Value
+							switch field {
+							case "sqrt", "sin", "log":
+								expr = &FuncCall{Name: field, Args: args, Ret: "float"}
+								typ = "float"
+							case "pow":
+								expr = &FuncCall{Name: "Float.pow", Args: args, Ret: "float"}
+								typ = "float"
+							default:
+								return nil, "", fmt.Errorf("unsupported field %s", field)
+							}
+							i++
+							continue
+						}
+					} else if info.typ == "go_testpkg" {
+						if key, ok := idx.Key.(*StringLit); ok {
+							field := key.Value
+							if field == "Add" && len(op.Call.Args) == 2 {
+								left, _, err := convertExpr(op.Call.Args[0], env, vars)
+								if err != nil {
+									return nil, "", err
+								}
+								right, _, err := convertExpr(op.Call.Args[1], env, vars)
+								if err != nil {
+									return nil, "", err
+								}
+								expr = &BinaryExpr{Left: left, Op: "+", Right: right, Typ: "int", Ltyp: "int", Rtyp: "int"}
+								typ = "int"
+								i++
+								continue
+							}
+						}
+					}
+				}
+			}
+			return nil, "", fmt.Errorf("postfix op not supported")
 		case op.Cast != nil && op.Cast.Type != nil && op.Cast.Type.Simple != nil:
 			target := *op.Cast.Type.Simple
 			if typ == "string" && target == "int" {
@@ -2266,6 +2328,29 @@ func convertSelector(sel *parser.SelectorExpr, env *types.Env, vars map[string]V
 	expr := Expr(&Name{Ident: sel.Root, Typ: info.typ, Ref: info.ref})
 	typ := info.typ
 	for _, t := range sel.Tail {
+		if info.typ == "python_math" {
+			switch t {
+			case "pi":
+				expr = &FloatLit{Value: 3.141592653589793}
+				typ = "float"
+				continue
+			case "e":
+				expr = &FloatLit{Value: 2.718281828459045}
+				typ = "float"
+				continue
+			}
+		} else if info.typ == "go_testpkg" {
+			switch t {
+			case "Pi":
+				expr = &FloatLit{Value: 3.14}
+				typ = "float"
+				continue
+			case "Answer":
+				expr = &IntLit{Value: 42}
+				typ = "int"
+				continue
+			}
+		}
 		if info.group && t == "key" {
 			keyInfo := vars[sel.Root+"Key"]
 			expr = &Name{Ident: sel.Root + "_key", Typ: keyInfo.typ}
