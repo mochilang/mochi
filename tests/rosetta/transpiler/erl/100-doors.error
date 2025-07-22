@@ -1,0 +1,58 @@
+exit status 127
+/workspace/mochi/tests/rosetta/transpiler/erl/100-doors.erl:9:30: Warning: variable 'Doors' shadowed in 'fun'
+%    9|     Fun = fun Fun_loop(List, Doors) ->
+%     |                              ^
+
+/workspace/mochi/tests/rosetta/transpiler/erl/100-doors.erl:12:10: Warning: variable 'I' is unused
+%   12|         [I|Rest] ->
+%     |          ^
+
+/workspace/mochi/tests/rosetta/transpiler/erl/100-doors.erl:18:32: Warning: variable 'Doors2' shadowed in 'fun'
+%   18|     Fun2 = fun Fun2_loop(List, Doors2) ->
+%     |                                ^
+
+/workspace/mochi/tests/rosetta/transpiler/erl/100-doors.erl:23:34: Warning: variable 'Doors2' shadowed in 'fun'
+%   23|             Fun3 = fun Fun3_loop(Doors2, Idx, Pass) ->
+%     |                                  ^
+
+/workspace/mochi/tests/rosetta/transpiler/erl/100-doors.erl:23:42: Warning: variable 'Idx' shadowed in 'fun'
+%   23|             Fun3 = fun Fun3_loop(Doors2, Idx, Pass) ->
+%     |                                          ^
+
+/workspace/mochi/tests/rosetta/transpiler/erl/100-doors.erl:23:47: Warning: variable 'Pass' shadowed in 'fun'
+%   23|             Fun3 = fun Fun3_loop(Doors2, Idx, Pass) ->
+%     |                                               ^
+
+/workspace/mochi/tests/rosetta/transpiler/erl/100-doors.erl:32:10: Warning: variable 'Idx2' is unused
+%   32| {Doors3, Idx2, Pass} = Fun3(Doors2, Idx, Pass),
+%     |          ^
+
+/workspace/mochi/tests/rosetta/transpiler/erl/100-doors.erl:37:32: Warning: variable 'Doors3' shadowed in 'fun'
+%   37|     Fun4 = fun Fun4_loop(List, Doors3) ->
+%     |                                ^
+
+/workspace/mochi/tests/rosetta/transpiler/erl/100-doors.erl:42:34: Warning: variable 'List' shadowed in 'fun'
+%   42|             Fun5 = fun Fun5_loop(List, Doors3, Line, Row) ->
+%     |                                  ^
+
+/workspace/mochi/tests/rosetta/transpiler/erl/100-doors.erl:42:40: Warning: variable 'Doors3' shadowed in 'fun'
+%   42|             Fun5 = fun Fun5_loop(List, Doors3, Line, Row) ->
+%     |                                        ^
+
+/workspace/mochi/tests/rosetta/transpiler/erl/100-doors.erl:42:48: Warning: variable 'Line' shadowed in 'fun'
+%   42|             Fun5 = fun Fun5_loop(List, Doors3, Line, Row) ->
+%     |                                                ^
+
+/workspace/mochi/tests/rosetta/transpiler/erl/100-doors.erl:42:54: Warning: variable 'Row' shadowed in 'fun'
+%   42|             Fun5 = fun Fun5_loop(List, Doors3, Line, Row) ->
+%     |                                                      ^
+
+escript: exception error: no case clause matching [1,2,3,4,5,6,7,8,9]
+  in function  main:'-main/1-Fun5_loop/4-4-'/5 (/workspace/mochi/tests/rosetta/transpiler/erl/100-doors.erl, line 43)
+  in call from main:'-main/1-Fun4_loop/2-3-'/2 (/workspace/mochi/tests/rosetta/transpiler/erl/100-doors.erl, line 61)
+  in call from main:main/1 (/workspace/mochi/tests/rosetta/transpiler/erl/100-doors.erl, line 66)
+  in call from escript:run/2 (escript.erl, line 904)
+  in call from escript:start/1 (escript.erl, line 418)
+  in call from init:start_it/1 
+  in call from init:start_em/1 
+  in call from init:do_boot/3 
