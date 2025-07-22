@@ -36,6 +36,9 @@ var (
 	needMath             bool
 	needContainsInt      bool
 	needContainsStr      bool
+	usesMapStrInt        bool
+	usesMapIntStr        bool
+	usesMapStrMapStrInt  bool
 	multiJoinEnabled     bool
 	multiJoinSort        bool
 	groupLeftJoinEnabled bool
@@ -320,6 +323,40 @@ func (d *DeclStmt) emit(w io.Writer, indent int) {
 
 func (a *AssignStmt) emit(w io.Writer, indent int) {
 	writeIndent(w, indent)
+	if t, ok := varTypes[a.Name]; ok && len(a.Indexes) > 0 {
+		switch t {
+		case "map_str_int":
+			io.WriteString(w, "map_str_int_set(&")
+			io.WriteString(w, a.Name)
+			io.WriteString(w, ", ")
+			a.Indexes[0].emitExpr(w)
+			io.WriteString(w, ", ")
+			a.Value.emitExpr(w)
+			io.WriteString(w, ");\n")
+			return
+		case "map_int_str":
+			io.WriteString(w, "map_int_str_set(&")
+			io.WriteString(w, a.Name)
+			io.WriteString(w, ", ")
+			a.Indexes[0].emitExpr(w)
+			io.WriteString(w, ", ")
+			a.Value.emitExpr(w)
+			io.WriteString(w, ");\n")
+			return
+		case "map_str_map_str_int":
+			io.WriteString(w, "map_str_int_set(")
+			io.WriteString(w, "map_str_map_str_int_get(&")
+			io.WriteString(w, a.Name)
+			io.WriteString(w, ", ")
+			a.Indexes[0].emitExpr(w)
+			io.WriteString(w, "), ")
+			a.Indexes[1].emitExpr(w)
+			io.WriteString(w, ", ")
+			a.Value.emitExpr(w)
+			io.WriteString(w, ");\n")
+			return
+		}
+	}
 	io.WriteString(w, a.Name)
 	for _, idx := range a.Indexes {
 		io.WriteString(w, "[")
@@ -532,18 +569,94 @@ type MapItem struct {
 type MapLit struct{ Items []MapItem }
 
 func (m *MapLit) emitExpr(w io.Writer) {
-	io.WriteString(w, "{ ")
-	for i, it := range m.Items {
-		if i > 0 {
+	typ := mapLitType(m)
+	switch typ {
+	case "map_str_int":
+		usesMapStrInt = true
+		fmt.Fprintf(w, "(map_str_int){ .items = {")
+		for i, it := range m.Items {
+			if i > 0 {
+				io.WriteString(w, ", ")
+			}
+			io.WriteString(w, "{")
+			if k, ok := it.Key.(*VarRef); ok {
+				fmt.Fprintf(w, "\"%s\"", k.Name)
+			} else {
+				it.Key.emitExpr(w)
+			}
 			io.WriteString(w, ", ")
+			it.Value.emitExpr(w)
+			io.WriteString(w, "}")
 		}
-		io.WriteString(w, "{")
-		it.Key.emitExpr(w)
-		io.WriteString(w, ": ")
-		it.Value.emitExpr(w)
-		io.WriteString(w, "}")
+		fmt.Fprintf(w, "}, .len = %d }", len(m.Items))
+	case "map_int_str":
+		usesMapIntStr = true
+		fmt.Fprintf(w, "(map_int_str){ .items = {")
+		for i, it := range m.Items {
+			if i > 0 {
+				io.WriteString(w, ", ")
+			}
+			io.WriteString(w, "{")
+			it.Key.emitExpr(w)
+			io.WriteString(w, ", ")
+			it.Value.emitExpr(w)
+			io.WriteString(w, "}")
+		}
+		fmt.Fprintf(w, "}, .len = %d }", len(m.Items))
+	case "map_str_map_str_int":
+		usesMapStrMapStrInt = true
+		fmt.Fprintf(w, "(map_str_map_str_int){ .items = {")
+		for i, it := range m.Items {
+			if i > 0 {
+				io.WriteString(w, ", ")
+			}
+			io.WriteString(w, "{")
+			it.Key.emitExpr(w)
+			io.WriteString(w, ", &")
+			if inner, ok := it.Value.(*MapLit); ok {
+				inner.emitExpr(w)
+			} else {
+				it.Value.emitExpr(w)
+			}
+			io.WriteString(w, "}")
+		}
+		fmt.Fprintf(w, "}, .len = %d }", len(m.Items))
 	}
-	io.WriteString(w, " }")
+}
+
+func mapLitType(m *MapLit) string {
+	if len(m.Items) == 0 {
+		return "map_str_int"
+	}
+	keyIsInt := true
+	for _, it := range m.Items {
+		if _, ok := it.Key.(*IntLit); !ok {
+			keyIsInt = false
+			break
+		}
+	}
+	switch m.Items[0].Value.(type) {
+	case *IntLit, *BinaryExpr, *VarRef:
+		if keyIsInt {
+			return "map_int_int"
+		}
+		return "map_str_int"
+	case *StringLit:
+		if keyIsInt {
+			return "map_int_str"
+		}
+		return "map_str_str"
+	case *MapLit:
+		if keyIsInt {
+			return "map_int_map_str_int"
+		}
+		return "map_str_map_str_int"
+	default:
+		if keyIsInt {
+			return "map_int_int"
+		}
+		return "map_str_int"
+	}
 }
 
 type FieldExpr struct {
@@ -576,6 +689,41 @@ type IndexExpr struct {
 }
 
 func (i *IndexExpr) emitExpr(w io.Writer) {
+	if vr, ok := i.Target.(*VarRef); ok {
+		if t, ok2 := varTypes[vr.Name]; ok2 {
+			switch t {
+			case "map_str_int":
+				io.WriteString(w, "map_str_int_get(&")
+				io.WriteString(w, vr.Name)
+				io.WriteString(w, ", ")
+				i.Index.emitExpr(w)
+				io.WriteString(w, ")")
+				return
+			case "map_int_str":
+				io.WriteString(w, "map_int_str_get(&")
+				io.WriteString(w, vr.Name)
+				io.WriteString(w, ", ")
+				i.Index.emitExpr(w)
+				io.WriteString(w, ")")
+				return
+			case "map_str_map_str_int":
+				io.WriteString(w, "map_str_map_str_int_get(&")
+				io.WriteString(w, vr.Name)
+				io.WriteString(w, ", ")
+				i.Index.emitExpr(w)
+				io.WriteString(w, ")")
+				return
+			}
+		}
+	}
+	if tname := inferExprType(currentEnv, i.Target); tname == "map_str_int*" {
+		io.WriteString(w, "map_str_int_get(")
+		i.Target.emitExpr(w)
+		io.WriteString(w, ", ")
+		i.Index.emitExpr(w)
+		io.WriteString(w, ")")
+		return
+	}
 	if exprIsString(i.Target) {
 		io.WriteString(w, "(const char[]){")
 		i.Target.emitExpr(w)
@@ -715,6 +863,33 @@ func (b *BinaryExpr) emitExpr(w io.Writer) {
 								b.Left.emitExpr(w)
 								io.WriteString(w, ")")
 								return
+							}
+							if vr, ok := b.Right.(*VarRef); ok {
+								if t, ok2 := varTypes[vr.Name]; ok2 {
+									switch t {
+									case "map_str_int":
+										io.WriteString(w, "map_str_int_has(&")
+										io.WriteString(w, vr.Name)
+										io.WriteString(w, ", ")
+										b.Left.emitExpr(w)
+										io.WriteString(w, ")")
+										return
+									case "map_int_str":
+										io.WriteString(w, "map_int_str_has(&")
+										io.WriteString(w, vr.Name)
+										io.WriteString(w, ", ")
+										b.Left.emitExpr(w)
+										io.WriteString(w, ")")
+										return
+									case "map_str_map_str_int":
+										io.WriteString(w, "map_str_map_str_int_get(&")
+										io.WriteString(w, vr.Name)
+										io.WriteString(w, ", ")
+										b.Left.emitExpr(w)
+										io.WriteString(w, ") != NULL")
+										return
+									}
+								}
 							}
 						}
 					}
@@ -858,6 +1033,26 @@ func (p *Program) Emit() []byte {
 		buf.WriteString("    return 0;\n")
 		buf.WriteString("}\n\n")
 	}
+	if usesMapStrInt {
+		buf.WriteString("typedef struct {const char* key; int value;} pair_str_int;\n")
+		buf.WriteString("typedef struct {pair_str_int items[16]; int len;} map_str_int;\n")
+		buf.WriteString("static int map_str_int_get(map_str_int* m,const char* k){for(int i=0;i<m->len;i++){if(strcmp(m->items[i].key,k)==0) return m->items[i].value;}return 0;}\n")
+		buf.WriteString("static void map_str_int_set(map_str_int* m,const char* k,int v){for(int i=0;i<m->len;i++){if(strcmp(m->items[i].key,k)==0){m->items[i].value=v;return;}}m->items[m->len++] = (pair_str_int){k,v};}\n")
+		buf.WriteString("static int map_str_int_has(map_str_int* m,const char* k){for(int i=0;i<m->len;i++){if(strcmp(m->items[i].key,k)==0) return 1;}return 0;}\n\n")
+	}
+	if usesMapIntStr {
+		buf.WriteString("typedef struct {int key; const char* value;} pair_int_str;\n")
+		buf.WriteString("typedef struct {pair_int_str items[16]; int len;} map_int_str;\n")
+		buf.WriteString("static const char* map_int_str_get(map_int_str* m,int k){for(int i=0;i<m->len;i++){if(m->items[i].key==k) return m->items[i].value;}return \"\";}\n")
+		buf.WriteString("static void map_int_str_set(map_int_str* m,int k,const char* v){for(int i=0;i<m->len;i++){if(m->items[i].key==k){m->items[i].value=v;return;}}m->items[m->len++] = (pair_int_str){k,v};}\n")
+		buf.WriteString("static int map_int_str_has(map_int_str* m,int k){for(int i=0;i<m->len;i++){if(m->items[i].key==k) return 1;}return 0;}\n\n")
+	}
+	if usesMapStrMapStrInt {
+		buf.WriteString("typedef struct {const char* key; map_str_int* value;} pair_str_map_str_int;\n")
+		buf.WriteString("typedef struct {pair_str_map_str_int items[16]; int len;} map_str_map_str_int;\n")
+		buf.WriteString("static map_str_int* map_str_map_str_int_get(map_str_map_str_int* m,const char* k){for(int i=0;i<m->len;i++){if(strcmp(m->items[i].key,k)==0) return m->items[i].value;}return NULL;}\n")
+		buf.WriteString("static void map_str_map_str_int_set(map_str_map_str_int* m,const char* k,map_str_int* v){for(int i=0;i<m->len;i++){if(strcmp(m->items[i].key,k)==0){m->items[i].value=v;return;}}m->items[m->len++] = (pair_str_map_str_int){k,v};}\n")
+	}
 	names := make([]string, 0, len(structTypes))
 	for name := range structTypes {
 		names = append(names, name)
@@ -993,6 +1188,9 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 	needMath = false
 	needContainsInt = false
 	needContainsStr = false
+	usesMapStrInt = false
+	usesMapIntStr = false
+	usesMapStrMapStrInt = false
 	datasetWhereEnabled = false
 	p := &Program{}
 	mainFn := &Function{Name: "main"}
@@ -1240,10 +1438,20 @@ func compileStmt(env *types.Env, s *parser.Statement) (Stmt, error) {
 			env.SetValue(s.Let.Name, val, true)
 		}
 		varTypes[s.Let.Name] = declType
-		if _, isMap := valExpr.(*MapLit); isMap {
-			return nil, nil
+		if ml, ok := valExpr.(*MapLit); ok {
+			t := mapLitType(ml)
+			varTypes[s.Let.Name] = t
+			switch t {
+			case "map_str_int":
+				usesMapStrInt = true
+			case "map_int_str":
+				usesMapIntStr = true
+			case "map_str_map_str_int":
+				usesMapStrMapStrInt = true
+				usesMapStrInt = true
+			}
 		}
-		return &DeclStmt{Name: s.Let.Name, Value: valExpr, Type: declType}, nil
+		return &DeclStmt{Name: s.Let.Name, Value: valExpr, Type: varTypes[s.Let.Name]}, nil
 	case s.Var != nil:
 		currentVarName = s.Var.Name
 		valExpr := convertExpr(s.Var.Value)
@@ -1266,10 +1474,20 @@ func compileStmt(env *types.Env, s *parser.Statement) (Stmt, error) {
 			env.SetValue(s.Var.Name, val, true)
 		}
 		varTypes[s.Var.Name] = declType
-		if _, isMap := valExpr.(*MapLit); isMap {
-			return nil, nil
+		if ml, ok := valExpr.(*MapLit); ok {
+			t := mapLitType(ml)
+			varTypes[s.Var.Name] = t
+			switch t {
+			case "map_str_int":
+				usesMapStrInt = true
+			case "map_int_str":
+				usesMapIntStr = true
+			case "map_str_map_str_int":
+				usesMapStrMapStrInt = true
+				usesMapStrInt = true
+			}
 		}
-		return &DeclStmt{Name: s.Var.Name, Value: valExpr, Type: declType}, nil
+		return &DeclStmt{Name: s.Var.Name, Value: valExpr, Type: varTypes[s.Var.Name]}, nil
 	case s.Assign != nil:
 		valExpr := convertExpr(s.Assign.Value)
 		if list, ok := convertListExpr(s.Assign.Value); ok {
@@ -2980,6 +3198,22 @@ func inferExprType(env *types.Env, e Expr) string {
 			return "double"
 		}
 		return "int"
+	case *MapLit:
+		return mapLitType(v)
+	case *IndexExpr:
+		if vr, ok := v.Target.(*VarRef); ok {
+			switch varTypes[vr.Name] {
+			case "map_str_int":
+				return "int"
+			case "map_int_str":
+				return "const char*"
+			case "map_str_map_str_int":
+				return "map_str_int*"
+			}
+		}
+		if inferExprType(env, v.Target) == "map_str_int*" {
+			return "int"
+		}
 	case *UnaryExpr:
 		return inferExprType(env, v.Expr)
 	}
@@ -3026,6 +3260,8 @@ func inferCType(env *types.Env, name string, e Expr) string {
 			return "double"
 		case types.StructType:
 			return tt.Name
+		case types.MapType:
+			return "map_str_int"
 		}
 	}
 	return "int"
