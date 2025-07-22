@@ -782,6 +782,58 @@ type MapItem struct {
 	Value Expr
 }
 
+// StructUpdateExpr updates a field of a struct or map.
+type StructUpdateExpr struct {
+	Target Expr
+	Field  string
+	Value  Expr
+}
+
+func (s *StructUpdateExpr) emit(w io.Writer) {
+	io.WriteString(w, "%{")
+	s.Target.emit(w)
+	io.WriteString(w, " | ")
+	io.WriteString(w, s.Field)
+	io.WriteString(w, ": ")
+	s.Value.emit(w)
+	io.WriteString(w, "}")
+}
+
+// UpdateStmt modifies items within a list of structs.
+type UpdateStmt struct {
+	Target string
+	Fields []string
+	Values []Expr
+	Cond   Expr
+}
+
+func (u *UpdateStmt) emit(w io.Writer, indent int) {
+	for i := 0; i < indent; i++ {
+		io.WriteString(w, "  ")
+	}
+	io.WriteString(w, u.Target)
+	io.WriteString(w, " = Enum.map(")
+	io.WriteString(w, u.Target)
+	io.WriteString(w, ", fn item -> ")
+	expr := Expr(&VarRef{Name: "item"})
+	for i, f := range u.Fields {
+		expr = &StructUpdateExpr{Target: expr, Field: f, Value: u.Values[i]}
+	}
+	if u.Cond != nil {
+		ce := &CondExpr{Cond: u.Cond, Then: expr, Else: &VarRef{Name: "item"}}
+		ce.emit(w)
+	} else {
+		expr.emit(w)
+	}
+	io.WriteString(w, " end)")
+	io.WriteString(w, "\n")
+	for i := 0; i < indent; i++ {
+		io.WriteString(w, "  ")
+	}
+	io.WriteString(w, "_ = ")
+	io.WriteString(w, u.Target)
+}
+
 func (m *MapLit) emit(w io.Writer) {
 	io.WriteString(w, "%{")
 	for i, it := range m.Items {
@@ -1337,6 +1389,8 @@ func compileStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 		return compileWhileStmt(st.While, env)
 	case st.For != nil:
 		return compileForStmt(st.For, env)
+	case st.Update != nil:
+		return compileUpdateStmt(st.Update, env)
 	case st.Break != nil:
 		return &BreakStmt{}, nil
 	case st.Continue != nil:
@@ -1555,6 +1609,57 @@ func compileForStmt(fs *parser.ForStmt, env *types.Env) (Stmt, error) {
 	check(body)
 	res := &ForStmt{Name: fs.Name, Start: start, End: end, Source: src, Body: body, Simple: simple}
 	return res, nil
+}
+
+func compileUpdateStmt(us *parser.UpdateStmt, env *types.Env) (Stmt, error) {
+	t, err := env.GetVar(us.Target)
+	if err != nil {
+		return nil, err
+	}
+	lt, ok := t.(types.ListType)
+	if !ok {
+		return nil, fmt.Errorf("update target not list")
+	}
+	st, ok := lt.Elem.(types.StructType)
+	if !ok {
+		return nil, fmt.Errorf("update element not struct")
+	}
+	child := types.NewEnv(env)
+	for _, f := range st.Order {
+		child.SetVar(f, st.Fields[f], false)
+	}
+	fieldSet := map[string]bool{}
+	for _, f := range st.Order {
+		fieldSet[f] = true
+	}
+	fields := make([]string, len(us.Set.Items))
+	values := make([]Expr, len(us.Set.Items))
+	for i, it := range us.Set.Items {
+		name, ok := identName(it.Key)
+		if !ok {
+			name, ok = literalString(it.Key)
+			if !ok {
+				return nil, fmt.Errorf("unsupported update key")
+			}
+		}
+		val, err := compileExpr(it.Value, child)
+		if err != nil {
+			return nil, err
+		}
+		val = substituteFieldRefs(val, fieldSet)
+		fields[i] = name
+		values[i] = val
+	}
+	var cond Expr
+	if us.Where != nil {
+		var err error
+		cond, err = compileExpr(us.Where, child)
+		if err != nil {
+			return nil, err
+		}
+		cond = substituteFieldRefs(cond, fieldSet)
+	}
+	return &UpdateStmt{Target: us.Target, Fields: fields, Values: values, Cond: cond}, nil
 }
 
 func compileFunExpr(fn *parser.FunExpr, env *types.Env) (Expr, error) {
@@ -2858,4 +2963,62 @@ func repoRoot() string {
 		dir = parent
 	}
 	return ""
+}
+
+func identName(e *parser.Expr) (string, bool) {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) != 0 {
+		return "", false
+	}
+	u := e.Binary.Left
+	if len(u.Ops) != 0 || u.Value == nil {
+		return "", false
+	}
+	p := u.Value
+	if len(p.Ops) != 0 || p.Target == nil || p.Target.Selector == nil {
+		return "", false
+	}
+	if len(p.Target.Selector.Tail) == 0 {
+		return p.Target.Selector.Root, true
+	}
+	return "", false
+}
+
+func substituteFieldRefs(e Expr, fields map[string]bool) Expr {
+	switch ex := e.(type) {
+	case *VarRef:
+		if fields[ex.Name] {
+			return &IndexExpr{Target: &VarRef{Name: "item"}, Index: &AtomLit{Name: ex.Name}, UseMapSyntax: true}
+		}
+		return ex
+	case *BinaryExpr:
+		return &BinaryExpr{Left: substituteFieldRefs(ex.Left, fields), Op: ex.Op, Right: substituteFieldRefs(ex.Right, fields), MapIn: ex.MapIn}
+	case *UnaryExpr:
+		return &UnaryExpr{Op: ex.Op, Expr: substituteFieldRefs(ex.Expr, fields)}
+	case *CallExpr:
+		args := make([]Expr, len(ex.Args))
+		for i, a := range ex.Args {
+			args[i] = substituteFieldRefs(a, fields)
+		}
+		return &CallExpr{Func: ex.Func, Args: args, Var: ex.Var}
+	case *CondExpr:
+		return &CondExpr{Cond: substituteFieldRefs(ex.Cond, fields), Then: substituteFieldRefs(ex.Then, fields), Else: substituteFieldRefs(ex.Else, fields)}
+	case *GroupExpr:
+		return &GroupExpr{Expr: substituteFieldRefs(ex.Expr, fields)}
+	case *IndexExpr:
+		return &IndexExpr{Target: substituteFieldRefs(ex.Target, fields), Index: substituteFieldRefs(ex.Index, fields), IsString: ex.IsString, UseMapSyntax: ex.UseMapSyntax}
+	case *ListLit:
+		elems := make([]Expr, len(ex.Elems))
+		for i, el := range ex.Elems {
+			elems[i] = substituteFieldRefs(el, fields)
+		}
+		return &ListLit{Elems: elems}
+	case *MapLit:
+		items := make([]MapItem, len(ex.Items))
+		for i, it := range ex.Items {
+			items[i] = MapItem{Key: substituteFieldRefs(it.Key, fields), Value: substituteFieldRefs(it.Value, fields)}
+		}
+		return &MapLit{Items: items}
+	default:
+		return ex
+	}
 }

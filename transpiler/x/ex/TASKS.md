@@ -1,6 +1,6 @@
-## Progress (2025-07-22 09:06 +0700)
-- Commit aee7c5875: ex transpiler: add yaml loader
-- Generated Elixir for 100/102 programs
+## Progress (2025-07-22 09:44 +0700)
+- Commit f00a0aca8: ex transpiler: implement update statements
+- Generated Elixir for 101/102 programs
 - Updated README checklist and outputs
 - Improved code emission and type inference
 
