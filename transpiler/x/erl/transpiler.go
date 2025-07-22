@@ -57,10 +57,7 @@ func (c *context) clone() *context {
 	for k, v := range c.orig {
 		orig[k] = v
 	}
-	counter := make(map[string]int, len(c.counter))
-	for k, v := range c.counter {
-		counter[k] = v
-	}
+	counter := c.counter
 	fields := make(map[string]map[string]bool, len(c.strField))
 	for k, v := range c.strField {
 		fm := make(map[string]bool, len(v))
@@ -1399,8 +1396,11 @@ func (i *IfStmt) emit(w io.Writer) {
 }
 
 func (f *ForStmt) emit(w io.Writer) {
+	loopName := f.Fun + "_loop"
 	io.WriteString(w, f.Fun)
-	io.WriteString(w, " = fun F(List")
+	io.WriteString(w, " = fun ")
+	io.WriteString(w, loopName)
+	io.WriteString(w, "(List")
 	for _, p := range f.Params {
 		io.WriteString(w, ", ")
 		io.WriteString(w, p)
@@ -1424,9 +1424,13 @@ func (f *ForStmt) emit(w io.Writer) {
 		io.WriteString(w, ",")
 	}
 	if f.Breakable {
-		io.WriteString(w, "\n            F(Rest")
+		io.WriteString(w, "\n            ")
+		io.WriteString(w, loopName)
+		io.WriteString(w, "(Rest")
 	} else {
-		io.WriteString(w, "\n            F(Rest")
+		io.WriteString(w, "\n            ")
+		io.WriteString(w, loopName)
+		io.WriteString(w, "(Rest")
 	}
 	for _, a := range f.Next {
 		io.WriteString(w, ", ")
@@ -1434,7 +1438,9 @@ func (f *ForStmt) emit(w io.Writer) {
 	}
 	io.WriteString(w, ")")
 	if f.Breakable {
-		io.WriteString(w, "\n        catch\n            continue -> F(Rest")
+		io.WriteString(w, "\n        catch\n            continue -> ")
+		io.WriteString(w, loopName)
+		io.WriteString(w, "(Rest")
 		for _, p := range f.Params {
 			io.WriteString(w, ", ")
 			io.WriteString(w, p)
@@ -1480,8 +1486,11 @@ func (f *ForStmt) emit(w io.Writer) {
 }
 
 func (ws *WhileStmt) emit(w io.Writer) {
+	loopName := ws.Fun + "_loop"
 	io.WriteString(w, ws.Fun)
-	io.WriteString(w, " = fun F(")
+	io.WriteString(w, " = fun ")
+	io.WriteString(w, loopName)
+	io.WriteString(w, "(")
 	for i, p := range ws.Params {
 		if i > 0 {
 			io.WriteString(w, ", ")
@@ -1496,7 +1505,9 @@ func (ws *WhileStmt) emit(w io.Writer) {
 		st.emit(w)
 		io.WriteString(w, ",")
 	}
-	io.WriteString(w, "\n            F(")
+	io.WriteString(w, "\n            ")
+	io.WriteString(w, loopName)
+	io.WriteString(w, "(")
 	for i, a := range ws.Next {
 		if i > 0 {
 			io.WriteString(w, ", ")
@@ -2214,7 +2225,7 @@ func convertStmt(st *parser.Statement, env *types.Env, ctx *context) ([]Stmt, er
 	case st.For != nil:
 		loopCtx := ctx.clone()
 		alias := loopCtx.newAlias(st.For.Name)
-		funName := loopCtx.newAlias("fun")
+		funName := ctx.newAlias("fun")
 		body := []Stmt{}
 		for _, bs := range st.For.Body {
 			cs, err := convertStmt(bs, env, loopCtx)
@@ -2304,7 +2315,7 @@ func convertStmt(st *parser.Statement, env *types.Env, ctx *context) ([]Stmt, er
 			next[i] = loopCtx.alias[n]
 			ctx.alias[n] = loopCtx.alias[n]
 		}
-		funName := loopCtx.newAlias("fun")
+		funName := ctx.newAlias("fun")
 		return []Stmt{&WhileStmt{Params: params, Cond: cond, Body: body, Next: next, Fun: funName}}, nil
 	case st.Import != nil:
 		if st.Import.Auto && st.Import.Lang != nil && *st.Import.Lang == "go" {
