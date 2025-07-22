@@ -645,15 +645,15 @@ func (p *PrintExpr) emit(w io.Writer) {
 			} else {
 				io.WriteString(w, "null")
 			}
-		} else {
-			io.WriteString(w, "JSON.stringify(")
-			if a != nil {
-				a.emit(w)
-			} else {
-				io.WriteString(w, "null")
-			}
-			io.WriteString(w, ")")
+			continue
 		}
+		io.WriteString(w, "((v => typeof v === 'string' ? v : JSON.stringify(v))(")
+		if a != nil {
+			a.emit(w)
+		} else {
+			io.WriteString(w, "null")
+		}
+		io.WriteString(w, "))")
 	}
 	io.WriteString(w, ")")
 }
@@ -676,12 +676,6 @@ func (s *SubstringExpr) emit(w io.Writer) {
 
 func (m *MapLit) emit(w io.Writer) {
 	io.WriteString(w, "{")
-	if m.TypeName != "" {
-		fmt.Fprintf(w, "\"__name\": %q", m.TypeName)
-		if len(m.Entries) > 0 {
-			io.WriteString(w, ", ")
-		}
-	}
 	for i, e := range m.Entries {
 		if i > 0 {
 			io.WriteString(w, ", ")
