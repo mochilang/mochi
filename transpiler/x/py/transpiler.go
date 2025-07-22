@@ -352,20 +352,6 @@ func (f *FieldExpr) emit(w io.Writer) error {
 		return err
 	}
 	useIndex := f.MapIndex
-	if useIndex && currentEnv != nil {
-		if st, ok := inferPyType(f.Target, currentEnv).(types.StructType); ok {
-			if _, ok := st.Fields[f.Name]; ok {
-				useIndex = false
-			}
-		} else {
-			for _, st := range currentEnv.Structs() {
-				if _, ok := st.Fields[f.Name]; ok {
-					useIndex = false
-					break
-				}
-			}
-		}
-	}
 	if useIndex {
 		_, err := fmt.Fprintf(w, "[%q]", f.Name)
 		return err
@@ -3477,13 +3463,14 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 						currentImports["dataclasses"] = true
 						conv := &ListComp{Var: "_x", Iter: a, Expr: &CallExpr{Func: &FieldExpr{Target: &Name{Name: "dataclasses"}, Name: "asdict"}, Args: []Expr{&Name{Name: "_x"}}}}
 						outArgs[i] = &CallExpr{Func: &RawExpr{Code: "json.dumps"}, Args: []Expr{conv}}
+					} else if _, ok2 := lt.Elem.(types.MapType); ok2 {
+						outArgs[i] = &RawExpr{Code: fmt.Sprintf("str(%s).replace('}, {','},{')", exprString(a))}
 					} else {
 						currentImports["json"] = true
 						outArgs[i] = &CallExpr{Func: &RawExpr{Code: "json.dumps"}, Args: []Expr{a}}
 					}
 				} else if _, ok := t.(types.MapType); ok {
-					currentImports["json"] = true
-					outArgs[i] = &CallExpr{Func: &RawExpr{Code: "json.dumps"}, Args: []Expr{a}}
+					outArgs[i] = &RawExpr{Code: fmt.Sprintf("str(%s).replace('}, {','},{')", exprString(a))}
 				} else if isStructType(t) {
 					currentImports["json"] = true
 					currentImports["dataclasses"] = true
@@ -4145,14 +4132,47 @@ func convertGroupQuery(q *parser.QueryExpr, env *types.Env, target string) ([]St
 		}
 	}
 
-	prev := currentEnv
-	genv := types.NewEnv(env)
+	groupsVar := "_" + target + "_groups"
+
+	stmts := []Stmt{}
+
+	var itemDC *DataClassDef
+	var row Expr
 	var itemType types.Type = types.AnyType{}
-	if env != nil {
-		if t, err := env.GetVar(q.Var); err == nil {
-			itemType = t
+	if len(vars) > 1 {
+		var fields []DataClassField
+		args := make([]Expr, len(vars))
+		fieldTypes := map[string]types.Type{}
+		for i, v := range vars {
+			var typ types.Type = types.AnyType{}
+			if env != nil {
+				if t, err := env.GetVar(v); err == nil {
+					typ = t
+				}
+			}
+			fields = append(fields, DataClassField{Name: v, Type: typ.String()})
+			args[i] = &Name{Name: v}
+			fieldTypes[v] = typ
+		}
+		structCounter++
+		itemDC = &DataClassDef{Name: fmt.Sprintf("GroupItem%d", structCounter), Fields: fields}
+		row = &CallExpr{Func: &Name{Name: itemDC.Name}, Args: args}
+		itemType = types.StructType{Name: itemDC.Name, Fields: fieldTypes}
+		stmts = append(stmts, itemDC)
+		if env != nil {
+			env.SetStruct(itemDC.Name, itemType.(types.StructType))
+		}
+	} else {
+		row = &Name{Name: q.Var}
+		if env != nil {
+			if t, err := env.GetVar(q.Var); err == nil {
+				itemType = t
+			}
 		}
 	}
+
+	prev := currentEnv
+	genv := types.NewEnv(env)
 	keyType := inferPyType(keyVal, env)
 	genv.SetVar(q.Group.Name, types.StructType{Fields: map[string]types.Type{"key": keyType, "items": types.ListType{Elem: itemType}}}, true)
 	currentEnv = genv
@@ -4188,15 +4208,15 @@ func convertGroupQuery(q *parser.QueryExpr, env *types.Env, target string) ([]St
 		}
 	}
 	currentEnv = prev
-	sel = replaceGroup(sel, q.Group.Name)
+	if n, ok := sel.(*Name); !(ok && n.Name == q.Group.Name) {
+		sel = replaceGroup(sel, q.Group.Name)
+	}
 	if having != nil {
 		having = replaceGroup(having, q.Group.Name)
 	}
 	if sortExpr != nil {
 		sortExpr = replaceGroup(sortExpr, q.Group.Name)
 	}
-
-	groupsVar := "_" + target + "_groups"
 
 	groupDC := &DataClassDef{
 		Name:   toClassName(groupsVar),
@@ -4205,10 +4225,10 @@ func convertGroupQuery(q *parser.QueryExpr, env *types.Env, target string) ([]St
 	if env != nil {
 		env.SetStruct(groupDC.Name, types.StructType{Fields: map[string]types.Type{"key": keyType, "items": types.ListType{Elem: itemType}}})
 	}
-
-	stmts := []Stmt{groupDC, &LetStmt{Name: groupsVar, Expr: &DictLit{}}}
-
-	row := &Name{Name: q.Var}
+	if itemDC != nil {
+		stmts = append(stmts, itemDC)
+	}
+	stmts = append(stmts, groupDC, &LetStmt{Name: groupsVar, Expr: &DictLit{}})
 	inner := []Stmt{
 		&LetStmt{Name: "_g", Expr: &CallExpr{Func: &FieldExpr{Target: &Name{Name: groupsVar}, Name: "setdefault"}, Args: []Expr{keyExpr, &CallExpr{Func: &Name{Name: groupDC.Name}, Args: []Expr{keyExpr, &ListLit{}}}}}},
 		&ExprStmt{Expr: &CallExpr{Func: &FieldExpr{Target: &FieldExpr{Target: &Name{Name: "_g"}, Name: "items"}, Name: "append"}, Args: []Expr{row}}},
@@ -4216,7 +4236,6 @@ func convertGroupQuery(q *parser.QueryExpr, env *types.Env, target string) ([]St
 	if where != nil {
 		inner = []Stmt{&IfStmt{Cond: where, Then: inner}}
 	}
-
 	bodyLoop := inner
 	for i := len(vars) - 1; i >= 0; i-- {
 		bodyLoop = []Stmt{&ForStmt{Var: vars[i], Iter: iters[i], Body: bodyLoop}}
@@ -4263,7 +4282,11 @@ func convertGroupQuery(q *parser.QueryExpr, env *types.Env, target string) ([]St
 			env.SetStruct(resultDC.Name, structFromDataClass(resultDC, env))
 			env.SetVar(target, types.ListType{Elem: structFromDataClass(resultDC, env)}, false)
 		} else {
-			env.SetVar(target, types.ListType{Elem: types.AnyType{}}, false)
+			if st, ok := env.GetStruct(groupDC.Name); ok {
+				env.SetVar(target, types.ListType{Elem: st}, false)
+			} else {
+				env.SetVar(target, types.ListType{Elem: structFromDataClass(groupDC, env)}, false)
+			}
 		}
 	}
 

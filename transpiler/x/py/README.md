@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Python code from programs in `tests/vm/valid` lives in `tests/transpiler/x/py`.
-Last updated: 2025-07-22 03:29 UTC
+Last updated: 2025-07-22 04:26 UTC
 
-## VM Golden Test Checklist (93/102)
+## VM Golden Test Checklist (95/102)
 - [x] append_builtin
 - [x] avg_builtin
 - [x] basic_compare
@@ -32,12 +32,12 @@ Last updated: 2025-07-22 03:29 UTC
 - [x] group_by_conditional_sum
 - [x] group_by_having
 - [x] group_by_join
-- [ ] group_by_left_join
+- [x] group_by_left_join
 - [x] group_by_multi_join
 - [ ] group_by_multi_join_sort
 - [ ] group_by_multi_sort
 - [x] group_by_sort
-- [ ] group_items_iteration
+- [x] group_items_iteration
 - [x] if_else
 - [x] if_then_else
 - [x] if_then_else_nested
