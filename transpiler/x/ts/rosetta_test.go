@@ -35,7 +35,12 @@ func runRosettaCase(t *testing.T, name string) {
 
 	want, err := os.ReadFile(outPath)
 	if err != nil {
-		t.Fatalf("read want: %v", err)
+		// fall back to source .out file if transpiler output not found
+		srcOut := filepath.Join(root, "tests", "rosetta", "x", "Mochi", name+".out")
+		want, err = os.ReadFile(srcOut)
+		if err != nil {
+			t.Fatalf("read want: %v", err)
+		}
 	}
 	want = bytes.TrimSpace(want)
 
@@ -58,7 +63,7 @@ func runRosettaCase(t *testing.T, name string) {
 	if err := os.WriteFile(codePath, code, 0o644); err != nil {
 		t.Fatalf("write code: %v", err)
 	}
-	cmd := exec.Command("deno", "run", "--quiet", "--allow-net", "--allow-read", codePath)
+	cmd := exec.Command("deno", "run", "--quiet", "--allow-net", "--allow-read", "--allow-env", codePath)
 	cmd.Env = append(os.Environ(), "DENO_TLS_CA_STORE=system")
 	if data, err := os.ReadFile(strings.TrimSuffix(src, ".mochi") + ".in"); err == nil {
 		cmd.Stdin = bytes.NewReader(data)
@@ -78,11 +83,15 @@ func runRosettaCase(t *testing.T, name string) {
 
 func TestTSTranspiler_Rosetta_Golden(t *testing.T) {
 	root := repoRoot(t)
-	files, err := filepath.Glob(filepath.Join(root, "tests", "rosetta", "x", "Mochi", "*.mochi"))
+	srcDir := filepath.Join(root, "tests", "rosetta", "x", "Mochi")
+	files, err := filepath.Glob(filepath.Join(srcDir, "*.out"))
 	if err != nil {
 		t.Fatalf("glob: %v", err)
 	}
 	sort.Strings(files)
+	if len(files) == 0 {
+		t.Fatalf("no Mochi Rosetta tests found")
+	}
 	max := len(files)
 	if v := os.Getenv("ROSETTA_MAX"); v != "" {
 		if n, err := strconv.Atoi(v); err == nil && n < max {
@@ -90,7 +99,7 @@ func TestTSTranspiler_Rosetta_Golden(t *testing.T) {
 		}
 	}
 	for _, f := range files[:max] {
-		name := strings.TrimSuffix(filepath.Base(f), ".mochi")
+		name := strings.TrimSuffix(filepath.Base(f), ".out")
 		t.Run(name, func(t *testing.T) { runRosettaCase(t, name) })
 	}
 }
@@ -100,13 +109,13 @@ func updateRosettaChecklist() {
 	srcDir := filepath.Join(root, "tests", "rosetta", "x", "Mochi")
 	outDir := filepath.Join(root, "tests", "rosetta", "transpiler", "TypeScript")
 	md := filepath.Join(root, "transpiler", "x", "ts", "ROSETTA.md")
-	files, _ := filepath.Glob(filepath.Join(srcDir, "*.mochi"))
+	files, _ := filepath.Glob(filepath.Join(srcDir, "*.out"))
 	sort.Strings(files)
 	total := len(files)
 	compiled := 0
 	var lines []string
 	for _, f := range files {
-		name := strings.TrimSuffix(filepath.Base(f), ".mochi")
+		name := strings.TrimSuffix(filepath.Base(f), ".out")
 		mark := "[ ]"
 		if _, err := os.Stat(filepath.Join(outDir, name+".error")); err == nil {
 			// leave unchecked

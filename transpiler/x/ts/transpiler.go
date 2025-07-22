@@ -29,6 +29,30 @@ var transpileEnv *types.Env
 var generatedTypes map[string]bool
 var prelude []Stmt
 var pythonMathAliases map[string]bool
+var useNow bool
+
+var reserved = map[string]bool{
+	"break": true, "case": true, "catch": true, "class": true, "const": true,
+	"continue": true, "debugger": true, "default": true, "delete": true,
+	"do": true, "else": true, "enum": true, "export": true, "extends": true,
+	"false": true, "finally": true, "for": true, "function": true, "if": true,
+	"import": true, "in": true, "instanceof": true, "new": true, "null": true,
+	"return": true, "super": true, "switch": true, "this": true, "throw": true,
+	"true": true, "try": true, "typeof": true, "var": true, "void": true,
+	"while": true, "with": true, "as": true, "implements": true,
+	"interface": true, "let": true, "package": true, "private": true,
+	"protected": true, "public": true, "static": true, "yield": true,
+	"any": true, "boolean": true, "constructor": true, "declare": true,
+	"get": true, "module": true, "require": true, "number": true, "set": true,
+	"string": true, "symbol": true, "type": true, "from": true, "of": true,
+}
+
+func safeName(name string) string {
+	if reserved[name] {
+		return "_" + name
+	}
+	return name
+}
 
 type Stmt interface {
 	emit(io.Writer)
@@ -222,6 +246,11 @@ type MaxExpr struct{ Value Expr }
 
 // IntDivExpr performs integer division of two expressions.
 type IntDivExpr struct{ Left, Right Expr }
+
+// NowExpr expands to a deterministic timestamp similar to the VM's now() builtin.
+type NowExpr struct{}
+
+func (n *NowExpr) emit(w io.Writer) { io.WriteString(w, "_now()") }
 
 // ValuesExpr returns Object.values(o).
 type ValuesExpr struct{ Value Expr }
@@ -446,7 +475,7 @@ func (b *BoolLit) emit(w io.Writer) {
 
 func (n *NullLit) emit(w io.Writer) { io.WriteString(w, "null") }
 
-func (n *NameRef) emit(w io.Writer) { io.WriteString(w, n.Name) }
+func (n *NameRef) emit(w io.Writer) { io.WriteString(w, safeName(n.Name)) }
 
 func (b *BinaryExpr) emit(w io.Writer) {
 	io.WriteString(w, "(")
@@ -1482,7 +1511,7 @@ func (v *VarDecl) emit(w io.Writer) {
 	} else {
 		io.WriteString(w, "let ")
 	}
-	io.WriteString(w, v.Name)
+	io.WriteString(w, safeName(v.Name))
 	if v.Type != "" && v.Type != "any" {
 		io.WriteString(w, ": ")
 		io.WriteString(w, v.Type)
@@ -1499,7 +1528,7 @@ func (v *VarDecl) emit(w io.Writer) {
 }
 
 func (a *AssignStmt) emit(w io.Writer) {
-	io.WriteString(w, a.Name)
+	io.WriteString(w, safeName(a.Name))
 	io.WriteString(w, " = ")
 	a.Expr.emit(w)
 	if b, ok := w.(interface{ WriteByte(byte) error }); ok {
@@ -1545,19 +1574,19 @@ func (wst *WhileStmt) emit(w io.Writer) {
 
 func (f *ForRangeStmt) emit(w io.Writer) {
 	io.WriteString(w, "for (let ")
-	io.WriteString(w, f.Name)
+	io.WriteString(w, safeName(f.Name))
 	io.WriteString(w, " = ")
 	if f.Start != nil {
 		f.Start.emit(w)
 	}
 	io.WriteString(w, "; ")
-	io.WriteString(w, f.Name)
+	io.WriteString(w, safeName(f.Name))
 	io.WriteString(w, " < ")
 	if f.End != nil {
 		f.End.emit(w)
 	}
 	io.WriteString(w, "; ")
-	io.WriteString(w, f.Name)
+	io.WriteString(w, safeName(f.Name))
 	io.WriteString(w, "++) {\n")
 	for _, st := range f.Body {
 		st.emit(w)
@@ -1568,7 +1597,7 @@ func (f *ForRangeStmt) emit(w io.Writer) {
 
 func (f *ForInStmt) emit(w io.Writer) {
 	io.WriteString(w, "for (const ")
-	io.WriteString(w, f.Name)
+	io.WriteString(w, safeName(f.Name))
 	if f.Keys {
 		io.WriteString(w, " in ")
 	} else {
@@ -1604,13 +1633,13 @@ func (r *ReturnStmt) emit(w io.Writer) {
 
 func (f *FuncDecl) emit(w io.Writer) {
 	io.WriteString(w, "function ")
-	io.WriteString(w, f.Name)
+	io.WriteString(w, safeName(f.Name))
 	io.WriteString(w, "(")
 	for i, p := range f.Params {
 		if i > 0 {
 			io.WriteString(w, ", ")
 		}
-		io.WriteString(w, p)
+		io.WriteString(w, safeName(p))
 		if i < len(f.ParamTypes) && f.ParamTypes[i] != "" && f.ParamTypes[i] != "any" {
 			io.WriteString(w, ": ")
 			io.WriteString(w, f.ParamTypes[i])
@@ -1820,11 +1849,13 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	generatedTypes = map[string]bool{}
 	prelude = nil
 	pythonMathAliases = map[string]bool{}
+	useNow = false
 	defer func() {
 		transpileEnv = nil
 		generatedTypes = nil
 		prelude = nil
 		pythonMathAliases = nil
+		useNow = false
 	}()
 	tsProg := &Program{}
 
@@ -1834,6 +1865,27 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 			return nil, err
 		}
 		tsProg.Stmts = append(tsProg.Stmts, stmt)
+	}
+	if useNow {
+		prelude = append(prelude, &RawStmt{Code: `var _nowSeed = 0;
+var _nowSeeded = false;
+{
+  const s = typeof Deno !== "undefined" ? Deno.env.get("MOCHI_NOW_SEED") : (process.env.MOCHI_NOW_SEED || "");
+  if (s) {
+    const v = parseInt(s, 10);
+    if (!isNaN(v)) {
+      _nowSeed = v;
+      _nowSeeded = true;
+    }
+  }
+}
+function _now(): number {
+  if (_nowSeeded) {
+    _nowSeed = (_nowSeed * 1664525 + 1013904223) % 2147483647;
+    return _nowSeed;
+  }
+  return Date.now() * 1000;
+}`})
 	}
 	if len(prelude) > 0 {
 		tsProg.Stmts = append(prelude, tsProg.Stmts...)
@@ -2865,6 +2917,12 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 				return nil, fmt.Errorf("values expects one argument")
 			}
 			return &ValuesExpr{Value: args[0]}, nil
+		case "now":
+			if len(args) != 0 {
+				return nil, fmt.Errorf("now expects no arguments")
+			}
+			useNow = true
+			return &NowExpr{}, nil
 		case "json":
 			if len(args) != 1 {
 				return nil, fmt.Errorf("json expects one argument")
