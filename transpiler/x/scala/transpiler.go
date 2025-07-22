@@ -860,27 +860,27 @@ func (g *GroupByExpr) emit(w io.Writer) {
 	if elem == "" {
 		elem = "Any"
 	}
-	fmt.Fprintf(w, "({ var _tmp = ArrayBuffer[(Any, Map[String,Any])]() ; for (%s <- ", g.Var)
+	fmt.Fprint(w, "ArrayBuffer.from((for (")
+	fmt.Fprintf(w, "%s <- ", g.Var)
 	g.Source.emit(w)
-	fmt.Fprint(w, ") {")
+	fmt.Fprint(w, ")")
 	for _, f := range g.Froms {
-		fmt.Fprintf(w, " for (%s <- ", f.Var)
+		fmt.Fprintf(w, "; %s <- ", f.Var)
 		f.Src.emit(w)
-		fmt.Fprint(w, ") {")
 	}
 	for _, j := range g.Joins {
-		fmt.Fprintf(w, " for (%s <- ", j.Var)
+		fmt.Fprintf(w, "; %s <- ", j.Var)
 		j.Src.emit(w)
-		fmt.Fprint(w, ") { if (")
+		fmt.Fprint(w, " if (")
 		j.Cond.emit(w)
-		fmt.Fprint(w, ") {")
+		fmt.Fprint(w, ")")
 	}
 	if g.Where != nil {
 		fmt.Fprint(w, " if (")
 		g.Where.emit(w)
-		fmt.Fprint(w, ") {")
+		fmt.Fprint(w, ")")
 	}
-	fmt.Fprint(w, " _tmp.append((")
+	fmt.Fprint(w, " yield (")
 	g.Key.emit(w)
 	fmt.Fprint(w, ", Map(")
 	fmt.Fprintf(w, "\"%s\" -> %s", g.Var, g.Var)
@@ -891,16 +891,8 @@ func (g *GroupByExpr) emit(w io.Writer) {
 		fmt.Fprintf(w, ", \"%s\" -> %s", j.Var, j.Var)
 	}
 	fmt.Fprint(w, ")))")
-	if g.Where != nil {
-		fmt.Fprint(w, " }")
-	}
-	for range g.Joins {
-		fmt.Fprint(w, " }}")
-	}
-	for range g.Froms {
-		fmt.Fprint(w, " }")
-	}
-	fmt.Fprint(w, " }; ArrayBuffer(_tmp.groupBy(_._1).map{ case (k, arr) => Map(\"key\" -> k, \"items\" -> ArrayBuffer(arr.map(_._2).toSeq: _*)) }.toSeq: _*)")
+	fmt.Fprint(w, ")")
+	fmt.Fprint(w, ".groupBy(_._1).map{ case (k, arr) => Map(\"key\" -> k, \"items\" -> ArrayBuffer(arr.map(_._2).toSeq: _*)) }")
 	if g.Having != nil {
 		fmt.Fprint(w, ".filter(")
 		fmt.Fprintf(w, "%s => ", g.Name)
@@ -916,7 +908,7 @@ func (g *GroupByExpr) emit(w io.Writer) {
 	fmt.Fprint(w, ".map(")
 	fmt.Fprintf(w, "%s => ", g.Name)
 	g.Select.emit(w)
-	fmt.Fprint(w, ") })")
+	fmt.Fprint(w, "))")
 }
 
 // Emit generates formatted Scala source for the given program.
@@ -1853,6 +1845,12 @@ func convertInnerJoinQuery(q *parser.QueryExpr, env *types.Env) (Expr, error) {
 		return nil, err
 	}
 	srcType := types.ExprType(q.Source, env)
+	if n, ok := src.(*Name); ok {
+		if gt, ok := srcType.(types.GroupType); ok {
+			src = &IndexExpr{Value: n, Index: &StringLit{Value: "items"}}
+			srcType = types.ListType{Elem: gt.Elem}
+		}
+	}
 	var elemT types.Type = types.AnyType{}
 	if lt, ok := srcType.(types.ListType); ok {
 		elemT = lt.Elem
@@ -2255,6 +2253,8 @@ func convertForStmt(fs *parser.ForStmt, env *types.Env) (Stmt, error) {
 		if typ, err := env.GetVar(n.Name); err == nil {
 			if _, ok := typ.(types.MapType); ok {
 				iter = &FieldExpr{Receiver: iter, Name: "keys"}
+			} else if _, ok := typ.(types.GroupType); ok {
+				iter = &IndexExpr{Value: iter, Index: &StringLit{Value: "items"}}
 			}
 		}
 	}
