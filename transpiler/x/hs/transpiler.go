@@ -367,6 +367,8 @@ type PrintStmt struct {
 	String bool
 }
 
+type ExprStmt struct{ Expr Expr }
+
 type JSONStmt struct {
 	Expr Expr
 }
@@ -469,6 +471,11 @@ func (p *PrintStmt) emit(w io.Writer) {
 	io.WriteString(w, "print (")
 	p.Expr.emit(w)
 	io.WriteString(w, ")")
+}
+
+func (e *ExprStmt) emit(w io.Writer) {
+	writeIndent(w)
+	e.Expr.emit(w)
 }
 
 func (j *JSONStmt) emit(w io.Writer) {
@@ -849,6 +856,19 @@ type CallExpr struct {
 	Fun  Expr
 	Args []Expr
 }
+
+type RecordUpdate struct {
+	Target Expr
+	Field  string
+	Value  Expr
+}
+
+// SliceExpr represents list or string slicing.
+type SliceExpr struct {
+	Target Expr
+	Start  Expr
+	End    Expr
+}
 type LambdaExpr struct {
 	Params []string
 	Body   Expr
@@ -936,6 +956,22 @@ func (r *RecordLit) emit(w io.Writer) {
 	}
 	io.WriteString(w, "}")
 }
+
+func (r *RecordUpdate) emit(w io.Writer) {
+	switch r.Target.(type) {
+	case *NameRef, *FieldExpr:
+		r.Target.emit(w)
+	default:
+		io.WriteString(w, "(")
+		r.Target.emit(w)
+		io.WriteString(w, ")")
+	}
+	io.WriteString(w, " {")
+	io.WriteString(w, r.Field)
+	io.WriteString(w, " = ")
+	r.Value.emit(w)
+	io.WriteString(w, "}")
+}
 func (n *NameRef) emit(w io.Writer) { io.WriteString(w, safeName(n.Name)) }
 func (f *FieldExpr) emit(w io.Writer) {
 	if nr, ok := f.Target.(*NameRef); ok && nr.Name == "testpkg" {
@@ -987,6 +1023,25 @@ func (l *LenExpr) emit(w io.Writer) {
 		l.Arg.emit(w)
 		io.WriteString(w, ")")
 	}
+}
+
+func (s *SliceExpr) emit(w io.Writer) {
+	io.WriteString(w, "take (")
+	s.End.emit(w)
+	io.WriteString(w, " - ")
+	s.Start.emit(w)
+	io.WriteString(w, ") (drop ")
+	s.Start.emit(w)
+	io.WriteString(w, " ")
+	switch s.Target.(type) {
+	case *NameRef, *ListLit, *CallExpr:
+		s.Target.emit(w)
+	default:
+		io.WriteString(w, "(")
+		s.Target.emit(w)
+		io.WriteString(w, ")")
+	}
+	io.WriteString(w, ")")
 }
 func isStringExpr(e Expr) bool {
 	switch ex := e.(type) {
@@ -1806,7 +1861,12 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 				h.Stmts = append(h.Stmts, &JSONStmt{Expr: arg})
 				continue
 			}
-			return nil, fmt.Errorf("unsupported expression")
+			ex, err := convertExpr(st.Expr.Expr)
+			if err != nil {
+				return nil, err
+			}
+			h.Stmts = append(h.Stmts, &ExprStmt{Expr: ex})
+			continue
 		default:
 			if st.Test == nil && st.Import == nil && st.Type == nil {
 				return nil, fmt.Errorf("unsupported statement")
@@ -2024,16 +2084,34 @@ func convertPostfix(pf *parser.PostfixExpr) (Expr, error) {
 				}
 				args = append(args, ex)
 			}
-			expr = &CallExpr{Fun: expr, Args: args}
+			if n, ok := expr.(*NameRef); ok && n.Name == "str" && len(args) == 1 {
+				expr = &CallExpr{Fun: &NameRef{Name: "show"}, Args: args}
+			} else {
+				expr = &CallExpr{Fun: expr, Args: args}
+			}
 			continue
 		}
-		if op.Index != nil && op.Index.Colon == nil {
-			idx, err := convertExpr(op.Index.Start)
-			if err != nil {
-				return nil, err
+		if op.Index != nil {
+			if op.Index.Colon == nil {
+				idx, err := convertExpr(op.Index.Start)
+				if err != nil {
+					return nil, err
+				}
+				expr = &IndexExpr{Target: expr, Index: idx}
+				continue
 			}
-			expr = &IndexExpr{Target: expr, Index: idx}
-			continue
+			if op.Index.Colon != nil && op.Index.Colon2 == nil && op.Index.Step == nil {
+				start, err := convertExpr(op.Index.Start)
+				if err != nil {
+					return nil, err
+				}
+				end, err := convertExpr(op.Index.End)
+				if err != nil {
+					return nil, err
+				}
+				expr = &SliceExpr{Target: expr, Start: start, End: end}
+				continue
+			}
 		}
 		if op.Cast != nil {
 			if op.Cast.Type.Simple != nil {
@@ -2109,6 +2187,21 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 		return &GroupExpr{Expr: e}, nil
 	case p.Match != nil:
 		return convertMatchExpr(p.Match)
+	case p.Struct != nil:
+		names := make([]string, len(p.Struct.Fields))
+		vals := make([]Expr, len(p.Struct.Fields))
+		for i, f := range p.Struct.Fields {
+			names[i] = f.Name
+			ve, err := convertExpr(f.Value)
+			if err != nil {
+				return nil, err
+			}
+			vals[i] = ve
+		}
+		for _, n := range names {
+			preludeHide[n] = true
+		}
+		return &RecordLit{Name: p.Struct.Name, Names: names, Fields: vals}, nil
 	case p.List != nil:
 		if envInfo != nil {
 			if st, ok := types.InferStructFromList(p.List, envInfo); ok {
@@ -2150,7 +2243,7 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 		}
 		return &ListLit{Elems: elems}, nil
 	case p.Map != nil:
-		if len(p.Map.Items) >= 2 {
+		if len(p.Map.Items) >= 1 {
 			allConst := true
 			fields := make([]string, len(p.Map.Items))
 			typestr := make([]string, len(p.Map.Items))
@@ -2387,14 +2480,17 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 		if p.Query.Group != nil && len(p.Query.Group.Exprs) > 0 {
 			// unreachable
 		}
-		var result Expr = &ComprExpr{Vars: vars, Sources: srcs, Cond: cond, Body: body}
-		if p.Query.Sort != nil {
+		var result Expr
+		if p.Query.Sort != nil && len(srcs) == 1 {
 			sortExpr, err := convertExpr(p.Query.Sort)
 			if err != nil {
 				return nil, err
 			}
 			needDataList = true
-			result = &CallExpr{Fun: &NameRef{Name: "sortOn"}, Args: []Expr{&GroupExpr{Expr: &LambdaExpr{Params: []string{vars[0]}, Body: sortExpr}}, result}}
+			sorted := &CallExpr{Fun: &NameRef{Name: "sortOn"}, Args: []Expr{&GroupExpr{Expr: &LambdaExpr{Params: []string{vars[0]}, Body: sortExpr}}, srcs[0]}}
+			result = &ComprExpr{Vars: vars, Sources: []Expr{sorted}, Cond: cond, Body: body}
+		} else {
+			result = &ComprExpr{Vars: vars, Sources: srcs, Cond: cond, Body: body}
 		}
 		return result, nil
 	case p.Load != nil:
@@ -2905,7 +3001,12 @@ func convertStmtList(list []*parser.Statement) ([]Stmt, error) {
 				}
 				continue
 			}
-			return nil, fmt.Errorf("unsupported expression")
+			ex, err := convertExpr(st.Expr.Expr)
+			if err != nil {
+				return nil, err
+			}
+			out = append(out, &ExprStmt{Expr: ex})
+			continue
 		case st.Return != nil:
 			ex, err := convertExpr(st.Return.Value)
 			if err != nil {
@@ -2938,9 +3039,22 @@ func convertStmtList(list []*parser.Statement) ([]Stmt, error) {
 				return nil, err
 			}
 			name := safeName(st.Assign.Name)
-			if len(st.Assign.Index) == 0 {
+			if len(st.Assign.Index) == 0 && len(st.Assign.Field) == 0 {
 				recordType(name, val)
 				out = append(out, &AssignStmt{Name: name, Expr: val})
+				break
+			}
+			if len(st.Assign.Field) > 0 {
+				prev := vars[name]
+				if prev == nil {
+					prev = &NameRef{Name: name}
+				}
+				expr := prev
+				for i := range st.Assign.Field {
+					expr = &RecordUpdate{Target: expr, Field: st.Assign.Field[i].Name, Value: val}
+				}
+				recordType(name, expr)
+				out = append(out, &AssignStmt{Name: name, Expr: expr})
 				break
 			}
 			var idxExprs []Expr
@@ -2979,6 +3093,21 @@ func convertStmtList(list []*parser.Statement) ([]Stmt, error) {
 				return nil, err
 			}
 			out = append(out, s)
+		case st.Fun != nil:
+			if len(st.Fun.Body) == 1 && st.Fun.Body[0].Return != nil {
+				bodyExpr, err := convertExpr(st.Fun.Body[0].Return.Value)
+				if err != nil {
+					return nil, err
+				}
+				var params []string
+				for _, p := range st.Fun.Params {
+					params = append(params, safeName(p.Name))
+				}
+				fn := &LambdaExpr{Params: params, Body: bodyExpr}
+				out = append(out, &LetStmt{Name: safeName(st.Fun.Name), Expr: fn})
+			} else {
+				return nil, fmt.Errorf("unsupported statement in block")
+			}
 		default:
 			return nil, fmt.Errorf("unsupported statement in block")
 		}
