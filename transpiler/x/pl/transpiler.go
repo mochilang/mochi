@@ -243,6 +243,23 @@ func (p *PrintStmt) emit(w io.Writer, idx int) {
 		e.Elem.emit(w)
 		fmt.Fprintf(w, "], R%d), writeln(R%d)", idx, idx)
 		return
+	case *SetOpExpr:
+		fmt.Fprintf(w, "    ")
+		switch e.Op {
+		case "union":
+			io.WriteString(w, "union(")
+		case "union_all":
+			io.WriteString(w, "append(")
+		case "except":
+			io.WriteString(w, "subtract(")
+		case "intersect":
+			io.WriteString(w, "intersection(")
+		}
+		e.Left.emit(w)
+		io.WriteString(w, ", ")
+		e.Right.emit(w)
+		fmt.Fprintf(w, ", R%d), writeln(R%d)", idx, idx)
+		return
 	case *ListLit:
 		for i, el := range e.Elems {
 			io.WriteString(w, "    writeln(")
@@ -371,6 +388,29 @@ func (p *MultiPrintStmt) emit(w io.Writer, idx int) {
 			idx++
 			continue
 		}
+		if se, ok := ex.(*SetOpExpr); ok {
+			switch se.Op {
+			case "union":
+				io.WriteString(w, "union(")
+			case "union_all":
+				io.WriteString(w, "append(")
+			case "except":
+				io.WriteString(w, "subtract(")
+			case "intersect":
+				io.WriteString(w, "intersection(")
+			}
+			se.Left.emit(w)
+			io.WriteString(w, ", ")
+			se.Right.emit(w)
+			fmt.Fprintf(w, ", V%d)", idx)
+			if i == len(p.Exprs)-1 {
+				fmt.Fprintf(w, ", writeln(V%d)", idx)
+			} else {
+				fmt.Fprintf(w, ", write(V%d), write(' ')", idx)
+			}
+			idx++
+			continue
+		}
 		if i == len(p.Exprs)-1 {
 			io.WriteString(w, "writeln(")
 			ex.emit(w)
@@ -397,6 +437,24 @@ func (l *LetStmt) emit(w io.Writer, _ int) {
 			}
 			a.emit(w)
 		}
+		fmt.Fprintf(w, ", %s)", l.Name)
+		return
+	}
+	if se, ok := l.Expr.(*SetOpExpr); ok {
+		io.WriteString(w, "    ")
+		switch se.Op {
+		case "union":
+			io.WriteString(w, "union(")
+		case "union_all":
+			io.WriteString(w, "append(")
+		case "except":
+			io.WriteString(w, "subtract(")
+		case "intersect":
+			io.WriteString(w, "intersection(")
+		}
+		se.Left.emit(w)
+		io.WriteString(w, ", ")
+		se.Right.emit(w)
 		fmt.Fprintf(w, ", %s)", l.Name)
 		return
 	}
@@ -487,6 +545,11 @@ type MaxExpr struct{ Value Expr }
 type AppendExpr struct {
 	List Expr
 	Elem Expr
+}
+type SetOpExpr struct {
+	Left  Expr
+	Right Expr
+	Op    string
 }
 
 // FunLit represents a simple anonymous function with a captured
@@ -664,6 +727,35 @@ func (a *AppendExpr) emit(w io.Writer) {
 	io.WriteString(w, ", [")
 	a.Elem.emit(w)
 	io.WriteString(w, "], R)")
+}
+
+func (s *SetOpExpr) emit(w io.Writer) {
+	switch s.Op {
+	case "union":
+		io.WriteString(w, "union(")
+		s.Left.emit(w)
+		io.WriteString(w, ", ")
+		s.Right.emit(w)
+		io.WriteString(w, ", R)")
+	case "union_all":
+		io.WriteString(w, "append(")
+		s.Left.emit(w)
+		io.WriteString(w, ", ")
+		s.Right.emit(w)
+		io.WriteString(w, ", R)")
+	case "except":
+		io.WriteString(w, "subtract(")
+		s.Left.emit(w)
+		io.WriteString(w, ", ")
+		s.Right.emit(w)
+		io.WriteString(w, ", R)")
+	case "intersect":
+		io.WriteString(w, "intersection(")
+		s.Left.emit(w)
+		io.WriteString(w, ", ")
+		s.Right.emit(w)
+		io.WriteString(w, ", R)")
+	}
 }
 
 func (i *IndexExpr) emit(w io.Writer) {
@@ -924,6 +1016,95 @@ func cloneMap(m *MapLit) *MapLit {
 	items := make([]MapItem, len(m.Items))
 	copy(items, m.Items)
 	return &MapLit{Items: items}
+}
+
+func unionConst(a, b *ListLit) (*ListLit, bool) {
+	res := []Expr{}
+	seen := map[int]bool{}
+	for _, e := range a.Elems {
+		li, ok := e.(*IntLit)
+		if !ok {
+			return nil, false
+		}
+		if !seen[li.Value] {
+			seen[li.Value] = true
+			res = append(res, e)
+		}
+	}
+	for _, e := range b.Elems {
+		li, ok := e.(*IntLit)
+		if !ok {
+			return nil, false
+		}
+		if !seen[li.Value] {
+			seen[li.Value] = true
+			res = append(res, e)
+		}
+	}
+	return &ListLit{Elems: res}, true
+}
+
+func unionAllConst(a, b *ListLit) (*ListLit, bool) {
+	res := make([]Expr, 0, len(a.Elems)+len(b.Elems))
+	for _, e := range a.Elems {
+		if _, ok := e.(*IntLit); !ok {
+			return nil, false
+		}
+		res = append(res, e)
+	}
+	for _, e := range b.Elems {
+		if _, ok := e.(*IntLit); !ok {
+			return nil, false
+		}
+		res = append(res, e)
+	}
+	return &ListLit{Elems: res}, true
+}
+
+func exceptConst(a, b *ListLit) (*ListLit, bool) {
+	res := []Expr{}
+	skip := map[int]bool{}
+	for _, e := range b.Elems {
+		li, ok := e.(*IntLit)
+		if !ok {
+			return nil, false
+		}
+		skip[li.Value] = true
+	}
+	for _, e := range a.Elems {
+		li, ok := e.(*IntLit)
+		if !ok {
+			return nil, false
+		}
+		if !skip[li.Value] {
+			res = append(res, e)
+		}
+	}
+	return &ListLit{Elems: res}, true
+}
+
+func intersectConst(a, b *ListLit) (*ListLit, bool) {
+	res := []Expr{}
+	setB := map[int]bool{}
+	for _, e := range b.Elems {
+		li, ok := e.(*IntLit)
+		if !ok {
+			return nil, false
+		}
+		setB[li.Value] = true
+	}
+	seen := map[int]bool{}
+	for _, e := range a.Elems {
+		li, ok := e.(*IntLit)
+		if !ok {
+			return nil, false
+		}
+		if setB[li.Value] && !seen[li.Value] {
+			seen[li.Value] = true
+			res = append(res, e)
+		}
+	}
+	return &ListLit{Elems: res}, true
 }
 
 func updateNestedList(l *ListLit, idx1, idx2 int, val Expr) (*ListLit, bool) {
@@ -1380,7 +1561,18 @@ func compileStmts(sts []*parser.Statement, env *compileEnv) ([]Stmt, error) {
 					break
 				}
 			}
-			return nil, fmt.Errorf("unsupported statement")
+			val, err := toExpr(s.Assign.Value, env)
+			if err != nil {
+				return nil, err
+			}
+			rowVar := env.fresh("tmp")
+			out = append(out, &LetStmt{Name: rowVar, Expr: &IndexExpr{Target: &Var{Name: env.current(s.Assign.Name)}, Index: idx1Expr}})
+			newRow := env.fresh("tmp")
+			out = append(out, &IndexAssignStmt{Name: newRow, Target: rowVar, Index: idx2Expr, Value: val})
+			name := env.fresh(s.Assign.Name)
+			env.setConst(name, nil)
+			out = append(out, &IndexAssignStmt{Name: name, Target: env.current(s.Assign.Name), Index: idx1Expr, Value: &Var{Name: newRow}})
+			break
 
 		case s.Assign != nil && len(s.Assign.Index) == 1 && s.Assign.Index[0].Colon == nil && s.Assign.Index[0].End == nil && s.Assign.Index[0].Step == nil:
 			idx, err := toExpr(s.Assign.Index[0].Start, env)
@@ -1716,6 +1908,8 @@ func toBinary(b *parser.BinaryExpr, env *compileEnv) (Expr, error) {
 			opStr = ";"
 		case "in":
 			opStr = "in"
+		case "union", "union_all", "except", "intersect":
+			opStr = op
 		default:
 			return nil, fmt.Errorf("unsupported op")
 		}
@@ -1798,6 +1992,28 @@ func toBinary(b *parser.BinaryExpr, env *compileEnv) (Expr, error) {
 				}
 			}
 			left = &InExpr{Elem: left, Target: right, IsString: isStringLike(right, env), IsMap: isMapLike(right, env)}
+		} else if opStr == "union" || opStr == "union_all" || opStr == "except" || opStr == "intersect" {
+			if ll, ok1 := left.(*ListLit); ok1 {
+				if rr, ok2 := right.(*ListLit); ok2 {
+					var res *ListLit
+					var ok bool
+					switch opStr {
+					case "union":
+						res, ok = unionConst(ll, rr)
+					case "union_all":
+						res, ok = unionAllConst(ll, rr)
+					case "except":
+						res, ok = exceptConst(ll, rr)
+					case "intersect":
+						res, ok = intersectConst(ll, rr)
+					}
+					if ok {
+						left = res
+						continue
+					}
+				}
+			}
+			left = &SetOpExpr{Left: left, Right: right, Op: opStr}
 		} else {
 			left = &BinaryExpr{Left: left, Op: opStr, Right: right}
 		}
