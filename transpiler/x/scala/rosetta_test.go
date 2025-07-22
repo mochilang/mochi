@@ -33,18 +33,20 @@ func TestScalaTranspiler_Rosetta_Golden(t *testing.T) {
 	}
 	sort.Strings(files)
 
+	start := 0
 	if v := os.Getenv("MOCHI_ROSETTA_INDEX"); v != "" {
 		if n, err := strconv.Atoi(v); err == nil && n >= 1 && n <= len(files) {
-			files = files[n-1 : n]
+			start = n - 1
+			files = files[start : start+1]
 		}
 	} else if len(files) > 0 {
 		files = files[:1]
 	}
 
 	var passed, failed int
-	for _, f := range files {
+	for i, f := range files {
 		name := strings.TrimSuffix(filepath.Base(f), ".mochi")
-		ok := t.Run(name, func(t *testing.T) {
+		ok := t.Run(fmt.Sprintf("%03d_%s", start+i+1, name), func(t *testing.T) {
 			codePath := filepath.Join(outDir, name+".scala")
 			outPath := filepath.Join(outDir, name+".out")
 			errPath := filepath.Join(outDir, name+".error")
