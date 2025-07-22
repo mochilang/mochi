@@ -100,32 +100,43 @@ func runRosettaCase(t *testing.T, name string) {
 	_ = os.Remove(filepath.Join(outDir, name+".error"))
 }
 
+func listRosettaPrograms(t *testing.T) []string {
+        t.Helper()
+        root := repoRootRosetta(t)
+        pattern := filepath.Join(root, "tests", "rosetta", "x", "Mochi", "*.mochi")
+        files, err := filepath.Glob(pattern)
+        if err != nil {
+                t.Fatalf("glob: %v", err)
+        }
+        sort.Strings(files)
+        programs := make([]string, len(files))
+        for i, f := range files {
+                programs[i] = strings.TrimSuffix(filepath.Base(f), ".mochi")
+        }
+        return programs
+}
+
 func TestPascalTranspiler_Rosetta(t *testing.T) {
-	if _, err := exec.LookPath("fpc"); err != nil {
-		t.Skip("fpc not installed")
-	}
-	root := repoRootRosetta(t)
-	pattern := filepath.Join(root, "tests", "rosetta", "x", "Mochi", "*.mochi")
-	files, err := filepath.Glob(pattern)
-	if err != nil {
-		t.Fatalf("glob: %v", err)
-	}
-	sort.Strings(files)
-	max := 3
-	if v := os.Getenv("ROSETTA_MAX"); v != "" {
-		if n, err := strconv.Atoi(v); err == nil {
-			max = n
-		}
-	}
-	if len(files) < max {
-		max = len(files)
-	}
-	for _, f := range files[:max] {
-		name := strings.TrimSuffix(filepath.Base(f), ".mochi")
-		if !t.Run(name, func(t *testing.T) { runRosettaCase(t, name) }) {
-			break
-		}
-	}
+        if _, err := exec.LookPath("fpc"); err != nil {
+                t.Skip("fpc not installed")
+        }
+        programs := listRosettaPrograms(t)
+        if len(programs) == 0 {
+                t.Fatalf("no rosetta programs found")
+        }
+
+        idx := 1
+        if v := os.Getenv("ROSETTA_INDEX"); v != "" {
+                if n, err := strconv.Atoi(v); err == nil {
+                        idx = n
+                }
+        }
+        if idx < 1 || idx > len(programs) {
+                t.Fatalf("index %d out of range (1-%d)", idx, len(programs))
+        }
+        name := programs[idx-1]
+        t.Logf("running %s (index %d)", name, idx)
+        runRosettaCase(t, name)
 }
 
 func updateRosettaChecklist() {
