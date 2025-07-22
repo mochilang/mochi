@@ -9,6 +9,7 @@ import (
 	"os/exec"
 	"path/filepath"
 	"sort"
+	"strconv"
 	"strings"
 	"testing"
 	"time"
@@ -31,6 +32,14 @@ func TestScalaTranspiler_Rosetta_Golden(t *testing.T) {
 		t.Fatalf("glob: %v", err)
 	}
 	sort.Strings(files)
+
+	if v := os.Getenv("MOCHI_ROSETTA_INDEX"); v != "" {
+		if n, err := strconv.Atoi(v); err == nil && n >= 1 && n <= len(files) {
+			files = files[n-1 : n]
+		}
+	} else if len(files) > 0 {
+		files = files[:1]
+	}
 
 	var passed, failed int
 	for _, f := range files {
@@ -101,7 +110,7 @@ func updateRosettaChecklist() {
 	total := len(files)
 	completed := 0
 	var lines []string
-	for _, f := range files {
+	for i, f := range files {
 		name := strings.TrimSuffix(filepath.Base(f), ".mochi")
 		mark := "[ ]"
 		if _, err := os.Stat(filepath.Join(outDir, name+".out")); err == nil {
@@ -110,7 +119,7 @@ func updateRosettaChecklist() {
 		} else if _, err := os.Stat(filepath.Join(outDir, name+".error")); err == nil {
 			mark = "[ ]"
 		}
-		lines = append(lines, fmt.Sprintf("- %s %s", mark, name))
+		lines = append(lines, fmt.Sprintf("%d. %s %s", i+1, mark, name))
 	}
 	var buf bytes.Buffer
 	buf.WriteString("# Scala Transpiler Rosetta Output\n\n")
