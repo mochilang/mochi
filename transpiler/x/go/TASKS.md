@@ -1,3 +1,27 @@
+## Progress (2025-07-22 12:52 +0700)
+- Implement basic union support; tree_sum transpiles successfully
+- Regenerated golden files - 95/102 vm valid programs passing
+
+## Progress (2025-07-22 12:33 +0700)
+- docs: update erl progress
+- Regenerated golden files - 95/102 vm valid programs passing
+
+## Progress (2025-07-22 12:33 +0700)
+- docs: update erl progress
+- Regenerated golden files - 95/102 vm valid programs passing
+
+## Progress (2025-07-22 12:33 +0700)
+- docs: update erl progress
+- Regenerated golden files - 95/102 vm valid programs passing
+
+## Progress (2025-07-22 12:33 +0700)
+- docs: update erl progress
+- Regenerated golden files - 94/102 vm valid programs passing
+
+## Progress (2025-07-22 12:33 +0700)
+- docs: update erl progress
+- Regenerated golden files - 94/102 vm valid programs passing
+
 ## Progress (2025-07-22 10:07 +0700)
 - Clean up Typescript for next round
 - Regenerated golden files - 94/102 vm valid programs passing

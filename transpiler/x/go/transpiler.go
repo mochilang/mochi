@@ -28,15 +28,16 @@ type Program struct {
 }
 
 var (
-	usesStrings bool
-	usesStrconv bool
-	usesPrint   bool
-	usesSort    bool
-	usesJSON    bool
-	topEnv      *types.Env
-	extraDecls  []Stmt
-	structCount int
-	imports     map[string]string
+	usesStrings    bool
+	usesStrconv    bool
+	usesPrint      bool
+	usesSort       bool
+	usesJSON       bool
+	topEnv         *types.Env
+	extraDecls     []Stmt
+	structCount    int
+	imports        map[string]string
+	currentRetType string
 )
 
 func toPascalCase(s string) string {
@@ -206,6 +207,29 @@ func (t *TypeDeclStmt) emit(w io.Writer) {
 	fmt.Fprint(w, "}")
 }
 
+// UnionDeclStmt declares a simple union type as a Go interface and its variants.
+type UnionDeclStmt struct {
+	Name     string
+	Variants []UnionVariant
+}
+
+type UnionVariant struct {
+	Name   string
+	Fields []ParamDecl
+}
+
+func (u *UnionDeclStmt) emit(w io.Writer) {
+	fmt.Fprintf(w, "type %s interface { is%s() }\n", u.Name, u.Name)
+	for _, v := range u.Variants {
+		fmt.Fprintf(w, "type %s struct {\n", v.Name)
+		for _, f := range v.Fields {
+			fmt.Fprintf(w, "    %s %s `json:%q`\n", toGoFieldName(f.Name), f.Type, f.Name)
+		}
+		fmt.Fprint(w, "}\n")
+		fmt.Fprintf(w, "func (%s) is%s() {}\n", v.Name, u.Name)
+	}
+}
+
 type FuncDecl struct {
 	Name   string
 	Params []ParamDecl
@@ -293,6 +317,42 @@ func (ie *IfExpr) emit(w io.Writer) {
 		fmt.Fprint(w, " }")
 	}
 	fmt.Fprint(w, " }()")
+}
+
+// UnionMatchExpr represents a type switch over a union.
+type UnionMatchExpr struct {
+	Target Expr
+	Cases  []UnionMatchCase
+	Type   string
+}
+
+type UnionMatchCase struct {
+	Variant  string
+	Fields   []string
+	Bindings []string
+	Body     Expr
+}
+
+func (m *UnionMatchExpr) emit(w io.Writer) {
+	ret := "any"
+	if m.Type != "" {
+		ret = m.Type
+	}
+	fmt.Fprintf(w, "func() %s { switch v := ", ret)
+	m.Target.emit(w)
+	fmt.Fprint(w, ".(type) {")
+	for _, c := range m.Cases {
+		fmt.Fprintf(w, "case %s:", c.Variant)
+		for i, b := range c.Bindings {
+			if b != "" && i < len(c.Fields) {
+				fmt.Fprintf(w, " %s := v.%s;", b, c.Fields[i])
+			}
+		}
+		fmt.Fprint(w, " return ")
+		c.Body.emit(w)
+		fmt.Fprint(w, ";")
+	}
+	fmt.Fprintf(w, "default: var z %s; return z } }()", ret)
 }
 
 func (i *IfStmt) emit(w io.Writer) {
@@ -1514,8 +1574,23 @@ func compileStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 		}
 		return &VarDecl{Name: st.Var.Name, Type: typ, Global: env == topEnv}, nil
 	case st.Type != nil:
-		stype, ok := env.GetStruct(st.Type.Name)
-		if ok {
+		if len(st.Type.Variants) > 0 {
+			if _, ok := env.GetUnion(st.Type.Name); ok {
+				variants := make([]UnionVariant, 0, len(st.Type.Variants))
+				for _, v := range st.Type.Variants {
+					stype, ok := env.GetStruct(v.Name)
+					if !ok {
+						continue
+					}
+					fields := make([]ParamDecl, len(stype.Order))
+					for i, n := range stype.Order {
+						fields[i] = ParamDecl{Name: n, Type: toGoTypeFromType(stype.Fields[n])}
+					}
+					variants = append(variants, UnionVariant{Name: v.Name, Fields: fields})
+				}
+				return &UnionDeclStmt{Name: st.Type.Name, Variants: variants}, nil
+			}
+		} else if stype, ok := env.GetStruct(st.Type.Name); ok {
 			fields := make([]ParamDecl, len(stype.Order))
 			for i, n := range stype.Order {
 				fields[i] = ParamDecl{Name: n, Type: toGoTypeFromType(stype.Fields[n])}
@@ -1675,8 +1750,58 @@ func compileMatchExpr(me *parser.MatchExpr, env *types.Env) (Expr, error) {
 	if err != nil {
 		return nil, err
 	}
-	tmp := &parser.Expr{Binary: &parser.BinaryExpr{Left: &parser.Unary{Value: &parser.PostfixExpr{Target: &parser.Primary{Match: me}}}}}
-	typ := toGoTypeFromType(types.ExprType(tmp, env))
+	typ := "any"
+	if len(me.Cases) > 0 {
+		t0 := types.ExprType(me.Cases[0].Result, env)
+		typ = toGoTypeFromType(t0)
+		for _, c := range me.Cases[1:] {
+			if !types.EqualTypes(t0, types.ExprType(c.Result, env)) {
+				typ = "any"
+				break
+			}
+		}
+	}
+	if typ == "any" && currentRetType != "" {
+		typ = currentRetType
+	}
+	// Detect union match by looking for variant patterns.
+	if len(me.Cases) > 0 {
+		if name, ok := identName(me.Cases[0].Pattern); ok {
+			if _, ok2 := env.FindUnionByVariant(name); ok2 {
+				cases := make([]UnionMatchCase, len(me.Cases))
+				for i, c := range me.Cases {
+					var variant string
+					var bindings []string
+					var fields []string
+					if n, ok := identName(c.Pattern); ok {
+						variant = n
+					} else if call, ok := callPattern(c.Pattern); ok {
+						variant = call.Func
+						st, _ := env.GetStruct(variant)
+						bindings = make([]string, len(call.Args))
+						fields = make([]string, len(call.Args))
+						for j, a := range call.Args {
+							if j < len(st.Order) {
+								fields[j] = toGoFieldName(st.Order[j])
+							}
+							if nm, ok := identName(a); ok {
+								bindings[j] = nm
+							}
+						}
+					} else {
+						variant = "_"
+					}
+					body, err := compileExpr(c.Result, env, "")
+					if err != nil {
+						return nil, err
+					}
+					cases[i] = UnionMatchCase{Variant: variant, Fields: fields, Bindings: bindings, Body: body}
+				}
+				return &UnionMatchExpr{Target: target, Cases: cases, Type: typ}, nil
+			}
+		}
+	}
+
 	var expr Expr = zeroValueExpr(typ)
 	for i := len(me.Cases) - 1; i >= 0; i-- {
 		c := me.Cases[i]
@@ -2338,7 +2463,11 @@ func compileReturnStmt(rs *parser.ReturnStmt, env *types.Env) (Stmt, error) {
 
 func compileFunStmt(fn *parser.FunStmt, env *types.Env) (Stmt, error) {
 	child := types.NewEnv(env)
+	prevRet := currentRetType
+	retHint := toGoType(fn.Return, env)
+	currentRetType = retHint
 	body, err := compileStmts(fn.Body, child)
+	currentRetType = prevRet
 	if err != nil {
 		return nil, err
 	}
@@ -2369,6 +2498,8 @@ func compileFunStmt(fn *parser.FunStmt, env *types.Env) (Stmt, error) {
 
 func compileFunExpr(fn *parser.FunExpr, env *types.Env) (Expr, error) {
 	child := types.NewEnv(env)
+	prevRet := currentRetType
+	currentRetType = toGoType(fn.Return, env)
 	var body []*parser.Statement
 	var stmts []Stmt
 	var err error
@@ -2396,6 +2527,7 @@ func compileFunExpr(fn *parser.FunExpr, env *types.Env) (Expr, error) {
 		params[i] = ParamDecl{Name: p.Name, Type: typ}
 	}
 	ret := toGoType(fn.Return, env)
+	currentRetType = prevRet
 	return &FuncLit{Params: params, Return: ret, Body: stmts}, nil
 }
 
@@ -2967,6 +3099,9 @@ func compilePrimary(p *parser.Primary, env *types.Env, base string) (Expr, error
 	case p.FunExpr != nil:
 		return compileFunExpr(p.FunExpr, env)
 	case p.Selector != nil && len(p.Selector.Tail) == 0:
+		if _, ok := env.FindUnionByVariant(p.Selector.Root); ok {
+			return &StructLit{Name: p.Selector.Root}, nil
+		}
 		return &VarRef{Name: p.Selector.Root}, nil
 	}
 	return nil, fmt.Errorf("unsupported primary")
@@ -3183,6 +3318,39 @@ func isListPrimary(p *parser.Primary) bool {
 	return false
 }
 
+func callPattern(e *parser.Expr) (*parser.CallExpr, bool) {
+	if e == nil || len(e.Binary.Right) != 0 {
+		return nil, false
+	}
+	u := e.Binary.Left
+	if len(u.Ops) != 0 {
+		return nil, false
+	}
+	p := u.Value
+	if len(p.Ops) != 0 || p.Target == nil || p.Target.Call == nil {
+		return nil, false
+	}
+	return p.Target.Call, true
+}
+
+func identName(e *parser.Expr) (string, bool) {
+	if e == nil || len(e.Binary.Right) != 0 {
+		return "", false
+	}
+	u := e.Binary.Left
+	if len(u.Ops) != 0 {
+		return "", false
+	}
+	p := u.Value
+	if len(p.Ops) != 0 || p.Target == nil {
+		return "", false
+	}
+	if p.Target.Selector != nil && len(p.Target.Selector.Tail) == 0 {
+		return p.Target.Selector.Root, true
+	}
+	return "", false
+}
+
 // Emit formats the Go AST back into source code.
 func Emit(prog *Program) []byte {
 	var buf bytes.Buffer
@@ -3220,6 +3388,9 @@ func Emit(prog *Program) []byte {
 		case *TypeDeclStmt:
 			st.emit(&buf)
 			buf.WriteString("\n\n")
+		case *UnionDeclStmt:
+			st.emit(&buf)
+			buf.WriteString("\n\n")
 		case *FuncDecl:
 			st.emit(&buf)
 			buf.WriteString("\n\n")
@@ -3239,6 +3410,9 @@ func Emit(prog *Program) []byte {
 			continue
 		}
 		if _, ok := s.(*TypeDeclStmt); ok {
+			continue
+		}
+		if _, ok := s.(*UnionDeclStmt); ok {
 			continue
 		}
 		buf.WriteString("    ")
