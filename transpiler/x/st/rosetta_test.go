@@ -23,19 +23,23 @@ func TestSmalltalkRosetta(t *testing.T) {
 	if _, err := exec.LookPath("gst"); err != nil {
 		t.Skip("gst not installed")
 	}
-	root := repoRootDir(t)
-	srcDir := filepath.Join(root, "tests", "rosetta", "x", "Mochi")
-	outDir := filepath.Join(root, "tests", "rosetta", "transpiler", "st")
-	os.MkdirAll(outDir, 0o755)
+       root := repoRootDir(t)
+       srcDir := filepath.Join(root, "tests", "rosetta", "x", "Mochi")
+       outDir := filepath.Join(root, "tests", "rosetta", "transpiler", "st")
+       os.MkdirAll(outDir, 0o755)
 
-	files, err := filepath.Glob(filepath.Join(srcDir, "*.mochi"))
-	if err != nil {
-		t.Fatalf("glob: %v", err)
-	}
-	sort.Strings(files)
-	if len(files) == 0 {
-		t.Fatal("no Mochi Rosetta tests found")
-	}
+       pattern := filepath.Join(srcDir, "*.mochi")
+       if only := os.Getenv("MOCHI_ROSETTA_ONLY"); only != "" {
+               pattern = filepath.Join(srcDir, only+".mochi")
+       }
+       files, err := filepath.Glob(pattern)
+       if err != nil {
+               t.Fatalf("glob: %v", err)
+       }
+       sort.Strings(files)
+       if len(files) == 0 {
+               t.Fatalf("no Mochi Rosetta tests found: %s", pattern)
+       }
 
 	for _, srcPath := range files {
 		name := strings.TrimSuffix(filepath.Base(srcPath), ".mochi")
