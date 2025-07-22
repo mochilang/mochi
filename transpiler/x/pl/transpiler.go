@@ -1956,6 +1956,9 @@ func compileStmts(sts []*parser.Statement, env *compileEnv) ([]Stmt, error) {
 			if err != nil {
 				return nil, err
 			}
+			if m, ok := cond.(*MapLit); ok {
+				cond = &BoolLit{Value: len(m.Items) > 0}
+			}
 			if s.If.ElseIf != nil {
 				return nil, fmt.Errorf("unsupported elseif")
 			}
@@ -1969,6 +1972,14 @@ func compileStmts(sts []*parser.Statement, env *compileEnv) ([]Stmt, error) {
 				if err != nil {
 					return nil, err
 				}
+			}
+			if b, ok := cond.(*BoolLit); ok {
+				if b.Value {
+					out = append(out, thenStmts...)
+				} else {
+					out = append(out, elseStmts...)
+				}
+				continue
 			}
 			out = append(out, &IfStmt{Cond: cond, Then: thenStmts, Else: elseStmts})
 		case s.Return != nil:
@@ -2960,6 +2971,9 @@ func toIfExpr(ifp *parser.IfExpr, env *compileEnv) (Expr, error) {
 	if err != nil {
 		return nil, err
 	}
+	if m, ok := cond.(*MapLit); ok {
+		cond = &BoolLit{Value: len(m.Items) > 0}
+	}
 	thenExpr, err := toExpr(ifp.Then, env)
 	if err != nil {
 		return nil, err
@@ -3263,6 +3277,84 @@ func evalQueryExpr(q *parser.QueryExpr, env *compileEnv) (Expr, error) {
 			delete(env.consts, env.current(j.Var))
 		}
 		delete(env.consts, env.current(q.Var))
+		delete(env.vars, q.Var)
+		delete(env.vars, j.Var)
+		return out, nil
+	}
+
+	if len(q.Joins) == 1 && q.Joins[0].Side != nil && *q.Joins[0].Side == "right" && len(q.Froms) == 0 && q.Group == nil && q.Sort == nil && q.Skip == nil && q.Take == nil {
+		j := q.Joins[0]
+		leftSrc, err := toExpr(j.Src, env)
+		if err != nil {
+			return nil, err
+		}
+		left, ok := constList(leftSrc, env)
+		if !ok {
+			return nil, fmt.Errorf("unsupported join source")
+		}
+		rightSrc, err := toExpr(q.Source, env)
+		if err != nil {
+			return nil, err
+		}
+		right, ok := constList(rightSrc, env)
+		if !ok {
+			return nil, fmt.Errorf("unsupported query source")
+		}
+		out := &ListLit{}
+		env.vars[q.Var] = 0
+		env.vars[j.Var] = 0
+		for _, l := range left.Elems {
+			env.consts[env.current(j.Var)] = l
+			matched := false
+			for _, r := range right.Elems {
+				env.consts[env.current(q.Var)] = r
+				cond, err := toExpr(j.On, env)
+				if err != nil {
+					return nil, err
+				}
+				b, ok := cond.(*BoolLit)
+				if !ok || !b.Value {
+					continue
+				}
+				matched = true
+				if q.Where != nil {
+					wc, err := toExpr(q.Where, env)
+					if err != nil {
+						return nil, err
+					}
+					wb, ok := wc.(*BoolLit)
+					if !ok || !wb.Value {
+						continue
+					}
+				}
+				val, err := toExpr(q.Select, env)
+				if err != nil {
+					return nil, err
+				}
+				out.Elems = append(out.Elems, val)
+			}
+			if !matched {
+				env.consts[env.current(q.Var)] = &MapLit{}
+				if q.Where != nil {
+					wc, err := toExpr(q.Where, env)
+					if err != nil {
+						return nil, err
+					}
+					wb, ok := wc.(*BoolLit)
+					if !ok || !wb.Value {
+						delete(env.consts, env.current(q.Var))
+						continue
+					}
+				}
+				val, err := toExpr(q.Select, env)
+				if err != nil {
+					return nil, err
+				}
+				out.Elems = append(out.Elems, val)
+			}
+			delete(env.consts, env.current(q.Var))
+		}
+		delete(env.consts, env.current(j.Var))
 		delete(env.vars, q.Var)
 		delete(env.vars, j.Var)
 		return out, nil
