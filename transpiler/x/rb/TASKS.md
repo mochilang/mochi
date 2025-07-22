@@ -1,3 +1,13 @@
+## Progress (2025-07-22 10:29 +0700)
+- Commit e0ed85914: rb transpiler: support group_by multi sort
+- Generated Ruby for 91/102 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-22 10:07 +0700)
+- Commit b6741d6c9: Clean up Typescript for next round
+- Generated Ruby for 91/102 programs
+- Updated README checklist and outputs
+
 ## Progress (2025-07-22 06:19 +0700)
 - Commit 85aa12994: cs transpiler: support outer join
 - Generated Ruby for 90/101 programs
