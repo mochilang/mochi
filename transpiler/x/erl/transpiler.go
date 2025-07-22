@@ -572,6 +572,9 @@ type ForStmt struct {
 	Src       Expr   // list or map expression
 	Body      []Stmt
 	Breakable bool
+	Params    []string
+	Next      []string
+	Fun       string
 }
 
 // QueryExpr represents a basic list comprehension query.
@@ -640,6 +643,7 @@ type WhileStmt struct {
 	Cond   Expr
 	Body   []Stmt
 	Next   []string // variable names for next iteration
+	Fun    string
 }
 
 // ListAssignStmt assigns to an element of a list.
@@ -1395,44 +1399,65 @@ func (i *IfStmt) emit(w io.Writer) {
 }
 
 func (f *ForStmt) emit(w io.Writer) {
-	if !f.Breakable {
-		io.WriteString(w, "lists:foreach(fun(")
-		io.WriteString(w, f.Var)
-		io.WriteString(w, ") ->")
-		for idx, st := range f.Body {
-			io.WriteString(w, "\n    ")
-			st.emit(w)
-			if idx < len(f.Body)-1 {
-				io.WriteString(w, ",")
-			}
-		}
-		io.WriteString(w, "\nend, ")
-		switch f.Kind {
-		case "range":
-			io.WriteString(w, "lists:seq(")
-			f.Start.emit(w)
-			io.WriteString(w, ", (")
-			f.End.emit(w)
-			io.WriteString(w, ") - 1))")
-		case "map":
-			io.WriteString(w, "maps:keys(")
-			f.Src.emit(w)
-			io.WriteString(w, "))")
-		default: // list
-			f.Src.emit(w)
-			io.WriteString(w, ")")
-		}
-		return
+	io.WriteString(w, f.Fun)
+	io.WriteString(w, " = fun F(List")
+	for _, p := range f.Params {
+		io.WriteString(w, ", ")
+		io.WriteString(w, p)
 	}
-	io.WriteString(w, "Fun = fun F([]) -> ok;\n    F([")
+	io.WriteString(w, ") ->\n    case List of\n        [] -> {")
+	for i, p := range f.Params {
+		if i > 0 {
+			io.WriteString(w, ", ")
+		}
+		io.WriteString(w, p)
+	}
+	io.WriteString(w, "};\n        [")
 	io.WriteString(w, f.Var)
-	io.WriteString(w, "|Rest]) ->\n        try")
+	io.WriteString(w, "|Rest] ->")
+	if f.Breakable {
+		io.WriteString(w, "\n        try")
+	}
 	for _, st := range f.Body {
 		io.WriteString(w, "\n            ")
 		st.emit(w)
 		io.WriteString(w, ",")
 	}
-	io.WriteString(w, "\n            F(Rest)\n        catch\n            continue -> F(Rest);\n            break -> ok\n        end\nend,\nFun(")
+	if f.Breakable {
+		io.WriteString(w, "\n            F(Rest")
+	} else {
+		io.WriteString(w, "\n            F(Rest")
+	}
+	for _, a := range f.Next {
+		io.WriteString(w, ", ")
+		io.WriteString(w, a)
+	}
+	io.WriteString(w, ")")
+	if f.Breakable {
+		io.WriteString(w, "\n        catch\n            continue -> F(Rest")
+		for _, p := range f.Params {
+			io.WriteString(w, ", ")
+			io.WriteString(w, p)
+		}
+		io.WriteString(w, ");\n            break -> {")
+		for i, p := range f.Params {
+			if i > 0 {
+				io.WriteString(w, ", ")
+			}
+			io.WriteString(w, p)
+		}
+		io.WriteString(w, "}\n        end")
+	}
+	io.WriteString(w, "\n    end\nend,\n{")
+	for i, a := range f.Next {
+		if i > 0 {
+			io.WriteString(w, ", ")
+		}
+		io.WriteString(w, a)
+	}
+	io.WriteString(w, "} = ")
+	io.WriteString(w, f.Fun)
+	io.WriteString(w, "(")
 	switch f.Kind {
 	case "range":
 		io.WriteString(w, "lists:seq(")
@@ -1447,13 +1472,20 @@ func (f *ForStmt) emit(w io.Writer) {
 	default: // list
 		f.Src.emit(w)
 	}
+	for _, p := range f.Params {
+		io.WriteString(w, ", ")
+		io.WriteString(w, p)
+	}
 	io.WriteString(w, ")")
 }
 
 func (ws *WhileStmt) emit(w io.Writer) {
-	io.WriteString(w, "Fun = fun(F")
-	for _, p := range ws.Params {
-		io.WriteString(w, ", ")
+	io.WriteString(w, ws.Fun)
+	io.WriteString(w, " = fun F(")
+	for i, p := range ws.Params {
+		if i > 0 {
+			io.WriteString(w, ", ")
+		}
 		io.WriteString(w, p)
 	}
 	io.WriteString(w, ") ->\n    case ")
@@ -1464,14 +1496,34 @@ func (ws *WhileStmt) emit(w io.Writer) {
 		st.emit(w)
 		io.WriteString(w, ",")
 	}
-	io.WriteString(w, "\n            F(F")
-	for _, a := range ws.Next {
-		io.WriteString(w, ", ")
+	io.WriteString(w, "\n            F(")
+	for i, a := range ws.Next {
+		if i > 0 {
+			io.WriteString(w, ", ")
+		}
 		io.WriteString(w, a)
 	}
-	io.WriteString(w, ");\n        _ -> ok\n    end\nend,\nFun(Fun")
-	for _, p := range ws.Params {
-		io.WriteString(w, ", ")
+	io.WriteString(w, ");\n        _ -> {")
+	for i, p := range ws.Params {
+		if i > 0 {
+			io.WriteString(w, ", ")
+		}
+		io.WriteString(w, p)
+	}
+	io.WriteString(w, "}\n    end\nend,\n{")
+	for i, a := range ws.Next {
+		if i > 0 {
+			io.WriteString(w, ", ")
+		}
+		io.WriteString(w, a)
+	}
+	io.WriteString(w, "} = ")
+	io.WriteString(w, ws.Fun)
+	io.WriteString(w, "(")
+	for i, p := range ws.Params {
+		if i > 0 {
+			io.WriteString(w, ", ")
+		}
 		io.WriteString(w, p)
 	}
 	io.WriteString(w, ")")
@@ -2162,6 +2214,7 @@ func convertStmt(st *parser.Statement, env *types.Env, ctx *context) ([]Stmt, er
 	case st.For != nil:
 		loopCtx := ctx.clone()
 		alias := loopCtx.newAlias(st.For.Name)
+		funName := loopCtx.newAlias("fun")
 		body := []Stmt{}
 		for _, bs := range st.For.Body {
 			cs, err := convertStmt(bs, env, loopCtx)
@@ -2169,6 +2222,21 @@ func convertStmt(st *parser.Statement, env *types.Env, ctx *context) ([]Stmt, er
 				return nil, err
 			}
 			body = append(body, cs...)
+		}
+		names := make([]string, 0, len(ctx.alias))
+		for n := range ctx.alias {
+			if n == "fun" {
+				continue
+			}
+			names = append(names, n)
+		}
+		sort.Strings(names)
+		params := make([]string, len(names))
+		next := make([]string, len(names))
+		for i, n := range names {
+			params[i] = ctx.alias[n]
+			next[i] = loopCtx.alias[n]
+			ctx.alias[n] = loopCtx.alias[n]
 		}
 		brk := containsLoopCtrl(body)
 		if st.For.RangeEnd != nil {
@@ -2180,7 +2248,7 @@ func convertStmt(st *parser.Statement, env *types.Env, ctx *context) ([]Stmt, er
 			if err != nil {
 				return nil, err
 			}
-			return []Stmt{&ForStmt{Var: alias, Kind: "range", Start: start, End: end, Body: body, Breakable: brk}}, nil
+			return []Stmt{&ForStmt{Var: alias, Kind: "range", Start: start, End: end, Body: body, Breakable: brk, Params: params, Next: next, Fun: funName}}, nil
 		}
 		src, err := convertExpr(st.For.Source, env, ctx)
 		if err != nil {
@@ -2202,11 +2270,14 @@ func convertStmt(st *parser.Statement, env *types.Env, ctx *context) ([]Stmt, er
 				kind = "map"
 			}
 		}
-		return []Stmt{&ForStmt{Var: alias, Kind: kind, Src: src, Body: body, Breakable: brk}}, nil
+		return []Stmt{&ForStmt{Var: alias, Kind: kind, Src: src, Body: body, Breakable: brk, Params: params, Next: next, Fun: funName}}, nil
 	case st.While != nil:
 		// parameters are current aliases sorted for stable output
 		names := make([]string, 0, len(ctx.alias))
 		for n := range ctx.alias {
+			if n == "fun" {
+				continue
+			}
 			names = append(names, n)
 		}
 		sort.Strings(names)
@@ -2233,7 +2304,8 @@ func convertStmt(st *parser.Statement, env *types.Env, ctx *context) ([]Stmt, er
 			next[i] = loopCtx.alias[n]
 			ctx.alias[n] = loopCtx.alias[n]
 		}
-		return []Stmt{&WhileStmt{Params: params, Cond: cond, Body: body, Next: next}}, nil
+		funName := loopCtx.newAlias("fun")
+		return []Stmt{&WhileStmt{Params: params, Cond: cond, Body: body, Next: next, Fun: funName}}, nil
 	case st.Import != nil:
 		if st.Import.Auto && st.Import.Lang != nil && *st.Import.Lang == "go" {
 			alias := st.Import.As
@@ -2290,36 +2362,36 @@ func convertIfStmt(n *parser.IfStmt, env *types.Env, ctx *context) (*IfStmt, err
 		}
 	}
 
-       changed := map[string]bool{}
-       for k, v := range thenCtx.alias {
-               if base.alias[k] != v {
-                       changed[k] = true
-               }
-       }
-       for k, v := range elseCtx.alias {
-               if base.alias[k] != v {
-                       changed[k] = true
-               }
-       }
-       var names []string
-       for name := range changed {
-               names = append(names, name)
-       }
-       sort.Strings(names)
-       for _, name := range names {
-               newA := ctx.newAlias(name)
-               tVal := base.alias[name]
-               if a, ok := thenCtx.alias[name]; ok {
-                       tVal = a
-               }
-               thenStmts = append(thenStmts, &LetStmt{Name: newA, Expr: &NameRef{Name: tVal}})
-               eVal := base.alias[name]
-               if a, ok := elseCtx.alias[name]; ok {
-                       eVal = a
-               }
-               elseStmts = append(elseStmts, &LetStmt{Name: newA, Expr: &NameRef{Name: eVal}})
-               ctx.alias[name] = newA
-       }
+	changed := map[string]bool{}
+	for k, v := range thenCtx.alias {
+		if base.alias[k] != v {
+			changed[k] = true
+		}
+	}
+	for k, v := range elseCtx.alias {
+		if base.alias[k] != v {
+			changed[k] = true
+		}
+	}
+	var names []string
+	for name := range changed {
+		names = append(names, name)
+	}
+	sort.Strings(names)
+	for _, name := range names {
+		newA := ctx.newAlias(name)
+		tVal := base.alias[name]
+		if a, ok := thenCtx.alias[name]; ok {
+			tVal = a
+		}
+		thenStmts = append(thenStmts, &LetStmt{Name: newA, Expr: &NameRef{Name: tVal}})
+		eVal := base.alias[name]
+		if a, ok := elseCtx.alias[name]; ok {
+			eVal = a
+		}
+		elseStmts = append(elseStmts, &LetStmt{Name: newA, Expr: &NameRef{Name: eVal}})
+		ctx.alias[name] = newA
+	}
 
 	return &IfStmt{Cond: cond, Then: thenStmts, Else: elseStmts}, nil
 }
