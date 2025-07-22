@@ -1,3 +1,9 @@
+## Progress (2025-07-22 15:38 UTC)
+- pascal rosetta tests use index (progress 87/103)
+
+## Progress (2025-07-22 22:32 +0700)
+- pascal rosetta: run program by index (progress 87/103)
+
 ## Progress (2025-07-22 21:48 +0700)
 - ex: start handling mutable for loops and clean rosetta test (progress 87/103)
 
