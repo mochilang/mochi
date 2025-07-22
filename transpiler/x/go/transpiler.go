@@ -1703,6 +1703,18 @@ func compileStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 			if err != nil {
 				return nil, err
 			}
+			// attempt to refine list element type on assignment
+			if vt, err := env.GetVar(st.Assign.Name); err == nil {
+				if lt, ok := vt.(types.ListType); ok {
+					elemT := types.TypeOfExpr(st.Assign.Value, env)
+					if types.IsAnyType(elemT) {
+						elemT = types.TypeOfExprBasic(st.Assign.Value, env)
+					}
+					if types.IsAnyType(lt.Elem) && !types.IsAnyType(elemT) {
+						env.SetVarDeep(st.Assign.Name, types.ListType{Elem: elemT}, true)
+					}
+				}
+			}
 			return &IndexAssignStmt{Name: st.Assign.Name, Index: idx, Value: val}, nil
 		}
 		if len(st.Assign.Index) == 0 && len(st.Assign.Field) == 0 {
@@ -2698,8 +2710,8 @@ func boolExprFor(e Expr, t types.Type) Expr {
 	case types.ListType, types.MapType:
 		return &BinaryExpr{Left: &CallExpr{Func: "len", Args: []Expr{e}}, Op: "!=", Right: &IntLit{Value: 0}}
 	default:
-		// assume struct or unknown types are always truthy
-		return &BoolLit{Value: true}
+		// assume dynamic value should be treated as boolean
+		return &AssertExpr{Expr: e, Type: "bool"}
 	}
 }
 
@@ -3035,7 +3047,11 @@ func compileUnary(u *parser.Unary, env *types.Env, base string) (Expr, error) {
 		case "-":
 			expr = &BinaryExpr{Left: &IntLit{Value: 0}, Op: "-", Right: expr}
 		case "!":
-			expr = &NotExpr{Expr: expr}
+			if types.IsAnyType(types.TypeOfPostfix(u.Value, env)) {
+				expr = &NotExpr{Expr: &AssertExpr{Expr: expr, Type: "bool"}}
+			} else {
+				expr = &NotExpr{Expr: expr}
+			}
 		default:
 			return nil, fmt.Errorf("unsupported unary op")
 		}

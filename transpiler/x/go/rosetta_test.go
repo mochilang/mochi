@@ -9,6 +9,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"sort"
 	"strings"
 	"testing"
 	"time"
@@ -34,8 +35,10 @@ func TestGoTranspiler_Rosetta_Golden(t *testing.T) {
 	if len(files) == 0 {
 		t.Fatalf("no mochi files in %s", srcDir)
 	}
+	sort.Strings(files)
 
 	var passed, failed int
+	var firstFail string
 	for _, src := range files {
 		name := strings.TrimSuffix(filepath.Base(src), ".mochi")
 		ok := t.Run(name, func(t *testing.T) {
@@ -89,9 +92,16 @@ func TestGoTranspiler_Rosetta_Golden(t *testing.T) {
 			passed++
 		} else {
 			failed++
+			if firstFail == "" {
+				firstFail = name
+			}
+			break
 		}
 	}
 	t.Logf("Summary: %d passed, %d failed", passed, failed)
+	if firstFail != "" {
+		t.Fatalf("first failing program: %s", firstFail)
+	}
 }
 
 // TestMain is defined in vm_valid_golden_test.go. That TestMain updates
