@@ -1,1 +1,1 @@
-['{"__name": "GenType1", "tag": "a", "total": 3.0}', '{"__name": "GenType1", "tag": "b", "total": 3.0}']
+[{"__name": "GenType1", "tag": "a", "total": 3.0}, {"__name": "GenType1", "tag": "b", "total": 3.0}]
