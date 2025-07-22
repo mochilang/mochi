@@ -660,6 +660,14 @@ func (l *LetStmt) emit(w io.Writer, _ int) {
 		fmt.Fprintf(w, ", %s)", l.Name)
 		return
 	}
+	if ae, ok := l.Expr.(*AppendExpr); ok {
+		io.WriteString(w, "    append(")
+		ae.List.emit(w)
+		io.WriteString(w, ", [")
+		ae.Elem.emit(w)
+		fmt.Fprintf(w, "], %s)", l.Name)
+		return
+	}
 	if ie, ok := l.Expr.(*IndexExpr); ok && ie.IsMap {
 		fmt.Fprintf(w, "    get_dict(")
 		ie.Index.emit(w)
