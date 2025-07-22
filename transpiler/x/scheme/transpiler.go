@@ -365,7 +365,11 @@ func convertStmt(st *parser.Statement) (Node, error) {
 				return &List{Elems: forms}, nil
 			}
 		}
-		return nil, fmt.Errorf("unsupported expression statement")
+		node, err := convertParserExpr(st.Expr.Expr)
+		if err != nil {
+			return nil, err
+		}
+		return node, nil
 	case st.Let != nil:
 		name := st.Let.Name
 		var val Node
