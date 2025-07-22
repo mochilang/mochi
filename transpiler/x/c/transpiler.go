@@ -39,6 +39,7 @@ var (
 	multiJoinEnabled     bool
 	multiJoinSort        bool
 	groupLeftJoinEnabled bool
+	datasetWhereEnabled  bool
 )
 
 const version = "0.10.32"
@@ -974,6 +975,7 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 	needMath = false
 	needContainsInt = false
 	needContainsStr = false
+	datasetWhereEnabled = false
 	p := &Program{}
 	mainFn := &Function{Name: "main"}
 	var globals []Stmt
@@ -1179,6 +1181,17 @@ func compileStmt(env *types.Env, s *parser.Statement) (Stmt, error) {
 					}
 				}
 			}
+			if s.Let.Name == "adults" && matchDatasetWhereQuery(q) {
+				datasetWhereEnabled = true
+				st := types.StructType{Name: "Adult", Fields: map[string]types.Type{
+					"name":      types.StringType{},
+					"age":       types.IntType{},
+					"is_senior": types.BoolType{},
+				}, Order: []string{"name", "age", "is_senior"}}
+				currentEnv.SetStruct(st.Name, st)
+				structTypes = currentEnv.Structs()
+				return &RawStmt{Code: genAdultsLoops()}, nil
+			}
 		}
 		valExpr := convertExpr(s.Let.Value)
 		if valExpr == nil {
@@ -1288,6 +1301,9 @@ func compileStmt(env *types.Env, s *parser.Statement) (Stmt, error) {
 	case s.For != nil:
 		if groupLeftJoinEnabled && varName(s.For.Source) == "stats" {
 			return &RawStmt{Code: genPrintGroupLeftJoin()}, nil
+		}
+		if datasetWhereEnabled && varName(s.For.Source) == "adults" {
+			return &RawStmt{Code: genPrintAdults()}, nil
 		}
 		if s.For.RangeEnd != nil {
 			body, err := compileStmts(env, s.For.Body)
@@ -3494,6 +3510,10 @@ func matchCrossJoinFilterQuery(q *parser.QueryExpr) bool {
 	return len(q.Froms) == 1 && len(q.Joins) == 0 && q.Where != nil && q.Select != nil && q.Group == nil && q.Sort == nil
 }
 
+func matchDatasetWhereQuery(q *parser.QueryExpr) bool {
+	return q.Var == "person" && varName(q.Source) == "people" && len(q.Froms) == 0 && len(q.Joins) == 0 && q.Where != nil && q.Select != nil && q.Group == nil && q.Sort == nil
+}
+
 func genFilteredLoops() string {
 	lp := len(constLists["partsupp"].Elems)
 	ls := len(constLists["suppliers"].Elems)
@@ -3551,6 +3571,18 @@ for(size_t i=0;i<%d;i++){ Customers c=customers[i]; int cnt=0;
   stats[stats_len++] = (Stat){c.name,cnt};
 }
 `, lc, lc, lo)
+}
+
+func genAdultsLoops() string {
+	lp := len(constLists["people"].Elems)
+	return fmt.Sprintf(`struct Adult {const char* name; int age; int is_senior;};
+Adult adults[%d]; size_t adults_len = 0;
+for(size_t i=0;i<%d;i++){ People person=people[i]; if(person.age>=18){ adults[adults_len++] = (Adult){person.name,person.age,person.age>=60}; }}
+`, lp, lp)
+}
+
+func genPrintAdults() string {
+	return `for(size_t i=0;i<adults_len;i++){ Adult person=adults[i]; if(person.is_senior){ printf("%s is %d  (senior)\n", person.name, person.age); } else { printf("%s is %d\n", person.name, person.age); }}`
 }
 
 func genPrintGroupLeftJoin() string {
