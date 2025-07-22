@@ -366,6 +366,7 @@ func (p *Program) write(w io.Writer) {
 	p.addInclude("<sstream>")
 	p.addInclude("<iomanip>")
 	p.addInclude("<optional>")
+	p.addInclude("<vector>")
 	for _, inc := range p.Includes {
 		fmt.Fprintf(w, "#include %s\n", inc)
 	}
@@ -785,7 +786,11 @@ func (c *CallExpr) emit(w io.Writer) {
 }
 
 func (l *LambdaExpr) emit(w io.Writer) {
-	io.WriteString(w, "[=](")
+	cap := "[]"
+	if inFunction || inLambda > 0 {
+		cap = "[&]"
+	}
+	io.WriteString(w, cap+"(")
 	for i, p := range l.Params {
 		if i > 0 {
 			io.WriteString(w, ", ")
@@ -803,7 +808,11 @@ func (l *LambdaExpr) emit(w io.Writer) {
 }
 
 func (l *BlockLambda) emit(w io.Writer) {
-	io.WriteString(w, "[=](")
+	cap := "[]"
+	if inFunction || inLambda > 0 {
+		cap = "[&]"
+	}
+	io.WriteString(w, cap+"(")
 	for i, p := range l.Params {
 		if i > 0 {
 			io.WriteString(w, ", ")
@@ -2218,6 +2227,27 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 				return nil, err
 			}
 			args = append(args, ce)
+		}
+		if currentEnv != nil {
+			if fn, ok := currentEnv.GetFunc(p.Call.Func); ok {
+				if len(args) < len(fn.Params) {
+					var params []Param
+					for _, pa := range fn.Params[len(args):] {
+						typ := ""
+						if pa.Type != nil && pa.Type.Simple != nil {
+							typ = cppType(*pa.Type.Simple)
+						}
+						params = append(params, Param{Name: pa.Name, Type: typ})
+					}
+					var callArgs []Expr
+					callArgs = append(callArgs, args...)
+					for _, pa := range params {
+						callArgs = append(callArgs, &VarRef{Name: pa.Name})
+					}
+					call := &CallExpr{Name: p.Call.Func, Args: callArgs}
+					return &LambdaExpr{Params: params, Body: call}, nil
+				}
+			}
 		}
 		return &CallExpr{Name: p.Call.Func, Args: args}, nil
 	case p.Selector != nil:
