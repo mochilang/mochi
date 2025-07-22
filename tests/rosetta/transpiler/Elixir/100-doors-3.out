@@ -1,0 +1,13 @@
+warning: variable "result" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 17 │     result = (result <> "-")
+    │     ~
+    │
+    └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/100-doors-3.exs:17:5
+
+    warning: variable "result" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 15 │     result = (result <> "O")
+    │     ~
+    │
+    └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/100-doors-3.exs:15:5
