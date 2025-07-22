@@ -31,6 +31,7 @@ type Program struct {
 	UseSort    bool
 	UseJSON    bool
 	UseTime    bool
+	UseInput   bool
 }
 
 var (
@@ -40,6 +41,7 @@ var (
 	usesSort       bool
 	usesJSON       bool
 	usesTime       bool
+	usesInput      bool
 	topEnv         *types.Env
 	extraDecls     []Stmt
 	structCount    int
@@ -1444,6 +1446,7 @@ func Transpile(p *parser.Program, env *types.Env) (*Program, error) {
 	usesSort = false
 	usesJSON = false
 	usesTime = false
+	usesInput = false
 	topEnv = env
 	extraDecls = nil
 	structCount = 0
@@ -1470,6 +1473,7 @@ func Transpile(p *parser.Program, env *types.Env) (*Program, error) {
 	gp.UseSort = usesSort
 	gp.UseJSON = usesJSON
 	gp.UseTime = usesTime
+	gp.UseInput = usesInput
 	gp.Imports = imports
 	return gp, nil
 }
@@ -2731,6 +2735,9 @@ func boolExprFor(e Expr, t types.Type) Expr {
 	if _, ok := t.(types.BoolType); ok {
 		return e
 	}
+	if _, ok := e.(*NotExpr); ok {
+		return e
+	}
 	switch t.(type) {
 	case types.OptionType:
 		return &BinaryExpr{Left: e, Op: "!=", Right: &VarRef{Name: "nil"}}
@@ -3265,8 +3272,13 @@ func compilePostfix(pf *parser.PostfixExpr, env *types.Env, base string) (Expr, 
 			if op.Cast.Type.Simple != nil {
 				name := *op.Cast.Type.Simple
 				if name == "int" {
-					usesStrconv = true
-					expr = &AtoiExpr{Expr: expr}
+					if _, ok := t.(types.StringType); ok {
+						usesStrconv = true
+						expr = &AtoiExpr{Expr: expr}
+					} else {
+						expr = &AssertExpr{Expr: expr, Type: "int"}
+					}
+					t = types.IntType{}
 				} else if name == "float" {
 					expr = &CallExpr{Func: "float64", Args: []Expr{expr}}
 				} else if st, ok := env.GetStruct(name); ok {
@@ -3357,6 +3369,12 @@ func compilePrimary(p *parser.Primary, env *types.Env, base string) (Expr, error
 			name = "len"
 		case "str":
 			name = "fmt.Sprint"
+		case "int":
+			if _, ok := types.ExprType(p.Call.Args[0], env).(types.StringType); ok {
+				usesStrconv = true
+				return &AtoiExpr{Expr: args[0]}, nil
+			}
+			return &AssertExpr{Expr: args[0], Type: "int"}, nil
 		case "sum":
 			isFloat := false
 			switch a := args[0].(type) {
@@ -3391,6 +3409,9 @@ func compilePrimary(p *parser.Primary, env *types.Env, base string) (Expr, error
 			return &ExistsExpr{Expr: bexpr}, nil
 		case "substring":
 			return &CallExpr{Func: "string", Args: []Expr{&SliceExpr{X: &RuneSliceExpr{Expr: args[0]}, Start: args[1], End: args[2]}}}, nil
+		case "input":
+			usesInput = true
+			return &CallExpr{Func: "_input"}, nil
 		case "now":
 			usesTime = true
 			return &NowExpr{}, nil
@@ -3885,6 +3906,14 @@ func Emit(prog *Program) []byte {
 		buf.WriteString("        return int(nowSeed)\n")
 		buf.WriteString("    }\n")
 		buf.WriteString("    return int(time.Now().UnixNano())\n")
+		buf.WriteString("}\n\n")
+	}
+
+	if prog.UseInput {
+		buf.WriteString("func _input() string {\n")
+		buf.WriteString("    var s string\n")
+		buf.WriteString("    fmt.Scanln(&s)\n")
+		buf.WriteString("    return s\n")
 		buf.WriteString("}\n\n")
 	}
 
