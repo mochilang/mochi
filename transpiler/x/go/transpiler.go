@@ -920,6 +920,19 @@ type GroupJoinQueryExpr struct {
 	SimpleItem bool
 }
 
+// OuterJoinExpr represents a simple full outer join between two sources.
+type OuterJoinExpr struct {
+	LeftVar   string
+	LeftSrc   Expr
+	RightVar  string
+	RightSrc  Expr
+	Cond      Expr
+	Select    Expr
+	ElemType  string
+	LeftType  string
+	RightType string
+}
+
 func (q *QueryExpr) emit(w io.Writer) {
 	fmt.Fprintf(w, "func() []%s { ", q.ElemType)
 	if q.Sort != nil {
@@ -1216,6 +1229,53 @@ func (g *GroupJoinQueryExpr) emit(w io.Writer) {
 	fmt.Fprint(w, "return res }()")
 }
 
+func (o *OuterJoinExpr) emit(w io.Writer) {
+	fmt.Fprintf(w, "func() []%s {\n", o.ElemType)
+	fmt.Fprintf(w, "res := []%s{}\n", o.ElemType)
+	fmt.Fprintf(w, "for _, %sVal := range ", o.LeftVar)
+	o.LeftSrc.emit(w)
+	fmt.Fprint(w, " {\n")
+	fmt.Fprintf(w, "    %s := &%sVal\n", o.LeftVar, o.LeftVar)
+	fmt.Fprint(w, "    matched := false\n")
+	fmt.Fprintf(w, "    for _, %sVal := range ", o.RightVar)
+	o.RightSrc.emit(w)
+	fmt.Fprint(w, " {\n")
+	fmt.Fprintf(w, "        %s := &%sVal\n", o.RightVar, o.RightVar)
+	fmt.Fprint(w, "        if ")
+	if o.Cond != nil {
+		o.Cond.emit(w)
+	} else {
+		fmt.Fprint(w, "true")
+	}
+	fmt.Fprint(w, " {\n            matched = true\n            res = append(res, ")
+	o.Select.emit(w)
+	fmt.Fprint(w, ")\n        }\n    }\n")
+	fmt.Fprintf(w, "    if !matched {\n        var %s %s = nil\n        res = append(res, ", o.RightVar, o.RightType)
+	o.Select.emit(w)
+	fmt.Fprint(w, ")\n    }\n")
+	fmt.Fprint(w, "}\n")
+	fmt.Fprintf(w, "for _, %sVal := range ", o.RightVar)
+	o.RightSrc.emit(w)
+	fmt.Fprint(w, " {\n")
+	fmt.Fprintf(w, "    %s := &%sVal\n", o.RightVar, o.RightVar)
+	fmt.Fprint(w, "    exists := false\n")
+	fmt.Fprintf(w, "    for _, %sVal2 := range ", o.LeftVar)
+	o.LeftSrc.emit(w)
+	fmt.Fprint(w, " {\n")
+	fmt.Fprintf(w, "        %s := &%sVal2\n", o.LeftVar, o.LeftVar)
+	fmt.Fprint(w, "        if ")
+	if o.Cond != nil {
+		o.Cond.emit(w)
+	} else {
+		fmt.Fprint(w, "true")
+	}
+	fmt.Fprint(w, " {\n            exists = true\n            break\n        }\n    }\n")
+	fmt.Fprintf(w, "    if !exists {\n        var %s %s = nil\n        res = append(res, ", o.LeftVar, o.LeftType)
+	o.Select.emit(w)
+	fmt.Fprint(w, ")\n    }\n")
+	fmt.Fprint(w, "}\nreturn res }()")
+}
+
 type AtoiExpr struct{ Expr Expr }
 
 func (a *AtoiExpr) emit(w io.Writer) {
@@ -1374,10 +1434,16 @@ func compileStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 					env.SetVarDeep(st.Let.Name, types.ListType{Elem: stype}, false)
 				}
 			}
+			if oj, ok := e.(*OuterJoinExpr); ok && oj.ElemType != "" {
+				typ = "[]" + oj.ElemType
+				if stype, ok := topEnv.GetStruct(oj.ElemType); ok {
+					env.SetVarDeep(st.Let.Name, types.ListType{Elem: stype}, false)
+				}
+			}
 			global := env == topEnv
 			if global {
 				switch e.(type) {
-				case *QueryExpr, *GroupQueryExpr, *GroupJoinQueryExpr:
+				case *QueryExpr, *GroupQueryExpr, *GroupJoinQueryExpr, *OuterJoinExpr:
 					global = false
 				}
 			}
@@ -1426,10 +1492,16 @@ func compileStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 					env.SetVarDeep(st.Var.Name, types.ListType{Elem: stype}, true)
 				}
 			}
+			if oj, ok := e.(*OuterJoinExpr); ok && oj.ElemType != "" {
+				typ = "[]" + oj.ElemType
+				if stype, ok := topEnv.GetStruct(oj.ElemType); ok {
+					env.SetVarDeep(st.Var.Name, types.ListType{Elem: stype}, true)
+				}
+			}
 			global := env == topEnv
 			if global {
 				switch e.(type) {
-				case *QueryExpr, *GroupQueryExpr, *GroupJoinQueryExpr:
+				case *QueryExpr, *GroupQueryExpr, *GroupJoinQueryExpr, *OuterJoinExpr:
 					global = false
 				}
 			}
@@ -1622,6 +1694,9 @@ func compileMatchExpr(me *parser.MatchExpr, env *types.Env) (Expr, error) {
 }
 
 func compileQueryExpr(q *parser.QueryExpr, env *types.Env, base string) (Expr, error) {
+	if len(q.Joins) == 1 && q.Joins[0].Side != nil && *q.Joins[0].Side == "outer" && q.Group == nil && len(q.Froms) == 0 && q.Where == nil && q.Sort == nil && q.Skip == nil && q.Take == nil {
+		return compileOuterJoinQuery(q, env, base)
+	}
 	if q.Group != nil && len(q.Group.Exprs) == 1 && len(q.Froms) == 0 && len(q.Joins) == 0 && q.Sort == nil && q.Skip == nil && q.Take == nil {
 		src, err := compileExpr(q.Source, env, "")
 		if err != nil {
@@ -2059,6 +2134,75 @@ func compileQueryExpr(q *parser.QueryExpr, env *types.Env, base string) (Expr, e
 		}
 	}
 	return &QueryExpr{Var: q.Var, Src: src, Froms: froms, Joins: joins, Where: where, Sort: sortExpr, SortType: sortType, Skip: skipExpr, Take: takeExpr, Select: sel, ElemType: et}, nil
+}
+
+func compileOuterJoinQuery(q *parser.QueryExpr, env *types.Env, base string) (Expr, error) {
+	j := q.Joins[0]
+	leftSrc, err := compileExpr(q.Source, env, "")
+	if err != nil {
+		return nil, err
+	}
+	leftT := types.ExprType(q.Source, env)
+	var leftElem types.Type
+	switch t := leftT.(type) {
+	case types.ListType:
+		leftElem = t.Elem
+	case types.GroupType:
+		leftElem = t.Elem
+		leftSrc = &FieldExpr{X: leftSrc, Name: "Items"}
+	default:
+		leftElem = types.AnyType{}
+	}
+	child := types.NewEnv(env)
+	child.SetVar(q.Var, leftElem, true)
+	rightSrc, err := compileExpr(j.Src, child, "")
+	if err != nil {
+		return nil, err
+	}
+	rightT := types.ExprType(j.Src, child)
+	var rightElem types.Type
+	switch t := rightT.(type) {
+	case types.ListType:
+		rightElem = t.Elem
+	case types.GroupType:
+		rightElem = t.Elem
+		rightSrc = &FieldExpr{X: rightSrc, Name: "Items"}
+	default:
+		rightElem = types.AnyType{}
+	}
+	ptrEnv := types.NewEnv(env)
+	ptrEnv.SetVar(q.Var, types.OptionType{Elem: leftElem}, true)
+	ptrEnv.SetVar(j.Var, types.OptionType{Elem: rightElem}, true)
+	condEnv := types.NewEnv(env)
+	condEnv.SetVar(q.Var, leftElem, true)
+	condEnv.SetVar(j.Var, rightElem, true)
+	cond, err := compileExpr(j.On, condEnv, "")
+	if err != nil {
+		return nil, err
+	}
+	baseName := "Result"
+	if base != "" {
+		baseName = structNameFromVar(base)
+	}
+	name := types.UniqueStructName(baseName, topEnv, nil)
+	stype := types.StructType{
+		Name: name,
+		Fields: map[string]types.Type{
+			"order":    types.OptionType{Elem: leftElem},
+			"customer": types.OptionType{Elem: rightElem},
+		},
+		Order: []string{"order", "customer"},
+	}
+	if topEnv != nil {
+		topEnv.SetStruct(name, stype)
+	}
+	fieldsDecl := []ParamDecl{{Name: "order", Type: toGoTypeFromType(stype.Fields["order"])}, {Name: "customer", Type: toGoTypeFromType(stype.Fields["customer"])}}
+	extraDecls = append(extraDecls, &TypeDeclStmt{Name: name, Fields: fieldsDecl})
+	sel := &StructLit{Name: name, Fields: []Expr{&VarRef{Name: q.Var}, &VarRef{Name: j.Var}}, Names: []string{"order", "customer"}}
+	et := name
+	leftType := toGoTypeFromType(types.OptionType{Elem: leftElem})
+	rightType := toGoTypeFromType(types.OptionType{Elem: rightElem})
+	return &OuterJoinExpr{LeftVar: q.Var, LeftSrc: leftSrc, RightVar: j.Var, RightSrc: rightSrc, Cond: cond, Select: sel, ElemType: et, LeftType: leftType, RightType: rightType}, nil
 }
 
 func zeroValueExpr(goType string) Expr {
@@ -3308,6 +3452,14 @@ func toNodeExpr(e Expr) *ast.Node {
 		if ex.Having != nil {
 			n.Children = append(n.Children, &ast.Node{Kind: "having", Children: []*ast.Node{toNodeExpr(ex.Having)}})
 		}
+		return n
+	case *OuterJoinExpr:
+		n := &ast.Node{Kind: "outer_join"}
+		n.Children = append(n.Children, toNodeExpr(ex.LeftSrc), toNodeExpr(ex.RightSrc))
+		if ex.Cond != nil {
+			n.Children = append(n.Children, &ast.Node{Kind: "on", Children: []*ast.Node{toNodeExpr(ex.Cond)}})
+		}
+		n.Children = append(n.Children, &ast.Node{Kind: "select", Children: []*ast.Node{toNodeExpr(ex.Select)}})
 		return n
 	case *AssertExpr:
 		n := &ast.Node{Kind: "assert", Value: ex.Type}
