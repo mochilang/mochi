@@ -1,4 +1,8 @@
-## Progress (2025-07-21 23:51 UTC)
+## Progress (2025-07-22 02:06 UTC)
+- java: support jsonl load (e71ba2347)
+
+- docs(java): update golden outputs (83b8c2544)
+
 - java transpiler: simplify avg handling (6a6d5558c)
 
 - docs: update java transpiler progress (52a94e25e)

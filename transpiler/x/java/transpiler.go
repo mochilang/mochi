@@ -3,7 +3,9 @@
 package javatr
 
 import (
+	"bufio"
 	"bytes"
+	"encoding/json"
 	"fmt"
 	"io"
 	"math"
@@ -2316,10 +2318,13 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 		if p.Load.Path != nil {
 			path = strings.Trim(*p.Load.Path, "\"")
 		}
-		if format != "yaml" {
+		if format == "" {
+			format = "yaml"
+		}
+		if format != "yaml" && format != "jsonl" {
 			return nil, fmt.Errorf("unsupported load format")
 		}
-		expr, err := dataExprFromFile(path, p.Load.Type)
+		expr, err := dataExprFromFile(path, format, p.Load.Type)
 		if err != nil {
 			return nil, err
 		}
@@ -3242,7 +3247,7 @@ func repoRoot() string {
 	return ""
 }
 
-func dataExprFromFile(path string, typ *parser.TypeRef) (Expr, error) {
+func dataExprFromFile(path, format string, typ *parser.TypeRef) (Expr, error) {
 	if path == "" {
 		return &ListLit{}, nil
 	}
@@ -3256,8 +3261,31 @@ func dataExprFromFile(path string, typ *parser.TypeRef) (Expr, error) {
 		return nil, err
 	}
 	var v interface{}
-	if err := yaml.Unmarshal(data, &v); err != nil {
-		return nil, err
+	switch format {
+	case "yaml":
+		if err := yaml.Unmarshal(data, &v); err != nil {
+			return nil, err
+		}
+	case "jsonl":
+		var list []interface{}
+		scanner := bufio.NewScanner(bytes.NewReader(data))
+		for scanner.Scan() {
+			line := strings.TrimSpace(scanner.Text())
+			if line == "" {
+				continue
+			}
+			var item interface{}
+			if err := json.Unmarshal([]byte(line), &item); err != nil {
+				return nil, err
+			}
+			list = append(list, item)
+		}
+		if err := scanner.Err(); err != nil {
+			return nil, err
+		}
+		v = list
+	default:
+		return nil, fmt.Errorf("unsupported format")
 	}
 	return valueToExpr(v, typ), nil
 }
@@ -3269,7 +3297,8 @@ func valueToExpr(v interface{}, typ *parser.TypeRef) Expr {
 			if st, ok := topEnv.GetStruct(*typ.Simple); ok {
 				fields := make([]Expr, len(st.Order))
 				for i, k := range st.Order {
-					fields[i] = valueToExpr(val[k], nil)
+					ft := parserTypeRefFromType(st.Fields[k])
+					fields[i] = valueToExpr(val[k], ft)
 				}
 				return &StructLit{Name: *typ.Simple, Fields: fields, Names: st.Order}
 			}
@@ -3299,8 +3328,34 @@ func valueToExpr(v interface{}, typ *parser.TypeRef) Expr {
 	case int, int64:
 		return &IntLit{Value: int(reflect.ValueOf(val).Int())}
 	case float32, float64:
+		if typ != nil && typ.Simple != nil && *typ.Simple == "int" {
+			return &IntLit{Value: int(reflect.ValueOf(val).Float())}
+		}
 		return &FloatLit{Value: reflect.ValueOf(val).Float()}
 	default:
 		return &StringLit{Value: fmt.Sprintf("%v", val)}
 	}
+}
+
+func parserTypeRefFromType(t types.Type) *parser.TypeRef {
+	switch tt := t.(type) {
+	case types.IntType, types.Int64Type:
+		s := "int"
+		return &parser.TypeRef{Simple: &s}
+	case types.FloatType:
+		s := "double"
+		return &parser.TypeRef{Simple: &s}
+	case types.BoolType:
+		s := "bool"
+		return &parser.TypeRef{Simple: &s}
+	case types.StringType:
+		s := "string"
+		return &parser.TypeRef{Simple: &s}
+	case types.StructType:
+		if tt.Name != "" {
+			s := tt.Name
+			return &parser.TypeRef{Simple: &s}
+		}
+	}
+	return nil
 }
