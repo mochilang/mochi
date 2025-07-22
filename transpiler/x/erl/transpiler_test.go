@@ -253,7 +253,7 @@ func TestTranspileLeftJoin(t *testing.T)              { runGolden(t, "left_join"
 func TestTranspileLeftJoinMulti(t *testing.T)         { runGolden(t, "left_join_multi") }
 func TestTranspileGroupByHaving(t *testing.T)         { runGolden(t, "group_by_having") }
 func TestTranspileGroupByLeftJoin(t *testing.T)       { runGolden(t, "group_by_left_join") }
-func TestTranspileOuterJoin(t *testing.T)            { runGolden(t, "outer_join") }
+func TestTranspileOuterJoin(t *testing.T)             { runGolden(t, "outer_join") }
 
 func TestTranspileJsonBuiltin(t *testing.T) { runGolden(t, "json_builtin") }
 
@@ -262,6 +262,10 @@ func TestTranspileSortStable(t *testing.T)       { runGolden(t, "sort_stable") }
 func TestTranspilePureGlobalFold(t *testing.T)   { runGolden(t, "pure_global_fold") }
 func TestTranspileQuerySumSelect(t *testing.T)   { runGolden(t, "query_sum_select") }
 func TestTranspileGroupByMultiSort(t *testing.T) { runGolden(t, "group_by_multi_sort") }
+
+func TestTranspileLoadJSONL(t *testing.T) { runGolden(t, "load_jsonl") }
+
+func TestTranspileLoadYAML(t *testing.T) { runGolden(t, "load_yaml") }
 
 func updateEnabled() bool { return *update }
 

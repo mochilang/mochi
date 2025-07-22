@@ -4,6 +4,7 @@ package erl
 
 import (
 	"bytes"
+	"encoding/json"
 	"fmt"
 	"io"
 	"os"
@@ -12,6 +13,8 @@ import (
 	"sort"
 	"strings"
 	"time"
+
+	yaml "gopkg.in/yaml.v3"
 
 	"mochi/parser"
 	"mochi/types"
@@ -509,22 +512,22 @@ type leftJoin struct {
 
 // LeftJoinExpr represents a basic left join between two sources.
 type LeftJoinExpr struct {
-        LeftVar  string
-        LeftSrc  Expr
-        RightVar string
-        RightSrc Expr
-        On       Expr
-        Select   Expr
+	LeftVar  string
+	LeftSrc  Expr
+	RightVar string
+	RightSrc Expr
+	On       Expr
+	Select   Expr
 }
 
 // OuterJoinExpr represents a full outer join between two sources.
 type OuterJoinExpr struct {
-        LeftVar  string
-        LeftSrc  Expr
-        RightVar string
-        RightSrc Expr
-        On       Expr
-        Select   Expr
+	LeftVar  string
+	LeftSrc  Expr
+	RightVar string
+	RightSrc Expr
+	On       Expr
+	Select   Expr
 }
 
 type rightJoin struct {
@@ -677,7 +680,13 @@ func isStringExpr(e Expr) bool {
 	case *NameRef:
 		return v.IsString
 	case *IndexExpr:
-		return v.IsString
+		if v.IsString {
+			return true
+		}
+		if _, ok := v.Index.(*StringLit); ok {
+			return true
+		}
+		return false
 	default:
 		return false
 	}
@@ -842,6 +851,29 @@ func fieldIsString(target Expr, key Expr, env *types.Env, ctx *context) bool {
 				name := ctx.original(t.Name)
 				if ctx.isStrField(name, a.Name) {
 					return true
+				}
+			}
+		}
+	}
+	if s, ok := key.(*StringLit); ok {
+		if nr, ok := target.(*NameRef); ok {
+			name := nr.Name
+			if ctx != nil {
+				name = ctx.original(nr.Name)
+				if ctx.isStrField(name, s.Value) {
+					return true
+				}
+			}
+			if t, err := env.GetVar(name); err == nil {
+				if lt, ok := t.(types.ListType); ok {
+					t = lt.Elem
+				}
+				if st, ok := t.(types.StructType); ok {
+					if ft, ok := st.Fields[s.Value]; ok {
+						if _, ok := ft.(types.StringType); ok {
+							return true
+						}
+					}
 				}
 			}
 		}
@@ -1565,45 +1597,45 @@ func (l *LeftJoinExpr) emit(w io.Writer) {
 }
 
 func (o *OuterJoinExpr) emit(w io.Writer) {
-        io.WriteString(w, "lists:reverse(lists:foldl(fun(")
-        io.WriteString(w, o.LeftVar)
-        io.WriteString(w, ", Acc0) ->\n    {Matched,Acc} = lists:foldl(fun(")
-        io.WriteString(w, o.RightVar)
-        io.WriteString(w, ", {M,A}) ->\n        case ")
-        if o.On != nil {
-                o.On.emit(w)
-        } else {
-                io.WriteString(w, "true")
-        }
-        io.WriteString(w, " of\n            true -> {true, [")
-        o.Select.emit(w)
-        io.WriteString(w, "|A]};\n            _ -> {M,A}\n        end\n    end, {false, Acc0}, ")
-        o.RightSrc.emit(w)
-        io.WriteString(w, "),\n    case Matched of\n        true -> Acc;\n        false -> [(fun() -> ")
-        io.WriteString(w, o.RightVar)
-        io.WriteString(w, " = nil, ")
-        o.Select.emit(w)
-        io.WriteString(w, " end())|Acc]\n    end\nend, [], ")
-        o.LeftSrc.emit(w)
-        io.WriteString(w, ")) ++ lists:reverse(lists:foldl(fun(")
-        io.WriteString(w, o.RightVar)
-        io.WriteString(w, ", Acc0) ->\n    Exists = lists:any(fun(")
-        io.WriteString(w, o.LeftVar)
-        io.WriteString(w, ") -> ")
-        if o.On != nil {
-                o.On.emit(w)
-        } else {
-                io.WriteString(w, "true")
-        }
-        io.WriteString(w, " end, ")
-        o.LeftSrc.emit(w)
-        io.WriteString(w, "),\n    case Exists of\n        true -> Acc0;\n        false -> [(fun() -> ")
-        io.WriteString(w, o.LeftVar)
-        io.WriteString(w, " = nil, ")
-        o.Select.emit(w)
-        io.WriteString(w, " end())|Acc0]\n    end\nend, [], ")
-        o.RightSrc.emit(w)
-        io.WriteString(w, "))")
+	io.WriteString(w, "lists:reverse(lists:foldl(fun(")
+	io.WriteString(w, o.LeftVar)
+	io.WriteString(w, ", Acc0) ->\n    {Matched,Acc} = lists:foldl(fun(")
+	io.WriteString(w, o.RightVar)
+	io.WriteString(w, ", {M,A}) ->\n        case ")
+	if o.On != nil {
+		o.On.emit(w)
+	} else {
+		io.WriteString(w, "true")
+	}
+	io.WriteString(w, " of\n            true -> {true, [")
+	o.Select.emit(w)
+	io.WriteString(w, "|A]};\n            _ -> {M,A}\n        end\n    end, {false, Acc0}, ")
+	o.RightSrc.emit(w)
+	io.WriteString(w, "),\n    case Matched of\n        true -> Acc;\n        false -> [(fun() -> ")
+	io.WriteString(w, o.RightVar)
+	io.WriteString(w, " = nil, ")
+	o.Select.emit(w)
+	io.WriteString(w, " end())|Acc]\n    end\nend, [], ")
+	o.LeftSrc.emit(w)
+	io.WriteString(w, ")) ++ lists:reverse(lists:foldl(fun(")
+	io.WriteString(w, o.RightVar)
+	io.WriteString(w, ", Acc0) ->\n    Exists = lists:any(fun(")
+	io.WriteString(w, o.LeftVar)
+	io.WriteString(w, ") -> ")
+	if o.On != nil {
+		o.On.emit(w)
+	} else {
+		io.WriteString(w, "true")
+	}
+	io.WriteString(w, " end, ")
+	o.LeftSrc.emit(w)
+	io.WriteString(w, "),\n    case Exists of\n        true -> Acc0;\n        false -> [(fun() -> ")
+	io.WriteString(w, o.LeftVar)
+	io.WriteString(w, " = nil, ")
+	o.Select.emit(w)
+	io.WriteString(w, " end())|Acc0]\n    end\nend, [], ")
+	o.RightSrc.emit(w)
+	io.WriteString(w, "))")
 }
 
 func mapOp(op string) string {
@@ -2346,6 +2378,17 @@ func convertPrimary(p *parser.Primary, env *types.Env, ctx *context) (Expr, erro
 		return convertFunExpr(p.FunExpr, env, ctx)
 	case p.Group != nil:
 		return convertExpr(p.Group, env, ctx)
+	case p.Load != nil:
+		format := parseFormat(p.Load.With)
+		path := ""
+		if p.Load.Path != nil {
+			path = strings.Trim(*p.Load.Path, "\"")
+		}
+		expr, err := dataExprFromFile(path, format)
+		if err != nil {
+			return nil, err
+		}
+		return expr, nil
 	case p.List != nil:
 		elems := make([]Expr, len(p.List.Elems))
 		for i, e := range p.List.Elems {
@@ -2500,23 +2543,35 @@ func convertQueryExpr(q *parser.QueryExpr, env *types.Env, ctx *context) (Expr, 
 		return nil, err
 	}
 	alias := loopCtx.newAlias(q.Var)
-	loopCtx.setStrFields(q.Var, stringFields(src))
-	loopCtx.setBoolFields(q.Var, boolFields(src))
+	strF := stringFields(src)
+	if strF == nil {
+		if nr, ok := src.(*NameRef); ok {
+			strF = ctx.strField[ctx.original(nr.Name)]
+		}
+	}
+	boolF := boolFields(src)
+	if boolF == nil {
+		if nr, ok := src.(*NameRef); ok {
+			boolF = ctx.boolField[ctx.original(nr.Name)]
+		}
+	}
+	loopCtx.setStrFields(q.Var, strF)
+	loopCtx.setBoolFields(q.Var, boolF)
 	child := types.NewEnv(env)
 	child.SetVar(q.Var, types.AnyType{}, true)
 	froms := []queryFrom{}
 	var rjoin *rightJoin
 	var cond Expr
 	joins := q.Joins
-       if len(q.Joins) == 1 && q.Joins[0].Side != nil {
-               side := *q.Joins[0].Side
-               if side == "left" && len(q.Froms) == 0 && q.Where == nil && q.Sort == nil && q.Skip == nil && q.Take == nil {
-                       return convertLeftJoinQuery(q, env, ctx)
-               }
-               if side == "outer" && len(q.Froms) == 0 && q.Where == nil && q.Sort == nil && q.Skip == nil && q.Take == nil {
-                       return convertOuterJoinQuery(q, env, ctx)
-               }
-       }
+	if len(q.Joins) == 1 && q.Joins[0].Side != nil {
+		side := *q.Joins[0].Side
+		if side == "left" && len(q.Froms) == 0 && q.Where == nil && q.Sort == nil && q.Skip == nil && q.Take == nil {
+			return convertLeftJoinQuery(q, env, ctx)
+		}
+		if side == "outer" && len(q.Froms) == 0 && q.Where == nil && q.Sort == nil && q.Skip == nil && q.Take == nil {
+			return convertOuterJoinQuery(q, env, ctx)
+		}
+	}
 	if len(q.Joins) > 1 {
 		last := q.Joins[len(q.Joins)-1]
 		if last.Side != nil && *last.Side == "left" && q.Sort == nil && q.Skip == nil && q.Take == nil && q.Group == nil {
@@ -2660,34 +2715,34 @@ func convertLeftJoinQuery(q *parser.QueryExpr, env *types.Env, ctx *context) (Ex
 }
 
 func convertOuterJoinQuery(q *parser.QueryExpr, env *types.Env, ctx *context) (Expr, error) {
-        j := q.Joins[0]
-        loopCtx := ctx.clone()
-        leftSrc, err := convertExpr(q.Source, env, ctx)
-        if err != nil {
-                return nil, err
-        }
-        leftVar := loopCtx.newAlias(q.Var)
-        loopCtx.setStrFields(q.Var, stringFields(leftSrc))
-        loopCtx.setBoolFields(q.Var, boolFields(leftSrc))
-        rightSrc, err := convertExpr(j.Src, env, ctx)
-        if err != nil {
-                return nil, err
-        }
-        rightVar := loopCtx.newAlias(j.Var)
-        loopCtx.setStrFields(j.Var, stringFields(rightSrc))
-        loopCtx.setBoolFields(j.Var, boolFields(rightSrc))
-        child := types.NewEnv(env)
-        child.SetVar(q.Var, types.AnyType{}, true)
-        child.SetVar(j.Var, types.AnyType{}, true)
-        cond, err := convertExpr(j.On, child, loopCtx)
-        if err != nil {
-                return nil, err
-        }
-        sel, err := convertExpr(q.Select, child, loopCtx)
-        if err != nil {
-                return nil, err
-        }
-        return &OuterJoinExpr{LeftVar: leftVar, LeftSrc: leftSrc, RightVar: rightVar, RightSrc: rightSrc, On: cond, Select: sel}, nil
+	j := q.Joins[0]
+	loopCtx := ctx.clone()
+	leftSrc, err := convertExpr(q.Source, env, ctx)
+	if err != nil {
+		return nil, err
+	}
+	leftVar := loopCtx.newAlias(q.Var)
+	loopCtx.setStrFields(q.Var, stringFields(leftSrc))
+	loopCtx.setBoolFields(q.Var, boolFields(leftSrc))
+	rightSrc, err := convertExpr(j.Src, env, ctx)
+	if err != nil {
+		return nil, err
+	}
+	rightVar := loopCtx.newAlias(j.Var)
+	loopCtx.setStrFields(j.Var, stringFields(rightSrc))
+	loopCtx.setBoolFields(j.Var, boolFields(rightSrc))
+	child := types.NewEnv(env)
+	child.SetVar(q.Var, types.AnyType{}, true)
+	child.SetVar(j.Var, types.AnyType{}, true)
+	cond, err := convertExpr(j.On, child, loopCtx)
+	if err != nil {
+		return nil, err
+	}
+	sel, err := convertExpr(q.Select, child, loopCtx)
+	if err != nil {
+		return nil, err
+	}
+	return &OuterJoinExpr{LeftVar: leftVar, LeftSrc: leftSrc, RightVar: rightVar, RightSrc: rightSrc, On: cond, Select: sel}, nil
 }
 
 func replaceVars(e Expr, repl map[string]Expr) Expr {
@@ -3244,6 +3299,133 @@ func convertLiteral(l *parser.Literal) (Expr, error) {
 	default:
 		return nil, fmt.Errorf("unsupported literal")
 	}
+}
+
+func literalString(e *parser.Expr) (string, bool) {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) > 0 {
+		return "", false
+	}
+	u := e.Binary.Left
+	if len(u.Ops) > 0 || u.Value == nil {
+		return "", false
+	}
+	p := u.Value
+	if len(p.Ops) > 0 || p.Target == nil {
+		return "", false
+	}
+	if p.Target.Lit != nil && p.Target.Lit.Str != nil {
+		return *p.Target.Lit.Str, true
+	}
+	if p.Target.Selector != nil && len(p.Target.Selector.Tail) == 0 {
+		return p.Target.Selector.Root, true
+	}
+	return "", false
+}
+
+func parseFormat(e *parser.Expr) string {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) > 0 {
+		return ""
+	}
+	ml := e.Binary.Left.Value.Target.Map
+	if ml == nil {
+		return ""
+	}
+	for _, it := range ml.Items {
+		key, ok := literalString(it.Key)
+		if !ok || key != "format" {
+			continue
+		}
+		if v, ok := literalString(it.Value); ok {
+			return v
+		}
+	}
+	return ""
+}
+
+func valueToExpr(v interface{}) Expr {
+	switch val := v.(type) {
+	case map[string]interface{}:
+		keys := make([]string, 0, len(val))
+		for k := range val {
+			keys = append(keys, k)
+		}
+		sort.Strings(keys)
+		items := make([]MapItem, len(keys))
+		for i, k := range keys {
+			items[i] = MapItem{Key: &StringLit{Value: k}, Value: valueToExpr(val[k])}
+		}
+		return &MapLit{Items: items}
+	case []interface{}:
+		elems := make([]Expr, len(val))
+		for i, it := range val {
+			elems[i] = valueToExpr(it)
+		}
+		return &ListLit{Elems: elems}
+	case string:
+		return &StringLit{Value: val}
+	case bool:
+		return &BoolLit{Value: val}
+	case int:
+		return &IntLit{Value: int64(val)}
+	case int64:
+		return &IntLit{Value: val}
+	case float64:
+		f := val
+		if float64(int64(f)) == f {
+			return &IntLit{Value: int64(f)}
+		}
+		return &FloatLit{Value: f}
+	case float32:
+		f := float64(val)
+		if float64(int64(f)) == f {
+			return &IntLit{Value: int64(f)}
+		}
+		return &FloatLit{Value: f}
+	default:
+		return &StringLit{Value: fmt.Sprintf("%v", val)}
+	}
+}
+
+func dataExprFromFile(path, format string) (Expr, error) {
+	if path == "" {
+		return &ListLit{}, nil
+	}
+	root := repoRoot()
+	if root != "" && strings.HasPrefix(path, "../") {
+		clean := strings.TrimPrefix(path, "../")
+		path = filepath.Join(root, "tests", clean)
+	}
+	data, err := os.ReadFile(path)
+	if err != nil {
+		return nil, err
+	}
+	var v interface{}
+	switch format {
+	case "yaml":
+		if err := yaml.Unmarshal(data, &v); err != nil {
+			return nil, err
+		}
+	case "json":
+		if err := json.Unmarshal(data, &v); err != nil {
+			return nil, err
+		}
+	case "jsonl":
+		var arr []interface{}
+		for _, line := range bytes.Split(data, []byte{'\n'}) {
+			line = bytes.TrimSpace(line)
+			if len(line) == 0 {
+				continue
+			}
+			var item interface{}
+			if err := json.Unmarshal(line, &item); err == nil {
+				arr = append(arr, item)
+			}
+		}
+		v = arr
+	default:
+		return nil, fmt.Errorf("unsupported load format")
+	}
+	return valueToExpr(v), nil
 }
 
 // Emit renders Erlang source for the program.
