@@ -50,6 +50,7 @@ func runCase(src, outDir string) ([]byte, error) {
 		return nil, err
 	}
 	cmd := exec.Command("lua", codePath)
+	cmd.Env = append(os.Environ(), "MOCHI_NOW_SEED=1")
 	if data, err := os.ReadFile(strings.TrimSuffix(src, ".mochi") + ".in"); err == nil {
 		cmd.Stdin = bytes.NewReader(data)
 	}
@@ -70,6 +71,7 @@ func TestLuaTranspiler_Rosetta(t *testing.T) {
 	srcDir := filepath.Join(root, "tests", "rosetta", "x", "Mochi")
 	outDir := filepath.Join(root, "tests", "rosetta", "transpiler", "Lua")
 	os.MkdirAll(outDir, 0o755)
+	t.Cleanup(updateRosettaReadme)
 
 	pattern := filepath.Join(srcDir, "*.mochi")
 	if only := os.Getenv("MOCHI_ROSETTA_ONLY"); only != "" {
