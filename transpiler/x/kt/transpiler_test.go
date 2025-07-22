@@ -104,6 +104,7 @@ func TestTranspilePrograms(t *testing.T) {
 		"order_by_map",
 		"sort_stable",
 		"load_yaml",
+		"load_jsonl",
 		"save_jsonl_stdout",
 		"update_stmt",
 	}

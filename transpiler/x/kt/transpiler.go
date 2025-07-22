@@ -44,6 +44,9 @@ func init() {
     }
     return when (fmt) {
         "yaml" -> loadYamlSimple(lines)
+        "jsonl" -> lines.filter { it.isNotBlank() }
+            .map { parseJsonLine(it) }
+            .toMutableList()
         else -> mutableListOf()
     }
 }`,
@@ -81,6 +84,16 @@ func init() {
         t.startsWith("\"") && t.endsWith("\"") -> t.substring(1, t.length - 1)
         else -> t
     }
+}`,
+		"parseJsonLine": `fun parseJsonLine(line: String): MutableMap<String, Any?> {
+    val obj = mutableMapOf<String, Any?>()
+    val r = Regex("\"([^\"]+)\":\\s*(\"[^\"]*\"|-?\\d+(?:\\.\\d+)?|true|false|null)")
+    for (m in r.findAll(line)) {
+        val k = m.groupValues[1]
+        val v = parseSimpleValue(m.groupValues[2])
+        obj[k] = v
+    }
+    return obj
 }`,
 		"_save": `fun _save(rows: List<Any?>, path: String?, opts: Map<String, Any?>?) {
     val fmt = opts?.get("format") as? String ?: "csv"
@@ -2520,6 +2533,7 @@ func convertLoadExpr(env *types.Env, l *parser.LoadExpr) (Expr, error) {
 	useHelper("_load")
 	useHelper("loadYamlSimple")
 	useHelper("parseSimpleValue")
+	useHelper("parseJsonLine")
 	var path Expr = &VarRef{Name: "null"}
 	if l.Path != nil {
 		path = &StringLit{Value: *l.Path}
