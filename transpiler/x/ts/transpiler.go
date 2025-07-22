@@ -2593,16 +2593,11 @@ func convertBinary(b *parser.BinaryExpr) (Expr, error) {
 			operands[i] = &ExceptExpr{Left: operands[i], Right: operands[i+1]}
 		case "intersect":
 			operands[i] = &IntersectExpr{Left: operands[i], Right: operands[i+1]}
-		default:
-			if ops[i] == "/" {
-				if _, ok := typesArr[i].(types.IntType); ok {
-					if _, ok2 := typesArr[i+1].(types.IntType); ok2 {
-						operands[i] = &IntDivExpr{Left: operands[i], Right: operands[i+1]}
-						typesArr[i] = types.IntType{}
-						break
-					}
-				}
-			}
+               default:
+                       // Mochi's `/` operator always performs floating point
+                       // division even when both operands are integers. Avoid
+                       // emitting `Math.trunc` so the generated code matches
+                       // the VM semantics.
 			operands[i] = &BinaryExpr{Left: operands[i], Op: ops[i], Right: operands[i+1]}
 			switch ops[i] {
 			case "+", "-", "*", "/", "%":
