@@ -2395,7 +2395,7 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 				} else if isBoolExpr(a) {
 					args[i] = &TernaryExpr{Cond: a, Then: &StringLit{Value: "True"}, Else: &StringLit{Value: "False"}}
 				} else if isStringExpr(a) {
-					args[i] = &BinaryExpr{Left: &BinaryExpr{Left: &StringLit{Value: "'"}, Op: "+", Right: a}, Op: "+", Right: &StringLit{Value: "'"}}
+					args[i] = a
 				}
 			}
 			if len(args) > 1 {
