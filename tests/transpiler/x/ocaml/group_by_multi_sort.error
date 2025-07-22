@@ -1,6 +1,0 @@
-exit status 2
-File "/workspace/mochi/tests/transpiler/x/ocaml/group_by_multi_sort.ml", line 18, characters 36-43:
-18 |   print_endline (String.concat " " [grouped]);
-                                         ^^^^^^^
-Error: This expression has type (string * Obj.t) list list
-       but an expression was expected of type string
