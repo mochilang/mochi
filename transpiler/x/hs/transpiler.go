@@ -513,7 +513,7 @@ func (a *AssignStmt) emit(w io.Writer) {
 		needIORef = true
 		io.WriteString(w, "writeIORef ")
 		io.WriteString(w, name)
-		io.WriteString(w, " (")
+		io.WriteString(w, " $! (")
 		a.Expr.emit(w)
 		io.WriteString(w, ")")
 	} else {
@@ -1670,6 +1670,12 @@ func header(withList, withMap, withJSON, withTrace, withIORef bool) string {
 
 // Emit generates formatted Haskell code.
 func Emit(p *Program) []byte {
+	for _, m := range mutated {
+		if m {
+			needIORef = true
+			break
+		}
+	}
 	var buf bytes.Buffer
 	buf.WriteString(header(needDataList, needDataMap, needJSON, needTrace, needIORef))
 	if needGroupBy {
@@ -2624,6 +2630,13 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 				return &CallExpr{Fun: &NameRef{Name: "round"}, Args: []Expr{&GroupExpr{Expr: call}}}, nil
 			}
 			return call, nil
+		}
+		if p.Call.Func == "str" && len(p.Call.Args) == 1 {
+			arg, err := convertExpr(p.Call.Args[0])
+			if err != nil {
+				return nil, err
+			}
+			return &CallExpr{Fun: &NameRef{Name: "show"}, Args: []Expr{arg}}, nil
 		}
 		if p.Call.Func == "substring" && len(p.Call.Args) == 3 {
 			arg0, err := convertExpr(p.Call.Args[0])
