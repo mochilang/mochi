@@ -10,6 +10,7 @@ import (
 	"os/exec"
 	"path/filepath"
 	"sort"
+	"strconv"
 	"strings"
 	"testing"
 	"time"
@@ -83,6 +84,7 @@ func TestTranspiler_Rosetta(t *testing.T) {
 	srcDir := filepath.Join(root, "tests", "rosetta", "x", "Mochi")
 	outDir := filepath.Join(root, "tests", "rosetta", "transpiler", "Rust")
 	os.MkdirAll(outDir, 0o755)
+	t.Cleanup(updateRosetta)
 	pattern := filepath.Join(srcDir, "*.mochi")
 	if only := os.Getenv("MOCHI_ROSETTA_ONLY"); only != "" {
 		pattern = filepath.Join(srcDir, only+".mochi")
@@ -95,6 +97,13 @@ func TestTranspiler_Rosetta(t *testing.T) {
 		t.Fatalf("no rosetta programs found: %s", pattern)
 	}
 	sort.Strings(files)
+	if idxStr := os.Getenv("MOCHI_ROSETTA_INDEX"); idxStr != "" {
+		idx, err := strconv.Atoi(idxStr)
+		if err != nil || idx < 1 || idx > len(files) {
+			t.Fatalf("invalid MOCHI_ROSETTA_INDEX: %s", idxStr)
+		}
+		files = files[idx-1 : idx]
+	}
 	var passed, failed int
 	var firstFail string
 	for _, src := range files {
@@ -138,10 +147,11 @@ func updateRosetta() {
 	outDir := filepath.Join(root, "tests", "rosetta", "transpiler", "Rust")
 	readmePath := filepath.Join(root, "transpiler", "x", "rs", "ROSETTA.md")
 	files, _ := filepath.Glob(filepath.Join(srcDir, "*.mochi"))
+	sort.Strings(files)
 	total := len(files)
 	compiled := 0
 	var lines []string
-	for _, f := range files {
+	for i, f := range files {
 		name := strings.TrimSuffix(filepath.Base(f), ".mochi")
 		mark := "[ ]"
 		if _, err := os.Stat(filepath.Join(outDir, name+".out")); err == nil {
@@ -150,7 +160,7 @@ func updateRosetta() {
 				mark = "[x]"
 			}
 		}
-		lines = append(lines, fmt.Sprintf("- %s %s.mochi", mark, name))
+		lines = append(lines, fmt.Sprintf("%3d. %s %s.mochi", i+1, mark, name))
 	}
 	tsRaw, _ := exec.Command("git", "log", "-1", "--format=%cI").Output()
 	ts := strings.TrimSpace(string(tsRaw))
