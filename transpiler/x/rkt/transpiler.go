@@ -249,21 +249,51 @@ func (r *ReturnStmt) emit(w io.Writer) {
 }
 
 type FunDecl struct {
-	Name   string
-	Params []string
-	Body   []Stmt
+        Name   string
+        Params []string
+        Body   []Stmt
 }
 
 func (f *FunDecl) emit(w io.Writer) {
-	fmt.Fprintf(w, "(define (%s", f.Name)
-	for _, p := range f.Params {
-		fmt.Fprintf(w, " %s", p)
-	}
-	io.WriteString(w, ")\n")
-	for _, st := range f.Body {
-		st.emit(w)
-	}
-	io.WriteString(w, ")\n")
+        fmt.Fprintf(w, "(define (%s", f.Name)
+        for _, p := range f.Params {
+                fmt.Fprintf(w, " %s", p)
+        }
+        io.WriteString(w, ")\n")
+        for _, st := range f.Body {
+                st.emit(w)
+        }
+        io.WriteString(w, ")\n")
+}
+
+type LambdaExpr struct {
+        Params []string
+        Body   []Stmt
+        Expr   Expr
+}
+
+func (l *LambdaExpr) emit(w io.Writer) {
+        io.WriteString(w, "(lambda (")
+        for i, p := range l.Params {
+                if i > 0 {
+                        io.WriteString(w, " ")
+                }
+                io.WriteString(w, p)
+        }
+        io.WriteString(w, ")")
+        if len(l.Body) > 0 {
+                io.WriteString(w, "\n")
+                for _, st := range l.Body {
+                        st.emit(w)
+                }
+                io.WriteString(w, ")")
+        } else if l.Expr != nil {
+                io.WriteString(w, " ")
+                l.Expr.emit(w)
+                io.WriteString(w, ")")
+        } else {
+                io.WriteString(w, ")")
+        }
 }
 
 type IfExpr struct {
@@ -1084,17 +1114,38 @@ func convertForStmt(n *parser.ForStmt, env *types.Env) (Stmt, error) {
 }
 
 func convertFunStmt(fn *parser.FunStmt, env *types.Env) (Stmt, error) {
-	child := types.NewEnv(env)
-	var params []string
-	for _, p := range fn.Params {
-		params = append(params, p.Name)
-		child.SetVar(p.Name, types.AnyType{}, true)
-	}
-	body, err := convertStatements(fn.Body, child)
-	if err != nil {
-		return nil, err
-	}
-	return &FunDecl{Name: fn.Name, Params: params, Body: body}, nil
+        child := types.NewEnv(env)
+        var params []string
+        for _, p := range fn.Params {
+                params = append(params, p.Name)
+                child.SetVar(p.Name, types.AnyType{}, true)
+        }
+        body, err := convertStatements(fn.Body, child)
+        if err != nil {
+                return nil, err
+        }
+        return &FunDecl{Name: fn.Name, Params: params, Body: body}, nil
+}
+
+func convertFunExpr(fn *parser.FunExpr, env *types.Env) (Expr, error) {
+        child := types.NewEnv(env)
+        params := make([]string, len(fn.Params))
+        for i, p := range fn.Params {
+                params[i] = p.Name
+                child.SetVar(p.Name, types.AnyType{}, true)
+        }
+        if fn.ExprBody != nil {
+                expr, err := convertExpr(fn.ExprBody, child)
+                if err != nil {
+                        return nil, err
+                }
+                return &LambdaExpr{Params: params, Expr: expr}, nil
+        }
+        stmts, err := convertStatements(fn.BlockBody, child)
+        if err != nil {
+                return nil, err
+        }
+        return &LambdaExpr{Params: params, Body: stmts}, nil
 }
 
 func convertUpdateStmt(u *parser.UpdateStmt, env *types.Env) (Stmt, error) {
@@ -1371,10 +1422,12 @@ func convertPrimary(p *parser.Primary, env *types.Env) (Expr, error) {
 		return convertList(p.List, env)
 	case p.Struct != nil:
 		return convertStruct(p.Struct, env)
-	case p.Map != nil:
-		return convertMap(p.Map, env)
-	case p.Call != nil:
-		return convertCall(p.Call, env)
+       case p.Map != nil:
+               return convertMap(p.Map, env)
+       case p.FunExpr != nil:
+               return convertFunExpr(p.FunExpr, env)
+       case p.Call != nil:
+               return convertCall(p.Call, env)
 	case p.Query != nil:
 		return convertQueryExpr(p.Query, env)
 	case p.If != nil:
