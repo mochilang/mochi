@@ -1736,6 +1736,8 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 			switch *st.Let.Type.Simple {
 			case "int":
 				val = &IntLit{Value: 0}
+			case "bigint":
+				val = &IntLit{Value: 0}
 			case "bool":
 				val = &BoolLit{Value: false}
 			case "string":
@@ -1775,6 +1777,8 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 		} else if st.Var.Type != nil && st.Var.Type.Simple != nil {
 			switch *st.Var.Type.Simple {
 			case "int":
+				val = &IntLit{Value: 0}
+			case "bigint":
 				val = &IntLit{Value: 0}
 			case "bool":
 				val = &BoolLit{Value: false}
@@ -2440,6 +2444,8 @@ func simpleResolveType(t *parser.TypeRef, env *types.Env) types.Type {
 		switch *t.Simple {
 		case "int":
 			return types.IntType{}
+		case "bigint":
+			return types.BigIntType{}
 		case "int64":
 			return types.Int64Type{}
 		case "float":
@@ -2624,20 +2630,13 @@ func convertUpdate(u *parser.UpdateStmt) (*UpdateStmt, error) {
 
 func maybeBoolString(e Expr) Expr {
 	if isBoolExpr(e) {
-		if c, ok := e.(*CallExpr); ok && c.Func == "str_contains" {
-			return &CondExpr{Cond: e, Then: &StringLit{Value: "True"}, Else: &StringLit{Value: "False"}}
-		}
-		return &CondExpr{Cond: e, Then: &IntLit{Value: 1}, Else: &IntLit{Value: 0}}
+		return &CondExpr{Cond: e, Then: &StringLit{Value: "true"}, Else: &StringLit{Value: "false"}}
 	}
 	return e
 }
 
 func maybeFloatString(e Expr) Expr {
-	return &CondExpr{
-		Cond: &CallExpr{Func: "is_float", Args: []Expr{e}},
-		Then: &CallExpr{Func: "json_encode", Args: []Expr{e, &IntLit{Value: 1344}}},
-		Else: e,
-	}
+	return &CallExpr{Func: "json_encode", Args: []Expr{e, &IntLit{Value: 1344}}}
 }
 
 func convertImport(im *parser.ImportStmt) (Stmt, error) {
