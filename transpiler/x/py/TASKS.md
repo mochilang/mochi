@@ -1,5 +1,5 @@
-## Progress (2025-07-22 21:42 +0700)
-- Commit 7b4d8103a: c transpiler: use golden harness and fix update flag
+## Progress (2025-07-22 22:49 +0700)
+- Commit 471b8e5ea: transpiler/erl: use index for Rosetta tests
 - Generated Python for 103/103 programs
 - Updated README checklist and outputs
 - Removed runtime helpers and improved boolean type inference
