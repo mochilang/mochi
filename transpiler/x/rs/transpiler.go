@@ -765,7 +765,17 @@ func (v *VarDecl) emit(w io.Writer) {
 	}
 	if v.Expr != nil {
 		io.WriteString(w, " = ")
-		v.Expr.emit(w)
+		if v.Type == "" && stringVars[v.Name] {
+			if sl, ok := v.Expr.(*StringLit); ok {
+				io.WriteString(w, "String::from(")
+				sl.emit(w)
+				io.WriteString(w, ")")
+			} else {
+				v.Expr.emit(w)
+			}
+		} else {
+			v.Expr.emit(w)
+		}
 	} else if v.Type != "" {
 		io.WriteString(w, " = ")
 		if v.Type == "String" {
@@ -818,15 +828,7 @@ type BinaryExpr struct {
 
 func (b *BinaryExpr) emit(w io.Writer) {
 	if b.Op == "+" {
-		if _, ok := b.Left.(*StringLit); ok {
-			io.WriteString(w, "format!(\"{}{}\", ")
-			b.Left.emit(w)
-			io.WriteString(w, ", ")
-			b.Right.emit(w)
-			io.WriteString(w, ")")
-			return
-		}
-		if _, ok := b.Right.(*StringLit); ok {
+		if inferType(b.Left) == "String" || inferType(b.Right) == "String" {
 			io.WriteString(w, "format!(\"{}{}\", ")
 			b.Left.emit(w)
 			io.WriteString(w, ", ")
@@ -1414,6 +1416,7 @@ func compileStmt(stmt *parser.Statement) (Stmt, error) {
 	case stmt.Let != nil:
 		var e Expr
 		var err error
+		emptyList := false
 		if stmt.Let.Value != nil {
 			if ll := listLiteral(stmt.Let.Value); ll != nil {
 				if st, ok := types.InferStructFromList(ll, curEnv); ok {
@@ -1437,6 +1440,9 @@ func compileStmt(stmt *parser.Statement) (Stmt, error) {
 					varTypes[stmt.Let.Name] = fmt.Sprintf("Vec<%s>", name)
 				}
 			}
+			if ll := listLiteral(stmt.Let.Value); ll != nil && len(ll.Elems) == 0 {
+				emptyList = true
+			}
 			e, err = compileExpr(stmt.Let.Value)
 			if err != nil {
 				return nil, err
@@ -1459,6 +1465,9 @@ func compileStmt(stmt *parser.Statement) (Stmt, error) {
 			}
 		} else if e != nil {
 			typ = inferType(e)
+			if emptyList && typ == "Vec<i64>" {
+				typ = ""
+			}
 			if _, ok := e.(*StringLit); ok {
 				typ = ""
 			} else if _, ok := e.(*MapLit); ok {
@@ -1494,6 +1503,7 @@ func compileStmt(stmt *parser.Statement) (Stmt, error) {
 	case stmt.Var != nil:
 		var e Expr
 		var err error
+		emptyList := false
 		if stmt.Var.Value != nil {
 			if ll := listLiteral(stmt.Var.Value); ll != nil {
 				if st, ok := types.InferStructFromList(ll, curEnv); ok {
@@ -1517,6 +1527,9 @@ func compileStmt(stmt *parser.Statement) (Stmt, error) {
 					varTypes[stmt.Var.Name] = fmt.Sprintf("Vec<%s>", name)
 				}
 			}
+			if ll := listLiteral(stmt.Var.Value); ll != nil && len(ll.Elems) == 0 {
+				emptyList = true
+			}
 			e, err = compileExpr(stmt.Var.Value)
 			if err != nil {
 				return nil, err
@@ -1539,6 +1552,9 @@ func compileStmt(stmt *parser.Statement) (Stmt, error) {
 			}
 		} else if e != nil {
 			typ = inferType(e)
+			if emptyList && typ == "Vec<i64>" {
+				typ = ""
+			}
 			if _, ok := e.(*StringLit); ok {
 				typ = ""
 			} else if _, ok := e.(*MapLit); ok {
@@ -1584,13 +1600,23 @@ func compileStmt(stmt *parser.Statement) (Stmt, error) {
 			}
 			return &IndexAssignStmt{Target: target, Value: val}, nil
 		}
+		updated := false
+		if app, ok := val.(*AppendExpr); ok {
+			if nref, ok2 := app.List.(*NameRef); ok2 && nref.Name == stmt.Assign.Name {
+				elemType := inferType(app.Elem)
+				if elemType != "" {
+					varTypes[stmt.Assign.Name] = fmt.Sprintf("Vec<%s>", elemType)
+					updated = true
+				}
+			}
+		}
 		if _, ok := val.(*MapLit); ok {
 			mapVars[stmt.Assign.Name] = true
 		}
 		if inferType(val) == "String" {
 			stringVars[stmt.Assign.Name] = true
 		}
-		if t := inferType(val); t != "" {
+		if t := inferType(val); t != "" && !updated {
 			varTypes[stmt.Assign.Name] = t
 		}
 		return &AssignStmt{Name: stmt.Assign.Name, Expr: val}, nil
