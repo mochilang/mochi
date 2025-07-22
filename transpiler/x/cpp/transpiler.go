@@ -1542,7 +1542,7 @@ func (s *LetStmt) emit(w io.Writer, indent int) {
 	} else {
 		io.WriteString(w, typ+" ")
 	}
-	io.WriteString(w, s.Name)
+	io.WriteString(w, safeName(s.Name))
 	if s.Value != nil {
 		io.WriteString(w, " = ")
 		s.Value.emit(w)
@@ -2350,10 +2350,21 @@ func convertStmt(s *parser.Statement) (Stmt, error) {
 			}
 		}
 		typ := ""
-		if s.Let.Type != nil && s.Let.Type.Simple != nil {
-			typ = cppType(*s.Let.Type.Simple)
-		} else if s.Let.Value != nil {
+		if s.Let.Type != nil {
+			if s.Let.Type.Simple != nil {
+				typ = cppType(*s.Let.Type.Simple)
+			} else if s.Let.Type.Generic != nil {
+				typ = cppType(typeRefString(&parser.TypeRef{Generic: s.Let.Type.Generic}))
+			}
+		}
+		if (typ == "" || typ == "auto") && s.Let.Value != nil {
 			typ = guessType(s.Let.Value)
+			if (typ == "" || typ == "auto") && val != nil {
+				t2 := exprType(val)
+				if t2 != "" && t2 != "auto" {
+					typ = t2
+				}
+			}
 			if typ == "" {
 				if _, ok := val.(*StringLit); ok {
 					typ = "std::string"
@@ -2379,10 +2390,21 @@ func convertStmt(s *parser.Statement) (Stmt, error) {
 			}
 		}
 		typ := ""
-		if s.Var.Type != nil && s.Var.Type.Simple != nil {
-			typ = cppType(*s.Var.Type.Simple)
-		} else if s.Var.Value != nil {
+		if s.Var.Type != nil {
+			if s.Var.Type.Simple != nil {
+				typ = cppType(*s.Var.Type.Simple)
+			} else if s.Var.Type.Generic != nil {
+				typ = cppType(typeRefString(&parser.TypeRef{Generic: s.Var.Type.Generic}))
+			}
+		}
+		if (typ == "" || typ == "auto") && s.Var.Value != nil {
 			typ = guessType(s.Var.Value)
+			if (typ == "" || typ == "auto") && val != nil {
+				t2 := exprType(val)
+				if t2 != "" && t2 != "auto" {
+					typ = t2
+				}
+			}
 			if typ == "" {
 				if _, ok := val.(*StringLit); ok {
 					typ = "std::string"
@@ -4156,6 +4178,19 @@ func guessType(e *parser.Expr) string {
 		if typ != nil {
 			if _, ok := typ.(types.AnyType); !ok {
 				return cppTypeFrom(typ)
+			}
+		}
+	}
+	if e.Binary != nil && e.Binary.Left != nil && e.Binary.Left.Value != nil {
+		pf := e.Binary.Left.Value
+		if len(pf.Ops) > 0 && pf.Ops[0].Index != nil && pf.Ops[0].Index.Colon == nil {
+			if sel := pf.Target.Selector; sel != nil && len(sel.Tail) == 0 {
+				if t, ok := localTypes[sel.Root]; ok {
+					return elementTypeFromListType(t)
+				}
+				if t, ok := globalTypes[sel.Root]; ok {
+					return elementTypeFromListType(t)
+				}
 			}
 		}
 	}
