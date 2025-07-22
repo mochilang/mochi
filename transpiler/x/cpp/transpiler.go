@@ -4,15 +4,21 @@ package cpp
 
 import (
 	"bytes"
+	"encoding/json"
 	"fmt"
 	"io"
 	"os"
 	"path/filepath"
+	"reflect"
 	"runtime"
+	"sort"
 	"strings"
 	"time"
 
+	yaml "gopkg.in/yaml.v3"
+
 	"mochi/parser"
+	"mochi/transpiler/meta"
 	"mochi/types"
 )
 
@@ -2770,6 +2776,17 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 		return convertIfExpr(p.If)
 	case p.Match != nil:
 		return convertMatchExpr(p.Match)
+	case p.Load != nil:
+		format := parseFormat(p.Load.With)
+		path := ""
+		if p.Load.Path != nil {
+			path = strings.Trim(*p.Load.Path, "\"")
+		}
+		expr, err := dataExprFromFile(path, format, p.Load.Type)
+		if err != nil {
+			return nil, err
+		}
+		return expr, nil
 	case p.Struct != nil:
 		var fields []FieldLit
 		for _, f := range p.Struct.Fields {
@@ -4114,4 +4131,102 @@ func convertTypeDecl(td *parser.TypeDecl) (*StructDef, error) {
 		st.Fields = append(st.Fields, Param{Name: m.Field.Name, Type: typ})
 	}
 	return st, nil
+}
+
+func valueToExpr(v interface{}, typ *parser.TypeRef) Expr {
+	switch val := v.(type) {
+	case map[string]interface{}:
+		names := make([]string, 0, len(val))
+		for k := range val {
+			names = append(names, k)
+		}
+		sort.Strings(names)
+		fields := make([]FieldLit, len(names))
+		keys := make([]Expr, len(names))
+		vals := make([]Expr, len(names))
+		for i, k := range names {
+			fields[i] = FieldLit{Name: k, Value: valueToExpr(val[k], nil)}
+			keys[i] = &StringLit{Value: k}
+			vals[i] = valueToExpr(val[k], nil)
+		}
+		if typ != nil && typ.Simple != nil {
+			if currentEnv != nil {
+				if st, ok := currentEnv.GetStruct(*typ.Simple); ok {
+					ordered := make([]FieldLit, len(st.Order))
+					for i, name := range st.Order {
+						for j, f := range fields {
+							if f.Name == name {
+								ordered[i] = fields[j]
+								break
+							}
+						}
+					}
+					return &StructLit{Name: *typ.Simple, Fields: ordered}
+				}
+			}
+			return &StructLit{Name: *typ.Simple, Fields: fields}
+		}
+		return &MapLit{Keys: keys, Values: vals, KeyType: "std::string", ValueType: "auto"}
+	case []interface{}:
+		elems := make([]Expr, len(val))
+		for i, it := range val {
+			elems[i] = valueToExpr(it, typ)
+		}
+		return &ListLit{Elems: elems}
+	case string:
+		return &StringLit{Value: val}
+	case bool:
+		return &BoolLit{Value: val}
+	case float64:
+		if val == float64(int(val)) {
+			return &IntLit{Value: int(val)}
+		}
+		return &FloatLit{Value: val}
+	case int, int64:
+		return &IntLit{Value: int(reflect.ValueOf(val).Int())}
+	default:
+		return &StringLit{Value: fmt.Sprintf("%v", val)}
+	}
+}
+
+func dataExprFromFile(path, format string, typ *parser.TypeRef) (Expr, error) {
+	if path == "" {
+		return &ListLit{}, nil
+	}
+	root := meta.RepoRoot()
+	if root != "" && strings.HasPrefix(path, "../") {
+		clean := strings.TrimPrefix(path, "../")
+		path = filepath.Join(root, "tests", clean)
+	}
+	data, err := os.ReadFile(path)
+	if err != nil {
+		return nil, err
+	}
+	var v interface{}
+	switch format {
+	case "yaml":
+		if err := yaml.Unmarshal(data, &v); err != nil {
+			return nil, err
+		}
+	case "json":
+		if err := json.Unmarshal(data, &v); err != nil {
+			return nil, err
+		}
+	case "jsonl":
+		var arr []interface{}
+		for _, line := range bytes.Split(data, []byte{'\n'}) {
+			line = bytes.TrimSpace(line)
+			if len(line) == 0 {
+				continue
+			}
+			var item interface{}
+			if err := json.Unmarshal(line, &item); err == nil {
+				arr = append(arr, item)
+			}
+		}
+		v = arr
+	default:
+		return nil, fmt.Errorf("unsupported load format")
+	}
+	return valueToExpr(v, typ), nil
 }
