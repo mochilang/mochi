@@ -29,8 +29,10 @@ var groupItems map[string]string
 var needLoadYaml bool
 var needSaveJsonl bool
 var needInput bool
+var needAppendBool bool
 var pyMathAliases map[string]bool
 var structDefs map[string]map[string]string
+var varDecls map[string]*VarStmt
 
 func javaType(t string) string {
 	switch t {
@@ -1138,6 +1140,15 @@ func (a *AppendExpr) emit(w io.Writer) {
 	if jt == "" {
 		jt = elem
 	}
+	if elem == "boolean" {
+		needAppendBool = true
+		fmt.Fprint(w, "appendBool(")
+		a.List.emit(w)
+		fmt.Fprint(w, ", ")
+		a.Value.emit(w)
+		fmt.Fprint(w, ")")
+		return
+	}
 	if elem == "int" {
 		fmt.Fprint(w, "java.util.stream.IntStream.concat(java.util.Arrays.stream(")
 		a.List.emit(w)
@@ -1675,8 +1686,10 @@ func Transpile(p *parser.Program, env *types.Env) (*Program, error) {
 	topEnv = env
 	groupItems = map[string]string{}
 	needInput = false
+	needAppendBool = false
 	pyMathAliases = map[string]bool{}
 	structDefs = map[string]map[string]string{}
+	varDecls = map[string]*VarStmt{}
 	for _, s := range p.Statements {
 		if s.Fun != nil {
 			body, err := compileStmts(s.Fun.Body)
@@ -1821,7 +1834,9 @@ func compileStmt(s *parser.Statement) (Stmt, error) {
 			if l, ok := e.(*ListLit); ok && l.ElemType == "" && strings.HasSuffix(t, "[]") {
 				l.ElemType = strings.TrimSuffix(t, "[]")
 			}
-			return &VarStmt{Name: s.Var.Name, Type: t, Expr: e}, nil
+			vs := &VarStmt{Name: s.Var.Name, Type: t, Expr: e}
+			varDecls[s.Var.Name] = vs
+			return vs, nil
 		}
 		t := typeRefString(s.Var.Type)
 		if t == "" && topEnv != nil {
@@ -1832,7 +1847,9 @@ func compileStmt(s *parser.Statement) (Stmt, error) {
 		if t != "" {
 			varTypes[s.Var.Name] = t
 		}
-		return &VarStmt{Name: s.Var.Name, Type: t}, nil
+		vs := &VarStmt{Name: s.Var.Name, Type: t}
+		varDecls[s.Var.Name] = vs
+		return vs, nil
 	case s.Type != nil:
 		if st, ok := topEnv.GetStruct(s.Type.Name); ok {
 			fields := make([]Param, len(st.Order))
@@ -1855,9 +1872,30 @@ func compileStmt(s *parser.Statement) (Stmt, error) {
 			if err != nil {
 				return nil, err
 			}
-			if _, ok := varTypes[s.Assign.Name]; !ok {
-				if t := inferType(e); t != "" {
+			if ap, ok := e.(*AppendExpr); ok {
+				vt := inferType(ap.Value)
+				if vt != "" {
+					if cur, ok := varTypes[s.Assign.Name]; ok && (cur == "int[]" || cur == "Object[]") && vt == "boolean" {
+						newT := "boolean[]"
+						varTypes[s.Assign.Name] = newT
+						if vs, ok2 := varDecls[s.Assign.Name]; ok2 {
+							vs.Type = newT
+							if ll, ok3 := vs.Expr.(*ListLit); ok3 {
+								ll.ElemType = "boolean"
+							}
+						}
+					}
+				}
+			}
+			if t := inferType(e); t != "" {
+				if cur, ok := varTypes[s.Assign.Name]; !ok || ((cur == "int[]" || cur == "Object[]") && t != cur) {
 					varTypes[s.Assign.Name] = t
+					if vs, ok := varDecls[s.Assign.Name]; ok {
+						vs.Type = t
+						if ll, ok2 := vs.Expr.(*ListLit); ok2 && strings.HasSuffix(t, "[]") {
+							ll.ElemType = strings.TrimSuffix(t, "[]")
+						}
+					}
 				}
 			}
 			return &AssignStmt{Name: s.Assign.Name, Expr: e}, nil
@@ -1877,6 +1915,17 @@ func compileStmt(s *parser.Statement) (Stmt, error) {
 			val, err := compileExpr(s.Assign.Value)
 			if err != nil {
 				return nil, err
+			}
+			if t := inferType(val); t != "" {
+				if cur, ok := varTypes[s.Assign.Name]; ok && (cur == "int[]" || cur == "Object[]") && t == "boolean" {
+					varTypes[s.Assign.Name] = "boolean[]"
+					if vs, ok2 := varDecls[s.Assign.Name]; ok2 {
+						vs.Type = "boolean[]"
+						if ll, ok3 := vs.Expr.(*ListLit); ok3 {
+							ll.ElemType = "boolean"
+						}
+					}
+				}
 			}
 			base := Expr(&VarExpr{Name: s.Assign.Name})
 			return &IndexAssignStmt{Target: base, Indices: indices, Expr: val}, nil
@@ -2909,6 +2958,13 @@ func Emit(prog *Program) []byte {
 		buf.WriteString("            }\n")
 		buf.WriteString("            System.out.println(\"{\" + String.join(\", \", parts) + \"}\");\n")
 		buf.WriteString("        }\n")
+		buf.WriteString("    }\n\n")
+	}
+	if needAppendBool {
+		buf.WriteString("    static boolean[] appendBool(boolean[] arr, boolean v) {\n")
+		buf.WriteString("        boolean[] out = java.util.Arrays.copyOf(arr, arr.length + 1);\n")
+		buf.WriteString("        out[arr.length] = v;\n")
+		buf.WriteString("        return out;\n")
 		buf.WriteString("    }\n\n")
 	}
 	// helper functions removed for simplified output
