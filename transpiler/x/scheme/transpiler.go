@@ -155,26 +155,12 @@ func header() []byte {
 		}
 	}
 	loc, _ := time.LoadLocation("Asia/Bangkok")
-        prelude := `(begin
-  (current-error-port (open-output-string))
-  (import (scheme base) (srfi 69) (scheme sort) (chibi string)))
-(define (to-str x)
-  (cond ((and (list? x) (pair? x)
-              (pair? (car x)) (string? (car (car x))))
-         (string-append "{" (string-join (map (lambda (kv)
-                                              (string-append "\"" (car kv) "\": " (to-str (cdr kv))))
-                                            x) ", ") "}"))
-        ((hash-table? x)
-         (let ((pairs (hash-table->alist x)))
-           (string-append "{" (string-join (map (lambda (kv)
-                                                  (string-append "\"" (car kv) "\": " (to-str (cdr kv))))
-                                                pairs) ", ") "}")))
-        ((list? x)
+	prelude := `(define (to-str x)
+  (cond ((pair? x)
          (string-append "[" (string-join (map to-str x) ", ") "]"))
-        ((string? x) (string-append "\"" x "\""))
+        ((string? x) x)
         ((boolean? x) (if x "true" "false"))
-        (else (number->string x))))
-`
+        (else (number->string x))))`
 	return []byte(fmt.Sprintf(";; Generated on %s\n%s\n",
 		ts.In(loc).Format("2006-01-02 15:04 -0700"), prelude))
 }
@@ -336,43 +322,43 @@ func convertForStmt(fs *parser.ForStmt) (Node, error) {
 
 func convertStmt(st *parser.Statement) (Node, error) {
 	switch {
-        case st.Expr != nil:
-                call := st.Expr.Expr.Binary.Left.Value.Target.Call
-                if call != nil && len(st.Expr.Expr.Binary.Right) == 0 {
-                        args := make([]Node, len(call.Args))
-                        for i, a := range call.Args {
-                                n, err := convertParserExpr(a)
-                                if err != nil {
-                                        return nil, err
-                                }
-                                args[i] = n
-                        }
-                        switch call.Func {
-                        case "print":
-                                forms := []Node{Symbol("begin")}
-                                for i, a := range args {
-                                        if _, ok := types.ExprType(call.Args[i], currentEnv).(types.BoolType); ok {
-                                                a = &List{Elems: []Node{Symbol("if"), a, IntLit(1), IntLit(0)}}
-                                        }
-                                        forms = append(forms, &List{Elems: []Node{Symbol("display"), a}})
-                                        if i < len(args)-1 {
-                                                forms = append(forms, &List{Elems: []Node{Symbol("display"), StringLit(" ")}})
-                                        }
-                                }
-                                forms = append(forms, &List{Elems: []Node{Symbol("newline")}})
-                                return &List{Elems: forms}, nil
-                        case "json":
-                                if len(args) != 1 {
-                                        return nil, fmt.Errorf("json expects 1 arg")
-                                }
-                                forms := []Node{Symbol("begin"),
-                                        &List{Elems: []Node{Symbol("display"), &List{Elems: []Node{Symbol("to-str"), args[0]}}}},
-                                        &List{Elems: []Node{Symbol("newline")}},
-                                }
-                                return &List{Elems: forms}, nil
-                        }
-                }
-                return nil, fmt.Errorf("unsupported expression statement")
+	case st.Expr != nil:
+		call := st.Expr.Expr.Binary.Left.Value.Target.Call
+		if call != nil && len(st.Expr.Expr.Binary.Right) == 0 {
+			args := make([]Node, len(call.Args))
+			for i, a := range call.Args {
+				n, err := convertParserExpr(a)
+				if err != nil {
+					return nil, err
+				}
+				args[i] = n
+			}
+			switch call.Func {
+			case "print":
+				forms := []Node{Symbol("begin")}
+				for i, a := range args {
+					if _, ok := types.ExprType(call.Args[i], currentEnv).(types.BoolType); ok {
+						a = &List{Elems: []Node{Symbol("if"), a, BoolLit(true), BoolLit(false)}}
+					}
+					forms = append(forms, &List{Elems: []Node{Symbol("display"), &List{Elems: []Node{Symbol("to-str"), a}}}})
+					if i < len(args)-1 {
+						forms = append(forms, &List{Elems: []Node{Symbol("display"), StringLit(" ")}})
+					}
+				}
+				forms = append(forms, &List{Elems: []Node{Symbol("newline")}})
+				return &List{Elems: forms}, nil
+			case "json":
+				if len(args) != 1 {
+					return nil, fmt.Errorf("json expects 1 arg")
+				}
+				forms := []Node{Symbol("begin"),
+					&List{Elems: []Node{Symbol("display"), args[0]}},
+					&List{Elems: []Node{Symbol("newline")}},
+				}
+				return &List{Elems: forms}, nil
+			}
+		}
+		return nil, fmt.Errorf("unsupported expression statement")
 	case st.Let != nil:
 		name := st.Let.Name
 		var val Node
@@ -550,7 +536,11 @@ func convertParserExpr(e *parser.Expr) (Node, error) {
 			typesStack = append(typesStack, types.AnyType{})
 		}
 
-		ops = append(ops, part.Op)
+		op := part.Op
+		if part.Op == "union" && part.All {
+			op = "union_all"
+		}
+		ops = append(ops, op)
 		exprs = append(exprs, right)
 		typesStack = append(typesStack, rightType)
 	}
@@ -753,6 +743,8 @@ func convertParserPrimary(p *parser.Primary) (Node, error) {
 			return n, nil
 		}
 		return convertQueryExpr(p.Query)
+	case p.Match != nil:
+		return convertMatchExpr(p.Match)
 	case p.FunExpr != nil:
 		return convertFunExpr(p.FunExpr)
 	case p.Call != nil:
@@ -785,21 +777,71 @@ func convertIfExpr(ie *parser.IfExpr) (Node, error) {
 	return &List{Elems: []Node{Symbol("if"), cond, thenNode, elseNode}}, nil
 }
 
+func convertMatchExpr(me *parser.MatchExpr) (Node, error) {
+	target, err := convertParserExpr(me.Target)
+	if err != nil {
+		return nil, err
+	}
+	temp := gensym("match")
+	clauses := []Node{}
+	var defaultNode Node = voidSym()
+	for _, c := range me.Cases {
+		if isUnderscore(c.Pattern) {
+			dn, err := convertParserExpr(c.Result)
+			if err != nil {
+				return nil, err
+			}
+			defaultNode = dn
+			continue
+		}
+		pat, err := convertParserExpr(c.Pattern)
+		if err != nil {
+			return nil, err
+		}
+		res, err := convertParserExpr(c.Result)
+		if err != nil {
+			return nil, err
+		}
+		clauseCond := &List{Elems: []Node{Symbol("equal?"), temp, pat}}
+		clauses = append(clauses, &List{Elems: []Node{clauseCond, res}})
+	}
+	clauses = append(clauses, &List{Elems: []Node{Symbol("else"), defaultNode}})
+	condExpr := &List{Elems: append([]Node{Symbol("cond")}, clauses...)}
+	return &List{Elems: []Node{
+		Symbol("let"),
+		&List{Elems: []Node{&List{Elems: []Node{temp, target}}}},
+		condExpr,
+	}}, nil
+}
+
+func isUnderscore(e *parser.Expr) bool {
+	if e == nil || e.Binary == nil || e.Binary.Left == nil || e.Binary.Left.Value == nil {
+		return false
+	}
+	t := e.Binary.Left.Value.Target
+	return t != nil && t.Selector != nil && t.Selector.Root == "_" && len(t.Selector.Tail) == 0
+}
+
 func convertFunExpr(fe *parser.FunExpr) (Node, error) {
 	params := []Node{}
+	prevEnv := currentEnv
+	currentEnv = types.NewEnv(currentEnv)
 	for _, p := range fe.Params {
 		params = append(params, Symbol(p.Name))
+		currentEnv.SetVar(p.Name, types.AnyType{}, true)
 	}
 	var body Node
 	if fe.ExprBody != nil {
 		b, err := convertParserExpr(fe.ExprBody)
 		if err != nil {
+			currentEnv = prevEnv
 			return nil, err
 		}
 		body = b
 	} else {
 		stmts, err := convertStmts(fe.BlockBody)
 		if err != nil {
+			currentEnv = prevEnv
 			return nil, err
 		}
 		if len(stmts) == 1 {
@@ -808,6 +850,7 @@ func convertFunExpr(fe *parser.FunExpr) (Node, error) {
 			body = &List{Elems: append([]Node{Symbol("begin")}, stmts...)}
 		}
 	}
+	currentEnv = prevEnv
 	return &List{Elems: []Node{Symbol("lambda"), &List{Elems: params}, body}}, nil
 }
 
@@ -1414,6 +1457,16 @@ func makeBinary(op string, left, right Node) Node {
 			&List{Elems: []Node{&List{Elems: []Node{Symbol("hash-table?"), right}}, &List{Elems: []Node{Symbol("if"), &List{Elems: []Node{Symbol("hash-table-exists?"), right, left}}, StringLit("true"), StringLit("false")}}}},
 			&List{Elems: []Node{Symbol("else"), &List{Elems: []Node{Symbol("if"), &List{Elems: []Node{Symbol("member"), left, right}}, StringLit("true"), StringLit("false")}}}},
 		}}
+	case "union":
+		return &List{Elems: []Node{Symbol("delete-duplicates"), &List{Elems: []Node{Symbol("append"), left, right}}}}
+	case "union_all":
+		return &List{Elems: []Node{Symbol("append"), left, right}}
+	case "except":
+		lambda := &List{Elems: []Node{Symbol("lambda"), &List{Elems: []Node{Symbol("x")}}, &List{Elems: []Node{Symbol("not"), &List{Elems: []Node{Symbol("member"), Symbol("x"), right}}}}}}
+		return &List{Elems: []Node{Symbol("filter"), lambda, left}}
+	case "intersect":
+		lambda := &List{Elems: []Node{Symbol("lambda"), &List{Elems: []Node{Symbol("x")}}, &List{Elems: []Node{Symbol("member"), Symbol("x"), right}}}}
+		return &List{Elems: []Node{Symbol("filter"), lambda, left}}
 	default:
 		return &List{Elems: []Node{Symbol(op), left, right}}
 	}
