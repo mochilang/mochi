@@ -730,9 +730,6 @@ type FloatLit struct{ Value float64 }
 
 func (f *FloatLit) emit(w io.Writer) error {
 	s := strconv.FormatFloat(f.Value, 'f', -1, 64)
-	if !strings.ContainsAny(s, ".eE") {
-		s += ".0"
-	}
 	_, err := io.WriteString(w, s)
 	return err
 }
