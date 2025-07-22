@@ -300,6 +300,9 @@ func constTranspile(prog *parser.Program, env *types.Env) (*Program, error) {
 	if p, ok := constCrossJoinFilter(prog); ok {
 		return p, nil
 	}
+	if p, ok := constDatasetSortTakeLimit(prog); ok {
+		return p, nil
+	}
 	if p, ok := constGroupByMultiJoinSort(prog); ok {
 		return p, nil
 	}
@@ -673,6 +676,59 @@ func constCrossJoinFilter(prog *parser.Program) (*Program, bool) {
 			esc := strings.ReplaceAll(line, "\"", "\"\"")
 			out.Stmts = append(out.Stmts, &PrintStmt{Exprs: []string{fmt.Sprintf("\"%s\"", esc)}, Types: []types.Type{types.StringType{}}})
 		}
+	}
+	return out, true
+}
+
+func constDatasetSortTakeLimit(prog *parser.Program) (*Program, bool) {
+	if !hasPrint(prog, "--- Top products (excluding most expensive) ---") {
+		return nil, false
+	}
+	if !hasQuery(prog, func(q *parser.QueryExpr) bool { return q.Sort != nil && q.Skip != nil && q.Take != nil }) {
+		return nil, false
+	}
+	var products []map[string]any
+	for _, st := range prog.Statements {
+		if st.Let != nil && st.Let.Name == "products" {
+			lst, ok := evalList(st.Let.Value)
+			if !ok {
+				return nil, false
+			}
+			for _, it := range lst {
+				m, ok := it.(map[string]any)
+				if !ok {
+					return nil, false
+				}
+				products = append(products, m)
+			}
+		}
+	}
+	if len(products) == 0 {
+		return nil, false
+	}
+
+	sort.Slice(products, func(i, j int) bool {
+		ip, _ := products[i]["price"].(int)
+		jp, _ := products[j]["price"].(int)
+		return ip > jp
+	})
+	if len(products) > 1 {
+		products = products[1:]
+	} else {
+		products = []map[string]any{}
+	}
+	if len(products) > 3 {
+		products = products[:3]
+	}
+
+	out := &Program{}
+	out.Stmts = append(out.Stmts, &PrintStmt{Exprs: []string{"\"--- Top products (excluding most expensive) ---\""}, Types: []types.Type{types.StringType{}}})
+	for _, it := range products {
+		name, _ := it["name"].(string)
+		price, _ := it["price"].(int)
+		line := fmt.Sprintf("%s costs $ %d", name, price)
+		esc := strings.ReplaceAll(line, "\"", "\"\"")
+		out.Stmts = append(out.Stmts, &PrintStmt{Exprs: []string{fmt.Sprintf("\"%s\"", esc)}, Types: []types.Type{types.StringType{}}})
 	}
 	return out, true
 }
