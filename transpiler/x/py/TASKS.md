@@ -1,8 +1,8 @@
-## Progress (2025-07-22 17:22 +0700)
-- Commit 624b0e7ea: transpiler(py): handle go auto and mix imports
+## Progress (2025-07-22 17:46 +0700)
+- Commit fc4b1cb87: transpiler(py): support special joins
 - Generated Python for 103/103 programs
 - Updated README checklist and outputs
-- Refactored join handling and improved type inference from loaded data
+- Removed runtime helpers and improved boolean type inference
 
 ## Progress (2025-07-22 14:44 +0700)
 - Commit 75825c5ea: transpiler(py): fix group_by_conditional_sum output

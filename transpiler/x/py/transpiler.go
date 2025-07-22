@@ -1750,7 +1750,7 @@ func inferTypeFromExpr(e *parser.Expr) types.Type {
 		for _, r := range e.Binary.Right {
 			rt := inferTypeFromExpr(exprFromPostfix(r.Right))
 			switch r.Op {
-			case "&&", "||", "==", "!=", "<", "<=", ">", ">=":
+			case "&&", "||", "==", "!=", "<", "<=", ">", ">=", "in":
 				lt = types.BoolType{}
 			case "+", "-", "*", "/", "%":
 				if lt.String() == (types.FloatType{}).String() || rt.String() == (types.FloatType{}).String() {
