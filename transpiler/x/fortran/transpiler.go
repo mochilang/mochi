@@ -134,8 +134,8 @@ func (r *ReturnStmt) emit(w io.Writer, ind int) {
 func (s *AssignStmt) emit(w io.Writer, ind int) {
 	writeIndent(w, ind)
 	name := s.Name
-	for _, idx := range s.Index {
-		name += fmt.Sprintf("(%s)", idx)
+	if len(s.Index) > 0 {
+		name += fmt.Sprintf("(%s)", strings.Join(s.Index, ", "))
 	}
 	fmt.Fprintf(w, "%s = %s\n", name, s.Expr)
 }
@@ -1285,11 +1285,14 @@ func compileStmt(p *Program, st *parser.Statement, env *types.Env) (Stmt, error)
 		if st.Let.Value != nil {
 			if ie := extractIfExpr(st.Let.Value); ie != nil {
 				typ := types.ExprType(st.Let.Value, env)
-				size := -1
+				dims := []int{-1}
 				if arr, ok := extractConstList(st.Let.Value, env); ok {
-					size = len(arr)
+					dims[0] = len(arr)
 				}
-				ft, err := mapTypeNameWithSize(typ, size)
+				if r, c, ok := constNestedListDims(st.Let.Value, env); ok {
+					dims = []int{r, c}
+				}
+				ft, err := mapTypeNameWithDims(typ, dims)
 				if err != nil {
 					return nil, err
 				}
@@ -1358,11 +1361,14 @@ func compileStmt(p *Program, st *parser.Statement, env *types.Env) (Stmt, error)
 		} else if st.Var.Value != nil {
 			typ = types.ExprType(st.Var.Value, env)
 		}
-		size := -1
+		dims := []int{-1}
 		if arr, ok := extractConstList(st.Var.Value, env); ok {
-			size = len(arr)
+			dims[0] = len(arr)
 		}
-		ft, err := mapTypeNameWithSize(typ, size)
+		if r, c, ok := constNestedListDims(st.Var.Value, env); ok {
+			dims = []int{r, c}
+		}
+		ft, err := mapTypeNameWithDims(typ, dims)
 		if err != nil {
 			return nil, err
 		}
@@ -1916,6 +1922,25 @@ func extractConstList(e *parser.Expr, env *types.Env) ([]string, bool) {
 	return out, true
 }
 
+func constNestedListDims(e *parser.Expr, env *types.Env) (int, int, bool) {
+	vals, ok := evalList(e)
+	if !ok || len(vals) == 0 {
+		return 0, 0, false
+	}
+	row0, ok := vals[0].([]any)
+	if !ok {
+		return 0, 0, false
+	}
+	cols := len(row0)
+	for _, v := range vals {
+		r, ok := v.([]any)
+		if !ok || len(r) != cols {
+			return 0, 0, false
+		}
+	}
+	return len(vals), cols, true
+}
+
 func constMapSize(e *parser.Expr) (int, bool) {
 	if e == nil || e.Binary == nil || e.Binary.Left == nil || len(e.Binary.Right) > 0 {
 		return 0, false
@@ -2256,21 +2281,21 @@ func toPostfix(pf *parser.PostfixExpr, env *types.Env) (string, error) {
 		return "", err
 	}
 	typ := types.TypeOfPrimaryBasic(pf.Target, env)
-	for _, op := range pf.Ops {
+	var idxs []string
+	for i := 0; i < len(pf.Ops); i++ {
+		op := pf.Ops[i]
 		switch {
 		case op.Index != nil && op.Index.Start != nil && op.Index.Colon == nil && op.Index.Colon2 == nil && op.Index.Step == nil:
 			idx, err := toExpr(op.Index.Start, env)
 			if err != nil {
 				return "", err
 			}
-			if types.IsStringType(typ) {
-				val = fmt.Sprintf("%s(%s+1:%s+1)", val, idx, idx)
-			} else {
-				val = fmt.Sprintf("%s(%s+1)", val, idx)
-			}
+			idxs = append(idxs, fmt.Sprintf("%s+1", idx))
 			if lt, ok := typ.(types.ListType); ok {
 				typ = lt.Elem
 			}
+			// continue collecting consecutive indexes
+			continue
 		case op.Cast != nil:
 			tgt := types.ResolveTypeRef(op.Cast.Type, env)
 			switch tgt.(type) {
@@ -2297,6 +2322,27 @@ func toPostfix(pf *parser.PostfixExpr, env *types.Env) (string, error) {
 		default:
 			return "", fmt.Errorf("postfix operations unsupported")
 		}
+		if len(idxs) > 0 {
+			if types.IsStringType(typ) {
+				if len(idxs) != 1 {
+					return "", fmt.Errorf("invalid string index")
+				}
+				val = fmt.Sprintf("%s(%s:%s)", val, idxs[0], idxs[0])
+			} else {
+				val = fmt.Sprintf("%s(%s)", val, strings.Join(idxs, ", "))
+			}
+			idxs = nil
+		}
+	}
+	if len(idxs) > 0 {
+		if types.IsStringType(typ) {
+			if len(idxs) != 1 {
+				return "", fmt.Errorf("invalid string index")
+			}
+			val = fmt.Sprintf("%s(%s:%s)", val, idxs[0], idxs[0])
+		} else {
+			val = fmt.Sprintf("%s(%s)", val, strings.Join(idxs, ", "))
+		}
 	}
 	return val, nil
 }
@@ -2319,6 +2365,38 @@ func toPrimary(p *parser.Primary, env *types.Env) (string, error) {
 			return fmt.Sprintf("\"%s\"", s), nil
 		}
 	case p.List != nil:
+		// detect nested constant lists to emit multi-dimensional arrays
+		var nested [][]string
+		isNested := true
+		for _, el := range p.List.Elems {
+			vals, ok := extractConstList(el, env)
+			if !ok {
+				isNested = false
+				break
+			}
+			nested = append(nested, vals)
+		}
+		if isNested && len(nested) > 0 {
+			rows := len(nested)
+			cols := len(nested[0])
+			for _, r := range nested {
+				if len(r) != cols {
+					isNested = false
+					break
+				}
+			}
+			if isNested {
+				var flat []string
+				for c := 0; c < cols; c++ {
+					for r := 0; r < rows; r++ {
+						flat = append(flat, nested[r][c])
+					}
+				}
+				return fmt.Sprintf("reshape((/ %s /), (/ %d, %d /))",
+					strings.Join(flat, ", "), rows, cols), nil
+			}
+		}
+
 		var elems []string
 		for _, el := range p.List.Elems {
 			v, err := toExpr(el, env)
@@ -2484,22 +2562,42 @@ func mapBaseType(t types.Type) (string, error) {
 	}
 }
 
-func mapTypeNameWithSize(t types.Type, size int) (string, error) {
+func mapTypeNameWithDims(t types.Type, dims []int) (string, error) {
 	if lt, ok := t.(types.ListType); ok {
+		if inner, ok := lt.Elem.(types.ListType); ok {
+			base, err := mapBaseType(inner.Elem)
+			if err != nil {
+				return "", err
+			}
+			n1, n2 := 2, 2
+			if len(dims) > 0 && dims[0] > 0 {
+				n1 = dims[0]
+			}
+			if len(dims) > 1 && dims[1] > 0 {
+				n2 = dims[1]
+			}
+			return fmt.Sprintf("%s, dimension(%d,%d)", base, n1, n2), nil
+		}
+
 		base, err := mapBaseType(lt.Elem)
 		if err != nil {
 			return "", err
 		}
-		if size <= 0 {
-			size = 2
+		n := 2
+		if len(dims) > 0 && dims[0] > 0 {
+			n = dims[0]
 		}
-		return fmt.Sprintf("%s, dimension(%d)", base, size), nil
+		return fmt.Sprintf("%s, dimension(%d)", base, n), nil
 	}
 	return mapBaseType(t)
 }
 
+func mapTypeNameWithSize(t types.Type, size int) (string, error) {
+	return mapTypeNameWithDims(t, []int{size})
+}
+
 func mapTypeName(t types.Type) (string, error) {
-	return mapTypeNameWithSize(t, -1)
+	return mapTypeNameWithDims(t, nil)
 }
 
 func defaultValue(t types.Type) string {
