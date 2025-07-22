@@ -3,12 +3,12 @@
 package cpp_test
 
 import (
+	"bufio"
 	"bytes"
 	"fmt"
 	"os"
 	"os/exec"
 	"path/filepath"
-	"sort"
 	"strconv"
 	"strings"
 	"testing"
@@ -19,6 +19,27 @@ import (
 	"mochi/types"
 )
 
+func readIndex(dir string) ([]string, error) {
+	path := filepath.Join(dir, "index.txt")
+	f, err := os.Open(path)
+	if err != nil {
+		return nil, err
+	}
+	defer f.Close()
+	var names []string
+	scanner := bufio.NewScanner(f)
+	for scanner.Scan() {
+		fields := strings.Fields(scanner.Text())
+		if len(fields) == 2 {
+			names = append(names, fields[1])
+		}
+	}
+	if err := scanner.Err(); err != nil {
+		return nil, err
+	}
+	return names, nil
+}
+
 func TestCPPTranspiler_Rosetta_Golden(t *testing.T) {
 	if _, err := exec.LookPath("g++"); err != nil {
 		t.Skip("g++ not installed")
@@ -27,8 +48,14 @@ func TestCPPTranspiler_Rosetta_Golden(t *testing.T) {
 	outDir := filepath.Join(root, "tests", "rosetta", "transpiler", "CPP")
 	os.MkdirAll(outDir, 0o755)
 
-	files, _ := filepath.Glob(filepath.Join(root, "tests", "rosetta", "x", "Mochi", "*.mochi"))
-	sort.Strings(files)
+	names, err := readIndex(filepath.Join(root, "tests", "rosetta", "x", "Mochi"))
+	if err != nil {
+		t.Fatalf("read index: %v", err)
+	}
+	files := make([]string, len(names))
+	for i, name := range names {
+		files[i] = filepath.Join(root, "tests", "rosetta", "x", "Mochi", name)
+	}
 
 	startIdx := 1
 	if v := os.Getenv("ROSETTA_INDEX"); v != "" {
@@ -119,13 +146,15 @@ func updateRosettaReadme() {
 	outDir := filepath.Join(root, "tests", "rosetta", "transpiler", "CPP")
 	readmePath := filepath.Join(root, "transpiler", "x", "cpp", "ROSETTA.md")
 
-	files, _ := filepath.Glob(filepath.Join(srcDir, "*.mochi"))
-	sort.Strings(files)
-	total := len(files)
+	names, err := readIndex(srcDir)
+	if err != nil {
+		return
+	}
+	total := len(names)
 	compiled := 0
 	var lines []string
-	for i, f := range files {
-		name := strings.TrimSuffix(filepath.Base(f), ".mochi")
+	for i, f := range names {
+		name := strings.TrimSuffix(f, ".mochi")
 		mark := "[ ]"
 		if _, err := os.Stat(filepath.Join(outDir, name+".out")); err == nil {
 			if _, err2 := os.Stat(filepath.Join(outDir, name+".error")); os.IsNotExist(err2) {
