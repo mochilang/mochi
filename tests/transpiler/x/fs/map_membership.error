@@ -1,7 +1,0 @@
-exit status 1
-F# Compiler for F# 4.0 (Open Source Edition)
-Freely distributed under the Apache 2.0 Open Source License
-
-/workspace/mochi/tests/transpiler/x/fs/map_membership.fs(8,32): error FS0001: The type 'Anon1' is not compatible with the type 'seq<string>'
-
-/workspace/mochi/tests/transpiler/x/fs/map_membership.fs(9,32): error FS0001: The type 'Anon1' is not compatible with the type 'seq<string>'
