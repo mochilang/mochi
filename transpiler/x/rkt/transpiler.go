@@ -159,6 +159,8 @@ func (i *IfStmt) emit(w io.Writer) {
 			s.emit(w)
 		}
 		io.WriteString(w, ")")
+	} else {
+		io.WriteString(w, " (void)")
 	}
 	io.WriteString(w, ")\n")
 }
