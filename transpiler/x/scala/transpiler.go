@@ -869,10 +869,9 @@ func (g *GroupByExpr) emit(w io.Writer) {
 	if elem == "" {
 		elem = "Any"
 	}
-	fmt.Fprint(w, "ArrayBuffer.from((for (")
+	fmt.Fprint(w, "ArrayBuffer((for (")
 	fmt.Fprintf(w, "%s <- ", g.Var)
 	g.Source.emit(w)
-	fmt.Fprint(w, ")")
 	for _, f := range g.Froms {
 		fmt.Fprintf(w, "; %s <- ", f.Var)
 		f.Src.emit(w)
@@ -889,7 +888,7 @@ func (g *GroupByExpr) emit(w io.Writer) {
 		g.Where.emit(w)
 		fmt.Fprint(w, ")")
 	}
-	fmt.Fprint(w, " yield (")
+	fmt.Fprint(w, ") yield (")
 	g.Key.emit(w)
 	fmt.Fprint(w, ", Map(")
 	fmt.Fprintf(w, "\"%s\" -> %s", g.Var, g.Var)
@@ -899,8 +898,9 @@ func (g *GroupByExpr) emit(w io.Writer) {
 	for _, j := range g.Joins {
 		fmt.Fprintf(w, ", \"%s\" -> %s", j.Var, j.Var)
 	}
-	fmt.Fprint(w, ")))")
+	fmt.Fprint(w, "))")
 	fmt.Fprint(w, ")")
+	fmt.Fprint(w, ".toSeq: _*)")
 	fmt.Fprint(w, ".groupBy(_._1).map{ case (k, arr) => Map(\"key\" -> k, \"items\" -> ArrayBuffer(arr.map(_._2).toSeq: _*)) }")
 	if g.Having != nil {
 		fmt.Fprint(w, ".filter(")
