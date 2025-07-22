@@ -1,8 +1,0 @@
-run: exit status 1
-Traceback (most recent call last):
-  File "/workspace/mochi/tests/transpiler/x/py/group_by_multi_join_sort.py", line 41, in <module>
-    class ResultGroup:
-  File "/workspace/mochi/tests/transpiler/x/py/group_by_multi_join_sort.py", line 42, in ResultGroup
-    key: {string: any}
-          ^^^^^^
-NameError: name 'string' is not defined

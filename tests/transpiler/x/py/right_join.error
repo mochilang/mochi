@@ -1,9 +1,0 @@
-run: exit status 1
-Traceback (most recent call last):
-  File "/workspace/mochi/tests/transpiler/x/py/right_join.py", line 23, in <module>
-    result = [{"customerName": c["name"], "order": o} for o in orders for c in customers if o["customerId"] == c["id"]] + [(lambda c: {"customerName": c["name"], "order": o})(None) for o in orders if not any([o["customerId"] == c["id"] for c in customers])]
-             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/workspace/mochi/tests/transpiler/x/py/right_join.py", line 23, in <listcomp>
-    result = [{"customerName": c["name"], "order": o} for o in orders for c in customers if o["customerId"] == c["id"]] + [(lambda c: {"customerName": c["name"], "order": o})(None) for o in orders if not any([o["customerId"] == c["id"] for c in customers])]
-                                                                                            ~^^^^^^^^^^^^^^
-TypeError: 'Order' object is not subscriptable

@@ -1,9 +1,0 @@
-run: exit status 1
-Traceback (most recent call last):
-  File "/workspace/mochi/tests/transpiler/x/py/group_by_multi_join.py", line 31, in <module>
-    filtered = [Filtered(ps.part, ps.cost * ps.qty) for ps in partsupp for s in suppliers for n in nations if s["id"] == ps.supplier and n["id"] == s["nation"] and n["name"] == "A"]
-               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/workspace/mochi/tests/transpiler/x/py/group_by_multi_join.py", line 31, in <listcomp>
-    filtered = [Filtered(ps.part, ps.cost * ps.qty) for ps in partsupp for s in suppliers for n in nations if s["id"] == ps.supplier and n["id"] == s["nation"] and n["name"] == "A"]
-                                                                                                              ~^^^^^^
-TypeError: 'Supplier' object is not subscriptable
