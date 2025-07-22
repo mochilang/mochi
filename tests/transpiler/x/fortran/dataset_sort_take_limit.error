@@ -1,8 +1,0 @@
-error[I009]: invalid use of unary '-' on null
-  --> /workspace/mochi/tests/vm/valid/dataset_sort_take_limit.mochi:12:25
-
- 12 |                 sort by -p.price
-    |                         ^
-
-help:
-  Use unary operators only with numbers or booleans.
