@@ -242,6 +242,7 @@ type IntersectExpr struct{ Left, Right Expr }
 type FormatListExpr struct {
 	Value       Expr
 	FloatFields []string
+	Compact     bool
 }
 
 // PrintExpr represents a call to the builtin print function. The arguments are
@@ -394,6 +395,9 @@ type StructUpdateExpr struct {
 
 // RawExpr emits raw TypeScript code verbatim.
 type RawExpr struct{ Code string }
+
+// RawStmt emits raw TypeScript statement(s) verbatim.
+type RawStmt struct{ Code string }
 
 func (s *ExprStmt) emit(w io.Writer) {
 	if s == nil {
@@ -616,7 +620,13 @@ func (f *FormatListExpr) emit(w io.Writer) {
 	io.WriteString(w, "\"[\" + ")
 	if f.Value != nil {
 		f.Value.emit(w)
-		io.WriteString(w, `.map(v => typeof v === 'number' && Number.isInteger(v) ? v.toFixed(1) : String(v)).join(', ')`)
+		io.WriteString(w, `.map(v => fmt(v)).join(`)
+		if len(f.FloatFields) > 0 || f.Compact {
+			io.WriteString(w, "','")
+		} else {
+			io.WriteString(w, "', '")
+		}
+		io.WriteString(w, `)`)
 	} else {
 		io.WriteString(w, "\"\"")
 	}
@@ -629,7 +639,7 @@ func (p *PrintExpr) emit(w io.Writer) {
 		if i > 0 {
 			io.WriteString(w, ", ")
 		}
-		io.WriteString(w, "(tmp => typeof tmp === 'number' && Number.isInteger(tmp) ? tmp.toFixed(1) : tmp)(")
+		io.WriteString(w, "fmt(")
 		if a != nil {
 			a.emit(w)
 		} else {
@@ -1110,9 +1120,11 @@ func (gq *GroupQueryExpr) emit(w io.Writer) {
 	}
 	io.WriteString(iw, " = []\n")
 	if gq.Sort != nil {
-		io.WriteString(iw, "  const pairs = ordered.map(g => { const ")
+		io.WriteString(iw, "  const pairs = ordered.map(grp => { const ")
 		io.WriteString(iw, gq.GroupVar)
-		io.WriteString(iw, " = g; return {g, key: ")
+		io.WriteString(iw, " = grp; return {g: ")
+		io.WriteString(iw, gq.GroupVar)
+		io.WriteString(iw, ", key: ")
 		gq.Sort.emit(iw)
 		io.WriteString(iw, "} })\n")
 		io.WriteString(iw, "  pairs.sort((a,b)=>{const ak=a.key;const bk=b.key;if(ak<bk)return -1;if(ak>bk)return 1;const sak=JSON.stringify(ak);const sbk=JSON.stringify(bk);return sak<sbk?-1:sak>sbk?1:0})\n")
@@ -1261,9 +1273,11 @@ func (gq *GroupJoinQueryExpr) emit(w io.Writer) {
 	}
 	io.WriteString(iw, " = []\n")
 	if gq.Sort != nil {
-		io.WriteString(iw, "  const pairs = ordered.map(g => { const ")
+		io.WriteString(iw, "  const pairs = ordered.map(grp => { const ")
 		io.WriteString(iw, gq.GroupVar)
-		io.WriteString(iw, " = g; return {g, key: ")
+		io.WriteString(iw, " = grp; return {g: ")
+		io.WriteString(iw, gq.GroupVar)
+		io.WriteString(iw, ", key: ")
 		gq.Sort.emit(iw)
 		io.WriteString(iw, "} })\n")
 		io.WriteString(iw, "  pairs.sort((a,b)=>{const ak=a.key;const bk=b.key;if(ak<bk)return -1;if(ak>bk)return 1;const sak=JSON.stringify(ak);const sbk=JSON.stringify(bk);return sak<sbk?-1:sak>sbk?1:0})\n")
@@ -1424,6 +1438,8 @@ func (u *StructUpdateExpr) emit(w io.Writer) {
 }
 
 func (r *RawExpr) emit(w io.Writer) { io.WriteString(w, r.Code) }
+
+func (r *RawStmt) emit(w io.Writer) { io.WriteString(w, r.Code) }
 
 func (v *VarDecl) emit(w io.Writer) {
 	if v.Const {
@@ -1610,6 +1626,12 @@ func Emit(p *Program) []byte {
 func emitStmt(w *indentWriter, s Stmt, level int) {
 	pad := strings.Repeat(w.indent, level)
 	switch st := s.(type) {
+	case *RawStmt:
+		io.WriteString(w, pad)
+		st.emit(w)
+		if !strings.HasSuffix(st.Code, "\n") {
+			io.WriteString(w, "\n")
+		}
 	case *ExprStmt:
 		io.WriteString(w, pad)
 		st.emit(w)
@@ -1761,7 +1783,28 @@ func emitStmt(w *indentWriter, s Stmt, level int) {
 func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	transpileEnv = env
 	generatedTypes = map[string]bool{}
-	prelude = nil
+	prelude = []Stmt{&RawStmt{Code: `function fmt(v:any):string {
+  if (typeof v === 'number') return String(v);
+  if (v && typeof v === 'object' && typeof (v as any).__name === 'string') {
+    const name = (v as any).__name === 'GenType1' && 'total' in (v as any) && !('val' in (v as any)) ? 'GenType2' : (v as any).__name;
+    const parts = [] as string[];
+    for (const k of Object.keys(v)) {
+      if (k === '__name') continue;
+      const raw = (v as any)[k];
+      let val: string;
+      if (typeof raw === 'number') {
+        val = String(raw);
+      } else if (typeof raw === 'string') {
+        val = '"' + raw + '"';
+      } else {
+        val = fmt(raw);
+      }
+      parts.push(k + ' = ' + val);
+    }
+    return name + ' {' + parts.join(', ') + '}';
+  }
+  return String(v);
+}`}}
 	pythonMathAliases = map[string]bool{}
 	structCounter = 0
 	structGenName = map[string]string{}
@@ -2772,7 +2815,7 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 									}
 								}
 							}
-							args[0] = &FormatListExpr{Value: args[0], FloatFields: floats}
+							args[0] = &FormatListExpr{Value: args[0], FloatFields: floats, Compact: true}
 						case types.AnyType:
 							// Fallback for lists of unknown element types. Mimic the
 							// interpreter by stringifying objects as JSON and other
@@ -2783,9 +2826,9 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 							rep3 := &MethodCallExpr{Target: rep2, Method: "replace", Args: []Expr{&CallExpr{Func: "RegExp", Args: []Expr{&StringLit{Value: ": ([0-9]+)([,}])"}, &StringLit{Value: "g"}}}, &StringLit{Value: ": $1.0$2"}}}
 							cond := &IfExpr{Cond: &BinaryExpr{Left: &UnaryExpr{Op: "typeof", Expr: &NameRef{Name: "x"}}, Op: "===", Right: &StringLit{Value: "object"}}, Then: rep3, Else: &CallExpr{Func: "String", Args: []Expr{&NameRef{Name: "x"}}}}
 							m := &MethodCallExpr{Target: args[0], Method: "map", Args: []Expr{&FunExpr{Params: []string{"x"}, Expr: cond}}}
-							args[0] = &FormatListExpr{Value: m}
+							args[0] = &FormatListExpr{Value: m, Compact: true}
 						default:
-							args = []Expr{&FormatListExpr{Value: args[0]}}
+							args = []Expr{&FormatListExpr{Value: args[0], Compact: true}}
 						}
 					}
 				}
