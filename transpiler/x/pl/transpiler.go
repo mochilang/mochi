@@ -681,6 +681,32 @@ func (i *IfExpr) emit(w io.Writer) {
 	io.WriteString(w, ")")
 }
 
+func matchToIf(m *parser.MatchExpr, env *compileEnv) (Expr, error) {
+	target, err := toExpr(m.Target, env)
+	if err != nil {
+		return nil, err
+	}
+	var out Expr = &IntLit{Value: 0}
+	for i := len(m.Cases) - 1; i >= 0; i-- {
+		c := m.Cases[i]
+		res, err := toExpr(c.Result, env)
+		if err != nil {
+			return nil, err
+		}
+		if sel := c.Pattern.Binary.Left.Value.Target.Selector; sel != nil && sel.Root == "_" && len(sel.Tail) == 0 {
+			out = res
+			continue
+		}
+		pat, err := toExpr(c.Pattern, env)
+		if err != nil {
+			return nil, err
+		}
+		cond := &BinaryExpr{Left: target, Op: "=:=", Right: pat}
+		out = &IfExpr{Cond: cond, Then: res, Else: out}
+	}
+	return out, nil
+}
+
 func (s *SubstringExpr) emit(w io.Writer) {
 	io.WriteString(w, "(Len is ")
 	s.End.emit(w)
@@ -1892,6 +1918,8 @@ func toPrimary(p *parser.Primary, env *compileEnv) (Expr, error) {
 			return nil, err
 		}
 		return &GroupExpr{Expr: expr}, nil
+	case p.Match != nil:
+		return matchToIf(p.Match, env)
 	case p.If != nil:
 		return toIfExpr(p.If, env)
 	}
