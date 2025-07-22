@@ -51,10 +51,10 @@ func TestPHPTranspiler_Rosetta_Golden(t *testing.T) {
 		t.Fatal("no rosetta programs found")
 	}
 
-	if s := os.Getenv("ROSETTA_INDEX"); s != "" {
+	if s := os.Getenv("MOCHI_ROSETTA_INDEX"); s != "" {
 		idx, err := strconv.Atoi(s)
 		if err != nil || idx <= 0 || idx > len(files) {
-			t.Fatalf("invalid ROSETTA_INDEX: %s", s)
+			t.Fatalf("invalid MOCHI_ROSETTA_INDEX: %s", s)
 		}
 		files = files[idx-1 : idx]
 	} else if s := os.Getenv("ROSETTA_LIMIT"); s != "" {
