@@ -125,6 +125,14 @@ type SaveStmt struct {
 	Format string
 }
 
+// UpdateStmt modifies fields of items within a list of structs.
+type UpdateStmt struct {
+	Target string
+	Fields []string
+	Values []Expr
+	Cond   Expr
+}
+
 // ListLit represents a list literal converted to std::vector.
 type ListLit struct{ Elems []Expr }
 
@@ -1614,6 +1622,51 @@ func (s *SaveStmt) emit(w io.Writer, indent int) {
 	io.WriteString(w, "// unsupported save\n")
 }
 
+func (u *UpdateStmt) emit(w io.Writer, indent int) {
+	for i := 0; i < indent; i++ {
+		io.WriteString(w, "    ")
+	}
+	fmt.Fprintf(w, "for (size_t i = 0; i < %s.size(); ++i) {\n", u.Target)
+	for i := 0; i < indent+1; i++ {
+		io.WriteString(w, "    ")
+	}
+	fmt.Fprintf(w, "auto item = %s[i];\n", u.Target)
+	if u.Cond != nil {
+		for i := 0; i < indent+1; i++ {
+			io.WriteString(w, "    ")
+		}
+		io.WriteString(w, "if (")
+		u.Cond.emit(w)
+		io.WriteString(w, ") {\n")
+	}
+	inner := indent + 1
+	if u.Cond != nil {
+		inner++
+	}
+	for j, f := range u.Fields {
+		for i := 0; i < inner; i++ {
+			io.WriteString(w, "    ")
+		}
+		fmt.Fprintf(w, "item.%s = ", f)
+		u.Values[j].emit(w)
+		io.WriteString(w, ";\n")
+	}
+	if u.Cond != nil {
+		for i := 0; i < indent+1; i++ {
+			io.WriteString(w, "    ")
+		}
+		io.WriteString(w, "}\n")
+	}
+	for i := 0; i < indent+1; i++ {
+		io.WriteString(w, "    ")
+	}
+	fmt.Fprintf(w, "%s[i] = item;\n", u.Target)
+	for i := 0; i < indent; i++ {
+		io.WriteString(w, "    ")
+	}
+	io.WriteString(w, "}\n")
+}
+
 func (f *ForStmt) emit(w io.Writer, indent int) {
 	for i := 0; i < indent; i++ {
 		io.WriteString(w, "    ")
@@ -2048,6 +2101,12 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 			} else {
 				body = append(body, &AssignStmt{Name: stmt.Assign.Name, Value: val})
 			}
+		case stmt.Update != nil:
+			us, err := convertUpdateStmt(stmt.Update)
+			if err != nil {
+				return nil, err
+			}
+			body = append(body, us)
 		case stmt.For != nil:
 			start, err := convertExpr(stmt.For.Source)
 			if err != nil {
@@ -2325,6 +2384,12 @@ func convertStmt(s *parser.Statement) (Stmt, error) {
 			return &AssignFieldStmt{Target: target, Field: fld, Value: val}, nil
 		}
 		return &AssignStmt{Name: s.Assign.Name, Value: val}, nil
+	case s.Update != nil:
+		us, err := convertUpdateStmt(s.Update)
+		if err != nil {
+			return nil, err
+		}
+		return us, nil
 	case s.For != nil:
 		start, err := convertExpr(s.For.Source)
 		if err != nil {
@@ -4493,4 +4558,94 @@ func dataExprFromFile(path, format string, typ *parser.TypeRef) (Expr, error) {
 		return nil, fmt.Errorf("unsupported load format")
 	}
 	return valueToExpr(v, typ), nil
+}
+
+func simpleIdent(e *parser.Expr) (string, bool) {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) != 0 {
+		return "", false
+	}
+	u := e.Binary.Left
+	if len(u.Ops) != 0 || u.Value == nil {
+		return "", false
+	}
+	p := u.Value
+	if len(p.Ops) != 0 || p.Target == nil || p.Target.Selector == nil {
+		return "", false
+	}
+	if len(p.Target.Selector.Tail) == 0 {
+		return p.Target.Selector.Root, true
+	}
+	return "", false
+}
+
+func substituteFieldRefs(e Expr, fields map[string]bool) Expr {
+	switch ex := e.(type) {
+	case *VarRef:
+		if fields[ex.Name] {
+			return &SelectorExpr{Target: &VarRef{Name: "item"}, Field: ex.Name}
+		}
+		return ex
+	case *BinaryExpr:
+		return &BinaryExpr{Left: substituteFieldRefs(ex.Left, fields), Op: ex.Op, Right: substituteFieldRefs(ex.Right, fields)}
+	case *UnaryExpr:
+		return &UnaryExpr{Op: ex.Op, Expr: substituteFieldRefs(ex.Expr, fields)}
+	case *CallExpr:
+		args := make([]Expr, len(ex.Args))
+		for i, a := range ex.Args {
+			args[i] = substituteFieldRefs(a, fields)
+		}
+		return &CallExpr{Name: ex.Name, Args: args}
+	default:
+		return ex
+	}
+}
+
+func convertUpdateStmt(u *parser.UpdateStmt) (Stmt, error) {
+	if currentEnv == nil {
+		return nil, fmt.Errorf("missing env")
+	}
+	t, err := currentEnv.GetVar(u.Target)
+	if err != nil {
+		return nil, err
+	}
+	lt, ok := t.(types.ListType)
+	if !ok {
+		return nil, fmt.Errorf("update target not list")
+	}
+	st, ok := lt.Elem.(types.StructType)
+	if !ok {
+		return nil, fmt.Errorf("update element not struct")
+	}
+	child := types.NewEnv(currentEnv)
+	fieldSet := map[string]bool{}
+	for n, ft := range st.Fields {
+		child.SetVar(n, ft, true)
+		fieldSet[n] = true
+	}
+	fields := make([]string, len(u.Set.Items))
+	values := make([]Expr, len(u.Set.Items))
+	for i, it := range u.Set.Items {
+		key, ok := simpleIdent(it.Key)
+		if !ok {
+			key, ok = literalString(it.Key)
+			if !ok {
+				return nil, fmt.Errorf("unsupported update key")
+			}
+		}
+		val, err := convertExpr(it.Value)
+		if err != nil {
+			return nil, err
+		}
+		values[i] = substituteFieldRefs(val, fieldSet)
+		fields[i] = key
+	}
+	var cond Expr
+	if u.Where != nil {
+		c, err := convertExpr(u.Where)
+		if err != nil {
+			return nil, err
+		}
+		cond = substituteFieldRefs(c, fieldSet)
+	}
+	return &UpdateStmt{Target: u.Target, Fields: fields, Values: values, Cond: cond}, nil
 }
