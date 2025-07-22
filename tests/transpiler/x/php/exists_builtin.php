@@ -9,4 +9,4 @@ $flag = count((function() use ($data) {
   }
   return $result;
 })()) > 0;
-echo ($flag ? "True" : "False"), PHP_EOL;
+echo ($flag ? "true" : "false"), PHP_EOL;
