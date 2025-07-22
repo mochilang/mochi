@@ -1,0 +1,2 @@
+# command-line-arguments
+tests/transpiler/x/go/right_join.go:72:61: invalid operation: entry.Order (variable of struct type Order) is not an interface

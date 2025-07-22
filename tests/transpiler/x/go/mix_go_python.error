@@ -1,0 +1,2 @@
+# command-line-arguments
+tests/transpiler/x/go/mix_go_python.go:18:13: use of package math not in selector

@@ -1,4 +1,0 @@
-exit status 1
-# command-line-arguments
-../../../tests/transpiler/x/go/order_by_map.go:35:26: cannot use map[any]any{…} (value of type map[any]any) as map[string]int value in struct literal
-../../../tests/transpiler/x/go/order_by_map.go:37:47: invalid operation: tmp[i].Key < tmp[j].Key (operator < not defined on map)

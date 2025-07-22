@@ -1,0 +1,3 @@
+# command-line-arguments
+tests/transpiler/x/go/group_by_multi_sort.go:95:8: invalid operation: g.Key (variable of struct type GroupedKey) is not an interface
+tests/transpiler/x/go/group_by_multi_sort.go:96:8: invalid operation: g.Key (variable of struct type GroupedKey) is not an interface

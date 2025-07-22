@@ -1,0 +1,10 @@
+# command-line-arguments
+tests/transpiler/x/go/group_by_multi_join_sort.go:173:26: invalid operation: x.L (variable of struct type Lineitem) is not an interface
+tests/transpiler/x/go/group_by_multi_join_sort.go:181:15: invalid operation: g.Key (variable of struct type ResultKey) is not an interface
+tests/transpiler/x/go/group_by_multi_join_sort.go:182:15: invalid operation: g.Key (variable of struct type ResultKey) is not an interface
+tests/transpiler/x/go/group_by_multi_join_sort.go:188:27: invalid operation: x.L (variable of struct type Lineitem) is not an interface
+tests/transpiler/x/go/group_by_multi_join_sort.go:196:15: invalid operation: g.Key (variable of struct type ResultKey) is not an interface
+tests/transpiler/x/go/group_by_multi_join_sort.go:197:15: invalid operation: g.Key (variable of struct type ResultKey) is not an interface
+tests/transpiler/x/go/group_by_multi_join_sort.go:198:15: invalid operation: g.Key (variable of struct type ResultKey) is not an interface
+tests/transpiler/x/go/group_by_multi_join_sort.go:199:15: invalid operation: g.Key (variable of struct type ResultKey) is not an interface
+tests/transpiler/x/go/group_by_multi_join_sort.go:200:15: invalid operation: g.Key (variable of struct type ResultKey) is not an interface

@@ -1,0 +1,4 @@
+# command-line-arguments
+tests/transpiler/x/go/outer_join.go:106:26: invalid operation: row (variable of struct type Result) is not an interface
+tests/transpiler/x/go/outer_join.go:108:26: invalid operation: row (variable of struct type Result) is not an interface
+tests/transpiler/x/go/outer_join.go:111:28: invalid operation: row (variable of struct type Result) is not an interface
