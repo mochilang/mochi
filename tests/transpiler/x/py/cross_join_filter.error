@@ -1,7 +1,0 @@
-run: exit status 1
---- Even pairs ---
-Traceback (most recent call last):
-  File "/workspace/mochi/tests/transpiler/x/py/cross_join_filter.py", line 15, in <module>
-    print(" ".join(str(x) for x in [p["n"], p["l"]]).rstrip())
-                                    ~^^^^^
-TypeError: 'Pair' object is not subscriptable
