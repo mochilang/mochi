@@ -988,6 +988,32 @@ type QueryExpr struct {
 }
 
 func (q *QueryExpr) emit(w io.Writer) {
+	// generate simpler iterator pipeline for basic queries
+	if len(q.Froms) == 0 && len(q.Joins) == 0 && q.GroupVar == "" &&
+		q.Sort == nil && q.Skip == nil && q.Take == nil {
+		io.WriteString(w, "{ ")
+		if q.VarByRef {
+			q.Src.emit(w)
+			io.WriteString(w, ".iter()")
+		} else {
+			q.Src.emit(w)
+			io.WriteString(w, ".into_iter()")
+		}
+		if q.Where != nil {
+			io.WriteString(w, ".filter(|")
+			io.WriteString(w, q.Var)
+			io.WriteString(w, "| ")
+			q.Where.emit(w)
+			io.WriteString(w, ")")
+		}
+		io.WriteString(w, ".map(|")
+		io.WriteString(w, q.Var)
+		io.WriteString(w, "| ")
+		q.Select.emit(w)
+		fmt.Fprintf(w, ").collect::<Vec<%s>>() }", q.ItemType)
+		return
+	}
+
 	fmt.Fprintf(w, "{ let mut _q: Vec<%s> = Vec::new(); ", q.ItemType)
 	if q.Sort != nil {
 		fmt.Fprintf(w, "let mut _tmp: Vec<(%s, %s)> = Vec::new(); ", q.SortType, q.ItemType)
