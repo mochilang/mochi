@@ -622,6 +622,17 @@ type LeftJoinExpr struct {
 	ElemType string
 }
 
+// OuterJoinExpr represents a simple full outer join query of two sources.
+type OuterJoinExpr struct {
+	LeftVar  string
+	LeftSrc  Expr
+	RightVar string
+	RightSrc Expr
+	Cond     Expr
+	Select   Expr
+	ElemType string
+}
+
 func (q *QueryExpr) emit(w io.Writer) {
 	et := q.ElemType
 	if et == "" {
@@ -738,6 +749,40 @@ func (l *LeftJoinExpr) emit(w io.Writer) {
 	fmt.Fprint(w, " = null ; _res.append(")
 	l.Select.emit(w)
 	fmt.Fprint(w, ") }\n _res })")
+}
+
+func (o *OuterJoinExpr) emit(w io.Writer) {
+	et := o.ElemType
+	if et == "" {
+		et = "Any"
+	}
+	fmt.Fprintf(w, "({ var _res = ArrayBuffer[%s]() ; for (%s <- ", et, o.LeftVar)
+	o.LeftSrc.emit(w)
+	fmt.Fprintf(w, ") { var matched = false ; for (%s <- ", o.RightVar)
+	o.RightSrc.emit(w)
+	fmt.Fprint(w, ") { if (")
+	o.Cond.emit(w)
+	fmt.Fprint(w, ") { matched = true ; _res.append(")
+	o.Select.emit(w)
+	fmt.Fprint(w, ") } }; if (!matched) { var ")
+	fmt.Fprint(w, o.RightVar)
+	fmt.Fprint(w, " = null ; _res.append(")
+	o.Select.emit(w)
+	fmt.Fprint(w, ") } }; for (")
+	fmt.Fprint(w, o.RightVar)
+	fmt.Fprint(w, " <- ")
+	o.RightSrc.emit(w)
+	fmt.Fprint(w, ") { var exists = false ; for (")
+	fmt.Fprint(w, o.LeftVar)
+	fmt.Fprint(w, " <- ")
+	o.LeftSrc.emit(w)
+	fmt.Fprint(w, ") { if (")
+	o.Cond.emit(w)
+	fmt.Fprint(w, ") { exists = true } }; if (!exists) { var ")
+	fmt.Fprint(w, o.LeftVar)
+	fmt.Fprint(w, " = null ; _res.append(")
+	o.Select.emit(w)
+	fmt.Fprint(w, ") } } ; _res })")
 }
 
 func (g *GroupByExpr) emit(w io.Writer) {
@@ -1305,6 +1350,9 @@ func convertPrimary(p *parser.Primary, env *types.Env) (Expr, error) {
 		}
 		return &MapLit{Items: entries}, nil
 	case p.Query != nil:
+		if oj, err := convertOuterJoinQuery(p.Query, env); err == nil {
+			return oj, nil
+		}
 		if rj, err := convertRightJoinQuery(p.Query, env); err == nil {
 			return rj, nil
 		}
@@ -1548,8 +1596,18 @@ func convertRightJoinQuery(q *parser.QueryExpr, env *types.Env) (Expr, error) {
 		return nil, err
 	}
 	child := types.NewEnv(env)
-	child.SetVar(q.Var, types.AnyType{}, true)
-	child.SetVar(j.Var, types.AnyType{}, true)
+	srcType := types.ExprType(q.Source, env)
+	var leftElem types.Type = types.AnyType{}
+	if lt, ok := srcType.(types.ListType); ok {
+		leftElem = lt.Elem
+	}
+	child.SetVar(q.Var, leftElem, true)
+	jType := types.ExprType(j.Src, env)
+	var rightElem types.Type = types.AnyType{}
+	if lt, ok := jType.(types.ListType); ok {
+		rightElem = lt.Elem
+	}
+	child.SetVar(j.Var, rightElem, true)
 	cond, err := convertExpr(j.On, child)
 	if err != nil {
 		return nil, err
@@ -1560,7 +1618,7 @@ func convertRightJoinQuery(q *parser.QueryExpr, env *types.Env) (Expr, error) {
 	}
 	elemTypeStr := toScalaTypeFromType(types.ExprType(q.Select, child))
 	if elemTypeStr == "" {
-		elemTypeStr = "Any"
+		elemTypeStr = "Map[String,Any]"
 	}
 	return &RightJoinExpr{LeftVar: q.Var, LeftSrc: leftSrc, RightVar: j.Var, RightSrc: rightSrc, Cond: cond, Select: sel, ElemType: elemTypeStr}, nil
 }
@@ -1582,8 +1640,18 @@ func convertLeftJoinQuery(q *parser.QueryExpr, env *types.Env) (Expr, error) {
 		return nil, err
 	}
 	child := types.NewEnv(env)
-	child.SetVar(q.Var, types.AnyType{}, true)
-	child.SetVar(j.Var, types.AnyType{}, true)
+	srcType := types.ExprType(q.Source, env)
+	var leftElem types.Type = types.AnyType{}
+	if lt, ok := srcType.(types.ListType); ok {
+		leftElem = lt.Elem
+	}
+	child.SetVar(q.Var, leftElem, true)
+	jType := types.ExprType(j.Src, env)
+	var rightElem types.Type = types.AnyType{}
+	if lt, ok := jType.(types.ListType); ok {
+		rightElem = lt.Elem
+	}
+	child.SetVar(j.Var, rightElem, true)
 	cond, err := convertExpr(j.On, child)
 	if err != nil {
 		return nil, err
@@ -1597,6 +1665,62 @@ func convertLeftJoinQuery(q *parser.QueryExpr, env *types.Env) (Expr, error) {
 		elemTypeStr = "Any"
 	}
 	return &LeftJoinExpr{LeftVar: q.Var, LeftSrc: leftSrc, RightVar: j.Var, RightSrc: rightSrc, Cond: cond, Select: sel, ElemType: elemTypeStr}, nil
+}
+
+func convertOuterJoinQuery(q *parser.QueryExpr, env *types.Env) (Expr, error) {
+	if q == nil || len(q.Joins) != 1 || q.Distinct || q.Group != nil || q.Sort != nil || q.Skip != nil || q.Take != nil || q.Where != nil || len(q.Froms) > 0 {
+		return nil, fmt.Errorf("unsupported query")
+	}
+	j := q.Joins[0]
+	if j.Side == nil || *j.Side != "outer" {
+		return nil, fmt.Errorf("unsupported query")
+	}
+	leftSrc, err := convertExpr(q.Source, env)
+	if err != nil {
+		return nil, err
+	}
+	rightSrc, err := convertExpr(j.Src, env)
+	if err != nil {
+		return nil, err
+	}
+	child := types.NewEnv(env)
+	child.SetVar(q.Var, types.AnyType{}, true)
+	child.SetVar(j.Var, types.AnyType{}, true)
+	cond, err := convertExpr(j.On, child)
+	if err != nil {
+		return nil, err
+	}
+	if ml := mapLiteral(q.Select); ml != nil {
+		if st, ok := types.InferStructFromMapEnv(ml, child); ok {
+			name := types.UniqueStructName("QueryItem", env, nil)
+			st.Name = name
+			env.SetStruct(name, st)
+			fields := make([]Param, len(st.Order))
+			for i, n := range st.Order {
+				fields[i] = Param{Name: n, Type: toScalaTypeFromType(st.Fields[n])}
+			}
+			typeDecls = append(typeDecls, &TypeDeclStmt{Name: name, Fields: fields})
+			sl := &parser.StructLiteral{Name: name}
+			for _, n := range st.Order {
+				for _, it := range ml.Items {
+					if key, _ := types.SimpleStringKey(it.Key); key == n {
+						sl.Fields = append(sl.Fields, &parser.StructLitField{Name: n, Value: it.Value})
+						break
+					}
+				}
+			}
+			q.Select = &parser.Expr{Binary: &parser.BinaryExpr{Left: &parser.Unary{Value: &parser.PostfixExpr{Target: &parser.Primary{Struct: sl}}}}}
+		}
+	}
+	sel, err := convertExpr(q.Select, child)
+	if err != nil {
+		return nil, err
+	}
+	elemTypeStr := toScalaTypeFromType(types.ExprType(q.Select, child))
+	if elemTypeStr == "" {
+		elemTypeStr = "Any"
+	}
+	return &OuterJoinExpr{LeftVar: q.Var, LeftSrc: leftSrc, RightVar: j.Var, RightSrc: rightSrc, Cond: cond, Select: sel, ElemType: elemTypeStr}, nil
 }
 
 func convertInnerJoinQuery(q *parser.QueryExpr, env *types.Env) (Expr, error) {
@@ -2033,6 +2157,12 @@ func convertIfStmt(is *parser.IfStmt, env *types.Env) (Stmt, error) {
 	cond, err := convertExpr(is.Cond, env)
 	if err != nil {
 		return nil, err
+	}
+	if env != nil {
+		t := types.ExprType(is.Cond, env)
+		if _, ok := t.(types.BoolType); !ok {
+			cond = &BinaryExpr{Left: cond, Op: "!=", Right: &Name{Name: "null"}}
+		}
 	}
 	var thenStmts []Stmt
 	for _, st := range is.Then {
