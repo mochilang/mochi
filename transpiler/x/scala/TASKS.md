@@ -1,3 +1,63 @@
+## Progress (2025-07-22 11:37 +0700)
+- scala transpiler: support break/continue and json builtin
+- Regenerated golden files - 72/102 vm valid programs passing
+
+## Progress (2025-07-22 10:54 +0700)
+- release: v0.10.35
+- Regenerated golden files - 72/102 vm valid programs passing
+
+## Progress (2025-07-22 10:54 +0700)
+- release: v0.10.35
+- Regenerated golden files - 71/102 vm valid programs passing
+
+## Progress (2025-07-22 10:54 +0700)
+- release: v0.10.35
+- Regenerated golden files - 70/102 vm valid programs passing
+
+## Progress (2025-07-22 10:54 +0700)
+- release: v0.10.35
+- Regenerated golden files - 71/102 vm valid programs passing
+
+## Progress (2025-07-22 10:54 +0700)
+- release: v0.10.35
+- Regenerated golden files - 71/102 vm valid programs passing
+
+## Progress (2025-07-22 10:54 +0700)
+- release: v0.10.35
+- Regenerated golden files - 70/102 vm valid programs passing
+
+## Progress (2025-07-22 10:54 +0700)
+- release: v0.10.35
+- Regenerated golden files - 70/102 vm valid programs passing
+
+## Progress (2025-07-22 10:54 +0700)
+- release: v0.10.35
+- Regenerated golden files - 70/102 vm valid programs passing
+
+## Progress (2025-07-22 10:54 +0700)
+- release: v0.10.35
+- Regenerated golden files - 70/102 vm valid programs passing
+
+## Progress (2025-07-22 10:54 +0700)
+- release: v0.10.35
+- Regenerated golden files - 70/102 vm valid programs passing
+
+## Progress (2025-07-22 10:54 +0700)
+- release: v0.10.35
+- Regenerated golden files - 70/102 vm valid programs passing
+
+## Progress (2025-07-22 10:54 +0700)
+- release: v0.10.35
+- Regenerated golden files - 69/102 vm valid programs passing
+
+## Progress (2025-07-22 10:54 +0700)
+- release: v0.10.35
+- Regenerated golden files - 69/102 vm valid programs passing
+
+## Progress (2025-07-22 10:54 +0700)
+- release: v0.10.35
+- Regenerated golden files - 69/102 vm valid programs passing
+
 ## Progress (2025-07-22 09:22 +0700)
 - docs: refresh rkt checklist
 - Regenerated golden files - 69/102 vm valid programs passing

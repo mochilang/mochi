@@ -1,5 +1,0 @@
-exit status 1
-/workspace/mochi/tests/transpiler/x/scala/cast_struct.scala:7: error: value title is not a member of Any
-    println(todo.title)
-                 ^
-one error found
