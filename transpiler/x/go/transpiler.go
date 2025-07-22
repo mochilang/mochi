@@ -1516,6 +1516,11 @@ func compileStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 						ex = &BoolIntExpr{Expr: ex}
 					}
 				}
+				if types.IsAnyType(t) {
+					if ce, ok := ex.(*CallExpr); ok && strings.HasPrefix(ce.Func, "math.") {
+						ex = &FloatStringExpr{Value: ex}
+					}
+				}
 				args[i] = ex
 			}
 			usesPrint = true

@@ -1,3 +1,23 @@
+## Progress (2025-07-22 15:03 +0700)
+- go transpiler: handle math float calls
+- Regenerated golden files - 101/102 vm valid programs passing
+
+## Progress (2025-07-22 14:53 +0700)
+- ocaml transpiler: remove helpers
+- Regenerated golden files - 102/102 vm valid programs passing
+
+## Progress (2025-07-22 14:53 +0700)
+- ocaml transpiler: remove helpers
+- Regenerated golden files - 102/102 vm valid programs passing
+
+## Progress (2025-07-22 14:53 +0700)
+- ocaml transpiler: remove helpers
+- Regenerated golden files - 102/102 vm valid programs passing
+
+## Progress (2025-07-22 14:53 +0700)
+- ocaml transpiler: remove helpers
+- Regenerated golden files - 102/102 vm valid programs passing
+
 ## Progress (2025-07-22 14:26 +0700)
 - docs(go): update progress
 - Regenerated golden files - 100/102 vm valid programs passing
