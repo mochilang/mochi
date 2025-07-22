@@ -20,6 +20,7 @@ var (
 	extraHelpers   []string
 	helpersUsed    map[string]bool
 	builtinAliases map[string]string
+	reserved       map[string]bool
 )
 
 func init() {
@@ -120,6 +121,30 @@ func init() {
     else -> toJson(v.toString())
 }`,
 		"expect": `fun expect(cond: Boolean) { if (!cond) throw RuntimeException("expect failed") }`,
+		"_now": `var _nowSeed = 0L
+var _nowSeeded = false
+fun _now(): Int {
+    if (!_nowSeeded) {
+        System.getenv("MOCHI_NOW_SEED")?.toLongOrNull()?.let {
+            _nowSeed = it
+            _nowSeeded = true
+        }
+    }
+    return if (_nowSeeded) {
+        _nowSeed = (_nowSeed * 1664525 + 1013904223) % 2147483647
+        _nowSeed.toInt()
+    } else {
+        System.nanoTime().toInt()
+    }
+}`,
+	}
+	reserved = map[string]bool{
+		"package": true, "as": true, "typealias": true, "class": true,
+		"this": true, "super": true, "val": true, "var": true,
+		"fun": true, "for": true, "null": true, "true": true, "false": true,
+		"is": true, "in": true, "throw": true, "return": true, "break": true,
+		"continue": true, "object": true, "if": true, "try": true, "else": true,
+		"while": true, "do": true, "when": true, "interface": true,
 	}
 	extraHelpers = nil
 	helpersUsed = map[string]bool{}
@@ -149,6 +174,13 @@ func useHelper(name string) {
 		helpersUsed[name] = true
 		extraHelpers = append(extraHelpers, code)
 	}
+}
+
+func safeName(n string) string {
+	if reserved[n] {
+		return "_" + n
+	}
+	return n
 }
 
 type Stmt interface{ emit(io.Writer, int) }
@@ -278,12 +310,12 @@ func (d *DataClass) emit(w io.Writer, indentLevel int) {
 
 func (f *FuncDef) emit(w io.Writer, indentLevel int) {
 	indent(w, indentLevel)
-	io.WriteString(w, "fun "+f.Name+"(")
+	io.WriteString(w, "fun "+safeName(f.Name)+"(")
 	for i, p := range f.Params {
 		if i > 0 {
 			io.WriteString(w, ", ")
 		}
-		io.WriteString(w, p)
+		io.WriteString(w, safeName(p))
 	}
 	ret := f.Ret
 	if ret == "" {
@@ -501,7 +533,7 @@ type VarRef struct {
 	Type string
 }
 
-func (v *VarRef) emit(w io.Writer) { io.WriteString(w, v.Name) }
+func (v *VarRef) emit(w io.Writer) { io.WriteString(w, safeName(v.Name)) }
 
 // FieldExpr represents obj.field access.
 type FieldExpr struct {
@@ -518,7 +550,7 @@ func (f *FieldExpr) emit(w io.Writer) {
 	} else {
 		f.Receiver.emit(w)
 	}
-	io.WriteString(w, "."+f.Name)
+	io.WriteString(w, "."+safeName(f.Name))
 }
 
 // CastExpr represents value as type conversions like "\"123\" as int".
@@ -671,7 +703,7 @@ type LetStmt struct {
 
 func (s *LetStmt) emit(w io.Writer, indentLevel int) { // 'let' is immutable
 	indent(w, indentLevel)
-	io.WriteString(w, "val "+s.Name)
+	io.WriteString(w, "val "+safeName(s.Name))
 	if s.Type != "" {
 		io.WriteString(w, ": "+s.Type)
 	}
@@ -687,7 +719,7 @@ type VarStmt struct {
 
 func (s *VarStmt) emit(w io.Writer, indentLevel int) {
 	indent(w, indentLevel)
-	io.WriteString(w, "var "+s.Name)
+	io.WriteString(w, "var "+safeName(s.Name))
 	if s.Type != "" {
 		io.WriteString(w, ": "+s.Type)
 	}
@@ -702,7 +734,7 @@ type AssignStmt struct {
 
 func (s *AssignStmt) emit(w io.Writer, indentLevel int) {
 	indent(w, indentLevel)
-	io.WriteString(w, s.Name+" = ")
+	io.WriteString(w, safeName(s.Name)+" = ")
 	s.Value.emit(w)
 }
 
@@ -768,7 +800,7 @@ type ForRangeStmt struct {
 
 func (fr *ForRangeStmt) emit(w io.Writer, indentLevel int) {
 	indent(w, indentLevel)
-	io.WriteString(w, "for ("+fr.Name+" in ")
+	io.WriteString(w, "for ("+safeName(fr.Name)+" in ")
 	if fr.Start != nil {
 		fr.Start.emit(w)
 	}
@@ -794,7 +826,7 @@ type ForEachStmt struct {
 
 func (fe *ForEachStmt) emit(w io.Writer, indentLevel int) {
 	indent(w, indentLevel)
-	io.WriteString(w, "for ("+fe.Name+" in ")
+	io.WriteString(w, "for ("+safeName(fe.Name)+" in ")
 	if fe.Iterable != nil {
 		fe.Iterable.emit(w)
 	}
@@ -1042,6 +1074,11 @@ func (m *MaxExpr) emit(w io.Writer) {
 	m.Value.emit(w)
 	io.WriteString(w, ".max()")
 }
+
+// NowExpr expands to a deterministic timestamp similar to the VM's now() builtin.
+type NowExpr struct{}
+
+func (n *NowExpr) emit(w io.Writer) { io.WriteString(w, "_now()") }
 
 type ValuesExpr struct{ Map Expr }
 
@@ -1895,7 +1932,11 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 					}
 				}
 			}
-			p.Funcs = append(p.Funcs, &FuncDef{Name: st.Fun.Name, Params: params, Ret: ret, Body: body})
+			fname := st.Fun.Name
+			if fname == "main" {
+				fname = "user_main"
+			}
+			p.Funcs = append(p.Funcs, &FuncDef{Name: fname, Params: params, Ret: ret, Body: body})
 		case st.If != nil:
 			stmt, err := convertIfStmt(env, st.If)
 			if err != nil {
@@ -2097,7 +2138,11 @@ func convertStmts(env *types.Env, list []*parser.Statement) ([]Stmt, error) {
 					}
 				}
 			}
-			out = append(out, &FuncDef{Name: s.Fun.Name, Params: params, Ret: ret, Body: body})
+			fname := s.Fun.Name
+			if fname == "main" {
+				fname = "user_main"
+			}
+			out = append(out, &FuncDef{Name: fname, Params: params, Ret: ret, Body: body})
 		case s.Return != nil:
 			var v Expr
 			if s.Return.Value != nil {
@@ -3288,6 +3333,13 @@ func convertPrimary(env *types.Env, p *parser.Primary) (Expr, error) {
 				args[i] = ex
 			}
 			name := p.Call.Func
+			if name == "now" {
+				if len(args) != 0 {
+					return nil, fmt.Errorf("now expects no arguments")
+				}
+				useHelper("_now")
+				return &NowExpr{}, nil
+			}
 			if name == "print" {
 				if len(args) == 1 {
 					name = "println"
@@ -3315,7 +3367,10 @@ func convertPrimary(env *types.Env, p *parser.Primary) (Expr, error) {
 					}
 				}
 			}
-			return &CallExpr{Func: name, Args: args}, nil
+			if name == "main" {
+				name = "user_main"
+			}
+			return &CallExpr{Func: safeName(name), Args: args}, nil
 		}
 	case p.Struct != nil:
 		return convertStructLiteral(env, p.Struct)

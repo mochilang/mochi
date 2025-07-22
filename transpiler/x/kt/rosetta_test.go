@@ -53,7 +53,7 @@ func TestRosettaKotlin(t *testing.T) {
 		name := strings.TrimSuffix(filepath.Base(outPath), ".out")
 		srcPath := filepath.Join(srcDir, name+".mochi")
 		ktPath := filepath.Join(outDir, name+".kt")
-		t.Run(name, func(t *testing.T) {
+		ok := t.Run(name, func(t *testing.T) {
 			prog, err := parser.Parse(srcPath)
 			if err != nil {
 				writeKTError(outDir, name, fmt.Errorf("parse error: %w", err))
@@ -107,5 +107,8 @@ func TestRosettaKotlin(t *testing.T) {
 			_ = os.Remove(filepath.Join(outDir, name+".error"))
 			_ = os.Remove(jar)
 		})
+		if !ok {
+			break
+		}
 	}
 }
