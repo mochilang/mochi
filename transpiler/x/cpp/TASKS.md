@@ -1,3 +1,28 @@
+## Progress (2025-07-22 17:24 +0700)
+- update docs and golden for in_operator_extended
+- Generated C++ for 102/103 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-22 17:24 +0700)
+- update docs and golden for in_operator_extended
+- Generated C++ for 102/103 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-22 17:24 +0700)
+- update docs and golden for in_operator_extended
+- Generated C++ for 102/103 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-22 17:24 +0700)
+- update docs and golden for in_operator_extended
+- Generated C++ for 102/103 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-22 17:24 +0700)
+- update docs and golden for in_operator_extended
+- Generated C++ for 102/103 programs
+- Updated README checklist and outputs
+
 ## Progress (2025-07-22 16:38 +0700)
 - docs: update cpp golden progress
 - Generated C++ for 101/103 programs
