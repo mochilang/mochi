@@ -165,6 +165,13 @@ func (c *context) setConst(name string, val Expr) {
 	c.constVal[name] = val
 }
 
+func (c *context) clearConst(name string) {
+	if c.constVal == nil {
+		return
+	}
+	delete(c.constVal, name)
+}
+
 func (c *context) constValue(name string) (Expr, bool) {
 	v, ok := c.constVal[name]
 	return v, ok
@@ -2017,10 +2024,7 @@ func convertStmt(st *parser.Statement, env *types.Env, ctx *context) ([]Stmt, er
 		ctx.setStrFields(st.Var.Name, stringFields(e))
 		ctx.setBoolFields(st.Var.Name, boolFields(e))
 		ctx.setStringVar(st.Var.Name, isStringExpr(e))
-		switch e.(type) {
-		case *IntLit, *FloatLit, *BoolLit, *StringLit, *AtomLit:
-			ctx.setConst(st.Var.Name, e)
-		}
+		ctx.clearConst(st.Var.Name)
 		return []Stmt{&LetStmt{Name: alias, Expr: e}}, nil
 	case st.Assign != nil && len(st.Assign.Index) == 0 && len(st.Assign.Field) == 0:
 		val, err := convertExpr(st.Assign.Value, env, ctx)
@@ -2031,6 +2035,12 @@ func convertStmt(st *parser.Statement, env *types.Env, ctx *context) ([]Stmt, er
 		ctx.setStrFields(st.Assign.Name, stringFields(val))
 		ctx.setBoolFields(st.Assign.Name, boolFields(val))
 		ctx.setStringVar(st.Assign.Name, isStringExpr(val))
+		switch val.(type) {
+		case *IntLit, *FloatLit, *BoolLit, *StringLit, *AtomLit:
+			ctx.setConst(st.Assign.Name, val)
+		default:
+			ctx.clearConst(st.Assign.Name)
+		}
 		return []Stmt{&LetStmt{Name: alias, Expr: val}}, nil
 	case st.Assign != nil && len(st.Assign.Index) == 0 && len(st.Assign.Field) == 1:
 		val, err := convertExpr(st.Assign.Value, env, ctx)
@@ -2040,6 +2050,7 @@ func convertStmt(st *parser.Statement, env *types.Env, ctx *context) ([]Stmt, er
 		old := ctx.current(st.Assign.Name)
 		alias := ctx.newAlias(st.Assign.Name)
 		key := &StringLit{Value: st.Assign.Field[0].Name}
+		ctx.clearConst(st.Assign.Name)
 		return []Stmt{&MapAssignStmt{Name: alias, Old: old, Key: key, Value: val}}, nil
 	case st.Assign != nil && len(st.Assign.Index) == 1 && len(st.Assign.Field) == 0:
 		idx, err := convertExpr(st.Assign.Index[0].Start, env, ctx)
@@ -2052,6 +2063,7 @@ func convertStmt(st *parser.Statement, env *types.Env, ctx *context) ([]Stmt, er
 		}
 		old := ctx.current(st.Assign.Name)
 		alias := ctx.newAlias(st.Assign.Name)
+		ctx.clearConst(st.Assign.Name)
 		kind := "list"
 		if t, err := env.GetVar(st.Assign.Name); err == nil {
 			if _, ok := t.(types.MapType); ok {
@@ -2077,6 +2089,7 @@ func convertStmt(st *parser.Statement, env *types.Env, ctx *context) ([]Stmt, er
 			return nil, err
 		}
 		alias := ctx.newAlias(st.Assign.Name)
+		ctx.clearConst(st.Assign.Name)
 		tmp := ctx.newAlias("tmp")
 		tmp2 := ctx.newAlias("tmp")
 		kind := "list"
@@ -2107,6 +2120,7 @@ func convertStmt(st *parser.Statement, env *types.Env, ctx *context) ([]Stmt, er
 		if err != nil {
 			return nil, err
 		}
+		ctx.clearConst(st.Update.Target)
 		return []Stmt{u}, nil
 	case st.Expr != nil:
 		if se := extractSaveExpr(st.Expr.Expr); se != nil {
@@ -2246,30 +2260,62 @@ func convertIfStmt(n *parser.IfStmt, env *types.Env, ctx *context) (*IfStmt, err
 	if _, ok := types.ExprType(n.Cond, env).(types.BoolType); !ok {
 		cond = &BinaryExpr{Left: cond, Op: "!=", Right: &AtomLit{Name: "nil"}}
 	}
+
+	base := ctx.clone()
+	thenCtx := base.clone()
 	thenStmts := []Stmt{}
 	for _, st := range n.Then {
-		cs, err := convertStmt(st, env, ctx)
+		cs, err := convertStmt(st, env, thenCtx)
 		if err != nil {
 			return nil, err
 		}
 		thenStmts = append(thenStmts, cs...)
 	}
+
+	elseCtx := base.clone()
 	var elseStmts []Stmt
 	if n.ElseIf != nil {
-		es, err := convertIfStmt(n.ElseIf, env, ctx)
+		es, err := convertIfStmt(n.ElseIf, env, elseCtx)
 		if err != nil {
 			return nil, err
 		}
 		elseStmts = []Stmt{es}
 	} else if len(n.Else) > 0 {
 		for _, st := range n.Else {
-			cs, err := convertStmt(st, env, ctx)
+			cs, err := convertStmt(st, env, elseCtx)
 			if err != nil {
 				return nil, err
 			}
 			elseStmts = append(elseStmts, cs...)
 		}
 	}
+
+	changed := map[string]bool{}
+	for k, v := range thenCtx.alias {
+		if base.alias[k] != v {
+			changed[k] = true
+		}
+	}
+	for k, v := range elseCtx.alias {
+		if base.alias[k] != v {
+			changed[k] = true
+		}
+	}
+	for name := range changed {
+		newA := ctx.newAlias(name)
+		tVal := base.alias[name]
+		if a, ok := thenCtx.alias[name]; ok {
+			tVal = a
+		}
+		thenStmts = append(thenStmts, &LetStmt{Name: newA, Expr: &NameRef{Name: tVal}})
+		eVal := base.alias[name]
+		if a, ok := elseCtx.alias[name]; ok {
+			eVal = a
+		}
+		elseStmts = append(elseStmts, &LetStmt{Name: newA, Expr: &NameRef{Name: eVal}})
+		ctx.alias[name] = newA
+	}
+
 	return &IfStmt{Cond: cond, Then: thenStmts, Else: elseStmts}, nil
 }
 
