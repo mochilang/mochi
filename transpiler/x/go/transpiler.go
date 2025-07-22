@@ -31,6 +31,7 @@ type Program struct {
 	UseSort    bool
 	UseJSON    bool
 	UseTime    bool
+	UseInput   bool
 }
 
 var (
@@ -40,6 +41,7 @@ var (
 	usesSort       bool
 	usesJSON       bool
 	usesTime       bool
+	usesInput      bool
 	topEnv         *types.Env
 	extraDecls     []Stmt
 	structCount    int
@@ -880,6 +882,13 @@ func (n *NowExpr) emit(w io.Writer) {
 	io.WriteString(w, "_now()")
 }
 
+// InputExpr reads a line from standard input.
+type InputExpr struct{}
+
+func (i *InputExpr) emit(w io.Writer) {
+	io.WriteString(w, "_input()")
+}
+
 // JsonExpr prints a value as pretty JSON.
 type JsonExpr struct{ Value Expr }
 
@@ -1444,6 +1453,7 @@ func Transpile(p *parser.Program, env *types.Env) (*Program, error) {
 	usesSort = false
 	usesJSON = false
 	usesTime = false
+	usesInput = false
 	topEnv = env
 	extraDecls = nil
 	structCount = 0
@@ -1470,6 +1480,7 @@ func Transpile(p *parser.Program, env *types.Env) (*Program, error) {
 	gp.UseSort = usesSort
 	gp.UseJSON = usesJSON
 	gp.UseTime = usesTime
+	gp.UseInput = usesInput
 	gp.Imports = imports
 	return gp, nil
 }
@@ -3357,6 +3368,16 @@ func compilePrimary(p *parser.Primary, env *types.Env, base string) (Expr, error
 			name = "len"
 		case "str":
 			name = "fmt.Sprint"
+		case "int":
+			argType := types.TypeOfExpr(p.Call.Args[0], env)
+			if _, ok := argType.(types.StringType); ok {
+				usesStrconv = true
+				return &AtoiExpr{Expr: args[0]}, nil
+			}
+			if types.IsAnyType(argType) {
+				args[0] = &AssertExpr{Expr: args[0], Type: "int"}
+			}
+			return &CallExpr{Func: "int", Args: []Expr{args[0]}}, nil
 		case "sum":
 			isFloat := false
 			switch a := args[0].(type) {
@@ -3394,6 +3415,9 @@ func compilePrimary(p *parser.Primary, env *types.Env, base string) (Expr, error
 		case "now":
 			usesTime = true
 			return &NowExpr{}, nil
+		case "input":
+			usesInput = true
+			return &InputExpr{}, nil
 		case "json":
 			usesJSON = true
 			return &JsonExpr{Value: args[0]}, nil
@@ -3866,6 +3890,12 @@ func Emit(prog *Program) []byte {
 	if prog.UseSort {
 		buf.WriteString("    \"sort\"\n")
 	}
+	if prog.UseInput {
+		buf.WriteString("    \"bufio\"\n")
+		if !prog.UseTime {
+			buf.WriteString("    \"os\"\n")
+		}
+	}
 	buf.WriteString(")\n\n")
 
 	if prog.UseTime {
@@ -3885,6 +3915,14 @@ func Emit(prog *Program) []byte {
 		buf.WriteString("        return int(nowSeed)\n")
 		buf.WriteString("    }\n")
 		buf.WriteString("    return int(time.Now().UnixNano())\n")
+		buf.WriteString("}\n\n")
+	}
+
+	if prog.UseInput {
+		buf.WriteString("var _scanner = bufio.NewScanner(os.Stdin)\n")
+		buf.WriteString("func _input() string {\n")
+		buf.WriteString("    if !_scanner.Scan() { return \"\" }\n")
+		buf.WriteString("    return _scanner.Text()\n")
 		buf.WriteString("}\n\n")
 	}
 
