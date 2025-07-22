@@ -30,6 +30,7 @@ var globalTypes map[string]string
 var inFunction bool
 var inLambda int
 var builtinAliases map[string]string
+var useNow bool
 
 func init() {
 	_, file, _, _ := runtime.Caller(0)
@@ -56,6 +57,7 @@ type Program struct {
 	ListTypes map[string]string
 	// collected types of top-level variables
 	GlobalTypes map[string]string
+	UseNow      bool
 }
 
 func (p *Program) addInclude(inc string) {
@@ -223,6 +225,9 @@ type CallExpr struct {
 	Name string
 	Args []Expr
 }
+
+// NowExpr expands to a deterministic timestamp similar to the VM's now() builtin.
+type NowExpr struct{}
 
 type ExistsExpr struct{ List Expr }
 
@@ -464,11 +469,30 @@ func (p *Program) write(w io.Writer) {
 	p.addInclude("<iomanip>")
 	p.addInclude("<optional>")
 	p.addInclude("<vector>")
+	if p.UseNow {
+		p.addInclude("<cstdlib>")
+		p.addInclude("<chrono>")
+	}
 	for _, inc := range p.Includes {
 		fmt.Fprintf(w, "#include %s\n", inc)
 	}
 	fmt.Fprintln(w)
 	fmt.Fprintln(w)
+	if p.UseNow {
+		fmt.Fprintln(w, "static int _now() {")
+		fmt.Fprintln(w, "    static int seed = 0;")
+		fmt.Fprintln(w, "    static bool seeded = false;")
+		fmt.Fprintln(w, "    if (!seeded) {")
+		fmt.Fprintln(w, "        const char* s = std::getenv(\"MOCHI_NOW_SEED\");")
+		fmt.Fprintln(w, "        if (s && *s) { seed = std::atoi(s); seeded = true; }")
+		fmt.Fprintln(w, "    }")
+		fmt.Fprintln(w, "    if (seeded) {")
+		fmt.Fprintln(w, "        seed = (seed * 1664525 + 1013904223) % 2147483647;")
+		fmt.Fprintln(w, "        return seed;")
+		fmt.Fprintln(w, "    }")
+		fmt.Fprintln(w, "    return (int)std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::system_clock::now().time_since_epoch()).count();")
+		fmt.Fprintln(w, "}")
+	}
 	for _, st := range p.Structs {
 		if st.Abstract {
 			fmt.Fprintf(w, "struct %s;\n", st.Name)
@@ -927,6 +951,10 @@ func (t *TrimSpaceExpr) emit(w io.Writer) {
 	io.WriteString(w, "([]{ std::string __s = ")
 	t.Value.emit(w)
 	io.WriteString(w, "; size_t __b = 0; while(__b < __s.size() && std::isspace(static_cast<unsigned char>(__s[__b]))) ++__b; size_t __e = __s.size(); while(__e > __b && std::isspace(static_cast<unsigned char>(__s[__e-1]))) --__e; return __s.substr(__b, __e-__b); }())")
+}
+
+func (n *NowExpr) emit(w io.Writer) {
+	io.WriteString(w, "_now()")
 }
 
 func (c *CastExpr) emit(w io.Writer) {
@@ -1778,6 +1806,7 @@ func (i *IfExpr) emit(w io.Writer) {
 }
 
 func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
+	useNow = false
 	cp := &Program{Includes: []string{"<iostream>", "<string>"}, ListTypes: map[string]string{}, GlobalTypes: map[string]string{}}
 	currentProgram = cp
 	currentEnv = env
@@ -1876,8 +1905,12 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 				}
 			}
 			typ := ""
-			if stmt.Let.Type != nil && stmt.Let.Type.Simple != nil {
-				typ = cppType(*stmt.Let.Type.Simple)
+			if stmt.Let.Type != nil {
+				if stmt.Let.Type.Simple != nil {
+					typ = cppType(*stmt.Let.Type.Simple)
+				} else if stmt.Let.Type.Generic != nil {
+					typ = cppType(typeRefString(&parser.TypeRef{Generic: stmt.Let.Type.Generic}))
+				}
 			}
 			if typ == "" {
 				if lst, ok := val.(*ListLit); ok {
@@ -1984,8 +2017,12 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 				}
 			}
 			typ := ""
-			if stmt.Var.Type != nil && stmt.Var.Type.Simple != nil {
-				typ = cppType(*stmt.Var.Type.Simple)
+			if stmt.Var.Type != nil {
+				if stmt.Var.Type.Simple != nil {
+					typ = cppType(*stmt.Var.Type.Simple)
+				} else if stmt.Var.Type.Generic != nil {
+					typ = cppType(typeRefString(&parser.TypeRef{Generic: stmt.Var.Type.Generic}))
+				}
 			}
 			if typ == "" {
 				if lst, ok := val.(*ListLit); ok {
@@ -2172,6 +2209,7 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 		}
 	}
 	cp.Globals = globals
+	cp.UseNow = useNow
 	cp.Functions = append(cp.Functions, &Func{Name: "main", ReturnType: "int", Body: body})
 	return cp, nil
 }
@@ -2765,8 +2803,9 @@ func convertFun(fn *parser.FunStmt) (*Func, error) {
 	prevLocals := localTypes
 	localTypes = map[string]string{}
 	for _, p := range fn.Params {
-		if p.Type != nil && p.Type.Simple != nil {
-			localTypes[p.Name] = cppType(*p.Type.Simple)
+		if p.Type != nil {
+			tp := types.ResolveTypeRef(p.Type, currentEnv)
+			localTypes[p.Name] = cppTypeFrom(tp)
 		}
 	}
 	defer func() { localTypes = prevLocals }()
@@ -2782,11 +2821,9 @@ func convertFun(fn *parser.FunStmt) (*Func, error) {
 	var params []Param
 	for _, p := range fn.Params {
 		typ := ""
-		if p.Type != nil && p.Type.Simple != nil {
-			typ = cppType(*p.Type.Simple)
-			if _, ok := currentEnv.GetUnion(*p.Type.Simple); ok {
-				typ = fmt.Sprintf("const %s*", *p.Type.Simple)
-			}
+		if p.Type != nil {
+			tp := types.ResolveTypeRef(p.Type, currentEnv)
+			typ = cppTypeFrom(tp)
 		}
 		inFunction = prev
 		params = append(params, Param{Name: p.Name, Type: typ})
@@ -2842,6 +2879,11 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 		return convertLiteral(p.Lit)
 	case p.Call != nil:
 		switch p.Call.Func {
+		case "now":
+			if len(p.Call.Args) == 0 {
+				useNow = true
+				return &NowExpr{}, nil
+			}
 		case "len":
 			if len(p.Call.Args) == 1 {
 				arg, err := convertExpr(p.Call.Args[0])
@@ -4042,6 +4084,19 @@ func cppType(t string) string {
 	case "string":
 		return "std::string"
 	}
+	if strings.HasPrefix(t, "list<") && strings.HasSuffix(t, ">") {
+		elem := strings.TrimSuffix(strings.TrimPrefix(t, "list<"), ">")
+		return fmt.Sprintf("std::vector<%s>", cppType(strings.TrimSpace(elem)))
+	}
+	if strings.HasPrefix(t, "map<") && strings.HasSuffix(t, ">") {
+		body := strings.TrimSuffix(strings.TrimPrefix(t, "map<"), ">")
+		parts := strings.SplitN(body, ",", 2)
+		if len(parts) == 2 {
+			k := cppType(strings.TrimSpace(parts[0]))
+			v := cppType(strings.TrimSpace(parts[1]))
+			return fmt.Sprintf("std::map<%s, %s>", k, v)
+		}
+	}
 	if currentEnv != nil {
 		if st, ok := currentEnv.GetStruct(t); ok {
 			return st.Name
@@ -4205,6 +4260,23 @@ func elementTypeFromListType(t string) string {
 		}
 	}
 	return "auto"
+}
+
+func typeRefString(t *parser.TypeRef) string {
+	if t == nil {
+		return ""
+	}
+	if t.Simple != nil {
+		return *t.Simple
+	}
+	if t.Generic != nil {
+		parts := make([]string, len(t.Generic.Args))
+		for i, a := range t.Generic.Args {
+			parts[i] = typeRefString(a)
+		}
+		return fmt.Sprintf("%s<%s>", t.Generic.Name, strings.Join(parts, ","))
+	}
+	return ""
 }
 
 func defaultValueForType(t string) string {
