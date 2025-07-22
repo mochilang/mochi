@@ -468,7 +468,10 @@ type NameRef struct {
 }
 
 // MapLit represents a map literal.
-type MapLit struct{ Items []MapItem }
+type MapLit struct {
+	Items   []MapItem
+	Pattern bool
+}
 
 // MapItem is a key/value pair within a map literal.
 type MapItem struct {
@@ -1130,7 +1133,11 @@ func (m *MapLit) emit(w io.Writer) {
 			io.WriteString(w, ", ")
 		}
 		it.Key.emit(w)
-		io.WriteString(w, " => ")
+		if m.Pattern {
+			io.WriteString(w, " := ")
+		} else {
+			io.WriteString(w, " => ")
+		}
 		it.Value.emit(w)
 	}
 	io.WriteString(w, "}")
@@ -2535,6 +2542,13 @@ func convertPrimary(p *parser.Primary, env *types.Env, ctx *context) (Expr, erro
 		if v, ok := ctx.constValue(p.Selector.Root); ok {
 			return v, nil
 		}
+		if ut, ok := env.FindUnionByVariant(p.Selector.Root); ok {
+			st, _ := env.GetStruct(p.Selector.Root)
+			if len(st.Order) == 0 {
+				_ = ut
+				return &MapLit{Items: []MapItem{{Key: &StringLit{Value: "tag"}, Value: &StringLit{Value: strings.ToLower(p.Selector.Root)}}}}, nil
+			}
+		}
 		nr := &NameRef{Name: ctx.current(p.Selector.Root)}
 		if t, err := env.GetVar(p.Selector.Root); err == nil {
 			if _, ok := t.(types.StringType); ok {
@@ -2580,6 +2594,26 @@ func convertPrimary(p *parser.Primary, env *types.Env, ctx *context) (Expr, erro
 		}
 		return expr, nil
 	case p.Call != nil:
+		if ut, ok := env.FindUnionByVariant(p.Call.Func); ok {
+			st, _ := env.GetStruct(p.Call.Func)
+			items := make([]MapItem, 0, len(p.Call.Args)+1)
+			items = append(items, MapItem{Key: &StringLit{Value: "tag"}, Value: &StringLit{Value: strings.ToLower(p.Call.Func)}})
+			for i, a := range p.Call.Args {
+				v, err := convertExpr(a, env, ctx)
+				if err != nil {
+					return nil, err
+				}
+				field := ""
+				if i < len(st.Order) {
+					field = st.Order[i]
+				} else {
+					field = fmt.Sprintf("f%d", i)
+				}
+				items = append(items, MapItem{Key: &StringLit{Value: field}, Value: v})
+			}
+			_ = ut // silence unused, for future use
+			return &MapLit{Items: items}, nil
+		}
 		if p.Call.Func == "substring" && len(p.Call.Args) == 3 {
 			strExpr, err := convertExpr(p.Call.Args[0], env, ctx)
 			if err != nil {
@@ -2660,6 +2694,25 @@ func convertPrimary(p *parser.Primary, env *types.Env, ctx *context) (Expr, erro
 		}
 		return &ListLit{Elems: elems}, nil
 	case p.Struct != nil:
+		if ut, ok := env.FindUnionByVariant(p.Struct.Name); ok {
+			st, _ := env.GetStruct(p.Struct.Name)
+			items := make([]MapItem, 0, len(p.Struct.Fields)+1)
+			items = append(items, MapItem{Key: &StringLit{Value: "tag"}, Value: &StringLit{Value: strings.ToLower(p.Struct.Name)}})
+			order := st.Order
+			for i, f := range p.Struct.Fields {
+				v, err := convertExpr(f.Value, env, ctx)
+				if err != nil {
+					return nil, err
+				}
+				field := f.Name
+				if field == "" && i < len(order) {
+					field = order[i]
+				}
+				items = append(items, MapItem{Key: &StringLit{Value: field}, Value: v})
+			}
+			_ = ut
+			return &MapLit{Items: items}, nil
+		}
 		items := make([]MapItem, len(p.Struct.Fields))
 		for i, f := range p.Struct.Fields {
 			v, err := convertExpr(f.Value, env, ctx)
@@ -2823,6 +2876,7 @@ func convertMatch(me *parser.MatchExpr, env *types.Env, ctx *context) (Expr, err
 		if err != nil {
 			return nil, err
 		}
+		pat = markPattern(pat)
 		res, err := convertExpr(c.Result, env, ctx)
 		if err != nil {
 			return nil, err
@@ -2830,6 +2884,42 @@ func convertMatch(me *parser.MatchExpr, env *types.Env, ctx *context) (Expr, err
 		clauses[i] = CaseClause{Pattern: pat, Body: res}
 	}
 	return &CaseExpr{Target: target, Clauses: clauses}, nil
+}
+
+func markPattern(e Expr) Expr {
+	switch v := e.(type) {
+	case *MapLit:
+		v.Pattern = true
+		for i := range v.Items {
+			v.Items[i].Key = markPattern(v.Items[i].Key).(Expr)
+			v.Items[i].Value = markPattern(v.Items[i].Value).(Expr)
+		}
+		return v
+	case *ListLit:
+		for i := range v.Elems {
+			v.Elems[i] = markPattern(v.Elems[i])
+		}
+		return v
+	case *CallExpr:
+		for i := range v.Args {
+			v.Args[i] = markPattern(v.Args[i])
+		}
+		return v
+	case *UnaryExpr:
+		v.Expr = markPattern(v.Expr)
+		return v
+	case *BinaryExpr:
+		v.Left = markPattern(v.Left)
+		v.Right = markPattern(v.Right)
+		return v
+	case *IfExpr:
+		v.Cond = markPattern(v.Cond)
+		v.Then = markPattern(v.Then)
+		v.Else = markPattern(v.Else)
+		return v
+	default:
+		return e
+	}
 }
 
 func convertQueryExpr(q *parser.QueryExpr, env *types.Env, ctx *context) (Expr, error) {
