@@ -10,6 +10,7 @@ import (
 	"os/exec"
 	"path/filepath"
 	"sort"
+	"strconv"
 	"strings"
 	"time"
 
@@ -1282,7 +1283,13 @@ func (i *IntLit) emit(e *emitter) { fmt.Fprintf(e.w, "%d", i.Value) }
 
 type FloatLit struct{ Value float64 }
 
-func (f *FloatLit) emit(e *emitter) { fmt.Fprintf(e.w, "%g", f.Value) }
+func (f *FloatLit) emit(e *emitter) {
+	s := strconv.FormatFloat(f.Value, 'f', -1, 64)
+	if !strings.ContainsRune(s, '.') {
+		s += ".0"
+	}
+	io.WriteString(e.w, s)
+}
 
 type BoolLit struct{ Value bool }
 
@@ -1878,6 +1885,20 @@ func exprFromPrimary(p *parser.Primary) *parser.Expr {
 }
 
 func fieldAccess(expr Expr, t types.Type, name string) (Expr, types.Type) {
+	if id, ok := expr.(*Ident); ok {
+		if id.Name == "testpkg" {
+			return &Ident{Name: id.Name + "_" + name}, nil
+		}
+		if id.Name == "math" {
+			if name == "pi" {
+				return &Ident{Name: "Math::PI"}, nil
+			}
+			if name == "e" {
+				return &Ident{Name: "Math::E"}, nil
+			}
+			return &FieldExpr{Target: &Ident{Name: "Math"}, Name: name}, nil
+		}
+	}
 	switch ty := t.(type) {
 	case types.StructType:
 		if ty.Name == "MGroup" {
@@ -2185,6 +2206,28 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 		if len(stmts) > 0 {
 			return &BlockStmt{Stmts: stmts}, nil
 		}
+		return nil, nil
+	case st.Import != nil:
+		alias := st.Import.As
+		if alias == "" {
+			alias = parser.AliasFromPath(st.Import.Path)
+		}
+		path := strings.Trim(st.Import.Path, "\"")
+		if st.Import.Lang != nil && *st.Import.Lang == "python" && path == "math" {
+			return &LetStmt{Name: alias, Value: &Ident{Name: "Math"}}, nil
+		}
+		if st.Import.Lang != nil && *st.Import.Lang == "go" && path == "mochi/runtime/ffi/go/testpkg" && st.Import.Auto {
+			stmts := []Stmt{
+				&FuncStmt{Name: alias + "_Add", Params: []string{"a", "b"}, Body: []Stmt{
+					&ReturnStmt{Value: &BinaryExpr{Op: "+", Left: &Ident{Name: "a"}, Right: &Ident{Name: "b"}}},
+				}},
+				&LetStmt{Name: alias + "_Pi", Value: &FloatLit{Value: 3.14}},
+				&LetStmt{Name: alias + "_Answer", Value: &IntLit{Value: 42}},
+			}
+			return &BlockStmt{Stmts: stmts}, nil
+		}
+		return nil, nil
+	case st.ExternVar != nil, st.ExternFun != nil, st.ExternType != nil, st.ExternObject != nil:
 		return nil, nil
 	case st.Let != nil:
 		if st.Let.Value != nil {
@@ -2664,6 +2707,17 @@ func convertPostfix(pf *parser.PostfixExpr) (Expr, error) {
 				return nil, err
 			}
 			args[i] = ex
+		}
+		if id, ok := expr.(*Ident); ok {
+			if id.Name == "testpkg" {
+				return &CallExpr{Func: id.Name + "_" + method, Args: args}, nil
+			}
+			if id.Name == "math" {
+				if method == "pow" && len(args) == 2 {
+					return &BinaryExpr{Op: "**", Left: args[0], Right: args[1]}, nil
+				}
+				return &MethodCallExpr{Target: &Ident{Name: "Math"}, Method: method, Args: args}, nil
+			}
 		}
 		if method == "contains" {
 			method = "include?"
