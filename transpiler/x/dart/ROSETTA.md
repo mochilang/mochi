@@ -2,13 +2,13 @@
 
 This directory contains Dart code generated from Mochi programs in `tests/rosetta/x/Mochi`. Each program has a `.dart` file and `.out` output. Compilation or runtime failures are captured in a `.error` file.
 
-Compiled and ran: 5/284
+Compiled and ran: 1/284
 
 ## Checklist
-- [x] 100-doors-2
-- [x] 100-doors-3
-- [x] 100-doors
-- [x] 100-prisoners
+- [ ] 100-doors-2
+- [ ] 100-doors-3
+- [ ] 100-doors
+- [ ] 100-prisoners
 - [x] 15-puzzle-game
 - [ ] 15-puzzle-solver
 - [ ] 2048
@@ -290,4 +290,4 @@ Compiled and ran: 5/284
 - [ ] define-a-primitive-data-type
 - [ ] md5
 
-_Last updated: 2025-07-22 21:23 +0700_
+_Last updated: 2025-07-22 22:03 +0700_

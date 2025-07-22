@@ -4,11 +4,13 @@ package dartt_test
 
 import (
 	"bytes"
+	"flag"
 	"fmt"
 	"os"
 	"os/exec"
 	"path/filepath"
 	"sort"
+	"strconv"
 	"strings"
 	"testing"
 	"time"
@@ -17,6 +19,8 @@ import (
 	dartt "mochi/transpiler/x/dart"
 	"mochi/types"
 )
+
+var rosettaIndex = flag.Int("rosetta_index", 0, "1-based index of Mochi Rosetta program to run; 0 runs all")
 
 func TestDartTranspiler_Rosetta_Golden(t *testing.T) {
 	if _, err := exec.LookPath("dart"); err != nil {
@@ -29,6 +33,22 @@ func TestDartTranspiler_Rosetta_Golden(t *testing.T) {
 	srcDir := filepath.Join(root, "tests", "rosetta", "x", "Mochi")
 	files, _ := filepath.Glob(filepath.Join(srcDir, "*.mochi"))
 	sort.Strings(files)
+
+	idx := 0
+	if s := os.Getenv("ROSETTA_INDEX"); s != "" {
+		if v, err := strconv.Atoi(s); err == nil {
+			idx = v
+		}
+	}
+	if *rosettaIndex > 0 {
+		idx = *rosettaIndex
+	}
+	if idx > 0 {
+		if idx < 1 || idx > len(files) {
+			t.Fatalf("index %d out of range (1..%d)", idx, len(files))
+		}
+		files = files[idx-1 : idx]
+	}
 	for _, src := range files {
 		name := strings.TrimSuffix(filepath.Base(src), ".mochi")
 		ok := t.Run(name, func(t *testing.T) {
