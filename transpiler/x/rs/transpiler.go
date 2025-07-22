@@ -36,6 +36,8 @@ var curEnv *types.Env
 var structTypes map[string]types.StructType
 var cloneVars map[string]bool
 var useMath bool
+var enumDecls []*EnumDecl
+var unionTypes map[string]types.UnionType
 
 func VarTypes() map[string]string { return varTypes }
 
@@ -45,6 +47,7 @@ type Program struct {
 	UsesHashMap bool
 	UsesGroup   bool
 	Types       []*StructDecl
+	Enums       []*EnumDecl
 }
 
 type Stmt interface{ emit(io.Writer) }
@@ -228,8 +231,47 @@ func (s *StructDecl) emit(w io.Writer) {
 	io.WriteString(w, "        write!(f, \"}}\")\n    }\n}\n")
 }
 
+// EnumVariant represents a single enum variant.
+type EnumVariant struct {
+	Name   string
+	Fields []Param
+}
+
+// EnumDecl represents a Rust enum declaration.
+type EnumDecl struct {
+	Name     string
+	Variants []EnumVariant
+}
+
+func (e *EnumDecl) emit(w io.Writer) {
+	fmt.Fprintf(w, "#[derive(Debug, Clone)]\nenum %s {\n", e.Name)
+	for _, v := range e.Variants {
+		if len(v.Fields) == 0 {
+			fmt.Fprintf(w, "    %s,\n", v.Name)
+			continue
+		}
+		fmt.Fprintf(w, "    %s { ", v.Name)
+		for i, f := range v.Fields {
+			if i > 0 {
+				io.WriteString(w, ", ")
+			}
+			fmt.Fprintf(w, "%s: %s", f.Name, f.Type)
+		}
+		io.WriteString(w, " },\n")
+	}
+	io.WriteString(w, "}\n")
+}
+
 // StructLit represents instantiation of a struct value.
 type StructLit struct {
+	Name   string
+	Fields []Expr
+	Names  []string
+}
+
+// VariantLit represents instantiation of a union variant value.
+type VariantLit struct {
+	Enum   string
 	Name   string
 	Fields []Expr
 	Names  []string
@@ -245,6 +287,21 @@ func (s *StructLit) emit(w io.Writer) {
 		f.emit(w)
 	}
 	io.WriteString(w, "}")
+}
+
+func (v *VariantLit) emit(w io.Writer) {
+	fmt.Fprintf(w, "%s::%s", v.Enum, v.Name)
+	if len(v.Fields) > 0 {
+		io.WriteString(w, " { ")
+		for i, f := range v.Fields {
+			if i > 0 {
+				io.WriteString(w, ", ")
+			}
+			fmt.Fprintf(w, "%s: ", v.Names[i])
+			f.emit(w)
+		}
+		io.WriteString(w, " }")
+	}
 }
 
 type FuncDecl struct {
@@ -668,6 +725,9 @@ func (n *NameRef) emit(w io.Writer) {
 			io.WriteString(w, ".clone()")
 		}
 	} else {
+		if strings.HasPrefix(varTypes[n.Name], "Box<") {
+			io.WriteString(w, "*")
+		}
 		io.WriteString(w, n.Name)
 	}
 }
@@ -841,6 +901,28 @@ func (i *IfExpr) emit(w io.Writer) {
 type MatchArm struct {
 	Pattern Expr // nil for _
 	Result  Expr
+}
+
+// VariantPattern represents a match arm pattern for a union variant.
+type VariantPattern struct {
+	Enum   string
+	Name   string
+	Vars   []string
+	Fields []string
+}
+
+func (p *VariantPattern) emit(w io.Writer) {
+	fmt.Fprintf(w, "%s::%s", p.Enum, p.Name)
+	if len(p.Vars) > 0 {
+		io.WriteString(w, " { ")
+		for i, v := range p.Vars {
+			if i > 0 {
+				io.WriteString(w, ", ")
+			}
+			fmt.Fprintf(w, "%s: %s", p.Fields[i], v)
+		}
+		io.WriteString(w, " }")
+	}
 }
 
 type MatchExpr struct {
@@ -1268,9 +1350,11 @@ func Transpile(p *parser.Program, env *types.Env) (*Program, error) {
 	varTypes = make(map[string]string)
 	funParams = make(map[string]int)
 	typeDecls = nil
+	enumDecls = nil
 	structForMap = make(map[*parser.MapLiteral]string)
 	structForList = make(map[*parser.ListLiteral]string)
 	structTypes = make(map[string]types.StructType)
+	unionTypes = make(map[string]types.UnionType)
 	curEnv = env
 	prog := &Program{}
 	for _, st := range p.Statements {
@@ -1283,6 +1367,7 @@ func Transpile(p *parser.Program, env *types.Env) (*Program, error) {
 		}
 	}
 	prog.Types = typeDecls
+	prog.Enums = enumDecls
 	_ = env // reserved for future use
 	prog.UsesHashMap = usesHashMap
 	prog.UsesGroup = usesGroup
@@ -1726,7 +1811,26 @@ func compileUpdateStmt(u *parser.UpdateStmt) (Stmt, error) {
 
 func compileTypeStmt(t *parser.TypeDecl) (Stmt, error) {
 	if len(t.Variants) > 0 {
-		return nil, fmt.Errorf("union types not supported")
+		if curEnv != nil {
+			if ut, ok := curEnv.GetUnion(t.Name); ok {
+				unionTypes[t.Name] = ut
+				enum := &EnumDecl{Name: t.Name}
+				for _, v := range t.Variants {
+					st := ut.Variants[v.Name]
+					fields := make([]Param, len(st.Order))
+					for i, name := range st.Order {
+						typ := rustTypeFromType(st.Fields[name])
+						if typ == t.Name {
+							typ = fmt.Sprintf("Box<%s>", typ)
+						}
+						fields[i] = Param{Name: name, Type: typ}
+					}
+					enum.Variants = append(enum.Variants, EnumVariant{Name: v.Name, Fields: fields})
+				}
+				enumDecls = append(enumDecls, enum)
+			}
+		}
+		return nil, nil
 	}
 	st, ok := curEnv.GetStruct(t.Name)
 	if !ok {
@@ -2158,6 +2262,24 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 		}
 		return nil, err
 	case p.Struct != nil:
+		if ut, ok := curEnv.FindUnionByVariant(p.Struct.Name); ok {
+			st := ut.Variants[p.Struct.Name]
+			fields := make([]Expr, len(p.Struct.Fields))
+			names := make([]string, len(st.Order))
+			copy(names, st.Order)
+			for i, f := range p.Struct.Fields {
+				v, err := compileExpr(f.Value)
+				if err != nil {
+					return nil, err
+				}
+				ft := rustTypeFromType(st.Fields[st.Order[i]])
+				if ft == ut.Name {
+					v = &CallExpr{Func: "Box::new", Args: []Expr{v}}
+				}
+				fields[i] = v
+			}
+			return &VariantLit{Enum: ut.Name, Name: p.Struct.Name, Fields: fields, Names: names}, nil
+		}
 		st, ok := structTypes[p.Struct.Name]
 		if !ok {
 			st, _ = curEnv.GetStruct(p.Struct.Name)
@@ -2183,6 +2305,12 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 		structTypes[p.Struct.Name] = st
 		return &StructLit{Name: p.Struct.Name, Fields: fields, Names: names}, nil
 	case p.Selector != nil:
+		if len(p.Selector.Tail) == 0 {
+			if ut, ok := curEnv.FindUnionByVariant(p.Selector.Root); ok {
+				st := ut.Variants[p.Selector.Root]
+				return &VariantLit{Enum: ut.Name, Name: p.Selector.Root, Fields: nil, Names: st.Order}, nil
+			}
+		}
 		expr := Expr(&NameRef{Name: p.Selector.Root})
 		for _, f := range p.Selector.Tail {
 			expr = &FieldExpr{Receiver: expr, Name: f}
@@ -2250,6 +2378,42 @@ func compileIfExpr(n *parser.IfExpr) (Expr, error) {
 	return &IfExpr{Cond: cond, Then: thenExpr, ElseIf: elseIf, Else: elseExpr}, nil
 }
 
+func compilePattern(e *parser.Expr) (Expr, error) {
+	ex, err := compileExpr(e)
+	if err != nil {
+		return nil, err
+	}
+	if ce, ok := ex.(*CallExpr); ok {
+		if ut, ok := curEnv.FindUnionByVariant(ce.Func); ok {
+			st := ut.Variants[ce.Func]
+			vars := make([]string, len(ce.Args))
+			for i, a := range ce.Args {
+				if nr, ok := a.(*NameRef); ok {
+					vars[i] = nr.Name
+					typ := rustTypeFromType(st.Fields[st.Order[i]])
+					if typ == ut.Name {
+						typ = fmt.Sprintf("Box<%s>", typ)
+					}
+					varTypes[nr.Name] = typ
+				} else {
+					return nil, fmt.Errorf("unsupported pattern")
+				}
+			}
+			fields := make([]string, len(st.Order))
+			copy(fields, st.Order)
+			return &VariantPattern{Enum: ut.Name, Name: ce.Func, Vars: vars, Fields: fields}, nil
+		}
+	}
+	if nr, ok := ex.(*NameRef); ok {
+		if ut, ok := curEnv.FindUnionByVariant(nr.Name); ok {
+			st := ut.Variants[nr.Name]
+			varTypes[nr.Name] = ut.Name
+			return &VariantPattern{Enum: ut.Name, Name: nr.Name, Vars: nil, Fields: st.Order}, nil
+		}
+	}
+	return ex, nil
+}
+
 func compileMatchExpr(me *parser.MatchExpr) (Expr, error) {
 	target, err := compileExpr(me.Target)
 	if err != nil {
@@ -2257,7 +2421,11 @@ func compileMatchExpr(me *parser.MatchExpr) (Expr, error) {
 	}
 	arms := make([]MatchArm, len(me.Cases))
 	for i, c := range me.Cases {
-		pat, err := compileExpr(c.Pattern)
+		origVars := make(map[string]string)
+		for k, v := range varTypes {
+			origVars[k] = v
+		}
+		pat, err := compilePattern(c.Pattern)
 		if err != nil {
 			return nil, err
 		}
@@ -2639,6 +2807,8 @@ func inferType(e Expr) string {
 		return ct
 	case *StructLit:
 		return ex.Name
+	case *VariantLit:
+		return ex.Enum
 	case *QueryExpr:
 		return fmt.Sprintf("Vec<%s>", ex.ItemType)
 	case *OuterJoinExpr:
@@ -2700,6 +2870,9 @@ func rustType(t string) string {
 	if _, ok := structTypes[t]; ok {
 		return t
 	}
+	if _, ok := unionTypes[t]; ok {
+		return t
+	}
 	return "i64"
 }
 
@@ -2753,6 +2926,8 @@ func rustTypeFromType(t types.Type) string {
 	case types.OptionType:
 		return fmt.Sprintf("Option<%s>", rustTypeFromType(tt.Elem))
 	case types.StructType:
+		return tt.Name
+	case types.UnionType:
 		return tt.Name
 	case types.VoidType:
 		return "()"
@@ -3038,6 +3213,10 @@ func Emit(prog *Program) []byte {
 	}
 	if prog.UsesGroup {
 		buf.WriteString("#[derive(Clone)]\nstruct Group<K, V> { key: K, items: Vec<V> }\n")
+	}
+	for _, e := range prog.Enums {
+		e.emit(&buf)
+		buf.WriteByte('\n')
 	}
 	for _, d := range prog.Types {
 		d.emit(&buf)
