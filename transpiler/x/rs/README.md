@@ -2,9 +2,9 @@
 
 This experimental transpiler converts a subset of Mochi into readable Rust code.
 Generated sources for the golden tests live under `tests/transpiler/x/rs`.
-Last updated: 2025-07-22 05:36 +0700
+Last updated: 2025-07-22 06:42 +0700
 
-## VM Golden Test Checklist (99/101)
+## VM Golden Test Checklist (100/101)
 - [x] append_builtin.mochi
 - [x] avg_builtin.mochi
 - [x] basic_compare.mochi
@@ -35,7 +35,7 @@ Last updated: 2025-07-22 05:36 +0700
 - [x] group_by_left_join.mochi
 - [x] group_by_multi_join.mochi
 - [x] group_by_multi_join_sort.mochi
-- [ ] group_by_multi_sort.mochi
+- [x] group_by_multi_sort.mochi
 - [x] group_by_sort.mochi
 - [x] group_items_iteration.mochi
 - [x] if_else.mochi

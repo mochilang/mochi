@@ -2363,12 +2363,28 @@ func compileQueryExpr(q *parser.QueryExpr) (Expr, error) {
 	if q.Group != nil {
 		usesGroup = true
 		usesHashMap = true
+		if ml := mapLiteralExpr(q.Group.Exprs[0]); ml != nil {
+			if _, ok := structForMap[ml]; !ok {
+				if st, ok := types.InferStructFromMapEnv(ml, child); ok {
+					name := types.UniqueStructName("GroupKey", curEnv, nil)
+					st.Name = name
+					curEnv.SetStruct(name, st)
+					fields := make([]Param, len(st.Order))
+					for i, n := range st.Order {
+						fields[i] = Param{Name: n, Type: rustTypeFromType(st.Fields[n])}
+					}
+					typeDecls = append(typeDecls, &StructDecl{Name: name, Fields: fields})
+					structTypes[name] = st
+					structForMap[ml] = name
+				}
+			}
+		}
 		gk, err := compileExprWithEnv(q.Group.Exprs[0], child)
 		if err != nil {
 			return nil, err
 		}
 		groupKey = gk
-		keyT := rustTypeFromType(types.ExprType(q.Group.Exprs[0], child))
+		keyT := inferType(gk)
 		elemTStr := rustTypeFromType(elemT)
 		groupVar = q.Group.Name
 		groupType = fmt.Sprintf("Group<%s, %s>", keyT, elemTStr)
