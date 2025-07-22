@@ -2067,6 +2067,9 @@ func convertStmt(s *parser.Statement) (Stmt, error) {
 			case "strings":
 				expr := &RawExpr{Code: "{ ToUpper: (s:string)=>s.toUpperCase(), TrimSpace: (s:string)=>s.trim() }"}
 				return &VarDecl{Name: alias, Expr: expr, Const: true}, nil
+			case "net":
+				expr := &RawExpr{Code: "{ LookupHost: (_host:string)=>[[], null] }"}
+				return &VarDecl{Name: alias, Expr: expr, Const: true}, nil
 			}
 		}
 		return nil, nil
@@ -2861,6 +2864,9 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 	case p.Lit != nil:
 		return convertLiteral(p.Lit)
 	case p.Selector != nil:
+		if len(p.Selector.Tail) == 0 && p.Selector.Root == "nil" {
+			return &NullLit{}, nil
+		}
 		if transpileEnv != nil && len(p.Selector.Tail) == 0 {
 			if u, ok := transpileEnv.FindUnionByVariant(p.Selector.Root); ok {
 				v := u.Variants[p.Selector.Root]
