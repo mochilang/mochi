@@ -1011,18 +1011,19 @@ type QueryExpr struct {
 
 // GroupQueryExpr represents a simple `group by` query without joins or sorting.
 type GroupQueryExpr struct {
-	Var      string
-	Src      Expr
-	Key      Expr
-	GroupVar string
-	Cond     Expr
-	Select   Expr
-	Having   Expr
-	ElemType string
-	ItemType string
-	KeyType  string
-	Sort     Expr
-	SortType string
+	Var       string
+	Src       Expr
+	Key       Expr
+	GroupVar  string
+	Cond      Expr
+	Select    Expr
+	Having    Expr
+	ElemType  string
+	GroupType string
+	ItemType  string
+	KeyType   string
+	Sort      Expr
+	SortType  string
 }
 
 // GroupJoinQueryExpr represents a `group by` query that may include joins.
@@ -1164,7 +1165,7 @@ func (q *QueryExpr) emit(w io.Writer) {
 
 func (g *GroupQueryExpr) emit(w io.Writer) {
 	fmt.Fprintf(w, "func() []%s {\n", g.ElemType)
-	fmt.Fprintf(w, "groups := map[string]%s{}\n", g.ElemType)
+	fmt.Fprintf(w, "groups := map[string]%s{}\n", g.GroupType)
 	fmt.Fprint(w, "order := []string{}\n")
 	fmt.Fprintf(w, "for _, %s := range ", g.Var)
 	g.Src.emit(w)
@@ -1177,7 +1178,7 @@ func (g *GroupQueryExpr) emit(w io.Writer) {
 	fmt.Fprint(w, "k := fmt.Sprint(")
 	g.Key.emit(w)
 	fmt.Fprint(w, ")\n")
-	fmt.Fprintf(w, "grp, ok := groups[k]\nif !ok {\n    grp = %s{Key: ", g.ElemType)
+	fmt.Fprintf(w, "grp, ok := groups[k]\nif !ok {\n    grp = %s{Key: ", g.GroupType)
 	g.Key.emit(w)
 	fmt.Fprintf(w, ", Items: []%s{}}\n    groups[k] = grp\n    order = append(order, k)\n}\n", g.ItemType)
 	fmt.Fprintf(w, "grp.Items = append(grp.Items, %s)\ngroups[k] = grp\n", g.Var)
@@ -1243,7 +1244,7 @@ func (g *GroupJoinQueryExpr) emit(w io.Writer) {
 	g.Src.emit(w)
 	fmt.Fprint(w, " {")
 	if len(g.Joins) == 1 && g.Joins[0].Side == "left" && len(g.Froms) == 0 {
-		fmt.Fprint(w, "\n    matched := false")
+		fmt.Fprint(w, "\n    matched := false\n")
 	}
 	for _, f := range g.Froms {
 		fmt.Fprintf(w, " for _, %s := range ", f.Var)
@@ -2220,14 +2221,19 @@ func compileQueryExpr(q *parser.QueryExpr, env *types.Env, base string) (Expr, e
 			if err != nil {
 				return nil, err
 			}
-			sortType = toGoTypeFromType(types.ExprType(q.Sort, genv))
-			if sortType == "" {
+			st := types.ExprType(q.Sort, genv)
+			sortType = toGoTypeFromType(st)
+			if sortType == "" || !isBasicOrderedType(st) {
 				sortType = "any"
 			}
 			usesSort = true
 		}
 		usesPrint = true
-		return &GroupQueryExpr{Var: q.Var, Src: src, Key: keyExpr, GroupVar: q.Group.Name, Cond: nil, Select: sel, Having: having, ElemType: et, ItemType: itemType, KeyType: keyGoType, Sort: sortExpr, SortType: sortType}, nil
+		groupType := fmt.Sprintf("struct{Key %s; Items []%s}", keyGoType, itemType)
+		if isVarRef(q.Select, q.Group.Name) {
+			groupType = et
+		}
+		return &GroupQueryExpr{Var: q.Var, Src: src, Key: keyExpr, GroupVar: q.Group.Name, Cond: nil, Select: sel, Having: having, ElemType: et, GroupType: groupType, ItemType: itemType, KeyType: keyGoType, Sort: sortExpr, SortType: sortType}, nil
 	}
 	if q.Group != nil {
 		src, err := compileExpr(q.Source, env, "")
@@ -2392,8 +2398,9 @@ func compileQueryExpr(q *parser.QueryExpr, env *types.Env, base string) (Expr, e
 			if err != nil {
 				return nil, err
 			}
-			sortType = toGoTypeFromType(types.ExprType(q.Sort, genv))
-			if sortType == "" {
+			st := types.ExprType(q.Sort, genv)
+			sortType = toGoTypeFromType(st)
+			if sortType == "" || !isBasicOrderedType(st) {
 				sortType = "any"
 			}
 			usesSort = true
@@ -2529,8 +2536,9 @@ func compileQueryExpr(q *parser.QueryExpr, env *types.Env, base string) (Expr, e
 		if err != nil {
 			return nil, err
 		}
-		sortType = toGoTypeFromType(types.ExprType(q.Sort, child))
-		if sortType == "" {
+		st := types.ExprType(q.Sort, child)
+		sortType = toGoTypeFromType(st)
+		if sortType == "" || !isBasicOrderedType(st) {
 			sortType = "any"
 		}
 		usesSort = true
@@ -2710,6 +2718,7 @@ func compileForStmt(fs *parser.ForStmt, env *types.Env) (Stmt, error) {
 		isMap = true
 		child.SetVar(fs.Name, tt.Key, true)
 		keyType = toGoTypeFromType(tt.Key)
+		usesSort = true
 	case types.ListType:
 		child.SetVar(fs.Name, tt.Elem, true)
 	default:
@@ -3569,6 +3578,16 @@ func toGoTypeFromType(t types.Type) string {
 		return ""
 	}
 	return "any"
+}
+
+func isBasicOrderedType(t types.Type) bool {
+	switch t.(type) {
+	case types.IntType, types.Int64Type, types.BigIntType,
+		types.FloatType, types.BigRatType,
+		types.StringType, types.BoolType:
+		return true
+	}
+	return false
 }
 
 func isBoolExpr(e *parser.Expr) bool { return isBoolBinary(e.Binary) }
