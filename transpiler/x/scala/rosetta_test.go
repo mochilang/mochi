@@ -3,12 +3,12 @@
 package scalat_test
 
 import (
+	"bufio"
 	"bytes"
 	"fmt"
 	"os"
 	"os/exec"
 	"path/filepath"
-	"sort"
 	"strconv"
 	"strings"
 	"testing"
@@ -20,6 +20,26 @@ import (
 	"mochi/types"
 )
 
+func readIndex(path string) ([]string, error) {
+	f, err := os.Open(path)
+	if err != nil {
+		return nil, err
+	}
+	defer f.Close()
+	var names []string
+	scanner := bufio.NewScanner(f)
+	for scanner.Scan() {
+		fields := strings.Fields(scanner.Text())
+		if len(fields) == 2 {
+			names = append(names, fields[1])
+		}
+	}
+	if err := scanner.Err(); err != nil {
+		return nil, err
+	}
+	return names, nil
+}
+
 func TestScalaTranspiler_Rosetta_Golden(t *testing.T) {
 	ensureScala(t)
 	root := testutil.FindRepoRoot(t)
@@ -27,31 +47,33 @@ func TestScalaTranspiler_Rosetta_Golden(t *testing.T) {
 	outDir := filepath.Join(root, "tests", "rosetta", "transpiler", "Scala")
 	os.MkdirAll(outDir, 0o755)
 
-	files, err := filepath.Glob(filepath.Join(srcDir, "*.mochi"))
+	names, err := readIndex(filepath.Join(srcDir, "index.txt"))
 	if err != nil {
-		t.Fatalf("glob: %v", err)
+		t.Fatalf("read index: %v", err)
 	}
-	sort.Strings(files)
+	if len(names) == 0 {
+		t.Fatalf("no programs found in index")
+	}
 
 	start := 0
 	if v := os.Getenv("MOCHI_ROSETTA_INDEX"); v != "" {
-		if n, err := strconv.Atoi(v); err == nil && n >= 1 && n <= len(files) {
+		if n, err := strconv.Atoi(v); err == nil && n >= 1 && n <= len(names) {
 			start = n - 1
-			files = files[start : start+1]
+			names = names[start : start+1]
 		}
-	} else if len(files) > 0 {
-		files = files[:1]
+	} else {
+		names = names[:1]
 	}
 
 	var passed, failed int
-	for i, f := range files {
-		name := strings.TrimSuffix(filepath.Base(f), ".mochi")
+	for i, nameFile := range names {
+		name := strings.TrimSuffix(filepath.Base(nameFile), ".mochi")
 		ok := t.Run(fmt.Sprintf("%03d_%s", start+i+1, name), func(t *testing.T) {
 			codePath := filepath.Join(outDir, name+".scala")
 			outPath := filepath.Join(outDir, name+".out")
 			errPath := filepath.Join(outDir, name+".error")
 
-			prog, err := parser.Parse(f)
+			prog, err := parser.Parse(filepath.Join(srcDir, nameFile))
 			if err != nil {
 				_ = os.WriteFile(errPath, []byte(err.Error()), 0o644)
 				t.Fatalf("parse: %v", err)
@@ -107,13 +129,15 @@ func updateRosettaChecklist() {
 	root := repoRoot()
 	srcDir := filepath.Join(root, "tests", "rosetta", "x", "Mochi")
 	outDir := filepath.Join(root, "tests", "rosetta", "transpiler", "Scala")
-	files, _ := filepath.Glob(filepath.Join(srcDir, "*.mochi"))
-	sort.Strings(files)
-	total := len(files)
+	names, err := readIndex(filepath.Join(srcDir, "index.txt"))
+	if err != nil {
+		return
+	}
+	total := len(names)
 	completed := 0
 	var lines []string
-	for i, f := range files {
-		name := strings.TrimSuffix(filepath.Base(f), ".mochi")
+	for i, nameFile := range names {
+		name := strings.TrimSuffix(filepath.Base(nameFile), ".mochi")
 		mark := "[ ]"
 		if _, err := os.Stat(filepath.Join(outDir, name+".out")); err == nil {
 			completed++
