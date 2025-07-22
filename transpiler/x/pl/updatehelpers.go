@@ -116,13 +116,19 @@ func UpdateRosettaReadme() {
 	srcDir := filepath.Join(root, "tests", "rosetta", "x", "Mochi")
 	outDir := filepath.Join(root, "tests", "rosetta", "transpiler", "Prolog")
 	readme := filepath.Join(root, "transpiler", "x", "pl", "ROSETTA.md")
-	files, _ := filepath.Glob(filepath.Join(srcDir, "*.mochi"))
-	sort.Strings(files)
+	idxPath := filepath.Join(srcDir, "index.txt")
+	data, _ := os.ReadFile(idxPath)
+	var files []string
+	for _, line := range strings.Split(strings.TrimSpace(string(data)), "\n") {
+		fields := strings.Fields(line)
+		if len(fields) >= 2 {
+			files = append(files, strings.TrimSuffix(fields[1], ".mochi"))
+		}
+	}
 	total := len(files)
 	compiled := 0
 	var lines []string
-	for i, f := range files {
-		name := strings.TrimSuffix(filepath.Base(f), ".mochi")
+	for i, name := range files {
 		mark := "[ ]"
 		if _, err := os.Stat(filepath.Join(outDir, name+".out")); err == nil {
 			if _, err2 := os.Stat(filepath.Join(outDir, name+".error")); os.IsNotExist(err2) {

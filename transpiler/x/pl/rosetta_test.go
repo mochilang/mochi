@@ -7,7 +7,6 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
-	"sort"
 	"strconv"
 	"strings"
 	"testing"
@@ -93,11 +92,18 @@ func TestPrologTranspiler_Rosetta(t *testing.T) {
 		t.Skip("swipl not installed")
 	}
 	root := repoRootRosetta(t)
-	files, err := filepath.Glob(filepath.Join(root, "tests", "rosetta", "x", "Mochi", "*.mochi"))
+	idxPath := filepath.Join(root, "tests", "rosetta", "x", "Mochi", "index.txt")
+	data, err := os.ReadFile(idxPath)
 	if err != nil {
-		t.Fatalf("glob: %v", err)
+		t.Fatalf("read index: %v", err)
 	}
-	sort.Strings(files)
+	var files []string
+	for _, line := range strings.Split(strings.TrimSpace(string(data)), "\n") {
+		fields := strings.Fields(line)
+		if len(fields) >= 2 {
+			files = append(files, filepath.Join(root, "tests", "rosetta", "x", "Mochi", fields[1]))
+		}
+	}
 
 	if v := os.Getenv("ROSETTA_INDEX"); v != "" {
 		idx, err := strconv.Atoi(v)
