@@ -1265,6 +1265,20 @@ func transpileCall(c *parser.CallExpr) (Node, error) {
 		elems = append(elems, Symbol("apply"), Symbol("max"))
 	case "substring":
 		elems = append(elems, Symbol("subs"))
+	case "input":
+		if len(c.Args) != 0 {
+			return nil, fmt.Errorf("input expects no args")
+		}
+		return &List{Elems: []Node{Symbol("read-line")}}, nil
+	case "abs":
+		if len(c.Args) != 1 {
+			return nil, fmt.Errorf("abs expects 1 arg")
+		}
+		arg, err := transpileExpr(c.Args[0])
+		if err != nil {
+			return nil, err
+		}
+		return &List{Elems: []Node{Symbol("Math/abs"), arg}}, nil
 	case "append":
 		elems = append(elems, Symbol("conj"))
 	case "sum":
