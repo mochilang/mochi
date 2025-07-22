@@ -112,6 +112,33 @@ func (m *MapAssignStmt) emit(w io.Writer) {
 	io.WriteString(w, "))\n")
 }
 
+type ExprStmt struct{ Expr Expr }
+
+func (e *ExprStmt) emit(w io.Writer) {
+	e.Expr.emit(w)
+	io.WriteString(w, "\n")
+}
+
+type SaveStmt struct {
+	Src    Expr
+	Path   string
+	Format string
+}
+
+func (s *SaveStmt) emit(w io.Writer) {
+	if s.Format == "jsonl" && (s.Path == "" || s.Path == "-") {
+		io.WriteString(w, "(for ([_row ")
+		if s.Src != nil {
+			s.Src.emit(w)
+		} else {
+			io.WriteString(w, "'()")
+		}
+		io.WriteString(w, "]) (displayln (jsexpr->string _row)))\n")
+		return
+	}
+	io.WriteString(w, ";; unsupported save\n")
+}
+
 type IfStmt struct {
 	Cond Expr
 	Then []Stmt
@@ -985,6 +1012,21 @@ func parseFormat(e *parser.Expr) string {
 	return ""
 }
 
+func extractSaveExpr(e *parser.Expr) *parser.SaveExpr {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) > 0 {
+		return nil
+	}
+	u := e.Binary.Left
+	if len(u.Ops) > 0 || u.Value == nil {
+		return nil
+	}
+	p := u.Value
+	if len(p.Ops) > 0 || p.Target == nil {
+		return nil
+	}
+	return p.Target.Save
+}
+
 func valueToExpr(v interface{}, typ *parser.TypeRef, env *types.Env) Expr {
 	switch val := v.(type) {
 	case map[string]interface{}:
@@ -1228,6 +1270,9 @@ func convertStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 	case st.Fun != nil:
 		return convertFunStmt(st.Fun, env)
 	case st.Expr != nil:
+		if se := extractSaveExpr(st.Expr.Expr); se != nil {
+			return convertSaveStmt(se, env)
+		}
 		call := st.Expr.Expr.Binary.Left.Value.Target.Call
 		if call != nil && call.Func == "print" {
 			var parts []Expr
@@ -1246,6 +1291,13 @@ func convertStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 				return nil, err
 			}
 			return &PrintStmt{Parts: []Expr{&CallExpr{Func: "jsexpr->string", Args: []Expr{arg}}}}, nil
+		}
+		if call != nil {
+			expr, err := convertCall(call, env)
+			if err != nil {
+				return nil, err
+			}
+			return &ExprStmt{Expr: expr}, nil
 		}
 		return nil, fmt.Errorf("unsupported expression statement")
 	case st.Update != nil:
@@ -1478,6 +1530,22 @@ func convertUpdateStmt(u *parser.UpdateStmt, env *types.Env) (Stmt, error) {
 		cond = substituteFields(cond, "item", fields)
 	}
 	return &UpdateStmt{Target: u.Target, Fields: names, Values: values, Cond: cond}, nil
+}
+
+func convertSaveStmt(se *parser.SaveExpr, env *types.Env) (Stmt, error) {
+	src, err := convertExpr(se.Src, env)
+	if err != nil {
+		return nil, err
+	}
+	format := parseFormat(se.With)
+	path := ""
+	if se.Path != nil {
+		path = strings.Trim(*se.Path, "\"")
+	}
+	if format != "jsonl" || (path != "" && path != "-") {
+		return nil, fmt.Errorf("unsupported save")
+	}
+	return &SaveStmt{Src: src, Path: path, Format: format}, nil
 }
 
 func convertExpr(e *parser.Expr, env *types.Env) (Expr, error) {
