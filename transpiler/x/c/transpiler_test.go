@@ -264,7 +264,11 @@ func updateReadme() {
 	ts := ""
 	if err == nil {
 		if t, perr := time.Parse(time.RFC3339, strings.TrimSpace(string(out))); perr == nil {
-			ts = t.Format("2006-01-02 15:04 MST")
+			if loc, lerr := time.LoadLocation("Asia/Bangkok"); lerr == nil {
+				ts = t.In(loc).Format("2006-01-02 15:04 -0700")
+			} else {
+				ts = t.Format("2006-01-02 15:04 -0700")
+			}
 		}
 	}
 	var lines []string
@@ -290,19 +294,40 @@ func updateTasks() {
 	root := repoRoot(&testing.T{})
 	taskFile := filepath.Join(root, "transpiler", "x", "c", "TASKS.md")
 	compiled, total := countCompiled()
-	out, err := exec.Command("git", "log", "-1", "--format=%cI").Output()
+	out, err := exec.Command("git", "log", "-1", "--format=%cI%n%h%n%s").Output()
 	ts := ""
+	hash := ""
+	msg := ""
 	if err == nil {
-		if t, perr := time.Parse(time.RFC3339, strings.TrimSpace(string(out))); perr == nil {
-			ts = t.Format("2006-01-02 15:04 MST")
+		parts := strings.SplitN(strings.TrimSpace(string(out)), "\n", 3)
+		if len(parts) == 3 {
+			if t, perr := time.Parse(time.RFC3339, parts[0]); perr == nil {
+				if loc, lerr := time.LoadLocation("Asia/Bangkok"); lerr == nil {
+					ts = t.In(loc).Format("2006-01-02 15:04 -0700")
+				} else {
+					ts = t.Format("2006-01-02 15:04 -0700")
+				}
+			}
+			hash = parts[1]
+			msg = parts[2]
 		}
 	}
-	var buf bytes.Buffer
-	buf.WriteString(fmt.Sprintf("## Progress (%s)\n", ts))
-	buf.WriteString(fmt.Sprintf("- VM valid golden test results updated to %d/%d\n", compiled, total))
-	buf.WriteString("- join_multi now passes\n\n")
-	if data, err := os.ReadFile(taskFile); err == nil {
-		buf.Write(data)
+	entry := fmt.Sprintf("## Progress (%s)\n- Commit %s: %s\n- Regenerated golden files - %d/%d vm valid programs passing\n\n", ts, hash, msg, compiled, total)
+	if prev, err := os.ReadFile(taskFile); err == nil {
+		sections := strings.Split(string(prev), "\n## ")
+		count := 0
+		for _, sec := range sections {
+			if strings.HasPrefix(sec, "Progress") {
+				if count >= 4 {
+					break
+				}
+				entry += "## " + sec
+				if !strings.HasSuffix(sec, "\n") {
+					entry += "\n"
+				}
+				count++
+			}
+		}
 	}
-	_ = os.WriteFile(taskFile, buf.Bytes(), 0o644)
+	_ = os.WriteFile(taskFile, []byte(entry), 0o644)
 }

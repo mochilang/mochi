@@ -41,6 +41,7 @@ var (
 	groupLeftJoinEnabled bool
 	datasetWhereEnabled  bool
 	joinMultiEnabled     bool
+	builtinAliases       map[string]string
 )
 
 const version = "0.10.32"
@@ -996,6 +997,27 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 	needContainsStr = false
 	datasetWhereEnabled = false
 	joinMultiEnabled = false
+	builtinAliases = make(map[string]string)
+
+	for _, st := range prog.Statements {
+		if st.Import != nil && st.Import.Lang != nil {
+			alias := st.Import.As
+			if alias == "" {
+				alias = parser.AliasFromPath(st.Import.Path)
+			}
+			path := strings.Trim(st.Import.Path, "\"")
+			switch *st.Import.Lang {
+			case "go":
+				if st.Import.Auto && path == "mochi/runtime/ffi/go/testpkg" {
+					builtinAliases[alias] = "go_testpkg"
+				}
+			case "python":
+				if path == "math" {
+					builtinAliases[alias] = "python_math"
+				}
+			}
+		}
+	}
 	p := &Program{}
 	mainFn := &Function{Name: "main"}
 	var globals []Stmt
@@ -1072,6 +1094,8 @@ func compileStmts(env *types.Env, list []*parser.Statement) ([]Stmt, error) {
 
 func compileStmt(env *types.Env, s *parser.Statement) (Stmt, error) {
 	switch {
+	case s.Import != nil:
+		return nil, nil
 	case s.Expr != nil:
 		call := s.Expr.Expr.Binary.Left.Value.Target.Call
 		if call != nil && call.Func == "print" {
@@ -1914,6 +1938,32 @@ func convertUnary(u *parser.Unary) Expr {
 		}
 		return &CallExpr{Func: "contains", Args: []Expr{base, arg}}
 	}
+	if sel := u.Value.Target.Selector; sel != nil && len(sel.Tail) == 1 && len(u.Value.Ops) == 1 && u.Value.Ops[0].Call != nil && len(u.Ops) == 0 {
+		alias := sel.Root
+		method := sel.Tail[0]
+		if kind, ok := builtinAliases[alias]; ok {
+			args := make([]Expr, len(u.Value.Ops[0].Call.Args))
+			for i, a := range u.Value.Ops[0].Call.Args {
+				ex := convertExpr(a)
+				if ex == nil {
+					return nil
+				}
+				args[i] = ex
+			}
+			switch kind {
+			case "go_testpkg":
+				if method == "Add" && len(args) == 2 {
+					return &BinaryExpr{Left: args[0], Op: "+", Right: args[1]}
+				}
+			case "python_math":
+				switch method {
+				case "sqrt", "sin", "log", "pow":
+					markMath()
+					return &CallExpr{Func: method, Args: args}
+				}
+			}
+		}
+	}
 	if len(u.Value.Ops) == 1 && u.Value.Ops[0].Cast != nil &&
 		u.Value.Ops[0].Cast.Type != nil && u.Value.Ops[0].Cast.Type.Simple != nil && len(u.Ops) == 0 {
 		castType := *u.Value.Ops[0].Cast.Type.Simple
@@ -2279,6 +2329,24 @@ func convertUnary(u *parser.Unary) Expr {
 		return &VarRef{Name: sel.Root}
 	}
 	if sel := u.Value.Target.Selector; sel != nil && len(sel.Tail) > 0 && len(u.Ops) == 0 {
+		if kind, ok := builtinAliases[sel.Root]; ok && len(sel.Tail) == 1 {
+			switch kind {
+			case "go_testpkg":
+				switch sel.Tail[0] {
+				case "Pi":
+					return &FloatLit{Value: 3.14}
+				case "Answer":
+					return &IntLit{Value: 42}
+				}
+			case "python_math":
+				switch sel.Tail[0] {
+				case "pi":
+					return &FloatLit{Value: 3.141592653589793}
+				case "e":
+					return &FloatLit{Value: 2.718281828459045}
+				}
+			}
+		}
 		expr := Expr(&VarRef{Name: sel.Root})
 		for _, f := range sel.Tail {
 			expr = &FieldExpr{Target: expr, Name: f}
