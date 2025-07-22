@@ -27,6 +27,28 @@ var loopCounter int
 var continueLabels []string
 var structCount int
 
+const helperNow = `
+local _now_seed = 0
+local _now_seeded = false
+do
+  local s = os.getenv("MOCHI_NOW_SEED")
+  if s and s ~= "" then
+    local v = tonumber(s)
+    if v then
+      _now_seed = v
+      _now_seeded = true
+    end
+  end
+end
+local function _now()
+  if _now_seeded then
+    _now_seed = (_now_seed * 1664525 + 1013904223) % 2147483647
+    return _now_seed
+  end
+  return os.time() * 1000000000
+end
+`
+
 // Program represents a simple Lua program consisting of a sequence of
 // statements.
 type Program struct {
@@ -327,6 +349,8 @@ func (c *CallExpr) emit(w io.Writer) {
 			}
 			io.WriteString(w, ")")
 		}
+	case "now":
+		io.WriteString(w, "_now()")
 	case "json":
 		io.WriteString(w, `
 (function(v)
@@ -524,14 +548,16 @@ func (wst *WhileStmt) emit(w io.Writer) {
 		wst.Cond.emit(w)
 	}
 	io.WriteString(w, " do\n")
+	if label != "" {
+		io.WriteString(w, "::")
+		io.WriteString(w, label)
+		io.WriteString(w, "::\n")
+	}
 	for _, st := range wst.Body {
 		st.emit(w)
 		io.WriteString(w, "\n")
 	}
 	if label != "" {
-		io.WriteString(w, "::")
-		io.WriteString(w, label)
-		io.WriteString(w, "::\n")
 		continueLabels = continueLabels[:len(continueLabels)-1]
 	}
 	io.WriteString(w, "end")
@@ -557,14 +583,16 @@ func (fr *ForRangeStmt) emit(w io.Writer) {
 		io.WriteString(w, " - 1")
 	}
 	io.WriteString(w, " do\n")
+	if label != "" {
+		io.WriteString(w, "::")
+		io.WriteString(w, label)
+		io.WriteString(w, "::\n")
+	}
 	for _, st := range fr.Body {
 		st.emit(w)
 		io.WriteString(w, "\n")
 	}
 	if label != "" {
-		io.WriteString(w, "::")
-		io.WriteString(w, label)
-		io.WriteString(w, "::\n")
 		continueLabels = continueLabels[:len(continueLabels)-1]
 	}
 	io.WriteString(w, "end")
@@ -589,14 +617,16 @@ func (fi *ForInStmt) emit(w io.Writer) {
 		fi.Iterable.emit(w)
 	}
 	io.WriteString(w, ") do\n")
+	if label != "" {
+		io.WriteString(w, "::")
+		io.WriteString(w, label)
+		io.WriteString(w, "::\n")
+	}
 	for _, st := range fi.Body {
 		st.emit(w)
 		io.WriteString(w, "\n")
 	}
 	if label != "" {
-		io.WriteString(w, "::")
-		io.WriteString(w, label)
-		io.WriteString(w, "::\n")
 		continueLabels = continueLabels[:len(continueLabels)-1]
 	}
 	io.WriteString(w, "end")
@@ -1012,6 +1042,14 @@ func exprType(e Expr) types.Type {
 		return types.FloatType{}
 	case *BoolLit:
 		return types.BoolType{}
+	case *CallExpr:
+		if currentEnv != nil {
+			if t, err := currentEnv.GetVar(ex.Func); err == nil {
+				if ft, ok := t.(types.FuncType); ok {
+					return ft.Return
+				}
+			}
+		}
 	}
 	return types.AnyType{}
 }
@@ -1715,6 +1753,7 @@ func dataExprFromFile(path, format string, typ *parser.TypeRef) (Expr, error) {
 func Emit(p *Program) []byte {
 	var b bytes.Buffer
 	b.WriteString(header())
+	b.WriteString(helperNow)
 	prevEnv := currentEnv
 	currentEnv = p.Env
 	for i, st := range p.Stmts {
@@ -1983,7 +2022,7 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 			ce.Args = append(ce.Args, ae)
 		}
 		switch p.Call.Func {
-		case "append", "avg", "sum", "contains", "len", "count":
+		case "append", "avg", "sum", "contains", "len", "count", "now":
 			// handled during emission
 			return ce, nil
 		}
@@ -2589,16 +2628,26 @@ func convertUpdateStmt(u *parser.UpdateStmt) (Stmt, error) {
 
 func convertFunStmt(fs *parser.FunStmt) (Stmt, error) {
 	f := &FunStmt{Name: fs.Name}
+	child := types.NewEnv(currentEnv)
 	for _, p := range fs.Params {
 		f.Params = append(f.Params, p.Name)
+		if p.Type != nil {
+			child.SetVar(p.Name, types.ResolveTypeRef(p.Type, currentEnv), false)
+		} else {
+			child.SetVar(p.Name, types.AnyType{}, false)
+		}
 	}
+	prev := currentEnv
+	currentEnv = child
 	for _, st := range fs.Body {
 		s, err := convertStmt(st)
 		if err != nil {
+			currentEnv = prev
 			return nil, err
 		}
 		f.Body = append(f.Body, s)
 	}
+	currentEnv = prev
 	return f, nil
 }
 
@@ -2653,7 +2702,11 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 			}
 		}
 		if qc, ok := expr.(*QueryComp); ok {
+			currentEnv.SetVar(st.Let.Name, types.ListType{Elem: types.AnyType{}}, false)
 			return &QueryAssignStmt{Name: st.Let.Name, Query: qc}, nil
+		}
+		if currentEnv != nil {
+			currentEnv.SetVar(st.Let.Name, exprType(expr), false)
 		}
 		return &AssignStmt{Name: st.Let.Name, Value: expr}, nil
 	case st.Var != nil:
@@ -2675,7 +2728,11 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 			}
 		}
 		if qc, ok := expr.(*QueryComp); ok {
+			currentEnv.SetVar(st.Var.Name, types.ListType{Elem: types.AnyType{}}, false)
 			return &QueryAssignStmt{Name: st.Var.Name, Query: qc}, nil
+		}
+		if currentEnv != nil {
+			currentEnv.SetVar(st.Var.Name, exprType(expr), false)
 		}
 		return &AssignStmt{Name: st.Var.Name, Value: expr}, nil
 	case st.Assign != nil:
