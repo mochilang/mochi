@@ -1500,6 +1500,10 @@ func inferPyType(e Expr, env *types.Env) types.Type {
 				return types.ListType{Elem: types.AnyType{}}
 			case "dict":
 				return types.MapType{Key: types.AnyType{}, Value: types.AnyType{}}
+			case "upper", "lower":
+				if len(ex.Args) == 1 {
+					return types.StringType{}
+				}
 			}
 		}
 		return types.AnyType{}
@@ -3921,6 +3925,14 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 		case "substring":
 			if len(args) == 3 {
 				return &SliceExpr{Target: args[0], Start: args[1], End: args[2]}, nil
+			}
+		case "upper":
+			if len(args) == 1 {
+				return &CallExpr{Func: &FieldExpr{Target: args[0], Name: "upper"}}, nil
+			}
+		case "lower":
+			if len(args) == 1 {
+				return &CallExpr{Func: &FieldExpr{Target: args[0], Name: "lower"}}, nil
 			}
 		case "now":
 			if len(args) == 0 {
