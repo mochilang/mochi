@@ -155,20 +155,45 @@ type IfStmt struct {
 	Cond Expr
 	Then []Stmt
 	Else []Stmt
+	Vars []string
 }
 
 func (s *IfStmt) emit(w io.Writer, indent int) {
 	for i := 0; i < indent; i++ {
 		io.WriteString(w, "  ")
 	}
-	io.WriteString(w, "if ")
+	if len(s.Vars) > 0 {
+		io.WriteString(w, "{")
+		for i, v := range s.Vars {
+			if i > 0 {
+				io.WriteString(w, ", ")
+			}
+			io.WriteString(w, v)
+		}
+		io.WriteString(w, "} = if ")
+	} else {
+		io.WriteString(w, "if ")
+	}
 	s.Cond.emit(w)
 	io.WriteString(w, " do\n")
 	for _, st := range s.Then {
 		st.emit(w, indent+1)
 		io.WriteString(w, "\n")
 	}
-	if len(s.Else) > 0 {
+	if len(s.Vars) > 0 {
+		for i := 0; i < indent+1; i++ {
+			io.WriteString(w, "  ")
+		}
+		io.WriteString(w, "{")
+		for i, v := range s.Vars {
+			if i > 0 {
+				io.WriteString(w, ", ")
+			}
+			io.WriteString(w, v)
+		}
+		io.WriteString(w, "}\n")
+	}
+	if len(s.Else) > 0 || len(s.Vars) > 0 {
 		for i := 0; i < indent; i++ {
 			io.WriteString(w, "  ")
 		}
@@ -176,6 +201,19 @@ func (s *IfStmt) emit(w io.Writer, indent int) {
 		for _, st := range s.Else {
 			st.emit(w, indent+1)
 			io.WriteString(w, "\n")
+		}
+		if len(s.Vars) > 0 {
+			for i := 0; i < indent+1; i++ {
+				io.WriteString(w, "  ")
+			}
+			io.WriteString(w, "{")
+			for i, v := range s.Vars {
+				if i > 0 {
+					io.WriteString(w, ", ")
+				}
+				io.WriteString(w, v)
+			}
+			io.WriteString(w, "}\n")
 		}
 	}
 	for i := 0; i < indent; i++ {
@@ -1640,7 +1678,8 @@ func compileIfStmt(is *parser.IfStmt, env *types.Env) (Stmt, error) {
 			}
 		}
 	}
-	return &IfStmt{Cond: cond, Then: thenStmts, Else: elseStmts}, nil
+	vars := gatherMutVars(append(append([]Stmt{}, thenStmts...), elseStmts...), env)
+	return &IfStmt{Cond: cond, Then: thenStmts, Else: elseStmts, Vars: vars}, nil
 }
 
 func compileWhileStmt(ws *parser.WhileStmt, env *types.Env) (Stmt, error) {
@@ -1692,6 +1731,11 @@ func gatherMutVars(stmts []Stmt, env *types.Env) []string {
 					set[t.Name] = struct{}{}
 				}
 			case *IfStmt:
+				for _, v := range t.Vars {
+					if _, err := env.GetVar(v); err == nil {
+						set[v] = struct{}{}
+					}
+				}
 				walk(t.Then)
 				walk(t.Else)
 			case *ForStmt:
