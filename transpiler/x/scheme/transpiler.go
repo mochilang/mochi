@@ -278,18 +278,40 @@ func convertForStmt(fs *parser.ForStmt) (Node, error) {
 	currentEnv = types.NewEnv(currentEnv)
 	currentEnv.SetVar(fs.Name, types.AnyType{}, true)
 
-	iter, err := convertParserExpr(fs.Source)
-	if err != nil {
-		currentEnv = prevEnv
-		return nil, err
-	}
-	if _, ok := types.ExprType(fs.Source, prevEnv).(types.MapType); ok {
-		iter = &List{Elems: []Node{Symbol("hash-table-keys"), iter}}
+	var iter Node
+	var start Node
+	var end Node
+	var err error
+	hasRange := fs.RangeEnd != nil
+	if hasRange {
+		start, err = convertParserExpr(fs.Source)
+		if err != nil {
+			currentEnv = prevEnv
+			return nil, err
+		}
+		end, err = convertParserExpr(fs.RangeEnd)
+		if err != nil {
+			currentEnv = prevEnv
+			return nil, err
+		}
+	} else {
+		iter, err = convertParserExpr(fs.Source)
+		if err != nil {
+			currentEnv = prevEnv
+			return nil, err
+		}
+		if _, ok := types.ExprType(fs.Source, prevEnv).(types.MapType); ok {
+			iter = &List{Elems: []Node{Symbol("hash-table-keys"), iter}}
+		}
 	}
 	loopVar := Symbol("xs")
 	loopSym := gensym("loop")
 	breakSym := gensym("break")
-	pushLoop(breakSym, &List{Elems: []Node{loopSym, &List{Elems: []Node{Symbol("cdr"), loopVar}}}})
+	if hasRange {
+		pushLoop(breakSym, &List{Elems: []Node{loopSym, &List{Elems: []Node{Symbol("+"), Symbol(fs.Name), IntLit(1)}}}})
+	} else {
+		pushLoop(breakSym, &List{Elems: []Node{loopSym, &List{Elems: []Node{Symbol("cdr"), loopVar}}}})
+	}
 
 	body, err := convertStmts(fs.Body)
 	currentEnv = prevEnv
@@ -299,18 +321,36 @@ func convertForStmt(fs *parser.ForStmt) (Node, error) {
 	}
 	bodyNode := &List{Elems: append([]Node{Symbol("begin")}, body...)}
 
-	loopBody := &List{Elems: []Node{
-		Symbol("if"), &List{Elems: []Node{Symbol("null?"), loopVar}},
-		voidSym(),
-		&List{Elems: []Node{
-			Symbol("begin"),
+	var loopBody Node
+	var loopInit Node
+	param := loopVar
+	if hasRange {
+		loopBody = &List{Elems: []Node{
+			Symbol("if"), &List{Elems: []Node{Symbol("<"), Symbol(fs.Name), end}},
 			&List{Elems: []Node{
-				Symbol("let"), &List{Elems: []Node{&List{Elems: []Node{Symbol(fs.Name), &List{Elems: []Node{Symbol("car"), loopVar}}}}}},
+				Symbol("begin"),
 				bodyNode,
+				&List{Elems: []Node{loopSym, &List{Elems: []Node{Symbol("+"), Symbol(fs.Name), IntLit(1)}}}},
 			}},
-			&List{Elems: []Node{loopSym, &List{Elems: []Node{Symbol("cdr"), loopVar}}}},
-		}},
-	}}
+			voidSym(),
+		}}
+		loopInit = start
+		param = Symbol(fs.Name)
+	} else {
+		loopBody = &List{Elems: []Node{
+			Symbol("if"), &List{Elems: []Node{Symbol("null?"), loopVar}},
+			voidSym(),
+			&List{Elems: []Node{
+				Symbol("begin"),
+				&List{Elems: []Node{
+					Symbol("let"), &List{Elems: []Node{&List{Elems: []Node{Symbol(fs.Name), &List{Elems: []Node{Symbol("car"), loopVar}}}}}},
+					bodyNode,
+				}},
+				&List{Elems: []Node{loopSym, &List{Elems: []Node{Symbol("cdr"), loopVar}}}},
+			}},
+		}}
+		loopInit = iter
+	}
 
 	loopFn := &List{Elems: []Node{
 		Symbol("call/cc"),
@@ -319,9 +359,9 @@ func convertForStmt(fs *parser.ForStmt) (Node, error) {
 			&List{Elems: []Node{
 				Symbol("letrec"),
 				&List{Elems: []Node{
-					&List{Elems: []Node{loopSym, &List{Elems: []Node{Symbol("lambda"), &List{Elems: []Node{loopVar}}, loopBody}}}},
+					&List{Elems: []Node{loopSym, &List{Elems: []Node{Symbol("lambda"), &List{Elems: []Node{param}}, loopBody}}}},
 				}},
-				&List{Elems: []Node{loopSym, iter}},
+				&List{Elems: []Node{loopSym, loopInit}},
 			}},
 		}},
 	}}
@@ -392,6 +432,15 @@ func convertStmt(st *parser.Statement) (Node, error) {
 		} else {
 			val = voidSym()
 		}
+		if currentEnv != nil {
+			var t types.Type = types.AnyType{}
+			if st.Let.Type != nil {
+				t = types.ResolveTypeRef(st.Let.Type, currentEnv)
+			} else if st.Let.Value != nil {
+				t = types.ExprType(st.Let.Value, currentEnv)
+			}
+			currentEnv.SetVar(name, t, false)
+		}
 		return &List{Elems: []Node{Symbol("define"), Symbol(name), val}}, nil
 	case st.Var != nil:
 		name := st.Var.Name
@@ -406,6 +455,15 @@ func convertStmt(st *parser.Statement) (Node, error) {
 			val = typedDefault(st.Var.Type)
 		} else {
 			val = voidSym()
+		}
+		if currentEnv != nil {
+			var t types.Type = types.AnyType{}
+			if st.Var.Type != nil {
+				t = types.ResolveTypeRef(st.Var.Type, currentEnv)
+			} else if st.Var.Value != nil {
+				t = types.ExprType(st.Var.Value, currentEnv)
+			}
+			currentEnv.SetVar(name, t, true)
 		}
 		return &List{Elems: []Node{Symbol("define"), Symbol(name), val}}, nil
 	case st.Assign != nil && len(st.Assign.Index) == 0 && len(st.Assign.Field) == 0:
