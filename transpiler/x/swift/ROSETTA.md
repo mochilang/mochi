@@ -2,12 +2,12 @@
 
 Generated Swift code for Mochi Rosetta programs in `tests/rosetta/x/Mochi`. Outputs are stored in `tests/rosetta/transpiler/Swift`. Errors are captured in `.error` files.
 
-Completed: 1/284
-Last updated: 2025-07-22 21:48 +0700
+Completed: 2/284
+Last updated: 2025-07-22 22:49 +0700
 
 Checklist:
 - [x] 100-doors-2
-- [ ] 100-doors-3
+- [x] 100-doors-3
 - [ ] 100-doors
 - [ ] 100-prisoners
 - [ ] 15-puzzle-game

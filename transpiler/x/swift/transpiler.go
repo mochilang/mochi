@@ -739,9 +739,16 @@ func (c *CastExpr) emit(w io.Writer) {
 		c.Expr.emit(w)
 		return
 	}
-	fmt.Fprint(w, "(")
-	c.Expr.emit(w)
-	fmt.Fprintf(w, " as! %s)", c.Type)
+	switch c.Type {
+	case "Int", "Int64", "Double", "String", "Bool":
+		fmt.Fprintf(w, "%s(", c.Type)
+		c.Expr.emit(w)
+		fmt.Fprint(w, ")")
+	default:
+		fmt.Fprint(w, "(")
+		c.Expr.emit(w)
+		fmt.Fprintf(w, " as! %s)", c.Type)
+	}
 }
 
 type BinaryExpr struct {
@@ -1882,10 +1889,18 @@ func convertExpr(env *types.Env, e *parser.Expr) (Expr, error) {
 				}
 			} else {
 				if types.IsAnyType(ltyp) {
-					left = &CastExpr{Expr: left, Type: "Double"}
+					if types.IsIntType(rtyp) {
+						left = &CastExpr{Expr: left, Type: "Int"}
+					} else {
+						left = &CastExpr{Expr: left, Type: "Double"}
+					}
 				}
 				if types.IsAnyType(rtyp) {
-					right = &CastExpr{Expr: right, Type: "Double"}
+					if types.IsIntType(ltyp) {
+						right = &CastExpr{Expr: right, Type: "Int"}
+					} else {
+						right = &CastExpr{Expr: right, Type: "Double"}
+					}
 				}
 			}
 		}

@@ -1,5 +1,5 @@
-## Progress (2025-07-22 21:48 +0700)
-- ex: start handling mutable for loops and clean rosetta test
+## Progress (2025-07-22 22:49 +0700)
+- transpiler/erl: use index for Rosetta tests
 - Generated golden tests for 101/103 programs
 - Updated README checklist and output artifacts
 
