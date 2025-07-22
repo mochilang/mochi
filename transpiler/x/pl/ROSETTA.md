@@ -1,8 +1,8 @@
 # Rosetta Prolog Transpiler
 
-## Rosetta Golden Test Checklist (0/284)
+## Rosetta Golden Test Checklist (1/284)
 Last updated: 2025-07-22 17:27 +0700
-- [ ] `100-doors-2`
+- [x] `100-doors-2`
 - [ ] `100-doors-3`
 - [ ] `100-doors`
 - [ ] `100-prisoners`
