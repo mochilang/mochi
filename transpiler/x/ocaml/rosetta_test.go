@@ -9,6 +9,7 @@ import (
 	"os/exec"
 	"path/filepath"
 	"sort"
+	"strconv"
 	"strings"
 	"testing"
 	"time"
@@ -96,6 +97,13 @@ func TestOCamlTranspiler_Rosetta_Golden(t *testing.T) {
 		t.Fatalf("glob: %v", err)
 	}
 	sort.Strings(files)
+	if v := os.Getenv("ROSETTA_INDEX"); v != "" {
+		if idx, err := strconv.Atoi(v); err == nil && idx >= 1 && idx <= len(files) {
+			files = files[idx-1 : idx]
+		} else {
+			t.Fatalf("invalid ROSETTA_INDEX %s", v)
+		}
+	}
 	var passed int
 	for _, src := range files {
 		name := strings.TrimSuffix(filepath.Base(src), ".mochi")
@@ -128,14 +136,14 @@ func updateRosettaReadme() {
 	total := len(files)
 	completed := 0
 	var lines []string
-	for _, f := range files {
+	for i, f := range files {
 		name := strings.TrimSuffix(filepath.Base(f), ".mochi")
 		mark := "[ ]"
 		if _, err := os.Stat(filepath.Join(outDir, name+".out")); err == nil {
 			completed++
 			mark = "[x]"
 		}
-		lines = append(lines, fmt.Sprintf("- %s %s", mark, name))
+		lines = append(lines, fmt.Sprintf("%d. %s %s", i+1, mark, name))
 	}
 
 	var buf bytes.Buffer
