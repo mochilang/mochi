@@ -1,6 +1,6 @@
-## Progress (2025-07-22 13:13 +0700)
-- Commit 14c5e01e5: docs(py): update progress
-- Generated Python for 91/102 programs
+## Progress (2025-07-22 13:20 +0700)
+- Commit e08db0886: transpiler(py): improve join type inference
+- Generated Python for 95/102 programs
 - Updated README checklist and outputs
 - Refactored join handling and improved type inference from loaded data
 

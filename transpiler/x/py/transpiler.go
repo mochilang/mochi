@@ -3330,19 +3330,27 @@ func convertSelector(sel *parser.SelectorExpr, method bool) Expr {
 			}
 		}
 	}
-	for i, t := range sel.Tail {
-		idx := i == len(sel.Tail)-1 && method
-		useMap := mapIndex && !idx
-		if useMap && currentEnv != nil {
-			if st, ok := inferPyType(expr, currentEnv).(types.StructType); ok {
-				if _, ok := st.Fields[t]; ok {
-					useMap = false
-				}
-			}
-		}
-		expr = &FieldExpr{Target: expr, Name: t, MapIndex: useMap}
-		mapIndex = true
-	}
+        for i, t := range sel.Tail {
+                idx := i == len(sel.Tail)-1 && method
+                useMap := mapIndex && !idx
+                if useMap && currentEnv != nil {
+                        if st, ok := inferPyType(expr, currentEnv).(types.StructType); ok {
+                                if _, ok := st.Fields[t]; ok {
+                                        useMap = false
+                                }
+                        }
+                        if useMap {
+                                for _, st := range currentEnv.Structs() {
+                                        if _, ok := st.Fields[t]; ok {
+                                                useMap = false
+                                                break
+                                        }
+                                }
+                        }
+                }
+                expr = &FieldExpr{Target: expr, Name: t, MapIndex: useMap}
+                mapIndex = true
+        }
 	return expr
 }
 
@@ -4178,12 +4186,14 @@ func convertGroupQuery(q *parser.QueryExpr, env *types.Env, target string) ([]St
 
 	prev := currentEnv
 	genv := types.NewEnv(env)
-	var itemType types.Type = types.AnyType{}
-	if env != nil {
-		if t, err := env.GetVar(q.Var); err == nil {
-			itemType = t
-		}
-	}
+    var itemType types.Type = types.AnyType{}
+    if env != nil {
+            if t, err := env.GetVar(q.Var); err == nil {
+                    itemType = t
+            } else if lt, ok := inferTypeFromExpr(q.Source).(types.ListType); ok {
+                    itemType = lt.Elem
+            }
+    }
 	keyType := inferPyType(keyVal, env)
 	genv.SetVar(q.Group.Name, types.StructType{Fields: map[string]types.Type{"key": keyType, "items": types.ListType{Elem: itemType}}}, true)
 	currentEnv = genv
