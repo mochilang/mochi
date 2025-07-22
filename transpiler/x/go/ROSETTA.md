@@ -1,16 +1,16 @@
 # Go Rosetta Transpiler Output
 
-Completed programs: 43/284
-Last updated: 2025-07-22 20:27 +0700
+Completed programs: 1/284
+Last updated: 2025-07-22 21:48 +0700
 
 Checklist:
 
 - [x] 100-doors-2
-- [x] 100-doors-3
-- [x] 100-doors
+- [ ] 100-doors-3
+- [ ] 100-doors
 - [ ] 100-prisoners
 - [ ] 15-puzzle-game
-- [x] 15-puzzle-solver
+- [ ] 15-puzzle-solver
 - [ ] 2048
 - [ ] 21-game
 - [ ] 24-game-solve
@@ -18,7 +18,7 @@ Checklist:
 - [ ] 4-rings-or-4-squares-puzzle
 - [ ] 9-billion-names-of-god-the-integer
 - [ ] 99-bottles-of-beer-2
-- [x] 99-bottles-of-beer
+- [ ] 99-bottles-of-beer
 - [ ] DNS-query
 - [ ] a+b
 - [ ] abbreviations-automatic
@@ -32,15 +32,15 @@ Checklist:
 - [ ] abundant-odd-numbers
 - [ ] accumulator-factory
 - [ ] achilles-numbers
-- [x] ackermann-function-2
+- [ ] ackermann-function-2
 - [ ] ackermann-function-3
-- [x] ackermann-function
+- [ ] ackermann-function
 - [ ] active-directory-connect
 - [ ] active-directory-search-for-a-user
 - [ ] active-object
 - [ ] add-a-variable-to-a-class-instance-at-runtime
 - [ ] additive-primes
-- [x] address-of-a-variable
+- [ ] address-of-a-variable
 - [ ] adfgvx-cipher
 - [ ] aks-test-for-primes
 - [ ] algebraic-data-types
@@ -56,13 +56,13 @@ Checklist:
 - [ ] angle-difference-between-two-bearings-2
 - [ ] angles-geometric-normalization-and-conversion
 - [ ] animate-a-pendulum
-- [x] animation
-- [x] anonymous-recursion-1
-- [x] anonymous-recursion-2
-- [x] anonymous-recursion
+- [ ] animation
+- [ ] anonymous-recursion-1
+- [ ] anonymous-recursion-2
+- [ ] anonymous-recursion
 - [ ] anti-primes
-- [x] append-a-record-to-the-end-of-a-text-file
-- [x] apply-a-callback-to-an-array-1
+- [ ] append-a-record-to-the-end-of-a-text-file
+- [ ] apply-a-callback-to-an-array-1
 - [ ] apply-a-callback-to-an-array-2
 - [ ] apply-a-digital-filter-direct-form-ii-transposed-
 - [ ] approximate-equality
@@ -77,13 +77,13 @@ Checklist:
 - [ ] arithmetic-integer-1
 - [ ] arithmetic-integer-2
 - [ ] arithmetic-numbers
-- [x] arithmetic-rational
+- [ ] arithmetic-rational
 - [ ] array-concatenation
-- [x] array-length
+- [ ] array-length
 - [ ] arrays
 - [ ] ascending-primes
-- [x] ascii-art-diagram-converter
-- [x] assertions
+- [ ] ascii-art-diagram-converter
+- [ ] assertions
 - [ ] associative-array-creation
 - [ ] associative-array-iteration
 - [ ] associative-array-merging
@@ -101,7 +101,7 @@ Checklist:
 - [ ] averages-simple-moving-average
 - [ ] avl-tree
 - [ ] b-zier-curves-intersections
-- [x] babbage-problem
+- [ ] babbage-problem
 - [ ] babylonian-spiral
 - [ ] balanced-brackets
 - [ ] balanced-ternary
@@ -114,9 +114,9 @@ Checklist:
 - [ ] bifid-cipher
 - [ ] bin-given-limits
 - [ ] binary-digits
-- [x] binary-search
+- [ ] binary-search
 - [ ] binary-strings
-- [x] bioinformatics-base-count
+- [ ] bioinformatics-base-count
 - [ ] bioinformatics-global-alignment
 - [ ] bioinformatics-sequence-mutation
 - [ ] biorhythms
@@ -153,11 +153,11 @@ Checklist:
 - [ ] calendar---for-real-programmers-2
 - [ ] calendar
 - [ ] calkin-wilf-sequence
-- [x] call-a-foreign-language-function
+- [ ] call-a-foreign-language-function
 - [ ] call-a-function-1
 - [ ] call-a-function-10
 - [ ] call-a-function-11
-- [x] call-a-function-12
+- [ ] call-a-function-12
 - [ ] call-a-function-2
 - [ ] call-a-function-3
 - [ ] call-a-function-4
@@ -174,7 +174,7 @@ Checklist:
 - [ ] canny-edge-detector
 - [ ] canonicalize-cidr
 - [ ] cantor-set
-- [x] carmichael-3-strong-pseudoprimes
+- [ ] carmichael-3-strong-pseudoprimes
 - [ ] cartesian-product-of-two-or-more-lists-1
 - [ ] cartesian-product-of-two-or-more-lists-2
 - [ ] cartesian-product-of-two-or-more-lists-3
@@ -184,29 +184,29 @@ Checklist:
 - [ ] catalan-numbers-1
 - [ ] catalan-numbers-2
 - [ ] catalan-numbers-pascals-triangle
-- [x] catamorphism
+- [ ] catamorphism
 - [ ] catmull-clark-subdivision-surface
-- [x] chaocipher
+- [ ] chaocipher
 - [ ] chaos-game
-- [x] character-codes-1
-- [x] character-codes-2
-- [x] character-codes-3
-- [x] character-codes-4
-- [x] character-codes-5
+- [ ] character-codes-1
+- [ ] character-codes-2
+- [ ] character-codes-3
+- [ ] character-codes-4
+- [ ] character-codes-5
 - [ ] chat-server
 - [ ] check-machin-like-formulas
 - [ ] check-that-file-exists
-- [x] checkpoint-synchronization-1
+- [ ] checkpoint-synchronization-1
 - [ ] checkpoint-synchronization-2
-- [x] checkpoint-synchronization-3
-- [x] checkpoint-synchronization-4
+- [ ] checkpoint-synchronization-3
+- [ ] checkpoint-synchronization-4
 - [ ] chernicks-carmichael-numbers
 - [ ] cheryls-birthday
 - [ ] chinese-remainder-theorem
 - [ ] chinese-zodiac
 - [ ] cholesky-decomposition-1
 - [ ] cholesky-decomposition
-- [x] chowla-numbers
+- [ ] chowla-numbers
 - [ ] church-numerals-1
 - [ ] church-numerals-2
 - [ ] circles-of-given-radius-through-two-points
@@ -216,11 +216,11 @@ Checklist:
 - [ ] compiler-virtual-machine-interpreter
 - [ ] composite-numbers-k-with-no-single-digit-factors-whose-factors-are-all-substrings-of-k
 - [ ] compound-data-type
-- [x] concurrent-computing-1
-- [x] concurrent-computing-2
-- [x] concurrent-computing-3
+- [ ] concurrent-computing-1
+- [ ] concurrent-computing-2
+- [ ] concurrent-computing-3
 - [ ] conditional-structures-1
-- [x] conditional-structures-10
+- [ ] conditional-structures-10
 - [ ] conditional-structures-2
 - [ ] conditional-structures-3
 - [ ] conditional-structures-4
@@ -228,7 +228,7 @@ Checklist:
 - [ ] conditional-structures-6
 - [ ] conditional-structures-7
 - [ ] conditional-structures-8
-- [x] conditional-structures-9
+- [ ] conditional-structures-9
 - [ ] consecutive-primes-with-ascending-or-descending-differences
 - [ ] constrained-genericity-1
 - [ ] constrained-genericity-2
@@ -242,12 +242,12 @@ Checklist:
 - [ ] convex-hull
 - [ ] conways-game-of-life
 - [ ] copy-a-string-1
-- [x] copy-a-string-2
+- [ ] copy-a-string-2
 - [ ] copy-stdin-to-stdout-1
 - [ ] copy-stdin-to-stdout-2
 - [ ] count-in-factors
-- [x] count-in-octal-1
-- [x] count-in-octal-2
+- [ ] count-in-octal-1
+- [ ] count-in-octal-2
 - [ ] count-in-octal-3
 - [ ] count-in-octal-4
 - [ ] count-occurrences-of-a-substring
