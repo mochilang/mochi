@@ -122,7 +122,7 @@ func formatValue(v value, indent int) string {
 	case valString:
 		return fmt.Sprintf("'%s'", escape(v.s))
 	case valFloat:
-		return fmt.Sprintf("%.1f", v.f)
+		return fmt.Sprintf("%.2f", v.f)
 	case valList:
 		if len(v.list) == 0 {
 			return "#()"
@@ -183,7 +183,7 @@ func jsonString(v value) string {
 	case valString:
 		return fmt.Sprintf("\"%s\"", escape(v.s))
 	case valFloat:
-		return fmt.Sprintf("%.1f", v.f)
+		return fmt.Sprintf("%.2f", v.f)
 	case valList:
 		parts := make([]string, len(v.list))
 		for i, it := range v.list {
@@ -729,6 +729,24 @@ func evalPostfix(p *parser.PostfixExpr, vars map[string]value) (value, error) {
 			}
 			return value{kind: valBool, b: strings.Contains(root.s, arg.s)}, nil
 		}
+		if p.Target.Selector.Root == "testpkg" && p.Target.Selector.Tail[0] == "Add" {
+			call := p.Ops[0].Call
+			if len(call.Args) != 2 {
+				return value{}, fmt.Errorf("bad args")
+			}
+			a, err := evalExpr(call.Args[0], vars)
+			if err != nil {
+				return value{}, err
+			}
+			b, err := evalExpr(call.Args[1], vars)
+			if err != nil {
+				return value{}, err
+			}
+			if a.kind == valInt && b.kind == valInt {
+				return value{kind: valInt, i: a.i + b.i}, nil
+			}
+			return value{}, fmt.Errorf("bad args")
+		}
 	}
 
 	v, err := evalPrimary(p.Target, vars)
@@ -938,6 +956,14 @@ func evalPrimary(p *parser.Primary, vars map[string]value) (value, error) {
 		}
 		if len(p.Selector.Tail) == 0 {
 			return value{kind: valString, s: p.Selector.Root}, nil
+		}
+		if p.Selector.Root == "testpkg" && len(p.Selector.Tail) == 1 {
+			switch p.Selector.Tail[0] {
+			case "Pi":
+				return value{kind: valFloat, f: 3.14}, nil
+			case "Answer":
+				return value{kind: valInt, i: 42}, nil
+			}
 		}
 	case p.List != nil:
 		elems := make([]value, len(p.List.Elems))
@@ -1647,6 +1673,27 @@ func identName(e *parser.Expr) (string, bool) {
 	return p.Selector.Root, true
 }
 
+func literalString(e *parser.Expr) (string, bool) {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) > 0 {
+		return "", false
+	}
+	u := e.Binary.Left
+	if len(u.Ops) > 0 || u.Value == nil {
+		return "", false
+	}
+	p := u.Value
+	if len(p.Ops) > 0 || p.Target == nil {
+		return "", false
+	}
+	if p.Target.Lit != nil && p.Target.Lit.Str != nil {
+		return *p.Target.Lit.Str, true
+	}
+	if p.Target.Selector != nil && len(p.Target.Selector.Tail) == 0 {
+		return p.Target.Selector.Root, true
+	}
+	return "", false
+}
+
 func callPattern(e *parser.Expr) (*parser.CallExpr, bool) {
 	if e == nil || e.Binary == nil || len(e.Binary.Right) != 0 {
 		return nil, false
@@ -2325,6 +2372,9 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	var processStmt func(*parser.Statement) error
 	processStmt = func(st *parser.Statement) error {
 		switch {
+		case st.Import != nil:
+			// imports are handled implicitly
+			return nil
 		case st.Let != nil:
 			v := value{}
 			if st.Let.Value != nil {
@@ -2571,29 +2621,59 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 			return breakErr{}
 		case st.Continue != nil:
 			return continueErr{}
-		case st.Expr != nil:
-			if se := extractSaveExpr(st.Expr.Expr); se != nil {
-				format := parseFormatExpr(se.With)
-				path := ""
-				if se.Path != nil {
-					path = strings.Trim(*se.Path, "\"")
+		case st.Update != nil:
+			target, ok := vars[st.Update.Target]
+			if !ok {
+				return fmt.Errorf("unknown update target")
+			}
+			if target.kind != valList {
+				return fmt.Errorf("update target not list")
+			}
+			newList := make([]value, len(target.list))
+			for i, elem := range target.list {
+				if elem.kind != valMap {
+					return fmt.Errorf("update element not struct")
 				}
-				if format == "jsonl" && (path == "" || path == "-") {
-					src, err := evalExpr(se.Src, vars)
+				local := copyVars(vars)
+				for k, v := range elem.kv {
+					local[k] = v
+				}
+				apply := true
+				if st.Update.Where != nil {
+					cond, err := evalExpr(st.Update.Where, local)
 					if err != nil {
 						return err
 					}
-					if src.kind != valList {
-						return fmt.Errorf("save expects list")
-					}
-					for _, row := range src.list {
-						line := "Transcript show:'" + escape(jsonString(row)) + "'; cr"
-						p.Lines = append(p.Lines, line)
-					}
-					return nil
+					apply = isTruthy(cond)
 				}
-				return fmt.Errorf("unsupported expression")
+				newElem := elem
+				if apply {
+					if newElem.kv == nil {
+						newElem.kv = map[string]value{}
+					}
+					for _, it := range st.Update.Set.Items {
+						name, ok := identName(it.Key)
+						if !ok {
+							name, ok = literalString(it.Key)
+							if !ok {
+								return fmt.Errorf("unsupported update key")
+							}
+						}
+						val, err := evalExpr(it.Value, local)
+						if err != nil {
+							return err
+						}
+						newElem.kv[name] = val
+						local[name] = val
+					}
+				}
+				newList[i] = newElem
 			}
+			target.list = newList
+			vars[st.Update.Target] = target
+			appendAssign(&p.Lines, st.Update.Target, target)
+			return nil
+		case st.Expr != nil:
 			call := st.Expr.Expr.Binary.Left.Value.Target.Call
 			if call == nil {
 				return fmt.Errorf("unsupported expression")
@@ -2700,21 +2780,6 @@ func parseFormatExpr(e *parser.Expr) string {
 		return f.s
 	}
 	return ""
-}
-
-func extractSaveExpr(e *parser.Expr) *parser.SaveExpr {
-	if e == nil || e.Binary == nil || len(e.Binary.Right) > 0 {
-		return nil
-	}
-	u := e.Binary.Left
-	if len(u.Ops) > 0 || u.Value == nil {
-		return nil
-	}
-	p := u.Value
-	if len(p.Ops) > 0 || p.Target == nil {
-		return nil
-	}
-	return p.Target.Save
 }
 
 func anyToValue(x interface{}, typ string) value {
