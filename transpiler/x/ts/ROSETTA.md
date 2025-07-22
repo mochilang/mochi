@@ -2,24 +2,21 @@
 
 This checklist is auto-generated.
 Generated TypeScript code from programs in `tests/rosetta/x/Mochi` lives in `tests/rosetta/transpiler/TypeScript`.
-Last updated: 2025-07-22 11:00 UTC
+Last updated: 2025-07-22 13:51 UTC
 
-## Rosetta Golden Test Checklist (0/284)
-- [ ] 100-doors-2
-- [ ] 100-doors-3
-- [ ] 100-doors
-- [ ] 100-prisoners
-- [ ] 15-puzzle-game
+## Rosetta Golden Test Checklist (4/269)
+- [x] 100-doors-2
+- [x] 100-doors-3
+- [x] 100-doors
+- [x] 100-prisoners
 - [ ] 15-puzzle-solver
 - [ ] 2048
-- [ ] 21-game
 - [ ] 24-game-solve
 - [ ] 24-game
 - [ ] 4-rings-or-4-squares-puzzle
 - [ ] 9-billion-names-of-god-the-integer
 - [ ] 99-bottles-of-beer-2
 - [ ] 99-bottles-of-beer
-- [ ] DNS-query
 - [ ] a+b
 - [ ] abbreviations-automatic
 - [ ] abbreviations-easy
@@ -143,8 +140,6 @@ Last updated: 2025-07-22 11:00 UTC
 - [ ] break-oo-privacy
 - [ ] brilliant-numbers
 - [ ] brownian-tree
-- [ ] bulls-and-cows-player
-- [ ] bulls-and-cows
 - [ ] burrows-wheeler-transform
 - [ ] caesar-cipher-1
 - [ ] caesar-cipher-2
@@ -215,7 +210,6 @@ Last updated: 2025-07-22 11:00 UTC
 - [ ] comma-quibbling
 - [ ] compiler-virtual-machine-interpreter
 - [ ] composite-numbers-k-with-no-single-digit-factors-whose-factors-are-all-substrings-of-k
-- [ ] compound-data-type
 - [ ] concurrent-computing-1
 - [ ] concurrent-computing-2
 - [ ] concurrent-computing-3
@@ -240,16 +234,9 @@ Last updated: 2025-07-22 11:00 UTC
 - [ ] convert-decimal-number-to-rational
 - [ ] convert-seconds-to-compound-duration
 - [ ] convex-hull
-- [ ] conways-game-of-life
 - [ ] copy-a-string-1
 - [ ] copy-a-string-2
-- [ ] copy-stdin-to-stdout-1
-- [ ] copy-stdin-to-stdout-2
 - [ ] count-in-factors
-- [ ] count-in-octal-1
-- [ ] count-in-octal-2
-- [ ] count-in-octal-3
-- [ ] count-in-octal-4
 - [ ] count-occurrences-of-a-substring
 - [ ] count-the-coins-1
 - [ ] count-the-coins-2
@@ -258,7 +245,6 @@ Last updated: 2025-07-22 11:00 UTC
 - [ ] crc-32-2
 - [ ] create-a-file-on-magnetic-tape
 - [ ] create-a-file
-- [ ] create-a-two-dimensional-array-at-runtime-1
 - [ ] create-an-html-table
 - [ ] create-an-object-at-a-given-address
 - [ ] csv-data-manipulation
@@ -276,7 +262,6 @@ Last updated: 2025-07-22 11:00 UTC
 - [ ] cusip
 - [ ] cyclops-numbers
 - [ ] damm-algorithm
-- [ ] date-format
 - [ ] date-manipulation
 - [ ] day-of-the-week
 - [ ] de-bruijn-sequences

@@ -100,7 +100,9 @@ func TestTSTranspiler_Rosetta_Golden(t *testing.T) {
 	}
 	for _, f := range files[:max] {
 		name := strings.TrimSuffix(filepath.Base(f), ".out")
-		t.Run(name, func(t *testing.T) { runRosettaCase(t, name) })
+		if ok := t.Run(name, func(t *testing.T) { runRosettaCase(t, name) }); !ok {
+			t.Fatalf("first failing program: %s", name)
+		}
 	}
 }
 
