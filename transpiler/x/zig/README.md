@@ -2,9 +2,9 @@
 
 Generated Zig code for the Mochi VM valid tests lives under `tests/transpiler/x/zig`.
 
-Last updated: 2025-07-22 09:03 +0700
+Last updated: 2025-07-22 09:27 +0700
 
-## VM Golden Test Checklist (91/102)
+## VM Golden Test Checklist (93/102)
 - [x] append_builtin.mochi
 - [x] avg_builtin.mochi
 - [x] basic_compare.mochi
@@ -80,7 +80,7 @@ Last updated: 2025-07-22 09:03 +0700
 - [ ] python_auto.mochi
 - [ ] python_math.mochi
 - [x] query_sum_select.mochi
-- [ ] record_assign.mochi
+- [x] record_assign.mochi
 - [x] right_join.mochi
 - [ ] save_jsonl_stdout.mochi
 - [x] short_circuit.mochi
@@ -97,7 +97,7 @@ Last updated: 2025-07-22 09:03 +0700
 - [x] sum_builtin.mochi
 - [x] tail_recursion.mochi
 - [x] test_block.mochi
-- [ ] tree_sum.mochi
+- [x] tree_sum.mochi
 - [x] two-sum.mochi
 - [x] typed_let.mochi
 - [x] typed_var.mochi

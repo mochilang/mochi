@@ -1,3 +1,13 @@
+## Progress (2025-07-22 09:37 +0700)
+- Commit 16e351779: zig transpiler: handle call statements and void returns
+- Generated Zig for 93/102 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-22 09:27 +0700)
+- Commit d4b40f2e1: zig transpiler: fix list index assignment
+- Generated Zig for 91/102 programs
+- Updated README checklist and outputs
+
 ## Progress (2025-07-22 09:03 +0700)
 - Commit ac197544c: zig transpiler: support nested functions
 - Generated Zig for 91/102 programs
