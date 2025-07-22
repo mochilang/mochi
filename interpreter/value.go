@@ -6,6 +6,8 @@ import (
 	"sort"
 	"strconv"
 	"strings"
+
+	"mochi/parser"
 )
 
 // ValueTag represents the type of a runtime value.
@@ -84,6 +86,8 @@ func anyToValue(v any) Value {
 	case int:
 		return Value{Tag: TagInt, Int: val}
 	case int64:
+		return Value{Tag: TagInt, Int: int(val)}
+	case parser.IntLit:
 		return Value{Tag: TagInt, Int: int(val)}
 	case float64:
 		return Value{Tag: TagFloat, Float: val}

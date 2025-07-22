@@ -464,6 +464,9 @@ func (i *Interpreter) evalStmt(s *parser.Statement) error {
 			if err != nil {
 				return err
 			}
+			if n, ok := toInt(val); ok {
+				val = n
+			}
 		}
 		i.env.SetValue(s.Let.Name, val, false)
 		return nil
@@ -475,6 +478,9 @@ func (i *Interpreter) evalStmt(s *parser.Statement) error {
 			val, err = i.evalExpr(s.Var.Value)
 			if err != nil {
 				return err
+			}
+			if n, ok := toInt(val); ok {
+				val = n
 			}
 		}
 		i.env.SetValue(s.Var.Name, val, true)
@@ -855,12 +861,12 @@ func (i *Interpreter) evalFor(stmt *parser.ForStmt) error {
 		if err != nil {
 			return err
 		}
-		fromInt, ok1 := fromVal.(int)
-		toInt, ok2 := toVal.(int)
+		fromInt, ok1 := toInt(fromVal)
+		toIntVal, ok2 := toInt(toVal)
 		if !ok1 || !ok2 {
 			return errInvalidRangeBounds(stmt.Pos, fmt.Sprintf("%T", fromVal), fmt.Sprintf("%T", toVal))
 		}
-		for x := fromInt; x < toInt; x++ {
+		for x := fromInt; x < toIntVal; x++ {
 			child.SetValue(stmt.Name, x, true)
 			cont, err := i.execLoopBody(stmt.Body)
 			if err != nil {
