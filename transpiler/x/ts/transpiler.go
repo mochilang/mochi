@@ -2820,13 +2820,28 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 						args[i] = &FormatListExpr{Value: a}
 						continue
 					}
-					if isBoolExpr(p.Call.Args[i]) {
-						args[i] = &BoolStringExpr{Value: a}
+				}
+				switch v := a.(type) {
+				case *MethodCallExpr:
+					if v.Method == "includes" {
+						args[i] = &UnaryExpr{Op: "+", Expr: a}
 						continue
+					}
+				case *UnaryExpr:
+					if v.Op == "!" {
+						if mc, ok := v.Expr.(*MethodCallExpr); ok && mc.Method == "includes" {
+							// print boolean as is
+							continue
+						}
 					}
 				}
 				if isNumericBool(a) {
 					args[i] = &UnaryExpr{Op: "+", Expr: a}
+					continue
+				}
+				if transpileEnv != nil && isBoolExpr(p.Call.Args[i]) {
+					args[i] = &BoolStringExpr{Value: a}
+					continue
 				}
 			}
 			return &PrintExpr{Args: args}, nil
@@ -3214,16 +3229,27 @@ func isNumericBool(e Expr) bool {
 	case *BinaryExpr:
 		switch ex.Op {
 		case "in":
-			return false
+			return true
 		case "==", "!=", "<", "<=", ">", ">=", "&&", "||":
 			return true
 		}
 		return isNumericBool(ex.Left) || isNumericBool(ex.Right)
 	case *UnaryExpr:
 		if ex.Op == "!" {
+			if be, ok := ex.Expr.(*BinaryExpr); ok && be.Op == "in" {
+				return false
+			}
+			if mc, ok := ex.Expr.(*MethodCallExpr); ok && mc.Method == "includes" {
+				return false
+			}
 			return true
 		}
 		return isNumericBool(ex.Expr)
+	case *MethodCallExpr:
+		if ex.Method == "includes" {
+			return true
+		}
+		return false
 	default:
 		return false
 	}
