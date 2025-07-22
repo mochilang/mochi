@@ -8,6 +8,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"sort"
 	"strings"
 	"testing"
 	"time"
@@ -40,80 +41,21 @@ func TestTranspilePrograms(t *testing.T) {
 	if _, err := exec.LookPath("kotlinc"); err != nil {
 		t.Skip("kotlinc not installed")
 	}
-	cases := []string{
-		"print_hello",
-		"count_builtin",
-		"avg_builtin",
-		"sum_builtin",
-		"len_builtin",
-		"len_string",
-		"str_builtin",
-		"let_and_print",
-		"basic_compare",
-		"binary_precedence",
-		"math_ops",
-		"unary_neg",
-		"string_compare",
-		"string_concat",
-		"append_builtin",
-		"min_max_builtin",
-		"substring_builtin",
-		"typed_let",
-		"typed_var",
-		"var_assignment",
-		"len_map",
-		"list_index",
-		"string_contains",
-		"string_in_operator",
-		"string_index",
-		"bool_chain",
-		"if_else",
-		"if_then_else",
-		"if_then_else_nested",
-		"break_continue",
-		"for_list_collection",
-		"for_loop",
-		"while_loop",
-		"fun_call",
-		"fun_three_args",
-		"fun_expr_in_let",
-		"list_assign",
-		"map_assign",
-		"map_in_operator",
-		"slice",
-		"string_prefix_slice",
-		"cast_string_to_int",
-		"for_map_collection",
-		"list_nested_assign",
-		"map_nested_assign",
-		"tail_recursion",
-		"two-sum",
-		"membership",
-		"map_membership",
-		"closure",
-		"nested_function",
-		"map_literal_dynamic",
-		"cross_join",
-		"pure_fold",
-		"pure_global_fold",
-		"short_circuit",
-		"match_expr",
-		"match_full",
-		"group_by_multi_join",
-		"user_type_literal",
-		"order_by_map",
-		"sort_stable",
-		"load_yaml",
-		"load_jsonl",
-		"save_jsonl_stdout",
-		"update_stmt",
-	}
 	root := repoRoot(t)
+	srcDir := filepath.Join(root, "tests", "vm", "valid")
 	outDir := filepath.Join(root, "tests", "transpiler", "x", "kt")
+	files, err := filepath.Glob(filepath.Join(srcDir, "*.mochi"))
+	if err != nil {
+		t.Fatalf("glob: %v", err)
+	}
+	sort.Strings(files)
+	if len(files) == 0 {
+		t.Fatal("no golden tests found")
+	}
 	os.MkdirAll(outDir, 0o755)
-	for _, name := range cases {
-		t.Run(name, func(t *testing.T) {
-			src := filepath.Join(root, "tests", "vm", "valid", name+".mochi")
+	for _, src := range files {
+		name := strings.TrimSuffix(filepath.Base(src), ".mochi")
+		ok := t.Run(name, func(t *testing.T) {
 			prog, err := parser.Parse(src)
 			if err != nil {
 				t.Fatalf("parse: %v", err)
@@ -155,6 +97,9 @@ func TestTranspilePrograms(t *testing.T) {
 			}
 			_ = os.Remove(jar)
 		})
+		if !ok {
+			break
+		}
 	}
 }
 

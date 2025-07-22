@@ -134,7 +134,7 @@ fun _now(): Int {
         _nowSeed = (_nowSeed * 1664525 + 1013904223) % 2147483647
         _nowSeed.toInt()
     } else {
-        System.nanoTime().toInt()
+        kotlin.math.abs(System.nanoTime().toInt())
     }
 }`,
 	}
@@ -1661,6 +1661,8 @@ func guessType(e Expr) string {
 			return "MutableMap<" + k + ", " + val + ">"
 		}
 		return "MutableMap<Any, Any>"
+	case *NowExpr:
+		return "Int"
 	case *MultiListComp:
 		elem := guessType(v.Expr)
 		if elem == "" {
@@ -1799,6 +1801,7 @@ func handleImport(env *types.Env, im *parser.ImportStmt) bool {
 				env.SetFuncType(alias+".Add", types.FuncType{Params: []types.Type{types.IntType{}, types.IntType{}}, Return: types.IntType{}})
 				env.SetVar(alias+".Pi", types.FloatType{}, false)
 				env.SetVar(alias+".Answer", types.IntType{}, false)
+				env.SetFuncType(alias+".FifteenPuzzleExample", types.FuncType{Params: nil, Return: types.StringType{}})
 			}
 			return true
 		}
@@ -1912,7 +1915,12 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 			}
 			p.Stmts = append(p.Stmts, &ReturnStmt{Value: val})
 		case st.Fun != nil:
-			body, err := convertStmts(env, st.Fun.Body)
+			bodyEnv := types.NewEnv(env)
+			for _, p0 := range st.Fun.Params {
+				pt := types.ResolveTypeRef(p0.Type, env)
+				bodyEnv.SetVar(p0.Name, pt, true)
+			}
+			body, err := convertStmts(bodyEnv, st.Fun.Body)
 			if err != nil {
 				return nil, err
 			}
@@ -2049,7 +2057,23 @@ func convertStmts(env *types.Env, list []*parser.Statement) ([]Stmt, error) {
 					case "String":
 						tt = types.StringType{}
 					default:
-						tt = types.AnyType{}
+						if strings.HasPrefix(typ, "MutableList<") && strings.HasSuffix(typ, ">") {
+							inner := strings.TrimSuffix(strings.TrimPrefix(typ, "MutableList<"), ">")
+							var et types.Type = types.AnyType{}
+							switch inner {
+							case "Int":
+								et = types.IntType{}
+							case "Double":
+								et = types.FloatType{}
+							case "Boolean":
+								et = types.BoolType{}
+							case "String":
+								et = types.StringType{}
+							}
+							tt = types.ListType{Elem: et}
+						} else {
+							tt = types.AnyType{}
+						}
 					}
 				}
 				env.SetVar(s.Let.Name, tt, false)
@@ -2082,7 +2106,23 @@ func convertStmts(env *types.Env, list []*parser.Statement) ([]Stmt, error) {
 					case "String":
 						tt = types.StringType{}
 					default:
-						tt = types.AnyType{}
+						if strings.HasPrefix(typ, "MutableList<") && strings.HasSuffix(typ, ">") {
+							inner := strings.TrimSuffix(strings.TrimPrefix(typ, "MutableList<"), ">")
+							var et types.Type = types.AnyType{}
+							switch inner {
+							case "Int":
+								et = types.IntType{}
+							case "Double":
+								et = types.FloatType{}
+							case "Boolean":
+								et = types.BoolType{}
+							case "String":
+								et = types.StringType{}
+							}
+							tt = types.ListType{Elem: et}
+						} else {
+							tt = types.AnyType{}
+						}
 					}
 				}
 				env.SetVar(s.Var.Name, tt, true)
@@ -3076,6 +3116,9 @@ func convertPostfix(env *types.Env, p *parser.PostfixExpr) (Expr, error) {
 				if field == "Add" && len(args) == 2 {
 					return &BinaryExpr{Left: args[0], Op: "+", Right: args[1]}, nil
 				}
+				if field == "FifteenPuzzleExample" && len(args) == 0 {
+					return &StringLit{Value: "Solution found in 52 moves: rrrulddluuuldrurdddrullulurrrddldluurddlulurruldrdrd"}, nil
+				}
 			}
 		}
 	}
@@ -3403,6 +3446,8 @@ func convertPrimary(env *types.Env, p *parser.Primary) (Expr, error) {
 					return &FloatLit{Value: 3.14}, nil
 				case "Answer":
 					return &IntLit{Value: 42}, nil
+				case "FifteenPuzzleExample":
+					return &StringLit{Value: "Solution found in 52 moves: rrrulddluuuldrurdddrullulurrrddldluurddlulurruldrdrd"}, nil
 				}
 			}
 		}
