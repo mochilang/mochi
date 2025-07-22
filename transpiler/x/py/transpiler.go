@@ -3507,22 +3507,16 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 					outArgs[i] = &RawExpr{Code: fmt.Sprintf("(\"true\" if %s else \"false\")", exprString(a))}
 				} else if lt, ok := t.(types.ListType); ok {
 					if _, ok2 := lt.Elem.(types.StructType); ok2 {
-						currentImports["json"] = true
 						currentImports["dataclasses"] = true
-						conv := &ListComp{Var: "_x", Iter: a, Expr: &CallExpr{Func: &FieldExpr{Target: &Name{Name: "dataclasses"}, Name: "asdict"}, Args: []Expr{&Name{Name: "_x"}}}}
-						outArgs[i] = &CallExpr{Func: &RawExpr{Code: "json.dumps"}, Args: []Expr{conv}}
+						outArgs[i] = &ListComp{Var: "_x", Iter: a, Expr: &CallExpr{Func: &FieldExpr{Target: &Name{Name: "dataclasses"}, Name: "asdict"}, Args: []Expr{&Name{Name: "_x"}}}}
 					} else {
-						currentImports["json"] = true
-						outArgs[i] = &CallExpr{Func: &RawExpr{Code: "json.dumps"}, Args: []Expr{a}}
+						outArgs[i] = a
 					}
 				} else if _, ok := t.(types.MapType); ok {
-					currentImports["json"] = true
-					outArgs[i] = &CallExpr{Func: &RawExpr{Code: "json.dumps"}, Args: []Expr{a}}
+					outArgs[i] = a
 				} else if isStructType(t) {
-					currentImports["json"] = true
 					currentImports["dataclasses"] = true
-					conv := &CallExpr{Func: &FieldExpr{Target: &Name{Name: "dataclasses"}, Name: "asdict"}, Args: []Expr{a}}
-					outArgs[i] = &CallExpr{Func: &RawExpr{Code: "json.dumps"}, Args: []Expr{conv}}
+					outArgs[i] = &CallExpr{Func: &FieldExpr{Target: &Name{Name: "dataclasses"}, Name: "asdict"}, Args: []Expr{a}}
 				} else {
 					outArgs[i] = a
 				}

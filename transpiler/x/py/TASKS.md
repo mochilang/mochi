@@ -1,6 +1,6 @@
-## Progress (2025-07-22 14:16 +0700)
-- Commit c7b6f60ac: transpiler(py): improve print type inference
-- Generated Python for 95/102 programs
+## Progress (2025-07-22 14:44 +0700)
+- Commit 75825c5ea: transpiler(py): fix group_by_conditional_sum output
+- Generated Python for 96/102 programs
 - Updated README checklist and outputs
 - Refactored join handling and improved type inference from loaded data
 
