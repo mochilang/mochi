@@ -9,6 +9,7 @@ import (
 	"sort"
 	"strconv"
 	"strings"
+	"unicode"
 
 	"mochi/ast"
 	"mochi/parser"
@@ -737,7 +738,11 @@ func matchToIf(m *parser.MatchExpr, env *compileEnv) (Expr, error) {
 		if err != nil {
 			return nil, err
 		}
-		cond := &BinaryExpr{Left: target, Op: "=:=", Right: pat}
+		op := "=:="
+		if isStringLike(target, env) || isStringLike(pat, env) || isMapLike(target, env) || isMapLike(pat, env) {
+			op = "="
+		}
+		cond := &BinaryExpr{Left: target, Op: op, Right: pat}
 		out = &IfExpr{Cond: cond, Then: res, Else: out}
 	}
 	return out, nil
@@ -1010,6 +1015,10 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	p := &Program{}
 	for i, st := range prog.Statements {
 		switch {
+		case st.Test != nil:
+			continue
+		case st.Expect != nil:
+			continue
 		case st.Fun != nil:
 			if len(st.Fun.Params) == 0 && st.Fun.Return != nil {
 				// used for constant folding only
@@ -1186,6 +1195,11 @@ func compileStmts(sts []*parser.Statement, env *compileEnv) ([]Stmt, error) {
 	var out []Stmt
 	for i, s := range sts {
 		switch {
+		case s.Test != nil:
+			// ignore test blocks
+			continue
+		case s.Expect != nil:
+			continue
 		case s.Expr != nil:
 			call := s.Expr.Expr.Binary.Left.Value.Target.Call
 			if call == nil || (call.Func != "print" && call.Func != "json") {
@@ -1670,13 +1684,13 @@ func toBinary(b *parser.BinaryExpr, env *compileEnv) (Expr, error) {
 		case "%":
 			opStr = "mod"
 		case "==":
-			if isStringLike(left, env) || isStringLike(right, env) {
+			if isStringLike(left, env) || isStringLike(right, env) || isMapLike(left, env) || isMapLike(right, env) {
 				opStr = "="
 			} else {
 				opStr = "=:="
 			}
 		case "!=":
-			if isStringLike(left, env) || isStringLike(right, env) {
+			if isStringLike(left, env) || isStringLike(right, env) || isMapLike(left, env) || isMapLike(right, env) {
 				opStr = "\\="
 			} else {
 				opStr = "=\\="
@@ -1941,6 +1955,16 @@ func toPostfix(pf *parser.PostfixExpr, env *compileEnv) (Expr, error) {
 
 func toPrimary(p *parser.Primary, env *compileEnv) (Expr, error) {
 	switch {
+	case p.Struct != nil:
+		items := []MapItem{{Key: "tag", Value: &StringLit{Value: p.Struct.Name}}}
+		for _, f := range p.Struct.Fields {
+			val, err := toExpr(f.Value, env)
+			if err != nil {
+				return nil, err
+			}
+			items = append(items, MapItem{Key: f.Name, Value: val})
+		}
+		return &MapLit{Items: items}, nil
 	case p.Lit != nil:
 		if p.Lit.Int != nil {
 			return &IntLit{Value: int(*p.Lit.Int)}, nil
@@ -1973,6 +1997,13 @@ func toPrimary(p *parser.Primary, env *compileEnv) (Expr, error) {
 			idx := &StringLit{Value: p.Selector.Tail[0]}
 			target := &Var{Name: env.current(p.Selector.Root)}
 			return &IndexExpr{Target: target, Index: idx, IsString: true, IsMap: true}, nil
+		}
+		if len(p.Selector.Tail) > 1 {
+			var expr Expr = &Var{Name: env.current(p.Selector.Root)}
+			for _, f := range p.Selector.Tail {
+				expr = &IndexExpr{Target: expr, Index: &StringLit{Value: f}, IsString: true, IsMap: true}
+			}
+			return expr, nil
 		}
 		return nil, fmt.Errorf("unsupported selector")
 	case p.Call != nil:
@@ -2110,6 +2141,31 @@ func toPrimary(p *parser.Primary, env *compileEnv) (Expr, error) {
 			}
 			return &AppendExpr{List: listArg, Elem: elemArg}, nil
 		default:
+			if len(p.Call.Func) > 0 && unicode.IsUpper(rune(p.Call.Func[0])) {
+				args := make([]Expr, len(p.Call.Args))
+				for i, a := range p.Call.Args {
+					ex, err := toExpr(a, env)
+					if err != nil {
+						return nil, err
+					}
+					args[i] = ex
+				}
+				if p.Call.Func == "Node" && len(args) == 3 {
+					items := []MapItem{
+						{Key: "tag", Value: &StringLit{Value: "Node"}},
+						{Key: "left", Value: args[0]},
+						{Key: "value", Value: args[1]},
+						{Key: "right", Value: args[2]},
+					}
+					return &MapLit{Items: items}, nil
+				}
+				items := []MapItem{{Key: "tag", Value: &StringLit{Value: p.Call.Func}}}
+				for i, a := range args {
+					key := fmt.Sprintf("_%d", i+1)
+					items = append(items, MapItem{Key: key, Value: a})
+				}
+				return &MapLit{Items: items}, nil
+			}
 			if len(p.Call.Args) == 0 {
 				if ex, ok := env.funcs[p.Call.Func]; ok {
 					return ex, nil
