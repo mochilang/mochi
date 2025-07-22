@@ -50,6 +50,13 @@ type IndexAssignStmt struct {
 	Target Expr
 	Value  Expr
 }
+
+// SaveStmt saves a list of maps to stdout in JSONL format.
+type SaveStmt struct {
+	Src    Expr
+	Path   string
+	Format string
+}
 type FunStmt struct {
 	Name   string
 	Params []string
@@ -173,7 +180,9 @@ func (c *CallExpr) emit(w io.Writer) {
 	switch c.Func {
 	case "print":
 		if len(c.Args) == 1 && (isListExpr(c.Args[0]) || isMapExpr(c.Args[0])) {
-			(&CallExpr{Func: "json", Args: c.Args}).emit(w)
+			io.WriteString(w, "print(")
+			(&CallExpr{Func: "repr", Args: c.Args}).emit(w)
+			io.WriteString(w, ")")
 			return
 		}
 
@@ -318,7 +327,7 @@ func (c *CallExpr) emit(w io.Writer) {
 			io.WriteString(w, ")")
 		}
 	case "json":
-		io.WriteString(w, `;
+		io.WriteString(w, `
 (function(v)
   local function encode(x)
     if type(x) == "table" then
@@ -333,7 +342,44 @@ func (c *CallExpr) emit(w io.Writer) {
       else
         local keys = {}
         for k in pairs(x) do table.insert(keys, k) end
-        table.sort(keys, function(a,b) return tostring(a) < tostring(b) end)
+        table.sort(keys, function(a,b) return tostring(a) > tostring(b) end)
+        local parts = {"{"}
+        for i, k in ipairs(keys) do
+          parts[#parts+1] = '"' .. tostring(k) .. '": ' .. encode(x[k])
+          if i < #keys then parts[#parts+1] = ", " end
+        end
+        parts[#parts+1] = "}"
+        return table.concat(parts)
+      end
+    elseif type(x) == "string" then
+      return '"' .. x .. '"'
+    else
+      return tostring(x)
+    end
+  end
+  print(encode(v))
+end)(`)
+		if len(c.Args) > 0 {
+			c.Args[0].emit(w)
+		}
+		io.WriteString(w, `)`)
+	case "repr":
+		io.WriteString(w, `
+(function(v)
+  local function encode(x)
+    if type(x) == "table" then
+      if #x > 0 then
+        local parts = {"["}
+        for i, val in ipairs(x) do
+          parts[#parts+1] = encode(val)
+          if i < #x then parts[#parts+1] = ", " end
+        end
+        parts[#parts+1] = "]"
+        return table.concat(parts)
+      else
+        local keys = {}
+        for k in pairs(x) do table.insert(keys, k) end
+        table.sort(keys, function(a,b) return tostring(a) > tostring(b) end)
         local parts = {"{"}
         for i, k in ipairs(keys) do
           parts[#parts+1] = "'" .. tostring(k) .. "': " .. encode(x[k])
@@ -348,7 +394,7 @@ func (c *CallExpr) emit(w io.Writer) {
       return tostring(x)
     end
   end
-  print(encode(v))
+  return encode(v)
 end)(`)
 		if len(c.Args) > 0 {
 			c.Args[0].emit(w)
@@ -398,6 +444,18 @@ func (a *IndexAssignStmt) emit(w io.Writer) {
 	} else {
 		a.Value.emit(w)
 	}
+}
+
+func (s *SaveStmt) emit(w io.Writer) {
+	if s.Format == "jsonl" && (s.Path == "" || s.Path == "-") {
+		io.WriteString(w, "for _, _row in ipairs(")
+		s.Src.emit(w)
+		io.WriteString(w, ") do\n  ")
+		(&CallExpr{Func: "json", Args: []Expr{&Ident{Name: "_row"}}}).emit(w)
+		io.WriteString(w, "\nend")
+		return
+	}
+	io.WriteString(w, "-- unsupported save")
 }
 
 func (f *FunStmt) emit(w io.Writer) {
@@ -1111,7 +1169,7 @@ func (qc *QueryComp) emit(w io.Writer) {
 			io.WriteString(w, "end\n")
 		}
 		if qc.SortKey != nil {
-			io.WriteString(w, "local __tmp = {}\nlocal res = {}\n")
+			io.WriteString(w, "local __tmp = {}\nlocal res = {}\nlocal _idx = 0\n")
 		} else {
 			io.WriteString(w, "local res = {}\n")
 		}
@@ -1122,7 +1180,7 @@ func (qc *QueryComp) emit(w io.Writer) {
 			io.WriteString(w, " then\n")
 		}
 		if qc.SortKey != nil {
-			io.WriteString(w, "  table.insert(__tmp, {k = ")
+			io.WriteString(w, "  _idx = _idx + 1\n  table.insert(__tmp, {i = _idx, k = ")
 			qc.SortKey.emit(w)
 			io.WriteString(w, ", v = ")
 		} else {
@@ -1151,9 +1209,9 @@ func (qc *QueryComp) emit(w io.Writer) {
 						io.WriteString(w, "  if a.k."+field+" ~= b.k."+field+" then return a.k."+field+" < b.k."+field+" end\n")
 					}
 				}
-				io.WriteString(w, "  return false\nend)\n")
+				io.WriteString(w, "  return a.i < b.i\nend)\n")
 			} else {
-				io.WriteString(w, "table.sort(__tmp, function(a,b) return a.k < b.k end)\n")
+				io.WriteString(w, "table.sort(__tmp, function(a,b) if a.k == b.k then return a.i < b.i end return a.k < b.k end)\n")
 			}
 			io.WriteString(w, "for i,p in ipairs(__tmp) do res[i] = p.v end\n")
 		}
@@ -1180,7 +1238,7 @@ func (qc *QueryComp) emit(w io.Writer) {
 	if qc.Agg != "" && qc.GroupKey == nil {
 		io.WriteString(w, "(function()\n  local _tmp = {}\n")
 	} else if qc.SortKey != nil {
-		io.WriteString(w, "(function()\n  local __tmp = {}\n  local _res = {}\n")
+		io.WriteString(w, "(function()\n  local __tmp = {}\n  local _res = {}\n  local _idx = 0\n")
 	} else {
 		io.WriteString(w, "(function()\n  local _res = {}\n")
 	}
@@ -1215,7 +1273,7 @@ func (qc *QueryComp) emit(w io.Writer) {
 	if qc.Agg != "" && qc.GroupKey == nil {
 		io.WriteString(w, "table.insert(_tmp, ")
 	} else if qc.SortKey != nil {
-		io.WriteString(w, "table.insert(__tmp, {k = ")
+		io.WriteString(w, "_idx = _idx + 1\n  table.insert(__tmp, {i = _idx, k = ")
 		qc.SortKey.emit(w)
 		io.WriteString(w, ", v = ")
 	} else {
@@ -1252,9 +1310,9 @@ func (qc *QueryComp) emit(w io.Writer) {
 					io.WriteString(w, "    if a.k."+field+" ~= b.k."+field+" then return a.k."+field+" < b.k."+field+" end\n")
 				}
 			}
-			io.WriteString(w, "    return false\n  end)\n")
+			io.WriteString(w, "    return a.i < b.i\n  end)\n")
 		} else {
-			io.WriteString(w, "  table.sort(__tmp, function(a,b) return a.k < b.k end)\n")
+			io.WriteString(w, "  table.sort(__tmp, function(a,b) if a.k == b.k then return a.i < b.i end return a.k < b.k end)\n")
 		}
 		io.WriteString(w, "  for i,p in ipairs(__tmp) do _res[i] = p.v end\n")
 		if qc.Skip != nil || qc.Take != nil {
@@ -1530,6 +1588,21 @@ func literalString(e *parser.Expr) (string, bool) {
 	return "", false
 }
 
+func extractSaveExpr(e *parser.Expr) *parser.SaveExpr {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) > 0 {
+		return nil
+	}
+	u := e.Binary.Left
+	if len(u.Ops) > 0 || u.Value == nil {
+		return nil
+	}
+	p := u.Value
+	if len(p.Ops) > 0 || p.Target == nil {
+		return nil
+	}
+	return p.Target.Save
+}
+
 func parseFormat(e *parser.Expr) string {
 	ml := mapLiteralExpr(e)
 	if ml == nil {
@@ -1640,7 +1713,7 @@ func Emit(p *Program) []byte {
 			b.WriteByte('\n')
 		}
 		st.emit(&b)
-		b.WriteByte('\n')
+		b.WriteString(";\n")
 	}
 	currentEnv = prevEnv
 	return formatLua(b.Bytes())
@@ -2473,6 +2546,18 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 	case st.ExternObject != nil:
 		return nil, nil
 	case st.Expr != nil:
+		if se := extractSaveExpr(st.Expr.Expr); se != nil {
+			src, err := convertExpr(se.Src)
+			if err != nil {
+				return nil, err
+			}
+			format := parseFormat(se.With)
+			path := ""
+			if se.Path != nil {
+				path = strings.Trim(*se.Path, "\"")
+			}
+			return &SaveStmt{Src: src, Path: path, Format: format}, nil
+		}
 		expr, err := convertExpr(st.Expr.Expr)
 		if err != nil {
 			return nil, err
