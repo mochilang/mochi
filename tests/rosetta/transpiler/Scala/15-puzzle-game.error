@@ -1,0 +1,65 @@
+exit status 1
+/workspace/mochi/tests/rosetta/transpiler/Scala/15-puzzle-game.scala:5: error: not found: value now
+    return now() % 4
+           ^
+/workspace/mochi/tests/rosetta/transpiler/Scala/15-puzzle-game.scala:19: error: not found: type any
+  def isValidMove(m: Int): Map[String,any] = {
+                                      ^
+/workspace/mochi/tests/rosetta/transpiler/Scala/15-puzzle-game.scala:21: error: value - is not a member of (String, Int)
+      return Map("idx" -> empty - 4, "ok" -> empty / 4 > 0)
+                                ^
+/workspace/mochi/tests/rosetta/transpiler/Scala/15-puzzle-game.scala:21: error: value > is not a member of (String, Int)
+      return Map("idx" -> empty - 4, "ok" -> empty / 4 > 0)
+                                                       ^
+/workspace/mochi/tests/rosetta/transpiler/Scala/15-puzzle-game.scala:24: error: type mismatch;
+ found   : Int(4)
+ required: String
+      return Map("idx" -> empty + 4, "ok" -> empty / 4 < 3)
+                                  ^
+/workspace/mochi/tests/rosetta/transpiler/Scala/15-puzzle-game.scala:24: error: value < is not a member of (String, Int)
+      return Map("idx" -> empty + 4, "ok" -> empty / 4 < 3)
+                                                       ^
+/workspace/mochi/tests/rosetta/transpiler/Scala/15-puzzle-game.scala:27: error: type mismatch;
+ found   : Int(1)
+ required: String
+      return Map("idx" -> empty + 1, "ok" -> empty % 4 < 3)
+                                  ^
+/workspace/mochi/tests/rosetta/transpiler/Scala/15-puzzle-game.scala:27: error: value < is not a member of (String, Int)
+      return Map("idx" -> empty + 1, "ok" -> empty % 4 < 3)
+                                                       ^
+/workspace/mochi/tests/rosetta/transpiler/Scala/15-puzzle-game.scala:30: error: value - is not a member of (String, Int)
+      return Map("idx" -> empty - 1, "ok" -> empty % 4 > 0)
+                                ^
+/workspace/mochi/tests/rosetta/transpiler/Scala/15-puzzle-game.scala:30: error: value > is not a member of (String, Int)
+      return Map("idx" -> empty - 1, "ok" -> empty % 4 > 0)
+                                                       ^
+/workspace/mochi/tests/rosetta/transpiler/Scala/15-puzzle-game.scala:41: error: not found: value int
+    val j = int(r("idx"))
+            ^
+/workspace/mochi/tests/rosetta/transpiler/Scala/15-puzzle-game.scala:44: error: type mismatch;
+ found   : Any
+ required: Int
+    board(j) = tmp
+               ^
+/workspace/mochi/tests/rosetta/transpiler/Scala/15-puzzle-game.scala:68: error: value < is not a member of Any
+        if (`val` < 10) {
+                  ^
+/workspace/mochi/tests/rosetta/transpiler/Scala/15-puzzle-game.scala:85: error: not found: value input
+      val s = input()
+              ^
+/workspace/mochi/tests/rosetta/transpiler/Scala/15-puzzle-game.scala:87: error: not found: value continue
+        continue
+        ^
+/workspace/mochi/tests/rosetta/transpiler/Scala/15-puzzle-game.scala:106: error: method playOneMove has return statement; needs result type
+                return
+                ^
+/workspace/mochi/tests/rosetta/transpiler/Scala/15-puzzle-game.scala:109: error: not found: value continue
+                continue
+                ^
+/workspace/mochi/tests/rosetta/transpiler/Scala/15-puzzle-game.scala:117: error: not found: value continue
+        continue
+        ^
+/workspace/mochi/tests/rosetta/transpiler/Scala/15-puzzle-game.scala:119: error: method playOneMove has return statement; needs result type
+      return
+      ^
+19 errors found

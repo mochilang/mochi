@@ -1,0 +1,40 @@
+exit status 1
+/workspace/mochi/tests/rosetta/transpiler/Scala/24-game-solve.scala:4: error: not found: type any
+  def newNum(n: Int): Map[String,any] = {
+                                 ^
+/workspace/mochi/tests/rosetta/transpiler/Scala/24-game-solve.scala:8: error: not found: type any
+  def exprEval(x: Map[String,any]): Map[String,Int] = {
+                             ^
+/workspace/mochi/tests/rosetta/transpiler/Scala/24-game-solve.scala:15: error: type mismatch;
+ found   : Int
+ required: String
+      return Map("num" -> l("num") * r("denom") + l("denom") * r("num"), "denom" -> l("denom") * r("denom"))
+                                                             ^
+/workspace/mochi/tests/rosetta/transpiler/Scala/24-game-solve.scala:18: error: value - is not a member of (String, Int)
+      return Map("num" -> l("num") * r("denom") - l("denom") * r("num"), "denom" -> l("denom") * r("denom"))
+                                                ^
+/workspace/mochi/tests/rosetta/transpiler/Scala/24-game-solve.scala:26: error: not found: type any
+  def exprString(x: Map[String,any]): String = {
+                               ^
+/workspace/mochi/tests/rosetta/transpiler/Scala/24-game-solve.scala:49: error: not found: type any
+  def solve(xs: ArrayBuffer[Map[String,any]]): Boolean = {
+                                       ^
+/workspace/mochi/tests/rosetta/transpiler/Scala/24-game-solve.scala:52: error: not found: value goal
+      if (f("denom") != 0 && f("num") == f("denom") * goal) {
+                                                      ^
+/workspace/mochi/tests/rosetta/transpiler/Scala/24-game-solve.scala:62: error: not found: type any
+        var rest: ArrayBuffer[Map[String,any]] = ArrayBuffer()
+                                         ^
+/workspace/mochi/tests/rosetta/transpiler/Scala/24-game-solve.scala:96: error: not found: type any
+      var cards: ArrayBuffer[Map[String,any]] = ArrayBuffer()
+                                        ^
+/workspace/mochi/tests/rosetta/transpiler/Scala/24-game-solve.scala:98: error: not found: value n_cards
+      while (i < n_cards) {
+                 ^
+/workspace/mochi/tests/rosetta/transpiler/Scala/24-game-solve.scala:99: error: not found: value now
+        val n = now() % digit_range - 1 + 1
+                ^
+/workspace/mochi/tests/rosetta/transpiler/Scala/24-game-solve.scala:99: error: not found: value digit_range
+        val n = now() % digit_range - 1 + 1
+                        ^
+12 errors found
