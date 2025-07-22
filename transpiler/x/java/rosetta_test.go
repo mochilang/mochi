@@ -17,25 +17,6 @@ import (
 	"mochi/types"
 )
 
-func repoRoot(t *testing.T) string {
-	dir, err := os.Getwd()
-	if err != nil {
-		t.Fatal(err)
-	}
-	for i := 0; i < 10; i++ {
-		if _, err := os.Stat(filepath.Join(dir, "go.mod")); err == nil {
-			return dir
-		}
-		parent := filepath.Dir(dir)
-		if parent == dir {
-			break
-		}
-		dir = parent
-	}
-	t.Fatal("go.mod not found")
-	return ""
-}
-
 func shouldUpdateRosetta() bool {
 	if v, ok := os.LookupEnv("UPDATE"); ok && (v == "1" || v == "true") {
 		return true
@@ -66,7 +47,7 @@ func classNameFromVar(s string) string {
 }
 
 func runRosettaTask(t *testing.T, name string) {
-	root := repoRoot(t)
+	root := repoRootDir(t)
 	src := filepath.Join(root, "tests", "rosetta", "x", "Mochi", name+".mochi")
 	outDir := filepath.Join(root, "tests", "rosetta", "transpiler", "Java")
 	codePath := filepath.Join(outDir, name+".java")
@@ -136,7 +117,7 @@ func TestJavaTranspiler_Rosetta_Golden(t *testing.T) {
 	if _, err := exec.LookPath("java"); err != nil {
 		t.Skip("java runtime not installed")
 	}
-	root := repoRoot(t)
+	root := repoRootDir(t)
 	files, err := filepath.Glob(filepath.Join(root, "tests", "rosetta", "x", "Mochi", "*.mochi"))
 	if err != nil {
 		t.Fatalf("glob: %v", err)
@@ -150,14 +131,8 @@ func TestJavaTranspiler_Rosetta_Golden(t *testing.T) {
 	}
 }
 
-func TestMain(m *testing.M) {
-	code := m.Run()
-	updateReadme()
-	os.Exit(code)
-}
-
-func updateReadme() {
-	root := repoRoot(&testing.T{})
+func updateRosetta() {
+	root := repoRootDir(&testing.T{})
 	srcDir := filepath.Join(root, "tests", "rosetta", "x", "Mochi")
 	outDir := filepath.Join(root, "tests", "rosetta", "transpiler", "Java")
 	readmePath := filepath.Join(root, "transpiler", "x", "java", "ROSETTA.md")

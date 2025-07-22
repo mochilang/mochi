@@ -28,6 +28,7 @@ var topEnv *types.Env
 var groupItems map[string]string
 var needLoadYaml bool
 var needSaveJsonl bool
+var needInput bool
 var pyMathAliases map[string]bool
 var structDefs map[string]map[string]string
 
@@ -144,6 +145,8 @@ func inferType(e Expr) string {
 		return "double"
 	case *BoolLit:
 		return "boolean"
+	case *InputExpr:
+		return "String"
 	case *StringLit:
 		return "string"
 	case *SubstringExpr:
@@ -1333,6 +1336,11 @@ type BoolLit struct{ Value bool }
 
 func (b *BoolLit) emit(w io.Writer) { fmt.Fprint(w, b.Value) }
 
+// InputExpr represents a call to input() returning a line from stdin.
+type InputExpr struct{}
+
+func (in *InputExpr) emit(w io.Writer) { fmt.Fprint(w, "_scanner.nextLine()") }
+
 func (u *UnaryExpr) emit(w io.Writer) {
 	fmt.Fprint(w, u.Op)
 	if _, ok := u.Value.(*BinaryExpr); ok {
@@ -1651,6 +1659,7 @@ func Transpile(p *parser.Program, env *types.Env) (*Program, error) {
 	structCount = 0
 	topEnv = env
 	groupItems = map[string]string{}
+	needInput = false
 	pyMathAliases = map[string]bool{}
 	structDefs = map[string]map[string]string{}
 	for _, s := range p.Statements {
@@ -2246,6 +2255,10 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 			args[i] = ex
 		}
 		name := p.Call.Func
+		if name == "input" && len(args) == 0 {
+			needInput = true
+			return &InputExpr{}, nil
+		}
 		if t, ok := varTypes[name]; ok && t == "fn" {
 			return &MethodCallExpr{Target: &VarExpr{Name: name}, Name: "applyAsInt", Args: args}, nil
 		}
@@ -2812,6 +2825,9 @@ func Emit(prog *Program) []byte {
 	if len(prog.Stmts) > 0 {
 		buf.WriteByte('\n')
 	}
+	if needInput {
+		buf.WriteString("    static java.util.Scanner _scanner = new java.util.Scanner(System.in);\n\n")
+	}
 	if needLoadYaml {
 		buf.WriteString("    static java.util.List<java.util.Map<String,Object>> loadYaml(String path) {\n")
 		buf.WriteString("        if (!(new java.io.File(path)).isAbsolute()) {\n")
@@ -3088,6 +3104,8 @@ func renameVar(e Expr, oldName, newName string) Expr {
 			elems[i] = renameVar(el, oldName, newName)
 		}
 		return &ListLit{ElemType: ex.ElemType, Elems: elems}
+	case *InputExpr:
+		return ex
 	case *StructLit:
 		fields := make([]Expr, len(ex.Fields))
 		for i, f := range ex.Fields {
