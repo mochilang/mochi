@@ -35,6 +35,7 @@ func init() {
 // --- C# AST ---
 
 type Program struct {
+	Imports []string
 	Structs []StructDecl
 	Globals []*Global
 	Funcs   []*Function
@@ -68,6 +69,7 @@ var usesJson bool
 var globalDecls map[string]*Global
 var mutatedVars map[string]bool
 var blockDepth int
+var importAliases map[string]string
 
 func gitTimestamp() string {
 	out, err := exec.Command("git", "log", "-1", "--format=%cI").Output()
@@ -567,6 +569,20 @@ type MethodCallExpr struct {
 }
 
 func (m *MethodCallExpr) emit(w io.Writer) {
+	if vr, ok := m.Target.(*VarRef); ok {
+		if alias, ok2 := importAliases[vr.Name]; ok2 && alias == "math" {
+			fmt.Fprint(w, "Math.")
+			fmt.Fprintf(w, "%s(", strings.Title(m.Name))
+			for i, a := range m.Args {
+				if i > 0 {
+					fmt.Fprint(w, ", ")
+				}
+				a.emit(w)
+			}
+			fmt.Fprint(w, ")")
+			return
+		}
+	}
 	m.Target.emit(w)
 	fmt.Fprintf(w, ".%s(", m.Name)
 	for i, a := range m.Args {
@@ -650,6 +666,16 @@ type FieldExpr struct {
 }
 
 func (f *FieldExpr) emit(w io.Writer) {
+	if vr, ok := f.Target.(*VarRef); ok {
+		if alias, ok2 := importAliases[vr.Name]; ok2 && alias == "math" {
+			name := strings.Title(f.Name)
+			if f.Name == "pi" {
+				name = "PI"
+			}
+			fmt.Fprintf(w, "Math.%s", name)
+			return
+		}
+	}
 	if isMapExpr(f.Target) {
 		fmt.Fprint(w, "((dynamic)(")
 		f.Target.emit(w)
@@ -1463,6 +1489,7 @@ func Transpile(p *parser.Program, env *types.Env) (*Program, error) {
 	usesJson = false
 	globalDecls = make(map[string]*Global)
 	mutatedVars = make(map[string]bool)
+	importAliases = make(map[string]string)
 	for _, st := range p.Statements {
 		s, err := compileStmt(prog, st)
 		if err != nil {
@@ -1616,15 +1643,25 @@ func compilePostfix(p *parser.PostfixExpr) (Expr, error) {
 		case op.Field != nil:
 			expr = &FieldExpr{Target: expr, Name: op.Field.Name}
 		case op.Call != nil:
-			if fe, ok := expr.(*FieldExpr); ok && fe.Name == "contains" {
-				if len(op.Call.Args) != 1 {
-					return nil, fmt.Errorf("unsupported method call")
-				}
-				arg, err := compileExpr(op.Call.Args[0])
+			args := make([]Expr, len(op.Call.Args))
+			for i, a := range op.Call.Args {
+				ex, err := compileExpr(a)
 				if err != nil {
 					return nil, err
 				}
-				expr = &ContainsExpr{Str: fe.Target, Sub: arg}
+				args[i] = ex
+			}
+			if fe, ok := expr.(*FieldExpr); ok {
+				if fe.Name == "contains" {
+					if len(args) != 1 {
+						return nil, fmt.Errorf("unsupported method call")
+					}
+					expr = &ContainsExpr{Str: fe.Target, Sub: args[0]}
+				} else {
+					expr = &MethodCallExpr{Target: fe.Target, Name: fe.Name, Args: args}
+				}
+			} else if vr, ok := expr.(*VarRef); ok {
+				expr = &CallExpr{Func: vr.Name, Args: args}
 			} else {
 				return nil, fmt.Errorf("unsupported call")
 			}
@@ -1982,6 +2019,14 @@ func compileStmt(prog *Program, s *parser.Statement) (Stmt, error) {
 		return &WhileStmt{Cond: cond, Body: body}, nil
 	case s.If != nil:
 		return compileIfStmt(prog, s.If)
+	case s.Import != nil:
+		if prog != nil && s.Import.Auto && s.Import.Lang != nil && *s.Import.Lang == "python" {
+			if s.Import.Path == "\"math\"" || s.Import.Path == "math" {
+				prog.Imports = append(prog.Imports, fmt.Sprintf("using %s = System.Math;", s.Import.As))
+				importAliases[s.Import.As] = "math"
+				return nil, nil
+			}
+		}
 	case s.Test == nil && s.Import == nil && s.Type == nil:
 		return nil, fmt.Errorf("unsupported statement at %d:%d", s.Pos.Line, s.Pos.Column)
 	}
@@ -2637,7 +2682,7 @@ func compileQueryExpr(q *parser.QueryExpr) (Expr, error) {
 	switch agg := sel.(type) {
 	case *SumExpr:
 		arg := exprString(agg.Arg)
-		base := strings.TrimSuffix(query, " select "+exprString(sel))
+		base := strings.TrimSuffix(query, " select "+exprString(sel)) + " select " + arg
 		if arg == curVar {
 			query = fmt.Sprintf("(%s).Sum()", base)
 		} else {
@@ -2645,6 +2690,9 @@ func compileQueryExpr(q *parser.QueryExpr) (Expr, error) {
 		}
 		usesLinq = true
 		typ := "double"
+		if typeOfExpr(agg.Arg) == "int" {
+			typ = "int"
+		}
 		varTypes[curVar] = savedVar
 		mapVars[curVar] = savedMap
 		return &RawExpr{Code: query, Type: typ}, nil
@@ -2696,6 +2744,12 @@ func Emit(prog *Program) []byte {
 	if usesJson {
 		buf.WriteString("using System.Text.Json;\n")
 	}
+	for _, imp := range prog.Imports {
+		buf.WriteString(imp)
+		if !strings.HasSuffix(imp, "\n") {
+			buf.WriteString("\n")
+		}
+	}
 	buf.WriteString("\n")
 
 	for _, st := range prog.Structs {
@@ -2703,14 +2757,14 @@ func Emit(prog *Program) []byte {
 		for _, f := range st.Fields {
 			fmt.Fprintf(&buf, "    public %s %s;\n", f.Type, f.Name)
 		}
-		buf.WriteString("    public override string ToString() => $\"{{")
+		fmt.Fprintf(&buf, "    public override string ToString() => $\"%s {{", st.Name)
 		for i, f := range st.Fields {
 			if i > 0 {
 				buf.WriteString(", ")
 			}
-			fmt.Fprintf(&buf, "'%s': ", f.Name)
+			fmt.Fprintf(&buf, "%s = ", f.Name)
 			if f.Type == "string" {
-				fmt.Fprintf(&buf, "'{%s}'", f.Name)
+				fmt.Fprintf(&buf, "\\\"{%s}\\\"", f.Name)
 			} else if f.Type == "double" {
 				fmt.Fprintf(&buf, "{%s.ToString(\"0.0\")}", f.Name)
 			} else {
