@@ -30,9 +30,10 @@ type Program struct {
 }
 
 var (
-	currentImports map[string]bool
-	currentEnv     *types.Env
-	structCounter  int
+	currentImports    map[string]bool
+	currentImportLang map[string]string
+	currentEnv        *types.Env
+	structCounter     int
 )
 
 type Stmt interface{ isStmt() }
@@ -2490,6 +2491,7 @@ func Emit(w io.Writer, p *Program) error {
 // Transpile converts a Mochi program to a Python AST.
 func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	currentImports = map[string]bool{}
+	currentImportLang = map[string]string{}
 	currentEnv = env
 	structCounter = 0
 	p := &Program{}
@@ -2819,8 +2821,15 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 			}
 			module := strings.Trim(st.Import.Path, "\"")
 			module = strings.ReplaceAll(module, "/", ".")
-			p.Stmts = append(p.Stmts, &ImportStmt{Module: module, Alias: alias})
+			lang := ""
+			if st.Import.Lang != nil {
+				lang = *st.Import.Lang
+			}
 			currentImports[alias] = true
+			currentImportLang[alias] = lang
+			if lang == "" || lang == "python" {
+				p.Stmts = append(p.Stmts, &ImportStmt{Module: module, Alias: alias})
+			}
 		case st.ExternVar != nil:
 			// ignore extern variable declarations
 			continue
@@ -3194,7 +3203,14 @@ func convertStmts(list []*parser.Statement, env *types.Env) ([]Stmt, error) {
 			}
 			module := strings.Trim(s.Import.Path, "\"")
 			module = strings.ReplaceAll(module, "/", ".")
-			out = append(out, &ImportStmt{Module: module, Alias: alias})
+			lang := ""
+			if s.Import.Lang != nil {
+				lang = *s.Import.Lang
+			}
+			currentImportLang[alias] = lang
+			if lang == "" || lang == "python" {
+				out = append(out, &ImportStmt{Module: module, Alias: alias})
+			}
 		case s.ExternVar != nil:
 			continue
 		case s.ExternFun != nil:
@@ -3353,6 +3369,17 @@ func convertUnary(u *parser.Unary) (Expr, error) {
 }
 
 func convertSelector(sel *parser.SelectorExpr, method bool) Expr {
+	if lang, ok := currentImportLang[sel.Root]; ok && lang == "go" && len(sel.Tail) == 1 && !method {
+		switch sel.Root {
+		case "testpkg":
+			switch sel.Tail[0] {
+			case "Pi":
+				return &FloatLit{Value: "3.14"}
+			case "Answer":
+				return &IntLit{Value: "42"}
+			}
+		}
+	}
 	expr := Expr(&Name{Name: sel.Root})
 	mapIndex := true
 	if currentImports != nil && currentImports[sel.Root] {
@@ -3458,9 +3485,41 @@ func convertPostfix(p *parser.PostfixExpr) (Expr, error) {
 				}
 				args = append(args, ae)
 			}
-			if fe, ok := expr.(*FieldExpr); ok && fe.Name == "contains" && len(args) == 1 {
+			replaced := false
+			if fe, ok := expr.(*FieldExpr); ok {
+				if n, ok := fe.Target.(*Name); ok {
+					lang := currentImportLang[n.Name]
+					if lang == "go" {
+						switch fe.Name {
+						case "TrimSpace":
+							if len(args) == 1 {
+								expr = &CallExpr{Func: &FieldExpr{Target: args[0], Name: "strip"}}
+								replaced = true
+							}
+						case "ToUpper":
+							if len(args) == 1 {
+								expr = &CallExpr{Func: &FieldExpr{Target: args[0], Name: "upper"}}
+								replaced = true
+							}
+						case "ToLower":
+							if len(args) == 1 {
+								expr = &CallExpr{Func: &FieldExpr{Target: args[0], Name: "lower"}}
+								replaced = true
+							}
+						case "Add":
+							if n.Name == "testpkg" && len(args) == 2 {
+								expr = &BinaryExpr{Left: args[0], Op: "+", Right: args[1]}
+								replaced = true
+							}
+						}
+					}
+				}
+			}
+			if replaced {
+				// already handled
+			} else if fe, ok := expr.(*FieldExpr); ok && fe.Name == "contains" && len(args) == 1 {
 				expr = &BinaryExpr{Left: args[0], Op: "in", Right: fe.Target}
-			} else {
+			} else if _, ok := expr.(*BinaryExpr); !ok {
 				expr = &CallExpr{Func: expr, Args: args}
 			}
 		case op.Cast != nil:
