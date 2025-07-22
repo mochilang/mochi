@@ -562,11 +562,15 @@ func (e *IntDivExpr) emit(w io.Writer) {
 }
 
 func (e *ValuesExpr) emit(w io.Writer) {
-	io.WriteString(w, "Object.values(")
+	io.WriteString(w, "Object.keys(")
 	if e.Value != nil {
 		e.Value.emit(w)
 	}
-	io.WriteString(w, ")")
+	io.WriteString(w, ").filter(k => k !== '__name').map(k => ")
+	if e.Value != nil {
+		e.Value.emit(w)
+	}
+	io.WriteString(w, "[k])")
 }
 
 func (u *UnionExpr) emit(w io.Writer) {
@@ -618,7 +622,10 @@ func (e *IntersectExpr) emit(w io.Writer) {
 
 func (f *FormatListExpr) emit(w io.Writer) {
 	if f.Value != nil {
+		io.WriteString(w, "[")
 		f.Value.emit(w)
+		io.WriteString(w, `.map(v => typeof v === 'string' ? '\'' + v + '\'' : String(v)).join(', ')`)
+		io.WriteString(w, "]")
 	} else {
 		io.WriteString(w, "[]")
 	}
@@ -626,15 +633,29 @@ func (f *FormatListExpr) emit(w io.Writer) {
 
 func (p *PrintExpr) emit(w io.Writer) {
 	io.WriteString(w, "console.log(")
-	for i, a := range p.Args {
-		if i > 0 {
-			io.WriteString(w, ", ")
-		}
-		if a != nil {
-			a.emit(w)
+	if len(p.Args) == 1 {
+		io.WriteString(w, `((v => Array.isArray(v) ? '[' + v.map(x => typeof x === 'string' ? '\'' + x + '\'' : String(x)).join(', ') + ']' : String(v))(`)
+		if p.Args[0] != nil {
+			p.Args[0].emit(w)
 		} else {
 			io.WriteString(w, "null")
 		}
+		io.WriteString(w, "))")
+	} else {
+		io.WriteString(w, "[")
+		for i, a := range p.Args {
+			if i > 0 {
+				io.WriteString(w, ", ")
+			}
+			if a != nil {
+				io.WriteString(w, "String(")
+				a.emit(w)
+				io.WriteString(w, ")")
+			} else {
+				io.WriteString(w, "null")
+			}
+		}
+		io.WriteString(w, "].join(' ').trimEnd()")
 	}
 	io.WriteString(w, ")")
 }
@@ -657,12 +678,6 @@ func (s *SubstringExpr) emit(w io.Writer) {
 
 func (m *MapLit) emit(w io.Writer) {
 	io.WriteString(w, "{")
-	if m.TypeName != "" {
-		fmt.Fprintf(w, "\"__name\": %q", m.TypeName)
-		if len(m.Entries) > 0 {
-			io.WriteString(w, ", ")
-		}
-	}
 	for i, e := range m.Entries {
 		if i > 0 {
 			io.WriteString(w, ", ")
