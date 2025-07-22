@@ -1,3 +1,7 @@
+## Progress (2025-07-22 17:22 +0700)
+- remove obsolete scala error logs
+- Regenerated golden files - 87/103 vm valid programs passing
+
 ## Progress (2025-07-22 17:13 +0700)
 - scala transpiler: add Python and Go FFI helpers, improved float formatting
 - Regenerated golden files - 87/103 vm valid programs passing

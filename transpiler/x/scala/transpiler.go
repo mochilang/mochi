@@ -9,11 +9,11 @@ import (
 	"fmt"
 	"io"
 	"os"
-       "path/filepath"
-       "reflect"
-       "sort"
-       "strings"
-       "strconv"
+	"path/filepath"
+	"reflect"
+	"sort"
+	"strconv"
+	"strings"
 
 	yaml "gopkg.in/yaml.v3"
 
@@ -205,9 +205,10 @@ func (m *MatchExpr) emit(w io.Writer) {
 }
 
 type LetStmt struct {
-	Name  string
-	Type  string
-	Value Expr
+	Name   string
+	Type   string
+	Value  Expr
+	Global bool
 }
 
 func (s *LetStmt) emit(w io.Writer) {
@@ -222,9 +223,25 @@ func (s *LetStmt) emit(w io.Writer) {
 }
 
 type VarStmt struct {
-	Name  string
-	Type  string
-	Value Expr
+	Name   string
+	Type   string
+	Value  Expr
+	Global bool
+}
+
+// SaveStmt writes a list of maps to stdout in JSONL format.
+type SaveStmt struct {
+	Src    Expr
+	Path   string
+	Format string
+}
+
+// UpdateStmt updates fields of structs in a list.
+type UpdateStmt struct {
+	Target string
+	Fields []string
+	Values []Expr
+	Cond   Expr
 }
 
 // TypeDeclStmt represents a case class declaration.
@@ -401,6 +418,43 @@ func (fe *ForEachStmt) emit(w io.Writer) {
 	}
 }
 
+func (s *SaveStmt) emit(w io.Writer) {
+	fmt.Fprint(w, "for (_row <- ")
+	if s.Src != nil {
+		s.Src.emit(w)
+	}
+	fmt.Fprint(w, ") {\n")
+	fmt.Fprint(w, "    val _keys = _row.keys.toSeq.sorted\n")
+	fmt.Fprint(w, "    val _tmp = scala.collection.mutable.Map[String,Any]()\n")
+	fmt.Fprint(w, "    for (k <- _keys) _tmp(k) = _row(k)\n")
+	fmt.Fprint(w, "    println(toJson(_tmp.toMap))\n")
+	fmt.Fprint(w, "  }")
+}
+
+func (u *UpdateStmt) emit(w io.Writer) {
+	fmt.Fprintf(w, "for (i <- 0 until %s.length) {\n", u.Target)
+	fmt.Fprintf(w, "  var item = %s(i)\n", u.Target)
+	if u.Cond != nil {
+		fmt.Fprint(w, "  if (")
+		u.Cond.emit(w)
+		fmt.Fprint(w, ") {\n")
+	}
+	pad := "  "
+	if u.Cond != nil {
+		pad = "    "
+	}
+	for i, f := range u.Fields {
+		fmt.Fprintf(w, "%sitem = item.copy(%s = ", pad, f)
+		u.Values[i].emit(w)
+		fmt.Fprint(w, ")\n")
+	}
+	if u.Cond != nil {
+		fmt.Fprint(w, "  }\n")
+	}
+	fmt.Fprintf(w, "  %s(i) = item\n", u.Target)
+	fmt.Fprint(w, "}\n")
+}
+
 func (i *IfStmt) emit(w io.Writer) {
 	fmt.Fprint(w, "if (")
 	i.Cond.emit(w)
@@ -461,20 +515,9 @@ type CallExpr struct {
 type LenExpr struct{ Value Expr }
 
 func (l *LenExpr) emit(w io.Writer) {
-	if _, ok := l.Value.(*BinaryExpr); ok {
-		fmt.Fprint(w, "(")
-		l.Value.emit(w)
-		fmt.Fprint(w, ").size")
-		return
-	}
-	if inferType(l.Value) == "" {
-		fmt.Fprint(w, "(")
-		l.Value.emit(w)
-		fmt.Fprint(w, ").asInstanceOf[collection.Seq[_]].size")
-		return
-	}
+	fmt.Fprint(w, "(")
 	l.Value.emit(w)
-	fmt.Fprint(w, ".size")
+	fmt.Fprint(w, ").size")
 }
 
 func (c *CallExpr) emit(w io.Writer) {
@@ -505,11 +548,11 @@ func (b *BoolLit) emit(w io.Writer) { fmt.Fprintf(w, "%t", b.Value) }
 type FloatLit struct{ Value float64 }
 
 func (f *FloatLit) emit(w io.Writer) {
-       s := strconv.FormatFloat(f.Value, 'f', -1, 64)
-       if !strings.ContainsAny(s, ".eE") && !strings.Contains(s, ".") {
-               s += ".0"
-       }
-       fmt.Fprint(w, s)
+	s := strconv.FormatFloat(f.Value, 'f', -1, 64)
+	if !strings.ContainsAny(s, ".eE") && !strings.Contains(s, ".") {
+		s += ".0"
+	}
+	fmt.Fprint(w, s)
 }
 
 type Name struct{ Name string }
@@ -975,6 +1018,7 @@ func Emit(p *Program) []byte {
 		buf.WriteString("  }\n\n")
 	}
 
+	var globals []Stmt
 	for _, st := range p.Stmts {
 		switch s := st.(type) {
 		case *FunStmt:
@@ -987,7 +1031,24 @@ func Emit(p *Program) []byte {
 			s.emit(&buf)
 			buf.WriteByte('\n')
 			buf.WriteByte('\n')
+		case *LetStmt:
+			if s.Global {
+				globals = append(globals, s)
+				continue
+			}
+		case *VarStmt:
+			if s.Global {
+				globals = append(globals, s)
+				continue
+			}
 		}
+	}
+
+	for _, st := range globals {
+		buf.WriteString("  ")
+		st.emit(&buf)
+		buf.WriteByte('\n')
+		buf.WriteByte('\n')
 	}
 
 	buf.WriteString("  def main(args: Array[String]): Unit = {\n")
@@ -995,6 +1056,14 @@ func Emit(p *Program) []byte {
 		switch st.(type) {
 		case *FunStmt, *TypeDeclStmt:
 			continue
+		case *LetStmt:
+			if st.(*LetStmt).Global {
+				continue
+			}
+		case *VarStmt:
+			if st.(*VarStmt).Global {
+				continue
+			}
 		}
 		buf.WriteString("    ")
 		st.emit(&buf)
@@ -1012,31 +1081,41 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	needsBreaks = false
 	needsJSON = false
 	builtinAliases = map[string]string{}
-        for _, st := range prog.Statements {
-                if st.Import != nil && st.Import.Lang != nil {
-                        alias := st.Import.As
-                        if alias == "" {
-                                alias = parser.AliasFromPath(st.Import.Path)
-                        }
-                        path := strings.Trim(st.Import.Path, "\"")
-                        switch *st.Import.Lang {
-                        case "go":
-                                if st.Import.Auto && path == "mochi/runtime/ffi/go/testpkg" {
-                                        builtinAliases[alias] = "go_testpkg"
-                                } else if st.Import.Auto && path == "strings" {
-                                        builtinAliases[alias] = "go_strings"
-                                }
-                        case "python":
-                                if path == "math" {
-                                        builtinAliases[alias] = "python_math"
-                                }
-                        }
-                }
-        }
 	for _, st := range prog.Statements {
+		if st.Import != nil && st.Import.Lang != nil {
+			alias := st.Import.As
+			if alias == "" {
+				alias = parser.AliasFromPath(st.Import.Path)
+			}
+			path := strings.Trim(st.Import.Path, "\"")
+			switch *st.Import.Lang {
+			case "go":
+				if st.Import.Auto && path == "mochi/runtime/ffi/go/testpkg" {
+					builtinAliases[alias] = "go_testpkg"
+				} else if st.Import.Auto && path == "strings" {
+					builtinAliases[alias] = "go_strings"
+				}
+			case "python":
+				if path == "math" {
+					builtinAliases[alias] = "python_math"
+				}
+			}
+		}
+	}
+	seenFun := false
+	for _, st := range prog.Statements {
+		if st.Fun != nil {
+			seenFun = true
+		}
 		s, err := convertStmt(st, env)
 		if err != nil {
 			return nil, err
+		}
+		if ls, ok := s.(*LetStmt); ok && !seenFun {
+			ls.Global = true
+		}
+		if vs, ok := s.(*VarStmt); ok && !seenFun {
+			vs.Global = true
 		}
 		if s != nil {
 			sc.Stmts = append(sc.Stmts, s)
@@ -1060,7 +1139,14 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 
 func convertStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 	switch {
+	case st.Test != nil:
+		return nil, nil
+	case st.Expect != nil:
+		return nil, nil
 	case st.Expr != nil:
+		if se := extractSaveExpr(st.Expr.Expr); se != nil {
+			return convertSaveStmt(se, env)
+		}
 		e, err := convertExpr(st.Expr.Expr, env)
 		if err != nil {
 			return nil, err
@@ -1181,20 +1267,26 @@ func convertStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 		return convertWhileStmt(st.While, env)
 	case st.For != nil:
 		return convertForStmt(st.For, env)
+	case st.Update != nil:
+		up, err := convertUpdateStmt(st.Update, env)
+		if err != nil {
+			return nil, err
+		}
+		return up, nil
 	case st.If != nil:
 		return convertIfStmt(st.If, env)
 	case st.Break != nil:
 		return &BreakStmt{}, nil
 	case st.Continue != nil:
 		return &ContinueStmt{}, nil
-       case st.Import != nil:
-               // handled during preprocessing
-               return nil, nil
-       case st.ExternVar != nil, st.ExternFun != nil:
-               return nil, nil
-       default:
-               return nil, fmt.Errorf("unsupported statement")
-       }
+	case st.Import != nil:
+		// handled during preprocessing
+		return nil, nil
+	case st.ExternVar != nil, st.ExternFun != nil:
+		return nil, nil
+	default:
+		return nil, fmt.Errorf("unsupported statement")
+	}
 }
 
 func convertExpr(e *parser.Expr, env *types.Env) (Expr, error) {
@@ -1324,54 +1416,54 @@ func convertUnary(u *parser.Unary, env *types.Env) (Expr, error) {
 }
 
 func convertPostfix(pf *parser.PostfixExpr, env *types.Env) (Expr, error) {
-        if pf == nil {
-                return nil, fmt.Errorf("unsupported postfix")
-        }
-        expr, err := convertPrimary(pf.Target, env)
-        if err != nil {
-                return nil, err
-        }
-        if pf.Target.Selector != nil && len(pf.Target.Selector.Tail) == 1 && len(pf.Ops) > 0 && pf.Ops[0].Call != nil {
-                if kind, ok := builtinAliases[pf.Target.Selector.Root]; ok {
-                        field := pf.Target.Selector.Tail[0]
-                        call := pf.Ops[0].Call
-                        args := make([]Expr, len(call.Args))
-                        for j, a := range call.Args {
-                                ex, err := convertExpr(a, env)
-                                if err != nil {
-                                        return nil, err
-                                }
-                                args[j] = ex
-                        }
-                        switch kind {
-                        case "go_strings":
-                                switch field {
-                                case "TrimSpace":
-                                        expr = &CallExpr{Fn: &FieldExpr{Receiver: args[0], Name: "trim"}}
-                                case "ToUpper":
-                                        expr = &CallExpr{Fn: &FieldExpr{Receiver: args[0], Name: "toUpperCase"}}
-                                }
-                                if expr != nil {
-                                        return expr, nil
-                                }
-                        case "python_math":
-                                switch field {
-                                case "sqrt", "sin", "log", "pow":
-                                        expr = &CallExpr{Fn: &FieldExpr{Receiver: &Name{Name: "math"}, Name: field}, Args: args}
-                                        return expr, nil
-                                case "pi":
-                                        expr = &FieldExpr{Receiver: &Name{Name: "math"}, Name: "Pi"}
-                                        return expr, nil
-                                case "e":
-                                        expr = &FieldExpr{Receiver: &Name{Name: "math"}, Name: "E"}
-                                        return expr, nil
-                                }
-                        }
-                }
-        }
-        for i := 0; i < len(pf.Ops); i++ {
-                op := pf.Ops[i]
-                switch {
+	if pf == nil {
+		return nil, fmt.Errorf("unsupported postfix")
+	}
+	expr, err := convertPrimary(pf.Target, env)
+	if err != nil {
+		return nil, err
+	}
+	if pf.Target.Selector != nil && len(pf.Target.Selector.Tail) == 1 && len(pf.Ops) > 0 && pf.Ops[0].Call != nil {
+		if kind, ok := builtinAliases[pf.Target.Selector.Root]; ok {
+			field := pf.Target.Selector.Tail[0]
+			call := pf.Ops[0].Call
+			args := make([]Expr, len(call.Args))
+			for j, a := range call.Args {
+				ex, err := convertExpr(a, env)
+				if err != nil {
+					return nil, err
+				}
+				args[j] = ex
+			}
+			switch kind {
+			case "go_strings":
+				switch field {
+				case "TrimSpace":
+					expr = &CallExpr{Fn: &FieldExpr{Receiver: args[0], Name: "trim"}}
+				case "ToUpper":
+					expr = &CallExpr{Fn: &FieldExpr{Receiver: args[0], Name: "toUpperCase"}}
+				}
+				if expr != nil {
+					return expr, nil
+				}
+			case "python_math":
+				switch field {
+				case "sqrt", "sin", "log", "pow":
+					expr = &CallExpr{Fn: &FieldExpr{Receiver: &Name{Name: "math"}, Name: field}, Args: args}
+					return expr, nil
+				case "pi":
+					expr = &FieldExpr{Receiver: &Name{Name: "math"}, Name: "Pi"}
+					return expr, nil
+				case "e":
+					expr = &FieldExpr{Receiver: &Name{Name: "math"}, Name: "E"}
+					return expr, nil
+				}
+			}
+		}
+	}
+	for i := 0; i < len(pf.Ops); i++ {
+		op := pf.Ops[i]
+		switch {
 		case op.Field != nil:
 			if n, ok := expr.(*Name); ok && env != nil {
 				if typ, err := env.GetVar(n.Name); err == nil {
@@ -1393,59 +1485,59 @@ func convertPostfix(pf *parser.PostfixExpr, env *types.Env) (Expr, error) {
 							}
 							args[j] = ex
 						}
-                                                if kind == "go_testpkg" && field == "Add" && len(args) == 2 {
-                                                        expr = &BinaryExpr{Left: args[0], Op: "+", Right: args[1]}
-                                                        i++
-                                                        continue
-                                                }
-                                                if kind == "go_strings" {
-                                                        switch field {
-                                                        case "TrimSpace":
-                                                                expr = &CallExpr{Fn: &FieldExpr{Receiver: args[0], Name: "trim"}}
-                                                                i++
-                                                                continue
-                                                        case "ToUpper":
-                                                                expr = &CallExpr{Fn: &FieldExpr{Receiver: args[0], Name: "toUpperCase"}}
-                                                                i++
-                                                                continue
-                                                        }
-                                                }
-                                                if kind == "python_math" {
-                                                        switch field {
-                                                        case "sqrt", "sin", "log", "pow":
-                                                                fnName := field
-                                                                if field == "pow" {
-                                                                        fnName = "pow"
-                                                                }
-                                                                expr = &CallExpr{Fn: &FieldExpr{Receiver: &Name{Name: "math"}, Name: fnName}, Args: args}
-                                                                i++
-                                                                continue
-                                                        }
-                                                }
+						if kind == "go_testpkg" && field == "Add" && len(args) == 2 {
+							expr = &BinaryExpr{Left: args[0], Op: "+", Right: args[1]}
+							i++
+							continue
+						}
+						if kind == "go_strings" {
+							switch field {
+							case "TrimSpace":
+								expr = &CallExpr{Fn: &FieldExpr{Receiver: args[0], Name: "trim"}}
+								i++
+								continue
+							case "ToUpper":
+								expr = &CallExpr{Fn: &FieldExpr{Receiver: args[0], Name: "toUpperCase"}}
+								i++
+								continue
+							}
+						}
+						if kind == "python_math" {
+							switch field {
+							case "sqrt", "sin", "log", "pow":
+								fnName := field
+								if field == "pow" {
+									fnName = "pow"
+								}
+								expr = &CallExpr{Fn: &FieldExpr{Receiver: &Name{Name: "math"}, Name: fnName}, Args: args}
+								i++
+								continue
+							}
+						}
 					} else {
-                                                if kind == "go_testpkg" {
-                                                        switch field {
-                                                        case "Pi":
-                                                                expr = &FloatLit{Value: 3.14}
-                                                                i++
-                                                                continue
-                                                        case "Answer":
-                                                                expr = &IntLit{Value: 42}
-                                                                i++
-                                                                continue
-                                                        }
-                                                } else if kind == "python_math" {
-                                                        switch field {
-                                                        case "pi":
-                                                                expr = &FieldExpr{Receiver: &Name{Name: "math"}, Name: "Pi"}
-                                                                i++
-                                                                continue
-                                                        case "e":
-                                                                expr = &FieldExpr{Receiver: &Name{Name: "math"}, Name: "E"}
-                                                                i++
-                                                                continue
-                                                        }
-                                                }
+						if kind == "go_testpkg" {
+							switch field {
+							case "Pi":
+								expr = &FloatLit{Value: 3.14}
+								i++
+								continue
+							case "Answer":
+								expr = &IntLit{Value: 42}
+								i++
+								continue
+							}
+						} else if kind == "python_math" {
+							switch field {
+							case "pi":
+								expr = &FieldExpr{Receiver: &Name{Name: "math"}, Name: "Pi"}
+								i++
+								continue
+							case "e":
+								expr = &FieldExpr{Receiver: &Name{Name: "math"}, Name: "E"}
+								i++
+								continue
+							}
+						}
 					}
 				}
 			}
@@ -1563,22 +1655,22 @@ func convertPrimary(p *parser.Primary, env *types.Env) (Expr, error) {
 				}
 			}
 			if kind, ok := builtinAliases[p.Selector.Root]; ok && len(p.Selector.Tail) == 1 {
-                                switch kind {
-                                case "go_testpkg":
-                                        switch p.Selector.Tail[0] {
-                                        case "Pi":
-                                                return &FloatLit{Value: 3.14}, nil
-                                        case "Answer":
-                                                return &IntLit{Value: 42}, nil
-                                        }
-                                case "python_math":
-                                        switch p.Selector.Tail[0] {
-                                        case "pi":
-                                                return &FieldExpr{Receiver: &Name{Name: "math"}, Name: "Pi"}, nil
-                                        case "e":
-                                                return &FieldExpr{Receiver: &Name{Name: "math"}, Name: "E"}, nil
-                                        }
-                                }
+				switch kind {
+				case "go_testpkg":
+					switch p.Selector.Tail[0] {
+					case "Pi":
+						return &FloatLit{Value: 3.14}, nil
+					case "Answer":
+						return &IntLit{Value: 42}, nil
+					}
+				case "python_math":
+					switch p.Selector.Tail[0] {
+					case "pi":
+						return &FieldExpr{Receiver: &Name{Name: "math"}, Name: "Pi"}, nil
+					case "e":
+						return &FieldExpr{Receiver: &Name{Name: "math"}, Name: "E"}, nil
+					}
+				}
 			}
 		}
 		for _, f := range p.Selector.Tail {
@@ -2356,6 +2448,12 @@ func convertQueryExpr(q *parser.QueryExpr, env *types.Env) (Expr, error) {
 	if err != nil {
 		return nil, err
 	}
+	if fe, ok := sel.(*FieldExpr); ok && fe.Name == "sum" {
+		if n, ok2 := fe.Receiver.(*Name); ok2 && n.Name == q.Var {
+			qe := &QueryExpr{Var: q.Var, Src: src, Froms: froms, Where: where, Sort: sort, SortType: sortType, Skip: skipExpr, Take: takeExpr, Select: &Name{Name: q.Var}, Distinct: q.Distinct, ElemType: toScalaTypeFromType(elemT)}
+			return &FieldExpr{Receiver: qe, Name: "sum"}, nil
+		}
+	}
 	elemTypeStr := toScalaTypeFromType(types.ExprType(q.Select, child))
 	if elemTypeStr == "" {
 		elemTypeStr = "Any"
@@ -2486,6 +2584,69 @@ func convertForStmt(fs *parser.ForStmt, env *types.Env) (Stmt, error) {
 	return &ForEachStmt{Name: fs.Name, Iterable: iter, Body: body}, nil
 }
 
+func convertSaveStmt(se *parser.SaveExpr, env *types.Env) (Stmt, error) {
+	src, err := convertExpr(se.Src, env)
+	if err != nil {
+		return nil, err
+	}
+	format := parseFormat(se.With)
+	path := ""
+	if se.Path != nil {
+		path = strings.Trim(*se.Path, "\"")
+	}
+	if format != "jsonl" || (path != "" && path != "-") {
+		return nil, fmt.Errorf("unsupported save")
+	}
+	needsJSON = true
+	return &SaveStmt{Src: src, Path: path, Format: format}, nil
+}
+
+func convertUpdateStmt(us *parser.UpdateStmt, env *types.Env) (Stmt, error) {
+	if env == nil {
+		return nil, fmt.Errorf("missing env")
+	}
+	t, err := env.GetVar(us.Target)
+	if err != nil {
+		return nil, err
+	}
+	lt, ok := t.(types.ListType)
+	if !ok {
+		return nil, fmt.Errorf("update target not list")
+	}
+	st, ok := lt.Elem.(types.StructType)
+	if !ok {
+		return nil, fmt.Errorf("update element not struct")
+	}
+	child := types.NewEnv(env)
+	fieldSet := map[string]bool{}
+	for name, ft := range st.Fields {
+		child.SetVar(name, ft, true)
+		fieldSet[name] = true
+	}
+	var fields []string
+	var values []Expr
+	for _, item := range us.Set.Items {
+		key, ok := types.SimpleStringKey(item.Key)
+		if !ok {
+			return nil, fmt.Errorf("unsupported update key")
+		}
+		val, err := convertExpr(item.Value, child)
+		if err != nil {
+			return nil, err
+		}
+		fields = append(fields, key)
+		values = append(values, val)
+	}
+	var cond Expr
+	if us.Where != nil {
+		cond, err = convertExpr(us.Where, child)
+		if err != nil {
+			return nil, err
+		}
+	}
+	return &UpdateStmt{Target: us.Target, Fields: fields, Values: values, Cond: cond}, nil
+}
+
 func convertIfStmt(is *parser.IfStmt, env *types.Env) (Stmt, error) {
 	cond, err := convertExpr(is.Cond, env)
 	if err != nil {
@@ -2534,6 +2695,28 @@ func toScalaType(t *parser.TypeRef) string {
 			return "Double"
 		default:
 			return *t.Simple
+		}
+	}
+	if t.Generic != nil {
+		name := t.Generic.Name
+		args := t.Generic.Args
+		if name == "list" && len(args) == 1 {
+			elem := toScalaType(args[0])
+			if elem == "" {
+				elem = "Any"
+			}
+			return fmt.Sprintf("ArrayBuffer[%s]", elem)
+		}
+		if name == "map" && len(args) == 2 {
+			k := toScalaType(args[0])
+			if k == "" {
+				k = "Any"
+			}
+			v := toScalaType(args[1])
+			if v == "" {
+				v = "Any"
+			}
+			return fmt.Sprintf("Map[%s,%s]", k, v)
 		}
 	}
 	if t.Fun != nil {
@@ -2656,16 +2839,16 @@ func inferType(e Expr) string {
 		return "String"
 	case *BinaryExpr:
 		switch ex.Op {
-                case "+", "-", "*", "/", "%":
-                        lt := inferType(ex.Left)
-                        rt := inferType(ex.Right)
-                        if lt == "Double" || rt == "Double" {
-                                return "Double"
-                        }
-                        if lt == "" || rt == "" {
-                                return ""
-                        }
-                        return "Int"
+		case "+", "-", "*", "/", "%":
+			lt := inferType(ex.Left)
+			rt := inferType(ex.Right)
+			if lt == "Double" || rt == "Double" {
+				return "Double"
+			}
+			if lt == "" || rt == "" {
+				return ""
+			}
+			return "Int"
 		case "==", "!=", ">", "<", ">=", "<=":
 			return "Boolean"
 		}
@@ -2979,6 +3162,21 @@ func literalString(e *parser.Expr) (string, bool) {
 		return p.Target.Selector.Root, true
 	}
 	return "", false
+}
+
+func extractSaveExpr(e *parser.Expr) *parser.SaveExpr {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) > 0 {
+		return nil
+	}
+	u := e.Binary.Left
+	if len(u.Ops) > 0 || u.Value == nil {
+		return nil
+	}
+	p := u.Value
+	if len(p.Ops) > 0 || p.Target == nil {
+		return nil
+	}
+	return p.Target.Save
 }
 
 func parseFormat(e *parser.Expr) string {
