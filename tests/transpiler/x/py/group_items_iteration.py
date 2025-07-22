@@ -25,7 +25,7 @@ tmp = []
 for g in groups:
     total = 0
     for x in g.items:
-        total = total + x["val"]
+        total = total + x.val
     tmp = tmp + [{"tag": g.key, "total": total}]
 result = [r for r in sorted([r for r in tmp], key=lambda r: r["tag"])]
 print(json.dumps(result))

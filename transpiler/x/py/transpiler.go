@@ -1273,8 +1273,7 @@ func maybeDataClassList(name string, list *ListLit, env *types.Env) (*DataClassD
 		fields = append(fields, DataClassField{Name: k, Type: t.String()})
 	}
 	var elems []Expr
-	structCounter++
-	className := fmt.Sprintf("GenType%d", structCounter)
+	className := toClassName(name)
 	for _, el := range list.Elems {
 		d := el.(*DictLit)
 		args := make([]Expr, len(d.Values))
@@ -1298,8 +1297,7 @@ func dataClassFromDict(name string, d *DictLit, env *types.Env) (*DataClassDef, 
 		t := inferPyType(d.Values[i], env)
 		fields = append(fields, DataClassField{Name: k, Type: t.String()})
 	}
-	structCounter++
-	className := fmt.Sprintf("GenType%d", structCounter)
+	className := toClassName(name)
 	args := make([]Expr, len(d.Values))
 	copy(args, d.Values)
 	return &DataClassDef{Name: className, Fields: fields}, args
@@ -1837,6 +1835,30 @@ func inferTypeFromExpr(e *parser.Expr) types.Type {
 	case t.Selector != nil && len(t.Selector.Tail) == 0:
 		if currentEnv != nil {
 			if typ, err := currentEnv.GetVar(t.Selector.Root); err == nil {
+				return typ
+			}
+		}
+		return types.AnyType{}
+	case t.Selector != nil:
+		if currentEnv != nil {
+			typ, err := currentEnv.GetVar(t.Selector.Root)
+			if err == nil {
+				for _, fld := range t.Selector.Tail {
+					switch tt := typ.(type) {
+					case types.StructType:
+						if ft, ok := tt.Fields[fld]; ok {
+							typ = ft
+						} else {
+							typ = types.AnyType{}
+						}
+					case types.MapType:
+						typ = tt.Value
+					case types.ListType:
+						typ = tt.Elem
+					default:
+						typ = types.AnyType{}
+					}
+				}
 				return typ
 			}
 		}
@@ -2639,6 +2661,14 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 					env.SetVar(st.For.Name, lt.Elem, true)
 				} else if lt, ok := inferPyType(iter, env).(types.ListType); ok {
 					env.SetVar(st.For.Name, lt.Elem, true)
+				} else if fe, ok := iter.(*FieldExpr); ok {
+					if stt, ok := inferPyType(fe.Target, env).(types.StructType); ok {
+						if ft, ok := stt.Fields[fe.Name]; ok {
+							if lt, ok := ft.(types.ListType); ok {
+								env.SetVar(st.For.Name, lt.Elem, true)
+							}
+						}
+					}
 				}
 			}
 			if st.For.RangeEnd != nil {
@@ -4246,8 +4276,7 @@ func convertGroupQuery(q *parser.QueryExpr, env *types.Env, target string) ([]St
 			fields = append(fields, DataClassField{Name: v, Type: "any"})
 			args = append(args, &Name{Name: v})
 		}
-		structCounter++
-		rowDC = &DataClassDef{Name: fmt.Sprintf("GenType%d", structCounter), Fields: fields}
+		rowDC = &DataClassDef{Name: toClassName(target + "_row"), Fields: fields}
 		row = &CallExpr{Func: &Name{Name: rowDC.Name}, Args: args}
 	}
 	stmts := []Stmt{groupDC}
@@ -4287,8 +4316,6 @@ func convertGroupQuery(q *parser.QueryExpr, env *types.Env, target string) ([]St
 			}
 		}
 		if dc != nil {
-			structCounter++
-			dc.Name = fmt.Sprintf("GenType%d", structCounter)
 			resultDC = dc
 			stmts = append(stmts, dc)
 			sel = &CallExpr{Func: &Name{Name: dc.Name}, Args: args}

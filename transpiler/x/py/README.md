@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Python code from programs in `tests/vm/valid` lives in `tests/transpiler/x/py`.
-Last updated: 2025-07-22 05:43 UTC
+Last updated: 2025-07-22 06:09 UTC
 
-## VM Golden Test Checklist (91/102)
+## VM Golden Test Checklist (88/102)
 - [x] append_builtin
 - [x] avg_builtin
 - [x] basic_compare
@@ -12,13 +12,13 @@ Last updated: 2025-07-22 05:43 UTC
 - [x] bool_chain
 - [x] break_continue
 - [x] cast_string_to_int
-- [x] cast_struct
+- [ ] cast_struct
 - [x] closure
 - [x] count_builtin
 - [x] cross_join
 - [x] cross_join_filter
 - [x] cross_join_triple
-- [x] dataset_sort_take_limit
+- [ ] dataset_sort_take_limit
 - [x] dataset_where_filter
 - [x] exists_builtin
 - [x] for_list_collection
@@ -29,7 +29,7 @@ Last updated: 2025-07-22 05:43 UTC
 - [x] fun_three_args
 - [ ] go_auto
 - [x] group_by
-- [ ] group_by_conditional_sum
+- [x] group_by_conditional_sum
 - [x] group_by_having
 - [x] group_by_join
 - [x] group_by_left_join
@@ -37,17 +37,17 @@ Last updated: 2025-07-22 05:43 UTC
 - [ ] group_by_multi_join_sort
 - [ ] group_by_multi_sort
 - [x] group_by_sort
-- [ ] group_items_iteration
+- [x] group_items_iteration
 - [x] if_else
 - [x] if_then_else
 - [x] if_then_else_nested
 - [x] in_operator
 - [x] in_operator_extended
-- [x] inner_join
-- [x] join_multi
+- [ ] inner_join
+- [ ] join_multi
 - [x] json_builtin
-- [x] left_join
-- [x] left_join_multi
+- [ ] left_join
+- [ ] left_join_multi
 - [x] len_builtin
 - [x] len_map
 - [x] len_string
@@ -71,7 +71,7 @@ Last updated: 2025-07-22 05:43 UTC
 - [x] membership
 - [x] min_max_builtin
 - [x] nested_function
-- [ ] order_by_map
+- [x] order_by_map
 - [ ] outer_join
 - [x] partial_application
 - [x] print_hello
