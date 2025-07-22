@@ -7,6 +7,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"math"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -64,8 +65,9 @@ type partial struct {
 // evaluation. It is set by Transpile for the duration of a single
 // transpilation run.
 var (
-	currentFuncs map[string]*parser.FunStmt
-	currentEnv   *types.Env
+	currentFuncs   map[string]*parser.FunStmt
+	currentEnv     *types.Env
+	builtinAliases map[string]string
 )
 
 type breakErr struct{}
@@ -747,6 +749,45 @@ func evalPostfix(p *parser.PostfixExpr, vars map[string]value) (value, error) {
 			}
 			return value{}, fmt.Errorf("bad args")
 		}
+		if kind, ok := builtinAliases[p.Target.Selector.Root]; ok {
+			call := p.Ops[0].Call
+			if kind == "go_strings" {
+				switch p.Target.Selector.Tail[0] {
+				case "TrimSpace", "ToUpper":
+					if len(call.Args) != 1 {
+						return value{}, fmt.Errorf("bad args")
+					}
+					arg, err := evalExpr(call.Args[0], vars)
+					if err != nil {
+						return value{}, err
+					}
+					if arg.kind != valString {
+						return value{}, fmt.Errorf("bad args")
+					}
+					if p.Target.Selector.Tail[0] == "TrimSpace" {
+						return value{kind: valString, s: strings.TrimSpace(arg.s)}, nil
+					}
+					return value{kind: valString, s: strings.ToUpper(arg.s)}, nil
+				}
+			}
+			if kind == "python_math" {
+				switch p.Target.Selector.Tail[0] {
+				case "pow":
+					if len(call.Args) != 2 {
+						return value{}, fmt.Errorf("bad args")
+					}
+					a, err := evalExpr(call.Args[0], vars)
+					if err != nil {
+						return value{}, err
+					}
+					b, err := evalExpr(call.Args[1], vars)
+					if err != nil {
+						return value{}, err
+					}
+					return value{kind: valFloat, f: math.Pow(toFloat(a), toFloat(b))}, nil
+				}
+			}
+		}
 	}
 
 	v, err := evalPrimary(p.Target, vars)
@@ -963,6 +1004,17 @@ func evalPrimary(p *parser.Primary, vars map[string]value) (value, error) {
 				return value{kind: valFloat, f: 3.14}, nil
 			case "Answer":
 				return value{kind: valInt, i: 42}, nil
+			}
+		}
+		if kind, ok := builtinAliases[p.Selector.Root]; ok && len(p.Selector.Tail) == 1 {
+			switch kind {
+			case "python_math":
+				switch p.Selector.Tail[0] {
+				case "pi":
+					return value{kind: valFloat, f: math.Pi}, nil
+				case "e":
+					return value{kind: valFloat, f: math.E}, nil
+				}
 			}
 		}
 	case p.List != nil:
@@ -2363,9 +2415,30 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	funcs := map[string]*parser.FunStmt{}
 	currentFuncs = funcs
 	currentEnv = env
+	builtinAliases = make(map[string]string)
+	for _, st := range prog.Statements {
+		if st.Import != nil && st.Import.Lang != nil {
+			alias := st.Import.As
+			if alias == "" {
+				alias = parser.AliasFromPath(st.Import.Path)
+			}
+			path := strings.Trim(st.Import.Path, "\"")
+			switch *st.Import.Lang {
+			case "go":
+				if st.Import.Auto && path == "strings" {
+					builtinAliases[alias] = "go_strings"
+				}
+			case "python":
+				if path == "math" {
+					builtinAliases[alias] = "python_math"
+				}
+			}
+		}
+	}
 	defer func() {
 		currentFuncs = nil
 		currentEnv = nil
+		builtinAliases = nil
 	}()
 	p := &Program{}
 
@@ -2770,6 +2843,21 @@ func parseFormatExpr(e *parser.Expr) string {
 		return f.s
 	}
 	return ""
+}
+
+func extractSaveExpr(e *parser.Expr) *parser.SaveExpr {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) > 0 {
+		return nil
+	}
+	u := e.Binary.Left
+	if len(u.Ops) > 0 || u.Value == nil {
+		return nil
+	}
+	p := u.Value
+	if len(p.Ops) > 0 || p.Target == nil {
+		return nil
+	}
+	return p.Target.Save
 }
 
 func anyToValue(x interface{}, typ string) value {
