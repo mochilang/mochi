@@ -37,6 +37,7 @@ var (
 	structNameCount  map[string]int
 	nextStructHint   string
 	usesJSON         bool
+	useNow           bool
 	imports          []string
 )
 
@@ -1163,6 +1164,14 @@ func (f *FormatList) emit(w io.Writer) error {
 	return nil
 }
 
+// NowExpr returns a deterministic timestamp similar to the VM's now() builtin.
+type NowExpr struct{}
+
+func (n *NowExpr) emit(w io.Writer) error {
+	_, err := io.WriteString(w, "_now()")
+	return err
+}
+
 // CountExpr represents count(list) or count(group).
 type CountExpr struct{ X Expr }
 
@@ -2253,6 +2262,8 @@ func inferType(e Expr) string {
 		return "List<dynamic>"
 	case *AvgExpr, *SumExpr, *MinExpr, *MaxExpr:
 		return "num"
+	case *NowExpr:
+		return "int"
 	case *ValuesExpr:
 		return "List<dynamic>"
 	case *StrExpr, *FormatList:
@@ -2400,8 +2411,24 @@ func Emit(w io.Writer, p *Program) error {
 			return err
 		}
 	}
-	if len(p.Imports) > 0 || usesJSON {
+	if useNow && !added["dart:io"] {
+		if _, err := io.WriteString(w, "import 'dart:io';\n"); err != nil {
+			return err
+		}
+	}
+	if len(p.Imports) > 0 || usesJSON || useNow {
 		if _, err := io.WriteString(w, "\n"); err != nil {
+			return err
+		}
+	}
+	if useNow {
+		if _, err := io.WriteString(w, "int _nowSeed = 0;\nbool _nowSeeded = false;\n"); err != nil {
+			return err
+		}
+		if _, err := io.WriteString(w, "void _initNow() {\n  var s = Platform.environment['MOCHI_NOW_SEED'];\n  if (s != null && s.isNotEmpty) {\n    var v = int.tryParse(s);\n    if (v != null) {\n      _nowSeed = v;\n      _nowSeeded = true;\n    }\n  }\n}\n"); err != nil {
+			return err
+		}
+		if _, err := io.WriteString(w, "int _now() {\n  if (_nowSeeded) {\n    _nowSeed = (_nowSeed * 1664525 + 1013904223) % 2147483647;\n    return _nowSeed;\n  }\n  return DateTime.now().microsecondsSinceEpoch;\n}\n\n"); err != nil {
 			return err
 		}
 	}
@@ -2446,6 +2473,11 @@ func Emit(w io.Writer, p *Program) error {
 	if _, err := io.WriteString(w, "void main() {\n"); err != nil {
 		return err
 	}
+	if useNow {
+		if _, err := io.WriteString(w, "  _initNow();\n"); err != nil {
+			return err
+		}
+	}
 	for _, st := range p.Stmts {
 		if _, ok := st.(*FuncDecl); ok {
 			continue
@@ -2485,6 +2517,7 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	structNameCount = map[string]int{}
 	nextStructHint = ""
 	usesJSON = false
+	useNow = false
 	imports = nil
 	p := &Program{}
 	for _, st := range prog.Statements {
@@ -3046,6 +3079,10 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 				return nil, err
 			}
 			return &MaxExpr{List: list}, nil
+		}
+		if p.Call.Func == "now" && len(p.Call.Args) == 0 {
+			useNow = true
+			return &NowExpr{}, nil
 		}
 		if p.Call.Func == "values" && len(p.Call.Args) == 1 {
 			mp, err := convertExpr(p.Call.Args[0])

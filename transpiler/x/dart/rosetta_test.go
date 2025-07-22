@@ -8,11 +8,11 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"sort"
 	"strings"
 	"testing"
 	"time"
 
-	"mochi/golden"
 	"mochi/parser"
 	dartt "mochi/transpiler/x/dart"
 	"mochi/types"
@@ -26,49 +26,56 @@ func TestDartTranspiler_Rosetta_Golden(t *testing.T) {
 	outDir := filepath.Join(root, "tests", "rosetta", "transpiler", "Dart")
 	os.MkdirAll(outDir, 0o755)
 
-	golden.RunWithSummary(t, filepath.Join("tests", "rosetta", "x", "Mochi"), ".mochi", ".out", func(src string) ([]byte, error) {
-		base := strings.TrimSuffix(filepath.Base(src), ".mochi")
-		codePath := filepath.Join(outDir, base+".dart")
-		outPath := filepath.Join(outDir, base+".out")
-		errPath := filepath.Join(outDir, base+".error")
+	files, _ := filepath.Glob(filepath.Join("tests", "rosetta", "x", "Mochi", "*.mochi"))
+	sort.Strings(files)
+	for _, src := range files {
+		name := strings.TrimSuffix(filepath.Base(src), ".mochi")
+		ok := t.Run(name, func(t *testing.T) {
+			base := strings.TrimSuffix(filepath.Base(src), ".mochi")
+			codePath := filepath.Join(outDir, base+".dart")
+			outPath := filepath.Join(outDir, base+".out")
+			errPath := filepath.Join(outDir, base+".error")
 
-		prog, err := parser.Parse(src)
-		if err != nil {
-			_ = os.WriteFile(errPath, []byte("parse: "+err.Error()), 0o644)
-			return nil, err
+			prog, err := parser.Parse(src)
+			if err != nil {
+				_ = os.WriteFile(errPath, []byte("parse: "+err.Error()), 0o644)
+				t.Fatalf("parse: %v", err)
+			}
+			env := types.NewEnv(nil)
+			if errs := types.Check(prog, env); len(errs) > 0 {
+				_ = os.WriteFile(errPath, []byte("type: "+errs[0].Error()), 0o644)
+				t.Fatalf("type: %v", errs[0])
+			}
+			ast, err := dartt.Transpile(prog, env)
+			if err != nil {
+				_ = os.WriteFile(errPath, []byte("transpile: "+err.Error()), 0o644)
+				t.Fatalf("transpile: %v", err)
+			}
+			var buf bytes.Buffer
+			if err := dartt.Emit(&buf, ast); err != nil {
+				_ = os.WriteFile(errPath, []byte("emit: "+err.Error()), 0o644)
+				t.Fatalf("emit: %v", err)
+			}
+			if err := os.WriteFile(codePath, buf.Bytes(), 0o644); err != nil {
+				t.Fatalf("write code: %v", err)
+			}
+			cmd := exec.Command("dart", codePath)
+			if data, err := os.ReadFile(strings.TrimSuffix(src, ".mochi") + ".in"); err == nil {
+				cmd.Stdin = bytes.NewReader(data)
+			}
+			out, err := cmd.CombinedOutput()
+			got := bytes.TrimSpace(out)
+			if err != nil {
+				_ = os.WriteFile(errPath, append([]byte("run: "+err.Error()+"\n"), out...), 0o644)
+				t.Fatalf("run: %v", err)
+			}
+			_ = os.Remove(errPath)
+			_ = os.WriteFile(outPath, got, 0o644)
+		})
+		if !ok {
+			t.Fatalf("first failing program: %s", name)
 		}
-		env := types.NewEnv(nil)
-		if errs := types.Check(prog, env); len(errs) > 0 {
-			_ = os.WriteFile(errPath, []byte("type: "+errs[0].Error()), 0o644)
-			return nil, errs[0]
-		}
-		ast, err := dartt.Transpile(prog, env)
-		if err != nil {
-			_ = os.WriteFile(errPath, []byte("transpile: "+err.Error()), 0o644)
-			return nil, err
-		}
-		var buf bytes.Buffer
-		if err := dartt.Emit(&buf, ast); err != nil {
-			_ = os.WriteFile(errPath, []byte("emit: "+err.Error()), 0o644)
-			return nil, err
-		}
-		if err := os.WriteFile(codePath, buf.Bytes(), 0o644); err != nil {
-			return nil, err
-		}
-		cmd := exec.Command("dart", codePath)
-		if data, err := os.ReadFile(strings.TrimSuffix(src, ".mochi") + ".in"); err == nil {
-			cmd.Stdin = bytes.NewReader(data)
-		}
-		out, err := cmd.CombinedOutput()
-		got := bytes.TrimSpace(out)
-		if err != nil {
-			_ = os.WriteFile(errPath, append([]byte("run: "+err.Error()+"\n"), out...), 0o644)
-			return nil, err
-		}
-		_ = os.Remove(errPath)
-		_ = os.WriteFile(outPath, got, 0o644)
-		return got, nil
-	})
+	}
 }
 
 func updateRosetta() {
