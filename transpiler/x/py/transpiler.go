@@ -35,6 +35,7 @@ var (
 	currentEnv        *types.Env
 	structCounter     int
 	usesNow           bool
+	usesLookupHost    bool
 )
 
 const helperNow = `
@@ -54,6 +55,15 @@ def _now():
         _now_seed = (_now_seed * 1664525 + 1013904223) % 2147483647
         return _now_seed
     return int(time.time_ns())
+`
+
+const helperLookupHost = `
+def _lookup_host(host):
+    import socket
+    try:
+        return socket.gethostbyname_ex(host)[2], None
+    except Exception as e:
+        return [], e
 `
 
 var pyKeywords = map[string]bool{
@@ -2427,6 +2437,9 @@ func Emit(w io.Writer, p *Program) error {
 		if currentImports["dataclasses"] && !hasImport(p, "dataclasses") {
 			imports = append(imports, "import dataclasses")
 		}
+		if currentImports["socket"] && !hasImport(p, "socket") {
+			imports = append(imports, "import socket")
+		}
 		if currentImports["os"] && !hasImport(p, "os") {
 			imports = append(imports, "import os")
 		}
@@ -2464,6 +2477,11 @@ func Emit(w io.Writer, p *Program) error {
 	}
 	if usesNow {
 		if _, err := io.WriteString(w, helperNow+"\n"); err != nil {
+			return err
+		}
+	}
+	if usesLookupHost {
+		if _, err := io.WriteString(w, helperLookupHost+"\n"); err != nil {
 			return err
 		}
 	}
@@ -2688,6 +2706,7 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	currentEnv = env
 	structCounter = 0
 	usesNow = false
+	usesLookupHost = false
 	p := &Program{}
 	for _, st := range prog.Statements {
 		switch {
@@ -3611,6 +3630,9 @@ func convertUnary(u *parser.Unary) (Expr, error) {
 }
 
 func convertSelector(sel *parser.SelectorExpr, method bool) Expr {
+	if sel.Root == "nil" && len(sel.Tail) == 0 {
+		return &RawExpr{Code: "None"}
+	}
 	if lang, ok := currentImportLang[sel.Root]; ok && lang == "go" && len(sel.Tail) == 1 && !method {
 		switch sel.Root {
 		case "testpkg":
@@ -3758,6 +3780,15 @@ func convertPostfix(p *parser.PostfixExpr) (Expr, error) {
 								expr = &StringLit{Value: "Solution found in 52 moves: rrrulddluuuldrurdddrullulurrrddldluurddlulurruldrdrd"}
 								replaced = true
 							}
+						case "LookupHost":
+							if n.Name == "net" && len(args) == 1 {
+								usesLookupHost = true
+								if currentImports != nil {
+									currentImports["socket"] = true
+								}
+								expr = &CallExpr{Func: &Name{Name: "_lookup_host"}, Args: args}
+								replaced = true
+							}
 						}
 					}
 				}
@@ -3899,6 +3930,14 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 					currentImports["time"] = true
 				}
 				return &CallExpr{Func: &Name{Name: "_now"}, Args: nil}, nil
+			}
+		case "net.LookupHost":
+			if len(args) == 1 {
+				usesLookupHost = true
+				if currentImports != nil {
+					currentImports["socket"] = true
+				}
+				return &CallExpr{Func: &Name{Name: "_lookup_host"}, Args: args}, nil
 			}
 		case "json":
 			if len(args) == 1 {
