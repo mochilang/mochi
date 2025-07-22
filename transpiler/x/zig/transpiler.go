@@ -174,6 +174,9 @@ type SaveStmt struct {
 	Format string
 }
 
+// JSONStmt prints a value as JSON on its own line.
+type JSONStmt struct{ Value Expr }
+
 // ExprStmt allows top-level expressions.
 type ExprStmt struct{ Expr Expr }
 
@@ -1037,6 +1040,21 @@ func (s *SaveStmt) emit(w io.Writer, indent int) {
 	}
 	writeIndent(w, indent)
 	io.WriteString(w, "// unsupported save\n")
+}
+
+func (j *JSONStmt) emit(w io.Writer, indent int) {
+	writeIndent(w, indent)
+	io.WriteString(w, "const __j = std.json.stringifyAlloc(std.heap.page_allocator, ")
+	if j.Value != nil {
+		j.Value.emit(w)
+	} else {
+		io.WriteString(w, "null")
+	}
+	io.WriteString(w, ", .{}) catch unreachable;\n")
+	writeIndent(w, indent)
+	io.WriteString(w, "std.io.getStdOut().writer().print(\"{s}\\n\", .{__j}) catch unreachable;\n")
+	writeIndent(w, indent)
+	io.WriteString(w, "std.heap.page_allocator.free(__j);\n")
 }
 
 func (e *ExprStmt) emit(w io.Writer, indent int) {
@@ -2483,8 +2501,13 @@ func compileStmt(s *parser.Statement, prog *parser.Program) (Stmt, error) {
 		if err != nil {
 			return nil, err
 		}
-		if call, ok := expr.(*CallExpr); ok && call.Func == "print" && len(call.Args) > 0 {
-			return &PrintStmt{Values: call.Args}, nil
+		if call, ok := expr.(*CallExpr); ok {
+			if call.Func == "print" && len(call.Args) > 0 {
+				return &PrintStmt{Values: call.Args}, nil
+			}
+			if call.Func == "json" && len(call.Args) == 1 {
+				return &JSONStmt{Value: call.Args[0]}, nil
+			}
 		}
 		return &ExprStmt{Expr: expr}, nil
 	case s.Let != nil:
