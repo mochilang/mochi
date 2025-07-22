@@ -256,7 +256,13 @@ func (p *PrintStmt) emit(w io.Writer, idx int) {
 		fmt.Fprintf(w, ", R%d), writeln(R%d)", idx, idx)
 		return
 	case *IndexExpr:
-		if e.IsString {
+		if e.IsMap {
+			io.WriteString(w, "    get_dict(")
+			e.Index.emit(w)
+			io.WriteString(w, ", ")
+			e.Target.emit(w)
+			fmt.Fprintf(w, ", V%d), writeln(V%d)", idx, idx)
+		} else if e.IsString {
 			io.WriteString(w, "    sub_string(")
 			e.Target.emit(w)
 			io.WriteString(w, ", ")
@@ -334,6 +340,20 @@ func (p *MultiPrintStmt) emit(w io.Writer, idx int) {
 	for i, ex := range p.Exprs {
 		if i > 0 {
 			io.WriteString(w, ", ")
+		}
+		if ie, ok := ex.(*IndexExpr); ok && ie.IsMap {
+			fmt.Fprintf(w, "get_dict(")
+			ie.Index.emit(w)
+			io.WriteString(w, ", ")
+			ie.Target.emit(w)
+			fmt.Fprintf(w, ", V%d)", idx)
+			if i == len(p.Exprs)-1 {
+				fmt.Fprintf(w, ", writeln(V%d)", idx)
+			} else {
+				fmt.Fprintf(w, ", write(V%d), write(' ')", idx)
+			}
+			idx++
+			continue
 		}
 		if i == len(p.Exprs)-1 {
 			io.WriteString(w, "writeln(")
@@ -547,7 +567,7 @@ func (l *ListLit) emit(w io.Writer) {
 }
 
 func (m *MapLit) emit(w io.Writer) {
-	io.WriteString(w, "{")
+	io.WriteString(w, "_{")
 	for i, it := range m.Items {
 		if i > 0 {
 			io.WriteString(w, ", ")
@@ -1308,6 +1328,49 @@ func stmtNode(s Stmt) *ast.Node {
 	}
 }
 
+func toExprNoConst(e *parser.Expr, env *compileEnv) (Expr, error) {
+	if e == nil || e.Binary == nil || e.Binary.Left == nil {
+		return nil, fmt.Errorf("unsupported expression")
+	}
+	return toBinaryNoConst(e.Binary, env)
+}
+
+func toBinaryNoConst(b *parser.BinaryExpr, env *compileEnv) (Expr, error) {
+	if len(b.Right) > 0 {
+		return nil, fmt.Errorf("unsupported map key")
+	}
+	return toUnaryNoConst(b.Left, env)
+}
+
+func toUnaryNoConst(u *parser.Unary, env *compileEnv) (Expr, error) {
+	if len(u.Ops) > 0 {
+		return nil, fmt.Errorf("unsupported map key")
+	}
+	return toPostfixNoConst(u.Value, env)
+}
+
+func toPostfixNoConst(pf *parser.PostfixExpr, env *compileEnv) (Expr, error) {
+	if len(pf.Ops) > 0 {
+		return nil, fmt.Errorf("unsupported map key")
+	}
+	return toPrimaryNoConst(pf.Target, env)
+}
+
+func toPrimaryNoConst(p *parser.Primary, env *compileEnv) (Expr, error) {
+	switch {
+	case p.Lit != nil:
+		if p.Lit.Int != nil {
+			return &IntLit{Value: int(*p.Lit.Int)}, nil
+		}
+		if p.Lit.Str != nil {
+			return &StringLit{Value: *p.Lit.Str}, nil
+		}
+	case p.Selector != nil && len(p.Selector.Tail) == 0:
+		return &Var{Name: p.Selector.Root}, nil
+	}
+	return nil, fmt.Errorf("unsupported map key")
+}
+
 func toExpr(e *parser.Expr, env *compileEnv) (Expr, error) {
 	if e == nil || e.Binary == nil || e.Binary.Left == nil {
 		return nil, fmt.Errorf("unsupported expression")
@@ -1794,7 +1857,7 @@ func toPrimary(p *parser.Primary, env *compileEnv) (Expr, error) {
 	case p.Map != nil:
 		items := make([]MapItem, len(p.Map.Items))
 		for i, it := range p.Map.Items {
-			key, err := toExpr(it.Key, env)
+			key, err := toExprNoConst(it.Key, env)
 			if err != nil {
 				return nil, err
 			}
