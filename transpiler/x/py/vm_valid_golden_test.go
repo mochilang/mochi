@@ -127,7 +127,13 @@ func updateReadme() {
 	buf.WriteString("# Transpiler Progress\n\n")
 	buf.WriteString("This checklist is auto-generated.\n")
 	buf.WriteString("Generated Python code from programs in `tests/vm/valid` lives in `tests/transpiler/x/py`.\n")
-	buf.WriteString("Last updated: " + time.Now().UTC().Format("2006-01-02 15:04 MST") + "\n\n")
+	ts := time.Now().UTC()
+	if out, err := exec.Command("git", "log", "-1", "--format=%cI").Output(); err == nil {
+		if t, perr := time.Parse(time.RFC3339, strings.TrimSpace(string(out))); perr == nil {
+			ts = t.UTC()
+		}
+	}
+	buf.WriteString("Last updated: " + ts.Format("2006-01-02 15:04 MST") + "\n\n")
 	fmt.Fprintf(&buf, "## VM Golden Test Checklist (%d/%d)\n", compiled, total)
 	buf.WriteString(strings.Join(lines, "\n"))
 	buf.WriteString("\n")
@@ -175,7 +181,7 @@ func updateTasks() {
 	fmt.Fprintf(&buf, "- Commit %s: %s\n", hash, msg)
 	fmt.Fprintf(&buf, "- Generated Python for %d/%d programs\n", compiled, total)
 	buf.WriteString("- Updated README checklist and outputs\n")
-	buf.WriteString("- Refactored join handling and improved type inference from loaded data\n\n")
+	buf.WriteString("- Removed runtime helpers and improved boolean type inference\n\n")
 	if data, err := os.ReadFile(taskFile); err == nil {
 		sections := strings.Split(string(data), "\n## ")
 		count := 0
