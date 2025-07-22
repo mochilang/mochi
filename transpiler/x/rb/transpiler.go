@@ -1619,9 +1619,26 @@ func (f *FormatList) emit(e *emitter) {
 type FormatBool struct{ Value Expr }
 
 func (f *FormatBool) emit(e *emitter) {
-	io.WriteString(e.w, "(")
-	f.Value.emit(e)
-	io.WriteString(e.w, " ? 'True' : 'False')")
+        io.WriteString(e.w, "(")
+        f.Value.emit(e)
+        io.WriteString(e.w, " ? 'True' : 'False')")
+}
+
+// SaveJSONLExpr writes a list of records to stdout as JSON lines.
+type SaveJSONLExpr struct{ Src Expr }
+
+func (s *SaveJSONLExpr) emit(e *emitter) {
+        io.WriteString(e.w, "(")
+        s.Src.emit(e)
+        io.WriteString(e.w, ".each do |row|")
+        e.nl()
+        e.indent++
+        e.writeIndent()
+        io.WriteString(e.w, "puts(JSON.generate(row.to_h, space: ' ', object_nl: '', array_nl: '', indent: '').gsub(/,/, ', '))")
+        e.nl()
+        e.indent--
+        e.writeIndent()
+        io.WriteString(e.w, "end)")
 }
 
 // MethodCallExpr represents calling a method on a target expression.
@@ -1858,19 +1875,34 @@ func dataExprFromFile(path, format string, typ *parser.TypeRef) (Expr, error) {
 		return nil, err
 	}
 	var v interface{}
-	switch format {
-	case "yaml":
-		if err := yaml.Unmarshal(data, &v); err != nil {
-			return nil, err
-		}
-	case "json":
-		if err := json.Unmarshal(data, &v); err != nil {
-			return nil, err
-		}
-	default:
-		return nil, fmt.Errorf("unsupported load format")
-	}
-	return valueToExpr(v, typ), nil
+       switch format {
+       case "yaml":
+               if err := yaml.Unmarshal(data, &v); err != nil {
+                       return nil, err
+               }
+       case "json":
+               if err := json.Unmarshal(data, &v); err != nil {
+                       return nil, err
+               }
+       case "jsonl":
+               lines := strings.Split(strings.TrimSpace(string(data)), "\n")
+               arr := make([]interface{}, 0, len(lines))
+               for _, line := range lines {
+                       line = strings.TrimSpace(line)
+                       if line == "" {
+                               continue
+                       }
+                       var obj interface{}
+                       if err := json.Unmarshal([]byte(line), &obj); err != nil {
+                               return nil, err
+                       }
+                       arr = append(arr, obj)
+               }
+               v = arr
+       default:
+               return nil, fmt.Errorf("unsupported load format")
+       }
+       return valueToExpr(v, typ), nil
 }
 
 func exprFromPrimary(p *parser.Primary) *parser.Expr {
@@ -2907,14 +2939,27 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 			items[i] = MapItem{Key: k, Value: v}
 		}
 		return &MapLit{Items: items}, nil
-	case p.Load != nil:
-		format := parseFormat(p.Load.With)
-		path := ""
-		if p.Load.Path != nil {
-			path = strings.Trim(*p.Load.Path, "\"")
-		}
-		return dataExprFromFile(path, format, p.Load.Type)
-	case p.Struct != nil:
+       case p.Load != nil:
+               format := parseFormat(p.Load.With)
+               path := ""
+               if p.Load.Path != nil {
+                       path = strings.Trim(*p.Load.Path, "\"")
+               }
+               return dataExprFromFile(path, format, p.Load.Type)
+       case p.Save != nil:
+               if p.Save.Path != nil && p.Save.With != nil {
+                       format := parseFormat(p.Save.With)
+                       if format == "jsonl" && strings.Trim(*p.Save.Path, "\"") == "-" {
+                               src, err := convertExpr(p.Save.Src)
+                               if err != nil {
+                                       return nil, err
+                               }
+                               needsJSON = true
+                               return &SaveJSONLExpr{Src: src}, nil
+                       }
+               }
+               return nil, fmt.Errorf("unsupported save expression")
+       case p.Struct != nil:
 		fields := make([]StructField, len(p.Struct.Fields))
 		for i, f := range p.Struct.Fields {
 			v, err := convertExpr(f.Value)
