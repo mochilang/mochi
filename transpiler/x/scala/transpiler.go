@@ -120,6 +120,37 @@ func containsContinue(stmts []Stmt) bool {
 
 func ContainsBreak(stmts []Stmt) bool    { return containsBreak(stmts) }
 func ContainsContinue(stmts []Stmt) bool { return containsContinue(stmts) }
+func containsReturn(stmts []Stmt) bool {
+	for _, st := range stmts {
+		switch s := st.(type) {
+		case *ReturnStmt:
+			return true
+		case *FunStmt:
+			if containsReturn(s.Body) {
+				return true
+			}
+		case *IfStmt:
+			if containsReturn(s.Then) || containsReturn(s.Else) {
+				return true
+			}
+		case *ForEachStmt:
+			if containsReturn(s.Body) {
+				return true
+			}
+		case *ForRangeStmt:
+			if containsReturn(s.Body) {
+				return true
+			}
+		case *WhileStmt:
+			if containsReturn(s.Body) {
+				return true
+			}
+		}
+	}
+	return false
+}
+
+func ContainsReturn(stmts []Stmt) bool { return containsReturn(stmts) }
 
 type ExprStmt struct{ Expr Expr }
 
@@ -638,8 +669,9 @@ func (m *MapLit) emit(w io.Writer) {
 			fmt.Fprint(w, ", ")
 		}
 		it.Key.emit(w)
-		fmt.Fprint(w, " -> ")
+		fmt.Fprint(w, " -> (")
 		it.Value.emit(w)
+		fmt.Fprint(w, ")")
 	}
 	fmt.Fprint(w, ")")
 }
@@ -1985,6 +2017,21 @@ func convertCall(c *parser.CallExpr, env *types.Env) (Expr, error) {
 		if len(args) == 1 {
 			name = "String.valueOf"
 		}
+	case "int":
+		if len(args) == 1 {
+			return &FieldExpr{Receiver: args[0], Name: "asInstanceOf[Int]"}, nil
+		}
+	case "input":
+		if len(args) == 0 {
+			call := &CallExpr{Fn: &Name{Name: "scala.io.StdIn.readLine"}, Args: nil}
+			opt := &CallExpr{Fn: &Name{Name: "Option"}, Args: []Expr{call}}
+			return &CallExpr{Fn: &FieldExpr{Receiver: opt, Name: "getOrElse"}, Args: []Expr{&StringLit{Value: "q"}}}, nil
+		}
+		if len(args) == 1 {
+			call := &CallExpr{Fn: &Name{Name: "scala.io.StdIn.readLine"}, Args: args}
+			opt := &CallExpr{Fn: &Name{Name: "Option"}, Args: []Expr{call}}
+			return &CallExpr{Fn: &FieldExpr{Receiver: opt, Name: "getOrElse"}, Args: []Expr{&StringLit{Value: "q"}}}, nil
+		}
 	case "append":
 		if len(args) == 2 {
 			return &AppendExpr{List: args[0], Elem: args[1]}, nil
@@ -2671,6 +2718,9 @@ func convertFunStmt(fs *parser.FunStmt, env *types.Env) (Stmt, error) {
 		}
 		fn.Body = append(fn.Body, s)
 	}
+	if fn.Return == "" && containsReturn(fn.Body) {
+		fn.Return = "Unit"
+	}
 	return fn, nil
 }
 
@@ -2860,6 +2910,8 @@ func toScalaType(t *parser.TypeRef) string {
 			return "Boolean"
 		case "float":
 			return "Double"
+		case "any":
+			return "Any"
 		default:
 			return *t.Simple
 		}
