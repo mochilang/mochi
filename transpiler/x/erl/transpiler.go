@@ -1477,27 +1477,20 @@ func (q *QueryExpr) emit(w io.Writer) {
 
 		expr := base.String()
 		if q.SortKey != nil {
-			io.WriteString(w, "lists:map(fun({_,V}) -> V end, ")
-			if q.Take != nil {
-				io.WriteString(w, "lists:sublist(")
-			}
-			if q.Skip != nil {
-				io.WriteString(w, "lists:nthtail(")
-				q.Skip.emit(w)
-				io.WriteString(w, ", ")
-			}
-			io.WriteString(w, "lists:sort(fun({K1,_},{K2,_}) -> K1 =< K2 end, ")
+			io.WriteString(w, "(fun() ->\n        Pairs = ")
 			io.WriteString(w, expr)
-			io.WriteString(w, ")")
+			io.WriteString(w, ",\n        SortedPairs = lists:sort(fun({K1,_},{K2,_}) -> K1 =< K2 end, Pairs),\n        Values = [V || {_,V} <- SortedPairs]")
 			if q.Skip != nil {
-				io.WriteString(w, ")")
+				io.WriteString(w, ",\n        Values = lists:nthtail(")
+				q.Skip.emit(w)
+				io.WriteString(w, ", Values)")
 			}
 			if q.Take != nil {
-				io.WriteString(w, ", ")
+				io.WriteString(w, ",\n        Values = lists:sublist(Values, ")
 				q.Take.emit(w)
 				io.WriteString(w, ")")
 			}
-			io.WriteString(w, ")")
+			io.WriteString(w, ",\n        Values end)()")
 			return
 		}
 		if q.Take != nil {
@@ -1548,27 +1541,20 @@ func (q *QueryExpr) emit(w io.Writer) {
 
 	expr := base.String()
 	if q.SortKey != nil {
-		io.WriteString(w, "lists:map(fun({_,V}) -> V end, ")
-		if q.Take != nil {
-			io.WriteString(w, "lists:sublist(")
-		}
-		if q.Skip != nil {
-			io.WriteString(w, "lists:nthtail(")
-			q.Skip.emit(w)
-			io.WriteString(w, ", ")
-		}
-		io.WriteString(w, "lists:sort(fun({K1,_},{K2,_}) -> K1 =< K2 end, ")
+		io.WriteString(w, "(fun() ->\n        Pairs = ")
 		io.WriteString(w, expr)
-		io.WriteString(w, ")")
+		io.WriteString(w, ",\n        SortedPairs = lists:sort(fun({K1,_},{K2,_}) -> K1 =< K2 end, Pairs),\n        Values = [V || {_,V} <- SortedPairs]")
 		if q.Skip != nil {
-			io.WriteString(w, ")")
+			io.WriteString(w, ",\n        Values = lists:nthtail(")
+			q.Skip.emit(w)
+			io.WriteString(w, ", Values)")
 		}
 		if q.Take != nil {
-			io.WriteString(w, ", ")
+			io.WriteString(w, ",\n        Values = lists:sublist(Values, ")
 			q.Take.emit(w)
 			io.WriteString(w, ")")
 		}
-		io.WriteString(w, ")")
+		io.WriteString(w, ",\n        Values end)()")
 		return
 	}
 	if q.Take != nil {
