@@ -1,3 +1,7 @@
+## Progress (2025-07-22 06:48 +0000)
+- erl: handle map sort key (dbdb26f46)
+- Regenerated golden files - 98/102 vm valid programs passing
+
 ## Progress (2025-07-22 13:12 +0700)
 - erl transpiler: support save jsonl to stdout (f4cc7ef56)
 - Regenerated golden files - 97/102 vm valid programs passing

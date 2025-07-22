@@ -1486,7 +1486,7 @@ func (q *QueryExpr) emit(w io.Writer) {
 				q.Skip.emit(w)
 				io.WriteString(w, ", ")
 			}
-			io.WriteString(w, "lists:sort(fun({K1,_},{K2,_}) -> K1 =< K2 end, ")
+			io.WriteString(w, "lists:sort(fun({K1,_},{K2,_}) -> erlang:term_to_binary(K1) =< erlang:term_to_binary(K2) end, ")
 			io.WriteString(w, expr)
 			io.WriteString(w, ")")
 			if q.Skip != nil {
@@ -1557,7 +1557,7 @@ func (q *QueryExpr) emit(w io.Writer) {
 			q.Skip.emit(w)
 			io.WriteString(w, ", ")
 		}
-		io.WriteString(w, "lists:sort(fun({K1,_},{K2,_}) -> K1 =< K2 end, ")
+		io.WriteString(w, "lists:sort(fun({K1,_},{K2,_}) -> erlang:term_to_binary(K1) =< erlang:term_to_binary(K2) end, ")
 		io.WriteString(w, expr)
 		io.WriteString(w, ")")
 		if q.Skip != nil {
@@ -3415,7 +3415,9 @@ func convertGroupLeftJoinQuery(q *parser.QueryExpr, env *types.Env, ctx *context
 		sortExpr = replaceGroupExpr(sortExpr, "G", keyVar, itemsVar)
 		sortMapFun := &AnonFunc{Params: []string{pair}, Body: []Stmt{keyLet, itemsLet}, Return: &TupleExpr{A: sortExpr, B: selExpr}}
 		mapped := &CallExpr{Func: "lists:map", Args: []Expr{sortMapFun, toList}}
-		sortFun := &AnonFunc{Params: []string{"A", "B"}, Return: &BinaryExpr{Left: &CallExpr{Func: "element", Args: []Expr{&IntLit{Value: 1}, &NameRef{Name: "A"}}}, Op: "<=", Right: &CallExpr{Func: "element", Args: []Expr{&IntLit{Value: 1}, &NameRef{Name: "B"}}}}}
+		cmpA := &CallExpr{Func: "erlang:term_to_binary", Args: []Expr{&CallExpr{Func: "element", Args: []Expr{&IntLit{Value: 1}, &NameRef{Name: "A"}}}}}
+		cmpB := &CallExpr{Func: "erlang:term_to_binary", Args: []Expr{&CallExpr{Func: "element", Args: []Expr{&IntLit{Value: 1}, &NameRef{Name: "B"}}}}}
+		sortFun := &AnonFunc{Params: []string{"A", "B"}, Return: &BinaryExpr{Left: cmpA, Op: "<=", Right: cmpB}}
 		sorted := &CallExpr{Func: "lists:sort", Args: []Expr{sortFun, mapped}}
 		result = &CallExpr{Func: "lists:map", Args: []Expr{&AnonFunc{Params: []string{"T"}, Return: &CallExpr{Func: "element", Args: []Expr{&IntLit{Value: 2}, &NameRef{Name: "T"}}}}, sorted}}
 	}
@@ -3618,7 +3620,9 @@ func convertGroupQuery(q *parser.QueryExpr, env *types.Env, ctx *context) (Expr,
 		sortExpr = replaceGroupExpr(sortExpr, "G", keyVar, itemsVar)
 		sortMapFun := &AnonFunc{Params: []string{pair}, Body: []Stmt{keyLet, itemsLet}, Return: &TupleExpr{A: sortExpr, B: selExpr}}
 		mapped := &CallExpr{Func: "lists:map", Args: []Expr{sortMapFun, toList}}
-		sortFun := &AnonFunc{Params: []string{"A", "B"}, Return: &BinaryExpr{Left: &CallExpr{Func: "element", Args: []Expr{&IntLit{Value: 1}, &NameRef{Name: "A"}}}, Op: "=<", Right: &CallExpr{Func: "element", Args: []Expr{&IntLit{Value: 1}, &NameRef{Name: "B"}}}}}
+		cmpA := &CallExpr{Func: "erlang:term_to_binary", Args: []Expr{&CallExpr{Func: "element", Args: []Expr{&IntLit{Value: 1}, &NameRef{Name: "A"}}}}}
+		cmpB := &CallExpr{Func: "erlang:term_to_binary", Args: []Expr{&CallExpr{Func: "element", Args: []Expr{&IntLit{Value: 1}, &NameRef{Name: "B"}}}}}
+		sortFun := &AnonFunc{Params: []string{"A", "B"}, Return: &BinaryExpr{Left: cmpA, Op: "=<", Right: cmpB}}
 		sorted := &CallExpr{Func: "lists:sort", Args: []Expr{sortFun, mapped}}
 		result = &CallExpr{Func: "lists:map", Args: []Expr{&AnonFunc{Params: []string{"T"}, Return: &CallExpr{Func: "element", Args: []Expr{&IntLit{Value: 2}, &NameRef{Name: "T"}}}}, sorted}}
 	}
