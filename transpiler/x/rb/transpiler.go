@@ -1237,6 +1237,56 @@ func (s *IndexAssignStmt) emit(e *emitter) {
 	s.Value.emit(e)
 }
 
+// UpdateStmt represents an update statement on a list of structs.
+type UpdateStmt struct {
+	Target string
+	Fields []string
+	Values []Expr
+	Cond   Expr
+	Struct bool
+}
+
+func (u *UpdateStmt) emit(e *emitter) {
+	io.WriteString(e.w, u.Target)
+	io.WriteString(e.w, ".each_with_index do |item, idx|")
+	e.nl()
+	e.indent++
+	if u.Cond != nil {
+		e.writeIndent()
+		io.WriteString(e.w, "if ")
+		u.Cond.emit(e)
+		io.WriteString(e.w, "")
+		e.nl()
+		e.indent++
+	}
+	for i, f := range u.Fields {
+		e.writeIndent()
+		if u.Struct {
+			io.WriteString(e.w, "item.")
+			io.WriteString(e.w, f)
+			io.WriteString(e.w, " = ")
+		} else {
+			io.WriteString(e.w, "item[")
+			fmt.Fprintf(e.w, "%q", f)
+			io.WriteString(e.w, "] = ")
+		}
+		u.Values[i].emit(e)
+		e.nl()
+	}
+	if u.Cond != nil {
+		e.indent--
+		e.writeIndent()
+		io.WriteString(e.w, "end")
+		e.nl()
+	}
+	e.writeIndent()
+	io.WriteString(e.w, u.Target+"[idx] = item")
+	e.nl()
+	e.indent--
+	e.writeIndent()
+	io.WriteString(e.w, "end")
+}
+
 type Expr interface{ emit(*emitter) }
 
 // ExprStmt represents a statement consisting of a single expression.
@@ -2398,6 +2448,8 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 		return convertWhile(st.While)
 	case st.For != nil:
 		return convertFor(st.For)
+	case st.Update != nil:
+		return convertUpdate(st.Update)
 	case st.Expect != nil:
 		e, err := convertExpr(st.Expect.Value)
 		if err != nil {
@@ -2649,6 +2701,63 @@ func convertFor(f *parser.ForStmt) (Stmt, error) {
 		}
 	}
 	return &ForInStmt{Name: f.Name, Iterable: iterable, Body: body}, nil
+}
+
+func convertUpdate(u *parser.UpdateStmt) (Stmt, error) {
+	if currentEnv == nil {
+		return nil, fmt.Errorf("missing env")
+	}
+	t, err := currentEnv.GetVar(u.Target)
+	if err != nil {
+		return nil, err
+	}
+	lt, ok := t.(types.ListType)
+	if !ok {
+		return nil, fmt.Errorf("update target not list")
+	}
+	st, ok := lt.Elem.(types.StructType)
+	if !ok {
+		return nil, fmt.Errorf("update element not struct")
+	}
+	child := types.NewEnv(currentEnv)
+	fieldSet := map[string]bool{}
+	for name, ft := range st.Fields {
+		child.SetVar(name, ft, true)
+		fieldSet[name] = true
+	}
+	prev := currentEnv
+	currentEnv = child
+	var fields []string
+	var values []Expr
+	for _, it := range u.Set.Items {
+		key, ok := isSimpleIdent(it.Key)
+		if !ok {
+			key, ok = literalString(it.Key)
+			if !ok {
+				currentEnv = prev
+				return nil, fmt.Errorf("unsupported update key")
+			}
+		}
+		val, err := convertExpr(it.Value)
+		if err != nil {
+			currentEnv = prev
+			return nil, err
+		}
+		val = substituteFields(val, "item", fieldSet)
+		fields = append(fields, key)
+		values = append(values, val)
+	}
+	var cond Expr
+	if u.Where != nil {
+		c, err := convertExpr(u.Where)
+		if err != nil {
+			currentEnv = prev
+			return nil, err
+		}
+		cond = substituteFields(c, "item", fieldSet)
+	}
+	currentEnv = prev
+	return &UpdateStmt{Target: u.Target, Fields: fields, Values: values, Cond: cond, Struct: true}, nil
 }
 
 func convertImport(im *parser.ImportStmt) (Stmt, error) {
@@ -3806,6 +3915,18 @@ func stmtNode(s Stmt) *ast.Node {
 		n.Children = append(n.Children, exprNode(st.Target))
 		n.Children = append(n.Children, exprNode(st.Index))
 		n.Children = append(n.Children, exprNode(st.Value))
+		return n
+	case *UpdateStmt:
+		n := &ast.Node{Kind: "update", Value: st.Target}
+		fields := &ast.Node{Kind: "fields"}
+		for i, f := range st.Fields {
+			fn := &ast.Node{Kind: "field", Value: f, Children: []*ast.Node{exprNode(st.Values[i])}}
+			fields.Children = append(fields.Children, fn)
+		}
+		n.Children = append(n.Children, fields)
+		if st.Cond != nil {
+			n.Children = append(n.Children, &ast.Node{Kind: "cond", Children: []*ast.Node{exprNode(st.Cond)}})
+		}
 		return n
 	case *IfStmt:
 		n := &ast.Node{Kind: "if", Children: []*ast.Node{exprNode(st.Cond)}}

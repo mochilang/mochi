@@ -126,12 +126,14 @@ func TestTranspilePrograms(t *testing.T) {
 		"group_by_join",
 		"group_by_left_join",
 		"group_by_sort",
-                "group_by_conditional_sum",
-                "group_by_having",
-                "load_yaml",
-                "load_jsonl",
-                "save_jsonl_stdout",
-        }
+		"group_by_conditional_sum",
+		"group_by_having",
+		"load_yaml",
+		"load_jsonl",
+		"save_jsonl_stdout",
+		"update_stmt",
+		"user_type_literal",
+	}
 	root := repoRoot(t)
 	outDir := filepath.Join(root, "tests", "transpiler", "x", "rb")
 	os.MkdirAll(outDir, 0o755)
