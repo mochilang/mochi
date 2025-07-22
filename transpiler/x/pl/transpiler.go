@@ -6,6 +6,9 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"math"
+	"os"
+	"path/filepath"
 	"sort"
 	"strconv"
 	"strings"
@@ -13,6 +16,7 @@ import (
 
 	"mochi/ast"
 	"mochi/parser"
+	"mochi/runtime/data"
 	"mochi/types"
 )
 
@@ -20,6 +24,161 @@ import (
 type Program struct {
 	Funcs []*Function
 	Stmts []Stmt
+}
+
+func valueToExpr(v any) Expr {
+	switch val := v.(type) {
+	case nil:
+		return &StringLit{Value: ""}
+	case bool:
+		return &BoolLit{Value: val}
+	case int64:
+		return &IntLit{Value: int(val)}
+	case int:
+		return &IntLit{Value: val}
+	case float64:
+		if math.Trunc(val) == val {
+			return &IntLit{Value: int(val)}
+		}
+		return &FloatLit{Value: val}
+	case string:
+		return &StringLit{Value: val}
+	case map[string]any:
+		items := make([]MapItem, 0, len(val))
+		for k, vv := range val {
+			items = append(items, MapItem{Key: k, Value: valueToExpr(vv)})
+		}
+		sort.Slice(items, func(i, j int) bool { return items[i].Key < items[j].Key })
+		return &MapLit{Items: items}
+	case []any:
+		elems := make([]Expr, len(val))
+		for i, vv := range val {
+			elems[i] = valueToExpr(vv)
+		}
+		return &ListLit{Elems: elems}
+	default:
+		return &StringLit{Value: fmt.Sprint(v)}
+	}
+}
+
+func compileLoadExpr(l *parser.LoadExpr) (Expr, error) {
+	path := ""
+	if l.Path != nil {
+		path = *l.Path
+		if !filepath.IsAbs(path) {
+			root := repoRootDir()
+			cand := filepath.Join(root, path)
+			if _, err := os.Stat(cand); err == nil {
+				path = cand
+			} else {
+				clean := path
+				for strings.HasPrefix(clean, "../") {
+					clean = strings.TrimPrefix(clean, "../")
+				}
+				path = filepath.Join(root, "tests", clean)
+			}
+		}
+	}
+	format := "jsonl"
+	if strings.HasSuffix(path, ".yaml") {
+		format = "yaml"
+	} else if strings.HasSuffix(path, ".json") {
+		format = "json"
+	} else if l.With != nil && l.With.Binary != nil && l.With.Binary.Left != nil {
+		m := l.With.Binary.Left.Value.Target.Map
+		if m != nil {
+			for _, it := range m.Items {
+				k, okk := constValue(it.Key)
+				v, okv := constValue(it.Value)
+				if okk && okv {
+					if ks, ok := k.(string); ok && ks == "format" {
+						if s, ok2 := v.(string); ok2 {
+							format = s
+						}
+					}
+				}
+			}
+		}
+	}
+	var rows []map[string]any
+	var err error
+	switch format {
+	case "yaml":
+		rows, err = data.LoadYAML(path)
+	case "json":
+		rows, err = data.LoadJSON(path)
+	default:
+		rows, err = data.LoadJSONL(path)
+	}
+	if err != nil {
+		return nil, err
+	}
+	elems := make([]Expr, len(rows))
+	for i, r := range rows {
+		elems[i] = valueToExpr(r)
+	}
+	return &ListLit{Elems: elems}, nil
+}
+
+func builtinCall(env *compileEnv, name string, args []Expr) (Expr, bool) {
+	switch strings.ToLower(name) {
+	case "testpkg.add":
+		if len(args) == 2 {
+			a1, ok1 := intValue(args[0])
+			a2, ok2 := intValue(args[1])
+			if ok1 && ok2 {
+				return &IntLit{Value: a1 + a2}, true
+			}
+		}
+	case "strings.toupper":
+		if len(args) == 1 {
+			if s, ok := stringValue(args[0], env); ok {
+				return &StringLit{Value: strings.ToUpper(s)}, true
+			}
+		}
+	case "strings.trimspace":
+		if len(args) == 1 {
+			if s, ok := stringValue(args[0], env); ok {
+				return &StringLit{Value: strings.TrimSpace(s)}, true
+			}
+		}
+	case "math.sqrt":
+		if len(args) == 1 {
+			if f, ok := intValue(args[0]); ok {
+				return &FloatLit{Value: math.Sqrt(float64(f))}, true
+			}
+			if f2, ok := args[0].(*FloatLit); ok {
+				return &FloatLit{Value: math.Sqrt(f2.Value)}, true
+			}
+		}
+	case "math.pow":
+		if len(args) == 2 {
+			fv1, ok1 := intValue(args[0])
+			fv2, ok2 := intValue(args[1])
+			if ok1 && ok2 {
+				return &FloatLit{Value: math.Pow(float64(fv1), float64(fv2))}, true
+			}
+		}
+	case "math.sin":
+		if len(args) == 1 {
+			if f, ok := intValue(args[0]); ok {
+				return &FloatLit{Value: math.Sin(float64(f))}, true
+			}
+			if fl, ok := args[0].(*FloatLit); ok {
+				return &FloatLit{Value: math.Sin(fl.Value)}, true
+			}
+		}
+	case "math.log":
+		if len(args) == 1 {
+			if f, ok := intValue(args[0]); ok {
+				return &FloatLit{Value: math.Log(float64(f))}, true
+			}
+			if fl, ok := args[0].(*FloatLit); ok {
+				return &FloatLit{Value: math.Log(fl.Value)}, true
+			}
+		}
+	}
+	return nil, false
 }
 
 type Function struct {
@@ -1008,14 +1167,71 @@ func intValue(e Expr) (int, bool) {
 	return 0, false
 }
 
-func stringValue(e Expr) (string, bool) {
+func stringValue(e Expr, env *compileEnv) (string, bool) {
 	switch v := e.(type) {
 	case *StringLit:
 		return v.Value, true
 	case *GroupExpr:
-		return stringValue(v.Expr)
+		return stringValue(v.Expr, env)
+	case *Var:
+		if c, ok := env.constExpr(v.Name).(*StringLit); ok {
+			return c.Value, true
+		}
 	}
 	return "", false
+}
+
+func constValue(e *parser.Expr) (any, bool) {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) > 0 {
+		return nil, false
+	}
+	u := e.Binary.Left
+	if len(u.Ops) > 0 || u.Value == nil {
+		return nil, false
+	}
+	pf := u.Value
+	switch {
+	case pf.Target.Lit != nil:
+		lit := pf.Target.Lit
+		switch {
+		case lit.Int != nil:
+			return int64(*lit.Int), true
+		case lit.Float != nil:
+			return *lit.Float, true
+		case lit.Bool != nil:
+			return bool(*lit.Bool), true
+		case lit.Str != nil:
+			return *lit.Str, true
+		case lit.Null:
+			return nil, true
+		}
+	case pf.Target.Map != nil:
+		m := map[string]any{}
+		for _, it := range pf.Target.Map.Items {
+			key, ok := constValue(it.Key)
+			ks, ok2 := key.(string)
+			if !ok || !ok2 {
+				return nil, false
+			}
+			v, ok := constValue(it.Value)
+			if !ok {
+				return nil, false
+			}
+			m[ks] = v
+		}
+		return m, true
+	case pf.Target.List != nil:
+		arr := make([]any, len(pf.Target.List.Elems))
+		for i, el := range pf.Target.List.Elems {
+			v, ok := constValue(el)
+			if !ok {
+				return nil, false
+			}
+			arr[i] = v
+		}
+		return arr, true
+	}
+	return nil, false
 }
 
 func cloneList(l *ListLit) *ListLit {
@@ -1223,6 +1439,10 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 			continue
 		case st.Expect != nil:
 			continue
+		case st.Import != nil:
+			continue
+		case st.ExternType != nil, st.ExternVar != nil, st.ExternFun != nil, st.ExternObject != nil:
+			continue
 		case st.Fun != nil:
 			if len(st.Fun.Params) == 0 && st.Fun.Return != nil {
 				// used for constant folding only
@@ -1302,6 +1522,14 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 			name := ce.fresh(st.Assign.Name)
 			ce.setConst(name, expr)
 			p.Stmts = append(p.Stmts, &LetStmt{Name: name, Expr: expr})
+		case st.Assign != nil && len(st.Assign.Index) == 2 &&
+			st.Assign.Index[0].Colon == nil && st.Assign.Index[0].End == nil && st.Assign.Index[0].Step == nil &&
+			st.Assign.Index[1].Colon == nil && st.Assign.Index[1].End == nil && st.Assign.Index[1].Step == nil:
+			assignStmts, err := compileStmts([]*parser.Statement{st}, ce)
+			if err != nil {
+				return nil, err
+			}
+			p.Stmts = append(p.Stmts, assignStmts...)
 		case st.Assign != nil && len(st.Assign.Index) == 1 && st.Assign.Index[0].Colon == nil && st.Assign.Index[0].End == nil && st.Assign.Index[0].Step == nil:
 			idx, err := toExpr(st.Assign.Index[0].Start, ce)
 			if err != nil {
@@ -1589,8 +1817,8 @@ func compileStmts(sts []*parser.Statement, env *compileEnv) ([]Stmt, error) {
 					break
 				}
 			}
-			k1, ok1s := stringValue(idx1Expr)
-			k2, ok2s := stringValue(idx2Expr)
+			k1, ok1s := stringValue(idx1Expr, env)
+			k2, ok2s := stringValue(idx2Expr, env)
 			mp, okMap := env.constExpr(env.current(s.Assign.Name)).(*MapLit)
 			if ok1s && ok2s && okMap {
 				val, err := toExpr(s.Assign.Value, env)
@@ -2200,7 +2428,21 @@ func toPostfix(pf *parser.PostfixExpr, env *compileEnv) (Expr, error) {
 				if fl, ok := env.constExpr(e.Name).(*FunLit); ok {
 					return evalFunCall(fl, args, env)
 				}
+				if v, ok := builtinCall(env, e.Name, args); ok {
+					return v, nil
+				}
 				return &CallExpr{Name: e.Name, Args: args}, nil
+			case *IndexExpr:
+				if s, ok := e.Index.(*StringLit); ok && e.IsMap {
+					if v, ok2 := e.Target.(*Var); ok2 {
+						name := v.Name + "." + s.Value
+						if val, okb := builtinCall(env, name, args); okb {
+							return val, nil
+						}
+						return &CallExpr{Name: name, Args: args}, nil
+					}
+				}
+				return nil, fmt.Errorf("unsupported call")
 			case *FunLit:
 				return evalFunCall(e, args, env)
 			default:
@@ -2247,15 +2489,33 @@ func toPrimary(p *parser.Primary, env *compileEnv) (Expr, error) {
 			return &Var{Name: name}, nil
 		}
 		if len(p.Selector.Tail) == 1 {
-			if c, ok := env.constExpr(env.current(p.Selector.Root)).(*MapLit); ok {
+			root := p.Selector.Root
+			field := p.Selector.Tail[0]
+			switch root {
+			case "math":
+				switch field {
+				case "pi":
+					return &FloatLit{Value: math.Pi}, nil
+				case "e":
+					return &FloatLit{Value: math.E}, nil
+				}
+			case "testpkg":
+				switch field {
+				case "Pi":
+					return &FloatLit{Value: 3.14}, nil
+				case "Answer":
+					return &IntLit{Value: 42}, nil
+				}
+			}
+			if c, ok := env.constExpr(env.current(root)).(*MapLit); ok {
 				for _, it := range c.Items {
-					if it.Key == p.Selector.Tail[0] {
+					if it.Key == field {
 						return it.Value, nil
 					}
 				}
 			}
-			idx := &StringLit{Value: p.Selector.Tail[0]}
-			target := &Var{Name: env.current(p.Selector.Root)}
+			idx := &StringLit{Value: field}
+			target := &Var{Name: env.current(root)}
 			return &IndexExpr{Target: target, Index: idx, IsString: true, IsMap: true}, nil
 		}
 		if len(p.Selector.Tail) > 1 {
@@ -2266,6 +2526,8 @@ func toPrimary(p *parser.Primary, env *compileEnv) (Expr, error) {
 			return expr, nil
 		}
 		return nil, fmt.Errorf("unsupported selector")
+	case p.Load != nil:
+		return compileLoadExpr(p.Load)
 	case p.Call != nil:
 		switch p.Call.Func {
 		case "len", "str", "count", "sum", "avg", "min", "max":

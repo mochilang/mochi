@@ -1,0 +1,5 @@
+ERROR: /workspace/mochi/tests/transpiler/x/pl/mix_go_python.pl:7:18: Syntax error: Operator expected
+ERROR: /workspace/mochi/tests/transpiler/x/pl/mix_go_python.pl:1: Initialization goal raised exception:
+ERROR: catch/3: Unknown procedure: main/1
+ERROR:   However, there are definitions for:
+ERROR:         main/0

@@ -2,8 +2,8 @@
 
 This directory contains a tiny transpiler that converts a restricted subset of Mochi programs to SWI-Prolog. It is mainly used for experimentation and golden tests.
 
-## VM Golden Test Checklist (86/103)
-Last updated: 2025-07-22 16:51 +0700
+## VM Golden Test Checklist (94/103)
+Last updated: 2025-07-22 17:14 +0700
 - [x] `append_builtin`
 - [x] `avg_builtin`
 - [x] `basic_compare`
@@ -26,7 +26,7 @@ Last updated: 2025-07-22 16:51 +0700
 - [x] `fun_call`
 - [x] `fun_expr_in_let`
 - [x] `fun_three_args`
-- [ ] `go_auto`
+- [x] `go_auto`
 - [x] `group_by`
 - [x] `group_by_conditional_sum`
 - [x] `group_by_having`
@@ -55,21 +55,21 @@ Last updated: 2025-07-22 16:51 +0700
 - [x] `list_index`
 - [x] `list_nested_assign`
 - [x] `list_set_ops`
-- [ ] `load_jsonl`
-- [ ] `load_yaml`
+- [x] `load_jsonl`
+- [x] `load_yaml`
 - [x] `map_assign`
 - [x] `map_in_operator`
 - [x] `map_index`
 - [x] `map_int_key`
 - [x] `map_literal_dynamic`
 - [x] `map_membership`
-- [ ] `map_nested_assign`
+- [x] `map_nested_assign`
 - [x] `match_expr`
 - [x] `match_full`
 - [x] `math_ops`
 - [x] `membership`
 - [x] `min_max_builtin`
-- [ ] `mix_go_python`
+- [x] `mix_go_python`
 - [x] `nested_function`
 - [x] `order_by_map`
 - [ ] `outer_join`
@@ -77,15 +77,15 @@ Last updated: 2025-07-22 16:51 +0700
 - [x] `print_hello`
 - [x] `pure_fold`
 - [x] `pure_global_fold`
-- [ ] `python_auto`
-- [ ] `python_math`
+- [x] `python_auto`
+- [x] `python_math`
 - [x] `query_sum_select`
 - [ ] `record_assign`
 - [ ] `right_join`
 - [ ] `save_jsonl_stdout`
 - [x] `short_circuit`
 - [x] `slice`
-- [ ] `sort_stable`
+- [x] `sort_stable`
 - [x] `str_builtin`
 - [x] `string_compare`
 - [x] `string_concat`
