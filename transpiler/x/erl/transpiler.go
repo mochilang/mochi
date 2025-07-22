@@ -614,11 +614,13 @@ func (j *JsonStmt) emit(w io.Writer) {
 }
 
 func (r *ReturnStmt) emit(w io.Writer) {
+	io.WriteString(w, "throw({return, ")
 	if r.Expr != nil {
 		r.Expr.emit(w)
 	} else {
 		io.WriteString(w, "nil")
 	}
+	io.WriteString(w, "})")
 }
 
 func (fd *FuncDecl) emit(w io.Writer) {
@@ -630,7 +632,7 @@ func (fd *FuncDecl) emit(w io.Writer) {
 		}
 		io.WriteString(w, p)
 	}
-	io.WriteString(w, ") ->\n")
+	io.WriteString(w, ") ->\n    try\n")
 	for _, st := range fd.Body {
 		io.WriteString(w, "        ")
 		st.emit(w)
@@ -642,7 +644,7 @@ func (fd *FuncDecl) emit(w io.Writer) {
 	} else {
 		io.WriteString(w, "nil")
 	}
-	io.WriteString(w, ".\n\n")
+	io.WriteString(w, "\n    catch {return, V} -> V end.\n\n")
 }
 
 func (af *AnonFunc) emit(w io.Writer) {
@@ -653,7 +655,7 @@ func (af *AnonFunc) emit(w io.Writer) {
 		}
 		io.WriteString(w, p)
 	}
-	io.WriteString(w, ") ->\n")
+	io.WriteString(w, ") ->\n    try\n")
 	for _, st := range af.Body {
 		io.WriteString(w, "        ")
 		st.emit(w)
@@ -665,7 +667,7 @@ func (af *AnonFunc) emit(w io.Writer) {
 	} else {
 		io.WriteString(w, "nil")
 	}
-	io.WriteString(w, " end")
+	io.WriteString(w, "\n    catch {return, V} -> V end")
 }
 
 func isStringExpr(e Expr) bool {
