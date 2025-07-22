@@ -1,6 +1,6 @@
-## Progress (2025-07-22 09:10 +0700)
-- Commit 0363e8e26: st transpiler: support partial application
-- Generated Smalltalk for 95/102 programs
+## Progress (2025-07-22 09:39 +0700)
+- Commit 12c564f55: st transpiler: add dataset load
+- Generated Smalltalk for 96/102 programs
 - Updated README checklist and outputs
 - Added support for break and continue statements
 
