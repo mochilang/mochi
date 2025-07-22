@@ -121,7 +121,7 @@ func UpdateRosettaReadme() {
 	total := len(files)
 	compiled := 0
 	var lines []string
-	for _, f := range files {
+	for i, f := range files {
 		name := strings.TrimSuffix(filepath.Base(f), ".mochi")
 		mark := "[ ]"
 		if _, err := os.Stat(filepath.Join(outDir, name+".out")); err == nil {
@@ -130,7 +130,7 @@ func UpdateRosettaReadme() {
 				mark = "[x]"
 			}
 		}
-		lines = append(lines, fmt.Sprintf("- %s `%s`", mark, name))
+		lines = append(lines, fmt.Sprintf("%d. %s `%s`", i+1, mark, name))
 	}
 	out, err := exec.Command("git", "log", "-1", "--date=iso-strict", "--format=%cd").Output()
 	ts := ""
