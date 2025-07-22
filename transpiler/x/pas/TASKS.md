@@ -1,3 +1,6 @@
+## Progress (2025-07-22 04:16 UTC)
+- Added struct casting and JSON builtin output. `cast_struct` and `json_builtin` now transpile (progress 89/102)
+
 ## Progress (2025-07-22 03:25 UTC)
 - Implemented multi-key grouping with sorting. `group_by_multi_sort` now transpiles (progress 87/102)
 

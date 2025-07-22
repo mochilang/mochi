@@ -3,7 +3,7 @@
 This folder contains the experimental Pascal transpiler.
 Generated sources for the golden tests live under `tests/transpiler/x/pas`.
 
-## VM Golden Test Checklist (87/102) - updated 2025-07-22 03:25 UTC
+## VM Golden Test Checklist (89/102)
 - [x] append_builtin
 - [x] avg_builtin
 - [x] basic_compare
@@ -11,7 +11,7 @@ Generated sources for the golden tests live under `tests/transpiler/x/pas`.
 - [x] bool_chain
 - [x] break_continue
 - [x] cast_string_to_int
-- [ ] cast_struct
+- [x] cast_struct
 - [x] closure
 - [x] count_builtin
 - [x] cross_join
@@ -29,13 +29,13 @@ Generated sources for the golden tests live under `tests/transpiler/x/pas`.
 - [x] go_auto
 - [x] group_by
 - [x] group_by_conditional_sum
-- [ ] group_by_having
+- [x] group_by_having
 - [x] group_by_join
 - [x] group_by_left_join
 - [x] group_by_multi_join
 - [x] group_by_multi_join_sort
 - [x] group_by_multi_sort
-- [ ] group_by_sort
+- [x] group_by_sort
 - [ ] group_items_iteration
 - [x] if_else
 - [x] if_then_else
@@ -44,7 +44,7 @@ Generated sources for the golden tests live under `tests/transpiler/x/pas`.
 - [x] in_operator_extended
 - [x] inner_join
 - [x] join_multi
-- [ ] json_builtin
+- [x] json_builtin
 - [x] left_join
 - [x] left_join_multi
 - [x] len_builtin
@@ -64,8 +64,8 @@ Generated sources for the golden tests live under `tests/transpiler/x/pas`.
 - [x] map_literal_dynamic
 - [x] map_membership
 - [x] map_nested_assign
-- [ ] match_expr
-- [ ] match_full
+- [x] match_expr
+- [x] match_full
 - [x] math_ops
 - [x] membership
 - [x] min_max_builtin
@@ -96,14 +96,14 @@ Generated sources for the golden tests live under `tests/transpiler/x/pas`.
 - [x] sum_builtin
 - [x] tail_recursion
 - [x] test_block
-- [ ] tree_sum
+- [x] tree_sum
 - [x] two-sum
 - [x] typed_let
 - [x] typed_var
 - [x] unary_neg
 - [ ] update_stmt
-- [ ] user_type_literal
+- [x] user_type_literal
 - [x] values_builtin
 - [x] var_assignment
 - [x] while_loop
-Last updated: 2025-07-22 03:25 UTC
+Last updated: 2025-07-22 04:16 UTC

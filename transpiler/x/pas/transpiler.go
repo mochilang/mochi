@@ -27,6 +27,13 @@ func sanitize(name string) string {
 		nameMap[name] = name + "_"
 		return name + "_"
 	}
+	for _, r := range currProg.Records {
+		if strings.EqualFold(r.Name, name) {
+			v := name + "_v"
+			nameMap[name] = v
+			return v
+		}
+	}
 	return name
 }
 
@@ -806,6 +813,18 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 				pr.Stmts = append(pr.Stmts, &PrintStmt{Exprs: parts, Types: typesList, NeedSysUtils: needSys})
 				continue
 			}
+			if call != nil && call.Func == "json" && len(call.Args) == 1 {
+				id, ok := exprToIdent(call.Args[0])
+				if ok {
+					vname := sanitize(id)
+					if typ, ok2 := currentVarTypes[vname]; ok2 {
+						if rec, ok3 := findRecord(typ); ok3 {
+							pr.Stmts = append(pr.Stmts, buildJSONPrettyStmts(vname, rec)...)
+							continue
+						}
+					}
+				}
+			}
 			ex, err := convertExpr(env, st.Expr.Expr)
 			if err != nil {
 				return nil, err
@@ -1327,6 +1346,18 @@ func convertBody(env *types.Env, body []*parser.Statement, varTypes map[string]s
 				}
 				out = append(out, &PrintStmt{Exprs: parts, Types: typesList, NeedSysUtils: needSys})
 				continue
+			}
+			if call != nil && call.Func == "json" && len(call.Args) == 1 {
+				id, ok := exprToIdent(call.Args[0])
+				if ok {
+					vname := sanitize(id)
+					if typ, ok2 := currentVarTypes[vname]; ok2 {
+						if rec, ok3 := findRecord(typ); ok3 {
+							out = append(out, buildJSONPrettyStmts(vname, rec)...)
+							continue
+						}
+					}
+				}
 			}
 			ex, err := convertExpr(env, st.Expr.Expr)
 			if err != nil {
@@ -2639,7 +2670,28 @@ func convertPostfix(env *types.Env, pf *parser.PostfixExpr) (Expr, error) {
 			if target == "int" {
 				expr = &CastExpr{Expr: expr, Type: target}
 			} else {
-				expr = expr
+				tmp := *pf
+				tmp.Ops = tmp.Ops[:i]
+				base := &parser.Expr{Binary: &parser.BinaryExpr{Left: &parser.Unary{Value: &tmp}}}
+				if ml := mapLitFromExpr(base); ml != nil {
+					var fields []FieldExpr
+					for _, it := range ml.Items {
+						key, ok := exprToIdent(it.Key)
+						if !ok {
+							if s, ok2 := literalString(it.Key); ok2 {
+								key = s
+							} else {
+								return nil, fmt.Errorf("unsupported struct key")
+							}
+						}
+						val, err := convertExpr(env, it.Value)
+						if err != nil {
+							return nil, err
+						}
+						fields = append(fields, FieldExpr{Name: key, Expr: val})
+					}
+					expr = &RecordLit{Type: target, Fields: fields}
+				}
 			}
 		default:
 			return nil, fmt.Errorf("unsupported postfix")
@@ -3352,6 +3404,28 @@ func buildJSONLineExpr(varName string, rec RecordDef) Expr {
 	}
 	expr = &BinaryExpr{Op: "+", Left: expr, Right: &StringLit{Value: "}"}}
 	return expr
+}
+
+func buildJSONPrettyStmts(varName string, rec RecordDef) []Stmt {
+	var out []Stmt
+	out = append(out, &WritelnStmt{Expr: &StringLit{Value: "{"}})
+	for i, f := range rec.Fields {
+		sel := &SelectorExpr{Root: varName, Tail: []string{f.Name}}
+		var line Expr = &StringLit{Value: fmt.Sprintf("  \"%s\": ", f.Name)}
+		if f.Type == "integer" {
+			line = &BinaryExpr{Op: "+", Left: line, Right: &CallExpr{Name: "IntToStr", Args: []Expr{sel}}}
+		} else {
+			line = &BinaryExpr{Op: "+", Left: line, Right: &StringLit{Value: "\""}}
+			line = &BinaryExpr{Op: "+", Left: line, Right: sel}
+			line = &BinaryExpr{Op: "+", Left: line, Right: &StringLit{Value: "\""}}
+		}
+		if i < len(rec.Fields)-1 {
+			line = &BinaryExpr{Op: "+", Left: line, Right: &StringLit{Value: ","}}
+		}
+		out = append(out, &WritelnStmt{Expr: line})
+	}
+	out = append(out, &WritelnStmt{Expr: &StringLit{Value: "}"}})
+	return out
 }
 
 func extractSaveExpr(e *parser.Expr) *parser.SaveExpr {
