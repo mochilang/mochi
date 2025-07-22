@@ -48,6 +48,9 @@ var needJSON bool
 // needTrace reports whether Debug.Trace is required.
 var needTrace bool
 
+// needIORef reports whether Data.IORef is required.
+var needIORef bool
+
 // groupVars tracks variables that represent groups.
 var groupVars map[string]bool
 
@@ -56,6 +59,9 @@ var groupKeyStruct map[string]string
 
 // groupItemType stores the struct type name of each group's items.
 var groupItemType map[string]string
+
+// mutated tracks variables that are reassigned.
+var mutated map[string]bool
 
 // vars holds the last computed expression of each variable at the top level.
 var vars map[string]Expr
@@ -487,16 +493,34 @@ func (j *JSONStmt) emit(w io.Writer) {
 
 func (l *LetStmt) emit(w io.Writer) {
 	writeIndent(w)
-	io.WriteString(w, safeName(l.Name))
-	io.WriteString(w, " = ")
-	l.Expr.emit(w)
+	name := safeName(l.Name)
+	if mutated[l.Name] && indent != "" {
+		needIORef = true
+		io.WriteString(w, name+" <- newIORef (")
+		l.Expr.emit(w)
+		io.WriteString(w, ")")
+	} else {
+		io.WriteString(w, name)
+		io.WriteString(w, " = ")
+		l.Expr.emit(w)
+	}
 }
 
 func (a *AssignStmt) emit(w io.Writer) {
 	writeIndent(w)
-	io.WriteString(w, safeName(a.Name))
-	io.WriteString(w, " = ")
-	a.Expr.emit(w)
+	name := safeName(a.Name)
+	if mutated[a.Name] {
+		needIORef = true
+		io.WriteString(w, "writeIORef ")
+		io.WriteString(w, name)
+		io.WriteString(w, " (")
+		a.Expr.emit(w)
+		io.WriteString(w, ")")
+	} else {
+		io.WriteString(w, name)
+		io.WriteString(w, " = ")
+		a.Expr.emit(w)
+	}
 }
 
 func (i *IfStmt) emit(w io.Writer) {
@@ -972,7 +996,16 @@ func (r *RecordUpdate) emit(w io.Writer) {
 	r.Value.emit(w)
 	io.WriteString(w, "}")
 }
-func (n *NameRef) emit(w io.Writer) { io.WriteString(w, safeName(n.Name)) }
+func (n *NameRef) emit(w io.Writer) {
+	name := safeName(n.Name)
+	if mutated[n.Name] {
+		needIORef = true
+		io.WriteString(w, "readIORef ")
+		io.WriteString(w, name)
+	} else {
+		io.WriteString(w, name)
+	}
+}
 func (f *FieldExpr) emit(w io.Writer) {
 	if nr, ok := f.Target.(*NameRef); ok && nr.Name == "testpkg" {
 		io.WriteString(w, "testpkg_"+f.Field)
@@ -1593,7 +1626,7 @@ func inferVarFromSource(name string, src Expr) {
 	}
 }
 
-func header(withList, withMap, withJSON, withTrace bool) string {
+func header(withList, withMap, withJSON, withTrace, withIORef bool) string {
 	out, err := exec.Command("git", "log", "-1", "--date=iso-strict", "--format=%cd").Output()
 	ts := time.Now()
 	if err == nil {
@@ -1627,13 +1660,16 @@ func header(withList, withMap, withJSON, withTrace bool) string {
 	if withTrace {
 		h += "import Debug.Trace (trace)\n"
 	}
+	if withIORef {
+		h += "import Data.IORef\n"
+	}
 	return h
 }
 
 // Emit generates formatted Haskell code.
 func Emit(p *Program) []byte {
 	var buf bytes.Buffer
-	buf.WriteString(header(needDataList, needDataMap, needJSON, needTrace))
+	buf.WriteString(header(needDataList, needDataMap, needJSON, needTrace, needIORef))
 	if needGroupBy {
 		buf.WriteString(groupPrelude())
 		buf.WriteByte('\n')
@@ -1648,8 +1684,14 @@ func Emit(p *Program) []byte {
 		buf.WriteByte('\n')
 		buf.WriteByte('\n')
 	}
+	var refDecls []*LetStmt
 	for _, s := range p.Stmts {
 		if l, ok := s.(*LetStmt); ok {
+			if mutated[l.Name] {
+				refDecls = append(refDecls, l)
+				needIORef = true
+				continue
+			}
 			l.emit(&buf)
 			buf.WriteByte('\n')
 			buf.WriteByte('\n')
@@ -1659,8 +1701,17 @@ func Emit(p *Program) []byte {
 	buf.WriteString("main = do\n")
 	prev := indent
 	indent += "    "
+	for _, l := range refDecls {
+		writeIndent(&buf)
+		io.WriteString(&buf, safeName(l.Name)+" <- newIORef (")
+		l.Expr.emit(&buf)
+		io.WriteString(&buf, ")\n")
+	}
 	for _, s := range p.Stmts {
-		if _, ok := s.(*LetStmt); ok {
+		if l, ok := s.(*LetStmt); ok {
+			if mutated[l.Name] {
+				continue
+			}
 			continue
 		}
 		s.emit(&buf)
@@ -1684,12 +1735,14 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	needGroupBy = false
 	needJSON = false
 	needTrace = false
+	needIORef = false
 	groupVars = map[string]bool{}
 	groupKeyStruct = map[string]string{}
 	groupItemType = map[string]string{}
 	structDefs = map[string]*TypeDecl{}
 	structCount = 0
 	preludeHide = map[string]bool{}
+	mutated = map[string]bool{}
 	for i := 0; i < len(prog.Statements); i++ {
 		st := prog.Statements[i]
 		if st.Var != nil && st.Var.Value != nil && st.Var.Value.Binary != nil && st.Var.Value.Binary.Left != nil && st.Var.Value.Binary.Left.Value != nil && st.Var.Value.Binary.Left.Value.Target != nil && st.Var.Value.Binary.Left.Value.Target.List != nil && len(st.Var.Value.Binary.Left.Value.Target.List.Elems) == 0 {
@@ -3009,12 +3062,14 @@ func convertStmtList(list []*parser.Statement) ([]Stmt, error) {
 				return nil, err
 			}
 			name := safeName(st.Assign.Name)
+			mutated[name] = true
 			if len(st.Assign.Index) == 0 && len(st.Assign.Field) == 0 {
 				recordType(name, val)
 				out = append(out, &AssignStmt{Name: name, Expr: val})
 				break
 			}
 			if len(st.Assign.Field) > 0 {
+				mutated[name] = true
 				prev := vars[name]
 				if prev == nil {
 					prev = &NameRef{Name: name}
@@ -3045,6 +3100,7 @@ func convertStmtList(list []*parser.Statement) ([]Stmt, error) {
 			} else {
 				expr = listAssign(prev, idxExprs, val)
 			}
+			mutated[name] = true
 			recordType(name, expr)
 			out = append(out, &AssignStmt{Name: name, Expr: expr})
 		case st.Break != nil:
