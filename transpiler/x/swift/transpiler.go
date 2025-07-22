@@ -739,15 +739,27 @@ func (c *CastExpr) emit(w io.Writer) {
 		c.Expr.emit(w)
 		return
 	}
-	switch c.Type {
+	t := c.Type
+	force := false
+	if strings.HasSuffix(t, "!") {
+		force = true
+		t = strings.TrimSuffix(t, "!")
+	}
+	switch t {
 	case "Int", "Int64", "Double", "String", "Bool":
-		fmt.Fprintf(w, "%s(", c.Type)
-		c.Expr.emit(w)
-		fmt.Fprint(w, ")")
+		if force {
+			fmt.Fprint(w, "(")
+			c.Expr.emit(w)
+			fmt.Fprintf(w, " as! %s)", t)
+		} else {
+			fmt.Fprintf(w, "%s(", t)
+			c.Expr.emit(w)
+			fmt.Fprint(w, ")")
+		}
 	default:
 		fmt.Fprint(w, "(")
 		c.Expr.emit(w)
-		fmt.Fprintf(w, " as! %s)", c.Type)
+		fmt.Fprintf(w, " as! %s)", t)
 	}
 }
 
@@ -1330,6 +1342,15 @@ func convertIfStmt(env *types.Env, i *parser.IfStmt) (Stmt, error) {
 	if err != nil {
 		return nil, err
 	}
+	if env != nil {
+		t := types.TypeOfExpr(i.Cond, env)
+		if ot, ok := t.(types.OptionType); ok {
+			t = ot.Elem
+		}
+		if types.IsAnyType(t) {
+			cond = &CastExpr{Expr: cond, Type: "Bool!"}
+		}
+	}
 	thenStmts, err := convertStmts(env, i.Then)
 	if err != nil {
 		return nil, err
@@ -1385,6 +1406,15 @@ func convertWhileStmt(env *types.Env, wst *parser.WhileStmt) (Stmt, error) {
 	cond, err := convertExpr(env, wst.Cond)
 	if err != nil {
 		return nil, err
+	}
+	if env != nil {
+		t := types.TypeOfExpr(wst.Cond, env)
+		if ot, ok := t.(types.OptionType); ok {
+			t = ot.Elem
+		}
+		if types.IsAnyType(t) {
+			cond = &CastExpr{Expr: cond, Type: "Bool!"}
+		}
 	}
 	body, err := convertStmts(env, wst.Body)
 	if err != nil {
@@ -1868,16 +1898,22 @@ func convertExpr(env *types.Env, e *parser.Expr) (Expr, error) {
 				right = &RawStmt{Code: fmt.Sprintf("String(describing: %s)", exprString(right))}
 			} else if types.IsIntType(ltyp) && types.IsAnyType(rtyp) {
 				right = &CastExpr{Expr: right, Type: "Int"}
+				rtyp = types.IntType{}
 			} else if types.IsIntType(rtyp) && types.IsAnyType(ltyp) {
 				left = &CastExpr{Expr: left, Type: "Int"}
+				ltyp = types.IntType{}
 			} else if types.IsFloatType(ltyp) && types.IsAnyType(rtyp) {
 				right = &CastExpr{Expr: right, Type: "Double"}
+				rtyp = types.FloatType{}
 			} else if types.IsFloatType(rtyp) && types.IsAnyType(ltyp) {
 				left = &CastExpr{Expr: left, Type: "Double"}
+				ltyp = types.FloatType{}
 			} else if types.IsStringType(ltyp) && types.IsAnyType(rtyp) {
 				right = &CastExpr{Expr: right, Type: "String"}
+				rtyp = types.StringType{}
 			} else if types.IsStringType(rtyp) && types.IsAnyType(ltyp) {
 				left = &CastExpr{Expr: left, Type: "String"}
+				ltyp = types.StringType{}
 			}
 		case "+", "-", "*", "/", "%":
 			if op == "+" && (types.IsStringType(ltyp) || types.IsStringType(rtyp)) {
@@ -1888,18 +1924,29 @@ func convertExpr(env *types.Env, e *parser.Expr) (Expr, error) {
 					right = &CastExpr{Expr: right, Type: "String"}
 				}
 			} else {
-				if types.IsAnyType(ltyp) {
-					if types.IsIntType(rtyp) {
-						left = &CastExpr{Expr: left, Type: "Int"}
-					} else {
-						left = &CastExpr{Expr: left, Type: "Double"}
+				if types.IsAnyType(ltyp) && types.IsAnyType(rtyp) {
+					left = &CastExpr{Expr: left, Type: "Int"}
+					right = &CastExpr{Expr: right, Type: "Int"}
+					ltyp = types.IntType{}
+					rtyp = types.IntType{}
+				} else {
+					if types.IsAnyType(ltyp) {
+						if types.IsIntType(rtyp) || types.IsInt64Type(rtyp) {
+							left = &CastExpr{Expr: left, Type: "Int"}
+							ltyp = types.IntType{}
+						} else {
+							left = &CastExpr{Expr: left, Type: "Double"}
+							ltyp = types.FloatType{}
+						}
 					}
-				}
-				if types.IsAnyType(rtyp) {
-					if types.IsIntType(ltyp) {
-						right = &CastExpr{Expr: right, Type: "Int"}
-					} else {
-						right = &CastExpr{Expr: right, Type: "Double"}
+					if types.IsAnyType(rtyp) {
+						if types.IsIntType(ltyp) || types.IsInt64Type(ltyp) {
+							right = &CastExpr{Expr: right, Type: "Int"}
+							rtyp = types.IntType{}
+						} else {
+							right = &CastExpr{Expr: right, Type: "Double"}
+							rtyp = types.FloatType{}
+						}
 					}
 				}
 			}
@@ -1971,6 +2018,16 @@ func convertUnary(env *types.Env, u *parser.Unary) (Expr, error) {
 			}
 			expr = &UnaryExpr{Op: "-", Expr: expr}
 		case "!":
+			if env != nil {
+				sub := &parser.Unary{Value: u.Value, Ops: u.Ops[:i]}
+				t := types.TypeOfUnary(sub, env)
+				if ot, ok := t.(types.OptionType); ok {
+					t = ot.Elem
+				}
+				if types.IsAnyType(t) {
+					expr = &CastExpr{Expr: expr, Type: "Bool!"}
+				}
+			}
 			expr = &UnaryExpr{Op: "!", Expr: expr}
 		case "+":
 			// ignore
