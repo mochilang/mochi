@@ -28,7 +28,9 @@ var typeDecls []*TypeDeclStmt
 var needsBreaks bool
 var needsJSON bool
 var replaceContinue bool
+var useNow bool
 var builtinAliases map[string]string
+var localVarTypes map[string]string
 
 func BuiltinAliases() map[string]string { return builtinAliases }
 
@@ -37,6 +39,7 @@ var scalaKeywords = map[string]bool{
 	"var":  true,
 	"type": true,
 	"def":  true,
+	"this": true,
 }
 
 func escapeName(name string) string {
@@ -60,6 +63,10 @@ func containsBreak(stmts []Stmt) bool {
 		switch s := st.(type) {
 		case *BreakStmt:
 			return true
+		case *FunStmt:
+			if containsBreak(s.Body) {
+				return true
+			}
 		case *IfStmt:
 			if containsBreak(s.Then) || containsBreak(s.Else) {
 				return true
@@ -86,6 +93,10 @@ func containsContinue(stmts []Stmt) bool {
 		switch s := st.(type) {
 		case *ContinueStmt:
 			return true
+		case *FunStmt:
+			if containsContinue(s.Body) {
+				return true
+			}
 		case *IfStmt:
 			if containsContinue(s.Then) || containsContinue(s.Else) {
 				return true
@@ -351,15 +362,47 @@ func (r *ReturnStmt) emit(w io.Writer) {
 }
 
 func (ws *WhileStmt) emit(w io.Writer) {
+	hasBr := containsBreak(ws.Body)
+	hasCont := containsContinue(ws.Body)
+	if hasBr || hasCont {
+		needsBreaks = true
+	}
+	if hasBr {
+		fmt.Fprint(w, "breakable {\n")
+	}
 	fmt.Fprint(w, "while (")
 	ws.Cond.emit(w)
 	fmt.Fprint(w, ") {\n")
+	if hasCont {
+		fmt.Fprint(w, "    breakable {\n")
+		replaceContinue = true
+	}
 	for _, st := range ws.Body {
 		fmt.Fprint(w, "    ")
-		st.emit(w)
+		switch s := st.(type) {
+		case *BreakStmt:
+			if hasBr {
+				fmt.Fprint(w, "break")
+			}
+		case *ContinueStmt:
+			if hasCont {
+				fmt.Fprint(w, "break")
+			} else {
+				s.emit(w)
+			}
+		default:
+			st.emit(w)
+		}
 		fmt.Fprint(w, "\n")
 	}
+	if hasCont {
+		replaceContinue = false
+		fmt.Fprint(w, "    }\n")
+	}
 	fmt.Fprint(w, "  }")
+	if hasBr {
+		fmt.Fprint(w, "\n}")
+	}
 }
 
 func (fr *ForRangeStmt) emit(w io.Writer) {
@@ -554,6 +597,11 @@ func (f *FloatLit) emit(w io.Writer) {
 	}
 	fmt.Fprint(w, s)
 }
+
+// NowExpr expands to a deterministic timestamp helper.
+type NowExpr struct{}
+
+func (n *NowExpr) emit(w io.Writer) { fmt.Fprint(w, "_now()") }
 
 type Name struct{ Name string }
 
@@ -1007,6 +1055,23 @@ func Emit(p *Program) []byte {
 		buf.WriteString("import scala.util.control.Breaks._\n")
 	}
 	buf.WriteString("object Main {\n")
+	if useNow {
+		buf.WriteString("  private var _nowSeed: Int = 0\n")
+		buf.WriteString("  private var _nowSeeded: Boolean = false\n")
+		buf.WriteString("  private def _now(): Int = {\n")
+		buf.WriteString("    if (!_nowSeeded) {\n")
+		buf.WriteString("      sys.env.get(\"MOCHI_NOW_SEED\").foreach { s =>\n")
+		buf.WriteString("        try { _nowSeed = s.toInt; _nowSeeded = true } catch { case _ : NumberFormatException => () }\n")
+		buf.WriteString("      }\n")
+		buf.WriteString("    }\n")
+		buf.WriteString("    if (_nowSeeded) {\n")
+		buf.WriteString("      _nowSeed = (_nowSeed * 1664525 + 1013904223) % 2147483647\n")
+		buf.WriteString("      _nowSeed\n")
+		buf.WriteString("    } else {\n")
+		buf.WriteString("      Math.abs(System.nanoTime().toInt)\n")
+		buf.WriteString("    }\n")
+		buf.WriteString("  }\n\n")
+	}
 	if needsJSON {
 		buf.WriteString("  def toJson(value: Any, indent: Int = 0): String = value match {\n")
 		buf.WriteString("    case m: scala.collection.Map[_, _] =>\n")
@@ -1082,7 +1147,9 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	typeDecls = nil
 	needsBreaks = false
 	needsJSON = false
+	useNow = false
 	builtinAliases = map[string]string{}
+	localVarTypes = make(map[string]string)
 	for _, st := range prog.Statements {
 		if st.Import != nil && st.Import.Lang != nil {
 			alias := st.Import.As
@@ -1166,6 +1233,9 @@ func convertStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 		typ := toScalaType(st.Let.Type)
 		if typ == "" {
 			typ = inferTypeWithEnv(e, env)
+			if typ == "Any" {
+				typ = ""
+			}
 		}
 		if e == nil && typ != "" {
 			e = defaultExpr(typ)
@@ -1187,6 +1257,9 @@ func convertStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 			}
 			env.SetVar(st.Let.Name, t, false)
 		}
+		if typ != "" {
+			localVarTypes[st.Let.Name] = typ
+		}
 		return &LetStmt{Name: st.Let.Name, Type: typ, Value: e}, nil
 	case st.Var != nil:
 		var e Expr
@@ -1200,6 +1273,9 @@ func convertStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 		typ := toScalaType(st.Var.Type)
 		if typ == "" {
 			typ = inferTypeWithEnv(e, env)
+			if typ == "Any" {
+				typ = ""
+			}
 		}
 		if e == nil && typ != "" {
 			e = defaultExpr(typ)
@@ -1220,6 +1296,9 @@ func convertStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 				t = types.ExprType(st.Var.Value, env)
 			}
 			env.SetVar(st.Var.Name, t, true)
+		}
+		if typ != "" {
+			localVarTypes[st.Var.Name] = typ
 		}
 		return &VarStmt{Name: st.Var.Name, Type: typ, Value: e}, nil
 	case st.Type != nil:
@@ -1896,6 +1975,11 @@ func convertCall(c *parser.CallExpr, env *types.Env) (Expr, error) {
 			needsJSON = true
 			jsonCall := &CallExpr{Fn: &Name{Name: "toJson"}, Args: []Expr{args[0]}}
 			return &CallExpr{Fn: &Name{Name: "println"}, Args: []Expr{jsonCall}}, nil
+		}
+	case "now":
+		if len(args) == 0 {
+			useNow = true
+			return &NowExpr{}, nil
 		}
 	case "str":
 		if len(args) == 1 {
@@ -2985,6 +3069,9 @@ func inferTypeWithEnv(e Expr, env *types.Env) string {
 	if env != nil {
 		switch ex := e.(type) {
 		case *Name:
+			if t, ok := localVarTypes[ex.Name]; ok {
+				return t
+			}
 			if typ, err := env.GetVar(ex.Name); err == nil {
 				return toScalaTypeFromType(typ)
 			}
@@ -2997,6 +3084,25 @@ func inferTypeWithEnv(e Expr, env *types.Env) string {
 								return toScalaTypeFromType(ft)
 							}
 						}
+					}
+				}
+			}
+		case *IndexExpr:
+			t := inferTypeWithEnv(ex.Value, env)
+			if strings.HasPrefix(t, "ArrayBuffer[") {
+				inner := strings.TrimSuffix(strings.TrimPrefix(t, "ArrayBuffer["), "]")
+				if inner != "" {
+					return inner
+				}
+				return "Any"
+			}
+			if strings.HasPrefix(t, "Map[") {
+				parts := strings.TrimSuffix(strings.TrimPrefix(t, "Map["), "]")
+				kv := strings.SplitN(parts, ",", 2)
+				if len(kv) == 2 {
+					valType := strings.TrimSpace(kv[1])
+					if valType != "" {
+						return valType
 					}
 				}
 			}
