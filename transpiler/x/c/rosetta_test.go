@@ -31,19 +31,10 @@ func TestRosettaTranspilerGolden(t *testing.T) {
 		t.Fatalf("glob: %v", err)
 	}
 	sort.Strings(files)
-	max := 1
-	if len(files) < max {
-		max = len(files)
-	}
-	count := 0
 	for _, src := range files {
-		if count >= max {
-			break
-		}
 		if _, err := os.Stat(strings.TrimSuffix(src, ".mochi") + ".in"); err == nil {
 			continue
 		}
-		count++
 		name := strings.TrimSuffix(filepath.Base(src), ".mochi")
 		wantOut := filepath.Join(outDir, name+".out")
 		t.Run(name, func(t *testing.T) {
@@ -84,6 +75,9 @@ func TestRosettaTranspilerGolden(t *testing.T) {
 				t.Errorf("output mismatch for %s: got %q want %q", name, trimmed, wantData)
 			}
 		})
+		if t.Failed() {
+			break
+		}
 	}
 }
 
