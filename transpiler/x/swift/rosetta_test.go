@@ -3,12 +3,12 @@
 package swifttrans_test
 
 import (
+	"bufio"
 	"bytes"
 	"fmt"
 	"os"
 	"os/exec"
 	"path/filepath"
-	"sort"
 	"strconv"
 	"strings"
 	"testing"
@@ -26,28 +26,26 @@ func TestSwiftTranspiler_Rosetta_Golden(t *testing.T) {
 	outDir := filepath.Join(root, "tests", "rosetta", "transpiler", "Swift")
 	os.MkdirAll(outDir, 0o755)
 
-	pattern := filepath.Join(root, "tests", "rosetta", "x", "Mochi", "*.mochi")
-	files, err := filepath.Glob(pattern)
+	srcDir := filepath.Join(root, "tests", "rosetta", "x", "Mochi")
+	idxPath := filepath.Join(srcDir, "index.txt")
+	names, err := readIndex(idxPath)
 	if err != nil {
-		t.Fatalf("glob: %v", err)
+		t.Fatalf("read index: %v", err)
 	}
-	sort.Strings(files)
 
-	if idxStr := os.Getenv("ROSETTA_INDEX"); idxStr != "" {
-		idx, err := strconv.Atoi(idxStr)
-		if err != nil || idx < 1 || idx > len(files) {
-			t.Fatalf("invalid ROSETTA_INDEX %s", idxStr)
+	idx := 1
+	if v := os.Getenv("ROSETTA_INDEX"); v != "" {
+		if n, err := strconv.Atoi(v); err == nil && n > 0 {
+			idx = n
+		} else {
+			t.Fatalf("invalid ROSETTA_INDEX %s", v)
 		}
-		files = files[idx-1 : idx]
-	} else {
-		max := len(files)
-		if v := os.Getenv("ROSETTA_MAX"); v != "" {
-			if n, err := strconv.Atoi(v); err == nil && n < max {
-				max = n
-			}
-		}
-		files = files[:max]
 	}
+	if idx > len(names) {
+		t.Fatalf("index %d out of range", idx)
+	}
+
+	files := []string{filepath.Join(srcDir, names[idx-1])}
 
 	runCase := func(src string) error {
 		base := strings.TrimSuffix(filepath.Base(src), ".mochi")
@@ -87,7 +85,8 @@ func TestSwiftTranspiler_Rosetta_Golden(t *testing.T) {
 
 	for _, src := range files {
 		name := strings.TrimSuffix(filepath.Base(src), ".mochi")
-		ok := t.Run(name, func(t *testing.T) {
+		testName := fmt.Sprintf("%03d_%s", idx, name)
+		ok := t.Run(testName, func(t *testing.T) {
 			if err := runCase(src); err != nil {
 				t.Fatal(err)
 			}
@@ -96,6 +95,26 @@ func TestSwiftTranspiler_Rosetta_Golden(t *testing.T) {
 			break
 		}
 	}
+}
+
+func readIndex(path string) ([]string, error) {
+	f, err := os.Open(path)
+	if err != nil {
+		return nil, err
+	}
+	defer f.Close()
+	var names []string
+	scanner := bufio.NewScanner(f)
+	for scanner.Scan() {
+		parts := strings.Fields(scanner.Text())
+		if len(parts) == 2 {
+			names = append(names, parts[1])
+		}
+	}
+	if err := scanner.Err(); err != nil {
+		return nil, err
+	}
+	return names, nil
 }
 
 func updateRosetta() {
