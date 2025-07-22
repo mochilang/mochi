@@ -1,7 +1,8 @@
-## Progress (2025-07-22 16:35 +0700)
+## Progress (2025-07-22 16:43 +0700)
 - ocaml transpiler: support ffi auto imports (9ff917453)
 
-- VM valid programs compiled: 91/103
+- VM valid programs compiled: 95/103
+- ocaml transpiler: add list set ops, exists builtin and unary not (0db7c879d)
 
 - scala transpiler: improve group query typing (a650a0dae)
 

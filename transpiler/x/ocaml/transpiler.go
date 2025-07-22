@@ -37,6 +37,8 @@ func (p *Program) UsesStrModule() bool {
 			return true
 		case *BinaryExpr:
 			return exprUses(x.Left) || exprUses(x.Right)
+		case *UnaryNot:
+			return exprUses(x.Expr)
 		case *UnaryMinus:
 			return exprUses(x.Expr)
 		case *IfExpr:
@@ -371,6 +373,15 @@ func (a *AssignStmt) emit(w io.Writer) {
 	fmt.Fprintf(w, "  %s := ", a.Name)
 	a.Expr.emit(w)
 	io.WriteString(w, ";\n")
+}
+
+// ExprStmt represents a stand-alone expression.
+type ExprStmt struct{ Expr Expr }
+
+func (e *ExprStmt) emit(w io.Writer) {
+	io.WriteString(w, "  ")
+	e.Expr.emit(w)
+	io.WriteString(w, "\n")
 }
 
 // PrintStmt represents a call to print_endline with one or more values.
@@ -753,6 +764,89 @@ func (v *ValuesBuiltin) emitPrint(w io.Writer) {
 	io.WriteString(w, "String.concat \" \" (List.map string_of_int (")
 	v.emit(w)
 	io.WriteString(w, "))")
+}
+
+// ExistsBuiltin checks if a list has any element.
+type ExistsBuiltin struct{ List Expr }
+
+func (e *ExistsBuiltin) emit(w io.Writer) {
+	io.WriteString(w, "(List.length ")
+	e.List.emit(w)
+	io.WriteString(w, " > 0)")
+}
+
+func (e *ExistsBuiltin) emitPrint(w io.Writer) {
+	io.WriteString(w, "string_of_bool (")
+	e.emit(w)
+	io.WriteString(w, ")")
+}
+
+// UnionExpr represents list union without duplicates.
+type UnionExpr struct{ Left, Right Expr }
+
+func (u *UnionExpr) emit(w io.Writer) {
+	io.WriteString(w, "(List.sort_uniq compare (")
+	u.Left.emit(w)
+	io.WriteString(w, " @ ")
+	u.Right.emit(w)
+	io.WriteString(w, "))")
+}
+
+func (u *UnionExpr) emitPrint(w io.Writer) {
+	io.WriteString(w, "(\"[\" ^ String.concat \", \" (List.map string_of_int (")
+	u.emit(w)
+	io.WriteString(w, ")) ^ \"]\")")
+}
+
+// UnionAllExpr represents concatenation of two lists.
+type UnionAllExpr struct{ Left, Right Expr }
+
+func (u *UnionAllExpr) emit(w io.Writer) {
+	io.WriteString(w, "(")
+	u.Left.emit(w)
+	io.WriteString(w, " @ ")
+	u.Right.emit(w)
+	io.WriteString(w, ")")
+}
+
+func (u *UnionAllExpr) emitPrint(w io.Writer) {
+	io.WriteString(w, "(\"[\" ^ String.concat \", \" (List.map string_of_int (")
+	u.emit(w)
+	io.WriteString(w, ")) ^ \"]\")")
+}
+
+// ExceptExpr represents list difference a except b.
+type ExceptExpr struct{ Left, Right Expr }
+
+func (e *ExceptExpr) emit(w io.Writer) {
+	io.WriteString(w, "(List.filter (fun x -> not (List.mem x ")
+	e.Right.emit(w)
+	io.WriteString(w, ")) ")
+	e.Left.emit(w)
+	io.WriteString(w, ")")
+}
+
+func (e *ExceptExpr) emitPrint(w io.Writer) {
+	io.WriteString(w, "(\"[\" ^ String.concat \", \" (List.map string_of_int (")
+	e.emit(w)
+	io.WriteString(w, ")) ^ \"]\")")
+}
+
+// IntersectExpr represents list intersection.
+type IntersectExpr struct{ Left, Right Expr }
+
+func (i *IntersectExpr) emit(w io.Writer) {
+	io.WriteString(w, "(List.filter (fun x -> List.mem x ")
+	i.Right.emit(w)
+	io.WriteString(w, ") ")
+	i.Left.emit(w)
+	io.WriteString(w, ")")
+}
+
+func (i *IntersectExpr) emitPrint(w io.Writer) {
+	io.WriteString(w, "(\"[\" ^ String.concat \", \" (List.map string_of_int (")
+	i.emit(w)
+	io.WriteString(w, ")) ^ \"]\")")
 }
 
 // StringContainsBuiltin represents s.contains(sub).
@@ -1298,6 +1392,20 @@ func (u *UnaryMinus) emitPrint(w io.Writer) {
 	io.WriteString(w, ")")
 }
 
+// UnaryNot represents logical negation of a boolean expression.
+type UnaryNot struct{ Expr Expr }
+
+func (u *UnaryNot) emit(w io.Writer) {
+	io.WriteString(w, "not ")
+	u.Expr.emit(w)
+}
+
+func (u *UnaryNot) emitPrint(w io.Writer) {
+	io.WriteString(w, "string_of_bool (not ")
+	u.Expr.emit(w)
+	io.WriteString(w, ")")
+}
+
 // CastExpr represents a simple cast expression like string -> int.
 type CastExpr struct {
 	Expr Expr
@@ -1673,6 +1781,12 @@ func transpileStmt(st *parser.Statement, env *types.Env, vars map[string]VarInfo
 		if err != nil {
 			return nil, err
 		}
+		if len(st.Assign.Field) > 0 && len(st.Assign.Index) == 0 {
+			key := &StringLit{Value: st.Assign.Field[0].Name}
+			mapExpr := Expr(&Name{Ident: st.Assign.Name, Typ: info.typ, Ref: true})
+			upd := &MapUpdateExpr{Map: mapExpr, Key: key, Value: valExpr}
+			return &AssignStmt{Name: st.Assign.Name, Expr: upd}, nil
+		}
 		if len(st.Assign.Index) > 0 {
 			if strings.HasPrefix(info.typ, "map") && len(st.Assign.Index) == 1 {
 				ix := st.Assign.Index[0]
@@ -1750,6 +1864,17 @@ func transpileStmt(st *parser.Statement, env *types.Env, vars map[string]VarInfo
 				path = strings.Trim(*se.Path, "\"")
 			}
 			return &SaveStmt{Src: src, Path: path, Format: format}, nil
+		}
+		if call != nil {
+			args := make([]Expr, len(call.Args))
+			for i, a := range call.Args {
+				ex, _, err := convertExpr(a, env, vars)
+				if err != nil {
+					return nil, err
+				}
+				args[i] = ex
+			}
+			return &ExprStmt{Expr: &FuncCall{Name: call.Func, Args: args, Ret: "int"}}, nil
 		}
 		return nil, fmt.Errorf("unsupported expression")
 	case st.If != nil:
@@ -1842,7 +1967,7 @@ func transpileStmt(st *parser.Statement, env *types.Env, vars map[string]VarInfo
 			if p.Type != nil && p.Type.Simple != nil {
 				typ = *p.Type.Simple
 			}
-			fnVars[p.Name] = VarInfo{typ: typ}
+			fnVars[p.Name] = VarInfo{typ: typ, ref: true}
 		}
 		bodyStmts := st.Fun.Body
 		if len(bodyStmts) > 0 && bodyStmts[len(bodyStmts)-1].Return != nil {
@@ -1954,7 +2079,11 @@ func convertBinary(b *parser.BinaryExpr, env *types.Env, vars map[string]VarInfo
 	}
 	operands := []Expr{left}
 	typesList := []string{typ}
-	ops := []string{}
+	type opInfo struct {
+		op  string
+		all bool
+	}
+	ops := []opInfo{}
 	for _, op := range b.Right {
 		right, rtyp, err := convertPostfix(op.Right, env, vars)
 		if err != nil {
@@ -1962,7 +2091,7 @@ func convertBinary(b *parser.BinaryExpr, env *types.Env, vars map[string]VarInfo
 		}
 		operands = append(operands, right)
 		typesList = append(typesList, rtyp)
-		ops = append(ops, op.Op)
+		ops = append(ops, opInfo{op.Op, op.All})
 	}
 
 	prec := func(op string) int {
@@ -1977,6 +2106,8 @@ func convertBinary(b *parser.BinaryExpr, env *types.Env, vars map[string]VarInfo
 			return 1
 		case "||":
 			return 0
+		case "union", "except", "intersect", "union_all":
+			return -1
 		default:
 			return -1
 		}
@@ -1985,13 +2116,13 @@ func convertBinary(b *parser.BinaryExpr, env *types.Env, vars map[string]VarInfo
 	// Shunting-yard like evaluation
 	var exprStack []Expr
 	var typeStack []string
-	var opStack []string
+	var opStack []opInfo
 
 	pushResult := func() {
 		if len(opStack) == 0 {
 			return
 		}
-		op := opStack[len(opStack)-1]
+		info := opStack[len(opStack)-1]
 		opStack = opStack[:len(opStack)-1]
 		if len(exprStack) < 2 || len(typeStack) < 2 {
 			return
@@ -2006,24 +2137,36 @@ func convertBinary(b *parser.BinaryExpr, env *types.Env, vars map[string]VarInfo
 		typeStack = typeStack[:len(typeStack)-1]
 
 		resTyp := ltyp
-		switch op {
+		switch info.op {
 		case "+", "-", "*", "/", "%":
-			if op == "+" && ltyp == "string" && rtyp == "string" {
+			if info.op == "+" && ltyp == "string" && rtyp == "string" {
 				resTyp = "string"
 			} else if ltyp == "float" || rtyp == "float" {
 				resTyp = "float"
 			} else {
 				resTyp = "int"
 			}
-		case "==", "!=", "<", "<=", ">", ">=", "&&", "||", "in":
+		case "==", "!=", "<", "<=", ">", ">=", "&&", "||", "in", "union", "union_all", "except", "intersect":
 			resTyp = "bool"
 		}
 
 		var expr Expr
-		if op == "in" {
+		if info.op == "in" {
 			expr = &InExpr{Item: left, Coll: right, Typ: rtyp}
+		} else if info.op == "union" {
+			expr = &UnionExpr{Left: left, Right: right}
+			resTyp = ltyp
+		} else if info.op == "union_all" {
+			expr = &UnionAllExpr{Left: left, Right: right}
+			resTyp = ltyp
+		} else if info.op == "except" {
+			expr = &ExceptExpr{Left: left, Right: right}
+			resTyp = ltyp
+		} else if info.op == "intersect" {
+			expr = &IntersectExpr{Left: left, Right: right}
+			resTyp = ltyp
 		} else {
-			expr = &BinaryExpr{Left: left, Op: op, Right: right, Typ: resTyp, Ltyp: ltyp, Rtyp: rtyp}
+			expr = &BinaryExpr{Left: left, Op: info.op, Right: right, Typ: resTyp, Ltyp: ltyp, Rtyp: rtyp}
 		}
 		exprStack = append(exprStack, expr)
 		typeStack = append(typeStack, resTyp)
@@ -2032,7 +2175,7 @@ func convertBinary(b *parser.BinaryExpr, env *types.Env, vars map[string]VarInfo
 	exprStack = append(exprStack, operands[0])
 	typeStack = append(typeStack, typesList[0])
 	for i, op := range ops {
-		for len(opStack) > 0 && prec(opStack[len(opStack)-1]) >= prec(op) {
+		for len(opStack) > 0 && prec(opStack[len(opStack)-1].op) >= prec(op.op) {
 			pushResult()
 		}
 		opStack = append(opStack, op)
@@ -2062,6 +2205,15 @@ func convertUnary(u *parser.Unary, env *types.Env, vars map[string]VarInfo) (Exp
 				return nil, "", fmt.Errorf("unary - only for numeric")
 			}
 			return &UnaryMinus{Expr: expr}, typ, nil
+		} else if len(u.Ops) == 1 && u.Ops[0] == "!" {
+			expr, typ, err := convertPostfix(u.Value, env, vars)
+			if err != nil {
+				return nil, "", err
+			}
+			if typ != "bool" {
+				return nil, "", fmt.Errorf("unary ! only for bool")
+			}
+			return &UnaryNot{Expr: expr}, "bool", nil
 		}
 		return nil, "", fmt.Errorf("unary ops not supported")
 	}
@@ -2315,7 +2467,9 @@ func convertPostfix(p *parser.PostfixExpr, env *types.Env, vars map[string]VarIn
 				i++
 				continue
 			}
-			return nil, "", fmt.Errorf("unsupported cast")
+			// ignore casts to user types
+			i++
+			continue
 		default:
 			return nil, "", fmt.Errorf("postfix op not supported")
 		}
@@ -2448,6 +2602,17 @@ func convertPrimary(p *parser.Primary, env *types.Env, vars map[string]VarInfo) 
 			typ = "map{" + strings.Join(fieldTypes, ",") + "}"
 		}
 		return &MapLit{Items: items, Dynamic: dynamic}, typ, nil
+	case p.Struct != nil:
+		items := make([]MapEntry, len(p.Struct.Fields))
+		for i, f := range p.Struct.Fields {
+			key := &StringLit{Value: f.Name}
+			val, _, err := convertExpr(f.Value, env, vars)
+			if err != nil {
+				return nil, "", err
+			}
+			items[i] = MapEntry{Key: key, Value: val}
+		}
+		return &MapLit{Items: items, Dynamic: true}, "map-dyn", nil
 	case p.Query != nil:
 		qe, qtyp, err := convertQueryExpr(p.Query, env, vars)
 		if err != nil {
@@ -2556,7 +2721,7 @@ func convertFunExpr(fn *parser.FunExpr, env *types.Env, vars map[string]VarInfo)
 		if p.Type != nil && p.Type.Simple != nil {
 			typ = *p.Type.Simple
 		}
-		fnVars[p.Name] = VarInfo{typ: typ}
+		fnVars[p.Name] = VarInfo{typ: typ, ref: true}
 		params[i] = p.Name
 	}
 	var retExpr Expr
@@ -2823,6 +2988,16 @@ func convertCall(c *parser.CallExpr, env *types.Env, vars map[string]VarInfo) (E
 			return nil, "", fmt.Errorf("count expects list")
 		}
 		return &CountBuiltin{List: listArg}, "int", nil
+	}
+	if c.Func == "exists" && len(c.Args) == 1 {
+		listArg, typ, err := convertExpr(c.Args[0], env, vars)
+		if err != nil {
+			return nil, "", err
+		}
+		if !strings.HasPrefix(typ, "list") {
+			return nil, "", fmt.Errorf("exists expects list")
+		}
+		return &ExistsBuiltin{List: listArg}, "bool", nil
 	}
 	if c.Func == "avg" && len(c.Args) == 1 {
 		listArg, typ, err := convertExpr(c.Args[0], env, vars)
