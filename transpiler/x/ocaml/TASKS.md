@@ -1,4 +1,8 @@
-## Progress (2025-07-22 17:08 +0700)
+## Progress (2025-07-22 10:55 +0000)
+- ocaml transpiler: implement update stmt (6aad3e4d2)
+- VM valid programs compiled: 102/103
+
+## Previous Progress (2025-07-22 17:08 +0700)
 - ocaml docs: update progress (3d7a570e5)
 
 - VM valid programs compiled: 99/103

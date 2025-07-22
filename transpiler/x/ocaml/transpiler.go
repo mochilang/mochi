@@ -388,14 +388,11 @@ func (e *ExprStmt) emit(w io.Writer) {
 type PrintStmt struct{ Exprs []Expr }
 
 func (p *PrintStmt) emit(w io.Writer) {
-	io.WriteString(w, "  print_endline (String.concat \" \" [")
-	for i, e := range p.Exprs {
-		if i > 0 {
-			io.WriteString(w, "; ")
-		}
+	for _, e := range p.Exprs {
+		io.WriteString(w, "  print_endline ")
 		e.emitPrint(w)
+		io.WriteString(w, ";\n")
 	}
-	io.WriteString(w, "]);\n")
 }
 
 // JSONStmt prints a value as JSON on its own line.
@@ -504,6 +501,43 @@ func (fe *ForEachStmt) emit(w io.Writer) {
 	io.WriteString(w, "    with Continue -> ()) ")
 	fe.Iterable.emit(w)
 	io.WriteString(w, " with Break -> ())\n")
+}
+
+// UpdateStmt updates fields of items in a list of structs.
+type UpdateStmt struct {
+	Target string
+	Fields []string
+	Values []Expr
+	Cond   Expr
+}
+
+func (u *UpdateStmt) emit(w io.Writer) {
+	fmt.Fprintf(w, "  let %s =\n", u.Target)
+	io.WriteString(w, "    List.map (fun item ->\n")
+	if u.Cond != nil {
+		io.WriteString(w, "      if ")
+		u.Cond.emit(w)
+		io.WriteString(w, " then (\n        {")
+	} else {
+		io.WriteString(w, "      {")
+	}
+	for i, f := range u.Fields {
+		if i > 0 {
+			io.WriteString(w, "; ")
+		}
+		fmt.Fprintf(w, "%s = ", f)
+		u.Values[i].emit(w)
+	}
+	io.WriteString(w, " }")
+	if u.Cond != nil {
+		io.WriteString(w, " else item")
+		io.WriteString(w, "\n")
+	} else {
+		io.WriteString(w, "\n")
+	}
+	io.WriteString(w, "    ) ")
+	io.WriteString(w, u.Target)
+	io.WriteString(w, "\n")
 }
 
 // BreakStmt exits the nearest loop.
@@ -1961,6 +1995,61 @@ func transpileStmt(st *parser.Statement, env *types.Env, vars map[string]VarInfo
 		}
 		delete(vars, st.For.Name)
 		return &ForEachStmt{Name: st.For.Name, Iterable: iter, Body: body, Typ: iterTyp}, nil
+	case st.Update != nil:
+		fields := make([]string, len(st.Update.Set.Items))
+		values := make([]Expr, len(st.Update.Set.Items))
+		child := types.NewEnv(env)
+		if t, err := env.GetVar(st.Update.Target); err == nil {
+			if lt, ok := t.(types.ListType); ok {
+				if s, ok := lt.Elem.(types.StructType); ok {
+					for _, f := range s.Order {
+						child.SetVar(f, s.Fields[f], true)
+					}
+				}
+			}
+		}
+		fieldVars := map[string]VarInfo{}
+		fieldSet := map[string]bool{}
+		for name, typ := range child.Types() {
+			fieldSet[name] = true
+			tname := "int"
+			switch typ.(type) {
+			case types.StringType:
+				tname = "string"
+			case types.FloatType:
+				tname = "float"
+			case types.BoolType:
+				tname = "bool"
+			default:
+				tname = guessTypeFromName(name)
+			}
+			fieldVars[name] = VarInfo{typ: tname}
+		}
+		for i, it := range st.Update.Set.Items {
+			key, ok := isSimpleIdent(it.Key)
+			if !ok {
+				key, ok = literalString(it.Key)
+				if !ok {
+					return nil, fmt.Errorf("unsupported update key")
+				}
+			}
+			val, _, err := convertExpr(it.Value, child, fieldVars)
+			if err != nil {
+				return nil, err
+			}
+			fields[i] = key
+			values[i] = substituteFieldVars(val, fieldSet)
+		}
+		var cond Expr
+		if st.Update.Where != nil {
+			var err error
+			cond, _, err = convertExpr(st.Update.Where, child, fieldVars)
+			if err != nil {
+				return nil, err
+			}
+			cond = substituteFieldVars(cond, fieldSet)
+		}
+		return &UpdateStmt{Target: st.Update.Target, Fields: fields, Values: values, Cond: cond}, nil
 	case st.Break != nil:
 		return &BreakStmt{}, nil
 	case st.Continue != nil:
@@ -3206,6 +3295,27 @@ func buildMapUpdate(mp Expr, keys []Expr, val Expr) Expr {
 	}
 	inner := buildMapUpdate(&MapIndexExpr{Map: mp, Key: key, Typ: "map", Dyn: false}, keys[1:], val)
 	return &MapUpdateExpr{Map: mp, Key: key, Value: inner}
+}
+
+func substituteFieldVars(e Expr, fields map[string]bool) Expr {
+	switch ex := e.(type) {
+	case *Name:
+		if fields[ex.Ident] {
+			return &MapIndexExpr{Map: &Name{Ident: "item"}, Key: &StringLit{Value: ex.Ident}, Typ: ex.Typ, Dyn: false}
+		}
+		return ex
+	case *BinaryExpr:
+		ex.Left = substituteFieldVars(ex.Left, fields)
+		ex.Right = substituteFieldVars(ex.Right, fields)
+		return ex
+	case *FuncCall:
+		for i := range ex.Args {
+			ex.Args[i] = substituteFieldVars(ex.Args[i], fields)
+		}
+		return ex
+	default:
+		return ex
+	}
 }
 
 func renderExpr(e Expr) string {
