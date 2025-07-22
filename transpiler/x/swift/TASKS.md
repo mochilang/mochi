@@ -1,6 +1,6 @@
-## Progress (2025-07-22 10:07 +0700)
-- Clean up Typescript for next round
-- Generated golden tests for 94/102 programs
+## Progress (2025-07-22 11:21 +0700)
+- swift transpiler: support ffi auto imports
+- Generated golden tests for 97/102 programs
 - Updated README checklist and output artifacts
 
 # Swift Transpiler Tasks
