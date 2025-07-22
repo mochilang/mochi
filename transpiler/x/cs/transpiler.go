@@ -25,6 +25,27 @@ import (
 
 var version string
 var currentProg *Program
+var nameMap = map[string]string{}
+var reserved = map[string]bool{
+	"this":   true,
+	"base":   true,
+	"object": true,
+	"string": true,
+	"int":    true,
+	"bool":   true,
+	"params": true,
+}
+
+func sanitize(name string) string {
+	if v, ok := nameMap[name]; ok {
+		return v
+	}
+	if reserved[name] {
+		nameMap[name] = name + "_"
+		return name + "_"
+	}
+	return name
+}
 
 func init() {
 	_, file, _, _ := runtime.Caller(0)
@@ -74,6 +95,7 @@ var globalDecls map[string]*Global
 var mutatedVars map[string]bool
 var blockDepth int
 var importAliases map[string]string
+var needNow bool
 
 func gitTimestamp() string {
 	out, err := exec.Command("git", "log", "-1", "--format=%cI").Output()
@@ -108,7 +130,15 @@ func (s *LetStmt) emit(w io.Writer) {
 	} else {
 		fmt.Fprintf(w, "var %s = ", s.Name)
 	}
-	s.Value.emit(w)
+	if list, ok := s.Value.(*ListLit); ok && len(list.Elems) == 0 {
+		if t, ok2 := varTypes[s.Name]; ok2 && t != "" {
+			fmt.Fprintf(w, "new %s{}", t)
+		} else {
+			s.Value.emit(w)
+		}
+	} else {
+		s.Value.emit(w)
+	}
 }
 
 // VarStmt represents a mutable variable declaration.
@@ -125,7 +155,15 @@ func (s *VarStmt) emit(w io.Writer) {
 	}
 	if s.Value != nil {
 		fmt.Fprint(w, " = ")
-		s.Value.emit(w)
+		if list, ok := s.Value.(*ListLit); ok && len(list.Elems) == 0 {
+			if t, ok2 := varTypes[s.Name]; ok2 && t != "" {
+				fmt.Fprintf(w, "new %s{}", t)
+			} else {
+				s.Value.emit(w)
+			}
+		} else {
+			s.Value.emit(w)
+		}
 	}
 }
 
@@ -1529,6 +1567,7 @@ func Transpile(p *parser.Program, env *types.Env) (*Program, error) {
 	usesDict = false
 	usesLinq = false
 	usesJson = false
+	needNow = false
 	globalDecls = make(map[string]*Global)
 	mutatedVars = make(map[string]bool)
 	importAliases = make(map[string]string)
@@ -1747,6 +1786,7 @@ func compileStmt(prog *Program, s *parser.Statement) (Stmt, error) {
 		}
 		return &ExprStmt{Expr: e}, nil
 	case s.Let != nil:
+		name := sanitize(s.Let.Name)
 		var val Expr
 		var err error
 		if s.Let.Value != nil {
@@ -1766,44 +1806,45 @@ func compileStmt(prog *Program, s *parser.Statement) (Stmt, error) {
 			default:
 				return nil, fmt.Errorf("unsupported let type")
 			}
-			varTypes[s.Let.Name] = csType(s.Let.Type)
+			varTypes[name] = csType(s.Let.Type)
 		} else {
 			return nil, fmt.Errorf("unsupported let")
 		}
 		if list, ok := val.(*ListLit); ok {
-			if res, changed := inferStructList(s.Let.Name, prog, list); changed {
+			if res, changed := inferStructList(name, prog, list); changed {
 				val = res
 			}
 		}
 		if mp, ok := val.(*MapLit); ok {
 			if len(mp.Items) > 2 {
-				if res, changed := inferStructMap(s.Let.Name, prog, mp); changed {
+				if res, changed := inferStructMap(name, prog, mp); changed {
 					val = res
 				}
 			}
 		}
 		if isStringExpr(val) {
-			stringVars[s.Let.Name] = true
+			stringVars[name] = true
 		}
 		if isMapExpr(val) {
-			mapVars[s.Let.Name] = true
+			mapVars[name] = true
 		}
-		if t := typeOfExpr(val); t != "" {
-			varTypes[s.Let.Name] = t
+		if t := typeOfExpr(val); t != "" && s.Let.Type == nil {
+			varTypes[name] = t
 		}
 		if prog != nil && blockDepth == 0 {
 			for m := range mutatedVars {
 				if exprUsesVar(val, m) {
-					return &LetStmt{Name: s.Let.Name, Value: val}, nil
+					return &LetStmt{Name: name, Value: val}, nil
 				}
 			}
-			g := &Global{Name: s.Let.Name, Value: val}
+			g := &Global{Name: name, Value: val}
 			prog.Globals = append(prog.Globals, g)
-			globalDecls[s.Let.Name] = g
+			globalDecls[name] = g
 			return nil, nil
 		}
-		return &LetStmt{Name: s.Let.Name, Value: val}, nil
+		return &LetStmt{Name: name, Value: val}, nil
 	case s.Var != nil:
+		name := sanitize(s.Var.Name)
 		var val Expr
 		var err error
 		if s.Var.Value != nil {
@@ -1823,7 +1864,7 @@ func compileStmt(prog *Program, s *parser.Statement) (Stmt, error) {
 			default:
 				return nil, fmt.Errorf("unsupported var type")
 			}
-			varTypes[s.Var.Name] = csType(s.Var.Type)
+			varTypes[name] = csType(s.Var.Type)
 		}
 		if list, ok := val.(*ListLit); ok {
 			_ = list // do not convert mutable vars to structs
@@ -1832,21 +1873,24 @@ func compileStmt(prog *Program, s *parser.Statement) (Stmt, error) {
 			_ = mp // keep as dictionary for mutable vars
 		}
 		if isStringExpr(val) {
-			stringVars[s.Var.Name] = true
+			stringVars[name] = true
 		}
 		if isMapExpr(val) {
-			mapVars[s.Var.Name] = true
+			mapVars[name] = true
 		}
-		if t := typeOfExpr(val); t != "" {
-			varTypes[s.Var.Name] = t
+		if t := typeOfExpr(val); t != "" && s.Var.Type == nil {
+			varTypes[name] = t
 		}
 		if prog != nil && blockDepth == 0 {
-			g := &Global{Name: s.Var.Name, Value: val}
+			g := &Global{Name: name, Value: val}
 			prog.Globals = append(prog.Globals, g)
-			globalDecls[s.Var.Name] = g
+			globalDecls[name] = g
 			return nil, nil
 		}
-		return &VarStmt{Name: s.Var.Name, Value: val}, nil
+		if list, ok := val.(*ListLit); ok && len(list.Elems) == 0 && s.Var.Type != nil {
+			val = &RawExpr{Code: fmt.Sprintf("new %s{}", csType(s.Var.Type))}
+		}
+		return &VarStmt{Name: name, Value: val}, nil
 	case s.Type != nil:
 		if prog != nil {
 			if st, ok := structTypes[s.Type.Name]; ok {
@@ -1859,52 +1903,53 @@ func compileStmt(prog *Program, s *parser.Statement) (Stmt, error) {
 		}
 		return nil, nil
 	case s.Assign != nil:
+		name := sanitize(s.Assign.Name)
 		if len(s.Assign.Index) == 0 && len(s.Assign.Field) == 0 {
 			val, err := compileExpr(s.Assign.Value)
 			if err != nil {
 				return nil, err
 			}
 			if app, ok := val.(*AppendExpr); ok {
-				if vt, ok2 := varTypes[s.Assign.Name]; ok2 && (vt == "" || vt == "object[]") {
+				if vt, ok2 := varTypes[name]; ok2 && (vt == "" || vt == "object[]") {
 					item := app.Item
 					if mp, ok3 := item.(*MapLit); ok3 {
 						if len(mp.Items) > 2 {
-							if res, changed := inferStructMap(s.Assign.Name, prog, mp); changed {
+							if res, changed := inferStructMap(name, prog, mp); changed {
 								item = res
 							}
 						}
 					}
 					t := typeOfExpr(item)
 					if t != "" {
-						varTypes[s.Assign.Name] = t + "[]"
-						if g, ok3 := globalDecls[s.Assign.Name]; ok3 {
-							g.Value = &RawExpr{Code: fmt.Sprintf("new %s{}", varTypes[s.Assign.Name])}
+						varTypes[name] = t + "[]"
+						if g, ok3 := globalDecls[name]; ok3 {
+							g.Value = &RawExpr{Code: fmt.Sprintf("new %s{}", varTypes[name])}
 						}
 					}
 					val = &AppendExpr{List: app.List, Item: item}
 				}
 			}
 			if isStringExpr(val) {
-				stringVars[s.Assign.Name] = true
+				stringVars[name] = true
 			}
 			if isMapExpr(val) {
-				mapVars[s.Assign.Name] = true
+				mapVars[name] = true
 				if mp, ok := val.(*MapLit); ok {
 					if len(mp.Items) > 2 {
-						if res, changed := inferStructMap(s.Assign.Name, prog, mp); changed {
+						if res, changed := inferStructMap(name, prog, mp); changed {
 							val = res
 						}
 					}
 				}
 			}
 			if t := typeOfExpr(val); t != "" {
-				varTypes[s.Assign.Name] = t
+				varTypes[name] = t
 			}
-			mutatedVars[s.Assign.Name] = true
-			return &AssignStmt{Name: s.Assign.Name, Value: val}, nil
+			mutatedVars[name] = true
+			return &AssignStmt{Name: name, Value: val}, nil
 		}
 		if len(s.Assign.Index) > 0 && len(s.Assign.Field) == 0 {
-			var target Expr = &VarRef{Name: s.Assign.Name}
+			var target Expr = &VarRef{Name: name}
 			for i := 0; i < len(s.Assign.Index)-1; i++ {
 				idx, err := compileExpr(s.Assign.Index[i].Start)
 				if err != nil {
@@ -1923,7 +1968,7 @@ func compileStmt(prog *Program, s *parser.Statement) (Stmt, error) {
 			return &AssignIndexStmt{Target: target, Index: idx, Value: val}, nil
 		}
 		if len(s.Assign.Field) > 0 && len(s.Assign.Index) == 0 {
-			var target Expr = &VarRef{Name: s.Assign.Name}
+			var target Expr = &VarRef{Name: name}
 			for i := 0; i < len(s.Assign.Field)-1; i++ {
 				target = &FieldExpr{Target: target, Name: s.Assign.Field[i].Name}
 			}
@@ -1943,7 +1988,7 @@ func compileStmt(prog *Program, s *parser.Statement) (Stmt, error) {
 		params := make([]string, len(s.Fun.Params))
 		ptypes := make([]string, len(s.Fun.Params))
 		for i, p := range s.Fun.Params {
-			params[i] = p.Name
+			params[i] = sanitize(p.Name)
 			ptypes[i] = csType(p.Type)
 		}
 		var body []Stmt
@@ -2221,6 +2266,11 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 				usesLinq = true
 				return &AppendExpr{List: args[0], Item: args[1]}, nil
 			}
+		case "now":
+			if len(args) == 0 {
+				needNow = true
+				return &CallExpr{Func: "_now"}, nil
+			}
 		case "exists":
 			if len(args) == 1 {
 				usesLinq = true
@@ -2348,7 +2398,7 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 	case p.Match != nil:
 		return compileMatchExpr(p.Match)
 	case p.Selector != nil:
-		expr := Expr(&VarRef{Name: p.Selector.Root})
+		expr := Expr(&VarRef{Name: sanitize(p.Selector.Root)})
 		for _, t := range p.Selector.Tail {
 			expr = &FieldExpr{Target: expr, Name: t}
 		}
@@ -2367,7 +2417,7 @@ func compileFunExpr(f *parser.FunExpr) (Expr, error) {
 	params := make([]string, len(f.Params))
 	ptypes := make([]string, len(f.Params))
 	for i, p := range f.Params {
-		params[i] = p.Name
+		params[i] = sanitize(p.Name)
 		ptypes[i] = csType(p.Type)
 	}
 	var body []Stmt
@@ -2822,6 +2872,9 @@ func Emit(prog *Program) []byte {
 	if usesJson {
 		buf.WriteString("using System.Text.Json;\n")
 	}
+	if needNow {
+		buf.WriteString("using System.Runtime.InteropServices;\n")
+	}
 	for _, imp := range prog.Imports {
 		buf.WriteString(imp)
 		if !strings.HasSuffix(imp, "\n") {
@@ -2854,6 +2907,18 @@ func Emit(prog *Program) []byte {
 	}
 
 	buf.WriteString("class Program {\n")
+	if needNow {
+		buf.WriteString("    static bool _seededNow;\n")
+		buf.WriteString("    static int _nowSeed;\n")
+		buf.WriteString("    static void _initNow() {\n")
+		buf.WriteString("        var s = Environment.GetEnvironmentVariable(\"MOCHI_NOW_SEED\");\n")
+		buf.WriteString("        if (!string.IsNullOrEmpty(s) && int.TryParse(s, out _nowSeed)) { _seededNow = true; }\n")
+		buf.WriteString("    }\n")
+		buf.WriteString("    static int _now() {\n")
+		buf.WriteString("        if (_seededNow) { _nowSeed = (_nowSeed*1664525 + 1013904223) % 2147483647; return _nowSeed; }\n")
+		buf.WriteString("        return (int)DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();\n")
+		buf.WriteString("    }\n")
+	}
 	for _, g := range prog.Globals {
 		buf.WriteString("\tstatic ")
 		t := typeOfExpr(g.Value)
@@ -2876,6 +2941,9 @@ func Emit(prog *Program) []byte {
 		buf.WriteString("\n")
 	}
 	buf.WriteString("\tstatic void Main() {\n")
+	if needNow {
+		buf.WriteString("\t\t_initNow();\n")
+	}
 	for _, s := range prog.Stmts {
 		buf.WriteString("\t\t")
 		s.emit(&buf)

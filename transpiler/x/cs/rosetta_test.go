@@ -8,11 +8,12 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"regexp"
+	"sort"
 	"strings"
 	"testing"
 	"time"
 
-	"mochi/golden"
 	"mochi/parser"
 	cs "mochi/transpiler/x/cs"
 	"mochi/types"
@@ -27,7 +28,31 @@ func TestCSTranspiler_Rosetta_Golden(t *testing.T) {
 		t.Skip("dotnet not installed")
 	}
 
-	golden.RunWithSummary(t, "tests/rosetta/x/Mochi", ".mochi", ".out", func(src string) ([]byte, error) {
+	pattern := filepath.Join(root, "tests", "rosetta", "x", "Mochi", "*.mochi")
+	files, err := filepath.Glob(pattern)
+	if err != nil {
+		t.Fatal(err)
+	}
+	sort.Strings(files)
+
+	normalize := func(b []byte) []byte {
+		out := string(b)
+		out = strings.ReplaceAll(out, filepath.ToSlash(root)+"/", "")
+		out = strings.ReplaceAll(out, filepath.ToSlash(root), "")
+		out = strings.ReplaceAll(out, "github.com/mochi-lang/mochi/", "")
+		out = strings.ReplaceAll(out, "mochi/tests/", "tests/")
+		durRE := regexp.MustCompile(`\([0-9]+(\.[0-9]+)?(ns|µs|ms|s)\)`)
+		out = durRE.ReplaceAllString(out, "(X)")
+		tsRE := regexp.MustCompile(`\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z`)
+		out = tsRE.ReplaceAllString(out, "2006-01-02T15:04:05Z")
+		out = strings.TrimSpace(out)
+		if !strings.HasSuffix(out, "\n") {
+			out += "\n"
+		}
+		return []byte(out)
+	}
+
+	runner := func(src string) ([]byte, error) {
 		base := strings.TrimSuffix(filepath.Base(src), ".mochi")
 		codePath := filepath.Join(outDir, base+".cs")
 		outPath := filepath.Join(outDir, base+".out")
@@ -73,7 +98,30 @@ func TestCSTranspiler_Rosetta_Golden(t *testing.T) {
 		outBytes := bytes.TrimSpace(out)
 		_ = os.WriteFile(outPath, outBytes, 0o644)
 		return outBytes, nil
-	})
+	}
+
+	for _, src := range files {
+		base := strings.TrimSuffix(filepath.Base(src), ".mochi")
+		wantPath := filepath.Join(root, "tests", "rosetta", "x", "Mochi", base+".out")
+		ok := t.Run(base, func(t *testing.T) {
+			got, err := runner(src)
+			if err != nil {
+				t.Fatalf("process error: %v", err)
+			}
+			want, err := os.ReadFile(wantPath)
+			if err != nil {
+				t.Fatalf("failed to read golden: %v", err)
+			}
+			got = normalize(got)
+			want = normalize(want)
+			if !bytes.Equal(got, want) {
+				t.Errorf("golden mismatch for %s\n\n--- Got ---\n%s\n\n--- Want ---\n%s\n", base+".out", got, want)
+			}
+		})
+		if !ok {
+			break
+		}
+	}
 }
 
 func updateRosetta() {
