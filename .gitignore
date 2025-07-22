@@ -254,6 +254,8 @@ out
 !tests/rosetta/out/CS/*
 !tests/rosetta/out/Erlang
 !tests/rosetta/out/Erlang/*
+!tests/rosetta/transpiler/php
+!tests/rosetta/transpiler/php/**
 
 # Nuxt.js build / generate output
 .nuxt
