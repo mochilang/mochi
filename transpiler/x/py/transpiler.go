@@ -36,6 +36,49 @@ var (
 	structCounter     int
 )
 
+var pyKeywords = map[string]bool{
+	"False":    true,
+	"True":     true,
+	"None":     true,
+	"and":      true,
+	"as":       true,
+	"assert":   true,
+	"break":    true,
+	"class":    true,
+	"continue": true,
+	"def":      true,
+	"del":      true,
+	"elif":     true,
+	"else":     true,
+	"except":   true,
+	"finally":  true,
+	"for":      true,
+	"from":     true,
+	"global":   true,
+	"if":       true,
+	"import":   true,
+	"in":       true,
+	"is":       true,
+	"lambda":   true,
+	"nonlocal": true,
+	"not":      true,
+	"or":       true,
+	"pass":     true,
+	"raise":    true,
+	"return":   true,
+	"try":      true,
+	"while":    true,
+	"with":     true,
+	"yield":    true,
+}
+
+func safeName(n string) string {
+	if pyKeywords[n] {
+		return n + "_"
+	}
+	return n
+}
+
 type Stmt interface{ isStmt() }
 
 // ImportStmt represents an `import` statement.
@@ -241,7 +284,7 @@ func (c *CallExpr) emit(w io.Writer) error {
 type Name struct{ Name string }
 
 func (n *Name) emit(w io.Writer) error {
-	_, err := io.WriteString(w, n.Name)
+	_, err := io.WriteString(w, safeName(n.Name))
 	return err
 }
 
@@ -727,7 +770,7 @@ func emitStmtIndent(w io.Writer, s Stmt, indent string) error {
 		_, err := io.WriteString(w, "\n")
 		return err
 	case *AssignStmt:
-		if _, err := io.WriteString(w, indent+st.Name+" = "); err != nil {
+		if _, err := io.WriteString(w, indent+safeName(st.Name)+" = "); err != nil {
 			return err
 		}
 		if err := emitExpr(w, st.Expr); err != nil {
@@ -736,7 +779,7 @@ func emitStmtIndent(w io.Writer, s Stmt, indent string) error {
 		_, err := io.WriteString(w, "\n")
 		return err
 	case *LetStmt:
-		if _, err := io.WriteString(w, indent+st.Name+" = "); err != nil {
+		if _, err := io.WriteString(w, indent+safeName(st.Name)+" = "); err != nil {
 			return err
 		}
 		if err := emitExpr(w, st.Expr); err != nil {
@@ -745,7 +788,7 @@ func emitStmtIndent(w io.Writer, s Stmt, indent string) error {
 		_, err := io.WriteString(w, "\n")
 		return err
 	case *VarStmt:
-		if _, err := io.WriteString(w, indent+st.Name+" = "); err != nil {
+		if _, err := io.WriteString(w, indent+safeName(st.Name)+" = "); err != nil {
 			return err
 		}
 		if err := emitExpr(w, st.Expr); err != nil {
@@ -770,7 +813,7 @@ func emitStmtIndent(w io.Writer, s Stmt, indent string) error {
 		}
 		return nil
 	case *ForStmt:
-		if _, err := io.WriteString(w, indent+"for "+st.Var+" in "); err != nil {
+		if _, err := io.WriteString(w, indent+"for "+safeName(st.Var)+" in "); err != nil {
 			return err
 		}
 		if err := emitExpr(w, st.Iter); err != nil {
@@ -866,7 +909,7 @@ func emitStmtIndent(w io.Writer, s Stmt, indent string) error {
 		_, err := io.WriteString(w, "\n")
 		return err
 	case *FuncDef:
-		if _, err := io.WriteString(w, indent+"def "+st.Name+"("); err != nil {
+		if _, err := io.WriteString(w, indent+"def "+safeName(st.Name)+"("); err != nil {
 			return err
 		}
 		for i, p := range st.Params {
@@ -875,7 +918,7 @@ func emitStmtIndent(w io.Writer, s Stmt, indent string) error {
 					return err
 				}
 			}
-			if _, err := io.WriteString(w, p); err != nil {
+			if _, err := io.WriteString(w, safeName(p)); err != nil {
 				return err
 			}
 		}
@@ -2394,7 +2437,7 @@ func Emit(w io.Writer, p *Program) error {
 			// already emitted above
 			continue
 		case *DataClassDef:
-			if _, err := io.WriteString(w, "@dataclass\nclass "+st.Name+":\n"); err != nil {
+			if _, err := io.WriteString(w, "@dataclass\nclass "+safeName(st.Name)+":\n"); err != nil {
 				return err
 			}
 			if len(st.Fields) == 0 {
@@ -2404,7 +2447,7 @@ func Emit(w io.Writer, p *Program) error {
 				continue
 			}
 			for _, f := range st.Fields {
-				line := fmt.Sprintf("    %s: %s\n", f.Name, pyTypeName(f.Type))
+				line := fmt.Sprintf("    %s: %s\n", safeName(f.Name), pyTypeName(f.Type))
 				if _, err := io.WriteString(w, line); err != nil {
 					return err
 				}
@@ -2421,7 +2464,7 @@ func Emit(w io.Writer, p *Program) error {
 				return err
 			}
 		case *LetStmt:
-			if _, err := io.WriteString(w, st.Name+" = "); err != nil {
+			if _, err := io.WriteString(w, safeName(st.Name)+" = "); err != nil {
 				return err
 			}
 			if err := emitExpr(w, st.Expr); err != nil {
@@ -2431,7 +2474,7 @@ func Emit(w io.Writer, p *Program) error {
 				return err
 			}
 		case *VarStmt:
-			if _, err := io.WriteString(w, st.Name+" = "); err != nil {
+			if _, err := io.WriteString(w, safeName(st.Name)+" = "); err != nil {
 				return err
 			}
 			if err := emitExpr(w, st.Expr); err != nil {
@@ -2456,7 +2499,7 @@ func Emit(w io.Writer, p *Program) error {
 				}
 			}
 		case *ForStmt:
-			if _, err := io.WriteString(w, "for "+st.Var+" in "); err != nil {
+			if _, err := io.WriteString(w, "for "+safeName(st.Var)+" in "); err != nil {
 				return err
 			}
 			if err := emitExpr(w, st.Iter); err != nil {
