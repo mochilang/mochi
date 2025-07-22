@@ -795,6 +795,36 @@ func evalPostfix(p *parser.PostfixExpr, vars map[string]value) (value, error) {
 				return value{kind: valFloat, f: math.Log(toFloat(x))}, nil
 			}
 		}
+		if p.Target.Selector.Root == "strings" {
+			call := p.Ops[0].Call
+			name := p.Target.Selector.Tail[0]
+			switch name {
+			case "TrimSpace":
+				if len(call.Args) != 1 {
+					return value{}, fmt.Errorf("bad args")
+				}
+				x, err := evalExpr(call.Args[0], vars)
+				if err != nil {
+					return value{}, err
+				}
+				if x.kind != valString {
+					return value{}, fmt.Errorf("bad args")
+				}
+				return value{kind: valString, s: strings.TrimSpace(x.s)}, nil
+			case "ToUpper":
+				if len(call.Args) != 1 {
+					return value{}, fmt.Errorf("bad args")
+				}
+				x, err := evalExpr(call.Args[0], vars)
+				if err != nil {
+					return value{}, err
+				}
+				if x.kind != valString {
+					return value{}, fmt.Errorf("bad args")
+				}
+				return value{kind: valString, s: strings.ToUpper(x.s)}, nil
+			}
+		}
 	}
 
 	v, err := evalPrimary(p.Target, vars)
