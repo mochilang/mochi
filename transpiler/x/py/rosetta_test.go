@@ -101,16 +101,24 @@ func TestPyTranspiler_Rosetta_Golden(t *testing.T) {
 	if err != nil {
 		t.Fatalf("glob: %v", err)
 	}
+	sort.Strings(files)
+	if v := os.Getenv("MOCHI_ROSETTA_INDEX"); v != "" {
+		if n, err := strconv.Atoi(v); err == nil && n >= 1 && n <= len(files) {
+			files = files[n-1 : n]
+		} else {
+			t.Fatalf("invalid MOCHI_ROSETTA_INDEX: %s", v)
+		}
+	}
 	max := len(files)
 	if v := os.Getenv("ROSETTA_MAX"); v != "" {
 		if n, err := strconv.Atoi(v); err == nil && n < max {
 			max = n
 		}
 	}
-	sort.Strings(files)
-	for _, f := range files[:max] {
+	for i, f := range files[:max] {
 		name := strings.TrimSuffix(filepath.Base(f), ".mochi")
-		if ok := t.Run(name, func(t *testing.T) { runRosettaCase(t, name) }); !ok {
+		idxName := fmt.Sprintf("%03d_%s", i+1, name)
+		if ok := t.Run(idxName, func(t *testing.T) { runRosettaCase(t, name) }); !ok {
 			t.Fatalf("first failing program: %s", name)
 		}
 	}
@@ -126,7 +134,7 @@ func updateRosetta() {
 	total := len(files)
 	compiled := 0
 	var lines []string
-	for _, f := range files {
+	for i, f := range files {
 		name := strings.TrimSuffix(filepath.Base(f), ".mochi")
 		mark := "[ ]"
 		if _, err := os.Stat(filepath.Join(outDir, name+".error")); err == nil {
@@ -135,7 +143,7 @@ func updateRosetta() {
 			compiled++
 			mark = "[x]"
 		}
-		lines = append(lines, fmt.Sprintf("- %s %s", mark, name))
+		lines = append(lines, fmt.Sprintf("%d. %s %s", i+1, mark, name))
 	}
 	var buf bytes.Buffer
 	buf.WriteString("# Rosetta Transpiler Progress\n\n")
