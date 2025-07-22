@@ -10,6 +10,7 @@ import (
 	"os/exec"
 	"path/filepath"
 	"sort"
+	"strconv"
 	"strings"
 	"testing"
 	"time"
@@ -36,6 +37,13 @@ func TestGoTranspiler_Rosetta_Golden(t *testing.T) {
 		t.Fatalf("no mochi files in %s", srcDir)
 	}
 	sort.Strings(files)
+	if idxStr := os.Getenv("MOCHI_ROSETTA_INDEX"); idxStr != "" {
+		idx, err := strconv.Atoi(idxStr)
+		if err != nil || idx < 1 || idx > len(files) {
+			t.Fatalf("invalid MOCHI_ROSETTA_INDEX: %s", idxStr)
+		}
+		files = []string{files[idx-1]}
+	}
 
 	var passed, failed int
 	var firstFail string
