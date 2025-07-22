@@ -1,3 +1,7 @@
+## Progress (2025-07-22 14:24 +0700)
+- go transpiler: support load_jsonl
+- Regenerated golden files - 99/102 vm valid programs passing
+
 ## Progress (2025-07-22 14:01 +0700)
 - go transpiler: add load_yaml support
 - Regenerated golden files - 98/102 vm valid programs passing
@@ -429,4 +433,3 @@
 ## Progress (2025-07-21 16:32 +0700)
 - scheme transpiler: support join items
 - Regenerated golden files - 84/100 vm valid programs passing
-
