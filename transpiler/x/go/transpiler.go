@@ -4,12 +4,17 @@ package gotranspiler
 
 import (
 	"bytes"
+	"encoding/json"
 	"fmt"
 	"go/format"
 	"io"
+	"os"
+	"path/filepath"
+	"reflect"
 	"sort"
 	"strings"
 
+	yaml "gopkg.in/yaml.v3"
 	"mochi/ast"
 	"mochi/parser"
 	meta "mochi/transpiler/meta"
@@ -1856,6 +1861,102 @@ func parseFormat(e *parser.Expr) string {
 	return ""
 }
 
+func valueToExpr(v interface{}, typ *parser.TypeRef, env *types.Env) Expr {
+	switch val := v.(type) {
+	case map[string]interface{}:
+		names := make([]string, 0, len(val))
+		for k := range val {
+			names = append(names, k)
+		}
+		sort.Strings(names)
+		fields := make([]Expr, len(names))
+		for i, k := range names {
+			fields[i] = valueToExpr(val[k], nil, env)
+		}
+		if typ != nil && typ.Simple != nil {
+			return &StructLit{Name: *typ.Simple, Fields: fields, Names: names}
+		}
+		keys := make([]Expr, len(names))
+		for i, k := range names {
+			keys[i] = &StringLit{Value: k}
+		}
+		return &MapLit{Keys: keys, Values: fields}
+	case []interface{}:
+		elems := make([]Expr, len(val))
+		var et *parser.TypeRef
+		if typ != nil {
+			if typ.Generic != nil && typ.Generic.Name == "list" && len(typ.Generic.Args) == 1 {
+				et = typ.Generic.Args[0]
+			} else {
+				et = typ
+			}
+		}
+		for i, it := range val {
+			elems[i] = valueToExpr(it, et, env)
+		}
+		elemType := ""
+		if et != nil && et.Simple != nil {
+			elemType = *et.Simple
+		}
+		return &ListLit{ElemType: elemType, Elems: elems}
+	case string:
+		return &StringLit{Value: val}
+	case bool:
+		return &BoolLit{Value: val}
+	case float64:
+		if val == float64(int(val)) {
+			return &IntLit{Value: int(val)}
+		}
+		return &FloatLit{Value: val}
+	case int, int64:
+		return &IntLit{Value: int(reflect.ValueOf(val).Int())}
+	default:
+		return &StringLit{Value: fmt.Sprintf("%v", val)}
+	}
+}
+
+func dataExprFromFile(path, format string, typ *parser.TypeRef, env *types.Env) (Expr, error) {
+	if path == "" {
+		return &ListLit{}, nil
+	}
+	root := meta.RepoRoot()
+	if root != "" && strings.HasPrefix(path, "../") {
+		clean := strings.TrimPrefix(path, "../")
+		path = filepath.Join(root, "tests", clean)
+	}
+	data, err := os.ReadFile(path)
+	if err != nil {
+		return nil, err
+	}
+	var v interface{}
+	switch format {
+	case "yaml":
+		if err := yaml.Unmarshal(data, &v); err != nil {
+			return nil, err
+		}
+	case "json":
+		if err := json.Unmarshal(data, &v); err != nil {
+			return nil, err
+		}
+	case "jsonl":
+		var arr []interface{}
+		for _, line := range bytes.Split(data, []byte{'\n'}) {
+			line = bytes.TrimSpace(line)
+			if len(line) == 0 {
+				continue
+			}
+			var item interface{}
+			if err := json.Unmarshal(line, &item); err == nil {
+				arr = append(arr, item)
+			}
+		}
+		v = arr
+	default:
+		return nil, fmt.Errorf("unsupported load format")
+	}
+	return valueToExpr(v, typ, env), nil
+}
+
 func compileIfStmt(is *parser.IfStmt, env *types.Env) (Stmt, error) {
 	condExpr, err := compileExpr(is.Cond, env, "")
 	if err != nil {
@@ -3304,6 +3405,17 @@ func compilePrimary(p *parser.Primary, env *types.Env, base string) (Expr, error
 		return compileExpr(p.Group, env, "")
 	case p.Match != nil:
 		return compileMatchExpr(p.Match, env)
+	case p.Load != nil:
+		format := parseFormat(p.Load.With)
+		path := ""
+		if p.Load.Path != nil {
+			path = strings.Trim(*p.Load.Path, "\"")
+		}
+		expr, err := dataExprFromFile(path, format, p.Load.Type, env)
+		if err == nil {
+			return expr, nil
+		}
+		return nil, err
 	case p.Query != nil:
 		return compileQueryExpr(p.Query, env, base)
 	case p.FunExpr != nil:
