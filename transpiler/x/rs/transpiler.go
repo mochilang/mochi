@@ -921,11 +921,12 @@ type MatchExpr struct {
 func (m *MatchExpr) emit(w io.Writer) {
 	io.WriteString(w, "match ")
 	m.Target.emit(w)
-	io.WriteString(w, " { ")
-	for i, a := range m.Arms {
-		if i > 0 {
-			io.WriteString(w, " ")
-		}
+	io.WriteString(w, " {")
+	if len(m.Arms) > 0 {
+		io.WriteString(w, "\n")
+	}
+	for _, a := range m.Arms {
+		io.WriteString(w, "    ")
 		if a.Pattern != nil {
 			a.Pattern.emit(w)
 		} else {
@@ -933,9 +934,9 @@ func (m *MatchExpr) emit(w io.Writer) {
 		}
 		io.WriteString(w, " => ")
 		a.Result.emit(w)
-		io.WriteString(w, ",")
+		io.WriteString(w, ",\n")
 	}
-	io.WriteString(w, " }")
+	io.WriteString(w, "}")
 }
 
 type queryFrom struct {

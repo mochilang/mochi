@@ -6,7 +6,10 @@ enum Tree {
 }
 
 fn sum_tree(t: Tree) -> i64 {
-    return match t { Tree::Leaf => 0, Tree::Node { left: left, value: value, right: right } => ((sum_tree(*left) + value) + sum_tree(*right)), }
+    match t {
+        Tree::Leaf => 0,
+        Tree::Node { left, value, right } => sum_tree(*left) + value + sum_tree(*right),
+    }
 }
 
 fn main() {
