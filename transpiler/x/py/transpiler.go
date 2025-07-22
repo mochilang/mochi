@@ -3497,6 +3497,9 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 				var t types.Type = types.AnyType{}
 				if currentEnv != nil {
 					t = inferTypeFromExpr(p.Call.Args[i])
+					if _, ok := t.(types.AnyType); ok {
+						t = inferPyType(a, currentEnv)
+					}
 				}
 				if isBoolOp(p.Call.Args[i]) {
 					outArgs[i] = &RawExpr{Code: fmt.Sprintf("(1 if %s else 0)", exprString(a))}
