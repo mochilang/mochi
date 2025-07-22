@@ -2,20 +2,20 @@
 
 This checklist is auto-generated.
 Generated TypeScript code from programs in `tests/rosetta/x/Mochi` lives in `tests/rosetta/transpiler/TypeScript`.
-Last updated: 2025-07-22 15:56 UTC
+Last updated: 2025-07-22 16:16 UTC
 
-## Rosetta Golden Test Checklist (7/284)
+## Rosetta Golden Test Checklist (11/284)
 1. [x] 100-doors-2
 2. [x] 100-doors-3
 3. [x] 100-doors
 4. [x] 100-prisoners
-5. [ ] 15-puzzle-game
+5. [x] 15-puzzle-game
 6. [x] 15-puzzle-solver
 7. [x] 2048
-8. [ ] 21-game
+8. [x] 21-game
 9. [x] 24-game-solve
-10. [ ] 24-game
-11. [ ] 4-rings-or-4-squares-puzzle
+10. [x] 24-game
+11. [x] 4-rings-or-4-squares-puzzle
 12. [ ] 9-billion-names-of-god-the-integer
 13. [ ] 99-bottles-of-beer-2
 14. [ ] 99-bottles-of-beer

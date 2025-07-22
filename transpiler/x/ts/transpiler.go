@@ -748,6 +748,8 @@ func (s *SliceExpr) emit(w io.Writer) {
 	io.WriteString(w, ".slice(")
 	if s.Start != nil {
 		s.Start.emit(w)
+	} else if s.End != nil {
+		io.WriteString(w, "0")
 	}
 	if s.End != nil {
 		io.WriteString(w, ", ")
@@ -1891,9 +1893,29 @@ function _now(): number {
 }`})
 	}
 	if useInput {
-		prelude = append(prelude, &RawStmt{Code: `function _input(): string {
-  const v = prompt('');
-  return v === null ? '' : v;
+		prelude = append(prelude, &RawStmt{Code: `let _inputData: string[] | null = null;
+function _input(): string {
+  if (_inputData === null) {
+    let data: string;
+    if (typeof Deno !== 'undefined') {
+      const dec = new TextDecoder();
+      const chunks: string[] = [];
+      const buf = new Uint8Array(1024);
+      for (;;) {
+        const n = Deno.stdin.readSync(buf);
+        if (n === null) break;
+        chunks.push(dec.decode(buf.subarray(0, n)));
+        if (n < buf.length) break;
+      }
+      data = chunks.join('');
+    } else {
+      const fs = require('fs');
+      data = fs.readFileSync(0, 'utf8');
+    }
+    _inputData = data.split(/\r?\n/);
+  }
+  const v = _inputData.shift();
+  return v === undefined ? '' : v;
 }`})
 	}
 	if len(prelude) > 0 {
@@ -2949,6 +2971,13 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 				return nil, fmt.Errorf("str expects one argument")
 			}
 			return &CallExpr{Func: "String", Args: args}, nil
+		case "int":
+			if len(args) != 1 {
+				return nil, fmt.Errorf("int expects one argument")
+			}
+			// Math.trunc mirrors Mochi's int() which drops the
+			// fractional part without rounding.
+			return &CallExpr{Func: "Math.trunc", Args: args}, nil
 		case "substring":
 			if len(args) != 3 {
 				return nil, fmt.Errorf("substring expects three arguments")
