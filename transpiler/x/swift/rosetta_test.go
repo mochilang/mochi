@@ -32,13 +32,22 @@ func TestSwiftTranspiler_Rosetta_Golden(t *testing.T) {
 		t.Fatalf("glob: %v", err)
 	}
 	sort.Strings(files)
-	max := len(files)
-	if v := os.Getenv("ROSETTA_MAX"); v != "" {
-		if n, err := strconv.Atoi(v); err == nil && n < max {
-			max = n
+
+	if idxStr := os.Getenv("ROSETTA_INDEX"); idxStr != "" {
+		idx, err := strconv.Atoi(idxStr)
+		if err != nil || idx < 1 || idx > len(files) {
+			t.Fatalf("invalid ROSETTA_INDEX %s", idxStr)
 		}
+		files = files[idx-1 : idx]
+	} else {
+		max := len(files)
+		if v := os.Getenv("ROSETTA_MAX"); v != "" {
+			if n, err := strconv.Atoi(v); err == nil && n < max {
+				max = n
+			}
+		}
+		files = files[:max]
 	}
-	files = files[:max]
 
 	runCase := func(src string) error {
 		base := strings.TrimSuffix(filepath.Base(src), ".mochi")
@@ -102,8 +111,10 @@ func updateRosetta() {
 		name := strings.TrimSuffix(filepath.Base(f), ".mochi")
 		mark := "[ ]"
 		if _, err := os.Stat(filepath.Join(binDir, name+".swift")); err == nil {
-			compiled++
-			mark = "[x]"
+			if _, err2 := os.Stat(filepath.Join(binDir, name+".error")); os.IsNotExist(err2) {
+				compiled++
+				mark = "[x]"
+			}
 		}
 		lines = append(lines, "- "+mark+" "+name)
 	}

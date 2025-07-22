@@ -1,6 +1,6 @@
-## Progress (2025-07-22 16:48 +0700)
-- swift transpiler: add save jsonl and update stmt support
-- Generated golden tests for 103/103 programs
+## Progress (2025-07-22 21:48 +0700)
+- ex: start handling mutable for loops and clean rosetta test
+- Generated golden tests for 101/103 programs
 - Updated README checklist and output artifacts
 
 # Swift Transpiler Tasks

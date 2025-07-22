@@ -1,0 +1,79 @@
+exit status 1
+/tmp/TestSwiftTranspiler_Rosetta_Golden1348262181/002/main.swift:7:16: warning: cast from 'Int' to unrelated type 'Double' always fails
+ 5 | for i in 1..<101 {
+ 6 |     var j = 1
+ 7 |     while (((j as! Double) * (j as! Double)) < (i as! Double)) {
+   |                `- warning: cast from 'Int' to unrelated type 'Double' always fails
+ 8 |         j = ((j as! Double) + 1)
+ 9 |     }
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden1348262181/002/main.swift:7:33: warning: cast from 'Int' to unrelated type 'Double' always fails
+ 5 | for i in 1..<101 {
+ 6 |     var j = 1
+ 7 |     while (((j as! Double) * (j as! Double)) < (i as! Double)) {
+   |                                 `- warning: cast from 'Int' to unrelated type 'Double' always fails
+ 8 |         j = ((j as! Double) + 1)
+ 9 |     }
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden1348262181/002/main.swift:7:51: warning: cast from 'Int' to unrelated type 'Double' always fails
+ 5 | for i in 1..<101 {
+ 6 |     var j = 1
+ 7 |     while (((j as! Double) * (j as! Double)) < (i as! Double)) {
+   |                                                   `- warning: cast from 'Int' to unrelated type 'Double' always fails
+ 8 |         j = ((j as! Double) + 1)
+ 9 |     }
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden1348262181/002/main.swift:8:29: error: cannot assign value of type 'Double' to type 'Int'
+ 6 |     var j = 1
+ 7 |     while (((j as! Double) * (j as! Double)) < (i as! Double)) {
+ 8 |         j = ((j as! Double) + 1)
+   |                             `- error: cannot assign value of type 'Double' to type 'Int'
+ 9 |     }
+10 |     if (((j as! Double) * (j as! Double)) == (i as! Double)) {
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden1348262181/002/main.swift:10:13: warning: cast from 'Int' to unrelated type 'Double' always fails
+ 8 |         j = ((j as! Double) + 1)
+ 9 |     }
+10 |     if (((j as! Double) * (j as! Double)) == (i as! Double)) {
+   |             `- warning: cast from 'Int' to unrelated type 'Double' always fails
+11 |         result = ((result as! String) + "O")
+12 |     } else {
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden1348262181/002/main.swift:10:30: warning: cast from 'Int' to unrelated type 'Double' always fails
+ 8 |         j = ((j as! Double) + 1)
+ 9 |     }
+10 |     if (((j as! Double) * (j as! Double)) == (i as! Double)) {
+   |                              `- warning: cast from 'Int' to unrelated type 'Double' always fails
+11 |         result = ((result as! String) + "O")
+12 |     } else {
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden1348262181/002/main.swift:10:49: warning: cast from 'Int' to unrelated type 'Double' always fails
+ 8 |         j = ((j as! Double) + 1)
+ 9 |     }
+10 |     if (((j as! Double) * (j as! Double)) == (i as! Double)) {
+   |                                                 `- warning: cast from 'Int' to unrelated type 'Double' always fails
+11 |         result = ((result as! String) + "O")
+12 |     } else {
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden1348262181/002/main.swift:11:27: warning: forced cast of 'String' to same type has no effect
+ 9 |     }
+10 |     if (((j as! Double) * (j as! Double)) == (i as! Double)) {
+11 |         result = ((result as! String) + "O")
+   |                           `- warning: forced cast of 'String' to same type has no effect
+12 |     } else {
+13 |         result = ((result as! String) + "-")
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden1348262181/002/main.swift:13:27: warning: forced cast of 'String' to same type has no effect
+11 |         result = ((result as! String) + "O")
+12 |     } else {
+13 |         result = ((result as! String) + "-")
+   |                           `- warning: forced cast of 'String' to same type has no effect
+14 |     }
+15 | }
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden1348262181/002/main.swift:16:15: warning: forced cast of 'String' to same type has no effect
+14 |     }
+15 | }
+16 | print((result as! String))
+   |               `- warning: forced cast of 'String' to same type has no effect
+17 | 
