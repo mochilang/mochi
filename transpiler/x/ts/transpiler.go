@@ -160,6 +160,10 @@ type BoolLit struct {
 	Value bool
 }
 
+// BoolStringExpr wraps a boolean expression so that it prints as "True" or
+// "False" when emitted. This matches Mochi's interpreter output.
+type BoolStringExpr struct{ Expr Expr }
+
 // formatFloat keeps a trailing `.0` for whole numbers so the generated code
 // more closely matches Mochi's print output for floats.
 func formatFloat(f float64) string {
@@ -443,6 +447,14 @@ func (b *BoolLit) emit(w io.Writer) {
 	}
 }
 
+func (b *BoolStringExpr) emit(w io.Writer) {
+	io.WriteString(w, "(")
+	if b.Expr != nil {
+		b.Expr.emit(w)
+	}
+	io.WriteString(w, " ? \"True\" : \"False\")")
+}
+
 func (n *NullLit) emit(w io.Writer) { io.WriteString(w, "null") }
 
 func (n *NameRef) emit(w io.Writer) { io.WriteString(w, n.Name) }
@@ -626,6 +638,7 @@ func (f *FormatListExpr) emit(w io.Writer) {
 
 func (p *PrintExpr) emit(w io.Writer) {
 	io.WriteString(w, "console.log(")
+	io.WriteString(w, "[")
 	for i, a := range p.Args {
 		if i > 0 {
 			io.WriteString(w, ", ")
@@ -636,7 +649,7 @@ func (p *PrintExpr) emit(w io.Writer) {
 			io.WriteString(w, "null")
 		}
 	}
-	io.WriteString(w, ")")
+	io.WriteString(w, "].map(v => typeof v === 'boolean' ? (v ? 'True' : 'False') : v).filter(v => v !== '').join(' '))")
 }
 
 func (s *SubstringExpr) emit(w io.Writer) {
@@ -2068,6 +2081,11 @@ func convertForStmt(f *parser.ForStmt, env *types.Env) (Stmt, error) {
 			keys = true
 		}
 	}
+	if keys {
+		cond := &BinaryExpr{Left: &NameRef{Name: f.Name}, Op: "===", Right: &StringLit{Value: "__name"}}
+		skip := &IfStmt{Cond: cond, Then: []Stmt{&ContinueStmt{}}}
+		body = append([]Stmt{skip}, body...)
+	}
 	return &ForInStmt{Name: f.Name, Iterable: iterable, Body: body, Keys: keys}, nil
 }
 
@@ -2766,6 +2784,10 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 			for i, a := range args {
 				if isNumericBool(a) {
 					args[i] = &UnaryExpr{Op: "+", Expr: a}
+				} else if transpileEnv != nil {
+					if _, ok := types.ExprType(p.Call.Args[i], transpileEnv).(types.BoolType); ok {
+						args[i] = &BoolStringExpr{Expr: a}
+					}
 				}
 			}
 			return &PrintExpr{Args: args}, nil
@@ -3592,6 +3614,8 @@ func exprToNode(e Expr) *ast.Node {
 			return &ast.Node{Kind: "bool", Value: "true"}
 		}
 		return &ast.Node{Kind: "bool", Value: "false"}
+	case *BoolStringExpr:
+		return &ast.Node{Kind: "boolstr", Children: []*ast.Node{exprToNode(ex.Expr)}}
 	case *NullLit:
 		return &ast.Node{Kind: "null"}
 	case *NameRef:
