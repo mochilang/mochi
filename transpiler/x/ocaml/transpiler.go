@@ -887,8 +887,9 @@ func (f *FuncCall) emit(w io.Writer) {
 		return
 	}
 	for _, a := range f.Args {
-		io.WriteString(w, " ")
+		io.WriteString(w, " (")
 		a.emit(w)
+		io.WriteString(w, ")")
 	}
 }
 
@@ -1535,7 +1536,7 @@ func (n *Name) emitPrint(w io.Writer) {
 	case "bool":
 		fmt.Fprintf(w, "string_of_bool %s", ident)
 	case "float":
-		fmt.Fprintf(w, "string_of_float %s", ident)
+		fmt.Fprintf(w, "Printf.sprintf \"%%.15f\" (%s)", ident)
 	default:
 		io.WriteString(w, ident)
 	}
@@ -1558,8 +1559,11 @@ func formatFloat(v float64) string {
 	return s
 }
 
-func (f *FloatLit) emit(w io.Writer)      { io.WriteString(w, formatFloat(f.Value)) }
-func (f *FloatLit) emitPrint(w io.Writer) { io.WriteString(w, "string_of_float "+formatFloat(f.Value)) }
+func (f *FloatLit) emit(w io.Writer) { io.WriteString(w, formatFloat(f.Value)) }
+func (f *FloatLit) emitPrint(w io.Writer) {
+	io.WriteString(w, "Printf.sprintf \"%.15f\" ")
+	f.emit(w)
+}
 
 // BoolLit represents a boolean literal.
 type BoolLit struct{ Value bool }
@@ -1724,6 +1728,10 @@ func transpileStmt(st *parser.Statement, env *types.Env, vars map[string]VarInfo
 			case "go":
 				if strings.Contains(path, "testpkg") && st.Import.Auto {
 					vars[alias] = VarInfo{typ: "go_testpkg"}
+					return nil, nil
+				}
+				if path == "strings" && st.Import.Auto {
+					vars[alias] = VarInfo{typ: "go_strings"}
 					return nil, nil
 				}
 			}
@@ -2008,6 +2016,9 @@ func transpileStmt(st *parser.Statement, env *types.Env, vars map[string]VarInfo
 		return &FunStmt{Name: st.Fun.Name, Params: params, Body: body, Ret: ret}, nil
 	case st.Type != nil:
 		// ignore type declarations
+		return nil, nil
+	case st.Test != nil:
+		// ignore test blocks
 		return nil, nil
 	default:
 		return nil, fmt.Errorf("unsupported statement")
@@ -2314,6 +2325,29 @@ func convertPostfix(p *parser.PostfixExpr, env *types.Env, vars map[string]VarIn
 						i++
 						continue
 					}
+				} else if nameTyp == "go_strings" {
+					field := op.Field.Name
+					if i+1 < len(p.Ops) && p.Ops[i+1].Call != nil {
+						call := p.Ops[i+1].Call
+						if len(call.Args) == 1 {
+							arg, _, err := convertExpr(call.Args[0], env, vars)
+							if err != nil {
+								return nil, "", err
+							}
+							switch field {
+							case "TrimSpace":
+								expr = &FuncCall{Name: "String.trim", Args: []Expr{arg}, Ret: "string"}
+								typ = "string"
+							case "ToUpper":
+								expr = &FuncCall{Name: "String.uppercase_ascii", Args: []Expr{arg}, Ret: "string"}
+								typ = "string"
+							default:
+								return nil, "", fmt.Errorf("unsupported field %s", field)
+							}
+							i += 2
+							continue
+						}
+					}
 				} else if nameTyp == "go_testpkg" {
 					field := op.Field.Name
 					if i+1 < len(p.Ops) && p.Ops[i+1].Call != nil {
@@ -2361,8 +2395,12 @@ func convertPostfix(p *parser.PostfixExpr, env *types.Env, vars map[string]VarIn
 				expr = &MapIndexExpr{Map: expr, Key: key, Typ: ft, Dyn: dyn}
 				typ = ft
 			} else {
-				expr = &MapIndexExpr{Map: expr, Key: key, Typ: "int", Dyn: dyn}
-				typ = "int"
+				t := "int"
+				if dyn {
+					t = "map-dyn"
+				}
+				expr = &MapIndexExpr{Map: expr, Key: key, Typ: t, Dyn: dyn}
+				typ = t
 			}
 			i++
 		case op.Index != nil && op.Index.Colon == nil && op.Index.Colon2 == nil && op.Index.End == nil && op.Index.Step == nil:
@@ -2376,8 +2414,12 @@ func convertPostfix(p *parser.PostfixExpr, env *types.Env, vars map[string]VarIn
 					expr = &MapIndexExpr{Map: expr, Key: idxExpr, Typ: ft, Dyn: dyn}
 					typ = ft
 				} else {
-					expr = &MapIndexExpr{Map: expr, Key: idxExpr, Typ: "int", Dyn: dyn}
-					typ = "int"
+					t := "int"
+					if dyn {
+						t = "map-dyn"
+					}
+					expr = &MapIndexExpr{Map: expr, Key: idxExpr, Typ: t, Dyn: dyn}
+					typ = t
 				}
 			} else if strings.HasPrefix(typ, "map-") {
 				parts := strings.Split(typ, "-")
@@ -2436,6 +2478,28 @@ func convertPostfix(p *parser.PostfixExpr, env *types.Env, vars map[string]VarIn
 							}
 							i++
 							continue
+						}
+					} else if info.typ == "go_strings" {
+						if key, ok := idx.Key.(*StringLit); ok {
+							field := key.Value
+							if len(op.Call.Args) == 1 {
+								arg, _, err := convertExpr(op.Call.Args[0], env, vars)
+								if err != nil {
+									return nil, "", err
+								}
+								switch field {
+								case "TrimSpace":
+									expr = &FuncCall{Name: "String.trim", Args: []Expr{arg}, Ret: "string"}
+									typ = "string"
+								case "ToUpper":
+									expr = &FuncCall{Name: "String.uppercase_ascii", Args: []Expr{arg}, Ret: "string"}
+									typ = "string"
+								default:
+									return nil, "", fmt.Errorf("unsupported field %s", field)
+								}
+								i++
+								continue
+							}
 						}
 					} else if info.typ == "go_testpkg" {
 						if key, ok := idx.Key.(*StringLit); ok {
@@ -2564,7 +2628,34 @@ func convertPrimary(p *parser.Primary, env *types.Env, vars map[string]VarInfo) 
 		if err != nil {
 			return nil, "", err
 		}
-		return expr, "list", nil
+		listTyp := "list"
+		if lst, ok := expr.(*ListLit); ok && len(lst.Elems) > 0 {
+			if mp, ok := lst.Elems[0].(*MapLit); ok {
+				fields := make([]string, 0, len(mp.Items))
+				for _, it := range mp.Items {
+					if k, ok := it.Key.(*StringLit); ok {
+						ft := "int"
+						switch it.Value.(type) {
+						case *StringLit:
+							ft = "string"
+						case *FloatLit:
+							ft = "float"
+						case *BoolLit:
+							ft = "bool"
+						}
+						fields = append(fields, k.Value+":"+ft)
+					}
+				}
+				if len(fields) > 0 {
+					if mp.Dynamic {
+						listTyp = "list-map-dyn{" + strings.Join(fields, ",") + "}"
+					} else {
+						listTyp = "list-map{" + strings.Join(fields, ",") + "}"
+					}
+				}
+			}
+		}
+		return expr, listTyp, nil
 	case p.Map != nil:
 		items := make([]MapEntry, len(p.Map.Items))
 		fieldTypes := []string{}
@@ -2813,6 +2904,22 @@ func convertQueryExpr(q *parser.QueryExpr, env *types.Env, vars map[string]VarIn
 		} else {
 			whereExpr = &BinaryExpr{Left: whereExpr, Op: "&&", Right: cond, Typ: "bool"}
 		}
+	}
+	call := extractCallExpr(q.Select)
+	if call != nil && call.Func == "sum" && len(call.Args) == 1 &&
+		q.Group == nil && len(q.Froms) == 0 && len(q.Joins) == 0 &&
+		q.Sort == nil && q.Skip == nil && q.Take == nil {
+		argExpr, _, err := convertExpr(call.Args[0], env, qVars)
+		if err != nil {
+			return nil, "", err
+		}
+		qe := &QueryExpr{Loops: loops, Where: whereExpr, Select: argExpr}
+		elemTyp := qVars[q.Var].typ
+		ret := "int"
+		if elemTyp == "float" {
+			ret = "float"
+		}
+		return &SumBuiltin{List: qe, ElemType: elemTyp}, ret, nil
 	}
 	if q.Group != nil {
 		keyExpr, keyTyp, err := convertExpr(q.Group.Exprs[0], env, qVars)
@@ -3196,10 +3303,15 @@ func valueToExpr(v interface{}) Expr {
 		}
 		sort.Strings(keys)
 		items := make([]MapEntry, len(keys))
+		dynamic := false
 		for i, k := range keys {
-			items[i] = MapEntry{Key: &StringLit{Value: k}, Value: valueToExpr(val[k])}
+			vexpr := valueToExpr(val[k])
+			if _, ok := vexpr.(*IntLit); !ok {
+				dynamic = true
+			}
+			items[i] = MapEntry{Key: &StringLit{Value: k}, Value: vexpr}
 		}
-		return &MapLit{Items: items}
+		return &MapLit{Items: items, Dynamic: dynamic}
 	case []interface{}:
 		elems := make([]Expr, len(val))
 		for i, it := range val {
@@ -3286,4 +3398,19 @@ func extractSaveExpr(e *parser.Expr) *parser.SaveExpr {
 		return nil
 	}
 	return p.Target.Save
+}
+
+func extractCallExpr(e *parser.Expr) *parser.CallExpr {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) > 0 {
+		return nil
+	}
+	u := e.Binary.Left
+	if len(u.Ops) > 0 || u.Value == nil {
+		return nil
+	}
+	p := u.Value
+	if len(p.Ops) > 0 || p.Target == nil {
+		return nil
+	}
+	return p.Target.Call
 }

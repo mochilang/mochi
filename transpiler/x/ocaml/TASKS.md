@@ -1,7 +1,12 @@
-## Progress (2025-07-22 16:43 +0700)
+## Progress (2025-07-22 17:08 +0700)
+- ocaml docs: update progress (3d7a570e5)
+
+- VM valid programs compiled: 99/103
+
 - ocaml transpiler: support ffi auto imports (9ff917453)
 
-- VM valid programs compiled: 95/103
+- ocaml transpiler: jsonl load, go strings functions and query sum support
+- ocaml transpiler: ignore test blocks
 - ocaml transpiler: add list set ops, exists builtin and unary not (0db7c879d)
 
 - scala transpiler: improve group query typing (a650a0dae)
