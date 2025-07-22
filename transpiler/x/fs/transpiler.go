@@ -165,6 +165,19 @@ func structFieldType(name, field string) (string, bool) {
 	return "", false
 }
 
+func structFieldNames(name string) ([]string, bool) {
+	for _, sd := range structDefs {
+		if sd.Name == name {
+			names := make([]string, len(sd.Fields))
+			for i, f := range sd.Fields {
+				names[i] = f.Name
+			}
+			return names, true
+		}
+	}
+	return nil, false
+}
+
 func addStructDef(name string, st types.StructType) {
 	def := StructDef{Name: name}
 	for _, f := range st.Order {
@@ -1924,9 +1937,17 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 			if len(args) != 1 {
 				return nil, fmt.Errorf("values expects 1 arg")
 			}
-			if inferType(args[0]) == "map" {
+			t := inferType(args[0])
+			if t == "map" {
 				inner := &CallExpr{Func: "Map.toList", Args: []Expr{args[0]}}
 				return &CallExpr{Func: "List.map snd", Args: []Expr{inner}}, nil
+			}
+			if fields, ok := structFieldNames(t); ok {
+				elems := make([]Expr, len(fields))
+				for i, f := range fields {
+					elems[i] = &FieldExpr{Target: args[0], Name: f}
+				}
+				return &ListLit{Elems: elems}, nil
 			}
 			return &CallExpr{Func: "Seq.map snd", Args: args}, nil
 		default:
