@@ -2,15 +2,15 @@
 
 Generated PHP code from Mochi Rosetta tasks lives in `tests/rosetta/transpiler/php`.
 
-Last updated: 2025-07-22 20:41 +0700
+Last updated: 2025-07-22 22:06 +0700
 
-## Checklist (6/284)
+## Checklist (1/284)
 - [x] 100-doors-2
-- [x] 100-doors-3
-- [x] 100-doors
-- [x] 100-prisoners
-- [x] 15-puzzle-game
-- [x] 15-puzzle-solver
+- [ ] 100-doors-3
+- [ ] 100-doors
+- [ ] 100-prisoners
+- [ ] 15-puzzle-game
+- [ ] 15-puzzle-solver
 - [ ] 2048
 - [ ] 21-game
 - [ ] 24-game-solve

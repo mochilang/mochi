@@ -8,6 +8,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"sort"
 	"strconv"
 	"strings"
 	"testing"
@@ -32,13 +33,25 @@ func TestPHPTranspiler_Rosetta_Golden(t *testing.T) {
 	if err != nil {
 		t.Fatalf("glob: %v", err)
 	}
-	limit := len(files)
-	if s := os.Getenv("ROSETTA_LIMIT"); s != "" {
-		if n, err := strconv.Atoi(s); err == nil && n < limit {
-			limit = n
+	sort.Strings(files)
+
+	if s := os.Getenv("ROSETTA_INDEX"); s != "" {
+		idx, err := strconv.Atoi(s)
+		if err != nil || idx < 1 || idx > len(files) {
+			t.Fatalf("invalid ROSETTA_INDEX: %s", s)
 		}
+		files = files[idx-1 : idx]
+	} else {
+		limit := len(files)
+		if s := os.Getenv("ROSETTA_LIMIT"); s != "" {
+			if n, err := strconv.Atoi(s); err == nil && n < limit {
+				limit = n
+			}
+		}
+		files = files[:limit]
 	}
-	for _, src := range files[:limit] {
+
+	for _, src := range files {
 		name := strings.TrimSuffix(filepath.Base(src), ".mochi")
 		if err := runRosettaPHP(src, outDir); err != nil {
 			t.Fatalf("%s: %v", name, err)
