@@ -1,9 +1,9 @@
 # Smalltalk Transpiler
 
 This directory holds an experimental transpiler that converts a small subset of Mochi into Smalltalk. The generated sources for the golden tests live under `tests/transpiler/x/st`.
-Last updated: 2025-07-22 09:39 +0700
+Last updated: 2025-07-22 10:12 +0700
 
-## VM Golden Test Checklist (96/102)
+## VM Golden Test Checklist (98/102)
 - [x] append_builtin
 - [x] avg_builtin
 - [x] basic_compare
@@ -34,7 +34,7 @@ Last updated: 2025-07-22 09:39 +0700
 - [x] group_by_left_join
 - [x] group_by_multi_join
 - [x] group_by_multi_join_sort
-- [ ] group_by_multi_sort
+- [x] group_by_multi_sort
 - [x] group_by_sort
 - [x] group_items_iteration
 - [x] if_else
@@ -81,7 +81,7 @@ Last updated: 2025-07-22 09:39 +0700
 - [x] query_sum_select
 - [x] record_assign
 - [x] right_join
-- [ ] save_jsonl_stdout
+- [x] save_jsonl_stdout
 - [x] short_circuit
 - [x] slice
 - [x] sort_stable
