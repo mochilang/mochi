@@ -1,3 +1,7 @@
+## Progress (2025-07-22 13:41 +0700)
+- test(erl): regenerate order_by_map (5d21c8482)
+- Regenerated golden files - 99/102 vm valid programs passing
+
 ## Progress (2025-07-22 13:39 +0700)
 - erl: support order_by_map and simplify query sort (05628dc1c)
 - Regenerated golden files - 98/102 vm valid programs passing
