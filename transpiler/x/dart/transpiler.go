@@ -34,6 +34,7 @@ var (
 	structOrder      []string
 	compVarTypes     map[string]string
 	localVarTypes    map[string]string
+	funcReturnTypes  map[string]string
 	structNameCount  map[string]int
 	nextStructHint   string
 	usesJSON         bool
@@ -967,6 +968,20 @@ func (s *SliceExpr) emit(w io.Writer) error {
 }
 
 func (i *IndexExpr) emit(w io.Writer) error {
+	t := inferType(i.Target)
+	if fields, ok := structFields[t]; ok {
+		if s, ok2 := i.Index.(*StringLit); ok2 {
+			for _, f := range fields {
+				if f.Name == s.Value {
+					if err := i.Target.emit(w); err != nil {
+						return err
+					}
+					_, err := io.WriteString(w, "."+s.Value)
+					return err
+				}
+			}
+		}
+	}
 	if err := i.Target.emit(w); err != nil {
 		return err
 	}
@@ -1158,10 +1173,17 @@ func (v *ValuesExpr) emit(w io.Writer) error {
 type StrExpr struct{ Value Expr }
 
 func (s *StrExpr) emit(w io.Writer) error {
+	_, err := io.WriteString(w, "(")
+	if err != nil {
+		return err
+	}
 	if err := s.Value.emit(w); err != nil {
 		return err
 	}
-	_, err := io.WriteString(w, ".toString()")
+	if _, err := io.WriteString(w, ")"); err != nil {
+		return err
+	}
+	_, err = io.WriteString(w, ".toString()")
 	return err
 }
 
@@ -1195,6 +1217,35 @@ type InputExpr struct{}
 func (in *InputExpr) emit(w io.Writer) error {
 	_, err := io.WriteString(w, "stdin.readLineSync() ?? ''")
 	return err
+}
+
+// CastExpr represents value type conversions like `x as int`.
+type CastExpr struct {
+	Value Expr
+	Type  string
+}
+
+func (c *CastExpr) emit(w io.Writer) error {
+	if err := c.Value.emit(w); err != nil {
+		return err
+	}
+	switch c.Type {
+	case "int":
+		_, err := io.WriteString(w, " as int")
+		return err
+	case "num":
+		_, err := io.WriteString(w, " as num")
+		return err
+	case "String":
+		_, err := io.WriteString(w, " as String")
+		return err
+	case "bool":
+		_, err := io.WriteString(w, " as bool")
+		return err
+	default:
+		_, err := io.WriteString(w, " as "+c.Type)
+		return err
+	}
 }
 
 // CountExpr represents count(list) or count(group).
@@ -2228,6 +2279,9 @@ func inferType(e Expr) string {
 					return inferType(ex.Args[0])
 				}
 			default:
+				if rt, ok := funcReturnTypes[n.Name]; ok {
+					return rt
+				}
 				if currentEnv != nil {
 					if t, err := currentEnv.GetVar(n.Name); err == nil {
 						if ft, ok := t.(types.FuncType); ok {
@@ -2408,10 +2462,15 @@ func walkTypes(s Stmt) {
 		}
 	case *SaveStmt:
 		inferType(st.Src)
+	case *ReturnStmt:
+		if st.Value != nil {
+			inferType(st.Value)
+		}
 	case *FuncDecl:
 		for _, b := range st.Body {
 			walkTypes(b)
 		}
+		funcReturnTypes[st.Name] = inferReturnType(st.Body)
 	}
 }
 
@@ -2569,6 +2628,7 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	structOrder = nil
 	compVarTypes = map[string]string{}
 	localVarTypes = map[string]string{}
+	funcReturnTypes = map[string]string{}
 	structNameCount = map[string]int{}
 	nextStructHint = ""
 	usesJSON = false
@@ -3150,6 +3210,13 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 				return nil, err
 			}
 			return &ValuesExpr{Map: mp}, nil
+		}
+		if p.Call.Func == "int" && len(p.Call.Args) == 1 {
+			v, err := convertExpr(p.Call.Args[0])
+			if err != nil {
+				return nil, err
+			}
+			return &CastExpr{Value: v, Type: "int"}, nil
 		}
 		if p.Call.Func == "str" && len(p.Call.Args) == 1 {
 			v, err := convertExpr(p.Call.Args[0])
