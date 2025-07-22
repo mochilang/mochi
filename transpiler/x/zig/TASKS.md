@@ -1,3 +1,7 @@
+## Progress (2025-07-22 03:25 UTC)
+- Commit b6f87c79e: zig: support sorting in group by
+- Generated Zig for 94/102 programs
+- Updated README checklist and outputs
 ## Progress (2025-07-22 09:37 +0700)
 - Commit 16e351779: zig transpiler: handle call statements and void returns
 - Generated Zig for 93/102 programs
