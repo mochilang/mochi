@@ -270,6 +270,8 @@ func TestTranspileLoadYAML(t *testing.T)  { runGolden(t, "load_yaml") }
 func TestTranspilePythonAuto(t *testing.T) { runGolden(t, "python_auto") }
 func TestTranspilePythonMath(t *testing.T) { runGolden(t, "python_math") }
 
+func TestTranspileSaveJSONLStdout(t *testing.T) { runGolden(t, "save_jsonl_stdout") }
+
 func updateEnabled() bool { return *update }
 
 func countCompiled() (int, int) {
