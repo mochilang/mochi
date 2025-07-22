@@ -1,3 +1,43 @@
+## Progress (2025-07-22 12:31 +0700)
+- attempted outer join fixes
+- Generated C++ for 72/102 programs
+- Updated README checklist
+
+## Progress (2025-07-22 12:16 +0700)
+- Applying previous commit.
+- Generated C++ for 92/102 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-22 12:16 +0700)
+- Applying previous commit.
+- Generated C++ for 92/102 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-22 12:16 +0700)
+- Applying previous commit.
+- Generated C++ for 92/102 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-22 12:16 +0700)
+- Applying previous commit.
+- Generated C++ for 92/102 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-22 12:16 +0700)
+- Applying previous commit.
+- Generated C++ for 92/102 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-22 12:16 +0700)
+- Applying previous commit.
+- Generated C++ for 92/102 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-22 12:16 +0700)
+- Applying previous commit.
+- Generated C++ for 92/102 programs
+- Updated README checklist and outputs
+
 ## Progress (2025-07-22 09:43 +0700)
 - cpp transpiler: handle test blocks
 - Generated C++ for 91/102 programs
