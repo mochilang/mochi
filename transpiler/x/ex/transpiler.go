@@ -4,6 +4,7 @@ package ex
 
 import (
 	"bytes"
+	"encoding/json"
 	"fmt"
 	"io"
 	"os"
@@ -13,6 +14,8 @@ import (
 	"strconv"
 	"strings"
 	"time"
+
+	"gopkg.in/yaml.v3"
 
 	"mochi/parser"
 	"mochi/types"
@@ -2664,6 +2667,9 @@ func compilePrimary(p *parser.Primary, env *types.Env) (Expr, error) {
 			root := repoRoot()
 			path = filepath.ToSlash(filepath.Join(root, "tests", clean))
 		}
+		if expr, err := dataExprFromFile(path, format); err == nil {
+			return expr, nil
+		}
 		return &LoadExpr{Path: path, Format: format}, nil
 	case p.Query != nil:
 		return compileQueryExpr(p.Query, env)
@@ -2963,6 +2969,80 @@ func repoRoot() string {
 		dir = parent
 	}
 	return ""
+}
+
+func valueToExpr(v interface{}) Expr {
+	switch val := v.(type) {
+	case map[string]interface{}:
+		keys := make([]string, 0, len(val))
+		for k := range val {
+			keys = append(keys, k)
+		}
+		sort.Strings(keys)
+		items := make([]MapItem, len(keys))
+		for i, k := range keys {
+			items[i] = MapItem{Key: &AtomLit{Name: k}, Value: valueToExpr(val[k])}
+		}
+		return &MapLit{Items: items}
+	case []interface{}:
+		elems := make([]Expr, len(val))
+		for i, it := range val {
+			elems[i] = valueToExpr(it)
+		}
+		return &ListLit{Elems: elems}
+	case string:
+		return &StringLit{Value: val}
+	case bool:
+		return &BoolLit{Value: val}
+	case float64:
+		s := strconv.FormatFloat(val, 'f', -1, 64)
+		if !strings.ContainsAny(s, ".eE") && !strings.Contains(s, ".") {
+			s += ".0"
+		}
+		return &NumberLit{Value: s}
+	case nil:
+		return &NilLit{}
+	default:
+		return &NilLit{}
+	}
+}
+
+func dataExprFromFile(path, format string) (Expr, error) {
+	if path == "" {
+		return &ListLit{}, nil
+	}
+	root := repoRoot()
+	if root != "" && strings.HasPrefix(path, "../") {
+		clean := strings.TrimPrefix(path, "../")
+		path = filepath.Join(root, "tests", clean)
+	}
+	data, err := os.ReadFile(path)
+	if err != nil {
+		return nil, err
+	}
+	var v interface{}
+	switch format {
+	case "yaml":
+		if err := yaml.Unmarshal(data, &v); err != nil {
+			return nil, err
+		}
+	case "jsonl":
+		var arr []interface{}
+		for _, line := range bytes.Split(data, []byte{'\n'}) {
+			line = bytes.TrimSpace(line)
+			if len(line) == 0 {
+				continue
+			}
+			var item interface{}
+			if err := json.Unmarshal(line, &item); err == nil {
+				arr = append(arr, item)
+			}
+		}
+		v = arr
+	default:
+		return nil, fmt.Errorf("unsupported load format")
+	}
+	return valueToExpr(v), nil
 }
 
 func identName(e *parser.Expr) (string, bool) {
