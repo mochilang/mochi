@@ -2,8 +2,8 @@
 
 Generated C# code for programs in `tests/vm/valid`. Each program has a `.cs` file produced by the transpiler and a `.out` file containing its runtime output. Compilation or execution errors are captured in a `.error` file placed next to the source.
 
-Compiled programs: 102/102
-Last updated: 2025-07-22 10:54 +0700
+Compiled programs: 102/103
+Last updated: 2025-07-22 21:48 +0700
 
 ## Checklist
 - [x] append_builtin
@@ -71,6 +71,7 @@ Last updated: 2025-07-22 10:54 +0700
 - [x] math_ops
 - [x] membership
 - [x] min_max_builtin
+- [ ] mix_go_python
 - [x] nested_function
 - [x] order_by_map
 - [x] outer_join
@@ -78,7 +79,7 @@ Last updated: 2025-07-22 10:54 +0700
 - [x] print_hello
 - [x] pure_fold
 - [x] pure_global_fold
- - [x] python_auto
+- [x] python_auto
 - [x] python_math
 - [x] query_sum_select
 - [x] record_assign

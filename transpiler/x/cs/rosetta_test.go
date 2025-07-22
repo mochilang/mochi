@@ -9,6 +9,7 @@ import (
 	"os/exec"
 	"path/filepath"
 	"sort"
+	"strconv"
 	"strings"
 	"testing"
 	"time"
@@ -23,6 +24,7 @@ func TestCSTranspiler_Rosetta_Golden(t *testing.T) {
 	outDir := filepath.Join(root, "tests", "rosetta", "transpiler", "CS")
 	srcDir := filepath.Join(root, "tests", "rosetta", "x", "Mochi")
 	os.MkdirAll(outDir, 0o755)
+	t.Cleanup(updateRosetta)
 
 	if _, err := exec.LookPath("dotnet"); err != nil {
 		t.Skip("dotnet not installed")
@@ -40,6 +42,14 @@ func TestCSTranspiler_Rosetta_Golden(t *testing.T) {
 		t.Fatalf("no Mochi Rosetta tests found: %s", pattern)
 	}
 	sort.Strings(files)
+	if idxStr := os.Getenv("MOCHI_ROSETTA_INDEX"); idxStr != "" {
+		if idx, err := strconv.Atoi(idxStr); err == nil {
+			if idx <= 0 || idx > len(files) {
+				t.Fatalf("index %d out of range", idx)
+			}
+			files = files[idx-1 : idx]
+		}
+	}
 	firstOnly := os.Getenv("MOCHI_FIRST_ERROR") == "1"
 
 	runCase := func(src string) ([]byte, error) {
@@ -113,7 +123,7 @@ func updateRosetta() {
 	total := len(files)
 	compiled := 0
 	var lines []string
-	for _, f := range files {
+	for i, f := range files {
 		name := strings.TrimSuffix(filepath.Base(f), ".mochi")
 		mark := "[ ]"
 		if _, err := os.Stat(filepath.Join(outDir, name+".out")); err == nil {
@@ -122,7 +132,7 @@ func updateRosetta() {
 				mark = "[x]"
 			}
 		}
-		lines = append(lines, fmt.Sprintf("- %s %s", mark, name))
+		lines = append(lines, fmt.Sprintf("%d. %s %s", i+1, mark, name))
 	}
 
 	var buf bytes.Buffer
