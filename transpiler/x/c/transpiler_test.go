@@ -19,7 +19,7 @@ import (
 	"mochi/types"
 )
 
-var update = flag.Bool("update", false, "update golden files")
+var updateFlag = flag.Bool("ctrans_update", false, "update golden files")
 
 func repoRoot(t *testing.T) string {
 	t.Helper()
@@ -83,7 +83,7 @@ func transpileAndRun(src string) ([]byte, error) {
 }
 
 func updateEnabled() bool {
-	return *update
+	return *updateFlag
 }
 
 func normalize(root string, b []byte) []byte {
