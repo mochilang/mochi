@@ -28,6 +28,7 @@ var transpileEnv *types.Env
 var generatedTypes map[string]bool
 var prelude []Stmt
 var pythonMathAliases map[string]bool
+var showHelperAdded bool
 
 type Stmt interface {
 	emit(io.Writer)
@@ -624,34 +625,18 @@ func (f *FormatListExpr) emit(w io.Writer) {
 }
 
 func (p *PrintExpr) emit(w io.Writer) {
-	if len(p.Args) == 0 {
-		io.WriteString(w, "console.log()")
-		return
-	}
-	if len(p.Args) == 1 {
-		io.WriteString(w, "console.log(String(")
-		if p.Args[0] != nil {
-			p.Args[0].emit(w)
-		} else {
-			io.WriteString(w, "null")
-		}
-		io.WriteString(w, "))")
-		return
-	}
-	io.WriteString(w, "console.log((")
+	io.WriteString(w, "console.log([")
 	for i, a := range p.Args {
 		if i > 0 {
-			io.WriteString(w, " + \" \" + ")
+			io.WriteString(w, ", ")
 		}
-		io.WriteString(w, "String(")
 		if a != nil {
 			a.emit(w)
 		} else {
 			io.WriteString(w, "null")
 		}
-		io.WriteString(w, ")")
 	}
-	io.WriteString(w, ").trim())")
+	io.WriteString(w, "].map(v => __show(v)).join(\" \"))")
 }
 
 func (s *SubstringExpr) emit(w io.Writer) {
@@ -847,6 +832,43 @@ func (q *QueryExprJS) emit(w io.Writer) {
 			io.WriteString(iw, "}\n")
 		}
 		emitJoin(0, 1)
+		io.WriteString(iw, "  }\n  return result\n")
+		io.WriteString(iw, "})()")
+		return
+	}
+
+	leftSimple := len(q.Loops) == 1 && len(q.Joins) == 1 && q.Joins[0].Side == "left" && q.Sort == nil && q.Skip == nil && q.Take == nil && q.Where == nil
+	if leftSimple {
+		j := q.Joins[0]
+		io.WriteString(iw, "  const result")
+		if q.ElemType != "" {
+			io.WriteString(iw, ": ")
+			io.WriteString(iw, q.ElemType)
+			io.WriteString(iw, "[]")
+		}
+		io.WriteString(iw, " = []\n")
+		io.WriteString(iw, "  for (const ")
+		io.WriteString(iw, q.Loops[0].Name)
+		io.WriteString(iw, " of ")
+		q.Loops[0].Source.emit(iw)
+		io.WriteString(iw, ") {\n")
+		io.WriteString(iw, "    let matched = false\n")
+		io.WriteString(iw, "    for (const ")
+		io.WriteString(iw, j.Name)
+		io.WriteString(iw, " of ")
+		j.Source.emit(iw)
+		io.WriteString(iw, ") {\n")
+		io.WriteString(iw, "      if (!(")
+		j.On.emit(iw)
+		io.WriteString(iw, ")) continue\n")
+		io.WriteString(iw, "      matched = true\n")
+		io.WriteString(iw, "      result.push(")
+		q.Select.emit(iw)
+		io.WriteString(iw, ")\n")
+		io.WriteString(iw, "    }\n")
+		io.WriteString(iw, "    if (!matched) result.push(")
+		emitReplaceName(iw, q.Select, j.Name, &NullLit{})
+		io.WriteString(iw, ")\n")
 		io.WriteString(iw, "  }\n  return result\n")
 		io.WriteString(iw, "})()")
 		return
@@ -1783,7 +1805,14 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	generatedTypes = map[string]bool{}
 	prelude = nil
 	pythonMathAliases = map[string]bool{}
-	defer func() { transpileEnv = nil; generatedTypes = nil; prelude = nil; pythonMathAliases = nil }()
+	showHelperAdded = false
+	defer func() {
+		transpileEnv = nil
+		generatedTypes = nil
+		prelude = nil
+		pythonMathAliases = nil
+		showHelperAdded = false
+	}()
 	tsProg := &Program{}
 
 	for _, st := range prog.Statements {
@@ -2781,6 +2810,7 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 					args[i] = &UnaryExpr{Op: "+", Expr: a}
 				}
 			}
+			ensureShowHelper()
 			return &PrintExpr{Args: args}, nil
 		case "len":
 			if len(args) != 1 {
@@ -3146,6 +3176,21 @@ func ensureNamedStruct(st types.StructType, hint string) string {
 	return name
 }
 
+func ensureShowHelper() {
+	if showHelperAdded {
+		return
+	}
+	code := "function __show(v:any, nest?:boolean){\n" +
+		"  if (v === null || v === undefined) return 'None';\n" +
+		"  if (Array.isArray(v)) return '[' + v.map(x => __show(x, true)).join(', ') + ']';\n" +
+		"  if (typeof v === 'object') return '{' + Object.keys(v).map(k => \"'\" + k + \"': \" + __show(v[k], true)).join(', ') + '}';\n" +
+		"  if (typeof v === 'string') return nest ? \"'\" + v + \"'\" : v;\n" +
+		"  return String(v);\n" +
+		"}\n"
+	prelude = append(prelude, &RawStmt{Code: code})
+	showHelperAdded = true
+}
+
 func mapLiteral(e *parser.Expr) *parser.MapLiteral {
 	if e == nil || e.Binary == nil || len(e.Binary.Right) != 0 {
 		return nil
@@ -3387,6 +3432,76 @@ func replaceFields(e Expr, target Expr, fields map[string]bool) Expr {
 		return ex
 	default:
 		return ex
+	}
+}
+
+func emitReplaceName(w io.Writer, e Expr, name string, repl Expr) {
+	switch ex := e.(type) {
+	case *NameRef:
+		if ex.Name == name {
+			repl.emit(w)
+		} else {
+			ex.emit(w)
+		}
+	case *IndexExpr:
+		emitReplaceName(w, ex.Target, name, repl)
+		io.WriteString(w, "[")
+		if ex.Index != nil {
+			emitReplaceName(w, ex.Index, name, repl)
+		}
+		io.WriteString(w, "]")
+	case *MapLit:
+		io.WriteString(w, "{")
+		for i, ent := range ex.Entries {
+			if i > 0 {
+				io.WriteString(w, ", ")
+			}
+			switch k := ent.Key.(type) {
+			case *StringLit:
+				if v, ok := ent.Value.(*NameRef); ok && v.Name == k.Value {
+					if k.Value == name {
+						io.WriteString(w, k.Value)
+						continue
+					}
+				}
+				fmt.Fprintf(w, "%q: ", k.Value)
+				emitReplaceName(w, ent.Value, name, repl)
+			case *NameRef:
+				if v, ok := ent.Value.(*NameRef); ok && v.Name == k.Name {
+					if k.Name == name {
+						io.WriteString(w, k.Name)
+						continue
+					}
+				}
+				io.WriteString(w, k.Name)
+				io.WriteString(w, ": ")
+				emitReplaceName(w, ent.Value, name, repl)
+			default:
+				io.WriteString(w, "[")
+				emitReplaceName(w, ent.Key, name, repl)
+				io.WriteString(w, "]: ")
+				emitReplaceName(w, ent.Value, name, repl)
+			}
+		}
+		io.WriteString(w, "}")
+	case *BinaryExpr:
+		emitReplaceName(w, ex.Left, name, repl)
+		io.WriteString(w, " "+ex.Op+" ")
+		emitReplaceName(w, ex.Right, name, repl)
+	case *UnaryExpr:
+		io.WriteString(w, ex.Op)
+		emitReplaceName(w, ex.Expr, name, repl)
+	case *ListLit:
+		io.WriteString(w, "[")
+		for i, el := range ex.Elems {
+			if i > 0 {
+				io.WriteString(w, ", ")
+			}
+			emitReplaceName(w, el, name, repl)
+		}
+		io.WriteString(w, "]")
+	default:
+		ex.emit(w)
 	}
 }
 
