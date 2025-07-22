@@ -37,6 +37,7 @@ func TestGoTranspiler_Rosetta_Golden(t *testing.T) {
 		t.Fatalf("no mochi files in %s", srcDir)
 	}
 	sort.Strings(files)
+
 	if idxStr := os.Getenv("MOCHI_ROSETTA_INDEX"); idxStr != "" {
 		idx, err := strconv.Atoi(idxStr)
 		if err != nil || idx < 1 || idx > len(files) {
@@ -47,9 +48,10 @@ func TestGoTranspiler_Rosetta_Golden(t *testing.T) {
 
 	var passed, failed int
 	var firstFail string
-	for _, src := range files {
+	for i, src := range files {
 		name := strings.TrimSuffix(filepath.Base(src), ".mochi")
-		ok := t.Run(name, func(t *testing.T) {
+		testName := fmt.Sprintf("%03d_%s", i+1, name)
+		ok := t.Run(testName, func(t *testing.T) {
 			codePath := filepath.Join(outDir, name+".go")
 			outPath := filepath.Join(outDir, name+".out")
 			errPath := filepath.Join(outDir, name+".error")
@@ -126,14 +128,14 @@ func updateRosettaChecklist() {
 	total := len(files)
 	compiled := 0
 	var lines []string
-	for _, f := range files {
+	for i, f := range files {
 		name := strings.TrimSuffix(filepath.Base(f), ".mochi")
 		mark := "[ ]"
 		if _, err := os.Stat(filepath.Join(outDir, name+".out")); err == nil {
 			compiled++
 			mark = "[x]"
 		}
-		lines = append(lines, fmt.Sprintf("- %s %s", mark, name))
+		lines = append(lines, fmt.Sprintf("%d. %s %s", i+1, mark, name))
 	}
 	tsRaw, _ := exec.Command("git", "log", "-1", "--format=%cI").Output()
 	ts := strings.TrimSpace(string(tsRaw))
