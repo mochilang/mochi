@@ -9,6 +9,7 @@ import (
 	"os/exec"
 	"path/filepath"
 	"sort"
+	"strconv"
 	"strings"
 	"testing"
 	"time"
@@ -28,6 +29,13 @@ func TestCPPTranspiler_Rosetta_Golden(t *testing.T) {
 
 	files, _ := filepath.Glob(filepath.Join(root, "tests", "rosetta", "x", "Mochi", "*.mochi"))
 	sort.Strings(files)
+	if v := os.Getenv("ROSETTA_INDEX"); v != "" {
+		if n, err := strconv.Atoi(v); err == nil && n > 0 && n <= len(files) {
+			files = files[n-1 : n]
+		} else {
+			t.Fatalf("invalid ROSETTA_INDEX %s", v)
+		}
+	}
 	var firstErr string
 	runOne := func(src string) error {
 		base := strings.TrimSuffix(filepath.Base(src), ".mochi")
@@ -103,7 +111,7 @@ func updateRosettaReadme() {
 	total := len(files)
 	compiled := 0
 	var lines []string
-	for _, f := range files {
+	for i, f := range files {
 		name := strings.TrimSuffix(filepath.Base(f), ".mochi")
 		mark := "[ ]"
 		if _, err := os.Stat(filepath.Join(outDir, name+".out")); err == nil {
@@ -112,7 +120,7 @@ func updateRosettaReadme() {
 				mark = "[x]"
 			}
 		}
-		lines = append(lines, fmt.Sprintf("- %s %s", mark, name))
+		lines = append(lines, fmt.Sprintf("%d. %s %s", i+1, mark, name))
 	}
 	tsRaw, _ := exec.Command("git", "log", "-1", "--format=%cI").Output()
 	ts := strings.TrimSpace(string(tsRaw))
