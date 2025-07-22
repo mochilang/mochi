@@ -2,9 +2,9 @@
 
 Generated Lua code for programs in `tests/vm/valid`. Each program has a `.lua` file produced by the transpiler and a `.out` file with its runtime output. Compilation or execution errors are captured in `.error` files.
 
-Transpiled programs: 91/101
+Transpiled programs: 92/101
 
-Last updated: 2025-07-22 06:19 GMT+7
+Last updated: 2025-07-22 06:41 GMT+7
 
 Checklist:
 
@@ -105,7 +105,7 @@ Checklist:
 - [x] typed_var
 - [x] unary_neg
 - [ ] update_stmt
-- [ ] user_type_literal
+- [x] user_type_literal
 - [x] values_builtin
 - [x] var_assignment
 - [x] while_loop
