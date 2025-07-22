@@ -2,8 +2,8 @@
 
 Generated Scheme code for programs in `tests/vm/valid`. Each program has a `.scm` file produced by the transpiler and a `.out` file with its runtime output. Compilation or execution errors are captured in `.error` files.
 
-## VM Golden Test Checklist (69/101)
-Last updated: 2025-07-21 23:19 UTC
+## VM Golden Test Checklist (76/102)
+Last updated: 2025-07-22 02:24 UTC
 
 - [x] append_builtin
 - [x] avg_builtin
@@ -13,7 +13,7 @@ Last updated: 2025-07-21 23:19 UTC
 - [x] break_continue
 - [x] cast_string_to_int
 - [x] cast_struct
-- [ ] closure
+- [x] closure
 - [x] count_builtin
 - [x] cross_join
 - [x] cross_join_filter
@@ -25,12 +25,12 @@ Last updated: 2025-07-21 23:19 UTC
 - [x] for_loop
 - [x] for_map_collection
 - [x] fun_call
-- [ ] fun_expr_in_let
+- [x] fun_expr_in_let
 - [x] fun_three_args
 - [ ] go_auto
 - [ ] group_by
 - [ ] group_by_conditional_sum
-- [ ] group_by_having
+- [x] group_by_having
 - [x] group_by_join
 - [x] group_by_left_join
 - [x] group_by_multi_join
@@ -45,7 +45,7 @@ Last updated: 2025-07-21 23:19 UTC
 - [x] in_operator_extended
 - [x] inner_join
 - [x] join_multi
-- [ ] json_builtin
+- [x] json_builtin
 - [x] left_join
 - [x] left_join_multi
 - [x] len_builtin
@@ -55,7 +55,8 @@ Last updated: 2025-07-21 23:19 UTC
 - [x] list_assign
 - [x] list_index
 - [x] list_nested_assign
-- [ ] list_set_ops
+- [x] list_set_ops
+- [ ] load_jsonl
 - [ ] load_yaml
 - [x] map_assign
 - [x] map_in_operator
@@ -64,8 +65,8 @@ Last updated: 2025-07-21 23:19 UTC
 - [x] map_literal_dynamic
 - [x] map_membership
 - [x] map_nested_assign
-- [ ] match_expr
-- [ ] match_full
+- [x] match_expr
+- [x] match_full
 - [x] math_ops
 - [x] membership
 - [x] min_max_builtin

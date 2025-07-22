@@ -52,7 +52,7 @@ func TestSchemeTranspiler_VMValid_Golden(t *testing.T) {
 		if err := os.WriteFile(codePath, code, 0o644); err != nil {
 			return nil, err
 		}
-		cmd := exec.Command("chibi-scheme", "-m", "chibi", codePath)
+		cmd := exec.Command("chibi-scheme", "-q", "-m", "chibi", "-m", "srfi.1", "-m", "srfi.69", "-m", "scheme.sort", "-m", "chibi.string", codePath)
 		if data, err := os.ReadFile(strings.TrimSuffix(src, ".mochi") + ".in"); err == nil {
 			cmd.Stdin = bytes.NewReader(data)
 		}

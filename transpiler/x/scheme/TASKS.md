@@ -1,4 +1,6 @@
-## Progress (2025-07-21 23:19 UTC)
-- Compiled 69/101 programs for Scheme
-- Added outputs for `break_continue` and `string_prefix_slice`
-- Removed old `.error` files for these cases
+## Progress (2025-07-22 09:24 +0700)
+- Commit 0522a81df: hs transpiler: regenerate outputs
+- Generated Scheme for 76/100 programs
+- Updated README checklist and outputs
+
+
