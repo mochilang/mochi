@@ -4,6 +4,7 @@ package javatr_test
 
 import (
 	"bytes"
+	"flag"
 	"fmt"
 	"os"
 	"os/exec"
@@ -25,6 +26,10 @@ func shouldUpdateRosetta() bool {
 	}
 	return false
 }
+
+// rosettaIndex optionally selects a single program by 1-based index when
+// running the Rosetta tests.
+var rosettaIndex = flag.Int("index", 0, "run only the N-th Rosetta program (1-based)")
 
 func runRosettaTask(t *testing.T, name string) {
 	root := repoRootDir(t)
@@ -101,7 +106,14 @@ func TestJavaTranspiler_Rosetta_Golden(t *testing.T) {
 	}
 	sort.Strings(files)
 
-	if v := os.Getenv("MOCHI_ROSETTA_INDEX"); v != "" {
+	if *rosettaIndex > 0 {
+		if *rosettaIndex < 1 || *rosettaIndex > len(files) {
+			t.Fatalf("invalid -index: %d", *rosettaIndex)
+		}
+		files = files[*rosettaIndex-1 : *rosettaIndex]
+	} else if v := os.Getenv("MOCHI_ROSETTA_ONLY"); v != "" {
+		files = []string{filepath.Join(root, "tests", "rosetta", "x", "Mochi", v+".mochi")}
+	} else if v := os.Getenv("MOCHI_ROSETTA_INDEX"); v != "" {
 		idx, err := strconv.Atoi(v)
 		if err != nil || idx < 1 || idx > len(files) {
 			t.Fatalf("invalid MOCHI_ROSETTA_INDEX %s", v)
@@ -115,6 +127,7 @@ func TestJavaTranspiler_Rosetta_Golden(t *testing.T) {
 
 	outDir := filepath.Join(root, "tests", "rosetta", "transpiler", "Java")
 	os.MkdirAll(outDir, 0o755)
+	t.Cleanup(updateRosetta)
 	var firstFail string
 	for _, f := range files {
 		name := strings.TrimSuffix(filepath.Base(f), ".mochi")

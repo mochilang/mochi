@@ -2,9 +2,9 @@
 
 Generated Java code for programs in `tests/rosetta/x/Mochi`. Each program has a `.java` file produced by the transpiler and a `.out` file with its runtime output. Compilation or execution errors are captured in `.error` files.
 
-## Rosetta Checklist (1/284) - updated 2025-07-22 15:37 UTC
+## Rosetta Checklist (2/284) - updated 2025-07-22 15:58 UTC
 1. [x] 100-doors-2
-2. [ ] 100-doors-3
+2. [x] 100-doors-3
 3. [ ] 100-doors
 4. [ ] 100-prisoners
 5. [ ] 15-puzzle-game
