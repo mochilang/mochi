@@ -1,3 +1,18 @@
+## Progress (2025-07-22 23:07 +0700)
+- dart transpiler: index rosetta cases
+- Generated C++ for 102/103 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-22 23:07 +0700)
+- dart transpiler: index rosetta cases
+- Generated C++ for 102/103 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-22 23:07 +0700)
+- dart transpiler: index rosetta cases
+- Generated C++ for 102/103 programs
+- Updated README checklist and outputs
+
 ## Progress (2025-07-22 22:22 +0700)
 - cpp transpiler: add index-based rosetta run
 - Generated C++ for 102/103 programs
