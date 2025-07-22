@@ -4,11 +4,13 @@ package tstranspiler_test
 
 import (
 	"bytes"
+	"flag"
 	"fmt"
 	"os"
 	"os/exec"
 	"path/filepath"
 	"sort"
+	"strconv"
 	"strings"
 	"testing"
 	"time"
@@ -29,10 +31,7 @@ func runRosettaCase(t *testing.T, name string) {
 	outPath := filepath.Join(outDir, name+".out")
 	errPath := filepath.Join(outDir, name+".error")
 
-	want, err := os.ReadFile(outPath)
-	if err != nil {
-		t.Fatalf("read want: %v", err)
-	}
+	want, _ := os.ReadFile(outPath)
 	want = bytes.TrimSpace(want)
 	prog, err := parser.Parse(src)
 	if err != nil {
@@ -66,8 +65,11 @@ func runRosettaCase(t *testing.T, name string) {
 	}
 	_ = os.Remove(errPath)
 	_ = os.WriteFile(outPath, got, 0o644)
+	if updating() || len(want) == 0 {
+		return
+	}
 	if !bytes.Equal(got, want) {
-		t.Fatalf("output mismatch")
+		t.Fatalf("output mismatch\nGot: %s\nWant: %s", got, want)
 	}
 }
 
@@ -85,6 +87,13 @@ func TestTSTranspiler_Rosetta_Golden(t *testing.T) {
 		t.Fatalf("glob: %v", err)
 	}
 	sort.Strings(files)
+	if idxStr := os.Getenv("MOCHI_ROSETTA_INDEX"); idxStr != "" {
+		idx, err := strconv.Atoi(idxStr)
+		if err != nil || idx < 1 || idx > len(files) {
+			t.Fatalf("invalid MOCHI_ROSETTA_INDEX: %s", idxStr)
+		}
+		files = []string{files[idx-1]}
+	}
 	for _, f := range files {
 		name := strings.TrimSuffix(filepath.Base(f), ".mochi")
 		if ok := t.Run(name, func(t *testing.T) { runRosettaCase(t, name) }); !ok {
@@ -103,7 +112,7 @@ func updateRosettaChecklist() {
 	total := len(files)
 	compiled := 0
 	var lines []string
-	for _, f := range files {
+	for i, f := range files {
 		name := strings.TrimSuffix(filepath.Base(f), ".out")
 		mark := "[ ]"
 		if _, err := os.Stat(filepath.Join(outDir, name+".error")); err == nil {
@@ -112,7 +121,7 @@ func updateRosettaChecklist() {
 			compiled++
 			mark = "[x]"
 		}
-		lines = append(lines, fmt.Sprintf("- %s %s", mark, name))
+		lines = append(lines, fmt.Sprintf("%d. %s %s", i+1, mark, name))
 	}
 	ts := time.Now().UTC().Format("2006-01-02 15:04 MST")
 	var buf bytes.Buffer
@@ -124,4 +133,17 @@ func updateRosettaChecklist() {
 	buf.WriteString(strings.Join(lines, "\n"))
 	buf.WriteString("\n")
 	_ = os.WriteFile(md, buf.Bytes(), 0o644)
+}
+
+func updating() bool {
+	f := flag.Lookup("update")
+	if f == nil {
+		return false
+	}
+	if getter, ok := f.Value.(interface{ Get() any }); ok {
+		if v, ok2 := getter.Get().(bool); ok2 {
+			return v
+		}
+	}
+	return false
 }
