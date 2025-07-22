@@ -109,18 +109,20 @@ func updateReadme() {
 	readmePath := filepath.Join(root, "transpiler", "x", "py", "README.md")
 	files, _ := filepath.Glob(filepath.Join(srcDir, "*.mochi"))
 	sort.Strings(files)
-	total := len(files)
-	compiled := 0
-	var lines []string
-	for _, f := range files {
-		name := strings.TrimSuffix(filepath.Base(f), ".mochi")
-		mark := "[ ]"
-		if _, err := os.Stat(filepath.Join(outDir, name+".py")); err == nil {
-			compiled++
-			mark = "[x]"
-		}
-		lines = append(lines, fmt.Sprintf("- %s %s", mark, name))
-	}
+        total := len(files)
+        compiled := 0
+        var lines []string
+        for _, f := range files {
+                name := strings.TrimSuffix(filepath.Base(f), ".mochi")
+                mark := "[ ]"
+                if _, err := os.Stat(filepath.Join(outDir, name+".error")); err == nil {
+                        // keep mark as unchecked when an error file exists
+                } else if _, err := os.Stat(filepath.Join(outDir, name+".py")); err == nil {
+                        compiled++
+                        mark = "[x]"
+                }
+                lines = append(lines, fmt.Sprintf("- %s %s", mark, name))
+        }
 	var buf bytes.Buffer
 	buf.WriteString("# Transpiler Progress\n\n")
 	buf.WriteString("This checklist is auto-generated.\n")
@@ -157,14 +159,17 @@ func updateTasks() {
 	outDir := filepath.Join(root, "tests", "transpiler", "x", "py")
 	files, _ := filepath.Glob(filepath.Join(srcDir, "*.mochi"))
 	sort.Strings(files)
-	total := len(files)
-	compiled := 0
-	for _, f := range files {
-		name := strings.TrimSuffix(filepath.Base(f), ".mochi")
-		if _, err := os.Stat(filepath.Join(outDir, name+".py")); err == nil {
-			compiled++
-		}
-	}
+        total := len(files)
+        compiled := 0
+        for _, f := range files {
+                name := strings.TrimSuffix(filepath.Base(f), ".mochi")
+                if _, err := os.Stat(filepath.Join(outDir, name+".error")); err == nil {
+                        continue
+                }
+                if _, err := os.Stat(filepath.Join(outDir, name+".py")); err == nil {
+                        compiled++
+                }
+        }
 	var buf bytes.Buffer
 	buf.WriteString(fmt.Sprintf("## Progress (%s)\n", ts))
 	fmt.Fprintf(&buf, "- Commit %s: %s\n", hash, msg)
