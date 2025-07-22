@@ -3,7 +3,7 @@
 This directory contains the experimental TypeScript transpiler.
 Generated sources for the golden tests live under `tests/transpiler/x/ts`.
 
-## VM Golden Test Checklist (91/103)
+## VM Golden Test Checklist (94/103)
 - [x] append_builtin.mochi
 - [x] avg_builtin.mochi
 - [x] basic_compare.mochi
@@ -58,7 +58,7 @@ Generated sources for the golden tests live under `tests/transpiler/x/ts`.
 - [x] load_jsonl.mochi
 - [x] load_yaml.mochi
 - [x] map_assign.mochi
-- [ ] map_in_operator.mochi
+ - [x] map_in_operator.mochi
 - [x] map_index.mochi
 - [x] map_int_key.mochi
 - [x] map_literal_dynamic.mochi
@@ -66,7 +66,7 @@ Generated sources for the golden tests live under `tests/transpiler/x/ts`.
 - [x] map_nested_assign.mochi
 - [x] match_expr.mochi
 - [x] match_full.mochi
-- [ ] math_ops.mochi
+ - [x] math_ops.mochi
 - [x] membership.mochi
 - [x] min_max_builtin.mochi
 - [ ] mix_go_python.mochi
@@ -90,7 +90,7 @@ Generated sources for the golden tests live under `tests/transpiler/x/ts`.
 - [x] string_compare.mochi
 - [x] string_concat.mochi
 - [x] string_contains.mochi
-- [ ] string_in_operator.mochi
+ - [x] string_in_operator.mochi
 - [x] string_index.mochi
 - [x] string_prefix_slice.mochi
 - [x] substring_builtin.mochi
@@ -108,4 +108,4 @@ Generated sources for the golden tests live under `tests/transpiler/x/ts`.
 - [x] var_assignment.mochi
 - [x] while_loop.mochi
 
-_Last updated: 2025-07-22 17:13 +0700_
+_Last updated: 2025-07-22 17:34 +0700_
