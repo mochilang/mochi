@@ -71,6 +71,7 @@ var usesDict bool
 var usesLinq bool
 var usesJson bool
 var usesNow bool
+var usesInput bool
 var globalDecls map[string]*Global
 var mutatedVars map[string]bool
 var blockDepth int
@@ -1571,6 +1572,7 @@ func Transpile(p *parser.Program, env *types.Env) (*Program, error) {
 	usesLinq = false
 	usesJson = false
 	usesNow = false
+	usesInput = false
 	globalDecls = make(map[string]*Global)
 	mutatedVars = make(map[string]bool)
 	importAliases = make(map[string]string)
@@ -1673,6 +1675,9 @@ func compileUnary(u *parser.Unary) (Expr, error) {
 	}
 	for i := len(u.Ops) - 1; i >= 0; i-- {
 		if u.Ops[i] == "!" {
+			if typeOfExpr(expr) != "bool" {
+				expr = &CallExpr{Func: "Convert.ToBoolean", Args: []Expr{expr}}
+			}
 			expr = &NotExpr{Val: expr}
 		} else {
 			expr = &UnaryExpr{Op: u.Ops[i], Val: expr}
@@ -2300,6 +2305,19 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 			if len(args) == 1 {
 				return &StrExpr{Arg: args[0]}, nil
 			}
+		case "int":
+			if len(args) == 1 {
+				return &CallExpr{Func: "Convert.ToInt32", Args: []Expr{args[0]}}, nil
+			}
+		case "float":
+			if len(args) == 1 {
+				return &CallExpr{Func: "Convert.ToDouble", Args: []Expr{args[0]}}, nil
+			}
+		case "input":
+			if len(args) == 0 {
+				usesInput = true
+				return &RawExpr{Code: "_input()", Type: "string"}, nil
+			}
 		case "min":
 			if len(args) == 1 {
 				usesLinq = true
@@ -2874,6 +2892,9 @@ func Emit(prog *Program) []byte {
 	if usesJson {
 		buf.WriteString("using System.Text.Json;\n")
 	}
+	if usesInput {
+		buf.WriteString("using System.IO;\n")
+	}
 	for _, imp := range prog.Imports {
 		buf.WriteString(imp)
 		if !strings.HasSuffix(imp, "\n") {
@@ -2922,6 +2943,24 @@ func Emit(prog *Program) []byte {
 		buf.WriteString("\t\t\treturn nowSeed;\n")
 		buf.WriteString("\t\t}\n")
 		buf.WriteString("\t\treturn (int)(DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() % int.MaxValue);\n")
+		buf.WriteString("\t}\n")
+	}
+	if usesInput {
+		buf.WriteString("\tstatic string[] inputLines;\n")
+		buf.WriteString("\tstatic int inputIndex = 0;\n")
+		buf.WriteString("\tstatic string _input() {\n")
+		buf.WriteString("\t\tif (inputLines == null) {\n")
+		buf.WriteString("\t\t\tvar path = Environment.GetEnvironmentVariable(\"MOCHI_INPUT_FILE\");\n")
+		buf.WriteString("\t\t\tif (!string.IsNullOrEmpty(path) && File.Exists(path)) {\n")
+		buf.WriteString("\t\t\t\tinputLines = File.ReadAllLines(path);\n")
+		buf.WriteString("\t\t\t} else {\n")
+		buf.WriteString("\t\t\t\tinputLines = new string[]{};\n")
+		buf.WriteString("\t\t\t}\n")
+		buf.WriteString("\t\t}\n")
+		buf.WriteString("\t\tif (inputIndex < inputLines.Length) {\n")
+		buf.WriteString("\t\t\treturn inputLines[inputIndex++];\n")
+		buf.WriteString("\t\t}\n")
+		buf.WriteString("\t\treturn Console.ReadLine();\n")
 		buf.WriteString("\t}\n")
 	}
 	for _, g := range prog.Globals {

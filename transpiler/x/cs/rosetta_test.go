@@ -91,6 +91,12 @@ func TestCSTranspiler_Rosetta_Golden(t *testing.T) {
 		}
 		cmd := exec.Command("dotnet", "run", "--project", proj)
 		cmd.Env = append(os.Environ(), "DOTNET_NOLOGO=1", "DOTNET_SKIP_FIRST_TIME_EXPERIENCE=1")
+		inPath := filepath.Join(srcDir, base+".in")
+		if data, err := os.ReadFile(inPath); err == nil {
+			env := "MOCHI_INPUT_FILE=" + inPath
+			cmd.Env = append(cmd.Env, env)
+			cmd.Stdin = bytes.NewReader(data)
+		}
 		out, err := cmd.CombinedOutput()
 		if err != nil {
 			_ = os.WriteFile(errPath, append([]byte("dotnet run: "+err.Error()+"\n"), out...), 0o644)
