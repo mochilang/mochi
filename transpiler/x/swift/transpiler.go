@@ -5,14 +5,19 @@ package swifttrans
 import (
 	"bufio"
 	"bytes"
+	"encoding/json"
 	"fmt"
 	"io"
 	"math"
 	"os"
 	"path/filepath"
+	"reflect"
+	"sort"
 	"strconv"
 	"strings"
 	"time"
+
+	"gopkg.in/yaml.v3"
 
 	"mochi/ast"
 	"mochi/parser"
@@ -2347,6 +2352,17 @@ func convertPrimary(env *types.Env, pr *parser.Primary) (Expr, error) {
 		return convertMatchExpr(env, pr.Match)
 	case pr.Query != nil:
 		return convertQueryExpr(env, pr.Query)
+	case pr.Load != nil:
+		format := parseFormat(pr.Load.With)
+		path := ""
+		if pr.Load.Path != nil {
+			path = strings.Trim(*pr.Load.Path, "\"")
+		}
+		expr, err := dataExprFromFile(env, path, format, pr.Load.Type)
+		if err != nil {
+			return nil, err
+		}
+		return expr, nil
 	case pr.Selector != nil && len(pr.Selector.Tail) == 0:
 		return &NameExpr{Name: pr.Selector.Root}, nil
 	}
@@ -2516,6 +2532,182 @@ func swiftTypeOf(t types.Type) string {
 	default:
 		return "Any"
 	}
+}
+
+func parserTypeRefFromType(t types.Type) *parser.TypeRef {
+	switch tt := t.(type) {
+	case types.IntType, types.Int64Type:
+		s := "int"
+		return &parser.TypeRef{Simple: &s}
+	case types.FloatType, types.BigRatType:
+		s := "float"
+		return &parser.TypeRef{Simple: &s}
+	case types.BoolType:
+		s := "bool"
+		return &parser.TypeRef{Simple: &s}
+	case types.StringType:
+		s := "string"
+		return &parser.TypeRef{Simple: &s}
+	case types.ListType:
+		el := parserTypeRefFromType(tt.Elem)
+		if el == nil {
+			return nil
+		}
+		return &parser.TypeRef{Generic: &parser.GenericType{Name: "list", Args: []*parser.TypeRef{el}}}
+	case types.MapType:
+		k := parserTypeRefFromType(tt.Key)
+		v := parserTypeRefFromType(tt.Value)
+		if k == nil || v == nil {
+			return nil
+		}
+		return &parser.TypeRef{Generic: &parser.GenericType{Name: "map", Args: []*parser.TypeRef{k, v}}}
+	case types.StructType:
+		if tt.Name != "" {
+			s := tt.Name
+			return &parser.TypeRef{Simple: &s}
+		}
+	}
+	return nil
+}
+
+func literalString(e *parser.Expr) (string, bool) {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) > 0 {
+		return "", false
+	}
+	u := e.Binary.Left
+	if len(u.Ops) > 0 || u.Value == nil {
+		return "", false
+	}
+	p := u.Value
+	if len(p.Ops) > 0 || p.Target == nil {
+		return "", false
+	}
+	if p.Target.Lit != nil && p.Target.Lit.Str != nil {
+		return *p.Target.Lit.Str, true
+	}
+	if p.Target.Selector != nil && len(p.Target.Selector.Tail) == 0 {
+		return p.Target.Selector.Root, true
+	}
+	return "", false
+}
+
+func parseFormat(e *parser.Expr) string {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) > 0 {
+		return ""
+	}
+	ml := e.Binary.Left.Value.Target.Map
+	if ml == nil {
+		return ""
+	}
+	for _, it := range ml.Items {
+		key, ok := literalString(it.Key)
+		if !ok || key != "format" {
+			continue
+		}
+		if v, ok := literalString(it.Value); ok {
+			return v
+		}
+	}
+	return ""
+}
+
+func valueToExpr(env *types.Env, v interface{}, typ *parser.TypeRef) Expr {
+	switch val := v.(type) {
+	case map[string]interface{}:
+		if typ != nil && typ.Simple != nil && env != nil {
+			if st, ok := env.GetStruct(*typ.Simple); ok {
+				var fields []FieldInit
+				for _, name := range st.Order {
+					ft := parserTypeRefFromType(st.Fields[name])
+					fields = append(fields, FieldInit{Name: name, Value: valueToExpr(env, val[name], ft)})
+				}
+				return &StructInit{Name: st.Name, Fields: fields}
+			}
+		}
+		names := make([]string, 0, len(val))
+		for k := range val {
+			names = append(names, k)
+		}
+		sort.Strings(names)
+		keys := make([]Expr, len(names))
+		values := make([]Expr, len(names))
+		for i, k := range names {
+			keys[i] = &LitExpr{Value: k, IsString: true}
+			values[i] = valueToExpr(env, val[k], nil)
+		}
+		return &MapLit{Keys: keys, Values: values}
+	case []interface{}:
+		elems := make([]Expr, len(val))
+		for i, it := range val {
+			elems[i] = valueToExpr(env, it, typ)
+		}
+		return &ArrayLit{Elems: elems}
+	case string:
+		return &LitExpr{Value: val, IsString: true}
+	case bool:
+		if val {
+			return &LitExpr{Value: "true"}
+		}
+		return &LitExpr{Value: "false"}
+	case int, int64:
+		return &LitExpr{Value: fmt.Sprintf("%v", val)}
+	case float64, float32:
+		f := reflect.ValueOf(val).Float()
+		s := strconv.FormatFloat(f, 'f', -1, 64)
+		if math.Trunc(f) == f && !strings.Contains(s, ".") {
+			s += ".0"
+		}
+		return &LitExpr{Value: s}
+	default:
+		return &LitExpr{Value: fmt.Sprintf("%v", val), IsString: true}
+	}
+}
+
+func dataExprFromFile(env *types.Env, path, format string, typ *parser.TypeRef) (Expr, error) {
+	if path == "" {
+		return &ArrayLit{}, nil
+	}
+	root := repoRoot()
+	if root != "" && strings.HasPrefix(path, "../") {
+		clean := strings.TrimPrefix(path, "../")
+		path = filepath.Join(root, "tests", clean)
+	}
+	data, err := os.ReadFile(path)
+	if err != nil {
+		return nil, err
+	}
+	var v interface{}
+	switch format {
+	case "yaml", "":
+		if err := yaml.Unmarshal(data, &v); err != nil {
+			return nil, err
+		}
+	case "json":
+		if err := json.Unmarshal(data, &v); err != nil {
+			return nil, err
+		}
+	case "jsonl":
+		var list []interface{}
+		scanner := bufio.NewScanner(bytes.NewReader(data))
+		for scanner.Scan() {
+			line := strings.TrimSpace(scanner.Text())
+			if line == "" {
+				continue
+			}
+			var item interface{}
+			if err := json.Unmarshal([]byte(line), &item); err != nil {
+				return nil, err
+			}
+			list = append(list, item)
+		}
+		if err := scanner.Err(); err != nil {
+			return nil, err
+		}
+		v = list
+	default:
+		return nil, fmt.Errorf("unsupported load format")
+	}
+	return valueToExpr(env, v, typ), nil
 }
 
 // TestIntConst is a helper for debugging
