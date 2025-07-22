@@ -341,8 +341,15 @@ type LoadExpr struct {
 }
 
 func (l *LoadExpr) emit(w io.Writer) {
-	if l.Format == "yaml" {
+	switch l.Format {
+	case "yaml":
 		fmt.Fprintf(w, "(function() { $lines = file(%q, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES); $rows = []; $curr = []; foreach ($lines as $line) { $line = trim($line); if (str_starts_with($line, '-')) { if ($curr) $rows[] = $curr; $curr = []; $line = trim(substr($line, 1)); if ($line !== '') { [$k,$v] = array_map('trim', explode(':', $line, 2)); $curr[$k] = is_numeric($v) ? (int)$v : $v; } } else { [$k,$v] = array_map('trim', explode(':', $line, 2)); $curr[$k] = is_numeric($v) ? (int)$v : $v; } } if ($curr) $rows[] = $curr; return $rows; })()", l.Path)
+	case "jsonl":
+		fmt.Fprintf(w, "(function() { $rows = []; foreach (file(%q, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES) as $line) { $line = trim($line); if ($line === '') continue; $rows[] = json_decode($line, true); } return $rows; })()", l.Path)
+	case "json":
+		fmt.Fprintf(w, "json_decode(file_get_contents(%q), true)", l.Path)
+	default:
+		fmt.Fprint(w, "[]")
 	}
 }
 
@@ -1234,7 +1241,8 @@ func convertBinary(b *parser.BinaryExpr) (Expr, error) {
 				return &CallExpr{Func: "in_array", Args: []Expr{left, right}}
 			}
 			if isStringExpr(right) {
-				return &CallExpr{Func: "str_contains", Args: []Expr{right, left}}
+				cmp := &CallExpr{Func: "strpos", Args: []Expr{right, left}}
+				return &BinaryExpr{Left: cmp, Op: "!==", Right: &BoolLit{Value: false}}
 			}
 		}
 		return &BinaryExpr{Left: left, Op: op, Right: right}
@@ -2426,7 +2434,7 @@ func isBoolExpr(e Expr) bool {
 		}
 	case *BinaryExpr:
 		switch v.Op {
-		case "<", "<=", ">", ">=", "==", "!=", "&&", "||", "in":
+		case "<", "<=", ">", ">=", "==", "!=", "===", "!==", "&&", "||", "in":
 			return true
 		}
 	case *CallExpr:
@@ -2513,6 +2521,9 @@ func convertUpdate(u *parser.UpdateStmt) (*UpdateStmt, error) {
 
 func maybeBoolString(e Expr) Expr {
 	if isBoolExpr(e) {
+		if c, ok := e.(*CallExpr); ok && c.Func == "str_contains" {
+			return &CondExpr{Cond: e, Then: &StringLit{Value: "True"}, Else: &StringLit{Value: "False"}}
+		}
 		return &CondExpr{Cond: e, Then: &IntLit{Value: 1}, Else: &IntLit{Value: 0}}
 	}
 	return e
