@@ -2402,6 +2402,12 @@ func convertImport(im *parser.ImportStmt) (Stmt, error) {
 				&LetStmt{Name: "Answer", Expr: &IntLit{Value: 42}},
 			}}, nil
 		}
+		if path == "strings" {
+			return &ModuleDef{Open: true, Name: alias, Stmts: []Stmt{
+				&FunDef{Name: "ToUpper", Params: []string{"s"}, Body: []Stmt{&ReturnStmt{Expr: &MethodCallExpr{Target: &IdentExpr{Name: "s"}, Name: "ToUpper"}}}},
+				&FunDef{Name: "TrimSpace", Params: []string{"s"}, Body: []Stmt{&ReturnStmt{Expr: &MethodCallExpr{Target: &IdentExpr{Name: "s"}, Name: "Trim"}}}},
+			}}, nil
+		}
 	}
 	return nil, nil
 }
