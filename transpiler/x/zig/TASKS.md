@@ -1,3 +1,8 @@
+## Progress (2025-07-22 10:11 +0700)
+- Commit f3b115b02: zig transpiler: support update and group sort
+- Generated Zig for 95/102 programs
+- Updated README checklist and outputs
+
 ## Progress (2025-07-22 09:37 +0700)
 - Commit 16e351779: zig transpiler: handle call statements and void returns
 - Generated Zig for 93/102 programs
