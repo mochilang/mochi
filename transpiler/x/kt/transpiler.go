@@ -121,6 +121,7 @@ func init() {
     else -> toJson(v.toString())
 }`,
 		"expect": `fun expect(cond: Boolean) { if (!cond) throw RuntimeException("expect failed") }`,
+		"input":  `fun input(): String = readLine() ?: ""`,
 		"_now": `var _nowSeed = 0L
 var _nowSeeded = false
 fun _now(): Int {
@@ -156,6 +157,7 @@ type Program struct {
 	Structs []*DataClass
 	Unions  []*SumType
 	Funcs   []*FuncDef
+	Globals []Stmt
 	Stmts   []Stmt
 	Helpers []string
 }
@@ -508,8 +510,9 @@ func (m *MapLit) emit(w io.Writer) {
 			io.WriteString(w, ", ")
 		}
 		it.Key.emit(w)
-		io.WriteString(w, " to ")
+		io.WriteString(w, " to (")
 		it.Value.emit(w)
+		io.WriteString(w, ")")
 	}
 	io.WriteString(w, ")")
 }
@@ -563,7 +566,7 @@ func (c *CastExpr) emit(w io.Writer) {
 	c.Value.emit(w)
 	switch c.Type {
 	case "int":
-		io.WriteString(w, ".toInt()")
+		io.WriteString(w, " as Int")
 	case "float":
 		io.WriteString(w, ".toDouble()")
 	case "string":
@@ -1006,8 +1009,14 @@ func (l *LenExpr) emit(w io.Writer) {
 type StrExpr struct{ Value Expr }
 
 func (s *StrExpr) emit(w io.Writer) {
-	s.Value.emit(w)
-	io.WriteString(w, ".toString()")
+	if _, ok := s.Value.(*BinaryExpr); ok {
+		io.WriteString(w, "(")
+		s.Value.emit(w)
+		io.WriteString(w, ").toString()")
+	} else {
+		s.Value.emit(w)
+		io.WriteString(w, ".toString()")
+	}
 }
 
 type NotExpr struct{ Value Expr }
@@ -1526,6 +1535,8 @@ func kotlinType(t *parser.TypeRef) string {
 			return "Boolean"
 		case "string":
 			return "String"
+		case "any":
+			return "Any"
 		default:
 			return *t.Simple
 		}
@@ -1721,6 +1732,14 @@ func guessType(e Expr) string {
 			return v.Type
 		}
 		return "Any"
+	case *CallExpr:
+		switch v.Func {
+		case "input":
+			return "String"
+		case "int":
+			return "Int"
+		}
+		return ""
 	case *FieldExpr:
 		if v.Type != "" {
 			return v.Type
@@ -1861,7 +1880,7 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 			if st.Let.Type == nil {
 				typ = envTypeName(env, st.Let.Name)
 			}
-			p.Stmts = append(p.Stmts, &LetStmt{Name: st.Let.Name, Type: typ, Value: val})
+			p.Globals = append(p.Globals, &LetStmt{Name: st.Let.Name, Type: typ, Value: val})
 		case st.Var != nil:
 			var val Expr
 			if st.Var.Value != nil {
@@ -1877,7 +1896,7 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 			if st.Var.Type == nil {
 				typ = envTypeName(env, st.Var.Name)
 			}
-			p.Stmts = append(p.Stmts, &VarStmt{Name: st.Var.Name, Type: typ, Value: val})
+			p.Globals = append(p.Globals, &VarStmt{Name: st.Var.Name, Type: typ, Value: val})
 		case st.Assign != nil && len(st.Assign.Index) == 0 && len(st.Assign.Field) == 0:
 			e, err := convertExpr(env, st.Assign.Value)
 			if err != nil {
@@ -3376,6 +3395,19 @@ func convertPrimary(env *types.Env, p *parser.Primary) (Expr, error) {
 				args[i] = ex
 			}
 			name := p.Call.Func
+			if name == "input" {
+				if len(args) != 0 {
+					return nil, fmt.Errorf("input expects no arguments")
+				}
+				useHelper("input")
+				return &CallExpr{Func: "input"}, nil
+			}
+			if name == "int" {
+				if len(args) != 1 {
+					return nil, fmt.Errorf("int expects 1 arg")
+				}
+				return &CastExpr{Value: args[0], Type: "int"}, nil
+			}
 			if name == "now" {
 				if len(args) != 0 {
 					return nil, fmt.Errorf("now expects no arguments")
@@ -3570,6 +3602,10 @@ func Emit(prog *Program) []byte {
 	}
 	for _, d := range prog.Structs {
 		d.emit(&buf, 0)
+		buf.WriteString("\n")
+	}
+	for _, g := range prog.Globals {
+		g.emit(&buf, 0)
 		buf.WriteString("\n")
 	}
 	for _, f := range prog.Funcs {

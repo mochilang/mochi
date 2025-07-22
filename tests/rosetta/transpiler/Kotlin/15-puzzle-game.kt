@@ -15,6 +15,13 @@ fun _now(): Int {
     }
 }
 
+fun input(): String = readLine() ?: ""
+
+var board: MutableList<Int> = mutableListOf(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 0)
+val solved: MutableList<Int> = mutableListOf(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 0)
+var empty: Int = 15
+var moves: Int = 0
+var quit: Boolean = false
 fun randMove(): Int {
     return _now() % 4
 }
@@ -30,20 +37,20 @@ fun isSolved(): Boolean {
     return true
 }
 
-fun isValidMove(m: Int): MutableMap<String, any> {
+fun isValidMove(m: Int): MutableMap<String, Any> {
     if (m == 0) {
-        return mutableMapOf<String, Any>("idx" to empty - 4, "ok" to (empty / 4) > 0)
+        return mutableMapOf<String, Any>("idx" to (empty - 4), "ok" to ((empty / 4) > 0))
     }
     if (m == 1) {
-        return mutableMapOf<String, Any>("idx" to empty + 4, "ok" to (empty / 4) < 3)
+        return mutableMapOf<String, Any>("idx" to (empty + 4), "ok" to ((empty / 4) < 3))
     }
     if (m == 2) {
-        return mutableMapOf<String, Any>("idx" to empty + 1, "ok" to (empty % 4) < 3)
+        return mutableMapOf<String, Any>("idx" to (empty + 1), "ok" to ((empty % 4) < 3))
     }
     if (m == 3) {
-        return mutableMapOf<String, Any>("idx" to empty - 1, "ok" to (empty % 4) > 0)
+        return mutableMapOf<String, Any>("idx" to (empty - 1), "ok" to ((empty % 4) > 0))
     }
-    return mutableMapOf<String, Any>("idx" to 0, "ok" to false)
+    return mutableMapOf<String, Any>("idx" to (0), "ok" to (false))
 }
 
 fun doMove(m: Int): Boolean {
@@ -52,7 +59,7 @@ fun doMove(m: Int): Boolean {
         return false
     }
     val i: Int = empty
-    val j = int((r["idx"]!!))
+    val j = (r["idx"]!!) as Int
     val tmp: Int = (board[i] as Int)
     board[i] = (board[j] as Int)
     board[j] = tmp
@@ -95,12 +102,12 @@ fun printBoard(): Unit {
 
 fun playOneMove(): Unit {
     while (true) {
-        println(("Enter move #" + (moves + 1.toString()).toString()) + " (U, D, L, R, or Q): ")
-        val s = input()
+        println(("Enter move #" + ((moves + 1).toString()).toString()) + " (U, D, L, R, or Q): ")
+        val s: String = input()
         if (s == "") {
             continue
         }
-        val c = s.subList(0, 1)
+        val c = s.substring(0, 1)
         var m: Int = 0
         if ((c == "U") || (c == "u")) {
             m = 0
@@ -152,10 +159,5 @@ fun user_main(): Unit {
 }
 
 fun main() {
-    var board: MutableList<Int> = mutableListOf(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 0)
-    val solved: MutableList<Int> = mutableListOf(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 0)
-    var empty: Int = 15
-    var moves: Int = 0
-    var quit: Boolean = false
     user_main()
 }
