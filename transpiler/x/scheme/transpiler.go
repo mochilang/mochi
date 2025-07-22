@@ -19,6 +19,7 @@ var currentEnv *types.Env
 var breakStack []Symbol
 var continueStack []Node
 var gensymCounter int
+var needBase bool
 
 func pushLoop(breakSym Symbol, cont Node) {
 	breakStack = append(breakStack, breakSym)
@@ -155,11 +156,15 @@ func header() []byte {
 		}
 	}
 	loc, _ := time.LoadLocation("Asia/Bangkok")
-	prelude := `(define (to-str x)
+	prelude := ""
+	if needBase {
+		prelude += "(import (only (scheme base) call/cc))\n"
+	}
+	prelude += `(define (to-str x)
   (cond ((pair? x)
          (string-append "[" (string-join (map to-str x) ", ") "]"))
         ((string? x) x)
-        ((boolean? x) (if x "true" "false"))
+        ((boolean? x) (if x "1" "0"))
         (else (number->string x))))`
 	return []byte(fmt.Sprintf(";; Generated on %s\n%s\n",
 		ts.In(loc).Format("2006-01-02 15:04 -0700"), prelude))
@@ -232,6 +237,7 @@ func convertIfStmt(is *parser.IfStmt) (Node, error) {
 }
 
 func convertWhileStmt(ws *parser.WhileStmt) (Node, error) {
+	needBase = true
 	cond, err := convertParserExpr(ws.Cond)
 	if err != nil {
 		return nil, err
@@ -265,6 +271,7 @@ func convertWhileStmt(ws *parser.WhileStmt) (Node, error) {
 }
 
 func convertForStmt(fs *parser.ForStmt) (Node, error) {
+	needBase = true
 	prevEnv := currentEnv
 	currentEnv = types.NewEnv(currentEnv)
 	currentEnv.SetVar(fs.Name, types.AnyType{}, true)
@@ -479,6 +486,7 @@ func convertStmt(st *parser.Statement) (Node, error) {
 // print statements with string literals.
 func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	currentEnv = env
+	needBase = false
 	p := &Program{}
 	for _, st := range prog.Statements {
 		form, err := convertStmt(st)
