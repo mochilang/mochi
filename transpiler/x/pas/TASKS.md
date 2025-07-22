@@ -1,3 +1,6 @@
+## Progress (2025-07-22 22:49 +0700)
+- transpiler/erl: use index for Rosetta tests (progress 87/103)
+
 ## Progress (2025-07-22 15:38 UTC)
 - pascal rosetta tests use index (progress 87/103)
 
