@@ -1,3 +1,7 @@
+## Progress (2025-07-22 10:07 +0700)
+- Clean up Typescript for next round
+- Regenerated golden files - 94/102 vm valid programs passing
+
 ## Progress (2025-07-22 09:13 +0700)
 - feat(go): begin outer join support
 - Regenerated golden files - 93/102 vm valid programs passing
