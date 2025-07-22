@@ -2208,6 +2208,84 @@ func evalQueryExpr(q *parser.QueryExpr, env *compileEnv) (Expr, error) {
 		return out, nil
 	}
 
+	if len(q.Joins) == 1 && q.Joins[0].Side != nil && *q.Joins[0].Side == "left" && len(q.Froms) == 0 && q.Group == nil && q.Sort == nil && q.Skip == nil && q.Take == nil {
+		j := q.Joins[0]
+		leftSrc, err := toExpr(q.Source, env)
+		if err != nil {
+			return nil, err
+		}
+		left, ok := constList(leftSrc, env)
+		if !ok {
+			return nil, fmt.Errorf("unsupported query source")
+		}
+		rightSrc, err := toExpr(j.Src, env)
+		if err != nil {
+			return nil, err
+		}
+		right, ok := constList(rightSrc, env)
+		if !ok {
+			return nil, fmt.Errorf("unsupported join source")
+		}
+		out := &ListLit{}
+		env.vars[q.Var] = 0
+		env.vars[j.Var] = 0
+		for _, l := range left.Elems {
+			env.consts[env.current(q.Var)] = l
+			matched := false
+			for _, r := range right.Elems {
+				env.consts[env.current(j.Var)] = r
+				cond, err := toExpr(j.On, env)
+				if err != nil {
+					return nil, err
+				}
+				b, ok := cond.(*BoolLit)
+				if !ok || !b.Value {
+					continue
+				}
+				matched = true
+				if q.Where != nil {
+					wc, err := toExpr(q.Where, env)
+					if err != nil {
+						return nil, err
+					}
+					wb, ok := wc.(*BoolLit)
+					if !ok || !wb.Value {
+						continue
+					}
+				}
+				val, err := toExpr(q.Select, env)
+				if err != nil {
+					return nil, err
+				}
+				out.Elems = append(out.Elems, val)
+			}
+			if !matched {
+				env.consts[env.current(j.Var)] = &MapLit{}
+				if q.Where != nil {
+					wc, err := toExpr(q.Where, env)
+					if err != nil {
+						return nil, err
+					}
+					wb, ok := wc.(*BoolLit)
+					if !ok || !wb.Value {
+						delete(env.consts, env.current(j.Var))
+						continue
+					}
+				}
+				val, err := toExpr(q.Select, env)
+				if err != nil {
+					return nil, err
+				}
+				out.Elems = append(out.Elems, val)
+			}
+			delete(env.consts, env.current(j.Var))
+		}
+		delete(env.consts, env.current(q.Var))
+		delete(env.vars, q.Var)
+		delete(env.vars, j.Var)
+		return out, nil
+	}
+
 	if len(q.Joins) >= 1 && len(q.Froms) == 0 && q.Group == nil && q.Sort == nil && q.Skip == nil && q.Take == nil {
 		leftSrc, err := toExpr(q.Source, env)
 		if err != nil {
