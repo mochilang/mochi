@@ -1,9 +1,9 @@
-# Ruby Rosetta Transpiler Output (1/284)
-Last updated: 2025-07-22 15:41 UTC
+# Ruby Rosetta Transpiler Output (3/284)
+Last updated: 2025-07-22 16:04 UTC
 
   1. [x] 100-doors-2
-  2. [ ] 100-doors-3
-  3. [ ] 100-doors
+  2. [x] 100-doors-3
+  3. [x] 100-doors
   4. [ ] 100-prisoners
   5. [ ] 15-puzzle-game
   6. [ ] 15-puzzle-solver

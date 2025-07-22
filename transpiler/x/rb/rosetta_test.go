@@ -3,12 +3,12 @@
 package rb_test
 
 import (
+	"bufio"
 	"bytes"
 	"fmt"
 	"os"
 	"os/exec"
 	"path/filepath"
-	"sort"
 	"strconv"
 	"strings"
 	"testing"
@@ -83,6 +83,28 @@ func shouldUpdate() bool {
 	return false
 }
 
+func loadIndex(dir string) ([]string, error) {
+	path := filepath.Join(dir, "index.txt")
+	f, err := os.Open(path)
+	if err != nil {
+		return nil, err
+	}
+	defer f.Close()
+	var files []string
+	scan := bufio.NewScanner(f)
+	for scan.Scan() {
+		fields := strings.Fields(scan.Text())
+		if len(fields) != 2 {
+			continue
+		}
+		files = append(files, filepath.Join(dir, fields[1]))
+	}
+	if err := scan.Err(); err != nil {
+		return nil, err
+	}
+	return files, nil
+}
+
 func TestRubyTranspiler_Rosetta(t *testing.T) {
 	if _, err := exec.LookPath("ruby"); err != nil {
 		t.Skip("ruby not installed")
@@ -92,11 +114,13 @@ func TestRubyTranspiler_Rosetta(t *testing.T) {
 	outDir := filepath.Join(root, "tests", "rosetta", "transpiler", "rb")
 	os.MkdirAll(outDir, 0o755)
 	t.Cleanup(updateRosetta)
-	files, err := filepath.Glob(filepath.Join(srcDir, "*.mochi"))
+	files, err := loadIndex(srcDir)
 	if err != nil {
-		t.Fatalf("glob: %v", err)
+		t.Fatalf("load index: %v", err)
 	}
-	sort.Strings(files)
+	if len(files) == 0 {
+		t.Fatalf("no files in index")
+	}
 	if idxStr := os.Getenv("MOCHI_ROSETTA_INDEX"); idxStr != "" {
 		idx, err := strconv.Atoi(idxStr)
 		if err != nil || idx < 1 || idx > len(files) {
@@ -128,8 +152,7 @@ func updateRosetta() {
 	srcDir := filepath.Join(root, "tests", "rosetta", "x", "Mochi")
 	outDir := filepath.Join(root, "tests", "rosetta", "transpiler", "rb")
 	readmePath := filepath.Join(root, "transpiler", "x", "rb", "ROSETTA.md")
-	files, _ := filepath.Glob(filepath.Join(srcDir, "*.mochi"))
-	sort.Strings(files)
+	files, _ := loadIndex(srcDir)
 	total := len(files)
 	compiled := 0
 	var lines []string
