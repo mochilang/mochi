@@ -857,11 +857,11 @@ func (v *ValuesExpr) emit(w io.Writer) {
 type ListStringExpr struct{ List Expr }
 
 func (ls *ListStringExpr) emit(w io.Writer) {
-	usesJSON = true
 	usesStrings = true
-	io.WriteString(w, "func() string { b, _ := json.Marshal(")
+	usesPrint = true
+	io.WriteString(w, "func() string { var sb strings.Builder; sb.WriteByte('['); for i, v := range ")
 	ls.List.emit(w)
-	io.WriteString(w, `); s := string(b); s = strings.ReplaceAll(s, ":", ": "); s = strings.ReplaceAll(s, ",", ", "); s = strings.ReplaceAll(s, "}, {", "},{"); s = strings.ReplaceAll(s, "\"", "'"); return s }()`)
+	io.WriteString(w, " { if i > 0 { sb.WriteString(\", \") }; sb.WriteString(fmt.Sprint(v)) }; sb.WriteByte(']'); return sb.String() }()")
 }
 
 // StringJoinExpr joins a list of strings with spaces.
@@ -1529,7 +1529,6 @@ func compileStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 					if _, ok2 := tt.Elem.(types.StringType); ok2 {
 						ex = &StringJoinExpr{List: ex}
 					} else {
-						usesJSON = true
 						ex = &ListStringExpr{List: ex}
 					}
 				case types.StructType:
