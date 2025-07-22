@@ -80,6 +80,7 @@ func TestMain(m *testing.M) {
 	code := m.Run()
 	updateReadme()
 	updateTasks()
+	updateRosetta()
 	os.Exit(code)
 }
 
