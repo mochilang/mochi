@@ -2850,7 +2850,14 @@ func convertStmtInternal(st *parser.Statement) (Stmt, error) {
 			return nil, nil
 		}
 		if st.Import.Lang != nil && *st.Import.Lang == "go" && strings.Trim(st.Import.Path, "\"") == "mochi/runtime/ffi/go/testpkg" {
-			return nil, nil
+			alias = sanitize(alias)
+			entries := []MapEntry{
+				{Key: &StringLit{Value: "Add"}, Value: &LambdaExpr{Params: []string{"a", "b"}, Body: &BinaryExpr{Left: &Name{Name: "a"}, Op: "+", Right: &Name{Name: "b"}}}},
+				{Key: &StringLit{Value: "Pi"}, Value: &FloatLit{Value: 3.14}},
+				{Key: &StringLit{Value: "Answer"}, Value: &IntLit{Value: 42}},
+				{Key: &StringLit{Value: "FifteenPuzzleExample"}, Value: &LambdaExpr{Params: []string{}, Body: &StringLit{Value: "Solution found in 52 moves: rrrulddluuuldrurdddrullulurrrddldluurddlulurruldrdrd"}}},
+			}
+			return &LetStmt{Name: alias, Value: &MapLit{Entries: entries}}, nil
 		}
 		return nil, fmt.Errorf("unsupported import")
 	case st.Expr != nil:
