@@ -1,3 +1,7 @@
+## Progress (2025-07-22 09:13 +0700)
+- feat(go): begin outer join support
+- Regenerated golden files - 93/102 vm valid programs passing
+
 ## Progress (2025-07-22 08:47 +0700)
 - docs(go): update progress
 - Regenerated golden files - 93/101 vm valid programs passing

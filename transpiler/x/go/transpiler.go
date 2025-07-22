@@ -2232,6 +2232,8 @@ func boolExprFor(e Expr, t types.Type) Expr {
 		return e
 	}
 	switch t.(type) {
+	case types.OptionType:
+		return &BinaryExpr{Left: e, Op: "!=", Right: &VarRef{Name: "nil"}}
 	case types.IntType, types.Int64Type, types.BigIntType,
 		types.FloatType, types.BigRatType:
 		return &BinaryExpr{Left: e, Op: "!=", Right: &IntLit{Value: 0}}
@@ -2556,6 +2558,9 @@ func compilePostfix(pf *parser.PostfixExpr, env *types.Env, base string) (Expr, 
 				} else {
 					t = types.AnyType{}
 				}
+			case types.OptionType:
+				expr = &FieldExpr{X: expr, Name: toGoFieldName(f)}
+				t = tt.Elem
 			case types.GroupType:
 				if f == "key" {
 					expr = &FieldExpr{X: expr, Name: "Key"}
@@ -2568,11 +2573,7 @@ func compilePostfix(pf *parser.PostfixExpr, env *types.Env, base string) (Expr, 
 					t = types.AnyType{}
 				}
 			default:
-				if types.IsAnyType(t) {
-					expr = &IndexExpr{X: &AssertExpr{Expr: expr, Type: "map[string]any"}, Index: &StringLit{Value: f}}
-				} else {
-					expr = &FieldExpr{X: expr, Name: f}
-				}
+				expr = &FieldExpr{X: expr, Name: toGoFieldName(f)}
 				t = types.AnyType{}
 			}
 		}
@@ -2716,6 +2717,9 @@ func compilePostfix(pf *parser.PostfixExpr, env *types.Env, base string) (Expr, 
 				} else {
 					t = types.AnyType{}
 				}
+			case types.OptionType:
+				expr = &FieldExpr{X: expr, Name: op.Field.Name}
+				t = tt.Elem
 			default:
 				// when type information is unknown, assume map access to
 				// avoid generating invalid struct field references
