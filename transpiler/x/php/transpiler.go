@@ -399,6 +399,12 @@ type IntDivExpr struct {
 	Right Expr
 }
 
+// SumExpr represents summation of all elements in a list.
+type SumExpr struct {
+	List Expr
+	Uses []string
+}
+
 type Var struct{ Name string }
 
 type IntLit struct{ Value int }
@@ -1069,6 +1075,23 @@ func (d *IntDivExpr) emit(w io.Writer) {
 	io.WriteString(w, ", ")
 	d.Right.emit(w)
 	io.WriteString(w, ")")
+}
+
+func (s *SumExpr) emit(w io.Writer) {
+	io.WriteString(w, "(function()")
+	if len(s.Uses) > 0 {
+		io.WriteString(w, " use (")
+		for i, u := range s.Uses {
+			if i > 0 {
+				io.WriteString(w, ", ")
+			}
+			fmt.Fprintf(w, "$%s", u)
+		}
+		io.WriteString(w, ")")
+	}
+	io.WriteString(w, " { $s = 0; foreach (")
+	s.List.emit(w)
+	io.WriteString(w, " as $_v) { $s += $_v; } return $s; })()")
 }
 
 func (u *UnaryExpr) emit(w io.Writer) {
@@ -2235,6 +2258,12 @@ func convertQueryExpr(q *parser.QueryExpr) (Expr, error) {
 	if len(funcStack) == 0 {
 		uses = append(uses, globalNames...)
 	}
+	if c, ok := sel.(*CallExpr); ok && c.Func == "array_sum" && len(c.Args) == 1 {
+		if v, ok2 := c.Args[0].(*Var); ok2 && v.Name == q.Var && len(q.Froms) == 0 && len(q.Joins) == 0 && q.Sort == nil && q.Skip == nil && q.Take == nil && !q.Distinct {
+			qexpr := &QueryExpr{Loops: loops, Where: where, Select: &Var{Name: q.Var}, Uses: uses}
+			return &SumExpr{List: qexpr, Uses: uses}, nil
+		}
+	}
 	return &QueryExpr{Loops: loops, Where: where, Select: sel, Uses: uses}, nil
 }
 
@@ -2847,6 +2876,8 @@ func exprNode(e Expr) *ast.Node {
 		return n
 	case *GroupExpr:
 		return &ast.Node{Kind: "group", Children: []*ast.Node{exprNode(ex.X)}}
+	case *SumExpr:
+		return &ast.Node{Kind: "sum", Children: []*ast.Node{exprNode(ex.List)}}
 	case *IntDivExpr:
 		return &ast.Node{Kind: "intdiv", Children: []*ast.Node{exprNode(ex.Left), exprNode(ex.Right)}}
 	case *SubstringExpr:

@@ -1,10 +1,12 @@
 <?php
 $nums = [1, 2, 3];
-$result = [];
-foreach ($nums as $n) {
-  if ($n > 1) {
-    $result[] = array_sum($n);
+$result = (function() use ($nums) { $s = 0; foreach ((function() use ($nums) {
+  $result = [];
+  foreach ($nums as $n) {
+    if ($n > 1) {
+      $result[] = $n;
+    }
   }
-}
-
-echo (is_float($result) ? json_encode($result, 1344) : $result), PHP_EOL;
+  return $result;
+})() as $_v) { $s += $_v; } return $s; })();
+echo str_replace("false", "False", str_replace("true", "True", str_replace("\"", "'", str_replace(":", ": ", str_replace(",", ", ", json_encode($result, 1344)))))), PHP_EOL;
