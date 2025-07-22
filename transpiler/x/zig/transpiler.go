@@ -676,7 +676,7 @@ func (s *PrintStmt) emit(w io.Writer, indent int) {
 			if t.Map {
 				fmtSpec[i] = "{s}"
 			} else {
-				fmtSpec[i] = "{c}"
+				fmtSpec[i] = "{d}"
 			}
 		case *StringLit:
 			fmtSpec[i] = "{s}"
@@ -2239,12 +2239,15 @@ func compileStmt(s *parser.Statement, prog *parser.Program) (Stmt, error) {
 		return &FieldAssignStmt{Target: target, Name: fieldName, Value: val}, nil
 	case s.Assign != nil && len(s.Assign.Index) > 0 && len(s.Assign.Field) == 0:
 		target := Expr(&VarRef{Name: s.Assign.Name, Map: mapVars[s.Assign.Name]})
+		imap := mapVars[s.Assign.Name]
 		for _, idx := range s.Assign.Index {
 			ix, err := compileExpr(idx.Start)
 			if err != nil {
 				return nil, err
 			}
-			target = &IndexExpr{Target: target, Index: ix, Map: true}
+			target = &IndexExpr{Target: target, Index: ix, Map: imap}
+			// subsequent indexes default to list access
+			imap = false
 		}
 		val, err := compileExpr(s.Assign.Value)
 		if err != nil {

@@ -2,9 +2,9 @@
 
 Generated Zig code for the Mochi VM valid tests lives under `tests/transpiler/x/zig`.
 
-Last updated: 2025-07-22 06:19 +0700
+Last updated: 2025-07-22 09:03 +0700
 
-## VM Golden Test Checklist (91/101)
+## VM Golden Test Checklist (91/102)
 - [x] append_builtin.mochi
 - [x] avg_builtin.mochi
 - [x] basic_compare.mochi
@@ -56,6 +56,7 @@ Last updated: 2025-07-22 06:19 +0700
 - [x] list_index.mochi
 - [x] list_nested_assign.mochi
 - [x] list_set_ops.mochi
+- [ ] load_jsonl.mochi
 - [ ] load_yaml.mochi
 - [x] map_assign.mochi
 - [x] map_in_operator.mochi
