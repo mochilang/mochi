@@ -257,22 +257,6 @@ func mapFieldType(typ, field string) (string, bool) {
 }
 
 func isDynamicMapType(typ string) bool {
-	if strings.HasPrefix(typ, "map{") && strings.HasSuffix(typ, "}") {
-		inner := strings.TrimSuffix(strings.TrimPrefix(typ, "map{"), "}")
-		parts := strings.Split(inner, ",")
-		var base string
-		for _, p := range parts {
-			kv := strings.SplitN(p, ":", 2)
-			if len(kv) != 2 {
-				continue
-			}
-			if base == "" {
-				base = kv[1]
-			} else if kv[1] != base {
-				return true
-			}
-		}
-	}
 	return false
 }
 
@@ -980,13 +964,13 @@ func emitQueryLoop(w io.Writer, loops []queryLoop, sel Expr, where Expr, idx int
 		}
 		return
 	}
-	io.WriteString(w, "(List.concat (List.map (fun ")
+	io.WriteString(w, "(List.concat_map (fun ")
 	io.WriteString(w, loop.Name)
 	io.WriteString(w, " -> ")
 	emitQueryLoop(w, loops, sel, where, idx+1)
 	io.WriteString(w, ") ")
 	loop.Src.emit(w)
-	io.WriteString(w, "))")
+	io.WriteString(w, ")")
 }
 
 func (q *QueryExpr) emit(w io.Writer) {
@@ -2269,8 +2253,6 @@ func convertPrimary(p *parser.Primary, env *types.Env, vars map[string]VarInfo) 
 	case p.Map != nil:
 		items := make([]MapEntry, len(p.Map.Items))
 		fieldTypes := []string{}
-		var firstType string
-		dynamic := false
 		for i, it := range p.Map.Items {
 			k, _, err := convertExpr(it.Key, env, vars)
 			if err != nil {
@@ -2283,11 +2265,7 @@ func convertPrimary(p *parser.Primary, env *types.Env, vars map[string]VarInfo) 
 			if err != nil {
 				return nil, "", err
 			}
-			if i == 0 {
-				firstType = vt
-			} else if vt != firstType {
-				dynamic = true
-			}
+			_ = vt
 			if ks, ok := k.(*StringLit); ok {
 				fieldTypes = append(fieldTypes, ks.Value+":"+vt)
 			} else {
@@ -2298,9 +2276,6 @@ func convertPrimary(p *parser.Primary, env *types.Env, vars map[string]VarInfo) 
 		typ := "map"
 		if fieldTypes != nil {
 			typ = "map{" + strings.Join(fieldTypes, ",") + "}"
-		}
-		if dynamic {
-			return &MapLit{Items: items, Dynamic: true}, typ, nil
 		}
 		return &MapLit{Items: items}, typ, nil
 	case p.Query != nil:
