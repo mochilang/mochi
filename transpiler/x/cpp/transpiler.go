@@ -1507,6 +1507,9 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	var globals []Stmt
 	for _, stmt := range prog.Statements {
 		switch {
+		case stmt.Test != nil:
+			// ignore test blocks
+			continue
 		case stmt.Fun != nil:
 			fn, err := convertFun(stmt.Fun)
 			if err != nil {
