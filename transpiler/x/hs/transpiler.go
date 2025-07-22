@@ -664,6 +664,34 @@ func (f *ForStmt) emit(w io.Writer) {
 	writeIndent(w)
 	io.WriteString(w, "mapM_ (\\")
 	io.WriteString(w, safeName(f.Name))
+	if len(f.Body) == 1 {
+		if ps, ok := f.Body[0].(*PrintStmt); ok {
+			io.WriteString(w, " ->\n")
+			pushIndent()
+			ps.emit(w)
+			io.WriteString(w, "\n")
+			popIndent()
+			writeIndent(w)
+			io.WriteString(w, ") ")
+			if f.To != nil {
+				io.WriteString(w, "[")
+				f.From.emit(w)
+				io.WriteString(w, " .. (")
+				f.To.emit(w)
+				io.WriteString(w, " - 1)]")
+				return
+			}
+			if isMapExpr(f.From) {
+				needDataMap = true
+				io.WriteString(w, "(Map.keys ")
+				f.From.emit(w)
+				io.WriteString(w, ")")
+			} else {
+				f.From.emit(w)
+			}
+			return
+		}
+	}
 	io.WriteString(w, " -> do\n")
 	pushIndent()
 	for _, st := range f.Body {
