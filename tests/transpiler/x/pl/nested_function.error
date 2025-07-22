@@ -1,0 +1,2 @@
+ERROR: /workspace/mochi/tests/transpiler/x/pl/nested_function.pl:1: Initialization goal raised exception:
+ERROR: outer/2: Unknown procedure: inner/2
