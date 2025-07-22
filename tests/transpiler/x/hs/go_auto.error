@@ -1,7 +1,0 @@
-run: exit status 1
-
-/workspace/mochi/tests/transpiler/x/hs/go_auto.hs:7:20: error:
-    parse error on input ‘Add’
-  |
-7 |     print (testpkg.Add 2 3)
-  |                    ^^^
