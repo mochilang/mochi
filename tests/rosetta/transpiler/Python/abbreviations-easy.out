@@ -1,10 +1,2 @@
-Traceback (most recent call last):
-  File "/workspace/mochi/tests/rosetta/transpiler/Python/abbreviations-easy.py", line 85, in <module>
-    main()
-  File "/workspace/mochi/tests/rosetta/transpiler/Python/abbreviations-easy.py", line 77, in main
-    results = validate(commands, words, mins)
-              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/workspace/mochi/tests/rosetta/transpiler/Python/abbreviations-easy.py", line 48, in validate
-    c = upper(cmd)
-        ^^^^^
-NameError: name 'upper' is not defined. Did you mean: 'super'?
+user words:  riG   rePEAT copies  put mo   rest    types   fup.    6       poweRin    
+full words:  RIGHT REPEAT *error* PUT MOVE RESTORE *error* *error* *error* POWERINPUT
