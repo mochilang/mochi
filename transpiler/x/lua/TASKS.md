@@ -1,4 +1,3 @@
-## Progress (2025-07-22 06:19 GMT+7)
-- 91/101 VM tests passing
-- Implemented pass-by-value for struct parameters
-- Updated README checklist automatically
+## Progress (2025-07-22 06:41 GMT+7)
+- 92/101 VM tests passing
+- Added float literal support
