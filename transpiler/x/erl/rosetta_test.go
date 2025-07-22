@@ -89,20 +89,17 @@ func runRosetta(t *testing.T, srcPath, name, outDir string) {
 	prog, err := parser.Parse(srcPath)
 	if err != nil {
 		_ = os.WriteFile(errFile, []byte(fmt.Sprintf("parse error: %v", err)), 0o644)
-		t.Skip("parse error")
-		return
+		t.Fatalf("parse: %v", err)
 	}
 	env := types.NewEnv(nil)
 	if errs := types.Check(prog, env); len(errs) > 0 {
 		_ = os.WriteFile(errFile, []byte(fmt.Sprintf("type error: %v", errs[0])), 0o644)
-		t.Skip("type error")
-		return
+		t.Fatalf("type: %v", errs[0])
 	}
 	ast, err := erl.Transpile(prog, env)
 	if err != nil {
 		_ = os.WriteFile(errFile, []byte(fmt.Sprintf("transpile error: %v", err)), 0o644)
-		t.Skip("transpile error")
-		return
+		t.Fatalf("transpile: %v", err)
 	}
 	code := ast.Emit()
 	if updateEnabled() {
@@ -124,7 +121,7 @@ func runRosetta(t *testing.T, srcPath, name, outDir string) {
 		if updateEnabled() {
 			_ = os.WriteFile(errFile, append([]byte(err.Error()+"\n"), buf.Bytes()...), 0o644)
 		}
-		return
+		t.Fatalf("run: %v", err)
 	}
 	got := bytes.TrimSpace(buf.Bytes())
 	if updateEnabled() {
