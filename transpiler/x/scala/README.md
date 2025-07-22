@@ -2,8 +2,8 @@
 
 Generated Scala code for programs in `tests/vm/valid`. Each program has a `.scala` file produced by the transpiler and a `.out` file with its runtime output. Compilation or execution errors are captured in `.error` files.
 
-## Golden Test Checklist (82/102)
-_Last updated: 2025-07-22 15:57 +0700_
+## Golden Test Checklist (84/103)
+_Last updated: 2025-07-22 16:36 +0700_
 
 - [x] append_builtin
 - [x] avg_builtin
@@ -55,7 +55,7 @@ _Last updated: 2025-07-22 15:57 +0700_
 - [x] list_assign
 - [x] list_index
 - [x] list_nested_assign
-- [x] list_set_ops
+- [ ] list_set_ops
 - [x] load_jsonl
 - [x] load_yaml
 - [x] map_assign
@@ -70,22 +70,23 @@ _Last updated: 2025-07-22 15:57 +0700_
 - [x] math_ops
 - [x] membership
 - [x] min_max_builtin
+- [ ] mix_go_python
 - [x] nested_function
-- [ ] order_by_map
+- [x] order_by_map
 - [ ] outer_join
-- [ ] partial_application
+- [x] partial_application
 - [x] print_hello
 - [x] pure_fold
 - [ ] pure_global_fold
 - [ ] python_auto
 - [ ] python_math
 - [ ] query_sum_select
-- [ ] record_assign
+- [x] record_assign
 - [ ] right_join
 - [ ] save_jsonl_stdout
 - [x] short_circuit
 - [x] slice
-- [ ] sort_stable
+- [x] sort_stable
 - [x] str_builtin
 - [x] string_compare
 - [x] string_concat
@@ -103,7 +104,7 @@ _Last updated: 2025-07-22 15:57 +0700_
 - [x] typed_var
 - [x] unary_neg
 - [ ] update_stmt
-- [x] user_type_literal
+- [ ] user_type_literal
 - [ ] values_builtin
 - [x] var_assignment
 - [x] while_loop

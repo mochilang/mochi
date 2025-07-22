@@ -527,6 +527,7 @@ func (l *ListLit) emit(w io.Writer) {
 type MapEntry struct {
 	Key   Expr
 	Value Expr
+	Type  string
 }
 
 // MapLit represents a simple map literal using Scala's Map.
@@ -792,7 +793,29 @@ func (q *QueryExpr) emit(w io.Writer) {
 		fmt.Fprint(w, " }")
 	}
 	if q.Sort != nil {
-		fmt.Fprint(w, " }; var _res = _tmp.sortBy(_._1).map(_._2)")
+		fmt.Fprint(w, " }; var _res = _tmp.sortBy(")
+		if ml, ok := q.Sort.(*MapLit); ok {
+			fmt.Fprint(w, "t => (")
+			for i, it := range ml.Items {
+				if i > 0 {
+					fmt.Fprint(w, ", ")
+				}
+				fmt.Fprint(w, "t._1(")
+				it.Key.emit(w)
+				fmt.Fprint(w, ")")
+				typ := it.Type
+				if typ == "" {
+					typ = inferType(it.Value)
+				}
+				if typ != "" && typ != "Any" {
+					fmt.Fprintf(w, ".asInstanceOf[%s]", typ)
+				}
+			}
+			fmt.Fprint(w, ")")
+		} else {
+			fmt.Fprint(w, "_._1")
+		}
+		fmt.Fprint(w, ").map(_._2)")
 	} else {
 		fmt.Fprint(w, " }")
 	}
@@ -1108,7 +1131,9 @@ func convertStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 				}
 				variants = append(variants, Variant{Name: v.Name, Fields: fields})
 			}
-			return &TypeDeclStmt{Name: st.Type.Name, Variants: variants}, nil
+			td := &TypeDeclStmt{Name: st.Type.Name, Variants: variants}
+			typeDecls = append(typeDecls, td)
+			return nil, nil
 		}
 		td := &TypeDeclStmt{Name: st.Type.Name}
 		for _, m := range st.Type.Members {
@@ -1116,7 +1141,8 @@ func convertStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 				td.Fields = append(td.Fields, Param{Name: m.Field.Name, Type: toScalaType(m.Field.Type)})
 			}
 		}
-		return td, nil
+		typeDecls = append(typeDecls, td)
+		return nil, nil
 	case st.Assign != nil:
 		target := Expr(&Name{Name: st.Assign.Name})
 		if len(st.Assign.Index) > 0 {
@@ -1522,7 +1548,7 @@ func convertPrimary(p *parser.Primary, env *types.Env) (Expr, error) {
 			if err != nil {
 				return nil, err
 			}
-			entries[i] = MapEntry{Key: k, Value: v}
+			entries[i] = MapEntry{Key: k, Value: v, Type: inferTypeWithEnv(v, env)}
 		}
 		return &MapLit{Items: entries}, nil
 	case p.Load != nil:
@@ -1659,10 +1685,13 @@ func convertCall(c *parser.CallExpr, env *types.Env) (Expr, error) {
 			if len(args) < len(fn.Params) {
 				missing := fn.Params[len(args):]
 				params := make([]Param, len(missing))
+				callArgs := make([]Expr, 0, len(fn.Params))
+				callArgs = append(callArgs, args...)
 				for i, p := range missing {
 					params[i] = Param{Name: p.Name, Type: toScalaType(p.Type)}
+					callArgs = append(callArgs, &Name{Name: p.Name})
 				}
-				call := &CallExpr{Fn: &Name{Name: name}, Args: args}
+				call := &CallExpr{Fn: &Name{Name: name}, Args: callArgs}
 				return &FunExpr{Params: params, Expr: call}, nil
 			}
 		}
@@ -1798,6 +1827,9 @@ func convertRightJoinQuery(q *parser.QueryExpr, env *types.Env) (Expr, error) {
 	if err != nil {
 		return nil, err
 	}
+	genv := types.NewEnv(child)
+	genv.SetVar(q.Var, types.AnyType{}, true)
+	genv.SetVar(j.Var, types.AnyType{}, true)
 	if ml := mapLiteral(q.Select); ml != nil {
 		if st, ok := types.InferStructFromMapEnv(ml, child); ok {
 			name := types.UniqueStructName("QueryItem", env, nil)
@@ -2096,7 +2128,7 @@ func convertGroupQuery(q *parser.QueryExpr, env *types.Env) (Expr, error) {
 		if err != nil {
 			return nil, err
 		}
-		sortType = inferType(sortExpr)
+		sortType = inferTypeWithEnv(sortExpr, genv)
 		if sortType == "" {
 			sortType = toScalaTypeFromType(types.ExprType(q.Sort, genv))
 		}
@@ -2186,7 +2218,7 @@ func convertQueryExpr(q *parser.QueryExpr, env *types.Env) (Expr, error) {
 		if err != nil {
 			return nil, err
 		}
-		sortType = inferType(sort)
+		sortType = inferTypeWithEnv(sort, child)
 		if sortType == "" {
 			sortType = toScalaTypeFromType(types.ExprType(q.Sort, child))
 		}
@@ -2586,9 +2618,24 @@ func inferTypeWithEnv(e Expr, env *types.Env) string {
 	if t := inferType(e); t != "" {
 		return t
 	}
-	if n, ok := e.(*Name); ok && env != nil {
-		if typ, err := env.GetVar(n.Name); err == nil {
-			return toScalaTypeFromType(typ)
+	if env != nil {
+		switch ex := e.(type) {
+		case *Name:
+			if typ, err := env.GetVar(ex.Name); err == nil {
+				return toScalaTypeFromType(typ)
+			}
+		case *FieldExpr:
+			if n, ok := ex.Receiver.(*Name); ok {
+				if t, err := env.GetVar(n.Name); err == nil {
+					if st, ok := t.(types.StructType); ok {
+						if def, ok := env.GetStruct(st.Name); ok {
+							if ft, ok := def.Fields[ex.Name]; ok {
+								return toScalaTypeFromType(ft)
+							}
+						}
+					}
+				}
+			}
 		}
 	}
 	return ""
@@ -2881,7 +2928,8 @@ func valueToExpr(v interface{}, typ *parser.TypeRef, env *types.Env) Expr {
 		sort.Strings(keys)
 		items := make([]MapEntry, len(keys))
 		for i, k := range keys {
-			items[i] = MapEntry{Key: &StringLit{Value: k}, Value: valueToExpr(val[k], nil, env)}
+			v := valueToExpr(val[k], nil, env)
+			items[i] = MapEntry{Key: &StringLit{Value: k}, Value: v, Type: inferTypeWithEnv(v, env)}
 		}
 		return &MapLit{Items: items}
 	case []interface{}:
