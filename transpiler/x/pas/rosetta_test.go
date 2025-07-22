@@ -3,12 +3,12 @@
 package pas_test
 
 import (
+	"bufio"
 	"bytes"
 	"fmt"
 	"os"
 	"os/exec"
 	"path/filepath"
-	"sort"
 	"strconv"
 	"strings"
 	"testing"
@@ -101,42 +101,49 @@ func runRosettaCase(t *testing.T, name string) {
 }
 
 func listRosettaPrograms(t *testing.T) []string {
-        t.Helper()
-        root := repoRootRosetta(t)
-        pattern := filepath.Join(root, "tests", "rosetta", "x", "Mochi", "*.mochi")
-        files, err := filepath.Glob(pattern)
-        if err != nil {
-                t.Fatalf("glob: %v", err)
-        }
-        sort.Strings(files)
-        programs := make([]string, len(files))
-        for i, f := range files {
-                programs[i] = strings.TrimSuffix(filepath.Base(f), ".mochi")
-        }
-        return programs
+	t.Helper()
+	root := repoRootRosetta(t)
+	indexPath := filepath.Join(root, "tests", "rosetta", "x", "Mochi", "index.txt")
+	f, err := os.Open(indexPath)
+	if err != nil {
+		t.Fatalf("open index: %v", err)
+	}
+	defer f.Close()
+	scanner := bufio.NewScanner(f)
+	var names []string
+	for scanner.Scan() {
+		parts := strings.Fields(scanner.Text())
+		if len(parts) == 2 {
+			names = append(names, strings.TrimSuffix(parts[1], ".mochi"))
+		}
+	}
+	if err := scanner.Err(); err != nil {
+		t.Fatalf("read index: %v", err)
+	}
+	return names
 }
 
 func TestPascalTranspiler_Rosetta(t *testing.T) {
-        if _, err := exec.LookPath("fpc"); err != nil {
-                t.Skip("fpc not installed")
-        }
-        programs := listRosettaPrograms(t)
-        if len(programs) == 0 {
-                t.Fatalf("no rosetta programs found")
-        }
+	if _, err := exec.LookPath("fpc"); err != nil {
+		t.Skip("fpc not installed")
+	}
+	programs := listRosettaPrograms(t)
+	if len(programs) == 0 {
+		t.Fatalf("no rosetta programs found")
+	}
 
-        idx := 1
-        if v := os.Getenv("ROSETTA_INDEX"); v != "" {
-                if n, err := strconv.Atoi(v); err == nil {
-                        idx = n
-                }
-        }
-        if idx < 1 || idx > len(programs) {
-                t.Fatalf("index %d out of range (1-%d)", idx, len(programs))
-        }
-        name := programs[idx-1]
-        t.Logf("running %s (index %d)", name, idx)
-        runRosettaCase(t, name)
+	idx := 1
+	if v := os.Getenv("ROSETTA_INDEX"); v != "" {
+		if n, err := strconv.Atoi(v); err == nil {
+			idx = n
+		}
+	}
+	if idx < 1 || idx > len(programs) {
+		t.Fatalf("index %d out of range (1-%d)", idx, len(programs))
+	}
+	name := programs[idx-1]
+	t.Logf("running %s (index %d)", name, idx)
+	runRosettaCase(t, name)
 }
 
 func updateRosettaChecklist() {
@@ -145,13 +152,27 @@ func updateRosettaChecklist() {
 	outDir := filepath.Join(root, "tests", "rosetta", "transpiler", "Pascal")
 	readmePath := filepath.Join(root, "transpiler", "x", "pas", "ROSETTA.md")
 
-	files, _ := filepath.Glob(filepath.Join(srcDir, "*.mochi"))
-	sort.Strings(files)
-	total := len(files)
+	indexPath := filepath.Join(srcDir, "index.txt")
+	f, err := os.Open(indexPath)
+	if err != nil {
+		return
+	}
+	defer f.Close()
+	scanner := bufio.NewScanner(f)
+	var names []string
+	for scanner.Scan() {
+		parts := strings.Fields(scanner.Text())
+		if len(parts) == 2 {
+			names = append(names, strings.TrimSuffix(parts[1], ".mochi"))
+		}
+	}
+	if err := scanner.Err(); err != nil {
+		return
+	}
+	total := len(names)
 	completed := 0
 	var lines []string
-	for _, f := range files {
-		name := strings.TrimSuffix(filepath.Base(f), ".mochi")
+	for _, name := range names {
 		mark := "[ ]"
 		if _, err := os.Stat(filepath.Join(outDir, name+".out")); err == nil {
 			if _, err2 := os.Stat(filepath.Join(outDir, name+".error")); os.IsNotExist(err2) {
