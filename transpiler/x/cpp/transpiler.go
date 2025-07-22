@@ -328,6 +328,7 @@ type RightJoinComp struct {
 	LeftIter  Expr
 	RightVar  string
 	RightIter Expr
+	RightType string
 	LeftType  string
 	InnerType string
 	Cond      Expr
@@ -1155,16 +1156,34 @@ func (rjc *RightJoinComp) emit(w io.Writer) {
 	io.WriteString(w, "            __matched = true;\n")
 	io.WriteString(w, "            { std::optional<"+rjc.InnerType+"> "+rjc.LeftVar+"_opt("+rjc.LeftVar+");\n")
 	io.WriteString(w, "            auto "+rjc.LeftVar+" = "+rjc.LeftVar+"_opt;\n")
+	old := localTypes
+	nt := map[string]string{}
+	for k, v := range old {
+		nt[k] = v
+	}
+	nt[rjc.LeftVar] = fmt.Sprintf("std::optional<%s>", rjc.InnerType)
+	nt[rjc.RightVar] = rjc.RightType
+	localTypes = nt
 	io.WriteString(w, "            __items.push_back(")
 	rjc.Body.emit(w)
 	io.WriteString(w, "); }\n")
+	localTypes = old
 	io.WriteString(w, "        }\n")
 	io.WriteString(w, "    }\n")
 	io.WriteString(w, "    if(!__matched) {\n")
 	io.WriteString(w, "        std::optional<"+rjc.InnerType+"> "+rjc.LeftVar+" = std::nullopt;\n")
+	old2 := localTypes
+	nt2 := map[string]string{}
+	for k, v := range old2 {
+		nt2[k] = v
+	}
+	nt2[rjc.LeftVar] = fmt.Sprintf("std::optional<%s>", rjc.InnerType)
+	nt2[rjc.RightVar] = rjc.RightType
+	localTypes = nt2
 	io.WriteString(w, "        __items.push_back(")
 	rjc.Body.emit(w)
 	io.WriteString(w, ");\n")
+	localTypes = old2
 	io.WriteString(w, "    }\n")
 	io.WriteString(w, "}\n")
 	io.WriteString(w, "return __items; }())")
@@ -3308,6 +3327,7 @@ func convertRightJoinQuery(q *parser.QueryExpr, target string) (Expr, *StructDef
 			rightType = t
 		}
 	}
+	optRightType := fmt.Sprintf("std::optional<%s>", rightType)
 	optLeftType := fmt.Sprintf("std::optional<%s>", leftType)
 	qTypes := map[string]string{q.Var: leftType, j.Var: rightType}
 	oldTypes := localTypes
@@ -3353,6 +3373,10 @@ func convertRightJoinQuery(q *parser.QueryExpr, target string) (Expr, *StructDef
 							typ = t
 						}
 					}
+					if vr, ok := ml.Values[i].(*VarRef); ok && vr.Name == j.Var {
+						typ = optRightType
+						ml.Values[i] = &CallExpr{Name: optRightType, Args: []Expr{vr}}
+					}
 					fields[i] = Param{Name: k, Type: typ}
 					flds[i] = FieldLit{Name: k, Value: ml.Values[i]}
 				}
@@ -3367,7 +3391,7 @@ func convertRightJoinQuery(q *parser.QueryExpr, target string) (Expr, *StructDef
 		currentProgram.addInclude("<vector>")
 		currentProgram.addInclude("<optional>")
 	}
-	return &RightJoinComp{LeftVar: q.Var, LeftIter: leftIter, RightVar: j.Var, RightIter: rightIter, LeftType: optLeftType, InnerType: leftType, Cond: cond, Body: body, ElemType: elemType}, def, elemType, nil
+	return &RightJoinComp{LeftVar: q.Var, LeftIter: leftIter, RightVar: j.Var, RightIter: rightIter, RightType: rightType, LeftType: optLeftType, InnerType: leftType, Cond: cond, Body: body, ElemType: elemType}, def, elemType, nil
 }
 
 func convertOuterJoinQuery(q *parser.QueryExpr, target string) (Expr, *StructDef, string, error) {
@@ -3818,6 +3842,9 @@ func inferStructFromList(name string, l *ListLit) (*StructDef, string, bool) {
 }
 
 func structFieldType(stName, field string) string {
+	if strings.HasPrefix(stName, "std::optional<") && strings.HasSuffix(stName, ">") {
+		stName = strings.TrimSuffix(strings.TrimPrefix(stName, "std::optional<"), ">")
+	}
 	if currentProgram != nil {
 		for _, st := range currentProgram.Structs {
 			if st.Name == stName {
