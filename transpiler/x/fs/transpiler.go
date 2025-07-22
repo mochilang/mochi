@@ -398,6 +398,16 @@ func (l *LoadYamlExpr) emit(w io.Writer) {
 	fmt.Fprintf(w, "(let deserializer = DeserializerBuilder().Build()\n    let yamlText = File.ReadAllText(%q)\n    deserializer.Deserialize<%s list>(yamlText))", l.Path, l.Type)
 }
 
+// LoadJSONLExpr represents loading a JSONL file at runtime.
+type LoadJSONLExpr struct {
+	Path string
+	Type string
+}
+
+func (l *LoadJSONLExpr) emit(w io.Writer) {
+	fmt.Fprintf(w, "(File.ReadLines(%q) |> Seq.map (fun line -> JsonSerializer.Deserialize<%s>(line)) |> Seq.toList)", l.Path, l.Type)
+}
+
 // SaveJSONLExpr writes a list of records to stdout as JSON lines.
 type SaveJSONLExpr struct{ Src Expr }
 
@@ -2014,6 +2024,38 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 		}
 		return &StructLit{Name: p.Struct.Name, Fields: fields}, nil
 	case p.Map != nil:
+		if transpileEnv != nil {
+			if st, ok := types.InferStructFromMapEnv(p.Map, transpileEnv); ok {
+				structCount++
+				name := fmt.Sprintf("Anon%d", structCount)
+				addStructDef(name, st)
+				fields := make([]StructFieldExpr, len(p.Map.Items))
+				for i, it := range p.Map.Items {
+					v, err := convertExpr(it.Value)
+					if err != nil {
+						return nil, err
+					}
+					key, _ := types.SimpleStringKey(it.Key)
+					fields[i] = StructFieldExpr{Name: key, Value: v}
+				}
+				return &StructLit{Name: name, Fields: fields}, nil
+			}
+			if fields, ok := inferStructFromMapVars(p.Map); ok {
+				structCount++
+				name := fmt.Sprintf("Anon%d", structCount)
+				structDefs = append(structDefs, StructDef{Name: name, Fields: fields})
+				vals := make([]StructFieldExpr, len(p.Map.Items))
+				for i, it := range p.Map.Items {
+					v, err := convertExpr(it.Value)
+					if err != nil {
+						return nil, err
+					}
+					key, _ := types.SimpleStringKey(it.Key)
+					vals[i] = StructFieldExpr{Name: key, Value: v}
+				}
+				return &StructLit{Name: name, Fields: vals}, nil
+			}
+		}
 		items := make([][2]Expr, len(p.Map.Items))
 		for i, it := range p.Map.Items {
 			k, err := convertExpr(it.Key)
@@ -2081,6 +2123,17 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 					typ = *p.Load.Type.Simple
 				}
 				return &LoadYamlExpr{Path: path, Type: typ}, nil
+			}
+			if format == "jsonl" {
+				neededOpens["System"] = true
+				neededOpens["System.IO"] = true
+				neededOpens["System.Text.Json"] = true
+				path := strings.Trim(*p.Load.Path, "\"")
+				typ := "obj"
+				if p.Load.Type.Simple != nil {
+					typ = *p.Load.Type.Simple
+				}
+				return &LoadJSONLExpr{Path: path, Type: typ}, nil
 			}
 		}
 	case p.Save != nil:
