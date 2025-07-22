@@ -127,7 +127,7 @@ type ForRangeStmt struct {
 }
 
 func (f *ForRangeStmt) emit(out io.Writer) error {
-	if _, err := io.WriteString(out, "for (var "+f.Name+" = "); err != nil {
+	if _, err := io.WriteString(out, "for (int "+f.Name+" = "); err != nil {
 		return err
 	}
 	if f.Start != nil {
@@ -2340,6 +2340,8 @@ func walkTypes(s Stmt) {
 		if st.End != nil {
 			inferType(st.End)
 		}
+		// range loops use integer counters
+		localVarTypes[st.Name] = "int"
 		for _, b := range st.Body {
 			walkTypes(b)
 		}
