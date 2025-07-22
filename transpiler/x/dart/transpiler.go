@@ -38,6 +38,7 @@ var (
 	nextStructHint   string
 	usesJSON         bool
 	useNow           bool
+	useInput         bool
 	imports          []string
 )
 
@@ -56,6 +57,20 @@ func capitalize(name string) string {
 		parts[i] = strings.ToUpper(p[:1]) + p[1:]
 	}
 	return strings.Join(parts, "")
+}
+
+var dartKeywords = map[string]struct{}{
+	"abstract": {}, "else": {}, "enum": {}, "false": {}, "final": {},
+	"for": {}, "if": {}, "in": {}, "new": {}, "null": {}, "super": {},
+	"switch": {}, "case": {}, "var": {}, "void": {}, "while": {},
+	"return": {}, "this": {}, "true": {},
+}
+
+func sanitize(name string) string {
+	if _, ok := dartKeywords[name]; ok {
+		return "_" + name
+	}
+	return name
 }
 
 // --- Simple Dart AST ---
@@ -717,6 +732,8 @@ type StringLit struct{ Value string }
 func (s *StringLit) emit(w io.Writer) error {
 	val := strings.ReplaceAll(s.Value, "\\", "\\\\")
 	val = strings.ReplaceAll(val, "\"", "\\\"")
+	val = strings.ReplaceAll(val, "\n", "\\n")
+	val = strings.ReplaceAll(val, "\r", "\\r")
 	val = strings.ReplaceAll(val, "$", "\\$")
 	_, err := io.WriteString(w, "\""+val+"\"")
 	return err
@@ -1169,6 +1186,14 @@ type NowExpr struct{}
 
 func (n *NowExpr) emit(w io.Writer) error {
 	_, err := io.WriteString(w, "_now()")
+	return err
+}
+
+// InputExpr represents a call to input() returning a line from stdin.
+type InputExpr struct{}
+
+func (in *InputExpr) emit(w io.Writer) error {
+	_, err := io.WriteString(w, "stdin.readLineSync() ?? ''")
 	return err
 }
 
@@ -2264,6 +2289,8 @@ func inferType(e Expr) string {
 		return "num"
 	case *NowExpr:
 		return "int"
+	case *InputExpr:
+		return "String"
 	case *ValuesExpr:
 		return "List<dynamic>"
 	case *StrExpr, *FormatList:
@@ -2411,12 +2438,12 @@ func Emit(w io.Writer, p *Program) error {
 			return err
 		}
 	}
-	if useNow && !added["dart:io"] {
+	if (useNow || useInput) && !added["dart:io"] {
 		if _, err := io.WriteString(w, "import 'dart:io';\n"); err != nil {
 			return err
 		}
 	}
-	if len(p.Imports) > 0 || usesJSON || useNow {
+	if len(p.Imports) > 0 || usesJSON || useNow || useInput {
 		if _, err := io.WriteString(w, "\n"); err != nil {
 			return err
 		}
@@ -2460,17 +2487,39 @@ func Emit(w io.Writer, p *Program) error {
 		}
 	}
 
+	hasMain := false
 	for _, st := range p.Stmts {
 		if fd, ok := st.(*FuncDecl); ok {
+			if fd.Name == "main" {
+				hasMain = true
+			}
 			if err := fd.emit(w); err != nil {
 				return err
 			}
 			if _, err := io.WriteString(w, "\n\n"); err != nil {
 				return err
 			}
+		} else if ls, ok := st.(*LetStmt); ok {
+			if err := ls.emit(w); err != nil {
+				return err
+			}
+			if _, err := io.WriteString(w, ";\n"); err != nil {
+				return err
+			}
+		} else if vs, ok := st.(*VarStmt); ok {
+			if err := vs.emit(w); err != nil {
+				return err
+			}
+			if _, err := io.WriteString(w, ";\n"); err != nil {
+				return err
+			}
 		}
 	}
-	if _, err := io.WriteString(w, "void main() {\n"); err != nil {
+	entry := "main"
+	if hasMain {
+		entry = "_start"
+	}
+	if _, err := io.WriteString(w, "void "+entry+"() {\n"); err != nil {
 		return err
 	}
 	if useNow {
@@ -2479,7 +2528,8 @@ func Emit(w io.Writer, p *Program) error {
 		}
 	}
 	for _, st := range p.Stmts {
-		if _, ok := st.(*FuncDecl); ok {
+		switch st.(type) {
+		case *FuncDecl, *LetStmt, *VarStmt:
 			continue
 		}
 		if _, err := io.WriteString(w, "  "); err != nil {
@@ -2496,6 +2546,11 @@ func Emit(w io.Writer, p *Program) error {
 			if _, err := io.WriteString(w, ";\n"); err != nil {
 				return err
 			}
+		}
+	}
+	if hasMain {
+		if _, err := io.WriteString(w, "  main();\n"); err != nil {
+			return err
 		}
 	}
 	if _, err := io.WriteString(w, "}\n"); err != nil {
@@ -2518,6 +2573,7 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	nextStructHint = ""
 	usesJSON = false
 	useNow = false
+	useInput = false
 	imports = nil
 	p := &Program{}
 	for _, st := range prog.Statements {
@@ -2584,7 +2640,7 @@ func convertForStmt(fst *parser.ForStmt) (Stmt, error) {
 		if err != nil {
 			return nil, err
 		}
-		return &ForRangeStmt{Name: fst.Name, Start: start, End: end, Body: body}, nil
+		return &ForRangeStmt{Name: sanitize(fst.Name), Start: start, End: end, Body: body}, nil
 	}
 	iter, err := convertExpr(fst.Source)
 	if err != nil {
@@ -2594,7 +2650,7 @@ func convertForStmt(fst *parser.ForStmt) (Stmt, error) {
 	if err != nil {
 		return nil, err
 	}
-	return &ForInStmt{Name: fst.Name, Iterable: iter, Body: body}, nil
+	return &ForInStmt{Name: sanitize(fst.Name), Iterable: iter, Body: body}, nil
 }
 
 func convertUpdate(u *parser.UpdateStmt) (Stmt, error) {
@@ -2771,7 +2827,7 @@ func convertStmtInternal(st *parser.Statement) (Stmt, error) {
 		} else {
 			return nil, fmt.Errorf("let missing value not supported")
 		}
-		return &LetStmt{Name: st.Let.Name, Value: e}, nil
+		return &LetStmt{Name: sanitize(st.Let.Name), Value: e}, nil
 	case st.Var != nil:
 		var e Expr
 		if st.Var.Value != nil {
@@ -2783,7 +2839,7 @@ func convertStmtInternal(st *parser.Statement) (Stmt, error) {
 		} else if st.Var.Type != nil && st.Var.Type.Simple != nil && *st.Var.Type.Simple == "int" {
 			e = &IntLit{Value: 0}
 		}
-		return &VarStmt{Name: st.Var.Name, Value: e}, nil
+		return &VarStmt{Name: sanitize(st.Var.Name), Value: e}, nil
 	case st.Assign != nil:
 		target, err := convertAssignTarget(st.Assign)
 		if err != nil {
@@ -2815,9 +2871,9 @@ func convertStmtInternal(st *parser.Statement) (Stmt, error) {
 		}
 		var params []string
 		for _, p := range st.Fun.Params {
-			params = append(params, p.Name)
+			params = append(params, sanitize(p.Name))
 		}
-		return &FuncDecl{Name: st.Fun.Name, Params: params, Body: body}, nil
+		return &FuncDecl{Name: sanitize(st.Fun.Name), Params: params, Body: body}, nil
 	case st.While != nil:
 		return convertWhileStmt(st.While)
 	case st.For != nil:
@@ -2836,7 +2892,7 @@ func convertStmtInternal(st *parser.Statement) (Stmt, error) {
 }
 
 func convertAssignTarget(as *parser.AssignStmt) (Expr, error) {
-	expr := Expr(&Name{Name: as.Name})
+	expr := Expr(&Name{Name: sanitize(as.Name)})
 	for i, idx := range as.Index {
 		if idx.Start == nil || idx.Colon != nil || idx.Colon2 != nil || idx.End != nil || idx.Step != nil {
 			return nil, fmt.Errorf("complex assignment not supported")
@@ -3084,6 +3140,10 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 			useNow = true
 			return &NowExpr{}, nil
 		}
+		if p.Call.Func == "input" && len(p.Call.Args) == 0 {
+			useInput = true
+			return &InputExpr{}, nil
+		}
 		if p.Call.Func == "values" && len(p.Call.Args) == 1 {
 			mp, err := convertExpr(p.Call.Args[0])
 			if err != nil {
@@ -3242,7 +3302,7 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 	case p.FunExpr != nil && p.FunExpr.ExprBody != nil:
 		var params []string
 		for _, pa := range p.FunExpr.Params {
-			params = append(params, pa.Name)
+			params = append(params, sanitize(pa.Name))
 		}
 		body, err := convertExpr(p.FunExpr.ExprBody)
 		if err != nil {
@@ -3250,7 +3310,7 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 		}
 		return &LambdaExpr{Params: params, Body: body}, nil
 	case p.Selector != nil:
-		expr := Expr(&Name{Name: p.Selector.Root})
+		expr := Expr(&Name{Name: sanitize(p.Selector.Root)})
 		for _, f := range p.Selector.Tail {
 			expr = &SelectorExpr{Receiver: expr, Field: f}
 		}

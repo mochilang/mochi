@@ -26,7 +26,8 @@ func TestDartTranspiler_Rosetta_Golden(t *testing.T) {
 	outDir := filepath.Join(root, "tests", "rosetta", "transpiler", "Dart")
 	os.MkdirAll(outDir, 0o755)
 
-	files, _ := filepath.Glob(filepath.Join("tests", "rosetta", "x", "Mochi", "*.mochi"))
+	srcDir := filepath.Join(root, "tests", "rosetta", "x", "Mochi")
+	files, _ := filepath.Glob(filepath.Join(srcDir, "*.mochi"))
 	sort.Strings(files)
 	for _, src := range files {
 		name := strings.TrimSuffix(filepath.Base(src), ".mochi")
