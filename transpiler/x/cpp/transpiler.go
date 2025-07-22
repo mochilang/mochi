@@ -399,6 +399,9 @@ func (p *Program) Emit() []byte {
 }
 
 func (p *Program) write(w io.Writer) {
+	oldGlobals := globalTypes
+	globalTypes = p.GlobalTypes
+	defer func() { globalTypes = oldGlobals }()
 	v := strings.TrimSpace(version)
 	loc := time.FixedZone("GMT+7", 7*3600)
 	ts := time.Now().In(loc).Format("2006-01-02 15:04:05 MST")
@@ -413,20 +416,6 @@ func (p *Program) write(w io.Writer) {
 	}
 	fmt.Fprintln(w)
 	fmt.Fprintln(w)
-	fmt.Fprintln(w, "template<typename T>")
-	fmt.Fprintln(w, "std::ostream& operator<<(std::ostream& os, const std::optional<T>& v) {")
-	fmt.Fprintln(w, "    if(v) os << *v; else os << \"None\";")
-	fmt.Fprintln(w, "    return os;")
-	fmt.Fprintln(w, "}")
-	fmt.Fprintln(w)
-	fmt.Fprintln(w, "template<typename T>")
-	fmt.Fprintln(w, "std::ostream& operator<<(std::ostream& os, const std::vector<T>& v) {")
-	fmt.Fprintln(w, "    os << '[';")
-	fmt.Fprintln(w, "    bool first = true;")
-	fmt.Fprintln(w, "    for(const auto& x : v) { if(!first) os << \", \"; first = false; os << x; }")
-	fmt.Fprintln(w, "    os << ']';")
-	fmt.Fprintln(w, "    return os;")
-	fmt.Fprintln(w, "}")
 	fmt.Fprintln(w)
 	for _, st := range p.Structs {
 		fmt.Fprintf(w, "struct %s {\n", st.Name)
@@ -458,9 +447,9 @@ func (p *Program) write(w io.Writer) {
 			case strings.HasPrefix(f.Type, "std::optional<"):
 				fmt.Fprintf(w, "; if(v.%s) os << *v.%s; else os << \"None\"; os", f.Name, f.Name)
 			case strings.HasPrefix(f.Type, "std::vector<"):
-				fmt.Fprintf(w, "<< '['; for(size_t i=0;i<v.%s.size();++i){ if(i>0) os << ', '; os << v.%s[i]; } os << ']'", f.Name, f.Name)
+				fmt.Fprintf(w, "<< \"[\"; for(size_t i=0;i<v.%s.size();++i){ if(i>0) os << \", \"; os << v.%s[i]; } os << \"]\"", f.Name, f.Name)
 			case strings.HasPrefix(f.Type, "std::map<"):
-				fmt.Fprintf(w, "<< '{'; bool first_%d=true; for(const auto& p: v.%s){ if(!first_%d) os << ', '; first_%d=false; os << p.first << ': ' << p.second; } os << '}'", i, f.Name, i, i)
+				fmt.Fprintf(w, "<< \"{\"; bool first_%d=true; for(const auto& p: v.%s){ if(!first_%d) os << \", \"; first_%d=false; os << p.first << ': ' << p.second; } os << \"}\"", i, f.Name, i, i)
 			default:
 				fmt.Fprintf(w, "<< v.%s", f.Name)
 			}
@@ -555,7 +544,7 @@ func emitToStream(w io.Writer, stream string, e Expr, indent int) {
 		io.WriteString(w, ind+"{")
 		io.WriteString(w, " auto __tmp = ")
 		e.emit(w)
-		io.WriteString(w, "; "+stream+" << '['; for(size_t i=0;i<__tmp.size();++i){ if(i>0) "+stream+" << ', '; "+stream+" << __tmp[i]; } "+stream+" << ']'; }")
+		io.WriteString(w, "; "+stream+" << \"[\"; for(size_t i=0;i<__tmp.size();++i){ if(i>0) "+stream+" << \", \"; "+stream+" << __tmp[i]; } "+stream+" << \"]\"; }")
 		io.WriteString(w, "\n")
 	case strings.HasPrefix(typ, "std::optional<"):
 		io.WriteString(w, ind+"{")
@@ -567,7 +556,7 @@ func emitToStream(w io.Writer, stream string, e Expr, indent int) {
 		io.WriteString(w, ind+"{")
 		io.WriteString(w, " auto __tmp = ")
 		e.emit(w)
-		io.WriteString(w, "; "+stream+" << '{'; bool first=true; for(const auto& __p : __tmp){ if(!first) "+stream+" << ', '; first=false; "+stream+" << __p.first << ': ' << __p.second; } "+stream+" << '}'; }")
+		io.WriteString(w, "; "+stream+" << \"{\"; bool first=true; for(const auto& __p : __tmp){ if(!first) "+stream+" << \", \"; first=false; "+stream+" << __p.first << ': ' << __p.second; } "+stream+" << \"}\"; }")
 		io.WriteString(w, "\n")
 	default:
 		io.WriteString(w, ind+stream+" << ")
@@ -805,6 +794,7 @@ func (s *StrExpr) emit(w io.Writer) {
 func (v *ValuesExpr) emit(w io.Writer) {
 	if currentProgram != nil {
 		currentProgram.addInclude("<vector>")
+		currentProgram.addInclude("<map>")
 	}
 	io.WriteString(w, "([&]{ std::vector<decltype(")
 	v.Map.emit(w)
@@ -959,7 +949,7 @@ func (gc *GroupComp) emit(w io.Writer) {
 	}
 	io.WriteString(w, "("+cap+"{ std::vector<"+gc.ElemType+"> __items;\n")
 	inLambda++
-	io.WriteString(w, "std::vector<"+gc.GroupStruct+"> __groups;\n")
+	io.WriteString(w, "std::map<"+gc.KeyType+", std::vector<"+gc.ItemType+">> __groups;\n")
 	for i, v := range gc.Vars {
 		io.WriteString(w, "for (auto ")
 		io.WriteString(w, v)
@@ -983,24 +973,16 @@ func (gc *GroupComp) emit(w io.Writer) {
 	io.WriteString(w, "        auto __key = ")
 	gc.Key.emit(w)
 	io.WriteString(w, ";\n")
-	io.WriteString(w, "        bool __found = false;\n")
-	io.WriteString(w, "        for(auto &__g : __groups) {\n")
-	io.WriteString(w, "            if(__g.key == __key) { __g.items.push_back(__row); __found = true; break; }\n")
-	io.WriteString(w, "        }\n")
-	io.WriteString(w, "        if(!__found) {\n")
-	io.WriteString(w, "            "+gc.GroupStruct+" __g{__key, {}};\n")
-	io.WriteString(w, "            __g.items.push_back(__row);\n")
-	io.WriteString(w, "            __groups.push_back(__g);\n")
-	io.WriteString(w, "        }\n")
+	io.WriteString(w, "        __groups[__key].push_back(__row);\n")
 	if gc.Cond != nil {
 		io.WriteString(w, "    }\n")
 	}
 	for range gc.Vars {
 		io.WriteString(w, "}\n")
 	}
-	io.WriteString(w, "for(auto &__g : __groups) {\n")
+	io.WriteString(w, "for(const auto& __kv : __groups) {\n")
 	io.WriteString(w, "    ")
-	io.WriteString(w, gc.GroupStruct+" "+gc.GroupName+" = __g;\n")
+	io.WriteString(w, gc.GroupStruct+" "+gc.GroupName+"{__kv.first, __kv.second};\n")
 	io.WriteString(w, "    __items.push_back(")
 	gc.Body.emit(w)
 	io.WriteString(w, ");\n")

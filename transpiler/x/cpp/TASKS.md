@@ -1,3 +1,33 @@
+## Progress (2025-07-22 14:58 +0700)
+- cpp transpiler: remove helper templates, use std::map for grouping
+- Generated C++ for 98/102 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-22 14:58 +0700)
+- update ts readme
+- Generated C++ for 98/102 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-22 14:58 +0700)
+- update ts readme
+- Generated C++ for 98/102 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-22 14:58 +0700)
+- update ts readme
+- Generated C++ for 98/102 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-22 14:58 +0700)
+- update ts readme
+- Generated C++ for 98/102 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-22 14:58 +0700)
+- update ts readme
+- Generated C++ for 98/102 programs
+- Updated README checklist and outputs
+
 ## Progress (2025-07-22 14:39 +0700)
 - cpp transpiler: support group_by_multi_sort
 - Generated C++ for 98/102 programs
