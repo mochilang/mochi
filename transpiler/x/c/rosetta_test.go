@@ -13,6 +13,7 @@ import (
 	"testing"
 	"time"
 
+	"mochi/golden"
 	ctrans "mochi/transpiler/x/c"
 )
 
@@ -21,73 +22,35 @@ func TestRosettaTranspilerGolden(t *testing.T) {
 		t.Skipf("C compiler not installed: %v", err)
 	}
 	root := repoRoot(t)
-	srcDir := filepath.Join(root, "tests", "rosetta", "x", "Mochi")
 	outDir := filepath.Join(root, "tests", "rosetta", "transpiler", "C")
-	if err := os.MkdirAll(outDir, 0o755); err != nil {
-		t.Fatalf("mkdir: %v", err)
-	}
-	files, err := filepath.Glob(filepath.Join(srcDir, "*.mochi"))
-	if err != nil {
-		t.Fatalf("glob: %v", err)
-	}
-	sort.Strings(files)
-	var firstFail string
-	for _, src := range files {
-		if _, err := os.Stat(strings.TrimSuffix(src, ".mochi") + ".in"); err == nil {
-			continue
-		}
+	os.MkdirAll(outDir, 0o755)
+
+	golden.RunFirstFailure(t, "tests/rosetta/x/Mochi", ".mochi", ".out", func(src string) ([]byte, error) {
 		name := strings.TrimSuffix(filepath.Base(src), ".mochi")
-		wantOut := filepath.Join(outDir, name+".out")
-		t.Run(name, func(t *testing.T) {
-			if firstFail != "" {
-				t.Skip("skipping after first failure")
-			}
-			code, err := transpileFile(src)
-			if err != nil {
-				firstFail = name
-				return
-			}
-			if updateEnabled() {
-				norm := normalize(root, code)
-				if err := os.WriteFile(filepath.Join(outDir, name+".c"), norm, 0o644); err != nil {
-					t.Fatalf("write code: %v", err)
-				}
-			}
-			got, runErr := transpileAndRun(src)
-			if runErr != nil {
-				if updateEnabled() {
-					errPath := filepath.Join(outDir, name+".error")
-					if werr := os.WriteFile(errPath, []byte(runErr.Error()+"\n"), 0o644); werr != nil {
-						t.Fatalf("write error file: %v (run error: %v)", werr, runErr)
-					}
-				}
-				firstFail = name
-				return
-			}
-			if updateEnabled() {
-				_ = os.Remove(filepath.Join(outDir, name+".error"))
-				trimmed := bytes.TrimSpace(got)
-				if err := os.WriteFile(wantOut, trimmed, 0o644); err != nil {
-					t.Fatalf("write output: %v", err)
-				}
-			}
-			trimmed := bytes.TrimSpace(got)
-			wantData, err := os.ReadFile(wantOut)
-			if err != nil {
-				t.Fatalf("read expected: %v", err)
-			}
-			wantData = bytes.TrimSpace(wantData)
-			if !bytes.Equal(trimmed, wantData) {
-				t.Errorf("output mismatch for %s: got %q want %q", name, trimmed, wantData)
-			}
-		})
-		if firstFail != "" {
-			break
+		codePath := filepath.Join(outDir, name+".c")
+		errPath := filepath.Join(outDir, name+".error")
+
+		code, err := transpileFile(src)
+		if err != nil {
+			_ = os.WriteFile(errPath, []byte(err.Error()), 0o644)
+			return nil, err
 		}
-	}
-	if firstFail != "" {
-		t.Fatalf("first failing program: %s", firstFail)
-	}
+		if updateEnabled() {
+			norm := normalize(root, code)
+			_ = os.WriteFile(codePath, norm, 0o644)
+		}
+		out, runErr := transpileAndRun(src)
+		if runErr != nil {
+			_ = os.WriteFile(errPath, []byte(runErr.Error()+"\n"), 0o644)
+			return nil, runErr
+		}
+		_ = os.Remove(errPath)
+		if updateEnabled() {
+			trimmed := bytes.TrimSpace(out)
+			_ = os.WriteFile(filepath.Join(outDir, name+".out"), trimmed, 0o644)
+		}
+		return bytes.TrimSpace(out), nil
+	})
 }
 
 func updateRosettaReadme() {
