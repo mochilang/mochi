@@ -1084,7 +1084,14 @@ func typeOfExpr(e Expr) string {
 	case *AvgExpr:
 		return "double"
 	case *SumExpr:
-		return "double"
+		t := typeOfExpr(ex.Arg)
+		if strings.HasSuffix(t, "[]") {
+			t = strings.TrimSuffix(t, "[]")
+		}
+		if t == "double" {
+			return "double"
+		}
+		return "int"
 	case *CountExpr:
 		return "int"
 	case *MinExpr:
@@ -2062,7 +2069,8 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 			if len(args) == 1 {
 				arg := args[0]
 				if isBoolExpr(arg) {
-					return &CallExpr{Func: name, Args: []Expr{arg}}, nil
+					inner := &IfExpr{Cond: arg, Then: &IntLit{Value: 1}, Else: &IntLit{Value: 0}}
+					return &CallExpr{Func: name, Args: []Expr{inner}}, nil
 				}
 				if _, ok := arg.(*MapLit); ok {
 					usesJson = true
