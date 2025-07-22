@@ -62,6 +62,7 @@ type Program struct {
 	NeedMax      bool
 	NeedContains bool
 	NeedShowList bool
+	UseNow       bool
 }
 
 // Stmt represents a Pascal statement.
@@ -699,6 +700,12 @@ func (p *Program) Emit() []byte {
 	if len(uses) > 0 {
 		fmt.Fprintf(&buf, "uses %s;\n", strings.Join(uses, ", "))
 	}
+	if p.UseNow {
+		buf.WriteString("var _nowSeed: int64 = 0;\n")
+		buf.WriteString("var _nowSeeded: boolean = false;\n")
+		buf.WriteString("procedure init_now();\nvar s: string; v: int64;\nbegin\n  s := GetEnvironmentVariable('MOCHI_NOW_SEED');\n  if s <> '' then begin\n    Val(s, v);\n    _nowSeed := v;\n    _nowSeeded := true;\n  end;\nend;\n")
+		buf.WriteString("function _now(): integer;\nbegin\n  if _nowSeeded then begin\n    _nowSeed := (_nowSeed * 1664525 + 1013904223) mod 2147483647;\n    _now := _nowSeed;\n  end else begin\n    _now := Integer(GetTickCount64());\n  end;\nend;\n")
+	}
 	if p.NeedContains {
 		buf.WriteString("function contains(xs: array of integer; v: integer): boolean;\nvar i: integer;\nbegin\n  for i := 0 to High(xs) do begin\n    if xs[i] = v then begin\n      contains := true; exit;\n    end;\n  end;\n  contains := false;\nend;\n")
 	}
@@ -721,9 +728,6 @@ func (p *Program) Emit() []byte {
 		}
 		buf.WriteString("end;\n")
 	}
-	for _, f := range p.Funs {
-		f.emit(&buf)
-	}
 	if len(p.Vars) > 0 {
 		buf.WriteString("var\n")
 		for _, v := range p.Vars {
@@ -734,7 +738,13 @@ func (p *Program) Emit() []byte {
 			fmt.Fprintf(&buf, "  %s: %s;\n", v.Name, typ)
 		}
 	}
+	for _, f := range p.Funs {
+		f.emit(&buf)
+	}
 	buf.WriteString("begin\n")
+	if p.UseNow {
+		buf.WriteString("  init_now();\n")
+	}
 	for _, v := range p.Vars {
 		if v.Init != nil {
 			buf.WriteString("  ")
@@ -2830,6 +2840,10 @@ func convertPrimary(env *types.Env, p *parser.Primary) (Expr, error) {
 				}
 				return &ValuesExpr{Elems: elems}, nil
 			}
+		} else if name == "now" && len(args) == 0 {
+			currProg.UseSysUtils = true
+			currProg.UseNow = true
+			return &CallExpr{Name: "_now", Args: nil}, nil
 		} else if name == "append" && len(args) == 2 {
 			return &CallExpr{Name: "concat", Args: []Expr{args[0], &ListLit{Elems: []Expr{args[1]}}}}, nil
 		}
