@@ -12,6 +12,7 @@ import (
 	"strings"
 	"testing"
 	"time"
+	"unicode"
 
 	"mochi/parser"
 	rs "mochi/transpiler/x/rs"
@@ -49,7 +50,13 @@ func runRosetta(t *testing.T, src, outDir string) ([]byte, error) {
 	}
 	tmpDir := t.TempDir()
 	bin := filepath.Join(tmpDir, base)
-	if out, err := exec.Command("rustc", codePath, "-O", "-o", bin).CombinedOutput(); err != nil {
+	crate := strings.Map(func(r rune) rune {
+		if unicode.IsLetter(r) || unicode.IsDigit(r) || r == '_' {
+			return r
+		}
+		return '_'
+	}, base)
+	if out, err := exec.Command("rustc", codePath, "-O", "--crate-name", crate, "-o", bin).CombinedOutput(); err != nil {
 		_ = os.WriteFile(errPath, out, 0o644)
 		return nil, fmt.Errorf("rustc: %w", err)
 	}
