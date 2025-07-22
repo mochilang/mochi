@@ -87,6 +87,7 @@ func TestLuaTranspiler_Rosetta(t *testing.T) {
 	sort.Strings(files)
 
 	var passed, failed int
+	var firstFail string
 	for _, src := range files {
 		name := strings.TrimSuffix(filepath.Base(src), ".mochi")
 		ok := t.Run(name, func(t *testing.T) {
@@ -125,9 +126,16 @@ func TestLuaTranspiler_Rosetta(t *testing.T) {
 			passed++
 		} else {
 			failed++
+			if firstFail == "" {
+				firstFail = name
+				break
+			}
 		}
 	}
 	t.Logf("Summary: %d passed, %d failed", passed, failed)
+	if firstFail != "" {
+		t.Fatalf("first failing program: %s", firstFail)
+	}
 }
 
 func updateRosettaReadme() {

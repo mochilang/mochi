@@ -1860,7 +1860,11 @@ func convertUnary(u *parser.Unary) (Expr, error) {
 		case "-":
 			expr = &BinaryExpr{Left: &IntLit{Value: 0}, Op: "-", Right: expr}
 		case "!":
-			expr = &IfExpr{Cond: expr, Then: &IntLit{Value: 0}, Else: &IntLit{Value: 1}}
+			if isBoolExpr(expr) {
+				expr = &UnaryExpr{Op: "!", Value: expr}
+			} else {
+				expr = &IfExpr{Cond: expr, Then: &IntLit{Value: 0}, Else: &IntLit{Value: 1}}
+			}
 		default:
 			return nil, fmt.Errorf("unsupported unary operator")
 		}
@@ -1982,7 +1986,12 @@ func convertPostfix(p *parser.PostfixExpr) (Expr, error) {
 				return nil, fmt.Errorf("unsupported call")
 			}
 		case op.Cast != nil:
-			// ignore cast
+			if op.Cast.Type != nil && op.Cast.Type.Simple != nil {
+				switch *op.Cast.Type.Simple {
+				case "float":
+					expr = &BinaryExpr{Left: expr, Op: "*", Right: &FloatLit{Value: 1.0}}
+				}
+			}
 		default:
 			return nil, fmt.Errorf("postfix ops not supported")
 		}
