@@ -1,3 +1,42 @@
+## Progress (2025-07-22 08:49 +0700)
+- cs transpiler: bool print as 1/0, improved sum type (progress 76/101)
+
+## Progress (2025-07-22 08:49 +0700)
+- update cs README and tasks (progress 91/101)
+
+## Progress (2025-07-22 08:49 +0700)
+- update cs README and tasks (progress 91/101)
+
+## Progress (2025-07-22 08:49 +0700)
+- update cs README and tasks (progress 91/101)
+
+## Progress (2025-07-22 08:49 +0700)
+- update cs README and tasks (progress 91/101)
+
+## Progress (2025-07-22 08:49 +0700)
+- update cs README and tasks (progress 91/101)
+
+## Progress (2025-07-22 08:49 +0700)
+- update cs README and tasks (progress 91/101)
+
+## Progress (2025-07-22 08:49 +0700)
+- update cs README and tasks (progress 91/101)
+
+## Progress (2025-07-22 08:49 +0700)
+- update cs README and tasks (progress 91/101)
+
+## Progress (2025-07-22 08:49 +0700)
+- update cs README and tasks (progress 91/101)
+
+## Progress (2025-07-22 08:49 +0700)
+- update cs README and tasks (progress 91/101)
+
+## Progress (2025-07-22 08:49 +0700)
+- update cs README and tasks (progress 91/101)
+
+## Progress (2025-07-22 08:49 +0700)
+- update cs README and tasks (progress 71/101)
+
 ## Progress (2025-07-21 23:54 UTC)
 - cs transpiler: support string concatenation (progress 71/101)
 
@@ -238,6 +277,19 @@
 
 ## Progress (2025-07-22 06:00 +0700)
 - cs: implemented outer join (progress 68/101)
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

@@ -2,8 +2,8 @@
 
 Generated C# code for programs in `tests/vm/valid`. Each program has a `.cs` file produced by the transpiler and a `.out` file containing its runtime output. Compilation or execution errors are captured in a `.error` file placed next to the source.
 
-Compiled programs: 71/101
-Last updated: 2025-07-21 23:54 UTC
+Compiled programs: 76/101
+Last updated: 2025-07-22 08:49 +0700
 
 ## Checklist
 - [x] append_builtin
@@ -36,7 +36,7 @@ Last updated: 2025-07-21 23:54 UTC
 - [x] group_by_left_join
 - [x] group_by_multi_join
 - [x] group_by_multi_join_sort
-- [ ] group_by_multi_sort
+- [x] group_by_multi_sort
 - [x] group_by_sort
 - [x] group_items_iteration
 - [x] if_else
@@ -80,30 +80,30 @@ Last updated: 2025-07-21 23:54 UTC
 - [ ] python_auto
 - [ ] python_math
 - [ ] query_sum_select
-- [ ] record_assign
+- [x] record_assign
 - [ ] right_join
-- [ ] save_jsonl_stdout
-- [ ] short_circuit
-- [ ] slice
-- [ ] sort_stable
+- [x] save_jsonl_stdout
+- [x] short_circuit
+- [x] slice
+- [x] sort_stable
 - [x] str_builtin
-- [ ] string_compare
+- [x] string_compare
 - [x] string_concat
 - [x] string_contains
-- [ ] string_in_operator
-- [ ] string_index
-- [ ] string_prefix_slice
-- [ ] substring_builtin
-- [ ] sum_builtin
-- [ ] tail_recursion
-- [ ] test_block
+- [x] string_in_operator
+- [x] string_index
+- [x] string_prefix_slice
+- [x] substring_builtin
+- [x] sum_builtin
+- [x] tail_recursion
+- [x] test_block
 - [ ] tree_sum
 - [ ] two-sum
-- [ ] typed_let
-- [ ] typed_var
-- [ ] unary_neg
+- [x] typed_let
+- [x] typed_var
+- [x] unary_neg
 - [ ] update_stmt
-- [ ] user_type_literal
+- [x] user_type_literal
 - [ ] values_builtin
-- [ ] var_assignment
-- [ ] while_loop
+- [x] var_assignment
+- [x] while_loop
