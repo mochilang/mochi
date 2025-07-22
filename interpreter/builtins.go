@@ -5,6 +5,8 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"math"
+	"os"
 	"strconv"
 	"strings"
 	"time"
@@ -13,6 +15,20 @@ import (
 	"mochi/runtime/data"
 	"mochi/types"
 )
+
+var (
+	seededNow bool
+	nowSeed   int64
+)
+
+func init() {
+	if s := os.Getenv("MOCHI_NOW_SEED"); s != "" {
+		if v, err := strconv.ParseInt(s, 10, 64); err == nil {
+			nowSeed = v
+			seededNow = true
+		}
+	}
+}
 
 // builtinPrint implements the print(...) function.
 func builtinPrint(i *Interpreter, c *parser.CallExpr) (any, error) {
@@ -92,6 +108,10 @@ func builtinNow(i *Interpreter, c *parser.CallExpr) (any, error) {
 	if len(c.Args) != 0 {
 		return nil, fmt.Errorf("now() takes no arguments")
 	}
+	if seededNow {
+		nowSeed = (nowSeed*1664525 + 1013904223) % 2147483647
+		return nowSeed, nil
+	}
 	return time.Now().UnixNano(), nil
 }
 
@@ -118,6 +138,13 @@ func builtinStr(i *Interpreter, c *parser.CallExpr) (any, error) {
 	val, err := i.evalExpr(c.Args[0])
 	if err != nil {
 		return nil, err
+	}
+	if f, ok := val.(float64); ok {
+		s := strconv.FormatFloat(f, 'f', -1, 64)
+		if !strings.ContainsRune(s, '.') && !math.IsInf(f, 0) && !math.IsNaN(f) {
+			s += ".0"
+		}
+		return s, nil
 	}
 	return fmt.Sprint(val), nil
 }

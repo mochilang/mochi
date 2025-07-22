@@ -2,11 +2,11 @@
 
 This checklist tracks Mochi programs from `tests/rosetta/x/Mochi` that successfully transpile using the experimental Fortran backend.
 
-Checklist of programs that currently transpile and run (1/284):
+Checklist of programs that currently transpile and run (3/284):
 
 1. [x] 100-doors-2
-2. [ ] 100-doors-3
-3. [ ] 100-doors
+2. [x] 100-doors-3
+3. [x] 100-doors
 4. [ ] 100-prisoners
 5. [ ] 15-puzzle-game
 6. [ ] 15-puzzle-solver
@@ -289,4 +289,4 @@ Checklist of programs that currently transpile and run (1/284):
 283. [ ] define-a-primitive-data-type
 284. [ ] md5
 
-_Last updated: 2025-07-22 22:27:35 +0700_
+_Last updated: 2025-07-23 00:10:44 +0700_
