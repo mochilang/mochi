@@ -160,6 +160,10 @@ func (b *BoolLit) emit(w io.Writer) {
 	}
 }
 
+type NullLit struct{}
+
+func (n *NullLit) emit(w io.Writer) { io.WriteString(w, "Default::default()") }
+
 // BreakStmt represents a `break` statement.
 type BreakStmt struct{}
 
@@ -2753,6 +2757,8 @@ func compileLiteral(l *parser.Literal) (Expr, error) {
 		return &NumberLit{Value: val}, nil
 	case l.Bool != nil:
 		return &BoolLit{Value: bool(*l.Bool)}, nil
+	case l.Null:
+		return &NullLit{}, nil
 	default:
 		return nil, fmt.Errorf("unsupported literal")
 	}
@@ -2767,6 +2773,8 @@ func inferType(e Expr) string {
 		return "i64"
 	case *BoolLit:
 		return "bool"
+	case *NullLit:
+		return ""
 	case *StringLit:
 		return "String"
 	case *ListLit:
