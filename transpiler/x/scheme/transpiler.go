@@ -155,14 +155,22 @@ func header() []byte {
 		}
 	}
 	loc, _ := time.LoadLocation("Asia/Bangkok")
-	prelude := `(define (to-str x)
+	imports := "(import (srfi 1) (srfi 69) (scheme sort))"
+	prelude := `(define (join xs sep)
+  (if (null? xs)
+      ""
+      (if (null? (cdr xs))
+          (car xs)
+          (string-append (car xs) sep (join (cdr xs) sep)))))
+
+(define (to-str x)
   (cond ((pair? x)
-         (string-append "[" (string-join (map to-str x) ", ") "]"))
+         (string-append "[" (join (map to-str x) ", ") "]"))
         ((string? x) x)
         ((boolean? x) (if x "true" "false"))
         (else (number->string x))))`
-	return []byte(fmt.Sprintf(";; Generated on %s\n%s\n",
-		ts.In(loc).Format("2006-01-02 15:04 -0700"), prelude))
+	return []byte(fmt.Sprintf(";; Generated on %s\n%s\n%s\n",
+		ts.In(loc).Format("2006-01-02 15:04 -0700"), imports, prelude))
 }
 
 func voidSym() Node { return &List{Elems: []Node{Symbol("quote"), Symbol("nil")}} }
@@ -1619,6 +1627,24 @@ func convertCall(target Node, call *parser.CallOp) (Node, error) {
 			return nil, fmt.Errorf("%s expects 1 arg", sym)
 		}
 		return &List{Elems: []Node{Symbol("apply"), Symbol(string(sym)), args[0]}}, nil
+	case "values":
+		if len(args) != 1 {
+			return nil, fmt.Errorf("values expects 1 arg")
+		}
+		alist := &List{Elems: []Node{Symbol("hash-table->alist"), args[0]}}
+		a := gensym("a")
+		b := gensym("b")
+		cmp := &List{Elems: []Node{
+			Symbol("lambda"),
+			&List{Elems: []Node{a, b}},
+			&List{Elems: []Node{
+				Symbol("string<?"),
+				&List{Elems: []Node{Symbol("car"), a}},
+				&List{Elems: []Node{Symbol("car"), b}},
+			}},
+		}}
+		sorted := &List{Elems: []Node{Symbol("list-sort"), cmp, alist}}
+		return &List{Elems: []Node{Symbol("map"), Symbol("cdr"), sorted}}, nil
 	case "substring":
 		if len(args) != 3 {
 			return nil, fmt.Errorf("substring expects 3 args")
