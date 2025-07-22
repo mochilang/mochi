@@ -60,6 +60,7 @@ func TestTSTranspiler_VMValid_Golden(t *testing.T) {
 		}
 		out, err := cmd.CombinedOutput()
 		got := bytes.TrimSpace(out)
+		got = append(got, '\n')
 		if err != nil {
 			_ = os.WriteFile(errPath, append([]byte("run: "+err.Error()+"\n"), out...), 0o644)
 			return nil, err
@@ -97,25 +98,25 @@ func repoRoot(t *testing.T) string {
 }
 
 func updateReadme() {
-        root := repoRoot(&testing.T{})
-        srcDir := filepath.Join(root, "tests", "vm", "valid")
-        outDir := filepath.Join(root, "tests", "transpiler", "x", "ts")
-        readmePath := filepath.Join(root, "transpiler", "x", "ts", "README.md")
-        out, err := exec.Command("git", "log", "-1", "--format=%cI").Output()
-        ts := ""
-        if err == nil {
-                if t, perr := time.Parse(time.RFC3339, strings.TrimSpace(string(out))); perr == nil {
-                        if loc, lerr := time.LoadLocation("Asia/Bangkok"); lerr == nil {
-                                ts = t.In(loc).Format("2006-01-02 15:04 -0700")
-                        } else {
-                                ts = t.Format("2006-01-02 15:04 MST")
-                        }
-                }
-        }
-        files, _ := filepath.Glob(filepath.Join(srcDir, "*.mochi"))
-        total := len(files)
-        passed := 0
-        var lines []string
+	root := repoRoot(&testing.T{})
+	srcDir := filepath.Join(root, "tests", "vm", "valid")
+	outDir := filepath.Join(root, "tests", "transpiler", "x", "ts")
+	readmePath := filepath.Join(root, "transpiler", "x", "ts", "README.md")
+	out, err := exec.Command("git", "log", "-1", "--format=%cI").Output()
+	ts := ""
+	if err == nil {
+		if t, perr := time.Parse(time.RFC3339, strings.TrimSpace(string(out))); perr == nil {
+			if loc, lerr := time.LoadLocation("Asia/Bangkok"); lerr == nil {
+				ts = t.In(loc).Format("2006-01-02 15:04 -0700")
+			} else {
+				ts = t.Format("2006-01-02 15:04 MST")
+			}
+		}
+	}
+	files, _ := filepath.Glob(filepath.Join(srcDir, "*.mochi"))
+	total := len(files)
+	passed := 0
+	var lines []string
 	for _, f := range files {
 		name := filepath.Base(f)
 		base := strings.TrimSuffix(name, ".mochi")
@@ -142,12 +143,12 @@ func updateReadme() {
 	buf.WriteString("This directory contains the experimental TypeScript transpiler.\n")
 	buf.WriteString("Generated sources for the golden tests live under `tests/transpiler/x/ts`.\n\n")
 	fmt.Fprintf(&buf, "## VM Golden Test Checklist (%d/%d)\n", passed, total)
-        buf.WriteString(strings.Join(lines, "\n"))
-        buf.WriteString("\n")
-        if ts != "" {
-                fmt.Fprintf(&buf, "\n_Last updated: %s_\n", ts)
-        }
-        _ = os.WriteFile(readmePath, buf.Bytes(), 0o644)
+	buf.WriteString(strings.Join(lines, "\n"))
+	buf.WriteString("\n")
+	if ts != "" {
+		fmt.Fprintf(&buf, "\n_Last updated: %s_\n", ts)
+	}
+	_ = os.WriteFile(readmePath, buf.Bytes(), 0o644)
 }
 
 func updateTasks() {
