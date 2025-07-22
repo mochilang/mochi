@@ -80,7 +80,7 @@ func TestCPPTranspiler_Rosetta_Golden(t *testing.T) {
 		ok := t.Run(name, func(t *testing.T) {
 			if err := runOne(src); err != nil {
 				firstErr = name
-				t.Fatalf("%v", err)
+				t.Fail()
 			}
 		})
 		if !ok {
