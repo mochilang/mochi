@@ -8,7 +8,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
-	"sort"
+	"strconv"
 	"strings"
 	"testing"
 	"time"
@@ -30,31 +30,20 @@ func TestRacketTranspiler_Rosetta(t *testing.T) {
 	os.MkdirAll(outDir, 0o755)
 	t.Cleanup(updateRosettaChecklist)
 
-	outs, err := filepath.Glob(filepath.Join(srcDir, "*.out"))
-	if err != nil {
-		t.Fatalf("glob: %v", err)
-	}
-	sort.Strings(outs)
-	if len(outs) == 0 {
-		t.Fatal("no Mochi Rosetta tests found")
-	}
-
-	var firstErr error
-	var firstName string
-	for _, outPath := range outs {
-		name := strings.TrimSuffix(filepath.Base(outPath), ".out")
-		srcPath := filepath.Join(srcDir, name+".mochi")
-		if _, err := os.Stat(srcPath); err != nil {
-			t.Fatalf("missing source for %s", name)
-		}
-		if err := transpileAndRunRacket(root, srcPath, outPath, outDir, name); err != nil {
-			firstErr = err
-			firstName = name
-			break
+	index := 1
+	if s := os.Getenv("ROSETTA_INDEX"); s != "" {
+		if n, err := strconv.Atoi(s); err == nil && n >= 1 && n <= len(rkt.RosettaPrograms) {
+			index = n
 		}
 	}
-	if firstErr != nil {
-		t.Fatalf("%s: %v", firstName, firstErr)
+	name := rkt.RosettaPrograms[index-1]
+	srcPath := filepath.Join(srcDir, name+".mochi")
+	outPath := filepath.Join(srcDir, name+".out")
+	if _, err := os.Stat(srcPath); err != nil {
+		t.Fatalf("missing source for %s", name)
+	}
+	if err := transpileAndRunRacket(root, srcPath, outPath, outDir, name); err != nil {
+		t.Fatalf("%s: %v", name, err)
 	}
 }
 
@@ -116,17 +105,13 @@ func writeRacketError(dir, name string, err error) {
 
 func updateRosettaChecklist() {
 	root := repoRoot(&testing.T{})
-	srcDir := filepath.Join(root, "tests", "rosetta", "x", "Mochi")
 	outDir := filepath.Join(root, "tests", "rosetta", "transpiler", "Racket")
 	readmePath := filepath.Join(root, "transpiler", "x", "rkt", "ROSETTA.md")
 
-	files, _ := filepath.Glob(filepath.Join(srcDir, "*.mochi"))
-	sort.Strings(files)
-	total := len(files)
+	total := len(rkt.RosettaPrograms)
 	compiled := 0
 	var lines []string
-	for _, f := range files {
-		name := strings.TrimSuffix(filepath.Base(f), ".mochi")
+	for _, name := range rkt.RosettaPrograms {
 		mark := "[ ]"
 		if _, err := os.Stat(filepath.Join(outDir, name+".out")); err == nil {
 			if _, err2 := os.Stat(filepath.Join(outDir, name+".error")); os.IsNotExist(err2) {
