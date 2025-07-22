@@ -109,3 +109,47 @@ func countCompiled(root string) (int, int) {
 	}
 	return compiled, total
 }
+
+// UpdateRosettaReadme regenerates ROSETTA checklist from transpiler outputs.
+func UpdateRosettaReadme() {
+	root := repoRootDir()
+	srcDir := filepath.Join(root, "tests", "rosetta", "x", "Mochi")
+	outDir := filepath.Join(root, "tests", "rosetta", "transpiler", "Prolog")
+	readme := filepath.Join(root, "transpiler", "x", "pl", "ROSETTA.md")
+	files, _ := filepath.Glob(filepath.Join(srcDir, "*.mochi"))
+	sort.Strings(files)
+	total := len(files)
+	compiled := 0
+	var lines []string
+	for _, f := range files {
+		name := strings.TrimSuffix(filepath.Base(f), ".mochi")
+		mark := "[ ]"
+		if _, err := os.Stat(filepath.Join(outDir, name+".out")); err == nil {
+			if _, err2 := os.Stat(filepath.Join(outDir, name+".error")); os.IsNotExist(err2) {
+				compiled++
+				mark = "[x]"
+			}
+		}
+		lines = append(lines, fmt.Sprintf("- %s `%s`", mark, name))
+	}
+	out, err := exec.Command("git", "log", "-1", "--date=iso-strict", "--format=%cd").Output()
+	ts := ""
+	if err == nil {
+		if t, perr := time.Parse(time.RFC3339, strings.TrimSpace(string(out))); perr == nil {
+			if loc, lerr := time.LoadLocation("Asia/Bangkok"); lerr == nil {
+				ts = t.In(loc).Format("2006-01-02 15:04 -0700")
+			} else {
+				ts = t.Format("2006-01-02 15:04 MST")
+			}
+		}
+	}
+	var buf bytes.Buffer
+	buf.WriteString("# Rosetta Prolog Transpiler\n\n")
+	fmt.Fprintf(&buf, "## Rosetta Golden Test Checklist (%d/%d)\n", compiled, total)
+	if ts != "" {
+		fmt.Fprintf(&buf, "Last updated: %s\n", ts)
+	}
+	buf.WriteString(strings.Join(lines, "\n"))
+	buf.WriteString("\n\n*Checklist generated automatically from tests/rosetta/x/Mochi*")
+	_ = os.WriteFile(readme, buf.Bytes(), 0o644)
+}
