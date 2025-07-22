@@ -2619,6 +2619,34 @@ func isIntType(t types.Type) bool {
 	return false
 }
 
+// isIntLike reports whether t represents an integer type or the underlying
+// expression e is a literal integer. This helps retain integer semantics in
+// untyped code where the type checker may return types.AnyType.
+func isIntLike(t types.Type, e Expr) bool {
+	if isIntType(t) {
+		return true
+	}
+	if _, ok := t.(types.AnyType); ok {
+		if n, ok := e.(*NumberLit); ok {
+			if !strings.ContainsAny(n.Value, ".eE") {
+				return true
+			}
+		}
+	}
+	return false
+}
+
+// isIntegerLiteral reports whether e is a numeric literal without a decimal
+// point or exponent.
+func isIntegerLiteral(e Expr) bool {
+	if n, ok := e.(*NumberLit); ok {
+		if !strings.ContainsAny(n.Value, ".eE") {
+			return true
+		}
+	}
+	return false
+}
+
 func convertBinary(b *parser.BinaryExpr) (Expr, error) {
 	if b == nil {
 		return nil, fmt.Errorf("nil binary")
@@ -2692,7 +2720,7 @@ func convertBinary(b *parser.BinaryExpr) (Expr, error) {
 		case "intersect":
 			operands[i] = &IntersectExpr{Left: operands[i], Right: operands[i+1]}
 		default:
-			if ops[i] == "/" && isIntType(typesArr[i]) && isIntType(typesArr[i+1]) {
+			if ops[i] == "/" && (isIntLike(typesArr[i], operands[i]) && isIntLike(typesArr[i+1], operands[i+1]) || isIntegerLiteral(operands[i+1])) {
 				operands[i] = &IntDivExpr{Left: operands[i], Right: operands[i+1]}
 				typesArr[i] = types.IntType{}
 			} else {
@@ -3215,6 +3243,14 @@ func inferLiteralType(e *parser.Expr, env *types.Env) (types.Type, bool) {
 		}
 		if mt, ok := types.InferSimpleMap(ml, env); ok {
 			return mt, true
+		}
+	}
+	if lit := p.Target.Lit; lit != nil {
+		if lit.Int != nil {
+			return types.IntType{}, true
+		}
+		if lit.Float != nil {
+			return types.FloatType{}, true
 		}
 	}
 	return nil, false
