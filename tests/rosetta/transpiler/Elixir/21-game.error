@@ -1,0 +1,115 @@
+run: exit status 1
+    warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+  9 │         i = 1
+    │         ~
+    │
+    └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/21-game.exs:9:9: Main.parseIntStr/1
+
+    warning: variable "neg" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+  8 │         neg = true
+    │         ~
+    │
+    └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/21-game.exs:8:9: Main.parseIntStr/1
+
+    warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 16 │           i = i + 1
+    │           ~
+    │
+    └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/21-game.exs:16:11: Main.parseIntStr/1
+
+    warning: variable "n" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 15 │           n = n * 10 + Enum.at(digits, Enum.slice(str, i, i + 1 - i))
+    │           ~
+    │
+    └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/21-game.exs:15:11: Main.parseIntStr/1
+
+    warning: variable "n" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 24 │         n = -n
+    │         ~
+    │
+    └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/21-game.exs:24:9: Main.parseIntStr/1
+
+    error: undefined variable "now"
+    │
+ 34 │       computer = rem(now.(), 2) == 0
+    │                      ^^^
+    │
+    └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/21-game.exs:34:22: Main.main/0
+
+    error: undefined variable "input"
+    │
+ 71 │                           line = input.()
+    │                                  ^^^^^
+    │
+    └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/21-game.exs:71:34: Main.main/0
+
+    warning: variable "done" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 74 │ ...                   done = true
+    │                       ~
+    │
+    └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/21-game.exs:74:29: Main.main/0
+
+     warning: variable "done" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 104 │                       done = true
+     │                       ~
+     │
+     └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/21-game.exs:104:23: Main.main/0
+
+    warning: variable "choice" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 57 │                       choice = 21 - total
+    │                       ~
+    │
+    └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/21-game.exs:57:23: Main.main/0
+
+    error: undefined variable "now"
+    │
+ 55 │                       choice = rem(now.(), 3) + 1
+    │                                    ^^^
+    │
+    └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/21-game.exs:55:36: Main.main/0
+
+    warning: variable "choice" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 55 │                       choice = rem(now.(), 3) + 1
+    │                       ~
+    │
+    └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/21-game.exs:55:23: Main.main/0
+
+    warning: variable "done" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 64 │                       done = true
+    │                       ~
+    │
+    └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/21-game.exs:64:23: Main.main/0
+
+     warning: variable "computer" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 108 │                   computer = !computer
+     │                   ~
+     │
+     └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/21-game.exs:108:19: Main.main/0
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 109 │                   i = i + 1
+     │                   ~
+     │
+     └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/21-game.exs:109:19: Main.main/0
+
+     warning: variable "round" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 119 │             round = round + 1
+     │             ~
+     │
+     └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/21-game.exs:119:13: Main.main/0
+
+** (CompileError) /workspace/mochi/tests/rosetta/transpiler/Elixir/21-game.exs: cannot compile module Main (errors have been logged)
+
