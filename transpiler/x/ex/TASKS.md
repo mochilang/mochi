@@ -1,6 +1,6 @@
-## Progress (2025-07-22 10:22 +0700)
-- Commit c5ded03f6: erl: support left join with preceding joins
-- Generated Elixir for 102/102 programs
+## Progress (2025-07-22 22:49 +0700)
+- Commit 471b8e5ea: transpiler/erl: use index for Rosetta tests
+- Generated Elixir for 102/103 programs
 - Updated README checklist and outputs
 - Improved code emission and type inference
 

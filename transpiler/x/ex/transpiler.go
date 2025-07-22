@@ -277,17 +277,45 @@ func (wst *WhileStmt) emit(w io.Writer, indent int) {
 	for i := 0; i < indent; i++ {
 		io.WriteString(w, "  ")
 	}
-	io.WriteString(w, "try do\n")
-	for i := 0; i < indent+1; i++ {
-		io.WriteString(w, "  ")
-	}
 	if len(wst.Vars) == 0 {
+		io.WriteString(w, "try do\n")
+		for i := 0; i < indent+1; i++ {
+			io.WriteString(w, "  ")
+		}
 		io.WriteString(w, "while_fun.(while_fun)\n")
+		for i := 0; i < indent; i++ {
+			io.WriteString(w, "  ")
+		}
+		io.WriteString(w, "catch\n")
+		for i := 0; i < indent+1; i++ {
+			io.WriteString(w, "  ")
+		}
+		io.WriteString(w, ":break -> nil\n")
+		for i := 0; i < indent; i++ {
+			io.WriteString(w, "  ")
+		}
+		io.WriteString(w, "end\n")
 	} else if len(wst.Vars) == 1 {
 		io.WriteString(w, wst.Vars[0])
-		io.WriteString(w, " = while_fun.(while_fun, ")
+		io.WriteString(w, " = try do\n")
+		for i := 0; i < indent+2; i++ {
+			io.WriteString(w, "  ")
+		}
+		io.WriteString(w, "while_fun.(while_fun, ")
 		io.WriteString(w, wst.Vars[0])
 		io.WriteString(w, ")\n")
+		for i := 0; i < indent+1; i++ {
+			io.WriteString(w, "  ")
+		}
+		io.WriteString(w, "catch\n")
+		for i := 0; i < indent+2; i++ {
+			io.WriteString(w, "  ")
+		}
+		io.WriteString(w, ":break -> nil\n")
+		for i := 0; i < indent+1; i++ {
+			io.WriteString(w, "  ")
+		}
+		io.WriteString(w, "end\n")
 	} else {
 		io.WriteString(w, "{")
 		for i, v := range wst.Vars {
@@ -296,25 +324,30 @@ func (wst *WhileStmt) emit(w io.Writer, indent int) {
 			}
 			io.WriteString(w, v)
 		}
-		io.WriteString(w, "} = while_fun.(while_fun")
+		io.WriteString(w, "} = try do\n")
+		for i := 0; i < indent+2; i++ {
+			io.WriteString(w, "  ")
+		}
+		io.WriteString(w, "while_fun.(while_fun")
 		for _, v := range wst.Vars {
 			io.WriteString(w, ", ")
 			io.WriteString(w, v)
 		}
 		io.WriteString(w, ")\n")
+		for i := 0; i < indent+1; i++ {
+			io.WriteString(w, "  ")
+		}
+		io.WriteString(w, "catch\n")
+		for i := 0; i < indent+2; i++ {
+			io.WriteString(w, "  ")
+		}
+		io.WriteString(w, ":break -> nil\n")
+		for i := 0; i < indent+1; i++ {
+			io.WriteString(w, "  ")
+		}
+		io.WriteString(w, "end\n")
 	}
-	for i := 0; i < indent; i++ {
-		io.WriteString(w, "  ")
-	}
-	io.WriteString(w, "catch\n")
-	for i := 0; i < indent+1; i++ {
-		io.WriteString(w, "  ")
-	}
-	io.WriteString(w, ":break -> nil\n")
-	for i := 0; i < indent; i++ {
-		io.WriteString(w, "  ")
-	}
-	io.WriteString(w, "end")
+	return
 }
 
 // ForStmt represents a basic for loop over a collection or range.
@@ -1471,6 +1504,29 @@ func compileStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 		}
 		return nil, fmt.Errorf("unsupported statement at %d:%d", st.Pos.Line, st.Pos.Column)
 	case st.If != nil:
+		if st.If.ElseIf == nil && len(st.If.Then) == 1 && len(st.If.Else) == 1 {
+			th := st.If.Then[0]
+			el := st.If.Else[0]
+			if th.Assign != nil && el.Assign != nil &&
+				th.Assign.Name == el.Assign.Name &&
+				len(th.Assign.Index) == 0 && len(th.Assign.Field) == 0 &&
+				len(el.Assign.Index) == 0 && len(el.Assign.Field) == 0 {
+				cond, err := compileExpr(st.If.Cond, env)
+				if err != nil {
+					return nil, err
+				}
+				thenExpr, err := compileExpr(th.Assign.Value, env)
+				if err != nil {
+					return nil, err
+				}
+				elseExpr, err := compileExpr(el.Assign.Value, env)
+				if err != nil {
+					return nil, err
+				}
+				ce := &CondExpr{Cond: cond, Then: thenExpr, Else: elseExpr}
+				return &AssignStmt{Name: th.Assign.Name, Value: ce}, nil
+			}
+		}
 		return compileIfStmt(st.If, env)
 	case st.While != nil:
 		return compileWhileStmt(st.While, env)
