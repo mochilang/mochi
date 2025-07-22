@@ -9,10 +9,11 @@ import (
 	"fmt"
 	"io"
 	"os"
-	"path/filepath"
-	"reflect"
-	"sort"
-	"strings"
+       "path/filepath"
+       "reflect"
+       "sort"
+       "strings"
+       "strconv"
 
 	yaml "gopkg.in/yaml.v3"
 
@@ -503,7 +504,13 @@ func (b *BoolLit) emit(w io.Writer) { fmt.Fprintf(w, "%t", b.Value) }
 // FloatLit represents a floating point literal.
 type FloatLit struct{ Value float64 }
 
-func (f *FloatLit) emit(w io.Writer) { fmt.Fprintf(w, "%g", f.Value) }
+func (f *FloatLit) emit(w io.Writer) {
+       s := strconv.FormatFloat(f.Value, 'f', -1, 64)
+       if !strings.ContainsAny(s, ".eE") && !strings.Contains(s, ".") {
+               s += ".0"
+       }
+       fmt.Fprint(w, s)
+}
 
 type Name struct{ Name string }
 
@@ -1005,21 +1012,27 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	needsBreaks = false
 	needsJSON = false
 	builtinAliases = map[string]string{}
-	for _, st := range prog.Statements {
-		if st.Import != nil && st.Import.Lang != nil {
-			alias := st.Import.As
-			if alias == "" {
-				alias = parser.AliasFromPath(st.Import.Path)
-			}
-			path := strings.Trim(st.Import.Path, "\"")
-			switch *st.Import.Lang {
-			case "go":
-				if st.Import.Auto && path == "mochi/runtime/ffi/go/testpkg" {
-					builtinAliases[alias] = "go_testpkg"
-				}
-			}
-		}
-	}
+        for _, st := range prog.Statements {
+                if st.Import != nil && st.Import.Lang != nil {
+                        alias := st.Import.As
+                        if alias == "" {
+                                alias = parser.AliasFromPath(st.Import.Path)
+                        }
+                        path := strings.Trim(st.Import.Path, "\"")
+                        switch *st.Import.Lang {
+                        case "go":
+                                if st.Import.Auto && path == "mochi/runtime/ffi/go/testpkg" {
+                                        builtinAliases[alias] = "go_testpkg"
+                                } else if st.Import.Auto && path == "strings" {
+                                        builtinAliases[alias] = "go_strings"
+                                }
+                        case "python":
+                                if path == "math" {
+                                        builtinAliases[alias] = "python_math"
+                                }
+                        }
+                }
+        }
 	for _, st := range prog.Statements {
 		s, err := convertStmt(st, env)
 		if err != nil {
@@ -1174,12 +1187,14 @@ func convertStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 		return &BreakStmt{}, nil
 	case st.Continue != nil:
 		return &ContinueStmt{}, nil
-	case st.Import != nil:
-		// handled during preprocessing
-		return nil, nil
-	default:
-		return nil, fmt.Errorf("unsupported statement")
-	}
+       case st.Import != nil:
+               // handled during preprocessing
+               return nil, nil
+       case st.ExternVar != nil, st.ExternFun != nil:
+               return nil, nil
+       default:
+               return nil, fmt.Errorf("unsupported statement")
+       }
 }
 
 func convertExpr(e *parser.Expr, env *types.Env) (Expr, error) {
@@ -1309,16 +1324,54 @@ func convertUnary(u *parser.Unary, env *types.Env) (Expr, error) {
 }
 
 func convertPostfix(pf *parser.PostfixExpr, env *types.Env) (Expr, error) {
-	if pf == nil {
-		return nil, fmt.Errorf("unsupported postfix")
-	}
-	expr, err := convertPrimary(pf.Target, env)
-	if err != nil {
-		return nil, err
-	}
-	for i := 0; i < len(pf.Ops); i++ {
-		op := pf.Ops[i]
-		switch {
+        if pf == nil {
+                return nil, fmt.Errorf("unsupported postfix")
+        }
+        expr, err := convertPrimary(pf.Target, env)
+        if err != nil {
+                return nil, err
+        }
+        if pf.Target.Selector != nil && len(pf.Target.Selector.Tail) == 1 && len(pf.Ops) > 0 && pf.Ops[0].Call != nil {
+                if kind, ok := builtinAliases[pf.Target.Selector.Root]; ok {
+                        field := pf.Target.Selector.Tail[0]
+                        call := pf.Ops[0].Call
+                        args := make([]Expr, len(call.Args))
+                        for j, a := range call.Args {
+                                ex, err := convertExpr(a, env)
+                                if err != nil {
+                                        return nil, err
+                                }
+                                args[j] = ex
+                        }
+                        switch kind {
+                        case "go_strings":
+                                switch field {
+                                case "TrimSpace":
+                                        expr = &CallExpr{Fn: &FieldExpr{Receiver: args[0], Name: "trim"}}
+                                case "ToUpper":
+                                        expr = &CallExpr{Fn: &FieldExpr{Receiver: args[0], Name: "toUpperCase"}}
+                                }
+                                if expr != nil {
+                                        return expr, nil
+                                }
+                        case "python_math":
+                                switch field {
+                                case "sqrt", "sin", "log", "pow":
+                                        expr = &CallExpr{Fn: &FieldExpr{Receiver: &Name{Name: "math"}, Name: field}, Args: args}
+                                        return expr, nil
+                                case "pi":
+                                        expr = &FieldExpr{Receiver: &Name{Name: "math"}, Name: "Pi"}
+                                        return expr, nil
+                                case "e":
+                                        expr = &FieldExpr{Receiver: &Name{Name: "math"}, Name: "E"}
+                                        return expr, nil
+                                }
+                        }
+                }
+        }
+        for i := 0; i < len(pf.Ops); i++ {
+                op := pf.Ops[i]
+                switch {
 		case op.Field != nil:
 			if n, ok := expr.(*Name); ok && env != nil {
 				if typ, err := env.GetVar(n.Name); err == nil {
@@ -1340,24 +1393,59 @@ func convertPostfix(pf *parser.PostfixExpr, env *types.Env) (Expr, error) {
 							}
 							args[j] = ex
 						}
-						if kind == "go_testpkg" && field == "Add" && len(args) == 2 {
-							expr = &BinaryExpr{Left: args[0], Op: "+", Right: args[1]}
-							i++
-							continue
-						}
+                                                if kind == "go_testpkg" && field == "Add" && len(args) == 2 {
+                                                        expr = &BinaryExpr{Left: args[0], Op: "+", Right: args[1]}
+                                                        i++
+                                                        continue
+                                                }
+                                                if kind == "go_strings" {
+                                                        switch field {
+                                                        case "TrimSpace":
+                                                                expr = &CallExpr{Fn: &FieldExpr{Receiver: args[0], Name: "trim"}}
+                                                                i++
+                                                                continue
+                                                        case "ToUpper":
+                                                                expr = &CallExpr{Fn: &FieldExpr{Receiver: args[0], Name: "toUpperCase"}}
+                                                                i++
+                                                                continue
+                                                        }
+                                                }
+                                                if kind == "python_math" {
+                                                        switch field {
+                                                        case "sqrt", "sin", "log", "pow":
+                                                                fnName := field
+                                                                if field == "pow" {
+                                                                        fnName = "pow"
+                                                                }
+                                                                expr = &CallExpr{Fn: &FieldExpr{Receiver: &Name{Name: "math"}, Name: fnName}, Args: args}
+                                                                i++
+                                                                continue
+                                                        }
+                                                }
 					} else {
-						if kind == "go_testpkg" {
-							switch field {
-							case "Pi":
-								expr = &FloatLit{Value: 3.14}
-								i++
-								continue
-							case "Answer":
-								expr = &IntLit{Value: 42}
-								i++
-								continue
-							}
-						}
+                                                if kind == "go_testpkg" {
+                                                        switch field {
+                                                        case "Pi":
+                                                                expr = &FloatLit{Value: 3.14}
+                                                                i++
+                                                                continue
+                                                        case "Answer":
+                                                                expr = &IntLit{Value: 42}
+                                                                i++
+                                                                continue
+                                                        }
+                                                } else if kind == "python_math" {
+                                                        switch field {
+                                                        case "pi":
+                                                                expr = &FieldExpr{Receiver: &Name{Name: "math"}, Name: "Pi"}
+                                                                i++
+                                                                continue
+                                                        case "e":
+                                                                expr = &FieldExpr{Receiver: &Name{Name: "math"}, Name: "E"}
+                                                                i++
+                                                                continue
+                                                        }
+                                                }
 					}
 				}
 			}
@@ -1475,15 +1563,22 @@ func convertPrimary(p *parser.Primary, env *types.Env) (Expr, error) {
 				}
 			}
 			if kind, ok := builtinAliases[p.Selector.Root]; ok && len(p.Selector.Tail) == 1 {
-				switch kind {
-				case "go_testpkg":
-					switch p.Selector.Tail[0] {
-					case "Pi":
-						return &FloatLit{Value: 3.14}, nil
-					case "Answer":
-						return &IntLit{Value: 42}, nil
-					}
-				}
+                                switch kind {
+                                case "go_testpkg":
+                                        switch p.Selector.Tail[0] {
+                                        case "Pi":
+                                                return &FloatLit{Value: 3.14}, nil
+                                        case "Answer":
+                                                return &IntLit{Value: 42}, nil
+                                        }
+                                case "python_math":
+                                        switch p.Selector.Tail[0] {
+                                        case "pi":
+                                                return &FieldExpr{Receiver: &Name{Name: "math"}, Name: "Pi"}, nil
+                                        case "e":
+                                                return &FieldExpr{Receiver: &Name{Name: "math"}, Name: "E"}, nil
+                                        }
+                                }
 			}
 		}
 		for _, f := range p.Selector.Tail {
@@ -2561,13 +2656,16 @@ func inferType(e Expr) string {
 		return "String"
 	case *BinaryExpr:
 		switch ex.Op {
-		case "+", "-", "*", "/", "%":
-			lt := inferType(ex.Left)
-			rt := inferType(ex.Right)
-			if lt == "Double" || rt == "Double" {
-				return "Double"
-			}
-			return "Int"
+                case "+", "-", "*", "/", "%":
+                        lt := inferType(ex.Left)
+                        rt := inferType(ex.Right)
+                        if lt == "Double" || rt == "Double" {
+                                return "Double"
+                        }
+                        if lt == "" || rt == "" {
+                                return ""
+                        }
+                        return "Int"
 		case "==", "!=", ">", "<", ">=", "<=":
 			return "Boolean"
 		}
