@@ -466,6 +466,12 @@ func (l *LenExpr) emit(w io.Writer) {
 		fmt.Fprint(w, ").size")
 		return
 	}
+	if inferType(l.Value) == "" {
+		fmt.Fprint(w, "(")
+		l.Value.emit(w)
+		fmt.Fprint(w, ").asInstanceOf[collection.Seq[_]].size")
+		return
+	}
 	l.Value.emit(w)
 	fmt.Fprint(w, ".size")
 }
@@ -1793,7 +1799,7 @@ func convertRightJoinQuery(q *parser.QueryExpr, env *types.Env) (Expr, error) {
 		return nil, err
 	}
 	if ml := mapLiteral(q.Select); ml != nil {
-		if st, ok := types.InferStructFromMapEnv(ml, child); ok {
+		if st, ok := types.InferStructFromMapEnv(ml, genv); ok {
 			name := types.UniqueStructName("QueryItem", env, nil)
 			st.Name = name
 			env.SetStruct(name, st)
@@ -1814,11 +1820,11 @@ func convertRightJoinQuery(q *parser.QueryExpr, env *types.Env) (Expr, error) {
 			q.Select = &parser.Expr{Binary: &parser.BinaryExpr{Left: &parser.Unary{Value: &parser.PostfixExpr{Target: &parser.Primary{Struct: sl}}}}}
 		}
 	}
-	sel, err := convertExpr(q.Select, child)
+	sel, err := convertExpr(q.Select, genv)
 	if err != nil {
 		return nil, err
 	}
-	elemTypeStr := toScalaTypeFromType(types.ExprType(q.Select, child))
+	elemTypeStr := toScalaTypeFromType(types.ExprType(q.Select, genv))
 	if elemTypeStr == "" {
 		elemTypeStr = "Any"
 	}
@@ -2064,12 +2070,14 @@ func convertGroupQuery(q *parser.QueryExpr, env *types.Env) (Expr, error) {
 	if len(q.Joins) > 0 || len(q.Froms) > 0 {
 		elemT = types.MapType{Key: types.AnyType{}, Value: types.AnyType{}}
 	}
-	key, err := convertExpr(q.Group.Exprs[0], child)
+	keyExpr := q.Group.Exprs[0]
+	key, err := convertExpr(keyExpr, child)
 	if err != nil {
 		return nil, err
 	}
+	keyT := types.ExprType(keyExpr, child)
 	genv := types.NewEnv(child)
-	genv.SetVar(q.Group.Name, types.GroupType{Key: types.AnyType{}, Elem: elemT}, true)
+	genv.SetVar(q.Group.Name, types.GroupType{Key: keyT, Elem: elemT}, true)
 	sel, err := convertExpr(q.Select, genv)
 	if err != nil {
 		return nil, err

@@ -1,11 +1,7 @@
-exit status 1
-/workspace/mochi/tests/transpiler/x/scala/group_by_join.scala:9: error: value size is not a member of Any
-    val stats: ArrayBuffer[Any] = ({ var _tmp = ArrayBuffer[(Any, Map[String,Any])]() ; for (o <- orders) { for (c <- customers) { if (o.customerId == c.id) { _tmp.append((c.name, Map("o" -> o, "c" -> c))) }} }; ArrayBuffer(_tmp.groupBy(_._1).map{ case (k, arr) => Map("key" -> k, "items" -> ArrayBuffer(arr.map(_._2).toSeq: _*)) }.toSeq: _*).map(g => Map("name" -> g("key"), "count" -> g("items").size)) })
-                                                                                                                                                                                                                                                                                                                                                                                                              ^
-/workspace/mochi/tests/transpiler/x/scala/group_by_join.scala:12: error: value name is not a member of Any
-      println(List(s.name, "orders:", s.count).mkString(" "))
-                     ^
-/workspace/mochi/tests/transpiler/x/scala/group_by_join.scala:12: error: value count is not a member of Any
-      println(List(s.name, "orders:", s.count).mkString(" "))
-                                        ^
-three errors found
+/tmp/group_new.scala:11: error: illegal start of simple expression
+    val stats: ArrayBuffer[Any] = ArrayBuffer.from((for (o <- orders); c <- customers if (o.customerId == c.id) yield (c.name, Map("o" -> o, "c" -> c)))).groupBy(_._1).map{ case (k, arr) => Map("key" -> k, "items" -> ArrayBuffer(arr.map(_._2).toSeq: _*)) }.map(g => Map("name" -> g("key"), "count" -> g("items").size)))
+                                                                     ^
+/tmp/group_new.scala:11: error: ';' expected but '<-' found.
+    val stats: ArrayBuffer[Any] = ArrayBuffer.from((for (o <- orders); c <- customers if (o.customerId == c.id) yield (c.name, Map("o" -> o, "c" -> c)))).groupBy(_._1).map{ case (k, arr) => Map("key" -> k, "items" -> ArrayBuffer(arr.map(_._2).toSeq: _*)) }.map(g => Map("name" -> g("key"), "count" -> g("items").size)))
+                                                                         ^
+two errors found
