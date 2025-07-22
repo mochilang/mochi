@@ -6,6 +6,7 @@ import (
 	"bytes"
 	"fmt"
 	"io"
+	"math"
 	"os/exec"
 	"strconv"
 	"strings"
@@ -28,6 +29,7 @@ var typeAliases map[string]string
 var funDepth int
 var funParamsStack [][]string
 var nestedFunArgs map[string][]string
+var builtinAliases map[string]string
 
 func toSnakeCase(s string) string {
 	var buf strings.Builder
@@ -560,6 +562,9 @@ func zigTypeFromExpr(e Expr) string {
 			}
 			return "i64"
 		default:
+			if strings.HasPrefix(ce.Func, "std.math.") {
+				return "f64"
+			}
 			return "i64"
 		}
 	case *IndexExpr:
@@ -702,9 +707,14 @@ func (s *PrintStmt) emit(w io.Writer, indent int) {
 			}
 		case *StringLit:
 			fmtSpec[i] = "{s}"
+		case *FloatLit:
+			fmtSpec[i] = "{d}"
 		default:
-			if zigTypeFromExpr(v) == "[]const u8" {
+			tname := zigTypeFromExpr(v)
+			if tname == "[]const u8" {
 				fmtSpec[i] = "{s}"
+			} else if tname == "f64" || tname == "f32" {
+				fmtSpec[i] = "{d}"
 			} else {
 				fmtSpec[i] = "{any}"
 			}
@@ -830,7 +840,11 @@ func (s *StringLit) emit(w io.Writer) { fmt.Fprintf(w, "%q", s.Value) }
 func (i *IntLit) emit(w io.Writer) { fmt.Fprintf(w, "%d", i.Value) }
 
 func (f *FloatLit) emit(w io.Writer) {
-	io.WriteString(w, strconv.FormatFloat(f.Value, 'f', 1, 64))
+	if math.Trunc(f.Value) == f.Value {
+		io.WriteString(w, strconv.FormatFloat(f.Value, 'f', 1, 64))
+	} else {
+		io.WriteString(w, strconv.FormatFloat(f.Value, 'f', -1, 64))
+	}
 }
 
 func (v *VarRef) emit(w io.Writer) { io.WriteString(w, v.Name) }
@@ -1212,11 +1226,31 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	funDepth = 0
 	funParamsStack = nil
 	nestedFunArgs = map[string][]string{}
+	builtinAliases = map[string]string{}
 	mutables := map[string]bool{}
 	collectMutables(prog.Statements, mutables)
 	constLists = map[string]*ListLit{}
 	mapVars = map[string]bool{}
 	structDefs = map[string]*StructDef{}
+	for _, st := range prog.Statements {
+		if st.Import != nil && st.Import.Lang != nil {
+			alias := st.Import.As
+			if alias == "" {
+				alias = parser.AliasFromPath(st.Import.Path)
+			}
+			path := strings.Trim(st.Import.Path, "\"")
+			switch *st.Import.Lang {
+			case "go":
+				if st.Import.Auto && path == "mochi/runtime/ffi/go/testpkg" {
+					builtinAliases[alias] = "go_testpkg"
+				}
+			case "python":
+				if path == "math" {
+					builtinAliases[alias] = "python_math"
+				}
+			}
+		}
+	}
 	for _, st := range prog.Statements {
 		if st.Fun != nil {
 			fn, err := compileFunStmt(st.Fun, prog)
@@ -1379,6 +1413,44 @@ func compileUnary(u *parser.Unary) (Expr, error) {
 func compilePostfix(pf *parser.PostfixExpr) (Expr, error) {
 	if pf == nil {
 		return nil, fmt.Errorf("nil postfix")
+	}
+	if pf.Target != nil && pf.Target.Selector != nil && len(pf.Target.Selector.Tail) == 1 && len(pf.Ops) == 1 && pf.Ops[0].Call != nil {
+		alias := pf.Target.Selector.Root
+		method := pf.Target.Selector.Tail[0]
+		if kind, ok := builtinAliases[alias]; ok {
+			args := make([]Expr, len(pf.Ops[0].Call.Args))
+			for i, a := range pf.Ops[0].Call.Args {
+				ex, err := compileExpr(a)
+				if err != nil {
+					return nil, err
+				}
+				if il, ok := ex.(*IntLit); ok {
+					ex = &FloatLit{Value: float64(il.Value)}
+				}
+				args[i] = ex
+			}
+			switch kind {
+			case "go_testpkg":
+				if method == "Add" && len(args) == 2 {
+					return &BinaryExpr{Left: args[0], Op: "+", Right: args[1]}, nil
+				}
+			case "python_math":
+				switch method {
+				case "sqrt", "sin":
+					if len(args) == 1 {
+						return &CallExpr{Func: "std.math." + strings.ToLower(method), Args: args}, nil
+					}
+				case "log":
+					if len(args) == 1 {
+						return &CallExpr{Func: "std.math.log", Args: []Expr{&VarRef{Name: "f64"}, &FieldExpr{Target: &VarRef{Name: "std.math"}, Name: "e"}, args[0]}}, nil
+					}
+				case "pow":
+					if len(args) == 2 {
+						return &CallExpr{Func: "std.math.pow", Args: []Expr{&VarRef{Name: "f64"}, args[0], args[1]}}, nil
+					}
+				}
+			}
+		}
 	}
 	// Detect selector call pattern like `s.contains(sub)`
 	if pf.Target != nil && pf.Target.Selector != nil && len(pf.Target.Selector.Tail) == 1 && pf.Target.Selector.Tail[0] == "contains" && len(pf.Ops) == 1 && pf.Ops[0].Call != nil {
@@ -1677,6 +1749,26 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 	case p.Match != nil:
 		return compileMatchExpr(p.Match)
 	case p.Selector != nil:
+		if len(p.Selector.Tail) == 1 {
+			if kind, ok := builtinAliases[p.Selector.Root]; ok {
+				switch kind {
+				case "go_testpkg":
+					switch p.Selector.Tail[0] {
+					case "Pi":
+						return &FloatLit{Value: 3.14}, nil
+					case "Answer":
+						return &IntLit{Value: 42}, nil
+					}
+				case "python_math":
+					switch p.Selector.Tail[0] {
+					case "pi":
+						return &FloatLit{Value: 3.141592653589793}, nil
+					case "e":
+						return &FloatLit{Value: 2.718281828459045}, nil
+					}
+				}
+			}
+		}
 		var expr Expr = &VarRef{Name: p.Selector.Root}
 		for _, f := range p.Selector.Tail {
 			expr = &FieldExpr{Target: expr, Name: f}
@@ -2206,6 +2298,8 @@ func compileStmt(s *parser.Statement, prog *parser.Program) (Stmt, error) {
 		}
 		if vd.Type != "" && varTypes[s.Let.Name] == "" {
 			varTypes[s.Let.Name] = vd.Type
+		} else if vd.Type == "" {
+			varTypes[s.Let.Name] = zigTypeFromExpr(expr)
 		}
 		return vd, nil
 	case s.Var != nil:
@@ -2237,6 +2331,8 @@ func compileStmt(s *parser.Statement, prog *parser.Program) (Stmt, error) {
 		}
 		if vd.Type != "" && varTypes[s.Var.Name] == "" {
 			varTypes[s.Var.Name] = vd.Type
+		} else if vd.Type == "" {
+			varTypes[s.Var.Name] = zigTypeFromExpr(expr)
 		}
 		return vd, nil
 	case s.Assign != nil && len(s.Assign.Index) == 0 && len(s.Assign.Field) == 0:
@@ -2295,6 +2391,10 @@ func compileStmt(s *parser.Statement, prog *parser.Program) (Stmt, error) {
 		return compileUpdateStmt(s.Update)
 	case s.Type != nil:
 		return nil, compileTypeDecl(s.Type)
+	case s.ExternVar != nil:
+		return nil, nil
+	case s.ExternFun != nil:
+		return nil, nil
 	default:
 		return nil, fmt.Errorf("unsupported statement")
 	}

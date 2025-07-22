@@ -1,3 +1,13 @@
+## Progress (2025-07-22 10:54 +0700)
+- Commit d025bc223: release: v0.10.35
+- Generated Zig for 99/102 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-22 10:54 +0700)
+- Commit d025bc223: release: v0.10.35
+- Generated Zig for 96/102 programs
+- Updated README checklist and outputs
+
 ## Progress (2025-07-22 10:11 +0700)
 - Commit f3b115b02: zig transpiler: support update and group sort
 - Generated Zig for 95/102 programs
