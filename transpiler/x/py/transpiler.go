@@ -3493,18 +3493,6 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 					outArgs[i] = a
 				}
 			}
-			if len(outArgs) > 1 {
-				var buf strings.Builder
-				buf.WriteString("print(\" \".join(str(x) for x in [")
-				for i, a := range outArgs {
-					if i > 0 {
-						buf.WriteString(", ")
-					}
-					buf.WriteString(exprString(a))
-				}
-				buf.WriteString("]).rstrip())")
-				return &RawExpr{Code: buf.String()}, nil
-			}
 			return &CallExpr{Func: &Name{Name: "print"}, Args: outArgs}, nil
 		case "append":
 			if len(args) == 2 {
