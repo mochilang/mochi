@@ -672,6 +672,10 @@ func (l *LenExpr) emit(w io.Writer) {
 }
 
 func (l *ListLit) emit(w io.Writer) {
+	if len(l.Elems) == 0 {
+		io.WriteString(w, "{}")
+		return
+	}
 	io.WriteString(w, "std::vector{")
 	for i, e := range l.Elems {
 		if i > 0 {
@@ -4126,7 +4130,8 @@ func guessType(e *parser.Expr) string {
 				return fmt.Sprintf("std::vector<%s>", et)
 			}
 		}
-		return "std::vector<auto>"
+		// Default to vector<int> when element type cannot be inferred
+		return "std::vector<int>"
 	}
 	if types.IsMapExpr(e, currentEnv) {
 		if e.Binary != nil && e.Binary.Left != nil && e.Binary.Left.Value != nil {
@@ -4242,7 +4247,8 @@ func exprType(e Expr) string {
 		if len(v.Elems) > 0 {
 			return fmt.Sprintf("std::vector<%s>", exprType(v.Elems[0]))
 		}
-		return "std::vector<auto>"
+		// If the list is empty, fall back to a vector of int
+		return "std::vector<int>"
 	case *MapLit:
 		if len(v.Keys) > 0 {
 			kt := exprType(v.Keys[0])
