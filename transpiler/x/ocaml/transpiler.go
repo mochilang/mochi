@@ -237,6 +237,8 @@ func (p *Program) UsesJSON() bool {
 		switch st := s.(type) {
 		case *JSONStmt:
 			uses = true
+		case *PrintStmt:
+			uses = true
 		case *IfStmt:
 			for _, t := range st.Then {
 				check(t)
@@ -1143,7 +1145,7 @@ func (g *GroupByQueryExpr) emit(w io.Writer) {
 			io.WriteString(w, "(fst a) (fst b)")
 		}
 		io.WriteString(w, ") !__res0 in\n")
-		io.WriteString(w, "  List.rev (List.map snd __sorted))")
+		io.WriteString(w, "  List.map snd __sorted)")
 	} else {
 		io.WriteString(w, "  List.rev (List.map snd !__res0))")
 	}
@@ -1407,7 +1409,7 @@ func (n *Name) emitPrint(w io.Writer) {
 	case "bool":
 		fmt.Fprintf(w, "string_of_bool %s", ident)
 	default:
-		io.WriteString(w, ident)
+		fmt.Fprintf(w, "__to_json %s", ident)
 	}
 }
 
@@ -1585,11 +1587,25 @@ func (p *Program) Emit() []byte {
      let rest = list_aux tl in
      let cur = __to_json (obj hd) in
      if rest = "" then cur else cur ^ "," ^ rest
+  and map_aux o =
+    if is_int o && (magic (obj o) : int) = 0 then "" else
+     let hd = field o 0 in
+     let tl = field o 1 in
+     let k = (magic (field hd 0) : string) in
+     let v = __to_json (obj (field hd 1)) in
+     let rest = map_aux tl in
+     let cur = Printf.sprintf "\"%s\": %s" k v in
+     if rest = "" then cur else cur ^ "," ^ rest
   in
   let r = repr v in
   if is_int r then string_of_int (magic v) else
   match tag r with
-    | 0 -> if size r = 0 then "[]" else "[" ^ list_aux r ^ "]"
+    | 0 -> if size r = 0 then "[]" else (
+        let hd = field r 0 in
+        if tag hd = 0 && size hd = 2 && tag (field hd 0) = 252 then
+          "{" ^ map_aux r ^ "}"
+        else
+          "[" ^ list_aux r ^ "]")
     | 252 -> Printf.sprintf "%S" (magic v : string)
     | 253 -> string_of_float (magic v)
     | _ -> "null"
