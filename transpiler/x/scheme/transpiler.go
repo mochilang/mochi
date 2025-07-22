@@ -73,9 +73,9 @@ type BoolLit bool
 
 func (b BoolLit) Emit(w io.Writer) {
 	if bool(b) {
-		io.WriteString(w, "\"true\"")
+		io.WriteString(w, "#t")
 	} else {
-		io.WriteString(w, "\"false\"")
+		io.WriteString(w, "#f")
 	}
 }
 
@@ -160,7 +160,8 @@ func header() []byte {
 	loc, _ := time.LoadLocation("Asia/Bangkok")
 	prelude := ""
 	if needBase {
-		prelude += "(import (only (scheme base) call/cc))\n"
+		prelude += "(import (only (scheme base) call/cc list-ref list-set! list))\n"
+		prelude += "(import (scheme time))\n"
 	}
 	prelude += `(define (to-str x)
   (cond ((pair? x)
@@ -195,6 +196,74 @@ func typedDefault(t *parser.TypeRef) Node {
 }
 
 func convertStmts(stmts []*parser.Statement) ([]Node, error) {
+	if len(stmts) == 0 {
+		return nil, nil
+	}
+
+	// Handle leading variable declarations with a let binding so Scheme
+	// does not emit unexpected defines in expression context.
+	var bindings []Node
+	i := 0
+	for i < len(stmts) {
+		st := stmts[i]
+		var name string
+		var val Node
+		var err error
+		if st.Let != nil {
+			name = st.Let.Name
+			if st.Let.Value != nil {
+				val, err = convertParserExpr(st.Let.Value)
+			} else if st.Let.Type != nil {
+				val = typedDefault(st.Let.Type)
+			} else {
+				val = voidSym()
+			}
+			if currentEnv != nil {
+				var t types.Type = types.AnyType{}
+				if st.Let.Type != nil {
+					t = types.ResolveTypeRef(st.Let.Type, currentEnv)
+				} else if st.Let.Value != nil {
+					t = types.ExprType(st.Let.Value, currentEnv)
+				}
+				currentEnv.SetVar(name, t, false)
+			}
+		} else if st.Var != nil {
+			name = st.Var.Name
+			if st.Var.Value != nil {
+				val, err = convertParserExpr(st.Var.Value)
+			} else if st.Var.Type != nil {
+				val = typedDefault(st.Var.Type)
+			} else {
+				val = voidSym()
+			}
+			if currentEnv != nil {
+				var t types.Type = types.AnyType{}
+				if st.Var.Type != nil {
+					t = types.ResolveTypeRef(st.Var.Type, currentEnv)
+				} else if st.Var.Value != nil {
+					t = types.ExprType(st.Var.Value, currentEnv)
+				}
+				currentEnv.SetVar(name, t, true)
+			}
+		} else {
+			break
+		}
+		if err != nil {
+			return nil, err
+		}
+		bindings = append(bindings, &List{Elems: []Node{Symbol(name), val}})
+		i++
+	}
+
+	if len(bindings) > 0 {
+		rest, err := convertStmts(stmts[i:])
+		if err != nil {
+			return nil, err
+		}
+		body := &List{Elems: append([]Node{Symbol("begin")}, rest...)}
+		return []Node{&List{Elems: []Node{Symbol("let"), &List{Elems: bindings}, body}}}, nil
+	}
+
 	var forms []Node
 	for _, st := range stmts {
 		f, err := convertStmt(st)
@@ -1707,6 +1776,12 @@ func convertCall(target Node, call *parser.CallOp) (Node, error) {
 			return nil, fmt.Errorf("exists expects 1 arg")
 		}
 		return &List{Elems: []Node{Symbol("if"), &List{Elems: []Node{Symbol("null?"), args[0]}}, StringLit("false"), StringLit("true")}}, nil
+	case "now":
+		if len(args) != 0 {
+			return nil, fmt.Errorf("now expects no args")
+		}
+		needBase = true
+		return &List{Elems: []Node{Symbol("current-jiffy")}}, nil
 	default:
 		elems := make([]Node, 0, len(args)+1)
 		elems = append(elems, Symbol(sym))
