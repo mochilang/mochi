@@ -23,6 +23,21 @@ var builtinNames = map[string]struct{}{
 	"str": {}, "min": {}, "max": {}, "append": {}, "json": {}, "exists": {},
 	"values": {}, "load": {}, "save": {}, "now": {}, "input": {},
 }
+
+// Some PHP built-in functions cannot be redefined. When a Mochi program
+// defines a function with one of these names we rename the function and all
+// call sites to avoid redeclaration errors.
+var phpReserved = map[string]struct{}{
+	"shuffle": {},
+	"join":    {},
+	"pow":     {},
+	"abs":     {},
+}
+
+// renameMap tracks function names that were renamed due to conflicts with
+// PHP built-ins. The key is the original Mochi name and the value is the name
+// used in the generated PHP code.
+var renameMap map[string]string
 var closureNames = map[string]bool{}
 var groupStack []string
 var globalNames []string
@@ -992,9 +1007,7 @@ func (s *StringLit) emit(w io.Writer) { fmt.Fprintf(w, "%q", s.Value) }
 
 func (b *BinaryExpr) emit(w io.Writer) {
 	if b.Op == "+" {
-		_, leftStr := b.Left.(*StringLit)
-		_, rightStr := b.Right.(*StringLit)
-		if leftStr || rightStr {
+		if isStringExpr(b.Left) || isStringExpr(b.Right) {
 			b.Left.emit(w)
 			fmt.Fprint(w, " . ")
 			b.Right.emit(w)
@@ -1200,6 +1213,7 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	transpileEnv = env
 	globalNames = nil
 	closureNames = map[string]bool{}
+	renameMap = map[string]string{}
 	defer func() { transpileEnv = nil }()
 	p := &Program{Env: env}
 	for _, st := range prog.Statements {
@@ -1468,6 +1482,9 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 					callName = "$" + name
 				}
 			}
+		}
+		if newName, ok := renameMap[name]; ok {
+			callName = newName
 		}
 		if name == "print" {
 			callName = "echo"
@@ -1746,13 +1763,6 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 		}
 		return &ExprStmt{Expr: e}, nil
 	case st.Let != nil:
-		if transpileEnv != nil {
-			if t, err := transpileEnv.GetVar(st.Let.Name); err == nil {
-				if _, ok := t.(types.FuncType); ok {
-					closureNames[st.Let.Name] = true
-				}
-			}
-		}
 		var val Expr
 		if st.Let.Value != nil {
 			v, err := convertExpr(st.Let.Value)
@@ -1787,6 +1797,9 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 			}
 			if typ != nil {
 				transpileEnv.SetVar(st.Let.Name, typ, false)
+				if _, ok := typ.(types.FuncType); ok {
+					closureNames[st.Let.Name] = true
+				}
 			}
 		}
 		if len(funcStack) == 0 {
@@ -1794,13 +1807,6 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 		}
 		return &LetStmt{Name: st.Let.Name, Value: val}, nil
 	case st.Var != nil:
-		if transpileEnv != nil {
-			if t, err := transpileEnv.GetVar(st.Var.Name); err == nil {
-				if _, ok := t.(types.FuncType); ok {
-					closureNames[st.Var.Name] = true
-				}
-			}
-		}
 		var val Expr
 		if st.Var.Value != nil {
 			v, err := convertExpr(st.Var.Value)
@@ -1829,6 +1835,9 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 			}
 			if typ != nil {
 				transpileEnv.SetVar(st.Var.Name, typ, true)
+				if _, ok := typ.(types.FuncType); ok {
+					closureNames[st.Var.Name] = true
+				}
 			}
 		}
 		if len(funcStack) == 0 {
@@ -1901,16 +1910,22 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 		if len(funcStack) == 0 {
 			uses = append(uses, globalNames...)
 		}
+		name := st.Fun.Name
+		if _, reserved := phpReserved[name]; reserved {
+			newName := "mochi_" + name
+			renameMap[name] = newName
+			name = newName
+		}
 		if wasTop {
-			decl := &FuncDecl{Name: st.Fun.Name, Params: params, Body: body}
-			globalNames = append(globalNames, st.Fun.Name)
+			decl := &FuncDecl{Name: name, Params: params, Body: body}
+			globalNames = append(globalNames, name)
 			return decl, nil
 		}
 		clo := &ClosureExpr{Params: params, Uses: uses, Body: body}
 		if len(funcStack) == 0 {
-			globalNames = append(globalNames, st.Fun.Name)
+			globalNames = append(globalNames, name)
 		}
-		return &LetStmt{Name: st.Fun.Name, Value: clo}, nil
+		return &LetStmt{Name: name, Value: clo}, nil
 	case st.While != nil:
 		cond, err := convertExpr(st.While.Cond)
 		if err != nil {
@@ -2564,6 +2579,12 @@ func isStringExpr(e Expr) bool {
 	case *CondExpr:
 		if isStringExpr(v.Then) && isStringExpr(v.Else) {
 			return true
+		}
+	case *BinaryExpr:
+		if v.Op == "+" {
+			if isStringExpr(v.Left) || isStringExpr(v.Right) {
+				return true
+			}
 		}
 	}
 	return false
