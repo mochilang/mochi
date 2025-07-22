@@ -249,51 +249,51 @@ func (r *ReturnStmt) emit(w io.Writer) {
 }
 
 type FunDecl struct {
-        Name   string
-        Params []string
-        Body   []Stmt
+	Name   string
+	Params []string
+	Body   []Stmt
 }
 
 func (f *FunDecl) emit(w io.Writer) {
-        fmt.Fprintf(w, "(define (%s", f.Name)
-        for _, p := range f.Params {
-                fmt.Fprintf(w, " %s", p)
-        }
-        io.WriteString(w, ")\n")
-        for _, st := range f.Body {
-                st.emit(w)
-        }
-        io.WriteString(w, ")\n")
+	fmt.Fprintf(w, "(define (%s", f.Name)
+	for _, p := range f.Params {
+		fmt.Fprintf(w, " %s", p)
+	}
+	io.WriteString(w, ")\n")
+	for _, st := range f.Body {
+		st.emit(w)
+	}
+	io.WriteString(w, ")\n")
 }
 
 type LambdaExpr struct {
-        Params []string
-        Body   []Stmt
-        Expr   Expr
+	Params []string
+	Body   []Stmt
+	Expr   Expr
 }
 
 func (l *LambdaExpr) emit(w io.Writer) {
-        io.WriteString(w, "(lambda (")
-        for i, p := range l.Params {
-                if i > 0 {
-                        io.WriteString(w, " ")
-                }
-                io.WriteString(w, p)
-        }
-        io.WriteString(w, ")")
-        if len(l.Body) > 0 {
-                io.WriteString(w, "\n")
-                for _, st := range l.Body {
-                        st.emit(w)
-                }
-                io.WriteString(w, ")")
-        } else if l.Expr != nil {
-                io.WriteString(w, " ")
-                l.Expr.emit(w)
-                io.WriteString(w, ")")
-        } else {
-                io.WriteString(w, ")")
-        }
+	io.WriteString(w, "(lambda (")
+	for i, p := range l.Params {
+		if i > 0 {
+			io.WriteString(w, " ")
+		}
+		io.WriteString(w, p)
+	}
+	io.WriteString(w, ")")
+	if len(l.Body) > 0 {
+		io.WriteString(w, "\n")
+		for _, st := range l.Body {
+			st.emit(w)
+		}
+		io.WriteString(w, ")")
+	} else if l.Expr != nil {
+		io.WriteString(w, " ")
+		l.Expr.emit(w)
+		io.WriteString(w, ")")
+	} else {
+		io.WriteString(w, ")")
+	}
 }
 
 type IfExpr struct {
@@ -408,6 +408,24 @@ type IndexExpr struct {
 	IsMap    bool
 }
 
+type SliceExpr struct {
+	Target   Expr
+	Start    Expr
+	End      Expr
+	IsString bool
+}
+
+type MatchCase struct {
+	Pattern Expr
+	Expr    Expr
+	Default bool
+}
+
+type MatchExpr struct {
+	Value Expr
+	Cases []MatchCase
+}
+
 func (i *IndexExpr) emit(w io.Writer) {
 	if i.IsString {
 		io.WriteString(w, "(string-ref ")
@@ -428,6 +446,64 @@ func (i *IndexExpr) emit(w io.Writer) {
 		i.Index.emit(w)
 		io.WriteString(w, ")")
 	}
+}
+
+func (s *SliceExpr) emit(w io.Writer) {
+	if s.IsString {
+		io.WriteString(w, "(substring ")
+		s.Target.emit(w)
+		io.WriteString(w, " ")
+		if s.Start != nil {
+			s.Start.emit(w)
+		} else {
+			io.WriteString(w, "0")
+		}
+		io.WriteString(w, " ")
+		if s.End != nil {
+			s.End.emit(w)
+		} else {
+			io.WriteString(w, "(string-length ")
+			s.Target.emit(w)
+			io.WriteString(w, ")")
+		}
+		io.WriteString(w, ")")
+	} else {
+		io.WriteString(w, "(sublist ")
+		s.Target.emit(w)
+		io.WriteString(w, " ")
+		if s.Start != nil {
+			s.Start.emit(w)
+		} else {
+			io.WriteString(w, "0")
+		}
+		io.WriteString(w, " ")
+		if s.End != nil {
+			s.End.emit(w)
+		} else {
+			io.WriteString(w, "(length ")
+			s.Target.emit(w)
+			io.WriteString(w, ")")
+		}
+		io.WriteString(w, ")")
+	}
+}
+
+func (m *MatchExpr) emit(w io.Writer) {
+	io.WriteString(w, "(match ")
+	m.Value.emit(w)
+	io.WriteString(w, "\n")
+	for _, c := range m.Cases {
+		io.WriteString(w, "  [")
+		if c.Default {
+			io.WriteString(w, "_")
+		} else {
+			c.Pattern.emit(w)
+		}
+		io.WriteString(w, " ")
+		c.Expr.emit(w)
+		io.WriteString(w, "]\n")
+	}
+	io.WriteString(w, ")")
 }
 
 func (c *CallExpr) emit(w io.Writer) {
@@ -845,6 +921,32 @@ func rktType(t types.Type) string {
 	}
 }
 
+func zeroValue(t *parser.TypeRef, env *types.Env) Expr {
+	if t == nil {
+		return nil
+	}
+	if env == nil {
+		env = types.NewEnv(nil)
+	}
+	typ := types.ResolveTypeRef(t, env)
+	switch typ.(type) {
+	case types.IntType, types.Int64Type:
+		return &IntLit{Value: 0}
+	case types.FloatType:
+		return &FloatLit{Value: 0}
+	case types.BoolType:
+		return &Name{Name: "#f"}
+	case types.StringType:
+		return &StringLit{Value: ""}
+	case types.ListType:
+		return &ListLit{}
+	case types.MapType, types.StructType:
+		return &CallExpr{Func: "hash"}
+	default:
+		return nil
+	}
+}
+
 func Emit(w io.Writer, p *Program) error {
 	if _, err := io.WriteString(w, header()); err != nil {
 		return err
@@ -893,10 +995,16 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 
 func convertStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 	switch {
-	case st.Let != nil && st.Let.Value != nil:
-		e, err := convertExpr(st.Let.Value, env)
-		if err != nil {
-			return nil, err
+	case st.Let != nil:
+		var e Expr
+		var err error
+		if st.Let.Value != nil {
+			e, err = convertExpr(st.Let.Value, env)
+			if err != nil {
+				return nil, err
+			}
+		} else {
+			e = zeroValue(st.Let.Type, env)
 		}
 		var t types.Type
 		if env != nil {
@@ -905,10 +1013,16 @@ func convertStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 			}
 		}
 		return &LetStmt{Name: st.Let.Name, Expr: e, Type: t}, nil
-	case st.Var != nil && st.Var.Value != nil:
-		e, err := convertExpr(st.Var.Value, env)
-		if err != nil {
-			return nil, err
+	case st.Var != nil:
+		var e Expr
+		var err error
+		if st.Var.Value != nil {
+			e, err = convertExpr(st.Var.Value, env)
+			if err != nil {
+				return nil, err
+			}
+		} else {
+			e = zeroValue(st.Var.Type, env)
 		}
 		var t types.Type
 		if env != nil {
@@ -922,7 +1036,7 @@ func convertStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 		if err != nil {
 			return nil, err
 		}
-		if len(st.Assign.Index) == 1 {
+		if len(st.Assign.Index) == 1 && st.Assign.Index[0].Colon == nil {
 			idxExpr, err := convertExpr(st.Assign.Index[0].Start, env)
 			if err != nil {
 				return nil, err
@@ -933,6 +1047,10 @@ func convertStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 				}
 			}
 			return &ListAssignStmt{Name: st.Assign.Name, Index: idxExpr, Expr: e}, nil
+		}
+		if len(st.Assign.Field) == 1 && len(st.Assign.Index) == 0 {
+			key := &StringLit{Value: st.Assign.Field[0].Name}
+			return &MapAssignStmt{Name: st.Assign.Name, Key: key, Expr: e}, nil
 		}
 		return &AssignStmt{Name: st.Assign.Name, Expr: e}, nil
 	case st.Return != nil:
@@ -1114,38 +1232,38 @@ func convertForStmt(n *parser.ForStmt, env *types.Env) (Stmt, error) {
 }
 
 func convertFunStmt(fn *parser.FunStmt, env *types.Env) (Stmt, error) {
-        child := types.NewEnv(env)
-        var params []string
-        for _, p := range fn.Params {
-                params = append(params, p.Name)
-                child.SetVar(p.Name, types.AnyType{}, true)
-        }
-        body, err := convertStatements(fn.Body, child)
-        if err != nil {
-                return nil, err
-        }
-        return &FunDecl{Name: fn.Name, Params: params, Body: body}, nil
+	child := types.NewEnv(env)
+	var params []string
+	for _, p := range fn.Params {
+		params = append(params, p.Name)
+		child.SetVar(p.Name, types.AnyType{}, true)
+	}
+	body, err := convertStatements(fn.Body, child)
+	if err != nil {
+		return nil, err
+	}
+	return &FunDecl{Name: fn.Name, Params: params, Body: body}, nil
 }
 
 func convertFunExpr(fn *parser.FunExpr, env *types.Env) (Expr, error) {
-        child := types.NewEnv(env)
-        params := make([]string, len(fn.Params))
-        for i, p := range fn.Params {
-                params[i] = p.Name
-                child.SetVar(p.Name, types.AnyType{}, true)
-        }
-        if fn.ExprBody != nil {
-                expr, err := convertExpr(fn.ExprBody, child)
-                if err != nil {
-                        return nil, err
-                }
-                return &LambdaExpr{Params: params, Expr: expr}, nil
-        }
-        stmts, err := convertStatements(fn.BlockBody, child)
-        if err != nil {
-                return nil, err
-        }
-        return &LambdaExpr{Params: params, Body: stmts}, nil
+	child := types.NewEnv(env)
+	params := make([]string, len(fn.Params))
+	for i, p := range fn.Params {
+		params[i] = p.Name
+		child.SetVar(p.Name, types.AnyType{}, true)
+	}
+	if fn.ExprBody != nil {
+		expr, err := convertExpr(fn.ExprBody, child)
+		if err != nil {
+			return nil, err
+		}
+		return &LambdaExpr{Params: params, Expr: expr}, nil
+	}
+	stmts, err := convertStatements(fn.BlockBody, child)
+	if err != nil {
+		return nil, err
+	}
+	return &LambdaExpr{Params: params, Body: stmts}, nil
 }
 
 func convertUpdateStmt(u *parser.UpdateStmt, env *types.Env) (Stmt, error) {
@@ -1392,6 +1510,25 @@ func convertPostfix(pf *parser.PostfixExpr, env *types.Env) (Expr, error) {
 			isStr := types.IsStringPrimary(pf.Target, env)
 			isMap := types.IsMapPrimary(pf.Target, env)
 			expr = &IndexExpr{Target: expr, Index: idx, IsString: isStr, IsMap: isMap}
+		case op.Index != nil && op.Index.Colon != nil:
+			if op.Index.Colon2 != nil || op.Index.Step != nil {
+				return nil, fmt.Errorf("slice step not supported")
+			}
+			var start, end Expr
+			if op.Index.Start != nil {
+				start, err = convertExpr(op.Index.Start, env)
+				if err != nil {
+					return nil, err
+				}
+			}
+			if op.Index.End != nil {
+				end, err = convertExpr(op.Index.End, env)
+				if err != nil {
+					return nil, err
+				}
+			}
+			isStr := types.IsStringPrimary(pf.Target, env)
+			expr = &SliceExpr{Target: expr, Start: start, End: end, IsString: isStr}
 		case op.Cast != nil && op.Cast.Type != nil && op.Cast.Type.Simple != nil:
 			expr = &CastExpr{Value: expr, Type: *op.Cast.Type.Simple}
 		default:
@@ -1422,12 +1559,14 @@ func convertPrimary(p *parser.Primary, env *types.Env) (Expr, error) {
 		return convertList(p.List, env)
 	case p.Struct != nil:
 		return convertStruct(p.Struct, env)
-       case p.Map != nil:
-               return convertMap(p.Map, env)
-       case p.FunExpr != nil:
-               return convertFunExpr(p.FunExpr, env)
-       case p.Call != nil:
-               return convertCall(p.Call, env)
+	case p.Map != nil:
+		return convertMap(p.Map, env)
+	case p.FunExpr != nil:
+		return convertFunExpr(p.FunExpr, env)
+	case p.Call != nil:
+		return convertCall(p.Call, env)
+	case p.Match != nil:
+		return convertMatchExpr(p.Match, env)
 	case p.Query != nil:
 		return convertQueryExpr(p.Query, env)
 	case p.If != nil:
@@ -1505,6 +1644,31 @@ func convertMap(m *parser.MapLiteral, env *types.Env) (Expr, error) {
 		args = append(args, k, v)
 	}
 	return &CallExpr{Func: "hash", Args: args}, nil
+}
+
+func convertMatchExpr(m *parser.MatchExpr, env *types.Env) (Expr, error) {
+	val, err := convertExpr(m.Target, env)
+	if err != nil {
+		return nil, err
+	}
+	var cases []MatchCase
+	for _, c := range m.Cases {
+		patExpr, err := convertExpr(c.Pattern, env)
+		if err != nil {
+			return nil, err
+		}
+		resExpr, err := convertExpr(c.Result, env)
+		if err != nil {
+			return nil, err
+		}
+		def := false
+		if name, ok := isSimpleIdent(c.Pattern); ok && name == "_" {
+			def = true
+			patExpr = nil
+		}
+		cases = append(cases, MatchCase{Pattern: patExpr, Expr: resExpr, Default: def})
+	}
+	return &MatchExpr{Value: val, Cases: cases}, nil
 }
 
 func convertCall(c *parser.CallExpr, env *types.Env) (Expr, error) {

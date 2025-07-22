@@ -1,3 +1,13 @@
+## Progress (2025-07-22 02:11 +0000)
+- Commit cfdc48e97: added match and slice support
+- Generated Racket for 92/102 programs
+- Updated README checklist
+
+## Progress (2025-07-22 08:58 +0700)
+- Commit da1405629: rkt transpiler: support lambda expressions
+- Generated Racket for 84/100 programs
+- Updated README checklist
+
 ## Progress (2025-07-22 06:19 +0700)
 - Commit 85aa12994: cs transpiler: support outer join
 - Generated Racket for 85/100 programs
