@@ -3,13 +3,13 @@
 package st_test
 
 import (
+	"bufio"
 	"bytes"
 	"flag"
 	"fmt"
 	"os"
 	"os/exec"
 	"path/filepath"
-	"sort"
 	"strconv"
 	"strings"
 	"testing"
@@ -30,17 +30,21 @@ func TestSmalltalkRosetta(t *testing.T) {
 	outDir := filepath.Join(root, "tests", "rosetta", "transpiler", "st")
 	os.MkdirAll(outDir, 0o755)
 
-	pattern := filepath.Join(srcDir, "*.mochi")
-	if only := os.Getenv("MOCHI_ROSETTA_ONLY"); only != "" {
-		pattern = filepath.Join(srcDir, only+".mochi")
-	}
-	files, err := filepath.Glob(pattern)
+	indexPath := filepath.Join(srcDir, "index.txt")
+	names, err := readIndex(indexPath)
 	if err != nil {
-		t.Fatalf("glob: %v", err)
+		t.Fatalf("read index: %v", err)
 	}
-	sort.Strings(files)
-	if len(files) == 0 {
-		t.Fatalf("no Mochi Rosetta tests found: %s", pattern)
+	if len(names) == 0 {
+		t.Fatalf("no Mochi Rosetta tests found: %s", indexPath)
+	}
+	var files []string
+	if only := os.Getenv("MOCHI_ROSETTA_ONLY"); only != "" {
+		files = []string{filepath.Join(srcDir, only+".mochi")}
+	} else {
+		for _, name := range names {
+			files = append(files, filepath.Join(srcDir, name))
+		}
 	}
 
 	if idxStr := os.Getenv("MOCHI_ROSETTA_INDEX"); idxStr != "" {
@@ -139,18 +143,41 @@ func shouldUpdate() bool {
 	return f != nil && f.Value.String() == "true"
 }
 
+func readIndex(path string) ([]string, error) {
+	f, err := os.Open(path)
+	if err != nil {
+		return nil, err
+	}
+	defer f.Close()
+	var names []string
+	scanner := bufio.NewScanner(f)
+	for scanner.Scan() {
+		parts := strings.Fields(scanner.Text())
+		if len(parts) == 2 {
+			names = append(names, parts[1])
+		}
+	}
+	if err := scanner.Err(); err != nil {
+		return nil, err
+	}
+	return names, nil
+}
+
 func updateRosettaChecklist() {
 	root := repoRootDir(&testing.T{})
 	srcDir := filepath.Join(root, "tests", "rosetta", "x", "Mochi")
 	outDir := filepath.Join(root, "tests", "rosetta", "transpiler", "st")
 	readmePath := filepath.Join(root, "transpiler", "x", "st", "ROSETTA.md")
-	files, _ := filepath.Glob(filepath.Join(srcDir, "*.mochi"))
-	sort.Strings(files)
-	total := len(files)
+
+	names, err := readIndex(filepath.Join(srcDir, "index.txt"))
+	if err != nil {
+		return
+	}
+	total := len(names)
 	compiled := 0
 	var lines []string
-	for _, f := range files {
-		name := strings.TrimSuffix(filepath.Base(f), ".mochi")
+	for _, nameFile := range names {
+		name := strings.TrimSuffix(nameFile, ".mochi")
 		mark := "[ ]"
 		if _, err := os.Stat(filepath.Join(outDir, name+".out")); err == nil {
 			if _, err2 := os.Stat(filepath.Join(outDir, name+".error")); os.IsNotExist(err2) {
