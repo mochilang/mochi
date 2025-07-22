@@ -45,6 +45,7 @@ var (
 	datasetWhereEnabled  bool
 	joinMultiEnabled     bool
 	builtinAliases       map[string]string
+	funcAliases          map[string]string
 	mapKeyTypes          map[string]string
 	mapValTypes          map[string]string
 	needMapGetSI         bool
@@ -52,6 +53,7 @@ var (
 	needMapGetIS         bool
 	needListAppendInt    bool
 	needListAppendStr    bool
+	needNow              bool
 )
 
 const version = "0.10.32"
@@ -326,9 +328,13 @@ func (d *DeclStmt) emit(w io.Writer, indent int) {
 			fmt.Fprintf(w, "size_t %s_len = %d;\n", d.Name, len(lst.Elems))
 			return
 		}
-		fmt.Fprintf(w, "%s *%s = NULL;\n", base, d.Name)
-		writeIndent(w, indent)
-		fmt.Fprintf(w, "size_t %s_len = 0;\n", d.Name)
+		if vr, ok := d.Value.(*VarRef); ok {
+			fmt.Fprintf(w, "%s *%s = %s;\n", base, d.Name, vr.Name)
+		} else {
+			fmt.Fprintf(w, "%s *%s = NULL;\n", base, d.Name)
+			writeIndent(w, indent)
+			fmt.Fprintf(w, "size_t %s_len = 0;\n", d.Name)
+		}
 		return
 	} else {
 		io.WriteString(w, typ)
@@ -912,6 +918,8 @@ func (b *BinaryExpr) emitExpr(w io.Writer) {
 func escape(s string) string {
 	s = strings.ReplaceAll(s, "\\", "\\\\")
 	s = strings.ReplaceAll(s, "\"", "\\\"")
+	s = strings.ReplaceAll(s, "\n", "\\n")
+	s = strings.ReplaceAll(s, "\t", "\\t")
 	return s
 }
 
@@ -1069,6 +1077,14 @@ func (p *Program) Emit() []byte {
 		buf.WriteString("    return arr;\n")
 		buf.WriteString("}\n\n")
 	}
+	if needNow {
+		buf.WriteString("#include <time.h>\n")
+		buf.WriteString("static int _now(void) {\n")
+		buf.WriteString("    struct timespec ts;\n")
+		buf.WriteString("    clock_gettime(CLOCK_REALTIME, &ts);\n")
+		buf.WriteString("    return (int)(ts.tv_sec * 1000 + ts.tv_nsec / 1000000);\n")
+		buf.WriteString("}\n\n")
+	}
 	names := make([]string, 0, len(structTypes))
 	for name := range structTypes {
 		names = append(names, name)
@@ -1151,7 +1167,16 @@ func (p *Program) Emit() []byte {
 		if ret == "" {
 			ret = "int"
 		}
-		buf.WriteString(ret)
+		if strings.HasSuffix(ret, "[]") {
+			base := strings.TrimSuffix(ret, "[]")
+			if base == "" {
+				base = "int"
+			}
+			buf.WriteString(base)
+			buf.WriteString(" *")
+		} else {
+			buf.WriteString(ret)
+		}
 		buf.WriteString(" ")
 		buf.WriteString(f.Name)
 		if f.Name == "main" && len(f.Params) == 0 {
@@ -1165,7 +1190,16 @@ func (p *Program) Emit() []byte {
 				if p.Type == "" {
 					p.Type = "int"
 				}
-				buf.WriteString(p.Type)
+				if strings.HasSuffix(p.Type, "[]") {
+					base := strings.TrimSuffix(p.Type, "[]")
+					if base == "" {
+						base = "int"
+					}
+					buf.WriteString(base)
+					buf.WriteString(" *")
+				} else {
+					buf.WriteString(p.Type)
+				}
 				buf.WriteString(" ")
 				buf.WriteString(p.Name)
 			}
@@ -1214,9 +1248,11 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 	needMapGetIS = false
 	needListAppendInt = false
 	needListAppendStr = false
+	needNow = false
 	datasetWhereEnabled = false
 	joinMultiEnabled = false
 	builtinAliases = make(map[string]string)
+	funcAliases = make(map[string]string)
 
 	for _, st := range prog.Statements {
 		if st.Import != nil && st.Import.Lang != nil {
@@ -1243,7 +1279,12 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 	for _, st := range prog.Statements {
 		if st.Fun != nil {
 			fnExpr := &parser.FunExpr{Params: st.Fun.Params, Return: st.Fun.Return, BlockBody: st.Fun.Body}
-			fun, err := compileFunction(env, st.Fun.Name, fnExpr)
+			name := st.Fun.Name
+			if name == "main" {
+				name = "user_main"
+				funcAliases["main"] = "user_main"
+			}
+			fun, err := compileFunction(env, name, fnExpr)
 			if err != nil {
 				return nil, err
 			}
@@ -1687,6 +1728,20 @@ func compileStmt(env *types.Env, s *parser.Statement) (Stmt, error) {
 				env.SetValue(s.Assign.Name, val, true)
 			}
 		}
+		if call, ok := valExpr.(*CallExpr); ok && call.Func == "append" && len(call.Args) == 2 && len(idxs) == 0 && len(fields) == 0 {
+			if vr, ok2 := call.Args[0].(*VarRef); ok2 && vr.Name == s.Assign.Name {
+				base := strings.TrimSuffix(varTypes[s.Assign.Name], "[]")
+				if base == "" {
+					base = "int"
+				}
+				switch base {
+				case "int":
+					needListAppendInt = true
+				case "const char*":
+					needListAppendStr = true
+				}
+			}
+		}
 		if isMapVar(s.Assign.Name) && len(idxs) == 1 && len(fields) == 0 {
 			keyT := mapKeyTypes[s.Assign.Name]
 			valT := mapValTypes[s.Assign.Name]
@@ -2053,11 +2108,29 @@ func compileFunction(env *types.Env, name string, fn *parser.FunExpr) (*Function
 	var paramTypes []string
 	for _, p := range fn.Params {
 		typ := "int"
-		if p.Type != nil && p.Type.Simple != nil && *p.Type.Simple == "string" {
-			typ = "const char*"
-		} else if p.Type != nil && p.Type.Simple != nil {
-			if _, ok := env.GetStruct(*p.Type.Simple); ok {
-				typ = *p.Type.Simple
+		if p.Type != nil {
+			if p.Type.Simple != nil {
+				if *p.Type.Simple == "string" {
+					typ = "const char*"
+				} else if st, ok := env.GetStruct(*p.Type.Simple); ok {
+					typ = st.Name
+				}
+			} else if g := p.Type.Generic; g != nil && g.Name == "list" && len(g.Args) == 1 {
+				elemT := "int"
+				if g.Args[0].Simple != nil {
+					switch *g.Args[0].Simple {
+					case "string":
+						elemT = "const char*"
+					case "float":
+						elemT = "double"
+						markMath()
+					default:
+						if st, ok := env.GetStruct(*g.Args[0].Simple); ok {
+							elemT = st.Name
+						}
+					}
+				}
+				typ = elemT + "[]"
 			}
 		}
 		if typ == "double" || strings.HasSuffix(typ, "double[]") {
@@ -2065,6 +2138,7 @@ func compileFunction(env *types.Env, name string, fn *parser.FunExpr) (*Function
 		}
 		paramTypes = append(paramTypes, typ)
 		params = append(params, Param{Name: p.Name, Type: typ})
+		varTypes[p.Name] = typ
 		switch typ {
 		case "const char*":
 			localEnv.SetVar(p.Name, types.StringType{}, true)
@@ -2073,23 +2147,43 @@ func compileFunction(env *types.Env, name string, fn *parser.FunExpr) (*Function
 		case "int":
 			localEnv.SetVar(p.Name, types.IntType{}, true)
 		default:
-			if st, ok := env.GetStruct(typ); ok {
+			if strings.HasSuffix(typ, "[]") {
+				localEnv.SetVar(p.Name, types.ListType{Elem: types.IntType{}}, true)
+			} else if st, ok := env.GetStruct(typ); ok {
 				localEnv.SetVar(p.Name, st, true)
 			}
 		}
 	}
 	funcParamTypes[name] = paramTypes
 	ret := "int"
-	if fn.Return != nil && fn.Return.Simple != nil {
-		switch *fn.Return.Simple {
-		case "string":
-			ret = "const char*"
-		case "float":
-			ret = "double"
-		default:
-			if _, ok := env.GetStruct(*fn.Return.Simple); ok {
-				ret = *fn.Return.Simple
+	if fn.Return != nil {
+		if fn.Return.Simple != nil {
+			switch *fn.Return.Simple {
+			case "string":
+				ret = "const char*"
+			case "float":
+				ret = "double"
+			default:
+				if _, ok := env.GetStruct(*fn.Return.Simple); ok {
+					ret = *fn.Return.Simple
+				}
 			}
+		} else if g := fn.Return.Generic; g != nil && g.Name == "list" && len(g.Args) == 1 {
+			elemT := "int"
+			if g.Args[0].Simple != nil {
+				switch *g.Args[0].Simple {
+				case "string":
+					elemT = "const char*"
+				case "float":
+					elemT = "double"
+					markMath()
+				default:
+					if st, ok := env.GetStruct(*g.Args[0].Simple); ok {
+						elemT = st.Name
+					}
+				}
+			}
+			ret = elemT + "[]"
 		}
 	}
 	if ret == "double" {
@@ -2643,6 +2737,10 @@ func convertUnary(u *parser.Unary) Expr {
 			}
 			return &StringLit{Value: string(r[start:end])}
 		}
+		if call.Func == "now" && len(call.Args) == 0 {
+			needNow = true
+			return &CallExpr{Func: "_now"}
+		}
 		if call.Func == "str" && len(call.Args) == 1 {
 			arg := convertExpr(call.Args[0])
 			if lit, ok := arg.(*IntLit); ok {
@@ -2671,6 +2769,9 @@ func convertUnary(u *parser.Unary) Expr {
 				return nil
 			}
 			args = append(args, ex)
+		}
+		if newName, ok := funcAliases[call.Func]; ok {
+			call.Func = newName
 		}
 		if t, ok := varTypes[call.Func]; ok {
 			if apply, ok2 := closureApply[t]; ok2 {

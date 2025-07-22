@@ -1,5 +1,5 @@
-## Progress (2025-07-22 17:22 +0700)
-- Commit 2b6272792: c transpiler: support simple filter queries
+## Progress (2025-07-22 20:29 +0700)
+- Commit 68c90d923: c transpiler: add dynamic list support
 - Regenerated golden files - 80/103 vm valid programs passing
 
 ## Progress (2025-07-22 14:12 +0700)
