@@ -1,3 +1,8 @@
+## Progress (2025-07-22 11:32 +0700)
+- Commit 130aeea34: zig transpiler: support load jsonl and yaml
+- Generated Zig for 101/102 programs
+- Updated README checklist and outputs
+
 ## Progress (2025-07-22 10:54 +0700)
 - Commit d025bc223: release: v0.10.35
 - Generated Zig for 99/102 programs
