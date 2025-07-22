@@ -118,6 +118,9 @@ func TestTranspile_Golden(t *testing.T) {
 		"typed_var",
 		"load_jsonl",
 		"load_yaml",
+		"mix_go_python",
+		"python_auto",
+		"python_math",
 	}
 	for _, name := range names {
 		src := filepath.Join(root, "tests", "vm", "valid", name+".mochi")
