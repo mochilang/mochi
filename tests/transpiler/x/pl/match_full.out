@@ -1,0 +1,4 @@
+two
+relaxed
+ERROR: /workspace/mochi/tests/transpiler/x/pl/match_full.pl:1: Initialization goal raised exception:
+ERROR: =:=/2: Arithmetic: `true/0' is not a function

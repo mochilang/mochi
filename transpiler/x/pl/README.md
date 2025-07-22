@@ -2,8 +2,8 @@
 
 This directory contains a tiny transpiler that converts a restricted subset of Mochi programs to SWI-Prolog. It is mainly used for experimentation and golden tests.
 
-## VM Golden Test Checklist (80/102)
-Last updated: 2025-07-22 14:11 +0700
+## VM Golden Test Checklist (86/102)
+Last updated: 2025-07-22 14:53 +0700
 - [x] `append_builtin`
 - [x] `avg_builtin`
 - [x] `basic_compare`
@@ -46,7 +46,7 @@ Last updated: 2025-07-22 14:11 +0700
 - [x] `join_multi`
 - [x] `json_builtin`
 - [x] `left_join`
-- [ ] `left_join_multi`
+- [x] `left_join_multi`
 - [x] `len_builtin`
 - [x] `len_map`
 - [x] `len_string`
@@ -61,17 +61,17 @@ Last updated: 2025-07-22 14:11 +0700
 - [x] `map_in_operator`
 - [x] `map_index`
 - [x] `map_int_key`
-- [ ] `map_literal_dynamic`
+- [x] `map_literal_dynamic`
 - [x] `map_membership`
 - [ ] `map_nested_assign`
 - [x] `match_expr`
-- [ ] `match_full`
+- [x] `match_full`
 - [x] `math_ops`
 - [x] `membership`
 - [x] `min_max_builtin`
 - [ ] `nested_function`
 - [ ] `order_by_map`
-- [ ] `outer_join`
+- [x] `outer_join`
 - [x] `partial_application`
 - [x] `print_hello`
 - [x] `pure_fold`
@@ -80,11 +80,11 @@ Last updated: 2025-07-22 14:11 +0700
 - [ ] `python_math`
 - [x] `query_sum_select`
 - [ ] `record_assign`
-- [ ] `right_join`
+- [x] `right_join`
 - [ ] `save_jsonl_stdout`
 - [x] `short_circuit`
 - [x] `slice`
-- [ ] `sort_stable`
+- [x] `sort_stable`
 - [x] `str_builtin`
 - [x] `string_compare`
 - [x] `string_concat`
