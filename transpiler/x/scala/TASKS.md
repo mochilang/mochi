@@ -1,3 +1,15 @@
+## Progress (2025-07-22 14:25 +0700)
+- scala transpiler: fix group_by queries
+- Regenerated golden files - 77/102 vm valid programs passing
+
+## Progress (2025-07-22 14:12 +0700)
+- scala transpiler: support load_jsonl and yaml
+- Regenerated golden files - 77/102 vm valid programs passing
+
+## Progress (2025-07-22 14:12 +0700)
+- scala transpiler: support load_jsonl and yaml
+- Regenerated golden files - 74/102 vm valid programs passing
+
 ## Progress (2025-07-22 14:03 +0700)
 - scala transpiler: support load_jsonl and load_yaml without runtime helpers
 - Regenerated golden files - 76/102 vm valid programs passing
