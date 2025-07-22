@@ -1,3 +1,33 @@
+## Progress (2025-07-22 16:22 UTC)
+- pascal: add indices to rosetta checklist (progress 87/103)
+
+## Progress (2025-07-22 16:22 UTC)
+- pascal: add indices to rosetta checklist (progress 87/103)
+
+## Progress (2025-07-22 16:22 UTC)
+- pascal: add indices to rosetta checklist (progress 87/103)
+
+## Progress (2025-07-22 16:22 UTC)
+- pascal: add indices to rosetta checklist (progress 87/103)
+
+## Progress (2025-07-22 16:22 UTC)
+- pascal: add indices to rosetta checklist (progress 87/103)
+
+## Progress (2025-07-22 16:22 UTC)
+- pascal: add indices to rosetta checklist (progress 87/103)
+
+## Progress (2025-07-22 16:22 UTC)
+- pascal: add indices to rosetta checklist (progress 87/103)
+
+## Progress (2025-07-22 23:17 +0700)
+- pascal rosetta: update progress (progress 87/103)
+
+## Progress (2025-07-22 23:17 +0700)
+- pascal rosetta: update progress (progress 87/103)
+
+## Progress (2025-07-22 23:17 +0700)
+- pascal rosetta: update progress (progress 87/103)
+
 ## Progress (2025-07-22 22:49 +0700)
 - transpiler/erl: use index for Rosetta tests (progress 87/103)
 
