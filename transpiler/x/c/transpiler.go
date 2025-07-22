@@ -692,6 +692,27 @@ func (b *BinaryExpr) emitExpr(w io.Writer) {
 						io.WriteString(w, " == ")
 						e.emitExpr(w)
 					}
+					if vr, ok := b.Right.(*VarRef); ok {
+						if t, ok2 := varTypes[vr.Name]; ok2 && strings.HasSuffix(t, "[]") {
+							elem := strings.TrimSuffix(t, "[]")
+							if elem == "int" {
+								io.WriteString(w, "contains_int(")
+								io.WriteString(w, vr.Name)
+								fmt.Fprintf(w, ", sizeof(%s)/sizeof(%s[0]), ", vr.Name, vr.Name)
+								b.Left.emitExpr(w)
+								io.WriteString(w, ")")
+								return
+							}
+							if elem == "const char*" {
+								io.WriteString(w, "contains_str(")
+								io.WriteString(w, vr.Name)
+								fmt.Fprintf(w, ", sizeof(%s)/sizeof(%s[0]), ", vr.Name, vr.Name)
+								b.Left.emitExpr(w)
+								io.WriteString(w, ")")
+								return
+							}
+						}
+					}
 				}
 			}
 			io.WriteString(w, ")")
@@ -798,6 +819,18 @@ func (p *Program) Emit() []byte {
 		buf.WriteString("#include <math.h>\n")
 	}
 	buf.WriteString("\n")
+	buf.WriteString("static int contains_int(const int arr[], size_t len, int val) {\n")
+	buf.WriteString("    for (size_t i = 0; i < len; i++) {\n")
+	buf.WriteString("        if (arr[i] == val) return 1;\n")
+	buf.WriteString("    }\n")
+	buf.WriteString("    return 0;\n")
+	buf.WriteString("}\n\n")
+	buf.WriteString("static int contains_str(const char *arr[], size_t len, const char *val) {\n")
+	buf.WriteString("    for (size_t i = 0; i < len; i++) {\n")
+	buf.WriteString("        if (strcmp(arr[i], val) == 0) return 1;\n")
+	buf.WriteString("    }\n")
+	buf.WriteString("    return 0;\n")
+	buf.WriteString("}\n\n")
 	names := make([]string, 0, len(structTypes))
 	for name := range structTypes {
 		names = append(names, name)

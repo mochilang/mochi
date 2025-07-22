@@ -149,6 +149,7 @@ func TestTranspilerGolden(t *testing.T) {
 		filepath.Join(srcDir, "slice.mochi"),
 		filepath.Join(srcDir, "min_max_builtin.mochi"),
 		filepath.Join(srcDir, "in_operator.mochi"),
+		filepath.Join(srcDir, "membership.mochi"),
 		filepath.Join(srcDir, "list_set_ops.mochi"),
 		filepath.Join(srcDir, "short_circuit.mochi"),
 		filepath.Join(srcDir, "pure_fold.mochi"),
