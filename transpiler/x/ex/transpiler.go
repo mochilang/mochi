@@ -277,13 +277,17 @@ func (wst *WhileStmt) emit(w io.Writer, indent int) {
 	for i := 0; i < indent; i++ {
 		io.WriteString(w, "  ")
 	}
+	io.WriteString(w, "try do\n")
+	for i := 0; i < indent+1; i++ {
+		io.WriteString(w, "  ")
+	}
 	if len(wst.Vars) == 0 {
-		io.WriteString(w, "while_fun.(while_fun)")
+		io.WriteString(w, "while_fun.(while_fun)\n")
 	} else if len(wst.Vars) == 1 {
 		io.WriteString(w, wst.Vars[0])
 		io.WriteString(w, " = while_fun.(while_fun, ")
 		io.WriteString(w, wst.Vars[0])
-		io.WriteString(w, ")")
+		io.WriteString(w, ")\n")
 	} else {
 		io.WriteString(w, "{")
 		for i, v := range wst.Vars {
@@ -297,8 +301,20 @@ func (wst *WhileStmt) emit(w io.Writer, indent int) {
 			io.WriteString(w, ", ")
 			io.WriteString(w, v)
 		}
-		io.WriteString(w, ")")
+		io.WriteString(w, ")\n")
 	}
+	for i := 0; i < indent; i++ {
+		io.WriteString(w, "  ")
+	}
+	io.WriteString(w, "catch\n")
+	for i := 0; i < indent+1; i++ {
+		io.WriteString(w, "  ")
+	}
+	io.WriteString(w, ":break -> nil\n")
+	for i := 0; i < indent; i++ {
+		io.WriteString(w, "  ")
+	}
+	io.WriteString(w, "end")
 }
 
 // ForStmt represents a basic for loop over a collection or range.
@@ -643,8 +659,15 @@ func (b *BinaryExpr) emit(w io.Writer) {
 		return false
 	}
 	isString := func(e Expr) bool {
-		_, ok := e.(*StringLit)
-		return ok
+		switch t := e.(type) {
+		case *StringLit:
+			return true
+		case *CallExpr:
+			if t.Func == "to_string" || strings.HasSuffix(t.Func, ".to_string") {
+				return true
+			}
+		}
+		return false
 	}
 	if b.Op == "/" && isInt(b.Left) && isInt(b.Right) {
 		io.WriteString(w, "div(")
@@ -1569,9 +1592,10 @@ func compileWhileStmt(ws *parser.WhileStmt, env *types.Env) (Stmt, error) {
 	if err != nil {
 		return nil, err
 	}
+	bodyEnv := types.NewEnv(env)
 	body := make([]Stmt, 0, len(ws.Body))
 	for _, s := range ws.Body {
-		st, err := compileStmt(s, env)
+		st, err := compileStmt(s, bodyEnv)
 		if err != nil {
 			return nil, err
 		}
