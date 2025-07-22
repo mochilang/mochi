@@ -982,12 +982,20 @@ type NotExpr struct{ Value Expr }
 
 func (n *NotExpr) emit(w io.Writer) {
 	io.WriteString(w, "!")
+	needCast := guessType(n.Value) != "Boolean"
+	if needCast {
+		io.WriteString(w, "(")
+	}
 	switch n.Value.(type) {
 	case *BoolLit, *VarRef, *CallExpr, *IndexExpr, *FieldExpr:
 		n.Value.emit(w)
 	default:
 		io.WriteString(w, "(")
 		n.Value.emit(w)
+		io.WriteString(w, ")")
+	}
+	if needCast {
+		io.WriteString(w, " as Boolean")
 		io.WriteString(w, ")")
 	}
 }
@@ -1014,9 +1022,11 @@ type AppendExpr struct {
 }
 
 func (a *AppendExpr) emit(w io.Writer) {
+	io.WriteString(w, "(")
 	a.List.emit(w)
 	io.WriteString(w, " + ")
 	a.Elem.emit(w)
+	io.WriteString(w, ").toMutableList()")
 }
 
 type MinExpr struct{ Value Expr }
@@ -1641,15 +1651,21 @@ func guessType(e Expr) string {
 		}
 		return "MutableList<" + elem + ">"
 	case *BinaryExpr:
-		if v.Op == "+" {
+		if v.Op == "+" || v.Op == "-" || v.Op == "*" || v.Op == "%" {
 			lt := guessType(v.Left)
 			rt := guessType(v.Right)
 			if lt == "String" || rt == "String" {
 				return "String"
 			}
+			if lt == "Int" && rt == "Int" {
+				if v.Op == "%" {
+					return "Int"
+				}
+				return "Int"
+			}
 			return "Double"
 		}
-		if v.Op == "-" || v.Op == "*" || v.Op == "/" || v.Op == "%" {
+		if v.Op == "/" {
 			return "Double"
 		}
 		if v.Op == "==" || v.Op == "!=" || v.Op == ">" || v.Op == "<" || v.Op == ">=" || v.Op == "<=" {
@@ -1833,6 +1849,9 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 			target, err := buildAccessTarget(env, st.Assign.Name, st.Assign.Index, st.Assign.Field)
 			if err != nil {
 				return nil, err
+			}
+			if ix, ok := target.(*IndexExpr); ok {
+				ix.ForceBang = false
 			}
 			v, err := convertExpr(env, st.Assign.Value)
 			if err != nil {
@@ -2038,6 +2057,9 @@ func convertStmts(env *types.Env, list []*parser.Statement) ([]Stmt, error) {
 			if err != nil {
 				return nil, err
 			}
+			if ix, ok := target.(*IndexExpr); ok {
+				ix.ForceBang = false
+			}
 			v, err := convertExpr(env, s.Assign.Value)
 			if err != nil {
 				return nil, err
@@ -2151,7 +2173,7 @@ func convertIfStmt(env *types.Env, is *parser.IfStmt) (Stmt, error) {
 		return nil, err
 	}
 	if !isBoolExpr(cond) {
-		cond = &NotNullCheck{Value: cond}
+		cond = &CastExpr{Value: cond, Type: "Boolean"}
 	}
 	thenStmts, err := convertStmts(env, is.Then)
 	if err != nil {
@@ -2179,7 +2201,7 @@ func convertWhileStmt(env *types.Env, ws *parser.WhileStmt) (Stmt, error) {
 		return nil, err
 	}
 	if !isBoolExpr(cond) {
-		cond = &NotNullCheck{Value: cond}
+		cond = &CastExpr{Value: cond, Type: "Boolean"}
 	}
 	body, err := convertStmts(env, ws.Body)
 	if err != nil {
@@ -2198,7 +2220,9 @@ func convertForStmt(env *types.Env, fs *parser.ForStmt) (Stmt, error) {
 		if err != nil {
 			return nil, err
 		}
-		body, err := convertStmts(env, fs.Body)
+		bodyEnv := types.NewEnv(env)
+		bodyEnv.SetVar(fs.Name, types.IntType{}, true)
+		body, err := convertStmts(bodyEnv, fs.Body)
 		if err != nil {
 			return nil, err
 		}
