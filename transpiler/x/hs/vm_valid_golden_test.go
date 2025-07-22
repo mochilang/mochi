@@ -71,6 +71,7 @@ func TestMain(m *testing.M) {
 	code := m.Run()
 	updateReadme()
 	updateTasks()
+	updateChecklist()
 	os.Exit(code)
 }
 
