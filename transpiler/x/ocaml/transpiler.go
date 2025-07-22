@@ -23,6 +23,8 @@ import (
 	"mochi/types"
 )
 
+var structFields = map[string]map[string]string{}
+
 // Program represents an OCaml program. All statements are emitted inside
 // a `let () =` block.
 type Program struct {
@@ -1734,6 +1736,30 @@ func defaultValueExpr(typ string) Expr {
 	return &IntLit{Value: 0}
 }
 
+func typeRefString(t *parser.TypeRef) string {
+	if t == nil {
+		return ""
+	}
+	if t.Simple != nil {
+		return *t.Simple
+	}
+	if t.Generic != nil {
+		switch t.Generic.Name {
+		case "list":
+			if len(t.Generic.Args) == 1 {
+				elem := typeRefString(t.Generic.Args[0])
+				if elem != "" {
+					return "list-" + elem
+				}
+			}
+			return "list"
+		case "map":
+			return "map"
+		}
+	}
+	return ""
+}
+
 // Emit renders OCaml source code for the program.
 func (p *Program) Emit() []byte {
 	var buf bytes.Buffer
@@ -1806,8 +1832,11 @@ func transpileStmt(st *parser.Statement, env *types.Env, vars map[string]VarInfo
 			if err != nil {
 				return nil, err
 			}
-		} else if st.Let.Type != nil && st.Let.Type.Simple != nil {
-			typ = *st.Let.Type.Simple
+		} else if st.Let.Type != nil {
+			typ = typeRefString(st.Let.Type)
+			if typ == "" {
+				typ = "int"
+			}
 			expr = defaultValueExpr(typ)
 		} else {
 			return nil, fmt.Errorf("let without value not supported")
@@ -1823,8 +1852,11 @@ func transpileStmt(st *parser.Statement, env *types.Env, vars map[string]VarInfo
 			if err != nil {
 				return nil, err
 			}
-		} else if st.Var.Type != nil && st.Var.Type.Simple != nil {
-			typ = *st.Var.Type.Simple
+		} else if st.Var.Type != nil {
+			typ = typeRefString(st.Var.Type)
+			if typ == "" {
+				typ = "int"
+			}
 			expr = defaultValueExpr(typ)
 		} else {
 			return nil, fmt.Errorf("var without type or value not supported")
@@ -2078,8 +2110,11 @@ func transpileStmt(st *parser.Statement, env *types.Env, vars map[string]VarInfo
 		for i, p := range st.Fun.Params {
 			params[i] = p.Name
 			typ := "int"
-			if p.Type != nil && p.Type.Simple != nil {
-				typ = *p.Type.Simple
+			if p.Type != nil {
+				typ = typeRefString(p.Type)
+				if typ == "" {
+					typ = "int"
+				}
 			}
 			fnVars[p.Name] = VarInfo{typ: typ, ref: true}
 		}
@@ -2121,7 +2156,19 @@ func transpileStmt(st *parser.Statement, env *types.Env, vars map[string]VarInfo
 		env.SetFuncType(st.Fun.Name, types.FuncType{Return: retTyp})
 		return &FunStmt{Name: st.Fun.Name, Params: params, Body: body, Ret: ret}, nil
 	case st.Type != nil:
-		// ignore type declarations
+		if len(st.Type.Members) > 0 {
+			fields := map[string]string{}
+			for _, m := range st.Type.Members {
+				if m.Field != nil {
+					ft := typeRefString(m.Field.Type)
+					if ft == "" {
+						ft = "int"
+					}
+					fields[m.Field.Name] = ft
+				}
+			}
+			structFields[st.Type.Name] = fields
+		}
 		return nil, nil
 	case st.Test != nil:
 		// ignore test blocks
@@ -2686,6 +2733,14 @@ func convertSelector(sel *parser.SelectorExpr, env *types.Env, vars map[string]V
 		if ft, ok := mapFieldType(typ, t); ok {
 			expr = &MapIndexExpr{Map: expr, Key: key, Typ: ft, Dyn: dyn}
 			typ = ft
+		} else if fields, ok := structFields[typ]; ok {
+			if ft, ok2 := fields[t]; ok2 {
+				expr = &MapIndexExpr{Map: expr, Key: key, Typ: ft, Dyn: true}
+				typ = ft
+			} else {
+				expr = &MapIndexExpr{Map: expr, Key: key, Typ: "int", Dyn: true}
+				typ = "int"
+			}
 		} else {
 			expr = &MapIndexExpr{Map: expr, Key: key, Typ: "int", Dyn: dyn}
 			typ = "int"
@@ -2915,8 +2970,11 @@ func convertFunExpr(fn *parser.FunExpr, env *types.Env, vars map[string]VarInfo)
 	params := make([]string, len(fn.Params))
 	for i, p := range fn.Params {
 		typ := "int"
-		if p.Type != nil && p.Type.Simple != nil {
-			typ = *p.Type.Simple
+		if p.Type != nil {
+			typ = typeRefString(p.Type)
+			if typ == "" {
+				typ = "int"
+			}
 		}
 		fnVars[p.Name] = VarInfo{typ: typ, ref: true}
 		params[i] = p.Name
