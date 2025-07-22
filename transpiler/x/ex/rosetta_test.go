@@ -10,6 +10,7 @@ import (
 	"path/filepath"
 	"regexp"
 	"sort"
+	"strconv"
 	"strings"
 	"testing"
 	"time"
@@ -25,6 +26,24 @@ func TestExTranspiler_Rosetta_Golden(t *testing.T) {
 	root := repoRoot(t)
 	outDir := filepath.Join(root, "tests", "rosetta", "transpiler", "Elixir")
 	os.MkdirAll(outDir, 0o755)
+
+	if idxStr := os.Getenv("MOCHI_ROSETTA_INDEX"); idxStr != "" {
+		idx, err := strconv.Atoi(idxStr)
+		if err != nil {
+			t.Fatalf("invalid MOCHI_ROSETTA_INDEX: %s", idxStr)
+		}
+		pattern := filepath.Join(root, "tests", "rosetta", "x", "Mochi", "*.mochi")
+		files, err := filepath.Glob(pattern)
+		if err != nil {
+			t.Fatalf("glob: %v", err)
+		}
+		sort.Strings(files)
+		if idx < 1 || idx > len(files) {
+			t.Fatalf("MOCHI_ROSETTA_INDEX out of range: %d", idx)
+		}
+		name := strings.TrimSuffix(filepath.Base(files[idx-1]), ".mochi")
+		os.Setenv("MOCHI_ROSETTA_ONLY", name)
+	}
 
 	golden.RunFirstFailure(t, "tests/rosetta/x/Mochi", ".mochi", ".out", func(src string) ([]byte, error) {
 		name := strings.TrimSuffix(filepath.Base(src), ".mochi")
@@ -115,7 +134,7 @@ func updateRosettaReadme() {
 	total := len(files)
 	compiled := 0
 	var lines []string
-	for _, f := range files {
+	for i, f := range files {
 		name := strings.TrimSuffix(filepath.Base(f), ".mochi")
 		mark := "[ ]"
 		if _, err := os.Stat(filepath.Join(outDir, name+".exs")); err == nil {
@@ -124,7 +143,7 @@ func updateRosettaReadme() {
 				mark = "[x]"
 			}
 		}
-		lines = append(lines, fmt.Sprintf("- %s %s", mark, name))
+		lines = append(lines, fmt.Sprintf("%d. %s %s", i+1, mark, name))
 	}
 	var buf bytes.Buffer
 	buf.WriteString("# Rosetta Transpiler Progress\n\n")
