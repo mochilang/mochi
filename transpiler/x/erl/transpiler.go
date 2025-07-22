@@ -357,6 +357,54 @@ func replaceGroupExpr(e Expr, groupVar, keyVar, itemsVar string) Expr {
 	}
 }
 
+func substituteFieldRefs(e Expr, fields map[string]bool) Expr {
+	switch v := e.(type) {
+	case *NameRef:
+		if fields[v.Name] {
+			return &IndexExpr{Target: &NameRef{Name: "Item"}, Index: &StringLit{Value: v.Name}, Kind: "map"}
+		}
+		return v
+	case *BinaryExpr:
+		v.Left = substituteFieldRefs(v.Left, fields)
+		v.Right = substituteFieldRefs(v.Right, fields)
+		return v
+	case *UnaryExpr:
+		v.Expr = substituteFieldRefs(v.Expr, fields)
+		return v
+	case *CallExpr:
+		for i := range v.Args {
+			v.Args[i] = substituteFieldRefs(v.Args[i], fields)
+		}
+		return v
+	case *IndexExpr:
+		v.Target = substituteFieldRefs(v.Target, fields)
+		v.Index = substituteFieldRefs(v.Index, fields)
+		return v
+	case *ListLit:
+		for i := range v.Elems {
+			v.Elems[i] = substituteFieldRefs(v.Elems[i], fields)
+		}
+		return v
+	case *MapLit:
+		for i := range v.Items {
+			v.Items[i].Key = substituteFieldRefs(v.Items[i].Key, fields)
+			v.Items[i].Value = substituteFieldRefs(v.Items[i].Value, fields)
+		}
+		return v
+	case *IfExpr:
+		v.Cond = substituteFieldRefs(v.Cond, fields)
+		v.Then = substituteFieldRefs(v.Then, fields)
+		v.Else = substituteFieldRefs(v.Else, fields)
+		return v
+	case *ContainsExpr:
+		v.Str = substituteFieldRefs(v.Str, fields)
+		v.Sub = substituteFieldRefs(v.Sub, fields)
+		return v
+	default:
+		return v
+	}
+}
+
 type Stmt interface{ emit(io.Writer) }
 
 type Expr interface{ emit(io.Writer) }
@@ -601,6 +649,15 @@ type MapAssignStmt struct {
 	Old   string
 	Key   Expr
 	Value Expr
+}
+
+// UpdateStmt updates fields of items in a list of maps.
+type UpdateStmt struct {
+	Target string
+	Old    string
+	Fields []string
+	Values []Expr
+	Cond   Expr
 }
 
 // BreakStmt represents a `break` statement.
@@ -1433,6 +1490,26 @@ func (ma *MapAssignStmt) emit(w io.Writer) {
 	fmt.Fprintf(w, ", %s)", ma.Old)
 }
 
+func (u *UpdateStmt) emit(w io.Writer) {
+	fmt.Fprintf(w, "%s = lists:map(fun(Item) -> ", u.Target)
+	var body Expr = &NameRef{Name: "Item"}
+	for i, f := range u.Fields {
+		body = &CallExpr{Func: "maps:put", Args: []Expr{&StringLit{Value: f}, u.Values[i], body}}
+	}
+	if u.Cond != nil {
+		io.WriteString(w, "case ")
+		u.Cond.emit(w)
+		io.WriteString(w, " of true -> ")
+		body.emit(w)
+		io.WriteString(w, "; _ -> Item end")
+	} else {
+		body.emit(w)
+	}
+	io.WriteString(w, " end, ")
+	io.WriteString(w, u.Old)
+	io.WriteString(w, ")")
+}
+
 func (b *BreakStmt) emit(w io.Writer)    { io.WriteString(w, "throw(break)") }
 func (c *ContinueStmt) emit(w io.Writer) { io.WriteString(w, "throw(continue)") }
 
@@ -2025,6 +2102,12 @@ func convertStmt(st *parser.Statement, env *types.Env, ctx *context) ([]Stmt, er
 			stmts = append(stmts, &ListAssignStmt{Name: alias, Old: old, Index: idx1, Value: &NameRef{Name: tmp2}})
 		}
 		return stmts, nil
+	case st.Update != nil:
+		u, err := convertUpdateStmt(st.Update, env, ctx)
+		if err != nil {
+			return nil, err
+		}
+		return []Stmt{u}, nil
 	case st.Expr != nil:
 		if se := extractSaveExpr(st.Expr.Expr); se != nil {
 			src, err := convertExpr(se.Src, env, ctx)
@@ -2294,6 +2377,60 @@ func convertFunStmtAsExpr(fn *parser.FunStmt, env *types.Env, ctx *context) (Exp
 		ret = &AtomLit{Name: "nil"}
 	}
 	return &AnonFunc{Params: params, Body: stmts, Return: ret}, nil
+}
+
+func convertUpdateStmt(us *parser.UpdateStmt, env *types.Env, ctx *context) (*UpdateStmt, error) {
+	t, err := env.GetVar(us.Target)
+	if err != nil {
+		return nil, err
+	}
+	lt, ok := t.(types.ListType)
+	if !ok {
+		return nil, fmt.Errorf("update target not list")
+	}
+	st, ok := lt.Elem.(types.StructType)
+	if !ok {
+		return nil, fmt.Errorf("update element not struct")
+	}
+	child := types.NewEnv(env)
+	fieldSet := map[string]bool{}
+	tmpCtx := ctx.clone()
+	for name, ft := range st.Fields {
+		child.SetVar(name, ft, true)
+		fieldSet[name] = true
+		tmpCtx.alias[name] = name
+		tmpCtx.orig[name] = name
+	}
+	fields := make([]string, len(us.Set.Items))
+	values := make([]Expr, len(us.Set.Items))
+	for i, it := range us.Set.Items {
+		key, ok := simpleIdent(it.Key)
+		if !ok {
+			key, ok = literalString(it.Key)
+			if !ok {
+				return nil, fmt.Errorf("unsupported update key")
+			}
+		}
+		val, err := convertExpr(it.Value, child, tmpCtx)
+		if err != nil {
+			return nil, err
+		}
+		val = substituteFieldRefs(val, fieldSet)
+		fields[i] = key
+		values[i] = val
+	}
+	var cond Expr
+	if us.Where != nil {
+		var err error
+		cond, err = convertExpr(us.Where, child, tmpCtx)
+		if err != nil {
+			return nil, err
+		}
+		cond = substituteFieldRefs(cond, fieldSet)
+	}
+	old := ctx.current(us.Target)
+	alias := ctx.newAlias(us.Target)
+	return &UpdateStmt{Target: alias, Old: old, Fields: fields, Values: values, Cond: cond}, nil
 }
 
 func convertExpr(e *parser.Expr, env *types.Env, ctx *context) (Expr, error) {
