@@ -30,6 +30,7 @@ var generatedTypes map[string]bool
 var prelude []Stmt
 var pythonMathAliases map[string]bool
 var useNow bool
+var useInput bool
 
 var reserved = map[string]bool{
 	"break": true, "case": true, "catch": true, "class": true, "const": true,
@@ -1850,12 +1851,14 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	prelude = nil
 	pythonMathAliases = map[string]bool{}
 	useNow = false
+	useInput = false
 	defer func() {
 		transpileEnv = nil
 		generatedTypes = nil
 		prelude = nil
 		pythonMathAliases = nil
 		useNow = false
+		useInput = false
 	}()
 	tsProg := &Program{}
 
@@ -1885,6 +1888,12 @@ function _now(): number {
     return _nowSeed;
   }
   return Date.now() * 1000;
+}`})
+	}
+	if useInput {
+		prelude = append(prelude, &RawStmt{Code: `function _input(): string {
+  const v = prompt('');
+  return v === null ? '' : v;
 }`})
 	}
 	if len(prelude) > 0 {
@@ -2030,9 +2039,9 @@ func convertStmt(s *parser.Statement) (Stmt, error) {
 		if s.Import.Lang != nil && *s.Import.Lang == "go" {
 			path := strings.Trim(s.Import.Path, "\"")
 			switch path {
-                       case "mochi/runtime/ffi/go/testpkg":
-                               expr := &RawExpr{Code: "{ Add: (a:number,b:number)=>a+b, Pi: 3.14, Answer: 42, FifteenPuzzleExample: ()=>'Solution found in 52 moves: rrrulddluuuldrurdddrullulurrrddldluurddlulurruldrdrd' }"}
-                               return &VarDecl{Name: alias, Expr: expr, Const: true}, nil
+			case "mochi/runtime/ffi/go/testpkg":
+				expr := &RawExpr{Code: "{ Add: (a:number,b:number)=>a+b, Pi: 3.14, Answer: 42, FifteenPuzzleExample: ()=>'Solution found in 52 moves: rrrulddluuuldrurdddrullulurrrddldluurddlulurruldrdrd' }"}
+				return &VarDecl{Name: alias, Expr: expr, Const: true}, nil
 			case "strings":
 				expr := &RawExpr{Code: "{ ToUpper: (s:string)=>s.toUpperCase(), TrimSpace: (s:string)=>s.trim() }"}
 				return &VarDecl{Name: alias, Expr: expr, Const: true}, nil
@@ -2923,6 +2932,12 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 			}
 			useNow = true
 			return &NowExpr{}, nil
+		case "input":
+			if len(args) != 0 {
+				return nil, fmt.Errorf("input expects no arguments")
+			}
+			useInput = true
+			return &CallExpr{Func: "_input"}, nil
 		case "json":
 			if len(args) != 1 {
 				return nil, fmt.Errorf("json expects one argument")
