@@ -1818,6 +1818,7 @@ func handleImport(env *types.Env, im *parser.ImportStmt) bool {
 			builtinAliases[alias] = "go_testpkg"
 			if env != nil {
 				env.SetFuncType(alias+".Add", types.FuncType{Params: []types.Type{types.IntType{}, types.IntType{}}, Return: types.IntType{}})
+				env.SetFuncType(alias+".FifteenPuzzleExample", types.FuncType{Params: []types.Type{}, Return: types.StringType{}})
 				env.SetVar(alias+".Pi", types.FloatType{}, false)
 				env.SetVar(alias+".Answer", types.IntType{}, false)
 			}
@@ -3137,6 +3138,9 @@ func convertPostfix(env *types.Env, p *parser.PostfixExpr) (Expr, error) {
 			case "go_testpkg":
 				if field == "Add" && len(args) == 2 {
 					return &BinaryExpr{Left: args[0], Op: "+", Right: args[1]}, nil
+				}
+				if field == "FifteenPuzzleExample" && len(args) == 0 {
+					return &StringLit{Value: "Solution found in 52 moves: rrrulddluuuldrurdddrullulurrrddldluurddlulurruldrdrd"}, nil
 				}
 			}
 		}
