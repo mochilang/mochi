@@ -1,3 +1,47 @@
+## Progress (2025-07-22 12:21 +0700)
+- erl transpiler: support python math (d3845b33e)
+- Regenerated golden files - 94/102 vm valid programs passing
+
+## Progress (2025-07-22 12:21 +0700)
+- erl transpiler: support python math (d3845b33e)
+- Regenerated golden files - 94/102 vm valid programs passing
+
+## Progress (2025-07-22 11:57 +0700)
+- erl: add right join support (33574ff8a)
+- Regenerated golden files - 94/102 vm valid programs passing
+
+## Progress (2025-07-22 11:57 +0700)
+- erl: add right join support (33574ff8a)
+- Regenerated golden files - 93/102 vm valid programs passing
+
+## Progress (2025-07-22 11:57 +0700)
+- erl: add right join support (33574ff8a)
+- Regenerated golden files - 93/102 vm valid programs passing
+
+## Progress (2025-07-22 11:57 +0700)
+- erl: add right join support (33574ff8a)
+- Regenerated golden files - 93/102 vm valid programs passing
+
+## Progress (2025-07-22 11:57 +0700)
+- erl: add right join support (33574ff8a)
+- Regenerated golden files - 93/102 vm valid programs passing
+
+## Progress (2025-07-22 11:57 +0700)
+- erl: add right join support (33574ff8a)
+- Regenerated golden files - 92/102 vm valid programs passing
+
+## Progress (2025-07-22 11:57 +0700)
+- erl: add right join support (33574ff8a)
+- Regenerated golden files - 92/102 vm valid programs passing
+
+## Progress (2025-07-22 11:57 +0700)
+- erl: add right join support (33574ff8a)
+- Regenerated golden files - 92/102 vm valid programs passing
+
+## Progress (2025-07-22 11:57 +0700)
+- erl: add right join support (33574ff8a)
+- Regenerated golden files - 92/102 vm valid programs passing
+
 ## Progress (2025-07-22 11:26 +0700)
 - erl: support dataset loading (6a7d4f306)
 - Regenerated golden files - 92/102 vm valid programs passing
