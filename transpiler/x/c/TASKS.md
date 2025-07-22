@@ -1,3 +1,7 @@
+## Progress (2025-07-22 10:54 +0700)
+- VM valid golden test results updated to 74/102
+- dataset_where_filter now passes
+
 ## Progress (2025-07-22 10:22 +0700)
 - VM valid golden test results updated to 73/102
 - group_by_multi_join now passes
