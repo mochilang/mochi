@@ -256,7 +256,7 @@ func (t *TypeDeclStmt) emit(w io.Writer) {
 				if typ == "" {
 					typ = "Any"
 				}
-				fmt.Fprintf(w, "%s: %s", escapeName(f.Name), typ)
+				fmt.Fprintf(w, "var %s: %s", escapeName(f.Name), typ)
 			}
 			fmt.Fprintf(w, ") extends %s\n", escapeName(t.Name))
 		}
@@ -271,7 +271,7 @@ func (t *TypeDeclStmt) emit(w io.Writer) {
 		if typ == "" {
 			typ = "Any"
 		}
-		fmt.Fprintf(w, "%s: %s", escapeName(f.Name), typ)
+		fmt.Fprintf(w, "var %s: %s", escapeName(f.Name), typ)
 	}
 	fmt.Fprint(w, ")")
 }
@@ -541,6 +541,20 @@ func (m *MapLit) emit(w io.Writer) {
 		it.Key.emit(w)
 		fmt.Fprint(w, " -> ")
 		it.Value.emit(w)
+	}
+	fmt.Fprint(w, ")")
+}
+
+// TupleLit represents a simple tuple literal.
+type TupleLit struct{ Elems []Expr }
+
+func (t *TupleLit) emit(w io.Writer) {
+	fmt.Fprint(w, "(")
+	for i, e := range t.Elems {
+		if i > 0 {
+			fmt.Fprint(w, ", ")
+		}
+		e.emit(w)
 	}
 	fmt.Fprint(w, ")")
 }
@@ -947,7 +961,7 @@ func Emit(p *Program) []byte {
 
 	for _, st := range p.Stmts {
 		switch s := st.(type) {
-		case *FunStmt:
+		case *FunStmt, *LetStmt, *VarStmt:
 			buf.WriteString("  ")
 			s.emit(&buf)
 			buf.WriteByte('\n')
@@ -963,7 +977,7 @@ func Emit(p *Program) []byte {
 	buf.WriteString("  def main(args: Array[String]): Unit = {\n")
 	for _, st := range p.Stmts {
 		switch st.(type) {
-		case *FunStmt, *TypeDeclStmt:
+		case *FunStmt, *TypeDeclStmt, *LetStmt, *VarStmt:
 			continue
 		}
 		buf.WriteString("    ")
@@ -1659,10 +1673,13 @@ func convertCall(c *parser.CallExpr, env *types.Env) (Expr, error) {
 			if len(args) < len(fn.Params) {
 				missing := fn.Params[len(args):]
 				params := make([]Param, len(missing))
+				callArgs := make([]Expr, 0, len(fn.Params))
+				callArgs = append(callArgs, args...)
 				for i, p := range missing {
 					params[i] = Param{Name: p.Name, Type: toScalaType(p.Type)}
+					callArgs = append(callArgs, &Name{Name: p.Name})
 				}
-				call := &CallExpr{Fn: &Name{Name: name}, Args: args}
+				call := &CallExpr{Fn: &Name{Name: name}, Args: callArgs}
 				return &FunExpr{Params: params, Expr: call}, nil
 			}
 		}
@@ -2186,9 +2203,18 @@ func convertQueryExpr(q *parser.QueryExpr, env *types.Env) (Expr, error) {
 		if err != nil {
 			return nil, err
 		}
-		sortType = inferType(sort)
-		if sortType == "" {
-			sortType = toScalaTypeFromType(types.ExprType(q.Sort, child))
+		if ml, ok := sort.(*MapLit); ok {
+			elems := make([]Expr, len(ml.Items))
+			for i, it := range ml.Items {
+				elems[i] = it.Value
+			}
+			sort = &TupleLit{Elems: elems}
+			sortType = tupleTypeFromElems(elems, child)
+		} else {
+			sortType = inferTypeWithEnv(sort, child)
+			if sortType == "" {
+				sortType = toScalaTypeFromType(types.ExprType(q.Sort, child))
+			}
 		}
 	}
 	if q.Skip != nil {
@@ -2496,6 +2522,19 @@ func inferType(e Expr) string {
 			}
 		}
 		return fmt.Sprintf("Map[%s,%s]", kt, vt)
+	case *TupleLit:
+		if len(ex.Elems) == 0 {
+			return ""
+		}
+		parts := make([]string, len(ex.Elems))
+		for i, e := range ex.Elems {
+			t := inferType(e)
+			if t == "" {
+				t = "Any"
+			}
+			parts[i] = t
+		}
+		return fmt.Sprintf("(%s)", strings.Join(parts, ", "))
 	case *StructLit:
 		return ex.Name
 	case *LenExpr:
@@ -2591,8 +2630,45 @@ func inferTypeWithEnv(e Expr, env *types.Env) string {
 			return toScalaTypeFromType(typ)
 		}
 	}
+	if tu, ok := e.(*TupleLit); ok && env != nil {
+		parts := make([]string, len(tu.Elems))
+		for i, el := range tu.Elems {
+			t := inferTypeWithEnv(el, env)
+			if t == "" {
+				t = "Any"
+			}
+			parts[i] = t
+		}
+		return fmt.Sprintf("(%s)", strings.Join(parts, ", "))
+	}
+	if fe, ok := e.(*FieldExpr); ok && env != nil {
+		if n, ok2 := fe.Receiver.(*Name); ok2 {
+			if st, err := env.GetVar(n.Name); err == nil {
+				if stt, ok3 := st.(types.StructType); ok3 {
+					if ft, ok4 := stt.Fields[fe.Name]; ok4 {
+						return toScalaTypeFromType(ft)
+					}
+				}
+			}
+		}
+	}
 	return ""
 }
+
+func tupleTypeFromElems(elems []Expr, env *types.Env) string {
+	parts := make([]string, len(elems))
+	for i, el := range elems {
+		t := inferTypeWithEnv(el, env)
+		if t == "" {
+			t = "Any"
+		}
+		parts[i] = t
+	}
+	return fmt.Sprintf("(%s)", strings.Join(parts, ", "))
+}
+
+// TupleTypeFromElems is exported for tests.
+func TupleTypeFromElems(elems []Expr, env *types.Env) string { return tupleTypeFromElems(elems, env) }
 
 // defaultExpr returns a zero value expression for the given Scala type.
 func defaultExpr(typ string) Expr {

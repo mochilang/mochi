@@ -1,8 +1,0 @@
-exit status 1
-/workspace/mochi/tests/transpiler/x/scala/list_set_ops.scala:8: error: overloaded method value ++ with alternatives:
-  (xs: scala.collection.GenTraversableOnce[Int])scala.collection.mutable.ArrayBuffer[Int] <and>
-  [B >: Int, That](that: scala.collection.GenTraversableOnce[B])(implicit bf: scala.collection.generic.CanBuildFrom[scala.collection.mutable.ArrayBuffer[Int],B,That])That
- cannot be applied to (Int)
-    println(ArrayBuffer(1, 2) ++ ArrayBuffer(2, 3).size)
-                              ^
-one error found

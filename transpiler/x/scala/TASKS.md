@@ -1,3 +1,19 @@
+## Progress (2025-07-22 17:04 +0700)
+- work
+- Regenerated golden files - 84/103 vm valid programs passing
+
+## Progress (2025-07-22 16:38 +0700)
+- docs: update cpp golden progress
+- Regenerated golden files - 80/103 vm valid programs passing
+
+## Progress (2025-07-22 16:38 +0700)
+- docs: update cpp golden progress
+- Regenerated golden files - 80/103 vm valid programs passing
+
+## Progress (2025-07-22 16:38 +0700)
+- docs: update cpp golden progress
+- Regenerated golden files - 80/103 vm valid programs passing
+
 ## Progress (2025-07-22 15:41 +0700)
 - scala transpiler: support load_jsonl and yaml
 - Regenerated golden files - 82/102 vm valid programs passing
