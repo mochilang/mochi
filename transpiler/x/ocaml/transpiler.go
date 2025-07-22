@@ -323,6 +323,28 @@ func ocamlType(t string) string {
 // Stmt can emit itself as OCaml code.
 type Stmt interface{ emit(io.Writer) }
 
+// TypeDeclStmt represents a simple record type declaration.
+type TypeDeclStmt struct {
+	Name   string
+	Fields []FieldDef
+}
+
+type FieldDef struct {
+	Name string
+	Type string
+}
+
+func (t *TypeDeclStmt) emit(w io.Writer) {
+	fmt.Fprintf(w, "type %s = { ", strings.ToLower(t.Name))
+	for i, f := range t.Fields {
+		if i > 0 {
+			io.WriteString(w, "; ")
+		}
+		fmt.Fprintf(w, "mutable %s : %s", f.Name, ocamlType(f.Type))
+	}
+	io.WriteString(w, " }\n")
+}
+
 // LetStmt represents a simple variable binding.
 type LetStmt struct {
 	Name string
@@ -881,6 +903,28 @@ func (m *MapLit) emit(w io.Writer) {
 
 func (m *MapLit) emitPrint(w io.Writer) { m.emit(w) }
 
+// RecordLit represents a simple record literal for a user-defined type.
+type RecordLit struct {
+	Name   string
+	Fields []MapEntry
+}
+
+func (r *RecordLit) emit(w io.Writer) {
+	fmt.Fprintf(w, "{ ")
+	for i, f := range r.Fields {
+		if i > 0 {
+			io.WriteString(w, "; ")
+		}
+		if k, ok := f.Key.(*StringLit); ok {
+			fmt.Fprintf(w, "%s = ", k.Value)
+			f.Value.emit(w)
+		}
+	}
+	io.WriteString(w, " }")
+}
+
+func (r *RecordLit) emitPrint(w io.Writer) { r.emit(w) }
+
 // MapIndexExpr represents map[key] access.
 type MapIndexExpr struct {
 	Map Expr
@@ -932,6 +976,21 @@ func (mi *MapIndexExpr) emitPrint(w io.Writer) {
 		}
 	}
 }
+
+// FieldExpr represents record field access `record.field`.
+type FieldExpr struct {
+	Target Expr
+	Field  string
+	Typ    string
+}
+
+func (f *FieldExpr) emit(w io.Writer) {
+	f.Target.emit(w)
+	io.WriteString(w, ".")
+	io.WriteString(w, f.Field)
+}
+
+func (f *FieldExpr) emitPrint(w io.Writer) { f.emit(w) }
 
 // IndexExpr represents list[index] or string[index].
 type IndexExpr struct {
@@ -1408,8 +1467,12 @@ func (n *Name) emitPrint(w io.Writer) {
 		fmt.Fprintf(w, "string_of_int %s", ident)
 	case "bool":
 		fmt.Fprintf(w, "string_of_bool %s", ident)
+	case "float":
+		fmt.Fprintf(w, "string_of_float %s", ident)
+	case "string":
+		io.WriteString(w, ident)
 	default:
-		fmt.Fprintf(w, "__to_json %s", ident)
+		io.WriteString(w, ident)
 	}
 }
 
@@ -1556,62 +1619,8 @@ func (p *Program) Emit() []byte {
 	var buf bytes.Buffer
 	buf.WriteString(header())
 	buf.WriteString("\n")
-	if p.UsesShow() {
-		buf.WriteString(`let rec __show v =
-  let open Obj in
-  let rec list_aux o =
-    if is_int o && (magic (obj o) : int) = 0 then "" else
-     let hd = field o 0 in
-     let tl = field o 1 in
-     let rest = list_aux tl in
-     if rest = "" then __show (obj hd) else __show (obj hd) ^ "; " ^ rest
-  in
-
-  let r = repr v in
-  if is_int r then string_of_int (magic v) else
-  match tag r with
-    | 0 -> if size r = 0 then "[]" else "[" ^ list_aux r ^ "]"
-    | 252 -> (magic v : string)
-    | 253 -> string_of_float (magic v)
-    | _ -> "<value>"
-
-`)
-	}
-	if p.UsesJSON() {
-		buf.WriteString(`let rec __to_json v =
-  let open Obj in
-  let rec list_aux o =
-    if is_int o && (magic (obj o) : int) = 0 then "" else
-     let hd = field o 0 in
-     let tl = field o 1 in
-     let rest = list_aux tl in
-     let cur = __to_json (obj hd) in
-     if rest = "" then cur else cur ^ "," ^ rest
-  and map_aux o =
-    if is_int o && (magic (obj o) : int) = 0 then "" else
-     let hd = field o 0 in
-     let tl = field o 1 in
-     let k = (magic (field hd 0) : string) in
-     let v = __to_json (obj (field hd 1)) in
-     let rest = map_aux tl in
-     let cur = Printf.sprintf "\"%s\": %s" k v in
-     if rest = "" then cur else cur ^ "," ^ rest
-  in
-  let r = repr v in
-  if is_int r then string_of_int (magic v) else
-  match tag r with
-    | 0 -> if size r = 0 then "[]" else (
-        let hd = field r 0 in
-        if tag hd = 0 && size hd = 2 && tag (field hd 0) = 252 then
-          "{" ^ map_aux r ^ "}"
-        else
-          "[" ^ list_aux r ^ "]")
-    | 252 -> Printf.sprintf "%S" (magic v : string)
-    | 253 -> string_of_float (magic v)
-    | _ -> "null"
-
-`)
-	}
+	// runtime helpers were previously emitted here, but the simplified
+	// transpiler avoids generating any helper functions for readability.
 	if p.UsesStrModule() {
 		buf.WriteString("open Str\n\n")
 	}
@@ -1619,16 +1628,19 @@ func (p *Program) Emit() []byte {
 		buf.WriteString("exception Break\nexception Continue\n\n")
 	}
 	for _, s := range p.Stmts {
-		if _, ok := s.(*FunStmt); ok {
+		switch s.(type) {
+		case *FunStmt, *TypeDeclStmt:
 			s.emit(&buf)
 		}
 	}
 	buf.WriteString("let () =\n")
 	for _, s := range p.Stmts {
-		if _, ok := s.(*FunStmt); ok {
+		switch s.(type) {
+		case *FunStmt, *TypeDeclStmt:
 			continue
+		default:
+			s.emit(&buf)
 		}
-		s.emit(&buf)
 	}
 	return buf.Bytes()
 }
@@ -1909,8 +1921,21 @@ func transpileStmt(st *parser.Statement, env *types.Env, vars map[string]VarInfo
 		env.SetFuncType(st.Fun.Name, types.FuncType{Return: retTyp})
 		return &FunStmt{Name: st.Fun.Name, Params: params, Body: body, Ret: ret}, nil
 	case st.Type != nil:
-		// ignore type declarations
-		return nil, nil
+		if len(st.Type.Variants) > 0 {
+			return nil, nil
+		}
+		var fields []FieldDef
+		for _, m := range st.Type.Members {
+			if m.Field == nil {
+				continue
+			}
+			ft := types.ResolveTypeRef(m.Field.Type, env)
+			fields = append(fields, FieldDef{Name: m.Field.Name, Type: ft.String()})
+		}
+		if len(fields) == 0 {
+			return nil, nil
+		}
+		return &TypeDeclStmt{Name: st.Type.Name, Fields: fields}, nil
 	default:
 		return nil, fmt.Errorf("unsupported statement")
 	}
@@ -2293,7 +2318,17 @@ func convertPostfix(p *parser.PostfixExpr, env *types.Env, vars map[string]VarIn
 				i++
 				continue
 			}
-			return nil, "", fmt.Errorf("unsupported cast")
+			if m, ok := expr.(*MapLit); ok {
+				fields := make([]MapEntry, len(m.Items))
+				copy(fields, m.Items)
+				expr = &RecordLit{Name: target, Fields: fields}
+				typ = target
+				i++
+				continue
+			}
+			// ignore other cast operations and keep the underlying expression
+			i++
+			continue
 		default:
 			return nil, "", fmt.Errorf("postfix op not supported")
 		}
@@ -2317,6 +2352,14 @@ func convertSelector(sel *parser.SelectorExpr, env *types.Env, vars map[string]V
 		if ft, ok := mapFieldType(typ, t); ok {
 			expr = &MapIndexExpr{Map: expr, Key: key, Typ: ft, Dyn: dyn}
 			typ = ft
+		} else if st, ok := env.GetStruct(typ); ok {
+			if ft, ok2 := st.Fields[t]; ok2 {
+				typ = ft.String()
+				expr = &FieldExpr{Target: expr, Field: t, Typ: typ}
+			} else {
+				typ = "int"
+				expr = &FieldExpr{Target: expr, Field: t, Typ: "int"}
+			}
 		} else {
 			expr = &MapIndexExpr{Map: expr, Key: key, Typ: "int", Dyn: dyn}
 			typ = "int"
@@ -2382,7 +2425,9 @@ func convertPrimary(p *parser.Primary, env *types.Env, vars map[string]VarInfo) 
 			if err != nil {
 				return nil, "", err
 			}
-			if vt != "int" {
+			switch vt {
+			case "int", "string", "float", "bool":
+			default:
 				dynamic = true
 			}
 			if ks, ok := k.(*StringLit); ok {
