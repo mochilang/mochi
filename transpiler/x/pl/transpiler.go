@@ -231,6 +231,17 @@ type IndexAssignStmt struct {
 	Index  Expr
 	Value  Expr
 }
+
+// CallStmt invokes a function ignoring its result.
+type CallStmt struct{ Call *CallExpr }
+
+// MapAssignStmt updates a map field at runtime.
+type MapAssignStmt struct {
+	Name   string
+	Target string
+	Key    Expr
+	Value  Expr
+}
 type IfStmt struct {
 	Cond Expr
 	Then []Stmt
@@ -617,6 +628,14 @@ func (l *LetStmt) emit(w io.Writer, _ int) {
 		fmt.Fprintf(w, ", %s)", l.Name)
 		return
 	}
+	if ie, ok := l.Expr.(*IndexExpr); ok && ie.IsMap {
+		fmt.Fprintf(w, "    get_dict(")
+		ie.Index.emit(w)
+		fmt.Fprintf(w, ", ")
+		ie.Target.emit(w)
+		fmt.Fprintf(w, ", %s)", l.Name)
+		return
+	}
 	if needsIs(l.Expr) {
 		fmt.Fprintf(w, "    %s is ", l.Name)
 	} else {
@@ -634,6 +653,35 @@ func (s *IndexAssignStmt) emit(w io.Writer, idx int) {
 	fmt.Fprintf(w, ", %s, ", s.Name)
 	s.Value.emit(w)
 	fmt.Fprintf(w, ", %s)", tmp)
+}
+
+func (c *CallStmt) emit(w io.Writer, idx int) {
+	io.WriteString(w, "    ")
+	fmt.Fprintf(w, "%s(", c.Call.Name)
+	for i, a := range c.Call.Args {
+		if i > 0 {
+			io.WriteString(w, ", ")
+		}
+		a.emit(w)
+	}
+	if len(c.Call.Args) > 0 {
+		io.WriteString(w, ", _")
+	} else {
+		io.WriteString(w, "_")
+	}
+	io.WriteString(w, ")")
+}
+
+func (m *MapAssignStmt) emit(w io.Writer, idx int) {
+	tmp := fmt.Sprintf("V%d", idx)
+	fmt.Fprintf(w, "    get_dict(")
+	m.Key.emit(w)
+	fmt.Fprintf(w, ", %s, %s),\n    ", m.Target, tmp)
+	fmt.Fprintf(w, "%s1 is ", tmp)
+	m.Value.emit(w)
+	fmt.Fprintf(w, ", put_dict(")
+	m.Key.emit(w)
+	fmt.Fprintf(w, ", %s, %s1, %s)", m.Target, tmp, m.Name)
 }
 
 func (b *BreakStmt) emit(w io.Writer, idx int)    {}
@@ -686,6 +734,7 @@ type IntLit struct{ Value int }
 type FloatLit struct{ Value float64 }
 type BoolLit struct{ Value bool }
 type StringLit struct{ Value string }
+type AtomLit struct{ Value string }
 type Var struct{ Name string }
 type UnaryNot struct{ Expr Expr }
 type ListLit struct{ Elems []Expr }
@@ -772,6 +821,7 @@ func (i *IntLit) emit(w io.Writer)    { fmt.Fprintf(w, "%d", i.Value) }
 func (f *FloatLit) emit(w io.Writer)  { io.WriteString(w, strconv.FormatFloat(f.Value, 'f', -1, 64)) }
 func (b *BoolLit) emit(w io.Writer)   { fmt.Fprintf(w, "%v", b.Value) }
 func (s *StringLit) emit(w io.Writer) { fmt.Fprintf(w, "\"%s\"", escape(s.Value)) }
+func (a *AtomLit) emit(w io.Writer)   { io.WriteString(w, a.Value) }
 func (v *Var) emit(w io.Writer)       { io.WriteString(w, v.Name) }
 func (u *UnaryNot) emit(w io.Writer) {
 	io.WriteString(w, "\\+(")
@@ -1385,6 +1435,32 @@ func updateMapField(m *MapLit, key string, val Expr) (*MapLit, bool) {
 	return nil, false
 }
 
+func replaceIndex(e Expr, target, key, tmp string) Expr {
+	switch v := e.(type) {
+	case *IndexExpr:
+		if v.IsMap {
+			if t, ok := v.Target.(*Var); ok && t.Name == target {
+				switch k := v.Index.(type) {
+				case *AtomLit:
+					if k.Value == key {
+						return &Var{Name: tmp}
+					}
+				case *StringLit:
+					if k.Value == key {
+						return &Var{Name: tmp}
+					}
+				}
+			}
+		}
+		return &IndexExpr{Target: replaceIndex(v.Target, target, key, tmp), Index: replaceIndex(v.Index, target, key, tmp), IsString: v.IsString, IsMap: v.IsMap}
+	case *BinaryExpr:
+		return &BinaryExpr{Left: replaceIndex(v.Left, target, key, tmp), Op: v.Op, Right: replaceIndex(v.Right, target, key, tmp)}
+	case *GroupExpr:
+		return &GroupExpr{Expr: replaceIndex(v.Expr, target, key, tmp)}
+	}
+	return e
+}
+
 func nextSimpleAssign(sts []*parser.Statement, idx int, name string) bool {
 	if idx+1 >= len(sts) {
 		return false
@@ -1637,71 +1713,77 @@ func compileStmts(sts []*parser.Statement, env *compileEnv) ([]Stmt, error) {
 			continue
 		case s.Expr != nil:
 			call := s.Expr.Expr.Binary.Left.Value.Target.Call
-			if call == nil || (call.Func != "print" && call.Func != "json") {
+			if call == nil {
 				return nil, fmt.Errorf("unsupported expression")
 			}
 			args := make([]Expr, len(call.Args))
-			allConst := true
-			var sb strings.Builder
 			for i, a := range call.Args {
 				ex, err := toExpr(a, env)
 				if err != nil {
 					return nil, err
 				}
 				args[i] = ex
-				if allConst {
-					switch v := ex.(type) {
-					case *StringLit:
-						sb.WriteString(v.Value)
-					case *IntLit:
-						sb.WriteString(strconv.Itoa(v.Value))
-					case *FloatLit:
-						sb.WriteString(strconv.FormatFloat(v.Value, 'f', -1, 64))
-					case *BoolLit:
-						if v.Value {
-							sb.WriteString("true")
-						} else {
-							sb.WriteString("false")
-						}
-					default:
-						allConst = false
-					}
-				}
-				if i < len(call.Args)-1 && allConst {
-					sb.WriteString(" ")
-				}
 			}
-			if call.Func == "json" {
-				if len(args) != 1 {
-					return nil, fmt.Errorf("unsupported expression")
-				}
-				arg := args[0]
-				if v, ok := arg.(*Var); ok {
-					if c := env.constExpr(v.Name); c != nil {
-						arg = c
+			if call.Func == "print" || call.Func == "json" {
+				allConst := true
+				var sb strings.Builder
+				for i, ex := range args {
+					if allConst {
+						switch v := ex.(type) {
+						case *StringLit:
+							sb.WriteString(v.Value)
+						case *IntLit:
+							sb.WriteString(strconv.Itoa(v.Value))
+						case *FloatLit:
+							sb.WriteString(strconv.FormatFloat(v.Value, 'f', -1, 64))
+						case *BoolLit:
+							if v.Value {
+								sb.WriteString("true")
+							} else {
+								sb.WriteString("false")
+							}
+						default:
+							allConst = false
+						}
+					}
+					if i < len(args)-1 && allConst {
+						sb.WriteString(" ")
 					}
 				}
-				js, err := jsonString(arg)
-				if err != nil {
-					return nil, err
-				}
-				out = append(out, &PrintStmt{Expr: &StringLit{Value: js}})
-			} else {
-				var stmt Stmt
-				if len(args) == 1 {
+				if call.Func == "json" {
+					if len(args) != 1 {
+						return nil, fmt.Errorf("unsupported expression")
+					}
 					arg := args[0]
 					if v, ok := arg.(*Var); ok {
 						if c := env.constExpr(v.Name); c != nil {
 							arg = c
 						}
 					}
-					stmt = &PrintStmt{Expr: arg}
-					out = append(out, stmt)
-				} else if allConst {
-					out = append(out, &PrintStmt{Expr: &StringLit{Value: sb.String()}})
+					js, err := jsonString(arg)
+					if err != nil {
+						return nil, err
+					}
+					out = append(out, &PrintStmt{Expr: &StringLit{Value: js}})
 				} else {
-					out = append(out, &MultiPrintStmt{Exprs: args})
+					var stmt Stmt
+					if len(args) == 1 {
+						arg := args[0]
+						if v, ok := arg.(*Var); ok {
+							if c := env.constExpr(v.Name); c != nil {
+								arg = c
+							}
+						}
+						stmt = &PrintStmt{Expr: arg}
+						out = append(out, stmt)
+					} else if allConst {
+						out = append(out, &PrintStmt{Expr: &StringLit{Value: sb.String()}})
+					} else {
+						out = append(out, &MultiPrintStmt{Exprs: args})
+					}
 				}
+			} else {
+				out = append(out, &CallStmt{Call: &CallExpr{Name: call.Func, Args: args}})
 			}
 		case s.Let != nil:
 			var expr Expr
@@ -1774,21 +1856,31 @@ func compileStmts(sts []*parser.Statement, env *compileEnv) ([]Stmt, error) {
 			out = append(out, &LetStmt{Name: name, Expr: expr})
 		case s.Assign != nil && len(s.Assign.Field) == 1 && len(s.Assign.Index) == 0:
 			key := s.Assign.Field[0].Name
-			mp, ok := env.constExpr(env.current(s.Assign.Name)).(*MapLit)
-			if !ok {
-				return nil, fmt.Errorf("unsupported record assign")
+			if mp, ok := env.constExpr(env.current(s.Assign.Name)).(*MapLit); ok {
+				val, err := toExpr(s.Assign.Value, env)
+				if err != nil {
+					return nil, err
+				}
+				updated, ok := updateMapField(mp, key, val)
+				if !ok {
+					return nil, fmt.Errorf("field not found")
+				}
+				name := env.fresh(s.Assign.Name)
+				env.setConst(name, updated)
+				out = append(out, &LetStmt{Name: name, Expr: updated})
+			} else {
+				val, err := toExpr(s.Assign.Value, env)
+				if err != nil {
+					return nil, err
+				}
+				target := env.current(s.Assign.Name)
+				tmp := env.fresh("tmp")
+				out = append(out, &LetStmt{Name: tmp, Expr: &IndexExpr{Target: &Var{Name: target}, Index: &AtomLit{Value: key}, IsMap: true}})
+				val = replaceIndex(val, target, key, tmp)
+				name := env.fresh(s.Assign.Name)
+				env.setConst(name, nil)
+				out = append(out, &MapAssignStmt{Name: name, Target: target, Key: &AtomLit{Value: key}, Value: val})
 			}
-			val, err := toExpr(s.Assign.Value, env)
-			if err != nil {
-				return nil, err
-			}
-			updated, ok := updateMapField(mp, key, val)
-			if !ok {
-				return nil, fmt.Errorf("field not found")
-			}
-			name := env.fresh(s.Assign.Name)
-			env.setConst(name, updated)
-			out = append(out, &LetStmt{Name: name, Expr: updated})
 
 		case s.Assign != nil && len(s.Assign.Index) == 2 &&
 			s.Assign.Index[0].Colon == nil && s.Assign.Index[0].End == nil && s.Assign.Index[0].Step == nil &&
