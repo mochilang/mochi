@@ -9,6 +9,8 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"sort"
+	"strconv"
 	"strings"
 	"testing"
 	"time"
@@ -22,22 +24,42 @@ import (
 var updateRosetta = flag.Bool("update-rosetta-zig", false, "update rosetta golden files")
 
 func TestZigTranspiler_Rosetta(t *testing.T) {
+	t.Cleanup(updateRosettaReadme)
 	if _, err := exec.LookPath("zig"); err != nil {
 		t.Skip("zig not installed")
 	}
 	root := rosettaRepoRoot(t)
-	outDir := filepath.Join(root, "tests", "rosetta", "transpiler", "Zig")
+	srcDir := filepath.Join(root, "tests", "rosetta", "x", "Mochi")
+	outDir := filepath.Join(root, "tests", "rosetta", "out", "Zig")
 	os.MkdirAll(outDir, 0o755)
-	t.Cleanup(updateRosettaReadme)
+
+	if idxStr := os.Getenv("MOCHI_ROSETTA_INDEX"); idxStr != "" {
+		idx, err := strconv.Atoi(idxStr)
+		if err != nil || idx < 1 {
+			t.Fatalf("invalid MOCHI_ROSETTA_INDEX: %s", idxStr)
+		}
+		files, err := filepath.Glob(filepath.Join(srcDir, "*.mochi"))
+		if err != nil {
+			t.Fatalf("glob: %v", err)
+		}
+		sort.Strings(files)
+		if idx > len(files) {
+			t.Fatalf("index %d out of range (%d files)", idx, len(files))
+		}
+		src := files[idx-1]
+		if _, err := runCase(src, outDir); err != nil {
+			t.Fatalf("%s: %v", filepath.Base(src), err)
+		}
+		return
+	}
 
 	golden.RunFirstFailure(t, "tests/rosetta/x/Mochi", ".mochi", ".out", func(src string) ([]byte, error) {
-		name := strings.TrimSuffix(filepath.Base(src), ".mochi")
-		return runCase(src, outDir, name)
+		return runCase(src, outDir)
 	})
 }
 
-func runCase(srcDir, outDir, name string) ([]byte, error) {
-	src := filepath.Join(srcDir, name+".mochi")
+func runCase(src, outDir string) ([]byte, error) {
+	name := strings.TrimSuffix(filepath.Base(src), ".mochi")
 	prog, err := parser.Parse(src)
 	if err != nil {
 		writeErr(outDir, name, fmt.Errorf("parse: %w", err))
@@ -59,7 +81,7 @@ func runCase(srcDir, outDir, name string) ([]byte, error) {
 		return nil, err
 	}
 	cmd := exec.Command("zig", "run", codePath)
-	if data, err := os.ReadFile(filepath.Join(srcDir, name+".in")); err == nil {
+	if data, err := os.ReadFile(filepath.Join(filepath.Dir(src), name+".in")); err == nil {
 		cmd.Stdin = bytes.NewReader(data)
 	}
 	out, err := cmd.CombinedOutput()
@@ -108,14 +130,15 @@ func rosettaRepoRoot(t *testing.T) string {
 func updateRosettaReadme() {
 	root := rosettaRepoRoot(&testing.T{})
 	srcDir := filepath.Join(root, "tests", "rosetta", "x", "Mochi")
-	outDir := filepath.Join(root, "tests", "rosetta", "transpiler", "Zig")
+	outDir := filepath.Join(root, "tests", "rosetta", "out", "Zig")
 	readme := filepath.Join(root, "transpiler", "x", "zig", "ROSETTA.md")
 
 	files, _ := filepath.Glob(filepath.Join(srcDir, "*.mochi"))
+	sort.Strings(files)
 	total := len(files)
 	compiled := 0
 	var lines []string
-	for _, f := range files {
+	for i, f := range files {
 		name := strings.TrimSuffix(filepath.Base(f), ".mochi")
 		mark := "[ ]"
 		if _, err := os.Stat(filepath.Join(outDir, name+".out")); err == nil {
@@ -124,7 +147,7 @@ func updateRosettaReadme() {
 				compiled++
 			}
 		}
-		lines = append(lines, fmt.Sprintf("- %s %s", mark, name))
+		lines = append(lines, fmt.Sprintf("%d. %s %s", i+1, mark, name))
 	}
 	out, err := exec.Command("git", "log", "-1", "--format=%cI").Output()
 	ts := ""
@@ -139,7 +162,7 @@ func updateRosettaReadme() {
 	}
 	var buf bytes.Buffer
 	buf.WriteString("# Zig Rosetta Transpiler\n\n")
-	buf.WriteString("Generated Zig code for Rosetta tasks lives under `tests/rosetta/transpiler/Zig`.\n\n")
+	buf.WriteString("Generated Zig code for Rosetta tasks lives under `tests/rosetta/out/Zig`.\n\n")
 	if ts != "" {
 		fmt.Fprintf(&buf, "Last updated: %s\n\n", ts)
 	}
