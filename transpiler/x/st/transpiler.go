@@ -426,6 +426,7 @@ func evalBinary(b *parser.BinaryExpr, vars map[string]value) (value, error) {
 		{"<", "<=", ">", ">=", "==", "!=", "in"},
 		{"&&"},
 		{"||"},
+		{"union", "union_all", "except", "intersect"},
 	}
 	for _, level := range prec {
 		i := 0
@@ -600,6 +601,68 @@ func applyOp(a value, op string, b value) (value, error) {
 	case "||":
 		if a.kind == valBool && b.kind == valBool {
 			return value{kind: valBool, b: a.b || b.b}, nil
+		}
+	case "union":
+		if a.kind == valList && b.kind == valList {
+			seen := map[string]bool{}
+			out := make([]value, 0, len(a.list)+len(b.list))
+			for _, it := range a.list {
+				key := it.String()
+				if !seen[key] {
+					seen[key] = true
+					out = append(out, it)
+				}
+			}
+			for _, it := range b.list {
+				key := it.String()
+				if !seen[key] {
+					seen[key] = true
+					out = append(out, it)
+				}
+			}
+			return value{kind: valList, list: out}, nil
+		}
+	case "union_all":
+		if a.kind == valList && b.kind == valList {
+			out := append(append([]value{}, a.list...), b.list...)
+			return value{kind: valList, list: out}, nil
+		}
+	case "except":
+		if a.kind == valList && b.kind == valList {
+			out := []value{}
+			for _, it := range a.list {
+				keep := true
+				for _, jb := range b.list {
+					res, err := applyOp(it, "==", jb)
+					if err == nil && res.kind == valBool && res.b {
+						keep = false
+						break
+					}
+				}
+				if keep {
+					out = append(out, it)
+				}
+			}
+			return value{kind: valList, list: out}, nil
+		}
+	case "intersect":
+		if a.kind == valList && b.kind == valList {
+			out := []value{}
+			seen := map[string]bool{}
+			for _, it := range a.list {
+				for _, jb := range b.list {
+					res, err := applyOp(it, "==", jb)
+					if err == nil && res.kind == valBool && res.b {
+						key := it.String()
+						if !seen[key] {
+							seen[key] = true
+							out = append(out, it)
+						}
+						break
+					}
+				}
+			}
+			return value{kind: valList, list: out}, nil
 		}
 	}
 	return value{}, fmt.Errorf("unsupported op")
