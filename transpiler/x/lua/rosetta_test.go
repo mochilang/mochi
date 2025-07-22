@@ -94,9 +94,10 @@ func TestLuaTranspiler_Rosetta(t *testing.T) {
 	}
 
 	var passed int
-	for _, src := range files {
+	for i, src := range files {
 		name := strings.TrimSuffix(filepath.Base(src), ".mochi")
-		ok := t.Run(name, func(t *testing.T) {
+		testName := fmt.Sprintf("%03d_%s", i+1, name)
+		ok := t.Run(testName, func(t *testing.T) {
 			got, err := runCase(src, outDir)
 			if err != nil {
 				t.Fatalf("run error: %v", err)
@@ -129,7 +130,7 @@ func TestLuaTranspiler_Rosetta(t *testing.T) {
 			}
 		})
 		if !ok {
-			t.Fatalf("first failing program: %s", name)
+			t.Fatalf("first failing program: %s", testName)
 		}
 		passed++
 	}
