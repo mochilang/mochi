@@ -1,12 +1,13 @@
 # C++ Transpiler Output
 
 This checklist is auto-generated.
-Generated C++ code for programs in `tests/vm/valid`. Each program has a `.cpp` file produced by the transpiler and a `.out` file containing its runtime output. Compilation or execution errors are captured in a `.error` file placed next to the source.
+Generated C++ code for programs in `tests/vm/valid`. Each program has a `.cpp` file produced by the transpiler and a `.out` file containing its runtime output.
+Compilation or execution errors are captured in a `.error` file placed next to the source.
 
-Last updated: 2025-07-22 09:43 +0700
+Last updated: 2025-07-22 12:33 +0700
 
-## VM Golden Test Checklist (91/102)
-- [x] append_builtin
+## VM Golden Test Checklist (72/102)
+- [ ] append_builtin
 - [x] avg_builtin
 - [x] basic_compare
 - [x] binary_precedence
@@ -26,19 +27,19 @@ Last updated: 2025-07-22 09:43 +0700
 - [x] for_loop
 - [x] for_map_collection
 - [x] fun_call
-- [x] fun_expr_in_let
+- [ ] fun_expr_in_let
 - [x] fun_three_args
 - [ ] go_auto
-- [x] group_by
-- [x] group_by_conditional_sum
-- [x] group_by_having
+- [ ] group_by
+- [ ] group_by_conditional_sum
+- [ ] group_by_having
 - [x] group_by_join
-- [x] group_by_left_join
+- [ ] group_by_left_join
 - [x] group_by_multi_join
 - [x] group_by_multi_join_sort
 - [ ] group_by_multi_sort
-- [x] group_by_sort
-- [x] group_items_iteration
+- [ ] group_by_sort
+- [ ] group_items_iteration
 - [x] if_else
 - [x] if_then_else
 - [x] if_then_else_nested
@@ -46,8 +47,8 @@ Last updated: 2025-07-22 09:43 +0700
 - [x] in_operator_extended
 - [x] inner_join
 - [x] join_multi
-- [x] json_builtin
-- [x] left_join
+- [ ] json_builtin
+- [ ] left_join
 - [x] left_join_multi
 - [x] len_builtin
 - [x] len_map
@@ -56,7 +57,7 @@ Last updated: 2025-07-22 09:43 +0700
 - [x] list_assign
 - [x] list_index
 - [x] list_nested_assign
-- [x] list_set_ops
+- [ ] list_set_ops
 - [ ] load_jsonl
 - [ ] load_yaml
 - [x] map_assign
@@ -67,26 +68,26 @@ Last updated: 2025-07-22 09:43 +0700
 - [x] map_membership
 - [x] map_nested_assign
 - [x] match_expr
-- [x] match_full
+- [ ] match_full
 - [x] math_ops
 - [x] membership
 - [x] min_max_builtin
 - [x] nested_function
-- [x] order_by_map
+- [ ] order_by_map
 - [ ] outer_join
-- [x] partial_application
+- [ ] partial_application
 - [x] print_hello
 - [x] pure_fold
-- [x] pure_global_fold
+- [ ] pure_global_fold
 - [ ] python_auto
 - [ ] python_math
-- [x] query_sum_select
+- [ ] query_sum_select
 - [x] record_assign
 - [ ] right_join
 - [ ] save_jsonl_stdout
 - [x] short_circuit
-- [x] slice
-- [x] sort_stable
+- [ ] slice
+- [ ] sort_stable
 - [x] str_builtin
 - [x] string_compare
 - [x] string_concat
@@ -105,6 +106,6 @@ Last updated: 2025-07-22 09:43 +0700
 - [x] unary_neg
 - [ ] update_stmt
 - [x] user_type_literal
-- [x] values_builtin
+- [ ] values_builtin
 - [x] var_assignment
 - [x] while_loop

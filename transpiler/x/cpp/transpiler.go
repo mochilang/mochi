@@ -247,6 +247,7 @@ type ForStmt struct {
 	Start, End Expr
 	Body       []Stmt
 	IsMap      bool
+	ElemType   string
 }
 
 type IfStmt struct {
@@ -400,6 +401,12 @@ func (p *Program) write(w io.Writer) {
 	}
 	fmt.Fprintln(w)
 	fmt.Fprintln(w)
+	fmt.Fprintln(w, "template<typename T>")
+	fmt.Fprintln(w, "std::ostream& operator<<(std::ostream& os, const std::optional<T>& v) {")
+	fmt.Fprintln(w, "    if(v) os << *v; else os << \"None\";")
+	fmt.Fprintln(w, "    return os;")
+	fmt.Fprintln(w, "}")
+	fmt.Fprintln(w)
 	for _, st := range p.Structs {
 		fmt.Fprintf(w, "struct %s {\n", st.Name)
 		for _, f := range st.Fields {
@@ -416,28 +423,29 @@ func (p *Program) write(w io.Writer) {
 	}
 	for _, st := range p.Structs {
 		fmt.Fprintf(w, "std::ostream& operator<<(std::ostream& os, const %s& v) {\n", st.Name)
-		fmt.Fprintln(w, "    os << '{';")
+		fmt.Fprint(w, "    os << '{'")
 		for i, f := range st.Fields {
 			if i > 0 {
-				fmt.Fprintln(w, "    os << ', ';")
+				fmt.Fprint(w, " << \", \"")
 			}
-			fmt.Fprintf(w, "    os << '%s': ", f.Name)
+			fmt.Fprintf(w, " << \"'%s': \"", f.Name)
 			switch {
 			case f.Type == "std::string":
-				fmt.Fprintf(w, "    os << '%c' << v.%s << '%c';\n", '\'', f.Name, '\'')
+				fmt.Fprintf(w, "<< \"'\" << v.%s << \"'\"", f.Name)
 			case f.Type == "double":
-				fmt.Fprintf(w, "    os << std::fixed << std::setprecision(1) << v.%s;\n", f.Name)
+				fmt.Fprintf(w, "<< std::fixed << std::setprecision(1) << v.%s", f.Name)
 			case strings.HasPrefix(f.Type, "std::optional<"):
-				fmt.Fprintf(w, "    if(v.%s) os << *v.%s; else os << \"None\";\n", f.Name, f.Name)
+				fmt.Fprintf(w, "; if(v.%s) os << *v.%s; else os << \"None\"; os", f.Name, f.Name)
 			case strings.HasPrefix(f.Type, "std::vector<"):
-				fmt.Fprintf(w, "    os << '['; for(size_t i=0;i<v.%s.size();++i){ if(i>0) os << ', '; os << v.%s[i]; } os << ']';\n", f.Name, f.Name)
+				fmt.Fprintf(w, "<< '['; for(size_t i=0;i<v.%s.size();++i){ if(i>0) os << ', '; os << v.%s[i]; } os << ']'", f.Name, f.Name)
 			case strings.HasPrefix(f.Type, "std::map<"):
-				fmt.Fprintf(w, "    os << '{'; bool first_%d=true; for(const auto& p: v.%s){ if(!first_%d) os << ', '; first_%d=false; os << p.first << ': ' << p.second; } os << '}';\n", i, f.Name, i, i)
+				fmt.Fprintf(w, "<< '{'; bool first_%d=true; for(const auto& p: v.%s){ if(!first_%d) os << ', '; first_%d=false; os << p.first << ': ' << p.second; } os << '}'", i, f.Name, i, i)
 			default:
-				fmt.Fprintf(w, "    os << v.%s;\n", f.Name)
+				fmt.Fprintf(w, "<< v.%s", f.Name)
 			}
+			fmt.Fprintln(w)
 		}
-		fmt.Fprintln(w, "    os << '}';")
+		fmt.Fprintln(w, " << '}';")
 		fmt.Fprintln(w, "    return os;")
 		fmt.Fprintln(w, "}")
 		fmt.Fprintln(w)
@@ -666,11 +674,23 @@ func (u *UnaryExpr) emit(w io.Writer) {
 }
 
 func (s *SelectorExpr) emit(w io.Writer) {
-	if strings.HasPrefix(exprType(s.Target), "std::map<") {
+	t := exprType(s.Target)
+	if strings.HasPrefix(t, "std::map<") {
 		s.Target.emit(w)
 		io.WriteString(w, "[\"")
 		io.WriteString(w, s.Field)
 		io.WriteString(w, "\"]")
+	} else if ft := structFieldType(t, s.Field); strings.HasPrefix(ft, "std::optional<") {
+		s.Target.emit(w)
+		io.WriteString(w, ".")
+		io.WriteString(w, s.Field)
+		io.WriteString(w, ".value()")
+	} else if strings.HasPrefix(t, "std::optional<") {
+		io.WriteString(w, "(")
+		s.Target.emit(w)
+		io.WriteString(w, ".value())")
+		io.WriteString(w, ".")
+		io.WriteString(w, s.Field)
 	} else {
 		s.Target.emit(w)
 		io.WriteString(w, ".")
@@ -1201,7 +1221,7 @@ func (ojc *OuterJoinComp) emit(w io.Writer) {
 	ojc.RightIter.emit(w)
 	io.WriteString(w, ") {\n")
 	io.WriteString(w, "    bool __matched = false;\n")
-	io.WriteString(w, "    for (auto "+ojc.LeftVar+"_2 : ")
+	io.WriteString(w, "    for (auto "+ojc.LeftVar+" : ")
 	ojc.LeftIter.emit(w)
 	io.WriteString(w, ") {\n")
 	io.WriteString(w, "        if(")
@@ -1426,7 +1446,13 @@ func (f *ForStmt) emit(w io.Writer, indent int) {
 			io.WriteString(w, f.Var)
 			io.WriteString(w, " = __p.first;\n")
 		} else {
-			io.WriteString(w, "for (auto ")
+			io.WriteString(w, "for (")
+			if f.ElemType != "" {
+				io.WriteString(w, f.ElemType)
+				io.WriteString(w, " ")
+			} else {
+				io.WriteString(w, "auto ")
+			}
 			io.WriteString(w, f.Var)
 			io.WriteString(w, " : ")
 			f.Start.emit(w)
@@ -1544,11 +1570,18 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 			if stmt.Let.Value != nil {
 				if q := extractQuery(stmt.Let.Value); q != nil {
 					var def *StructDef
-					if len(q.Joins) == 1 && q.Joins[0].Side != nil && *q.Joins[0].Side == "left" {
-						if q.Group != nil {
-							val, def, _, err = convertLeftJoinGroupQuery(q, stmt.Let.Name)
-						} else {
-							val, def, _, err = convertLeftJoinQuery(q, stmt.Let.Name)
+					if len(q.Joins) == 1 && q.Joins[0].Side != nil {
+						switch *q.Joins[0].Side {
+						case "left":
+							if q.Group != nil {
+								val, def, _, err = convertLeftJoinGroupQuery(q, stmt.Let.Name)
+							} else {
+								val, def, _, err = convertLeftJoinQuery(q, stmt.Let.Name)
+							}
+						case "right":
+							val, def, _, err = convertRightJoinQuery(q, stmt.Let.Name)
+						case "outer":
+							val, def, _, err = convertOuterJoinQuery(q, stmt.Let.Name)
 						}
 					} else if len(q.Joins) == 2 && q.Joins[1].Side != nil && *q.Joins[1].Side == "left" && (q.Joins[0].Side == nil) {
 						val, def, _, err = convertJoinLeftJoinQuery(q, stmt.Let.Name)
@@ -1618,6 +1651,18 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 						cp.ListTypes = map[string]string{}
 					}
 					cp.ListTypes[stmt.Let.Name] = jl.ElemType
+				} else if rjc, ok := val.(*RightJoinComp); ok {
+					typ = fmt.Sprintf("std::vector<%s>", rjc.ElemType)
+					if cp.ListTypes == nil {
+						cp.ListTypes = map[string]string{}
+					}
+					cp.ListTypes[stmt.Let.Name] = rjc.ElemType
+				} else if ojc, ok := val.(*OuterJoinComp); ok {
+					typ = fmt.Sprintf("std::vector<%s>", ojc.ElemType)
+					if cp.ListTypes == nil {
+						cp.ListTypes = map[string]string{}
+					}
+					cp.ListTypes[stmt.Let.Name] = ojc.ElemType
 				}
 			}
 			globals = append(globals, &LetStmt{Name: stmt.Let.Name, Type: typ, Value: val})
@@ -1627,11 +1672,18 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 			if stmt.Var.Value != nil {
 				if q := extractQuery(stmt.Var.Value); q != nil {
 					var def *StructDef
-					if len(q.Joins) == 1 && q.Joins[0].Side != nil && *q.Joins[0].Side == "left" {
-						if q.Group != nil {
-							val, def, _, err = convertLeftJoinGroupQuery(q, stmt.Var.Name)
-						} else {
-							val, def, _, err = convertLeftJoinQuery(q, stmt.Var.Name)
+					if len(q.Joins) == 1 && q.Joins[0].Side != nil {
+						switch *q.Joins[0].Side {
+						case "left":
+							if q.Group != nil {
+								val, def, _, err = convertLeftJoinGroupQuery(q, stmt.Var.Name)
+							} else {
+								val, def, _, err = convertLeftJoinQuery(q, stmt.Var.Name)
+							}
+						case "right":
+							val, def, _, err = convertRightJoinQuery(q, stmt.Var.Name)
+						case "outer":
+							val, def, _, err = convertOuterJoinQuery(q, stmt.Var.Name)
 						}
 					} else if len(q.Joins) == 2 && q.Joins[1].Side != nil && *q.Joins[1].Side == "left" && (q.Joins[0].Side == nil) {
 						val, def, _, err = convertJoinLeftJoinQuery(q, stmt.Var.Name)
@@ -1701,6 +1753,18 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 						cp.ListTypes = map[string]string{}
 					}
 					cp.ListTypes[stmt.Var.Name] = jl.ElemType
+				} else if rjc, ok := val.(*RightJoinComp); ok {
+					typ = fmt.Sprintf("std::vector<%s>", rjc.ElemType)
+					if cp.ListTypes == nil {
+						cp.ListTypes = map[string]string{}
+					}
+					cp.ListTypes[stmt.Var.Name] = rjc.ElemType
+				} else if ojc, ok := val.(*OuterJoinComp); ok {
+					typ = fmt.Sprintf("std::vector<%s>", ojc.ElemType)
+					if cp.ListTypes == nil {
+						cp.ListTypes = map[string]string{}
+					}
+					cp.ListTypes[stmt.Var.Name] = ojc.ElemType
 				}
 			}
 			globals = append(globals, &LetStmt{Name: stmt.Var.Name, Type: typ, Value: val})
@@ -1766,13 +1830,29 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 					}
 				}
 			}
+			varType := elementTypeFromListType(guessType(stmt.For.Source))
+			if vr, ok := start.(*VarRef); ok {
+				if t, ok2 := currentProgram.ListTypes[vr.Name]; ok2 {
+					varType = t
+				}
+			}
+			fs.ElemType = varType
+			oldTypes2 := localTypes
+			newTypes := map[string]string{}
+			for k, v := range oldTypes2 {
+				newTypes[k] = v
+			}
+			newTypes[stmt.For.Name] = varType
+			localTypes = newTypes
 			for _, s := range stmt.For.Body {
 				st, err := convertStmt(s)
 				if err != nil {
+					localTypes = oldTypes2
 					return nil, err
 				}
 				fs.Body = append(fs.Body, st)
 			}
+			localTypes = oldTypes2
 			body = append(body, fs)
 		case stmt.While != nil:
 			ws, err := convertWhileStmt(stmt.While)
@@ -1943,13 +2023,29 @@ func convertStmt(s *parser.Statement) (Stmt, error) {
 				}
 			}
 		}
+		varType := elementTypeFromListType(guessType(s.For.Source))
+		if vr, ok := start.(*VarRef); ok {
+			if t, ok2 := currentProgram.ListTypes[vr.Name]; ok2 {
+				varType = t
+			}
+		}
+		fs.ElemType = varType
+		oldTypes2 := localTypes
+		newTypes := map[string]string{}
+		for k, v := range oldTypes2 {
+			newTypes[k] = v
+		}
+		newTypes[s.For.Name] = varType
+		localTypes = newTypes
 		for _, st := range s.For.Body {
 			cs, err := convertStmt(st)
 			if err != nil {
+				localTypes = oldTypes2
 				return nil, err
 			}
 			fs.Body = append(fs.Body, cs)
 		}
+		localTypes = oldTypes2
 		return fs, nil
 	case s.Break != nil:
 		return &BreakStmt{}, nil
