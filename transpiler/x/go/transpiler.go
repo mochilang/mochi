@@ -137,7 +137,11 @@ func (v *VarDecl) emit(w io.Writer) {
 		fmt.Fprintf(w, "var %s %s = ", v.Name, v.Type)
 		v.Value.emit(w)
 	case v.Value != nil:
-		fmt.Fprintf(w, "%s := ", v.Name)
+		if v.Global {
+			fmt.Fprintf(w, "var %s = ", v.Name)
+		} else {
+			fmt.Fprintf(w, "%s := ", v.Name)
+		}
 		v.Value.emit(w)
 	case v.Type != "":
 		fmt.Fprintf(w, "var %s %s", v.Name, v.Type)
