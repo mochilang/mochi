@@ -1,0 +1,18 @@
+// Demonstrates calling Go and Python code in the same file
+
+import go "strings" as strings auto
+import python "math" as math
+
+// Hardcoded input
+let rawName = "   alice  "
+let radius = 3.0
+
+// Use Go to trim and uppercase the name
+let name = strings.ToUpper(strings.TrimSpace(rawName))
+
+// Use Python to compute circle area
+let area = math.pi * math.pow(radius, 2.0)
+
+// Output the result
+print("Hello", name + "!")
+print("The area of a circle with radius", radius, "is", area)
