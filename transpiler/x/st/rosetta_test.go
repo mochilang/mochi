@@ -10,6 +10,7 @@ import (
 	"os/exec"
 	"path/filepath"
 	"sort"
+	"strconv"
 	"strings"
 	"testing"
 	"time"
@@ -40,6 +41,15 @@ func TestSmalltalkRosetta(t *testing.T) {
 	sort.Strings(files)
 	if len(files) == 0 {
 		t.Fatalf("no Mochi Rosetta tests found: %s", pattern)
+	}
+
+	if idxStr := os.Getenv("MOCHI_ROSETTA_INDEX"); idxStr != "" {
+		idx, err := strconv.Atoi(idxStr)
+		if err != nil || idx < 1 || idx > len(files) {
+			t.Fatalf("invalid MOCHI_ROSETTA_INDEX %q", idxStr)
+		}
+		t.Logf("running rosetta program #%d/%d: %s", idx, len(files), filepath.Base(files[idx-1]))
+		files = files[idx-1 : idx]
 	}
 
 	for _, srcPath := range files {
