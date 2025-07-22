@@ -425,7 +425,7 @@ func (t *TypeDeclStmt) emit(w io.Writer, indent string) {
 		if i > 0 {
 			fmt.Fprint(w, ", ")
 		}
-		fmt.Fprintf(w, "q(%s)", f.Name)
+		fmt.Fprintf(w, "String.valueOf(%s)", f.Name)
 	}
 	fmt.Fprint(w, ");\n")
 	fmt.Fprint(w, indent+"    }\n")
@@ -2271,8 +2271,11 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 					args[i] = &CallExpr{Func: "java.util.Arrays.toString", Args: []Expr{a}}
 				} else if isListExpr(a) {
 					args[i] = &ListStrExpr{List: a}
+				} else if isBoolExpr(a) {
+					args[i] = &TernaryExpr{Cond: a, Then: &StringLit{Value: "True"}, Else: &StringLit{Value: "False"}}
+				} else if isStringExpr(a) {
+					args[i] = &BinaryExpr{Left: &BinaryExpr{Left: &StringLit{Value: "'"}, Op: "+", Right: a}, Op: "+", Right: &StringLit{Value: "'"}}
 				}
-				args[i] = &CallExpr{Func: "boolStr", Args: []Expr{args[i]}}
 			}
 			if len(args) > 1 {
 				expr := args[0]
@@ -2872,15 +2875,7 @@ func Emit(prog *Program) []byte {
 		buf.WriteString("        }\n")
 		buf.WriteString("    }\n\n")
 	}
-	buf.WriteString("    static String q(Object v) {\n")
-	buf.WriteString("        if (v instanceof String) return \"'\" + v.toString() + \"'\";\n")
-	buf.WriteString("        return String.valueOf(v);\n")
-	buf.WriteString("    }\n\n")
-
-	buf.WriteString("    static String boolStr(Object v) {\n")
-	buf.WriteString("        if (v instanceof Boolean b) return b ? \"True\" : \"False\";\n")
-	buf.WriteString("        return String.valueOf(v);\n")
-	buf.WriteString("    }\n\n")
+	// helper functions removed for simplified output
 	for i, fn := range prog.Funcs {
 		ret := javaType(fn.Return)
 		if ret == "" {
@@ -2937,6 +2932,24 @@ func typeRefString(tr *parser.TypeRef) string {
 		return *tr.Simple
 	}
 	if tr.Generic != nil {
+		if tr.Generic.Name == "list" && len(tr.Generic.Args) == 1 {
+			elem := typeRefString(tr.Generic.Args[0])
+			if elem == "" {
+				elem = "Object"
+			}
+			return elem + "[]"
+		}
+		if tr.Generic.Name == "map" && len(tr.Generic.Args) == 2 {
+			key := typeRefString(tr.Generic.Args[0])
+			val := typeRefString(tr.Generic.Args[1])
+			if key == "" {
+				key = "Object"
+			}
+			if val == "" {
+				val = "Object"
+			}
+			return fmt.Sprintf("java.util.Map<%s,%s>", javaBoxType(key), javaBoxType(val))
+		}
 		return tr.Generic.Name
 	}
 	if tr.Fun != nil {
