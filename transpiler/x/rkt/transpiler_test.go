@@ -116,6 +116,8 @@ func TestTranspile_Golden(t *testing.T) {
 		"sort_stable",
 		"typed_let",
 		"typed_var",
+		"load_jsonl",
+		"load_yaml",
 	}
 	for _, name := range names {
 		src := filepath.Join(root, "tests", "vm", "valid", name+".mochi")
