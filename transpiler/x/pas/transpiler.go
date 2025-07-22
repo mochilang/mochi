@@ -1034,6 +1034,16 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 			if _, ok := varTypes[st.Assign.Name]; !ok {
 				if t := inferType(ex); t != "" {
 					varTypes[st.Assign.Name] = t
+					setVarType(st.Assign.Name, t)
+				}
+				if call, ok := ex.(*CallExpr); ok && call.Name == "concat" && len(call.Args) == 2 {
+					if list, ok := call.Args[1].(*ListLit); ok && len(list.Elems) == 1 {
+						if et := inferType(list.Elems[0]); et != "" {
+							t := "array of " + et
+							varTypes[st.Assign.Name] = t
+							setVarType(st.Assign.Name, t)
+						}
+					}
 				}
 			}
 			pr.Stmts = append(pr.Stmts, &AssignStmt{Name: st.Assign.Name, Expr: ex})
@@ -1231,7 +1241,39 @@ func convertBody(env *types.Env, body []*parser.Statement, varTypes map[string]s
 				}
 				out = append(out, &AssignStmt{Name: st.Let.Name, Expr: ex})
 			}
-			currProg.Vars = append(currProg.Vars, vd)
+			if !hasVar(vd.Name) {
+				currProg.Vars = append(currProg.Vars, vd)
+			}
+			if vd.Type != "" {
+				varTypes[vd.Name] = vd.Type
+			}
+		case st.Var != nil:
+			vd := VarDecl{Name: st.Var.Name}
+			if st.Var.Type != nil && st.Var.Type.Simple != nil {
+				if *st.Var.Type.Simple == "int" {
+					vd.Type = "integer"
+				} else if *st.Var.Type.Simple == "string" {
+					vd.Type = "string"
+				}
+			}
+			if st.Var.Value != nil {
+				ex, err := convertExpr(env, st.Var.Value)
+				if err != nil {
+					return nil, err
+				}
+				vd.Init = ex
+				if vd.Type == "" {
+					if t := inferType(ex); t != "" {
+						vd.Type = t
+					} else if st.Var.Value.Binary != nil && st.Var.Value.Binary.Left != nil && st.Var.Value.Binary.Left.Value != nil && st.Var.Value.Binary.Left.Value.Target != nil && st.Var.Value.Binary.Left.Value.Target.List != nil && len(st.Var.Value.Binary.Left.Value.Target.List.Elems) == 0 {
+						vd.Type = "array of boolean"
+					}
+				}
+				out = append(out, &AssignStmt{Name: st.Var.Name, Expr: ex})
+			}
+			if !hasVar(vd.Name) {
+				currProg.Vars = append(currProg.Vars, vd)
+			}
 			if vd.Type != "" {
 				varTypes[vd.Name] = vd.Type
 			}
@@ -1268,6 +1310,16 @@ func convertBody(env *types.Env, body []*parser.Statement, varTypes map[string]s
 					}
 				}
 			}
+		case st.While != nil:
+			cond, err := convertExpr(env, st.While.Cond)
+			if err != nil {
+				return nil, err
+			}
+			body, err := convertBody(env, st.While.Body, varTypes)
+			if err != nil {
+				return nil, err
+			}
+			out = append(out, &WhileStmt{Cond: cond, Body: body})
 		case st.Break != nil:
 			out = append(out, &BreakStmt{})
 		case st.Continue != nil:
@@ -3323,6 +3375,25 @@ func parseYAMLRecords(data []byte) ([]map[string]string, error) {
 		res = append(res, cur)
 	}
 	return res, scanner.Err()
+}
+
+func hasVar(name string) bool {
+	for _, v := range currProg.Vars {
+		if v.Name == name {
+			return true
+		}
+	}
+	return false
+}
+
+func setVarType(name, typ string) {
+	for i, v := range currProg.Vars {
+		if v.Name == name {
+			currProg.Vars[i].Type = typ
+			return
+		}
+	}
+	currProg.Vars = append(currProg.Vars, VarDecl{Name: name, Type: typ})
 }
 
 func findRecord(name string) (RecordDef, bool) {
