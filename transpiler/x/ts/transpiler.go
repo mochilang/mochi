@@ -940,11 +940,9 @@ func (q *QueryExprJS) emit(w io.Writer) {
 		}
 		emitLoops(0, 1)
 		if q.Sort != nil {
-			io.WriteString(iw, "  result.sort((a, b) => {")
-			io.WriteString(iw, "const ak = a.k; const bk = b.k;")
-			io.WriteString(iw, " if (ak < bk) return -1; if (ak > bk) return 1;")
-			io.WriteString(iw, " const sak = JSON.stringify(ak); const sbk = JSON.stringify(bk);")
-			io.WriteString(iw, " return sak < sbk ? -1 : sak > sbk ? 1 : 0})\n")
+			io.WriteString(iw, "  result.sort((a, b) => ")
+			emitSortComparator(iw, q.Sort)
+			io.WriteString(iw, ")\n")
 			io.WriteString(iw, "  const out = result.map(r => r.v)\n")
 		} else {
 			io.WriteString(iw, "  const out = result\n")
@@ -2981,10 +2979,10 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 			}
 			entries[i] = MapEntry{Key: k, Value: v}
 		}
-                // Avoid generating unused type declarations for simple map
-                // literals. Struct interfaces are emitted when a variable or
-                // query explicitly requires one, so map literals on their own
-                // can remain anonymous objects.
+		// Avoid generating unused type declarations for simple map
+		// literals. Struct interfaces are emitted when a variable or
+		// query explicitly requires one, so map literals on their own
+		// can remain anonymous objects.
 		return &MapLit{Entries: entries}, nil
 	case p.Load != nil:
 		format := parseFormat(p.Load.With)
@@ -3377,6 +3375,46 @@ func parseFormat(e *parser.Expr) string {
 		}
 	}
 	return ""
+}
+
+func mapStringFields(m *MapLit) ([]string, bool) {
+	if m == nil {
+		return nil, false
+	}
+	fields := make([]string, 0, len(m.Entries))
+	for _, ent := range m.Entries {
+		switch k := ent.Key.(type) {
+		case *StringLit:
+			fields = append(fields, k.Value)
+		case *NameRef:
+			fields = append(fields, k.Name)
+		default:
+			return nil, false
+		}
+	}
+	return fields, true
+}
+
+func emitSortComparator(w io.Writer, sortExpr Expr) {
+	switch s := sortExpr.(type) {
+	case *IndexExpr:
+		if key, ok := s.Index.(*StringLit); ok && isIdent(key.Value) {
+			fmt.Fprintf(w, "a.k.%s < b.k.%s ? -1 : a.k.%s > b.k.%s ? 1 : 0", key.Value, key.Value, key.Value, key.Value)
+			return
+		}
+	case *NameRef:
+		io.WriteString(w, "a.k < b.k ? -1 : a.k > b.k ? 1 : 0")
+		return
+	case *MapLit:
+		if fields, ok := mapStringFields(s); ok {
+			for _, f := range fields {
+				fmt.Fprintf(w, "a.k.%s < b.k.%s ? -1 : a.k.%s > b.k.%s ? 1 : ", f, f, f, f)
+			}
+			io.WriteString(w, "0")
+			return
+		}
+	}
+	io.WriteString(w, "a.k < b.k ? -1 : a.k > b.k ? 1 : 0")
 }
 
 func substituteFields(e Expr, varName string, fields map[string]bool) Expr {
