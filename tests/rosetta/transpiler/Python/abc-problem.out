@@ -1,0 +1,13 @@
+Traceback (most recent call last):
+  File "/workspace/mochi/tests/rosetta/transpiler/Python/abc-problem.py", line 44, in <module>
+    main()
+  File "/workspace/mochi/tests/rosetta/transpiler/Python/abc-problem.py", line 43, in main
+    print(word + " " + str(sp(word)))
+                           ^^^^^^^^
+  File "/workspace/mochi/tests/rosetta/transpiler/Python/abc-problem.py", line 39, in <lambda>
+    return lambda w: canSpell(w, bl)
+                     ^^^^^^^^^^^^^^^
+  File "/workspace/mochi/tests/rosetta/transpiler/Python/abc-problem.py", line 22, in canSpell
+    c = lower(word[0:1])
+        ^^^^^
+NameError: name 'lower' is not defined

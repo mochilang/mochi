@@ -1,5 +1,5 @@
-## Progress (2025-07-22 22:49 +0700)
-- Commit 471b8e5ea: transpiler/erl: use index for Rosetta tests
+## Progress (2025-07-22 23:07 +0700)
+- Commit b9c32e8f4: dart transpiler: index rosetta cases
 - Generated Python for 103/103 programs
 - Updated README checklist and outputs
 - Removed runtime helpers and improved boolean type inference

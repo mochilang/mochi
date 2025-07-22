@@ -1,0 +1,13 @@
+run: exit status 1
+Traceback (most recent call last):
+  File "/workspace/mochi/tests/rosetta/transpiler/Python/abstract-type.py", line 30, in <module>
+    main()
+  File "/workspace/mochi/tests/rosetta/transpiler/Python/abstract-type.py", line 28, in main
+    bprint(d)
+  File "/workspace/mochi/tests/rosetta/transpiler/Python/abstract-type.py", line 24, in bprint
+    print(beastName(b) + ", who's a " + beastKind(b) + ", cries: \"" + beastCry(b) + "\".")
+          ^^^^^^^^^^^^
+  File "/workspace/mochi/tests/rosetta/transpiler/Python/abstract-type.py", line 20, in beastName
+    return (n if b == Dog(_, n) else (n if b == Cat(_, n) else None_))
+                          ^
+NameError: name '_' is not defined
