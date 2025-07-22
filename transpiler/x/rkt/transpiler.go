@@ -3,13 +3,19 @@
 package rkt
 
 import (
+	"bufio"
+	"bytes"
+	"encoding/json"
 	"fmt"
 	"io"
 	"os"
 	"os/exec"
 	"path/filepath"
+	"sort"
 	"strings"
 	"time"
+
+	yaml "gopkg.in/yaml.v3"
 
 	"mochi/parser"
 	"mochi/types"
@@ -50,7 +56,7 @@ func (p *PrintStmt) emit(w io.Writer) {
 			io.WriteString(w, " ")
 			part.emit(w)
 		}
-		io.WriteString(w, ")) \" \"))")
+		io.WriteString(w, ") \" \"))")
 	}
 	io.WriteString(w, ")\n")
 }
@@ -947,6 +953,122 @@ func zeroValue(t *parser.TypeRef, env *types.Env) Expr {
 	}
 }
 
+func parseFormat(e *parser.Expr) string {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) > 0 {
+		return ""
+	}
+	u := e.Binary.Left
+	if len(u.Ops) > 0 || u.Value == nil {
+		return ""
+	}
+	p := u.Value
+	if len(p.Ops) > 0 || p.Target == nil || p.Target.Map == nil {
+		return ""
+	}
+	for _, it := range p.Target.Map.Items {
+		key, ok := isSimpleIdent(it.Key)
+		if !ok {
+			key, ok = literalString(it.Key)
+		}
+		if key == "format" {
+			if s, ok := literalString(it.Value); ok {
+				return s
+			}
+		}
+	}
+	return ""
+}
+
+func valueToExpr(v interface{}, typ *parser.TypeRef, env *types.Env) Expr {
+	switch val := v.(type) {
+	case map[string]interface{}:
+		names := make([]string, 0, len(val))
+		for k := range val {
+			names = append(names, k)
+		}
+		sort.Strings(names)
+		var args []Expr
+		for _, k := range names {
+			args = append(args, &StringLit{Value: k})
+			args = append(args, valueToExpr(val[k], nil, env))
+		}
+		return &CallExpr{Func: "hash", Args: args}
+	case []interface{}:
+		elems := make([]Expr, len(val))
+		for i, it := range val {
+			elems[i] = valueToExpr(it, nil, env)
+		}
+		return &ListLit{Elems: elems}
+	case string:
+		return &StringLit{Value: val}
+	case bool:
+		if val {
+			return &Name{Name: "#t"}
+		}
+		return &Name{Name: "#f"}
+	case float64:
+		if val == float64(int(val)) {
+			return &IntLit{Value: int(val)}
+		}
+		return &FloatLit{Value: val}
+	case int:
+		return &IntLit{Value: val}
+	case int64:
+		return &IntLit{Value: int(val)}
+	case nil:
+		return &StringLit{Value: ""}
+	default:
+		return &StringLit{Value: fmt.Sprintf("%v", val)}
+	}
+}
+
+func dataExprFromFile(path, format string, typ *parser.TypeRef, env *types.Env) (Expr, error) {
+	if path == "" {
+		return &ListLit{}, nil
+	}
+	root := repoRoot()
+	if root != "" && strings.HasPrefix(path, "../") {
+		clean := strings.TrimPrefix(path, "../")
+		path = filepath.Join(root, "tests", clean)
+	}
+	data, err := os.ReadFile(path)
+	if err != nil {
+		return nil, err
+	}
+	var v interface{}
+	switch format {
+	case "yaml":
+		if err := yaml.Unmarshal(data, &v); err != nil {
+			return nil, err
+		}
+	case "json":
+		if err := json.Unmarshal(data, &v); err != nil {
+			return nil, err
+		}
+	case "jsonl":
+		var list []interface{}
+		scanner := bufio.NewScanner(bytes.NewReader(data))
+		for scanner.Scan() {
+			line := strings.TrimSpace(scanner.Text())
+			if line == "" {
+				continue
+			}
+			var item interface{}
+			if err := json.Unmarshal([]byte(line), &item); err != nil {
+				return nil, err
+			}
+			list = append(list, item)
+		}
+		if err := scanner.Err(); err != nil {
+			return nil, err
+		}
+		v = list
+	default:
+		return nil, fmt.Errorf("unsupported load format")
+	}
+	return valueToExpr(v, typ, env), nil
+}
+
 func Emit(w io.Writer, p *Program) error {
 	if _, err := io.WriteString(w, header()); err != nil {
 		return err
@@ -1561,6 +1683,13 @@ func convertPrimary(p *parser.Primary, env *types.Env) (Expr, error) {
 		return convertStruct(p.Struct, env)
 	case p.Map != nil:
 		return convertMap(p.Map, env)
+	case p.Load != nil:
+		format := parseFormat(p.Load.With)
+		path := ""
+		if p.Load.Path != nil {
+			path = strings.Trim(*p.Load.Path, "\"")
+		}
+		return dataExprFromFile(path, format, p.Load.Type, env)
 	case p.FunExpr != nil:
 		return convertFunExpr(p.FunExpr, env)
 	case p.Call != nil:
