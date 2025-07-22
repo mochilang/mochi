@@ -3246,16 +3246,18 @@ func compilePostfix(pf *parser.PostfixExpr, env *types.Env, base string) (Expr, 
 				return nil, fmt.Errorf("unsupported postfix")
 			}
 		} else if op.Field != nil {
-			if _, ok := imports[pf.Target.Selector.Root]; ok && i+1 < len(pf.Ops) && pf.Ops[i+1].Call != nil {
-				args := make([]Expr, len(pf.Ops[i+1].Call.Args))
-				for j, a := range pf.Ops[i+1].Call.Args {
-					ex, err := compileExpr(a, env, "")
-					if err != nil {
-						return nil, err
+			if pf.Target != nil && pf.Target.Selector != nil {
+				if _, ok := imports[pf.Target.Selector.Root]; ok && i+1 < len(pf.Ops) && pf.Ops[i+1].Call != nil {
+					args := make([]Expr, len(pf.Ops[i+1].Call.Args))
+					for j, a := range pf.Ops[i+1].Call.Args {
+						ex, err := compileExpr(a, env, "")
+						if err != nil {
+							return nil, err
+						}
+						args[j] = ex
 					}
-					args[j] = ex
+					return &CallExpr{Func: pf.Target.Selector.Root + "." + toGoFieldName(op.Field.Name), Args: args}, nil
 				}
-				return &CallExpr{Func: pf.Target.Selector.Root + "." + toGoFieldName(op.Field.Name), Args: args}, nil
 			}
 			switch tt := t.(type) {
 			case types.MapType:
