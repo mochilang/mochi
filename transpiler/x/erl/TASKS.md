@@ -1,3 +1,11 @@
+## Progress (2025-07-22 14:43 +0700)
+- erl transpiler: handle test_block (be449538c)
+- Regenerated golden files - 102/102 vm valid programs passing
+
+## Progress (2025-07-22 14:37 +0700)
+- erl transpiler: add update stmt support (6cc05f23b)
+- Regenerated golden files - 102/102 vm valid programs passing
+
 ## Progress (2025-07-22 14:17 +0700)
 - docs(erl): update progress (7b0649983)
 - Regenerated golden files - 101/102 vm valid programs passing
