@@ -160,7 +160,7 @@ func header() []byte {
 	loc, _ := time.LoadLocation("Asia/Bangkok")
 	prelude := ""
 	if needBase {
-		prelude += "(import (only (scheme base) call/cc))\n"
+		prelude += "(import (only (scheme base) call/cc list-set!))\n"
 	}
 	prelude += `(define (to-str x)
   (cond ((pair? x)
@@ -278,6 +278,53 @@ func convertForStmt(fs *parser.ForStmt) (Node, error) {
 	currentEnv = types.NewEnv(currentEnv)
 	currentEnv.SetVar(fs.Name, types.AnyType{}, true)
 
+	if fs.RangeEnd != nil {
+		start, err := convertParserExpr(fs.Source)
+		if err != nil {
+			currentEnv = prevEnv
+			return nil, err
+		}
+		end, err := convertParserExpr(fs.RangeEnd)
+		if err != nil {
+			currentEnv = prevEnv
+			return nil, err
+		}
+		body, err := convertStmts(fs.Body)
+		currentEnv = prevEnv
+		if err != nil {
+			return nil, err
+		}
+		loopSym := gensym("loop")
+		breakSym := gensym("break")
+		pushLoop(breakSym, &List{Elems: []Node{loopSym, &List{Elems: []Node{Symbol("+"), Symbol(fs.Name), IntLit(1)}}}})
+		bodyNode := &List{Elems: append([]Node{Symbol("begin")}, body...)}
+		bodyNode = &List{Elems: []Node{Symbol("let"), &List{Elems: []Node{}}, bodyNode}}
+		loopBody := &List{Elems: []Node{
+			Symbol("if"), &List{Elems: []Node{Symbol("<"), Symbol(fs.Name), end}},
+			&List{Elems: []Node{
+				Symbol("begin"),
+				bodyNode,
+				&List{Elems: []Node{loopSym, &List{Elems: []Node{Symbol("+"), Symbol(fs.Name), IntLit(1)}}}},
+			}},
+			voidSym(),
+		}}
+		loopFn := &List{Elems: []Node{
+			Symbol("call/cc"),
+			&List{Elems: []Node{
+				Symbol("lambda"), &List{Elems: []Node{breakSym}},
+				&List{Elems: []Node{
+					Symbol("letrec"),
+					&List{Elems: []Node{
+						&List{Elems: []Node{loopSym, &List{Elems: []Node{Symbol("lambda"), &List{Elems: []Node{Symbol(fs.Name)}}, loopBody}}}},
+					}},
+					&List{Elems: []Node{loopSym, start}},
+				}},
+			}},
+		}}
+		popLoop()
+		return loopFn, nil
+	}
+
 	iter, err := convertParserExpr(fs.Source)
 	if err != nil {
 		currentEnv = prevEnv
@@ -392,6 +439,9 @@ func convertStmt(st *parser.Statement) (Node, error) {
 		} else {
 			val = voidSym()
 		}
+		if currentEnv != nil {
+			currentEnv.SetVar(name, types.AnyType{}, true)
+		}
 		return &List{Elems: []Node{Symbol("define"), Symbol(name), val}}, nil
 	case st.Var != nil:
 		name := st.Var.Name
@@ -406,6 +456,9 @@ func convertStmt(st *parser.Statement) (Node, error) {
 			val = typedDefault(st.Var.Type)
 		} else {
 			val = voidSym()
+		}
+		if currentEnv != nil {
+			currentEnv.SetVar(name, types.AnyType{}, true)
 		}
 		return &List{Elems: []Node{Symbol("define"), Symbol(name), val}}, nil
 	case st.Assign != nil && len(st.Assign.Index) == 0 && len(st.Assign.Field) == 0:
