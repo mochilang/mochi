@@ -44,7 +44,13 @@ type value struct {
 	list []value
 	kv   map[string]value
 	fun  *parser.FunExpr
+	part *partial
 	env  map[string]value
+}
+
+type partial struct {
+	fn   *parser.FunStmt
+	args []value
 }
 
 // currentFuncs holds function declarations available during constant
@@ -1182,6 +1188,11 @@ func evalPrimary(p *parser.Primary, vars map[string]value) (value, error) {
 				}
 				args[i] = av
 			}
+			if fv.part != nil {
+				all := append(append([]value{}, fv.part.args...), args...)
+				res, _, err := evalFunction(fv.part.fn, all, fv.env)
+				return res, err
+			}
 			res, _, err := evalFunExpr(fv.fun, args, fv.env)
 			return res, err
 		}
@@ -1336,7 +1347,11 @@ func evalFunction(fn *parser.FunStmt, args []value, captured map[string]value) (
 	if fn == nil {
 		return value{}, nil, fmt.Errorf("undefined function")
 	}
-	if len(args) != len(fn.Params) {
+	if len(args) < len(fn.Params) {
+		cp := append([]value(nil), args...)
+		return value{kind: valFunc, part: &partial{fn: fn, args: cp}, env: copyVars(captured)}, nil, nil
+	}
+	if len(args) > len(fn.Params) {
 		return value{}, nil, fmt.Errorf("argument count mismatch")
 	}
 

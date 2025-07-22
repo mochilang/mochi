@@ -1,6 +1,6 @@
-## Progress (2025-07-22 06:34 +0700)
-- Commit d7ef2854a: st transpiler: support list set operations
-- Generated Smalltalk for 93/101 programs
+## Progress (2025-07-22 09:10 +0700)
+- Commit 0363e8e26: st transpiler: support partial application
+- Generated Smalltalk for 95/102 programs
 - Updated README checklist and outputs
 - Added support for break and continue statements
 
