@@ -50,23 +50,23 @@ func runRosettaTask(t *testing.T, name string) {
 	src := filepath.Join(root, "tests", "rosetta", "x", "Mochi", name+".mochi")
 	prog, err := parser.Parse(src)
 	if err != nil {
-		t.Fatalf("parse: %v", err)
+		t.Fatalf("%s: parse: %v", name, err)
 	}
 	env := types.NewEnv(nil)
 	if errs := types.Check(prog, env); len(errs) > 0 {
-		t.Fatalf("type: %v", errs[0])
+		t.Fatalf("%s: type: %v", name, errs[0])
 	}
 	ast, err := pl.Transpile(prog, env)
 	if err != nil {
-		t.Fatalf("transpile: %v", err)
+		t.Fatalf("%s: transpile: %v", name, err)
 	}
 	var buf bytes.Buffer
 	if err := pl.Emit(&buf, ast); err != nil {
-		t.Fatalf("emit: %v", err)
+		t.Fatalf("%s: emit: %v", name, err)
 	}
 	plFile := filepath.Join(outDir, name+".pl")
 	if err := os.WriteFile(plFile, buf.Bytes(), 0o644); err != nil {
-		t.Fatalf("write: %v", err)
+		t.Fatalf("%s: write: %v", name, err)
 	}
 	cmd := exec.Command("swipl", "-q", "-f", plFile)
 	cmd.Env = append(os.Environ(), "MOCHI_ROOT="+root)
@@ -74,7 +74,7 @@ func runRosettaTask(t *testing.T, name string) {
 	got := bytes.TrimSpace(out)
 	if err != nil || bytes.Contains(out, []byte("ERROR:")) {
 		_ = os.WriteFile(filepath.Join(outDir, name+".error"), out, 0o644)
-		t.Fatalf("run: %v", err)
+		t.Fatalf("%s: run: %v\n%s", name, err, string(out))
 	}
 	_ = os.Remove(filepath.Join(outDir, name+".error"))
 	outWant := filepath.Join(outDir, name+".out")
@@ -82,7 +82,7 @@ func runRosettaTask(t *testing.T, name string) {
 		_ = os.WriteFile(outWant, append(got, '\n'), 0o644)
 	} else if want, err := os.ReadFile(outWant); err == nil {
 		if !bytes.Equal(got, bytes.TrimSpace(want)) {
-			t.Errorf("output mismatch:\nGot: %s\nWant: %s", got, bytes.TrimSpace(want))
+			t.Fatalf("%s: output mismatch:\nGot: %s\nWant: %s", name, got, bytes.TrimSpace(want))
 		}
 	}
 }
@@ -103,7 +103,7 @@ func TestPrologTranspiler_Rosetta(t *testing.T) {
 	}
 	for _, f := range files[:max] {
 		name := strings.TrimSuffix(filepath.Base(f), ".mochi")
-		t.Run(name, func(t *testing.T) { runRosettaTask(t, name) })
+		runRosettaTask(t, name)
 	}
 	pl.UpdateRosettaReadme()
 }

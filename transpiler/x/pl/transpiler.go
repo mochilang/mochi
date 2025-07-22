@@ -1136,6 +1136,9 @@ func needsIs(e Expr) bool {
 	case *IntLit:
 		return true
 	case *BinaryExpr:
+		if ex.Op == "+" && (isSimpleString(ex.Left) || isSimpleString(ex.Right)) {
+			return false
+		}
 		return isArithOp(ex.Op) || needsIs(ex.Left) || needsIs(ex.Right)
 	case *GroupExpr:
 		return needsIs(ex.Expr)
@@ -1153,6 +1156,17 @@ func needsIs(e Expr) bool {
 func isStringLit(e Expr) bool {
 	_, ok := e.(*StringLit)
 	return ok
+}
+
+func isSimpleString(e Expr) bool {
+	switch e.(type) {
+	case *StringLit, *StrExpr:
+		return true
+	}
+	if b, ok := e.(*BinaryExpr); ok && b.Op == "+" {
+		return isSimpleString(b.Left) || isSimpleString(b.Right)
+	}
+	return false
 }
 
 func isStringLike(e Expr, env *compileEnv) bool {
@@ -1221,8 +1235,19 @@ func stringValue(e Expr, env *compileEnv) (string, bool) {
 	switch v := e.(type) {
 	case *StringLit:
 		return v.Value, true
+	case *IntLit:
+		return strconv.Itoa(v.Value), true
+	case *FloatLit:
+		return strconv.FormatFloat(v.Value, 'f', -1, 64), true
+	case *BoolLit:
+		if v.Value {
+			return "true", true
+		}
+		return "false", true
 	case *GroupExpr:
 		return stringValue(v.Expr, env)
+	case *StrExpr:
+		return stringValue(v.Value, env)
 	case *Var:
 		if c, ok := env.constExpr(v.Name).(*StringLit); ok {
 			return c.Value, true
@@ -1962,6 +1987,22 @@ func compileStmts(sts []*parser.Statement, env *compileEnv) ([]Stmt, error) {
 			if s.If.ElseIf != nil {
 				return nil, fmt.Errorf("unsupported elseif")
 			}
+			if b, ok := cond.(*BoolLit); ok {
+				if b.Value {
+					thenStmts, err := compileStmts(s.If.Then, env)
+					if err != nil {
+						return nil, err
+					}
+					out = append(out, thenStmts...)
+				} else if s.If.Else != nil {
+					elseStmts, err := compileStmts(s.If.Else, env)
+					if err != nil {
+						return nil, err
+					}
+					out = append(out, elseStmts...)
+				}
+				continue
+			}
 			thenStmts, err := compileStmts(s.If.Then, env)
 			if err != nil {
 				return nil, err
@@ -1972,14 +2013,6 @@ func compileStmts(sts []*parser.Statement, env *compileEnv) ([]Stmt, error) {
 				if err != nil {
 					return nil, err
 				}
-			}
-			if b, ok := cond.(*BoolLit); ok {
-				if b.Value {
-					out = append(out, thenStmts...)
-				} else {
-					out = append(out, elseStmts...)
-				}
-				continue
 			}
 			out = append(out, &IfStmt{Cond: cond, Then: thenStmts, Else: elseStmts})
 		case s.Return != nil:
@@ -2287,6 +2320,15 @@ func toBinary(b *parser.BinaryExpr, env *compileEnv) (Expr, error) {
 			opStr = op
 		default:
 			return nil, fmt.Errorf("unsupported op")
+		}
+		if opStr == "+" && (isStringLike(left, env) || isStringLike(right, env)) {
+			if s1, ok1 := stringValue(left, env); ok1 {
+				if s2, ok2 := stringValue(right, env); ok2 {
+					left = &StringLit{Value: s1 + s2}
+					continue
+				}
+			}
+			return nil, fmt.Errorf("unsupported string add")
 		}
 		if li, lok := left.(*IntLit); lok {
 			if ri, rok := right.(*IntLit); rok {
