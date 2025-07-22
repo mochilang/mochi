@@ -110,9 +110,18 @@ func TestHSTranspiler_Rosetta_Golden(t *testing.T) {
 	if len(files) < max {
 		max = len(files)
 	}
+	firstErr := ""
 	for _, f := range files[:max] {
 		name := strings.TrimSuffix(filepath.Base(f), ".mochi")
 		t.Run(name, func(t *testing.T) { runRosettaTask(t, root, name) })
+		if firstErr == "" {
+			if _, err := os.Stat(filepath.Join(root, "tests", "rosetta", "transpiler", "Haskell", name+".error")); err == nil {
+				firstErr = name
+			}
+		}
+	}
+	if firstErr != "" {
+		t.Fatalf("first failing program: %s", firstErr)
 	}
 }
 

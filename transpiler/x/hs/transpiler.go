@@ -705,9 +705,9 @@ func (f *ForStmt) emit(w io.Writer) {
 			pushIndent()
 			ps.emit(w)
 			io.WriteString(w, "\n")
-			popIndent()
 			writeIndent(w)
 			io.WriteString(w, ") ")
+			popIndent()
 			if f.To != nil {
 				io.WriteString(w, "[")
 				f.From.emit(w)
@@ -733,9 +733,9 @@ func (f *ForStmt) emit(w io.Writer) {
 		st.emit(w)
 		io.WriteString(w, "\n")
 	}
-	popIndent()
 	writeIndent(w)
 	io.WriteString(w, ") ")
+	popIndent()
 	if f.To != nil {
 		io.WriteString(w, "[")
 		f.From.emit(w)
@@ -1000,8 +1000,9 @@ func (n *NameRef) emit(w io.Writer) {
 	name := safeName(n.Name)
 	if mutated[n.Name] {
 		needIORef = true
-		io.WriteString(w, "readIORef ")
+		io.WriteString(w, "(unsafePerformIO (readIORef ")
 		io.WriteString(w, name)
+		io.WriteString(w, "))")
 	} else {
 		io.WriteString(w, name)
 	}
@@ -1662,6 +1663,7 @@ func header(withList, withMap, withJSON, withTrace, withIORef bool) string {
 	}
 	if withIORef {
 		h += "import Data.IORef\n"
+		h += "import System.IO.Unsafe (unsafePerformIO)\n"
 	}
 	return h
 }
