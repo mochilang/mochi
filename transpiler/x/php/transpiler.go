@@ -17,6 +17,7 @@ import (
 
 var transpileEnv *types.Env
 var funcStack [][]string
+
 var builtinNames = map[string]struct{}{
 	"print": {}, "len": {}, "substring": {}, "count": {}, "sum": {}, "avg": {},
 	"str": {}, "min": {}, "max": {}, "append": {}, "json": {}, "exists": {},
@@ -1741,6 +1742,17 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 				val = &StringLit{Value: ""}
 			}
 		}
+		if transpileEnv != nil {
+			var typ types.Type
+			if st.Let.Type != nil {
+				typ = simpleResolveType(st.Let.Type, transpileEnv)
+			} else if st.Let.Value != nil {
+				typ = types.ExprType(st.Let.Value, transpileEnv)
+			}
+			if typ != nil {
+				transpileEnv.SetVar(st.Let.Name, typ, false)
+			}
+		}
 		if len(funcStack) == 0 {
 			globalNames = append(globalNames, st.Let.Name)
 		}
@@ -1768,6 +1780,17 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 				val = &BoolLit{Value: false}
 			case "string":
 				val = &StringLit{Value: ""}
+			}
+		}
+		if transpileEnv != nil {
+			var typ types.Type
+			if st.Var.Type != nil {
+				typ = simpleResolveType(st.Var.Type, transpileEnv)
+			} else if st.Var.Value != nil {
+				typ = types.ExprType(st.Var.Value, transpileEnv)
+			}
+			if typ != nil {
+				transpileEnv.SetVar(st.Var.Name, typ, true)
 			}
 		}
 		if len(funcStack) == 0 {
@@ -1809,13 +1832,27 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 			closureNames[st.Fun.Name] = true
 		}
 		params := make([]string, len(st.Fun.Params))
-		for i, p := range st.Fun.Params {
-			params[i] = p.Name
+		savedEnv := transpileEnv
+		childEnv := transpileEnv
+		if transpileEnv != nil {
+			childEnv = types.NewEnv(transpileEnv)
+			for i, p := range st.Fun.Params {
+				params[i] = p.Name
+				childEnv.SetVar(p.Name, simpleResolveType(p.Type, transpileEnv), true)
+			}
+			transpileEnv = childEnv
+		} else {
+			for i, p := range st.Fun.Params {
+				params[i] = p.Name
+			}
 		}
 		funcStack = append(funcStack, params)
 		wasTop := topLevel
 		body, err := convertStmtList(st.Fun.Body)
 		funcStack = funcStack[:len(funcStack)-1]
+		if transpileEnv != nil {
+			transpileEnv = savedEnv
+		}
 		if err != nil {
 			return nil, err
 		}
@@ -1847,7 +1884,29 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 		}
 		return &WhileStmt{Cond: cond, Body: body}, nil
 	case st.For != nil:
+		savedEnv := transpileEnv
+		if transpileEnv != nil {
+			child := types.NewEnv(transpileEnv)
+			if st.For.RangeEnd != nil {
+				child.SetVar(st.For.Name, types.IntType{}, true)
+			} else {
+				t := types.ExprType(st.For.Source, transpileEnv)
+				if mt, ok := t.(types.MapType); ok {
+					child.SetVar(st.For.Name, mt.Key, true)
+				} else if lt, ok := t.(types.ListType); ok {
+					child.SetVar(st.For.Name, lt.Elem, true)
+				} else if _, ok := t.(types.StringType); ok {
+					child.SetVar(st.For.Name, types.StringType{}, true)
+				} else {
+					child.SetVar(st.For.Name, types.AnyType{}, true)
+				}
+			}
+			transpileEnv = child
+		}
 		body, err := convertStmtList(st.For.Body)
+		if transpileEnv != nil {
+			transpileEnv = savedEnv
+		}
 		if err != nil {
 			return nil, err
 		}
@@ -1868,7 +1927,7 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 		}
 		keys := false
 		if transpileEnv != nil {
-			t := types.ExprType(st.For.Source, transpileEnv)
+			t := types.ExprType(st.For.Source, savedEnv)
 			if types.IsMapType(t) {
 				keys = true
 			}
@@ -2371,6 +2430,50 @@ func groupItemsExpr(e Expr) Expr {
 		}
 	}
 	return e
+}
+
+func simpleResolveType(t *parser.TypeRef, env *types.Env) types.Type {
+	if t == nil {
+		return types.AnyType{}
+	}
+	if t.Simple != nil {
+		switch *t.Simple {
+		case "int":
+			return types.IntType{}
+		case "int64":
+			return types.Int64Type{}
+		case "float":
+			return types.FloatType{}
+		case "string":
+			return types.StringType{}
+		case "bool":
+			return types.BoolType{}
+		default:
+			if st, ok := env.GetStruct(*t.Simple); ok {
+				return st
+			}
+			if ut, ok := env.GetUnion(*t.Simple); ok {
+				return ut
+			}
+			if ut, ok := env.FindUnionByVariant(*t.Simple); ok {
+				return ut
+			}
+			return types.AnyType{}
+		}
+	}
+	if t.Generic != nil {
+		switch t.Generic.Name {
+		case "list":
+			if len(t.Generic.Args) == 1 {
+				return types.ListType{Elem: simpleResolveType(t.Generic.Args[0], env)}
+			}
+		case "map":
+			if len(t.Generic.Args) == 2 {
+				return types.MapType{Key: simpleResolveType(t.Generic.Args[0], env), Value: simpleResolveType(t.Generic.Args[1], env)}
+			}
+		}
+	}
+	return types.AnyType{}
 }
 
 func isListExpr(e Expr) bool {

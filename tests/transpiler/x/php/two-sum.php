@@ -1,6 +1,6 @@
 <?php
 function twoSum($nums, $target) {
-  $n = strlen($nums);
+  $n = count($nums);
   for ($i = 0; $i < $n; $i++) {
   for ($j = $i + 1; $j < $n; $j++) {
   if ($nums[$i] + $nums[$j] == $target) {
