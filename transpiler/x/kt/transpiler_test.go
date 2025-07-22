@@ -162,6 +162,7 @@ func TestMain(m *testing.M) {
 	code := m.Run()
 	updateReadme()
 	updateTasks()
+	kt.UpdateRosettaChecklist()
 	os.Exit(code)
 }
 
