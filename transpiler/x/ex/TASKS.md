@@ -1,6 +1,6 @@
-## Progress (2025-07-22 06:31 +0700)
-- Commit e04a6e708: ex transpiler: support group_by_multi_sort
-- Generated Elixir for 97/101 programs
+## Progress (2025-07-22 06:37 +0700)
+- Commit 0ad69754b: ts: add error logs for failing tests
+- Generated Elixir for 98/101 programs
 - Updated README checklist and outputs
 - Improved code emission and type inference
 

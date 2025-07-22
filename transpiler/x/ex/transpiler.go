@@ -886,9 +886,9 @@ func (g *GroupBySortExpr) emit(w io.Writer) {
 	g.Key.emit(w)
 	io.WriteString(w, " end)\n  |> Enum.map(fn {key, items} -> %{key: key, items: items} end)\n  |> Enum.sort_by(fn g -> ")
 	g.Sort.emit(w)
-        io.WriteString(w, " end)\n  |> Enum.map(fn g ->\n    ")
-        g.Select.emit(w)
-        io.WriteString(w, "\n  end")
+	io.WriteString(w, " end)\n  |> Enum.map(fn g ->\n    ")
+	g.Select.emit(w)
+	io.WriteString(w, "\n  end")
 	io.WriteString(w, ")")
 }
 
@@ -1553,7 +1553,7 @@ func compileMatchExpr(me *parser.MatchExpr, env *types.Env) (Expr, error) {
 	for i, c := range me.Cases {
 		var pat Expr
 		if !isUnderscoreExpr(c.Pattern) {
-			p, err := compileExpr(c.Pattern, env)
+			p, err := compilePattern(c.Pattern, env)
 			if err != nil {
 				return nil, err
 			}
@@ -1566,6 +1566,31 @@ func compileMatchExpr(me *parser.MatchExpr, env *types.Env) (Expr, error) {
 		clauses[i] = CaseClause{Pattern: pat, Result: res}
 	}
 	return &CaseExpr{Target: target, Clauses: clauses}, nil
+}
+
+func compilePattern(e *parser.Expr, env *types.Env) (Expr, error) {
+	if name, ok := isSimpleIdent(e); ok {
+		if _, err := env.GetVar(name); err != nil {
+			if _, ok := env.GetStruct(name); ok {
+				return &AtomLit{Name: ":" + name}, nil
+			}
+		}
+	}
+
+	if call, ok := isSimpleCall(e); ok {
+		if st, ok2 := env.GetStruct(call.Func); ok2 && len(call.Args) == len(st.Order) {
+			items := make([]MapItem, len(call.Args))
+			for i, a := range call.Args {
+				val, err := compilePattern(a, env)
+				if err != nil {
+					return nil, err
+				}
+				items[i] = MapItem{Key: &AtomLit{Name: st.Order[i]}, Value: val}
+			}
+			return &MapLit{Items: items}, nil
+		}
+	}
+	return compileExpr(e, env)
 }
 
 func compileQueryExpr(q *parser.QueryExpr, env *types.Env) (Expr, error) {
@@ -2381,7 +2406,14 @@ func compilePrimary(p *parser.Primary, env *types.Env) (Expr, error) {
 				}
 			}
 		}
-		expr := Expr(&VarRef{Name: p.Selector.Root})
+		var expr Expr = &VarRef{Name: p.Selector.Root}
+		if len(p.Selector.Tail) == 0 {
+			if isZeroVariant(p.Selector.Root, env) {
+				expr = &AtomLit{Name: ":" + p.Selector.Root}
+			} else if _, err := env.GetVar(p.Selector.Root); err != nil {
+				// keep VarRef
+			}
+		}
 		for _, t := range p.Selector.Tail {
 			expr = &IndexExpr{Target: expr, Index: &AtomLit{Name: t}, UseMapSyntax: true}
 		}
@@ -2551,6 +2583,36 @@ func isSimpleIdent(e *parser.Expr) (string, bool) {
 		return p.Target.Selector.Root, true
 	}
 	return "", false
+}
+
+func isSimpleCall(e *parser.Expr) (*parser.CallExpr, bool) {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) > 0 {
+		return nil, false
+	}
+	u := e.Binary.Left
+	if len(u.Ops) > 0 || u.Value == nil {
+		return nil, false
+	}
+	p := u.Value
+	if len(p.Ops) > 0 || p.Target == nil {
+		return nil, false
+	}
+	if p.Target.Call != nil {
+		return p.Target.Call, true
+	}
+	return nil, false
+}
+
+func isZeroVariant(name string, env *types.Env) bool {
+	st, ok := env.GetStruct(name)
+	if !ok || len(st.Fields) > 0 {
+		return false
+	}
+	if u, ok := env.FindUnionByVariant(name); ok {
+		_, ok = u.Variants[name]
+		return ok
+	}
+	return false
 }
 
 func gatherVarsExpr(e *parser.Expr, set map[string]struct{}) {
