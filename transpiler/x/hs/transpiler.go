@@ -757,9 +757,11 @@ func (f *ForStmt) emit(w io.Writer) {
 func (wst *WhileStmt) emit(w io.Writer) {
 	name := "loop"
 	writeIndent(w)
-	io.WriteString(w, "let ")
+	io.WriteString(w, "let\n")
+	pushIndent()
+	writeIndent(w)
 	io.WriteString(w, name)
-	if wst.Var != "" {
+	if wst.Var != "" && !mutated[wst.Var] {
 		io.WriteString(w, " ")
 		io.WriteString(w, safeName(wst.Var))
 	}
@@ -774,22 +776,32 @@ func (wst *WhileStmt) emit(w io.Writer) {
 		st.emit(w)
 		io.WriteString(w, "\n")
 	}
+	if wst.Var != "" && wst.Next != nil {
+		writeIndent(w)
+		if mutated[wst.Var] {
+			io.WriteString(w, "writeIORef ")
+			io.WriteString(w, safeName(wst.Var))
+			io.WriteString(w, " $! (")
+			wst.Next.emit(w)
+			io.WriteString(w, ")\n")
+		} else {
+			io.WriteString(w, safeName(wst.Var))
+			io.WriteString(w, " <- (")
+			wst.Next.emit(w)
+			io.WriteString(w, ")\n")
+		}
+	}
 	writeIndent(w)
 	io.WriteString(w, name)
-	if wst.Var != "" && wst.Next != nil {
-		io.WriteString(w, " (")
-		wst.Next.emit(w)
-		io.WriteString(w, ")\n")
-	} else {
-		io.WriteString(w, "\n")
-	}
+	io.WriteString(w, "\n")
 	popIndent()
 	writeIndent(w)
 	io.WriteString(w, "else return ()\n")
 	popIndent()
+	popIndent()
 	writeIndent(w)
 	io.WriteString(w, name)
-	if wst.Var != "" {
+	if wst.Var != "" && !mutated[wst.Var] {
 		io.WriteString(w, " ")
 		io.WriteString(w, safeName(wst.Var))
 	}
