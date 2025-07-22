@@ -1,6 +1,6 @@
-## Progress (2025-07-22 16:14 +0700)
-- Commit a650a0dae: scala transpiler: improve group query typing
-- Regenerated golden files - 79/103 vm valid programs passing
+## Progress (2025-07-22 17:22 +0700)
+- Commit 2b6272792: c transpiler: support simple filter queries
+- Regenerated golden files - 80/103 vm valid programs passing
 
 ## Progress (2025-07-22 14:12 +0700)
 - VM valid golden test results updated to 77/102
