@@ -1293,21 +1293,21 @@ func dataClassFromDict(name string, d *DictLit, env *types.Env) (*DataClassDef, 
 }
 
 func isNumeric(t types.Type) bool {
-        switch t.(type) {
-        case types.IntType, types.Int64Type, types.FloatType, types.BigIntType, types.BigRatType:
-                return true
-        default:
-                return false
-        }
+	switch t.(type) {
+	case types.IntType, types.Int64Type, types.FloatType, types.BigIntType, types.BigRatType:
+		return true
+	default:
+		return false
+	}
 }
 
 func isIntLike(t types.Type) bool {
-        switch t.(type) {
-        case types.IntType, types.Int64Type, types.BigIntType:
-                return true
-        default:
-                return false
-        }
+	switch t.(type) {
+	case types.IntType, types.Int64Type, types.BigIntType:
+		return true
+	default:
+		return false
+	}
 }
 
 func parseScalar(s string) interface{} {
@@ -2221,7 +2221,6 @@ func Emit(w io.Writer, p *Program) error {
 	}
 	if needDC {
 		imports = append(imports, "from dataclasses import dataclass")
-		imports = append(imports, "from typing import List, Dict")
 	}
 	sort.Strings(imports)
 	for _, line := range imports {
@@ -3178,13 +3177,13 @@ func convertBinary(b *parser.BinaryExpr) (Expr, error) {
 		operands = append(operands, o)
 	}
 
-       if len(ops) == 1 && ops[0] == "/" {
-               if isSumUnary(b.Left) && isSumPostfix(b.Right[0].Right) {
-                       ops[0] = "//"
-               } else if isIntLike(inferPyType(operands[0], currentEnv)) && isIntLike(inferPyType(operands[1], currentEnv)) {
-                       ops[0] = "//"
-               }
-       }
+	if len(ops) == 1 && ops[0] == "/" {
+		if isSumUnary(b.Left) && isSumPostfix(b.Right[0].Right) {
+			ops[0] = "//"
+		} else if isIntLike(inferPyType(operands[0], currentEnv)) && isIntLike(inferPyType(operands[1], currentEnv)) {
+			ops[0] = "//"
+		}
+	}
 
 	levels := [][]string{
 		{"*", "/", "//", "%"},
