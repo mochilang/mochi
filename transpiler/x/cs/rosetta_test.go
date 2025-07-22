@@ -47,6 +47,8 @@ func TestCSTranspiler_Rosetta_Golden(t *testing.T) {
 			if idx <= 0 || idx > len(files) {
 				t.Fatalf("index %d out of range", idx)
 			}
+			base := strings.TrimSuffix(filepath.Base(files[idx-1]), ".mochi")
+			t.Setenv("MOCHI_ROSETTA_ONLY", base)
 			files = files[idx-1 : idx]
 		}
 	}
