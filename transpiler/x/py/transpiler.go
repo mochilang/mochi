@@ -3394,11 +3394,26 @@ func convertPostfix(p *parser.PostfixExpr) (Expr, error) {
 				expr = &CallExpr{Func: &Name{Name: "float"}, Args: []Expr{expr}}
 			case "string":
 				expr = &CallExpr{Func: &Name{Name: "str"}, Args: []Expr{expr}}
-			case "bool":
-				expr = &CallExpr{Func: &Name{Name: "bool"}, Args: []Expr{expr}}
-			default:
-				// ignore cast for other types
-			}
+                       case "bool":
+                               expr = &CallExpr{Func: &Name{Name: "bool"}, Args: []Expr{expr}}
+                       default:
+                                if currentEnv != nil {
+                                        if st, ok := currentEnv.GetStruct(name); ok {
+                                                if d, ok := expr.(*DictLit); ok {
+                                                        var kwargs []Expr
+                                                        for i := range d.Keys {
+                                                                if k, ok := d.Keys[i].(*StringLit); ok {
+                                                                        kwargs = append(kwargs, &KeywordArg{Name: k.Value, Value: d.Values[i]})
+                                                                }
+                                                        }
+                                                        expr = &CallExpr{Func: &Name{Name: name}, Args: kwargs}
+                                                } else {
+                                                        expr = &CallExpr{Func: &Name{Name: name}, Args: []Expr{&RawExpr{Code: "**" + exprString(expr)}}}
+                                                }
+                                                _ = st
+                                        }
+                                }
+                        }
 		default:
 			return nil, fmt.Errorf("postfix op not supported")
 		}

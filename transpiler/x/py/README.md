@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Python code from programs in `tests/vm/valid` lives in `tests/transpiler/x/py`.
-Last updated: 2025-07-22 03:00 UTC
+Last updated: 2025-07-22 03:14 UTC
 
-## VM Golden Test Checklist (102/102)
+## VM Golden Test Checklist (88/102)
 - [x] append_builtin
 - [x] avg_builtin
 - [x] basic_compare
@@ -27,17 +27,17 @@ Last updated: 2025-07-22 03:00 UTC
 - [x] fun_call
 - [x] fun_expr_in_let
 - [x] fun_three_args
-- [x] go_auto
+- [ ] go_auto
 - [x] group_by
-- [x] group_by_conditional_sum
-- [x] group_by_having
+- [ ] group_by_conditional_sum
+- [ ] group_by_having
 - [x] group_by_join
-- [x] group_by_left_join
-- [x] group_by_multi_join
-- [x] group_by_multi_join_sort
-- [x] group_by_multi_sort
-- [x] group_by_sort
-- [x] group_items_iteration
+- [ ] group_by_left_join
+- [ ] group_by_multi_join
+- [ ] group_by_multi_join_sort
+- [ ] group_by_multi_sort
+- [ ] group_by_sort
+- [ ] group_items_iteration
 - [x] if_else
 - [x] if_then_else
 - [x] if_then_else_nested
@@ -71,8 +71,8 @@ Last updated: 2025-07-22 03:00 UTC
 - [x] membership
 - [x] min_max_builtin
 - [x] nested_function
-- [x] order_by_map
-- [x] outer_join
+- [ ] order_by_map
+- [ ] outer_join
 - [x] partial_application
 - [x] print_hello
 - [x] pure_fold
@@ -80,9 +80,9 @@ Last updated: 2025-07-22 03:00 UTC
 - [x] python_auto
 - [x] python_math
 - [x] query_sum_select
-- [x] record_assign
-- [x] right_join
-- [x] save_jsonl_stdout
+- [ ] record_assign
+- [ ] right_join
+- [ ] save_jsonl_stdout
 - [x] short_circuit
 - [x] slice
 - [x] sort_stable
