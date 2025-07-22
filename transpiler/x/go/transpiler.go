@@ -1726,15 +1726,27 @@ func compileStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 	case st.Fun != nil:
 		return compileFunStmt(st.Fun, env)
 	case st.Import != nil:
-		if st.Import.Lang != nil && *st.Import.Lang == "go" && st.Import.Auto {
+		if st.Import.Lang != nil {
+			lang := *st.Import.Lang
 			alias := st.Import.As
 			if alias == "" {
 				alias = parser.AliasFromPath(st.Import.Path)
 			}
-			if imports != nil {
-				imports[alias] = strings.Trim(st.Import.Path, "\"")
+			switch lang {
+			case "go":
+				if st.Import.Auto && imports != nil {
+					imports[alias] = strings.Trim(st.Import.Path, "\"")
+				}
+			case "python":
+				if st.Import.Path == "math" && imports != nil {
+					imports[alias] = "math"
+				}
 			}
 		}
+		return nil, nil
+	case st.ExternVar != nil:
+		return nil, nil
+	case st.ExternFun != nil:
 		return nil, nil
 	case st.Break != nil:
 		return &BreakStmt{}, nil
@@ -3051,7 +3063,7 @@ func compilePostfix(pf *parser.PostfixExpr, env *types.Env, base string) (Expr, 
 			args[i] = ex
 		}
 		if _, ok := imports[pf.Target.Selector.Root]; ok {
-			return &CallExpr{Func: pf.Target.Selector.Root + "." + method, Args: args}, nil
+			return &CallExpr{Func: pf.Target.Selector.Root + "." + toGoFieldName(method), Args: args}, nil
 		}
 		switch method {
 		case "contains":
@@ -3081,7 +3093,8 @@ func compilePostfix(pf *parser.PostfixExpr, env *types.Env, base string) (Expr, 
 			return nil, fmt.Errorf("unsupported method %s", method)
 		}
 	}
-	for _, op := range pf.Ops {
+	for i := 0; i < len(pf.Ops); i++ {
+		op := pf.Ops[i]
 		if op.Index != nil {
 			idx := op.Index
 			if idx.Colon == nil && idx.Colon2 == nil {
@@ -3133,6 +3146,19 @@ func compilePostfix(pf *parser.PostfixExpr, env *types.Env, base string) (Expr, 
 				}
 			}
 		} else if op.Call != nil {
+			if vr, ok := expr.(*VarRef); ok {
+				if _, ok2 := imports[vr.Name]; ok2 {
+					args := make([]Expr, len(op.Call.Args))
+					for j, a := range op.Call.Args {
+						ex, err := compileExpr(a, env, "")
+						if err != nil {
+							return nil, err
+						}
+						args[j] = ex
+					}
+					return &CallExpr{Func: vr.Name, Args: args}, nil
+				}
+			}
 			return nil, fmt.Errorf("unsupported call")
 		} else if op.Cast != nil {
 			if op.Cast.Type == nil {
@@ -3168,6 +3194,17 @@ func compilePostfix(pf *parser.PostfixExpr, env *types.Env, base string) (Expr, 
 				return nil, fmt.Errorf("unsupported postfix")
 			}
 		} else if op.Field != nil {
+			if _, ok := imports[pf.Target.Selector.Root]; ok && i+1 < len(pf.Ops) && pf.Ops[i+1].Call != nil {
+				args := make([]Expr, len(pf.Ops[i+1].Call.Args))
+				for j, a := range pf.Ops[i+1].Call.Args {
+					ex, err := compileExpr(a, env, "")
+					if err != nil {
+						return nil, err
+					}
+					args[j] = ex
+				}
+				return &CallExpr{Func: pf.Target.Selector.Root + "." + toGoFieldName(op.Field.Name), Args: args}, nil
+			}
 			switch tt := t.(type) {
 			case types.MapType:
 				expr = &IndexExpr{X: expr, Index: &StringLit{Value: op.Field.Name}}
