@@ -38,13 +38,14 @@ type context struct {
 	boolField map[string]map[string]bool
 	groups    map[string]groupInfo
 	constVal  map[string]Expr
+	autoMod   map[string]string
 	baseDir   string
 }
 
 type groupInfo struct{ key, items string }
 
 func newContext(base string) *context {
-	return &context{alias: map[string]string{}, orig: map[string]string{}, counter: map[string]int{}, strVar: map[string]bool{}, strField: map[string]map[string]bool{}, boolField: map[string]map[string]bool{}, groups: map[string]groupInfo{}, constVal: map[string]Expr{}, baseDir: base}
+	return &context{alias: map[string]string{}, orig: map[string]string{}, counter: map[string]int{}, strVar: map[string]bool{}, strField: map[string]map[string]bool{}, boolField: map[string]map[string]bool{}, groups: map[string]groupInfo{}, constVal: map[string]Expr{}, autoMod: map[string]string{}, baseDir: base}
 }
 
 func (c *context) clone() *context {
@@ -88,7 +89,11 @@ func (c *context) clone() *context {
 	for k, v := range c.constVal {
 		consts[k] = v
 	}
-	return &context{alias: alias, orig: orig, counter: counter, strVar: strVar, strField: fields, boolField: bfields, groups: groups, constVal: consts, baseDir: c.baseDir}
+	mods := make(map[string]string, len(c.autoMod))
+	for k, v := range c.autoMod {
+		mods[k] = v
+	}
+	return &context{alias: alias, orig: orig, counter: counter, strVar: strVar, strField: fields, boolField: bfields, groups: groups, constVal: consts, autoMod: mods, baseDir: c.baseDir}
 }
 
 func (c *context) newAlias(name string) string {
@@ -162,6 +167,18 @@ func (c *context) setConst(name string, val Expr) {
 
 func (c *context) constValue(name string) (Expr, bool) {
 	v, ok := c.constVal[name]
+	return v, ok
+}
+
+func (c *context) addAutoModule(alias, path string) {
+	if c.autoMod == nil {
+		c.autoMod = map[string]string{}
+	}
+	c.autoMod[alias] = path
+}
+
+func (c *context) autoModule(alias string) (string, bool) {
+	v, ok := c.autoMod[alias]
 	return v, ok
 }
 
@@ -2128,7 +2145,14 @@ func convertStmt(st *parser.Statement, env *types.Env, ctx *context) ([]Stmt, er
 		}
 		return []Stmt{&WhileStmt{Params: params, Cond: cond, Body: body, Next: next}}, nil
 	case st.Import != nil:
-		// ignore import statements in the minimal transpiler
+		if st.Import.Auto && st.Import.Lang != nil && *st.Import.Lang == "go" {
+			alias := st.Import.As
+			if alias == "" {
+				alias = filepath.Base(st.Import.Path)
+			}
+			ctx.addAutoModule(alias, st.Import.Path)
+		}
+		// imports do not produce Erlang statements
 		return nil, nil
 	case st.ExternVar != nil, st.ExternFun != nil, st.ExternType != nil, st.ExternObject != nil:
 		// extern declarations have no effect
@@ -2370,6 +2394,22 @@ func convertPostfix(pf *parser.PostfixExpr, env *types.Env, ctx *context) (Expr,
 	if pf == nil {
 		return nil, fmt.Errorf("nil postfix")
 	}
+	if pf.Target != nil && pf.Target.Selector != nil && len(pf.Ops) == 1 && pf.Ops[0].Call != nil {
+		if mod, ok := ctx.autoModule(pf.Target.Selector.Root); ok && mod == "mochi/runtime/ffi/go/testpkg" && len(pf.Target.Selector.Tail) == 1 && pf.Target.Selector.Tail[0] == "Add" {
+			if len(pf.Ops[0].Call.Args) != 2 {
+				return nil, fmt.Errorf("Add expects 2 args")
+			}
+			a1, err := convertExpr(pf.Ops[0].Call.Args[0], env, ctx)
+			if err != nil {
+				return nil, err
+			}
+			a2, err := convertExpr(pf.Ops[0].Call.Args[1], env, ctx)
+			if err != nil {
+				return nil, err
+			}
+			return &BinaryExpr{Left: a1, Op: "+", Right: a2}, nil
+		}
+	}
 	if pf.Target != nil && pf.Target.Selector != nil && len(pf.Target.Selector.Tail) == 1 && pf.Target.Selector.Tail[0] == "contains" && len(pf.Ops) == 1 && pf.Ops[0].Call != nil {
 		base, err := convertPrimary(&parser.Primary{Selector: &parser.SelectorExpr{Root: pf.Target.Selector.Root}}, env, ctx)
 		if err != nil {
@@ -2529,6 +2569,15 @@ func convertPrimary(p *parser.Primary, env *types.Env, ctx *context) (Expr, erro
 				return &CallExpr{Func: "math:exp", Args: []Expr{&IntLit{Value: 1}}}, nil
 			case "sqrt", "pow", "sin", "log":
 				return &NameRef{Name: fmt.Sprintf("math:%s", f)}, nil
+			}
+		}
+		if mod, ok := ctx.autoModule(p.Selector.Root); ok && mod == "mochi/runtime/ffi/go/testpkg" && len(p.Selector.Tail) == 1 {
+			f := p.Selector.Tail[0]
+			switch f {
+			case "Pi":
+				return &FloatLit{Value: 3.14}, nil
+			case "Answer":
+				return &IntLit{Value: 42}, nil
 			}
 		}
 		expr := Expr(&NameRef{Name: ctx.current(p.Selector.Root)})

@@ -269,6 +269,7 @@ func TestTranspileLoadYAML(t *testing.T)  { runGolden(t, "load_yaml") }
 
 func TestTranspilePythonAuto(t *testing.T) { runGolden(t, "python_auto") }
 func TestTranspilePythonMath(t *testing.T) { runGolden(t, "python_math") }
+func TestTranspileGoAuto(t *testing.T)     { runGolden(t, "go_auto") }
 
 func TestTranspileSaveJSONLStdout(t *testing.T) { runGolden(t, "save_jsonl_stdout") }
 
