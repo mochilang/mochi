@@ -1,5 +1,0 @@
-exit status 1
-/workspace/mochi/tests/transpiler/x/scala/values_builtin.scala:6: error: Iterable[Int] does not take parameters
-    println(m.values().toList())
-                    ^
-one error found

@@ -3,6 +3,6 @@ import scala.collection.mutable.{ArrayBuffer, Map}
 object Main {
   def main(args: Array[String]): Unit = {
     val m: Map[String,Int] = Map("a" -> 1, "b" -> 2, "c" -> 3)
-    println(m.values().toList())
+    println(m.values.toSeq.sorted.mkString("[", ", ", "]"))
   }
 }
