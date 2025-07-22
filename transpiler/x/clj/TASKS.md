@@ -1,3 +1,7 @@
+## Progress (2025-07-22 22:18 +0700)
+- clj rosetta: index tasks and run by env
+- Regenerated golden files - 101/103 vm valid programs passing
+
 ## Progress (2025-07-22 06:31 +0700)
 - docs(clj): refresh checklist and progress
 - Regenerated golden files - 101/101 vm valid programs passing

@@ -4,6 +4,7 @@ package cljt_test
 
 import (
 	"bytes"
+	"flag"
 	"fmt"
 	"os"
 	"os/exec"
@@ -18,6 +19,8 @@ import (
 	cljt "mochi/transpiler/x/clj"
 	"mochi/types"
 )
+
+var rosettaIndex = flag.Int("index", 0, "run a specific Rosetta example by index (1-based)")
 
 func TestRosettaClojure(t *testing.T) {
 	defer updateRosettaReadme()
@@ -40,7 +43,12 @@ func TestRosettaClojure(t *testing.T) {
 	}
 	sort.Strings(outs)
 
-	if idxStr := os.Getenv("MOCHI_ROSETTA_INDEX"); idxStr != "" {
+	if *rosettaIndex > 0 {
+		if *rosettaIndex > len(outs) {
+			t.Fatalf("index %d out of range", *rosettaIndex)
+		}
+		outs = outs[*rosettaIndex-1 : *rosettaIndex]
+	} else if idxStr := os.Getenv("MOCHI_ROSETTA_INDEX"); idxStr != "" {
 		idx, err := strconv.Atoi(idxStr)
 		if err != nil || idx < 1 || idx > len(outs) {
 			t.Fatalf("invalid MOCHI_ROSETTA_INDEX: %s", idxStr)
