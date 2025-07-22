@@ -3,9 +3,9 @@
 This checklist is auto-generated.
 Generated C++ code for programs in `tests/vm/valid`. Each program has a `.cpp` file produced by the transpiler and a `.out` file containing its runtime output. Compilation or execution errors are captured in a `.error` file placed next to the source.
 
-Last updated: 2025-07-22 16:27 +0700
+Last updated: 2025-07-22 16:38 +0700
 
-## VM Golden Test Checklist (100/103)
+## VM Golden Test Checklist (101/103)
 - [x] append_builtin
 - [x] avg_builtin
 - [x] basic_compare
@@ -71,7 +71,7 @@ Last updated: 2025-07-22 16:27 +0700
 - [x] math_ops
 - [x] membership
 - [x] min_max_builtin
-- [ ] mix_go_python
+- [x] mix_go_python
 - [x] nested_function
 - [x] order_by_map
 - [x] outer_join
