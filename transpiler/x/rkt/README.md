@@ -1,8 +1,8 @@
 # Mochi Racket Transpiler
 This directory contains the experimental Racket transpiler. Golden tests under `tests/vm/valid` check the generated code and its runtime output.
 
-## Golden Test Checklist (86/101)
-Last updated: 2025-07-22 06:19 +0700
+## Golden Test Checklist (92/102)
+Last updated: 2025-07-22 02:11 +0000
 
 - [x] append_builtin
 - [x] avg_builtin
@@ -55,6 +55,7 @@ Last updated: 2025-07-22 06:19 +0700
 - [x] list_index
 - [x] list_nested_assign
 - [x] list_set_ops
+- [ ] load_jsonl
 - [ ] load_yaml
 - [x] map_assign
 - [x] map_in_operator
@@ -63,8 +64,8 @@ Last updated: 2025-07-22 06:19 +0700
 - [x] map_literal_dynamic
 - [x] map_membership
 - [x] map_nested_assign
-- [ ] match_expr
-- [ ] match_full
+- [x] match_expr
+- [x] match_full
 - [x] math_ops
 - [x] membership
 - [x] min_max_builtin
@@ -82,7 +83,7 @@ Last updated: 2025-07-22 06:19 +0700
 - [x] right_join
 - [ ] save_jsonl_stdout
 - [x] short_circuit
-- [ ] slice
+- [x] slice
 - [ ] sort_stable
 - [x] str_builtin
 - [x] string_compare
@@ -90,15 +91,15 @@ Last updated: 2025-07-22 06:19 +0700
 - [x] string_contains
 - [x] string_in_operator
 - [x] string_index
-- [ ] string_prefix_slice
+- [x] string_prefix_slice
 - [x] substring_builtin
 - [x] sum_builtin
 - [x] tail_recursion
 - [x] test_block
 - [ ] tree_sum
 - [x] two-sum
-- [ ] typed_let
-- [ ] typed_var
+- [x] typed_let
+- [x] typed_var
 - [x] unary_neg
 - [x] update_stmt
 - [x] user_type_literal
