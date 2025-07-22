@@ -52,6 +52,7 @@ var (
 	structCount  int
 	transpileEnv *types.Env
 	neededOpens  map[string]bool
+	indentLevel  int
 )
 
 func copyMap(src map[string]string) map[string]string {
@@ -60,6 +61,12 @@ func copyMap(src map[string]string) map[string]string {
 		dst[k] = v
 	}
 	return dst
+}
+
+func writeIndent(w io.Writer) {
+	for i := 0; i < indentLevel; i++ {
+		io.WriteString(w, "    ")
+	}
 }
 
 func fsType(t types.Type) string {
@@ -274,13 +281,16 @@ func (m *ModuleDef) emit(w io.Writer) {
 	if m.Open {
 		io.WriteString(w, "open System\n\n")
 	}
+	writeIndent(w)
 	fmt.Fprintf(w, "module %s\n", fsIdent(m.Name))
+	indentLevel++
 	for i, st := range m.Stmts {
 		st.emit(w)
 		if i < len(m.Stmts)-1 {
 			w.Write([]byte{'\n'})
 		}
 	}
+	indentLevel--
 	if len(m.Stmts) > 0 {
 		w.Write([]byte{'\n'})
 	}
@@ -294,6 +304,7 @@ type LambdaExpr struct {
 }
 
 func (l *LambdaExpr) emit(w io.Writer) {
+	writeIndent(w)
 	io.WriteString(w, "fun")
 	if len(l.Params) == 0 {
 		io.WriteString(w, " ()")
@@ -318,13 +329,14 @@ func (l *LambdaExpr) emit(w io.Writer) {
 		return
 	}
 	w.Write([]byte{'\n'})
+	indentLevel++
 	for i, st := range l.Body {
-		io.WriteString(w, "    ")
 		st.emit(w)
 		if i < len(l.Body)-1 {
 			w.Write([]byte{'\n'})
 		}
 	}
+	indentLevel--
 }
 
 type FunDef struct {
@@ -334,6 +346,7 @@ type FunDef struct {
 }
 
 func (f *FunDef) emit(w io.Writer) {
+	writeIndent(w)
 	io.WriteString(w, "let rec ")
 	io.WriteString(w, fsIdent(f.Name))
 	if len(f.Params) == 0 {
@@ -344,18 +357,20 @@ func (f *FunDef) emit(w io.Writer) {
 		io.WriteString(w, p)
 	}
 	io.WriteString(w, " =\n")
+	indentLevel++
 	for i, st := range f.Body {
-		io.WriteString(w, "    ")
 		st.emit(w)
 		if i < len(f.Body)-1 {
 			w.Write([]byte{'\n'})
 		}
 	}
+	indentLevel--
 }
 
 type ReturnStmt struct{ Expr Expr }
 
 func (r *ReturnStmt) emit(w io.Writer) {
+	writeIndent(w)
 	if r.Expr != nil {
 		r.Expr.emit(w)
 	}
@@ -363,11 +378,17 @@ func (r *ReturnStmt) emit(w io.Writer) {
 
 type BreakStmt struct{}
 
-func (b *BreakStmt) emit(w io.Writer) { io.WriteString(w, "break") }
+func (b *BreakStmt) emit(w io.Writer) {
+	writeIndent(w)
+	io.WriteString(w, "break")
+}
 
 type ContinueStmt struct{}
 
-func (c *ContinueStmt) emit(w io.Writer) { io.WriteString(w, "continue") }
+func (c *ContinueStmt) emit(w io.Writer) {
+	writeIndent(w)
+	io.WriteString(w, "continue")
+}
 
 // ListLit represents an F# list literal.
 type ListLit struct{ Elems []Expr }
@@ -680,29 +701,39 @@ type IfStmt struct {
 }
 
 func (i *IfStmt) emit(w io.Writer) {
+	writeIndent(w)
 	io.WriteString(w, "if ")
 	i.Cond.emit(w)
 	io.WriteString(w, " then\n")
+	indentLevel++
 	for idx, st := range i.Then {
 		st.emit(w)
 		if idx < len(i.Then)-1 {
 			w.Write([]byte{'\n'})
 		}
 	}
+	indentLevel--
 	if len(i.Else) > 0 {
-		io.WriteString(w, "\nelse\n")
+		w.Write([]byte{'\n'})
+		writeIndent(w)
+		io.WriteString(w, "else\n")
+		indentLevel++
 		for idx, st := range i.Else {
 			st.emit(w)
 			if idx < len(i.Else)-1 {
 				w.Write([]byte{'\n'})
 			}
 		}
+		indentLevel--
 	}
 }
 
 type ExprStmt struct{ Expr Expr }
 
-func (s *ExprStmt) emit(w io.Writer) { s.Expr.emit(w) }
+func (s *ExprStmt) emit(w io.Writer) {
+	writeIndent(w)
+	s.Expr.emit(w)
+}
 
 type AssignStmt struct {
 	Name string
@@ -710,6 +741,7 @@ type AssignStmt struct {
 }
 
 func (s *AssignStmt) emit(w io.Writer) {
+	writeIndent(w)
 	io.WriteString(w, fsIdent(s.Name))
 	io.WriteString(w, " <- ")
 	s.Expr.emit(w)
@@ -721,6 +753,7 @@ type IndexAssignStmt struct {
 }
 
 func (s *IndexAssignStmt) emit(w io.Writer) {
+	writeIndent(w)
 	s.Target.emit(w)
 	io.WriteString(w, " <- ")
 	s.Value.emit(w)
@@ -748,15 +781,18 @@ type WhileStmt struct {
 }
 
 func (wst *WhileStmt) emit(w io.Writer) {
+	writeIndent(w)
 	io.WriteString(w, "while ")
 	wst.Cond.emit(w)
 	io.WriteString(w, " do\n")
+	indentLevel++
 	for i, st := range wst.Body {
 		st.emit(w)
 		if i < len(wst.Body)-1 {
 			w.Write([]byte{'\n'})
 		}
 	}
+	indentLevel--
 }
 
 type UpdateStmt struct {
@@ -789,6 +825,7 @@ type ForStmt struct {
 }
 
 func (fst *ForStmt) emit(w io.Writer) {
+	writeIndent(w)
 	io.WriteString(w, "for ")
 	if fst.End == nil && inferType(fst.Start) == "map" {
 		io.WriteString(w, "KeyValue(")
@@ -807,12 +844,14 @@ func (fst *ForStmt) emit(w io.Writer) {
 		fst.Start.emit(w)
 	}
 	io.WriteString(w, " do\n")
+	indentLevel++
 	for i, st := range fst.Body {
 		st.emit(w)
 		if i < len(fst.Body)-1 {
 			w.Write([]byte{'\n'})
 		}
 	}
+	indentLevel--
 }
 
 type LetStmt struct {
@@ -823,6 +862,7 @@ type LetStmt struct {
 }
 
 func (s *LetStmt) emit(w io.Writer) {
+	writeIndent(w)
 	io.WriteString(w, "let ")
 	if s.Mutable {
 		io.WriteString(w, "mutable ")
@@ -1318,6 +1358,7 @@ func (c *CastExpr) emit(w io.Writer) {
 // Emit generates formatted F# code from the AST.
 func Emit(prog *Program) []byte {
 	var buf bytes.Buffer
+	indentLevel = 0
 	buf.WriteString(header())
 	for _, u := range prog.Unions {
 		fmt.Fprintf(&buf, "type %s =\n", u.Name)
