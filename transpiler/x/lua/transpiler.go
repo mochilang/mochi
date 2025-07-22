@@ -534,7 +534,7 @@ func (fi *ForInStmt) emit(w io.Writer) {
 func (u *UpdateStmt) emit(w io.Writer) {
 	idx := loopCounter
 	loopCounter++
-	item := fmt.Sprintf("_it%d", idx)
+	item := "item"
 	io.WriteString(w, "for _i")
 	fmt.Fprintf(w, "%d = 1, #", idx)
 	io.WriteString(w, u.Target)
@@ -779,7 +779,7 @@ func isIntExpr(e Expr) bool {
 		}
 	case *BinaryExpr:
 		switch ex.Op {
-		case "+", "-", "*", "/", "%", "<", "<=", ">", ">=", "==", "!=":
+		case "+", "-", "*", "/", "%":
 			return isIntExpr(ex.Left) && isIntExpr(ex.Right)
 		}
 	}
@@ -800,10 +800,8 @@ func isBoolExpr(e Expr) bool {
 		}
 	case *BinaryExpr:
 		switch ex.Op {
-		case "&&", "||":
+		case "&&", "||", "==", "!=", "<", "<=", ">", ">=", "in":
 			return true
-		case "==", "!=", "<", "<=", ">", ">=":
-			return isIntExpr(ex.Left) && isIntExpr(ex.Right)
 		}
 	case *UnaryExpr:
 		if ex.Op == "!" {
@@ -1809,6 +1807,11 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 	case p.Match != nil:
 		return convertMatchExpr(p.Match)
 	case p.Selector != nil:
+		if len(p.Selector.Tail) == 0 && currentEnv != nil {
+			if _, ok := currentEnv.FindUnionByVariant(p.Selector.Root); ok {
+				return &MapLit{Keys: []Expr{&StringLit{Value: "__name"}}, Values: []Expr{&StringLit{Value: p.Selector.Root}}}, nil
+			}
+		}
 		expr := Expr(&Ident{Name: p.Selector.Root})
 		t := exprType(expr)
 		for _, name := range p.Selector.Tail {
