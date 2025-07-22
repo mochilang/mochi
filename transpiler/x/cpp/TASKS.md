@@ -1,3 +1,23 @@
+## Progress (2025-07-22 14:39 +0700)
+- cpp transpiler: support group_by_multi_sort
+- Generated C++ for 98/102 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-22 14:18 +0700)
+- ocaml transpiler: handle map printing
+- Generated C++ for 98/102 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-22 14:18 +0700)
+- ocaml transpiler: handle map printing
+- Generated C++ for 98/102 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-22 14:18 +0700)
+- ocaml transpiler: handle map printing
+- Generated C++ for 97/102 programs
+- Updated README checklist and outputs
+
 ## Progress (2025-07-22 14:10 +0700)
 - cpp transpiler: support jsonl save
 - Generated C++ for 97/102 programs
