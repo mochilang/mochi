@@ -1,4 +1,24 @@
 # 📦 CHANGELOG.md
+## [0.10.35] – 2025-07-22T10:43:45+07:00
+
+### Added
+
+* Int-keyed maps in the C transpiler
+* Sum query support in PHP and JSONL load improvements for Elixir
+* Group query sorting with HAVING in Python
+* Save statements and stable sort in Lua with left joins in Erlang
+* `group_by_multi_sort` across Kotlin, Pascal and Swift plus new loop helpers
+
+### Changed
+
+* TypeScript compiler cleaned up with regenerated outputs
+* Progress logs and tasks refreshed across languages
+
+### Fixed
+
+* Query and dataset bugs across multiple backends
+* Miscellaneous documentation issues
+
 ## [0.10.34] – 2025-07-21T19:10:17+07:00
 
 ### Added
