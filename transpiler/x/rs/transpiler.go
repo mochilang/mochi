@@ -37,6 +37,7 @@ var curEnv *types.Env
 var structTypes map[string]types.StructType
 var cloneVars map[string]bool
 var useMath bool
+var useNow bool
 var patternMode bool
 var boxVars map[string]bool
 
@@ -462,7 +463,7 @@ func (i *IndexExpr) emit(w io.Writer) {
 	i.Target.emit(w)
 	io.WriteString(w, "[")
 	i.Index.emit(w)
-	io.WriteString(w, "]")
+	io.WriteString(w, " as usize]")
 }
 
 // StringIndexExpr represents string[index] returning a character.
@@ -1364,6 +1365,7 @@ func Transpile(p *parser.Program, env *types.Env) (*Program, error) {
 	usesHashMap = false
 	usesGroup = false
 	useMath = false
+	useNow = false
 	mapVars = make(map[string]bool)
 	stringVars = make(map[string]bool)
 	groupVars = make(map[string]bool)
@@ -1741,7 +1743,7 @@ func compileForStmt(n *parser.ForStmt) (Stmt, error) {
 	byRef := false
 	if t := inferType(iter); strings.HasPrefix(t, "Vec<") {
 		elem := strings.TrimSuffix(strings.TrimPrefix(t, "Vec<"), ">")
-		if elem == "String" || strings.HasPrefix(elem, "Vec<") || strings.HasPrefix(elem, "HashMap<") {
+		if strings.HasPrefix(elem, "Vec<") || strings.HasPrefix(elem, "HashMap<") {
 			byRef = true
 		} else if _, ok := structTypes[elem]; ok {
 			byRef = true
@@ -1907,6 +1909,9 @@ func compileFunStmt(fn *parser.FunStmt) (Stmt, error) {
 		}
 		params[i] = Param{Name: p.Name, Type: typ}
 		typList[i] = typ
+		if typ != "" {
+			varTypes[p.Name] = typ
+		}
 	}
 	funParams[fn.Name] = len(fn.Params)
 	funParamTypes[fn.Name] = typList
@@ -2144,7 +2149,17 @@ func compilePostfix(p *parser.PostfixExpr) (Expr, error) {
 				expr = &MethodCallExpr{Receiver: expr, Name: "apply", Args: args}
 			}
 		case op.Cast != nil:
-			// ignore casts
+			t := rustTypeRef(op.Cast.Type)
+			switch t {
+			case "f64":
+				expr = &FloatCastExpr{Expr: expr}
+			case "i64":
+				expr = &IntCastExpr{Expr: expr}
+			case "String":
+				expr = &StringCastExpr{Expr: expr}
+			default:
+				// unsupported cast ignored
+			}
 		default:
 			return nil, fmt.Errorf("unsupported postfix")
 		}
@@ -2240,6 +2255,10 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 		if name == "sum" && len(args) == 1 {
 			return &SumExpr{Arg: args[0]}, nil
 		}
+		if name == "now" && len(args) == 0 {
+			useNow = true
+			return &CallExpr{Func: "now", Args: nil}, nil
+		}
 		if name == "str" && len(args) == 1 {
 			return &StrExpr{Arg: args[0]}, nil
 		}
@@ -2301,6 +2320,11 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 			}
 			if inferType(ex) == "usize" {
 				ex = &IntCastExpr{Expr: ex}
+			}
+			if inferType(ex) == "String" {
+				if _, ok := ex.(*StringLit); ok {
+					ex = &StringCastExpr{Expr: ex}
+				}
 			}
 			elems[i] = ex
 		}
@@ -2904,6 +2928,15 @@ func inferType(e Expr) string {
 		return fmt.Sprintf("Vec<%s>", ex.ItemType)
 	case *OuterJoinExpr:
 		return fmt.Sprintf("Vec<%s>", ex.ItemType)
+	case *IntCastExpr:
+		return "i64"
+	case *FloatCastExpr:
+		return "f64"
+	case *UnaryExpr:
+		if ex.Op == "!" {
+			return "bool"
+		}
+		return inferType(ex.Expr)
 	case *MapLit:
 		usesHashMap = true
 		if len(ex.Items) > 0 {
@@ -3289,6 +3322,9 @@ func Emit(prog *Program) []byte {
 	if prog.UsesHashMap {
 		buf.WriteString("use std::collections::HashMap;\n")
 	}
+	if useNow {
+		buf.WriteString("use std::time::{SystemTime, UNIX_EPOCH};\n")
+	}
 	if useMath {
 		buf.WriteString("mod math {\n")
 		buf.WriteString("    pub const pi: f64 = std::f64::consts::PI;\n")
@@ -3299,6 +3335,15 @@ func Emit(prog *Program) []byte {
 		buf.WriteString("    pub fn log(x: f64) -> f64 { x.ln() }\n")
 		buf.WriteString("}\n")
 	}
+	if useNow {
+		buf.WriteString("static mut SEED: u64 = 1;\n")
+		buf.WriteString("fn now() -> i64 {\n")
+		buf.WriteString("    unsafe {\n")
+		buf.WriteString("        SEED = SEED.wrapping_mul(1664525).wrapping_add(1013904223);\n")
+		buf.WriteString("        (SEED % 1000000000) as i64\n")
+		buf.WriteString("    }\n")
+		buf.WriteString("}\n")
+	}
 	if prog.UsesGroup {
 		buf.WriteString("#[derive(Clone)]\nstruct Group<K, V> { key: K, items: Vec<V> }\n")
 	}
@@ -3306,20 +3351,37 @@ func Emit(prog *Program) []byte {
 		d.emit(&buf)
 		buf.WriteByte('\n')
 	}
+	hasMain := false
 	for _, s := range prog.Stmts {
 		if fd, ok := s.(*FuncDecl); ok {
+			if fd.Name == "main" {
+				hasMain = true
+			}
 			fd.emit(&buf)
 			buf.WriteString("\n\n")
 		}
 	}
-	buf.WriteString("fn main() {\n")
+	nonFuncs := []Stmt{}
 	for _, s := range prog.Stmts {
-		if _, ok := s.(*FuncDecl); ok {
-			continue
+		if _, ok := s.(*FuncDecl); !ok {
+			nonFuncs = append(nonFuncs, s)
 		}
-		writeStmt(&buf, s, 1)
 	}
-	buf.WriteString("}\n")
+	skipWrapper := false
+	if hasMain && len(nonFuncs) == 1 {
+		if es, ok := nonFuncs[0].(*ExprStmt); ok {
+			if ce, ok := es.Expr.(*CallExpr); ok && ce.Func == "main" && len(ce.Args) == 0 {
+				skipWrapper = true
+			}
+		}
+	}
+	if !skipWrapper {
+		buf.WriteString("fn main() {\n")
+		for _, s := range nonFuncs {
+			writeStmt(&buf, s, 1)
+		}
+		buf.WriteString("}\n")
+	}
 	if b := buf.Bytes(); len(b) > 0 && b[len(b)-1] != '\n' {
 		b = append(b, '\n')
 	}

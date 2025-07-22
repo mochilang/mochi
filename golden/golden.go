@@ -7,6 +7,7 @@ import (
 	"os"
 	"path/filepath"
 	"regexp"
+	"sort"
 	"strings"
 	"testing"
 	"time"
@@ -126,7 +127,10 @@ func RunWithSummary(t *testing.T, dir, srcExt, goldenExt string, fn Runner) {
 		t.Fatalf("no test files found: %s", pattern)
 	}
 
+	sort.Strings(files)
+
 	var passed, failed int
+	var firstFail string
 	for _, src := range files {
 		name := strings.TrimSuffix(filepath.Base(src), srcExt)
 		wantPath := filepath.Join(rootDir, dir, name+goldenExt)
@@ -207,9 +211,15 @@ func RunWithSummary(t *testing.T, dir, srcExt, goldenExt string, fn Runner) {
 			passed++
 		} else {
 			failed++
+			if firstFail == "" {
+				firstFail = name
+			}
+			break
 		}
 	}
-
+	if firstFail != "" {
+		t.Fatalf("first failing program: %s", firstFail)
+	}
 	t.Logf("Summary: %d passed, %d failed", passed, failed)
 }
 
