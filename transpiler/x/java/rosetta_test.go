@@ -9,6 +9,7 @@ import (
 	"os/exec"
 	"path/filepath"
 	"sort"
+	"strconv"
 	"strings"
 	"testing"
 	"time"
@@ -99,6 +100,19 @@ func TestJavaTranspiler_Rosetta_Golden(t *testing.T) {
 		t.Fatalf("glob: %v", err)
 	}
 	sort.Strings(files)
+
+	if v := os.Getenv("ROSETTA_INDEX"); v != "" {
+		idx, err := strconv.Atoi(v)
+		if err != nil || idx < 1 || idx > len(files) {
+			t.Fatalf("invalid ROSETTA_INDEX %s", v)
+		}
+		files = files[idx-1 : idx]
+	} else if v := os.Getenv("ROSETTA_MAX"); v != "" {
+		if n, err := strconv.Atoi(v); err == nil && n < len(files) {
+			files = files[:n]
+		}
+	}
+
 	outDir := filepath.Join(root, "tests", "rosetta", "transpiler", "Java")
 	os.MkdirAll(outDir, 0o755)
 	var firstFail string
