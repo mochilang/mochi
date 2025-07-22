@@ -1,8 +1,0 @@
-exit status 1
-/workspace/mochi/tests/rosetta/transpiler/Scala/100-prisoners.scala:36: error: '.' expected but ':' found.
-            val this: Any = drawers(prev)
-                    ^
-/workspace/mochi/tests/rosetta/transpiler/Scala/100-prisoners.scala:37: error: identifier expected but ';' found.
-            if (this == p) {
-^
-two errors found
