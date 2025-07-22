@@ -421,6 +421,18 @@ type IfExpr struct {
 	Else Expr
 }
 
+// CaseExpr represents an Erlang case expression.
+type CaseExpr struct {
+	Target  Expr
+	Clauses []CaseClause
+}
+
+// CaseClause is a pattern -> result pair within a case expression.
+type CaseClause struct {
+	Pattern Expr
+	Body    Expr
+}
+
 // NameRef refers to a variable.
 type NameRef struct {
 	Name     string
@@ -645,6 +657,13 @@ func isStringExpr(e Expr) bool {
 		return false
 	case *IfExpr:
 		return isStringExpr(v.Then) && isStringExpr(v.Else)
+	case *CaseExpr:
+		for _, cl := range v.Clauses {
+			if !isStringExpr(cl.Body) {
+				return false
+			}
+		}
+		return true
 	case *NameRef:
 		return v.IsString
 	case *IndexExpr:
@@ -669,6 +688,13 @@ func isBoolExpr(e Expr) bool {
 		}
 	case *IfExpr:
 		return isBoolExpr(v.Then) && isBoolExpr(v.Else)
+	case *CaseExpr:
+		for _, cl := range v.Clauses {
+			if !isBoolExpr(cl.Body) {
+				return false
+			}
+		}
+		return true
 	}
 	return false
 }
@@ -1176,6 +1202,23 @@ func (i *IfExpr) emit(w io.Writer) {
 	io.WriteString(w, ";\n    _ -> ")
 	i.Else.emit(w)
 	io.WriteString(w, "\nend)")
+}
+
+func (c *CaseExpr) emit(w io.Writer) {
+	io.WriteString(w, "(case ")
+	c.Target.emit(w)
+	io.WriteString(w, " of\n")
+	for i, cl := range c.Clauses {
+		io.WriteString(w, "    ")
+		cl.Pattern.emit(w)
+		io.WriteString(w, " -> ")
+		cl.Body.emit(w)
+		if i < len(c.Clauses)-1 {
+			io.WriteString(w, ";\n")
+		} else {
+			io.WriteString(w, "\nend)")
+		}
+	}
 }
 
 func (n *NameRef) emit(w io.Writer) { io.WriteString(w, n.Name) }
@@ -2374,25 +2417,19 @@ func convertMatch(me *parser.MatchExpr, env *types.Env, ctx *context) (Expr, err
 	if err != nil {
 		return nil, err
 	}
-	var expr Expr = &AtomLit{Name: "nil"}
-	for i := len(me.Cases) - 1; i >= 0; i-- {
-		c := me.Cases[i]
-		res, err := convertExpr(c.Result, env, ctx)
-		if err != nil {
-			return nil, err
-		}
+	clauses := make([]CaseClause, len(me.Cases))
+	for i, c := range me.Cases {
 		pat, err := convertExpr(c.Pattern, env, ctx)
 		if err != nil {
 			return nil, err
 		}
-		if n, ok := pat.(*NameRef); ok && n.Name == "_" {
-			expr = res
-			continue
+		res, err := convertExpr(c.Result, env, ctx)
+		if err != nil {
+			return nil, err
 		}
-		cond := &BinaryExpr{Left: target, Op: "==", Right: pat}
-		expr = &IfExpr{Cond: cond, Then: res, Else: expr}
+		clauses[i] = CaseClause{Pattern: pat, Body: res}
 	}
-	return expr, nil
+	return &CaseExpr{Target: target, Clauses: clauses}, nil
 }
 
 func convertQueryExpr(q *parser.QueryExpr, env *types.Env, ctx *context) (Expr, error) {

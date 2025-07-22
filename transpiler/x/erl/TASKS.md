@@ -1,3 +1,7 @@
+## Progress (2025-07-22 03:27 +0000)
+- erl: add case expression and match tests (50459c218)
+- Regenerated golden files - 88/102 vm valid programs passing
+
 ## Progress (2025-07-22 10:07 +0700)
 - Clean up Typescript for next round (b6741d6c9)
 - Regenerated golden files - 86/102 vm valid programs passing
