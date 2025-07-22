@@ -905,7 +905,7 @@ func (c *CallExpr) emit(w io.Writer) {
 		}
 	case "now":
 		if len(c.Args) == 0 {
-			fmt.Fprint(w, "Int64(Date().timeIntervalSince1970)")
+			fmt.Fprint(w, "Int.random(in: 0..<Int.max)")
 			return
 		}
 	}
@@ -1211,11 +1211,17 @@ func convertStmt(env *types.Env, st *parser.Statement) (Stmt, error) {
 		var err error
 		var typ string
 		if st.Let.Value != nil {
-			ex, err = convertExpr(env, st.Let.Value)
-			if err != nil {
-				return nil, err
+			if st.Let.Type != nil && (types.IsEmptyListLiteral(st.Let.Value) || isEmptyMapLiteral(st.Let.Value)) {
+				ex = zeroValue(st.Let.Type)
+			} else {
+				ex, err = convertExpr(env, st.Let.Value)
+				if err != nil {
+					return nil, err
+				}
 			}
-			if env != nil {
+			if st.Let.Type != nil {
+				typ = toSwiftType(st.Let.Type)
+			} else if env != nil {
 				t := types.TypeOfExpr(st.Let.Value, env)
 				typ = swiftTypeOf(t)
 				if !types.IsEmptyListLiteral(st.Let.Value) && !isEmptyMapLiteral(st.Let.Value) {
@@ -1226,17 +1232,32 @@ func convertStmt(env *types.Env, st *parser.Statement) (Stmt, error) {
 			ex = zeroValue(st.Let.Type)
 			typ = toSwiftType(st.Let.Type)
 		}
+		if env != nil {
+			var varT types.Type = types.AnyType{}
+			if st.Let.Type != nil {
+				varT = types.ResolveTypeRef(st.Let.Type, env)
+			} else if st.Let.Value != nil {
+				varT = types.TypeOfExpr(st.Let.Value, env)
+			}
+			env.SetVar(st.Let.Name, varT, true)
+		}
 		return &VarDecl{Name: st.Let.Name, Const: true, Type: typ, Expr: ex}, nil
 	case st.Var != nil:
 		var ex Expr
 		var err error
 		var typ string
 		if st.Var.Value != nil {
-			ex, err = convertExpr(env, st.Var.Value)
-			if err != nil {
-				return nil, err
+			if st.Var.Type != nil && (types.IsEmptyListLiteral(st.Var.Value) || isEmptyMapLiteral(st.Var.Value)) {
+				ex = zeroValue(st.Var.Type)
+			} else {
+				ex, err = convertExpr(env, st.Var.Value)
+				if err != nil {
+					return nil, err
+				}
 			}
-			if env != nil {
+			if st.Var.Type != nil {
+				typ = toSwiftType(st.Var.Type)
+			} else if env != nil {
 				t := types.TypeOfExpr(st.Var.Value, env)
 				typ = swiftTypeOf(t)
 				if !types.IsEmptyListLiteral(st.Var.Value) && !isEmptyMapLiteral(st.Var.Value) {
@@ -1246,6 +1267,15 @@ func convertStmt(env *types.Env, st *parser.Statement) (Stmt, error) {
 		} else if st.Var.Type != nil {
 			ex = zeroValue(st.Var.Type)
 			typ = toSwiftType(st.Var.Type)
+		}
+		if env != nil {
+			var varT types.Type = types.AnyType{}
+			if st.Var.Type != nil {
+				varT = types.ResolveTypeRef(st.Var.Type, env)
+			} else if st.Var.Value != nil {
+				varT = types.TypeOfExpr(st.Var.Value, env)
+			}
+			env.SetVar(st.Var.Name, varT, true)
 		}
 		return &VarDecl{Name: st.Var.Name, Const: false, Type: typ, Expr: ex}, nil
 	case st.Type != nil:
@@ -1375,10 +1405,16 @@ func convertIfStmt(env *types.Env, i *parser.IfStmt) (Stmt, error) {
 
 func convertFunDecl(env *types.Env, f *parser.FunStmt) (Stmt, error) {
 	fn := &FunDecl{Name: f.Name, Ret: toSwiftType(f.Return)}
+	child := types.NewEnv(env)
 	for _, p := range f.Params {
 		fn.Params = append(fn.Params, Param{Name: p.Name, Type: toSwiftType(p.Type)})
+		var pt types.Type = types.AnyType{}
+		if p.Type != nil {
+			pt = types.ResolveTypeRef(p.Type, env)
+		}
+		child.SetVar(p.Name, pt, true)
 	}
-	body, err := convertStmts(env, f.Body)
+	body, err := convertStmts(child, f.Body)
 	if err != nil {
 		return nil, err
 	}
@@ -2588,6 +2624,24 @@ func convertPrimary(env *types.Env, pr *parser.Primary) (Expr, error) {
 	case pr.Struct != nil:
 		return convertStructLiteral(env, pr.Struct)
 	case pr.Call != nil:
+		if pr.Call.Func == "append" && len(pr.Call.Args) == 2 {
+			left, err := convertExpr(env, pr.Call.Args[0])
+			if err != nil {
+				return nil, err
+			}
+			right, err := convertExpr(env, pr.Call.Args[1])
+			if err != nil {
+				return nil, err
+			}
+			arr := &ArrayLit{Elems: []Expr{right}}
+			expr := &BinaryExpr{Left: left, Op: "+", Right: arr}
+			if env != nil {
+				if lt, ok := types.TypeOfExpr(pr.Call.Args[0], env).(types.ListType); ok {
+					return &CastExpr{Expr: expr, Type: swiftTypeOf(lt)}, nil
+				}
+			}
+			return expr, nil
+		}
 		if pr.Call.Func == "len" && len(pr.Call.Args) == 1 {
 			if n, ok := evalLenConst(pr.Call.Args[0]); ok {
 				return &LitExpr{Value: fmt.Sprintf("%d", n), IsString: false}, nil
