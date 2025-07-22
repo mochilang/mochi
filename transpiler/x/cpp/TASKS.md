@@ -1,3 +1,14 @@
+## Progress (2025-07-22 09:11 +0700)
+- Added right and outer join support
+- Removed runtime print helpers
+- Generated C++ for 91/102 programs
+- Updated README checklist
+
+## Progress (2025-07-22 09:10 +0700)
+- cpp transpiler: support partial application
+- Generated C++ for 91/102 programs
+- Updated README checklist and outputs
+
 ## Progress (2025-07-22 08:49 +0700)
 - update cs README and tasks
 - Generated C++ for 91/101 programs

@@ -321,6 +321,34 @@ type LeftJoinComp struct {
 	ElemType  string
 }
 
+// RightJoinComp represents a simple right join without grouping.
+type RightJoinComp struct {
+	LeftVar   string
+	LeftIter  Expr
+	RightVar  string
+	RightIter Expr
+	LeftType  string
+	InnerType string
+	Cond      Expr
+	Body      Expr
+	ElemType  string
+}
+
+// OuterJoinComp represents a full outer join.
+type OuterJoinComp struct {
+	LeftVar    string
+	LeftIter   Expr
+	RightVar   string
+	RightIter  Expr
+	LeftType   string
+	RightType  string
+	LeftInner  string
+	RightInner string
+	Cond       Expr
+	Body       Expr
+	ElemType   string
+}
+
 // JoinLeftJoinComp handles an inner join followed by a left join.
 type JoinLeftJoinComp struct {
 	LeftVar   string
@@ -372,17 +400,6 @@ func (p *Program) write(w io.Writer) {
 	}
 	fmt.Fprintln(w)
 	fmt.Fprintln(w)
-	fmt.Fprintln(w, "template<typename T>\nstd::ostream& operator<<(std::ostream& os, const std::optional<T>& v) {")
-	fmt.Fprintln(w, "    if(v) os << *v; else os << \"None\";")
-	fmt.Fprintln(w, "    return os;\n}")
-	fmt.Fprintln(w)
-	fmt.Fprintln(w, "template<typename T>\nstd::ostream& operator<<(std::ostream& os, const std::vector<T>& v) {")
-	fmt.Fprintln(w, "    os << '[';")
-	fmt.Fprintln(w, "    bool first = true;")
-	fmt.Fprintln(w, "    for(const auto& x : v) { if(!first) os << \", \"; first = false; os << x; }")
-	fmt.Fprintln(w, "    os << ']';")
-	fmt.Fprintln(w, "    return os;\n}")
-	fmt.Fprintln(w)
 	for _, st := range p.Structs {
 		fmt.Fprintf(w, "struct %s {\n", st.Name)
 		for _, f := range st.Fields {
@@ -399,20 +416,28 @@ func (p *Program) write(w io.Writer) {
 	}
 	for _, st := range p.Structs {
 		fmt.Fprintf(w, "std::ostream& operator<<(std::ostream& os, const %s& v) {\n", st.Name)
-		fmt.Fprintf(w, "    os << '{'")
+		fmt.Fprintln(w, "    os << '{';")
 		for i, f := range st.Fields {
 			if i > 0 {
-				fmt.Fprintf(w, " << \", \"")
+				fmt.Fprintln(w, "    os << ', ';")
 			}
-			if f.Type == "std::string" {
-				fmt.Fprintf(w, " << \"'%s': '\" << v.%s << \"'\"", f.Name, f.Name)
-			} else if f.Type == "double" {
-				fmt.Fprintf(w, " << \"'%s': \" << std::fixed << std::setprecision(1) << v.%s", f.Name, f.Name)
-			} else {
-				fmt.Fprintf(w, " << \"'%s': \" << v.%s", f.Name, f.Name)
+			fmt.Fprintf(w, "    os << '%s': ", f.Name)
+			switch {
+			case f.Type == "std::string":
+				fmt.Fprintf(w, "    os << '%c' << v.%s << '%c';\n", '\'', f.Name, '\'')
+			case f.Type == "double":
+				fmt.Fprintf(w, "    os << std::fixed << std::setprecision(1) << v.%s;\n", f.Name)
+			case strings.HasPrefix(f.Type, "std::optional<"):
+				fmt.Fprintf(w, "    if(v.%s) os << *v.%s; else os << \"None\";\n", f.Name, f.Name)
+			case strings.HasPrefix(f.Type, "std::vector<"):
+				fmt.Fprintf(w, "    os << '['; for(size_t i=0;i<v.%s.size();++i){ if(i>0) os << ', '; os << v.%s[i]; } os << ']';\n", f.Name, f.Name)
+			case strings.HasPrefix(f.Type, "std::map<"):
+				fmt.Fprintf(w, "    os << '{'; bool first_%d=true; for(const auto& p: v.%s){ if(!first_%d) os << ', '; first_%d=false; os << p.first << ': ' << p.second; } os << '}';\n", i, f.Name, i, i)
+			default:
+				fmt.Fprintf(w, "    os << v.%s;\n", f.Name)
 			}
 		}
-		fmt.Fprintln(w, " << '}';")
+		fmt.Fprintln(w, "    os << '}';")
 		fmt.Fprintln(w, "    return os;")
 		fmt.Fprintln(w, "}")
 		fmt.Fprintln(w)
@@ -474,25 +499,55 @@ func (f *Func) emit(w io.Writer) {
 }
 
 func (s *PrintStmt) emit(w io.Writer, indent int) {
+	if currentProgram != nil {
+		currentProgram.addInclude("<iostream>")
+		currentProgram.addInclude("<iomanip>")
+	}
+	for i, v := range s.Values {
+		if i > 0 {
+			for j := 0; j < indent; j++ {
+				io.WriteString(w, "    ")
+			}
+			io.WriteString(w, "std::cout << \" \";\n")
+		}
+		emitToStream(w, "std::cout", v, indent)
+	}
 	for i := 0; i < indent; i++ {
 		io.WriteString(w, "    ")
 	}
-	if currentProgram != nil {
-		currentProgram.addInclude("<iostream>")
-	}
-	io.WriteString(w, "std::cout")
-	for i, v := range s.Values {
-		if i > 0 {
-			io.WriteString(w, " << \" \" << ")
-		} else {
-			io.WriteString(w, " << ")
-		}
-		if exprType(v) == "double" {
+	io.WriteString(w, "std::cout << std::endl;\n")
+}
+
+func emitToStream(w io.Writer, stream string, e Expr, indent int) {
+	ind := strings.Repeat("    ", indent)
+	typ := exprType(e)
+	switch {
+	case strings.HasPrefix(typ, "std::vector<"):
+		io.WriteString(w, ind+"{")
+		io.WriteString(w, " auto __tmp = ")
+		e.emit(w)
+		io.WriteString(w, "; "+stream+" << '['; for(size_t i=0;i<__tmp.size();++i){ if(i>0) "+stream+" << ', '; "+stream+" << __tmp[i]; } "+stream+" << ']'; }")
+		io.WriteString(w, "\n")
+	case strings.HasPrefix(typ, "std::optional<"):
+		io.WriteString(w, ind+"{")
+		io.WriteString(w, " auto __tmp = ")
+		e.emit(w)
+		io.WriteString(w, "; if(__tmp) "+stream+" << *__tmp; else "+stream+" << \"None\"; }")
+		io.WriteString(w, "\n")
+	case strings.HasPrefix(typ, "std::map<"):
+		io.WriteString(w, ind+"{")
+		io.WriteString(w, " auto __tmp = ")
+		e.emit(w)
+		io.WriteString(w, "; "+stream+" << '{'; bool first=true; for(const auto& __p : __tmp){ if(!first) "+stream+" << ', '; first=false; "+stream+" << __p.first << ': ' << __p.second; } "+stream+" << '}'; }")
+		io.WriteString(w, "\n")
+	default:
+		io.WriteString(w, ind+stream+" << ")
+		if typ == "double" {
 			io.WriteString(w, "std::fixed << std::setprecision(1) << ")
 		}
-		v.emit(w)
+		e.emit(w)
+		io.WriteString(w, ";\n")
 	}
-	io.WriteString(w, " << std::endl;\n")
 }
 
 func (wst *WhileStmt) emit(w io.Writer, indent int) {
@@ -1066,6 +1121,100 @@ func (c *JoinLeftJoinComp) emit(w io.Writer) {
 	io.WriteString(w, ");\n")
 	io.WriteString(w, "            }\n")
 	io.WriteString(w, "        }\n")
+	io.WriteString(w, "    }\n")
+	io.WriteString(w, "}\n")
+	io.WriteString(w, "return __items; }())")
+	inLambda--
+}
+
+func (rjc *RightJoinComp) emit(w io.Writer) {
+	cap := "[]"
+	if inFunction || inLambda > 0 {
+		cap = "[&]"
+	}
+	io.WriteString(w, "("+cap+"{ std::vector<"+rjc.ElemType+"> __items;\n")
+	inLambda++
+	io.WriteString(w, "for (auto "+rjc.RightVar+" : ")
+	rjc.RightIter.emit(w)
+	io.WriteString(w, ") {\n")
+	io.WriteString(w, "    bool __matched = false;\n")
+	io.WriteString(w, "    for (auto __"+rjc.LeftVar+" : ")
+	rjc.LeftIter.emit(w)
+	io.WriteString(w, ") {\n")
+	io.WriteString(w, "        auto "+rjc.LeftVar+" = __"+rjc.LeftVar+";\n")
+	io.WriteString(w, "        if(")
+	rjc.Cond.emit(w)
+	io.WriteString(w, ") {\n")
+	io.WriteString(w, "            __matched = true;\n")
+	io.WriteString(w, "            { std::optional<"+rjc.InnerType+"> "+rjc.LeftVar+"_opt("+rjc.LeftVar+");\n")
+	io.WriteString(w, "            auto "+rjc.LeftVar+" = "+rjc.LeftVar+"_opt;\n")
+	io.WriteString(w, "            __items.push_back(")
+	rjc.Body.emit(w)
+	io.WriteString(w, "); }\n")
+	io.WriteString(w, "        }\n")
+	io.WriteString(w, "    }\n")
+	io.WriteString(w, "    if(!__matched) {\n")
+	io.WriteString(w, "        std::optional<"+rjc.InnerType+"> "+rjc.LeftVar+" = std::nullopt;\n")
+	io.WriteString(w, "        __items.push_back(")
+	rjc.Body.emit(w)
+	io.WriteString(w, ");\n")
+	io.WriteString(w, "    }\n")
+	io.WriteString(w, "}\n")
+	io.WriteString(w, "return __items; }())")
+	inLambda--
+}
+
+func (ojc *OuterJoinComp) emit(w io.Writer) {
+	cap := "[]"
+	if inFunction || inLambda > 0 {
+		cap = "[&]"
+	}
+	io.WriteString(w, "("+cap+"{ std::vector<"+ojc.ElemType+"> __items;\n")
+	inLambda++
+	io.WriteString(w, "for (auto "+ojc.LeftVar+" : ")
+	ojc.LeftIter.emit(w)
+	io.WriteString(w, ") {\n")
+	io.WriteString(w, "    bool __matched = false;\n")
+	io.WriteString(w, "    for (auto "+ojc.RightVar+" : ")
+	ojc.RightIter.emit(w)
+	io.WriteString(w, ") {\n")
+	io.WriteString(w, "        if(")
+	ojc.Cond.emit(w)
+	io.WriteString(w, ") {\n")
+	io.WriteString(w, "            __matched = true;\n")
+	io.WriteString(w, "            { std::optional<"+ojc.LeftInner+"> "+ojc.LeftVar+"_opt("+ojc.LeftVar+"); std::optional<"+ojc.RightInner+"> "+ojc.RightVar+"_opt("+ojc.RightVar+");\n")
+	io.WriteString(w, "            auto "+ojc.LeftVar+" = "+ojc.LeftVar+"_opt;\n")
+	io.WriteString(w, "            auto "+ojc.RightVar+" = "+ojc.RightVar+"_opt;\n")
+	io.WriteString(w, "            __items.push_back(")
+	ojc.Body.emit(w)
+	io.WriteString(w, "); }\n")
+	io.WriteString(w, "        }\n")
+	io.WriteString(w, "    }\n")
+	io.WriteString(w, "    if(!__matched) {\n")
+	io.WriteString(w, "        std::optional<"+ojc.RightInner+"> "+ojc.RightVar+" = std::nullopt;\n")
+	io.WriteString(w, "        { std::optional<"+ojc.LeftInner+"> "+ojc.LeftVar+"_opt("+ojc.LeftVar+"); auto "+ojc.LeftVar+" = "+ojc.LeftVar+"_opt; __items.push_back(")
+	ojc.Body.emit(w)
+	io.WriteString(w, "); }\n")
+	io.WriteString(w, "    }\n")
+	io.WriteString(w, "}\n")
+	io.WriteString(w, "for (auto "+ojc.RightVar+" : ")
+	ojc.RightIter.emit(w)
+	io.WriteString(w, ") {\n")
+	io.WriteString(w, "    bool __matched = false;\n")
+	io.WriteString(w, "    for (auto "+ojc.LeftVar+"_2 : ")
+	ojc.LeftIter.emit(w)
+	io.WriteString(w, ") {\n")
+	io.WriteString(w, "        if(")
+	ojc.Cond.emit(w)
+	io.WriteString(w, ") { __matched = true; break; }\n")
+	io.WriteString(w, "    }\n")
+	io.WriteString(w, "    if(!__matched) {\n")
+	io.WriteString(w, "        std::optional<"+ojc.LeftInner+"> "+ojc.LeftVar+" = std::nullopt;\n")
+	io.WriteString(w, "        std::optional<"+ojc.RightInner+"> "+ojc.RightVar+"_opt("+ojc.RightVar+");\n")
+	io.WriteString(w, "        auto "+ojc.RightVar+" = "+ojc.RightVar+"_opt;\n")
+	io.WriteString(w, "        __items.push_back(")
+	ojc.Body.emit(w)
+	io.WriteString(w, ");\n")
 	io.WriteString(w, "    }\n")
 	io.WriteString(w, "}\n")
 	io.WriteString(w, "return __items; }())")
@@ -2308,13 +2457,23 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 		}
 		return &MapLit{Keys: keys, Values: vals, KeyType: kt, ValueType: vt}, nil
 	case p.Query != nil:
-		if len(p.Query.Joins) == 1 && p.Query.Joins[0].Side != nil && *p.Query.Joins[0].Side == "left" {
-			if p.Query.Group != nil {
-				expr, _, _, err := convertLeftJoinGroupQuery(p.Query, "tmp")
+		if len(p.Query.Joins) == 1 && p.Query.Joins[0].Side != nil {
+			side := *p.Query.Joins[0].Side
+			switch side {
+			case "left":
+				if p.Query.Group != nil {
+					expr, _, _, err := convertLeftJoinGroupQuery(p.Query, "tmp")
+					return expr, err
+				}
+				expr, _, _, err := convertLeftJoinQuery(p.Query, "tmp")
+				return expr, err
+			case "right":
+				expr, _, _, err := convertRightJoinQuery(p.Query, "tmp")
+				return expr, err
+			case "outer":
+				expr, _, _, err := convertOuterJoinQuery(p.Query, "tmp")
 				return expr, err
 			}
-			expr, _, _, err := convertLeftJoinQuery(p.Query, "tmp")
-			return expr, err
 		}
 		expr, _, _, err := convertSimpleQuery(p.Query, "tmp")
 		return expr, err
@@ -3005,6 +3164,188 @@ func convertJoinLeftJoinQuery(q *parser.QueryExpr, target string) (Expr, *Struct
 	return &JoinLeftJoinComp{LeftVar: q.Var, LeftIter: leftIter, JoinVar: j1.Var, JoinIter: joinIter, JoinCond: joinCond, RightVar: j2.Var, RightIter: rightIter, RightType: optRightType, InnerType: rightType, Cond: cond, Body: body, ElemType: elemType}, def, elemType, nil
 }
 
+func convertRightJoinQuery(q *parser.QueryExpr, target string) (Expr, *StructDef, string, error) {
+	if q == nil || len(q.Joins) != 1 || q.Group != nil || q.Distinct || q.Sort != nil || q.Skip != nil || q.Take != nil {
+		return nil, nil, "", fmt.Errorf("unsupported query")
+	}
+	j := q.Joins[0]
+	if j.Side == nil || *j.Side != "right" {
+		return nil, nil, "", fmt.Errorf("unsupported query")
+	}
+	leftIter, err := convertExpr(q.Source)
+	if err != nil {
+		return nil, nil, "", err
+	}
+	rightIter, err := convertExpr(j.Src)
+	if err != nil {
+		return nil, nil, "", err
+	}
+	leftType := elementTypeFromListType(guessType(q.Source))
+	if vr, ok := leftIter.(*VarRef); ok {
+		if t, ok2 := currentProgram.ListTypes[vr.Name]; ok2 {
+			leftType = t
+		}
+	}
+	rightType := elementTypeFromListType(guessType(j.Src))
+	if vr, ok := rightIter.(*VarRef); ok {
+		if t, ok2 := currentProgram.ListTypes[vr.Name]; ok2 {
+			rightType = t
+		}
+	}
+	optLeftType := fmt.Sprintf("std::optional<%s>", leftType)
+	qTypes := map[string]string{q.Var: leftType, j.Var: rightType}
+	oldTypes := localTypes
+	localTypes = qTypes
+	cond, err := convertExpr(j.On)
+	if err != nil {
+		localTypes = oldTypes
+		return nil, nil, "", err
+	}
+	qTypes[q.Var] = optLeftType
+	localTypes = qTypes
+	body, err := convertExpr(q.Select)
+	if err != nil {
+		localTypes = oldTypes
+		return nil, nil, "", err
+	}
+	elemType := exprType(body)
+	var def *StructDef
+	if ml, ok := body.(*MapLit); ok {
+		if keys := make([]string, len(ml.Keys)); true {
+			for i, k := range ml.Keys {
+				n, ok := keyName(k)
+				if !ok {
+					keys = nil
+					break
+				}
+				keys[i] = n
+			}
+			if keys != nil {
+				structName := strings.Title(target) + "Item"
+				fields := make([]Param, len(keys))
+				flds := make([]FieldLit, len(keys))
+				for i, k := range keys {
+					typ := exprType(ml.Values[i])
+					if sel, ok := ml.Values[i].(*SelectorExpr); ok {
+						if vr, ok2 := sel.Target.(*VarRef); ok2 {
+							if s, ok3 := qTypes[vr.Name]; ok3 {
+								typ = structFieldType(s, sel.Field)
+							}
+						}
+					} else if vr, ok := ml.Values[i].(*VarRef); ok {
+						if t, ok2 := qTypes[vr.Name]; ok2 {
+							typ = t
+						}
+					}
+					fields[i] = Param{Name: k, Type: typ}
+					flds[i] = FieldLit{Name: k, Value: ml.Values[i]}
+				}
+				body = &StructLit{Name: structName, Fields: flds}
+				def = &StructDef{Name: structName, Fields: fields}
+				elemType = structName
+			}
+		}
+	}
+	localTypes = oldTypes
+	if currentProgram != nil {
+		currentProgram.addInclude("<vector>")
+		currentProgram.addInclude("<optional>")
+	}
+	return &RightJoinComp{LeftVar: q.Var, LeftIter: leftIter, RightVar: j.Var, RightIter: rightIter, LeftType: optLeftType, InnerType: leftType, Cond: cond, Body: body, ElemType: elemType}, def, elemType, nil
+}
+
+func convertOuterJoinQuery(q *parser.QueryExpr, target string) (Expr, *StructDef, string, error) {
+	if q == nil || len(q.Joins) != 1 || q.Group != nil || q.Distinct || q.Sort != nil || q.Skip != nil || q.Take != nil {
+		return nil, nil, "", fmt.Errorf("unsupported query")
+	}
+	j := q.Joins[0]
+	if j.Side == nil || *j.Side != "outer" {
+		return nil, nil, "", fmt.Errorf("unsupported query")
+	}
+	leftIter, err := convertExpr(q.Source)
+	if err != nil {
+		return nil, nil, "", err
+	}
+	rightIter, err := convertExpr(j.Src)
+	if err != nil {
+		return nil, nil, "", err
+	}
+	leftType := elementTypeFromListType(guessType(q.Source))
+	if vr, ok := leftIter.(*VarRef); ok {
+		if t, ok2 := currentProgram.ListTypes[vr.Name]; ok2 {
+			leftType = t
+		}
+	}
+	rightType := elementTypeFromListType(guessType(j.Src))
+	if vr, ok := rightIter.(*VarRef); ok {
+		if t, ok2 := currentProgram.ListTypes[vr.Name]; ok2 {
+			rightType = t
+		}
+	}
+	optLeftType := fmt.Sprintf("std::optional<%s>", leftType)
+	optRightType := fmt.Sprintf("std::optional<%s>", rightType)
+	qTypes := map[string]string{q.Var: leftType, j.Var: rightType}
+	oldTypes := localTypes
+	localTypes = qTypes
+	cond, err := convertExpr(j.On)
+	if err != nil {
+		localTypes = oldTypes
+		return nil, nil, "", err
+	}
+	qTypes[q.Var] = optLeftType
+	qTypes[j.Var] = optRightType
+	localTypes = qTypes
+	body, err := convertExpr(q.Select)
+	if err != nil {
+		localTypes = oldTypes
+		return nil, nil, "", err
+	}
+	elemType := exprType(body)
+	var def *StructDef
+	if ml, ok := body.(*MapLit); ok {
+		if keys := make([]string, len(ml.Keys)); true {
+			for i, k := range ml.Keys {
+				n, ok := keyName(k)
+				if !ok {
+					keys = nil
+					break
+				}
+				keys[i] = n
+			}
+			if keys != nil {
+				structName := strings.Title(target) + "Item"
+				fields := make([]Param, len(keys))
+				flds := make([]FieldLit, len(keys))
+				for i, k := range keys {
+					typ := exprType(ml.Values[i])
+					if sel, ok := ml.Values[i].(*SelectorExpr); ok {
+						if vr, ok2 := sel.Target.(*VarRef); ok2 {
+							if s, ok3 := qTypes[vr.Name]; ok3 {
+								typ = structFieldType(s, sel.Field)
+							}
+						}
+					} else if vr, ok := ml.Values[i].(*VarRef); ok {
+						if t, ok2 := qTypes[vr.Name]; ok2 {
+							typ = t
+						}
+					}
+					fields[i] = Param{Name: k, Type: typ}
+					flds[i] = FieldLit{Name: k, Value: ml.Values[i]}
+				}
+				body = &StructLit{Name: structName, Fields: flds}
+				def = &StructDef{Name: structName, Fields: fields}
+				elemType = structName
+			}
+		}
+	}
+	localTypes = oldTypes
+	if currentProgram != nil {
+		currentProgram.addInclude("<vector>")
+		currentProgram.addInclude("<optional>")
+	}
+	return &OuterJoinComp{LeftVar: q.Var, LeftIter: leftIter, RightVar: j.Var, RightIter: rightIter, LeftType: optLeftType, RightType: optRightType, LeftInner: leftType, RightInner: rightType, Cond: cond, Body: body, ElemType: elemType}, def, elemType, nil
+}
+
 func cppType(t string) string {
 	switch t {
 	case "int":
@@ -3267,6 +3608,10 @@ func exprType(e Expr) string {
 	case *LeftJoinComp:
 		return fmt.Sprintf("std::vector<%s>", v.ElemType)
 	case *JoinLeftJoinComp:
+		return fmt.Sprintf("std::vector<%s>", v.ElemType)
+	case *RightJoinComp:
+		return fmt.Sprintf("std::vector<%s>", v.ElemType)
+	case *OuterJoinComp:
 		return fmt.Sprintf("std::vector<%s>", v.ElemType)
 	case *SortComp:
 		return fmt.Sprintf("std::vector<%s>", v.ElemType)
