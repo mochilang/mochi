@@ -37,8 +37,10 @@ var curEnv *types.Env
 var structTypes map[string]types.StructType
 var cloneVars map[string]bool
 var useMath bool
+var useTime bool
 var patternMode bool
 var boxVars map[string]bool
+var mainFuncName string
 
 func VarTypes() map[string]string { return varTypes }
 
@@ -49,6 +51,7 @@ type Program struct {
 	Stmts       []Stmt
 	UsesHashMap bool
 	UsesGroup   bool
+	UseTime     bool
 	Types       []TypeDecl
 }
 
@@ -462,6 +465,9 @@ func (i *IndexExpr) emit(w io.Writer) {
 	i.Target.emit(w)
 	io.WriteString(w, "[")
 	i.Index.emit(w)
+	if strings.HasPrefix(inferType(i.Target), "Vec<") && inferType(i.Index) != "usize" {
+		io.WriteString(w, " as usize")
+	}
 	io.WriteString(w, "]")
 }
 
@@ -676,7 +682,8 @@ func (s *SubstringExpr) emit(w io.Writer) {
 type StringCastExpr struct{ Expr Expr }
 
 func (s *StringCastExpr) emit(w io.Writer) {
-	if inferType(s.Expr) == "String" {
+	t := inferType(s.Expr)
+	if t == "String" {
 		if nr, ok := s.Expr.(*NameRef); ok && cloneVars[nr.Name] {
 			s.Expr.emit(w)
 			return
@@ -691,9 +698,8 @@ func (s *StringCastExpr) emit(w io.Writer) {
 		io.WriteString(w, ".clone()")
 		return
 	}
-	io.WriteString(w, "String::from(")
 	s.Expr.emit(w)
-	io.WriteString(w, ")")
+	io.WriteString(w, ".to_string()")
 }
 
 // IntCastExpr converts an expression to a 64-bit integer.
@@ -719,6 +725,11 @@ func (f *FloatCastExpr) emit(w io.Writer) {
 		io.WriteString(w, " as f64")
 	}
 }
+
+// NowExpr expands to a deterministic timestamp similar to the VM's now() builtin.
+type NowExpr struct{}
+
+func (n *NowExpr) emit(w io.Writer) { io.WriteString(w, "_now()") }
 
 type NameRef struct{ Name string }
 
@@ -774,6 +785,12 @@ func (v *VarDecl) emit(w io.Writer) {
 				v.Expr.emit(w)
 			}
 		} else {
+			if v.Type == "i64" && inferType(v.Expr) == "f64" {
+				io.WriteString(w, "(")
+				v.Expr.emit(w)
+				io.WriteString(w, " as i64)")
+				return
+			}
 			v.Expr.emit(w)
 		}
 	} else if v.Type != "" {
@@ -1364,6 +1381,7 @@ func Transpile(p *parser.Program, env *types.Env) (*Program, error) {
 	usesHashMap = false
 	usesGroup = false
 	useMath = false
+	useTime = false
 	mapVars = make(map[string]bool)
 	stringVars = make(map[string]bool)
 	groupVars = make(map[string]bool)
@@ -1371,6 +1389,7 @@ func Transpile(p *parser.Program, env *types.Env) (*Program, error) {
 	funParams = make(map[string]int)
 	funParamTypes = make(map[string][]string)
 	boxVars = make(map[string]bool)
+	mainFuncName = ""
 	typeDecls = nil
 	structForMap = make(map[*parser.MapLiteral]string)
 	structForList = make(map[*parser.ListLiteral]string)
@@ -1390,6 +1409,7 @@ func Transpile(p *parser.Program, env *types.Env) (*Program, error) {
 	_ = env // reserved for future use
 	prog.UsesHashMap = usesHashMap
 	prog.UsesGroup = usesGroup
+	prog.UseTime = useTime
 	return prog, nil
 }
 
@@ -1479,6 +1499,9 @@ func compileStmt(stmt *parser.Statement) (Stmt, error) {
 		}
 		if q, ok := e.(*QueryExpr); ok && typ == "" {
 			typ = fmt.Sprintf("Vec<%s>", q.ItemType)
+		}
+		if typ == "i64" && containsFloat(e) {
+			typ = "f64"
 		}
 		if typ != "" {
 			if typ == "String" {
@@ -1769,7 +1792,11 @@ func compileForStmt(n *parser.ForStmt) (Stmt, error) {
 		t := inferType(iter)
 		if strings.HasPrefix(t, "Vec<") {
 			typ := strings.TrimSuffix(strings.TrimPrefix(t, "Vec<"), ">")
-			varTypes[n.Name] = typ
+			if byRef && typ == "String" {
+				varTypes[n.Name] = "&String"
+			} else {
+				varTypes[n.Name] = typ
+			}
 		} else {
 			varTypes[n.Name] = "i64"
 		}
@@ -1907,6 +1934,15 @@ func compileFunStmt(fn *parser.FunStmt) (Stmt, error) {
 		}
 		params[i] = Param{Name: p.Name, Type: typ}
 		typList[i] = typ
+		if typ != "" {
+			varTypes[p.Name] = typ
+			if strings.HasPrefix(typ, "HashMap") {
+				mapVars[p.Name] = true
+			}
+			if typ == "String" {
+				stringVars[p.Name] = true
+			}
+		}
 	}
 	funParams[fn.Name] = len(fn.Params)
 	funParamTypes[fn.Name] = typList
@@ -1951,7 +1987,12 @@ func compileFunStmt(fn *parser.FunStmt) (Stmt, error) {
 			}
 		}
 	}
-	return &FuncDecl{Name: fn.Name, Params: params, Return: ret, Body: body}, nil
+	name := fn.Name
+	if name == "main" {
+		mainFuncName = "mochi_main"
+		name = mainFuncName
+	}
+	return &FuncDecl{Name: name, Params: params, Return: ret, Body: body}, nil
 }
 
 func applyIndexOps(base Expr, ops []*parser.IndexOp) (Expr, error) {
@@ -2164,6 +2205,13 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 			args[i] = ex
 		}
 		name := p.Call.Func
+		if name == "main" && mainFuncName != "" {
+			name = mainFuncName
+		}
+		if name == "now" && len(args) == 0 {
+			useTime = true
+			return &NowExpr{}, nil
+		}
 		if ut, ok := curEnv.FindUnionByVariant(name); ok {
 			st, _ := curEnv.GetStruct(name)
 			fields := make([]Expr, len(args))
@@ -2273,6 +2321,8 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 					if _, isUnary := args[i].(*UnaryExpr); !isUnary {
 						args[i] = &UnaryExpr{Op: "&", Expr: args[i]}
 					}
+				} else if pts[i] == "String" && inferType(args[i]) != "String" {
+					args[i] = &StringCastExpr{Expr: args[i]}
 				}
 			}
 		}
@@ -2930,6 +2980,15 @@ func inferType(e Expr) string {
 		if nr, ok := ex.Receiver.(*NameRef); ok && nr.Name == "math" {
 			return "f64"
 		}
+	case *UnaryExpr:
+		if ex.Op == "!" {
+			return "bool"
+		}
+		return inferType(ex.Expr)
+	case *IntCastExpr:
+		return "i64"
+	case *FloatCastExpr:
+		return "f64"
 	case *FieldExpr:
 		if nr, ok := ex.Receiver.(*NameRef); ok && nr.Name == "math" {
 			return "f64"
@@ -2945,6 +3004,20 @@ func inferType(e Expr) string {
 		return ""
 	}
 	return ""
+}
+
+func containsFloat(e Expr) bool {
+	switch ex := e.(type) {
+	case *NumberLit:
+		return strings.ContainsAny(ex.Value, ".eE")
+	case *FloatCastExpr:
+		return true
+	case *BinaryExpr:
+		return containsFloat(ex.Left) || containsFloat(ex.Right)
+	case *UnaryExpr:
+		return containsFloat(ex.Expr)
+	}
+	return false
 }
 
 func rustType(t string) string {
@@ -3289,6 +3362,10 @@ func Emit(prog *Program) []byte {
 	if prog.UsesHashMap {
 		buf.WriteString("use std::collections::HashMap;\n")
 	}
+	if prog.UseTime {
+		buf.WriteString("use std::sync::atomic::{AtomicBool, AtomicI64, Ordering};\n")
+		buf.WriteString("use std::time::{SystemTime, UNIX_EPOCH};\n")
+	}
 	if useMath {
 		buf.WriteString("mod math {\n")
 		buf.WriteString("    pub const pi: f64 = std::f64::consts::PI;\n")
@@ -3301,6 +3378,27 @@ func Emit(prog *Program) []byte {
 	}
 	if prog.UsesGroup {
 		buf.WriteString("#[derive(Clone)]\nstruct Group<K, V> { key: K, items: Vec<V> }\n")
+	}
+	if prog.UseTime {
+		buf.WriteString("static NOW_SEEDED: AtomicBool = AtomicBool::new(false);\n")
+		buf.WriteString("static NOW_SEED: AtomicI64 = AtomicI64::new(0);\n")
+		buf.WriteString("fn _now() -> i64 {\n")
+		buf.WriteString("    if !NOW_SEEDED.load(Ordering::SeqCst) {\n")
+		buf.WriteString("        if let Ok(s) = std::env::var(\"MOCHI_NOW_SEED\") {\n")
+		buf.WriteString("            if let Ok(v) = s.parse::<i64>() {\n")
+		buf.WriteString("                NOW_SEED.store(v, Ordering::SeqCst);\n")
+		buf.WriteString("                NOW_SEEDED.store(true, Ordering::SeqCst);\n")
+		buf.WriteString("            }\n")
+		buf.WriteString("        }\n")
+		buf.WriteString("    }\n")
+		buf.WriteString("    if NOW_SEEDED.load(Ordering::SeqCst) {\n")
+		buf.WriteString("        let seed = (NOW_SEED.load(Ordering::SeqCst)*1664525 + 1013904223) % 2147483647;\n")
+		buf.WriteString("        NOW_SEED.store(seed, Ordering::SeqCst);\n")
+		buf.WriteString("        seed\n")
+		buf.WriteString("    } else {\n")
+		buf.WriteString("        SystemTime::now().duration_since(UNIX_EPOCH).unwrap().as_nanos() as i64\n")
+		buf.WriteString("    }\n")
+		buf.WriteString("}\n")
 	}
 	for _, d := range prog.Types {
 		d.emit(&buf)
@@ -3495,6 +3593,8 @@ func exprNode(e Expr) *ast.Node {
 		return &ast.Node{Kind: "max", Children: []*ast.Node{exprNode(ex.List)}}
 	case *JoinExpr:
 		return &ast.Node{Kind: "join", Children: []*ast.Node{exprNode(ex.List)}}
+	case *NowExpr:
+		return &ast.Node{Kind: "now"}
 	case *SubstringExpr:
 		n := &ast.Node{Kind: "substring"}
 		n.Children = append(n.Children, exprNode(ex.Str))
