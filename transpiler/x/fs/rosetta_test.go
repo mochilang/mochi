@@ -68,6 +68,7 @@ func TestFSTranspiler_Rosetta_Golden(t *testing.T) {
 	sort.Strings(files)
 
 	var passed, failed int
+	var firstFail string
 	for _, src := range files {
 		base := strings.TrimSuffix(filepath.Base(src), ".mochi")
 		ok := t.Run(base, func(t *testing.T) {
@@ -127,10 +128,16 @@ func TestFSTranspiler_Rosetta_Golden(t *testing.T) {
 			passed++
 		} else {
 			failed++
+			if firstFail == "" {
+				firstFail = base
+			}
 			break
 		}
 	}
 	t.Logf("Summary: %d passed, %d failed", passed, failed)
+	if firstFail != "" {
+		t.Fatalf("first failing program: %s", firstFail)
+	}
 }
 
 // updateRosettaReadme is registered via t.Cleanup to regenerate ROSETTA.md.
