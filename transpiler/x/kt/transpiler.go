@@ -628,7 +628,12 @@ func (b *BinaryExpr) emit(w io.Writer) {
 		} else if numOp {
 			t := guessType(e)
 			if t == "" || t == "Any" {
-				cast(e, "Double")
+				ot := guessType(other)
+				if ot == "Int" {
+					cast(e, "Int")
+				} else {
+					cast(e, "Double")
+				}
 				return
 			}
 		}
@@ -1012,6 +1017,28 @@ func isBoolExpr(e Expr) bool {
 	switch e.(type) {
 	case *BoolLit, *BinaryExpr, *ContainsExpr, *ExistsExpr, *NotExpr, *WhenExpr:
 		return true
+	}
+	return false
+}
+
+func boolAsInt(e *parser.Expr) bool {
+	if e == nil || e.Binary == nil {
+		return false
+	}
+	if len(e.Binary.Right) == 0 && len(e.Binary.Left.Ops) > 0 {
+		for _, op := range e.Binary.Left.Ops {
+			if op == "!" {
+				return true
+			}
+		}
+	}
+	for _, op := range e.Binary.Right {
+		switch op.Op {
+		case "in":
+			return false
+		case "&&", "||", "<", "<=", ">", ">=", "==", "!=":
+			return true
+		}
 	}
 	return false
 }
@@ -3285,11 +3312,17 @@ func convertPrimary(env *types.Env, p *parser.Primary) (Expr, error) {
 				if err != nil {
 					return nil, err
 				}
+				if env != nil && len(p.Call.Args) > 1 && types.IsBoolType(types.TypeOfExpr(a, env)) && boolAsInt(a) {
+					ex = &IfExpr{Cond: ex, Then: &IntLit{Value: 1}, Else: &IntLit{Value: 0}}
+				}
 				args[i] = ex
 			}
 			name := p.Call.Func
 			if name == "print" {
 				if len(args) == 1 {
+					if env != nil && types.IsBoolType(types.TypeOfExpr(p.Call.Args[0], env)) && boolAsInt(p.Call.Args[0]) {
+						args[0] = &IfExpr{Cond: args[0], Then: &IntLit{Value: 1}, Else: &IntLit{Value: 0}}
+					}
 					name = "println"
 					return &CallExpr{Func: name, Args: args}, nil
 				}

@@ -2,6 +2,6 @@ fun main() {
     val a = 10 - 3
     val b = 2 + 2
     println(a)
-    println(a == 7)
-    println(b < 5)
+    println(if (a == 7) 1 else 0)
+    println(if ((b as Number).toDouble() < 5) 1 else 0)
 }

@@ -8,6 +8,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"sort"
 	"strings"
 	"testing"
 	"time"
@@ -41,120 +42,118 @@ func TestTranspilePrograms(t *testing.T) {
 		t.Skip("kotlinc not installed")
 	}
 	cases := []string{
-		"print_hello",
-		"count_builtin",
+		"append_builtin",
 		"avg_builtin",
-		"sum_builtin",
-		"len_builtin",
-		"len_string",
-		"str_builtin",
-		"let_and_print",
 		"basic_compare",
 		"binary_precedence",
-		"math_ops",
-		"unary_neg",
-		"string_compare",
-		"string_concat",
-		"append_builtin",
-		"min_max_builtin",
-		"substring_builtin",
-		"typed_let",
-		"typed_var",
-		"var_assignment",
-		"len_map",
-		"list_index",
-		"string_contains",
-		"string_in_operator",
-		"string_index",
 		"bool_chain",
+		"break_continue",
+		"cast_string_to_int",
+		"closure",
+		"count_builtin",
+		"cross_join",
+		"for_list_collection",
+		"for_loop",
+		"for_map_collection",
+		"fun_call",
+		"fun_expr_in_let",
+		"fun_three_args",
+		"group_by_multi_join",
 		"if_else",
 		"if_then_else",
 		"if_then_else_nested",
-		"break_continue",
-		"for_list_collection",
-		"for_loop",
-		"while_loop",
-		"fun_call",
-		"fun_three_args",
-		"fun_expr_in_let",
+		"len_builtin",
+		"len_map",
+		"len_string",
 		"list_assign",
+		"list_index",
+		"list_nested_assign",
+		"load_jsonl",
+		"load_yaml",
 		"map_assign",
 		"map_in_operator",
-		"slice",
-		"string_prefix_slice",
-		"cast_string_to_int",
-		"for_map_collection",
-		"list_nested_assign",
-		"map_nested_assign",
-		"tail_recursion",
-		"two-sum",
-		"membership",
-		"map_membership",
-		"closure",
-		"nested_function",
 		"map_literal_dynamic",
-		"cross_join",
-		"pure_fold",
-		"pure_global_fold",
-		"short_circuit",
+		"map_membership",
+		"map_nested_assign",
 		"match_expr",
 		"match_full",
-		"group_by_multi_join",
-		"user_type_literal",
+		"math_ops",
+		"membership",
+		"min_max_builtin",
+		"nested_function",
 		"order_by_map",
-		"sort_stable",
-		"load_yaml",
-		"load_jsonl",
+		"print_hello",
+		"pure_fold",
+		"pure_global_fold",
 		"save_jsonl_stdout",
+		"short_circuit",
+		"slice",
+		"sort_stable",
+		"str_builtin",
+		"string_compare",
+		"string_concat",
+		"string_contains",
+		"string_in_operator",
+		"string_index",
+		"string_prefix_slice",
+		"substring_builtin",
+		"sum_builtin",
+		"tail_recursion",
+		"two-sum",
+		"typed_let",
+		"typed_var",
 		"update_stmt",
+		"unary_neg",
+		"user_type_literal",
+		"var_assignment",
+		"while_loop",
 	}
+	sort.Strings(cases)
 	root := repoRoot(t)
 	outDir := filepath.Join(root, "tests", "transpiler", "x", "kt")
 	os.MkdirAll(outDir, 0o755)
 	for _, name := range cases {
-		t.Run(name, func(t *testing.T) {
-			src := filepath.Join(root, "tests", "vm", "valid", name+".mochi")
-			prog, err := parser.Parse(src)
-			if err != nil {
-				t.Fatalf("parse: %v", err)
-			}
-			env := types.NewEnv(nil)
-			if errs := types.Check(prog, env); len(errs) > 0 {
-				t.Fatalf("type: %v", errs[0])
-			}
-			ast, err := kt.Transpile(env, prog)
-			if err != nil {
-				t.Fatalf("transpile: %v", err)
-			}
-			code := kt.Emit(ast)
-			ktFile := filepath.Join(outDir, name+".kt")
-			if err := os.WriteFile(ktFile, code, 0o644); err != nil {
-				t.Fatalf("write: %v", err)
-			}
-			jar := filepath.Join(outDir, name+".jar")
-			if out, err := exec.Command("kotlinc", ktFile, "-include-runtime", "-d", jar).CombinedOutput(); err != nil {
-				_ = os.WriteFile(filepath.Join(outDir, name+".error"), out, 0o644)
-				t.Fatalf("kotlinc: %v", err)
-			}
-			cmd := exec.Command("java", "-jar", jar)
-			cmd.Env = append(os.Environ(), "MOCHI_ROOT="+root)
-			out, err := cmd.CombinedOutput()
-			got := bytes.TrimSpace(out)
-			if err != nil {
-				_ = os.WriteFile(filepath.Join(outDir, name+".error"), out, 0o644)
-				t.Fatalf("run: %v", err)
-			}
-			_ = os.Remove(filepath.Join(outDir, name+".error"))
-			want, err := os.ReadFile(filepath.Join(outDir, name+".out"))
-			if err != nil {
-				t.Fatalf("read want: %v", err)
-			}
-			want = bytes.TrimSpace(want)
-			if !bytes.Equal(got, want) {
-				t.Errorf("output mismatch:\nGot: %s\nWant: %s", got, want)
-			}
-			_ = os.Remove(jar)
-		})
+		src := filepath.Join(root, "tests", "vm", "valid", name+".mochi")
+		prog, err := parser.Parse(src)
+		if err != nil {
+			t.Fatalf("%s: parse: %v", name, err)
+		}
+		env := types.NewEnv(nil)
+		if errs := types.Check(prog, env); len(errs) > 0 {
+			t.Fatalf("%s: type: %v", name, errs[0])
+		}
+		ast, err := kt.Transpile(env, prog)
+		if err != nil {
+			t.Fatalf("%s: transpile: %v", name, err)
+		}
+		code := kt.Emit(ast)
+		ktFile := filepath.Join(outDir, name+".kt")
+		if err := os.WriteFile(ktFile, code, 0o644); err != nil {
+			t.Fatalf("%s: write: %v", name, err)
+		}
+		jar := filepath.Join(outDir, name+".jar")
+		if out, err := exec.Command("kotlinc", ktFile, "-include-runtime", "-d", jar).CombinedOutput(); err != nil {
+			_ = os.WriteFile(filepath.Join(outDir, name+".error"), out, 0o644)
+			t.Fatalf("%s: kotlinc: %v", name, err)
+		}
+		cmd := exec.Command("java", "-jar", jar)
+		cmd.Env = append(os.Environ(), "MOCHI_ROOT="+root)
+		out, err := cmd.CombinedOutput()
+		got := bytes.TrimSpace(out)
+		if err != nil {
+			_ = os.WriteFile(filepath.Join(outDir, name+".error"), out, 0o644)
+			t.Fatalf("%s: run: %v", name, err)
+		}
+		_ = os.Remove(filepath.Join(outDir, name+".error"))
+		want, err := os.ReadFile(filepath.Join(outDir, name+".out"))
+		if err != nil {
+			t.Fatalf("%s: read want: %v", name, err)
+		}
+		want = bytes.TrimSpace(want)
+		if !bytes.Equal(got, want) {
+			t.Fatalf("%s: output mismatch\nGot: %s\nWant: %s", name, got, want)
+		}
+		_ = os.Remove(jar)
 	}
 }
 
