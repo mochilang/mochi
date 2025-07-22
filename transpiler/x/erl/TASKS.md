@@ -1,3 +1,31 @@
+## Progress (2025-07-22 11:10 +0700)
+- erl: support outer join (84642adc7)
+- Regenerated golden files - 91/102 vm valid programs passing
+
+## Progress (2025-07-22 11:10 +0700)
+- erl: support outer join (84642adc7)
+- Regenerated golden files - 91/102 vm valid programs passing
+
+## Progress (2025-07-22 11:10 +0700)
+- erl: support outer join (84642adc7)
+- Regenerated golden files - 91/102 vm valid programs passing
+
+## Progress (2025-07-22 11:10 +0700)
+- erl: support outer join (84642adc7)
+- Regenerated golden files - 90/102 vm valid programs passing
+
+## Progress (2025-07-22 11:10 +0700)
+- erl: support outer join (84642adc7)
+- Regenerated golden files - 89/102 vm valid programs passing
+
+## Progress (2025-07-22 11:10 +0700)
+- erl: support outer join (84642adc7)
+- Regenerated golden files - 89/102 vm valid programs passing
+
+## Progress (2025-07-22 11:10 +0700)
+- erl: support outer join (84642adc7)
+- Regenerated golden files - 89/102 vm valid programs passing
+
 ## Progress (2025-07-22 10:54 +0700)
 - release: v0.10.35 (d025bc223)
 - Regenerated golden files - 89/102 vm valid programs passing
