@@ -96,19 +96,30 @@ func TestHSTranspiler_Rosetta_Golden(t *testing.T) {
 		t.Fatalf("glob: %v", err)
 	}
 	sort.Strings(files)
-	max := 3
-	if v := os.Getenv("ROSETTA_MAX"); v != "" {
-		if n, err := strconv.Atoi(v); err == nil && n < len(files) {
-			max = n
-		} else if err == nil {
-			max = n
+
+	if idxStr := os.Getenv("ROSETTA_INDEX"); idxStr != "" {
+		idx, err := strconv.Atoi(idxStr)
+		if err != nil || idx <= 0 || idx > len(files) {
+			t.Fatalf("invalid ROSETTA_INDEX %s", idxStr)
 		}
+		files = files[idx-1 : idx]
+	} else {
+		max := 3
+		if v := os.Getenv("ROSETTA_MAX"); v != "" {
+			if n, err := strconv.Atoi(v); err == nil && n < len(files) {
+				max = n
+			} else if err == nil {
+				max = n
+			}
+		}
+		if len(files) < max {
+			max = len(files)
+		}
+		files = files[:max]
 	}
-	if len(files) < max {
-		max = len(files)
-	}
+
 	var firstErr string
-	for _, f := range files[:max] {
+	for _, f := range files {
 		name := strings.TrimSuffix(filepath.Base(f), ".mochi")
 		ok := t.Run(name, func(t *testing.T) {
 			if err := runRosettaTask(root, name); err != nil {
