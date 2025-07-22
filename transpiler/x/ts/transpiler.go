@@ -617,11 +617,13 @@ func (e *IntersectExpr) emit(w io.Writer) {
 }
 
 func (f *FormatListExpr) emit(w io.Writer) {
-	if f.Value != nil {
-		f.Value.emit(w)
-	} else {
-		io.WriteString(w, "[]")
-	}
+        io.WriteString(w, "\"[\" + (")
+        if f.Value != nil {
+                f.Value.emit(w)
+        } else {
+                io.WriteString(w, "[]")
+        }
+        io.WriteString(w, ").join(\", \") + \"]\"")
 }
 
 func (p *PrintExpr) emit(w io.Writer) {
@@ -2762,13 +2764,19 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 			args[i] = ae
 		}
 		switch p.Call.Func {
-		case "print":
-			for i, a := range args {
-				if isNumericBool(a) {
-					args[i] = &UnaryExpr{Op: "+", Expr: a}
-				}
-			}
-			return &PrintExpr{Args: args}, nil
+               case "print":
+                       for i, a := range args {
+                               if transpileEnv != nil {
+                                       if isListType(types.ExprType(p.Call.Args[i], transpileEnv)) {
+                                               args[i] = &FormatListExpr{Value: a}
+                                               continue
+                                       }
+                               }
+                               if isNumericBool(a) {
+                                       args[i] = &UnaryExpr{Op: "+", Expr: a}
+                               }
+                       }
+                       return &PrintExpr{Args: args}, nil
 		case "len":
 			if len(args) != 1 {
 				return nil, fmt.Errorf("len expects one argument")
@@ -3179,6 +3187,17 @@ func isNumericBool(e Expr) bool {
 	default:
 		return false
 	}
+}
+
+func isListType(t types.Type) bool {
+        switch tt := t.(type) {
+        case types.ListType:
+                return true
+        case types.OptionType:
+                return isListType(tt.Elem)
+        default:
+                return false
+        }
 }
 
 func isSimpleIdent(e *parser.Expr) (string, bool) {
