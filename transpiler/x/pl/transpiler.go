@@ -58,6 +58,12 @@ type LetStmt struct {
 	Expr Expr
 }
 
+// BreakStmt stops the nearest loop during compile time.
+type BreakStmt struct{}
+
+// ContinueStmt skips to the next iteration of the nearest loop during compile time.
+type ContinueStmt struct{}
+
 // IndexAssignStmt updates a list element at runtime.
 type IndexAssignStmt struct {
 	Name   string
@@ -402,6 +408,9 @@ func (s *IndexAssignStmt) emit(w io.Writer, idx int) {
 	s.Value.emit(w)
 	fmt.Fprintf(w, ", %s)", tmp)
 }
+
+func (b *BreakStmt) emit(w io.Writer, idx int)    {}
+func (c *ContinueStmt) emit(w io.Writer, idx int) {}
 
 func emitIfToVar(w io.Writer, name string, ie *IfExpr) {
 	io.WriteString(w, "(")
@@ -863,10 +872,26 @@ func intValue(e Expr) (int, bool) {
 	return 0, false
 }
 
+func stringValue(e Expr) (string, bool) {
+	switch v := e.(type) {
+	case *StringLit:
+		return v.Value, true
+	case *GroupExpr:
+		return stringValue(v.Expr)
+	}
+	return "", false
+}
+
 func cloneList(l *ListLit) *ListLit {
 	elems := make([]Expr, len(l.Elems))
 	copy(elems, l.Elems)
 	return &ListLit{Elems: elems}
+}
+
+func cloneMap(m *MapLit) *MapLit {
+	items := make([]MapItem, len(m.Items))
+	copy(items, m.Items)
+	return &MapLit{Items: items}
 }
 
 func updateNestedList(l *ListLit, idx1, idx2 int, val Expr) (*ListLit, bool) {
@@ -885,6 +910,27 @@ func updateNestedList(l *ListLit, idx1, idx2 int, val Expr) (*ListLit, bool) {
 	newOuter := cloneList(l)
 	newOuter.Elems[idx1] = newInner
 	return newOuter, true
+}
+
+func updateNestedMap(m *MapLit, k1, k2 string, val Expr) (*MapLit, bool) {
+	for i, it := range m.Items {
+		if it.Key == k1 {
+			inner, ok := it.Value.(*MapLit)
+			if !ok {
+				return nil, false
+			}
+			for j, it2 := range inner.Items {
+				if it2.Key == k2 {
+					newInner := cloneMap(inner)
+					newInner.Items[j].Value = val
+					newOuter := cloneMap(m)
+					newOuter.Items[i].Value = newInner
+					return newOuter, true
+				}
+			}
+		}
+	}
+	return nil, false
 }
 
 func nextSimpleAssign(sts []*parser.Statement, idx int, name string) bool {
@@ -1166,8 +1212,8 @@ func compileStmts(sts []*parser.Statement, env *compileEnv) ([]Stmt, error) {
 			}
 			idx1, ok1 := intValue(idx1Expr)
 			idx2, ok2 := intValue(idx2Expr)
-			list, ok3 := env.constExpr(env.current(s.Assign.Name)).(*ListLit)
-			if ok1 && ok2 && ok3 {
+			list, okList := env.constExpr(env.current(s.Assign.Name)).(*ListLit)
+			if ok1 && ok2 && okList {
 				val, err := toExpr(s.Assign.Value, env)
 				if err != nil {
 					return nil, err
@@ -1177,7 +1223,22 @@ func compileStmts(sts []*parser.Statement, env *compileEnv) ([]Stmt, error) {
 					name := env.fresh(s.Assign.Name)
 					env.setConst(name, updated)
 					out = append(out, &LetStmt{Name: name, Expr: updated})
-					// handled
+					break
+				}
+			}
+			k1, ok1s := stringValue(idx1Expr)
+			k2, ok2s := stringValue(idx2Expr)
+			mp, okMap := env.constExpr(env.current(s.Assign.Name)).(*MapLit)
+			if ok1s && ok2s && okMap {
+				val, err := toExpr(s.Assign.Value, env)
+				if err != nil {
+					return nil, err
+				}
+				updated, ok := updateNestedMap(mp, k1, k2, val)
+				if ok {
+					name := env.fresh(s.Assign.Name)
+					env.setConst(name, updated)
+					out = append(out, &LetStmt{Name: name, Expr: updated})
 					break
 				}
 			}
@@ -1227,6 +1288,10 @@ func compileStmts(sts []*parser.Statement, env *compileEnv) ([]Stmt, error) {
 			name := env.fresh("return")
 			env.setConst(name, expr)
 			out = append(out, &LetStmt{Name: name, Expr: expr})
+		case s.Break != nil:
+			out = append(out, &BreakStmt{})
+		case s.Continue != nil:
+			out = append(out, &ContinueStmt{})
 		case s.For != nil:
 			if s.For.RangeEnd != nil {
 				start, err := toExpr(s.For.Source, env)
@@ -1251,7 +1316,21 @@ func compileStmts(sts []*parser.Statement, env *compileEnv) ([]Stmt, error) {
 					if err != nil {
 						return nil, err
 					}
-					out = append(out, body...)
+					for _, st := range body {
+						switch st.(type) {
+						case *BreakStmt:
+							goto breakNumFor
+						case *ContinueStmt:
+							goto continueNumFor
+						default:
+							out = append(out, st)
+						}
+					}
+				continueNumFor:
+					continue
+				}
+			breakNumFor:
+				{
 				}
 			} else {
 				src, err := toExpr(s.For.Source, env)
@@ -1286,7 +1365,18 @@ func compileStmts(sts []*parser.Statement, env *compileEnv) ([]Stmt, error) {
 						if err != nil {
 							return nil, err
 						}
-						out = append(out, body...)
+						for _, st := range body {
+							switch st.(type) {
+							case *BreakStmt:
+								goto breakListFor
+							case *ContinueStmt:
+								goto continueListFor
+							default:
+								out = append(out, st)
+							}
+						}
+					continueListFor:
+						continue
 					}
 				} else {
 					for _, elem := range list.Elems {
@@ -1297,8 +1387,22 @@ func compileStmts(sts []*parser.Statement, env *compileEnv) ([]Stmt, error) {
 						if err != nil {
 							return nil, err
 						}
-						out = append(out, body...)
+						for _, st := range body {
+							switch st.(type) {
+							case *BreakStmt:
+								goto breakListFor
+							case *ContinueStmt:
+								goto continueListFor2
+							default:
+								out = append(out, st)
+							}
+						}
+					continueListFor2:
+						continue
 					}
+				}
+			breakListFor:
+				{
 				}
 			}
 		case s.While != nil:
@@ -1318,7 +1422,21 @@ func compileStmts(sts []*parser.Statement, env *compileEnv) ([]Stmt, error) {
 				if err != nil {
 					return nil, err
 				}
-				out = append(out, body...)
+				for _, st := range body {
+					switch st.(type) {
+					case *BreakStmt:
+						goto breakWhile
+					case *ContinueStmt:
+						goto continueWhile
+					default:
+						out = append(out, st)
+					}
+				}
+			continueWhile:
+				continue
+			}
+		breakWhile:
+			{
 			}
 		default:
 			return nil, fmt.Errorf("unsupported statement")
@@ -1349,6 +1467,10 @@ func stmtNode(s Stmt) *ast.Node {
 			n.Children = append(n.Children, stmtNode(e))
 		}
 		return n
+	case *BreakStmt:
+		return &ast.Node{Kind: "break"}
+	case *ContinueStmt:
+		return &ast.Node{Kind: "continue"}
 	default:
 		return &ast.Node{Kind: "unknown"}
 	}
