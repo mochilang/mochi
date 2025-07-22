@@ -1,3 +1,31 @@
+## Progress (2025-07-22 13:31 +0700)
+- scala transpiler: support multi left join
+- Regenerated golden files - 74/102 vm valid programs passing
+
+## Progress (2025-07-22 13:26 +0700)
+- docs: update scala progress
+- Regenerated golden files - 74/102 vm valid programs passing
+
+## Progress (2025-07-22 13:31 +0700)
+- scala transpiler: support multi left join
+- Regenerated golden files - 74/102 vm valid programs passing
+
+## Progress (2025-07-22 13:26 +0700)
+- docs: update scala progress
+- Regenerated golden files - 74/102 vm valid programs passing
+
+## Progress (2025-07-22 13:26 +0700)
+- docs: update scala progress
+- Regenerated golden files - 74/102 vm valid programs passing
+
+## Progress (2025-07-22 13:26 +0700)
+- docs: update scala progress
+- Regenerated golden files - 74/102 vm valid programs passing
+
+## Progress (2025-07-22 13:26 +0700)
+- docs: update scala progress
+- Regenerated golden files - 74/102 vm valid programs passing
+
 ## Progress (2025-07-22 13:21 +0700)
 - docs: refresh scala checklist
 - Regenerated golden files - 73/102 vm valid programs passing
