@@ -170,10 +170,11 @@ func TestTranspilerGolden(t *testing.T) {
 		filepath.Join(srcDir, "group_by.mochi"),
 		filepath.Join(srcDir, "group_by_conditional_sum.mochi"),
 		filepath.Join(srcDir, "group_by_join.mochi"),
-               filepath.Join(srcDir, "group_by_left_join.mochi"),
-               filepath.Join(srcDir, "left_join.mochi"),
-               filepath.Join(srcDir, "left_join_multi.mochi"),
-               filepath.Join(srcDir, "group_by_having.mochi"),
+		filepath.Join(srcDir, "group_by_left_join.mochi"),
+		filepath.Join(srcDir, "left_join.mochi"),
+		filepath.Join(srcDir, "left_join_multi.mochi"),
+		filepath.Join(srcDir, "join_multi.mochi"),
+		filepath.Join(srcDir, "group_by_having.mochi"),
 		filepath.Join(srcDir, "group_by_sort.mochi"),
 		filepath.Join(srcDir, "group_by_multi_join_sort.mochi"),
 		filepath.Join(srcDir, "inner_join.mochi"),
@@ -299,7 +300,7 @@ func updateTasks() {
 	var buf bytes.Buffer
 	buf.WriteString(fmt.Sprintf("## Progress (%s)\n", ts))
 	buf.WriteString(fmt.Sprintf("- VM valid golden test results updated to %d/%d\n", compiled, total))
-	buf.WriteString("- group_by_multi_join now passes\n\n")
+	buf.WriteString("- join_multi now passes\n\n")
 	if data, err := os.ReadFile(taskFile); err == nil {
 		buf.Write(data)
 	}
