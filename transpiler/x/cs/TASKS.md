@@ -1,3 +1,12 @@
+## Progress (2025-07-21 23:54 UTC)
+- cs transpiler: support string concatenation (progress 71/101)
+
+## Progress (2025-07-22 06:49 +0700)
+- update cs transpiler docs (progress 71/101)
+
+## Progress (2025-07-22 06:49 +0700)
+- update cs transpiler docs (progress 70/101)
+
 ## Progress (2025-07-21 23:46 UTC)
 - cs transpiler: support string contains (progress 70/101)
 
@@ -229,6 +238,9 @@
 
 ## Progress (2025-07-22 06:00 +0700)
 - cs: implemented outer join (progress 68/101)
+
+
+
 
 
 
