@@ -9,6 +9,7 @@ import (
 	"os/exec"
 	"path/filepath"
 	"sort"
+	"strconv"
 	"strings"
 	"testing"
 	"time"
@@ -36,6 +37,15 @@ func TestRosettaClojure(t *testing.T) {
 	}
 	if len(outs) == 0 {
 		t.Fatal("no Mochi Rosetta tests found")
+	}
+	sort.Strings(outs)
+
+	if idxStr := os.Getenv("MOCHI_ROSETTA_INDEX"); idxStr != "" {
+		idx, err := strconv.Atoi(idxStr)
+		if err != nil || idx < 1 || idx > len(outs) {
+			t.Fatalf("invalid MOCHI_ROSETTA_INDEX: %s", idxStr)
+		}
+		outs = outs[idx-1 : idx]
 	}
 
 	for _, srcPath := range outs {
@@ -123,14 +133,14 @@ func updateRosettaReadme() {
 	total := len(files)
 	completed := 0
 	var lines []string
-	for _, f := range files {
+	for i, f := range files {
 		name := strings.TrimSuffix(filepath.Base(f), ".mochi")
 		mark := "[ ]"
 		if _, err := os.Stat(filepath.Join(binDir, name+".out")); err == nil {
 			completed++
 			mark = "[x]"
 		}
-		lines = append(lines, fmt.Sprintf("- %s %s", mark, name))
+		lines = append(lines, fmt.Sprintf("%d. %s %s", i+1, mark, name))
 	}
 	loc, _ := time.LoadLocation("Asia/Bangkok")
 	ts := time.Now().In(loc).Format("2006-01-02 15:04 -0700")
