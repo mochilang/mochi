@@ -109,12 +109,13 @@ func stripWarnings(b []byte) []byte {
 	var res [][]byte
 	skipping := false
 	for _, l := range lines {
-		if bytes.HasPrefix(l, []byte("warning:")) {
+		trimmed := bytes.TrimSpace(l)
+		if bytes.HasPrefix(trimmed, []byte("warning:")) {
 			skipping = true
 			continue
 		}
 		if skipping {
-			if len(bytes.TrimSpace(l)) == 0 {
+			if len(trimmed) == 0 {
 				skipping = false
 			}
 			continue
