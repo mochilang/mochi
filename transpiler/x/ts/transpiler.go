@@ -28,8 +28,6 @@ var transpileEnv *types.Env
 var generatedTypes map[string]bool
 var prelude []Stmt
 var pythonMathAliases map[string]bool
-var structCounter int
-var structGenName map[string]string
 
 type Stmt interface {
 	emit(io.Writer)
@@ -252,8 +250,7 @@ type PrintExpr struct{ Args []Expr }
 
 // MapLit represents a map/object literal.
 type MapLit struct {
-	Entries  []MapEntry
-	TypeName string
+	Entries []MapEntry
 }
 
 // MapEntry is a key/value pair inside a MapLit.
@@ -617,28 +614,44 @@ func (e *IntersectExpr) emit(w io.Writer) {
 }
 
 func (f *FormatListExpr) emit(w io.Writer) {
-        io.WriteString(w, "\"[\" + (")
-        if f.Value != nil {
-                f.Value.emit(w)
-        } else {
-                io.WriteString(w, "[]")
-        }
-        io.WriteString(w, ").join(\", \") + \"]\"")
+	io.WriteString(w, "\"[\" + (")
+	if f.Value != nil {
+		f.Value.emit(w)
+	} else {
+		io.WriteString(w, "[]")
+	}
+	io.WriteString(w, ").join(\", \") + \"]\"")
 }
 
 func (p *PrintExpr) emit(w io.Writer) {
-	io.WriteString(w, "console.log(")
+	if len(p.Args) == 0 {
+		io.WriteString(w, "console.log()")
+		return
+	}
+	if len(p.Args) == 1 {
+		io.WriteString(w, "console.log(String(")
+		if p.Args[0] != nil {
+			p.Args[0].emit(w)
+		} else {
+			io.WriteString(w, "null")
+		}
+		io.WriteString(w, "))")
+		return
+	}
+	io.WriteString(w, "console.log((")
 	for i, a := range p.Args {
 		if i > 0 {
-			io.WriteString(w, ", ")
+			io.WriteString(w, " + \" \" + ")
 		}
+		io.WriteString(w, "String(")
 		if a != nil {
 			a.emit(w)
 		} else {
 			io.WriteString(w, "null")
 		}
+		io.WriteString(w, ")")
 	}
-	io.WriteString(w, ")")
+	io.WriteString(w, ").trim())")
 }
 
 func (s *SubstringExpr) emit(w io.Writer) {
@@ -659,12 +672,6 @@ func (s *SubstringExpr) emit(w io.Writer) {
 
 func (m *MapLit) emit(w io.Writer) {
 	io.WriteString(w, "{")
-	if m.TypeName != "" {
-		fmt.Fprintf(w, "\"__name\": %q", m.TypeName)
-		if len(m.Entries) > 0 {
-			io.WriteString(w, ", ")
-		}
-	}
 	for i, e := range m.Entries {
 		if i > 0 {
 			io.WriteString(w, ", ")
@@ -1776,8 +1783,6 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	generatedTypes = map[string]bool{}
 	prelude = nil
 	pythonMathAliases = map[string]bool{}
-	structCounter = 0
-	structGenName = map[string]string{}
 	defer func() { transpileEnv = nil; generatedTypes = nil; prelude = nil; pythonMathAliases = nil }()
 	tsProg := &Program{}
 
@@ -2764,19 +2769,19 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 			args[i] = ae
 		}
 		switch p.Call.Func {
-               case "print":
-                       for i, a := range args {
-                               if transpileEnv != nil {
-                                       if isListType(types.ExprType(p.Call.Args[i], transpileEnv)) {
-                                               args[i] = &FormatListExpr{Value: a}
-                                               continue
-                                       }
-                               }
-                               if isNumericBool(a) {
-                                       args[i] = &UnaryExpr{Op: "+", Expr: a}
-                               }
-                       }
-                       return &PrintExpr{Args: args}, nil
+		case "print":
+			for i, a := range args {
+				if transpileEnv != nil {
+					if isListType(types.ExprType(p.Call.Args[i], transpileEnv)) {
+						args[i] = &FormatListExpr{Value: a}
+						continue
+					}
+				}
+				if isNumericBool(a) {
+					args[i] = &UnaryExpr{Op: "+", Expr: a}
+				}
+			}
+			return &PrintExpr{Args: args}, nil
 		case "len":
 			if len(args) != 1 {
 				return nil, fmt.Errorf("len expects one argument")
@@ -2913,15 +2918,14 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 			}
 			entries[i] = MapEntry{Key: k, Value: v}
 		}
-		tname := ""
 		if transpileEnv != nil {
 			if st, ok := types.InferStructFromMapEnv(p.Map, transpileEnv); ok {
 				name := ensureNamedStruct(st, "Result")
 				st.Name = name
-				tname = structGenName[name]
+				_ = name
 			}
 		}
-		return &MapLit{Entries: entries, TypeName: tname}, nil
+		return &MapLit{Entries: entries}, nil
 	case p.Load != nil:
 		format := parseFormat(p.Load.With)
 		path := ""
@@ -3125,12 +3129,6 @@ func tsType(t types.Type) string {
 
 func ensureNamedStruct(st types.StructType, hint string) string {
 	if st.Name != "" {
-		if structGenName != nil {
-			if _, ok := structGenName[st.Name]; !ok {
-				structCounter++
-				structGenName[st.Name] = fmt.Sprintf("GenType%d", structCounter)
-			}
-		}
 		return st.Name
 	}
 	name := types.UniqueStructName(strings.Title(hint), transpileEnv, nil)
@@ -3144,12 +3142,6 @@ func ensureNamedStruct(st types.StructType, hint string) string {
 		}
 		prelude = append(prelude, &InterfaceDecl{Name: name, Fields: fields})
 		generatedTypes[name] = true
-	}
-	if structGenName != nil {
-		if _, ok := structGenName[name]; !ok {
-			structCounter++
-			structGenName[name] = fmt.Sprintf("GenType%d", structCounter)
-		}
 	}
 	return name
 }
@@ -3190,14 +3182,14 @@ func isNumericBool(e Expr) bool {
 }
 
 func isListType(t types.Type) bool {
-        switch tt := t.(type) {
-        case types.ListType:
-                return true
-        case types.OptionType:
-                return isListType(tt.Elem)
-        default:
-                return false
-        }
+	switch tt := t.(type) {
+	case types.ListType:
+		return true
+	case types.OptionType:
+		return isListType(tt.Elem)
+	default:
+		return false
+	}
 }
 
 func isSimpleIdent(e *parser.Expr) (string, bool) {
