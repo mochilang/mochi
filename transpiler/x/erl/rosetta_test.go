@@ -10,6 +10,7 @@ import (
 	"os/exec"
 	"path/filepath"
 	"sort"
+	"strconv"
 	"strings"
 	"testing"
 	"time"
@@ -59,8 +60,14 @@ func TestRosettaTranspile(t *testing.T) {
 		t.Fatal("no Mochi Rosetta tests found")
 	}
 	sort.Strings(files)
+	max := len(files)
+	if v := os.Getenv("ROSETTA_MAX"); v != "" {
+		if n, err := strconv.Atoi(v); err == nil && n < max {
+			max = n
+		}
+	}
 
-	for _, src := range files {
+	for _, src := range files[:max] {
 		name := strings.TrimSuffix(filepath.Base(src), ".mochi")
 		t.Run(name, func(t *testing.T) { runRosetta(t, src, name, outDir) })
 	}
