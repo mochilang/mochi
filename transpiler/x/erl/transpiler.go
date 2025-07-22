@@ -6,12 +6,15 @@ import (
 	"bytes"
 	"fmt"
 	"io"
+	"math"
 	"os"
 	"os/exec"
 	"path/filepath"
 	"sort"
 	"strings"
 	"time"
+
+	"mochi/runtime/data"
 
 	"mochi/parser"
 	"mochi/types"
@@ -35,12 +38,13 @@ type context struct {
 	boolField map[string]map[string]bool
 	groups    map[string]groupInfo
 	constVal  map[string]Expr
+	baseDir   string
 }
 
 type groupInfo struct{ key, items string }
 
-func newContext() *context {
-	return &context{alias: map[string]string{}, orig: map[string]string{}, counter: map[string]int{}, strVar: map[string]bool{}, strField: map[string]map[string]bool{}, boolField: map[string]map[string]bool{}, groups: map[string]groupInfo{}, constVal: map[string]Expr{}}
+func newContext(base string) *context {
+	return &context{alias: map[string]string{}, orig: map[string]string{}, counter: map[string]int{}, strVar: map[string]bool{}, strField: map[string]map[string]bool{}, boolField: map[string]map[string]bool{}, groups: map[string]groupInfo{}, constVal: map[string]Expr{}, baseDir: base}
 }
 
 func (c *context) clone() *context {
@@ -84,7 +88,7 @@ func (c *context) clone() *context {
 	for k, v := range c.constVal {
 		consts[k] = v
 	}
-	return &context{alias: alias, orig: orig, counter: counter, strVar: strVar, strField: fields, boolField: bfields, groups: groups, constVal: consts}
+	return &context{alias: alias, orig: orig, counter: counter, strVar: strVar, strField: fields, boolField: bfields, groups: groups, constVal: consts, baseDir: c.baseDir}
 }
 
 func (c *context) newAlias(name string) string {
@@ -509,22 +513,22 @@ type leftJoin struct {
 
 // LeftJoinExpr represents a basic left join between two sources.
 type LeftJoinExpr struct {
-        LeftVar  string
-        LeftSrc  Expr
-        RightVar string
-        RightSrc Expr
-        On       Expr
-        Select   Expr
+	LeftVar  string
+	LeftSrc  Expr
+	RightVar string
+	RightSrc Expr
+	On       Expr
+	Select   Expr
 }
 
 // OuterJoinExpr represents a full outer join between two sources.
 type OuterJoinExpr struct {
-        LeftVar  string
-        LeftSrc  Expr
-        RightVar string
-        RightSrc Expr
-        On       Expr
-        Select   Expr
+	LeftVar  string
+	LeftSrc  Expr
+	RightVar string
+	RightSrc Expr
+	On       Expr
+	Select   Expr
 }
 
 type rightJoin struct {
@@ -1565,45 +1569,45 @@ func (l *LeftJoinExpr) emit(w io.Writer) {
 }
 
 func (o *OuterJoinExpr) emit(w io.Writer) {
-        io.WriteString(w, "lists:reverse(lists:foldl(fun(")
-        io.WriteString(w, o.LeftVar)
-        io.WriteString(w, ", Acc0) ->\n    {Matched,Acc} = lists:foldl(fun(")
-        io.WriteString(w, o.RightVar)
-        io.WriteString(w, ", {M,A}) ->\n        case ")
-        if o.On != nil {
-                o.On.emit(w)
-        } else {
-                io.WriteString(w, "true")
-        }
-        io.WriteString(w, " of\n            true -> {true, [")
-        o.Select.emit(w)
-        io.WriteString(w, "|A]};\n            _ -> {M,A}\n        end\n    end, {false, Acc0}, ")
-        o.RightSrc.emit(w)
-        io.WriteString(w, "),\n    case Matched of\n        true -> Acc;\n        false -> [(fun() -> ")
-        io.WriteString(w, o.RightVar)
-        io.WriteString(w, " = nil, ")
-        o.Select.emit(w)
-        io.WriteString(w, " end())|Acc]\n    end\nend, [], ")
-        o.LeftSrc.emit(w)
-        io.WriteString(w, ")) ++ lists:reverse(lists:foldl(fun(")
-        io.WriteString(w, o.RightVar)
-        io.WriteString(w, ", Acc0) ->\n    Exists = lists:any(fun(")
-        io.WriteString(w, o.LeftVar)
-        io.WriteString(w, ") -> ")
-        if o.On != nil {
-                o.On.emit(w)
-        } else {
-                io.WriteString(w, "true")
-        }
-        io.WriteString(w, " end, ")
-        o.LeftSrc.emit(w)
-        io.WriteString(w, "),\n    case Exists of\n        true -> Acc0;\n        false -> [(fun() -> ")
-        io.WriteString(w, o.LeftVar)
-        io.WriteString(w, " = nil, ")
-        o.Select.emit(w)
-        io.WriteString(w, " end())|Acc0]\n    end\nend, [], ")
-        o.RightSrc.emit(w)
-        io.WriteString(w, "))")
+	io.WriteString(w, "lists:reverse(lists:foldl(fun(")
+	io.WriteString(w, o.LeftVar)
+	io.WriteString(w, ", Acc0) ->\n    {Matched,Acc} = lists:foldl(fun(")
+	io.WriteString(w, o.RightVar)
+	io.WriteString(w, ", {M,A}) ->\n        case ")
+	if o.On != nil {
+		o.On.emit(w)
+	} else {
+		io.WriteString(w, "true")
+	}
+	io.WriteString(w, " of\n            true -> {true, [")
+	o.Select.emit(w)
+	io.WriteString(w, "|A]};\n            _ -> {M,A}\n        end\n    end, {false, Acc0}, ")
+	o.RightSrc.emit(w)
+	io.WriteString(w, "),\n    case Matched of\n        true -> Acc;\n        false -> [(fun() -> ")
+	io.WriteString(w, o.RightVar)
+	io.WriteString(w, " = nil, ")
+	o.Select.emit(w)
+	io.WriteString(w, " end())|Acc]\n    end\nend, [], ")
+	o.LeftSrc.emit(w)
+	io.WriteString(w, ")) ++ lists:reverse(lists:foldl(fun(")
+	io.WriteString(w, o.RightVar)
+	io.WriteString(w, ", Acc0) ->\n    Exists = lists:any(fun(")
+	io.WriteString(w, o.LeftVar)
+	io.WriteString(w, ") -> ")
+	if o.On != nil {
+		o.On.emit(w)
+	} else {
+		io.WriteString(w, "true")
+	}
+	io.WriteString(w, " end, ")
+	o.LeftSrc.emit(w)
+	io.WriteString(w, "),\n    case Exists of\n        true -> Acc0;\n        false -> [(fun() -> ")
+	io.WriteString(w, o.LeftVar)
+	io.WriteString(w, " = nil, ")
+	o.Select.emit(w)
+	io.WriteString(w, " end())|Acc0]\n    end\nend, [], ")
+	o.RightSrc.emit(w)
+	io.WriteString(w, "))")
 }
 
 func mapOp(op string) string {
@@ -1634,6 +1638,94 @@ func builtinFunc(name string) bool {
 	}
 }
 
+func constValue(e *parser.Expr) (any, bool) {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) > 0 {
+		return nil, false
+	}
+	u := e.Binary.Left
+	if len(u.Ops) > 0 || u.Value == nil {
+		return nil, false
+	}
+	pf := u.Value
+	switch {
+	case pf.Target.Lit != nil:
+		lit := pf.Target.Lit
+		switch {
+		case lit.Int != nil:
+			return int64(*lit.Int), true
+		case lit.Float != nil:
+			return *lit.Float, true
+		case lit.Bool != nil:
+			return bool(*lit.Bool), true
+		case lit.Str != nil:
+			return *lit.Str, true
+		case lit.Null:
+			return nil, true
+		}
+	case pf.Target.Map != nil:
+		m := map[string]any{}
+		for _, it := range pf.Target.Map.Items {
+			key, ok := types.SimpleStringKey(it.Key)
+			if !ok {
+				return nil, false
+			}
+			v, ok := constValue(it.Value)
+			if !ok {
+				return nil, false
+			}
+			m[key] = v
+		}
+		return m, true
+	case pf.Target.List != nil:
+		arr := make([]any, len(pf.Target.List.Elems))
+		for i, el := range pf.Target.List.Elems {
+			v, ok := constValue(el)
+			if !ok {
+				return nil, false
+			}
+			arr[i] = v
+		}
+		return arr, true
+	}
+	return nil, false
+}
+
+func valueToExpr(v any) Expr {
+	switch val := v.(type) {
+	case nil:
+		return &AtomLit{Name: "nil"}
+	case bool:
+		if val {
+			return &AtomLit{Name: "true"}
+		}
+		return &AtomLit{Name: "false"}
+	case int64:
+		return &IntLit{Value: val}
+	case float64:
+		if math.Trunc(val) == val {
+			return &IntLit{Value: int64(val)}
+		}
+		return &FloatLit{Value: val}
+	case string:
+		return &StringLit{Value: val}
+	case map[string]any:
+		items := make([]MapItem, 0, len(val))
+		for k, vv := range val {
+			items = append(items, MapItem{Key: &StringLit{Value: k}, Value: valueToExpr(vv)})
+		}
+		sort.Slice(items, func(i, j int) bool { return items[i].Key.(*StringLit).Value < items[j].Key.(*StringLit).Value })
+		return &MapLit{Items: items}
+	case []any:
+		elems := make([]Expr, len(val))
+		for i, vv := range val {
+			elems[i] = valueToExpr(vv)
+		}
+		return &ListLit{Elems: elems}
+	default:
+		return &AtomLit{Name: "nil"}
+	}
+}
+
 func sanitize(name string) string {
 	if name == "" {
 		return "V"
@@ -1643,7 +1735,8 @@ func sanitize(name string) string {
 
 // Transpile converts a subset of Mochi to an Erlang AST.
 func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
-	ctx := newContext()
+	base := filepath.Dir(prog.Pos.Filename)
+	ctx := newContext(base)
 	p := &Program{}
 	for _, st := range prog.Statements {
 		if st.Fun != nil {
@@ -2386,6 +2479,51 @@ func convertPrimary(p *parser.Primary, env *types.Env, ctx *context) (Expr, erro
 			items[i] = MapItem{Key: k, Value: v}
 		}
 		return &MapLit{Items: items}, nil
+	case p.Load != nil:
+		path := ""
+		if p.Load.Path != nil {
+			path = *p.Load.Path
+			if !filepath.IsAbs(path) {
+				cand := filepath.Join(ctx.baseDir, path)
+				if _, err := os.Stat(cand); err == nil {
+					path = cand
+				} else {
+					clean := path
+					for strings.HasPrefix(clean, "../") {
+						clean = strings.TrimPrefix(clean, "../")
+					}
+					path = filepath.Join(repoRoot(), "tests", clean)
+				}
+			}
+		}
+		format := "jsonl"
+		if p.Load.With != nil {
+			if m, ok := constValue(p.Load.With); ok {
+				if mp, ok2 := m.(map[string]any); ok2 {
+					if f, ok3 := mp["format"].(string); ok3 {
+						format = f
+					}
+				}
+			}
+		}
+		var rows []map[string]any
+		var err error
+		switch format {
+		case "yaml":
+			rows, err = data.LoadYAML(path)
+		case "jsonl":
+			rows, err = data.LoadJSONL(path)
+		default:
+			rows, err = data.LoadJSON(path)
+		}
+		if err != nil {
+			return nil, err
+		}
+		list := make([]Expr, len(rows))
+		for i, r := range rows {
+			list[i] = valueToExpr(r)
+		}
+		return &ListLit{Elems: list}, nil
 	case p.Query != nil:
 		return convertQueryExpr(p.Query, env, ctx)
 	case p.If != nil:
@@ -2508,15 +2646,15 @@ func convertQueryExpr(q *parser.QueryExpr, env *types.Env, ctx *context) (Expr, 
 	var rjoin *rightJoin
 	var cond Expr
 	joins := q.Joins
-       if len(q.Joins) == 1 && q.Joins[0].Side != nil {
-               side := *q.Joins[0].Side
-               if side == "left" && len(q.Froms) == 0 && q.Where == nil && q.Sort == nil && q.Skip == nil && q.Take == nil {
-                       return convertLeftJoinQuery(q, env, ctx)
-               }
-               if side == "outer" && len(q.Froms) == 0 && q.Where == nil && q.Sort == nil && q.Skip == nil && q.Take == nil {
-                       return convertOuterJoinQuery(q, env, ctx)
-               }
-       }
+	if len(q.Joins) == 1 && q.Joins[0].Side != nil {
+		side := *q.Joins[0].Side
+		if side == "left" && len(q.Froms) == 0 && q.Where == nil && q.Sort == nil && q.Skip == nil && q.Take == nil {
+			return convertLeftJoinQuery(q, env, ctx)
+		}
+		if side == "outer" && len(q.Froms) == 0 && q.Where == nil && q.Sort == nil && q.Skip == nil && q.Take == nil {
+			return convertOuterJoinQuery(q, env, ctx)
+		}
+	}
 	if len(q.Joins) > 1 {
 		last := q.Joins[len(q.Joins)-1]
 		if last.Side != nil && *last.Side == "left" && q.Sort == nil && q.Skip == nil && q.Take == nil && q.Group == nil {
@@ -2660,34 +2798,34 @@ func convertLeftJoinQuery(q *parser.QueryExpr, env *types.Env, ctx *context) (Ex
 }
 
 func convertOuterJoinQuery(q *parser.QueryExpr, env *types.Env, ctx *context) (Expr, error) {
-        j := q.Joins[0]
-        loopCtx := ctx.clone()
-        leftSrc, err := convertExpr(q.Source, env, ctx)
-        if err != nil {
-                return nil, err
-        }
-        leftVar := loopCtx.newAlias(q.Var)
-        loopCtx.setStrFields(q.Var, stringFields(leftSrc))
-        loopCtx.setBoolFields(q.Var, boolFields(leftSrc))
-        rightSrc, err := convertExpr(j.Src, env, ctx)
-        if err != nil {
-                return nil, err
-        }
-        rightVar := loopCtx.newAlias(j.Var)
-        loopCtx.setStrFields(j.Var, stringFields(rightSrc))
-        loopCtx.setBoolFields(j.Var, boolFields(rightSrc))
-        child := types.NewEnv(env)
-        child.SetVar(q.Var, types.AnyType{}, true)
-        child.SetVar(j.Var, types.AnyType{}, true)
-        cond, err := convertExpr(j.On, child, loopCtx)
-        if err != nil {
-                return nil, err
-        }
-        sel, err := convertExpr(q.Select, child, loopCtx)
-        if err != nil {
-                return nil, err
-        }
-        return &OuterJoinExpr{LeftVar: leftVar, LeftSrc: leftSrc, RightVar: rightVar, RightSrc: rightSrc, On: cond, Select: sel}, nil
+	j := q.Joins[0]
+	loopCtx := ctx.clone()
+	leftSrc, err := convertExpr(q.Source, env, ctx)
+	if err != nil {
+		return nil, err
+	}
+	leftVar := loopCtx.newAlias(q.Var)
+	loopCtx.setStrFields(q.Var, stringFields(leftSrc))
+	loopCtx.setBoolFields(q.Var, boolFields(leftSrc))
+	rightSrc, err := convertExpr(j.Src, env, ctx)
+	if err != nil {
+		return nil, err
+	}
+	rightVar := loopCtx.newAlias(j.Var)
+	loopCtx.setStrFields(j.Var, stringFields(rightSrc))
+	loopCtx.setBoolFields(j.Var, boolFields(rightSrc))
+	child := types.NewEnv(env)
+	child.SetVar(q.Var, types.AnyType{}, true)
+	child.SetVar(j.Var, types.AnyType{}, true)
+	cond, err := convertExpr(j.On, child, loopCtx)
+	if err != nil {
+		return nil, err
+	}
+	sel, err := convertExpr(q.Select, child, loopCtx)
+	if err != nil {
+		return nil, err
+	}
+	return &OuterJoinExpr{LeftVar: leftVar, LeftSrc: leftSrc, RightVar: rightVar, RightSrc: rightSrc, On: cond, Select: sel}, nil
 }
 
 func replaceVars(e Expr, repl map[string]Expr) Expr {
