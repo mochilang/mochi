@@ -290,6 +290,11 @@ func pascalCase(name string) string {
 	return strings.Join(parts, "")
 }
 
+func uniqueWhileVar() string {
+	whileCounter++
+	return fmt.Sprintf("while_flag_%d", whileCounter)
+}
+
 func parseFormat(e *parser.Expr) string {
 	if e == nil || e.Binary == nil || len(e.Binary.Right) > 0 {
 		return ""
@@ -442,6 +447,8 @@ func transpileImportStmt(im *parser.ImportStmt) (Node, error) {
 
 var transpileEnv *types.Env
 var currentSeqVar string
+var currentWhileVar string
+var whileCounter int
 var groupVars map[string]bool
 var structCount int
 var currentProgram *Program
@@ -633,11 +640,17 @@ func transpileStmt(s *parser.Statement) (Node, error) {
 		if currentSeqVar != "" {
 			return &List{Elems: []Node{Symbol("recur"), Symbol("nil")}}, nil
 		}
+		if currentWhileVar != "" {
+			return &List{Elems: []Node{Symbol("recur"), Symbol("false")}}, nil
+		}
 		return nil, fmt.Errorf("break outside loop")
 	case s.Continue != nil:
 		if currentSeqVar != "" {
 			restSeq := &List{Elems: []Node{Symbol("rest"), Symbol(currentSeqVar)}}
 			return &List{Elems: []Node{Symbol("recur"), restSeq}}, nil
+		}
+		if currentWhileVar != "" {
+			return &List{Elems: []Node{Symbol("recur"), Symbol("true")}}, nil
 		}
 		return nil, fmt.Errorf("continue outside loop")
 	default:
@@ -1233,6 +1246,11 @@ func transpileCall(c *parser.CallExpr) (Node, error) {
 		elems = append(elems, Symbol("println"))
 	case "len":
 		elems = append(elems, Symbol("count"))
+	case "now":
+		if len(c.Args) != 0 {
+			return nil, fmt.Errorf("now expects no args")
+		}
+		return &List{Elems: []Node{Symbol("System/currentTimeMillis")}}, nil
 	case "count":
 		if len(c.Args) == 1 {
 			if name, ok := identName(c.Args[0]); ok && groupVars != nil && groupVars[name] {
@@ -1858,21 +1876,65 @@ func blockForms(stmts []*parser.Statement) ([]Node, error) {
 }
 
 func transpileWhileStmt(w *parser.WhileStmt) (Node, error) {
+	useCtrl := hasLoopCtrl(w.Body)
 	cond, err := transpileExpr(w.Cond)
 	if err != nil {
 		return nil, err
 	}
-	body, err := blockForms(w.Body)
-	if err != nil {
-		return nil, err
+	if !useCtrl {
+		body, err := blockForms(w.Body)
+		if err != nil {
+			return nil, err
+		}
+		var bodyNode Node
+		if len(body) == 1 {
+			bodyNode = body[0]
+		} else {
+			bodyNode = &List{Elems: append([]Node{Symbol("do")}, body...)}
+		}
+		return &List{Elems: []Node{Symbol("while"), cond, bodyNode}}, nil
 	}
-	var bodyNode Node
-	if len(body) == 1 {
-		bodyNode = body[0]
+
+	prevFlag := currentWhileVar
+	flagVar := uniqueWhileVar()
+	currentWhileVar = flagVar
+	defer func() { currentWhileVar = prevFlag }()
+
+	bodyNodes := []Node{}
+	for _, st := range w.Body {
+		n, err := transpileStmt(st)
+		if err != nil {
+			return nil, err
+		}
+		if n != nil {
+			bodyNodes = append(bodyNodes, n)
+		}
+	}
+
+	condElems := []Node{}
+	other := []Node{}
+	for _, n := range bodyNodes {
+		if c, b, ok := condRecur(n); ok {
+			condElems = append(condElems, c, b)
+		} else {
+			other = append(other, n)
+		}
+	}
+
+	elseBody := append([]Node{}, other...)
+	elseBody = append(elseBody, &List{Elems: []Node{Symbol("recur"), Symbol(flagVar)}})
+	var elseNode Node
+	if len(elseBody) == 1 {
+		elseNode = elseBody[0]
 	} else {
-		bodyNode = &List{Elems: append([]Node{Symbol("do")}, body...)}
+		elseNode = &List{Elems: append([]Node{Symbol("do")}, elseBody...)}
 	}
-	return &List{Elems: []Node{Symbol("while"), cond, bodyNode}}, nil
+	condElems = append(condElems, Keyword("else"), elseNode)
+
+	condForm := &List{Elems: append([]Node{Symbol("cond")}, condElems...)}
+	loopBody := &List{Elems: []Node{Symbol("when"), &List{Elems: []Node{Symbol("and"), Symbol(flagVar), cond}}, condForm}}
+	binding := &Vector{Elems: []Node{Symbol(flagVar), Symbol("true")}}
+	return &List{Elems: []Node{Symbol("loop"), binding, loopBody}}, nil
 }
 
 func transpileForStmt(f *parser.ForStmt) (Node, error) {
@@ -1968,23 +2030,34 @@ func transpileForStmt(f *parser.ForStmt) (Node, error) {
 }
 
 func condRecur(n Node) (cond Node, recur Node, ok bool) {
-	l, ok := n.(*List)
-	if !ok || len(l.Elems) != 3 {
-		return nil, nil, false
+	if l, ok := n.(*List); ok {
+		if len(l.Elems) == 2 {
+			if sym, ok := l.Elems[0].(Symbol); ok && sym == "recur" {
+				return Symbol("true"), l, true
+			}
+		}
+		if len(l.Elems) == 3 {
+			if sym, ok := l.Elems[0].(Symbol); ok && sym == "when" {
+				if r, ok := l.Elems[2].(*List); ok {
+					if len(r.Elems) == 2 {
+						if rsym, ok := r.Elems[0].(Symbol); ok && rsym == "recur" {
+							return l.Elems[1], r, true
+						}
+					}
+					if len(r.Elems) >= 2 {
+						if first, ok := r.Elems[0].(Symbol); ok && first == "do" {
+							if rl, ok := r.Elems[len(r.Elems)-1].(*List); ok && len(rl.Elems) == 2 {
+								if rsym, ok := rl.Elems[0].(Symbol); ok && rsym == "recur" {
+									return l.Elems[1], rl, true
+								}
+							}
+						}
+					}
+				}
+			}
+		}
 	}
-	sym, ok := l.Elems[0].(Symbol)
-	if !ok || sym != "when" {
-		return nil, nil, false
-	}
-	r, ok := l.Elems[2].(*List)
-	if !ok || len(r.Elems) != 2 {
-		return nil, nil, false
-	}
-	rsym, ok := r.Elems[0].(Symbol)
-	if !ok || rsym != "recur" {
-		return nil, nil, false
-	}
-	return l.Elems[1], r, true
+	return nil, nil, false
 }
 
 func transpileUpdateStmt(u *parser.UpdateStmt) (Node, error) {
