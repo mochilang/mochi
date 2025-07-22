@@ -35,32 +35,29 @@ func removeErr(root, name string) {
 	os.Remove(filepath.Join(root, "tests", "rosetta", "transpiler", "Haskell", name+".error"))
 }
 
-func runRosettaTask(t *testing.T, root, name string) {
+func runRosettaTask(root, name string) error {
 	src := filepath.Join(root, "tests", "rosetta", "x", "Mochi", name+".mochi")
 	prog, err := parser.Parse(src)
 	if err != nil {
 		writeErr(root, name, fmt.Errorf("parse: %w", err))
-		t.Skipf("parse error: %v", err)
-		return
+		return fmt.Errorf("parse error: %v", err)
 	}
 	env := types.NewEnv(nil)
 	if errs := types.Check(prog, env); len(errs) > 0 {
 		writeErr(root, name, fmt.Errorf("type: %v", errs[0]))
-		t.Skipf("type error: %v", errs[0])
-		return
+		return fmt.Errorf("type error: %v", errs[0])
 	}
 	hprog, err := hs.Transpile(prog, env)
 	if err != nil {
 		writeErr(root, name, fmt.Errorf("transpile: %w", err))
-		t.Skipf("transpile error: %v", err)
-		return
+		return fmt.Errorf("transpile error: %v", err)
 	}
 	code := hs.Emit(hprog)
 	outDir := filepath.Join(root, "tests", "rosetta", "transpiler", "Haskell")
 	os.MkdirAll(outDir, 0o755)
 	hsFile := filepath.Join(outDir, name+".hs")
 	if err := os.WriteFile(hsFile, code, 0o644); err != nil {
-		t.Fatalf("write hs: %v", err)
+		return fmt.Errorf("write hs: %v", err)
 	}
 
 	cmd := exec.Command("runhaskell", hsFile)
@@ -71,22 +68,22 @@ func runRosettaTask(t *testing.T, root, name string) {
 	got := bytes.TrimSpace(outBytes)
 	if err != nil {
 		writeErr(root, name, fmt.Errorf("run: %v\n%s", err, outBytes))
-		t.Skipf("run error: %v", err)
-		return
+		return fmt.Errorf("run error: %v", err)
 	}
 	removeErr(root, name)
 	outPath := filepath.Join(outDir, name+".out")
 	if shouldUpdateRosetta() {
 		_ = os.WriteFile(outPath, append(got, '\n'), 0o644)
-		return
+		return nil
 	}
 	want, err := os.ReadFile(outPath)
 	if err != nil {
-		t.Fatalf("read want: %v", err)
+		return fmt.Errorf("read want: %v", err)
 	}
 	if !bytes.Equal(got, bytes.TrimSpace(want)) {
-		t.Errorf("output mismatch for %s.out\n\n--- Got ---\n%s\n\n--- Want ---\n%s", name, got, bytes.TrimSpace(want))
+		return fmt.Errorf("output mismatch for %s.out", name)
 	}
+	return nil
 }
 
 func TestHSTranspiler_Rosetta_Golden(t *testing.T) {
@@ -110,14 +107,17 @@ func TestHSTranspiler_Rosetta_Golden(t *testing.T) {
 	if len(files) < max {
 		max = len(files)
 	}
-	firstErr := ""
+	var firstErr string
 	for _, f := range files[:max] {
 		name := strings.TrimSuffix(filepath.Base(f), ".mochi")
-		t.Run(name, func(t *testing.T) { runRosettaTask(t, root, name) })
-		if firstErr == "" {
-			if _, err := os.Stat(filepath.Join(root, "tests", "rosetta", "transpiler", "Haskell", name+".error")); err == nil {
+		ok := t.Run(name, func(t *testing.T) {
+			if err := runRosettaTask(root, name); err != nil {
 				firstErr = name
+				t.Fatalf("%v", err)
 			}
+		})
+		if !ok {
+			break
 		}
 	}
 	if firstErr != "" {
