@@ -616,7 +616,26 @@ func (f *FormatListExpr) emit(w io.Writer) {
 	io.WriteString(w, "\"[\" + ")
 	if f.Value != nil {
 		f.Value.emit(w)
-		io.WriteString(w, `.map(v => typeof v === 'number' && Number.isInteger(v) ? v.toFixed(1) : String(v)).join(', ')`)
+		io.WriteString(w, `.map(v => {
+        if (typeof v === 'number' && Number.isInteger(v)) return String(v);
+        if (v && typeof v === 'object' && '__name' in v) {
+          const {__name, ...rest} = v as any;
+          if (/^GenType\d+$/.test(String(__name))) {
+            return '{' + Object.entries(rest).map(([k,val]) => {
+              if (typeof val === 'number' && Number.isInteger(val)) return k + ' = ' + String(val);
+              if (typeof val === 'string') return k + ' = "' + val + '"';
+              return k + ' = ' + String(val);
+            }).join(', ') + '}';
+          }
+          return __name + ' {' + Object.entries(rest).map(([k,val]) => {
+            if (typeof val === 'number' && Number.isInteger(val)) return k + ' = ' + String(val);
+            if (typeof val === 'string') return k + ' = "' + val + '"';
+            return k + ' = ' + String(val);
+          }).join(', ') + '}';
+        }
+        if (typeof v === 'string') return '"' + v + '"';
+        return String(v);
+      }).join(', ')`)
 	} else {
 		io.WriteString(w, "\"\"")
 	}
@@ -629,13 +648,11 @@ func (p *PrintExpr) emit(w io.Writer) {
 		if i > 0 {
 			io.WriteString(w, ", ")
 		}
-		io.WriteString(w, "(tmp => typeof tmp === 'number' && Number.isInteger(tmp) ? tmp.toFixed(1) : tmp)(")
 		if a != nil {
 			a.emit(w)
 		} else {
 			io.WriteString(w, "null")
 		}
-		io.WriteString(w, ")")
 	}
 	io.WriteString(w, ")")
 }
@@ -1110,11 +1127,9 @@ func (gq *GroupQueryExpr) emit(w io.Writer) {
 	}
 	io.WriteString(iw, " = []\n")
 	if gq.Sort != nil {
-		io.WriteString(iw, "  const pairs = ordered.map(g => { const ")
-		io.WriteString(iw, gq.GroupVar)
-		io.WriteString(iw, " = g; return {g, key: ")
+		io.WriteString(iw, "  const pairs = ordered.map(g => ({g, key: ")
 		gq.Sort.emit(iw)
-		io.WriteString(iw, "} })\n")
+		io.WriteString(iw, "}))\n")
 		io.WriteString(iw, "  pairs.sort((a,b)=>{const ak=a.key;const bk=b.key;if(ak<bk)return -1;if(ak>bk)return 1;const sak=JSON.stringify(ak);const sbk=JSON.stringify(bk);return sak<sbk?-1:sak>sbk?1:0})\n")
 		io.WriteString(iw, "  ordered = pairs.map(p => p.g)\n")
 	}
@@ -1261,11 +1276,9 @@ func (gq *GroupJoinQueryExpr) emit(w io.Writer) {
 	}
 	io.WriteString(iw, " = []\n")
 	if gq.Sort != nil {
-		io.WriteString(iw, "  const pairs = ordered.map(g => { const ")
-		io.WriteString(iw, gq.GroupVar)
-		io.WriteString(iw, " = g; return {g, key: ")
+		io.WriteString(iw, "  const pairs = ordered.map(g => ({g, key: ")
 		gq.Sort.emit(iw)
-		io.WriteString(iw, "} })\n")
+		io.WriteString(iw, "}))\n")
 		io.WriteString(iw, "  pairs.sort((a,b)=>{const ak=a.key;const bk=b.key;if(ak<bk)return -1;if(ak>bk)return 1;const sak=JSON.stringify(ak);const sbk=JSON.stringify(bk);return sak<sbk?-1:sak>sbk?1:0})\n")
 		io.WriteString(iw, "  ordered = pairs.map(p => p.g)\n")
 	}
@@ -1809,12 +1822,22 @@ func convertStmt(s *parser.Statement) (Stmt, error) {
 			name := ensureNamedStruct(tt, s.Let.Name)
 			tt.Name = name
 			t = tt
+			if ml, ok := e.(*MapLit); ok {
+				ml.TypeName = structGenName[name]
+			}
 		case types.ListType:
 			if st, ok := tt.Elem.(types.StructType); ok {
 				name := ensureNamedStruct(st, strings.TrimSuffix(s.Let.Name, "s"))
 				st.Name = name
 				tt.Elem = st
 				t = tt
+				if ll, ok2 := e.(*ListLit); ok2 {
+					for _, el := range ll.Elems {
+						if ml, ok3 := el.(*MapLit); ok3 {
+							ml.TypeName = structGenName[name]
+						}
+					}
+				}
 			}
 		}
 		typeStr := tsType(t)
@@ -1850,12 +1873,22 @@ func convertStmt(s *parser.Statement) (Stmt, error) {
 			name := ensureNamedStruct(tt, s.Var.Name)
 			tt.Name = name
 			t = tt
+			if ml, ok := e.(*MapLit); ok {
+				ml.TypeName = structGenName[name]
+			}
 		case types.ListType:
 			if st, ok := tt.Elem.(types.StructType); ok {
 				name := ensureNamedStruct(st, strings.TrimSuffix(s.Var.Name, "s"))
 				st.Name = name
 				tt.Elem = st
 				t = tt
+				if ll, ok2 := e.(*ListLit); ok2 {
+					for _, el := range ll.Elems {
+						if ml, ok3 := el.(*MapLit); ok3 {
+							ml.TypeName = structGenName[name]
+						}
+					}
+				}
 			}
 		}
 		typeStr := tsType(t)
@@ -2265,6 +2298,9 @@ func convertQueryExpr(q *parser.QueryExpr) (Expr, error) {
 			name := ensureNamedStruct(st, "Result")
 			st.Name = name
 			elemType = name
+			if mexpr, ok2 := sel.(*MapLit); ok2 {
+				mexpr.TypeName = structGenName[name]
+			}
 		}
 	}
 
@@ -2315,6 +2351,9 @@ func convertQueryExpr(q *parser.QueryExpr) (Expr, error) {
 				name := ensureNamedStruct(st, "Result")
 				st.Name = name
 				elemType = name
+				if mexpr, ok2 := sel.(*MapLit); ok2 {
+					mexpr.TypeName = structGenName[name]
+				}
 			}
 		}
 		transpileEnv = prev
@@ -2360,6 +2399,9 @@ func convertQueryExpr(q *parser.QueryExpr) (Expr, error) {
 				name := ensureNamedStruct(st, "Result")
 				st.Name = name
 				elemType = name
+				if mexpr, ok2 := sel.(*MapLit); ok2 {
+					mexpr.TypeName = structGenName[name]
+				}
 			}
 		}
 		transpileEnv = prev
@@ -2758,7 +2800,7 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 					if v, ok := args[0].(*ValuesExpr); ok {
 						val := &CallExpr{Func: "Object.values", Args: []Expr{v.Value}}
 						sortCall := &MethodCallExpr{Target: val, Method: "sort", Args: []Expr{}}
-						args[0] = &MethodCallExpr{Target: sortCall, Method: "join", Args: []Expr{&StringLit{Value: " "}}}
+						args[0] = &FormatListExpr{Value: sortCall}
 					} else if lt, ok := types.ExprType(p.Call.Args[0], transpileEnv).(types.ListType); ok {
 						switch lt.Elem.(type) {
 						case types.StringType:
@@ -2934,10 +2976,12 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 		}
 		tname := ""
 		if transpileEnv != nil {
-			if st, ok := types.InferStructFromMapEnv(p.Map, transpileEnv); ok {
-				name := ensureNamedStruct(st, "Result")
-				st.Name = name
-				tname = structGenName[name]
+			if _, ok := types.InferSimpleMap(p.Map, transpileEnv); !ok {
+				if st, ok2 := types.InferStructFromMapEnv(p.Map, transpileEnv); ok2 {
+					name := ensureNamedStruct(st, "Anon")
+					st.Name = name
+					tname = structGenName[name]
+				}
 			}
 		}
 		return &MapLit{Entries: entries, TypeName: tname}, nil
@@ -3083,11 +3127,11 @@ func inferLiteralType(e *parser.Expr, env *types.Env) (types.Type, bool) {
 		}
 	}
 	if ml := p.Target.Map; ml != nil {
-		if st, ok := types.InferStructFromMapEnv(ml, env); ok {
-			return st, true
-		}
 		if mt, ok := types.InferSimpleMap(ml, env); ok {
 			return mt, true
+		}
+		if st, ok := types.InferStructFromMapEnv(ml, env); ok {
+			return st, true
 		}
 	}
 	return nil, false
