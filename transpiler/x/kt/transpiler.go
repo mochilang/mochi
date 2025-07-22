@@ -1637,6 +1637,8 @@ func guessType(e Expr) string {
 		return "Boolean"
 	case *StringLit:
 		return "String"
+	case *StrExpr:
+		return "String"
 	case *ListLit:
 		if len(v.Elems) > 0 {
 			elem := guessType(v.Elems[0])

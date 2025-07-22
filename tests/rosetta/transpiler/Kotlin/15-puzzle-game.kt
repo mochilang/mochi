@@ -85,11 +85,11 @@ fun printBoard(): Unit {
         if (_val == 0) {
             line = line + "  ."
         } else {
-            val s = _val.toString()
+            val s: String = _val.toString()
             if (_val < 10) {
-                line = (line + "  ") + (s).toString()
+                line = (line + "  ") + s
             } else {
-                line = (line + " ") + (s).toString()
+                line = (line + " ") + s
             }
         }
         if ((i % 4) == 3) {
@@ -102,7 +102,7 @@ fun printBoard(): Unit {
 
 fun playOneMove(): Unit {
     while (true) {
-        println(("Enter move #" + ((moves + 1).toString()).toString()) + " (U, D, L, R, or Q): ")
+        println(("Enter move #" + (moves + 1).toString()) + " (U, D, L, R, or Q): ")
         val s: String = input()
         if (s == "") {
             continue
@@ -122,7 +122,7 @@ fun playOneMove(): Unit {
                         m = 3
                     } else {
                         if ((c == "Q") || (c == "q")) {
-                            println(("Quiting after " + (moves.toString()).toString()) + " moves.")
+                            println(("Quiting after " + moves.toString()) + " moves.")
                             quit = true
                             return
                         } else {
@@ -149,7 +149,7 @@ fun play(): Unit {
         playOneMove()
     }
     if (isSolved() as Boolean) {
-        println(("You solved the puzzle in " + (moves.toString()).toString()) + " moves.")
+        println(("You solved the puzzle in " + moves.toString()) + " moves.")
     }
 }
 

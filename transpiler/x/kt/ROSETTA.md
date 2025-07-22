@@ -2,16 +2,16 @@
 
 Generated Kotlin sources for Rosetta Code tests are stored in `tests/rosetta/transpiler/Kotlin`.
 
-Last updated: 2025-07-22 23:19 +0700
+Last updated: 2025-07-22 23:55 +0700
 
-Completed tasks: **4/284**
+Completed tasks: **5/284**
 
 ### Checklist
 1. [x] `100-doors-2`
 2. [x] `100-doors-3`
 3. [x] `100-doors`
 4. [x] `100-prisoners`
-5. [ ] `15-puzzle-game`
+5. [x] `15-puzzle-game`
 6. [ ] `15-puzzle-solver`
 7. [ ] `2048`
 8. [ ] `21-game`
