@@ -521,7 +521,7 @@ func (e *AvgExpr) emit(w io.Writer) {
 	if e.Value != nil {
 		e.Value.emit(w)
 	}
-	io.WriteString(w, "; return arr.reduce((a, b) => a + b, 0.0) / arr.length; })()")
+	io.WriteString(w, "; return (arr.reduce((a, b) => a + b, 0.0) / arr.length).toFixed(1); })()")
 }
 
 func (e *SumExpr) emit(w io.Writer) {
@@ -617,20 +617,11 @@ func (e *IntersectExpr) emit(w io.Writer) {
 }
 
 func (f *FormatListExpr) emit(w io.Writer) {
-	io.WriteString(w, "\"[\" + ")
 	if f.Value != nil {
 		f.Value.emit(w)
-		io.WriteString(w, `.map(v => typeof v === 'string' ? '\"' + v + '\"' : String(v)).join(`)
-		if len(f.FloatFields) > 0 || f.Compact {
-			io.WriteString(w, "','")
-		} else {
-			io.WriteString(w, "', '")
-		}
-		io.WriteString(w, `)`)
 	} else {
-		io.WriteString(w, "\"\"")
+		io.WriteString(w, "[]")
 	}
-	io.WriteString(w, " + \"]\"")
 }
 
 func (p *PrintExpr) emit(w io.Writer) {
@@ -639,20 +630,10 @@ func (p *PrintExpr) emit(w io.Writer) {
 		if i > 0 {
 			io.WriteString(w, ", ")
 		}
-		if _, ok := a.(*FormatListExpr); ok {
-			if a != nil {
-				a.emit(w)
-			} else {
-				io.WriteString(w, "null")
-			}
+		if a != nil {
+			a.emit(w)
 		} else {
-			io.WriteString(w, "JSON.stringify(")
-			if a != nil {
-				a.emit(w)
-			} else {
-				io.WriteString(w, "null")
-			}
-			io.WriteString(w, ")")
+			io.WriteString(w, "null")
 		}
 	}
 	io.WriteString(w, ")")
@@ -2782,47 +2763,9 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 		}
 		switch p.Call.Func {
 		case "print":
-			if transpileEnv != nil {
-				if len(args) == 1 {
-					// Special case printing list values
-					if v, ok := args[0].(*ValuesExpr); ok {
-						val := &CallExpr{Func: "Object.values", Args: []Expr{v.Value}}
-						sortCall := &MethodCallExpr{Target: val, Method: "sort", Args: []Expr{}}
-						args[0] = &MethodCallExpr{Target: sortCall, Method: "join", Args: []Expr{&StringLit{Value: " "}}}
-					} else if lt, ok := types.ExprType(p.Call.Args[0], transpileEnv).(types.ListType); ok {
-						switch lt.Elem.(type) {
-						case types.StringType:
-							args[0] = &MethodCallExpr{Target: args[0], Method: "join", Args: []Expr{&StringLit{Value: " "}}}
-						case types.MapType, types.StructType:
-							var floats []string
-							if st, ok := lt.Elem.(types.StructType); ok {
-								for _, name := range st.Order {
-									if _, ok := st.Fields[name].(types.FloatType); ok {
-										floats = append(floats, name)
-									}
-								}
-							}
-							args[0] = &FormatListExpr{Value: args[0], FloatFields: floats, Compact: true}
-						case types.AnyType:
-							// Fallback for lists of unknown element types. Mimic the
-							// interpreter by stringifying objects as JSON and other
-							// values via `String(x)`.
-							js := &CallExpr{Func: "JSON.stringify", Args: []Expr{&NameRef{Name: "x"}}}
-							rep1 := &MethodCallExpr{Target: js, Method: "replace", Args: []Expr{&CallExpr{Func: "RegExp", Args: []Expr{&StringLit{Value: ":"}, &StringLit{Value: "g"}}}, &StringLit{Value: ": "}}}
-							rep2 := &MethodCallExpr{Target: rep1, Method: "replace", Args: []Expr{&CallExpr{Func: "RegExp", Args: []Expr{&StringLit{Value: ","}, &StringLit{Value: "g"}}}, &StringLit{Value: ", "}}}
-							rep3 := &MethodCallExpr{Target: rep2, Method: "replace", Args: []Expr{&CallExpr{Func: "RegExp", Args: []Expr{&StringLit{Value: ": ([0-9]+)([,}])"}, &StringLit{Value: "g"}}}, &StringLit{Value: ": $1.0$2"}}}
-							cond := &IfExpr{Cond: &BinaryExpr{Left: &UnaryExpr{Op: "typeof", Expr: &NameRef{Name: "x"}}, Op: "===", Right: &StringLit{Value: "object"}}, Then: rep3, Else: &CallExpr{Func: "String", Args: []Expr{&NameRef{Name: "x"}}}}
-							m := &MethodCallExpr{Target: args[0], Method: "map", Args: []Expr{&FunExpr{Params: []string{"x"}, Expr: cond}}}
-							args[0] = &FormatListExpr{Value: m, Compact: true}
-						default:
-							args = []Expr{&FormatListExpr{Value: args[0], Compact: true}}
-						}
-					}
-				}
-				for i, a := range args {
-					if isNumericBool(a) {
-						args[i] = &UnaryExpr{Op: "+", Expr: a}
-					}
+			for i, a := range args {
+				if isNumericBool(a) {
+					args[i] = &UnaryExpr{Op: "+", Expr: a}
 				}
 			}
 			return &PrintExpr{Args: args}, nil
