@@ -1724,7 +1724,7 @@ func convertPostfix(env *types.Env, p *parser.PostfixExpr) (Expr, error) {
 		if t == nil {
 			t = types.TypeOfPrimaryBasic(p.Target, env)
 		}
-		for _, f := range tail {
+		for i, f := range tail {
 			if _, ok := t.(types.StructType); ok {
 				expr = &FieldExpr{Target: expr, Name: f}
 				if st, ok := t.(types.StructType); ok {
@@ -1734,8 +1734,22 @@ func convertPostfix(env *types.Env, p *parser.PostfixExpr) (Expr, error) {
 				}
 			} else {
 				expr = &IndexExpr{Base: expr, Index: &LitExpr{Value: f, IsString: true}, Force: true}
-				if mt, ok := t.(types.MapType); ok {
+				if gt, ok := t.(types.GroupType); ok {
+					if f == "key" {
+						t = types.MapType{Key: types.StringType{}, Value: types.AnyType{}}
+						if i < len(tail)-1 {
+							expr = &CastExpr{Expr: expr, Type: "[String: Any]"}
+						}
+					} else if f == "items" {
+						t = types.ListType{Elem: gt.Elem}
+					}
+				} else if mt, ok := t.(types.MapType); ok {
 					t = mt.Value
+					if i < len(tail)-1 {
+						if _, ok := t.(types.MapType); ok {
+							expr = &CastExpr{Expr: expr, Type: "[String: Any]"}
+						}
+					}
 				}
 			}
 		}
@@ -1913,10 +1927,15 @@ func convertQueryExpr(env *types.Env, q *parser.QueryExpr) (Expr, error) {
 		return nil, err
 	}
 	varType := types.TypeOfExpr(q.Source, env)
-	if lt, ok := varType.(types.ListType); ok {
-		varType = lt.Elem
-	} else if gt, ok := varType.(types.GroupType); ok {
+	if gt, ok := varType.(types.GroupType); ok {
+		src = &CastExpr{Expr: &IndexExpr{Base: src, Index: &LitExpr{Value: "items", IsString: true}, Force: true}, Type: "[[String: Any]]"}
 		varType = gt.Elem
+	} else if lt, ok := varType.(types.ListType); ok {
+		if gt2, ok := lt.Elem.(types.GroupType); ok {
+			varType = gt2.Elem
+		} else {
+			varType = lt.Elem
+		}
 	}
 	child := types.NewEnv(env)
 	child.SetVar(q.Var, varType, true)
@@ -1927,10 +1946,15 @@ func convertQueryExpr(env *types.Env, q *parser.QueryExpr) (Expr, error) {
 			return nil, err
 		}
 		t := types.TypeOfExpr(f.Src, child)
-		if lt, ok := t.(types.ListType); ok {
-			t = lt.Elem
-		} else if gt, ok := t.(types.GroupType); ok {
+		if gt, ok := t.(types.GroupType); ok {
+			fe = &CastExpr{Expr: &IndexExpr{Base: fe, Index: &LitExpr{Value: "items", IsString: true}, Force: true}, Type: "[[String: Any]]"}
 			t = gt.Elem
+		} else if lt, ok := t.(types.ListType); ok {
+			if gt2, ok := lt.Elem.(types.GroupType); ok {
+				t = gt2.Elem
+			} else {
+				t = lt.Elem
+			}
 		}
 		child.SetVar(f.Var, t, true)
 		froms[i] = queryFrom{Var: f.Var, Src: fe}
@@ -1942,10 +1966,15 @@ func convertQueryExpr(env *types.Env, q *parser.QueryExpr) (Expr, error) {
 			return nil, err
 		}
 		jt := types.TypeOfExpr(j.Src, child)
-		if lt, ok := jt.(types.ListType); ok {
-			jt = lt.Elem
-		} else if gt, ok := jt.(types.GroupType); ok {
+		if gt, ok := jt.(types.GroupType); ok {
+			je = &CastExpr{Expr: &IndexExpr{Base: je, Index: &LitExpr{Value: "items", IsString: true}, Force: true}, Type: "[[String: Any]]"}
 			jt = gt.Elem
+		} else if lt, ok := jt.(types.ListType); ok {
+			if gt2, ok := lt.Elem.(types.GroupType); ok {
+				jt = gt2.Elem
+			} else {
+				jt = lt.Elem
+			}
 		}
 		child.SetVar(j.Var, jt, true)
 		var on Expr
