@@ -1,82 +1,10 @@
 OpenJDK 64-Bit Server VM warning: Options -Xverify:none and -noverify were deprecated in JDK 13 and will likely be removed in a future release.
-/workspace/mochi/tests/rosetta/transpiler/Kotlin/15-puzzle-game.kt:25:14: error: unresolved reference: board
-        if ((board[i] as Int) != (solved[i] as Int)) {
-             ^
-/workspace/mochi/tests/rosetta/transpiler/Kotlin/15-puzzle-game.kt:25:35: error: unresolved reference: solved
-        if ((board[i] as Int) != (solved[i] as Int)) {
-                                  ^
-/workspace/mochi/tests/rosetta/transpiler/Kotlin/15-puzzle-game.kt:33:45: error: unresolved reference: any
-fun isValidMove(m: Int): MutableMap<String, any> {
-                                            ^
-/workspace/mochi/tests/rosetta/transpiler/Kotlin/15-puzzle-game.kt:35:51: error: unresolved reference: empty
-        return mutableMapOf<String, Any>("idx" to empty - 4, "ok" to (empty / 4) > 0)
-                                                  ^
-/workspace/mochi/tests/rosetta/transpiler/Kotlin/15-puzzle-game.kt:35:71: error: unresolved reference: empty
-        return mutableMapOf<String, Any>("idx" to empty - 4, "ok" to (empty / 4) > 0)
-                                                                      ^
-/workspace/mochi/tests/rosetta/transpiler/Kotlin/15-puzzle-game.kt:38:51: error: unresolved reference: empty
-        return mutableMapOf<String, Any>("idx" to empty + 4, "ok" to (empty / 4) < 3)
-                                                  ^
-/workspace/mochi/tests/rosetta/transpiler/Kotlin/15-puzzle-game.kt:38:71: error: unresolved reference: empty
-        return mutableMapOf<String, Any>("idx" to empty + 4, "ok" to (empty / 4) < 3)
-                                                                      ^
-/workspace/mochi/tests/rosetta/transpiler/Kotlin/15-puzzle-game.kt:41:51: error: unresolved reference: empty
-        return mutableMapOf<String, Any>("idx" to empty + 1, "ok" to (empty % 4) < 3)
-                                                  ^
-/workspace/mochi/tests/rosetta/transpiler/Kotlin/15-puzzle-game.kt:41:71: error: unresolved reference: empty
-        return mutableMapOf<String, Any>("idx" to empty + 1, "ok" to (empty % 4) < 3)
-                                                                      ^
-/workspace/mochi/tests/rosetta/transpiler/Kotlin/15-puzzle-game.kt:44:51: error: unresolved reference: empty
-        return mutableMapOf<String, Any>("idx" to empty - 1, "ok" to (empty % 4) > 0)
-                                                  ^
-/workspace/mochi/tests/rosetta/transpiler/Kotlin/15-puzzle-game.kt:44:71: error: unresolved reference: empty
-        return mutableMapOf<String, Any>("idx" to empty - 1, "ok" to (empty % 4) > 0)
-                                                                      ^
-/workspace/mochi/tests/rosetta/transpiler/Kotlin/15-puzzle-game.kt:54:18: error: unresolved reference: empty
-    val i: Int = empty
-                 ^
-/workspace/mochi/tests/rosetta/transpiler/Kotlin/15-puzzle-game.kt:55:13: error: unresolved reference: int
-    val j = int((r["idx"]!!))
-            ^
-/workspace/mochi/tests/rosetta/transpiler/Kotlin/15-puzzle-game.kt:56:21: error: unresolved reference: board
-    val tmp: Int = (board[i] as Int)
-                    ^
-/workspace/mochi/tests/rosetta/transpiler/Kotlin/15-puzzle-game.kt:57:5: error: unresolved reference: board
-    board[i] = (board[j] as Int)
-    ^
-/workspace/mochi/tests/rosetta/transpiler/Kotlin/15-puzzle-game.kt:57:17: error: unresolved reference: board
-    board[i] = (board[j] as Int)
-                ^
-/workspace/mochi/tests/rosetta/transpiler/Kotlin/15-puzzle-game.kt:58:5: error: unresolved reference: board
-    board[j] = tmp
-    ^
-/workspace/mochi/tests/rosetta/transpiler/Kotlin/15-puzzle-game.kt:59:5: error: unresolved reference: empty
-    empty = j
-    ^
-/workspace/mochi/tests/rosetta/transpiler/Kotlin/15-puzzle-game.kt:60:5: error: unresolved reference: moves
-    moves = moves + 1
-    ^
-/workspace/mochi/tests/rosetta/transpiler/Kotlin/15-puzzle-game.kt:60:13: error: unresolved reference: moves
-    moves = moves + 1
-            ^
-/workspace/mochi/tests/rosetta/transpiler/Kotlin/15-puzzle-game.kt:77:26: error: unresolved reference: board
-        val _val: Int = (board[i] as Int)
-                         ^
-/workspace/mochi/tests/rosetta/transpiler/Kotlin/15-puzzle-game.kt:98:36: error: unresolved reference: moves
+/workspace/mochi/tests/rosetta/transpiler/Kotlin/15-puzzle-game.kt:105:42: error: none of the following functions can be called with the arguments supplied: 
+public final operator fun plus(other: Byte): Int defined in kotlin.Int
+public final operator fun plus(other: Double): Double defined in kotlin.Int
+public final operator fun plus(other: Float): Float defined in kotlin.Int
+public final operator fun plus(other: Int): Int defined in kotlin.Int
+public final operator fun plus(other: Long): Long defined in kotlin.Int
+public final operator fun plus(other: Short): Int defined in kotlin.Int
         println(("Enter move #" + (moves + 1.toString()).toString()) + " (U, D, L, R, or Q): ")
-                                   ^
-/workspace/mochi/tests/rosetta/transpiler/Kotlin/15-puzzle-game.kt:99:17: error: unresolved reference: input
-        val s = input()
-                ^
-/workspace/mochi/tests/rosetta/transpiler/Kotlin/15-puzzle-game.kt:118:58: error: unresolved reference: moves
-                            println(("Quiting after " + (moves.toString()).toString()) + " moves.")
-                                                         ^
-/workspace/mochi/tests/rosetta/transpiler/Kotlin/15-puzzle-game.kt:119:29: error: unresolved reference: quit
-                            quit = true
-                            ^
-/workspace/mochi/tests/rosetta/transpiler/Kotlin/15-puzzle-game.kt:139:13: error: unresolved reference: quit
-    while (!quit && (isSolved() == false)) {
-            ^
-/workspace/mochi/tests/rosetta/transpiler/Kotlin/15-puzzle-game.kt:145:49: error: unresolved reference: moves
-        println(("You solved the puzzle in " + (moves.toString()).toString()) + " moves.")
-                                                ^
+                                         ^
