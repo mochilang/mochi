@@ -372,6 +372,13 @@ type PrintStmt struct{ Args []Expr }
 // JsonStmt prints a value as JSON.
 type JsonStmt struct{ Value Expr }
 
+// SaveStmt writes rows into a file or stdout in JSONL format.
+type SaveStmt struct {
+	Src    Expr
+	Path   string
+	Format string
+}
+
 // ReturnStmt represents returning a value from a function.
 type ReturnStmt struct{ Expr Expr }
 
@@ -611,6 +618,16 @@ func (j *JsonStmt) emit(w io.Writer) {
 	io.WriteString(w, "io:format(\"~p~n\", [")
 	j.Value.emit(w)
 	io.WriteString(w, "])")
+}
+
+func (s *SaveStmt) emit(w io.Writer) {
+	if s.Format == "jsonl" && (s.Path == "" || s.Path == "-") {
+		io.WriteString(w, "lists:foreach(fun(_row) -> io:format(\"~p~n\", [_row]) end, ")
+		s.Src.emit(w)
+		io.WriteString(w, ")")
+		return
+	}
+	io.WriteString(w, "% unsupported save")
 }
 
 func (r *ReturnStmt) emit(w io.Writer) {
@@ -1769,6 +1786,68 @@ func sanitize(name string) string {
 	return strings.ToUpper(name[:1]) + name[1:]
 }
 
+func literalString(e *parser.Expr) (string, bool) {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) > 0 {
+		return "", false
+	}
+	u := e.Binary.Left
+	if len(u.Ops) > 0 || u.Value == nil {
+		return "", false
+	}
+	p := u.Value
+	if len(p.Ops) > 0 || p.Target == nil {
+		return "", false
+	}
+	if p.Target.Lit != nil && p.Target.Lit.Str != nil {
+		return *p.Target.Lit.Str, true
+	}
+	if p.Target.Selector != nil && len(p.Target.Selector.Tail) == 0 {
+		return p.Target.Selector.Root, true
+	}
+	return "", false
+}
+
+func parseFormat(e *parser.Expr) string {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) > 0 {
+		return ""
+	}
+	u := e.Binary.Left
+	if len(u.Ops) > 0 || u.Value == nil {
+		return ""
+	}
+	p := u.Value
+	if len(p.Ops) > 0 || p.Target == nil || p.Target.Map == nil {
+		return ""
+	}
+	for _, it := range p.Target.Map.Items {
+		key, ok := literalString(it.Key)
+		if !ok {
+			continue
+		}
+		if key == "format" {
+			if s, ok := literalString(it.Value); ok {
+				return s
+			}
+		}
+	}
+	return ""
+}
+
+func extractSaveExpr(e *parser.Expr) *parser.SaveExpr {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) > 0 {
+		return nil
+	}
+	u := e.Binary.Left
+	if len(u.Ops) > 0 || u.Value == nil {
+		return nil
+	}
+	p := u.Value
+	if len(p.Ops) > 0 || p.Target == nil {
+		return nil
+	}
+	return p.Target.Save
+}
+
 // Transpile converts a subset of Mochi to an Erlang AST.
 func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	base := filepath.Dir(prog.Pos.Filename)
@@ -1937,6 +2016,18 @@ func convertStmt(st *parser.Statement, env *types.Env, ctx *context) ([]Stmt, er
 		}
 		return stmts, nil
 	case st.Expr != nil:
+		if se := extractSaveExpr(st.Expr.Expr); se != nil {
+			src, err := convertExpr(se.Src, env, ctx)
+			if err != nil {
+				return nil, err
+			}
+			format := parseFormat(se.With)
+			path := ""
+			if se.Path != nil {
+				path = *se.Path
+			}
+			return []Stmt{&SaveStmt{Src: src, Path: path, Format: format}}, nil
+		}
 		e, err := convertExpr(st.Expr.Expr, env, ctx)
 		if err != nil {
 			return nil, err

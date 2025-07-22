@@ -1,3 +1,7 @@
+## Progress (2025-07-22 12:58 +0700)
+- docs: update erl progress (86eba7eda)
+- Regenerated golden files - 96/102 vm valid programs passing
+
 ## Progress (2025-07-22 12:33 +0700)
 - docs: update erl progress (d37eb1c7e)
 - Regenerated golden files - 95/102 vm valid programs passing
