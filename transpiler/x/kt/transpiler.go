@@ -15,8 +15,100 @@ import (
 
 var (
 	extraDecls     []*DataClass
+	helperSnippets map[string]string
+	extraHelpers   []string
+	helpersUsed    map[string]bool
 	builtinAliases map[string]string
 )
+
+func init() {
+	helperSnippets = map[string]string{
+		"_load": `fun _load(path: String?, opts: Map<String, Any?>?): MutableList<MutableMap<String, Any?>> {
+    val fmt = opts?.get("format") as? String ?: "csv"
+    val lines = if (path == null || path == "-") {
+        listOf<String>()
+    } else {
+        var f = java.io.File(path)
+        if (!f.isAbsolute) {
+            if (!f.exists()) {
+                System.getenv("MOCHI_ROOT")?.let { root ->
+                    var clean = path!!
+                    while (clean.startsWith("../")) clean = clean.substring(3)
+                    var cand = java.io.File(root + "/tests/" + clean)
+                    if (!cand.exists()) cand = java.io.File(root + "/" + clean)
+                    f = cand
+                }
+            }
+        }
+        if (f.exists()) f.readLines() else listOf<String>()
+    }
+    return when (fmt) {
+        "yaml" -> loadYamlSimple(lines)
+        else -> mutableListOf()
+    }
+}`,
+		"loadYamlSimple": `fun loadYamlSimple(lines: List<String>): MutableList<MutableMap<String, Any?>> {
+    val res = mutableListOf<MutableMap<String, Any?>>()
+    var cur: MutableMap<String, Any?>? = null
+    for (ln in lines) {
+        val t = ln.trim()
+        if (t.startsWith("- ")) {
+            cur?.let { res.add(it) }
+            cur = mutableMapOf()
+            val idx = t.indexOf(':', 2)
+            if (idx >= 0) {
+                val k = t.substring(2, idx).trim()
+                val v = parseSimpleValue(t.substring(idx + 1))
+                cur!![k] = v
+            }
+        } else if (t.contains(':')) {
+            val idx = t.indexOf(':')
+            val k = t.substring(0, idx).trim()
+            val v = parseSimpleValue(t.substring(idx + 1))
+            cur?.set(k, v)
+        }
+    }
+    cur?.let { res.add(it) }
+    return res
+}`,
+		"parseSimpleValue": `fun parseSimpleValue(s: String): Any? {
+    val t = s.trim()
+    return when {
+        t.matches(Regex("^-?\\d+$")) -> t.toInt()
+        t.matches(Regex("^-?\\d+\\.\\d+$")) -> t.toDouble()
+        t.equals("true", true) -> true
+        t.equals("false", true) -> false
+        t.startsWith("\"") && t.endsWith("\"") -> t.substring(1, t.length - 1)
+        else -> t
+    }
+}`,
+		"_save": `fun _save(rows: List<Any?>, path: String?, opts: Map<String, Any?>?) {
+    val fmt = opts?.get("format") as? String ?: "csv"
+    val writer = if (path == null || path == "-") {
+        java.io.BufferedWriter(java.io.OutputStreamWriter(System.out))
+    } else {
+        java.io.File(path).bufferedWriter()
+    }
+    if (fmt == "jsonl") {
+        for (r in rows) {
+            writer.write(toJson(r))
+            writer.newLine()
+        }
+    }
+    if (path != null && path != "-") writer.close()
+}`,
+		"toJson": `fun toJson(v: Any?): String = when (v) {
+    null -> "null"
+    is String -> "\"" + v.replace("\"", "\\\"") + "\""
+    is Boolean, is Number -> v.toString()
+    is Map<*, *> -> v.entries.joinToString(prefix = "{", postfix = "}") { toJson(it.key.toString()) + ":" + toJson(it.value) }
+    is Iterable<*> -> v.joinToString(prefix = "[", postfix = "]") { toJson(it) }
+    else -> toJson(v.toString())
+}`,
+	}
+	extraHelpers = nil
+	helpersUsed = map[string]bool{}
+}
 
 // Program represents a simple Kotlin program consisting of statements executed in main.
 // Program contains top level functions and statements executed in `main`.
@@ -24,11 +116,22 @@ type Program struct {
 	Structs []*DataClass
 	Funcs   []*FuncDef
 	Stmts   []Stmt
+	Helpers []string
 }
 
 func indent(w io.Writer, n int) {
 	for i := 0; i < n; i++ {
 		io.WriteString(w, "    ")
+	}
+}
+
+func useHelper(name string) {
+	if helpersUsed[name] {
+		return
+	}
+	if code, ok := helperSnippets[name]; ok {
+		helpersUsed[name] = true
+		extraHelpers = append(extraHelpers, code)
 	}
 }
 
@@ -69,8 +172,10 @@ type FuncDef struct {
 
 // DataClass declares a simple Kotlin data class.
 type DataClass struct {
-	Name   string
-	Fields []ParamDecl
+	Name     string
+	Fields   []ParamDecl
+	Extends  string
+	IsObject bool
 }
 
 type ParamDecl struct {
@@ -99,6 +204,17 @@ func (s *StructLit) emit(w io.Writer) {
 
 func (d *DataClass) emit(w io.Writer, indentLevel int) {
 	indent(w, indentLevel)
+	if d.IsObject {
+		io.WriteString(w, "object "+d.Name)
+		if d.Extends != "" {
+			io.WriteString(w, " : "+d.Extends+"()")
+		}
+		return
+	}
+	if len(d.Fields) == 0 && d.Extends != "" {
+		io.WriteString(w, "class "+d.Name+" : "+d.Extends+"()")
+		return
+	}
 	io.WriteString(w, "data class "+d.Name+"(")
 	for i, f := range d.Fields {
 		if i > 0 {
@@ -111,6 +227,9 @@ func (d *DataClass) emit(w io.Writer, indentLevel int) {
 		io.WriteString(w, "var "+f.Name+": "+typ)
 	}
 	io.WriteString(w, ")")
+	if d.Extends != "" {
+		io.WriteString(w, " : "+d.Extends+"()")
+	}
 }
 
 func (f *FuncDef) emit(w io.Writer, indentLevel int) {
@@ -1512,6 +1631,8 @@ func handleImport(env *types.Env, im *parser.ImportStmt) bool {
 // Transpile converts a Mochi program to a simple Kotlin AST.
 func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 	extraDecls = nil
+	extraHelpers = nil
+	helpersUsed = map[string]bool{}
 	p := &Program{}
 	for _, st := range prog.Statements {
 		switch {
@@ -1577,6 +1698,12 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 				return nil, err
 			}
 			p.Stmts = append(p.Stmts, &IndexAssignStmt{Target: target, Value: v})
+		case st.Update != nil:
+			stmt, err := convertUpdateStmt(env, st.Update)
+			if err != nil {
+				return nil, err
+			}
+			p.Stmts = append(p.Stmts, stmt)
 		case st.Return != nil:
 			var val Expr
 			if st.Return.Value != nil {
@@ -1653,6 +1780,7 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 		}
 	}
 	p.Structs = extraDecls
+	p.Helpers = extraHelpers
 	return p, nil
 }
 
@@ -1707,6 +1835,12 @@ func convertStmts(env *types.Env, list []*parser.Statement) ([]Stmt, error) {
 				return nil, err
 			}
 			out = append(out, &IndexAssignStmt{Target: target, Value: v})
+		case s.Update != nil:
+			st, err := convertUpdateStmt(env, s.Update)
+			if err != nil {
+				return nil, err
+			}
+			out = append(out, st)
 		case s.Fun != nil:
 			body, err := convertStmts(env, s.Fun.Body)
 			if err != nil {
@@ -1872,6 +2006,71 @@ func convertForStmt(env *types.Env, fs *parser.ForStmt) (Stmt, error) {
 		return nil, err
 	}
 	return &ForEachStmt{Name: fs.Name, Iterable: iter, Body: body}, nil
+}
+
+func convertUpdateStmt(env *types.Env, us *parser.UpdateStmt) (Stmt, error) {
+	listVar := newVarRef(env, us.Target)
+	var elem types.Type = types.AnyType{}
+	if env != nil {
+		if t, err := env.GetVar(us.Target); err == nil {
+			if lt, ok := t.(types.ListType); ok {
+				elem = lt.Elem
+			}
+		}
+	}
+	st, ok := elem.(types.StructType)
+	if !ok {
+		return nil, fmt.Errorf("update only supported for list of struct")
+	}
+	idxVar := fmt.Sprintf("_i%d", len(us.Target))
+	itemVar := fmt.Sprintf("_it%d", len(us.Target))
+	bodyEnv := types.NewEnv(env)
+	bodyEnv.SetVar(itemVar, st, true)
+	for name, typ := range st.Fields {
+		bodyEnv.SetVar(name, typ, true)
+	}
+	// var _it = list[i]
+	itemGet := &IndexExpr{Target: listVar, Index: &VarRef{Name: idxVar}, Type: kotlinTypeFromType(st), ForceBang: true}
+	varSt := &VarStmt{Name: itemVar, Type: kotlinTypeFromType(st), Value: itemGet}
+	// field lets
+	var pre []Stmt
+	pre = append(pre, varSt)
+	for _, name := range st.Order {
+		pre = append(pre, &LetStmt{Name: name, Type: kotlinTypeFromType(st.Fields[name]), Value: &FieldExpr{Receiver: &VarRef{Name: itemVar}, Name: name}})
+	}
+	// condition
+	var cond Expr
+	var err error
+	if us.Where != nil {
+		cond, err = convertExpr(bodyEnv, us.Where)
+		if err != nil {
+			return nil, err
+		}
+	}
+	// assignments
+	var assigns []Stmt
+	for _, it := range us.Set.Items {
+		key, ok := types.SimpleStringKey(it.Key)
+		if !ok {
+			return nil, fmt.Errorf("update dynamic key unsupported")
+		}
+		val, err := convertExpr(bodyEnv, it.Value)
+		if err != nil {
+			return nil, err
+		}
+		assigns = append(assigns, &IndexAssignStmt{Target: &FieldExpr{Receiver: &VarRef{Name: itemVar}, Name: key}, Value: val})
+	}
+	var ifBody []Stmt
+	if cond != nil {
+		ifBody = append(ifBody, &IfStmt{Cond: cond, Then: assigns})
+	} else {
+		ifBody = assigns
+	}
+	// write back
+	assignBack := &IndexAssignStmt{Target: &IndexExpr{Target: listVar, Index: &VarRef{Name: idxVar}, Type: kotlinTypeFromType(st), ForceBang: true}, Value: &VarRef{Name: itemVar}}
+	loopBody := append(pre, ifBody...)
+	loopBody = append(loopBody, assignBack)
+	return &ForRangeStmt{Name: idxVar, Start: &IntLit{Value: 0}, End: &FieldExpr{Receiver: listVar, Name: "size"}, Body: loopBody}, nil
 }
 
 func buildIndexTarget(env *types.Env, name string, idx []*parser.IndexOp) (Expr, error) {
@@ -2281,6 +2480,61 @@ func convertStructLiteral(env *types.Env, sl *parser.StructLiteral) (Expr, error
 		vals[i] = v
 	}
 	return &StructLit{Name: sl.Name, Fields: vals, Names: names}, nil
+}
+
+func convertLoadExpr(env *types.Env, l *parser.LoadExpr) (Expr, error) {
+	useHelper("_load")
+	useHelper("loadYamlSimple")
+	useHelper("parseSimpleValue")
+	var path Expr = &VarRef{Name: "null"}
+	if l.Path != nil {
+		path = &StringLit{Value: *l.Path}
+	}
+	var opts Expr = &VarRef{Name: "null"}
+	if l.With != nil {
+		var err error
+		opts, err = convertExpr(env, l.With)
+		if err != nil {
+			return nil, err
+		}
+	}
+	base := &CallExpr{Func: "_load", Args: []Expr{path, opts}}
+	if l.Type != nil && l.Type.Simple != nil {
+		if st, ok := env.GetStruct(*l.Type.Simple); ok {
+			names := make([]string, len(st.Order))
+			vals := make([]Expr, len(st.Order))
+			for i, f := range st.Order {
+				names[i] = f
+				val := &IndexExpr{Target: &VarRef{Name: "it"}, Index: &StringLit{Value: f}, Type: kotlinTypeFromType(st.Fields[f]), ForceBang: true}
+				vals[i] = val
+			}
+			lambda := &FuncLit{Params: []string{"it"}, Body: []Stmt{&ReturnStmt{Value: &StructLit{Name: st.Name, Fields: vals, Names: names}}}}
+			mapped := &InvokeExpr{Callee: &FieldExpr{Receiver: base, Name: "map"}, Args: []Expr{lambda}}
+			return &InvokeExpr{Callee: &FieldExpr{Receiver: mapped, Name: "toMutableList"}}, nil
+		}
+	}
+	return base, nil
+}
+
+func convertSaveExpr(env *types.Env, s *parser.SaveExpr) (Expr, error) {
+	useHelper("_save")
+	useHelper("toJson")
+	src, err := convertExpr(env, s.Src)
+	if err != nil {
+		return nil, err
+	}
+	var path Expr = &VarRef{Name: "null"}
+	if s.Path != nil {
+		path = &StringLit{Value: *s.Path}
+	}
+	var opts Expr = &VarRef{Name: "null"}
+	if s.With != nil {
+		opts, err = convertExpr(env, s.With)
+		if err != nil {
+			return nil, err
+		}
+	}
+	return &CallExpr{Func: "_save", Args: []Expr{src, path, opts}}, nil
 }
 
 func isUnderscore(e *parser.Expr) bool {
@@ -2868,6 +3122,10 @@ func convertPrimary(env *types.Env, p *parser.Primary) (Expr, error) {
 		return &MapLit{Items: items}, nil
 	case p.Query != nil:
 		return convertQueryExpr(env, p.Query)
+	case p.Load != nil:
+		return convertLoadExpr(env, p.Load)
+	case p.Save != nil:
+		return convertSaveExpr(env, p.Save)
 	case p.Match != nil:
 		return convertMatchExpr(env, p.Match)
 	case p.FunExpr != nil:
@@ -2882,6 +3140,13 @@ func convertPrimary(env *types.Env, p *parser.Primary) (Expr, error) {
 // Emit returns formatted Kotlin source code for prog.
 func Emit(prog *Program) []byte {
 	var buf bytes.Buffer
+	for _, h := range prog.Helpers {
+		buf.WriteString(h)
+		if !strings.HasSuffix(h, "\n") {
+			buf.WriteString("\n")
+		}
+		buf.WriteString("\n")
+	}
 	for _, d := range prog.Structs {
 		d.emit(&buf, 0)
 		buf.WriteString("\n")

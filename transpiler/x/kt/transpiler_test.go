@@ -101,6 +101,11 @@ func TestTranspilePrograms(t *testing.T) {
 		"match_full",
 		"group_by_multi_join",
 		"user_type_literal",
+		"order_by_map",
+		"sort_stable",
+		"load_yaml",
+		"save_jsonl_stdout",
+		"update_stmt",
 	}
 	root := repoRoot(t)
 	outDir := filepath.Join(root, "tests", "transpiler", "x", "kt")
