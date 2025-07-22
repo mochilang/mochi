@@ -127,6 +127,7 @@ func TestFSTranspiler_Rosetta_Golden(t *testing.T) {
 			passed++
 		} else {
 			failed++
+			break
 		}
 	}
 	t.Logf("Summary: %d passed, %d failed", passed, failed)
