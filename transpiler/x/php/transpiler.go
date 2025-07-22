@@ -21,7 +21,7 @@ var funcStack [][]string
 var builtinNames = map[string]struct{}{
 	"print": {}, "len": {}, "substring": {}, "count": {}, "sum": {}, "avg": {},
 	"str": {}, "min": {}, "max": {}, "append": {}, "json": {}, "exists": {},
-	"values": {}, "load": {}, "save": {},
+	"values": {}, "load": {}, "save": {}, "now": {}, "input": {},
 }
 var closureNames = map[string]bool{}
 var groupStack []string
@@ -1567,6 +1567,17 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 				target = &IndexExpr{X: args[0], Index: &StringLit{Value: "items"}}
 			}
 			return &CallExpr{Func: "array_values", Args: []Expr{target}}, nil
+		} else if name == "now" {
+			if len(args) != 0 {
+				return nil, fmt.Errorf("now expects no args")
+			}
+			return &CallExpr{Func: "hrtime", Args: []Expr{&BoolLit{Value: true}}}, nil
+		} else if name == "input" {
+			if len(args) != 0 {
+				return nil, fmt.Errorf("input expects no args")
+			}
+			fgets := &CallExpr{Func: "fgets", Args: []Expr{&Name{Value: "STDIN"}}}
+			return &CallExpr{Func: "trim", Args: []Expr{fgets}}, nil
 		}
 		if transpileEnv != nil {
 			if t, err := transpileEnv.GetVar(name); err == nil {
