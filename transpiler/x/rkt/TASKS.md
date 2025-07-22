@@ -1,3 +1,13 @@
+## Progress (2025-07-22 10:21 +0700)
+- Commit ce87939a3: rkt: support descending group sort
+- Generated Racket for 93/102 programs
+- Updated README checklist
+
+## Progress (2025-07-22 10:07 +0700)
+- Commit b6741d6c9: Clean up Typescript for next round
+- Generated Racket for 91/100 programs
+- Updated README checklist
+
 ## Progress (2025-07-22 02:11 +0000)
 - Commit cfdc48e97: added match and slice support
 - Generated Racket for 92/102 programs
