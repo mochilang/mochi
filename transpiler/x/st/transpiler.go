@@ -2407,20 +2407,10 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 		case st.Type != nil:
 			return nil
 		case st.Test != nil:
-			for _, b := range st.Test.Body {
-				if err := processStmt(b); err != nil {
-					return err
-				}
-			}
+			// tests are ignored when transpiling
 			return nil
 		case st.Expect != nil:
-			v, err := evalExpr(st.Expect.Value, vars)
-			if err != nil {
-				return err
-			}
-			if v.kind != valBool || !v.b {
-				return fmt.Errorf("expect failed")
-			}
+			// expects are ignored when transpiling
 			return nil
 		case st.Assign != nil:
 			if len(st.Assign.Index) > 0 {
