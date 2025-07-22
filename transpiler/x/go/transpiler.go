@@ -1739,8 +1739,16 @@ func compileStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 					imports[alias] = strings.Trim(st.Import.Path, "\"")
 				}
 			case "python":
-				if st.Import.Path == "math" && imports != nil {
-					imports[alias] = "math"
+				if st.Import.Path == "math" {
+					if imports != nil {
+						imports[alias] = "math"
+					}
+					if st.Import.Auto && env != nil {
+						env.SetVar(alias+".pi", types.FloatType{}, false)
+						env.SetVar(alias+".e", types.FloatType{}, false)
+						env.SetVar(alias+".sqrt", types.FuncType{Params: []types.Type{types.FloatType{}}, Return: types.FloatType{}, Pure: true}, false)
+						env.SetVar(alias+".pow", types.FuncType{Params: []types.Type{types.FloatType{}, types.FloatType{}}, Return: types.FloatType{}, Pure: true}, false)
+					}
 				}
 			}
 		}
