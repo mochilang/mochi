@@ -3,13 +3,13 @@
 package erl_test
 
 import (
+	"bufio"
 	"bytes"
 	"flag"
 	"fmt"
 	"os"
 	"os/exec"
 	"path/filepath"
-	"sort"
 	"strconv"
 	"strings"
 	"testing"
@@ -52,29 +52,46 @@ func TestRosettaTranspile(t *testing.T) {
 	outDir := filepath.Join(root, "tests", "rosetta", "transpiler", "erl")
 	os.MkdirAll(outDir, 0o755)
 
-	files, err := filepath.Glob(filepath.Join(srcDir, "*.mochi"))
+	indexPath := filepath.Join(srcDir, "index.txt")
+	f, err := os.Open(indexPath)
 	if err != nil {
-		t.Fatalf("glob: %v", err)
+		t.Fatalf("open index: %v", err)
 	}
-	if len(files) == 0 {
-		t.Fatal("no Mochi Rosetta tests found")
+	defer f.Close()
+	scanner := bufio.NewScanner(f)
+	var names []string
+	for scanner.Scan() {
+		parts := strings.Fields(scanner.Text())
+		if len(parts) == 2 {
+			names = append(names, parts[1])
+		}
 	}
-	sort.Strings(files)
+	if err := scanner.Err(); err != nil {
+		t.Fatalf("read index: %v", err)
+	}
+	if len(names) == 0 {
+		t.Fatal("empty index")
+	}
 
 	if idxStr := os.Getenv("MOCHI_ROSETTA_INDEX"); idxStr != "" {
 		idx, err := strconv.Atoi(idxStr)
-		if err != nil || idx < 1 || idx > len(files) {
+		if err != nil || idx < 1 || idx > len(names) {
 			t.Fatalf("invalid MOCHI_ROSETTA_INDEX: %s", idxStr)
 		}
-		files = files[idx-1 : idx]
+		names = names[idx-1 : idx]
 	} else {
-		max := len(files)
+		max := len(names)
 		if v := os.Getenv("ROSETTA_MAX"); v != "" {
 			if n, err := strconv.Atoi(v); err == nil && n < max {
 				max = n
 			}
 		}
-		files = files[:max]
+		names = names[:max]
+	}
+
+	var files []string
+	for _, nameFile := range names {
+		files = append(files, filepath.Join(srcDir, nameFile))
 	}
 
 	var firstFail string
@@ -154,11 +171,24 @@ func countRosetta() (int, int) {
 	root := repoRoot(&testing.T{})
 	srcDir := filepath.Join(root, "tests", "rosetta", "x", "Mochi")
 	outDir := filepath.Join(root, "tests", "rosetta", "transpiler", "erl")
-	files, _ := filepath.Glob(filepath.Join(srcDir, "*.mochi"))
-	total := len(files)
+	indexPath := filepath.Join(srcDir, "index.txt")
+	f, err := os.Open(indexPath)
+	if err != nil {
+		return 0, 0
+	}
+	defer f.Close()
+	scanner := bufio.NewScanner(f)
+	var names []string
+	for scanner.Scan() {
+		parts := strings.Fields(scanner.Text())
+		if len(parts) == 2 {
+			names = append(names, parts[1])
+		}
+	}
+	total := len(names)
 	compiled := 0
-	for _, f := range files {
-		name := strings.TrimSuffix(filepath.Base(f), ".mochi")
+	for _, n := range names {
+		name := strings.TrimSuffix(filepath.Base(n), ".mochi")
 		if _, err := os.Stat(filepath.Join(outDir, name+".out")); err == nil {
 			compiled++
 		}
@@ -171,19 +201,31 @@ func updateRosettaReadme() {
 	srcDir := filepath.Join(root, "tests", "rosetta", "x", "Mochi")
 	outDir := filepath.Join(root, "tests", "rosetta", "transpiler", "erl")
 	readmePath := filepath.Join(root, "transpiler", "x", "erl", "ROSETTA.md")
-	files, _ := filepath.Glob(filepath.Join(srcDir, "*.mochi"))
-	sort.Strings(files)
-	total := len(files)
+	indexPath := filepath.Join(srcDir, "index.txt")
+	f, err := os.Open(indexPath)
+	if err != nil {
+		return
+	}
+	defer f.Close()
+	scanner := bufio.NewScanner(f)
+	var names []string
+	for scanner.Scan() {
+		parts := strings.Fields(scanner.Text())
+		if len(parts) == 2 {
+			names = append(names, parts[1])
+		}
+	}
+	total := len(names)
 	compiled := 0
 	var lines []string
-	for i, f := range files {
-		name := strings.TrimSuffix(filepath.Base(f), ".mochi")
+	for _, n := range names {
+		name := strings.TrimSuffix(filepath.Base(n), ".mochi")
 		mark := "[ ]"
 		if _, err := os.Stat(filepath.Join(outDir, name+".out")); err == nil {
 			compiled++
 			mark = "[x]"
 		}
-		lines = append(lines, fmt.Sprintf("%d. %s %s", i+1, mark, name))
+		lines = append(lines, fmt.Sprintf("- %s %s", mark, name))
 	}
 	tsRaw, _ := exec.Command("git", "log", "-1", "--format=%cI").Output()
 	ts := strings.TrimSpace(string(tsRaw))
