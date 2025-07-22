@@ -9,6 +9,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"sort"
 	"strings"
 	"testing"
 	"time"
@@ -93,7 +94,9 @@ func TestTranspiler_Rosetta(t *testing.T) {
 	if len(files) == 0 {
 		t.Fatalf("no rosetta programs found: %s", pattern)
 	}
+	sort.Strings(files)
 	var passed, failed int
+	var firstFail string
 	for _, src := range files {
 		base := strings.TrimSuffix(filepath.Base(src), ".mochi")
 		ok := t.Run(base, func(t *testing.T) {
@@ -119,7 +122,12 @@ func TestTranspiler_Rosetta(t *testing.T) {
 			passed++
 		} else {
 			failed++
+			firstFail = base
+			break
 		}
+	}
+	if firstFail != "" {
+		t.Fatalf("first failing program: %s", firstFail)
 	}
 	t.Logf("Summary: %d passed, %d failed", passed, failed)
 }

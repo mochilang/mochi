@@ -1,11 +1,11 @@
-# Rosetta Rust Transpiler Output (3/284)
-Last updated: 2025-07-22 20:30 +0700
+# Rosetta Rust Transpiler Output (2/284)
+Last updated: 2025-07-22 20:48 +0700
 
 ## Program checklist
 
 - [x] 100-doors-2.mochi
 - [x] 100-doors-3.mochi
-- [x] 100-doors.mochi
+- [ ] 100-doors.mochi
 - [ ] 100-prisoners.mochi
 - [ ] 15-puzzle-game.mochi
 - [ ] 15-puzzle-solver.mochi
