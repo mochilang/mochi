@@ -34,6 +34,22 @@ var pyMathAliases map[string]bool
 var structDefs map[string]map[string]string
 var varDecls map[string]*VarStmt
 
+func copyMap(src map[string]string) map[string]string {
+	dst := make(map[string]string, len(src))
+	for k, v := range src {
+		dst[k] = v
+	}
+	return dst
+}
+
+func sanitize(name string) string {
+	switch name {
+	case "this":
+		return "this_"
+	}
+	return name
+}
+
 func javaType(t string) string {
 	switch t {
 	case "int":
@@ -156,6 +172,9 @@ func inferType(e Expr) string {
 	case *IndexExpr:
 		if isStringExpr(ex.Target) {
 			return "string"
+		}
+		if t := arrayElemType(ex.Target); t != "" {
+			return t
 		}
 	case *SliceExpr:
 		if isStringExpr(ex.Value) {
@@ -401,11 +420,11 @@ func (t *TypeDeclStmt) emit(w io.Writer, indent string) {
 		if typ == "" {
 			typ = f.Type
 		}
-		fmt.Fprintf(w, "%s %s", typ, f.Name)
+		fmt.Fprintf(w, "%s %s", typ, sanitize(f.Name))
 	}
 	fmt.Fprint(w, ") {\n")
 	for _, f := range t.Fields {
-		fmt.Fprintf(w, indent+"        this.%s = %s;\n", f.Name, f.Name)
+		fmt.Fprintf(w, indent+"        this.%s = %s;\n", sanitize(f.Name), sanitize(f.Name))
 	}
 	fmt.Fprint(w, indent+"    }\n")
 	fmt.Fprint(w, indent+"    @Override public String toString() {\n")
@@ -612,7 +631,7 @@ func (l *LambdaExpr) emit(w io.Writer) {
 		if typ == "" {
 			typ = "java.util.Map"
 		}
-		fmt.Fprintf(w, "%s %s", typ, p.Name)
+		fmt.Fprintf(w, "%s %s", typ, sanitize(p.Name))
 	}
 	fmt.Fprint(w, ") -> ")
 	if len(l.Body) == 1 {
@@ -692,7 +711,7 @@ func (s *LetStmt) emit(w io.Writer, indent string) {
 	if typ == "" {
 		typ = "java.util.Map"
 	}
-	fmt.Fprint(w, javaType(typ)+" "+s.Name)
+	fmt.Fprint(w, javaType(typ)+" "+sanitize(s.Name))
 	if s.Expr != nil {
 		fmt.Fprint(w, " = ")
 		s.Expr.emit(w)
@@ -732,7 +751,7 @@ type AssignStmt struct {
 }
 
 func (s *AssignStmt) emit(w io.Writer, indent string) {
-	fmt.Fprint(w, indent+s.Name+" = ")
+	fmt.Fprint(w, indent+sanitize(s.Name)+" = ")
 	s.Expr.emit(w)
 	fmt.Fprint(w, ";\n")
 }
@@ -891,6 +910,11 @@ func (l *ListLit) emit(w io.Writer) {
 			}
 		}
 		arrType = javaType(arrType)
+	} else {
+		jt := javaType(arrType)
+		if jt != "" {
+			arrType = jt
+		}
 	}
 	fmt.Fprintf(w, "new %s[]{", arrType)
 	for i, e := range l.Elems {
@@ -1006,7 +1030,7 @@ func (f *FloatLit) emit(w io.Writer) {
 
 type VarExpr struct{ Name string }
 
-func (v *VarExpr) emit(w io.Writer) { fmt.Fprint(w, v.Name) }
+func (v *VarExpr) emit(w io.Writer) { fmt.Fprint(w, sanitize(v.Name)) }
 
 // FieldExpr represents obj.field access.
 type FieldExpr struct {
@@ -1094,8 +1118,9 @@ type ValuesExpr struct{ Map Expr }
 
 // AppendExpr appends an element to an array and returns the new array.
 type AppendExpr struct {
-	List  Expr
-	Value Expr
+	List     Expr
+	Value    Expr
+	ElemType string
 }
 
 // UnionExpr concatenates two arrays removing duplicate elements.
@@ -1132,9 +1157,15 @@ func (v *ValuesExpr) emit(w io.Writer) {
 }
 
 func (a *AppendExpr) emit(w io.Writer) {
-	elem := arrayElemType(a.List)
+	elem := a.ElemType
+	if elem == "" {
+		elem = arrayElemType(a.List)
+	}
 	if elem == "" {
 		elem = "Object"
+	}
+	if elem == "bool" {
+		elem = "boolean"
 	}
 	jt := javaType(elem)
 	if jt == "" {
@@ -1692,6 +1723,13 @@ func Transpile(p *parser.Program, env *types.Env) (*Program, error) {
 	varDecls = map[string]*VarStmt{}
 	for _, s := range p.Statements {
 		if s.Fun != nil {
+			saved := varTypes
+			varTypes = copyMap(varTypes)
+			for _, pa := range s.Fun.Params {
+				if t := typeRefString(pa.Type); t != "" {
+					varTypes[pa.Name] = t
+				}
+			}
 			body, err := compileStmts(s.Fun.Body)
 			if err != nil {
 				return nil, err
@@ -1712,6 +1750,7 @@ func Transpile(p *parser.Program, env *types.Env) (*Program, error) {
 			}
 			funcRet[s.Fun.Name] = ret
 			prog.Funcs = append(prog.Funcs, &Function{Name: s.Fun.Name, Params: params, Return: ret, Body: body})
+			varTypes = saved
 			continue
 		}
 		st, err := compileStmt(s)
@@ -2325,6 +2364,9 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 			needInput = true
 			return &InputExpr{}, nil
 		}
+		if name == "now" && len(args) == 0 {
+			return &CallExpr{Func: "(int)System.currentTimeMillis", Args: nil}, nil
+		}
 		if t, ok := varTypes[name]; ok && t == "fn" {
 			return &MethodCallExpr{Target: &VarExpr{Name: name}, Name: "applyAsInt", Args: args}, nil
 		}
@@ -2384,7 +2426,11 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 			return &ValuesExpr{Map: args[0]}, nil
 		}
 		if name == "append" && len(args) == 2 {
-			return &AppendExpr{List: args[0], Value: args[1]}, nil
+			et := inferType(args[1])
+			if et == "" {
+				et = arrayElemType(args[0])
+			}
+			return &AppendExpr{List: args[0], Value: args[1], ElemType: et}, nil
 		}
 		if name == "str" && len(args) == 1 {
 			return &CallExpr{Func: "String.valueOf", Args: args}, nil
@@ -2960,13 +3006,6 @@ func Emit(prog *Program) []byte {
 		buf.WriteString("        }\n")
 		buf.WriteString("    }\n\n")
 	}
-	if needAppendBool {
-		buf.WriteString("    static boolean[] appendBool(boolean[] arr, boolean v) {\n")
-		buf.WriteString("        boolean[] out = java.util.Arrays.copyOf(arr, arr.length + 1);\n")
-		buf.WriteString("        out[arr.length] = v;\n")
-		buf.WriteString("        return out;\n")
-		buf.WriteString("    }\n\n")
-	}
 	// helper functions removed for simplified output
 	for i, fn := range prog.Funcs {
 		ret := javaType(fn.Return)
@@ -3004,6 +3043,13 @@ func Emit(prog *Program) []byte {
 		}
 	}
 	buf.WriteString("    }\n")
+	if needAppendBool {
+		buf.WriteString("\n    static boolean[] appendBool(boolean[] arr, boolean v) {\n")
+		buf.WriteString("        boolean[] out = java.util.Arrays.copyOf(arr, arr.length + 1);\n")
+		buf.WriteString("        out[arr.length] = v;\n")
+		buf.WriteString("        return out;\n")
+		buf.WriteString("    }\n")
+	}
 	buf.WriteString("}\n")
 	return formatJava(buf.Bytes())
 }
@@ -3173,7 +3219,7 @@ func renameVar(e Expr, oldName, newName string) Expr {
 	case *ValuesExpr:
 		return &ValuesExpr{Map: renameVar(ex.Map, oldName, newName)}
 	case *AppendExpr:
-		return &AppendExpr{List: renameVar(ex.List, oldName, newName), Value: renameVar(ex.Value, oldName, newName)}
+		return &AppendExpr{List: renameVar(ex.List, oldName, newName), Value: renameVar(ex.Value, oldName, newName), ElemType: ex.ElemType}
 	case *ListLit:
 		elems := make([]Expr, len(ex.Elems))
 		for i, el := range ex.Elems {

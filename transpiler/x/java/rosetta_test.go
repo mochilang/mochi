@@ -8,6 +8,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"sort"
 	"strings"
 	"testing"
 	"time"
@@ -97,12 +98,20 @@ func TestJavaTranspiler_Rosetta_Golden(t *testing.T) {
 	if err != nil {
 		t.Fatalf("glob: %v", err)
 	}
+	sort.Strings(files)
 	outDir := filepath.Join(root, "tests", "rosetta", "transpiler", "Java")
 	os.MkdirAll(outDir, 0o755)
-
+	var firstFail string
 	for _, f := range files {
 		name := strings.TrimSuffix(filepath.Base(f), ".mochi")
-		t.Run(name, func(t *testing.T) { runRosettaTask(t, name) })
+		ok := t.Run(name, func(t *testing.T) { runRosettaTask(t, name) })
+		if !ok {
+			firstFail = name
+			break
+		}
+	}
+	if firstFail != "" {
+		t.Fatalf("first failing program: %s", firstFail)
 	}
 }
 
