@@ -275,6 +275,8 @@ func TestTranspileGoAuto(t *testing.T)     { runGolden(t, "go_auto") }
 
 func TestTranspileSaveJSONLStdout(t *testing.T) { runGolden(t, "save_jsonl_stdout") }
 
+func TestTranspileUpdateStmt(t *testing.T) { runGolden(t, "update_stmt") }
+
 func updateEnabled() bool { return *update }
 
 func countCompiled() (int, int) {
