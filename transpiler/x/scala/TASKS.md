@@ -1,3 +1,11 @@
+## Progress (2025-07-22 14:03 +0700)
+- scala transpiler: support load_jsonl and load_yaml without runtime helpers
+- Regenerated golden files - 76/102 vm valid programs passing
+
+## Progress (2025-07-22 13:49 +0700)
+- docs: update scala checklist
+- Regenerated golden files - 74/102 vm valid programs passing
+
 ## Progress (2025-07-22 13:31 +0700)
 - scala transpiler: support multi left join
 - Regenerated golden files - 74/102 vm valid programs passing

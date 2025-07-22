@@ -3,10 +3,18 @@
 package scalat
 
 import (
+	"bufio"
 	"bytes"
+	"encoding/json"
 	"fmt"
 	"io"
+	"os"
+	"path/filepath"
+	"reflect"
+	"sort"
 	"strings"
+
+	yaml "gopkg.in/yaml.v3"
 
 	"mochi/ast"
 	"mochi/parser"
@@ -726,13 +734,12 @@ func (q *QueryExpr) emit(w io.Writer) {
 	if q.Sort == nil && !q.Distinct && q.Skip == nil && q.Take == nil && len(q.Froms) == 0 {
 		fmt.Fprintf(w, "(for (%s <- ", q.Var)
 		q.Src.emit(w)
-		fmt.Fprint(w, ")")
 		if q.Where != nil {
 			fmt.Fprint(w, " if (")
 			q.Where.emit(w)
 			fmt.Fprint(w, ")")
 		}
-		fmt.Fprint(w, " yield ")
+		fmt.Fprint(w, ") yield ")
 		q.Select.emit(w)
 		fmt.Fprint(w, ")")
 		return
@@ -1438,6 +1445,23 @@ func convertPrimary(p *parser.Primary, env *types.Env) (Expr, error) {
 			entries[i] = MapEntry{Key: k, Value: v}
 		}
 		return &MapLit{Items: entries}, nil
+	case p.Load != nil:
+		format := parseFormat(p.Load.With)
+		path := ""
+		if p.Load.Path != nil {
+			path = strings.Trim(*p.Load.Path, "\"")
+		}
+		if format == "" {
+			format = "yaml"
+		}
+		if format != "yaml" && format != "jsonl" {
+			return nil, fmt.Errorf("unsupported load format")
+		}
+		expr, err := dataExprFromFile(path, format, p.Load.Type, env)
+		if err != nil {
+			return nil, err
+		}
+		return expr, nil
 	case p.Query != nil:
 		if rj, err := convertRightJoinQuery(p.Query, env); err == nil {
 			return rj, nil
@@ -2663,4 +2687,180 @@ func formatScala(src []byte) []byte {
 		}
 	}
 	return []byte(strings.Join(out, "\n"))
+}
+
+func repoRoot() string {
+	if root := meta.RepoRoot(); root != "" {
+		return root
+	}
+	dir, _ := os.Getwd()
+	for i := 0; i < 10; i++ {
+		if _, err := os.Stat(filepath.Join(dir, "go.mod")); err == nil {
+			return dir
+		}
+		parent := filepath.Dir(dir)
+		if parent == dir {
+			break
+		}
+		dir = parent
+	}
+	return ""
+}
+
+func isSimpleIdent(e *parser.Expr) (string, bool) {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) > 0 {
+		return "", false
+	}
+	u := e.Binary.Left
+	if len(u.Ops) > 0 || u.Value == nil {
+		return "", false
+	}
+	p := u.Value
+	if len(p.Ops) > 0 || p.Target == nil {
+		return "", false
+	}
+	if p.Target.Selector != nil && len(p.Target.Selector.Tail) == 0 {
+		return p.Target.Selector.Root, true
+	}
+	return "", false
+}
+
+func literalString(e *parser.Expr) (string, bool) {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) > 0 {
+		return "", false
+	}
+	u := e.Binary.Left
+	if len(u.Ops) > 0 || u.Value == nil {
+		return "", false
+	}
+	p := u.Value
+	if len(p.Ops) > 0 || p.Target == nil {
+		return "", false
+	}
+	if p.Target.Lit != nil && p.Target.Lit.Str != nil {
+		return *p.Target.Lit.Str, true
+	}
+	if p.Target.Selector != nil && len(p.Target.Selector.Tail) == 0 {
+		return p.Target.Selector.Root, true
+	}
+	return "", false
+}
+
+func parseFormat(e *parser.Expr) string {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) > 0 {
+		return ""
+	}
+	u := e.Binary.Left
+	if len(u.Ops) > 0 || u.Value == nil {
+		return ""
+	}
+	p := u.Value
+	if len(p.Ops) > 0 || p.Target == nil || p.Target.Map == nil {
+		return ""
+	}
+	for _, it := range p.Target.Map.Items {
+		key, ok := isSimpleIdent(it.Key)
+		if !ok {
+			key, ok = literalString(it.Key)
+		}
+		if key == "format" {
+			if s, ok := literalString(it.Value); ok {
+				return s
+			}
+		}
+	}
+	return ""
+}
+
+func valueToExpr(v interface{}, typ *parser.TypeRef, env *types.Env) Expr {
+	switch val := v.(type) {
+	case map[string]interface{}:
+		if typ != nil && typ.Simple != nil && env != nil {
+			if st, ok := env.GetStruct(*typ.Simple); ok {
+				fields := make([]Expr, len(st.Order))
+				for i, k := range st.Order {
+					fields[i] = valueToExpr(val[k], nil, env)
+				}
+				return &StructLit{Name: st.Name, Fields: fields}
+			}
+		}
+		keys := make([]string, 0, len(val))
+		for k := range val {
+			keys = append(keys, k)
+		}
+		sort.Strings(keys)
+		items := make([]MapEntry, len(keys))
+		for i, k := range keys {
+			items[i] = MapEntry{Key: &StringLit{Value: k}, Value: valueToExpr(val[k], nil, env)}
+		}
+		return &MapLit{Items: items}
+	case []interface{}:
+		var elemTyp *parser.TypeRef
+		if typ != nil {
+			elemTyp = typ
+		}
+		elems := make([]Expr, len(val))
+		for i, it := range val {
+			elems[i] = valueToExpr(it, elemTyp, env)
+		}
+		return &ListLit{Elems: elems}
+	case string:
+		return &StringLit{Value: val}
+	case bool:
+		return &BoolLit{Value: val}
+	case float64:
+		if float64(int(val)) == val {
+			return &IntLit{Value: int(val)}
+		}
+		return &FloatLit{Value: val}
+	case int, int64:
+		return &IntLit{Value: int(reflect.ValueOf(val).Int())}
+	case nil:
+		return &StringLit{Value: ""}
+	default:
+		return &StringLit{Value: fmt.Sprintf("%v", val)}
+	}
+}
+
+func dataExprFromFile(path, format string, typ *parser.TypeRef, env *types.Env) (Expr, error) {
+	if path == "" {
+		return &ListLit{}, nil
+	}
+	root := repoRoot()
+	if root != "" && strings.HasPrefix(path, "../") {
+		clean := strings.TrimPrefix(path, "../")
+		path = filepath.Join(root, "tests", clean)
+	}
+	data, err := os.ReadFile(path)
+	if err != nil {
+		return nil, err
+	}
+	var v interface{}
+	switch format {
+	case "yaml":
+		if err := yaml.Unmarshal(data, &v); err != nil {
+			return nil, err
+		}
+	case "jsonl":
+		var list []interface{}
+		scanner := bufio.NewScanner(bytes.NewReader(data))
+		for scanner.Scan() {
+			line := strings.TrimSpace(scanner.Text())
+			if line == "" {
+				continue
+			}
+			var item interface{}
+			if err := json.Unmarshal([]byte(line), &item); err != nil {
+				return nil, err
+			}
+			list = append(list, item)
+		}
+		if err := scanner.Err(); err != nil {
+			return nil, err
+		}
+		v = list
+	default:
+		return nil, fmt.Errorf("unsupported load format")
+	}
+	return valueToExpr(v, typ, env), nil
 }
