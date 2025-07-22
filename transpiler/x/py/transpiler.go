@@ -900,7 +900,10 @@ func emitStmtIndent(w io.Writer, s Stmt, indent string) error {
 				if _, err := io.WriteString(w, ":\n"); err != nil {
 					return err
 				}
-				if _, err := io.WriteString(w, indent+"    print(json.dumps(_row))\n"); err != nil {
+				if _, err := io.WriteString(w, indent+"    _tmp = dataclasses.asdict(_row) if hasattr(_row, \"__dataclass_fields__\") else _row\n"); err != nil {
+					return err
+				}
+				if _, err := io.WriteString(w, indent+"    print(json.dumps(_tmp))\n"); err != nil {
 					return err
 				}
 				return nil
@@ -918,7 +921,10 @@ func emitStmtIndent(w io.Writer, s Stmt, indent string) error {
 			if _, err := io.WriteString(w, ":\n"); err != nil {
 				return err
 			}
-			if _, err := io.WriteString(w, inner+"    f.write(json.dumps(_row)+\"\\n\")\n"); err != nil {
+			if _, err := io.WriteString(w, inner+"    _tmp = dataclasses.asdict(_row) if hasattr(_row, \"__dataclass_fields__\") else _row\n"); err != nil {
+				return err
+			}
+			if _, err := io.WriteString(w, inner+"    f.write(json.dumps(_tmp)+\"\\n\")\n"); err != nil {
 				return err
 			}
 			return nil
@@ -1302,6 +1308,20 @@ func dataClassFromDict(name string, d *DictLit, env *types.Env) (*DataClassDef, 
 	args := make([]Expr, len(d.Values))
 	copy(args, d.Values)
 	return &DataClassDef{Name: className, Fields: fields}, args
+}
+
+func applyResultClass(e Expr, class string, args []Expr) {
+	switch ex := e.(type) {
+	case *ListComp:
+		ex.Expr = &CallExpr{Func: &Name{Name: class}, Args: args}
+	case *MultiListComp:
+		ex.Expr = &CallExpr{Func: &Name{Name: class}, Args: args}
+	case *LambdaExpr:
+		applyResultClass(ex.Expr, class, args)
+	case *BinaryExpr:
+		applyResultClass(ex.Left, class, args)
+		applyResultClass(ex.Right, class, args)
+	}
 }
 
 func isNumeric(t types.Type) bool {
@@ -1953,6 +1973,94 @@ func substituteFields(e Expr, varName string, fields map[string]bool) Expr {
 	}
 }
 
+func replaceName(e Expr, name string, repl Expr) Expr {
+	switch ex := e.(type) {
+	case *Name:
+		if ex.Name == name {
+			return repl
+		}
+		return ex
+	case *BinaryExpr:
+		ex.Left = replaceName(ex.Left, name, repl)
+		ex.Right = replaceName(ex.Right, name, repl)
+		return ex
+	case *UnaryExpr:
+		ex.Expr = replaceName(ex.Expr, name, repl)
+		return ex
+	case *CallExpr:
+		ex.Func = replaceName(ex.Func, name, repl)
+		for i := range ex.Args {
+			ex.Args[i] = replaceName(ex.Args[i], name, repl)
+		}
+		return ex
+	case *FieldExpr:
+		ex.Target = replaceName(ex.Target, name, repl)
+		if n, ok := ex.Target.(*Name); ok && repl != nil && n.Name == "None" {
+			return repl
+		}
+		return ex
+	case *IndexExpr:
+		ex.Target = replaceName(ex.Target, name, repl)
+		ex.Index = replaceName(ex.Index, name, repl)
+		return ex
+	case *SliceExpr:
+		ex.Target = replaceName(ex.Target, name, repl)
+		if ex.Start != nil {
+			ex.Start = replaceName(ex.Start, name, repl)
+		}
+		if ex.End != nil {
+			ex.End = replaceName(ex.End, name, repl)
+		}
+		if ex.Step != nil {
+			ex.Step = replaceName(ex.Step, name, repl)
+		}
+		return ex
+	case *CondExpr:
+		ex.Cond = replaceName(ex.Cond, name, repl)
+		ex.Then = replaceName(ex.Then, name, repl)
+		ex.Else = replaceName(ex.Else, name, repl)
+		return ex
+	case *ListLit:
+		for i := range ex.Elems {
+			ex.Elems[i] = replaceName(ex.Elems[i], name, repl)
+		}
+		return ex
+	case *DictLit:
+		for i := range ex.Keys {
+			ex.Keys[i] = replaceName(ex.Keys[i], name, repl)
+			ex.Values[i] = replaceName(ex.Values[i], name, repl)
+		}
+		return ex
+	case *LambdaExpr:
+		for _, p := range ex.Params {
+			if p == name {
+				return ex
+			}
+		}
+		ex.Expr = replaceName(ex.Expr, name, repl)
+		return ex
+	default:
+		return ex
+	}
+}
+
+func cloneExpr(e Expr) Expr {
+	switch ex := e.(type) {
+	case *Name:
+		return &Name{Name: ex.Name}
+	case *FieldExpr:
+		return &FieldExpr{Target: cloneExpr(ex.Target), Name: ex.Name, MapIndex: ex.MapIndex}
+	case *CallExpr:
+		args := make([]Expr, len(ex.Args))
+		for i := range ex.Args {
+			args[i] = cloneExpr(ex.Args[i])
+		}
+		return &CallExpr{Func: cloneExpr(ex.Func), Args: args}
+	default:
+		return ex
+	}
+}
+
 func parseFormat(e *parser.Expr) string {
 	if e == nil || e.Binary == nil || len(e.Binary.Right) > 0 {
 		return ""
@@ -2510,6 +2618,7 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 				}
 				if format == "jsonl" {
 					currentImports["json"] = true
+					currentImports["dataclasses"] = true
 				}
 				p.Stmts = append(p.Stmts, &SaveStmt{Src: src, Path: path, Format: format})
 			} else {
@@ -2559,10 +2668,13 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 								dc, args := dataClassFromDict(st.Let.Name, d, env)
 								if dc != nil {
 									p.Stmts = append(p.Stmts, dc)
-									if lc, ok := e.(*ListComp); ok {
-										lc.Expr = &CallExpr{Func: &Name{Name: dc.Name}, Args: args}
-									} else if mc, ok := e.(*MultiListComp); ok {
-										mc.Expr = &CallExpr{Func: &Name{Name: dc.Name}, Args: args}
+									if len(q.Joins) == 1 && q.Joins[0].Side != nil && (*q.Joins[0].Side == "right" || *q.Joins[0].Side == "outer") && len(q.Froms) == 0 {
+										e, err = convertSpecialJoinClass(q, dc.Name, args)
+										if err != nil {
+											return nil, err
+										}
+									} else {
+										applyResultClass(e, dc.Name, args)
 									}
 									if env != nil {
 										env.SetStruct(dc.Name, structFromDataClass(dc, env))
@@ -2621,10 +2733,13 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 								dc, args := dataClassFromDict(st.Var.Name, d, env)
 								if dc != nil {
 									p.Stmts = append(p.Stmts, dc)
-									if lc, ok := e.(*ListComp); ok {
-										lc.Expr = &CallExpr{Func: &Name{Name: dc.Name}, Args: args}
-									} else if mc, ok := e.(*MultiListComp); ok {
-										mc.Expr = &CallExpr{Func: &Name{Name: dc.Name}, Args: args}
+									if len(q.Joins) == 1 && q.Joins[0].Side != nil && (*q.Joins[0].Side == "right" || *q.Joins[0].Side == "outer") && len(q.Froms) == 0 {
+										e, err = convertSpecialJoinClass(q, dc.Name, args)
+										if err != nil {
+											return nil, err
+										}
+									} else {
+										applyResultClass(e, dc.Name, args)
 									}
 									if env != nil {
 										env.SetStruct(dc.Name, structFromDataClass(dc, env))
@@ -2925,6 +3040,7 @@ func convertStmts(list []*parser.Statement, env *types.Env) ([]Stmt, error) {
 				}
 				if format == "jsonl" && currentImports != nil {
 					currentImports["json"] = true
+					currentImports["dataclasses"] = true
 				}
 				out = append(out, &SaveStmt{Src: src, Path: path, Format: format})
 			} else {
@@ -4136,6 +4252,81 @@ func convertSpecialJoin(q *parser.QueryExpr) (Expr, error) {
 		if err != nil {
 			return nil, err
 		}
+		lam := &LambdaExpr{Params: []string{q.Var}, Expr: noneLeftBody}
+		call := &CallExpr{Func: &RawExpr{Code: fmt.Sprintf("(%s)", exprString(lam))}, Args: []Expr{&Name{Name: "None"}}}
+		anyMatch := &CallExpr{Func: &Name{Name: "any"}, Args: []Expr{&ListComp{Var: q.Var, Iter: leftIter, Expr: cond}}}
+		condRight := &UnaryExpr{Op: "not ", Expr: anyMatch}
+		parts = append(parts, &ListComp{Var: j.Var, Iter: rightIter, Expr: call, Cond: condRight})
+	}
+
+	expr := parts[0]
+	for _, p := range parts[1:] {
+		expr = &BinaryExpr{Left: expr, Op: "+", Right: p}
+	}
+	return expr, nil
+}
+
+func convertSpecialJoinClass(q *parser.QueryExpr, class string, args []Expr) (Expr, error) {
+	j := q.Joins[0]
+	side := *j.Side
+	leftIter, err := convertExpr(q.Source)
+	if err != nil {
+		return nil, err
+	}
+	rightIter, err := convertExpr(j.Src)
+	if err != nil {
+		return nil, err
+	}
+	cond, err := convertExpr(j.On)
+	if err != nil {
+		return nil, err
+	}
+
+	makeArgs := func(repl map[string]Expr) []Expr {
+		out := make([]Expr, len(args))
+		for i, a := range args {
+			a = cloneExpr(a)
+			if name, ok := a.(*Name); ok {
+				if r, ok2 := repl[name.Name]; ok2 {
+					out[i] = r
+					continue
+				}
+			}
+			v := a
+			if r, ok := repl[j.Var]; ok {
+				v = replaceName(v, j.Var, r)
+			}
+			if r, ok := repl[q.Var]; ok {
+				v = replaceName(v, q.Var, r)
+			}
+			out[i] = v
+		}
+		return out
+	}
+
+	baseExpr := &CallExpr{Func: &Name{Name: class}, Args: makeArgs(map[string]Expr{})}
+	var base Expr
+	if side == "right" {
+		base = &MultiListComp{Vars: []string{j.Var, q.Var}, Iters: []Expr{rightIter, leftIter}, Expr: baseExpr, Cond: cond}
+	} else {
+		base = &MultiListComp{Vars: []string{q.Var, j.Var}, Iters: []Expr{leftIter, rightIter}, Expr: baseExpr, Cond: cond}
+	}
+
+	parts := []Expr{base}
+
+	if side == "outer" {
+		repl := map[string]Expr{j.Var: &Name{Name: "None"}}
+		noneRightBody := &CallExpr{Func: &Name{Name: class}, Args: makeArgs(repl)}
+		lam := &LambdaExpr{Params: []string{j.Var}, Expr: noneRightBody}
+		call := &CallExpr{Func: &RawExpr{Code: fmt.Sprintf("(%s)", exprString(lam))}, Args: []Expr{&Name{Name: "None"}}}
+		anyMatch := &CallExpr{Func: &Name{Name: "any"}, Args: []Expr{&ListComp{Var: j.Var, Iter: rightIter, Expr: cond}}}
+		condLeft := &UnaryExpr{Op: "not ", Expr: anyMatch}
+		parts = append(parts, &ListComp{Var: q.Var, Iter: leftIter, Expr: call, Cond: condLeft})
+	}
+
+	if side == "right" || side == "outer" {
+		repl := map[string]Expr{q.Var: &Name{Name: "None"}}
+		noneLeftBody := &CallExpr{Func: &Name{Name: class}, Args: makeArgs(repl)}
 		lam := &LambdaExpr{Params: []string{q.Var}, Expr: noneLeftBody}
 		call := &CallExpr{Func: &RawExpr{Code: fmt.Sprintf("(%s)", exprString(lam))}, Args: []Expr{&Name{Name: "None"}}}
 		anyMatch := &CallExpr{Func: &Name{Name: "any"}, Args: []Expr{&ListComp{Var: q.Var, Iter: leftIter, Expr: cond}}}
