@@ -1,5 +1,5 @@
-## Progress (2025-07-22 23:07 +0700)
-- Commit b9c32e8f4: dart transpiler: index rosetta cases
+## Progress (2025-07-22 23:29 +0700)
+- Commit c57de9624: transpiler/python: compile rosetta cases 7-28
 - Generated Python for 103/103 programs
 - Updated README checklist and outputs
 - Removed runtime helpers and improved boolean type inference

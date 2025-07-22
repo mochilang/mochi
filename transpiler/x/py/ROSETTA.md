@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Python code from programs in `tests/rosetta/x/Mochi` lives in `tests/rosetta/transpiler/Python`.
-Last updated: 2025-07-22 16:14 UTC
+Last updated: 2025-07-22 16:46 UTC
 
-## Rosetta Golden Test Checklist (23/284)
+## Rosetta Golden Test Checklist (25/284)
 1. [x] 100-doors-2
 2. [x] 100-doors-3
 3. [x] 100-doors
@@ -19,7 +19,7 @@ Last updated: 2025-07-22 16:14 UTC
 12. [x] 9-billion-names-of-god-the-integer
 13. [x] 99-bottles-of-beer-2
 14. [x] 99-bottles-of-beer
-15. [ ] DNS-query
+15. [x] DNS-query
 16. [x] a+b
 17. [x] abbreviations-automatic
 18. [ ] abbreviations-easy
@@ -33,7 +33,7 @@ Last updated: 2025-07-22 16:14 UTC
 26. [x] accumulator-factory
 27. [x] achilles-numbers
 28. [x] ackermann-function-2
-29. [ ] ackermann-function-3
+29. [x] ackermann-function-3
 30. [ ] ackermann-function
 31. [ ] active-directory-connect
 32. [ ] active-directory-search-for-a-user
