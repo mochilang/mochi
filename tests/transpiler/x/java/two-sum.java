@@ -1,7 +1,7 @@
 public class Main {
     static int[] result = twoSum(new int[]{2, 7, 11, 15}, 9);
 
-    static list twoSum(list nums, int target) {
+    static int[] twoSum(int[] nums, int target) {
         int n = nums.length;
         for (int i = 0; i < n; i++) {
             for (int j = i + 1; j < n; j++) {
