@@ -2493,6 +2493,10 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 								dc, args := dataClassFromDict(st.Let.Name, d, env)
 								if dc != nil {
 									p.Stmts = append(p.Stmts, dc)
+									if env != nil {
+										env.SetStruct(dc.Name, structFromDataClass(dc, env))
+										env.SetVar(st.Let.Name, types.ListType{Elem: structFromDataClass(dc, env)}, false)
+									}
 									if lc, ok := e.(*ListComp); ok {
 										lc.Expr = &CallExpr{Func: &Name{Name: dc.Name}, Args: args}
 									} else if mc, ok := e.(*MultiListComp); ok {
@@ -3216,6 +3220,7 @@ func convertUnary(u *parser.Unary) (Expr, error) {
 func convertSelector(sel *parser.SelectorExpr, method bool) Expr {
 	expr := Expr(&Name{Name: sel.Root})
 	mapIndex := true
+	structMode := false
 	if currentImports != nil && currentImports[sel.Root] {
 		mapIndex = false
 	}
@@ -3223,13 +3228,18 @@ func convertSelector(sel *parser.SelectorExpr, method bool) Expr {
 		if t, err := currentEnv.GetVar(sel.Root); err == nil {
 			if _, ok := t.(types.StructType); ok {
 				mapIndex = false
+				structMode = true
 			}
 		}
 	}
 	for i, t := range sel.Tail {
 		idx := i == len(sel.Tail)-1 && method
 		expr = &FieldExpr{Target: expr, Name: t, MapIndex: mapIndex && !idx}
-		mapIndex = true
+		if structMode {
+			mapIndex = false
+		} else {
+			mapIndex = true
+		}
 	}
 	return expr
 }
@@ -3689,6 +3699,11 @@ func convertQueryExpr(q *parser.QueryExpr) (Expr, error) {
 		if err != nil {
 			return nil, err
 		}
+		if currentEnv != nil {
+			if lt, ok := inferTypeFromExpr(f.Src).(types.ListType); ok {
+				currentEnv.SetVar(f.Var, lt.Elem, true)
+			}
+		}
 		vars = append(vars, f.Var)
 		iters = append(iters, e)
 	}
@@ -3954,6 +3969,11 @@ func convertGroupQuery(q *parser.QueryExpr, env *types.Env, target string) ([]St
 		e, err := convertExpr(f.Src)
 		if err != nil {
 			return nil, err
+		}
+		if env != nil {
+			if lt, ok := inferTypeFromExpr(f.Src).(types.ListType); ok {
+				env.SetVar(f.Var, lt.Elem, true)
+			}
 		}
 		vars = append(vars, f.Var)
 		iters = append(iters, e)
