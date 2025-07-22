@@ -1250,6 +1250,12 @@ func typeOfExpr(e Expr) string {
 			return "object[]"
 		case "Select", "Where":
 			return typeOfExpr(ex.Target)
+		default:
+			if vr, ok := ex.Target.(*VarRef); ok {
+				if alias, ok2 := importAliases[vr.Name]; ok2 && alias == "math" {
+					return "double"
+				}
+			}
 		}
 	case *RawExpr:
 		return ex.Type
@@ -2058,7 +2064,7 @@ func compileStmt(prog *Program, s *parser.Statement) (Stmt, error) {
 	case s.Update != nil:
 		return compileUpdateStmt(s.Update)
 	case s.Import != nil:
-		if prog != nil && s.Import.Auto && s.Import.Lang != nil && *s.Import.Lang == "python" {
+		if prog != nil && s.Import.Lang != nil && *s.Import.Lang == "python" {
 			if s.Import.Path == "\"math\"" || s.Import.Path == "math" {
 				prog.Imports = append(prog.Imports, fmt.Sprintf("using %s = System.Math;", s.Import.As))
 				importAliases[s.Import.As] = "math"
@@ -2201,22 +2207,6 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 					inner := &CallExpr{Func: "JsonSerializer.Serialize", Args: []Expr{arg}}
 					return &CallExpr{Func: name, Args: []Expr{inner}}, nil
 				}
-				if t := typeOfExpr(arg); strings.HasSuffix(t, "[]") {
-					if t == "string[]" {
-						usesLinq = true
-						sel := &MethodCallExpr{Target: arg, Name: "Select", Args: []Expr{&FunLit{Params: []string{"x"}, ParamTypes: []string{"string"}, ReturnType: "string", ExprBody: &BinaryExpr{Left: &StringLit{Value: "'"}, Op: "+", Right: &BinaryExpr{Left: &VarRef{Name: "x"}, Op: "+", Right: &StringLit{Value: "'"}}}}}}
-						join := &CallExpr{Func: "string.Join", Args: []Expr{&StringLit{Value: ", "}, sel}}
-						wrapped := &BinaryExpr{Left: &StringLit{Value: "["}, Op: "+", Right: &BinaryExpr{Left: join, Op: "+", Right: &StringLit{Value: "]"}}}
-						return &CallExpr{Func: name, Args: []Expr{wrapped}}, nil
-					}
-					join := &CallExpr{Func: "string.Join", Args: []Expr{&StringLit{Value: ", "}, arg}}
-					wrapped := &BinaryExpr{Left: &StringLit{Value: "["}, Op: "+", Right: &BinaryExpr{Left: join, Op: "+", Right: &StringLit{Value: "]"}}}
-					return &CallExpr{Func: name, Args: []Expr{wrapped}}, nil
-				}
-				if typeOfExpr(arg) == "double" {
-					formatted := &MethodCallExpr{Target: arg, Name: "ToString", Args: []Expr{&StringLit{Value: "0.0"}}}
-					return &CallExpr{Func: name, Args: []Expr{formatted}}, nil
-				}
 				return &CallExpr{Func: name, Args: []Expr{arg}}, nil
 			}
 			elems := make([]Expr, len(args))
@@ -2224,9 +2214,8 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 				elems[i] = a
 			}
 			list := &ListLit{Elems: elems}
-			join := &CallExpr{Func: "string.Join", Args: []Expr{&StringLit{Value: ", "}, list}}
-			wrapped := &BinaryExpr{Left: &StringLit{Value: "["}, Op: "+", Right: &BinaryExpr{Left: join, Op: "+", Right: &StringLit{Value: "]"}}}
-			return &CallExpr{Func: name, Args: []Expr{wrapped}}, nil
+			join := &CallExpr{Func: "string.Join", Args: []Expr{&StringLit{Value: " "}, list}}
+			return &CallExpr{Func: name, Args: []Expr{join}}, nil
 		case "append":
 			if len(args) == 2 {
 				usesLinq = true
