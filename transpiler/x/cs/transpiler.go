@@ -347,11 +347,37 @@ type IfStmt struct {
 }
 
 func (i *IfStmt) emit(w io.Writer) {
-	fmt.Fprint(w, "if (")
+	condStr := ""
 	if i.Cond != nil {
-		i.Cond.emit(w)
+		if isBoolExpr(i.Cond) {
+			condStr = exprString(i.Cond)
+		} else {
+			condStr = boolExprString(i.Cond)
+		}
 	}
-	fmt.Fprint(w, ") {\n")
+	if condStr == "true" {
+		for _, st := range i.Then {
+			st.emit(w)
+			if isBlockStmt(st) {
+				io.WriteString(w, "\n")
+			} else {
+				io.WriteString(w, ";\n")
+			}
+		}
+		return
+	}
+	if condStr == "false" {
+		for _, st := range i.Else {
+			st.emit(w)
+			if isBlockStmt(st) {
+				io.WriteString(w, "\n")
+			} else {
+				io.WriteString(w, ";\n")
+			}
+		}
+		return
+	}
+	fmt.Fprintf(w, "if (%s) {\n", condStr)
 	for _, st := range i.Then {
 		fmt.Fprint(w, "    ")
 		st.emit(w)
@@ -698,6 +724,21 @@ func exprString(e Expr) string {
 	var buf bytes.Buffer
 	e.emit(&buf)
 	return buf.String()
+}
+
+func boolExprString(e Expr) string {
+	t := typeOfExpr(e)
+	if t == "bool" {
+		return exprString(e)
+	}
+	if t == "" || t == "object" {
+		return "true"
+	}
+	if !strings.HasPrefix(t, "Dictionary<") && !strings.HasSuffix(t, "[]") {
+		s := exprString(e)
+		return fmt.Sprintf("!EqualityComparer<%s>.Default.Equals(%s, default(%s))", t, s, t)
+	}
+	return fmt.Sprintf("%s != null", exprString(e))
 }
 
 func exprUsesVar(e Expr, name string) bool {
@@ -2152,9 +2193,8 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 				elems[i] = a
 			}
 			list := &ListLit{Elems: elems}
-			join := &CallExpr{Func: "string.Join", Args: []Expr{&StringLit{Value: ", "}, list}}
-			wrapped := &BinaryExpr{Left: &StringLit{Value: "["}, Op: "+", Right: &BinaryExpr{Left: join, Op: "+", Right: &StringLit{Value: "]"}}}
-			return &CallExpr{Func: name, Args: []Expr{wrapped}}, nil
+			join := &CallExpr{Func: "string.Join", Args: []Expr{&StringLit{Value: " "}, list}}
+			return &CallExpr{Func: name, Args: []Expr{join}}, nil
 		case "append":
 			if len(args) == 2 {
 				usesLinq = true
@@ -2516,8 +2556,8 @@ func compileQueryExpr(q *parser.QueryExpr) (Expr, error) {
 				builder.Reset()
 				fmt.Fprintf(builder, "from %s in %s", j.Var, exprString(js))
 				tmp := curVar + "Tmp"
-				left := exprString(cmp.Right)
-				right := exprString(cmp.Left)
+				left := exprString(rightExpr)
+				right := exprString(leftExpr)
 				fmt.Fprintf(builder, " join %s in %s on %s equals %s into %s", curVar, srcExpr, left, right, tmp)
 				fmt.Fprintf(builder, " from %s in %s.DefaultIfEmpty()", curVar, tmp)
 				varTypes[j.Var] = strings.TrimSuffix(typeOfExpr(js), "[]")
@@ -2527,7 +2567,7 @@ func compileQueryExpr(q *parser.QueryExpr) (Expr, error) {
 				curVar = j.Var
 			} else {
 				tmp := j.Var + "Tmp"
-				fmt.Fprintf(builder, " join %s in %s on %s equals %s into %s", curVar, exprString(js), right, left, tmp)
+				fmt.Fprintf(builder, " join %s in %s on %s equals %s into %s", curVar, exprString(js), exprString(rightExpr), exprString(leftExpr), tmp)
 				fmt.Fprintf(builder, " from %s in %s.DefaultIfEmpty()", curVar, tmp)
 				curVar = j.Var
 			}
