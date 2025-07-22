@@ -1,3 +1,8 @@
+## Progress (2025-07-22 06:19 +0700)
+- Commit 85aa12994: cs transpiler: support outer join
+- Generated Zig for 91/101 programs
+- Updated README checklist and outputs
+
 ## Progress (2025-07-22 05:20 +0700)
 - Commit 121bd3e1b: update py transpiler docs
 - Generated Zig for 90/101 programs
