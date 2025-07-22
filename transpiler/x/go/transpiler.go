@@ -1549,10 +1549,13 @@ func compileStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 		return &ExprStmt{Expr: e}, nil
 	case st.Let != nil:
 		var typ string
+		var declaredType types.Type
 		if st.Let.Type != nil {
 			typ = toGoType(st.Let.Type, env)
+			declaredType = types.ResolveTypeRef(st.Let.Type, env)
 		} else if t, err := env.GetVar(st.Let.Name); err == nil {
 			typ = toGoTypeFromType(t)
+			declaredType = t
 		}
 		if st.Let.Value != nil {
 			e, err := compileExpr(st.Let.Value, env, st.Let.Name)
@@ -1564,18 +1567,26 @@ func compileStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 					updateMapLitTypes(ml, t)
 				}
 			}
+			var valType types.Type
 			if typ == "" {
-				t := types.TypeOfExpr(st.Let.Value, env)
-				if types.IsAnyType(t) {
-					t = types.TypeOfExprBasic(st.Let.Value, env)
+				valType = types.TypeOfExpr(st.Let.Value, env)
+				if types.IsAnyType(valType) {
+					valType = types.TypeOfExprBasic(st.Let.Value, env)
 				}
-				typ = toGoTypeFromType(t)
-				if _, ok := t.(types.FuncType); ok {
+				typ = toGoTypeFromType(valType)
+				if _, ok := valType.(types.FuncType); ok {
 					typ = ""
 				}
+			} else {
+				valType = types.TypeOfExpr(st.Let.Value, env)
 			}
-			if ll, ok := e.(*ListLit); ok && ll.ElemType != "" {
-				typ = "[]" + ll.ElemType
+			if ll, ok := e.(*ListLit); ok {
+				if ll.ElemType != "" && ll.ElemType != "any" {
+					typ = "[]" + ll.ElemType
+				} else if st.Let.Type != nil && st.Let.Type.Generic != nil && st.Let.Type.Generic.Name == "list" && len(st.Let.Type.Generic.Args) == 1 {
+					ll.ElemType = toGoType(st.Let.Type.Generic.Args[0], env)
+					typ = "[]" + ll.ElemType
+				}
 			}
 			if qe, ok := e.(*QueryExpr); ok && qe.ElemType != "" {
 				typ = "[]" + qe.ElemType
@@ -1601,6 +1612,11 @@ func compileStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 					env.SetVarDeep(st.Let.Name, types.ListType{Elem: stype}, false)
 				}
 			}
+			if declaredType != nil {
+				env.SetVarDeep(st.Let.Name, declaredType, false)
+			} else if valType != nil {
+				env.SetVarDeep(st.Let.Name, valType, false)
+			}
 			global := env == topEnv
 			if global {
 				switch e.(type) {
@@ -1613,10 +1629,13 @@ func compileStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 		return &VarDecl{Name: st.Let.Name, Type: typ, Global: env == topEnv}, nil
 	case st.Var != nil:
 		var typ string
+		var declaredType types.Type
 		if st.Var.Type != nil {
 			typ = toGoType(st.Var.Type, env)
+			declaredType = types.ResolveTypeRef(st.Var.Type, env)
 		} else if t, err := env.GetVar(st.Var.Name); err == nil {
 			typ = toGoTypeFromType(t)
+			declaredType = t
 		}
 		if st.Var.Value != nil {
 			e, err := compileExpr(st.Var.Value, env, st.Var.Name)
@@ -1628,18 +1647,26 @@ func compileStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 					updateMapLitTypes(ml, t)
 				}
 			}
+			var valType types.Type
 			if typ == "" {
-				t := types.TypeOfExpr(st.Var.Value, env)
-				if types.IsAnyType(t) {
-					t = types.TypeOfExprBasic(st.Var.Value, env)
+				valType = types.TypeOfExpr(st.Var.Value, env)
+				if types.IsAnyType(valType) {
+					valType = types.TypeOfExprBasic(st.Var.Value, env)
 				}
-				typ = toGoTypeFromType(t)
-				if _, ok := t.(types.FuncType); ok {
+				typ = toGoTypeFromType(valType)
+				if _, ok := valType.(types.FuncType); ok {
 					typ = ""
 				}
+			} else {
+				valType = types.TypeOfExpr(st.Var.Value, env)
 			}
-			if ll, ok := e.(*ListLit); ok && ll.ElemType != "" {
-				typ = "[]" + ll.ElemType
+			if ll, ok := e.(*ListLit); ok {
+				if ll.ElemType != "" && ll.ElemType != "any" {
+					typ = "[]" + ll.ElemType
+				} else if st.Var.Type != nil && st.Var.Type.Generic != nil && st.Var.Type.Generic.Name == "list" && len(st.Var.Type.Generic.Args) == 1 {
+					ll.ElemType = toGoType(st.Var.Type.Generic.Args[0], env)
+					typ = "[]" + ll.ElemType
+				}
 			}
 			if qe, ok := e.(*QueryExpr); ok && qe.ElemType != "" {
 				typ = "[]" + qe.ElemType
@@ -1658,6 +1685,11 @@ func compileStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 				if stype, ok := topEnv.GetStruct(oj.ElemType); ok {
 					env.SetVarDeep(st.Var.Name, types.ListType{Elem: stype}, true)
 				}
+			}
+			if declaredType != nil {
+				env.SetVarDeep(st.Var.Name, declaredType, true)
+			} else if valType != nil {
+				env.SetVarDeep(st.Var.Name, valType, true)
 			}
 			global := env == topEnv
 			if global {
@@ -3606,7 +3638,11 @@ func toGoTypeFromType(t types.Type) string {
 	case types.BigRatType, types.FloatType:
 		return "float64"
 	case types.ListType:
-		return "[]" + toGoTypeFromType(tt.Elem)
+		elem := toGoTypeFromType(tt.Elem)
+		if elem == "" {
+			elem = "any"
+		}
+		return "[]" + elem
 	case types.MapType:
 		key := toGoTypeFromType(tt.Key)
 		if key == "" {
