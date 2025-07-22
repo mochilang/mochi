@@ -1623,16 +1623,25 @@ func convertPostfix(pf *parser.PostfixExpr, env *types.Env) (Expr, error) {
 		case op.Index != nil:
 			idx := op.Index
 			if idx.Colon != nil || idx.Colon2 != nil {
-				if idx.Start == nil || idx.End == nil {
-					return nil, fmt.Errorf("unsupported slice")
+				if idx.Colon2 != nil || idx.Step != nil {
+					return nil, fmt.Errorf("slice step not supported")
 				}
-				start, err := convertExpr(idx.Start, env)
-				if err != nil {
-					return nil, err
+				var start, end Expr
+				if idx.Start != nil {
+					start, err = convertExpr(idx.Start, env)
+					if err != nil {
+						return nil, err
+					}
+				} else {
+					start = &IntLit{Value: 0}
 				}
-				end, err := convertExpr(idx.End, env)
-				if err != nil {
-					return nil, err
+				if idx.End != nil {
+					end, err = convertExpr(idx.End, env)
+					if err != nil {
+						return nil, err
+					}
+				} else {
+					end = &LenExpr{Value: expr}
 				}
 				expr = &SliceExpr{Value: expr, Start: start, End: end}
 			} else {
