@@ -3,12 +3,12 @@
 package php_test
 
 import (
+	"bufio"
 	"bytes"
 	"fmt"
 	"os"
 	"os/exec"
 	"path/filepath"
-	"sort"
 	"strconv"
 	"strings"
 	"testing"
@@ -29,11 +29,27 @@ func TestPHPTranspiler_Rosetta_Golden(t *testing.T) {
 	os.MkdirAll(outDir, 0o755)
 	defer updateRosettaReadme()
 
-	files, err := filepath.Glob(filepath.Join(srcDir, "*.mochi"))
+	indexPath := filepath.Join(srcDir, "index.txt")
+	f, err := os.Open(indexPath)
 	if err != nil {
-		t.Fatalf("glob: %v", err)
+		t.Fatalf("open index: %v", err)
 	}
-	sort.Strings(files)
+	defer f.Close()
+	scanner := bufio.NewScanner(f)
+	var files []string
+	for scanner.Scan() {
+		parts := strings.Fields(scanner.Text())
+		if len(parts) == 2 {
+			files = append(files, filepath.Join(srcDir, parts[1]))
+		}
+	}
+	if err := scanner.Err(); err != nil {
+		t.Fatalf("scan index: %v", err)
+	}
+
+	if len(files) == 0 {
+		t.Fatal("no rosetta programs found")
+	}
 
 	if s := os.Getenv("ROSETTA_INDEX"); s != "" {
 		idx, err := strconv.Atoi(s)
@@ -123,12 +139,28 @@ func updateRosettaReadme() {
 		}
 	}
 
-	files, _ := filepath.Glob(filepath.Join(srcDir, "*.mochi"))
+	indexPath := filepath.Join(srcDir, "index.txt")
+	idxFile, err := os.Open(indexPath)
+	if err != nil {
+		return
+	}
+	defer idxFile.Close()
+	scanner := bufio.NewScanner(idxFile)
+	var files []string
+	for scanner.Scan() {
+		parts := strings.Fields(scanner.Text())
+		if len(parts) == 2 {
+			files = append(files, parts[1])
+		}
+	}
+	if err := scanner.Err(); err != nil {
+		return
+	}
 	total := len(files)
 	compiled := 0
 	var lines []string
-	for _, f := range files {
-		name := strings.TrimSuffix(filepath.Base(f), ".mochi")
+	for _, nameFile := range files {
+		name := strings.TrimSuffix(nameFile, ".mochi")
 		mark := "[ ]"
 		phpFile := filepath.Join(outDir, name+".php")
 		outFile := filepath.Join(outDir, name+".out")
