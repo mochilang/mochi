@@ -9,7 +9,7 @@ Compiled and ran: 5/284
 - [x] 100-doors-3
 - [x] 100-doors
 - [x] 100-prisoners
-- [ ] 15-puzzle-game
+- [x] 15-puzzle-game
 - [ ] 15-puzzle-solver
 - [ ] 2048
 - [ ] 21-game
@@ -290,4 +290,4 @@ Compiled and ran: 5/284
 - [ ] define-a-primitive-data-type
 - [ ] md5
 
-_Last updated: 2025-07-22 20:55 +0700_
+_Last updated: 2025-07-22 21:23 +0700_
