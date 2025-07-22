@@ -68,6 +68,7 @@ func runCase(src, outDir string) ([]byte, error) {
 		return nil, err
 	}
 	cmd := exec.Command(exe)
+	cmd.Env = append(os.Environ(), "MOCHI_NOW_SEED=1")
 	if data, err := os.ReadFile(strings.TrimSuffix(src, ".mochi") + ".in"); err == nil {
 		cmd.Stdin = bytes.NewReader(data)
 	}
@@ -98,20 +99,16 @@ func TestOCamlTranspiler_Rosetta_Golden(t *testing.T) {
 	var passed int
 	for _, src := range files {
 		name := strings.TrimSuffix(filepath.Base(src), ".mochi")
-		ok := t.Run(name, func(t *testing.T) {
+		if ok := t.Run(name, func(t *testing.T) {
 			if _, err := runCase(src, outDir); err != nil {
 				t.Fatalf("%v", err)
 			}
-		})
-		if ok {
-			passed++
-		} else {
-			t.Logf("first failing program: %s", name)
-			break
+		}); !ok {
+			t.Fatalf("first failing program: %s", name)
 		}
+		passed++
 	}
-	failed := len(files) - passed
-	t.Logf("Summary: %d passed, %d failed", passed, failed)
+	t.Logf("Summary: %d passed, %d failed", passed, len(files)-passed)
 }
 
 func TestMain(m *testing.M) {
