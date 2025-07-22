@@ -440,9 +440,9 @@ func (p *Program) write(w io.Writer) {
 			case strings.HasPrefix(f.Type, "std::optional<"):
 				fmt.Fprintf(w, "; if(v.%s) os << *v.%s; else os << \"None\"; os", f.Name, f.Name)
 			case strings.HasPrefix(f.Type, "std::vector<"):
-				fmt.Fprintf(w, "<< '['; for(size_t i=0;i<v.%s.size();++i){ if(i>0) os << ', '; os << v.%s[i]; } os << ']'", f.Name, f.Name)
+				fmt.Fprintf(w, "<< '['; for(size_t i=0;i<v.%s.size();++i){ if(i>0) os << \", \"; os << v.%s[i]; } os << ']'", f.Name, f.Name)
 			case strings.HasPrefix(f.Type, "std::map<"):
-				fmt.Fprintf(w, "<< '{'; bool first_%d=true; for(const auto& p: v.%s){ if(!first_%d) os << ', '; first_%d=false; os << p.first << ': ' << p.second; } os << '}'", i, f.Name, i, i)
+				fmt.Fprintf(w, "<< '{'; bool first_%d=true; for(const auto& p: v.%s){ if(!first_%d) os << \", \"; first_%d=false; os << p.first << ': ' << p.second; } os << '}'", i, f.Name, i, i)
 			default:
 				fmt.Fprintf(w, "<< v.%s", f.Name)
 			}
@@ -537,7 +537,7 @@ func emitToStream(w io.Writer, stream string, e Expr, indent int) {
 		io.WriteString(w, ind+"{")
 		io.WriteString(w, " auto __tmp = ")
 		e.emit(w)
-		io.WriteString(w, "; "+stream+" << '['; for(size_t i=0;i<__tmp.size();++i){ if(i>0) "+stream+" << ', '; "+stream+" << __tmp[i]; } "+stream+" << ']'; }")
+		io.WriteString(w, "; "+stream+" << '['; for(size_t i=0;i<__tmp.size();++i){ if(i>0) "+stream+" << \", \"; "+stream+" << __tmp[i]; } "+stream+" << ']'; }")
 		io.WriteString(w, "\n")
 	case strings.HasPrefix(typ, "std::optional<"):
 		io.WriteString(w, ind+"{")
@@ -549,7 +549,7 @@ func emitToStream(w io.Writer, stream string, e Expr, indent int) {
 		io.WriteString(w, ind+"{")
 		io.WriteString(w, " auto __tmp = ")
 		e.emit(w)
-		io.WriteString(w, "; "+stream+" << '{'; bool first=true; for(const auto& __p : __tmp){ if(!first) "+stream+" << ', '; first=false; "+stream+" << __p.first << ': ' << __p.second; } "+stream+" << '}'; }")
+		io.WriteString(w, "; "+stream+" << '{'; bool first=true; for(const auto& __p : __tmp){ if(!first) "+stream+" << \", \"; first=false; "+stream+" << __p.first << ': ' << __p.second; } "+stream+" << '}'; }")
 		io.WriteString(w, "\n")
 	default:
 		io.WriteString(w, ind+stream+" << ")
@@ -954,14 +954,18 @@ func (gc *GroupComp) emit(w io.Writer) {
 		gc.Cond.emit(w)
 		io.WriteString(w, ") {\n")
 	}
-	io.WriteString(w, "        "+gc.ItemType+" __row{")
-	for i, v := range gc.RowVars {
-		if i > 0 {
-			io.WriteString(w, ", ")
+	if len(gc.RowVars) > 0 {
+		io.WriteString(w, "        "+gc.ItemType+" __row{")
+		for i, v := range gc.RowVars {
+			if i > 0 {
+				io.WriteString(w, ", ")
+			}
+			io.WriteString(w, v)
 		}
-		io.WriteString(w, v)
+		io.WriteString(w, "};\n")
+	} else {
+		io.WriteString(w, "        auto __row = "+gc.ItemVar+";\n")
 	}
-	io.WriteString(w, "};\n")
 	io.WriteString(w, "        auto __key = ")
 	gc.Key.emit(w)
 	io.WriteString(w, ";\n")
@@ -3101,15 +3105,22 @@ func convertSimpleQuery(q *parser.QueryExpr, target string) (Expr, *StructDef, s
 				currentProgram.addInclude("<tuple>")
 			}
 		}
-		pairName := strings.Title(q.Group.Name) + "Row"
-		pfields := make([]Param, len(vars))
-		for i, v := range vars {
-			pfields[i] = Param{Name: v, Type: qTypes[v]}
+		itemType := ""
+		pairName := ""
+		pfields := []Param{}
+		if len(vars) > 1 {
+			pairName = strings.Title(q.Group.Name) + "Row"
+			pfields = make([]Param, len(vars))
+			for i, v := range vars {
+				pfields[i] = Param{Name: v, Type: qTypes[v]}
+			}
+			if currentProgram != nil {
+				currentProgram.Structs = append(currentProgram.Structs, StructDef{Name: pairName, Fields: pfields})
+			}
+			itemType = pairName
+		} else {
+			itemType = qTypes[vars[0]]
 		}
-		if currentProgram != nil {
-			currentProgram.Structs = append(currentProgram.Structs, StructDef{Name: pairName, Fields: pfields})
-		}
-		itemType := pairName
 		structName := strings.Title(q.Group.Name) + "Group"
 		gdef := &StructDef{Name: structName, Fields: []Param{{Name: "key", Type: keyType}, {Name: "items", Type: fmt.Sprintf("std::vector<%s>", itemType)}}}
 		if currentProgram != nil {
@@ -3120,7 +3131,8 @@ func convertSimpleQuery(q *parser.QueryExpr, target string) (Expr, *StructDef, s
 		if err != nil {
 			return nil, nil, "", err
 		}
-		elemType = exprType(body)
+		resultType := exprType(body)
+		elemType = resultType
 		if ml, ok := body.(*MapLit); ok {
 			if keys := make([]string, len(ml.Keys)); true {
 				for i, k := range ml.Keys {
@@ -3154,13 +3166,61 @@ func convertSimpleQuery(q *parser.QueryExpr, target string) (Expr, *StructDef, s
 					body = &StructLit{Name: structName2, Fields: flds2}
 					def = &StructDef{Name: structName2, Fields: fields2}
 					elemType = structName2
+					resultType = structName2
 				}
 			}
 		}
 		if currentProgram != nil {
 			currentProgram.addInclude("<vector>")
 		}
-		return &GroupComp{Vars: vars, Iters: iters, Cond: cond, Key: keyExpr, ItemVar: "__row", RowVars: vars, GroupName: q.Group.Name, GroupStruct: structName, Body: body, ElemType: elemType, KeyType: keyType, ItemType: itemType}, def, elemType, nil
+		gcBody := body
+		if q.Sort != nil || q.Skip != nil || q.Take != nil {
+			gcBody = &VarRef{Name: q.Group.Name}
+			elemType = structName
+		}
+		gc := &GroupComp{Vars: vars, Iters: iters, Cond: cond, Key: keyExpr, GroupName: q.Group.Name, GroupStruct: structName, Body: gcBody, ElemType: elemType, KeyType: keyType, ItemType: itemType}
+		if len(vars) > 1 {
+			gc.ItemVar = "__row"
+			gc.RowVars = vars
+		} else {
+			gc.ItemVar = vars[0]
+		}
+		if q.Sort != nil || q.Skip != nil || q.Take != nil {
+			var keyExpr2 Expr
+			var keyType2 string = "int"
+			var desc bool
+			var err error
+			if q.Sort != nil {
+				keyExpr2, err = convertExpr(q.Sort)
+				if err != nil {
+					return nil, nil, "", err
+				}
+				if u, ok := keyExpr2.(*UnaryExpr); ok && u.Op == "-" {
+					keyExpr2 = u.Expr
+					desc = true
+				}
+				keyType2 = exprType(keyExpr2)
+			}
+			var skipExpr, takeExpr Expr
+			if q.Skip != nil {
+				skipExpr, err = convertExpr(q.Skip)
+				if err != nil {
+					return nil, nil, "", err
+				}
+			}
+			if q.Take != nil {
+				takeExpr, err = convertExpr(q.Take)
+				if err != nil {
+					return nil, nil, "", err
+				}
+			}
+			if currentProgram != nil {
+				currentProgram.addInclude("<algorithm>")
+			}
+			sc := &SortComp{Vars: []string{q.Group.Name}, Iters: []Expr{gc}, Key: keyExpr2, Desc: desc, Skip: skipExpr, Take: takeExpr, Body: body, ElemType: resultType, KeyType: keyType2}
+			return sc, def, resultType, nil
+		}
+		return gc, def, elemType, nil
 	}
 	if currentProgram != nil {
 		currentProgram.addInclude("<vector>")
@@ -3896,6 +3956,11 @@ func exprType(e Expr) string {
 		}
 		if t, ok := localTypes[v.Name]; ok {
 			return t
+		}
+		if currentProgram != nil {
+			if et, ok := currentProgram.ListTypes[v.Name]; ok {
+				return fmt.Sprintf("std::vector<%s>", et)
+			}
 		}
 		return "auto"
 	case *StructLit:
