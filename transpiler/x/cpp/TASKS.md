@@ -1,3 +1,58 @@
+## Progress (2025-07-22 14:31 +0700)
+- transpiler(py): support group joins in group_by
+- Generated C++ for 98/102 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-22 14:31 +0700)
+- transpiler(py): support group joins in group_by
+- Generated C++ for 98/102 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-22 14:31 +0700)
+- transpiler(py): support group joins in group_by
+- Generated C++ for 98/102 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-22 14:31 +0700)
+- transpiler(py): support group joins in group_by
+- Generated C++ for 98/102 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-22 14:31 +0700)
+- transpiler(py): support group joins in group_by
+- Generated C++ for 98/102 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-22 14:31 +0700)
+- transpiler(py): support group joins in group_by
+- Generated C++ for 98/102 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-22 14:31 +0700)
+- transpiler(py): support group joins in group_by
+- Generated C++ for 98/102 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-22 14:31 +0700)
+- transpiler(py): support group joins in group_by
+- Generated C++ for 98/102 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-22 14:31 +0700)
+- transpiler(py): support group joins in group_by
+- Generated C++ for 98/102 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-22 14:31 +0700)
+- transpiler(py): support group joins in group_by
+- Generated C++ for 98/102 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-22 14:31 +0700)
+- transpiler(py): support group joins in group_by
+- Generated C++ for 98/102 programs
+- Updated README checklist and outputs
+
 ## Progress (2025-07-22 14:10 +0700)
 - cpp transpiler: support jsonl save
 - Generated C++ for 97/102 programs

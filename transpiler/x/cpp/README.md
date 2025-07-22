@@ -3,9 +3,9 @@
 This checklist is auto-generated.
 Generated C++ code for programs in `tests/vm/valid`. Each program has a `.cpp` file produced by the transpiler and a `.out` file containing its runtime output. Compilation or execution errors are captured in a `.error` file placed next to the source.
 
-Last updated: 2025-07-22 14:10 +0700
+Last updated: 2025-07-22 14:31 +0700
 
-## VM Golden Test Checklist (97/102)
+## VM Golden Test Checklist (98/102)
 - [x] append_builtin
 - [x] avg_builtin
 - [x] basic_compare
@@ -36,7 +36,7 @@ Last updated: 2025-07-22 14:10 +0700
 - [x] group_by_left_join
 - [x] group_by_multi_join
 - [x] group_by_multi_join_sort
-- [ ] group_by_multi_sort
+- [x] group_by_multi_sort
 - [x] group_by_sort
 - [x] group_items_iteration
 - [x] if_else
