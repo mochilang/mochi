@@ -616,13 +616,7 @@ func (f *FormatListExpr) emit(w io.Writer) {
 	io.WriteString(w, "\"[\" + ")
 	if f.Value != nil {
 		f.Value.emit(w)
-		io.WriteString(w, `.map(v => { if (typeof v === 'string') return '\'' + v + '\''; if (typeof v === 'number') return Number.isInteger(v) ? String(v) : String(v); if (typeof v === 'boolean') return v ? 'True' : 'False'; if (typeof v === 'object') { if (v && v.__name) { const entries = Object.entries(v).filter(([k]) => k !== '__name'); return v.__name + ' {' + entries.map(([k,val]) => { if (typeof val === 'string') return k + ' = ' + '\'' + val + '\''; if (typeof val === 'number') return k + ' = ' + (Number.isInteger(val) ? String(val) : String(val)); if (typeof val === 'boolean') return k + ' = ' + (val ? 'True' : 'False'); return k + ' = ' + String(val); }).join(', ') + '}'; } let s = JSON.stringify(v).replace(/"/g, '\'' ).replace(/:/g, ': ').replace(/,/g, ', ');`)
-		if len(f.FloatFields) > 0 {
-			io.WriteString(w, ` s = s.replace(/'(`)
-			io.WriteString(w, strings.Join(f.FloatFields, "|"))
-			io.WriteString(w, `)'\s*: (-?[0-9]+)([,}])/g, '$1': $2.0$3');`)
-		}
-		io.WriteString(w, ` s = s.replace(/('[^']*(?:id|key)'\s*: )(-?[0-9]+)\.0([,}])/g, '$1$2$3'); return s } return String(v); }).join(', ')`)
+		io.WriteString(w, `.map(v => typeof v === 'number' && Number.isInteger(v) ? v.toFixed(1) : String(v)).join(', ')`)
 	} else {
 		io.WriteString(w, "\"\"")
 	}
@@ -635,11 +629,13 @@ func (p *PrintExpr) emit(w io.Writer) {
 		if i > 0 {
 			io.WriteString(w, ", ")
 		}
+		io.WriteString(w, "(tmp => typeof tmp === 'number' && Number.isInteger(tmp) ? tmp.toFixed(1) : tmp)(")
 		if a != nil {
 			a.emit(w)
 		} else {
 			io.WriteString(w, "null")
 		}
+		io.WriteString(w, ")")
 	}
 	io.WriteString(w, ")")
 }
