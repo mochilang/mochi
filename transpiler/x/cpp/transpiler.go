@@ -31,6 +31,14 @@ var inFunction bool
 var inLambda int
 var builtinAliases map[string]string
 var useNow bool
+var reserved = map[string]bool{"this": true}
+
+func safeName(n string) string {
+	if reserved[n] {
+		return "_" + n
+	}
+	return n
+}
 
 func init() {
 	_, file, _, _ := runtime.Caller(0)
@@ -776,7 +784,7 @@ func (b *BoolLit) emit(w io.Writer) {
 }
 
 func (s *StructLit) emit(w io.Writer) {
-	io.WriteString(w, s.Name)
+	io.WriteString(w, safeName(s.Name))
 	io.WriteString(w, "{")
 	for i, f := range s.Fields {
 		if i > 0 {
@@ -982,7 +990,7 @@ func (s *SubstringExpr) emit(w io.Writer) {
 	io.WriteString(w, ")")
 }
 
-func (v *VarRef) emit(w io.Writer) { io.WriteString(w, v.Name) }
+func (v *VarRef) emit(w io.Writer) { io.WriteString(w, safeName(v.Name)) }
 
 func (c *CallExpr) emit(w io.Writer) {
 	io.WriteString(w, c.Name)
@@ -1549,7 +1557,7 @@ func (a *AssignStmt) emit(w io.Writer, indent int) {
 	for i := 0; i < indent; i++ {
 		io.WriteString(w, "    ")
 	}
-	io.WriteString(w, a.Name)
+	io.WriteString(w, safeName(a.Name))
 	io.WriteString(w, " = ")
 	a.Value.emit(w)
 	io.WriteString(w, ";\n")
@@ -1712,7 +1720,7 @@ func (f *ForStmt) emit(w io.Writer, indent int) {
 				io.WriteString(w, "    ")
 			}
 			io.WriteString(w, "auto ")
-			io.WriteString(w, f.Var)
+			io.WriteString(w, safeName(f.Var))
 			io.WriteString(w, " = __p.first;\n")
 		} else {
 			io.WriteString(w, "for (")
@@ -1722,22 +1730,22 @@ func (f *ForStmt) emit(w io.Writer, indent int) {
 			} else {
 				io.WriteString(w, "auto ")
 			}
-			io.WriteString(w, f.Var)
+			io.WriteString(w, safeName(f.Var))
 			io.WriteString(w, " : ")
 			f.Start.emit(w)
 			io.WriteString(w, ") {\n")
 		}
 	} else {
 		io.WriteString(w, "for (int ")
-		io.WriteString(w, f.Var)
+		io.WriteString(w, safeName(f.Var))
 		io.WriteString(w, " = ")
 		f.Start.emit(w)
 		io.WriteString(w, "; ")
-		io.WriteString(w, f.Var)
+		io.WriteString(w, safeName(f.Var))
 		io.WriteString(w, " < ")
 		f.End.emit(w)
 		io.WriteString(w, "; ")
-		io.WriteString(w, f.Var)
+		io.WriteString(w, safeName(f.Var))
 		io.WriteString(w, "++ ) {\n")
 	}
 	old := localTypes
@@ -4330,6 +4338,18 @@ func exprType(e Expr) string {
 			return fmt.Sprintf("std::map<%s, %s>", kt, exprType(v.Values[0]))
 		}
 		return "std::map<auto, auto>"
+	case *IndexExpr:
+		t := exprType(v.Target)
+		if strings.HasPrefix(t, "std::vector<") && strings.HasSuffix(t, ">") {
+			return strings.TrimSuffix(strings.TrimPrefix(t, "std::vector<"), ">")
+		}
+		if strings.HasPrefix(t, "std::map<") && strings.HasSuffix(t, ">") {
+			parts := strings.SplitN(strings.TrimSuffix(strings.TrimPrefix(t, "std::map<"), ">"), ",", 2)
+			if len(parts) == 2 {
+				return strings.TrimSpace(parts[1])
+			}
+		}
+		return "auto"
 	case *SelectorExpr:
 		t := exprType(v.Target)
 		if ft := structFieldType(t, v.Field); ft != "" {
