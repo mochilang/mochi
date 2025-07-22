@@ -3,12 +3,12 @@
 package kt_test
 
 import (
-	"bufio"
 	"bytes"
 	"fmt"
 	"os"
 	"os/exec"
 	"path/filepath"
+	"sort"
 	"strconv"
 	"strings"
 	"testing"
@@ -38,30 +38,17 @@ func TestRosettaKotlin(t *testing.T) {
 			idx = v
 		}
 	}
-	indexPath := filepath.Join(srcDir, "index.txt")
-	f, err := os.Open(indexPath)
+	files, err := filepath.Glob(filepath.Join(srcDir, "*.mochi"))
 	if err != nil {
-		t.Fatalf("open index: %v", err)
+		t.Fatalf("glob: %v", err)
 	}
-	defer f.Close()
-	scanner := bufio.NewScanner(f)
-	var names []string
-	for scanner.Scan() {
-		parts := strings.Fields(scanner.Text())
-		if len(parts) == 2 {
-			names = append(names, parts[1])
-		}
-	}
-	if err := scanner.Err(); err != nil {
-		t.Fatalf("read index: %v", err)
-	}
-	if idx > len(names) {
+	sort.Strings(files)
+	if idx > len(files) {
 		t.Fatalf("index %d out of range", idx)
 	}
-	nameFile := names[idx-1]
-	name := strings.TrimSuffix(nameFile, ".mochi")
-	srcPath := filepath.Join(srcDir, nameFile)
-	outPath := filepath.Join(srcDir, name+".out")
+	srcPath := files[idx-1]
+	name := strings.TrimSuffix(filepath.Base(srcPath), ".mochi")
+	outPath := strings.TrimSuffix(srcPath, ".mochi") + ".out"
 	ktPath := filepath.Join(outDir, name+".kt")
 	t.Cleanup(kt.UpdateRosettaChecklist)
 	ok := t.Run(fmt.Sprintf("%03d_%s", idx, name), func(t *testing.T) {
