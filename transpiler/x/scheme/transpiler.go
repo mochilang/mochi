@@ -8,6 +8,7 @@ import (
 	"io"
 	"math"
 	"os/exec"
+	"sort"
 	"strings"
 	"time"
 
@@ -19,6 +20,8 @@ var currentEnv *types.Env
 var breakStack []Symbol
 var continueStack []Node
 var gensymCounter int
+var structCounter int
+var structNames map[string]string
 
 func pushLoop(breakSym Symbol, cont Node) {
 	breakStack = append(breakStack, breakSym)
@@ -156,9 +159,19 @@ func header() []byte {
 	}
 	loc, _ := time.LoadLocation("Asia/Bangkok")
 	prelude := `(define (to-str x)
-  (cond ((pair? x)
-         (string-append "[" (string-join (map to-str x) ", ") "]"))
-        ((string? x) x)
+  (cond ((and (hash-table? x) (hash-table-exists? x "__name"))
+         (let* ((name (hash-table-ref x "__name"))
+                (ks (filter (lambda (k) (not (string=? k "__name"))) (hash-table-keys x))))
+           (set! ks (list-sort string<? ks))
+           (string-append name " {"
+                        (string-join (map (lambda (k)
+                                            (string-append k " = " (to-str (hash-table-ref x k))))
+                                          ks)
+                                     ", ")
+                        "}")))
+        ((pair? x)
+         (string-append "[" (string-join (map to-str x) ",") "]"))
+        ((string? x) (string-append "\"" x "\""))
         ((boolean? x) (if x "true" "false"))
         (else (number->string x))))`
 	return []byte(fmt.Sprintf(";; Generated on %s\n%s\n",
@@ -479,6 +492,8 @@ func convertStmt(st *parser.Statement) (Node, error) {
 // print statements with string literals.
 func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	currentEnv = env
+	structCounter = 0
+	structNames = map[string]string{}
 	p := &Program{}
 	for _, st := range prog.Statements {
 		form, err := convertStmt(st)
@@ -713,10 +728,12 @@ func convertParserPrimary(p *parser.Primary) (Node, error) {
 		return &List{Elems: append([]Node{Symbol("list")}, elems...)}, nil
 	case p.Map != nil:
 		pairs := []Node{Symbol("list")}
+		keys := []string{}
 		for _, it := range p.Map.Items {
 			var k Node
 			if s, ok := types.SimpleStringKey(it.Key); ok {
 				k = StringLit(s)
+				keys = append(keys, s)
 			} else {
 				var err error
 				k, err = convertParserExpr(it.Key)
@@ -730,6 +747,22 @@ func convertParserPrimary(p *parser.Primary) (Node, error) {
 			}
 			pair := &List{Elems: []Node{Symbol("cons"), k, v}}
 			pairs = append(pairs, pair)
+		}
+		if len(keys) == len(p.Map.Items) {
+			sort.Strings(keys)
+			sig := strings.Join(keys, "|")
+			if structNames == nil {
+				structNames = map[string]string{}
+			}
+			name, ok := structNames[sig]
+			if !ok {
+				structCounter++
+				name = fmt.Sprintf("GenType%d", structCounter)
+				structNames[sig] = name
+			}
+			tmp := []Node{Symbol("list"), &List{Elems: []Node{Symbol("cons"), StringLit("__name"), StringLit(name)}}}
+			tmp = append(tmp, pairs[1:]...)
+			pairs = tmp
 		}
 		return &List{Elems: []Node{Symbol("alist->hash-table"), &List{Elems: pairs}}}, nil
 	case p.Query != nil:
@@ -973,7 +1006,6 @@ func convertGroupByJoinQuery(q *parser.QueryExpr) (Node, error) {
 		currentEnv = prevEnv
 		return nil, err
 	}
-	sel = mapToAlist(sel)
 	var sortExpr Node
 	if q.Sort != nil {
 		sortExpr, err = convertParserExpr(q.Sort)
@@ -1118,6 +1150,7 @@ func convertGroupByJoinQuery(q *parser.QueryExpr) (Node, error) {
 			l.source,
 		}}
 	}
+	groupsList := gensym("groups_list")
 	buildRes := &List{Elems: []Node{
 		Symbol("for-each"),
 		&List{Elems: []Node{
@@ -1128,7 +1161,7 @@ func convertGroupByJoinQuery(q *parser.QueryExpr) (Node, error) {
 				&List{Elems: []Node{Symbol("append"), Symbol(res), &List{Elems: []Node{Symbol("list"), sel}}}},
 			}},
 		}},
-		&List{Elems: []Node{Symbol("hash-table-values"), Symbol(groups)}},
+		Symbol(groupsList),
 	}}
 
 	var sortCall Node
@@ -1143,8 +1176,8 @@ func convertGroupByJoinQuery(q *parser.QueryExpr) (Node, error) {
 			&List{Elems: []Node{Symbol("<"), keyA, keyB}},
 		}}
 		sortCall = &List{Elems: []Node{
-			Symbol("set!"), Symbol(res),
-			&List{Elems: []Node{Symbol("list-sort"), cmp, Symbol(res)}},
+			Symbol("set!"), Symbol(groupsList),
+			&List{Elems: []Node{Symbol("list-sort"), cmp, Symbol(groupsList)}},
 		}}
 	}
 
@@ -1153,9 +1186,19 @@ func convertGroupByJoinQuery(q *parser.QueryExpr) (Node, error) {
 		Symbol("let"),
 		&List{Elems: []Node{
 			&List{Elems: []Node{Symbol(groups), &List{Elems: []Node{Symbol("make-hash-table")}}}},
-			&List{Elems: []Node{Symbol(res), &List{Elems: []Node{Symbol("list")}}}},
 		}},
-		&List{Elems: []Node{Symbol("begin"), loopBody, buildRes, sortCall, Symbol(res)}},
+		&List{Elems: []Node{
+			Symbol("begin"),
+			loopBody,
+			&List{Elems: []Node{
+				Symbol("let"),
+				&List{Elems: []Node{
+					&List{Elems: []Node{Symbol(groupsList), &List{Elems: []Node{Symbol("hash-table-values"), Symbol(groups)}}}},
+					&List{Elems: []Node{Symbol(res), &List{Elems: []Node{Symbol("list")}}}},
+				}},
+				&List{Elems: []Node{Symbol("begin"), sortCall, buildRes, Symbol(res)}},
+			}},
+		}},
 	}}, nil
 }
 
