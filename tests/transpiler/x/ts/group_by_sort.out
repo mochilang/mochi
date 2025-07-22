@@ -1,1 +1,1 @@
-{"cat": "b", "total": 7} {"cat": "a", "total": 4}
+[GenType2 {cat = "b", total = 7},GenType2 {cat = "a", total = 4}]
