@@ -261,14 +261,14 @@ func (p *PrintStmt) emit(w io.Writer, idx int) {
 		fmt.Fprintf(w, ", R%d), writeln(R%d)", idx, idx)
 		return
 	case *ListLit:
-		for i, el := range e.Elems {
-			io.WriteString(w, "    writeln(")
-			el.emit(w)
-			io.WriteString(w, ")")
-			if i < len(e.Elems)-1 {
-				io.WriteString(w, ",\n")
-			}
-		}
+		io.WriteString(w, "    writeln(")
+		e.emit(w)
+		io.WriteString(w, ")")
+		return
+	case *MapLit:
+		io.WriteString(w, "    writeln(")
+		e.emit(w)
+		io.WriteString(w, ")")
 		return
 	case *CallExpr:
 		fmt.Fprintf(w, "    %s(", e.Name)
@@ -663,7 +663,7 @@ func (l *ListLit) emit(w io.Writer) {
 }
 
 func (m *MapLit) emit(w io.Writer) {
-	io.WriteString(w, "_{")
+	io.WriteString(w, "map{")
 	for i, it := range m.Items {
 		if i > 0 {
 			io.WriteString(w, ", ")
@@ -831,7 +831,7 @@ func matchToIf(m *parser.MatchExpr, env *compileEnv) (Expr, error) {
 			return nil, err
 		}
 		op := "=:="
-		if isStringLike(target, env) || isStringLike(pat, env) || isMapLike(target, env) || isMapLike(pat, env) {
+		if isStringLike(target, env) || isStringLike(pat, env) || isMapLike(target, env) || isMapLike(pat, env) || isBoolLike(target, env) || isBoolLike(pat, env) {
 			op = "="
 		}
 		cond := &BinaryExpr{Left: target, Op: op, Right: pat}
@@ -966,6 +966,18 @@ func isStringLike(e Expr, env *compileEnv) bool {
 	}
 	if ix, ok := e.(*IndexExpr); ok {
 		if ix.IsString {
+			return true
+		}
+	}
+	return false
+}
+
+func isBoolLike(e Expr, env *compileEnv) bool {
+	if _, ok := e.(*BoolLit); ok {
+		return true
+	}
+	if v, ok := e.(*Var); ok {
+		if c, ok2 := env.constExpr(v.Name).(*BoolLit); ok2 && c != nil {
 			return true
 		}
 	}
@@ -1141,6 +1153,17 @@ func updateNestedMap(m *MapLit, k1, k2 string, val Expr) (*MapLit, bool) {
 					return newOuter, true
 				}
 			}
+		}
+	}
+	return nil, false
+}
+
+func updateMapField(m *MapLit, key string, val Expr) (*MapLit, bool) {
+	for i, it := range m.Items {
+		if it.Key == key {
+			newMap := cloneMap(m)
+			newMap.Items[i].Value = val
+			return newMap, true
 		}
 	}
 	return nil, false
@@ -1381,6 +1404,9 @@ func compileStmts(sts []*parser.Statement, env *compileEnv) ([]Stmt, error) {
 			continue
 		case s.Expect != nil:
 			continue
+		case s.Fun != nil:
+			env.fnMap[s.Fun.Name] = s.Fun
+			continue
 		case s.Expr != nil:
 			call := s.Expr.Expr.Binary.Left.Value.Target.Call
 			if call == nil || (call.Func != "print" && call.Func != "json") {
@@ -1518,6 +1544,24 @@ func compileStmts(sts []*parser.Statement, env *compileEnv) ([]Stmt, error) {
 			name := env.fresh(s.Assign.Name)
 			env.setConst(name, expr)
 			out = append(out, &LetStmt{Name: name, Expr: expr})
+		case s.Assign != nil && len(s.Assign.Field) == 1 && len(s.Assign.Index) == 0:
+			key := s.Assign.Field[0].Name
+			mp, ok := env.constExpr(env.current(s.Assign.Name)).(*MapLit)
+			if !ok {
+				return nil, fmt.Errorf("unsupported record assign")
+			}
+			val, err := toExpr(s.Assign.Value, env)
+			if err != nil {
+				return nil, err
+			}
+			updated, ok := updateMapField(mp, key, val)
+			if !ok {
+				return nil, fmt.Errorf("field not found")
+			}
+			name := env.fresh(s.Assign.Name)
+			env.setConst(name, updated)
+			out = append(out, &LetStmt{Name: name, Expr: updated})
+
 		case s.Assign != nil && len(s.Assign.Index) == 2 &&
 			s.Assign.Index[0].Colon == nil && s.Assign.Index[0].End == nil && s.Assign.Index[0].Step == nil &&
 			s.Assign.Index[1].Colon == nil && s.Assign.Index[1].End == nil && s.Assign.Index[1].Step == nil:
@@ -3126,6 +3170,18 @@ func evalQueryExpr(q *parser.QueryExpr, env *compileEnv) (Expr, error) {
 					itRec.isNum = true
 				case *StringLit:
 					itRec.str = k.Value
+				case *MapLit:
+					parts := []string{}
+					for _, it := range k.Items {
+						if iv, ok := intValue(it.Value); ok {
+							parts = append(parts, fmt.Sprintf("%09d", iv))
+						} else if sv, ok := it.Value.(*StringLit); ok {
+							parts = append(parts, sv.Value)
+						} else {
+							return nil, fmt.Errorf("unsupported sort key")
+						}
+					}
+					itRec.str = strings.Join(parts, "|")
 				default:
 					return nil, fmt.Errorf("unsupported sort key")
 				}
