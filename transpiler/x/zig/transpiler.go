@@ -35,6 +35,11 @@ var funDepth int
 var funParamsStack [][]string
 var nestedFunArgs map[string][]string
 var builtinAliases map[string]string
+var funcAliases map[string]string
+var needStrInt bool
+var needStrFloat bool
+var needNow bool
+var needConcatString bool
 var transEnv *types.Env
 
 func toSnakeCase(s string) string {
@@ -600,6 +605,9 @@ func zigTypeFromExpr(e Expr) string {
 			if strings.HasPrefix(ce.Func, "std.math.") {
 				return "f64"
 			}
+			if t, ok := varTypes[ce.Func]; ok {
+				return t
+			}
 			return "i64"
 		}
 	case *IndexExpr:
@@ -853,6 +861,18 @@ func (p *Program) Emit() []byte {
 	var buf bytes.Buffer
 	buf.WriteString(header())
 	buf.WriteString("const std = @import(\"std\");\n\n")
+	if needConcatString {
+		buf.WriteString("fn _concat_string(a: []const u8, b: []const u8) []const u8 {\n    const alloc = std.heap.page_allocator;\n    return std.mem.concat(alloc, u8, &[_][]const u8{ a, b }) catch unreachable;\n}\n\n")
+	}
+	if needNow {
+		buf.WriteString("fn _now() i64 { return std.time.milliTimestamp(); }\n\n")
+	}
+	if needStrInt {
+		buf.WriteString("fn _str_i64(v: i64) []const u8 { return std.fmt.allocPrint(std.heap.page_allocator, \"{d}\", .{v}) catch unreachable; }\n\n")
+	}
+	if needStrFloat {
+		buf.WriteString("fn _str_f64(v: f64) []const u8 { return std.fmt.allocPrint(std.heap.page_allocator, \"{d:.1}\", .{v}) catch unreachable; }\n\n")
+	}
 	for _, st := range p.Structs {
 		st.emit(&buf)
 		buf.WriteString("\n")
@@ -1081,6 +1101,7 @@ func (e *ExprStmt) emit(w io.Writer, indent int) {
 	writeIndent(w, indent)
 	if e.Expr != nil {
 		e.Expr.emit(w)
+		io.WriteString(w, ";")
 	}
 	io.WriteString(w, "\n")
 }
@@ -1101,11 +1122,38 @@ func (v *VarRef) emit(w io.Writer) { io.WriteString(w, v.Name) }
 
 func (b *BinaryExpr) emit(w io.Writer) {
 	if b.Op == "+" {
+		if zigTypeFromExpr(b.Left) == "[]const u8" || zigTypeFromExpr(b.Right) == "[]const u8" {
+			needConcatString = true
+			io.WriteString(w, "_concat_string(")
+			b.Left.emit(w)
+			io.WriteString(w, ", ")
+			b.Right.emit(w)
+			io.WriteString(w, ")")
+			return
+		}
 		if l, ok := b.Left.(*StringLit); ok {
 			if r, ok2 := b.Right.(*StringLit); ok2 {
 				fmt.Fprintf(w, "%q", l.Value+r.Value)
 				return
 			}
+		}
+	}
+	if zigTypeFromExpr(b.Left) == "[]const u8" && zigTypeFromExpr(b.Right) == "[]const u8" {
+		switch b.Op {
+		case "==":
+			io.WriteString(w, "std.mem.eql(u8, ")
+			b.Left.emit(w)
+			io.WriteString(w, ", ")
+			b.Right.emit(w)
+			io.WriteString(w, ")")
+			return
+		case "!=":
+			io.WriteString(w, "!std.mem.eql(u8, ")
+			b.Left.emit(w)
+			io.WriteString(w, ", ")
+			b.Right.emit(w)
+			io.WriteString(w, ")")
+			return
 		}
 	}
 	if _, ok := b.Left.(*StringLit); ok {
@@ -1217,7 +1265,13 @@ func (i *IndexExpr) emit(w io.Writer) {
 	} else {
 		i.Target.emit(w)
 		io.WriteString(w, "[")
-		i.Index.emit(w)
+		if zigTypeFromExpr(i.Index) != "usize" {
+			io.WriteString(w, "@as(usize, @intCast(")
+			i.Index.emit(w)
+			io.WriteString(w, "))")
+		} else {
+			i.Index.emit(w)
+		}
 		io.WriteString(w, "]")
 	}
 }
@@ -1484,6 +1538,12 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	funParamsStack = nil
 	nestedFunArgs = map[string][]string{}
 	builtinAliases = map[string]string{}
+	funcAliases = map[string]string{}
+	needStrInt = false
+	needStrFloat = false
+	needNow = false
+	needConcatString = false
+	varTypes["_concat_string"] = "[]const u8"
 	mutables := map[string]bool{}
 	collectMutables(prog.Statements, mutables)
 	constLists = map[string]*ListLit{}
@@ -1639,6 +1699,13 @@ func compileExpr(e *parser.Expr) (Expr, error) {
 					expr = &ListLit{Elems: res}
 					continue
 				}
+			}
+		}
+		if op.Op == "+" {
+			lt := zigTypeFromExpr(expr)
+			rt := zigTypeFromExpr(r)
+			if lt == "[]const u8" || rt == "[]const u8" {
+				needConcatString = true
 			}
 		}
 		expr = &BinaryExpr{Left: expr, Op: op.Op, Right: r}
@@ -1851,11 +1918,23 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 			args[i] = ex
 		}
 		switch p.Call.Func {
+		case "now":
+			if len(args) == 0 {
+				needNow = true
+				varTypes["_now"] = "i64"
+				return &CallExpr{Func: "_now", Args: nil}, nil
+			}
 		case "str":
 			if len(args) == 1 {
-				if lit, ok := args[0].(*IntLit); ok {
-					return &StringLit{Value: fmt.Sprintf("%d", lit.Value)}, nil
+				t := zigTypeFromExpr(args[0])
+				if t == "f64" {
+					needStrFloat = true
+					varTypes["_str_f64"] = "[]const u8"
+					return &CallExpr{Func: "_str_f64", Args: []Expr{args[0]}}, nil
 				}
+				needStrInt = true
+				varTypes["_str_i64"] = "[]const u8"
+				return &CallExpr{Func: "_str_i64", Args: []Expr{args[0]}}, nil
 			}
 		case "substring":
 			if len(args) == 3 {
@@ -1935,14 +2014,18 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 				return &AppendExpr{List: args[0], Value: args[1], ElemType: zigTypeFromExpr(args[1])}, nil
 			}
 		}
-		if extra, ok := nestedFunArgs[p.Call.Func]; ok {
+		fname := p.Call.Func
+		if alias, ok := funcAliases[fname]; ok {
+			fname = alias
+		}
+		if extra, ok := nestedFunArgs[fname]; ok {
 			pre := make([]Expr, len(extra))
 			for i, n := range extra {
 				pre[i] = &VarRef{Name: n}
 			}
 			args = append(pre, args...)
 		}
-		return &CallExpr{Func: p.Call.Func, Args: args}, nil
+		return &CallExpr{Func: fname, Args: args}, nil
 	case p.Lit != nil:
 		if p.Lit.Str != nil {
 			return &StringLit{Value: *p.Lit.Str}, nil
@@ -2463,6 +2546,11 @@ func toZigType(t *parser.TypeRef) string {
 }
 
 func compileFunStmt(fn *parser.FunStmt, prog *parser.Program) (*Func, error) {
+	name := fn.Name
+	if name == "main" {
+		name = "user_main"
+		funcAliases["main"] = "user_main"
+	}
 	names := make([]string, len(fn.Params))
 	params := make([]Param, len(fn.Params))
 	for i, p := range fn.Params {
@@ -2491,7 +2579,7 @@ func compileFunStmt(fn *parser.FunStmt, prog *parser.Program) (*Func, error) {
 			body = append(body, s)
 		}
 	}
-	f := &Func{Name: fn.Name, Params: params, ReturnType: ret, Body: body}
+	f := &Func{Name: name, Params: params, ReturnType: ret, Body: body}
 	if funDepth > 1 {
 		captured := []string{}
 		for i := 0; i < len(funParamsStack)-1; i++ {
