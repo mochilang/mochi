@@ -1,6 +1,6 @@
-## Progress (2025-07-22 15:08 +0700)
-- Commit bde78003b: c transpiler: support go_auto
-- Regenerated golden files - 79/102 vm valid programs passing
+## Progress (2025-07-22 16:14 +0700)
+- Commit a650a0dae: scala transpiler: improve group query typing
+- Regenerated golden files - 79/103 vm valid programs passing
 
 ## Progress (2025-07-22 14:12 +0700)
 - VM valid golden test results updated to 77/102
