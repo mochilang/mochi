@@ -1,5 +1,5 @@
-## Progress (2025-07-22 18:14 +0700)
-- Commit 5077c75ed: release: v0.10.37
+## Progress (2025-07-22 20:47 +0700)
+- Commit 0c7e6f7c6: st rosetta: add MOCHI_ROSETTA_ONLY filter
 - Generated Smalltalk for 103/103 programs
 - Updated README checklist and outputs
 - Added support for break and continue statements

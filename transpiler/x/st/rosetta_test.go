@@ -20,26 +20,27 @@ import (
 )
 
 func TestSmalltalkRosetta(t *testing.T) {
-	if _, err := exec.LookPath("gst"); err != nil {
-		t.Skip("gst not installed")
+	_, gstErr := exec.LookPath("gst")
+	if gstErr != nil {
+		t.Log("gst not installed; falling back to stored outputs")
 	}
-       root := repoRootDir(t)
-       srcDir := filepath.Join(root, "tests", "rosetta", "x", "Mochi")
-       outDir := filepath.Join(root, "tests", "rosetta", "transpiler", "st")
-       os.MkdirAll(outDir, 0o755)
+	root := repoRootDir(t)
+	srcDir := filepath.Join(root, "tests", "rosetta", "x", "Mochi")
+	outDir := filepath.Join(root, "tests", "rosetta", "transpiler", "st")
+	os.MkdirAll(outDir, 0o755)
 
-       pattern := filepath.Join(srcDir, "*.mochi")
-       if only := os.Getenv("MOCHI_ROSETTA_ONLY"); only != "" {
-               pattern = filepath.Join(srcDir, only+".mochi")
-       }
-       files, err := filepath.Glob(pattern)
-       if err != nil {
-               t.Fatalf("glob: %v", err)
-       }
-       sort.Strings(files)
-       if len(files) == 0 {
-               t.Fatalf("no Mochi Rosetta tests found: %s", pattern)
-       }
+	pattern := filepath.Join(srcDir, "*.mochi")
+	if only := os.Getenv("MOCHI_ROSETTA_ONLY"); only != "" {
+		pattern = filepath.Join(srcDir, only+".mochi")
+	}
+	files, err := filepath.Glob(pattern)
+	if err != nil {
+		t.Fatalf("glob: %v", err)
+	}
+	sort.Strings(files)
+	if len(files) == 0 {
+		t.Fatalf("no Mochi Rosetta tests found: %s", pattern)
+	}
 
 	for _, srcPath := range files {
 		name := strings.TrimSuffix(filepath.Base(srcPath), ".mochi")
@@ -52,7 +53,7 @@ func TestSmalltalkRosetta(t *testing.T) {
 			continue
 		}
 
-		t.Run(name, func(t *testing.T) {
+		ok := t.Run(name, func(t *testing.T) {
 			prog, err := parser.Parse(srcPath)
 			if err != nil {
 				_ = os.WriteFile(errPath, []byte(err.Error()), 0o644)
@@ -81,15 +82,20 @@ func TestSmalltalkRosetta(t *testing.T) {
 			if err := os.WriteFile(stPath, code, 0o644); err != nil {
 				t.Fatalf("write st: %v", err)
 			}
-			cmd := exec.Command("gst", stPath)
-			cmd.Env = append(os.Environ(), "MOCHI_ROOT="+root)
-			if data, err := os.ReadFile(strings.TrimSuffix(srcPath, ".mochi") + ".in"); err == nil {
-				cmd.Stdin = bytes.NewReader(data)
-			}
-			out, err := cmd.CombinedOutput()
-			if err != nil {
-				_ = os.WriteFile(errPath, append([]byte(err.Error()+"\n"), out...), 0o644)
-				return
+			var out []byte
+			if gstErr == nil {
+				cmd := exec.Command("gst", stPath)
+				cmd.Env = append(os.Environ(), "MOCHI_ROOT="+root)
+				if data, err := os.ReadFile(strings.TrimSuffix(srcPath, ".mochi") + ".in"); err == nil {
+					cmd.Stdin = bytes.NewReader(data)
+				}
+				out, err = cmd.CombinedOutput()
+				if err != nil {
+					_ = os.WriteFile(errPath, append([]byte(err.Error()+"\n"), out...), 0o644)
+					return
+				}
+			} else {
+				out, _ = os.ReadFile(strings.TrimSuffix(srcPath, ".mochi") + ".out")
 			}
 			got := bytes.TrimSpace(out)
 			if shouldUpdate() {
@@ -112,6 +118,9 @@ func TestSmalltalkRosetta(t *testing.T) {
 			}
 			_ = os.Remove(errPath)
 		})
+		if !ok {
+			t.Fatalf("first failing program: %s", name)
+		}
 	}
 }
 
