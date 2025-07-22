@@ -1,3 +1,48 @@
+## Progress (2025-07-22 13:26 +0700)
+- docs: update scala progress
+- Generated C++ for 97/102 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-22 13:26 +0700)
+- docs: update scala progress
+- Generated C++ for 97/102 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-22 13:26 +0700)
+- docs: update scala progress
+- Generated C++ for 97/102 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-22 13:26 +0700)
+- docs: update scala progress
+- Generated C++ for 97/102 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-22 13:26 +0700)
+- docs: update scala progress
+- Generated C++ for 96/102 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-22 13:26 +0700)
+- docs: update scala progress
+- Generated C++ for 95/102 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-22 13:26 +0700)
+- docs: update scala progress
+- Generated C++ for 94/102 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-22 13:26 +0700)
+- docs: update scala progress
+- Generated C++ for 94/102 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-22 13:26 +0700)
+- docs: update scala progress
+- Generated C++ for 94/102 programs
+- Updated README checklist and outputs
+
 ## Progress (2025-07-22 13:21 +0700)
 - cpp transpiler: support right joins
 - Generated C++ for 93/102 programs

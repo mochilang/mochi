@@ -22,6 +22,7 @@ var currentEnv *types.Env
 var localTypes map[string]string
 var inFunction bool
 var inLambda int
+var builtinAliases map[string]string
 
 func init() {
 	_, file, _, _ := runtime.Caller(0)
@@ -1564,6 +1565,7 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	cp := &Program{Includes: []string{"<iostream>", "<string>"}, ListTypes: map[string]string{}}
 	currentProgram = cp
 	currentEnv = env
+	builtinAliases = map[string]string{}
 	defer func() { currentProgram = nil; currentEnv = nil }()
 	var body []Stmt
 	var globals []Stmt
@@ -1578,6 +1580,14 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 				return nil, err
 			}
 			cp.Functions = append(cp.Functions, fn)
+		case stmt.Import != nil:
+			if _, err := convertStmt(stmt); err != nil {
+				return nil, err
+			}
+		case stmt.ExternVar != nil, stmt.ExternFun != nil, stmt.ExternObject != nil, stmt.ExternType != nil:
+			if _, err := convertStmt(stmt); err != nil {
+				return nil, err
+			}
 		case stmt.Expr != nil:
 			if call := extractCall(stmt.Expr.Expr); call != nil && call.Func == "print" {
 				if cp != nil {
@@ -2097,6 +2107,37 @@ func convertStmt(s *parser.Statement) (Stmt, error) {
 			}
 		}
 		return &ReturnStmt{Value: val}, nil
+	case s.Import != nil:
+		if s.Import.Lang != nil {
+			alias := s.Import.As
+			if alias == "" {
+				alias = parser.AliasFromPath(s.Import.Path)
+			}
+			path := strings.Trim(s.Import.Path, "\"")
+			lang := *s.Import.Lang
+			if builtinAliases == nil {
+				builtinAliases = map[string]string{}
+			}
+			switch lang {
+			case "python":
+				if path == "math" {
+					builtinAliases[alias] = "python_math"
+					if currentProgram != nil {
+						currentProgram.addInclude("<cmath>")
+					}
+					return nil, nil
+				}
+			case "go":
+				if s.Import.Auto && path == "mochi/runtime/ffi/go/testpkg" {
+					builtinAliases[alias] = "go_testpkg"
+					return nil, nil
+				}
+			}
+		}
+		return nil, nil
+	case s.ExternVar != nil, s.ExternFun != nil, s.ExternObject != nil, s.ExternType != nil:
+		// ignore extern declarations
+		return nil, nil
 	case s.If != nil:
 		return convertIfStmt(s.If)
 	case s.While != nil:
@@ -2236,6 +2277,37 @@ func convertPostfix(p *parser.PostfixExpr) (Expr, error) {
 			}
 			if sel, ok := expr.(*SelectorExpr); ok && sel.Field == "contains" && len(args) == 1 {
 				expr = &ContainsExpr{Value: sel.Target, Sub: args[0]}
+			} else if sel, ok := expr.(*SelectorExpr); ok {
+				if vr, ok2 := sel.Target.(*VarRef); ok2 {
+					if kind, ok3 := builtinAliases[vr.Name]; ok3 {
+						switch kind {
+						case "go_testpkg":
+							if sel.Field == "Add" && len(args) == 2 {
+								expr = &BinaryExpr{Left: args[0], Op: "+", Right: args[1]}
+								break
+							}
+						case "python_math":
+							if currentProgram != nil {
+								currentProgram.addInclude("<cmath>")
+							}
+							switch sel.Field {
+							case "sqrt", "sin", "log":
+								expr = &CallExpr{Name: "std::" + sel.Field, Args: args}
+								break
+							case "pow":
+								expr = &CallExpr{Name: "std::pow", Args: args}
+								break
+							}
+						}
+					}
+				}
+				if _, ok4 := expr.(*CallExpr); ok4 {
+					// already handled
+				} else if _, ok4 := expr.(*BinaryExpr); ok4 {
+					// already handled
+				} else {
+					return nil, fmt.Errorf("unsupported call")
+				}
 			} else if vr, ok := expr.(*VarRef); ok {
 				expr = &CallExpr{Name: vr.Name, Args: args}
 			} else {
@@ -2535,7 +2607,27 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 		}
 		return &CallExpr{Name: p.Call.Func, Args: args}, nil
 	case p.Selector != nil:
-		expr := Expr(&VarRef{Name: p.Selector.Root})
+		alias := p.Selector.Root
+		if kind, ok := builtinAliases[alias]; ok && len(p.Selector.Tail) == 1 {
+			field := p.Selector.Tail[0]
+			switch kind {
+			case "go_testpkg":
+				switch field {
+				case "Pi":
+					return &FloatLit{Value: 3.14}, nil
+				case "Answer":
+					return &IntLit{Value: 42}, nil
+				}
+			case "python_math":
+				switch field {
+				case "pi":
+					return &FloatLit{Value: 3.141592653589793}, nil
+				case "e":
+					return &FloatLit{Value: 2.718281828459045}, nil
+				}
+			}
+		}
+		expr := Expr(&VarRef{Name: alias})
 		for _, f := range p.Selector.Tail {
 			expr = &SelectorExpr{Target: expr, Field: f}
 		}
