@@ -41,6 +41,9 @@ var useTime bool
 var patternMode bool
 var boxVars map[string]bool
 var mainFuncName string
+var globalVars map[string]bool
+var unsafeFuncs map[string]bool
+var funcDepth int
 
 func VarTypes() map[string]string { return varTypes }
 
@@ -53,6 +56,7 @@ type Program struct {
 	UsesGroup   bool
 	UseTime     bool
 	Types       []TypeDecl
+	Globals     []*VarDecl
 }
 
 type Stmt interface{ emit(io.Writer) }
@@ -321,10 +325,15 @@ type FuncDecl struct {
 	Params []Param
 	Return string
 	Body   []Stmt
+	Unsafe bool
 }
 
 func (f *FuncDecl) emit(w io.Writer) {
-	fmt.Fprintf(w, "fn %s(", f.Name)
+	if f.Unsafe {
+		fmt.Fprintf(w, "unsafe fn %s(", f.Name)
+	} else {
+		fmt.Fprintf(w, "fn %s(", f.Name)
+	}
 	for i, p := range f.Params {
 		if i > 0 {
 			io.WriteString(w, ", ")
@@ -762,9 +771,44 @@ type VarDecl struct {
 	Expr    Expr
 	Type    string
 	Mutable bool
+	Global  bool
 }
 
 func (v *VarDecl) emit(w io.Writer) {
+	if v.Global {
+		io.WriteString(w, "static mut ")
+		io.WriteString(w, v.Name)
+		io.WriteString(w, ": ")
+		typ := v.Type
+		if typ == "" {
+			typ = varTypes[v.Name]
+		}
+		if typ == "" {
+			typ = "i64"
+		}
+		io.WriteString(w, typ)
+		io.WriteString(w, " = ")
+		switch typ {
+		case "String":
+			io.WriteString(w, "String::new()")
+		case "bool":
+			io.WriteString(w, "false")
+		case "i64", "f64":
+			io.WriteString(w, "0")
+		default:
+			if strings.HasPrefix(typ, "Vec<") {
+				io.WriteString(w, "Vec::new()")
+			} else if strings.HasPrefix(typ, "HashMap<") {
+				io.WriteString(w, "HashMap::new()")
+			} else if strings.HasPrefix(typ, "Option<") {
+				io.WriteString(w, "None")
+			} else {
+				io.WriteString(w, "Default::default()")
+			}
+		}
+		io.WriteString(w, ";")
+		return
+	}
 	io.WriteString(w, "let ")
 	if v.Mutable {
 		io.WriteString(w, "mut ")
@@ -1390,6 +1434,9 @@ func Transpile(p *parser.Program, env *types.Env) (*Program, error) {
 	funParamTypes = make(map[string][]string)
 	boxVars = make(map[string]bool)
 	mainFuncName = ""
+	globalVars = make(map[string]bool)
+	unsafeFuncs = make(map[string]bool)
+	funcDepth = 0
 	typeDecls = nil
 	structForMap = make(map[*parser.MapLiteral]string)
 	structForList = make(map[*parser.ListLiteral]string)
@@ -1403,6 +1450,19 @@ func Transpile(p *parser.Program, env *types.Env) (*Program, error) {
 		}
 		if s != nil {
 			prog.Stmts = append(prog.Stmts, s)
+		}
+	}
+	for _, st := range prog.Stmts {
+		if vd, ok := st.(*VarDecl); ok && vd.Global {
+			prog.Globals = append(prog.Globals, vd)
+		}
+	}
+	if len(prog.Globals) > 0 {
+		for _, st := range prog.Stmts {
+			if fd, ok := st.(*FuncDecl); ok {
+				fd.Unsafe = true
+				unsafeFuncs[fd.Name] = true
+			}
 		}
 	}
 	prog.Types = typeDecls
@@ -1522,7 +1582,12 @@ func compileStmt(stmt *parser.Statement) (Stmt, error) {
 				}
 			}
 		}
-		return &VarDecl{Name: stmt.Let.Name, Expr: e, Type: typ}, nil
+		vd := &VarDecl{Name: stmt.Let.Name, Expr: e, Type: typ}
+		if funcDepth == 0 {
+			vd.Global = true
+			globalVars[stmt.Let.Name] = true
+		}
+		return vd, nil
 	case stmt.Var != nil:
 		var e Expr
 		var err error
@@ -1609,7 +1674,12 @@ func compileStmt(stmt *parser.Statement) (Stmt, error) {
 				}
 			}
 		}
-		return &VarDecl{Name: stmt.Var.Name, Expr: e, Type: typ, Mutable: true}, nil
+		vd := &VarDecl{Name: stmt.Var.Name, Expr: e, Type: typ, Mutable: true}
+		if funcDepth == 0 {
+			vd.Global = true
+			globalVars[stmt.Var.Name] = true
+		}
+		return vd, nil
 	case stmt.Assign != nil:
 		val, err := compileExpr(stmt.Assign.Value)
 		if err != nil {
@@ -1920,6 +1990,8 @@ func compileTypeStmt(t *parser.TypeDecl) (Stmt, error) {
 }
 
 func compileFunStmt(fn *parser.FunStmt) (Stmt, error) {
+	funcDepth++
+	defer func() { funcDepth-- }()
 	params := make([]Param, len(fn.Params))
 	typList := make([]string, len(fn.Params))
 	for i, p := range fn.Params {
@@ -3404,6 +3476,10 @@ func Emit(prog *Program) []byte {
 		d.emit(&buf)
 		buf.WriteByte('\n')
 	}
+	for _, g := range prog.Globals {
+		g.emit(&buf)
+		buf.WriteByte('\n')
+	}
 	for _, s := range prog.Stmts {
 		if fd, ok := s.(*FuncDecl); ok {
 			fd.emit(&buf)
@@ -3411,9 +3487,31 @@ func Emit(prog *Program) []byte {
 		}
 	}
 	buf.WriteString("fn main() {\n")
+	for _, g := range prog.Globals {
+		if g.Expr != nil {
+			buf.WriteString("    unsafe { ")
+			buf.WriteString(g.Name)
+			buf.WriteString(" = ")
+			var b bytes.Buffer
+			g.Expr.emit(&b)
+			buf.Write(b.Bytes())
+			buf.WriteString("; }\n")
+		}
+	}
 	for _, s := range prog.Stmts {
 		if _, ok := s.(*FuncDecl); ok {
 			continue
+		}
+		if vd, ok := s.(*VarDecl); ok && vd.Global {
+			continue
+		}
+		if es, ok := s.(*ExprStmt); ok {
+			if ce, ok2 := es.Expr.(*CallExpr); ok2 && unsafeFuncs[ce.Func] {
+				buf.WriteString("    unsafe { ")
+				ce.emit(&buf)
+				buf.WriteString("; }\n")
+				continue
+			}
 		}
 		writeStmt(&buf, s, 1)
 	}
