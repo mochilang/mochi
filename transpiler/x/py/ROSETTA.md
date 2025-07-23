@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Python code from programs in `tests/rosetta/x/Mochi` lives in `tests/rosetta/transpiler/Python`.
-Last updated: 2025-07-23 07:37 UTC
+Last updated: 2025-07-23 08:14 UTC
 
-## Rosetta Golden Test Checklist (96/284)
+## Rosetta Golden Test Checklist (124/284)
 1. [x] 100-doors-2
 2. [x] 100-doors-3
 3. [x] 100-doors
@@ -84,8 +84,8 @@ Last updated: 2025-07-23 07:37 UTC
 77. [x] ascending-primes
 78. [x] ascii-art-diagram-converter
 79. [x] assertions
-80. [ ] associative-array-creation
-81. [ ] associative-array-iteration
+80. [x] associative-array-creation
+81. [x] associative-array-iteration
 82. [x] associative-array-merging
 83. [x] atomic-updates
 84. [x] attractive-numbers
@@ -105,36 +105,36 @@ Last updated: 2025-07-23 07:37 UTC
 98. [x] babylonian-spiral
 99. [x] balanced-brackets
 100. [x] balanced-ternary
-101. [ ] barnsley-fern
-102. [ ] base64-decode-data
-103. [ ] bell-numbers
-104. [ ] benfords-law
+101. [x] barnsley-fern
+102. [x] base64-decode-data
+103. [x] bell-numbers
+104. [x] benfords-law
 105. [ ] bernoulli-numbers
-106. [ ] best-shuffle
-107. [ ] bifid-cipher
-108. [ ] bin-given-limits
-109. [ ] binary-digits
+106. [x] best-shuffle
+107. [x] bifid-cipher
+108. [x] bin-given-limits
+109. [x] binary-digits
 110. [ ] binary-search
-111. [ ] binary-strings
-112. [ ] bioinformatics-base-count
-113. [ ] bioinformatics-global-alignment
-114. [ ] bioinformatics-sequence-mutation
-115. [ ] biorhythms
+111. [x] binary-strings
+112. [x] bioinformatics-base-count
+113. [x] bioinformatics-global-alignment
+114. [x] bioinformatics-sequence-mutation
+115. [x] biorhythms
 116. [ ] bitcoin-address-validation
-117. [ ] bitmap-b-zier-curves-cubic
-118. [ ] bitmap-b-zier-curves-quadratic
-119. [ ] bitmap-bresenhams-line-algorithm
-120. [ ] bitmap-flood-fill
-121. [ ] bitmap-histogram
-122. [ ] bitmap-midpoint-circle-algorithm
-123. [ ] bitmap-ppm-conversion-through-a-pipe
+117. [x] bitmap-b-zier-curves-cubic
+118. [x] bitmap-b-zier-curves-quadratic
+119. [x] bitmap-bresenhams-line-algorithm
+120. [x] bitmap-flood-fill
+121. [x] bitmap-histogram
+122. [x] bitmap-midpoint-circle-algorithm
+123. [x] bitmap-ppm-conversion-through-a-pipe
 124. [ ] bitmap-read-a-ppm-file
-125. [ ] bitmap-read-an-image-through-a-pipe
-126. [ ] bitmap-write-a-ppm-file
-127. [ ] bitmap
-128. [ ] bitwise-io-1
+125. [x] bitmap-read-an-image-through-a-pipe
+126. [x] bitmap-write-a-ppm-file
+127. [x] bitmap
+128. [x] bitwise-io-1
 129. [ ] bitwise-io-2
-130. [ ] bitwise-operations
+130. [x] bitwise-operations
 131. [ ] blum-integer
 132. [ ] boolean-values
 133. [ ] box-the-compass

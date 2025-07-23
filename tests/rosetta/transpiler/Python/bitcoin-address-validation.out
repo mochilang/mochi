@@ -1,0 +1,14 @@
+Traceback (most recent call last):
+  File "/workspace/mochi/tests/rosetta/transpiler/Python/bitcoin-address-validation.py", line 55, in <module>
+    print(str(validA58("1AGNa15ZQXAZUgFiqJ3i7Z2DPU2J6hW62i")))
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/mochi/tests/rosetta/transpiler/Python/bitcoin-address-validation.py", line 48, in validA58
+    sum = computeChecksum(a)
+          ^^^^^^^^^^^^^^^^^^
+  File "/workspace/mochi/tests/rosetta/transpiler/Python/bitcoin-address-validation.py", line 40, in computeChecksum
+    hash = doubleSHA256(a[0:21])
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/mochi/tests/rosetta/transpiler/Python/bitcoin-address-validation.py", line 37, in doubleSHA256
+    first = sha256(bs)
+            ^^^^^^
+NameError: name 'sha256' is not defined

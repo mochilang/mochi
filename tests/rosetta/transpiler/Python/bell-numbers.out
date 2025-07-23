@@ -1,0 +1,8 @@
+First fifteen and fiftieth Bell numbers:
+Traceback (most recent call last):
+  File "/workspace/mochi/tests/rosetta/transpiler/Python/bell-numbers.py", line 37, in <module>
+    main()
+  File "/workspace/mochi/tests/rosetta/transpiler/Python/bell-numbers.py", line 31, in main
+    print("" + padStart(str(i), 2, " ") + ": " + str(bt[i][0]))
+               ^^^^^^^^
+NameError: name 'padStart' is not defined

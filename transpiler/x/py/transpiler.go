@@ -1556,6 +1556,10 @@ func inferPyType(e Expr, env *types.Env) types.Type {
 				if len(ex.Args) == 1 {
 					return types.StringType{}
 				}
+			case "padStart":
+				if len(ex.Args) == 3 {
+					return types.StringType{}
+				}
 			}
 		}
 		return types.AnyType{}
@@ -4008,6 +4012,10 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 		case "lower":
 			if len(args) == 1 {
 				return &CallExpr{Func: &FieldExpr{Target: args[0], Name: "lower"}}, nil
+			}
+		case "padStart":
+			if len(args) == 3 {
+				return &CallExpr{Func: &FieldExpr{Target: args[0], Name: "rjust"}, Args: []Expr{args[1], args[2]}}, nil
 			}
 		case "now":
 			if len(args) == 0 {
