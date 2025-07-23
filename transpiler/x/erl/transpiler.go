@@ -563,6 +563,7 @@ type IfStmt struct {
 // ForStmt represents a simple for-in or range loop.
 type ForStmt struct {
 	Var       string
+	Rest      string
 	Kind      string // "range", "list" or "map"
 	Start     Expr   // for range loops
 	End       Expr   // for range loops
@@ -1414,7 +1415,9 @@ func (f *ForStmt) emit(w io.Writer) {
 	}
 	io.WriteString(w, "};\n        [")
 	io.WriteString(w, f.Var)
-	io.WriteString(w, "|Rest] ->")
+	io.WriteString(w, "|")
+	io.WriteString(w, f.Rest)
+	io.WriteString(w, "] ->")
 	if f.Breakable {
 		io.WriteString(w, "\n        try")
 	}
@@ -1426,11 +1429,13 @@ func (f *ForStmt) emit(w io.Writer) {
 	if f.Breakable {
 		io.WriteString(w, "\n            ")
 		io.WriteString(w, loopName)
-		io.WriteString(w, "(Rest")
+		io.WriteString(w, "(")
+		io.WriteString(w, f.Rest)
 	} else {
 		io.WriteString(w, "\n            ")
 		io.WriteString(w, loopName)
-		io.WriteString(w, "(Rest")
+		io.WriteString(w, "(")
+		io.WriteString(w, f.Rest)
 	}
 	for _, a := range f.Next {
 		io.WriteString(w, ", ")
@@ -1440,7 +1445,8 @@ func (f *ForStmt) emit(w io.Writer) {
 	if f.Breakable {
 		io.WriteString(w, "\n        catch\n            continue -> ")
 		io.WriteString(w, loopName)
-		io.WriteString(w, "(Rest")
+		io.WriteString(w, "(")
+		io.WriteString(w, f.Rest)
 		for _, p := range f.Params {
 			io.WriteString(w, ", ")
 			io.WriteString(w, p)
@@ -2225,6 +2231,7 @@ func convertStmt(st *parser.Statement, env *types.Env, ctx *context) ([]Stmt, er
 	case st.For != nil:
 		loopCtx := ctx.clone()
 		alias := loopCtx.newAlias(st.For.Name)
+		restName := loopCtx.newAlias("rest")
 		funName := ctx.newAlias("fun")
 		body := []Stmt{}
 		for _, bs := range st.For.Body {
@@ -2259,7 +2266,7 @@ func convertStmt(st *parser.Statement, env *types.Env, ctx *context) ([]Stmt, er
 			if err != nil {
 				return nil, err
 			}
-			return []Stmt{&ForStmt{Var: alias, Kind: "range", Start: start, End: end, Body: body, Breakable: brk, Params: params, Next: next, Fun: funName}}, nil
+			return []Stmt{&ForStmt{Var: alias, Rest: restName, Kind: "range", Start: start, End: end, Body: body, Breakable: brk, Params: params, Next: next, Fun: funName}}, nil
 		}
 		src, err := convertExpr(st.For.Source, env, ctx)
 		if err != nil {
@@ -2281,7 +2288,7 @@ func convertStmt(st *parser.Statement, env *types.Env, ctx *context) ([]Stmt, er
 				kind = "map"
 			}
 		}
-		return []Stmt{&ForStmt{Var: alias, Kind: kind, Src: src, Body: body, Breakable: brk, Params: params, Next: next, Fun: funName}}, nil
+		return []Stmt{&ForStmt{Var: alias, Rest: restName, Kind: kind, Src: src, Body: body, Breakable: brk, Params: params, Next: next, Fun: funName}}, nil
 	case st.While != nil:
 		// parameters are current aliases sorted for stable output
 		names := make([]string, 0, len(ctx.alias))
@@ -2341,7 +2348,11 @@ func convertIfStmt(n *parser.IfStmt, env *types.Env, ctx *context) (*IfStmt, err
 		return nil, err
 	}
 	if _, ok := types.ExprType(n.Cond, env).(types.BoolType); !ok {
-		cond = &BinaryExpr{Left: cond, Op: "!=", Right: &AtomLit{Name: "nil"}}
+		if ix, ok2 := cond.(*IndexExpr); ok2 && ix.Kind == "list" && !ix.IsString {
+			// Assume list element boolean when used directly as a condition.
+		} else {
+			cond = &BinaryExpr{Left: cond, Op: "!=", Right: &AtomLit{Name: "nil"}}
+		}
 	}
 
 	base := ctx.clone()
