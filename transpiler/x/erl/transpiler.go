@@ -97,6 +97,7 @@ type context struct {
 	orig      map[string]string
 	counter   map[string]int
 	strVar    map[string]bool
+	mapVar    map[string]bool
 	strField  map[string]map[string]bool
 	boolField map[string]map[string]bool
 	groups    map[string]groupInfo
@@ -109,7 +110,7 @@ type context struct {
 type groupInfo struct{ key, items string }
 
 func newContext(base string) *context {
-	return &context{alias: map[string]string{}, orig: map[string]string{}, counter: map[string]int{}, strVar: map[string]bool{}, strField: map[string]map[string]bool{}, boolField: map[string]map[string]bool{}, groups: map[string]groupInfo{}, constVal: map[string]Expr{}, autoMod: map[string]string{}, baseDir: base, globals: map[string]bool{}}
+	return &context{alias: map[string]string{}, orig: map[string]string{}, counter: map[string]int{}, strVar: map[string]bool{}, mapVar: map[string]bool{}, strField: map[string]map[string]bool{}, boolField: map[string]map[string]bool{}, groups: map[string]groupInfo{}, constVal: map[string]Expr{}, autoMod: map[string]string{}, baseDir: base, globals: map[string]bool{}}
 }
 
 func (c *context) clone() *context {
@@ -146,6 +147,10 @@ func (c *context) clone() *context {
 	for k, v := range c.strVar {
 		strVar[k] = v
 	}
+	mapVar := make(map[string]bool, len(c.mapVar))
+	for k, v := range c.mapVar {
+		mapVar[k] = v
+	}
 	consts := make(map[string]Expr, len(c.constVal))
 	for k, v := range c.constVal {
 		consts[k] = v
@@ -158,7 +163,7 @@ func (c *context) clone() *context {
 	for k, v := range c.globals {
 		gl[k] = v
 	}
-	return &context{alias: alias, orig: orig, counter: counter, strVar: strVar, strField: fields, boolField: bfields, groups: groups, constVal: consts, autoMod: mods, baseDir: c.baseDir, globals: gl}
+	return &context{alias: alias, orig: orig, counter: counter, strVar: strVar, mapVar: mapVar, strField: fields, boolField: bfields, groups: groups, constVal: consts, autoMod: mods, baseDir: c.baseDir, globals: gl}
 }
 
 func (c *context) newAlias(name string) string {
@@ -223,6 +228,16 @@ func (c *context) setStringVar(name string, isStr bool) {
 	c.strVar[name] = true
 }
 
+func (c *context) setMapVar(name string, isMap bool) {
+	if !isMap {
+		return
+	}
+	if c.mapVar == nil {
+		c.mapVar = map[string]bool{}
+	}
+	c.mapVar[name] = true
+}
+
 func (c *context) setConst(name string, val Expr) {
 	if c.constVal == nil {
 		c.constVal = map[string]Expr{}
@@ -265,6 +280,10 @@ func (c *context) autoModule(alias string) (string, bool) {
 
 func (c *context) isStringVar(name string) bool {
 	return c.strVar[name]
+}
+
+func (c *context) isMapVar(name string) bool {
+	return c.mapVar[name]
 }
 
 func (c *context) getGroup(name string) (groupInfo, bool) {
@@ -856,6 +875,7 @@ func (af *AnonFunc) emit(w io.Writer) {
 		io.WriteString(w, "nil")
 	}
 	io.WriteString(w, "\n    catch {return, V} -> V end")
+	io.WriteString(w, "\nend")
 }
 
 func isStringExpr(e Expr) bool {
@@ -927,6 +947,9 @@ func isMapExpr(e Expr, env *types.Env, ctx *context) bool {
 			name := v.Name
 			if ctx != nil {
 				name = ctx.original(v.Name)
+				if ctx.isMapVar(name) {
+					return true
+				}
 			}
 			if t, err := env.GetVar(name); err == nil {
 				if _, ok := t.(types.MapType); ok {
@@ -1189,6 +1212,34 @@ func (c *CallExpr) emit(w io.Writer) {
 			c.Args[0].emit(w)
 		} else {
 			io.WriteString(w, "0")
+		}
+		io.WriteString(w, ")")
+		return
+	case "upper":
+		io.WriteString(w, "string:to_upper(")
+		if len(c.Args) > 0 {
+			c.Args[0].emit(w)
+		}
+		io.WriteString(w, ")")
+		return
+	case "Upper":
+		io.WriteString(w, "string:to_upper(")
+		if len(c.Args) > 0 {
+			c.Args[0].emit(w)
+		}
+		io.WriteString(w, ")")
+		return
+	case "lower":
+		io.WriteString(w, "string:to_lower(")
+		if len(c.Args) > 0 {
+			c.Args[0].emit(w)
+		}
+		io.WriteString(w, ")")
+		return
+	case "Lower":
+		io.WriteString(w, "string:to_lower(")
+		if len(c.Args) > 0 {
+			c.Args[0].emit(w)
 		}
 		io.WriteString(w, ")")
 		return
@@ -1980,7 +2031,7 @@ func mapOp(op string) string {
 
 func builtinFunc(name string) bool {
 	switch name {
-	case "print", "append", "avg", "count", "len", "str", "sum", "min", "max", "values", "exists", "json", "now", "input", "int", "abs":
+	case "print", "append", "avg", "count", "len", "str", "sum", "min", "max", "values", "exists", "json", "now", "input", "int", "abs", "upper", "lower":
 		return true
 	default:
 		return false
@@ -2213,6 +2264,7 @@ func convertStmt(st *parser.Statement, env *types.Env, ctx *context, top bool) (
 		ctx.setStrFields(st.Let.Name, stringFields(e))
 		ctx.setBoolFields(st.Let.Name, boolFields(e))
 		ctx.setStringVar(st.Let.Name, isStringExpr(e))
+		ctx.setMapVar(st.Let.Name, isMapExpr(e, env, ctx) || (st.Let.Type != nil && st.Let.Type.Generic != nil && st.Let.Type.Generic.Name == "map"))
 		switch e.(type) {
 		case *IntLit, *FloatLit, *BoolLit, *StringLit, *AtomLit:
 			ctx.setConst(st.Let.Name, e)
@@ -2237,6 +2289,7 @@ func convertStmt(st *parser.Statement, env *types.Env, ctx *context, top bool) (
 		ctx.setStrFields(st.Var.Name, stringFields(e))
 		ctx.setBoolFields(st.Var.Name, boolFields(e))
 		ctx.setStringVar(st.Var.Name, isStringExpr(e))
+		ctx.setMapVar(st.Var.Name, isMapExpr(e, env, ctx) || (st.Var.Type != nil && st.Var.Type.Generic != nil && st.Var.Type.Generic.Name == "map"))
 		ctx.clearConst(st.Var.Name)
 		if top {
 			ctx.setGlobal(st.Var.Name)
@@ -2256,6 +2309,7 @@ func convertStmt(st *parser.Statement, env *types.Env, ctx *context, top bool) (
 		ctx.setStrFields(st.Assign.Name, stringFields(val))
 		ctx.setBoolFields(st.Assign.Name, boolFields(val))
 		ctx.setStringVar(st.Assign.Name, isStringExpr(val))
+		ctx.setMapVar(st.Assign.Name, isMapExpr(val, env, ctx))
 		switch val.(type) {
 		case *IntLit, *FloatLit, *BoolLit, *StringLit, *AtomLit:
 			ctx.setConst(st.Assign.Name, val)
@@ -2297,7 +2351,9 @@ func convertStmt(st *parser.Statement, env *types.Env, ctx *context, top bool) (
 			oldVar := ctx.newAlias(st.Assign.Name)
 			alias := ctx.newAlias(st.Assign.Name)
 			kind := "list"
-			if t, err := env.GetVar(st.Assign.Name); err == nil {
+			if ctx.isMapVar(st.Assign.Name) {
+				kind = "map"
+			} else if t, err := env.GetVar(st.Assign.Name); err == nil {
 				if _, ok := t.(types.MapType); ok {
 					kind = "map"
 				}
@@ -2317,7 +2373,9 @@ func convertStmt(st *parser.Statement, env *types.Env, ctx *context, top bool) (
 		alias := ctx.newAlias(st.Assign.Name)
 		ctx.clearConst(st.Assign.Name)
 		kind := "list"
-		if t, err := env.GetVar(st.Assign.Name); err == nil {
+		if ctx.isMapVar(st.Assign.Name) {
+			kind = "map"
+		} else if t, err := env.GetVar(st.Assign.Name); err == nil {
 			if _, ok := t.(types.MapType); ok {
 				kind = "map"
 			}
@@ -2345,7 +2403,9 @@ func convertStmt(st *parser.Statement, env *types.Env, ctx *context, top bool) (
 		tmp := ctx.newAlias("tmp")
 		tmp2 := ctx.newAlias("tmp")
 		kind := "list"
-		if t, err := env.GetVar(st.Assign.Name); err == nil {
+		if ctx.isMapVar(st.Assign.Name) {
+			kind = "map"
+		} else if t, err := env.GetVar(st.Assign.Name); err == nil {
 			if _, ok := t.(types.MapType); ok {
 				kind = "map"
 			}
@@ -2463,6 +2523,7 @@ func convertStmt(st *parser.Statement, env *types.Env, ctx *context, top bool) (
 		loopCtx.setStrFields(st.For.Name, stringFields(src))
 		loopCtx.setBoolFields(st.For.Name, boolFields(src))
 		loopCtx.setStringVar(st.For.Name, isStringExpr(src))
+		loopCtx.setMapVar(st.For.Name, isMapExpr(src, env, ctx))
 		kind := "list"
 		if isMapExpr(src, env, ctx) {
 			isGroupItems := false
@@ -2959,12 +3020,15 @@ func convertPostfix(pf *parser.PostfixExpr, env *types.Env, ctx *context) (Expr,
 				ce.Args = append(ce.Args, ae)
 			}
 			expr = ce
-		case op.Cast != nil && op.Cast.Type.Simple != nil:
-			if *op.Cast.Type.Simple == "int" {
-				// casting to int is a no-op when the value is already numeric
-				expr = expr
+		case op.Cast != nil:
+			if op.Cast.Type != nil && op.Cast.Type.Simple != nil {
+				if *op.Cast.Type.Simple == "int" {
+					// casting to int is a no-op when the value is already numeric
+					expr = expr
+				}
+				// other casts are no-ops
 			}
-			// other casts are no-ops
+			// ignore generic casts
 		case op.Index != nil && op.Index.Colon == nil && op.Index.Colon2 == nil:
 			idx, err := convertExpr(op.Index.Start, env, ctx)
 			if err != nil {

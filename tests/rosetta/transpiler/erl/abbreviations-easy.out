@@ -1,0 +1,6 @@
+/workspace/mochi/tests/rosetta/transpiler/erl/abbreviations-easy.erl:122:28: Warning: the result of calling lists:append/2 is ignored (suppress the warning by assigning the expression to the _ variable)
+%  122|         true -> Results2 = lists:append(Results, [C]),
+%     |                            ^
+
+user words:  riG     rePEAT  copies  put     mo      rest    types   fup.    6       poweRin 
+full words:  *error* *error* *error* *error* *error* *error* *error* *error* *error* *error*
