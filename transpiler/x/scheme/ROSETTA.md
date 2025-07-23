@@ -2,23 +2,23 @@
 
 Generated Scheme code for Rosetta Code tasks under `tests/rosetta/x/Mochi`.
 
-## Checklist (8/284)
-Last updated: 2025-07-23 05:44 UTC
+## Checklist (12/284)
+Last updated: 2025-07-23 06:04 UTC
 
 1. [x] 100-doors-2
 2. [x] 100-doors-3
 3. [x] 100-doors
 4. [x] 100-prisoners
-5. [ ] 15-puzzle-game
-6. [ ] 15-puzzle-solver
+5. [x] 15-puzzle-game
+6. [x] 15-puzzle-solver
 7. [x] 2048
 8. [x] 21-game
 9. [x] 24-game-solve
 10. [x] 24-game
 11. [ ] 4-rings-or-4-squares-puzzle
 12. [ ] 9-billion-names-of-god-the-integer
-13. [ ] 99-bottles-of-beer-2
-14. [ ] 99-bottles-of-beer
+13. [x] 99-bottles-of-beer-2
+14. [x] 99-bottles-of-beer
 15. [ ] DNS-query
 16. [ ] a+b
 17. [ ] abbreviations-automatic

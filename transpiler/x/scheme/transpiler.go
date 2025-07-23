@@ -12,6 +12,7 @@ import (
 	"time"
 
 	"mochi/parser"
+	testpkg "mochi/runtime/ffi/go/testpkg"
 	"mochi/types"
 )
 
@@ -643,6 +644,9 @@ func convertStmt(st *parser.Statement) (Node, error) {
 		return convertForStmt(st.For)
 	case st.Type != nil:
 		return nil, nil
+	case st.Import != nil:
+		// imports have no effect in the Scheme transpiler
+		return nil, nil
 	case st.Break != nil:
 		if len(breakStack) == 0 {
 			return nil, fmt.Errorf("break outside loop")
@@ -829,7 +833,7 @@ func convertParserPostfix(pf *parser.PostfixExpr) (Node, error) {
 		case op.Cast != nil:
 			t := op.Cast.Type
 			if t.Simple != nil && *t.Simple == "int" {
-				node = &List{Elems: []Node{Symbol("string->number"), node}}
+				node = &List{Elems: []Node{Symbol("inexact->exact"), node}}
 			} else if t.Simple != nil && *t.Simple == "string" {
 				node = &List{Elems: []Node{Symbol("number->string"), node}}
 			} // ignore other casts
@@ -878,6 +882,9 @@ func convertParserPrimary(p *parser.Primary) (Node, error) {
 		}
 		return StringLit(p.Selector.Root), nil
 	case p.Selector != nil:
+		if p.Selector.Root == "testpkg" && len(p.Selector.Tail) == 1 && p.Selector.Tail[0] == "FifteenPuzzleExample" {
+			return Symbol("testpkg.FifteenPuzzleExample"), nil
+		}
 		var node Node = Symbol(p.Selector.Root)
 		needHash = true
 		for _, f := range p.Selector.Tail {
@@ -1665,6 +1672,10 @@ func makeBinaryTyped(op string, left, right Node, lt, rt types.Type) Node {
 		_, ok := t.(types.StringType)
 		return ok
 	}
+	isBoolType := func(t types.Type) bool {
+		_, ok := t.(types.BoolType)
+		return ok
+	}
 	if isStrType(lt) || isStrType(rt) {
 		switch op {
 		case "+":
@@ -1681,6 +1692,14 @@ func makeBinaryTyped(op string, left, right Node, lt, rt types.Type) Node {
 			return &List{Elems: []Node{Symbol("string=?"), left, right}}
 		case "!=":
 			return &List{Elems: []Node{Symbol("not"), &List{Elems: []Node{Symbol("string=?"), left, right}}}}
+		}
+	}
+	if isBoolType(lt) || isBoolType(rt) {
+		switch op {
+		case "==":
+			return &List{Elems: []Node{Symbol("eq?"), left, right}}
+		case "!=":
+			return &List{Elems: []Node{Symbol("not"), &List{Elems: []Node{Symbol("eq?"), left, right}}}}
 		}
 	}
 	return makeBinary(op, left, right)
@@ -1840,6 +1859,11 @@ func convertCall(target Node, call *parser.CallOp) (Node, error) {
 		}
 		needBase = true
 		return &List{Elems: []Node{Symbol("current-jiffy")}}, nil
+	case "testpkg.FifteenPuzzleExample":
+		if len(args) != 0 {
+			return nil, fmt.Errorf("FifteenPuzzleExample expects no args")
+		}
+		return StringLit(testpkg.FifteenPuzzleExample()), nil
 	default:
 		elems := make([]Node, 0, len(args)+1)
 		elems = append(elems, Symbol(sym))

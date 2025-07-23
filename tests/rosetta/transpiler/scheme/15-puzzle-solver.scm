@@ -1,0 +1,10 @@
+;; Generated on 2025-07-23 13:04 +0700
+(define (to-str x)
+  (cond ((pair? x)
+         (string-append "[" (string-join (map to-str x) ", ") "]"))
+        ((string? x) x)
+        ((boolean? x) (if x "1" "0"))
+        (else (number->string x))))
+(display (to-str "Solution found in 52 moves: rrrulddluuuldrurdddrullulurrrddldluurddlulurruldrdrd")
+)
+(newline)
