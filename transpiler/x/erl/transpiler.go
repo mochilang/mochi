@@ -48,21 +48,47 @@ mochi_lookup_host(Host) ->
             IPs = [inet:ntoa(A) || A <- Addrs],
             [IPs, nil];
         {error, Reason} ->
-            [nil, Reason]
+        [nil, Reason]
+    end.
+`
+
+const helperMember = `
+mochi_member(Key, Coll) ->
+    case erlang:is_map(Coll) of
+        true -> maps:is_key(Key, Coll);
+        _ -> case erlang:is_list(Coll) of
+            true -> lists:member(Key, Coll);
+            _ when is_binary(Coll) -> string:str(Coll, Key) /= 0;
+            _ -> false
+        end
+    end.
+`
+const helperToInt = `
+mochi_to_int(V) ->
+    case erlang:is_integer(V) of
+        true -> V;
+        _ -> case erlang:is_float(V) of
+            true -> trunc(V);
+            _ -> list_to_integer(V)
+        end
     end.
 `
 
 var useNow bool
 var useLookupHost bool
+var useToInt bool
+var useMemberHelper bool
 
 // Program is a minimal Erlang module consisting of sequential statements.
 // Program is a minimal Erlang module consisting of sequential statements and
 // optional function declarations.
 type Program struct {
-	Funs          []*FuncDecl
-	Stmts         []Stmt
-	UseNow        bool
-	UseLookupHost bool
+	Funs            []*FuncDecl
+	Stmts           []Stmt
+	UseNow          bool
+	UseLookupHost   bool
+	UseToInt        bool
+	UseMemberHelper bool
 }
 
 // context tracks variable aliases to emulate mutable variables.
@@ -1157,37 +1183,14 @@ func (c *CallExpr) emit(w io.Writer) {
 		io.WriteString(w, ")")
 		return
 	case "int":
-		io.WriteString(w, "case erlang:is_integer(")
+		useToInt = true
+		io.WriteString(w, "mochi_to_int(")
 		if len(c.Args) > 0 {
 			c.Args[0].emit(w)
 		} else {
 			io.WriteString(w, "0")
 		}
-		io.WriteString(w, ") of true -> ")
-		if len(c.Args) > 0 {
-			c.Args[0].emit(w)
-		} else {
-			io.WriteString(w, "0")
-		}
-		io.WriteString(w, "; _ -> case erlang:is_float(")
-		if len(c.Args) > 0 {
-			c.Args[0].emit(w)
-		} else {
-			io.WriteString(w, "0")
-		}
-		io.WriteString(w, ") of true -> trunc(")
-		if len(c.Args) > 0 {
-			c.Args[0].emit(w)
-		} else {
-			io.WriteString(w, "0")
-		}
-		io.WriteString(w, "); _ -> list_to_integer(")
-		if len(c.Args) > 0 {
-			c.Args[0].emit(w)
-		} else {
-			io.WriteString(w, "0")
-		}
-		io.WriteString(w, ") end end")
+		io.WriteString(w, ")")
 		return
 	case "str":
 		io.WriteString(w, "lists:flatten(io_lib:format(\"~p\", [")
@@ -2147,6 +2150,8 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	ctx := newContext(base)
 	useNow = false
 	useLookupHost = false
+	useToInt = false
+	useMemberHelper = false
 	p := &Program{}
 	for _, st := range prog.Statements {
 		if st.Fun != nil {
@@ -2165,6 +2170,8 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	}
 	p.UseNow = useNow
 	p.UseLookupHost = useLookupHost
+	p.UseToInt = useToInt
+	p.UseMemberHelper = useMemberHelper
 	return p, nil
 }
 
@@ -2811,7 +2818,8 @@ func convertBinary(b *parser.BinaryExpr, env *types.Env, ctx *context) (Expr, er
 			} else if isMapExpr(r, env, ctx) {
 				exprs[i] = &CallExpr{Func: "maps:is_key", Args: []Expr{l, r}}
 			} else {
-				exprs[i] = &CallExpr{Func: "lists:member", Args: []Expr{l, r}}
+				useMemberHelper = true
+				exprs[i] = &CallExpr{Func: "mochi_member", Args: []Expr{l, r}}
 			}
 			exprs = append(exprs[:i+1], exprs[i+2:]...)
 			ops = append(ops[:i], ops[i+1:]...)
@@ -3157,6 +3165,9 @@ func convertPrimary(p *parser.Primary, env *types.Env, ctx *context) (Expr, erro
 		if p.Call.Func == "now" && len(p.Call.Args) == 0 {
 			useNow = true
 			return &NowExpr{}, nil
+		}
+		if p.Call.Func == "int" && len(p.Call.Args) == 1 {
+			useToInt = true
 		}
 		name := p.Call.Func
 		if !builtinFunc(name) {
@@ -4283,6 +4294,14 @@ func (p *Program) Emit() []byte {
 	}
 	if p.UseLookupHost {
 		buf.WriteString(helperLookupHost)
+		buf.WriteString("\n")
+	}
+	if p.UseToInt {
+		buf.WriteString(helperToInt)
+		buf.WriteString("\n")
+	}
+	if p.UseMemberHelper {
+		buf.WriteString(helperMember)
 		buf.WriteString("\n")
 	}
 	for _, f := range p.Funs {
