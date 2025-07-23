@@ -1,3 +1,59 @@
+## Progress (2025-07-23 13:34 +0700)
+- transpiler/go: add rosetta index 25
+- Regenerated golden files - 103/103 vm valid programs passing
+
+## Progress (2025-07-23 13:34 +0700)
+- transpiler/go: add rosetta index 25
+- Regenerated golden files - 103/103 vm valid programs passing
+
+## Progress (2025-07-23 13:34 +0700)
+- transpiler/go: add rosetta index 25
+- Regenerated golden files - 103/103 vm valid programs passing
+
+## Progress (2025-07-23 13:34 +0700)
+- transpiler/go: add rosetta index 25
+- Regenerated golden files - 103/103 vm valid programs passing
+
+## Progress (2025-07-23 13:34 +0700)
+- transpiler/go: add rosetta index 24
+- Regenerated golden files - 103/103 vm valid programs passing
+
+## Progress (2025-07-23 13:34 +0700)
+- transpiler/go: handle union match
+- Regenerated golden files - 103/103 vm valid programs passing
+
+## Progress (2025-07-23 13:30 +0700)
+- transpiler/go: add rosetta index 22
+- Regenerated golden files - 103/103 vm valid programs passing
+
+## Progress (2025-07-23 13:30 +0700)
+- transpiler/go: add rosetta index 22
+- Regenerated golden files - 103/103 vm valid programs passing
+
+## Progress (2025-07-23 13:30 +0700)
+- transpiler/go: add rosetta index 22
+- Regenerated golden files - 103/103 vm valid programs passing
+
+## Progress (2025-07-23 13:30 +0700)
+- transpiler/go: add rosetta index 22
+- Regenerated golden files - 103/103 vm valid programs passing
+
+## Progress (2025-07-23 13:30 +0700)
+- transpiler/go: add rosetta index 22
+- Regenerated golden files - 103/103 vm valid programs passing
+
+## Progress (2025-07-23 13:30 +0700)
+- transpiler/go: add rosetta index 21
+- Regenerated golden files - 103/103 vm valid programs passing
+
+## Progress (2025-07-23 13:23 +0700)
+- rb transpiler: handle null literals and map get; add _add helper
+- Regenerated golden files - 103/103 vm valid programs passing
+
+## Progress (2025-07-23 13:23 +0700)
+- rb transpiler: handle null literals and map get; add _add helper
+- Regenerated golden files - 103/103 vm valid programs passing
+
 ## Progress (2025-07-23 12:03 +0700)
 - transpiler: handle parameter types and floats
 - Regenerated golden files - 103/103 vm valid programs passing

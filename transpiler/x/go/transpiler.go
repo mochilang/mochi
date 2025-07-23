@@ -352,8 +352,10 @@ func (m *UnionMatchExpr) emit(w io.Writer) {
 	for _, c := range m.Cases {
 		fmt.Fprintf(w, "case %s:", c.Variant)
 		for i, b := range c.Bindings {
-			if b != "" && i < len(c.Fields) {
+			if b != "" && b != "_" && i < len(c.Fields) {
 				fmt.Fprintf(w, " %s := v.%s;", b, c.Fields[i])
+			} else if b == "_" && i < len(c.Fields) {
+				fmt.Fprintf(w, " _ = v.%s;", c.Fields[i])
 			}
 		}
 		fmt.Fprint(w, " return ")
@@ -2241,28 +2243,26 @@ func compileMatchExpr(me *parser.MatchExpr, env *types.Env) (Expr, error) {
 		return nil, err
 	}
 	typ := "any"
-	if len(me.Cases) > 0 {
-		t0 := types.ExprType(me.Cases[0].Result, env)
-		typ = toGoTypeFromType(t0)
-		for _, c := range me.Cases[1:] {
-			if !types.EqualTypes(t0, types.ExprType(c.Result, env)) {
-				typ = "any"
-				break
-			}
-		}
-	}
-	if typ == "any" && currentRetType != "" {
+	if currentRetType != "" {
 		typ = currentRetType
 	}
 	// Detect union match by looking for variant patterns.
 	if len(me.Cases) > 0 {
+		var firstVar string
 		if name, ok := identName(me.Cases[0].Pattern); ok {
-			if _, ok2 := env.FindUnionByVariant(name); ok2 {
+			firstVar = name
+		} else if call, ok := callPattern(me.Cases[0].Pattern); ok {
+			firstVar = call.Func
+		}
+		if firstVar != "" {
+			if _, ok2 := env.FindUnionByVariant(firstVar); ok2 {
 				cases := make([]UnionMatchCase, len(me.Cases))
+				var retType types.Type
 				for i, c := range me.Cases {
 					var variant string
 					var bindings []string
 					var fields []string
+					child := env
 					if n, ok := identName(c.Pattern); ok {
 						variant = n
 					} else if call, ok := callPattern(c.Pattern); ok {
@@ -2270,22 +2270,35 @@ func compileMatchExpr(me *parser.MatchExpr, env *types.Env) (Expr, error) {
 						st, _ := env.GetStruct(variant)
 						bindings = make([]string, len(call.Args))
 						fields = make([]string, len(call.Args))
+						child = types.NewEnv(env)
 						for j, a := range call.Args {
 							if j < len(st.Order) {
 								fields[j] = toGoFieldName(st.Order[j])
-							}
-							if nm, ok := identName(a); ok {
-								bindings[j] = nm
+								if nm, ok := identName(a); ok {
+									bindings[j] = nm
+									child.SetVar(nm, st.Fields[st.Order[j]], false)
+								}
 							}
 						}
 					} else {
 						variant = "_"
 					}
-					body, err := compileExpr(c.Result, env, "")
+					body, err := compileExpr(c.Result, child, "")
 					if err != nil {
 						return nil, err
 					}
+					if rt := types.ExprType(c.Result, child); rt != nil {
+						if i == 0 {
+							retType = rt
+							typ = toGoTypeFromType(rt)
+						} else if !types.EqualTypes(retType, rt) {
+							typ = "any"
+						}
+					}
 					cases[i] = UnionMatchCase{Variant: variant, Fields: fields, Bindings: bindings, Body: body}
+				}
+				if typ == "any" && currentRetType != "" {
+					typ = currentRetType
 				}
 				return &UnionMatchExpr{Target: target, Cases: cases, Type: typ}, nil
 			}
@@ -3081,17 +3094,17 @@ func compileFunStmt(fn *parser.FunStmt, env *types.Env) (Stmt, error) {
 }
 
 func compileFunExpr(fn *parser.FunExpr, env *types.Env) (Expr, error) {
-       child := types.NewEnv(env)
-       for _, p := range fn.Params {
-               if p.Type != nil {
-                       child.SetVar(p.Name, types.ResolveTypeRef(p.Type, env), true)
-               } else if t, err := env.GetVar(p.Name); err == nil {
-                       child.SetVar(p.Name, t, true)
-               } else {
-                       child.SetVar(p.Name, types.AnyType{}, true)
-               }
-       }
-        prevRet := currentRetType
+	child := types.NewEnv(env)
+	for _, p := range fn.Params {
+		if p.Type != nil {
+			child.SetVar(p.Name, types.ResolveTypeRef(p.Type, env), true)
+		} else if t, err := env.GetVar(p.Name); err == nil {
+			child.SetVar(p.Name, t, true)
+		} else {
+			child.SetVar(p.Name, types.AnyType{}, true)
+		}
+	}
+	prevRet := currentRetType
 	currentRetType = toGoType(fn.Return, env)
 	var body []*parser.Statement
 	var stmts []Stmt
@@ -3671,15 +3684,15 @@ func compilePrimary(p *parser.Primary, env *types.Env, base string) (Expr, error
 		case "exists":
 			bexpr := &BinaryExpr{Left: &CallExpr{Func: "len", Args: []Expr{args[0]}}, Op: ">", Right: &IntLit{Value: 0}}
 			return &ExistsExpr{Expr: bexpr}, nil
-                case "substring":
-                        usesSubstr = true
-                        return &CallExpr{Func: "_substr", Args: []Expr{args[0], args[1], args[2]}}, nil
-               case "lower":
-                       usesStrings = true
-                       return &CallExpr{Func: "strings.ToLower", Args: []Expr{args[0]}}, nil
-                case "upper":
-                        usesStrings = true
-                        return &CallExpr{Func: "strings.ToUpper", Args: []Expr{args[0]}}, nil
+		case "substring":
+			usesSubstr = true
+			return &CallExpr{Func: "_substr", Args: []Expr{args[0], args[1], args[2]}}, nil
+		case "lower":
+			usesStrings = true
+			return &CallExpr{Func: "strings.ToLower", Args: []Expr{args[0]}}, nil
+		case "upper":
+			usesStrings = true
+			return &CallExpr{Func: "strings.ToUpper", Args: []Expr{args[0]}}, nil
 		case "now":
 			usesTime = true
 			return &NowExpr{}, nil
