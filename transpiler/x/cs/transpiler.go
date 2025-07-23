@@ -885,6 +885,8 @@ func isStringExpr(e Expr) bool {
 		if ex.Func == "Convert.ToString" {
 			return true
 		}
+	case *RawExpr:
+		return ex.Type == "string"
 	}
 	return false
 }
@@ -2066,6 +2068,11 @@ func compileStmt(prog *Program, s *parser.Statement) (Stmt, error) {
 	case s.Fun != nil:
 		params := make([]string, len(s.Fun.Params))
 		ptypes := make([]string, len(s.Fun.Params))
+		// save global variable maps so local declarations don't leak
+		savedAll := cloneStringMap(varTypes)
+		savedMap := cloneBoolMap(mapVars)
+		savedStrAll := cloneBoolMap(stringVars)
+		savedMut := cloneBoolMap(mutatedVars)
 		saved := make(map[string]string)
 		savedStr := make(map[string]bool)
 		for i, p := range s.Fun.Params {
@@ -2115,6 +2122,11 @@ func compileStmt(prog *Program, s *parser.Statement) (Stmt, error) {
 				stringVars[name] = val
 			}
 		}
+		// restore global maps
+		varTypes = savedAll
+		mapVars = savedMap
+		stringVars = savedStrAll
+		mutatedVars = savedMut
 		if s.Fun.Return == nil {
 			retType = ""
 		}
@@ -3356,3 +3368,19 @@ func extractSaveExpr(e *parser.Expr) *parser.SaveExpr {
 }
 
 // print converts the custom AST to an ast.Node and prints it.
+
+func cloneStringMap(src map[string]string) map[string]string {
+	dst := make(map[string]string)
+	for k, v := range src {
+		dst[k] = v
+	}
+	return dst
+}
+
+func cloneBoolMap(src map[string]bool) map[string]bool {
+	dst := make(map[string]bool)
+	for k, v := range src {
+		dst[k] = v
+	}
+	return dst
+}
