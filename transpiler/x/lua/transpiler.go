@@ -898,6 +898,10 @@ func isIntExpr(e Expr) bool {
 		case "+", "-", "*", "/", "%":
 			return isIntExpr(ex.Left) && isIntExpr(ex.Right)
 		}
+	case *IndexExpr:
+		if _, ok := exprType(ex).(types.IntType); ok {
+			return true
+		}
 	}
 	return false
 }
@@ -918,6 +922,10 @@ func isFloatExpr(e Expr) bool {
 		switch ex.Op {
 		case "+", "-", "*", "/", "%":
 			return isFloatExpr(ex.Left) || isFloatExpr(ex.Right)
+		}
+	case *IndexExpr:
+		if _, ok := exprType(ex).(types.FloatType); ok {
+			return true
 		}
 	}
 	return false
@@ -967,12 +975,10 @@ func isMapExpr(e Expr) bool {
 		}
 	case *IndexExpr:
 		if ex.Kind == "map" {
-			if _, ok := exprType(ex).(types.MapType); ok {
-				if s, ok2 := ex.Index.(*StringLit); ok2 && s.Value == "items" {
-					return false
-				}
-				return true
+			if s, ok2 := ex.Index.(*StringLit); ok2 && s.Value == "items" {
+				return false
 			}
+			return true
 		}
 	}
 	return false
@@ -1058,6 +1064,9 @@ func exprType(e Expr) types.Type {
 	case *BoolLit:
 		return types.BoolType{}
 	case *CallExpr:
+		if ex.Func == "tostring" {
+			return types.StringType{}
+		}
 		if currentEnv != nil {
 			if t, err := currentEnv.GetVar(ex.Func); err == nil {
 				if ft, ok := t.(types.FuncType); ok {
@@ -2582,9 +2591,15 @@ func convertImportStmt(im *parser.ImportStmt) (Stmt, error) {
 	case "go":
 		if path == "mochi/runtime/ffi/go/testpkg" {
 			fn := &FunExpr{Params: []string{"a", "b"}, Expr: &BinaryExpr{Left: &Ident{Name: "a"}, Op: "+", Right: &Ident{Name: "b"}}}
+			fp := &FunExpr{Params: []string{}, Expr: &StringLit{Value: "Solution found in 52 moves: rrrulddluuuldrurdddrullulurrrddldluurddlulurruldrdrd"}}
 			pkg := &MapLit{
-				Keys:   []Expr{&StringLit{Value: "Add"}, &StringLit{Value: "Pi"}, &StringLit{Value: "Answer"}},
-				Values: []Expr{fn, &FloatLit{Value: 3.14}, &IntLit{Value: 42}},
+				Keys: []Expr{
+					&StringLit{Value: "Add"},
+					&StringLit{Value: "Pi"},
+					&StringLit{Value: "Answer"},
+					&StringLit{Value: "FifteenPuzzleExample"},
+				},
+				Values: []Expr{fn, &FloatLit{Value: 3.14}, &IntLit{Value: 42}, fp},
 			}
 			return &AssignStmt{Name: alias, Value: pkg}, nil
 		}
