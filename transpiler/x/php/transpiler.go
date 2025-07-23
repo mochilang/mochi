@@ -37,7 +37,24 @@ const helperLookupHost = `function _lookup_host($host) {
     return [$ips, null];
 }`
 
+const helperNow = `$now_seed = 0;
+$now_seeded = false;
+$s = getenv('MOCHI_NOW_SEED');
+if ($s !== false && $s !== '') {
+    $now_seed = intval($s);
+    $now_seeded = true;
+}
+function _now() {
+    global $now_seed, $now_seeded;
+    if ($now_seeded) {
+        $now_seed = ($now_seed * 1664525 + 1013904223) % 2147483647;
+        return $now_seed;
+    }
+    return hrtime(true);
+}`
+
 var usesLookupHost bool
+var usesNow bool
 
 // Some PHP built-in functions cannot be redefined. When a Mochi program
 // defines a function with one of these names we rename the function and all
@@ -1259,6 +1276,11 @@ func Emit(w io.Writer, p *Program) error {
 			return err
 		}
 	}
+	if usesNow {
+		if _, err := io.WriteString(w, helperNow+"\n"); err != nil {
+			return err
+		}
+	}
 	for _, s := range p.Stmts {
 		s.emit(w)
 		switch s.(type) {
@@ -1282,6 +1304,7 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	closureNames = map[string]bool{}
 	renameMap = map[string]string{}
 	usesLookupHost = false
+	usesNow = false
 	defer func() { transpileEnv = nil }()
 	p := &Program{Env: env}
 	for _, st := range prog.Statements {
@@ -1706,7 +1729,8 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 			if len(args) != 0 {
 				return nil, fmt.Errorf("now expects no args")
 			}
-			return &CallExpr{Func: "hrtime", Args: []Expr{&BoolLit{Value: true}}}, nil
+			usesNow = true
+			return &CallExpr{Func: "_now"}, nil
 		} else if name == "input" {
 			if len(args) != 0 {
 				return nil, fmt.Errorf("input expects no args")
