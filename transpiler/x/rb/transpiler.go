@@ -1094,6 +1094,25 @@ var (
 	usesInput bool
 )
 
+// reserved lists Ruby reserved keywords that cannot be used as identifiers.
+var reserved = map[string]bool{
+	"BEGIN": true, "END": true, "alias": true, "and": true, "begin": true,
+	"break": true, "case": true, "class": true, "def": true, "defined?": true,
+	"do": true, "else": true, "elsif": true, "end": true, "ensure": true,
+	"false": true, "for": true, "if": true, "in": true, "module": true,
+	"next": true, "nil": true, "not": true, "or": true, "redo": true,
+	"rescue": true, "retry": true, "return": true, "self": true, "super": true,
+	"then": true, "true": true, "undef": true, "unless": true, "until": true,
+	"when": true, "while": true, "yield": true,
+}
+
+func safeName(n string) string {
+	if reserved[n] {
+		return n + "_"
+	}
+	return n
+}
+
 // emitter maintains the current indentation level while emitting Ruby code.
 type emitter struct {
 	w      io.Writer
@@ -1132,18 +1151,17 @@ func inScope(name string) bool {
 }
 
 func (e *emitter) name(n string) {
-	if topVars != nil && topVars[n] && !inScope(n) {
-		io.WriteString(e.w, "$"+n)
-	} else {
-		io.WriteString(e.w, n)
-	}
+	io.WriteString(e.w, identName(n))
 }
 
 func identName(n string) string {
+	var name string
 	if topVars != nil && topVars[n] && !inScope(n) {
-		return "$" + n
+		name = "$" + n
+	} else {
+		name = n
 	}
-	return n
+	return safeName(name)
 }
 
 func (e *emitter) writeIndent() {
@@ -2721,6 +2739,28 @@ func convertMatchExpr(me *parser.MatchExpr) (Expr, error) {
 			return nil, err
 		}
 		pat := c.Pattern
+		if pat.Binary != nil && len(pat.Binary.Right) == 0 {
+			u := pat.Binary.Left
+			if len(u.Ops) == 0 && u.Value != nil && u.Value.Target != nil && u.Value.Target.Call != nil {
+				call := u.Value.Target.Call
+				if st, ok := currentEnv.GetStruct(call.Func); ok {
+					cond := &MethodCallExpr{Target: target, Method: "is_a?", Args: []Expr{&Ident{Name: call.Func}}}
+					exprCase := res
+					for j := len(call.Args) - 1; j >= 0; j-- {
+						name, ok := isSimpleIdent(call.Args[j])
+						if ok && name != "_" {
+							if j < len(st.Order) {
+								field := st.Order[j]
+								lam := &LambdaExpr{Params: []string{identName(name)}, Expr: exprCase}
+								exprCase = &MethodCallExpr{Target: lam, Method: "call", Args: []Expr{&FieldExpr{Target: target, Name: field}}}
+							}
+						}
+					}
+					expr = &CondExpr{Cond: cond, Then: exprCase, Else: expr}
+					continue
+				}
+			}
+		}
 		if pat.Binary != nil && len(pat.Binary.Right) == 0 {
 			u := pat.Binary.Left
 			if len(u.Ops) == 0 && u.Value != nil && u.Value.Target != nil && u.Value.Target.Call != nil && u.Value.Target.Call.Func == "Node" {
