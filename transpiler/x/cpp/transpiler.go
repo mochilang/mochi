@@ -506,6 +506,17 @@ func (p *Program) write(w io.Writer) {
 		fmt.Fprintln(w, "    return (int)(std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::system_clock::now().time_since_epoch()).count() % 2147483647);")
 		fmt.Fprintln(w, "}")
 	}
+	if len(p.Structs) > 0 {
+		fmt.Fprintln(w, "template <typename T>")
+		fmt.Fprintln(w, "std::ostream& operator<<(std::ostream& os, const std::vector<T>& vec) {")
+		fmt.Fprintln(w, "    os << \"[\";")
+		fmt.Fprintln(w, "    for(size_t i=0;i<vec.size();++i){ if(i>0) os << \", \"; os << vec[i]; }")
+		fmt.Fprintln(w, "    os << \"]\";")
+		fmt.Fprintln(w, "    return os;")
+		fmt.Fprintln(w, "}")
+		fmt.Fprintln(w)
+	}
+
 	for _, st := range p.Structs {
 		if st.Abstract {
 			fmt.Fprintf(w, "struct %s;\n", st.Name)
