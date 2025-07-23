@@ -1280,7 +1280,7 @@ func (s *SliceExpr) emit(w io.Writer) {
 		}
 		fmt.Fprint(w, ")")
 		return
-	} else if isListExpr(s.X) && s.End != nil {
+	} else if s.End != nil {
 		if be, ok := s.End.(*BinaryExpr); ok && be.Op == "+" {
 			if rv, ok2 := be.Right.(*IntLit); ok2 && rv.Value == 1 {
 				if lv, ok3 := be.Left.(*Var); ok3 {
@@ -2757,6 +2757,56 @@ func isFuncType(t types.Type) bool {
 	return ok
 }
 
+// exprType attempts to determine the static type of expression e using
+// transpileEnv. It only handles a subset of expressions needed by the
+// transpiler helpers.
+func exprType(e Expr) types.Type {
+	if transpileEnv == nil {
+		return types.AnyType{}
+	}
+	switch v := e.(type) {
+	case *Var:
+		if t, err := transpileEnv.GetVar(v.Name); err == nil {
+			return t
+		}
+	case *IndexExpr:
+		t := exprType(v.X)
+		switch tt := t.(type) {
+		case types.ListType:
+			return tt.Elem
+		case types.MapType:
+			return tt.Value
+		case types.StringType:
+			return types.StringType{}
+		}
+	case *SubstringExpr:
+		return types.StringType{}
+	case *SliceExpr:
+		t := exprType(v.X)
+		if _, ok := t.(types.StringType); ok {
+			return types.StringType{}
+		}
+		if lt, ok := t.(types.ListType); ok {
+			return lt
+		}
+	case *StringLit:
+		return types.StringType{}
+	case *IntLit:
+		return types.IntType{}
+	case *FloatLit:
+		return types.FloatType{}
+	case *BoolLit:
+		return types.BoolType{}
+	case *CallExpr:
+		if t, err := transpileEnv.GetVar(v.Func); err == nil {
+			if ft, ok := t.(types.FuncType); ok {
+				return ft.Return
+			}
+		}
+	}
+	return types.AnyType{}
+}
+
 func groupItemsExpr(e Expr) Expr {
 	if v, ok := e.(*Var); ok {
 		if transpileEnv != nil {
@@ -2846,6 +2896,10 @@ func isListExpr(e Expr) bool {
 		}
 	} else if _, ok := e.(*SliceExpr); ok {
 		return true
+	} else if ie, ok := e.(*IndexExpr); ok {
+		if _, ok := exprType(ie).(types.ListType); ok {
+			return true
+		}
 	}
 	return false
 }
@@ -2912,6 +2966,10 @@ func isStringExpr(e Expr) bool {
 			if isStringExpr(v.Left) || isStringExpr(v.Right) {
 				return true
 			}
+		}
+	case *IndexExpr:
+		if _, ok := exprType(v).(types.StringType); ok {
+			return true
 		}
 	case *SliceExpr:
 		if isStringExpr(v.X) {
