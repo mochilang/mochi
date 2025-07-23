@@ -1,9 +1,0 @@
-run: exit status 1
-/workspace/mochi/tests/rosetta/transpiler/rb/almkvist-giullera-formula-for-pi.rb:268:in `computeIP': undefined method `get' for {}:Hash (NoMethodError)
-
-  exps["2"] = exps.get("2", 0) + 5
-                  ^^^^
-	from /workspace/mochi/tests/rosetta/transpiler/rb/almkvist-giullera-formula-for-pi.rb:323:in `main'
-	from /workspace/mochi/tests/rosetta/transpiler/rb/almkvist-giullera-formula-for-pi.rb:377:in `<main>'
-N                               Integer Portion  Pow  Nth Term (33 dp)
------------------------------------------------------------------------------------------

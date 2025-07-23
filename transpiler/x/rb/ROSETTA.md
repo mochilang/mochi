@@ -1,5 +1,5 @@
-# Ruby Rosetta Transpiler Output (48/284)
-Last updated: 2025-07-23 06:19 UTC
+# Ruby Rosetta Transpiler Output (58/284)
+Last updated: 2025-07-23 06:32 UTC
 
   1. [x] 100-doors-2
   2. [x] 100-doors-3
@@ -37,12 +37,12 @@ Last updated: 2025-07-23 06:19 UTC
  34. [x] add-a-variable-to-a-class-instance-at-runtime
  35. [x] additive-primes
  36. [x] address-of-a-variable
- 37. [ ] adfgvx-cipher
+ 37. [x] adfgvx-cipher
  38. [x] aks-test-for-primes
  39. [x] algebraic-data-types
  40. [x] align-columns
  41. [x] aliquot-sequence-classifications
- 42. [ ] almkvist-giullera-formula-for-pi
+ 42. [x] almkvist-giullera-formula-for-pi
  43. [x] almost-prime
  44. [x] amb
  45. [x] amicable-pairs
@@ -51,14 +51,14 @@ Last updated: 2025-07-23 06:19 UTC
  48. [x] angle-difference-between-two-bearings-1
  49. [x] angle-difference-between-two-bearings-2
  50. [x] angles-geometric-normalization-and-conversion
- 51. [ ] animate-a-pendulum
- 52. [ ] animation
- 53. [ ] anonymous-recursion-1
- 54. [ ] anonymous-recursion-2
- 55. [ ] anonymous-recursion
- 56. [ ] anti-primes
- 57. [ ] append-a-record-to-the-end-of-a-text-file
- 58. [ ] apply-a-callback-to-an-array-1
+ 51. [x] animate-a-pendulum
+ 52. [x] animation
+ 53. [x] anonymous-recursion-1
+ 54. [x] anonymous-recursion-2
+ 55. [x] anonymous-recursion
+ 56. [x] anti-primes
+ 57. [x] append-a-record-to-the-end-of-a-text-file
+ 58. [x] apply-a-callback-to-an-array-1
  59. [ ] apply-a-callback-to-an-array-2
  60. [ ] apply-a-digital-filter-direct-form-ii-transposed-
  61. [ ] approximate-equality
