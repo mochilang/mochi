@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated TypeScript code from programs in `tests/rosetta/x/Mochi` lives in `tests/rosetta/transpiler/TypeScript`.
-Last updated: 2025-07-23 02:34 UTC
+Last updated: 2025-07-23 03:13 UTC
 
-## Rosetta Golden Test Checklist (21/284)
+## Rosetta Golden Test Checklist (22/284)
 1. [x] 100-doors-2
 2. [x] 100-doors-3
 3. [x] 100-doors
@@ -20,7 +20,7 @@ Last updated: 2025-07-23 02:34 UTC
 13. [x] 99-bottles-of-beer-2
 14. [x] 99-bottles-of-beer
 15. [x] DNS-query
-16. [ ] a+b
+16. [x] a+b
 17. [ ] abbreviations-automatic
 18. [ ] abbreviations-easy
 19. [ ] abbreviations-simple
