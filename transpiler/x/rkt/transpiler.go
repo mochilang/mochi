@@ -822,6 +822,45 @@ func literalIntPostfix(p *parser.PostfixExpr) bool {
 	return p.Target.Lit != nil && p.Target.Lit.Int != nil
 }
 
+// plusOne checks if e represents start + 1 where start is the same expression
+// as the provided start parameter. It handles simple cases produced by the
+// parser for slice boundaries.
+func plusOne(e Expr, start Expr) bool {
+	b, ok := e.(*BinaryExpr)
+	if !ok || b.Op != "+" {
+		return false
+	}
+	if l, ok := b.Left.(*IntLit); ok {
+		if l.Value == 1 {
+			if r, ok2 := b.Right.(*Name); ok2 {
+				if s, ok3 := start.(*Name); ok3 && r.Name == s.Name {
+					return true
+				}
+			}
+			if r, ok2 := b.Right.(*IntLit); ok2 {
+				if s, ok3 := start.(*IntLit); ok3 && r.Value == s.Value {
+					return true
+				}
+			}
+		}
+	}
+	if r, ok := b.Right.(*IntLit); ok {
+		if r.Value == 1 {
+			if l, ok2 := b.Left.(*Name); ok2 {
+				if s, ok3 := start.(*Name); ok3 && l.Name == s.Name {
+					return true
+				}
+			}
+			if l, ok2 := b.Left.(*IntLit); ok2 {
+				if s, ok3 := start.(*IntLit); ok3 && l.Value == s.Value {
+					return true
+				}
+			}
+		}
+	}
+	return false
+}
+
 func substituteFields(e Expr, varName string, fields map[string]bool) Expr {
 	switch ex := e.(type) {
 	case *Name:
@@ -2019,6 +2058,20 @@ func convertPostfix(pf *parser.PostfixExpr, env *types.Env) (Expr, error) {
 						break
 					}
 				}
+				if lit, ok := n.Index.(*StringLit); ok && lit.Value == "get" {
+					if len(op.Call.Args) == 2 {
+						key, err := convertExpr(op.Call.Args[0], env)
+						if err != nil {
+							return nil, err
+						}
+						def, err := convertExpr(op.Call.Args[1], env)
+						if err != nil {
+							return nil, err
+						}
+						expr = &CallExpr{Func: "hash-ref", Args: []Expr{n.Target, key, def}}
+						break
+					}
+				}
 				return nil, fmt.Errorf("unsupported call")
 			default:
 				return nil, fmt.Errorf("unsupported call")
@@ -2059,7 +2112,11 @@ func convertPostfix(pf *parser.PostfixExpr, env *types.Env) (Expr, error) {
 				}
 			}
 			isStr := types.IsStringPrimary(pf.Target, env)
-			expr = &SliceExpr{Target: expr, Start: start, End: end, IsString: isStr}
+			if !isStr && start != nil && end != nil && plusOne(end, start) {
+				expr = &IndexExpr{Target: expr, Index: start, IsString: false, IsMap: false}
+			} else {
+				expr = &SliceExpr{Target: expr, Start: start, End: end, IsString: isStr}
+			}
 		case op.Cast != nil && op.Cast.Type != nil:
 			if op.Cast.Type.Simple != nil {
 				expr = &CastExpr{Value: expr, Type: *op.Cast.Type.Simple}
