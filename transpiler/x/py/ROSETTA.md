@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Python code from programs in `tests/rosetta/x/Mochi` lives in `tests/rosetta/transpiler/Python`.
-Last updated: 2025-07-23 05:43 UTC
+Last updated: 2025-07-23 05:56 UTC
 
-## Rosetta Golden Test Checklist (69/284)
+## Rosetta Golden Test Checklist (70/284)
 1. [x] 100-doors-2
 2. [x] 100-doors-3
 3. [x] 100-doors
@@ -75,7 +75,7 @@ Last updated: 2025-07-23 05:43 UTC
 68. [x] arithmetic-geometric-mean-calculate-pi
 69. [x] arithmetic-geometric-mean
 70. [x] arithmetic-integer-1
-71. [ ] arithmetic-integer-2
+71. [x] arithmetic-integer-2
 72. [ ] arithmetic-numbers
 73. [ ] arithmetic-rational
 74. [ ] array-concatenation
