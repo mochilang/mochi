@@ -1,0 +1,15 @@
+exit status 70
+WARNING: out of order define: (define idx (modulo (current-jiffy) (length empty)))
+WARNING: out of order define: (define cell (list-ref empty idx))
+WARNING: out of order define: (define val 4)
+WARNING: out of order define: (define y 0)
+WARNING: out of order define: (define line "|")
+WARNING: out of order define: (define x 0)
+WARNING: out of order define: (define res (list))
+WARNING: out of order define: (define gain 0)
+ERROR in modulo on line 280 of file /usr/share/chibi/init-7.scm: divide by zero
+  called from <anonymous> on line 146 of file /workspace/mochi/tests/rosetta/transpiler/scheme/2048.scm
+  called from call-with-current-continuation on line 848 of file /usr/share/chibi/init-7.scm
+  called from <anonymous> on line 1103 of file /workspace/mochi/tests/rosetta/transpiler/scheme/2048.scm
+  called from <anonymous> on line 1292 of file /usr/share/chibi/init-7.scm
+  called from <anonymous> on line 821 of file /usr/share/chibi/init-7.scm
