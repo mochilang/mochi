@@ -4012,6 +4012,10 @@ func convertPrimary(env *types.Env, p *parser.Primary) (Expr, error) {
 				name = "user_main"
 			}
 			call := &CallExpr{Func: safeName(name), Args: args}
+			if retType != "" && retType != "Any" {
+				// return type known, no cast needed
+				return call, nil
+			}
 			if retType != "" {
 				return &CastExpr{Value: call, Type: retType}, nil
 			}
