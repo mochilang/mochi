@@ -258,6 +258,8 @@ out
 !tests/rosetta/transpiler/php/**
 !tests/rosetta/transpiler/CPP/
 !tests/rosetta/transpiler/CPP/**
+!tests/rosetta/transpiler/Zig
+!tests/rosetta/transpiler/Zig/**
 
 # Nuxt.js build / generate output
 .nuxt

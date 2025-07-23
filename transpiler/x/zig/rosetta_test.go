@@ -50,7 +50,7 @@ func TestZigTranspiler_Rosetta(t *testing.T) {
 	}
 	root := rosettaRepoRoot(t)
 	srcDir := filepath.Join(root, "tests", "rosetta", "x", "Mochi")
-	outDir := filepath.Join(root, "tests", "rosetta", "out", "Zig")
+	outDir := filepath.Join(root, "tests", "rosetta", "transpiler", "Zig")
 	os.MkdirAll(outDir, 0o755)
 
 	names, err := readIndex(srcDir)
@@ -114,6 +114,7 @@ func runCase(src, outDir string) ([]byte, error) {
 		return nil, err
 	}
 	cmd := exec.Command("zig", "run", codePath)
+	cmd.Env = append(os.Environ(), "MOCHI_NOW_SEED=0")
 	if data, err := os.ReadFile(filepath.Join(filepath.Dir(src), name+".in")); err == nil {
 		cmd.Stdin = bytes.NewReader(data)
 	}
@@ -163,7 +164,7 @@ func rosettaRepoRoot(t *testing.T) string {
 func updateRosettaReadme() {
 	root := rosettaRepoRoot(&testing.T{})
 	srcDir := filepath.Join(root, "tests", "rosetta", "x", "Mochi")
-	outDir := filepath.Join(root, "tests", "rosetta", "out", "Zig")
+	outDir := filepath.Join(root, "tests", "rosetta", "transpiler", "Zig")
 	readme := filepath.Join(root, "transpiler", "x", "zig", "ROSETTA.md")
 
 	names, err := readIndex(srcDir)
@@ -197,7 +198,7 @@ func updateRosettaReadme() {
 	}
 	var buf bytes.Buffer
 	buf.WriteString("# Zig Rosetta Transpiler\n\n")
-	buf.WriteString("Generated Zig code for Rosetta tasks lives under `tests/rosetta/out/Zig`.\n\n")
+	buf.WriteString("Generated Zig code for Rosetta tasks lives under `tests/rosetta/transpiler/Zig`.\n\n")
 	if ts != "" {
 		fmt.Fprintf(&buf, "Last updated: %s\n\n", ts)
 	}
