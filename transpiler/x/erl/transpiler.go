@@ -36,6 +36,7 @@ type context struct {
 	strVar    map[string]bool
 	strField  map[string]map[string]bool
 	boolField map[string]map[string]bool
+	boolList  map[string]bool
 	groups    map[string]groupInfo
 	constVal  map[string]Expr
 	autoMod   map[string]string
@@ -45,7 +46,7 @@ type context struct {
 type groupInfo struct{ key, items string }
 
 func newContext(base string) *context {
-	return &context{alias: map[string]string{}, orig: map[string]string{}, counter: map[string]int{}, strVar: map[string]bool{}, strField: map[string]map[string]bool{}, boolField: map[string]map[string]bool{}, groups: map[string]groupInfo{}, constVal: map[string]Expr{}, autoMod: map[string]string{}, baseDir: base}
+	return &context{alias: map[string]string{}, orig: map[string]string{}, counter: map[string]int{}, strVar: map[string]bool{}, strField: map[string]map[string]bool{}, boolField: map[string]map[string]bool{}, boolList: map[string]bool{}, groups: map[string]groupInfo{}, constVal: map[string]Expr{}, autoMod: map[string]string{}, baseDir: base}
 }
 
 func (c *context) clone() *context {
@@ -74,6 +75,10 @@ func (c *context) clone() *context {
 		}
 		bfields[k] = fm
 	}
+	boolList := make(map[string]bool, len(c.boolList))
+	for k, v := range c.boolList {
+		boolList[k] = v
+	}
 	groups := make(map[string]groupInfo, len(c.groups))
 	for k, v := range c.groups {
 		groups[k] = v
@@ -90,7 +95,7 @@ func (c *context) clone() *context {
 	for k, v := range c.autoMod {
 		mods[k] = v
 	}
-	return &context{alias: alias, orig: orig, counter: counter, strVar: strVar, strField: fields, boolField: bfields, groups: groups, constVal: consts, autoMod: mods, baseDir: c.baseDir}
+	return &context{alias: alias, orig: orig, counter: counter, strVar: strVar, strField: fields, boolField: bfields, boolList: boolList, groups: groups, constVal: consts, autoMod: mods, baseDir: c.baseDir}
 }
 
 func (c *context) newAlias(name string) string {
@@ -190,6 +195,17 @@ func (c *context) isStringVar(name string) bool {
 	return c.strVar[name]
 }
 
+func (c *context) setBoolList(name string) {
+	if c.boolList == nil {
+		c.boolList = map[string]bool{}
+	}
+	c.boolList[name] = true
+}
+
+func (c *context) isBoolList(name string) bool {
+	return c.boolList[name]
+}
+
 func (c *context) getGroup(name string) (groupInfo, bool) {
 	g, ok := c.groups[name]
 	return g, ok
@@ -270,7 +286,7 @@ func replaceGroupExpr(e Expr, groupVar, keyVar, itemsVar string) Expr {
 	switch v := e.(type) {
 	case *NameRef:
 		if v.Name == groupVar {
-			return &NameRef{Name: itemsVar, IsString: v.IsString}
+			return &NameRef{Name: itemsVar, IsString: v.IsString, IsBool: v.IsBool}
 		}
 		return v
 	case *BinaryExpr:
@@ -517,6 +533,7 @@ type CaseClause struct {
 type NameRef struct {
 	Name     string
 	IsString bool
+	IsBool   bool
 }
 
 // MapLit represents a map literal.
@@ -537,6 +554,7 @@ type IndexExpr struct {
 	Index    Expr
 	Kind     string // "list", "map" or "string"
 	IsString bool
+	IsBool   bool
 }
 
 type IntLit struct{ Value int64 }
@@ -823,6 +841,10 @@ func isBoolExpr(e Expr) bool {
 			}
 		}
 		return true
+	case *NameRef:
+		return v.IsBool
+	case *IndexExpr:
+		return v.IsBool
 	}
 	return false
 }
@@ -1402,10 +1424,18 @@ func (f *ForStmt) emit(w io.Writer) {
 	io.WriteString(w, loopName)
 	io.WriteString(w, "(List")
 	for _, p := range f.Params {
-		io.WriteString(w, ", ")
+		io.WriteString(w, ", _")
 		io.WriteString(w, p)
 	}
-	io.WriteString(w, ") ->\n    case List of\n        [] -> {")
+	io.WriteString(w, ") ->")
+	for _, p := range f.Params {
+		io.WriteString(w, "\n        ")
+		io.WriteString(w, p)
+		io.WriteString(w, " = _")
+		io.WriteString(w, p)
+		io.WriteString(w, ",")
+	}
+	io.WriteString(w, "\n    case List of\n        [] -> {")
 	for i, p := range f.Params {
 		if i > 0 {
 			io.WriteString(w, ", ")
@@ -2124,6 +2154,9 @@ func convertStmt(st *parser.Statement, env *types.Env, ctx *context) ([]Stmt, er
 		if err != nil {
 			return nil, err
 		}
+		if isBoolExpr(val) {
+			ctx.setBoolList(st.Assign.Name)
+		}
 		old := ctx.current(st.Assign.Name)
 		alias := ctx.newAlias(st.Assign.Name)
 		ctx.clearConst(st.Assign.Name)
@@ -2150,6 +2183,9 @@ func convertStmt(st *parser.Statement, env *types.Env, ctx *context) ([]Stmt, er
 		val, err := convertExpr(st.Assign.Value, env, ctx)
 		if err != nil {
 			return nil, err
+		}
+		if isBoolExpr(val) {
+			ctx.setBoolList(st.Assign.Name)
 		}
 		alias := ctx.newAlias(st.Assign.Name)
 		ctx.clearConst(st.Assign.Name)
@@ -2226,14 +2262,6 @@ func convertStmt(st *parser.Statement, env *types.Env, ctx *context) ([]Stmt, er
 		loopCtx := ctx.clone()
 		alias := loopCtx.newAlias(st.For.Name)
 		funName := ctx.newAlias("fun")
-		body := []Stmt{}
-		for _, bs := range st.For.Body {
-			cs, err := convertStmt(bs, env, loopCtx)
-			if err != nil {
-				return nil, err
-			}
-			body = append(body, cs...)
-		}
 		names := make([]string, 0, len(ctx.alias))
 		for n := range ctx.alias {
 			if n == "fun" {
@@ -2243,9 +2271,20 @@ func convertStmt(st *parser.Statement, env *types.Env, ctx *context) ([]Stmt, er
 		}
 		sort.Strings(names)
 		params := make([]string, len(names))
-		next := make([]string, len(names))
 		for i, n := range names {
 			params[i] = ctx.alias[n]
+			loopCtx.alias[n] = loopCtx.newAlias(n)
+		}
+		body := []Stmt{}
+		for _, bs := range st.For.Body {
+			cs, err := convertStmt(bs, env, loopCtx)
+			if err != nil {
+				return nil, err
+			}
+			body = append(body, cs...)
+		}
+		next := make([]string, len(names))
+		for i, n := range names {
 			next[i] = loopCtx.alias[n]
 			ctx.alias[n] = loopCtx.alias[n]
 		}
@@ -2341,7 +2380,15 @@ func convertIfStmt(n *parser.IfStmt, env *types.Env, ctx *context) (*IfStmt, err
 		return nil, err
 	}
 	if _, ok := types.ExprType(n.Cond, env).(types.BoolType); !ok {
-		cond = &BinaryExpr{Left: cond, Op: "!=", Right: &AtomLit{Name: "nil"}}
+		if ie, ok2 := cond.(*IndexExpr); ok2 && ie.Kind == "list" {
+			if nr, ok3 := ie.Target.(*NameRef); ok3 && ctx.isBoolList(ctx.original(nr.Name)) {
+				// boolean list element
+			} else {
+				cond = &BinaryExpr{Left: cond, Op: "!=", Right: &AtomLit{Name: "nil"}}
+			}
+		} else {
+			cond = &BinaryExpr{Left: cond, Op: "!=", Right: &AtomLit{Name: "nil"}}
+		}
 	}
 
 	base := ctx.clone()
@@ -2743,7 +2790,15 @@ func convertPostfix(pf *parser.PostfixExpr, env *types.Env, ctx *context) (Expr,
 				kind = "string"
 				isStr = true
 			}
-			expr = &IndexExpr{Target: expr, Index: idx, Kind: kind, IsString: isStr}
+			isBool := false
+			if kind == "list" {
+				if nr, ok := expr.(*NameRef); ok {
+					if ctx.isBoolList(ctx.original(nr.Name)) {
+						isBool = true
+					}
+				}
+			}
+			expr = &IndexExpr{Target: expr, Index: idx, Kind: kind, IsString: isStr, IsBool: isBool}
 		case op.Index != nil && op.Index.Colon != nil && op.Index.Step == nil && op.Index.Colon2 == nil:
 			var startExpr, endExpr Expr
 			var err error
@@ -2806,7 +2861,8 @@ func convertPostfix(pf *parser.PostfixExpr, env *types.Env, ctx *context) (Expr,
 			}
 			keyLit := &StringLit{Value: field}
 			isStr := fieldIsString(expr, keyLit, env, ctx)
-			expr = &IndexExpr{Target: expr, Index: keyLit, Kind: "map", IsString: isStr}
+			isBool := fieldIsBool(expr, keyLit, env, ctx)
+			expr = &IndexExpr{Target: expr, Index: keyLit, Kind: "map", IsString: isStr, IsBool: isBool}
 		default:
 			return nil, fmt.Errorf("unsupported postfix")
 		}
@@ -2833,10 +2889,15 @@ func convertPrimary(p *parser.Primary, env *types.Env, ctx *context) (Expr, erro
 		if t, err := env.GetVar(p.Selector.Root); err == nil {
 			if _, ok := t.(types.StringType); ok {
 				nr.IsString = true
+			} else if _, ok := t.(types.BoolType); ok {
+				nr.IsBool = true
 			}
 		}
 		if !nr.IsString && ctx.isStringVar(p.Selector.Root) {
 			nr.IsString = true
+		}
+		if ctx.isBoolList(p.Selector.Root) {
+			// variable holds list of booleans, not bool
 		}
 		return nr, nil
 	case p.Selector != nil && len(p.Selector.Tail) > 0:
@@ -2872,7 +2933,8 @@ func convertPrimary(p *parser.Primary, env *types.Env, ctx *context) (Expr, erro
 					isStr = true
 				}
 			}
-			expr = &IndexExpr{Target: expr, Index: key, Kind: "map", IsString: isStr}
+			isBool := fieldIsBool(expr, key, env, ctx)
+			expr = &IndexExpr{Target: expr, Index: key, Kind: "map", IsString: isStr, IsBool: isBool}
 		}
 		return expr, nil
 	case p.Call != nil:
@@ -2928,6 +2990,13 @@ func convertPrimary(p *parser.Primary, env *types.Env, ctx *context) (Expr, erro
 				return nil, err
 			}
 			ce.Args = append(ce.Args, ae)
+		}
+		if p.Call.Func == "append" && len(ce.Args) == 2 {
+			if nr, ok := ce.Args[0].(*NameRef); ok {
+				if isBoolExpr(ce.Args[1]) {
+					ctx.setBoolList(ctx.original(nr.Name))
+				}
+			}
 		}
 		if fn, ok := env.GetFunc(p.Call.Func); ok && len(p.Call.Args) < len(fn.Params) {
 			remain := fn.Params[len(p.Call.Args):]
@@ -3126,7 +3195,15 @@ func convertIf(ifx *parser.IfExpr, env *types.Env, ctx *context) (Expr, error) {
 		return nil, err
 	}
 	if _, ok := types.ExprType(ifx.Cond, env).(types.BoolType); !ok {
-		cond = &BinaryExpr{Left: cond, Op: "!=", Right: &AtomLit{Name: "nil"}}
+		if ie, ok2 := cond.(*IndexExpr); ok2 && ie.Kind == "list" {
+			if nr, ok3 := ie.Target.(*NameRef); ok3 && ctx.isBoolList(ctx.original(nr.Name)) {
+				// keep boolean
+			} else {
+				cond = &BinaryExpr{Left: cond, Op: "!=", Right: &AtomLit{Name: "nil"}}
+			}
+		} else {
+			cond = &BinaryExpr{Left: cond, Op: "!=", Right: &AtomLit{Name: "nil"}}
+		}
 	}
 	thenExpr, err := convertExpr(ifx.Then, env, ctx)
 	if err != nil {
