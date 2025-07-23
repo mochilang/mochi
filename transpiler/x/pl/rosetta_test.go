@@ -70,6 +70,9 @@ func runRosettaTask(t *testing.T, name string) {
 	}
 	cmd := exec.Command("swipl", "-q", "-f", plFile)
 	cmd.Env = append(os.Environ(), "MOCHI_ROOT="+root)
+	if data, err := os.ReadFile(strings.TrimSuffix(src, ".mochi") + ".in"); err == nil {
+		cmd.Stdin = bytes.NewReader(data)
+	}
 	out, err := cmd.CombinedOutput()
 	got := bytes.TrimSpace(out)
 	if err != nil || bytes.Contains(out, []byte("ERROR:")) {
