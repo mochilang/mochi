@@ -1,7 +1,7 @@
 # Go Rosetta Transpiler Output
 
-Completed programs: 6/284
-Last updated: 2025-07-22 23:26 +0700
+Completed programs: 8/284
+Last updated: 2025-07-23 09:04 +0700
 
 Checklist:
 
@@ -11,8 +11,8 @@ Checklist:
 4. [x] 100-prisoners
 5. [x] 15-puzzle-game
 6. [x] 15-puzzle-solver
-7. [ ] 2048
-8. [ ] 21-game
+7. [x] 2048
+8. [x] 21-game
 9. [ ] 24-game-solve
 10. [ ] 24-game
 11. [ ] 4-rings-or-4-squares-puzzle

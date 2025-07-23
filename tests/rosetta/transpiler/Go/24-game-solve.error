@@ -1,0 +1,8 @@
+exit status 1
+# command-line-arguments
+../../../tests/rosetta/transpiler/Go/24-game-solve.go:48:10: cannot use x["value"] (map index expression of interface type any) as map[string]int value in return statement: need type assertion
+../../../tests/rosetta/transpiler/Go/24-game-solve.go:50:34: cannot use x["left"] (map index expression of interface type any) as map[string]any value in argument to exprEval: need type assertion
+../../../tests/rosetta/transpiler/Go/24-game-solve.go:51:34: cannot use x["right"] (map index expression of interface type any) as map[string]any value in argument to exprEval: need type assertion
+../../../tests/rosetta/transpiler/Go/24-game-solve.go:66:31: invalid operation: cannot index x["value"] (map index expression of interface type any)
+../../../tests/rosetta/transpiler/Go/24-game-solve.go:68:29: cannot use x["left"] (map index expression of interface type any) as map[string]any value in argument to exprString: need type assertion
+../../../tests/rosetta/transpiler/Go/24-game-solve.go:69:29: cannot use x["right"] (map index expression of interface type any) as map[string]any value in argument to exprString: need type assertion
