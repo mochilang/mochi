@@ -4700,6 +4700,15 @@ func exprType(e Expr) string {
 			return "bool"
 		}
 		return exprType(v.Expr)
+	case *CallExpr:
+		if currentProgram != nil {
+			for _, fn := range currentProgram.Functions {
+				if fn.Name == v.Name {
+					return fn.ReturnType
+				}
+			}
+		}
+		return "auto"
 	case *BinaryExpr:
 		switch v.Op {
 		case "==", "!=", "<", "<=", ">", ">=", "&&", "||", "in":
