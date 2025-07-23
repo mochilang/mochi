@@ -5,7 +5,7 @@ List _lookupHost(String host) {
   return [<String>[], null];
 }
 
-final List<dynamic> res = _lookupHost("www.kame.net")();
+final List<dynamic> res = _lookupHost("www.kame.net");
 final addrs = res[0];
 final err = res[1];
 void main() {

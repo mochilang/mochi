@@ -2,7 +2,7 @@
 
 This directory contains Dart code generated from Mochi programs in `tests/rosetta/x/Mochi`. Each program has a `.dart` file and `.out` output. Compilation or runtime failures are captured in a `.error` file.
 
-Compiled and ran: 15/284
+Compiled and ran: 25/284
 
 ## Checklist
 1. [x] 100-doors-2
@@ -19,18 +19,18 @@ Compiled and ran: 15/284
 12. [x] 9-billion-names-of-god-the-integer
 13. [x] 99-bottles-of-beer-2
 14. [x] 99-bottles-of-beer
-15. [ ] DNS-query
+15. [x] DNS-query
 16. [x] a+b
-17. [ ] abbreviations-automatic
-18. [ ] abbreviations-easy
-19. [ ] abbreviations-simple
-20. [ ] abc-problem
-21. [ ] abelian-sandpile-model-identity
-22. [ ] abelian-sandpile-model
+17. [x] abbreviations-automatic
+18. [x] abbreviations-easy
+19. [x] abbreviations-simple
+20. [x] abc-problem
+21. [x] abelian-sandpile-model-identity
+22. [x] abelian-sandpile-model
 23. [ ] abstract-type
-24. [ ] abundant-deficient-and-perfect-number-classifications
-25. [ ] abundant-odd-numbers
-26. [ ] accumulator-factory
+24. [x] abundant-deficient-and-perfect-number-classifications
+25. [x] abundant-odd-numbers
+26. [x] accumulator-factory
 27. [ ] achilles-numbers
 28. [ ] ackermann-function-2
 29. [ ] ackermann-function-3
@@ -290,4 +290,4 @@ Compiled and ran: 15/284
 283. [ ] define-a-primitive-data-type
 284. [ ] md5
 
-_Last updated: 2025-07-23 10:32 +0700_
+_Last updated: 2025-07-23 11:32 +0700_
