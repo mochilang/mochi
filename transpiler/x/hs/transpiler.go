@@ -499,11 +499,14 @@ func (l *LetStmt) emit(w io.Writer) {
 		io.WriteString(w, name+" <- newIORef (")
 		l.Expr.emit(w)
 		io.WriteString(w, ")")
-	} else {
-		io.WriteString(w, name)
-		io.WriteString(w, " = ")
-		l.Expr.emit(w)
+		return
 	}
+	if indent != "" {
+		io.WriteString(w, "let ")
+	}
+	io.WriteString(w, name)
+	io.WriteString(w, " = ")
+	l.Expr.emit(w)
 }
 
 func (a *AssignStmt) emit(w io.Writer) {
@@ -1708,6 +1711,21 @@ func Emit(p *Program) []byte {
 		buf.WriteByte('\n')
 	}
 	var refDecls []*LetStmt
+	hasMain := false
+	for _, f := range p.Funcs {
+		if f.Name == "main" {
+			hasMain = true
+			break
+		}
+	}
+	if !hasMain {
+		for _, s := range p.Stmts {
+			if l, ok := s.(*LetStmt); ok && l.Name == "main" {
+				hasMain = true
+				break
+			}
+		}
+	}
 	for _, s := range p.Stmts {
 		if l, ok := s.(*LetStmt); ok {
 			if mutated[l.Name] {
@@ -1720,10 +1738,14 @@ func Emit(p *Program) []byte {
 			buf.WriteByte('\n')
 		}
 	}
-	buf.WriteString("main :: IO ()\n")
-	buf.WriteString("main = do\n")
+	if !hasMain {
+		buf.WriteString("main :: IO ()\n")
+		buf.WriteString("main = do\n")
+	}
 	prev := indent
-	indent += "    "
+	if !hasMain {
+		indent += "    "
+	}
 	for _, l := range refDecls {
 		writeIndent(&buf)
 		io.WriteString(&buf, safeName(l.Name)+" <- newIORef (")
@@ -1740,7 +1762,9 @@ func Emit(p *Program) []byte {
 		s.emit(&buf)
 		buf.WriteByte('\n')
 	}
-	indent = prev
+	if !hasMain {
+		indent = prev
+	}
 	return buf.Bytes()
 }
 
@@ -1929,6 +1953,24 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	for i := len(names) - 1; i >= 0; i-- {
 		n := names[i]
 		h.Stmts = append([]Stmt{&LetStmt{Name: n, Expr: vars[n]}}, h.Stmts...)
+	}
+	hasMainFunc := false
+	for _, f := range h.Funcs {
+		if f.Name == "main" {
+			hasMainFunc = true
+			break
+		}
+	}
+	if hasMainFunc && len(h.Stmts) > 0 {
+		if es, ok := h.Stmts[len(h.Stmts)-1].(*ExprStmt); ok {
+			if nr, ok2 := es.Expr.(*NameRef); ok2 && nr.Name == "main" {
+				h.Stmts = h.Stmts[:len(h.Stmts)-1]
+			} else if call, ok2 := es.Expr.(*CallExpr); ok2 {
+				if n, ok3 := call.Fun.(*NameRef); ok3 && n.Name == "main" && len(call.Args) == 0 {
+					h.Stmts = h.Stmts[:len(h.Stmts)-1]
+				}
+			}
+		}
 	}
 	// attach struct type declarations
 	for _, tdecl := range structDefs {
