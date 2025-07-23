@@ -12,6 +12,7 @@ import (
 	"sort"
 	"strconv"
 	"strings"
+	"unicode"
 
 	yaml "gopkg.in/yaml.v3"
 
@@ -74,6 +75,24 @@ func sanitize(name string) string {
 		return "_" + name
 	}
 	return name
+}
+
+func validIdent(name string) bool {
+	if name == "" {
+		return false
+	}
+	for i, r := range name {
+		if i == 0 {
+			if !(unicode.IsLetter(r) || r == '_') {
+				return false
+			}
+		} else {
+			if !(unicode.IsLetter(r) || unicode.IsDigit(r) || r == '_') {
+				return false
+			}
+		}
+	}
+	return true
 }
 
 // --- Simple Dart AST ---
@@ -795,8 +814,10 @@ func (l *ListLit) emit(w io.Writer) error {
 			return err
 		}
 	}
-	_, err := io.WriteString(w, "]")
-	return err
+	if _, err := io.WriteString(w, "]"); err != nil {
+		return err
+	}
+	return nil
 }
 
 // MapLit represents a simple map literal.
@@ -1006,8 +1027,14 @@ func (i *IndexExpr) emit(w io.Writer) error {
 			return err
 		}
 	}
-	_, err := io.WriteString(w, "]")
-	return err
+	if _, err := io.WriteString(w, "]"); err != nil {
+		return err
+	}
+	if strings.HasPrefix(t, "Map<") {
+		_, err := io.WriteString(w, "!")
+		return err
+	}
+	return nil
 }
 
 // SubstringExpr represents substring(s, start, end).
@@ -1984,13 +2011,22 @@ func inferType(e Expr) string {
 		}
 		sigParts := make([]string, len(ex.Entries))
 		valid := true
+		hasDynamic := false
 		for i, it := range ex.Entries {
 			var field string
 			switch k := it.Key.(type) {
 			case *Name:
-				field = k.Name
+				if validIdent(k.Name) {
+					field = k.Name
+				} else {
+					valid = false
+				}
 			case *StringLit:
-				field = k.Value
+				if validIdent(k.Value) {
+					field = k.Value
+				} else {
+					valid = false
+				}
 			default:
 				valid = false
 			}
@@ -1998,9 +2034,12 @@ func inferType(e Expr) string {
 				break
 			}
 			t := inferType(it.Value)
+			if t == "dynamic" || len(structFields[t]) > 0 {
+				hasDynamic = true
+			}
 			sigParts[i] = field + ":" + t
 		}
-		if valid {
+		if valid && !hasDynamic && nextStructHint != "" {
 			sig := strings.Join(sigParts, ";")
 			name, ok := structSig[sig]
 			if !ok {
@@ -2046,7 +2085,10 @@ func inferType(e Expr) string {
 				kt = "String"
 			}
 		}
-		vt := inferType(ex.Entries[0].Value)
+		vt := "dynamic"
+		if len(ex.Entries) > 0 {
+			vt = inferType(ex.Entries[0].Value)
+		}
 		for _, it := range ex.Entries[1:] {
 			t := inferType(it.Key)
 			if t == "dynamic" {
@@ -2064,10 +2106,7 @@ func inferType(e Expr) string {
 		if kt == "dynamic" {
 			kt = "dynamic"
 		}
-		if vt == "dynamic" {
-			vt = "dynamic"
-		}
-		return "Map<" + kt + ", " + vt + ">"
+		return "Map<" + kt + ", dynamic>"
 	case *MultiListComp:
 		saved := map[string]string{}
 		for i, v := range ex.Vars {
@@ -3277,7 +3316,21 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 			if err != nil {
 				return nil, err
 			}
-			return &CastExpr{Value: v, Type: "int"}, nil
+			return &CallExpr{Func: &SelectorExpr{Receiver: &Name{Name: "int"}, Field: "parse"}, Args: []Expr{v}}, nil
+		}
+		if p.Call.Func == "float" && len(p.Call.Args) == 1 {
+			v, err := convertExpr(p.Call.Args[0])
+			if err != nil {
+				return nil, err
+			}
+			return &CastExpr{Value: v, Type: "num"}, nil
+		}
+		if p.Call.Func == "abs" && len(p.Call.Args) == 1 {
+			v, err := convertExpr(p.Call.Args[0])
+			if err != nil {
+				return nil, err
+			}
+			return &CallExpr{Func: &SelectorExpr{Receiver: v, Field: "abs"}}, nil
 		}
 		if p.Call.Func == "str" && len(p.Call.Args) == 1 {
 			v, err := convertExpr(p.Call.Args[0])

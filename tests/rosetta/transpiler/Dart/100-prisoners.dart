@@ -38,7 +38,7 @@ void doTrials(trials, np, strategy) {
   int pardoned = 0;
   int t = 0;
   while (t < trials) {
-    List<dynamic> drawers = [];
+    List<int> drawers = [];
     int i = 0;
     while (i < 100) {
     drawers = [...drawers, i];
@@ -53,7 +53,7 @@ void doTrials(trials, np, strategy) {
     int prev = p;
     int d = 0;
     while (d < 50) {
-    final _this = drawers[prev];
+    final int _this = drawers[prev];
     if (_this == p) {
     found = true;
     break;
@@ -62,7 +62,7 @@ void doTrials(trials, np, strategy) {
     d = d + 1;
   };
   } else {
-    List<dynamic> opened = [];
+    List<bool> opened = [];
     int k = 0;
     while (k < 100) {
     opened = [...opened, false];
