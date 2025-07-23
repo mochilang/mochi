@@ -1269,6 +1269,32 @@ func (i *IndexExpr) emit(w io.Writer) {
 }
 
 func (s *SliceExpr) emit(w io.Writer) {
+	if isStringExpr(s.X) {
+		fmt.Fprint(w, "substr(")
+		s.X.emit(w)
+		fmt.Fprint(w, ", ")
+		s.Start.emit(w)
+		if s.End != nil {
+			fmt.Fprint(w, ", ")
+			(&BinaryExpr{Left: s.End, Op: "-", Right: s.Start}).emit(w)
+		}
+		fmt.Fprint(w, ")")
+		return
+	} else if isListExpr(s.X) && s.End != nil {
+		if be, ok := s.End.(*BinaryExpr); ok && be.Op == "+" {
+			if rv, ok2 := be.Right.(*IntLit); ok2 && rv.Value == 1 {
+				if lv, ok3 := be.Left.(*Var); ok3 {
+					if sv, ok4 := s.Start.(*Var); ok4 && sv.Name == lv.Name {
+						s.X.emit(w)
+						fmt.Fprint(w, "[")
+						s.Start.emit(w)
+						fmt.Fprint(w, "]")
+						return
+					}
+				}
+			}
+		}
+	}
 	fmt.Fprint(w, "array_slice(")
 	s.X.emit(w)
 	fmt.Fprint(w, ", ")
@@ -1442,6 +1468,17 @@ func convertBinary(b *parser.BinaryExpr) (Expr, error) {
 			if ls || rs {
 				return &BinaryExpr{Left: left, Op: ".", Right: right}, true
 			}
+			if isListExpr(left) && isListExpr(right) {
+				return &CallExpr{Func: "array_merge", Args: []Expr{left, right}}, false
+			}
+			if isListExpr(left) && isStringExpr(right) {
+				joined := &CallExpr{Func: "implode", Args: []Expr{&StringLit{Value: ""}, left}}
+				return &BinaryExpr{Left: joined, Op: ".", Right: right}, true
+			}
+			if isStringExpr(left) && isListExpr(right) {
+				joined := &CallExpr{Func: "implode", Args: []Expr{&StringLit{Value: ""}, right}}
+				return &BinaryExpr{Left: left, Op: ".", Right: joined}, true
+			}
 			return &BinaryExpr{Left: left, Op: "+", Right: right}, false
 		}
 		return &BinaryExpr{Left: left, Op: op, Right: right}, false
@@ -1531,6 +1568,11 @@ func convertPostfix(pf *parser.PostfixExpr) (Expr, error) {
 				return &CallExpr{Func: "in_array", Args: append(args, e)}, nil
 			}
 			return nil, fmt.Errorf("contains on unsupported type")
+		case "keys":
+			if len(args) != 0 {
+				return nil, fmt.Errorf("keys expects no args")
+			}
+			return &CallExpr{Func: "array_keys", Args: []Expr{e}}, nil
 		default:
 			if pf.Target != nil && pf.Target.Selector != nil {
 				root := pf.Target.Selector.Root
@@ -2812,7 +2854,9 @@ func isMapExpr(e Expr) bool {
 	if isMapArg(e) {
 		return true
 	}
-	if c, ok := e.(*CallExpr); ok {
+	switch v := e.(type) {
+	case *CallExpr:
+		c := v
 		if transpileEnv != nil {
 			if t, err := transpileEnv.GetVar(c.Func); err == nil {
 				if ft, ok := t.(types.FuncType); ok {
@@ -2821,6 +2865,10 @@ func isMapExpr(e Expr) bool {
 					}
 				}
 			}
+		}
+	case *IndexExpr:
+		if _, ok := v.Index.(*StringLit); ok {
+			return true
 		}
 	}
 	return false
@@ -2864,6 +2912,10 @@ func isStringExpr(e Expr) bool {
 			if isStringExpr(v.Left) || isStringExpr(v.Right) {
 				return true
 			}
+		}
+	case *SliceExpr:
+		if isStringExpr(v.X) {
+			return true
 		}
 	}
 	return false

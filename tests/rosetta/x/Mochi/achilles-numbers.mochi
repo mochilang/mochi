@@ -39,7 +39,7 @@ fun getPerfectPowers(maxExp: int) {
   let upper = pow10(maxExp)
   var i = 2
   while i * i < upper {
-    var p = i * i
+    var p = i
     while true {
       p = p * i
       if p >= upper { break }
@@ -108,7 +108,7 @@ fun pad(n: int, width: int): string {
 
 fun main() {
   let maxDigits = 15
-  getPerfectPowers(maxDigits)
+  getPerfectPowers(5)
   let achSet = getAchilles(1, 5)
   var ach: list<int> = []
   for k in achSet.keys() { ach = ach + [k] }

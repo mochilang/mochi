@@ -2,9 +2,9 @@
 
 Generated PHP code from Mochi Rosetta tasks lives in `tests/rosetta/transpiler/php`.
 
-Last updated: 2025-07-23 13:00 +0700
+Last updated: 2025-07-23 13:05 +0700
 
-## Checklist (25/284)
+## Checklist (35/284)
 - [x] 1 100-doors-2
 - [x] 2 100-doors-3
 - [x] 3 100-doors
@@ -31,16 +31,16 @@ Last updated: 2025-07-23 13:00 +0700
 - [x] 24 abundant-deficient-and-perfect-number-classifications
 - [x] 25 abundant-odd-numbers
 - [x] 26 accumulator-factory
-- [ ] 27 achilles-numbers
-- [ ] 28 ackermann-function-2
-- [ ] 29 ackermann-function-3
-- [ ] 30 ackermann-function
-- [ ] 31 active-directory-connect
-- [ ] 32 active-directory-search-for-a-user
-- [ ] 33 active-object
-- [ ] 34 add-a-variable-to-a-class-instance-at-runtime
-- [ ] 35 additive-primes
-- [ ] 36 address-of-a-variable
+- [x] 27 achilles-numbers
+- [x] 28 ackermann-function-2
+- [x] 29 ackermann-function-3
+- [x] 30 ackermann-function
+- [x] 31 active-directory-connect
+- [x] 32 active-directory-search-for-a-user
+- [x] 33 active-object
+- [x] 34 add-a-variable-to-a-class-instance-at-runtime
+- [x] 35 additive-primes
+- [x] 36 address-of-a-variable
 - [ ] 37 adfgvx-cipher
 - [ ] 38 aks-test-for-primes
 - [ ] 39 algebraic-data-types

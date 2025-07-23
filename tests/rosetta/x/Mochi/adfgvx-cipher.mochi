@@ -41,7 +41,7 @@ fun createPolybius(): list<string> {
   while i < 6 {
     var row = shuffled[i*6:(i+1)*6]
     p = append(p, row)
-    var line = labels[i:i+1] + " | "
+    var line = labels[i] + " | "
     var j = 0
     while j < 6 {
       line = line + row[j:j+1] + " "
