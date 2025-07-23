@@ -1,4 +1,4 @@
-// Generated 2025-07-22 22:23 +0700
+// Generated 2025-07-23 02:25 +0000
 
 exception Break
 exception Continue
@@ -28,20 +28,20 @@ let rec shuffle xs =
     let mutable i: int = 99
     while i > 0 do
         let j = (_now()) % (i + 1)
-        let tmp = List.item i arr
-        arr <- List.mapi (fun k x -> if k = i then List.item j arr else x) arr
-        arr <- List.mapi (fun k x -> if k = j then tmp else x) arr
+        let tmp = arr.[i]
+        arr.[i] <- arr.[j]
+        arr.[j] <- tmp
         i <- i - 1
     arr
-let rec doTrials trials np strategy =
+let rec doTrials (trials: int) (np: int) (strategy: string) =
     let mutable pardoned: int = 0
     let mutable t: int = 0
     try
         while t < trials do
-            let mutable drawers = []
+            let mutable drawers = [||]
             let mutable i: int = 0
             while i < 100 do
-                drawers <- drawers @ [i]
+                drawers <- Array.append drawers [|i|]
                 i <- i + 1
             drawers <- shuffle drawers
             let mutable p: int = 0
@@ -54,7 +54,7 @@ let rec doTrials trials np strategy =
                         let mutable d: int = 0
                         try
                             while d < 50 do
-                                let this = List.item prev drawers
+                                let this = drawers.[prev]
                                 if this = p then
                                     found <- true
                                     raise Break
@@ -62,19 +62,19 @@ let rec doTrials trials np strategy =
                                 d <- d + 1                        with
                         | Break -> ()
                     else
-                        let mutable opened = []
+                        let mutable opened = [||]
                         let mutable k: int = 0
                         while k < 100 do
-                            opened <- opened @ [false]
+                            opened <- Array.append opened [|false|]
                             k <- k + 1
                         let mutable d: int = 0
                         try
                             while d < 50 do
                                 let mutable n = (_now()) % 100
-                                while List.item n opened do
+                                while opened.[n] do
                                     n <- (_now()) % 100
-                                opened <- List.mapi (                                fun i x -> (if i = n then true else x)) opened
-                                if (List.item n drawers) = p then
+                                opened.[n] <- true
+                                if (drawers.[n]) = p then
                                     found <- true
                                     raise Break
                                 d <- d + 1                        with
@@ -92,8 +92,8 @@ let rec doTrials trials np strategy =
     printfn "%s" (((((("  strategy = " + strategy) + "  pardoned = ") + (string pardoned)) + " relative frequency = ") + (string rf)) + "%")
 let rec main () =
     let trials: int = 1000
-    for np in [10; 100] do
+    for np in [|10; 100|] do
         printfn "%s" (((("Results from " + (string trials)) + " trials with ") + (string np)) + " prisoners:\n")
-        for strat in ["random"; "optimal"] do
+        for strat in [|"random"; "optimal"|] do
             doTrials trials np strat
 main()

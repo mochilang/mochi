@@ -9,6 +9,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"sort"
 	"strconv"
 	"strings"
 	"testing"
@@ -55,26 +56,18 @@ func TestFSTranspiler_Rosetta_Golden(t *testing.T) {
 	os.MkdirAll(outDir, 0o755)
 	t.Cleanup(updateRosettaReadme)
 
+	_ = updateIndex(srcDir)
+	names, err := readIndex(filepath.Join(srcDir, "index.txt"))
+	if err != nil {
+		t.Fatalf("read index: %v", err)
+	}
 	var files []string
 	if only := os.Getenv("MOCHI_ROSETTA_ONLY"); only != "" {
 		files = append(files, filepath.Join(srcDir, only+".mochi"))
 	} else {
-		idxPath := filepath.Join(srcDir, "index.txt")
-		f, err := os.Open(idxPath)
-		if err != nil {
-			t.Fatalf("open index: %v", err)
+		for _, n := range names {
+			files = append(files, filepath.Join(srcDir, n))
 		}
-		scanner := bufio.NewScanner(f)
-		for scanner.Scan() {
-			parts := strings.Fields(scanner.Text())
-			if len(parts) == 2 {
-				files = append(files, filepath.Join(srcDir, parts[1]))
-			}
-		}
-		if err := scanner.Err(); err != nil {
-			t.Fatalf("scan index: %v", err)
-		}
-		f.Close()
 	}
 	if len(files) == 0 {
 		t.Fatal("no Mochi Rosetta tests found")
@@ -205,4 +198,38 @@ func updateRosetta() {
 	buf.WriteString("\n\n")
 	fmt.Fprintf(&buf, "Last updated: %s\n", ts)
 	_ = os.WriteFile(readmePath, buf.Bytes(), 0o644)
+}
+
+func readIndex(path string) ([]string, error) {
+	f, err := os.Open(path)
+	if err != nil {
+		return nil, err
+	}
+	defer f.Close()
+	var names []string
+	scanner := bufio.NewScanner(f)
+	for scanner.Scan() {
+		parts := strings.Fields(scanner.Text())
+		if len(parts) == 2 {
+			names = append(names, parts[1])
+		}
+	}
+	if err := scanner.Err(); err != nil {
+		return nil, err
+	}
+	return names, nil
+}
+
+func updateIndex(dir string) error {
+	pattern := filepath.Join(dir, "*.mochi")
+	files, err := filepath.Glob(pattern)
+	if err != nil {
+		return err
+	}
+	sort.Strings(files)
+	var buf bytes.Buffer
+	for i, f := range files {
+		fmt.Fprintf(&buf, "%d %s\n", i+1, filepath.Base(f))
+	}
+	return os.WriteFile(filepath.Join(dir, "index.txt"), buf.Bytes(), 0o644)
 }
