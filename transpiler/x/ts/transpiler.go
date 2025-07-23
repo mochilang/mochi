@@ -208,6 +208,12 @@ type BinaryExpr struct {
 	Right Expr
 }
 
+// NullishCoalesceExpr represents a `a ?? b` operation.
+type NullishCoalesceExpr struct {
+	Left  Expr
+	Right Expr
+}
+
 // UnaryExpr represents a prefix unary operation.
 type UnaryExpr struct {
 	Op   string
@@ -490,6 +496,18 @@ func (b *BinaryExpr) emit(w io.Writer) {
 	io.WriteString(w, b.Op)
 	io.WriteString(w, " ")
 	b.Right.emit(w)
+	io.WriteString(w, ")")
+}
+
+func (n *NullishCoalesceExpr) emit(w io.Writer) {
+	io.WriteString(w, "(")
+	if n.Left != nil {
+		n.Left.emit(w)
+	}
+	io.WriteString(w, " ?? ")
+	if n.Right != nil {
+		n.Right.emit(w)
+	}
 	io.WriteString(w, ")")
 }
 
@@ -2910,6 +2928,11 @@ func convertPostfix(p *parser.PostfixExpr) (Expr, error) {
 						expr = &MethodCallExpr{Target: idx.Target, Method: "includes", Args: args}
 					case lit.Value == "keys" && len(args) == 0:
 						expr = &MapKeysExpr{Target: idx.Target}
+					case lit.Value == "get" && len(args) == 2:
+						expr = &NullishCoalesceExpr{
+							Left:  &IndexExpr{Target: idx.Target, Index: args[0]},
+							Right: args[1],
+						}
 					default:
 						expr = &InvokeExpr{Callee: expr, Args: args}
 					}
