@@ -5,6 +5,7 @@ package ocaml_test
 import (
 	"bufio"
 	"bytes"
+	"flag"
 	"fmt"
 	"os"
 	"os/exec"
@@ -36,6 +37,12 @@ func repoRootDir(t *testing.T) string {
 	}
 	t.Fatal("go.mod not found")
 	return ""
+}
+
+// shouldUpdate reports whether the -update flag was set.
+func shouldUpdate() bool {
+	f := flag.Lookup("update")
+	return f != nil && f.Value.String() == "true"
 }
 
 func runCase(src, outDir string) ([]byte, error) {
@@ -131,8 +138,35 @@ func TestOCamlTranspiler_Rosetta_Golden(t *testing.T) {
 	src := filepath.Join(srcDir, nameFile)
 
 	if ok := t.Run(fmt.Sprintf("%03d_%s", idx, name), func(t *testing.T) {
-		if _, err := runCase(src, outDir); err != nil {
+		got, err := runCase(src, outDir)
+		if err != nil {
 			t.Fatalf("%v", err)
+		}
+		wantPath := filepath.Join(outDir, name+".out")
+		want, err := os.ReadFile(wantPath)
+		if err != nil {
+			if shouldUpdate() {
+				if err2 := os.WriteFile(wantPath, append(got, '\n'), 0o644); err2 == nil {
+					t.Logf("updated: %s", wantPath)
+					return
+				} else {
+					t.Fatalf("write golden: %v", err2)
+				}
+			}
+			t.Fatalf("read golden: %v", err)
+		}
+		got = bytes.TrimSpace(got)
+		want = bytes.TrimSpace(want)
+		if !bytes.Equal(got, want) {
+			if shouldUpdate() {
+				if err2 := os.WriteFile(wantPath, append(got, '\n'), 0o644); err2 == nil {
+					t.Logf("updated: %s", wantPath)
+					return
+				} else {
+					t.Fatalf("write golden: %v", err2)
+				}
+			}
+			t.Errorf("golden mismatch\n\n--- Got ---\n%s\n\n--- Want ---\n%s\n", got, want)
 		}
 	}); !ok {
 		t.Fatalf("program failed: %s", name)
@@ -162,8 +196,10 @@ func updateRosettaReadme() {
 		name := strings.TrimSuffix(nameFile, ".mochi")
 		mark := "[ ]"
 		if _, err := os.Stat(filepath.Join(outDir, name+".out")); err == nil {
-			completed++
-			mark = "[x]"
+			if _, err2 := os.Stat(filepath.Join(outDir, name+".error")); os.IsNotExist(err2) {
+				completed++
+				mark = "[x]"
+			}
 		}
 		lines = append(lines, fmt.Sprintf("%d. %s %s", i+1, mark, name))
 	}

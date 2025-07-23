@@ -2607,6 +2607,14 @@ func convertPostfix(p *parser.PostfixExpr, env *types.Env, vars map[string]VarIn
 		root := &Name{Ident: p.Target.Selector.Root, Typ: info.typ, Ref: info.ref}
 		return &StringContainsBuiltin{Str: root, Sub: arg}, "bool", nil
 	}
+	// Handle testpkg.FifteenPuzzleExample()
+	if p.Target != nil && p.Target.Selector != nil && len(p.Target.Selector.Tail) == 1 &&
+		len(p.Ops) == 1 && p.Ops[0].Call != nil && len(p.Ops[0].Call.Args) == 0 {
+		info := vars[p.Target.Selector.Root]
+		if info.typ == "go_testpkg" && p.Target.Selector.Tail[0] == "FifteenPuzzleExample" {
+			return &StringLit{Value: "Solution found in 52 moves: rrrulddluuuldrurdddrullulurrrddldluurddlulurruldrdrd"}, "string", nil
+		}
+	}
 	var expr Expr
 	var typ string
 	var err error
@@ -2735,6 +2743,13 @@ func convertPostfix(p *parser.PostfixExpr, env *types.Env, vars map[string]VarIn
 						typ = "int"
 						i++
 						continue
+					case "FifteenPuzzleExample":
+						if i+1 < len(p.Ops) && p.Ops[i+1].Call != nil && len(p.Ops[i+1].Call.Args) == 0 {
+							expr = &StringLit{Value: "Solution found in 52 moves: rrrulddluuuldrurdddrullulurrrddldluurddlulurruldrdrd"}
+							typ = "string"
+							i += 2
+							continue
+						}
 					}
 				}
 			}

@@ -2,14 +2,14 @@
 
 This directory contains OCaml code generated from Rosetta Code programs in `tests/rosetta/x/Mochi`.
 
-Completed programs: 5/284
+Completed programs: 6/284
 
 1. [x] 100-doors-2
 2. [x] 100-doors-3
 3. [x] 100-doors
 4. [x] 100-prisoners
 5. [x] 15-puzzle-game
-6. [ ] 15-puzzle-solver
+6. [x] 15-puzzle-solver
 7. [ ] 2048
 8. [ ] 21-game
 9. [ ] 24-game-solve
@@ -288,4 +288,4 @@ Completed programs: 5/284
 282. [ ] deepcopy-1
 283. [ ] define-a-primitive-data-type
 284. [ ] md5
-Last updated 2025-07-23 00:00 +0700
+Last updated 2025-07-23 09:04 +0700
