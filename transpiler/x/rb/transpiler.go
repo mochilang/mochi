@@ -1876,9 +1876,9 @@ func (j *JoinExpr) emit(e *emitter) {
 type FormatList struct{ List Expr }
 
 func (f *FormatList) emit(e *emitter) {
-	io.WriteString(e.w, `("[" + (`)
+	io.WriteString(e.w, `((__v = `)
 	f.List.emit(e)
-	io.WriteString(e.w, `).map{ |x| if x.is_a?(String) then '\'' + x + '\'' elsif x.respond_to?(:to_h) then '{' + x.to_h.map{ |k,v| "'#{k}': #{v.is_a?(String) ? '\'' + v + '\'' : v.to_s}" }.join(', ') + '}' else x.to_s end }.join(', ') + "]")`)
+	io.WriteString(e.w, `); __v.is_a?(Array) ? ("[" + __v.map{ |x| if x.is_a?(String) then '\'' + x + '\'' elsif x.respond_to?(:to_h) then '{' + x.to_h.map{ |k,v| "'#{k}': #{v.is_a?(String) ? '\'' + v + '\'' : v.to_s}" }.join(', ') + '}' else x.to_s end }.join(', ') + "]") : __v.to_s)`)
 }
 
 // FormatBool renders a boolean as "True" or "False" for printing.
