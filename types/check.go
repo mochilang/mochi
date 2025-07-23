@@ -1301,17 +1301,17 @@ func resolveTypeRef(t *parser.TypeRef, env *Env) Type {
 		case "bool":
 			return BoolType{}
 		default:
-			if typ, ok := env.LookupType(*t.Simple); ok {
-				return typ
-			}
 			if ut, ok := env.GetUnion(*t.Simple); ok {
-				return ut
-			}
-			if ut, ok := env.FindUnionByVariant(*t.Simple); ok {
 				return ut
 			}
 			if st, ok := env.GetStruct(*t.Simple); ok {
 				return st
+			}
+			if typ, ok := env.LookupType(*t.Simple); ok {
+				return typ
+			}
+			if ut, ok := env.FindUnionByVariant(*t.Simple); ok {
+				return ut
 			}
 			return AnyType{}
 		}
