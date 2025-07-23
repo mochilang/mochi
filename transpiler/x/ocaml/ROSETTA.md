@@ -2,7 +2,7 @@
 
 This directory contains OCaml code generated from Rosetta Code programs in `tests/rosetta/x/Mochi`.
 
-Completed programs: 20/284
+Completed programs: 16/284
 
 1. [x] 100-doors-2
 2. [x] 100-doors-3
@@ -18,22 +18,22 @@ Completed programs: 20/284
 12. [x] 9-billion-names-of-god-the-integer
 13. [x] 99-bottles-of-beer-2
 14. [x] 99-bottles-of-beer
-15. [ ] DNS-query
+15. [x] DNS-query
 16. [x] a+b
 17. [ ] abbreviations-automatic
 18. [ ] abbreviations-easy
 19. [ ] abbreviations-simple
 20. [ ] abc-problem
 21. [ ] abelian-sandpile-model-identity
-22. [x] abelian-sandpile-model
+22. [ ] abelian-sandpile-model
 23. [ ] abstract-type
-24. [x] abundant-deficient-and-perfect-number-classifications
-25. [x] abundant-odd-numbers
+24. [ ] abundant-deficient-and-perfect-number-classifications
+25. [ ] abundant-odd-numbers
 26. [ ] accumulator-factory
 27. [ ] achilles-numbers
-28. [x] ackermann-function-2
+28. [ ] ackermann-function-2
 29. [ ] ackermann-function-3
-30. [x] ackermann-function
+30. [ ] ackermann-function
 31. [ ] active-directory-connect
 32. [ ] active-directory-search-for-a-user
 33. [ ] active-object
@@ -288,4 +288,4 @@ Completed programs: 20/284
 282. [ ] deepcopy-1
 283. [ ] define-a-primitive-data-type
 284. [ ] md5
-Last updated 2025-07-23 13:23 +0700
+Last updated 2025-07-23 15:05 +0700
