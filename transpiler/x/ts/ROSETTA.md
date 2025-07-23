@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated TypeScript code from programs in `tests/rosetta/x/Mochi` lives in `tests/rosetta/transpiler/TypeScript`.
-Last updated: 2025-07-23 03:29 UTC
+Last updated: 2025-07-23 06:07 UTC
 
-## Rosetta Golden Test Checklist (26/284)
+## Rosetta Golden Test Checklist (37/284)
 1. [x] 100-doors-2
 2. [x] 100-doors-3
 3. [x] 100-doors
@@ -31,17 +31,17 @@ Last updated: 2025-07-23 03:29 UTC
 24. [x] abundant-deficient-and-perfect-number-classifications
 25. [x] abundant-odd-numbers
 26. [x] accumulator-factory
-27. [ ] achilles-numbers
-28. [ ] ackermann-function-2
-29. [ ] ackermann-function-3
-30. [ ] ackermann-function
-31. [ ] active-directory-connect
-32. [ ] active-directory-search-for-a-user
-33. [ ] active-object
-34. [ ] add-a-variable-to-a-class-instance-at-runtime
-35. [ ] additive-primes
-36. [ ] address-of-a-variable
-37. [ ] adfgvx-cipher
+27. [x] achilles-numbers
+28. [x] ackermann-function-2
+29. [x] ackermann-function-3
+30. [x] ackermann-function
+31. [x] active-directory-connect
+32. [x] active-directory-search-for-a-user
+33. [x] active-object
+34. [x] add-a-variable-to-a-class-instance-at-runtime
+35. [x] additive-primes
+36. [x] address-of-a-variable
+37. [x] adfgvx-cipher
 38. [ ] aks-test-for-primes
 39. [ ] algebraic-data-types
 40. [ ] align-columns
