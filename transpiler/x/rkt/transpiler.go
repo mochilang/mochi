@@ -1010,6 +1010,16 @@ func (b *BinaryExpr) emit(w io.Writer) {
 		io.WriteString(w, " ")
 		b.Right.emit(w)
 		io.WriteString(w, ")")
+	case "fmod":
+		io.WriteString(w, "(- ")
+		b.Left.emit(w)
+		io.WriteString(w, " (* (floor (/ ")
+		b.Left.emit(w)
+		io.WriteString(w, " ")
+		b.Right.emit(w)
+		io.WriteString(w, ")) ")
+		b.Right.emit(w)
+		io.WriteString(w, "))")
 	default:
 		fmt.Fprintf(w, "(%s ", b.Op)
 		b.Left.emit(w)
@@ -1931,7 +1941,15 @@ func convertBinary(b *parser.BinaryExpr, env *types.Env) (Expr, error) {
 			continue
 		}
 		if op == "<" || op == "<=" || op == ">" || op == ">=" {
-			if types.IsStringUnary(b.Left, env) || types.IsStringPostfix(part.Right, env) {
+			leftIsString := false
+			if _, ok := types.TypeOfUnary(b.Left, env).(types.StringType); ok {
+				leftIsString = true
+			}
+			rightIsString := false
+			if _, ok := types.TypeOfPostfix(part.Right, env).(types.StringType); ok {
+				rightIsString = true
+			}
+			if leftIsString || rightIsString {
 				switch op {
 				case "<":
 					op = "string<?"
@@ -1945,6 +1963,13 @@ func convertBinary(b *parser.BinaryExpr, env *types.Env) (Expr, error) {
 			}
 		}
 		if op == "%" {
+			lt := types.TypeOfUnary(b.Left, env)
+			rt := types.TypeOfPostfix(part.Right, env)
+			if types.IsFloatType(lt) || types.IsFloatType(rt) {
+				left := exprs[len(exprs)-1]
+				exprs[len(exprs)-1] = &BinaryExpr{Op: "fmod", Left: left, Right: right}
+				continue
+			}
 			op = "modulo"
 		}
 		for len(ops) > 0 && precedence(ops[len(ops)-1]) >= precedence(op) {
