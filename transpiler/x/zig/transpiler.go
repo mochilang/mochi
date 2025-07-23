@@ -134,6 +134,18 @@ type CallExpr struct {
 	Args []Expr
 }
 
+func exprToString(e Expr) (string, bool) {
+	switch t := e.(type) {
+	case *VarRef:
+		return t.Name, true
+	case *FieldExpr:
+		if s, ok := exprToString(t.Target); ok {
+			return s + "." + t.Name, true
+		}
+	}
+	return "", false
+}
+
 // PrintStmt writes values using std.io.getStdOut().writer().print.
 type PrintStmt struct{ Values []Expr }
 
@@ -1847,6 +1859,21 @@ func compilePostfix(pf *parser.PostfixExpr) (Expr, error) {
 				continue
 			}
 			return nil, fmt.Errorf("unsupported postfix")
+		}
+		if op.Call != nil {
+			args := make([]Expr, len(op.Call.Args))
+			for i, a := range op.Call.Args {
+				ex, err := compileExpr(a)
+				if err != nil {
+					return nil, err
+				}
+				args[i] = ex
+			}
+			if name, ok := exprToString(expr); ok {
+				expr = &CallExpr{Func: name, Args: args}
+				continue
+			}
+			return nil, fmt.Errorf("unsupported call target")
 		}
 		if op.Field != nil {
 			expr = &FieldExpr{Target: expr, Name: op.Field.Name}
