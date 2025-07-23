@@ -1,3 +1,11 @@
+## Progress (2025-07-23 09:17 +0700)
+- update dart rosetta progress
+- Regenerated golden files - 103/103 vm valid programs passing
+
+## Progress (2025-07-23 09:17 +0700)
+- update dart rosetta progress
+- Regenerated golden files - 103/103 vm valid programs passing
+
 ## Progress (2025-07-22 23:26 +0700)
 - update zig rosetta checklist
 - Regenerated golden files - 103/103 vm valid programs passing
