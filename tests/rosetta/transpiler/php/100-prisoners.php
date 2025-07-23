@@ -1,10 +1,25 @@
 <?php
+$now_seed = 0;
+$now_seeded = false;
+$s = getenv('MOCHI_NOW_SEED');
+if ($s !== false && $s !== '') {
+    $now_seed = intval($s);
+    $now_seeded = true;
+}
+function _now() {
+    global $now_seed, $now_seeded;
+    if ($now_seeded) {
+        $now_seed = ($now_seed * 1664525 + 1013904223) % 2147483647;
+        return $now_seed;
+    }
+    return hrtime(true);
+}
 function mochi_shuffle($xs) {
   global $doTrials, $main;
   $arr = $xs;
   $i = 99;
   while ($i > 0) {
-  $j = hrtime(true) % ($i + 1);
+  $j = _now() % ($i + 1);
   $tmp = $arr[$i];
   $arr[$i] = $arr[$j];
   $arr[$j] = $tmp;
@@ -49,9 +64,9 @@ function doTrials($trials, $np, $strategy) {
 };
   $d = 0;
   while ($d < 50) {
-  $n = hrtime(true) % 100;
+  $n = _now() % 100;
   while ($opened[$n]) {
-  $n = hrtime(true) % 100;
+  $n = _now() % 100;
 };
   $opened[$n] = true;
   if ($drawers[$n] == $p) {
@@ -73,13 +88,13 @@ function doTrials($trials, $np, $strategy) {
   $t = $t + 1;
 };
   $rf = ($pardoned) / ($trials) * 100.0;
-  echo "  strategy = " . $strategy . "  pardoned = " . strval($pardoned) . " relative frequency = " . strval($rf) . "%", PHP_EOL;
+  echo "  strategy = " . $strategy . "  pardoned = " . json_encode($pardoned, 1344) . " relative frequency = " . json_encode($rf, 1344) . "%", PHP_EOL;
 }
 function main() {
   global $mochi_shuffle, $doTrials;
   $trials = 1000;
   foreach ([10, 100] as $np) {
-  echo "Results from " . strval($trials) . " trials with " . strval($np) . " prisoners:\n", PHP_EOL;
+  echo "Results from " . json_encode($trials, 1344) . " trials with " . json_encode($np, 1344) . " prisoners:\n", PHP_EOL;
   foreach (["random", "optimal"] as $strat) {
   doTrials($trials, $np, $strat);
 };
