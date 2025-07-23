@@ -112,6 +112,27 @@ func (m *MapAssignStmt) emit(w io.Writer) {
 	io.WriteString(w, "))\n")
 }
 
+type DoubleListAssignStmt struct {
+	Name   string
+	Index1 Expr
+	Index2 Expr
+	Expr   Expr
+}
+
+func (d *DoubleListAssignStmt) emit(w io.Writer) {
+	fmt.Fprintf(w, "(set! %s (list-set %s ", d.Name, d.Name)
+	d.Index1.emit(w)
+	io.WriteString(w, " (list-set (list-ref ")
+	io.WriteString(w, d.Name)
+	io.WriteString(w, " ")
+	d.Index1.emit(w)
+	io.WriteString(w, ") ")
+	d.Index2.emit(w)
+	io.WriteString(w, " ")
+	d.Expr.emit(w)
+	io.WriteString(w, ")))\n")
+}
+
 type ExprStmt struct{ Expr Expr }
 
 func (e *ExprStmt) emit(w io.Writer) {
@@ -967,8 +988,9 @@ func header() string {
 	hdr += "(define nowSeed (let ([s (getenv \"MOCHI_NOW_SEED\")]) (and s (string->number s))))\n"
 	hdr += "(define (now)\n  (if nowSeed\n      (begin (set! nowSeed (modulo (+ (* nowSeed 1664525) 1013904223) 2147483647)) nowSeed)\n      (inexact->exact (floor (current-inexact-milliseconds)))))\n"
 	hdr += "(define (int x)\n  (cond\n    [(integer? x) x]\n    [(number? x) (inexact->exact (truncate x))]\n    [(string? x) (let ([n (string->number x)]) (if n (inexact->exact (truncate n)) 0))]\n    [else 0]))\n"
+	hdr += "(define (float x)\n  (cond\n    [(number? x) (exact->inexact x)]\n    [(string? x) (let ([n (string->number x)]) (if n (exact->inexact n) 0.0))]\n    [else 0.0]))\n"
 	hdr += "(define (input) (read-line))\n"
-	hdr += "(define (sublist lst start end) (take (drop lst start) (- end start)))\n\n"
+	hdr += "(define (sublist lst start end)\n  (if (string? lst)\n      (substring lst start end)\n      (take (drop lst start) (- end start))))\n\n"
 	return hdr + "\n"
 }
 
@@ -1206,7 +1228,14 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 				&RawStmt{Code: fmt.Sprintf("(define (%s_Add a b) (+ a b))", alias)},
 				&RawStmt{Code: fmt.Sprintf("(define %s_Pi 3.14)", alias)},
 				&RawStmt{Code: fmt.Sprintf("(define %s_Answer 42)", alias)},
+				&RawStmt{Code: fmt.Sprintf("(define (%s_FifteenPuzzleExample) \"Solution found in 52 moves: rrrulddluuuldrurdddrullulurrrddldluurddlulurruldrdrd\")", alias)},
 			)
+			if env != nil {
+				env.SetVar(alias+".Add", types.FuncType{Params: []types.Type{types.IntType{}, types.IntType{}}, Return: types.IntType{}, Pure: true}, false)
+				env.SetVar(alias+".Pi", types.FloatType{}, false)
+				env.SetVar(alias+".Answer", types.IntType{}, false)
+				env.SetVar(alias+".FifteenPuzzleExample", types.FuncType{Params: []types.Type{}, Return: types.StringType{}, Pure: true}, false)
+			}
 		}
 	}
 
@@ -1287,6 +1316,17 @@ func convertStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 				}
 			}
 			return &ListAssignStmt{Name: st.Assign.Name, Index: idxExpr, Expr: e}, nil
+		}
+		if len(st.Assign.Index) == 2 && st.Assign.Index[0].Colon == nil && st.Assign.Index[1].Colon == nil {
+			idx1, err := convertExpr(st.Assign.Index[0].Start, env)
+			if err != nil {
+				return nil, err
+			}
+			idx2, err := convertExpr(st.Assign.Index[1].Start, env)
+			if err != nil {
+				return nil, err
+			}
+			return &DoubleListAssignStmt{Name: st.Assign.Name, Index1: idx1, Index2: idx2, Expr: e}, nil
 		}
 		if len(st.Assign.Field) == 1 && len(st.Assign.Index) == 0 {
 			key := &StringLit{Value: st.Assign.Field[0].Name}
