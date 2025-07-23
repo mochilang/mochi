@@ -824,7 +824,7 @@ func isStringExpr(e Expr) bool {
 	case *StringLit:
 		return true
 	case *CallExpr:
-		return v.Func == "str"
+		return v.Func == "str" || strings.HasPrefix(v.Func, "string:")
 	case *BinaryExpr:
 		if v.Op == "++" || v.Op == "+" {
 			return isStringExpr(v.Left) || isStringExpr(v.Right)
@@ -1255,6 +1255,16 @@ func (b *BinaryExpr) emit(w io.Writer) {
 		if b.Op == "+" {
 			if isStringExpr(b.Left) || isStringExpr(b.Right) {
 				op = "++"
+			} else {
+				if idx, ok := b.Left.(*IndexExpr); ok && idx.Kind != "map" {
+					op = "++"
+				} else if idx, ok := b.Right.(*IndexExpr); ok && idx.Kind != "map" {
+					op = "++"
+				} else if ce, ok := b.Left.(*CallExpr); ok && strings.HasPrefix(ce.Func, "string:") {
+					op = "++"
+				} else if ce, ok := b.Right.(*CallExpr); ok && strings.HasPrefix(ce.Func, "string:") {
+					op = "++"
+				}
 			}
 		}
 		b.Left.emit(w)
@@ -2185,7 +2195,17 @@ func convertStmt(st *parser.Statement, env *types.Env, ctx *context, top bool) (
 		}
 		ctx.setStrFields(st.Let.Name, stringFields(e))
 		ctx.setBoolFields(st.Let.Name, boolFields(e))
-		ctx.setStringVar(st.Let.Name, isStringExpr(e))
+		if isStringExpr(e) {
+			ctx.setStringVar(st.Let.Name, true)
+		} else if t, err := env.GetVar(st.Let.Name); err == nil {
+			if lt, ok := t.(types.ListType); ok {
+				if _, ok := lt.Elem.(types.StringType); ok {
+					ctx.setStringVar(st.Let.Name, true)
+				}
+			} else if _, ok := t.(types.StringType); ok {
+				ctx.setStringVar(st.Let.Name, true)
+			}
+		}
 		switch e.(type) {
 		case *IntLit, *FloatLit, *BoolLit, *StringLit, *AtomLit:
 			ctx.setConst(st.Let.Name, e)
@@ -2209,7 +2229,17 @@ func convertStmt(st *parser.Statement, env *types.Env, ctx *context, top bool) (
 		}
 		ctx.setStrFields(st.Var.Name, stringFields(e))
 		ctx.setBoolFields(st.Var.Name, boolFields(e))
-		ctx.setStringVar(st.Var.Name, isStringExpr(e))
+		if isStringExpr(e) {
+			ctx.setStringVar(st.Var.Name, true)
+		} else if t, err := env.GetVar(st.Var.Name); err == nil {
+			if lt, ok := t.(types.ListType); ok {
+				if _, ok := lt.Elem.(types.StringType); ok {
+					ctx.setStringVar(st.Var.Name, true)
+				}
+			} else if _, ok := t.(types.StringType); ok {
+				ctx.setStringVar(st.Var.Name, true)
+			}
+		}
 		ctx.clearConst(st.Var.Name)
 		if top {
 			ctx.setGlobal(st.Var.Name)
@@ -2815,15 +2845,28 @@ func convertBinary(b *parser.BinaryExpr, env *types.Env, ctx *context) (Expr, er
 			return false
 		}
 	}
+	isFloatType := func(t types.Type) bool {
+		switch t.(type) {
+		case types.FloatType, types.BigRatType:
+			return true
+		default:
+			return false
+		}
+	}
 	for _, lvl := range levels {
 		for i := 0; i < len(ops); {
 			if contains(lvl, ops[i]) {
 				l := exprs[i]
 				r := exprs[i+1]
 				op := ops[i]
-				if op == "/" && isIntType(typesList[i]) && isIntType(typesList[i+1]) {
-					op = "div"
-					typesList[i] = types.IntType{}
+				if op == "/" {
+					if isIntType(typesList[i]) && isIntType(typesList[i+1]) {
+						op = "div"
+						typesList[i] = types.IntType{}
+					} else if !isFloatType(typesList[i]) && !isFloatType(typesList[i+1]) {
+						op = "div"
+						typesList[i] = types.IntType{}
+					}
 				}
 				exprs[i] = &BinaryExpr{Left: l, Op: op, Right: r}
 				exprs = append(exprs[:i+1], exprs[i+2:]...)
@@ -2922,7 +2965,11 @@ func convertPostfix(pf *parser.PostfixExpr, env *types.Env, ctx *context) (Expr,
 			expr = ce
 		case op.Cast != nil && op.Cast.Type.Simple != nil:
 			if *op.Cast.Type.Simple == "int" {
-				expr = &CallExpr{Func: "list_to_integer", Args: []Expr{expr}}
+				if isStringExpr(expr) {
+					expr = &CallExpr{Func: "list_to_integer", Args: []Expr{expr}}
+				} else {
+					expr = &CallExpr{Func: "trunc", Args: []Expr{expr}}
+				}
 			}
 			// other casts are no-ops
 		case op.Index != nil && op.Index.Colon == nil && op.Index.Colon2 == nil:
@@ -2942,6 +2989,21 @@ func convertPostfix(pf *parser.PostfixExpr, env *types.Env, ctx *context) (Expr,
 				isStr = true
 			} else if _, ok := idx.(*StringLit); ok {
 				kind = "map"
+			}
+			if !isStr && kind == "list" {
+				if nr, ok := expr.(*NameRef); ok {
+					name := nr.Name
+					if ctx != nil {
+						name = ctx.original(nr.Name)
+					}
+					if t, err := env.GetVar(name); err == nil {
+						if lt, ok := t.(types.ListType); ok {
+							if _, ok := lt.Elem.(types.StringType); ok {
+								isStr = true
+							}
+						}
+					}
+				}
 			}
 			expr = &IndexExpr{Target: expr, Index: idx, Kind: kind, IsString: isStr}
 		case op.Index != nil && op.Index.Colon != nil && op.Index.Step == nil && op.Index.Colon2 == nil:
