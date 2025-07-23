@@ -50,6 +50,15 @@ local function _now()
 end
 `
 
+const helperPadStart = `
+local function _padStart(s, len, ch)
+  if ch == nil or ch == '' then ch = ' ' end
+  if #s >= len then return s end
+  local fill = string.sub(ch, 1, 1)
+  return string.rep(fill, len - #s) .. s
+end
+`
+
 // Program represents a simple Lua program consisting of a sequence of
 // statements.
 type Program struct {
@@ -307,6 +316,20 @@ func (c *CallExpr) emit(w io.Writer) {
 			c.Args[1].emit(w)
 		}
 		io.WriteString(w, " + 1, ")
+		if len(c.Args) > 2 {
+			c.Args[2].emit(w)
+		}
+		io.WriteString(w, ")")
+	case "padStart":
+		io.WriteString(w, "_padStart(")
+		if len(c.Args) > 0 {
+			c.Args[0].emit(w)
+		}
+		io.WriteString(w, ", ")
+		if len(c.Args) > 1 {
+			c.Args[1].emit(w)
+		}
+		io.WriteString(w, ", ")
 		if len(c.Args) > 2 {
 			c.Args[2].emit(w)
 		}
@@ -687,19 +710,42 @@ func (fi *ForInStmt) emit(w io.Writer) {
 		label = newContinueLabel()
 		continueLabels = append(continueLabels, label)
 	}
-	io.WriteString(w, "for ")
-	if isMapExpr(fi.Iterable) {
-		io.WriteString(w, sanitizeName(fi.Name))
-		io.WriteString(w, " in pairs(")
-	} else {
-		io.WriteString(w, "_, ")
-		io.WriteString(w, sanitizeName(fi.Name))
-		io.WriteString(w, " in ipairs(")
-	}
-	if fi.Iterable != nil {
+	if isStringExpr(fi.Iterable) {
+		tmp := fmt.Sprintf("_s%d", loopCounter)
+		idx := fmt.Sprintf("_i%d", loopCounter)
+		loopCounter++
+		io.WriteString(w, "local ")
+		io.WriteString(w, tmp)
+		io.WriteString(w, " = ")
 		fi.Iterable.emit(w)
+		io.WriteString(w, "\nfor ")
+		io.WriteString(w, idx)
+		io.WriteString(w, " = 1, #")
+		io.WriteString(w, tmp)
+		io.WriteString(w, " do\n  local ")
+		io.WriteString(w, sanitizeName(fi.Name))
+		io.WriteString(w, " = string.sub(")
+		io.WriteString(w, tmp)
+		io.WriteString(w, ", ")
+		io.WriteString(w, idx)
+		io.WriteString(w, ", ")
+		io.WriteString(w, idx)
+		io.WriteString(w, ")\n")
+	} else {
+		io.WriteString(w, "for ")
+		if isMapExpr(fi.Iterable) {
+			io.WriteString(w, sanitizeName(fi.Name))
+			io.WriteString(w, " in pairs(")
+		} else {
+			io.WriteString(w, "_, ")
+			io.WriteString(w, sanitizeName(fi.Name))
+			io.WriteString(w, " in ipairs(")
+		}
+		if fi.Iterable != nil {
+			fi.Iterable.emit(w)
+		}
+		io.WriteString(w, ") do\n")
 	}
-	io.WriteString(w, ") do\n")
 	for _, st := range fi.Body {
 		st.emit(w)
 		io.WriteString(w, "\n")
@@ -1978,6 +2024,7 @@ func Emit(p *Program) []byte {
 	var b bytes.Buffer
 	b.WriteString(header())
 	b.WriteString(helperNow)
+	b.WriteString(helperPadStart)
 	prevEnv := currentEnv
 	currentEnv = p.Env
 	for i, st := range p.Stmts {
