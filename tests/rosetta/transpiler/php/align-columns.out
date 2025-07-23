@@ -1,143 +1,20 @@
-Warning: Undefined variable $a in /workspace/mochi/tests/rosetta/transpiler/php/align-columns.php on line 98
+Given      a          text       file   of     many      lines,     where    fields  within  a      line 
+are        delineated by         a      single 'dollar'  character, write    a       program 
+that       aligns     each       column of     fields    by         ensuring that    words   in     each 
+column     are        separated  by     at     least     one        space.   
+Further,   allow      for        each   word   in        a          column   to      be      either left 
+justified, right      justified, or     center justified within     its      column. 
 
-Warning: Undefined variable $text in /workspace/mochi/tests/rosetta/transpiler/php/align-columns.php on line 98
+  Given        a         text     file    of     many      lines,    where   fields  within    a    line 
+   are     delineated     by       a    single 'dollar'  character,  write      a    program 
+   that      aligns      each    column   of    fields       by     ensuring  that    words    in   each 
+  column      are     separated    by     at     least      one      space.  
+ Further,    allow       for      each   word     in         a       column    to      be    either left 
+justified,   right    justified,   or   center justified   within     its    column. 
 
-Warning: Undefined variable $file in /workspace/mochi/tests/rosetta/transpiler/php/align-columns.php on line 98
-
-Warning: Undefined variable $of in /workspace/mochi/tests/rosetta/transpiler/php/align-columns.php on line 98
-
-Warning: Undefined variable $many in /workspace/mochi/tests/rosetta/transpiler/php/align-columns.php on line 98
-
-Warning: Undefined variable $lines in /workspace/mochi/tests/rosetta/transpiler/php/align-columns.php on line 98
-
-Warning: Undefined variable $where in /workspace/mochi/tests/rosetta/transpiler/php/align-columns.php on line 98
-
-Warning: Undefined variable $fields in /workspace/mochi/tests/rosetta/transpiler/php/align-columns.php on line 98
-
-Warning: Undefined variable $within in /workspace/mochi/tests/rosetta/transpiler/php/align-columns.php on line 98
-
-Warning: Undefined variable $a in /workspace/mochi/tests/rosetta/transpiler/php/align-columns.php on line 98
-
-Warning: Undefined variable $line in /workspace/mochi/tests/rosetta/transpiler/php/align-columns.php on line 98
-
-Warning: Undefined variable $delineated in /workspace/mochi/tests/rosetta/transpiler/php/align-columns.php on line 98
-
-Warning: Undefined variable $by in /workspace/mochi/tests/rosetta/transpiler/php/align-columns.php on line 98
-
-Warning: Undefined variable $a in /workspace/mochi/tests/rosetta/transpiler/php/align-columns.php on line 98
-
-Warning: Undefined variable $single in /workspace/mochi/tests/rosetta/transpiler/php/align-columns.php on line 98
-
-Warning: Undefined variable $character in /workspace/mochi/tests/rosetta/transpiler/php/align-columns.php on line 98
-
-Warning: Undefined variable $write in /workspace/mochi/tests/rosetta/transpiler/php/align-columns.php on line 98
-
-Warning: Undefined variable $a in /workspace/mochi/tests/rosetta/transpiler/php/align-columns.php on line 98
-
-Warning: Undefined variable $program in /workspace/mochi/tests/rosetta/transpiler/php/align-columns.php on line 98
-
-Warning: Undefined variable $aligns in /workspace/mochi/tests/rosetta/transpiler/php/align-columns.php on line 98
-
-Warning: Undefined variable $each in /workspace/mochi/tests/rosetta/transpiler/php/align-columns.php on line 98
-
-Warning: Undefined variable $column in /workspace/mochi/tests/rosetta/transpiler/php/align-columns.php on line 98
-
-Warning: Undefined variable $of in /workspace/mochi/tests/rosetta/transpiler/php/align-columns.php on line 98
-
-Warning: Undefined variable $fields in /workspace/mochi/tests/rosetta/transpiler/php/align-columns.php on line 98
-
-Warning: Undefined variable $by in /workspace/mochi/tests/rosetta/transpiler/php/align-columns.php on line 98
-
-Warning: Undefined variable $ensuring in /workspace/mochi/tests/rosetta/transpiler/php/align-columns.php on line 98
-
-Warning: Undefined variable $that in /workspace/mochi/tests/rosetta/transpiler/php/align-columns.php on line 98
-
-Warning: Undefined variable $words in /workspace/mochi/tests/rosetta/transpiler/php/align-columns.php on line 98
-
-Warning: Undefined variable $in in /workspace/mochi/tests/rosetta/transpiler/php/align-columns.php on line 98
-
-Warning: Undefined variable $each in /workspace/mochi/tests/rosetta/transpiler/php/align-columns.php on line 98
-
-Warning: Undefined variable $are in /workspace/mochi/tests/rosetta/transpiler/php/align-columns.php on line 98
-
-Warning: Undefined variable $separated in /workspace/mochi/tests/rosetta/transpiler/php/align-columns.php on line 98
-
-Warning: Undefined variable $by in /workspace/mochi/tests/rosetta/transpiler/php/align-columns.php on line 98
-
-Warning: Undefined variable $at in /workspace/mochi/tests/rosetta/transpiler/php/align-columns.php on line 98
-
-Warning: Undefined variable $least in /workspace/mochi/tests/rosetta/transpiler/php/align-columns.php on line 98
-
-Warning: Undefined variable $one in /workspace/mochi/tests/rosetta/transpiler/php/align-columns.php on line 98
-
-Warning: Undefined variable $space in /workspace/mochi/tests/rosetta/transpiler/php/align-columns.php on line 98
-
-Warning: Undefined variable $allow in /workspace/mochi/tests/rosetta/transpiler/php/align-columns.php on line 98
-
-Warning: Undefined variable $for in /workspace/mochi/tests/rosetta/transpiler/php/align-columns.php on line 98
-
-Warning: Undefined variable $each in /workspace/mochi/tests/rosetta/transpiler/php/align-columns.php on line 98
-
-Warning: Undefined variable $word in /workspace/mochi/tests/rosetta/transpiler/php/align-columns.php on line 98
-
-Warning: Undefined variable $in in /workspace/mochi/tests/rosetta/transpiler/php/align-columns.php on line 98
-
-Warning: Undefined variable $a in /workspace/mochi/tests/rosetta/transpiler/php/align-columns.php on line 98
-
-Warning: Undefined variable $column in /workspace/mochi/tests/rosetta/transpiler/php/align-columns.php on line 98
-
-Warning: Undefined variable $to in /workspace/mochi/tests/rosetta/transpiler/php/align-columns.php on line 98
-
-Warning: Undefined variable $be in /workspace/mochi/tests/rosetta/transpiler/php/align-columns.php on line 98
-
-Warning: Undefined variable $either in /workspace/mochi/tests/rosetta/transpiler/php/align-columns.php on line 98
-
-Warning: Undefined variable $left in /workspace/mochi/tests/rosetta/transpiler/php/align-columns.php on line 98
-
-Warning: Undefined variable $right in /workspace/mochi/tests/rosetta/transpiler/php/align-columns.php on line 98
-
-Warning: Undefined variable $justified in /workspace/mochi/tests/rosetta/transpiler/php/align-columns.php on line 98
-
-Warning: Undefined variable $or in /workspace/mochi/tests/rosetta/transpiler/php/align-columns.php on line 98
-
-Warning: Undefined variable $center in /workspace/mochi/tests/rosetta/transpiler/php/align-columns.php on line 98
-
-Warning: Undefined variable $justified in /workspace/mochi/tests/rosetta/transpiler/php/align-columns.php on line 98
-
-Warning: Undefined variable $within in /workspace/mochi/tests/rosetta/transpiler/php/align-columns.php on line 98
-
-Warning: Undefined variable $its in /workspace/mochi/tests/rosetta/transpiler/php/align-columns.php on line 98
-
-Warning: Undefined variable $column in /workspace/mochi/tests/rosetta/transpiler/php/align-columns.php on line 98
-
-Notice: Only variables should be passed by reference in /workspace/mochi/tests/rosetta/transpiler/php/align-columns.php on line 62
-
-Notice: Only variables should be passed by reference in /workspace/mochi/tests/rosetta/transpiler/php/align-columns.php on line 62
-
-Notice: Only variables should be passed by reference in /workspace/mochi/tests/rosetta/transpiler/php/align-columns.php on line 62
-
-Notice: Only variables should be passed by reference in /workspace/mochi/tests/rosetta/transpiler/php/align-columns.php on line 62
-
-Notice: Only variables should be passed by reference in /workspace/mochi/tests/rosetta/transpiler/php/align-columns.php on line 62
-
-Notice: Only variables should be passed by reference in /workspace/mochi/tests/rosetta/transpiler/php/align-columns.php on line 62
-Given,       
-are          'dollar', 
-that         
-column.      
-Further,     
-justified,,. 
-
-   Given,    
-    are      'dollar', 
-    that     
-  column.    
-  Further,   
-justified,,. 
-
-      Given, 
-         are 'dollar', 
-        that 
-     column. 
-    Further, 
-justified,,.
+     Given          a       text   file     of      many     lines,    where  fields  within      a line 
+       are delineated         by      a single  'dollar' character,    write       a program 
+      that     aligns       each column     of    fields         by ensuring    that   words     in each 
+    column        are  separated     by     at     least        one   space. 
+  Further,      allow        for   each   word        in          a   column      to      be either left 
+justified,      right justified,     or center justified     within      its column.
