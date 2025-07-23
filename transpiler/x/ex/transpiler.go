@@ -61,15 +61,14 @@ type Stmt interface{ emit(io.Writer, int) }
 type VarRef struct{ Name string }
 
 func (v *VarRef) emit(w io.Writer) {
-	if moduleMode {
-		if _, ok := globalVars[v.Name]; ok {
-			io.WriteString(w, "@")
-			io.WriteString(w, moduleAttrName(v.Name))
-			return
-		}
-		io.WriteString(w, v.Name)
-		return
-	}
+        if moduleMode {
+                if _, ok := globalVars[v.Name]; ok {
+                        fmt.Fprintf(w, "Process.get(:%s)", moduleAttrName(v.Name))
+                        return
+                }
+                io.WriteString(w, v.Name)
+                return
+        }
 	io.WriteString(w, v.Name)
 }
 
@@ -93,17 +92,18 @@ func (s *LetStmt) emit(w io.Writer, indent int) {
 }
 
 func (s *LetStmt) emitGlobal(w io.Writer, indent int) {
-	for i := 0; i < indent; i++ {
-		io.WriteString(w, "  ")
-	}
-	io.WriteString(w, "@")
-	io.WriteString(w, moduleAttrName(s.Name))
-	io.WriteString(w, " ")
-	if s.Value != nil {
-		s.Value.emit(w)
-	} else {
-		io.WriteString(w, "nil")
-	}
+        for i := 0; i < indent; i++ {
+                io.WriteString(w, "  ")
+        }
+        io.WriteString(w, "Process.put(:")
+        io.WriteString(w, moduleAttrName(s.Name))
+        io.WriteString(w, ", ")
+        if s.Value != nil {
+                s.Value.emit(w)
+        } else {
+                io.WriteString(w, "nil")
+        }
+        io.WriteString(w, ")")
 }
 
 // AssignStmt reassigns a variable.
@@ -116,18 +116,19 @@ func (s *AssignStmt) emit(w io.Writer, indent int) {
 	for i := 0; i < indent; i++ {
 		io.WriteString(w, "  ")
 	}
-	if moduleMode {
-		if _, ok := globalVars[s.Name]; ok {
-			io.WriteString(w, "@")
-			io.WriteString(w, moduleAttrName(s.Name))
-		} else {
-			io.WriteString(w, s.Name)
-		}
-	} else {
-		io.WriteString(w, s.Name)
-	}
-	io.WriteString(w, " = ")
-	s.Value.emit(w)
+        if moduleMode {
+                if _, ok := globalVars[s.Name]; ok {
+                        fmt.Fprintf(w, "Process.put(:%s, ", moduleAttrName(s.Name))
+                        s.Value.emit(w)
+                        io.WriteString(w, ")")
+                        return
+                }
+                io.WriteString(w, s.Name)
+        } else {
+                io.WriteString(w, s.Name)
+        }
+        io.WriteString(w, " = ")
+        s.Value.emit(w)
 }
 
 type Expr interface{ emit(io.Writer) }
@@ -1783,15 +1784,19 @@ func gatherMutVars(stmts []Stmt, env *types.Env) []string {
 		for _, s := range ss {
 			switch t := s.(type) {
 			case *AssignStmt:
-				if _, err := env.GetVar(t.Name); err == nil {
-					set[t.Name] = struct{}{}
-				}
+                               if _, err := env.GetVar(t.Name); err == nil {
+                                       if _, ok := globalVars[t.Name]; !ok {
+                                               set[t.Name] = struct{}{}
+                                       }
+                               }
 			case *IfStmt:
-				for _, v := range t.Vars {
-					if _, err := env.GetVar(v); err == nil {
-						set[v] = struct{}{}
-					}
-				}
+                               for _, v := range t.Vars {
+                                       if _, err := env.GetVar(v); err == nil {
+                                               if _, ok := globalVars[v]; !ok {
+                                                       set[v] = struct{}{}
+                                               }
+                                       }
+                               }
 				walk(t.Then)
 				walk(t.Else)
 			case *ForStmt:

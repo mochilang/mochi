@@ -1,150 +1,84 @@
 run: exit status 1
-    error: undefined variable "now"
+    warning: variable "seed" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
     │
- 10 │       throw {:return, rem(now.(), 4)}
-    │                           ^^^
+ 14 │               seed = v
+    │               ~
     │
-    └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/15-puzzle-game.exs:10:27: Main.randMove/0
+    └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/15-puzzle-game.exs:14:15: Main._now/0
+
+    warning: variable "seeded" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 15 │               seeded = true
+    │               ~
+    │
+    └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/15-puzzle-game.exs:15:15: Main._now/0
 
     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
     │
- 23 │           i = i + 1
-    │           ~
-    │
-    └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/15-puzzle-game.exs:23:11: Main.isSolved/0
-
-    error: undefined variable "int"
-    │
- 61 │       j = int.(Enum.at(r, "idx"))
-    │           ^^^
-    │
-    └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/15-puzzle-game.exs:61:11: Main.doMove/1
-
-    warning: variable "board" is unused (if the variable is not meant to be used, prefix it with an underscore)
-    │
- 63 │       board = List.replace_at(@board, i, Enum.at(@board, j))
+ 54 │       i = try do
     │       ~
     │
-    └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/15-puzzle-game.exs:63:7: Main.doMove/1
-
-    warning: variable "board" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
-    │
- 64 │       board = List.replace_at(@board, j, tmp)
-    │       ~
-    │
-    └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/15-puzzle-game.exs:64:7: Main.doMove/1
-
-    warning: variable "empty" is unused (if the variable is not meant to be used, prefix it with an underscore)
-    │
- 65 │       empty = j
-    │       ~
-    │
-    └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/15-puzzle-game.exs:65:7: Main.doMove/1
-
-    warning: variable "moves" is unused (if the variable is not meant to be used, prefix it with an underscore)
-    │
- 66 │       moves = @moves + 1
-    │       ~
-    │
-    └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/15-puzzle-game.exs:66:7: Main.doMove/1
-
-    warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
-    │
- 78 │             i = i + 1
-    │             ~
-    │
-    └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/15-puzzle-game.exs:78:13: Main.shuffle/1
-
-     warning: variable "line" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
-     │
- 104 │               line = (line <> " ") + s
-     │               ~
-     │
-     └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/15-puzzle-game.exs:104:15: Main.printBoard/0
-
-     warning: variable "line" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
-     │
- 102 │               line = (line <> "  ") + s
-     │               ~
-     │
-     └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/15-puzzle-game.exs:102:15: Main.printBoard/0
-
-    warning: variable "line" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
-    │
- 98 │             line = (line <> "  .")
-    │             ~
-    │
-    └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/15-puzzle-game.exs:98:13: Main.printBoard/0
-
-     warning: variable "line" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
-     │
- 109 │             line = ""
-     │             ~
-     │
-     └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/15-puzzle-game.exs:109:13: Main.printBoard/0
+    └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/15-puzzle-game.exs:54:7: Main.isSolved/0
 
      warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
      │
- 111 │           i = i + 1
-     │           ~
+ 108 │             i = i + 1
+     │             ~
      │
-     └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/15-puzzle-game.exs:111:11: Main.printBoard/0
+     └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/15-puzzle-game.exs:108:13: Main.shuffle/1
 
-     error: undefined variable "input"
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
      │
- 128 │             s = input.()
-     │                 ^^^^^
-     │
-     └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/15-puzzle-game.exs:128:17: Main.playOneMove/0
-
-     warning: variable "quit" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
-     │
- 148 │                       quit = true
-     │                       ~
-     │
-     └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/15-puzzle-game.exs:148:23: Main.playOneMove/0
-
-     warning: variable "m" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
-     │
- 144 │                     m = 3
-     │                     ~
-     │
-     └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/15-puzzle-game.exs:144:21: Main.playOneMove/0
-
-     warning: variable "m" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
-     │
- 141 │                   m = 2
-     │                   ~
-     │
-     └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/15-puzzle-game.exs:141:19: Main.playOneMove/0
-
-     warning: variable "m" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
-     │
- 138 │                 m = 1
-     │                 ~
-     │
-     └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/15-puzzle-game.exs:138:17: Main.playOneMove/0
-
-     warning: variable "m" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
-     │
- 135 │               m = 0
-     │               ~
-     │
-     └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/15-puzzle-game.exs:135:15: Main.playOneMove/0
-
-     error: undefined variable "quit"
-     │
- 171 │       quit = while_fun.(while_fun, quit)
-     │                                    ^^^^
-     │
-     └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/15-puzzle-game.exs:171:36: Main.playOneMove/0
-
-     warning: variable "quit" is unused (if the variable is not meant to be used, prefix it with an underscore)
-     │
- 171 │       quit = while_fun.(while_fun, quit)
+ 115 │       i = try do
      │       ~
      │
-     └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/15-puzzle-game.exs:171:7: Main.playOneMove/0
+     └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/15-puzzle-game.exs:115:7: Main.shuffle/1
 
-** (CompileError) /workspace/mochi/tests/rosetta/transpiler/Elixir/15-puzzle-game.exs: cannot compile module Main (errors have been logged)
+     warning: variable "line" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 136 │             line = if val < 10, do: ((line <> "  ") <> s), else: ((line <> " ") <> s)
+     │             ~
+     │
+     └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/15-puzzle-game.exs:136:13: Main.printBoard/0
 
+     warning: variable "line" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 133 │             line = (line <> "  .")
+     │             ~
+     │
+     └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/15-puzzle-game.exs:133:13: Main.printBoard/0
+
+     warning: variable "line" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 140 │             line = ""
+     │             ~
+     │
+     └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/15-puzzle-game.exs:140:13: Main.printBoard/0
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 148 │       {i, line} = try do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/15-puzzle-game.exs:148:8: Main.printBoard/0
+
+     warning: variable "line" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 148 │       {i, line} = try do
+     │           ~
+     │
+     └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/15-puzzle-game.exs:148:11: Main.printBoard/0
+
+     warning: this clause for main/0 cannot match because a previous clause at line 251 always matches
+     │
+ 259 │   def main() do
+     │       ~
+     │
+     └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/15-puzzle-game.exs:259:7
+
+** (MatchError) no match of right hand side value: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 12]
+    /workspace/mochi/tests/rosetta/transpiler/Elixir/15-puzzle-game.exs:93: Main.doMove/1
+    /workspace/mochi/tests/rosetta/transpiler/Elixir/15-puzzle-game.exs:107: anonymous fn/3 in Main.shuffle/1
+    /workspace/mochi/tests/rosetta/transpiler/Elixir/15-puzzle-game.exs:116: Main.shuffle/1
+    /workspace/mochi/tests/rosetta/transpiler/Elixir/15-puzzle-game.exs:253: Main.main/0
+    /workspace/mochi/tests/rosetta/transpiler/Elixir/15-puzzle-game.exs:262: (file)
