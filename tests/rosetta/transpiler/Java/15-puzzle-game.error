@@ -1,0 +1,19 @@
+run: exit status 1
+Starting board:
+
+  5  1  2  3
+ 13  9  6  4
+  . 10  7 11
+ 14 15 12  8
+Enter move #51 (U, D, L, R, or Q): 
+Please enter "U", "D", "L", or "R" to move the empty cell
+up, down, left, or right. You can also enter "Q" to quit.
+Upper or lowercase is accepted and only the first non-blank
+character is important (i.e. you may enter "up" if you like).
+Enter move #51 (U, D, L, R, or Q): 
+Exception in thread "main" java.util.NoSuchElementException: No line found
+	at java.base/java.util.Scanner.nextLine(Scanner.java:1660)
+	at Main.playOneMove(Main.java:91)
+	at Main.play(Main.java:126)
+	at Main.main(Main.java:135)
+	at Main.main(Main.java:138)
