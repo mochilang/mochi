@@ -3081,8 +3081,17 @@ func compileFunStmt(fn *parser.FunStmt, env *types.Env) (Stmt, error) {
 }
 
 func compileFunExpr(fn *parser.FunExpr, env *types.Env) (Expr, error) {
-	child := types.NewEnv(env)
-	prevRet := currentRetType
+       child := types.NewEnv(env)
+       for _, p := range fn.Params {
+               if p.Type != nil {
+                       child.SetVar(p.Name, types.ResolveTypeRef(p.Type, env), true)
+               } else if t, err := env.GetVar(p.Name); err == nil {
+                       child.SetVar(p.Name, t, true)
+               } else {
+                       child.SetVar(p.Name, types.AnyType{}, true)
+               }
+       }
+        prevRet := currentRetType
 	currentRetType = toGoType(fn.Return, env)
 	var body []*parser.Statement
 	var stmts []Stmt
@@ -3662,12 +3671,15 @@ func compilePrimary(p *parser.Primary, env *types.Env, base string) (Expr, error
 		case "exists":
 			bexpr := &BinaryExpr{Left: &CallExpr{Func: "len", Args: []Expr{args[0]}}, Op: ">", Right: &IntLit{Value: 0}}
 			return &ExistsExpr{Expr: bexpr}, nil
-		case "substring":
-			usesSubstr = true
-			return &CallExpr{Func: "_substr", Args: []Expr{args[0], args[1], args[2]}}, nil
-		case "upper":
-			usesStrings = true
-			return &CallExpr{Func: "strings.ToUpper", Args: []Expr{args[0]}}, nil
+                case "substring":
+                        usesSubstr = true
+                        return &CallExpr{Func: "_substr", Args: []Expr{args[0], args[1], args[2]}}, nil
+               case "lower":
+                       usesStrings = true
+                       return &CallExpr{Func: "strings.ToLower", Args: []Expr{args[0]}}, nil
+                case "upper":
+                        usesStrings = true
+                        return &CallExpr{Func: "strings.ToUpper", Args: []Expr{args[0]}}, nil
 		case "now":
 			usesTime = true
 			return &NowExpr{}, nil
