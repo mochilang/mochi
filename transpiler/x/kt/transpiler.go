@@ -455,11 +455,25 @@ type IndexExpr struct {
 }
 
 func (ix *IndexExpr) emit(w io.Writer) {
-	isMap := strings.HasPrefix(guessType(ix.Target), "MutableMap<") || ix.ForceBang
+	t := guessType(ix.Target)
+	isMap := strings.HasPrefix(t, "MutableMap<") || ix.ForceBang
 	if isMap {
 		io.WriteString(w, "(")
 	}
-	ix.Target.emit(w)
+	if (t == "" || t == "Any") && ix.ForceBang {
+		keyType := guessType(ix.Index)
+		container := "MutableList<Any>"
+		if keyType == "String" {
+			container = "MutableMap<String, Any>"
+		} else if keyType == "Any" || keyType == "" {
+			container = "MutableMap<Any, Any>"
+		}
+		io.WriteString(w, "(")
+		ix.Target.emit(w)
+		io.WriteString(w, " as "+container+")")
+	} else {
+		ix.Target.emit(w)
+	}
 	io.WriteString(w, "[")
 	ix.Index.emit(w)
 	io.WriteString(w, "]")
