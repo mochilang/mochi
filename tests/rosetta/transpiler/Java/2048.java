@@ -69,7 +69,7 @@ b[cell[1]][cell[0]] = val;
             String line = "|";
             int x = 0;
             while (x < SIZE) {
-                java.util.Map v = b[y][x];
+                int v = b[y][x];
                 if (v == 0) {
                     line = line + "    |";
                 } else {
@@ -129,7 +129,7 @@ b[cell[1]][cell[0]] = val;
         while (y < SIZE) {
             java.util.Map<String,Object> r = slideLeft(b[y]);
             java.util.Map new_ = r.get("row");
-            score = score + r.get("gain");
+            score = score + (int)(r.get("gain"));
             int x = 0;
             while (x < SIZE) {
                 if (b[y][x] != new_[x]) {
@@ -149,8 +149,8 @@ b[y][x] = new_[x];
         while (y < SIZE) {
             int[] rev = reverseRow(b[y]);
             java.util.Map<String,Object> r = slideLeft(rev);
-            rev = r.get("row");
-            score = score + r.get("gain");
+            rev = (int[])(r.get("row"));
+            score = score + (int)(r.get("gain"));
             rev = reverseRow(rev);
             int x = 0;
             while (x < SIZE) {
@@ -190,7 +190,7 @@ b[y][x] = col[y];
             int[] col = getCol(b, x);
             java.util.Map<String,Object> r = slideLeft(col);
             java.util.Map new_ = r.get("row");
-            score = score + r.get("gain");
+            score = score + (int)(r.get("gain"));
             int y = 0;
             while (y < SIZE) {
                 if (b[y][x] != new_[y]) {
@@ -210,8 +210,8 @@ b[y][x] = new_[y];
         while (x < SIZE) {
             int[] col = reverseRow(getCol(b, x));
             java.util.Map<String,Object> r = slideLeft(col);
-            col = r.get("row");
-            score = score + r.get("gain");
+            col = (int[])(r.get("row"));
+            score = score + (int)(r.get("gain"));
             col = reverseRow(col);
             int y = 0;
             while (y < SIZE) {
@@ -262,9 +262,9 @@ b[y][x] = col[y];
         return false;
     }
     public static void main(String[] args) {
-        board = r.get("board");
+        board = (int[][])(r.get("board"));
         r = spawnTile(board);
-        board = r.get("board");
+        board = (int[][])(r.get("board"));
         full = r.get("full");
         draw(board, score);
         while (true) {
@@ -273,34 +273,34 @@ b[y][x] = col[y];
             boolean moved = false;
             if (((cmd.equals("a")) || cmd.equals("A"))) {
                 java.util.Map<String,Object> m = moveLeft(board, score);
-                board = m.get("board");
-                score = m.get("score");
-                moved = m.get("moved");
+                board = (int[][])(m.get("board"));
+                score = (int)(m.get("score"));
+                moved = (boolean)(m.get("moved"));
             }
             if (((cmd.equals("d")) || cmd.equals("D"))) {
                 java.util.Map<String,Object> m = moveRight(board, score);
-                board = m.get("board");
-                score = m.get("score");
-                moved = m.get("moved");
+                board = (int[][])(m.get("board"));
+                score = (int)(m.get("score"));
+                moved = (boolean)(m.get("moved"));
             }
             if (((cmd.equals("w")) || cmd.equals("W"))) {
                 java.util.Map<String,Object> m = moveUp(board, score);
-                board = m.get("board");
-                score = m.get("score");
-                moved = m.get("moved");
+                board = (int[][])(m.get("board"));
+                score = (int)(m.get("score"));
+                moved = (boolean)(m.get("moved"));
             }
             if (((cmd.equals("s")) || cmd.equals("S"))) {
                 java.util.Map<String,Object> m = moveDown(board, score);
-                board = m.get("board");
-                score = m.get("score");
-                moved = m.get("moved");
+                board = (int[][])(m.get("board"));
+                score = (int)(m.get("score"));
+                moved = (boolean)(m.get("moved"));
             }
             if (((cmd.equals("q")) || cmd.equals("Q"))) {
                 break;
             }
             if (moved) {
                 java.util.Map<String,Object> r2 = spawnTile(board);
-                board = r2.get("board");
+                board = (int[][])(r2.get("board"));
                 full = r2.get("full");
                 if (full && (!(Boolean)hasMoves(board))) {
                     draw(board, score);
