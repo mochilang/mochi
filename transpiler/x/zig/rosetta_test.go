@@ -114,7 +114,7 @@ func runCase(src, outDir string) ([]byte, error) {
 		return nil, err
 	}
 	cmd := exec.Command("zig", "run", codePath)
-	cmd.Env = append(os.Environ(), "MOCHI_NOW_SEED=0")
+	cmd.Env = append(os.Environ(), "MOCHI_NOW_SEED=1")
 	if data, err := os.ReadFile(filepath.Join(filepath.Dir(src), name+".in")); err == nil {
 		cmd.Stdin = bytes.NewReader(data)
 	}
