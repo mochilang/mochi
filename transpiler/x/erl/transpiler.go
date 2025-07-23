@@ -4016,6 +4016,7 @@ func (p *Program) Emit() []byte {
 	}
 	buf.WriteString("#!/usr/bin/env escript\n")
 	buf.WriteString("-module(main).\n")
+	buf.WriteString("-compile([nowarn_shadow_vars, nowarn_unused_vars]).\n")
 	exports := []string{"main/1"}
 	for _, f := range p.Funs {
 		exports = append(exports, fmt.Sprintf("%s/%d", f.Name, len(f.Params)))

@@ -1,17 +1,1 @@
-/workspace/mochi/tests/rosetta/transpiler/erl/100-doors-3.erl:9:30: Warning: variable 'Result' shadowed in 'fun'
-%    9|     Fun = fun Fun_loop(List, Result) ->
-%     |                              ^
-
-/workspace/mochi/tests/rosetta/transpiler/erl/100-doors-3.erl:14:34: Warning: variable 'I' shadowed in 'fun'
-%   14|             Fun2 = fun Fun2_loop(I, J, Result) ->
-%     |                                  ^
-
-/workspace/mochi/tests/rosetta/transpiler/erl/100-doors-3.erl:14:37: Warning: variable 'J' shadowed in 'fun'
-%   14|             Fun2 = fun Fun2_loop(I, J, Result) ->
-%     |                                     ^
-
-/workspace/mochi/tests/rosetta/transpiler/erl/100-doors-3.erl:14:40: Warning: variable 'Result' shadowed in 'fun'
-%   14|             Fun2 = fun Fun2_loop(I, J, Result) ->
-%     |                                        ^
-
 O--O----O------O--------O----------O------------O--------------O----------------O------------------O
