@@ -101,6 +101,29 @@ func javaBoxType(t string) string {
 	}
 }
 
+func emitCastExpr(w io.Writer, e Expr, typ string) {
+	// Cast map lookups to the destination type when needed.
+	if typ != "" && typ != "java.util.Map" && typ != "map" {
+		switch ex := e.(type) {
+		case *IndexExpr:
+			if ex.IsMap || isMapExpr(ex.Target) {
+				fmt.Fprintf(w, "(%s)(", javaType(typ))
+				e.emit(w)
+				fmt.Fprint(w, ")")
+				return
+			}
+		case *FieldExpr:
+			if isMapExpr(ex.Target) {
+				fmt.Fprintf(w, "(%s)(", javaType(typ))
+				e.emit(w)
+				fmt.Fprint(w, ")")
+				return
+			}
+		}
+	}
+	e.emit(w)
+}
+
 func typeFromName(n string) types.Type {
 	switch n {
 	case "int", "Integer":
@@ -720,7 +743,7 @@ func (s *LetStmt) emit(w io.Writer, indent string) {
 	fmt.Fprint(w, javaType(typ)+" "+sanitize(s.Name))
 	if s.Expr != nil {
 		fmt.Fprint(w, " = ")
-		s.Expr.emit(w)
+		emitCastExpr(w, s.Expr, typ)
 	}
 	fmt.Fprint(w, ";\n")
 }
@@ -746,7 +769,7 @@ func (s *VarStmt) emit(w io.Writer, indent string) {
 	fmt.Fprint(w, javaType(typ)+" "+s.Name)
 	if s.Expr != nil {
 		fmt.Fprint(w, " = ")
-		s.Expr.emit(w)
+		emitCastExpr(w, s.Expr, typ)
 	}
 	fmt.Fprint(w, ";\n")
 }
@@ -758,7 +781,11 @@ type AssignStmt struct {
 
 func (s *AssignStmt) emit(w io.Writer, indent string) {
 	fmt.Fprint(w, indent+sanitize(s.Name)+" = ")
-	s.Expr.emit(w)
+	typ := ""
+	if vs, ok := varDecls[s.Name]; ok {
+		typ = vs.Type
+	}
+	emitCastExpr(w, s.Expr, typ)
 	fmt.Fprint(w, ";\n")
 }
 
@@ -1004,6 +1031,27 @@ func (b *BinaryExpr) emit(w io.Writer) {
 			return
 		}
 	}
+	if b.Op == "&&" || b.Op == "||" {
+		emitCastExpr(w, b.Left, "boolean")
+		fmt.Fprint(w, " "+b.Op+" ")
+		emitCastExpr(w, b.Right, "boolean")
+		return
+	}
+
+	if b.Op == "+" || b.Op == "-" || b.Op == "*" || b.Op == "/" || b.Op == "%" ||
+		b.Op == "==" || b.Op == "!=" || b.Op == "<" || b.Op == "<=" || b.Op == ">" || b.Op == ">=" {
+		lt := inferType(b.Left)
+		rt := inferType(b.Right)
+		typ := "int"
+		if lt == "double" || rt == "double" {
+			typ = "double"
+		}
+		emitCastExpr(w, b.Left, typ)
+		fmt.Fprint(w, " "+b.Op+" ")
+		emitCastExpr(w, b.Right, typ)
+		return
+	}
+
 	if _, ok := b.Left.(*TernaryExpr); ok {
 		fmt.Fprint(w, "(")
 		b.Left.emit(w)
@@ -1074,6 +1122,8 @@ func (l *LenExpr) emit(w io.Writer) {
 		fmt.Fprint(w, ".items.size()")
 	case isStringExpr(l.Value):
 		fmt.Fprint(w, ".length()")
+	case isArrayExpr(l.Value):
+		fmt.Fprint(w, ".length")
 	case isMapExpr(l.Value):
 		fmt.Fprint(w, ".size()")
 	default:
@@ -1650,6 +1700,15 @@ func arrayElemType(e Expr) string {
 			t = arrayElemType(ex.Right)
 		}
 		return t
+	case *IndexExpr:
+		t := arrayElemType(ex.Target)
+		if strings.HasSuffix(t, "[]") {
+			return strings.TrimSuffix(t, "[]")
+		}
+		if strings.HasPrefix(t, "java.util.List<") && strings.HasSuffix(t, ">") {
+			return strings.TrimSuffix(strings.TrimPrefix(t, "java.util.List<"), ">")
+		}
+		return ""
 	case *VarExpr:
 		if t, ok := varTypes[ex.Name]; ok {
 			if strings.HasSuffix(t, "[]") {
