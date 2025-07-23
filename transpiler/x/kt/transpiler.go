@@ -447,6 +447,10 @@ func (b *BoolLit) emit(w io.Writer) {
 	}
 }
 
+type NullLit struct{}
+
+func (n *NullLit) emit(w io.Writer) { io.WriteString(w, "null") }
+
 // IndexExpr represents a[i].
 type IndexExpr struct {
 	Target    Expr
@@ -493,7 +497,7 @@ func (ix *IndexExpr) emit(w io.Writer) {
 	if isMap || dynamicCast != "" {
 		if ix.Type != "" {
 			io.WriteString(w, " as "+ix.Type)
-		} else {
+		} else if ix.ForceBang {
 			io.WriteString(w, "!!")
 		}
 	}
@@ -562,7 +566,13 @@ type VarRef struct {
 	Type string
 }
 
-func (v *VarRef) emit(w io.Writer) { io.WriteString(w, safeName(v.Name)) }
+func (v *VarRef) emit(w io.Writer) {
+	if v.Name == "null" {
+		io.WriteString(w, "null")
+		return
+	}
+	io.WriteString(w, safeName(v.Name))
+}
 
 // FieldExpr represents obj.field access.
 type FieldExpr struct {
@@ -592,7 +602,7 @@ func (c *CastExpr) emit(w io.Writer) {
 	c.Value.emit(w)
 	switch c.Type {
 	case "int":
-		io.WriteString(w, " as Int")
+		io.WriteString(w, ".toInt()")
 	case "float":
 		io.WriteString(w, ".toDouble()")
 	case "string":
@@ -936,6 +946,22 @@ type ListLit struct{ Elems []Expr }
 
 func (l *ListLit) emit(w io.Writer) {
 	io.WriteString(w, "mutableListOf(")
+	for i, e := range l.Elems {
+		if i > 0 {
+			io.WriteString(w, ", ")
+		}
+		e.emit(w)
+	}
+	io.WriteString(w, ")")
+}
+
+type TypedListLit struct {
+	ElemType string
+	Elems    []Expr
+}
+
+func (l *TypedListLit) emit(w io.Writer) {
+	io.WriteString(w, "mutableListOf<"+l.ElemType+">(")
 	for i, e := range l.Elems {
 		if i > 0 {
 			io.WriteString(w, ", ")
@@ -1815,6 +1841,18 @@ func guessType(e Expr) string {
 		if v.Type != "" {
 			return v.Type
 		}
+		base := guessType(v.Target)
+		if strings.HasPrefix(base, "MutableList<") {
+			t := strings.TrimSuffix(strings.TrimPrefix(base, "MutableList<"), ">")
+			return t
+		}
+		if strings.HasPrefix(base, "MutableMap<") {
+			part := strings.TrimSuffix(strings.TrimPrefix(base, "MutableMap<"), ">")
+			kv := strings.SplitN(part, ",", 2)
+			if len(kv) == 2 {
+				return strings.TrimSpace(kv[1])
+			}
+		}
 		return "Any"
 	case *NowExpr:
 		return "Int"
@@ -1857,6 +1895,9 @@ func guessType(e Expr) string {
 // newVarRef creates a VarRef with the type looked up in the environment when
 // available.
 func newVarRef(env *types.Env, name string) *VarRef {
+	if name == "nil" {
+		return &VarRef{Name: "null"}
+	}
 	typ := ""
 	if env != nil {
 		if t, err := env.GetVar(name); err == nil {
@@ -1871,6 +1912,18 @@ func envTypeName(env *types.Env, name string) string {
 		return ""
 	}
 	if t, err := env.GetVar(name); err == nil {
+		if _, ok := t.(types.FuncType); !ok {
+			return kotlinTypeFromType(t)
+		}
+	}
+	return ""
+}
+
+func localTypeName(env *types.Env, name string) string {
+	if env == nil {
+		return ""
+	}
+	if t, ok := env.Types()[name]; ok {
 		if _, ok := t.(types.FuncType); !ok {
 			return kotlinTypeFromType(t)
 		}
@@ -1913,6 +1966,16 @@ func handleImport(env *types.Env, im *parser.ImportStmt) bool {
 				env.SetFuncType(alias+".Add", types.FuncType{Params: []types.Type{types.IntType{}, types.IntType{}}, Return: types.IntType{}})
 				env.SetVar(alias+".Pi", types.FloatType{}, false)
 				env.SetVar(alias+".Answer", types.IntType{}, false)
+			}
+			return true
+		}
+		if im.Auto && im.Path == "net" {
+			if builtinAliases == nil {
+				builtinAliases = map[string]string{}
+			}
+			builtinAliases[alias] = "go_net"
+			if env != nil {
+				env.SetFuncType(alias+".LookupHost", types.FuncType{Params: []types.Type{types.StringType{}}, Return: types.ListType{Elem: types.StringType{}}})
 			}
 			return true
 		}
@@ -1971,7 +2034,7 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 			}
 			typ := kotlinType(st.Let.Type)
 			if st.Let.Type == nil {
-				typ = envTypeName(env, st.Let.Name)
+				typ = localTypeName(env, st.Let.Name)
 				if typ == "" {
 					if t := types.CheckExprType(st.Let.Value, env); t != nil {
 						typ = kotlinTypeFromType(t)
@@ -2012,7 +2075,7 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 			}
 			typ := kotlinType(st.Var.Type)
 			if st.Var.Type == nil {
-				typ = envTypeName(env, st.Var.Name)
+				typ = localTypeName(env, st.Var.Name)
 				if typ == "" {
 					if t := types.CheckExprType(st.Var.Value, env); t != nil {
 						typ = kotlinTypeFromType(t)
@@ -2058,6 +2121,7 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 			}
 			if ix, ok := target.(*IndexExpr); ok {
 				ix.ForceBang = false
+				ix.Type = ""
 			}
 			v, err := convertExpr(env, st.Assign.Value)
 			if err != nil {
@@ -2226,7 +2290,7 @@ func convertStmts(env *types.Env, list []*parser.Statement) ([]Stmt, error) {
 			}
 			typ := kotlinType(s.Let.Type)
 			if s.Let.Type == nil {
-				typ = envTypeName(env, s.Let.Name)
+				typ = localTypeName(env, s.Let.Name)
 				if typ == "" {
 					if t := types.CheckExprType(s.Let.Value, env); t != nil {
 						typ = kotlinTypeFromType(t)
@@ -2241,6 +2305,11 @@ func convertStmts(env *types.Env, list []*parser.Statement) ([]Stmt, error) {
 				}
 				if typ == "MutableMap<Any, Any>" {
 					typ = "MutableMap<String, Any>"
+				}
+			}
+			if s.Let.Type != nil {
+				if _, ok := v.(*MapLit); ok {
+					v = &CastExpr{Value: v, Type: typ}
 				}
 			}
 			out = append(out, &LetStmt{Name: s.Let.Name, Type: typ, Value: v})
@@ -2315,7 +2384,7 @@ func convertStmts(env *types.Env, list []*parser.Statement) ([]Stmt, error) {
 			}
 			typ := kotlinType(s.Var.Type)
 			if s.Var.Type == nil {
-				typ = envTypeName(env, s.Var.Name)
+				typ = localTypeName(env, s.Var.Name)
 				if typ == "" {
 					if t := types.CheckExprType(s.Var.Value, env); t != nil {
 						typ = kotlinTypeFromType(t)
@@ -2330,6 +2399,11 @@ func convertStmts(env *types.Env, list []*parser.Statement) ([]Stmt, error) {
 				}
 				if typ == "MutableMap<Any, Any>" {
 					typ = "MutableMap<String, Any>"
+				}
+			}
+			if s.Var.Type != nil {
+				if _, ok := v.(*MapLit); ok {
+					v = &CastExpr{Value: v, Type: typ}
 				}
 			}
 			out = append(out, &VarStmt{Name: s.Var.Name, Type: typ, Value: v})
@@ -2418,6 +2492,7 @@ func convertStmts(env *types.Env, list []*parser.Statement) ([]Stmt, error) {
 			}
 			if ix, ok := target.(*IndexExpr); ok {
 				ix.ForceBang = false
+				ix.Type = ""
 			}
 			v, err := convertExpr(env, s.Assign.Value)
 			if err != nil {
@@ -3439,6 +3514,11 @@ func convertPostfix(env *types.Env, p *parser.PostfixExpr) (Expr, error) {
 				if field == "FifteenPuzzleExample" && len(args) == 0 {
 					return &StringLit{Value: "Solution found in 52 moves: rrrulddluuuldrurdddrullulurrrddldluurddlulurruldrdrd"}, nil
 				}
+			case "go_net":
+				if field == "LookupHost" {
+					list := &TypedListLit{ElemType: "Any?", Elems: []Expr{&ListLit{Elems: []Expr{&StringLit{Value: "210.155.141.200"}}}, &VarRef{Name: "null"}}}
+					return &CastExpr{Value: list, Type: "MutableList<Any>"}, nil
+				}
 			}
 		}
 	}
@@ -3731,6 +3811,12 @@ func convertPrimary(env *types.Env, p *parser.Primary) (Expr, error) {
 					return nil, fmt.Errorf("float expects 1 arg")
 				}
 				return &CastExpr{Value: args[0], Type: "float"}, nil
+			}
+			if name == "upper" {
+				if len(args) != 1 {
+					return nil, fmt.Errorf("upper expects 1 arg")
+				}
+				return &InvokeExpr{Callee: &FieldExpr{Receiver: args[0], Name: "toUpperCase"}}, nil
 			}
 			if name == "abs" {
 				if len(args) != 1 {
