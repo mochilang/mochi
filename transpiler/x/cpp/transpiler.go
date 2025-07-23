@@ -499,7 +499,7 @@ func (p *Program) write(w io.Writer) {
 		fmt.Fprintln(w, "        seed = (seed * 1664525 + 1013904223) % 2147483647;")
 		fmt.Fprintln(w, "        return seed;")
 		fmt.Fprintln(w, "    }")
-		fmt.Fprintln(w, "    return (int)std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::system_clock::now().time_since_epoch()).count();")
+		fmt.Fprintln(w, "    return (int)(std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::system_clock::now().time_since_epoch()).count() % 2147483647);")
 		fmt.Fprintln(w, "}")
 	}
 	for _, st := range p.Structs {
@@ -597,7 +597,7 @@ func (p *Program) write(w io.Writer) {
 }
 
 func (f *Func) emit(w io.Writer) {
-	fmt.Fprintf(w, "%s %s(", f.ReturnType, f.Name)
+	fmt.Fprintf(w, "%s %s(", f.ReturnType, safeName(f.Name))
 	for i, p := range f.Params {
 		if i > 0 {
 			io.WriteString(w, ", ")
@@ -608,7 +608,7 @@ func (f *Func) emit(w io.Writer) {
 		} else {
 			io.WriteString(w, typ+" ")
 		}
-		io.WriteString(w, p.Name)
+		io.WriteString(w, safeName(p.Name))
 	}
 	fmt.Fprintln(w, ") {")
 	for _, st := range f.Body {
@@ -1567,7 +1567,7 @@ func (s *LetStmt) emit(w io.Writer, indent int) {
 	} else {
 		io.WriteString(w, typ+" ")
 	}
-	io.WriteString(w, s.Name)
+	io.WriteString(w, safeName(s.Name))
 	if s.Value != nil {
 		io.WriteString(w, " = ")
 		s.Value.emit(w)
@@ -2384,13 +2384,21 @@ func convertStmt(s *parser.Statement) (Stmt, error) {
 			}
 		}
 		typ := ""
-		if s.Let.Type != nil && s.Let.Type.Simple != nil {
-			typ = cppType(*s.Let.Type.Simple)
-		} else if s.Let.Value != nil {
-			typ = guessType(s.Let.Value)
-			if typ == "" {
-				if _, ok := val.(*StringLit); ok {
-					typ = "std::string"
+		if s.Let.Type != nil {
+			if s.Let.Type.Simple != nil {
+				typ = cppType(*s.Let.Type.Simple)
+			} else if s.Let.Type.Generic != nil {
+				typ = cppType(typeRefString(&parser.TypeRef{Generic: s.Let.Type.Generic}))
+			}
+		}
+		if typ == "" && s.Let.Value != nil {
+			typ = exprType(val)
+			if typ == "auto" || typ == "" {
+				typ = guessType(s.Let.Value)
+				if typ == "" {
+					if _, ok := val.(*StringLit); ok {
+						typ = "std::string"
+					}
 				}
 			}
 		}
@@ -2413,13 +2421,21 @@ func convertStmt(s *parser.Statement) (Stmt, error) {
 			}
 		}
 		typ := ""
-		if s.Var.Type != nil && s.Var.Type.Simple != nil {
-			typ = cppType(*s.Var.Type.Simple)
-		} else if s.Var.Value != nil {
-			typ = guessType(s.Var.Value)
-			if typ == "" {
-				if _, ok := val.(*StringLit); ok {
-					typ = "std::string"
+		if s.Var.Type != nil {
+			if s.Var.Type.Simple != nil {
+				typ = cppType(*s.Var.Type.Simple)
+			} else if s.Var.Type.Generic != nil {
+				typ = cppType(typeRefString(&parser.TypeRef{Generic: s.Var.Type.Generic}))
+			}
+		}
+		if typ == "" && s.Var.Value != nil {
+			typ = exprType(val)
+			if typ == "auto" || typ == "" {
+				typ = guessType(s.Var.Value)
+				if typ == "" {
+					if _, ok := val.(*StringLit); ok {
+						typ = "std::string"
+					}
 				}
 			}
 		}
@@ -2853,6 +2869,9 @@ func convertFun(fn *parser.FunStmt) (*Func, error) {
 		ret = cppType(typeRefString(&parser.TypeRef{Generic: fn.Return.Generic}))
 	} else {
 		ret = "auto"
+	}
+	if fn.Name == "main" && ret == "void" {
+		ret = "int"
 	}
 	prevRet := currentReturnType
 	currentReturnType = ret
