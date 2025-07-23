@@ -1649,8 +1649,12 @@ func checkPrimary(p *parser.Primary, env *Env, expected Type) (Type, error) {
 				}
 				return nil, errNotStruct(p.Pos, typ)
 			case MapType:
-				if field == "keys" {
+				switch field {
+				case "keys":
 					typ = FuncType{Params: []Type{}, Return: ListType{Elem: AnyType{}}, Pure: true}
+					continue
+				case "get":
+					typ = FuncType{Params: []Type{t.Key, t.Value}, Return: t.Value, Pure: true}
 					continue
 				}
 				if unify(t.Key, StringType{}, nil) {

@@ -1427,6 +1427,15 @@ func isIntLike(t types.Type) bool {
 	}
 }
 
+func isFloatLike(t types.Type) bool {
+	switch t.(type) {
+	case types.FloatType, types.BigRatType:
+		return true
+	default:
+		return false
+	}
+}
+
 func isListOfStrings(t types.Type) bool {
 	if lt, ok := t.(types.ListType); ok {
 		_, ok2 := lt.Elem.(types.StringType)
@@ -3617,6 +3626,13 @@ func convertBinary(b *parser.BinaryExpr) (Expr, error) {
 	}
 
 	apply := func(left Expr, op string, right Expr) Expr {
+		if op == "/" {
+			lt := inferPyType(left, currentEnv)
+			rt := inferPyType(right, currentEnv)
+			if !isFloatLike(lt) && !isFloatLike(rt) {
+				op = "//"
+			}
+		}
 		if op == "+" {
 			if s, ok := left.(*SliceExpr); ok {
 				left = &CallExpr{Func: &FieldExpr{Target: &StringLit{Value: ""}, Name: "join"}, Args: []Expr{s}}
