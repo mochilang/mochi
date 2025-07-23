@@ -649,6 +649,17 @@ type IndexExpr struct {
 }
 
 func (i *IndexExpr) emitExpr(w io.Writer) {
+	if key, ok := evalString(i.Index); ok {
+		tname := inferExprType(currentEnv, i.Target)
+		if st, ok2 := currentEnv.GetStruct(tname); ok2 {
+			if _, ok3 := st.Fields[key]; ok3 {
+				i.Target.emitExpr(w)
+				io.WriteString(w, ".")
+				io.WriteString(w, key)
+				return
+			}
+		}
+	}
 	if exprIsString(i.Target) {
 		io.WriteString(w, "(const char[]){")
 		i.Target.emitExpr(w)
