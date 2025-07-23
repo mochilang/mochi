@@ -1,14 +1,20 @@
 exit status 1
-/workspace/mochi/tests/rosetta/transpiler/Scala/2048.scala:126: error: illegal start of simple pattern
-      val new: Any = r("row")
-          ^
-/workspace/mochi/tests/rosetta/transpiler/Scala/2048.scala:127: error: '=' expected but ';' found.
-      score = score + r("gain")
-^
-/workspace/mochi/tests/rosetta/transpiler/Scala/2048.scala:187: error: illegal start of simple pattern
-      val new: Any = r("row")
-          ^
-/workspace/mochi/tests/rosetta/transpiler/Scala/2048.scala:188: error: '=' expected but ';' found.
-      score = score + r("gain")
-^
+/workspace/mochi/tests/rosetta/transpiler/Scala/2048.scala:87: error: type mismatch;
+ found   : Any
+ required: Int
+        line = (line + pad(v) + "|").asInstanceOf[String]
+                           ^
+/workspace/mochi/tests/rosetta/transpiler/Scala/2048.scala:185: error: type mismatch;
+ found   : scala.collection.mutable.ArrayBuffer[Any]
+ required: scala.collection.mutable.ArrayBuffer[Int]
+Note: Any >: Int, but class ArrayBuffer is invariant in type A.
+You may wish to investigate a wildcard type such as `_ >: Int`. (SLS 3.2.10)
+    col = col :+ b(y).asInstanceOf[ArrayBuffer[Any]](x)
+              ^
+/workspace/mochi/tests/rosetta/transpiler/Scala/2048.scala:270: error: value >= is not a member of Any
+      if (b(y).asInstanceOf[ArrayBuffer[Any]](x) >= 2048) {
+                                                 ^
+/workspace/mochi/tests/rosetta/transpiler/Scala/2048.scala:328: error: value && is not a member of Any
+        if ((full && !(hasMoves(board)).asInstanceOf[Boolean]).asInstanceOf[Boolean]) {
+                  ^
 four errors found

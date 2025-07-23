@@ -1,3 +1,43 @@
+## Progress (2025-07-23 10:19 +0700)
+- scala rosetta: regenerate task 6
+- Regenerated golden files - 92/103 vm valid programs passing
+
+## Progress (2025-07-23 10:19 +0700)
+- scala rosetta: regenerate task 6
+- Regenerated golden files - 92/103 vm valid programs passing
+
+## Progress (2025-07-23 10:19 +0700)
+- scala rosetta: regenerate task 6
+- Regenerated golden files - 92/103 vm valid programs passing
+
+## Progress (2025-07-23 10:19 +0700)
+- scala rosetta: regenerate task 6
+- Regenerated golden files - 92/103 vm valid programs passing
+
+## Progress (2025-07-23 10:18 +0700)
+- scala rosetta: regenerate task 5
+- Regenerated golden files - 92/103 vm valid programs passing
+
+## Progress (2025-07-23 10:18 +0700)
+- scala rosetta: regenerate task 4
+- Regenerated golden files - 92/103 vm valid programs passing
+
+## Progress (2025-07-23 10:18 +0700)
+- scala rosetta: regenerate task 3
+- Regenerated golden files - 92/103 vm valid programs passing
+
+## Progress (2025-07-23 10:17 +0700)
+- scala rosetta: regenerate for tasks 1-2
+- Regenerated golden files - 92/103 vm valid programs passing
+
+## Progress (2025-07-23 10:13 +0700)
+- cpp: fix deterministic now seed
+- Regenerated golden files - 92/103 vm valid programs passing
+
+## Progress (2025-07-23 10:13 +0700)
+- cpp: fix deterministic now seed
+- Regenerated golden files - 92/103 vm valid programs passing
+
 ## Progress (2025-07-22 20:44 +0700)
 - scala transpiler: cast bool in unary and if
 - Regenerated golden files - 92/103 vm valid programs passing
