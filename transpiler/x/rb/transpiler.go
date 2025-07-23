@@ -3300,6 +3300,16 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 				return nil, fmt.Errorf("substring expects 3 args")
 			}
 			return &SliceExpr{Target: args[0], Start: args[1], End: args[2]}, nil
+		case "upper":
+			if len(args) != 1 {
+				return nil, fmt.Errorf("upper expects 1 arg")
+			}
+			return &MethodCallExpr{Target: args[0], Method: "upcase"}, nil
+		case "lower":
+			if len(args) != 1 {
+				return nil, fmt.Errorf("lower expects 1 arg")
+			}
+			return &MethodCallExpr{Target: args[0], Method: "downcase"}, nil
 		case "now":
 			if len(args) != 0 {
 				return nil, fmt.Errorf("now takes no args")
