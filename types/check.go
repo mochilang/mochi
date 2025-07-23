@@ -465,7 +465,7 @@ func Check(prog *parser.Program, env *Env) []error {
 		Pure:   true,
 	}, false)
 	env.SetVar("parseIntStr", FuncType{
-		Params: []Type{StringType{}},
+		Params: []Type{StringType{}, IntType{}},
 		Return: IntType{},
 		Pure:   true,
 	}, false)
@@ -522,6 +522,11 @@ func Check(prog *parser.Program, env *Env) []error {
 	env.SetVar("indexOf", FuncType{
 		Params: []Type{StringType{}, StringType{}},
 		Return: IntType{},
+		Pure:   true,
+	}, false)
+	env.SetVar("repeat", FuncType{
+		Params: []Type{StringType{}, IntType{}},
+		Return: StringType{},
 		Pure:   true,
 	}, false)
 	env.SetVar("sha256", FuncType{
@@ -1390,8 +1395,15 @@ func applyBinaryType(pos lexer.Position, op string, left, right Type) (Type, err
 	case "+", "-", "*", "/", "%":
 		switch {
 		case isNumeric(left) && isNumeric(right):
-			if op == "/" && unify(left, IntType{}, nil) && unify(right, IntType{}, nil) {
-				return IntType{}, nil
+			if op == "/" {
+				if _, ok := left.(IntType); ok {
+					if _, ok2 := right.(IntType); ok2 {
+						return IntType{}, nil
+					}
+				}
+			}
+			if unify(left, BigRatType{}, nil) || unify(right, BigRatType{}, nil) {
+				return BigRatType{}, nil
 			}
 			if unify(left, FloatType{}, nil) || unify(right, FloatType{}, nil) {
 				return FloatType{}, nil
@@ -2452,7 +2464,7 @@ var builtinArity = map[string]int{
 	"json":        1,
 	"to_json":     1,
 	"str":         1,
-	"parseIntStr": 1,
+	"parseIntStr": 2,
 	"int":         1,
 	"upper":       1,
 	"lower":       1,
@@ -2482,6 +2494,7 @@ var builtinArity = map[string]int{
 	"substring":   3,
 	"padStart":    3,
 	"indexOf":     2,
+	"repeat":      2,
 	"sha256":      1,
 	"num":         1,
 	"denom":       1,
@@ -2494,7 +2507,7 @@ func checkBuiltinCall(name string, args []Type, pos lexer.Position) error {
 			return errArgCount(pos, name, 0, len(args))
 		}
 		return nil
-	case "json", "to_json", "str", "upper", "lower", "int", "eval", "parseIntStr":
+	case "json", "to_json", "str", "upper", "lower", "int", "eval":
 		if len(args) != 1 {
 			return errArgCount(pos, name, 1, len(args))
 		}
@@ -2510,12 +2523,24 @@ func checkBuiltinCall(name string, args []Type, pos lexer.Position) error {
 			default:
 				return fmt.Errorf("int() expects numeric or string")
 			}
-		case "parseIntStr":
-			if _, ok := args[0].(StringType); !ok {
-				if _, ok := args[0].(AnyType); !ok {
-					return errArgTypeMismatch(pos, 0, StringType{}, args[0])
-				}
+		}
+		return nil
+	case "parseIntStr":
+		if len(args) != 2 {
+			return errArgCount(pos, name, 2, len(args))
+		}
+		if _, ok := args[0].(StringType); !ok {
+			if _, ok := args[0].(AnyType); !ok {
+				return errArgTypeMismatch(pos, 0, StringType{}, args[0])
 			}
+		}
+		switch args[1].(type) {
+		case IntType, AnyType:
+			// ok
+		case BigIntType:
+			args[1] = IntType{}
+		default:
+			return errArgTypeMismatch(pos, 1, IntType{}, args[1])
 		}
 		return nil
 	case "len":
@@ -2788,6 +2813,24 @@ func checkBuiltinCall(name string, args []Type, pos lexer.Position) error {
 					return errArgTypeMismatch(pos, i, StringType{}, args[i])
 				}
 			}
+		}
+		return nil
+	case "repeat":
+		if len(args) != 2 {
+			return errArgCount(pos, name, 2, len(args))
+		}
+		if _, ok := args[0].(StringType); !ok {
+			if _, ok := args[0].(AnyType); !ok {
+				return errArgTypeMismatch(pos, 0, StringType{}, args[0])
+			}
+		}
+		switch args[1].(type) {
+		case IntType, AnyType:
+			// ok
+		case BigIntType:
+			args[1] = IntType{}
+		default:
+			return errArgTypeMismatch(pos, 1, IntType{}, args[1])
 		}
 		return nil
 	case "sha256":

@@ -35,6 +35,8 @@ var useInput bool
 var useKeys bool
 var useNumDenom bool
 var useSHA256 bool
+var useRepeat bool
+var useParseIntStr bool
 
 var reserved = map[string]bool{
 	"break": true, "case": true, "catch": true, "class": true, "const": true,
@@ -1897,6 +1899,8 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	useKeys = false
 	useNumDenom = false
 	useSHA256 = false
+	useRepeat = false
+	useParseIntStr = false
 	defer func() {
 		transpileEnv = nil
 		generatedTypes = nil
@@ -1907,6 +1911,8 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 		useKeys = false
 		useNumDenom = false
 		useSHA256 = false
+		useRepeat = false
+		useParseIntStr = false
 	}()
 	tsProg := &Program{}
 
@@ -1980,6 +1986,12 @@ function sha256(bs: number[]): number[] {
   hash.update(new Uint8Array(bs));
   return Array.from(hash.digest());
 }`})
+	}
+	if useRepeat {
+		prelude = append(prelude, &RawStmt{Code: `function repeat(s: string, n: number): string { return s.repeat(Math.trunc(n)); }`})
+	}
+	if useParseIntStr {
+		prelude = append(prelude, &RawStmt{Code: `function parseIntStr(s: string, base: number): number { return parseInt(s, Math.trunc(base)); }`})
 	}
 	if len(prelude) > 0 {
 		tsProg.Stmts = append(prelude, tsProg.Stmts...)
@@ -2959,6 +2971,8 @@ func convertPostfix(p *parser.PostfixExpr) (Expr, error) {
 						expr = &MapKeysExpr{Target: idx.Target}
 					case lit.Value == "get":
 						expr = &MethodCallExpr{Target: idx.Target, Method: "get", Args: args}
+					case lit.Value == "padStart" && len(args) == 2:
+						expr = &MethodCallExpr{Target: &CallExpr{Func: "String", Args: []Expr{idx.Target}}, Method: "padStart", Args: args}
 					default:
 						expr = &InvokeExpr{Callee: expr, Args: args}
 					}
@@ -3162,6 +3176,12 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 			// Math.trunc mirrors Mochi's int() which drops the
 			// fractional part without rounding.
 			return &CallExpr{Func: "Math.trunc", Args: args}, nil
+		case "parseIntStr":
+			if len(args) != 2 {
+				return nil, fmt.Errorf("parseIntStr expects two arguments")
+			}
+			useParseIntStr = true
+			return &CallExpr{Func: "parseIntStr", Args: []Expr{args[0], args[1]}}, nil
 		case "substring":
 			if len(args) != 3 {
 				return nil, fmt.Errorf("substring expects three arguments")
@@ -3172,6 +3192,12 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 				return nil, fmt.Errorf("indexOf expects two arguments")
 			}
 			return &MethodCallExpr{Target: args[0], Method: "indexOf", Args: []Expr{args[1]}}, nil
+		case "repeat":
+			if len(args) != 2 {
+				return nil, fmt.Errorf("repeat expects two arguments")
+			}
+			useRepeat = true
+			return &CallExpr{Func: "repeat", Args: []Expr{args[0], args[1]}}, nil
 		case "substr":
 			if len(args) != 3 {
 				return nil, fmt.Errorf("substr expects three arguments")
@@ -3196,7 +3222,8 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 			if len(args) != 3 {
 				return nil, fmt.Errorf("padStart expects three arguments")
 			}
-			return &MethodCallExpr{Target: args[0], Method: "padStart", Args: []Expr{args[1], args[2]}}, nil
+			target := &CallExpr{Func: "String", Args: []Expr{args[0]}}
+			return &MethodCallExpr{Target: target, Method: "padStart", Args: []Expr{args[1], args[2]}}, nil
 		case "sha256":
 			if len(args) != 1 {
 				return nil, fmt.Errorf("sha256 expects one argument")
