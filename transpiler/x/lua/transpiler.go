@@ -87,6 +87,7 @@ type FunStmt struct {
 	Name   string
 	Params []string
 	Body   []Stmt
+	Env    *types.Env
 }
 type ReturnStmt struct{ Value Expr }
 
@@ -541,6 +542,10 @@ func (s *SaveStmt) emit(w io.Writer) {
 }
 
 func (f *FunStmt) emit(w io.Writer) {
+	prev := currentEnv
+	if f.Env != nil {
+		currentEnv = f.Env
+	}
 	io.WriteString(w, "function ")
 	io.WriteString(w, sanitizeName(f.Name))
 	io.WriteString(w, "(")
@@ -556,6 +561,7 @@ func (f *FunStmt) emit(w io.Writer) {
 		io.WriteString(w, "\n")
 	}
 	io.WriteString(w, "end")
+	currentEnv = prev
 }
 
 func (r *ReturnStmt) emit(w io.Writer) {
@@ -995,7 +1001,8 @@ func isBoolExpr(e Expr) bool {
 }
 
 func isMapExpr(e Expr) bool {
-	if _, ok := exprType(e).(types.MapType); ok {
+	switch exprType(e).(type) {
+	case types.MapType, types.StructType:
 		return true
 	}
 	switch ex := e.(type) {
@@ -1089,6 +1096,20 @@ func exprType(e Expr) types.Type {
 				return tt.Elem
 			case types.StringType:
 				return types.StringType{}
+			case types.StructType:
+				var common types.Type
+				for _, ft := range tt.Fields {
+					if common == nil {
+						common = ft
+					} else if common != ft {
+						return types.AnyType{}
+					}
+				}
+				if common != nil {
+					return common
+				}
+			case types.MapType:
+				return tt.Value
 			}
 		}
 	case *StringLit:
@@ -1176,8 +1197,6 @@ func (b *BinaryExpr) emit(w io.Writer) {
 		op = "~="
 	}
 	if op == "+" && (isStringExpr(b.Left) || isStringExpr(b.Right)) {
-		op = ".."
-	} else if op == "+" && !(isIntExpr(b.Left) || isFloatExpr(b.Left) || isIntExpr(b.Right) || isFloatExpr(b.Right)) {
 		op = ".."
 	} else if op == "&&" {
 		op = "and"
@@ -2720,6 +2739,7 @@ func convertFunStmt(fs *parser.FunStmt) (Stmt, error) {
 	}
 	currentEnv = prev
 	funcDepth--
+	f.Env = child
 	return f, nil
 }
 
@@ -2781,6 +2801,8 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 		if currentEnv != nil {
 			if st.Let.Type != nil {
 				currentEnv.SetVar(st.Let.Name, types.ResolveTypeRef(st.Let.Type, currentEnv), false)
+			} else if st.Let.Value != nil {
+				currentEnv.SetVar(st.Let.Name, types.ExprType(st.Let.Value, currentEnv), false)
 			} else {
 				currentEnv.SetVar(st.Let.Name, exprType(expr), false)
 			}
@@ -2813,6 +2835,8 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 		if currentEnv != nil {
 			if st.Var.Type != nil {
 				currentEnv.SetVar(st.Var.Name, types.ResolveTypeRef(st.Var.Type, currentEnv), false)
+			} else if st.Var.Value != nil {
+				currentEnv.SetVar(st.Var.Name, types.ExprType(st.Var.Value, currentEnv), false)
 			} else {
 				currentEnv.SetVar(st.Var.Name, exprType(expr), false)
 			}
