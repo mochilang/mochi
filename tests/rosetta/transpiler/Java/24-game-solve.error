@@ -1,0 +1,134 @@
+compile: exit status 1
+/tmp/TestJavaTranspiler_Rosetta_Golden24-game-solve3559370857/001/Main.java:16: error: incompatible types: Map cannot be converted to int
+        if ((int)((java.util.Map)(x.get("op"))) == OP_NUM) {
+                 ^
+/tmp/TestJavaTranspiler_Rosetta_Golden24-game-solve3559370857/001/Main.java:21: error: incompatible types: Map cannot be converted to int
+        if ((int)((java.util.Map)(x.get("op"))) == OP_ADD) {
+                 ^
+/tmp/TestJavaTranspiler_Rosetta_Golden24-game-solve3559370857/001/Main.java:22: error: incompatible types: Integer cannot be converted to Map
+            return new java.util.LinkedHashMap<String, Integer>(java.util.Map.of("num", (int)((java.util.Map)(l.get("num"))) * (int)((java.util.Map)(r.get("denom"))) + (int)((java.util.Map)(l.get("denom"))) * (int)((java.util.Map)(r.get("num"))), "denom", (int)((java.util.Map)(l.get("denom"))) * (int)((java.util.Map)(r.get("denom")))));
+                                                                                                             ^
+/tmp/TestJavaTranspiler_Rosetta_Golden24-game-solve3559370857/001/Main.java:22: error: incompatible types: Integer cannot be converted to Map
+            return new java.util.LinkedHashMap<String, Integer>(java.util.Map.of("num", (int)((java.util.Map)(l.get("num"))) * (int)((java.util.Map)(r.get("denom"))) + (int)((java.util.Map)(l.get("denom"))) * (int)((java.util.Map)(r.get("num"))), "denom", (int)((java.util.Map)(l.get("denom"))) * (int)((java.util.Map)(r.get("denom")))));
+                                                                                                                                                    ^
+/tmp/TestJavaTranspiler_Rosetta_Golden24-game-solve3559370857/001/Main.java:22: error: incompatible types: Integer cannot be converted to Map
+            return new java.util.LinkedHashMap<String, Integer>(java.util.Map.of("num", (int)((java.util.Map)(l.get("num"))) * (int)((java.util.Map)(r.get("denom"))) + (int)((java.util.Map)(l.get("denom"))) * (int)((java.util.Map)(r.get("num"))), "denom", (int)((java.util.Map)(l.get("denom"))) * (int)((java.util.Map)(r.get("denom")))));
+                                                                                                                                                                                             ^
+/tmp/TestJavaTranspiler_Rosetta_Golden24-game-solve3559370857/001/Main.java:22: error: incompatible types: Integer cannot be converted to Map
+            return new java.util.LinkedHashMap<String, Integer>(java.util.Map.of("num", (int)((java.util.Map)(l.get("num"))) * (int)((java.util.Map)(r.get("denom"))) + (int)((java.util.Map)(l.get("denom"))) * (int)((java.util.Map)(r.get("num"))), "denom", (int)((java.util.Map)(l.get("denom"))) * (int)((java.util.Map)(r.get("denom")))));
+                                                                                                                                                                                                                                      ^
+/tmp/TestJavaTranspiler_Rosetta_Golden24-game-solve3559370857/001/Main.java:22: error: incompatible types: Integer cannot be converted to Map
+            return new java.util.LinkedHashMap<String, Integer>(java.util.Map.of("num", (int)((java.util.Map)(l.get("num"))) * (int)((java.util.Map)(r.get("denom"))) + (int)((java.util.Map)(l.get("denom"))) * (int)((java.util.Map)(r.get("num"))), "denom", (int)((java.util.Map)(l.get("denom"))) * (int)((java.util.Map)(r.get("denom")))));
+                                                                                                                                                                                                                                                                                     ^
+/tmp/TestJavaTranspiler_Rosetta_Golden24-game-solve3559370857/001/Main.java:22: error: incompatible types: Integer cannot be converted to Map
+            return new java.util.LinkedHashMap<String, Integer>(java.util.Map.of("num", (int)((java.util.Map)(l.get("num"))) * (int)((java.util.Map)(r.get("denom"))) + (int)((java.util.Map)(l.get("denom"))) * (int)((java.util.Map)(r.get("num"))), "denom", (int)((java.util.Map)(l.get("denom"))) * (int)((java.util.Map)(r.get("denom")))));
+                                                                                                                                                                                                                                                                                                                              ^
+/tmp/TestJavaTranspiler_Rosetta_Golden24-game-solve3559370857/001/Main.java:24: error: incompatible types: Map cannot be converted to int
+        if ((int)((java.util.Map)(x.get("op"))) == OP_SUB) {
+                 ^
+/tmp/TestJavaTranspiler_Rosetta_Golden24-game-solve3559370857/001/Main.java:25: error: incompatible types: Integer cannot be converted to Map
+            return new java.util.LinkedHashMap<String, Integer>(java.util.Map.of("num", (int)((java.util.Map)(l.get("num"))) * (int)((java.util.Map)(r.get("denom"))) - (int)((java.util.Map)(l.get("denom"))) * (int)((java.util.Map)(r.get("num"))), "denom", (int)((java.util.Map)(l.get("denom"))) * (int)((java.util.Map)(r.get("denom")))));
+                                                                                                             ^
+/tmp/TestJavaTranspiler_Rosetta_Golden24-game-solve3559370857/001/Main.java:25: error: incompatible types: Integer cannot be converted to Map
+            return new java.util.LinkedHashMap<String, Integer>(java.util.Map.of("num", (int)((java.util.Map)(l.get("num"))) * (int)((java.util.Map)(r.get("denom"))) - (int)((java.util.Map)(l.get("denom"))) * (int)((java.util.Map)(r.get("num"))), "denom", (int)((java.util.Map)(l.get("denom"))) * (int)((java.util.Map)(r.get("denom")))));
+                                                                                                                                                    ^
+/tmp/TestJavaTranspiler_Rosetta_Golden24-game-solve3559370857/001/Main.java:25: error: incompatible types: Integer cannot be converted to Map
+            return new java.util.LinkedHashMap<String, Integer>(java.util.Map.of("num", (int)((java.util.Map)(l.get("num"))) * (int)((java.util.Map)(r.get("denom"))) - (int)((java.util.Map)(l.get("denom"))) * (int)((java.util.Map)(r.get("num"))), "denom", (int)((java.util.Map)(l.get("denom"))) * (int)((java.util.Map)(r.get("denom")))));
+                                                                                                                                                                                             ^
+/tmp/TestJavaTranspiler_Rosetta_Golden24-game-solve3559370857/001/Main.java:25: error: incompatible types: Integer cannot be converted to Map
+            return new java.util.LinkedHashMap<String, Integer>(java.util.Map.of("num", (int)((java.util.Map)(l.get("num"))) * (int)((java.util.Map)(r.get("denom"))) - (int)((java.util.Map)(l.get("denom"))) * (int)((java.util.Map)(r.get("num"))), "denom", (int)((java.util.Map)(l.get("denom"))) * (int)((java.util.Map)(r.get("denom")))));
+                                                                                                                                                                                                                                      ^
+/tmp/TestJavaTranspiler_Rosetta_Golden24-game-solve3559370857/001/Main.java:25: error: incompatible types: Integer cannot be converted to Map
+            return new java.util.LinkedHashMap<String, Integer>(java.util.Map.of("num", (int)((java.util.Map)(l.get("num"))) * (int)((java.util.Map)(r.get("denom"))) - (int)((java.util.Map)(l.get("denom"))) * (int)((java.util.Map)(r.get("num"))), "denom", (int)((java.util.Map)(l.get("denom"))) * (int)((java.util.Map)(r.get("denom")))));
+                                                                                                                                                                                                                                                                                     ^
+/tmp/TestJavaTranspiler_Rosetta_Golden24-game-solve3559370857/001/Main.java:25: error: incompatible types: Integer cannot be converted to Map
+            return new java.util.LinkedHashMap<String, Integer>(java.util.Map.of("num", (int)((java.util.Map)(l.get("num"))) * (int)((java.util.Map)(r.get("denom"))) - (int)((java.util.Map)(l.get("denom"))) * (int)((java.util.Map)(r.get("num"))), "denom", (int)((java.util.Map)(l.get("denom"))) * (int)((java.util.Map)(r.get("denom")))));
+                                                                                                                                                                                                                                                                                                                              ^
+/tmp/TestJavaTranspiler_Rosetta_Golden24-game-solve3559370857/001/Main.java:27: error: incompatible types: Map cannot be converted to int
+        if ((int)((java.util.Map)(x.get("op"))) == OP_MUL) {
+                 ^
+/tmp/TestJavaTranspiler_Rosetta_Golden24-game-solve3559370857/001/Main.java:28: error: incompatible types: Integer cannot be converted to Map
+            return new java.util.LinkedHashMap<String, Integer>(java.util.Map.of("num", (int)((java.util.Map)(l.get("num"))) * (int)((java.util.Map)(r.get("num"))), "denom", (int)((java.util.Map)(l.get("denom"))) * (int)((java.util.Map)(r.get("denom")))));
+                                                                                                             ^
+/tmp/TestJavaTranspiler_Rosetta_Golden24-game-solve3559370857/001/Main.java:28: error: incompatible types: Integer cannot be converted to Map
+            return new java.util.LinkedHashMap<String, Integer>(java.util.Map.of("num", (int)((java.util.Map)(l.get("num"))) * (int)((java.util.Map)(r.get("num"))), "denom", (int)((java.util.Map)(l.get("denom"))) * (int)((java.util.Map)(r.get("denom")))));
+                                                                                                                                                    ^
+/tmp/TestJavaTranspiler_Rosetta_Golden24-game-solve3559370857/001/Main.java:28: error: incompatible types: Integer cannot be converted to Map
+            return new java.util.LinkedHashMap<String, Integer>(java.util.Map.of("num", (int)((java.util.Map)(l.get("num"))) * (int)((java.util.Map)(r.get("num"))), "denom", (int)((java.util.Map)(l.get("denom"))) * (int)((java.util.Map)(r.get("denom")))));
+                                                                                                                                                                                                   ^
+/tmp/TestJavaTranspiler_Rosetta_Golden24-game-solve3559370857/001/Main.java:28: error: incompatible types: Integer cannot be converted to Map
+            return new java.util.LinkedHashMap<String, Integer>(java.util.Map.of("num", (int)((java.util.Map)(l.get("num"))) * (int)((java.util.Map)(r.get("num"))), "denom", (int)((java.util.Map)(l.get("denom"))) * (int)((java.util.Map)(r.get("denom")))));
+                                                                                                                                                                                                                                            ^
+/tmp/TestJavaTranspiler_Rosetta_Golden24-game-solve3559370857/001/Main.java:30: error: incompatible types: Integer cannot be converted to Map
+        return new java.util.LinkedHashMap<String, Integer>(java.util.Map.of("num", (int)((java.util.Map)(l.get("num"))) * (int)((java.util.Map)(r.get("denom"))), "denom", (int)((java.util.Map)(l.get("denom"))) * (int)((java.util.Map)(r.get("num")))));
+                                                                                                         ^
+/tmp/TestJavaTranspiler_Rosetta_Golden24-game-solve3559370857/001/Main.java:30: error: incompatible types: Integer cannot be converted to Map
+        return new java.util.LinkedHashMap<String, Integer>(java.util.Map.of("num", (int)((java.util.Map)(l.get("num"))) * (int)((java.util.Map)(r.get("denom"))), "denom", (int)((java.util.Map)(l.get("denom"))) * (int)((java.util.Map)(r.get("num")))));
+                                                                                                                                                ^
+/tmp/TestJavaTranspiler_Rosetta_Golden24-game-solve3559370857/001/Main.java:30: error: incompatible types: Integer cannot be converted to Map
+        return new java.util.LinkedHashMap<String, Integer>(java.util.Map.of("num", (int)((java.util.Map)(l.get("num"))) * (int)((java.util.Map)(r.get("denom"))), "denom", (int)((java.util.Map)(l.get("denom"))) * (int)((java.util.Map)(r.get("num")))));
+                                                                                                                                                                                                 ^
+/tmp/TestJavaTranspiler_Rosetta_Golden24-game-solve3559370857/001/Main.java:30: error: incompatible types: Integer cannot be converted to Map
+        return new java.util.LinkedHashMap<String, Integer>(java.util.Map.of("num", (int)((java.util.Map)(l.get("num"))) * (int)((java.util.Map)(r.get("denom"))), "denom", (int)((java.util.Map)(l.get("denom"))) * (int)((java.util.Map)(r.get("num")))));
+                                                                                                                                                                                                                                          ^
+/tmp/TestJavaTranspiler_Rosetta_Golden24-game-solve3559370857/001/Main.java:34: error: incompatible types: Map cannot be converted to int
+        if ((int)((java.util.Map)(x.get("op"))) == OP_NUM) {
+                 ^
+/tmp/TestJavaTranspiler_Rosetta_Golden24-game-solve3559370857/001/Main.java:35: error: incompatible types: String cannot be converted to int
+            return String.valueOf((java.util.Map)(x.get("value"))["num"]);
+                                                                  ^
+/tmp/TestJavaTranspiler_Rosetta_Golden24-game-solve3559370857/001/Main.java:35: error: array required, but Object found
+            return String.valueOf((java.util.Map)(x.get("value"))["num"]);
+                                                                 ^
+/tmp/TestJavaTranspiler_Rosetta_Golden24-game-solve3559370857/001/Main.java:40: error: incompatible types: Map cannot be converted to int
+        if ((int)((java.util.Map)(x.get("op"))) == OP_ADD) {
+                 ^
+/tmp/TestJavaTranspiler_Rosetta_Golden24-game-solve3559370857/001/Main.java:42: error: incompatible types: Map cannot be converted to int
+        } else         if ((int)((java.util.Map)(x.get("op"))) == OP_SUB) {
+                                ^
+/tmp/TestJavaTranspiler_Rosetta_Golden24-game-solve3559370857/001/Main.java:44: error: incompatible types: Map cannot be converted to int
+        } else         if ((int)((java.util.Map)(x.get("op"))) == OP_MUL) {
+                                ^
+/tmp/TestJavaTranspiler_Rosetta_Golden24-game-solve3559370857/001/Main.java:54: error: cannot find symbol
+            java.util.Map<String,Integer> f = exprEval((java.util.Map)(xs.get(0)));
+                                                                         ^
+  symbol:   method get(int)
+  location: variable xs of type Map<String,Object>[]
+/tmp/TestJavaTranspiler_Rosetta_Golden24-game-solve3559370857/001/Main.java:55: error: incompatible types: int cannot be converted to boolean
+            if ((int)((int)(f.get("denom"))) != 0 && (boolean)((int)(f.get("num"))) == (int)((int)(f.get("denom"))) * goal) {
+                                                              ^
+/tmp/TestJavaTranspiler_Rosetta_Golden24-game-solve3559370857/001/Main.java:56: error: cannot find symbol
+                System.out.println(exprString((java.util.Map)(xs.get(0))));
+                                                                ^
+  symbol:   method get(int)
+  location: variable xs of type Map<String,Object>[]
+/tmp/TestJavaTranspiler_Rosetta_Golden24-game-solve3559370857/001/Main.java:65: error: generic array creation
+                java.util.Map<String,Object>[] rest = new java.util.Map<String,Object>[]{};
+                                                      ^
+/tmp/TestJavaTranspiler_Rosetta_Golden24-game-solve3559370857/001/Main.java:69: error: cannot find symbol
+                        rest = java.util.stream.Stream.concat(java.util.Arrays.stream(rest), java.util.stream.Stream.of((java.util.Map)(xs.get(k)))).toArray(java.util.Map<String,Object>[]::new);
+                                                                                                                                          ^
+  symbol:   method get(int)
+  location: variable xs of type Map<String,Object>[]
+/tmp/TestJavaTranspiler_Rosetta_Golden24-game-solve3559370857/001/Main.java:69: error: generic array creation
+                        rest = java.util.stream.Stream.concat(java.util.Arrays.stream(rest), java.util.stream.Stream.of((java.util.Map)(xs.get(k)))).toArray(java.util.Map<String,Object>[]::new);
+                                                                                                                                                                                         ^
+/tmp/TestJavaTranspiler_Rosetta_Golden24-game-solve3559370857/001/Main.java:73: error: cannot find symbol
+                java.util.Map<String,Object> a = (java.util.Map<String,Object>)((java.util.Map)(xs.get(i)));
+                                                                                                  ^
+  symbol:   method get(int)
+  location: variable xs of type Map<String,Object>[]
+/tmp/TestJavaTranspiler_Rosetta_Golden24-game-solve3559370857/001/Main.java:74: error: cannot find symbol
+                java.util.Map<String,Object> b = (java.util.Map<String,Object>)((java.util.Map)(xs.get(j)));
+                                                                                                  ^
+  symbol:   method get(int)
+  location: variable xs of type Map<String,Object>[]
+/tmp/TestJavaTranspiler_Rosetta_Golden24-game-solve3559370857/001/Main.java:99: error: generic array creation
+            java.util.Map<String,Object>[] cards = new java.util.Map<String,Object>[]{};
+                                                   ^
+/tmp/TestJavaTranspiler_Rosetta_Golden24-game-solve3559370857/001/Main.java:103: error: generic array creation
+                cards = java.util.stream.Stream.concat(java.util.Arrays.stream(cards), java.util.stream.Stream.of(newNum(n))).toArray(java.util.Map<String,Object>[]::new);
+                                                                                                                                                                  ^
+Note: /tmp/TestJavaTranspiler_Rosetta_Golden24-game-solve3559370857/001/Main.java uses unchecked or unsafe operations.
+Note: Recompile with -Xlint:unchecked for details.
+40 errors
