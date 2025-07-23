@@ -417,11 +417,15 @@ var ocamlReserved = map[string]bool{
 	"end": true, "exception": true, "external": true, "fun": true, "function": true,
 	"let": true, "in": true, "match": true, "mod": true, "module": true, "open": true,
 	"rec": true, "try": true, "type": true, "val": true, "when": true, "with": true,
+	"new": true,
 }
 
 func sanitizeIdent(s string) string {
 	if ocamlReserved[s] {
 		return s + "_"
+	}
+	if len(s) > 0 && s[0] >= 'A' && s[0] <= 'Z' {
+		return strings.ToLower(s)
 	}
 	return s
 }
@@ -454,15 +458,15 @@ type VarStmt struct {
 }
 
 func (v *VarStmt) emit(w io.Writer) {
-	fmt.Fprintf(w, "  let %s = ref ", sanitizeIdent(v.Name))
+	fmt.Fprintf(w, "  let %s = ref (", sanitizeIdent(v.Name))
 	v.Expr.emit(w)
-	io.WriteString(w, " in\n")
+	io.WriteString(w, ") in\n")
 }
 
 func (v *VarStmt) emitTop(w io.Writer) {
-	fmt.Fprintf(w, "let %s = ref ", sanitizeIdent(v.Name))
+	fmt.Fprintf(w, "let %s = ref (", sanitizeIdent(v.Name))
 	v.Expr.emit(w)
-	io.WriteString(w, "\n")
+	io.WriteString(w, ")\n")
 }
 
 // AssignStmt represents an update to a mutable variable.
@@ -695,6 +699,7 @@ type FunStmt struct {
 	Params []string
 	Body   []Stmt
 	Ret    Expr
+	RetTyp string
 }
 
 func (f *FunStmt) emit(w io.Writer) {
@@ -708,12 +713,17 @@ func (f *FunStmt) emit(w io.Writer) {
 	}
 	io.WriteString(w, " =\n")
 	io.WriteString(w, "  let __ret = ref ")
-	if f.Ret != nil {
+	if f.RetTyp != "" {
+		defaultValueExpr(f.RetTyp).emit(w)
+	} else if f.Ret != nil {
 		f.Ret.emit(w)
 	} else {
 		io.WriteString(w, "()")
 	}
 	io.WriteString(w, " in\n")
+	for _, p := range f.Params {
+		fmt.Fprintf(w, "  let %s = ref %s in\n", sanitizeIdent(p), sanitizeIdent(p))
+	}
 	io.WriteString(w, "  (try\n")
 	for _, st := range f.Body {
 		st.emit(w)
@@ -736,11 +746,13 @@ type StrBuiltin struct {
 func (s *StrBuiltin) emit(w io.Writer) {
 	switch s.Typ {
 	case "float":
-		io.WriteString(w, "string_of_float ")
+		io.WriteString(w, "(string_of_float ")
 		s.Expr.emit(w)
+		io.WriteString(w, ")")
 	default:
-		io.WriteString(w, "string_of_int ")
+		io.WriteString(w, "(string_of_int ")
 		s.Expr.emit(w)
+		io.WriteString(w, ")")
 	}
 }
 
@@ -1533,8 +1545,9 @@ func (ix *IndexExpr) emit(w io.Writer) {
 	default:
 		io.WriteString(w, "List.nth (")
 		ix.Col.emit(w)
-		io.WriteString(w, ") ")
+		io.WriteString(w, ") (")
 		ix.Index.emit(w)
+		io.WriteString(w, ")")
 	}
 }
 
@@ -2048,7 +2061,7 @@ func transpileStmt(st *parser.Statement, env *types.Env, vars map[string]VarInfo
 			}
 		}
 		if !info.ref {
-			return nil, fmt.Errorf("assignment to unknown or immutable variable")
+			return nil, fmt.Errorf("assignment to unknown or immutable variable: %s", st.Assign.Name)
 		}
 		valExpr, valTyp, err := convertExpr(st.Assign.Value, env, vars)
 		if err != nil {
@@ -2319,7 +2332,7 @@ func transpileStmt(st *parser.Statement, env *types.Env, vars map[string]VarInfo
 					typ = "int"
 				}
 			}
-			fnVars[p.Name] = VarInfo{typ: typ}
+			fnVars[p.Name] = VarInfo{typ: typ, ref: true}
 		}
 		bodyStmts := st.Fun.Body
 		if len(bodyStmts) > 0 && bodyStmts[len(bodyStmts)-1].Return != nil {
@@ -2343,21 +2356,10 @@ func transpileStmt(st *parser.Statement, env *types.Env, vars map[string]VarInfo
 		env.SetFunc(st.Fun.Name, st.Fun)
 		var retTyp types.Type = types.BoolType{}
 		if st.Fun.Return != nil {
-			if st.Fun.Return.Simple != nil {
-				switch *st.Fun.Return.Simple {
-				case "int":
-					retTyp = types.IntType{}
-				case "string":
-					retTyp = types.StringType{}
-				case "bool":
-					retTyp = types.BoolType{}
-				}
-			} else if st.Fun.Return.Fun != nil {
-				retTyp = types.FuncType{Return: types.IntType{}}
-			}
+			retTyp = types.ResolveTypeRef(st.Fun.Return, env)
 		}
 		env.SetFuncType(st.Fun.Name, types.FuncType{Return: retTyp})
-		return &FunStmt{Name: st.Fun.Name, Params: params, Body: body, Ret: ret}, nil
+		return &FunStmt{Name: st.Fun.Name, Params: params, Body: body, Ret: ret, RetTyp: typeString(retTyp)}, nil
 	case st.Type != nil:
 		if len(st.Type.Members) > 0 {
 			fields := map[string]string{}
@@ -2767,12 +2769,8 @@ func convertPostfix(p *parser.PostfixExpr, env *types.Env, vars map[string]VarIn
 				expr = &MapIndexExpr{Map: expr, Key: key, Typ: ft, Dyn: dyn}
 				typ = ft
 			} else {
-				t := "int"
-				if dyn {
-					t = "map-dyn"
-				}
-				expr = &MapIndexExpr{Map: expr, Key: key, Typ: t, Dyn: dyn}
-				typ = t
+				expr = &MapIndexExpr{Map: expr, Key: key, Typ: "int", Dyn: dyn}
+				typ = "int"
 			}
 			i++
 		case op.Index != nil && op.Index.Colon == nil && op.Index.Colon2 == nil && op.Index.End == nil && op.Index.Step == nil:
@@ -2786,12 +2784,8 @@ func convertPostfix(p *parser.PostfixExpr, env *types.Env, vars map[string]VarIn
 					expr = &MapIndexExpr{Map: expr, Key: idxExpr, Typ: ft, Dyn: dyn}
 					typ = ft
 				} else {
-					t := "int"
-					if dyn {
-						t = "map-dyn"
-					}
-					expr = &MapIndexExpr{Map: expr, Key: idxExpr, Typ: t, Dyn: dyn}
-					typ = t
+					expr = &MapIndexExpr{Map: expr, Key: idxExpr, Typ: "int", Dyn: dyn}
+					typ = "int"
 				}
 			} else if strings.HasPrefix(typ, "map-") {
 				parts := strings.Split(typ, "-")
