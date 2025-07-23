@@ -7,11 +7,16 @@
 * Additional Rosetta examples across C#, Lua, Racket and Swift
 * Map key handling for TypeScript with selector calls for Zig
 * Local variable tracking and typed call arguments in multiple backends
+* `padStart` helpers for Python, Ruby and Lua with integer and membership utilities
+* List parameter and nested literal support across transpilers
+* `net.LookupHost` for Erlang and OCaml plus map indexing in Swift and PHP
 
 ### Changed
 
 * Improved type inference for Kotlin and container metadata in Scala
 * Enhanced C++ variable management and indentation fixes in C#
+* Improved map handling for Java with additional Rosetta programs
+* Progress checklists updated across languages
 * Rosetta outputs regenerated and stored with source code
 
 ### Fixed
@@ -19,7 +24,8 @@
 * Deterministic `now` seeding for C++
 * Global variable rename issues in Rust
 * Miscellaneous compilation bugs across languages
-
+* Fixed string slice handling in the C# transpiler
+* Various minor issues across PHP and Ruby backends
 
 ## [0.10.37] – 2025-07-22T17:53:32+07:00
 
