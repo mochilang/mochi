@@ -148,7 +148,7 @@ func fsType(t types.Type) string {
 	case types.StringType:
 		return "string"
 	case types.ListType:
-		return fsType(tt.Elem) + " list"
+		return fsType(tt.Elem) + " array"
 	case types.MapType:
 		return fmt.Sprintf("Map<%s, %s>", fsType(tt.Key), fsType(tt.Value))
 	case types.OptionType:
@@ -172,7 +172,14 @@ func fsTypeFromString(s string) string {
 	case "string":
 		return "string"
 	default:
-		if strings.HasSuffix(s, " list") || strings.HasPrefix(s, "Map<") || s == "obj" {
+		if strings.HasPrefix(s, "list<") && strings.HasSuffix(s, ">") {
+			elem := strings.TrimSuffix(strings.TrimPrefix(s, "list<"), ">")
+			return fsTypeFromString(elem) + " array"
+		}
+		if strings.HasSuffix(s, " list") {
+			return fsTypeFromString(strings.TrimSuffix(s, " list")) + " array"
+		}
+		if strings.HasSuffix(s, " array") || strings.HasPrefix(s, "Map<") || s == "obj" {
 			return "obj"
 		}
 		return s
@@ -274,7 +281,7 @@ func simpleListType(l *ListLit) string {
 			return ""
 		}
 	}
-	return first + " list"
+	return first + " array"
 }
 
 func inferLiteralType(e *parser.Expr) string {
@@ -290,14 +297,14 @@ func inferLiteralType(e *parser.Expr) string {
 			structCount++
 			name := fmt.Sprintf("Anon%d", structCount)
 			addStructDef(name, st)
-			return name + " list"
+			return name + " array"
 		}
 		if len(ll.Elems) > 0 && ll.Elems[0].Binary != nil && ll.Elems[0].Binary.Left.Value.Target.Map != nil {
 			if fields, ok := inferStructFromMapVars(ll.Elems[0].Binary.Left.Value.Target.Map); ok {
 				structCount++
 				name := fmt.Sprintf("Anon%d", structCount)
 				structDefs = append(structDefs, StructDef{Name: name, Fields: fields})
-				return name + " list"
+				return name + " array"
 			}
 		}
 	}
@@ -315,18 +322,18 @@ func inferQueryType(q *parser.QueryExpr) string {
 					structCount++
 					name := fmt.Sprintf("Anon%d", structCount)
 					addStructDef(name, st)
-					return name + " list"
+					return name + " array"
 				}
 				if fields, ok := inferStructFromMapVars(ml); ok {
 					structCount++
 					name := fmt.Sprintf("Anon%d", structCount)
 					structDefs = append(structDefs, StructDef{Name: name, Fields: fields})
-					return name + " list"
+					return name + " array"
 				}
 			}
 		}
 	}
-	return "list"
+	return "array"
 }
 
 type Stmt interface{ emit(io.Writer) }
@@ -410,6 +417,7 @@ func (l *LambdaExpr) emit(w io.Writer) {
 type FunDef struct {
 	Name   string
 	Params []string
+	Types  []string
 	Body   []Stmt
 }
 
@@ -420,9 +428,17 @@ func (f *FunDef) emit(w io.Writer) {
 	if len(f.Params) == 0 {
 		io.WriteString(w, " ()")
 	}
-	for _, p := range f.Params {
+	for i, p := range f.Params {
 		io.WriteString(w, " ")
-		io.WriteString(w, p)
+		if i < len(f.Types) && f.Types[i] != "" {
+			io.WriteString(w, "(")
+			io.WriteString(w, p)
+			io.WriteString(w, ": ")
+			io.WriteString(w, f.Types[i])
+			io.WriteString(w, ")")
+		} else {
+			io.WriteString(w, p)
+		}
 	}
 	io.WriteString(w, " =\n")
 	indentLevel++
@@ -462,14 +478,14 @@ func (c *ContinueStmt) emit(w io.Writer) {
 type ListLit struct{ Elems []Expr }
 
 func (l *ListLit) emit(w io.Writer) {
-	io.WriteString(w, "[")
+	io.WriteString(w, "[|")
 	for i, e := range l.Elems {
 		e.emit(w)
 		if i < len(l.Elems)-1 {
 			io.WriteString(w, "; ")
 		}
 	}
-	io.WriteString(w, "]")
+	io.WriteString(w, "|]")
 }
 
 // MapLit represents an F# map literal.
@@ -740,10 +756,11 @@ func (g *GroupQueryExpr) emit(w io.Writer) {
 }
 
 func (a *AppendExpr) emit(w io.Writer) {
+	io.WriteString(w, "Array.append ")
 	a.List.emit(w)
-	io.WriteString(w, " @ [")
+	io.WriteString(w, " [|")
 	a.Elem.emit(w)
-	io.WriteString(w, "]")
+	io.WriteString(w, "|]")
 }
 
 // SubstringExpr represents substring(str, start, end).
@@ -824,16 +841,14 @@ func (s *IndexAssignStmt) emit(w io.Writer) {
 	if idx, ok := s.Target.(*IndexExpr); ok {
 		if id, ok2 := idx.Target.(*IdentExpr); ok2 {
 			t := inferType(idx.Target)
-			if t == "list" || strings.HasSuffix(t, " list") || strings.HasPrefix(t, "list<") || t == "" {
+			if strings.Contains(t, "array") || t == "" {
 				writeIndent(w)
 				name := fsIdent(id.Name)
 				io.WriteString(w, name)
-				io.WriteString(w, " <- List.mapi (fun k x -> if k = ")
+				io.WriteString(w, ".[")
 				idx.Index.emit(w)
-				io.WriteString(w, " then ")
+				io.WriteString(w, "] <- ")
 				s.Value.emit(w)
-				io.WriteString(w, " else x) ")
-				io.WriteString(w, name)
 				return
 			}
 		}
@@ -1041,8 +1056,8 @@ func (b *BinaryExpr) emit(w io.Writer) {
 				b.Left.emit(w)
 			}
 			io.WriteString(w, ")")
-		} else if rtyp == "list" {
-			io.WriteString(w, "List.contains ")
+		} else if rtyp == "array" {
+			io.WriteString(w, "Array.contains ")
 			if needsParen(b.Left) {
 				io.WriteString(w, "(")
 				b.Left.emit(w)
@@ -1255,7 +1270,7 @@ func inferType(e Expr) string {
 	case *BoolLit:
 		return "bool"
 	case *ListLit:
-		return "list"
+		return "array"
 	case *MapLit:
 		return "map"
 	case *StructLit:
@@ -1268,11 +1283,11 @@ func inferType(e Expr) string {
 		}
 		return ""
 	case *QueryExpr, *GroupQueryExpr:
-		return "list"
+		return "array"
 	case *IdentExpr:
 		if t, ok := varTypes[v.Name]; ok {
-			if strings.HasSuffix(t, " list") || strings.HasPrefix(t, "list<") {
-				return "list"
+			if strings.HasSuffix(t, " list") || strings.HasSuffix(t, " array") || strings.HasPrefix(t, "list<") {
+				return "array"
 			}
 			if strings.HasPrefix(t, "Map<") {
 				return "map"
@@ -1282,7 +1297,7 @@ func inferType(e Expr) string {
 		return ""
 	case *FieldExpr:
 		t := inferType(v.Target)
-		name := strings.TrimSuffix(t, " list")
+		name := strings.TrimSuffix(strings.TrimSuffix(t, " list"), " array")
 		if strings.HasPrefix(name, "list<") {
 			name = strings.TrimSuffix(strings.TrimPrefix(name, "list<"), ">")
 		}
@@ -1313,7 +1328,7 @@ func inferType(e Expr) string {
 			}
 		}
 	case *AppendExpr:
-		return "list"
+		return "array"
 	case *SubstringExpr:
 		return "string"
 	case *SliceExpr:
@@ -1384,11 +1399,11 @@ type IndexExpr struct {
 
 func (i *IndexExpr) emit(w io.Writer) {
 	t := inferType(i.Target)
-	if t == "list" || strings.HasSuffix(t, " list") || strings.HasPrefix(t, "list<") || t == "" {
-		io.WriteString(w, "List.item ")
-		i.Index.emit(w)
-		io.WriteString(w, " ")
+	if strings.Contains(t, "array") || t == "" {
 		i.Target.emit(w)
+		io.WriteString(w, ".[")
+		i.Index.emit(w)
+		io.WriteString(w, "]")
 		return
 	}
 	if strings.HasPrefix(t, "Map<") {
@@ -1445,13 +1460,14 @@ type SliceExpr struct {
 }
 
 func (s *SliceExpr) emit(w io.Writer) {
-	if inferType(s.Target) == "list" {
+	if inferType(s.Target) == "array" {
+		io.WriteString(w, "Array.sub ")
 		s.Target.emit(w)
-		io.WriteString(w, ".[")
+		io.WriteString(w, " ")
 		s.Start.emit(w)
-		io.WriteString(w, "..(")
-		(&BinaryExpr{Left: s.End, Op: "-", Right: &IntLit{Value: 1}}).emit(w)
-		io.WriteString(w, ")]")
+		io.WriteString(w, " (")
+		(&BinaryExpr{Left: s.End, Op: "-", Right: s.Start}).emit(w)
+		io.WriteString(w, ")")
 		return
 	}
 	s.Target.emit(w)
@@ -1695,7 +1711,7 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 		if sl, ok := e.(*StructLit); ok && sl.Name != "" {
 			declared = sl.Name
 		}
-		if declared == "list" {
+		if declared == "array" {
 			if ll, ok := e.(*ListLit); ok {
 				if t := simpleListType(ll); t != "" {
 					declared = t
@@ -1704,7 +1720,7 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 		}
 		varTypes[st.Let.Name] = declared
 		typ := declared
-		if typ == "list" || typ == "map" {
+		if typ == "array" || typ == "map" {
 			typ = ""
 		}
 		return &LetStmt{Name: st.Let.Name, Expr: e, Type: typ}, nil
@@ -1730,7 +1746,7 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 		if sl, ok := e.(*StructLit); ok && sl.Name != "" {
 			declared = sl.Name
 		}
-		if declared == "list" {
+		if declared == "array" {
 			if ll, ok := e.(*ListLit); ok {
 				if t := simpleListType(ll); t != "" {
 					declared = t
@@ -1739,7 +1755,7 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 		}
 		varTypes[st.Var.Name] = declared
 		typ := declared
-		if typ == "list" || typ == "map" {
+		if typ == "array" || typ == "map" {
 			typ = ""
 		}
 		return &LetStmt{Name: st.Var.Name, Expr: e, Type: typ, Mutable: true}, nil
@@ -1818,7 +1834,11 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 		varTypes = copyMap(varTypes)
 		for _, p := range st.Fun.Params {
 			if p.Type != nil && p.Type.Simple != nil {
-				varTypes[p.Name] = *p.Type.Simple
+				varTypes[p.Name] = fsTypeFromString(*p.Type.Simple)
+			} else if transpileEnv != nil {
+				if t, err := transpileEnv.GetVar(p.Name); err == nil {
+					varTypes[p.Name] = fsType(t)
+				}
 			}
 		}
 		body := make([]Stmt, len(st.Fun.Body))
@@ -1831,11 +1851,19 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 			body[i] = cs
 		}
 		params := make([]string, len(st.Fun.Params))
+		types := make([]string, len(st.Fun.Params))
 		for i, p := range st.Fun.Params {
 			params[i] = p.Name
+			if t, ok := varTypes[p.Name]; ok {
+				types[i] = fsTypeFromString(t)
+			} else if transpileEnv != nil {
+				if vt, err := transpileEnv.GetVar(p.Name); err == nil {
+					types[i] = fsType(vt)
+				}
+			}
 		}
 		varTypes = save
-		return &FunDef{Name: st.Fun.Name, Params: params, Body: body}, nil
+		return &FunDef{Name: st.Fun.Name, Params: params, Types: types, Body: body}, nil
 	case st.While != nil:
 		cond, err := convertExpr(st.While.Cond)
 		if err != nil {
@@ -2055,10 +2083,10 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 					return &CallExpr{Func: "printfn \"%d\"", Args: []Expr{args[0]}}, nil
 				case "float":
 					return &CallExpr{Func: "printfn \"%.1f\"", Args: []Expr{args[0]}}, nil
-				case "list":
-					mapped := &CallExpr{Func: "List.map string", Args: []Expr{args[0]}}
-					concat := &CallExpr{Func: "String.concat", Args: []Expr{&StringLit{Value: ", "}, mapped}}
-					wrapped := &BinaryExpr{Left: &BinaryExpr{Left: &StringLit{Value: "["}, Op: "+", Right: concat}, Op: "+", Right: &StringLit{Value: "]"}}
+				case "array":
+					mapped := &CallExpr{Func: "Array.map string", Args: []Expr{args[0]}}
+					concat := &CallExpr{Func: "String.concat", Args: []Expr{&StringLit{Value: ", "}, &CallExpr{Func: "Array.toList", Args: []Expr{mapped}}}}
+					wrapped := &BinaryExpr{Left: &BinaryExpr{Left: &StringLit{Value: "[|"}, Op: "+", Right: concat}, Op: "+", Right: &StringLit{Value: "|]"}}
 					return &CallExpr{Func: "printfn \"%s\"", Args: []Expr{wrapped}}, nil
 				case "string":
 					return &CallExpr{Func: "printfn \"%s\"", Args: []Expr{args[0]}}, nil
@@ -2079,9 +2107,9 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 					elems[i] = &CallExpr{Func: "sprintf \"%d\"", Args: []Expr{a}}
 				case "float":
 					elems[i] = &CallExpr{Func: "sprintf \"%.1f\"", Args: []Expr{a}}
-				case "list":
-					mapped := &CallExpr{Func: "List.map string", Args: []Expr{a}}
-					elems[i] = &BinaryExpr{Left: &BinaryExpr{Left: &StringLit{Value: "["}, Op: "+", Right: &CallExpr{Func: "String.concat", Args: []Expr{&StringLit{Value: ", "}, mapped}}}, Op: "+", Right: &StringLit{Value: "]"}}
+				case "array":
+					mapped := &CallExpr{Func: "Array.map string", Args: []Expr{a}}
+					elems[i] = &BinaryExpr{Left: &BinaryExpr{Left: &StringLit{Value: "[|"}, Op: "+", Right: &CallExpr{Func: "String.concat", Args: []Expr{&StringLit{Value: ", "}, &CallExpr{Func: "Array.toList", Args: []Expr{mapped}}}}}, Op: "+", Right: &StringLit{Value: "|]"}}
 				default:
 					elems[i] = &CallExpr{Func: "string", Args: []Expr{a}}
 				}
@@ -2093,8 +2121,8 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 			fn := "Seq.length"
 			if len(args) == 1 {
 				switch inferType(args[0]) {
-				case "list":
-					fn = "List.length"
+				case "array":
+					fn = "Array.length"
 				case "string":
 					fn = "String.length"
 				case "map":
@@ -2102,7 +2130,7 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 				case "group":
 					if id, ok := args[0].(*IdentExpr); ok {
 						field := &FieldExpr{Target: id, Name: "items"}
-						return &CallExpr{Func: "List.length", Args: []Expr{field}}, nil
+						return &CallExpr{Func: "Array.length", Args: []Expr{field}}, nil
 					}
 				}
 			}
@@ -2111,14 +2139,14 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 			return &CallExpr{Func: "string", Args: args}, nil
 		case "sum":
 			fn := "Seq.sum"
-			if len(args) == 1 && inferType(args[0]) == "list" {
-				fn = "List.sum"
+			if len(args) == 1 && inferType(args[0]) == "array" {
+				fn = "Array.sum"
 			}
 			return &CallExpr{Func: fn, Args: args}, nil
 		case "avg":
 			fn := "Seq.averageBy float"
-			if len(args) == 1 && inferType(args[0]) == "list" {
-				fn = "List.averageBy float"
+			if len(args) == 1 && inferType(args[0]) == "array" {
+				fn = "Array.averageBy float"
 			}
 			return &CallExpr{Func: fn, Args: args}, nil
 		case "exists":
@@ -2126,8 +2154,8 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 				return nil, fmt.Errorf("exists expects 1 arg")
 			}
 			fn := "Seq.isEmpty"
-			if inferType(args[0]) == "list" {
-				fn = "List.isEmpty"
+			if inferType(args[0]) == "array" {
+				fn = "Array.isEmpty"
 			}
 			return &UnaryExpr{Op: "not", Expr: &CallExpr{Func: fn, Args: args}}, nil
 		case "append":
