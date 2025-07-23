@@ -1063,11 +1063,12 @@ type AppendExpr struct {
 }
 
 func (a *AppendExpr) emit(w io.Writer) {
-	io.WriteString(w, "(")
+	io.WriteString(w, "run { ")
+	io.WriteString(w, "val _tmp = ")
 	a.List.emit(w)
-	io.WriteString(w, " + ")
+	io.WriteString(w, ".toMutableList(); _tmp.add(")
 	a.Elem.emit(w)
-	io.WriteString(w, ").toMutableList()")
+	io.WriteString(w, "); _tmp }")
 }
 
 type MinExpr struct{ Value Expr }
@@ -1639,6 +1640,8 @@ func guessType(e Expr) string {
 		return "String"
 	case *StrExpr:
 		return "String"
+	case *LenExpr:
+		return "Int"
 	case *ListLit:
 		if len(v.Elems) > 0 {
 			elem := guessType(v.Elems[0])
@@ -1782,7 +1785,9 @@ func envTypeName(env *types.Env, name string) string {
 		return ""
 	}
 	if t, err := env.GetVar(name); err == nil {
-		return kotlinTypeFromType(t)
+		if _, ok := t.(types.FuncType); !ok {
+			return kotlinTypeFromType(t)
+		}
 	}
 	return ""
 }

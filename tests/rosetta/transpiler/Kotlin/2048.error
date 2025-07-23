@@ -1,22 +1,7 @@
 OpenJDK 64-Bit Server VM warning: Options -Xverify:none and -noverify were deprecated in JDK 13 and will likely be removed in a future release.
-/workspace/mochi/tests/rosetta/transpiler/Kotlin/2048.kt:35:23: error: type inference failed. Expected type mismatch: inferred type is MutableList<Any> but MutableList<MutableList<Int>> was expected
-        b = (b + row).toMutableList()
-                      ^
-/workspace/mochi/tests/rosetta/transpiler/Kotlin/2048.kt:48:55: error: type inference failed. Expected type mismatch: inferred type is MutableList<Any> but MutableList<MutableList<Int>> was expected
-                empty = (empty + mutableListOf(x, y)).toMutableList()
-                                                      ^
-/workspace/mochi/tests/rosetta/transpiler/Kotlin/2048.kt:58:41: error: type mismatch: inferred type is Double but Int was expected
-    val cell: MutableList<Int> = (empty[idx] as MutableList<Int>)
-                                        ^
-/workspace/mochi/tests/rosetta/transpiler/Kotlin/2048.kt:69:32: error: type mismatch: inferred type is Double but (Int) -> String was expected
-    var pad: (Int) -> String = 4 - (s.length as Number).toDouble()
-                               ^
 /workspace/mochi/tests/rosetta/transpiler/Kotlin/2048.kt:91:37: error: type mismatch: inferred type is Any but Int was expected
                 line = (line + (pad(v)).toString()) + "|"
                                     ^
-/workspace/mochi/tests/rosetta/transpiler/Kotlin/2048.kt:106:25: error: type mismatch: inferred type is Double but Int was expected
-        out = (out + (r[i] as Int)).toMutableList()
-                        ^
 /workspace/mochi/tests/rosetta/transpiler/Kotlin/2048.kt:147:9: error: val cannot be reassigned
         score = score + ((r["gain"]!!) as Number).toDouble()
         ^
