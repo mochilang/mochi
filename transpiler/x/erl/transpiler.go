@@ -824,7 +824,13 @@ func isStringExpr(e Expr) bool {
 	case *StringLit:
 		return true
 	case *CallExpr:
-		return v.Func == "str"
+		if v.Func == "str" {
+			return true
+		}
+		if strings.HasPrefix(v.Func, "string:") {
+			return true
+		}
+		return false
 	case *BinaryExpr:
 		if v.Op == "++" || v.Op == "+" {
 			return isStringExpr(v.Left) || isStringExpr(v.Right)
@@ -870,6 +876,21 @@ func isBoolExpr(e Expr) bool {
 			}
 		}
 		return true
+	}
+	return false
+}
+
+func isIntExpr(e Expr) bool {
+	switch v := e.(type) {
+	case *IntLit:
+		return true
+	case *NameRef:
+		return !v.IsString
+	case *BinaryExpr:
+		switch v.Op {
+		case "div", "rem", "%":
+			return true
+		}
 	}
 	return false
 }
@@ -2815,15 +2836,34 @@ func convertBinary(b *parser.BinaryExpr, env *types.Env, ctx *context) (Expr, er
 			return false
 		}
 	}
+	isIntExpr := func(e Expr) bool {
+		switch v := e.(type) {
+		case *IntLit:
+			return true
+		case *NameRef:
+			return !v.IsString
+		case *BinaryExpr:
+			switch v.Op {
+			case "div", "rem", "%":
+				return true
+			}
+		}
+		return false
+	}
 	for _, lvl := range levels {
 		for i := 0; i < len(ops); {
 			if contains(lvl, ops[i]) {
 				l := exprs[i]
 				r := exprs[i+1]
 				op := ops[i]
-				if op == "/" && isIntType(typesList[i]) && isIntType(typesList[i+1]) {
-					op = "div"
-					typesList[i] = types.IntType{}
+				if op == "/" {
+					if isIntType(typesList[i]) && isIntType(typesList[i+1]) {
+						op = "div"
+						typesList[i] = types.IntType{}
+					} else if isIntExpr(l) && isIntExpr(r) {
+						op = "div"
+						typesList[i] = types.IntType{}
+					}
 				}
 				exprs[i] = &BinaryExpr{Left: l, Op: op, Right: r}
 				exprs = append(exprs[:i+1], exprs[i+2:]...)
@@ -2922,7 +2962,9 @@ func convertPostfix(pf *parser.PostfixExpr, env *types.Env, ctx *context) (Expr,
 			expr = ce
 		case op.Cast != nil && op.Cast.Type.Simple != nil:
 			if *op.Cast.Type.Simple == "int" {
-				expr = &CallExpr{Func: "list_to_integer", Args: []Expr{expr}}
+				if !isIntExpr(expr) {
+					expr = &CallExpr{Func: "list_to_integer", Args: []Expr{expr}}
+				}
 			}
 			// other casts are no-ops
 		case op.Index != nil && op.Index.Colon == nil && op.Index.Colon2 == nil:
