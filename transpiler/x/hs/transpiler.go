@@ -2263,7 +2263,9 @@ func convertPostfix(pf *parser.PostfixExpr) (Expr, error) {
 			if op.Cast.Type.Simple != nil {
 				tname := *op.Cast.Type.Simple
 				if tname == "int" {
-					expr = &CastExpr{Expr: &CallExpr{Fun: &NameRef{Name: "read"}, Args: []Expr{expr}}, Type: "Int"}
+					// Cast numeric expressions using round instead of read
+					// which expects a String.
+					expr = &CallExpr{Fun: &NameRef{Name: "round"}, Args: []Expr{&GroupExpr{Expr: expr}}}
 					continue
 				}
 				if tname == "float" {
@@ -3135,7 +3137,8 @@ func convertWhileStmt(w *parser.WhileStmt) (Stmt, error) {
 
 func convertStmtList(list []*parser.Statement) ([]Stmt, error) {
 	var out []Stmt
-	for _, st := range list {
+	for i := 0; i < len(list); i++ {
+		st := list[i]
 		switch {
 		case st.Expr != nil:
 			call := st.Expr.Expr.Binary.Left.Value.Target.Call
@@ -3178,6 +3181,27 @@ func convertStmtList(list []*parser.Statement) ([]Stmt, error) {
 			}
 			out = append(out, &ReturnStmt{Expr: ex})
 		case st.If != nil:
+			// Detect an if statement that ends with a return and has
+			// no else branch. Combine it with the remaining
+			// statements as the else block to model early return.
+			if st.If.ElseIf == nil && len(st.If.Else) == 0 && len(st.If.Then) > 0 {
+				if last := st.If.Then[len(st.If.Then)-1]; last.Return != nil && i+1 < len(list) {
+					cond, err := convertExpr(st.If.Cond)
+					if err != nil {
+						return nil, err
+					}
+					thenStmts, err := convertStmtList(st.If.Then)
+					if err != nil {
+						return nil, err
+					}
+					elseStmts, err := convertStmtList(list[i+1:])
+					if err != nil {
+						return nil, err
+					}
+					out = append(out, &IfStmt{Cond: cond, Then: thenStmts, Else: elseStmts})
+					return out, nil
+				}
+			}
 			s, err := convertIfStmt(st.If)
 			if err != nil {
 				return nil, err
