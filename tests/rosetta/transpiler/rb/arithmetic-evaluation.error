@@ -1,0 +1,8 @@
+parse: error[P999]: /workspace/mochi/tests/rosetta/x/Mochi/arithmetic-evaluation.mochi:26:29: unexpected token "(" (expected TypeRef)
+  --> /workspace/mochi/tests/rosetta/x/Mochi/arithmetic-evaluation.mochi:26:29
+
+ 26 | fun parseNumber(p: Parser): (int, Parser) {
+    |                             ^
+
+help:
+  Parse error occurred. Check syntax near this location.
