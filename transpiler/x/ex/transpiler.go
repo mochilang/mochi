@@ -1650,6 +1650,7 @@ func compileIfStmt(is *parser.IfStmt, env *types.Env) (Stmt, error) {
 	if err != nil {
 		return nil, err
 	}
+	envBefore := env.Copy()
 	thenStmts := make([]Stmt, 0, len(is.Then))
 	for _, s := range is.Then {
 		st, err := compileStmt(s, env)
@@ -1678,7 +1679,7 @@ func compileIfStmt(is *parser.IfStmt, env *types.Env) (Stmt, error) {
 			}
 		}
 	}
-	vars := gatherMutVars(append(append([]Stmt{}, thenStmts...), elseStmts...), env)
+	vars := gatherMutVars(append(append([]Stmt{}, thenStmts...), elseStmts...), envBefore)
 	return &IfStmt{Cond: cond, Then: thenStmts, Else: elseStmts, Vars: vars}, nil
 }
 

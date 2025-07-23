@@ -4,6 +4,7 @@ package ex_test
 
 import (
 	"bytes"
+	"flag"
 	"fmt"
 	"os"
 	"os/exec"
@@ -15,7 +16,6 @@ import (
 	"testing"
 	"time"
 
-	"mochi/golden"
 	"mochi/parser"
 	ex "mochi/transpiler/x/ex"
 	"mochi/types"
@@ -45,46 +45,86 @@ func TestExTranspiler_Rosetta_Golden(t *testing.T) {
 		os.Setenv("MOCHI_ROSETTA_ONLY", name)
 	}
 
-	golden.RunFirstFailure(t, "tests/rosetta/x/Mochi", ".mochi", ".out", func(src string) ([]byte, error) {
+	srcDir := filepath.Join(root, "tests", "rosetta", "x", "Mochi")
+	pattern := filepath.Join(srcDir, "*.mochi")
+	if only := os.Getenv("MOCHI_ROSETTA_ONLY"); only != "" {
+		pattern = filepath.Join(srcDir, only+".mochi")
+	}
+	files, err := filepath.Glob(pattern)
+	if err != nil {
+		t.Fatalf("glob: %v", err)
+	}
+	if len(files) == 0 {
+		t.Fatalf("no test files found: %s", pattern)
+	}
+	sort.Strings(files)
+
+	update := false
+	if f := flag.Lookup("update"); f != nil && f.Value.String() == "true" {
+		update = true
+	}
+
+	for _, src := range files {
 		name := strings.TrimSuffix(filepath.Base(src), ".mochi")
 		codePath := filepath.Join(outDir, name+".exs")
 		outPath := filepath.Join(outDir, name+".out")
 		errPath := filepath.Join(outDir, name+".error")
 
-		prog, err := parser.Parse(src)
-		if err != nil {
-			_ = os.WriteFile(errPath, []byte("parse: "+err.Error()), 0o644)
-			return nil, err
+		ok := t.Run(name, func(t *testing.T) {
+			prog, err := parser.Parse(src)
+			if err != nil {
+				_ = os.WriteFile(errPath, []byte("parse: "+err.Error()), 0o644)
+				t.Fatalf("parse: %v", err)
+			}
+			env := types.NewEnv(nil)
+			if errs := types.Check(prog, env); len(errs) > 0 {
+				_ = os.WriteFile(errPath, []byte("type: "+errs[0].Error()), 0o644)
+				t.Fatalf("type: %v", errs[0])
+			}
+			ast, err := ex.Transpile(prog, env)
+			if err != nil {
+				_ = os.WriteFile(errPath, []byte("transpile: "+err.Error()), 0o644)
+				t.Fatalf("transpile: %v", err)
+			}
+			code := ex.Emit(ast)
+			if err := os.WriteFile(codePath, code, 0o644); err != nil {
+				t.Fatalf("write: %v", err)
+			}
+			cmd := exec.Command("elixir", codePath)
+			if data, err := os.ReadFile(strings.TrimSuffix(src, ".mochi") + ".in"); err == nil {
+				cmd.Stdin = bytes.NewReader(data)
+			}
+			out, err := cmd.CombinedOutput()
+			got := bytes.TrimSpace(stripWarnings(out))
+			if err != nil {
+				_ = os.WriteFile(errPath, append([]byte("run: "+err.Error()+"\n"), out...), 0o644)
+				t.Fatalf("run: %v", err)
+			}
+			_ = os.Remove(errPath)
+			got = normalizeOutput(root, got)
+			_ = os.WriteFile(outPath, got, 0o644)
+
+			if update {
+				if err := os.WriteFile(outPath, got, 0o644); err != nil {
+					t.Fatalf("update: %v", err)
+				}
+				return
+			}
+
+			want, err := os.ReadFile(outPath)
+			if err != nil {
+				t.Fatalf("read golden: %v", err)
+			}
+			want = normalizeOutput(root, want)
+			if !bytes.Equal(got, want) {
+				t.Fatalf("golden mismatch for %s\n\n--- Got ---\n%s\n\n--- Want ---\n%s\n", name+".out", got, want)
+			}
+		})
+
+		if !ok {
+			t.Fatalf("first failing program: %s", name)
 		}
-		env := types.NewEnv(nil)
-		if errs := types.Check(prog, env); len(errs) > 0 {
-			_ = os.WriteFile(errPath, []byte("type: "+errs[0].Error()), 0o644)
-			return nil, errs[0]
-		}
-		ast, err := ex.Transpile(prog, env)
-		if err != nil {
-			_ = os.WriteFile(errPath, []byte("transpile: "+err.Error()), 0o644)
-			return nil, err
-		}
-		code := ex.Emit(ast)
-		if err := os.WriteFile(codePath, code, 0o644); err != nil {
-			return nil, err
-		}
-		cmd := exec.Command("elixir", codePath)
-		if data, err := os.ReadFile(strings.TrimSuffix(src, ".mochi") + ".in"); err == nil {
-			cmd.Stdin = bytes.NewReader(data)
-		}
-		out, err := cmd.CombinedOutput()
-		got := bytes.TrimSpace(stripWarnings(out))
-		if err != nil {
-			_ = os.WriteFile(errPath, append([]byte("run: "+err.Error()+"\n"), out...), 0o644)
-			return nil, err
-		}
-		_ = os.Remove(errPath)
-		got = normalizeOutput(root, got)
-		_ = os.WriteFile(outPath, got, 0o644)
-		return got, nil
-	})
+	}
 }
 
 func normalizeOutput(root string, b []byte) []byte {
