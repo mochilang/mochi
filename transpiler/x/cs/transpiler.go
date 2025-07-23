@@ -893,10 +893,14 @@ func isMapExpr(e Expr) bool {
 	switch ex := e.(type) {
 	case *MapLit:
 		return true
+	case *IndexExpr:
+		if isMapExpr(ex.Target) {
+			return true
+		}
 	case *VarRef:
 		if t, ok := varTypes[ex.Name]; ok {
 			if strings.HasSuffix(t, "[]") {
-				t = strings.TrimSuffix(t, "[]")
+				return false
 			}
 			if strings.HasPrefix(t, "Dictionary<") {
 				return true
@@ -907,7 +911,7 @@ func isMapExpr(e Expr) bool {
 	default:
 		t := typeOfExpr(e)
 		if strings.HasSuffix(t, "[]") {
-			t = strings.TrimSuffix(t, "[]")
+			return false
 		}
 		if strings.HasPrefix(t, "Dictionary<") {
 			return true
@@ -1369,12 +1373,13 @@ func listType(l *ListLit) string {
 }
 
 func (ix *IndexExpr) emit(w io.Writer) {
-	if typeOfExpr(ix) == "object" && isMapExpr(ix.Target) {
-		fmt.Fprint(w, "(dynamic)(")
+	t := typeOfExpr(ix)
+	if (t == "object" || t == "") && isMapExpr(ix.Target) {
+		fmt.Fprint(w, "((dynamic)")
 		ix.Target.emit(w)
-		fmt.Fprint(w, "[")
+		fmt.Fprint(w, ")[")
 		ix.Index.emit(w)
-		fmt.Fprint(w, "])")
+		fmt.Fprint(w, "]")
 		return
 	}
 	ix.Target.emit(w)
@@ -1767,10 +1772,12 @@ func compilePostfix(p *parser.PostfixExpr) (Expr, error) {
 			} else {
 				end = &CallExpr{Func: "len", Args: []Expr{expr}}
 			}
-			if !isStringExpr(expr) {
+			if isStringExpr(expr) {
+				expr = &SubstringExpr{Str: expr, Start: start, End: end}
+			} else {
 				usesLinq = true
+				expr = &SliceExpr{Value: expr, Start: start, End: end}
 			}
-			expr = &SliceExpr{Value: expr, Start: start, End: end}
 		case op.Field != nil:
 			expr = &FieldExpr{Target: expr, Name: op.Field.Name}
 		case op.Call != nil:
@@ -1838,6 +1845,16 @@ func compileStmt(prog *Program, s *parser.Statement) (Stmt, error) {
 		}
 		return &ExprStmt{Expr: e}, nil
 	case s.Let != nil:
+		if _, ok := varTypes[s.Let.Name]; ok {
+			if s.Let.Value == nil {
+				return nil, fmt.Errorf("redeclare without value")
+			}
+			val, err := compileExpr(s.Let.Value)
+			if err != nil {
+				return nil, err
+			}
+			return &AssignStmt{Name: s.Let.Name, Value: val}, nil
+		}
 		var val Expr
 		var err error
 		if s.Let.Value != nil {
@@ -1898,6 +1915,16 @@ func compileStmt(prog *Program, s *parser.Statement) (Stmt, error) {
 		}
 		return &LetStmt{Name: s.Let.Name, Value: val}, nil
 	case s.Var != nil:
+		if _, ok := varTypes[s.Var.Name]; ok {
+			if s.Var.Value == nil {
+				return nil, fmt.Errorf("redeclare without value")
+			}
+			val, err := compileExpr(s.Var.Value)
+			if err != nil {
+				return nil, err
+			}
+			return &AssignStmt{Name: s.Var.Name, Value: val}, nil
+		}
 		var val Expr
 		var err error
 		if s.Var.Value != nil {
