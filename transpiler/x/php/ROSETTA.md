@@ -2,13 +2,13 @@
 
 Generated PHP code from Mochi Rosetta tasks lives in `tests/rosetta/transpiler/php`.
 
-Last updated: 2025-07-23 09:33 +0700
+Last updated: 2025-07-23 11:36 +0700
 
-## Checklist (14/284)
+## Checklist (20/284)
 - [x] 1 100-doors-2
 - [x] 2 100-doors-3
 - [x] 3 100-doors
-- [x] 4 100-prisoners
+- [ ] 4 100-prisoners
 - [x] 5 15-puzzle-game
 - [x] 6 15-puzzle-solver
 - [x] 7 2048
@@ -20,15 +20,15 @@ Last updated: 2025-07-23 09:33 +0700
 - [x] 13 99-bottles-of-beer-2
 - [x] 14 99-bottles-of-beer
 - [x] 15 DNS-query
-- [ ] 16 a+b
-- [ ] 17 abbreviations-automatic
-- [ ] 18 abbreviations-easy
-- [ ] 19 abbreviations-simple
-- [ ] 20 abc-problem
+- [x] 16 a+b
+- [x] 17 abbreviations-automatic
+- [x] 18 abbreviations-easy
+- [x] 19 abbreviations-simple
+- [x] 20 abc-problem
 - [ ] 21 abelian-sandpile-model-identity
-- [ ] 22 abelian-sandpile-model
+- [x] 22 abelian-sandpile-model
 - [ ] 23 abstract-type
-- [ ] 24 abundant-deficient-and-perfect-number-classifications
+- [x] 24 abundant-deficient-and-perfect-number-classifications
 - [ ] 25 abundant-odd-numbers
 - [ ] 26 accumulator-factory
 - [ ] 27 achilles-numbers

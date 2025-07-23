@@ -22,6 +22,7 @@ var builtinNames = map[string]struct{}{
 	"print": {}, "len": {}, "substring": {}, "count": {}, "sum": {}, "avg": {},
 	"str": {}, "min": {}, "max": {}, "append": {}, "json": {}, "exists": {},
 	"values": {}, "load": {}, "save": {}, "now": {}, "input": {},
+	"upper": {}, "lower": {},
 }
 
 const helperLookupHost = `function _lookup_host($host) {
@@ -1363,6 +1364,9 @@ func convertBinary(b *parser.BinaryExpr) (Expr, error) {
 			if isListExpr(right) {
 				return &CallExpr{Func: "in_array", Args: []Expr{left, right}}, false
 			}
+			if isMapExpr(right) {
+				return &CallExpr{Func: "array_key_exists", Args: []Expr{left, right}}, false
+			}
 			if isStringExpr(right) {
 				cmp := &CallExpr{Func: "strpos", Args: []Expr{right, left}}
 				return &BinaryExpr{Left: cmp, Op: "!==", Right: &BoolLit{Value: false}}, false
@@ -1480,8 +1484,12 @@ func convertPostfix(pf *parser.PostfixExpr) (Expr, error) {
 		op := pf.Ops[i]
 		switch {
 		case op.Cast != nil:
-			if op.Cast.Type == nil || op.Cast.Type.Simple == nil {
+			if op.Cast.Type == nil {
 				return nil, fmt.Errorf("unsupported cast")
+			}
+			if op.Cast.Type.Simple == nil {
+				// ignore casts to complex types
+				break
 			}
 			switch *op.Cast.Type.Simple {
 			case "int":
@@ -1651,6 +1659,16 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 				return nil, fmt.Errorf("str expects 1 arg")
 			}
 			return &CallExpr{Func: "json_encode", Args: []Expr{args[0], &IntLit{Value: 1344}}}, nil
+		} else if name == "upper" {
+			if len(args) != 1 {
+				return nil, fmt.Errorf("upper expects 1 arg")
+			}
+			return &CallExpr{Func: "strtoupper", Args: args}, nil
+		} else if name == "lower" {
+			if len(args) != 1 {
+				return nil, fmt.Errorf("lower expects 1 arg")
+			}
+			return &CallExpr{Func: "strtolower", Args: args}, nil
 		} else if name == "min" || name == "max" {
 			if len(args) != 1 {
 				return nil, fmt.Errorf("%s expects 1 arg", name)
@@ -1904,6 +1922,8 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 		}
 		if len(funcStack) == 0 {
 			globalNames = append(globalNames, st.Let.Name)
+		} else {
+			funcStack[len(funcStack)-1] = append(funcStack[len(funcStack)-1], st.Let.Name)
 		}
 		return &LetStmt{Name: st.Let.Name, Value: val}, nil
 	case st.Var != nil:
@@ -1942,6 +1962,8 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 		}
 		if len(funcStack) == 0 {
 			globalNames = append(globalNames, st.Var.Name)
+		} else {
+			funcStack[len(funcStack)-1] = append(funcStack[len(funcStack)-1], st.Var.Name)
 		}
 		return &VarStmt{Name: st.Var.Name, Value: val}, nil
 	case st.Assign != nil:
@@ -2642,6 +2664,15 @@ func isListExpr(e Expr) bool {
 		return true
 	}
 	if c, ok := e.(*CallExpr); ok {
+		if transpileEnv != nil {
+			if t, err := transpileEnv.GetVar(c.Func); err == nil {
+				if ft, ok := t.(types.FuncType); ok {
+					if _, ok := ft.Return.(types.ListType); ok {
+						return true
+					}
+				}
+			}
+		}
 		switch c.Func {
 		case "array_merge", "array_slice", "array_values", "array_diff", "array_intersect", "array_unique":
 			return true
@@ -2660,6 +2691,17 @@ func isListExpr(e Expr) bool {
 func isMapExpr(e Expr) bool {
 	if isMapArg(e) {
 		return true
+	}
+	if c, ok := e.(*CallExpr); ok {
+		if transpileEnv != nil {
+			if t, err := transpileEnv.GetVar(c.Func); err == nil {
+				if ft, ok := t.(types.FuncType); ok {
+					if types.IsMapType(ft.Return) {
+						return true
+					}
+				}
+			}
+		}
 	}
 	return false
 }
