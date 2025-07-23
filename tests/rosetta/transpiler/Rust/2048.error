@@ -1,0 +1,1595 @@
+error[E0425]: cannot find value `g_moved` in this scope
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/2048.rs:216:51
+    |
+216 |     return Map2 {board: b, score: g_score, moved: g_moved}
+    |                                                   ^^^^^^^ help: a local variable with a similar name exists: `moved`
+
+error[E0425]: cannot find value `g_moved` in this scope
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/2048.rs:238:51
+    |
+238 |     return Map2 {board: b, score: g_score, moved: g_moved}
+    |                                                   ^^^^^^^ help: a local variable with a similar name exists: `moved`
+
+error[E0425]: cannot find value `g_moved` in this scope
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/2048.rs:277:51
+    |
+277 |     return Map2 {board: b, score: g_score, moved: g_moved}
+    |                                                   ^^^^^^^ help: a local variable with a similar name exists: `moved`
+
+error[E0425]: cannot find value `g_moved` in this scope
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/2048.rs:299:51
+    |
+299 |     return Map2 {board: b, score: g_score, moved: g_moved}
+    |                                                   ^^^^^^^ help: a local variable with a similar name exists: `moved`
+
+error[E0425]: cannot find value `board` in this scope
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/2048.rs:344:5
+    |
+344 |     board = g_r.board;
+    |     ^^^^^
+    |
+help: you might have meant to introduce a new binding
+    |
+344 |     let board = g_r.board;
+    |     +++
+
+error[E0425]: cannot find value `r` in this scope
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/2048.rs:345:5
+    |
+345 |     r = spawnTile(g_board);
+    |     ^
+    |
+help: you might have meant to introduce a new binding
+    |
+345 |     let r = spawnTile(g_board);
+    |     +++
+
+error[E0425]: cannot find value `board` in this scope
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/2048.rs:346:5
+    |
+346 |     board = g_r.board;
+    |     ^^^^^
+    |
+help: you might have meant to introduce a new binding
+    |
+346 |     let board = g_r.board;
+    |     +++
+
+error[E0425]: cannot find value `full` in this scope
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/2048.rs:347:5
+    |
+347 |     full = g_r.full;
+    |     ^^^^
+    |
+help: you might have meant to introduce a new binding
+    |
+347 |     let full = g_r.full;
+    |     +++
+
+error[E0425]: cannot find value `board` in this scope
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/2048.rs:355:13
+    |
+355 |             board = g_m.board;
+    |             ^^^^^
+    |
+help: you might have meant to introduce a new binding
+    |
+355 |             let board = g_m.board;
+    |             +++
+
+error[E0425]: cannot find value `score` in this scope
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/2048.rs:356:13
+    |
+356 |             score = g_m.score;
+    |             ^^^^^
+    |
+help: you might have meant to introduce a new binding
+    |
+356 |             let score = g_m.score;
+    |             +++
+
+error[E0425]: cannot find value `moved` in this scope
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/2048.rs:357:13
+    |
+357 |             moved = g_m.moved;
+    |             ^^^^^
+    |
+help: you might have meant to introduce a new binding
+    |
+357 |             let moved = g_m.moved;
+    |             +++
+
+error[E0425]: cannot find value `board` in this scope
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/2048.rs:361:13
+    |
+361 |             board = g_m.board;
+    |             ^^^^^
+    |
+help: you might have meant to introduce a new binding
+    |
+361 |             let board = g_m.board;
+    |             +++
+
+error[E0425]: cannot find value `score` in this scope
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/2048.rs:362:13
+    |
+362 |             score = g_m.score;
+    |             ^^^^^
+    |
+help: you might have meant to introduce a new binding
+    |
+362 |             let score = g_m.score;
+    |             +++
+
+error[E0425]: cannot find value `moved` in this scope
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/2048.rs:363:13
+    |
+363 |             moved = g_m.moved;
+    |             ^^^^^
+    |
+help: you might have meant to introduce a new binding
+    |
+363 |             let moved = g_m.moved;
+    |             +++
+
+error[E0425]: cannot find value `board` in this scope
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/2048.rs:367:13
+    |
+367 |             board = g_m.board;
+    |             ^^^^^
+    |
+help: you might have meant to introduce a new binding
+    |
+367 |             let board = g_m.board;
+    |             +++
+
+error[E0425]: cannot find value `score` in this scope
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/2048.rs:368:13
+    |
+368 |             score = g_m.score;
+    |             ^^^^^
+    |
+help: you might have meant to introduce a new binding
+    |
+368 |             let score = g_m.score;
+    |             +++
+
+error[E0425]: cannot find value `moved` in this scope
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/2048.rs:369:13
+    |
+369 |             moved = g_m.moved;
+    |             ^^^^^
+    |
+help: you might have meant to introduce a new binding
+    |
+369 |             let moved = g_m.moved;
+    |             +++
+
+error[E0425]: cannot find value `board` in this scope
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/2048.rs:373:13
+    |
+373 |             board = g_m.board;
+    |             ^^^^^
+    |
+help: you might have meant to introduce a new binding
+    |
+373 |             let board = g_m.board;
+    |             +++
+
+error[E0425]: cannot find value `score` in this scope
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/2048.rs:374:13
+    |
+374 |             score = g_m.score;
+    |             ^^^^^
+    |
+help: you might have meant to introduce a new binding
+    |
+374 |             let score = g_m.score;
+    |             +++
+
+error[E0425]: cannot find value `moved` in this scope
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/2048.rs:375:13
+    |
+375 |             moved = g_m.moved;
+    |             ^^^^^
+    |
+help: you might have meant to introduce a new binding
+    |
+375 |             let moved = g_m.moved;
+    |             +++
+
+error[E0425]: cannot find value `board` in this scope
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/2048.rs:382:13
+    |
+382 |             board = g_r2.board;
+    |             ^^^^^
+    |
+help: you might have meant to introduce a new binding
+    |
+382 |             let board = g_r2.board;
+    |             +++
+
+error[E0425]: cannot find value `full` in this scope
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/2048.rs:383:13
+    |
+383 |             full = g_r2.full;
+    |             ^^^^
+    |
+help: you might have meant to introduce a new binding
+    |
+383 |             let full = g_r2.full;
+    |             +++
+
+warning: unused import: `std::collections::HashMap`
+ --> /workspace/mochi/tests/rosetta/transpiler/Rust/2048.rs:2:5
+  |
+2 | use std::collections::HashMap;
+  |     ^^^^^^^^^^^^^^^^^^^^^^^^^
+  |
+  = note: `#[warn(unused_imports)]` on by default
+
+warning: unused imports: `Read` and `self`
+ --> /workspace/mochi/tests/rosetta/transpiler/Rust/2048.rs:5:15
+  |
+5 | use std::io::{self, Read};
+  |               ^^^^  ^^^^
+
+warning: unnecessary parentheses around `while` condition
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/2048.rs:86:11
+   |
+86 |     while (y < g_SIZE) {
+   |           ^          ^
+   |
+   = note: `#[warn(unused_parens)]` on by default
+help: remove these parentheses
+   |
+86 -     while (y < g_SIZE) {
+86 +     while y < g_SIZE {
+   |
+
+warning: unnecessary parentheses around `while` condition
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/2048.rs:89:15
+   |
+89 |         while (x < g_SIZE) {
+   |               ^          ^
+   |
+help: remove these parentheses
+   |
+89 -         while (x < g_SIZE) {
+89 +         while x < g_SIZE {
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/2048.rs:91:17
+   |
+91 |             x = (x + 1);
+   |                 ^     ^
+   |
+help: remove these parentheses
+   |
+91 -             x = (x + 1);
+91 +             x = x + 1;
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/2048.rs:94:13
+   |
+94 |         y = (y + 1);
+   |             ^     ^
+   |
+help: remove these parentheses
+   |
+94 -         y = (y + 1);
+94 +         y = y + 1;
+   |
+
+warning: unnecessary parentheses around `while` condition
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/2048.rs:102:11
+    |
+102 |     while (y < g_SIZE) {
+    |           ^          ^
+    |
+help: remove these parentheses
+    |
+102 -     while (y < g_SIZE) {
+102 +     while y < g_SIZE {
+    |
+
+warning: unnecessary parentheses around `while` condition
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/2048.rs:104:15
+    |
+104 |         while (x < g_SIZE) {
+    |               ^          ^
+    |
+help: remove these parentheses
+    |
+104 -         while (x < g_SIZE) {
+104 +         while x < g_SIZE {
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/2048.rs:105:16
+    |
+105 |             if (b[y as usize][x as usize] == 0) {
+    |                ^                              ^
+    |
+help: remove these parentheses
+    |
+105 -             if (b[y as usize][x as usize] == 0) {
+105 +             if b[y as usize][x as usize] == 0 {
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/2048.rs:108:17
+    |
+108 |             x = (x + 1);
+    |                 ^     ^
+    |
+help: remove these parentheses
+    |
+108 -             x = (x + 1);
+108 +             x = x + 1;
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/2048.rs:110:13
+    |
+110 |         y = (y + 1);
+    |             ^     ^
+    |
+help: remove these parentheses
+    |
+110 -         y = (y + 1);
+110 +         y = y + 1;
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/2048.rs:112:8
+    |
+112 |     if (empty.len() == 0) {
+    |        ^                ^
+    |
+help: remove these parentheses
+    |
+112 -     if (empty.len() == 0) {
+112 +     if empty.len() == 0 {
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/2048.rs:115:19
+    |
+115 |     let mut idx = (_now() % empty.len());
+    |                   ^                    ^
+    |
+help: remove these parentheses
+    |
+115 -     let mut idx = (_now() % empty.len());
+115 +     let mut idx = _now() % empty.len();
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/2048.rs:118:8
+    |
+118 |     if ((_now() % 10) < 9) {
+    |        ^                 ^
+    |
+help: remove these parentheses
+    |
+118 -     if ((_now() % 10) < 9) {
+118 +     if (_now() % 10) < 9 {
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/2048.rs:127:24
+    |
+127 |     let mut pad: i64 = (4 - s.len());
+    |                        ^           ^
+    |
+help: remove these parentheses
+    |
+127 -     let mut pad: i64 = (4 - s.len());
+127 +     let mut pad: i64 = 4 - s.len();
+    |
+
+warning: unnecessary parentheses around `while` condition
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/2048.rs:130:11
+    |
+130 |     while (i < pad) {
+    |           ^       ^
+    |
+help: remove these parentheses
+    |
+130 -     while (i < pad) {
+130 +     while i < pad {
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/2048.rs:132:13
+    |
+132 |         i = (i + 1);
+    |             ^     ^
+    |
+help: remove these parentheses
+    |
+132 -         i = (i + 1);
+132 +         i = i + 1;
+    |
+
+warning: unnecessary parentheses around `while` condition
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/2048.rs:140:11
+    |
+140 |     while (y < g_SIZE) {
+    |           ^          ^
+    |
+help: remove these parentheses
+    |
+140 -     while (y < g_SIZE) {
+140 +     while y < g_SIZE {
+    |
+
+warning: unnecessary parentheses around `while` condition
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/2048.rs:144:15
+    |
+144 |         while (x < g_SIZE) {
+    |               ^          ^
+    |
+help: remove these parentheses
+    |
+144 -         while (x < g_SIZE) {
+144 +         while x < g_SIZE {
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/2048.rs:146:16
+    |
+146 |             if (v == 0) {
+    |                ^      ^
+    |
+help: remove these parentheses
+    |
+146 -             if (v == 0) {
+146 +             if v == 0 {
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/2048.rs:151:17
+    |
+151 |             x = (x + 1);
+    |                 ^     ^
+    |
+help: remove these parentheses
+    |
+151 -             x = (x + 1);
+151 +             x = x + 1;
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/2048.rs:154:13
+    |
+154 |         y = (y + 1);
+    |             ^     ^
+    |
+help: remove these parentheses
+    |
+154 -         y = (y + 1);
+154 +         y = y + 1;
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/2048.rs:162:17
+    |
+162 |     let mut i = (g_r.len() - 1);
+    |                 ^             ^
+    |
+help: remove these parentheses
+    |
+162 -     let mut i = (g_r.len() - 1);
+162 +     let mut i = g_r.len() - 1;
+    |
+
+warning: unnecessary parentheses around `while` condition
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/2048.rs:163:11
+    |
+163 |     while (i >= 0) {
+    |           ^      ^
+    |
+help: remove these parentheses
+    |
+163 -     while (i >= 0) {
+163 +     while i >= 0 {
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/2048.rs:165:13
+    |
+165 |         i = (i - 1);
+    |             ^     ^
+    |
+help: remove these parentheses
+    |
+165 -         i = (i - 1);
+165 +         i = i - 1;
+    |
+
+warning: unnecessary parentheses around `while` condition
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/2048.rs:173:11
+    |
+173 |     while (i < row.len()) {
+    |           ^             ^
+    |
+help: remove these parentheses
+    |
+173 -     while (i < row.len()) {
+173 +     while i < row.len() {
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/2048.rs:174:12
+    |
+174 |         if (row[i as usize] != 0) {
+    |            ^                    ^
+    |
+help: remove these parentheses
+    |
+174 -         if (row[i as usize] != 0) {
+174 +         if row[i as usize] != 0 {
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/2048.rs:177:13
+    |
+177 |         i = (i + 1);
+    |             ^     ^
+    |
+help: remove these parentheses
+    |
+177 -         i = (i + 1);
+177 +         i = i + 1;
+    |
+
+warning: unnecessary parentheses around `while` condition
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/2048.rs:182:11
+    |
+182 |     while (i < xs.len()) {
+    |           ^            ^
+    |
+help: remove these parentheses
+    |
+182 -     while (i < xs.len()) {
+182 +     while i < xs.len() {
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/2048.rs:183:12
+    |
+183 |         if (((i + 1) < xs.len()) && (xs[i as usize] == xs[(i + 1) as usize])) {
+    |            ^                                                                ^
+    |
+help: remove these parentheses
+    |
+183 -         if (((i + 1) < xs.len()) && (xs[i as usize] == xs[(i + 1) as usize])) {
+183 +         if ((i + 1) < xs.len()) && (xs[i as usize] == xs[(i + 1) as usize]) {
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/2048.rs:184:26
+    |
+184 |             let v: i64 = (xs[i as usize] * 2);
+    |                          ^                  ^
+    |
+help: remove these parentheses
+    |
+184 -             let v: i64 = (xs[i as usize] * 2);
+184 +             let v: i64 = xs[i as usize] * 2;
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/2048.rs:185:20
+    |
+185 |             gain = (gain + v);
+    |                    ^        ^
+    |
+help: remove these parentheses
+    |
+185 -             gain = (gain + v);
+185 +             gain = gain + v;
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/2048.rs:187:17
+    |
+187 |             i = (i + 2);
+    |                 ^     ^
+    |
+help: remove these parentheses
+    |
+187 -             i = (i + 2);
+187 +             i = i + 2;
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/2048.rs:190:17
+    |
+190 |             i = (i + 1);
+    |                 ^     ^
+    |
+help: remove these parentheses
+    |
+190 -             i = (i + 1);
+190 +             i = i + 1;
+    |
+
+warning: unnecessary parentheses around `while` condition
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/2048.rs:193:11
+    |
+193 |     while (res.len() < g_SIZE) {
+    |           ^                  ^
+    |
+help: remove these parentheses
+    |
+193 -     while (res.len() < g_SIZE) {
+193 +     while res.len() < g_SIZE {
+    |
+
+warning: unnecessary parentheses around `while` condition
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/2048.rs:202:11
+    |
+202 |     while (y < g_SIZE) {
+    |           ^          ^
+    |
+help: remove these parentheses
+    |
+202 -     while (y < g_SIZE) {
+202 +     while y < g_SIZE {
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/2048.rs:205:17
+    |
+205 |         score = (g_score + g_r["gain"]);
+    |                 ^                     ^
+    |
+help: remove these parentheses
+    |
+205 -         score = (g_score + g_r["gain"]);
+205 +         score = g_score + g_r["gain"];
+    |
+
+warning: unnecessary parentheses around `while` condition
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/2048.rs:207:15
+    |
+207 |         while (x < g_SIZE) {
+    |               ^          ^
+    |
+help: remove these parentheses
+    |
+207 -         while (x < g_SIZE) {
+207 +         while x < g_SIZE {
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/2048.rs:208:16
+    |
+208 |             if (b[y as usize][x as usize] != new[x]) {
+    |                ^                                   ^
+    |
+help: remove these parentheses
+    |
+208 -             if (b[y as usize][x as usize] != new[x]) {
+208 +             if b[y as usize][x as usize] != new[x] {
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/2048.rs:212:17
+    |
+212 |             x = (x + 1);
+    |                 ^     ^
+    |
+help: remove these parentheses
+    |
+212 -             x = (x + 1);
+212 +             x = x + 1;
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/2048.rs:214:13
+    |
+214 |         y = (y + 1);
+    |             ^     ^
+    |
+help: remove these parentheses
+    |
+214 -         y = (y + 1);
+214 +         y = y + 1;
+    |
+
+warning: unnecessary parentheses around `while` condition
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/2048.rs:222:11
+    |
+222 |     while (y < g_SIZE) {
+    |           ^          ^
+    |
+help: remove these parentheses
+    |
+222 -     while (y < g_SIZE) {
+222 +     while y < g_SIZE {
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/2048.rs:226:17
+    |
+226 |         score = (g_score + g_r["gain"]);
+    |                 ^                     ^
+    |
+help: remove these parentheses
+    |
+226 -         score = (g_score + g_r["gain"]);
+226 +         score = g_score + g_r["gain"];
+    |
+
+warning: unnecessary parentheses around `while` condition
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/2048.rs:229:15
+    |
+229 |         while (x < g_SIZE) {
+    |               ^          ^
+    |
+help: remove these parentheses
+    |
+229 -         while (x < g_SIZE) {
+229 +         while x < g_SIZE {
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/2048.rs:230:16
+    |
+230 |             if (b[y as usize][x as usize] != rev[x as usize]) {
+    |                ^                                            ^
+    |
+help: remove these parentheses
+    |
+230 -             if (b[y as usize][x as usize] != rev[x as usize]) {
+230 +             if b[y as usize][x as usize] != rev[x as usize] {
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/2048.rs:234:17
+    |
+234 |             x = (x + 1);
+    |                 ^     ^
+    |
+help: remove these parentheses
+    |
+234 -             x = (x + 1);
+234 +             x = x + 1;
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/2048.rs:236:13
+    |
+236 |         y = (y + 1);
+    |             ^     ^
+    |
+help: remove these parentheses
+    |
+236 -         y = (y + 1);
+236 +         y = y + 1;
+    |
+
+warning: unnecessary parentheses around `while` condition
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/2048.rs:244:11
+    |
+244 |     while (y < g_SIZE) {
+    |           ^          ^
+    |
+help: remove these parentheses
+    |
+244 -     while (y < g_SIZE) {
+244 +     while y < g_SIZE {
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/2048.rs:246:13
+    |
+246 |         y = (y + 1);
+    |             ^     ^
+    |
+help: remove these parentheses
+    |
+246 -         y = (y + 1);
+246 +         y = y + 1;
+    |
+
+warning: unnecessary parentheses around `while` condition
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/2048.rs:253:11
+    |
+253 |     while (y < g_SIZE) {
+    |           ^          ^
+    |
+help: remove these parentheses
+    |
+253 -     while (y < g_SIZE) {
+253 +     while y < g_SIZE {
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/2048.rs:255:13
+    |
+255 |         y = (y + 1);
+    |             ^     ^
+    |
+help: remove these parentheses
+    |
+255 -         y = (y + 1);
+255 +         y = y + 1;
+    |
+
+warning: unnecessary parentheses around `while` condition
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/2048.rs:262:11
+    |
+262 |     while (x < g_SIZE) {
+    |           ^          ^
+    |
+help: remove these parentheses
+    |
+262 -     while (x < g_SIZE) {
+262 +     while x < g_SIZE {
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/2048.rs:266:17
+    |
+266 |         score = (g_score + g_r["gain"]);
+    |                 ^                     ^
+    |
+help: remove these parentheses
+    |
+266 -         score = (g_score + g_r["gain"]);
+266 +         score = g_score + g_r["gain"];
+    |
+
+warning: unnecessary parentheses around `while` condition
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/2048.rs:268:15
+    |
+268 |         while (y < g_SIZE) {
+    |               ^          ^
+    |
+help: remove these parentheses
+    |
+268 -         while (y < g_SIZE) {
+268 +         while y < g_SIZE {
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/2048.rs:269:16
+    |
+269 |             if (b[y as usize][x as usize] != new[y]) {
+    |                ^                                   ^
+    |
+help: remove these parentheses
+    |
+269 -             if (b[y as usize][x as usize] != new[y]) {
+269 +             if b[y as usize][x as usize] != new[y] {
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/2048.rs:273:17
+    |
+273 |             y = (y + 1);
+    |                 ^     ^
+    |
+help: remove these parentheses
+    |
+273 -             y = (y + 1);
+273 +             y = y + 1;
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/2048.rs:275:13
+    |
+275 |         x = (x + 1);
+    |             ^     ^
+    |
+help: remove these parentheses
+    |
+275 -         x = (x + 1);
+275 +         x = x + 1;
+    |
+
+warning: unnecessary parentheses around `while` condition
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/2048.rs:283:11
+    |
+283 |     while (x < g_SIZE) {
+    |           ^          ^
+    |
+help: remove these parentheses
+    |
+283 -     while (x < g_SIZE) {
+283 +     while x < g_SIZE {
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/2048.rs:287:17
+    |
+287 |         score = (g_score + g_r["gain"]);
+    |                 ^                     ^
+    |
+help: remove these parentheses
+    |
+287 -         score = (g_score + g_r["gain"]);
+287 +         score = g_score + g_r["gain"];
+    |
+
+warning: unnecessary parentheses around `while` condition
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/2048.rs:290:15
+    |
+290 |         while (y < g_SIZE) {
+    |               ^          ^
+    |
+help: remove these parentheses
+    |
+290 -         while (y < g_SIZE) {
+290 +         while y < g_SIZE {
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/2048.rs:291:16
+    |
+291 |             if (b[y as usize][x as usize] != col[y as usize]) {
+    |                ^                                            ^
+    |
+help: remove these parentheses
+    |
+291 -             if (b[y as usize][x as usize] != col[y as usize]) {
+291 +             if b[y as usize][x as usize] != col[y as usize] {
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/2048.rs:295:17
+    |
+295 |             y = (y + 1);
+    |                 ^     ^
+    |
+help: remove these parentheses
+    |
+295 -             y = (y + 1);
+295 +             y = y + 1;
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/2048.rs:297:13
+    |
+297 |         x = (x + 1);
+    |             ^     ^
+    |
+help: remove these parentheses
+    |
+297 -         x = (x + 1);
+297 +         x = x + 1;
+    |
+
+warning: unnecessary parentheses around `while` condition
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/2048.rs:304:11
+    |
+304 |     while (y < g_SIZE) {
+    |           ^          ^
+    |
+help: remove these parentheses
+    |
+304 -     while (y < g_SIZE) {
+304 +     while y < g_SIZE {
+    |
+
+warning: unnecessary parentheses around `while` condition
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/2048.rs:306:15
+    |
+306 |         while (x < g_SIZE) {
+    |               ^          ^
+    |
+help: remove these parentheses
+    |
+306 -         while (x < g_SIZE) {
+306 +         while x < g_SIZE {
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/2048.rs:307:16
+    |
+307 |             if (b[y as usize][x as usize] == 0) {
+    |                ^                              ^
+    |
+help: remove these parentheses
+    |
+307 -             if (b[y as usize][x as usize] == 0) {
+307 +             if b[y as usize][x as usize] == 0 {
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/2048.rs:310:16
+    |
+310 |             if (((x + 1) < g_SIZE) && (b[y as usize][x as usize] == b[y as usize][(x + 1) as usize])) {
+    |                ^                                                                                    ^
+    |
+help: remove these parentheses
+    |
+310 -             if (((x + 1) < g_SIZE) && (b[y as usize][x as usize] == b[y as usize][(x + 1) as usize])) {
+310 +             if ((x + 1) < g_SIZE) && (b[y as usize][x as usize] == b[y as usize][(x + 1) as usize]) {
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/2048.rs:313:16
+    |
+313 |             if (((y + 1) < g_SIZE) && (b[y as usize][x as usize] == b[(y + 1) as usize][x as usize])) {
+    |                ^                                                                                    ^
+    |
+help: remove these parentheses
+    |
+313 -             if (((y + 1) < g_SIZE) && (b[y as usize][x as usize] == b[(y + 1) as usize][x as usize])) {
+313 +             if ((y + 1) < g_SIZE) && (b[y as usize][x as usize] == b[(y + 1) as usize][x as usize]) {
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/2048.rs:316:17
+    |
+316 |             x = (x + 1);
+    |                 ^     ^
+    |
+help: remove these parentheses
+    |
+316 -             x = (x + 1);
+316 +             x = x + 1;
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/2048.rs:318:13
+    |
+318 |         y = (y + 1);
+    |             ^     ^
+    |
+help: remove these parentheses
+    |
+318 -         y = (y + 1);
+318 +         y = y + 1;
+    |
+
+warning: unnecessary parentheses around `while` condition
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/2048.rs:325:11
+    |
+325 |     while (y < g_SIZE) {
+    |           ^          ^
+    |
+help: remove these parentheses
+    |
+325 -     while (y < g_SIZE) {
+325 +     while y < g_SIZE {
+    |
+
+warning: unnecessary parentheses around `while` condition
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/2048.rs:327:15
+    |
+327 |         while (x < g_SIZE) {
+    |               ^          ^
+    |
+help: remove these parentheses
+    |
+327 -         while (x < g_SIZE) {
+327 +         while x < g_SIZE {
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/2048.rs:328:16
+    |
+328 |             if (b[y as usize][x as usize] >= 2048) {
+    |                ^                                 ^
+    |
+help: remove these parentheses
+    |
+328 -             if (b[y as usize][x as usize] >= 2048) {
+328 +             if b[y as usize][x as usize] >= 2048 {
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/2048.rs:331:17
+    |
+331 |             x = (x + 1);
+    |                 ^     ^
+    |
+help: remove these parentheses
+    |
+331 -             x = (x + 1);
+331 +             x = x + 1;
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/2048.rs:333:13
+    |
+333 |         y = (y + 1);
+    |             ^     ^
+    |
+help: remove these parentheses
+    |
+333 -         y = (y + 1);
+333 +         y = y + 1;
+    |
+
+warning: denote infinite loops with `loop { ... }`
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/2048.rs:349:5
+    |
+349 |     while true {
+    |     ^^^^^^^^^^ help: use `loop`
+    |
+    = note: `#[warn(while_true)]` on by default
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/2048.rs:351:50
+    |
+351 |         static mut g_cmd: String = String::new();;
+    |                                                  ^ help: remove this semicolon
+    |
+    = note: `#[warn(redundant_semicolons)]` on by default
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/2048.rs:352:42
+    |
+352 |         static mut g_moved: bool = false;;
+    |                                          ^ help: remove this semicolon
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/2048.rs:353:12
+    |
+353 |         if ((g_cmd == "a") || (g_cmd == "A")) {
+    |            ^                                ^
+    |
+help: remove these parentheses
+    |
+353 -         if ((g_cmd == "a") || (g_cmd == "A")) {
+353 +         if (g_cmd == "a") || (g_cmd == "A") {
+    |
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/2048.rs:354:55
+    |
+354 |             static mut g_m: Map2 = Default::default();;
+    |                                                       ^ help: remove this semicolon
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/2048.rs:359:12
+    |
+359 |         if ((g_cmd == "d") || (g_cmd == "D")) {
+    |            ^                                ^
+    |
+help: remove these parentheses
+    |
+359 -         if ((g_cmd == "d") || (g_cmd == "D")) {
+359 +         if (g_cmd == "d") || (g_cmd == "D") {
+    |
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/2048.rs:360:55
+    |
+360 |             static mut g_m: Map2 = Default::default();;
+    |                                                       ^ help: remove this semicolon
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/2048.rs:365:12
+    |
+365 |         if ((g_cmd == "w") || (g_cmd == "W")) {
+    |            ^                                ^
+    |
+help: remove these parentheses
+    |
+365 -         if ((g_cmd == "w") || (g_cmd == "W")) {
+365 +         if (g_cmd == "w") || (g_cmd == "W") {
+    |
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/2048.rs:366:55
+    |
+366 |             static mut g_m: Map2 = Default::default();;
+    |                                                       ^ help: remove this semicolon
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/2048.rs:371:12
+    |
+371 |         if ((g_cmd == "s") || (g_cmd == "S")) {
+    |            ^                                ^
+    |
+help: remove these parentheses
+    |
+371 -         if ((g_cmd == "s") || (g_cmd == "S")) {
+371 +         if (g_cmd == "s") || (g_cmd == "S") {
+    |
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/2048.rs:372:55
+    |
+372 |             static mut g_m: Map2 = Default::default();;
+    |                                                       ^ help: remove this semicolon
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/2048.rs:377:12
+    |
+377 |         if ((g_cmd == "q") || (g_cmd == "Q")) {
+    |            ^                                ^
+    |
+help: remove these parentheses
+    |
+377 -         if ((g_cmd == "q") || (g_cmd == "Q")) {
+377 +         if (g_cmd == "q") || (g_cmd == "Q") {
+    |
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/2048.rs:381:55
+    |
+381 |             static mut g_r2: Map = Default::default();;
+    |                                                       ^ help: remove this semicolon
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/2048.rs:384:16
+    |
+384 |             if (g_full && !hasMoves(g_board)) {
+    |                ^                            ^
+    |
+help: remove these parentheses
+    |
+384 -             if (g_full && !hasMoves(g_board)) {
+384 +             if g_full && !hasMoves(g_board) {
+    |
+
+error[E0277]: the trait bound `Map: Default` is not satisfied
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/2048.rs:80:23
+   |
+80 | static mut g_r: Map = Default::default();
+   |                       ^^^^^^^^^^^^^^^^^^ the trait `Default` is not implemented for `Map`
+   |
+help: consider annotating `Map` with `#[derive(Default)]`
+   |
+31 + #[derive(Default)]
+32 | struct Map {
+   |
+
+error[E0277]: the trait bound `Map2: Default` is not satisfied
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/2048.rs:354:36
+    |
+354 |             static mut g_m: Map2 = Default::default();;
+    |                                    ^^^^^^^^^^^^^^^^^^ the trait `Default` is not implemented for `Map2`
+    |
+help: consider annotating `Map2` with `#[derive(Default)]`
+    |
+61  + #[derive(Default)]
+62  | struct Map2 {
+    |
+
+error[E0277]: the trait bound `Map2: Default` is not satisfied
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/2048.rs:360:36
+    |
+360 |             static mut g_m: Map2 = Default::default();;
+    |                                    ^^^^^^^^^^^^^^^^^^ the trait `Default` is not implemented for `Map2`
+    |
+help: consider annotating `Map2` with `#[derive(Default)]`
+    |
+61  + #[derive(Default)]
+62  | struct Map2 {
+    |
+
+error[E0277]: the trait bound `Map2: Default` is not satisfied
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/2048.rs:366:36
+    |
+366 |             static mut g_m: Map2 = Default::default();;
+    |                                    ^^^^^^^^^^^^^^^^^^ the trait `Default` is not implemented for `Map2`
+    |
+help: consider annotating `Map2` with `#[derive(Default)]`
+    |
+61  + #[derive(Default)]
+62  | struct Map2 {
+    |
+
+error[E0277]: the trait bound `Map2: Default` is not satisfied
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/2048.rs:372:36
+    |
+372 |             static mut g_m: Map2 = Default::default();;
+    |                                    ^^^^^^^^^^^^^^^^^^ the trait `Default` is not implemented for `Map2`
+    |
+help: consider annotating `Map2` with `#[derive(Default)]`
+    |
+61  + #[derive(Default)]
+62  | struct Map2 {
+    |
+
+error[E0277]: the trait bound `Map: Default` is not satisfied
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/2048.rs:381:36
+    |
+381 |             static mut g_r2: Map = Default::default();;
+    |                                    ^^^^^^^^^^^^^^^^^^ the trait `Default` is not implemented for `Map`
+    |
+help: consider annotating `Map` with `#[derive(Default)]`
+    |
+31  + #[derive(Default)]
+32  | struct Map {
+    |
+
+error[E0308]: mismatched types
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/2048.rs:113:28
+    |
+113 |         return Map {board: b, full: true}
+    |                            ^ expected `i64`, found `Vec<Vec<i64>>`
+    |
+    = note: expected type `i64`
+             found struct `Vec<Vec<i64>>`
+
+error[E0308]: mismatched types
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/2048.rs:115:29
+    |
+115 |     let mut idx = (_now() % empty.len());
+    |                             ^^^^^^^^^^^ expected `i64`, found `usize`
+
+error[E0277]: cannot calculate the remainder of `i64` divided by `usize`
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/2048.rs:115:27
+    |
+115 |     let mut idx = (_now() % empty.len());
+    |                           ^ no implementation for `i64 % usize`
+    |
+    = help: the trait `Rem<usize>` is not implemented for `i64`
+    = help: the following other types implement trait `Rem<Rhs>`:
+              `&i64` implements `Rem<i64>`
+              `&i64` implements `Rem`
+              `i64` implements `Rem<&i64>`
+              `i64` implements `Rem`
+
+error[E0308]: mismatched types
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/2048.rs:122:24
+    |
+122 |     return Map {board: b, full: (empty.len() == 1)}
+    |                        ^ expected `i64`, found `Vec<Vec<i64>>`
+    |
+    = note: expected type `i64`
+             found struct `Vec<Vec<i64>>`
+
+error[E0308]: mismatched types
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/2048.rs:127:24
+    |
+127 |     let mut pad: i64 = (4 - s.len());
+    |                  ---   ^^^^^^^^^^^^^ expected `i64`, found `usize`
+    |                  |
+    |                  expected due to this
+    |
+help: you can convert a `usize` to an `i64` and panic if the converted value doesn't fit
+    |
+127 |     let mut pad: i64 = ((4 - s.len())).try_into().unwrap();
+    |                        +             +++++++++++++++++++++
+
+error[E0308]: mismatched types
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/2048.rs:134:19
+    |
+134 |     return (out + s).to_string()
+    |                   ^ expected `&str`, found `String`
+    |
+help: consider borrowing here
+    |
+134 |     return (out + &s).to_string()
+    |                   +
+
+error[E0599]: no method named `len` found for struct `Map` in the current scope
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/2048.rs:162:22
+    |
+31  | struct Map {
+    | ---------- method `len` not found for this struct
+...
+162 |     let mut i = (g_r.len() - 1);
+    |                      ^^^ method not found in `Map`
+    |
+    = help: items from traits can only be used if the trait is implemented and in scope
+    = note: the following trait defines an item `len`, perhaps you need to implement it:
+            candidate #1: `ExactSizeIterator`
+
+error[E0308]: mismatched types
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/2048.rs:173:16
+    |
+173 |     while (i < row.len()) {
+    |            -   ^^^^^^^^^ expected `i64`, found `usize`
+    |            |
+    |            expected because this is `i64`
+    |
+help: you can convert a `usize` to an `i64` and panic if the converted value doesn't fit
+    |
+173 |     while (i < row.len().try_into().unwrap()) {
+    |                         ++++++++++++++++++++
+
+error[E0308]: mismatched types
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/2048.rs:182:16
+    |
+182 |     while (i < xs.len()) {
+    |            -   ^^^^^^^^ expected `i64`, found `usize`
+    |            |
+    |            expected because this is `i64`
+    |
+help: you can convert a `usize` to an `i64` and panic if the converted value doesn't fit
+    |
+182 |     while (i < xs.len().try_into().unwrap()) {
+    |                        ++++++++++++++++++++
+
+error[E0308]: mismatched types
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/2048.rs:183:24
+    |
+183 |         if (((i + 1) < xs.len()) && (xs[i as usize] == xs[(i + 1) as usize])) {
+    |              -------   ^^^^^^^^ expected `i64`, found `usize`
+    |              |
+    |              expected because this is `i64`
+    |
+help: you can convert a `usize` to an `i64` and panic if the converted value doesn't fit
+    |
+183 |         if (((i + 1) < xs.len().try_into().unwrap()) && (xs[i as usize] == xs[(i + 1) as usize])) {
+    |                                ++++++++++++++++++++
+
+error[E0308]: mismatched types
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/2048.rs:186:53
+    |
+186 |             res = { let mut v = res.clone(); v.push(v); v };
+    |                                                ---- ^ expected `i64`, found `Vec<i64>`
+    |                                                |
+    |                                                arguments to this method are incorrect
+    |
+    = note: expected type `i64`
+             found struct `Vec<i64>`
+note: method defined here
+   --> /rustc/17067e9ac6d7ecb70e50f92c1944e545188d2359/library/alloc/src/vec/mod.rs:2442:12
+
+error[E0308]: mismatched types
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/2048.rs:193:24
+    |
+193 |     while (res.len() < g_SIZE) {
+    |            ---------   ^^^^^^ expected `usize`, found `i64`
+    |            |
+    |            expected because this is `usize`
+    |
+help: you can convert an `i64` to a `usize` and panic if the converted value doesn't fit
+    |
+193 |     while (res.len() < g_SIZE.try_into().unwrap()) {
+    |                              ++++++++++++++++++++
+
+error[E0308]: mismatched types
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/2048.rs:196:23
+    |
+196 |     return Map1 {row: res, gain: gain}
+    |                       ^^^ expected `i64`, found `Vec<i64>`
+    |
+    = note: expected type `i64`
+             found struct `Vec<i64>`
+
+error[E0608]: cannot index into a value of type `Map`
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/2048.rs:204:27
+    |
+204 |         let new: i64 = g_r["row"];
+    |                           ^^^^^^^
+
+error[E0608]: cannot index into a value of type `Map`
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/2048.rs:205:31
+    |
+205 |         score = (g_score + g_r["gain"]);
+    |                               ^^^^^^^^
+
+error[E0308]: mismatched types
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/2048.rs:216:25
+    |
+216 |     return Map2 {board: b, score: g_score, moved: g_moved}
+    |                         ^ expected `i64`, found `Vec<Vec<i64>>`
+    |
+    = note: expected type `i64`
+             found struct `Vec<Vec<i64>>`
+
+error[E0608]: cannot index into a value of type `Map`
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/2048.rs:225:18
+    |
+225 |         rev = g_r["row"];
+    |                  ^^^^^^^
+
+error[E0608]: cannot index into a value of type `Map`
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/2048.rs:226:31
+    |
+226 |         score = (g_score + g_r["gain"]);
+    |                               ^^^^^^^^
+
+error[E0308]: mismatched types
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/2048.rs:238:25
+    |
+238 |     return Map2 {board: b, score: g_score, moved: g_moved}
+    |                         ^ expected `i64`, found `Vec<Vec<i64>>`
+    |
+    = note: expected type `i64`
+             found struct `Vec<Vec<i64>>`
+
+error[E0608]: cannot index into a value of type `Map`
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/2048.rs:265:27
+    |
+265 |         let new: i64 = g_r["row"];
+    |                           ^^^^^^^
+
+error[E0608]: cannot index into a value of type `Map`
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/2048.rs:266:31
+    |
+266 |         score = (g_score + g_r["gain"]);
+    |                               ^^^^^^^^
+
+error[E0308]: mismatched types
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/2048.rs:277:25
+    |
+277 |     return Map2 {board: b, score: g_score, moved: g_moved}
+    |                         ^ expected `i64`, found `Vec<Vec<i64>>`
+    |
+    = note: expected type `i64`
+             found struct `Vec<Vec<i64>>`
+
+error[E0608]: cannot index into a value of type `Map`
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/2048.rs:286:18
+    |
+286 |         col = g_r["row"];
+    |                  ^^^^^^^
+
+error[E0608]: cannot index into a value of type `Map`
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/2048.rs:287:31
+    |
+287 |         score = (g_score + g_r["gain"]);
+    |                               ^^^^^^^^
+
+error[E0308]: mismatched types
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/2048.rs:299:25
+    |
+299 |     return Map2 {board: b, score: g_score, moved: g_moved}
+    |                         ^ expected `i64`, found `Vec<Vec<i64>>`
+    |
+    = note: expected type `i64`
+             found struct `Vec<Vec<i64>>`
+
+error[E0308]: mismatched types
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/2048.rs:342:23
+    |
+81  | static mut g_full: i64 = 0;
+    |                    --- expected due to this type
+...
+342 |     unsafe { g_full = g_r.full; }
+    |                       ^^^^^^^^ expected `i64`, found `bool`
+
+error[E0599]: no method named `is_some` found for type `bool` in the current scope
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/2048.rs:380:20
+    |
+380 |         if g_moved.is_some() {
+    |                    ^^^^^^^ method not found in `bool`
+
+error[E0308]: mismatched types
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/2048.rs:384:17
+    |
+384 |             if (g_full && !hasMoves(g_board)) {
+    |                 ^^^^^^ expected `bool`, found `i64`
+
+warning: unused variable: `score`
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/2048.rs:137:34
+    |
+137 | unsafe fn draw(b: Vec<Vec<i64>>, score: i64) {
+    |                                  ^^^^^ help: if this is intentional, prefix it with an underscore: `_score`
+    |
+    = note: `#[warn(unused_variables)]` on by default
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/2048.rs:145:17
+    |
+145 |             let mut v: i64 = b[y as usize][x as usize];
+    |                 ----^
+    |                 |
+    |                 help: remove this `mut`
+    |
+    = note: `#[warn(unused_mut)]` on by default
+
+error[E0596]: cannot borrow `b` as mutable, as it is not declared as mutable
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/2048.rs:254:9
+    |
+254 |         b[y as usize][x as usize] = col[y as usize];
+    |         ^ cannot borrow as mutable
+    |
+help: consider changing this to be mutable
+    |
+251 | unsafe fn setCol(mut b: Vec<Vec<i64>>, x: i64, col: Vec<i64>) {
+    |                  +++
+
+error: aborting due to 57 previous errors; 91 warnings emitted
+
+Some errors have detailed explanations: E0277, E0308, E0425, E0596, E0599, E0608.
+For more information about an error, try `rustc --explain E0277`.
