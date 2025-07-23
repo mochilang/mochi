@@ -99,6 +99,7 @@ func runRosetta(t *testing.T, src, outDir string) ([]byte, error) {
 		return nil, fmt.Errorf("rustc: %w", err)
 	}
 	cmd := exec.Command(bin)
+	cmd.Env = append(os.Environ(), "MOCHI_NOW_SEED=1")
 	if data, err := os.ReadFile(strings.TrimSuffix(src, ".mochi") + ".in"); err == nil {
 		cmd.Stdin = bytes.NewReader(data)
 	}

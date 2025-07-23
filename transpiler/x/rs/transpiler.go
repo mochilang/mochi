@@ -30,9 +30,11 @@ var groupVars map[string]bool
 var varTypes map[string]string
 var funParams map[string]int
 var funParamTypes map[string][]string
+var funReturns map[string]string
 var typeDecls []TypeDecl
 var structForMap map[*parser.MapLiteral]string
 var structForList map[*parser.ListLiteral]string
+var structSig map[string]string
 var curEnv *types.Env
 var structTypes map[string]types.StructType
 var cloneVars map[string]bool
@@ -44,6 +46,8 @@ var mainFuncName string
 var globalVars map[string]bool
 var unsafeFuncs map[string]bool
 var funcDepth int
+var usesInput bool
+var usesInt bool
 
 func VarTypes() map[string]string { return varTypes }
 
@@ -55,6 +59,8 @@ type Program struct {
 	UsesHashMap bool
 	UsesGroup   bool
 	UseTime     bool
+	UseInput    bool
+	UseInt      bool
 	Types       []TypeDecl
 	Globals     []*VarDecl
 }
@@ -463,6 +469,16 @@ func (i *IndexExpr) emit(w io.Writer) {
 			i.Index.emit(w)
 			io.WriteString(w, "]")
 			return
+		}
+		if key, ok := literalStringExpr(i.Index); ok {
+			if st, ok2 := structTypes[inferType(i.Target)]; ok2 {
+				if _, ok3 := st.Fields[key]; ok3 {
+					t.emit(w)
+					io.WriteString(w, ".")
+					io.WriteString(w, key)
+					return
+				}
+			}
 		}
 	case *MapLit:
 		i.Target.emit(w)
@@ -1426,12 +1442,15 @@ func Transpile(p *parser.Program, env *types.Env) (*Program, error) {
 	usesGroup = false
 	useMath = false
 	useTime = false
+	usesInput = false
+	usesInt = false
 	mapVars = make(map[string]bool)
 	stringVars = make(map[string]bool)
 	groupVars = make(map[string]bool)
 	varTypes = make(map[string]string)
 	funParams = make(map[string]int)
 	funParamTypes = make(map[string][]string)
+	funReturns = make(map[string]string)
 	boxVars = make(map[string]bool)
 	mainFuncName = ""
 	globalVars = make(map[string]bool)
@@ -1441,6 +1460,7 @@ func Transpile(p *parser.Program, env *types.Env) (*Program, error) {
 	structForMap = make(map[*parser.MapLiteral]string)
 	structForList = make(map[*parser.ListLiteral]string)
 	structTypes = make(map[string]types.StructType)
+	structSig = make(map[string]string)
 	curEnv = env
 	prog := &Program{}
 	for _, st := range p.Statements {
@@ -1470,6 +1490,8 @@ func Transpile(p *parser.Program, env *types.Env) (*Program, error) {
 	prog.UsesHashMap = usesHashMap
 	prog.UsesGroup = usesGroup
 	prog.UseTime = useTime
+	prog.UseInput = usesInput
+	prog.UseInt = usesInt
 	return prog, nil
 }
 
@@ -1711,6 +1733,13 @@ func compileStmt(stmt *parser.Statement) (Stmt, error) {
 		}
 		if t := inferType(val); t != "" && !updated {
 			varTypes[stmt.Assign.Name] = t
+		}
+		if vt, ok := varTypes[stmt.Assign.Name]; ok && vt == "String" {
+			if _, ok := val.(*StringLit); ok {
+				val = &StringCastExpr{Expr: val}
+			} else if inferType(val) != "String" {
+				val = &StringCastExpr{Expr: val}
+			}
 		}
 		return &AssignStmt{Name: stmt.Assign.Name, Expr: val}, nil
 	case stmt.Return != nil:
@@ -2051,6 +2080,23 @@ func compileFunStmt(fn *parser.FunStmt) (Stmt, error) {
 			ret = fmt.Sprintf("impl Fn(%s) -> %s", strings.Join(pts, ", "), rt)
 		}
 	}
+	if ret == "" || strings.HasPrefix(ret, "HashMap") {
+		var out string
+		for _, st := range body {
+			if r, ok := st.(*ReturnStmt); ok && r.Value != nil {
+				t := inferType(r.Value)
+				if out == "" {
+					out = t
+				} else if out != t {
+					out = ""
+					break
+				}
+			}
+		}
+		if out != "" {
+			ret = out
+		}
+	}
 	if ret == "String" {
 		for i, st := range body {
 			if r, ok := st.(*ReturnStmt); ok && r.Value != nil {
@@ -2063,6 +2109,9 @@ func compileFunStmt(fn *parser.FunStmt) (Stmt, error) {
 	if name == "main" {
 		mainFuncName = "mochi_main"
 		name = mainFuncName
+	}
+	if ret != "" {
+		funReturns[fn.Name] = ret
 	}
 	return &FuncDecl{Name: name, Params: params, Return: ret, Body: body}, nil
 }
@@ -2284,6 +2333,14 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 			useTime = true
 			return &NowExpr{}, nil
 		}
+		if name == "input" && len(args) == 0 {
+			usesInput = true
+			funReturns[name] = "String"
+		}
+		if name == "int" && len(args) == 1 {
+			usesInt = true
+			funReturns[name] = "i64"
+		}
 		if ut, ok := curEnv.FindUnionByVariant(name); ok {
 			st, _ := curEnv.GetStruct(name)
 			fields := make([]Expr, len(args))
@@ -2454,6 +2511,44 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 				fields[i] = v
 			}
 			return &StructLit{Name: name, Fields: fields, Names: names}, nil
+		}
+		if st, ok := types.InferStructFromMapEnv(p.Map, curEnv); ok {
+			sigParts := make([]string, len(st.Order))
+			for i, n := range st.Order {
+				sigParts[i] = n + ":" + rustTypeFromType(st.Fields[n])
+			}
+			sig := strings.Join(sigParts, ";")
+			name, ok := structSig[sig]
+			if !ok {
+				name = types.UniqueStructName("Map", curEnv, nil)
+				st.Name = name
+				curEnv.SetStruct(name, st)
+				fields := make([]Param, len(st.Order))
+				for i, n := range st.Order {
+					fields[i] = Param{Name: n, Type: rustTypeFromType(st.Fields[n])}
+				}
+				typeDecls = append(typeDecls, &StructDecl{Name: name, Fields: fields})
+				structTypes[name] = st
+				structSig[sig] = name
+			}
+			structForMap[p.Map] = name
+			names := st.Order
+			vals := make([]Expr, len(p.Map.Items))
+			for i, it := range p.Map.Items {
+				v, err := compileExpr(it.Value)
+				if err != nil {
+					return nil, err
+				}
+				ft := st.Fields[names[i]]
+				rt := rustTypeFromType(ft)
+				if rt == "String" {
+					v = &StringCastExpr{Expr: v}
+				} else if rt == "f64" && inferType(v) == "i64" {
+					v = &FloatCastExpr{Expr: v}
+				}
+				vals[i] = v
+			}
+			return &StructLit{Name: name, Fields: vals, Names: names}, nil
 		}
 		entries := make([]MapEntry, len(p.Map.Items))
 		for i, it := range p.Map.Items {
@@ -3052,6 +3147,10 @@ func inferType(e Expr) string {
 		if nr, ok := ex.Receiver.(*NameRef); ok && nr.Name == "math" {
 			return "f64"
 		}
+	case *CallExpr:
+		if t, ok := funReturns[ex.Func]; ok {
+			return t
+		}
 	case *UnaryExpr:
 		if ex.Op == "!" {
 			return "bool"
@@ -3215,6 +3314,13 @@ func literalString(e *parser.Expr) (string, bool) {
 	}
 	if p.Target.Selector != nil && len(p.Target.Selector.Tail) == 0 {
 		return p.Target.Selector.Root, true
+	}
+	return "", false
+}
+
+func literalStringExpr(e Expr) (string, bool) {
+	if s, ok := e.(*StringLit); ok {
+		return s.Value, true
 	}
 	return "", false
 }
@@ -3438,6 +3544,9 @@ func Emit(prog *Program) []byte {
 		buf.WriteString("use std::sync::atomic::{AtomicBool, AtomicI64, Ordering};\n")
 		buf.WriteString("use std::time::{SystemTime, UNIX_EPOCH};\n")
 	}
+	if prog.UseInput {
+		buf.WriteString("use std::io::{self, Read};\n")
+	}
 	if useMath {
 		buf.WriteString("mod math {\n")
 		buf.WriteString("    pub const pi: f64 = std::f64::consts::PI;\n")
@@ -3471,6 +3580,16 @@ func Emit(prog *Program) []byte {
 		buf.WriteString("        SystemTime::now().duration_since(UNIX_EPOCH).unwrap().as_nanos() as i64\n")
 		buf.WriteString("    }\n")
 		buf.WriteString("}\n")
+	}
+	if prog.UseInput {
+		buf.WriteString("fn input() -> String {\n")
+		buf.WriteString("    let mut s = String::new();\n")
+		buf.WriteString("    std::io::stdin().read_line(&mut s).unwrap();\n")
+		buf.WriteString("    s.trim_end().to_string()\n")
+		buf.WriteString("}\n")
+	}
+	if prog.UseInt {
+		buf.WriteString("fn int(x: i64) -> i64 { x }\n")
 	}
 	for _, d := range prog.Types {
 		d.emit(&buf)
