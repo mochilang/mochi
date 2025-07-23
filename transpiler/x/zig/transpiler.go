@@ -36,6 +36,7 @@ var funParamsStack [][]string
 var nestedFunArgs map[string][]string
 var builtinAliases map[string]string
 var transEnv *types.Env
+var loopCounter int
 var mainFuncName string
 var useNow bool
 var useStr bool
@@ -557,6 +558,17 @@ func zigTypeFromExpr(e Expr) string {
 		return "i64"
 	case *BinaryExpr:
 		be := e.(*BinaryExpr)
+		if be.Op == "+" {
+			lt := zigTypeFromExpr(be.Left)
+			rt := zigTypeFromExpr(be.Right)
+			if lt == "[]const u8" || rt == "[]const u8" {
+				return "[]const u8"
+			}
+			if lt == "f64" || rt == "f64" {
+				return "f64"
+			}
+			return "i64"
+		}
 		switch be.Op {
 		case "==", "!=", "<", "<=", ">", ">=", "&&", "||", "in":
 			return "bool"
@@ -998,6 +1010,8 @@ func (v *VarDecl) emit(w io.Writer, indent int) {
 	fmt.Fprintf(w, "%s %s", kw, v.Name)
 	if v.Type != "" {
 		fmt.Fprintf(w, ": %s", v.Type)
+	} else if t, ok := varTypes[v.Name]; ok && t != "" {
+		fmt.Fprintf(w, ": %s", t)
 	} else if v.Mutable {
 		if _, ok := v.Value.(*IntLit); ok {
 			io.WriteString(w, ": i64")
@@ -1392,20 +1406,37 @@ func (wst *WhileStmt) emit(w io.Writer, indent int) {
 
 func (f *ForStmt) emit(w io.Writer, indent int) {
 	writeIndent(w, indent)
+	used := stmtsUse(f.Name, f.Body)
+	tmp := fmt.Sprintf("__it%d", loopCounter)
+	loopCounter++
 	if f.Iterable != nil {
 		io.WriteString(w, "for (")
 		f.Iterable.emit(w)
 		io.WriteString(w, ") |")
-		io.WriteString(w, f.Name)
-		io.WriteString(w, "| {\n")
+		if used {
+			io.WriteString(w, tmp)
+			io.WriteString(w, "| {\n")
+			writeIndent(w, indent+1)
+			fmt.Fprintf(w, "const %s = %s;\n", f.Name, tmp)
+		} else {
+			io.WriteString(w, "_|")
+			io.WriteString(w, " {\n")
+		}
 	} else {
 		io.WriteString(w, "for (")
 		f.Start.emit(w)
 		io.WriteString(w, "..")
 		f.End.emit(w)
 		io.WriteString(w, ") |")
-		io.WriteString(w, f.Name)
-		io.WriteString(w, "| {\n")
+		if used {
+			io.WriteString(w, tmp)
+			io.WriteString(w, "| {\n")
+			writeIndent(w, indent+1)
+			fmt.Fprintf(w, "const %s: i64 = @intCast(%s);\n", f.Name, tmp)
+		} else {
+			io.WriteString(w, "_|")
+			io.WriteString(w, " {\n")
+		}
 	}
 	for _, st := range f.Body {
 		st.emit(w, indent+1)
@@ -2956,6 +2987,125 @@ func compileSaveStmt(se *parser.SaveExpr) (Stmt, error) {
 		}
 	}
 	return &SaveStmt{Src: src, Path: path, Format: format}, nil
+}
+
+func exprUses(name string, e Expr) bool {
+	switch t := e.(type) {
+	case *VarRef:
+		return t.Name == name
+	case *BinaryExpr:
+		return exprUses(name, t.Left) || exprUses(name, t.Right)
+	case *CallExpr:
+		for _, a := range t.Args {
+			if exprUses(name, a) {
+				return true
+			}
+		}
+		return false
+	case *IndexExpr:
+		return exprUses(name, t.Target) || exprUses(name, t.Index)
+	case *FieldExpr:
+		return exprUses(name, t.Target)
+	case *SliceExpr:
+		return exprUses(name, t.Target) || exprUses(name, t.Start) || exprUses(name, t.End)
+	case *IfExpr:
+		return exprUses(name, t.Cond) || exprUses(name, t.Then) || exprUses(name, t.Else)
+	case *AppendExpr:
+		return exprUses(name, t.List) || exprUses(name, t.Value)
+	case *NotExpr:
+		return exprUses(name, t.Expr)
+	case *ListLit:
+		for _, el := range t.Elems {
+			if exprUses(name, el) {
+				return true
+			}
+		}
+	case *MapLit:
+		for _, m := range t.Entries {
+			if exprUses(name, m.Key) || exprUses(name, m.Value) {
+				return true
+			}
+		}
+	case *QueryComp:
+		for _, s := range t.Sources {
+			if exprUses(name, s) {
+				return true
+			}
+		}
+		if exprUses(name, t.Elem) || exprUses(name, t.Filter) || exprUses(name, t.Sort) || exprUses(name, t.Skip) || exprUses(name, t.Take) {
+			return true
+		}
+	case *GroupByExpr:
+		return exprUses(name, t.Source) || exprUses(name, t.Key) || exprUses(name, t.SelectExpr) || exprUses(name, t.Sort)
+	}
+	return false
+}
+
+func stmtsUse(name string, stmts []Stmt) bool {
+	for _, st := range stmts {
+		switch s := st.(type) {
+		case *VarDecl:
+			if exprUses(name, s.Value) {
+				return true
+			}
+		case *AssignStmt:
+			if s.Name == name || exprUses(name, s.Value) {
+				return true
+			}
+		case *IndexAssignStmt:
+			if exprUses(name, s.Target) || exprUses(name, s.Value) {
+				return true
+			}
+		case *FieldAssignStmt:
+			if exprUses(name, s.Target) || exprUses(name, s.Value) {
+				return true
+			}
+		case *ExprStmt:
+			if exprUses(name, s.Expr) {
+				return true
+			}
+		case *IfStmt:
+			if exprUses(name, s.Cond) || stmtsUse(name, s.Then) || stmtsUse(name, s.Else) {
+				return true
+			}
+		case *WhileStmt:
+			if exprUses(name, s.Cond) || stmtsUse(name, s.Body) {
+				return true
+			}
+		case *ForStmt:
+			if s.Name != name {
+				if exprUses(name, s.Start) || exprUses(name, s.End) || exprUses(name, s.Iterable) {
+					return true
+				}
+				if stmtsUse(name, s.Body) {
+					return true
+				}
+			}
+		case *UpdateStmt:
+			if s.Target == name {
+				return true
+			}
+			if exprUses(name, s.Cond) {
+				return true
+			}
+			for _, v := range s.Values {
+				if exprUses(name, v) {
+					return true
+				}
+			}
+		case *SaveStmt:
+			if exprUses(name, s.Src) {
+				return true
+			}
+		case *PrintStmt:
+			for _, v := range s.Values {
+				if exprUses(name, v) {
+					return true
+				}
+			}
+		}
+	}
+	return false
 }
 
 func compileTypeDecl(td *parser.TypeDecl) error {

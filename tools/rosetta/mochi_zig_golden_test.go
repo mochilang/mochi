@@ -18,7 +18,7 @@ import (
 
 // TestMochiZigGolden compiles each Mochi source program under
 // tests/rosetta/x/Mochi to Zig and verifies the generated code
-// and program output match the golden files in tests/rosetta/out/Zig.
+// and program output match the golden files in tests/rosetta/transpiler/Zig.
 func TestMochiZigGolden(t *testing.T) {
 	zigc, err := zigcode.EnsureZig()
 	if err != nil {
@@ -29,7 +29,7 @@ func TestMochiZigGolden(t *testing.T) {
 
 	root := findRepoRoot(t)
 	srcDir := filepath.Join(root, "tests/rosetta/x/Mochi")
-	outDir := filepath.Join(root, "tests/rosetta/out/Zig")
+	outDir := filepath.Join(root, "tests/rosetta/transpiler/Zig")
 
 	if err := os.MkdirAll(outDir, 0o755); err != nil {
 		t.Fatalf("mkout: %v", err)
