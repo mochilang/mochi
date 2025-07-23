@@ -811,7 +811,9 @@ func (idx *IndexExpr) emit(w io.Writer) {
 		idx.Index.emit(w)
 		fmt.Fprint(w, ")")
 	}
-	if idx.Type != "" && idx.Type != "Any" && !strings.HasPrefix(idx.Type, "ArrayBuffer[") && !strings.HasPrefix(idx.Type, "Map[") {
+	if idx.Type != "" && idx.Type != "Any" &&
+		(idx.Container == "Any" || strings.Contains(idx.Container, "Any")) &&
+		!strings.HasPrefix(idx.Type, "ArrayBuffer[") && !strings.HasPrefix(idx.Type, "Map[") {
 		fmt.Fprintf(w, ".asInstanceOf[%s]", idx.Type)
 	}
 }
@@ -3399,6 +3401,14 @@ func inferTypeWithEnv(e Expr, env *types.Env) string {
 					valType := strings.TrimSpace(kv[1])
 					if valType != "" {
 						return valType
+					}
+				}
+			}
+		case *CallExpr:
+			if n, ok := ex.Fn.(*Name); ok {
+				if typ, err := env.GetVar(n.Name); err == nil {
+					if ft, ok2 := typ.(types.FuncType); ok2 {
+						return toScalaTypeFromType(ft.Return)
 					}
 				}
 			}
