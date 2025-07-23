@@ -49,6 +49,17 @@ def _input()
 end
 `
 
+const helperLookupHost = `
+require 'resolv'
+def _lookup_host(host)
+  begin
+    [Resolv.getaddresses(host), nil]
+  rescue StandardError => e
+    [[], e]
+  end
+end
+`
+
 // --- Ruby AST ---
 
 type Program struct {
@@ -1089,9 +1100,10 @@ func (gq *GroupLeftJoinQueryExpr) emit(e *emitter) {
 }
 
 var (
-	needsJSON bool
-	usesNow   bool
-	usesInput bool
+	needsJSON      bool
+	usesNow        bool
+	usesInput      bool
+	usesLookupHost bool
 )
 
 // reserved lists Ruby reserved keywords that cannot be used as identifiers.
@@ -1161,7 +1173,12 @@ func identName(n string) string {
 	} else {
 		name = n
 	}
-	return safeName(name)
+	switch name {
+	case "nil", "true", "false":
+		return name
+	default:
+		return safeName(name)
+	}
 }
 
 func (e *emitter) writeIndent() {
@@ -1248,6 +1265,13 @@ func (i *ImportStmt) emit(e *emitter) {
 		io.WriteString(e.w, "  def self.TrimSpace(s); s.strip; end\n")
 		io.WriteString(e.w, "end\n")
 		io.WriteString(e.w, i.Alias+" = GoStrings")
+	case "go_net":
+		io.WriteString(e.w, "module GoNet\n")
+		io.WriteString(e.w, "  def self.LookupHost(host)\n")
+		io.WriteString(e.w, "    _lookup_host(host)\n")
+		io.WriteString(e.w, "  end\n")
+		io.WriteString(e.w, "end\n")
+		io.WriteString(e.w, i.Alias+" = GoNet")
 	}
 }
 
@@ -2373,6 +2397,11 @@ func Emit(w io.Writer, p *Program) error {
 			return err
 		}
 	}
+	if usesLookupHost {
+		if _, err := io.WriteString(w, helperLookupHost+"\n"); err != nil {
+			return err
+		}
+	}
 	for _, s := range p.Stmts {
 		e.writeIndent()
 		s.emit(e)
@@ -2386,6 +2415,7 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	needsJSON = false
 	usesNow = false
 	usesInput = false
+	usesLookupHost = false
 	currentEnv = env
 	topVars = map[string]bool{}
 	scopeStack = nil
@@ -2970,6 +3000,15 @@ func convertImport(im *parser.ImportStmt) (Stmt, error) {
 			}
 			return &ImportStmt{Alias: alias, Module: "go_testpkg"}, nil
 		}
+		if im.Auto && path == "net" {
+			if currentEnv != nil {
+				fields := map[string]types.Type{
+					"LookupHost": types.FuncType{Params: []types.Type{types.StringType{}}, Return: types.ListType{Elem: types.AnyType{}}},
+				}
+				currentEnv.SetVar(alias, types.StructType{Name: "GoNet", Fields: fields}, false)
+			}
+			return &ImportStmt{Alias: alias, Module: "go_net"}, nil
+		}
 		if im.Auto && path == "strings" {
 			if currentEnv != nil {
 				fields := map[string]types.Type{
@@ -3075,10 +3114,15 @@ func convertPostfix(pf *parser.PostfixExpr) (Expr, error) {
 			}
 			args[i] = ex
 		}
-		if method == "contains" {
-			method = "include?"
+		if ident, ok := expr.(*Ident); ok && ident.Name == "net" && method == "LookupHost" {
+			usesLookupHost = true
+			expr = &CallExpr{Func: "_lookup_host", Args: args}
+		} else {
+			if method == "contains" {
+				method = "include?"
+			}
+			expr = &MethodCallExpr{Target: expr, Method: method, Args: args}
 		}
-		expr = &MethodCallExpr{Target: expr, Method: method, Args: args}
 		start = 1
 	} else {
 		expr, err = convertPrimary(pf.Target)
@@ -3138,10 +3182,15 @@ func convertPostfix(pf *parser.PostfixExpr) (Expr, error) {
 				args[j] = ex
 			}
 			method := op.Field.Name
-			if method == "contains" {
-				method = "include?"
+			if ident, ok := expr.(*Ident); ok && ident.Name == "net" && method == "LookupHost" {
+				usesLookupHost = true
+				expr = &CallExpr{Func: "_lookup_host", Args: args}
+			} else {
+				if method == "contains" {
+					method = "include?"
+				}
+				expr = &MethodCallExpr{Target: expr, Method: method, Args: args}
 			}
-			expr = &MethodCallExpr{Target: expr, Method: method, Args: args}
 			i++ // consume call op
 			curType = nil
 		case op.Field != nil:
@@ -3270,6 +3319,12 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 			needsJSON = true
 			pretty := &MethodCallExpr{Target: &Ident{Name: "JSON"}, Method: "pretty_generate", Args: []Expr{args[0]}}
 			return &CallExpr{Func: "puts", Args: []Expr{pretty}}, nil
+		case "net.LookupHost":
+			if len(args) != 1 {
+				return nil, fmt.Errorf("net.LookupHost expects 1 arg")
+			}
+			usesLookupHost = true
+			return &CallExpr{Func: "_lookup_host", Args: args}, nil
 		default:
 			if currentEnv != nil {
 				if fn, ok := currentEnv.GetFunc(name); ok {
