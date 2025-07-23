@@ -368,9 +368,6 @@ func (a *AssignStmt) emit(w io.Writer, indent int) {
 	if call, ok := a.Value.(*CallExpr); ok && call.Func == "append" && len(call.Args) == 2 {
 		if vr, ok2 := call.Args[0].(*VarRef); ok2 && vr.Name == a.Name && len(a.Indexes) == 0 && len(a.Fields) == 0 {
 			base := strings.TrimSuffix(varTypes[a.Name], "[]")
-			if base == "" {
-				base = "int"
-			}
 			writeIndent(w, indent)
 			switch base {
 			case "int":
@@ -386,7 +383,7 @@ func (a *AssignStmt) emit(w io.Writer, indent int) {
 				io.WriteString(w, ");\n")
 				return
 			default:
-				if strings.HasSuffix(base, "[]") {
+				if strings.HasSuffix(base, "[]") || base == "" {
 					needListAppendPtr = true
 					fmt.Fprintf(w, "%s = list_append_intptr(%s, &%s_len, ", a.Name, a.Name, a.Name)
 					call.Args[1].emitExpr(w)
