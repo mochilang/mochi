@@ -18,19 +18,21 @@ fun isSolved(): bool {
   return true
 }
 
-fun isValidMove(m: int): map<string, any> {
-  if m == 0 { return {"idx": empty - 4, "ok": empty / 4 > 0} }
-  if m == 1 { return {"idx": empty + 4, "ok": empty / 4 < 3} }
-  if m == 2 { return {"idx": empty + 1, "ok": empty % 4 < 3} }
-  if m == 3 { return {"idx": empty - 1, "ok": empty % 4 > 0} }
-  return {"idx": 0, "ok": false}
+type MoveResult { idx: int, ok: bool }
+
+fun isValidMove(m: int): MoveResult {
+  if m == 0 { return MoveResult{idx: empty - 4, ok: empty / 4 > 0} }
+  if m == 1 { return MoveResult{idx: empty + 4, ok: empty / 4 < 3} }
+  if m == 2 { return MoveResult{idx: empty + 1, ok: empty % 4 < 3} }
+  if m == 3 { return MoveResult{idx: empty - 1, ok: empty % 4 > 0} }
+  return MoveResult{idx: 0, ok: false}
 }
 
 fun doMove(m: int): bool {
   let r = isValidMove(m)
-  if !r["ok"] { return false }
+  if !r.ok { return false }
   let i = empty
-  let j = int(r["idx"])
+  let j = r.idx
   let tmp = board[i]
   board[i] = board[j]
   board[j] = tmp
