@@ -1,0 +1,487 @@
+run: exit status 1
+
+/workspace/mochi/tests/rosetta/transpiler/Haskell/99-bottles-of-beer-2.hs:61:17: error:
+    • Couldn't match type ‘()’ with ‘[Char]’
+      Expected: String
+        Actual: ()
+    • In the first argument of ‘return’, namely ‘()’
+      In the expression: return ()
+      In a stmt of a 'do' block:
+        if n < 0 then do return ("") else return ()
+   |
+61 |     else return ()
+   |                 ^^
+
+/workspace/mochi/tests/rosetta/transpiler/Haskell/99-bottles-of-beer-2.hs:65:17: error:
+    • Couldn't match type ‘()’ with ‘[Char]’
+      Expected: String
+        Actual: ()
+    • In the first argument of ‘return’, namely ‘()’
+      In the expression: return ()
+      In a stmt of a 'do' block:
+        if n < 20 then do return ((small !! n)) else return ()
+   |
+65 |     else return ()
+   |                 ^^
+
+/workspace/mochi/tests/rosetta/transpiler/Haskell/99-bottles-of-beer-2.hs:68:41: error:
+    • Couldn't match type ‘Int’ with ‘[Char]’
+      Expected: String
+        Actual: Int
+    • In the first argument of ‘(/)’, namely ‘n’
+      In the first argument of ‘read’, namely ‘((n / fromIntegral 10))’
+      In the second argument of ‘(!!)’, namely
+        ‘(read ((n / fromIntegral 10)) :: Int)’
+   |
+68 |         t <- newIORef ((tens !! (read ((n / fromIntegral 10)) :: Int)))
+   |                                         ^
+
+/workspace/mochi/tests/rosetta/transpiler/Haskell/99-bottles-of-beer-2.hs:75:17: error:
+    • Couldn't match type ‘()’ with ‘[Char]’
+      Expected: String
+        Actual: ()
+    • In the first argument of ‘return’, namely ‘()’
+      In the expression: return ()
+      In a stmt of a 'do' block:
+        if n < 100 then
+            do t <- newIORef ((tens !! (read ((n / fromIntegral 10)) :: Int)))
+               s <- newIORef (n `mod` 10)
+               if (deref s) > 0 then do ... else return ()
+               ....
+        else
+            return ()
+   |
+75 |     else return ()
+   |                 ^^
+
+/workspace/mochi/tests/rosetta/transpiler/Haskell/99-bottles-of-beer-2.hs:85:34: error:
+    • Couldn't match type ‘()’ with ‘IORef [Char]’
+      Expected: IORef (IORef [Char])
+        Actual: IORef ()
+    • In the first argument of ‘deref’, namely ‘s’
+      In the first argument of ‘fields’, namely ‘(deref s)’
+      In the first argument of ‘newIORef’, namely ‘(fields (deref s))’
+   |
+85 |     w <- newIORef (fields (deref s))
+   |                                  ^
+
+/workspace/mochi/tests/rosetta/transpiler/Haskell/99-bottles-of-beer-2.hs:87:26: error:
+    • Couldn't match expected type: IO [String]
+                  with actual type: [[Char]]
+    • In the second argument of ‘($!)’, namely
+        ‘(take 0 (deref w)
+            ++ [((deref w) !! 0) ++ "s"] ++ drop (0 + 1) (deref w))’
+      In a stmt of a 'do' block:
+        writeIORef w
+          $!
+            (take 0 (deref w)
+               ++ [((deref w) !! 0) ++ "s"] ++ drop (0 + 1) (deref w))
+      In the expression:
+        do writeIORef w
+             $!
+               (take 0 (deref w)
+                  ++ [((deref w) !! 0) ++ "s"] ++ drop (0 + 1) (deref w))
+   |
+87 |         writeIORef w $! (take 0 (deref w) ++ [((deref w) !! 0) ++ "s"] ++ drop (0 + 1) (deref w))
+   |                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+/workspace/mochi/tests/rosetta/transpiler/Haskell/99-bottles-of-beer-2.hs:87:40: error:
+    • Couldn't match type: IO [String]
+                     with: [[Char]]
+      Expected: IORef [[Char]]
+        Actual: IORef (IO [String])
+    • In the first argument of ‘deref’, namely ‘w’
+      In the second argument of ‘take’, namely ‘(deref w)’
+      In the first argument of ‘(++)’, namely ‘take 0 (deref w)’
+   |
+87 |         writeIORef w $! (take 0 (deref w) ++ [((deref w) !! 0) ++ "s"] ++ drop (0 + 1) (deref w))
+   |                                        ^
+
+/workspace/mochi/tests/rosetta/transpiler/Haskell/99-bottles-of-beer-2.hs:87:55: error:
+    • Couldn't match type: IO [String]
+                     with: [[Char]]
+      Expected: IORef [[Char]]
+        Actual: IORef (IO [String])
+    • In the first argument of ‘deref’, namely ‘w’
+      In the first argument of ‘(!!)’, namely ‘(deref w)’
+      In the first argument of ‘(++)’, namely ‘((deref w) !! 0)’
+   |
+87 |         writeIORef w $! (take 0 (deref w) ++ [((deref w) !! 0) ++ "s"] ++ drop (0 + 1) (deref w))
+   |                                                       ^
+
+/workspace/mochi/tests/rosetta/transpiler/Haskell/99-bottles-of-beer-2.hs:87:95: error:
+    • Couldn't match type: IO [String]
+                     with: [[Char]]
+      Expected: IORef [[Char]]
+        Actual: IORef (IO [String])
+    • In the first argument of ‘deref’, namely ‘w’
+      In the second argument of ‘drop’, namely ‘(deref w)’
+      In the second argument of ‘(++)’, namely ‘drop (0 + 1) (deref w)’
+   |
+87 |         writeIORef w $! (take 0 (deref w) ++ [((deref w) !! 0) ++ "s"] ++ drop (0 + 1) (deref w))
+   |                                                                                               ^
+
+/workspace/mochi/tests/rosetta/transpiler/Haskell/99-bottles-of-beer-2.hs:90:25: error:
+    • Couldn't match type: IO [String]
+                     with: [[Char]]
+      Expected: IORef [[Char]]
+        Actual: IORef (IO [String])
+    • In the first argument of ‘deref’, namely ‘w’
+      In the first argument of ‘join’, namely ‘(deref w)’
+      In the first argument of ‘return’, namely ‘(join (deref w) " ")’
+   |
+90 |     return (join (deref w) " ")
+   |                         ^
+
+/workspace/mochi/tests/rosetta/transpiler/Haskell/99-bottles-of-beer-2.hs:101:17: error:
+    • Couldn't match expected type ‘[a]’ with actual type ‘()’
+    • In the first argument of ‘return’, namely ‘()’
+      In the expression: return ()
+      In a stmt of a 'do' block:
+        if length p <= 2 then do return (p) else return ()
+    • Relevant bindings include
+        p :: [a]
+          (bound at /workspace/mochi/tests/rosetta/transpiler/Haskell/99-bottles-of-beer-2.hs:98:6)
+        slur :: [a] -> Int -> IO (IO String)
+          (bound at /workspace/mochi/tests/rosetta/transpiler/Haskell/99-bottles-of-beer-2.hs:98:1)
+    |
+101 |     else return ()
+    |                 ^^
+
+/workspace/mochi/tests/rosetta/transpiler/Haskell/99-bottles-of-beer-2.hs:141:34: error:
+    • Couldn't match type: [a]
+                     with: IORef [Char]
+      Expected: IORef (IORef [Char])
+        Actual: IORef [a]
+    • In the first argument of ‘deref’, namely ‘s’
+      In the first argument of ‘fields’, namely ‘(deref s)’
+      In the first argument of ‘newIORef’, namely ‘(fields (deref s))’
+    • Relevant bindings include
+        s :: IORef [a]
+          (bound at /workspace/mochi/tests/rosetta/transpiler/Haskell/99-bottles-of-beer-2.hs:130:5)
+        a :: IORef [[a]]
+          (bound at /workspace/mochi/tests/rosetta/transpiler/Haskell/99-bottles-of-beer-2.hs:103:5)
+        p :: [a]
+          (bound at /workspace/mochi/tests/rosetta/transpiler/Haskell/99-bottles-of-beer-2.hs:98:6)
+        slur :: [a] -> Int -> IO (IO String)
+          (bound at /workspace/mochi/tests/rosetta/transpiler/Haskell/99-bottles-of-beer-2.hs:98:1)
+    |
+141 |     w <- newIORef (fields (deref s))
+    |                                  ^
+
+/workspace/mochi/tests/rosetta/transpiler/Haskell/99-bottles-of-beer-2.hs:142:25: error:
+    • Couldn't match type: IO [String]
+                     with: [[Char]]
+      Expected: IORef [[Char]]
+        Actual: IORef (IO [String])
+    • In the first argument of ‘deref’, namely ‘w’
+      In the first argument of ‘join’, namely ‘(deref w)’
+      In the first argument of ‘return’, namely ‘(join (deref w) " ")’
+    |
+142 |     return (join (deref w) " ")
+    |                         ^
+
+/workspace/mochi/tests/rosetta/transpiler/Haskell/99-bottles-of-beer-2.hs:150:27: error:
+    • Couldn't match expected type: [Char]
+                  with actual type: IO (IO String)
+    • In the first argument of ‘(++)’, namely
+        ‘slur (numberName (deref i)) (deref i)’
+      In the first argument of ‘putStrLn’, namely
+        ‘(slur (numberName (deref i)) (deref i)
+            ++
+              " "
+                ++
+                  pluralizeFirst (slur "bottle of" (deref i)) (deref i)
+                    ++ " " ++ slur "beer on the wall" (deref i))’
+      In a stmt of a 'do' block:
+        putStrLn
+          (slur (numberName (deref i)) (deref i)
+             ++
+               " "
+                 ++
+                   pluralizeFirst (slur "bottle of" (deref i)) (deref i)
+                     ++ " " ++ slur "beer on the wall" (deref i))
+    |
+150 |                 putStrLn (slur (numberName (deref i)) (deref i) ++ " " ++ pluralizeFirst (slur "bottle of" (deref i)) (deref i) ++ " " ++ slur "beer on the wall" (deref i))
+    |                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+/workspace/mochi/tests/rosetta/transpiler/Haskell/99-bottles-of-beer-2.hs:150:33: error:
+    • Couldn't match expected type: [a1]
+                  with actual type: IO String
+    • In the first argument of ‘slur’, namely ‘(numberName (deref i))’
+      In the first argument of ‘(++)’, namely
+        ‘slur (numberName (deref i)) (deref i)’
+      In the first argument of ‘putStrLn’, namely
+        ‘(slur (numberName (deref i)) (deref i)
+            ++
+              " "
+                ++
+                  pluralizeFirst (slur "bottle of" (deref i)) (deref i)
+                    ++ " " ++ slur "beer on the wall" (deref i))’
+    |
+150 |                 putStrLn (slur (numberName (deref i)) (deref i) ++ " " ++ pluralizeFirst (slur "bottle of" (deref i)) (deref i) ++ " " ++ slur "beer on the wall" (deref i))
+    |                                 ^^^^^^^^^^^^^^^^^^^^
+
+/workspace/mochi/tests/rosetta/transpiler/Haskell/99-bottles-of-beer-2.hs:150:75: error:
+    • Couldn't match expected type: [Char]
+                  with actual type: IO (IO String)
+    • In the first argument of ‘(++)’, namely
+        ‘pluralizeFirst (slur "bottle of" (deref i)) (deref i)’
+      In the second argument of ‘(++)’, namely
+        ‘pluralizeFirst (slur "bottle of" (deref i)) (deref i)
+           ++ " " ++ slur "beer on the wall" (deref i)’
+      In the second argument of ‘(++)’, namely
+        ‘" "
+           ++
+             pluralizeFirst (slur "bottle of" (deref i)) (deref i)
+               ++ " " ++ slur "beer on the wall" (deref i)’
+    |
+150 |                 putStrLn (slur (numberName (deref i)) (deref i) ++ " " ++ pluralizeFirst (slur "bottle of" (deref i)) (deref i) ++ " " ++ slur "beer on the wall" (deref i))
+    |                                                                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+/workspace/mochi/tests/rosetta/transpiler/Haskell/99-bottles-of-beer-2.hs:150:91: error:
+    • Couldn't match expected type: IORef ()
+                  with actual type: IO (IO String)
+    • In the first argument of ‘pluralizeFirst’, namely
+        ‘(slur "bottle of" (deref i))’
+      In the first argument of ‘(++)’, namely
+        ‘pluralizeFirst (slur "bottle of" (deref i)) (deref i)’
+      In the second argument of ‘(++)’, namely
+        ‘pluralizeFirst (slur "bottle of" (deref i)) (deref i)
+           ++ " " ++ slur "beer on the wall" (deref i)’
+    |
+150 |                 putStrLn (slur (numberName (deref i)) (deref i) ++ " " ++ pluralizeFirst (slur "bottle of" (deref i)) (deref i) ++ " " ++ slur "beer on the wall" (deref i))
+    |                                                                                           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+/workspace/mochi/tests/rosetta/transpiler/Haskell/99-bottles-of-beer-2.hs:150:139: error:
+    • Couldn't match expected type: [Char]
+                  with actual type: IO (IO String)
+    • In the second argument of ‘(++)’, namely
+        ‘slur "beer on the wall" (deref i)’
+      In the second argument of ‘(++)’, namely
+        ‘" " ++ slur "beer on the wall" (deref i)’
+      In the second argument of ‘(++)’, namely
+        ‘pluralizeFirst (slur "bottle of" (deref i)) (deref i)
+           ++ " " ++ slur "beer on the wall" (deref i)’
+    |
+150 |                 putStrLn (slur (numberName (deref i)) (deref i) ++ " " ++ pluralizeFirst (slur "bottle of" (deref i)) (deref i) ++ " " ++ slur "beer on the wall" (deref i))
+    |                                                                                                                                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+/workspace/mochi/tests/rosetta/transpiler/Haskell/99-bottles-of-beer-2.hs:151:27: error:
+    • Couldn't match expected type: [Char]
+                  with actual type: IO (IO String)
+    • In the first argument of ‘(++)’, namely
+        ‘slur (numberName (deref i)) (deref i)’
+      In the first argument of ‘putStrLn’, namely
+        ‘(slur (numberName (deref i)) (deref i)
+            ++
+              " "
+                ++
+                  pluralizeFirst (slur "bottle of" (deref i)) (deref i)
+                    ++ " " ++ slur "beer" (deref i))’
+      In a stmt of a 'do' block:
+        putStrLn
+          (slur (numberName (deref i)) (deref i)
+             ++
+               " "
+                 ++
+                   pluralizeFirst (slur "bottle of" (deref i)) (deref i)
+                     ++ " " ++ slur "beer" (deref i))
+    |
+151 |                 putStrLn (slur (numberName (deref i)) (deref i) ++ " " ++ pluralizeFirst (slur "bottle of" (deref i)) (deref i) ++ " " ++ slur "beer" (deref i))
+    |                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+/workspace/mochi/tests/rosetta/transpiler/Haskell/99-bottles-of-beer-2.hs:151:33: error:
+    • Couldn't match expected type: [a2]
+                  with actual type: IO String
+    • In the first argument of ‘slur’, namely ‘(numberName (deref i))’
+      In the first argument of ‘(++)’, namely
+        ‘slur (numberName (deref i)) (deref i)’
+      In the first argument of ‘putStrLn’, namely
+        ‘(slur (numberName (deref i)) (deref i)
+            ++
+              " "
+                ++
+                  pluralizeFirst (slur "bottle of" (deref i)) (deref i)
+                    ++ " " ++ slur "beer" (deref i))’
+    |
+151 |                 putStrLn (slur (numberName (deref i)) (deref i) ++ " " ++ pluralizeFirst (slur "bottle of" (deref i)) (deref i) ++ " " ++ slur "beer" (deref i))
+    |                                 ^^^^^^^^^^^^^^^^^^^^
+
+/workspace/mochi/tests/rosetta/transpiler/Haskell/99-bottles-of-beer-2.hs:151:75: error:
+    • Couldn't match expected type: [Char]
+                  with actual type: IO (IO String)
+    • In the first argument of ‘(++)’, namely
+        ‘pluralizeFirst (slur "bottle of" (deref i)) (deref i)’
+      In the second argument of ‘(++)’, namely
+        ‘pluralizeFirst (slur "bottle of" (deref i)) (deref i)
+           ++ " " ++ slur "beer" (deref i)’
+      In the second argument of ‘(++)’, namely
+        ‘" "
+           ++
+             pluralizeFirst (slur "bottle of" (deref i)) (deref i)
+               ++ " " ++ slur "beer" (deref i)’
+    |
+151 |                 putStrLn (slur (numberName (deref i)) (deref i) ++ " " ++ pluralizeFirst (slur "bottle of" (deref i)) (deref i) ++ " " ++ slur "beer" (deref i))
+    |                                                                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+/workspace/mochi/tests/rosetta/transpiler/Haskell/99-bottles-of-beer-2.hs:151:91: error:
+    • Couldn't match expected type: IORef ()
+                  with actual type: IO (IO String)
+    • In the first argument of ‘pluralizeFirst’, namely
+        ‘(slur "bottle of" (deref i))’
+      In the first argument of ‘(++)’, namely
+        ‘pluralizeFirst (slur "bottle of" (deref i)) (deref i)’
+      In the second argument of ‘(++)’, namely
+        ‘pluralizeFirst (slur "bottle of" (deref i)) (deref i)
+           ++ " " ++ slur "beer" (deref i)’
+    |
+151 |                 putStrLn (slur (numberName (deref i)) (deref i) ++ " " ++ pluralizeFirst (slur "bottle of" (deref i)) (deref i) ++ " " ++ slur "beer" (deref i))
+    |                                                                                           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+/workspace/mochi/tests/rosetta/transpiler/Haskell/99-bottles-of-beer-2.hs:151:139: error:
+    • Couldn't match expected type: [Char]
+                  with actual type: IO (IO String)
+    • In the second argument of ‘(++)’, namely ‘slur "beer" (deref i)’
+      In the second argument of ‘(++)’, namely
+        ‘" " ++ slur "beer" (deref i)’
+      In the second argument of ‘(++)’, namely
+        ‘pluralizeFirst (slur "bottle of" (deref i)) (deref i)
+           ++ " " ++ slur "beer" (deref i)’
+    |
+151 |                 putStrLn (slur (numberName (deref i)) (deref i) ++ " " ++ pluralizeFirst (slur "bottle of" (deref i)) (deref i) ++ " " ++ slur "beer" (deref i))
+    |                                                                                                                                           ^^^^^^^^^^^^^^^^^^^^^
+
+/workspace/mochi/tests/rosetta/transpiler/Haskell/99-bottles-of-beer-2.hs:152:27: error:
+    • Couldn't match expected type: [Char]
+                  with actual type: IO (IO String)
+    • In the first argument of ‘(++)’, namely
+        ‘slur "take one" (deref i)’
+      In the first argument of ‘putStrLn’, namely
+        ‘(slur "take one" (deref i)
+            ++
+              " "
+                ++
+                  slur "down" (deref i) ++ " " ++ slur "pass it around" (deref i))’
+      In a stmt of a 'do' block:
+        putStrLn
+          (slur "take one" (deref i)
+             ++
+               " "
+                 ++ slur "down" (deref i) ++ " " ++ slur "pass it around" (deref i))
+    |
+152 |                 putStrLn (slur "take one" (deref i) ++ " " ++ slur "down" (deref i) ++ " " ++ slur "pass it around" (deref i))
+    |                           ^^^^^^^^^^^^^^^^^^^^^^^^^
+
+/workspace/mochi/tests/rosetta/transpiler/Haskell/99-bottles-of-beer-2.hs:152:63: error:
+    • Couldn't match expected type: [Char]
+                  with actual type: IO (IO String)
+    • In the first argument of ‘(++)’, namely ‘slur "down" (deref i)’
+      In the second argument of ‘(++)’, namely
+        ‘slur "down" (deref i) ++ " " ++ slur "pass it around" (deref i)’
+      In the second argument of ‘(++)’, namely
+        ‘" "
+           ++ slur "down" (deref i) ++ " " ++ slur "pass it around" (deref i)’
+    |
+152 |                 putStrLn (slur "take one" (deref i) ++ " " ++ slur "down" (deref i) ++ " " ++ slur "pass it around" (deref i))
+    |                                                               ^^^^^^^^^^^^^^^^^^^^^
+
+/workspace/mochi/tests/rosetta/transpiler/Haskell/99-bottles-of-beer-2.hs:152:95: error:
+    • Couldn't match expected type: [Char]
+                  with actual type: IO (IO String)
+    • In the second argument of ‘(++)’, namely
+        ‘slur "pass it around" (deref i)’
+      In the second argument of ‘(++)’, namely
+        ‘" " ++ slur "pass it around" (deref i)’
+      In the second argument of ‘(++)’, namely
+        ‘slur "down" (deref i) ++ " " ++ slur "pass it around" (deref i)’
+    |
+152 |                 putStrLn (slur "take one" (deref i) ++ " " ++ slur "down" (deref i) ++ " " ++ slur "pass it around" (deref i))
+    |                                                                                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+/workspace/mochi/tests/rosetta/transpiler/Haskell/99-bottles-of-beer-2.hs:153:27: error:
+    • Couldn't match expected type: [Char]
+                  with actual type: IO (IO String)
+    • In the first argument of ‘(++)’, namely
+        ‘slur (numberName ((deref i) - 1)) (deref i)’
+      In the first argument of ‘putStrLn’, namely
+        ‘(slur (numberName ((deref i) - 1)) (deref i)
+            ++
+              " "
+                ++
+                  pluralizeFirst (slur "bottle of" (deref i)) ((deref i) - 1)
+                    ++ " " ++ slur "beer on the wall" (deref i))’
+      In a stmt of a 'do' block:
+        putStrLn
+          (slur (numberName ((deref i) - 1)) (deref i)
+             ++
+               " "
+                 ++
+                   pluralizeFirst (slur "bottle of" (deref i)) ((deref i) - 1)
+                     ++ " " ++ slur "beer on the wall" (deref i))
+    |
+153 |                 putStrLn (slur (numberName ((deref i) - 1)) (deref i) ++ " " ++ pluralizeFirst (slur "bottle of" (deref i)) ((deref i) - 1) ++ " " ++ slur "beer on the wall" (deref i))
+    |                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+/workspace/mochi/tests/rosetta/transpiler/Haskell/99-bottles-of-beer-2.hs:153:33: error:
+    • Couldn't match expected type: [a3]
+                  with actual type: IO String
+    • In the first argument of ‘slur’, namely
+        ‘(numberName ((deref i) - 1))’
+      In the first argument of ‘(++)’, namely
+        ‘slur (numberName ((deref i) - 1)) (deref i)’
+      In the first argument of ‘putStrLn’, namely
+        ‘(slur (numberName ((deref i) - 1)) (deref i)
+            ++
+              " "
+                ++
+                  pluralizeFirst (slur "bottle of" (deref i)) ((deref i) - 1)
+                    ++ " " ++ slur "beer on the wall" (deref i))’
+    |
+153 |                 putStrLn (slur (numberName ((deref i) - 1)) (deref i) ++ " " ++ pluralizeFirst (slur "bottle of" (deref i)) ((deref i) - 1) ++ " " ++ slur "beer on the wall" (deref i))
+    |                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+/workspace/mochi/tests/rosetta/transpiler/Haskell/99-bottles-of-beer-2.hs:153:81: error:
+    • Couldn't match expected type: [Char]
+                  with actual type: IO (IO String)
+    • In the first argument of ‘(++)’, namely
+        ‘pluralizeFirst (slur "bottle of" (deref i)) ((deref i) - 1)’
+      In the second argument of ‘(++)’, namely
+        ‘pluralizeFirst (slur "bottle of" (deref i)) ((deref i) - 1)
+           ++ " " ++ slur "beer on the wall" (deref i)’
+      In the second argument of ‘(++)’, namely
+        ‘" "
+           ++
+             pluralizeFirst (slur "bottle of" (deref i)) ((deref i) - 1)
+               ++ " " ++ slur "beer on the wall" (deref i)’
+    |
+153 |                 putStrLn (slur (numberName ((deref i) - 1)) (deref i) ++ " " ++ pluralizeFirst (slur "bottle of" (deref i)) ((deref i) - 1) ++ " " ++ slur "beer on the wall" (deref i))
+    |                                                                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+/workspace/mochi/tests/rosetta/transpiler/Haskell/99-bottles-of-beer-2.hs:153:97: error:
+    • Couldn't match expected type: IORef ()
+                  with actual type: IO (IO String)
+    • In the first argument of ‘pluralizeFirst’, namely
+        ‘(slur "bottle of" (deref i))’
+      In the first argument of ‘(++)’, namely
+        ‘pluralizeFirst (slur "bottle of" (deref i)) ((deref i) - 1)’
+      In the second argument of ‘(++)’, namely
+        ‘pluralizeFirst (slur "bottle of" (deref i)) ((deref i) - 1)
+           ++ " " ++ slur "beer on the wall" (deref i)’
+    |
+153 |                 putStrLn (slur (numberName ((deref i) - 1)) (deref i) ++ " " ++ pluralizeFirst (slur "bottle of" (deref i)) ((deref i) - 1) ++ " " ++ slur "beer on the wall" (deref i))
+    |                                                                                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+/workspace/mochi/tests/rosetta/transpiler/Haskell/99-bottles-of-beer-2.hs:153:151: error:
+    • Couldn't match expected type: [Char]
+                  with actual type: IO (IO String)
+    • In the second argument of ‘(++)’, namely
+        ‘slur "beer on the wall" (deref i)’
+      In the second argument of ‘(++)’, namely
+        ‘" " ++ slur "beer on the wall" (deref i)’
+      In the second argument of ‘(++)’, namely
+        ‘pluralizeFirst (slur "bottle of" (deref i)) ((deref i) - 1)
+           ++ " " ++ slur "beer on the wall" (deref i)’
+    |
+153 |                 putStrLn (slur (numberName ((deref i) - 1)) (deref i) ++ " " ++ pluralizeFirst (slur "bottle of" (deref i)) ((deref i) - 1) ++ " " ++ slur "beer on the wall" (deref i))
+    |                                                                                                                                                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
