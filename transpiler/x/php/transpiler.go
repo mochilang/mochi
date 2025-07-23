@@ -280,6 +280,44 @@ func gatherLocals(stmts []Stmt, locals map[string]struct{}) {
 	}
 }
 
+func markRefParams(body []Stmt, params []string) []bool {
+	flags := make([]bool, len(params))
+	var mark func([]Stmt)
+	mark = func(stmts []Stmt) {
+		for _, st := range stmts {
+			switch s := st.(type) {
+			case *AssignStmt:
+				for i, p := range params {
+					if s.Name == p {
+						flags[i] = true
+					}
+				}
+			case *IndexAssignStmt:
+				if idx, ok := s.Target.(*IndexExpr); ok {
+					if v, ok := idx.X.(*Var); ok {
+						for i, p := range params {
+							if v.Name == p {
+								flags[i] = true
+							}
+						}
+					}
+				}
+			case *IfStmt:
+				mark(s.Then)
+				mark(s.Else)
+			case *WhileStmt:
+				mark(s.Body)
+			case *ForRangeStmt:
+				mark(s.Body)
+			case *ForEachStmt:
+				mark(s.Body)
+			}
+		}
+	}
+	mark(body)
+	return flags
+}
+
 func (f *FuncDecl) emit(w io.Writer) {
 	fmt.Fprintf(w, "function %s(", f.Name)
 	for i, p := range f.Params {
@@ -1376,7 +1414,7 @@ func (n *NullLit) emit(w io.Writer) { io.WriteString(w, "null") }
 func Emit(w io.Writer, p *Program) error {
 	transpileEnv = p.Env
 	defer func() { transpileEnv = nil }()
-	if _, err := io.WriteString(w, "<?php\n"); err != nil {
+	if _, err := io.WriteString(w, "<?php\nini_set('memory_limit', '-1');\n"); err != nil {
 		return err
 	}
 	if usesLookupHost {
@@ -1965,7 +2003,7 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 		return &MapLit{Items: items}, nil
 	case p.FunExpr != nil:
 		params := make([]string, len(p.FunExpr.Params))
-		refFlags := make([]bool, len(p.FunExpr.Params))
+		var refFlags []bool
 		for i, p2 := range p.FunExpr.Params {
 			params[i] = p2.Name
 			if transpileEnv != nil {
@@ -1997,6 +2035,7 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 			}
 		}
 		funcStack = funcStack[:len(funcStack)-1]
+		refFlags = markRefParams(body, params)
 		uses := []string{}
 		for _, frame := range funcStack {
 			uses = append(uses, frame...)
@@ -2196,7 +2235,7 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 			closureNames[st.Fun.Name] = true
 		}
 		params := make([]string, len(st.Fun.Params))
-		refFlags := make([]bool, len(st.Fun.Params))
+		var refFlags []bool
 		savedEnv := transpileEnv
 		childEnv := transpileEnv
 		if transpileEnv != nil {
@@ -2225,6 +2264,7 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 		if err != nil {
 			return nil, err
 		}
+		refFlags = markRefParams(body, params)
 		uses := []string{}
 		for _, frame := range funcStack {
 			uses = append(uses, frame...)
