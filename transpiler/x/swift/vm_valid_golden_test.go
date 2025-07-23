@@ -50,7 +50,7 @@ func TestSwiftTranspiler_VMValid_Golden(t *testing.T) {
 		if err := os.WriteFile(codePath, code, 0o644); err != nil {
 			return nil, err
 		}
-		out, err := compileAndRunSwiftSrc(t, swiftExe, code)
+		out, err := compileAndRunSwiftSrc(t, swiftExe, code, nil)
 		if err != nil {
 			_ = os.WriteFile(errPath, append([]byte(err.Error()+"\n"), out...), 0o644)
 			return nil, err
