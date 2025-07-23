@@ -1,0 +1,4 @@
+Warning: Undefined array key "bar" in /workspace/mochi/tests/rosetta/transpiler/php/associative-array-creation.php on line 17
+null
+false
+2 42 -1
