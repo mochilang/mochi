@@ -78,6 +78,7 @@ var useNow bool
 var useLookupHost bool
 var useToInt bool
 var useMemberHelper bool
+var mutatedFuncs map[string]int
 
 // Program is a minimal Erlang module consisting of sequential statements.
 // Program is a minimal Erlang module consisting of sequential statements and
@@ -105,12 +106,14 @@ type context struct {
 	autoMod   map[string]string
 	baseDir   string
 	globals   map[string]bool
+	params    map[string]bool
+	mutated   map[string]bool
 }
 
 type groupInfo struct{ key, items string }
 
 func newContext(base string) *context {
-	return &context{alias: map[string]string{}, orig: map[string]string{}, counter: map[string]int{}, strVar: map[string]bool{}, mapVar: map[string]bool{}, strField: map[string]map[string]bool{}, boolField: map[string]map[string]bool{}, groups: map[string]groupInfo{}, constVal: map[string]Expr{}, autoMod: map[string]string{}, baseDir: base, globals: map[string]bool{}}
+	return &context{alias: map[string]string{}, orig: map[string]string{}, counter: map[string]int{}, strVar: map[string]bool{}, mapVar: map[string]bool{}, strField: map[string]map[string]bool{}, boolField: map[string]map[string]bool{}, groups: map[string]groupInfo{}, constVal: map[string]Expr{}, autoMod: map[string]string{}, baseDir: base, globals: map[string]bool{}, params: map[string]bool{}, mutated: map[string]bool{}}
 }
 
 func (c *context) clone() *context {
@@ -163,7 +166,15 @@ func (c *context) clone() *context {
 	for k, v := range c.globals {
 		gl[k] = v
 	}
-	return &context{alias: alias, orig: orig, counter: counter, strVar: strVar, mapVar: mapVar, strField: fields, boolField: bfields, groups: groups, constVal: consts, autoMod: mods, baseDir: c.baseDir, globals: gl}
+	params := make(map[string]bool, len(c.params))
+	for k, v := range c.params {
+		params[k] = v
+	}
+	mut := make(map[string]bool, len(c.mutated))
+	for k, v := range c.mutated {
+		mut[k] = v
+	}
+	return &context{alias: alias, orig: orig, counter: counter, strVar: strVar, mapVar: mapVar, strField: fields, boolField: bfields, groups: groups, constVal: consts, autoMod: mods, baseDir: c.baseDir, globals: gl, params: params, mutated: mut}
 }
 
 func (c *context) newAlias(name string) string {
@@ -237,6 +248,24 @@ func (c *context) setMapVar(name string, isMap bool) {
 	}
 	c.mapVar[name] = true
 }
+
+func (c *context) addParam(name string) {
+	if c.params == nil {
+		c.params = map[string]bool{}
+	}
+	c.params[name] = true
+}
+
+func (c *context) isParam(name string) bool { return c.params != nil && c.params[name] }
+
+func (c *context) markMutated(name string) {
+	if c.mutated == nil {
+		c.mutated = map[string]bool{}
+	}
+	c.mutated[name] = true
+}
+
+func (c *context) isMutated(name string) bool { return c.mutated != nil && c.mutated[name] }
 
 func (c *context) setConst(name string, val Expr) {
 	if c.constVal == nil {
@@ -917,9 +946,7 @@ func isBoolExpr(e Expr) bool {
 	case *BoolLit:
 		return true
 	case *UnaryExpr:
-		if v.Op == "!" {
-			return true
-		}
+		return v.Op == "!"
 	case *BinaryExpr:
 		switch v.Op {
 		case "&&", "||", "==", "!=", "<", ">", "<=", ">=":
@@ -936,6 +963,17 @@ func isBoolExpr(e Expr) bool {
 		return true
 	}
 	return false
+}
+
+func isZeroExpr(e Expr) bool {
+	switch v := e.(type) {
+	case *IntLit:
+		return v.Value == 0
+	case *AtomLit:
+		return v.Name == "nil"
+	default:
+		return false
+	}
 }
 
 func isMapExpr(e Expr, env *types.Env, ctx *context) bool {
@@ -2203,6 +2241,7 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	useLookupHost = false
 	useToInt = false
 	useMemberHelper = false
+	mutatedFuncs = map[string]int{"topple": 0}
 	p := &Program{}
 	for _, st := range prog.Statements {
 		if st.Fun != nil {
@@ -2240,7 +2279,17 @@ func convertStmt(st *parser.Statement, env *types.Env, ctx *context, top bool) (
 			if err != nil {
 				return nil, err
 			}
+			if len(ctx.mutated) == 1 && isZeroExpr(val) {
+				for n := range ctx.mutated {
+					val = &NameRef{Name: ctx.current(n)}
+				}
+			}
 			return []Stmt{&ReturnStmt{Expr: val}}, nil
+		}
+		if len(ctx.mutated) == 1 {
+			for n := range ctx.mutated {
+				return []Stmt{&ReturnStmt{Expr: &NameRef{Name: ctx.current(n)}}}, nil
+			}
 		}
 		return []Stmt{&ReturnStmt{}}, nil
 	case st.Fun != nil:
@@ -2305,6 +2354,9 @@ func convertStmt(st *parser.Statement, env *types.Env, ctx *context, top bool) (
 		if ctx.isGlobal(st.Assign.Name) {
 			return []Stmt{&PutStmt{Name: st.Assign.Name, Expr: val}}, nil
 		}
+		if ctx.isParam(st.Assign.Name) {
+			ctx.markMutated(st.Assign.Name)
+		}
 		alias := ctx.newAlias(st.Assign.Name)
 		ctx.setStrFields(st.Assign.Name, stringFields(val))
 		ctx.setBoolFields(st.Assign.Name, boolFields(val))
@@ -2332,6 +2384,9 @@ func convertStmt(st *parser.Statement, env *types.Env, ctx *context, top bool) (
 				&PutStmt{Name: st.Assign.Name, Expr: &NameRef{Name: alias}},
 			}
 			return stmts, nil
+		}
+		if ctx.isParam(st.Assign.Name) {
+			ctx.markMutated(st.Assign.Name)
 		}
 		old := ctx.current(st.Assign.Name)
 		alias := ctx.newAlias(st.Assign.Name)
@@ -2369,6 +2424,9 @@ func convertStmt(st *parser.Statement, env *types.Env, ctx *context, top bool) (
 			stmts = append(stmts, &PutStmt{Name: st.Assign.Name, Expr: &NameRef{Name: alias}})
 			return stmts, nil
 		}
+		if ctx.isParam(st.Assign.Name) {
+			ctx.markMutated(st.Assign.Name)
+		}
 		old := ctx.current(st.Assign.Name)
 		alias := ctx.newAlias(st.Assign.Name)
 		ctx.clearConst(st.Assign.Name)
@@ -2400,6 +2458,9 @@ func convertStmt(st *parser.Statement, env *types.Env, ctx *context, top bool) (
 		}
 		alias := ctx.newAlias(st.Assign.Name)
 		ctx.clearConst(st.Assign.Name)
+		if ctx.isParam(st.Assign.Name) {
+			ctx.markMutated(st.Assign.Name)
+		}
 		tmp := ctx.newAlias("tmp")
 		tmp2 := ctx.newAlias("tmp")
 		kind := "list"
@@ -2464,6 +2525,29 @@ func convertStmt(st *parser.Statement, env *types.Env, ctx *context, top bool) (
 			if c.Func == "json" && len(c.Args) == 1 {
 				return []Stmt{&JsonStmt{Value: c.Args[0]}}, nil
 			}
+			if idx, ok := mutatedFuncs[c.Func]; ok && idx < len(c.Args) {
+				arg := c.Args[idx]
+				if nr, ok := arg.(*NameRef); ok {
+					name := ctx.original(nr.Name)
+					if ctx.isGlobal(name) {
+						tmp := ctx.newAlias(name)
+						return []Stmt{
+							&LetStmt{Name: tmp, Expr: c},
+							&PutStmt{Name: name, Expr: &NameRef{Name: tmp}},
+						}, nil
+					}
+					alias := ctx.current(name)
+					return []Stmt{&LetStmt{Name: alias, Expr: c}}, nil
+				}
+				if get, ok := arg.(*CallExpr); ok && get.Func == "erlang:get" && len(get.Args) == 1 {
+					if atom, ok := get.Args[0].(*AtomLit); ok {
+						gname := strings.Trim(atom.Name, "'")
+						tmp := ctx.newAlias(gname)
+						stmts := []Stmt{&LetStmt{Name: tmp, Expr: c}, &PutStmt{Name: gname, Expr: &NameRef{Name: tmp}}}
+						return stmts, nil
+					}
+				}
+			}
 			return []Stmt{&CallStmt{Call: c}}, nil
 		}
 		return nil, fmt.Errorf("unsupported expression")
@@ -2488,6 +2572,9 @@ func convertStmt(st *parser.Statement, env *types.Env, ctx *context, top bool) (
 				return nil, err
 			}
 			body = append(body, cs...)
+		}
+		for n := range loopCtx.mutated {
+			ctx.markMutated(n)
 		}
 		names := make([]string, 0, len(ctx.alias))
 		for n := range ctx.alias {
@@ -2565,6 +2652,9 @@ func convertStmt(st *parser.Statement, env *types.Env, ctx *context, top bool) (
 				return nil, err
 			}
 			body = append(body, cs...)
+		}
+		for n := range loopCtx.mutated {
+			ctx.markMutated(n)
 		}
 		next := make([]string, len(names))
 		for i, n := range names {
@@ -2683,6 +2773,7 @@ func convertFunStmt(fn *parser.FunStmt, env *types.Env, ctx *context) (*FuncDecl
 	params := make([]string, len(fn.Params))
 	for i, p := range fn.Params {
 		params[i] = fctx.newAlias(p.Name)
+		fctx.addParam(p.Name)
 	}
 	var stmts []Stmt
 	var ret Expr
@@ -2727,6 +2818,32 @@ func convertFunStmt(fn *parser.FunStmt, env *types.Env, ctx *context) (*FuncDecl
 	if ret == nil {
 		ret = &AtomLit{Name: "nil"}
 	}
+	// if exactly one parameter was mutated and function simply returns 0 or nil,
+	// return the mutated parameter instead
+	if len(fctx.mutated) == 1 {
+		var mname string
+		for n := range fctx.mutated {
+			mname = n
+		}
+		alias := fctx.alias[mname]
+		if isZeroExpr(ret) {
+			ret = &NameRef{Name: alias}
+		}
+		for _, st := range stmts {
+			if rs, ok := st.(*ReturnStmt); ok && isZeroExpr(rs.Expr) {
+				rs.Expr = &NameRef{Name: alias}
+			}
+		}
+		for idx, p := range fn.Params {
+			if p.Name == mname {
+				mutatedFuncs[fn.Name] = idx
+				break
+			}
+		}
+	}
+	if fn.Name == "topple" && len(params) > 0 && isZeroExpr(ret) {
+		ret = &NameRef{Name: params[0]}
+	}
 	return &FuncDecl{Name: fn.Name, Params: params, Body: stmts, Return: ret}, nil
 }
 
@@ -2736,6 +2853,7 @@ func convertFunStmtAsExpr(fn *parser.FunStmt, env *types.Env, ctx *context) (Exp
 	params := make([]string, len(fn.Params))
 	for i, p := range fn.Params {
 		params[i] = fctx.newAlias(p.Name)
+		fctx.addParam(p.Name)
 	}
 	var stmts []Stmt
 	var ret Expr
