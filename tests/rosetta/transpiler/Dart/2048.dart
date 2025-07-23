@@ -21,8 +21,32 @@ int _now() {
   return DateTime.now().microsecondsSinceEpoch;
 }
 
+class Board {
+  List<List<int>> cells;
+  Board({required this.cells});
+}
+
+class SpawnResult {
+  Board board;
+  bool full;
+  SpawnResult({required this.board, required this.full});
+}
+
+class SlideResult {
+  List<int> row;
+  int gain;
+  SlideResult({required this.row, required this.gain});
+}
+
+class MoveResult {
+  Board board;
+  int score;
+  bool moved;
+  MoveResult({required this.board, required this.score, required this.moved});
+}
+
 final int SIZE = 4;
-List<List<int>> newBoard() {
+Board newBoard() {
   List<List<int>> b = [];
   int y = 0;
   while (y < SIZE) {
@@ -35,16 +59,17 @@ List<List<int>> newBoard() {
     b = [...b, row];
     y = y + 1;
   }
-  return b;
+  return Board(cells: b);
 }
 
-Map<String, dynamic> spawnTile(b) {
+SpawnResult spawnTile(Board b) {
+  var grid = b.cells;
   List<List<int>> empty = [];
   int y = 0;
   while (y < SIZE) {
     int x = 0;
     while (x < SIZE) {
-    if (b[y]![x] == 0) {
+    if (grid[y]![x] == 0) {
     empty = [...empty, [x, y]];
   }
     x = x + 1;
@@ -52,19 +77,19 @@ Map<String, dynamic> spawnTile(b) {
     y = y + 1;
   }
   if (empty.length == 0) {
-    return {"board": b, "full": true};
+    return SpawnResult(board: b, full: true);
   }
   int idx = _now() % empty.length;
-  final List<int> cell = empty[idx];
+  final cell = empty[idx];
   int val = 4;
   if (_now() % 10 < 9) {
     val = 2;
   }
-  b[cell[1]]![cell[0]] = val;
-  return {"board": b, "full": empty.length == 1};
+  grid[cell[1]]![cell[0]] = val;
+  return SpawnResult(board: Board(cells: grid), full: empty.length == 1);
 }
 
-String pad(n) {
+String pad(int n) {
   String s = (n).toString();
   int pad = 4 - s.length;
   int i = 0;
@@ -76,7 +101,7 @@ String pad(n) {
   return out + s;
 }
 
-void draw(b, score) {
+void draw(Board b, int score) {
   print("Score: " + (score).toString());
   int y = 0;
   while (y < SIZE) {
@@ -84,7 +109,7 @@ void draw(b, score) {
     String line = "|";
     int x = 0;
     while (x < SIZE) {
-    var v = b[y]![x];
+    var v = b.cells[y]![x];
     if (v == 0) {
     line = line + "    |";
   } else {
@@ -99,17 +124,17 @@ void draw(b, score) {
   print("W=Up S=Down A=Left D=Right Q=Quit");
 }
 
-List<int> reverseRow(r) {
+List<int> reverseRow(List<int> r) {
   List<int> out = [];
   int i = r.length - 1;
   while (i >= 0) {
-    out = [...out, r[i]!];
+    out = [...out, r[i]];
     i = i - 1;
   }
   return out;
 }
 
-Map<String, dynamic> slideLeft(row) {
+SlideResult slideLeft(List<int> row) {
   List<int> xs = [];
   int i = 0;
   while (i < row.length) {
@@ -123,7 +148,7 @@ Map<String, dynamic> slideLeft(row) {
   i = 0;
   while (i < xs.length) {
     if (i + 1 < xs.length && xs[i] == xs[i + 1]) {
-    final int v = xs[i] * 2;
+    final num v = xs[i] * 2;
     gain = gain + v;
     res = [...res, v];
     i = i + 2;
@@ -135,124 +160,132 @@ Map<String, dynamic> slideLeft(row) {
   while (res.length < SIZE) {
     res = [...res, 0];
   }
-  return {"row": res, "gain": gain};
+  return SlideResult(row: res, gain: gain);
 }
 
-Map<String, dynamic> moveLeft(b, score) {
+MoveResult moveLeft(Board b, int score) {
+  var grid = b.cells;
   bool moved = false;
   int y = 0;
   while (y < SIZE) {
-    final Map<String, dynamic> r = slideLeft(b[y]);
-    final _new = r["row"]!;
-    score = score + r["gain"]!;
+    final SlideResult r = slideLeft(grid[y]);
+    final _new = r.row;
+    score = score + r.gain;
     int x = 0;
     while (x < SIZE) {
-    if (b[y]![x] != _new[x]) {
+    if (grid[y]![x] != _new[x]) {
     moved = true;
   }
-    b[y]![x] = _new[x];
+    grid[y]![x] = _new[x];
     x = x + 1;
   }
     y = y + 1;
   }
-  return {"board": b, "score": score, "moved": moved};
+  return MoveResult(board: Board(cells: grid), score: score, moved: moved);
 }
 
-Map<String, dynamic> moveRight(b, score) {
+MoveResult moveRight(Board b, int score) {
+  var grid = b.cells;
   bool moved = false;
   int y = 0;
   while (y < SIZE) {
-    List<int> rev = reverseRow(b[y]);
-    final Map<String, dynamic> r = slideLeft(rev);
-    rev = r["row"]!;
-    score = score + r["gain"]!;
+    List<int> rev = reverseRow(grid[y]);
+    final SlideResult r = slideLeft(rev);
+    rev = r.row;
+    score = score + r.gain;
     rev = reverseRow(rev);
     int x = 0;
     while (x < SIZE) {
-    if (b[y]![x] != rev[x]) {
+    if (grid[y]![x] != rev[x]) {
     moved = true;
   }
-    b[y]![x] = rev[x];
+    grid[y]![x] = rev[x];
     x = x + 1;
   }
     y = y + 1;
   }
-  return {"board": b, "score": score, "moved": moved};
+  return MoveResult(board: Board(cells: grid), score: score, moved: moved);
 }
 
-List<int> getCol(b, x) {
+List<int> getCol(Board b, int x) {
   List<int> col = [];
   int y = 0;
   while (y < SIZE) {
-    col = [...col, b[y]![x]];
+    col = [...col, b.cells[y]![x]];
     y = y + 1;
   }
   return col;
 }
 
-void setCol(b, x, col) {
+void setCol(Board b, int x, List<int> col) {
+  var rows = b.cells;
   int y = 0;
   while (y < SIZE) {
-    b[y]![x] = col[y];
+    var row = rows[y];
+    row[x] = col[y];
+    rows[y] = row;
     y = y + 1;
   }
+  b.cells = rows;
 }
 
-Map<String, dynamic> moveUp(b, score) {
+MoveResult moveUp(Board b, int score) {
+  var grid = b.cells;
   bool moved = false;
   int x = 0;
   while (x < SIZE) {
     List<int> col = getCol(b, x);
-    final Map<String, dynamic> r = slideLeft(col);
-    final _new = r["row"]!;
-    score = score + r["gain"]!;
+    final SlideResult r = slideLeft(col);
+    final _new = r.row;
+    score = score + r.gain;
     int y = 0;
     while (y < SIZE) {
-    if (b[y]![x] != _new[y]) {
+    if (grid[y]![x] != _new[y]) {
     moved = true;
   }
-    b[y]![x] = _new[y];
+    grid[y]![x] = _new[y];
     y = y + 1;
   }
     x = x + 1;
   }
-  return {"board": b, "score": score, "moved": moved};
+  return MoveResult(board: Board(cells: grid), score: score, moved: moved);
 }
 
-Map<String, dynamic> moveDown(b, score) {
+MoveResult moveDown(Board b, int score) {
+  var grid = b.cells;
   bool moved = false;
   int x = 0;
   while (x < SIZE) {
     List<int> col = reverseRow(getCol(b, x));
-    final Map<String, dynamic> r = slideLeft(col);
-    col = r["row"]!;
-    score = score + r["gain"]!;
+    final SlideResult r = slideLeft(col);
+    col = r.row;
+    score = score + r.gain;
     col = reverseRow(col);
     int y = 0;
     while (y < SIZE) {
-    if (b[y]![x] != col[y]) {
+    if (grid[y]![x] != col[y]) {
     moved = true;
   }
-    b[y]![x] = col[y];
+    grid[y]![x] = col[y];
     y = y + 1;
   }
     x = x + 1;
   }
-  return {"board": b, "score": score, "moved": moved};
+  return MoveResult(board: Board(cells: grid), score: score, moved: moved);
 }
 
-bool hasMoves(b) {
+bool hasMoves(Board b) {
   int y = 0;
   while (y < SIZE) {
     int x = 0;
     while (x < SIZE) {
-    if (b[y]![x] == 0) {
+    if (b.cells[y]![x] == 0) {
     return true;
   }
-    if (x + 1 < SIZE && b[y]![x] == b[y]![x + 1]) {
+    if (x + 1 < SIZE && b.cells[y]![x] == b.cells[y]![x + 1]) {
     return true;
   }
-    if (y + 1 < SIZE && b[y]![x] == b[y + 1]![x]) {
+    if (y + 1 < SIZE && b.cells[y]![x] == b.cells[y + 1]![x]) {
     return true;
   }
     x = x + 1;
@@ -262,12 +295,12 @@ bool hasMoves(b) {
   return false;
 }
 
-bool has2048(b) {
+bool has2048(Board b) {
   int y = 0;
   while (y < SIZE) {
     int x = 0;
     while (x < SIZE) {
-    if (b[y]![x] >= 2048) {
+    if (b.cells[y]![x] >= 2048) {
     return true;
   }
     x = x + 1;
@@ -277,52 +310,52 @@ bool has2048(b) {
   return false;
 }
 
-List<List<int>> board = newBoard();
-Map<String, dynamic> r = spawnTile(board);
-var full = r["full"]!;
+Board board = newBoard();
+SpawnResult r = spawnTile(board);
+bool full = r.full;
 int score = 0;
 void main() {
   _initNow();
-  board = r["board"]!;
+  board = r.board;
   r = spawnTile(board);
-  board = r["board"]!;
-  full = r["full"]!;
+  board = r.board;
+  full = r.full;
   draw(board, score);
   while (true) {
     print("Move: ");
     final String cmd = stdin.readLineSync() ?? '';
     bool moved = false;
     if (cmd == "a" || cmd == "A") {
-    final Map<String, dynamic> m = moveLeft(board, score);
-    board = m["board"]!;
-    score = m["score"]!;
-    moved = m["moved"]!;
+    final MoveResult m = moveLeft(board, score);
+    board = m.board;
+    score = m.score;
+    moved = m.moved;
   }
     if (cmd == "d" || cmd == "D") {
-    final Map<String, dynamic> m = moveRight(board, score);
-    board = m["board"]!;
-    score = m["score"]!;
-    moved = m["moved"]!;
+    final MoveResult m = moveRight(board, score);
+    board = m.board;
+    score = m.score;
+    moved = m.moved;
   }
     if (cmd == "w" || cmd == "W") {
-    final Map<String, dynamic> m = moveUp(board, score);
-    board = m["board"]!;
-    score = m["score"]!;
-    moved = m["moved"]!;
+    final MoveResult m = moveUp(board, score);
+    board = m.board;
+    score = m.score;
+    moved = m.moved;
   }
     if (cmd == "s" || cmd == "S") {
-    final Map<String, dynamic> m = moveDown(board, score);
-    board = m["board"]!;
-    score = m["score"]!;
-    moved = m["moved"]!;
+    final MoveResult m = moveDown(board, score);
+    board = m.board;
+    score = m.score;
+    moved = m.moved;
   }
     if (cmd == "q" || cmd == "Q") {
     break;
   }
     if (moved) {
-    final Map<String, dynamic> r2 = spawnTile(board);
-    board = r2["board"]!;
-    full = r2["full"]!;
+    final SpawnResult r2 = spawnTile(board);
+    board = r2.board;
+    full = r2.full;
     if (full && !hasMoves(board)) {
     draw(board, score);
     print("Game Over");
