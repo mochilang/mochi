@@ -37,8 +37,8 @@ Compiled and ran: 32/284
 30. [x] ackermann-function
 31. [x] active-directory-connect
 32. [x] active-directory-search-for-a-user
-33. [x] active-object
-34. [ ] add-a-variable-to-a-class-instance-at-runtime
+33. [ ] active-object
+34. [x] add-a-variable-to-a-class-instance-at-runtime
 35. [ ] additive-primes
 36. [ ] address-of-a-variable
 37. [ ] adfgvx-cipher
@@ -290,4 +290,4 @@ Compiled and ran: 32/284
 283. [ ] define-a-primitive-data-type
 284. [ ] md5
 
-_Last updated: 2025-07-23 16:37 +0700_
+_Last updated: 2025-07-23 17:03 +0700_

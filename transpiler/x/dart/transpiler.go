@@ -46,6 +46,7 @@ var (
 	imports          []string
 	testpkgAliases   map[string]struct{}
 	netAliases       map[string]struct{}
+	structMutable    map[string]bool
 )
 
 // GetStructOrder returns the generated struct names (for testing).
@@ -2786,11 +2787,11 @@ func Emit(w io.Writer, p *Program) error {
 			return err
 		}
 		for _, f := range fields {
-			if _, err := fmt.Fprintf(w, "  final %s %s;\n", f.Type, f.Name); err != nil {
+			if _, err := fmt.Fprintf(w, "  %s %s;\n", f.Type, f.Name); err != nil {
 				return err
 			}
 		}
-		if _, err := fmt.Fprintf(w, "  const %s({", name); err != nil {
+		if _, err := fmt.Fprintf(w, "  %s({", name); err != nil {
 			return err
 		}
 		for i, f := range fields {
@@ -2900,6 +2901,7 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	imports = nil
 	testpkgAliases = map[string]struct{}{}
 	netAliases = map[string]struct{}{}
+	structMutable = map[string]bool{}
 	p := &Program{}
 	for _, st := range prog.Statements {
 		s, err := convertStmtInternal(st)
@@ -3250,7 +3252,8 @@ func convertStmtInternal(st *parser.Statement) (Stmt, error) {
 }
 
 func convertAssignTarget(as *parser.AssignStmt) (Expr, error) {
-	expr := Expr(&Name{Name: sanitize(as.Name)})
+	baseName := sanitize(as.Name)
+	expr := Expr(&Name{Name: baseName})
 	for i, idx := range as.Index {
 		if idx.Start == nil || idx.Colon != nil || idx.Colon2 != nil || idx.End != nil || idx.Step != nil {
 			return nil, fmt.Errorf("complex assignment not supported")
@@ -3273,6 +3276,20 @@ func convertAssignTarget(as *parser.AssignStmt) (Expr, error) {
 			expr = &NotNilExpr{X: nexpr}
 		} else {
 			expr = nexpr
+			var typ string
+			if currentEnv != nil {
+				if t, err := currentEnv.GetVar(baseName); err == nil {
+					if st, ok := t.(types.StructType); ok {
+						typ = st.Name
+					}
+				}
+			}
+			if typ == "" {
+				typ = localVarTypes[baseName]
+			}
+			if typ != "" {
+				structMutable[typ] = true
+			}
 		}
 	}
 	return expr, nil
