@@ -901,6 +901,7 @@ func (wst *WhileStmt) emit(w io.Writer) {
 	indentLevel--
 	if wst.WithBreak {
 		indentLevel--
+		w.Write([]byte{'\n'})
 		writeIndent(w)
 		io.WriteString(w, "with\n")
 		writeIndent(w)
@@ -973,6 +974,7 @@ func (fst *ForStmt) emit(w io.Writer) {
 	indentLevel--
 	if fst.WithBreak {
 		indentLevel--
+		w.Write([]byte{'\n'})
 		writeIndent(w)
 		io.WriteString(w, "with\n")
 		writeIndent(w)
