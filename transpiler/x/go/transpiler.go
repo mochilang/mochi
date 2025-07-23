@@ -35,6 +35,7 @@ type Program struct {
 	UseInput     bool
 	UseSubstr    bool
 	UseFloatConv bool
+	UseBigInt    bool
 }
 
 var (
@@ -47,6 +48,7 @@ var (
 	usesInput      bool
 	usesSubstr     bool
 	usesFloatConv  bool
+	usesBigInt     bool
 	topEnv         *types.Env
 	extraDecls     []Stmt
 	structCount    int
@@ -783,6 +785,74 @@ func (b *BinaryExpr) emit(w io.Writer) {
 	fmt.Fprint(w, ")")
 }
 
+// BigBinaryExpr represents arithmetic on big integers.
+type BigBinaryExpr struct {
+	Left  Expr
+	Op    string
+	Right Expr
+}
+
+func (b *BigBinaryExpr) emit(w io.Writer) {
+	switch b.Op {
+	case "+":
+		io.WriteString(w, "new(big.Int).Add(")
+	case "-":
+		io.WriteString(w, "new(big.Int).Sub(")
+	case "*":
+		io.WriteString(w, "new(big.Int).Mul(")
+	case "/":
+		io.WriteString(w, "new(big.Int).Div(")
+	case "%":
+		io.WriteString(w, "new(big.Int).Mod(")
+	default:
+		io.WriteString(w, "new(big.Int)")
+		return
+	}
+	b.Left.emit(w)
+	io.WriteString(w, ", ")
+	b.Right.emit(w)
+	io.WriteString(w, ")")
+}
+
+// BigCmpExpr compares two big integers with the given operator.
+type BigCmpExpr struct {
+	Left  Expr
+	Op    string
+	Right Expr
+}
+
+func (b *BigCmpExpr) emit(w io.Writer) {
+	io.WriteString(w, "func() bool { return ")
+	b.Left.emit(w)
+	io.WriteString(w, ".Cmp(")
+	b.Right.emit(w)
+	io.WriteString(w, ") ")
+	switch b.Op {
+	case "<":
+		io.WriteString(w, "< 0")
+	case "<=":
+		io.WriteString(w, "<= 0")
+	case ">":
+		io.WriteString(w, "> 0")
+	case ">=":
+		io.WriteString(w, ">= 0")
+	case "==":
+		io.WriteString(w, "== 0")
+	case "!=":
+		io.WriteString(w, "!= 0")
+	}
+	io.WriteString(w, " }()")
+}
+
+// BigIntToIntExpr converts a *big.Int to int via Int64().
+type BigIntToIntExpr struct{ Value Expr }
+
+func (b *BigIntToIntExpr) emit(w io.Writer) {
+	io.WriteString(w, "int(")
+	b.Value.emit(w)
+	io.WriteString(w, ".Int64())")
+}
+
 type AvgExpr struct{ List Expr }
 
 func (a *AvgExpr) emit(w io.Writer) {
@@ -1503,6 +1573,7 @@ func Transpile(p *parser.Program, env *types.Env) (*Program, error) {
 	usesInput = false
 	usesSubstr = false
 	usesFloatConv = false
+	usesBigInt = false
 	topEnv = env
 	extraDecls = nil
 	structCount = 0
@@ -1533,6 +1604,7 @@ func Transpile(p *parser.Program, env *types.Env) (*Program, error) {
 	gp.UseInput = usesInput
 	gp.UseSubstr = usesSubstr
 	gp.UseFloatConv = usesFloatConv
+	gp.UseBigInt = usesBigInt
 	gp.Imports = imports
 	return gp, nil
 }
@@ -1726,6 +1798,9 @@ func compileStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 			if ae, ok := e.(*AssertExpr); ok && typ != "" && ae.Type == typ {
 				e = ae.Expr
 			}
+			if typ == "*big.Int" {
+				e = ensureBigIntExpr(e, valType)
+			}
 			if declaredType != nil {
 				if env == topEnv {
 					env.SetVarDeep(st.Let.Name, declaredType, false)
@@ -1823,6 +1898,9 @@ func compileStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 						env.SetVar(st.Var.Name, types.ListType{Elem: stype}, true)
 					}
 				}
+			}
+			if typ == "*big.Int" {
+				e = ensureBigIntExpr(e, valType)
 			}
 			if declaredType != nil {
 				if env == topEnv {
@@ -2870,6 +2948,10 @@ func zeroValueExpr(goType string) Expr {
 	case strings.HasPrefix(goType, "[]"):
 		return &VarRef{Name: "nil"}
 	case strings.HasPrefix(goType, "*"):
+		if goType == "*big.Int" {
+			usesBigInt = true
+			return &CallExpr{Func: "big.NewInt", Args: []Expr{&IntLit{Value: 0}}}
+		}
 		return &VarRef{Name: "nil"}
 	default:
 		if _, ok := topEnv.GetStruct(goType); ok {
@@ -2877,6 +2959,19 @@ func zeroValueExpr(goType string) Expr {
 		}
 		return &VarRef{Name: "nil"}
 	}
+}
+
+func isBigIntType(t types.Type) bool {
+	_, ok := t.(types.BigIntType)
+	return ok
+}
+
+func ensureBigIntExpr(e Expr, t types.Type) Expr {
+	if isBigIntType(t) {
+		return e
+	}
+	usesBigInt = true
+	return &CallExpr{Func: "big.NewInt", Args: []Expr{&CallExpr{Func: "int64", Args: []Expr{e}}}}
 }
 
 func boolExprFor(e Expr, t types.Type) Expr {
@@ -2899,9 +2994,13 @@ func boolExprFor(e Expr, t types.Type) Expr {
 	switch t.(type) {
 	case types.OptionType:
 		return &BinaryExpr{Left: e, Op: "!=", Right: &VarRef{Name: "nil"}}
-	case types.IntType, types.Int64Type, types.BigIntType,
+	case types.IntType, types.Int64Type,
 		types.FloatType, types.BigRatType:
 		return &BinaryExpr{Left: e, Op: "!=", Right: &IntLit{Value: 0}}
+	case types.BigIntType:
+		usesBigInt = true
+		zero := &CallExpr{Func: "big.NewInt", Args: []Expr{&IntLit{Value: 0}}}
+		return &BigCmpExpr{Left: e, Op: "!=", Right: zero}
 	case types.StringType:
 		return &BinaryExpr{Left: e, Op: "!=", Right: &StringLit{Value: ""}}
 	case types.ListType, types.MapType:
@@ -3248,6 +3347,17 @@ func compileBinary(b *parser.BinaryExpr, env *types.Env, base string) (Expr, err
 					}
 					newExpr = &IntersectExpr{Left: left, Right: right, ElemType: et}
 				default:
+					if isBigIntType(typesList[i]) || isBigIntType(typesList[i+1]) {
+						usesBigInt = true
+						left = ensureBigIntExpr(left, typesList[i])
+						right = ensureBigIntExpr(right, typesList[i+1])
+						switch ops[i].Op {
+						case "+", "-", "*", "/", "%":
+							newExpr = &BigBinaryExpr{Left: left, Op: ops[i].Op, Right: right}
+						case "<", "<=", ">", ">=", "==", "!=":
+							newExpr = &BigCmpExpr{Left: left, Op: ops[i].Op, Right: right}
+						}
+					}
 					// list concatenation with +
 					if ops[i].Op == "+" {
 						if lt, ok := typesList[i].(types.ListType); ok {
@@ -3305,7 +3415,14 @@ func compileUnary(u *parser.Unary, env *types.Env, base string) (Expr, error) {
 		op := u.Ops[i]
 		switch op {
 		case "-":
-			expr = &BinaryExpr{Left: &IntLit{Value: 0}, Op: "-", Right: expr}
+			if isBigIntType(types.TypeOfPostfix(u.Value, env)) {
+				usesBigInt = true
+				zero := &CallExpr{Func: "big.NewInt", Args: []Expr{&IntLit{Value: 0}}}
+				expr = ensureBigIntExpr(expr, types.TypeOfPostfix(u.Value, env))
+				expr = &BigBinaryExpr{Left: zero, Op: "-", Right: expr}
+			} else {
+				expr = &BinaryExpr{Left: &IntLit{Value: 0}, Op: "-", Right: expr}
+			}
 		case "!":
 			if types.IsAnyType(types.TypeOfPostfix(u.Value, env)) {
 				expr = &NotExpr{Expr: &AssertExpr{Expr: expr, Type: "bool"}}
@@ -3542,12 +3659,26 @@ func compilePostfix(pf *parser.PostfixExpr, env *types.Env, base string) (Expr, 
 					case types.StringType:
 						usesStrconv = true
 						expr = &AtoiExpr{Expr: expr}
-					case types.IntType, types.Int64Type, types.BigIntType:
+					case types.IntType, types.Int64Type:
 						// no-op
+					case types.BigIntType:
+						usesBigInt = true
+						expr = &BigIntToIntExpr{Value: expr}
 					default:
 						expr = &IntCastExpr{Expr: expr}
 					}
 					t = types.IntType{}
+				} else if name == "bigint" {
+					usesBigInt = true
+					switch t.(type) {
+					case types.IntType, types.Int64Type:
+						expr = &CallExpr{Func: "big.NewInt", Args: []Expr{expr}}
+					case types.BigIntType:
+						// no-op
+					default:
+						return nil, fmt.Errorf("unsupported postfix")
+					}
+					t = types.BigIntType{}
 				} else if name == "float" {
 					expr = &CallExpr{Func: "float64", Args: []Expr{expr}}
 				} else if st, ok := env.GetStruct(name); ok {
@@ -3660,6 +3791,10 @@ func compilePrimary(p *parser.Primary, env *types.Env, base string) (Expr, error
 			if _, ok := argType.(types.StringType); ok {
 				usesStrconv = true
 				return &AtoiExpr{Expr: args[0]}, nil
+			}
+			if _, ok := argType.(types.BigIntType); ok {
+				usesBigInt = true
+				return &BigIntToIntExpr{Value: args[0]}, nil
 			}
 			if types.IsAnyType(argType) {
 				args[0] = &AssertExpr{Expr: args[0], Type: "int"}
@@ -3934,6 +4069,9 @@ func toGoType(t *parser.TypeRef, env *types.Env) string {
 		switch *t.Simple {
 		case "int":
 			return "int"
+		case "bigint":
+			usesBigInt = true
+			return "*big.Int"
 		case "string":
 			return "string"
 		case "bool":
@@ -3984,8 +4122,11 @@ func toGoType(t *parser.TypeRef, env *types.Env) string {
 
 func toGoTypeFromType(t types.Type) string {
 	switch tt := t.(type) {
-	case types.IntType, types.Int64Type, types.BigIntType:
+	case types.IntType, types.Int64Type:
 		return "int"
+	case types.BigIntType:
+		usesBigInt = true
+		return "*big.Int"
 	case types.StringType:
 		return "string"
 	case types.BoolType:
@@ -4223,6 +4364,9 @@ func Emit(prog *Program) []byte {
 	}
 	if prog.UseSort {
 		buf.WriteString("    \"sort\"\n")
+	}
+	if prog.UseBigInt {
+		buf.WriteString("    \"math/big\"\n")
 	}
 	if prog.UseInput {
 		buf.WriteString("    \"bufio\"\n")
