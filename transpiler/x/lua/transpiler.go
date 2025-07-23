@@ -1120,7 +1120,12 @@ func isMapExpr(e Expr) bool {
 			if s, ok2 := ex.Index.(*StringLit); ok2 && s.Value == "items" {
 				return false
 			}
-			return true
+			if _, ok := exprType(e).(types.MapType); ok {
+				return true
+			}
+			if _, ok := exprType(e).(types.StructType); ok {
+				return true
+			}
 		}
 	}
 	return false
@@ -1300,9 +1305,7 @@ func (b *BinaryExpr) emit(w io.Writer) {
 	if op == "!=" {
 		op = "~="
 	}
-	if op == "+" && (isStringExpr(b.Left) || isStringExpr(b.Right)) {
-		op = ".."
-	} else if op == "&&" {
+	if op == "&&" {
 		op = "and"
 	} else if op == "||" {
 		op = "or"
@@ -1321,7 +1324,11 @@ func (b *BinaryExpr) emit(w io.Writer) {
 		io.WriteString(w, ")")
 		return
 	}
-	if op == "+" && !isStringExpr(b.Left) && !isStringExpr(b.Right) && !(isIntExpr(b.Left) || isFloatExpr(b.Left)) && !(isIntExpr(b.Right) || isFloatExpr(b.Right)) {
+	if op == "+" && !isStringExpr(b.Left) && !isStringExpr(b.Right) && (isIntExpr(b.Left) || isFloatExpr(b.Left)) && (isIntExpr(b.Right) || isFloatExpr(b.Right)) {
+		// numeric addition, keep '+'
+	} else if op == "+" && (isStringExpr(b.Left) || isStringExpr(b.Right)) {
+		op = ".."
+	} else if op == "+" && !isStringExpr(b.Left) && !isStringExpr(b.Right) && !(isIntExpr(b.Left) || isFloatExpr(b.Left)) && !(isIntExpr(b.Right) || isFloatExpr(b.Right)) {
 		io.WriteString(w, "((tonumber(")
 		b.Left.emit(w)
 		io.WriteString(w, ") or 0) + (tonumber(")
