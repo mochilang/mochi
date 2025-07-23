@@ -1,7 +1,7 @@
 # Go Rosetta Transpiler Output
 
-Completed programs: 55/284
-Last updated: 2025-07-23 23:44 +0700
+Completed programs: 68/284
+Last updated: 2025-07-24 00:03 +0700
 
 Checklist:
 
@@ -68,19 +68,19 @@ Checklist:
 61. [x] approximate-equality (61)
 62. [x] arbitrary-precision-integers-included- (62)
 63. [x] archimedean-spiral (63)
-64. [ ] arena-storage-pool (64)
-65. [ ] arithmetic-complex (65)
-66. [ ] arithmetic-derivative (66)
-67. [ ] arithmetic-evaluation (67)
-68. [ ] arithmetic-geometric-mean-calculate-pi (68)
-69. [ ] arithmetic-geometric-mean (69)
-70. [ ] arithmetic-integer-1 (70)
-71. [ ] arithmetic-integer-2 (71)
-72. [ ] arithmetic-numbers (72)
-73. [ ] arithmetic-rational (73)
-74. [ ] array-concatenation (74)
-75. [ ] array-length (75)
-76. [ ] arrays (76)
+64. [x] arena-storage-pool (64)
+65. [x] arithmetic-complex (65)
+66. [x] arithmetic-derivative (66)
+67. [x] arithmetic-evaluation (67)
+68. [x] arithmetic-geometric-mean-calculate-pi (68)
+69. [x] arithmetic-geometric-mean (69)
+70. [x] arithmetic-integer-1 (70)
+71. [x] arithmetic-integer-2 (71)
+72. [x] arithmetic-numbers (72)
+73. [x] arithmetic-rational (73)
+74. [x] array-concatenation (74)
+75. [x] array-length (75)
+76. [x] arrays (76)
 77. [ ] ascending-primes (77)
 78. [ ] ascii-art-diagram-converter (78)
 79. [ ] assertions (79)

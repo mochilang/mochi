@@ -1699,10 +1699,12 @@ func compileStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 		if st.Let.Type != nil {
 			typ = toGoType(st.Let.Type, env)
 			declaredType = types.ResolveTypeRef(st.Let.Type, env)
-		} else if t, err := env.GetVar(st.Let.Name); err == nil {
-			if _, ok := t.(types.FuncType); !ok {
-				typ = toGoTypeFromType(t)
-				declaredType = t
+		} else if env == topEnv {
+			if t, err := env.GetVar(st.Let.Name); err == nil {
+				if _, ok := t.(types.FuncType); !ok {
+					typ = toGoTypeFromType(t)
+					declaredType = t
+				}
 			}
 		}
 		if st.Let.Value != nil {
@@ -1731,11 +1733,13 @@ func compileStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 				valType = types.TypeOfExpr(st.Let.Value, env)
 			}
 			if ll, ok := e.(*ListLit); ok {
-				if ll.ElemType != "" && ll.ElemType != "any" {
-					typ = "[]" + ll.ElemType
-				} else if st.Let.Type != nil && st.Let.Type.Generic != nil && st.Let.Type.Generic.Name == "list" && len(st.Let.Type.Generic.Args) == 1 {
+				if st.Let.Type != nil && st.Let.Type.Generic != nil && st.Let.Type.Generic.Name == "list" && len(st.Let.Type.Generic.Args) == 1 {
 					ll.ElemType = toGoType(st.Let.Type.Generic.Args[0], env)
 					typ = "[]" + ll.ElemType
+				} else if ll.ElemType != "" && ll.ElemType != "any" {
+					if st.Let.Type == nil {
+						typ = "[]" + ll.ElemType
+					}
 				}
 			}
 			if qe, ok := e.(*QueryExpr); ok && qe.ElemType != "" {
@@ -1849,10 +1853,12 @@ func compileStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 		if st.Var.Type != nil {
 			typ = toGoType(st.Var.Type, env)
 			declaredType = types.ResolveTypeRef(st.Var.Type, env)
-		} else if t, err := env.GetVar(st.Var.Name); err == nil {
-			if _, ok := t.(types.FuncType); !ok {
-				typ = toGoTypeFromType(t)
-				declaredType = t
+		} else if env == topEnv {
+			if t, err := env.GetVar(st.Var.Name); err == nil {
+				if _, ok := t.(types.FuncType); !ok {
+					typ = toGoTypeFromType(t)
+					declaredType = t
+				}
 			}
 		}
 		if st.Var.Value != nil {
@@ -1881,11 +1887,13 @@ func compileStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 				valType = types.TypeOfExpr(st.Var.Value, env)
 			}
 			if ll, ok := e.(*ListLit); ok {
-				if ll.ElemType != "" && ll.ElemType != "any" {
-					typ = "[]" + ll.ElemType
-				} else if st.Var.Type != nil && st.Var.Type.Generic != nil && st.Var.Type.Generic.Name == "list" && len(st.Var.Type.Generic.Args) == 1 {
+				if st.Var.Type != nil && st.Var.Type.Generic != nil && st.Var.Type.Generic.Name == "list" && len(st.Var.Type.Generic.Args) == 1 {
 					ll.ElemType = toGoType(st.Var.Type.Generic.Args[0], env)
 					typ = "[]" + ll.ElemType
+				} else if ll.ElemType != "" && ll.ElemType != "any" {
+					if st.Var.Type == nil {
+						typ = "[]" + ll.ElemType
+					}
 				}
 			}
 			if qe, ok := e.(*QueryExpr); ok && qe.ElemType != "" {
@@ -2000,6 +2008,15 @@ func compileStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 			e, err := compileExpr(st.Assign.Value, env, "")
 			if err != nil {
 				return nil, err
+			}
+			if ll, ok := e.(*ListLit); ok {
+				if vt, err := env.GetVar(st.Assign.Name); err == nil {
+					if lt, ok2 := vt.(types.ListType); ok2 {
+						if ll.ElemType == "" || ll.ElemType == "any" {
+							ll.ElemType = toGoTypeFromType(lt.Elem)
+						}
+					}
+				}
 			}
 			return &AssignStmt{Name: st.Assign.Name, Value: e}, nil
 		}
@@ -3157,9 +3174,28 @@ func compileReturnStmt(rs *parser.ReturnStmt, env *types.Env) (Stmt, error) {
 	ret := currentRetType
 	if ret != "" && ret != "any" {
 		exprType := toGoTypeFromType(types.ExprType(rs.Value, env))
-		if exprType == "" || exprType == "any" {
-			switch val.(type) {
-			case *VarRef, *IndexExpr, *FieldExpr, *CallExpr:
+		if exprType == "" {
+			exprType = "any"
+		}
+		if ll, ok := val.(*ListLit); ok && strings.HasPrefix(ret, "[]") {
+			if ll.ElemType == "" || ll.ElemType == "any" {
+				ll.ElemType = ret[2:]
+				exprType = ret
+			}
+		}
+		if ml, ok := val.(*MapLit); ok && strings.HasPrefix(ret, "map[") {
+			if mt, ok2 := toTypeFromGoType(ret).(types.MapType); ok2 {
+				if ml.KeyType == "" || ml.KeyType == "any" {
+					ml.KeyType = toGoTypeFromType(mt.Key)
+				}
+				if ml.ValueType == "" || ml.ValueType == "any" {
+					ml.ValueType = toGoTypeFromType(mt.Value)
+				}
+				exprType = ret
+			}
+		}
+		if exprType != ret {
+			if ae, ok := val.(*AssertExpr); !(ok && ae.Type == ret) {
 				val = &AssertExpr{Expr: val, Type: ret}
 			}
 		}
@@ -3602,11 +3638,16 @@ func compilePostfix(pf *parser.PostfixExpr, env *types.Env, base string) (Expr, 
 							key = s
 						}
 						if gt, ok3 := fieldTypeGuess[key]; key != "" && ok3 && gt != "" && gt != "any" {
-							expr = &AssertExpr{Expr: expr, Type: gt}
-							if gt == "map[string]int" {
+							if ae, ok := expr.(*AssertExpr); !(ok && ae.Type == gt) {
+								expr = &AssertExpr{Expr: expr, Type: gt}
+							}
+							switch gt {
+							case "map[string]int":
 								t = types.MapType{Key: types.StringType{}, Value: types.IntType{}}
-							} else if gt == "map[string]any" {
+							case "map[string]any":
 								t = types.MapType{Key: types.StringType{}, Value: types.AnyType{}}
+							default:
+								t = toTypeFromGoType(gt)
 							}
 						}
 					}
@@ -3628,13 +3669,16 @@ func compilePostfix(pf *parser.PostfixExpr, env *types.Env, base string) (Expr, 
 							key = s
 						}
 						if gt, ok3 := fieldTypeGuess[key]; key != "" && ok3 && gt != "" && gt != "any" {
-							expr = &AssertExpr{Expr: expr, Type: gt}
-							if gt == "map[string]int" {
+							if ae, ok := expr.(*AssertExpr); !(ok && ae.Type == gt) {
+								expr = &AssertExpr{Expr: expr, Type: gt}
+							}
+							switch gt {
+							case "map[string]int":
 								t = types.MapType{Key: types.StringType{}, Value: types.IntType{}}
-							} else if gt == "map[string]any" {
+							case "map[string]any":
 								t = types.MapType{Key: types.StringType{}, Value: types.AnyType{}}
-							} else {
-								t = types.AnyType{}
+							default:
+								t = toTypeFromGoType(gt)
 							}
 						} else {
 							t = types.AnyType{}
@@ -3743,13 +3787,17 @@ func compilePostfix(pf *parser.PostfixExpr, env *types.Env, base string) (Expr, 
 				if g.Name == "list" && len(g.Args) == 1 {
 					typ := "[]" + toGoType(g.Args[0], env)
 					if types.IsAnyType(t) {
-						expr = &AssertExpr{Expr: expr, Type: typ}
+						if ae, ok := expr.(*AssertExpr); !(ok && ae.Type == typ) {
+							expr = &AssertExpr{Expr: expr, Type: typ}
+						}
 					}
 					t = types.ListType{Elem: types.ResolveTypeRef(g.Args[0], env)}
 				} else if g.Name == "map" && len(g.Args) == 2 {
 					typ := fmt.Sprintf("map[%s]%s", toGoType(g.Args[0], env), toGoType(g.Args[1], env))
 					if types.IsAnyType(t) {
-						expr = &AssertExpr{Expr: expr, Type: typ}
+						if ae, ok := expr.(*AssertExpr); !(ok && ae.Type == typ) {
+							expr = &AssertExpr{Expr: expr, Type: typ}
+						}
 					}
 					t = types.MapType{Key: types.ResolveTypeRef(g.Args[0], env), Value: types.ResolveTypeRef(g.Args[1], env)}
 				} else {
@@ -4223,6 +4271,32 @@ func toGoTypeFromType(t types.Type) string {
 		return ""
 	}
 	return "any"
+}
+
+func toTypeFromGoType(s string) types.Type {
+	switch {
+	case s == "int":
+		return types.IntType{}
+	case s == "float64":
+		return types.FloatType{}
+	case s == "string":
+		return types.StringType{}
+	case s == "bool":
+		return types.BoolType{}
+	case s == "*big.Int":
+		return types.BigIntType{}
+	case strings.HasPrefix(s, "[]"):
+		return types.ListType{Elem: toTypeFromGoType(s[2:])}
+	case strings.HasPrefix(s, "map[string]"):
+		return types.MapType{Key: types.StringType{}, Value: toTypeFromGoType(s[len("map[string]"):])}
+	case strings.HasPrefix(s, "*"):
+		return types.OptionType{Elem: toTypeFromGoType(s[1:])}
+	default:
+		if st, ok := topEnv.GetStruct(s); ok {
+			return st
+		}
+		return types.AnyType{}
+	}
 }
 
 func isBasicOrderedType(t types.Type) bool {
