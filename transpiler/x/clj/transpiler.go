@@ -670,6 +670,7 @@ func transpileFunStmt(f *parser.FunStmt) (Node, error) {
 	}
 	funParamsStack = append(funParamsStack, names)
 	body := []Node{}
+	hasReturn := false
 	for i := 0; i < len(f.Body); i++ {
 		st := f.Body[i]
 		// Pattern: if ... return X; return Y
@@ -691,6 +692,9 @@ func transpileFunStmt(f *parser.FunStmt) (Node, error) {
 				break
 			}
 		}
+		if st.Return != nil {
+			hasReturn = true
+		}
 		n, err := transpileStmt(st)
 		if err != nil {
 			return nil, err
@@ -699,7 +703,25 @@ func transpileFunStmt(f *parser.FunStmt) (Node, error) {
 			body = append(body, n)
 		}
 	}
-	defn := &Defn{Name: f.Name, Params: params, Body: body}
+	var bodyNode Node
+	if len(body) == 1 {
+		bodyNode = body[0]
+	} else {
+		bodyNode = &List{Elems: append([]Node{Symbol("do")}, body...)}
+	}
+	if hasReturn {
+		catchExpr := &List{Elems: []Node{
+			Symbol("catch"), Symbol("clojure.lang.ExceptionInfo"), Symbol("e"),
+			&List{Elems: []Node{
+				Symbol("if"),
+				&List{Elems: []Node{Symbol("="), &List{Elems: []Node{Symbol("ex-message"), Symbol("e")}}, StringLit("return")}},
+				&List{Elems: []Node{Symbol("get"), &List{Elems: []Node{Symbol("ex-data"), Symbol("e")}}, Keyword("v")}},
+				&List{Elems: []Node{Symbol("throw"), Symbol("e")}},
+			}},
+		}}
+		bodyNode = &List{Elems: []Node{Symbol("try"), bodyNode, catchExpr}}
+	}
+	defn := &Defn{Name: f.Name, Params: params, Body: []Node{bodyNode}}
 	if funDepth > 1 && currentProgram != nil {
 		captured := []string{}
 		for i := 0; i < len(funParamsStack)-1; i++ {
@@ -718,10 +740,19 @@ func transpileFunStmt(f *parser.FunStmt) (Node, error) {
 }
 
 func transpileReturnStmt(r *parser.ReturnStmt) (Node, error) {
+	var val Node
+	var err error
 	if r.Value == nil {
-		return Symbol("nil"), nil
+		val = Symbol("nil")
+	} else {
+		val, err = transpileExpr(r.Value)
+		if err != nil {
+			return nil, err
+		}
 	}
-	return transpileExpr(r.Value)
+	m := &Map{Pairs: [][2]Node{{Keyword("v"), val}}}
+	ex := &List{Elems: []Node{Symbol("ex-info"), StringLit("return"), m}}
+	return &List{Elems: []Node{Symbol("throw"), ex}}, nil
 }
 
 var binOp = map[string]string{
@@ -743,6 +774,48 @@ var binOp = map[string]string{
 	"union_all": "union_all",
 	"except":    "except",
 	"intersect": "intersect",
+}
+
+func binPrec(op string) int {
+	switch op {
+	case "||":
+		return 1
+	case "&&":
+		return 2
+	case "==", "!=", "<", "<=", ">", ">=", "in":
+		return 3
+	case "+", "-":
+		return 4
+	case "*", "/", "%":
+		return 5
+	default:
+		return 6
+	}
+}
+
+func applyBinOp(op string, left, right Node) Node {
+	sym := binOp[op]
+	switch sym {
+	case "+":
+		if isStringNode(left) || isStringNode(right) {
+			return &List{Elems: []Node{Symbol("str"), left, right}}
+		}
+		return &List{Elems: []Node{Symbol("+"), left, right}}
+	case "union":
+		setFn := func(x Node) Node { return &List{Elems: []Node{Symbol("set"), x}} }
+		u := &List{Elems: []Node{Symbol("clojure.set/union"), setFn(left), setFn(right)}}
+		return &List{Elems: []Node{Symbol("vec"), u}}
+	case "union_all":
+		return &List{Elems: []Node{Symbol("vec"), &List{Elems: []Node{Symbol("concat"), left, right}}}}
+	case "except":
+		diff := &List{Elems: []Node{Symbol("clojure.set/difference"), &List{Elems: []Node{Symbol("set"), left}}, &List{Elems: []Node{Symbol("set"), right}}}}
+		return &List{Elems: []Node{Symbol("vec"), diff}}
+	case "intersect":
+		inter := &List{Elems: []Node{Symbol("clojure.set/intersection"), &List{Elems: []Node{Symbol("set"), left}}, &List{Elems: []Node{Symbol("set"), right}}}}
+		return &List{Elems: []Node{Symbol("vec"), inter}}
+	default:
+		return &List{Elems: []Node{Symbol(sym), left, right}}
+	}
 }
 
 func isStringNode(n Node) bool {
@@ -847,65 +920,32 @@ func transpileExpr(e *parser.Expr) (Node, error) {
 	if err != nil {
 		return nil, err
 	}
-	n := left
+
+	nodes := []Node{left}
+	ops := []string{}
 	for _, op := range e.Binary.Right {
 		right, err := transpilePostfix(op.Right)
 		if err != nil {
 			return nil, err
 		}
-		if op.Op == "in" {
-			if isStringNode(right) {
-				n = &List{Elems: []Node{Symbol("clojure.string/includes?"), right, n}}
-			} else if isMapNode(right) {
-				n = &List{Elems: []Node{Symbol("contains?"), right, n}}
-			} else {
-				set := &Set{Elems: []Node{n}}
-				some := &List{Elems: []Node{Symbol("some"), set, right}}
-				n = &List{Elems: []Node{Symbol("boolean"), some}}
-			}
-			continue
+		prec := binPrec(op.Op)
+		for len(ops) > 0 && binPrec(ops[len(ops)-1]) >= prec {
+			r := nodes[len(nodes)-1]
+			nodes = nodes[:len(nodes)-1]
+			l := nodes[len(nodes)-1]
+			nodes[len(nodes)-1] = applyBinOp(ops[len(ops)-1], l, r)
+			ops = ops[:len(ops)-1]
 		}
-		if (op.Op == "<" || op.Op == "<=" || op.Op == ">" || op.Op == ">=") && (isStringNode(n) || isStringNode(right)) {
-			cmp := &List{Elems: []Node{Symbol("compare"), n, right}}
-			switch op.Op {
-			case "<":
-				n = &List{Elems: []Node{Symbol("neg?"), cmp}}
-			case "<=":
-				n = &List{Elems: []Node{Symbol("<="), cmp, IntLit(0)}}
-			case ">":
-				n = &List{Elems: []Node{Symbol("pos?"), cmp}}
-			case ">=":
-				n = &List{Elems: []Node{Symbol(">="), cmp, IntLit(0)}}
-			}
-			continue
-		}
-		sym, ok := binOp[op.Op]
-		if !ok {
-			return nil, fmt.Errorf("binary op not supported")
-		}
-		switch sym {
-		case "+":
-			if isStringNode(n) || isStringNode(right) {
-				n = &List{Elems: []Node{Symbol("str"), n, right}}
-			} else {
-				n = &List{Elems: []Node{Symbol("+"), n, right}}
-			}
-		case "union":
-			setFn := func(x Node) Node { return &List{Elems: []Node{Symbol("set"), x}} }
-			u := &List{Elems: []Node{Symbol("clojure.set/union"), setFn(n), setFn(right)}}
-			n = &List{Elems: []Node{Symbol("vec"), u}}
-		case "union_all":
-			n = &List{Elems: []Node{Symbol("vec"), &List{Elems: []Node{Symbol("concat"), n, right}}}}
-		case "except":
-			diff := &List{Elems: []Node{Symbol("clojure.set/difference"), &List{Elems: []Node{Symbol("set"), n}}, &List{Elems: []Node{Symbol("set"), right}}}}
-			n = &List{Elems: []Node{Symbol("vec"), diff}}
-		case "intersect":
-			inter := &List{Elems: []Node{Symbol("clojure.set/intersection"), &List{Elems: []Node{Symbol("set"), n}}, &List{Elems: []Node{Symbol("set"), right}}}}
-			n = &List{Elems: []Node{Symbol("vec"), inter}}
-		default:
-			n = &List{Elems: []Node{Symbol(sym), n, right}}
-		}
+		nodes = append(nodes, right)
+		ops = append(ops, op.Op)
 	}
+	for i := len(ops) - 1; i >= 0; i-- {
+		r := nodes[len(nodes)-1]
+		nodes = nodes[:len(nodes)-1]
+		l := nodes[len(nodes)-1]
+		nodes[len(nodes)-1] = applyBinOp(ops[i], l, r)
+	}
+	n := nodes[0]
 	return n, nil
 }
 
@@ -2073,9 +2113,22 @@ func condRecur(n Node) (cond Node, recur Node, ok bool) {
 					}
 					if len(r.Elems) >= 2 {
 						if first, ok := r.Elems[0].(Symbol); ok && first == "do" {
-							if rl, ok := r.Elems[len(r.Elems)-1].(*List); ok && len(rl.Elems) == 2 {
-								if rsym, ok := rl.Elems[0].(Symbol); ok && rsym == "recur" {
-									return l.Elems[1], r, true
+							if rl, ok := r.Elems[len(r.Elems)-1].(*List); ok {
+								if len(rl.Elems) == 2 {
+									if rsym, ok := rl.Elems[0].(Symbol); ok && rsym == "recur" {
+										return l.Elems[1], r, true
+									}
+								}
+								// handle nested `when` or `if` containing recur
+								if len(rl.Elems) == 3 {
+									if fsym, ok := rl.Elems[0].(Symbol); ok && (fsym == "when" || fsym == "if") {
+										if c2, r2, ok2 := condRecur(rl); ok2 {
+											cond := &List{Elems: []Node{Symbol("and"), l.Elems[1], c2}}
+											pre := append([]Node{}, r.Elems[1:len(r.Elems)-1]...)
+											body := &List{Elems: append([]Node{Symbol("do")}, append(pre, r2)...)}
+											return cond, body, true
+										}
+									}
 								}
 							}
 						}
