@@ -878,7 +878,10 @@ func (i *IndexExpr) emit(w io.Writer) {
 		resType := exprType(i)
 		if idxType == "int" {
 			if resType == "auto" {
-				resType = "std::vector<int>"
+				// The any value is cast to a vector<int>, so the
+				// indexed result must be an int rather than a
+				// whole vector.
+				resType = "int"
 			}
 			io.WriteString(w, "std::any_cast<"+resType+">(std::any_cast<std::vector<int>>(")
 			i.Target.emit(w)
@@ -1620,6 +1623,18 @@ func (e *ExistsExpr) emit(w io.Writer) {
 }
 
 func (b *BinaryExpr) emit(w io.Writer) {
+	if b.Op == "+" {
+		lt := exprType(b.Left)
+		rt := exprType(b.Right)
+		if strings.HasPrefix(lt, "std::vector<") && lt == rt {
+			io.WriteString(w, "([&]{ auto __lhs = ")
+			b.Left.emit(w)
+			io.WriteString(w, "; auto __rhs = ")
+			b.Right.emit(w)
+			io.WriteString(w, "; __lhs.insert(__lhs.end(), __rhs.begin(), __rhs.end()); return __lhs; }())")
+			return
+		}
+	}
 	if b.Op == "/" {
 		lt := exprType(b.Left)
 		rt := exprType(b.Right)
@@ -2732,6 +2747,9 @@ func convertStmt(s *parser.Statement) (Stmt, error) {
 				val = &CastExpr{Value: val, Type: currentReturnType}
 			}
 		}
+		if val == nil && currentReturnType == "int" {
+			val = &IntLit{Value: 0}
+		}
 		return &ReturnStmt{Value: val}, nil
 	case s.Import != nil:
 		if s.Import.Lang != nil {
@@ -2877,13 +2895,24 @@ func convertPostfix(p *parser.PostfixExpr) (Expr, error) {
 				if op.Index.Colon2 != nil || op.Index.Step != nil {
 					return nil, fmt.Errorf("slice not supported")
 				}
-				start, err := convertExpr(op.Index.Start)
-				if err != nil {
-					return nil, err
+				var start Expr
+				var end Expr
+				var err error
+				if op.Index.Start != nil {
+					start, err = convertExpr(op.Index.Start)
+					if err != nil {
+						return nil, err
+					}
+				} else {
+					start = &IntLit{Value: 0}
 				}
-				end, err := convertExpr(op.Index.End)
-				if err != nil {
-					return nil, err
+				if op.Index.End != nil {
+					end, err = convertExpr(op.Index.End)
+					if err != nil {
+						return nil, err
+					}
+				} else {
+					end = &LenExpr{Value: expr}
 				}
 				if currentProgram != nil {
 					currentProgram.addInclude("<vector>")
