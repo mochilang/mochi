@@ -64,12 +64,13 @@ type context struct {
 	constVal  map[string]Expr
 	autoMod   map[string]string
 	baseDir   string
+	globals   map[string]bool
 }
 
 type groupInfo struct{ key, items string }
 
 func newContext(base string) *context {
-	return &context{alias: map[string]string{}, orig: map[string]string{}, counter: map[string]int{}, strVar: map[string]bool{}, strField: map[string]map[string]bool{}, boolField: map[string]map[string]bool{}, groups: map[string]groupInfo{}, constVal: map[string]Expr{}, autoMod: map[string]string{}, baseDir: base}
+	return &context{alias: map[string]string{}, orig: map[string]string{}, counter: map[string]int{}, strVar: map[string]bool{}, strField: map[string]map[string]bool{}, boolField: map[string]map[string]bool{}, groups: map[string]groupInfo{}, constVal: map[string]Expr{}, autoMod: map[string]string{}, baseDir: base, globals: map[string]bool{}}
 }
 
 func (c *context) clone() *context {
@@ -114,7 +115,11 @@ func (c *context) clone() *context {
 	for k, v := range c.autoMod {
 		mods[k] = v
 	}
-	return &context{alias: alias, orig: orig, counter: counter, strVar: strVar, strField: fields, boolField: bfields, groups: groups, constVal: consts, autoMod: mods, baseDir: c.baseDir}
+	gl := make(map[string]bool, len(c.globals))
+	for k, v := range c.globals {
+		gl[k] = v
+	}
+	return &context{alias: alias, orig: orig, counter: counter, strVar: strVar, strField: fields, boolField: bfields, groups: groups, constVal: consts, autoMod: mods, baseDir: c.baseDir, globals: gl}
 }
 
 func (c *context) newAlias(name string) string {
@@ -197,6 +202,15 @@ func (c *context) constValue(name string) (Expr, bool) {
 	v, ok := c.constVal[name]
 	return v, ok
 }
+
+func (c *context) setGlobal(name string) {
+	if c.globals == nil {
+		c.globals = map[string]bool{}
+	}
+	c.globals[name] = true
+}
+
+func (c *context) isGlobal(name string) bool { return c.globals != nil && c.globals[name] }
 
 func (c *context) addAutoModule(alias, path string) {
 	if c.autoMod == nil {
@@ -492,6 +506,12 @@ type AnonFunc struct {
 
 // LetStmt represents a variable binding.
 type LetStmt struct {
+	Name string
+	Expr Expr
+}
+
+// PutStmt stores a value in the process dictionary.
+type PutStmt struct {
 	Name string
 	Expr Expr
 }
@@ -1060,6 +1080,12 @@ func (l *LetStmt) emit(w io.Writer) {
 	l.Expr.emit(w)
 }
 
+func (p *PutStmt) emit(w io.Writer) {
+	fmt.Fprintf(w, "erlang:put('%s', ", p.Name)
+	p.Expr.emit(w)
+	io.WriteString(w, ")")
+}
+
 func (c *CallExpr) emit(w io.Writer) {
 	switch c.Func {
 	case "append":
@@ -1101,6 +1127,42 @@ func (c *CallExpr) emit(w io.Writer) {
 			a.emit(w)
 		}
 		io.WriteString(w, ")")
+		return
+	case "input":
+		io.WriteString(w, "string:trim(io:get_line(\"\"), right, [$\n])")
+		return
+	case "int":
+		io.WriteString(w, "case erlang:is_integer(")
+		if len(c.Args) > 0 {
+			c.Args[0].emit(w)
+		} else {
+			io.WriteString(w, "0")
+		}
+		io.WriteString(w, ") of true -> ")
+		if len(c.Args) > 0 {
+			c.Args[0].emit(w)
+		} else {
+			io.WriteString(w, "0")
+		}
+		io.WriteString(w, "; _ -> case erlang:is_float(")
+		if len(c.Args) > 0 {
+			c.Args[0].emit(w)
+		} else {
+			io.WriteString(w, "0")
+		}
+		io.WriteString(w, ") of true -> trunc(")
+		if len(c.Args) > 0 {
+			c.Args[0].emit(w)
+		} else {
+			io.WriteString(w, "0")
+		}
+		io.WriteString(w, "); _ -> list_to_integer(")
+		if len(c.Args) > 0 {
+			c.Args[0].emit(w)
+		} else {
+			io.WriteString(w, "0")
+		}
+		io.WriteString(w, ") end end")
 		return
 	case "str":
 		io.WriteString(w, "lists:flatten(io_lib:format(\"~p\", [")
@@ -1880,7 +1942,7 @@ func mapOp(op string) string {
 
 func builtinFunc(name string) bool {
 	switch name {
-	case "print", "append", "avg", "count", "len", "str", "sum", "min", "max", "values", "exists", "json", "now":
+	case "print", "append", "avg", "count", "len", "str", "sum", "min", "max", "values", "exists", "json", "now", "input", "int":
 		return true
 	default:
 		return false
@@ -2059,7 +2121,7 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 			p.Funs = append(p.Funs, fd)
 			continue
 		}
-		stmts, err := convertStmt(st, env, ctx)
+		stmts, err := convertStmt(st, env, ctx, true)
 		if err != nil {
 			return nil, err
 		}
@@ -2069,7 +2131,7 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	return p, nil
 }
 
-func convertStmt(st *parser.Statement, env *types.Env, ctx *context) ([]Stmt, error) {
+func convertStmt(st *parser.Statement, env *types.Env, ctx *context, top bool) ([]Stmt, error) {
 	switch {
 	case st.Test != nil:
 		// test blocks are ignored in transpiled output
@@ -2104,7 +2166,6 @@ func convertStmt(st *parser.Statement, env *types.Env, ctx *context) ([]Stmt, er
 		} else {
 			e = &AtomLit{Name: "nil"}
 		}
-		alias := ctx.newAlias(st.Let.Name)
 		ctx.setStrFields(st.Let.Name, stringFields(e))
 		ctx.setBoolFields(st.Let.Name, boolFields(e))
 		ctx.setStringVar(st.Let.Name, isStringExpr(e))
@@ -2112,6 +2173,11 @@ func convertStmt(st *parser.Statement, env *types.Env, ctx *context) ([]Stmt, er
 		case *IntLit, *FloatLit, *BoolLit, *StringLit, *AtomLit:
 			ctx.setConst(st.Let.Name, e)
 		}
+		if top {
+			ctx.setGlobal(st.Let.Name)
+			return []Stmt{&PutStmt{Name: st.Let.Name, Expr: e}}, nil
+		}
+		alias := ctx.newAlias(st.Let.Name)
 		return []Stmt{&LetStmt{Name: alias, Expr: e}}, nil
 	case st.Var != nil:
 		var e Expr
@@ -2124,16 +2190,23 @@ func convertStmt(st *parser.Statement, env *types.Env, ctx *context) ([]Stmt, er
 		} else {
 			e = &AtomLit{Name: "nil"}
 		}
-		alias := ctx.newAlias(st.Var.Name)
 		ctx.setStrFields(st.Var.Name, stringFields(e))
 		ctx.setBoolFields(st.Var.Name, boolFields(e))
 		ctx.setStringVar(st.Var.Name, isStringExpr(e))
 		ctx.clearConst(st.Var.Name)
+		if top {
+			ctx.setGlobal(st.Var.Name)
+			return []Stmt{&PutStmt{Name: st.Var.Name, Expr: e}}, nil
+		}
+		alias := ctx.newAlias(st.Var.Name)
 		return []Stmt{&LetStmt{Name: alias, Expr: e}}, nil
 	case st.Assign != nil && len(st.Assign.Index) == 0 && len(st.Assign.Field) == 0:
 		val, err := convertExpr(st.Assign.Value, env, ctx)
 		if err != nil {
 			return nil, err
+		}
+		if ctx.isGlobal(st.Assign.Name) {
+			return []Stmt{&PutStmt{Name: st.Assign.Name, Expr: val}}, nil
 		}
 		alias := ctx.newAlias(st.Assign.Name)
 		ctx.setStrFields(st.Assign.Name, stringFields(val))
@@ -2151,6 +2224,17 @@ func convertStmt(st *parser.Statement, env *types.Env, ctx *context) ([]Stmt, er
 		if err != nil {
 			return nil, err
 		}
+		if ctx.isGlobal(st.Assign.Name) {
+			old := ctx.newAlias(st.Assign.Name)
+			key := &StringLit{Value: st.Assign.Field[0].Name}
+			alias := ctx.newAlias(st.Assign.Name)
+			stmts := []Stmt{
+				&LetStmt{Name: old, Expr: &CallExpr{Func: "erlang:get", Args: []Expr{&AtomLit{Name: fmt.Sprintf("'%s'", st.Assign.Name)}}}},
+				&MapAssignStmt{Name: alias, Old: old, Key: key, Value: val},
+				&PutStmt{Name: st.Assign.Name, Expr: &NameRef{Name: alias}},
+			}
+			return stmts, nil
+		}
 		old := ctx.current(st.Assign.Name)
 		alias := ctx.newAlias(st.Assign.Name)
 		key := &StringLit{Value: st.Assign.Field[0].Name}
@@ -2164,6 +2248,26 @@ func convertStmt(st *parser.Statement, env *types.Env, ctx *context) ([]Stmt, er
 		val, err := convertExpr(st.Assign.Value, env, ctx)
 		if err != nil {
 			return nil, err
+		}
+		if ctx.isGlobal(st.Assign.Name) {
+			oldVar := ctx.newAlias(st.Assign.Name)
+			alias := ctx.newAlias(st.Assign.Name)
+			kind := "list"
+			if t, err := env.GetVar(st.Assign.Name); err == nil {
+				if _, ok := t.(types.MapType); ok {
+					kind = "map"
+				}
+			}
+			stmts := []Stmt{
+				&LetStmt{Name: oldVar, Expr: &CallExpr{Func: "erlang:get", Args: []Expr{&AtomLit{Name: fmt.Sprintf("'%s'", st.Assign.Name)}}}},
+			}
+			if kind == "map" {
+				stmts = append(stmts, &MapAssignStmt{Name: alias, Old: oldVar, Key: idx, Value: val})
+			} else {
+				stmts = append(stmts, &ListAssignStmt{Name: alias, Old: oldVar, Index: idx, Value: val})
+			}
+			stmts = append(stmts, &PutStmt{Name: st.Assign.Name, Expr: &NameRef{Name: alias}})
+			return stmts, nil
 		}
 		old := ctx.current(st.Assign.Name)
 		alias := ctx.newAlias(st.Assign.Name)
@@ -2218,6 +2322,12 @@ func convertStmt(st *parser.Statement, env *types.Env, ctx *context) ([]Stmt, er
 		} else {
 			stmts = append(stmts, &ListAssignStmt{Name: alias, Old: old, Index: idx1, Value: &NameRef{Name: tmp2}})
 		}
+		if ctx.isGlobal(st.Assign.Name) {
+			pre := &LetStmt{Name: old, Expr: &CallExpr{Func: "erlang:get", Args: []Expr{&AtomLit{Name: fmt.Sprintf("'%s'", st.Assign.Name)}}}}
+			stmts = append([]Stmt{pre}, stmts...)
+			stmts = append(stmts, &PutStmt{Name: st.Assign.Name, Expr: &NameRef{Name: alias}})
+			return stmts, nil
+		}
 		return stmts, nil
 	case st.Update != nil:
 		u, err := convertUpdateStmt(st.Update, env, ctx)
@@ -2269,7 +2379,7 @@ func convertStmt(st *parser.Statement, env *types.Env, ctx *context) ([]Stmt, er
 		funName := ctx.newAlias("fun")
 		body := []Stmt{}
 		for _, bs := range st.For.Body {
-			cs, err := convertStmt(bs, env, loopCtx)
+			cs, err := convertStmt(bs, env, loopCtx, false)
 			if err != nil {
 				return nil, err
 			}
@@ -2345,7 +2455,7 @@ func convertStmt(st *parser.Statement, env *types.Env, ctx *context) ([]Stmt, er
 		loopCtx := ctx.clone()
 		body := []Stmt{}
 		for _, bs := range st.While.Body {
-			cs, err := convertStmt(bs, env, loopCtx)
+			cs, err := convertStmt(bs, env, loopCtx, false)
 			if err != nil {
 				return nil, err
 			}
@@ -2391,7 +2501,7 @@ func convertIfStmt(n *parser.IfStmt, env *types.Env, ctx *context) (*IfStmt, err
 	thenCtx := base.clone()
 	thenStmts := []Stmt{}
 	for _, st := range n.Then {
-		cs, err := convertStmt(st, env, thenCtx)
+		cs, err := convertStmt(st, env, thenCtx, false)
 		if err != nil {
 			return nil, err
 		}
@@ -2408,7 +2518,7 @@ func convertIfStmt(n *parser.IfStmt, env *types.Env, ctx *context) (*IfStmt, err
 		elseStmts = []Stmt{es}
 	} else if len(n.Else) > 0 {
 		for _, st := range n.Else {
-			cs, err := convertStmt(st, env, elseCtx)
+			cs, err := convertStmt(st, env, elseCtx, false)
 			if err != nil {
 				return nil, err
 			}
@@ -2503,7 +2613,7 @@ func convertFunStmt(fn *parser.FunStmt, env *types.Env, ctx *context) (*FuncDecl
 			}
 			continue
 		}
-		ss, err := convertStmt(st, child, fctx)
+		ss, err := convertStmt(st, child, fctx, false)
 		if err != nil {
 			return nil, err
 		}
@@ -2556,7 +2666,7 @@ func convertFunStmtAsExpr(fn *parser.FunStmt, env *types.Env, ctx *context) (Exp
 			}
 			continue
 		}
-		ss, err := convertStmt(st, child, fctx)
+		ss, err := convertStmt(st, child, fctx, false)
 		if err != nil {
 			return nil, err
 		}
@@ -2797,6 +2907,8 @@ func convertPostfix(pf *parser.PostfixExpr, env *types.Env, ctx *context) (Expr,
 			} else if isStringExpr(expr) {
 				kind = "string"
 				isStr = true
+			} else if _, ok := idx.(*StringLit); ok {
+				kind = "map"
 			}
 			expr = &IndexExpr{Target: expr, Index: idx, Kind: kind, IsString: isStr}
 		case op.Index != nil && op.Index.Colon != nil && op.Index.Step == nil && op.Index.Colon2 == nil:
@@ -2884,6 +2996,9 @@ func convertPrimary(p *parser.Primary, env *types.Env, ctx *context) (Expr, erro
 				return &MapLit{Items: []MapItem{{Key: &StringLit{Value: "tag"}, Value: &StringLit{Value: strings.ToLower(p.Selector.Root)}}}}, nil
 			}
 		}
+		if ctx.isGlobal(p.Selector.Root) {
+			return &CallExpr{Func: "erlang:get", Args: []Expr{&AtomLit{Name: fmt.Sprintf("'%s'", p.Selector.Root)}}}, nil
+		}
 		nr := &NameRef{Name: ctx.current(p.Selector.Root)}
 		if t, err := env.GetVar(p.Selector.Root); err == nil {
 			if _, ok := t.(types.StringType); ok {
@@ -2917,7 +3032,12 @@ func convertPrimary(p *parser.Primary, env *types.Env, ctx *context) (Expr, erro
 				return &StringLit{Value: "Solution found in 52 moves: rrrulddluuuldrurdddrullulurrrddldluurddlulurruldrdrd"}, nil
 			}
 		}
-		expr := Expr(&NameRef{Name: ctx.current(p.Selector.Root)})
+		var expr Expr
+		if ctx.isGlobal(p.Selector.Root) {
+			expr = &CallExpr{Func: "erlang:get", Args: []Expr{&AtomLit{Name: fmt.Sprintf("'%s'", p.Selector.Root)}}}
+		} else {
+			expr = &NameRef{Name: ctx.current(p.Selector.Root)}
+		}
 		for i, f := range p.Selector.Tail {
 			key := &StringLit{Value: f}
 			// determine if resulting value is string only on last step
@@ -3166,7 +3286,7 @@ func convertFunExpr(fn *parser.FunExpr, env *types.Env, ctx *context) (Expr, err
 				}
 				continue
 			}
-			ss, err := convertStmt(st, child, fctx)
+			ss, err := convertStmt(st, child, fctx, false)
 			if err != nil {
 				return nil, err
 			}
