@@ -1400,10 +1400,20 @@ func checkBinaryExpr(b *parser.BinaryExpr, env *Env) (Type, error) {
 
 func applyBinaryType(pos lexer.Position, op string, left, right Type) (Type, error) {
 	if _, ok := left.(AnyType); ok {
-		return AnyType{}, nil
+		switch op {
+		case "+", "-", "*", "/", "%", "<", "<=", ">", ">=", "==", "!=", "&&", "||", "in":
+			return nil, errAnyOperator(pos, op)
+		default:
+			return AnyType{}, nil
+		}
 	}
 	if _, ok := right.(AnyType); ok {
-		return AnyType{}, nil
+		switch op {
+		case "+", "-", "*", "/", "%", "<", "<=", ">", ">=", "==", "!=", "&&", "||", "in":
+			return nil, errAnyOperator(pos, op)
+		default:
+			return AnyType{}, nil
+		}
 	}
 	if op == "+" || op == "union" || op == "union_all" || op == "except" || op == "intersect" {
 		if llist, ok := left.(ListType); ok {
