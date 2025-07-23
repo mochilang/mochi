@@ -46,12 +46,24 @@ type VarRef struct{ Name string }
 func (v *VarRef) emit(w io.Writer) {
 	if moduleMode {
 		if _, ok := globalVars[v.Name]; ok {
-			io.WriteString(w, "@")
+			io.WriteString(w, "get_")
+			io.WriteString(w, v.Name)
+			io.WriteString(w, "()")
+			return
 		}
 		io.WriteString(w, v.Name)
 		return
 	}
 	io.WriteString(w, v.Name)
+}
+
+func emitVarName(w io.Writer, name string) {
+	if moduleMode {
+		if _, ok := globalVars[name]; ok {
+			io.WriteString(w, "@")
+		}
+	}
+	io.WriteString(w, name)
 }
 
 // LetStmt binds a variable optionally to a value.
@@ -97,7 +109,17 @@ func (s *AssignStmt) emit(w io.Writer, indent int) {
 	for i := 0; i < indent; i++ {
 		io.WriteString(w, "  ")
 	}
-	io.WriteString(w, s.Name)
+	if moduleMode {
+		if _, ok := globalVars[s.Name]; ok {
+			io.WriteString(w, "set_")
+			io.WriteString(w, s.Name)
+			io.WriteString(w, "(")
+			s.Value.emit(w)
+			io.WriteString(w, ")")
+			return
+		}
+	}
+	emitVarName(w, s.Name)
 	io.WriteString(w, " = ")
 	s.Value.emit(w)
 }
@@ -279,7 +301,7 @@ func (wst *WhileStmt) emit(w io.Writer, indent int) {
 	io.WriteString(w, "while_fun.(while_fun")
 	for _, v := range wst.Vars {
 		io.WriteString(w, ", ")
-		io.WriteString(w, v)
+		emitVarName(w, v)
 	}
 	io.WriteString(w, ")\n")
 	for i := 0; i < indent+1; i++ {
@@ -292,7 +314,7 @@ func (wst *WhileStmt) emit(w io.Writer, indent int) {
 	if len(wst.Vars) == 0 {
 		io.WriteString(w, "nil\n")
 	} else if len(wst.Vars) == 1 {
-		io.WriteString(w, wst.Vars[0])
+		emitVarName(w, wst.Vars[0])
 		io.WriteString(w, "\n")
 	} else {
 		io.WriteString(w, "{")
@@ -300,7 +322,7 @@ func (wst *WhileStmt) emit(w io.Writer, indent int) {
 			if i > 0 {
 				io.WriteString(w, ", ")
 			}
-			io.WriteString(w, v)
+			emitVarName(w, v)
 		}
 		io.WriteString(w, "}\n")
 	}
@@ -328,19 +350,19 @@ func (wst *WhileStmt) emit(w io.Writer, indent int) {
 		for i := 0; i < indent+1; i++ {
 			io.WriteString(w, "  ")
 		}
-                io.WriteString(w, ":break -> nil\n")
-                for i := 0; i < indent; i++ {
-                        io.WriteString(w, "  ")
-                }
-                io.WriteString(w, "end\n")
-        } else if len(wst.Vars) == 1 {
-		io.WriteString(w, wst.Vars[0])
+		io.WriteString(w, ":break -> nil\n")
+		for i := 0; i < indent; i++ {
+			io.WriteString(w, "  ")
+		}
+		io.WriteString(w, "end\n")
+	} else if len(wst.Vars) == 1 {
+		emitVarName(w, wst.Vars[0])
 		io.WriteString(w, " = try do\n")
 		for i := 0; i < indent+2; i++ {
 			io.WriteString(w, "  ")
 		}
 		io.WriteString(w, "while_fun.(while_fun, ")
-		io.WriteString(w, wst.Vars[0])
+		emitVarName(w, wst.Vars[0])
 		io.WriteString(w, ")\n")
 		for i := 0; i < indent+1; i++ {
 			io.WriteString(w, "  ")
@@ -349,20 +371,20 @@ func (wst *WhileStmt) emit(w io.Writer, indent int) {
 		for i := 0; i < indent+2; i++ {
 			io.WriteString(w, "  ")
 		}
-                io.WriteString(w, ":break -> ")
-                io.WriteString(w, wst.Vars[0])
-                io.WriteString(w, "\n")
-                for i := 0; i < indent+1; i++ {
-                        io.WriteString(w, "  ")
-                }
-                io.WriteString(w, "end\n")
-        } else {
+		io.WriteString(w, ":break -> ")
+		emitVarName(w, wst.Vars[0])
+		io.WriteString(w, "\n")
+		for i := 0; i < indent+1; i++ {
+			io.WriteString(w, "  ")
+		}
+		io.WriteString(w, "end\n")
+	} else {
 		io.WriteString(w, "{")
 		for i, v := range wst.Vars {
 			if i > 0 {
 				io.WriteString(w, ", ")
 			}
-			io.WriteString(w, v)
+			emitVarName(w, v)
 		}
 		io.WriteString(w, "} = try do\n")
 		for i := 0; i < indent+2; i++ {
@@ -371,7 +393,7 @@ func (wst *WhileStmt) emit(w io.Writer, indent int) {
 		io.WriteString(w, "while_fun.(while_fun")
 		for _, v := range wst.Vars {
 			io.WriteString(w, ", ")
-			io.WriteString(w, v)
+			emitVarName(w, v)
 		}
 		io.WriteString(w, ")\n")
 		for i := 0; i < indent+1; i++ {
@@ -381,19 +403,19 @@ func (wst *WhileStmt) emit(w io.Writer, indent int) {
 		for i := 0; i < indent+2; i++ {
 			io.WriteString(w, "  ")
 		}
-                io.WriteString(w, ":break -> {")
-                for i, v := range wst.Vars {
-                        if i > 0 {
-                                io.WriteString(w, ", ")
-                        }
-                        io.WriteString(w, v)
-                }
-                io.WriteString(w, "}\n")
-                for i := 0; i < indent+1; i++ {
-                        io.WriteString(w, "  ")
-                }
-                io.WriteString(w, "end\n")
-        }
+		io.WriteString(w, ":break -> {")
+		for i, v := range wst.Vars {
+			if i > 0 {
+				io.WriteString(w, ", ")
+			}
+			emitVarName(w, v)
+		}
+		io.WriteString(w, "}\n")
+		for i := 0; i < indent+1; i++ {
+			io.WriteString(w, "  ")
+		}
+		io.WriteString(w, "end\n")
+	}
 	return
 }
 
@@ -613,6 +635,12 @@ func (fn *FuncDecl) emit(w io.Writer, indent int) {
 		io.WriteString(w, "  ")
 	}
 	io.WriteString(w, "try do\n")
+	if fn.Name == "main" && len(fn.Params) == 0 {
+		for i := 0; i < indent+2; i++ {
+			io.WriteString(w, "  ")
+		}
+		io.WriteString(w, "_init_globals()\n")
+	}
 	for _, st := range fn.Body {
 		st.emit(w, indent+2)
 		io.WriteString(w, "\n")
@@ -1299,45 +1327,55 @@ func Emit(p *Program) []byte {
 	moduleMode = true
 	buf.WriteString("defmodule Main do\n")
 	buf.WriteString(nowHelper(1))
+	buf.WriteString(inputHelper(1))
+	gnames := make([]string, 0, len(globalVars))
+	for n := range globalVars {
+		gnames = append(gnames, n)
+	}
+	buf.WriteString(globalHelpers(gnames, 1))
 	var globals []Stmt
 	var funcs []Stmt
 	var main []Stmt
 	foundFunc := false
+	hasUserMain := false
 	for _, st := range p.Stmts {
-		if _, ok := st.(*FuncDecl); ok {
+		if fnDecl, ok := st.(*FuncDecl); ok {
 			foundFunc = true
+			if fnDecl.Name == "main" && len(fnDecl.Params) == 0 {
+				hasUserMain = true
+			}
 			funcs = append(funcs, st)
 			continue
 		}
-               if funcsExist && !foundFunc {
-                       globals = append(globals, st)
-               } else {
-                       if es, ok := st.(*ExprStmt); ok {
-                               if call, ok := es.Expr.(*CallExpr); ok && call.Func == "main" && len(call.Args) == 0 {
-                                       continue
-                               }
-                       }
-                       main = append(main, st)
-               }
-       }
-	for _, st := range globals {
-		if ls, ok := st.(*LetStmt); ok {
-			ls.emitGlobal(&buf, 1)
+		if funcsExist && !foundFunc {
+			globals = append(globals, st)
 		} else {
-			st.emit(&buf, 1)
+			if es, ok := st.(*ExprStmt); ok {
+				if call, ok := es.Expr.(*CallExpr); ok && call.Func == "main" && len(call.Args) == 0 {
+					continue
+				}
+			}
+			main = append(main, st)
 		}
-		buf.WriteString("\n")
 	}
+	buf.WriteString(initGlobalsHelper(globals, 1))
+
 	for _, st := range funcs {
 		st.emit(&buf, 1)
 		buf.WriteString("\n")
 	}
-	buf.WriteString("  def main() do\n")
-	for _, st := range main {
-		st.emit(&buf, 2)
-		buf.WriteString("\n")
+	if len(main) > 0 {
+		buf.WriteString("  def main() do\n")
+		buf.WriteString("    _init_globals()\n")
+		for _, st := range main {
+			st.emit(&buf, 2)
+			buf.WriteString("\n")
+		}
+		buf.WriteString("  end\n")
+	} else if !hasUserMain {
+		buf.WriteString("  def main() do\n    _init_globals()\n  end\n")
 	}
-	buf.WriteString("  end\nend\n")
+	buf.WriteString("end\n")
 	buf.WriteString("Main.main()\n")
 	moduleMode = false
 	return buf.Bytes()
@@ -1510,15 +1548,15 @@ func compileStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 			if err != nil {
 				return nil, err
 			}
-       t, _ := env.GetVar(st.Assign.Name)
-       var call *CallExpr
-       switch t.(type) {
-       case types.MapType:
-               call = &CallExpr{Func: "Map.put", Args: []Expr{&VarRef{Name: st.Assign.Name}, idx, val}}
-       default:
-               // Fallback to list semantics when the type is unknown
-               call = &CallExpr{Func: "List.replace_at", Args: []Expr{&VarRef{Name: st.Assign.Name}, idx, val}}
-       }
+			t, _ := env.GetVar(st.Assign.Name)
+			var call *CallExpr
+			switch t.(type) {
+			case types.MapType:
+				call = &CallExpr{Func: "Map.put", Args: []Expr{&VarRef{Name: st.Assign.Name}, idx, val}}
+			default:
+				// Fallback to list semantics when the type is unknown
+				call = &CallExpr{Func: "List.replace_at", Args: []Expr{&VarRef{Name: st.Assign.Name}, idx, val}}
+			}
 			return &AssignStmt{Name: st.Assign.Name, Value: call}, nil
 		}
 		if len(st.Assign.Index) == 2 && len(st.Assign.Field) == 0 {
@@ -2557,7 +2595,13 @@ func compilePostfix(pf *parser.PostfixExpr, env *types.Env) (Expr, error) {
 				expr = &IndexExpr{Target: expr, Index: idx, UseMapSyntax: true}
 				typ = tt.Value
 			default:
-				expr = &IndexExpr{Target: expr, Index: idx}
+				if _, ok := idx.(*StringLit); ok {
+					expr = &IndexExpr{Target: expr, Index: idx, UseMapSyntax: true}
+				} else if _, ok := idx.(*AtomLit); ok {
+					expr = &IndexExpr{Target: expr, Index: idx, UseMapSyntax: true}
+				} else {
+					expr = &IndexExpr{Target: expr, Index: idx}
+				}
 				typ = types.AnyType{}
 			}
 		} else if op.Index != nil && (op.Index.Colon != nil || op.Index.Colon2 != nil) {
@@ -2761,6 +2805,16 @@ func compilePrimary(p *parser.Primary, env *types.Env) (Expr, error) {
 			}
 		case "str":
 			name = "to_string"
+		case "int":
+			if len(args) == 1 {
+				cond := &CallExpr{Func: "is_integer", Args: []Expr{args[0]}}
+				cast := &CastExpr{Expr: args[0], Type: "int"}
+				return &CondExpr{Cond: cond, Then: args[0], Else: cast}, nil
+			}
+		case "input":
+			if len(args) == 0 {
+				return &CallExpr{Func: "_input", Args: nil}, nil
+			}
 		case "append":
 			if len(args) == 2 {
 				list := args[0]
@@ -3027,6 +3081,59 @@ func nowHelper(indent int) string {
 	buf.WriteString(pad + "  else\n")
 	buf.WriteString(pad + "    System.os_time(:nanosecond)\n")
 	buf.WriteString(pad + "  end\n")
+	buf.WriteString(pad + "end\n")
+	return buf.String()
+}
+
+func inputHelper(indent int) string {
+	var buf bytes.Buffer
+	pad := strings.Repeat("  ", indent)
+	buf.WriteString(pad + "defp _input() do\n")
+	buf.WriteString(pad + "  case IO.read(:line) do\n")
+	buf.WriteString(pad + "    :eof -> \"\"\n")
+	buf.WriteString(pad + "    data -> String.trim_trailing(data, \"\\n\")\n")
+	buf.WriteString(pad + "  end\n")
+	buf.WriteString(pad + "end\n")
+	return buf.String()
+}
+
+func globalHelpers(names []string, indent int) string {
+	if len(names) == 0 {
+		return ""
+	}
+	sort.Strings(names)
+	var buf bytes.Buffer
+	pad := strings.Repeat("  ", indent)
+	for _, n := range names {
+		buf.WriteString(pad + "defp get_" + n + "() do\n")
+		buf.WriteString(pad + "  Process.get(:" + n + ")\n")
+		buf.WriteString(pad + "end\n")
+		buf.WriteString(pad + "defp set_" + n + "(v) do\n")
+		buf.WriteString(pad + "  Process.put(:" + n + ", v)\n")
+		buf.WriteString(pad + "  v\n")
+		buf.WriteString(pad + "end\n")
+	}
+	return buf.String()
+}
+
+func initGlobalsHelper(globals []Stmt, indent int) string {
+	if len(globals) == 0 {
+		return ""
+	}
+	var buf bytes.Buffer
+	pad := strings.Repeat("  ", indent)
+	buf.WriteString(pad + "defp _init_globals() do\n")
+	for _, st := range globals {
+		if ls, ok := st.(*LetStmt); ok {
+			buf.WriteString(pad + "  Process.put(:" + ls.Name + ", ")
+			if ls.Value != nil {
+				ls.Value.emit(&buf)
+			} else {
+				buf.WriteString("nil")
+			}
+			buf.WriteString(")\n")
+		}
+	}
 	buf.WriteString(pad + "end\n")
 	return buf.String()
 }
