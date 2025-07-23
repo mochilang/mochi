@@ -1967,6 +1967,8 @@ func convertStmt(s *parser.Statement) (Stmt, error) {
 		t, _ := transpileEnv.GetVar(s.Let.Name)
 		if it, ok := inferLiteralType(s.Let.Value, transpileEnv); ok {
 			t = it
+		} else if s.Let.Type != nil {
+			t = types.ResolveTypeRef(s.Let.Type, transpileEnv)
 		}
 		switch tt := t.(type) {
 		case types.StructType:
@@ -1982,6 +1984,9 @@ func convertStmt(s *parser.Statement) (Stmt, error) {
 			}
 		}
 		typeStr := tsType(t)
+		if transpileEnv != nil {
+			transpileEnv.SetVar(s.Let.Name, t, false)
+		}
 		if q, ok := e.(*QueryExprJS); ok && q.ElemType != "" {
 			typeStr = q.ElemType + "[]"
 		}
@@ -2008,6 +2013,8 @@ func convertStmt(s *parser.Statement) (Stmt, error) {
 		}
 		if it, ok := inferLiteralType(s.Var.Value, transpileEnv); ok {
 			t = it
+		} else if s.Var.Type != nil {
+			t = types.ResolveTypeRef(s.Var.Type, transpileEnv)
 		}
 		switch tt := t.(type) {
 		case types.StructType:
@@ -2023,6 +2030,9 @@ func convertStmt(s *parser.Statement) (Stmt, error) {
 			}
 		}
 		typeStr := tsType(t)
+		if transpileEnv != nil {
+			transpileEnv.SetVar(s.Var.Name, t, true)
+		}
 		if q, ok := e.(*QueryExprJS); ok && q.ElemType != "" {
 			typeStr = q.ElemType + "[]"
 		}
@@ -3049,6 +3059,16 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 				return nil, fmt.Errorf("substring expects three arguments")
 			}
 			return &SubstringExpr{Str: args[0], Start: args[1], End: args[2]}, nil
+		case "upper":
+			if len(args) != 1 {
+				return nil, fmt.Errorf("upper expects one argument")
+			}
+			return &MethodCallExpr{Target: args[0], Method: "toUpperCase", Args: nil}, nil
+		case "lower":
+			if len(args) != 1 {
+				return nil, fmt.Errorf("lower expects one argument")
+			}
+			return &MethodCallExpr{Target: args[0], Method: "toLowerCase", Args: nil}, nil
 		default:
 			if fn, ok := transpileEnv.GetFunc(p.Call.Func); ok {
 				if len(args) < len(fn.Params) {
