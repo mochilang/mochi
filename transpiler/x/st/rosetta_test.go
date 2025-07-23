@@ -192,7 +192,7 @@ func updateRosettaChecklist() {
 				mark = "[x]"
 			}
 		}
-		lines = append(lines, fmt.Sprintf("%d. %s %s", i+1, mark, name))
+		lines = append(lines, fmt.Sprintf("%d. %s %d %s", i+1, mark, i+1, name))
 	}
 	out, err := exec.Command("git", "log", "-1", "--format=%cI").Output()
 	ts := time.Now()

@@ -1239,6 +1239,23 @@ func evalPrimary(p *parser.Primary, vars map[string]value) (value, error) {
 				}
 				return value{kind: valFloat, f: float64(total) / float64(len(listv.list))}, nil
 			}
+		case "abs":
+			if len(p.Call.Args) != 1 {
+				return value{}, fmt.Errorf("bad args")
+			}
+			v, err := evalExpr(p.Call.Args[0], vars)
+			if err != nil {
+				return value{}, err
+			}
+			switch v.kind {
+			case valInt:
+				if v.i < 0 {
+					v.i = -v.i
+				}
+				return value{kind: valInt, i: v.i}, nil
+			case valFloat:
+				return value{kind: valFloat, f: math.Abs(v.f)}, nil
+			}
 		case "substring":
 			if len(p.Call.Args) != 3 {
 				return value{}, fmt.Errorf("bad args")
