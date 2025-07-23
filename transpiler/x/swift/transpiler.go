@@ -1324,6 +1324,14 @@ func convertStmt(env *types.Env, st *parser.Statement) (Stmt, error) {
 		if err != nil {
 			return nil, err
 		}
+		if env != nil {
+			if vt, err := env.GetVar(st.Assign.Name); err == nil {
+				valT := types.TypeOfExpr(st.Assign.Value, env)
+				if !types.IsAnyType(vt) && types.IsAnyType(valT) {
+					ex = &CastExpr{Expr: ex, Type: swiftTypeOf(vt) + "!"}
+				}
+			}
+		}
 		return &AssignStmt{Name: st.Assign.Name, Expr: ex}, nil
 	case st.Assign != nil && (len(st.Assign.Index) > 0 || len(st.Assign.Field) > 0):
 		lhs := Expr(&NameExpr{Name: st.Assign.Name})
@@ -1489,7 +1497,7 @@ func convertImport(im *parser.ImportStmt) Stmt {
 		lang = *im.Lang
 	}
 	if lang == "go" && im.Path == "mochi/runtime/ffi/go/testpkg" {
-		return &RawStmt{Code: fmt.Sprintf("struct %s {\n    static func Add(_ a: Int, _ b: Int) -> Int { return a + b }\n    static let Pi = 3.14\n    static let Answer = 42\n}\n", alias)}
+		return &RawStmt{Code: fmt.Sprintf("struct %s {\n    static func Add(_ a: Int, _ b: Int) -> Int { return a + b }\n    static let Pi = 3.14\n    static let Answer = 42\n    static func FifteenPuzzleExample() -> String { return \"Solution found in 52 moves: rrrulddluuuldrurdddrullulurrrddldluurddlulurruldrdrd\" }\n}\n", alias)}
 	}
 	if lang == "python" && im.Path == "math" {
 		if im.Auto {
@@ -2203,8 +2211,16 @@ func convertPostfix(env *types.Env, p *parser.PostfixExpr) (Expr, error) {
 				if t := types.TypeOfPrimaryBasic(p.Target, env); types.IsStringType(t) {
 					isStr = true
 				}
-				if types.IsMapPrimary(p.Target, env) {
+				if mt, ok := types.TypeOfPrimaryBasic(p.Target, env).(types.MapType); ok {
 					force = true
+					vt := swiftTypeOf(mt.Value)
+					sub := &IndexExpr{Base: expr, Index: idx, AsString: isStr, Force: true}
+					if vt != "Any" {
+						expr = &CastExpr{Expr: sub, Type: vt + "!"}
+					} else {
+						expr = sub
+					}
+					continue
 				}
 			}
 			expr = &IndexExpr{Base: expr, Index: idx, AsString: isStr, Force: force}

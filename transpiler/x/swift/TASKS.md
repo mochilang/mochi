@@ -1,5 +1,5 @@
-## Progress (2025-07-22 22:49 +0700)
-- transpiler/erl: use index for Rosetta tests
+## Progress (2025-07-23 10:26 +0700)
+- swift: add 15 puzzle helper
 - Generated golden tests for 101/103 programs
 - Updated README checklist and output artifacts
 
