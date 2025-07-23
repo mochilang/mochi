@@ -645,6 +645,10 @@ func (b *BinaryExpr) emit(w io.Writer) {
 			io.WriteString(w, "(")
 			e.emit(w)
 			io.WriteString(w, " as Number).toDouble()")
+		} else if typ == "Int" {
+			io.WriteString(w, "(")
+			e.emit(w)
+			io.WriteString(w, " as Int)")
 		} else if typ == "String" {
 			io.WriteString(w, "(")
 			e.emit(w)
@@ -663,7 +667,12 @@ func (b *BinaryExpr) emit(w io.Writer) {
 		} else if numOp {
 			t := guessType(e)
 			if t == "" || t == "Any" {
-				cast(e, "Double")
+				ot := guessType(other)
+				if ot == "Int" {
+					cast(e, "Int")
+				} else {
+					cast(e, "Double")
+				}
 				return
 			}
 		}
@@ -1969,6 +1978,19 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 			if fname == "main" {
 				fname = "user_main"
 			}
+			// insert mutable parameter locals if assigned
+			for i, p0 := range st.Fun.Params {
+				if paramAssigned(p0.Name, body) {
+					typ := kotlinType(p0.Type)
+					if typ == "" {
+						typ = "Any"
+					}
+					assign := &VarStmt{Name: p0.Name, Type: typ, Value: &VarRef{Name: p0.Name}}
+					body = append([]Stmt{assign}, body...)
+					// update params[i] remains same
+				}
+				_ = i
+			}
 			p.Funcs = append(p.Funcs, &FuncDef{Name: fname, Params: params, Ret: ret, Body: body})
 		case st.If != nil:
 			stmt, err := convertIfStmt(env, st.If)
@@ -2065,6 +2087,10 @@ func convertStmts(env *types.Env, list []*parser.Statement) ([]Stmt, error) {
 				if typ == "" {
 					typ = guessType(v)
 				}
+				if typ == "Any" {
+					// allow Kotlin to infer a more precise type
+					typ = ""
+				}
 			}
 			out = append(out, &LetStmt{Name: s.Let.Name, Type: typ, Value: v})
 			if env != nil {
@@ -2115,6 +2141,10 @@ func convertStmts(env *types.Env, list []*parser.Statement) ([]Stmt, error) {
 				typ = envTypeName(env, s.Var.Name)
 				if typ == "" {
 					typ = guessType(v)
+				}
+				if typ == "Any" {
+					// prefer type inference over explicit Any
+					typ = ""
 				}
 			}
 			out = append(out, &VarStmt{Name: s.Var.Name, Type: typ, Value: v})
@@ -2996,6 +3026,34 @@ func callPattern(e *parser.Expr) (*parser.CallExpr, bool) {
 	return p.Target.Call, true
 }
 
+func paramAssigned(name string, stmts []Stmt) bool {
+	for _, st := range stmts {
+		switch s := st.(type) {
+		case *AssignStmt:
+			if s.Name == name {
+				return true
+			}
+		case *IfStmt:
+			if paramAssigned(name, s.Then) || paramAssigned(name, s.Else) {
+				return true
+			}
+		case *WhileStmt:
+			if paramAssigned(name, s.Body) {
+				return true
+			}
+		case *ForEachStmt:
+			if paramAssigned(name, s.Body) {
+				return true
+			}
+		case *ForRangeStmt:
+			if paramAssigned(name, s.Body) {
+				return true
+			}
+		}
+	}
+	return false
+}
+
 func convertFunExpr(env *types.Env, f *parser.FunExpr) (Expr, error) {
 	params := make([]string, len(f.Params))
 	for i, p := range f.Params {
@@ -3194,6 +3252,20 @@ func convertPostfix(env *types.Env, p *parser.PostfixExpr) (Expr, error) {
 						tname = kotlinTypeFromType(tt.Value)
 					}
 				}
+			}
+			if tname == "" {
+				baseType := guessType(expr)
+				if strings.HasPrefix(baseType, "MutableList<") {
+					tname = strings.TrimSuffix(strings.TrimPrefix(baseType, "MutableList<"), ">")
+				} else if strings.HasPrefix(baseType, "MutableMap<") {
+					part := strings.TrimSuffix(strings.TrimPrefix(baseType, "MutableMap<"), ">")
+					if idx := strings.Index(part, ","); idx >= 0 {
+						tname = strings.TrimSpace(part[idx+1:])
+					}
+				}
+			}
+			if tname == "Any" {
+				tname = ""
 			}
 			expr = &IndexExpr{Target: expr, Index: idx, Type: tname, ForceBang: true}
 		case op.Index != nil && op.Index.Colon != nil && op.Index.Colon2 == nil && op.Index.Step == nil:
