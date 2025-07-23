@@ -1,0 +1,7 @@
+OpenJDK 64-Bit Server VM warning: Options -Xverify:none and -noverify were deprecated in JDK 13 and will likely be removed in a future release.
+/workspace/mochi/tests/rosetta/transpiler/Kotlin/aliquot-sequence-classifications.kt:1:22: error: the integer literal does not conform to the expected type Int
+val THRESHOLD: Int = 140737488355328
+                     ^
+/workspace/mochi/tests/rosetta/transpiler/Kotlin/aliquot-sequence-classifications.kt:148:20: error: the integer literal does not conform to the expected type Int
+    val big: Int = 15355717786080
+                   ^
