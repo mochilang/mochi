@@ -2127,19 +2127,27 @@ func convertStmt(s *parser.Statement) (Stmt, error) {
 	case s.Continue != nil:
 		return &ContinueStmt{}, nil
 	case s.Fun != nil:
-		body, err := convertStmtList(s.Fun.Body)
-		if err != nil {
-			return nil, err
-		}
+		child := types.NewEnv(transpileEnv)
 		var params []string
 		var typesArr []string
 		for _, p := range s.Fun.Params {
 			params = append(params, p.Name)
+			var pt types.Type
 			if p.Type != nil {
-				typesArr = append(typesArr, tsType(types.ResolveTypeRef(p.Type, transpileEnv)))
+				pt = types.ResolveTypeRef(p.Type, transpileEnv)
+				typesArr = append(typesArr, tsType(pt))
 			} else {
+				pt = types.AnyType{}
 				typesArr = append(typesArr, "")
 			}
+			child.SetVar(p.Name, pt, true)
+		}
+		prev := transpileEnv
+		transpileEnv = child
+		body, err := convertStmtList(s.Fun.Body)
+		transpileEnv = prev
+		if err != nil {
+			return nil, err
 		}
 		var retType string
 		if s.Fun.Return != nil {
