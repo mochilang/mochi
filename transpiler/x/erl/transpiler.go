@@ -130,6 +130,12 @@ func (c *context) newAlias(name string) string {
 	}
 	c.alias[name] = alias
 	c.orig[alias] = name
+	if c.strVar[name] {
+		if c.strVar == nil {
+			c.strVar = map[string]bool{}
+		}
+		c.strVar[alias] = true
+	}
 	return alias
 }
 
@@ -824,7 +830,15 @@ func isStringExpr(e Expr) bool {
 	case *StringLit:
 		return true
 	case *CallExpr:
-		return v.Func == "str"
+		if v.Func == "str" {
+			return true
+		}
+		if v.Func == "lists:nth" && len(v.Args) == 2 {
+			if isStringExpr(v.Args[1]) {
+				return true
+			}
+		}
+		return false
 	case *BinaryExpr:
 		if v.Op == "++" || v.Op == "+" {
 			return isStringExpr(v.Left) || isStringExpr(v.Right)
@@ -893,6 +907,56 @@ func isMapExpr(e Expr, env *types.Env, ctx *context) bool {
 	case *IndexExpr:
 		if v.Kind == "map" {
 			return true
+		}
+	}
+	return false
+}
+
+func isIntExpr(e Expr, env *types.Env, ctx *context) bool {
+	switch v := e.(type) {
+	case *IntLit:
+		return true
+	case *UnaryExpr:
+		if v.Op == "+" || v.Op == "-" {
+			return isIntExpr(v.Expr, env, ctx)
+		}
+	case *BinaryExpr:
+		switch v.Op {
+		case "+", "-", "*", "div", "%":
+			return isIntExpr(v.Left, env, ctx) && isIntExpr(v.Right, env, ctx)
+		}
+	case *CallExpr:
+		if v.Func == "int" {
+			return true
+		}
+		if v.Func == "erlang:get" && len(v.Args) == 1 {
+			if a, ok := v.Args[0].(*AtomLit); ok {
+				name := strings.Trim(a.Name, "'")
+				if t, err := env.GetVar(name); err == nil {
+					switch t.(type) {
+					case types.IntType, types.Int64Type, types.BigIntType:
+						return true
+					}
+				}
+			}
+		}
+	case *NameRef:
+		if env != nil {
+			name := v.Name
+			if ctx != nil {
+				name = ctx.original(v.Name)
+			}
+			if t, err := env.GetVar(name); err == nil {
+				switch t.(type) {
+				case types.IntType, types.Int64Type, types.BigIntType:
+					return true
+				}
+			}
+			if c, ok := ctx.constVal[name]; ok {
+				if _, ok := c.(*IntLit); ok {
+					return true
+				}
+			}
 		}
 	}
 	return false
@@ -1129,7 +1193,16 @@ func (c *CallExpr) emit(w io.Writer) {
 		io.WriteString(w, ")")
 		return
 	case "input":
-		io.WriteString(w, "string:trim(io:get_line(\"\"), right, [$\n])")
+		io.WriteString(w, "string:trim(io:get_line(\"\"), trailing, [$\n])")
+		return
+	case "abs":
+		io.WriteString(w, "erlang:abs(")
+		if len(c.Args) > 0 {
+			c.Args[0].emit(w)
+		} else {
+			io.WriteString(w, "0")
+		}
+		io.WriteString(w, ")")
 		return
 	case "int":
 		io.WriteString(w, "case erlang:is_integer(")
@@ -1443,7 +1516,14 @@ func (n *NameRef) emit(w io.Writer) { io.WriteString(w, n.Name) }
 
 func (i *IntLit) emit(w io.Writer) { fmt.Fprintf(w, "%d", i.Value) }
 
-func (f *FloatLit) emit(w io.Writer) { fmt.Fprintf(w, "%g", f.Value) }
+func (f *FloatLit) emit(w io.Writer) {
+	if math.Abs(f.Value) < 1 && f.Value != 0 {
+		s := strings.TrimRight(strings.TrimRight(fmt.Sprintf("%f", f.Value), "0"), ".")
+		io.WriteString(w, s)
+	} else {
+		fmt.Fprintf(w, "%g", f.Value)
+	}
+}
 
 func (b *BoolLit) emit(w io.Writer) {
 	if b.Value {
@@ -1942,7 +2022,7 @@ func mapOp(op string) string {
 
 func builtinFunc(name string) bool {
 	switch name {
-	case "print", "append", "avg", "count", "len", "str", "sum", "min", "max", "values", "exists", "json", "now", "input", "int":
+	case "print", "append", "avg", "count", "len", "str", "sum", "min", "max", "values", "exists", "json", "now", "input", "int", "abs":
 		return true
 	default:
 		return false
@@ -2169,6 +2249,13 @@ func convertStmt(st *parser.Statement, env *types.Env, ctx *context, top bool) (
 		ctx.setStrFields(st.Let.Name, stringFields(e))
 		ctx.setBoolFields(st.Let.Name, boolFields(e))
 		ctx.setStringVar(st.Let.Name, isStringExpr(e))
+		if t, err := env.GetVar(st.Let.Name); err == nil {
+			if lt, ok := t.(types.ListType); ok {
+				if _, ok := lt.Elem.(types.StringType); ok {
+					ctx.setStringVar(st.Let.Name, true)
+				}
+			}
+		}
 		switch e.(type) {
 		case *IntLit, *FloatLit, *BoolLit, *StringLit, *AtomLit:
 			ctx.setConst(st.Let.Name, e)
@@ -2193,6 +2280,13 @@ func convertStmt(st *parser.Statement, env *types.Env, ctx *context, top bool) (
 		ctx.setStrFields(st.Var.Name, stringFields(e))
 		ctx.setBoolFields(st.Var.Name, boolFields(e))
 		ctx.setStringVar(st.Var.Name, isStringExpr(e))
+		if t, err := env.GetVar(st.Var.Name); err == nil {
+			if lt, ok := t.(types.ListType); ok {
+				if _, ok := lt.Elem.(types.StringType); ok {
+					ctx.setStringVar(st.Var.Name, true)
+				}
+			}
+		}
 		ctx.clearConst(st.Var.Name)
 		if top {
 			ctx.setGlobal(st.Var.Name)
@@ -2793,7 +2887,18 @@ func convertBinary(b *parser.BinaryExpr, env *types.Env, ctx *context) (Expr, er
 			if contains(lvl, ops[i]) {
 				l := exprs[i]
 				r := exprs[i+1]
-				exprs[i] = &BinaryExpr{Left: l, Op: ops[i], Right: r}
+				opName := ops[i]
+				if opName == "/" {
+					if isIntExpr(l, env, ctx) && isIntExpr(r, env, ctx) {
+						opName = "div"
+					} else if _, ok := l.(*FloatLit); !ok {
+						if _, ok := r.(*FloatLit); !ok {
+							// assume integer division when no float literals detected
+							opName = "div"
+						}
+					}
+				}
+				exprs[i] = &BinaryExpr{Left: l, Op: opName, Right: r}
 				exprs = append(exprs[:i+1], exprs[i+2:]...)
 				ops = append(ops[:i], ops[i+1:]...)
 			} else {
@@ -2889,7 +2994,7 @@ func convertPostfix(pf *parser.PostfixExpr, env *types.Env, ctx *context) (Expr,
 			expr = ce
 		case op.Cast != nil && op.Cast.Type.Simple != nil:
 			if *op.Cast.Type.Simple == "int" {
-				expr = &CallExpr{Func: "list_to_integer", Args: []Expr{expr}}
+				expr = &CallExpr{Func: "int", Args: []Expr{expr}}
 			}
 			// other casts are no-ops
 		case op.Index != nil && op.Index.Colon == nil && op.Index.Colon2 == nil:

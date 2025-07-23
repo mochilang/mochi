@@ -1,0 +1,11 @@
+exit status 127
+escript: exception error: an error occurred when evaluating an arithmetic expression
+  in operator  +/2
+     called as "n" + "i"
+  in call from main:'-slur/2-Fun5_loop/8-2-'/8 (/workspace/mochi/tests/rosetta/transpiler/erl/99-bottles-of-beer-2.erl, line 182)
+  in call from main:slur/2 (/workspace/mochi/tests/rosetta/transpiler/erl/99-bottles-of-beer-2.erl, line 191)
+  in call from main:'-main/0-Fun6_loop/1-0-'/1 (/workspace/mochi/tests/rosetta/transpiler/erl/99-bottles-of-beer-2.erl, line 204)
+  in call from main:main/0 (/workspace/mochi/tests/rosetta/transpiler/erl/99-bottles-of-beer-2.erl, line 216)
+  in call from escript:run/2 (escript.erl, line 904)
+  in call from escript:start/1 (escript.erl, line 418)
+  in call from init:start_it/1 
