@@ -1,0 +1,14 @@
+WARNING: empty already refers to: #'clojure.core/empty in namespace: main, being replaced by: #'main/empty
+WARNING: val already refers to: #'clojure.core/val in namespace: main, being replaced by: #'main/val
+Score: 0
++----+----+----+----+
+|    |    |    |    |
++----+----+----+----+
+|    |    |    |    |
++----+----+----+----+
+|    |    |    |    |
++----+----+----+----+
+|    |    |    |    |
++----+----+----+----+
+W=Up S=Down A=Left D=Right Q=Quit
+Move:
