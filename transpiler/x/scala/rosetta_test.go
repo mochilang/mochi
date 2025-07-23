@@ -47,6 +47,7 @@ func TestScalaTranspiler_Rosetta_Golden(t *testing.T) {
 	srcDir := filepath.Join(root, "tests", "rosetta", "x", "Mochi")
 	outDir := filepath.Join(root, "tests", "rosetta", "transpiler", "Scala")
 	os.MkdirAll(outDir, 0o755)
+	t.Cleanup(updateRosettaChecklist)
 
 	names, err := readIndex(filepath.Join(srcDir, "index.txt"))
 	if err != nil {
