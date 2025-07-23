@@ -1,4 +1,0 @@
-zig build: exit status 1
-/tmp/100-doors.zig:20:36: error: expected type '[]const bool', found '[]i32'
-/tmp/100-doors.zig:20:36: note: pointer type child 'i32' cannot cast into pointer type child 'bool'
-/root/.local/share/mise/installs/zig/0.11.0/lib/std/array_list.zig:251:48: note: parameter type declared here
