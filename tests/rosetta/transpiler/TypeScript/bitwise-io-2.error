@@ -1,0 +1,26 @@
+run: signal: trace/breakpoint trap
+"This is a test." as bytes: 84 104 105 115 32 105 115 32 97 32 116 101 115 116 46
+    original bits: [01010100 01101000 01101001 01110011 00100000 01101001 01110011 00100000 01100001 00100000 01110100 01100101 01110011 01110100 00101110]
+Written bitstream: [10101001 10100011 01001111 00110100 00011010 01111001 10100000 11000010 10000011 10100110 01011110 01111101 00010111 00000000]
+Written bytes: A9 A3 4F 34 1A 79 A0 C2 83 A6 5E 7D 17 00
+
+<--- Last few GCs --->
+
+[15987:0x558ec357d000]    56756 ms: Scavenge 2022.5 (2040.0) -> 2008.6 (2041.0) MB, pooled: 0.0 MB, 12.54 / 0.00 ms (average mu = 0.250, current mu = 0.195) allocation failure; 
+[15987:0x558ec357d000]    58983 ms: Mark-Compact (reduce) 2008.8 (2041.0) -> 2008.6 (2011.0) MB, pooled: 0.0 MB, 2198.35 / 0.00 ms (+ 2.9 ms in 3 steps since start of marking, biggest step 2.6 ms, walltime since start of marking 2227 ms) (average mu = 0.2
+
+
+#
+# Fatal JavaScript out of memory: Ineffective mark-compacts near heap limit
+#
+==== C stack trace ===============================
+
+    deno(+0x2b7e253) [0x558eb0cf3253]
+    deno(+0x2b7d2cb) [0x558eb0cf22cb]
+    deno(+0x2b81368) [0x558eb0cf6368]
+    deno(+0x2bd6476) [0x558eb0d4b476]
+    deno(+0x2dbf057) [0x558eb0f34057]
+    deno(+0x2dc21e5) [0x558eb0f371e5]
+    deno(+0x2dd110d) [0x558eb0f4610d]
+    deno(+0x2dd09cf) [0x558eb0f459cf]
+    deno(+0x36bdf4b) [0x558eb1832f4b]
