@@ -108,6 +108,17 @@ type Stmt interface{ emit(io.Writer) }
 
 type Expr interface{ emit(io.Writer) }
 
+type StmtList struct{ List []Stmt }
+
+func (sl *StmtList) emit(w io.Writer) {
+	for i, s := range sl.List {
+		if i > 0 {
+			io.WriteString(w, "\n")
+		}
+		s.emit(w)
+	}
+}
+
 type ExprStmt struct{ Expr Expr }
 
 func (s *ExprStmt) emit(w io.Writer) { s.Expr.emit(w) }
@@ -1795,10 +1806,14 @@ func compileStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 					}
 				}
 			}
-			if ae, ok := e.(*AssertExpr); ok && typ != "" && ae.Type == typ {
+			if typ != "" && typ != "any" && types.IsAnyType(valType) {
+				e = &AssertExpr{Expr: e, Type: typ}
+			} else if ae, ok := e.(*AssertExpr); ok && typ != "" && ae.Type == typ {
 				e = ae.Expr
 			}
-			if typ == "*big.Int" {
+			if typ != "" && typ != "any" && types.IsAnyType(valType) {
+				e = &AssertExpr{Expr: e, Type: typ}
+			} else if typ == "*big.Int" {
 				e = ensureBigIntExpr(e, valType)
 			}
 			if declaredType != nil {
@@ -1821,7 +1836,11 @@ func compileStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 					global = false
 				}
 			}
-			return &VarDecl{Name: st.Let.Name, Type: typ, Value: e, Global: global}, nil
+			vd := &VarDecl{Name: st.Let.Name, Type: typ, Value: e, Global: global}
+			if env != topEnv {
+				return &StmtList{List: []Stmt{vd, &AssignStmt{Name: "_", Value: &VarRef{Name: st.Let.Name}}}}, nil
+			}
+			return vd, nil
 		}
 		return &VarDecl{Name: st.Let.Name, Type: typ, Global: env == topEnv}, nil
 	case st.Var != nil:
@@ -1922,7 +1941,11 @@ func compileStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 					global = false
 				}
 			}
-			return &VarDecl{Name: st.Var.Name, Type: typ, Value: e, Global: global}, nil
+			vd := &VarDecl{Name: st.Var.Name, Type: typ, Value: e, Global: global}
+			if env != topEnv {
+				return &StmtList{List: []Stmt{vd, &AssignStmt{Name: "_", Value: &VarRef{Name: st.Var.Name}}}}, nil
+			}
+			return vd, nil
 		}
 		return &VarDecl{Name: st.Var.Name, Type: typ, Global: env == topEnv}, nil
 	case st.Type != nil:
@@ -3672,7 +3695,7 @@ func compilePostfix(pf *parser.PostfixExpr, env *types.Env, base string) (Expr, 
 					usesBigInt = true
 					switch t.(type) {
 					case types.IntType, types.Int64Type:
-						expr = &CallExpr{Func: "big.NewInt", Args: []Expr{expr}}
+						expr = &CallExpr{Func: "big.NewInt", Args: []Expr{&CallExpr{Func: "int64", Args: []Expr{expr}}}}
 					case types.BigIntType:
 						// no-op
 					default:
@@ -3751,9 +3774,7 @@ func compilePostfix(pf *parser.PostfixExpr, env *types.Env, base string) (Expr, 
 				expr = &FieldExpr{X: expr, Name: op.Field.Name}
 				t = tt.Elem
 			default:
-				// when type information is unknown, assume map access to
-				// avoid generating invalid struct field references
-				expr = &IndexExpr{X: expr, Index: &StringLit{Value: op.Field.Name}}
+				expr = &FieldExpr{X: expr, Name: op.Field.Name}
 				t = types.AnyType{}
 			}
 		}
@@ -4014,6 +4035,13 @@ func compilePrimary(p *parser.Primary, env *types.Env, base string) (Expr, error
 			if err != nil {
 				return nil, err
 			}
+			if ml, ok := ex.(*MapLit); ok {
+				if stype, ok2 := env.GetStruct(p.Struct.Name); ok2 {
+					if ft, ok3 := stype.Fields[name]; ok3 {
+						updateMapLitTypes(ml, ft)
+					}
+				}
+			}
 			fields[i] = ex
 		}
 		return &StructLit{Name: p.Struct.Name, Fields: fields, Names: names}, nil
@@ -4072,6 +4100,8 @@ func toGoType(t *parser.TypeRef, env *types.Env) string {
 		case "bigint":
 			usesBigInt = true
 			return "*big.Int"
+		case "float":
+			return "float64"
 		case "string":
 			return "string"
 		case "bool":
