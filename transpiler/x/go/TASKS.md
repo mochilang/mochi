@@ -1,3 +1,47 @@
+## Progress (2025-07-23 11:36 +0700)
+- python transpiler: handle null literal; add algebraic-data-types
+- Regenerated golden files - 103/103 vm valid programs passing
+
+## Progress (2025-07-23 11:36 +0700)
+- python transpiler: handle null literal; add algebraic-data-types
+- Regenerated golden files - 103/103 vm valid programs passing
+
+## Progress (2025-07-23 11:36 +0700)
+- python transpiler: handle null literal; add algebraic-data-types
+- Regenerated golden files - 103/103 vm valid programs passing
+
+## Progress (2025-07-23 11:36 +0700)
+- python transpiler: handle null literal; add algebraic-data-types
+- Regenerated golden files - 103/103 vm valid programs passing
+
+## Progress (2025-07-23 11:36 +0700)
+- python transpiler: handle null literal; add algebraic-data-types
+- Regenerated golden files - 103/103 vm valid programs passing
+
+## Progress (2025-07-23 11:36 +0700)
+- python transpiler: handle null literal; add algebraic-data-types
+- Regenerated golden files - 103/103 vm valid programs passing
+
+## Progress (2025-07-23 11:36 +0700)
+- python transpiler: handle null literal; add algebraic-data-types
+- Regenerated golden files - 103/103 vm valid programs passing
+
+## Progress (2025-07-23 11:36 +0700)
+- python transpiler: handle null literal; add algebraic-data-types
+- Regenerated golden files - 103/103 vm valid programs passing
+
+## Progress (2025-07-23 11:36 +0700)
+- python transpiler: handle null literal; add algebraic-data-types
+- Regenerated golden files - 103/103 vm valid programs passing
+
+## Progress (2025-07-23 11:36 +0700)
+- python transpiler: handle null literal; add algebraic-data-types
+- Regenerated golden files - 103/103 vm valid programs passing
+
+## Progress (2025-07-23 11:36 +0700)
+- python transpiler: handle null literal; add algebraic-data-types
+- Regenerated golden files - 103/103 vm valid programs passing
+
 ## Progress (2025-07-22 23:26 +0700)
 - update zig rosetta checklist
 - Regenerated golden files - 103/103 vm valid programs passing

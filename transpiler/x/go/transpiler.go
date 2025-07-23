@@ -968,7 +968,11 @@ type UnionAllExpr struct {
 }
 
 func (u *UnionAllExpr) emit(w io.Writer) {
-	fmt.Fprintf(w, "func() []%s { res := make([]%s, len(", u.ElemType, u.ElemType)
+	et := u.ElemType
+	if et == "" {
+		et = "any"
+	}
+	fmt.Fprintf(w, "func() []%s { res := make([]%s, len(", et, et)
 	u.Left.emit(w)
 	fmt.Fprint(w, ")); copy(res, ")
 	u.Left.emit(w)
@@ -2911,6 +2915,15 @@ func compileReturnStmt(rs *parser.ReturnStmt, env *types.Env) (Stmt, error) {
 
 func compileFunStmt(fn *parser.FunStmt, env *types.Env) (Stmt, error) {
 	child := types.NewEnv(env)
+	for _, p := range fn.Params {
+		if p.Type != nil {
+			child.SetVar(p.Name, types.ResolveTypeRef(p.Type, env), true)
+		} else if t, err := env.GetVar(p.Name); err == nil {
+			child.SetVar(p.Name, t, true)
+		} else {
+			child.SetVar(p.Name, types.AnyType{}, true)
+		}
+	}
 	prevRet := currentRetType
 	retHint := toGoType(fn.Return, env)
 	currentRetType = retHint
@@ -3077,8 +3090,21 @@ func compileBinary(b *parser.BinaryExpr, env *types.Env, base string) (Expr, err
 					}
 					newExpr = &IntersectExpr{Left: left, Right: right, ElemType: et}
 				default:
-					// auto cast int to float64 when mixed with float
-					if ops[i].Op == "+" || ops[i].Op == "-" || ops[i].Op == "*" || ops[i].Op == "/" {
+					// list concatenation with +
+					if ops[i].Op == "+" {
+						if lt, ok := typesList[i].(types.ListType); ok {
+							et := toGoTypeFromType(lt.Elem)
+							newExpr = &UnionAllExpr{Left: left, Right: right, ElemType: et}
+						}
+					}
+					// auto cast int/any to float64 for arithmetic
+					if newExpr == nil && (ops[i].Op == "+" || ops[i].Op == "-" || ops[i].Op == "*" || ops[i].Op == "/") {
+						if _, ok := typesList[i].(types.AnyType); ok {
+							left = &AssertExpr{Expr: left, Type: "float64"}
+						}
+						if _, ok := typesList[i+1].(types.AnyType); ok {
+							right = &AssertExpr{Expr: right, Type: "float64"}
+						}
 						if _, ok := typesList[i].(types.FloatType); ok {
 							if _, ok2 := typesList[i+1].(types.IntType); ok2 {
 								right = &CallExpr{Func: "float64", Args: []Expr{right}}
@@ -3090,7 +3116,9 @@ func compileBinary(b *parser.BinaryExpr, env *types.Env, base string) (Expr, err
 							}
 						}
 					}
-					newExpr = &BinaryExpr{Left: left, Op: ops[i].Op, Right: right}
+					if newExpr == nil {
+						newExpr = &BinaryExpr{Left: left, Op: ops[i].Op, Right: right}
+					}
 				}
 				operands[i] = newExpr
 				operands = append(operands[:i+1], operands[i+2:]...)
@@ -3448,6 +3476,13 @@ func compilePrimary(p *parser.Primary, env *types.Env, base string) (Expr, error
 				args[0] = &AssertExpr{Expr: args[0], Type: "int"}
 			}
 			return &CallExpr{Func: "int", Args: []Expr{args[0]}}, nil
+		case "float":
+			return &CallExpr{Func: "float64", Args: []Expr{args[0]}}, nil
+		case "abs":
+			if imports != nil {
+				imports["math"] = "math"
+			}
+			return &CallExpr{Func: "math.Abs", Args: []Expr{args[0]}}, nil
 		case "sum":
 			isFloat := false
 			switch a := args[0].(type) {
