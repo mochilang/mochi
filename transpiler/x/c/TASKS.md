@@ -1,5 +1,5 @@
-## Progress (2025-07-23 14:33 +0700)
-- Commit e2fee52fad: fix string slicing in cs transpiler
+## Progress (2025-07-23 23:20 +0700)
+- Commit fabda9006e: update rosetta index and refactor puzzle move type
 - Regenerated golden files - 80/103 vm valid programs passing
 
 ## Progress (2025-07-22 14:12 +0700)

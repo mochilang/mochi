@@ -281,6 +281,9 @@ func (c *CallStmt) emit(w io.Writer, indent int) {
 		}
 		return
 	}
+	writeIndent(w, indent)
+	(&CallExpr{Func: c.Func, Args: c.Args}).emitExpr(w)
+	io.WriteString(w, ";\n")
 }
 
 func (r *ReturnStmt) emit(w io.Writer, indent int) {
@@ -1509,6 +1512,21 @@ func compileStmt(env *types.Env, s *parser.Statement) (Stmt, error) {
 				return &PrintStmt{Args: []Expr{&StringLit{Value: str}}, Types: []string{"string"}}, nil
 			}
 			return nil, fmt.Errorf("unsupported json argument")
+		}
+		if call != nil {
+			var args []Expr
+			for _, a := range call.Args {
+				ex := convertExpr(a)
+				if ex == nil {
+					return nil, fmt.Errorf("invalid call argument")
+				}
+				args = append(args, ex)
+			}
+			name := call.Func
+			if newName, ok := funcAliases[name]; ok {
+				name = newName
+			}
+			return &CallStmt{Func: name, Args: args}, nil
 		}
 	case s.Let != nil:
 		currentVarName = s.Let.Name
