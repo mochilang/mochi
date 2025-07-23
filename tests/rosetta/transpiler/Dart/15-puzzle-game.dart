@@ -21,6 +21,12 @@ int _now() {
   return DateTime.now().microsecondsSinceEpoch;
 }
 
+class MoveResult {
+  int idx;
+  bool ok;
+  MoveResult({required this.idx, required this.ok});
+}
+
 List<int> board = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 0];
 final List<int> solved = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 0];
 int empty = 15;
@@ -41,29 +47,29 @@ bool isSolved() {
   return true;
 }
 
-Map<String, dynamic> isValidMove(m) {
+MoveResult isValidMove(int m) {
   if (m == 0) {
-    return {"idx": empty - 4, "ok": empty ~/ 4 > 0};
+    return MoveResult(idx: empty - 4, ok: empty ~/ 4 > 0);
   }
   if (m == 1) {
-    return {"idx": empty + 4, "ok": empty ~/ 4 < 3};
+    return MoveResult(idx: empty + 4, ok: empty ~/ 4 < 3);
   }
   if (m == 2) {
-    return {"idx": empty + 1, "ok": empty % 4 < 3};
+    return MoveResult(idx: empty + 1, ok: empty % 4 < 3);
   }
   if (m == 3) {
-    return {"idx": empty - 1, "ok": empty % 4 > 0};
+    return MoveResult(idx: empty - 1, ok: empty % 4 > 0);
   }
-  return {"idx": 0, "ok": false};
+  return MoveResult(idx: 0, ok: false);
 }
 
-bool doMove(m) {
-  final Map<String, dynamic> r = isValidMove(m);
-  if (!r["ok"]!) {
+bool doMove(int m) {
+  final MoveResult r = isValidMove(m);
+  if (!r.ok) {
     return false;
   }
   final int i = empty;
-  final j = int.parse(r["idx"]!);
+  final j = r.idx;
   final int tmp = board[i];
   board[i] = board[j];
   board[j] = tmp;
@@ -72,7 +78,7 @@ bool doMove(m) {
   return true;
 }
 
-void shuffle(n) {
+void shuffle(int n) {
   int i = 0;
   while (i < n || isSolved()) {
     if (doMove(randMove())) {
@@ -111,7 +117,7 @@ void playOneMove() {
     if (s == "") {
     continue;
   }
-    final String c = s.substring(0, 1);
+    final c = s.substring(0, 1);
     int m = 0;
     if (c == "U" || c == "u") {
     m = 0;
