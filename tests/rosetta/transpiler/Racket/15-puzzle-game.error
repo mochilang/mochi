@@ -1,9 +1,0 @@
-run error: exit status 1
-quotient: contract violation
-  expected: integer?
-  given: #t
-  context...:
-   /workspace/mochi/tests/rosetta/transpiler/Racket/15-puzzle-game.rkt:38:0: isValidMove
-   /workspace/mochi/tests/rosetta/transpiler/Racket/15-puzzle-game.rkt:69:0
-   /workspace/mochi/tests/rosetta/transpiler/Racket/15-puzzle-game.rkt:152:0: main
-   body of "/workspace/mochi/tests/rosetta/transpiler/Racket/15-puzzle-game.rkt"
