@@ -5,6 +5,7 @@ package swifttrans_test
 import (
 	"bufio"
 	"bytes"
+	"flag"
 	"fmt"
 	"os"
 	"os/exec"
@@ -72,12 +73,18 @@ func TestSwiftTranspiler_Rosetta_Golden(t *testing.T) {
 		if err := os.WriteFile(codePath, code, 0o644); err != nil {
 			return fmt.Errorf("write code: %w", err)
 		}
-		out, err := compileAndRunSwiftSrc(t, swiftExe, code)
+		inData, _ := os.ReadFile(strings.TrimSuffix(src, ".mochi") + ".in")
+		want, _ := os.ReadFile(outPath)
+		want = bytes.TrimSpace(want)
+		out, err := compileAndRunSwiftSrc(t, swiftExe, code, inData)
 		if err != nil {
 			_ = os.WriteFile(errPath, append([]byte(err.Error()+"\n"), out...), 0o644)
 			return fmt.Errorf("run: %v", err)
 		}
 		outBytes := bytes.TrimSpace(out)
+		if !updating() && len(want) > 0 && !bytes.Equal(outBytes, want) {
+			return fmt.Errorf("output mismatch\nGot: %s\nWant: %s", outBytes, want)
+		}
 		_ = os.WriteFile(outPath, outBytes, 0o644)
 		_ = os.Remove(errPath)
 		return nil
@@ -129,7 +136,7 @@ func updateRosetta() {
 	for i, f := range names {
 		name := strings.TrimSuffix(f, ".mochi")
 		mark := "[ ]"
-		if _, err := os.Stat(filepath.Join(binDir, name+".swift")); err == nil {
+		if _, err := os.Stat(filepath.Join(binDir, name+".out")); err == nil {
 			if _, err2 := os.Stat(filepath.Join(binDir, name+".error")); os.IsNotExist(err2) {
 				compiled++
 				mark = "[x]"
@@ -158,4 +165,17 @@ func updateRosetta() {
 	buf.WriteString(strings.Join(lines, "\n"))
 	buf.WriteString("\n")
 	_ = os.WriteFile(docPath, buf.Bytes(), 0o644)
+}
+
+func updating() bool {
+	f := flag.Lookup("update")
+	if f == nil {
+		return false
+	}
+	if getter, ok := f.Value.(interface{ Get() any }); ok {
+		if v, ok2 := getter.Get().(bool); ok2 {
+			return v
+		}
+	}
+	return false
 }

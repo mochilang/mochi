@@ -739,6 +739,14 @@ func (c *CastExpr) emit(w io.Writer) {
 		c.Expr.emit(w)
 		return
 	}
+	if inner, ok := c.Expr.(*CastExpr); ok {
+		t1 := strings.TrimSuffix(c.Type, "!")
+		t2 := strings.TrimSuffix(inner.Type, "!")
+		if t1 == t2 {
+			inner.emit(w)
+			return
+		}
+	}
 	t := c.Type
 	force := false
 	if strings.HasSuffix(t, "!") {
@@ -848,6 +856,18 @@ func (c *CallExpr) emit(w io.Writer) {
 		}
 		fmt.Fprint(w, ")")
 		return
+	case "int":
+		if len(c.Args) == 1 {
+			fmt.Fprint(w, "Int(")
+			c.Args[0].emit(w)
+			fmt.Fprint(w, ")")
+			return
+		}
+	case "input":
+		if len(c.Args) == 0 {
+			fmt.Fprint(w, "(readLine() ?? \"\")")
+			return
+		}
 	case "append":
 		if len(c.Args) == 2 {
 			fmt.Fprint(w, "(")
@@ -2624,6 +2644,16 @@ func convertPrimary(env *types.Env, pr *parser.Primary) (Expr, error) {
 	case pr.Struct != nil:
 		return convertStructLiteral(env, pr.Struct)
 	case pr.Call != nil:
+		if pr.Call.Func == "int" && len(pr.Call.Args) == 1 {
+			arg, err := convertExpr(env, pr.Call.Args[0])
+			if err != nil {
+				return nil, err
+			}
+			return &CastExpr{Expr: arg, Type: "Int!"}, nil
+		}
+		if pr.Call.Func == "input" && len(pr.Call.Args) == 0 {
+			return &CallExpr{Func: "input"}, nil
+		}
 		if pr.Call.Func == "append" && len(pr.Call.Args) == 2 {
 			left, err := convertExpr(env, pr.Call.Args[0])
 			if err != nil {
