@@ -33,6 +33,7 @@ var builtinAliases map[string]string
 var useNow bool
 var reserved = map[string]bool{"this": true, "new": true}
 var currentReturnType string
+var inReturn bool
 
 func safeName(n string) string {
 	if reserved[n] {
@@ -874,20 +875,31 @@ func (i *IndexExpr) emit(w io.Writer) {
 			currentProgram.addInclude("<any>")
 		}
 		idxType := exprType(i.Index)
+		resType := exprType(i)
 		if idxType == "int" {
-			io.WriteString(w, "std::any_cast<std::vector<int>>(")
+			if resType == "auto" {
+				resType = "std::vector<int>"
+			}
+			io.WriteString(w, "std::any_cast<"+resType+">(std::any_cast<std::vector<int>>(")
 			i.Target.emit(w)
 			io.WriteString(w, ")[")
 			i.Index.emit(w)
-			io.WriteString(w, "]")
+			io.WriteString(w, "])")
 			return
 		}
 		if idxType == "std::string" {
-			io.WriteString(w, "std::any_cast<std::map<std::string, std::any>>(")
+			if resType == "auto" {
+				if sl, ok := i.Index.(*StringLit); ok && (sl.Value == "num" || sl.Value == "denom") {
+					resType = "int"
+				} else {
+					resType = "std::any"
+				}
+			}
+			io.WriteString(w, "std::any_cast<"+resType+">(std::any_cast<std::map<std::string, std::any>>(")
 			i.Target.emit(w)
 			io.WriteString(w, ")[")
 			i.Index.emit(w)
-			io.WriteString(w, "]")
+			io.WriteString(w, "])")
 			return
 		}
 	}
@@ -956,6 +968,10 @@ func (a *AppendExpr) emit(w io.Writer) {
 	io.WriteString(w, "([&]{ auto __tmp = ")
 	a.List.emit(w)
 	io.WriteString(w, "; __tmp.push_back(")
+	elemType := elementTypeFromListType(exprType(a.List))
+	if et := exprType(a.Elem); et != elemType && elemType != "auto" {
+		io.WriteString(w, "("+elemType+")")
+	}
 	a.Elem.emit(w)
 	io.WriteString(w, "); return __tmp; }())")
 }
@@ -2706,9 +2722,14 @@ func convertStmt(s *parser.Statement) (Stmt, error) {
 		var val Expr
 		if s.Return.Value != nil {
 			var err error
+			inReturn = true
 			val, err = convertExpr(s.Return.Value)
+			inReturn = false
 			if err != nil {
 				return nil, err
+			}
+			if exprType(val) == "std::any" && currentReturnType != "" && currentReturnType != "std::any" {
+				val = &CastExpr{Value: val, Type: currentReturnType}
 			}
 		}
 		return &ReturnStmt{Value: val}, nil
@@ -3268,6 +3289,18 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 		}
 		if currentEnv != nil {
 			if fn, ok := currentEnv.GetFunc(p.Call.Func); ok {
+				for i, arg := range args {
+					if i < len(fn.Params) {
+						ptyp := cppTypeFrom(types.ResolveTypeRef(fn.Params[i].Type, currentEnv))
+						if ptyp == "" {
+							ptyp = "auto"
+						}
+						at := exprType(arg)
+						if at != ptyp && ptyp != "auto" {
+							args[i] = &CastExpr{Value: arg, Type: ptyp}
+						}
+					}
+				}
 				if len(args) < len(fn.Params) {
 					var params []Param
 					for _, pa := range fn.Params[len(args):] {
@@ -3361,7 +3394,20 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 		}
 		kt := guessType(p.Map.Items[0].Key)
 		vt := guessType(p.Map.Items[0].Value)
-		if currentReturnType == "std::map<std::string, std::any>" {
+		for _, it := range p.Map.Items[1:] {
+			t2 := guessType(it.Value)
+			if t2 != vt {
+				vt = "std::any"
+				break
+			}
+		}
+		if inReturn && strings.HasPrefix(currentReturnType, "std::map<") {
+			parts := strings.SplitN(strings.TrimSuffix(strings.TrimPrefix(currentReturnType, "std::map<"), ">"), ",", 2)
+			if len(parts) == 2 {
+				kt = strings.TrimSpace(parts[0])
+				vt = strings.TrimSpace(parts[1])
+			}
+		} else if currentReturnType == "std::map<std::string, std::any>" {
 			if kt == "auto" {
 				kt = "std::string"
 			}
@@ -4595,7 +4641,11 @@ func exprType(e Expr) string {
 			if kt == "auto" {
 				kt = "std::string"
 			}
-			return fmt.Sprintf("std::map<%s, %s>", kt, exprType(v.Values[0]))
+			vt := v.ValueType
+			if vt == "" || vt == "auto" {
+				vt = exprType(v.Values[0])
+			}
+			return fmt.Sprintf("std::map<%s, %s>", kt, vt)
 		}
 		return "std::map<auto, auto>"
 	case *IndexExpr:
