@@ -2,7 +2,7 @@
 
 This directory contains Dart code generated from Mochi programs in `tests/rosetta/x/Mochi`. Each program has a `.dart` file and `.out` output. Compilation or runtime failures are captured in a `.error` file.
 
-Compiled and ran: 27/284
+Compiled and ran: 32/284
 
 ## Checklist
 1. [x] 100-doors-2
@@ -33,11 +33,11 @@ Compiled and ran: 27/284
 26. [x] accumulator-factory
 27. [ ] achilles-numbers
 28. [x] ackermann-function-2
-29. [ ] ackermann-function-3
-30. [ ] ackermann-function
-31. [ ] active-directory-connect
-32. [ ] active-directory-search-for-a-user
-33. [ ] active-object
+29. [x] ackermann-function-3
+30. [x] ackermann-function
+31. [x] active-directory-connect
+32. [x] active-directory-search-for-a-user
+33. [x] active-object
 34. [ ] add-a-variable-to-a-class-instance-at-runtime
 35. [ ] additive-primes
 36. [ ] address-of-a-variable
@@ -290,4 +290,4 @@ Compiled and ran: 27/284
 283. [ ] define-a-primitive-data-type
 284. [ ] md5
 
-_Last updated: 2025-07-23 13:23 +0700_
+_Last updated: 2025-07-23 16:37 +0700_

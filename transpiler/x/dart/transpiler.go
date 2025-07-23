@@ -97,6 +97,34 @@ func validIdent(name string) bool {
 	return true
 }
 
+func emitWithBigIntCast(w io.Writer, e Expr, from, to string) error {
+	if to == "BigInt" && from == "int" {
+		if lit, ok := e.(*IntLit); ok {
+			_, err := fmt.Fprintf(w, "BigInt.from(%d)", lit.Value)
+			return err
+		}
+		if _, err := io.WriteString(w, "BigInt.from("); err != nil {
+			return err
+		}
+		if err := e.emit(w); err != nil {
+			return err
+		}
+		_, err := io.WriteString(w, ")")
+		return err
+	}
+	if to == "int" && from == "BigInt" {
+		if _, err := io.WriteString(w, "("); err != nil {
+			return err
+		}
+		if err := e.emit(w); err != nil {
+			return err
+		}
+		_, err := io.WriteString(w, ").toInt()")
+		return err
+	}
+	return e.emit(w)
+}
+
 // --- Simple Dart AST ---
 
 // Program represents a sequence of statements.
@@ -330,6 +358,20 @@ func (s *VarStmt) emit(w io.Writer) error {
 		}
 	}
 	if s.Value != nil {
+		if typ == "BigInt" && inferType(s.Value) == "int" {
+			if lit, ok := s.Value.(*IntLit); ok {
+				_, err := fmt.Fprintf(w, " = BigInt.from(%d)", lit.Value)
+				return err
+			}
+			if _, err := io.WriteString(w, " = BigInt.from("); err != nil {
+				return err
+			}
+			if err := s.Value.emit(w); err != nil {
+				return err
+			}
+			_, err := io.WriteString(w, ")")
+			return err
+		}
 		if _, err := io.WriteString(w, " = "); err != nil {
 			return err
 		}
@@ -364,6 +406,21 @@ func (s *AssignStmt) emit(w io.Writer) error {
 	if _, err := io.WriteString(w, " = "); err != nil {
 		return err
 	}
+	targetType := inferType(s.Target)
+	if targetType == "BigInt" && inferType(s.Value) == "int" {
+		if lit, ok := s.Value.(*IntLit); ok {
+			_, err := fmt.Fprintf(w, "BigInt.from(%d)", lit.Value)
+			return err
+		}
+		if _, err := io.WriteString(w, "BigInt.from("); err != nil {
+			return err
+		}
+		if err := s.Value.emit(w); err != nil {
+			return err
+		}
+		_, err := io.WriteString(w, ")")
+		return err
+	}
 	return s.Value.emit(w)
 }
 
@@ -389,6 +446,20 @@ func (s *LetStmt) emit(w io.Writer) error {
 		if _, err := io.WriteString(w, "final "+typ+" "+s.Name+" = "); err != nil {
 			return err
 		}
+	}
+	if typ == "BigInt" && inferType(s.Value) == "int" {
+		if lit, ok := s.Value.(*IntLit); ok {
+			_, err := fmt.Fprintf(w, "BigInt.from(%d)", lit.Value)
+			return err
+		}
+		if _, err := io.WriteString(w, "BigInt.from("); err != nil {
+			return err
+		}
+		if err := s.Value.emit(w); err != nil {
+			return err
+		}
+		_, err := io.WriteString(w, ")")
+		return err
 	}
 	return s.Value.emit(w)
 }
@@ -619,14 +690,22 @@ func (b *BinaryExpr) emit(w io.Writer) error {
 	}
 	lt := inferType(b.Left)
 	rt := inferType(b.Right)
+	target := lt
+	if lt == "BigInt" || rt == "BigInt" {
+		target = "BigInt"
+	} else if rt != lt {
+		target = lt
+	}
+	left := func() error { return emitWithBigIntCast(w, b.Left, lt, target) }
+	right := func() error { return emitWithBigIntCast(w, b.Right, rt, target) }
 	if (b.Op == "<" || b.Op == "<=" || b.Op == ">" || b.Op == ">=") && lt == "String" && rt == "String" {
-		if err := b.Left.emit(w); err != nil {
+		if err := left(); err != nil {
 			return err
 		}
 		if _, err := io.WriteString(w, ".compareTo("); err != nil {
 			return err
 		}
-		if err := b.Right.emit(w); err != nil {
+		if err := right(); err != nil {
 			return err
 		}
 		var cmp string
@@ -649,20 +728,22 @@ func (b *BinaryExpr) emit(w io.Writer) error {
 		if _, err := io.WriteString(w, "("); err != nil {
 			return err
 		}
-		if err := b.Left.emit(w); err != nil {
+		if err := left(); err != nil {
 			return err
 		}
 		if _, err := io.WriteString(w, ")"); err != nil {
 			return err
 		}
 	} else {
-		if err := b.Left.emit(w); err != nil {
+		if err := left(); err != nil {
 			return err
 		}
 	}
 	op := b.Op
-	if b.Op == "/" && lt == "int" && rt == "int" {
-		op = "~/"
+	if b.Op == "/" {
+		if (lt == "int" && rt == "int") || lt == "BigInt" || rt == "BigInt" {
+			op = "~/"
+		}
 	}
 	if _, err := io.WriteString(w, " "+op+" "); err != nil {
 		return err
@@ -672,13 +753,13 @@ func (b *BinaryExpr) emit(w io.Writer) error {
 		if _, err := io.WriteString(w, "("); err != nil {
 			return err
 		}
-		if err := b.Right.emit(w); err != nil {
+		if err := right(); err != nil {
 			return err
 		}
 		_, err := io.WriteString(w, ")")
 		return err
 	}
-	return b.Right.emit(w)
+	return right()
 }
 
 func precedence(e Expr) int {
@@ -698,6 +779,8 @@ func precedence(e Expr) int {
 		case "||":
 			return 6
 		}
+	case *CastExpr:
+		return 7
 	}
 	return 0
 }
@@ -1302,12 +1385,39 @@ type CastExpr struct {
 }
 
 func (c *CastExpr) emit(w io.Writer) error {
+	valType := inferType(c.Value)
 	if c.Type == "BigInt" {
 		if lit, ok := c.Value.(*IntLit); ok {
 			_, err := fmt.Fprintf(w, "BigInt.from(%d)", lit.Value)
 			return err
 		}
+		if valType == "int" {
+			_, err := io.WriteString(w, "BigInt.from(")
+			if err != nil {
+				return err
+			}
+			if err := c.Value.emit(w); err != nil {
+				return err
+			}
+			_, err = io.WriteString(w, ")")
+			return err
+		}
+		if valType == "BigInt" {
+			return c.Value.emit(w)
+		}
 	}
+
+	if c.Type == "int" && valType == "BigInt" {
+		if _, err := io.WriteString(w, "("); err != nil {
+			return err
+		}
+		if err := c.Value.emit(w); err != nil {
+			return err
+		}
+		_, err := io.WriteString(w, ").toInt()")
+		return err
+	}
+
 	if err := c.Value.emit(w); err != nil {
 		return err
 	}
@@ -2001,6 +2111,9 @@ func dartType(t types.Type) string {
 	case types.GroupType:
 		return "Map<String, dynamic>"
 	case types.StructType:
+		if v.Name != "" {
+			return v.Name
+		}
 		return "Map<String, dynamic>"
 	default:
 		return "dynamic"
@@ -2053,6 +2166,9 @@ func inferType(e Expr) string {
 		}
 		return "List<" + typ + ">"
 	case *MapLit:
+		if name, ok := mapLitStructName[ex]; ok {
+			return name
+		}
 		if len(ex.Entries) == 0 {
 			return "Map<dynamic, dynamic>"
 		}
@@ -2331,6 +2447,9 @@ func inferType(e Expr) string {
 			if lt == "String" || rt == "String" {
 				return "String"
 			}
+			if lt == "BigInt" || rt == "BigInt" {
+				return "BigInt"
+			}
 			if lt == "int" && rt == "int" {
 				return "int"
 			}
@@ -2338,6 +2457,9 @@ func inferType(e Expr) string {
 		case "-", "*", "%":
 			lt := inferType(ex.Left)
 			rt := inferType(ex.Right)
+			if lt == "BigInt" || rt == "BigInt" {
+				return "BigInt"
+			}
 			if lt == "int" && rt == "int" {
 				return "int"
 			}
@@ -2345,6 +2467,9 @@ func inferType(e Expr) string {
 		case "/":
 			lt := inferType(ex.Left)
 			rt := inferType(ex.Right)
+			if lt == "BigInt" || rt == "BigInt" {
+				return "BigInt"
+			}
 			if lt == "int" && rt == "int" {
 				return "int"
 			}
@@ -3035,6 +3160,12 @@ func convertStmtInternal(st *parser.Statement) (Stmt, error) {
 			return nil, fmt.Errorf("let missing value not supported")
 		}
 		typ := typeRefString(st.Let.Type)
+		if typ == "" {
+			saved := nextStructHint
+			nextStructHint = ""
+			typ = inferType(e)
+			nextStructHint = saved
+		}
 		return &LetStmt{Name: sanitize(st.Let.Name), Type: typ, Value: e}, nil
 	case st.Var != nil:
 		var e Expr
@@ -3048,6 +3179,12 @@ func convertStmtInternal(st *parser.Statement) (Stmt, error) {
 			e = &IntLit{Value: 0}
 		}
 		typ := typeRefString(st.Var.Type)
+		if typ == "" {
+			saved := nextStructHint
+			nextStructHint = ""
+			typ = inferType(e)
+			nextStructHint = saved
+		}
 		return &VarStmt{Name: sanitize(st.Var.Name), Type: typ, Value: e}, nil
 	case st.Assign != nil:
 		target, err := convertAssignTarget(st.Assign)
@@ -3351,7 +3488,8 @@ func convertPostfix(pf *parser.PostfixExpr) (Expr, error) {
 				}
 			}
 		case op.Cast != nil:
-			// ignore casts
+			typ := typeRefString(op.Cast.Type)
+			expr = &CastExpr{Value: expr, Type: typ}
 		default:
 			return nil, fmt.Errorf("postfix op not supported")
 		}
@@ -3428,12 +3566,12 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 			if err != nil {
 				return nil, err
 			}
-			if currentEnv != nil {
-				if t := types.ExprType(p.Call.Args[0], currentEnv); t != nil {
-					if _, ok := t.(types.BigIntType); ok {
-						return &CallExpr{Func: &SelectorExpr{Receiver: v, Field: "toInt"}}, nil
-					}
-				}
+			vt := inferType(v)
+			if vt == "BigInt" {
+				return &CallExpr{Func: &SelectorExpr{Receiver: v, Field: "toInt"}}, nil
+			}
+			if vt != "String" {
+				return &CastExpr{Value: v, Type: "int"}, nil
 			}
 			return &CallExpr{Func: &SelectorExpr{Receiver: &Name{Name: "int"}, Field: "parse"}, Args: []Expr{v}}, nil
 		}
@@ -3728,6 +3866,8 @@ func convertExistsQuery(q *parser.QueryExpr) (Expr, error) {
 
 func convertStructLiteral(sl *parser.StructLiteral) (Expr, error) {
 	var entries []MapEntry
+	savedHint := nextStructHint
+	nextStructHint = ""
 	if currentEnv != nil {
 		if _, ok := currentEnv.FindUnionByVariant(sl.Name); ok {
 			entries = append(entries, MapEntry{Key: &StringLit{Value: "__name"}, Value: &StringLit{Value: sl.Name}})
@@ -3748,7 +3888,10 @@ func convertStructLiteral(sl *parser.StructLiteral) (Expr, error) {
 		}
 		entries = append(entries, MapEntry{Key: &StringLit{Value: f.Name}, Value: v})
 	}
-	return &MapLit{Entries: entries}, nil
+	ml := &MapLit{Entries: entries}
+	mapLitStructName[ml] = sl.Name
+	nextStructHint = savedHint
+	return ml, nil
 }
 
 func convertMatchExpr(me *parser.MatchExpr) (Expr, error) {
