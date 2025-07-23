@@ -254,11 +254,32 @@ func (c *CallExpr) emit(w io.Writer) {
 		}
 		return
 	case "len", "count":
-		io.WriteString(w, "(function(v)\n  if type(v) == 'table' and v.items ~= nil then\n    return #v.items\n  elseif type(v) == 'table' and (v[1] == nil) then\n    local c = 0\n    for _ in pairs(v) do c = c + 1 end\n    return c\n  else\n    return #v\n  end\nend)(")
+		io.WriteString(w, "(function(v)\n  if type(v) == 'table' and v.items ~= nil then\n    return #v.items\n  elseif type(v) == 'table' and (v[1] == nil) then\n    local c = 0\n    for _ in pairs(v) do c = c + 1 end\n    return c\n  elseif type(v) == 'string' or type(v) == 'table' then\n    return #v\n  else\n    return 0\n  end\nend)(")
 		if len(c.Args) > 0 {
 			c.Args[0].emit(w)
 		}
 		io.WriteString(w, ")")
+	case "get":
+		// map get with optional default
+		io.WriteString(w, "((function(m,k,d) local v=m[k] if v==nil then return d end return v end)(")
+		if len(c.Args) > 0 {
+			c.Args[0].emit(w)
+		} else {
+			io.WriteString(w, "nil")
+		}
+		io.WriteString(w, ", ")
+		if len(c.Args) > 1 {
+			c.Args[1].emit(w)
+		} else {
+			io.WriteString(w, "nil")
+		}
+		io.WriteString(w, ", ")
+		if len(c.Args) > 2 {
+			c.Args[2].emit(w)
+		} else {
+			io.WriteString(w, "nil")
+		}
+		io.WriteString(w, "))")
 	case "int":
 		io.WriteString(w, "math.floor(")
 		if len(c.Args) > 0 {
@@ -478,7 +499,7 @@ end)(`)
 		}
 		io.WriteString(w, `)`)
 	default:
-		io.WriteString(w, c.Func)
+		io.WriteString(w, sanitizeName(c.Func))
 		io.WriteString(w, "(")
 		for i, a := range c.Args {
 			if i > 0 {
@@ -878,7 +899,7 @@ func (f *FunExpr) emit(w io.Writer) {
 }
 func sanitizeName(n string) string {
 	switch n {
-	case "table", "string", "math", "io", "os", "coroutine", "utf8":
+	case "table", "string", "math", "io", "os", "coroutine", "utf8", "repeat":
 		return "_" + n
 	}
 	return n
@@ -1208,6 +1229,14 @@ func (b *BinaryExpr) emit(w io.Writer) {
 		} else {
 			op = "//"
 		}
+	}
+	if op == "+" && isListExpr(b.Left) && isListExpr(b.Right) {
+		io.WriteString(w, "(function(a,b) local res={table.unpack(a)} for _,v in ipairs(b) do res[#res+1]=v end return res end)(")
+		b.Left.emit(w)
+		io.WriteString(w, ", ")
+		b.Right.emit(w)
+		io.WriteString(w, ")")
+		return
 	}
 	if op == "+" && !isStringExpr(b.Left) && !isStringExpr(b.Right) && !(isIntExpr(b.Left) || isFloatExpr(b.Left)) && !(isIntExpr(b.Right) || isFloatExpr(b.Right)) {
 		io.WriteString(w, "((tonumber(")
@@ -1576,6 +1605,66 @@ func identName(e *parser.Expr) (string, bool) {
 		return "", false
 	}
 	return p.Target.Selector.Root, true
+}
+
+// identNameUnary returns the identifier name represented by a unary expression
+// if it is a simple identifier expression.
+func identNameUnary(u *parser.Unary) (string, bool) {
+	if u == nil || len(u.Ops) != 0 || u.Value == nil {
+		return "", false
+	}
+	p := u.Value
+	if len(p.Ops) != 0 || p.Target == nil || p.Target.Selector == nil || len(p.Target.Selector.Tail) != 0 {
+		return "", false
+	}
+	return p.Target.Selector.Root, true
+}
+
+// intValue returns the integer value represented by the expression if it is a
+// literal integer.
+func intValue(e *parser.Expr) (int, bool) {
+	if e == nil || len(e.Binary.Right) != 0 {
+		return 0, false
+	}
+	u := e.Binary.Left
+	if len(u.Ops) != 0 || u.Value == nil {
+		return 0, false
+	}
+	p := u.Value
+	if len(p.Ops) != 0 || p.Target == nil || p.Target.Lit == nil || p.Target.Lit.Int == nil {
+		return 0, false
+	}
+	return int(*p.Target.Lit.Int), true
+}
+
+func intValuePostfix(p *parser.PostfixExpr) (int, bool) {
+	if p == nil || len(p.Ops) != 0 || p.Target == nil || p.Target.Lit == nil || p.Target.Lit.Int == nil {
+		return 0, false
+	}
+	return int(*p.Target.Lit.Int), true
+}
+
+// isStartPlusOne reports whether end represents the expression start + 1.
+func isStartPlusOne(start, end *parser.Expr) bool {
+	if start == nil || end == nil || end.Binary == nil || len(end.Binary.Right) != 1 {
+		return false
+	}
+	op := end.Binary.Right[0]
+	if op.Op != "+" {
+		return false
+	}
+	startName, ok := identName(start)
+	if !ok {
+		return false
+	}
+	leftName, ok := identNameUnary(end.Binary.Left)
+	if !ok || leftName != startName {
+		return false
+	}
+	if val, ok := intValuePostfix(op.Right); ok && val == 1 {
+		return true
+	}
+	return false
 }
 
 func replaceFields(e Expr, target Expr, fields map[string]bool) Expr {
@@ -2006,9 +2095,32 @@ func convertPostfix(p *parser.PostfixExpr) (Expr, error) {
 				kind = "string"
 			} else if isMapExpr(expr) {
 				kind = "map"
+			} else if _, ok := idx.(*StringLit); ok {
+				kind = "map"
 			}
 			expr = &IndexExpr{Target: expr, Index: idx, Kind: kind}
 		case op.Index != nil:
+			// If this is a slice of a single element like a[i:i+1]
+			// convert it into an index access so that the result
+			// has the element type rather than a list. Several
+			// Rosetta examples use this pattern to fetch a single
+			// string from a list of strings.
+			if op.Index.Colon != nil && op.Index.Colon2 == nil && op.Index.Step == nil && op.Index.Start != nil && op.Index.End != nil {
+				if isStartPlusOne(op.Index.Start, op.Index.End) {
+					idx, err := convertExpr(op.Index.Start)
+					if err != nil {
+						return nil, err
+					}
+					kind := "list"
+					if isStringExpr(expr) {
+						kind = "string"
+					} else if isMapExpr(expr) {
+						kind = "map"
+					}
+					expr = &IndexExpr{Target: expr, Index: idx, Kind: kind}
+					continue
+				}
+			}
 			var start, end Expr
 			var err error
 			if op.Index.Start != nil {
@@ -2040,21 +2152,16 @@ func convertPostfix(p *parser.PostfixExpr) (Expr, error) {
 					}
 					args = append(args, ae)
 				}
-				if id, ok := expr.(*Ident); ok {
-					name := id.Name + "." + op.Field.Name
-					expr = &CallExpr{Func: name, Args: args}
-				} else {
-					args = append([]Expr{expr}, args...)
-					cexpr := &CallExpr{Func: op.Field.Name, Args: args}
-					if currentEnv != nil {
-						if t, err := currentEnv.GetVar(op.Field.Name); err == nil {
-							if ft, ok := t.(types.FuncType); ok {
-								cexpr.ParamTypes = ft.Params
-							}
+				args = append([]Expr{expr}, args...)
+				cexpr := &CallExpr{Func: op.Field.Name, Args: args}
+				if currentEnv != nil {
+					if t, err := currentEnv.GetVar(op.Field.Name); err == nil {
+						if ft, ok := t.(types.FuncType); ok {
+							cexpr.ParamTypes = ft.Params
 						}
 					}
-					expr = cexpr
 				}
+				expr = cexpr
 			} else {
 				expr = &IndexExpr{Target: expr, Index: &StringLit{Value: op.Field.Name}, Kind: "map"}
 			}
@@ -2325,6 +2432,8 @@ func convertLiteral(l *parser.Literal) (Expr, error) {
 		return &StringLit{Value: *l.Str}, nil
 	case l.Bool != nil:
 		return &BoolLit{Value: bool(*l.Bool)}, nil
+	case l.Null:
+		return &Ident{Name: "nil"}, nil
 	default:
 		return nil, fmt.Errorf("unsupported literal")
 	}

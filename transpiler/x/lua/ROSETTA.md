@@ -2,9 +2,9 @@
 
 Generated Lua code for programs in `tests/rosetta/x/Mochi`. Each program has a `.lua` file produced by the transpiler and a `.out` file with its runtime output. Compilation or runtime errors are captured in `.error` files.
 
-Transpiled programs: 36/284
+Transpiled programs: 56/284
 
-Last updated: 2025-07-23 13:07 GMT+7
+Last updated: 2025-07-23 13:23 GMT+7
 
 Checklist:
 
@@ -44,26 +44,26 @@ Checklist:
 34. [x] add-a-variable-to-a-class-instance-at-runtime
 35. [x] additive-primes
 36. [x] address-of-a-variable
-37. [ ] adfgvx-cipher
-38. [ ] aks-test-for-primes
-39. [ ] algebraic-data-types
-40. [ ] align-columns
-41. [ ] aliquot-sequence-classifications
-42. [ ] almkvist-giullera-formula-for-pi
-43. [ ] almost-prime
-44. [ ] amb
-45. [ ] amicable-pairs
-46. [ ] anagrams-deranged-anagrams
-47. [ ] anagrams
-48. [ ] angle-difference-between-two-bearings-1
-49. [ ] angle-difference-between-two-bearings-2
-50. [ ] angles-geometric-normalization-and-conversion
-51. [ ] animate-a-pendulum
-52. [ ] animation
-53. [ ] anonymous-recursion-1
-54. [ ] anonymous-recursion-2
-55. [ ] anonymous-recursion
-56. [ ] anti-primes
+37. [x] adfgvx-cipher
+38. [x] aks-test-for-primes
+39. [x] algebraic-data-types
+40. [x] align-columns
+41. [x] aliquot-sequence-classifications
+42. [x] almkvist-giullera-formula-for-pi
+43. [x] almost-prime
+44. [x] amb
+45. [x] amicable-pairs
+46. [x] anagrams-deranged-anagrams
+47. [x] anagrams
+48. [x] angle-difference-between-two-bearings-1
+49. [x] angle-difference-between-two-bearings-2
+50. [x] angles-geometric-normalization-and-conversion
+51. [x] animate-a-pendulum
+52. [x] animation
+53. [x] anonymous-recursion-1
+54. [x] anonymous-recursion-2
+55. [x] anonymous-recursion
+56. [x] anti-primes
 57. [ ] append-a-record-to-the-end-of-a-text-file
 58. [ ] apply-a-callback-to-an-array-1
 59. [ ] apply-a-callback-to-an-array-2
