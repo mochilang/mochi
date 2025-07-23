@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated TypeScript code from programs in `tests/rosetta/x/Mochi` lives in `tests/rosetta/transpiler/TypeScript`.
-Last updated: 2025-07-23 11:38 UTC
+Last updated: 2025-07-23 12:25 UTC
 
-## Rosetta Golden Test Checklist (141/284)
+## Rosetta Golden Test Checklist (161/284)
 1. [x] 100-doors-2
 2. [x] 100-doors-3
 3. [x] 100-doors
@@ -153,26 +153,26 @@ Last updated: 2025-07-23 11:38 UTC
 146. [x] calendar---for-real-programmers-2
 147. [x] calendar
 148. [x] calkin-wilf-sequence
-149. [ ] call-a-foreign-language-function
-150. [ ] call-a-function-1
-151. [ ] call-a-function-10
-152. [ ] call-a-function-11
-153. [ ] call-a-function-12
-154. [ ] call-a-function-2
-155. [ ] call-a-function-3
-156. [ ] call-a-function-4
-157. [ ] call-a-function-5
-158. [ ] call-a-function-6
-159. [ ] call-a-function-7
-160. [ ] call-a-function-8
-161. [ ] call-a-function-9
-162. [ ] call-an-object-method-1
-163. [ ] call-an-object-method-2
-164. [ ] call-an-object-method-3
-165. [ ] call-an-object-method
-166. [ ] camel-case-and-snake-case
-167. [ ] canny-edge-detector
-168. [ ] canonicalize-cidr
+149. [x] call-a-foreign-language-function
+150. [x] call-a-function-1
+151. [x] call-a-function-10
+152. [x] call-a-function-11
+153. [x] call-a-function-12
+154. [x] call-a-function-2
+155. [x] call-a-function-3
+156. [x] call-a-function-4
+157. [x] call-a-function-5
+158. [x] call-a-function-6
+159. [x] call-a-function-7
+160. [x] call-a-function-8
+161. [x] call-a-function-9
+162. [x] call-an-object-method-1
+163. [x] call-an-object-method-2
+164. [x] call-an-object-method-3
+165. [x] call-an-object-method
+166. [x] camel-case-and-snake-case
+167. [x] canny-edge-detector
+168. [x] canonicalize-cidr
 169. [ ] cantor-set
 170. [ ] carmichael-3-strong-pseudoprimes
 171. [ ] cartesian-product-of-two-or-more-lists-1
