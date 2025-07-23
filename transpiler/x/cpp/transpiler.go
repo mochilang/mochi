@@ -875,18 +875,15 @@ func (i *IndexExpr) emit(w io.Writer) {
 			currentProgram.addInclude("<any>")
 		}
 		idxType := exprType(i.Index)
-		resType := exprType(i)
 		if idxType == "int" {
-			if resType == "auto" {
-				resType = "std::vector<int>"
-			}
-			io.WriteString(w, "std::any_cast<"+resType+">(std::any_cast<std::vector<int>>(")
+			io.WriteString(w, "std::any_cast<std::vector<int>>(")
 			i.Target.emit(w)
 			io.WriteString(w, ")[")
 			i.Index.emit(w)
-			io.WriteString(w, "])")
+			io.WriteString(w, "]")
 			return
 		}
+		resType := exprType(i)
 		if idxType == "std::string" {
 			if resType == "auto" {
 				if sl, ok := i.Index.(*StringLit); ok && (sl.Value == "num" || sl.Value == "denom") {
