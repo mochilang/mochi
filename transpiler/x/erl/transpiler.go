@@ -24,8 +24,9 @@ import (
 // Program is a minimal Erlang module consisting of sequential statements and
 // optional function declarations.
 type Program struct {
-	Funs  []*FuncDecl
-	Stmts []Stmt
+	Funs    []*FuncDecl
+	Stmts   []Stmt
+	UseTime bool
 }
 
 // context tracks variable aliases to emulate mutable variables.
@@ -40,12 +41,13 @@ type context struct {
 	constVal  map[string]Expr
 	autoMod   map[string]string
 	baseDir   string
+	useTime   bool
 }
 
 type groupInfo struct{ key, items string }
 
 func newContext(base string) *context {
-	return &context{alias: map[string]string{}, orig: map[string]string{}, counter: map[string]int{}, strVar: map[string]bool{}, strField: map[string]map[string]bool{}, boolField: map[string]map[string]bool{}, groups: map[string]groupInfo{}, constVal: map[string]Expr{}, autoMod: map[string]string{}, baseDir: base}
+	return &context{alias: map[string]string{}, orig: map[string]string{}, counter: map[string]int{}, strVar: map[string]bool{}, strField: map[string]map[string]bool{}, boolField: map[string]map[string]bool{}, groups: map[string]groupInfo{}, constVal: map[string]Expr{}, autoMod: map[string]string{}, baseDir: base, useTime: false}
 }
 
 func (c *context) clone() *context {
@@ -90,7 +92,7 @@ func (c *context) clone() *context {
 	for k, v := range c.autoMod {
 		mods[k] = v
 	}
-	return &context{alias: alias, orig: orig, counter: counter, strVar: strVar, strField: fields, boolField: bfields, groups: groups, constVal: consts, autoMod: mods, baseDir: c.baseDir}
+	return &context{alias: alias, orig: orig, counter: counter, strVar: strVar, strField: fields, boolField: bfields, groups: groups, constVal: consts, autoMod: mods, baseDir: c.baseDir, useTime: c.useTime}
 }
 
 func (c *context) newAlias(name string) string {
@@ -1157,10 +1159,7 @@ func (b *BinaryExpr) emit(w io.Writer) {
 		op := mapOp(b.Op)
 		// use string concatenation operator when needed
 		if b.Op == "+" {
-			if _, ok := b.Left.(*StringLit); ok {
-				op = "++"
-			}
-			if _, ok := b.Right.(*StringLit); ok {
+			if isStringExpr(b.Left) || isStringExpr(b.Right) {
 				op = "++"
 			}
 		}
@@ -1397,15 +1396,20 @@ func (i *IfStmt) emit(w io.Writer) {
 
 func (f *ForStmt) emit(w io.Writer) {
 	loopName := f.Fun + "_loop"
+	listVar := loopName + "_list"
+	restVar := loopName + "_rest"
 	io.WriteString(w, f.Fun)
 	io.WriteString(w, " = fun ")
 	io.WriteString(w, loopName)
-	io.WriteString(w, "(List")
+	io.WriteString(w, "(")
+	io.WriteString(w, listVar)
 	for _, p := range f.Params {
 		io.WriteString(w, ", ")
 		io.WriteString(w, p)
 	}
-	io.WriteString(w, ") ->\n    case List of\n        [] -> {")
+	io.WriteString(w, ") ->\n    case ")
+	io.WriteString(w, listVar)
+	io.WriteString(w, " of\n        [] -> {")
 	for i, p := range f.Params {
 		if i > 0 {
 			io.WriteString(w, ", ")
@@ -1414,7 +1418,9 @@ func (f *ForStmt) emit(w io.Writer) {
 	}
 	io.WriteString(w, "};\n        [")
 	io.WriteString(w, f.Var)
-	io.WriteString(w, "|Rest] ->")
+	io.WriteString(w, "|")
+	io.WriteString(w, restVar)
+	io.WriteString(w, "] ->")
 	if f.Breakable {
 		io.WriteString(w, "\n        try")
 	}
@@ -1426,11 +1432,13 @@ func (f *ForStmt) emit(w io.Writer) {
 	if f.Breakable {
 		io.WriteString(w, "\n            ")
 		io.WriteString(w, loopName)
-		io.WriteString(w, "(Rest")
+		io.WriteString(w, "(")
+		io.WriteString(w, restVar)
 	} else {
 		io.WriteString(w, "\n            ")
 		io.WriteString(w, loopName)
-		io.WriteString(w, "(Rest")
+		io.WriteString(w, "(")
+		io.WriteString(w, restVar)
 	}
 	for _, a := range f.Next {
 		io.WriteString(w, ", ")
@@ -1440,7 +1448,8 @@ func (f *ForStmt) emit(w io.Writer) {
 	if f.Breakable {
 		io.WriteString(w, "\n        catch\n            continue -> ")
 		io.WriteString(w, loopName)
-		io.WriteString(w, "(Rest")
+		io.WriteString(w, "(")
+		io.WriteString(w, restVar)
 		for _, p := range f.Params {
 			io.WriteString(w, ", ")
 			io.WriteString(w, p)
@@ -2025,6 +2034,7 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 		}
 		p.Stmts = append(p.Stmts, stmts...)
 	}
+	p.UseTime = ctx.useTime
 	return p, nil
 }
 
@@ -2382,6 +2392,14 @@ func convertIfStmt(n *parser.IfStmt, env *types.Env, ctx *context) (*IfStmt, err
 	for k, v := range elseCtx.alias {
 		if base.alias[k] != v {
 			changed[k] = true
+		}
+	}
+	for name := range changed {
+		baseVal := base.alias[name]
+		_, inThen := thenCtx.alias[name]
+		_, inElse := elseCtx.alias[name]
+		if baseVal == "" && (!inThen || !inElse) {
+			delete(changed, name)
 		}
 	}
 	var names []string
@@ -2912,6 +2930,10 @@ func convertPrimary(p *parser.Primary, env *types.Env, ctx *context) (Expr, erro
 			return &SubstringExpr{Str: strExpr, Start: startExpr, End: endExpr}, nil
 		}
 		name := p.Call.Func
+		if name == "now" && len(p.Call.Args) == 0 {
+			ctx.useTime = true
+			return &CallExpr{Func: "m_now"}, nil
+		}
 		if !builtinFunc(name) {
 			if _, ok := ctx.alias[name]; ok {
 				name = ctx.current(name)
@@ -4022,6 +4044,16 @@ func (p *Program) Emit() []byte {
 		exports = append(exports, fmt.Sprintf("%s/%d", f.Name, len(f.Params)))
 	}
 	buf.WriteString("-export([" + strings.Join(exports, ", ") + "]).\n\n")
+	buf.WriteString("init_now() ->\n")
+	buf.WriteString("    case os:getenv(\"MOCHI_NOW_SEED\") of\n")
+	buf.WriteString("        false -> ok;\n")
+	buf.WriteString("        S -> {Seed, _} = string:to_integer(S), put(now_seed, Seed), put(now_seeded, true)\n")
+	buf.WriteString("    end.\n")
+	buf.WriteString("m_now() ->\n")
+	buf.WriteString("    case get(now_seeded) of\n")
+	buf.WriteString("        true -> Seed = get(now_seed), Seed2 = (Seed * 1664525 + 1013904223) rem 2147483647, put(now_seed, Seed2), Seed2;\n")
+	buf.WriteString("        _ -> erlang:system_time(millisecond)\n")
+	buf.WriteString("    end.\n\n")
 	buf.WriteString(fmt.Sprintf("%% Generated by Mochi transpiler v%s (%s) on %s\n\n", version(), hash, ts.Format("2006-01-02 15:04 MST")))
 	for _, f := range p.Funs {
 		f.emit(&buf)
