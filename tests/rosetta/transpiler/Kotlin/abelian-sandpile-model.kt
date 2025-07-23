@@ -71,7 +71,7 @@ fun user_main(): Unit {
     var pile: MutableList<MutableList<Int>> = newPile(16) as MutableList<MutableList<Int>>
     val hdim: Int = 7
     pile[hdim][hdim] = 16
-    pile = handlePile(pile as MutableList<MutableList<Int>>, hdim, hdim) as MutableList<MutableList<Int>> as MutableList<Any>
+    pile = handlePile(pile as MutableList<MutableList<Int>>, hdim, hdim) as MutableList<MutableList<Int>> as MutableList<MutableList<Int>>
     drawPile(pile as MutableList<MutableList<Int>>, 16)
 }
 

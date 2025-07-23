@@ -78,7 +78,7 @@ fun isDigits(s: String): Boolean {
 }
 
 fun readTable(table: String): MutableMap<String, Any> {
-    val toks: MutableList<String> = fields(table)
+    val toks: MutableList<String> = fields(table) as MutableList<String>
     var cmds: MutableList<String> = mutableListOf()
     var mins: MutableList<Int> = mutableListOf()
     var i: Int = 0
@@ -86,8 +86,8 @@ fun readTable(table: String): MutableMap<String, Any> {
         val cmd: String = toks[i]
         var minlen: Int = cmd.length
         i = i + 1
-        if ((i < toks.size) && (isDigits(toks[i]) as Boolean)) {
-            val num: Int = parseIntStr(toks[i])
+        if ((i < toks.size) && isDigits(toks[i]) as Boolean) {
+            val num: Int = parseIntStr(toks[i]) as Int
             if ((num >= 1) && (num < cmd.length)) {
                 minlen = num
                 i = i + 1
@@ -131,24 +131,24 @@ fun validate(commands: MutableList<String>, mins: MutableList<Int>, words: Mutab
 fun user_main(): Unit {
     val table: String = ((((((("" + "add 1  alter 3  backup 2  bottom 1  Cappend 2  change 1  Schange  Cinsert 2  Clast 3 ") + "compress 4 copy 2 count 3 Coverlay 3 cursor 3  delete 3 Cdelete 2  down 1  duplicate ") + "3 xEdit 1 expand 3 extract 3  find 1 Nfind 2 Nfindup 6 NfUP 3 Cfind 2 findUP 3 fUP 2 ") + "forward 2  get  help 1 hexType 4  input 1 powerInput 3  join 1 split 2 spltJOIN load ") + "locate 1 Clocate 2 lowerCase 3 upperCase 3 Lprefix 2  macro  merge 2 modify 3 move 2 ") + "msg  next 1 overlay 1 parse preserve 4 purge 3 put putD query 1 quit  read recover 3 ") + "refresh renum 3 repeat 3 replace 1 Creplace 2 reset 3 restore 4 rgtLEFT right 2 left ") + "2  save  set  shift 2  si  sort  sos  stack 3 status 4 top  transfer 3  type 1  up 1 "
     val sentence: String = "riG   rePEAT copies  put mo   rest    types   fup.    6\npoweRin"
-    val tbl: MutableMap<String, Any> = readTable(table)
+    val tbl: MutableMap<String, Any> = readTable(table) as MutableMap<String, Any>
     val commands: MutableList<String> = (tbl)["commands"]!! as MutableList<String>
     val mins: MutableList<Int> = (tbl)["mins"]!! as MutableList<Int>
-    val words: MutableList<String> = fields(sentence)
-    val results: MutableList<String> = validate(commands, mins, words)
+    val words: MutableList<String> = fields(sentence) as MutableList<String>
+    val results: MutableList<String> = validate(commands, mins, words) as MutableList<String>
     var out1: String = "user words:"
     var k: Int = 0
     while (k < words.size) {
         out1 = out1 + " "
         if (k < (words.size - 1)) {
-            out1 = out1 + (padRight(words[k], results[k].length)).toString()
+            out1 = out1 + padRight(words[k], results[k].length) as String
         } else {
             out1 = out1 + words[k]
         }
         k = k + 1
     }
     println(out1)
-    println("full words: " + (join(results, " ")).toString())
+    println("full words: " + join(results, " ") as String)
 }
 
 fun main() {

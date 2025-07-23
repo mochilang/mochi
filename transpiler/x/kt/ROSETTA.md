@@ -2,9 +2,9 @@
 
 Generated Kotlin sources for Rosetta Code tests are stored in `tests/rosetta/transpiler/Kotlin`.
 
-Last updated: 2025-07-23 18:30 +0700
+Last updated: 2025-07-23 19:32 +0700
 
-Completed tasks: **21/284**
+Completed tasks: **25/284**
 
 ### Checklist
 1. [x] `100-doors-2`
@@ -28,10 +28,10 @@ Completed tasks: **21/284**
 19. [x] `abbreviations-simple`
 20. [x] `abc-problem`
 21. [x] `abelian-sandpile-model-identity`
-22. [ ] `abelian-sandpile-model`
-23. [ ] `abstract-type`
-24. [ ] `abundant-deficient-and-perfect-number-classifications`
-25. [ ] `abundant-odd-numbers`
+22. [x] `abelian-sandpile-model`
+23. [x] `abstract-type`
+24. [x] `abundant-deficient-and-perfect-number-classifications`
+25. [x] `abundant-odd-numbers`
 26. [ ] `accumulator-factory`
 27. [ ] `achilles-numbers`
 28. [ ] `ackermann-function-2`

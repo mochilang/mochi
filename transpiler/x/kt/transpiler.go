@@ -249,7 +249,7 @@ type SumType struct {
 
 func (u *SumType) emit(w io.Writer, indentLevel int) {
 	indent(w, indentLevel)
-	io.WriteString(w, "sealed interface "+u.Name+"\n")
+	io.WriteString(w, "sealed class "+u.Name+"\n")
 	for _, v := range u.Variants {
 		v.Extends = u.Name
 		v.emit(w, indentLevel)
@@ -2151,7 +2151,9 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 				}
 			}
 			if currentRetType != "" && currentRetType != "Any" && val != nil {
-				val = &CastExpr{Value: val, Type: currentRetType}
+				if guessType(val) != currentRetType {
+					val = &CastExpr{Value: val, Type: currentRetType}
+				}
 			}
 			p.Stmts = append(p.Stmts, &ReturnStmt{Value: val})
 		case st.Fun != nil:
@@ -2296,6 +2298,13 @@ func convertStmts(env *types.Env, list []*parser.Statement) ([]Stmt, error) {
 				if typ == "" {
 					if t := types.CheckExprType(s.Let.Value, env); t != nil {
 						typ = kotlinTypeFromType(t)
+						if strings.Contains(typ, "->") {
+							// fall back to guess if return type inferred as a function
+							gt := guessType(v)
+							if gt != "" {
+								typ = gt
+							}
+						}
 					}
 				}
 				if typ == "" {
@@ -2390,6 +2399,12 @@ func convertStmts(env *types.Env, list []*parser.Statement) ([]Stmt, error) {
 				if typ == "" {
 					if t := types.CheckExprType(s.Var.Value, env); t != nil {
 						typ = kotlinTypeFromType(t)
+						if typ == "Any" || strings.Contains(typ, "->") {
+							gt := guessType(v)
+							if gt != "" {
+								typ = gt
+							}
+						}
 					}
 				}
 				if typ == "" {
@@ -2482,7 +2497,17 @@ func convertStmts(env *types.Env, list []*parser.Statement) ([]Stmt, error) {
 				if tt, err := env.GetVar(s.Assign.Name); err == nil {
 					tname := kotlinTypeFromType(tt)
 					if tname != "" && tname != guessType(v) {
-						v = &CastExpr{Value: v, Type: tname}
+						if tname == "Any" {
+							if gt := guessType(v); gt != "" {
+								v = &CastExpr{Value: v, Type: gt}
+							}
+						} else if tname == "MutableList<Any>" {
+							if gt := guessType(v); gt != "" {
+								v = &CastExpr{Value: v, Type: gt}
+							}
+						} else {
+							v = &CastExpr{Value: v, Type: tname}
+						}
 					}
 				}
 			}
@@ -2890,10 +2915,12 @@ func convertMatchExpr(env *types.Env, me *parser.MatchExpr) (Expr, error) {
 				var stmts []Stmt
 				for idx, arg := range call.Args {
 					if name, ok := identName(arg); ok {
-						ft := st.Fields[st.Order[idx]]
-						child.SetVar(name, ft, true)
-						field := &FieldExpr{Receiver: &CastExpr{Value: target, Type: call.Func}, Name: st.Order[idx], Type: kotlinTypeFromType(ft)}
-						stmts = append(stmts, &LetStmt{Name: name, Type: kotlinTypeFromType(ft), Value: field})
+						if name != "_" {
+							ft := st.Fields[st.Order[idx]]
+							child.SetVar(name, ft, true)
+							field := &FieldExpr{Receiver: &CastExpr{Value: target, Type: call.Func}, Name: st.Order[idx], Type: kotlinTypeFromType(ft)}
+							stmts = append(stmts, &LetStmt{Name: name, Type: kotlinTypeFromType(ft), Value: field})
+						}
 					}
 				}
 				res, err := convertExpr(child, c.Result)

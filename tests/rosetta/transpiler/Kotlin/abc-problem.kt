@@ -37,7 +37,7 @@ fun canSpell(word: String, blks: MutableList<String>): Boolean {
                 }
                 j = j + 1
             }
-            if (canSpell(word.substring(1, word.length), rest) as Boolean) {
+            if (canSpell(word.substring(1, word.length), rest) as Boolean as Boolean) {
                 return true as Boolean
             }
         }
@@ -47,12 +47,12 @@ fun canSpell(word: String, blks: MutableList<String>): Boolean {
 }
 
 fun newSpeller(blocks: String): (String) -> Boolean {
-    val bl: MutableList<String> = fields(blocks)
-    return { w: String -> canSpell(w, bl) } as (String) -> Boolean
+    val bl: MutableList<String> = fields(blocks) as MutableList<String>
+    return { w: String -> canSpell(w, bl) as Boolean } as (String) -> Boolean
 }
 
 fun user_main(): Unit {
-    val sp: (String) -> Boolean = newSpeller("BO XK DQ CP NA GT RE TG QD FS JW HU VI AN OB ER FS LY PC ZM")
+    val sp: (String) -> Boolean = newSpeller("BO XK DQ CP NA GT RE TG QD FS JW HU VI AN OB ER FS LY PC ZM") as (String) -> Boolean
     for (word in mutableListOf("A", "BARK", "BOOK", "TREAT", "COMMON", "SQUAD", "CONFUSE")) {
         println((word + " ") + sp(word).toString())
     }

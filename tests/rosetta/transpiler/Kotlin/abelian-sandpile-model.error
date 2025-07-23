@@ -1,4 +1,0 @@
-OpenJDK 64-Bit Server VM warning: Options -Xverify:none and -noverify were deprecated in JDK 13 and will likely be removed in a future release.
-/workspace/mochi/tests/rosetta/transpiler/Kotlin/abelian-sandpile-model.kt:74:12: error: type mismatch: inferred type is MutableList<Any> but MutableList<MutableList<Int>> was expected
-    pile = handlePile(pile as MutableList<MutableList<Int>>, hdim, hdim) as MutableList<MutableList<Int>> as MutableList<Any>
-           ^
