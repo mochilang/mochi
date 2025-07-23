@@ -210,6 +210,16 @@ type ContinueStmt struct{}
 
 func (c *ContinueStmt) emit(w io.Writer) { io.WriteString(w, "(loop)\n") }
 
+type RangeContinueStmt struct{ Var string }
+
+func (c *RangeContinueStmt) emit(w io.Writer) {
+	io.WriteString(w, "(begin (set! ")
+	io.WriteString(w, c.Var)
+	io.WriteString(w, " (+ ")
+	io.WriteString(w, c.Var)
+	io.WriteString(w, " 1)) (loop))\n")
+}
+
 type UpdateStmt struct {
 	Target string
 	Fields []string
@@ -252,21 +262,28 @@ type ForRangeStmt struct {
 }
 
 func (fr *ForRangeStmt) emit(w io.Writer) {
-	io.WriteString(w, "(for ([")
+	io.WriteString(w, "(let/ec _break (let (")
+	io.WriteString(w, "[")
 	io.WriteString(w, fr.Name)
-	io.WriteString(w, " (in-range ")
+	io.WriteString(w, " ")
 	if fr.Start != nil {
 		fr.Start.emit(w)
 	} else {
 		io.WriteString(w, "0")
 	}
+	io.WriteString(w, "])\n  (let loop ()\n    (when (< ")
+	io.WriteString(w, fr.Name)
 	io.WriteString(w, " ")
 	fr.End.emit(w)
-	io.WriteString(w, ")])\n")
+	io.WriteString(w, ")\n")
 	for _, st := range fr.Body {
 		st.emit(w)
 	}
-	io.WriteString(w, ")\n")
+	io.WriteString(w, "      (set! ")
+	io.WriteString(w, fr.Name)
+	io.WriteString(w, " (+ ")
+	io.WriteString(w, fr.Name)
+	io.WriteString(w, " 1))\n      (loop)))\n))\n")
 }
 
 type ForInStmt struct {
@@ -787,6 +804,20 @@ func literalString(e *parser.Expr) (string, bool) {
 		return p.Target.Selector.Root, true
 	}
 	return "", false
+}
+
+func literalIntUnary(u *parser.Unary) bool {
+	if u == nil || len(u.Ops) > 0 || u.Value == nil {
+		return false
+	}
+	return literalIntPostfix(u.Value)
+}
+
+func literalIntPostfix(p *parser.PostfixExpr) bool {
+	if p == nil || len(p.Ops) > 0 || p.Target == nil {
+		return false
+	}
+	return p.Target.Lit != nil && p.Target.Lit.Int != nil
 }
 
 func substituteFields(e Expr, varName string, fields map[string]bool) Expr {
@@ -1479,6 +1510,9 @@ func convertForStmt(n *parser.ForStmt, env *types.Env) (Stmt, error) {
 		if err != nil {
 			return nil, err
 		}
+		for i, st := range body {
+			body[i] = replaceRangeContinue(st, n.Name)
+		}
 		return &ForRangeStmt{Name: n.Name, Start: start, End: end, Body: body}, nil
 	}
 	iter, err := convertExpr(n.Source, env)
@@ -1529,6 +1563,38 @@ func convertForStmt(n *parser.ForStmt, env *types.Env) (Stmt, error) {
 		keys = true
 	}
 	return &ForInStmt{Name: n.Name, Iterable: iter, Body: body, Keys: keys, Break: breakCond, Unless: continueCond}, nil
+}
+
+func replaceRangeContinue(st Stmt, varName string) Stmt {
+	switch s := st.(type) {
+	case *ContinueStmt:
+		return &RangeContinueStmt{Var: varName}
+	case *IfStmt:
+		for i, c := range s.Then {
+			s.Then[i] = replaceRangeContinue(c, varName)
+		}
+		for i, c := range s.Else {
+			s.Else[i] = replaceRangeContinue(c, varName)
+		}
+		return s
+	case *WhileStmt:
+		for i, c := range s.Body {
+			s.Body[i] = replaceRangeContinue(c, varName)
+		}
+		return s
+	case *ForRangeStmt:
+		for i, c := range s.Body {
+			s.Body[i] = replaceRangeContinue(c, s.Name)
+		}
+		return s
+	case *ForInStmt:
+		for i, c := range s.Body {
+			s.Body[i] = replaceRangeContinue(c, s.Name)
+		}
+		return s
+	default:
+		return s
+	}
 }
 
 func convertFunStmt(fn *parser.FunStmt, env *types.Env) (Stmt, error) {
@@ -1704,7 +1770,9 @@ func convertBinary(b *parser.BinaryExpr, env *types.Env) (Expr, error) {
 		if op == "/" {
 			lt := types.TypeOfUnary(b.Left, env)
 			rt := types.TypeOfPostfix(part.Right, env)
-			if (types.IsIntType(lt) || types.IsInt64Type(lt)) && (types.IsIntType(rt) || types.IsInt64Type(rt)) {
+			if literalIntPostfix(part.Right) && !types.IsFloatType(lt) {
+				op = "quotient"
+			} else if (types.IsIntType(lt) || types.IsInt64Type(lt)) && (types.IsIntType(rt) || types.IsInt64Type(rt)) {
 				op = "quotient"
 			} else {
 				op = "/"
