@@ -225,15 +225,11 @@ func convertStmts(stmts []*parser.Statement) ([]Node, error) {
 		return nil, nil
 	}
 
-	// Handle leading variable declarations with a let binding so Scheme
-	// does not emit unexpected defines in expression context.
-	var bindings []Node
-	i := 0
-	for i < len(stmts) {
-		st := stmts[i]
-		var name string
-		var val Node
-		var err error
+	st := stmts[0]
+	var name string
+	var val Node
+	var err error
+	if st.Let != nil || st.Var != nil {
 		if st.Let != nil {
 			name = st.Let.Name
 			if st.Let.Value != nil {
@@ -252,7 +248,7 @@ func convertStmts(stmts []*parser.Statement) ([]Node, error) {
 				}
 				currentEnv.SetVar(name, t, false)
 			}
-		} else if st.Var != nil {
+		} else {
 			name = st.Var.Name
 			if st.Var.Value != nil {
 				val, err = convertParserExpr(st.Var.Value)
@@ -270,43 +266,39 @@ func convertStmts(stmts []*parser.Statement) ([]Node, error) {
 				}
 				currentEnv.SetVar(name, t, true)
 			}
-		} else {
-			break
 		}
 		if err != nil {
 			return nil, err
 		}
-		bindings = append(bindings, &List{Elems: []Node{Symbol(name), val}})
-		i++
-	}
-
-	if len(bindings) > 0 {
-		rest, err := convertStmts(stmts[i:])
+		rest, err := convertStmts(stmts[1:])
 		if err != nil {
 			return nil, err
 		}
 		body := &List{Elems: append([]Node{Symbol("begin")}, rest...)}
-		return []Node{&List{Elems: []Node{Symbol("let"), &List{Elems: bindings}, body}}}, nil
+		binding := &List{Elems: []Node{Symbol(name), val}}
+		return []Node{&List{Elems: []Node{Symbol("let"), &List{Elems: []Node{binding}}, body}}}, nil
 	}
 
+	first, err := convertStmt(st)
+	if err != nil {
+		return nil, err
+	}
+	rest, err := convertStmts(stmts[1:])
+	if err != nil {
+		return nil, err
+	}
 	var forms []Node
-	for _, st := range stmts {
-		f, err := convertStmt(st)
-		if err != nil {
-			return nil, err
-		}
-		if f != nil {
-			if lst, ok := f.(*List); ok && len(lst.Elems) > 0 && lst.Elems[0] == Symbol("begin") {
-				forms = append(forms, lst.Elems[1:]...)
-			} else {
-				forms = append(forms, f)
-			}
-		}
-		if st.Return != nil {
-			break
+	if first != nil {
+		if lst, ok := first.(*List); ok && len(lst.Elems) > 0 && lst.Elems[0] == Symbol("begin") {
+			forms = append(forms, lst.Elems[1:]...)
+		} else {
+			forms = append(forms, first)
 		}
 	}
-	return forms, nil
+	if st.Return != nil {
+		return forms, nil
+	}
+	return append(forms, rest...), nil
 }
 
 func convertIfStmt(is *parser.IfStmt) (Node, error) {
