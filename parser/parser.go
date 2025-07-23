@@ -540,8 +540,8 @@ type FunExpr struct {
 	Pos       lexer.Position
 	Params    []*Param     `parser:"'fun' '(' [ @@ { ',' @@ } ] ')'"`
 	Return    *TypeRef     `parser:"[ ':' @@ ]"`
-	BlockBody []*Statement `parser:"'{' @@* '}'"`
-	ExprBody  *Expr        `parser:"| '=>' @@"`
+	BlockBody []*Statement `parser:"[ '{' @@* '}' ]"`
+	ExprBody  *Expr        `parser:"[ '=>' @@ ]"`
 }
 
 // --- Atoms ---
