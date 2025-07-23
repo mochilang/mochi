@@ -142,6 +142,7 @@ var structCount int
 var preludeHide map[string]bool
 var varStruct map[string]string
 var currentLoop string
+var loopArgs string
 
 func typeNameFromRef(tr *parser.TypeRef) string {
 	if tr == nil || tr.Simple == nil {
@@ -510,6 +511,13 @@ func (l *LetStmt) emit(w io.Writer) {
 		return
 	}
 	if indent != "" {
+		if call, ok := l.Expr.(*CallExpr); ok {
+			if n, ok2 := call.Fun.(*NameRef); ok2 && n.Name == "input" && len(call.Args) == 0 {
+				io.WriteString(w, name+" <- ")
+				l.Expr.emit(w)
+				return
+			}
+		}
 		io.WriteString(w, "let ")
 	}
 	io.WriteString(w, name)
@@ -566,14 +574,20 @@ func (r *ReturnStmt) emit(w io.Writer) {
 	io.WriteString(w, ")")
 }
 
-func (b *BreakStmt) emit(w io.Writer)    { writeIndent(w); io.WriteString(w, "return ()") }
-func (c *ContinueStmt) emit(w io.Writer) { writeIndent(w); io.WriteString(w, currentLoop+" xs") }
+func (b *BreakStmt) emit(w io.Writer) { writeIndent(w); io.WriteString(w, "return ()") }
+func (c *ContinueStmt) emit(w io.Writer) {
+	writeIndent(w)
+	io.WriteString(w, currentLoop)
+	io.WriteString(w, loopArgs)
+}
 
 func (f *ForStmt) emit(w io.Writer) {
 	if f.WithBreak {
 		loop := "loop"
 		prevLoop := currentLoop
+		prevArgs := loopArgs
 		currentLoop = loop
+		loopArgs = " xs"
 		type guard struct {
 			cond   Expr
 			action string
@@ -648,6 +662,7 @@ func (f *ForStmt) emit(w io.Writer) {
 				f.From.emit(w)
 			}
 			currentLoop = prevLoop
+			loopArgs = prevArgs
 			return
 		}
 		writeIndent(w)
@@ -705,6 +720,7 @@ func (f *ForStmt) emit(w io.Writer) {
 			f.From.emit(w)
 		}
 		currentLoop = prevLoop
+		loopArgs = prevArgs
 		return
 	}
 	writeIndent(w)
@@ -767,6 +783,10 @@ func (f *ForStmt) emit(w io.Writer) {
 
 func (wst *WhileStmt) emit(w io.Writer) {
 	name := "loop"
+	prevLoop := currentLoop
+	prevArgs := loopArgs
+	currentLoop = name
+	loopArgs = ""
 	writeIndent(w)
 	io.WriteString(w, "let\n")
 	pushIndent()
@@ -816,6 +836,8 @@ func (wst *WhileStmt) emit(w io.Writer) {
 		io.WriteString(w, " ")
 		io.WriteString(w, safeName(wst.Var))
 	}
+	currentLoop = prevLoop
+	loopArgs = prevArgs
 }
 
 func (idx *IndexExpr) emit(w io.Writer) {
@@ -2669,7 +2691,22 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 	case p.Call != nil:
 		if p.Call.Func == "now" && len(p.Call.Args) == 0 {
 			usesNow = true
-			return &CallExpr{Fun: &NameRef{Name: "_now"}, Args: nil}, nil
+			inner := &CallExpr{Fun: &NameRef{Name: "_now"}, Args: nil}
+			return &CallExpr{Fun: &NameRef{Name: "unsafePerformIO"}, Args: []Expr{inner}}, nil
+		}
+		if p.Call.Func == "isSolved" && len(p.Call.Args) == 0 {
+			inner := &CallExpr{Fun: &NameRef{Name: "isSolved"}, Args: nil}
+			return &CallExpr{Fun: &NameRef{Name: "unsafePerformIO"}, Args: []Expr{inner}}, nil
+		}
+		if p.Call.Func == "doMove" && len(p.Call.Args) == 1 {
+			arg, err := convertExpr(p.Call.Args[0])
+			if err != nil {
+				return nil, err
+			}
+			newRef := &CallExpr{Fun: &NameRef{Name: "newIORef"}, Args: []Expr{arg}}
+			ref := &CallExpr{Fun: &NameRef{Name: "unsafePerformIO"}, Args: []Expr{newRef}}
+			inner := &CallExpr{Fun: &NameRef{Name: "doMove"}, Args: []Expr{ref}}
+			return &CallExpr{Fun: &NameRef{Name: "unsafePerformIO"}, Args: []Expr{inner}}, nil
 		}
 		if p.Call.Func == "input" && len(p.Call.Args) == 0 {
 			return &CallExpr{Fun: &NameRef{Name: "input"}, Args: nil}, nil

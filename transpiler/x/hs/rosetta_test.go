@@ -187,7 +187,7 @@ func updateChecklist() {
 			compiled++
 			mark = "[x]"
 		}
-		lines = append(lines, fmt.Sprintf("%d. %s %s", i+1, mark, name))
+		lines = append(lines, fmt.Sprintf("%d. %s %s (%d)", i+1, mark, name, i+1))
 	}
 	var buf bytes.Buffer
 	fmt.Fprintf(&buf, "# Rosetta Haskell Transpiler (%d/%d succeeded)\n\n", compiled, total)
