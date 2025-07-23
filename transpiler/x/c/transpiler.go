@@ -54,6 +54,7 @@ var (
 	needMapGetIS         bool
 	needListAppendInt    bool
 	needListAppendStr    bool
+	needListAppendPtr    bool
 	needNow              bool
 	needInput            bool
 	needSubstring        bool
@@ -302,16 +303,10 @@ func (d *DeclStmt) emit(w io.Writer, indent int) {
 	writeIndent(w, indent)
 	if strings.HasSuffix(typ, "[][]") {
 		base := strings.TrimSuffix(typ, "[][]")
-		rows, cols := 0, 0
-		if list, ok := d.Value.(*ListLit); ok {
-			rows = len(list.Elems)
-			if rows > 0 {
-				if sub, ok2 := list.Elems[0].(*ListLit); ok2 {
-					cols = len(sub.Elems)
-				}
-			}
-		}
-		fmt.Fprintf(w, "%s %s[%d][%d]", base, d.Name, rows, cols)
+		fmt.Fprintf(w, "%s **%s = NULL;\n", base, d.Name)
+		writeIndent(w, indent)
+		fmt.Fprintf(w, "size_t %s_len = 0;\n", d.Name)
+		return
 	} else if strings.HasSuffix(typ, "[]") {
 		base := strings.TrimSuffix(typ, "[]")
 		if lst, ok := d.Value.(*ListLit); ok && len(lst.Elems) > 0 {
@@ -378,6 +373,14 @@ func (a *AssignStmt) emit(w io.Writer, indent int) {
 				call.Args[1].emitExpr(w)
 				io.WriteString(w, ");\n")
 				return
+			default:
+				if strings.HasSuffix(base, "[]") {
+					needListAppendPtr = true
+					fmt.Fprintf(w, "%s = list_append_intptr(%s, &%s_len, ", a.Name, a.Name, a.Name)
+					call.Args[1].emitExpr(w)
+					io.WriteString(w, ");\n")
+					return
+				}
 			}
 		}
 	}
@@ -1080,6 +1083,14 @@ func (p *Program) Emit() []byte {
 		buf.WriteString("    return arr;\n")
 		buf.WriteString("}\n\n")
 	}
+	if needListAppendPtr {
+		buf.WriteString("static int** list_append_intptr(int **arr, size_t *len, int *val) {\n")
+		buf.WriteString("    arr = realloc(arr, (*len + 1) * sizeof(int*));\n")
+		buf.WriteString("    arr[*len] = val;\n")
+		buf.WriteString("    (*len)++;\n")
+		buf.WriteString("    return arr;\n")
+		buf.WriteString("}\n\n")
+	}
 	if needNow {
 		buf.WriteString("#include <time.h>\n")
 		buf.WriteString("static int _now(void) {\n")
@@ -1169,10 +1180,18 @@ func (p *Program) Emit() []byte {
 				case types.StructType:
 					typ = ft.Name
 				case types.ListType:
-					if _, ok := ft.Elem.(types.StringType); ok {
-						typ = "const char*[]"
+					if inner, ok := ft.Elem.(types.ListType); ok {
+						if _, ok := inner.Elem.(types.StringType); ok {
+							typ = "const char**"
+						} else {
+							typ = "int**"
+						}
 					} else {
-						typ = "int[]"
+						if _, ok := ft.Elem.(types.StringType); ok {
+							typ = "const char*[]"
+						} else {
+							typ = "int[]"
+						}
 					}
 				}
 			}
@@ -1191,15 +1210,17 @@ func (p *Program) Emit() []byte {
 		if ret == "" {
 			ret = "int"
 		}
-		if strings.HasSuffix(ret, "[]") {
-			base := strings.TrimSuffix(ret, "[]")
-			if base == "" {
-				base = "int"
-			}
-			buf.WriteString(base)
+		ptr := 0
+		for strings.HasSuffix(ret, "[]") {
+			ret = strings.TrimSuffix(ret, "[]")
+			ptr++
+		}
+		if ret == "" {
+			ret = "int"
+		}
+		buf.WriteString(ret)
+		for i := 0; i < ptr; i++ {
 			buf.WriteString(" *")
-		} else {
-			buf.WriteString(ret)
 		}
 		buf.WriteString(" ")
 		buf.WriteString(f.Name)
@@ -1214,15 +1235,18 @@ func (p *Program) Emit() []byte {
 				if p.Type == "" {
 					p.Type = "int"
 				}
-				if strings.HasSuffix(p.Type, "[]") {
-					base := strings.TrimSuffix(p.Type, "[]")
-					if base == "" {
-						base = "int"
-					}
-					buf.WriteString(base)
+				ptr := 0
+				t := p.Type
+				for strings.HasSuffix(t, "[]") {
+					t = strings.TrimSuffix(t, "[]")
+					ptr++
+				}
+				if t == "" {
+					t = "int"
+				}
+				buf.WriteString(t)
+				for j := 0; j < ptr; j++ {
 					buf.WriteString(" *")
-				} else {
-					buf.WriteString(p.Type)
 				}
 				buf.WriteString(" ")
 				buf.WriteString(p.Name)
@@ -1272,6 +1296,7 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 	needMapGetIS = false
 	needListAppendInt = false
 	needListAppendStr = false
+	needListAppendPtr = false
 	needNow = false
 	needInput = false
 	needSubstring = false
@@ -2181,7 +2206,21 @@ func compileFunction(env *types.Env, name string, fn *parser.FunExpr) (*Function
 			localEnv.SetVar(p.Name, types.IntType{}, true)
 		default:
 			if strings.HasSuffix(typ, "[]") {
-				localEnv.SetVar(p.Name, types.ListType{Elem: types.IntType{}}, true)
+				base := strings.TrimSuffix(typ, "[]")
+				if strings.HasSuffix(base, "[]") {
+					inner := strings.TrimSuffix(base, "[]")
+					if inner == "const char*" {
+						localEnv.SetVar(p.Name, types.ListType{Elem: types.ListType{Elem: types.StringType{}}}, true)
+					} else {
+						localEnv.SetVar(p.Name, types.ListType{Elem: types.ListType{Elem: types.IntType{}}}, true)
+					}
+				} else {
+					if base == "const char*" {
+						localEnv.SetVar(p.Name, types.ListType{Elem: types.StringType{}}, true)
+					} else {
+						localEnv.SetVar(p.Name, types.ListType{Elem: types.IntType{}}, true)
+					}
+				}
 			} else if st, ok := env.GetStruct(typ); ok {
 				localEnv.SetVar(p.Name, st, true)
 			}
@@ -2487,6 +2526,8 @@ func convertUnary(u *parser.Unary) Expr {
 					tt = types.StringType{}
 				case "int[]":
 					tt = types.ListType{Elem: types.IntType{}}
+				case "int[][]":
+					tt = types.ListType{Elem: types.ListType{Elem: types.IntType{}}}
 				case "double[]":
 					tt = types.ListType{Elem: types.FloatType{}}
 				case "const char*[]":
@@ -2494,14 +2535,25 @@ func convertUnary(u *parser.Unary) Expr {
 				default:
 					if strings.HasSuffix(tname, "[]") {
 						base := strings.TrimSuffix(tname, "[]")
-						if base == "const char*" {
-							tt = types.ListType{Elem: types.StringType{}}
-						} else if base == "int" {
-							tt = types.ListType{Elem: types.IntType{}}
-						} else if base == "double" {
-							tt = types.ListType{Elem: types.FloatType{}}
-						} else if st, ok := currentEnv.GetStruct(base); ok {
-							tt = types.ListType{Elem: st}
+						if strings.HasSuffix(base, "[]") {
+							inner := strings.TrimSuffix(base, "[]")
+							if inner == "int" {
+								tt = types.ListType{Elem: types.ListType{Elem: types.IntType{}}}
+							} else if inner == "const char*" {
+								tt = types.ListType{Elem: types.ListType{Elem: types.StringType{}}}
+							} else if inner == "double" {
+								tt = types.ListType{Elem: types.ListType{Elem: types.FloatType{}}}
+							}
+						} else {
+							if base == "const char*" {
+								tt = types.ListType{Elem: types.StringType{}}
+							} else if base == "int" {
+								tt = types.ListType{Elem: types.IntType{}}
+							} else if base == "double" {
+								tt = types.ListType{Elem: types.FloatType{}}
+							} else if st, ok := currentEnv.GetStruct(base); ok {
+								tt = types.ListType{Elem: st}
+							}
 						}
 					} else if st, ok := currentEnv.GetStruct(tname); ok {
 						tt = st
@@ -3611,6 +3663,12 @@ func inferExprType(env *types.Env, e Expr) string {
 			case types.StringType:
 				return "const char*"
 			case types.ListType:
+				if inner, ok := tt.Elem.(types.ListType); ok {
+					if _, ok := inner.Elem.(types.StringType); ok {
+						return "const char**"
+					}
+					return "int**"
+				}
 				if _, ok := tt.Elem.(types.StringType); ok {
 					return "const char*[]"
 				}

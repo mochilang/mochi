@@ -1,0 +1,186 @@
+compile failed: exit status 1: /tmp/ctranspile2469705708/2048.mochi.c:49:8: error: expected identifier or ‘(’ before ‘[’ token
+   49 |     int[] board;
+      |        ^
+/tmp/ctranspile2469705708/2048.mochi.c:54:8: error: expected identifier or ‘(’ before ‘[’ token
+   54 |     int[] row;
+      |        ^
+/tmp/ctranspile2469705708/2048.mochi.c:59:8: error: expected identifier or ‘(’ before ‘[’ token
+   59 |     int[] board;
+      |        ^
+/tmp/ctranspile2469705708/2048.mochi.c: In function ‘newBoard’:
+/tmp/ctranspile2469705708/2048.mochi.c:79:40: warning: passing argument 3 of ‘list_append_int’ makes integer from pointer without a cast [-Wint-conversion]
+   79 |         b = list_append_int(b, &b_len, row);
+      |                                        ^~~
+      |                                        |
+      |                                        int *
+/tmp/ctranspile2469705708/2048.mochi.c:22:56: note: expected ‘int’ but argument is of type ‘int *’
+   22 | static int* list_append_int(int *arr, size_t *len, int val) {
+      |                                                    ~~~~^~~
+/tmp/ctranspile2469705708/2048.mochi.c: In function ‘spawnTile’:
+/tmp/ctranspile2469705708/2048.mochi.c:92:21: error: subscripted value is neither array nor pointer nor vector
+   92 |             if (b[y][x] == 0) {
+      |                     ^
+/tmp/ctranspile2469705708/2048.mochi.c:93:60: error: expected expression before ‘{’ token
+   93 |                 empty = list_append_int(empty, &empty_len, { x, y });
+      |                                                            ^
+/tmp/ctranspile2469705708/2048.mochi.c:100:25: error: ‘Anon1’ has no member named ‘board’
+  100 |         return (Anon1){.board = b, .full = 1};
+      |                         ^~~~~
+/tmp/ctranspile2469705708/2048.mochi.c:100:33: warning: initialization of ‘int’ from ‘int *’ makes integer from pointer without a cast [-Wint-conversion]
+  100 |         return (Anon1){.board = b, .full = 1};
+      |                                 ^
+/tmp/ctranspile2469705708/2048.mochi.c:100:33: note: (near initialization for ‘(anonymous).full’)
+/tmp/ctranspile2469705708/2048.mochi.c:108:11: error: subscripted value is neither array nor pointer nor vector
+  108 |     b[cell[1]][cell[0]] = val;
+      |           ^
+/tmp/ctranspile2469705708/2048.mochi.c:108:20: error: subscripted value is neither array nor pointer nor vector
+  108 |     b[cell[1]][cell[0]] = val;
+      |                    ^
+/tmp/ctranspile2469705708/2048.mochi.c:109:21: error: ‘Anon1’ has no member named ‘board’
+  109 |     return (Anon1){.board = b, .full = empty_len == 1};
+      |                     ^~~~~
+/tmp/ctranspile2469705708/2048.mochi.c:109:29: warning: initialization of ‘int’ from ‘int *’ makes integer from pointer without a cast [-Wint-conversion]
+  109 |     return (Anon1){.board = b, .full = empty_len == 1};
+      |                             ^
+/tmp/ctranspile2469705708/2048.mochi.c:109:29: note: (near initialization for ‘(anonymous).full’)
+/tmp/ctranspile2469705708/2048.mochi.c: In function ‘draw’:
+/tmp/ctranspile2469705708/2048.mochi.c:132:25: error: subscripted value is neither array nor pointer nor vector
+  132 |             int v = b[y][x];
+      |                         ^
+/tmp/ctranspile2469705708/2048.mochi.c: In function ‘reverseRow’:
+/tmp/ctranspile2469705708/2048.mochi.c:150:13: error: ‘r_len’ undeclared (first use in this function)
+  150 |     int i = r_len - 1;
+      |             ^~~~~
+/tmp/ctranspile2469705708/2048.mochi.c:150:13: note: each undeclared identifier is reported only once for each function it appears in
+/tmp/ctranspile2469705708/2048.mochi.c: In function ‘slideLeft’:
+/tmp/ctranspile2469705708/2048.mochi.c:162:16: error: ‘row_len’ undeclared (first use in this function)
+  162 |     while (i < row_len) {
+      |                ^~~~~~~
+/tmp/ctranspile2469705708/2048.mochi.c:186:21: error: ‘Anon2’ has no member named ‘row’
+  186 |     return (Anon2){.row = res, .gain = gain};
+      |                     ^~~
+/tmp/ctranspile2469705708/2048.mochi.c:186:27: warning: initialization of ‘int’ from ‘int *’ makes integer from pointer without a cast [-Wint-conversion]
+  186 |     return (Anon2){.row = res, .gain = gain};
+      |                           ^~~
+/tmp/ctranspile2469705708/2048.mochi.c:186:27: note: (near initialization for ‘(anonymous).gain’)
+/tmp/ctranspile2469705708/2048.mochi.c: In function ‘moveLeft’:
+/tmp/ctranspile2469705708/2048.mochi.c:193:30: warning: passing argument 1 of ‘slideLeft’ makes pointer from integer without a cast [-Wint-conversion]
+  193 |         Anon2 r = slideLeft(b[y]);
+      |                             ~^~~
+      |                              |
+      |                              int
+/tmp/ctranspile2469705708/2048.mochi.c:158:23: note: expected ‘int *’ but argument is of type ‘int’
+  158 | Anon2 slideLeft(int * row) {
+      |                 ~~~~~~^~~
+/tmp/ctranspile2469705708/2048.mochi.c:199:21: error: subscripted value is neither array nor pointer nor vector
+  199 |             if (b[y][x] != new[x]) {
+      |                     ^
+/tmp/ctranspile2469705708/2048.mochi.c:202:17: error: subscripted value is neither array nor pointer nor vector
+  202 |             b[y][x] = new[x];
+      |                 ^
+/tmp/ctranspile2469705708/2048.mochi.c:207:21: error: ‘Anon3’ has no member named ‘board’
+  207 |     return (Anon3){.board = b, .score = score, .moved = moved};
+      |                     ^~~~~
+/tmp/ctranspile2469705708/2048.mochi.c:207:29: warning: initialization of ‘int’ from ‘int *’ makes integer from pointer without a cast [-Wint-conversion]
+  207 |     return (Anon3){.board = b, .score = score, .moved = moved};
+      |                             ^
+/tmp/ctranspile2469705708/2048.mochi.c:207:29: note: (near initialization for ‘(anonymous).score’)
+/tmp/ctranspile2469705708/2048.mochi.c: In function ‘moveRight’:
+/tmp/ctranspile2469705708/2048.mochi.c:217:16: error: ‘Anon2’ has no member named ‘row’
+  217 |         rev = r.row;
+      |                ^
+/tmp/ctranspile2469705708/2048.mochi.c:222:21: error: subscripted value is neither array nor pointer nor vector
+  222 |             if (b[y][x] != rev[x]) {
+      |                     ^
+/tmp/ctranspile2469705708/2048.mochi.c:225:17: error: subscripted value is neither array nor pointer nor vector
+  225 |             b[y][x] = rev[x];
+      |                 ^
+/tmp/ctranspile2469705708/2048.mochi.c:230:21: error: ‘Anon3’ has no member named ‘board’
+  230 |     return (Anon3){.board = b, .score = score, .moved = moved};
+      |                     ^~~~~
+/tmp/ctranspile2469705708/2048.mochi.c:230:29: warning: initialization of ‘int’ from ‘int *’ makes integer from pointer without a cast [-Wint-conversion]
+  230 |     return (Anon3){.board = b, .score = score, .moved = moved};
+      |                             ^
+/tmp/ctranspile2469705708/2048.mochi.c:230:29: note: (near initialization for ‘(anonymous).score’)
+/tmp/ctranspile2469705708/2048.mochi.c: In function ‘getCol’:
+/tmp/ctranspile2469705708/2048.mochi.c:238:50: error: subscripted value is neither array nor pointer nor vector
+  238 |         col = list_append_int(col, &col_len, b[y][x]);
+      |                                                  ^
+/tmp/ctranspile2469705708/2048.mochi.c: In function ‘setCol’:
+/tmp/ctranspile2469705708/2048.mochi.c:247:13: error: subscripted value is neither array nor pointer nor vector
+  247 |         b[y][x] = col[y];
+      |             ^
+/tmp/ctranspile2469705708/2048.mochi.c: In function ‘moveUp’:
+/tmp/ctranspile2469705708/2048.mochi.c:264:21: error: subscripted value is neither array nor pointer nor vector
+  264 |             if (b[y][x] != new[y]) {
+      |                     ^
+/tmp/ctranspile2469705708/2048.mochi.c:267:17: error: subscripted value is neither array nor pointer nor vector
+  267 |             b[y][x] = new[y];
+      |                 ^
+/tmp/ctranspile2469705708/2048.mochi.c:272:21: error: ‘Anon3’ has no member named ‘board’
+  272 |     return (Anon3){.board = b, .score = score, .moved = moved};
+      |                     ^~~~~
+/tmp/ctranspile2469705708/2048.mochi.c:272:29: warning: initialization of ‘int’ from ‘int *’ makes integer from pointer without a cast [-Wint-conversion]
+  272 |     return (Anon3){.board = b, .score = score, .moved = moved};
+      |                             ^
+/tmp/ctranspile2469705708/2048.mochi.c:272:29: note: (near initialization for ‘(anonymous).score’)
+/tmp/ctranspile2469705708/2048.mochi.c: In function ‘moveDown’:
+/tmp/ctranspile2469705708/2048.mochi.c:282:16: error: ‘Anon2’ has no member named ‘row’
+  282 |         col = r.row;
+      |                ^
+/tmp/ctranspile2469705708/2048.mochi.c:287:21: error: subscripted value is neither array nor pointer nor vector
+  287 |             if (b[y][x] != col[y]) {
+      |                     ^
+/tmp/ctranspile2469705708/2048.mochi.c:290:17: error: subscripted value is neither array nor pointer nor vector
+  290 |             b[y][x] = col[y];
+      |                 ^
+/tmp/ctranspile2469705708/2048.mochi.c:295:21: error: ‘Anon3’ has no member named ‘board’
+  295 |     return (Anon3){.board = b, .score = score, .moved = moved};
+      |                     ^~~~~
+/tmp/ctranspile2469705708/2048.mochi.c:295:29: warning: initialization of ‘int’ from ‘int *’ makes integer from pointer without a cast [-Wint-conversion]
+  295 |     return (Anon3){.board = b, .score = score, .moved = moved};
+      |                             ^
+/tmp/ctranspile2469705708/2048.mochi.c:295:29: note: (near initialization for ‘(anonymous).score’)
+/tmp/ctranspile2469705708/2048.mochi.c: In function ‘hasMoves’:
+/tmp/ctranspile2469705708/2048.mochi.c:303:21: error: subscripted value is neither array nor pointer nor vector
+  303 |             if (b[y][x] == 0) {
+      |                     ^
+/tmp/ctranspile2469705708/2048.mochi.c:306:42: error: subscripted value is neither array nor pointer nor vector
+  306 |             if (((x + 1) < SIZE) && (b[y][x] == b[y][x + 1])) {
+      |                                          ^
+/tmp/ctranspile2469705708/2048.mochi.c:306:53: error: subscripted value is neither array nor pointer nor vector
+  306 |             if (((x + 1) < SIZE) && (b[y][x] == b[y][x + 1])) {
+      |                                                     ^
+/tmp/ctranspile2469705708/2048.mochi.c:309:42: error: subscripted value is neither array nor pointer nor vector
+  309 |             if (((y + 1) < SIZE) && (b[y][x] == b[y + 1][x])) {
+      |                                          ^
+/tmp/ctranspile2469705708/2048.mochi.c:309:57: error: subscripted value is neither array nor pointer nor vector
+  309 |             if (((y + 1) < SIZE) && (b[y][x] == b[y + 1][x])) {
+      |                                                         ^
+/tmp/ctranspile2469705708/2048.mochi.c: In function ‘has2048’:
+/tmp/ctranspile2469705708/2048.mochi.c:324:21: error: subscripted value is neither array nor pointer nor vector
+  324 |             if (b[y][x] >= 2048) {
+      |                     ^
+/tmp/ctranspile2469705708/2048.mochi.c: In function ‘main’:
+/tmp/ctranspile2469705708/2048.mochi.c:338:14: error: ‘Anon1’ has no member named ‘board’
+  338 |     board = r.board;
+      |              ^
+/tmp/ctranspile2469705708/2048.mochi.c:341:14: error: ‘Anon1’ has no member named ‘board’
+  341 |     board = r.board;
+      |              ^
+/tmp/ctranspile2469705708/2048.mochi.c:349:22: error: ‘Anon3’ has no member named ‘board’
+  349 |             board = m.board;
+      |                      ^
+/tmp/ctranspile2469705708/2048.mochi.c:355:22: error: ‘Anon3’ has no member named ‘board’
+  355 |             board = m.board;
+      |                      ^
+/tmp/ctranspile2469705708/2048.mochi.c:361:22: error: ‘Anon3’ has no member named ‘board’
+  361 |             board = m.board;
+      |                      ^
+/tmp/ctranspile2469705708/2048.mochi.c:367:22: error: ‘Anon3’ has no member named ‘board’
+  367 |             board = m.board;
+      |                      ^
+/tmp/ctranspile2469705708/2048.mochi.c:376:23: error: ‘Anon1’ has no member named ‘board’
+  376 |             board = r2.board;
+      |                       ^
+
