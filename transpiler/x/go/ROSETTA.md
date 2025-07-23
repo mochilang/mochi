@@ -1,7 +1,7 @@
 # Go Rosetta Transpiler Output
 
-Completed programs: 8/284
-Last updated: 2025-07-23 09:04 +0700
+Completed programs: 11/284
+Last updated: 2025-07-23 11:36 +0700
 
 Checklist:
 
@@ -13,9 +13,9 @@ Checklist:
 6. [x] 15-puzzle-solver
 7. [x] 2048
 8. [x] 21-game
-9. [ ] 24-game-solve
-10. [ ] 24-game
-11. [ ] 4-rings-or-4-squares-puzzle
+9. [x] 24-game-solve
+10. [x] 24-game
+11. [x] 4-rings-or-4-squares-puzzle
 12. [ ] 9-billion-names-of-god-the-integer
 13. [ ] 99-bottles-of-beer-2
 14. [ ] 99-bottles-of-beer
