@@ -2,7 +2,7 @@
 
 This directory contains Dart code generated from Mochi programs in `tests/rosetta/x/Mochi`. Each program has a `.dart` file and `.out` output. Compilation or runtime failures are captured in a `.error` file.
 
-Compiled and ran: 25/284
+Compiled and ran: 26/284
 
 ## Checklist
 1. [x] 100-doors-2
@@ -27,7 +27,7 @@ Compiled and ran: 25/284
 20. [x] abc-problem
 21. [x] abelian-sandpile-model-identity
 22. [x] abelian-sandpile-model
-23. [ ] abstract-type
+23. [x] abstract-type
 24. [x] abundant-deficient-and-perfect-number-classifications
 25. [x] abundant-odd-numbers
 26. [x] accumulator-factory
@@ -290,4 +290,4 @@ Compiled and ran: 25/284
 283. [ ] define-a-primitive-data-type
 284. [ ] md5
 
-_Last updated: 2025-07-23 11:32 +0700_
+_Last updated: 2025-07-23 11:58 +0700_
