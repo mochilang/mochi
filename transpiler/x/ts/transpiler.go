@@ -3004,12 +3004,15 @@ func convertPostfix(p *parser.PostfixExpr) (Expr, error) {
 				if op.Index.Start == nil {
 					return nil, fmt.Errorf("nil index")
 				}
-				idx, err := convertExpr(op.Index.Start)
+				idxExpr := op.Index.Start
+				idx, err := convertExpr(idxExpr)
 				if err != nil {
 					return nil, err
 				}
 				if !isMapExpr(p) {
-					idx = &CallExpr{Func: "Math.trunc", Args: []Expr{idx}}
+					if _, ok := literalString(idxExpr); !ok {
+						idx = &CallExpr{Func: "Math.trunc", Args: []Expr{idx}}
+					}
 				}
 				expr = &IndexExpr{Target: expr, Index: idx}
 			}
