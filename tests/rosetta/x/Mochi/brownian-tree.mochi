@@ -1,10 +1,10 @@
 // Mochi implementation of Rosetta "Brownian tree" task
 // Generates a simple diffusion-limited aggregation on a 2D grid.
 
-const w: int = 400
-const h: int = 300
-const n: int = 15000
-const frost: int = 255
+let w: int = 400
+let h: int = 300
+let n: int = 15000
+let frost: int = 255
 
 var grid: list<list<int>> = []
 var y = 0

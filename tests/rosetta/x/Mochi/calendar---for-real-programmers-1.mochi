@@ -12,7 +12,7 @@ var qtr = 0
 while qtr < 4 {
   var mi = 0
   while mi < 3 {
-    print("      " + months[qtr*3+mi] + "           ", end="")
+    print("      " + months[qtr*3+mi] + "           ", false)
     mi = mi + 1
   }
   print("")
@@ -20,10 +20,10 @@ while qtr < 4 {
   while mi < 3 {
     var d = 0
     while d < 7 {
-      print(" " + days[d], end="")
+        print(" " + days[d], false)
       d = d + 1
     }
-    print("     ", end="")
+    print("     ", false)
     mi = mi + 1
   }
   print("")
@@ -36,15 +36,15 @@ while qtr < 4 {
         let m = qtr*3 + mi
         let val = week*7 + day - start[m] + 1
         if val >= 1 && val <= daysInMonth[m] {
-          let s = str(val)
+          var s = str(val)
           if len(s) == 1 { s = " " + s }
-          print(" " + s, end="")
+            print(" " + s, false)
         } else {
-          print("   ", end="")
+          print("   ", false)
         }
         day = day + 1
       }
-      print("     ", end="")
+        print("     ", false)
       mi = mi + 1
     }
     print("")
