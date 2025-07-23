@@ -1461,6 +1461,7 @@ func convertBody(env *types.Env, body []*parser.Statement, varTypes map[string]s
 				if _, ok := varTypes[st.For.Name]; !ok {
 					varTypes[st.For.Name] = "integer"
 				}
+				setVarType(st.For.Name, varTypes[st.For.Name])
 			} else {
 				out = append(out, &ForEachStmt{Name: st.For.Name, Iterable: start, Body: body})
 				if _, ok := varTypes[st.For.Name]; !ok {
@@ -1477,6 +1478,7 @@ func convertBody(env *types.Env, body []*parser.Statement, varTypes map[string]s
 						varTypes[st.For.Name] = "integer"
 					}
 				}
+				setVarType(st.For.Name, varTypes[st.For.Name])
 			}
 		case st.While != nil:
 			cond, err := convertExpr(env, st.While.Cond)
