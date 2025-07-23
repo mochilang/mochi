@@ -1,0 +1,23 @@
+run: exit status 255
+6 x 6 Polybius square:
+
+  | A D F G V X
+---------------
+A | F E Q 3 M 6 
+D | 8 2 O G K R 
+F | I T Z X 1 V 
+G | C Y P A 7 5 
+V | B D 4 9 0 L 
+X | W S H J N U 
+
+The key is QC1YZ4DHK
+
+Plaintext : ATTACKAT1200AM
+
+Fatal error: Uncaught TypeError: array_slice(): Argument #1 ($array) must be of type array, string given in /workspace/mochi/tests/rosetta/transpiler/php/adfgvx-cipher.php:133
+Stack trace:
+#0 /workspace/mochi/tests/rosetta/transpiler/php/adfgvx-cipher.php(133): array_slice('FEQ3M6', 0, 1)
+#1 /workspace/mochi/tests/rosetta/transpiler/php/adfgvx-cipher.php(295): encrypt(Array, 'QC1YZ4DHK', 'ATTACKAT1200AM')
+#2 /workspace/mochi/tests/rosetta/transpiler/php/adfgvx-cipher.php(300): main()
+#3 {main}
+  thrown in /workspace/mochi/tests/rosetta/transpiler/php/adfgvx-cipher.php on line 133
