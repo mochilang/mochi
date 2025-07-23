@@ -732,15 +732,27 @@ func (a *AppendExpr) emit(w io.Writer) {
 
 // IndexExpr represents x[i] which becomes x(i) in Scala.
 type IndexExpr struct {
-	Value Expr
-	Index Expr
+	Value     Expr
+	Index     Expr
+	Type      string
+	Container string
 }
 
 func (idx *IndexExpr) emit(w io.Writer) {
-	idx.Value.emit(w)
-	fmt.Fprint(w, "(")
-	idx.Index.emit(w)
-	fmt.Fprint(w, ")")
+	if idx.Container == "Any" {
+		idx.Value.emit(w)
+		fmt.Fprint(w, ".asInstanceOf[ArrayBuffer[Any]](")
+		idx.Index.emit(w)
+		fmt.Fprint(w, ")")
+	} else {
+		idx.Value.emit(w)
+		fmt.Fprint(w, "(")
+		idx.Index.emit(w)
+		fmt.Fprint(w, ")")
+	}
+	if idx.Type != "" && idx.Type != "Any" {
+		fmt.Fprintf(w, ".asInstanceOf[%s]", idx.Type)
+	}
 }
 
 // SliceExpr represents x[a:b] which becomes x.slice(a, b).
@@ -776,9 +788,9 @@ func (c *CastExpr) emit(w io.Writer) {
 	}
 	switch c.Type {
 	case "int":
-		fmt.Fprint(w, ".toInt")
+		fmt.Fprint(w, ".asInstanceOf[Int]")
 	case "float":
-		fmt.Fprint(w, ".toDouble")
+		fmt.Fprint(w, ".asInstanceOf[Double]")
 	case "string":
 		fmt.Fprint(w, ".toString")
 	case "bool":
@@ -1391,7 +1403,7 @@ func convertStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 		target := Expr(&Name{Name: st.Assign.Name})
 		if len(st.Assign.Index) > 0 {
 			var err error
-			target, err = applyIndexOps(target, st.Assign.Index)
+			target, err = applyIndexOps(target, st.Assign.Index, env)
 			if err != nil {
 				return nil, err
 			}
@@ -1483,6 +1495,16 @@ func convertBinary(b *parser.BinaryExpr, env *types.Env) (Expr, error) {
 			fn := &FunExpr{Params: []Param{{Name: "x"}}, Expr: &CallExpr{Fn: &FieldExpr{Receiver: right, Name: "contains"}, Args: []Expr{&Name{Name: "x"}}}}
 			ex = &CallExpr{Fn: &FieldExpr{Receiver: left, Name: "filter"}, Args: []Expr{fn}}
 		default:
+			if op == "+" || op == "-" || op == "*" || op == "/" || op == "%" {
+				lt := inferTypeWithEnv(left, env)
+				rt := inferTypeWithEnv(right, env)
+				if lt != "Any" && lt != "" && rt == "Any" {
+					right = &CastExpr{Value: right, Type: strings.ToLower(lt)}
+				}
+				if rt != "Any" && rt != "" && lt == "Any" {
+					left = &CastExpr{Value: left, Type: strings.ToLower(rt)}
+				}
+			}
 			ex = &BinaryExpr{Left: left, Op: op, Right: right}
 		}
 		operands[i] = ex
@@ -1523,7 +1545,7 @@ func contains(list []string, op string) bool {
 	return false
 }
 
-func applyIndexOps(base Expr, ops []*parser.IndexOp) (Expr, error) {
+func applyIndexOps(base Expr, ops []*parser.IndexOp, env *types.Env) (Expr, error) {
 	var err error
 	for _, op := range ops {
 		if op.Colon != nil || op.Colon2 != nil || op.End != nil || op.Step != nil {
@@ -1537,7 +1559,7 @@ func applyIndexOps(base Expr, ops []*parser.IndexOp) (Expr, error) {
 		if err != nil {
 			return nil, err
 		}
-		base = &IndexExpr{Value: base, Index: idx}
+		base = &IndexExpr{Value: base, Index: idx, Container: inferTypeWithEnv(base, env)}
 	}
 	return base, nil
 }
@@ -1681,7 +1703,9 @@ func convertPostfix(pf *parser.PostfixExpr, env *types.Env) (Expr, error) {
 				if typ, err := env.GetVar(n.Name); err == nil {
 					switch typ.(type) {
 					case types.GroupType, types.MapType:
-						expr = &IndexExpr{Value: expr, Index: &StringLit{Value: op.Field.Name}}
+						ie := &IndexExpr{Value: expr, Index: &StringLit{Value: op.Field.Name}, Container: toScalaTypeFromType(typ)}
+						ie.Type = inferTypeWithEnv(ie, env)
+						expr = ie
 						continue
 					}
 				}
@@ -1808,7 +1832,9 @@ func convertPostfix(pf *parser.PostfixExpr, env *types.Env) (Expr, error) {
 				if err != nil {
 					return nil, err
 				}
-				expr = &IndexExpr{Value: expr, Index: start}
+				ie := &IndexExpr{Value: expr, Index: start, Container: inferTypeWithEnv(expr, env)}
+				ie.Type = inferTypeWithEnv(ie, env)
+				expr = ie
 			}
 		case op.Call != nil:
 			call := op.Call
@@ -1884,7 +1910,9 @@ func convertPrimary(p *parser.Primary, env *types.Env) (Expr, error) {
 		if env != nil {
 			if typ, err := env.GetVar(p.Selector.Root); err == nil {
 				if _, ok := typ.(types.GroupType); ok && len(p.Selector.Tail) > 0 {
-					expr = &IndexExpr{Value: expr, Index: &StringLit{Value: p.Selector.Tail[0]}}
+					ie := &IndexExpr{Value: expr, Index: &StringLit{Value: p.Selector.Tail[0]}, Container: toScalaTypeFromType(typ)}
+					ie.Type = inferTypeWithEnv(ie, env)
+					expr = ie
 					for _, f := range p.Selector.Tail[1:] {
 						expr = &FieldExpr{Receiver: expr, Name: f}
 					}
@@ -2036,7 +2064,7 @@ func convertCall(c *parser.CallExpr, env *types.Env) (Expr, error) {
 			if n, ok := args[0].(*Name); ok && env != nil {
 				if typ, err := env.GetVar(n.Name); err == nil {
 					if _, ok := typ.(types.GroupType); ok {
-						v := &IndexExpr{Value: args[0], Index: &StringLit{Value: "items"}}
+						v := &IndexExpr{Value: args[0], Index: &StringLit{Value: "items"}, Container: toScalaTypeFromType(typ)}
 						return &LenExpr{Value: v}, nil
 					}
 				}
@@ -2411,7 +2439,7 @@ func convertInnerJoinQuery(q *parser.QueryExpr, env *types.Env) (Expr, error) {
 	srcType := types.ExprType(q.Source, env)
 	if n, ok := src.(*Name); ok {
 		if gt, ok := srcType.(types.GroupType); ok {
-			src = &IndexExpr{Value: n, Index: &StringLit{Value: "items"}}
+			src = &IndexExpr{Value: n, Index: &StringLit{Value: "items"}, Container: toScalaTypeFromType(srcType)}
 			srcType = types.ListType{Elem: gt.Elem}
 		}
 	}
@@ -2848,7 +2876,7 @@ func convertForStmt(fs *parser.ForStmt, env *types.Env) (Stmt, error) {
 			if _, ok := typ.(types.MapType); ok {
 				iter = &FieldExpr{Receiver: iter, Name: "keys"}
 			} else if _, ok := typ.(types.GroupType); ok {
-				iter = &IndexExpr{Value: iter, Index: &StringLit{Value: "items"}}
+				iter = &IndexExpr{Value: iter, Index: &StringLit{Value: "items"}, Container: toScalaTypeFromType(typ)}
 			}
 		}
 	}

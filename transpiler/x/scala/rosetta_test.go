@@ -5,6 +5,7 @@ package scalat_test
 import (
 	"bufio"
 	"bytes"
+	"flag"
 	"fmt"
 	"os"
 	"os/exec"
@@ -98,6 +99,12 @@ func TestScalaTranspiler_Rosetta_Golden(t *testing.T) {
 				t.Fatalf("compile: %v", err)
 			}
 			cmd := exec.Command("scala", "-cp", tmp, "Main")
+			if data, err := os.ReadFile(strings.TrimSuffix(filepath.Join(srcDir, nameFile), ".mochi") + ".in"); err == nil {
+				cmd.Stdin = bytes.NewReader(data)
+			}
+			want, _ := os.ReadFile(outPath)
+			want = bytes.TrimSpace(want)
+
 			out, err := cmd.CombinedOutput()
 			got := bytes.TrimSpace(out)
 			if err != nil {
@@ -106,13 +113,11 @@ func TestScalaTranspiler_Rosetta_Golden(t *testing.T) {
 			}
 			_ = os.Remove(errPath)
 			_ = os.WriteFile(outPath, got, 0o644)
-			want, err := os.ReadFile(outPath)
-			if err != nil {
-				t.Fatalf("read want: %v", err)
-			}
-			want = bytes.TrimSpace(want)
-			if !bytes.Equal(got, want) {
-				t.Errorf("output mismatch:\nGot: %s\nWant: %s", got, want)
+
+			if !updating() && len(want) > 0 {
+				if !bytes.Equal(got, want) {
+					t.Errorf("output mismatch:\nGot: %s\nWant: %s", got, want)
+				}
 			}
 		})
 		if ok {
@@ -157,4 +162,17 @@ func updateRosettaChecklist() {
 	buf.WriteString(strings.Join(lines, "\n"))
 	buf.WriteString("\n")
 	_ = os.WriteFile(filepath.Join(root, "transpiler", "x", "scala", "ROSETTA.md"), buf.Bytes(), 0o644)
+}
+
+func updating() bool {
+	f := flag.Lookup("update")
+	if f == nil {
+		return false
+	}
+	if getter, ok := f.Value.(interface{ Get() any }); ok {
+		if v, ok2 := getter.Get().(bool); ok2 {
+			return v
+		}
+	}
+	return false
 }
