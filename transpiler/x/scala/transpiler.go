@@ -741,7 +741,11 @@ type IndexExpr struct {
 func (idx *IndexExpr) emit(w io.Writer) {
 	if idx.Container == "Any" {
 		idx.Value.emit(w)
-		fmt.Fprint(w, ".asInstanceOf[ArrayBuffer[Any]](")
+		if idx.Type != "" {
+			fmt.Fprintf(w, ".asInstanceOf[ArrayBuffer[%s]](", idx.Type)
+		} else {
+			fmt.Fprint(w, ".asInstanceOf[ArrayBuffer[Any]](")
+		}
 		idx.Index.emit(w)
 		fmt.Fprint(w, ")")
 	} else {
@@ -750,7 +754,7 @@ func (idx *IndexExpr) emit(w io.Writer) {
 		idx.Index.emit(w)
 		fmt.Fprint(w, ")")
 	}
-	if idx.Type != "" && idx.Type != "Any" {
+	if idx.Type != "" && idx.Type != "Any" && !strings.HasPrefix(idx.Type, "ArrayBuffer[") {
 		fmt.Fprintf(w, ".asInstanceOf[%s]", idx.Type)
 	}
 }
@@ -795,6 +799,10 @@ func (c *CastExpr) emit(w io.Writer) {
 		fmt.Fprint(w, ".toString")
 	case "bool":
 		fmt.Fprint(w, ".asInstanceOf[Boolean]")
+	default:
+		if c.Type != "" {
+			fmt.Fprintf(w, ".asInstanceOf[%s]", c.Type)
+		}
 	}
 }
 
@@ -1414,6 +1422,11 @@ func convertStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 		e, err := convertExpr(st.Assign.Value, env)
 		if err != nil {
 			return nil, err
+		}
+		targetType := inferTypeWithEnv(target, env)
+		valType := inferTypeWithEnv(e, env)
+		if targetType != "" && targetType != "Any" && (valType == "" || valType == "Any") {
+			e = &CastExpr{Value: e, Type: targetType}
 		}
 		return &AssignStmt{Target: target, Value: e}, nil
 	case st.Fun != nil:
@@ -2781,11 +2794,29 @@ func convertMatchExpr(me *parser.MatchExpr, env *types.Env) (Expr, error) {
 	return m, nil
 }
 
+func copyMap(m map[string]string) map[string]string {
+	n := make(map[string]string, len(m))
+	for k, v := range m {
+		n[k] = v
+	}
+	return n
+}
+
 func convertFunStmt(fs *parser.FunStmt, env *types.Env) (Stmt, error) {
+	saved := localVarTypes
+	localVarTypes = copyMap(localVarTypes)
+	defer func() { localVarTypes = saved }()
+
+	child := types.NewEnv(env)
+
 	mutated := map[string]bool{}
 	for _, p := range fs.Params {
 		if paramAssigned(p.Name, fs.Body) {
 			mutated[p.Name] = true
+		}
+		child.SetVar(p.Name, types.ResolveTypeRef(p.Type, env), true)
+		if ts := toScalaType(p.Type); ts != "" {
+			localVarTypes[p.Name] = ts
 		}
 	}
 
@@ -2804,7 +2835,7 @@ func convertFunStmt(fs *parser.FunStmt, env *types.Env) (Stmt, error) {
 	}
 	fn.Return = toScalaType(fs.Return)
 	for _, st := range fs.Body {
-		s, err := convertStmt(st, env)
+		s, err := convertStmt(st, child)
 		if err != nil {
 			return nil, err
 		}
