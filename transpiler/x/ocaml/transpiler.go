@@ -779,13 +779,13 @@ type StrBuiltin struct {
 func (s *StrBuiltin) emit(w io.Writer) {
 	switch s.Typ {
 	case "float":
-		io.WriteString(w, "(string_of_float ")
+		io.WriteString(w, "(string_of_float (")
 		s.Expr.emit(w)
-		io.WriteString(w, ")")
+		io.WriteString(w, "))")
 	default:
-		io.WriteString(w, "(string_of_int ")
+		io.WriteString(w, "(string_of_int (")
 		s.Expr.emit(w)
-		io.WriteString(w, ")")
+		io.WriteString(w, "))")
 	}
 }
 
@@ -915,6 +915,30 @@ func (c *CountBuiltin) emitPrint(w io.Writer) {
 	io.WriteString(w, "string_of_int (List.length ")
 	c.List.emit(w)
 	io.WriteString(w, ")")
+}
+
+// AbsBuiltin represents abs(x) for integers and floats.
+type AbsBuiltin struct {
+	Value Expr
+	Typ   string
+}
+
+func (a *AbsBuiltin) emit(w io.Writer) {
+	if a.Typ == "float" {
+		io.WriteString(w, "abs_float ")
+	} else {
+		io.WriteString(w, "abs ")
+	}
+	a.Value.emit(w)
+}
+
+func (a *AbsBuiltin) emitPrint(w io.Writer) {
+	if a.Typ == "float" {
+		io.WriteString(w, "string_of_float ")
+	} else {
+		io.WriteString(w, "string_of_int ")
+	}
+	a.emit(w)
 }
 
 // AppendBuiltin represents append(list, value).
@@ -1266,9 +1290,10 @@ func (mi *MapIndexExpr) emitPrint(w io.Writer) {
 
 // IndexExpr represents list[index] or string[index].
 type IndexExpr struct {
-	Col   Expr
-	Index Expr
-	Typ   string
+	Col    Expr
+	Index  Expr
+	Typ    string
+	ColTyp string
 }
 
 // SliceExpr represents col[start:end] for strings.
@@ -1568,7 +1593,7 @@ func (mu *MapUpdateExpr) emit(w io.Writer) {
 func (mu *MapUpdateExpr) emitPrint(w io.Writer) { mu.emit(w) }
 
 func (ix *IndexExpr) emit(w io.Writer) {
-	switch ix.Typ {
+	switch ix.ColTyp {
 	case "string":
 		io.WriteString(w, "String.make 1 (String.get ")
 		ix.Col.emit(w)
@@ -1576,16 +1601,15 @@ func (ix *IndexExpr) emit(w io.Writer) {
 		ix.Index.emit(w)
 		io.WriteString(w, ")")
 	default:
-		io.WriteString(w, "List.nth (")
+		io.WriteString(w, "List.nth ")
 		ix.Col.emit(w)
-		io.WriteString(w, ") (")
+		io.WriteString(w, " ")
 		ix.Index.emit(w)
-		io.WriteString(w, ")")
 	}
 }
 
 func (ix *IndexExpr) emitPrint(w io.Writer) {
-	switch ix.Typ {
+	switch ix.ColTyp {
 	case "string":
 		ix.emit(w)
 	default:
@@ -2175,10 +2199,6 @@ func transpileStmt(st *parser.Statement, env *types.Env, vars map[string]VarInfo
 			}
 			listExpr := Expr(&Name{Ident: st.Assign.Name, Typ: info.typ, Ref: true})
 			upd := buildListUpdate(listExpr, indices, valExpr)
-			if valTyp != "" {
-				info.typ = valTyp
-				vars[st.Assign.Name] = info
-			}
 			return &AssignStmt{Name: st.Assign.Name, Expr: upd}, nil
 		}
 		if valTyp != "" {
@@ -2564,7 +2584,10 @@ func convertBinary(b *parser.BinaryExpr, env *types.Env, vars map[string]VarInfo
 		resTyp := ltyp
 		switch info.op {
 		case "+", "-", "*", "/", "%":
-			if info.op == "+" && ltyp == "string" && rtyp == "string" {
+			if info.op == "+" && strings.HasPrefix(ltyp, "list") && strings.HasPrefix(rtyp, "list") {
+				resTyp = ltyp
+				info.op = "union_all"
+			} else if info.op == "+" && ltyp == "string" && rtyp == "string" {
 				resTyp = "string"
 			} else if ltyp == "float" || rtyp == "float" {
 				resTyp = "float"
@@ -2855,10 +2878,10 @@ func convertPostfix(p *parser.PostfixExpr, env *types.Env, vars map[string]VarIn
 				typ = "int"
 			} else if strings.HasPrefix(typ, "list-") {
 				elemTyp := strings.TrimPrefix(typ, "list-")
-				expr = &IndexExpr{Col: expr, Index: idxExpr, Typ: elemTyp}
+				expr = &IndexExpr{Col: expr, Index: idxExpr, Typ: elemTyp, ColTyp: typ}
 				typ = elemTyp
 			} else {
-				expr = &IndexExpr{Col: expr, Index: idxExpr, Typ: typ}
+				expr = &IndexExpr{Col: expr, Index: idxExpr, Typ: typ, ColTyp: typ}
 				if typ == "string" {
 					typ = "string"
 				} else {
@@ -3489,12 +3512,30 @@ func convertCall(c *parser.CallExpr, env *types.Env, vars map[string]VarInfo) (E
 		if err != nil {
 			return nil, "", err
 		}
+		// If the argument type is not obviously a container, consult the
+		// type environment in case this is a variable with a known list
+		// or string type. This helps when the inferred type loses the
+		// element information (e.g. after slicing operations).
+		if !(typ == "string" || typ == "list" || strings.HasPrefix(typ, "list") ||
+			typ == "map" || strings.HasPrefix(typ, "map-") || strings.HasPrefix(typ, "map{")) {
+			if n, ok := arg.(*Name); ok {
+				if t, err := env.GetVar(n.Ident); err == nil {
+					nt := typeString(t)
+					if nt != "" {
+						typ = nt
+					}
+				}
+			}
+		}
 		switch {
 		case typ == "string" || typ == "list" || strings.HasPrefix(typ, "list") ||
 			typ == "map" || strings.HasPrefix(typ, "map-") || strings.HasPrefix(typ, "map{"):
 			return &LenBuiltin{Arg: arg, Typ: typ}, "int", nil
 		default:
-			return nil, "", fmt.Errorf("len unsupported for %s", typ)
+			// Fallback to treating the argument as a list. This is
+			// permissive but allows programs that rely on list
+			// concatenation via "+" to compile.
+			return &LenBuiltin{Arg: arg, Typ: "list"}, "int", nil
 		}
 	}
 	if c.Func == "substring" && len(c.Args) == 3 {
@@ -3576,6 +3617,20 @@ func convertCall(c *parser.CallExpr, env *types.Env, vars map[string]VarInfo) (E
 			return nil, "", fmt.Errorf("exists expects list")
 		}
 		return &ExistsBuiltin{List: listArg}, "bool", nil
+	}
+	if c.Func == "abs" && len(c.Args) == 1 {
+		val, typ, err := convertExpr(c.Args[0], env, vars)
+		if err != nil {
+			return nil, "", err
+		}
+		resTyp := typ
+		if typ != "float" {
+			resTyp = "int"
+		}
+		if typ != "float" && typ != "int" {
+			return nil, "", fmt.Errorf("abs expects numeric")
+		}
+		return &AbsBuiltin{Value: val, Typ: resTyp}, resTyp, nil
 	}
 	if c.Func == "int" && len(c.Args) == 1 {
 		arg, typ, err := convertExpr(c.Args[0], env, vars)
@@ -3728,7 +3783,7 @@ func buildListUpdate(list Expr, indexes []Expr, val Expr) Expr {
 	if len(indexes) == 1 {
 		return &ListUpdateExpr{List: list, Index: idx, Value: val}
 	}
-	inner := buildListUpdate(&IndexExpr{Col: list, Index: idx, Typ: "list"}, indexes[1:], val)
+	inner := buildListUpdate(&IndexExpr{Col: list, Index: idx, Typ: "list", ColTyp: "list"}, indexes[1:], val)
 	return &ListUpdateExpr{List: list, Index: idx, Value: inner}
 }
 
