@@ -517,10 +517,12 @@ type MatchExpr struct {
 
 func (i *IndexExpr) emit(w io.Writer) {
 	if i.IsString {
+		io.WriteString(w, "(string ")
 		io.WriteString(w, "(string-ref ")
 		i.Target.emit(w)
 		io.WriteString(w, " ")
 		i.Index.emit(w)
+		io.WriteString(w, ")")
 		io.WriteString(w, ")")
 	} else if i.IsMap {
 		io.WriteString(w, "(hash-ref ")
@@ -1875,6 +1877,16 @@ func convertBinary(b *parser.BinaryExpr, env *types.Env) (Expr, error) {
 					isMap = true
 				}
 			}
+			if !isMap {
+				if types.IsMapType(types.TypeOfPostfix(part.Right, env)) {
+					isMap = true
+				}
+			}
+			if !isMap {
+				if idx, ok := right.(*IndexExpr); ok && idx.IsMap {
+					isMap = true
+				}
+			}
 			opExpr := &InExpr{Elem: exprs[len(exprs)-1], Set: right, IsStr: isStr, IsMap: isMap}
 			exprs[len(exprs)-1] = opExpr
 			continue
@@ -2020,6 +2032,11 @@ func convertPostfix(pf *parser.PostfixExpr, env *types.Env) (Expr, error) {
 			isMap := types.IsMapPrimary(pf.Target, env)
 			if !isMap && !isStr {
 				if _, ok := idx.(*StringLit); ok {
+					isMap = true
+				}
+			}
+			if !isMap {
+				if ex, ok := expr.(*IndexExpr); ok && ex.IsMap {
 					isMap = true
 				}
 			}
