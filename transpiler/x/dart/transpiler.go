@@ -42,8 +42,10 @@ var (
 	usesJSON         bool
 	useNow           bool
 	useInput         bool
+	useLookupHost    bool
 	imports          []string
 	testpkgAliases   map[string]struct{}
+	netAliases       map[string]struct{}
 )
 
 // GetStructOrder returns the generated struct names (for testing).
@@ -514,9 +516,10 @@ func (u *UpdateStmt) emit(w io.Writer) error {
 
 // FuncDecl represents a function definition.
 type FuncDecl struct {
-	Name   string
-	Params []string
-	Body   []Stmt
+	Name       string
+	Params     []string
+	ParamTypes map[string]string
+	Body       []Stmt
 }
 
 func (f *FuncDecl) emit(w io.Writer) error {
@@ -540,6 +543,13 @@ func (f *FuncDecl) emit(w io.Writer) error {
 	if _, err := io.WriteString(w, ") {\n"); err != nil {
 		return err
 	}
+	saved := map[string]string{}
+	for n, t := range f.ParamTypes {
+		if old, ok := localVarTypes[n]; ok {
+			saved[n] = old
+		}
+		localVarTypes[n] = t
+	}
 	for _, st := range f.Body {
 		if _, err := io.WriteString(w, "  "); err != nil {
 			return err
@@ -556,6 +566,13 @@ func (f *FuncDecl) emit(w io.Writer) error {
 			if _, err := io.WriteString(w, ";\n"); err != nil {
 				return err
 			}
+		}
+	}
+	for n := range f.ParamTypes {
+		if v, ok := saved[n]; ok {
+			localVarTypes[n] = v
+		} else {
+			delete(localVarTypes, n)
 		}
 	}
 	_, err := io.WriteString(w, "}")
@@ -736,7 +753,14 @@ func (c *CallExpr) emit(w io.Writer) error {
 
 type Name struct{ Name string }
 
-func (n *Name) emit(w io.Writer) error { _, err := io.WriteString(w, n.Name); return err }
+func (n *Name) emit(w io.Writer) error {
+	if n.Name == "nil" {
+		_, err := io.WriteString(w, "null")
+		return err
+	}
+	_, err := io.WriteString(w, n.Name)
+	return err
+}
 
 // SelectorExpr represents receiver.field access.
 type SelectorExpr struct {
@@ -2536,10 +2560,26 @@ func walkTypes(s Stmt) {
 			inferType(st.Value)
 		}
 	case *FuncDecl:
+		saved := map[string]string{}
+		for n, t := range st.ParamTypes {
+			if old, ok := localVarTypes[n]; ok {
+				saved[n] = old
+			}
+			localVarTypes[n] = t
+		}
 		for _, b := range st.Body {
 			walkTypes(b)
 		}
-		funcReturnTypes[st.Name] = inferReturnType(st.Body)
+		for n := range st.ParamTypes {
+			if v, ok := saved[n]; ok {
+				localVarTypes[n] = v
+			} else {
+				delete(localVarTypes, n)
+			}
+		}
+		if funcReturnTypes[st.Name] == "" {
+			funcReturnTypes[st.Name] = inferReturnType(st.Body)
+		}
 	}
 }
 
@@ -2584,6 +2624,11 @@ func Emit(w io.Writer, p *Program) error {
 			return err
 		}
 		if _, err := io.WriteString(w, "int _now() {\n  if (_nowSeeded) {\n    _nowSeed = (_nowSeed * 1664525 + 1013904223) % 2147483647;\n    return _nowSeed;\n  }\n  return DateTime.now().microsecondsSinceEpoch;\n}\n\n"); err != nil {
+			return err
+		}
+	}
+	if useLookupHost {
+		if _, err := io.WriteString(w, "List _lookupHost(String host) {\n  return [<String>[], null];\n}\n\n"); err != nil {
 			return err
 		}
 	}
@@ -2703,8 +2748,10 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	usesJSON = false
 	useNow = false
 	useInput = false
+	useLookupHost = false
 	imports = nil
 	testpkgAliases = map[string]struct{}{}
+	netAliases = map[string]struct{}{}
 	p := &Program{}
 	for _, st := range prog.Statements {
 		s, err := convertStmtInternal(st)
@@ -2923,6 +2970,12 @@ func convertStmtInternal(st *parser.Statement) (Stmt, error) {
 			testpkgAliases[alias] = struct{}{}
 			return nil, nil
 		}
+		if st.Import.Lang != nil && *st.Import.Lang == "go" && strings.Trim(st.Import.Path, "\"") == "net" {
+			netAliases[alias] = struct{}{}
+			useLookupHost = true
+			imports = append(imports, "import 'dart:io';")
+			return nil, nil
+		}
 		return nil, fmt.Errorf("unsupported import")
 	case st.Expr != nil:
 		if se := extractSaveExpr(st.Expr.Expr); se != nil {
@@ -3003,10 +3056,22 @@ func convertStmtInternal(st *parser.Statement) (Stmt, error) {
 			return nil, err
 		}
 		var params []string
+		paramTypes := make(map[string]string)
 		for _, p := range st.Fun.Params {
-			params = append(params, sanitize(p.Name))
+			typ := typeRefString(p.Type)
+			name := sanitize(p.Name)
+			if typ != "" {
+				params = append(params, fmt.Sprintf("%s %s", typ, name))
+				paramTypes[name] = typ
+			} else {
+				params = append(params, name)
+			}
 		}
-		return &FuncDecl{Name: sanitize(st.Fun.Name), Params: params, Body: body}, nil
+		fd := &FuncDecl{Name: sanitize(st.Fun.Name), Params: params, ParamTypes: paramTypes, Body: body}
+		if rt := typeRefString(st.Fun.Return); rt != "" {
+			funcReturnTypes[fd.Name] = rt
+		}
+		return fd, nil
 	case st.While != nil:
 		return convertWhileStmt(st.While)
 	case st.For != nil:
@@ -3147,6 +3212,7 @@ func convertPostfix(pf *parser.PostfixExpr) (Expr, error) {
 	if err != nil {
 		return nil, err
 	}
+	replaced := false
 	for i := 0; i < len(pf.Ops); i++ {
 		op := pf.Ops[i]
 		switch {
@@ -3199,6 +3265,19 @@ func convertPostfix(pf *parser.PostfixExpr) (Expr, error) {
 							}
 						}
 					}
+					if _, ok := netAliases[n.Name]; ok {
+						if op.Field.Name == "LookupHost" && len(call.Call.Args) == 1 {
+							arg, err := convertExpr(call.Call.Args[0])
+							if err != nil {
+								return nil, err
+							}
+							useLookupHost = true
+							expr = &CallExpr{Func: &Name{Name: "_lookupHost"}, Args: []Expr{arg}}
+							i++
+							replaced = true
+							continue
+						}
+					}
 				}
 				var args []Expr
 				for _, a := range call.Call.Args {
@@ -3232,11 +3311,19 @@ func convertPostfix(pf *parser.PostfixExpr) (Expr, error) {
 								break
 							}
 						}
+					} else if _, ok := netAliases[n.Name]; ok {
+						if sel.Field == "LookupHost" && len(args) == 1 {
+							useLookupHost = true
+							expr = &CallExpr{Func: &Name{Name: "_lookupHost"}, Args: args}
+							args = nil
+						}
 					}
 				}
 			}
-			if _, ok := expr.(*StringLit); !ok {
-				expr = &CallExpr{Func: expr, Args: args}
+			if !replaced {
+				if _, ok := expr.(*StringLit); !ok {
+					expr = &CallExpr{Func: expr, Args: args}
+				}
 			}
 		case op.Cast != nil:
 			// ignore casts
@@ -3399,7 +3486,14 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 			}
 			return &CallExpr{Func: &Name{"print"}, Args: []Expr{join}}, nil
 		}
-
+		if p.Call.Func == "net.LookupHost" && len(p.Call.Args) == 1 {
+			arg, err := convertExpr(p.Call.Args[0])
+			if err != nil {
+				return nil, err
+			}
+			useLookupHost = true
+			return &CallExpr{Func: &Name{Name: "_lookupHost"}, Args: []Expr{arg}}, nil
+		}
 		ce := &CallExpr{Func: &Name{p.Call.Func}}
 		for _, a := range p.Call.Args {
 			ex, err := convertExpr(a)
