@@ -2,9 +2,9 @@
 
 Generated Lua code for programs in `tests/vm/valid`. Each program has a `.lua` file produced by the transpiler and a `.out` file with its runtime output. Compilation or execution errors are captured in `.error` files.
 
-Transpiled programs: 102/102
+Transpiled programs: 102/103
 
-Last updated: 2025-07-22 10:54 GMT+7
+Last updated: 2025-07-23 15:10 GMT+7
 
 Checklist:
 
@@ -73,6 +73,7 @@ Checklist:
 - [x] math_ops
 - [x] membership
 - [x] min_max_builtin
+- [ ] mix_go_python
 - [x] nested_function
 - [x] order_by_map
 - [x] outer_join
