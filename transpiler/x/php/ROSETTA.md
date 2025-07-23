@@ -2,9 +2,9 @@
 
 Generated PHP code from Mochi Rosetta tasks lives in `tests/rosetta/transpiler/php`.
 
-Last updated: 2025-07-23 12:23 +0700
+Last updated: 2025-07-23 13:00 +0700
 
-## Checklist (21/284)
+## Checklist (25/284)
 - [x] 1 100-doors-2
 - [x] 2 100-doors-3
 - [x] 3 100-doors
@@ -25,12 +25,12 @@ Last updated: 2025-07-23 12:23 +0700
 - [x] 18 abbreviations-easy
 - [x] 19 abbreviations-simple
 - [x] 20 abc-problem
-- [ ] 21 abelian-sandpile-model-identity
+- [x] 21 abelian-sandpile-model-identity
 - [x] 22 abelian-sandpile-model
-- [ ] 23 abstract-type
+- [x] 23 abstract-type
 - [x] 24 abundant-deficient-and-perfect-number-classifications
-- [ ] 25 abundant-odd-numbers
-- [ ] 26 accumulator-factory
+- [x] 25 abundant-odd-numbers
+- [x] 26 accumulator-factory
 - [ ] 27 achilles-numbers
 - [ ] 28 ackermann-function-2
 - [ ] 29 ackermann-function-3

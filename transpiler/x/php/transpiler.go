@@ -252,9 +252,10 @@ func (s *QueryLetStmt) emit(w io.Writer) {
 
 // FuncDecl represents a simple function declaration.
 type FuncDecl struct {
-	Name   string
-	Params []string
-	Body   []Stmt
+	Name      string
+	Params    []string
+	RefParams []bool
+	Body      []Stmt
 }
 
 func (f *FuncDecl) emit(w io.Writer) {
@@ -262,6 +263,9 @@ func (f *FuncDecl) emit(w io.Writer) {
 	for i, p := range f.Params {
 		if i > 0 {
 			fmt.Fprint(w, ", ")
+		}
+		if i < len(f.RefParams) && f.RefParams[i] {
+			fmt.Fprint(w, "&")
 		}
 		fmt.Fprintf(w, "$%s", sanitizeVarName(p))
 	}
@@ -302,9 +306,10 @@ func (f *FuncDecl) emit(w io.Writer) {
 
 // ClosureExpr represents an anonymous function with optional captured variables.
 type ClosureExpr struct {
-	Params []string
-	Uses   []string
-	Body   []Stmt
+	Params    []string
+	RefParams []bool
+	Uses      []string
+	Body      []Stmt
 }
 
 func (c *ClosureExpr) emit(w io.Writer) {
@@ -312,6 +317,9 @@ func (c *ClosureExpr) emit(w io.Writer) {
 	for i, p := range c.Params {
 		if i > 0 {
 			fmt.Fprint(w, ", ")
+		}
+		if i < len(c.RefParams) && c.RefParams[i] {
+			fmt.Fprint(w, "&")
 		}
 		fmt.Fprintf(w, "$%s", sanitizeVarName(p))
 	}
@@ -548,6 +556,18 @@ type MatchExpr struct {
 	Arms   []MatchArm
 }
 
+type UnionMatchCase struct {
+	Tag    string
+	Vars   []string
+	Fields []string
+	Result Expr
+}
+
+type UnionMatchExpr struct {
+	Target Expr
+	Cases  []UnionMatchCase
+}
+
 type QueryLoop struct {
 	Name   string
 	Source Expr
@@ -702,6 +722,30 @@ func (m *MatchExpr) emit(w io.Writer) {
 		io.WriteString(w, ",\n")
 	}
 	io.WriteString(w, "}")
+}
+
+func (u *UnionMatchExpr) emit(w io.Writer) {
+	io.WriteString(w, "(function($__v) {\n")
+	for i, c := range u.Cases {
+		if i == 0 {
+			fmt.Fprintf(w, "  if ($__v['__tag'] === %q) {\n", c.Tag)
+		} else {
+			fmt.Fprintf(w, "  } elseif ($__v['__tag'] === %q) {\n", c.Tag)
+		}
+		for j, vname := range c.Vars {
+			if vname == "_" || c.Fields == nil || j >= len(c.Fields) {
+				continue
+			}
+			fmt.Fprintf(w, "    $%s = $__v[%q];\n", sanitizeVarName(vname), c.Fields[j])
+		}
+		io.WriteString(w, "    return ")
+		c.Result.emit(w)
+		io.WriteString(w, ";\n")
+	}
+	io.WriteString(w, "  }\n")
+	io.WriteString(w, "})(")
+	u.Target.emit(w)
+	io.WriteString(w, ")")
 }
 
 func (c *CallExpr) emit(w io.Writer) {
@@ -1796,7 +1840,24 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 		}
 		return &MapLit{Items: items}, nil
 	case p.Struct != nil:
-		items := make([]MapEntry, len(p.Struct.Fields))
+		items := []MapEntry{}
+		if transpileEnv != nil {
+			if ut, ok := transpileEnv.FindUnionByVariant(p.Struct.Name); ok {
+				items = append(items, MapEntry{Key: &StringLit{Value: "__tag"}, Value: &StringLit{Value: p.Struct.Name}})
+				st := ut.Variants[p.Struct.Name]
+				for idx, fname := range st.Order {
+					if idx < len(p.Struct.Fields) {
+						v, err := convertExpr(p.Struct.Fields[idx].Value)
+						if err != nil {
+							return nil, err
+						}
+						items = append(items, MapEntry{Key: &StringLit{Value: fname}, Value: v})
+					}
+				}
+				return &MapLit{Items: items}, nil
+			}
+		}
+		items = make([]MapEntry, len(p.Struct.Fields))
 		for i, f := range p.Struct.Fields {
 			v, err := convertExpr(f.Value)
 			if err != nil {
@@ -1807,8 +1868,15 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 		return &MapLit{Items: items}, nil
 	case p.FunExpr != nil:
 		params := make([]string, len(p.FunExpr.Params))
+		refFlags := make([]bool, len(p.FunExpr.Params))
 		for i, p2 := range p.FunExpr.Params {
 			params[i] = p2.Name
+			if transpileEnv != nil {
+				typ := simpleResolveType(p2.Type, transpileEnv)
+				if types.IsListType(typ) || types.IsMapType(typ) {
+					refFlags[i] = true
+				}
+			}
 		}
 		funcStack = append(funcStack, params)
 		var body []Stmt
@@ -1832,7 +1900,7 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 		for _, frame := range funcStack {
 			uses = append(uses, frame...)
 		}
-		return &ClosureExpr{Params: params, Uses: uses, Body: body}, nil
+		return &ClosureExpr{Params: params, RefParams: refFlags, Uses: uses, Body: body}, nil
 	case p.If != nil:
 		return convertIfExpr(p.If)
 	case p.Selector != nil:
@@ -2025,13 +2093,18 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 			closureNames[st.Fun.Name] = true
 		}
 		params := make([]string, len(st.Fun.Params))
+		refFlags := make([]bool, len(st.Fun.Params))
 		savedEnv := transpileEnv
 		childEnv := transpileEnv
 		if transpileEnv != nil {
 			childEnv = types.NewEnv(transpileEnv)
 			for i, p := range st.Fun.Params {
 				params[i] = p.Name
-				childEnv.SetVar(p.Name, simpleResolveType(p.Type, transpileEnv), true)
+				typ := simpleResolveType(p.Type, transpileEnv)
+				childEnv.SetVar(p.Name, typ, true)
+				if types.IsListType(typ) || types.IsMapType(typ) {
+					refFlags[i] = true
+				}
 			}
 			transpileEnv = childEnv
 		} else {
@@ -2063,11 +2136,11 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 			name = newName
 		}
 		if wasTop {
-			decl := &FuncDecl{Name: name, Params: params, Body: body}
+			decl := &FuncDecl{Name: name, Params: params, RefParams: refFlags, Body: body}
 			globalNames = append(globalNames, name)
 			return decl, nil
 		}
-		clo := &ClosureExpr{Params: params, Uses: uses, Body: body}
+		clo := &ClosureExpr{Params: params, RefParams: refFlags, Uses: uses, Body: body}
 		if len(funcStack) == 0 {
 			globalNames = append(globalNames, name)
 		}
@@ -2230,6 +2303,8 @@ func convertMatchExpr(me *parser.MatchExpr) (Expr, error) {
 		return nil, err
 	}
 	arms := make([]MatchArm, len(me.Cases))
+	var unionCases []UnionMatchCase
+	allUnion := true
 	for i, c := range me.Cases {
 		res, err := convertExpr(c.Result)
 		if err != nil {
@@ -2245,8 +2320,29 @@ func convertMatchExpr(me *parser.MatchExpr) (Expr, error) {
 				pex = nil
 			}
 			pat = pex
+			if ce, ok := pex.(*CallExpr); ok && transpileEnv != nil {
+				if ut, ok := transpileEnv.FindUnionByVariant(ce.Func); ok {
+					st := ut.Variants[ce.Func]
+					vars := make([]string, len(ce.Args))
+					for j, a := range ce.Args {
+						if v, ok := a.(*Var); ok {
+							vars[j] = v.Name
+						} else {
+							vars[j] = "_"
+						}
+					}
+					fields := make([]string, len(st.Order))
+					copy(fields, st.Order)
+					unionCases = append(unionCases, UnionMatchCase{Tag: ce.Func, Vars: vars, Fields: fields, Result: res})
+					continue
+				}
+			}
 		}
 		arms[i] = MatchArm{Pattern: pat, Result: res}
+		allUnion = false
+	}
+	if allUnion && len(unionCases) > 0 {
+		return &UnionMatchExpr{Target: target, Cases: unionCases}, nil
 	}
 	return &MatchExpr{Target: target, Arms: arms}, nil
 }
@@ -2741,6 +2837,20 @@ func isStringExpr(e Expr) bool {
 					return true
 				}
 			}
+		}
+	case *CallExpr:
+		if transpileEnv != nil {
+			if t, err := transpileEnv.GetVar(v.Func); err == nil {
+				if ft, ok := t.(types.FuncType); ok {
+					if _, ok := ft.Return.(types.StringType); ok {
+						return true
+					}
+				}
+			}
+		}
+		switch v.Func {
+		case "json_encode", "strval", "strtoupper", "strtolower", "trim", "fgets":
+			return true
 		}
 	case *CondExpr:
 		if isStringExpr(v.Then) && isStringExpr(v.Else) {
