@@ -664,6 +664,7 @@ type BinaryExpr struct {
 func (b *BinaryExpr) emit(w io.Writer) {
 	numOp := (b.Op == "+" || b.Op == "-" || b.Op == "*" || b.Op == "/" || b.Op == "%")
 	cmpOp := b.Op == ">" || b.Op == "<" || b.Op == ">=" || b.Op == "<="
+	boolOp := b.Op == "&&" || b.Op == "||"
 	strOp := b.Op == "+" && (guessType(b.Left) == "String" || guessType(b.Right) == "String")
 	cast := func(e Expr, typ string) {
 		if typ == "Double" {
@@ -678,6 +679,10 @@ func (b *BinaryExpr) emit(w io.Writer) {
 			io.WriteString(w, "(")
 			e.emit(w)
 			io.WriteString(w, ").toString()")
+		} else if typ == "Boolean" {
+			io.WriteString(w, "(")
+			e.emit(w)
+			io.WriteString(w, " as Boolean)")
 		} else {
 			e.emit(w)
 		}
@@ -701,7 +706,13 @@ func (b *BinaryExpr) emit(w io.Writer) {
 				return
 			}
 		}
-		if cmpOp {
+		if boolOp {
+			t := guessType(e)
+			if t != "Boolean" {
+				cast(e, "Boolean")
+				return
+			}
+		} else if cmpOp {
 			lt := guessType(e)
 			rt := guessType(other)
 			if (lt == "" || lt == "Any") && rt == "String" {
@@ -1920,8 +1931,33 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 			typ := kotlinType(st.Let.Type)
 			if st.Let.Type == nil {
 				typ = envTypeName(env, st.Let.Name)
+				if typ == "" {
+					if t := types.CheckExprType(st.Let.Value, env); t != nil {
+						typ = kotlinTypeFromType(t)
+					}
+				}
+				if typ == "" {
+					typ = guessType(val)
+				}
+				if typ == "Any" {
+					typ = ""
+				}
+				if typ == "MutableMap<Any, Any>" {
+					typ = "MutableMap<String, Any>"
+				}
 			}
 			p.Globals = append(p.Globals, &LetStmt{Name: st.Let.Name, Type: typ, Value: val})
+			if env != nil {
+				var tt types.Type
+				if st.Let.Type != nil {
+					tt = types.ResolveTypeRef(st.Let.Type, env)
+				} else if t := types.CheckExprType(st.Let.Value, env); t != nil {
+					tt = t
+				} else {
+					tt = types.AnyType{}
+				}
+				env.SetVar(st.Let.Name, tt, false)
+			}
 		case st.Var != nil:
 			var val Expr
 			if st.Var.Value != nil {
@@ -1936,12 +1972,42 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 			typ := kotlinType(st.Var.Type)
 			if st.Var.Type == nil {
 				typ = envTypeName(env, st.Var.Name)
+				if typ == "" {
+					if t := types.CheckExprType(st.Var.Value, env); t != nil {
+						typ = kotlinTypeFromType(t)
+					}
+				}
+				if typ == "" {
+					typ = guessType(val)
+				}
+				if typ == "Any" {
+					typ = ""
+				}
 			}
 			p.Globals = append(p.Globals, &VarStmt{Name: st.Var.Name, Type: typ, Value: val})
+			if env != nil {
+				var tt types.Type
+				if st.Var.Type != nil {
+					tt = types.ResolveTypeRef(st.Var.Type, env)
+				} else if t := types.CheckExprType(st.Var.Value, env); t != nil {
+					tt = t
+				} else {
+					tt = types.AnyType{}
+				}
+				env.SetVar(st.Var.Name, tt, true)
+			}
 		case st.Assign != nil && len(st.Assign.Index) == 0 && len(st.Assign.Field) == 0:
 			e, err := convertExpr(env, st.Assign.Value)
 			if err != nil {
 				return nil, err
+			}
+			if env != nil {
+				if tt, err := env.GetVar(st.Assign.Name); err == nil {
+					tname := kotlinTypeFromType(tt)
+					if tname != "" && tname != guessType(e) {
+						e = &CastExpr{Value: e, Type: tname}
+					}
+				}
 			}
 			p.Stmts = append(p.Stmts, &AssignStmt{Name: st.Assign.Name, Value: e})
 		case st.Assign != nil && (len(st.Assign.Index) > 0 || len(st.Assign.Field) > 0):
@@ -1955,6 +2021,11 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 			v, err := convertExpr(env, st.Assign.Value)
 			if err != nil {
 				return nil, err
+			}
+			if ix, ok := target.(*IndexExpr); ok {
+				if ix.Type != "" && ix.Type != guessType(v) {
+					v = &CastExpr{Value: v, Type: ix.Type}
+				}
 			}
 			p.Stmts = append(p.Stmts, &IndexAssignStmt{Target: target, Value: v})
 		case st.Update != nil:
@@ -2110,11 +2181,19 @@ func convertStmts(env *types.Env, list []*parser.Statement) ([]Stmt, error) {
 			if s.Let.Type == nil {
 				typ = envTypeName(env, s.Let.Name)
 				if typ == "" {
+					if t := types.CheckExprType(s.Let.Value, env); t != nil {
+						typ = kotlinTypeFromType(t)
+					}
+				}
+				if typ == "" {
 					typ = guessType(v)
 				}
 				if typ == "Any" {
 					// allow Kotlin to infer a more precise type
 					typ = ""
+				}
+				if typ == "MutableMap<Any, Any>" {
+					typ = "MutableMap<String, Any>"
 				}
 			}
 			out = append(out, &LetStmt{Name: s.Let.Name, Type: typ, Value: v})
@@ -2165,11 +2244,19 @@ func convertStmts(env *types.Env, list []*parser.Statement) ([]Stmt, error) {
 			if s.Var.Type == nil {
 				typ = envTypeName(env, s.Var.Name)
 				if typ == "" {
+					if t := types.CheckExprType(s.Var.Value, env); t != nil {
+						typ = kotlinTypeFromType(t)
+					}
+				}
+				if typ == "" {
 					typ = guessType(v)
 				}
 				if typ == "Any" {
 					// prefer type inference over explicit Any
 					typ = ""
+				}
+				if typ == "MutableMap<Any, Any>" {
+					typ = "MutableMap<String, Any>"
 				}
 			}
 			out = append(out, &VarStmt{Name: s.Var.Name, Type: typ, Value: v})
@@ -2216,6 +2303,14 @@ func convertStmts(env *types.Env, list []*parser.Statement) ([]Stmt, error) {
 			if err != nil {
 				return nil, err
 			}
+			if env != nil {
+				if tt, err := env.GetVar(s.Assign.Name); err == nil {
+					tname := kotlinTypeFromType(tt)
+					if tname != "" && tname != guessType(v) {
+						v = &CastExpr{Value: v, Type: tname}
+					}
+				}
+			}
 			out = append(out, &AssignStmt{Name: s.Assign.Name, Value: v})
 		case s.Assign != nil && (len(s.Assign.Index) > 0 || len(s.Assign.Field) > 0):
 			target, err := buildAccessTarget(env, s.Assign.Name, s.Assign.Index, s.Assign.Field)
@@ -2228,6 +2323,11 @@ func convertStmts(env *types.Env, list []*parser.Statement) ([]Stmt, error) {
 			v, err := convertExpr(env, s.Assign.Value)
 			if err != nil {
 				return nil, err
+			}
+			if ix, ok := target.(*IndexExpr); ok {
+				if ix.Type != "" && ix.Type != guessType(v) {
+					v = &CastExpr{Value: v, Type: ix.Type}
+				}
 			}
 			out = append(out, &IndexAssignStmt{Target: target, Value: v})
 		case s.Update != nil:
