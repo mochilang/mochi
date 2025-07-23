@@ -178,10 +178,13 @@ func (c *context) clone() *context {
 }
 
 func (c *context) newAlias(name string) string {
+	if name == "_" {
+		return "_"
+	}
 	c.counter[name]++
 	alias := sanitize(name)
 	if c.counter[name] > 1 {
-		alias = fmt.Sprintf("%s%d", alias, c.counter[name])
+		alias = fmt.Sprintf("%s_%d", alias, c.counter[name])
 	}
 	c.alias[name] = alias
 	c.orig[alias] = name
@@ -189,6 +192,9 @@ func (c *context) newAlias(name string) string {
 }
 
 func (c *context) current(name string) string {
+	if name == "_" {
+		return "_"
+	}
 	if a, ok := c.alias[name]; ok {
 		return a
 	}
@@ -1721,6 +1727,13 @@ func (ws *WhileStmt) emit(w io.Writer) {
 	io.WriteString(w, ") ->\n    case ")
 	ws.Cond.emit(w)
 	io.WriteString(w, " of\n        true ->\n            try")
+	for i := range ws.Next {
+		io.WriteString(w, "\n                ")
+		io.WriteString(w, ws.Next[i])
+		io.WriteString(w, " = ")
+		io.WriteString(w, ws.Params[i])
+		io.WriteString(w, ",")
+	}
 	for _, st := range ws.Body {
 		io.WriteString(w, "\n                ")
 		st.emit(w)
@@ -1735,7 +1748,16 @@ func (ws *WhileStmt) emit(w io.Writer) {
 		}
 		io.WriteString(w, a)
 	}
-	io.WriteString(w, ")\n            catch\n                break -> {")
+	io.WriteString(w, ")\n            catch\n                continue -> ")
+	io.WriteString(w, loopName)
+	io.WriteString(w, "(")
+	for i, a := range ws.Params {
+		if i > 0 {
+			io.WriteString(w, ", ")
+		}
+		io.WriteString(w, a)
+	}
+	io.WriteString(w, ");\n                break -> {")
 	for i, p := range ws.Params {
 		if i > 0 {
 			io.WriteString(w, ", ")
