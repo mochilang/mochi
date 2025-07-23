@@ -67,7 +67,21 @@ var groupKeyStruct map[string]string
 var groupItemType map[string]string
 
 // mutated tracks variables that are reassigned.
+// mutatedGlobal tracks mutated global variables across all functions.
+var mutatedGlobal map[string]bool
+
+// mutated holds the currently active mutation map when emitting code.
+// For global statements this is the same as mutatedGlobal. For each
+// function a temporary map containing its mutated locals is used during
+// emission.
 var mutated map[string]bool
+
+// locals holds the set of local variable names for the function
+// currently being converted.
+var locals map[string]bool
+
+// globals records the names of global variables defined at the top level.
+var globals map[string]bool
 
 // vars holds the last computed expression of each variable at the top level.
 var vars map[string]Expr
@@ -143,6 +157,13 @@ var preludeHide map[string]bool
 var varStruct map[string]string
 var currentLoop string
 var loopArgs string
+
+func markMutated(name string) {
+	mutated[name] = true
+	if globals[name] {
+		mutatedGlobal[name] = true
+	}
+}
 
 func typeNameFromRef(tr *parser.TypeRef) string {
 	if tr == nil || tr.Simple == nil {
@@ -349,12 +370,22 @@ type Stmt interface{ emit(io.Writer) }
 type Expr interface{ emit(io.Writer) }
 
 type Func struct {
-	Name   string
-	Params []string
-	Body   []Stmt
+	Name    string
+	Params  []string
+	Body    []Stmt
+	Mutated map[string]bool
 }
 
 func (f *Func) emit(w io.Writer) {
+	prevMut := mutated
+	mutated = map[string]bool{}
+	for k, v := range mutatedGlobal {
+		mutated[k] = v
+	}
+	for k, v := range f.Mutated {
+		mutated[k] = v
+	}
+
 	io.WriteString(w, safeName(f.Name))
 	for _, p := range f.Params {
 		io.WriteString(w, " ")
@@ -375,6 +406,7 @@ func (f *Func) emit(w io.Writer) {
 		io.WriteString(w, "\n")
 	}
 	indent = prev
+	mutated = prevMut
 }
 
 type PrintStmt struct {
@@ -426,6 +458,16 @@ type WhileStmt struct {
 	Cond Expr
 	Body []Stmt
 	Next Expr
+}
+
+// WhileExpr is like WhileStmt but used in expression position and
+// returns a value when the loop finishes normally.
+type WhileExpr struct {
+	Var  string
+	Cond Expr
+	Body []Stmt
+	Next Expr
+	End  Expr
 }
 
 // IndexExpr accesses a single element of a list or map.
@@ -836,6 +878,71 @@ func (wst *WhileStmt) emit(w io.Writer) {
 		io.WriteString(w, " ")
 		io.WriteString(w, safeName(wst.Var))
 	}
+	currentLoop = prevLoop
+	loopArgs = prevArgs
+}
+
+func (we *WhileExpr) emit(w io.Writer) {
+	name := "loop"
+	prevLoop := currentLoop
+	prevArgs := loopArgs
+	currentLoop = name
+	loopArgs = ""
+	io.WriteString(w, "(let\n")
+	pushIndent()
+	writeIndent(w)
+	io.WriteString(w, name)
+	if we.Var != "" && !mutated[we.Var] {
+		io.WriteString(w, " ")
+		io.WriteString(w, safeName(we.Var))
+	}
+	io.WriteString(w, " = do\n")
+	pushIndent()
+	writeIndent(w)
+	io.WriteString(w, "if ")
+	we.Cond.emit(w)
+	io.WriteString(w, " then do\n")
+	pushIndent()
+	for _, st := range we.Body {
+		st.emit(w)
+		io.WriteString(w, "\n")
+	}
+	if we.Var != "" && we.Next != nil {
+		writeIndent(w)
+		if mutated[we.Var] {
+			io.WriteString(w, "writeIORef ")
+			io.WriteString(w, safeName(we.Var))
+			io.WriteString(w, " $! (")
+			we.Next.emit(w)
+			io.WriteString(w, ")\n")
+		} else {
+			io.WriteString(w, safeName(we.Var))
+			io.WriteString(w, " <- (")
+			we.Next.emit(w)
+			io.WriteString(w, ")\n")
+		}
+	}
+	writeIndent(w)
+	io.WriteString(w, name)
+	io.WriteString(w, "\n")
+	popIndent()
+	writeIndent(w)
+	io.WriteString(w, "else return (")
+	if we.End != nil {
+		we.End.emit(w)
+	} else {
+		io.WriteString(w, "()")
+	}
+	io.WriteString(w, ")\n")
+	popIndent()
+	popIndent()
+	writeIndent(w)
+	io.WriteString(w, name)
+	if we.Var != "" && !mutated[we.Var] {
+		io.WriteString(w, " ")
+		io.WriteString(w, safeName(we.Var))
+	}
+	io.WriteString(w, ")")
 	currentLoop = prevLoop
 	loopArgs = prevArgs
 }
@@ -1756,10 +1863,23 @@ func header(withList, withMap, withJSON, withTrace, withIORef, withNow bool) str
 
 // Emit generates formatted Haskell code.
 func Emit(p *Program) []byte {
-	for _, m := range mutated {
+	for _, m := range mutatedGlobal {
 		if m {
 			needIORef = true
 			break
+		}
+	}
+	if !needIORef {
+		for _, f := range p.Funcs {
+			for _, m := range f.Mutated {
+				if m {
+					needIORef = true
+					break
+				}
+			}
+			if needIORef {
+				break
+			}
 		}
 	}
 	var buf bytes.Buffer
@@ -1868,7 +1988,10 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	structDefs = map[string]*TypeDecl{}
 	structCount = 0
 	preludeHide = map[string]bool{}
-	mutated = map[string]bool{}
+	mutatedGlobal = map[string]bool{}
+	mutated = mutatedGlobal
+	locals = nil
+	globals = map[string]bool{}
 	for i := 0; i < len(prog.Statements); i++ {
 		st := prog.Statements[i]
 		if st.Var != nil && st.Var.Value != nil && st.Var.Value.Binary != nil && st.Var.Value.Binary.Left != nil && st.Var.Value.Binary.Left.Value != nil && st.Var.Value.Binary.Left.Value.Target != nil && st.Var.Value.Binary.Left.Value.Target.List != nil && len(st.Var.Value.Binary.Left.Value.Target.List.Elems) == 0 {
@@ -1889,6 +2012,7 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 				return nil, err
 			}
 			name := safeName(st.Let.Name)
+			globals[name] = true
 			vars[name] = ex
 			recordType(name, ex)
 		case st.Var != nil:
@@ -1897,6 +2021,7 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 				return nil, err
 			}
 			name := safeName(st.Var.Name)
+			globals[name] = true
 			vars[name] = ex
 			recordType(name, ex)
 		case st.Import != nil && st.Import.Path == "mochi/runtime/ffi/go/testpkg" && st.Import.As == "testpkg" && st.Import.Auto:
@@ -1924,9 +2049,11 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 				return nil, err
 			}
 			name := safeName(st.Assign.Name)
+			globals[name] = true
 			if len(st.Assign.Index) == 0 {
 				vars[name] = val
 				recordType(name, val)
+				mutatedGlobal[name] = true
 				break
 			}
 			var idxExprs []Expr
@@ -1950,6 +2077,7 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 			}
 			vars[name] = expr
 			recordType(name, expr)
+			mutatedGlobal[name] = true
 		case st.Fun != nil:
 			fn, err := convertFunStmt(st.Fun)
 			if err != nil {
@@ -3074,10 +3202,29 @@ func convertMatchExpr(m *parser.MatchExpr) (Expr, error) {
 }
 
 func convertFunStmt(f *parser.FunStmt) (*Func, error) {
+	prevMutated := mutated
+	prevLocals := locals
+	mutated = map[string]bool{}
+	locals = map[string]bool{}
+	for _, p := range f.Params {
+		locals[safeName(p.Name)] = true
+	}
+
 	stmts, err := convertStmtList(f.Body)
 	if err != nil {
+		mutated = prevMutated
+		locals = prevLocals
 		return nil, err
 	}
+	localMut := mutated
+	mutated = prevMutated
+	for name := range localMut {
+		if globals[name] {
+			mutatedGlobal[name] = true
+		}
+	}
+	locals = prevLocals
+
 	var params []string
 	for _, p := range f.Params {
 		params = append(params, safeName(p.Name))
@@ -3087,11 +3234,11 @@ func convertFunStmt(f *parser.FunStmt) (*Func, error) {
 			if rs, ok2 := stmts[1].(*ReturnStmt); ok2 {
 				needTrace = true
 				tr := &CallExpr{Fun: &NameRef{Name: "trace"}, Args: []Expr{ps.Expr, rs.Expr}}
-				return &Func{Name: safeName(f.Name), Params: params, Body: []Stmt{&ReturnStmt{Expr: tr}}}, nil
+				return &Func{Name: safeName(f.Name), Params: params, Body: []Stmt{&ReturnStmt{Expr: tr}}, Mutated: localMut}, nil
 			}
 		}
 	}
-	return &Func{Name: safeName(f.Name), Params: params, Body: stmts}, nil
+	return &Func{Name: safeName(f.Name), Params: params, Body: stmts, Mutated: localMut}, nil
 }
 
 func convertForStmt(f *parser.ForStmt) (Stmt, error) {
@@ -3249,29 +3396,33 @@ func convertStmtList(list []*parser.Statement) ([]Stmt, error) {
 			if err != nil {
 				return nil, err
 			}
-			recordType(safeName(st.Let.Name), ex)
-			out = append(out, &LetStmt{Name: safeName(st.Let.Name), Expr: ex})
+			name := safeName(st.Let.Name)
+			locals[name] = true
+			recordType(name, ex)
+			out = append(out, &LetStmt{Name: name, Expr: ex})
 		case st.Var != nil:
 			ex, err := convertExpr(st.Var.Value)
 			if err != nil {
 				return nil, err
 			}
-			recordType(safeName(st.Var.Name), ex)
-			out = append(out, &LetStmt{Name: safeName(st.Var.Name), Expr: ex})
+			name := safeName(st.Var.Name)
+			locals[name] = true
+			recordType(name, ex)
+			out = append(out, &LetStmt{Name: name, Expr: ex})
 		case st.Assign != nil:
 			val, err := convertExpr(st.Assign.Value)
 			if err != nil {
 				return nil, err
 			}
 			name := safeName(st.Assign.Name)
-			mutated[name] = true
+			markMutated(name)
 			if len(st.Assign.Index) == 0 && len(st.Assign.Field) == 0 {
 				recordType(name, val)
 				out = append(out, &AssignStmt{Name: name, Expr: val})
 				break
 			}
 			if len(st.Assign.Field) > 0 {
-				mutated[name] = true
+				markMutated(name)
 				// Use the current variable reference to avoid composing
 				// updates over the last stored expression. Otherwise a
 				// previous literal value may be mutated instead of the
@@ -3303,7 +3454,7 @@ func convertStmtList(list []*parser.Statement) ([]Stmt, error) {
 			} else {
 				expr = listAssign(prev, idxExprs, val)
 			}
-			mutated[name] = true
+			markMutated(name)
 			recordType(name, expr)
 			out = append(out, &AssignStmt{Name: name, Expr: expr})
 		case st.Break != nil:
@@ -3311,11 +3462,25 @@ func convertStmtList(list []*parser.Statement) ([]Stmt, error) {
 		case st.Continue != nil:
 			out = append(out, &ContinueStmt{})
 		case st.While != nil:
-			s, err := convertWhileStmt(st.While)
+			stw, err := convertWhileStmt(st.While)
 			if err != nil {
 				return nil, err
 			}
-			out = append(out, s)
+			if i+1 < len(list) && list[i+1].Return != nil {
+				endExpr, err := convertExpr(list[i+1].Return.Value)
+				if err != nil {
+					return nil, err
+				}
+				if ws, ok := stw.(*WhileStmt); ok {
+					we := &WhileExpr{Var: ws.Var, Cond: ws.Cond, Body: ws.Body, Next: ws.Next, End: endExpr}
+					out = append(out, &ReturnStmt{Expr: we})
+					i++
+				} else {
+					out = append(out, stw)
+				}
+			} else {
+				out = append(out, stw)
+			}
 		case st.For != nil:
 			s, err := convertForStmt(st.For)
 			if err != nil {
