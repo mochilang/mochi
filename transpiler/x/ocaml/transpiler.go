@@ -25,6 +25,7 @@ import (
 
 var structFields = map[string]map[string]string{}
 var usesNow bool
+var usesLookupHost bool
 
 // Program represents an OCaml program. All statements are emitted inside
 // a `let () =` block.
@@ -1823,7 +1824,7 @@ func (n *Name) emitPrint(w io.Writer) {
 	case "float":
 		fmt.Fprintf(w, "Printf.sprintf \"%%.15f\" (%s)", ident)
 	default:
-		io.WriteString(w, ident)
+		fmt.Fprintf(w, "__show %s", ident)
 	}
 }
 
@@ -1959,6 +1960,32 @@ let _now () =
   ) else int_of_float (Sys.time () *. 1000000000.)
 `
 
+const helperLookupHost = `
+let nil = Obj.repr 0
+
+let _lookup_host _host =
+  [Obj.repr ([] : string list); nil]
+`
+
+const helperShow = `
+let rec __show v =
+  let open Obj in
+  let rec list_aux o =
+    if is_int o && (magic (obj o) : int) = 0 then "" else
+      let hd = field o 0 in
+      let tl = field o 1 in
+      let rest = list_aux tl in
+      if rest = "" then __show (obj hd) else __show (obj hd) ^ "; " ^ rest
+  in
+  let r = repr v in
+  if is_int r then string_of_int (magic v) else
+  match tag r with
+  | 0 -> if size r = 0 then "[]" else "[" ^ list_aux r ^ "]"
+  | 252 -> (magic v : string)
+  | 253 -> string_of_float (magic v)
+  | _ -> "<value>"
+`
+
 func gitTimestamp() string {
 	out, err := exec.Command("git", "log", "-1", "--format=%cI").Output()
 	if err == nil {
@@ -2025,11 +2052,17 @@ func (p *Program) Emit() []byte {
 	var buf bytes.Buffer
 	buf.WriteString(header())
 	buf.WriteString("\n")
+	buf.WriteString(helperShow)
+	buf.WriteString("\n")
 	if p.UsesStrModule() {
 		buf.WriteString("open Str\n\n")
 	}
 	if usesNow {
 		buf.WriteString(helperNow)
+		buf.WriteString("\n")
+	}
+	if usesLookupHost {
+		buf.WriteString(helperLookupHost)
 		buf.WriteString("\n")
 	}
 	if p.UsesControl() {
@@ -2080,6 +2113,10 @@ func transpileStmt(st *parser.Statement, env *types.Env, vars map[string]VarInfo
 				}
 				if path == "strings" && st.Import.Auto {
 					vars[alias] = VarInfo{typ: "go_strings"}
+					return nil, nil
+				}
+				if path == "net" && st.Import.Auto {
+					vars[alias] = VarInfo{typ: "go_net"}
 					return nil, nil
 				}
 			}
@@ -2479,6 +2516,7 @@ func transpileStmts(list []*parser.Statement, env *types.Env, vars map[string]Va
 
 func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	usesNow = false
+	usesLookupHost = false
 	pr := &Program{}
 	vars := map[string]VarInfo{}
 	stmts, err := transpileStmts(prog.Statements, env, vars)
@@ -2798,6 +2836,22 @@ func convertPostfix(p *parser.PostfixExpr, env *types.Env, vars map[string]VarIn
 							continue
 						}
 					}
+				} else if nameTyp == "go_net" {
+					field := op.Field.Name
+					if i+1 < len(p.Ops) && p.Ops[i+1].Call != nil {
+						call := p.Ops[i+1].Call
+						if field == "LookupHost" && len(call.Args) == 1 {
+							arg, _, err := convertExpr(call.Args[0], env, vars)
+							if err != nil {
+								return nil, "", err
+							}
+							usesLookupHost = true
+							expr = &FuncCall{Name: "_lookup_host", Args: []Expr{arg}, Ret: "list"}
+							typ = "list"
+							i += 2
+							continue
+						}
+					}
 				} else if nameTyp == "go_testpkg" {
 					field := op.Field.Name
 					if i+1 < len(p.Ops) && p.Ops[i+1].Call != nil {
@@ -2885,6 +2939,9 @@ func convertPostfix(p *parser.PostfixExpr, env *types.Env, vars map[string]VarIn
 				elemTyp := strings.TrimPrefix(typ, "list-")
 				expr = &IndexExpr{Col: expr, Index: idxExpr, Typ: elemTyp, ColTyp: typ}
 				typ = elemTyp
+			} else if typ == "list" {
+				expr = &IndexExpr{Col: expr, Index: idxExpr, Typ: "", ColTyp: typ}
+				typ = ""
 			} else {
 				expr = &IndexExpr{Col: expr, Index: idxExpr, Typ: typ, ColTyp: typ}
 				if typ == "string" {
@@ -2962,6 +3019,21 @@ func convertPostfix(p *parser.PostfixExpr, env *types.Env, vars map[string]VarIn
 								default:
 									return nil, "", fmt.Errorf("unsupported field %s", field)
 								}
+								i++
+								continue
+							}
+						}
+					} else if info.typ == "go_net" {
+						if key, ok := idx.Key.(*StringLit); ok {
+							field := key.Value
+							if field == "LookupHost" && len(op.Call.Args) == 1 {
+								arg, _, err := convertExpr(op.Call.Args[0], env, vars)
+								if err != nil {
+									return nil, "", err
+								}
+								usesLookupHost = true
+								expr = &FuncCall{Name: "_lookup_host", Args: []Expr{arg}, Ret: "list"}
+								typ = "list"
 								i++
 								continue
 							}
@@ -3509,7 +3581,7 @@ func convertCall(c *parser.CallExpr, env *types.Env, vars map[string]VarInfo) (E
 		case "int", "float":
 			return &StrBuiltin{Expr: arg, Typ: typ}, "string", nil
 		default:
-			return nil, "", fmt.Errorf("str only supports int or float")
+			return &FuncCall{Name: "__show", Args: []Expr{arg}, Ret: "string"}, "string", nil
 		}
 	}
 	if c.Func == "len" && len(c.Args) == 1 {
@@ -3673,6 +3745,14 @@ func convertCall(c *parser.CallExpr, env *types.Env, vars map[string]VarInfo) (E
 	if c.Func == "now" && len(c.Args) == 0 {
 		usesNow = true
 		return &FuncCall{Name: "_now", Args: nil, Ret: "int"}, "int", nil
+	}
+	if c.Func == "net.LookupHost" && len(c.Args) == 1 {
+		arg, _, err := convertExpr(c.Args[0], env, vars)
+		if err != nil {
+			return nil, "", err
+		}
+		usesLookupHost = true
+		return &FuncCall{Name: "_lookup_host", Args: []Expr{arg}, Ret: "list"}, "list", nil
 	}
 	if c.Func == "avg" && len(c.Args) == 1 {
 		listArg, typ, err := convertExpr(c.Args[0], env, vars)
