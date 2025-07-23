@@ -1,0 +1,66 @@
+6 x 6 Polybius square:
+
+  | A D F G V X
+---------------
+A | M N J F 6 B 
+D | O 5 L X G W 
+F | 7 E 1 R 8 H 
+G | V Q I D P U 
+V | 2 Z K 9 0 Y 
+X | S 4 C 3 T A 
+
+The key is L5A3YCSXJ
+
+Plaintext : ATTACKAT1200AM
+
+Deprecated: Implicit conversion from float 0.1111111111111111 to int loses precision in /workspace/mochi/tests/rosetta/transpiler/php/adfgvx-cipher.php on line 162
+
+Deprecated: Implicit conversion from float 0.2222222222222222 to int loses precision in /workspace/mochi/tests/rosetta/transpiler/php/adfgvx-cipher.php on line 162
+
+Deprecated: Implicit conversion from float 0.3333333333333333 to int loses precision in /workspace/mochi/tests/rosetta/transpiler/php/adfgvx-cipher.php on line 162
+
+Deprecated: Implicit conversion from float 0.4444444444444444 to int loses precision in /workspace/mochi/tests/rosetta/transpiler/php/adfgvx-cipher.php on line 162
+
+Deprecated: Implicit conversion from float 0.5555555555555556 to int loses precision in /workspace/mochi/tests/rosetta/transpiler/php/adfgvx-cipher.php on line 162
+
+Deprecated: Implicit conversion from float 0.6666666666666666 to int loses precision in /workspace/mochi/tests/rosetta/transpiler/php/adfgvx-cipher.php on line 162
+
+Deprecated: Implicit conversion from float 0.7777777777777778 to int loses precision in /workspace/mochi/tests/rosetta/transpiler/php/adfgvx-cipher.php on line 162
+
+Deprecated: Implicit conversion from float 0.8888888888888888 to int loses precision in /workspace/mochi/tests/rosetta/transpiler/php/adfgvx-cipher.php on line 162
+
+Deprecated: Implicit conversion from float 1.1111111111111112 to int loses precision in /workspace/mochi/tests/rosetta/transpiler/php/adfgvx-cipher.php on line 162
+
+Deprecated: Implicit conversion from float 1.2222222222222223 to int loses precision in /workspace/mochi/tests/rosetta/transpiler/php/adfgvx-cipher.php on line 162
+
+Deprecated: Implicit conversion from float 1.3333333333333333 to int loses precision in /workspace/mochi/tests/rosetta/transpiler/php/adfgvx-cipher.php on line 162
+
+Deprecated: Implicit conversion from float 1.4444444444444444 to int loses precision in /workspace/mochi/tests/rosetta/transpiler/php/adfgvx-cipher.php on line 162
+
+Deprecated: Implicit conversion from float 1.5555555555555556 to int loses precision in /workspace/mochi/tests/rosetta/transpiler/php/adfgvx-cipher.php on line 162
+
+Deprecated: Implicit conversion from float 1.6666666666666667 to int loses precision in /workspace/mochi/tests/rosetta/transpiler/php/adfgvx-cipher.php on line 162
+
+Deprecated: Implicit conversion from float 1.7777777777777777 to int loses precision in /workspace/mochi/tests/rosetta/transpiler/php/adfgvx-cipher.php on line 162
+
+Deprecated: Implicit conversion from float 1.8888888888888888 to int loses precision in /workspace/mochi/tests/rosetta/transpiler/php/adfgvx-cipher.php on line 162
+
+Deprecated: Implicit conversion from float 2.111111111111111 to int loses precision in /workspace/mochi/tests/rosetta/transpiler/php/adfgvx-cipher.php on line 162
+
+Deprecated: Implicit conversion from float 2.2222222222222223 to int loses precision in /workspace/mochi/tests/rosetta/transpiler/php/adfgvx-cipher.php on line 162
+
+Deprecated: Implicit conversion from float 2.3333333333333335 to int loses precision in /workspace/mochi/tests/rosetta/transpiler/php/adfgvx-cipher.php on line 162
+
+Deprecated: Implicit conversion from float 2.4444444444444446 to int loses precision in /workspace/mochi/tests/rosetta/transpiler/php/adfgvx-cipher.php on line 162
+
+Deprecated: Implicit conversion from float 2.5555555555555554 to int loses precision in /workspace/mochi/tests/rosetta/transpiler/php/adfgvx-cipher.php on line 162
+
+Deprecated: Implicit conversion from float 2.6666666666666665 to int loses precision in /workspace/mochi/tests/rosetta/transpiler/php/adfgvx-cipher.php on line 162
+
+Deprecated: Implicit conversion from float 2.7777777777777777 to int loses precision in /workspace/mochi/tests/rosetta/transpiler/php/adfgvx-cipher.php on line 162
+
+Deprecated: Implicit conversion from float 2.888888888888889 to int loses precision in /workspace/mochi/tests/rosetta/transpiler/php/adfgvx-cipher.php on line 162
+
+Encrypted : VXV XVA XFV VXV XFA XFVA XVX XFX XXV
+
+Decrypted : AAAAAYAAHYYYAM

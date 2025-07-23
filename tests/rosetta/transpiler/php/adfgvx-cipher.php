@@ -130,8 +130,8 @@ function encrypt(&$polybius, $key, $plainText) {
   while ($r < 6) {
   $c = 0;
   while ($c < 6) {
-  if (array_slice($polybius[$r], $c, $c + 1 - $c) == substr($plainText, $i, $i + 1 - $i)) {
-  $temp = $temp . array_slice($labels, $r, $r + 1 - $r) . array_slice($labels, $c, $c + 1 - $c);
+  if (substr($polybius[$r], $c, $c + 1 - $c) == substr($plainText, $i, $i + 1 - $i)) {
+  $temp = $temp . $labels[$r] . $labels[$c];
 }
   $c = $c + 1;
 };
@@ -270,7 +270,7 @@ function decrypt(&$polybius, $key, $cipherText) {
   $r = 0;
   while ($r < count($table)) {
   $j = 0;
-  while ($j < strlen($table[$r])) {
+  while ($j < count($table[$r])) {
   $temp = $temp . $table[$r][$j];
   $j = $j + 1;
 };
@@ -281,7 +281,7 @@ function decrypt(&$polybius, $key, $cipherText) {
   while ($idx < strlen($temp)) {
   $rIdx = indexOf($adfgvx, substr($temp, $idx, $idx + 1 - $idx));
   $cIdx = indexOf($adfgvx, substr($temp, $idx + 1, $idx + 2 - $idx + 1));
-  $plainText = $plainText . $polybius[$rIdx][$cIdx];
+  $plainText = $plainText . substr($polybius[$rIdx], $cIdx, $cIdx + 1 - $cIdx);
   $idx = $idx + 2;
 };
   return $plainText;

@@ -2,9 +2,9 @@
 
 Generated PHP code from Mochi Rosetta tasks lives in `tests/rosetta/transpiler/php`.
 
-Last updated: 2025-07-23 13:05 +0700
+Last updated: 2025-07-23 13:36 +0700
 
-## Checklist (35/284)
+## Checklist (36/284)
 - [x] 1 100-doors-2
 - [x] 2 100-doors-3
 - [x] 3 100-doors
@@ -41,7 +41,7 @@ Last updated: 2025-07-23 13:05 +0700
 - [x] 34 add-a-variable-to-a-class-instance-at-runtime
 - [x] 35 additive-primes
 - [x] 36 address-of-a-variable
-- [ ] 37 adfgvx-cipher
+- [x] 37 adfgvx-cipher
 - [ ] 38 aks-test-for-primes
 - [ ] 39 algebraic-data-types
 - [ ] 40 align-columns
