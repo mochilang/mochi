@@ -1964,7 +1964,14 @@ func convertStmt(s *parser.Statement) (Stmt, error) {
 		// `let` bindings are immutable in Mochi so we always emit
 		// a `const` declaration in the generated TypeScript.
 		mutable := false
-		t, _ := transpileEnv.GetVar(s.Let.Name)
+		var t types.Type
+		var typErr error
+		if transpileEnv != nil {
+			t, typErr = transpileEnv.GetVar(s.Let.Name)
+		}
+		if typErr != nil && s.Let.Value != nil {
+			t = types.CheckExprType(s.Let.Value, transpileEnv)
+		}
 		if it, ok := inferLiteralType(s.Let.Value, transpileEnv); ok {
 			t = it
 		} else if s.Let.Type != nil {
@@ -2008,8 +2015,12 @@ func convertStmt(s *parser.Statement) (Stmt, error) {
 		// `const` when scope analysis fails for locals.
 		mutable := true
 		var t types.Type
+		var typErr error
 		if transpileEnv != nil {
-			t, _ = transpileEnv.GetVar(s.Var.Name)
+			t, typErr = transpileEnv.GetVar(s.Var.Name)
+		}
+		if typErr != nil && s.Var.Value != nil {
+			t = types.CheckExprType(s.Var.Value, transpileEnv)
 		}
 		if it, ok := inferLiteralType(s.Var.Value, transpileEnv); ok {
 			t = it
@@ -2708,6 +2719,40 @@ func convertBinary(b *parser.BinaryExpr) (Expr, error) {
 
 	apply := func(i int) {
 		switch ops[i] {
+		case "+":
+			leftList := isListType(typesArr[i])
+			rightList := isListType(typesArr[i+1])
+			if !leftList {
+				if nr, ok := operands[i].(*NameRef); ok && transpileEnv != nil {
+					if t, err := transpileEnv.GetVar(nr.Name); err == nil {
+						leftList = isListType(t)
+					}
+				}
+			}
+			if !rightList {
+				if nr, ok := operands[i+1].(*NameRef); ok && transpileEnv != nil {
+					if t, err := transpileEnv.GetVar(nr.Name); err == nil {
+						rightList = isListType(t)
+					}
+				} else if _, ok := operands[i+1].(*ListLit); ok {
+					rightList = true
+				}
+			}
+			if leftList && rightList {
+				if oLit, ok := operands[i+1].(*ListLit); ok && len(oLit.Elems) == 1 {
+					operands[i] = &AppendExpr{List: operands[i], Elem: oLit.Elems[0]}
+				} else {
+					operands[i] = &UnionAllExpr{Left: operands[i], Right: operands[i+1]}
+				}
+				break
+			}
+			operands[i] = &BinaryExpr{Left: operands[i], Op: ops[i], Right: operands[i+1]}
+			if isIntType(typesArr[i]) && isIntType(typesArr[i+1]) {
+				typesArr[i] = types.IntType{}
+			} else {
+				typesArr[i] = types.FloatType{}
+			}
+			break
 		case "in":
 			isMap := false
 			if typ := postfixExprType(opnodes[i].Right); typ != nil {
