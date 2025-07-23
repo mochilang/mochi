@@ -8,6 +8,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"maps"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -2064,16 +2065,20 @@ func compileStmt(prog *Program, s *parser.Statement) (Stmt, error) {
 		}
 		return nil, fmt.Errorf("unsupported assignment")
 	case s.Fun != nil:
+		// create new variable scopes for function body
+		outerVars := varTypes
+		outerStr := stringVars
+		outerMap := mapVars
+		varTypes = maps.Clone(varTypes)
+		stringVars = maps.Clone(stringVars)
+		mapVars = maps.Clone(mapVars)
+
 		params := make([]string, len(s.Fun.Params))
 		ptypes := make([]string, len(s.Fun.Params))
-		saved := make(map[string]string)
-		savedStr := make(map[string]bool)
 		for i, p := range s.Fun.Params {
 			params[i] = p.Name
 			ptypes[i] = csType(p.Type)
-			saved[p.Name] = varTypes[p.Name]
 			varTypes[p.Name] = ptypes[i]
-			savedStr[p.Name] = stringVars[p.Name]
 			if ptypes[i] == "string" {
 				stringVars[p.Name] = true
 			} else {
@@ -2082,7 +2087,7 @@ func compileStmt(prog *Program, s *parser.Statement) (Stmt, error) {
 		}
 		retType := csType(s.Fun.Return)
 		if prog != nil && blockDepth == 0 {
-			varTypes[s.Fun.Name] = fmt.Sprintf("fn/%d", len(ptypes))
+			outerVars[s.Fun.Name] = fmt.Sprintf("fn/%d", len(ptypes))
 			funRets[s.Fun.Name] = retType
 			funParams[s.Fun.Name] = append([]string{}, ptypes...)
 		}
@@ -2101,20 +2106,9 @@ func compileStmt(prog *Program, s *parser.Statement) (Stmt, error) {
 			}
 		}
 		blockDepth--
-		for name, typ := range saved {
-			if typ == "" {
-				delete(varTypes, name)
-			} else {
-				varTypes[name] = typ
-			}
-		}
-		for name, val := range savedStr {
-			if !val {
-				delete(stringVars, name)
-			} else {
-				stringVars[name] = val
-			}
-		}
+		varTypes = outerVars
+		stringVars = outerStr
+		mapVars = outerMap
 		if s.Fun.Return == nil {
 			retType = ""
 		}

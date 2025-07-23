@@ -1,31 +1,31 @@
 # Rosetta C# Transpiler Output
 
-Completed programs: 23/284
-Last updated: 2025-07-23 13:23 
+Completed programs: 20/284
+Last updated: 2025-07-23 16:14 +0700
 
 ## Checklist
 1. [x] 100-doors-2
 2. [x] 100-doors-3
-3. [x] 100-doors
-4. [x] 100-prisoners
-5. [x] 15-puzzle-game
+3. [ ] 100-doors
+4. [ ] 100-prisoners
+5. [ ] 15-puzzle-game
 6. [x] 15-puzzle-solver
-7. [x] 2048
-8. [ ] 21-game
+7. [ ] 2048
+8. [x] 21-game
 9. [ ] 24-game-solve
 10. [ ] 24-game
 11. [x] 4-rings-or-4-squares-puzzle
-12. [x] 9-billion-names-of-god-the-integer
+12. [ ] 9-billion-names-of-god-the-integer
 13. [ ] 99-bottles-of-beer-2
 14. [x] 99-bottles-of-beer
 15. [ ] DNS-query
 16. [x] a+b
-17. [x] abbreviations-automatic
+17. [ ] abbreviations-automatic
 18. [ ] abbreviations-easy
 19. [ ] abbreviations-simple
 20. [ ] abc-problem
-21. [x] abelian-sandpile-model-identity
-22. [x] abelian-sandpile-model
+21. [ ] abelian-sandpile-model-identity
+22. [ ] abelian-sandpile-model
 23. [ ] abstract-type
 24. [x] abundant-deficient-and-perfect-number-classifications
 25. [ ] abundant-odd-numbers
@@ -68,7 +68,7 @@ Last updated: 2025-07-23 13:23
 62. [ ] arbitrary-precision-integers-included-
 63. [ ] archimedean-spiral
 64. [ ] arena-storage-pool
-65. [ ] arithmetic-complex
+65. [x] arithmetic-complex
 66. [ ] arithmetic-derivative
 67. [ ] arithmetic-evaluation
 68. [ ] arithmetic-geometric-mean-calculate-pi
@@ -100,7 +100,7 @@ Last updated: 2025-07-23 13:23
 94. [ ] averages-simple-moving-average
 95. [ ] avl-tree
 96. [ ] b-zier-curves-intersections
-97. [ ] babbage-problem
+97. [x] babbage-problem
 98. [ ] babylonian-spiral
 99. [ ] balanced-brackets
 100. [ ] balanced-ternary
@@ -112,10 +112,10 @@ Last updated: 2025-07-23 13:23
 106. [ ] best-shuffle
 107. [ ] bifid-cipher
 108. [ ] bin-given-limits
-109. [ ] binary-digits
+109. [x] binary-digits
 110. [ ] binary-search
 111. [ ] binary-strings
-112. [ ] bioinformatics-base-count
+112. [x] bioinformatics-base-count
 113. [ ] bioinformatics-global-alignment
 114. [ ] bioinformatics-sequence-mutation
 115. [ ] biorhythms
