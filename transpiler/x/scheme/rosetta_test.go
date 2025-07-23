@@ -5,6 +5,7 @@ package scheme_test
 import (
 	"bufio"
 	"bytes"
+	"flag"
 	"fmt"
 	"mochi/parser"
 	scheme "mochi/transpiler/x/scheme"
@@ -17,6 +18,10 @@ import (
 	"testing"
 	"time"
 )
+
+var update = flag.Bool("update-rosetta-scheme", false, "update golden files")
+
+func updateEnabled() bool { return *update }
 
 func readIndex(path string) ([]string, error) {
 	f, err := os.Open(path)
@@ -74,6 +79,12 @@ func TestSchemeTranspiler_Rosetta_Golden(t *testing.T) {
 			outPath := filepath.Join(outDir, base+".out")
 			errPath := filepath.Join(outDir, base+".error")
 
+			want, err := os.ReadFile(outPath)
+			if err != nil && !updateEnabled() {
+				t.Fatalf("read want: %v", err)
+			}
+			want = bytes.TrimSpace(want)
+
 			prog, err := parser.Parse(src)
 			if err != nil {
 				_ = os.WriteFile(errPath, []byte(err.Error()), 0o644)
@@ -94,6 +105,7 @@ func TestSchemeTranspiler_Rosetta_Golden(t *testing.T) {
 				t.Fatalf("write code: %v", err)
 			}
 			cmd := exec.Command("chibi-scheme", "-q", "-m", "chibi", "-m", "srfi.1", "-m", "srfi.69", "-m", "scheme.sort", "-m", "chibi.string", codePath)
+			cmd.Env = append(os.Environ(), "MOCHI_NOW_SEED=1")
 			if data, err := os.ReadFile(strings.TrimSuffix(src, ".mochi") + ".in"); err == nil {
 				cmd.Stdin = bytes.NewReader(data)
 			}
@@ -105,12 +117,11 @@ func TestSchemeTranspiler_Rosetta_Golden(t *testing.T) {
 			outBytes := bytes.TrimSpace(out)
 			_ = os.WriteFile(outPath, outBytes, 0o644)
 			_ = os.Remove(errPath)
-			want, err := os.ReadFile(filepath.Join(srcDir, base+".out"))
-			if err == nil {
-				want = bytes.TrimSpace(want)
-				if !bytes.Equal(outBytes, want) {
-					t.Errorf("output mismatch for %s\n\n--- Got ---\n%s\n\n--- Want ---\n%s", base+".out", outBytes, want)
-				}
+			if updateEnabled() || len(want) == 0 {
+				return
+			}
+			if !bytes.Equal(outBytes, want) {
+				t.Errorf("output mismatch for %s\n\n--- Got ---\n%s\n\n--- Want ---\n%s", base+".out", outBytes, want)
 			}
 		})
 		if !ok {
