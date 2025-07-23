@@ -913,7 +913,11 @@ type AssignStmt struct {
 }
 
 func (a *AssignStmt) emit(w io.Writer) {
-	io.WriteString(w, a.Name)
+	if newName, ok := globalRenames[a.Name]; ok && !isLocal(a.Name) {
+		io.WriteString(w, newName)
+	} else {
+		io.WriteString(w, a.Name)
+	}
 	io.WriteString(w, " = ")
 	a.Expr.emit(w)
 }
