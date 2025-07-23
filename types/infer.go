@@ -128,6 +128,10 @@ func inferBinaryType(env *Env, b *parser.BinaryExpr) Type {
 						res = FloatType{}
 						break
 					}
+					if isBigInt(left) || isBigInt(right) {
+						res = BigIntType{}
+						break
+					}
 					if isInt(left) && isInt(right) {
 						res = IntType{}
 						break
@@ -857,8 +861,9 @@ func equalTypes(a, b Type) bool {
 	return reflect.DeepEqual(a, b)
 }
 
-func isInt64(t Type) bool { _, ok := t.(Int64Type); return ok }
-func isInt(t Type) bool   { _, ok := t.(IntType); return ok }
+func isInt64(t Type) bool  { _, ok := t.(Int64Type); return ok }
+func isInt(t Type) bool    { _, ok := t.(IntType); return ok }
+func isBigInt(t Type) bool { _, ok := t.(BigIntType); return ok }
 func isFloat(t Type) bool {
 	_, ok := t.(FloatType)
 	if ok {

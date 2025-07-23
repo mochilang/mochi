@@ -1,3 +1,67 @@
+## Progress (2025-07-23 23:01 +0700)
+- go transpiler: handle bigints
+- Regenerated golden files - 103/103 vm valid programs passing
+
+## Progress (2025-07-23 23:01 +0700)
+- go transpiler: handle bigints
+- Regenerated golden files - 103/103 vm valid programs passing
+
+## Progress (2025-07-23 23:01 +0700)
+- go transpiler: handle bigints
+- Regenerated golden files - 103/103 vm valid programs passing
+
+## Progress (2025-07-23 23:01 +0700)
+- go transpiler: handle bigints
+- Regenerated golden files - 103/103 vm valid programs passing
+
+## Progress (2025-07-23 23:01 +0700)
+- go transpiler: handle bigints
+- Regenerated golden files - 103/103 vm valid programs passing
+
+## Progress (2025-07-23 23:01 +0700)
+- go transpiler: handle bigints
+- Regenerated golden files - 103/103 vm valid programs passing
+
+## Progress (2025-07-23 23:01 +0700)
+- go transpiler: handle bigints
+- Regenerated golden files - 103/103 vm valid programs passing
+
+## Progress (2025-07-23 23:01 +0700)
+- go transpiler: handle bigints
+- Regenerated golden files - 103/103 vm valid programs passing
+
+## Progress (2025-07-23 23:01 +0700)
+- go transpiler: handle bigints
+- Regenerated golden files - 103/103 vm valid programs passing
+
+## Progress (2025-07-23 23:01 +0700)
+- go transpiler: handle bigints
+- Regenerated golden files - 103/103 vm valid programs passing
+
+## Progress (2025-07-23 23:01 +0700)
+- go transpiler: handle bigints
+- Regenerated golden files - 103/103 vm valid programs passing
+
+## Progress (2025-07-23 23:01 +0700)
+- go transpiler: handle bigints
+- Regenerated golden files - 103/103 vm valid programs passing
+
+## Progress (2025-07-23 23:01 +0700)
+- go transpiler: handle bigints
+- Regenerated golden files - 103/103 vm valid programs passing
+
+## Progress (2025-07-23 22:52 +0700)
+- transpiler/go: begin bigint support
+- Regenerated golden files - 103/103 vm valid programs passing
+
+## Progress (2025-07-23 22:52 +0700)
+- transpiler/go: begin bigint support
+- Regenerated golden files - 103/103 vm valid programs passing
+
+## Progress (2025-07-23 22:52 +0700)
+- transpiler/go: begin bigint support
+- Regenerated golden files - 103/103 vm valid programs passing
+
 ## Progress (2025-07-23 13:39 +0700)
 - transpiler/go: add abundant-odd-numbers
 - Regenerated golden files - 103/103 vm valid programs passing
