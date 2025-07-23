@@ -21,7 +21,7 @@ var funcStack [][]string
 var builtinNames = map[string]struct{}{
 	"print": {}, "len": {}, "substring": {}, "count": {}, "sum": {}, "avg": {},
 	"str": {}, "min": {}, "max": {}, "append": {}, "json": {}, "exists": {},
-	"values": {}, "load": {}, "save": {}, "now": {}, "input": {},
+	"values": {}, "keys": {}, "load": {}, "save": {}, "now": {}, "input": {},
 	"upper": {}, "lower": {},
 }
 
@@ -258,6 +258,28 @@ type FuncDecl struct {
 	Body      []Stmt
 }
 
+func gatherLocals(stmts []Stmt, locals map[string]struct{}) {
+	for _, st := range stmts {
+		switch s := st.(type) {
+		case *LetStmt:
+			locals[s.Name] = struct{}{}
+		case *VarStmt:
+			locals[s.Name] = struct{}{}
+		case *IfStmt:
+			gatherLocals(s.Then, locals)
+			gatherLocals(s.Else, locals)
+		case *WhileStmt:
+			gatherLocals(s.Body, locals)
+		case *ForRangeStmt:
+			gatherLocals(s.Body, locals)
+		case *ForEachStmt:
+			gatherLocals(s.Body, locals)
+		case *QueryLetStmt:
+			locals[s.Name] = struct{}{}
+		}
+	}
+}
+
 func (f *FuncDecl) emit(w io.Writer) {
 	fmt.Fprintf(w, "function %s(", f.Name)
 	for i, p := range f.Params {
@@ -271,6 +293,8 @@ func (f *FuncDecl) emit(w io.Writer) {
 	}
 	fmt.Fprint(w, ") {\n")
 	if len(globalNames) > 0 {
+		locals := map[string]struct{}{}
+		gatherLocals(f.Body, locals)
 		var vars []string
 		for _, g := range globalNames {
 			if g == f.Name {
@@ -282,6 +306,9 @@ func (f *FuncDecl) emit(w io.Writer) {
 					skip = true
 					break
 				}
+			}
+			if _, ok := locals[g]; ok {
+				skip = true
 			}
 			if skip {
 				continue
@@ -1824,6 +1851,15 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 				target = &IndexExpr{X: args[0], Index: &StringLit{Value: "items"}}
 			}
 			return &CallExpr{Func: "array_values", Args: []Expr{target}}, nil
+		} else if name == "keys" {
+			if len(args) != 1 {
+				return nil, fmt.Errorf("keys expects 1 arg")
+			}
+			var target Expr = args[0]
+			if isGroupArg(args[0]) {
+				target = &IndexExpr{X: args[0], Index: &StringLit{Value: "items"}}
+			}
+			return &CallExpr{Func: "array_keys", Args: []Expr{target}}, nil
 		} else if name == "now" {
 			if len(args) != 0 {
 				return nil, fmt.Errorf("now expects no args")
@@ -1928,8 +1964,8 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 			params[i] = p2.Name
 			if transpileEnv != nil {
 				typ := simpleResolveType(p2.Type, transpileEnv)
-				if types.IsListType(typ) || types.IsMapType(typ) {
-					refFlags[i] = true
+				if isFuncType(typ) {
+					closureNames[p2.Name] = true
 				}
 			}
 		}
@@ -1941,7 +1977,11 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 				funcStack = funcStack[:len(funcStack)-1]
 				return nil, err
 			}
-			body = []Stmt{&ReturnStmt{Value: ex}}
+			if call, ok := ex.(*CallExpr); ok && call.Func == "echo" {
+				body = []Stmt{&ExprStmt{Expr: ex}}
+			} else {
+				body = []Stmt{&ReturnStmt{Value: ex}}
+			}
 		} else {
 			var err error
 			body, err = convertStmtList(p.FunExpr.BlockBody)
@@ -2159,8 +2199,8 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 				params[i] = p.Name
 				typ := simpleResolveType(p.Type, transpileEnv)
 				childEnv.SetVar(p.Name, typ, true)
-				if types.IsListType(typ) || types.IsMapType(typ) {
-					refFlags[i] = true
+				if isFuncType(typ) {
+					closureNames[p.Name] = true
 				}
 			}
 			transpileEnv = childEnv
@@ -2843,6 +2883,17 @@ func groupItemsExpr(e Expr) Expr {
 func simpleResolveType(t *parser.TypeRef, env *types.Env) types.Type {
 	if t == nil {
 		return types.AnyType{}
+	}
+	if t.Fun != nil {
+		params := make([]types.Type, len(t.Fun.Params))
+		for i, p := range t.Fun.Params {
+			params[i] = simpleResolveType(p, env)
+		}
+		var ret types.Type
+		if t.Fun.Return != nil {
+			ret = simpleResolveType(t.Fun.Return, env)
+		}
+		return types.FuncType{Params: params, Return: ret}
 	}
 	if t.Simple != nil {
 		switch *t.Simple {

@@ -2,13 +2,13 @@
 
 Generated PHP code from Mochi Rosetta tasks lives in `tests/rosetta/transpiler/php`.
 
-Last updated: 2025-07-23 13:52 +0700
+Last updated: 2025-07-23 14:01 +0700
 
-## Checklist (55/284)
+## Checklist (79/284)
 - [x] 1 100-doors-2
 - [x] 2 100-doors-3
 - [x] 3 100-doors
-- [ ] 4 100-prisoners
+- [x] 4 100-prisoners
 - [x] 5 15-puzzle-game
 - [x] 6 15-puzzle-solver
 - [x] 7 2048
@@ -62,32 +62,32 @@ Last updated: 2025-07-23 13:52 +0700
 - [x] 55 anonymous-recursion
 - [x] 56 anti-primes
 - [x] 57 append-a-record-to-the-end-of-a-text-file
-- [ ] 58 apply-a-callback-to-an-array-1
-- [ ] 59 apply-a-callback-to-an-array-2
-- [ ] 60 apply-a-digital-filter-direct-form-ii-transposed-
-- [ ] 61 approximate-equality
-- [ ] 62 arbitrary-precision-integers-included-
-- [ ] 63 archimedean-spiral
-- [ ] 64 arena-storage-pool
-- [ ] 65 arithmetic-complex
-- [ ] 66 arithmetic-derivative
+- [x] 58 apply-a-callback-to-an-array-1
+- [x] 59 apply-a-callback-to-an-array-2
+- [x] 60 apply-a-digital-filter-direct-form-ii-transposed-
+- [x] 61 approximate-equality
+- [x] 62 arbitrary-precision-integers-included-
+- [x] 63 archimedean-spiral
+- [x] 64 arena-storage-pool
+- [x] 65 arithmetic-complex
+- [x] 66 arithmetic-derivative
 - [ ] 67 arithmetic-evaluation
-- [ ] 68 arithmetic-geometric-mean-calculate-pi
-- [ ] 69 arithmetic-geometric-mean
-- [ ] 70 arithmetic-integer-1
-- [ ] 71 arithmetic-integer-2
+- [x] 68 arithmetic-geometric-mean-calculate-pi
+- [x] 69 arithmetic-geometric-mean
+- [x] 70 arithmetic-integer-1
+- [x] 71 arithmetic-integer-2
 - [ ] 72 arithmetic-numbers
-- [ ] 73 arithmetic-rational
-- [ ] 74 array-concatenation
-- [ ] 75 array-length
-- [ ] 76 arrays
+- [x] 73 arithmetic-rational
+- [x] 74 array-concatenation
+- [x] 75 array-length
+- [x] 76 arrays
 - [ ] 77 ascending-primes
-- [ ] 78 ascii-art-diagram-converter
-- [ ] 79 assertions
-- [ ] 80 associative-array-creation
-- [ ] 81 associative-array-iteration
-- [ ] 82 associative-array-merging
-- [ ] 83 atomic-updates
+- [x] 78 ascii-art-diagram-converter
+- [x] 79 assertions
+- [x] 80 associative-array-creation
+- [x] 81 associative-array-iteration
+- [x] 82 associative-array-merging
+- [x] 83 atomic-updates
 - [ ] 84 attractive-numbers
 - [ ] 85 average-loop-length
 - [ ] 86 averages-arithmetic-mean
