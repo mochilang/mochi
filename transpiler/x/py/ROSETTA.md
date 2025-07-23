@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Python code from programs in `tests/rosetta/x/Mochi` lives in `tests/rosetta/transpiler/Python`.
-Last updated: 2025-07-23 05:56 UTC
+Last updated: 2025-07-23 07:37 UTC
 
-## Rosetta Golden Test Checklist (70/284)
+## Rosetta Golden Test Checklist (96/284)
 1. [x] 100-doors-2
 2. [x] 100-doors-3
 3. [x] 100-doors
@@ -76,35 +76,35 @@ Last updated: 2025-07-23 05:56 UTC
 69. [x] arithmetic-geometric-mean
 70. [x] arithmetic-integer-1
 71. [x] arithmetic-integer-2
-72. [ ] arithmetic-numbers
-73. [ ] arithmetic-rational
-74. [ ] array-concatenation
-75. [ ] array-length
-76. [ ] arrays
-77. [ ] ascending-primes
-78. [ ] ascii-art-diagram-converter
-79. [ ] assertions
+72. [x] arithmetic-numbers
+73. [x] arithmetic-rational
+74. [x] array-concatenation
+75. [x] array-length
+76. [x] arrays
+77. [x] ascending-primes
+78. [x] ascii-art-diagram-converter
+79. [x] assertions
 80. [ ] associative-array-creation
 81. [ ] associative-array-iteration
-82. [ ] associative-array-merging
-83. [ ] atomic-updates
-84. [ ] attractive-numbers
-85. [ ] average-loop-length
-86. [ ] averages-arithmetic-mean
-87. [ ] averages-mean-time-of-day
-88. [ ] averages-median-1
-89. [ ] averages-median-2
-90. [ ] averages-median-3
-91. [ ] averages-mode
-92. [ ] averages-pythagorean-means
-93. [ ] averages-root-mean-square
-94. [ ] averages-simple-moving-average
-95. [ ] avl-tree
-96. [ ] b-zier-curves-intersections
-97. [ ] babbage-problem
-98. [ ] babylonian-spiral
-99. [ ] balanced-brackets
-100. [ ] balanced-ternary
+82. [x] associative-array-merging
+83. [x] atomic-updates
+84. [x] attractive-numbers
+85. [x] average-loop-length
+86. [x] averages-arithmetic-mean
+87. [x] averages-mean-time-of-day
+88. [x] averages-median-1
+89. [x] averages-median-2
+90. [x] averages-median-3
+91. [x] averages-mode
+92. [x] averages-pythagorean-means
+93. [x] averages-root-mean-square
+94. [x] averages-simple-moving-average
+95. [x] avl-tree
+96. [x] b-zier-curves-intersections
+97. [x] babbage-problem
+98. [x] babylonian-spiral
+99. [x] balanced-brackets
+100. [x] balanced-ternary
 101. [ ] barnsley-fern
 102. [ ] base64-decode-data
 103. [ ] bell-numbers

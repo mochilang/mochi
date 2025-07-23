@@ -1,0 +1,7 @@
+Traceback (most recent call last):
+  File "/workspace/mochi/tests/rosetta/transpiler/Python/associative-array-creation.py", line 23, in <module>
+    main()
+  File "/workspace/mochi/tests/rosetta/transpiler/Python/associative-array-creation.py", line 16, in main
+    y1 = x["bar"]
+         ~^^^^^^^
+KeyError: 'bar'
