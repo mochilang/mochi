@@ -1146,7 +1146,13 @@ func (o *OuterJoinExpr) emit(w io.Writer) {
 	io.WriteString(w, "})()")
 }
 
-func (s *StringLit) emit(w io.Writer) { fmt.Fprintf(w, "%q", s.Value) }
+func (s *StringLit) emit(w io.Writer) {
+	// Use single quoted strings to avoid PHP variable interpolation.
+	// Escape backslashes and single quotes.
+	esc := strings.ReplaceAll(s.Value, "\\", "\\\\")
+	esc = strings.ReplaceAll(esc, "'", "\\'")
+	io.WriteString(w, "'"+esc+"'")
+}
 
 func (b *BinaryExpr) emit(w io.Writer) {
 	if b.Op == "+" {
@@ -3104,6 +3110,8 @@ func isIntExpr(e Expr) bool {
 		case "+", "-", "*", "/", "%":
 			return isIntExpr(v.Left) && isIntExpr(v.Right)
 		}
+	case *GroupExpr:
+		return isIntExpr(v.X)
 	case *IntDivExpr:
 		return isIntExpr(v.Left) && isIntExpr(v.Right)
 	case *CondExpr:
