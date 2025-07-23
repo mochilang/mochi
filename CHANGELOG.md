@@ -1,4 +1,26 @@
 # 📦 CHANGELOG.md
+## [0.10.38] – 2025-07-23T10:17:23+07:00
+
+### Added
+
+* Global variable support for Rust and struct pattern matching in Ruby
+* Additional Rosetta examples across C#, Lua, Racket and Swift
+* Map key handling for TypeScript with selector calls for Zig
+* Local variable tracking and typed call arguments in multiple backends
+
+### Changed
+
+* Improved type inference for Kotlin and container metadata in Scala
+* Enhanced C++ variable management and indentation fixes in C#
+* Rosetta outputs regenerated and stored with source code
+
+### Fixed
+
+* Deterministic `now` seeding for C++
+* Global variable rename issues in Rust
+* Miscellaneous compilation bugs across languages
+
+
 ## [0.10.37] – 2025-07-22T17:53:32+07:00
 
 ### Added
