@@ -1,21 +1,2 @@
 2 is at index 4.
-Traceback (most recent call last):
-  File "/workspace/mochi/tests/rosetta/transpiler/Python/binary-search.py", line 43, in <module>
-    main()
-  File "/workspace/mochi/tests/rosetta/transpiler/Python/binary-search.py", line 38, in main
-    idx = bsearchRec(nums, x, 0, len(nums) - 1)
-          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/workspace/mochi/tests/rosetta/transpiler/Python/binary-search.py", line 27, in bsearchRec
-    return bsearchRec(arr, x, mid + 1, high)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/workspace/mochi/tests/rosetta/transpiler/Python/binary-search.py", line 24, in bsearchRec
-    return bsearchRec(arr, x, low, mid - 1)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/workspace/mochi/tests/rosetta/transpiler/Python/binary-search.py", line 24, in bsearchRec
-    return bsearchRec(arr, x, low, mid - 1)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/workspace/mochi/tests/rosetta/transpiler/Python/binary-search.py", line 24, in bsearchRec
-    return bsearchRec(arr, x, low, mid - 1)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  [Previous line repeated 994 more times]
-RecursionError: maximum recursion depth exceeded
+5 is not found.

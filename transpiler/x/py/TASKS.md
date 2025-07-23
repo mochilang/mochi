@@ -1,5 +1,5 @@
-## Progress (2025-07-23 15:10 +0700)
-- Commit 7319714ae6: transpiler/python: compile rosetta programs 101-130
+## Progress (2025-07-23 19:33 +0700)
+- Commit e1ffe8fed9: transpiler(ts): support struct methods
 - Generated Python for 103/103 programs
 - Updated README checklist and outputs
 - Removed runtime helpers and improved boolean type inference

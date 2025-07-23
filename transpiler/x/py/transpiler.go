@@ -357,6 +357,20 @@ func (b *BoolLit) emit(w io.Writer) error {
 	return err
 }
 
+// ParenExpr represents an expression wrapped in parentheses.
+type ParenExpr struct{ Expr Expr }
+
+func (p *ParenExpr) emit(w io.Writer) error {
+	if _, err := io.WriteString(w, "("); err != nil {
+		return err
+	}
+	if err := emitExpr(w, p.Expr); err != nil {
+		return err
+	}
+	_, err := io.WriteString(w, ")")
+	return err
+}
+
 type ListLit struct{ Elems []Expr }
 
 func (l *ListLit) emit(w io.Writer) error {
@@ -1560,6 +1574,8 @@ func inferPyType(e Expr, env *types.Env) types.Type {
 				if len(ex.Args) == 3 {
 					return types.StringType{}
 				}
+			case "Fraction":
+				return types.BigRatType{}
 			}
 		}
 		return types.AnyType{}
@@ -2499,6 +2515,9 @@ func Emit(w io.Writer, p *Program) error {
 		}
 		if currentImports["socket"] && !hasImport(p, "socket") {
 			imports = append(imports, "import socket")
+		}
+		if currentImports["fractions"] && !hasImport(p, "fractions") {
+			imports = append(imports, "from fractions import Fraction")
 		}
 		if currentImports["os"] && !hasImport(p, "os") {
 			imports = append(imports, "import os")
@@ -3878,6 +3897,8 @@ func convertPostfix(p *parser.PostfixExpr) (Expr, error) {
 			}
 			if replaced {
 				// already handled
+			} else if fe, ok := expr.(*FieldExpr); ok && fe.Name == "padStart" && len(args) == 2 {
+				expr = &CallExpr{Func: &FieldExpr{Target: fe.Target, Name: "rjust"}, Args: []Expr{args[0], args[1]}}
 			} else if fe, ok := expr.(*FieldExpr); ok && fe.Name == "contains" && len(args) == 1 {
 				expr = &BinaryExpr{Left: args[0], Op: "in", Right: fe.Target}
 			} else if _, ok := expr.(*BinaryExpr); !ok {
@@ -3894,6 +3915,11 @@ func convertPostfix(p *parser.PostfixExpr) (Expr, error) {
 				expr = &CallExpr{Func: &Name{Name: "str"}, Args: []Expr{expr}}
 			case "bool":
 				expr = &CallExpr{Func: &Name{Name: "bool"}, Args: []Expr{expr}}
+			case "bigrat":
+				if currentImports != nil {
+					currentImports["fractions"] = true
+				}
+				expr = &CallExpr{Func: &Name{Name: "Fraction"}, Args: []Expr{expr}}
 			default:
 				if currentEnv != nil {
 					if st, ok := currentEnv.GetStruct(name); ok {
@@ -4065,6 +4091,14 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 				length := &CallExpr{Func: &Name{Name: "len"}, Args: args}
 				return &BinaryExpr{Left: length, Op: ">", Right: &IntLit{Value: "0"}}, nil
 			}
+		case "num":
+			if len(args) == 1 {
+				return &FieldExpr{Target: args[0], Name: "numerator"}, nil
+			}
+		case "denom":
+			if len(args) == 1 {
+				return &FieldExpr{Target: args[0], Name: "denominator"}, nil
+			}
 		}
 		return &CallExpr{Func: &Name{Name: p.Call.Func}, Args: args}, nil
 	case p.Lit != nil:
@@ -4186,7 +4220,11 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 			return nil, fmt.Errorf("unsupported load format")
 		}
 	case p.Group != nil:
-		return convertExpr(p.Group)
+		e, err := convertExpr(p.Group)
+		if err != nil {
+			return nil, err
+		}
+		return &ParenExpr{Expr: e}, nil
 	default:
 		return nil, fmt.Errorf("unsupported expression")
 	}

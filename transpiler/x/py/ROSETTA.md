@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Python code from programs in `tests/rosetta/x/Mochi` lives in `tests/rosetta/transpiler/Python`.
-Last updated: 2025-07-23 08:14 UTC
+Last updated: 2025-07-23 13:26 UTC
 
-## Rosetta Golden Test Checklist (124/284)
+## Rosetta Golden Test Checklist (129/284)
 1. [x] 100-doors-2
 2. [x] 100-doors-3
 3. [x] 100-doors
@@ -109,18 +109,18 @@ Last updated: 2025-07-23 08:14 UTC
 102. [x] base64-decode-data
 103. [x] bell-numbers
 104. [x] benfords-law
-105. [ ] bernoulli-numbers
+105. [x] bernoulli-numbers
 106. [x] best-shuffle
 107. [x] bifid-cipher
 108. [x] bin-given-limits
 109. [x] binary-digits
-110. [ ] binary-search
+110. [x] binary-search
 111. [x] binary-strings
 112. [x] bioinformatics-base-count
 113. [x] bioinformatics-global-alignment
 114. [x] bioinformatics-sequence-mutation
 115. [x] biorhythms
-116. [ ] bitcoin-address-validation
+116. [x] bitcoin-address-validation
 117. [x] bitmap-b-zier-curves-cubic
 118. [x] bitmap-b-zier-curves-quadratic
 119. [x] bitmap-bresenhams-line-algorithm
@@ -128,12 +128,12 @@ Last updated: 2025-07-23 08:14 UTC
 121. [x] bitmap-histogram
 122. [x] bitmap-midpoint-circle-algorithm
 123. [x] bitmap-ppm-conversion-through-a-pipe
-124. [ ] bitmap-read-a-ppm-file
+124. [x] bitmap-read-a-ppm-file
 125. [x] bitmap-read-an-image-through-a-pipe
 126. [x] bitmap-write-a-ppm-file
 127. [x] bitmap
 128. [x] bitwise-io-1
-129. [ ] bitwise-io-2
+129. [x] bitwise-io-2
 130. [x] bitwise-operations
 131. [ ] blum-integer
 132. [ ] boolean-values
