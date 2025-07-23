@@ -523,9 +523,9 @@ type PrintStmt struct{ Exprs []Expr }
 
 func (p *PrintStmt) emit(w io.Writer) {
 	for _, e := range p.Exprs {
-		io.WriteString(w, "  print_endline ")
+		io.WriteString(w, "  print_endline (")
 		e.emitPrint(w)
-		io.WriteString(w, ";\n")
+		io.WriteString(w, ");\n")
 	}
 }
 
@@ -1223,7 +1223,7 @@ func (mi *MapIndexExpr) emit(w io.Writer) {
 		io.WriteString(w, ") ")
 		mi.Map.emit(w)
 		io.WriteString(w, ") : ")
-		if strings.HasPrefix(mi.Typ, "map") {
+		if isDynamicMapType(mi.Typ) {
 			io.WriteString(w, "(string * Obj.t) list")
 		} else {
 			io.WriteString(w, ocamlType(mi.Typ))
@@ -1596,16 +1596,28 @@ func (ix *IndexExpr) emitPrint(w io.Writer) {
 }
 
 func (s *SliceExpr) emit(w io.Writer) {
-	// Only string slices are supported for now
-	io.WriteString(w, "String.sub ")
-	s.Col.emit(w)
-	io.WriteString(w, " ")
-	s.Start.emit(w)
-	io.WriteString(w, " (")
+	if s.Typ == "string" {
+		io.WriteString(w, "String.sub ")
+		s.Col.emit(w)
+		io.WriteString(w, " ")
+		s.Start.emit(w)
+		io.WriteString(w, " (")
+		s.End.emit(w)
+		io.WriteString(w, " - ")
+		s.Start.emit(w)
+		io.WriteString(w, ")")
+		return
+	}
+	// list slice using Seq.drop/take
+	io.WriteString(w, "List.of_seq (Seq.take (")
 	s.End.emit(w)
 	io.WriteString(w, " - ")
 	s.Start.emit(w)
-	io.WriteString(w, ")")
+	io.WriteString(w, ") (Seq.drop ")
+	s.Start.emit(w)
+	io.WriteString(w, " (List.to_seq ")
+	s.Col.emit(w)
+	io.WriteString(w, ")))")
 }
 
 func (s *SliceExpr) emitPrint(w io.Writer) { s.emit(w) }
@@ -1654,6 +1666,9 @@ func (c *CastExpr) emit(w io.Writer) {
 	case "float_to_int":
 		io.WriteString(w, "int_of_float ")
 		c.Expr.emit(w)
+	case "int_to_float":
+		io.WriteString(w, "float_of_int ")
+		c.Expr.emit(w)
 	default:
 		c.Expr.emit(w)
 	}
@@ -1667,6 +1682,10 @@ func (c *CastExpr) emitPrint(w io.Writer) {
 		io.WriteString(w, ")")
 	case "float_to_int":
 		io.WriteString(w, "string_of_int (int_of_float ")
+		c.Expr.emit(w)
+		io.WriteString(w, ")")
+	case "int_to_float":
+		io.WriteString(w, "string_of_float (float_of_int ")
 		c.Expr.emit(w)
 		io.WriteString(w, ")")
 	default:
@@ -2848,13 +2867,25 @@ func convertPostfix(p *parser.PostfixExpr, env *types.Env, vars map[string]VarIn
 			}
 			i++
 		case op.Index != nil && op.Index.Colon != nil && op.Index.Colon2 == nil && op.Index.Step == nil:
-			startExpr, _, err := convertExpr(op.Index.Start, env, vars)
-			if err != nil {
-				return nil, "", err
+			var startExpr Expr
+			if op.Index.Start != nil {
+				var err error
+				startExpr, _, err = convertExpr(op.Index.Start, env, vars)
+				if err != nil {
+					return nil, "", err
+				}
+			} else {
+				startExpr = &IntLit{Value: 0}
 			}
-			endExpr, _, err := convertExpr(op.Index.End, env, vars)
-			if err != nil {
-				return nil, "", err
+			var endExpr Expr
+			if op.Index.End != nil {
+				var err error
+				endExpr, _, err = convertExpr(op.Index.End, env, vars)
+				if err != nil {
+					return nil, "", err
+				}
+			} else {
+				endExpr = &LenBuiltin{Arg: expr, Typ: "int"}
 			}
 			expr = &SliceExpr{Col: expr, Start: startExpr, End: endExpr, Typ: typ}
 			i++
@@ -3561,6 +3592,20 @@ func convertCall(c *parser.CallExpr, env *types.Env, vars map[string]VarInfo) (E
 			return arg, "int", nil
 		}
 		return &CastExpr{Expr: arg, Type: castType}, "int", nil
+	}
+	if c.Func == "float" && len(c.Args) == 1 {
+		arg, typ, err := convertExpr(c.Args[0], env, vars)
+		if err != nil {
+			return nil, "", err
+		}
+		castType := ""
+		switch typ {
+		case "int":
+			castType = "int_to_float"
+		default:
+			return arg, "float", nil
+		}
+		return &CastExpr{Expr: arg, Type: castType}, "float", nil
 	}
 	if c.Func == "input" && len(c.Args) == 0 {
 		return &InputBuiltin{}, "string", nil
