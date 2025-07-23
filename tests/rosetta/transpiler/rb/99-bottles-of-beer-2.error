@@ -1,0 +1,17 @@
+run: exit status 1
+/workspace/mochi/tests/rosetta/transpiler/rb/99-bottles-of-beer-2.rb: --> /workspace/mochi/tests/rosetta/transpiler/rb/99-bottles-of-beer-2.rb
+syntax error, unexpected '=', expecting `end' or dummy endsyntax error, unexpected local variable or method, expecting `end' or dummy end
+> 64  def randInt(seed, n)
+> 65    next = (seed * 1664525 + 1013904223) % 2147483647
+> 66    return next % n
+> 67  end
+> 68  def slur(p, d)
+> 99  end
+/workspace/mochi/tests/rosetta/transpiler/rb/99-bottles-of-beer-2.rb:65: syntax error, unexpected '=', expecting `end' or dummy end (SyntaxError)
+  next = (seed * 1664525 + 1013904223...
+       ^
+/workspace/mochi/tests/rosetta/transpiler/rb/99-bottles-of-beer-2.rb:68: void value expression
+/workspace/mochi/tests/rosetta/transpiler/rb/99-bottles-of-beer-2.rb:68: syntax error, unexpected local variable or method, expecting `end' or dummy end
+def slur(p, d)
+    ^~~~
+

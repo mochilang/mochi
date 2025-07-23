@@ -1,0 +1,8 @@
+run: exit status 1
+/workspace/mochi/tests/rosetta/transpiler/rb/abbreviations-easy.rb:58:in `validate': undefined local variable or method `upper' for main:Object (NameError)
+
+        c = upper.call(cmd)
+            ^^^^^
+Did you mean?  super
+	from /workspace/mochi/tests/rosetta/transpiler/rb/abbreviations-easy.rb:96:in `main'
+	from /workspace/mochi/tests/rosetta/transpiler/rb/abbreviations-easy.rb:106:in `<main>'
