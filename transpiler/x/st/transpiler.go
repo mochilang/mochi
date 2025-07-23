@@ -1155,7 +1155,29 @@ func evalPrimary(p *parser.Primary, vars map[string]value) (value, error) {
 				}
 				return value{kind: valList, list: vals}, nil
 			}
-		case "str":
+               case "int":
+                       if len(p.Call.Args) != 1 {
+                               return value{}, fmt.Errorf("bad args")
+                       }
+                       v, err := evalExpr(p.Call.Args[0], vars)
+                       if err != nil {
+                               return value{}, err
+                       }
+                       switch v.kind {
+                       case valInt:
+                               return v, nil
+                       case valFloat:
+                               return value{kind: valInt, i: int(v.f)}, nil
+                       case valString:
+                               n, err := strconv.Atoi(v.s)
+                               if err != nil {
+                                       return value{}, fmt.Errorf("invalid int")
+                               }
+                               return value{kind: valInt, i: n}, nil
+                       default:
+                               return value{}, fmt.Errorf("bad args")
+                       }
+               case "str":
 			if len(p.Call.Args) != 1 {
 				return value{}, fmt.Errorf("bad args")
 			}
@@ -1406,7 +1428,7 @@ func evalPrimary(p *parser.Primary, vars map[string]value) (value, error) {
 				return value{kind: valMap, kv: kv, typ: p.Call.Func}, nil
 			}
 		}
-		return value{}, fmt.Errorf("unsupported call")
+               return value{}, fmt.Errorf("unsupported call")
 	case p.If != nil:
 		return evalIfExpr(p.If, vars)
 	case p.Match != nil:
