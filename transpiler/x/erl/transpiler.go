@@ -2328,7 +2328,15 @@ func convertStmt(st *parser.Statement, env *types.Env, ctx *context, top bool) (
 		ctx.setStrFields(st.Let.Name, stringFields(e))
 		ctx.setBoolFields(st.Let.Name, boolFields(e))
 		ctx.setStringVar(st.Let.Name, isStringExpr(e))
-		ctx.setMapVar(st.Let.Name, isMapExpr(e, env, ctx) || (st.Let.Type != nil && st.Let.Type.Generic != nil && st.Let.Type.Generic.Name == "map"))
+		isMap := false
+		if st.Let.Type != nil && st.Let.Type.Generic != nil && st.Let.Type.Generic.Name == "map" {
+			isMap = true
+		} else if st.Let.Value != nil {
+			if _, ok := types.ExprType(st.Let.Value, env).(types.MapType); ok {
+				isMap = true
+			}
+		}
+		ctx.setMapVar(st.Let.Name, isMap)
 		switch e.(type) {
 		case *IntLit, *FloatLit, *BoolLit, *StringLit, *AtomLit:
 			ctx.setConst(st.Let.Name, e)
@@ -2353,7 +2361,15 @@ func convertStmt(st *parser.Statement, env *types.Env, ctx *context, top bool) (
 		ctx.setStrFields(st.Var.Name, stringFields(e))
 		ctx.setBoolFields(st.Var.Name, boolFields(e))
 		ctx.setStringVar(st.Var.Name, isStringExpr(e))
-		ctx.setMapVar(st.Var.Name, isMapExpr(e, env, ctx) || (st.Var.Type != nil && st.Var.Type.Generic != nil && st.Var.Type.Generic.Name == "map"))
+		isMap := false
+		if st.Var.Type != nil && st.Var.Type.Generic != nil && st.Var.Type.Generic.Name == "map" {
+			isMap = true
+		} else if st.Var.Value != nil {
+			if _, ok := types.ExprType(st.Var.Value, env).(types.MapType); ok {
+				isMap = true
+			}
+		}
+		ctx.setMapVar(st.Var.Name, isMap)
 		ctx.clearConst(st.Var.Name)
 		if top {
 			ctx.setGlobal(st.Var.Name)
@@ -2369,14 +2385,16 @@ func convertStmt(st *parser.Statement, env *types.Env, ctx *context, top bool) (
 		if ctx.isGlobal(st.Assign.Name) {
 			return []Stmt{&PutStmt{Name: st.Assign.Name, Expr: val}}, nil
 		}
-		if ctx.isParam(st.Assign.Name) {
-			ctx.markMutated(st.Assign.Name)
-		}
+		ctx.markMutated(st.Assign.Name)
 		alias := ctx.newAlias(st.Assign.Name)
 		ctx.setStrFields(st.Assign.Name, stringFields(val))
 		ctx.setBoolFields(st.Assign.Name, boolFields(val))
 		ctx.setStringVar(st.Assign.Name, isStringExpr(val))
-		ctx.setMapVar(st.Assign.Name, isMapExpr(val, env, ctx))
+		isMap := false
+		if _, ok := types.ExprType(st.Assign.Value, env).(types.MapType); ok {
+			isMap = true
+		}
+		ctx.setMapVar(st.Assign.Name, isMap)
 		switch val.(type) {
 		case *IntLit, *FloatLit, *BoolLit, *StringLit, *AtomLit:
 			ctx.setConst(st.Assign.Name, val)
@@ -2400,9 +2418,7 @@ func convertStmt(st *parser.Statement, env *types.Env, ctx *context, top bool) (
 			}
 			return stmts, nil
 		}
-		if ctx.isParam(st.Assign.Name) {
-			ctx.markMutated(st.Assign.Name)
-		}
+		ctx.markMutated(st.Assign.Name)
 		old := ctx.current(st.Assign.Name)
 		alias := ctx.newAlias(st.Assign.Name)
 		key := &StringLit{Value: st.Assign.Field[0].Name}
@@ -2439,9 +2455,7 @@ func convertStmt(st *parser.Statement, env *types.Env, ctx *context, top bool) (
 			stmts = append(stmts, &PutStmt{Name: st.Assign.Name, Expr: &NameRef{Name: alias}})
 			return stmts, nil
 		}
-		if ctx.isParam(st.Assign.Name) {
-			ctx.markMutated(st.Assign.Name)
-		}
+		ctx.markMutated(st.Assign.Name)
 		old := ctx.current(st.Assign.Name)
 		alias := ctx.newAlias(st.Assign.Name)
 		ctx.clearConst(st.Assign.Name)
@@ -2473,9 +2487,7 @@ func convertStmt(st *parser.Statement, env *types.Env, ctx *context, top bool) (
 		}
 		alias := ctx.newAlias(st.Assign.Name)
 		ctx.clearConst(st.Assign.Name)
-		if ctx.isParam(st.Assign.Name) {
-			ctx.markMutated(st.Assign.Name)
-		}
+		ctx.markMutated(st.Assign.Name)
 		tmp := ctx.newAlias("tmp")
 		tmp2 := ctx.newAlias("tmp")
 		kind := "list"
@@ -2654,12 +2666,8 @@ func convertStmt(st *parser.Statement, env *types.Env, ctx *context, top bool) (
 		for i, n := range names {
 			params[i] = ctx.alias[n]
 		}
-		condCtx := ctx.clone()
-		cond, err := convertExpr(st.While.Cond, env, condCtx)
-		if err != nil {
-			return nil, err
-		}
 		loopCtx := ctx.clone()
+		loopCtx.constVal = map[string]Expr{}
 		body := []Stmt{}
 		for _, bs := range st.While.Body {
 			cs, err := convertStmt(bs, env, loopCtx, false)
@@ -2667,6 +2675,14 @@ func convertStmt(st *parser.Statement, env *types.Env, ctx *context, top bool) (
 				return nil, err
 			}
 			body = append(body, cs...)
+		}
+		condCtx := ctx.clone()
+		for n := range loopCtx.mutated {
+			delete(condCtx.constVal, n)
+		}
+		cond, err := convertExpr(st.While.Cond, env, condCtx)
+		if err != nil {
+			return nil, err
 		}
 		for n := range loopCtx.mutated {
 			ctx.markMutated(n)
