@@ -1419,6 +1419,28 @@ func (c *CastExpr) emit(w io.Writer) error {
 		return err
 	}
 
+	if c.Type == "int" && valType == "num" {
+		if _, err := io.WriteString(w, "("); err != nil {
+			return err
+		}
+		if err := c.Value.emit(w); err != nil {
+			return err
+		}
+		_, err := io.WriteString(w, ").toInt()")
+		return err
+	}
+
+	if c.Type == "num" && valType == "int" {
+		if _, err := io.WriteString(w, "("); err != nil {
+			return err
+		}
+		if err := c.Value.emit(w); err != nil {
+			return err
+		}
+		_, err := io.WriteString(w, ".toDouble()")
+		return err
+	}
+
 	if err := c.Value.emit(w); err != nil {
 		return err
 	}
