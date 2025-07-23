@@ -1,0 +1,138 @@
+exit status 127
+/workspace/mochi/tests/rosetta/transpiler/erl/15-puzzle-game.erl:52:47: variable 'Board' is unbound
+%   52| {Board, Empty, I2, Moves, Quit, Solved} = Fun(Board, Empty, I, Moves, Quit, Solved),
+%     |                                               ^
+
+/workspace/mochi/tests/rosetta/transpiler/erl/15-puzzle-game.erl:52:54: variable 'Empty' is unbound
+%   52| {Board, Empty, I2, Moves, Quit, Solved} = Fun(Board, Empty, I, Moves, Quit, Solved),
+%     |                                                      ^
+
+/workspace/mochi/tests/rosetta/transpiler/erl/15-puzzle-game.erl:52:64: variable 'Moves' is unbound
+%   52| {Board, Empty, I2, Moves, Quit, Solved} = Fun(Board, Empty, I, Moves, Quit, Solved),
+%     |                                                                ^
+
+/workspace/mochi/tests/rosetta/transpiler/erl/15-puzzle-game.erl:52:71: variable 'Quit' is unbound
+%   52| {Board, Empty, I2, Moves, Quit, Solved} = Fun(Board, Empty, I, Moves, Quit, Solved),
+%     |                                                                       ^
+
+/workspace/mochi/tests/rosetta/transpiler/erl/15-puzzle-game.erl:52:77: variable 'Solved' is unbound
+%   52| {Board, Empty, I2, Moves, Quit, Solved} = Fun(Board, Empty, I, Moves, Quit, Solved),
+%     |                                                                             ^
+
+/workspace/mochi/tests/rosetta/transpiler/erl/15-puzzle-game.erl:59:44: variable 'Empty' is unbound
+%   59|         true -> throw({return, #{"idx" => (Empty - 4), "ok" => ((Empty / 4) > 0)}});
+%     |                                            ^
+
+/workspace/mochi/tests/rosetta/transpiler/erl/15-puzzle-game.erl:59:66: variable 'Empty' is unbound
+%   59|         true -> throw({return, #{"idx" => (Empty - 4), "ok" => ((Empty / 4) > 0)}});
+%     |                                                                  ^
+
+/workspace/mochi/tests/rosetta/transpiler/erl/15-puzzle-game.erl:63:44: variable 'Empty' unsafe in 'case' (line 58, column 9)
+%   63|         true -> throw({return, #{"idx" => (Empty + 4), "ok" => ((Empty / 4) < 3)}});
+%     |                                            ^
+
+/workspace/mochi/tests/rosetta/transpiler/erl/15-puzzle-game.erl:63:66: variable 'Empty' unsafe in 'case' (line 58, column 9)
+%   63|         true -> throw({return, #{"idx" => (Empty + 4), "ok" => ((Empty / 4) < 3)}});
+%     |                                                                  ^
+
+/workspace/mochi/tests/rosetta/transpiler/erl/15-puzzle-game.erl:84:14: variable 'Empty' is unbound
+%   84|         I3 = Empty,
+%     |              ^
+
+/workspace/mochi/tests/rosetta/transpiler/erl/15-puzzle-game.erl:85:13: variable 'Int' is unbound
+%   85|         J = Int(lists:nth("idx" + 1, R)),
+%     |             ^
+
+/workspace/mochi/tests/rosetta/transpiler/erl/15-puzzle-game.erl:86:33: variable 'Board' is unbound
+%   86|         Tmp = lists:nth(I3 + 1, Board),
+%     |                                 ^
+
+/workspace/mochi/tests/rosetta/transpiler/erl/15-puzzle-game.erl:90:19: variable 'Moves' is unbound
+%   90|         Moves2 = (Moves + 1),
+%     |                   ^
+
+/workspace/mochi/tests/rosetta/transpiler/erl/15-puzzle-game.erl:113:51: variable 'Board' is unbound
+%  113| {Board, Empty, I6, Moves, N, Quit, Solved} = Fun2(Board, Empty, I4, Moves, N, Quit, Solved),
+%     |                                                   ^
+
+/workspace/mochi/tests/rosetta/transpiler/erl/15-puzzle-game.erl:113:58: variable 'Empty' is unbound
+%  113| {Board, Empty, I6, Moves, N, Quit, Solved} = Fun2(Board, Empty, I4, Moves, N, Quit, Solved),
+%     |                                                          ^
+
+/workspace/mochi/tests/rosetta/transpiler/erl/15-puzzle-game.erl:113:69: variable 'Moves' is unbound
+%  113| {Board, Empty, I6, Moves, N, Quit, Solved} = Fun2(Board, Empty, I4, Moves, N, Quit, Solved),
+%     |                                                                     ^
+
+/workspace/mochi/tests/rosetta/transpiler/erl/15-puzzle-game.erl:113:79: variable 'Quit' is unbound
+%  113| {Board, Empty, I6, Moves, N, Quit, Solved} = Fun2(Board, Empty, I4, Moves, N, Quit, Solved),
+%     |                                                                               ^
+
+/workspace/mochi/tests/rosetta/transpiler/erl/15-puzzle-game.erl:113:85: variable 'Solved' is unbound
+%  113| {Board, Empty, I6, Moves, N, Quit, Solved} = Fun2(Board, Empty, I4, Moves, N, Quit, Solved),
+%     |                                                                                     ^
+
+/workspace/mochi/tests/rosetta/transpiler/erl/15-puzzle-game.erl:154:55: variable 'Board' is unbound
+%  154| {Board, Empty, I8, Line8, Moves, Quit, Solved} = Fun3(Board, Empty, I7, Line, Moves, Quit, Solved),
+%     |                                                       ^
+
+/workspace/mochi/tests/rosetta/transpiler/erl/15-puzzle-game.erl:154:62: variable 'Empty' is unbound
+%  154| {Board, Empty, I8, Line8, Moves, Quit, Solved} = Fun3(Board, Empty, I7, Line, Moves, Quit, Solved),
+%     |                                                              ^
+
+/workspace/mochi/tests/rosetta/transpiler/erl/15-puzzle-game.erl:154:79: variable 'Moves' is unbound
+%  154| {Board, Empty, I8, Line8, Moves, Quit, Solved} = Fun3(Board, Empty, I7, Line, Moves, Quit, Solved),
+%     |                                                                               ^
+
+/workspace/mochi/tests/rosetta/transpiler/erl/15-puzzle-game.erl:154:86: variable 'Quit' is unbound
+%  154| {Board, Empty, I8, Line8, Moves, Quit, Solved} = Fun3(Board, Empty, I7, Line, Moves, Quit, Solved),
+%     |                                                                                      ^
+
+/workspace/mochi/tests/rosetta/transpiler/erl/15-puzzle-game.erl:154:92: variable 'Solved' is unbound
+%  154| {Board, Empty, I8, Line8, Moves, Quit, Solved} = Fun3(Board, Empty, I7, Line, Moves, Quit, Solved),
+%     |                                                                                            ^
+
+/workspace/mochi/tests/rosetta/transpiler/erl/15-puzzle-game.erl:165:22: variable 'Input' is unbound
+%  165|                 S3 = Input(),
+%     |                      ^
+
+/workspace/mochi/tests/rosetta/transpiler/erl/15-puzzle-game.erl:222:45: variable 'Board' is unbound
+%  222| {Board, Empty, Moves, Quit7, Solved} = Fun4(Board, Empty, Moves, Quit, Solved),
+%     |                                             ^
+
+/workspace/mochi/tests/rosetta/transpiler/erl/15-puzzle-game.erl:222:52: variable 'Empty' is unbound
+%  222| {Board, Empty, Moves, Quit7, Solved} = Fun4(Board, Empty, Moves, Quit, Solved),
+%     |                                                    ^
+
+/workspace/mochi/tests/rosetta/transpiler/erl/15-puzzle-game.erl:222:59: variable 'Moves' is unbound
+%  222| {Board, Empty, Moves, Quit7, Solved} = Fun4(Board, Empty, Moves, Quit, Solved),
+%     |                                                           ^
+
+/workspace/mochi/tests/rosetta/transpiler/erl/15-puzzle-game.erl:222:66: variable 'Quit' is unbound
+%  222| {Board, Empty, Moves, Quit7, Solved} = Fun4(Board, Empty, Moves, Quit, Solved),
+%     |                                                                  ^
+
+/workspace/mochi/tests/rosetta/transpiler/erl/15-puzzle-game.erl:222:72: variable 'Solved' is unbound
+%  222| {Board, Empty, Moves, Quit7, Solved} = Fun4(Board, Empty, Moves, Quit, Solved),
+%     |                                                                        ^
+
+/workspace/mochi/tests/rosetta/transpiler/erl/15-puzzle-game.erl:243:44: variable 'Board' is unbound
+%  243| {Board, Empty, Moves, Quit, Solved} = Fun5(Board, Empty, Moves, Quit, Solved),
+%     |                                            ^
+
+/workspace/mochi/tests/rosetta/transpiler/erl/15-puzzle-game.erl:243:51: variable 'Empty' is unbound
+%  243| {Board, Empty, Moves, Quit, Solved} = Fun5(Board, Empty, Moves, Quit, Solved),
+%     |                                                   ^
+
+/workspace/mochi/tests/rosetta/transpiler/erl/15-puzzle-game.erl:243:58: variable 'Moves' is unbound
+%  243| {Board, Empty, Moves, Quit, Solved} = Fun5(Board, Empty, Moves, Quit, Solved),
+%     |                                                          ^
+
+/workspace/mochi/tests/rosetta/transpiler/erl/15-puzzle-game.erl:243:65: variable 'Quit' is unbound
+%  243| {Board, Empty, Moves, Quit, Solved} = Fun5(Board, Empty, Moves, Quit, Solved),
+%     |                                                                 ^
+
+/workspace/mochi/tests/rosetta/transpiler/erl/15-puzzle-game.erl:243:71: variable 'Solved' is unbound
+%  243| {Board, Empty, Moves, Quit, Solved} = Fun5(Board, Empty, Moves, Quit, Solved),
+%     |                                                                       ^
+
+escript: There were compilation errors.

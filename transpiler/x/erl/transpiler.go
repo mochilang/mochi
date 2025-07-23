@@ -20,12 +20,36 @@ import (
 	"mochi/types"
 )
 
+const helperNow = `
+mochi_now() ->
+    case erlang:get(now_seed) of
+        undefined ->
+            case os:getenv("MOCHI_NOW_SEED") of
+                false -> erlang:system_time(nanosecond);
+                S ->
+                    case catch list_to_integer(S) of
+                        {'EXIT', _} -> erlang:system_time(nanosecond);
+                        Seed ->
+                            erlang:put(now_seed, Seed),
+                            mochi_now()
+                    end
+            end;
+        Seed ->
+            Seed2 = (Seed * 1664525 + 1013904223) rem 2147483647,
+            erlang:put(now_seed, Seed2),
+            Seed2
+    end.
+`
+
+var useNow bool
+
 // Program is a minimal Erlang module consisting of sequential statements.
 // Program is a minimal Erlang module consisting of sequential statements and
 // optional function declarations.
 type Program struct {
-	Funs  []*FuncDecl
-	Stmts []Stmt
+	Funs   []*FuncDecl
+	Stmts  []Stmt
+	UseNow bool
 }
 
 // context tracks variable aliases to emulate mutable variables.
@@ -546,6 +570,9 @@ type FloatLit struct{ Value float64 }
 type BoolLit struct{ Value bool }
 
 type StringLit struct{ Value string }
+
+// NowExpr expands to a deterministic timestamp similar to the VM's now() builtin.
+type NowExpr struct{}
 
 // AtomLit represents a simple atom like 'nil'.
 type AtomLit struct{ Name string }
@@ -1076,14 +1103,14 @@ func (c *CallExpr) emit(w io.Writer) {
 		io.WriteString(w, ")")
 		return
 	case "str":
-		io.WriteString(w, "integer_to_list(")
+		io.WriteString(w, "lists:flatten(io_lib:format(\"~p\", [")
 		for i, a := range c.Args {
 			if i > 0 {
 				io.WriteString(w, ", ")
 			}
 			a.emit(w)
 		}
-		io.WriteString(w, ")")
+		io.WriteString(w, "]))")
 		return
 	case "sum":
 		io.WriteString(w, "lists:sum(")
@@ -1157,10 +1184,7 @@ func (b *BinaryExpr) emit(w io.Writer) {
 		op := mapOp(b.Op)
 		// use string concatenation operator when needed
 		if b.Op == "+" {
-			if _, ok := b.Left.(*StringLit); ok {
-				op = "++"
-			}
-			if _, ok := b.Right.(*StringLit); ok {
+			if isStringExpr(b.Left) || isStringExpr(b.Right) {
 				op = "++"
 			}
 		}
@@ -1371,6 +1395,8 @@ func (s *StringLit) emit(w io.Writer) { fmt.Fprintf(w, "%q", s.Value) }
 
 func (a *AtomLit) emit(w io.Writer) { io.WriteString(w, a.Name) }
 
+func (n *NowExpr) emit(w io.Writer) { io.WriteString(w, "mochi_now()") }
+
 func (i *IfStmt) emit(w io.Writer) {
 	io.WriteString(w, "case ")
 	i.Cond.emit(w)
@@ -1505,13 +1531,13 @@ func (ws *WhileStmt) emit(w io.Writer) {
 	}
 	io.WriteString(w, ") ->\n    case ")
 	ws.Cond.emit(w)
-	io.WriteString(w, " of\n        true ->")
+	io.WriteString(w, " of\n        true ->\n            try")
 	for _, st := range ws.Body {
-		io.WriteString(w, "\n            ")
+		io.WriteString(w, "\n                ")
 		st.emit(w)
 		io.WriteString(w, ",")
 	}
-	io.WriteString(w, "\n            ")
+	io.WriteString(w, "\n                ")
 	io.WriteString(w, loopName)
 	io.WriteString(w, "(")
 	for i, a := range ws.Next {
@@ -1520,7 +1546,14 @@ func (ws *WhileStmt) emit(w io.Writer) {
 		}
 		io.WriteString(w, a)
 	}
-	io.WriteString(w, ");\n        _ -> {")
+	io.WriteString(w, ")\n            catch\n                break -> {")
+	for i, p := range ws.Params {
+		if i > 0 {
+			io.WriteString(w, ", ")
+		}
+		io.WriteString(w, p)
+	}
+	io.WriteString(w, "}\n            end;\n        _ -> {")
 	for i, p := range ws.Params {
 		if i > 0 {
 			io.WriteString(w, ", ")
@@ -1847,7 +1880,7 @@ func mapOp(op string) string {
 
 func builtinFunc(name string) bool {
 	switch name {
-	case "print", "append", "avg", "count", "len", "str", "sum", "min", "max", "values", "exists", "json":
+	case "print", "append", "avg", "count", "len", "str", "sum", "min", "max", "values", "exists", "json", "now":
 		return true
 	default:
 		return false
@@ -2015,6 +2048,7 @@ func extractSaveExpr(e *parser.Expr) *parser.SaveExpr {
 func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	base := filepath.Dir(prog.Pos.Filename)
 	ctx := newContext(base)
+	useNow = false
 	p := &Program{}
 	for _, st := range prog.Statements {
 		if st.Fun != nil {
@@ -2031,6 +2065,7 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 		}
 		p.Stmts = append(p.Stmts, stmts...)
 	}
+	p.UseNow = useNow
 	return p, nil
 }
 
@@ -2403,12 +2438,24 @@ func convertIfStmt(n *parser.IfStmt, env *types.Env, ctx *context) (*IfStmt, err
 		if a, ok := thenCtx.alias[name]; ok {
 			tVal = a
 		}
-		thenStmts = append(thenStmts, &LetStmt{Name: newA, Expr: &NameRef{Name: tVal}})
+		var thenExpr Expr
+		if tVal == "" {
+			thenExpr = &AtomLit{Name: "nil"}
+		} else {
+			thenExpr = &NameRef{Name: tVal}
+		}
+		thenStmts = append(thenStmts, &LetStmt{Name: newA, Expr: thenExpr})
 		eVal := base.alias[name]
 		if a, ok := elseCtx.alias[name]; ok {
 			eVal = a
 		}
-		elseStmts = append(elseStmts, &LetStmt{Name: newA, Expr: &NameRef{Name: eVal}})
+		var elseExpr Expr
+		if eVal == "" {
+			elseExpr = &AtomLit{Name: "nil"}
+		} else {
+			elseExpr = &NameRef{Name: eVal}
+		}
+		elseStmts = append(elseStmts, &LetStmt{Name: newA, Expr: elseExpr})
 		ctx.alias[name] = newA
 	}
 
@@ -2918,6 +2965,10 @@ func convertPrimary(p *parser.Primary, env *types.Env, ctx *context) (Expr, erro
 				return nil, err
 			}
 			return &SubstringExpr{Str: strExpr, Start: startExpr, End: endExpr}, nil
+		}
+		if p.Call.Func == "now" && len(p.Call.Args) == 0 {
+			useNow = true
+			return &NowExpr{}, nil
 		}
 		name := p.Call.Func
 		if !builtinFunc(name) {
@@ -4038,6 +4089,10 @@ func (p *Program) Emit() []byte {
 	}
 	buf.WriteString("-export([" + strings.Join(exports, ", ") + "]).\n\n")
 	buf.WriteString(fmt.Sprintf("%% Generated by Mochi transpiler v%s (%s) on %s\n\n", version(), hash, ts.Format("2006-01-02 15:04 MST")))
+	if p.UseNow {
+		buf.WriteString(helperNow)
+		buf.WriteString("\n")
+	}
 	for _, f := range p.Funs {
 		f.emit(&buf)
 	}

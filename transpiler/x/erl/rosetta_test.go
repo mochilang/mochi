@@ -121,6 +121,7 @@ func runRosetta(t *testing.T, srcPath, name, outDir string) {
 	}
 
 	cmd := exec.Command("escript", erlFile)
+	cmd.Env = append(os.Environ(), "MOCHI_NOW_SEED=1")
 	if data, err := os.ReadFile(strings.TrimSuffix(srcPath, ".mochi") + ".in"); err == nil {
 		cmd.Stdin = bytes.NewReader(data)
 	}
