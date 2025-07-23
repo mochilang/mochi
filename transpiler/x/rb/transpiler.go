@@ -60,6 +60,18 @@ def _lookup_host(host)
 end
 `
 
+const helperAdd = `
+def _add(a, b)
+  if a.is_a?(Array) && b.is_a?(String)
+    a.join + b
+  elsif a.is_a?(String) && b.is_a?(Array)
+    a + b.join
+  else
+    a + b
+  end
+end
+`
+
 // --- Ruby AST ---
 
 type Program struct {
@@ -1514,6 +1526,10 @@ func (b *BoolLit) emit(e *emitter) {
 	}
 }
 
+type NullLit struct{}
+
+func (n *NullLit) emit(e *emitter) { io.WriteString(e.w, "nil") }
+
 type Ident struct{ Name string }
 
 func (id *Ident) emit(e *emitter) { e.name(id.Name) }
@@ -1643,6 +1659,22 @@ func (ix *IndexExpr) emit(e *emitter) {
 	io.WriteString(e.w, "]")
 }
 
+// MapGetExpr represents map.get(key, default).
+type MapGetExpr struct {
+	Map     Expr
+	Key     Expr
+	Default Expr
+}
+
+func (mg *MapGetExpr) emit(e *emitter) {
+	mg.Map.emit(e)
+	io.WriteString(e.w, ".fetch(")
+	mg.Key.emit(e)
+	io.WriteString(e.w, ", ")
+	mg.Default.emit(e)
+	io.WriteString(e.w, ")")
+}
+
 // FieldExpr represents accessing a struct field.
 type FieldExpr struct {
 	Target Expr
@@ -1682,9 +1714,17 @@ type BinaryExpr struct {
 }
 
 func (b *BinaryExpr) emit(e *emitter) {
-	b.Left.emit(e)
-	io.WriteString(e.w, " "+b.Op+" ")
-	b.Right.emit(e)
+	if b.Op == "+" {
+		io.WriteString(e.w, "_add(")
+		b.Left.emit(e)
+		io.WriteString(e.w, ", ")
+		b.Right.emit(e)
+		io.WriteString(e.w, ")")
+	} else {
+		b.Left.emit(e)
+		io.WriteString(e.w, " "+b.Op+" ")
+		b.Right.emit(e)
+	}
 }
 
 type UnionExpr struct{ Left, Right Expr }
@@ -2401,6 +2441,9 @@ func Emit(w io.Writer, p *Program) error {
 		if _, err := io.WriteString(w, helperLookupHost+"\n"); err != nil {
 			return err
 		}
+	}
+	if _, err := io.WriteString(w, helperAdd+"\n"); err != nil {
+		return err
 	}
 	for _, s := range p.Stmts {
 		e.writeIndent()
@@ -3121,7 +3164,11 @@ func convertPostfix(pf *parser.PostfixExpr) (Expr, error) {
 			if method == "contains" {
 				method = "include?"
 			}
-			expr = &MethodCallExpr{Target: expr, Method: method, Args: args}
+			if method == "get" && len(args) == 2 {
+				expr = &MapGetExpr{Map: expr, Key: args[0], Default: args[1]}
+			} else {
+				expr = &MethodCallExpr{Target: expr, Method: method, Args: args}
+			}
 		}
 		start = 1
 	} else {
@@ -3367,6 +3414,9 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 		}
 		if p.Lit.Bool != nil {
 			return &BoolLit{Value: bool(*p.Lit.Bool)}, nil
+		}
+		if p.Lit.Null {
+			return &NullLit{}, nil
 		}
 		return nil, fmt.Errorf("unsupported literal")
 	case p.List != nil:
