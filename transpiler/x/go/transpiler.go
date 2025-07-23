@@ -2896,6 +2896,16 @@ func compileReturnStmt(rs *parser.ReturnStmt, env *types.Env) (Stmt, error) {
 	if err != nil {
 		return nil, err
 	}
+	ret := currentRetType
+	if ret != "" && ret != "any" {
+		exprType := toGoTypeFromType(types.ExprType(rs.Value, env))
+		if exprType == "" || exprType == "any" {
+			switch val.(type) {
+			case *VarRef, *IndexExpr, *FieldExpr, *CallExpr:
+				val = &AssertExpr{Expr: val, Type: ret}
+			}
+		}
+	}
 	return &ReturnStmt{Value: val}, nil
 }
 
@@ -3252,6 +3262,11 @@ func compilePostfix(pf *parser.PostfixExpr, env *types.Env, base string) (Expr, 
 						}
 						if gt, ok3 := fieldTypeGuess[key]; key != "" && ok3 && gt != "" && gt != "any" {
 							expr = &AssertExpr{Expr: expr, Type: gt}
+							if gt == "map[string]int" {
+								t = types.MapType{Key: types.StringType{}, Value: types.IntType{}}
+							} else if gt == "map[string]any" {
+								t = types.MapType{Key: types.StringType{}, Value: types.AnyType{}}
+							}
 						}
 					}
 				default:
@@ -3453,25 +3468,38 @@ func compilePrimary(p *parser.Primary, env *types.Env, base string) (Expr, error
 			return &JsonExpr{Value: args[0]}, nil
 		}
 		if t, err := env.GetVar(name); err == nil {
-			if ft, ok := t.(types.FuncType); ok && len(args) < len(ft.Params) {
-				missing := ft.Params[len(args):]
-				var fn *parser.FunStmt
-				if f, ok := env.GetFunc(name); ok {
-					fn = f
-				}
-				params := make([]ParamDecl, len(missing))
-				callArgs := make([]Expr, 0, len(ft.Params))
-				callArgs = append(callArgs, args...)
-				for i, mt := range missing {
-					pname := fmt.Sprintf("p%d", i)
-					if fn != nil && i+len(args) < len(fn.Params) {
-						pname = fn.Params[i+len(args)].Name
+			if ft, ok := t.(types.FuncType); ok {
+				if len(args) < len(ft.Params) {
+					missing := ft.Params[len(args):]
+					var fn *parser.FunStmt
+					if f, ok := env.GetFunc(name); ok {
+						fn = f
 					}
-					params[i] = ParamDecl{Name: pname, Type: toGoTypeFromType(mt)}
-					callArgs = append(callArgs, &VarRef{Name: pname})
+					params := make([]ParamDecl, len(missing))
+					callArgs := make([]Expr, 0, len(ft.Params))
+					callArgs = append(callArgs, args...)
+					for i, mt := range missing {
+						pname := fmt.Sprintf("p%d", i)
+						if fn != nil && i+len(args) < len(fn.Params) {
+							pname = fn.Params[i+len(args)].Name
+						}
+						params[i] = ParamDecl{Name: pname, Type: toGoTypeFromType(mt)}
+						callArgs = append(callArgs, &VarRef{Name: pname})
+					}
+					body := []Stmt{&ReturnStmt{Value: &CallExpr{Func: name, Args: callArgs}}}
+					return &FuncLit{Params: params, Return: toGoTypeFromType(ft.Return), Body: body}, nil
 				}
-				body := []Stmt{&ReturnStmt{Value: &CallExpr{Func: name, Args: callArgs}}}
-				return &FuncLit{Params: params, Return: toGoTypeFromType(ft.Return), Body: body}, nil
+				if len(args) >= len(ft.Params) {
+					for i, mt := range ft.Params {
+						at := types.TypeOfExpr(p.Call.Args[i], env)
+						if types.IsAnyType(at) {
+							gt := toGoTypeFromType(mt)
+							if gt != "" && gt != "any" {
+								args[i] = &AssertExpr{Expr: args[i], Type: gt}
+							}
+						}
+					}
+				}
 			}
 		}
 		return &CallExpr{Func: name, Args: args}, nil
