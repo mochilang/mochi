@@ -1,0 +1,24 @@
+Original Colour PPM file
+P3
+# feep.ppm
+4 4
+15
+ 0  0  0    0  0  0    0  0  0   15  0 15
+ 0  0  0    0 15  7    0  0  0    0  0  0
+ 0  0  0    0  0  0    0 15  7    0  0  0
+15  0 15    0  0  0    0  0  0    0  0  0
+
+Traceback (most recent call last):
+  File "/workspace/mochi/tests/rosetta/transpiler/Python/bitmap-read-a-ppm-file.py", line 170, in <module>
+    bm = readP3(ppmtxt)
+         ^^^^^^^^^^^^^^
+  File "/workspace/mochi/tests/rosetta/transpiler/Python/bitmap-read-a-ppm-file.py", line 105, in readP3
+    toks = tokenize(text)
+           ^^^^^^^^^^^^^^
+  File "/workspace/mochi/tests/rosetta/transpiler/Python/bitmap-read-a-ppm-file.py", line 89, in tokenize
+    lines = splitLines(s)
+            ^^^^^^^^^^^^^
+  File "/workspace/mochi/tests/rosetta/transpiler/Python/bitmap-read-a-ppm-file.py", line 49, in splitLines
+    ch = substr(s, i, i + 1)
+         ^^^^^^
+NameError: name 'substr' is not defined

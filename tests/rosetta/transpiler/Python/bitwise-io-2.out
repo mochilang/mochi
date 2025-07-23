@@ -1,0 +1,13 @@
+Traceback (most recent call last):
+  File "/workspace/mochi/tests/rosetta/transpiler/Python/bitwise-io-2.py", line 202, in <module>
+    Example()
+  File "/workspace/mochi/tests/rosetta/transpiler/Python/bitwise-io-2.py", line 181, in Example
+    msgBytes = bytesOfStr(message)
+               ^^^^^^^^^^^^^^^^^^^
+  File "/workspace/mochi/tests/rosetta/transpiler/Python/bitwise-io-2.py", line 167, in bytesOfStr
+    bs = bs + [ord(s[i:i + 1])]
+               ^^^^^^^^^^^^^^^
+  File "/workspace/mochi/tests/rosetta/transpiler/Python/bitwise-io-2.py", line 135, in ord
+    idx = indexOf(upper, ch)
+          ^^^^^^^
+NameError: name 'indexOf' is not defined
