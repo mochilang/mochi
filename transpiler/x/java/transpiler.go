@@ -658,7 +658,7 @@ func (l *LambdaExpr) emit(w io.Writer) {
 		}
 		typ := javaType(p.Type)
 		if typ == "" {
-			typ = "java.util.Map"
+			typ = "Object"
 		}
 		fmt.Fprintf(w, "%s %s", typ, sanitize(p.Name))
 	}
@@ -738,7 +738,7 @@ func (s *LetStmt) emit(w io.Writer, indent string) {
 		typ = inferType(s.Expr)
 	}
 	if typ == "" {
-		typ = "java.util.Map"
+		typ = "Object"
 	}
 	fmt.Fprint(w, javaType(typ)+" "+sanitize(s.Name))
 	if s.Expr != nil {
@@ -764,7 +764,7 @@ func (s *VarStmt) emit(w io.Writer, indent string) {
 		typ = inferType(s.Expr)
 	}
 	if typ == "" {
-		typ = "java.util.Map"
+		typ = "Object"
 	}
 	fmt.Fprint(w, javaType(typ)+" "+s.Name)
 	if s.Expr != nil {
@@ -1083,7 +1083,10 @@ func (f *FloatLit) emit(w io.Writer) {
 	}
 }
 
-type VarExpr struct{ Name string }
+type VarExpr struct {
+	Name string
+	Type string
+}
 
 func (v *VarExpr) emit(w io.Writer) { fmt.Fprint(w, sanitize(v.Name)) }
 
@@ -1123,6 +1126,8 @@ func (l *LenExpr) emit(w io.Writer) {
 	case isStringExpr(l.Value):
 		fmt.Fprint(w, ".length()")
 	case isArrayExpr(l.Value):
+		fmt.Fprint(w, ".length")
+	case strings.HasSuffix(inferType(l.Value), "[]"):
 		fmt.Fprint(w, ".length")
 	case isMapExpr(l.Value):
 		fmt.Fprint(w, ".size()")
@@ -1544,6 +1549,11 @@ func (ix *IndexExpr) emit(w io.Writer) {
 		fmt.Fprint(w, ".charAt(")
 		ix.Index.emit(w)
 		fmt.Fprint(w, ")")
+	} else if isArrayExpr(ix.Target) {
+		ix.Target.emit(w)
+		fmt.Fprint(w, "[")
+		ix.Index.emit(w)
+		fmt.Fprint(w, "]")
 	} else if isMapExpr(ix.Target) {
 		ix.Target.emit(w)
 		fmt.Fprint(w, ".get(")
@@ -1595,6 +1605,9 @@ func isStringExpr(e Expr) bool {
 	case *StringLit:
 		return true
 	case *VarExpr:
+		if ex.Type != "" && (ex.Type == "string" || ex.Type == "String") {
+			return true
+		}
 		if t, ok := varTypes[ex.Name]; ok && (t == "string" || t == "String") {
 			return true
 		}
@@ -1633,6 +1646,11 @@ func isMapExpr(e Expr) bool {
 	case *MapLit:
 		return true
 	case *VarExpr:
+		if ex.Type != "" {
+			if ex.Type == "map" || strings.Contains(ex.Type, "Map") {
+				return true
+			}
+		}
 		if t, ok := varTypes[ex.Name]; ok {
 			if t == "map" || strings.Contains(t, "Map") {
 				return true
@@ -1658,6 +1676,11 @@ func isArrayExpr(e Expr) bool {
 			return true
 		}
 	case *VarExpr:
+		if ex.Type != "" {
+			if strings.HasSuffix(ex.Type, "[]") {
+				return true
+			}
+		}
 		if t, ok := varTypes[ex.Name]; ok && strings.HasSuffix(t, "[]") {
 			return true
 		}
@@ -2060,11 +2083,19 @@ func compileStmt(s *parser.Statement) (Stmt, error) {
 					}
 				}
 			}
-			base := Expr(&VarExpr{Name: s.Assign.Name})
+			baseType := ""
+			if t, ok := varTypes[s.Assign.Name]; ok {
+				baseType = t
+			}
+			base := Expr(&VarExpr{Name: s.Assign.Name, Type: baseType})
 			return &IndexAssignStmt{Target: base, Indices: indices, Expr: val}, nil
 		}
 		if len(s.Assign.Field) > 0 && len(s.Assign.Index) == 0 {
-			base := Expr(&VarExpr{Name: s.Assign.Name})
+			baseType := ""
+			if t, ok := varTypes[s.Assign.Name]; ok {
+				baseType = t
+			}
+			base := Expr(&VarExpr{Name: s.Assign.Name, Type: baseType})
 			for i := 0; i < len(s.Assign.Field)-1; i++ {
 				base = &IndexExpr{Target: base, Index: &StringLit{Value: s.Assign.Field[i].Name}}
 			}
@@ -2588,7 +2619,11 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 				return &IntLit{Value: 42}, nil
 			}
 		}
-		expr := Expr(&VarExpr{Name: p.Selector.Root})
+		typ := ""
+		if t, ok := varTypes[p.Selector.Root]; ok {
+			typ = t
+		}
+		expr := Expr(&VarExpr{Name: p.Selector.Root, Type: typ})
 		for _, name := range p.Selector.Tail {
 			expr = &FieldExpr{Target: expr, Name: name}
 		}
@@ -3330,7 +3365,7 @@ func renameVar(e Expr, oldName, newName string) Expr {
 	switch ex := e.(type) {
 	case *VarExpr:
 		if ex.Name == oldName {
-			return &VarExpr{Name: newName}
+			return &VarExpr{Name: newName, Type: ex.Type}
 		}
 		return ex
 	case *FieldExpr:
