@@ -1927,11 +1927,18 @@ func transpileWhileStmt(w *parser.WhileStmt) (Node, error) {
 
 	condElems := []Node{}
 	other := []Node{}
+	pre := []Node{}
+	condFound := false
 	for _, n := range bodyNodes {
 		if c, b, ok := condRecur(n); ok {
+			condFound = true
 			condElems = append(condElems, c, b)
 		} else {
-			other = append(other, n)
+			if !condFound {
+				pre = append(pre, n)
+			} else {
+				other = append(other, n)
+			}
 		}
 	}
 
@@ -1946,7 +1953,13 @@ func transpileWhileStmt(w *parser.WhileStmt) (Node, error) {
 	condElems = append(condElems, Keyword("else"), elseNode)
 
 	condForm := &List{Elems: append([]Node{Symbol("cond")}, condElems...)}
-	loopBody := &List{Elems: []Node{Symbol("when"), &List{Elems: []Node{Symbol("and"), Symbol(flagVar), cond}}, condForm}}
+	var bodyNode Node
+	if len(pre) == 0 {
+		bodyNode = condForm
+	} else {
+		bodyNode = &List{Elems: append([]Node{Symbol("do")}, append(pre, condForm)...)}
+	}
+	loopBody := &List{Elems: []Node{Symbol("when"), &List{Elems: []Node{Symbol("and"), Symbol(flagVar), cond}}, bodyNode}}
 	binding := &Vector{Elems: []Node{Symbol(flagVar), Symbol("true")}}
 	return &List{Elems: []Node{Symbol("loop"), binding, loopBody}}, nil
 }
@@ -2062,7 +2075,7 @@ func condRecur(n Node) (cond Node, recur Node, ok bool) {
 						if first, ok := r.Elems[0].(Symbol); ok && first == "do" {
 							if rl, ok := r.Elems[len(r.Elems)-1].(*List); ok && len(rl.Elems) == 2 {
 								if rsym, ok := rl.Elems[0].(Symbol); ok && rsym == "recur" {
-									return l.Elems[1], rl, true
+									return l.Elems[1], r, true
 								}
 							}
 						}
