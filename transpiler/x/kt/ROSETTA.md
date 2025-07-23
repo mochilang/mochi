@@ -2,9 +2,9 @@
 
 Generated Kotlin sources for Rosetta Code tests are stored in `tests/rosetta/transpiler/Kotlin`.
 
-Last updated: 2025-07-23 19:32 +0700
+Last updated: 2025-07-23 19:55 +0700
 
-Completed tasks: **25/284**
+Completed tasks: **33/284**
 
 ### Checklist
 1. [x] `100-doors-2`
@@ -32,26 +32,26 @@ Completed tasks: **25/284**
 23. [x] `abstract-type`
 24. [x] `abundant-deficient-and-perfect-number-classifications`
 25. [x] `abundant-odd-numbers`
-26. [ ] `accumulator-factory`
+26. [x] `accumulator-factory`
 27. [ ] `achilles-numbers`
 28. [ ] `ackermann-function-2`
 29. [ ] `ackermann-function-3`
 30. [ ] `ackermann-function`
-31. [ ] `active-directory-connect`
-32. [ ] `active-directory-search-for-a-user`
+31. [x] `active-directory-connect`
+32. [x] `active-directory-search-for-a-user`
 33. [ ] `active-object`
 34. [ ] `add-a-variable-to-a-class-instance-at-runtime`
-35. [ ] `additive-primes`
-36. [ ] `address-of-a-variable`
+35. [x] `additive-primes`
+36. [x] `address-of-a-variable`
 37. [ ] `adfgvx-cipher`
-38. [ ] `aks-test-for-primes`
+38. [x] `aks-test-for-primes`
 39. [ ] `algebraic-data-types`
 40. [ ] `align-columns`
 41. [ ] `aliquot-sequence-classifications`
 42. [ ] `almkvist-giullera-formula-for-pi`
 43. [ ] `almost-prime`
-44. [ ] `amb`
-45. [ ] `amicable-pairs`
+44. [x] `amb`
+45. [x] `amicable-pairs`
 46. [ ] `anagrams-deranged-anagrams`
 47. [ ] `anagrams`
 48. [ ] `angle-difference-between-two-bearings-1`

@@ -19,6 +19,7 @@ var (
 	helperSnippets map[string]string
 	extraHelpers   []string
 	helpersUsed    map[string]bool
+	localFuncs     map[string]bool
 	builtinAliases map[string]string
 	reserved       map[string]bool
 	currentRetType string
@@ -150,6 +151,7 @@ fun _now(): Int {
 	}
 	extraHelpers = nil
 	helpersUsed = map[string]bool{}
+	localFuncs = map[string]bool{}
 }
 
 // Program represents a simple Kotlin program consisting of statements executed in main.
@@ -566,8 +568,9 @@ func (c *ContainsExpr) emit(w io.Writer) {
 
 // VarRef references a variable by name with optional type information.
 type VarRef struct {
-	Name string
-	Type string
+	Name   string
+	Type   string
+	IsFunc bool
 }
 
 func (v *VarRef) emit(w io.Writer) {
@@ -575,7 +578,11 @@ func (v *VarRef) emit(w io.Writer) {
 		io.WriteString(w, "null")
 		return
 	}
-	io.WriteString(w, safeName(v.Name))
+	if v.IsFunc {
+		io.WriteString(w, "::"+safeName(v.Name))
+	} else {
+		io.WriteString(w, safeName(v.Name))
+	}
 }
 
 // FieldExpr represents obj.field access.
@@ -1908,12 +1915,19 @@ func newVarRef(env *types.Env, name string) *VarRef {
 		return &VarRef{Name: "null"}
 	}
 	typ := ""
+	isFunc := false
 	if env != nil {
 		if t, err := env.GetVar(name); err == nil {
 			typ = kotlinTypeFromType(t)
 		}
+		if _, ok := env.GetFunc(name); ok {
+			isFunc = true
+		}
 	}
-	return &VarRef{Name: name, Type: typ}
+	if localFuncs[name] {
+		isFunc = true
+	}
+	return &VarRef{Name: name, Type: typ, IsFunc: isFunc}
 }
 
 func envTypeName(env *types.Env, name string) string {
@@ -1998,6 +2012,7 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 	extraUnions = nil
 	extraHelpers = nil
 	helpersUsed = map[string]bool{}
+	localFuncs = map[string]bool{}
 	p := &Program{}
 	for _, st := range prog.Statements {
 		switch {
@@ -2097,6 +2112,11 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 					typ = ""
 				}
 			}
+			if st.Var.Type != nil {
+				if _, ok := val.(*MapLit); ok {
+					val = &CastExpr{Value: val, Type: typ}
+				}
+			}
 			p.Globals = append(p.Globals, &VarStmt{Name: st.Var.Name, Type: typ, Value: val})
 			if env != nil {
 				var tt types.Type
@@ -2158,10 +2178,19 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 			p.Stmts = append(p.Stmts, &ReturnStmt{Value: val})
 		case st.Fun != nil:
 			bodyEnv := types.NewEnv(env)
+			ftParams := make([]types.Type, 0, len(st.Fun.Params))
 			for _, p0 := range st.Fun.Params {
 				pt := types.ResolveTypeRef(p0.Type, env)
 				bodyEnv.SetVar(p0.Name, pt, true)
+				ftParams = append(ftParams, pt)
 			}
+			var retType types.Type = types.VoidType{}
+			if st.Fun.Return != nil {
+				retType = types.ResolveTypeRef(st.Fun.Return, env)
+			}
+			env.SetVar(st.Fun.Name, types.FuncType{Params: ftParams, Return: retType}, false)
+			env.SetFunc(st.Fun.Name, st.Fun)
+			localFuncs[st.Fun.Name] = true
 			prevRet := currentRetType
 			ret := kotlinType(st.Fun.Return)
 			if ret == "" {
@@ -2539,11 +2568,24 @@ func convertStmts(env *types.Env, list []*parser.Statement) ([]Stmt, error) {
 			out = append(out, st)
 		case s.Fun != nil:
 			bodyEnv := types.NewEnv(env)
+			ftParams := make([]types.Type, 0, len(s.Fun.Params))
 			for _, p0 := range s.Fun.Params {
 				pt := types.ResolveTypeRef(p0.Type, env)
 				bodyEnv.SetVar(p0.Name, pt, true)
+				ftParams = append(ftParams, pt)
 			}
+			var retType types.Type = types.VoidType{}
+			if s.Fun.Return != nil {
+				retType = types.ResolveTypeRef(s.Fun.Return, env)
+			}
+			env.SetVar(s.Fun.Name, types.FuncType{Params: ftParams, Return: retType}, false)
+			env.SetFunc(s.Fun.Name, s.Fun)
+			localFuncs[s.Fun.Name] = true
+			prevRet := currentRetType
+			ret := kotlinType(s.Fun.Return)
+			currentRetType = ret
 			body, err := convertStmts(bodyEnv, s.Fun.Body)
+			currentRetType = prevRet
 			if err != nil {
 				return nil, err
 			}
@@ -2555,7 +2597,6 @@ func convertStmts(env *types.Env, list []*parser.Statement) ([]Stmt, error) {
 				}
 				params = append(params, fmt.Sprintf("%s: %s", p0.Name, typ))
 			}
-			ret := kotlinType(s.Fun.Return)
 			if ret == "" {
 				if t, ok := env.Types()[s.Fun.Name]; ok {
 					if ft, ok := t.(types.FuncType); ok {
@@ -2578,7 +2619,9 @@ func convertStmts(env *types.Env, list []*parser.Statement) ([]Stmt, error) {
 				}
 			}
 			if currentRetType != "" && currentRetType != "Any" && v != nil {
-				v = &CastExpr{Value: v, Type: currentRetType}
+				if guessType(v) != currentRetType {
+					v = &CastExpr{Value: v, Type: currentRetType}
+				}
 			}
 			out = append(out, &ReturnStmt{Value: v})
 		case s.If != nil:

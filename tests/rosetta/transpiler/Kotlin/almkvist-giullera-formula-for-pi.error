@@ -1,0 +1,28 @@
+OpenJDK 64-Bit Server VM warning: Options -Xverify:none and -noverify were deprecated in JDK 13 and will likely be removed in a future release.
+/workspace/mochi/tests/rosetta/transpiler/Kotlin/almkvist-giullera-formula-for-pi.kt:367:139: error: type expected
+        if ((denomPow >= 70) && (bigCmp(diff, bigMulPow10(bigFromInt(1) as MutableList<Int>, denomPow - 70) as MutableList<Int>) as Int < 0)) {
+                                                                                                                                          ^
+/workspace/mochi/tests/rosetta/transpiler/Kotlin/almkvist-giullera-formula-for-pi.kt:367:140: error: expecting a '>'
+        if ((denomPow >= 70) && (bigCmp(diff, bigMulPow10(bigFromInt(1) as MutableList<Int>, denomPow - 70) as MutableList<Int>) as Int < 0)) {
+                                                                                                                                           ^
+/workspace/mochi/tests/rosetta/transpiler/Kotlin/almkvist-giullera-formula-for-pi.kt:377:102: error: type expected
+    while (bigCmp(low, bigSub(high, bigFromInt(1) as MutableList<Int>) as MutableList<Int>) as Int < 0) {
+                                                                                                     ^
+/workspace/mochi/tests/rosetta/transpiler/Kotlin/almkvist-giullera-formula-for-pi.kt:377:103: error: expecting a '>'
+    while (bigCmp(low, bigSub(high, bigFromInt(1) as MutableList<Int>) as MutableList<Int>) as Int < 0) {
+                                                                                                      ^
+/workspace/mochi/tests/rosetta/transpiler/Kotlin/almkvist-giullera-formula-for-pi.kt:273:30: error: expression '(f)["get"]!!' of type 'Int' cannot be invoked as a function. The function 'invoke()' is not found
+        (f)[n.toString()] = ((f)["get"]!!(n.toString(), 0) as Int) + 1
+                             ^
+/workspace/mochi/tests/rosetta/transpiler/Kotlin/almkvist-giullera-formula-for-pi.kt:282:22: error: expression '(exps)["get"]!!' of type 'Int' cannot be invoked as a function. The function 'invoke()' is not found
+        (exps)[k] = ((exps)["get"]!!(k, 0) as Int) - (6 * (fn)[k] as Int)
+                     ^
+/workspace/mochi/tests/rosetta/transpiler/Kotlin/almkvist-giullera-formula-for-pi.kt:284:20: error: expression '(exps)["get"]!!' of type 'Int' cannot be invoked as a function. The function 'invoke()' is not found
+    (exps)["2"] = ((exps)["get"]!!("2", 0) as Int) + 5
+                   ^
+/workspace/mochi/tests/rosetta/transpiler/Kotlin/almkvist-giullera-formula-for-pi.kt:288:22: error: expression '(exps)["get"]!!' of type 'Int' cannot be invoked as a function. The function 'invoke()' is not found
+        (exps)[k] = ((exps)["get"]!!(k, 0) as Int) + (ft2)[k] as Int
+                     ^
+/workspace/mochi/tests/rosetta/transpiler/Kotlin/almkvist-giullera-formula-for-pi.kt:290:20: error: expression '(exps)["get"]!!' of type 'Int' cannot be invoked as a function. The function 'invoke()' is not found
+    (exps)["3"] = ((exps)["get"]!!("3", 0) as Int) - 1
+                   ^

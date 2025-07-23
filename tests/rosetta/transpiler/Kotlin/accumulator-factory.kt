@@ -2,10 +2,10 @@ fun accumulator(sum: Any): (Any) -> Any {
     var store: MutableList<Any> = mutableListOf(sum)
     fun add(nv: Any): Any {
         store[0] = (store[0] as Number).toDouble() + (nv as Number).toDouble()
-        return store[0] as (Any) -> Any
+        return store[0]
     }
 
-    return add as (Any) -> Any
+    return ::add
 }
 
 fun user_main(): Unit {
