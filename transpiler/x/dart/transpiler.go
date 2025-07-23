@@ -1302,6 +1302,12 @@ type CastExpr struct {
 }
 
 func (c *CastExpr) emit(w io.Writer) error {
+	if c.Type == "BigInt" {
+		if lit, ok := c.Value.(*IntLit); ok {
+			_, err := fmt.Fprintf(w, "BigInt.from(%d)", lit.Value)
+			return err
+		}
+	}
 	if err := c.Value.emit(w); err != nil {
 		return err
 	}
@@ -1317,6 +1323,9 @@ func (c *CastExpr) emit(w io.Writer) error {
 		return err
 	case "bool":
 		_, err := io.WriteString(w, " as bool")
+		return err
+	case "BigInt":
+		_, err := io.WriteString(w, " as BigInt")
 		return err
 	default:
 		_, err := io.WriteString(w, " as "+c.Type)
@@ -1977,6 +1986,8 @@ func dartType(t types.Type) string {
 	switch v := t.(type) {
 	case types.IntType, types.Int64Type:
 		return "int"
+	case types.BigIntType:
+		return "BigInt"
 	case types.FloatType, types.BigRatType:
 		return "num"
 	case types.BoolType:
@@ -3416,6 +3427,13 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 			v, err := convertExpr(p.Call.Args[0])
 			if err != nil {
 				return nil, err
+			}
+			if currentEnv != nil {
+				if t := types.ExprType(p.Call.Args[0], currentEnv); t != nil {
+					if _, ok := t.(types.BigIntType); ok {
+						return &CallExpr{Func: &SelectorExpr{Receiver: v, Field: "toInt"}}, nil
+					}
+				}
 			}
 			return &CallExpr{Func: &SelectorExpr{Receiver: &Name{Name: "int"}, Field: "parse"}, Args: []Expr{v}}, nil
 		}
