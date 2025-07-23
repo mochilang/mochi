@@ -5,6 +5,7 @@ package cpp_test
 import (
 	"bufio"
 	"bytes"
+	"flag"
 	"fmt"
 	"os"
 	"os/exec"
@@ -18,6 +19,10 @@ import (
 	cpp "mochi/transpiler/x/cpp"
 	"mochi/types"
 )
+
+var update = flag.Bool("update-rosetta-cpp", false, "update rosetta golden files")
+
+func updateEnabled() bool { return *update }
 
 func readIndex(dir string) ([]string, error) {
 	path := filepath.Join(dir, "index.txt")
@@ -80,6 +85,11 @@ func TestCPPTranspiler_Rosetta_Golden(t *testing.T) {
 		codePath := filepath.Join(outDir, base+".cpp")
 		outPath := filepath.Join(outDir, base+".out")
 		errPath := filepath.Join(outDir, base+".error")
+		want, err := os.ReadFile(outPath)
+		if err != nil && !updateEnabled() {
+			return fmt.Errorf("missing golden output: %v", err)
+		}
+		want = bytes.TrimSpace(want)
 
 		prog, err := parser.Parse(src)
 		if err != nil {
@@ -111,13 +121,22 @@ func TestCPPTranspiler_Rosetta_Golden(t *testing.T) {
 			cmd.Stdin = bytes.NewReader(data)
 		}
 		out, err := cmd.CombinedOutput()
+		got := bytes.TrimSpace(out)
 		if err != nil {
 			_ = os.WriteFile(errPath, append([]byte("run: "+err.Error()+"\n"), out...), 0o644)
-			return err
+			if !updateEnabled() {
+				return err
+			}
+		} else {
+			_ = os.Remove(errPath)
 		}
-		_ = os.Remove(errPath)
-		outBytes := bytes.TrimSpace(out)
-		_ = os.WriteFile(outPath, outBytes, 0o644)
+		if updateEnabled() {
+			_ = os.WriteFile(outPath, got, 0o644)
+			return nil
+		}
+		if !bytes.Equal(got, want) {
+			return fmt.Errorf("output mismatch")
+		}
 		return nil
 	}
 

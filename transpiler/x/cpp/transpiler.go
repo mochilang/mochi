@@ -32,6 +32,7 @@ var inLambda int
 var builtinAliases map[string]string
 var useNow bool
 var reserved = map[string]bool{"this": true}
+var currentReturnType string
 
 func safeName(n string) string {
 	if reserved[n] {
@@ -569,6 +570,12 @@ func (p *Program) write(w io.Writer) {
 	// emit helper functions first
 	first := true
 	var mainFn *Func
+	for _, st := range p.Globals {
+		st.emit(w, 0)
+	}
+	if len(p.Globals) > 0 {
+		fmt.Fprintln(w)
+	}
 	for _, fn := range p.Functions {
 		if fn.Name == "main" {
 			mainFn = fn
@@ -580,16 +587,8 @@ func (p *Program) write(w io.Writer) {
 		first = false
 		fn.emit(w)
 	}
-	if len(p.Functions) > 1 {
-		fmt.Fprintln(w)
-	}
-	for _, st := range p.Globals {
-		st.emit(w, 0)
-	}
 	if mainFn != nil {
-		if len(p.Globals) > 0 {
-			fmt.Fprintln(w)
-		} else if !first {
+		if !first {
 			fmt.Fprintln(w)
 		}
 		mainFn.emit(w)
@@ -744,7 +743,13 @@ func (m *MapLit) emit(w io.Writer) {
 			m.Keys[i].emit(w)
 		}
 		io.WriteString(w, ", ")
-		m.Values[i].emit(w)
+		if m.ValueType == "std::any" {
+			io.WriteString(w, "std::any(")
+			m.Values[i].emit(w)
+			io.WriteString(w, ")")
+		} else {
+			m.Values[i].emit(w)
+		}
 		io.WriteString(w, "}")
 	}
 	io.WriteString(w, "}")
@@ -797,6 +802,16 @@ func (s *StructLit) emit(w io.Writer) {
 }
 
 func (u *UnaryExpr) emit(w io.Writer) {
+	if u.Op == "!" && exprType(u.Expr) == "std::any" {
+		if currentProgram != nil {
+			currentProgram.addInclude("<any>")
+		}
+		io.WriteString(w, "!")
+		io.WriteString(w, "std::any_cast<bool>(")
+		u.Expr.emit(w)
+		io.WriteString(w, ")")
+		return
+	}
 	io.WriteString(w, u.Op)
 	u.Expr.emit(w)
 }
@@ -966,17 +981,27 @@ func (n *NowExpr) emit(w io.Writer) {
 }
 
 func (c *CastExpr) emit(w io.Writer) {
-	if c.Type == "int" {
+	valType := exprType(c.Value)
+	if c.Type == "int" && valType == "std::string" {
 		io.WriteString(w, "std::stoi(")
 		c.Value.emit(w)
 		io.WriteString(w, ")")
-	} else {
-		io.WriteString(w, "(")
-		io.WriteString(w, c.Type)
-		io.WriteString(w, ")(")
+		return
+	}
+	if valType == "std::any" {
+		if currentProgram != nil {
+			currentProgram.addInclude("<any>")
+		}
+		fmt.Fprintf(w, "std::any_cast<%s>(", c.Type)
 		c.Value.emit(w)
 		io.WriteString(w, ")")
+		return
 	}
+	io.WriteString(w, "(")
+	io.WriteString(w, c.Type)
+	io.WriteString(w, ")(")
+	c.Value.emit(w)
+	io.WriteString(w, ")")
 }
 
 func (s *SubstringExpr) emit(w io.Writer) {
@@ -2218,7 +2243,16 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	}
 	cp.Globals = globals
 	cp.UseNow = useNow
-	cp.Functions = append(cp.Functions, &Func{Name: "main", ReturnType: "int", Body: body})
+	hasMain := false
+	for _, fn := range cp.Functions {
+		if fn.Name == "main" {
+			hasMain = true
+			break
+		}
+	}
+	if !hasMain {
+		cp.Functions = append(cp.Functions, &Func{Name: "main", ReturnType: "int", Body: body})
+	}
 	return cp, nil
 }
 
@@ -2810,6 +2844,18 @@ func convertFun(fn *parser.FunStmt) (*Func, error) {
 	inFunction = true
 	prevLocals := localTypes
 	localTypes = map[string]string{}
+	ret := "int"
+	if fn.Return == nil {
+		ret = "void"
+	} else if fn.Return.Simple != nil {
+		ret = cppType(*fn.Return.Simple)
+	} else if fn.Return.Generic != nil {
+		ret = cppType(typeRefString(&parser.TypeRef{Generic: fn.Return.Generic}))
+	} else {
+		ret = "auto"
+	}
+	prevRet := currentReturnType
+	currentReturnType = ret
 	for _, p := range fn.Params {
 		if p.Type != nil {
 			tp := types.ResolveTypeRef(p.Type, currentEnv)
@@ -2822,6 +2868,7 @@ func convertFun(fn *parser.FunStmt) (*Func, error) {
 		s, err := convertStmt(st)
 		if err != nil {
 			inFunction = prev
+			currentReturnType = prevRet
 			return nil, err
 		}
 		body = append(body, s)
@@ -2836,16 +2883,7 @@ func convertFun(fn *parser.FunStmt) (*Func, error) {
 		inFunction = prev
 		params = append(params, Param{Name: p.Name, Type: typ})
 	}
-	ret := "int"
-	if fn.Return == nil {
-		ret = "void"
-	} else if fn.Return.Simple != nil {
-		ret = cppType(*fn.Return.Simple)
-	} else {
-		// for function, struct or generic return types use auto to
-		// allow the compiler to deduce the concrete closure type
-		ret = "auto"
-	}
+	defer func() { currentReturnType = prevRet }()
 	return &Func{Name: fn.Name, Params: params, ReturnType: ret, Body: body}, nil
 }
 
@@ -3117,6 +3155,12 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 		}
 		kt := guessType(p.Map.Items[0].Key)
 		vt := guessType(p.Map.Items[0].Value)
+		if currentReturnType == "std::map<std::string, std::any>" {
+			if kt == "auto" {
+				kt = "std::string"
+			}
+			vt = "std::any"
+		}
 		keys := make([]Expr, len(p.Map.Items))
 		vals := make([]Expr, len(p.Map.Items))
 		for i, it := range p.Map.Items {
@@ -4089,6 +4133,11 @@ func cppType(t string) string {
 		return "double"
 	case "bool":
 		return "bool"
+	case "any":
+		if currentProgram != nil {
+			currentProgram.addInclude("<any>")
+		}
+		return "std::any"
 	case "string":
 		return "std::string"
 	}
@@ -4131,6 +4180,11 @@ func cppTypeFrom(tp types.Type) string {
 		return "bool"
 	case types.StringType:
 		return "std::string"
+	case types.AnyType:
+		if currentProgram != nil {
+			currentProgram.addInclude("<any>")
+		}
+		return "std::any"
 	case types.ListType:
 		return fmt.Sprintf("std::vector<%s>", cppTypeFrom(t.Elem))
 	case types.MapType:
