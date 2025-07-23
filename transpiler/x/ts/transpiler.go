@@ -33,6 +33,8 @@ var pythonMathAliases map[string]bool
 var useNow bool
 var useInput bool
 var useKeys bool
+var useNumDenom bool
+var useSHA256 bool
 
 var reserved = map[string]bool{
 	"break": true, "case": true, "catch": true, "class": true, "const": true,
@@ -1893,6 +1895,8 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	useNow = false
 	useInput = false
 	useKeys = false
+	useNumDenom = false
+	useSHA256 = false
 	defer func() {
 		transpileEnv = nil
 		generatedTypes = nil
@@ -1901,6 +1905,8 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 		useNow = false
 		useInput = false
 		useKeys = false
+		useNumDenom = false
+		useSHA256 = false
 	}()
 	tsProg := &Program{}
 
@@ -1961,6 +1967,18 @@ function _input(): string {
 	if useKeys {
 		prelude = append(prelude, &RawStmt{Code: `function _keys(obj: any): any[] {
   return Object.keys(obj);
+}`})
+	}
+	if useNumDenom {
+		prelude = append(prelude, &RawStmt{Code: `function num(x: number): number { return x; }
+function denom(_x: number): number { return 1; }`})
+	}
+	if useSHA256 {
+		prelude = append(prelude, &RawStmt{Code: `import { createHash } from 'node:crypto';
+function sha256(bs: number[]): number[] {
+  const hash = createHash('sha256');
+  hash.update(new Uint8Array(bs));
+  return Array.from(hash.digest());
 }`})
 	}
 	if len(prelude) > 0 {
@@ -2039,12 +2057,14 @@ func convertStmt(s *parser.Statement) (Stmt, error) {
 		// `const` when scope analysis fails for locals.
 		mutable := true
 		var t types.Type
-		var typErr error
-		if transpileEnv != nil {
-			t, typErr = transpileEnv.GetVar(s.Var.Name)
-		}
-		if typErr != nil && s.Var.Value != nil {
+		if s.Var.Value != nil {
 			t = types.CheckExprType(s.Var.Value, transpileEnv)
+		} else if transpileEnv != nil {
+			var typErr error
+			t, typErr = transpileEnv.GetVar(s.Var.Name)
+			if typErr != nil {
+				t = nil
+			}
 		}
 		if it, ok := inferLiteralType(s.Var.Value, transpileEnv); ok {
 			t = it
@@ -2916,6 +2936,9 @@ func convertPostfix(p *parser.PostfixExpr) (Expr, error) {
 				if err != nil {
 					return nil, err
 				}
+				if !isMapExpr(p) {
+					idx = &CallExpr{Func: "Math.trunc", Args: []Expr{idx}}
+				}
 				expr = &IndexExpr{Target: expr, Index: idx}
 			}
 		case op.Call != nil:
@@ -2953,7 +2976,15 @@ func convertPostfix(p *parser.PostfixExpr) (Expr, error) {
 				expr = &IndexExpr{Target: expr, Index: &StringLit{Value: op.Field.Name}}
 			}
 		case op.Cast != nil:
-			// ignore casts
+			if op.Cast.Type != nil && transpileEnv != nil {
+				t := types.ResolveTypeRef(op.Cast.Type, transpileEnv)
+				switch t.(type) {
+				case types.IntType, types.Int64Type:
+					expr = &CallExpr{Func: "Math.trunc", Args: []Expr{expr}}
+				default:
+					// other casts are no-ops in JavaScript
+				}
+			}
 		default:
 			return nil, fmt.Errorf("postfix op not supported")
 		}
@@ -3136,6 +3167,16 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 				return nil, fmt.Errorf("substring expects three arguments")
 			}
 			return &SubstringExpr{Str: args[0], Start: args[1], End: args[2]}, nil
+		case "indexOf":
+			if len(args) != 2 {
+				return nil, fmt.Errorf("indexOf expects two arguments")
+			}
+			return &MethodCallExpr{Target: args[0], Method: "indexOf", Args: []Expr{args[1]}}, nil
+		case "substr":
+			if len(args) != 3 {
+				return nil, fmt.Errorf("substr expects three arguments")
+			}
+			return &MethodCallExpr{Target: args[0], Method: "substring", Args: []Expr{args[1], args[2]}}, nil
 		case "upper":
 			if len(args) != 1 {
 				return nil, fmt.Errorf("upper expects one argument")
@@ -3146,6 +3187,34 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 				return nil, fmt.Errorf("lower expects one argument")
 			}
 			return &MethodCallExpr{Target: args[0], Method: "toLowerCase", Args: nil}, nil
+		case "contains":
+			if len(args) != 2 {
+				return nil, fmt.Errorf("contains expects two arguments")
+			}
+			return &MethodCallExpr{Target: args[0], Method: "includes", Args: []Expr{args[1]}}, nil
+		case "padStart":
+			if len(args) != 3 {
+				return nil, fmt.Errorf("padStart expects three arguments")
+			}
+			return &MethodCallExpr{Target: args[0], Method: "padStart", Args: []Expr{args[1], args[2]}}, nil
+		case "sha256":
+			if len(args) != 1 {
+				return nil, fmt.Errorf("sha256 expects one argument")
+			}
+			useSHA256 = true
+			return &CallExpr{Func: "sha256", Args: args}, nil
+		case "num":
+			if len(args) != 1 {
+				return nil, fmt.Errorf("num expects one argument")
+			}
+			useNumDenom = true
+			return &CallExpr{Func: "num", Args: args}, nil
+		case "denom":
+			if len(args) != 1 {
+				return nil, fmt.Errorf("denom expects one argument")
+			}
+			useNumDenom = true
+			return &CallExpr{Func: "denom", Args: args}, nil
 		default:
 			if fn, ok := transpileEnv.GetFunc(p.Call.Func); ok {
 				if len(args) < len(fn.Params) {
