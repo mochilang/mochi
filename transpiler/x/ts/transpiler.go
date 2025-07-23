@@ -2377,6 +2377,10 @@ func convertUpdate(u *parser.UpdateStmt, env *types.Env) (*UpdateStmt, error) {
 }
 
 func convertTypeDecl(td *parser.TypeDecl) (Stmt, error) {
+	if td.Alias != nil {
+		typ := tsType(types.ResolveTypeRef(td.Alias, transpileEnv))
+		return &TypeAlias{Name: td.Name, Type: typ}, nil
+	}
 	if len(td.Variants) > 0 {
 		parts := make([]string, len(td.Variants))
 		for i, v := range td.Variants {

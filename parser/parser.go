@@ -148,6 +148,7 @@ type TypeDecl struct {
 	Doc      string
 	Members  []*TypeMember  `parser:"[ [ '=' ] '{' @@ { [ ',' ] @@ } [ ',' ]? '}' ]"`
 	Variants []*TypeVariant `parser:"[ '=' @@ { '|' @@ } ]"`
+	Alias    *TypeRef       `parser:"[ '=' @@ ]"`
 }
 
 type TypeMember struct {
@@ -539,8 +540,8 @@ type FunExpr struct {
 	Pos       lexer.Position
 	Params    []*Param     `parser:"'fun' '(' [ @@ { ',' @@ } ] ')'"`
 	Return    *TypeRef     `parser:"[ ':' @@ ]"`
-	ExprBody  *Expr        `parser:"'=>' @@"`
-	BlockBody []*Statement `parser:"| '{' @@* '}'"`
+	BlockBody []*Statement `parser:"'{' @@* '}'"`
+	ExprBody  *Expr        `parser:"| '=>' @@"`
 }
 
 // --- Atoms ---
