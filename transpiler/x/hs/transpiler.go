@@ -51,6 +51,12 @@ var needTrace bool
 // needIORef reports whether Data.IORef is required.
 var needIORef bool
 
+// usesNow reports whether the _now helper is required.
+var usesNow bool
+
+// usesInput reports whether the input helper is required.
+var usesInput bool
+
 // groupVars tracks variables that represent groups.
 var groupVars map[string]bool
 
@@ -303,7 +309,7 @@ func guessHsType(ex Expr) string {
 	}
 	if be, ok := ex.(*BinaryExpr); ok {
 		if len(be.Ops) > 0 {
-			op := be.Ops[0].Op
+			op := be.Ops[len(be.Ops)-1].Op
 			switch op {
 			case "+", "-", "*", "/":
 				if op == "/" || isFloatExpr(be.Left) || isFloatExpr(be.Ops[0].Right) {
@@ -318,6 +324,8 @@ func guessHsType(ex Expr) string {
 				if isIntExpr(be.Left) || isIntExpr(be.Ops[0].Right) {
 					return "Int"
 				}
+			case "==", "!=", "<", ">", "<=", ">=", "&&", "||", "in":
+				return "Bool"
 			}
 		}
 	}
@@ -1445,6 +1453,8 @@ func (b *BinaryExpr) emit(w io.Writer) {
 			io.WriteString(w, "\\\\")
 		case "intersect":
 			io.WriteString(w, "`intersect`")
+		case "!=":
+			io.WriteString(w, "/=")
 		default:
 			io.WriteString(w, op.Op)
 		}
@@ -1642,7 +1652,7 @@ func inferVarFromSource(name string, src Expr) {
 	}
 }
 
-func header(withList, withMap, withJSON, withTrace, withIORef bool) string {
+func header(withList, withMap, withJSON, withTrace, withIORef, withNow bool) string {
 	out, err := exec.Command("git", "log", "-1", "--date=iso-strict", "--format=%cd").Output()
 	ts := time.Now()
 	if err == nil {
@@ -1679,9 +1689,45 @@ func header(withList, withMap, withJSON, withTrace, withIORef bool) string {
 	if withIORef {
 		h += "import Data.IORef\n"
 		h += "import System.IO.Unsafe (unsafePerformIO)\n"
+	}
+	if withNow {
+		h += "import System.Environment (lookupEnv)\n"
+		h += "import Data.Time.Clock.POSIX (getPOSIXTime)\n"
+		h += "import Data.Char (isDigit)\n"
+	}
+	h += "import System.IO (isEOF)\n"
+	h += "input :: IO String\n"
+	h += "input = do\n"
+	h += "    eof <- isEOF\n"
+	h += "    if eof then return \"\" else getLine\n"
+	if withIORef {
 		h += "deref :: IORef a -> a\n"
 		h += "{-# NOINLINE deref #-}\n"
 		h += "deref r = unsafePerformIO (atomicModifyIORef' r (\\x -> (x, x)))\n"
+	}
+	if withNow {
+		h += "_nowSeed :: IORef Int\n"
+		h += "_nowSeed = unsafePerformIO (newIORef 0)\n"
+		h += "{-# NOINLINE _nowSeed #-}\n"
+		h += "_nowSeeded :: IORef Bool\n"
+		h += "_nowSeeded = unsafePerformIO (newIORef False)\n"
+		h += "{-# NOINLINE _nowSeeded #-}\n"
+		h += "_now :: IO Int\n"
+		h += "_now = do\n"
+		h += "    seeded <- readIORef _nowSeeded\n"
+		h += "    if not seeded then do\n"
+		h += "        m <- lookupEnv \"MOCHI_NOW_SEED\"\n"
+		h += "        case m of\n"
+		h += "            Just s | all isDigit s -> do writeIORef _nowSeed (read s); writeIORef _nowSeeded True\n"
+		h += "            _ -> return ()\n"
+		h += "     else return ()\n"
+		h += "    seeded2 <- readIORef _nowSeeded\n"
+		h += "    if seeded2 then do\n"
+		h += "        modifyIORef' _nowSeed (\\x -> (x * 1664525 + 1013904223) `mod` 2147483647)\n"
+		h += "        readIORef _nowSeed\n"
+		h += "    else do\n"
+		h += "        t <- getPOSIXTime\n"
+		h += "        return (floor (t * 1000000000))\n"
 	}
 	return h
 }
@@ -1695,7 +1741,7 @@ func Emit(p *Program) []byte {
 		}
 	}
 	var buf bytes.Buffer
-	buf.WriteString(header(needDataList, needDataMap, needJSON, needTrace, needIORef))
+	buf.WriteString(header(needDataList, needDataMap, needJSON, needTrace, needIORef, usesNow))
 	if needGroupBy {
 		buf.WriteString(groupPrelude())
 		buf.WriteByte('\n')
@@ -1748,9 +1794,18 @@ func Emit(p *Program) []byte {
 	}
 	for _, l := range refDecls {
 		writeIndent(&buf)
-		io.WriteString(&buf, safeName(l.Name)+" <- newIORef (")
-		l.Expr.emit(&buf)
-		io.WriteString(&buf, ")\n")
+		name := safeName(l.Name)
+		if indent == "" {
+			io.WriteString(&buf, name+" = unsafePerformIO (newIORef (")
+			l.Expr.emit(&buf)
+			io.WriteString(&buf, "))\n")
+			writeIndent(&buf)
+			fmt.Fprintf(&buf, "{-# NOINLINE %s #-}\n", name)
+		} else {
+			io.WriteString(&buf, name+" <- newIORef (")
+			l.Expr.emit(&buf)
+			io.WriteString(&buf, ")\n")
+		}
 	}
 	for _, s := range p.Stmts {
 		if l, ok := s.(*LetStmt); ok {
@@ -1783,6 +1838,8 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	needJSON = false
 	needTrace = false
 	needIORef = false
+	usesNow = false
+	usesInput = false
 	groupVars = map[string]bool{}
 	groupKeyStruct = map[string]string{}
 	groupItemType = map[string]string{}
@@ -2608,6 +2665,13 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 		}
 		return &LambdaExpr{Params: params, Body: body}, nil
 	case p.Call != nil:
+		if p.Call.Func == "now" && len(p.Call.Args) == 0 {
+			usesNow = true
+			return &CallExpr{Fun: &NameRef{Name: "_now"}, Args: nil}, nil
+		}
+		if p.Call.Func == "input" && len(p.Call.Args) == 0 {
+			return &CallExpr{Fun: &NameRef{Name: "input"}, Args: nil}, nil
+		}
 		if p.Call.Func == "len" && len(p.Call.Args) == 1 {
 			arg, err := convertExpr(p.Call.Args[0])
 			if err != nil {
