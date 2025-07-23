@@ -8,6 +8,7 @@ import (
 	"io"
 	"math"
 	"sort"
+	"strconv"
 	"strings"
 	"unicode"
 
@@ -31,6 +32,7 @@ var prelude []Stmt
 var pythonMathAliases map[string]bool
 var useNow bool
 var useInput bool
+var useKeys bool
 
 var reserved = map[string]bool{
 	"break": true, "case": true, "catch": true, "class": true, "const": true,
@@ -1890,6 +1892,7 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	pythonMathAliases = map[string]bool{}
 	useNow = false
 	useInput = false
+	useKeys = false
 	defer func() {
 		transpileEnv = nil
 		generatedTypes = nil
@@ -1897,6 +1900,7 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 		pythonMathAliases = nil
 		useNow = false
 		useInput = false
+		useKeys = false
 	}()
 	tsProg := &Program{}
 
@@ -1952,6 +1956,11 @@ function _input(): string {
   }
   const v = _inputData.shift();
   return v === undefined ? '' : v;
+}`})
+	}
+	if useKeys {
+		prelude = append(prelude, &RawStmt{Code: `function _keys(obj: any): any[] {
+  return Object.keys(obj);
 }`})
 	}
 	if len(prelude) > 0 {
@@ -2342,7 +2351,7 @@ func convertTypeDecl(td *parser.TypeDecl) (Stmt, error) {
 			fields := []string{"tag: \"" + v.Name + "\""}
 			for _, f := range v.Fields {
 				ft := types.ResolveTypeRef(f.Type, transpileEnv)
-				fields = append(fields, fmt.Sprintf("%s: %s", f.Name, tsType(ft)))
+				fields = append(fields, fmt.Sprintf("%s: %s", tsKey(f.Name), tsType(ft)))
 			}
 			parts[i] = "{ " + strings.Join(fields, "; ") + " }"
 		}
@@ -2355,7 +2364,7 @@ func convertTypeDecl(td *parser.TypeDecl) (Stmt, error) {
 			continue
 		}
 		ft := types.ResolveTypeRef(m.Field.Type, transpileEnv)
-		fields = append(fields, fmt.Sprintf("%s: %s", m.Field.Name, tsType(ft)))
+		fields = append(fields, fmt.Sprintf("%s: %s", tsKey(m.Field.Name), tsType(ft)))
 	}
 	return &InterfaceDecl{Name: td.Name, Fields: fields}, nil
 }
@@ -3098,6 +3107,12 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 			}
 			useInput = true
 			return &CallExpr{Func: "_input"}, nil
+		case "keys":
+			if len(args) != 1 {
+				return nil, fmt.Errorf("keys expects one argument")
+			}
+			useKeys = true
+			return &CallExpr{Func: "_keys", Args: args}, nil
 		case "json":
 			if len(args) != 1 {
 				return nil, fmt.Errorf("json expects one argument")
@@ -3391,7 +3406,7 @@ func tsType(t types.Type) string {
 		for name, st := range tt.Variants {
 			fields := []string{"tag: \"" + name + "\""}
 			for _, f := range st.Order {
-				fields = append(fields, f+": "+tsType(st.Fields[f]))
+				fields = append(fields, tsKey(f)+": "+tsType(st.Fields[f]))
 			}
 			parts = append(parts, "{ "+strings.Join(fields, "; ")+" }")
 		}
@@ -3413,7 +3428,7 @@ func ensureNamedStruct(st types.StructType, hint string) string {
 	if !generatedTypes[name] {
 		fields := make([]string, len(st.Order))
 		for i, f := range st.Order {
-			fields[i] = fmt.Sprintf("%s: %s", f, tsType(st.Fields[f]))
+			fields[i] = fmt.Sprintf("%s: %s", tsKey(f), tsType(st.Fields[f]))
 		}
 		prelude = append(prelude, &InterfaceDecl{Name: name, Fields: fields})
 		generatedTypes[name] = true
@@ -3530,6 +3545,13 @@ func isIdent(s string) bool {
 		}
 	}
 	return true
+}
+
+func tsKey(name string) string {
+	if isIdent(name) {
+		return name
+	}
+	return strconv.Quote(name)
 }
 
 func literalString(e *parser.Expr) (string, bool) {
