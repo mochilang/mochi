@@ -4,6 +4,18 @@ public class Main {
     static int empty = 15;
     static int moves = 0;
     static boolean quit = false;
+    static class MoveResult {
+        int idx;
+        boolean ok;
+        MoveResult(int idx, boolean ok) {
+            this.idx = idx;
+            this.ok = ok;
+        }
+        @Override public String toString() {
+            return String.format("{'idx': %s, 'ok': %s}", String.valueOf(idx), String.valueOf(ok));
+        }
+    }
+
 
     static java.util.Scanner _scanner = new java.util.Scanner(System.in);
 
@@ -22,29 +34,29 @@ public class Main {
         return true;
     }
 
-    static java.util.Map<String,Object> isValidMove(int m) {
+    static MoveResult isValidMove(int m) {
         if (m == 0) {
-            return new java.util.LinkedHashMap<String, Object>() {{ put("idx", empty - 4); put("ok", empty / 4 > 0); }};
+            return new MoveResult(empty - 4, empty / 4 > 0);
         }
         if (m == 1) {
-            return new java.util.LinkedHashMap<String, Object>() {{ put("idx", empty + 4); put("ok", empty / 4 < 3); }};
+            return new MoveResult(empty + 4, empty / 4 < 3);
         }
         if (m == 2) {
-            return new java.util.LinkedHashMap<String, Object>() {{ put("idx", empty + 1); put("ok", empty % 4 < 3); }};
+            return new MoveResult(empty + 1, empty % 4 < 3);
         }
         if (m == 3) {
-            return new java.util.LinkedHashMap<String, Object>() {{ put("idx", empty - 1); put("ok", empty % 4 > 0); }};
+            return new MoveResult(empty - 1, empty % 4 > 0);
         }
-        return new java.util.LinkedHashMap<String, Object>() {{ put("idx", 0); put("ok", false); }};
+        return new MoveResult(0, false);
     }
 
     static boolean doMove(int m) {
-        java.util.Map<String,Object> r = isValidMove(m);
-        if (!(Boolean)r.get("ok")) {
+        MoveResult r = isValidMove(m);
+        if (!(Boolean)r.ok) {
             return false;
         }
         int i = empty;
-        int j = ((Number)(r.get("idx"))).intValue();
+        int j = r.idx;
         int tmp = board[i];
 board[i] = board[j];
 board[j] = tmp;
