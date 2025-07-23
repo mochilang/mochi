@@ -1,0 +1,24 @@
+exit status 1
+6 x 6 Polybius square:
+
+  | A D F G V X
+---------------
+"table: 0x55c85dbd52e0 | M N J F 6 B "
+"table: 0x55c85dbd59a0 | O 5 L X G W "
+"table: 0x55c85dbc1660 | 7 E 1 R 8 H "
+"table: 0x55c85dbcea30 | V Q I D P U "
+"table: 0x55c85dbd8960 | 2 Z K 9 0 Y "
+"table: 0x55c85dbd8fc0 | S 4 C 3 T A "
+
+The key is L5A3YCSXJ
+
+Plaintext : ATTACKAT1200AM
+
+Encrypted : l8t56 bl8t59 bl8t5a bl8t5d bl8t52 bl8t57 bl8t5c bl8t51 bl8t53 bl8 a530de5a5c0de5a580ce5a5c0ce5a550ce5a580ce5a540de5a580de5a5e0de5a5d bc0xa:dbc0xa:dbc0x6:dbc0x6:dbc0x7:dbc0x7:dbc0xc:dbc0xd:dbc0xd:dbc0 :dbc0xa:dbc0xa:dbc0x6:dbc0x6:dbc0x7:dbc0x7:dbc0xc:dbc0xd:dbc0xd:d xa:dbc0xa:dbc0x6:dbc0x6:dbc0x7:dbc0x7:dbc0xc:dbc0xc:dbc0xd:dbc0xd t56 bl8t58 bl8t59 bl8t5b bl8t50 bl8t56 bl8t5c bl8t5e bl8t52 bl8t59  bl8t58 bl8t5a bl8t5b bl8t5e bl8t54 bl8t58 bl8t5d bl8t52 bl8t56 b 0de5a510de5a550ce5a510ce5a550ce5a570ce5a510de5a5d0de5a500de5a5c0d e5a5e0de5a5a0de5a530ce5a5a0ce5a540ce5a560ce5a5f0de5a550de5a590de5
+lua: ...ace/mochi/tests/rosetta/transpiler/Lua/adfgvx-cipher.lua:783: bad argument #1 to 'sub' (string expected, got nil)
+stack traceback:
+	[C]: in function 'string.sub'
+	...ace/mochi/tests/rosetta/transpiler/Lua/adfgvx-cipher.lua:783: in function 'decrypt'
+	...ace/mochi/tests/rosetta/transpiler/Lua/adfgvx-cipher.lua:796: in function 'main'
+	...ace/mochi/tests/rosetta/transpiler/Lua/adfgvx-cipher.lua:800: in main chunk
+	[C]: in ?

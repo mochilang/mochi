@@ -1209,12 +1209,41 @@ func (b *BinaryExpr) emit(w io.Writer) {
 			op = "//"
 		}
 	}
+	if op == "+" && !isStringExpr(b.Left) && !isStringExpr(b.Right) && !(isIntExpr(b.Left) || isFloatExpr(b.Left)) && !(isIntExpr(b.Right) || isFloatExpr(b.Right)) {
+		io.WriteString(w, "((tonumber(")
+		b.Left.emit(w)
+		io.WriteString(w, ") or 0) + (tonumber(")
+		b.Right.emit(w)
+		io.WriteString(w, ") or 0))")
+		return
+	}
+
 	io.WriteString(w, "(")
-	b.Left.emit(w)
-	io.WriteString(w, " ")
-	io.WriteString(w, op)
-	io.WriteString(w, " ")
-	b.Right.emit(w)
+	if op == ".." {
+		if isStringExpr(b.Left) {
+			b.Left.emit(w)
+		} else {
+			io.WriteString(w, "tostring(")
+			b.Left.emit(w)
+			io.WriteString(w, ")")
+		}
+		io.WriteString(w, " ")
+		io.WriteString(w, op)
+		io.WriteString(w, " ")
+		if isStringExpr(b.Right) {
+			b.Right.emit(w)
+		} else {
+			io.WriteString(w, "tostring(")
+			b.Right.emit(w)
+			io.WriteString(w, ")")
+		}
+	} else {
+		b.Left.emit(w)
+		io.WriteString(w, " ")
+		io.WriteString(w, op)
+		io.WriteString(w, " ")
+		b.Right.emit(w)
+	}
 	io.WriteString(w, ")")
 }
 
