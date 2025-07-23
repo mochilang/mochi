@@ -13,6 +13,7 @@ import (
 	"reflect"
 	"sort"
 	"strings"
+	"unicode"
 
 	yaml "gopkg.in/yaml.v3"
 	"mochi/ast"
@@ -82,6 +83,21 @@ func toGoFieldName(name string) string {
 		n = strings.ReplaceAll(n, strings.Title(lower), init)
 	}
 	return n
+}
+
+func isIdentifier(s string) bool {
+	for i, r := range s {
+		if i == 0 {
+			if !unicode.IsLetter(r) && r != '_' {
+				return false
+			}
+		} else {
+			if !unicode.IsLetter(r) && !unicode.IsDigit(r) && r != '_' {
+				return false
+			}
+		}
+	}
+	return len(s) > 0
 }
 
 type Stmt interface{ emit(io.Writer) }
@@ -1670,6 +1686,37 @@ func compileStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 						env.SetVar(st.Let.Name, types.ListType{Elem: stype}, false)
 					}
 				}
+			}
+			if ml, ok := e.(*MapLit); ok {
+				if _, ok := valType.(types.StructType); ok && typ == "" {
+					if mla := mapLiteralExpr(st.Let.Value); mla != nil {
+						invalid := false
+						var vt types.Type
+						for i, it := range mla.Items {
+							key, ok2 := types.SimpleStringKey(it.Key)
+							if !ok2 || !isIdentifier(key) {
+								invalid = true
+							}
+							t := types.ExprType(it.Value, env)
+							if i == 0 {
+								vt = t
+							} else if !types.EqualTypes(vt, t) {
+								vt = types.AnyType{}
+							}
+						}
+						if invalid {
+							if vt == nil {
+								vt = types.AnyType{}
+							}
+							valType = types.MapType{Key: types.StringType{}, Value: vt}
+							typ = toGoTypeFromType(valType)
+							updateMapLitTypes(ml, valType)
+						}
+					}
+				}
+			}
+			if ae, ok := e.(*AssertExpr); ok && typ != "" && ae.Type == typ {
+				e = ae.Expr
 			}
 			if declaredType != nil {
 				if env == topEnv {
