@@ -1140,7 +1140,7 @@ func Emit(p *Program) []byte {
 	}
 	buf.WriteString("object Main {\n")
 	if useNow {
-		buf.WriteString("  private var _nowSeed: Int = 0\n")
+		buf.WriteString("  private var _nowSeed: Long = 0L\n")
 		buf.WriteString("  private var _nowSeeded: Boolean = false\n")
 		buf.WriteString("  private def _now(): Int = {\n")
 		buf.WriteString("    if (!_nowSeeded) {\n")
@@ -1150,7 +1150,7 @@ func Emit(p *Program) []byte {
 		buf.WriteString("    }\n")
 		buf.WriteString("    if (_nowSeeded) {\n")
 		buf.WriteString("      _nowSeed = (_nowSeed * 1664525 + 1013904223) % 2147483647\n")
-		buf.WriteString("      _nowSeed\n")
+		buf.WriteString("      _nowSeed.toInt\n")
 		buf.WriteString("    } else {\n")
 		buf.WriteString("      Math.abs(System.nanoTime().toInt)\n")
 		buf.WriteString("    }\n")
@@ -1516,6 +1516,13 @@ func convertBinary(b *parser.BinaryExpr, env *types.Env) (Expr, error) {
 				}
 				if rt != "Any" && rt != "" && lt == "Any" {
 					left = &CastExpr{Value: left, Type: strings.ToLower(rt)}
+				}
+			} else if op == "&&" || op == "||" {
+				if inferTypeWithEnv(left, env) != "Boolean" {
+					left = &CastExpr{Value: left, Type: "bool"}
+				}
+				if inferTypeWithEnv(right, env) != "Boolean" {
+					right = &CastExpr{Value: right, Type: "bool"}
 				}
 			}
 			ex = &BinaryExpr{Left: left, Op: op, Right: right}
@@ -3270,7 +3277,7 @@ func inferType(e Expr) string {
 }
 
 func inferTypeWithEnv(e Expr, env *types.Env) string {
-	if t := inferType(e); t != "" {
+	if t := inferType(e); t != "" && t != "Any" {
 		return t
 	}
 	if env != nil {

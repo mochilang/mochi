@@ -99,6 +99,7 @@ func TestScalaTranspiler_Rosetta_Golden(t *testing.T) {
 				t.Fatalf("compile: %v", err)
 			}
 			cmd := exec.Command("scala", "-cp", tmp, "Main")
+			cmd.Env = append(os.Environ(), "MOCHI_NOW_SEED=1")
 			if data, err := os.ReadFile(strings.TrimSuffix(filepath.Join(srcDir, nameFile), ".mochi") + ".in"); err == nil {
 				cmd.Stdin = bytes.NewReader(data)
 			}

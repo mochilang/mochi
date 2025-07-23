@@ -1,3 +1,51 @@
+## Progress (2025-07-23 11:57 +0700)
+- scala: support boolean casts for rosetta task 2048
+- Regenerated golden files - 92/103 vm valid programs passing
+
+## Progress (2025-07-23 11:57 +0700)
+- scala: support boolean casts for rosetta task 2048
+- Regenerated golden files - 92/103 vm valid programs passing
+
+## Progress (2025-07-23 11:57 +0700)
+- scala: support boolean casts for rosetta task 2048
+- Regenerated golden files - 92/103 vm valid programs passing
+
+## Progress (2025-07-23 11:57 +0700)
+- scala: support boolean casts for rosetta task 2048
+- Regenerated golden files - 92/103 vm valid programs passing
+
+## Progress (2025-07-23 11:57 +0700)
+- scala: support boolean casts for rosetta task 2048
+- Regenerated golden files - 92/103 vm valid programs passing
+
+## Progress (2025-07-23 11:57 +0700)
+- scala: support boolean casts for rosetta task 2048
+- Regenerated golden files - 92/103 vm valid programs passing
+
+## Progress (2025-07-23 11:57 +0700)
+- scala: support boolean casts for rosetta task 2048
+- Regenerated golden files - 92/103 vm valid programs passing
+
+## Progress (2025-07-23 11:36 +0700)
+- python transpiler: handle null literal; add algebraic-data-types
+- Regenerated golden files - 92/103 vm valid programs passing
+
+## Progress (2025-07-23 11:36 +0700)
+- python transpiler: handle null literal; add algebraic-data-types
+- Regenerated golden files - 92/103 vm valid programs passing
+
+## Progress (2025-07-23 11:36 +0700)
+- python transpiler: handle null literal; add algebraic-data-types
+- Regenerated golden files - 92/103 vm valid programs passing
+
+## Progress (2025-07-23 11:36 +0700)
+- python transpiler: handle null literal; add algebraic-data-types
+- Regenerated golden files - 92/103 vm valid programs passing
+
+## Progress (2025-07-23 11:36 +0700)
+- python transpiler: handle null literal; add algebraic-data-types
+- Regenerated golden files - 92/103 vm valid programs passing
+
 ## Progress (2025-07-23 10:36 +0700)
 - scala transpiler: add param types and casts
 - Regenerated golden files - 92/103 vm valid programs passing
