@@ -663,10 +663,13 @@ type BinaryExpr struct {
 }
 
 func (b *BinaryExpr) emit(w io.Writer) {
-	numOp := (b.Op == "+" || b.Op == "-" || b.Op == "*" || b.Op == "/" || b.Op == "%")
+	leftType := guessType(b.Left)
+	rightType := guessType(b.Right)
+	listOp := b.Op == "+" && (strings.HasPrefix(leftType, "MutableList<") || strings.HasPrefix(rightType, "MutableList<"))
+	numOp := (b.Op == "+" || b.Op == "-" || b.Op == "*" || b.Op == "/" || b.Op == "%") && !listOp
 	cmpOp := b.Op == ">" || b.Op == "<" || b.Op == ">=" || b.Op == "<="
 	boolOp := b.Op == "&&" || b.Op == "||"
-	strOp := b.Op == "+" && (guessType(b.Left) == "String" || guessType(b.Right) == "String")
+	strOp := b.Op == "+" && (leftType == "String" || rightType == "String")
 	cast := func(e Expr, typ string) {
 		if typ == "Double" {
 			io.WriteString(w, "(")
@@ -727,6 +730,9 @@ func (b *BinaryExpr) emit(w io.Writer) {
 		}
 		e.emit(w)
 	}
+	if listOp {
+		io.WriteString(w, "(")
+	}
 	if _, ok := b.Left.(*BinaryExpr); ok {
 		io.WriteString(w, "(")
 		emitOperand(b.Left, b.Right)
@@ -741,6 +747,10 @@ func (b *BinaryExpr) emit(w io.Writer) {
 		io.WriteString(w, ")")
 	} else {
 		emitOperand(b.Right, b.Left)
+	}
+	if listOp {
+		io.WriteString(w, ")")
+		io.WriteString(w, ".toMutableList()")
 	}
 }
 
@@ -1749,8 +1759,36 @@ func guessType(e Expr) string {
 			elem = "Any"
 		}
 		return "MutableList<" + elem + ">"
+	case *SliceExpr:
+		return guessType(v.Value)
 	case *BinaryExpr:
-		if v.Op == "+" || v.Op == "-" || v.Op == "*" || v.Op == "%" {
+		if v.Op == "+" {
+			lt := guessType(v.Left)
+			rt := guessType(v.Right)
+			if strings.HasPrefix(lt, "MutableList<") || strings.HasPrefix(rt, "MutableList<") {
+				elem := "Any"
+				if strings.HasPrefix(lt, "MutableList<") {
+					elem = strings.TrimSuffix(strings.TrimPrefix(lt, "MutableList<"), ">")
+				}
+				if strings.HasPrefix(rt, "MutableList<") {
+					rElem := strings.TrimSuffix(strings.TrimPrefix(rt, "MutableList<"), ">")
+					if elem == "Any" {
+						elem = rElem
+					} else if rElem != elem {
+						elem = "Any"
+					}
+				}
+				return "MutableList<" + elem + ">"
+			}
+			if lt == "String" || rt == "String" {
+				return "String"
+			}
+			if lt == "Double" || rt == "Double" {
+				return "Double"
+			}
+			return "Int"
+		}
+		if v.Op == "-" || v.Op == "*" || v.Op == "%" {
 			lt := guessType(v.Left)
 			rt := guessType(v.Right)
 			if lt == "String" || rt == "String" {
@@ -1759,7 +1797,6 @@ func guessType(e Expr) string {
 			if lt == "Double" || rt == "Double" {
 				return "Double"
 			}
-			// default to Int when neither side explicitly requires Double
 			return "Int"
 		}
 		if v.Op == "/" {
@@ -3688,6 +3725,18 @@ func convertPrimary(env *types.Env, p *parser.Primary) (Expr, error) {
 					return nil, fmt.Errorf("int expects 1 arg")
 				}
 				return &CastExpr{Value: args[0], Type: "int"}, nil
+			}
+			if name == "float" {
+				if len(args) != 1 {
+					return nil, fmt.Errorf("float expects 1 arg")
+				}
+				return &CastExpr{Value: args[0], Type: "float"}, nil
+			}
+			if name == "abs" {
+				if len(args) != 1 {
+					return nil, fmt.Errorf("abs expects 1 arg")
+				}
+				return &CallExpr{Func: "kotlin.math.abs", Args: args}, nil
 			}
 			if name == "now" {
 				if len(args) != 0 {
