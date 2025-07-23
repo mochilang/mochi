@@ -1601,10 +1601,11 @@ func (ix *IndexExpr) emit(w io.Writer) {
 		ix.Index.emit(w)
 		io.WriteString(w, ")")
 	default:
-		io.WriteString(w, "List.nth ")
+		io.WriteString(w, "List.nth (")
 		ix.Col.emit(w)
-		io.WriteString(w, " ")
+		io.WriteString(w, ") (")
 		ix.Index.emit(w)
+		io.WriteString(w, ")")
 	}
 }
 
@@ -2034,9 +2035,7 @@ func (p *Program) Emit() []byte {
 	if p.UsesControl() {
 		buf.WriteString("exception Break\nexception Continue\n\n")
 	}
-	if p.UsesReturn() {
-		buf.WriteString("exception Return\n\n")
-	}
+	buf.WriteString("exception Return\n\n")
 	for _, s := range p.Stmts {
 		switch st := s.(type) {
 		case *FunStmt:
@@ -2113,8 +2112,14 @@ func transpileStmt(st *parser.Statement, env *types.Env, vars map[string]VarInfo
 		} else {
 			return nil, fmt.Errorf("let without value not supported")
 		}
-		vars[st.Let.Name] = VarInfo{typ: typ}
-		return &LetStmt{Name: st.Let.Name, Expr: expr}, nil
+		vinfo := VarInfo{typ: typ}
+		stmt := Stmt(&LetStmt{Name: st.Let.Name, Expr: expr})
+		if strings.HasPrefix(typ, "list-") || strings.HasPrefix(typ, "map") {
+			vinfo.ref = true
+			stmt = &VarStmt{Name: st.Let.Name, Expr: expr}
+		}
+		vars[st.Let.Name] = vinfo
+		return stmt, nil
 	case st.Var != nil:
 		var expr Expr
 		var typ string
