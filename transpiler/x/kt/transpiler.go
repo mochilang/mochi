@@ -2237,7 +2237,33 @@ func convertStmts(env *types.Env, list []*parser.Statement) ([]Stmt, error) {
 							}
 							tt = types.ListType{Elem: et}
 						} else if strings.HasPrefix(typ, "MutableMap<") {
-							tt = types.MapType{Key: types.AnyType{}, Value: types.AnyType{}}
+							part := strings.TrimSuffix(strings.TrimPrefix(typ, "MutableMap<"), ">")
+							kv := strings.SplitN(part, ",", 2)
+							var kt types.Type = types.AnyType{}
+							var vt types.Type = types.AnyType{}
+							if len(kv) == 2 {
+								switch strings.TrimSpace(kv[0]) {
+								case "Int":
+									kt = types.IntType{}
+								case "Double":
+									kt = types.FloatType{}
+								case "Boolean":
+									kt = types.BoolType{}
+								case "String":
+									kt = types.StringType{}
+								}
+								switch strings.TrimSpace(kv[1]) {
+								case "Int":
+									vt = types.IntType{}
+								case "Double":
+									vt = types.FloatType{}
+								case "Boolean":
+									vt = types.BoolType{}
+								case "String":
+									vt = types.StringType{}
+								}
+							}
+							tt = types.MapType{Key: kt, Value: vt}
 						} else {
 							tt = types.AnyType{}
 						}
@@ -2300,7 +2326,33 @@ func convertStmts(env *types.Env, list []*parser.Statement) ([]Stmt, error) {
 							}
 							tt = types.ListType{Elem: et}
 						} else if strings.HasPrefix(typ, "MutableMap<") {
-							tt = types.MapType{Key: types.AnyType{}, Value: types.AnyType{}}
+							part := strings.TrimSuffix(strings.TrimPrefix(typ, "MutableMap<"), ">")
+							kv := strings.SplitN(part, ",", 2)
+							var kt types.Type = types.AnyType{}
+							var vt types.Type = types.AnyType{}
+							if len(kv) == 2 {
+								switch strings.TrimSpace(kv[0]) {
+								case "Int":
+									kt = types.IntType{}
+								case "Double":
+									kt = types.FloatType{}
+								case "Boolean":
+									kt = types.BoolType{}
+								case "String":
+									kt = types.StringType{}
+								}
+								switch strings.TrimSpace(kv[1]) {
+								case "Int":
+									vt = types.IntType{}
+								case "Double":
+									vt = types.FloatType{}
+								case "Boolean":
+									vt = types.BoolType{}
+								case "String":
+									vt = types.StringType{}
+								}
+							}
+							tt = types.MapType{Key: kt, Value: vt}
 						} else {
 							tt = types.AnyType{}
 						}
@@ -2385,6 +2437,9 @@ func convertStmts(env *types.Env, list []*parser.Statement) ([]Stmt, error) {
 				if err != nil {
 					return nil, err
 				}
+			}
+			if currentRetType != "" && currentRetType != "Any" && v != nil {
+				v = &CastExpr{Value: v, Type: currentRetType}
 			}
 			out = append(out, &ReturnStmt{Value: v})
 		case s.If != nil:
@@ -3408,6 +3463,9 @@ func convertPostfix(env *types.Env, p *parser.PostfixExpr) (Expr, error) {
 			if tname == "Any" {
 				tname = ""
 			}
+			if tname == "" && baseIsMap && i+1 < len(p.Ops) && p.Ops[i+1].Index != nil {
+				tname = "MutableMap<String, Any>"
+			}
 			expr = &IndexExpr{Target: expr, Index: idx, Type: tname, ForceBang: true}
 		case op.Index != nil && op.Index.Colon != nil && op.Index.Colon2 == nil && op.Index.Step == nil:
 			var startExpr Expr
@@ -3649,19 +3707,27 @@ func convertPrimary(env *types.Env, p *parser.Primary) (Expr, error) {
 			}
 			if env != nil {
 				if t, err := env.GetVar(name); err == nil {
-					if ft, ok := t.(types.FuncType); ok && len(args) < len(ft.Params) {
-						missing := len(ft.Params) - len(args)
-						params := make([]string, missing)
-						bodyArgs := make([]Expr, 0, len(ft.Params))
-						bodyArgs = append(bodyArgs, args...)
-						for i := 0; i < missing; i++ {
-							pName := fmt.Sprintf("p%d", i+1)
-							pType := kotlinTypeFromType(ft.Params[len(args)+i])
-							params[i] = fmt.Sprintf("%s: %s", pName, pType)
-							bodyArgs = append(bodyArgs, &VarRef{Name: pName, Type: pType})
+					if ft, ok := t.(types.FuncType); ok {
+						if len(args) < len(ft.Params) {
+							missing := len(ft.Params) - len(args)
+							params := make([]string, missing)
+							bodyArgs := make([]Expr, 0, len(ft.Params))
+							bodyArgs = append(bodyArgs, args...)
+							for i := 0; i < missing; i++ {
+								pName := fmt.Sprintf("p%d", i+1)
+								pType := kotlinTypeFromType(ft.Params[len(args)+i])
+								params[i] = fmt.Sprintf("%s: %s", pName, pType)
+								bodyArgs = append(bodyArgs, &VarRef{Name: pName, Type: pType})
+							}
+							body := []Stmt{&ReturnStmt{Value: &CallExpr{Func: name, Args: bodyArgs}}}
+							return &FuncLit{Params: params, Body: body}, nil
 						}
-						body := []Stmt{&ReturnStmt{Value: &CallExpr{Func: name, Args: bodyArgs}}}
-						return &FuncLit{Params: params, Body: body}, nil
+						for i := 0; i < len(args) && i < len(ft.Params); i++ {
+							tname := kotlinTypeFromType(ft.Params[i])
+							if tname != "" && tname != "Any" && tname != guessType(args[i]) {
+								args[i] = &CastExpr{Value: args[i], Type: tname}
+							}
+						}
 					}
 				}
 			}
