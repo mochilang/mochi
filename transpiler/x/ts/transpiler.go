@@ -2391,12 +2391,46 @@ func convertTypeDecl(td *parser.TypeDecl) (Stmt, error) {
 		return &TypeAlias{Name: td.Name, Type: typ}, nil
 	}
 	var fields []string
+	fieldSet := map[string]bool{}
 	for _, m := range td.Members {
-		if m.Field == nil {
-			continue
+		if m.Field != nil {
+			ft := types.ResolveTypeRef(m.Field.Type, transpileEnv)
+			fields = append(fields, fmt.Sprintf("%s: %s", tsKey(m.Field.Name), tsType(ft)))
+			fieldSet[m.Field.Name] = true
 		}
-		ft := types.ResolveTypeRef(m.Field.Type, transpileEnv)
-		fields = append(fields, fmt.Sprintf("%s: %s", tsKey(m.Field.Name), tsType(ft)))
+		if m.Method != nil {
+			params := []string{"self"}
+			paramTypes := []string{td.Name}
+			child := types.NewEnv(transpileEnv)
+			st, _ := transpileEnv.GetStruct(td.Name)
+			child.SetVar("self", st, true)
+			for _, p := range m.Method.Params {
+				params = append(params, p.Name)
+				var pt types.Type = types.AnyType{}
+				if p.Type != nil {
+					pt = types.ResolveTypeRef(p.Type, transpileEnv)
+					paramTypes = append(paramTypes, tsType(pt))
+				} else {
+					paramTypes = append(paramTypes, "")
+				}
+				child.SetVar(p.Name, pt, true)
+			}
+			prev := transpileEnv
+			transpileEnv = child
+			body, err := convertStmtList(m.Method.Body)
+			transpileEnv = prev
+			if err != nil {
+				return nil, err
+			}
+			for i := range body {
+				body[i] = substituteStmtFields(body[i], "self", fieldSet)
+			}
+			var retType string
+			if m.Method.Return != nil {
+				retType = tsType(types.ResolveTypeRef(m.Method.Return, transpileEnv))
+			}
+			prelude = append(prelude, &FuncDecl{Name: td.Name + "_" + m.Method.Name, Params: params, ParamTypes: paramTypes, ReturnType: retType, Body: body})
+		}
 	}
 	return &InterfaceDecl{Name: td.Name, Fields: fields}, nil
 }
@@ -2916,8 +2950,34 @@ func convertPostfix(p *parser.PostfixExpr) (Expr, error) {
 	if err != nil {
 		return nil, err
 	}
-	for _, op := range p.Ops {
+	partial := &parser.PostfixExpr{Target: p.Target}
+	curType := postfixExprType(partial)
+	for i := 0; i < len(p.Ops); i++ {
+		op := p.Ops[i]
 		switch {
+		case op.Field != nil && i+1 < len(p.Ops) && p.Ops[i+1].Call != nil:
+			if st, ok := curType.(types.StructType); ok {
+				if _, ok2 := st.Methods[op.Field.Name]; ok2 {
+					callOp := p.Ops[i+1].Call
+					args := make([]Expr, len(callOp.Args)+1)
+					args[0] = expr
+					for j, a := range callOp.Args {
+						ae, err := convertExpr(a)
+						if err != nil {
+							return nil, err
+						}
+						args[j+1] = ae
+					}
+					fname := st.Name + "_" + op.Field.Name
+					expr = &CallExpr{Func: fname, Args: args}
+					partial.Ops = append(partial.Ops, op, p.Ops[i+1])
+					curType = postfixExprType(partial)
+					i++
+					continue
+				}
+			}
+			// fall through to regular field handling
+			fallthrough
 		case op.Index != nil:
 			if op.Index.Colon != nil {
 				if op.Index.Colon2 != nil || op.Index.Step != nil {
@@ -2982,6 +3042,8 @@ func convertPostfix(p *parser.PostfixExpr) (Expr, error) {
 			} else {
 				expr = &InvokeExpr{Callee: expr, Args: args}
 			}
+			partial.Ops = append(partial.Ops, op)
+			curType = postfixExprType(partial)
 		case op.Field != nil:
 			if nr, ok := expr.(*NameRef); ok && pythonMathAliases != nil && pythonMathAliases[nr.Name] {
 				up := strings.ToUpper(op.Field.Name)
@@ -2989,6 +3051,8 @@ func convertPostfix(p *parser.PostfixExpr) (Expr, error) {
 			} else {
 				expr = &IndexExpr{Target: expr, Index: &StringLit{Value: op.Field.Name}}
 			}
+			partial.Ops = append(partial.Ops, op)
+			curType = postfixExprType(partial)
 		case op.Cast != nil:
 			if op.Cast.Type != nil && transpileEnv != nil {
 				t := types.ResolveTypeRef(op.Cast.Type, transpileEnv)
@@ -3030,6 +3094,14 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 				return nil, err
 			}
 			entries = append(entries, MapEntry{Key: &StringLit{Value: f.Name}, Value: val})
+		}
+		if transpileEnv != nil {
+			if st, ok := transpileEnv.GetStruct(p.Struct.Name); ok {
+				for name := range st.Methods {
+					code := fmt.Sprintf("function(...args){ return %s(this, ...args); }", st.Name+"_"+name)
+					entries = append(entries, MapEntry{Key: &StringLit{Value: name}, Value: &RawExpr{Code: code}})
+				}
+			}
 		}
 		return &MapLit{Entries: entries}, nil
 	case p.Lit != nil:
@@ -3177,6 +3249,11 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 			// fractional part without rounding.
 			return &CallExpr{Func: "Math.trunc", Args: args}, nil
 		case "parseIntStr":
+			if transpileEnv != nil {
+				if _, ok := transpileEnv.GetFunc("parseIntStr"); ok {
+					return &CallExpr{Func: "parseIntStr", Args: args}, nil
+				}
+			}
 			if len(args) != 2 {
 				return nil, fmt.Errorf("parseIntStr expects two arguments")
 			}
@@ -3193,6 +3270,11 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 			}
 			return &MethodCallExpr{Target: args[0], Method: "indexOf", Args: []Expr{args[1]}}, nil
 		case "repeat":
+			if transpileEnv != nil {
+				if _, ok := transpileEnv.GetFunc("repeat"); ok {
+					return &CallExpr{Func: "repeat", Args: args}, nil
+				}
+			}
 			if len(args) != 2 {
 				return nil, fmt.Errorf("repeat expects two arguments")
 			}
@@ -3867,6 +3949,29 @@ func replaceFields(e Expr, target Expr, fields map[string]bool) Expr {
 		return ex
 	default:
 		return ex
+	}
+}
+
+func substituteStmtFields(s Stmt, varName string, fields map[string]bool) Stmt {
+	switch st := s.(type) {
+	case *ExprStmt:
+		st.Expr = substituteFields(st.Expr, varName, fields)
+		return st
+	case *ReturnStmt:
+		if st.Value != nil {
+			st.Value = substituteFields(st.Value, varName, fields)
+		}
+		return st
+	case *AssignStmt:
+		st.Expr = substituteFields(st.Expr, varName, fields)
+		return st
+	case *VarDecl:
+		if st.Expr != nil {
+			st.Expr = substituteFields(st.Expr, varName, fields)
+		}
+		return st
+	default:
+		return st
 	}
 }
 
