@@ -360,6 +360,35 @@ func (c *CallExpr) emit(w io.Writer) {
 		}
 	case "now":
 		io.WriteString(w, "_now()")
+	case "net.LookupHost":
+		io.WriteString(w, `(function(host)
+  local res = {}
+  local p = io.popen('nslookup '..host)
+  if not p then return nil, 'nslookup failed' end
+  local out = p:read('*a')
+  p:close()
+  for addr in string.gmatch(out, '%d+%.%d+%.%d+%.%d+') do
+    table.insert(res, addr)
+  end
+  if #res == 0 then return nil, 'not found' end
+  return res, nil
+end)(`)
+		if len(c.Args) > 0 {
+			c.Args[0].emit(w)
+		}
+		io.WriteString(w, `)`)
+	case "upper":
+		io.WriteString(w, "string.upper(")
+		if len(c.Args) > 0 {
+			c.Args[0].emit(w)
+		}
+		io.WriteString(w, ")")
+	case "lower":
+		io.WriteString(w, "string.lower(")
+		if len(c.Args) > 0 {
+			c.Args[0].emit(w)
+		}
+		io.WriteString(w, ")")
 	case "json":
 		io.WriteString(w, `
 (function(v)
@@ -411,12 +440,17 @@ end)(`)
         parts[#parts+1] = "}"
         return table.concat(parts)
       elseif #x > 0 then
-        local parts = {"["}
+        local allTables = true
+        for _, v in ipairs(x) do
+          if type(v) ~= "table" then allTables = false break end
+        end
+        local parts = {}
+        if not allTables then parts[#parts+1] = "[" end
         for i, val in ipairs(x) do
           parts[#parts+1] = encode(val)
-          if i < #x then parts[#parts+1] = ", " end
+          if i < #x then parts[#parts+1] = " " end
         end
-        parts[#parts+1] = "]"
+        if not allTables then parts[#parts+1] = "]" end
         return table.concat(parts)
       else
         local keys = {}
@@ -465,7 +499,7 @@ func (a *AssignStmt) emit(w io.Writer) {
 	if a.Local {
 		io.WriteString(w, "local ")
 	}
-	io.WriteString(w, a.Name)
+	io.WriteString(w, sanitizeName(a.Name))
 	io.WriteString(w, " = ")
 	if a.Value == nil {
 		io.WriteString(w, "nil")
@@ -478,7 +512,7 @@ func (qa *QueryAssignStmt) emit(w io.Writer) {
 	if qa.Local {
 		io.WriteString(w, "local ")
 	}
-	io.WriteString(w, qa.Name)
+	io.WriteString(w, sanitizeName(qa.Name))
 	io.WriteString(w, " = ")
 	qa.Query.emit(w)
 	w.Write([]byte{'\n'})
@@ -508,13 +542,13 @@ func (s *SaveStmt) emit(w io.Writer) {
 
 func (f *FunStmt) emit(w io.Writer) {
 	io.WriteString(w, "function ")
-	io.WriteString(w, f.Name)
+	io.WriteString(w, sanitizeName(f.Name))
 	io.WriteString(w, "(")
 	for i, p := range f.Params {
 		if i > 0 {
 			io.WriteString(w, ", ")
 		}
-		io.WriteString(w, p)
+		io.WriteString(w, sanitizeName(p))
 	}
 	io.WriteString(w, ")\n")
 	for _, st := range f.Body {
@@ -563,16 +597,14 @@ func (wst *WhileStmt) emit(w io.Writer) {
 		wst.Cond.emit(w)
 	}
 	io.WriteString(w, " do\n")
-	if label != "" {
-		io.WriteString(w, "::")
-		io.WriteString(w, label)
-		io.WriteString(w, "::\n")
-	}
 	for _, st := range wst.Body {
 		st.emit(w)
 		io.WriteString(w, "\n")
 	}
 	if label != "" {
+		io.WriteString(w, "::")
+		io.WriteString(w, label)
+		io.WriteString(w, "::\n")
 		continueLabels = continueLabels[:len(continueLabels)-1]
 	}
 	io.WriteString(w, "end")
@@ -585,7 +617,7 @@ func (fr *ForRangeStmt) emit(w io.Writer) {
 		continueLabels = append(continueLabels, label)
 	}
 	io.WriteString(w, "for ")
-	io.WriteString(w, fr.Name)
+	io.WriteString(w, sanitizeName(fr.Name))
 	io.WriteString(w, " = ")
 	if fr.Start != nil {
 		fr.Start.emit(w)
@@ -598,16 +630,14 @@ func (fr *ForRangeStmt) emit(w io.Writer) {
 		io.WriteString(w, " - 1")
 	}
 	io.WriteString(w, " do\n")
-	if label != "" {
-		io.WriteString(w, "::")
-		io.WriteString(w, label)
-		io.WriteString(w, "::\n")
-	}
 	for _, st := range fr.Body {
 		st.emit(w)
 		io.WriteString(w, "\n")
 	}
 	if label != "" {
+		io.WriteString(w, "::")
+		io.WriteString(w, label)
+		io.WriteString(w, "::\n")
 		continueLabels = continueLabels[:len(continueLabels)-1]
 	}
 	io.WriteString(w, "end")
@@ -621,27 +651,25 @@ func (fi *ForInStmt) emit(w io.Writer) {
 	}
 	io.WriteString(w, "for ")
 	if isMapExpr(fi.Iterable) {
-		io.WriteString(w, fi.Name)
+		io.WriteString(w, sanitizeName(fi.Name))
 		io.WriteString(w, " in pairs(")
 	} else {
 		io.WriteString(w, "_, ")
-		io.WriteString(w, fi.Name)
+		io.WriteString(w, sanitizeName(fi.Name))
 		io.WriteString(w, " in ipairs(")
 	}
 	if fi.Iterable != nil {
 		fi.Iterable.emit(w)
 	}
 	io.WriteString(w, ") do\n")
-	if label != "" {
-		io.WriteString(w, "::")
-		io.WriteString(w, label)
-		io.WriteString(w, "::\n")
-	}
 	for _, st := range fi.Body {
 		st.emit(w)
 		io.WriteString(w, "\n")
 	}
 	if label != "" {
+		io.WriteString(w, "::")
+		io.WriteString(w, label)
+		io.WriteString(w, "::\n")
 		continueLabels = continueLabels[:len(continueLabels)-1]
 	}
 	io.WriteString(w, "end")
@@ -842,7 +870,15 @@ func (f *FunExpr) emit(w io.Writer) {
 	}
 	io.WriteString(w, "end")
 }
-func (id *Ident) emit(w io.Writer) { io.WriteString(w, id.Name) }
+func sanitizeName(n string) string {
+	switch n {
+	case "table", "string", "math", "io", "os", "coroutine", "utf8":
+		return "_" + n
+	}
+	return n
+}
+
+func (id *Ident) emit(w io.Writer) { io.WriteString(w, sanitizeName(id.Name)) }
 
 func isStringExpr(e Expr) bool {
 	if _, ok := exprType(e).(types.StringType); ok {
@@ -1140,6 +1176,8 @@ func (b *BinaryExpr) emit(w io.Writer) {
 		op = "~="
 	}
 	if op == "+" && (isStringExpr(b.Left) || isStringExpr(b.Right)) {
+		op = ".."
+	} else if op == "+" && !(isIntExpr(b.Left) || isFloatExpr(b.Left) || isIntExpr(b.Right) || isFloatExpr(b.Right)) {
 		op = ".."
 	} else if op == "&&" {
 		op = "and"
@@ -2741,7 +2779,11 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 			return &QueryAssignStmt{Name: st.Let.Name, Query: qc, Local: local}, nil
 		}
 		if currentEnv != nil {
-			currentEnv.SetVar(st.Let.Name, exprType(expr), false)
+			if st.Let.Type != nil {
+				currentEnv.SetVar(st.Let.Name, types.ResolveTypeRef(st.Let.Type, currentEnv), false)
+			} else {
+				currentEnv.SetVar(st.Let.Name, exprType(expr), false)
+			}
 		}
 		local := funcDepth > 0
 		return &AssignStmt{Name: st.Let.Name, Value: expr, Local: local}, nil
@@ -2769,7 +2811,11 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 			return &QueryAssignStmt{Name: st.Var.Name, Query: qc, Local: local}, nil
 		}
 		if currentEnv != nil {
-			currentEnv.SetVar(st.Var.Name, exprType(expr), false)
+			if st.Var.Type != nil {
+				currentEnv.SetVar(st.Var.Name, types.ResolveTypeRef(st.Var.Type, currentEnv), false)
+			} else {
+				currentEnv.SetVar(st.Var.Name, exprType(expr), false)
+			}
 		}
 		local := funcDepth > 0
 		return &AssignStmt{Name: st.Var.Name, Value: expr, Local: local}, nil
