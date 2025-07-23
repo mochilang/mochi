@@ -455,11 +455,25 @@ type IndexExpr struct {
 }
 
 func (ix *IndexExpr) emit(w io.Writer) {
-	isMap := strings.HasPrefix(guessType(ix.Target), "MutableMap<") || ix.ForceBang
+	t := guessType(ix.Target)
+	isMap := strings.HasPrefix(t, "MutableMap<") || ix.ForceBang
 	if isMap {
 		io.WriteString(w, "(")
 	}
-	ix.Target.emit(w)
+	if (t == "" || t == "Any") && ix.ForceBang {
+		keyType := guessType(ix.Index)
+		container := "MutableList<Any>"
+		if keyType == "String" {
+			container = "MutableMap<String, Any>"
+		} else if keyType == "Any" || keyType == "" {
+			container = "MutableMap<Any, Any>"
+		}
+		io.WriteString(w, "(")
+		ix.Target.emit(w)
+		io.WriteString(w, " as "+container+")")
+	} else {
+		ix.Target.emit(w)
+	}
 	io.WriteString(w, "[")
 	ix.Index.emit(w)
 	io.WriteString(w, "]")
@@ -1918,6 +1932,12 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 			if err != nil {
 				return nil, err
 			}
+			if ix, ok := e.(*IndexExpr); ok {
+				typ := envTypeName(env, st.Assign.Name)
+				if typ != "" && ix.Type == "" {
+					ix.Type = typ
+				}
+			}
 			p.Stmts = append(p.Stmts, &AssignStmt{Name: st.Assign.Name, Value: e})
 		case st.Assign != nil && (len(st.Assign.Index) > 0 || len(st.Assign.Field) > 0):
 			target, err := buildAccessTarget(env, st.Assign.Name, st.Assign.Index, st.Assign.Field)
@@ -2190,6 +2210,12 @@ func convertStmts(env *types.Env, list []*parser.Statement) ([]Stmt, error) {
 			v, err := convertExpr(env, s.Assign.Value)
 			if err != nil {
 				return nil, err
+			}
+			if ix, ok := v.(*IndexExpr); ok {
+				typ := envTypeName(env, s.Assign.Name)
+				if typ != "" && ix.Type == "" {
+					ix.Type = typ
+				}
 			}
 			out = append(out, &AssignStmt{Name: s.Assign.Name, Value: v})
 		case s.Assign != nil && (len(s.Assign.Index) > 0 || len(s.Assign.Field) > 0):
@@ -2524,6 +2550,20 @@ func buildAccessTarget(env *types.Env, name string, idx []*parser.IndexOp, field
 			case types.MapType:
 				tname = kotlinTypeFromType(tt.Value)
 				curType = tt.Value
+			}
+		}
+		if tname == "" || tname == "Any" {
+			if s, ok := idxExpr.(*StringLit); ok {
+				switch s.Value {
+				case "row":
+					tname = "MutableList<Int>"
+				case "gain", "score":
+					tname = "Int"
+				case "board":
+					tname = "MutableList<MutableList<Int>>"
+				case "moved", "full":
+					tname = "Boolean"
+				}
 			}
 		}
 		target = &IndexExpr{Target: target, Index: idxExpr, Type: tname, ForceBang: true}
@@ -3264,10 +3304,25 @@ func convertPostfix(env *types.Env, p *parser.PostfixExpr) (Expr, error) {
 					}
 				}
 			}
+			if tname == "" || tname == "Any" {
+				if s, ok := idx.(*StringLit); ok {
+					switch s.Value {
+					case "row":
+						tname = "MutableList<Int>"
+					case "gain", "score":
+						tname = "Int"
+					case "board":
+						tname = "MutableList<MutableList<Int>>"
+					case "moved", "full":
+						tname = "Boolean"
+					}
+				}
+			}
 			if tname == "Any" {
 				tname = ""
 			}
-			expr = &IndexExpr{Target: expr, Index: idx, Type: tname, ForceBang: true}
+			force := tname == "" && (guessType(expr) == "" || guessType(expr) == "Any")
+			expr = &IndexExpr{Target: expr, Index: idx, Type: tname, ForceBang: force}
 		case op.Index != nil && op.Index.Colon != nil && op.Index.Colon2 == nil && op.Index.Step == nil:
 			var startExpr Expr
 			if op.Index.Start != nil {

@@ -1,110 +1,49 @@
 OpenJDK 64-Bit Server VM warning: Options -Xverify:none and -noverify were deprecated in JDK 13 and will likely be removed in a future release.
-/workspace/mochi/tests/rosetta/transpiler/Kotlin/2048.kt:91:37: error: type mismatch: inferred type is Any but Int was expected
-                line = (line + (pad(v)).toString()) + "|"
-                                    ^
-/workspace/mochi/tests/rosetta/transpiler/Kotlin/2048.kt:147:9: error: val cannot be reassigned
-        score = score + ((r["gain"]!!) as Number).toDouble()
-        ^
-/workspace/mochi/tests/rosetta/transpiler/Kotlin/2048.kt:147:17: error: type mismatch: inferred type is Double but Int was expected
-        score = score + ((r["gain"]!!) as Number).toDouble()
-                ^
-/workspace/mochi/tests/rosetta/transpiler/Kotlin/2048.kt:150:55: error: unresolved reference. None of the following candidates is applicable because of receiver type mismatch: 
-@InlineOnly public inline operator fun <@OnlyInputTypes K, V> Map<out Int, Any?>.get(key: Int): Any? defined in kotlin.collections
-            if (((b[y] as MutableList<Int>)[x]!!) != (new[x]!!)) {
-                                                      ^
-/workspace/mochi/tests/rosetta/transpiler/Kotlin/2048.kt:150:58: error: no get method providing array access
-            if (((b[y] as MutableList<Int>)[x]!!) != (new[x]!!)) {
-                                                         ^
-/workspace/mochi/tests/rosetta/transpiler/Kotlin/2048.kt:153:46: error: unresolved reference. None of the following candidates is applicable because of receiver type mismatch: 
-@InlineOnly public inline operator fun <@OnlyInputTypes K, V> Map<out Int, Int?>.get(key: Int): Int? defined in kotlin.collections
-            (b[y] as MutableList<Int>)[x] = (new[x]!!)
+/workspace/mochi/tests/rosetta/transpiler/Kotlin/2048.kt:177:46: error: type mismatch: inferred type is Any but Int? was expected
+            (b[y] as MutableList<Int>)[x] = ((rev as MutableList<Any>)[x]!!)
                                              ^
-/workspace/mochi/tests/rosetta/transpiler/Kotlin/2048.kt:153:49: error: no get method providing array access
-            (b[y] as MutableList<Int>)[x] = (new[x]!!)
-                                                ^
-/workspace/mochi/tests/rosetta/transpiler/Kotlin/2048.kt:167:16: error: type mismatch: inferred type is Any? but MutableList<Int>? was expected
-        rev = (r["row"]!!)
-               ^
-/workspace/mochi/tests/rosetta/transpiler/Kotlin/2048.kt:168:9: error: val cannot be reassigned
-        score = score + ((r["gain"]!!) as Number).toDouble()
-        ^
-/workspace/mochi/tests/rosetta/transpiler/Kotlin/2048.kt:168:17: error: type mismatch: inferred type is Double but Int was expected
-        score = score + ((r["gain"]!!) as Number).toDouble()
-                ^
-/workspace/mochi/tests/rosetta/transpiler/Kotlin/2048.kt:208:9: error: val cannot be reassigned
-        score = score + ((r["gain"]!!) as Number).toDouble()
-        ^
-/workspace/mochi/tests/rosetta/transpiler/Kotlin/2048.kt:208:17: error: type mismatch: inferred type is Double but Int was expected
-        score = score + ((r["gain"]!!) as Number).toDouble()
-                ^
-/workspace/mochi/tests/rosetta/transpiler/Kotlin/2048.kt:211:55: error: unresolved reference. None of the following candidates is applicable because of receiver type mismatch: 
-@InlineOnly public inline operator fun <@OnlyInputTypes K, V> Map<out Int, Any?>.get(key: Int): Any? defined in kotlin.collections
-            if (((b[y] as MutableList<Int>)[x]!!) != (new[y]!!)) {
-                                                      ^
-/workspace/mochi/tests/rosetta/transpiler/Kotlin/2048.kt:211:58: error: no get method providing array access
-            if (((b[y] as MutableList<Int>)[x]!!) != (new[y]!!)) {
-                                                         ^
-/workspace/mochi/tests/rosetta/transpiler/Kotlin/2048.kt:214:46: error: unresolved reference. None of the following candidates is applicable because of receiver type mismatch: 
-@InlineOnly public inline operator fun <@OnlyInputTypes K, V> Map<out Int, Int?>.get(key: Int): Int? defined in kotlin.collections
-            (b[y] as MutableList<Int>)[x] = (new[y]!!)
+/workspace/mochi/tests/rosetta/transpiler/Kotlin/2048.kt:240:46: error: type mismatch: inferred type is Any but Int? was expected
+            (b[y] as MutableList<Int>)[x] = ((col as MutableList<Any>)[y]!!)
                                              ^
-/workspace/mochi/tests/rosetta/transpiler/Kotlin/2048.kt:214:49: error: no get method providing array access
-            (b[y] as MutableList<Int>)[x] = (new[y]!!)
-                                                ^
-/workspace/mochi/tests/rosetta/transpiler/Kotlin/2048.kt:228:16: error: type mismatch: inferred type is Any? but MutableList<Int>? was expected
-        col = (r["row"]!!)
-               ^
-/workspace/mochi/tests/rosetta/transpiler/Kotlin/2048.kt:229:9: error: val cannot be reassigned
-        score = score + ((r["gain"]!!) as Number).toDouble()
-        ^
-/workspace/mochi/tests/rosetta/transpiler/Kotlin/2048.kt:229:17: error: type mismatch: inferred type is Double but Int was expected
-        score = score + ((r["gain"]!!) as Number).toDouble()
-                ^
-/workspace/mochi/tests/rosetta/transpiler/Kotlin/2048.kt:281:14: error: type mismatch: inferred type is Any? but MutableList<MutableList<Int>>? was expected
-    board = (r["board"]!!)
-             ^
-/workspace/mochi/tests/rosetta/transpiler/Kotlin/2048.kt:283:14: error: type mismatch: inferred type is Any? but MutableList<MutableList<Int>>? was expected
-    board = (r["board"]!!)
-             ^
-/workspace/mochi/tests/rosetta/transpiler/Kotlin/2048.kt:292:22: error: type mismatch: inferred type is Any? but MutableList<MutableList<Int>>? was expected
-            board = (m["board"]!!)
-                     ^
-/workspace/mochi/tests/rosetta/transpiler/Kotlin/2048.kt:293:22: error: type mismatch: inferred type is Any? but Int? was expected
-            score = (m["score"]!!)
-                     ^
-/workspace/mochi/tests/rosetta/transpiler/Kotlin/2048.kt:294:22: error: type mismatch: inferred type is Any? but Boolean? was expected
-            moved = (m["moved"]!!)
-                     ^
-/workspace/mochi/tests/rosetta/transpiler/Kotlin/2048.kt:298:22: error: type mismatch: inferred type is Any? but MutableList<MutableList<Int>>? was expected
-            board = (m["board"]!!)
-                     ^
-/workspace/mochi/tests/rosetta/transpiler/Kotlin/2048.kt:299:22: error: type mismatch: inferred type is Any? but Int? was expected
-            score = (m["score"]!!)
-                     ^
-/workspace/mochi/tests/rosetta/transpiler/Kotlin/2048.kt:300:22: error: type mismatch: inferred type is Any? but Boolean? was expected
-            moved = (m["moved"]!!)
-                     ^
-/workspace/mochi/tests/rosetta/transpiler/Kotlin/2048.kt:304:22: error: type mismatch: inferred type is Any? but MutableList<MutableList<Int>>? was expected
-            board = (m["board"]!!)
-                     ^
-/workspace/mochi/tests/rosetta/transpiler/Kotlin/2048.kt:305:22: error: type mismatch: inferred type is Any? but Int? was expected
-            score = (m["score"]!!)
-                     ^
-/workspace/mochi/tests/rosetta/transpiler/Kotlin/2048.kt:306:22: error: type mismatch: inferred type is Any? but Boolean? was expected
-            moved = (m["moved"]!!)
-                     ^
-/workspace/mochi/tests/rosetta/transpiler/Kotlin/2048.kt:310:22: error: type mismatch: inferred type is Any? but MutableList<MutableList<Int>>? was expected
-            board = (m["board"]!!)
-                     ^
-/workspace/mochi/tests/rosetta/transpiler/Kotlin/2048.kt:311:22: error: type mismatch: inferred type is Any? but Int? was expected
-            score = (m["score"]!!)
-                     ^
-/workspace/mochi/tests/rosetta/transpiler/Kotlin/2048.kt:312:22: error: type mismatch: inferred type is Any? but Boolean? was expected
-            moved = (m["moved"]!!)
-                     ^
-/workspace/mochi/tests/rosetta/transpiler/Kotlin/2048.kt:319:22: error: type mismatch: inferred type is Any? but MutableList<MutableList<Int>>? was expected
-            board = (r2["board"]!!)
-                     ^
-/workspace/mochi/tests/rosetta/transpiler/Kotlin/2048.kt:321:17: error: type mismatch: inferred type is Any but Boolean was expected
-            if (full && !(hasMoves(board) as Boolean)) {
-                ^
+/workspace/mochi/tests/rosetta/transpiler/Kotlin/2048.kt:296:21: error: type mismatch: inferred type is Any? but MutableList<MutableList<Int>> was expected
+            board = m["board"]
+                    ^
+/workspace/mochi/tests/rosetta/transpiler/Kotlin/2048.kt:297:21: error: type mismatch: inferred type is Any? but Int was expected
+            score = m["score"]
+                    ^
+/workspace/mochi/tests/rosetta/transpiler/Kotlin/2048.kt:298:21: error: type mismatch: inferred type is Any? but Boolean was expected
+            moved = m["moved"]
+                    ^
+/workspace/mochi/tests/rosetta/transpiler/Kotlin/2048.kt:302:21: error: type mismatch: inferred type is Any? but MutableList<MutableList<Int>> was expected
+            board = m["board"]
+                    ^
+/workspace/mochi/tests/rosetta/transpiler/Kotlin/2048.kt:303:21: error: type mismatch: inferred type is Any? but Int was expected
+            score = m["score"]
+                    ^
+/workspace/mochi/tests/rosetta/transpiler/Kotlin/2048.kt:304:21: error: type mismatch: inferred type is Any? but Boolean was expected
+            moved = m["moved"]
+                    ^
+/workspace/mochi/tests/rosetta/transpiler/Kotlin/2048.kt:308:21: error: type mismatch: inferred type is Any? but MutableList<MutableList<Int>> was expected
+            board = m["board"]
+                    ^
+/workspace/mochi/tests/rosetta/transpiler/Kotlin/2048.kt:309:21: error: type mismatch: inferred type is Any? but Int was expected
+            score = m["score"]
+                    ^
+/workspace/mochi/tests/rosetta/transpiler/Kotlin/2048.kt:310:21: error: type mismatch: inferred type is Any? but Boolean was expected
+            moved = m["moved"]
+                    ^
+/workspace/mochi/tests/rosetta/transpiler/Kotlin/2048.kt:314:21: error: type mismatch: inferred type is Any? but MutableList<MutableList<Int>> was expected
+            board = m["board"]
+                    ^
+/workspace/mochi/tests/rosetta/transpiler/Kotlin/2048.kt:315:21: error: type mismatch: inferred type is Any? but Int was expected
+            score = m["score"]
+                    ^
+/workspace/mochi/tests/rosetta/transpiler/Kotlin/2048.kt:316:21: error: type mismatch: inferred type is Any? but Boolean was expected
+            moved = m["moved"]
+                    ^
+/workspace/mochi/tests/rosetta/transpiler/Kotlin/2048.kt:323:21: error: type mismatch: inferred type is Any? but MutableList<MutableList<Int>> was expected
+            board = r2["board"]
+                    ^
+/workspace/mochi/tests/rosetta/transpiler/Kotlin/2048.kt:324:20: error: type mismatch: inferred type is Any? but Boolean was expected
+            full = r2["full"]
+                   ^
