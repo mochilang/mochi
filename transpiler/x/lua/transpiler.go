@@ -26,6 +26,7 @@ var currentEnv *types.Env
 var loopCounter int
 var continueLabels []string
 var structCount int
+var funcDepth int
 
 const helperNow = `
 local _now_seed = 0
@@ -64,10 +65,12 @@ type ExprStmt struct{ Expr Expr }
 type AssignStmt struct {
 	Name  string
 	Value Expr
+	Local bool
 }
 type QueryAssignStmt struct {
 	Name  string
 	Query *QueryComp
+	Local bool
 }
 type IndexAssignStmt struct {
 	Target Expr
@@ -459,6 +462,9 @@ end)(`)
 }
 
 func (a *AssignStmt) emit(w io.Writer) {
+	if a.Local {
+		io.WriteString(w, "local ")
+	}
 	io.WriteString(w, a.Name)
 	io.WriteString(w, " = ")
 	if a.Value == nil {
@@ -469,6 +475,9 @@ func (a *AssignStmt) emit(w io.Writer) {
 }
 
 func (qa *QueryAssignStmt) emit(w io.Writer) {
+	if qa.Local {
+		io.WriteString(w, "local ")
+	}
 	io.WriteString(w, qa.Name)
 	io.WriteString(w, " = ")
 	qa.Query.emit(w)
@@ -2646,15 +2655,18 @@ func convertFunStmt(fs *parser.FunStmt) (Stmt, error) {
 	}
 	prev := currentEnv
 	currentEnv = child
+	funcDepth++
 	for _, st := range fs.Body {
 		s, err := convertStmt(st)
 		if err != nil {
 			currentEnv = prev
+			funcDepth--
 			return nil, err
 		}
 		f.Body = append(f.Body, s)
 	}
 	currentEnv = prev
+	funcDepth--
 	return f, nil
 }
 
@@ -2710,12 +2722,14 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 		}
 		if qc, ok := expr.(*QueryComp); ok {
 			currentEnv.SetVar(st.Let.Name, types.ListType{Elem: types.AnyType{}}, false)
-			return &QueryAssignStmt{Name: st.Let.Name, Query: qc}, nil
+			local := funcDepth > 0
+			return &QueryAssignStmt{Name: st.Let.Name, Query: qc, Local: local}, nil
 		}
 		if currentEnv != nil {
 			currentEnv.SetVar(st.Let.Name, exprType(expr), false)
 		}
-		return &AssignStmt{Name: st.Let.Name, Value: expr}, nil
+		local := funcDepth > 0
+		return &AssignStmt{Name: st.Let.Name, Value: expr, Local: local}, nil
 	case st.Var != nil:
 		var expr Expr
 		var err error
@@ -2736,12 +2750,14 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 		}
 		if qc, ok := expr.(*QueryComp); ok {
 			currentEnv.SetVar(st.Var.Name, types.ListType{Elem: types.AnyType{}}, false)
-			return &QueryAssignStmt{Name: st.Var.Name, Query: qc}, nil
+			local := funcDepth > 0
+			return &QueryAssignStmt{Name: st.Var.Name, Query: qc, Local: local}, nil
 		}
 		if currentEnv != nil {
 			currentEnv.SetVar(st.Var.Name, exprType(expr), false)
 		}
-		return &AssignStmt{Name: st.Var.Name, Value: expr}, nil
+		local := funcDepth > 0
+		return &AssignStmt{Name: st.Var.Name, Value: expr, Local: local}, nil
 	case st.Assign != nil:
 		expr, err := convertExpr(st.Assign.Value)
 		if err != nil {
