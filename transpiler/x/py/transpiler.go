@@ -30,12 +30,14 @@ type Program struct {
 }
 
 var (
-	currentImports    map[string]bool
-	currentImportLang map[string]string
-	currentEnv        *types.Env
-	structCounter     int
-	usesNow           bool
-	usesLookupHost    bool
+        currentImports    map[string]bool
+        currentImportLang map[string]string
+        currentEnv        *types.Env
+        structCounter     int
+        usesNow           bool
+        usesLookupHost    bool
+        usesPadStart      bool
+        usesFraction      bool
 )
 
 const helperNow = `
@@ -64,6 +66,11 @@ def _lookup_host(host):
         return socket.gethostbyname_ex(host)[2], None
     except Exception as e:
         return [], e
+`
+
+const helperPadStart = `
+def _pad_start(s, length, ch):
+    return str(s).rjust(length, ch)
 `
 
 var pyKeywords = map[string]bool{
@@ -2487,15 +2494,18 @@ func Emit(w io.Writer, p *Program) error {
 	var imports []string
 	needDC := false
 	if currentImports != nil {
-		if currentImports["json"] && !hasImport(p, "json") {
-			imports = append(imports, "import json")
-		}
-		if currentImports["dataclasses"] && !hasImport(p, "dataclasses") {
-			imports = append(imports, "import dataclasses")
-		}
-		if currentImports["socket"] && !hasImport(p, "socket") {
-			imports = append(imports, "import socket")
-		}
+               if currentImports["json"] && !hasImport(p, "json") {
+                       imports = append(imports, "import json")
+               }
+               if currentImports["dataclasses"] && !hasImport(p, "dataclasses") {
+                       imports = append(imports, "import dataclasses")
+               }
+               if usesFraction {
+                       imports = append(imports, "from fractions import Fraction")
+               }
+               if currentImports["socket"] && !hasImport(p, "socket") {
+                       imports = append(imports, "import socket")
+               }
 		if currentImports["os"] && !hasImport(p, "os") {
 			imports = append(imports, "import os")
 		}
@@ -2539,11 +2549,16 @@ func Emit(w io.Writer, p *Program) error {
 			return err
 		}
 	}
-	if usesLookupHost {
-		if _, err := io.WriteString(w, helperLookupHost+"\n"); err != nil {
-			return err
-		}
-	}
+        if usesLookupHost {
+                if _, err := io.WriteString(w, helperLookupHost+"\n"); err != nil {
+                        return err
+                }
+        }
+        if usesPadStart {
+                if _, err := io.WriteString(w, helperPadStart+"\n"); err != nil {
+                        return err
+                }
+        }
 	// no runtime helpers required
 	for _, s := range p.Stmts {
 		switch st := s.(type) {
@@ -3627,13 +3642,13 @@ func convertBinary(b *parser.BinaryExpr) (Expr, error) {
 		operands = append(operands, o)
 	}
 
-	if len(ops) == 1 && ops[0] == "/" {
-		if isSumUnary(b.Left) && isSumPostfix(b.Right[0].Right) {
-			ops[0] = "//"
-		} else if isIntLike(inferPyType(operands[0], currentEnv)) && isIntLike(inferPyType(operands[1], currentEnv)) {
-			ops[0] = "//"
-		}
-	}
+       if len(ops) == 1 && ops[0] == "/" && !usesFraction {
+               if isSumUnary(b.Left) && isSumPostfix(b.Right[0].Right) {
+                       ops[0] = "//"
+               } else if isIntLike(inferPyType(operands[0], currentEnv)) && isIntLike(inferPyType(operands[1], currentEnv)) {
+                       ops[0] = "//"
+               }
+       }
 
 	levels := [][]string{
 		{"*", "/", "//", "%"},
@@ -3646,13 +3661,13 @@ func convertBinary(b *parser.BinaryExpr) (Expr, error) {
 	}
 
 	apply := func(left Expr, op string, right Expr) Expr {
-		if op == "/" {
-			lt := inferPyType(left, currentEnv)
-			rt := inferPyType(right, currentEnv)
-			if !isFloatLike(lt) && !isFloatLike(rt) {
-				op = "//"
-			}
-		}
+               if op == "/" && !usesFraction {
+                       lt := inferPyType(left, currentEnv)
+                       rt := inferPyType(right, currentEnv)
+                       if !isFloatLike(lt) && !isFloatLike(rt) {
+                               op = "//"
+                       }
+               }
 		if op == "+" {
 			if s, ok := left.(*SliceExpr); ok {
 				left = &CallExpr{Func: &FieldExpr{Target: &StringLit{Value: ""}, Name: "join"}, Args: []Expr{s}}
@@ -3829,11 +3844,15 @@ func convertPostfix(p *parser.PostfixExpr) (Expr, error) {
 				args = append(args, ae)
 			}
 			replaced := false
-			if fe, ok := expr.(*FieldExpr); ok {
-				if n, ok := fe.Target.(*Name); ok {
-					lang := currentImportLang[n.Name]
-					if lang == "go" {
-						switch fe.Name {
+                       if fe, ok := expr.(*FieldExpr); ok {
+                               if fe.Name == "padStart" && len(args) == 2 {
+                                       usesPadStart = true
+                                       expr = &CallExpr{Func: &Name{Name: "_pad_start"}, Args: []Expr{fe.Target, args[0], args[1]}}
+                                       replaced = true
+                               } else if n, ok := fe.Target.(*Name); ok {
+                                       lang := currentImportLang[n.Name]
+                                       if lang == "go" {
+                                               switch fe.Name {
 						case "TrimSpace":
 							if len(args) == 1 {
 								expr = &CallExpr{Func: &FieldExpr{Target: args[0], Name: "strip"}}
@@ -3888,9 +3907,12 @@ func convertPostfix(p *parser.PostfixExpr) (Expr, error) {
 				expr = &CallExpr{Func: &Name{Name: "float"}, Args: []Expr{expr}}
 			case "string":
 				expr = &CallExpr{Func: &Name{Name: "str"}, Args: []Expr{expr}}
-			case "bool":
-				expr = &CallExpr{Func: &Name{Name: "bool"}, Args: []Expr{expr}}
-			default:
+                        case "bool":
+                                expr = &CallExpr{Func: &Name{Name: "bool"}, Args: []Expr{expr}}
+                       case "bigrat":
+                               usesFraction = true
+                               expr = &CallExpr{Func: &Name{Name: "Fraction"}, Args: []Expr{expr}}
+                        default:
 				if currentEnv != nil {
 					if st, ok := currentEnv.GetStruct(name); ok {
 						if d, ok := expr.(*DictLit); ok {
@@ -4005,15 +4027,28 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 			if len(args) == 1 {
 				return &CallExpr{Func: &FieldExpr{Target: args[0], Name: "upper"}}, nil
 			}
-		case "lower":
-			if len(args) == 1 {
-				return &CallExpr{Func: &FieldExpr{Target: args[0], Name: "lower"}}, nil
-			}
-		case "now":
-			if len(args) == 0 {
-				usesNow = true
-				if currentImports != nil {
-					currentImports["os"] = true
+               case "lower":
+                       if len(args) == 1 {
+                               return &CallExpr{Func: &FieldExpr{Target: args[0], Name: "lower"}}, nil
+                       }
+               case "padStart":
+                       if len(args) == 3 {
+                               usesPadStart = true
+                               return &CallExpr{Func: &Name{Name: "_pad_start"}, Args: args}, nil
+                       }
+               case "num":
+                       if len(args) == 1 {
+                               return &FieldExpr{Target: args[0], Name: "numerator"}, nil
+                       }
+               case "denom":
+                       if len(args) == 1 {
+                               return &FieldExpr{Target: args[0], Name: "denominator"}, nil
+                       }
+               case "now":
+                       if len(args) == 0 {
+                               usesNow = true
+                               if currentImports != nil {
+                                       currentImports["os"] = true
 					currentImports["time"] = true
 				}
 				return &CallExpr{Func: &Name{Name: "_now"}, Args: nil}, nil

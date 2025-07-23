@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Python code from programs in `tests/rosetta/x/Mochi` lives in `tests/rosetta/transpiler/Python`.
-Last updated: 2025-07-23 07:37 UTC
+Last updated: 2025-07-23 08:19 UTC
 
-## Rosetta Golden Test Checklist (96/284)
+## Rosetta Golden Test Checklist (104/284)
 1. [x] 100-doors-2
 2. [x] 100-doors-3
 3. [x] 100-doors
@@ -84,8 +84,8 @@ Last updated: 2025-07-23 07:37 UTC
 77. [x] ascending-primes
 78. [x] ascii-art-diagram-converter
 79. [x] assertions
-80. [ ] associative-array-creation
-81. [ ] associative-array-iteration
+80. [x] associative-array-creation
+81. [x] associative-array-iteration
 82. [x] associative-array-merging
 83. [x] atomic-updates
 84. [x] attractive-numbers
@@ -105,11 +105,11 @@ Last updated: 2025-07-23 07:37 UTC
 98. [x] babylonian-spiral
 99. [x] balanced-brackets
 100. [x] balanced-ternary
-101. [ ] barnsley-fern
-102. [ ] base64-decode-data
-103. [ ] bell-numbers
-104. [ ] benfords-law
-105. [ ] bernoulli-numbers
+101. [x] barnsley-fern
+102. [x] base64-decode-data
+103. [x] bell-numbers
+104. [x] benfords-law
+105. [x] bernoulli-numbers
 106. [ ] best-shuffle
 107. [ ] bifid-cipher
 108. [ ] bin-given-limits
