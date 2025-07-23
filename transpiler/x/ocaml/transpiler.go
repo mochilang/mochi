@@ -349,12 +349,26 @@ func mapFieldType(typ, field string) (string, bool) {
 			}
 		}
 	}
-	if typ == "map-dyn" {
+	if typ == "map-dyn" || typ == "map" {
 		switch field {
 		case "ok", "success":
 			return "bool", true
 		case "idx", "id", "index":
 			return "int", true
+		case "row", "col", "column":
+			return "list-int", true
+		case "board":
+			return "list-list-int", true
+		case "gain", "score":
+			return "int", true
+		case "moved":
+			return "bool", true
+		case "full":
+			return "bool", true
+		case "value":
+			return "map-int", true
+		case "left", "right":
+			return "map", true
 		}
 	}
 	if strings.HasPrefix(typ, "map-") {
@@ -367,7 +381,7 @@ func mapFieldType(typ, field string) (string, bool) {
 }
 
 func isDynamicMapType(typ string) bool {
-	return strings.HasPrefix(typ, "map-dyn")
+	return strings.HasPrefix(typ, "map-dyn") || typ == "map"
 }
 
 func ocamlType(t string) string {
@@ -381,6 +395,19 @@ func ocamlType(t string) string {
 	case "bool":
 		return "bool"
 	default:
+		if strings.HasPrefix(t, "map-") {
+			inner := strings.TrimPrefix(t, "map-")
+			return "(string * " + ocamlType(inner) + ") list"
+		}
+		if t == "map" {
+			return "(string * Obj.t) list"
+		}
+		if strings.HasPrefix(t, "list-") {
+			return ocamlType(strings.TrimPrefix(t, "list-")) + " list"
+		}
+		if t == "list" {
+			return "Obj.t list"
+		}
 		return "Obj.t"
 	}
 }
@@ -417,7 +444,8 @@ var ocamlReserved = map[string]bool{
 	"end": true, "exception": true, "external": true, "fun": true, "function": true,
 	"let": true, "in": true, "match": true, "mod": true, "module": true, "open": true,
 	"rec": true, "try": true, "type": true, "val": true, "when": true, "with": true,
-	"new": true,
+	"new":  true,
+	"done": true,
 }
 
 func sanitizeIdent(s string) string {
@@ -727,6 +755,11 @@ func (f *FunStmt) emit(w io.Writer) {
 	io.WriteString(w, "  (try\n")
 	for _, st := range f.Body {
 		st.emit(w)
+	}
+	if f.Ret != nil {
+		io.WriteString(w, "  __ret := ")
+		f.Ret.emit(w)
+		io.WriteString(w, ";\n")
 	}
 	io.WriteString(w, "    !__ret\n  with Return -> !__ret)\n\n")
 }
@@ -1185,9 +1218,9 @@ type MapIndexExpr struct {
 
 func (mi *MapIndexExpr) emit(w io.Writer) {
 	if mi.Dyn {
-		io.WriteString(w, "(Obj.obj (List.assoc ")
+		io.WriteString(w, "(Obj.obj (List.assoc (")
 		mi.Key.emit(w)
-		io.WriteString(w, " ")
+		io.WriteString(w, ") ")
 		mi.Map.emit(w)
 		io.WriteString(w, ") : ")
 		if strings.HasPrefix(mi.Typ, "map") {
@@ -1197,9 +1230,9 @@ func (mi *MapIndexExpr) emit(w io.Writer) {
 		}
 		io.WriteString(w, ")")
 	} else {
-		io.WriteString(w, "(List.assoc ")
+		io.WriteString(w, "(List.assoc (")
 		mi.Key.emit(w)
-		io.WriteString(w, " ")
+		io.WriteString(w, ") ")
 		mi.Map.emit(w)
 		io.WriteString(w, ")")
 	}
@@ -1581,7 +1614,7 @@ func (s *SliceExpr) emitPrint(w io.Writer) { s.emit(w) }
 type UnaryMinus struct{ Expr Expr }
 
 func (u *UnaryMinus) emit(w io.Writer) {
-	io.WriteString(w, "(-")
+	io.WriteString(w, "-(")
 	u.Expr.emit(w)
 	io.WriteString(w, ")")
 }
@@ -1908,6 +1941,13 @@ func defaultValueExpr(typ string) Expr {
 		return &MapLit{Items: nil}
 	case "func":
 		return &FuncExpr{}
+	default:
+		if strings.HasPrefix(typ, "list-") {
+			return &ListLit{Elems: nil}
+		}
+		if strings.HasPrefix(typ, "map-") {
+			return &MapLit{Items: nil}
+		}
 	}
 	return &IntLit{Value: 0}
 }
@@ -2334,11 +2374,7 @@ func transpileStmt(st *parser.Statement, env *types.Env, vars map[string]VarInfo
 			}
 			fnVars[p.Name] = VarInfo{typ: typ, ref: true}
 		}
-		bodyStmts := st.Fun.Body
-		if len(bodyStmts) > 0 && bodyStmts[len(bodyStmts)-1].Return != nil {
-			bodyStmts = bodyStmts[:len(bodyStmts)-1]
-		}
-		body, err := transpileStmts(bodyStmts, child, fnVars)
+		body, err := transpileStmts(st.Fun.Body, child, fnVars)
 		if err != nil {
 			return nil, err
 		}
@@ -2354,7 +2390,7 @@ func transpileStmt(st *parser.Statement, env *types.Env, vars map[string]VarInfo
 			}
 		}
 		env.SetFunc(st.Fun.Name, st.Fun)
-		var retTyp types.Type = types.BoolType{}
+		var retTyp types.Type = types.VoidType{}
 		if st.Fun.Return != nil {
 			retTyp = types.ResolveTypeRef(st.Fun.Return, env)
 		}
