@@ -1,3 +1,13 @@
+## Progress (2025-07-23 15:43 +0700)
+- Commit 2b4bee2c73: transpiler/erl: handle casts and built-in case
+- Generated Racket for 100/100 programs
+- Updated README checklist
+
+## Progress (2025-07-23 15:43 +0700)
+- Commit 2b4bee2c73: transpiler/erl: handle casts and built-in case
+- Generated Racket for 100/100 programs
+- Updated README checklist
+
 ## Progress (2025-07-23 13:56 +0700)
 - Commit aad3ecfcf4: rkt: support map keys and list append
 - Generated Racket for 100/100 programs
