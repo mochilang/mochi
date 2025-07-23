@@ -818,7 +818,7 @@ func (ix *IndexExpr) emit(w io.Writer) {
 		ix.Index.emit(w)
 		io.WriteString(w, " + 1)")
 		io.WriteString(w, ")")
-	case "list":
+	case "list", "list_elem":
 		ix.Target.emit(w)
 		io.WriteString(w, "[")
 		ix.Index.emit(w)
@@ -2090,7 +2090,7 @@ func convertPostfix(p *parser.PostfixExpr) (Expr, error) {
 			if err != nil {
 				return nil, err
 			}
-			kind := "list"
+			kind := "list_elem"
 			if isStringExpr(expr) {
 				kind = "string"
 			} else if isMapExpr(expr) {
@@ -2111,7 +2111,7 @@ func convertPostfix(p *parser.PostfixExpr) (Expr, error) {
 					if err != nil {
 						return nil, err
 					}
-					kind := "list"
+					kind := "list_elem"
 					if isStringExpr(expr) {
 						kind = "string"
 					} else if isMapExpr(expr) {
