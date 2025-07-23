@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated TypeScript code from programs in `tests/rosetta/x/Mochi` lives in `tests/rosetta/transpiler/TypeScript`.
-Last updated: 2025-07-23 10:18 UTC
+Last updated: 2025-07-23 10:39 UTC
 
-## Rosetta Golden Test Checklist (127/284)
+## Rosetta Golden Test Checklist (140/284)
 1. [x] 100-doors-2
 2. [x] 100-doors-3
 3. [x] 100-doors
@@ -136,22 +136,22 @@ Last updated: 2025-07-23 10:18 UTC
 129. [ ] bitwise-io-2
 130. [x] bitwise-operations
 131. [x] blum-integer
-132. [ ] boolean-values
-133. [ ] box-the-compass
-134. [ ] boyer-moore-string-search
-135. [ ] brazilian-numbers
-136. [ ] break-oo-privacy
+132. [x] boolean-values
+133. [x] box-the-compass
+134. [x] boyer-moore-string-search
+135. [x] brazilian-numbers
+136. [x] break-oo-privacy
 137. [ ] brilliant-numbers
-138. [ ] brownian-tree
+138. [x] brownian-tree
 139. [ ] bulls-and-cows-player
 140. [ ] bulls-and-cows
-141. [ ] burrows-wheeler-transform
-142. [ ] caesar-cipher-1
-143. [ ] caesar-cipher-2
-144. [ ] calculating-the-value-of-e
-145. [ ] calendar---for-real-programmers-1
-146. [ ] calendar---for-real-programmers-2
-147. [ ] calendar
+141. [x] burrows-wheeler-transform
+142. [x] caesar-cipher-1
+143. [x] caesar-cipher-2
+144. [x] calculating-the-value-of-e
+145. [x] calendar---for-real-programmers-1
+146. [x] calendar---for-real-programmers-2
+147. [x] calendar
 148. [ ] calkin-wilf-sequence
 149. [ ] call-a-foreign-language-function
 150. [ ] call-a-function-1
