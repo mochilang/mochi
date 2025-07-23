@@ -1800,6 +1800,8 @@ func compilePostfix(p *parser.PostfixExpr) (Expr, error) {
 			switch *op.Cast.Type.Simple {
 			case "int":
 				expr = &CallExpr{Func: "Convert.ToInt32", Args: []Expr{expr}}
+			case "float":
+				expr = &CallExpr{Func: "Convert.ToDouble", Args: []Expr{expr}}
 			default:
 				// other casts are treated as no-ops
 			}

@@ -1,45 +1,45 @@
 # Rosetta C# Transpiler Output
 
-Completed programs: 7/284
-Last updated: 2025-07-23 11:52 +0700
+Completed programs: 23/284
+Last updated: 2025-07-23 13:23 
 
 ## Checklist
 1. [x] 100-doors-2
 2. [x] 100-doors-3
 3. [x] 100-doors
-4. [ ] 100-prisoners
+4. [x] 100-prisoners
 5. [x] 15-puzzle-game
 6. [x] 15-puzzle-solver
 7. [x] 2048
-8. [x] 21-game
+8. [ ] 21-game
 9. [ ] 24-game-solve
 10. [ ] 24-game
-11. [ ] 4-rings-or-4-squares-puzzle
-12. [ ] 9-billion-names-of-god-the-integer
+11. [x] 4-rings-or-4-squares-puzzle
+12. [x] 9-billion-names-of-god-the-integer
 13. [ ] 99-bottles-of-beer-2
-14. [ ] 99-bottles-of-beer
+14. [x] 99-bottles-of-beer
 15. [ ] DNS-query
-16. [ ] a+b
-17. [ ] abbreviations-automatic
+16. [x] a+b
+17. [x] abbreviations-automatic
 18. [ ] abbreviations-easy
 19. [ ] abbreviations-simple
 20. [ ] abc-problem
-21. [ ] abelian-sandpile-model-identity
-22. [ ] abelian-sandpile-model
+21. [x] abelian-sandpile-model-identity
+22. [x] abelian-sandpile-model
 23. [ ] abstract-type
-24. [ ] abundant-deficient-and-perfect-number-classifications
+24. [x] abundant-deficient-and-perfect-number-classifications
 25. [ ] abundant-odd-numbers
 26. [ ] accumulator-factory
 27. [ ] achilles-numbers
-28. [ ] ackermann-function-2
+28. [x] ackermann-function-2
 29. [ ] ackermann-function-3
-30. [ ] ackermann-function
-31. [ ] active-directory-connect
-32. [ ] active-directory-search-for-a-user
+30. [x] ackermann-function
+31. [x] active-directory-connect
+32. [x] active-directory-search-for-a-user
 33. [ ] active-object
 34. [ ] add-a-variable-to-a-class-instance-at-runtime
-35. [ ] additive-primes
-36. [ ] address-of-a-variable
+35. [x] additive-primes
+36. [x] address-of-a-variable
 37. [ ] adfgvx-cipher
 38. [ ] aks-test-for-primes
 39. [ ] algebraic-data-types
@@ -55,13 +55,13 @@ Last updated: 2025-07-23 11:52 +0700
 49. [ ] angle-difference-between-two-bearings-2
 50. [ ] angles-geometric-normalization-and-conversion
 51. [ ] animate-a-pendulum
-52. [ ] animation
+52. [x] animation
 53. [ ] anonymous-recursion-1
 54. [ ] anonymous-recursion-2
 55. [ ] anonymous-recursion
 56. [ ] anti-primes
 57. [ ] append-a-record-to-the-end-of-a-text-file
-58. [ ] apply-a-callback-to-an-array-1
+58. [x] apply-a-callback-to-an-array-1
 59. [ ] apply-a-callback-to-an-array-2
 60. [ ] apply-a-digital-filter-direct-form-ii-transposed-
 61. [ ] approximate-equality
