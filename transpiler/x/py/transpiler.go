@@ -897,6 +897,26 @@ func emitStmtIndent(w io.Writer, s Stmt, indent string) error {
 	case *ContinueStmt:
 		_, err := io.WriteString(w, indent+"continue\n")
 		return err
+	case *DataClassDef:
+		if _, err := io.WriteString(w, indent+"@dataclass\n"); err != nil {
+			return err
+		}
+		if _, err := io.WriteString(w, indent+"class "+safeName(st.Name)+":\n"); err != nil {
+			return err
+		}
+		if len(st.Fields) == 0 {
+			if _, err := io.WriteString(w, indent+"    pass\n"); err != nil {
+				return err
+			}
+			return nil
+		}
+		for _, f := range st.Fields {
+			line := fmt.Sprintf("%s    %s: %s\n", indent, safeName(f.Name), pyTypeName(f.Type))
+			if _, err := io.WriteString(w, line); err != nil {
+				return err
+			}
+		}
+		return nil
 	case *AssertStmt:
 		if _, err := io.WriteString(w, indent+"assert "); err != nil {
 			return err

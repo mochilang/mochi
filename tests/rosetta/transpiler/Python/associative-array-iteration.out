@@ -1,0 +1,7 @@
+Traceback (most recent call last):
+  File "/workspace/mochi/tests/rosetta/transpiler/Python/associative-array-iteration.py", line 14, in <module>
+    main()
+  File "/workspace/mochi/tests/rosetta/transpiler/Python/associative-array-iteration.py", line 8, in main
+    for k in keys(m):
+             ^^^^
+NameError: name 'keys' is not defined

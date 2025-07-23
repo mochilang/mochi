@@ -1,0 +1,10 @@
+Traceback (most recent call last):
+  File "/workspace/mochi/tests/rosetta/transpiler/Python/b-zier-curves-intersections.py", line 144, in <module>
+    main()
+  File "/workspace/mochi/tests/rosetta/transpiler/Python/b-zier-curves-intersections.py", line 138, in main
+    inters = findIntersects(p, q, tol, spacing)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/mochi/tests/rosetta/transpiler/Python/b-zier-curves-intersections.py", line 113, in findIntersects
+    res = testIntersect(work["p"], work["q"], tol)
+                        ~~~~^^^^^
+TypeError: 'Workload' object is not subscriptable
