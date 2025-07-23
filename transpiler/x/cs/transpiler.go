@@ -17,6 +17,7 @@ import (
 	"strconv"
 	"strings"
 	"time"
+	"unicode"
 
 	yaml "gopkg.in/yaml.v3"
 	"mochi/parser"
@@ -107,6 +108,21 @@ func safeName(n string) string {
 	return n
 }
 
+func validIdent(n string) bool {
+	for i, r := range n {
+		if i == 0 {
+			if !(unicode.IsLetter(r) || r == '_') {
+				return false
+			}
+		} else {
+			if !(unicode.IsLetter(r) || unicode.IsDigit(r) || r == '_') {
+				return false
+			}
+		}
+	}
+	return true
+}
+
 func gitTimestamp() string {
 	out, err := exec.Command("git", "log", "-1", "--format=%cI").Output()
 	if err == nil {
@@ -136,7 +152,18 @@ type LetStmt struct {
 
 func (s *LetStmt) emit(w io.Writer) {
 	name := safeName(s.Name)
-	if t, ok := varTypes[s.Name]; ok && t != "" {
+	t := ""
+	if s.Value != nil {
+		if v := typeOfExpr(s.Value); v != "" && v != "object" {
+			t = v
+		}
+	}
+	if t == "" {
+		if vt, ok := varTypes[s.Name]; ok && vt != "" && !strings.HasPrefix(vt, "fn/") {
+			t = vt
+		}
+	}
+	if t != "" && t != "object" {
 		fmt.Fprintf(w, "%s %s = ", t, name)
 	} else {
 		fmt.Fprintf(w, "var %s = ", name)
@@ -152,7 +179,18 @@ type VarStmt struct {
 
 func (s *VarStmt) emit(w io.Writer) {
 	name := safeName(s.Name)
-	if t, ok := varTypes[s.Name]; ok && t != "" {
+	t := ""
+	if s.Value != nil {
+		if v := typeOfExpr(s.Value); v != "" && v != "object" {
+			t = v
+		}
+	}
+	if t == "" {
+		if vt, ok := varTypes[s.Name]; ok && vt != "" && !strings.HasPrefix(vt, "fn/") {
+			t = vt
+		}
+	}
+	if t != "" && t != "object" {
 		fmt.Fprintf(w, "%s %s", t, name)
 	} else {
 		fmt.Fprintf(w, "var %s", name)
@@ -367,6 +405,7 @@ func (f *Function) emit(w io.Writer) {
 	if ret == "" {
 		ret = "void"
 	}
+	saved := make(map[string]string)
 	fmt.Fprintf(w, "static %s %s(", ret, safeName(f.Name))
 	for i, p := range f.Params {
 		if i > 0 {
@@ -377,6 +416,8 @@ func (f *Function) emit(w io.Writer) {
 			typ = f.ParamTypes[i]
 		}
 		fmt.Fprintf(w, "%s %s", typ, safeName(p))
+		saved[p] = varTypes[p]
+		varTypes[p] = typ
 	}
 	fmt.Fprint(w, ") {\n")
 	for _, st := range f.Body {
@@ -385,6 +426,13 @@ func (f *Function) emit(w io.Writer) {
 		fmt.Fprint(w, ";\n")
 	}
 	fmt.Fprint(w, "}\n")
+	for name, t := range saved {
+		if t == "" {
+			delete(varTypes, name)
+		} else {
+			varTypes[name] = t
+		}
+	}
 }
 
 // WhileStmt represents a while loop.
@@ -846,7 +894,18 @@ func isMapExpr(e Expr) bool {
 	case *MapLit:
 		return true
 	case *VarRef:
-		return mapVars[ex.Name]
+		if t, ok := varTypes[ex.Name]; ok {
+			if strings.HasPrefix(t, "Dictionary<") {
+				return true
+			}
+			return false
+		}
+		return false
+	default:
+		t := typeOfExpr(e)
+		if strings.HasPrefix(t, "Dictionary<") {
+			return true
+		}
 	}
 	return false
 }
@@ -1036,6 +1095,9 @@ func inferStructMap(varName string, prog *Program, m *MapLit) (Expr, bool) {
 	for i, it := range m.Items {
 		k, ok := it.Key.(*StringLit)
 		if !ok {
+			return m, false
+		}
+		if !validIdent(k.Value) {
 			return m, false
 		}
 		keys[i] = k.Value
@@ -1327,6 +1389,9 @@ func mapTypes(m *MapLit) (string, string) {
 }
 
 func listType(l *ListLit) string {
+	if len(l.Elems) == 0 && l.ElemType != "" {
+		return l.ElemType
+	}
 	elemType := ""
 	for i, e := range l.Elems {
 		t := typeOfExpr(e)
@@ -1343,6 +1408,14 @@ func listType(l *ListLit) string {
 }
 
 func (ix *IndexExpr) emit(w io.Writer) {
+	if typeOfExpr(ix) == "object" && isMapExpr(ix.Target) {
+		fmt.Fprint(w, "(dynamic)(")
+		ix.Target.emit(w)
+		fmt.Fprint(w, "[")
+		ix.Index.emit(w)
+		fmt.Fprint(w, "])")
+		return
+	}
 	ix.Target.emit(w)
 	fmt.Fprint(w, "[")
 	ix.Index.emit(w)
@@ -1995,9 +2068,19 @@ func compileStmt(prog *Program, s *parser.Statement) (Stmt, error) {
 	case s.Fun != nil:
 		params := make([]string, len(s.Fun.Params))
 		ptypes := make([]string, len(s.Fun.Params))
+		saved := make(map[string]string)
+		savedStr := make(map[string]bool)
 		for i, p := range s.Fun.Params {
 			params[i] = p.Name
 			ptypes[i] = csType(p.Type)
+			saved[p.Name] = varTypes[p.Name]
+			varTypes[p.Name] = ptypes[i]
+			savedStr[p.Name] = stringVars[p.Name]
+			if ptypes[i] == "string" {
+				stringVars[p.Name] = true
+			} else {
+				delete(stringVars, p.Name)
+			}
 		}
 		var body []Stmt
 		if prog != nil && blockDepth > 0 {
@@ -2014,6 +2097,20 @@ func compileStmt(prog *Program, s *parser.Statement) (Stmt, error) {
 			}
 		}
 		blockDepth--
+		for name, typ := range saved {
+			if typ == "" {
+				delete(varTypes, name)
+			} else {
+				varTypes[name] = typ
+			}
+		}
+		for name, val := range savedStr {
+			if !val {
+				delete(stringVars, name)
+			} else {
+				stringVars[name] = val
+			}
+		}
 		retType := csType(s.Fun.Return)
 		if prog != nil && blockDepth == 0 {
 			varTypes[s.Fun.Name] = fmt.Sprintf("fn/%d", len(ptypes))
@@ -2966,15 +3063,15 @@ func Emit(prog *Program) []byte {
 	for _, g := range prog.Globals {
 		buf.WriteString("\tstatic ")
 		t := typeOfExpr(g.Value)
-		if t == "" {
-			if vt, ok := varTypes[g.Name]; ok && vt != "" {
+		if vt, ok := varTypes[g.Name]; ok && vt != "" && !strings.HasPrefix(vt, "fn/") {
+			if t == "" || t == "object" {
 				t = vt
 			}
 		}
-		if t != "" && t != "object" {
-			fmt.Fprintf(&buf, "%s %s = ", t, g.Name)
+		if t == "" || t == "object" {
+			fmt.Fprintf(&buf, "dynamic %s = ", g.Name)
 		} else {
-			fmt.Fprintf(&buf, "var %s = ", g.Name)
+			fmt.Fprintf(&buf, "%s %s = ", t, g.Name)
 		}
 		g.Value.emit(&buf)
 		buf.WriteString(";\n")
