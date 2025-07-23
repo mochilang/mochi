@@ -92,6 +92,7 @@ func compileRunClojureRosetta(t *testing.T, srcPath, outDir, name string) {
 		t.Fatalf("write clj: %v", err)
 	}
 	cmd := exec.Command("clojure", cljPath)
+	cmd.Env = append(os.Environ(), "MOCHI_NOW_SEED=1")
 	if data, err := os.ReadFile(strings.TrimSuffix(srcPath, ".mochi") + ".in"); err == nil {
 		cmd.Stdin = bytes.NewReader(data)
 	}

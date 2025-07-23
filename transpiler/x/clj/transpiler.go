@@ -295,6 +295,23 @@ func uniqueWhileVar() string {
 	return fmt.Sprintf("while_flag_%d", whileCounter)
 }
 
+func renameVar(name string) string {
+	if renameVars == nil || funDepth == 0 {
+		return name
+	}
+	if newName, ok := renameVars[name]; ok {
+		return newName
+	}
+	if transpileEnv != nil {
+		if _, ok := transpileEnv.GetFunc(name); ok {
+			newName := name + "_v"
+			renameVars[name] = newName
+			return newName
+		}
+	}
+	return name
+}
+
 func parseFormat(e *parser.Expr) string {
 	if e == nil || e.Binary == nil || len(e.Binary.Right) > 0 {
 		return ""
@@ -455,6 +472,8 @@ var currentProgram *Program
 var funDepth int
 var funParamsStack [][]string
 var nestedFunArgs map[string][]string
+var stringVars map[string]bool
+var renameVars map[string]string
 
 // Transpile converts a Mochi program into a Clojure AST. The implementation
 // is intentionally minimal and currently only supports very small programs used
@@ -469,6 +488,8 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	structCount = 0
 	funParamsStack = nil
 	nestedFunArgs = make(map[string][]string)
+	stringVars = nil
+	renameVars = nil
 	pr := &Program{}
 	currentProgram = pr
 	defer func() {
@@ -477,6 +498,8 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 		currentProgram = nil
 		nestedFunArgs = nil
 		funParamsStack = nil
+		stringVars = nil
+		renameVars = nil
 	}()
 
 	// emit (ns main)
@@ -496,6 +519,21 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	}
 	pr.Forms = append(pr.Forms, &List{Elems: nsElems})
 	pr.Forms = append(pr.Forms, &List{Elems: []Node{Symbol("require"), Symbol("'clojure.set")}})
+	initSeed := &List{Elems: []Node{
+		Symbol("let"), &Vector{Elems: []Node{
+			Symbol("s"), &List{Elems: []Node{Symbol("System/getenv"), StringLit("MOCHI_NOW_SEED")}},
+		}},
+		&List{Elems: []Node{
+			Symbol("if"),
+			&List{Elems: []Node{
+				Symbol("and"), Symbol("s"),
+				&List{Elems: []Node{Symbol("not"), &List{Elems: []Node{Symbol("="), Symbol("s"), StringLit("")}}}},
+			}},
+			&List{Elems: []Node{Symbol("Integer/parseInt"), Symbol("s")}},
+			IntLit(0),
+		}},
+	}}
+	pr.Forms = append(pr.Forms, &List{Elems: []Node{Symbol("def"), Symbol("nowSeed"), &List{Elems: []Node{Symbol("atom"), initSeed}}}})
 
 	body := []Node{}
 	for _, st := range prog.Statements {
@@ -567,7 +605,11 @@ func transpileStmt(s *parser.Statement) (Node, error) {
 				v = Symbol("nil")
 			}
 		}
-		return &List{Elems: []Node{Symbol("def"), Symbol(s.Let.Name), v}}, nil
+		if stringVars != nil && isStringNode(v) {
+			stringVars[s.Let.Name] = true
+		}
+		name := renameVar(s.Let.Name)
+		return &List{Elems: []Node{Symbol("def"), Symbol(name), v}}, nil
 	case s.Var != nil:
 		var v Node
 		var err error
@@ -594,7 +636,11 @@ func transpileStmt(s *parser.Statement) (Node, error) {
 				v = Symbol("nil")
 			}
 		}
-		return &List{Elems: []Node{Symbol("def"), Symbol(s.Var.Name), v}}, nil
+		if stringVars != nil && isStringNode(v) {
+			stringVars[s.Var.Name] = true
+		}
+		name := renameVar(s.Var.Name)
+		return &List{Elems: []Node{Symbol("def"), Symbol(name), v}}, nil
 	case s.Assign != nil:
 		v, err := transpileExpr(s.Assign.Value)
 		if err != nil {
@@ -616,16 +662,20 @@ func transpileStmt(s *parser.Statement) (Node, error) {
 		for _, fld := range s.Assign.Field {
 			path = append(path, Keyword(fld.Name))
 		}
+		if stringVars != nil && isStringNode(v) {
+			stringVars[s.Assign.Name] = true
+		}
+		name := renameVar(s.Assign.Name)
 		if simple && len(path) > 0 {
 			var assign Node
 			if len(path) == 1 {
-				assign = &List{Elems: []Node{Symbol("assoc"), Symbol(s.Assign.Name), path[0], v}}
+				assign = &List{Elems: []Node{Symbol("assoc"), Symbol(name), path[0], v}}
 			} else {
-				assign = &List{Elems: []Node{Symbol("assoc-in"), Symbol(s.Assign.Name), &Vector{Elems: path}, v}}
+				assign = &List{Elems: []Node{Symbol("assoc-in"), Symbol(name), &Vector{Elems: path}, v}}
 			}
-			return &List{Elems: []Node{Symbol("def"), Symbol(s.Assign.Name), assign}}, nil
+			return &List{Elems: []Node{Symbol("def"), Symbol(name), assign}}, nil
 		}
-		return &List{Elems: []Node{Symbol("def"), Symbol(s.Assign.Name), v}}, nil
+		return &List{Elems: []Node{Symbol("def"), Symbol(name), v}}, nil
 	case s.Fun != nil:
 		return transpileFunStmt(s.Fun)
 	case s.Return != nil:
@@ -660,13 +710,26 @@ func transpileStmt(s *parser.Statement) (Node, error) {
 
 func transpileFunStmt(f *parser.FunStmt) (Node, error) {
 	funDepth++
-	defer func() { funDepth--; funParamsStack = funParamsStack[:len(funParamsStack)-1] }()
+	defer func() {
+		funDepth--
+		funParamsStack = funParamsStack[:len(funParamsStack)-1]
+		stringVars = nil
+		renameVars = nil
+	}()
+
+	stringVars = make(map[string]bool)
+	renameVars = make(map[string]string)
 
 	params := []Node{}
 	names := []string{}
 	for _, p := range f.Params {
 		params = append(params, Symbol(p.Name))
 		names = append(names, p.Name)
+		if p.Type != nil && p.Type.Simple != nil {
+			if *p.Type.Simple == "string" {
+				stringVars[p.Name] = true
+			}
+		}
 	}
 	funParamsStack = append(funParamsStack, names)
 	body := []Node{}
@@ -829,6 +892,11 @@ func isStringNode(n Node) bool {
 			}
 		}
 	case Symbol:
+		if stringVars != nil {
+			if stringVars[string(t)] {
+				return true
+			}
+		}
 		if transpileEnv != nil {
 			if typ, err := transpileEnv.GetVar(string(t)); err == nil {
 				if _, ok := typ.(types.StringType); ok {
@@ -1258,6 +1326,7 @@ func transpilePrimary(p *parser.Primary) (Node, error) {
 		return &List{Elems: []Node{Symbol("doseq"), binding, printExpr}}, nil
 	case p.Selector != nil && len(p.Selector.Tail) == 0:
 		name := p.Selector.Root
+		name = renameVar(name)
 		if transpileEnv != nil {
 			if st, ok := transpileEnv.GetStruct(name); ok && len(st.Order) == 0 {
 				if _, ok2 := transpileEnv.FindUnionByVariant(name); ok2 {
@@ -1290,7 +1359,22 @@ func transpileCall(c *parser.CallExpr) (Node, error) {
 		if len(c.Args) != 0 {
 			return nil, fmt.Errorf("now expects no args")
 		}
-		return &List{Elems: []Node{Symbol("System/currentTimeMillis")}}, nil
+		update := &List{Elems: []Node{
+			Symbol("swap!"), Symbol("nowSeed"),
+			&List{Elems: []Node{
+				Symbol("fn"), &Vector{Elems: []Node{Symbol("s")}},
+				&List{Elems: []Node{
+					Symbol("mod"),
+					&List{Elems: []Node{
+						Symbol("+"),
+						&List{Elems: []Node{Symbol("*"), Symbol("s"), IntLit(1664525)}},
+						IntLit(1013904223),
+					}},
+					IntLit(2147483647),
+				}},
+			}},
+		}}
+		return update, nil
 	case "count":
 		if len(c.Args) == 1 {
 			if name, ok := identName(c.Args[0]); ok && groupVars != nil && groupVars[name] {
@@ -1809,7 +1893,9 @@ func identName(e *parser.Expr) (string, bool) {
 	if p == nil || p.Selector == nil || len(p.Selector.Tail) > 0 {
 		return "", false
 	}
-	return p.Selector.Root, true
+	name := p.Selector.Root
+	name = renameVar(name)
+	return name, true
 }
 
 func literalString(e *parser.Expr) (string, bool) {
