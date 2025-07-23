@@ -1,4 +1,32 @@
-## Progress (2025-07-23 10:30 +0700)
+## Progress (2025-07-23 04:09 UTC)
+- java transpiler: support map value casts (0403bf3250)
+
+- java transpiler: support map value casts (0403bf3250)
+
+- java transpiler: support map value casts (0403bf3250)
+
+- java transpiler: support map value casts (0403bf3250)
+
+- java transpiler: support map value casts (0403bf3250)
+
+- cpp transpiler: add prototypes and any-cast (b7e48da93f)
+
+- cpp transpiler: add prototypes and any-cast (b7e48da93f)
+
+- cpp transpiler: add prototypes and any-cast (b7e48da93f)
+
+- cpp transpiler: add prototypes and any-cast (b7e48da93f)
+
+- cpp transpiler: add prototypes and any-cast (b7e48da93f)
+
+- cpp transpiler: add prototypes and any-cast (b7e48da93f)
+
+- cpp transpiler: add prototypes and any-cast (b7e48da93f)
+
+- cpp transpiler: add prototypes and any-cast (b7e48da93f)
+
+- cpp transpiler: add prototypes and any-cast (b7e48da93f)
+
 - java rosetta: enable outputs and basic string equality (e1782fd115)
 
 - java rosetta: enable outputs and basic string equality (e1782fd115)

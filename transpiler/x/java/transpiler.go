@@ -54,6 +54,22 @@ func sanitize(name string) string {
 	return name
 }
 
+// guessTypeFromKey returns a Java type hint based on common map keys used in
+// Rosetta examples. It is only a heuristic.
+func guessTypeFromKey(key string) string {
+	switch key {
+	case "board":
+		return "int[][]"
+	case "row", "col", "rows", "cols":
+		return "int[]"
+	case "gain", "score", "idx", "count", "x", "y", "val":
+		return "int"
+	case "moved", "full", "done", "ok", "found":
+		return "boolean"
+	}
+	return ""
+}
+
 func javaType(t string) string {
 	switch t {
 	case "int":
@@ -934,13 +950,16 @@ func (l *ListLit) emit(w io.Writer) {
 
 // MapLit represents a simple map literal.
 type MapLit struct {
-	Keys   []Expr
-	Values []Expr
+	Keys    []Expr
+	Values  []Expr
+	ValType string
 }
 
 func (m *MapLit) emit(w io.Writer) {
 	valType := "Object"
-	if len(m.Values) > 0 {
+	if m.ValType != "" {
+		valType = javaBoxType(m.ValType)
+	} else if len(m.Values) > 0 {
 		t := inferType(m.Values[0])
 		same := true
 		for _, v := range m.Values[1:] {
@@ -953,15 +972,16 @@ func (m *MapLit) emit(w io.Writer) {
 			valType = javaBoxType(t)
 		}
 	}
-	fmt.Fprintf(w, "new java.util.LinkedHashMap<String, %s>() {{", valType)
+	fmt.Fprintf(w, "new java.util.LinkedHashMap<String, %s>(java.util.Map.of(", valType)
 	for i := range m.Keys {
-		fmt.Fprint(w, " put(")
+		if i > 0 {
+			fmt.Fprint(w, ", ")
+		}
 		m.Keys[i].emit(w)
 		fmt.Fprint(w, ", ")
 		m.Values[i].emit(w)
-		fmt.Fprint(w, ");")
 	}
-	fmt.Fprint(w, " }}")
+	fmt.Fprint(w, "))")
 }
 
 type BinaryExpr struct {
@@ -1074,6 +1094,8 @@ func (l *LenExpr) emit(w io.Writer) {
 		fmt.Fprint(w, ".items.size()")
 	case isStringExpr(l.Value):
 		fmt.Fprint(w, ".length()")
+	case isArrayExpr(l.Value):
+		fmt.Fprint(w, ".length")
 	case isMapExpr(l.Value):
 		fmt.Fprint(w, ".size()")
 	default:
@@ -1475,14 +1497,30 @@ func (s *SubstringExpr) emit(w io.Writer) {
 }
 
 // IndexExpr represents s[i]. For strings it emits charAt.
+// IndexExpr represents a[i] or m["k"].
+// If ValType is set for a map expression, the emitted code casts the result
+// to that type.
 type IndexExpr struct {
-	Target Expr
-	Index  Expr
-	IsMap  bool
+	Target  Expr
+	Index   Expr
+	IsMap   bool
+	ValType string
 }
 
 func (ix *IndexExpr) emit(w io.Writer) {
 	if ix.IsMap {
+		if ix.ValType != "" {
+			typ := javaType(ix.ValType)
+			if typ == "" {
+				typ = ix.ValType
+			}
+			fmt.Fprintf(w, "(%s)(", typ)
+			ix.Target.emit(w)
+			fmt.Fprint(w, ".get(")
+			ix.Index.emit(w)
+			fmt.Fprint(w, "))")
+			return
+		}
 		ix.Target.emit(w)
 		fmt.Fprint(w, ".get(")
 		ix.Index.emit(w)
@@ -1658,6 +1696,13 @@ func arrayElemType(e Expr) string {
 			if strings.HasPrefix(t, "java.util.List<") && strings.HasSuffix(t, ">") {
 				return strings.TrimSuffix(strings.TrimPrefix(t, "java.util.List<"), ">")
 			}
+		}
+	case *IndexExpr:
+		if t := arrayElemType(ex.Target); t != "" {
+			if strings.HasSuffix(t, "[]") {
+				return strings.TrimSuffix(t, "[]")
+			}
+			return t
 		}
 	}
 	return ""
@@ -1854,7 +1899,16 @@ func compileStmt(s *parser.Statement) (Stmt, error) {
 				t = toJavaTypeFromType(types.ExprType(s.Let.Value, topEnv))
 			}
 			if t == "" {
-				t = inferType(e)
+				if ml, ok := e.(*MapLit); ok && ml.ValType != "" {
+					t = fmt.Sprintf("java.util.Map<String,%s>", javaBoxType(ml.ValType))
+				} else {
+					t = inferType(e)
+					if t == "" {
+						if ix, ok := e.(*IndexExpr); ok && ix.ValType != "" {
+							t = ix.ValType
+						}
+					}
+				}
 			}
 			if t != "" {
 				varTypes[s.Let.Name] = t
@@ -1900,7 +1954,16 @@ func compileStmt(s *parser.Statement) (Stmt, error) {
 				t = toJavaTypeFromType(types.ExprType(s.Var.Value, topEnv))
 			}
 			if t == "" {
-				t = inferType(e)
+				if ml, ok := e.(*MapLit); ok && ml.ValType != "" {
+					t = fmt.Sprintf("java.util.Map<String,%s>", javaBoxType(ml.ValType))
+				} else {
+					t = inferType(e)
+					if t == "" {
+						if ix, ok := e.(*IndexExpr); ok && ix.ValType != "" {
+							t = ix.ValType
+						}
+					}
+				}
 			}
 			if t != "" {
 				varTypes[s.Var.Name] = t
@@ -2314,7 +2377,11 @@ func compilePostfix(pf *parser.PostfixExpr) (Expr, error) {
 			if err != nil {
 				return nil, err
 			}
-			expr = &IndexExpr{Target: expr, Index: idx, IsMap: isMapExpr(expr)}
+			valType := ""
+			if s, ok := literalString(op.Index.Start); ok {
+				valType = guessTypeFromKey(s)
+			}
+			expr = &IndexExpr{Target: expr, Index: idx, IsMap: isMapExpr(expr), ValType: valType}
 		case op.Index != nil && op.Index.Colon != nil && op.Index.Colon2 == nil && op.Index.Step == nil:
 			if op.Index.Start == nil || op.Index.End == nil {
 				return nil, fmt.Errorf("unsupported slice")
@@ -2609,6 +2676,7 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 		ml := p.Map
 		keys := make([]Expr, len(ml.Items))
 		vals := make([]Expr, len(ml.Items))
+		vtype := ""
 		for i, it := range ml.Items {
 			ke, err := compileExpr(it.Key)
 			if err != nil {
@@ -2618,10 +2686,15 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 			if err != nil {
 				return nil, err
 			}
+			if i == 0 {
+				vtype = inferType(ve)
+			} else if vtype != inferType(ve) {
+				vtype = ""
+			}
 			keys[i] = ke
 			vals[i] = ve
 		}
-		return &MapLit{Keys: keys, Values: vals}, nil
+		return &MapLit{Keys: keys, Values: vals, ValType: vtype}, nil
 	case p.Struct != nil:
 		names := make([]string, len(p.Struct.Fields))
 		vals := make([]Expr, len(p.Struct.Fields))
@@ -3079,6 +3152,13 @@ func Emit(prog *Program) []byte {
 	}
 	// helper functions removed for simplified output
 	for i, fn := range prog.Funcs {
+		saved := varTypes
+		varTypes = copyMap(varTypes)
+		for _, p := range fn.Params {
+			if p.Type != "" {
+				varTypes[p.Name] = p.Type
+			}
+		}
 		ret := javaType(fn.Return)
 		if ret == "" {
 			ret = "void"
@@ -3099,6 +3179,7 @@ func Emit(prog *Program) []byte {
 			s.emit(&buf, "        ")
 		}
 		buf.WriteString("    }")
+		varTypes = saved
 		buf.WriteByte('\n')
 		if i < len(prog.Funcs)-1 {
 			buf.WriteByte('\n')
@@ -3556,11 +3637,18 @@ func valueToExpr(v interface{}, typ *parser.TypeRef) Expr {
 		sort.Strings(names)
 		keys := make([]Expr, len(names))
 		vals := make([]Expr, len(names))
+		vtype := ""
 		for i, k := range names {
 			keys[i] = &StringLit{Value: k}
 			vals[i] = valueToExpr(val[k], nil)
+			t := inferType(vals[i])
+			if i == 0 {
+				vtype = t
+			} else if vtype != t {
+				vtype = ""
+			}
 		}
-		return &MapLit{Keys: keys, Values: vals}
+		return &MapLit{Keys: keys, Values: vals, ValType: vtype}
 	case []interface{}:
 		elems := make([]Expr, len(val))
 		for i, it := range val {
