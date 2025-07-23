@@ -42,6 +42,13 @@ def _now()
 end
 `
 
+const helperInput = `
+def _input()
+  line = STDIN.gets
+  line ? line.chomp : ''
+end
+`
+
 // --- Ruby AST ---
 
 type Program struct {
@@ -1084,6 +1091,7 @@ func (gq *GroupLeftJoinQueryExpr) emit(e *emitter) {
 var (
 	needsJSON bool
 	usesNow   bool
+	usesInput bool
 )
 
 // emitter maintains the current indentation level while emitting Ruby code.
@@ -1562,7 +1570,9 @@ type CastExpr struct {
 }
 
 func (c *CastExpr) emit(e *emitter) {
+	io.WriteString(e.w, "(")
 	c.Value.emit(e)
+	io.WriteString(e.w, ")")
 	switch c.Type {
 	case "int":
 		io.WriteString(e.w, ".to_i")
@@ -2287,6 +2297,11 @@ func Emit(w io.Writer, p *Program) error {
 			return err
 		}
 	}
+	if usesInput {
+		if _, err := io.WriteString(w, helperInput+"\n"); err != nil {
+			return err
+		}
+	}
 	for _, s := range p.Stmts {
 		e.writeIndent()
 		s.emit(e)
@@ -2299,6 +2314,7 @@ func Emit(w io.Writer, p *Program) error {
 func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	needsJSON = false
 	usesNow = false
+	usesInput = false
 	currentEnv = env
 	topVars = map[string]bool{}
 	rbProg := &Program{}
@@ -3136,6 +3152,12 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 			}
 			usesNow = true
 			return &CallExpr{Func: "_now"}, nil
+		case "input":
+			if len(args) != 0 {
+				return nil, fmt.Errorf("input takes no args")
+			}
+			usesInput = true
+			return &CallExpr{Func: "_input"}, nil
 		case "json":
 			if len(args) != 1 {
 				return nil, fmt.Errorf("json expects 1 arg")
