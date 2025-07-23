@@ -2,7 +2,7 @@ public class Main {
     static int SIZE = 4;
     static int[][] board = newBoard();
     static java.util.Map<String,Object> r = spawnTile(board);
-    static Object full = (Object)(r.get("full"));
+    static boolean full = (boolean)((boolean)(r.get("full")));
     static int score = 0;
 
     static java.util.Scanner _scanner = new java.util.Scanner(System.in);
@@ -37,7 +37,7 @@ public class Main {
             y = y + 1;
         }
         if (empty.length == 0) {
-            return new java.util.LinkedHashMap<String, Object>() {{ put("board", b); put("full", true); }};
+            return new java.util.LinkedHashMap<String, Object>(java.util.Map.of("board", b, "full", true));
         }
         int idx = _now() % empty.length;
         int[] cell = empty[idx];
@@ -46,7 +46,7 @@ public class Main {
             val = 2;
         }
 b[cell[1]][cell[0]] = val;
-        return new java.util.LinkedHashMap<String, Object>() {{ put("board", b); put("full", empty.length == 1); }};
+        return new java.util.LinkedHashMap<String, Object>(java.util.Map.of("board", b, "full", empty.length == 1));
     }
 
     static String pad(int n) {
@@ -120,7 +120,7 @@ b[cell[1]][cell[0]] = val;
         while (res.length < SIZE) {
             res = java.util.stream.IntStream.concat(java.util.Arrays.stream(res), java.util.stream.IntStream.of(0)).toArray();
         }
-        return new java.util.LinkedHashMap<String, Object>() {{ put("row", res); put("gain", gain); }};
+        return new java.util.LinkedHashMap<String, Object>(java.util.Map.of("row", res, "gain", gain));
     }
 
     static java.util.Map<String,Object> moveLeft(int[][] b, int score) {
@@ -128,8 +128,8 @@ b[cell[1]][cell[0]] = val;
         int y = 0;
         while (y < SIZE) {
             java.util.Map<String,Object> r = slideLeft(b[y]);
-            Object new_ = (Object)(r.get("row"));
-            score = score + (int)(r.get("gain"));
+            int[] new_ = (int[])((int[])(r.get("row")));
+            score = score + (int)((int)(r.get("gain")));
             int x = 0;
             while (x < SIZE) {
                 if (b[y][x] != new_[x]) {
@@ -140,7 +140,7 @@ b[y][x] = new_[x];
             }
             y = y + 1;
         }
-        return new java.util.LinkedHashMap<String, Object>() {{ put("board", b); put("score", score); put("moved", moved); }};
+        return new java.util.LinkedHashMap<String, Object>(java.util.Map.of("board", b, "score", score, "moved", moved));
     }
 
     static java.util.Map<String,Object> moveRight(int[][] b, int score) {
@@ -149,8 +149,8 @@ b[y][x] = new_[x];
         while (y < SIZE) {
             int[] rev = reverseRow(b[y]);
             java.util.Map<String,Object> r = slideLeft(rev);
-            rev = (int[])(r.get("row"));
-            score = score + (int)(r.get("gain"));
+            rev = (int[])((int[])(r.get("row")));
+            score = score + (int)((int)(r.get("gain")));
             rev = reverseRow(rev);
             int x = 0;
             while (x < SIZE) {
@@ -162,7 +162,7 @@ b[y][x] = rev[x];
             }
             y = y + 1;
         }
-        return new java.util.LinkedHashMap<String, Object>() {{ put("board", b); put("score", score); put("moved", moved); }};
+        return new java.util.LinkedHashMap<String, Object>(java.util.Map.of("board", b, "score", score, "moved", moved));
     }
 
     static int[] getCol(int[][] b, int x) {
@@ -189,8 +189,8 @@ b[y][x] = col[y];
         while (x < SIZE) {
             int[] col = getCol(b, x);
             java.util.Map<String,Object> r = slideLeft(col);
-            Object new_ = (Object)(r.get("row"));
-            score = score + (int)(r.get("gain"));
+            int[] new_ = (int[])((int[])(r.get("row")));
+            score = score + (int)((int)(r.get("gain")));
             int y = 0;
             while (y < SIZE) {
                 if (b[y][x] != new_[y]) {
@@ -201,7 +201,7 @@ b[y][x] = new_[y];
             }
             x = x + 1;
         }
-        return new java.util.LinkedHashMap<String, Object>() {{ put("board", b); put("score", score); put("moved", moved); }};
+        return new java.util.LinkedHashMap<String, Object>(java.util.Map.of("board", b, "score", score, "moved", moved));
     }
 
     static java.util.Map<String,Object> moveDown(int[][] b, int score) {
@@ -210,8 +210,8 @@ b[y][x] = new_[y];
         while (x < SIZE) {
             int[] col = reverseRow(getCol(b, x));
             java.util.Map<String,Object> r = slideLeft(col);
-            col = (int[])(r.get("row"));
-            score = score + (int)(r.get("gain"));
+            col = (int[])((int[])(r.get("row")));
+            score = score + (int)((int)(r.get("gain")));
             col = reverseRow(col);
             int y = 0;
             while (y < SIZE) {
@@ -223,7 +223,7 @@ b[y][x] = col[y];
             }
             x = x + 1;
         }
-        return new java.util.LinkedHashMap<String, Object>() {{ put("board", b); put("score", score); put("moved", moved); }};
+        return new java.util.LinkedHashMap<String, Object>(java.util.Map.of("board", b, "score", score, "moved", moved));
     }
 
     static boolean hasMoves(int[][] b) {
@@ -262,10 +262,10 @@ b[y][x] = col[y];
         return false;
     }
     public static void main(String[] args) {
-        board = (int[][])(r.get("board"));
+        board = (int[][])((int[][])(r.get("board")));
         r = spawnTile(board);
-        board = (int[][])(r.get("board"));
-        full = r.get("full");
+        board = (int[][])((int[][])(r.get("board")));
+        full = (boolean)((boolean)(r.get("full")));
         draw(board, score);
         while (true) {
             System.out.println("Move: ");
@@ -273,35 +273,35 @@ b[y][x] = col[y];
             boolean moved = false;
             if (((cmd.equals("a")) || cmd.equals("A"))) {
                 java.util.Map<String,Object> m = moveLeft(board, score);
-                board = (int[][])(m.get("board"));
-                score = (int)(m.get("score"));
-                moved = (boolean)(m.get("moved"));
+                board = (int[][])((int[][])(m.get("board")));
+                score = (int)((int)(m.get("score")));
+                moved = (boolean)((boolean)(m.get("moved")));
             }
             if (((cmd.equals("d")) || cmd.equals("D"))) {
                 java.util.Map<String,Object> m = moveRight(board, score);
-                board = (int[][])(m.get("board"));
-                score = (int)(m.get("score"));
-                moved = (boolean)(m.get("moved"));
+                board = (int[][])((int[][])(m.get("board")));
+                score = (int)((int)(m.get("score")));
+                moved = (boolean)((boolean)(m.get("moved")));
             }
             if (((cmd.equals("w")) || cmd.equals("W"))) {
                 java.util.Map<String,Object> m = moveUp(board, score);
-                board = (int[][])(m.get("board"));
-                score = (int)(m.get("score"));
-                moved = (boolean)(m.get("moved"));
+                board = (int[][])((int[][])(m.get("board")));
+                score = (int)((int)(m.get("score")));
+                moved = (boolean)((boolean)(m.get("moved")));
             }
             if (((cmd.equals("s")) || cmd.equals("S"))) {
                 java.util.Map<String,Object> m = moveDown(board, score);
-                board = (int[][])(m.get("board"));
-                score = (int)(m.get("score"));
-                moved = (boolean)(m.get("moved"));
+                board = (int[][])((int[][])(m.get("board")));
+                score = (int)((int)(m.get("score")));
+                moved = (boolean)((boolean)(m.get("moved")));
             }
             if (((cmd.equals("q")) || cmd.equals("Q"))) {
                 break;
             }
             if (moved) {
                 java.util.Map<String,Object> r2 = spawnTile(board);
-                board = (int[][])(r2.get("board"));
-                full = r2.get("full");
+                board = (int[][])((int[][])(r2.get("board")));
+                full = (boolean)((boolean)(r2.get("full")));
                 if (full && (!(Boolean)hasMoves(board))) {
                     draw(board, score);
                     System.out.println("Game Over");
