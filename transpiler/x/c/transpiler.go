@@ -309,30 +309,42 @@ func (d *DeclStmt) emit(w io.Writer, indent int) {
 		return
 	} else if strings.HasSuffix(typ, "[]") {
 		base := strings.TrimSuffix(typ, "[]")
-		if lst, ok := d.Value.(*ListLit); ok && len(lst.Elems) > 0 {
-			io.WriteString(w, base)
-			io.WriteString(w, " ")
-			io.WriteString(w, d.Name)
-			io.WriteString(w, "[]")
-			io.WriteString(w, " = {")
-			for i, e := range lst.Elems {
-				if i > 0 {
-					io.WriteString(w, ", ")
+		if lst, ok := d.Value.(*ListLit); ok {
+			if len(lst.Elems) > 0 {
+				io.WriteString(w, base)
+				io.WriteString(w, " ")
+				io.WriteString(w, d.Name)
+				io.WriteString(w, "[]")
+				io.WriteString(w, " = {")
+				for i, e := range lst.Elems {
+					if i > 0 {
+						io.WriteString(w, ", ")
+					}
+					e.emitExpr(w)
 				}
-				e.emitExpr(w)
+				io.WriteString(w, "};\n")
+				writeIndent(w, indent)
+				fmt.Fprintf(w, "size_t %s_len = %d;\n", d.Name, len(lst.Elems))
+				return
 			}
-			io.WriteString(w, "};\n")
+			fmt.Fprintf(w, "%s *%s = NULL;\n", base, d.Name)
 			writeIndent(w, indent)
-			fmt.Fprintf(w, "size_t %s_len = %d;\n", d.Name, len(lst.Elems))
+			fmt.Fprintf(w, "size_t %s_len = 0;\n", d.Name)
 			return
 		}
 		if vr, ok := d.Value.(*VarRef); ok {
 			fmt.Fprintf(w, "%s *%s = %s;\n", base, d.Name, vr.Name)
-		} else {
-			fmt.Fprintf(w, "%s *%s = NULL;\n", base, d.Name)
-			writeIndent(w, indent)
-			fmt.Fprintf(w, "size_t %s_len = 0;\n", d.Name)
+			return
 		}
+		if d.Value != nil {
+			fmt.Fprintf(w, "%s *%s = ", base, d.Name)
+			d.Value.emitExpr(w)
+			io.WriteString(w, ";\n")
+			return
+		}
+		fmt.Fprintf(w, "%s *%s = NULL;\n", base, d.Name)
+		writeIndent(w, indent)
+		fmt.Fprintf(w, "size_t %s_len = 0;\n", d.Name)
 		return
 	} else {
 		io.WriteString(w, typ)
@@ -3678,6 +3690,22 @@ func inferExprType(env *types.Env, e Expr) string {
 			if ft, ok2 := st.Fields[v.Name]; ok2 {
 				return cTypeFromMochiType(ft)
 			}
+		}
+	case *IndexExpr:
+		if key, ok := evalString(v.Index); ok {
+			tname := inferExprType(env, v.Target)
+			if st, ok2 := env.GetStruct(tname); ok2 {
+				if ft, ok3 := st.Fields[key]; ok3 {
+					return cTypeFromMochiType(ft)
+				}
+			}
+		}
+		tname := inferExprType(env, v.Target)
+		if strings.HasSuffix(tname, "[]") {
+			return strings.TrimSuffix(tname, "[]")
+		}
+		if tname == "const char*" {
+			return "const char*"
 		}
 	case *CallExpr:
 		switch v.Func {
