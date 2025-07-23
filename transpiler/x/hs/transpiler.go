@@ -1834,10 +1834,11 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 				}
 				idxExprs = append(idxExprs, ex)
 			}
-			prev := vars[name]
-			if prev == nil {
-				prev = &NameRef{Name: name}
-			}
+			// Always reference the current variable value rather than
+			// the last assigned expression. Using the previous
+			// expression can result in generated code that mutates
+			// a literal list instead of the variable.
+			prev := &NameRef{Name: name}
 			var expr Expr
 			if isMapExpr(prev) {
 				expr = mapAssign(prev, idxExprs, val)
@@ -3100,11 +3101,12 @@ func convertStmtList(list []*parser.Statement) ([]Stmt, error) {
 			}
 			if len(st.Assign.Field) > 0 {
 				mutated[name] = true
-				prev := vars[name]
-				if prev == nil {
-					prev = &NameRef{Name: name}
-				}
-				expr := prev
+				// Use the current variable reference to avoid composing
+				// updates over the last stored expression. Otherwise a
+				// previous literal value may be mutated instead of the
+				// runtime variable.
+				prev := &NameRef{Name: name}
+				var expr Expr = prev
 				for i := range st.Assign.Field {
 					expr = &RecordUpdate{Target: expr, Field: st.Assign.Field[i].Name, Value: val}
 				}
@@ -3120,10 +3122,10 @@ func convertStmtList(list []*parser.Statement) ([]Stmt, error) {
 				}
 				idxExprs = append(idxExprs, ex)
 			}
-			prev := vars[name]
-			if prev == nil {
-				prev = &NameRef{Name: name}
-			}
+			// Always read from the variable itself rather than the
+			// last recorded expression value. This ensures list and
+			// map updates modify the runtime data.
+			prev := &NameRef{Name: name}
 			var expr Expr
 			if isMapExpr(prev) {
 				expr = mapAssign(prev, idxExprs, val)
