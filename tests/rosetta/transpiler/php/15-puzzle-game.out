@@ -1,13 +1,8 @@
-Warning: Undefined array key -2 in /workspace/mochi/tests/rosetta/transpiler/php/15-puzzle-game.php on line 47
-
-Warning: Undefined array key -1 in /workspace/mochi/tests/rosetta/transpiler/php/15-puzzle-game.php on line 47
-
-Warning: Undefined array key -3 in /workspace/mochi/tests/rosetta/transpiler/php/15-puzzle-game.php on line 47
 Starting board:
 
-  1  .  .  8
-  9  .  7  3
- 13  5 10 12
- 14  6 11 15
+  .  2  4  8
+  1  5  6  3
+ 13 10  7 11
+ 14  9 15 12
 Enter move #51 (U, D, L, R, or Q): 
 Quiting after 50 moves.
