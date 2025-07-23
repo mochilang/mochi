@@ -3477,7 +3477,16 @@ func compilePostfix(pf *parser.PostfixExpr, env *types.Env, base string) (Expr, 
 	if pf.Target != nil && pf.Target.Selector != nil {
 		tail = pf.Target.Selector.Tail
 	}
-	t := types.TypeOfPrimaryBasic(pf.Target, env)
+	var t types.Type
+	if pf.Target != nil && pf.Target.Selector != nil && len(pf.Target.Selector.Tail) > 0 {
+		if v, err := env.GetVar(pf.Target.Selector.Root); err == nil {
+			t = v
+		} else {
+			t = types.TypeOfPrimaryBasic(pf.Target, env)
+		}
+	} else {
+		t = types.TypeOfPrimaryBasic(pf.Target, env)
+	}
 	if len(tail) > 0 && (len(pf.Ops) == 0 || pf.Ops[0].Call == nil) {
 		for _, f := range tail {
 			switch tt := t.(type) {
@@ -3603,7 +3612,11 @@ func compilePostfix(pf *parser.PostfixExpr, env *types.Env, base string) (Expr, 
 					}
 				default:
 					if types.IsAnyType(t) {
-						expr = &IndexExpr{X: &AssertExpr{Expr: expr, Type: "map[string]any"}, Index: iex}
+						if _, ok2 := types.TypeOfExpr(idx.Start, env).(types.IntType); ok2 {
+							expr = &IndexExpr{X: &AssertExpr{Expr: expr, Type: "[]any"}, Index: iex}
+						} else {
+							expr = &IndexExpr{X: &AssertExpr{Expr: expr, Type: "map[string]any"}, Index: iex}
+						}
 					} else {
 						expr = &IndexExpr{X: expr, Index: iex}
 					}
