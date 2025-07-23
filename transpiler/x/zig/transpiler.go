@@ -41,6 +41,7 @@ var mainFuncName string
 var useNow bool
 var useStr bool
 var useConcat bool
+var useInput bool
 
 func toSnakeCase(s string) string {
 	var buf strings.Builder
@@ -78,6 +79,7 @@ func (sd *StructDef) emit(w io.Writer) {
 
 type Program struct {
 	Structs   []*StructDef
+	Globals   []*VarDecl
 	Functions []*Func
 }
 
@@ -635,6 +637,29 @@ func zigTypeFromExpr(e Expr) string {
 			return "i64"
 		}
 	case *IndexExpr:
+		ix := e.(*IndexExpr)
+		t := zigTypeFromExpr(ix.Target)
+		if ix.Map {
+			if strings.HasPrefix(t, "std.StringHashMap(") {
+				return strings.TrimSuffix(strings.TrimPrefix(t, "std.StringHashMap("), ")")
+			}
+			if strings.HasPrefix(t, "std.AutoHashMap(") {
+				inner := strings.TrimSuffix(strings.TrimPrefix(t, "std.AutoHashMap("), ")")
+				parts := strings.Split(inner, ",")
+				if len(parts) == 2 {
+					return strings.TrimSpace(parts[1])
+				}
+			}
+			return "i64"
+		}
+		if strings.HasPrefix(t, "[]") {
+			return t[2:]
+		}
+		if strings.HasPrefix(t, "[") {
+			if pos := strings.Index(t, "]"); pos > 0 {
+				return t[pos+1:]
+			}
+		}
 		return "i64"
 	default:
 		return "i64"
@@ -889,6 +914,12 @@ func (p *Program) Emit() []byte {
 		st.emit(&buf)
 		buf.WriteString("\n")
 	}
+	for _, g := range p.Globals {
+		g.emit(&buf, 0)
+	}
+	if len(p.Globals) > 0 {
+		buf.WriteString("\n")
+	}
 	for i, fn := range p.Functions {
 		if i > 0 {
 			buf.WriteString("\n")
@@ -925,6 +956,16 @@ func (p *Program) Emit() []byte {
 		buf.WriteString("\nfn _concat_string(a: []const u8, b: []const u8) []const u8 {\n")
 		buf.WriteString("    const alloc = std.heap.page_allocator;\n")
 		buf.WriteString("    return std.mem.concat(alloc, u8, &[_][]const u8{ a, b }) catch unreachable;\n")
+		buf.WriteString("}\n")
+	}
+	if useInput {
+		buf.WriteString("\nvar _in_buf = std.io.bufferedReader(std.io.getStdIn().reader());\n")
+		buf.WriteString("fn _input() []const u8 {\n")
+		buf.WriteString("    const line = _in_buf.reader().readUntilDelimiterOrEofAlloc(std.heap.page_allocator, '\n', 1 << 20) catch return \"\";\n")
+		buf.WriteString("    if (line.len > 0 and line[line.len - 1] == '\n') {\n")
+		buf.WriteString("        return line[0..line.len-1];\n")
+		buf.WriteString("    }\n")
+		buf.WriteString("    return line;\n")
 		buf.WriteString("}\n")
 	}
 	return buf.Bytes()
@@ -1590,6 +1631,7 @@ func (c *CallExpr) emit(w io.Writer) {
 func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	main := &Func{Name: "main"}
 	funcs := []*Func{}
+	globals := []*VarDecl{}
 	transEnv = env
 	extraFuncs = nil
 	funcCounter = 0
@@ -1653,6 +1695,8 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 					constLists[vd.Name] = lst
 				}
 			}
+			globals = append(globals, vd)
+			continue
 		}
 		if s != nil {
 			main.Body = append(main.Body, s)
@@ -1665,7 +1709,7 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	for _, sd := range structDefs {
 		structs = append(structs, sd)
 	}
-	return &Program{Structs: structs, Functions: funcs}, nil
+	return &Program{Structs: structs, Globals: globals, Functions: funcs}, nil
 }
 
 func collectMutables(sts []*parser.Statement, m map[string]bool) {
@@ -1861,8 +1905,22 @@ func compilePostfix(pf *parser.PostfixExpr) (Expr, error) {
 				imap := false
 				switch t := expr.(type) {
 				case *MapLit:
+					if t.StructName != "" {
+						if key, ok := idx.(*StringLit); ok {
+							expr = &FieldExpr{Target: expr, Name: key.Value}
+							continue
+						}
+					}
 					imap = true
 				case *VarRef:
+					if st, ok := varTypes[t.Name]; ok {
+						if _, ok2 := structDefs[st]; ok2 {
+							if key, ok3 := idx.(*StringLit); ok3 {
+								expr = &FieldExpr{Target: expr, Name: key.Value}
+								continue
+							}
+						}
+					}
 					if mapVars[t.Name] {
 						imap = true
 					}
@@ -1994,6 +2052,12 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 			}
 			useNow = true
 			return &CallExpr{Func: "_now"}, nil
+		case "input":
+			if len(args) != 0 {
+				return nil, fmt.Errorf("input expects no arguments")
+			}
+			useInput = true
+			return &CallExpr{Func: "_input"}, nil
 		case "str":
 			if len(args) != 1 {
 				return nil, fmt.Errorf("str expects one argument")
@@ -2136,7 +2200,6 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 			if err != nil {
 				return nil, err
 			}
-			// treat identifiers as string keys for maps
 			if vr, ok := k.(*VarRef); ok {
 				k = &StringLit{Value: vr.Name}
 			}
@@ -2146,7 +2209,15 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 			}
 			entries[i] = MapEntry{Key: k, Value: v}
 		}
-		return &MapLit{Entries: entries}, nil
+		ml := &MapLit{Entries: entries}
+		if fields, ok := mapFields(ml); ok {
+			structName := fmt.Sprintf("Map%d", len(structDefs))
+			if _, exists := structDefs[structName]; !exists {
+				structDefs[structName] = &StructDef{Name: structName, Fields: fields}
+			}
+			ml.StructName = structName
+		}
+		return ml, nil
 	case p.Struct != nil:
 		entries := make([]MapEntry, len(p.Struct.Fields))
 		fields := make([]Field, len(p.Struct.Fields))
@@ -2722,9 +2793,11 @@ func compileStmt(s *parser.Statement, prog *parser.Program) (Stmt, error) {
 			}
 		}
 		if ml, ok := expr.(*MapLit); ok {
-			mapVars[s.Let.Name] = true
 			if ml.StructName != "" {
 				vd.Type = ml.StructName
+				mapVars[s.Let.Name] = false
+			} else {
+				mapVars[s.Let.Name] = true
 			}
 		}
 		if qc, ok := expr.(*QueryComp); ok {
@@ -2756,9 +2829,11 @@ func compileStmt(s *parser.Statement, prog *parser.Program) (Stmt, error) {
 			}
 		}
 		if ml, ok := expr.(*MapLit); ok {
-			mapVars[s.Var.Name] = true
 			if ml.StructName != "" {
 				vd.Type = ml.StructName
+				mapVars[s.Var.Name] = false
+			} else {
+				mapVars[s.Var.Name] = true
 			}
 		}
 		if qc, ok := expr.(*QueryComp); ok {
@@ -2775,8 +2850,12 @@ func compileStmt(s *parser.Statement, prog *parser.Program) (Stmt, error) {
 		if err != nil {
 			return nil, err
 		}
-		if _, ok := expr.(*MapLit); ok {
-			mapVars[s.Assign.Name] = true
+		if ml, ok := expr.(*MapLit); ok {
+			if ml.StructName != "" {
+				mapVars[s.Assign.Name] = false
+			} else {
+				mapVars[s.Assign.Name] = true
+			}
 		}
 		return &AssignStmt{Name: s.Assign.Name, Value: expr}, nil
 	case s.Assign != nil && len(s.Assign.Field) > 0:

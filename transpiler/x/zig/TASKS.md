@@ -1,3 +1,13 @@
+## Progress (2025-07-23 12:46 +0700)
+- Commit 116016df17: transpiler(kt): add support for rosetta index 8
+- Generated Zig for 98/103 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-23 12:46 +0700)
+- Commit 116016df17: transpiler(kt): add support for rosetta index 8
+- Generated Zig for 98/103 programs
+- Updated README checklist and outputs
+
 ## Progress (2025-07-23 10:13 +0700)
 - Commit 15cb4dd502: cpp: fix deterministic now seed
 - Generated Zig for 98/103 programs
