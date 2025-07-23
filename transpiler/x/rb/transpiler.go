@@ -72,6 +72,12 @@ def _add(a, b)
 end
 `
 
+const helperPadStart = `
+def _padStart(s, len, ch)
+  s.rjust(len, ch)
+end
+`
+
 // --- Ruby AST ---
 
 type Program struct {
@@ -1586,15 +1592,22 @@ func (f *ForRangeStmt) emit(e *emitter) {
 }
 
 // ForInStmt iterates over an iterable expression.
+// ForInStmt iterates over an iterable expression. If CharEach is true the
+// loop will iterate over the characters of a string using `each_char`.
 type ForInStmt struct {
 	Name     string
 	Iterable Expr
 	Body     []Stmt
+	CharEach bool
 }
 
 func (f *ForInStmt) emit(e *emitter) {
 	f.Iterable.emit(e)
-	io.WriteString(e.w, ".each do |")
+	if f.CharEach {
+		io.WriteString(e.w, ".each_char do |")
+	} else {
+		io.WriteString(e.w, ".each do |")
+	}
 	pushScope(f.Name)
 	io.WriteString(e.w, f.Name)
 	io.WriteString(e.w, "|")
@@ -2445,6 +2458,9 @@ func Emit(w io.Writer, p *Program) error {
 	if _, err := io.WriteString(w, helperAdd+"\n"); err != nil {
 		return err
 	}
+	if _, err := io.WriteString(w, helperPadStart+"\n"); err != nil {
+		return err
+	}
 	for _, s := range p.Stmts {
 		e.writeIndent()
 		s.emit(e)
@@ -2699,6 +2715,18 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 		return &ReturnStmt{Value: v}, nil
 	case st.Fun != nil:
 		funcDepth++
+		savedEnv := currentEnv
+		if savedEnv != nil {
+			child := types.NewEnv(savedEnv)
+			for _, p := range st.Fun.Params {
+				var typ types.Type = types.AnyType{}
+				if p.Type != nil {
+					typ = types.ResolveTypeRef(p.Type, savedEnv)
+				}
+				child.SetVar(p.Name, typ, true)
+			}
+			currentEnv = child
+		}
 		pushScope()
 		for _, p := range st.Fun.Params {
 			addVar(p.Name)
@@ -2708,12 +2736,14 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 			st2, err := convertStmt(s)
 			if err != nil {
 				popScope()
+				currentEnv = savedEnv
 				funcDepth--
 				return nil, err
 			}
 			body[i] = st2
 		}
 		popScope()
+		currentEnv = savedEnv
 		funcDepth--
 		var params []string
 		for _, p := range st.Fun.Params {
@@ -2940,12 +2970,17 @@ func convertFor(f *parser.ForStmt) (Stmt, error) {
 	if err != nil {
 		return nil, err
 	}
+	charEach := false
 	if currentEnv != nil {
-		if _, ok := types.ExprType(f.Source, currentEnv).(types.MapType); ok {
+		t := types.ExprType(f.Source, currentEnv)
+		switch t.(type) {
+		case types.MapType:
 			iterable = &MethodCallExpr{Target: iterable, Method: "keys"}
+		case types.StringType:
+			charEach = true
 		}
 	}
-	return &ForInStmt{Name: f.Name, Iterable: iterable, Body: body}, nil
+	return &ForInStmt{Name: f.Name, Iterable: iterable, Body: body, CharEach: charEach}, nil
 }
 
 func convertUpdate(u *parser.UpdateStmt) (Stmt, error) {
@@ -3421,6 +3456,11 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 				return nil, fmt.Errorf("lower expects 1 arg")
 			}
 			return &MethodCallExpr{Target: args[0], Method: "downcase"}, nil
+		case "padStart":
+			if len(args) != 3 {
+				return nil, fmt.Errorf("padStart expects 3 args")
+			}
+			return &CallExpr{Func: "_padStart", Args: args}, nil
 		case "now":
 			if len(args) != 0 {
 				return nil, fmt.Errorf("now takes no args")
