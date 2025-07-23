@@ -31,7 +31,7 @@ var inFunction bool
 var inLambda int
 var builtinAliases map[string]string
 var useNow bool
-var reserved = map[string]bool{"this": true}
+var reserved = map[string]bool{"this": true, "new": true}
 var currentReturnType string
 
 func safeName(n string) string {
@@ -570,6 +570,28 @@ func (p *Program) write(w io.Writer) {
 		fmt.Fprintln(w)
 	}
 	currentProgram = p
+	// declare function prototypes
+	for _, fn := range p.Functions {
+		fmt.Fprintf(w, "%s %s(", fn.ReturnType, safeName(fn.Name))
+		for i, p := range fn.Params {
+			if i > 0 {
+				io.WriteString(w, ", ")
+			}
+			typ := p.Type
+			if typ == "" {
+				io.WriteString(w, "auto")
+			} else {
+				io.WriteString(w, typ)
+			}
+			io.WriteString(w, " ")
+			io.WriteString(w, safeName(p.Name))
+		}
+		fmt.Fprintln(w, ");")
+	}
+	if len(p.Functions) > 0 {
+		fmt.Fprintln(w)
+	}
+
 	// emit helper functions first
 	first := true
 	var mainFn *Func
@@ -908,11 +930,11 @@ func (s *SumExpr) emit(w io.Writer) {
 }
 
 func (a *AppendExpr) emit(w io.Writer) {
-	io.WriteString(w, "([&]{ auto v = ")
+	io.WriteString(w, "([&]{ auto __tmp = ")
 	a.List.emit(w)
-	io.WriteString(w, "; v.push_back(")
+	io.WriteString(w, "; __tmp.push_back(")
 	a.Elem.emit(w)
-	io.WriteString(w, "); return v; }())")
+	io.WriteString(w, "); return __tmp; }())")
 }
 
 func (a *AvgExpr) emit(w io.Writer) {
@@ -1575,6 +1597,31 @@ func (b *BinaryExpr) emit(w io.Writer) {
 			b.Right.emit(w)
 			io.WriteString(w, ")")
 		}
+		return
+	}
+	lt := exprType(b.Left)
+	rt := exprType(b.Right)
+	if lt == "std::any" && rt != "std::any" {
+		if currentProgram != nil {
+			currentProgram.addInclude("<any>")
+		}
+		io.WriteString(w, "(")
+		io.WriteString(w, "std::any_cast<"+rt+">(")
+		b.Left.emit(w)
+		io.WriteString(w, ") "+b.Op+" ")
+		b.Right.emit(w)
+		io.WriteString(w, ")")
+		return
+	}
+	if rt == "std::any" && lt != "std::any" {
+		if currentProgram != nil {
+			currentProgram.addInclude("<any>")
+		}
+		io.WriteString(w, "(")
+		b.Left.emit(w)
+		io.WriteString(w, " "+b.Op+" std::any_cast<"+lt+">(")
+		b.Right.emit(w)
+		io.WriteString(w, "))")
 		return
 	}
 	io.WriteString(w, "(")
