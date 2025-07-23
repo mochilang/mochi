@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Python code from programs in `tests/rosetta/x/Mochi` lives in `tests/rosetta/transpiler/Python`.
-Last updated: 2025-07-23 02:31 UTC
+Last updated: 2025-07-23 04:09 UTC
 
-## Rosetta Golden Test Checklist (28/284)
+## Rosetta Golden Test Checklist (29/284)
 1. [x] 100-doors-2
 2. [x] 100-doors-3
 3. [x] 100-doors
@@ -27,7 +27,7 @@ Last updated: 2025-07-23 02:31 UTC
 20. [x] abc-problem
 21. [x] abelian-sandpile-model-identity
 22. [x] abelian-sandpile-model
-23. [ ] abstract-type
+23. [x] abstract-type
 24. [x] abundant-deficient-and-perfect-number-classifications
 25. [x] abundant-odd-numbers
 26. [x] accumulator-factory

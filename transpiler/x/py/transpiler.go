@@ -315,8 +315,14 @@ func (c *CallExpr) emit(w io.Writer) error {
 type Name struct{ Name string }
 
 func (n *Name) emit(w io.Writer) error {
-	_, err := io.WriteString(w, safeName(n.Name))
-	return err
+	switch n.Name {
+	case "None", "True", "False":
+		_, err := io.WriteString(w, n.Name)
+		return err
+	default:
+		_, err := io.WriteString(w, safeName(n.Name))
+		return err
+	}
 }
 
 type StringLit struct{ Value string }
@@ -2479,6 +2485,9 @@ func Emit(w io.Writer, p *Program) error {
 			return err
 		}
 	}
+	if _, err := io.WriteString(w, "import sys\nsys.set_int_max_str_digits(0)\n\n"); err != nil {
+		return err
+	}
 	if usesNow {
 		if _, err := io.WriteString(w, helperNow+"\n"); err != nil {
 			return err
@@ -4169,29 +4178,59 @@ func convertMatchExpr(me *parser.MatchExpr) (Expr, error) {
 		pat := c.Pattern
 		if pat.Binary != nil && len(pat.Binary.Right) == 0 {
 			u := pat.Binary.Left
-			if len(u.Ops) == 0 && u.Value != nil && u.Value.Target != nil && u.Value.Target.Call != nil && u.Value.Target.Call.Func == "Node" {
+			if len(u.Ops) == 0 && u.Value != nil && u.Value.Target != nil && u.Value.Target.Call != nil {
 				call := u.Value.Target.Call
-				if len(call.Args) == 3 {
-					names := []string{}
-					ok := true
-					for _, a := range call.Args {
-						name, ok2 := isSimpleIdent(a)
-						if !ok2 {
-							ok = false
-							break
-						}
-						names = append(names, name)
-					}
-					if ok {
-						if tn, ok2 := target.(*Name); ok2 {
-							fields := map[string]bool{}
-							for _, nm := range names {
-								fields[nm] = true
+				if ut, ok := currentEnv.FindUnionByVariant(call.Func); ok {
+					if _, ok2 := target.(*Name); ok2 {
+						st := ut.Variants[call.Func]
+						if len(call.Args) == len(st.Order) {
+							names := make([]string, len(call.Args))
+							ok3 := true
+							for i, a := range call.Args {
+								name, ok4 := isSimpleIdent(a)
+								if !ok4 {
+									ok3 = false
+									break
+								}
+								names[i] = name
 							}
-							res = substituteFields(res, tn.Name, fields)
-							cond := &BinaryExpr{Left: target, Op: "!=", Right: &Name{Name: "None"}}
-							expr = &CondExpr{Cond: cond, Then: res, Else: expr}
-							continue
+							if ok3 {
+								for i, nm := range names {
+									if nm != "_" {
+										field := st.Order[i]
+										res = replaceName(res, nm, &FieldExpr{Target: target, Name: field})
+									}
+								}
+								cond := &CallExpr{Func: &Name{Name: "isinstance"}, Args: []Expr{target, &Name{Name: call.Func}}}
+								expr = &CondExpr{Cond: cond, Then: res, Else: expr}
+								continue
+							}
+						}
+					}
+				}
+				if call.Func == "Node" {
+					if len(call.Args) == 3 {
+						names := []string{}
+						ok := true
+						for _, a := range call.Args {
+							name, ok2 := isSimpleIdent(a)
+							if !ok2 {
+								ok = false
+								break
+							}
+							names = append(names, name)
+						}
+						if ok {
+							if tn, ok2 := target.(*Name); ok2 {
+								fields := map[string]bool{}
+								for _, nm := range names {
+									fields[nm] = true
+								}
+								res = substituteFields(res, tn.Name, fields)
+								cond := &BinaryExpr{Left: target, Op: "!=", Right: &Name{Name: "None"}}
+								expr = &CondExpr{Cond: cond, Then: res, Else: expr}
+								continue
+							}
 						}
 					}
 				}
