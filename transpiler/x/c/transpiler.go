@@ -555,7 +555,15 @@ func (u *UnaryExpr) emitExpr(w io.Writer) {
 type ListLit struct{ Elems []Expr }
 
 func (l *ListLit) emitExpr(w io.Writer) {
-	io.WriteString(w, "{ ")
+	elemType := "int"
+	if len(l.Elems) > 0 {
+		if exprIsString(l.Elems[0]) {
+			elemType = "const char*"
+		} else if exprIsFloat(l.Elems[0]) {
+			elemType = "double"
+		}
+	}
+	fmt.Fprintf(w, "(%s[]){ ", elemType)
 	for i, e := range l.Elems {
 		if i > 0 {
 			io.WriteString(w, ", ")
@@ -729,12 +737,25 @@ func (c *CallExpr) emitExpr(w io.Writer) {
 		if i > 0 {
 			io.WriteString(w, ", ")
 		}
+		var paramType string
 		if types, ok := funcParamTypes[c.Func]; ok && i < len(types) {
-			if strings.HasPrefix(types[i], "struct ") && strings.HasSuffix(types[i], "*") {
-				io.WriteString(w, "&")
-			}
+			paramType = types[i]
+		}
+		if strings.HasPrefix(paramType, "struct ") && strings.HasSuffix(paramType, "*") {
+			io.WriteString(w, "&")
 		}
 		a.emitExpr(w)
+		if strings.HasSuffix(paramType, "[]") {
+			io.WriteString(w, ", ")
+			switch v := a.(type) {
+			case *VarRef:
+				io.WriteString(w, v.Name+"_len")
+			case *IndexExpr:
+				io.WriteString(w, "SIZE")
+			default:
+				io.WriteString(w, "0")
+			}
+		}
 	}
 	io.WriteString(w, ")")
 }
@@ -1809,6 +1830,10 @@ func compileStmt(env *types.Env, s *parser.Statement) (Stmt, error) {
 					needListAppendInt = true
 				case "const char*":
 					needListAppendStr = true
+				default:
+					if strings.HasSuffix(base, "[]") {
+						needListAppendPtr = true
+					}
 				}
 			}
 		}
@@ -2186,6 +2211,11 @@ func compileFunction(env *types.Env, name string, fn *parser.FunExpr) (*Function
 		params = append(params, Param{Name: p.Name, Type: typ})
 		varTypes[p.Name] = typ
 		localEnv.SetVar(p.Name, mochiT, true)
+		if strings.HasSuffix(typ, "[]") {
+			params = append(params, Param{Name: p.Name + "_len", Type: "size_t"})
+			varTypes[p.Name+"_len"] = "size_t"
+			localEnv.SetVar(p.Name+"_len", types.IntType{}, true)
+		}
 	}
 	funcParamTypes[name] = paramTypes
 	ret := "int"
