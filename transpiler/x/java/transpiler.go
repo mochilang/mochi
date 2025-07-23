@@ -29,6 +29,7 @@ var groupItems map[string]string
 var needLoadYaml bool
 var needSaveJsonl bool
 var needInput bool
+var needNow bool
 var needAppendBool bool
 var pyMathAliases map[string]bool
 var structDefs map[string]map[string]string
@@ -273,6 +274,8 @@ func inferType(e Expr) string {
 			jt = t
 		}
 		return jt + "[]"
+	case *IntCastExpr:
+		return "int"
 	case *CallExpr:
 		switch ex.Func {
 		case "String.valueOf", "substring":
@@ -1123,6 +1126,9 @@ type AppendExpr struct {
 	ElemType string
 }
 
+// IntCastExpr casts a value to int.
+type IntCastExpr struct{ Value Expr }
+
 // UnionExpr concatenates two arrays removing duplicate elements.
 type UnionExpr struct{ Left, Right Expr }
 
@@ -1200,6 +1206,12 @@ func (a *AppendExpr) emit(w io.Writer) {
 		fmt.Fprintf(w, "%s[]::new", jt)
 	}
 	fmt.Fprint(w, ")")
+}
+
+func (c *IntCastExpr) emit(w io.Writer) {
+	fmt.Fprint(w, "((Number)(")
+	c.Value.emit(w)
+	fmt.Fprint(w, ")).intValue()")
 }
 
 func (u *UnionExpr) emit(w io.Writer) {
@@ -1460,9 +1472,17 @@ func (s *SubstringExpr) emit(w io.Writer) {
 type IndexExpr struct {
 	Target Expr
 	Index  Expr
+	IsMap  bool
 }
 
 func (ix *IndexExpr) emit(w io.Writer) {
+	if ix.IsMap {
+		ix.Target.emit(w)
+		fmt.Fprint(w, ".get(")
+		ix.Index.emit(w)
+		fmt.Fprint(w, ")")
+		return
+	}
 	if isStringExpr(ix.Target) {
 		ix.Target.emit(w)
 		fmt.Fprint(w, ".charAt(")
@@ -1717,6 +1737,7 @@ func Transpile(p *parser.Program, env *types.Env) (*Program, error) {
 	topEnv = env
 	groupItems = map[string]string{}
 	needInput = false
+	needNow = false
 	needAppendBool = false
 	pyMathAliases = map[string]bool{}
 	structDefs = map[string]map[string]string{}
@@ -2274,7 +2295,7 @@ func compilePostfix(pf *parser.PostfixExpr) (Expr, error) {
 			if err != nil {
 				return nil, err
 			}
-			expr = &IndexExpr{Target: expr, Index: idx}
+			expr = &IndexExpr{Target: expr, Index: idx, IsMap: isMapExpr(expr)}
 		case op.Index != nil && op.Index.Colon != nil && op.Index.Colon2 == nil && op.Index.Step == nil:
 			if op.Index.Start == nil || op.Index.End == nil {
 				return nil, fmt.Errorf("unsupported slice")
@@ -2320,7 +2341,7 @@ func compilePostfix(pf *parser.PostfixExpr) (Expr, error) {
 				}
 			} else if v, ok := expr.(*VarExpr); ok {
 				if v.Name == "int" && len(args) == 1 {
-					expr = &CallExpr{Func: "Integer.parseInt", Args: args}
+					expr = &IntCastExpr{Value: args[0]}
 				} else if t, ok := varTypes[v.Name]; ok && t == "fn" {
 					expr = &MethodCallExpr{Target: expr, Name: "applyAsInt", Args: args}
 				} else {
@@ -2335,7 +2356,7 @@ func compilePostfix(pf *parser.PostfixExpr) (Expr, error) {
 			ctype := *op.Cast.Type.Simple
 			switch ctype {
 			case "int":
-				expr = &CallExpr{Func: "Integer.parseInt", Args: []Expr{expr}}
+				expr = &IntCastExpr{Value: expr}
 			default:
 				if st, ok := expr.(*StructLit); ok {
 					st.Name = ctype
@@ -2365,7 +2386,8 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 			return &InputExpr{}, nil
 		}
 		if name == "now" && len(args) == 0 {
-			return &CallExpr{Func: "(int)System.currentTimeMillis", Args: nil}, nil
+			needNow = true
+			return &CallExpr{Func: "_now", Args: nil}, nil
 		}
 		if t, ok := varTypes[name]; ok && t == "fn" {
 			return &MethodCallExpr{Target: &VarExpr{Name: name}, Name: "applyAsInt", Args: args}, nil
@@ -2420,7 +2442,7 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 			return &SumExpr{Value: args[0]}, nil
 		}
 		if name == "int" && len(args) == 1 {
-			return &CallExpr{Func: "Integer.parseInt", Args: args}, nil
+			return &IntCastExpr{Value: args[0]}, nil
 		}
 		if name == "values" && len(args) == 1 {
 			return &ValuesExpr{Map: args[0]}, nil
@@ -3043,6 +3065,23 @@ func Emit(prog *Program) []byte {
 		}
 	}
 	buf.WriteString("    }\n")
+	if needNow {
+		buf.WriteString("\n    static boolean _nowSeeded = false;\n")
+		buf.WriteString("    static int _nowSeed;\n")
+		buf.WriteString("    static int _now() {\n")
+		buf.WriteString("        if (!_nowSeeded) {\n")
+		buf.WriteString("            String s = System.getenv(\"MOCHI_NOW_SEED\");\n")
+		buf.WriteString("            if (s != null && !s.isEmpty()) {\n")
+		buf.WriteString("                try { _nowSeed = Integer.parseInt(s); _nowSeeded = true; } catch (Exception e) {}\n")
+		buf.WriteString("            }\n")
+		buf.WriteString("        }\n")
+		buf.WriteString("        if (_nowSeeded) {\n")
+		buf.WriteString("            _nowSeed = (int)((_nowSeed * 1664525L + 1013904223) % 2147483647);\n")
+		buf.WriteString("            return _nowSeed;\n")
+		buf.WriteString("        }\n")
+		buf.WriteString("        return (int)System.currentTimeMillis();\n")
+		buf.WriteString("    }\n")
+	}
 	if needAppendBool {
 		buf.WriteString("\n    static boolean[] appendBool(boolean[] arr, boolean v) {\n")
 		buf.WriteString("        boolean[] out = java.util.Arrays.copyOf(arr, arr.length + 1);\n")
@@ -3207,7 +3246,7 @@ func renameVar(e Expr, oldName, newName string) Expr {
 		}
 		return &MethodCallExpr{Target: renameVar(ex.Target, oldName, newName), Name: ex.Name, Args: args}
 	case *IndexExpr:
-		return &IndexExpr{Target: renameVar(ex.Target, oldName, newName), Index: renameVar(ex.Index, oldName, newName)}
+		return &IndexExpr{Target: renameVar(ex.Target, oldName, newName), Index: renameVar(ex.Index, oldName, newName), IsMap: ex.IsMap}
 	case *SliceExpr:
 		return &SliceExpr{Value: renameVar(ex.Value, oldName, newName), Start: renameVar(ex.Start, oldName, newName), End: renameVar(ex.End, oldName, newName)}
 	case *LenExpr:
@@ -3220,6 +3259,8 @@ func renameVar(e Expr, oldName, newName string) Expr {
 		return &ValuesExpr{Map: renameVar(ex.Map, oldName, newName)}
 	case *AppendExpr:
 		return &AppendExpr{List: renameVar(ex.List, oldName, newName), Value: renameVar(ex.Value, oldName, newName), ElemType: ex.ElemType}
+	case *IntCastExpr:
+		return &IntCastExpr{Value: renameVar(ex.Value, oldName, newName)}
 	case *ListLit:
 		elems := make([]Expr, len(ex.Elems))
 		for i, el := range ex.Elems {
@@ -3304,6 +3345,8 @@ func substituteFieldVars(e Expr, fields map[string]bool) Expr {
 		return &FieldExpr{Target: substituteFieldVars(ex.Target, fields), Name: ex.Name}
 	case *IndexExpr:
 		return &IndexExpr{Target: substituteFieldVars(ex.Target, fields), Index: substituteFieldVars(ex.Index, fields)}
+	case *IntCastExpr:
+		return &IntCastExpr{Value: substituteFieldVars(ex.Value, fields)}
 	case *SliceExpr:
 		return &SliceExpr{Value: substituteFieldVars(ex.Value, fields), Start: substituteFieldVars(ex.Start, fields), End: substituteFieldVars(ex.End, fields)}
 	case *ListLit:
