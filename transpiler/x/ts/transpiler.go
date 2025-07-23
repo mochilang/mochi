@@ -772,6 +772,21 @@ func (m *MethodCallExpr) emit(w io.Writer) {
 		io.WriteString(w, ").map(k => +k)")
 		return
 	}
+	if m.Method == "get" && len(m.Args) >= 1 {
+		io.WriteString(w, "(")
+		if m.Target != nil {
+			m.Target.emit(w)
+		}
+		io.WriteString(w, "[")
+		m.Args[0].emit(w)
+		io.WriteString(w, "]")
+		if len(m.Args) == 2 {
+			io.WriteString(w, " ?? ")
+			m.Args[1].emit(w)
+		}
+		io.WriteString(w, ")")
+		return
+	}
 	m.Target.emit(w)
 	io.WriteString(w, ".")
 	io.WriteString(w, m.Method)
@@ -2910,6 +2925,8 @@ func convertPostfix(p *parser.PostfixExpr) (Expr, error) {
 						expr = &MethodCallExpr{Target: idx.Target, Method: "includes", Args: args}
 					case lit.Value == "keys" && len(args) == 0:
 						expr = &MapKeysExpr{Target: idx.Target}
+					case lit.Value == "get":
+						expr = &MethodCallExpr{Target: idx.Target, Method: "get", Args: args}
 					default:
 						expr = &InvokeExpr{Callee: expr, Args: args}
 					}

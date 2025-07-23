@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated TypeScript code from programs in `tests/rosetta/x/Mochi` lives in `tests/rosetta/transpiler/TypeScript`.
-Last updated: 2025-07-23 06:01 UTC
+Last updated: 2025-07-23 06:11 UTC
 
-## Rosetta Golden Test Checklist (40/284)
+## Rosetta Golden Test Checklist (41/284)
 1. [x] 100-doors-2
 2. [x] 100-doors-3
 3. [x] 100-doors
@@ -45,7 +45,7 @@ Last updated: 2025-07-23 06:01 UTC
 38. [x] aks-test-for-primes
 39. [x] algebraic-data-types
 40. [x] align-columns
-41. [ ] aliquot-sequence-classifications
+41. [x] aliquot-sequence-classifications
 42. [ ] almkvist-giullera-formula-for-pi
 43. [ ] almost-prime
 44. [ ] amb

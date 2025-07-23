@@ -1,0 +1,9 @@
+run: exit status 1
+N                               Integer Portion  Pow  Nth Term (33 dp)
+-----------------------------------------------------------------------------------------
+[0m[1m[31merror[0m: Uncaught (in promise) TypeError: exps.get is not a function
+  exps["2"] = (exps.get("2", 0) + 5);
+[0m[31m                    ^[0m
+    at [0m[1m[3mcomputeIP[0m ([0m[36mfile:///workspace/mochi/tests/rosetta/transpiler/TypeScript/almkvist-giullera-formula-for-pi.ts[0m:[0m[33m269[0m:[0m[33m21[0m)
+    at [0m[1m[3mmain[0m ([0m[36mfile:///workspace/mochi/tests/rosetta/transpiler/TypeScript/almkvist-giullera-formula-for-pi.ts[0m:[0m[33m324[0m:[0m[33m26[0m)
+    at [0m[36mfile:///workspace/mochi/tests/rosetta/transpiler/TypeScript/almkvist-giullera-formula-for-pi.ts[0m:[0m[33m378[0m:[0m[33m1[0m
