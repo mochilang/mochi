@@ -2,9 +2,9 @@
 
 Generated Lua code for programs in `tests/rosetta/x/Mochi`. Each program has a `.lua` file produced by the transpiler and a `.out` file with its runtime output. Compilation or runtime errors are captured in `.error` files.
 
-Transpiled programs: 4/284
+Transpiled programs: 5/284
 
-Last updated: 2025-07-22 22:32 GMT+7
+Last updated: 2025-07-23 00:38 GMT+7
 
 Checklist:
 
@@ -12,7 +12,7 @@ Checklist:
 2. [x] 100-doors-3
 3. [x] 100-doors
 4. [x] 100-prisoners
-5. [ ] 15-puzzle-game
+5. [x] 15-puzzle-game
 6. [ ] 15-puzzle-solver
 7. [ ] 2048
 8. [ ] 21-game
