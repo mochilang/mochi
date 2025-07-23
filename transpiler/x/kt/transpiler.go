@@ -461,6 +461,11 @@ type IndexExpr struct {
 
 func (ix *IndexExpr) emit(w io.Writer) {
 	baseType := guessType(ix.Target)
+	if baseType == "" || baseType == "Any" {
+		if vr, ok := ix.Target.(*VarRef); ok && vr.Type != "" {
+			baseType = vr.Type
+		}
+	}
 	idxType := guessType(ix.Index)
 
 	isMap := strings.HasPrefix(baseType, "MutableMap<") || (ix.ForceBang && idxType != "Int")
@@ -470,7 +475,6 @@ func (ix *IndexExpr) emit(w io.Writer) {
 	if !isMap && !isList && (baseType == "" || baseType == "Any") {
 		if idxType == "Int" {
 			isList = true
-			dynamicCast = " as MutableList<Any?>"
 		} else {
 			isMap = true
 			if idxType == "Int" {
@@ -1869,6 +1873,11 @@ func guessType(e Expr) string {
 			return "Int"
 		}
 		return ""
+	case *CastExpr:
+		if v.Type != "" {
+			return v.Type
+		}
+		return guessType(v.Value)
 	case *FieldExpr:
 		if v.Type != "" {
 			return v.Type
@@ -2105,14 +2114,7 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 			if err != nil {
 				return nil, err
 			}
-			if env != nil {
-				if tt, err := env.GetVar(st.Assign.Name); err == nil {
-					tname := kotlinTypeFromType(tt)
-					if tname != "" && tname != guessType(e) {
-						e = &CastExpr{Value: e, Type: tname}
-					}
-				}
-			}
+			// skip assignment casting; rely on expression types
 			p.Stmts = append(p.Stmts, &AssignStmt{Name: st.Assign.Name, Value: e})
 		case st.Assign != nil && (len(st.Assign.Index) > 0 || len(st.Assign.Field) > 0):
 			target, err := buildAccessTarget(env, st.Assign.Name, st.Assign.Index, st.Assign.Field)
@@ -3664,6 +3666,13 @@ func convertPostfix(env *types.Env, p *parser.PostfixExpr) (Expr, error) {
 						expr = &CastExpr{Value: expr, Type: ctype}
 					}
 				}
+			} else if op.Cast.Type != nil && op.Cast.Type.Generic != nil {
+				t := types.ResolveTypeRef(op.Cast.Type, env)
+				kt := kotlinTypeFromType(t)
+				if kt == "" {
+					return nil, fmt.Errorf("unsupported cast")
+				}
+				expr = &CastExpr{Value: expr, Type: kt}
 			} else {
 				return nil, fmt.Errorf("unsupported cast")
 			}
@@ -3712,6 +3721,9 @@ func convertPrimary(env *types.Env, p *parser.Primary) (Expr, error) {
 				return &AvgExpr{Value: arg}, nil
 			case "len":
 				isStr := types.IsStringExpr(p.Call.Args[0], env)
+				if !isStr && guessType(arg) == "String" {
+					isStr = true
+				}
 				return &LenExpr{Value: arg, IsString: isStr}, nil
 			case "str":
 				return &StrExpr{Value: arg}, nil
@@ -3818,6 +3830,12 @@ func convertPrimary(env *types.Env, p *parser.Primary) (Expr, error) {
 				}
 				return &InvokeExpr{Callee: &FieldExpr{Receiver: args[0], Name: "toUpperCase"}}, nil
 			}
+			if name == "lower" {
+				if len(args) != 1 {
+					return nil, fmt.Errorf("lower expects 1 arg")
+				}
+				return &InvokeExpr{Callee: &FieldExpr{Receiver: args[0], Name: "toLowerCase"}}, nil
+			}
 			if name == "abs" {
 				if len(args) != 1 {
 					return nil, fmt.Errorf("abs expects 1 arg")
@@ -3840,6 +3858,7 @@ func convertPrimary(env *types.Env, p *parser.Primary) (Expr, error) {
 				join := &InvokeExpr{Callee: &FieldExpr{Receiver: listExpr, Name: "joinToString"}, Args: []Expr{&StringLit{Value: " "}}}
 				return &CallExpr{Func: "println", Args: []Expr{join}}, nil
 			}
+			var retType string
 			if env != nil {
 				if t, err := env.GetVar(name); err == nil {
 					if ft, ok := t.(types.FuncType); ok {
@@ -3863,13 +3882,18 @@ func convertPrimary(env *types.Env, p *parser.Primary) (Expr, error) {
 								args[i] = &CastExpr{Value: args[i], Type: tname}
 							}
 						}
+						retType = kotlinTypeFromType(ft.Return)
 					}
 				}
 			}
 			if name == "main" {
 				name = "user_main"
 			}
-			return &CallExpr{Func: safeName(name), Args: args}, nil
+			call := &CallExpr{Func: safeName(name), Args: args}
+			if retType != "" {
+				return &CastExpr{Value: call, Type: retType}, nil
+			}
+			return call, nil
 		}
 	case p.Struct != nil:
 		return convertStructLiteral(env, p.Struct)
