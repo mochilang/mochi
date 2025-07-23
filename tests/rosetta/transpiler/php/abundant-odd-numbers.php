@@ -1,4 +1,9 @@
 <?php
+ini_set('memory_limit','-1');
+function _append($a, $b) {
+    $a[] = $b;
+    return $a;
+}
 function divisors($n) {
   global $sum, $sumStr, $pad2, $pad5, $abundantOdd, $main;
   $divs = [1];
@@ -7,21 +12,21 @@ function divisors($n) {
   while ($i * $i <= $n) {
   if ($n % $i == 0) {
   $j = intval((intdiv($n, $i)));
-  $divs = array_merge($divs, [$i]);
+  $divs = _append($divs, $i);
   if ($i != $j) {
-  $divs2 = array_merge($divs2, [$j]);
+  $divs2 = _append($divs2, $j);
 };
 }
   $i = $i + 1;
 };
   $j = count($divs2) - 1;
   while ($j >= 0) {
-  $divs = array_merge($divs, [$divs2[$j]]);
+  $divs = _append($divs, $divs2[$j]);
   $j = $j - 1;
 };
   return $divs;
 }
-function sum(&$xs) {
+function sum($xs) {
   global $divisors, $sumStr, $pad2, $pad5, $abundantOdd, $main;
   $tot = 0;
   foreach ($xs as $v) {
@@ -29,7 +34,7 @@ function sum(&$xs) {
 };
   return $tot;
 }
-function sumStr(&$xs) {
+function sumStr($xs) {
   global $divisors, $sum, $pad2, $pad5, $abundantOdd, $main;
   $s = "";
   $i = 0;

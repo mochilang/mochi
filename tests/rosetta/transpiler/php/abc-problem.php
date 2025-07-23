@@ -1,4 +1,9 @@
 <?php
+ini_set('memory_limit','-1');
+function _append($a, $b) {
+    $a[] = $b;
+    return $a;
+}
 function fields($s) {
   global $canSpell, $newSpeller, $main;
   $res = [];
@@ -8,7 +13,7 @@ function fields($s) {
   $c = substr($s, $i, $i + 1 - $i);
   if ($c == " ") {
   if (strlen($cur) > 0) {
-  $res = array_merge($res, [$cur]);
+  $res = _append($res, $cur);
   $cur = "";
 };
 } else {
@@ -17,7 +22,7 @@ function fields($s) {
   $i = $i + 1;
 };
   if (strlen($cur) > 0) {
-  $res = array_merge($res, [$cur]);
+  $res = _append($res, $cur);
 }
   return $res;
 }
@@ -35,7 +40,7 @@ function canSpell($word, $blks) {
   $j = 0;
   while ($j < count($blks)) {
   if ($j != $i) {
-  $rest = array_merge($rest, [$blks[$j]]);
+  $rest = _append($rest, $blks[$j]);
 }
   $j = $j + 1;
 };

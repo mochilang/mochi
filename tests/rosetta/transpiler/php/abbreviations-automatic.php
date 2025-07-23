@@ -1,4 +1,9 @@
 <?php
+ini_set('memory_limit','-1');
+function _append($a, $b) {
+    $a[] = $b;
+    return $a;
+}
 function fields($s) {
   global $takeRunes, $distinct, $abbrevLen, $pad2, $main;
   $words = [];
@@ -8,7 +13,7 @@ function fields($s) {
   $ch = substr($s, $i, $i + 1 - $i);
   if ($ch == " " || $ch == "\n" || $ch == "\t") {
   if (strlen($cur) > 0) {
-  $words = array_merge($words, [$cur]);
+  $words = _append($words, $cur);
   $cur = "";
 };
 } else {
@@ -17,7 +22,7 @@ function fields($s) {
   $i = $i + 1;
 };
   if (strlen($cur) > 0) {
-  $words = array_merge($words, [$cur]);
+  $words = _append($words, $cur);
 }
   return $words;
 }
@@ -43,7 +48,7 @@ function distinct($xs) {
   $x = $xs[$i];
   if (!(array_key_exists($x, $m))) {
   $m[$x] = true;
-  $out = array_merge($out, [$x]);
+  $out = _append($out, $x);
 }
   $i = $i + 1;
 };
@@ -57,7 +62,7 @@ function abbrevLen($words) {
   $abbrs = [];
   $i = 0;
   while ($i < $size) {
-  $abbrs = array_merge($abbrs, [takeRunes($words[$i], $l)]);
+  $abbrs = _append($abbrs, takeRunes($words[$i], $l));
   $i = $i + 1;
 };
   if (count(distinct($abbrs)) == $size) {

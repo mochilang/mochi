@@ -1,4 +1,5 @@
 <?php
+ini_set('memory_limit','-1');
 function connect($client) {
   global $main;
   return $client["Host"] != "" && $client["Port"] > 0;

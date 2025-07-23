@@ -1,4 +1,9 @@
 <?php
+ini_set('memory_limit','-1');
+function _append($a, $b) {
+    $a[] = $b;
+    return $a;
+}
 function fields($s) {
   global $padRight, $mochi_join, $validate, $main;
   $words = [];
@@ -8,7 +13,7 @@ function fields($s) {
   $ch = substr($s, $i, $i + 1 - $i);
   if ($ch == " " || $ch == "\n" || $ch == "\t") {
   if (strlen($cur) > 0) {
-  $words = array_merge($words, [$cur]);
+  $words = _append($words, $cur);
   $cur = "";
 };
 } else {
@@ -17,7 +22,7 @@ function fields($s) {
   $i = $i + 1;
 };
   if (strlen($cur) > 0) {
-  $words = array_merge($words, [$cur]);
+  $words = _append($words, $cur);
 }
   return $words;
 }
@@ -62,7 +67,7 @@ function validate($commands, $words, $mins) {
   $c = strtoupper($cmd);
   $ww = strtoupper($w);
   if (substr($c, 0, $wlen - 0) == $ww) {
-  $results = array_merge($results, [$c]);
+  $results = _append($results, $c);
   $found = true;
   break;
 };
@@ -70,7 +75,7 @@ function validate($commands, $words, $mins) {
   $ci = $ci + 1;
 };
   if (!$found) {
-  $results = array_merge($results, ["*error*"]);
+  $results = _append($results, "*error*");
 }
   $wi = $wi + 1;
 };
@@ -93,7 +98,7 @@ function main() {
 }
   $j = $j + 1;
 };
-  $mins = array_merge($mins, [$count]);
+  $mins = _append($mins, $count);
   $i = $i + 1;
 };
   $sentence = "riG   rePEAT copies  put mo   rest    types   fup.    6       poweRin";

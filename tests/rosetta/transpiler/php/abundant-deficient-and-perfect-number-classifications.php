@@ -1,4 +1,5 @@
 <?php
+ini_set('memory_limit','-1');
 function pfacSum($i) {
   global $main;
   $sum = 0;

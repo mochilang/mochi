@@ -1,19 +1,24 @@
 <?php
+ini_set('memory_limit','-1');
+function _append($a, $b) {
+    $a[] = $b;
+    return $a;
+}
 function neighborsList() {
   global $plus, $isStable, $topple, $pileString, $s4, $s1, $s2, $s3_a, $s3_b, $s3, $s3_id, $s4b, $s5;
   return [[1, 3], [0, 2, 4], [1, 5], [0, 4, 6], [1, 3, 5, 7], [2, 4, 8], [3, 7], [4, 6, 8], [5, 7]];
 }
-function plus(&$a, &$b) {
+function plus($a, $b) {
   global $neighborsList, $isStable, $topple, $pileString, $s4, $s1, $s2, $s3_a, $s3_b, $s3, $s3_id, $s4b, $s5;
   $res = [];
   $i = 0;
   while ($i < count($a)) {
-  $res = array_merge($res, [$a[$i] + $b[$i]]);
+  $res = _append($res, $a[$i] + $b[$i]);
   $i = $i + 1;
 };
   return $res;
 }
-function isStable(&$p) {
+function isStable($p) {
   global $neighborsList, $plus, $topple, $pileString, $s4, $s1, $s2, $s3_a, $s3_b, $s3, $s3_id, $s4b, $s5;
   foreach ($p as $v) {
   if ($v > 3) {
@@ -22,7 +27,7 @@ function isStable(&$p) {
 };
   return true;
 }
-function topple(&$p) {
+function topple($p) {
   global $neighborsList, $plus, $isStable, $pileString, $s4, $s1, $s2, $s3_a, $s3_b, $s3, $s3_id, $s4b, $s5;
   $neighbors = neighborsList();
   $i = 0;
@@ -39,7 +44,7 @@ function topple(&$p) {
 };
   return 0;
 }
-function pileString(&$p) {
+function pileString($p) {
   global $neighborsList, $plus, $isStable, $topple, $s4, $s1, $s2, $s3_a, $s3_b, $s3, $s3_id, $s4b, $s5;
   $s = "";
   $r = 0;

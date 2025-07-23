@@ -1,5 +1,6 @@
 <?php
-function search_user(&$directory, $username) {
+ini_set('memory_limit','-1');
+function search_user($directory, $username) {
   global $main;
   return $directory[$username];
 }

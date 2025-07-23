@@ -1,4 +1,5 @@
 <?php
+ini_set('memory_limit','-1');
 function beastKind($b) {
   global $beastName, $beastCry, $bprint, $main;
   return (function($__v) {

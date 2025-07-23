@@ -1,4 +1,5 @@
 <?php
+ini_set('memory_limit','-1');
 function pow_big($base, $exp) {
   global $bit_len, $err, $ackermann2, $show, $main;
   $result = 1;

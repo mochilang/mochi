@@ -1,4 +1,9 @@
 <?php
+ini_set('memory_limit','-1');
+function _append($a, $b) {
+    $a[] = $b;
+    return $a;
+}
 $dim = 16;
 function newPile($d) {
   global $dim, $handlePile, $drawPile, $main;
@@ -8,10 +13,10 @@ function newPile($d) {
   $row = [];
   $x = 0;
   while ($x < $d) {
-  $row = array_merge($row, [0]);
+  $row = _append($row, 0);
   $x = $x + 1;
 };
-  $b = array_merge($b, [$row]);
+  $b = _append($b, $row);
   $y = $y + 1;
 };
   return $b;

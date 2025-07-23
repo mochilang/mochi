@@ -1,4 +1,9 @@
 <?php
+ini_set('memory_limit','-1');
+function _append($a, $b) {
+    $a[] = $b;
+    return $a;
+}
 function fields($s) {
   global $padRight, $mochi_join, $parseIntStr, $isDigits, $readTable, $validate, $main;
   $words = [];
@@ -8,7 +13,7 @@ function fields($s) {
   $ch = substr($s, $i, $i + 1 - $i);
   if ($ch == " " || $ch == "\n" || $ch == "\t") {
   if (strlen($cur) > 0) {
-  $words = array_merge($words, [$cur]);
+  $words = _append($words, $cur);
   $cur = "";
 };
 } else {
@@ -17,7 +22,7 @@ function fields($s) {
   $i = $i + 1;
 };
   if (strlen($cur) > 0) {
-  $words = array_merge($words, [$cur]);
+  $words = _append($words, $cur);
 }
   return $words;
 }
@@ -95,8 +100,8 @@ function readTable($table) {
   $i = $i + 1;
 };
 }
-  $cmds = array_merge($cmds, [$cmd]);
-  $mins = array_merge($mins, [$minlen]);
+  $cmds = _append($cmds, $cmd);
+  $mins = _append($mins, $minlen);
 };
   return ["commands" => $cmds, "mins" => $mins];
 }
@@ -115,7 +120,7 @@ function validate($commands, $mins, $words) {
   $c = strtoupper($cmd);
   $ww = strtoupper($w);
   if (substr($c, 0, $wlen - 0) == $ww) {
-  $results = array_merge($results, [$c]);
+  $results = _append($results, $c);
   $found = true;
   break;
 };
@@ -123,7 +128,7 @@ function validate($commands, $mins, $words) {
   $ci = $ci + 1;
 };
   if (!$found) {
-  $results = array_merge($results, ["*error*"]);
+  $results = _append($results, "*error*");
 }
   $wi = $wi + 1;
 };

@@ -1,4 +1,9 @@
 <?php
+ini_set('memory_limit','-1');
+function _append($a, $b) {
+    $a[] = $b;
+    return $a;
+}
 function fields($s) {
   global $mochi_join, $numberName, $pluralizeFirst, $randInt, $slur, $main;
   $words = [];
@@ -8,7 +13,7 @@ function fields($s) {
   $ch = substr($s, $i, $i + 1 - $i);
   if ($ch == " " || $ch == "\n" || $ch == "\t") {
   if (strlen($cur) > 0) {
-  $words = array_merge($words, [$cur]);
+  $words = _append($words, $cur);
   $cur = "";
 };
 } else {
@@ -17,7 +22,7 @@ function fields($s) {
   $i = $i + 1;
 };
   if (strlen($cur) > 0) {
-  $words = array_merge($words, [$cur]);
+  $words = _append($words, $cur);
 }
   return $words;
 }
@@ -78,7 +83,7 @@ function slur($p, $d) {
   $a = [];
   $i = 1;
   while ($i < strlen($p) - 1) {
-  $a = array_merge($a, [substr($p, $i, $i + 1 - $i)]);
+  $a = _append($a, substr($p, $i, $i + 1 - $i));
   $i = $i + 1;
 };
   $idx = count($a) - 1;

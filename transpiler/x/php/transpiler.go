@@ -53,8 +53,14 @@ function _now() {
     return hrtime(true);
 }`
 
+const helperAppend = `function _append($a, $b) {
+    $a[] = $b;
+    return $a;
+}`
+
 var usesLookupHost bool
 var usesNow bool
+var usesAppend bool
 
 // Some PHP built-in functions cannot be redefined. When a Mochi program
 // defines a function with one of these names we rename the function and all
@@ -1373,6 +1379,9 @@ func Emit(w io.Writer, p *Program) error {
 	if _, err := io.WriteString(w, "<?php\n"); err != nil {
 		return err
 	}
+	if _, err := io.WriteString(w, "ini_set('memory_limit','-1');\n"); err != nil {
+		return err
+	}
 	if usesLookupHost {
 		if _, err := io.WriteString(w, helperLookupHost+"\n"); err != nil {
 			return err
@@ -1380,6 +1389,11 @@ func Emit(w io.Writer, p *Program) error {
 	}
 	if usesNow {
 		if _, err := io.WriteString(w, helperNow+"\n"); err != nil {
+			return err
+		}
+	}
+	if usesAppend {
+		if _, err := io.WriteString(w, helperAppend+"\n"); err != nil {
 			return err
 		}
 	}
@@ -1407,6 +1421,7 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	renameMap = map[string]string{}
 	usesLookupHost = false
 	usesNow = false
+	usesAppend = false
 	defer func() { transpileEnv = nil }()
 	p := &Program{Env: env}
 	for _, st := range prog.Statements {
@@ -1827,8 +1842,8 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 			if len(args) != 2 {
 				return nil, fmt.Errorf("append expects 2 args")
 			}
-			tmp := &ListLit{Elems: []Expr{args[1]}}
-			return &CallExpr{Func: "array_merge", Args: []Expr{args[0], tmp}}, nil
+			usesAppend = true
+			return &CallExpr{Func: "_append", Args: args}, nil
 		} else if name == "json" {
 			if len(args) != 1 {
 				return nil, fmt.Errorf("json expects 1 arg")

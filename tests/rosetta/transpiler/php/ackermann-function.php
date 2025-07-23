@@ -1,4 +1,5 @@
 <?php
+ini_set('memory_limit','-1');
 function ackermann($m, $n) {
   global $main;
   if ($m == 0) {

@@ -1,4 +1,5 @@
 <?php
+ini_set('memory_limit','-1');
 function bottles($n) {
   global $main;
   if ($n == 0) {
@@ -7,7 +8,7 @@ function bottles($n) {
   if ($n == 1) {
   return "1 bottle";
 }
-  return strval($n) . " bottles";
+  return json_encode($n, 1344) . " bottles";
 }
 function main() {
   global $bottles;

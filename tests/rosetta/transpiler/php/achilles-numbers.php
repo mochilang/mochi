@@ -1,4 +1,5 @@
 <?php
+ini_set('memory_limit','-1');
 function pow10($exp) {
   global $totient, $pps, $getPerfectPowers, $getAchilles, $sortInts, $pad, $main;
   $n = 1;
@@ -73,7 +74,7 @@ function getAchilles($minExp, $maxExp) {
 };
   return $achilles;
 }
-function sortInts(&$xs) {
+function sortInts($xs) {
   global $pow10, $totient, $pps, $getPerfectPowers, $getAchilles, $pad, $main;
   $res = [];
   $tmp = $xs;

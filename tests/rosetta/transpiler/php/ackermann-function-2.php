@@ -1,4 +1,5 @@
 <?php
+ini_set('memory_limit','-1');
 function mochi_pow($base, $exp) {
   global $ackermann2, $main;
   $result = 1;
