@@ -1,5 +1,5 @@
-## Progress (2025-07-23 12:35 +0700)
-- Commit 0d38565d30: dart transpiler: support union patterns and map keys
+## Progress (2025-07-23 14:33 +0700)
+- Commit e2fee52fad: fix string slicing in cs transpiler
 - Regenerated golden files - 80/103 vm valid programs passing
 
 ## Progress (2025-07-22 14:12 +0700)

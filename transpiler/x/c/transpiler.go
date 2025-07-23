@@ -1182,15 +1182,15 @@ func (p *Program) Emit() []byte {
 				case types.ListType:
 					if inner, ok := ft.Elem.(types.ListType); ok {
 						if _, ok := inner.Elem.(types.StringType); ok {
-							typ = "const char**"
+							typ = "const char***"
 						} else {
 							typ = "int**"
 						}
 					} else {
 						if _, ok := ft.Elem.(types.StringType); ok {
-							typ = "const char*[]"
+							typ = "const char**"
 						} else {
-							typ = "int[]"
+							typ = "int*"
 						}
 					}
 				}
@@ -1605,7 +1605,13 @@ func compileStmt(env *types.Env, s *parser.Statement) (Stmt, error) {
 			}
 		}
 		currentVarName = ""
-		declType := inferCType(env, s.Let.Name, valExpr)
+		declType := ""
+		if s.Let.Type != nil {
+			declType = cTypeFromMochiType(types.ResolveTypeRef(s.Let.Type, env))
+		}
+		if declType == "" {
+			declType = inferCType(env, s.Let.Name, valExpr)
+		}
 		if strings.Contains(declType, "double") {
 			markMath()
 		}
@@ -1680,7 +1686,13 @@ func compileStmt(env *types.Env, s *parser.Statement) (Stmt, error) {
 		currentVarName = s.Var.Name
 		valExpr := convertExpr(s.Var.Value)
 		currentVarName = ""
-		declType := inferCType(env, s.Var.Name, valExpr)
+		declType := ""
+		if s.Var.Type != nil {
+			declType = cTypeFromMochiType(types.ResolveTypeRef(s.Var.Type, env))
+		}
+		if declType == "" {
+			declType = inferCType(env, s.Var.Name, valExpr)
+		}
 		if strings.Contains(declType, "double") {
 			markMath()
 		}
@@ -2165,101 +2177,25 @@ func compileFunction(env *types.Env, name string, fn *parser.FunExpr) (*Function
 	var params []Param
 	var paramTypes []string
 	for _, p := range fn.Params {
-		typ := "int"
-		if p.Type != nil {
-			if p.Type.Simple != nil {
-				if *p.Type.Simple == "string" {
-					typ = "const char*"
-				} else if st, ok := env.GetStruct(*p.Type.Simple); ok {
-					typ = st.Name
-				}
-			} else if g := p.Type.Generic; g != nil && g.Name == "list" && len(g.Args) == 1 {
-				elemT := "int"
-				if g.Args[0].Simple != nil {
-					switch *g.Args[0].Simple {
-					case "string":
-						elemT = "const char*"
-					case "float":
-						elemT = "double"
-						markMath()
-					default:
-						if st, ok := env.GetStruct(*g.Args[0].Simple); ok {
-							elemT = st.Name
-						}
-					}
-				}
-				typ = elemT + "[]"
-			}
-		}
-		if typ == "double" || strings.HasSuffix(typ, "double[]") {
+		mochiT := types.ResolveTypeRef(p.Type, env)
+		typ := cTypeFromMochiType(mochiT)
+		if strings.Contains(typ, "double") {
 			markMath()
 		}
 		paramTypes = append(paramTypes, typ)
 		params = append(params, Param{Name: p.Name, Type: typ})
 		varTypes[p.Name] = typ
-		switch typ {
-		case "const char*":
-			localEnv.SetVar(p.Name, types.StringType{}, true)
-		case "double":
-			localEnv.SetVar(p.Name, types.FloatType{}, true)
-		case "int":
-			localEnv.SetVar(p.Name, types.IntType{}, true)
-		default:
-			if strings.HasSuffix(typ, "[]") {
-				base := strings.TrimSuffix(typ, "[]")
-				if strings.HasSuffix(base, "[]") {
-					inner := strings.TrimSuffix(base, "[]")
-					if inner == "const char*" {
-						localEnv.SetVar(p.Name, types.ListType{Elem: types.ListType{Elem: types.StringType{}}}, true)
-					} else {
-						localEnv.SetVar(p.Name, types.ListType{Elem: types.ListType{Elem: types.IntType{}}}, true)
-					}
-				} else {
-					if base == "const char*" {
-						localEnv.SetVar(p.Name, types.ListType{Elem: types.StringType{}}, true)
-					} else {
-						localEnv.SetVar(p.Name, types.ListType{Elem: types.IntType{}}, true)
-					}
-				}
-			} else if st, ok := env.GetStruct(typ); ok {
-				localEnv.SetVar(p.Name, st, true)
-			}
-		}
+		localEnv.SetVar(p.Name, mochiT, true)
 	}
 	funcParamTypes[name] = paramTypes
 	ret := "int"
 	inferRetFromBody := false
 	if fn.Return != nil {
-		if fn.Return.Simple != nil {
-			switch *fn.Return.Simple {
-			case "string":
-				ret = "const char*"
-			case "float":
-				ret = "double"
-			default:
-				if _, ok := env.GetStruct(*fn.Return.Simple); ok {
-					ret = *fn.Return.Simple
-				}
-			}
-		} else if g := fn.Return.Generic; g != nil && g.Name == "list" && len(g.Args) == 1 {
-			elemT := "int"
-			if g.Args[0].Simple != nil {
-				switch *g.Args[0].Simple {
-				case "string":
-					elemT = "const char*"
-				case "float":
-					elemT = "double"
-					markMath()
-				default:
-					if st, ok := env.GetStruct(*g.Args[0].Simple); ok {
-						elemT = st.Name
-					}
-				}
-			}
-			ret = elemT + "[]"
-		} else if g := fn.Return.Generic; g != nil && g.Name == "map" {
+		mochiRet := types.ResolveTypeRef(fn.Return, env)
+		if g := fn.Return.Generic; g != nil && g.Name == "map" {
 			inferRetFromBody = true
 		}
+		ret = cTypeFromMochiType(mochiRet)
 	}
 	if ret == "double" {
 		markMath()
@@ -3659,25 +3595,7 @@ func inferExprType(env *types.Env, e Expr) string {
 		}
 	case *VarRef:
 		if t, err := env.GetVar(v.Name); err == nil {
-			switch tt := t.(type) {
-			case types.StringType:
-				return "const char*"
-			case types.ListType:
-				if inner, ok := tt.Elem.(types.ListType); ok {
-					if _, ok := inner.Elem.(types.StringType); ok {
-						return "const char**"
-					}
-					return "int**"
-				}
-				if _, ok := tt.Elem.(types.StringType); ok {
-					return "const char*[]"
-				}
-				return "int[]"
-			case types.BoolType:
-				return "int"
-			case types.StructType:
-				return tt.Name
-			}
+			return cTypeFromMochiType(t)
 		}
 		if t, ok := varTypes[v.Name]; ok {
 			return t
@@ -3717,21 +3635,7 @@ func inferExprType(env *types.Env, e Expr) string {
 		tname := inferExprType(env, v.Target)
 		if st, ok := env.GetStruct(tname); ok {
 			if ft, ok2 := st.Fields[v.Name]; ok2 {
-				switch ft.(type) {
-				case types.StringType:
-					return "const char*"
-				case types.BoolType:
-					return "int"
-				case types.FloatType:
-					return "double"
-				case types.StructType:
-					return ft.(types.StructType).Name
-				case types.ListType:
-					if _, ok := ft.(types.ListType).Elem.(types.StringType); ok {
-						return "const char*[]"
-					}
-					return "int[]"
-				}
+				return cTypeFromMochiType(ft)
 			}
 		}
 	case *CallExpr:
@@ -3798,23 +3702,28 @@ func inferCType(env *types.Env, name string, e Expr) string {
 		return t
 	}
 	if t, err := env.GetVar(name); err == nil {
-		switch tt := t.(type) {
-		case types.StringType:
-			return "const char*"
-		case types.ListType:
-			if _, ok := tt.Elem.(types.StringType); ok {
-				return "const char*[]"
-			}
-			return "int[]"
-		case types.BoolType:
-			return "int"
-		case types.FloatType:
-			return "double"
-		case types.StructType:
-			return tt.Name
-		}
+		return cTypeFromMochiType(t)
 	}
 	return "int"
+}
+
+func cTypeFromMochiType(t types.Type) string {
+	switch tt := t.(type) {
+	case types.StringType:
+		return "const char*"
+	case types.FloatType:
+		return "double"
+	case types.IntType, types.Int64Type:
+		return "int"
+	case types.BoolType:
+		return "int"
+	case types.StructType:
+		return tt.Name
+	case types.ListType:
+		return cTypeFromMochiType(tt.Elem) + "[]"
+	default:
+		return "int"
+	}
 }
 
 func anyToExpr(v any) Expr {
