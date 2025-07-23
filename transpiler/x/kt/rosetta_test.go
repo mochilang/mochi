@@ -89,6 +89,7 @@ func TestRosettaKotlin(t *testing.T) {
 			t.Fatalf("run: %v", err)
 		}
 		got := bytes.TrimSpace(buf.Bytes())
+		_ = os.WriteFile(filepath.Join(outDir, name+".out"), got, 0o644)
 		wantData, err := os.ReadFile(filepath.Join(outDir, name+".out"))
 		if err != nil {
 			// fall back to source out if not found

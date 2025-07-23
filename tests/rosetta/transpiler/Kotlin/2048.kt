@@ -29,10 +29,10 @@ fun newBoard(): MutableList<MutableList<Int>> {
         var row: MutableList<Int> = mutableListOf()
         var x: Int = 0
         while (x < SIZE) {
-            row = (row + 0).toMutableList()
+            row = run { val _tmp = row.toMutableList(); _tmp.add(0); _tmp }
             x = x + 1
         }
-        b = (b + row).toMutableList()
+        b = run { val _tmp = b.toMutableList(); _tmp.add(row); _tmp }
         y = y + 1
     }
     return b
@@ -45,7 +45,7 @@ fun spawnTile(b: MutableList<MutableList<Int>>): MutableMap<String, Any> {
         var x: Int = 0
         while (x < SIZE) {
             if (((b[y] as MutableList<Int>)[x]!!) == 0) {
-                empty = (empty + mutableListOf(x, y)).toMutableList()
+                empty = run { val _tmp = empty.toMutableList(); _tmp.add(mutableListOf(x, y)); _tmp }
             }
             x = x + 1
         }
@@ -54,7 +54,7 @@ fun spawnTile(b: MutableList<MutableList<Int>>): MutableMap<String, Any> {
     if (empty.size == 0) {
         return mutableMapOf<String, Any>("board" to (b), "full" to (true))
     }
-    var idx: Double = _now() % (empty.size as Number).toDouble()
+    var idx: Int = _now() % empty.size
     val cell: MutableList<Int> = (empty[idx] as MutableList<Int>)
     var _val: Int = 4
     if ((_now() % 10) < 9) {
@@ -66,10 +66,10 @@ fun spawnTile(b: MutableList<MutableList<Int>>): MutableMap<String, Any> {
 
 fun pad(n: Int): String {
     var s: String = n.toString()
-    var pad: (Int) -> String = 4 - (s.length as Number).toDouble()
+    var pad: Int = 4 - s.length
     var i: Int = 0
     var out: String = ""
-    while (i < (pad as Number).toDouble()) {
+    while (i < pad) {
         out = out + " "
         i = i + 1
     }
@@ -101,9 +101,9 @@ fun draw(b: MutableList<MutableList<Int>>, score: Int): Unit {
 
 fun reverseRow(r: MutableList<Int>): MutableList<Int> {
     var out: MutableList<Int> = mutableListOf()
-    var i: Double = (r.size as Number).toDouble() - 1
+    var i: Int = r.size - 1
     while (i >= 0) {
-        out = (out + (r[i] as Int)).toMutableList()
+        out = run { val _tmp = out.toMutableList(); _tmp.add((r[i] as Int)); _tmp }
         i = i - 1
     }
     return out
@@ -112,28 +112,28 @@ fun reverseRow(r: MutableList<Int>): MutableList<Int> {
 fun slideLeft(row: MutableList<Int>): MutableMap<String, Any> {
     var xs: MutableList<Int> = mutableListOf()
     var i: Int = 0
-    while (i < (row.size as Number).toDouble()) {
+    while (i < row.size) {
         if ((row[i] as Int) != 0) {
-            xs = (xs + (row[i] as Int)).toMutableList()
+            xs = run { val _tmp = xs.toMutableList(); _tmp.add((row[i] as Int)); _tmp }
         }
         i = i + 1
     }
     var res: MutableList<Int> = mutableListOf()
     var gain: Int = 0
     i = 0
-    while (i < (xs.size as Number).toDouble()) {
-        if (((i + 1) < (xs.size as Number).toDouble()) && ((xs[i] as Int) == (xs[i + 1] as Int))) {
+    while (i < xs.size) {
+        if (((i + 1) < xs.size) && ((xs[i] as Int) == (xs[i + 1] as Int))) {
             val v: Int = (xs[i] as Int) * 2
             gain = gain + v
-            res = (res + v).toMutableList()
+            res = run { val _tmp = res.toMutableList(); _tmp.add(v); _tmp }
             i = i + 2
         } else {
-            res = (res + (xs[i] as Int)).toMutableList()
+            res = run { val _tmp = res.toMutableList(); _tmp.add((xs[i] as Int)); _tmp }
             i = i + 1
         }
     }
-    while ((res.size as Number).toDouble() < SIZE) {
-        res = (res + 0).toMutableList()
+    while (res.size < SIZE) {
+        res = run { val _tmp = res.toMutableList(); _tmp.add(0); _tmp }
     }
     return mutableMapOf<String, Any>("row" to (res), "gain" to (gain))
 }
@@ -184,7 +184,7 @@ fun getCol(b: MutableList<MutableList<Int>>, x: Int): MutableList<Int> {
     var col: MutableList<Int> = mutableListOf()
     var y: Int = 0
     while (y < SIZE) {
-        col = (col + ((b[y] as MutableList<Int>)[x]!!)).toMutableList()
+        col = run { val _tmp = col.toMutableList(); _tmp.add(((b[y] as MutableList<Int>)[x]!!)); _tmp }
         y = y + 1
     }
     return col
