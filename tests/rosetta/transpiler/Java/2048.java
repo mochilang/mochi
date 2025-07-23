@@ -2,7 +2,7 @@ public class Main {
     static int SIZE = 4;
     static int[][] board = newBoard();
     static java.util.Map<String,Object> r = spawnTile(board);
-    static java.util.Map full = r.get("full");
+    static Object full = (Object)(r.get("full"));
     static int score = 0;
 
     static java.util.Scanner _scanner = new java.util.Scanner(System.in);
@@ -86,9 +86,9 @@ b[cell[1]][cell[0]] = val;
 
     static int[] reverseRow(int[] r) {
         int[] out = new int[]{};
-        int i = r.size() - 1;
+        int i = r.length - 1;
         while (i >= 0) {
-            out = java.util.stream.IntStream.concat(java.util.Arrays.stream(out), java.util.stream.IntStream.of(r.get(i))).toArray();
+            out = java.util.stream.IntStream.concat(java.util.Arrays.stream(out), java.util.stream.IntStream.of(r[i])).toArray();
             i = i - 1;
         }
         return out;
@@ -128,7 +128,7 @@ b[cell[1]][cell[0]] = val;
         int y = 0;
         while (y < SIZE) {
             java.util.Map<String,Object> r = slideLeft(b[y]);
-            java.util.Map new_ = r.get("row");
+            Object new_ = (Object)(r.get("row"));
             score = score + (int)(r.get("gain"));
             int x = 0;
             while (x < SIZE) {
@@ -189,7 +189,7 @@ b[y][x] = col[y];
         while (x < SIZE) {
             int[] col = getCol(b, x);
             java.util.Map<String,Object> r = slideLeft(col);
-            java.util.Map new_ = r.get("row");
+            Object new_ = (Object)(r.get("row"));
             score = score + (int)(r.get("gain"));
             int y = 0;
             while (y < SIZE) {
