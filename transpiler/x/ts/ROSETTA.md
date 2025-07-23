@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated TypeScript code from programs in `tests/rosetta/x/Mochi` lives in `tests/rosetta/transpiler/TypeScript`.
-Last updated: 2025-07-23 12:25 UTC
+Last updated: 2025-07-23 12:43 UTC
 
-## Rosetta Golden Test Checklist (161/284)
+## Rosetta Golden Test Checklist (162/284)
 1. [x] 100-doors-2
 2. [x] 100-doors-3
 3. [x] 100-doors
@@ -173,7 +173,7 @@ Last updated: 2025-07-23 12:25 UTC
 166. [x] camel-case-and-snake-case
 167. [x] canny-edge-detector
 168. [x] canonicalize-cidr
-169. [ ] cantor-set
+169. [x] cantor-set
 170. [ ] carmichael-3-strong-pseudoprimes
 171. [ ] cartesian-product-of-two-or-more-lists-1
 172. [ ] cartesian-product-of-two-or-more-lists-2
