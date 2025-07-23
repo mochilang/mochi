@@ -17,6 +17,7 @@ fun _now(): Int {
 
 fun input(): String = readLine() ?: ""
 
+data class MoveResult(val idx: Int, val ok: Boolean)
 var board: MutableList<Int> = mutableListOf(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 0)
 val solved: MutableList<Int> = mutableListOf(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 0)
 var empty: Int = 15
@@ -29,7 +30,7 @@ fun randMove(): Int {
 fun isSolved(): Boolean {
     var i: Int = 0
     while (i < 16) {
-        if ((board[i] as Int) != (solved[i] as Int)) {
+        if (board[i] != solved[i]) {
             return false
         }
         i = i + 1
@@ -37,41 +38,41 @@ fun isSolved(): Boolean {
     return true
 }
 
-fun isValidMove(m: Int): MutableMap<String, Any> {
+fun isValidMove(m: Int): MoveResult {
     if (m == 0) {
-        return mutableMapOf<String, Any>("idx" to (empty - 4), "ok" to ((empty / 4) > 0))
+        return MoveResult(idx = empty - 4, ok = (empty / 4) > 0)
     }
     if (m == 1) {
-        return mutableMapOf<String, Any>("idx" to (empty + 4), "ok" to ((empty / 4) < 3))
+        return MoveResult(idx = empty + 4, ok = (empty / 4) < 3)
     }
     if (m == 2) {
-        return mutableMapOf<String, Any>("idx" to (empty + 1), "ok" to ((empty % 4) < 3))
+        return MoveResult(idx = empty + 1, ok = (empty % 4) < 3)
     }
     if (m == 3) {
-        return mutableMapOf<String, Any>("idx" to (empty - 1), "ok" to ((empty % 4) > 0))
+        return MoveResult(idx = empty - 1, ok = (empty % 4) > 0)
     }
-    return mutableMapOf<String, Any>("idx" to (0), "ok" to (false))
+    return MoveResult(idx = 0, ok = false)
 }
 
 fun doMove(m: Int): Boolean {
-    val r = isValidMove(m)
-    if (!((r["ok"]!!) as Boolean)) {
+    val r: MoveResult = isValidMove(m) as MoveResult
+    if (!(r.ok as Boolean)) {
         return false
     }
     val i: Int = empty
-    val j = (r["idx"]!!) as Int
-    val tmp: Int = (board[i] as Int)
-    board[i] = (board[j] as Int)
+    val j = r.idx
+    val tmp: Int = board[i]
+    board[i] = (board)[j] as Int
     board[j] = tmp
-    empty = j
+    empty = j as Int
     moves = moves + 1
     return true
 }
 
 fun shuffle(n: Int): Unit {
     var i: Int = 0
-    while ((i < n) || isSolved()) {
-        if (doMove(randMove()) as Boolean) {
+    while ((i < n) || isSolved() as Boolean) {
+        if (doMove(randMove() as Int) as Boolean as Boolean) {
             i = i + 1
         }
     }
@@ -81,7 +82,7 @@ fun printBoard(): Unit {
     var line: String = ""
     var i: Int = 0
     while (i < 16) {
-        val _val: Int = (board[i] as Int)
+        val _val: Int = board[i]
         if (_val == 0) {
             line = line + "  ."
         } else {
@@ -107,7 +108,7 @@ fun playOneMove(): Unit {
         if (s == "") {
             continue
         }
-        val c = s.substring(0, 1)
+        val c: String = s.substring(0, 1)
         var m: Int = 0
         if ((c == "U") || (c == "u")) {
             m = 0
@@ -143,12 +144,12 @@ fun playOneMove(): Unit {
 
 fun play(): Unit {
     println("Starting board:")
-    while (!quit && (isSolved() == false)) {
+    while ((!quit as Boolean) && (isSolved() as Boolean == false)) {
         println("")
         printBoard()
         playOneMove()
     }
-    if (isSolved() as Boolean) {
+    if (isSolved() as Boolean as Boolean) {
         println(("You solved the puzzle in " + moves.toString()) + " moves.")
     }
 }
