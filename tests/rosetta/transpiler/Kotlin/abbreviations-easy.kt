@@ -77,7 +77,7 @@ fun validate(commands: MutableList<String>, words: MutableList<String>, mins: Mu
 
 fun user_main(): Unit {
     val table: String = ((((("Add ALTer  BAckup Bottom  CAppend Change SCHANGE  CInsert CLAst COMPress Copy " + "COUnt COVerlay CURsor DELete CDelete Down DUPlicate Xedit EXPand EXTract Find ") + "NFind NFINDUp NFUp CFind FINdup FUp FOrward GET Help HEXType Input POWerinput ") + " Join SPlit SPLTJOIN  LOAD  Locate CLocate  LOWercase UPPercase  LPrefix MACRO ") + "MErge MODify MOve MSG Next Overlay PARSE PREServe PURge PUT PUTD  Query  QUIT ") + "READ  RECover REFRESH RENum REPeat  Replace CReplace  RESet  RESTore  RGTLEFT ") + "RIght LEft  SAVE  SET SHift SI  SORT  SOS  STAck STATus  TOP TRAnsfer TypeUp "
-    val commands: MutableList<String> = fields(table)
+    val commands: MutableList<String> = fields(table) as MutableList<String>
     var mins: MutableList<Int> = mutableListOf()
     var i: Int = 0
     while (i < commands.size) {
@@ -95,16 +95,16 @@ fun user_main(): Unit {
         i = i + 1
     }
     val sentence: String = "riG   rePEAT copies  put mo   rest    types   fup.    6       poweRin"
-    val words: MutableList<String> = fields(sentence)
-    val results: MutableList<String> = validate(commands, words, mins)
+    val words: MutableList<String> = fields(sentence) as MutableList<String>
+    val results: MutableList<String> = validate(commands, words, mins) as MutableList<String>
     var out1: String = "user words:  "
     var k: Int = 0
     while (k < words.size) {
-        out1 = (out1 + (padRight(words[k], results[k].length)).toString()) + " "
+        out1 = (out1 + padRight(words[k], results[k].length) as String) + " "
         k = k + 1
     }
     println(out1)
-    println("full words:  " + (join(results, " ")).toString())
+    println("full words:  " + join(results, " ") as String)
 }
 
 fun main() {

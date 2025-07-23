@@ -1,0 +1,7 @@
+OpenJDK 64-Bit Server VM warning: Options -Xverify:none and -noverify were deprecated in JDK 13 and will likely be removed in a future release.
+/workspace/mochi/tests/rosetta/transpiler/Kotlin/accumulator-factory.kt:8:12: error: function invocation 'add(...)' expected
+    return add as (Any) -> Any
+           ^
+/workspace/mochi/tests/rosetta/transpiler/Kotlin/accumulator-factory.kt:8:12: error: no value passed for parameter 'nv'
+    return add as (Any) -> Any
+           ^
