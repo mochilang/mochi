@@ -328,12 +328,12 @@ func (wst *WhileStmt) emit(w io.Writer, indent int) {
 		for i := 0; i < indent+1; i++ {
 			io.WriteString(w, "  ")
 		}
-		io.WriteString(w, ":break -> nil\n")
-		for i := 0; i < indent; i++ {
-			io.WriteString(w, "  ")
-		}
-		io.WriteString(w, "end\n")
-	} else if len(wst.Vars) == 1 {
+                io.WriteString(w, ":break -> nil\n")
+                for i := 0; i < indent; i++ {
+                        io.WriteString(w, "  ")
+                }
+                io.WriteString(w, "end\n")
+        } else if len(wst.Vars) == 1 {
 		io.WriteString(w, wst.Vars[0])
 		io.WriteString(w, " = try do\n")
 		for i := 0; i < indent+2; i++ {
@@ -349,12 +349,14 @@ func (wst *WhileStmt) emit(w io.Writer, indent int) {
 		for i := 0; i < indent+2; i++ {
 			io.WriteString(w, "  ")
 		}
-		io.WriteString(w, ":break -> nil\n")
-		for i := 0; i < indent+1; i++ {
-			io.WriteString(w, "  ")
-		}
-		io.WriteString(w, "end\n")
-	} else {
+                io.WriteString(w, ":break -> ")
+                io.WriteString(w, wst.Vars[0])
+                io.WriteString(w, "\n")
+                for i := 0; i < indent+1; i++ {
+                        io.WriteString(w, "  ")
+                }
+                io.WriteString(w, "end\n")
+        } else {
 		io.WriteString(w, "{")
 		for i, v := range wst.Vars {
 			if i > 0 {
@@ -379,12 +381,19 @@ func (wst *WhileStmt) emit(w io.Writer, indent int) {
 		for i := 0; i < indent+2; i++ {
 			io.WriteString(w, "  ")
 		}
-		io.WriteString(w, ":break -> nil\n")
-		for i := 0; i < indent+1; i++ {
-			io.WriteString(w, "  ")
-		}
-		io.WriteString(w, "end\n")
-	}
+                io.WriteString(w, ":break -> {")
+                for i, v := range wst.Vars {
+                        if i > 0 {
+                                io.WriteString(w, ", ")
+                        }
+                        io.WriteString(w, v)
+                }
+                io.WriteString(w, "}\n")
+                for i := 0; i < indent+1; i++ {
+                        io.WriteString(w, "  ")
+                }
+                io.WriteString(w, "end\n")
+        }
 	return
 }
 
@@ -1300,12 +1309,17 @@ func Emit(p *Program) []byte {
 			funcs = append(funcs, st)
 			continue
 		}
-		if funcsExist && !foundFunc {
-			globals = append(globals, st)
-		} else {
-			main = append(main, st)
-		}
-	}
+               if funcsExist && !foundFunc {
+                       globals = append(globals, st)
+               } else {
+                       if es, ok := st.(*ExprStmt); ok {
+                               if call, ok := es.Expr.(*CallExpr); ok && call.Func == "main" && len(call.Args) == 0 {
+                                       continue
+                               }
+                       }
+                       main = append(main, st)
+               }
+       }
 	for _, st := range globals {
 		if ls, ok := st.(*LetStmt); ok {
 			ls.emitGlobal(&buf, 1)
@@ -1496,16 +1510,15 @@ func compileStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 			if err != nil {
 				return nil, err
 			}
-			t, _ := env.GetVar(st.Assign.Name)
-			var call *CallExpr
-			switch t.(type) {
-			case types.ListType:
-				call = &CallExpr{Func: "List.replace_at", Args: []Expr{&VarRef{Name: st.Assign.Name}, idx, val}}
-			case types.MapType:
-				call = &CallExpr{Func: "Map.put", Args: []Expr{&VarRef{Name: st.Assign.Name}, idx, val}}
-			default:
-				return nil, fmt.Errorf("unsupported indexed assignment at %d:%d", st.Pos.Line, st.Pos.Column)
-			}
+       t, _ := env.GetVar(st.Assign.Name)
+       var call *CallExpr
+       switch t.(type) {
+       case types.MapType:
+               call = &CallExpr{Func: "Map.put", Args: []Expr{&VarRef{Name: st.Assign.Name}, idx, val}}
+       default:
+               // Fallback to list semantics when the type is unknown
+               call = &CallExpr{Func: "List.replace_at", Args: []Expr{&VarRef{Name: st.Assign.Name}, idx, val}}
+       }
 			return &AssignStmt{Name: st.Assign.Name, Value: call}, nil
 		}
 		if len(st.Assign.Index) == 2 && len(st.Assign.Field) == 0 {
