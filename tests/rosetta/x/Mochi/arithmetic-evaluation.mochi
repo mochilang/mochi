@@ -3,6 +3,7 @@
 // for integer values.
 
 type Parser { expr: string, pos: int }
+type Res { v: int, p: Parser }
 
 fun skipWS(p: Parser): Parser {
   var i = p.pos
@@ -23,7 +24,7 @@ fun parseIntStr(str: string): int {
   return n
 }
 
-fun parseNumber(p: Parser): (int, Parser) {
+fun parseNumber(p: Parser): Res {
   p = skipWS(p)
   var start = p.pos
   while p.pos < len(p.expr) {
@@ -35,26 +36,28 @@ fun parseNumber(p: Parser): (int, Parser) {
     }
   }
   let token = substring(p.expr, start, p.pos)
-  return (parseIntStr(token), p)
+  return Res{v: parseIntStr(token), p: p}
 }
 
-fun parseFactor(p: Parser): (int, Parser) {
+fun parseFactor(p: Parser): Res {
   p = skipWS(p)
   if p.pos < len(p.expr) && substring(p.expr, p.pos, p.pos+1) == "(" {
     p.pos = p.pos + 1
-    var v
-    (v, p) = parseExpr(p)
+    var r = parseExpr(p)
+    var v = r.v
+    p = r.p
     p = skipWS(p)
     if p.pos < len(p.expr) && substring(p.expr, p.pos, p.pos+1) == ")" {
       p.pos = p.pos + 1
     }
-    return (v, p)
+    return Res{v: v, p: p}
   }
   if p.pos < len(p.expr) && substring(p.expr, p.pos, p.pos+1) == "-" {
     p.pos = p.pos + 1
-    var v
-    (v, p) = parseFactor(p)
-    return (-v, p)
+    var r = parseFactor(p)
+    var v = r.v
+    p = r.p
+    return Res{v: -v, p: p}
   }
   return parseNumber(p)
 }
@@ -71,81 +74,89 @@ fun powInt(base: int, exp: int): int {
   return r
 }
 
-fun parsePower(p: Parser): (int, Parser) {
-  var v
-  (v, p) = parseFactor(p)
+fun parsePower(p: Parser): Res {
+  var r = parseFactor(p)
+  var v = r.v
+  p = r.p
   while true {
     p = skipWS(p)
     if p.pos < len(p.expr) && substring(p.expr, p.pos, p.pos+1) == "^" {
       p.pos = p.pos + 1
-      var rhs
-      (rhs, p) = parseFactor(p)
+      var r2 = parseFactor(p)
+      var rhs = r2.v
+      p = r2.p
       v = powInt(v, rhs)
     } else {
       break
     }
   }
-  return (v, p)
+  return Res{v: v, p: p}
 }
 
-fun parseTerm(p: Parser): (int, Parser) {
-  var v
-  (v, p) = parsePower(p)
+fun parseTerm(p: Parser): Res {
+  var r = parsePower(p)
+  var v = r.v
+  p = r.p
   while true {
     p = skipWS(p)
     if p.pos < len(p.expr) {
       let op = substring(p.expr, p.pos, p.pos+1)
       if op == "*" {
         p.pos = p.pos + 1
-        var rhs
-        (rhs, p) = parsePower(p)
+        var r2 = parsePower(p)
+        var rhs = r2.v
+        p = r2.p
         v = v * rhs
         continue
       }
       if op == "/" {
         p.pos = p.pos + 1
-        var rhs
-        (rhs, p) = parsePower(p)
+        var r2 = parsePower(p)
+        var rhs = r2.v
+        p = r2.p
         v = v / rhs as int
         continue
       }
     }
     break
   }
-  return (v, p)
+  return Res{v: v, p: p}
 }
 
-fun parseExpr(p: Parser): (int, Parser) {
-  var v
-  (v, p) = parseTerm(p)
+fun parseExpr(p: Parser): Res {
+  var r = parseTerm(p)
+  var v = r.v
+  p = r.p
   while true {
     p = skipWS(p)
     if p.pos < len(p.expr) {
       let op = substring(p.expr, p.pos, p.pos+1)
       if op == "+" {
         p.pos = p.pos + 1
-        var rhs
-        (rhs, p) = parseTerm(p)
+        var r2 = parseTerm(p)
+        var rhs = r2.v
+        p = r2.p
         v = v + rhs
         continue
       }
       if op == "-" {
         p.pos = p.pos + 1
-        var rhs
-        (rhs, p) = parseTerm(p)
+        var r2 = parseTerm(p)
+        var rhs = r2.v
+        p = r2.p
         v = v - rhs
         continue
       }
     }
     break
   }
-  return (v, p)
+  return Res{v: v, p: p}
 }
 
 fun evalExpr(expr: string): int {
   var p = Parser{expr: expr, pos: 0}
-  let v, _ = parseExpr(p)
-  return v
+  let r = parseExpr(p)
+  return r.v
 }
 
 fun main() {
