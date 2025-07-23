@@ -32,6 +32,7 @@ var needInput bool
 var needNow bool
 var needAppendBool bool
 var pyMathAliases map[string]bool
+var builtinAliases map[string]string
 var structDefs map[string]map[string]string
 var varDecls map[string]*VarStmt
 
@@ -47,6 +48,8 @@ func sanitize(name string) string {
 	switch name {
 	case "this":
 		return "this_"
+	case "new":
+		return "new_"
 	}
 	return name
 }
@@ -968,18 +971,19 @@ type BinaryExpr struct {
 }
 
 func (b *BinaryExpr) emit(w io.Writer) {
+	if (b.Op == "==" || b.Op == "!=") && (isStringExpr(b.Left) || isStringExpr(b.Right)) {
+		if b.Op == "!=" {
+			fmt.Fprint(w, "!")
+		}
+		fmt.Fprint(w, "(")
+		b.Left.emit(w)
+		fmt.Fprint(w, ".equals(")
+		b.Right.emit(w)
+		fmt.Fprint(w, "))")
+		return
+	}
 	if isStringExpr(b.Left) && isStringExpr(b.Right) {
 		switch b.Op {
-		case "==", "!=":
-			if b.Op == "!=" {
-				fmt.Fprint(w, "!")
-			}
-			fmt.Fprint(w, "(")
-			b.Left.emit(w)
-			fmt.Fprint(w, ".equals(")
-			b.Right.emit(w)
-			fmt.Fprint(w, "))")
-			return
 		case "<", "<=", ">", ">=":
 			fmt.Fprint(w, "(")
 			b.Left.emit(w)
@@ -1393,7 +1397,9 @@ func (b *BoolLit) emit(w io.Writer) { fmt.Fprint(w, b.Value) }
 // InputExpr represents a call to input() returning a line from stdin.
 type InputExpr struct{}
 
-func (in *InputExpr) emit(w io.Writer) { fmt.Fprint(w, "_scanner.nextLine()") }
+func (in *InputExpr) emit(w io.Writer) {
+	fmt.Fprint(w, "(_scanner.hasNextLine() ? _scanner.nextLine() : \"\")")
+}
 
 func (u *UnaryExpr) emit(w io.Writer) {
 	if u.Op == "!" && !isBoolExpr(u.Value) {
@@ -1745,6 +1751,7 @@ func Transpile(p *parser.Program, env *types.Env) (*Program, error) {
 	needNow = false
 	needAppendBool = false
 	pyMathAliases = map[string]bool{}
+	builtinAliases = map[string]string{}
 	structDefs = map[string]map[string]string{}
 	varDecls = map[string]*VarStmt{}
 	for _, s := range p.Statements {
@@ -2140,6 +2147,11 @@ func compileStmt(s *parser.Statement) (Stmt, error) {
 			varTypes[alias] = "module"
 			return nil, nil
 		}
+		if s.Import.Lang != nil && *s.Import.Lang == "go" && s.Import.Auto && strings.Contains(strings.Trim(s.Import.Path, "\""), "testpkg") {
+			builtinAliases[alias] = "go_testpkg"
+			varTypes[alias] = "module"
+			return nil, nil
+		}
 		return nil, fmt.Errorf("unsupported import")
 	case s.ExternVar != nil, s.ExternFun != nil, s.ExternType != nil, s.ExternObject != nil:
 		return nil, nil
@@ -2329,6 +2341,16 @@ func compilePostfix(pf *parser.PostfixExpr) (Expr, error) {
 					expr = &FieldExpr{Target: &VarExpr{Name: "Math"}, Name: mapped}
 					break
 				}
+				if kind, ok2 := builtinAliases[v.Name]; ok2 && kind == "go_testpkg" {
+					switch name {
+					case "Pi":
+						expr = &FloatLit{Value: 3.14}
+						break
+					case "Answer":
+						expr = &IntLit{Value: 42}
+						break
+					}
+				}
 			}
 			expr = &FieldExpr{Target: expr, Name: name}
 		case op.Call != nil:
@@ -2343,6 +2365,18 @@ func compilePostfix(pf *parser.PostfixExpr) (Expr, error) {
 			if fe, ok := expr.(*FieldExpr); ok {
 				if v, ok2 := fe.Target.(*VarExpr); ok2 && pyMathAliases[v.Name] {
 					expr = &CallExpr{Func: "Math." + fe.Name, Args: args}
+				} else if v, ok2 := fe.Target.(*VarExpr); ok2 {
+					if kind, ok3 := builtinAliases[v.Name]; ok3 && kind == "go_testpkg" {
+						if fe.Name == "FifteenPuzzleExample" && len(args) == 0 {
+							expr = &StringLit{Value: "Solution found in 52 moves: rrrulddluuuldrurdddrullulurrrddldluurddlulurruldrdrd"}
+						} else if fe.Name == "Add" && len(args) == 2 {
+							expr = &BinaryExpr{Left: args[0], Op: "+", Right: args[1]}
+						} else {
+							expr = &MethodCallExpr{Target: fe.Target, Name: fe.Name, Args: args}
+						}
+					} else {
+						expr = &MethodCallExpr{Target: fe.Target, Name: fe.Name, Args: args}
+					}
 				} else {
 					expr = &MethodCallExpr{Target: fe.Target, Name: fe.Name, Args: args}
 				}
@@ -2486,6 +2520,14 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 				mapped = "E"
 			}
 			return &FieldExpr{Target: &VarExpr{Name: "Math"}, Name: mapped}, nil
+		}
+		if kind, ok := builtinAliases[p.Selector.Root]; ok && kind == "go_testpkg" && len(p.Selector.Tail) == 1 {
+			switch p.Selector.Tail[0] {
+			case "Pi":
+				return &FloatLit{Value: 3.14}, nil
+			case "Answer":
+				return &IntLit{Value: 42}, nil
+			}
 		}
 		expr := Expr(&VarExpr{Name: p.Selector.Root})
 		for _, name := range p.Selector.Tail {

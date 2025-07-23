@@ -1,4 +1,20 @@
-## Progress (2025-07-23 10:10 +0700)
+## Progress (2025-07-23 10:30 +0700)
+- java rosetta: enable outputs and basic string equality (e1782fd115)
+
+- java rosetta: enable outputs and basic string equality (e1782fd115)
+
+- java rosetta: enable outputs and basic string equality (e1782fd115)
+
+- java rosetta: enable outputs and basic string equality (e1782fd115)
+
+- java rosetta: enable outputs and basic string equality (e1782fd115)
+
+- java rosetta: enable outputs and basic string equality (e1782fd115)
+
+- java rosetta: enable outputs and basic string equality (e1782fd115)
+
+- java rosetta: enable outputs and basic string equality (e1782fd115)
+
 - Handle unknown indexed assignments (70742c3b62)
 
 - Handle unknown indexed assignments (70742c3b62)
