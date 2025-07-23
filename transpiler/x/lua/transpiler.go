@@ -658,11 +658,16 @@ func (wst *WhileStmt) emit(w io.Writer) {
 		wst.Cond.emit(w)
 	}
 	io.WriteString(w, " do\n")
+	if label != "" && isTrueCond(wst.Cond) {
+		io.WriteString(w, "::")
+		io.WriteString(w, label)
+		io.WriteString(w, "::\n")
+	}
 	for _, st := range wst.Body {
 		st.emit(w)
 		io.WriteString(w, "\n")
 	}
-	if label != "" {
+	if label != "" && !isTrueCond(wst.Cond) {
 		io.WriteString(w, "::")
 		io.WriteString(w, label)
 		io.WriteString(w, "::\n")
@@ -1005,6 +1010,16 @@ func isLuaIdent(s string) bool {
 		}
 	}
 	return true
+}
+
+func isTrueCond(e Expr) bool {
+	if e == nil {
+		return true
+	}
+	if b, ok := e.(*BoolLit); ok {
+		return b.Value
+	}
+	return false
 }
 
 func isIntExpr(e Expr) bool {
