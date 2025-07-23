@@ -32,6 +32,7 @@ var Errors = map[string]diagnostic.Template{
 	"T014": {Code: "T014", Message: "invalid primary expression", Help: "Expected a complete value or expression (e.g., literal, variable, function)."},
 	"T020": {Code: "T020", Message: "operator `%s` cannot be used on types %s and %s", Help: "Choose an operator that supports these operand types."},
 	"T021": {Code: "T021", Message: "unsupported operator: `%s`", Help: "Use a valid operator like +, -, ==, or <."},
+	"T043": {Code: "T043", Message: "operator `%s` cannot be used with `any`", Help: "Cast values to concrete types before using `%s`."},
 
 	// --- Indexing ---
 	"T015": {Code: "T015", Message: "index must be an integer", Help: "Use an `int` value for indexing (e.g., `list[0]`)."},
@@ -153,6 +154,10 @@ func errOperatorMismatch(pos lexer.Position, op string, left, right Type) error 
 
 func errUnsupportedOperator(pos lexer.Position, op string) error {
 	return Errors["T021"].New(pos, op)
+}
+
+func errAnyOperator(pos lexer.Position, op string) error {
+	return Errors["T043"].New(pos, op, op)
 }
 
 func errCannotIterate(pos lexer.Position, typ Type) error {
