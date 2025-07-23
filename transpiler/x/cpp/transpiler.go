@@ -868,6 +868,29 @@ func (s *SelectorExpr) emit(w io.Writer) {
 }
 
 func (i *IndexExpr) emit(w io.Writer) {
+	t := exprType(i.Target)
+	if t == "std::any" {
+		if currentProgram != nil {
+			currentProgram.addInclude("<any>")
+		}
+		idxType := exprType(i.Index)
+		if idxType == "int" {
+			io.WriteString(w, "std::any_cast<std::vector<int>>(")
+			i.Target.emit(w)
+			io.WriteString(w, ")[")
+			i.Index.emit(w)
+			io.WriteString(w, "]")
+			return
+		}
+		if idxType == "std::string" {
+			io.WriteString(w, "std::any_cast<std::map<std::string, std::any>>(")
+			i.Target.emit(w)
+			io.WriteString(w, ")[")
+			i.Index.emit(w)
+			io.WriteString(w, "]")
+			return
+		}
+	}
 	i.Target.emit(w)
 	io.WriteString(w, "[")
 	i.Index.emit(w)
@@ -1650,10 +1673,14 @@ func (s *LetStmt) emit(w io.Writer, indent int) {
 		io.WriteString(w, defaultValueForType(typ))
 	}
 	io.WriteString(w, ";\n")
-	if localTypes != nil && typ != "" {
-		localTypes[s.Name] = typ
-	} else if localTypes != nil {
-		localTypes[s.Name] = "auto"
+	if localTypes != nil {
+		if typ != "" {
+			localTypes[s.Name] = typ
+		} else if s.Value != nil {
+			localTypes[s.Name] = exprType(s.Value)
+		} else {
+			localTypes[s.Name] = "auto"
+		}
 	}
 }
 
@@ -1663,6 +1690,55 @@ func (a *AssignStmt) emit(w io.Writer, indent int) {
 	}
 	io.WriteString(w, safeName(a.Name))
 	io.WriteString(w, " = ")
+	valType := exprType(a.Value)
+	varType := "auto"
+	if localTypes != nil {
+		if t, ok := localTypes[a.Name]; ok {
+			varType = t
+		}
+	}
+	if varType == "auto" && globalTypes != nil {
+		if t, ok := globalTypes[a.Name]; ok {
+			varType = t
+		}
+	}
+	if valType == "std::any" {
+		if currentProgram != nil {
+			currentProgram.addInclude("<any>")
+		}
+		castType := varType
+		if castType == "auto" || castType == "" {
+			castType = "decltype(" + safeName(a.Name) + ")"
+		}
+		if castType != "std::any" {
+			io.WriteString(w, "std::any_cast<"+castType+">(")
+			a.Value.emit(w)
+			io.WriteString(w, ")")
+			io.WriteString(w, ";\n")
+			return
+		}
+	} else if idx, ok := a.Value.(*IndexExpr); ok {
+		t := exprType(idx.Target)
+		if strings.Contains(t, "std::any") {
+			if currentProgram != nil {
+				currentProgram.addInclude("<any>")
+			}
+			castType := varType
+			if castType == "auto" || castType == "" {
+				castType = "decltype(" + safeName(a.Name) + ")"
+			}
+			if castType == "" {
+				castType = "decltype(" + safeName(a.Name) + ")"
+			}
+			if castType != "std::any" {
+				io.WriteString(w, "std::any_cast<"+castType+">(")
+				a.Value.emit(w)
+				io.WriteString(w, ")")
+				io.WriteString(w, ";\n")
+				return
+			}
+		}
+	}
 	a.Value.emit(w)
 	io.WriteString(w, ";\n")
 }
@@ -2331,6 +2407,15 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	}
 	if !hasMain {
 		cp.Functions = append(cp.Functions, &Func{Name: "main", ReturnType: "int", Body: body})
+	}
+	if env != nil && cp.GlobalTypes != nil {
+		for n, t := range cp.GlobalTypes {
+			if t == "" || t == "auto" {
+				if vt, err := env.GetVar(n); err == nil {
+					cp.GlobalTypes[n] = cppTypeFrom(vt)
+				}
+			}
+		}
 	}
 	return cp, nil
 }
