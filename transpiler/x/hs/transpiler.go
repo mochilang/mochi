@@ -501,6 +501,13 @@ func (l *LetStmt) emit(w io.Writer) {
 		io.WriteString(w, ")")
 		return
 	}
+	if mutated[l.Name] && indent == "" {
+		needIORef = true
+		io.WriteString(w, name+" = unsafePerformIO (newIORef (")
+		l.Expr.emit(w)
+		io.WriteString(w, "))")
+		return
+	}
 	if indent != "" {
 		io.WriteString(w, "let ")
 	}
@@ -1710,7 +1717,6 @@ func Emit(p *Program) []byte {
 		buf.WriteByte('\n')
 		buf.WriteByte('\n')
 	}
-	var refDecls []*LetStmt
 	hasMain := false
 	for _, f := range p.Funcs {
 		if f.Name == "main" {
@@ -1729,13 +1735,12 @@ func Emit(p *Program) []byte {
 	for _, s := range p.Stmts {
 		if l, ok := s.(*LetStmt); ok {
 			if mutated[l.Name] {
-				refDecls = append(refDecls, l)
 				needIORef = true
-				continue
 			}
 			l.emit(&buf)
 			buf.WriteByte('\n')
 			buf.WriteByte('\n')
+			continue
 		}
 	}
 	if !hasMain {
@@ -1746,17 +1751,8 @@ func Emit(p *Program) []byte {
 	if !hasMain {
 		indent += "    "
 	}
-	for _, l := range refDecls {
-		writeIndent(&buf)
-		io.WriteString(&buf, safeName(l.Name)+" <- newIORef (")
-		l.Expr.emit(&buf)
-		io.WriteString(&buf, ")\n")
-	}
 	for _, s := range p.Stmts {
-		if l, ok := s.(*LetStmt); ok {
-			if mutated[l.Name] {
-				continue
-			}
+		if _, ok := s.(*LetStmt); ok {
 			continue
 		}
 		s.emit(&buf)
