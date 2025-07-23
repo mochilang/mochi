@@ -34,6 +34,7 @@ var continueStack []string
 var useNow bool
 var builtinAliases map[string]string
 var localVarTypes map[string]string
+var returnTypeStack []string
 
 func BuiltinAliases() map[string]string { return builtinAliases }
 
@@ -785,21 +786,32 @@ type IndexExpr struct {
 
 func (idx *IndexExpr) emit(w io.Writer) {
 	if idx.Container == "Any" {
-		idx.Value.emit(w)
-		if idx.Type != "" {
-			fmt.Fprintf(w, ".asInstanceOf[ArrayBuffer[%s]](", idx.Type)
+		if prev, ok := idx.Value.(*IndexExpr); ok && strings.HasPrefix(prev.Container, "Map[") {
+			idx.Value.emit(w)
+			if idx.Type != "" {
+				fmt.Fprintf(w, ".asInstanceOf[Map[String,%s]](", idx.Type)
+			} else {
+				fmt.Fprint(w, ".asInstanceOf[Map[String,Any]](")
+			}
+			idx.Index.emit(w)
+			fmt.Fprint(w, ")")
 		} else {
-			fmt.Fprint(w, ".asInstanceOf[ArrayBuffer[Any]](")
+			idx.Value.emit(w)
+			if idx.Type != "" {
+				fmt.Fprintf(w, ".asInstanceOf[ArrayBuffer[%s]](", idx.Type)
+			} else {
+				fmt.Fprint(w, ".asInstanceOf[ArrayBuffer[Any]](")
+			}
+			idx.Index.emit(w)
+			fmt.Fprint(w, ")")
 		}
-		idx.Index.emit(w)
-		fmt.Fprint(w, ")")
 	} else {
 		idx.Value.emit(w)
 		fmt.Fprint(w, "(")
 		idx.Index.emit(w)
 		fmt.Fprint(w, ")")
 	}
-	if idx.Type != "" && idx.Type != "Any" && !strings.HasPrefix(idx.Type, "ArrayBuffer[") {
+	if idx.Type != "" && idx.Type != "Any" && !strings.HasPrefix(idx.Type, "ArrayBuffer[") && !strings.HasPrefix(idx.Type, "Map[") {
 		fmt.Fprintf(w, ".asInstanceOf[%s]", idx.Type)
 	}
 }
@@ -2254,7 +2266,7 @@ func convertCall(c *parser.CallExpr, env *types.Env) (Expr, error) {
 				for i, p := range fn.Params {
 					target := toScalaType(p.Type)
 					if strings.HasPrefix(target, "Map[") {
-						if ie, ok := args[i].(*IndexExpr); ok && ie.Type == "" {
+						if ie, ok := args[i].(*IndexExpr); ok && (ie.Type == "" || ie.Type == "Any") {
 							args[i] = &FieldExpr{Receiver: ie, Name: "asInstanceOf[" + target + "]"}
 						}
 					}
@@ -2915,6 +2927,8 @@ func convertFunStmt(fs *parser.FunStmt, env *types.Env) (Stmt, error) {
 		}
 	}
 	fn.Return = toScalaType(fs.Return)
+	returnTypeStack = append(returnTypeStack, fn.Return)
+	defer func() { returnTypeStack = returnTypeStack[:len(returnTypeStack)-1] }()
 	for _, st := range fs.Body {
 		s, err := convertStmt(st, child)
 		if err != nil {
@@ -2938,6 +2952,15 @@ func convertReturnStmt(rs *parser.ReturnStmt, env *types.Env) (Stmt, error) {
 		expr, err = convertExpr(rs.Value, env)
 		if err != nil {
 			return nil, err
+		}
+	}
+	if len(returnTypeStack) > 0 && expr != nil {
+		rt := returnTypeStack[len(returnTypeStack)-1]
+		if rt != "" && rt != "Unit" {
+			et := inferTypeWithEnv(expr, env)
+			if et == "" || et != rt {
+				expr = &CastExpr{Value: expr, Type: rt}
+			}
 		}
 	}
 	return &ReturnStmt{Value: expr}, nil
