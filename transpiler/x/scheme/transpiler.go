@@ -22,11 +22,24 @@ var gensymCounter int
 var needBase bool
 var needHash bool
 var usesInput bool
+var returnStack []Symbol
 
 func pushLoop(breakSym Symbol, cont Node) {
 	breakStack = append(breakStack, breakSym)
 	continueStack = append(continueStack, cont)
 }
+
+func pushReturn(retSym Symbol) {
+	returnStack = append(returnStack, retSym)
+}
+
+func popReturn() {
+	if len(returnStack) > 0 {
+		returnStack = returnStack[:len(returnStack)-1]
+	}
+}
+
+func currentReturn() Symbol { return returnStack[len(returnStack)-1] }
 
 func popLoop() {
 	if len(breakStack) > 0 {
@@ -288,6 +301,9 @@ func convertStmts(stmts []*parser.Statement) ([]Node, error) {
 			} else {
 				forms = append(forms, f)
 			}
+		}
+		if st.Return != nil {
+			break
 		}
 	}
 	return forms, nil
@@ -591,7 +607,10 @@ func convertStmt(st *parser.Statement) (Node, error) {
 			}
 			currentEnv.SetVar(p.Name, pt, true)
 		}
+		retSym := gensym("ret")
+		pushReturn(retSym)
 		bodyForms, err := convertStmts(st.Fun.Body)
+		popReturn()
 		currentEnv = prevEnv
 		if err != nil {
 			return nil, err
@@ -602,16 +621,28 @@ func convertStmt(st *parser.Statement) (Node, error) {
 		} else {
 			body = &List{Elems: append([]Node{Symbol("begin")}, bodyForms...)}
 		}
+		wrapped := &List{Elems: []Node{
+			Symbol("call/cc"),
+			&List{Elems: []Node{
+				Symbol("lambda"), &List{Elems: []Node{retSym}},
+				body,
+			}},
+		}}
 		return &List{Elems: []Node{
 			Symbol("define"),
 			&List{Elems: append([]Node{Symbol(st.Fun.Name)}, params...)},
-			body,
+			wrapped,
 		}}, nil
 	case st.Return != nil:
-		if st.Return.Value == nil {
-			return voidSym(), nil
+		var val Node = voidSym()
+		if st.Return.Value != nil {
+			var err error
+			val, err = convertParserExpr(st.Return.Value)
+			if err != nil {
+				return nil, err
+			}
 		}
-		return convertParserExpr(st.Return.Value)
+		return &List{Elems: []Node{currentReturn(), val}}, nil
 	case st.If != nil:
 		return convertIfStmt(st.If)
 	case st.While != nil:
