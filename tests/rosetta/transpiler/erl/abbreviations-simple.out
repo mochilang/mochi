@@ -1,0 +1,10 @@
+/workspace/mochi/tests/rosetta/transpiler/erl/abbreviations-simple.erl:124:19: Warning: variable 'Neg3' exported from 'case' (line 101, column 9)
+%  124| {Digits, I10, N2, Neg3, Str} = Fun4(Digits, I9, N, Neg3, Str),
+%     |                   ^
+
+/workspace/mochi/tests/rosetta/transpiler/erl/abbreviations-simple.erl:225:28: Warning: the result of calling lists:append/2 is ignored (suppress the warning by assigning the expression to the _ variable)
+%  225|         true -> Results2 = lists:append(Results, [C]),
+%     |                            ^
+
+user words: riG     rePEAT  copies  put     mo      rest    types   fup.    6       poweRin
+full words: *error* *error* *error* *error* *error* *error* *error* *error* *error* *error*
