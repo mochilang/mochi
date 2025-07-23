@@ -21,12 +21,6 @@ int _now() {
   return DateTime.now().microsecondsSinceEpoch;
 }
 
-class S1 {
-  final int idx;
-  final bool ok;
-  const S1({required this.idx, required this.ok});
-}
-
 List<int> board = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 0];
 final List<int> solved = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 0];
 int empty = 15;
@@ -47,29 +41,29 @@ bool isSolved() {
   return true;
 }
 
-S1 isValidMove(m) {
+Map<String, dynamic> isValidMove(m) {
   if (m == 0) {
-    return S1(idx: empty - 4, ok: empty ~/ 4 > 0);
+    return {"idx": empty - 4, "ok": empty ~/ 4 > 0};
   }
   if (m == 1) {
-    return S1(idx: empty + 4, ok: empty ~/ 4 < 3);
+    return {"idx": empty + 4, "ok": empty ~/ 4 < 3};
   }
   if (m == 2) {
-    return S1(idx: empty + 1, ok: empty % 4 < 3);
+    return {"idx": empty + 1, "ok": empty % 4 < 3};
   }
   if (m == 3) {
-    return S1(idx: empty - 1, ok: empty % 4 > 0);
+    return {"idx": empty - 1, "ok": empty % 4 > 0};
   }
-  return S1(idx: 0, ok: false);
+  return {"idx": 0, "ok": false};
 }
 
 bool doMove(m) {
-  final S1 r = isValidMove(m);
-  if (!r.ok) {
+  final Map<String, dynamic> r = isValidMove(m);
+  if (!r["ok"]!) {
     return false;
   }
   final int i = empty;
-  final j = r.idx as int;
+  final j = int.parse(r["idx"]!);
   final int tmp = board[i];
   board[i] = board[j];
   board[j] = tmp;
