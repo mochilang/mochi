@@ -1,0 +1,6 @@
+exit status 1
+# command-line-arguments
+../../../tests/rosetta/transpiler/Go/angles-geometric-normalization-and-conversion.go:11:10: invalid operation: operator % not defined on d (variable of type float64)
+../../../tests/rosetta/transpiler/Go/angles-geometric-normalization-and-conversion.go:15:10: invalid operation: operator % not defined on g (variable of type float64)
+../../../tests/rosetta/transpiler/Go/angles-geometric-normalization-and-conversion.go:19:10: invalid operation: operator % not defined on m (variable of type float64)
+../../../tests/rosetta/transpiler/Go/angles-geometric-normalization-and-conversion.go:23:10: invalid operation: operator % not defined on r (variable of type float64)
