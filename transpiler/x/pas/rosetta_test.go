@@ -5,10 +5,12 @@ package pas_test
 import (
 	"bufio"
 	"bytes"
+	"flag"
 	"fmt"
 	"os"
 	"os/exec"
 	"path/filepath"
+	"sort"
 	"strconv"
 	"strings"
 	"testing"
@@ -18,6 +20,10 @@ import (
 	pas "mochi/transpiler/x/pas"
 	"mochi/types"
 )
+
+var update = flag.Bool("update-rosetta-pas", false, "update golden files")
+
+func updateEnabled() bool { return *update }
 
 func repoRootRosetta(t *testing.T) string {
 	t.Helper()
@@ -87,9 +93,14 @@ func runRosettaCase(t *testing.T, name string) {
 		_ = os.WriteFile(filepath.Join(outDir, name+".error"), out, 0o644)
 		t.Fatalf("run: %v", err)
 	}
+	_ = os.Remove(filepath.Join(outDir, name+".error"))
 	got := bytes.TrimSpace(out)
-	wantPath := filepath.Join(outDir, name+".out")
-	want, err := os.ReadFile(wantPath)
+	outPath := filepath.Join(outDir, name+".out")
+	if updateEnabled() {
+		_ = os.WriteFile(outPath, got, 0o644)
+		return
+	}
+	want, err := os.ReadFile(outPath)
 	if err != nil {
 		t.Fatalf("read want: %v", err)
 	}
@@ -97,7 +108,6 @@ func runRosettaCase(t *testing.T, name string) {
 	if !bytes.Equal(got, want) {
 		t.Errorf("%s output mismatch: got %s want %s", name, got, want)
 	}
-	_ = os.Remove(filepath.Join(outDir, name+".error"))
 }
 
 func listRosettaPrograms(t *testing.T) []string {
@@ -127,6 +137,7 @@ func TestPascalTranspiler_Rosetta(t *testing.T) {
 	if _, err := exec.LookPath("fpc"); err != nil {
 		t.Skip("fpc not installed")
 	}
+	t.Cleanup(updateRosettaChecklist)
 	programs := listRosettaPrograms(t)
 	if len(programs) == 0 {
 		t.Fatalf("no rosetta programs found")
@@ -151,6 +162,8 @@ func updateRosettaChecklist() {
 	srcDir := filepath.Join(root, "tests", "rosetta", "x", "Mochi")
 	outDir := filepath.Join(root, "tests", "rosetta", "transpiler", "Pascal")
 	readmePath := filepath.Join(root, "transpiler", "x", "pas", "ROSETTA.md")
+
+	_ = updateIndex(srcDir)
 
 	indexPath := filepath.Join(srcDir, "index.txt")
 	f, err := os.Open(indexPath)
@@ -195,4 +208,18 @@ func updateRosettaChecklist() {
 	buf.WriteString(strings.Join(lines, "\n"))
 	buf.WriteString("\n")
 	_ = os.WriteFile(readmePath, buf.Bytes(), 0o644)
+}
+
+func updateIndex(dir string) error {
+	pattern := filepath.Join(dir, "*.mochi")
+	files, err := filepath.Glob(pattern)
+	if err != nil {
+		return err
+	}
+	sort.Strings(files)
+	var buf bytes.Buffer
+	for i, f := range files {
+		fmt.Fprintf(&buf, "%d %s\n", i+1, filepath.Base(f))
+	}
+	return os.WriteFile(filepath.Join(dir, "index.txt"), buf.Bytes(), 0o644)
 }
