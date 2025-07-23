@@ -1542,6 +1542,11 @@ func isStringExpr(e Expr) bool {
 		if t, ok := varTypes[ex.Name]; ok && (t == "string" || t == "String") {
 			return true
 		}
+		if vs, ok := varDecls[ex.Name]; ok {
+			if vs.Type == "string" || vs.Type == "String" {
+				return true
+			}
+		}
 	case *CallExpr:
 		if ex.Func == "String.valueOf" {
 			return true
@@ -1846,6 +1851,7 @@ func compileStmt(s *parser.Statement) (Stmt, error) {
 			}
 			if t != "" {
 				varTypes[s.Let.Name] = t
+				varDecls[s.Let.Name] = &VarStmt{Name: s.Let.Name, Type: t, Expr: e}
 			}
 			if l, ok := e.(*ListLit); ok && l.ElemType == "" && strings.HasSuffix(t, "[]") {
 				l.ElemType = strings.TrimSuffix(t, "[]")
@@ -1860,6 +1866,7 @@ func compileStmt(s *parser.Statement) (Stmt, error) {
 		}
 		if t != "" {
 			varTypes[s.Let.Name] = t
+			varDecls[s.Let.Name] = &VarStmt{Name: s.Let.Name, Type: t}
 		}
 		return &LetStmt{Name: s.Let.Name, Type: t}, nil
 	case s.Var != nil:
