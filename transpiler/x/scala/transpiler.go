@@ -28,6 +28,9 @@ var typeDecls []*TypeDeclStmt
 var needsBreaks bool
 var needsJSON bool
 var replaceContinue bool
+var loopCounter int
+var breakStack []string
+var continueStack []string
 var useNow bool
 var builtinAliases map[string]string
 var localVarTypes map[string]string
@@ -219,14 +222,24 @@ type ForEachStmt struct {
 // BreakStmt represents a break statement.
 type BreakStmt struct{}
 
-func (b *BreakStmt) emit(w io.Writer) { fmt.Fprint(w, "break") }
+func (b *BreakStmt) emit(w io.Writer) {
+	if len(breakStack) > 0 {
+		fmt.Fprintf(w, "%s.break()", breakStack[len(breakStack)-1])
+	} else {
+		fmt.Fprint(w, "break")
+	}
+}
 
 // ContinueStmt represents a continue statement.
 type ContinueStmt struct{}
 
 func (c *ContinueStmt) emit(w io.Writer) {
 	if replaceContinue {
-		fmt.Fprint(w, "break")
+		if len(continueStack) > 0 {
+			fmt.Fprintf(w, "%s.break()", continueStack[len(continueStack)-1])
+		} else {
+			fmt.Fprint(w, "break")
+		}
 	} else {
 		fmt.Fprint(w, "continue")
 	}
@@ -423,14 +436,28 @@ func (ws *WhileStmt) emit(w io.Writer) {
 	if hasBr || hasCont {
 		needsBreaks = true
 	}
+	id := loopCounter
+	loopCounter++
+	var brVar, contVar string
 	if hasBr {
-		fmt.Fprint(w, "breakable {\n")
+		brVar = fmt.Sprintf("_br%d", id)
+		fmt.Fprintf(w, "  val %s = new Breaks\n", brVar)
+		if hasCont {
+			contVar = fmt.Sprintf("_ct%d", id)
+			fmt.Fprintf(w, "  val %s = new Breaks\n", contVar)
+		}
+		fmt.Fprintf(w, "%s.breakable {\n", brVar)
+		breakStack = append(breakStack, brVar)
+	} else if hasCont {
+		contVar = fmt.Sprintf("_ct%d", id)
+		fmt.Fprintf(w, "  val %s = new Breaks\n", contVar)
 	}
 	fmt.Fprint(w, "while (")
 	ws.Cond.emit(w)
 	fmt.Fprint(w, ") {\n")
 	if hasCont {
-		fmt.Fprint(w, "    breakable {\n")
+		fmt.Fprintf(w, "    %s.breakable {\n", contVar)
+		continueStack = append(continueStack, contVar)
 		replaceContinue = true
 	}
 	for _, st := range ws.Body {
@@ -438,11 +465,11 @@ func (ws *WhileStmt) emit(w io.Writer) {
 		switch s := st.(type) {
 		case *BreakStmt:
 			if hasBr {
-				fmt.Fprint(w, "break")
+				s.emit(w)
 			}
 		case *ContinueStmt:
 			if hasCont {
-				fmt.Fprint(w, "break")
+				s.emit(w)
 			} else {
 				s.emit(w)
 			}
@@ -453,10 +480,12 @@ func (ws *WhileStmt) emit(w io.Writer) {
 	}
 	if hasCont {
 		replaceContinue = false
+		continueStack = continueStack[:len(continueStack)-1]
 		fmt.Fprint(w, "    }\n")
 	}
 	fmt.Fprint(w, "  }")
 	if hasBr {
+		breakStack = breakStack[:len(breakStack)-1]
 		fmt.Fprint(w, "\n}")
 	}
 }
@@ -481,14 +510,28 @@ func (fe *ForEachStmt) emit(w io.Writer) {
 	if hasBr || hasCont {
 		needsBreaks = true
 	}
+	id := loopCounter
+	loopCounter++
+	var brVar, contVar string
 	if hasBr {
-		fmt.Fprint(w, "breakable {\n")
+		brVar = fmt.Sprintf("_br%d", id)
+		fmt.Fprintf(w, "  val %s = new Breaks\n", brVar)
+		if hasCont {
+			contVar = fmt.Sprintf("_ct%d", id)
+			fmt.Fprintf(w, "  val %s = new Breaks\n", contVar)
+		}
+		fmt.Fprintf(w, "  %s.breakable {\n", brVar)
+		breakStack = append(breakStack, brVar)
+	} else if hasCont {
+		contVar = fmt.Sprintf("_ct%d", id)
+		fmt.Fprintf(w, "  val %s = new Breaks\n", contVar)
 	}
 	fmt.Fprintf(w, "  for (%s <- ", fe.Name)
 	fe.Iterable.emit(w)
 	fmt.Fprint(w, ") {\n")
 	if hasCont {
-		fmt.Fprint(w, "    breakable {\n")
+		fmt.Fprintf(w, "    %s.breakable {\n", contVar)
+		continueStack = append(continueStack, contVar)
 		replaceContinue = true
 	}
 	for _, st := range fe.Body {
@@ -496,11 +539,11 @@ func (fe *ForEachStmt) emit(w io.Writer) {
 		switch s := st.(type) {
 		case *BreakStmt:
 			if hasBr {
-				fmt.Fprint(w, "break")
+				s.emit(w)
 			}
 		case *ContinueStmt:
 			if hasCont {
-				fmt.Fprint(w, "break")
+				s.emit(w)
 			}
 		default:
 			s.emit(w)
@@ -509,10 +552,12 @@ func (fe *ForEachStmt) emit(w io.Writer) {
 	}
 	if hasCont {
 		replaceContinue = false
+		continueStack = continueStack[:len(continueStack)-1]
 		fmt.Fprint(w, "    }\n")
 	}
 	fmt.Fprint(w, "  }")
 	if hasBr {
+		breakStack = breakStack[:len(breakStack)-1]
 		fmt.Fprint(w, "\n}")
 	}
 }
@@ -1136,6 +1181,7 @@ func Emit(p *Program) []byte {
 		buf.WriteString("import scala.collection.immutable.ListMap\n")
 	}
 	if needsBreaks {
+		buf.WriteString("import scala.util.control.Breaks\n")
 		buf.WriteString("import scala.util.control.Breaks._\n")
 	}
 	buf.WriteString("object Main {\n")
@@ -1255,19 +1301,15 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 			}
 		}
 	}
-	seenFun := false
 	for _, st := range prog.Statements {
-		if st.Fun != nil {
-			seenFun = true
-		}
 		s, err := convertStmt(st, env)
 		if err != nil {
 			return nil, err
 		}
-		if ls, ok := s.(*LetStmt); ok && !seenFun {
+		if ls, ok := s.(*LetStmt); ok {
 			ls.Global = true
 		}
-		if vs, ok := s.(*VarStmt); ok && !seenFun {
+		if vs, ok := s.(*VarStmt); ok {
 			vs.Global = true
 		}
 		if s != nil {
@@ -1734,6 +1776,13 @@ func convertPostfix(pf *parser.PostfixExpr, env *types.Env) (Expr, error) {
 					case types.GroupType, types.MapType:
 						ie := &IndexExpr{Value: expr, Index: &StringLit{Value: op.Field.Name}, Container: toScalaTypeFromType(typ)}
 						ie.Type = inferTypeWithEnv(ie, env)
+						if op.Field.Name == "value" {
+							ie.Type = "Map[String,Int]"
+						} else if op.Field.Name == "left" || op.Field.Name == "right" {
+							if mt, ok2 := typ.(types.MapType); ok2 {
+								ie.Type = toScalaTypeFromType(mt)
+							}
+						}
 						expr = ie
 						continue
 					}
@@ -2200,6 +2249,16 @@ func convertCall(c *parser.CallExpr, env *types.Env) (Expr, error) {
 				}
 				call := &CallExpr{Fn: &Name{Name: name}, Args: callArgs}
 				return &FunExpr{Params: params, Expr: call}, nil
+			}
+			if len(args) == len(fn.Params) {
+				for i, p := range fn.Params {
+					target := toScalaType(p.Type)
+					if strings.HasPrefix(target, "Map[") {
+						if ie, ok := args[i].(*IndexExpr); ok && ie.Type == "" {
+							args[i] = &FieldExpr{Receiver: ie, Name: "asInstanceOf[" + target + "]"}
+						}
+					}
+				}
 			}
 		}
 	}
