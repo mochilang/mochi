@@ -505,6 +505,9 @@ type FloatLit struct{ Value float64 }
 
 type BoolLit struct{ Value bool }
 
+// NullLit represents the `null` literal.
+type NullLit struct{}
+
 type StringLit struct{ Value string }
 
 // Name represents a bare identifier or constant without the '$' prefix.
@@ -1334,6 +1337,8 @@ func (b *BoolLit) emit(w io.Writer) {
 
 func (n *Name) emit(w io.Writer) { io.WriteString(w, n.Value) }
 
+func (n *NullLit) emit(w io.Writer) { io.WriteString(w, "null") }
+
 // Emit writes formatted PHP source to w.
 func Emit(w io.Writer, p *Program) error {
 	transpileEnv = p.Env
@@ -1573,6 +1578,14 @@ func convertPostfix(pf *parser.PostfixExpr) (Expr, error) {
 				return nil, fmt.Errorf("keys expects no args")
 			}
 			return &CallExpr{Func: "array_keys", Args: []Expr{e}}, nil
+		case "get":
+			if len(args) == 1 {
+				return &CondExpr{Cond: &CallExpr{Func: "array_key_exists", Args: []Expr{args[0], e}}, Then: &IndexExpr{X: e, Index: args[0]}, Else: &NullLit{}}, nil
+			}
+			if len(args) == 2 {
+				return &CondExpr{Cond: &CallExpr{Func: "array_key_exists", Args: []Expr{args[0], e}}, Then: &IndexExpr{X: e, Index: args[0]}, Else: args[1]}, nil
+			}
+			return nil, fmt.Errorf("get expects 1 or 2 args")
 		default:
 			if pf.Target != nil && pf.Target.Selector != nil {
 				root := pf.Target.Selector.Root
@@ -1990,6 +2003,8 @@ func convertLiteral(l *parser.Literal) (Expr, error) {
 		return &FloatLit{Value: *l.Float}, nil
 	case l.Bool != nil:
 		return &BoolLit{Value: bool(*l.Bool)}, nil
+	case l.Null:
+		return &NullLit{}, nil
 	}
 	return nil, fmt.Errorf("unsupported literal")
 }

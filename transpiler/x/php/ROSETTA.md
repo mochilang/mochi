@@ -2,13 +2,13 @@
 
 Generated PHP code from Mochi Rosetta tasks lives in `tests/rosetta/transpiler/php`.
 
-Last updated: 2025-07-23 13:36 +0700
+Last updated: 2025-07-23 13:52 +0700
 
-## Checklist (36/284)
+## Checklist (55/284)
 - [x] 1 100-doors-2
 - [x] 2 100-doors-3
 - [x] 3 100-doors
-- [x] 4 100-prisoners
+- [ ] 4 100-prisoners
 - [x] 5 15-puzzle-game
 - [x] 6 15-puzzle-solver
 - [x] 7 2048
@@ -42,26 +42,26 @@ Last updated: 2025-07-23 13:36 +0700
 - [x] 35 additive-primes
 - [x] 36 address-of-a-variable
 - [x] 37 adfgvx-cipher
-- [ ] 38 aks-test-for-primes
-- [ ] 39 algebraic-data-types
-- [ ] 40 align-columns
-- [ ] 41 aliquot-sequence-classifications
-- [ ] 42 almkvist-giullera-formula-for-pi
-- [ ] 43 almost-prime
-- [ ] 44 amb
-- [ ] 45 amicable-pairs
-- [ ] 46 anagrams-deranged-anagrams
-- [ ] 47 anagrams
-- [ ] 48 angle-difference-between-two-bearings-1
-- [ ] 49 angle-difference-between-two-bearings-2
-- [ ] 50 angles-geometric-normalization-and-conversion
-- [ ] 51 animate-a-pendulum
-- [ ] 52 animation
-- [ ] 53 anonymous-recursion-1
-- [ ] 54 anonymous-recursion-2
-- [ ] 55 anonymous-recursion
-- [ ] 56 anti-primes
-- [ ] 57 append-a-record-to-the-end-of-a-text-file
+- [x] 38 aks-test-for-primes
+- [x] 39 algebraic-data-types
+- [x] 40 align-columns
+- [x] 41 aliquot-sequence-classifications
+- [x] 42 almkvist-giullera-formula-for-pi
+- [x] 43 almost-prime
+- [x] 44 amb
+- [x] 45 amicable-pairs
+- [x] 46 anagrams-deranged-anagrams
+- [x] 47 anagrams
+- [x] 48 angle-difference-between-two-bearings-1
+- [x] 49 angle-difference-between-two-bearings-2
+- [x] 50 angles-geometric-normalization-and-conversion
+- [x] 51 animate-a-pendulum
+- [x] 52 animation
+- [x] 53 anonymous-recursion-1
+- [x] 54 anonymous-recursion-2
+- [x] 55 anonymous-recursion
+- [x] 56 anti-primes
+- [x] 57 append-a-record-to-the-end-of-a-text-file
 - [ ] 58 apply-a-callback-to-an-array-1
 - [ ] 59 apply-a-callback-to-an-array-2
 - [ ] 60 apply-a-digital-filter-direct-form-ii-transposed-
