@@ -2,9 +2,9 @@
 
 Generated Lua code for programs in `tests/rosetta/x/Mochi`. Each program has a `.lua` file produced by the transpiler and a `.out` file with its runtime output. Compilation or runtime errors are captured in `.error` files.
 
-Transpiled programs: 18/284
+Transpiled programs: 26/284
 
-Last updated: 2025-07-23 11:51 GMT+7
+Last updated: 2025-07-23 12:32 GMT+7
 
 Checklist:
 
@@ -26,14 +26,14 @@ Checklist:
 16. [x] a+b
 17. [x] abbreviations-automatic
 18. [x] abbreviations-easy
-19. [ ] abbreviations-simple
-20. [ ] abc-problem
-21. [ ] abelian-sandpile-model-identity
-22. [ ] abelian-sandpile-model
-23. [ ] abstract-type
-24. [ ] abundant-deficient-and-perfect-number-classifications
-25. [ ] abundant-odd-numbers
-26. [ ] accumulator-factory
+19. [x] abbreviations-simple
+20. [x] abc-problem
+21. [x] abelian-sandpile-model-identity
+22. [x] abelian-sandpile-model
+23. [x] abstract-type
+24. [x] abundant-deficient-and-perfect-number-classifications
+25. [x] abundant-odd-numbers
+26. [x] accumulator-factory
 27. [ ] achilles-numbers
 28. [ ] ackermann-function-2
 29. [ ] ackermann-function-3
