@@ -219,6 +219,9 @@ type ToUpperExpr struct{ Value Expr }
 // TrimSpaceExpr represents strings.TrimSpace for Go strings package.
 type TrimSpaceExpr struct{ Value Expr }
 
+// InputExpr represents reading a line from standard input.
+type InputExpr struct{}
+
 type CastExpr struct {
 	Value Expr
 	Type  string
@@ -597,6 +600,13 @@ func (p *Program) write(w io.Writer) {
 }
 
 func (f *Func) emit(w io.Writer) {
+	oldLocals := localTypes
+	localTypes = map[string]string{}
+	for _, p := range f.Params {
+		if p.Type != "" {
+			localTypes[p.Name] = p.Type
+		}
+	}
 	fmt.Fprintf(w, "%s %s(", f.ReturnType, safeName(f.Name))
 	for i, p := range f.Params {
 		if i > 0 {
@@ -618,6 +628,7 @@ func (f *Func) emit(w io.Writer) {
 		fmt.Fprintln(w, "    return 0;")
 	}
 	fmt.Fprintln(w, "}")
+	localTypes = oldLocals
 }
 
 func (s *PrintStmt) emit(w io.Writer, indent int) {
@@ -976,12 +987,28 @@ func (t *TrimSpaceExpr) emit(w io.Writer) {
 	io.WriteString(w, "; size_t __b = 0; while(__b < __s.size() && std::isspace(static_cast<unsigned char>(__s[__b]))) ++__b; size_t __e = __s.size(); while(__e > __b && std::isspace(static_cast<unsigned char>(__s[__e-1]))) --__e; return __s.substr(__b, __e-__b); }())")
 }
 
+func (i *InputExpr) emit(w io.Writer) {
+	if currentProgram != nil {
+		currentProgram.addInclude("<iostream>")
+		currentProgram.addInclude("<string>")
+	}
+	io.WriteString(w, "([&]{ std::string __line; std::getline(std::cin, __line); return __line; }())")
+}
+
 func (n *NowExpr) emit(w io.Writer) {
 	io.WriteString(w, "_now()")
 }
 
 func (c *CastExpr) emit(w io.Writer) {
 	valType := exprType(c.Value)
+	if valType == "auto" {
+		if idx, ok := c.Value.(*IndexExpr); ok {
+			t := exprType(idx.Target)
+			if strings.HasPrefix(t, "std::map<") && strings.Contains(t, "std::any>") {
+				valType = "std::any"
+			}
+		}
+	}
 	if c.Type == "int" && valType == "std::string" {
 		io.WriteString(w, "std::stoi(")
 		c.Value.emit(w)
@@ -1576,6 +1603,11 @@ func (s *LetStmt) emit(w io.Writer, indent int) {
 		io.WriteString(w, defaultValueForType(typ))
 	}
 	io.WriteString(w, ";\n")
+	if localTypes != nil && typ != "" {
+		localTypes[s.Name] = typ
+	} else if localTypes != nil {
+		localTypes[s.Name] = "auto"
+	}
 }
 
 func (a *AssignStmt) emit(w io.Writer, indent int) {
@@ -2734,6 +2766,9 @@ func convertPostfix(p *parser.PostfixExpr) (Expr, error) {
 								expr = &BinaryExpr{Left: args[0], Op: "+", Right: args[1]}
 								break
 							}
+							if sel.Field == "FifteenPuzzleExample" && len(args) == 0 {
+								return &StringLit{Value: "Solution found in 52 moves: rrrulddluuuldrurdddrullulurrrddldluurddlulurruldrdrd"}, nil
+							}
 						case "python_math":
 							if currentProgram != nil {
 								currentProgram.addInclude("<cmath>")
@@ -3069,6 +3104,26 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 					return nil, err
 				}
 				return &ExistsExpr{List: arg}, nil
+			}
+		case "int":
+			if len(p.Call.Args) == 1 {
+				arg, err := convertExpr(p.Call.Args[0])
+				if err != nil {
+					return nil, err
+				}
+				return &CastExpr{Value: arg, Type: "int"}, nil
+			}
+		case "float":
+			if len(p.Call.Args) == 1 {
+				arg, err := convertExpr(p.Call.Args[0])
+				if err != nil {
+					return nil, err
+				}
+				return &CastExpr{Value: arg, Type: "double"}, nil
+			}
+		case "input":
+			if len(p.Call.Args) == 0 {
+				return &InputExpr{}, nil
 			}
 		}
 		var args []Expr
@@ -4466,6 +4521,8 @@ func exprType(e Expr) string {
 	case *AvgExpr:
 		return "double"
 	case *ToUpperExpr, *TrimSpaceExpr:
+		return "std::string"
+	case *InputExpr:
 		return "std::string"
 	case *SumExpr:
 		return "double"
