@@ -14,7 +14,7 @@ fun isPrime(n: int): bool {
 
 var asc: list<int> = []
 
-fun generate(first: int, cand: int, digits: int) {
+fun gen(first: int, cand: int, digits: int) {
   if digits == 0 {
     if isPrime(cand) {
       asc = asc + [cand]
@@ -23,7 +23,7 @@ fun generate(first: int, cand: int, digits: int) {
   }
   var i = first
   while i < 10 {
-    generate(i + 1, cand * 10 + i, digits - 1)
+    gen(i + 1, cand * 10 + i, digits - 1)
     i = i + 1
   }
 }
@@ -39,7 +39,7 @@ fun pad(n: int, width: int): string {
 fun main() {
   var digits = 1
   while digits < 10 {
-    generate(1, 0, digits)
+    gen(1, 0, digits)
     digits = digits + 1
   }
   print("There are " + str(len(asc)) + " ascending primes, namely:")

@@ -3389,6 +3389,11 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 				return nil, fmt.Errorf("values takes one arg")
 			}
 			return &ValuesExpr{Map: args[0]}, nil
+		case "keys":
+			if len(args) != 1 {
+				return nil, fmt.Errorf("keys takes one arg")
+			}
+			return &MethodCallExpr{Target: args[0], Method: "keys"}, nil
 		case "exists":
 			if len(args) != 1 {
 				return nil, fmt.Errorf("exists takes one arg")

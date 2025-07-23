@@ -1,5 +1,5 @@
-# Ruby Rosetta Transpiler Output (58/284)
-Last updated: 2025-07-23 06:32 UTC
+# Ruby Rosetta Transpiler Output (86/284)
+Last updated: 2025-07-23 07:00 UTC
 
   1. [x] 100-doors-2
   2. [x] 100-doors-3
@@ -59,36 +59,36 @@ Last updated: 2025-07-23 06:32 UTC
  56. [x] anti-primes
  57. [x] append-a-record-to-the-end-of-a-text-file
  58. [x] apply-a-callback-to-an-array-1
- 59. [ ] apply-a-callback-to-an-array-2
- 60. [ ] apply-a-digital-filter-direct-form-ii-transposed-
- 61. [ ] approximate-equality
- 62. [ ] arbitrary-precision-integers-included-
- 63. [ ] archimedean-spiral
- 64. [ ] arena-storage-pool
- 65. [ ] arithmetic-complex
- 66. [ ] arithmetic-derivative
+ 59. [x] apply-a-callback-to-an-array-2
+ 60. [x] apply-a-digital-filter-direct-form-ii-transposed-
+ 61. [x] approximate-equality
+ 62. [x] arbitrary-precision-integers-included-
+ 63. [x] archimedean-spiral
+ 64. [x] arena-storage-pool
+ 65. [x] arithmetic-complex
+ 66. [x] arithmetic-derivative
  67. [ ] arithmetic-evaluation
- 68. [ ] arithmetic-geometric-mean-calculate-pi
- 69. [ ] arithmetic-geometric-mean
- 70. [ ] arithmetic-integer-1
- 71. [ ] arithmetic-integer-2
+ 68. [x] arithmetic-geometric-mean-calculate-pi
+ 69. [x] arithmetic-geometric-mean
+ 70. [x] arithmetic-integer-1
+ 71. [x] arithmetic-integer-2
  72. [ ] arithmetic-numbers
- 73. [ ] arithmetic-rational
- 74. [ ] array-concatenation
- 75. [ ] array-length
- 76. [ ] arrays
- 77. [ ] ascending-primes
- 78. [ ] ascii-art-diagram-converter
- 79. [ ] assertions
- 80. [ ] associative-array-creation
- 81. [ ] associative-array-iteration
- 82. [ ] associative-array-merging
- 83. [ ] atomic-updates
- 84. [ ] attractive-numbers
- 85. [ ] average-loop-length
- 86. [ ] averages-arithmetic-mean
- 87. [ ] averages-mean-time-of-day
- 88. [ ] averages-median-1
+ 73. [x] arithmetic-rational
+ 74. [x] array-concatenation
+ 75. [x] array-length
+ 76. [x] arrays
+ 77. [x] ascending-primes
+ 78. [x] ascii-art-diagram-converter
+ 79. [x] assertions
+ 80. [x] associative-array-creation
+ 81. [x] associative-array-iteration
+ 82. [x] associative-array-merging
+ 83. [x] atomic-updates
+ 84. [x] attractive-numbers
+ 85. [x] average-loop-length
+ 86. [x] averages-arithmetic-mean
+ 87. [x] averages-mean-time-of-day
+ 88. [x] averages-median-1
  89. [ ] averages-median-2
  90. [ ] averages-median-3
  91. [ ] averages-mode
