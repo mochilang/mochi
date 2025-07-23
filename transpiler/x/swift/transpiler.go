@@ -384,7 +384,7 @@ func (m *MapLit) emit(w io.Writer) {
 		fmt.Fprint(w, ": ")
 		m.Values[i].emit(w)
 	}
-	fmt.Fprint(w, "]")
+	fmt.Fprint(w, "] as [String: Any]")
 }
 
 // StructInit represents initialization of a struct value.
@@ -850,7 +850,7 @@ func (c *CallExpr) emit(w io.Writer) {
 			return
 		}
 	case "str":
-		fmt.Fprint(w, "String(")
+		fmt.Fprint(w, "String(describing: ")
 		if len(c.Args) > 0 {
 			c.Args[0].emit(w)
 		}
@@ -859,6 +859,13 @@ func (c *CallExpr) emit(w io.Writer) {
 	case "int":
 		if len(c.Args) == 1 {
 			fmt.Fprint(w, "Int(")
+			c.Args[0].emit(w)
+			fmt.Fprint(w, ")")
+			return
+		}
+	case "float":
+		if len(c.Args) == 1 {
+			fmt.Fprint(w, "Double(")
 			c.Args[0].emit(w)
 			fmt.Fprint(w, ")")
 			return
@@ -1140,6 +1147,8 @@ func findUpdatedVars(list []*parser.Statement, vars map[string]bool) {
 		switch {
 		case st.Update != nil:
 			vars[st.Update.Target] = true
+		case st.Assign != nil:
+			vars[st.Assign.Name] = true
 		case st.If != nil:
 			findUpdatedVars(st.If.Then, vars)
 			if st.If.Else != nil {
@@ -1443,6 +1452,24 @@ func convertIfStmt(env *types.Env, i *parser.IfStmt) (Stmt, error) {
 
 func convertFunDecl(env *types.Env, f *parser.FunStmt) (Stmt, error) {
 	fn := &FunDecl{Name: f.Name, Ret: toSwiftType(f.Return)}
+	// register function type for calls (and recursion)
+	if env != nil {
+		var params []types.Type
+		for _, p := range f.Params {
+			if p.Type != nil {
+				params = append(params, types.ResolveTypeRef(p.Type, env))
+			} else {
+				params = append(params, types.AnyType{})
+			}
+		}
+		var retTyp types.Type = types.VoidType{}
+		if f.Return != nil {
+			retTyp = types.ResolveTypeRef(f.Return, env)
+		}
+		env.SetFuncType(f.Name, types.FuncType{Params: params, Return: retTyp})
+		env.SetFunc(f.Name, f)
+	}
+
 	child := types.NewEnv(env)
 	var retT types.Type = types.AnyType{}
 	if f.Return != nil {
@@ -2210,6 +2237,10 @@ func convertPostfix(env *types.Env, p *parser.PostfixExpr) (Expr, error) {
 		}
 	}
 
+	var baseType types.Type
+	if env != nil {
+		baseType = types.TypeOfPrimaryBasic(p.Target, env)
+	}
 	for i := 0; i < len(p.Ops); i++ {
 		op := p.Ops[i]
 		if op.Index != nil {
@@ -2245,14 +2276,15 @@ func convertPostfix(env *types.Env, p *parser.PostfixExpr) (Expr, error) {
 			}
 			isStr := false
 			force := false
-			var baseType types.Type
 			if env != nil {
-				if t := types.TypeOfPrimaryBasic(p.Target, env); types.IsStringType(t) {
+				if types.IsStringType(baseType) {
 					isStr = true
 				}
-				baseType = types.TypeOfPrimaryBasic(p.Target, env)
-				if types.IsMapPrimary(p.Target, env) {
+				if m, ok := baseType.(types.MapType); ok {
 					force = true
+					baseType = m.Value
+				} else if l, ok := baseType.(types.ListType); ok {
+					baseType = l.Elem
 				}
 			}
 			if env != nil && types.IsAnyType(baseType) {
@@ -2264,6 +2296,17 @@ func convertPostfix(env *types.Env, p *parser.PostfixExpr) (Expr, error) {
 				expr = &IndexExpr{Base: &CastExpr{Expr: expr, Type: cast}, Index: idx, AsString: isStr, Force: force}
 			} else {
 				expr = &IndexExpr{Base: expr, Index: idx, AsString: isStr, Force: force}
+			}
+			if env != nil {
+				// update baseType after indexing
+				switch bt := baseType.(type) {
+				case types.MapType:
+					baseType = bt.Value
+				case types.ListType:
+					baseType = bt.Elem
+				default:
+					baseType = types.AnyType{}
+				}
 			}
 			continue
 		}
@@ -2749,10 +2792,24 @@ func convertPrimary(env *types.Env, pr *parser.Primary) (Expr, error) {
 			}
 		}
 		ce := &CallExpr{Func: pr.Call.Func}
-		for _, a := range pr.Call.Args {
+		var paramTypes []types.Type
+		if env != nil {
+			if t, err := env.GetVar(pr.Call.Func); err == nil {
+				if ft, ok := t.(types.FuncType); ok {
+					paramTypes = ft.Params
+				}
+			}
+		}
+		for j, a := range pr.Call.Args {
 			ae, err := convertExpr(env, a)
 			if err != nil {
 				return nil, err
+			}
+			if env != nil && j < len(paramTypes) {
+				pt := swiftTypeOf(paramTypes[j])
+				if pt != "Any" {
+					ae = &CastExpr{Expr: ae, Type: pt + "!"}
+				}
 			}
 			ce.Args = append(ce.Args, ae)
 		}

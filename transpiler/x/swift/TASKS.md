@@ -1,5 +1,5 @@
-## Progress (2025-07-23 10:37 +0700)
-- swift transpiler: add stub for puzzle solver and improve casts
+## Progress (2025-07-23 13:23 +0700)
+- rb transpiler: handle null literals and map get; add _add helper
 - Generated golden tests for 101/103 programs
 - Updated README checklist and output artifacts
 

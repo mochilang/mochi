@@ -1,0 +1,60 @@
+7
+ 3
+ 5
+ 7
+:  
+No solution
+ 7
+ 4
+ 2
+ 7
+:  
+((Optional(2) * (Optional(7) + Optional(7))) - Optional(4))
+ 4
+ 3
+ 7
+ 7
+:  
+((Optional(3) * Optional(7)) - (Optional(4) - Optional(7)))
+ 8
+ 5
+ 7
+ 4
+:  
+((Optional(8) + Optional(5)) + (Optional(7) + Optional(4)))
+ 5
+ 4
+ 3
+ 8
+:  
+((Optional(5) + Optional(4)) / (Optional(3) / Optional(8)))
+ 6
+ 7
+ 2
+ 6
+:  
+((Optional(6) + (Optional(6) * Optional(7))) / Optional(2))
+ 8
+ 3
+ 5
+ 8
+:  
+((Optional(8) + Optional(3)) + (Optional(5) + Optional(8)))
+ 2
+ 8
+ 7
+ 8
+:  
+(Optional(8) * ((Optional(2) + Optional(8)) - Optional(7)))
+ 4
+ 7
+ 6
+ 1
+:  
+(Optional(6) * (Optional(1) - (Optional(4) - Optional(7))))
+ 4
+ 8
+ 5
+ 8
+:  
+(Optional(8) * (Optional(5) - (Optional(8) / Optional(4))))
