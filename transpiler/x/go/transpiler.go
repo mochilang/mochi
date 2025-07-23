@@ -32,6 +32,7 @@ type Program struct {
 	UseJSON    bool
 	UseTime    bool
 	UseInput   bool
+	UseSubstr  bool
 }
 
 var (
@@ -42,6 +43,7 @@ var (
 	usesJSON       bool
 	usesTime       bool
 	usesInput      bool
+	usesSubstr     bool
 	topEnv         *types.Env
 	extraDecls     []Stmt
 	structCount    int
@@ -909,6 +911,24 @@ func (bi *BoolIntExpr) emit(w io.Writer) {
 	io.WriteString(w, " { return 1 }; return 0 }()")
 }
 
+// LookupHostExpr wraps net.LookupHost call and returns []any with address list and error.
+type LookupHostExpr struct{ Arg Expr }
+
+func (lh *LookupHostExpr) emit(w io.Writer) {
+	io.WriteString(w, "func() []any { a, b := net.LookupHost(")
+	lh.Arg.emit(w)
+	io.WriteString(w, "); return []any{a, b} }()")
+}
+
+// IntCastExpr converts a value to int using Go's int() conversion.
+type IntCastExpr struct{ Expr Expr }
+
+func (ic *IntCastExpr) emit(w io.Writer) {
+	io.WriteString(w, "int(")
+	ic.Expr.emit(w)
+	io.WriteString(w, ")")
+}
+
 // ExistsExpr represents the exists() builtin result to preserve boolean output.
 type ExistsExpr struct{ Expr Expr }
 
@@ -1459,6 +1479,7 @@ func Transpile(p *parser.Program, env *types.Env) (*Program, error) {
 	usesJSON = false
 	usesTime = false
 	usesInput = false
+	usesSubstr = false
 	topEnv = env
 	extraDecls = nil
 	structCount = 0
@@ -1487,6 +1508,7 @@ func Transpile(p *parser.Program, env *types.Env) (*Program, error) {
 	gp.UseJSON = usesJSON
 	gp.UseTime = usesTime
 	gp.UseInput = usesInput
+	gp.UseSubstr = usesSubstr
 	gp.Imports = imports
 	return gp, nil
 }
@@ -1584,6 +1606,8 @@ func compileStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 			if ml, ok := e.(*MapLit); ok {
 				if t, err := env.GetVar(st.Let.Name); err == nil {
 					updateMapLitTypes(ml, t)
+				} else if declaredType != nil {
+					updateMapLitTypes(ml, declaredType)
 				}
 			}
 			var valType types.Type
@@ -1610,31 +1634,55 @@ func compileStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 			if qe, ok := e.(*QueryExpr); ok && qe.ElemType != "" {
 				typ = "[]" + qe.ElemType
 				if stype, ok := topEnv.GetStruct(qe.ElemType); ok {
-					env.SetVarDeep(st.Let.Name, types.ListType{Elem: stype}, false)
+					if env == topEnv {
+						env.SetVarDeep(st.Let.Name, types.ListType{Elem: stype}, false)
+					} else {
+						env.SetVar(st.Let.Name, types.ListType{Elem: stype}, false)
+					}
 				}
 			}
 			if gq, ok := e.(*GroupQueryExpr); ok && gq.ElemType != "" {
 				typ = "[]" + gq.ElemType
 				if stype, ok := topEnv.GetStruct(gq.ElemType); ok {
-					env.SetVarDeep(st.Let.Name, types.ListType{Elem: stype}, false)
+					if env == topEnv {
+						env.SetVarDeep(st.Let.Name, types.ListType{Elem: stype}, false)
+					} else {
+						env.SetVar(st.Let.Name, types.ListType{Elem: stype}, false)
+					}
 				}
 			}
 			if gj, ok := e.(*GroupJoinQueryExpr); ok && gj.ElemType != "" {
 				typ = "[]" + gj.ElemType
 				if stype, ok := topEnv.GetStruct(gj.ElemType); ok {
-					env.SetVarDeep(st.Let.Name, types.ListType{Elem: stype}, false)
+					if env == topEnv {
+						env.SetVarDeep(st.Let.Name, types.ListType{Elem: stype}, false)
+					} else {
+						env.SetVar(st.Let.Name, types.ListType{Elem: stype}, false)
+					}
 				}
 			}
 			if oj, ok := e.(*OuterJoinExpr); ok && oj.ElemType != "" {
 				typ = "[]" + oj.ElemType
 				if stype, ok := topEnv.GetStruct(oj.ElemType); ok {
-					env.SetVarDeep(st.Let.Name, types.ListType{Elem: stype}, false)
+					if env == topEnv {
+						env.SetVarDeep(st.Let.Name, types.ListType{Elem: stype}, false)
+					} else {
+						env.SetVar(st.Let.Name, types.ListType{Elem: stype}, false)
+					}
 				}
 			}
 			if declaredType != nil {
-				env.SetVarDeep(st.Let.Name, declaredType, false)
+				if env == topEnv {
+					env.SetVarDeep(st.Let.Name, declaredType, false)
+				} else {
+					env.SetVar(st.Let.Name, declaredType, false)
+				}
 			} else if valType != nil {
-				env.SetVarDeep(st.Let.Name, valType, false)
+				if env == topEnv {
+					env.SetVarDeep(st.Let.Name, valType, false)
+				} else {
+					env.SetVar(st.Let.Name, valType, false)
+				}
 			}
 			global := env == topEnv
 			if global {
@@ -1666,6 +1714,8 @@ func compileStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 			if ml, ok := e.(*MapLit); ok {
 				if t, err := env.GetVar(st.Var.Name); err == nil {
 					updateMapLitTypes(ml, t)
+				} else if declaredType != nil {
+					updateMapLitTypes(ml, declaredType)
 				}
 			}
 			var valType types.Type
@@ -1692,25 +1742,45 @@ func compileStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 			if qe, ok := e.(*QueryExpr); ok && qe.ElemType != "" {
 				typ = "[]" + qe.ElemType
 				if stype, ok := topEnv.GetStruct(qe.ElemType); ok {
-					env.SetVarDeep(st.Var.Name, types.ListType{Elem: stype}, true)
+					if env == topEnv {
+						env.SetVarDeep(st.Var.Name, types.ListType{Elem: stype}, true)
+					} else {
+						env.SetVar(st.Var.Name, types.ListType{Elem: stype}, true)
+					}
 				}
 			}
 			if gj, ok := e.(*GroupJoinQueryExpr); ok && gj.ElemType != "" {
 				typ = "[]" + gj.ElemType
 				if stype, ok := topEnv.GetStruct(gj.ElemType); ok {
-					env.SetVarDeep(st.Var.Name, types.ListType{Elem: stype}, true)
+					if env == topEnv {
+						env.SetVarDeep(st.Var.Name, types.ListType{Elem: stype}, true)
+					} else {
+						env.SetVar(st.Var.Name, types.ListType{Elem: stype}, true)
+					}
 				}
 			}
 			if oj, ok := e.(*OuterJoinExpr); ok && oj.ElemType != "" {
 				typ = "[]" + oj.ElemType
 				if stype, ok := topEnv.GetStruct(oj.ElemType); ok {
-					env.SetVarDeep(st.Var.Name, types.ListType{Elem: stype}, true)
+					if env == topEnv {
+						env.SetVarDeep(st.Var.Name, types.ListType{Elem: stype}, true)
+					} else {
+						env.SetVar(st.Var.Name, types.ListType{Elem: stype}, true)
+					}
 				}
 			}
 			if declaredType != nil {
-				env.SetVarDeep(st.Var.Name, declaredType, true)
+				if env == topEnv {
+					env.SetVarDeep(st.Var.Name, declaredType, true)
+				} else {
+					env.SetVar(st.Var.Name, declaredType, true)
+				}
 			} else if valType != nil {
-				env.SetVarDeep(st.Var.Name, valType, true)
+				if env == topEnv {
+					env.SetVarDeep(st.Var.Name, valType, true)
+				} else {
+					env.SetVar(st.Var.Name, valType, true)
+				}
 			}
 			global := env == topEnv
 			if global {
@@ -2787,7 +2857,8 @@ func compileWhileStmt(ws *parser.WhileStmt, env *types.Env) (Stmt, error) {
 		return nil, err
 	}
 	cond := boolExprFor(condExpr, types.ExprType(ws.Cond, env))
-	body, err := compileStmts(ws.Body, env)
+	child := types.NewEnv(env)
+	body, err := compileStmts(ws.Body, child)
 	if err != nil {
 		return nil, err
 	}
@@ -3229,7 +3300,11 @@ func compilePostfix(pf *parser.PostfixExpr, env *types.Env, base string) (Expr, 
 			args[i] = ex
 		}
 		if _, ok := imports[pf.Target.Selector.Root]; ok {
-			return &CallExpr{Func: pf.Target.Selector.Root + "." + toGoFieldName(method), Args: args}, nil
+			full := pf.Target.Selector.Root + "." + toGoFieldName(method)
+			if full == "net.LookupHost" && len(args) == 1 {
+				return &LookupHostExpr{Arg: args[0]}, nil
+			}
+			return &CallExpr{Func: full, Args: args}, nil
 		}
 		switch method {
 		case "contains":
@@ -3374,8 +3449,16 @@ func compilePostfix(pf *parser.PostfixExpr, env *types.Env, base string) (Expr, 
 			if op.Cast.Type.Simple != nil {
 				name := *op.Cast.Type.Simple
 				if name == "int" {
-					usesStrconv = true
-					expr = &AtoiExpr{Expr: expr}
+					switch t.(type) {
+					case types.StringType:
+						usesStrconv = true
+						expr = &AtoiExpr{Expr: expr}
+					case types.IntType, types.Int64Type, types.BigIntType:
+						// no-op
+					default:
+						expr = &IntCastExpr{Expr: expr}
+					}
+					t = types.IntType{}
 				} else if name == "float" {
 					expr = &CallExpr{Func: "float64", Args: []Expr{expr}}
 				} else if st, ok := env.GetStruct(name); ok {
@@ -3399,6 +3482,23 @@ func compilePostfix(pf *parser.PostfixExpr, env *types.Env, base string) (Expr, 
 				}
 			} else if op.Cast.Type.Struct != nil {
 				return nil, fmt.Errorf("unsupported postfix")
+			} else if op.Cast.Type.Generic != nil {
+				g := op.Cast.Type.Generic
+				if g.Name == "list" && len(g.Args) == 1 {
+					typ := "[]" + toGoType(g.Args[0], env)
+					if types.IsAnyType(t) {
+						expr = &AssertExpr{Expr: expr, Type: typ}
+					}
+					t = types.ListType{Elem: types.ResolveTypeRef(g.Args[0], env)}
+				} else if g.Name == "map" && len(g.Args) == 2 {
+					typ := fmt.Sprintf("map[%s]%s", toGoType(g.Args[0], env), toGoType(g.Args[1], env))
+					if types.IsAnyType(t) {
+						expr = &AssertExpr{Expr: expr, Type: typ}
+					}
+					t = types.MapType{Key: types.ResolveTypeRef(g.Args[0], env), Value: types.ResolveTypeRef(g.Args[1], env)}
+				} else {
+					return nil, fmt.Errorf("unsupported postfix")
+				}
 			} else {
 				return nil, fmt.Errorf("unsupported postfix")
 			}
@@ -3516,7 +3616,11 @@ func compilePrimary(p *parser.Primary, env *types.Env, base string) (Expr, error
 			bexpr := &BinaryExpr{Left: &CallExpr{Func: "len", Args: []Expr{args[0]}}, Op: ">", Right: &IntLit{Value: 0}}
 			return &ExistsExpr{Expr: bexpr}, nil
 		case "substring":
-			return &CallExpr{Func: "string", Args: []Expr{&SliceExpr{X: &RuneSliceExpr{Expr: args[0]}, Start: args[1], End: args[2]}}}, nil
+			usesSubstr = true
+			return &CallExpr{Func: "_substr", Args: []Expr{args[0], args[1], args[2]}}, nil
+		case "upper":
+			usesStrings = true
+			return &CallExpr{Func: "strings.ToUpper", Args: []Expr{args[0]}}, nil
 		case "now":
 			usesTime = true
 			return &NowExpr{}, nil
@@ -3526,6 +3630,8 @@ func compilePrimary(p *parser.Primary, env *types.Env, base string) (Expr, error
 		case "json":
 			usesJSON = true
 			return &JsonExpr{Value: args[0]}, nil
+		case "net.LookupHost":
+			return &LookupHostExpr{Arg: args[0]}, nil
 		}
 		if t, err := env.GetVar(name); err == nil {
 			if ft, ok := t.(types.FuncType); ok {
@@ -4053,6 +4159,16 @@ func Emit(prog *Program) []byte {
 		buf.WriteString("func _input() string {\n")
 		buf.WriteString("    if !_scanner.Scan() { return \"\" }\n")
 		buf.WriteString("    return _scanner.Text()\n")
+		buf.WriteString("}\n\n")
+	}
+	if prog.UseSubstr {
+		buf.WriteString("func _substr(s string, start, end int) string {\n")
+		buf.WriteString("    r := []rune(s)\n")
+		buf.WriteString("    if start < 0 { start = 0 }\n")
+		buf.WriteString("    if end > len(r) { end = len(r) }\n")
+		buf.WriteString("    if start > len(r) { start = len(r) }\n")
+		buf.WriteString("    if end < start { end = start }\n")
+		buf.WriteString("    return string(r[start:end])\n")
 		buf.WriteString("}\n\n")
 	}
 
