@@ -21,6 +21,7 @@ import (
 )
 
 func TestSmalltalkRosetta(t *testing.T) {
+	t.Cleanup(updateRosettaChecklist)
 	_, gstErr := exec.LookPath("gst")
 	if gstErr != nil {
 		t.Log("gst not installed; falling back to stored outputs")
@@ -56,18 +57,19 @@ func TestSmalltalkRosetta(t *testing.T) {
 		files = files[idx-1 : idx]
 	}
 
-	for _, srcPath := range files {
+	for i, srcPath := range files {
 		name := strings.TrimSuffix(filepath.Base(srcPath), ".mochi")
+		testName := fmt.Sprintf("%03d_%s", i+1, name)
 		stPath := filepath.Join(outDir, name+".st")
 		wantPath := filepath.Join(outDir, name+".out")
 		errPath := filepath.Join(outDir, name+".error")
 
 		if _, err := os.Stat(wantPath); os.IsNotExist(err) && !shouldUpdate() {
-			t.Run(name, func(t *testing.T) { t.Skip("missing golden") })
+			t.Run(testName, func(t *testing.T) { t.Skip("missing golden") })
 			continue
 		}
 
-		ok := t.Run(name, func(t *testing.T) {
+		ok := t.Run(testName, func(t *testing.T) {
 			prog, err := parser.Parse(srcPath)
 			if err != nil {
 				_ = os.WriteFile(errPath, []byte(err.Error()), 0o644)
@@ -109,7 +111,12 @@ func TestSmalltalkRosetta(t *testing.T) {
 					return
 				}
 			} else {
-				out, _ = os.ReadFile(strings.TrimSuffix(srcPath, ".mochi") + ".out")
+				var err error
+				out, err = os.ReadFile(strings.TrimSuffix(srcPath, ".mochi") + ".out")
+				if err != nil {
+					t.Skip("no gst and no stored output")
+					return
+				}
 			}
 			got := bytes.TrimSpace(out)
 			if shouldUpdate() {
@@ -176,7 +183,7 @@ func updateRosettaChecklist() {
 	total := len(names)
 	compiled := 0
 	var lines []string
-	for _, nameFile := range names {
+	for i, nameFile := range names {
 		name := strings.TrimSuffix(nameFile, ".mochi")
 		mark := "[ ]"
 		if _, err := os.Stat(filepath.Join(outDir, name+".out")); err == nil {
@@ -185,7 +192,7 @@ func updateRosettaChecklist() {
 				mark = "[x]"
 			}
 		}
-		lines = append(lines, fmt.Sprintf("- %s %s", mark, name))
+		lines = append(lines, fmt.Sprintf("%d. %s %s", i+1, mark, name))
 	}
 	out, err := exec.Command("git", "log", "-1", "--format=%cI").Output()
 	ts := time.Now()
