@@ -358,7 +358,7 @@ type BinaryOp struct {
 
 type Unary struct {
 	Pos   lexer.Position
-	Ops   []string     `parser:"{@('-' | '!')}"`
+	Ops   []string     `parser:"{@('-':Punct | '!':Punct)}"`
 	Value *PostfixExpr `parser:"@@"`
 }
 

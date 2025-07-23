@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Python code from programs in `tests/rosetta/x/Mochi` lives in `tests/rosetta/transpiler/Python`.
-Last updated: 2025-07-23 04:54 UTC
+Last updated: 2025-07-23 05:43 UTC
 
-## Rosetta Golden Test Checklist (68/284)
+## Rosetta Golden Test Checklist (69/284)
 1. [x] 100-doors-2
 2. [x] 100-doors-3
 3. [x] 100-doors
@@ -46,7 +46,7 @@ Last updated: 2025-07-23 04:54 UTC
 39. [x] algebraic-data-types
 40. [x] align-columns
 41. [x] aliquot-sequence-classifications
-42. [ ] almkvist-giullera-formula-for-pi
+42. [x] almkvist-giullera-formula-for-pi
 43. [x] almost-prime
 44. [x] amb
 45. [x] amicable-pairs
