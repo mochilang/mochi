@@ -1841,6 +1841,10 @@ func compileStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 				}
 			}
 			vd := &VarDecl{Name: st.Let.Name, Type: typ, Value: e, Global: global}
+			if vd.Global && vd.Value != nil {
+				extraDecls = append(extraDecls, &AssignStmt{Name: vd.Name, Value: vd.Value})
+				vd.Value = nil
+			}
 			if env != topEnv {
 				return &StmtList{List: []Stmt{vd, &AssignStmt{Name: "_", Value: &VarRef{Name: st.Let.Name}}}}, nil
 			}
@@ -1950,6 +1954,10 @@ func compileStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 				}
 			}
 			vd := &VarDecl{Name: st.Var.Name, Type: typ, Value: e, Global: global}
+			if vd.Global && vd.Value != nil {
+				extraDecls = append(extraDecls, &AssignStmt{Name: vd.Name, Value: vd.Value})
+				vd.Value = nil
+			}
 			if env != topEnv {
 				return &StmtList{List: []Stmt{vd, &AssignStmt{Name: "_", Value: &VarRef{Name: st.Var.Name}}}}, nil
 			}
