@@ -73,9 +73,9 @@ func TestPHPTranspiler_Rosetta_Golden(t *testing.T) {
 
 func runRosettaPHP(src string, outDir string) error {
 	name := strings.TrimSuffix(filepath.Base(src), ".mochi")
-	codePath := filepath.Join(outDir, name+".php")
-	outPath := filepath.Join(outDir, name+".out")
-	errPath := filepath.Join(outDir, name+".error")
+        codePath := filepath.Join(outDir, name+".php")
+        outPath := filepath.Join(outDir, name+".out")
+        errPath := filepath.Join(outDir, name+".error")
 
 	prog, err := parser.Parse(src)
 	if err != nil {
@@ -100,25 +100,29 @@ func runRosettaPHP(src string, outDir string) error {
 	if err := os.WriteFile(codePath, buf.Bytes(), 0o644); err != nil {
 		return fmt.Errorf("write code: %w", err)
 	}
-	cmd := exec.Command("php", codePath)
-	if data, err := os.ReadFile(strings.TrimSuffix(src, ".mochi") + ".in"); err == nil {
-		cmd.Stdin = bytes.NewReader(data)
-	}
-	out, err := cmd.CombinedOutput()
-	got := bytes.TrimSpace(out)
+        cmd := exec.Command("php", codePath)
+        if data, err := os.ReadFile(strings.TrimSuffix(src, ".mochi") + ".in"); err == nil {
+                cmd.Stdin = bytes.NewReader(data)
+        }
+        want, _ := os.ReadFile(outPath)
+        want = bytes.TrimSpace(want)
+        out, err := cmd.CombinedOutput()
+        got := bytes.TrimSpace(out)
 	if err != nil {
 		_ = os.WriteFile(errPath, append([]byte("run: "+err.Error()+"\n"), out...), 0o644)
 		return fmt.Errorf("run: %w", err)
 	}
-	_ = os.Remove(errPath)
-	_ = os.WriteFile(outPath, got, 0o644)
-	if want, err := os.ReadFile(outPath); err == nil {
-		want = bytes.TrimSpace(want)
-		if !bytes.Equal(got, want) {
-			return fmt.Errorf("output mismatch: got %s want %s", got, want)
-		}
-	}
-	return nil
+        _ = os.Remove(errPath)
+        if shouldUpdate() || len(want) == 0 {
+                _ = os.WriteFile(outPath, append(got, '\n'), 0o644)
+                return nil
+        }
+        if !bytes.Equal(got, want) {
+                _ = os.WriteFile(errPath, out, 0o644)
+                return fmt.Errorf("output mismatch: got %s want %s", got, want)
+        }
+        _ = os.WriteFile(outPath, got, 0o644)
+        return nil
 }
 
 func updateRosettaReadme() {
@@ -159,18 +163,18 @@ func updateRosettaReadme() {
 	total := len(files)
 	compiled := 0
 	var lines []string
-	for _, nameFile := range files {
-		name := strings.TrimSuffix(nameFile, ".mochi")
-		mark := "[ ]"
-		phpFile := filepath.Join(outDir, name+".php")
-		outFile := filepath.Join(outDir, name+".out")
-		errFile := filepath.Join(outDir, name+".error")
-		if exists(phpFile) && exists(outFile) && !exists(errFile) {
-			compiled++
-			mark = "[x]"
-		}
-		lines = append(lines, fmt.Sprintf("- %s %s", mark, name))
-	}
+        for i, nameFile := range files {
+                name := strings.TrimSuffix(nameFile, ".mochi")
+                mark := "[ ]"
+                phpFile := filepath.Join(outDir, name+".php")
+                outFile := filepath.Join(outDir, name+".out")
+                errFile := filepath.Join(outDir, name+".error")
+                if exists(phpFile) && exists(outFile) && !exists(errFile) {
+                        compiled++
+                        mark = "[x]"
+                }
+                lines = append(lines, fmt.Sprintf("- %s %d %s", mark, i+1, name))
+        }
 
 	var buf bytes.Buffer
 	buf.WriteString("# PHP Rosetta Transpiler Output\n\n")
@@ -185,6 +189,13 @@ func updateRosettaReadme() {
 }
 
 func exists(path string) bool {
-	_, err := os.Stat(path)
-	return err == nil
+        _, err := os.Stat(path)
+        return err == nil
+}
+
+func shouldUpdate() bool {
+        if v, ok := os.LookupEnv("UPDATE"); ok && (v == "1" || v == "true") {
+                return true
+        }
+        return false
 }
