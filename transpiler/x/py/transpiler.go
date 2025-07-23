@@ -1427,6 +1427,23 @@ func isIntLike(t types.Type) bool {
 	}
 }
 
+func isListOfStrings(t types.Type) bool {
+	if lt, ok := t.(types.ListType); ok {
+		_, ok2 := lt.Elem.(types.StringType)
+		return ok2
+	}
+	return false
+}
+
+func sliceOfStringList(s *SliceExpr) bool {
+	if n, ok := s.Target.(*Name); ok && currentEnv != nil {
+		if t, err := currentEnv.GetVar(n.Name); err == nil {
+			return isListOfStrings(t)
+		}
+	}
+	return false
+}
+
 func isStructType(t types.Type) bool {
 	_, ok := t.(types.StructType)
 	return ok
@@ -3600,6 +3617,19 @@ func convertBinary(b *parser.BinaryExpr) (Expr, error) {
 	}
 
 	apply := func(left Expr, op string, right Expr) Expr {
+		if op == "+" {
+			if s, ok := left.(*SliceExpr); ok {
+				left = &CallExpr{Func: &FieldExpr{Target: &StringLit{Value: ""}, Name: "join"}, Args: []Expr{s}}
+			}
+			if s, ok := right.(*SliceExpr); ok {
+				right = &CallExpr{Func: &FieldExpr{Target: &StringLit{Value: ""}, Name: "join"}, Args: []Expr{s}}
+			}
+			if lt, ok := inferPyType(left, currentEnv).(types.ListType); ok && types.IsStringType(lt.Elem) && types.IsStringType(inferPyType(right, currentEnv)) {
+				left = &CallExpr{Func: &FieldExpr{Target: &StringLit{Value: ""}, Name: "join"}, Args: []Expr{left}}
+			} else if rt, ok := inferPyType(right, currentEnv).(types.ListType); ok && types.IsStringType(rt.Elem) && types.IsStringType(inferPyType(left, currentEnv)) {
+				right = &CallExpr{Func: &FieldExpr{Target: &StringLit{Value: ""}, Name: "join"}, Args: []Expr{right}}
+			}
+		}
 		return &BinaryExpr{Left: left, Op: op, Right: right}
 	}
 
@@ -4132,6 +4162,8 @@ func convertLiteral(l *parser.Literal) (Expr, error) {
 		return &BoolLit{Value: bool(*l.Bool)}, nil
 	case l.Str != nil:
 		return &StringLit{Value: *l.Str}, nil
+	case l.Null:
+		return &Name{Name: "None"}, nil
 	default:
 		return nil, fmt.Errorf("unsupported literal")
 	}
