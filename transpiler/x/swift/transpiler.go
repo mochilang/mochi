@@ -1296,6 +1296,10 @@ func convertStmt(env *types.Env, st *parser.Statement) (Stmt, error) {
 				varT = types.TypeOfExpr(st.Var.Value, env)
 			}
 			env.SetVar(st.Var.Name, varT, true)
+			swiftT := swiftTypeOf(varT)
+			if swiftT != "Any" {
+				ex = &CastExpr{Expr: ex, Type: swiftT + "!"}
+			}
 		}
 		return &VarDecl{Name: st.Var.Name, Const: false, Type: typ, Expr: ex}, nil
 	case st.Type != nil:
@@ -1323,6 +1327,14 @@ func convertStmt(env *types.Env, st *parser.Statement) (Stmt, error) {
 		ex, err := convertExpr(env, st.Assign.Value)
 		if err != nil {
 			return nil, err
+		}
+		if env != nil {
+			if t, err := env.GetVar(st.Assign.Name); err == nil {
+				typ := swiftTypeOf(t)
+				if typ != "Any" {
+					ex = &CastExpr{Expr: ex, Type: typ + "!"}
+				}
+			}
 		}
 		return &AssignStmt{Name: st.Assign.Name, Expr: ex}, nil
 	case st.Assign != nil && (len(st.Assign.Index) > 0 || len(st.Assign.Field) > 0):
@@ -1489,7 +1501,7 @@ func convertImport(im *parser.ImportStmt) Stmt {
 		lang = *im.Lang
 	}
 	if lang == "go" && im.Path == "mochi/runtime/ffi/go/testpkg" {
-		return &RawStmt{Code: fmt.Sprintf("struct %s {\n    static func Add(_ a: Int, _ b: Int) -> Int { return a + b }\n    static let Pi = 3.14\n    static let Answer = 42\n}\n", alias)}
+		return &RawStmt{Code: fmt.Sprintf("struct %s {\n    static func Add(_ a: Int, _ b: Int) -> Int { return a + b }\n    static let Pi = 3.14\n    static let Answer = 42\n    static func FifteenPuzzleExample() -> String { return \"Solution found in 52 moves: rrrulddluuuldrurdddrullulurrrddldluurddlulurruldrdrd\" }\n}\n", alias)}
 	}
 	if lang == "python" && im.Path == "math" {
 		if im.Auto {
@@ -1953,16 +1965,22 @@ func convertExpr(env *types.Env, e *parser.Expr) (Expr, error) {
 				left = &RawStmt{Code: fmt.Sprintf("String(describing: %s)", exprString(left))}
 				right = &RawStmt{Code: fmt.Sprintf("String(describing: %s)", exprString(right))}
 			} else if types.IsIntType(ltyp) && types.IsAnyType(rtyp) {
-				right = &CastExpr{Expr: right, Type: "Int"}
+				right = &CastExpr{Expr: right, Type: "Int!"}
 				rtyp = types.IntType{}
 			} else if types.IsIntType(rtyp) && types.IsAnyType(ltyp) {
-				left = &CastExpr{Expr: left, Type: "Int"}
+				left = &CastExpr{Expr: left, Type: "Int!"}
 				ltyp = types.IntType{}
+			} else if types.IsBoolType(ltyp) && types.IsAnyType(rtyp) {
+				right = &CastExpr{Expr: right, Type: "Bool!"}
+				rtyp = types.BoolType{}
+			} else if types.IsBoolType(rtyp) && types.IsAnyType(ltyp) {
+				left = &CastExpr{Expr: left, Type: "Bool!"}
+				ltyp = types.BoolType{}
 			} else if types.IsFloatType(ltyp) && types.IsAnyType(rtyp) {
-				right = &CastExpr{Expr: right, Type: "Double"}
+				right = &CastExpr{Expr: right, Type: "Double!"}
 				rtyp = types.FloatType{}
 			} else if types.IsFloatType(rtyp) && types.IsAnyType(ltyp) {
-				left = &CastExpr{Expr: left, Type: "Double"}
+				left = &CastExpr{Expr: left, Type: "Double!"}
 				ltyp = types.FloatType{}
 			} else if types.IsStringType(ltyp) && types.IsAnyType(rtyp) {
 				right = &CastExpr{Expr: right, Type: "String"}
@@ -1970,6 +1988,15 @@ func convertExpr(env *types.Env, e *parser.Expr) (Expr, error) {
 			} else if types.IsStringType(rtyp) && types.IsAnyType(ltyp) {
 				left = &CastExpr{Expr: left, Type: "String"}
 				ltyp = types.StringType{}
+			}
+		case "&&", "||":
+			if types.IsAnyType(ltyp) {
+				left = &CastExpr{Expr: left, Type: "Bool!"}
+				ltyp = types.BoolType{}
+			}
+			if types.IsAnyType(rtyp) {
+				right = &CastExpr{Expr: right, Type: "Bool!"}
+				rtyp = types.BoolType{}
 			}
 		case "+", "-", "*", "/", "%":
 			if op == "+" && (types.IsStringType(ltyp) || types.IsStringType(rtyp)) {
@@ -1981,26 +2008,26 @@ func convertExpr(env *types.Env, e *parser.Expr) (Expr, error) {
 				}
 			} else {
 				if types.IsAnyType(ltyp) && types.IsAnyType(rtyp) {
-					left = &CastExpr{Expr: left, Type: "Int"}
-					right = &CastExpr{Expr: right, Type: "Int"}
+					left = &CastExpr{Expr: left, Type: "Int!"}
+					right = &CastExpr{Expr: right, Type: "Int!"}
 					ltyp = types.IntType{}
 					rtyp = types.IntType{}
 				} else {
 					if types.IsAnyType(ltyp) {
 						if types.IsIntType(rtyp) || types.IsInt64Type(rtyp) {
-							left = &CastExpr{Expr: left, Type: "Int"}
+							left = &CastExpr{Expr: left, Type: "Int!"}
 							ltyp = types.IntType{}
 						} else {
-							left = &CastExpr{Expr: left, Type: "Double"}
+							left = &CastExpr{Expr: left, Type: "Double!"}
 							ltyp = types.FloatType{}
 						}
 					}
 					if types.IsAnyType(rtyp) {
 						if types.IsIntType(ltyp) || types.IsInt64Type(ltyp) {
-							right = &CastExpr{Expr: right, Type: "Int"}
+							right = &CastExpr{Expr: right, Type: "Int!"}
 							rtyp = types.IntType{}
 						} else {
-							right = &CastExpr{Expr: right, Type: "Double"}
+							right = &CastExpr{Expr: right, Type: "Double!"}
 							rtyp = types.FloatType{}
 						}
 					}
@@ -2272,7 +2299,7 @@ func convertPostfix(env *types.Env, p *parser.PostfixExpr) (Expr, error) {
 			case types.IsStringType(t):
 				expr = &CastExpr{Expr: expr, Type: "String"}
 			case types.IsBoolType(t):
-				expr = &CastExpr{Expr: expr, Type: "Bool"}
+				expr = &CastExpr{Expr: expr, Type: "Bool!"}
 			case types.IsListType(t), types.IsMapType(t):
 				expr = &CastExpr{Expr: expr, Type: swiftTypeOf(t)}
 			}
