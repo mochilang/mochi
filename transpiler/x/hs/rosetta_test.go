@@ -3,12 +3,12 @@
 package hs_test
 
 import (
+	"bufio"
 	"bytes"
 	"fmt"
 	"os"
 	"os/exec"
 	"path/filepath"
-	"sort"
 	"strconv"
 	"strings"
 	"testing"
@@ -24,6 +24,26 @@ func shouldUpdateRosetta() bool {
 		return true
 	}
 	return false
+}
+
+func readIndex(path string) ([]string, error) {
+	f, err := os.Open(path)
+	if err != nil {
+		return nil, err
+	}
+	defer f.Close()
+	var names []string
+	scanner := bufio.NewScanner(f)
+	for scanner.Scan() {
+		parts := strings.Fields(scanner.Text())
+		if len(parts) == 2 {
+			names = append(names, parts[1])
+		}
+	}
+	if err := scanner.Err(); err != nil {
+		return nil, err
+	}
+	return names, nil
 }
 
 func writeErr(root, name string, err error) {
@@ -92,11 +112,18 @@ func TestHSTranspiler_Rosetta_Golden(t *testing.T) {
 	}
 	t.Cleanup(updateChecklist)
 	root := repoRootDir(t)
-	files, err := filepath.Glob(filepath.Join(root, "tests", "rosetta", "x", "Mochi", "*.mochi"))
+	srcDir := filepath.Join(root, "tests", "rosetta", "x", "Mochi")
+	names, err := readIndex(filepath.Join(srcDir, "index.txt"))
 	if err != nil {
-		t.Fatalf("glob: %v", err)
+		t.Fatalf("read index: %v", err)
 	}
-	sort.Strings(files)
+	if len(names) == 0 {
+		t.Fatalf("no entries in index")
+	}
+	files := make([]string, len(names))
+	for i, n := range names {
+		files[i] = filepath.Join(srcDir, n)
+	}
 
 	if idxStr := os.Getenv("MOCHI_ROSETTA_INDEX"); idxStr != "" {
 		idx, err := strconv.Atoi(idxStr)
@@ -126,9 +153,10 @@ func TestHSTranspiler_Rosetta_Golden(t *testing.T) {
 	}
 
 	var firstErr string
-	for _, f := range files {
+	for i, f := range files {
 		name := strings.TrimSuffix(filepath.Base(f), ".mochi")
-		ok := t.Run(name, func(t *testing.T) {
+		testName := fmt.Sprintf("%03d_%s", i+1, name)
+		ok := t.Run(testName, func(t *testing.T) {
 			if err := runRosettaTask(root, name); err != nil {
 				firstErr = name
 				t.Fatalf("%v", err)
@@ -148,13 +176,12 @@ func updateChecklist() {
 	srcDir := filepath.Join(root, "tests", "rosetta", "x", "Mochi")
 	outDir := filepath.Join(root, "tests", "rosetta", "transpiler", "Haskell")
 	readme := filepath.Join(root, "transpiler", "x", "hs", "ROSETTA.md")
-	files, _ := filepath.Glob(filepath.Join(srcDir, "*.mochi"))
-	sort.Strings(files)
-	total := len(files)
+	names, _ := readIndex(filepath.Join(srcDir, "index.txt"))
+	total := len(names)
 	compiled := 0
 	var lines []string
-	for i, f := range files {
-		name := strings.TrimSuffix(filepath.Base(f), ".mochi")
+	for i, n := range names {
+		name := strings.TrimSuffix(filepath.Base(n), ".mochi")
 		mark := "[ ]"
 		if _, err := os.Stat(filepath.Join(outDir, name+".out")); err == nil {
 			compiled++

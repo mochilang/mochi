@@ -1012,9 +1012,9 @@ func (n *NameRef) emit(w io.Writer) {
 	name := safeName(n.Name)
 	if mutated[n.Name] {
 		needIORef = true
-		io.WriteString(w, "(unsafePerformIO (readIORef ")
+		io.WriteString(w, "(deref ")
 		io.WriteString(w, name)
-		io.WriteString(w, "))")
+		io.WriteString(w, ")")
 	} else {
 		io.WriteString(w, name)
 	}
@@ -1676,6 +1676,9 @@ func header(withList, withMap, withJSON, withTrace, withIORef bool) string {
 	if withIORef {
 		h += "import Data.IORef\n"
 		h += "import System.IO.Unsafe (unsafePerformIO)\n"
+		h += "deref :: IORef a -> a\n"
+		h += "{-# NOINLINE deref #-}\n"
+		h += "deref r = unsafePerformIO (atomicModifyIORef' r (\\x -> (x, x)))\n"
 	}
 	return h
 }
