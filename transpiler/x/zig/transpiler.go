@@ -965,8 +965,8 @@ func (p *Program) Emit() []byte {
 	if useInput {
 		buf.WriteString("\nvar _in_buf = std.io.bufferedReader(std.io.getStdIn().reader());\n")
 		buf.WriteString("fn _input() []const u8 {\n")
-		buf.WriteString("    const line = _in_buf.reader().readUntilDelimiterOrEofAlloc(std.heap.page_allocator, '\\x0a', 1 << 20) catch return \"\";\n")
-		buf.WriteString("    if (line.len > 0 and line[line.len - 1] == '\\x0a') {\n")
+		buf.WriteString("    const line = _in_buf.reader().readUntilDelimiterOrEofAlloc(std.heap.page_allocator, '\\n', 1 << 20) catch return \"\";\n")
+		buf.WriteString("    if (line.len > 0 and line[line.len - 1] == '\\n') {\n")
 		buf.WriteString("        return line[0..line.len-1];\n")
 		buf.WriteString("    }\n")
 		buf.WriteString("    return line;\n")

@@ -239,7 +239,7 @@ func (c *Compiler) writeBuiltins() {
 		c.indent++
 		c.writeln("var buf = std.ArrayList(u8).init(std.heap.page_allocator);")
 		c.writeln("defer buf.deinit();")
-		c.writeln("_ = std.io.getStdIn().reader().readUntilDelimiterOrEof(&buf, '\n') catch return \"\";")
+		c.writeln("_ = std.io.getStdIn().reader().readUntilDelimiterOrEof(&buf, '\\x0a') catch return \"\";")
 		c.writeln("return std.mem.trim(u8, buf.items, \" \t\r\n\");")
 		c.indent--
 		c.writeln("}")

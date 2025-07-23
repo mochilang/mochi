@@ -4,10 +4,8 @@ const std = @import("std");
 fn _input() []const u8 {
     var buf = std.ArrayList(u8).init(std.heap.page_allocator);
     defer buf.deinit();
-    _ = std.io.getStdIn().reader().readUntilDelimiterOrEof(&buf, '
-') catch return "";
-    return std.mem.trim(u8, buf.items, "
-");
+    _ = std.io.getStdIn().reader().readUntilDelimiterOrEof(&buf, '\\x0a') catch return "";
+    return std.mem.trim(u8, buf.items, " \t\r\n");
 }
 
 fn _int(v: anytype) i32 {
