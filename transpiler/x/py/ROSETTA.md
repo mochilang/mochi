@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Python code from programs in `tests/rosetta/x/Mochi` lives in `tests/rosetta/transpiler/Python`.
-Last updated: 2025-07-23 13:26 UTC
+Last updated: 2025-07-23 14:57 UTC
 
-## Rosetta Golden Test Checklist (129/284)
+## Rosetta Golden Test Checklist (133/284)
 1. [x] 100-doors-2
 2. [x] 100-doors-3
 3. [x] 100-doors
@@ -135,10 +135,10 @@ Last updated: 2025-07-23 13:26 UTC
 128. [x] bitwise-io-1
 129. [x] bitwise-io-2
 130. [x] bitwise-operations
-131. [ ] blum-integer
-132. [ ] boolean-values
-133. [ ] box-the-compass
-134. [ ] boyer-moore-string-search
+131. [x] blum-integer
+132. [x] boolean-values
+133. [x] box-the-compass
+134. [x] boyer-moore-string-search
 135. [ ] brazilian-numbers
 136. [ ] break-oo-privacy
 137. [ ] brilliant-numbers

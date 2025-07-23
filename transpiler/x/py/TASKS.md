@@ -1,5 +1,5 @@
-## Progress (2025-07-23 19:33 +0700)
-- Commit e1ffe8fed9: transpiler(ts): support struct methods
+## Progress (2025-07-23 21:33 +0700)
+- Commit 146df68827: transpiler(ex): support nested loops and input builtin
 - Generated Python for 103/103 programs
 - Updated README checklist and outputs
 - Removed runtime helpers and improved boolean type inference
