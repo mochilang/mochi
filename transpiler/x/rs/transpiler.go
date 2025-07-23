@@ -50,6 +50,7 @@ var usesInput bool
 var usesInt bool
 var builtinAliases map[string]string
 var globalRenames map[string]string
+var globalRenameBack map[string]string
 var localVarStack []map[string]bool
 
 func VarTypes() map[string]string { return varTypes }
@@ -77,6 +78,9 @@ func handleImport(im *parser.ImportStmt, env *types.Env) bool {
 			if builtinAliases == nil {
 				builtinAliases = map[string]string{}
 				globalRenames = map[string]string{}
+				globalRenameBack = map[string]string{}
+				globalRenameBack = map[string]string{}
+				globalRenameBack = map[string]string{}
 			}
 			builtinAliases[alias] = "go_testpkg"
 			if env != nil {
@@ -842,6 +846,11 @@ func (v *VarDecl) emit(w io.Writer) {
 		typ := v.Type
 		if typ == "" {
 			typ = varTypes[v.Name]
+			if typ == "" {
+				if orig, ok := globalRenameBack[v.Name]; ok {
+					typ = varTypes[orig]
+				}
+			}
 		}
 		if typ == "" {
 			typ = "i64"
@@ -1512,6 +1521,7 @@ func Transpile(p *parser.Program, env *types.Env) (*Program, error) {
 	curEnv = env
 	builtinAliases = map[string]string{}
 	globalRenames = map[string]string{}
+	globalRenameBack = map[string]string{}
 	prog := &Program{}
 	for _, st := range p.Statements {
 		if st.Import != nil {
@@ -1659,11 +1669,18 @@ func compileStmt(stmt *parser.Statement) (Stmt, error) {
 				}
 			}
 		}
+		if typ == "" && funcDepth == 0 && len(localVarStack) == 0 {
+			if _, ok := e.(*StringLit); ok {
+				typ = "String"
+				e = &StringCastExpr{Expr: e}
+			}
+		}
 		vd := &VarDecl{Name: stmt.Let.Name, Expr: e, Type: typ}
-		if funcDepth == 0 {
+		if funcDepth == 0 && len(localVarStack) == 0 {
 			vd.Global = true
 			newName := "g_" + stmt.Let.Name
 			globalRenames[stmt.Let.Name] = newName
+			globalRenameBack[newName] = stmt.Let.Name
 			vd.Name = newName
 			globalVars[stmt.Let.Name] = true
 		} else {
@@ -1758,11 +1775,18 @@ func compileStmt(stmt *parser.Statement) (Stmt, error) {
 				}
 			}
 		}
+		if typ == "" && funcDepth == 0 && len(localVarStack) == 0 {
+			if _, ok := e.(*StringLit); ok {
+				typ = "String"
+				e = &StringCastExpr{Expr: e}
+			}
+		}
 		vd := &VarDecl{Name: stmt.Var.Name, Expr: e, Type: typ, Mutable: true}
-		if funcDepth == 0 {
+		if funcDepth == 0 && len(localVarStack) == 0 {
 			vd.Global = true
 			newName := "g_" + stmt.Var.Name
 			globalRenames[stmt.Var.Name] = newName
+			globalRenameBack[newName] = stmt.Var.Name
 			vd.Name = newName
 			globalVars[stmt.Var.Name] = true
 		} else {
@@ -1858,6 +1882,8 @@ func compileStmt(stmt *parser.Statement) (Stmt, error) {
 }
 
 func compileIfStmt(n *parser.IfStmt) (Stmt, error) {
+	localVarStack = append(localVarStack, map[string]bool{})
+	defer func() { localVarStack = localVarStack[:len(localVarStack)-1] }()
 	cond, err := compileExpr(n.Cond)
 	if err != nil {
 		return nil, err
@@ -1909,6 +1935,8 @@ func compileIfStmt(n *parser.IfStmt) (Stmt, error) {
 }
 
 func compileWhileStmt(n *parser.WhileStmt) (Stmt, error) {
+	localVarStack = append(localVarStack, map[string]bool{})
+	defer func() { localVarStack = localVarStack[:len(localVarStack)-1] }()
 	cond, err := compileExpr(n.Cond)
 	if err != nil {
 		return nil, err
@@ -1927,6 +1955,8 @@ func compileWhileStmt(n *parser.WhileStmt) (Stmt, error) {
 }
 
 func compileForStmt(n *parser.ForStmt) (Stmt, error) {
+	localVarStack = append(localVarStack, map[string]bool{})
+	defer func() { localVarStack = localVarStack[:len(localVarStack)-1] }()
 	iter, err := compileExpr(n.Source)
 	if nr, ok := iter.(*NameRef); ok && groupVars[nr.Name] {
 		iter = &FieldExpr{Receiver: iter, Name: "items"}
@@ -3725,15 +3755,22 @@ func Emit(prog *Program) []byte {
 		}
 	}
 	buf.WriteString("fn main() {\n")
+	indent := 1
+	if len(prog.Globals) > 0 {
+		buf.WriteString("    unsafe {\n")
+		indent++
+	}
 	for _, g := range prog.Globals {
 		if g.Expr != nil {
-			buf.WriteString("    unsafe { ")
+			for i := 0; i < indent; i++ {
+				buf.WriteString("    ")
+			}
 			buf.WriteString(g.Name)
 			buf.WriteString(" = ")
 			var b bytes.Buffer
 			g.Expr.emit(&b)
 			buf.Write(b.Bytes())
-			buf.WriteString("; }\n")
+			buf.WriteString(";\n")
 		}
 	}
 	for _, s := range prog.Stmts {
@@ -3745,13 +3782,19 @@ func Emit(prog *Program) []byte {
 		}
 		if es, ok := s.(*ExprStmt); ok {
 			if ce, ok2 := es.Expr.(*CallExpr); ok2 && unsafeFuncs[ce.Func] {
-				buf.WriteString("    unsafe { ")
+				for i := 0; i < indent; i++ {
+					buf.WriteString("    ")
+				}
+				buf.WriteString("unsafe { ")
 				ce.emit(&buf)
 				buf.WriteString("; }\n")
 				continue
 			}
 		}
-		writeStmt(&buf, s, 1)
+		writeStmt(&buf, s, indent)
+	}
+	if len(prog.Globals) > 0 {
+		buf.WriteString("    }\n")
 	}
 	buf.WriteString("}\n")
 	if b := buf.Bytes(); len(b) > 0 && b[len(b)-1] != '\n' {

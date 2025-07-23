@@ -1,225 +1,3 @@
-error[E0425]: cannot find value `g_moved` in this scope
-   --> /workspace/mochi/tests/rosetta/transpiler/Rust/2048.rs:216:51
-    |
-216 |     return Map2 {board: b, score: g_score, moved: g_moved}
-    |                                                   ^^^^^^^ help: a local variable with a similar name exists: `moved`
-
-error[E0425]: cannot find value `g_moved` in this scope
-   --> /workspace/mochi/tests/rosetta/transpiler/Rust/2048.rs:238:51
-    |
-238 |     return Map2 {board: b, score: g_score, moved: g_moved}
-    |                                                   ^^^^^^^ help: a local variable with a similar name exists: `moved`
-
-error[E0425]: cannot find value `g_moved` in this scope
-   --> /workspace/mochi/tests/rosetta/transpiler/Rust/2048.rs:277:51
-    |
-277 |     return Map2 {board: b, score: g_score, moved: g_moved}
-    |                                                   ^^^^^^^ help: a local variable with a similar name exists: `moved`
-
-error[E0425]: cannot find value `g_moved` in this scope
-   --> /workspace/mochi/tests/rosetta/transpiler/Rust/2048.rs:299:51
-    |
-299 |     return Map2 {board: b, score: g_score, moved: g_moved}
-    |                                                   ^^^^^^^ help: a local variable with a similar name exists: `moved`
-
-error[E0425]: cannot find value `board` in this scope
-   --> /workspace/mochi/tests/rosetta/transpiler/Rust/2048.rs:344:5
-    |
-344 |     board = g_r.board;
-    |     ^^^^^
-    |
-help: you might have meant to introduce a new binding
-    |
-344 |     let board = g_r.board;
-    |     +++
-
-error[E0425]: cannot find value `r` in this scope
-   --> /workspace/mochi/tests/rosetta/transpiler/Rust/2048.rs:345:5
-    |
-345 |     r = spawnTile(g_board);
-    |     ^
-    |
-help: you might have meant to introduce a new binding
-    |
-345 |     let r = spawnTile(g_board);
-    |     +++
-
-error[E0425]: cannot find value `board` in this scope
-   --> /workspace/mochi/tests/rosetta/transpiler/Rust/2048.rs:346:5
-    |
-346 |     board = g_r.board;
-    |     ^^^^^
-    |
-help: you might have meant to introduce a new binding
-    |
-346 |     let board = g_r.board;
-    |     +++
-
-error[E0425]: cannot find value `full` in this scope
-   --> /workspace/mochi/tests/rosetta/transpiler/Rust/2048.rs:347:5
-    |
-347 |     full = g_r.full;
-    |     ^^^^
-    |
-help: you might have meant to introduce a new binding
-    |
-347 |     let full = g_r.full;
-    |     +++
-
-error[E0425]: cannot find value `board` in this scope
-   --> /workspace/mochi/tests/rosetta/transpiler/Rust/2048.rs:355:13
-    |
-355 |             board = g_m.board;
-    |             ^^^^^
-    |
-help: you might have meant to introduce a new binding
-    |
-355 |             let board = g_m.board;
-    |             +++
-
-error[E0425]: cannot find value `score` in this scope
-   --> /workspace/mochi/tests/rosetta/transpiler/Rust/2048.rs:356:13
-    |
-356 |             score = g_m.score;
-    |             ^^^^^
-    |
-help: you might have meant to introduce a new binding
-    |
-356 |             let score = g_m.score;
-    |             +++
-
-error[E0425]: cannot find value `moved` in this scope
-   --> /workspace/mochi/tests/rosetta/transpiler/Rust/2048.rs:357:13
-    |
-357 |             moved = g_m.moved;
-    |             ^^^^^
-    |
-help: you might have meant to introduce a new binding
-    |
-357 |             let moved = g_m.moved;
-    |             +++
-
-error[E0425]: cannot find value `board` in this scope
-   --> /workspace/mochi/tests/rosetta/transpiler/Rust/2048.rs:361:13
-    |
-361 |             board = g_m.board;
-    |             ^^^^^
-    |
-help: you might have meant to introduce a new binding
-    |
-361 |             let board = g_m.board;
-    |             +++
-
-error[E0425]: cannot find value `score` in this scope
-   --> /workspace/mochi/tests/rosetta/transpiler/Rust/2048.rs:362:13
-    |
-362 |             score = g_m.score;
-    |             ^^^^^
-    |
-help: you might have meant to introduce a new binding
-    |
-362 |             let score = g_m.score;
-    |             +++
-
-error[E0425]: cannot find value `moved` in this scope
-   --> /workspace/mochi/tests/rosetta/transpiler/Rust/2048.rs:363:13
-    |
-363 |             moved = g_m.moved;
-    |             ^^^^^
-    |
-help: you might have meant to introduce a new binding
-    |
-363 |             let moved = g_m.moved;
-    |             +++
-
-error[E0425]: cannot find value `board` in this scope
-   --> /workspace/mochi/tests/rosetta/transpiler/Rust/2048.rs:367:13
-    |
-367 |             board = g_m.board;
-    |             ^^^^^
-    |
-help: you might have meant to introduce a new binding
-    |
-367 |             let board = g_m.board;
-    |             +++
-
-error[E0425]: cannot find value `score` in this scope
-   --> /workspace/mochi/tests/rosetta/transpiler/Rust/2048.rs:368:13
-    |
-368 |             score = g_m.score;
-    |             ^^^^^
-    |
-help: you might have meant to introduce a new binding
-    |
-368 |             let score = g_m.score;
-    |             +++
-
-error[E0425]: cannot find value `moved` in this scope
-   --> /workspace/mochi/tests/rosetta/transpiler/Rust/2048.rs:369:13
-    |
-369 |             moved = g_m.moved;
-    |             ^^^^^
-    |
-help: you might have meant to introduce a new binding
-    |
-369 |             let moved = g_m.moved;
-    |             +++
-
-error[E0425]: cannot find value `board` in this scope
-   --> /workspace/mochi/tests/rosetta/transpiler/Rust/2048.rs:373:13
-    |
-373 |             board = g_m.board;
-    |             ^^^^^
-    |
-help: you might have meant to introduce a new binding
-    |
-373 |             let board = g_m.board;
-    |             +++
-
-error[E0425]: cannot find value `score` in this scope
-   --> /workspace/mochi/tests/rosetta/transpiler/Rust/2048.rs:374:13
-    |
-374 |             score = g_m.score;
-    |             ^^^^^
-    |
-help: you might have meant to introduce a new binding
-    |
-374 |             let score = g_m.score;
-    |             +++
-
-error[E0425]: cannot find value `moved` in this scope
-   --> /workspace/mochi/tests/rosetta/transpiler/Rust/2048.rs:375:13
-    |
-375 |             moved = g_m.moved;
-    |             ^^^^^
-    |
-help: you might have meant to introduce a new binding
-    |
-375 |             let moved = g_m.moved;
-    |             +++
-
-error[E0425]: cannot find value `board` in this scope
-   --> /workspace/mochi/tests/rosetta/transpiler/Rust/2048.rs:382:13
-    |
-382 |             board = g_r2.board;
-    |             ^^^^^
-    |
-help: you might have meant to introduce a new binding
-    |
-382 |             let board = g_r2.board;
-    |             +++
-
-error[E0425]: cannot find value `full` in this scope
-   --> /workspace/mochi/tests/rosetta/transpiler/Rust/2048.rs:383:13
-    |
-383 |             full = g_r2.full;
-    |             ^^^^
-    |
-help: you might have meant to introduce a new binding
-    |
-383 |             let full = g_r2.full;
-    |             +++
-
 warning: unused import: `std::collections::HashMap`
  --> /workspace/mochi/tests/rosetta/transpiler/Rust/2048.rs:2:5
   |
@@ -644,15 +422,15 @@ help: remove these parentheses
     |
 
 warning: unnecessary parentheses around assigned value
-   --> /workspace/mochi/tests/rosetta/transpiler/Rust/2048.rs:205:17
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/2048.rs:205:19
     |
-205 |         score = (g_score + g_r["gain"]);
-    |                 ^                     ^
+205 |         g_score = (g_score + g_r["gain"]);
+    |                   ^                     ^
     |
 help: remove these parentheses
     |
-205 -         score = (g_score + g_r["gain"]);
-205 +         score = g_score + g_r["gain"];
+205 -         g_score = (g_score + g_r["gain"]);
+205 +         g_score = g_score + g_r["gain"];
     |
 
 warning: unnecessary parentheses around `while` condition
@@ -716,15 +494,15 @@ help: remove these parentheses
     |
 
 warning: unnecessary parentheses around assigned value
-   --> /workspace/mochi/tests/rosetta/transpiler/Rust/2048.rs:226:17
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/2048.rs:226:19
     |
-226 |         score = (g_score + g_r["gain"]);
-    |                 ^                     ^
+226 |         g_score = (g_score + g_r["gain"]);
+    |                   ^                     ^
     |
 help: remove these parentheses
     |
-226 -         score = (g_score + g_r["gain"]);
-226 +         score = g_score + g_r["gain"];
+226 -         g_score = (g_score + g_r["gain"]);
+226 +         g_score = g_score + g_r["gain"];
     |
 
 warning: unnecessary parentheses around `while` condition
@@ -836,15 +614,15 @@ help: remove these parentheses
     |
 
 warning: unnecessary parentheses around assigned value
-   --> /workspace/mochi/tests/rosetta/transpiler/Rust/2048.rs:266:17
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/2048.rs:266:19
     |
-266 |         score = (g_score + g_r["gain"]);
-    |                 ^                     ^
+266 |         g_score = (g_score + g_r["gain"]);
+    |                   ^                     ^
     |
 help: remove these parentheses
     |
-266 -         score = (g_score + g_r["gain"]);
-266 +         score = g_score + g_r["gain"];
+266 -         g_score = (g_score + g_r["gain"]);
+266 +         g_score = g_score + g_r["gain"];
     |
 
 warning: unnecessary parentheses around `while` condition
@@ -908,15 +686,15 @@ help: remove these parentheses
     |
 
 warning: unnecessary parentheses around assigned value
-   --> /workspace/mochi/tests/rosetta/transpiler/Rust/2048.rs:287:17
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/2048.rs:287:19
     |
-287 |         score = (g_score + g_r["gain"]);
-    |                 ^                     ^
+287 |         g_score = (g_score + g_r["gain"]);
+    |                   ^                     ^
     |
 help: remove these parentheses
     |
-287 -         score = (g_score + g_r["gain"]);
-287 +         score = g_score + g_r["gain"];
+287 -         g_score = (g_score + g_r["gain"]);
+287 +         g_score = g_score + g_r["gain"];
     |
 
 warning: unnecessary parentheses around `while` condition
@@ -1112,127 +890,83 @@ help: remove these parentheses
     |
 
 warning: denote infinite loops with `loop { ... }`
-   --> /workspace/mochi/tests/rosetta/transpiler/Rust/2048.rs:349:5
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/2048.rs:350:9
     |
-349 |     while true {
-    |     ^^^^^^^^^^ help: use `loop`
+350 |         while true {
+    |         ^^^^^^^^^^ help: use `loop`
     |
     = note: `#[warn(while_true)]` on by default
 
-warning: unnecessary trailing semicolon
-   --> /workspace/mochi/tests/rosetta/transpiler/Rust/2048.rs:351:50
-    |
-351 |         static mut g_cmd: String = String::new();;
-    |                                                  ^ help: remove this semicolon
-    |
-    = note: `#[warn(redundant_semicolons)]` on by default
-
-warning: unnecessary trailing semicolon
-   --> /workspace/mochi/tests/rosetta/transpiler/Rust/2048.rs:352:42
-    |
-352 |         static mut g_moved: bool = false;;
-    |                                          ^ help: remove this semicolon
-
 warning: unnecessary parentheses around `if` condition
-   --> /workspace/mochi/tests/rosetta/transpiler/Rust/2048.rs:353:12
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/2048.rs:354:16
     |
-353 |         if ((g_cmd == "a") || (g_cmd == "A")) {
-    |            ^                                ^
-    |
-help: remove these parentheses
-    |
-353 -         if ((g_cmd == "a") || (g_cmd == "A")) {
-353 +         if (g_cmd == "a") || (g_cmd == "A") {
-    |
-
-warning: unnecessary trailing semicolon
-   --> /workspace/mochi/tests/rosetta/transpiler/Rust/2048.rs:354:55
-    |
-354 |             static mut g_m: Map2 = Default::default();;
-    |                                                       ^ help: remove this semicolon
-
-warning: unnecessary parentheses around `if` condition
-   --> /workspace/mochi/tests/rosetta/transpiler/Rust/2048.rs:359:12
-    |
-359 |         if ((g_cmd == "d") || (g_cmd == "D")) {
-    |            ^                                ^
-    |
-help: remove these parentheses
-    |
-359 -         if ((g_cmd == "d") || (g_cmd == "D")) {
-359 +         if (g_cmd == "d") || (g_cmd == "D") {
-    |
-
-warning: unnecessary trailing semicolon
-   --> /workspace/mochi/tests/rosetta/transpiler/Rust/2048.rs:360:55
-    |
-360 |             static mut g_m: Map2 = Default::default();;
-    |                                                       ^ help: remove this semicolon
-
-warning: unnecessary parentheses around `if` condition
-   --> /workspace/mochi/tests/rosetta/transpiler/Rust/2048.rs:365:12
-    |
-365 |         if ((g_cmd == "w") || (g_cmd == "W")) {
-    |            ^                                ^
-    |
-help: remove these parentheses
-    |
-365 -         if ((g_cmd == "w") || (g_cmd == "W")) {
-365 +         if (g_cmd == "w") || (g_cmd == "W") {
-    |
-
-warning: unnecessary trailing semicolon
-   --> /workspace/mochi/tests/rosetta/transpiler/Rust/2048.rs:366:55
-    |
-366 |             static mut g_m: Map2 = Default::default();;
-    |                                                       ^ help: remove this semicolon
-
-warning: unnecessary parentheses around `if` condition
-   --> /workspace/mochi/tests/rosetta/transpiler/Rust/2048.rs:371:12
-    |
-371 |         if ((g_cmd == "s") || (g_cmd == "S")) {
-    |            ^                                ^
-    |
-help: remove these parentheses
-    |
-371 -         if ((g_cmd == "s") || (g_cmd == "S")) {
-371 +         if (g_cmd == "s") || (g_cmd == "S") {
-    |
-
-warning: unnecessary trailing semicolon
-   --> /workspace/mochi/tests/rosetta/transpiler/Rust/2048.rs:372:55
-    |
-372 |             static mut g_m: Map2 = Default::default();;
-    |                                                       ^ help: remove this semicolon
-
-warning: unnecessary parentheses around `if` condition
-   --> /workspace/mochi/tests/rosetta/transpiler/Rust/2048.rs:377:12
-    |
-377 |         if ((g_cmd == "q") || (g_cmd == "Q")) {
-    |            ^                                ^
-    |
-help: remove these parentheses
-    |
-377 -         if ((g_cmd == "q") || (g_cmd == "Q")) {
-377 +         if (g_cmd == "q") || (g_cmd == "Q") {
-    |
-
-warning: unnecessary trailing semicolon
-   --> /workspace/mochi/tests/rosetta/transpiler/Rust/2048.rs:381:55
-    |
-381 |             static mut g_r2: Map = Default::default();;
-    |                                                       ^ help: remove this semicolon
-
-warning: unnecessary parentheses around `if` condition
-   --> /workspace/mochi/tests/rosetta/transpiler/Rust/2048.rs:384:16
-    |
-384 |             if (g_full && !hasMoves(g_board)) {
+354 |             if ((cmd == "a") || (cmd == "A")) {
     |                ^                            ^
     |
 help: remove these parentheses
     |
-384 -             if (g_full && !hasMoves(g_board)) {
-384 +             if g_full && !hasMoves(g_board) {
+354 -             if ((cmd == "a") || (cmd == "A")) {
+354 +             if (cmd == "a") || (cmd == "A") {
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/2048.rs:360:16
+    |
+360 |             if ((cmd == "d") || (cmd == "D")) {
+    |                ^                            ^
+    |
+help: remove these parentheses
+    |
+360 -             if ((cmd == "d") || (cmd == "D")) {
+360 +             if (cmd == "d") || (cmd == "D") {
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/2048.rs:366:16
+    |
+366 |             if ((cmd == "w") || (cmd == "W")) {
+    |                ^                            ^
+    |
+help: remove these parentheses
+    |
+366 -             if ((cmd == "w") || (cmd == "W")) {
+366 +             if (cmd == "w") || (cmd == "W") {
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/2048.rs:372:16
+    |
+372 |             if ((cmd == "s") || (cmd == "S")) {
+    |                ^                            ^
+    |
+help: remove these parentheses
+    |
+372 -             if ((cmd == "s") || (cmd == "S")) {
+372 +             if (cmd == "s") || (cmd == "S") {
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/2048.rs:378:16
+    |
+378 |             if ((cmd == "q") || (cmd == "Q")) {
+    |                ^                            ^
+    |
+help: remove these parentheses
+    |
+378 -             if ((cmd == "q") || (cmd == "Q")) {
+378 +             if (cmd == "q") || (cmd == "Q") {
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/2048.rs:385:20
+    |
+385 |                 if (g_full && !hasMoves(g_board)) {
+    |                    ^                            ^
+    |
+help: remove these parentheses
+    |
+385 -                 if (g_full && !hasMoves(g_board)) {
+385 +                 if g_full && !hasMoves(g_board) {
     |
 
 error[E0277]: the trait bound `Map: Default` is not satisfied
@@ -1246,66 +980,6 @@ help: consider annotating `Map` with `#[derive(Default)]`
 31 + #[derive(Default)]
 32 | struct Map {
    |
-
-error[E0277]: the trait bound `Map2: Default` is not satisfied
-   --> /workspace/mochi/tests/rosetta/transpiler/Rust/2048.rs:354:36
-    |
-354 |             static mut g_m: Map2 = Default::default();;
-    |                                    ^^^^^^^^^^^^^^^^^^ the trait `Default` is not implemented for `Map2`
-    |
-help: consider annotating `Map2` with `#[derive(Default)]`
-    |
-61  + #[derive(Default)]
-62  | struct Map2 {
-    |
-
-error[E0277]: the trait bound `Map2: Default` is not satisfied
-   --> /workspace/mochi/tests/rosetta/transpiler/Rust/2048.rs:360:36
-    |
-360 |             static mut g_m: Map2 = Default::default();;
-    |                                    ^^^^^^^^^^^^^^^^^^ the trait `Default` is not implemented for `Map2`
-    |
-help: consider annotating `Map2` with `#[derive(Default)]`
-    |
-61  + #[derive(Default)]
-62  | struct Map2 {
-    |
-
-error[E0277]: the trait bound `Map2: Default` is not satisfied
-   --> /workspace/mochi/tests/rosetta/transpiler/Rust/2048.rs:366:36
-    |
-366 |             static mut g_m: Map2 = Default::default();;
-    |                                    ^^^^^^^^^^^^^^^^^^ the trait `Default` is not implemented for `Map2`
-    |
-help: consider annotating `Map2` with `#[derive(Default)]`
-    |
-61  + #[derive(Default)]
-62  | struct Map2 {
-    |
-
-error[E0277]: the trait bound `Map2: Default` is not satisfied
-   --> /workspace/mochi/tests/rosetta/transpiler/Rust/2048.rs:372:36
-    |
-372 |             static mut g_m: Map2 = Default::default();;
-    |                                    ^^^^^^^^^^^^^^^^^^ the trait `Default` is not implemented for `Map2`
-    |
-help: consider annotating `Map2` with `#[derive(Default)]`
-    |
-61  + #[derive(Default)]
-62  | struct Map2 {
-    |
-
-error[E0277]: the trait bound `Map: Default` is not satisfied
-   --> /workspace/mochi/tests/rosetta/transpiler/Rust/2048.rs:381:36
-    |
-381 |             static mut g_r2: Map = Default::default();;
-    |                                    ^^^^^^^^^^^^^^^^^^ the trait `Default` is not implemented for `Map`
-    |
-help: consider annotating `Map` with `#[derive(Default)]`
-    |
-31  + #[derive(Default)]
-32  | struct Map {
-    |
 
 error[E0308]: mismatched types
    --> /workspace/mochi/tests/rosetta/transpiler/Rust/2048.rs:113:28
@@ -1462,19 +1136,25 @@ error[E0608]: cannot index into a value of type `Map`
     |                           ^^^^^^^
 
 error[E0608]: cannot index into a value of type `Map`
-   --> /workspace/mochi/tests/rosetta/transpiler/Rust/2048.rs:205:31
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/2048.rs:205:33
     |
-205 |         score = (g_score + g_r["gain"]);
-    |                               ^^^^^^^^
+205 |         g_score = (g_score + g_r["gain"]);
+    |                                 ^^^^^^^^
 
 error[E0308]: mismatched types
    --> /workspace/mochi/tests/rosetta/transpiler/Rust/2048.rs:216:25
     |
-216 |     return Map2 {board: b, score: g_score, moved: g_moved}
+216 |     return Map2 {board: b, score: g_score, moved: moved}
     |                         ^ expected `i64`, found `Vec<Vec<i64>>`
     |
     = note: expected type `i64`
              found struct `Vec<Vec<i64>>`
+
+error[E0308]: mismatched types
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/2048.rs:216:51
+    |
+216 |     return Map2 {board: b, score: g_score, moved: moved}
+    |                                                   ^^^^^ expected `i64`, found `bool`
 
 error[E0608]: cannot index into a value of type `Map`
    --> /workspace/mochi/tests/rosetta/transpiler/Rust/2048.rs:225:18
@@ -1483,19 +1163,25 @@ error[E0608]: cannot index into a value of type `Map`
     |                  ^^^^^^^
 
 error[E0608]: cannot index into a value of type `Map`
-   --> /workspace/mochi/tests/rosetta/transpiler/Rust/2048.rs:226:31
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/2048.rs:226:33
     |
-226 |         score = (g_score + g_r["gain"]);
-    |                               ^^^^^^^^
+226 |         g_score = (g_score + g_r["gain"]);
+    |                                 ^^^^^^^^
 
 error[E0308]: mismatched types
    --> /workspace/mochi/tests/rosetta/transpiler/Rust/2048.rs:238:25
     |
-238 |     return Map2 {board: b, score: g_score, moved: g_moved}
+238 |     return Map2 {board: b, score: g_score, moved: moved}
     |                         ^ expected `i64`, found `Vec<Vec<i64>>`
     |
     = note: expected type `i64`
              found struct `Vec<Vec<i64>>`
+
+error[E0308]: mismatched types
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/2048.rs:238:51
+    |
+238 |     return Map2 {board: b, score: g_score, moved: moved}
+    |                                                   ^^^^^ expected `i64`, found `bool`
 
 error[E0608]: cannot index into a value of type `Map`
    --> /workspace/mochi/tests/rosetta/transpiler/Rust/2048.rs:265:27
@@ -1504,19 +1190,25 @@ error[E0608]: cannot index into a value of type `Map`
     |                           ^^^^^^^
 
 error[E0608]: cannot index into a value of type `Map`
-   --> /workspace/mochi/tests/rosetta/transpiler/Rust/2048.rs:266:31
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/2048.rs:266:33
     |
-266 |         score = (g_score + g_r["gain"]);
-    |                               ^^^^^^^^
+266 |         g_score = (g_score + g_r["gain"]);
+    |                                 ^^^^^^^^
 
 error[E0308]: mismatched types
    --> /workspace/mochi/tests/rosetta/transpiler/Rust/2048.rs:277:25
     |
-277 |     return Map2 {board: b, score: g_score, moved: g_moved}
+277 |     return Map2 {board: b, score: g_score, moved: moved}
     |                         ^ expected `i64`, found `Vec<Vec<i64>>`
     |
     = note: expected type `i64`
              found struct `Vec<Vec<i64>>`
+
+error[E0308]: mismatched types
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/2048.rs:277:51
+    |
+277 |     return Map2 {board: b, score: g_score, moved: moved}
+    |                                                   ^^^^^ expected `i64`, found `bool`
 
 error[E0608]: cannot index into a value of type `Map`
    --> /workspace/mochi/tests/rosetta/transpiler/Rust/2048.rs:286:18
@@ -1525,40 +1217,184 @@ error[E0608]: cannot index into a value of type `Map`
     |                  ^^^^^^^
 
 error[E0608]: cannot index into a value of type `Map`
-   --> /workspace/mochi/tests/rosetta/transpiler/Rust/2048.rs:287:31
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/2048.rs:287:33
     |
-287 |         score = (g_score + g_r["gain"]);
-    |                               ^^^^^^^^
+287 |         g_score = (g_score + g_r["gain"]);
+    |                                 ^^^^^^^^
 
 error[E0308]: mismatched types
    --> /workspace/mochi/tests/rosetta/transpiler/Rust/2048.rs:299:25
     |
-299 |     return Map2 {board: b, score: g_score, moved: g_moved}
+299 |     return Map2 {board: b, score: g_score, moved: moved}
     |                         ^ expected `i64`, found `Vec<Vec<i64>>`
     |
     = note: expected type `i64`
              found struct `Vec<Vec<i64>>`
 
 error[E0308]: mismatched types
-   --> /workspace/mochi/tests/rosetta/transpiler/Rust/2048.rs:342:23
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/2048.rs:299:51
+    |
+299 |     return Map2 {board: b, score: g_score, moved: moved}
+    |                                                   ^^^^^ expected `i64`, found `bool`
+
+error[E0308]: mismatched types
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/2048.rs:343:18
     |
 81  | static mut g_full: i64 = 0;
     |                    --- expected due to this type
 ...
-342 |     unsafe { g_full = g_r.full; }
-    |                       ^^^^^^^^ expected `i64`, found `bool`
-
-error[E0599]: no method named `is_some` found for type `bool` in the current scope
-   --> /workspace/mochi/tests/rosetta/transpiler/Rust/2048.rs:380:20
-    |
-380 |         if g_moved.is_some() {
-    |                    ^^^^^^^ method not found in `bool`
+343 |         g_full = g_r.full;
+    |                  ^^^^^^^^ expected `i64`, found `bool`
 
 error[E0308]: mismatched types
-   --> /workspace/mochi/tests/rosetta/transpiler/Rust/2048.rs:384:17
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/2048.rs:345:19
     |
-384 |             if (g_full && !hasMoves(g_board)) {
-    |                 ^^^^^^ expected `bool`, found `i64`
+79  | static mut g_board: Vec<Vec<i64>> = Vec::new();
+    |                     ------------- expected due to this type
+...
+345 |         g_board = g_r.board;
+    |                   ^^^^^^^^^ expected `Vec<Vec<i64>>`, found `i64`
+    |
+    = note: expected struct `Vec<Vec<i64>>`
+                 found type `i64`
+
+error[E0308]: mismatched types
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/2048.rs:347:19
+    |
+79  | static mut g_board: Vec<Vec<i64>> = Vec::new();
+    |                     ------------- expected due to this type
+...
+347 |         g_board = g_r.board;
+    |                   ^^^^^^^^^ expected `Vec<Vec<i64>>`, found `i64`
+    |
+    = note: expected struct `Vec<Vec<i64>>`
+                 found type `i64`
+
+error[E0308]: mismatched types
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/2048.rs:348:18
+    |
+81  | static mut g_full: i64 = 0;
+    |                    --- expected due to this type
+...
+348 |         g_full = g_r.full;
+    |                  ^^^^^^^^ expected `i64`, found `bool`
+
+error[E0308]: mismatched types
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/2048.rs:356:27
+    |
+79  | static mut g_board: Vec<Vec<i64>> = Vec::new();
+    |                     ------------- expected due to this type
+...
+356 |                 g_board = m.board;
+    |                           ^^^^^^^ expected `Vec<Vec<i64>>`, found `i64`
+    |
+    = note: expected struct `Vec<Vec<i64>>`
+                 found type `i64`
+
+error[E0308]: mismatched types
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/2048.rs:358:25
+    |
+353 |             let mut moved: bool = false;
+    |                            ---- expected due to this type
+...
+358 |                 moved = m.moved;
+    |                         ^^^^^^^ expected `bool`, found `i64`
+
+error[E0308]: mismatched types
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/2048.rs:362:27
+    |
+79  | static mut g_board: Vec<Vec<i64>> = Vec::new();
+    |                     ------------- expected due to this type
+...
+362 |                 g_board = m.board;
+    |                           ^^^^^^^ expected `Vec<Vec<i64>>`, found `i64`
+    |
+    = note: expected struct `Vec<Vec<i64>>`
+                 found type `i64`
+
+error[E0308]: mismatched types
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/2048.rs:364:25
+    |
+353 |             let mut moved: bool = false;
+    |                            ---- expected due to this type
+...
+364 |                 moved = m.moved;
+    |                         ^^^^^^^ expected `bool`, found `i64`
+
+error[E0308]: mismatched types
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/2048.rs:368:27
+    |
+79  | static mut g_board: Vec<Vec<i64>> = Vec::new();
+    |                     ------------- expected due to this type
+...
+368 |                 g_board = m.board;
+    |                           ^^^^^^^ expected `Vec<Vec<i64>>`, found `i64`
+    |
+    = note: expected struct `Vec<Vec<i64>>`
+                 found type `i64`
+
+error[E0308]: mismatched types
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/2048.rs:370:25
+    |
+353 |             let mut moved: bool = false;
+    |                            ---- expected due to this type
+...
+370 |                 moved = m.moved;
+    |                         ^^^^^^^ expected `bool`, found `i64`
+
+error[E0308]: mismatched types
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/2048.rs:374:27
+    |
+79  | static mut g_board: Vec<Vec<i64>> = Vec::new();
+    |                     ------------- expected due to this type
+...
+374 |                 g_board = m.board;
+    |                           ^^^^^^^ expected `Vec<Vec<i64>>`, found `i64`
+    |
+    = note: expected struct `Vec<Vec<i64>>`
+                 found type `i64`
+
+error[E0308]: mismatched types
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/2048.rs:376:25
+    |
+353 |             let mut moved: bool = false;
+    |                            ---- expected due to this type
+...
+376 |                 moved = m.moved;
+    |                         ^^^^^^^ expected `bool`, found `i64`
+
+error[E0599]: no method named `is_some` found for type `bool` in the current scope
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/2048.rs:381:22
+    |
+381 |             if moved.is_some() {
+    |                      ^^^^^^^ method not found in `bool`
+
+error[E0308]: mismatched types
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/2048.rs:383:27
+    |
+79  | static mut g_board: Vec<Vec<i64>> = Vec::new();
+    |                     ------------- expected due to this type
+...
+383 |                 g_board = r2.board;
+    |                           ^^^^^^^^ expected `Vec<Vec<i64>>`, found `i64`
+    |
+    = note: expected struct `Vec<Vec<i64>>`
+                 found type `i64`
+
+error[E0308]: mismatched types
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/2048.rs:384:26
+    |
+81  | static mut g_full: i64 = 0;
+    |                    --- expected due to this type
+...
+384 |                 g_full = r2.full;
+    |                          ^^^^^^^ expected `i64`, found `bool`
+
+error[E0308]: mismatched types
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/2048.rs:385:21
+    |
+385 |                 if (g_full && !hasMoves(g_board)) {
+    |                     ^^^^^^ expected `bool`, found `i64`
 
 warning: unused variable: `score`
    --> /workspace/mochi/tests/rosetta/transpiler/Rust/2048.rs:137:34
@@ -1589,7 +1425,7 @@ help: consider changing this to be mutable
 251 | unsafe fn setCol(mut b: Vec<Vec<i64>>, x: i64, col: Vec<i64>) {
     |                  +++
 
-error: aborting due to 57 previous errors; 91 warnings emitted
+error: aborting due to 47 previous errors; 84 warnings emitted
 
-Some errors have detailed explanations: E0277, E0308, E0425, E0596, E0599, E0608.
+Some errors have detailed explanations: E0277, E0308, E0596, E0599, E0608.
 For more information about an error, try `rustc --explain E0277`.
