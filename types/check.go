@@ -941,7 +941,13 @@ func checkStmt(s *parser.Statement, env *Env, expectedReturn Type) error {
 			return errCannotAssign(s.Assign.Pos, rhsType, s.Assign.Name, lhsType)
 		}
 		if len(s.Assign.Index) == 0 && len(s.Assign.Field) == 0 {
-			env.SetVar(s.Assign.Name, rhsType, true)
+			if ContainsAny(rhsType) {
+				if _, ok := lhsType.(AnyType); ok {
+					env.SetVar(s.Assign.Name, rhsType, true)
+				}
+			} else {
+				env.SetVar(s.Assign.Name, rhsType, true)
+			}
 		}
 		return nil
 
