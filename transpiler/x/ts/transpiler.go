@@ -313,6 +313,11 @@ type MethodCallExpr struct {
 	Args   []Expr
 }
 
+// MapKeysExpr represents extraction of map keys as a number array.
+type MapKeysExpr struct {
+	Target Expr
+}
+
 // FunExpr represents an anonymous function expression.
 type FunExpr struct {
 	Params []string
@@ -759,6 +764,14 @@ func (s *SliceExpr) emit(w io.Writer) {
 }
 
 func (m *MethodCallExpr) emit(w io.Writer) {
+	if m.Method == "keys" && len(m.Args) == 0 {
+		io.WriteString(w, "Object.keys(")
+		if m.Target != nil {
+			m.Target.emit(w)
+		}
+		io.WriteString(w, ").map(k => +k)")
+		return
+	}
 	m.Target.emit(w)
 	io.WriteString(w, ".")
 	io.WriteString(w, m.Method)
@@ -770,6 +783,14 @@ func (m *MethodCallExpr) emit(w io.Writer) {
 		a.emit(w)
 	}
 	io.WriteString(w, ")")
+}
+
+func (m *MapKeysExpr) emit(w io.Writer) {
+	io.WriteString(w, "Object.keys(")
+	if m.Target != nil {
+		m.Target.emit(w)
+	}
+	io.WriteString(w, ").map(k => +k)")
 }
 
 func (f *FunExpr) emit(w io.Writer) {
@@ -2676,6 +2697,15 @@ func convertBinary(b *parser.BinaryExpr) (Expr, error) {
 					isMap = true
 				}
 			}
+			if !isMap && transpileEnv != nil {
+				if id := opnodes[i].Right.Target.Selector; id != nil {
+					if t, err := transpileEnv.GetVar(id.Root); err == nil {
+						if _, ok := t.(types.MapType); ok {
+							isMap = true
+						}
+					}
+				}
+			}
 			if !isMap && isMapExpr(opnodes[i].Right) {
 				isMap = true
 			}
@@ -2811,8 +2841,15 @@ func convertPostfix(p *parser.PostfixExpr) (Expr, error) {
 				args[i] = ae
 			}
 			if idx, ok := expr.(*IndexExpr); ok {
-				if lit, ok2 := idx.Index.(*StringLit); ok2 && lit.Value == "contains" && len(args) == 1 {
-					expr = &MethodCallExpr{Target: idx.Target, Method: "includes", Args: args}
+				if lit, ok2 := idx.Index.(*StringLit); ok2 {
+					switch {
+					case lit.Value == "contains" && len(args) == 1:
+						expr = &MethodCallExpr{Target: idx.Target, Method: "includes", Args: args}
+					case lit.Value == "keys" && len(args) == 0:
+						expr = &MapKeysExpr{Target: idx.Target}
+					default:
+						expr = &InvokeExpr{Callee: expr, Args: args}
+					}
 				} else {
 					expr = &InvokeExpr{Callee: expr, Args: args}
 				}

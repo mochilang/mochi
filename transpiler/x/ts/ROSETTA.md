@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated TypeScript code from programs in `tests/rosetta/x/Mochi` lives in `tests/rosetta/transpiler/TypeScript`.
-Last updated: 2025-07-22 17:20 UTC
+Last updated: 2025-07-23 02:34 UTC
 
-## Rosetta Golden Test Checklist (15/284)
+## Rosetta Golden Test Checklist (21/284)
 1. [x] 100-doors-2
 2. [x] 100-doors-3
 3. [x] 100-doors
@@ -25,12 +25,12 @@ Last updated: 2025-07-22 17:20 UTC
 18. [ ] abbreviations-easy
 19. [ ] abbreviations-simple
 20. [ ] abc-problem
-21. [ ] abelian-sandpile-model-identity
-22. [ ] abelian-sandpile-model
-23. [ ] abstract-type
-24. [ ] abundant-deficient-and-perfect-number-classifications
-25. [ ] abundant-odd-numbers
-26. [ ] accumulator-factory
+21. [x] abelian-sandpile-model-identity
+22. [x] abelian-sandpile-model
+23. [x] abstract-type
+24. [x] abundant-deficient-and-perfect-number-classifications
+25. [x] abundant-odd-numbers
+26. [x] accumulator-factory
 27. [ ] achilles-numbers
 28. [ ] ackermann-function-2
 29. [ ] ackermann-function-3
