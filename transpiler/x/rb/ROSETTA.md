@@ -1,5 +1,5 @@
-# Ruby Rosetta Transpiler Output (86/284)
-Last updated: 2025-07-23 07:00 UTC
+# Ruby Rosetta Transpiler Output (105/284)
+Last updated: 2025-07-23 07:49 UTC
 
   1. [x] 100-doors-2
   2. [x] 100-doors-3
@@ -89,26 +89,26 @@ Last updated: 2025-07-23 07:00 UTC
  86. [x] averages-arithmetic-mean
  87. [x] averages-mean-time-of-day
  88. [x] averages-median-1
- 89. [ ] averages-median-2
- 90. [ ] averages-median-3
- 91. [ ] averages-mode
- 92. [ ] averages-pythagorean-means
- 93. [ ] averages-root-mean-square
- 94. [ ] averages-simple-moving-average
- 95. [ ] avl-tree
- 96. [ ] b-zier-curves-intersections
- 97. [ ] babbage-problem
- 98. [ ] babylonian-spiral
- 99. [ ] balanced-brackets
-100. [ ] balanced-ternary
-101. [ ] barnsley-fern
-102. [ ] base64-decode-data
+ 89. [x] averages-median-2
+ 90. [x] averages-median-3
+ 91. [x] averages-mode
+ 92. [x] averages-pythagorean-means
+ 93. [x] averages-root-mean-square
+ 94. [x] averages-simple-moving-average
+ 95. [x] avl-tree
+ 96. [x] b-zier-curves-intersections
+ 97. [x] babbage-problem
+ 98. [x] babylonian-spiral
+ 99. [x] balanced-brackets
+100. [x] balanced-ternary
+101. [x] barnsley-fern
+102. [x] base64-decode-data
 103. [ ] bell-numbers
-104. [ ] benfords-law
-105. [ ] bernoulli-numbers
-106. [ ] best-shuffle
-107. [ ] bifid-cipher
-108. [ ] bin-given-limits
+104. [x] benfords-law
+105. [x] bernoulli-numbers
+106. [x] best-shuffle
+107. [x] bifid-cipher
+108. [x] bin-given-limits
 109. [ ] binary-digits
 110. [ ] binary-search
 111. [ ] binary-strings

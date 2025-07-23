@@ -72,6 +72,27 @@ def _add(a, b)
 end
 `
 
+const helperIterate = `
+def _iterate(obj)
+  if obj.is_a?(String)
+    obj.each_char { |ch| yield ch }
+  else
+    obj.each { |elem| yield elem }
+  end
+end
+`
+
+const helperPadStart = `
+def _pad_start(str, len, pad)
+  str.rjust(len, pad[0])
+end
+class String
+  def padStart(len, pad)
+    rjust(len, pad[0])
+  end
+end
+`
+
 // --- Ruby AST ---
 
 type Program struct {
@@ -1116,6 +1137,7 @@ var (
 	usesNow        bool
 	usesInput      bool
 	usesLookupHost bool
+	usesPadStart   bool
 )
 
 // reserved lists Ruby reserved keywords that cannot be used as identifiers.
@@ -1593,8 +1615,9 @@ type ForInStmt struct {
 }
 
 func (f *ForInStmt) emit(e *emitter) {
+	io.WriteString(e.w, "_iterate(")
 	f.Iterable.emit(e)
-	io.WriteString(e.w, ".each do |")
+	io.WriteString(e.w, ") do |")
 	pushScope(f.Name)
 	io.WriteString(e.w, f.Name)
 	io.WriteString(e.w, "|")
@@ -2445,6 +2468,14 @@ func Emit(w io.Writer, p *Program) error {
 	if _, err := io.WriteString(w, helperAdd+"\n"); err != nil {
 		return err
 	}
+	if _, err := io.WriteString(w, helperIterate+"\n"); err != nil {
+		return err
+	}
+	if usesPadStart {
+		if _, err := io.WriteString(w, helperPadStart+"\n"); err != nil {
+			return err
+		}
+	}
 	for _, s := range p.Stmts {
 		e.writeIndent()
 		s.emit(e)
@@ -3294,6 +3325,15 @@ func convertPostfix(pf *parser.PostfixExpr) (Expr, error) {
 			} else {
 				if method == "contains" {
 					method = "include?"
+				} else if method == "padStart" {
+					if len(args) != 2 {
+						return nil, fmt.Errorf("padStart expects 2 args")
+					}
+					usesPadStart = true
+					expr = &CallExpr{Func: "_pad_start", Args: []Expr{expr, args[0], args[1]}}
+					i++ // consume call op
+					curType = nil
+					continue
 				}
 				expr = &MethodCallExpr{Target: expr, Method: method, Args: args}
 			}
@@ -3364,6 +3404,16 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 				return nil, fmt.Errorf("avg takes one arg")
 			}
 			return &AvgExpr{Value: args[0]}, nil
+		case "num":
+			if len(args) != 1 {
+				return nil, fmt.Errorf("num expects 1 arg")
+			}
+			return &MethodCallExpr{Target: args[0], Method: "numerator"}, nil
+		case "denom":
+			if len(args) != 1 {
+				return nil, fmt.Errorf("denom expects 1 arg")
+			}
+			return &MethodCallExpr{Target: args[0], Method: "denominator"}, nil
 		case "min":
 			if len(args) != 1 {
 				return nil, fmt.Errorf("min takes one arg")
@@ -3421,6 +3471,12 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 				return nil, fmt.Errorf("lower expects 1 arg")
 			}
 			return &MethodCallExpr{Target: args[0], Method: "downcase"}, nil
+		case "padStart":
+			if len(args) != 3 {
+				return nil, fmt.Errorf("padStart expects 3 args")
+			}
+			usesPadStart = true
+			return &CallExpr{Func: "_pad_start", Args: args}, nil
 		case "now":
 			if len(args) != 0 {
 				return nil, fmt.Errorf("now takes no args")
