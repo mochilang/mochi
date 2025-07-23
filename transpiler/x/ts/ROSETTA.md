@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated TypeScript code from programs in `tests/rosetta/x/Mochi` lives in `tests/rosetta/transpiler/TypeScript`.
-Last updated: 2025-07-23 12:43 UTC
+Last updated: 2025-07-23 13:05 UTC
 
-## Rosetta Golden Test Checklist (162/284)
+## Rosetta Golden Test Checklist (192/284)
 1. [x] 100-doors-2
 2. [x] 100-doors-3
 3. [x] 100-doors
@@ -174,36 +174,36 @@ Last updated: 2025-07-23 12:43 UTC
 167. [x] canny-edge-detector
 168. [x] canonicalize-cidr
 169. [x] cantor-set
-170. [ ] carmichael-3-strong-pseudoprimes
-171. [ ] cartesian-product-of-two-or-more-lists-1
-172. [ ] cartesian-product-of-two-or-more-lists-2
-173. [ ] cartesian-product-of-two-or-more-lists-3
-174. [ ] cartesian-product-of-two-or-more-lists-4
-175. [ ] case-sensitivity-of-identifiers
-176. [ ] casting-out-nines
-177. [ ] catalan-numbers-1
-178. [ ] catalan-numbers-2
-179. [ ] catalan-numbers-pascals-triangle
-180. [ ] catamorphism
-181. [ ] catmull-clark-subdivision-surface
-182. [ ] chaocipher
-183. [ ] chaos-game
-184. [ ] character-codes-1
-185. [ ] character-codes-2
-186. [ ] character-codes-3
-187. [ ] character-codes-4
-188. [ ] character-codes-5
-189. [ ] chat-server
-190. [ ] check-machin-like-formulas
-191. [ ] check-that-file-exists
-192. [ ] checkpoint-synchronization-1
-193. [ ] checkpoint-synchronization-2
-194. [ ] checkpoint-synchronization-3
-195. [ ] checkpoint-synchronization-4
-196. [ ] chernicks-carmichael-numbers
-197. [ ] cheryls-birthday
-198. [ ] chinese-remainder-theorem
-199. [ ] chinese-zodiac
+170. [x] carmichael-3-strong-pseudoprimes
+171. [x] cartesian-product-of-two-or-more-lists-1
+172. [x] cartesian-product-of-two-or-more-lists-2
+173. [x] cartesian-product-of-two-or-more-lists-3
+174. [x] cartesian-product-of-two-or-more-lists-4
+175. [x] case-sensitivity-of-identifiers
+176. [x] casting-out-nines
+177. [x] catalan-numbers-1
+178. [x] catalan-numbers-2
+179. [x] catalan-numbers-pascals-triangle
+180. [x] catamorphism
+181. [x] catmull-clark-subdivision-surface
+182. [x] chaocipher
+183. [x] chaos-game
+184. [x] character-codes-1
+185. [x] character-codes-2
+186. [x] character-codes-3
+187. [x] character-codes-4
+188. [x] character-codes-5
+189. [x] chat-server
+190. [x] check-machin-like-formulas
+191. [x] check-that-file-exists
+192. [x] checkpoint-synchronization-1
+193. [x] checkpoint-synchronization-2
+194. [x] checkpoint-synchronization-3
+195. [x] checkpoint-synchronization-4
+196. [x] chernicks-carmichael-numbers
+197. [x] cheryls-birthday
+198. [x] chinese-remainder-theorem
+199. [x] chinese-zodiac
 200. [ ] cholesky-decomposition-1
 201. [ ] cholesky-decomposition
 202. [ ] chowla-numbers
