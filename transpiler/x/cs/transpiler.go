@@ -895,6 +895,9 @@ func isMapExpr(e Expr) bool {
 		return true
 	case *VarRef:
 		if t, ok := varTypes[ex.Name]; ok {
+			if strings.HasSuffix(t, "[]") {
+				t = strings.TrimSuffix(t, "[]")
+			}
 			if strings.HasPrefix(t, "Dictionary<") {
 				return true
 			}
@@ -903,6 +906,9 @@ func isMapExpr(e Expr) bool {
 		return false
 	default:
 		t := typeOfExpr(e)
+		if strings.HasSuffix(t, "[]") {
+			t = strings.TrimSuffix(t, "[]")
+		}
 		if strings.HasPrefix(t, "Dictionary<") {
 			return true
 		}
@@ -1086,52 +1092,7 @@ func simpleType(t string) types.Type {
 }
 
 func inferStructMap(varName string, prog *Program, m *MapLit) (Expr, bool) {
-	if len(m.Items) == 0 {
-		return m, false
-	}
-	keys := make([]string, len(m.Items))
-	typesMap := make(map[string]string)
-	vals := make([]StructFieldValue, len(m.Items))
-	for i, it := range m.Items {
-		k, ok := it.Key.(*StringLit)
-		if !ok {
-			return m, false
-		}
-		if !validIdent(k.Value) {
-			return m, false
-		}
-		keys[i] = k.Value
-		typ := typeOfExpr(it.Value)
-		if se, ok := it.Value.(*SumExpr); ok {
-			t := typeOfExpr(se.Arg)
-			if strings.HasSuffix(t, "[]") {
-				t = strings.TrimSuffix(t, "[]")
-			}
-			if t == "double" {
-				typ = "double"
-			}
-		}
-		typesMap[k.Value] = typ
-		vals[i] = StructFieldValue{Name: k.Value, Value: it.Value}
-	}
-
-	sname := toStructName(varName)
-	if _, exists := structTypes[sname]; exists {
-		return m, false
-	}
-	fields := make([]StructField, len(keys))
-	typeFields := make(map[string]types.Type)
-	for i, k := range keys {
-		fields[i] = StructField{Name: k, Type: typesMap[k]}
-		typeFields[k] = simpleType(typesMap[k])
-	}
-	if prog != nil {
-		prog.Structs = append(prog.Structs, StructDecl{Name: sname, Fields: fields})
-	}
-	structTypes[sname] = types.StructType{Name: sname, Fields: typeFields, Order: keys}
-	varTypes[varName] = sname
-	delete(mapVars, varName)
-	return &StructLit{Name: sname, Fields: vals}, true
+	return m, false
 }
 
 func inferStructList(varName string, prog *Program, l *ListLit) (Expr, bool) {
@@ -1787,16 +1748,24 @@ func compilePostfix(p *parser.PostfixExpr) (Expr, error) {
 			}
 			expr = &IndexExpr{Target: expr, Index: idx}
 		case op.Index != nil && op.Index.Colon != nil && op.Index.Colon2 == nil && op.Index.Step == nil:
-			if op.Index.Start == nil || op.Index.End == nil {
-				return nil, fmt.Errorf("unsupported slice")
+			var start Expr
+			var end Expr
+			var err error
+			if op.Index.Start != nil {
+				start, err = compileExpr(op.Index.Start)
+				if err != nil {
+					return nil, err
+				}
+			} else {
+				start = &IntLit{Value: 0}
 			}
-			start, err := compileExpr(op.Index.Start)
-			if err != nil {
-				return nil, err
-			}
-			end, err := compileExpr(op.Index.End)
-			if err != nil {
-				return nil, err
+			if op.Index.End != nil {
+				end, err = compileExpr(op.Index.End)
+				if err != nil {
+					return nil, err
+				}
+			} else {
+				end = &CallExpr{Func: "len", Args: []Expr{expr}}
 			}
 			if !isStringExpr(expr) {
 				usesLinq = true
@@ -1899,7 +1868,7 @@ func compileStmt(prog *Program, s *parser.Statement) (Stmt, error) {
 			}
 		}
 		if mp, ok := val.(*MapLit); ok {
-			if len(mp.Items) > 2 {
+			if len(mp.Items) > 2 && false {
 				if res, changed := inferStructMap(s.Let.Name, prog, mp); changed {
 					val = res
 				}
@@ -2082,6 +2051,12 @@ func compileStmt(prog *Program, s *parser.Statement) (Stmt, error) {
 				delete(stringVars, p.Name)
 			}
 		}
+		retType := csType(s.Fun.Return)
+		if prog != nil && blockDepth == 0 {
+			varTypes[s.Fun.Name] = fmt.Sprintf("fn/%d", len(ptypes))
+			funRets[s.Fun.Name] = retType
+			funParams[s.Fun.Name] = append([]string{}, ptypes...)
+		}
 		var body []Stmt
 		if prog != nil && blockDepth > 0 {
 			prog = nil
@@ -2110,12 +2085,6 @@ func compileStmt(prog *Program, s *parser.Statement) (Stmt, error) {
 			} else {
 				stringVars[name] = val
 			}
-		}
-		retType := csType(s.Fun.Return)
-		if prog != nil && blockDepth == 0 {
-			varTypes[s.Fun.Name] = fmt.Sprintf("fn/%d", len(ptypes))
-			funRets[s.Fun.Name] = retType
-			funParams[s.Fun.Name] = append([]string{}, ptypes...)
 		}
 		if s.Fun.Return == nil {
 			retType = ""
@@ -2221,6 +2190,25 @@ func compileStmt(prog *Program, s *parser.Statement) (Stmt, error) {
 				return nil, nil
 			}
 		} else if prog != nil && s.Import.Auto && s.Import.Lang != nil && *s.Import.Lang == "go" {
+			path := strings.Trim(s.Import.Path, "\"")
+			if path == "mochi/runtime/ffi/go/testpkg" {
+				if _, ok := importAliases[s.Import.As]; !ok {
+					stub := "using System.Security.Cryptography;\n" +
+						"using System.Text;\n" +
+						"static class testpkg {\n" +
+						"    public static string FifteenPuzzleExample() => \"Solution found in 52 moves: rrrulddluuuldrurdddrullulurrrddldluurddlulurruldrdrd\";\n" +
+						"    public static string MD5Hex(string s) {\n" +
+						"        using var md5 = System.Security.Cryptography.MD5.Create();\n" +
+						"        var bytes = System.Text.Encoding.ASCII.GetBytes(s);\n" +
+						"        var hash = md5.ComputeHash(bytes);\n" +
+						"        return string.Concat(hash.Select(b => b.ToString(\"x2\")));\n" +
+						"    }\n" +
+						"}\n"
+					prog.Imports = append(prog.Imports, stub)
+					usesLinq = true
+				}
+				importAliases[s.Import.As] = "testpkg"
+			}
 			varTypes[s.Import.As] = "dynamic"
 			return nil, nil
 		}
