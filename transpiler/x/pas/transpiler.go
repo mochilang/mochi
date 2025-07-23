@@ -54,6 +54,7 @@ type Program struct {
 	Funs         []FunDecl
 	Vars         []VarDecl
 	Records      []RecordDef
+	ArrayAliases map[string]string
 	Stmts        []Stmt
 	UseSysUtils  bool
 	UseMath      bool
@@ -305,7 +306,13 @@ type StringLit struct{ Value string }
 
 func (s *StringLit) emit(w io.Writer) {
 	escaped := strings.ReplaceAll(s.Value, "'", "''")
-	fmt.Fprintf(w, "'%s'", escaped)
+	parts := strings.Split(escaped, "\n")
+	for i, p := range parts {
+		if i > 0 {
+			io.WriteString(w, " + #10 + ")
+		}
+		fmt.Fprintf(w, "'%s'", p)
+	}
 }
 
 // ListLit is a simple list literal using Pascal's open array syntax.
@@ -721,6 +728,9 @@ func (p *Program) Emit() []byte {
 	if p.NeedShowList {
 		buf.WriteString("procedure show_list(xs: array of integer);\nvar i: integer;\nbegin\n  write('[');\n  for i := 0 to High(xs) do begin\n    write(xs[i]);\n    if i < High(xs) then write(', ');\n  end;\n  writeln(']');\nend;\n")
 	}
+	for elem, alias := range p.ArrayAliases {
+		fmt.Fprintf(&buf, "type %s = array of %s;\n", alias, elem)
+	}
 	for _, r := range p.Records {
 		fmt.Fprintf(&buf, "type %s = record\n", r.Name)
 		for _, f := range r.Fields {
@@ -1118,6 +1128,7 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 				if _, ok := varTypes[st.For.Name]; !ok {
 					varTypes[st.For.Name] = "integer"
 				}
+				setVarType(st.For.Name, varTypes[st.For.Name])
 			} else {
 				pr.Stmts = append(pr.Stmts, &ForEachStmt{Name: st.For.Name, Iterable: start, Body: body})
 				if _, ok := varTypes[st.For.Name]; !ok {
@@ -1134,6 +1145,7 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 						varTypes[st.For.Name] = "integer"
 					}
 				}
+				setVarType(st.For.Name, varTypes[st.For.Name])
 			}
 		case st.While != nil:
 			cond, err := convertExpr(env, st.While.Cond)
@@ -1160,7 +1172,49 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 			}
 			pr.Stmts = append(pr.Stmts, &IfStmt{Cond: cond, Then: thenBody, Else: elseBody})
 		case st.Fun != nil:
-			fnBody, err := convertBody(env, st.Fun.Body, varTypes)
+			local := map[string]string{}
+			for k, v := range varTypes {
+				local[k] = v
+			}
+			for _, p := range st.Fun.Params {
+				typ := "integer"
+				if p.Type != nil {
+					if p.Type.Simple != nil {
+						switch *p.Type.Simple {
+						case "int":
+							typ = "integer"
+						case "string":
+							typ = "string"
+						case "bool":
+							typ = "boolean"
+						default:
+							typ = *p.Type.Simple
+						}
+					} else if p.Type.Generic != nil && p.Type.Generic.Name == "list" && len(p.Type.Generic.Args) == 1 {
+						arg := p.Type.Generic.Args[0]
+						elem := "integer"
+						if arg.Simple != nil {
+							switch *arg.Simple {
+							case "int":
+								elem = "integer"
+							case "string":
+								elem = "string"
+							case "bool":
+								elem = "boolean"
+							default:
+								elem = *arg.Simple
+							}
+						}
+						typ = "array of " + elem
+					}
+				}
+				if strings.HasPrefix(typ, "array of ") {
+					elem := strings.TrimPrefix(typ, "array of ")
+					typ = pr.addArrayAlias(elem)
+				}
+				local[p.Name] = typ
+			}
+			fnBody, err := convertBody(env, st.Fun.Body, local)
 			if err != nil {
 				return nil, err
 			}
@@ -1195,6 +1249,10 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 						typ = "array of " + elem
 					}
 				}
+				if strings.HasPrefix(typ, "array of ") {
+					elem := strings.TrimPrefix(typ, "array of ")
+					typ = pr.addArrayAlias(elem)
+				}
 				params = append(params, fmt.Sprintf("%s: %s", p.Name, typ))
 			}
 			rt := ""
@@ -1220,7 +1278,8 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 							elem = *arg.Simple
 						}
 					}
-					rt = "array of " + elem
+					alias := pr.addArrayAlias(elem)
+					rt = alias
 				}
 			}
 			pr.Funs = append(pr.Funs, FunDecl{Name: st.Fun.Name, Params: params, ReturnType: rt, Body: fnBody})
@@ -1324,7 +1383,6 @@ func convertBody(env *types.Env, body []*parser.Statement, varTypes map[string]s
 				if err != nil {
 					return nil, err
 				}
-				vd.Init = ex
 				if vd.Type == "" {
 					if t := inferType(ex); t != "" {
 						vd.Type = t
@@ -1370,7 +1428,6 @@ func convertBody(env *types.Env, body []*parser.Statement, varTypes map[string]s
 				if err != nil {
 					return nil, err
 				}
-				vd.Init = ex
 				if vd.Type == "" {
 					if t := inferType(ex); t != "" {
 						vd.Type = t
@@ -3521,6 +3578,28 @@ func setVarType(name, typ string) {
 		}
 	}
 	currProg.Vars = append(currProg.Vars, VarDecl{Name: name, Type: typ})
+}
+
+func (p *Program) addArrayAlias(elem string) string {
+	if p.ArrayAliases == nil {
+		p.ArrayAliases = make(map[string]string)
+	}
+	if name, ok := p.ArrayAliases[elem]; ok {
+		return name
+	}
+	alias := ""
+	switch elem {
+	case "integer":
+		alias = "IntArray"
+	case "string":
+		alias = "StrArray"
+	case "boolean":
+		alias = "BoolArray"
+	default:
+		alias = strings.Title(elem) + "Array"
+	}
+	p.ArrayAliases[elem] = alias
+	return alias
 }
 
 func findRecord(name string) (RecordDef, bool) {
