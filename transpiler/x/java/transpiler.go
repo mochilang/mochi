@@ -319,6 +319,13 @@ func inferType(e Expr) string {
 			if t, ok := funcRet[ex.Func]; ok {
 				return t
 			}
+			if topEnv != nil {
+				if fn, ok := topEnv.GetFunc(ex.Func); ok {
+					if t := typeRefString(fn.Return); t != "" {
+						return t
+					}
+				}
+			}
 		}
 	case *MethodCallExpr:
 		switch ex.Name {
@@ -1561,16 +1568,15 @@ type IndexExpr struct {
 
 func (ix *IndexExpr) emit(w io.Writer) {
 	if ix.IsMap {
+		castType := "java.util.Map"
 		if ix.ResultType != "" {
-			fmt.Fprintf(w, "(%s)(", javaType(ix.ResultType))
+			castType = javaType(ix.ResultType)
 		}
+		fmt.Fprintf(w, "(%s)(", castType)
 		ix.Target.emit(w)
 		fmt.Fprint(w, ".get(")
 		ix.Index.emit(w)
-		fmt.Fprint(w, ")")
-		if ix.ResultType != "" {
-			fmt.Fprint(w, ")")
-		}
+		fmt.Fprint(w, "))")
 		return
 	}
 	if isStringExpr(ix.Target) {
@@ -1584,16 +1590,15 @@ func (ix *IndexExpr) emit(w io.Writer) {
 		ix.Index.emit(w)
 		fmt.Fprint(w, "]")
 	} else if isMapExpr(ix.Target) {
+		castType := "java.util.Map"
 		if ix.ResultType != "" {
-			fmt.Fprintf(w, "(%s)(", javaType(ix.ResultType))
+			castType = javaType(ix.ResultType)
 		}
+		fmt.Fprintf(w, "(%s)(", castType)
 		ix.Target.emit(w)
 		fmt.Fprint(w, ".get(")
 		ix.Index.emit(w)
-		fmt.Fprint(w, ")")
-		if ix.ResultType != "" {
-			fmt.Fprint(w, ")")
-		}
+		fmt.Fprint(w, "))")
 	} else {
 		ix.Target.emit(w)
 		fmt.Fprint(w, "[")
@@ -3377,6 +3382,16 @@ func toJavaTypeFromType(t types.Type) string {
 		if tt.Name != "" {
 			return tt.Name
 		}
+	case types.MapType:
+		k := toJavaTypeFromType(tt.Key)
+		if k == "" {
+			k = "Object"
+		}
+		v := toJavaTypeFromType(tt.Value)
+		if v == "" {
+			v = "Object"
+		}
+		return fmt.Sprintf("java.util.Map<%s,%s>", javaBoxType(k), javaBoxType(v))
 	}
 	return ""
 }
@@ -3468,7 +3483,7 @@ func renameVar(e Expr, oldName, newName string) Expr {
 		}
 		return &MethodCallExpr{Target: renameVar(ex.Target, oldName, newName), Name: ex.Name, Args: args}
 	case *IndexExpr:
-		return &IndexExpr{Target: renameVar(ex.Target, oldName, newName), Index: renameVar(ex.Index, oldName, newName), IsMap: ex.IsMap}
+		return &IndexExpr{Target: renameVar(ex.Target, oldName, newName), Index: renameVar(ex.Index, oldName, newName), IsMap: ex.IsMap, ResultType: ex.ResultType}
 	case *SliceExpr:
 		return &SliceExpr{Value: renameVar(ex.Value, oldName, newName), Start: renameVar(ex.Start, oldName, newName), End: renameVar(ex.End, oldName, newName)}
 	case *LenExpr:
@@ -3566,7 +3581,7 @@ func substituteFieldVars(e Expr, fields map[string]bool) Expr {
 	case *FieldExpr:
 		return &FieldExpr{Target: substituteFieldVars(ex.Target, fields), Name: ex.Name}
 	case *IndexExpr:
-		return &IndexExpr{Target: substituteFieldVars(ex.Target, fields), Index: substituteFieldVars(ex.Index, fields)}
+		return &IndexExpr{Target: substituteFieldVars(ex.Target, fields), Index: substituteFieldVars(ex.Index, fields), IsMap: ex.IsMap, ResultType: ex.ResultType}
 	case *IntCastExpr:
 		return &IntCastExpr{Value: substituteFieldVars(ex.Value, fields)}
 	case *SliceExpr:
