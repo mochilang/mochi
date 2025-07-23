@@ -947,6 +947,7 @@ func (m *MapLit) emit(w io.Writer) error {
 type IndexExpr struct {
 	Target Expr
 	Index  Expr
+	NoBang bool
 }
 
 // SliceExpr represents target[start:end].
@@ -1054,7 +1055,7 @@ func (i *IndexExpr) emit(w io.Writer) error {
 	if _, err := io.WriteString(w, "]"); err != nil {
 		return err
 	}
-	if strings.HasPrefix(t, "Map<") {
+	if strings.HasPrefix(t, "Map<") && !i.NoBang {
 		_, err := io.WriteString(w, "!")
 		return err
 	}
@@ -2130,7 +2131,7 @@ func inferType(e Expr) string {
 		if kt == "dynamic" {
 			kt = "dynamic"
 		}
-		return "Map<" + kt + ", dynamic>"
+		return "Map<" + kt + ", " + vt + ">"
 	case *MultiListComp:
 		saved := map[string]string{}
 		for i, v := range ex.Vars {
@@ -3103,6 +3104,7 @@ func convertAssignTarget(as *parser.AssignStmt) (Expr, error) {
 		if i < len(as.Index)-1 || len(as.Field) > 0 {
 			expr = &NotNilExpr{X: iexpr}
 		} else {
+			iexpr.NoBang = true
 			expr = iexpr
 		}
 	}
@@ -3316,6 +3318,7 @@ func convertPostfix(pf *parser.PostfixExpr) (Expr, error) {
 							useLookupHost = true
 							expr = &CallExpr{Func: &Name{Name: "_lookupHost"}, Args: args}
 							args = nil
+							replaced = true
 						}
 					}
 				}
@@ -3457,6 +3460,20 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 				return nil, err
 			}
 			return &SubstringExpr{Str: s0, Start: s1, End: s2}, nil
+		}
+		if p.Call.Func == "upper" && len(p.Call.Args) == 1 {
+			arg, err := convertExpr(p.Call.Args[0])
+			if err != nil {
+				return nil, err
+			}
+			return &CallExpr{Func: &SelectorExpr{Receiver: arg, Field: "toUpperCase"}}, nil
+		}
+		if p.Call.Func == "lower" && len(p.Call.Args) == 1 {
+			arg, err := convertExpr(p.Call.Args[0])
+			if err != nil {
+				return nil, err
+			}
+			return &CallExpr{Func: &SelectorExpr{Receiver: arg, Field: "toLowerCase"}}, nil
 		}
 		if p.Call.Func == "print" {
 			var args []Expr

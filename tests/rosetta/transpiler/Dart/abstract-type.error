@@ -1,0 +1,70 @@
+run: exit status 254
+../../../tests/rosetta/transpiler/Dart/abstract-type.dart:3:19: Error: Undefined name 'k'.
+  return b == Dog(k, _) ? k : b == Cat(k, _) ? k : null;
+                  ^
+../../../tests/rosetta/transpiler/Dart/abstract-type.dart:3:22: Error: Undefined name '_'.
+  return b == Dog(k, _) ? k : b == Cat(k, _) ? k : null;
+                     ^
+../../../tests/rosetta/transpiler/Dart/abstract-type.dart:3:15: Error: Method not found: 'Dog'.
+  return b == Dog(k, _) ? k : b == Cat(k, _) ? k : null;
+              ^^^
+../../../tests/rosetta/transpiler/Dart/abstract-type.dart:3:27: Error: Undefined name 'k'.
+  return b == Dog(k, _) ? k : b == Cat(k, _) ? k : null;
+                          ^
+../../../tests/rosetta/transpiler/Dart/abstract-type.dart:3:40: Error: Undefined name 'k'.
+  return b == Dog(k, _) ? k : b == Cat(k, _) ? k : null;
+                                       ^
+../../../tests/rosetta/transpiler/Dart/abstract-type.dart:3:43: Error: Undefined name '_'.
+  return b == Dog(k, _) ? k : b == Cat(k, _) ? k : null;
+                                          ^
+../../../tests/rosetta/transpiler/Dart/abstract-type.dart:3:36: Error: Method not found: 'Cat'.
+  return b == Dog(k, _) ? k : b == Cat(k, _) ? k : null;
+                                   ^^^
+../../../tests/rosetta/transpiler/Dart/abstract-type.dart:3:48: Error: Undefined name 'k'.
+  return b == Dog(k, _) ? k : b == Cat(k, _) ? k : null;
+                                               ^
+../../../tests/rosetta/transpiler/Dart/abstract-type.dart:7:19: Error: Undefined name '_'.
+  return b == Dog(_, n) ? n : b == Cat(_, n) ? n : null;
+                  ^
+../../../tests/rosetta/transpiler/Dart/abstract-type.dart:7:22: Error: Undefined name 'n'.
+  return b == Dog(_, n) ? n : b == Cat(_, n) ? n : null;
+                     ^
+../../../tests/rosetta/transpiler/Dart/abstract-type.dart:7:15: Error: Method not found: 'Dog'.
+  return b == Dog(_, n) ? n : b == Cat(_, n) ? n : null;
+              ^^^
+../../../tests/rosetta/transpiler/Dart/abstract-type.dart:7:27: Error: Undefined name 'n'.
+  return b == Dog(_, n) ? n : b == Cat(_, n) ? n : null;
+                          ^
+../../../tests/rosetta/transpiler/Dart/abstract-type.dart:7:40: Error: Undefined name '_'.
+  return b == Dog(_, n) ? n : b == Cat(_, n) ? n : null;
+                                       ^
+../../../tests/rosetta/transpiler/Dart/abstract-type.dart:7:43: Error: Undefined name 'n'.
+  return b == Dog(_, n) ? n : b == Cat(_, n) ? n : null;
+                                          ^
+../../../tests/rosetta/transpiler/Dart/abstract-type.dart:7:36: Error: Method not found: 'Cat'.
+  return b == Dog(_, n) ? n : b == Cat(_, n) ? n : null;
+                                   ^^^
+../../../tests/rosetta/transpiler/Dart/abstract-type.dart:7:48: Error: Undefined name 'n'.
+  return b == Dog(_, n) ? n : b == Cat(_, n) ? n : null;
+                                               ^
+../../../tests/rosetta/transpiler/Dart/abstract-type.dart:11:19: Error: Undefined name '_'.
+  return b == Dog(_, _) ? "Woof" : b == Cat(_, _) ? "Meow" : null;
+                  ^
+../../../tests/rosetta/transpiler/Dart/abstract-type.dart:11:22: Error: Undefined name '_'.
+  return b == Dog(_, _) ? "Woof" : b == Cat(_, _) ? "Meow" : null;
+                     ^
+../../../tests/rosetta/transpiler/Dart/abstract-type.dart:11:15: Error: Method not found: 'Dog'.
+  return b == Dog(_, _) ? "Woof" : b == Cat(_, _) ? "Meow" : null;
+              ^^^
+../../../tests/rosetta/transpiler/Dart/abstract-type.dart:11:45: Error: Undefined name '_'.
+  return b == Dog(_, _) ? "Woof" : b == Cat(_, _) ? "Meow" : null;
+                                            ^
+../../../tests/rosetta/transpiler/Dart/abstract-type.dart:11:48: Error: Undefined name '_'.
+  return b == Dog(_, _) ? "Woof" : b == Cat(_, _) ? "Meow" : null;
+                                               ^
+../../../tests/rosetta/transpiler/Dart/abstract-type.dart:11:41: Error: Method not found: 'Cat'.
+  return b == Dog(_, _) ? "Woof" : b == Cat(_, _) ? "Meow" : null;
+                                        ^^^
+../../../tests/rosetta/transpiler/Dart/abstract-type.dart:11:25: Error: A value of type 'String?' can't be returned from a function with return type 'String' because 'String?' is nullable and 'String' isn't.
+  return b == Dog(_, _) ? "Woof" : b == Cat(_, _) ? "Meow" : null;
+                        ^

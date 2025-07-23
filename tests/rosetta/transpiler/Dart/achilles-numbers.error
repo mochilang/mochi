@@ -1,0 +1,5 @@
+run: exit status 254
+../../../tests/rosetta/transpiler/Dart/achilles-numbers.dart:117:31: Error: The method 'call' isn't defined for the class 'bool?'.
+Try correcting the name to the name of an existing method, or defining a method named 'call'.
+  for (var k in achSet["keys"]()) {
+                              ^

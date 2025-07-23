@@ -41,7 +41,7 @@ List<String> distinct(List<String> xs) {
   while (i < xs.length) {
     final String x = xs[i];
     if (!m.containsKey(x)) {
-    m[x]! = true;
+    m[x] = true;
     out = [...out, x];
   }
     i = i + 1;
