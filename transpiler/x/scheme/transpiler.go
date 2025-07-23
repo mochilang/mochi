@@ -20,6 +20,8 @@ var breakStack []Symbol
 var continueStack []Node
 var gensymCounter int
 var needBase bool
+var needHash bool
+var usesInput bool
 
 func pushLoop(breakSym Symbol, cont Node) {
 	breakStack = append(breakStack, breakSym)
@@ -163,12 +165,21 @@ func header() []byte {
 		prelude += "(import (only (scheme base) call/cc list-ref list-set! list))\n"
 		prelude += "(import (scheme time))\n"
 	}
+	if needHash {
+		prelude += "(import (srfi 69))\n"
+	}
+	if usesInput {
+		prelude += "(import (chibi io))\n"
+	}
 	prelude += `(define (to-str x)
   (cond ((pair? x)
          (string-append "[" (string-join (map to-str x) ", ") "]"))
         ((string? x) x)
         ((boolean? x) (if x "1" "0"))
         (else (number->string x))))`
+	if usesInput {
+		prelude += "\n(define (_input)\n  (let ((l (read-line)))\n    (if (eof-object? l) \"\" l)))"
+	}
 	return []byte(fmt.Sprintf(";; Generated on %s\n%s\n",
 		ts.In(loc).Format("2006-01-02 15:04 -0700"), prelude))
 }
@@ -189,6 +200,7 @@ func typedDefault(t *parser.TypeRef) Node {
 	case "string":
 		return StringLit("")
 	case "map":
+		needHash = true
 		return &List{Elems: []Node{Symbol("make-hash-table")}}
 	default:
 		return voidSym()
@@ -370,6 +382,7 @@ func convertForStmt(fs *parser.ForStmt) (Node, error) {
 			return nil, err
 		}
 		if _, ok := types.ExprType(fs.Source, prevEnv).(types.MapType); ok {
+			needHash = true
 			iter = &List{Elems: []Node{Symbol("hash-table-keys"), iter}}
 		}
 	}
@@ -562,6 +575,7 @@ func convertStmt(st *parser.Statement) (Node, error) {
 		}
 		typ, _ := currentEnv.GetVar(st.Assign.Name)
 		if _, ok := typ.(types.MapType); ok {
+			needHash = true
 			return &List{Elems: []Node{Symbol("hash-table-set!"), target, idxNode, val}}, nil
 		}
 		return &List{Elems: []Node{Symbol("list-set!"), target, idxNode, val}}, nil
@@ -626,6 +640,8 @@ func convertStmt(st *parser.Statement) (Node, error) {
 func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	currentEnv = env
 	needBase = false
+	needHash = false
+	usesInput = false
 	p := &Program{}
 	for _, st := range prog.Statements {
 		form, err := convertStmt(st)
@@ -840,6 +856,7 @@ func convertParserPrimary(p *parser.Primary) (Node, error) {
 		return StringLit(p.Selector.Root), nil
 	case p.Selector != nil:
 		var node Node = Symbol(p.Selector.Root)
+		needHash = true
 		for _, f := range p.Selector.Tail {
 			node = &List{Elems: []Node{Symbol("hash-table-ref"), node, StringLit(f)}}
 		}
@@ -859,6 +876,7 @@ func convertParserPrimary(p *parser.Primary) (Node, error) {
 		}
 		return &List{Elems: append([]Node{Symbol("list")}, elems...)}, nil
 	case p.Map != nil:
+		needHash = true
 		pairs := []Node{Symbol("list")}
 		for _, it := range p.Map.Items {
 			var k Node
@@ -1776,6 +1794,23 @@ func convertCall(target Node, call *parser.CallOp) (Node, error) {
 			return nil, fmt.Errorf("exists expects 1 arg")
 		}
 		return &List{Elems: []Node{Symbol("if"), &List{Elems: []Node{Symbol("null?"), args[0]}}, StringLit("false"), StringLit("true")}}, nil
+	case "int":
+		if len(args) != 1 {
+			return nil, fmt.Errorf("int expects 1 arg")
+		}
+		x := args[0]
+		return &List{Elems: []Node{
+			Symbol("cond"),
+			&List{Elems: []Node{&List{Elems: []Node{Symbol("string?"), x}}, &List{Elems: []Node{Symbol("inexact->exact"), &List{Elems: []Node{Symbol("string->number"), x}}}}}},
+			&List{Elems: []Node{&List{Elems: []Node{Symbol("boolean?"), x}}, &List{Elems: []Node{Symbol("if"), x, IntLit(1), IntLit(0)}}}},
+			&List{Elems: []Node{Symbol("else"), &List{Elems: []Node{Symbol("inexact->exact"), x}}}},
+		}}, nil
+	case "input":
+		if len(args) != 0 {
+			return nil, fmt.Errorf("input expects no args")
+		}
+		usesInput = true
+		return &List{Elems: []Node{Symbol("_input")}}, nil
 	case "now":
 		if len(args) != 0 {
 			return nil, fmt.Errorf("now expects no args")
@@ -1840,6 +1875,7 @@ func convertIndex(target Node, orig *parser.Primary, idx *parser.IndexOp) (Node,
 		case types.ListType:
 			return &List{Elems: []Node{Symbol("list-ref"), target, in}}, nil
 		case types.MapType:
+			needHash = true
 			return &List{Elems: []Node{Symbol("hash-table-ref"), target, in}}, nil
 		}
 	}
