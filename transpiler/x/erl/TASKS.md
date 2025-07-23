@@ -1,3 +1,7 @@
+## Progress (2025-07-23 10:03 +0700)
+- ts transpiler: handle parameter scope (2ea03adf09)
+- Regenerated golden files - 102/103 vm valid programs passing
+
 ## Progress (2025-07-22 14:43 +0700)
 - erl transpiler: handle test_block (be449538c)
 - Regenerated golden files - 102/102 vm valid programs passing
