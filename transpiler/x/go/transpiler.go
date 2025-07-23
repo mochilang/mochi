@@ -1027,9 +1027,8 @@ func (lh *LookupHostExpr) emit(w io.Writer) {
 type IntCastExpr struct{ Expr Expr }
 
 func (ic *IntCastExpr) emit(w io.Writer) {
-	io.WriteString(w, "int(")
 	ic.Expr.emit(w)
-	io.WriteString(w, ")")
+	io.WriteString(w, ".(int)")
 }
 
 // ExistsExpr represents the exists() builtin result to preserve boolean output.
@@ -3381,11 +3380,38 @@ func compileBinary(b *parser.BinaryExpr, env *types.Env, base string) (Expr, err
 							newExpr = &BigCmpExpr{Left: left, Op: ops[i].Op, Right: right}
 						}
 					}
+					// compare interface values by string if needed
+					if newExpr == nil && (ops[i].Op == ">" || ops[i].Op == "<" || ops[i].Op == ">=" || ops[i].Op == "<=") {
+						if _, ok := typesList[i].(types.AnyType); ok {
+							left = &CallExpr{Func: "fmt.Sprint", Args: []Expr{left}}
+							usesStrings = true
+						}
+						if _, ok := typesList[i+1].(types.AnyType); ok {
+							right = &CallExpr{Func: "fmt.Sprint", Args: []Expr{right}}
+							usesStrings = true
+						}
+					}
 					// list concatenation with +
 					if ops[i].Op == "+" {
 						if lt, ok := typesList[i].(types.ListType); ok {
 							et := toGoTypeFromType(lt.Elem)
 							newExpr = &UnionAllExpr{Left: left, Right: right, ElemType: et}
+						}
+						// string and list<string> concatenation
+						if _, ok := typesList[i].(types.StringType); ok {
+							if lt, ok2 := typesList[i+1].(types.ListType); ok2 {
+								if _, ok3 := lt.Elem.(types.StringType); ok3 {
+									right = &CallExpr{Func: "strings.Join", Args: []Expr{right, &StringLit{Value: ""}}}
+									usesStrings = true
+								}
+							}
+						} else if _, ok := typesList[i+1].(types.StringType); ok {
+							if lt, ok2 := typesList[i].(types.ListType); ok2 {
+								if _, ok3 := lt.Elem.(types.StringType); ok3 {
+									left = &CallExpr{Func: "strings.Join", Args: []Expr{left, &StringLit{Value: ""}}}
+									usesStrings = true
+								}
+							}
 						}
 					}
 					// auto convert unknown types to float64 for arithmetic
@@ -3478,6 +3504,10 @@ func compilePostfix(pf *parser.PostfixExpr, env *types.Env, base string) (Expr, 
 		tail = pf.Target.Selector.Tail
 	}
 	t := types.TypeOfPrimaryBasic(pf.Target, env)
+	if pf.Target != nil && pf.Target.Selector != nil && len(pf.Target.Selector.Tail) > 0 {
+		rootPrim := &parser.Primary{Selector: &parser.SelectorExpr{Root: pf.Target.Selector.Root}}
+		t = types.TypeOfPrimaryBasic(rootPrim, env)
+	}
 	if len(tail) > 0 && (len(pf.Ops) == 0 || pf.Ops[0].Call == nil) {
 		for _, f := range tail {
 			switch tt := t.(type) {
@@ -3506,6 +3536,17 @@ func compilePostfix(pf *parser.PostfixExpr, env *types.Env, base string) (Expr, 
 					t = types.AnyType{}
 				}
 			default:
+				if types.IsAnyType(t) && pf.Target != nil && pf.Target.Selector != nil {
+					if rt, err := env.GetVar(pf.Target.Selector.Root); err == nil {
+						if st, ok := rt.(types.StructType); ok {
+							if ft, ok2 := st.Fields[f]; ok2 {
+								expr = &FieldExpr{X: expr, Name: toGoFieldName(f)}
+								t = ft
+								continue
+							}
+						}
+					}
+				}
 				if types.IsAnyType(t) {
 					expr = &IndexExpr{X: &AssertExpr{Expr: expr, Type: "map[string]any"}, Index: &StringLit{Value: f}}
 				} else {
@@ -3603,7 +3644,11 @@ func compilePostfix(pf *parser.PostfixExpr, env *types.Env, base string) (Expr, 
 					}
 				default:
 					if types.IsAnyType(t) {
-						expr = &IndexExpr{X: &AssertExpr{Expr: expr, Type: "map[string]any"}, Index: iex}
+						if _, ok := types.TypeOfExpr(idx.Start, env).(types.IntType); ok {
+							expr = &IndexExpr{X: &AssertExpr{Expr: expr, Type: "[]any"}, Index: iex}
+						} else {
+							expr = &IndexExpr{X: &AssertExpr{Expr: expr, Type: "map[string]any"}, Index: iex}
+						}
 					} else {
 						expr = &IndexExpr{X: expr, Index: iex}
 					}
