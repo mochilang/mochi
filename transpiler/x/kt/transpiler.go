@@ -455,21 +455,46 @@ type IndexExpr struct {
 }
 
 func (ix *IndexExpr) emit(w io.Writer) {
-	isMap := strings.HasPrefix(guessType(ix.Target), "MutableMap<") || ix.ForceBang
-	if isMap {
-		io.WriteString(w, "(")
+	baseType := guessType(ix.Target)
+	idxType := guessType(ix.Index)
+
+	isMap := strings.HasPrefix(baseType, "MutableMap<") || (ix.ForceBang && idxType != "Int")
+	isList := strings.HasPrefix(baseType, "MutableList<")
+
+	dynamicCast := ""
+	if !isMap && !isList && (baseType == "" || baseType == "Any") {
+		if idxType == "Int" {
+			isList = true
+			dynamicCast = " as MutableList<Any?>"
+		} else {
+			isMap = true
+			if idxType == "Int" {
+				dynamicCast = " as MutableMap<Int, Any?>"
+			} else {
+				dynamicCast = " as MutableMap<String, Any?>"
+			}
+		}
 	}
-	ix.Target.emit(w)
+
+	if isMap || dynamicCast != "" {
+		io.WriteString(w, "(")
+		ix.Target.emit(w)
+		if dynamicCast != "" {
+			io.WriteString(w, dynamicCast)
+		}
+		io.WriteString(w, ")")
+	} else {
+		ix.Target.emit(w)
+	}
 	io.WriteString(w, "[")
 	ix.Index.emit(w)
 	io.WriteString(w, "]")
-	if isMap {
+	if isMap || dynamicCast != "" {
 		if ix.Type != "" {
 			io.WriteString(w, " as "+ix.Type)
 		} else {
 			io.WriteString(w, "!!")
 		}
-		io.WriteString(w, ")")
 	}
 }
 
