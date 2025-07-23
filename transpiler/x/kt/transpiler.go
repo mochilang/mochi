@@ -1190,6 +1190,14 @@ func (v *ValuesExpr) emit(w io.Writer) {
 	io.WriteString(w, ".values")
 }
 
+// KeysExpr represents the `keys` builtin for maps.
+type KeysExpr struct{ Map Expr }
+
+func (k *KeysExpr) emit(w io.Writer) {
+	k.Map.emit(w)
+	io.WriteString(w, ".keys.toMutableList()")
+}
+
 type SubstringExpr struct {
 	Value Expr
 	Start Expr
@@ -1770,6 +1778,28 @@ func guessType(e Expr) string {
 			return "MutableMap<" + k + ", " + val + ">"
 		}
 		return "MutableMap<Any, Any>"
+	case *ValuesExpr:
+		base := guessType(v.Map)
+		if strings.HasPrefix(base, "MutableMap<") {
+			part := strings.TrimSuffix(strings.TrimPrefix(base, "MutableMap<"), ">")
+			kv := strings.SplitN(part, ",", 2)
+			if len(kv) == 2 {
+				val := strings.TrimSpace(kv[1])
+				return "MutableList<" + val + ">"
+			}
+		}
+		return "MutableList<Any>"
+	case *KeysExpr:
+		base := guessType(v.Map)
+		if strings.HasPrefix(base, "MutableMap<") {
+			part := strings.TrimSuffix(strings.TrimPrefix(base, "MutableMap<"), ">")
+			kv := strings.SplitN(part, ",", 2)
+			if len(kv) >= 1 {
+				key := strings.TrimSpace(kv[0])
+				return "MutableList<" + key + ">"
+			}
+		}
+		return "MutableList<Any>"
 	case *MultiListComp:
 		elem := guessType(v.Expr)
 		if elem == "" {
@@ -3697,6 +3727,19 @@ func convertPostfix(env *types.Env, p *parser.PostfixExpr) (Expr, error) {
 			}
 			expr = &ContainsExpr{Str: expr, Sub: arg}
 			i++ // skip call op
+		case op.Field != nil && op.Field.Name == "keys":
+			if i+1 < len(p.Ops) && p.Ops[i+1].Call != nil {
+				if len(p.Ops[i+1].Call.Args) != 0 {
+					return nil, fmt.Errorf("keys expects 0 args")
+				}
+				i++ // skip call op
+			}
+			if baseIsMap || strings.HasPrefix(guessType(expr), "MutableMap<") {
+				expr = &KeysExpr{Map: expr}
+				baseIsMap = false
+				break
+			}
+			expr = &FieldExpr{Receiver: expr, Name: "keys"}
 		case op.Field != nil:
 			if baseIsMap || strings.HasPrefix(guessType(expr), "MutableMap<") {
 				expr = &IndexExpr{Target: expr, Index: &StringLit{Value: op.Field.Name}, ForceBang: true}
@@ -3839,6 +3882,15 @@ func convertPrimary(env *types.Env, p *parser.Primary) (Expr, error) {
 				return nil, err
 			}
 			return &ValuesExpr{Map: m}, nil
+		case "keys":
+			if len(p.Call.Args) != 1 {
+				return nil, fmt.Errorf("keys expects 1 arg")
+			}
+			m, err := convertExpr(env, p.Call.Args[0])
+			if err != nil {
+				return nil, err
+			}
+			return &KeysExpr{Map: m}, nil
 		case "exists":
 			if len(p.Call.Args) != 1 {
 				return nil, fmt.Errorf("exists expects 1 arg")
