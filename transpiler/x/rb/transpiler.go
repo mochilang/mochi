@@ -1100,12 +1100,50 @@ type emitter struct {
 	indent int
 }
 
+var scopeStack []map[string]bool
+
+func pushScope(vars ...string) {
+	m := map[string]bool{}
+	for _, v := range vars {
+		m[v] = true
+	}
+	scopeStack = append(scopeStack, m)
+}
+
+func popScope() {
+	if len(scopeStack) > 0 {
+		scopeStack = scopeStack[:len(scopeStack)-1]
+	}
+}
+
+func addVar(name string) {
+	if len(scopeStack) > 0 {
+		scopeStack[len(scopeStack)-1][name] = true
+	}
+}
+
+func inScope(name string) bool {
+	for i := len(scopeStack) - 1; i >= 0; i-- {
+		if scopeStack[i][name] {
+			return true
+		}
+	}
+	return false
+}
+
 func (e *emitter) name(n string) {
-	if topVars != nil && topVars[n] {
+	if topVars != nil && topVars[n] && !inScope(n) {
 		io.WriteString(e.w, "$"+n)
 	} else {
 		io.WriteString(e.w, n)
 	}
+}
+
+func identName(n string) string {
+	if topVars != nil && topVars[n] && !inScope(n) {
+		return "$" + n
+	}
+	return n
 }
 
 func (e *emitter) writeIndent() {
@@ -1227,6 +1265,7 @@ func (f *FuncStmt) emit(e *emitter) {
 	}
 	io.WriteString(e.w, ")")
 	e.nl()
+	pushScope(f.Params...)
 	e.indent++
 	for _, st := range f.Body {
 		e.writeIndent()
@@ -1234,6 +1273,7 @@ func (f *FuncStmt) emit(e *emitter) {
 		e.nl()
 	}
 	e.indent--
+	popScope()
 	e.writeIndent()
 	io.WriteString(e.w, "end")
 }
@@ -1245,6 +1285,9 @@ type VarStmt struct {
 }
 
 func (s *VarStmt) emit(e *emitter) {
+	if len(scopeStack) > 0 {
+		addVar(s.Name)
+	}
 	e.name(s.Name)
 	io.WriteString(e.w, " = ")
 	s.Value.emit(e)
@@ -1376,6 +1419,9 @@ type LetStmt struct {
 }
 
 func (s *LetStmt) emit(e *emitter) {
+	if len(scopeStack) > 0 {
+		addVar(s.Name)
+	}
 	e.name(s.Name)
 	io.WriteString(e.w, " = ")
 	s.Value.emit(e)
@@ -1465,6 +1511,7 @@ func (f *ForRangeStmt) emit(e *emitter) {
 	io.WriteString(e.w, "...")
 	f.End.emit(e)
 	io.WriteString(e.w, ").each do |")
+	pushScope(f.Name)
 	io.WriteString(e.w, f.Name)
 	io.WriteString(e.w, "|")
 	e.nl()
@@ -1475,6 +1522,7 @@ func (f *ForRangeStmt) emit(e *emitter) {
 		e.nl()
 	}
 	e.indent--
+	popScope()
 	e.writeIndent()
 	io.WriteString(e.w, "end")
 }
@@ -1489,6 +1537,7 @@ type ForInStmt struct {
 func (f *ForInStmt) emit(e *emitter) {
 	f.Iterable.emit(e)
 	io.WriteString(e.w, ".each do |")
+	pushScope(f.Name)
 	io.WriteString(e.w, f.Name)
 	io.WriteString(e.w, "|")
 	e.nl()
@@ -1499,6 +1548,7 @@ func (f *ForInStmt) emit(e *emitter) {
 		e.nl()
 	}
 	e.indent--
+	popScope()
 	e.writeIndent()
 	io.WriteString(e.w, "end")
 }
@@ -1825,6 +1875,7 @@ func (l *LambdaExpr) emit(e *emitter) {
 		io.WriteString(e.w, p)
 	}
 	io.WriteString(e.w, ") {")
+	pushScope(l.Params...)
 	if len(l.Body) > 0 {
 		e.nl()
 		e.indent++
@@ -1839,6 +1890,7 @@ func (l *LambdaExpr) emit(e *emitter) {
 			e.nl()
 		}
 		e.indent--
+		popScope()
 		e.writeIndent()
 		io.WriteString(e.w, "}")
 		return
@@ -1848,6 +1900,7 @@ func (l *LambdaExpr) emit(e *emitter) {
 		l.Expr.emit(e)
 	}
 	io.WriteString(e.w, " }")
+	popScope()
 }
 
 func (m *MatchExpr) emit(e *emitter) {
@@ -2317,6 +2370,7 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	usesInput = false
 	currentEnv = env
 	topVars = map[string]bool{}
+	scopeStack = nil
 	rbProg := &Program{}
 	for _, st := range prog.Statements {
 		conv, err := convertStmt(st)
@@ -2396,7 +2450,7 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 					elems[i] = &StructNewExpr{Name: structName, Fields: fv}
 				}
 				list := &ListLit{Elems: elems}
-				stmts = append(stmts, &LetStmt{Name: st.Let.Name, Value: list})
+				stmts = append(stmts, &LetStmt{Name: identName(st.Let.Name), Value: list})
 				return &BlockStmt{Stmts: stmts}, nil
 			}
 			if q := extractQueryExpr(st.Let.Value); q != nil {
@@ -2408,7 +2462,7 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 				if def != nil {
 					stmts = append(stmts, def)
 				}
-				stmts = append(stmts, &LetStmt{Name: st.Let.Name, Value: qe})
+				stmts = append(stmts, &LetStmt{Name: identName(st.Let.Name), Value: qe})
 				return &BlockStmt{Stmts: stmts}, nil
 			}
 		}
@@ -2441,7 +2495,10 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 				topVars[st.Let.Name] = true
 			}
 		}
-		return &LetStmt{Name: st.Let.Name, Value: v}, nil
+		if funcDepth > 0 {
+			addVar(st.Let.Name)
+		}
+		return &LetStmt{Name: identName(st.Let.Name), Value: v}, nil
 	case st.Var != nil:
 		var v Expr
 		var err error
@@ -2469,14 +2526,15 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 				topVars[st.Var.Name] = true
 			}
 		}
-		return &VarStmt{Name: st.Var.Name, Value: v}, nil
+		addVar(st.Var.Name)
+		return &VarStmt{Name: identName(st.Var.Name), Value: v}, nil
 	case st.Assign != nil:
 		v, err := convertExpr(st.Assign.Value)
 		if err != nil {
 			return nil, err
 		}
 		if len(st.Assign.Index) >= 1 && len(st.Assign.Field) == 0 {
-			target := Expr(&Ident{Name: st.Assign.Name})
+			target := Expr(&Ident{Name: identName(st.Assign.Name)})
 			for i := 0; i < len(st.Assign.Index)-1; i++ {
 				if st.Assign.Index[i].Colon != nil || st.Assign.Index[i].Colon2 != nil {
 					return nil, fmt.Errorf("unsupported assignment")
@@ -2498,7 +2556,7 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 			return &IndexAssignStmt{Target: target, Index: idx, Value: v}, nil
 		}
 		if len(st.Assign.Index) == 0 && len(st.Assign.Field) >= 1 {
-			target := Expr(&Ident{Name: st.Assign.Name})
+			target := Expr(&Ident{Name: identName(st.Assign.Name)})
 			for i := 0; i < len(st.Assign.Field)-1; i++ {
 				target = &IndexExpr{Target: target, Index: &StringLit{Value: st.Assign.Field[i].Name}}
 			}
@@ -2506,7 +2564,7 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 			return &IndexAssignStmt{Target: target, Index: idx, Value: v}, nil
 		}
 		if len(st.Assign.Index) == 0 && len(st.Assign.Field) == 0 {
-			return &AssignStmt{Name: st.Assign.Name, Value: v}, nil
+			return &AssignStmt{Name: identName(st.Assign.Name), Value: v}, nil
 		}
 		return nil, fmt.Errorf("unsupported assignment")
 	case st.If != nil:
@@ -2550,15 +2608,21 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 		return &ReturnStmt{Value: v}, nil
 	case st.Fun != nil:
 		funcDepth++
+		pushScope()
+		for _, p := range st.Fun.Params {
+			addVar(p.Name)
+		}
 		body := make([]Stmt, len(st.Fun.Body))
 		for i, s := range st.Fun.Body {
 			st2, err := convertStmt(s)
 			if err != nil {
+				popScope()
 				funcDepth--
 				return nil, err
 			}
 			body[i] = st2
 		}
+		popScope()
 		funcDepth--
 		var params []string
 		for _, p := range st.Fun.Params {
@@ -2737,6 +2801,7 @@ func convertFor(f *parser.ForStmt) (Stmt, error) {
 		child.SetVar(f.Name, elemType, true)
 		currentEnv = child
 	}
+	addVar(f.Name)
 	body := make([]Stmt, len(f.Body))
 	for i, s := range f.Body {
 		st, err := convertStmt(s)
@@ -3270,7 +3335,11 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 		}
 		return &GroupExpr{Expr: ex}, nil
 	case p.Selector != nil:
-		expr := Expr(&Ident{Name: p.Selector.Root})
+		name := p.Selector.Root
+		if topVars != nil && topVars[name] && !inScope(name) {
+			name = "$" + name
+		}
+		expr := Expr(&Ident{Name: name})
 		var t types.Type
 		if currentEnv != nil {
 			prim := &parser.Primary{Selector: &parser.SelectorExpr{Root: p.Selector.Root}}
@@ -3303,8 +3372,10 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 			for i, pa := range p.FunExpr.Params {
 				params[i] = pa.Name
 			}
+			pushScope(params...)
 			if p.FunExpr.ExprBody != nil {
 				body, err := convertExpr(p.FunExpr.ExprBody)
+				popScope()
 				if err != nil {
 					return nil, err
 				}
@@ -3315,12 +3386,15 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 				for i, s := range p.FunExpr.BlockBody {
 					st, err := convertStmt(s)
 					if err != nil {
+						popScope()
 						return nil, err
 					}
 					stmts[i] = st
 				}
+				popScope()
 				return &LambdaExpr{Params: params, Body: stmts}, nil
 			}
+			popScope()
 		}
 		return nil, fmt.Errorf("unsupported primary")
 	}

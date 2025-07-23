@@ -1,23 +1,23 @@
-# Ruby Rosetta Transpiler Output (4/284)
-Last updated: 2025-07-22 16:30 UTC
+# Ruby Rosetta Transpiler Output (15/284)
+Last updated: 2025-07-23 02:53 UTC
 
   1. [x] 100-doors-2
   2. [x] 100-doors-3
   3. [x] 100-doors
   4. [x] 100-prisoners
-  5. [ ] 15-puzzle-game
-  6. [ ] 15-puzzle-solver
-  7. [ ] 2048
-  8. [ ] 21-game
-  9. [ ] 24-game-solve
- 10. [ ] 24-game
- 11. [ ] 4-rings-or-4-squares-puzzle
- 12. [ ] 9-billion-names-of-god-the-integer
+  5. [x] 15-puzzle-game
+  6. [x] 15-puzzle-solver
+  7. [x] 2048
+  8. [x] 21-game
+  9. [x] 24-game-solve
+ 10. [x] 24-game
+ 11. [x] 4-rings-or-4-squares-puzzle
+ 12. [x] 9-billion-names-of-god-the-integer
  13. [ ] 99-bottles-of-beer-2
- 14. [ ] 99-bottles-of-beer
+ 14. [x] 99-bottles-of-beer
  15. [ ] DNS-query
- 16. [ ] a+b
- 17. [ ] abbreviations-automatic
+ 16. [x] a+b
+ 17. [x] abbreviations-automatic
  18. [ ] abbreviations-easy
  19. [ ] abbreviations-simple
  20. [ ] abc-problem
