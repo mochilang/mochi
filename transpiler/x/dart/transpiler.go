@@ -287,12 +287,16 @@ func (s *IfStmt) emit(w io.Writer) error {
 
 type VarStmt struct {
 	Name  string
+	Type  string
 	Value Expr
 }
 
 func (s *VarStmt) emit(w io.Writer) error {
 	nextStructHint = s.Name
-	typ := inferType(s.Value)
+	typ := s.Type
+	if typ == "" {
+		typ = inferType(s.Value)
+	}
 	nextStructHint = ""
 	localVarTypes[s.Name] = typ
 	if typ == "dynamic" {
@@ -344,12 +348,16 @@ func (s *AssignStmt) emit(w io.Writer) error {
 
 type LetStmt struct {
 	Name  string
+	Type  string
 	Value Expr
 }
 
 func (s *LetStmt) emit(w io.Writer) error {
 	nextStructHint = s.Name
-	typ := inferType(s.Value)
+	typ := s.Type
+	if typ == "" {
+		typ = inferType(s.Value)
+	}
 	nextStructHint = ""
 	localVarTypes[s.Name] = typ
 	if typ == "dynamic" {
@@ -493,7 +501,10 @@ type FuncDecl struct {
 }
 
 func (f *FuncDecl) emit(w io.Writer) error {
-	retType := inferReturnType(f.Body)
+	retType := funcReturnTypes[f.Name]
+	if retType == "" {
+		retType = inferReturnType(f.Body)
+	}
 	if _, err := io.WriteString(w, retType+" "+f.Name+"("); err != nil {
 		return err
 	}
@@ -1922,6 +1933,16 @@ func dartType(t types.Type) string {
 	}
 }
 
+func typeRefString(tr *parser.TypeRef) string {
+	if tr == nil {
+		return ""
+	}
+	if currentEnv == nil {
+		return ""
+	}
+	return dartType(types.ResolveTypeRef(tr, currentEnv))
+}
+
 func inferType(e Expr) string {
 	switch ex := e.(type) {
 	case *IntLit:
@@ -2397,18 +2418,25 @@ func walkTypes(s Stmt) {
 	switch st := s.(type) {
 	case *LetStmt:
 		nextStructHint = st.Name
-		typ := inferType(st.Value)
+		typ := st.Type
+		if typ == "" {
+			typ = inferType(st.Value)
+		}
 		nextStructHint = ""
 		localVarTypes[st.Name] = typ
 	case *VarStmt:
+		nextStructHint = st.Name
+		typ := st.Type
 		if st.Value != nil {
-			nextStructHint = st.Name
-			typ := inferType(st.Value)
-			nextStructHint = ""
-			localVarTypes[st.Name] = typ
-		} else {
-			localVarTypes[st.Name] = "dynamic"
+			if typ == "" {
+				typ = inferType(st.Value)
+			}
 		}
+		if typ == "" {
+			typ = "dynamic"
+		}
+		nextStructHint = ""
+		localVarTypes[st.Name] = typ
 	case *AssignStmt:
 		inferType(st.Value)
 		inferType(st.Target)
@@ -2891,7 +2919,8 @@ func convertStmtInternal(st *parser.Statement) (Stmt, error) {
 		} else {
 			return nil, fmt.Errorf("let missing value not supported")
 		}
-		return &LetStmt{Name: sanitize(st.Let.Name), Value: e}, nil
+		typ := typeRefString(st.Let.Type)
+		return &LetStmt{Name: sanitize(st.Let.Name), Type: typ, Value: e}, nil
 	case st.Var != nil:
 		var e Expr
 		if st.Var.Value != nil {
@@ -2903,7 +2932,8 @@ func convertStmtInternal(st *parser.Statement) (Stmt, error) {
 		} else if st.Var.Type != nil && st.Var.Type.Simple != nil && *st.Var.Type.Simple == "int" {
 			e = &IntLit{Value: 0}
 		}
-		return &VarStmt{Name: sanitize(st.Var.Name), Value: e}, nil
+		typ := typeRefString(st.Var.Type)
+		return &VarStmt{Name: sanitize(st.Var.Name), Type: typ, Value: e}, nil
 	case st.Assign != nil:
 		target, err := convertAssignTarget(st.Assign)
 		if err != nil {

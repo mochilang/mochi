@@ -22,30 +22,30 @@ int _now() {
 }
 
 class S1 {
-  final List<dynamic> board;
+  final List<List<int>> board;
   final bool full;
   const S1({required this.board, required this.full});
 }
 
 class S2 {
-  final List<dynamic> row;
+  final List<int> row;
   final int gain;
   const S2({required this.row, required this.gain});
 }
 
 class S3 {
-  final List<dynamic> board;
+  final List<List<int>> board;
   final int score;
   final bool moved;
   const S3({required this.board, required this.score, required this.moved});
 }
 
 final int SIZE = 4;
-List<dynamic> newBoard() {
-  List<dynamic> b = [];
+List<List<int>> newBoard() {
+  List<List<int>> b = [];
   int y = 0;
   while (y < SIZE) {
-    List<dynamic> row = [];
+    List<int> row = [];
     int x = 0;
     while (x < SIZE) {
     row = [...row, 0];
@@ -58,7 +58,7 @@ List<dynamic> newBoard() {
 }
 
 S1 spawnTile(b) {
-  List<dynamic> empty = [];
+  List<List<int>> empty = [];
   int y = 0;
   while (y < SIZE) {
     int x = 0;
@@ -74,7 +74,7 @@ S1 spawnTile(b) {
     return S1(board: b, full: true);
   }
   int idx = _now() % empty.length;
-  final cell = empty[idx];
+  final List<int> cell = empty[idx];
   int val = 4;
   if (_now() % 10 < 9) {
     val = 2;
@@ -118,8 +118,8 @@ void draw(b, score) {
   print("W=Up S=Down A=Left D=Right Q=Quit");
 }
 
-String reverseRow(r) {
-  List<dynamic> out = [];
+List<int> reverseRow(r) {
+  List<int> out = [];
   int i = r.length - 1;
   while (i >= 0) {
     out = [...out, r[i]];
@@ -129,7 +129,7 @@ String reverseRow(r) {
 }
 
 S2 slideLeft(row) {
-  List<dynamic> xs = [];
+  List<int> xs = [];
   int i = 0;
   while (i < row.length) {
     if (row[i] != 0) {
@@ -137,12 +137,12 @@ S2 slideLeft(row) {
   }
     i = i + 1;
   }
-  List<dynamic> res = [];
+  List<int> res = [];
   int gain = 0;
   i = 0;
   while (i < xs.length) {
     if (i + 1 < xs.length && xs[i] == xs[i + 1]) {
-    final num v = xs[i] * 2;
+    final int v = xs[i] * 2;
     gain = gain + v;
     res = [...res, v];
     i = i + 2;
@@ -181,7 +181,7 @@ S3 moveRight(b, score) {
   bool moved = false;
   int y = 0;
   while (y < SIZE) {
-    List<dynamic> rev = reverseRow(b[y]);
+    List<int> rev = reverseRow(b[y]);
     final S2 r = slideLeft(rev);
     rev = r.row;
     score = score + r.gain;
@@ -199,8 +199,8 @@ S3 moveRight(b, score) {
   return S3(board: b, score: score, moved: moved);
 }
 
-List<dynamic> getCol(b, x) {
-  List<dynamic> col = [];
+List<int> getCol(b, x) {
+  List<int> col = [];
   int y = 0;
   while (y < SIZE) {
     col = [...col, b[y]![x]];
@@ -221,7 +221,7 @@ S3 moveUp(b, score) {
   bool moved = false;
   int x = 0;
   while (x < SIZE) {
-    List<dynamic> col = getCol(b, x);
+    List<int> col = getCol(b, x);
     final S2 r = slideLeft(col);
     final _new = r.row;
     score = score + r.gain;
@@ -242,7 +242,7 @@ S3 moveDown(b, score) {
   bool moved = false;
   int x = 0;
   while (x < SIZE) {
-    List<dynamic> col = reverseRow(getCol(b, x));
+    List<int> col = reverseRow(getCol(b, x));
     final S2 r = slideLeft(col);
     col = r.row;
     score = score + r.gain;
@@ -296,7 +296,7 @@ bool has2048(b) {
   return false;
 }
 
-List<dynamic> board = newBoard();
+List<List<int>> board = newBoard();
 S1 r = spawnTile(board);
 var full = r.full;
 int score = 0;
