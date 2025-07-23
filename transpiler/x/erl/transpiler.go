@@ -824,12 +824,17 @@ func isStringExpr(e Expr) bool {
 	case *StringLit:
 		return true
 	case *CallExpr:
-		return v.Func == "str"
+		if v.Func == "str" || strings.HasPrefix(v.Func, "string:") {
+			return true
+		}
+		return false
 	case *BinaryExpr:
 		if v.Op == "++" || v.Op == "+" {
 			return isStringExpr(v.Left) || isStringExpr(v.Right)
 		}
 		return false
+	case *SubstringExpr:
+		return true
 	case *IfExpr:
 		return isStringExpr(v.Then) && isStringExpr(v.Else)
 	case *CaseExpr:
@@ -2807,9 +2812,9 @@ func convertBinary(b *parser.BinaryExpr, env *types.Env, ctx *context) (Expr, er
 		}
 		return false
 	}
-	isIntType := func(t types.Type) bool {
+	isFloatType := func(t types.Type) bool {
 		switch t.(type) {
-		case types.IntType, types.Int64Type, types.BigIntType:
+		case types.FloatType, types.BigRatType:
 			return true
 		default:
 			return false
@@ -2821,7 +2826,7 @@ func convertBinary(b *parser.BinaryExpr, env *types.Env, ctx *context) (Expr, er
 				l := exprs[i]
 				r := exprs[i+1]
 				op := ops[i]
-				if op == "/" && isIntType(typesList[i]) && isIntType(typesList[i+1]) {
+				if op == "/" && !(isFloatType(typesList[i]) || isFloatType(typesList[i+1])) {
 					op = "div"
 					typesList[i] = types.IntType{}
 				}
@@ -2922,7 +2927,8 @@ func convertPostfix(pf *parser.PostfixExpr, env *types.Env, ctx *context) (Expr,
 			expr = ce
 		case op.Cast != nil && op.Cast.Type.Simple != nil:
 			if *op.Cast.Type.Simple == "int" {
-				expr = &CallExpr{Func: "list_to_integer", Args: []Expr{expr}}
+				// casting to int is a no-op when the value is already numeric
+				expr = expr
 			}
 			// other casts are no-ops
 		case op.Index != nil && op.Index.Colon == nil && op.Index.Colon2 == nil:
