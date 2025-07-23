@@ -1397,6 +1397,7 @@ func (i *IfStmt) emit(w io.Writer) {
 
 func (f *ForStmt) emit(w io.Writer) {
 	loopName := f.Fun + "_loop"
+	restVar := loopName + "_rest"
 	io.WriteString(w, f.Fun)
 	io.WriteString(w, " = fun ")
 	io.WriteString(w, loopName)
@@ -1414,7 +1415,9 @@ func (f *ForStmt) emit(w io.Writer) {
 	}
 	io.WriteString(w, "};\n        [")
 	io.WriteString(w, f.Var)
-	io.WriteString(w, "|Rest] ->")
+	io.WriteString(w, "|")
+	io.WriteString(w, restVar)
+	io.WriteString(w, "] ->")
 	if f.Breakable {
 		io.WriteString(w, "\n        try")
 	}
@@ -1426,11 +1429,13 @@ func (f *ForStmt) emit(w io.Writer) {
 	if f.Breakable {
 		io.WriteString(w, "\n            ")
 		io.WriteString(w, loopName)
-		io.WriteString(w, "(Rest")
+		io.WriteString(w, "(")
+		io.WriteString(w, restVar)
 	} else {
 		io.WriteString(w, "\n            ")
 		io.WriteString(w, loopName)
-		io.WriteString(w, "(Rest")
+		io.WriteString(w, "(")
+		io.WriteString(w, restVar)
 	}
 	for _, a := range f.Next {
 		io.WriteString(w, ", ")
@@ -1440,7 +1445,8 @@ func (f *ForStmt) emit(w io.Writer) {
 	if f.Breakable {
 		io.WriteString(w, "\n        catch\n            continue -> ")
 		io.WriteString(w, loopName)
-		io.WriteString(w, "(Rest")
+		io.WriteString(w, "(")
+		io.WriteString(w, restVar)
 		for _, p := range f.Params {
 			io.WriteString(w, ", ")
 			io.WriteString(w, p)
@@ -2341,7 +2347,9 @@ func convertIfStmt(n *parser.IfStmt, env *types.Env, ctx *context) (*IfStmt, err
 		return nil, err
 	}
 	if _, ok := types.ExprType(n.Cond, env).(types.BoolType); !ok {
-		cond = &BinaryExpr{Left: cond, Op: "!=", Right: &AtomLit{Name: "nil"}}
+		if _, ok := cond.(*IndexExpr); !ok {
+			cond = &BinaryExpr{Left: cond, Op: "!=", Right: &AtomLit{Name: "nil"}}
+		}
 	}
 
 	base := ctx.clone()
@@ -3125,8 +3133,15 @@ func convertIf(ifx *parser.IfExpr, env *types.Env, ctx *context) (Expr, error) {
 	if err != nil {
 		return nil, err
 	}
+	// The type checker does not always infer boolean type for expressions like
+	// list indexing. Adding an explicit `!= nil` check causes values such as
+	// `false` to be treated as true in Erlang. Instead, rely on pattern matching
+	// against the literal `true` value which works for booleans and treats all
+	// other terms as false.
 	if _, ok := types.ExprType(ifx.Cond, env).(types.BoolType); !ok {
-		cond = &BinaryExpr{Left: cond, Op: "!=", Right: &AtomLit{Name: "nil"}}
+		if _, ok := cond.(*IndexExpr); !ok {
+			cond = &BinaryExpr{Left: cond, Op: "!=", Right: &AtomLit{Name: "nil"}}
+		}
 	}
 	thenExpr, err := convertExpr(ifx.Then, env, ctx)
 	if err != nil {
