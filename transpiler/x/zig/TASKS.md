@@ -1,3 +1,453 @@
+## Progress (2025-07-23 13:20 +0700)
+- Commit 6be9e42b2c: transpiler/lua: update outputs up to index 36 and tweak binary ops
+- Generated Zig for 98/103 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-23 13:20 +0700)
+- Commit 6be9e42b2c: transpiler/lua: update outputs up to index 36 and tweak binary ops
+- Generated Zig for 98/103 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-23 13:20 +0700)
+- Commit 6be9e42b2c: transpiler/lua: update outputs up to index 36 and tweak binary ops
+- Generated Zig for 98/103 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-23 13:20 +0700)
+- Commit 6be9e42b2c: transpiler/lua: update outputs up to index 36 and tweak binary ops
+- Generated Zig for 98/103 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-23 13:20 +0700)
+- Commit 6be9e42b2c: transpiler/lua: update outputs up to index 36 and tweak binary ops
+- Generated Zig for 98/103 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-23 13:20 +0700)
+- Commit 6be9e42b2c: transpiler/lua: update outputs up to index 36 and tweak binary ops
+- Generated Zig for 98/103 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-23 13:20 +0700)
+- Commit 6be9e42b2c: transpiler/lua: update outputs up to index 36 and tweak binary ops
+- Generated Zig for 98/103 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-23 13:20 +0700)
+- Commit 6be9e42b2c: transpiler/lua: update outputs up to index 36 and tweak binary ops
+- Generated Zig for 98/103 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-23 13:20 +0700)
+- Commit 6be9e42b2c: transpiler/lua: update outputs up to index 36 and tweak binary ops
+- Generated Zig for 98/103 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-23 13:20 +0700)
+- Commit 6be9e42b2c: transpiler/lua: update outputs up to index 36 and tweak binary ops
+- Generated Zig for 98/103 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-23 13:20 +0700)
+- Commit 6be9e42b2c: transpiler/lua: update outputs up to index 36 and tweak binary ops
+- Generated Zig for 98/103 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-23 13:20 +0700)
+- Commit 6be9e42b2c: transpiler/lua: update outputs up to index 36 and tweak binary ops
+- Generated Zig for 98/103 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-23 13:20 +0700)
+- Commit 6be9e42b2c: transpiler/lua: update outputs up to index 36 and tweak binary ops
+- Generated Zig for 98/103 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-23 13:20 +0700)
+- Commit 6be9e42b2c: transpiler/lua: update outputs up to index 36 and tweak binary ops
+- Generated Zig for 98/103 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-23 13:20 +0700)
+- Commit 6be9e42b2c: transpiler/lua: update outputs up to index 36 and tweak binary ops
+- Generated Zig for 98/103 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-23 13:20 +0700)
+- Commit 6be9e42b2c: transpiler/lua: update outputs up to index 36 and tweak binary ops
+- Generated Zig for 98/103 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-23 13:20 +0700)
+- Commit 6be9e42b2c: transpiler/lua: update outputs up to index 36 and tweak binary ops
+- Generated Zig for 98/103 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-23 13:20 +0700)
+- Commit 6be9e42b2c: transpiler/lua: update outputs up to index 36 and tweak binary ops
+- Generated Zig for 98/103 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-23 13:20 +0700)
+- Commit 6be9e42b2c: transpiler/lua: update outputs up to index 36 and tweak binary ops
+- Generated Zig for 98/103 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-23 13:20 +0700)
+- Commit 6be9e42b2c: transpiler/lua: update outputs up to index 36 and tweak binary ops
+- Generated Zig for 98/103 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-23 13:20 +0700)
+- Commit 6be9e42b2c: transpiler/lua: update outputs up to index 36 and tweak binary ops
+- Generated Zig for 98/103 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-23 13:20 +0700)
+- Commit 6be9e42b2c: transpiler/lua: update outputs up to index 36 and tweak binary ops
+- Generated Zig for 98/103 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-23 13:20 +0700)
+- Commit 6be9e42b2c: transpiler/lua: update outputs up to index 36 and tweak binary ops
+- Generated Zig for 98/103 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-23 13:20 +0700)
+- Commit 6be9e42b2c: transpiler/lua: update outputs up to index 36 and tweak binary ops
+- Generated Zig for 98/103 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-23 13:20 +0700)
+- Commit 6be9e42b2c: transpiler/lua: update outputs up to index 36 and tweak binary ops
+- Generated Zig for 98/103 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-23 13:20 +0700)
+- Commit 6be9e42b2c: transpiler/lua: update outputs up to index 36 and tweak binary ops
+- Generated Zig for 98/103 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-23 13:20 +0700)
+- Commit 6be9e42b2c: transpiler/lua: update outputs up to index 36 and tweak binary ops
+- Generated Zig for 98/103 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-23 13:20 +0700)
+- Commit 6be9e42b2c: transpiler/lua: update outputs up to index 36 and tweak binary ops
+- Generated Zig for 98/103 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-23 13:20 +0700)
+- Commit 6be9e42b2c: transpiler/lua: update outputs up to index 36 and tweak binary ops
+- Generated Zig for 98/103 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-23 13:20 +0700)
+- Commit 6be9e42b2c: transpiler/lua: update outputs up to index 36 and tweak binary ops
+- Generated Zig for 98/103 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-23 13:20 +0700)
+- Commit 6be9e42b2c: transpiler/lua: update outputs up to index 36 and tweak binary ops
+- Generated Zig for 98/103 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-23 13:20 +0700)
+- Commit 6be9e42b2c: transpiler/lua: update outputs up to index 36 and tweak binary ops
+- Generated Zig for 98/103 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-23 13:20 +0700)
+- Commit 6be9e42b2c: transpiler/lua: update outputs up to index 36 and tweak binary ops
+- Generated Zig for 98/103 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-23 13:20 +0700)
+- Commit 6be9e42b2c: transpiler/lua: update outputs up to index 36 and tweak binary ops
+- Generated Zig for 98/103 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-23 13:20 +0700)
+- Commit 6be9e42b2c: transpiler/lua: update outputs up to index 36 and tweak binary ops
+- Generated Zig for 98/103 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-23 13:20 +0700)
+- Commit 6be9e42b2c: transpiler/lua: update outputs up to index 36 and tweak binary ops
+- Generated Zig for 98/103 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-23 13:20 +0700)
+- Commit 6be9e42b2c: transpiler/lua: update outputs up to index 36 and tweak binary ops
+- Generated Zig for 98/103 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-23 13:20 +0700)
+- Commit 6be9e42b2c: transpiler/lua: update outputs up to index 36 and tweak binary ops
+- Generated Zig for 98/103 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-23 13:20 +0700)
+- Commit 6be9e42b2c: transpiler/lua: update outputs up to index 36 and tweak binary ops
+- Generated Zig for 98/103 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-23 13:20 +0700)
+- Commit 6be9e42b2c: transpiler/lua: update outputs up to index 36 and tweak binary ops
+- Generated Zig for 98/103 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-23 13:20 +0700)
+- Commit 6be9e42b2c: transpiler/lua: update outputs up to index 36 and tweak binary ops
+- Generated Zig for 98/103 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-23 13:20 +0700)
+- Commit 6be9e42b2c: transpiler/lua: update outputs up to index 36 and tweak binary ops
+- Generated Zig for 98/103 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-23 13:20 +0700)
+- Commit 6be9e42b2c: transpiler/lua: update outputs up to index 36 and tweak binary ops
+- Generated Zig for 98/103 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-23 13:20 +0700)
+- Commit 6be9e42b2c: transpiler/lua: update outputs up to index 36 and tweak binary ops
+- Generated Zig for 98/103 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-23 13:20 +0700)
+- Commit 6be9e42b2c: transpiler/lua: update outputs up to index 36 and tweak binary ops
+- Generated Zig for 98/103 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-23 13:20 +0700)
+- Commit 6be9e42b2c: transpiler/lua: update outputs up to index 36 and tweak binary ops
+- Generated Zig for 98/103 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-23 13:20 +0700)
+- Commit 6be9e42b2c: transpiler/lua: update outputs up to index 36 and tweak binary ops
+- Generated Zig for 98/103 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-23 13:20 +0700)
+- Commit 6be9e42b2c: transpiler/lua: update outputs up to index 36 and tweak binary ops
+- Generated Zig for 98/103 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-23 13:20 +0700)
+- Commit 6be9e42b2c: transpiler/lua: update outputs up to index 36 and tweak binary ops
+- Generated Zig for 98/103 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-23 13:20 +0700)
+- Commit 6be9e42b2c: transpiler/lua: update outputs up to index 36 and tweak binary ops
+- Generated Zig for 98/103 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-23 13:20 +0700)
+- Commit 6be9e42b2c: transpiler/lua: update outputs up to index 36 and tweak binary ops
+- Generated Zig for 98/103 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-23 13:20 +0700)
+- Commit 6be9e42b2c: transpiler/lua: update outputs up to index 36 and tweak binary ops
+- Generated Zig for 98/103 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-23 13:20 +0700)
+- Commit 6be9e42b2c: transpiler/lua: update outputs up to index 36 and tweak binary ops
+- Generated Zig for 98/103 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-23 13:20 +0700)
+- Commit 6be9e42b2c: transpiler/lua: update outputs up to index 36 and tweak binary ops
+- Generated Zig for 98/103 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-23 13:20 +0700)
+- Commit 6be9e42b2c: transpiler/lua: update outputs up to index 36 and tweak binary ops
+- Generated Zig for 98/103 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-23 13:20 +0700)
+- Commit 6be9e42b2c: transpiler/lua: update outputs up to index 36 and tweak binary ops
+- Generated Zig for 98/103 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-23 13:20 +0700)
+- Commit 6be9e42b2c: transpiler/lua: update outputs up to index 36 and tweak binary ops
+- Generated Zig for 98/103 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-23 13:20 +0700)
+- Commit 6be9e42b2c: transpiler/lua: update outputs up to index 36 and tweak binary ops
+- Generated Zig for 98/103 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-23 13:20 +0700)
+- Commit 6be9e42b2c: transpiler/lua: update outputs up to index 36 and tweak binary ops
+- Generated Zig for 98/103 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-23 13:20 +0700)
+- Commit 6be9e42b2c: transpiler/lua: update outputs up to index 36 and tweak binary ops
+- Generated Zig for 98/103 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-23 13:20 +0700)
+- Commit 6be9e42b2c: transpiler/lua: update outputs up to index 36 and tweak binary ops
+- Generated Zig for 98/103 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-23 13:20 +0700)
+- Commit 6be9e42b2c: transpiler/lua: update outputs up to index 36 and tweak binary ops
+- Generated Zig for 98/103 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-23 13:20 +0700)
+- Commit 6be9e42b2c: transpiler/lua: update outputs up to index 36 and tweak binary ops
+- Generated Zig for 98/103 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-23 13:20 +0700)
+- Commit 6be9e42b2c: transpiler/lua: update outputs up to index 36 and tweak binary ops
+- Generated Zig for 98/103 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-23 13:20 +0700)
+- Commit 6be9e42b2c: transpiler/lua: update outputs up to index 36 and tweak binary ops
+- Generated Zig for 98/103 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-23 13:20 +0700)
+- Commit 6be9e42b2c: transpiler/lua: update outputs up to index 36 and tweak binary ops
+- Generated Zig for 98/103 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-23 13:20 +0700)
+- Commit 6be9e42b2c: transpiler/lua: update outputs up to index 36 and tweak binary ops
+- Generated Zig for 98/103 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-23 13:20 +0700)
+- Commit 6be9e42b2c: transpiler/lua: update outputs up to index 36 and tweak binary ops
+- Generated Zig for 98/103 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-23 13:20 +0700)
+- Commit 6be9e42b2c: transpiler/lua: update outputs up to index 36 and tweak binary ops
+- Generated Zig for 98/103 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-23 13:20 +0700)
+- Commit 6be9e42b2c: transpiler/lua: update outputs up to index 36 and tweak binary ops
+- Generated Zig for 98/103 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-23 13:20 +0700)
+- Commit 6be9e42b2c: transpiler/lua: update outputs up to index 36 and tweak binary ops
+- Generated Zig for 98/103 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-23 13:20 +0700)
+- Commit 6be9e42b2c: transpiler/lua: update outputs up to index 36 and tweak binary ops
+- Generated Zig for 98/103 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-23 13:20 +0700)
+- Commit 6be9e42b2c: transpiler/lua: update outputs up to index 36 and tweak binary ops
+- Generated Zig for 98/103 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-23 13:20 +0700)
+- Commit 6be9e42b2c: transpiler/lua: update outputs up to index 36 and tweak binary ops
+- Generated Zig for 98/103 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-23 13:20 +0700)
+- Commit 6be9e42b2c: transpiler/lua: update outputs up to index 36 and tweak binary ops
+- Generated Zig for 98/103 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-23 13:20 +0700)
+- Commit 6be9e42b2c: transpiler/lua: update outputs up to index 36 and tweak binary ops
+- Generated Zig for 98/103 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-23 13:20 +0700)
+- Commit 6be9e42b2c: transpiler/lua: update outputs up to index 36 and tweak binary ops
+- Generated Zig for 98/103 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-23 13:20 +0700)
+- Commit 6be9e42b2c: transpiler/lua: update outputs up to index 36 and tweak binary ops
+- Generated Zig for 98/103 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-23 13:20 +0700)
+- Commit 6be9e42b2c: transpiler/lua: update outputs up to index 36 and tweak binary ops
+- Generated Zig for 98/103 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-23 13:20 +0700)
+- Commit 6be9e42b2c: transpiler/lua: update outputs up to index 36 and tweak binary ops
+- Generated Zig for 98/103 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-23 13:20 +0700)
+- Commit 6be9e42b2c: transpiler/lua: update outputs up to index 36 and tweak binary ops
+- Generated Zig for 98/103 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-23 13:20 +0700)
+- Commit 6be9e42b2c: transpiler/lua: update outputs up to index 36 and tweak binary ops
+- Generated Zig for 98/103 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-23 13:20 +0700)
+- Commit 6be9e42b2c: transpiler/lua: update outputs up to index 36 and tweak binary ops
+- Generated Zig for 98/103 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-23 13:20 +0700)
+- Commit 6be9e42b2c: transpiler/lua: update outputs up to index 36 and tweak binary ops
+- Generated Zig for 98/103 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-23 13:20 +0700)
+- Commit 6be9e42b2c: transpiler/lua: update outputs up to index 36 and tweak binary ops
+- Generated Zig for 98/103 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-23 13:20 +0700)
+- Commit 6be9e42b2c: transpiler/lua: update outputs up to index 36 and tweak binary ops
+- Generated Zig for 98/103 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-23 13:20 +0700)
+- Commit 6be9e42b2c: transpiler/lua: update outputs up to index 36 and tweak binary ops
+- Generated Zig for 98/103 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-23 13:20 +0700)
+- Commit 6be9e42b2c: transpiler/lua: update outputs up to index 36 and tweak binary ops
+- Generated Zig for 98/103 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-23 13:20 +0700)
+- Commit 6be9e42b2c: transpiler/lua: update outputs up to index 36 and tweak binary ops
+- Generated Zig for 98/103 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-23 13:20 +0700)
+- Commit 6be9e42b2c: transpiler/lua: update outputs up to index 36 and tweak binary ops
+- Generated Zig for 98/103 programs
+- Updated README checklist and outputs
+
 ## Progress (2025-07-23 12:46 +0700)
 - Commit 116016df17: transpiler(kt): add support for rosetta index 8
 - Generated Zig for 98/103 programs
