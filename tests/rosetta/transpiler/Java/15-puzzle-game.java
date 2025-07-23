@@ -88,21 +88,21 @@ board[j] = tmp;
     static void playOneMove() {
         while (true) {
             System.out.println("Enter move #" + String.valueOf(moves + 1) + " (U, D, L, R, or Q): ");
-            String s = _scanner.nextLine();
+            String s = (_scanner.hasNextLine() ? _scanner.nextLine() : "");
             if ((s.equals(""))) {
                 continue;
             }
             String c = s.substring(0, 1);
             int m = 0;
-            if ((c.equals("U")) || c == "u") {
+            if (((c.equals("U")) || c.equals("u"))) {
                 m = 0;
-            } else             if ((c.equals("D")) || c == "d") {
+            } else             if (((c.equals("D")) || c.equals("d"))) {
                 m = 1;
-            } else             if ((c.equals("R")) || c == "r") {
+            } else             if (((c.equals("R")) || c.equals("r"))) {
                 m = 2;
-            } else             if ((c.equals("L")) || c == "l") {
+            } else             if (((c.equals("L")) || c.equals("l"))) {
                 m = 3;
-            } else             if ((c.equals("Q")) || c == "q") {
+            } else             if (((c.equals("Q")) || c.equals("q"))) {
                 System.out.println("Quiting after " + String.valueOf(moves) + " moves.");
                 quit = true;
                 return;

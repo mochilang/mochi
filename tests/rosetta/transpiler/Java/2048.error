@@ -1,0 +1,127 @@
+compile: exit status 1
+/tmp/TestJavaTranspiler_Rosetta_Golden2048365922123/001/Main.java:5: error: incompatible types: Object cannot be converted to Map
+    static java.util.Map full = r.get("full");
+                                     ^
+/tmp/TestJavaTranspiler_Rosetta_Golden2048365922123/001/Main.java:72: error: incompatible types: int cannot be converted to Map
+                java.util.Map v = b[y][x];
+                                      ^
+/tmp/TestJavaTranspiler_Rosetta_Golden2048365922123/001/Main.java:73: error: bad operand types for binary operator '=='
+                if (v == 0) {
+                      ^
+  first type:  Map
+  second type: int
+/tmp/TestJavaTranspiler_Rosetta_Golden2048365922123/001/Main.java:76: error: incompatible types: Map cannot be converted to int
+                    line = line + pad(v) + "|";
+                                      ^
+/tmp/TestJavaTranspiler_Rosetta_Golden2048365922123/001/Main.java:89: error: cannot find symbol
+        int i = r.size() - 1;
+                 ^
+  symbol:   method size()
+  location: variable r of type int[]
+/tmp/TestJavaTranspiler_Rosetta_Golden2048365922123/001/Main.java:91: error: cannot find symbol
+            out = java.util.stream.IntStream.concat(java.util.Arrays.stream(out), java.util.stream.IntStream.of(r.get(i))).toArray();
+                                                                                                                 ^
+  symbol:   method get(int)
+  location: variable r of type int[]
+/tmp/TestJavaTranspiler_Rosetta_Golden2048365922123/001/Main.java:131: error: incompatible types: Object cannot be converted to Map
+            java.util.Map new_ = r.get("row");
+                                      ^
+/tmp/TestJavaTranspiler_Rosetta_Golden2048365922123/001/Main.java:132: error: bad operand types for binary operator '+'
+            score = score + r.get("gain");
+                          ^
+  first type:  int
+  second type: Object
+/tmp/TestJavaTranspiler_Rosetta_Golden2048365922123/001/Main.java:135: error: array required, but Map found
+                if (b[y][x] != new_[x]) {
+                                   ^
+/tmp/TestJavaTranspiler_Rosetta_Golden2048365922123/001/Main.java:138: error: array required, but Map found
+b[y][x] = new_[x];
+              ^
+/tmp/TestJavaTranspiler_Rosetta_Golden2048365922123/001/Main.java:152: error: incompatible types: Object cannot be converted to int[]
+            rev = r.get("row");
+                       ^
+/tmp/TestJavaTranspiler_Rosetta_Golden2048365922123/001/Main.java:153: error: bad operand types for binary operator '+'
+            score = score + r.get("gain");
+                          ^
+  first type:  int
+  second type: Object
+/tmp/TestJavaTranspiler_Rosetta_Golden2048365922123/001/Main.java:192: error: incompatible types: Object cannot be converted to Map
+            java.util.Map new_ = r.get("row");
+                                      ^
+/tmp/TestJavaTranspiler_Rosetta_Golden2048365922123/001/Main.java:193: error: bad operand types for binary operator '+'
+            score = score + r.get("gain");
+                          ^
+  first type:  int
+  second type: Object
+/tmp/TestJavaTranspiler_Rosetta_Golden2048365922123/001/Main.java:196: error: array required, but Map found
+                if (b[y][x] != new_[y]) {
+                                   ^
+/tmp/TestJavaTranspiler_Rosetta_Golden2048365922123/001/Main.java:199: error: array required, but Map found
+b[y][x] = new_[y];
+              ^
+/tmp/TestJavaTranspiler_Rosetta_Golden2048365922123/001/Main.java:213: error: incompatible types: Object cannot be converted to int[]
+            col = r.get("row");
+                       ^
+/tmp/TestJavaTranspiler_Rosetta_Golden2048365922123/001/Main.java:214: error: bad operand types for binary operator '+'
+            score = score + r.get("gain");
+                          ^
+  first type:  int
+  second type: Object
+/tmp/TestJavaTranspiler_Rosetta_Golden2048365922123/001/Main.java:265: error: incompatible types: Object cannot be converted to int[][]
+        board = r.get("board");
+                     ^
+/tmp/TestJavaTranspiler_Rosetta_Golden2048365922123/001/Main.java:267: error: incompatible types: Object cannot be converted to int[][]
+        board = r.get("board");
+                     ^
+/tmp/TestJavaTranspiler_Rosetta_Golden2048365922123/001/Main.java:268: error: incompatible types: Object cannot be converted to Map
+        full = r.get("full");
+                    ^
+/tmp/TestJavaTranspiler_Rosetta_Golden2048365922123/001/Main.java:276: error: incompatible types: Object cannot be converted to int[][]
+                board = m.get("board");
+                             ^
+/tmp/TestJavaTranspiler_Rosetta_Golden2048365922123/001/Main.java:277: error: incompatible types: Object cannot be converted to int
+                score = m.get("score");
+                             ^
+/tmp/TestJavaTranspiler_Rosetta_Golden2048365922123/001/Main.java:278: error: incompatible types: Object cannot be converted to boolean
+                moved = m.get("moved");
+                             ^
+/tmp/TestJavaTranspiler_Rosetta_Golden2048365922123/001/Main.java:282: error: incompatible types: Object cannot be converted to int[][]
+                board = m.get("board");
+                             ^
+/tmp/TestJavaTranspiler_Rosetta_Golden2048365922123/001/Main.java:283: error: incompatible types: Object cannot be converted to int
+                score = m.get("score");
+                             ^
+/tmp/TestJavaTranspiler_Rosetta_Golden2048365922123/001/Main.java:284: error: incompatible types: Object cannot be converted to boolean
+                moved = m.get("moved");
+                             ^
+/tmp/TestJavaTranspiler_Rosetta_Golden2048365922123/001/Main.java:288: error: incompatible types: Object cannot be converted to int[][]
+                board = m.get("board");
+                             ^
+/tmp/TestJavaTranspiler_Rosetta_Golden2048365922123/001/Main.java:289: error: incompatible types: Object cannot be converted to int
+                score = m.get("score");
+                             ^
+/tmp/TestJavaTranspiler_Rosetta_Golden2048365922123/001/Main.java:290: error: incompatible types: Object cannot be converted to boolean
+                moved = m.get("moved");
+                             ^
+/tmp/TestJavaTranspiler_Rosetta_Golden2048365922123/001/Main.java:294: error: incompatible types: Object cannot be converted to int[][]
+                board = m.get("board");
+                             ^
+/tmp/TestJavaTranspiler_Rosetta_Golden2048365922123/001/Main.java:295: error: incompatible types: Object cannot be converted to int
+                score = m.get("score");
+                             ^
+/tmp/TestJavaTranspiler_Rosetta_Golden2048365922123/001/Main.java:296: error: incompatible types: Object cannot be converted to boolean
+                moved = m.get("moved");
+                             ^
+/tmp/TestJavaTranspiler_Rosetta_Golden2048365922123/001/Main.java:303: error: incompatible types: Object cannot be converted to int[][]
+                board = r2.get("board");
+                              ^
+/tmp/TestJavaTranspiler_Rosetta_Golden2048365922123/001/Main.java:304: error: incompatible types: Object cannot be converted to Map
+                full = r2.get("full");
+                             ^
+/tmp/TestJavaTranspiler_Rosetta_Golden2048365922123/001/Main.java:305: error: bad operand types for binary operator '&&'
+                if (full && (!(Boolean)hasMoves(board))) {
+                         ^
+  first type:  Map
+  second type: boolean
+Note: Some messages have been simplified; recompile with -Xdiags:verbose to get full output
+36 errors
