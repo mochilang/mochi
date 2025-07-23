@@ -2,9 +2,9 @@
 
 Generated PHP code from Mochi Rosetta tasks lives in `tests/rosetta/transpiler/php`.
 
-Last updated: 2025-07-23 15:05 +0700
+Last updated: 2025-07-23 15:49 +0700
 
-## Checklist (79/284)
+## Checklist (80/284)
 - [x] 1 100-doors-2
 - [x] 2 100-doors-3
 - [x] 3 100-doors
@@ -16,7 +16,7 @@ Last updated: 2025-07-23 15:05 +0700
 - [x] 9 24-game-solve
 - [x] 10 24-game
 - [x] 11 4-rings-or-4-squares-puzzle
-- [ ] 12 9-billion-names-of-god-the-integer
+- [x] 12 9-billion-names-of-god-the-integer
 - [x] 13 99-bottles-of-beer-2
 - [x] 14 99-bottles-of-beer
 - [x] 15 DNS-query
