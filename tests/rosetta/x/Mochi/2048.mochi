@@ -1,6 +1,22 @@
 // Simple 2048 game in Mochi.
 let SIZE = 4
 
+type SpawnResult {
+  board: list<list<int>>
+  full: bool
+}
+
+type SlideResult {
+  row: list<int>
+  gain: int
+}
+
+type MoveResult {
+  board: list<list<int>>
+  score: int
+  moved: bool
+}
+
 fun newBoard(): list<list<int>> {
   var b: list<list<int>> = []
   var y = 0
@@ -17,7 +33,7 @@ fun newBoard(): list<list<int>> {
   return b
 }
 
-fun spawnTile(b: list<list<int>>): map<string, any> {
+fun spawnTile(b: list<list<int>>): SpawnResult {
   var empty: list<list<int>> = []
   var y = 0
   while y < SIZE {
@@ -30,13 +46,13 @@ fun spawnTile(b: list<list<int>>): map<string, any> {
     }
     y = y + 1
   }
-  if len(empty) == 0 { return {"board": b, "full": true} }
+  if len(empty) == 0 { return SpawnResult{ board: b, full: true } }
   var idx = now() % len(empty)
   let cell = empty[idx]
   var val = 4
   if now() % 10 < 9 { val = 2 }
   b[cell[1]][cell[0]] = val
-  return {"board": b, "full": len(empty) == 1}
+  return SpawnResult{ board: b, full: len(empty) == 1 }
 }
 
 fun pad(n: int): string {
@@ -84,7 +100,7 @@ fun reverseRow(r: list<int>): list<int> {
   return out
 }
 
-fun slideLeft(row: list<int>): map<string, any> {
+fun slideLeft(row: list<int>): SlideResult {
   var xs: list<int> = []
   var i = 0
   while i < len(row) {
@@ -106,16 +122,16 @@ fun slideLeft(row: list<int>): map<string, any> {
     }
   }
   while len(res) < SIZE { res = append(res, 0) }
-  return {"row": res, "gain": gain}
+  return SlideResult{ row: res, gain: gain }
 }
 
-fun moveLeft(b: list<list<int>>, score: int): map<string, any> {
+fun moveLeft(b: list<list<int>>, score: int): MoveResult {
   var moved = false
   var y = 0
   while y < SIZE {
     let r = slideLeft(b[y])
-    let new = r["row"]
-    score = score + r["gain"]
+    let new = r.row
+    score = score + r.gain
     var x = 0
     while x < SIZE {
       if b[y][x] != new[x] { moved = true }
@@ -124,17 +140,17 @@ fun moveLeft(b: list<list<int>>, score: int): map<string, any> {
     }
     y = y + 1
   }
-  return {"board": b, "score": score, "moved": moved}
+  return MoveResult{ board: b, score: score, moved: moved }
 }
 
-fun moveRight(b: list<list<int>>, score: int): map<string, any> {
+fun moveRight(b: list<list<int>>, score: int): MoveResult {
   var moved = false
   var y = 0
   while y < SIZE {
     var rev = reverseRow(b[y])
     let r = slideLeft(rev)
-    rev = r["row"]
-    score = score + r["gain"]
+    rev = r.row
+    score = score + r.gain
     rev = reverseRow(rev)
     var x = 0
     while x < SIZE {
@@ -144,7 +160,7 @@ fun moveRight(b: list<list<int>>, score: int): map<string, any> {
     }
     y = y + 1
   }
-  return {"board": b, "score": score, "moved": moved}
+  return MoveResult{ board: b, score: score, moved: moved }
 }
 
 fun getCol(b: list<list<int>>, x: int): list<int> {
@@ -165,14 +181,14 @@ fun setCol(b: list<list<int>>, x: int, col: list<int>) {
   }
 }
 
-fun moveUp(b: list<list<int>>, score: int): map<string, any> {
+fun moveUp(b: list<list<int>>, score: int): MoveResult {
   var moved = false
   var x = 0
   while x < SIZE {
     var col = getCol(b, x)
     let r = slideLeft(col)
-    let new = r["row"]
-    score = score + r["gain"]
+    let new = r.row
+    score = score + r.gain
     var y = 0
     while y < SIZE {
       if b[y][x] != new[y] { moved = true }
@@ -181,17 +197,17 @@ fun moveUp(b: list<list<int>>, score: int): map<string, any> {
     }
     x = x + 1
   }
-  return {"board": b, "score": score, "moved": moved}
+  return MoveResult{ board: b, score: score, moved: moved }
 }
 
-fun moveDown(b: list<list<int>>, score: int): map<string, any> {
+fun moveDown(b: list<list<int>>, score: int): MoveResult {
   var moved = false
   var x = 0
   while x < SIZE {
     var col = reverseRow(getCol(b, x))
     let r = slideLeft(col)
-    col = r["row"]
-    score = score + r["gain"]
+    col = r.row
+    score = score + r.gain
     col = reverseRow(col)
     var y = 0
     while y < SIZE {
@@ -201,7 +217,7 @@ fun moveDown(b: list<list<int>>, score: int): map<string, any> {
     }
     x = x + 1
   }
-  return {"board": b, "score": score, "moved": moved}
+  return MoveResult{ board: b, score: score, moved: moved }
 }
 
 fun hasMoves(b: list<list<int>>): bool {
@@ -234,11 +250,11 @@ fun has2048(b: list<list<int>>): bool {
 
 var board = newBoard()
 var r = spawnTile(board)
-board = r["board"]
-var full = r["full"]
+board = r.board
+var full = r.full
 r = spawnTile(board)
-board = r["board"]
-full = r["full"]
+board = r.board
+full = r.full
 var score = 0
 
 draw(board, score)
@@ -248,33 +264,33 @@ while true {
   var moved = false
   if cmd == "a" || cmd == "A" {
     let m = moveLeft(board, score)
-    board = m["board"]
-    score = m["score"]
-    moved = m["moved"]
+    board = m.board
+    score = m.score
+    moved = m.moved
   }
   if cmd == "d" || cmd == "D" {
     let m = moveRight(board, score)
-    board = m["board"]
-    score = m["score"]
-    moved = m["moved"]
+    board = m.board
+    score = m.score
+    moved = m.moved
   }
   if cmd == "w" || cmd == "W" {
     let m = moveUp(board, score)
-    board = m["board"]
-    score = m["score"]
-    moved = m["moved"]
+    board = m.board
+    score = m.score
+    moved = m.moved
   }
   if cmd == "s" || cmd == "S" {
     let m = moveDown(board, score)
-    board = m["board"]
-    score = m["score"]
-    moved = m["moved"]
+    board = m.board
+    score = m.score
+    moved = m.moved
   }
   if cmd == "q" || cmd == "Q" { break }
   if moved {
     let r2 = spawnTile(board)
-    board = r2["board"]
-    full = r2["full"]
+    board = r2.board
+    full = r2.full
     if full && (!hasMoves(board)) {
       draw(board, score)
       print("Game Over")
