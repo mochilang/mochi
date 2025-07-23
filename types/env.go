@@ -119,6 +119,17 @@ func (e *Env) GetStream(name string) (StructType, bool) {
 	return StructType{}, false
 }
 
+// LookupType searches for a named type in the current scope and parents.
+func (e *Env) LookupType(name string) (Type, bool) {
+	if t, ok := e.types[name]; ok {
+		return t, true
+	}
+	if e.parent != nil {
+		return e.parent.LookupType(name)
+	}
+	return nil, false
+}
+
 // FindUnionByVariant returns the union type that contains the given variant name.
 func (e *Env) FindUnionByVariant(variant string) (UnionType, bool) {
 	for _, u := range e.unions {

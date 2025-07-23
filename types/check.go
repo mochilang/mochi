@@ -615,13 +615,29 @@ func Check(prog *parser.Program, env *Env) []error {
 
 	var errs []error
 
-	// First process all type declarations so functions can reference them
-	// regardless of their order in the source file.
+	// First pass: gather type and function declarations so definitions can
+	// reference them regardless of order in the source file.
 	for _, stmt := range prog.Statements {
 		if stmt.Type != nil {
 			if err := checkStmt(stmt, env, VoidType{}); err != nil {
 				errs = append(errs, err)
 			}
+		} else if stmt.Fun != nil {
+			params := make([]Type, len(stmt.Fun.Params))
+			for i, p := range stmt.Fun.Params {
+				if p.Type != nil {
+					params[i] = resolveTypeRef(p.Type, env)
+				} else {
+					params[i] = AnyType{}
+				}
+			}
+			var ret Type = VoidType{}
+			if stmt.Fun.Return != nil {
+				ret = resolveTypeRef(stmt.Fun.Return, env)
+			}
+			pure := isPureFunction(stmt.Fun, env)
+			env.SetVar(stmt.Fun.Name, FuncType{Params: params, Return: ret, Pure: pure}, false)
+			env.SetFunc(stmt.Fun.Name, stmt.Fun)
 		}
 	}
 
@@ -1066,6 +1082,11 @@ func checkStmt(s *parser.Statement, env *Env, expectedReturn Type) error {
 		return nil
 
 	case s.Type != nil:
+		if s.Type.Alias != nil {
+			t := resolveTypeRef(s.Type.Alias, env)
+			env.types[s.Type.Name] = t
+			return nil
+		}
 		if len(s.Type.Members) > 0 {
 			fields := map[string]Type{}
 			order := []string{}
@@ -1280,6 +1301,9 @@ func resolveTypeRef(t *parser.TypeRef, env *Env) Type {
 		case "bool":
 			return BoolType{}
 		default:
+			if typ, ok := env.LookupType(*t.Simple); ok {
+				return typ
+			}
 			if ut, ok := env.GetUnion(*t.Simple); ok {
 				return ut
 			}
