@@ -21,6 +21,7 @@ var (
 	helpersUsed    map[string]bool
 	builtinAliases map[string]string
 	reserved       map[string]bool
+	currentRetType string
 )
 
 func init() {
@@ -1755,15 +1756,18 @@ func guessType(e Expr) string {
 			if lt == "String" || rt == "String" {
 				return "String"
 			}
-			if lt == "Int" && rt == "Int" {
-				if v.Op == "%" {
-					return "Int"
-				}
-				return "Int"
+			if lt == "Double" || rt == "Double" {
+				return "Double"
 			}
-			return "Double"
+			// default to Int when neither side explicitly requires Double
+			return "Int"
 		}
 		if v.Op == "/" {
+			lt := guessType(v.Left)
+			rt := guessType(v.Right)
+			if lt != "Double" && rt != "Double" {
+				return "Int"
+			}
 			return "Double"
 		}
 		if v.Op == "==" || v.Op == "!=" || v.Op == ">" || v.Op == "<" || v.Op == ">=" || v.Op == "<=" {
@@ -2043,6 +2047,9 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 					return nil, err
 				}
 			}
+			if currentRetType != "" && currentRetType != "Any" && val != nil {
+				val = &CastExpr{Value: val, Type: currentRetType}
+			}
 			p.Stmts = append(p.Stmts, &ReturnStmt{Value: val})
 		case st.Fun != nil:
 			bodyEnv := types.NewEnv(env)
@@ -2050,7 +2057,18 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 				pt := types.ResolveTypeRef(p0.Type, env)
 				bodyEnv.SetVar(p0.Name, pt, true)
 			}
+			prevRet := currentRetType
+			ret := kotlinType(st.Fun.Return)
+			if ret == "" {
+				if t, ok := env.Types()[st.Fun.Name]; ok {
+					if ft, ok := t.(types.FuncType); ok {
+						ret = kotlinTypeFromType(ft.Return)
+					}
+				}
+			}
+			currentRetType = ret
 			body, err := convertStmts(bodyEnv, st.Fun.Body)
+			currentRetType = prevRet
 			if err != nil {
 				return nil, err
 			}
@@ -2061,14 +2079,6 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 					typ = "Any"
 				}
 				params = append(params, fmt.Sprintf("%s: %s", p0.Name, typ))
-			}
-			ret := kotlinType(st.Fun.Return)
-			if ret == "" {
-				if t, ok := env.Types()[st.Fun.Name]; ok {
-					if ft, ok := t.(types.FuncType); ok {
-						ret = kotlinTypeFromType(ft.Return)
-					}
-				}
 			}
 			fname := st.Fun.Name
 			if fname == "main" {
@@ -3193,10 +3203,14 @@ func convertFunExpr(env *types.Env, f *parser.FunExpr) (Expr, error) {
 		pt := types.ResolveTypeRef(p.Type, env)
 		bodyEnv.SetVar(p.Name, pt, true)
 	}
+	prevRet := currentRetType
+	ret := kotlinType(f.Return)
+	currentRetType = ret
 	var body []Stmt
 	if f.ExprBody != nil {
 		expr, err := convertExpr(bodyEnv, f.ExprBody)
 		if err != nil {
+			currentRetType = prevRet
 			return nil, err
 		}
 		body = []Stmt{&ReturnStmt{Value: expr}}
@@ -3204,9 +3218,11 @@ func convertFunExpr(env *types.Env, f *parser.FunExpr) (Expr, error) {
 		var err error
 		body, err = convertStmts(bodyEnv, f.BlockBody)
 		if err != nil {
+			currentRetType = prevRet
 			return nil, err
 		}
 	}
+	currentRetType = prevRet
 	return &FuncLit{Params: params, Body: body}, nil
 }
 
