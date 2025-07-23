@@ -1,0 +1,12 @@
+exit status 127
+rows:
+escript: exception error: an error occurred when evaluating an arithmetic expression
+  in operator  rem/2
+     called as 0.1 rem 10
+  in call from main:'-bigFromInt/1-Fun2_loop/3-0-'/3 (/workspace/mochi/tests/rosetta/transpiler/erl/9-billion-names-of-god-the-integer.erl, line 40)
+  in call from main:'-bigFromInt/1-Fun2_loop/3-0-'/3 (/workspace/mochi/tests/rosetta/transpiler/erl/9-billion-names-of-god-the-integer.erl, line 42)
+  in call from main:bigFromInt/1 (/workspace/mochi/tests/rosetta/transpiler/erl/9-billion-names-of-god-the-integer.erl, line 49)
+  in call from main:cumu/1 (/workspace/mochi/tests/rosetta/transpiler/erl/9-billion-names-of-god-the-integer.erl, line 160)
+  in call from main:row/1 (/workspace/mochi/tests/rosetta/transpiler/erl/9-billion-names-of-god-the-integer.erl, line 198)
+  in call from main:'-main/1-Fun10_loop/0-0-'/0 (/workspace/mochi/tests/rosetta/transpiler/erl/9-billion-names-of-god-the-integer.erl, line 226)
+  in call from main:main/1 (/workspace/mochi/tests/rosetta/transpiler/erl/9-billion-names-of-god-the-integer.erl, line 252)

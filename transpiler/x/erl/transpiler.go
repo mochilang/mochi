@@ -898,6 +898,44 @@ func isMapExpr(e Expr, env *types.Env, ctx *context) bool {
 	return false
 }
 
+func isIntExpr(e Expr, env *types.Env, ctx *context) bool {
+	switch v := e.(type) {
+	case *IntLit:
+		return true
+	case *NameRef:
+		name := v.Name
+		if ctx != nil {
+			name = ctx.original(v.Name)
+		}
+		if env != nil {
+			if t, err := env.GetVar(name); err == nil {
+				if _, ok := t.(types.IntType); ok {
+					return true
+				}
+			}
+		}
+		// assume int if type unknown
+		return true
+	case *CallExpr:
+		if v.Func == "erlang:get" && len(v.Args) == 1 {
+			if a, ok := v.Args[0].(*AtomLit); ok {
+				name := strings.Trim(a.Name, "'")
+				if ctx != nil {
+					name = ctx.original(name)
+				}
+				if env != nil {
+					if t, err := env.GetVar(name); err == nil {
+						if _, ok := t.(types.IntType); ok {
+							return true
+						}
+					}
+				}
+			}
+		}
+	}
+	return false
+}
+
 func mapValueIsString(e Expr, env *types.Env, ctx *context) bool {
 	if nr, ok := e.(*NameRef); ok {
 		name := nr.Name
@@ -1129,7 +1167,16 @@ func (c *CallExpr) emit(w io.Writer) {
 		io.WriteString(w, ")")
 		return
 	case "input":
-		io.WriteString(w, "string:trim(io:get_line(\"\"), right, [$\n])")
+		io.WriteString(w, "string:trim(io:get_line(\"\"))")
+		return
+	case "abs":
+		io.WriteString(w, "math:abs(")
+		if len(c.Args) > 0 {
+			c.Args[0].emit(w)
+		} else {
+			io.WriteString(w, "0")
+		}
+		io.WriteString(w, ")")
 		return
 	case "int":
 		io.WriteString(w, "case erlang:is_integer(")
@@ -1443,7 +1490,14 @@ func (n *NameRef) emit(w io.Writer) { io.WriteString(w, n.Name) }
 
 func (i *IntLit) emit(w io.Writer) { fmt.Fprintf(w, "%d", i.Value) }
 
-func (f *FloatLit) emit(w io.Writer) { fmt.Fprintf(w, "%g", f.Value) }
+func (f *FloatLit) emit(w io.Writer) {
+	s := fmt.Sprintf("%g", f.Value)
+	if strings.ContainsAny(s, "eE") && !strings.Contains(s, ".") {
+		parts := strings.SplitN(s, "e", 2)
+		s = parts[0] + ".0e" + parts[1]
+	}
+	io.WriteString(w, s)
+}
 
 func (b *BoolLit) emit(w io.Writer) {
 	if b.Value {
@@ -1942,7 +1996,7 @@ func mapOp(op string) string {
 
 func builtinFunc(name string) bool {
 	switch name {
-	case "print", "append", "avg", "count", "len", "str", "sum", "min", "max", "values", "exists", "json", "now", "input", "int":
+	case "print", "append", "avg", "count", "len", "str", "sum", "min", "max", "values", "exists", "json", "now", "input", "int", "abs":
 		return true
 	default:
 		return false
@@ -2793,7 +2847,11 @@ func convertBinary(b *parser.BinaryExpr, env *types.Env, ctx *context) (Expr, er
 			if contains(lvl, ops[i]) {
 				l := exprs[i]
 				r := exprs[i+1]
-				exprs[i] = &BinaryExpr{Left: l, Op: ops[i], Right: r}
+				op := ops[i]
+				if op == "/" && isIntExpr(l, env, ctx) && isIntExpr(r, env, ctx) {
+					op = "div"
+				}
+				exprs[i] = &BinaryExpr{Left: l, Op: op, Right: r}
 				exprs = append(exprs[:i+1], exprs[i+2:]...)
 				ops = append(ops[:i], ops[i+1:]...)
 			} else {
