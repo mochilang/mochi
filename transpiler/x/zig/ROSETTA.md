@@ -2,19 +2,19 @@
 
 Generated Zig code for Rosetta tasks lives under `tests/rosetta/transpiler/Zig`.
 
-Last updated: 2025-07-23 10:13 +0700
+Last updated: 2025-07-23 12:46 +0700
 
-## Program Checklist (18/284)
+## Program Checklist (24/284)
 1. [x] 100-doors-2
 2. [x] 100-doors-3
 3. [x] 100-doors
 4. [x] 100-prisoners
-5. [ ] 15-puzzle-game
-6. [ ] 15-puzzle-solver
-7. [ ] 2048
-8. [ ] 21-game
-9. [ ] 24-game-solve
-10. [ ] 24-game
+5. [x] 15-puzzle-game
+6. [x] 15-puzzle-solver
+7. [x] 2048
+8. [x] 21-game
+9. [x] 24-game-solve
+10. [x] 24-game
 11. [x] 4-rings-or-4-squares-puzzle
 12. [x] 9-billion-names-of-god-the-integer
 13. [x] 99-bottles-of-beer-2
