@@ -1,0 +1,9 @@
+run error: exit status 1
+/workspace/mochi/tests/rosetta/transpiler/Racket/abstract-type.rkt:32:3: match: syntax error in pattern
+  in: (Dog k _)
+  location...:
+   /workspace/mochi/tests/rosetta/transpiler/Racket/abstract-type.rkt:32:3
+  context...:
+   /usr/share/racket/collects/racket/match/gen-match.rkt:55:11: mk
+   /usr/share/racket/collects/racket/match/../../syntax/parse/private/parse-interp.rkt:643:50
+   /usr/share/racket/collects/racket/match/gen-match.rkt:24:0: go

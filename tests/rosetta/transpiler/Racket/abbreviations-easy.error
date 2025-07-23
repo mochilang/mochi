@@ -1,9 +1,0 @@
-run error: exit status 1
-string<=?: contract violation
-  expected: string?
-  given: #t
-  context...:
-   /workspace/mochi/tests/rosetta/transpiler/Racket/abbreviations-easy.rkt:126:4
-   /workspace/mochi/tests/rosetta/transpiler/Racket/abbreviations-easy.rkt:121:0
-   /workspace/mochi/tests/rosetta/transpiler/Racket/abbreviations-easy.rkt:116:2
-   body of "/workspace/mochi/tests/rosetta/transpiler/Racket/abbreviations-easy.rkt"
