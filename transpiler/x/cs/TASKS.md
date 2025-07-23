@@ -1,3 +1,6 @@
+## Progress (2025-07-23 09:12 +0700)
+- cs rosetta: add index handling and compile 100-doors (progress 102/103)
+
 ## Progress (2025-07-22 21:48 +0700)
 - ex: start handling mutable for loops and clean rosetta test (progress 102/103)
 
@@ -16,6 +19,7 @@
 
 ## Progress (2025-07-22 03:14 +0000)
 - cs transpiler: 100/102 tests compiled
+
 
 
 
