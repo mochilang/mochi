@@ -1727,13 +1727,6 @@ func (ws *WhileStmt) emit(w io.Writer) {
 	io.WriteString(w, ") ->\n    case ")
 	ws.Cond.emit(w)
 	io.WriteString(w, " of\n        true ->\n            try")
-	for i := range ws.Next {
-		io.WriteString(w, "\n                ")
-		io.WriteString(w, ws.Next[i])
-		io.WriteString(w, " = ")
-		io.WriteString(w, ws.Params[i])
-		io.WriteString(w, ",")
-	}
 	for _, st := range ws.Body {
 		io.WriteString(w, "\n                ")
 		st.emit(w)
