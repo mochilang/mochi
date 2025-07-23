@@ -24,16 +24,17 @@ import (
 
 // Program represents a Go program consisting of a sequence of statements.
 type Program struct {
-	Stmts      []Stmt
-	Imports    map[string]string
-	UseStrings bool
-	UseStrconv bool
-	UsePrint   bool
-	UseSort    bool
-	UseJSON    bool
-	UseTime    bool
-	UseInput   bool
-	UseSubstr  bool
+	Stmts        []Stmt
+	Imports      map[string]string
+	UseStrings   bool
+	UseStrconv   bool
+	UsePrint     bool
+	UseSort      bool
+	UseJSON      bool
+	UseTime      bool
+	UseInput     bool
+	UseSubstr    bool
+	UseFloatConv bool
 }
 
 var (
@@ -45,6 +46,7 @@ var (
 	usesTime       bool
 	usesInput      bool
 	usesSubstr     bool
+	usesFloatConv  bool
 	topEnv         *types.Env
 	extraDecls     []Stmt
 	structCount    int
@@ -1500,6 +1502,7 @@ func Transpile(p *parser.Program, env *types.Env) (*Program, error) {
 	usesTime = false
 	usesInput = false
 	usesSubstr = false
+	usesFloatConv = false
 	topEnv = env
 	extraDecls = nil
 	structCount = 0
@@ -1529,6 +1532,7 @@ func Transpile(p *parser.Program, env *types.Env) (*Program, error) {
 	gp.UseTime = usesTime
 	gp.UseInput = usesInput
 	gp.UseSubstr = usesSubstr
+	gp.UseFloatConv = usesFloatConv
 	gp.Imports = imports
 	return gp, nil
 }
@@ -3043,6 +3047,23 @@ func compileReturnStmt(rs *parser.ReturnStmt, env *types.Env) (Stmt, error) {
 
 func compileFunStmt(fn *parser.FunStmt, env *types.Env) (Stmt, error) {
 	child := types.NewEnv(env)
+	// Ensure the outer environment knows about this function's type so that
+	// subsequent statements (like a return) can lookup the correct type.
+	if _, err := env.GetVar(fn.Name); err != nil {
+		paramTypes := make([]types.Type, len(fn.Params))
+		for i, p := range fn.Params {
+			if p.Type != nil {
+				paramTypes[i] = types.ResolveTypeRef(p.Type, env)
+			} else {
+				paramTypes[i] = types.AnyType{}
+			}
+		}
+		var retT types.Type = types.AnyType{}
+		if fn.Return != nil {
+			retT = types.ResolveTypeRef(fn.Return, env)
+		}
+		env.SetVar(fn.Name, types.FuncType{Params: paramTypes, Return: retT}, false)
+	}
 	for _, p := range fn.Params {
 		if p.Type != nil {
 			child.SetVar(p.Name, types.ResolveTypeRef(p.Type, env), true)
@@ -3234,13 +3255,15 @@ func compileBinary(b *parser.BinaryExpr, env *types.Env, base string) (Expr, err
 							newExpr = &UnionAllExpr{Left: left, Right: right, ElemType: et}
 						}
 					}
-					// auto cast int/any to float64 for arithmetic
+					// auto convert unknown types to float64 for arithmetic
 					if newExpr == nil && (ops[i].Op == "+" || ops[i].Op == "-" || ops[i].Op == "*" || ops[i].Op == "/") {
 						if _, ok := typesList[i].(types.AnyType); ok {
-							left = &AssertExpr{Expr: left, Type: "float64"}
+							left = &CallExpr{Func: "_toFloat", Args: []Expr{left}}
+							usesFloatConv = true
 						}
 						if _, ok := typesList[i+1].(types.AnyType); ok {
-							right = &AssertExpr{Expr: right, Type: "float64"}
+							right = &CallExpr{Func: "_toFloat", Args: []Expr{right}}
+							usesFloatConv = true
 						}
 						if _, ok := typesList[i].(types.FloatType); ok {
 							if _, ok2 := typesList[i+1].(types.IntType); ok2 {
@@ -3948,10 +3971,13 @@ func toGoType(t *parser.TypeRef, env *types.Env) string {
 			params[i] = toGoType(p, env)
 		}
 		ret := toGoType(t.Fun.Return, env)
-		if ret != "" && ret != "any" {
+		if ret == "" {
+			ret = "any"
+		}
+		if ret != "any" {
 			return fmt.Sprintf("func(%s) %s", strings.Join(params, ", "), ret)
 		}
-		return fmt.Sprintf("func(%s)", strings.Join(params, ", "))
+		return fmt.Sprintf("func(%s) any", strings.Join(params, ", "))
 	}
 	return "any"
 }
@@ -4000,10 +4026,13 @@ func toGoTypeFromType(t types.Type) string {
 			params[i] = toGoTypeFromType(p)
 		}
 		ret := toGoTypeFromType(tt.Return)
-		if ret != "" && ret != "any" {
-			return fmt.Sprintf("func(%s) %s", strings.Join(params, ", "), ret)
+		if ret == "" {
+			if _, ok := tt.Return.(types.VoidType); ok {
+				return fmt.Sprintf("func(%s)", strings.Join(params, ", "))
+			}
+			ret = "any"
 		}
-		return fmt.Sprintf("func(%s)", strings.Join(params, ", "))
+		return fmt.Sprintf("func(%s) %s", strings.Join(params, ", "), ret)
 	case types.OptionType:
 		return "*" + toGoTypeFromType(tt.Elem)
 	case types.AnyType, types.VoidType:
@@ -4238,6 +4267,16 @@ func Emit(prog *Program) []byte {
 		buf.WriteString("    if start > len(r) { start = len(r) }\n")
 		buf.WriteString("    if end < start { end = start }\n")
 		buf.WriteString("    return string(r[start:end])\n")
+		buf.WriteString("}\n\n")
+	}
+	if prog.UseFloatConv {
+		buf.WriteString("func _toFloat(v any) float64 {\n")
+		buf.WriteString("    switch t := v.(type) {\n")
+		buf.WriteString("    case int: return float64(t)\n")
+		buf.WriteString("    case int64: return float64(t)\n")
+		buf.WriteString("    case float64: return t\n")
+		buf.WriteString("    default: return 0\n")
+		buf.WriteString("    }\n")
 		buf.WriteString("}\n\n")
 	}
 
