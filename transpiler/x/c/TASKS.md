@@ -1,5 +1,5 @@
-## Progress (2025-07-23 10:40 +0700)
-- Commit 85a9eda6db: update rosetta checklist
+## Progress (2025-07-23 12:35 +0700)
+- Commit 0d38565d30: dart transpiler: support union patterns and map keys
 - Regenerated golden files - 80/103 vm valid programs passing
 
 ## Progress (2025-07-22 14:12 +0700)
