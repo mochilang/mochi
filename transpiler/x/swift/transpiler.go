@@ -1377,6 +1377,12 @@ func convertStmt(env *types.Env, st *parser.Statement) (Stmt, error) {
 		if err != nil {
 			return nil, err
 		}
+		if env != nil {
+			typ := swiftTypeOf(cur)
+			if typ != "Any" {
+				val = &CastExpr{Expr: val, Type: typ + "!"}
+			}
+		}
 		return &IndexAssignStmt{Target: lhs, Value: val}, nil
 	case st.Fun != nil:
 		return convertFunDecl(env, st.Fun)
@@ -1438,6 +1444,11 @@ func convertIfStmt(env *types.Env, i *parser.IfStmt) (Stmt, error) {
 func convertFunDecl(env *types.Env, f *parser.FunStmt) (Stmt, error) {
 	fn := &FunDecl{Name: f.Name, Ret: toSwiftType(f.Return)}
 	child := types.NewEnv(env)
+	var retT types.Type = types.AnyType{}
+	if f.Return != nil {
+		retT = types.ResolveTypeRef(f.Return, env)
+	}
+	child.SetVar("$retType", retT, false)
 	for _, p := range f.Params {
 		fn.Params = append(fn.Params, Param{Name: p.Name, Type: toSwiftType(p.Type)})
 		var pt types.Type = types.AnyType{}
@@ -1465,6 +1476,14 @@ func convertReturnStmt(env *types.Env, r *parser.ReturnStmt) (Stmt, error) {
 		ex, err = convertExpr(env, r.Value)
 		if err != nil {
 			return nil, err
+		}
+	}
+	if env != nil {
+		if rt, err := env.GetVar("$retType"); err == nil {
+			typ := swiftTypeOf(rt)
+			if typ != "Any" {
+				ex = &CastExpr{Expr: ex, Type: typ + "!"}
+			}
 		}
 	}
 	return &ReturnStmt{Expr: ex}, nil
@@ -2226,15 +2245,26 @@ func convertPostfix(env *types.Env, p *parser.PostfixExpr) (Expr, error) {
 			}
 			isStr := false
 			force := false
+			var baseType types.Type
 			if env != nil {
 				if t := types.TypeOfPrimaryBasic(p.Target, env); types.IsStringType(t) {
 					isStr = true
 				}
+				baseType = types.TypeOfPrimaryBasic(p.Target, env)
 				if types.IsMapPrimary(p.Target, env) {
 					force = true
 				}
 			}
-			expr = &IndexExpr{Base: expr, Index: idx, AsString: isStr, Force: force}
+			if env != nil && types.IsAnyType(baseType) {
+				idxType := types.TypeOfExpr(op.Index.Start, env)
+				cast := "[Any]"
+				if types.IsStringType(idxType) {
+					cast = "[String: Any]"
+				}
+				expr = &IndexExpr{Base: &CastExpr{Expr: expr, Type: cast}, Index: idx, AsString: isStr, Force: force}
+			} else {
+				expr = &IndexExpr{Base: expr, Index: idx, AsString: isStr, Force: force}
+			}
 			continue
 		}
 		if op.Field != nil && i+1 < len(p.Ops) && p.Ops[i+1].Call != nil && op.Field.Name == "contains" {
@@ -2248,10 +2278,24 @@ func convertPostfix(env *types.Env, p *parser.PostfixExpr) (Expr, error) {
 		}
 		if op.Call != nil {
 			ce := &CallExpr{Func: exprString(expr)}
-			for _, a := range op.Call.Args {
+			var paramTypes []types.Type
+			if env != nil {
+				if t, err := env.GetVar(exprString(expr)); err == nil {
+					if ft, ok := t.(types.FuncType); ok {
+						paramTypes = ft.Params
+					}
+				}
+			}
+			for j, a := range op.Call.Args {
 				ae, err := convertExpr(env, a)
 				if err != nil {
 					return nil, err
+				}
+				if env != nil && j < len(paramTypes) {
+					pt := swiftTypeOf(paramTypes[j])
+					if pt != "Any" {
+						ae = &CastExpr{Expr: ae, Type: pt + "!"}
+					}
 				}
 				ce.Args = append(ce.Args, ae)
 			}
