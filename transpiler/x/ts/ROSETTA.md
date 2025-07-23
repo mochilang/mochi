@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated TypeScript code from programs in `tests/rosetta/x/Mochi` lives in `tests/rosetta/transpiler/TypeScript`.
-Last updated: 2025-07-23 10:39 UTC
+Last updated: 2025-07-23 11:38 UTC
 
-## Rosetta Golden Test Checklist (140/284)
+## Rosetta Golden Test Checklist (141/284)
 1. [x] 100-doors-2
 2. [x] 100-doors-3
 3. [x] 100-doors
@@ -152,7 +152,7 @@ Last updated: 2025-07-23 10:39 UTC
 145. [x] calendar---for-real-programmers-1
 146. [x] calendar---for-real-programmers-2
 147. [x] calendar
-148. [ ] calkin-wilf-sequence
+148. [x] calkin-wilf-sequence
 149. [ ] call-a-foreign-language-function
 150. [ ] call-a-function-1
 151. [ ] call-a-function-10
