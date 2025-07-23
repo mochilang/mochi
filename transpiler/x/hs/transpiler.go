@@ -2167,6 +2167,10 @@ func convertPostfix(pf *parser.PostfixExpr) (Expr, error) {
 					expr = &CastExpr{Expr: &CallExpr{Fun: &NameRef{Name: "read"}, Args: []Expr{expr}}, Type: "Int"}
 					continue
 				}
+				if tname == "float" {
+					expr = &CallExpr{Fun: &NameRef{Name: "fromIntegral"}, Args: []Expr{expr}}
+					continue
+				}
 				if ml, ok := expr.(*MapLit); ok {
 					names := make([]string, len(ml.Keys))
 					vals := make([]Expr, len(ml.Keys))
