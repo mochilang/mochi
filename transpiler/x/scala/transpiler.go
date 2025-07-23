@@ -1572,7 +1572,16 @@ func applyIndexOps(base Expr, ops []*parser.IndexOp, env *types.Env) (Expr, erro
 		if err != nil {
 			return nil, err
 		}
-		base = &IndexExpr{Value: base, Index: idx, Container: inferTypeWithEnv(base, env)}
+		ct := inferTypeWithEnv(base, env)
+		if ct == "" || ct == "Any" {
+			if iePrev, ok := base.(*IndexExpr); ok {
+				ct = iePrev.Type
+			}
+		}
+		ie := &IndexExpr{Value: base, Index: idx, Container: ct}
+		// assignment targets should not emit type casts
+		ie.Type = ""
+		base = ie
 	}
 	return base, nil
 }
@@ -1845,8 +1854,14 @@ func convertPostfix(pf *parser.PostfixExpr, env *types.Env) (Expr, error) {
 				if err != nil {
 					return nil, err
 				}
-				ie := &IndexExpr{Value: expr, Index: start, Container: inferTypeWithEnv(expr, env)}
-				ie.Type = inferTypeWithEnv(ie, env)
+				ct := inferTypeWithEnv(expr, env)
+				if ct == "" || ct == "Any" {
+					if iePrev, ok := expr.(*IndexExpr); ok {
+						ct = iePrev.Type
+					}
+				}
+				ie := &IndexExpr{Value: expr, Index: start, Container: ct}
+				ie.Type = elementType(ct)
 				expr = ie
 			}
 		case op.Call != nil:
@@ -3103,6 +3118,20 @@ func toScalaTypeFromType(t types.Type) string {
 		return "Any"
 	}
 	return "Any"
+}
+
+func elementType(container string) string {
+	if strings.HasPrefix(container, "ArrayBuffer[") {
+		return strings.TrimSuffix(strings.TrimPrefix(container, "ArrayBuffer["), "]")
+	}
+	if strings.HasPrefix(container, "Map[") {
+		parts := strings.TrimSuffix(strings.TrimPrefix(container, "Map["), "]")
+		kv := strings.SplitN(parts, ",", 2)
+		if len(kv) == 2 {
+			return strings.TrimSpace(kv[1])
+		}
+	}
+	return ""
 }
 
 // inferType attempts a best-effort static type deduction for the expression.

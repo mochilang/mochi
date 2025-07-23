@@ -1,3 +1,23 @@
+## Progress (2025-07-23 10:36 +0700)
+- scala transpiler: add param types and casts
+- Regenerated golden files - 92/103 vm valid programs passing
+
+## Progress (2025-07-23 10:36 +0700)
+- scala transpiler: add param types and casts
+- Regenerated golden files - 92/103 vm valid programs passing
+
+## Progress (2025-07-23 10:36 +0700)
+- scala transpiler: add param types and casts
+- Regenerated golden files - 92/103 vm valid programs passing
+
+## Progress (2025-07-23 10:36 +0700)
+- scala transpiler: add param types and casts
+- Regenerated golden files - 92/103 vm valid programs passing
+
+## Progress (2025-07-23 10:36 +0700)
+- scala transpiler: add param types and casts
+- Regenerated golden files - 92/103 vm valid programs passing
+
 ## Progress (2025-07-23 10:19 +0700)
 - scala rosetta: regenerate task 6
 - Regenerated golden files - 92/103 vm valid programs passing
