@@ -963,6 +963,12 @@ func (b *BinaryExpr) emit(w io.Writer) {
 		io.WriteString(w, "] [__r ")
 		b.Right.emit(w)
 		io.WriteString(w, "]) (if (and (string? __l) (string? __r)) (string-append __l __r) (+ __l __r)))")
+	case "list-append":
+		io.WriteString(w, "(append ")
+		b.Left.emit(w)
+		io.WriteString(w, " ")
+		b.Right.emit(w)
+		io.WriteString(w, ")")
 	default:
 		fmt.Fprintf(w, "(%s ", b.Op)
 		b.Left.emit(w)
@@ -1321,6 +1327,15 @@ func convertStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 				t = types.ResolveTypeRef(st.Let.Type, env)
 			} else if st.Let.Value != nil {
 				t = types.TypeOfExprBasic(st.Let.Value, env)
+				if _, ok := t.(types.AnyType); ok {
+					if call := st.Let.Value.Binary.Left.Value.Target.Call; call != nil {
+						if ft, err := env.GetVar(call.Func); err == nil {
+							if fn, ok := ft.(types.FuncType); ok {
+								t = fn.Return
+							}
+						}
+					}
+				}
 			}
 			env.SetVar(st.Let.Name, t, true)
 		}
@@ -1342,6 +1357,15 @@ func convertStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 				t = types.ResolveTypeRef(st.Var.Type, env)
 			} else if st.Var.Value != nil {
 				t = types.TypeOfExprBasic(st.Var.Value, env)
+				if _, ok := t.(types.AnyType); ok {
+					if call := st.Var.Value.Binary.Left.Value.Target.Call; call != nil {
+						if ft, err := env.GetVar(call.Func); err == nil {
+							if fn, ok := ft.(types.FuncType); ok {
+								t = fn.Return
+							}
+						}
+					}
+				}
 			}
 			env.SetVar(st.Var.Name, t, true)
 		}
@@ -1359,6 +1383,12 @@ func convertStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 			if t, err2 := env.GetVar(st.Assign.Name); err2 == nil {
 				if _, ok := t.(types.MapType); ok {
 					return &MapAssignStmt{Name: st.Assign.Name, Key: idxExpr, Expr: e}, nil
+				}
+				if _, ok := t.(types.AnyType); ok {
+					idxType := types.TypeOfExprBasic(st.Assign.Index[0].Start, env)
+					if _, ok := idxType.(types.StringType); ok {
+						return &MapAssignStmt{Name: st.Assign.Name, Key: idxExpr, Expr: e}, nil
+					}
 				}
 			}
 			return &ListAssignStmt{Name: st.Assign.Name, Index: idxExpr, Expr: e}, nil
@@ -1767,15 +1797,21 @@ func convertBinary(b *parser.BinaryExpr, env *types.Env) (Expr, error) {
 		}
 		if op == "+" {
 			stringLeft := false
+			listLeft := false
 			if t := types.TypeOfPostfixBasic(b.Left, env); t != nil {
 				if _, ok := t.(types.StringType); ok {
 					stringLeft = true
+				} else if _, ok := t.(types.ListType); ok {
+					listLeft = true
 				}
 			}
 			stringRight := false
+			listRight := false
 			if t := types.TypeOfPostfixBasic(&parser.Unary{Value: part.Right}, env); t != nil {
 				if _, ok := t.(types.StringType); ok {
 					stringRight = true
+				} else if _, ok := t.(types.ListType); ok {
+					listRight = true
 				}
 			}
 			if !stringLeft {
@@ -1786,13 +1822,25 @@ func convertBinary(b *parser.BinaryExpr, env *types.Env) (Expr, error) {
 					stringLeft = true
 				}
 			}
+			if !listLeft {
+				if lb, ok := currLeft.(*BinaryExpr); ok && lb.Op == "list-append" {
+					listLeft = true
+				}
+			}
 			if !stringRight {
 				if _, ok := right.(*StringLit); ok {
 					stringRight = true
 				}
 			}
+			if !listRight {
+				if rb, ok := right.(*BinaryExpr); ok && rb.Op == "list-append" {
+					listRight = true
+				}
+			}
 			if stringLeft || stringRight {
 				op = "string-append"
+			} else if listLeft || listRight {
+				op = "list-append"
 			}
 		}
 		if op == "&&" {
@@ -1815,6 +1863,18 @@ func convertBinary(b *parser.BinaryExpr, env *types.Env) (Expr, error) {
 		if op == "in" {
 			isStr := types.IsStringPostfix(part.Right, env)
 			isMap := types.IsMapPostfix(part.Right, env)
+			if !isMap {
+				if call := part.Right.Target.Call; call != nil {
+					if call.Func == "hash-ref" || call.Func == "hash-keys" {
+						isMap = true
+					}
+				}
+			}
+			if !isMap && len(part.Right.Ops) == 1 && part.Right.Ops[0].Field != nil {
+				if types.IsMapPrimary(part.Right.Target, env) {
+					isMap = true
+				}
+			}
 			opExpr := &InExpr{Elem: exprs[len(exprs)-1], Set: right, IsStr: isStr, IsMap: isMap}
 			exprs[len(exprs)-1] = opExpr
 			continue
@@ -1931,9 +1991,11 @@ func convertPostfix(pf *parser.PostfixExpr, env *types.Env) (Expr, error) {
 						}
 					}
 				}
-				if lit, ok := n.Index.(*StringLit); ok && lit.Value == "keys" && len(op.Call.Args) == 0 && types.IsMapPrimary(pf.Target, env) {
-					expr = &CallExpr{Func: "hash-keys", Args: []Expr{n.Target}}
-					break
+				if lit, ok := n.Index.(*StringLit); ok && lit.Value == "keys" {
+					if len(op.Call.Args) == 0 && types.IsMapPrimary(pf.Target, env) {
+						expr = &CallExpr{Func: "hash-keys", Args: []Expr{n.Target}}
+						break
+					}
 				}
 				if lit, ok := n.Index.(*StringLit); ok && lit.Value == "contains" {
 					if types.IsStringPrimary(pf.Target, env) {
