@@ -1129,7 +1129,14 @@ func (c *CallExpr) emit(w io.Writer) {
 		io.WriteString(w, ")")
 		return
 	case "input":
-		io.WriteString(w, "string:trim(io:get_line(\"\"), right, [$\n])")
+		io.WriteString(w, "string:trim(io:get_line(\"\"))")
+		return
+	case "abs":
+		io.WriteString(w, "erlang:abs(")
+		if len(c.Args) > 0 {
+			c.Args[0].emit(w)
+		}
+		io.WriteString(w, ")")
 		return
 	case "int":
 		io.WriteString(w, "case erlang:is_integer(")
@@ -1443,7 +1450,17 @@ func (n *NameRef) emit(w io.Writer) { io.WriteString(w, n.Name) }
 
 func (i *IntLit) emit(w io.Writer) { fmt.Fprintf(w, "%d", i.Value) }
 
-func (f *FloatLit) emit(w io.Writer) { fmt.Fprintf(w, "%g", f.Value) }
+func (f *FloatLit) emit(w io.Writer) {
+	s := fmt.Sprintf("%g", f.Value)
+	if strings.Contains(s, "e") {
+		parts := strings.SplitN(s, "e", 2)
+		if !strings.Contains(parts[0], ".") {
+			parts[0] = parts[0] + ".0"
+		}
+		s = parts[0] + "e" + parts[1]
+	}
+	io.WriteString(w, s)
+}
 
 func (b *BoolLit) emit(w io.Writer) {
 	if b.Value {
@@ -1942,7 +1959,7 @@ func mapOp(op string) string {
 
 func builtinFunc(name string) bool {
 	switch name {
-	case "print", "append", "avg", "count", "len", "str", "sum", "min", "max", "values", "exists", "json", "now", "input", "int":
+	case "print", "append", "avg", "count", "len", "str", "sum", "min", "max", "values", "exists", "json", "now", "input", "int", "abs":
 		return true
 	default:
 		return false
@@ -2749,12 +2766,14 @@ func convertBinary(b *parser.BinaryExpr, env *types.Env, ctx *context) (Expr, er
 	}
 	ops := make([]string, len(b.Right))
 	exprs := []Expr{left}
+	typesList := []types.Type{types.ExprType(&parser.Expr{Binary: &parser.BinaryExpr{Left: b.Left}}, env)}
 	for i, op := range b.Right {
 		r, err := convertPostfix(op.Right, env, ctx)
 		if err != nil {
 			return nil, err
 		}
 		exprs = append(exprs, r)
+		typesList = append(typesList, types.ExprType(&parser.Expr{Binary: &parser.BinaryExpr{Left: &parser.Unary{Value: op.Right}}}, env))
 		name := op.Op
 		if op.All {
 			name = name + "_all"
@@ -2788,13 +2807,27 @@ func convertBinary(b *parser.BinaryExpr, env *types.Env, ctx *context) (Expr, er
 		}
 		return false
 	}
+	isIntType := func(t types.Type) bool {
+		switch t.(type) {
+		case types.IntType, types.Int64Type, types.BigIntType:
+			return true
+		default:
+			return false
+		}
+	}
 	for _, lvl := range levels {
 		for i := 0; i < len(ops); {
 			if contains(lvl, ops[i]) {
 				l := exprs[i]
 				r := exprs[i+1]
-				exprs[i] = &BinaryExpr{Left: l, Op: ops[i], Right: r}
+				op := ops[i]
+				if op == "/" && isIntType(typesList[i]) && isIntType(typesList[i+1]) {
+					op = "div"
+					typesList[i] = types.IntType{}
+				}
+				exprs[i] = &BinaryExpr{Left: l, Op: op, Right: r}
 				exprs = append(exprs[:i+1], exprs[i+2:]...)
+				typesList = append(typesList[:i+1], typesList[i+2:]...)
 				ops = append(ops[:i], ops[i+1:]...)
 			} else {
 				i++

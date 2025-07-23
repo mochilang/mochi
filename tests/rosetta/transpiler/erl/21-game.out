@@ -1,0 +1,63 @@
+/workspace/mochi/tests/rosetta/transpiler/erl/21-game.erl:55:18: Warning: variable 'Neg3' exported from 'case' (line 32, column 9)
+%   55| {Digits, I4, N2, Neg3, Str} = Fun(Digits, I3, N, Neg3, Str),
+%     |                  ^
+
+Enter q to quit at any time
+
+The computer will choose first
+
+
+Running total is now 0
+
+
+ROUND 1:
+
+
+The computer chooses 3
+Running total is now 3
+
+
+The computer chooses 3
+Running total is now 6
+
+
+ROUND 2:
+
+
+The computer chooses 3
+Running total is now 9
+
+
+The computer chooses 2
+Running total is now 11
+
+
+ROUND 3:
+
+
+The computer chooses 1
+Running total is now 12
+
+
+The computer chooses 1
+Running total is now 13
+
+
+ROUND 4:
+
+
+The computer chooses 3
+Running total is now 16
+
+
+The computer chooses 3
+Running total is now 19
+
+
+ROUND 5:
+
+
+The computer chooses 2
+Running total is now 21
+
+So, commiserations, the computer has won!
