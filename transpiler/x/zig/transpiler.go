@@ -34,6 +34,7 @@ var typeAliases map[string]string
 var funDepth int
 var funParamsStack [][]string
 var nestedFunArgs map[string][]string
+var funcReturns map[string]string
 var builtinAliases map[string]string
 var transEnv *types.Env
 var loopCounter int
@@ -42,6 +43,9 @@ var useNow bool
 var useStr bool
 var useConcat bool
 var useInput bool
+
+// GetFuncReturns exposes function return types for testing.
+func GetFuncReturns() map[string]string { return funcReturns }
 
 func toSnakeCase(s string) string {
 	var buf strings.Builder
@@ -633,6 +637,12 @@ func zigTypeFromExpr(e Expr) string {
 		default:
 			if strings.HasPrefix(ce.Func, "std.math.") {
 				return "f64"
+			}
+			if rt, ok := funcReturns[ce.Func]; ok {
+				if rt == "" {
+					return "void"
+				}
+				return rt
 			}
 			return "i64"
 		}
@@ -1647,6 +1657,7 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	funDepth = 0
 	funParamsStack = nil
 	nestedFunArgs = map[string][]string{}
+	funcReturns = map[string]string{}
 	builtinAliases = map[string]string{}
 	mainFuncName = ""
 	useNow = false
@@ -1693,7 +1704,7 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 			continue
 		}
 		if vd, ok := s.(*VarDecl); ok {
-			vd.Mutable = mutables[vd.Name]
+			vd.Mutable = vd.Mutable || mutables[vd.Name]
 			if !vd.Mutable {
 				if lst, ok2 := vd.Value.(*ListLit); ok2 {
 					constLists[vd.Name] = lst
@@ -2021,6 +2032,7 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 			}
 		}
 		f := &Func{Name: name, Params: params, ReturnType: ret, Body: body}
+		funcReturns[name] = ret
 		if funDepth > 0 {
 			captured := []string{}
 			for i := 0; i < len(funParamsStack)-1; i++ {
@@ -2722,6 +2734,7 @@ func compileFunStmt(fn *parser.FunStmt, prog *parser.Program) (*Func, error) {
 		name = mainFuncName
 	}
 	f := &Func{Name: name, Params: params, ReturnType: ret, Body: body}
+	funcReturns[name] = ret
 	if funDepth > 1 {
 		captured := []string{}
 		for i := 0; i < len(funParamsStack)-1; i++ {
