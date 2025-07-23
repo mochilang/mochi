@@ -689,8 +689,15 @@ func (m *VM) call(fnIndex int, args []Value, trace []StackFrame) (Value, error) 
 		args = args[:fn.NumParams]
 	}
 	f := &frame{fn: fn, regs: make([]Value, fn.NumRegs)}
-	for i := 0; i < len(args) && i < len(f.regs); i++ {
-		f.regs[i] = copyValue(args[i])
+	// Populate global registers at the start of every call so functions can
+	// directly reference global variables via their reserved register slots.
+	for i := 0; i < m.prog.NumGlobals && i < len(f.regs); i++ {
+		f.regs[i] = m.globals[i]
+	}
+	// Function parameters are placed after the global register section.
+	off := m.prog.NumGlobals
+	for i := 0; i < len(args) && off+i < len(f.regs); i++ {
+		f.regs[off+i] = copyValue(args[i])
 	}
 	stack := []*frame{f}
 	for len(stack) > 0 {
@@ -2281,6 +2288,8 @@ func (c *compiler) compileFun(fn *parser.FunStmt) (Function, error) {
 	if len(c.globals) > fc.fn.NumRegs {
 		fc.fn.NumRegs = len(c.globals)
 	}
+	// parameter registers start after globals
+	fc.idx = len(c.globals)
 	for _, p := range fn.Params {
 		idx := fc.newReg()
 		fc.vars[p.Name] = idx
@@ -2310,6 +2319,7 @@ func (c *compiler) compileMethod(st types.StructType, fn *parser.FunStmt) (Funct
 		fc.fn.NumRegs = len(c.globals)
 	}
 	// struct fields as parameters
+	fc.idx = len(c.globals)
 	for _, field := range st.Order {
 		idx := fc.newReg()
 		fc.vars[field] = idx
@@ -2363,6 +2373,7 @@ func (c *compiler) compileFunExpr(fn *parser.FunExpr, captures []string) int {
 	if len(c.globals) > fc.fn.NumRegs {
 		fc.fn.NumRegs = len(c.globals)
 	}
+	fc.idx = len(c.globals)
 	for _, name := range captures {
 		idx := fc.newReg()
 		fc.vars[name] = idx
@@ -2401,6 +2412,7 @@ func (c *compiler) compileNamedFunExpr(name string, fn *parser.FunExpr, captures
 	fc.fn.Name = name
 	fc.fn.Line = fn.Pos.Line
 	fc.fn.NumParams = len(captures) + len(fn.Params)
+	fc.idx = len(c.globals)
 	for _, name := range captures {
 		idx := fc.newReg()
 		fc.vars[name] = idx
@@ -2444,6 +2456,7 @@ func (c *compiler) compileMain(p *parser.Program) (Function, error) {
 	if len(c.globals) > fc.fn.NumRegs {
 		fc.fn.NumRegs = len(c.globals)
 	}
+	fc.idx = len(c.globals)
 	for _, st := range p.Statements {
 		if st.Fun != nil {
 			continue
