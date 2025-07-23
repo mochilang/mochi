@@ -677,9 +677,9 @@ type CastExpr struct {
 func (c *CastExpr) emit(w io.Writer) {
 	switch c.Type {
 	case "int":
-		io.WriteString(w, "(let ([n (string->number ")
+		io.WriteString(w, "(int ")
 		c.Value.emit(w)
-		io.WriteString(w, ")]) (if n (inexact->exact n) 0))")
+		io.WriteString(w, ")")
 	case "float":
 		io.WriteString(w, "(exact->inexact ")
 		c.Value.emit(w)
@@ -957,6 +957,12 @@ func (b *BinaryExpr) emit(w io.Writer) {
 		io.WriteString(w, " ")
 		b.Right.emit(w)
 		io.WriteString(w, ")")
+	case "+":
+		io.WriteString(w, "(let ([__l ")
+		b.Left.emit(w)
+		io.WriteString(w, "] [__r ")
+		b.Right.emit(w)
+		io.WriteString(w, "]) (if (and (string? __l) (string? __r)) (string-append __l __r) (+ __l __r)))")
 	default:
 		fmt.Fprintf(w, "(%s ", b.Op)
 		b.Left.emit(w)
@@ -1021,6 +1027,8 @@ func header() string {
 	hdr += "(define (int x)\n  (cond\n    [(integer? x) x]\n    [(number? x) (inexact->exact (truncate x))]\n    [(string? x) (let ([n (string->number x)]) (if n (inexact->exact (truncate n)) 0))]\n    [else 0]))\n"
 	hdr += "(define (float x)\n  (cond\n    [(number? x) (exact->inexact x)]\n    [(string? x) (let ([n (string->number x)]) (if n (exact->inexact n) 0.0))]\n    [else 0.0]))\n"
 	hdr += "(define (input) (read-line))\n"
+	hdr += "(define (upper s) (string-upcase s))\n"
+	hdr += "(define (lower s) (string-downcase s))\n"
 	hdr += "(define (sublist lst start end)\n  (if (string? lst)\n      (substring lst start end)\n      (take (drop lst start) (- end start))))\n\n"
 	return hdr + "\n"
 }
@@ -1250,6 +1258,13 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 				env.SetVar(alias+".pow", types.FuncType{Params: []types.Type{types.FloatType{}, types.FloatType{}}, Return: types.FloatType{}, Pure: true}, false)
 				env.SetVar(alias+".sin", types.FuncType{Params: []types.Type{types.FloatType{}}, Return: types.FloatType{}, Pure: true}, false)
 				env.SetVar(alias+".log", types.FuncType{Params: []types.Type{types.FloatType{}}, Return: types.FloatType{}, Pure: true}, false)
+			}
+		} else if st.Import.Lang != nil && *st.Import.Lang == "go" && st.Import.Path == "net" {
+			r.Stmts = append(r.Stmts,
+				&RawStmt{Code: fmt.Sprintf("(define (%s_LookupHost host) (list '() #f))", alias)},
+			)
+			if env != nil {
+				env.SetVar(alias+".LookupHost", types.FuncType{Params: []types.Type{types.StringType{}}, Return: types.ListType{Elem: types.AnyType{}}, Pure: false}, false)
 			}
 		} else if st.Import.Auto && st.Import.Path == "mochi/runtime/ffi/go/testpkg" {
 			if alias == "" {
@@ -1742,8 +1757,18 @@ func convertBinary(b *parser.BinaryExpr, env *types.Env) (Expr, error) {
 			}
 		}
 		if op == "+" {
-			stringLeft := types.IsStringUnary(b.Left, env)
-			stringRight := types.IsStringPostfix(part.Right, env)
+			stringLeft := false
+			if t := types.TypeOfPostfixBasic(b.Left, env); t != nil {
+				if _, ok := t.(types.StringType); ok {
+					stringLeft = true
+				}
+			}
+			stringRight := false
+			if t := types.TypeOfPostfixBasic(&parser.Unary{Value: part.Right}, env); t != nil {
+				if _, ok := t.(types.StringType); ok {
+					stringRight = true
+				}
+			}
 			if !stringLeft {
 				if _, ok := currLeft.(*StringLit); ok {
 					stringLeft = true
@@ -1995,6 +2020,9 @@ func convertPrimary(p *parser.Primary, env *types.Env) (Expr, error) {
 	case p.Group != nil:
 		return convertExpr(p.Group, env)
 	case p.Selector != nil:
+		if p.Selector.Root == "nil" {
+			return &Name{Name: "#f"}, nil
+		}
 		return &Name{Name: p.Selector.Root}, nil
 	default:
 		return nil, fmt.Errorf("unsupported primary")
@@ -2012,6 +2040,9 @@ func convertLiteral(l *parser.Literal) (Expr, error) {
 		if *l.Bool {
 			return &Name{Name: "#t"}, nil
 		}
+		return &Name{Name: "#f"}, nil
+	}
+	if l.Null {
 		return &Name{Name: "#f"}, nil
 	}
 	if l.Str != nil {
