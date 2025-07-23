@@ -1876,9 +1876,9 @@ func (j *JoinExpr) emit(e *emitter) {
 type FormatList struct{ List Expr }
 
 func (f *FormatList) emit(e *emitter) {
-	io.WriteString(e.w, `("[" + (`)
+	io.WriteString(e.w, `((x = `)
 	f.List.emit(e)
-	io.WriteString(e.w, `).map{ |x| if x.is_a?(String) then '\'' + x + '\'' elsif x.respond_to?(:to_h) then '{' + x.to_h.map{ |k,v| "'#{k}': #{v.is_a?(String) ? '\'' + v + '\'' : v.to_s}" }.join(', ') + '}' else x.to_s end }.join(', ') + "]")`)
+	io.WriteString(e.w, `); x.is_a?(Array) ? ("[" + x.map{ |x| if x.is_a?(String) then '\'' + x + '\'' elsif x.respond_to?(:to_h) then '{' + x.to_h.map{ |k,v| "'#{k}': #{v.is_a?(String) ? '\'' + v + '\'' : v.to_s}" }.join(', ') + '}' else x.to_s end }.join(', ') + "]") : x.to_s)`)
 }
 
 // FormatBool renders a boolean as "True" or "False" for printing.
@@ -3070,44 +3070,103 @@ func convertExpr(e *parser.Expr) (Expr, error) {
 	if e == nil || e.Binary == nil {
 		return nil, fmt.Errorf("unsupported expression")
 	}
-	left, err := convertUnary(e.Binary.Left)
+	return convertBinary(e.Binary)
+}
+
+type binOp struct {
+	op    string
+	all   bool
+	right *parser.PostfixExpr
+}
+
+func convertBinary(b *parser.BinaryExpr) (Expr, error) {
+	if b == nil {
+		return nil, fmt.Errorf("nil binary")
+	}
+	operands := []Expr{}
+	ops := []binOp{}
+
+	first, err := convertUnary(b.Left)
 	if err != nil {
 		return nil, err
 	}
-	expr := left
-	for _, op := range e.Binary.Right {
-		right, err := convertPostfix(op.Right)
+	operands = append(operands, first)
+	for _, p := range b.Right {
+		o, err := convertPostfix(p.Right)
 		if err != nil {
 			return nil, err
 		}
-		if op.Op == "in" {
-			typ := types.TypeOfPostfix(op.Right, currentEnv)
+		ops = append(ops, binOp{op: p.Op, all: p.All, right: p.Right})
+		operands = append(operands, o)
+	}
+
+	levels := [][]string{
+		{"*", "/", "%"},
+		{"+", "-"},
+		{"<", "<=", ">", ">="},
+		{"==", "!=", "in"},
+		{"&&"},
+		{"||"},
+		{"union", "union_all", "except", "intersect"},
+	}
+
+	apply := func(i int) error {
+		left := operands[i]
+		right := operands[i+1]
+		op := ops[i]
+		var expr Expr
+		switch op.op {
+		case "in":
+			typ := types.TypeOfPostfix(op.right, currentEnv)
 			if _, ok := typ.(types.MapType); ok {
-				expr = &MethodCallExpr{Target: right, Method: "key?", Args: []Expr{expr}}
+				expr = &MethodCallExpr{Target: right, Method: "key?", Args: []Expr{left}}
 			} else {
-				expr = &MethodCallExpr{Target: right, Method: "include?", Args: []Expr{expr}}
+				expr = &MethodCallExpr{Target: right, Method: "include?", Args: []Expr{left}}
 			}
-			continue
-		}
-		switch op.Op {
 		case "union":
-			if op.All {
-				expr = &UnionAllExpr{Left: expr, Right: right}
+			if op.all {
+				expr = &UnionAllExpr{Left: left, Right: right}
 			} else {
-				expr = &UnionExpr{Left: expr, Right: right}
+				expr = &UnionExpr{Left: left, Right: right}
 			}
 		case "except":
-			expr = &ExceptExpr{Left: expr, Right: right}
+			expr = &ExceptExpr{Left: left, Right: right}
 		case "intersect":
-			expr = &IntersectExpr{Left: expr, Right: right}
+			expr = &IntersectExpr{Left: left, Right: right}
 		default:
-			if op.All {
-				return nil, fmt.Errorf("unsupported binary op")
+			if op.all {
+				return fmt.Errorf("unsupported binary op")
 			}
-			expr = &BinaryExpr{Op: op.Op, Left: expr, Right: right}
+			expr = &BinaryExpr{Op: op.op, Left: left, Right: right}
+		}
+		operands[i] = expr
+		operands = append(operands[:i+1], operands[i+2:]...)
+		ops = append(ops[:i], ops[i+1:]...)
+		return nil
+	}
+
+	for _, level := range levels {
+		for i := 0; i < len(ops); {
+			matched := false
+			for _, t := range level {
+				if ops[i].op == t {
+					if err := apply(i); err != nil {
+						return nil, err
+					}
+					matched = true
+					break
+				}
+			}
+			if !matched {
+				i++
+			}
 		}
 	}
-	return expr, nil
+
+	if len(operands) != 1 {
+		return nil, fmt.Errorf("expression reduction failed")
+	}
+	return operands[0], nil
 }
 
 func convertUnary(u *parser.Unary) (Expr, error) {
