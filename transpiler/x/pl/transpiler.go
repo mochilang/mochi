@@ -1349,6 +1349,119 @@ func constValue(e *parser.Expr) (any, bool) {
 	return nil, false
 }
 
+func identName(e *parser.Expr) (string, bool) {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) != 0 {
+		return "", false
+	}
+	u := e.Binary.Left
+	if len(u.Ops) != 0 || u.Value == nil {
+		return "", false
+	}
+	p := u.Value.Target
+	if p == nil || p.Selector == nil || len(p.Selector.Tail) != 0 {
+		return "", false
+	}
+	return p.Selector.Root, true
+}
+
+func intConst(e *parser.Expr) (int, bool) {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) != 0 {
+		return 0, false
+	}
+	u := e.Binary.Left
+	if len(u.Ops) != 0 || u.Value == nil || u.Value.Target.Lit == nil || u.Value.Target.Lit.Int == nil {
+		return 0, false
+	}
+	return int(*u.Value.Target.Lit.Int), true
+}
+
+func identNameUnary(u *parser.Unary) (string, bool) {
+	if u == nil || len(u.Ops) != 0 || u.Value == nil {
+		return "", false
+	}
+	p := u.Value
+	if len(p.Ops) != 0 || p.Target == nil || p.Target.Selector == nil || len(p.Target.Selector.Tail) != 0 {
+		return "", false
+	}
+	return p.Target.Selector.Root, true
+}
+
+func intConstPostfix(p *parser.PostfixExpr) (int, bool) {
+	if p == nil || len(p.Ops) != 0 || p.Target == nil {
+		return 0, false
+	}
+	if p.Target.Lit != nil && p.Target.Lit.Int != nil {
+		return int(*p.Target.Lit.Int), true
+	}
+	if p.Target.Group != nil {
+		return intConst(p.Target.Group)
+	}
+	return 0, false
+}
+
+func unrollWhile(w *parser.WhileStmt, env *compileEnv) ([]Stmt, error) {
+	if w.Cond == nil || w.Cond.Binary == nil || len(w.Cond.Binary.Right) != 1 {
+		return nil, nil
+	}
+	be := w.Cond.Binary
+	r := be.Right[0]
+	if r.Op != "<" && r.Op != "<=" {
+		return nil, nil
+	}
+	varName, ok := identNameUnary(be.Left)
+	if !ok {
+		return nil, nil
+	}
+	endVal, ok := intConstPostfix(r.Right)
+	if !ok {
+		return nil, nil
+	}
+	startExpr := env.constExpr(env.current(varName))
+	startVal, ok := intValue(startExpr)
+	if !ok {
+		return nil, nil
+	}
+	limit := endVal
+	if r.Op == "<" {
+		limit = endVal
+	} else {
+		limit = endVal + 1
+	}
+	body := w.Body
+	if len(body) == 0 {
+		return nil, nil
+	}
+	last := body[len(body)-1]
+	inc := false
+	if last.Assign != nil && last.Assign.Name == varName && len(last.Assign.Index) == 0 && len(last.Assign.Field) == 0 {
+		if last.Assign.Value != nil && last.Assign.Value.Binary != nil && len(last.Assign.Value.Binary.Right) == 1 {
+			b2 := last.Assign.Value.Binary
+			if n, ok2 := identNameUnary(b2.Left); ok2 && n == varName && b2.Right[0].Op == "+" {
+				if iv, ok3 := intConstPostfix(b2.Right[0].Right); ok3 && iv == 1 {
+					inc = true
+				}
+			}
+		}
+	}
+	if !inc {
+		return nil, nil
+	}
+	body = body[:len(body)-1]
+	out := []Stmt{}
+	for i := startVal; i < limit; i++ {
+		vname := env.fresh(varName)
+		iv := &IntLit{Value: i}
+		env.setConst(vname, iv)
+		out = append(out, &LetStmt{Name: vname, Expr: iv})
+		stmts, err := compileStmts(body, env)
+		if err != nil {
+			return nil, err
+		}
+		out = append(out, stmts...)
+	}
+	return out, nil
+}
+
 func cloneList(l *ListLit) *ListLit {
 	elems := make([]Expr, len(l.Elems))
 	copy(elems, l.Elems)
@@ -2188,38 +2301,14 @@ func compileStmts(sts []*parser.Statement, env *compileEnv) ([]Stmt, error) {
 				}
 			}
 		case s.While != nil:
-			for {
-				condExpr, err := toExpr(s.While.Cond, env)
-				if err != nil {
-					return nil, err
-				}
-				b, ok := condExpr.(*BoolLit)
-				if !ok {
-					return nil, fmt.Errorf("unsupported while")
-				}
-				if !b.Value {
-					break
-				}
-				body, err := compileStmts(s.While.Body, env)
-				if err != nil {
-					return nil, err
-				}
-				for _, st := range body {
-					switch st.(type) {
-					case *BreakStmt:
-						goto breakWhile
-					case *ContinueStmt:
-						goto continueWhile
-					default:
-						out = append(out, st)
-					}
-				}
-			continueWhile:
-				continue
+			wstmts, err := unrollWhile(s.While, env)
+			if err != nil {
+				return nil, err
 			}
-		breakWhile:
-			{
+			if wstmts == nil {
+				return nil, fmt.Errorf("unsupported while")
 			}
+			out = append(out, wstmts...)
 		case s.Type != nil:
 			continue
 		default:
