@@ -2,9 +2,9 @@
 
 Generated Lua code for programs in `tests/rosetta/x/Mochi`. Each program has a `.lua` file produced by the transpiler and a `.out` file with its runtime output. Compilation or runtime errors are captured in `.error` files.
 
-Transpiled programs: 56/284
+Transpiled programs: 71/284
 
-Last updated: 2025-07-23 13:23 GMT+7
+Last updated: 2025-07-23 14:01 GMT+7
 
 Checklist:
 
@@ -64,23 +64,23 @@ Checklist:
 54. [x] anonymous-recursion-2
 55. [x] anonymous-recursion
 56. [x] anti-primes
-57. [ ] append-a-record-to-the-end-of-a-text-file
-58. [ ] apply-a-callback-to-an-array-1
-59. [ ] apply-a-callback-to-an-array-2
-60. [ ] apply-a-digital-filter-direct-form-ii-transposed-
-61. [ ] approximate-equality
-62. [ ] arbitrary-precision-integers-included-
-63. [ ] archimedean-spiral
-64. [ ] arena-storage-pool
-65. [ ] arithmetic-complex
-66. [ ] arithmetic-derivative
+57. [x] append-a-record-to-the-end-of-a-text-file
+58. [x] apply-a-callback-to-an-array-1
+59. [x] apply-a-callback-to-an-array-2
+60. [x] apply-a-digital-filter-direct-form-ii-transposed-
+61. [x] approximate-equality
+62. [x] arbitrary-precision-integers-included-
+63. [x] archimedean-spiral
+64. [x] arena-storage-pool
+65. [x] arithmetic-complex
+66. [x] arithmetic-derivative
 67. [ ] arithmetic-evaluation
-68. [ ] arithmetic-geometric-mean-calculate-pi
-69. [ ] arithmetic-geometric-mean
-70. [ ] arithmetic-integer-1
-71. [ ] arithmetic-integer-2
+68. [x] arithmetic-geometric-mean-calculate-pi
+69. [x] arithmetic-geometric-mean
+70. [x] arithmetic-integer-1
+71. [x] arithmetic-integer-2
 72. [ ] arithmetic-numbers
-73. [ ] arithmetic-rational
+73. [x] arithmetic-rational
 74. [ ] array-concatenation
 75. [ ] array-length
 76. [ ] arrays
