@@ -1969,6 +1969,8 @@ func convertStmt(s *parser.Statement) (Stmt, error) {
 			t = it
 		} else if s.Let.Type != nil {
 			t = types.ResolveTypeRef(s.Let.Type, transpileEnv)
+		} else if s.Let.Value != nil {
+			t = types.ExprType(s.Let.Value, transpileEnv)
 		}
 		switch tt := t.(type) {
 		case types.StructType:
@@ -2015,6 +2017,8 @@ func convertStmt(s *parser.Statement) (Stmt, error) {
 			t = it
 		} else if s.Var.Type != nil {
 			t = types.ResolveTypeRef(s.Var.Type, transpileEnv)
+		} else if s.Var.Value != nil {
+			t = types.ExprType(s.Var.Value, transpileEnv)
 		}
 		switch tt := t.(type) {
 		case types.StructType:
@@ -2743,6 +2747,22 @@ func convertBinary(b *parser.BinaryExpr) (Expr, error) {
 		case "intersect":
 			operands[i] = &IntersectExpr{Left: operands[i], Right: operands[i+1]}
 		default:
+			if ops[i] == "+" {
+				if _, ok := typesArr[i].(types.ListType); ok {
+					if lit, ok2 := operands[i+1].(*ListLit); ok2 && len(lit.Elems) == 1 {
+						operands[i] = &AppendExpr{List: operands[i], Elem: lit.Elems[0]}
+						goto nextOp
+					}
+					if _, ok2 := operands[i+1].(*StringLit); ok2 {
+						operands[i] = &AppendExpr{List: operands[i], Elem: operands[i+1]}
+						goto nextOp
+					}
+					if _, ok2 := typesArr[i+1].(types.StringType); ok2 {
+						operands[i] = &AppendExpr{List: operands[i], Elem: operands[i+1]}
+						goto nextOp
+					}
+				}
+			}
 			if ops[i] == "/" && isIntType(typesArr[i]) && isIntType(typesArr[i+1]) {
 				operands[i] = &IntDivExpr{Left: operands[i], Right: operands[i+1]}
 				typesArr[i] = types.IntType{}
@@ -2763,6 +2783,7 @@ func convertBinary(b *parser.BinaryExpr) (Expr, error) {
 					typesArr[i] = typesArr[i]
 				}
 			}
+		nextOp:
 		}
 		operands = append(operands[:i+1], operands[i+2:]...)
 		ops = append(ops[:i], ops[i+1:]...)
