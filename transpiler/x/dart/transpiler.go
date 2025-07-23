@@ -731,6 +731,17 @@ type CallExpr struct {
 }
 
 func (c *CallExpr) emit(w io.Writer) error {
+	if sel, ok := c.Func.(*SelectorExpr); ok && sel.Field == "keys" && len(c.Args) == 0 {
+		if strings.HasPrefix(inferType(sel.Receiver), "Map<") {
+			if err := sel.Receiver.emit(w); err != nil {
+				return err
+			}
+			if _, err := io.WriteString(w, ".keys"); err != nil {
+				return err
+			}
+			return nil
+		}
+	}
 	if err := c.Func.emit(w); err != nil {
 		return err
 	}
@@ -3699,6 +3710,19 @@ func convertExistsQuery(q *parser.QueryExpr) (Expr, error) {
 
 func convertStructLiteral(sl *parser.StructLiteral) (Expr, error) {
 	var entries []MapEntry
+	if currentEnv != nil {
+		if _, ok := currentEnv.FindUnionByVariant(sl.Name); ok {
+			entries = append(entries, MapEntry{Key: &StringLit{Value: "__name"}, Value: &StringLit{Value: sl.Name}})
+			for _, f := range sl.Fields {
+				v, err := convertExpr(f.Value)
+				if err != nil {
+					return nil, err
+				}
+				entries = append(entries, MapEntry{Key: &StringLit{Value: f.Name}, Value: v})
+			}
+			return &MapLit{Entries: entries}, nil
+		}
+	}
 	for _, f := range sl.Fields {
 		v, err := convertExpr(f.Value)
 		if err != nil {
@@ -3714,12 +3738,34 @@ func convertMatchExpr(me *parser.MatchExpr) (Expr, error) {
 	if err != nil {
 		return nil, err
 	}
-	var expr Expr = &Name{Name: "null"}
+	var expr Expr = &StringLit{Value: ""}
 	for i := len(me.Cases) - 1; i >= 0; i-- {
 		c := me.Cases[i]
 		res, err := convertExpr(c.Result)
 		if err != nil {
 			return nil, err
+		}
+		if call, ok := callPattern(c.Pattern); ok && currentEnv != nil {
+			if ut, ok := currentEnv.FindUnionByVariant(call.Func); ok {
+				st := ut.Variants[call.Func]
+				repl := map[string]Expr{}
+				for idx, a := range call.Args {
+					if name, ok := isSimpleIdent(a); ok && name != "_" {
+						repl[name] = &IndexExpr{Target: target, Index: &StringLit{Value: st.Order[idx]}, NoBang: true}
+					}
+				}
+				res = replaceVars(res, repl)
+				cond := &BinaryExpr{Left: &IndexExpr{Target: target, Index: &StringLit{Value: "__name"}, NoBang: true}, Op: "==", Right: &StringLit{Value: call.Func}}
+				expr = &CondExpr{Cond: cond, Then: res, Else: expr}
+				continue
+			}
+		}
+		if name, ok := isSimpleIdent(c.Pattern); ok {
+			if _, ok := currentEnv.FindUnionByVariant(name); ok {
+				cond := &BinaryExpr{Left: &IndexExpr{Target: target, Index: &StringLit{Value: "__name"}, NoBang: true}, Op: "==", Right: &StringLit{Value: name}}
+				expr = &CondExpr{Cond: cond, Then: res, Else: expr}
+				continue
+			}
 		}
 		pat, err := convertExpr(c.Pattern)
 		if err != nil {
@@ -3838,6 +3884,21 @@ func isSimpleIdent(e *parser.Expr) (string, bool) {
 		return p.Target.Selector.Root, true
 	}
 	return "", false
+}
+
+func callPattern(e *parser.Expr) (*parser.CallExpr, bool) {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) > 0 {
+		return nil, false
+	}
+	u := e.Binary.Left
+	if len(u.Ops) > 0 || u.Value == nil {
+		return nil, false
+	}
+	p := u.Value
+	if len(p.Ops) > 0 || p.Target == nil || p.Target.Call == nil {
+		return nil, false
+	}
+	return p.Target.Call, true
 }
 
 func literalString(e *parser.Expr) (string, bool) {
@@ -4053,6 +4114,60 @@ func substituteFields(e Expr, varName string, fields map[string]bool) Expr {
 		ex.Cond = substituteFields(ex.Cond, varName, fields)
 		ex.Then = substituteFields(ex.Then, varName, fields)
 		ex.Else = substituteFields(ex.Else, varName, fields)
+		return ex
+	default:
+		return ex
+	}
+}
+
+func replaceVars(e Expr, vars map[string]Expr) Expr {
+	switch ex := e.(type) {
+	case *Name:
+		if v, ok := vars[ex.Name]; ok {
+			return v
+		}
+		return ex
+	case *BinaryExpr:
+		ex.Left = replaceVars(ex.Left, vars)
+		ex.Right = replaceVars(ex.Right, vars)
+		return ex
+	case *UnaryExpr:
+		ex.X = replaceVars(ex.X, vars)
+		return ex
+	case *CallExpr:
+		ex.Func = replaceVars(ex.Func, vars)
+		for i := range ex.Args {
+			ex.Args[i] = replaceVars(ex.Args[i], vars)
+		}
+		return ex
+	case *IndexExpr:
+		ex.Target = replaceVars(ex.Target, vars)
+		ex.Index = replaceVars(ex.Index, vars)
+		return ex
+	case *SliceExpr:
+		ex.Target = replaceVars(ex.Target, vars)
+		if ex.Start != nil {
+			ex.Start = replaceVars(ex.Start, vars)
+		}
+		if ex.End != nil {
+			ex.End = replaceVars(ex.End, vars)
+		}
+		return ex
+	case *ListLit:
+		for i := range ex.Elems {
+			ex.Elems[i] = replaceVars(ex.Elems[i], vars)
+		}
+		return ex
+	case *MapLit:
+		for i := range ex.Entries {
+			ex.Entries[i].Key = replaceVars(ex.Entries[i].Key, vars)
+			ex.Entries[i].Value = replaceVars(ex.Entries[i].Value, vars)
+		}
+		return ex
+	case *CondExpr:
+		ex.Cond = replaceVars(ex.Cond, vars)
+		ex.Then = replaceVars(ex.Then, vars)
+		ex.Else = replaceVars(ex.Else, vars)
 		return ex
 	default:
 		return ex

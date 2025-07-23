@@ -114,7 +114,7 @@ void main() {
   getPerfectPowers(maxDigits);
   final Map<int, bool> achSet = getAchilles(1, 5);
   List<int> ach = [];
-  for (var k in achSet["keys"]()) {
+  for (var k in achSet.keys) {
     ach = ach + [k];
   }
   ach = sortInts(ach);
