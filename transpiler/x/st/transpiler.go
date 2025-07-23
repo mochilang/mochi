@@ -68,6 +68,8 @@ var (
 	currentFuncs      map[string]*parser.FunStmt
 	currentEnv        *types.Env
 	pythonMathAliases map[string]bool
+	inputLines        []string
+	inputIndex        int
 )
 
 type breakErr struct{}
@@ -1316,6 +1318,16 @@ func evalPrimary(p *parser.Primary, vars map[string]value) (value, error) {
 				return value{}, fmt.Errorf("bad args")
 			}
 			return value{kind: valInt, i: int(time.Now().UnixNano())}, nil
+		case "input":
+			if len(p.Call.Args) != 0 {
+				return value{}, fmt.Errorf("bad args")
+			}
+			line := ""
+			if inputIndex < len(inputLines) {
+				line = inputLines[inputIndex]
+				inputIndex++
+			}
+			return value{kind: valString, s: line}, nil
 		}
 		if fv, ok := vars[p.Call.Func]; ok && fv.kind == valFunc {
 			args := make([]value, len(p.Call.Args))
@@ -2492,10 +2504,24 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	currentFuncs = funcs
 	currentEnv = env
 	pythonMathAliases = map[string]bool{}
+	inputLines = nil
+	inputIndex = 0
+	if prog != nil {
+		inPath := strings.TrimSuffix(prog.Pos.Filename, ".mochi") + ".in"
+		if data, err := os.ReadFile(inPath); err == nil {
+			lines := strings.Split(strings.ReplaceAll(string(data), "\r\n", "\n"), "\n")
+			if len(lines) > 0 && lines[len(lines)-1] == "" {
+				lines = lines[:len(lines)-1]
+			}
+			inputLines = lines
+		}
+	}
 	defer func() {
 		currentFuncs = nil
 		currentEnv = nil
 		pythonMathAliases = nil
+		inputLines = nil
+		inputIndex = 0
 	}()
 	p := &Program{}
 
