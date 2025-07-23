@@ -287,8 +287,9 @@ func (f *ForInStmt) emit(w io.Writer) {
 type ReturnStmt struct{ Expr Expr }
 
 func (r *ReturnStmt) emit(w io.Writer) {
+	io.WriteString(w, "(_return ")
 	r.Expr.emit(w)
-	io.WriteString(w, "\n")
+	io.WriteString(w, ")\n")
 }
 
 type FunDecl struct {
@@ -302,10 +303,11 @@ func (f *FunDecl) emit(w io.Writer) {
 	for _, p := range f.Params {
 		fmt.Fprintf(w, " %s", p)
 	}
-	io.WriteString(w, ")\n")
+	io.WriteString(w, ")\n  (let/ec _return (begin\n")
 	for _, st := range f.Body {
 		st.emit(w)
 	}
+	io.WriteString(w, "))\n")
 	io.WriteString(w, ")\n")
 }
 
@@ -325,11 +327,11 @@ func (l *LambdaExpr) emit(w io.Writer) {
 	}
 	io.WriteString(w, ")")
 	if len(l.Body) > 0 {
-		io.WriteString(w, "\n")
+		io.WriteString(w, "\n  (let/ec _return (begin\n")
 		for _, st := range l.Body {
 			st.emit(w)
 		}
-		io.WriteString(w, ")")
+		io.WriteString(w, ")))")
 	} else if l.Expr != nil {
 		io.WriteString(w, " ")
 		l.Expr.emit(w)
@@ -880,13 +882,13 @@ type BinaryExpr struct {
 func (b *BinaryExpr) emit(w io.Writer) {
 	switch b.Op {
 	case "!=":
-		io.WriteString(w, "(not (= ")
+		io.WriteString(w, "(not (equal? ")
 		b.Left.emit(w)
 		io.WriteString(w, " ")
 		b.Right.emit(w)
 		io.WriteString(w, "))")
 	case "==":
-		io.WriteString(w, "(= ")
+		io.WriteString(w, "(equal? ")
 		b.Left.emit(w)
 		io.WriteString(w, " ")
 		b.Right.emit(w)
@@ -1157,6 +1159,9 @@ func Emit(w io.Writer, p *Program) error {
 func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	r := &Program{}
 	importedModules = map[string]string{}
+	if env != nil {
+		env.SetVar("input", types.FuncType{Return: types.StringType{}}, false)
+	}
 	// handle imports first
 	for _, st := range prog.Statements {
 		if st.Import == nil {
@@ -1237,11 +1242,11 @@ func convertStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 		}
 		var t types.Type
 		if env != nil {
-			if tt, err2 := env.GetVar(st.Let.Name); err2 == nil {
-				t = tt
+			if st.Let.Type != nil {
+				t = types.ResolveTypeRef(st.Let.Type, env)
+			} else if st.Let.Value != nil {
+				t = types.TypeOfExprBasic(st.Let.Value, env)
 			}
-		}
-		if env != nil {
 			env.SetVar(st.Let.Name, t, true)
 		}
 		return &LetStmt{Name: st.Let.Name, Expr: e, Type: t}, nil
@@ -1258,11 +1263,11 @@ func convertStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 		}
 		var t types.Type
 		if env != nil {
-			if tt, err2 := env.GetVar(st.Var.Name); err2 == nil {
-				t = tt
+			if st.Var.Type != nil {
+				t = types.ResolveTypeRef(st.Var.Type, env)
+			} else if st.Var.Value != nil {
+				t = types.TypeOfExprBasic(st.Var.Value, env)
 			}
-		}
-		if env != nil {
 			env.SetVar(st.Var.Name, t, true)
 		}
 		return &LetStmt{Name: st.Var.Name, Expr: e, Type: t}, nil
@@ -1602,7 +1607,7 @@ func precedence(op string) int {
 		return 3
 	case "+", "-", "string-append":
 		return 4
-	case "*", "/", "modulo":
+	case "*", "/", "modulo", "quotient":
 		return 5
 	default:
 		return 0
@@ -1622,6 +1627,7 @@ func convertBinary(b *parser.BinaryExpr, env *types.Env) (Expr, error) {
 			return nil, err
 		}
 		op := part.Op
+		currLeft := exprs[len(exprs)-1]
 		if (op == "==" || op == "!=") && (types.IsStringUnary(b.Left, env) || types.IsStringPostfix(part.Right, env)) {
 			if op == "==" {
 				op = "string=?"
@@ -1629,8 +1635,25 @@ func convertBinary(b *parser.BinaryExpr, env *types.Env) (Expr, error) {
 				op = "string!="
 			}
 		}
-		if op == "+" && (types.IsStringUnary(b.Left, env) || types.IsStringPostfix(part.Right, env)) {
-			op = "string-append"
+		if op == "+" {
+			stringLeft := types.IsStringUnary(b.Left, env)
+			stringRight := types.IsStringPostfix(part.Right, env)
+			if !stringLeft {
+				if _, ok := currLeft.(*StringLit); ok {
+					stringLeft = true
+				}
+				if lb, ok := currLeft.(*BinaryExpr); ok && lb.Op == "string-append" {
+					stringLeft = true
+				}
+			}
+			if !stringRight {
+				if _, ok := right.(*StringLit); ok {
+					stringRight = true
+				}
+			}
+			if stringLeft || stringRight {
+				op = "string-append"
+			}
 		}
 		if op == "&&" {
 			op = "and"
@@ -1787,6 +1810,11 @@ func convertPostfix(pf *parser.PostfixExpr, env *types.Env) (Expr, error) {
 			}
 			isStr := types.IsStringPrimary(pf.Target, env)
 			isMap := types.IsMapPrimary(pf.Target, env)
+			if !isMap && !isStr {
+				if _, ok := idx.(*StringLit); ok {
+					isMap = true
+				}
+			}
 			expr = &IndexExpr{Target: expr, Index: idx, IsString: isStr, IsMap: isMap}
 		case op.Index != nil && op.Index.Colon != nil:
 			if op.Index.Colon2 != nil || op.Index.Step != nil {
