@@ -3270,8 +3270,33 @@ func compilePostfix(pf *parser.PostfixExpr, env *types.Env, base string) (Expr, 
 						}
 					}
 				default:
-					expr = &IndexExpr{X: expr, Index: iex}
-					t = types.AnyType{}
+					if types.IsAnyType(t) {
+						expr = &IndexExpr{X: &AssertExpr{Expr: expr, Type: "map[string]any"}, Index: iex}
+					} else {
+						expr = &IndexExpr{X: expr, Index: iex}
+					}
+					if types.IsAnyType(t) {
+						key := ""
+						if sl, ok2 := iex.(*StringLit); ok2 {
+							key = sl.Value
+						} else if s, ok2 := literalString(idx.Start); ok2 {
+							key = s
+						}
+						if gt, ok3 := fieldTypeGuess[key]; key != "" && ok3 && gt != "" && gt != "any" {
+							expr = &AssertExpr{Expr: expr, Type: gt}
+							if gt == "map[string]int" {
+								t = types.MapType{Key: types.StringType{}, Value: types.IntType{}}
+							} else if gt == "map[string]any" {
+								t = types.MapType{Key: types.StringType{}, Value: types.AnyType{}}
+							} else {
+								t = types.AnyType{}
+							}
+						} else {
+							t = types.AnyType{}
+						}
+					} else {
+						t = types.AnyType{}
+					}
 				}
 			} else {
 				var start, end Expr
