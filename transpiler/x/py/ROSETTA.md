@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Python code from programs in `tests/rosetta/x/Mochi` lives in `tests/rosetta/transpiler/Python`.
-Last updated: 2025-07-23 04:32 UTC
+Last updated: 2025-07-23 04:54 UTC
 
-## Rosetta Golden Test Checklist (39/284)
+## Rosetta Golden Test Checklist (68/284)
 1. [x] 100-doors-2
 2. [x] 100-doors-3
 3. [x] 100-doors
@@ -44,37 +44,37 @@ Last updated: 2025-07-23 04:32 UTC
 37. [x] adfgvx-cipher
 38. [x] aks-test-for-primes
 39. [x] algebraic-data-types
-40. [ ] align-columns
-41. [ ] aliquot-sequence-classifications
+40. [x] align-columns
+41. [x] aliquot-sequence-classifications
 42. [ ] almkvist-giullera-formula-for-pi
-43. [ ] almost-prime
-44. [ ] amb
-45. [ ] amicable-pairs
-46. [ ] anagrams-deranged-anagrams
-47. [ ] anagrams
-48. [ ] angle-difference-between-two-bearings-1
-49. [ ] angle-difference-between-two-bearings-2
-50. [ ] angles-geometric-normalization-and-conversion
-51. [ ] animate-a-pendulum
-52. [ ] animation
-53. [ ] anonymous-recursion-1
-54. [ ] anonymous-recursion-2
-55. [ ] anonymous-recursion
-56. [ ] anti-primes
-57. [ ] append-a-record-to-the-end-of-a-text-file
-58. [ ] apply-a-callback-to-an-array-1
-59. [ ] apply-a-callback-to-an-array-2
-60. [ ] apply-a-digital-filter-direct-form-ii-transposed-
-61. [ ] approximate-equality
-62. [ ] arbitrary-precision-integers-included-
-63. [ ] archimedean-spiral
-64. [ ] arena-storage-pool
-65. [ ] arithmetic-complex
-66. [ ] arithmetic-derivative
+43. [x] almost-prime
+44. [x] amb
+45. [x] amicable-pairs
+46. [x] anagrams-deranged-anagrams
+47. [x] anagrams
+48. [x] angle-difference-between-two-bearings-1
+49. [x] angle-difference-between-two-bearings-2
+50. [x] angles-geometric-normalization-and-conversion
+51. [x] animate-a-pendulum
+52. [x] animation
+53. [x] anonymous-recursion-1
+54. [x] anonymous-recursion-2
+55. [x] anonymous-recursion
+56. [x] anti-primes
+57. [x] append-a-record-to-the-end-of-a-text-file
+58. [x] apply-a-callback-to-an-array-1
+59. [x] apply-a-callback-to-an-array-2
+60. [x] apply-a-digital-filter-direct-form-ii-transposed-
+61. [x] approximate-equality
+62. [x] arbitrary-precision-integers-included-
+63. [x] archimedean-spiral
+64. [x] arena-storage-pool
+65. [x] arithmetic-complex
+66. [x] arithmetic-derivative
 67. [ ] arithmetic-evaluation
-68. [ ] arithmetic-geometric-mean-calculate-pi
-69. [ ] arithmetic-geometric-mean
-70. [ ] arithmetic-integer-1
+68. [x] arithmetic-geometric-mean-calculate-pi
+69. [x] arithmetic-geometric-mean
+70. [x] arithmetic-integer-1
 71. [ ] arithmetic-integer-2
 72. [ ] arithmetic-numbers
 73. [ ] arithmetic-rational

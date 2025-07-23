@@ -1,5 +1,5 @@
-## Progress (2025-07-23 11:31 +0700)
-- Commit 838e164fe6: python transpiler: generate aks-test-for-primes
+## Progress (2025-07-23 11:36 +0700)
+- Commit f47c1ea6ed: python transpiler: handle null literal; add algebraic-data-types
 - Generated Python for 103/103 programs
 - Updated README checklist and outputs
 - Removed runtime helpers and improved boolean type inference
