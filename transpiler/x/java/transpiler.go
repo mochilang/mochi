@@ -37,6 +37,8 @@ var structDefs map[string]map[string]string
 var varDecls map[string]*VarStmt
 var funcMapFields map[string]map[string]string
 var mapVarFields map[string]map[string]string
+var funcParams map[string][]string
+var returnTypeStack []string
 
 func copyMap(src map[string]string) map[string]string {
 	dst := make(map[string]string, len(src))
@@ -109,14 +111,24 @@ func emitCastExpr(w io.Writer, e Expr, typ string) {
 		switch ex := e.(type) {
 		case *IndexExpr:
 			if ex.IsMap || isMapExpr(ex.Target) {
-				fmt.Fprintf(w, "(%s)(", javaType(typ))
+				jt := javaType(typ)
+				if jt == "int" || jt == "double" || jt == "boolean" {
+					fmt.Fprintf(w, "(%s)(", javaBoxType(jt))
+				} else {
+					fmt.Fprintf(w, "(%s)(", jt)
+				}
 				e.emit(w)
 				fmt.Fprint(w, ")")
 				return
 			}
 		case *FieldExpr:
 			if isMapExpr(ex.Target) {
-				fmt.Fprintf(w, "(%s)(", javaType(typ))
+				jt := javaType(typ)
+				if jt == "int" || jt == "double" || jt == "boolean" {
+					fmt.Fprintf(w, "(%s)(", javaBoxType(jt))
+				} else {
+					fmt.Fprintf(w, "(%s)(", jt)
+				}
 				e.emit(w)
 				fmt.Fprint(w, ")")
 				return
@@ -445,7 +457,16 @@ func (r *ReturnStmt) emit(w io.Writer, indent string) {
 	fmt.Fprint(w, indent+"return")
 	if r.Expr != nil {
 		fmt.Fprint(w, " ")
-		r.Expr.emit(w)
+		if len(returnTypeStack) > 0 {
+			rt := returnTypeStack[len(returnTypeStack)-1]
+			if rt != "" {
+				emitCastExpr(w, r.Expr, rt)
+			} else {
+				r.Expr.emit(w)
+			}
+		} else {
+			r.Expr.emit(w)
+		}
 	}
 	fmt.Fprint(w, ";\n")
 }
@@ -1534,11 +1555,16 @@ func (m *MethodCallExpr) emit(w io.Writer) {
 func (c *CallExpr) emit(w io.Writer) {
 	fmt.Fprint(w, c.Func)
 	fmt.Fprint(w, "(")
+	ptypes := funcParams[c.Func]
 	for i, a := range c.Args {
 		if i > 0 {
 			fmt.Fprint(w, ", ")
 		}
-		a.emit(w)
+		typ := ""
+		if i < len(ptypes) {
+			typ = ptypes[i]
+		}
+		emitCastExpr(w, a, typ)
 	}
 	fmt.Fprint(w, ")")
 }
@@ -1568,7 +1594,7 @@ type IndexExpr struct {
 
 func (ix *IndexExpr) emit(w io.Writer) {
 	if ix.IsMap {
-		castType := "java.util.Map"
+		castType := "Object"
 		if ix.ResultType != "" {
 			castType = javaType(ix.ResultType)
 		}
@@ -1681,18 +1707,25 @@ func isStringExpr(e Expr) bool {
 	return false
 }
 
+func isMapType(t string) bool {
+	if strings.HasSuffix(t, "[]") {
+		return false
+	}
+	return t == "map" || strings.Contains(t, "Map")
+}
+
 func isMapExpr(e Expr) bool {
 	switch ex := e.(type) {
 	case *MapLit:
 		return true
 	case *VarExpr:
 		if ex.Type != "" {
-			if ex.Type == "map" || strings.Contains(ex.Type, "Map") {
+			if isMapType(ex.Type) {
 				return true
 			}
 		}
 		if t, ok := varTypes[ex.Name]; ok {
-			if t == "map" || strings.Contains(t, "Map") {
+			if isMapType(t) {
 				return true
 			}
 		}
@@ -1878,6 +1911,8 @@ func Transpile(p *parser.Program, env *types.Env) (*Program, error) {
 	varDecls = map[string]*VarStmt{}
 	funcMapFields = map[string]map[string]string{}
 	mapVarFields = map[string]map[string]string{}
+	funcParams = map[string][]string{}
+	returnTypeStack = nil
 	for _, s := range p.Statements {
 		if s.Fun != nil {
 			saved := varTypes
@@ -1887,13 +1922,18 @@ func Transpile(p *parser.Program, env *types.Env) (*Program, error) {
 					varTypes[pa.Name] = t
 				}
 			}
+			returnTypeStack = append(returnTypeStack, typeRefString(s.Fun.Return))
 			body, err := compileStmts(s.Fun.Body)
+			returnTypeStack = returnTypeStack[:len(returnTypeStack)-1]
 			if err != nil {
 				return nil, err
 			}
 			var params []Param
+			var ptypes []string
 			for _, p := range s.Fun.Params {
-				params = append(params, Param{Name: p.Name, Type: typeRefString(p.Type)})
+				pt := typeRefString(p.Type)
+				params = append(params, Param{Name: p.Name, Type: pt})
+				ptypes = append(ptypes, pt)
 			}
 			ret := typeRefString(s.Fun.Return)
 			if ret == "" {
@@ -1906,6 +1946,7 @@ func Transpile(p *parser.Program, env *types.Env) (*Program, error) {
 				}
 			}
 			funcRet[s.Fun.Name] = ret
+			funcParams[s.Fun.Name] = ptypes
 			if fm := collectReturnMap(body); fm != nil {
 				funcMapFields[s.Fun.Name] = fm
 			}
@@ -2860,7 +2901,9 @@ func compileFunExpr(fn *parser.FunExpr) (Expr, error) {
 		body = []Stmt{&ReturnStmt{Expr: ex}}
 	} else {
 		var err error
+		returnTypeStack = append(returnTypeStack, typeRefString(fn.Return))
 		body, err = compileStmts(fn.BlockBody)
+		returnTypeStack = returnTypeStack[:len(returnTypeStack)-1]
 		if err != nil {
 			return nil, err
 		}
