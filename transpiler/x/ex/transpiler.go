@@ -30,6 +30,23 @@ var builtinAliases map[string]string
 // globalVars tracks variables defined before the first function declaration.
 var globalVars map[string]struct{}
 
+var loopCounter int
+
+func moduleAttrName(name string) string {
+	if len(name) > 0 && name[0] >= 'A' && name[0] <= 'Z' {
+		return strings.ToLower(name)
+	}
+	return name
+}
+
+func uniqueWhileName() string {
+	loopCounter++
+	if loopCounter == 1 {
+		return "while_fun"
+	}
+	return fmt.Sprintf("while_fun_%d", loopCounter)
+}
+
 // moduleMode is true when emitting a module with functions.
 var moduleMode bool
 
@@ -47,6 +64,8 @@ func (v *VarRef) emit(w io.Writer) {
 	if moduleMode {
 		if _, ok := globalVars[v.Name]; ok {
 			io.WriteString(w, "@")
+			io.WriteString(w, moduleAttrName(v.Name))
+			return
 		}
 		io.WriteString(w, v.Name)
 		return
@@ -78,7 +97,7 @@ func (s *LetStmt) emitGlobal(w io.Writer, indent int) {
 		io.WriteString(w, "  ")
 	}
 	io.WriteString(w, "@")
-	io.WriteString(w, s.Name)
+	io.WriteString(w, moduleAttrName(s.Name))
 	io.WriteString(w, " ")
 	if s.Value != nil {
 		s.Value.emit(w)
@@ -97,7 +116,16 @@ func (s *AssignStmt) emit(w io.Writer, indent int) {
 	for i := 0; i < indent; i++ {
 		io.WriteString(w, "  ")
 	}
-	io.WriteString(w, s.Name)
+	if moduleMode {
+		if _, ok := globalVars[s.Name]; ok {
+			io.WriteString(w, "@")
+			io.WriteString(w, moduleAttrName(s.Name))
+		} else {
+			io.WriteString(w, s.Name)
+		}
+	} else {
+		io.WriteString(w, s.Name)
+	}
 	io.WriteString(w, " = ")
 	s.Value.emit(w)
 }
@@ -231,10 +259,13 @@ type WhileStmt struct {
 }
 
 func (wst *WhileStmt) emit(w io.Writer, indent int) {
+	name := uniqueWhileName()
 	for i := 0; i < indent; i++ {
 		io.WriteString(w, "  ")
 	}
-	io.WriteString(w, "while_fun = fn while_fun")
+	io.WriteString(w, name)
+	io.WriteString(w, " = fn ")
+	io.WriteString(w, name)
 	for _, v := range wst.Vars {
 		io.WriteString(w, ", ")
 		io.WriteString(w, v)
@@ -276,7 +307,9 @@ func (wst *WhileStmt) emit(w io.Writer, indent int) {
 	for i := 0; i < indent+2; i++ {
 		io.WriteString(w, "  ")
 	}
-	io.WriteString(w, "while_fun.(while_fun")
+	io.WriteString(w, name)
+	io.WriteString(w, ".(")
+	io.WriteString(w, name)
 	for _, v := range wst.Vars {
 		io.WriteString(w, ", ")
 		io.WriteString(w, v)
@@ -320,7 +353,10 @@ func (wst *WhileStmt) emit(w io.Writer, indent int) {
 		for i := 0; i < indent+1; i++ {
 			io.WriteString(w, "  ")
 		}
-		io.WriteString(w, "while_fun.(while_fun)\n")
+		io.WriteString(w, name)
+		io.WriteString(w, ".(")
+		io.WriteString(w, name)
+		io.WriteString(w, ")\n")
 		for i := 0; i < indent; i++ {
 			io.WriteString(w, "  ")
 		}
@@ -328,18 +364,21 @@ func (wst *WhileStmt) emit(w io.Writer, indent int) {
 		for i := 0; i < indent+1; i++ {
 			io.WriteString(w, "  ")
 		}
-                io.WriteString(w, ":break -> nil\n")
-                for i := 0; i < indent; i++ {
-                        io.WriteString(w, "  ")
-                }
-                io.WriteString(w, "end\n")
-        } else if len(wst.Vars) == 1 {
+		io.WriteString(w, ":break -> nil\n")
+		for i := 0; i < indent; i++ {
+			io.WriteString(w, "  ")
+		}
+		io.WriteString(w, "end\n")
+	} else if len(wst.Vars) == 1 {
 		io.WriteString(w, wst.Vars[0])
 		io.WriteString(w, " = try do\n")
 		for i := 0; i < indent+2; i++ {
 			io.WriteString(w, "  ")
 		}
-		io.WriteString(w, "while_fun.(while_fun, ")
+		io.WriteString(w, name)
+		io.WriteString(w, ".(")
+		io.WriteString(w, name)
+		io.WriteString(w, ", ")
 		io.WriteString(w, wst.Vars[0])
 		io.WriteString(w, ")\n")
 		for i := 0; i < indent+1; i++ {
@@ -349,14 +388,14 @@ func (wst *WhileStmt) emit(w io.Writer, indent int) {
 		for i := 0; i < indent+2; i++ {
 			io.WriteString(w, "  ")
 		}
-                io.WriteString(w, ":break -> ")
-                io.WriteString(w, wst.Vars[0])
-                io.WriteString(w, "\n")
-                for i := 0; i < indent+1; i++ {
-                        io.WriteString(w, "  ")
-                }
-                io.WriteString(w, "end\n")
-        } else {
+		io.WriteString(w, ":break -> ")
+		io.WriteString(w, wst.Vars[0])
+		io.WriteString(w, "\n")
+		for i := 0; i < indent+1; i++ {
+			io.WriteString(w, "  ")
+		}
+		io.WriteString(w, "end\n")
+	} else {
 		io.WriteString(w, "{")
 		for i, v := range wst.Vars {
 			if i > 0 {
@@ -368,7 +407,9 @@ func (wst *WhileStmt) emit(w io.Writer, indent int) {
 		for i := 0; i < indent+2; i++ {
 			io.WriteString(w, "  ")
 		}
-		io.WriteString(w, "while_fun.(while_fun")
+		io.WriteString(w, name)
+		io.WriteString(w, ".(")
+		io.WriteString(w, name)
 		for _, v := range wst.Vars {
 			io.WriteString(w, ", ")
 			io.WriteString(w, v)
@@ -381,19 +422,19 @@ func (wst *WhileStmt) emit(w io.Writer, indent int) {
 		for i := 0; i < indent+2; i++ {
 			io.WriteString(w, "  ")
 		}
-                io.WriteString(w, ":break -> {")
-                for i, v := range wst.Vars {
-                        if i > 0 {
-                                io.WriteString(w, ", ")
-                        }
-                        io.WriteString(w, v)
-                }
-                io.WriteString(w, "}\n")
-                for i := 0; i < indent+1; i++ {
-                        io.WriteString(w, "  ")
-                }
-                io.WriteString(w, "end\n")
-        }
+		io.WriteString(w, ":break -> {")
+		for i, v := range wst.Vars {
+			if i > 0 {
+				io.WriteString(w, ", ")
+			}
+			io.WriteString(w, v)
+		}
+		io.WriteString(w, "}\n")
+		for i := 0; i < indent+1; i++ {
+			io.WriteString(w, "  ")
+		}
+		io.WriteString(w, "end\n")
+	}
 	return
 }
 
@@ -725,10 +766,11 @@ func (g *GroupExpr) emit(w io.Writer) {
 
 // BinaryExpr represents a binary operation such as 1 + 2.
 type BinaryExpr struct {
-	Left  Expr
-	Op    string
-	Right Expr
-	MapIn bool
+	Left      Expr
+	Op        string
+	Right     Expr
+	MapIn     bool
+	StrConcat bool
 }
 
 func (b *BinaryExpr) emit(w io.Writer) {
@@ -765,7 +807,7 @@ func (b *BinaryExpr) emit(w io.Writer) {
 		io.WriteString(w, ")")
 		return
 	}
-	if b.Op == "+" && (isString(b.Left) || isString(b.Right)) {
+	if b.Op == "+" && (b.StrConcat || isString(b.Left) || isString(b.Right)) {
 		io.WriteString(w, "(")
 		b.Left.emit(w)
 		io.WriteString(w, " <> ")
@@ -1309,17 +1351,17 @@ func Emit(p *Program) []byte {
 			funcs = append(funcs, st)
 			continue
 		}
-               if funcsExist && !foundFunc {
-                       globals = append(globals, st)
-               } else {
-                       if es, ok := st.(*ExprStmt); ok {
-                               if call, ok := es.Expr.(*CallExpr); ok && call.Func == "main" && len(call.Args) == 0 {
-                                       continue
-                               }
-                       }
-                       main = append(main, st)
-               }
-       }
+		if funcsExist && !foundFunc {
+			globals = append(globals, st)
+		} else {
+			if es, ok := st.(*ExprStmt); ok {
+				if call, ok := es.Expr.(*CallExpr); ok && call.Func == "main" && len(call.Args) == 0 {
+					continue
+				}
+			}
+			main = append(main, st)
+		}
+	}
 	for _, st := range globals {
 		if ls, ok := st.(*LetStmt); ok {
 			ls.emitGlobal(&buf, 1)
@@ -1510,15 +1552,15 @@ func compileStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 			if err != nil {
 				return nil, err
 			}
-       t, _ := env.GetVar(st.Assign.Name)
-       var call *CallExpr
-       switch t.(type) {
-       case types.MapType:
-               call = &CallExpr{Func: "Map.put", Args: []Expr{&VarRef{Name: st.Assign.Name}, idx, val}}
-       default:
-               // Fallback to list semantics when the type is unknown
-               call = &CallExpr{Func: "List.replace_at", Args: []Expr{&VarRef{Name: st.Assign.Name}, idx, val}}
-       }
+			t, _ := env.GetVar(st.Assign.Name)
+			var call *CallExpr
+			switch t.(type) {
+			case types.MapType:
+				call = &CallExpr{Func: "Map.put", Args: []Expr{&VarRef{Name: st.Assign.Name}, idx, val}}
+			default:
+				// Fallback to list semantics when the type is unknown
+				call = &CallExpr{Func: "List.replace_at", Args: []Expr{&VarRef{Name: st.Assign.Name}, idx, val}}
+			}
 			return &AssignStmt{Name: st.Assign.Name, Value: call}, nil
 		}
 		if len(st.Assign.Index) == 2 && len(st.Assign.Field) == 0 {
@@ -2395,6 +2437,7 @@ func compileBinary(b *parser.BinaryExpr, env *types.Env) (Expr, error) {
 		return nil, err
 	}
 	operands := []Expr{left}
+	typesSlice := []types.Type{types.TypeOfUnary(b.Left, env)}
 	ops := make([]*parser.BinaryOp, len(b.Right))
 	for i, op := range b.Right {
 		expr, err := compilePostfix(op.Right, env)
@@ -2403,6 +2446,7 @@ func compileBinary(b *parser.BinaryExpr, env *types.Env) (Expr, error) {
 		}
 		ops[i] = op
 		operands = append(operands, expr)
+		typesSlice = append(typesSlice, types.TypeOfPostfix(op.Right, env))
 	}
 	levels := [][]string{
 		{"*", "/", "%"},
@@ -2451,11 +2495,24 @@ func compileBinary(b *parser.BinaryExpr, env *types.Env) (Expr, error) {
 						if _, ok := types.TypeOfPostfix(ops[i].Right, env).(types.MapType); ok {
 							bin.MapIn = true
 						}
+					} else if opName == "+" {
+						if _, ok := typesSlice[i].(types.StringType); ok {
+							bin.StrConcat = true
+						}
+						if _, ok := typesSlice[i+1].(types.StringType); ok {
+							bin.StrConcat = true
+						}
 					}
 					expr = bin
 				}
 				operands[i] = expr
+				if b, ok := expr.(*BinaryExpr); ok && b.Op == "+" && b.StrConcat {
+					typesSlice[i] = types.StringType{}
+				} else {
+					typesSlice[i] = types.AnyType{}
+				}
 				operands = append(operands[:i+1], operands[i+2:]...)
+				typesSlice = append(typesSlice[:i+1], typesSlice[i+2:]...)
 				ops = append(ops[:i], ops[i+1:]...)
 			} else {
 				i++
@@ -2770,6 +2827,12 @@ func compilePrimary(p *parser.Primary, env *types.Env) (Expr, error) {
 		case "now":
 			if len(args) == 0 {
 				return &CallExpr{Func: "_now", Args: nil}, nil
+			}
+		case "input":
+			if len(args) == 0 {
+				gets := &CallExpr{Func: "IO.gets", Args: []Expr{&StringLit{Value: ""}}}
+				trim := &CallExpr{Func: "String.trim", Args: []Expr{gets}}
+				return trim, nil
 			}
 		case "values":
 			if len(args) == 1 {

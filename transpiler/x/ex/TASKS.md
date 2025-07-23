@@ -1,5 +1,5 @@
-## Progress (2025-07-22 22:49 +0700)
-- Commit 471b8e5ea: transpiler/erl: use index for Rosetta tests
+## Progress (2025-07-23 20:13 +0700)
+- Commit 0a4e3506ef: transpiler: update ts outputs for rosetta indices 170-199
 - Generated Elixir for 102/103 programs
 - Updated README checklist and outputs
 - Improved code emission and type inference
