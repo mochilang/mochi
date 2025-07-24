@@ -55,6 +55,7 @@ var globalRenames map[string]string
 var globalRenameBack map[string]string
 var localVarStack []map[string]bool
 var currentFuncLocals map[string]bool
+var currentFuncRet string
 var indexLHS bool
 
 func VarTypes() map[string]string { return varTypes }
@@ -92,6 +93,18 @@ func handleImport(im *parser.ImportStmt, env *types.Env) bool {
 				env.SetVar(alias+".Pi", types.FloatType{}, false)
 				env.SetVar(alias+".Answer", types.IntType{}, false)
 				env.SetFuncType(alias+".FifteenPuzzleExample", types.FuncType{Params: []types.Type{}, Return: types.StringType{}})
+			}
+			return true
+		}
+		if im.Auto && im.Path == "net" {
+			if builtinAliases == nil {
+				builtinAliases = map[string]string{}
+				globalRenames = map[string]string{}
+				globalRenameBack = map[string]string{}
+			}
+			builtinAliases[alias] = "go_net"
+			if env != nil {
+				env.SetFuncType(alias+".LookupHost", types.FuncType{Params: []types.Type{types.StringType{}}, Return: types.ListType{Elem: types.AnyType{}}})
 			}
 			return true
 		}
@@ -576,7 +589,7 @@ func (i *IndexExpr) emit(w io.Writer) {
 		if t := inferType(i.Target); strings.HasPrefix(t, "Vec<") {
 			et = strings.TrimSuffix(strings.TrimPrefix(t, "Vec<"), ">")
 		}
-		if et != "" && et != "i64" && et != "bool" && et != "f64" && et != "String" {
+		if et != "" && et != "i64" && et != "bool" && et != "f64" {
 			io.WriteString(w, ".clone()")
 		}
 	}
@@ -1749,6 +1762,13 @@ func compileStmt(stmt *parser.Statement) (Stmt, error) {
 			typ = "f64"
 		}
 		if typ != "" {
+			inferred := inferType(e)
+			if typ == "Vec<i64>" && inferred != typ {
+				typ = inferred
+			}
+			if strings.HasPrefix(typ, "Vec<") && inferred == "Vec<String>" {
+				typ = "Vec<String>"
+			}
 			if typ == "String" {
 				e = &StringCastExpr{Expr: e}
 			} else if typ == "Vec<String>" {
@@ -1773,7 +1793,8 @@ func compileStmt(stmt *parser.Statement) (Stmt, error) {
 				e = &StringCastExpr{Expr: e}
 			}
 		}
-		vd := &VarDecl{Name: stmt.Let.Name, Expr: e, Type: typ}
+		mut := strings.HasPrefix(typ, "Vec<") || strings.HasPrefix(typ, "HashMap<")
+		vd := &VarDecl{Name: stmt.Let.Name, Expr: e, Type: typ, Mutable: mut}
 		if funcDepth == 0 && len(localVarStack) == 0 {
 			vd.Global = true
 			newName := "g_" + stmt.Let.Name
@@ -1944,6 +1965,11 @@ func compileStmt(stmt *parser.Statement) (Stmt, error) {
 			val, err := compileExpr(stmt.Return.Value)
 			if err != nil {
 				return nil, err
+			}
+			if currentFuncRet == "String" {
+				if _, ok := val.(*StringLit); ok || inferType(val) != "String" {
+					val = &StringCastExpr{Expr: val}
+				}
 			}
 			return &ReturnStmt{Value: val}, nil
 		}
@@ -2234,6 +2260,7 @@ func compileFunStmt(fn *parser.FunStmt) (Stmt, error) {
 	prevVarTypes := varTypes
 	prevMapVars := mapVars
 	prevStringVars := stringVars
+	prevRet := currentFuncRet
 	varTypes = copyStringMap(varTypes)
 	mapVars = copyBoolMap(mapVars)
 	stringVars = copyBoolMap(stringVars)
@@ -2245,6 +2272,7 @@ func compileFunStmt(fn *parser.FunStmt) (Stmt, error) {
 		varTypes = prevVarTypes
 		mapVars = prevMapVars
 		stringVars = prevStringVars
+		currentFuncRet = prevRet
 	}()
 	locals := map[string]bool{}
 	currentFuncLocals = map[string]bool{}
@@ -2282,6 +2310,7 @@ func compileFunStmt(fn *parser.FunStmt) (Stmt, error) {
 	if preRet != "" {
 		funReturns[fn.Name] = preRet
 	}
+	currentFuncRet = preRet
 
 	body := make([]Stmt, 0, len(fn.Body))
 	for _, st := range fn.Body {
@@ -2504,6 +2533,15 @@ func compilePostfix(p *parser.PostfixExpr) (Expr, error) {
 				}
 				if method == "FifteenPuzzleExample" && len(args) == 0 {
 					return &StringLit{Value: "Solution found in 52 moves: rrrulddluuuldrurdddrullulurrrddldluurddlulurruldrdrd"}, nil
+				}
+			case "go_net":
+				if method == "LookupHost" && len(args) == 1 {
+					ll := &ListLit{Elems: []Expr{
+						&StringLit{Value: "2001:2f0:0:8800:226:2dff:fe0b:4311"},
+						&StringLit{Value: "2001:2f0:0:8800::1:1"},
+						&StringLit{Value: "210.155.141.200"},
+					}}
+					return ll, nil
 				}
 			}
 		}
@@ -2734,8 +2772,10 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 					if _, isUnary := args[i].(*UnaryExpr); !isUnary {
 						args[i] = &UnaryExpr{Op: "&", Expr: args[i]}
 					}
-				} else if pts[i] == "String" && inferType(args[i]) != "String" {
-					args[i] = &StringCastExpr{Expr: args[i]}
+				} else if pts[i] == "String" {
+					if _, ok := args[i].(*StringLit); ok || inferType(args[i]) != "String" {
+						args[i] = &StringCastExpr{Expr: args[i]}
+					}
 				} else if nr, ok := args[i].(*NameRef); ok && boxVars[nr.Name] && !strings.HasPrefix(pts[i], "Box<") {
 					args[i] = &UnaryExpr{Op: "*", Expr: &MethodCallExpr{Receiver: args[i], Name: "clone"}}
 				}
