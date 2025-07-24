@@ -340,6 +340,17 @@ func simpleListType(l *ListLit) string {
 	return elemType + " array"
 }
 
+func mapValueType(s string) string {
+	if strings.HasPrefix(s, "Map<") && strings.HasSuffix(s, ">") {
+		parts := strings.TrimSuffix(strings.TrimPrefix(s, "Map<"), ">")
+		idx := strings.LastIndex(parts, ",")
+		if idx >= 0 {
+			return strings.TrimSpace(parts[idx+1:])
+		}
+	}
+	return "obj"
+}
+
 func inferLiteralType(e *parser.Expr) string {
 	if transpileEnv == nil || e == nil || e.Binary == nil || len(e.Binary.Right) != 0 {
 		return ""
@@ -1624,11 +1635,20 @@ func (i *IndexExpr) emit(w io.Writer) {
 		io.WriteString(w, "]")
 		return
 	}
-	if strings.HasPrefix(t, "Map<") {
-		io.WriteString(w, "Map.find ")
+	if strings.HasPrefix(t, "Map<") || t == "map" {
+		valT := mapValueType(t)
+		if t == "map" {
+			if id, ok := i.Target.(*IdentExpr); ok {
+				if vt, ok2 := varTypes[id.Name]; ok2 {
+					valT = mapValueType(vt)
+				}
+			}
+		}
+		io.WriteString(w, "(defaultArg (Map.tryFind ")
 		i.Index.emit(w)
 		io.WriteString(w, " ")
 		i.Target.emit(w)
+		fmt.Fprintf(w, ") Unchecked.defaultof<%s>)", valT)
 		return
 	}
 	i.Target.emit(w)
@@ -1762,6 +1782,13 @@ func (c *CastExpr) emit(w io.Writer) {
 		io.WriteString(w, " :?> ")
 		io.WriteString(w, c.Type)
 	}
+}
+
+// DefaultOfExpr represents Unchecked.defaultof<T>.
+type DefaultOfExpr struct{ Type string }
+
+func (d *DefaultOfExpr) emit(w io.Writer) {
+	fmt.Fprintf(w, "Unchecked.defaultof<%s>", d.Type)
 }
 
 // Emit generates formatted F# code from the AST.
@@ -1994,7 +2021,9 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 			}
 		}
 		fsDecl := fsTypeFromString(declared)
-		if fsDecl == "bigint" {
+		if _, ok := e.(*NullLit); ok && fsDecl != "" {
+			e = &DefaultOfExpr{Type: fsDecl}
+		} else if fsDecl == "bigint" {
 			if _, ok := e.(*IntLit); ok {
 				e = &CastExpr{Expr: e, Type: "bigint"}
 			}
@@ -2035,7 +2064,9 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 			}
 		}
 		fsDecl := fsTypeFromString(declared)
-		if fsDecl == "bigint" {
+		if _, ok := e.(*NullLit); ok && fsDecl != "" {
+			e = &DefaultOfExpr{Type: fsDecl}
+		} else if fsDecl == "bigint" {
 			if _, ok := e.(*IntLit); ok {
 				e = &CastExpr{Expr: e, Type: "bigint"}
 			}
@@ -2105,7 +2136,7 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 		}
 		if len(st.Assign.Field) == 1 {
 			upd := &StructUpdateExpr{Target: target, Field: st.Assign.Field[0].Name, Value: val}
-			return &ExprStmt{Expr: upd}, nil
+			return &AssignStmt{Name: st.Assign.Name, Expr: upd}, nil
 		}
 		return nil, fmt.Errorf("field assignment not supported")
 	case st.Return != nil:
