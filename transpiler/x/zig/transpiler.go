@@ -43,6 +43,7 @@ var useNow bool
 var useStr bool
 var useConcat bool
 var useInput bool
+var variantTags map[string]int
 
 // GetFuncReturns exposes function return types for testing.
 func GetFuncReturns() map[string]string { return funcReturns }
@@ -1668,6 +1669,7 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	constLists = map[string]*ListLit{}
 	mapVars = map[string]bool{}
 	structDefs = map[string]*StructDef{}
+	variantTags = map[string]int{}
 	for _, st := range prog.Statements {
 		if st.Import != nil && st.Import.Lang != nil {
 			alias := st.Import.As
@@ -2248,6 +2250,9 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 		if _, ok := structDefs[p.Struct.Name]; !ok {
 			structDefs[p.Struct.Name] = &StructDef{Name: p.Struct.Name, Fields: fields}
 		}
+		if tag, ok := variantTags[p.Struct.Name]; ok {
+			entries = append([]MapEntry{{Key: &StringLit{Value: "op"}, Value: &IntLit{Value: tag}}}, entries...)
+		}
 		return &MapLit{Entries: entries, StructName: p.Struct.Name}, nil
 	case p.Query != nil:
 		return compileQueryExpr(p.Query)
@@ -2322,6 +2327,24 @@ func compileMatchExpr(me *parser.MatchExpr) (Expr, error) {
 	var expr Expr = &StringLit{Value: ""}
 	for i := len(me.Cases) - 1; i >= 0; i-- {
 		c := me.Cases[i]
+		if call := extractCallPattern(c.Pattern); call != nil {
+			if tag, ok := variantTags[call.Func]; ok {
+				cond := &BinaryExpr{Left: &IndexExpr{Target: target, Index: &StringLit{Value: "op"}, Map: true}, Op: "==", Right: &IntLit{Value: tag}}
+				var res Expr
+				switch call.Func {
+				case "Num":
+					res = &IndexExpr{Target: target, Index: &StringLit{Value: "value"}, Map: true}
+				case "Bin":
+					res = &CallExpr{Func: "binEval", Args: []Expr{
+						&IndexExpr{Target: target, Index: &StringLit{Value: "op"}, Map: true},
+						&IndexExpr{Target: target, Index: &StringLit{Value: "left"}, Map: true},
+						&IndexExpr{Target: target, Index: &StringLit{Value: "right"}, Map: true},
+					}}
+				}
+				expr = &IfExpr{Cond: cond, Then: res, Else: expr}
+				continue
+			}
+		}
 		res, err := compileExpr(c.Result)
 		if err != nil {
 			return nil, err
@@ -2338,6 +2361,17 @@ func compileMatchExpr(me *parser.MatchExpr) (Expr, error) {
 		expr = &IfExpr{Cond: cond, Then: res, Else: expr}
 	}
 	return expr, nil
+}
+
+func extractCallPattern(e *parser.Expr) *parser.CallExpr {
+	if e == nil || e.Binary == nil || e.Binary.Left == nil {
+		return nil
+	}
+	pf := e.Binary.Left.Value
+	if pf == nil || pf.Target == nil || pf.Target.Call == nil || len(pf.Ops) != 0 {
+		return nil
+	}
+	return pf.Target.Call
 }
 
 func compileIfStmt(is *parser.IfStmt, prog *parser.Program) (Stmt, error) {
@@ -2707,6 +2741,9 @@ func compileFunStmt(fn *parser.FunStmt, prog *parser.Program) (*Func, error) {
 		params[i] = Param{Name: p.Name, Type: typ}
 		names[i] = p.Name
 		varTypes[p.Name] = typ
+		if strings.HasPrefix(typ, "std.StringHashMap(") || strings.HasPrefix(typ, "std.AutoHashMap(") {
+			mapVars[p.Name] = true
+		}
 	}
 	funParamsStack = append(funParamsStack, names)
 	funDepth++
@@ -3213,7 +3250,17 @@ func compileTypeDecl(td *parser.TypeDecl) error {
 			}
 			structDefs["Node"] = &StructDef{Name: "Node", Fields: fields}
 			typeAliases["Tree"] = "?*Node"
+			return nil
 		}
+		for i, v := range td.Variants {
+			fields := make([]Field, len(v.Fields))
+			for i, f := range v.Fields {
+				fields[i] = Field{Name: toSnakeCase(f.Name), Type: toZigType(f.Type)}
+			}
+			structDefs[v.Name] = &StructDef{Name: v.Name, Fields: fields}
+			variantTags[v.Name] = i
+		}
+		typeAliases[td.Name] = "std.StringHashMap(i64)"
 		return nil
 	}
 	if len(td.Members) > 0 {
