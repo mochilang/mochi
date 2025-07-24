@@ -183,7 +183,7 @@ func updateRosettaReadme() {
 				compiled++
 			}
 		}
-		lines = append(lines, fmt.Sprintf("%d. %s %s", i+1, mark, base))
+		lines = append(lines, fmt.Sprintf("%d. %s (%d) %s", i+1, mark, i+1, base))
 	}
 	out, err := exec.Command("git", "log", "-1", "--format=%cI").Output()
 	ts := ""
