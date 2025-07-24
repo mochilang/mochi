@@ -128,10 +128,11 @@ func updateReadme() {
 	buf.WriteString("# Transpiler Progress\n\n")
 	buf.WriteString("This checklist is auto-generated.\n")
 	buf.WriteString("Generated Python code from programs in `tests/vm/valid` lives in `tests/transpiler/x/py`.\n")
-	ts := time.Now().UTC()
+	loc := time.FixedZone("GMT+7", 7*60*60)
+	ts := time.Now().In(loc)
 	if out, err := exec.Command("git", "log", "-1", "--format=%cI").Output(); err == nil {
 		if t, perr := time.Parse(time.RFC3339, strings.TrimSpace(string(out))); perr == nil {
-			ts = t.UTC()
+			ts = t.In(loc)
 		}
 	}
 	buf.WriteString("Last updated: " + ts.Format("2006-01-02 15:04 MST") + "\n\n")
