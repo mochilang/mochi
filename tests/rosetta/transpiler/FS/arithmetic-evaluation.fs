@@ -1,4 +1,4 @@
-// Generated 2025-07-25 00:53 +0700
+// Generated 2025-07-25 01:11 +0700
 
 exception Break
 exception Continue
@@ -20,7 +20,7 @@ let rec skipWS (p: Parser) =
         let mutable i: int = p.pos
         while (i < (String.length (p.expr))) && ((p.expr.Substring(i, (i + 1) - i)) = " ") do
             i <- i + 1
-        { p with pos = i }
+        p <- { p with pos = i }
         __ret <- p
         raise Return
         __ret
@@ -50,7 +50,7 @@ and parseNumber (p: Parser) =
             while (p.pos) < (String.length (p.expr)) do
                 let ch: string = p.expr.Substring(p.pos, ((p.pos) + 1) - (p.pos))
                 if (ch >= "0") && (ch <= "9") then
-                    { p with pos = (p.pos) + 1 }
+                    p <- { p with pos = (p.pos) + 1 }
                 else
                     raise Break
         with
@@ -68,17 +68,17 @@ and parseFactor (p: Parser) =
     try
         p <- skipWS p
         if ((p.pos) < (String.length (p.expr))) && ((p.expr.Substring(p.pos, ((p.pos) + 1) - (p.pos))) = "(") then
-            { p with pos = (p.pos) + 1 }
+            p <- { p with pos = (p.pos) + 1 }
             let mutable r = parseExpr p
             let mutable v = r.v
             p <- r.p
             p <- skipWS p
             if ((p.pos) < (String.length (p.expr))) && ((p.expr.Substring(p.pos, ((p.pos) + 1) - (p.pos))) = ")") then
-                { p with pos = (p.pos) + 1 }
+                p <- { p with pos = (p.pos) + 1 }
             __ret <- { v = v; p = p }
             raise Return
         if ((p.pos) < (String.length (p.expr))) && ((p.expr.Substring(p.pos, ((p.pos) + 1) - (p.pos))) = "-") then
-            { p with pos = (p.pos) + 1 }
+            p <- { p with pos = (p.pos) + 1 }
             let mutable r = parseFactor p
             let mutable v = r.v
             p <- r.p
@@ -118,7 +118,7 @@ and parsePower (p: Parser) =
             while true do
                 p <- skipWS p
                 if ((p.pos) < (String.length (p.expr))) && ((p.expr.Substring(p.pos, ((p.pos) + 1) - (p.pos))) = "^") then
-                    { p with pos = (p.pos) + 1 }
+                    p <- { p with pos = (p.pos) + 1 }
                     let mutable r2 = parseFactor p
                     let mutable rhs = r2.v
                     p <- r2.p
@@ -146,14 +146,14 @@ and parseTerm (p: Parser) =
                 if (p.pos) < (String.length (p.expr)) then
                     let op: string = p.expr.Substring(p.pos, ((p.pos) + 1) - (p.pos))
                     if op = "*" then
-                        { p with pos = (p.pos) + 1 }
+                        p <- { p with pos = (p.pos) + 1 }
                         let mutable r2 = parsePower p
                         let mutable rhs = r2.v
                         p <- r2.p
                         v <- v * rhs
                         raise Continue
                     if op = "/" then
-                        { p with pos = (p.pos) + 1 }
+                        p <- { p with pos = (p.pos) + 1 }
                         let mutable r2 = parsePower p
                         let mutable rhs = r2.v
                         p <- r2.p
@@ -181,14 +181,14 @@ and parseExpr (p: Parser) =
                 if (p.pos) < (String.length (p.expr)) then
                     let op: string = p.expr.Substring(p.pos, ((p.pos) + 1) - (p.pos))
                     if op = "+" then
-                        { p with pos = (p.pos) + 1 }
+                        p <- { p with pos = (p.pos) + 1 }
                         let mutable r2 = parseTerm p
                         let mutable rhs = r2.v
                         p <- r2.p
                         v <- v + rhs
                         raise Continue
                     if op = "-" then
-                        { p with pos = (p.pos) + 1 }
+                        p <- { p with pos = (p.pos) + 1 }
                         let mutable r2 = parseTerm p
                         let mutable rhs = r2.v
                         p <- r2.p

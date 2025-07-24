@@ -2,7 +2,7 @@
 
 This file is auto-generated from rosetta tests.
 
-## Checklist (51/284)
+## Checklist (63/284)
 1. [x] 100-doors-2 (index 1)
 2. [x] 100-doors-3 (index 2)
 3. [x] 100-doors (index 3)
@@ -69,19 +69,19 @@ This file is auto-generated from rosetta tests.
 64. [x] arena-storage-pool (index 64)
 65. [x] arithmetic-complex (index 65)
 66. [x] arithmetic-derivative (index 66)
-67. [ ] arithmetic-evaluation (index 67)
-68. [ ] arithmetic-geometric-mean-calculate-pi (index 68)
-69. [ ] arithmetic-geometric-mean (index 69)
-70. [ ] arithmetic-integer-1 (index 70)
-71. [ ] arithmetic-integer-2 (index 71)
+67. [x] arithmetic-evaluation (index 67)
+68. [x] arithmetic-geometric-mean-calculate-pi (index 68)
+69. [x] arithmetic-geometric-mean (index 69)
+70. [x] arithmetic-integer-1 (index 70)
+71. [x] arithmetic-integer-2 (index 71)
 72. [ ] arithmetic-numbers (index 72)
-73. [ ] arithmetic-rational (index 73)
-74. [ ] array-concatenation (index 74)
-75. [ ] array-length (index 75)
-76. [ ] arrays (index 76)
-77. [ ] ascending-primes (index 77)
-78. [ ] ascii-art-diagram-converter (index 78)
-79. [ ] assertions (index 79)
+73. [x] arithmetic-rational (index 73)
+74. [x] array-concatenation (index 74)
+75. [x] array-length (index 75)
+76. [x] arrays (index 76)
+77. [x] ascending-primes (index 77)
+78. [x] ascii-art-diagram-converter (index 78)
+79. [x] assertions (index 79)
 80. [ ] associative-array-creation (index 80)
 81. [ ] associative-array-iteration (index 81)
 82. [ ] associative-array-merging (index 82)
@@ -288,4 +288,4 @@ This file is auto-generated from rosetta tests.
 283. [ ] define-a-primitive-data-type (index 283)
 284. [ ] md5 (index 284)
 
-Last updated: 2025-07-25 00:53 +0700
+Last updated: 2025-07-25 01:11 +0700
