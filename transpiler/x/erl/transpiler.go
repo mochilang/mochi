@@ -1056,6 +1056,38 @@ func mapValueIsString(e Expr, env *types.Env, ctx *context) bool {
 	return false
 }
 
+func isListExpr(e Expr, env *types.Env, ctx *context) bool {
+	switch v := e.(type) {
+	case *ListLit:
+		return true
+	case *NameRef:
+		if env != nil {
+			name := v.Name
+			if ctx != nil {
+				name = ctx.original(v.Name)
+			}
+			if t, err := env.GetVar(name); err == nil {
+				if _, ok := t.(types.ListType); ok {
+					return true
+				}
+			}
+		}
+	case *IndexExpr:
+		if v.Kind == "list" {
+			return true
+		}
+	case *CallExpr:
+		if v.Func == "append" || v.Func == "concat" || strings.HasPrefix(v.Func, "lists:") {
+			return true
+		}
+	case *BinaryExpr:
+		if v.Op == "++" || v.Op == "+" {
+			return isListExpr(v.Left, env, ctx) && isListExpr(v.Right, env, ctx)
+		}
+	}
+	return false
+}
+
 func stringFields(e Expr) map[string]bool {
 	switch v := e.(type) {
 	case *MapLit:
@@ -1335,6 +1367,13 @@ func (c *CallExpr) emit(w io.Writer) {
 		return
 	case "max":
 		io.WriteString(w, "lists:max(")
+		if len(c.Args) > 0 {
+			c.Args[0].emit(w)
+		}
+		io.WriteString(w, ")")
+		return
+	case "keys":
+		io.WriteString(w, "maps:keys(")
 		if len(c.Args) > 0 {
 			c.Args[0].emit(w)
 		}
@@ -2127,7 +2166,7 @@ func mapOp(op string) string {
 
 func builtinFunc(name string) bool {
 	switch name {
-	case "print", "append", "avg", "count", "len", "str", "sum", "min", "max", "values", "exists", "json", "now", "input", "int", "abs", "upper", "lower":
+	case "print", "append", "avg", "count", "len", "str", "sum", "min", "max", "values", "keys", "exists", "json", "now", "input", "int", "abs", "upper", "lower":
 		return true
 	default:
 		return false
@@ -3104,6 +3143,13 @@ func convertBinary(b *parser.BinaryExpr, env *types.Env, ctx *context) (Expr, er
 					op = "div"
 					typesList[i] = types.IntType{}
 				}
+				if op == "+" {
+					_, leftIsList := typesList[i].(types.ListType)
+					_, rightIsList := typesList[i+1].(types.ListType)
+					if leftIsList || rightIsList {
+						op = "++"
+					}
+				}
 				exprs[i] = &BinaryExpr{Left: l, Op: op, Right: r}
 				exprs = append(exprs[:i+1], exprs[i+2:]...)
 				typesList = append(typesList[:i+1], typesList[i+2:]...)
@@ -3184,6 +3230,16 @@ func convertPostfix(pf *parser.PostfixExpr, env *types.Env, ctx *context) (Expr,
 			return nil, err
 		}
 		return &ContainsExpr{Str: base, Sub: arg}, nil
+	}
+	if pf.Target != nil && pf.Target.Selector != nil && len(pf.Target.Selector.Tail) == 1 && pf.Target.Selector.Tail[0] == "keys" && len(pf.Ops) == 1 && pf.Ops[0].Call != nil {
+		base, err := convertPrimary(&parser.Primary{Selector: &parser.SelectorExpr{Root: pf.Target.Selector.Root}}, env, ctx)
+		if err != nil {
+			return nil, err
+		}
+		if len(pf.Ops[0].Call.Args) != 0 {
+			return nil, fmt.Errorf("keys expects 0 arg")
+		}
+		return &CallExpr{Func: "maps:keys", Args: []Expr{base}}, nil
 	}
 	expr, err := convertPrimary(pf.Target, env, ctx)
 	if err != nil {
@@ -3270,6 +3326,13 @@ func convertPostfix(pf *parser.PostfixExpr, env *types.Env, ctx *context) (Expr,
 				return nil, err
 			}
 			expr = &ContainsExpr{Str: expr, Sub: arg}
+			i++
+		case op.Field != nil && op.Field.Name == "keys" && i+1 < len(pf.Ops) && pf.Ops[i+1].Call != nil:
+			call := pf.Ops[i+1].Call
+			if len(call.Args) != 0 {
+				return nil, fmt.Errorf("keys expects 0 arg")
+			}
+			expr = &CallExpr{Func: "maps:keys", Args: []Expr{expr}}
 			i++
 		case op.Field != nil:
 			field := op.Field.Name
@@ -3459,6 +3522,9 @@ func convertPrimary(p *parser.Primary, env *types.Env, ctx *context) (Expr, erro
 			return ce, nil
 		} else if ce.Func == "values" && len(ce.Args) == 1 {
 			ce.Func = "maps:values"
+			return ce, nil
+		} else if ce.Func == "keys" && len(ce.Args) == 1 {
+			ce.Func = "maps:keys"
 			return ce, nil
 		} else if ce.Func == "exists" && len(ce.Args) == 1 {
 			arg := ce.Args[0]
