@@ -810,21 +810,22 @@ type LenBuiltin struct {
 }
 
 func (l *LenBuiltin) emit(w io.Writer) {
+	var fn string
 	switch l.Typ {
 	case "string":
-		io.WriteString(w, "String.length ")
-	case "list":
-		io.WriteString(w, "List.length ")
-	case "map":
-		io.WriteString(w, "List.length ")
+		fn = "String.length"
+	case "list", "map":
+		fn = "List.length"
 	default:
 		if strings.HasPrefix(l.Typ, "map-") {
-			io.WriteString(w, "List.length ")
+			fn = "List.length"
 		} else {
-			io.WriteString(w, "List.length ")
+			fn = "List.length"
 		}
 	}
+	io.WriteString(w, fn+" (")
 	l.Arg.emit(w)
+	io.WriteString(w, ")")
 }
 
 func (l *LenBuiltin) emitPrint(w io.Writer) {
@@ -2175,20 +2176,25 @@ func transpileStmt(st *parser.Statement, env *types.Env, vars map[string]VarInfo
 	case st.Var != nil:
 		var expr Expr
 		var typ string
-		var err error
+		if st.Var.Type != nil {
+			typ = typeRefString(st.Var.Type)
+		}
 		if st.Var.Value != nil {
-			expr, typ, err = convertExpr(st.Var.Value, env, vars)
+			valExpr, typVal, err := convertExpr(st.Var.Value, env, vars)
 			if err != nil {
 				return nil, err
 			}
-		} else if st.Var.Type != nil {
-			typ = typeRefString(st.Var.Type)
 			if typ == "" {
-				typ = "int"
+				typ = typVal
 			}
+			expr = valExpr
+		} else if typ != "" {
 			expr = defaultValueExpr(typ)
 		} else {
 			return nil, fmt.Errorf("var without type or value not supported")
+		}
+		if typ == "" {
+			typ = "int"
 		}
 		vars[st.Var.Name] = VarInfo{typ: typ, ref: true}
 		return &VarStmt{Name: st.Var.Name, Expr: expr}, nil
@@ -2453,6 +2459,12 @@ func transpileStmt(st *parser.Statement, env *types.Env, vars map[string]VarInfo
 		}
 		return &ReturnStmt{Expr: expr}, nil
 	case st.Fun != nil:
+		env.SetFunc(st.Fun.Name, st.Fun)
+		var retTyp types.Type = types.VoidType{}
+		if st.Fun.Return != nil {
+			retTyp = types.ResolveTypeRef(st.Fun.Return, env)
+		}
+		env.SetFuncType(st.Fun.Name, types.FuncType{Return: retTyp})
 		child := types.NewEnv(env)
 		fnVars := map[string]VarInfo{}
 		for k, v := range vars {
@@ -2488,12 +2500,6 @@ func transpileStmt(st *parser.Statement, env *types.Env, vars map[string]VarInfo
 				ret = r
 			}
 		}
-		env.SetFunc(st.Fun.Name, st.Fun)
-		var retTyp types.Type = types.VoidType{}
-		if st.Fun.Return != nil {
-			retTyp = types.ResolveTypeRef(st.Fun.Return, env)
-		}
-		env.SetFuncType(st.Fun.Name, types.FuncType{Return: retTyp})
 		return &FunStmt{Name: st.Fun.Name, Params: params, Body: body, Ret: ret, RetTyp: typeString(retTyp)}, nil
 	case st.Type != nil:
 		if len(st.Type.Members) > 0 {
@@ -3081,15 +3087,17 @@ func convertPostfix(p *parser.PostfixExpr, env *types.Env, vars map[string]VarIn
 				}
 			}
 			return nil, "", fmt.Errorf("postfix op not supported")
-		case op.Cast != nil && op.Cast.Type != nil && op.Cast.Type.Simple != nil:
-			target := *op.Cast.Type.Simple
+		case op.Cast != nil && op.Cast.Type != nil:
+			target := typeRefString(op.Cast.Type)
 			if typ == "string" && target == "int" {
 				expr = &CastExpr{Expr: expr, Type: target}
-				typ = target
-				i++
-				continue
+			} else if mi, ok := expr.(*MapIndexExpr); ok {
+				mi.Typ = target
+				expr = mi
 			}
-			// ignore casts to user types
+			if target != "" {
+				typ = target
+			}
 			i++
 			continue
 		default:
@@ -3593,6 +3601,20 @@ func convertQueryExpr(q *parser.QueryExpr, env *types.Env, vars map[string]VarIn
 }
 
 func convertCall(c *parser.CallExpr, env *types.Env, vars map[string]VarInfo) (Expr, string, error) {
+	if (c.Func == "upper" || c.Func == "lower") && len(c.Args) == 1 {
+		arg, typ, err := convertExpr(c.Args[0], env, vars)
+		if err != nil {
+			return nil, "", err
+		}
+		if typ != "string" {
+			return nil, "", fmt.Errorf("%s expects string", c.Func)
+		}
+		name := "String.uppercase_ascii"
+		if c.Func == "lower" {
+			name = "String.lowercase_ascii"
+		}
+		return &FuncCall{Name: name, Args: []Expr{arg}, Ret: "string"}, "string", nil
+	}
 	if c.Func == "str" && len(c.Args) == 1 {
 		arg, typ, err := convertExpr(c.Args[0], env, vars)
 		if err != nil {
