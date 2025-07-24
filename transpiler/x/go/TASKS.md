@@ -1,3 +1,51 @@
+## Progress (2025-07-24 15:49 +0700)
+- go transpiler: add padStart and bigint index
+- Regenerated golden files - 103/103 vm valid programs passing
+
+## Progress (2025-07-24 15:49 +0700)
+- go transpiler: add padStart and bigint index
+- Regenerated golden files - 103/103 vm valid programs passing
+
+## Progress (2025-07-24 15:41 +0700)
+- rosetta: add barnsley-fern
+- Regenerated golden files - 103/103 vm valid programs passing
+
+## Progress (2025-07-24 15:41 +0700)
+- rosetta: add barnsley-fern
+- Regenerated golden files - 103/103 vm valid programs passing
+
+## Progress (2025-07-24 15:41 +0700)
+- rosetta: add barnsley-fern
+- Regenerated golden files - 103/103 vm valid programs passing
+
+## Progress (2025-07-24 15:41 +0700)
+- rosetta: add barnsley-fern
+- Regenerated golden files - 103/103 vm valid programs passing
+
+## Progress (2025-07-24 15:41 +0700)
+- rosetta: add barnsley-fern
+- Regenerated golden files - 103/103 vm valid programs passing
+
+## Progress (2025-07-24 15:41 +0700)
+- rosetta: add barnsley-fern
+- Regenerated golden files - 103/103 vm valid programs passing
+
+## Progress (2025-07-24 15:41 +0700)
+- go transpiler: support int cast
+- Regenerated golden files - 103/103 vm valid programs passing
+
+## Progress (2025-07-24 15:41 +0700)
+- go transpiler: support int cast
+- Regenerated golden files - 103/103 vm valid programs passing
+
+## Progress (2025-07-24 15:36 +0700)
+- docs: update go transpiler tasks
+- Regenerated golden files - 103/103 vm valid programs passing
+
+## Progress (2025-07-24 15:36 +0700)
+- docs: update go transpiler tasks
+- Regenerated golden files - 103/103 vm valid programs passing
+
 ## Progress (2025-07-24 15:13 +0700)
 - java transpiler: add slice support and float cast
 - Regenerated golden files - 103/103 vm valid programs passing
