@@ -263,10 +263,7 @@ type BlockLambda struct {
 type MatchBlock struct{ Body []Stmt }
 
 func (m *MatchBlock) emit(w io.Writer) {
-	cap := "[]"
-	if inFunction || inLambda > 0 {
-		cap = "[&]"
-	}
+	cap := "[=]"
 	io.WriteString(w, "("+cap+"{\n")
 	inLambda++
 	for _, st := range m.Body {
@@ -1092,14 +1089,15 @@ func (s *StrExpr) emit(w io.Writer) {
 		currentProgram.addInclude("<sstream>")
 	}
 	io.WriteString(w, "([&]{ std::ostringstream ss; ")
-	if exprType(s.Value) == "std::any" {
+	t := exprType(s.Value)
+	if t == "std::any" {
 		io.WriteString(w, "any_to_stream(ss, ")
 		s.Value.emit(w)
 		io.WriteString(w, ");")
 	} else {
-		io.WriteString(w, "ss<<")
+		io.WriteString(w, "auto __v = ")
 		s.Value.emit(w)
-		io.WriteString(w, ";")
+		io.WriteString(w, "; if constexpr(std::is_same_v<decltype(__v), bool>) ss << std::boolalpha << __v; else ss << __v;")
 	}
 	io.WriteString(w, " return ss.str(); }())")
 }
@@ -1241,10 +1239,7 @@ func (c *CallExpr) emit(w io.Writer) {
 }
 
 func (l *LambdaExpr) emit(w io.Writer) {
-	cap := "[]"
-	if inFunction || inLambda > 0 {
-		cap = "[&]"
-	}
+	cap := "[=]"
 	io.WriteString(w, cap+"(")
 	for i, p := range l.Params {
 		if i > 0 {
@@ -1263,10 +1258,7 @@ func (l *LambdaExpr) emit(w io.Writer) {
 }
 
 func (l *BlockLambda) emit(w io.Writer) {
-	cap := "[]"
-	if inFunction || inLambda > 0 {
-		cap = "[&]"
-	}
+	cap := "[=]"
 	io.WriteString(w, cap+"(")
 	for i, p := range l.Params {
 		if i > 0 {
@@ -1306,10 +1298,7 @@ func (f *FieldPtrExpr) emit(w io.Writer) {
 }
 
 func (lc *MultiListComp) emit(w io.Writer) {
-	cap := "[]"
-	if inFunction || inLambda > 0 {
-		cap = "[&]"
-	}
+	cap := "[=]"
 	io.WriteString(w, "("+cap+"{ std::vector<"+lc.ElemType+"> __items;\n")
 	inLambda++
 	for i, v := range lc.Vars {
@@ -1338,10 +1327,7 @@ func (lc *MultiListComp) emit(w io.Writer) {
 }
 
 func (gc *GroupComp) emit(w io.Writer) {
-	cap := "[]"
-	if inFunction || inLambda > 0 {
-		cap = "[&]"
-	}
+	cap := "[=]"
 	io.WriteString(w, "("+cap+"{ std::vector<"+gc.ElemType+"> __items;\n")
 	inLambda++
 	io.WriteString(w, "std::map<"+gc.KeyType+", std::vector<"+gc.ItemType+">> __groups;\n")
@@ -1387,10 +1373,7 @@ func (gc *GroupComp) emit(w io.Writer) {
 }
 
 func (lgc *LeftJoinGroupComp) emit(w io.Writer) {
-	cap := "[]"
-	if inFunction || inLambda > 0 {
-		cap = "[&]"
-	}
+	cap := "[=]"
 	io.WriteString(w, "("+cap+"{ std::vector<"+lgc.ElemType+"> __items;\n")
 	inLambda++
 	io.WriteString(w, "std::vector<"+lgc.GroupStruct+"> __groups;\n")
@@ -1457,10 +1440,7 @@ func (lgc *LeftJoinGroupComp) emit(w io.Writer) {
 }
 
 func (ljc *LeftJoinComp) emit(w io.Writer) {
-	cap := "[]"
-	if inFunction || inLambda > 0 {
-		cap = "[&]"
-	}
+	cap := "[=]"
 	io.WriteString(w, "("+cap+"{ std::vector<"+ljc.ElemType+"> __items;\n")
 	inLambda++
 	io.WriteString(w, "for (auto "+ljc.LeftVar+" : ")
@@ -1494,10 +1474,7 @@ func (ljc *LeftJoinComp) emit(w io.Writer) {
 }
 
 func (c *JoinLeftJoinComp) emit(w io.Writer) {
-	cap := "[]"
-	if inFunction || inLambda > 0 {
-		cap = "[&]"
-	}
+	cap := "[=]"
 	io.WriteString(w, "("+cap+"{ std::vector<"+c.ElemType+"> __items;\n")
 	inLambda++
 	io.WriteString(w, "for (auto "+c.LeftVar+" : ")
@@ -1539,10 +1516,7 @@ func (c *JoinLeftJoinComp) emit(w io.Writer) {
 }
 
 func (rjc *RightJoinComp) emit(w io.Writer) {
-	cap := "[]"
-	if inFunction || inLambda > 0 {
-		cap = "[&]"
-	}
+	cap := "[=]"
 	io.WriteString(w, "("+cap+"{ std::vector<"+rjc.ElemType+"> __items;\n")
 	inLambda++
 	io.WriteString(w, "for (auto "+rjc.RightVar+" : ")
@@ -1594,10 +1568,7 @@ func (rjc *RightJoinComp) emit(w io.Writer) {
 }
 
 func (ojc *OuterJoinComp) emit(w io.Writer) {
-	cap := "[]"
-	if inFunction || inLambda > 0 {
-		cap = "[&]"
-	}
+	cap := "[=]"
 	io.WriteString(w, "("+cap+"{ std::vector<"+ojc.ElemType+"> __items;\n")
 	inLambda++
 	io.WriteString(w, "for (auto "+ojc.LeftVar+" : ")
@@ -1669,10 +1640,7 @@ func (ojc *OuterJoinComp) emit(w io.Writer) {
 }
 
 func (sc *SortComp) emit(w io.Writer) {
-	cap := "[]"
-	if inFunction || inLambda > 0 {
-		cap = "[&]"
-	}
+	cap := "[=]"
 	io.WriteString(w, "("+cap+"{ std::vector<std::pair<"+sc.KeyType+", "+sc.ElemType+">> __tmp;\n")
 	inLambda++
 	for i, v := range sc.Vars {
