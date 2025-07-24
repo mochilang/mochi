@@ -22,6 +22,7 @@ var continueStack []Node
 var gensymCounter int
 var needBase bool
 var needHash bool
+var needChar bool
 var usesInput bool
 var usesNow bool
 var usesLookupHost bool
@@ -193,6 +194,9 @@ func header() []byte {
 	}
 	// Always import string helpers for functions like string-contains
 	prelude += "(import (chibi string))\n"
+	if needChar {
+		prelude += "(import (scheme char))\n"
+	}
 	if needHash {
 		prelude += "(import (srfi 69))\n"
 	}
@@ -726,6 +730,7 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	currentEnv = env
 	needBase = false
 	needHash = false
+	needChar = false
 	usesInput = false
 	usesLookupHost = false
 	unionConsts = map[string]int{}
@@ -2065,6 +2070,18 @@ func convertCall(target Node, call *parser.CallOp) (Node, error) {
 			return nil, fmt.Errorf("substring expects 3 args")
 		}
 		return &List{Elems: []Node{Symbol("substring"), args[0], args[1], args[2]}}, nil
+	case "upper":
+		if len(args) != 1 {
+			return nil, fmt.Errorf("upper expects 1 arg")
+		}
+		needChar = true
+		return &List{Elems: []Node{Symbol("string-upcase"), args[0]}}, nil
+	case "lower":
+		if len(args) != 1 {
+			return nil, fmt.Errorf("lower expects 1 arg")
+		}
+		needChar = true
+		return &List{Elems: []Node{Symbol("string-downcase"), args[0]}}, nil
 	case "exists":
 		if len(args) != 1 {
 			return nil, fmt.Errorf("exists expects 1 arg")

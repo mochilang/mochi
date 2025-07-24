@@ -1,0 +1,19 @@
+WARNING: importing already defined binding: char-alphabetic?
+WARNING: importing already defined binding: char-ci<=?
+WARNING: importing already defined binding: char-ci<?
+WARNING: importing already defined binding: char-ci=?
+WARNING: importing already defined binding: char-ci>=?
+WARNING: importing already defined binding: char-ci>?
+WARNING: importing already defined binding: char-downcase
+WARNING: importing already defined binding: char-lower-case?
+WARNING: importing already defined binding: char-numeric?
+WARNING: importing already defined binding: char-upcase
+WARNING: importing already defined binding: char-upper-case?
+WARNING: importing already defined binding: char-whitespace?
+WARNING: importing already defined binding: string-ci<=?
+WARNING: importing already defined binding: string-ci<?
+WARNING: importing already defined binding: string-ci=?
+WARNING: importing already defined binding: string-ci>=?
+WARNING: importing already defined binding: string-ci>?
+user words:  riG   rePEAT copies  put mo   rest    types   fup.    6       poweRin    
+full words:  RIGHT REPEAT *error* PUT MOVE RESTORE *error* *error* *error* POWERINPUT
