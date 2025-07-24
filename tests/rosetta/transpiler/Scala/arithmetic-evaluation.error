@@ -1,22 +1,16 @@
 exit status 1
-1.0
-4.0
-9.0
-16.0
-25.0
-java.lang.ClassCastException: class java.lang.Double cannot be cast to class java.lang.Integer (java.lang.Double and java.lang.Integer are in module java.base of loader 'bootstrap')
+java.lang.ClassCastException: class java.lang.String cannot be cast to class java.lang.Integer (java.lang.String and java.lang.Integer are in module java.base of loader 'bootstrap')
 	at scala.runtime.BoxesRunTime.unboxToInt(BoxesRunTime.java:101)
-	at scala.Function1$class.apply$mcII$sp(Function1.scala:36)
-	at scala.runtime.AbstractFunction1.apply$mcII$sp(AbstractFunction1.scala:12)
-	at Main$$anonfun$Map$1.apply$mcVI$sp(apply-a-callback-to-an-array-2.scala:13)
-	at Main$$anonfun$Map$1.apply(apply-a-callback-to-an-array-2.scala:12)
-	at Main$$anonfun$Map$1.apply(apply-a-callback-to-an-array-2.scala:12)
-	at scala.collection.mutable.ResizableArray$class.foreach(ResizableArray.scala:59)
-	at scala.collection.mutable.ArrayBuffer.foreach(ArrayBuffer.scala:48)
-	at Main$.Map(apply-a-callback-to-an-array-2.scala:12)
-	at Main$.main(apply-a-callback-to-an-array-2.scala:21)
-	at Main$.main(apply-a-callback-to-an-array-2.scala:25)
-	at Main.main(apply-a-callback-to-an-array-2.scala)
+	at Main$.parseIntStr(arithmetic-evaluation.scala:23)
+	at Main$.parseNumber(arithmetic-evaluation.scala:45)
+	at Main$.parseFactor(arithmetic-evaluation.scala:69)
+	at Main$.parsePower(arithmetic-evaluation.scala:88)
+	at Main$.parseTerm(arithmetic-evaluation.scala:111)
+	at Main$.parseExpr(arithmetic-evaluation.scala:148)
+	at Main$.evalExpr(arithmetic-evaluation.scala:185)
+	at Main$.main(arithmetic-evaluation.scala:191)
+	at Main$.main(arithmetic-evaluation.scala:195)
+	at Main.main(arithmetic-evaluation.scala)
 	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:103)
 	at java.base/java.lang.reflect.Method.invoke(Method.java:580)
 	at scala.reflect.internal.util.ScalaClassLoader$$anonfun$run$1.apply(ScalaClassLoader.scala:70)

@@ -1505,6 +1505,23 @@ func convertStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 				typ = ""
 			}
 		}
+		if typ == "" || typ == "ArrayBuffer[Any]" {
+			if ll, ok := e.(*ListLit); ok && len(ll.Elems) > 0 {
+				elem := inferTypeWithEnv(ll.Elems[0], env)
+				homo := elem != "" && elem != "Any"
+				for _, el := range ll.Elems[1:] {
+					if inferTypeWithEnv(el, env) != elem {
+						homo = false
+						break
+					}
+				}
+				if homo {
+					typ = fmt.Sprintf("ArrayBuffer[%s]", elem)
+				} else if typ == "ArrayBuffer[Any]" {
+					typ = ""
+				}
+			}
+		}
 		if e == nil && typ != "" {
 			e = defaultExpr(typ)
 		}
@@ -1543,6 +1560,23 @@ func convertStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 			typ = inferTypeWithEnv(e, env)
 			if typ == "Any" {
 				typ = ""
+			}
+		}
+		if typ == "" || typ == "ArrayBuffer[Any]" {
+			if ll, ok := e.(*ListLit); ok && len(ll.Elems) > 0 {
+				elem := inferTypeWithEnv(ll.Elems[0], env)
+				homo := elem != "" && elem != "Any"
+				for _, el := range ll.Elems[1:] {
+					if inferTypeWithEnv(el, env) != elem {
+						homo = false
+						break
+					}
+				}
+				if homo {
+					typ = fmt.Sprintf("ArrayBuffer[%s]", elem)
+				} else if typ == "ArrayBuffer[Any]" {
+					typ = ""
+				}
 			}
 		}
 		if e == nil && typ != "" {
@@ -2510,12 +2544,23 @@ func convertLiteral(l *parser.Literal) (Expr, error) {
 }
 
 func convertFunExpr(fe *parser.FunExpr) (Expr, error) {
+	saved := localVarTypes
+	localVarTypes = copyMap(localVarTypes)
+	defer func() { localVarTypes = saved }()
+
+	child := types.NewEnv(nil)
+
 	f := &FunExpr{}
 	for _, p := range fe.Params {
-		f.Params = append(f.Params, Param{Name: p.Name, Type: toScalaType(p.Type)})
+		typ := toScalaType(p.Type)
+		f.Params = append(f.Params, Param{Name: p.Name, Type: typ})
+		if typ != "" {
+			localVarTypes[p.Name] = typ
+			child.SetVar(p.Name, types.ResolveTypeRef(p.Type, nil), true)
+		}
 	}
 	if fe.ExprBody != nil {
-		expr, err := convertExpr(fe.ExprBody, nil)
+		expr, err := convertExpr(fe.ExprBody, child)
 		if err != nil {
 			return nil, err
 		}
