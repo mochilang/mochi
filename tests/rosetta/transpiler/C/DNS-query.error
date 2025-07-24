@@ -1,0 +1,9 @@
+compile failed: exit status 1: /tmp/ctranspile1230977883/DNS-query.mochi.c: In function ‘main’:
+/tmp/ctranspile1230977883/DNS-query.mochi.c:14:16: error: ‘net’ undeclared (first use in this function)
+   14 |     int *res = net.LookupHost;
+      |                ^~~
+/tmp/ctranspile1230977883/DNS-query.mochi.c:14:16: note: each undeclared identifier is reported only once for each function it appears in
+/tmp/ctranspile1230977883/DNS-query.mochi.c:17:16: error: ‘nil’ undeclared (first use in this function)
+   17 |     if (err == nil) {
+      |                ^~~
+
