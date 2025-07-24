@@ -1,0 +1,9 @@
+dotnet run: exit status 1
+/tmp/TestCSTranspiler_Rosetta_Golden2535342692/001/Program.cs(38,28): error CS0266: Cannot implicitly convert type 'long' to 'int'. An explicit conversion exists (are you missing a cast?) [/tmp/TestCSTranspiler_Rosetta_Golden2535342692/001/app.csproj]
+/tmp/TestCSTranspiler_Rosetta_Golden2535342692/001/Program.cs(134,9): warning CS0162: Unreachable code detected [/tmp/TestCSTranspiler_Rosetta_Golden2535342692/001/app.csproj]
+/tmp/TestCSTranspiler_Rosetta_Golden2535342692/001/Program.cs(172,76): error CS1503: Argument 1: cannot convert from 'object' to 'string' [/tmp/TestCSTranspiler_Rosetta_Golden2535342692/001/app.csproj]
+/tmp/TestCSTranspiler_Rosetta_Golden2535342692/001/Program.cs(181,78): error CS1503: Argument 1: cannot convert from 'object' to 'string' [/tmp/TestCSTranspiler_Rosetta_Golden2535342692/001/app.csproj]
+/tmp/TestCSTranspiler_Rosetta_Golden2535342692/001/Program.cs(185,19): error CS0266: Cannot implicitly convert type 'long' to 'int'. An explicit conversion exists (are you missing a cast?) [/tmp/TestCSTranspiler_Rosetta_Golden2535342692/001/app.csproj]
+/tmp/TestCSTranspiler_Rosetta_Golden2535342692/001/Program.cs(187,73): error CS1503: Argument 1: cannot convert from 'object' to 'string' [/tmp/TestCSTranspiler_Rosetta_Golden2535342692/001/app.csproj]
+
+The build failed. Fix the build errors and run again.

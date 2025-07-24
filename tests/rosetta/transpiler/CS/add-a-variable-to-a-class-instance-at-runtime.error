@@ -1,0 +1,5 @@
+dotnet run: exit status 1
+/tmp/TestCSTranspiler_Rosetta_Golden2163071141/001/Program.cs(59,56): error CS0029: Cannot implicitly convert type 'System.Collections.Generic.Dictionary<object, object>' to 'System.Collections.Generic.Dictionary<string, string>' [/tmp/TestCSTranspiler_Rosetta_Golden2163071141/001/app.csproj]
+/tmp/TestCSTranspiler_Rosetta_Golden2163071141/001/Program.cs(77,32): error CS1503: Argument 1: cannot convert from 'System.Collections.Generic.Dictionary<string, string>' to 'System.Array' [/tmp/TestCSTranspiler_Rosetta_Golden2163071141/001/app.csproj]
+
+The build failed. Fix the build errors and run again.

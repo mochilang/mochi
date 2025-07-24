@@ -896,6 +896,8 @@ func isStringExpr(e Expr) bool {
 		return isStringExpr(ex.Value)
 	case *SubstringExpr:
 		return true
+	case *IndexExpr:
+		return typeOfExpr(ex) == "string"
 	case *VarRef:
 		return stringVars[ex.Name]
 	case *CallExpr:

@@ -1,0 +1,9 @@
+dotnet run: exit status 1
+/tmp/TestCSTranspiler_Rosetta_Golden1139539648/001/Program.cs(95,18): error CS1929: 'string[]' does not contain a definition for 'Append' and the best extension method overload 'Queryable.Append<char[]>(IQueryable<char[]>, char[])' requires a receiver of type 'System.Linq.IQueryable<char[]>' [/tmp/TestCSTranspiler_Rosetta_Golden1139539648/001/app.csproj]
+/tmp/TestCSTranspiler_Rosetta_Golden1139539648/001/Program.cs(137,22): error CS0021: Cannot apply indexing with [] to an expression of type 'object' [/tmp/TestCSTranspiler_Rosetta_Golden1139539648/001/app.csproj]
+/tmp/TestCSTranspiler_Rosetta_Golden1139539648/001/Program.cs(137,36): error CS0021: Cannot apply indexing with [] to an expression of type 'object' [/tmp/TestCSTranspiler_Rosetta_Golden1139539648/001/app.csproj]
+/tmp/TestCSTranspiler_Rosetta_Golden1139539648/001/Program.cs(149,47): error CS0021: Cannot apply indexing with [] to an expression of type 'object' [/tmp/TestCSTranspiler_Rosetta_Golden1139539648/001/app.csproj]
+/tmp/TestCSTranspiler_Rosetta_Golden1139539648/001/Program.cs(152,16): error CS0029: Cannot implicitly convert type 'object[]' to 'int[]' [/tmp/TestCSTranspiler_Rosetta_Golden1139539648/001/app.csproj]
+/tmp/TestCSTranspiler_Rosetta_Golden1139539648/001/Program.cs(242,47): error CS0019: Operator '==' cannot be applied to operands of type 'char' and 'string' [/tmp/TestCSTranspiler_Rosetta_Golden1139539648/001/app.csproj]
+
+The build failed. Fix the build errors and run again.
