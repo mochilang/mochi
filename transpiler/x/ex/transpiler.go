@@ -1421,11 +1421,12 @@ func Emit(p *Program) []byte {
 		}
 	}
 	if !funcsExist {
-		globalVars = map[string]struct{}{}
+		// retain globalVars so top-level variables are stored via Process dictionary
 	}
 	moduleMode = true
 	buf.WriteString("defmodule Main do\n")
 	buf.WriteString(nowHelper(1))
+	buf.WriteString(lookupHostHelper(1))
 	var globals []Stmt
 	var funcs []Stmt
 	var main []Stmt
@@ -1503,6 +1504,8 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 						env.SetVar(alias+".Answer", types.IntType{}, false)
 						env.SetFuncType(alias+".FifteenPuzzleExample", types.FuncType{Params: []types.Type{}, Return: types.StringType{}})
 					}
+				} else if st.Import.Auto && path == "net" {
+					builtinAliases[alias] = "go_net"
 				}
 			case "python":
 				if path == "math" {
@@ -2666,6 +2669,10 @@ func compilePostfix(pf *parser.PostfixExpr, env *types.Env) (Expr, error) {
 				if method == "FifteenPuzzleExample" && len(args) == 0 {
 					return &StringLit{Value: "Solution found in 52 moves: rrrulddluuuldrurdddrullulurrrddldluurddlulurruldrdrd"}, nil
 				}
+			case "go_net":
+				if method == "LookupHost" && len(args) == 1 {
+					return &CallExpr{Func: "NetHelper.lookup_host", Args: args}, nil
+				}
 			case "python_math":
 				switch method {
 				case "sqrt", "sin", "log":
@@ -2840,6 +2847,10 @@ func compilePrimary(p *parser.Primary, env *types.Env) (Expr, error) {
 					if method == "Add" && len(args) == 2 {
 						return &BinaryExpr{Left: args[0], Op: "+", Right: args[1]}, nil
 					}
+				case "go_net":
+					if method == "LookupHost" && len(args) == 1 {
+						return &CallExpr{Func: "NetHelper.lookup_host", Args: args}, nil
+					}
 				case "python_math":
 					switch method {
 					case "sqrt", "sin", "log":
@@ -2937,6 +2948,13 @@ func compilePrimary(p *parser.Primary, env *types.Env) (Expr, error) {
 				return &GroupExpr{Expr: cexpr}, nil
 			}
 		case "str":
+			if len(args) == 1 {
+				t := types.TypeOfExprBasic(p.Call.Args[0], env)
+				if _, ok := t.(types.StringType); ok {
+					return &CallExpr{Func: "to_string", Args: []Expr{args[0]}}, nil
+				}
+				return &CallExpr{Func: "Kernel.inspect", Args: []Expr{args[0]}}, nil
+			}
 			name = "to_string"
 		case "append":
 			if len(args) == 2 {
@@ -3210,6 +3228,27 @@ func nowHelper(indent int) string {
 	buf.WriteString(pad + "  else\n")
 	buf.WriteString(pad + "    System.os_time(:nanosecond)\n")
 	buf.WriteString(pad + "  end\n")
+	buf.WriteString(pad + "end\n")
+	return buf.String()
+}
+
+func lookupHostHelper(indent int) string {
+	var buf bytes.Buffer
+	pad := strings.Repeat("  ", indent)
+	buf.WriteString(pad + "defmodule NetHelper do\n")
+	pad2 := pad + "  "
+	buf.WriteString(pad2 + "def lookup_host(host) do\n")
+	buf.WriteString(pad2 + "  h = to_charlist(host)\n")
+	buf.WriteString(pad2 + "  {addrs, err} = case :inet_res.getbyname(h, :a) do\n")
+	buf.WriteString(pad2 + "    {:ok, {:hostent, _, _, _, _, addrs}} -> {Enum.map(addrs, fn a -> to_string(:inet.ntoa(a)) end), nil}\n")
+	buf.WriteString(pad2 + "    {:error, reason} -> {[], Atom.to_string(reason)}\n")
+	buf.WriteString(pad2 + "  end\n")
+	buf.WriteString(pad2 + "  addrs6 = case :inet_res.getbyname(h, :aaaa) do\n")
+	buf.WriteString(pad2 + "    {:ok, {:hostent, _, _, _, _, addrs}} -> Enum.map(addrs, fn a -> to_string(:inet.ntoa(a)) end)\n")
+	buf.WriteString(pad2 + "    _ -> []\n")
+	buf.WriteString(pad2 + "  end\n")
+	buf.WriteString(pad2 + "  [addrs ++ addrs6, err]\n")
+	buf.WriteString(pad2 + "end\n")
 	buf.WriteString(pad + "end\n")
 	return buf.String()
 }
