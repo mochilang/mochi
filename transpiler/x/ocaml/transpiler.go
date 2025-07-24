@@ -435,6 +435,19 @@ func typeString(t types.Type) string {
 			return "map"
 		}
 		return "map-" + val
+	case types.StructType:
+		fields := make([]string, len(tt.Order))
+		for i, name := range tt.Order {
+			ft := typeString(tt.Fields[name])
+			if ft == "" {
+				ft = "int"
+			}
+			fields[i] = name + ":" + ft
+		}
+		if len(fields) > 0 {
+			return "map-dyn{" + strings.Join(fields, ",") + "}"
+		}
+		return "map-dyn"
 	default:
 		return ""
 	}
@@ -744,8 +757,6 @@ func (f *FunStmt) emit(w io.Writer) {
 	io.WriteString(w, "  let __ret = ref ")
 	if f.RetTyp != "" {
 		defaultValueExpr(f.RetTyp).emit(w)
-	} else if f.Ret != nil {
-		f.Ret.emit(w)
 	} else {
 		io.WriteString(w, "()")
 	}
@@ -1329,6 +1340,7 @@ type MapUpdateExpr struct {
 	Map   Expr
 	Key   Expr
 	Value Expr
+	Dyn   bool
 }
 
 // queryLoop is one iteration variable and its source list.
@@ -1583,6 +1595,9 @@ func (mu *MapUpdateExpr) emit(w io.Writer) {
 	io.WriteString(w, "(")
 	mu.Key.emit(w)
 	io.WriteString(w, ", ")
+	if mu.Dyn {
+		io.WriteString(w, "Obj.repr ")
+	}
 	mu.Value.emit(w)
 	io.WriteString(w, ") :: List.remove_assoc ")
 	mu.Key.emit(w)
@@ -2195,7 +2210,7 @@ func transpileStmt(st *parser.Statement, env *types.Env, vars map[string]VarInfo
 		if len(st.Assign.Field) > 0 && len(st.Assign.Index) == 0 {
 			key := &StringLit{Value: st.Assign.Field[0].Name}
 			mapExpr := Expr(&Name{Ident: st.Assign.Name, Typ: info.typ, Ref: true})
-			upd := &MapUpdateExpr{Map: mapExpr, Key: key, Value: valExpr}
+			upd := &MapUpdateExpr{Map: mapExpr, Key: key, Value: valExpr, Dyn: isDynamicMapType(info.typ)}
 			return &AssignStmt{Name: st.Assign.Name, Expr: upd}, nil
 		}
 		if len(st.Assign.Index) > 0 {
@@ -2209,7 +2224,7 @@ func transpileStmt(st *parser.Statement, env *types.Env, vars map[string]VarInfo
 					return nil, err
 				}
 				mapExpr := Expr(&Name{Ident: st.Assign.Name, Typ: info.typ, Ref: true})
-				upd := &MapUpdateExpr{Map: mapExpr, Key: key, Value: valExpr}
+				upd := &MapUpdateExpr{Map: mapExpr, Key: key, Value: valExpr, Dyn: isDynamicMapType(info.typ)}
 				return &AssignStmt{Name: st.Assign.Name, Expr: upd}, nil
 			}
 			if strings.HasPrefix(info.typ, "map") {
@@ -2449,6 +2464,9 @@ func transpileStmt(st *parser.Statement, env *types.Env, vars map[string]VarInfo
 			typ := "int"
 			if p.Type != nil {
 				typ = typeRefString(p.Type)
+				if ts := typeString(types.ResolveTypeRef(p.Type, env)); ts != "" {
+					typ = ts
+				}
 				if typ == "" {
 					typ = "int"
 				}
@@ -2483,6 +2501,9 @@ func transpileStmt(st *parser.Statement, env *types.Env, vars map[string]VarInfo
 			for _, m := range st.Type.Members {
 				if m.Field != nil {
 					ft := typeRefString(m.Field.Type)
+					if ts := typeString(types.ResolveTypeRef(m.Field.Type, env)); ts != "" {
+						ft = ts
+					}
 					if ft == "" {
 						ft = "int"
 					}
@@ -3875,10 +3896,10 @@ func buildListUpdate(list Expr, indexes []Expr, val Expr) Expr {
 func buildMapUpdate(mp Expr, keys []Expr, val Expr) Expr {
 	key := keys[0]
 	if len(keys) == 1 {
-		return &MapUpdateExpr{Map: mp, Key: key, Value: val}
+		return &MapUpdateExpr{Map: mp, Key: key, Value: val, Dyn: true}
 	}
 	inner := buildMapUpdate(&MapIndexExpr{Map: mp, Key: key, Typ: "map", Dyn: false}, keys[1:], val)
-	return &MapUpdateExpr{Map: mp, Key: key, Value: inner}
+	return &MapUpdateExpr{Map: mp, Key: key, Value: inner, Dyn: true}
 }
 
 func substituteFieldVars(e Expr, fields map[string]bool) Expr {
