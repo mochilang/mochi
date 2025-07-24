@@ -1,0 +1,2017 @@
+exit status 1
+/tmp/TestSwiftTranspiler_Rosetta_Golden2145467911/001/main.swift:180:6: error: keyword 'repeat' cannot be used as an identifier here
+178 |     return String(s)
+179 | }
+180 | func repeat(_ ch: String, _ n: Int) -> String {
+    |      |- error: keyword 'repeat' cannot be used as an identifier here
+    |      `- note: if this name is unavoidable, use backticks to escape it
+181 |     var ch = ch
+182 |     var n = n
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2145467911/001/main.swift:6:22: warning: forced cast of '[Int]' to same type has no effect
+  4 | func bigTrim(_ a: [Int]) -> [Int] {
+  5 |     var a = a
+  6 |     var n = Int((((a as! [Int])).count))
+    |                      `- warning: forced cast of '[Int]' to same type has no effect
+  7 |     while ((Int(n) > 1) && (Int(a[(Int(n) - 1)]) == 0)) {
+  8 |         a = (Array(a[0..<(Int(n) - 1)]) as! [Int])
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2145467911/001/main.swift:9:27: warning: forced cast of 'Int' to same type has no effect
+  7 |     while ((Int(n) > 1) && (Int(a[(Int(n) - 1)]) == 0)) {
+  8 |         a = (Array(a[0..<(Int(n) - 1)]) as! [Int])
+  9 |         n = ((Int(n) - 1) as! Int)
+    |                           `- warning: forced cast of 'Int' to same type has no effect
+ 10 |     }
+ 11 |     return (a as! [Int])
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2145467911/001/main.swift:11:15: warning: forced cast of '[Int]' to same type has no effect
+  9 |         n = ((Int(n) - 1) as! Int)
+ 10 |     }
+ 11 |     return (a as! [Int])
+    |               `- warning: forced cast of '[Int]' to same type has no effect
+ 12 | }
+ 13 | func bigFromInt(_ x: Int) -> [Int] {
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2145467911/001/main.swift:21:28: warning: forced cast of '[Int]' to same type has no effect
+ 19 |     var n = Int(x)
+ 20 |     while (Int(n) > 0) {
+ 21 |         digits = (((digits as! [Int]) + [(Int(n) % 10)]) as! [Int])
+    |                            `- warning: forced cast of '[Int]' to same type has no effect
+ 22 |         n = ((Int(n) / 10) as! Int)
+ 23 |     }
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2145467911/001/main.swift:22:28: warning: forced cast of 'Int' to same type has no effect
+ 20 |     while (Int(n) > 0) {
+ 21 |         digits = (((digits as! [Int]) + [(Int(n) % 10)]) as! [Int])
+ 22 |         n = ((Int(n) / 10) as! Int)
+    |                            `- warning: forced cast of 'Int' to same type has no effect
+ 23 |     }
+ 24 |     return (digits as! [Int])
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2145467911/001/main.swift:24:20: warning: forced cast of '[Int]' to same type has no effect
+ 22 |         n = ((Int(n) / 10) as! Int)
+ 23 |     }
+ 24 |     return (digits as! [Int])
+    |                    `- warning: forced cast of '[Int]' to same type has no effect
+ 25 | }
+ 26 | func bigCmp(_ a: [Int], _ b: [Int]) -> Int {
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2145467911/001/main.swift:14:9: warning: variable 'x' was never mutated; consider changing to 'let' constant
+ 12 | }
+ 13 | func bigFromInt(_ x: Int) -> [Int] {
+ 14 |     var x = x
+    |         `- warning: variable 'x' was never mutated; consider changing to 'let' constant
+ 15 |     if (Int(x) == 0) {
+ 16 |         return ([0] as! [Int])
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2145467911/001/main.swift:29:18: warning: forced cast of '[Int]' to same type has no effect
+ 27 |     var a = a
+ 28 |     var b = b
+ 29 |     if (Int((((a as! [Int])).count)) > Int((((b as! [Int])).count))) {
+    |                  `- warning: forced cast of '[Int]' to same type has no effect
+ 30 |         return 1
+ 31 |     }
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2145467911/001/main.swift:29:49: warning: forced cast of '[Int]' to same type has no effect
+ 27 |     var a = a
+ 28 |     var b = b
+ 29 |     if (Int((((a as! [Int])).count)) > Int((((b as! [Int])).count))) {
+    |                                                 `- warning: forced cast of '[Int]' to same type has no effect
+ 30 |         return 1
+ 31 |     }
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2145467911/001/main.swift:32:18: warning: forced cast of '[Int]' to same type has no effect
+ 30 |         return 1
+ 31 |     }
+ 32 |     if (Int((((a as! [Int])).count)) < Int((((b as! [Int])).count))) {
+    |                  `- warning: forced cast of '[Int]' to same type has no effect
+ 33 |         return (-1 as! Int)
+ 34 |     }
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2145467911/001/main.swift:32:49: warning: forced cast of '[Int]' to same type has no effect
+ 30 |         return 1
+ 31 |     }
+ 32 |     if (Int((((a as! [Int])).count)) < Int((((b as! [Int])).count))) {
+    |                                                 `- warning: forced cast of '[Int]' to same type has no effect
+ 33 |         return (-1 as! Int)
+ 34 |     }
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2145467911/001/main.swift:33:20: warning: forced cast of 'Int' to same type has no effect
+ 31 |     }
+ 32 |     if (Int((((a as! [Int])).count)) < Int((((b as! [Int])).count))) {
+ 33 |         return (-1 as! Int)
+    |                    `- warning: forced cast of 'Int' to same type has no effect
+ 34 |     }
+ 35 |     var i = ((Int((((a as! [Int])).count)) - 1) as! Int)
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2145467911/001/main.swift:35:24: warning: forced cast of '[Int]' to same type has no effect
+ 33 |         return (-1 as! Int)
+ 34 |     }
+ 35 |     var i = ((Int((((a as! [Int])).count)) - 1) as! Int)
+    |                        `- warning: forced cast of '[Int]' to same type has no effect
+ 36 |     while (Int(i) >= 0) {
+ 37 |         if (Int(a[Int(i)]) > Int(b[Int(i)])) {
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2145467911/001/main.swift:35:49: warning: forced cast of 'Int' to same type has no effect
+ 33 |         return (-1 as! Int)
+ 34 |     }
+ 35 |     var i = ((Int((((a as! [Int])).count)) - 1) as! Int)
+    |                                                 `- warning: forced cast of 'Int' to same type has no effect
+ 36 |     while (Int(i) >= 0) {
+ 37 |         if (Int(a[Int(i)]) > Int(b[Int(i)])) {
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2145467911/001/main.swift:41:24: warning: forced cast of 'Int' to same type has no effect
+ 39 |         }
+ 40 |         if (Int(a[Int(i)]) < Int(b[Int(i)])) {
+ 41 |             return (-1 as! Int)
+    |                        `- warning: forced cast of 'Int' to same type has no effect
+ 42 |         }
+ 43 |         i = ((Int(i) - 1) as! Int)
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2145467911/001/main.swift:43:27: warning: forced cast of 'Int' to same type has no effect
+ 41 |             return (-1 as! Int)
+ 42 |         }
+ 43 |         i = ((Int(i) - 1) as! Int)
+    |                           `- warning: forced cast of 'Int' to same type has no effect
+ 44 |     }
+ 45 |     return 0
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2145467911/001/main.swift:27:9: warning: variable 'a' was never mutated; consider changing to 'let' constant
+ 25 | }
+ 26 | func bigCmp(_ a: [Int], _ b: [Int]) -> Int {
+ 27 |     var a = a
+    |         `- warning: variable 'a' was never mutated; consider changing to 'let' constant
+ 28 |     var b = b
+ 29 |     if (Int((((a as! [Int])).count)) > Int((((b as! [Int])).count))) {
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2145467911/001/main.swift:28:9: warning: variable 'b' was never mutated; consider changing to 'let' constant
+ 26 | func bigCmp(_ a: [Int], _ b: [Int]) -> Int {
+ 27 |     var a = a
+ 28 |     var b = b
+    |         `- warning: variable 'b' was never mutated; consider changing to 'let' constant
+ 29 |     if (Int((((a as! [Int])).count)) > Int((((b as! [Int])).count))) {
+ 30 |         return 1
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2145467911/001/main.swift:53:32: warning: forced cast of '[Int]' to same type has no effect
+ 51 |     var carry = 0
+ 52 |     var i = 0
+ 53 |     while (((Int(i) < Int((((a as! [Int])).count))) || (Int(i) < Int((((b as! [Int])).count)))) || (Int(carry) > 0)) {
+    |                                `- warning: forced cast of '[Int]' to same type has no effect
+ 54 |         var av = 0
+ 55 |         if (Int(i) < Int((((a as! [Int])).count))) {
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2145467911/001/main.swift:53:75: warning: forced cast of '[Int]' to same type has no effect
+ 51 |     var carry = 0
+ 52 |     var i = 0
+ 53 |     while (((Int(i) < Int((((a as! [Int])).count))) || (Int(i) < Int((((b as! [Int])).count)))) || (Int(carry) > 0)) {
+    |                                                                           `- warning: forced cast of '[Int]' to same type has no effect
+ 54 |         var av = 0
+ 55 |         if (Int(i) < Int((((a as! [Int])).count))) {
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2145467911/001/main.swift:55:31: warning: forced cast of '[Int]' to same type has no effect
+ 53 |     while (((Int(i) < Int((((a as! [Int])).count))) || (Int(i) < Int((((b as! [Int])).count)))) || (Int(carry) > 0)) {
+ 54 |         var av = 0
+ 55 |         if (Int(i) < Int((((a as! [Int])).count))) {
+    |                               `- warning: forced cast of '[Int]' to same type has no effect
+ 56 |             av = Int(a[Int(i)])
+ 57 |         }
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2145467911/001/main.swift:59:31: warning: forced cast of '[Int]' to same type has no effect
+ 57 |         }
+ 58 |         var bv = 0
+ 59 |         if (Int(i) < Int((((b as! [Int])).count))) {
+    |                               `- warning: forced cast of '[Int]' to same type has no effect
+ 60 |             bv = Int(b[Int(i)])
+ 61 |         }
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2145467911/001/main.swift:62:53: warning: forced cast of 'Int' to same type has no effect
+ 60 |             bv = Int(b[Int(i)])
+ 61 |         }
+ 62 |         var s = (((Int(av) + Int(bv)) + Int(carry)) as! Int)
+    |                                                     `- warning: forced cast of 'Int' to same type has no effect
+ 63 |         res = (((res as! [Int]) + [(Int(s) % 10)]) as! [Int])
+ 64 |         carry = ((Int(s) / 10) as! Int)
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2145467911/001/main.swift:63:22: warning: forced cast of '[Int]' to same type has no effect
+ 61 |         }
+ 62 |         var s = (((Int(av) + Int(bv)) + Int(carry)) as! Int)
+ 63 |         res = (((res as! [Int]) + [(Int(s) % 10)]) as! [Int])
+    |                      `- warning: forced cast of '[Int]' to same type has no effect
+ 64 |         carry = ((Int(s) / 10) as! Int)
+ 65 |         i = ((Int(i) + 1) as! Int)
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2145467911/001/main.swift:64:32: warning: forced cast of 'Int' to same type has no effect
+ 62 |         var s = (((Int(av) + Int(bv)) + Int(carry)) as! Int)
+ 63 |         res = (((res as! [Int]) + [(Int(s) % 10)]) as! [Int])
+ 64 |         carry = ((Int(s) / 10) as! Int)
+    |                                `- warning: forced cast of 'Int' to same type has no effect
+ 65 |         i = ((Int(i) + 1) as! Int)
+ 66 |     }
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2145467911/001/main.swift:65:27: warning: forced cast of 'Int' to same type has no effect
+ 63 |         res = (((res as! [Int]) + [(Int(s) % 10)]) as! [Int])
+ 64 |         carry = ((Int(s) / 10) as! Int)
+ 65 |         i = ((Int(i) + 1) as! Int)
+    |                           `- warning: forced cast of 'Int' to same type has no effect
+ 66 |     }
+ 67 |     return (bigTrim((res as! [Int])) as! [Int])
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2145467911/001/main.swift:67:26: warning: forced cast of '[Int]' to same type has no effect
+ 65 |         i = ((Int(i) + 1) as! Int)
+ 66 |     }
+ 67 |     return (bigTrim((res as! [Int])) as! [Int])
+    |                          `- warning: forced cast of '[Int]' to same type has no effect
+ 68 | }
+ 69 | func bigSub(_ a: [Int], _ b: [Int]) -> [Int] {
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2145467911/001/main.swift:67:38: warning: forced cast of '[Int]' to same type has no effect
+ 65 |         i = ((Int(i) + 1) as! Int)
+ 66 |     }
+ 67 |     return (bigTrim((res as! [Int])) as! [Int])
+    |                                      `- warning: forced cast of '[Int]' to same type has no effect
+ 68 | }
+ 69 | func bigSub(_ a: [Int], _ b: [Int]) -> [Int] {
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2145467911/001/main.swift:48:9: warning: variable 'a' was never mutated; consider changing to 'let' constant
+ 46 | }
+ 47 | func bigAdd(_ a: [Int], _ b: [Int]) -> [Int] {
+ 48 |     var a = a
+    |         `- warning: variable 'a' was never mutated; consider changing to 'let' constant
+ 49 |     var b = b
+ 50 |     var res: [Int] = ([] as! [Int])
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2145467911/001/main.swift:49:9: warning: variable 'b' was never mutated; consider changing to 'let' constant
+ 47 | func bigAdd(_ a: [Int], _ b: [Int]) -> [Int] {
+ 48 |     var a = a
+ 49 |     var b = b
+    |         `- warning: variable 'b' was never mutated; consider changing to 'let' constant
+ 50 |     var res: [Int] = ([] as! [Int])
+ 51 |     var carry = 0
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2145467911/001/main.swift:62:13: warning: variable 's' was never mutated; consider changing to 'let' constant
+ 60 |             bv = Int(b[Int(i)])
+ 61 |         }
+ 62 |         var s = (((Int(av) + Int(bv)) + Int(carry)) as! Int)
+    |             `- warning: variable 's' was never mutated; consider changing to 'let' constant
+ 63 |         res = (((res as! [Int]) + [(Int(s) % 10)]) as! [Int])
+ 64 |         carry = ((Int(s) / 10) as! Int)
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2145467911/001/main.swift:75:30: warning: forced cast of '[Int]' to same type has no effect
+ 73 |     var borrow = 0
+ 74 |     var i = 0
+ 75 |     while (Int(i) < Int((((a as! [Int])).count))) {
+    |                              `- warning: forced cast of '[Int]' to same type has no effect
+ 76 |         var av = Int(a[Int(i)])
+ 77 |         var bv = 0
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2145467911/001/main.swift:78:31: warning: forced cast of '[Int]' to same type has no effect
+ 76 |         var av = Int(a[Int(i)])
+ 77 |         var bv = 0
+ 78 |         if (Int(i) < Int((((b as! [Int])).count))) {
+    |                               `- warning: forced cast of '[Int]' to same type has no effect
+ 79 |             bv = Int(b[Int(i)])
+ 80 |         }
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2145467911/001/main.swift:81:57: warning: forced cast of 'Int' to same type has no effect
+ 79 |             bv = Int(b[Int(i)])
+ 80 |         }
+ 81 |         var diff = (((Int(av) - Int(bv)) - Int(borrow)) as! Int)
+    |                                                         `- warning: forced cast of 'Int' to same type has no effect
+ 82 |         if (Int(diff) < 0) {
+ 83 |             diff = ((Int(diff) + 10) as! Int)
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2145467911/001/main.swift:83:38: warning: forced cast of 'Int' to same type has no effect
+ 81 |         var diff = (((Int(av) - Int(bv)) - Int(borrow)) as! Int)
+ 82 |         if (Int(diff) < 0) {
+ 83 |             diff = ((Int(diff) + 10) as! Int)
+    |                                      `- warning: forced cast of 'Int' to same type has no effect
+ 84 |             borrow = 1
+ 85 |         } else {
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2145467911/001/main.swift:88:22: warning: forced cast of '[Int]' to same type has no effect
+ 86 |             borrow = 0
+ 87 |         }
+ 88 |         res = (((res as! [Int]) + [Int(diff)]) as! [Int])
+    |                      `- warning: forced cast of '[Int]' to same type has no effect
+ 89 |         i = ((Int(i) + 1) as! Int)
+ 90 |     }
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2145467911/001/main.swift:89:27: warning: forced cast of 'Int' to same type has no effect
+ 87 |         }
+ 88 |         res = (((res as! [Int]) + [Int(diff)]) as! [Int])
+ 89 |         i = ((Int(i) + 1) as! Int)
+    |                           `- warning: forced cast of 'Int' to same type has no effect
+ 90 |     }
+ 91 |     return (bigTrim((res as! [Int])) as! [Int])
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2145467911/001/main.swift:91:26: warning: forced cast of '[Int]' to same type has no effect
+ 89 |         i = ((Int(i) + 1) as! Int)
+ 90 |     }
+ 91 |     return (bigTrim((res as! [Int])) as! [Int])
+    |                          `- warning: forced cast of '[Int]' to same type has no effect
+ 92 | }
+ 93 | func bigMulSmall(_ a: [Int], _ m: Int) -> [Int] {
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2145467911/001/main.swift:91:38: warning: forced cast of '[Int]' to same type has no effect
+ 89 |         i = ((Int(i) + 1) as! Int)
+ 90 |     }
+ 91 |     return (bigTrim((res as! [Int])) as! [Int])
+    |                                      `- warning: forced cast of '[Int]' to same type has no effect
+ 92 | }
+ 93 | func bigMulSmall(_ a: [Int], _ m: Int) -> [Int] {
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2145467911/001/main.swift:70:9: warning: variable 'a' was never mutated; consider changing to 'let' constant
+ 68 | }
+ 69 | func bigSub(_ a: [Int], _ b: [Int]) -> [Int] {
+ 70 |     var a = a
+    |         `- warning: variable 'a' was never mutated; consider changing to 'let' constant
+ 71 |     var b = b
+ 72 |     var res: [Int] = ([] as! [Int])
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2145467911/001/main.swift:71:9: warning: variable 'b' was never mutated; consider changing to 'let' constant
+ 69 | func bigSub(_ a: [Int], _ b: [Int]) -> [Int] {
+ 70 |     var a = a
+ 71 |     var b = b
+    |         `- warning: variable 'b' was never mutated; consider changing to 'let' constant
+ 72 |     var res: [Int] = ([] as! [Int])
+ 73 |     var borrow = 0
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2145467911/001/main.swift:76:13: warning: variable 'av' was never mutated; consider changing to 'let' constant
+ 74 |     var i = 0
+ 75 |     while (Int(i) < Int((((a as! [Int])).count))) {
+ 76 |         var av = Int(a[Int(i)])
+    |             `- warning: variable 'av' was never mutated; consider changing to 'let' constant
+ 77 |         var bv = 0
+ 78 |         if (Int(i) < Int((((b as! [Int])).count))) {
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2145467911/001/main.swift:102:30: warning: forced cast of '[Int]' to same type has no effect
+100 |     var carry = 0
+101 |     var i = 0
+102 |     while (Int(i) < Int((((a as! [Int])).count))) {
+    |                              `- warning: forced cast of '[Int]' to same type has no effect
+103 |         var prod = (((Int(a[Int(i)]) * Int(m)) + Int(carry)) as! Int)
+104 |         res = (((res as! [Int]) + [(Int(prod) % 10)]) as! [Int])
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2145467911/001/main.swift:103:62: warning: forced cast of 'Int' to same type has no effect
+101 |     var i = 0
+102 |     while (Int(i) < Int((((a as! [Int])).count))) {
+103 |         var prod = (((Int(a[Int(i)]) * Int(m)) + Int(carry)) as! Int)
+    |                                                              `- warning: forced cast of 'Int' to same type has no effect
+104 |         res = (((res as! [Int]) + [(Int(prod) % 10)]) as! [Int])
+105 |         carry = ((Int(prod) / 10) as! Int)
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2145467911/001/main.swift:104:22: warning: forced cast of '[Int]' to same type has no effect
+102 |     while (Int(i) < Int((((a as! [Int])).count))) {
+103 |         var prod = (((Int(a[Int(i)]) * Int(m)) + Int(carry)) as! Int)
+104 |         res = (((res as! [Int]) + [(Int(prod) % 10)]) as! [Int])
+    |                      `- warning: forced cast of '[Int]' to same type has no effect
+105 |         carry = ((Int(prod) / 10) as! Int)
+106 |         i = ((Int(i) + 1) as! Int)
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2145467911/001/main.swift:105:35: warning: forced cast of 'Int' to same type has no effect
+103 |         var prod = (((Int(a[Int(i)]) * Int(m)) + Int(carry)) as! Int)
+104 |         res = (((res as! [Int]) + [(Int(prod) % 10)]) as! [Int])
+105 |         carry = ((Int(prod) / 10) as! Int)
+    |                                   `- warning: forced cast of 'Int' to same type has no effect
+106 |         i = ((Int(i) + 1) as! Int)
+107 |     }
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2145467911/001/main.swift:106:27: warning: forced cast of 'Int' to same type has no effect
+104 |         res = (((res as! [Int]) + [(Int(prod) % 10)]) as! [Int])
+105 |         carry = ((Int(prod) / 10) as! Int)
+106 |         i = ((Int(i) + 1) as! Int)
+    |                           `- warning: forced cast of 'Int' to same type has no effect
+107 |     }
+108 |     while (Int(carry) > 0) {
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2145467911/001/main.swift:109:22: warning: forced cast of '[Int]' to same type has no effect
+107 |     }
+108 |     while (Int(carry) > 0) {
+109 |         res = (((res as! [Int]) + [(Int(carry) % 10)]) as! [Int])
+    |                      `- warning: forced cast of '[Int]' to same type has no effect
+110 |         carry = ((Int(carry) / 10) as! Int)
+111 |     }
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2145467911/001/main.swift:110:36: warning: forced cast of 'Int' to same type has no effect
+108 |     while (Int(carry) > 0) {
+109 |         res = (((res as! [Int]) + [(Int(carry) % 10)]) as! [Int])
+110 |         carry = ((Int(carry) / 10) as! Int)
+    |                                    `- warning: forced cast of 'Int' to same type has no effect
+111 |     }
+112 |     return (bigTrim((res as! [Int])) as! [Int])
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2145467911/001/main.swift:112:26: warning: forced cast of '[Int]' to same type has no effect
+110 |         carry = ((Int(carry) / 10) as! Int)
+111 |     }
+112 |     return (bigTrim((res as! [Int])) as! [Int])
+    |                          `- warning: forced cast of '[Int]' to same type has no effect
+113 | }
+114 | func bigMulBig(_ a: [Int], _ b: [Int]) -> [Int] {
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2145467911/001/main.swift:112:38: warning: forced cast of '[Int]' to same type has no effect
+110 |         carry = ((Int(carry) / 10) as! Int)
+111 |     }
+112 |     return (bigTrim((res as! [Int])) as! [Int])
+    |                                      `- warning: forced cast of '[Int]' to same type has no effect
+113 | }
+114 | func bigMulBig(_ a: [Int], _ b: [Int]) -> [Int] {
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2145467911/001/main.swift:94:9: warning: variable 'a' was never mutated; consider changing to 'let' constant
+ 92 | }
+ 93 | func bigMulSmall(_ a: [Int], _ m: Int) -> [Int] {
+ 94 |     var a = a
+    |         `- warning: variable 'a' was never mutated; consider changing to 'let' constant
+ 95 |     var m = m
+ 96 |     if (Int(m) == 0) {
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2145467911/001/main.swift:95:9: warning: variable 'm' was never mutated; consider changing to 'let' constant
+ 93 | func bigMulSmall(_ a: [Int], _ m: Int) -> [Int] {
+ 94 |     var a = a
+ 95 |     var m = m
+    |         `- warning: variable 'm' was never mutated; consider changing to 'let' constant
+ 96 |     if (Int(m) == 0) {
+ 97 |         return ([0] as! [Int])
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2145467911/001/main.swift:103:13: warning: variable 'prod' was never mutated; consider changing to 'let' constant
+101 |     var i = 0
+102 |     while (Int(i) < Int((((a as! [Int])).count))) {
+103 |         var prod = (((Int(a[Int(i)]) * Int(m)) + Int(carry)) as! Int)
+    |             `- warning: variable 'prod' was never mutated; consider changing to 'let' constant
+104 |         res = (((res as! [Int]) + [(Int(prod) % 10)]) as! [Int])
+105 |         carry = ((Int(prod) / 10) as! Int)
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2145467911/001/main.swift:119:31: warning: forced cast of '[Int]' to same type has no effect
+117 |     var res: [Int] = ([] as! [Int])
+118 |     var i = 0
+119 |     while (Int(i) < (Int((((a as! [Int])).count)) + Int((((b as! [Int])).count)))) {
+    |                               `- warning: forced cast of '[Int]' to same type has no effect
+120 |         res = (((res as! [Int]) + [0]) as! [Int])
+121 |         i = ((Int(i) + 1) as! Int)
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2145467911/001/main.swift:119:62: warning: forced cast of '[Int]' to same type has no effect
+117 |     var res: [Int] = ([] as! [Int])
+118 |     var i = 0
+119 |     while (Int(i) < (Int((((a as! [Int])).count)) + Int((((b as! [Int])).count)))) {
+    |                                                              `- warning: forced cast of '[Int]' to same type has no effect
+120 |         res = (((res as! [Int]) + [0]) as! [Int])
+121 |         i = ((Int(i) + 1) as! Int)
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2145467911/001/main.swift:120:22: warning: forced cast of '[Int]' to same type has no effect
+118 |     var i = 0
+119 |     while (Int(i) < (Int((((a as! [Int])).count)) + Int((((b as! [Int])).count)))) {
+120 |         res = (((res as! [Int]) + [0]) as! [Int])
+    |                      `- warning: forced cast of '[Int]' to same type has no effect
+121 |         i = ((Int(i) + 1) as! Int)
+122 |     }
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2145467911/001/main.swift:121:27: warning: forced cast of 'Int' to same type has no effect
+119 |     while (Int(i) < (Int((((a as! [Int])).count)) + Int((((b as! [Int])).count)))) {
+120 |         res = (((res as! [Int]) + [0]) as! [Int])
+121 |         i = ((Int(i) + 1) as! Int)
+    |                           `- warning: forced cast of 'Int' to same type has no effect
+122 |     }
+123 |     i = 0
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2145467911/001/main.swift:124:30: warning: forced cast of '[Int]' to same type has no effect
+122 |     }
+123 |     i = 0
+124 |     while (Int(i) < Int((((a as! [Int])).count))) {
+    |                              `- warning: forced cast of '[Int]' to same type has no effect
+125 |         var carry = 0
+126 |         var j = 0
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2145467911/001/main.swift:127:34: warning: forced cast of '[Int]' to same type has no effect
+125 |         var carry = 0
+126 |         var j = 0
+127 |         while (Int(j) < Int((((b as! [Int])).count))) {
+    |                                  `- warning: forced cast of '[Int]' to same type has no effect
+128 |             var idx = ((Int(i) + Int(j)) as! Int)
+129 |             var prod = (((Int(res[Int(idx)]) + (Int(a[Int(i)]) * Int(b[Int(j)]))) + Int(carry)) as! Int)
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2145467911/001/main.swift:128:42: warning: forced cast of 'Int' to same type has no effect
+126 |         var j = 0
+127 |         while (Int(j) < Int((((b as! [Int])).count))) {
+128 |             var idx = ((Int(i) + Int(j)) as! Int)
+    |                                          `- warning: forced cast of 'Int' to same type has no effect
+129 |             var prod = (((Int(res[Int(idx)]) + (Int(a[Int(i)]) * Int(b[Int(j)]))) + Int(carry)) as! Int)
+130 |             res[Int(idx)] = ((Int(prod) % 10) as! Int)
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2145467911/001/main.swift:129:97: warning: forced cast of 'Int' to same type has no effect
+127 |         while (Int(j) < Int((((b as! [Int])).count))) {
+128 |             var idx = ((Int(i) + Int(j)) as! Int)
+129 |             var prod = (((Int(res[Int(idx)]) + (Int(a[Int(i)]) * Int(b[Int(j)]))) + Int(carry)) as! Int)
+    |                                                                                                 `- warning: forced cast of 'Int' to same type has no effect
+130 |             res[Int(idx)] = ((Int(prod) % 10) as! Int)
+131 |             carry = ((Int(prod) / 10) as! Int)
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2145467911/001/main.swift:130:47: warning: forced cast of 'Int' to same type has no effect
+128 |             var idx = ((Int(i) + Int(j)) as! Int)
+129 |             var prod = (((Int(res[Int(idx)]) + (Int(a[Int(i)]) * Int(b[Int(j)]))) + Int(carry)) as! Int)
+130 |             res[Int(idx)] = ((Int(prod) % 10) as! Int)
+    |                                               `- warning: forced cast of 'Int' to same type has no effect
+131 |             carry = ((Int(prod) / 10) as! Int)
+132 |             j = ((Int(j) + 1) as! Int)
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2145467911/001/main.swift:131:39: warning: forced cast of 'Int' to same type has no effect
+129 |             var prod = (((Int(res[Int(idx)]) + (Int(a[Int(i)]) * Int(b[Int(j)]))) + Int(carry)) as! Int)
+130 |             res[Int(idx)] = ((Int(prod) % 10) as! Int)
+131 |             carry = ((Int(prod) / 10) as! Int)
+    |                                       `- warning: forced cast of 'Int' to same type has no effect
+132 |             j = ((Int(j) + 1) as! Int)
+133 |         }
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2145467911/001/main.swift:132:31: warning: forced cast of 'Int' to same type has no effect
+130 |             res[Int(idx)] = ((Int(prod) % 10) as! Int)
+131 |             carry = ((Int(prod) / 10) as! Int)
+132 |             j = ((Int(j) + 1) as! Int)
+    |                               `- warning: forced cast of 'Int' to same type has no effect
+133 |         }
+134 |         var idx = ((Int(i) + Int((((b as! [Int])).count))) as! Int)
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2145467911/001/main.swift:134:39: warning: forced cast of '[Int]' to same type has no effect
+132 |             j = ((Int(j) + 1) as! Int)
+133 |         }
+134 |         var idx = ((Int(i) + Int((((b as! [Int])).count))) as! Int)
+    |                                       `- warning: forced cast of '[Int]' to same type has no effect
+135 |         while (Int(carry) > 0) {
+136 |             var prod = ((Int(res[Int(idx)]) + Int(carry)) as! Int)
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2145467911/001/main.swift:134:60: warning: forced cast of 'Int' to same type has no effect
+132 |             j = ((Int(j) + 1) as! Int)
+133 |         }
+134 |         var idx = ((Int(i) + Int((((b as! [Int])).count))) as! Int)
+    |                                                            `- warning: forced cast of 'Int' to same type has no effect
+135 |         while (Int(carry) > 0) {
+136 |             var prod = ((Int(res[Int(idx)]) + Int(carry)) as! Int)
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2145467911/001/main.swift:136:59: warning: forced cast of 'Int' to same type has no effect
+134 |         var idx = ((Int(i) + Int((((b as! [Int])).count))) as! Int)
+135 |         while (Int(carry) > 0) {
+136 |             var prod = ((Int(res[Int(idx)]) + Int(carry)) as! Int)
+    |                                                           `- warning: forced cast of 'Int' to same type has no effect
+137 |             res[Int(idx)] = ((Int(prod) % 10) as! Int)
+138 |             carry = ((Int(prod) / 10) as! Int)
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2145467911/001/main.swift:137:47: warning: forced cast of 'Int' to same type has no effect
+135 |         while (Int(carry) > 0) {
+136 |             var prod = ((Int(res[Int(idx)]) + Int(carry)) as! Int)
+137 |             res[Int(idx)] = ((Int(prod) % 10) as! Int)
+    |                                               `- warning: forced cast of 'Int' to same type has no effect
+138 |             carry = ((Int(prod) / 10) as! Int)
+139 |             idx = ((Int(idx) + 1) as! Int)
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2145467911/001/main.swift:138:39: warning: forced cast of 'Int' to same type has no effect
+136 |             var prod = ((Int(res[Int(idx)]) + Int(carry)) as! Int)
+137 |             res[Int(idx)] = ((Int(prod) % 10) as! Int)
+138 |             carry = ((Int(prod) / 10) as! Int)
+    |                                       `- warning: forced cast of 'Int' to same type has no effect
+139 |             idx = ((Int(idx) + 1) as! Int)
+140 |         }
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2145467911/001/main.swift:139:35: warning: forced cast of 'Int' to same type has no effect
+137 |             res[Int(idx)] = ((Int(prod) % 10) as! Int)
+138 |             carry = ((Int(prod) / 10) as! Int)
+139 |             idx = ((Int(idx) + 1) as! Int)
+    |                                   `- warning: forced cast of 'Int' to same type has no effect
+140 |         }
+141 |         i = ((Int(i) + 1) as! Int)
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2145467911/001/main.swift:141:27: warning: forced cast of 'Int' to same type has no effect
+139 |             idx = ((Int(idx) + 1) as! Int)
+140 |         }
+141 |         i = ((Int(i) + 1) as! Int)
+    |                           `- warning: forced cast of 'Int' to same type has no effect
+142 |     }
+143 |     return (bigTrim((res as! [Int])) as! [Int])
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2145467911/001/main.swift:143:26: warning: forced cast of '[Int]' to same type has no effect
+141 |         i = ((Int(i) + 1) as! Int)
+142 |     }
+143 |     return (bigTrim((res as! [Int])) as! [Int])
+    |                          `- warning: forced cast of '[Int]' to same type has no effect
+144 | }
+145 | func bigMulPow10(_ a: [Int], _ k: Int) -> [Int] {
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2145467911/001/main.swift:143:38: warning: forced cast of '[Int]' to same type has no effect
+141 |         i = ((Int(i) + 1) as! Int)
+142 |     }
+143 |     return (bigTrim((res as! [Int])) as! [Int])
+    |                                      `- warning: forced cast of '[Int]' to same type has no effect
+144 | }
+145 | func bigMulPow10(_ a: [Int], _ k: Int) -> [Int] {
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2145467911/001/main.swift:115:9: warning: variable 'a' was never mutated; consider changing to 'let' constant
+113 | }
+114 | func bigMulBig(_ a: [Int], _ b: [Int]) -> [Int] {
+115 |     var a = a
+    |         `- warning: variable 'a' was never mutated; consider changing to 'let' constant
+116 |     var b = b
+117 |     var res: [Int] = ([] as! [Int])
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2145467911/001/main.swift:116:9: warning: variable 'b' was never mutated; consider changing to 'let' constant
+114 | func bigMulBig(_ a: [Int], _ b: [Int]) -> [Int] {
+115 |     var a = a
+116 |     var b = b
+    |         `- warning: variable 'b' was never mutated; consider changing to 'let' constant
+117 |     var res: [Int] = ([] as! [Int])
+118 |     var i = 0
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2145467911/001/main.swift:128:17: warning: variable 'idx' was never mutated; consider changing to 'let' constant
+126 |         var j = 0
+127 |         while (Int(j) < Int((((b as! [Int])).count))) {
+128 |             var idx = ((Int(i) + Int(j)) as! Int)
+    |                 `- warning: variable 'idx' was never mutated; consider changing to 'let' constant
+129 |             var prod = (((Int(res[Int(idx)]) + (Int(a[Int(i)]) * Int(b[Int(j)]))) + Int(carry)) as! Int)
+130 |             res[Int(idx)] = ((Int(prod) % 10) as! Int)
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2145467911/001/main.swift:129:17: warning: variable 'prod' was never mutated; consider changing to 'let' constant
+127 |         while (Int(j) < Int((((b as! [Int])).count))) {
+128 |             var idx = ((Int(i) + Int(j)) as! Int)
+129 |             var prod = (((Int(res[Int(idx)]) + (Int(a[Int(i)]) * Int(b[Int(j)]))) + Int(carry)) as! Int)
+    |                 `- warning: variable 'prod' was never mutated; consider changing to 'let' constant
+130 |             res[Int(idx)] = ((Int(prod) % 10) as! Int)
+131 |             carry = ((Int(prod) / 10) as! Int)
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2145467911/001/main.swift:136:17: warning: variable 'prod' was never mutated; consider changing to 'let' constant
+134 |         var idx = ((Int(i) + Int((((b as! [Int])).count))) as! Int)
+135 |         while (Int(carry) > 0) {
+136 |             var prod = ((Int(res[Int(idx)]) + Int(carry)) as! Int)
+    |                 `- warning: variable 'prod' was never mutated; consider changing to 'let' constant
+137 |             res[Int(idx)] = ((Int(prod) % 10) as! Int)
+138 |             carry = ((Int(prod) / 10) as! Int)
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2145467911/001/main.swift:150:36: warning: forced cast of '[Int]' to same type has no effect
+148 |     var i = 0
+149 |     while (Int(i) < Int(k)) {
+150 |         a = ((([0] as! [Int]) + (a as! [Int])) as! [Int])
+    |                                    `- warning: forced cast of '[Int]' to same type has no effect
+151 |         i = ((Int(i) + 1) as! Int)
+152 |     }
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2145467911/001/main.swift:151:27: warning: forced cast of 'Int' to same type has no effect
+149 |     while (Int(i) < Int(k)) {
+150 |         a = ((([0] as! [Int]) + (a as! [Int])) as! [Int])
+151 |         i = ((Int(i) + 1) as! Int)
+    |                           `- warning: forced cast of 'Int' to same type has no effect
+152 |     }
+153 |     return (a as! [Int])
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2145467911/001/main.swift:153:15: warning: forced cast of '[Int]' to same type has no effect
+151 |         i = ((Int(i) + 1) as! Int)
+152 |     }
+153 |     return (a as! [Int])
+    |               `- warning: forced cast of '[Int]' to same type has no effect
+154 | }
+155 | func bigDivSmall(_ a: [Int], _ m: Int) -> [Int] {
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2145467911/001/main.swift:147:9: warning: variable 'k' was never mutated; consider changing to 'let' constant
+145 | func bigMulPow10(_ a: [Int], _ k: Int) -> [Int] {
+146 |     var a = a
+147 |     var k = k
+    |         `- warning: variable 'k' was never mutated; consider changing to 'let' constant
+148 |     var i = 0
+149 |     while (Int(i) < Int(k)) {
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2145467911/001/main.swift:160:24: warning: forced cast of '[Int]' to same type has no effect
+158 |     var res: [Int] = ([] as! [Int])
+159 |     var rem = 0
+160 |     var i = ((Int((((a as! [Int])).count)) - 1) as! Int)
+    |                        `- warning: forced cast of '[Int]' to same type has no effect
+161 |     while (Int(i) >= 0) {
+162 |         var cur = (((Int(rem) * 10) + Int(a[Int(i)])) as! Int)
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2145467911/001/main.swift:160:49: warning: forced cast of 'Int' to same type has no effect
+158 |     var res: [Int] = ([] as! [Int])
+159 |     var rem = 0
+160 |     var i = ((Int((((a as! [Int])).count)) - 1) as! Int)
+    |                                                 `- warning: forced cast of 'Int' to same type has no effect
+161 |     while (Int(i) >= 0) {
+162 |         var cur = (((Int(rem) * 10) + Int(a[Int(i)])) as! Int)
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2145467911/001/main.swift:162:55: warning: forced cast of 'Int' to same type has no effect
+160 |     var i = ((Int((((a as! [Int])).count)) - 1) as! Int)
+161 |     while (Int(i) >= 0) {
+162 |         var cur = (((Int(rem) * 10) + Int(a[Int(i)])) as! Int)
+    |                                                       `- warning: forced cast of 'Int' to same type has no effect
+163 |         var q = ((Int(cur) / Int(m)) as! Int)
+164 |         rem = ((Int(cur) % Int(m)) as! Int)
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2145467911/001/main.swift:163:38: warning: forced cast of 'Int' to same type has no effect
+161 |     while (Int(i) >= 0) {
+162 |         var cur = (((Int(rem) * 10) + Int(a[Int(i)])) as! Int)
+163 |         var q = ((Int(cur) / Int(m)) as! Int)
+    |                                      `- warning: forced cast of 'Int' to same type has no effect
+164 |         rem = ((Int(cur) % Int(m)) as! Int)
+165 |         res = ((([Int(q)] as! [Int]) + (res as! [Int])) as! [Int])
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2145467911/001/main.swift:164:36: warning: forced cast of 'Int' to same type has no effect
+162 |         var cur = (((Int(rem) * 10) + Int(a[Int(i)])) as! Int)
+163 |         var q = ((Int(cur) / Int(m)) as! Int)
+164 |         rem = ((Int(cur) % Int(m)) as! Int)
+    |                                    `- warning: forced cast of 'Int' to same type has no effect
+165 |         res = ((([Int(q)] as! [Int]) + (res as! [Int])) as! [Int])
+166 |         i = ((Int(i) - 1) as! Int)
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2145467911/001/main.swift:165:45: warning: forced cast of '[Int]' to same type has no effect
+163 |         var q = ((Int(cur) / Int(m)) as! Int)
+164 |         rem = ((Int(cur) % Int(m)) as! Int)
+165 |         res = ((([Int(q)] as! [Int]) + (res as! [Int])) as! [Int])
+    |                                             `- warning: forced cast of '[Int]' to same type has no effect
+166 |         i = ((Int(i) - 1) as! Int)
+167 |     }
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2145467911/001/main.swift:166:27: warning: forced cast of 'Int' to same type has no effect
+164 |         rem = ((Int(cur) % Int(m)) as! Int)
+165 |         res = ((([Int(q)] as! [Int]) + (res as! [Int])) as! [Int])
+166 |         i = ((Int(i) - 1) as! Int)
+    |                           `- warning: forced cast of 'Int' to same type has no effect
+167 |     }
+168 |     return (bigTrim((res as! [Int])) as! [Int])
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2145467911/001/main.swift:168:26: warning: forced cast of '[Int]' to same type has no effect
+166 |         i = ((Int(i) - 1) as! Int)
+167 |     }
+168 |     return (bigTrim((res as! [Int])) as! [Int])
+    |                          `- warning: forced cast of '[Int]' to same type has no effect
+169 | }
+170 | func bigToString(_ a: [Int]) -> String {
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2145467911/001/main.swift:168:38: warning: forced cast of '[Int]' to same type has no effect
+166 |         i = ((Int(i) - 1) as! Int)
+167 |     }
+168 |     return (bigTrim((res as! [Int])) as! [Int])
+    |                                      `- warning: forced cast of '[Int]' to same type has no effect
+169 | }
+170 | func bigToString(_ a: [Int]) -> String {
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2145467911/001/main.swift:156:9: warning: variable 'a' was never mutated; consider changing to 'let' constant
+154 | }
+155 | func bigDivSmall(_ a: [Int], _ m: Int) -> [Int] {
+156 |     var a = a
+    |         `- warning: variable 'a' was never mutated; consider changing to 'let' constant
+157 |     var m = m
+158 |     var res: [Int] = ([] as! [Int])
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2145467911/001/main.swift:157:9: warning: variable 'm' was never mutated; consider changing to 'let' constant
+155 | func bigDivSmall(_ a: [Int], _ m: Int) -> [Int] {
+156 |     var a = a
+157 |     var m = m
+    |         `- warning: variable 'm' was never mutated; consider changing to 'let' constant
+158 |     var res: [Int] = ([] as! [Int])
+159 |     var rem = 0
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2145467911/001/main.swift:162:13: warning: variable 'cur' was never mutated; consider changing to 'let' constant
+160 |     var i = ((Int((((a as! [Int])).count)) - 1) as! Int)
+161 |     while (Int(i) >= 0) {
+162 |         var cur = (((Int(rem) * 10) + Int(a[Int(i)])) as! Int)
+    |             `- warning: variable 'cur' was never mutated; consider changing to 'let' constant
+163 |         var q = ((Int(cur) / Int(m)) as! Int)
+164 |         rem = ((Int(cur) % Int(m)) as! Int)
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2145467911/001/main.swift:163:13: warning: variable 'q' was never mutated; consider changing to 'let' constant
+161 |     while (Int(i) >= 0) {
+162 |         var cur = (((Int(rem) * 10) + Int(a[Int(i)])) as! Int)
+163 |         var q = ((Int(cur) / Int(m)) as! Int)
+    |             `- warning: variable 'q' was never mutated; consider changing to 'let' constant
+164 |         rem = ((Int(cur) % Int(m)) as! Int)
+165 |         res = ((([Int(q)] as! [Int]) + (res as! [Int])) as! [Int])
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2145467911/001/main.swift:173:24: warning: forced cast of '[Int]' to same type has no effect
+171 |     var a = a
+172 |     var s = ""
+173 |     var i = ((Int((((a as! [Int])).count)) - 1) as! Int)
+    |                        `- warning: forced cast of '[Int]' to same type has no effect
+174 |     while (Int(i) >= 0) {
+175 |         s = ((String(s) + String(String(describing: Int(a[Int(i)])))) as! String)
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2145467911/001/main.swift:173:49: warning: forced cast of 'Int' to same type has no effect
+171 |     var a = a
+172 |     var s = ""
+173 |     var i = ((Int((((a as! [Int])).count)) - 1) as! Int)
+    |                                                 `- warning: forced cast of 'Int' to same type has no effect
+174 |     while (Int(i) >= 0) {
+175 |         s = ((String(s) + String(String(describing: Int(a[Int(i)])))) as! String)
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2145467911/001/main.swift:175:71: warning: forced cast of 'String' to same type has no effect
+173 |     var i = ((Int((((a as! [Int])).count)) - 1) as! Int)
+174 |     while (Int(i) >= 0) {
+175 |         s = ((String(s) + String(String(describing: Int(a[Int(i)])))) as! String)
+    |                                                                       `- warning: forced cast of 'String' to same type has no effect
+176 |         i = ((Int(i) - 1) as! Int)
+177 |     }
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2145467911/001/main.swift:176:27: warning: forced cast of 'Int' to same type has no effect
+174 |     while (Int(i) >= 0) {
+175 |         s = ((String(s) + String(String(describing: Int(a[Int(i)])))) as! String)
+176 |         i = ((Int(i) - 1) as! Int)
+    |                           `- warning: forced cast of 'Int' to same type has no effect
+177 |     }
+178 |     return String(s)
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2145467911/001/main.swift:171:9: warning: variable 'a' was never mutated; consider changing to 'let' constant
+169 | }
+170 | func bigToString(_ a: [Int]) -> String {
+171 |     var a = a
+    |         `- warning: variable 'a' was never mutated; consider changing to 'let' constant
+172 |     var s = ""
+173 |     var i = ((Int((((a as! [Int])).count)) - 1) as! Int)
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2145467911/001/main.swift:186:39: warning: forced cast of 'String' to same type has no effect
+184 |     var i = 0
+185 |     while (Int(i) < Int(n)) {
+186 |         s = ((String(s) + String(ch)) as! String)
+    |                                       `- warning: forced cast of 'String' to same type has no effect
+187 |         i = ((Int(i) + 1) as! Int)
+188 |     }
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2145467911/001/main.swift:187:27: warning: forced cast of 'Int' to same type has no effect
+185 |     while (Int(i) < Int(n)) {
+186 |         s = ((String(s) + String(ch)) as! String)
+187 |         i = ((Int(i) + 1) as! Int)
+    |                           `- warning: forced cast of 'Int' to same type has no effect
+188 |     }
+189 |     return String(s)
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2145467911/001/main.swift:181:9: warning: variable 'ch' was never mutated; consider changing to 'let' constant
+179 | }
+180 | func repeat(_ ch: String, _ n: Int) -> String {
+181 |     var ch = ch
+    |         `- warning: variable 'ch' was never mutated; consider changing to 'let' constant
+182 |     var n = n
+183 |     var s = ""
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2145467911/001/main.swift:182:9: warning: variable 'n' was never mutated; consider changing to 'let' constant
+180 | func repeat(_ ch: String, _ n: Int) -> String {
+181 |     var ch = ch
+182 |     var n = n
+    |         `- warning: variable 'n' was never mutated; consider changing to 'let' constant
+183 |     var s = ""
+184 |     var i = 0
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2145467911/001/main.swift:194:19: warning: forced cast of '[Int]' to same type has no effect
+192 |     var xs = xs
+193 |     var res: [Int] = ([] as! [Int])
+194 |     var tmp = (xs as! [Int])
+    |                   `- warning: forced cast of '[Int]' to same type has no effect
+195 |     while (Int((((tmp as! [Int])).count)) > 0) {
+196 |         var min = Int(tmp[0])
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2145467911/001/main.swift:195:23: warning: forced cast of '[Int]' to same type has no effect
+193 |     var res: [Int] = ([] as! [Int])
+194 |     var tmp = (xs as! [Int])
+195 |     while (Int((((tmp as! [Int])).count)) > 0) {
+    |                       `- warning: forced cast of '[Int]' to same type has no effect
+196 |         var min = Int(tmp[0])
+197 |         var idx = 0
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2145467911/001/main.swift:199:36: warning: forced cast of '[Int]' to same type has no effect
+197 |         var idx = 0
+198 |         var i = 1
+199 |         while (Int(i) < Int((((tmp as! [Int])).count))) {
+    |                                    `- warning: forced cast of '[Int]' to same type has no effect
+200 |             if (Int(tmp[Int(i)]) < Int(min)) {
+201 |                 min = Int(tmp[Int(i)])
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2145467911/001/main.swift:204:31: warning: forced cast of 'Int' to same type has no effect
+202 |                 idx = Int(i)
+203 |             }
+204 |             i = ((Int(i) + 1) as! Int)
+    |                               `- warning: forced cast of 'Int' to same type has no effect
+205 |         }
+206 |         res = (((res as! [Int]) + ([Int(min)] as! [Int])) as! [Int])
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2145467911/001/main.swift:206:22: warning: forced cast of '[Int]' to same type has no effect
+204 |             i = ((Int(i) + 1) as! Int)
+205 |         }
+206 |         res = (((res as! [Int]) + ([Int(min)] as! [Int])) as! [Int])
+    |                      `- warning: forced cast of '[Int]' to same type has no effect
+207 |         var out: [Int] = ([] as! [Int])
+208 |         var j = 0
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2145467911/001/main.swift:209:36: warning: forced cast of '[Int]' to same type has no effect
+207 |         var out: [Int] = ([] as! [Int])
+208 |         var j = 0
+209 |         while (Int(j) < Int((((tmp as! [Int])).count))) {
+    |                                    `- warning: forced cast of '[Int]' to same type has no effect
+210 |             if (Int(j) != Int(idx)) {
+211 |                 out = (((out as! [Int]) + ([Int(tmp[Int(j)])] as! [Int])) as! [Int])
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2145467911/001/main.swift:211:30: warning: forced cast of '[Int]' to same type has no effect
+209 |         while (Int(j) < Int((((tmp as! [Int])).count))) {
+210 |             if (Int(j) != Int(idx)) {
+211 |                 out = (((out as! [Int]) + ([Int(tmp[Int(j)])] as! [Int])) as! [Int])
+    |                              `- warning: forced cast of '[Int]' to same type has no effect
+212 |             }
+213 |             j = ((Int(j) + 1) as! Int)
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2145467911/001/main.swift:213:31: warning: forced cast of 'Int' to same type has no effect
+211 |                 out = (((out as! [Int]) + ([Int(tmp[Int(j)])] as! [Int])) as! [Int])
+212 |             }
+213 |             j = ((Int(j) + 1) as! Int)
+    |                               `- warning: forced cast of 'Int' to same type has no effect
+214 |         }
+215 |         tmp = (out as! [Int])
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2145467911/001/main.swift:215:20: warning: forced cast of '[Int]' to same type has no effect
+213 |             j = ((Int(j) + 1) as! Int)
+214 |         }
+215 |         tmp = (out as! [Int])
+    |                    `- warning: forced cast of '[Int]' to same type has no effect
+216 |     }
+217 |     return (res as! [Int])
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2145467911/001/main.swift:217:17: warning: forced cast of '[Int]' to same type has no effect
+215 |         tmp = (out as! [Int])
+216 |     }
+217 |     return (res as! [Int])
+    |                 `- warning: forced cast of '[Int]' to same type has no effect
+218 | }
+219 | func primesUpTo(_ n: Int) -> [Int] {
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2145467911/001/main.swift:192:9: warning: variable 'xs' was never mutated; consider changing to 'let' constant
+190 | }
+191 | func sortInts(_ xs: [Int]) -> [Int] {
+192 |     var xs = xs
+    |         `- warning: variable 'xs' was never mutated; consider changing to 'let' constant
+193 |     var res: [Int] = ([] as! [Int])
+194 |     var tmp = (xs as! [Int])
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2145467911/001/main.swift:224:26: warning: forced cast of '[Bool]' to same type has no effect
+222 |     var i = 0
+223 |     while (Int(i) <= Int(n)) {
+224 |         sieve = (((sieve as! [Bool]) + [true]) as! [Bool])
+    |                          `- warning: forced cast of '[Bool]' to same type has no effect
+225 |         i = ((Int(i) + 1) as! Int)
+226 |     }
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2145467911/001/main.swift:225:27: warning: forced cast of 'Int' to same type has no effect
+223 |     while (Int(i) <= Int(n)) {
+224 |         sieve = (((sieve as! [Bool]) + [true]) as! [Bool])
+225 |         i = ((Int(i) + 1) as! Int)
+    |                           `- warning: forced cast of 'Int' to same type has no effect
+226 |     }
+227 |     var p = 2
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2145467911/001/main.swift:229:27: warning: forced cast of 'Bool' to same type has no effect
+227 |     var p = 2
+228 |     while ((Int(p) * Int(p)) <= Int(n)) {
+229 |         if (sieve[Int(p)] as! Bool) {
+    |                           `- warning: forced cast of 'Bool' to same type has no effect
+230 |             var m = ((Int(p) * Int(p)) as! Int)
+231 |             while (Int(m) <= Int(n)) {
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2145467911/001/main.swift:230:40: warning: forced cast of 'Int' to same type has no effect
+228 |     while ((Int(p) * Int(p)) <= Int(n)) {
+229 |         if (sieve[Int(p)] as! Bool) {
+230 |             var m = ((Int(p) * Int(p)) as! Int)
+    |                                        `- warning: forced cast of 'Int' to same type has no effect
+231 |             while (Int(m) <= Int(n)) {
+232 |                 sieve[Int(m)] = false
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2145467911/001/main.swift:233:40: warning: forced cast of 'Int' to same type has no effect
+231 |             while (Int(m) <= Int(n)) {
+232 |                 sieve[Int(m)] = false
+233 |                 m = ((Int(m) + Int(p)) as! Int)
+    |                                        `- warning: forced cast of 'Int' to same type has no effect
+234 |             }
+235 |         }
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2145467911/001/main.swift:236:27: warning: forced cast of 'Int' to same type has no effect
+234 |             }
+235 |         }
+236 |         p = ((Int(p) + 1) as! Int)
+    |                           `- warning: forced cast of 'Int' to same type has no effect
+237 |     }
+238 |     var res: [Int] = ([] as! [Int])
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2145467911/001/main.swift:241:27: warning: forced cast of 'Bool' to same type has no effect
+239 |     var x = 2
+240 |     while (Int(x) <= Int(n)) {
+241 |         if (sieve[Int(x)] as! Bool) {
+    |                           `- warning: forced cast of 'Bool' to same type has no effect
+242 |             res = (((res as! [Int]) + [Int(x)]) as! [Int])
+243 |         }
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2145467911/001/main.swift:242:26: warning: forced cast of '[Int]' to same type has no effect
+240 |     while (Int(x) <= Int(n)) {
+241 |         if (sieve[Int(x)] as! Bool) {
+242 |             res = (((res as! [Int]) + [Int(x)]) as! [Int])
+    |                          `- warning: forced cast of '[Int]' to same type has no effect
+243 |         }
+244 |         x = ((Int(x) + 1) as! Int)
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2145467911/001/main.swift:244:27: warning: forced cast of 'Int' to same type has no effect
+242 |             res = (((res as! [Int]) + [Int(x)]) as! [Int])
+243 |         }
+244 |         x = ((Int(x) + 1) as! Int)
+    |                           `- warning: forced cast of 'Int' to same type has no effect
+245 |     }
+246 |     return (res as! [Int])
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2145467911/001/main.swift:246:17: warning: forced cast of '[Int]' to same type has no effect
+244 |         x = ((Int(x) + 1) as! Int)
+245 |     }
+246 |     return (res as! [Int])
+    |                 `- warning: forced cast of '[Int]' to same type has no effect
+247 | }
+248 | func factorialExp(_ n: Int, _ primes: [Int]) -> [String: Int] {
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2145467911/001/main.swift:220:9: warning: variable 'n' was never mutated; consider changing to 'let' constant
+218 | }
+219 | func primesUpTo(_ n: Int) -> [Int] {
+220 |     var n = n
+    |         `- warning: variable 'n' was never mutated; consider changing to 'let' constant
+221 |     var sieve: [Bool] = ([] as! [Bool])
+222 |     var i = 0
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2145467911/001/main.swift:251:29: error: use [:] to get an empty dictionary literal
+249 |     var n = n
+250 |     var primes = primes
+251 |     var m: [String: Int] = ([] as [String: Any] as! [String: Int])
+    |                             `- error: use [:] to get an empty dictionary literal
+252 |     for p in (primes as! [Int]) {
+253 |         if ((p as! Int) > Int(n)) {
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2145467911/001/main.swift:252:22: warning: forced cast of '[Int]' to same type has no effect
+250 |     var primes = primes
+251 |     var m: [String: Int] = ([] as [String: Any] as! [String: Int])
+252 |     for p in (primes as! [Int]) {
+    |                      `- warning: forced cast of '[Int]' to same type has no effect
+253 |         if ((p as! Int) > Int(n)) {
+254 |             break
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2145467911/001/main.swift:253:16: warning: forced cast of 'Int' to same type has no effect
+251 |     var m: [String: Int] = ([] as [String: Any] as! [String: Int])
+252 |     for p in (primes as! [Int]) {
+253 |         if ((p as! Int) > Int(n)) {
+    |                `- warning: forced cast of 'Int' to same type has no effect
+254 |             break
+255 |         }
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2145467911/001/main.swift:259:31: warning: forced cast of 'Int' to same type has no effect
+257 |         var e = 0
+258 |         while (Int(t) > 0) {
+259 |             t = ((Int(t) / (p as! Int)) as! Int)
+    |                               `- warning: forced cast of 'Int' to same type has no effect
+260 |             e = ((Int(e) + Int(t)) as! Int)
+261 |         }
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2145467911/001/main.swift:259:41: warning: forced cast of 'Int' to same type has no effect
+257 |         var e = 0
+258 |         while (Int(t) > 0) {
+259 |             t = ((Int(t) / (p as! Int)) as! Int)
+    |                                         `- warning: forced cast of 'Int' to same type has no effect
+260 |             e = ((Int(e) + Int(t)) as! Int)
+261 |         }
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2145467911/001/main.swift:260:36: warning: forced cast of 'Int' to same type has no effect
+258 |         while (Int(t) > 0) {
+259 |             t = ((Int(t) / (p as! Int)) as! Int)
+260 |             e = ((Int(e) + Int(t)) as! Int)
+    |                                    `- warning: forced cast of 'Int' to same type has no effect
+261 |         }
+262 |         m[String(String(describing: p))] = Int(e)
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2145467911/001/main.swift:264:15: warning: forced cast of '[String : Int]' to same type has no effect
+262 |         m[String(String(describing: p))] = Int(e)
+263 |     }
+264 |     return (m as! [String: Int])
+    |               `- warning: forced cast of '[String : Int]' to same type has no effect
+265 | }
+266 | func factorSmall(_ x: Int, _ primes: [Int]) -> [String: Int] {
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2145467911/001/main.swift:269:29: error: use [:] to get an empty dictionary literal
+267 |     var x = x
+268 |     var primes = primes
+269 |     var f: [String: Int] = ([] as [String: Any] as! [String: Int])
+    |                             `- error: use [:] to get an empty dictionary literal
+270 |     var n = Int(x)
+271 |     for p in (primes as! [Int]) {
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2145467911/001/main.swift:271:22: warning: forced cast of '[Int]' to same type has no effect
+269 |     var f: [String: Int] = ([] as [String: Any] as! [String: Int])
+270 |     var n = Int(x)
+271 |     for p in (primes as! [Int]) {
+    |                      `- warning: forced cast of '[Int]' to same type has no effect
+272 |         if (((p as! Int) * (p as! Int)) > Int(n)) {
+273 |             break
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2145467911/001/main.swift:272:17: warning: forced cast of 'Int' to same type has no effect
+270 |     var n = Int(x)
+271 |     for p in (primes as! [Int]) {
+272 |         if (((p as! Int) * (p as! Int)) > Int(n)) {
+    |                 `- warning: forced cast of 'Int' to same type has no effect
+273 |             break
+274 |         }
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2145467911/001/main.swift:272:31: warning: forced cast of 'Int' to same type has no effect
+270 |     var n = Int(x)
+271 |     for p in (primes as! [Int]) {
+272 |         if (((p as! Int) * (p as! Int)) > Int(n)) {
+    |                               `- warning: forced cast of 'Int' to same type has no effect
+273 |             break
+274 |         }
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2145467911/001/main.swift:276:29: warning: forced cast of 'Int' to same type has no effect
+274 |         }
+275 |         var c = 0
+276 |         while ((Int(n) % (p as! Int)) == 0) {
+    |                             `- warning: forced cast of 'Int' to same type has no effect
+277 |             c = ((Int(c) + 1) as! Int)
+278 |             n = ((Int(n) / (p as! Int)) as! Int)
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2145467911/001/main.swift:277:31: warning: forced cast of 'Int' to same type has no effect
+275 |         var c = 0
+276 |         while ((Int(n) % (p as! Int)) == 0) {
+277 |             c = ((Int(c) + 1) as! Int)
+    |                               `- warning: forced cast of 'Int' to same type has no effect
+278 |             n = ((Int(n) / (p as! Int)) as! Int)
+279 |         }
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2145467911/001/main.swift:278:31: warning: forced cast of 'Int' to same type has no effect
+276 |         while ((Int(n) % (p as! Int)) == 0) {
+277 |             c = ((Int(c) + 1) as! Int)
+278 |             n = ((Int(n) / (p as! Int)) as! Int)
+    |                               `- warning: forced cast of 'Int' to same type has no effect
+279 |         }
+280 |         if (Int(c) > 0) {
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2145467911/001/main.swift:278:41: warning: forced cast of 'Int' to same type has no effect
+276 |         while ((Int(n) % (p as! Int)) == 0) {
+277 |             c = ((Int(c) + 1) as! Int)
+278 |             n = ((Int(n) / (p as! Int)) as! Int)
+    |                                         `- warning: forced cast of 'Int' to same type has no effect
+279 |         }
+280 |         if (Int(c) > 0) {
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2145467911/001/main.swift:285:60: error: cannot call value of non-function type 'Int'
+283 |     }
+284 |     if (Int(n) > 1) {
+285 |         f[String(String(describing: Int(n)))] = (((f["get"]!(String(String(describing: Int(n))), 0) as! Int) + 1) as! Int)
+    |                                                            `- error: cannot call value of non-function type 'Int'
+286 |     }
+287 |     return (f as! [String: Int])
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2145467911/001/main.swift:285:115: warning: forced cast of 'Int' to same type has no effect
+283 |     }
+284 |     if (Int(n) > 1) {
+285 |         f[String(String(describing: Int(n)))] = (((f["get"]!(String(String(describing: Int(n))), 0) as! Int) + 1) as! Int)
+    |                                                                                                                   `- warning: forced cast of 'Int' to same type has no effect
+286 |     }
+287 |     return (f as! [String: Int])
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2145467911/001/main.swift:287:15: warning: forced cast of '[String : Int]' to same type has no effect
+285 |         f[String(String(describing: Int(n)))] = (((f["get"]!(String(String(describing: Int(n))), 0) as! Int) + 1) as! Int)
+286 |     }
+287 |     return (f as! [String: Int])
+    |               `- warning: forced cast of '[String : Int]' to same type has no effect
+288 | }
+289 | func computeIP(_ n: Int, _ primes: [Int]) -> [Int] {
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2145467911/001/main.swift:292:44: warning: forced cast of 'Int' to same type has no effect
+290 |     var n = n
+291 |     var primes = primes
+292 |     var exps = (factorialExp(((6 * Int(n)) as! Int), (primes as! [Int])) as! [String: Int])
+    |                                            `- warning: forced cast of 'Int' to same type has no effect
+293 |     let fn = (factorialExp(Int(n), (primes as! [Int])) as! [String: Int])
+294 |     for k in (fn as! [String: Int]).keys.sorted() {
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2145467911/001/main.swift:292:62: warning: forced cast of '[Int]' to same type has no effect
+290 |     var n = n
+291 |     var primes = primes
+292 |     var exps = (factorialExp(((6 * Int(n)) as! Int), (primes as! [Int])) as! [String: Int])
+    |                                                              `- warning: forced cast of '[Int]' to same type has no effect
+293 |     let fn = (factorialExp(Int(n), (primes as! [Int])) as! [String: Int])
+294 |     for k in (fn as! [String: Int]).keys.sorted() {
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2145467911/001/main.swift:292:74: warning: forced cast of '[String : Int]' to same type has no effect
+290 |     var n = n
+291 |     var primes = primes
+292 |     var exps = (factorialExp(((6 * Int(n)) as! Int), (primes as! [Int])) as! [String: Int])
+    |                                                                          `- warning: forced cast of '[String : Int]' to same type has no effect
+293 |     let fn = (factorialExp(Int(n), (primes as! [Int])) as! [String: Int])
+294 |     for k in (fn as! [String: Int]).keys.sorted() {
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2145467911/001/main.swift:293:44: warning: forced cast of '[Int]' to same type has no effect
+291 |     var primes = primes
+292 |     var exps = (factorialExp(((6 * Int(n)) as! Int), (primes as! [Int])) as! [String: Int])
+293 |     let fn = (factorialExp(Int(n), (primes as! [Int])) as! [String: Int])
+    |                                            `- warning: forced cast of '[Int]' to same type has no effect
+294 |     for k in (fn as! [String: Int]).keys.sorted() {
+295 |         exps[k] = (((exps["get"]!(k, 0) as! Int) - (6 * Int(fn[k]!))) as! Int)
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2145467911/001/main.swift:293:56: warning: forced cast of '[String : Int]' to same type has no effect
+291 |     var primes = primes
+292 |     var exps = (factorialExp(((6 * Int(n)) as! Int), (primes as! [Int])) as! [String: Int])
+293 |     let fn = (factorialExp(Int(n), (primes as! [Int])) as! [String: Int])
+    |                                                        `- warning: forced cast of '[String : Int]' to same type has no effect
+294 |     for k in (fn as! [String: Int]).keys.sorted() {
+295 |         exps[k] = (((exps["get"]!(k, 0) as! Int) - (6 * Int(fn[k]!))) as! Int)
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2145467911/001/main.swift:294:18: warning: forced cast of '[String : Int]' to same type has no effect
+292 |     var exps = (factorialExp(((6 * Int(n)) as! Int), (primes as! [Int])) as! [String: Int])
+293 |     let fn = (factorialExp(Int(n), (primes as! [Int])) as! [String: Int])
+294 |     for k in (fn as! [String: Int]).keys.sorted() {
+    |                  `- warning: forced cast of '[String : Int]' to same type has no effect
+295 |         exps[k] = (((exps["get"]!(k, 0) as! Int) - (6 * Int(fn[k]!))) as! Int)
+296 |     }
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2145467911/001/main.swift:295:33: error: cannot call value of non-function type 'Int'
+293 |     let fn = (factorialExp(Int(n), (primes as! [Int])) as! [String: Int])
+294 |     for k in (fn as! [String: Int]).keys.sorted() {
+295 |         exps[k] = (((exps["get"]!(k, 0) as! Int) - (6 * Int(fn[k]!))) as! Int)
+    |                                 `- error: cannot call value of non-function type 'Int'
+296 |     }
+297 |     exps["2"] = (((exps["get"]!("2", 0) as! Int) + 5) as! Int)
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2145467911/001/main.swift:295:71: warning: forced cast of 'Int' to same type has no effect
+293 |     let fn = (factorialExp(Int(n), (primes as! [Int])) as! [String: Int])
+294 |     for k in (fn as! [String: Int]).keys.sorted() {
+295 |         exps[k] = (((exps["get"]!(k, 0) as! Int) - (6 * Int(fn[k]!))) as! Int)
+    |                                                                       `- warning: forced cast of 'Int' to same type has no effect
+296 |     }
+297 |     exps["2"] = (((exps["get"]!("2", 0) as! Int) + 5) as! Int)
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2145467911/001/main.swift:297:31: error: cannot call value of non-function type 'Int'
+295 |         exps[k] = (((exps["get"]!(k, 0) as! Int) - (6 * Int(fn[k]!))) as! Int)
+296 |     }
+297 |     exps["2"] = (((exps["get"]!("2", 0) as! Int) + 5) as! Int)
+    |                               `- error: cannot call value of non-function type 'Int'
+298 |     let t2 = ((((532 * Int(n)) * Int(n)) + (126 * Int(n))) + 9)
+299 |     let ft2 = (factorSmall(Int(t2), (primes as! [Int])) as! [String: Int])
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2145467911/001/main.swift:297:55: warning: forced cast of 'Int' to same type has no effect
+295 |         exps[k] = (((exps["get"]!(k, 0) as! Int) - (6 * Int(fn[k]!))) as! Int)
+296 |     }
+297 |     exps["2"] = (((exps["get"]!("2", 0) as! Int) + 5) as! Int)
+    |                                                       `- warning: forced cast of 'Int' to same type has no effect
+298 |     let t2 = ((((532 * Int(n)) * Int(n)) + (126 * Int(n))) + 9)
+299 |     let ft2 = (factorSmall(Int(t2), (primes as! [Int])) as! [String: Int])
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2145467911/001/main.swift:299:45: warning: forced cast of '[Int]' to same type has no effect
+297 |     exps["2"] = (((exps["get"]!("2", 0) as! Int) + 5) as! Int)
+298 |     let t2 = ((((532 * Int(n)) * Int(n)) + (126 * Int(n))) + 9)
+299 |     let ft2 = (factorSmall(Int(t2), (primes as! [Int])) as! [String: Int])
+    |                                             `- warning: forced cast of '[Int]' to same type has no effect
+300 |     for k in (ft2 as! [String: Int]).keys.sorted() {
+301 |         exps[k] = (((exps["get"]!(k, 0) as! Int) + Int(ft2[k]!)) as! Int)
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2145467911/001/main.swift:299:57: warning: forced cast of '[String : Int]' to same type has no effect
+297 |     exps["2"] = (((exps["get"]!("2", 0) as! Int) + 5) as! Int)
+298 |     let t2 = ((((532 * Int(n)) * Int(n)) + (126 * Int(n))) + 9)
+299 |     let ft2 = (factorSmall(Int(t2), (primes as! [Int])) as! [String: Int])
+    |                                                         `- warning: forced cast of '[String : Int]' to same type has no effect
+300 |     for k in (ft2 as! [String: Int]).keys.sorted() {
+301 |         exps[k] = (((exps["get"]!(k, 0) as! Int) + Int(ft2[k]!)) as! Int)
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2145467911/001/main.swift:300:19: warning: forced cast of '[String : Int]' to same type has no effect
+298 |     let t2 = ((((532 * Int(n)) * Int(n)) + (126 * Int(n))) + 9)
+299 |     let ft2 = (factorSmall(Int(t2), (primes as! [Int])) as! [String: Int])
+300 |     for k in (ft2 as! [String: Int]).keys.sorted() {
+    |                   `- warning: forced cast of '[String : Int]' to same type has no effect
+301 |         exps[k] = (((exps["get"]!(k, 0) as! Int) + Int(ft2[k]!)) as! Int)
+302 |     }
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2145467911/001/main.swift:301:33: error: cannot call value of non-function type 'Int'
+299 |     let ft2 = (factorSmall(Int(t2), (primes as! [Int])) as! [String: Int])
+300 |     for k in (ft2 as! [String: Int]).keys.sorted() {
+301 |         exps[k] = (((exps["get"]!(k, 0) as! Int) + Int(ft2[k]!)) as! Int)
+    |                                 `- error: cannot call value of non-function type 'Int'
+302 |     }
+303 |     exps["3"] = (((exps["get"]!("3", 0) as! Int) - 1) as! Int)
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2145467911/001/main.swift:301:66: warning: forced cast of 'Int' to same type has no effect
+299 |     let ft2 = (factorSmall(Int(t2), (primes as! [Int])) as! [String: Int])
+300 |     for k in (ft2 as! [String: Int]).keys.sorted() {
+301 |         exps[k] = (((exps["get"]!(k, 0) as! Int) + Int(ft2[k]!)) as! Int)
+    |                                                                  `- warning: forced cast of 'Int' to same type has no effect
+302 |     }
+303 |     exps["3"] = (((exps["get"]!("3", 0) as! Int) - 1) as! Int)
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2145467911/001/main.swift:303:31: error: cannot call value of non-function type 'Int'
+301 |         exps[k] = (((exps["get"]!(k, 0) as! Int) + Int(ft2[k]!)) as! Int)
+302 |     }
+303 |     exps["3"] = (((exps["get"]!("3", 0) as! Int) - 1) as! Int)
+    |                               `- error: cannot call value of non-function type 'Int'
+304 |     var keys: [Int] = ([] as! [Int])
+305 |     for k in (exps as! [String: Int]).keys.sorted() {
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2145467911/001/main.swift:303:55: warning: forced cast of 'Int' to same type has no effect
+301 |         exps[k] = (((exps["get"]!(k, 0) as! Int) + Int(ft2[k]!)) as! Int)
+302 |     }
+303 |     exps["3"] = (((exps["get"]!("3", 0) as! Int) - 1) as! Int)
+    |                                                       `- warning: forced cast of 'Int' to same type has no effect
+304 |     var keys: [Int] = ([] as! [Int])
+305 |     for k in (exps as! [String: Int]).keys.sorted() {
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2145467911/001/main.swift:305:20: warning: forced cast of '[String : Int]' to same type has no effect
+303 |     exps["3"] = (((exps["get"]!("3", 0) as! Int) - 1) as! Int)
+304 |     var keys: [Int] = ([] as! [Int])
+305 |     for k in (exps as! [String: Int]).keys.sorted() {
+    |                    `- warning: forced cast of '[String : Int]' to same type has no effect
+306 |         keys = (((keys as! [Int]) + [Int(k)!]) as! [Int])
+307 |     }
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2145467911/001/main.swift:306:24: warning: forced cast of '[Int]' to same type has no effect
+304 |     var keys: [Int] = ([] as! [Int])
+305 |     for k in (exps as! [String: Int]).keys.sorted() {
+306 |         keys = (((keys as! [Int]) + [Int(k)!]) as! [Int])
+    |                        `- warning: forced cast of '[Int]' to same type has no effect
+307 |     }
+308 |     keys = (sortInts((keys as! [Int])) as! [Int])
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2145467911/001/main.swift:308:28: warning: forced cast of '[Int]' to same type has no effect
+306 |         keys = (((keys as! [Int]) + [Int(k)!]) as! [Int])
+307 |     }
+308 |     keys = (sortInts((keys as! [Int])) as! [Int])
+    |                            `- warning: forced cast of '[Int]' to same type has no effect
+309 |     var res = (bigFromInt(1) as! [Int])
+310 |     for p in (keys as! [Int]) {
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2145467911/001/main.swift:308:40: warning: forced cast of '[Int]' to same type has no effect
+306 |         keys = (((keys as! [Int]) + [Int(k)!]) as! [Int])
+307 |     }
+308 |     keys = (sortInts((keys as! [Int])) as! [Int])
+    |                                        `- warning: forced cast of '[Int]' to same type has no effect
+309 |     var res = (bigFromInt(1) as! [Int])
+310 |     for p in (keys as! [Int]) {
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2145467911/001/main.swift:309:30: warning: forced cast of '[Int]' to same type has no effect
+307 |     }
+308 |     keys = (sortInts((keys as! [Int])) as! [Int])
+309 |     var res = (bigFromInt(1) as! [Int])
+    |                              `- warning: forced cast of '[Int]' to same type has no effect
+310 |     for p in (keys as! [Int]) {
+311 |         var e = Int(exps[String(String(describing: p))]!)
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2145467911/001/main.swift:310:20: warning: forced cast of '[Int]' to same type has no effect
+308 |     keys = (sortInts((keys as! [Int])) as! [Int])
+309 |     var res = (bigFromInt(1) as! [Int])
+310 |     for p in (keys as! [Int]) {
+    |                    `- warning: forced cast of '[Int]' to same type has no effect
+311 |         var e = Int(exps[String(String(describing: p))]!)
+312 |         var i = 0
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2145467911/001/main.swift:314:37: warning: forced cast of '[Int]' to same type has no effect
+312 |         var i = 0
+313 |         while (Int(i) < Int(e)) {
+314 |             res = (bigMulSmall((res as! [Int]), (p as! Int)) as! [Int])
+    |                                     `- warning: forced cast of '[Int]' to same type has no effect
+315 |             i = ((Int(i) + 1) as! Int)
+316 |         }
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2145467911/001/main.swift:314:52: warning: forced cast of 'Int' to same type has no effect
+312 |         var i = 0
+313 |         while (Int(i) < Int(e)) {
+314 |             res = (bigMulSmall((res as! [Int]), (p as! Int)) as! [Int])
+    |                                                    `- warning: forced cast of 'Int' to same type has no effect
+315 |             i = ((Int(i) + 1) as! Int)
+316 |         }
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2145467911/001/main.swift:314:62: warning: forced cast of '[Int]' to same type has no effect
+312 |         var i = 0
+313 |         while (Int(i) < Int(e)) {
+314 |             res = (bigMulSmall((res as! [Int]), (p as! Int)) as! [Int])
+    |                                                              `- warning: forced cast of '[Int]' to same type has no effect
+315 |             i = ((Int(i) + 1) as! Int)
+316 |         }
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2145467911/001/main.swift:315:31: warning: forced cast of 'Int' to same type has no effect
+313 |         while (Int(i) < Int(e)) {
+314 |             res = (bigMulSmall((res as! [Int]), (p as! Int)) as! [Int])
+315 |             i = ((Int(i) + 1) as! Int)
+    |                               `- warning: forced cast of 'Int' to same type has no effect
+316 |         }
+317 |     }
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2145467911/001/main.swift:318:17: warning: forced cast of '[Int]' to same type has no effect
+316 |         }
+317 |     }
+318 |     return (res as! [Int])
+    |                 `- warning: forced cast of '[Int]' to same type has no effect
+319 | }
+320 | func formatTerm(_ ip: [Int], _ pw: Int) -> String {
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2145467911/001/main.swift:323:36: warning: forced cast of '[Int]' to same type has no effect
+321 |     var ip = ip
+322 |     var pw = pw
+323 |     var s = String(bigToString((ip as! [Int])))
+    |                                    `- warning: forced cast of '[Int]' to same type has no effect
+324 |     if (Int(pw) >= Int(((String(s)).count))) {
+325 |         var frac = ((String(repeat("0", ((Int(pw) - Int(((String(s)).count))) as! Int))) + String(s)) as! String)
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2145467911/001/main.swift:325:29: error: value pack expansion must contain at least one pack reference
+323 |     var s = String(bigToString((ip as! [Int])))
+324 |     if (Int(pw) >= Int(((String(s)).count))) {
+325 |         var frac = ((String(repeat("0", ((Int(pw) - Int(((String(s)).count))) as! Int))) + String(s)) as! String)
+    |                             `- error: value pack expansion must contain at least one pack reference
+326 |         if (Int(((String(frac)).count)) < 33) {
+327 |             frac = ((String(frac) + String(repeat("0", ((33 - Int(((String(frac)).count))) as! Int)))) as! String)
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2145467911/001/main.swift:327:44: error: value pack expansion must contain at least one pack reference
+325 |         var frac = ((String(repeat("0", ((Int(pw) - Int(((String(s)).count))) as! Int))) + String(s)) as! String)
+326 |         if (Int(((String(frac)).count)) < 33) {
+327 |             frac = ((String(frac) + String(repeat("0", ((33 - Int(((String(frac)).count))) as! Int)))) as! String)
+    |                                            `- error: value pack expansion must contain at least one pack reference
+328 |         }
+329 |         return (("0." + String(String(Array(String(frac))[0..<33]))) as! String)
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2145467911/001/main.swift:331:92: warning: forced cast of 'Int' to same type has no effect
+329 |         return (("0." + String(String(Array(String(frac))[0..<33]))) as! String)
+330 |     }
+331 |     var intpart = String(String(Array(String(s))[0..<((Int(((String(s)).count)) - Int(pw)) as! Int)]))
+    |                                                                                            `- warning: forced cast of 'Int' to same type has no effect
+332 |     var frac = String(String(Array(String(s))[((Int(((String(s)).count)) - Int(pw)) as! Int)..<Int(((String(s)).count))]))
+333 |     if (Int(((String(frac)).count)) < 33) {
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2145467911/001/main.swift:332:85: warning: forced cast of 'Int' to same type has no effect
+330 |     }
+331 |     var intpart = String(String(Array(String(s))[0..<((Int(((String(s)).count)) - Int(pw)) as! Int)]))
+332 |     var frac = String(String(Array(String(s))[((Int(((String(s)).count)) - Int(pw)) as! Int)..<Int(((String(s)).count))]))
+    |                                                                                     `- warning: forced cast of 'Int' to same type has no effect
+333 |     if (Int(((String(frac)).count)) < 33) {
+334 |         frac = ((String(frac) + String(repeat("0", ((33 - Int(((String(frac)).count))) as! Int)))) as! String)
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2145467911/001/main.swift:334:40: error: value pack expansion must contain at least one pack reference
+332 |     var frac = String(String(Array(String(s))[((Int(((String(s)).count)) - Int(pw)) as! Int)..<Int(((String(s)).count))]))
+333 |     if (Int(((String(frac)).count)) < 33) {
+334 |         frac = ((String(frac) + String(repeat("0", ((33 - Int(((String(frac)).count))) as! Int)))) as! String)
+    |                                        `- error: value pack expansion must contain at least one pack reference
+335 |     }
+336 |     return (((String(intpart) + ".") + String(String(Array(String(frac))[0..<33]))) as! String)
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2145467911/001/main.swift:336:85: warning: forced cast of 'String' to same type has no effect
+334 |         frac = ((String(frac) + String(repeat("0", ((33 - Int(((String(frac)).count))) as! Int)))) as! String)
+335 |     }
+336 |     return (((String(intpart) + ".") + String(String(Array(String(frac))[0..<33]))) as! String)
+    |                                                                                     `- warning: forced cast of 'String' to same type has no effect
+337 | }
+338 | func bigAbsDiff(_ a: [Int], _ b: [Int]) -> [Int] {
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2145467911/001/main.swift:341:23: warning: forced cast of '[Int]' to same type has no effect
+339 |     var a = a
+340 |     var b = b
+341 |     if (Int(bigCmp((a as! [Int]), (b as! [Int]))) >= 0) {
+    |                       `- warning: forced cast of '[Int]' to same type has no effect
+342 |         return (bigSub((a as! [Int]), (b as! [Int])) as! [Int])
+343 |     }
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2145467911/001/main.swift:341:38: warning: forced cast of '[Int]' to same type has no effect
+339 |     var a = a
+340 |     var b = b
+341 |     if (Int(bigCmp((a as! [Int]), (b as! [Int]))) >= 0) {
+    |                                      `- warning: forced cast of '[Int]' to same type has no effect
+342 |         return (bigSub((a as! [Int]), (b as! [Int])) as! [Int])
+343 |     }
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2145467911/001/main.swift:342:27: warning: forced cast of '[Int]' to same type has no effect
+340 |     var b = b
+341 |     if (Int(bigCmp((a as! [Int]), (b as! [Int]))) >= 0) {
+342 |         return (bigSub((a as! [Int]), (b as! [Int])) as! [Int])
+    |                           `- warning: forced cast of '[Int]' to same type has no effect
+343 |     }
+344 |     return (bigSub((b as! [Int]), (a as! [Int])) as! [Int])
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2145467911/001/main.swift:342:42: warning: forced cast of '[Int]' to same type has no effect
+340 |     var b = b
+341 |     if (Int(bigCmp((a as! [Int]), (b as! [Int]))) >= 0) {
+342 |         return (bigSub((a as! [Int]), (b as! [Int])) as! [Int])
+    |                                          `- warning: forced cast of '[Int]' to same type has no effect
+343 |     }
+344 |     return (bigSub((b as! [Int]), (a as! [Int])) as! [Int])
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2145467911/001/main.swift:342:54: warning: forced cast of '[Int]' to same type has no effect
+340 |     var b = b
+341 |     if (Int(bigCmp((a as! [Int]), (b as! [Int]))) >= 0) {
+342 |         return (bigSub((a as! [Int]), (b as! [Int])) as! [Int])
+    |                                                      `- warning: forced cast of '[Int]' to same type has no effect
+343 |     }
+344 |     return (bigSub((b as! [Int]), (a as! [Int])) as! [Int])
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2145467911/001/main.swift:344:23: warning: forced cast of '[Int]' to same type has no effect
+342 |         return (bigSub((a as! [Int]), (b as! [Int])) as! [Int])
+343 |     }
+344 |     return (bigSub((b as! [Int]), (a as! [Int])) as! [Int])
+    |                       `- warning: forced cast of '[Int]' to same type has no effect
+345 | }
+346 | func main() {
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2145467911/001/main.swift:344:38: warning: forced cast of '[Int]' to same type has no effect
+342 |         return (bigSub((a as! [Int]), (b as! [Int])) as! [Int])
+343 |     }
+344 |     return (bigSub((b as! [Int]), (a as! [Int])) as! [Int])
+    |                                      `- warning: forced cast of '[Int]' to same type has no effect
+345 | }
+346 | func main() {
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2145467911/001/main.swift:344:50: warning: forced cast of '[Int]' to same type has no effect
+342 |         return (bigSub((a as! [Int]), (b as! [Int])) as! [Int])
+343 |     }
+344 |     return (bigSub((b as! [Int]), (a as! [Int])) as! [Int])
+    |                                                  `- warning: forced cast of '[Int]' to same type has no effect
+345 | }
+346 | func main() {
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2145467911/001/main.swift:339:9: warning: variable 'a' was never mutated; consider changing to 'let' constant
+337 | }
+338 | func bigAbsDiff(_ a: [Int], _ b: [Int]) -> [Int] {
+339 |     var a = a
+    |         `- warning: variable 'a' was never mutated; consider changing to 'let' constant
+340 |     var b = b
+341 |     if (Int(bigCmp((a as! [Int]), (b as! [Int]))) >= 0) {
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2145467911/001/main.swift:340:9: warning: variable 'b' was never mutated; consider changing to 'let' constant
+338 | func bigAbsDiff(_ a: [Int], _ b: [Int]) -> [Int] {
+339 |     var a = a
+340 |     var b = b
+    |         `- warning: variable 'b' was never mutated; consider changing to 'let' constant
+341 |     if (Int(bigCmp((a as! [Int]), (b as! [Int]))) >= 0) {
+342 |         return (bigSub((a as! [Int]), (b as! [Int])) as! [Int])
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2145467911/001/main.swift:347:36: warning: forced cast of '[Int]' to same type has no effect
+345 | }
+346 | func main() {
+347 |     let primes = (primesUpTo(2000) as! [Int])
+    |                                    `- warning: forced cast of '[Int]' to same type has no effect
+348 |     print("N                               Integer Portion  Pow  Nth Term (33 dp)")
+349 |     let line = String(repeat("-", 89))
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2145467911/001/main.swift:349:23: error: value pack expansion must contain at least one pack reference
+347 |     let primes = (primesUpTo(2000) as! [Int])
+348 |     print("N                               Integer Portion  Pow  Nth Term (33 dp)")
+349 |     let line = String(repeat("-", 89))
+    |                       `- error: value pack expansion must contain at least one pack reference
+350 |     print(String(line))
+351 |     var sum = (bigFromInt(0) as! [Int])
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2145467911/001/main.swift:351:30: warning: forced cast of '[Int]' to same type has no effect
+349 |     let line = String(repeat("-", 89))
+350 |     print(String(line))
+351 |     var sum = (bigFromInt(0) as! [Int])
+    |                              `- warning: forced cast of '[Int]' to same type has no effect
+352 |     var prev = (bigFromInt(0) as! [Int])
+353 |     var denomPow = 0
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2145467911/001/main.swift:352:31: warning: forced cast of '[Int]' to same type has no effect
+350 |     print(String(line))
+351 |     var sum = (bigFromInt(0) as! [Int])
+352 |     var prev = (bigFromInt(0) as! [Int])
+    |                               `- warning: forced cast of '[Int]' to same type has no effect
+353 |     var denomPow = 0
+354 |     var n = 0
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2145467911/001/main.swift:356:45: warning: forced cast of '[Int]' to same type has no effect
+354 |     var n = 0
+355 |     while true {
+356 |         let ip = (computeIP(Int(n), (primes as! [Int])) as! [Int])
+    |                                             `- warning: forced cast of '[Int]' to same type has no effect
+357 |         let pw = ((6 * Int(n)) + 3)
+358 |         if (Int(pw) > Int(denomPow)) {
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2145467911/001/main.swift:356:57: warning: forced cast of '[Int]' to same type has no effect
+354 |     var n = 0
+355 |     while true {
+356 |         let ip = (computeIP(Int(n), (primes as! [Int])) as! [Int])
+    |                                                         `- warning: forced cast of '[Int]' to same type has no effect
+357 |         let pw = ((6 * Int(n)) + 3)
+358 |         if (Int(pw) > Int(denomPow)) {
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2145467911/001/main.swift:359:37: warning: forced cast of '[Int]' to same type has no effect
+357 |         let pw = ((6 * Int(n)) + 3)
+358 |         if (Int(pw) > Int(denomPow)) {
+359 |             sum = (bigMulPow10((sum as! [Int]), ((Int(pw) - Int(denomPow)) as! Int)) as! [Int])
+    |                                     `- warning: forced cast of '[Int]' to same type has no effect
+360 |             prev = (bigMulPow10((prev as! [Int]), ((Int(pw) - Int(denomPow)) as! Int)) as! [Int])
+361 |             denomPow = Int(pw)
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2145467911/001/main.swift:359:76: warning: forced cast of 'Int' to same type has no effect
+357 |         let pw = ((6 * Int(n)) + 3)
+358 |         if (Int(pw) > Int(denomPow)) {
+359 |             sum = (bigMulPow10((sum as! [Int]), ((Int(pw) - Int(denomPow)) as! Int)) as! [Int])
+    |                                                                            `- warning: forced cast of 'Int' to same type has no effect
+360 |             prev = (bigMulPow10((prev as! [Int]), ((Int(pw) - Int(denomPow)) as! Int)) as! [Int])
+361 |             denomPow = Int(pw)
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2145467911/001/main.swift:359:86: warning: forced cast of '[Int]' to same type has no effect
+357 |         let pw = ((6 * Int(n)) + 3)
+358 |         if (Int(pw) > Int(denomPow)) {
+359 |             sum = (bigMulPow10((sum as! [Int]), ((Int(pw) - Int(denomPow)) as! Int)) as! [Int])
+    |                                                                                      `- warning: forced cast of '[Int]' to same type has no effect
+360 |             prev = (bigMulPow10((prev as! [Int]), ((Int(pw) - Int(denomPow)) as! Int)) as! [Int])
+361 |             denomPow = Int(pw)
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2145467911/001/main.swift:360:39: warning: forced cast of '[Int]' to same type has no effect
+358 |         if (Int(pw) > Int(denomPow)) {
+359 |             sum = (bigMulPow10((sum as! [Int]), ((Int(pw) - Int(denomPow)) as! Int)) as! [Int])
+360 |             prev = (bigMulPow10((prev as! [Int]), ((Int(pw) - Int(denomPow)) as! Int)) as! [Int])
+    |                                       `- warning: forced cast of '[Int]' to same type has no effect
+361 |             denomPow = Int(pw)
+362 |         }
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2145467911/001/main.swift:360:78: warning: forced cast of 'Int' to same type has no effect
+358 |         if (Int(pw) > Int(denomPow)) {
+359 |             sum = (bigMulPow10((sum as! [Int]), ((Int(pw) - Int(denomPow)) as! Int)) as! [Int])
+360 |             prev = (bigMulPow10((prev as! [Int]), ((Int(pw) - Int(denomPow)) as! Int)) as! [Int])
+    |                                                                              `- warning: forced cast of 'Int' to same type has no effect
+361 |             denomPow = Int(pw)
+362 |         }
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2145467911/001/main.swift:360:88: warning: forced cast of '[Int]' to same type has no effect
+358 |         if (Int(pw) > Int(denomPow)) {
+359 |             sum = (bigMulPow10((sum as! [Int]), ((Int(pw) - Int(denomPow)) as! Int)) as! [Int])
+360 |             prev = (bigMulPow10((prev as! [Int]), ((Int(pw) - Int(denomPow)) as! Int)) as! [Int])
+    |                                                                                        `- warning: forced cast of '[Int]' to same type has no effect
+361 |             denomPow = Int(pw)
+362 |         }
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2145467911/001/main.swift:364:49: warning: forced cast of '[Int]' to same type has no effect
+362 |         }
+363 |         if (Int(n) < 10) {
+364 |             let termStr = String(formatTerm((ip as! [Int]), Int(pw)))
+    |                                                 `- warning: forced cast of '[Int]' to same type has no effect
+365 |             var ipStr = String(bigToString((ip as! [Int])))
+366 |             while (Int(((String(ipStr)).count)) < 44) {
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2145467911/001/main.swift:365:48: warning: forced cast of '[Int]' to same type has no effect
+363 |         if (Int(n) < 10) {
+364 |             let termStr = String(formatTerm((ip as! [Int]), Int(pw)))
+365 |             var ipStr = String(bigToString((ip as! [Int])))
+    |                                                `- warning: forced cast of '[Int]' to same type has no effect
+366 |             while (Int(((String(ipStr)).count)) < 44) {
+367 |                 ipStr = ((" " + String(ipStr)) as! String)
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2145467911/001/main.swift:367:48: warning: forced cast of 'String' to same type has no effect
+365 |             var ipStr = String(bigToString((ip as! [Int])))
+366 |             while (Int(((String(ipStr)).count)) < 44) {
+367 |                 ipStr = ((" " + String(ipStr)) as! String)
+    |                                                `- warning: forced cast of 'String' to same type has no effect
+368 |             }
+369 |             var pwStr = String(String(describing: -Int(pw)))
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2145467911/001/main.swift:371:48: warning: forced cast of 'String' to same type has no effect
+369 |             var pwStr = String(String(describing: -Int(pw)))
+370 |             while (Int(((String(pwStr)).count)) < 3) {
+371 |                 pwStr = ((" " + String(pwStr)) as! String)
+    |                                                `- warning: forced cast of 'String' to same type has no effect
+372 |             }
+373 |             var padTerm = String(termStr)
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2145467911/001/main.swift:375:52: warning: forced cast of 'String' to same type has no effect
+373 |             var padTerm = String(termStr)
+374 |             while (Int(((String(padTerm)).count)) < 35) {
+375 |                 padTerm = ((String(padTerm) + " ") as! String)
+    |                                                    `- warning: forced cast of 'String' to same type has no effect
+376 |             }
+377 |             print(((((((String(String(describing: Int(n))) + "  ") + String(ipStr)) + "  ") + String(pwStr)) + "  ") + String(padTerm)))
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2145467911/001/main.swift:379:28: warning: forced cast of '[Int]' to same type has no effect
+377 |             print(((((((String(String(describing: Int(n))) + "  ") + String(ipStr)) + "  ") + String(pwStr)) + "  ") + String(padTerm)))
+378 |         }
+379 |         sum = (bigAdd((sum as! [Int]), (ip as! [Int])) as! [Int])
+    |                            `- warning: forced cast of '[Int]' to same type has no effect
+380 |         let diff = (bigAbsDiff((sum as! [Int]), (prev as! [Int])) as! [Int])
+381 |         if ((Int(denomPow) >= 70) && (Int(bigCmp((diff as! [Int]), (bigMulPow10((bigFromInt(1) as! [Int]), ((Int(denomPow) - 70) as! Int)) as! [Int]))) < 0)) {
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2145467911/001/main.swift:379:44: warning: forced cast of '[Int]' to same type has no effect
+377 |             print(((((((String(String(describing: Int(n))) + "  ") + String(ipStr)) + "  ") + String(pwStr)) + "  ") + String(padTerm)))
+378 |         }
+379 |         sum = (bigAdd((sum as! [Int]), (ip as! [Int])) as! [Int])
+    |                                            `- warning: forced cast of '[Int]' to same type has no effect
+380 |         let diff = (bigAbsDiff((sum as! [Int]), (prev as! [Int])) as! [Int])
+381 |         if ((Int(denomPow) >= 70) && (Int(bigCmp((diff as! [Int]), (bigMulPow10((bigFromInt(1) as! [Int]), ((Int(denomPow) - 70) as! Int)) as! [Int]))) < 0)) {
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2145467911/001/main.swift:379:56: warning: forced cast of '[Int]' to same type has no effect
+377 |             print(((((((String(String(describing: Int(n))) + "  ") + String(ipStr)) + "  ") + String(pwStr)) + "  ") + String(padTerm)))
+378 |         }
+379 |         sum = (bigAdd((sum as! [Int]), (ip as! [Int])) as! [Int])
+    |                                                        `- warning: forced cast of '[Int]' to same type has no effect
+380 |         let diff = (bigAbsDiff((sum as! [Int]), (prev as! [Int])) as! [Int])
+381 |         if ((Int(denomPow) >= 70) && (Int(bigCmp((diff as! [Int]), (bigMulPow10((bigFromInt(1) as! [Int]), ((Int(denomPow) - 70) as! Int)) as! [Int]))) < 0)) {
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2145467911/001/main.swift:380:37: warning: forced cast of '[Int]' to same type has no effect
+378 |         }
+379 |         sum = (bigAdd((sum as! [Int]), (ip as! [Int])) as! [Int])
+380 |         let diff = (bigAbsDiff((sum as! [Int]), (prev as! [Int])) as! [Int])
+    |                                     `- warning: forced cast of '[Int]' to same type has no effect
+381 |         if ((Int(denomPow) >= 70) && (Int(bigCmp((diff as! [Int]), (bigMulPow10((bigFromInt(1) as! [Int]), ((Int(denomPow) - 70) as! Int)) as! [Int]))) < 0)) {
+382 |             break
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2145467911/001/main.swift:380:55: warning: forced cast of '[Int]' to same type has no effect
+378 |         }
+379 |         sum = (bigAdd((sum as! [Int]), (ip as! [Int])) as! [Int])
+380 |         let diff = (bigAbsDiff((sum as! [Int]), (prev as! [Int])) as! [Int])
+    |                                                       `- warning: forced cast of '[Int]' to same type has no effect
+381 |         if ((Int(denomPow) >= 70) && (Int(bigCmp((diff as! [Int]), (bigMulPow10((bigFromInt(1) as! [Int]), ((Int(denomPow) - 70) as! Int)) as! [Int]))) < 0)) {
+382 |             break
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2145467911/001/main.swift:380:67: warning: forced cast of '[Int]' to same type has no effect
+378 |         }
+379 |         sum = (bigAdd((sum as! [Int]), (ip as! [Int])) as! [Int])
+380 |         let diff = (bigAbsDiff((sum as! [Int]), (prev as! [Int])) as! [Int])
+    |                                                                   `- warning: forced cast of '[Int]' to same type has no effect
+381 |         if ((Int(denomPow) >= 70) && (Int(bigCmp((diff as! [Int]), (bigMulPow10((bigFromInt(1) as! [Int]), ((Int(denomPow) - 70) as! Int)) as! [Int]))) < 0)) {
+382 |             break
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2145467911/001/main.swift:381:56: warning: forced cast of '[Int]' to same type has no effect
+379 |         sum = (bigAdd((sum as! [Int]), (ip as! [Int])) as! [Int])
+380 |         let diff = (bigAbsDiff((sum as! [Int]), (prev as! [Int])) as! [Int])
+381 |         if ((Int(denomPow) >= 70) && (Int(bigCmp((diff as! [Int]), (bigMulPow10((bigFromInt(1) as! [Int]), ((Int(denomPow) - 70) as! Int)) as! [Int]))) < 0)) {
+    |                                                        `- warning: forced cast of '[Int]' to same type has no effect
+382 |             break
+383 |         }
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2145467911/001/main.swift:381:96: warning: forced cast of '[Int]' to same type has no effect
+379 |         sum = (bigAdd((sum as! [Int]), (ip as! [Int])) as! [Int])
+380 |         let diff = (bigAbsDiff((sum as! [Int]), (prev as! [Int])) as! [Int])
+381 |         if ((Int(denomPow) >= 70) && (Int(bigCmp((diff as! [Int]), (bigMulPow10((bigFromInt(1) as! [Int]), ((Int(denomPow) - 70) as! Int)) as! [Int]))) < 0)) {
+    |                                                                                                `- warning: forced cast of '[Int]' to same type has no effect
+382 |             break
+383 |         }
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2145467911/001/main.swift:381:130: warning: forced cast of 'Int' to same type has no effect
+379 |         sum = (bigAdd((sum as! [Int]), (ip as! [Int])) as! [Int])
+380 |         let diff = (bigAbsDiff((sum as! [Int]), (prev as! [Int])) as! [Int])
+381 |         if ((Int(denomPow) >= 70) && (Int(bigCmp((diff as! [Int]), (bigMulPow10((bigFromInt(1) as! [Int]), ((Int(denomPow) - 70) as! Int)) as! [Int]))) < 0)) {
+    |                                                                                                                                  `- warning: forced cast of 'Int' to same type has no effect
+382 |             break
+383 |         }
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2145467911/001/main.swift:381:140: warning: forced cast of '[Int]' to same type has no effect
+379 |         sum = (bigAdd((sum as! [Int]), (ip as! [Int])) as! [Int])
+380 |         let diff = (bigAbsDiff((sum as! [Int]), (prev as! [Int])) as! [Int])
+381 |         if ((Int(denomPow) >= 70) && (Int(bigCmp((diff as! [Int]), (bigMulPow10((bigFromInt(1) as! [Int]), ((Int(denomPow) - 70) as! Int)) as! [Int]))) < 0)) {
+    |                                                                                                                                            `- warning: forced cast of '[Int]' to same type has no effect
+382 |             break
+383 |         }
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2145467911/001/main.swift:384:21: warning: forced cast of '[Int]' to same type has no effect
+382 |             break
+383 |         }
+384 |         prev = (sum as! [Int])
+    |                     `- warning: forced cast of '[Int]' to same type has no effect
+385 |         n = ((Int(n) + 1) as! Int)
+386 |     }
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2145467911/001/main.swift:385:27: warning: forced cast of 'Int' to same type has no effect
+383 |         }
+384 |         prev = (sum as! [Int])
+385 |         n = ((Int(n) + 1) as! Int)
+    |                           `- warning: forced cast of 'Int' to same type has no effect
+386 |     }
+387 |     let precision = 70
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2145467911/001/main.swift:388:46: warning: forced cast of '[Int]' to same type has no effect
+386 |     }
+387 |     let precision = 70
+388 |     let target = (bigMulPow10((bigFromInt(1) as! [Int]), ((Int(denomPow) + (2 * Int(precision))) as! Int)) as! [Int])
+    |                                              `- warning: forced cast of '[Int]' to same type has no effect
+389 |     var low = (bigFromInt(0) as! [Int])
+390 |     var high = (bigMulPow10((bigFromInt(1) as! [Int]), ((Int(precision) + 1) as! Int)) as! [Int])
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2145467911/001/main.swift:388:98: warning: forced cast of 'Int' to same type has no effect
+386 |     }
+387 |     let precision = 70
+388 |     let target = (bigMulPow10((bigFromInt(1) as! [Int]), ((Int(denomPow) + (2 * Int(precision))) as! Int)) as! [Int])
+    |                                                                                                  `- warning: forced cast of 'Int' to same type has no effect
+389 |     var low = (bigFromInt(0) as! [Int])
+390 |     var high = (bigMulPow10((bigFromInt(1) as! [Int]), ((Int(precision) + 1) as! Int)) as! [Int])
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2145467911/001/main.swift:388:108: warning: forced cast of '[Int]' to same type has no effect
+386 |     }
+387 |     let precision = 70
+388 |     let target = (bigMulPow10((bigFromInt(1) as! [Int]), ((Int(denomPow) + (2 * Int(precision))) as! Int)) as! [Int])
+    |                                                                                                            `- warning: forced cast of '[Int]' to same type has no effect
+389 |     var low = (bigFromInt(0) as! [Int])
+390 |     var high = (bigMulPow10((bigFromInt(1) as! [Int]), ((Int(precision) + 1) as! Int)) as! [Int])
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2145467911/001/main.swift:389:30: warning: forced cast of '[Int]' to same type has no effect
+387 |     let precision = 70
+388 |     let target = (bigMulPow10((bigFromInt(1) as! [Int]), ((Int(denomPow) + (2 * Int(precision))) as! Int)) as! [Int])
+389 |     var low = (bigFromInt(0) as! [Int])
+    |                              `- warning: forced cast of '[Int]' to same type has no effect
+390 |     var high = (bigMulPow10((bigFromInt(1) as! [Int]), ((Int(precision) + 1) as! Int)) as! [Int])
+391 |     while (Int(bigCmp((low as! [Int]), (bigSub((high as! [Int]), (bigFromInt(1) as! [Int])) as! [Int]))) < 0) {
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2145467911/001/main.swift:390:44: warning: forced cast of '[Int]' to same type has no effect
+388 |     let target = (bigMulPow10((bigFromInt(1) as! [Int]), ((Int(denomPow) + (2 * Int(precision))) as! Int)) as! [Int])
+389 |     var low = (bigFromInt(0) as! [Int])
+390 |     var high = (bigMulPow10((bigFromInt(1) as! [Int]), ((Int(precision) + 1) as! Int)) as! [Int])
+    |                                            `- warning: forced cast of '[Int]' to same type has no effect
+391 |     while (Int(bigCmp((low as! [Int]), (bigSub((high as! [Int]), (bigFromInt(1) as! [Int])) as! [Int]))) < 0) {
+392 |         var mid = (bigDivSmall((bigAdd((low as! [Int]), (high as! [Int])) as! [Int]), 2) as! [Int])
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2145467911/001/main.swift:390:78: warning: forced cast of 'Int' to same type has no effect
+388 |     let target = (bigMulPow10((bigFromInt(1) as! [Int]), ((Int(denomPow) + (2 * Int(precision))) as! Int)) as! [Int])
+389 |     var low = (bigFromInt(0) as! [Int])
+390 |     var high = (bigMulPow10((bigFromInt(1) as! [Int]), ((Int(precision) + 1) as! Int)) as! [Int])
+    |                                                                              `- warning: forced cast of 'Int' to same type has no effect
+391 |     while (Int(bigCmp((low as! [Int]), (bigSub((high as! [Int]), (bigFromInt(1) as! [Int])) as! [Int]))) < 0) {
+392 |         var mid = (bigDivSmall((bigAdd((low as! [Int]), (high as! [Int])) as! [Int]), 2) as! [Int])
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2145467911/001/main.swift:390:88: warning: forced cast of '[Int]' to same type has no effect
+388 |     let target = (bigMulPow10((bigFromInt(1) as! [Int]), ((Int(denomPow) + (2 * Int(precision))) as! Int)) as! [Int])
+389 |     var low = (bigFromInt(0) as! [Int])
+390 |     var high = (bigMulPow10((bigFromInt(1) as! [Int]), ((Int(precision) + 1) as! Int)) as! [Int])
+    |                                                                                        `- warning: forced cast of '[Int]' to same type has no effect
+391 |     while (Int(bigCmp((low as! [Int]), (bigSub((high as! [Int]), (bigFromInt(1) as! [Int])) as! [Int]))) < 0) {
+392 |         var mid = (bigDivSmall((bigAdd((low as! [Int]), (high as! [Int])) as! [Int]), 2) as! [Int])
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2145467911/001/main.swift:391:28: warning: forced cast of '[Int]' to same type has no effect
+389 |     var low = (bigFromInt(0) as! [Int])
+390 |     var high = (bigMulPow10((bigFromInt(1) as! [Int]), ((Int(precision) + 1) as! Int)) as! [Int])
+391 |     while (Int(bigCmp((low as! [Int]), (bigSub((high as! [Int]), (bigFromInt(1) as! [Int])) as! [Int]))) < 0) {
+    |                            `- warning: forced cast of '[Int]' to same type has no effect
+392 |         var mid = (bigDivSmall((bigAdd((low as! [Int]), (high as! [Int])) as! [Int]), 2) as! [Int])
+393 |         var prod = (bigMulBig((bigMulBig((mid as! [Int]), (mid as! [Int])) as! [Int]), (sum as! [Int])) as! [Int])
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2145467911/001/main.swift:391:54: warning: forced cast of '[Int]' to same type has no effect
+389 |     var low = (bigFromInt(0) as! [Int])
+390 |     var high = (bigMulPow10((bigFromInt(1) as! [Int]), ((Int(precision) + 1) as! Int)) as! [Int])
+391 |     while (Int(bigCmp((low as! [Int]), (bigSub((high as! [Int]), (bigFromInt(1) as! [Int])) as! [Int]))) < 0) {
+    |                                                      `- warning: forced cast of '[Int]' to same type has no effect
+392 |         var mid = (bigDivSmall((bigAdd((low as! [Int]), (high as! [Int])) as! [Int]), 2) as! [Int])
+393 |         var prod = (bigMulBig((bigMulBig((mid as! [Int]), (mid as! [Int])) as! [Int]), (sum as! [Int])) as! [Int])
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2145467911/001/main.swift:391:81: warning: forced cast of '[Int]' to same type has no effect
+389 |     var low = (bigFromInt(0) as! [Int])
+390 |     var high = (bigMulPow10((bigFromInt(1) as! [Int]), ((Int(precision) + 1) as! Int)) as! [Int])
+391 |     while (Int(bigCmp((low as! [Int]), (bigSub((high as! [Int]), (bigFromInt(1) as! [Int])) as! [Int]))) < 0) {
+    |                                                                                 `- warning: forced cast of '[Int]' to same type has no effect
+392 |         var mid = (bigDivSmall((bigAdd((low as! [Int]), (high as! [Int])) as! [Int]), 2) as! [Int])
+393 |         var prod = (bigMulBig((bigMulBig((mid as! [Int]), (mid as! [Int])) as! [Int]), (sum as! [Int])) as! [Int])
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2145467911/001/main.swift:391:93: warning: forced cast of '[Int]' to same type has no effect
+389 |     var low = (bigFromInt(0) as! [Int])
+390 |     var high = (bigMulPow10((bigFromInt(1) as! [Int]), ((Int(precision) + 1) as! Int)) as! [Int])
+391 |     while (Int(bigCmp((low as! [Int]), (bigSub((high as! [Int]), (bigFromInt(1) as! [Int])) as! [Int]))) < 0) {
+    |                                                                                             `- warning: forced cast of '[Int]' to same type has no effect
+392 |         var mid = (bigDivSmall((bigAdd((low as! [Int]), (high as! [Int])) as! [Int]), 2) as! [Int])
+393 |         var prod = (bigMulBig((bigMulBig((mid as! [Int]), (mid as! [Int])) as! [Int]), (sum as! [Int])) as! [Int])
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2145467911/001/main.swift:392:45: warning: forced cast of '[Int]' to same type has no effect
+390 |     var high = (bigMulPow10((bigFromInt(1) as! [Int]), ((Int(precision) + 1) as! Int)) as! [Int])
+391 |     while (Int(bigCmp((low as! [Int]), (bigSub((high as! [Int]), (bigFromInt(1) as! [Int])) as! [Int]))) < 0) {
+392 |         var mid = (bigDivSmall((bigAdd((low as! [Int]), (high as! [Int])) as! [Int]), 2) as! [Int])
+    |                                             `- warning: forced cast of '[Int]' to same type has no effect
+393 |         var prod = (bigMulBig((bigMulBig((mid as! [Int]), (mid as! [Int])) as! [Int]), (sum as! [Int])) as! [Int])
+394 |         if (Int(bigCmp((prod as! [Int]), (target as! [Int]))) <= 0) {
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2145467911/001/main.swift:392:63: warning: forced cast of '[Int]' to same type has no effect
+390 |     var high = (bigMulPow10((bigFromInt(1) as! [Int]), ((Int(precision) + 1) as! Int)) as! [Int])
+391 |     while (Int(bigCmp((low as! [Int]), (bigSub((high as! [Int]), (bigFromInt(1) as! [Int])) as! [Int]))) < 0) {
+392 |         var mid = (bigDivSmall((bigAdd((low as! [Int]), (high as! [Int])) as! [Int]), 2) as! [Int])
+    |                                                               `- warning: forced cast of '[Int]' to same type has no effect
+393 |         var prod = (bigMulBig((bigMulBig((mid as! [Int]), (mid as! [Int])) as! [Int]), (sum as! [Int])) as! [Int])
+394 |         if (Int(bigCmp((prod as! [Int]), (target as! [Int]))) <= 0) {
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2145467911/001/main.swift:392:75: warning: forced cast of '[Int]' to same type has no effect
+390 |     var high = (bigMulPow10((bigFromInt(1) as! [Int]), ((Int(precision) + 1) as! Int)) as! [Int])
+391 |     while (Int(bigCmp((low as! [Int]), (bigSub((high as! [Int]), (bigFromInt(1) as! [Int])) as! [Int]))) < 0) {
+392 |         var mid = (bigDivSmall((bigAdd((low as! [Int]), (high as! [Int])) as! [Int]), 2) as! [Int])
+    |                                                                           `- warning: forced cast of '[Int]' to same type has no effect
+393 |         var prod = (bigMulBig((bigMulBig((mid as! [Int]), (mid as! [Int])) as! [Int]), (sum as! [Int])) as! [Int])
+394 |         if (Int(bigCmp((prod as! [Int]), (target as! [Int]))) <= 0) {
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2145467911/001/main.swift:392:90: warning: forced cast of '[Int]' to same type has no effect
+390 |     var high = (bigMulPow10((bigFromInt(1) as! [Int]), ((Int(precision) + 1) as! Int)) as! [Int])
+391 |     while (Int(bigCmp((low as! [Int]), (bigSub((high as! [Int]), (bigFromInt(1) as! [Int])) as! [Int]))) < 0) {
+392 |         var mid = (bigDivSmall((bigAdd((low as! [Int]), (high as! [Int])) as! [Int]), 2) as! [Int])
+    |                                                                                          `- warning: forced cast of '[Int]' to same type has no effect
+393 |         var prod = (bigMulBig((bigMulBig((mid as! [Int]), (mid as! [Int])) as! [Int]), (sum as! [Int])) as! [Int])
+394 |         if (Int(bigCmp((prod as! [Int]), (target as! [Int]))) <= 0) {
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2145467911/001/main.swift:393:47: warning: forced cast of '[Int]' to same type has no effect
+391 |     while (Int(bigCmp((low as! [Int]), (bigSub((high as! [Int]), (bigFromInt(1) as! [Int])) as! [Int]))) < 0) {
+392 |         var mid = (bigDivSmall((bigAdd((low as! [Int]), (high as! [Int])) as! [Int]), 2) as! [Int])
+393 |         var prod = (bigMulBig((bigMulBig((mid as! [Int]), (mid as! [Int])) as! [Int]), (sum as! [Int])) as! [Int])
+    |                                               `- warning: forced cast of '[Int]' to same type has no effect
+394 |         if (Int(bigCmp((prod as! [Int]), (target as! [Int]))) <= 0) {
+395 |             low = (mid as! [Int])
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2145467911/001/main.swift:393:64: warning: forced cast of '[Int]' to same type has no effect
+391 |     while (Int(bigCmp((low as! [Int]), (bigSub((high as! [Int]), (bigFromInt(1) as! [Int])) as! [Int]))) < 0) {
+392 |         var mid = (bigDivSmall((bigAdd((low as! [Int]), (high as! [Int])) as! [Int]), 2) as! [Int])
+393 |         var prod = (bigMulBig((bigMulBig((mid as! [Int]), (mid as! [Int])) as! [Int]), (sum as! [Int])) as! [Int])
+    |                                                                `- warning: forced cast of '[Int]' to same type has no effect
+394 |         if (Int(bigCmp((prod as! [Int]), (target as! [Int]))) <= 0) {
+395 |             low = (mid as! [Int])
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2145467911/001/main.swift:393:76: warning: forced cast of '[Int]' to same type has no effect
+391 |     while (Int(bigCmp((low as! [Int]), (bigSub((high as! [Int]), (bigFromInt(1) as! [Int])) as! [Int]))) < 0) {
+392 |         var mid = (bigDivSmall((bigAdd((low as! [Int]), (high as! [Int])) as! [Int]), 2) as! [Int])
+393 |         var prod = (bigMulBig((bigMulBig((mid as! [Int]), (mid as! [Int])) as! [Int]), (sum as! [Int])) as! [Int])
+    |                                                                            `- warning: forced cast of '[Int]' to same type has no effect
+394 |         if (Int(bigCmp((prod as! [Int]), (target as! [Int]))) <= 0) {
+395 |             low = (mid as! [Int])
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2145467911/001/main.swift:393:93: warning: forced cast of '[Int]' to same type has no effect
+391 |     while (Int(bigCmp((low as! [Int]), (bigSub((high as! [Int]), (bigFromInt(1) as! [Int])) as! [Int]))) < 0) {
+392 |         var mid = (bigDivSmall((bigAdd((low as! [Int]), (high as! [Int])) as! [Int]), 2) as! [Int])
+393 |         var prod = (bigMulBig((bigMulBig((mid as! [Int]), (mid as! [Int])) as! [Int]), (sum as! [Int])) as! [Int])
+    |                                                                                             `- warning: forced cast of '[Int]' to same type has no effect
+394 |         if (Int(bigCmp((prod as! [Int]), (target as! [Int]))) <= 0) {
+395 |             low = (mid as! [Int])
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2145467911/001/main.swift:393:105: warning: forced cast of '[Int]' to same type has no effect
+391 |     while (Int(bigCmp((low as! [Int]), (bigSub((high as! [Int]), (bigFromInt(1) as! [Int])) as! [Int]))) < 0) {
+392 |         var mid = (bigDivSmall((bigAdd((low as! [Int]), (high as! [Int])) as! [Int]), 2) as! [Int])
+393 |         var prod = (bigMulBig((bigMulBig((mid as! [Int]), (mid as! [Int])) as! [Int]), (sum as! [Int])) as! [Int])
+    |                                                                                                         `- warning: forced cast of '[Int]' to same type has no effect
+394 |         if (Int(bigCmp((prod as! [Int]), (target as! [Int]))) <= 0) {
+395 |             low = (mid as! [Int])
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2145467911/001/main.swift:394:30: warning: forced cast of '[Int]' to same type has no effect
+392 |         var mid = (bigDivSmall((bigAdd((low as! [Int]), (high as! [Int])) as! [Int]), 2) as! [Int])
+393 |         var prod = (bigMulBig((bigMulBig((mid as! [Int]), (mid as! [Int])) as! [Int]), (sum as! [Int])) as! [Int])
+394 |         if (Int(bigCmp((prod as! [Int]), (target as! [Int]))) <= 0) {
+    |                              `- warning: forced cast of '[Int]' to same type has no effect
+395 |             low = (mid as! [Int])
+396 |         } else {
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2145467911/001/main.swift:394:50: warning: forced cast of '[Int]' to same type has no effect
+392 |         var mid = (bigDivSmall((bigAdd((low as! [Int]), (high as! [Int])) as! [Int]), 2) as! [Int])
+393 |         var prod = (bigMulBig((bigMulBig((mid as! [Int]), (mid as! [Int])) as! [Int]), (sum as! [Int])) as! [Int])
+394 |         if (Int(bigCmp((prod as! [Int]), (target as! [Int]))) <= 0) {
+    |                                                  `- warning: forced cast of '[Int]' to same type has no effect
+395 |             low = (mid as! [Int])
+396 |         } else {
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2145467911/001/main.swift:395:24: warning: forced cast of '[Int]' to same type has no effect
+393 |         var prod = (bigMulBig((bigMulBig((mid as! [Int]), (mid as! [Int])) as! [Int]), (sum as! [Int])) as! [Int])
+394 |         if (Int(bigCmp((prod as! [Int]), (target as! [Int]))) <= 0) {
+395 |             low = (mid as! [Int])
+    |                        `- warning: forced cast of '[Int]' to same type has no effect
+396 |         } else {
+397 |             high = (bigSub((mid as! [Int]), (bigFromInt(1) as! [Int])) as! [Int])
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2145467911/001/main.swift:397:33: warning: forced cast of '[Int]' to same type has no effect
+395 |             low = (mid as! [Int])
+396 |         } else {
+397 |             high = (bigSub((mid as! [Int]), (bigFromInt(1) as! [Int])) as! [Int])
+    |                                 `- warning: forced cast of '[Int]' to same type has no effect
+398 |         }
+399 |     }
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2145467911/001/main.swift:397:60: warning: forced cast of '[Int]' to same type has no effect
+395 |             low = (mid as! [Int])
+396 |         } else {
+397 |             high = (bigSub((mid as! [Int]), (bigFromInt(1) as! [Int])) as! [Int])
+    |                                                            `- warning: forced cast of '[Int]' to same type has no effect
+398 |         }
+399 |     }
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2145467911/001/main.swift:397:72: warning: forced cast of '[Int]' to same type has no effect
+395 |             low = (mid as! [Int])
+396 |         } else {
+397 |             high = (bigSub((mid as! [Int]), (bigFromInt(1) as! [Int])) as! [Int])
+    |                                                                        `- warning: forced cast of '[Int]' to same type has no effect
+398 |         }
+399 |     }
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2145467911/001/main.swift:400:22: warning: forced cast of '[Int]' to same type has no effect
+398 |         }
+399 |     }
+400 |     var piInt = (low as! [Int])
+    |                      `- warning: forced cast of '[Int]' to same type has no effect
+401 |     var piStr = String(bigToString((piInt as! [Int])))
+402 |     if (Int(((String(piStr)).count)) <= Int(precision)) {
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2145467911/001/main.swift:401:43: warning: forced cast of '[Int]' to same type has no effect
+399 |     }
+400 |     var piInt = (low as! [Int])
+401 |     var piStr = String(bigToString((piInt as! [Int])))
+    |                                           `- warning: forced cast of '[Int]' to same type has no effect
+402 |     if (Int(((String(piStr)).count)) <= Int(precision)) {
+403 |         piStr = ((String(repeat("0", (((Int(precision) - Int(((String(piStr)).count))) + 1) as! Int))) + String(piStr)) as! String)
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2145467911/001/main.swift:403:26: error: value pack expansion must contain at least one pack reference
+401 |     var piStr = String(bigToString((piInt as! [Int])))
+402 |     if (Int(((String(piStr)).count)) <= Int(precision)) {
+403 |         piStr = ((String(repeat("0", (((Int(precision) - Int(((String(piStr)).count))) + 1) as! Int))) + String(piStr)) as! String)
+    |                          `- error: value pack expansion must contain at least one pack reference
+404 |     }
+405 |     var out = (((String(String(Array(String(piStr))[0..<((Int(((String(piStr)).count)) - Int(precision)) as! Int)])) + ".") + String(String(Array(String(piStr))[((Int(((String(piStr)).count)) - Int(precision)) as! Int)..<Int(((String(piStr)).count))]))) as! String)
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2145467911/001/main.swift:405:106: warning: forced cast of 'Int' to same type has no effect
+403 |         piStr = ((String(repeat("0", (((Int(precision) - Int(((String(piStr)).count))) + 1) as! Int))) + String(piStr)) as! String)
+404 |     }
+405 |     var out = (((String(String(Array(String(piStr))[0..<((Int(((String(piStr)).count)) - Int(precision)) as! Int)])) + ".") + String(String(Array(String(piStr))[((Int(((String(piStr)).count)) - Int(precision)) as! Int)..<Int(((String(piStr)).count))]))) as! String)
+    |                                                                                                          `- warning: forced cast of 'Int' to same type has no effect
+406 |     print("")
+407 |     print("Pi to 70 decimal places is:")
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2145467911/001/main.swift:405:211: warning: forced cast of 'Int' to same type has no effect
+403 |         piStr = ((String(repeat("0", (((Int(precision) - Int(((String(piStr)).count))) + 1) as! Int))) + String(piStr)) as! String)
+404 |     }
+405 |     var out = (((String(String(Array(String(piStr))[0..<((Int(((String(piStr)).count)) - Int(precision)) as! Int)])) + ".") + String(String(Array(String(piStr))[((Int(((String(piStr)).count)) - Int(precision)) as! Int)..<Int(((String(piStr)).count))]))) as! String)
+    |                                                                                                                                                                                                                   `- warning: forced cast of 'Int' to same type has no effect
+406 |     print("")
+407 |     print("Pi to 70 decimal places is:")
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2145467911/001/main.swift:405:255: warning: forced cast of 'String' to same type has no effect
+403 |         piStr = ((String(repeat("0", (((Int(precision) - Int(((String(piStr)).count))) + 1) as! Int))) + String(piStr)) as! String)
+404 |     }
+405 |     var out = (((String(String(Array(String(piStr))[0..<((Int(((String(piStr)).count)) - Int(precision)) as! Int)])) + ".") + String(String(Array(String(piStr))[((Int(((String(piStr)).count)) - Int(precision)) as! Int)..<Int(((String(piStr)).count))]))) as! String)
+    |                                                                                                                                                                                                                                                               `- warning: forced cast of 'String' to same type has no effect
+406 |     print("")
+407 |     print("Pi to 70 decimal places is:")

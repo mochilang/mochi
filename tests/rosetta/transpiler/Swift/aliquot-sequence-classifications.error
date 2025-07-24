@@ -1,0 +1,524 @@
+exit status 1
+/tmp/TestSwiftTranspiler_Rosetta_Golden1814781870/001/main.swift:9:31: warning: forced cast of '[Int]' to same type has no effect
+  7 |     var value = value
+  8 |     var i = 0
+  9 |     while (Int(i) < Int((((xs as! [Int])).count))) {
+    |                               `- warning: forced cast of '[Int]' to same type has no effect
+ 10 |         if (Int(xs[Int(i)]) == Int(value)) {
+ 11 |             return Int(i)
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden1814781870/001/main.swift:13:27: warning: forced cast of 'Int' to same type has no effect
+ 11 |             return Int(i)
+ 12 |         }
+ 13 |         i = ((Int(i) + 1) as! Int)
+    |                           `- warning: forced cast of 'Int' to same type has no effect
+ 14 |     }
+ 15 |     return ((0 - 1) as! Int)
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden1814781870/001/main.swift:15:21: warning: forced cast of 'Int' to same type has no effect
+ 13 |         i = ((Int(i) + 1) as! Int)
+ 14 |     }
+ 15 |     return ((0 - 1) as! Int)
+    |                     `- warning: forced cast of 'Int' to same type has no effect
+ 16 | }
+ 17 | func contains(_ xs: [Int], _ value: Int) -> Bool {
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden1814781870/001/main.swift:6:9: warning: variable 'xs' was never mutated; consider changing to 'let' constant
+  4 | let THRESHOLD = 140737488355328
+  5 | func indexOf(_ xs: [Int], _ value: Int) -> Int {
+  6 |     var xs = xs
+    |         `- warning: variable 'xs' was never mutated; consider changing to 'let' constant
+  7 |     var value = value
+  8 |     var i = 0
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden1814781870/001/main.swift:7:9: warning: variable 'value' was never mutated; consider changing to 'let' constant
+  5 | func indexOf(_ xs: [Int], _ value: Int) -> Int {
+  6 |     var xs = xs
+  7 |     var value = value
+    |         `- warning: variable 'value' was never mutated; consider changing to 'let' constant
+  8 |     var i = 0
+  9 |     while (Int(i) < Int((((xs as! [Int])).count))) {
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden1814781870/001/main.swift:20:30: warning: forced cast of '[Int]' to same type has no effect
+ 18 |     var xs = xs
+ 19 |     var value = value
+ 20 |     return ((Int(indexOf((xs as! [Int]), Int(value))) != (0 - 1)) as! Bool)
+    |                              `- warning: forced cast of '[Int]' to same type has no effect
+ 21 | }
+ 22 | func maxOf(_ a: Int, _ b: Int) -> Int {
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden1814781870/001/main.swift:20:67: warning: forced cast of 'Bool' to same type has no effect
+ 18 |     var xs = xs
+ 19 |     var value = value
+ 20 |     return ((Int(indexOf((xs as! [Int]), Int(value))) != (0 - 1)) as! Bool)
+    |                                                                   `- warning: forced cast of 'Bool' to same type has no effect
+ 21 | }
+ 22 | func maxOf(_ a: Int, _ b: Int) -> Int {
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden1814781870/001/main.swift:18:9: warning: variable 'xs' was never mutated; consider changing to 'let' constant
+ 16 | }
+ 17 | func contains(_ xs: [Int], _ value: Int) -> Bool {
+ 18 |     var xs = xs
+    |         `- warning: variable 'xs' was never mutated; consider changing to 'let' constant
+ 19 |     var value = value
+ 20 |     return ((Int(indexOf((xs as! [Int]), Int(value))) != (0 - 1)) as! Bool)
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden1814781870/001/main.swift:19:9: warning: variable 'value' was never mutated; consider changing to 'let' constant
+ 17 | func contains(_ xs: [Int], _ value: Int) -> Bool {
+ 18 |     var xs = xs
+ 19 |     var value = value
+    |         `- warning: variable 'value' was never mutated; consider changing to 'let' constant
+ 20 |     return ((Int(indexOf((xs as! [Int]), Int(value))) != (0 - 1)) as! Bool)
+ 21 | }
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden1814781870/001/main.swift:23:9: warning: variable 'a' was never mutated; consider changing to 'let' constant
+ 21 | }
+ 22 | func maxOf(_ a: Int, _ b: Int) -> Int {
+ 23 |     var a = a
+    |         `- warning: variable 'a' was never mutated; consider changing to 'let' constant
+ 24 |     var b = b
+ 25 |     if (Int(a) > Int(b)) {
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden1814781870/001/main.swift:24:9: warning: variable 'b' was never mutated; consider changing to 'let' constant
+ 22 | func maxOf(_ a: Int, _ b: Int) -> Int {
+ 23 |     var a = a
+ 24 |     var b = b
+    |         `- warning: variable 'b' was never mutated; consider changing to 'let' constant
+ 25 |     if (Int(a) > Int(b)) {
+ 26 |         return Int(a)
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden1814781870/001/main.swift:37:38: warning: forced cast of 'Int' to same type has no effect
+ 35 |     }
+ 36 |     var x = Int(n)
+ 37 |     var y = ((Int((Int(x) + 1)) / 2) as! Int)
+    |                                      `- warning: forced cast of 'Int' to same type has no effect
+ 38 |     while (Int(y) < Int(x)) {
+ 39 |         x = Int(y)
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden1814781870/001/main.swift:40:54: warning: forced cast of 'Int' to same type has no effect
+ 38 |     while (Int(y) < Int(x)) {
+ 39 |         x = Int(y)
+ 40 |         y = ((Int((Int(x) + (Int(n) / Int(x)))) / 2) as! Int)
+    |                                                      `- warning: forced cast of 'Int' to same type has no effect
+ 41 |     }
+ 42 |     return Int(x)
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden1814781870/001/main.swift:32:9: warning: variable 'n' was never mutated; consider changing to 'let' constant
+ 30 | }
+ 31 | func intSqrt(_ n: Int) -> Int {
+ 32 |     var n = n
+    |         `- warning: variable 'n' was never mutated; consider changing to 'let' constant
+ 33 |     if (Int(n) == 0) {
+ 34 |         return 0
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden1814781870/001/main.swift:54:62: warning: forced cast of 'Int' to same type has no effect
+ 52 |     while (Int(i) <= Int(sqrt)) {
+ 53 |         if ((Int(n) % Int(i)) == 0) {
+ 54 |             sum = (((Int(sum) + Int(i)) + (Int(n) / Int(i))) as! Int)
+    |                                                              `- warning: forced cast of 'Int' to same type has no effect
+ 55 |         }
+ 56 |         i = ((Int(i) + 1) as! Int)
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden1814781870/001/main.swift:56:27: warning: forced cast of 'Int' to same type has no effect
+ 54 |             sum = (((Int(sum) + Int(i)) + (Int(n) / Int(i))) as! Int)
+ 55 |         }
+ 56 |         i = ((Int(i) + 1) as! Int)
+    |                           `- warning: forced cast of 'Int' to same type has no effect
+ 57 |     }
+ 58 |     if ((Int(sqrt) * Int(sqrt)) == Int(n)) {
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden1814781870/001/main.swift:59:39: warning: forced cast of 'Int' to same type has no effect
+ 57 |     }
+ 58 |     if ((Int(sqrt) * Int(sqrt)) == Int(n)) {
+ 59 |         sum = ((Int(sum) - Int(sqrt)) as! Int)
+    |                                       `- warning: forced cast of 'Int' to same type has no effect
+ 60 |     }
+ 61 |     return Int(sum)
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden1814781870/001/main.swift:45:9: warning: variable 'n' was never mutated; consider changing to 'let' constant
+ 43 | }
+ 44 | func sumProperDivisors(_ n: Int) -> Int {
+ 45 |     var n = n
+    |         `- warning: variable 'n' was never mutated; consider changing to 'let' constant
+ 46 |     if (Int(n) < 2) {
+ 47 |         return 0
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden1814781870/001/main.swift:69:22: warning: forced cast of '[Int]' to same type has no effect
+ 67 |     while true {
+ 68 |         last = Int(sumProperDivisors(Int(last)))
+ 69 |         seq = (((seq as! [Int]) + [Int(last)]) as! [Int])
+    |                      `- warning: forced cast of '[Int]' to same type has no effect
+ 70 |         let n = Int((((seq as! [Int])).count))
+ 71 |         var aliquot = ""
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden1814781870/001/main.swift:70:28: warning: forced cast of '[Int]' to same type has no effect
+ 68 |         last = Int(sumProperDivisors(Int(last)))
+ 69 |         seq = (((seq as! [Int]) + [Int(last)]) as! [Int])
+ 70 |         let n = Int((((seq as! [Int])).count))
+    |                            `- warning: forced cast of '[Int]' to same type has no effect
+ 71 |         var aliquot = ""
+ 72 |         if (Int(last) == 0) {
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden1814781870/001/main.swift:79:89: warning: forced cast of 'String' to same type has no effect
+ 77 |             aliquot = "Amicable"
+ 78 |         } else if ((Int(n) >= 4) && (Int(last) == Int(k))) {
+ 79 |             aliquot = ((("Sociable[" + String(String(describing: (Int(n) - 1)))) + "]") as! String)
+    |                                                                                         `- warning: forced cast of 'String' to same type has no effect
+ 80 |         } else if (Int(last) == Int(seq[(Int(n) - 2)])) {
+ 81 |             aliquot = "Aspiring"
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden1814781870/001/main.swift:82:71: warning: forced cast of 'Int' to same type has no effect
+ 80 |         } else if (Int(last) == Int(seq[(Int(n) - 2)])) {
+ 81 |             aliquot = "Aspiring"
+ 82 |         } else if (contains((Array(seq[1..<Int(maxOf(1, ((Int(n) - 2) as! Int)))]) as! [Int]), Int(last)) as! Bool) {
+    |                                                                       `- warning: forced cast of 'Int' to same type has no effect
+ 83 |             let idx = Int(indexOf((seq as! [Int]), Int(last)))
+ 84 |             aliquot = ((("Cyclic[" + String(String(describing: ((Int(n) - 1) - Int(idx))))) + "]") as! String)
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden1814781870/001/main.swift:82:107: warning: forced cast of 'Bool' to same type has no effect
+ 80 |         } else if (Int(last) == Int(seq[(Int(n) - 2)])) {
+ 81 |             aliquot = "Aspiring"
+ 82 |         } else if (contains((Array(seq[1..<Int(maxOf(1, ((Int(n) - 2) as! Int)))]) as! [Int]), Int(last)) as! Bool) {
+    |                                                                                                           `- warning: forced cast of 'Bool' to same type has no effect
+ 83 |             let idx = Int(indexOf((seq as! [Int]), Int(last)))
+ 84 |             aliquot = ((("Cyclic[" + String(String(describing: ((Int(n) - 1) - Int(idx))))) + "]") as! String)
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden1814781870/001/main.swift:83:40: warning: forced cast of '[Int]' to same type has no effect
+ 81 |             aliquot = "Aspiring"
+ 82 |         } else if (contains((Array(seq[1..<Int(maxOf(1, ((Int(n) - 2) as! Int)))]) as! [Int]), Int(last)) as! Bool) {
+ 83 |             let idx = Int(indexOf((seq as! [Int]), Int(last)))
+    |                                        `- warning: forced cast of '[Int]' to same type has no effect
+ 84 |             aliquot = ((("Cyclic[" + String(String(describing: ((Int(n) - 1) - Int(idx))))) + "]") as! String)
+ 85 |         } else if ((Int(n) == 16) || (Int(last) > Int(THRESHOLD))) {
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden1814781870/001/main.swift:84:100: warning: forced cast of 'String' to same type has no effect
+ 82 |         } else if (contains((Array(seq[1..<Int(maxOf(1, ((Int(n) - 2) as! Int)))]) as! [Int]), Int(last)) as! Bool) {
+ 83 |             let idx = Int(indexOf((seq as! [Int]), Int(last)))
+ 84 |             aliquot = ((("Cyclic[" + String(String(describing: ((Int(n) - 1) - Int(idx))))) + "]") as! String)
+    |                                                                                                    `- warning: forced cast of 'String' to same type has no effect
+ 85 |         } else if ((Int(n) == 16) || (Int(last) > Int(THRESHOLD))) {
+ 86 |             aliquot = "Non-Terminating"
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden1814781870/001/main.swift:95:34: warning: forced cast of '[Int]' to same type has no effect
+ 93 |         
+ 94 |         if (String(aliquot) != "") {
+ 95 |             return (["seq": (seq as! [Int]), "aliquot": String(aliquot)] as [String: Any] as! [String: Any])
+    |                                  `- warning: forced cast of '[Int]' to same type has no effect
+ 96 |         }
+ 97 |     }
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden1814781870/001/main.swift:95:91: warning: forced cast of '[String : Any]' to same type has no effect
+ 93 |         
+ 94 |         if (String(aliquot) != "") {
+ 95 |             return (["seq": (seq as! [Int]), "aliquot": String(aliquot)] as [String: Any] as! [String: Any])
+    |                                                                                           `- warning: forced cast of '[String : Any]' to same type has no effect
+ 96 |         }
+ 97 |     }
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden1814781870/001/main.swift:98:26: warning: forced cast of '[Int]' to same type has no effect
+ 96 |         }
+ 97 |     }
+ 98 |     return (["seq": (seq as! [Int]), "aliquot": ""] as [String: Any] as! [String: Any])
+    |                          `- warning: forced cast of '[Int]' to same type has no effect
+ 99 | }
+100 | func padLeft(_ n: Int, _ w: Int) -> String {
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden1814781870/001/main.swift:98:70: warning: forced cast of '[String : Any]' to same type has no effect
+ 96 |         }
+ 97 |     }
+ 98 |     return (["seq": (seq as! [Int]), "aliquot": ""] as [String: Any] as! [String: Any])
+    |                                                                      `- warning: forced cast of '[String : Any]' to same type has no effect
+ 99 | }
+100 | func padLeft(_ n: Int, _ w: Int) -> String {
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden1814781870/001/main.swift:64:9: warning: variable 'k' was never mutated; consider changing to 'let' constant
+ 62 | }
+ 63 | func classifySequence(_ k: Int) -> [String: Any] {
+ 64 |     var k = k
+    |         `- warning: variable 'k' was never mutated; consider changing to 'let' constant
+ 65 |     var last = Int(k)
+ 66 |     var seq: [Int] = ([Int(k)] as! [Int])
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden1814781870/001/main.swift:105:32: warning: forced cast of 'String' to same type has no effect
+103 |     var s = String(String(describing: Int(n)))
+104 |     while (Int(((String(s)).count)) < Int(w)) {
+105 |         s = ((" " + String(s)) as! String)
+    |                                `- warning: forced cast of 'String' to same type has no effect
+106 |     }
+107 |     return String(s)
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden1814781870/001/main.swift:101:9: warning: variable 'n' was never mutated; consider changing to 'let' constant
+ 99 | }
+100 | func padLeft(_ n: Int, _ w: Int) -> String {
+101 |     var n = n
+    |         `- warning: variable 'n' was never mutated; consider changing to 'let' constant
+102 |     var w = w
+103 |     var s = String(String(describing: Int(n)))
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden1814781870/001/main.swift:102:9: warning: variable 'w' was never mutated; consider changing to 'let' constant
+100 | func padLeft(_ n: Int, _ w: Int) -> String {
+101 |     var n = n
+102 |     var w = w
+    |         `- warning: variable 'w' was never mutated; consider changing to 'let' constant
+103 |     var s = String(String(describing: Int(n)))
+104 |     while (Int(((String(s)).count)) < Int(w)) {
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden1814781870/001/main.swift:114:32: warning: forced cast of 'String' to same type has no effect
+112 |     var r = String(s)
+113 |     while (Int(((String(r)).count)) < Int(w)) {
+114 |         r = ((String(r) + " ") as! String)
+    |                                `- warning: forced cast of 'String' to same type has no effect
+115 |     }
+116 |     return String(r)
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden1814781870/001/main.swift:110:9: warning: variable 's' was never mutated; consider changing to 'let' constant
+108 | }
+109 | func padRight(_ s: String, _ w: Int) -> String {
+110 |     var s = s
+    |         `- warning: variable 's' was never mutated; consider changing to 'let' constant
+111 |     var w = w
+112 |     var r = String(s)
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden1814781870/001/main.swift:111:9: warning: variable 'w' was never mutated; consider changing to 'let' constant
+109 | func padRight(_ s: String, _ w: Int) -> String {
+110 |     var s = s
+111 |     var w = w
+    |         `- warning: variable 'w' was never mutated; consider changing to 'let' constant
+112 |     var r = String(s)
+113 |     while (Int(((String(r)).count)) < Int(w)) {
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden1814781870/001/main.swift:122:32: warning: forced cast of '[Int]' to same type has no effect
+120 |     var s = "["
+121 |     var i = 0
+122 |     while (Int(i) < Int((((seq as! [Int])).count))) {
+    |                                `- warning: forced cast of '[Int]' to same type has no effect
+123 |         s = ((String(s) + String(String(describing: Int(seq[Int(i)])))) as! String)
+124 |         if (Int(i) < (Int((((seq as! [Int])).count)) - 1)) {
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden1814781870/001/main.swift:123:73: warning: forced cast of 'String' to same type has no effect
+121 |     var i = 0
+122 |     while (Int(i) < Int((((seq as! [Int])).count))) {
+123 |         s = ((String(s) + String(String(describing: Int(seq[Int(i)])))) as! String)
+    |                                                                         `- warning: forced cast of 'String' to same type has no effect
+124 |         if (Int(i) < (Int((((seq as! [Int])).count)) - 1)) {
+125 |             s = ((String(s) + ", ") as! String)
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden1814781870/001/main.swift:124:34: warning: forced cast of '[Int]' to same type has no effect
+122 |     while (Int(i) < Int((((seq as! [Int])).count))) {
+123 |         s = ((String(s) + String(String(describing: Int(seq[Int(i)])))) as! String)
+124 |         if (Int(i) < (Int((((seq as! [Int])).count)) - 1)) {
+    |                                  `- warning: forced cast of '[Int]' to same type has no effect
+125 |             s = ((String(s) + ", ") as! String)
+126 |         }
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden1814781870/001/main.swift:125:37: warning: forced cast of 'String' to same type has no effect
+123 |         s = ((String(s) + String(String(describing: Int(seq[Int(i)])))) as! String)
+124 |         if (Int(i) < (Int((((seq as! [Int])).count)) - 1)) {
+125 |             s = ((String(s) + ", ") as! String)
+    |                                     `- warning: forced cast of 'String' to same type has no effect
+126 |         }
+127 |         i = ((Int(i) + 1) as! Int)
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden1814781870/001/main.swift:127:27: warning: forced cast of 'Int' to same type has no effect
+125 |             s = ((String(s) + ", ") as! String)
+126 |         }
+127 |         i = ((Int(i) + 1) as! Int)
+    |                           `- warning: forced cast of 'Int' to same type has no effect
+128 |     }
+129 |     s = ((String(s) + "]") as! String)
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden1814781870/001/main.swift:129:28: warning: forced cast of 'String' to same type has no effect
+127 |         i = ((Int(i) + 1) as! Int)
+128 |     }
+129 |     s = ((String(s) + "]") as! String)
+    |                            `- warning: forced cast of 'String' to same type has no effect
+130 |     return String(s)
+131 | }
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden1814781870/001/main.swift:119:9: warning: variable 'seq' was never mutated; consider changing to 'let' constant
+117 | }
+118 | func joinWithCommas(_ seq: [Int]) -> String {
+119 |     var seq = seq
+    |         `- warning: variable 'seq' was never mutated; consider changing to 'let' constant
+120 |     var s = "["
+121 |     var i = 0
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden1814781870/001/main.swift:136:45: warning: forced cast of '[String : Any]' to same type has no effect
+134 |     var k = 1
+135 |     while (Int(k) <= 10) {
+136 |         let res = (classifySequence(Int(k)) as! [String: Any])
+    |                                             `- warning: forced cast of '[String : Any]' to same type has no effect
+137 |         print(((((String(padLeft(Int(k), 2)) + ": ") + String(padRight(String((res as! [String: Any])["aliquot"]!), 15))) + " ") + String(joinWithCommas(((res as! [String: Any])["seq"]! as! [Int])))))
+138 |         k = ((Int(k) + 1) as! Int)
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden1814781870/001/main.swift:137:72: error: no exact matches in call to initializer 
+135 |     while (Int(k) <= 10) {
+136 |         let res = (classifySequence(Int(k)) as! [String: Any])
+137 |         print(((((String(padLeft(Int(k), 2)) + ": ") + String(padRight(String((res as! [String: Any])["aliquot"]!), 15))) + " ") + String(joinWithCommas(((res as! [String: Any])["seq"]! as! [Int])))))
+    |                                                                        `- error: no exact matches in call to initializer 
+138 |         k = ((Int(k) + 1) as! Int)
+139 |     }
+
+Swift.String.init:2:19: note: candidate requires that 'Any' conform to 'LosslessStringConvertible' (requirement specified as 'T' : 'LosslessStringConvertible')
+1 | struct String {
+2 | @inlinable public init<T>(_ value: T) where T : LosslessStringConvertible}
+  |                   `- note: candidate requires that 'Any' conform to 'LosslessStringConvertible' (requirement specified as 'T' : 'LosslessStringConvertible')
+3 | 
+
+Swift.String.init:2:8: note: candidate requires that 'Any' conform to 'BinaryInteger' (requirement specified as 'T' : 'BinaryInteger')
+1 | struct String {
+2 | public init<T>(_ value: T, radix: Int = 10, uppercase: Bool = false) where T : BinaryInteger}
+  |        `- note: candidate requires that 'Any' conform to 'BinaryInteger' (requirement specified as 'T' : 'BinaryInteger')
+3 | 
+
+Swift.String.init:2:8: note: candidate requires that 'Any' conform to 'Sequence' (requirement specified as 'S' : 'Sequence')
+1 | struct String {
+2 | public init<S>(_ characters: S) where S : Sequence, S.Element == Character}
+  |        `- note: candidate requires that 'Any' conform to 'Sequence' (requirement specified as 'S' : 'Sequence')
+3 | 
+
+Swift.RangeReplaceableCollection.init:2:19: note: candidate requires that 'Any' conform to 'Sequence' (requirement specified as 'S' : 'Sequence')
+1 | protocol RangeReplaceableCollection {
+2 | @inlinable public init<S>(_ elements: S) where S : Sequence, Self.Element == S.Element}
+  |                   `- note: candidate requires that 'Any' conform to 'Sequence' (requirement specified as 'S' : 'Sequence')
+3 | 
+
+Swift.String.init:2:8: note: incorrect labels for candidate (have: '(_:)', expected: '(describing:)')
+1 | struct String {
+2 | public init<Subject>(describing instance: Subject)}
+  |        `- note: incorrect labels for candidate (have: '(_:)', expected: '(describing:)')
+3 | 
+
+Swift.String.init:2:8: note: incorrect labels for candidate (have: '(_:)', expected: '(reflecting:)')
+1 | struct String {
+2 | public init<Subject>(reflecting subject: Subject)}
+  |        `- note: incorrect labels for candidate (have: '(_:)', expected: '(reflecting:)')
+3 | 
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden1814781870/001/main.swift:138:27: warning: forced cast of 'Int' to same type has no effect
+136 |         let res = (classifySequence(Int(k)) as! [String: Any])
+137 |         print(((((String(padLeft(Int(k), 2)) + ": ") + String(padRight(String((res as! [String: Any])["aliquot"]!), 15))) + " ") + String(joinWithCommas(((res as! [String: Any])["seq"]! as! [Int])))))
+138 |         k = ((Int(k) + 1) as! Int)
+    |                           `- warning: forced cast of 'Int' to same type has no effect
+139 |     }
+140 |     print("")
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden1814781870/001/main.swift:143:30: warning: forced cast of '[Int]' to same type has no effect
+141 |     let s = ([11, 12, 28, 496, 220, 1184, 12496, 1264460, 790, 909, 562, 1064, 1488] as! [Int])
+142 |     var i = 0
+143 |     while (Int(i) < Int((((s as! [Int])).count))) {
+    |                              `- warning: forced cast of '[Int]' to same type has no effect
+144 |         let val = Int(s[Int(i)])
+145 |         let res = (classifySequence(Int(val)) as! [String: Any])
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden1814781870/001/main.swift:145:47: warning: forced cast of '[String : Any]' to same type has no effect
+143 |     while (Int(i) < Int((((s as! [Int])).count))) {
+144 |         let val = Int(s[Int(i)])
+145 |         let res = (classifySequence(Int(val)) as! [String: Any])
+    |                                               `- warning: forced cast of '[String : Any]' to same type has no effect
+146 |         print(((((String(padLeft(Int(val), 7)) + ": ") + String(padRight(String((res as! [String: Any])["aliquot"]!), 15))) + " ") + String(joinWithCommas(((res as! [String: Any])["seq"]! as! [Int])))))
+147 |         i = ((Int(i) + 1) as! Int)
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden1814781870/001/main.swift:146:74: error: no exact matches in call to initializer 
+144 |         let val = Int(s[Int(i)])
+145 |         let res = (classifySequence(Int(val)) as! [String: Any])
+146 |         print(((((String(padLeft(Int(val), 7)) + ": ") + String(padRight(String((res as! [String: Any])["aliquot"]!), 15))) + " ") + String(joinWithCommas(((res as! [String: Any])["seq"]! as! [Int])))))
+    |                                                                          `- error: no exact matches in call to initializer 
+147 |         i = ((Int(i) + 1) as! Int)
+148 |     }
+
+Swift.String.init:2:19: note: candidate requires that 'Any' conform to 'LosslessStringConvertible' (requirement specified as 'T' : 'LosslessStringConvertible')
+1 | struct String {
+2 | @inlinable public init<T>(_ value: T) where T : LosslessStringConvertible}
+  |                   `- note: candidate requires that 'Any' conform to 'LosslessStringConvertible' (requirement specified as 'T' : 'LosslessStringConvertible')
+3 | 
+
+Swift.String.init:2:8: note: candidate requires that 'Any' conform to 'BinaryInteger' (requirement specified as 'T' : 'BinaryInteger')
+1 | struct String {
+2 | public init<T>(_ value: T, radix: Int = 10, uppercase: Bool = false) where T : BinaryInteger}
+  |        `- note: candidate requires that 'Any' conform to 'BinaryInteger' (requirement specified as 'T' : 'BinaryInteger')
+3 | 
+
+Swift.String.init:2:8: note: candidate requires that 'Any' conform to 'Sequence' (requirement specified as 'S' : 'Sequence')
+1 | struct String {
+2 | public init<S>(_ characters: S) where S : Sequence, S.Element == Character}
+  |        `- note: candidate requires that 'Any' conform to 'Sequence' (requirement specified as 'S' : 'Sequence')
+3 | 
+
+Swift.RangeReplaceableCollection.init:2:19: note: candidate requires that 'Any' conform to 'Sequence' (requirement specified as 'S' : 'Sequence')
+1 | protocol RangeReplaceableCollection {
+2 | @inlinable public init<S>(_ elements: S) where S : Sequence, Self.Element == S.Element}
+  |                   `- note: candidate requires that 'Any' conform to 'Sequence' (requirement specified as 'S' : 'Sequence')
+3 | 
+
+Swift.String.init:2:8: note: incorrect labels for candidate (have: '(_:)', expected: '(describing:)')
+1 | struct String {
+2 | public init<Subject>(describing instance: Subject)}
+  |        `- note: incorrect labels for candidate (have: '(_:)', expected: '(describing:)')
+3 | 
+
+Swift.String.init:2:8: note: incorrect labels for candidate (have: '(_:)', expected: '(reflecting:)')
+1 | struct String {
+2 | public init<Subject>(reflecting subject: Subject)}
+  |        `- note: incorrect labels for candidate (have: '(_:)', expected: '(reflecting:)')
+3 | 
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden1814781870/001/main.swift:147:27: warning: forced cast of 'Int' to same type has no effect
+145 |         let res = (classifySequence(Int(val)) as! [String: Any])
+146 |         print(((((String(padLeft(Int(val), 7)) + ": ") + String(padRight(String((res as! [String: Any])["aliquot"]!), 15))) + " ") + String(joinWithCommas(((res as! [String: Any])["seq"]! as! [Int])))))
+147 |         i = ((Int(i) + 1) as! Int)
+    |                           `- warning: forced cast of 'Int' to same type has no effect
+148 |     }
+149 |     print("")
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden1814781870/001/main.swift:151:41: warning: forced cast of '[String : Any]' to same type has no effect
+149 |     print("")
+150 |     let big = 15355717786080
+151 |     let r = (classifySequence(Int(big)) as! [String: Any])
+    |                                         `- warning: forced cast of '[String : Any]' to same type has no effect
+152 |     print(((((String(String(describing: Int(big))) + ": ") + String(padRight(String((r as! [String: Any])["aliquot"]!), 15))) + " ") + String(joinWithCommas(((r as! [String: Any])["seq"]! as! [Int])))))
+153 | }
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden1814781870/001/main.swift:152:78: error: no exact matches in call to initializer 
+150 |     let big = 15355717786080
+151 |     let r = (classifySequence(Int(big)) as! [String: Any])
+152 |     print(((((String(String(describing: Int(big))) + ": ") + String(padRight(String((r as! [String: Any])["aliquot"]!), 15))) + " ") + String(joinWithCommas(((r as! [String: Any])["seq"]! as! [Int])))))
+    |                                                                              `- error: no exact matches in call to initializer 
+153 | }
+154 | main()
+
+Swift.String.init:2:19: note: candidate requires that 'Any' conform to 'LosslessStringConvertible' (requirement specified as 'T' : 'LosslessStringConvertible')
+1 | struct String {
+2 | @inlinable public init<T>(_ value: T) where T : LosslessStringConvertible}
+  |                   `- note: candidate requires that 'Any' conform to 'LosslessStringConvertible' (requirement specified as 'T' : 'LosslessStringConvertible')
+3 | 
+
+Swift.String.init:2:8: note: candidate requires that 'Any' conform to 'BinaryInteger' (requirement specified as 'T' : 'BinaryInteger')
+1 | struct String {
+2 | public init<T>(_ value: T, radix: Int = 10, uppercase: Bool = false) where T : BinaryInteger}
+  |        `- note: candidate requires that 'Any' conform to 'BinaryInteger' (requirement specified as 'T' : 'BinaryInteger')
+3 | 
+
+Swift.String.init:2:8: note: candidate requires that 'Any' conform to 'Sequence' (requirement specified as 'S' : 'Sequence')
+1 | struct String {
+2 | public init<S>(_ characters: S) where S : Sequence, S.Element == Character}
+  |        `- note: candidate requires that 'Any' conform to 'Sequence' (requirement specified as 'S' : 'Sequence')
+3 | 
+
+Swift.RangeReplaceableCollection.init:2:19: note: candidate requires that 'Any' conform to 'Sequence' (requirement specified as 'S' : 'Sequence')
+1 | protocol RangeReplaceableCollection {
+2 | @inlinable public init<S>(_ elements: S) where S : Sequence, Self.Element == S.Element}
+  |                   `- note: candidate requires that 'Any' conform to 'Sequence' (requirement specified as 'S' : 'Sequence')
+3 | 
+
+Swift.String.init:2:8: note: incorrect labels for candidate (have: '(_:)', expected: '(describing:)')
+1 | struct String {
+2 | public init<Subject>(describing instance: Subject)}
+  |        `- note: incorrect labels for candidate (have: '(_:)', expected: '(describing:)')
+3 | 
+
+Swift.String.init:2:8: note: incorrect labels for candidate (have: '(_:)', expected: '(reflecting:)')
+1 | struct String {
+2 | public init<Subject>(reflecting subject: Subject)}
+  |        `- note: incorrect labels for candidate (have: '(_:)', expected: '(reflecting:)')
+3 | 

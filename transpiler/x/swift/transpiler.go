@@ -952,7 +952,7 @@ func (c *CallExpr) emit(w io.Writer) {
 		if len(c.Args) == 1 {
 			fmt.Fprint(w, "Int(")
 			c.Args[0].emit(w)
-			fmt.Fprint(w, ")")
+			fmt.Fprint(w, ")!")
 			return
 		}
 	case "float":
@@ -2535,19 +2535,25 @@ func convertPostfix(env *types.Env, p *parser.PostfixExpr) (Expr, error) {
 			t = ot.Elem
 		}
 		if _, ok := expr.(*FieldExpr); !ok {
-			switch {
-			case types.IsIntType(t):
-				expr = &CastExpr{Expr: expr, Type: "Int"}
-			case types.IsInt64Type(t):
-				expr = &CastExpr{Expr: expr, Type: "Int64"}
-			case types.IsFloatType(t):
-				expr = &CastExpr{Expr: expr, Type: "Double"}
-			case types.IsStringType(t):
-				expr = &CastExpr{Expr: expr, Type: "String"}
-			case types.IsBoolType(t):
-				expr = &CastExpr{Expr: expr, Type: "Bool!"}
-			case types.IsListType(t), types.IsMapType(t):
-				expr = &CastExpr{Expr: expr, Type: swiftTypeOf(t)}
+			if ce, ok2 := expr.(*CallExpr); !(ok2 && ce.Func == "input" && types.IsStringType(t)) {
+				if ce, ok2 := expr.(*CallExpr); ok2 && ce.Func == "int" && types.IsIntType(t) {
+					// result already Int via int(), skip additional cast
+				} else {
+					switch {
+					case types.IsIntType(t):
+						expr = &CastExpr{Expr: expr, Type: "Int"}
+					case types.IsInt64Type(t):
+						expr = &CastExpr{Expr: expr, Type: "Int64"}
+					case types.IsFloatType(t):
+						expr = &CastExpr{Expr: expr, Type: "Double"}
+					case types.IsStringType(t):
+						expr = &CastExpr{Expr: expr, Type: "String"}
+					case types.IsBoolType(t):
+						expr = &CastExpr{Expr: expr, Type: "Bool!"}
+					case types.IsListType(t), types.IsMapType(t):
+						expr = &CastExpr{Expr: expr, Type: swiftTypeOf(t)}
+					}
+				}
 			}
 		}
 	}
@@ -2970,7 +2976,7 @@ func convertPrimary(env *types.Env, pr *parser.Primary) (Expr, error) {
 			if err != nil {
 				return nil, err
 			}
-			return &CastExpr{Expr: arg, Type: "Int!"}, nil
+			return &CallExpr{Func: "int", Args: []Expr{arg}}, nil
 		}
 		if pr.Call.Func == "input" && len(pr.Call.Args) == 0 {
 			return &CallExpr{Func: "input"}, nil

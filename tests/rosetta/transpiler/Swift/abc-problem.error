@@ -1,0 +1,192 @@
+exit status 1
+/tmp/TestSwiftTranspiler_Rosetta_Golden2981149370/001/main.swift:13:30: warning: forced cast of '[String]' to same type has no effect
+11 |         if (String(c) == " ") {
+12 |             if (Int(((String(cur)).count)) > 0) {
+13 |                 res = (((res as! [String]) + [String(cur)]) as! [String])
+   |                              `- warning: forced cast of '[String]' to same type has no effect
+14 |                 cur = ""
+15 |             }
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2981149370/001/main.swift:17:46: warning: forced cast of 'String' to same type has no effect
+15 |             }
+16 |         } else {
+17 |             cur = ((String(cur) + String(c)) as! String)
+   |                                              `- warning: forced cast of 'String' to same type has no effect
+18 |         }
+19 |         i = ((Int(i) + 1) as! Int)
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2981149370/001/main.swift:19:27: warning: forced cast of 'Int' to same type has no effect
+17 |             cur = ((String(cur) + String(c)) as! String)
+18 |         }
+19 |         i = ((Int(i) + 1) as! Int)
+   |                           `- warning: forced cast of 'Int' to same type has no effect
+20 |     }
+21 |     if (Int(((String(cur)).count)) > 0) {
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2981149370/001/main.swift:22:22: warning: forced cast of '[String]' to same type has no effect
+20 |     }
+21 |     if (Int(((String(cur)).count)) > 0) {
+22 |         res = (((res as! [String]) + [String(cur)]) as! [String])
+   |                      `- warning: forced cast of '[String]' to same type has no effect
+23 |     }
+24 |     return (res as! [String])
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2981149370/001/main.swift:24:17: warning: forced cast of '[String]' to same type has no effect
+22 |         res = (((res as! [String]) + [String(cur)]) as! [String])
+23 |     }
+24 |     return (res as! [String])
+   |                 `- warning: forced cast of '[String]' to same type has no effect
+25 | }
+26 | func canSpell(_ word: String, _ blks: [String]) -> Bool {
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2981149370/001/main.swift:5:9: warning: variable 's' was never mutated; consider changing to 'let' constant
+ 3 | 
+ 4 | func fields(_ s: String) -> [String] {
+ 5 |     var s = s
+   |         `- warning: variable 's' was never mutated; consider changing to 'let' constant
+ 6 |     var res: [String] = ([] as! [String])
+ 7 |     var cur = ""
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2981149370/001/main.swift:32:20: error: cannot find 'lower' in scope
+30 |         return true
+31 |     }
+32 |     let c = String(lower(String(String(Array(word)[0..<1]))))
+   |                    `- error: cannot find 'lower' in scope
+33 |     var i = 0
+34 |     while (Int(i) < Int((((blks as! [String])).count))) {
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2981149370/001/main.swift:34:33: warning: forced cast of '[String]' to same type has no effect
+32 |     let c = String(lower(String(String(Array(word)[0..<1]))))
+33 |     var i = 0
+34 |     while (Int(i) < Int((((blks as! [String])).count))) {
+   |                                 `- warning: forced cast of '[String]' to same type has no effect
+35 |         let b = String(blks[Int(i)])
+36 |         if ((String(c) == String(lower(String(String(Array(b)[0..<1]))))) || (String(c) == String(lower(String(String(Array(b)[1..<2])))))) {
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2981149370/001/main.swift:36:34: error: cannot find 'lower' in scope
+34 |     while (Int(i) < Int((((blks as! [String])).count))) {
+35 |         let b = String(blks[Int(i)])
+36 |         if ((String(c) == String(lower(String(String(Array(b)[0..<1]))))) || (String(c) == String(lower(String(String(Array(b)[1..<2])))))) {
+   |                                  `- error: cannot find 'lower' in scope
+37 |             var rest: [String] = ([] as! [String])
+38 |             var j = 0
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2981149370/001/main.swift:36:99: error: cannot find 'lower' in scope
+34 |     while (Int(i) < Int((((blks as! [String])).count))) {
+35 |         let b = String(blks[Int(i)])
+36 |         if ((String(c) == String(lower(String(String(Array(b)[0..<1]))))) || (String(c) == String(lower(String(String(Array(b)[1..<2])))))) {
+   |                                                                                                   `- error: cannot find 'lower' in scope
+37 |             var rest: [String] = ([] as! [String])
+38 |             var j = 0
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2981149370/001/main.swift:36:12: error: the compiler is unable to type-check this expression in reasonable time; try breaking up the expression into distinct sub-expressions
+34 |     while (Int(i) < Int((((blks as! [String])).count))) {
+35 |         let b = String(blks[Int(i)])
+36 |         if ((String(c) == String(lower(String(String(Array(b)[0..<1]))))) || (String(c) == String(lower(String(String(Array(b)[1..<2])))))) {
+   |            `- error: the compiler is unable to type-check this expression in reasonable time; try breaking up the expression into distinct sub-expressions
+37 |             var rest: [String] = ([] as! [String])
+38 |             var j = 0
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2981149370/001/main.swift:39:41: warning: forced cast of '[String]' to same type has no effect
+37 |             var rest: [String] = ([] as! [String])
+38 |             var j = 0
+39 |             while (Int(j) < Int((((blks as! [String])).count))) {
+   |                                         `- warning: forced cast of '[String]' to same type has no effect
+40 |                 if (Int(j) != Int(i)) {
+41 |                     rest = (((rest as! [String]) + [String(blks[Int(j)])]) as! [String])
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2981149370/001/main.swift:41:36: warning: forced cast of '[String]' to same type has no effect
+39 |             while (Int(j) < Int((((blks as! [String])).count))) {
+40 |                 if (Int(j) != Int(i)) {
+41 |                     rest = (((rest as! [String]) + [String(blks[Int(j)])]) as! [String])
+   |                                    `- warning: forced cast of '[String]' to same type has no effect
+42 |                 }
+43 |                 j = ((Int(j) + 1) as! Int)
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2981149370/001/main.swift:43:35: warning: forced cast of 'Int' to same type has no effect
+41 |                     rest = (((rest as! [String]) + [String(blks[Int(j)])]) as! [String])
+42 |                 }
+43 |                 j = ((Int(j) + 1) as! Int)
+   |                                   `- warning: forced cast of 'Int' to same type has no effect
+44 |             }
+45 |             if (canSpell(String(String(Array(word)[1..<Array(word).count])), (rest as! [String])) as! Bool) {
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2981149370/001/main.swift:45:84: warning: forced cast of '[String]' to same type has no effect
+43 |                 j = ((Int(j) + 1) as! Int)
+44 |             }
+45 |             if (canSpell(String(String(Array(word)[1..<Array(word).count])), (rest as! [String])) as! Bool) {
+   |                                                                                    `- warning: forced cast of '[String]' to same type has no effect
+46 |                 return true
+47 |             }
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2981149370/001/main.swift:45:99: warning: forced cast of 'Bool' to same type has no effect
+43 |                 j = ((Int(j) + 1) as! Int)
+44 |             }
+45 |             if (canSpell(String(String(Array(word)[1..<Array(word).count])), (rest as! [String])) as! Bool) {
+   |                                                                                                   `- warning: forced cast of 'Bool' to same type has no effect
+46 |                 return true
+47 |             }
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2981149370/001/main.swift:49:27: warning: forced cast of 'Int' to same type has no effect
+47 |             }
+48 |         }
+49 |         i = ((Int(i) + 1) as! Int)
+   |                           `- warning: forced cast of 'Int' to same type has no effect
+50 |     }
+51 |     return false
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2981149370/001/main.swift:55:38: warning: forced cast of '[String]' to same type has no effect
+53 | func newSpeller(_ blocks: String) -> Any {
+54 |     var blocks = blocks
+55 |     let bl = (fields(String(blocks)) as! [String])
+   |                                      `- warning: forced cast of '[String]' to same type has no effect
+56 |     return { (w: String) -> Bool in (canSpell((w as! String), (bl as! [String])) as! Bool) }
+57 | }
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2981149370/001/main.swift:56:50: warning: forced cast of 'String' to same type has no effect
+54 |     var blocks = blocks
+55 |     let bl = (fields(String(blocks)) as! [String])
+56 |     return { (w: String) -> Bool in (canSpell((w as! String), (bl as! [String])) as! Bool) }
+   |                                                  `- warning: forced cast of 'String' to same type has no effect
+57 | }
+58 | func main() {
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2981149370/001/main.swift:56:67: warning: forced cast of '[String]' to same type has no effect
+54 |     var blocks = blocks
+55 |     let bl = (fields(String(blocks)) as! [String])
+56 |     return { (w: String) -> Bool in (canSpell((w as! String), (bl as! [String])) as! Bool) }
+   |                                                                   `- warning: forced cast of '[String]' to same type has no effect
+57 | }
+58 | func main() {
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2981149370/001/main.swift:56:82: warning: forced cast of 'Bool' to same type has no effect
+54 |     var blocks = blocks
+55 |     let bl = (fields(String(blocks)) as! [String])
+56 |     return { (w: String) -> Bool in (canSpell((w as! String), (bl as! [String])) as! Bool) }
+   |                                                                                  `- warning: forced cast of 'Bool' to same type has no effect
+57 | }
+58 | func main() {
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2981149370/001/main.swift:54:9: warning: variable 'blocks' was never mutated; consider changing to 'let' constant
+52 | }
+53 | func newSpeller(_ blocks: String) -> Any {
+54 |     var blocks = blocks
+   |         `- warning: variable 'blocks' was never mutated; consider changing to 'let' constant
+55 |     let bl = (fields(String(blocks)) as! [String])
+56 |     return { (w: String) -> Bool in (canSpell((w as! String), (bl as! [String])) as! Bool) }
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2981149370/001/main.swift:61:66: error: cannot call value of non-function type 'Any'
+59 |     let sp = newSpeller("BO XK DQ CP NA GT RE TG QD FS JW HU VI AN OB ER FS LY PC ZM")
+60 |     for word in (["A", "BARK", "BOOK", "TREAT", "COMMON", "SQUAD", "CONFUSE"] as! [String]) {
+61 |         print(((String(word) + " ") + String(String(describing: (sp((word as! String)) as! Bool)))))
+   |                                                                  `- error: cannot call value of non-function type 'Any'
+62 |     }
+63 | }
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2981149370/001/main.swift:61:75: warning: forced cast of 'String' to same type has no effect
+59 |     let sp = newSpeller("BO XK DQ CP NA GT RE TG QD FS JW HU VI AN OB ER FS LY PC ZM")
+60 |     for word in (["A", "BARK", "BOOK", "TREAT", "COMMON", "SQUAD", "CONFUSE"] as! [String]) {
+61 |         print(((String(word) + " ") + String(String(describing: (sp((word as! String)) as! Bool)))))
+   |                                                                           `- warning: forced cast of 'String' to same type has no effect
+62 |     }
+63 | }
