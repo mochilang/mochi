@@ -2533,16 +2533,24 @@ func compilePostfix(pf *parser.PostfixExpr) (Expr, error) {
 			}
 			expr = &IndexExpr{Target: expr, Index: idx, IsMap: isMapExpr(expr), ResultType: rType}
 		case op.Index != nil && op.Index.Colon != nil && op.Index.Colon2 == nil && op.Index.Step == nil:
-			if op.Index.Start == nil || op.Index.End == nil {
-				return nil, fmt.Errorf("unsupported slice")
+			var start Expr
+			var end Expr
+			var err error
+			if op.Index.Start != nil {
+				start, err = compileExpr(op.Index.Start)
+				if err != nil {
+					return nil, err
+				}
+			} else {
+				start = &IntLit{Value: 0}
 			}
-			start, err := compileExpr(op.Index.Start)
-			if err != nil {
-				return nil, err
-			}
-			end, err := compileExpr(op.Index.End)
-			if err != nil {
-				return nil, err
+			if op.Index.End != nil {
+				end, err = compileExpr(op.Index.End)
+				if err != nil {
+					return nil, err
+				}
+			} else {
+				end = &LenExpr{Value: expr}
 			}
 			expr = &SliceExpr{Value: expr, Start: start, End: end}
 		case op.Field != nil:
