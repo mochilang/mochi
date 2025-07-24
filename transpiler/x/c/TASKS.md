@@ -1,5 +1,5 @@
-## Progress (2025-07-24 08:10 +0700)
-- Commit 3275933817: rkt transpiler: handle undeclared assignment
+## Progress (2025-07-24 13:26 +0700)
+- Commit 3715fff6cd: dart transpiler: initial work on index 37
 - Regenerated golden files - 80/103 vm valid programs passing
 
 ## Progress (2025-07-22 14:12 +0700)
