@@ -332,7 +332,16 @@ type UpdateStmt struct {
 	Cond   Expr
 }
 
-func (s *ExprStmt) emit(w io.Writer) { s.Expr.emit(w) }
+func (s *ExprStmt) emit(w io.Writer) {
+	switch s.Expr.(type) {
+	case *CallExpr, *DynCallExpr:
+		s.Expr.emit(w)
+	default:
+		io.WriteString(w, "do local _ = ")
+		s.Expr.emit(w)
+		io.WriteString(w, " end")
+	}
+}
 
 func (c *CallExpr) emit(w io.Writer) {
 	switch c.Func {
