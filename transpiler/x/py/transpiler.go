@@ -4109,6 +4109,10 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 			if len(args) == 3 {
 				return &SliceExpr{Target: args[0], Start: args[1], End: args[2]}, nil
 			}
+		case "slice":
+			if len(args) == 3 {
+				return &SliceExpr{Target: args[0], Start: args[1], End: args[2]}, nil
+			}
 		case "upper":
 			if len(args) == 1 {
 				return &CallExpr{Func: &FieldExpr{Target: args[0], Name: "upper"}}, nil

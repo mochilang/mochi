@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Python code from programs in `tests/rosetta/x/Mochi` lives in `tests/rosetta/transpiler/Python`.
-Last updated: 2025-07-24 11:18 UTC
+Last updated: 2025-07-24 12:11 UTC
 
-## Rosetta Golden Test Checklist (206/284)
+## Rosetta Golden Test Checklist (207/284)
 1. [x] 100-doors-2
 2. [x] 100-doors-3
 3. [x] 100-doors
@@ -213,7 +213,7 @@ Last updated: 2025-07-24 11:18 UTC
 206. [x] circular-primes
 207. [x] cistercian-numerals
 208. [x] comma-quibbling
-209. [ ] compiler-virtual-machine-interpreter
+209. [x] compiler-virtual-machine-interpreter
 210. [ ] composite-numbers-k-with-no-single-digit-factors-whose-factors-are-all-substrings-of-k
 211. [ ] compound-data-type
 212. [ ] concurrent-computing-1
