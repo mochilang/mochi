@@ -1351,14 +1351,46 @@ func (b *BinaryExpr) emit(w io.Writer) {
 		io.WriteString(w, ")")
 		return
 	}
-	b.Left.emit(w)
+	lp := precedence(b.Op)
+	if lb, ok := b.Left.(*BinaryExpr); ok && precedence(lb.Op) > lp {
+		io.WriteString(w, "(")
+		lb.emit(w)
+		io.WriteString(w, ")")
+	} else {
+		b.Left.emit(w)
+	}
 	if op == "&&" {
 		op = "and"
 	} else if op == "||" {
 		op = "or"
 	}
 	fmt.Fprintf(w, " %s ", op)
-	b.Right.emit(w)
+	if rb, ok := b.Right.(*BinaryExpr); ok && precedence(rb.Op) >= lp {
+		io.WriteString(w, "(")
+		rb.emit(w)
+		io.WriteString(w, ")")
+	} else {
+		b.Right.emit(w)
+	}
+}
+
+func precedence(op string) int {
+	switch op {
+	case "*", "/", "%":
+		return 0
+	case "+", "-":
+		return 1
+	case "<", "<=", ">", ">=":
+		return 2
+	case "==", "!=", "in":
+		return 3
+	case "&&":
+		return 4
+	case "||":
+		return 5
+	default:
+		return 6
+	}
 }
 
 func (l *ListLit) emit(w io.Writer) {
@@ -2795,6 +2827,8 @@ func toZigType(t *parser.TypeRef) string {
 		switch *t.Simple {
 		case "int":
 			return "i64"
+		case "float":
+			return "f64"
 		case "bool":
 			return "bool"
 		case "string":
