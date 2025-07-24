@@ -24,6 +24,7 @@ var needBase bool
 var needHash bool
 var usesInput bool
 var usesNow bool
+var usesLookupHost bool
 var returnStack []Symbol
 var unionConsts map[string]int
 var unionConstOrder []string
@@ -211,6 +212,20 @@ func header() []byte {
         (set! _now_seed (modulo (+ (* _now_seed 1664525) 1013904223) 2147483647))
         _now_seed)
       (* (current-seconds) 1000000000)))`
+	}
+	if usesLookupHost {
+		prelude += "(import (chibi net) (scheme sort) (chibi string))\n"
+		prelude += `(define (_lookup_host host)
+  (with-exception-handler
+   (lambda (e) (list '() e))
+   (lambda ()
+     (let loop ((a (get-address-info host "http")) (acc '()))
+       (if a
+           (let ((addr (sockaddr-name (address-info-address a))))
+             (loop (address-info-next a)
+                   (if (string-contains addr ":") acc (cons addr acc))))
+          (list (list-sort string<? acc) 'nil))))))
+`
 	}
 	prelude += `(define (to-str x)
   (cond ((pair? x)
@@ -629,6 +644,7 @@ func convertStmt(st *parser.Statement) (Node, error) {
 		needHash = true
 		return &List{Elems: []Node{Symbol("hash-table-set!"), target, StringLit(last.Name), val}}, nil
 	case st.Fun != nil:
+		needBase = true
 		params := []Node{}
 		prevEnv := currentEnv
 		currentEnv = types.NewEnv(currentEnv)
@@ -709,6 +725,7 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	needBase = false
 	needHash = false
 	usesInput = false
+	usesLookupHost = false
 	unionConsts = map[string]int{}
 	unionConstOrder = nil
 	p := &Program{}
@@ -838,6 +855,21 @@ func convertParserPostfix(pf *parser.PostfixExpr) (Node, error) {
 	}
 	var node Node
 	var err error
+	// handle net.LookupHost call
+	if pf.Target.Selector != nil && len(pf.Target.Selector.Tail) == 1 && pf.Target.Selector.Tail[0] == "LookupHost" && len(pf.Ops) > 0 && pf.Ops[0].Call != nil {
+		if pf.Target.Selector.Root == "net" {
+			call := pf.Ops[0].Call
+			if len(call.Args) != 1 {
+				return nil, fmt.Errorf("LookupHost expects 1 arg")
+			}
+			arg, err := convertParserExpr(call.Args[0])
+			if err != nil {
+				return nil, err
+			}
+			usesLookupHost = true
+			return &List{Elems: []Node{Symbol("_lookup_host"), arg}}, nil
+		}
+	}
 	// handle selector like `x.contains()` parsed as part of target
 	if pf.Target.Selector != nil && len(pf.Target.Selector.Tail) == 1 && pf.Target.Selector.Tail[0] == "contains" && len(pf.Ops) > 0 && pf.Ops[0].Call != nil {
 		rootPrim := &parser.Primary{Selector: &parser.SelectorExpr{Root: pf.Target.Selector.Root}}
@@ -925,6 +957,9 @@ func convertParserPrimary(p *parser.Primary) (Node, error) {
 	case p.Lit != nil && p.Lit.Bool != nil:
 		return BoolLit(bool(*p.Lit.Bool)), nil
 	case p.Selector != nil && len(p.Selector.Tail) == 0:
+		if p.Selector.Root == "nil" {
+			return voidSym(), nil
+		}
 		if currentEnv != nil {
 			if _, err := currentEnv.GetVar(p.Selector.Root); err == nil {
 				return Symbol(p.Selector.Root), nil
@@ -1817,12 +1852,12 @@ func makeBinary(op string, left, right Node) Node {
 		if isStr(left) || isStr(right) {
 			return &List{Elems: []Node{Symbol("string=?"), left, right}}
 		}
-		return &List{Elems: []Node{Symbol("="), left, right}}
+		return &List{Elems: []Node{Symbol("equal?"), left, right}}
 	case "!=":
 		if isStr(left) || isStr(right) {
 			return &List{Elems: []Node{Symbol("not"), &List{Elems: []Node{Symbol("string=?"), left, right}}}}
 		}
-		return &List{Elems: []Node{Symbol("not"), &List{Elems: []Node{Symbol("="), left, right}}}}
+		return &List{Elems: []Node{Symbol("not"), &List{Elems: []Node{Symbol("equal?"), left, right}}}}
 	case "&&":
 		return &List{Elems: []Node{Symbol("and"), left, right}}
 	case "||":
@@ -2017,7 +2052,7 @@ func convertCall(target Node, call *parser.CallOp) (Node, error) {
 		if len(args) != 1 {
 			return nil, fmt.Errorf("str expects 1 arg")
 		}
-		return &List{Elems: []Node{Symbol("number->string"), args[0]}}, nil
+		return &List{Elems: []Node{Symbol("to-str"), args[0]}}, nil
 	case "min", "max":
 		if len(args) != 1 {
 			return nil, fmt.Errorf("%s expects 1 arg", sym)
@@ -2037,12 +2072,17 @@ func convertCall(target Node, call *parser.CallOp) (Node, error) {
 		if len(args) != 1 {
 			return nil, fmt.Errorf("int expects 1 arg")
 		}
-		x := args[0]
-		return &List{Elems: []Node{
+		x := gensym("v")
+		cond := &List{Elems: []Node{
 			Symbol("cond"),
-			&List{Elems: []Node{&List{Elems: []Node{Symbol("string?"), x}}, &List{Elems: []Node{Symbol("inexact->exact"), &List{Elems: []Node{Symbol("string->number"), x}}}}}},
-			&List{Elems: []Node{&List{Elems: []Node{Symbol("boolean?"), x}}, &List{Elems: []Node{Symbol("if"), x, IntLit(1), IntLit(0)}}}},
-			&List{Elems: []Node{Symbol("else"), &List{Elems: []Node{Symbol("inexact->exact"), x}}}},
+			&List{Elems: []Node{&List{Elems: []Node{Symbol("string?"), Symbol(x)}}, &List{Elems: []Node{Symbol("inexact->exact"), &List{Elems: []Node{Symbol("string->number"), Symbol(x)}}}}}},
+			&List{Elems: []Node{&List{Elems: []Node{Symbol("boolean?"), Symbol(x)}}, &List{Elems: []Node{Symbol("if"), Symbol(x), IntLit(1), IntLit(0)}}}},
+			&List{Elems: []Node{Symbol("else"), &List{Elems: []Node{Symbol("inexact->exact"), Symbol(x)}}}},
+		}}
+		return &List{Elems: []Node{
+			Symbol("let"),
+			&List{Elems: []Node{&List{Elems: []Node{Symbol(x), args[0]}}}},
+			cond,
 		}}, nil
 	case "input":
 		if len(args) != 0 {
