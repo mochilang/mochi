@@ -1,0 +1,65 @@
+run: exit status 1
+
+/workspace/mochi/tests/rosetta/transpiler/Haskell/24-game-solve.hs:77:98: error:
+    • Couldn't match expected type: [Char]
+                  with actual type: IO [Char]
+    • In the expression: binString op l r
+      In a case alternative:
+          Bin {op = op, left = l, right = r} -> binString op l r
+      In the expression:
+        case x of
+          Num {value = v} -> show (v.num)
+          Bin {op = op, left = l, right = r} -> binString op l r
+   |
+77 | exprString x = (case x of Num {value = v} -> show (v.num); Bin {op = op, left = l, right = r} -> binString op l r; )
+   |                                                                                                  ^^^^^^^^^^^^^^^^
+
+/workspace/mochi/tests/rosetta/transpiler/Haskell/24-game-solve.hs:79:1: error:
+    Couldn't match type ‘IO Bool’ with ‘Bool’
+    Expected: [Expr] -> Bool
+      Actual: [Expr] -> IO Bool
+   |
+79 | solve xs = do
+   | ^^^^^^^^^^^^^...
+
+/workspace/mochi/tests/rosetta/transpiler/Haskell/24-game-solve.hs:116:49: error:
+    • Couldn't match expected type ‘Bool’ with actual type ‘()’
+    • In the first argument of ‘return’, namely ‘()’
+      In the expression: return ()
+      In a stmt of a 'do' block:
+        if solve ((deref rest) ++ [(deref node)]) then
+            do return (True)
+        else
+            return ()
+    |
+116 |                                     else return ()
+    |                                                 ^^
+
+/workspace/mochi/tests/rosetta/transpiler/Haskell/24-game-solve.hs:126:30: error:
+    • Couldn't match expected type ‘()’ with actual type ‘Bool’
+    • In the first argument of ‘return’, namely ‘(False)’
+      In the expression: return (False)
+      In a stmt of a 'do' block:
+        if (deref i) < length xs then
+            do j <- newIORef ((deref i) + 1)
+               let loop = ...
+               loop
+               ....
+        else
+            return (False)
+    |
+126 |                 else return (False)
+    |                              ^^^^^
+
+/workspace/mochi/tests/rosetta/transpiler/Haskell/24-game-solve.hs:127:14: error:
+    • Couldn't match type ‘()’ with ‘Bool’
+      Expected: IO Bool
+        Actual: IO ()
+    • In the expression: loop
+      In a stmt of a 'do' block: (let loop = do ... in loop)
+      In the expression:
+        do i <- newIORef (0)
+           (let loop = ... in loop)
+    |
+127 |         } in loop)
+    |              ^^^^
