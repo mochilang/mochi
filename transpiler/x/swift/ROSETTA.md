@@ -2,8 +2,8 @@
 
 Generated Swift code for Mochi Rosetta programs in `tests/rosetta/x/Mochi`. Outputs are stored in `tests/rosetta/transpiler/Swift`. Errors are captured in `.error` files.
 
-Completed: 14/284
-Last updated: 2025-07-24 08:25 +0700
+Completed: 15/284
+Last updated: 2025-07-24 10:54 +0700
 
 Checklist:
 1. [x] 100-doors-2 (1)
@@ -20,7 +20,7 @@ Checklist:
 12. [x] 9-billion-names-of-god-the-integer (12)
 13. [x] 99-bottles-of-beer-2 (13)
 14. [x] 99-bottles-of-beer (14)
-15. [ ] DNS-query (15)
+15. [x] DNS-query (15)
 16. [ ] a+b (16)
 17. [ ] abbreviations-automatic (17)
 18. [ ] abbreviations-easy (18)
