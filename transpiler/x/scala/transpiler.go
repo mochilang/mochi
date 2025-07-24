@@ -32,6 +32,7 @@ var loopCounter int
 var breakStack []string
 var continueStack []string
 var useNow bool
+var useLookupHost bool
 var builtinAliases map[string]string
 var localVarTypes map[string]string
 var returnTypeStack []string
@@ -1300,6 +1301,11 @@ func Emit(p *Program) []byte {
 		buf.WriteString("    }\n")
 		buf.WriteString("  }\n\n")
 	}
+	if useLookupHost {
+		buf.WriteString("  private def _lookupHost(host: String): ArrayBuffer[Any] = {\n")
+		buf.WriteString("    ArrayBuffer[Any](ArrayBuffer.empty[String], null)\n")
+		buf.WriteString("  }\n\n")
+	}
 	if needsJSON {
 		buf.WriteString("  def toJson(value: Any, indent: Int = 0): String = value match {\n")
 		buf.WriteString("    case m: scala.collection.Map[_, _] =>\n")
@@ -1376,6 +1382,7 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	needsBreaks = false
 	needsJSON = false
 	useNow = false
+	useLookupHost = false
 	builtinAliases = map[string]string{}
 	localVarTypes = make(map[string]string)
 	for _, st := range prog.Statements {
@@ -1391,6 +1398,8 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 					builtinAliases[alias] = "go_testpkg"
 				} else if st.Import.Auto && path == "strings" {
 					builtinAliases[alias] = "go_strings"
+				} else if st.Import.Auto && path == "net" {
+					builtinAliases[alias] = "go_net"
 				}
 			case "python":
 				if path == "math" {
@@ -1860,6 +1869,12 @@ func convertPostfix(pf *parser.PostfixExpr, env *types.Env) (Expr, error) {
 				if expr != nil {
 					return expr, nil
 				}
+			case "go_net":
+				if field == "LookupHost" && len(args) == 1 {
+					useLookupHost = true
+					expr = &CallExpr{Fn: &Name{Name: "_lookupHost"}, Args: args}
+					return expr, nil
+				}
 			case "python_math":
 				switch field {
 				case "sqrt", "sin", "log", "pow":
@@ -1936,6 +1951,14 @@ func convertPostfix(pf *parser.PostfixExpr, env *types.Env) (Expr, error) {
 								continue
 							}
 						}
+						if kind == "go_net" {
+							if field == "LookupHost" && len(args) == 1 {
+								useLookupHost = true
+								expr = &CallExpr{Fn: &Name{Name: "_lookupHost"}, Args: args}
+								i++
+								continue
+							}
+						}
 						if kind == "python_math" {
 							switch field {
 							case "sqrt", "sin", "log", "pow":
@@ -1957,6 +1980,12 @@ func convertPostfix(pf *parser.PostfixExpr, env *types.Env) (Expr, error) {
 								continue
 							case "Answer":
 								expr = &IntLit{Value: 42}
+								i++
+								continue
+							}
+						} else if kind == "go_net" {
+							if field == "LookupHost" {
+								expr = &Name{Name: "_lookupHost"}
 								i++
 								continue
 							}
@@ -2102,6 +2131,9 @@ func convertPrimary(p *parser.Primary, env *types.Env) (Expr, error) {
 	case p.Call != nil:
 		return convertCall(p.Call, env)
 	case p.Selector != nil:
+		if p.Selector.Root == "nil" && len(p.Selector.Tail) == 0 {
+			return &Name{Name: "null"}, nil
+		}
 		expr := Expr(&Name{Name: p.Selector.Root})
 		if env != nil {
 			if typ, err := env.GetVar(p.Selector.Root); err == nil {
@@ -2123,6 +2155,11 @@ func convertPrimary(p *parser.Primary, env *types.Env) (Expr, error) {
 						return &FloatLit{Value: 3.14}, nil
 					case "Answer":
 						return &IntLit{Value: 42}, nil
+					}
+				case "go_net":
+					if p.Selector.Tail[0] == "LookupHost" {
+						useLookupHost = true
+						return &Name{Name: "_lookupHost"}, nil
 					}
 				case "python_math":
 					switch p.Selector.Tail[0] {
