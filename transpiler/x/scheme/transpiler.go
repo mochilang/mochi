@@ -25,6 +25,8 @@ var needHash bool
 var usesInput bool
 var usesNow bool
 var returnStack []Symbol
+var unionConsts map[string]int
+var unionConstOrder []string
 
 func pushLoop(breakSym Symbol, cont Node) {
 	breakStack = append(breakStack, breakSym)
@@ -58,6 +60,14 @@ func currentContinue() Node { return continueStack[len(continueStack)-1] }
 func gensym(prefix string) Symbol {
 	gensymCounter++
 	return Symbol(fmt.Sprintf("%s%d", prefix, gensymCounter))
+}
+
+func ensureUnionConst(variant string) Symbol {
+	if _, ok := unionConsts[variant]; !ok {
+		unionConsts[variant] = len(unionConsts)
+		unionConstOrder = append(unionConstOrder, variant)
+	}
+	return Symbol("OP_" + strings.ToUpper(variant))
 }
 
 // Node represents a Scheme AST node.
@@ -699,6 +709,8 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	needBase = false
 	needHash = false
 	usesInput = false
+	unionConsts = map[string]int{}
+	unionConstOrder = nil
 	p := &Program{}
 	for _, st := range prog.Statements {
 		form, err := convertStmt(st)
@@ -712,6 +724,14 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 				p.Forms = append(p.Forms, form)
 			}
 		}
+	}
+	if len(unionConstOrder) > 0 {
+		defs := make([]Node, len(unionConstOrder))
+		for i, v := range unionConstOrder {
+			constSym := Symbol("OP_" + strings.ToUpper(v))
+			defs[i] = &List{Elems: []Node{Symbol("define"), constSym, IntLit(unionConsts[v])}}
+		}
+		p.Forms = append(defs, p.Forms...)
 	}
 	return p, nil
 }
@@ -958,6 +978,35 @@ func convertParserPrimary(p *parser.Primary) (Node, error) {
 		}
 		return &List{Elems: []Node{Symbol("alist->hash-table"), &List{Elems: pairs}}}, nil
 	case p.Struct != nil:
+		if ut, ok := currentEnv.FindUnionByVariant(p.Struct.Name); ok {
+			needHash = true
+			st := ut.Variants[p.Struct.Name]
+			if len(p.Struct.Fields) != len(st.Order) {
+				return nil, fmt.Errorf("invalid fields for %s", p.Struct.Name)
+			}
+			pairs := []Node{Symbol("list")}
+			if p.Struct.Name == "Num" {
+				pairs = append(pairs, &List{Elems: []Node{Symbol("cons"), StringLit("op"), ensureUnionConst("Num")}})
+				for i, f := range p.Struct.Fields {
+					v, err := convertParserExpr(f.Value)
+					if err != nil {
+						return nil, err
+					}
+					pair := &List{Elems: []Node{Symbol("cons"), StringLit(st.Order[i]), v}}
+					pairs = append(pairs, pair)
+				}
+			} else {
+				for i, f := range p.Struct.Fields {
+					v, err := convertParserExpr(f.Value)
+					if err != nil {
+						return nil, err
+					}
+					pair := &List{Elems: []Node{Symbol("cons"), StringLit(st.Order[i]), v}}
+					pairs = append(pairs, pair)
+				}
+			}
+			return &List{Elems: []Node{Symbol("alist->hash-table"), &List{Elems: pairs}}}, nil
+		}
 		needHash = true
 		pairs := []Node{Symbol("list")}
 		for _, f := range p.Struct.Fields {
@@ -1020,15 +1069,59 @@ func convertMatchExpr(me *parser.MatchExpr) (Node, error) {
 		return nil, err
 	}
 	temp := gensym("match")
-	clauses := []Node{}
-	var defaultNode Node = voidSym()
-	for _, c := range me.Cases {
+	var expr Node = voidSym()
+	for i := len(me.Cases) - 1; i >= 0; i-- {
+		c := me.Cases[i]
 		if isUnderscore(c.Pattern) {
-			dn, err := convertParserExpr(c.Result)
+			n, err := convertParserExpr(c.Result)
 			if err != nil {
 				return nil, err
 			}
-			defaultNode = dn
+			expr = n
+			continue
+		}
+		if variant, vars, fields, ok := extractVariantPattern(c.Pattern); ok {
+			prevEnv := currentEnv
+			var st types.StructType
+			if len(vars) > 0 {
+				child := types.NewEnv(currentEnv)
+				ut, _ := currentEnv.FindUnionByVariant(variant)
+				st = ut.Variants[variant]
+				for j, nm := range vars {
+					if nm == "_" {
+						continue
+					}
+					child.SetVar(nm, st.Fields[fields[j]], true)
+				}
+				currentEnv = child
+			}
+			body, err := convertParserExpr(c.Result)
+			if len(vars) > 0 {
+				currentEnv = prevEnv
+			}
+			if err != nil {
+				return nil, err
+			}
+			then := body
+			if len(vars) > 0 {
+				bindings := make([]Node, len(vars))
+				for j, nm := range vars {
+					if nm == "_" {
+						bindings[j] = &List{Elems: []Node{Symbol("_"), voidSym()}}
+						continue
+					}
+					val := &List{Elems: []Node{Symbol("hash-table-ref"), temp, StringLit(fields[j])}}
+					bindings[j] = &List{Elems: []Node{Symbol(nm), val}}
+				}
+				then = &List{Elems: []Node{Symbol("let"), &List{Elems: bindings}, body}}
+			}
+			var cond Node
+			if variant == "Num" {
+				cond = &List{Elems: []Node{Symbol("equal?"), &List{Elems: []Node{Symbol("hash-table-ref"), temp, StringLit("op")}}, ensureUnionConst("Num")}}
+			} else {
+				cond = &List{Elems: []Node{Symbol("not"), &List{Elems: []Node{Symbol("equal?"), &List{Elems: []Node{Symbol("hash-table-ref"), temp, StringLit("op")}}, ensureUnionConst("Num")}}}}
+			}
+			expr = &List{Elems: []Node{Symbol("if"), cond, then, expr}}
 			continue
 		}
 		pat, err := convertParserExpr(c.Pattern)
@@ -1039,15 +1132,13 @@ func convertMatchExpr(me *parser.MatchExpr) (Node, error) {
 		if err != nil {
 			return nil, err
 		}
-		clauseCond := &List{Elems: []Node{Symbol("equal?"), temp, pat}}
-		clauses = append(clauses, &List{Elems: []Node{clauseCond, res}})
+		cond := &List{Elems: []Node{Symbol("equal?"), temp, pat}}
+		expr = &List{Elems: []Node{Symbol("if"), cond, res, expr}}
 	}
-	clauses = append(clauses, &List{Elems: []Node{Symbol("else"), defaultNode}})
-	condExpr := &List{Elems: append([]Node{Symbol("cond")}, clauses...)}
 	return &List{Elems: []Node{
 		Symbol("let"),
 		&List{Elems: []Node{&List{Elems: []Node{temp, target}}}},
-		condExpr,
+		expr,
 	}}, nil
 }
 
@@ -1057,6 +1148,55 @@ func isUnderscore(e *parser.Expr) bool {
 	}
 	t := e.Binary.Left.Value.Target
 	return t != nil && t.Selector != nil && t.Selector.Root == "_" && len(t.Selector.Tail) == 0
+}
+
+func isSimpleIdent(e *parser.Expr) (string, bool) {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) > 0 {
+		return "", false
+	}
+	u := e.Binary.Left
+	if len(u.Ops) > 0 || u.Value == nil {
+		return "", false
+	}
+	p := u.Value
+	if len(p.Ops) > 0 || p.Target == nil {
+		return "", false
+	}
+	if p.Target.Selector != nil && len(p.Target.Selector.Tail) == 0 {
+		return p.Target.Selector.Root, true
+	}
+	return "", false
+}
+
+func extractVariantPattern(e *parser.Expr) (string, []string, []string, bool) {
+	if e == nil || e.Binary == nil || e.Binary.Left == nil || e.Binary.Left.Value == nil {
+		return "", nil, nil, false
+	}
+	pf := e.Binary.Left.Value
+	prim := pf.Target
+	if prim != nil && prim.Call != nil && len(pf.Ops) == 0 {
+		if ut, ok := currentEnv.FindUnionByVariant(prim.Call.Func); ok {
+			st := ut.Variants[prim.Call.Func]
+			if len(prim.Call.Args) != len(st.Order) {
+				return "", nil, nil, false
+			}
+			vars := make([]string, len(prim.Call.Args))
+			for i, a := range prim.Call.Args {
+				if name, ok2 := isSimpleIdent(a); ok2 {
+					vars[i] = name
+				} else {
+					return "", nil, nil, false
+				}
+			}
+			return prim.Call.Func, vars, st.Order, true
+		}
+	} else if prim != nil && prim.Selector != nil && len(prim.Selector.Tail) == 0 && len(pf.Ops) == 0 {
+		if ut, ok := currentEnv.FindUnionByVariant(prim.Selector.Root); ok {
+			st := ut.Variants[prim.Selector.Root]
+			return prim.Selector.Root, nil, st.Order, true
+		}
+	}
+	return "", nil, nil, false
 }
 
 func convertFunExpr(fe *parser.FunExpr) (Node, error) {
@@ -1808,6 +1948,21 @@ func convertCall(target Node, call *parser.CallOp) (Node, error) {
 			return nil, err
 		}
 		args[i] = n
+	}
+	if ut, ok := currentEnv.FindUnionByVariant(string(sym)); ok {
+		needHash = true
+		st := ut.Variants[string(sym)]
+		if len(args) != len(st.Order) {
+			return nil, fmt.Errorf("%s expects %d args", sym, len(st.Order))
+		}
+		pairs := []Node{Symbol("list")}
+		opPair := &List{Elems: []Node{Symbol("cons"), StringLit("op"), ensureUnionConst(string(sym))}}
+		pairs = append(pairs, opPair)
+		for i, field := range st.Order {
+			pair := &List{Elems: []Node{Symbol("cons"), StringLit(field), args[i]}}
+			pairs = append(pairs, pair)
+		}
+		return &List{Elems: []Node{Symbol("alist->hash-table"), &List{Elems: pairs}}}, nil
 	}
 	switch sym {
 	case "len", "count":
