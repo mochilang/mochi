@@ -1,0 +1,5 @@
+exit status 1
+/workspace/mochi/tests/rosetta/transpiler/Scala/achilles-numbers.scala:132: error: Iterable[Int] does not take parameters
+    for (k <- achSet.keys()) {
+                         ^
+one error found

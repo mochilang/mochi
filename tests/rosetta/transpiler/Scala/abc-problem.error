@@ -1,5 +1,0 @@
-exit status 1
-/workspace/mochi/tests/rosetta/transpiler/Scala/abc-problem.scala:30: error: not found: value lower
-    val c = lower(word.slice(0, 1))
-            ^
-one error found

@@ -912,7 +912,7 @@ func (c *CastExpr) emit(w io.Writer) {
 	case "int":
 		fmt.Fprint(w, ".asInstanceOf[Int]")
 	case "float":
-		fmt.Fprint(w, ".asInstanceOf[Double]")
+		fmt.Fprint(w, ".toString.toDouble")
 	case "string":
 		fmt.Fprint(w, ".toString")
 	case "bool":
@@ -1667,11 +1667,22 @@ func convertBinary(b *parser.BinaryExpr, env *types.Env) (Expr, error) {
 			if op == "+" || op == "-" || op == "*" || op == "/" || op == "%" {
 				lt := inferTypeWithEnv(left, env)
 				rt := inferTypeWithEnv(right, env)
+				if op == "+" && (strings.HasPrefix(lt, "ArrayBuffer[") || strings.HasPrefix(rt, "ArrayBuffer[")) {
+					ex = &BinaryExpr{Left: left, Op: "++", Right: right}
+					operands[i] = ex
+					operands = append(operands[:i+1], operands[i+2:]...)
+					operators = append(operators[:i], operators[i+1:]...)
+					return
+				}
 				if lt != "Any" && lt != "" && rt == "Any" {
 					right = &CastExpr{Value: right, Type: strings.ToLower(lt)}
 				}
 				if rt != "Any" && rt != "" && lt == "Any" {
 					left = &CastExpr{Value: left, Type: strings.ToLower(rt)}
+				}
+				if (lt == "Any" || lt == "") && (rt == "Any" || rt == "") {
+					left = &CastExpr{Value: left, Type: "float"}
+					right = &CastExpr{Value: right, Type: "float"}
 				}
 			} else if op == "&&" || op == "||" {
 				if inferTypeWithEnv(left, env) != "Boolean" {
@@ -2000,6 +2011,11 @@ func convertPostfix(pf *parser.PostfixExpr, env *types.Env) (Expr, error) {
 			}
 			if i+1 < len(pf.Ops) && pf.Ops[i+1].Call != nil {
 				call := pf.Ops[i+1].Call
+				if op.Field.Name == "keys" && len(call.Args) == 0 {
+					expr = &FieldExpr{Receiver: expr, Name: "keys"}
+					i++
+					continue
+				}
 				args := make([]Expr, len(call.Args))
 				for j, a := range call.Args {
 					ex, err := convertExpr(a, env)
@@ -2335,6 +2351,14 @@ func convertCall(c *parser.CallExpr, env *types.Env) (Expr, error) {
 	case "substring":
 		if len(args) == 3 {
 			return &SubstringExpr{Value: args[0], Start: args[1], End: args[2]}, nil
+		}
+	case "upper":
+		if len(args) == 1 {
+			return &CallExpr{Fn: &FieldExpr{Receiver: args[0], Name: "toUpperCase"}}, nil
+		}
+	case "lower":
+		if len(args) == 1 {
+			return &CallExpr{Fn: &FieldExpr{Receiver: args[0], Name: "toLowerCase"}}, nil
 		}
 	case "sum":
 		if len(args) == 1 {
@@ -3085,8 +3109,10 @@ func convertReturnStmt(rs *parser.ReturnStmt, env *types.Env) (Stmt, error) {
 		rt := returnTypeStack[len(returnTypeStack)-1]
 		if rt != "" && rt != "Unit" {
 			et := inferTypeWithEnv(expr, env)
-			if et == "" || et != rt {
-				expr = &CastExpr{Value: expr, Type: rt}
+			if !(strings.Contains(rt, "=>") && et == "") {
+				if et == "" || et != rt {
+					expr = &CastExpr{Value: expr, Type: rt}
+				}
 			}
 		}
 	}
