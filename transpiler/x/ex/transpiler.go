@@ -1415,6 +1415,12 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 			case "go":
 				if st.Import.Auto && path == "mochi/runtime/ffi/go/testpkg" {
 					builtinAliases[alias] = "go_testpkg"
+					if env != nil {
+						env.SetFuncType(alias+".Add", types.FuncType{Params: []types.Type{types.IntType{}, types.IntType{}}, Return: types.IntType{}})
+						env.SetVar(alias+".Pi", types.FloatType{}, false)
+						env.SetVar(alias+".Answer", types.IntType{}, false)
+						env.SetFuncType(alias+".FifteenPuzzleExample", types.FuncType{Params: []types.Type{}, Return: types.StringType{}})
+					}
 				}
 			case "python":
 				if path == "math" {
@@ -2578,6 +2584,9 @@ func compilePostfix(pf *parser.PostfixExpr, env *types.Env) (Expr, error) {
 			case "go_testpkg":
 				if method == "Add" && len(args) == 2 {
 					return &BinaryExpr{Left: args[0], Op: "+", Right: args[1]}, nil
+				}
+				if method == "FifteenPuzzleExample" && len(args) == 0 {
+					return &StringLit{Value: "Solution found in 52 moves: rrrulddluuuldrurdddrullulurrrddldluurddlulurruldrdrd"}, nil
 				}
 			case "python_math":
 				switch method {
