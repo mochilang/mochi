@@ -79,7 +79,11 @@ func transpileAndRun(src string) ([]byte, error) {
 	if out, err := exec.Command(cc, cFile, "-o", exe).CombinedOutput(); err != nil {
 		return nil, fmt.Errorf("compile failed: %v: %s", err, string(out))
 	}
-	return exec.Command(exe).CombinedOutput()
+	cmd := exec.Command(exe)
+	if data, err := os.ReadFile(strings.TrimSuffix(src, ".mochi") + ".in"); err == nil {
+		cmd.Stdin = bytes.NewReader(data)
+	}
+	return cmd.CombinedOutput()
 }
 
 func updateEnabled() bool {

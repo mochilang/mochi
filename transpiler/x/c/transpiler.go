@@ -281,6 +281,16 @@ func (c *CallStmt) emit(w io.Writer, indent int) {
 		}
 		return
 	}
+	writeIndent(w, indent)
+	io.WriteString(w, c.Func)
+	io.WriteString(w, "(")
+	for i, a := range c.Args {
+		if i > 0 {
+			io.WriteString(w, ", ")
+		}
+		a.emitExpr(w)
+	}
+	io.WriteString(w, ");\n")
 }
 
 func (r *ReturnStmt) emit(w io.Writer, indent int) {
@@ -1507,6 +1517,24 @@ func compileStmt(env *types.Env, s *parser.Statement) (Stmt, error) {
 			}
 			return nil, fmt.Errorf("unsupported json argument")
 		}
+		if call != nil {
+			var args []Expr
+			for _, a := range call.Args {
+				ex := convertExpr(a)
+				if ex == nil {
+					return nil, fmt.Errorf("invalid call argument")
+				}
+				args = append(args, ex)
+			}
+			if newName, ok := funcAliases[call.Func]; ok {
+				call.Func = newName
+			}
+			typ := ""
+			if t, ok := funcReturnTypes[call.Func]; ok {
+				typ = t
+			}
+			return &CallStmt{Func: call.Func, Args: args, Type: typ}, nil
+		}
 	case s.Let != nil:
 		currentVarName = s.Let.Name
 		if q := queryExpr(s.Let.Value); q != nil {
@@ -2707,6 +2735,11 @@ func convertUnary(u *parser.Unary) Expr {
 				}
 				return &ListLit{Elems: slice}
 			}
+		}
+		if inferExprType(currentEnv, base) == "const char*" {
+			needSubstring = true
+			funcReturnTypes["_substring"] = "const char*"
+			return &CallExpr{Func: "_substring", Args: []Expr{base, start, end}}
 		}
 	}
 	if call := u.Value.Target.Call; call != nil && len(u.Ops) == 0 {
