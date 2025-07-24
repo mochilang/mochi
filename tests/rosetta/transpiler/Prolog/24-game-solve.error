@@ -1,0 +1,5 @@
+ERROR: /workspace/mochi/tests/rosetta/transpiler/Prolog/24-game-solve.pl:35:24: Syntax error: key_expected
+ERROR: /workspace/mochi/tests/rosetta/transpiler/Prolog/24-game-solve.pl:39:24: Syntax error: key_expected
+ERROR: /workspace/mochi/tests/rosetta/transpiler/Prolog/24-game-solve.pl:1: Initialization goal raised exception:
+ERROR: is/2: Arguments are not sufficiently instantiated
+
