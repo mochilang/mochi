@@ -529,14 +529,42 @@ func (l *ListLit) emit(w io.Writer) {
 }
 
 // MapLit represents an F# map literal.
-type MapLit struct{ Items [][2]Expr }
+type MapLit struct {
+	Items [][2]Expr
+	Types []string
+}
 
 func (m *MapLit) emit(w io.Writer) {
 	io.WriteString(w, "Map.ofList [")
+	same := true
+	if len(m.Types) == 0 {
+		m.Types = make([]string, len(m.Items))
+		prev := ""
+		for i, kv := range m.Items {
+			t := inferType(kv[1])
+			m.Types[i] = t
+			if i == 0 {
+				prev = t
+			} else if t != prev {
+				same = false
+			}
+		}
+	} else {
+		prev := m.Types[0]
+		for _, t := range m.Types[1:] {
+			if t != prev {
+				same = false
+				break
+			}
+		}
+	}
 	for i, kv := range m.Items {
 		io.WriteString(w, "(")
 		kv[0].emit(w)
 		io.WriteString(w, ", ")
+		if !same && m.Types[i] != "obj" {
+			io.WriteString(w, "box ")
+		}
 		kv[1].emit(w)
 		io.WriteString(w, ")")
 		if i < len(m.Items)-1 {
@@ -922,16 +950,16 @@ type WhileStmt struct {
 }
 
 func (wst *WhileStmt) emit(w io.Writer) {
-	if wst.WithBreak {
-		writeIndent(w)
-		io.WriteString(w, "try\n")
-		indentLevel++
-	}
 	writeIndent(w)
 	io.WriteString(w, "while ")
 	wst.Cond.emit(w)
 	io.WriteString(w, " do\n")
 	indentLevel++
+	if wst.WithBreak {
+		writeIndent(w)
+		io.WriteString(w, "try\n")
+		indentLevel++
+	}
 	for i, st := range wst.Body {
 		st.emit(w)
 		if i < len(wst.Body)-1 {
@@ -945,7 +973,9 @@ func (wst *WhileStmt) emit(w io.Writer) {
 		writeIndent(w)
 		io.WriteString(w, "with\n")
 		writeIndent(w)
-		io.WriteString(w, "| Break -> ()")
+		io.WriteString(w, "| Break -> ()\n")
+		writeIndent(w)
+		io.WriteString(w, "| Continue -> ()")
 	}
 }
 
@@ -980,11 +1010,6 @@ type ForStmt struct {
 }
 
 func (fst *ForStmt) emit(w io.Writer) {
-	if fst.WithBreak {
-		writeIndent(w)
-		io.WriteString(w, "try\n")
-		indentLevel++
-	}
 	writeIndent(w)
 	io.WriteString(w, "for ")
 	if fst.End == nil && inferType(fst.Start) == "map" {
@@ -1005,21 +1030,28 @@ func (fst *ForStmt) emit(w io.Writer) {
 	}
 	io.WriteString(w, " do\n")
 	indentLevel++
+	if fst.WithBreak {
+		writeIndent(w)
+		io.WriteString(w, "try\n")
+		indentLevel++
+	}
 	for i, st := range fst.Body {
 		st.emit(w)
 		if i < len(fst.Body)-1 {
 			w.Write([]byte{'\n'})
 		}
 	}
-	indentLevel--
 	if fst.WithBreak {
 		indentLevel--
 		w.Write([]byte{'\n'})
 		writeIndent(w)
 		io.WriteString(w, "with\n")
 		writeIndent(w)
-		io.WriteString(w, "| Break -> ()")
+		io.WriteString(w, "| Break -> ()\n")
+		writeIndent(w)
+		io.WriteString(w, "| Continue -> ()")
 	}
+	indentLevel--
 }
 
 type LetStmt struct {
@@ -1872,7 +1904,7 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 			}
 		}
 		fsDecl := fsTypeFromString(declared)
-		varTypes[st.Let.Name] = fsDecl
+		varTypes[st.Let.Name] = declared
 		typ := fsDecl
 		if typ == "array" || typ == "map" {
 			typ = ""
@@ -1924,7 +1956,7 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 			}
 		}
 		fsDecl := fsTypeFromString(declared)
-		varTypes[st.Var.Name] = fsDecl
+		varTypes[st.Var.Name] = declared
 		typ := fsDecl
 		if typ == "array" || typ == "map" {
 			typ = ""
@@ -2275,17 +2307,13 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 					return &CallExpr{Func: "printfn \"%.1f\"", Args: []Expr{args[0]}}, nil
 				case "array":
 					mapped := &CallExpr{Func: "Array.map string", Args: []Expr{args[0]}}
-					concat := &CallExpr{Func: "String.concat", Args: []Expr{&StringLit{Value: ", "}, &CallExpr{Func: "Array.toList", Args: []Expr{mapped}}}}
-					wrapped := &BinaryExpr{Left: &BinaryExpr{Left: &StringLit{Value: "[|"}, Op: "+", Right: concat}, Op: "+", Right: &StringLit{Value: "|]"}}
+					concat := &CallExpr{Func: "String.concat", Args: []Expr{&StringLit{Value: " "}, &CallExpr{Func: "Array.toList", Args: []Expr{mapped}}}}
+					wrapped := &BinaryExpr{Left: &BinaryExpr{Left: &StringLit{Value: "["}, Op: "+", Right: concat}, Op: "+", Right: &StringLit{Value: "]"}}
 					return &CallExpr{Func: "printfn \"%s\"", Args: []Expr{wrapped}}, nil
 				case "string":
 					return &CallExpr{Func: "printfn \"%s\"", Args: []Expr{args[0]}}, nil
 				default:
-					arg := args[0]
-					if _, ok := args[0].(*StringLit); !ok {
-						arg = &CallExpr{Func: "string", Args: []Expr{args[0]}}
-					}
-					return &CallExpr{Func: "printfn \"%s\"", Args: []Expr{arg}}, nil
+					return &CallExpr{Func: "printfn \"%A\"", Args: []Expr{args[0]}}, nil
 				}
 			}
 			elems := make([]Expr, len(args))
@@ -2299,9 +2327,9 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 					elems[i] = &CallExpr{Func: "sprintf \"%.1f\"", Args: []Expr{a}}
 				case "array":
 					mapped := &CallExpr{Func: "Array.map string", Args: []Expr{a}}
-					elems[i] = &BinaryExpr{Left: &BinaryExpr{Left: &StringLit{Value: "[|"}, Op: "+", Right: &CallExpr{Func: "String.concat", Args: []Expr{&StringLit{Value: ", "}, &CallExpr{Func: "Array.toList", Args: []Expr{mapped}}}}}, Op: "+", Right: &StringLit{Value: "|]"}}
+					elems[i] = &BinaryExpr{Left: &BinaryExpr{Left: &StringLit{Value: "["}, Op: "+", Right: &CallExpr{Func: "String.concat", Args: []Expr{&StringLit{Value: " "}, &CallExpr{Func: "Array.toList", Args: []Expr{mapped}}}}}, Op: "+", Right: &StringLit{Value: "]"}}
 				default:
-					elems[i] = &CallExpr{Func: "string", Args: []Expr{a}}
+					elems[i] = &CallExpr{Func: "sprintf \"%A\"", Args: []Expr{a}}
 				}
 			}
 			list := &ListLit{Elems: elems}
@@ -2488,21 +2516,6 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 	case p.Map != nil:
 		if transpileEnv != nil {
 			if _, ok := types.InferSimpleMap(p.Map, transpileEnv); !ok {
-				if st, ok := types.InferStructFromMapEnv(p.Map, transpileEnv); ok {
-					structCount++
-					name := fmt.Sprintf("Anon%d", structCount)
-					addStructDef(name, st)
-					fields := make([]StructFieldExpr, len(p.Map.Items))
-					for i, it := range p.Map.Items {
-						v, err := convertExpr(it.Value)
-						if err != nil {
-							return nil, err
-						}
-						key, _ := types.SimpleStringKey(it.Key)
-						fields[i] = StructFieldExpr{Name: key, Value: v}
-					}
-					return &StructLit{Name: name, Fields: fields}, nil
-				}
 				if fields, ok := inferStructFromMapVars(p.Map); ok {
 					structCount++
 					name := fmt.Sprintf("Anon%d", structCount)
@@ -2521,6 +2534,7 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 			}
 		}
 		items := make([][2]Expr, len(p.Map.Items))
+		types := make([]string, len(p.Map.Items))
 		for i, it := range p.Map.Items {
 			k, err := convertExpr(it.Key)
 			if err != nil {
@@ -2531,8 +2545,9 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 				return nil, err
 			}
 			items[i] = [2]Expr{k, v}
+			types[i] = inferType(v)
 		}
-		return &MapLit{Items: items}, nil
+		return &MapLit{Items: items, Types: types}, nil
 	case p.Match != nil:
 		return convertMatchExpr(p.Match)
 	case p.FunExpr != nil:
