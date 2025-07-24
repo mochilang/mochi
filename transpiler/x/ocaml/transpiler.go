@@ -2593,6 +2593,22 @@ func transpileStmt(st *parser.Statement, env *types.Env, vars map[string]VarInfo
 			}
 			structFields[st.Type.Name] = fields
 		}
+		if len(st.Type.Variants) > 0 {
+			for _, v := range st.Type.Variants {
+				fields := map[string]string{}
+				for _, f := range v.Fields {
+					ft := typeRefString(f.Type)
+					if ts := typeString(types.ResolveTypeRef(f.Type, env)); ts != "" {
+						ft = ts
+					}
+					if ft == "" {
+						ft = "int"
+					}
+					fields[f.Name] = ft
+				}
+				structFields[v.Name] = fields
+			}
+		}
 		return nil, nil
 	case st.Test != nil:
 		// ignore test blocks
@@ -3343,16 +3359,23 @@ func convertPrimary(p *parser.Primary, env *types.Env, vars map[string]VarInfo) 
 		}
 		return &MapLit{Items: items, Dynamic: dynamic}, typ, nil
 	case p.Struct != nil:
-		items := make([]MapEntry, len(p.Struct.Fields))
-		for i, f := range p.Struct.Fields {
+		items := make([]MapEntry, 0, len(p.Struct.Fields)+1)
+		if _, ok := env.FindUnionByVariant(p.Struct.Name); ok {
+			items = append(items, MapEntry{Key: &StringLit{Value: "tag"}, Value: &StringLit{Value: p.Struct.Name}})
+		}
+		for _, f := range p.Struct.Fields {
 			key := &StringLit{Value: f.Name}
 			val, _, err := convertExpr(f.Value, env, vars)
 			if err != nil {
 				return nil, "", err
 			}
-			items[i] = MapEntry{Key: key, Value: val}
+			items = append(items, MapEntry{Key: key, Value: val})
 		}
-		return &MapLit{Items: items, Dynamic: true}, "map-dyn", nil
+		dyn := true
+		if _, ok := env.FindUnionByVariant(p.Struct.Name); ok {
+			dyn = false
+		}
+		return &MapLit{Items: items, Dynamic: dyn}, "map-dyn", nil
 	case p.Query != nil:
 		qe, qtyp, err := convertQueryExpr(p.Query, env, vars)
 		if err != nil {
