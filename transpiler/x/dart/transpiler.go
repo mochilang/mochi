@@ -345,7 +345,11 @@ func (s *VarStmt) emit(w io.Writer) error {
 	nextStructHint = s.Name
 	typ := s.Type
 	if typ == "" {
-		typ = inferType(s.Value)
+		if t, ok := localVarTypes[s.Name]; ok {
+			typ = t
+		} else {
+			typ = inferType(s.Value)
+		}
 	}
 	nextStructHint = ""
 	localVarTypes[s.Name] = typ
@@ -435,7 +439,11 @@ func (s *LetStmt) emit(w io.Writer) error {
 	nextStructHint = s.Name
 	typ := s.Type
 	if typ == "" {
-		typ = inferType(s.Value)
+		if t, ok := localVarTypes[s.Name]; ok {
+			typ = t
+		} else {
+			typ = inferType(s.Value)
+		}
 	}
 	nextStructHint = ""
 	localVarTypes[s.Name] = typ
@@ -615,11 +623,11 @@ func (f *FuncDecl) emit(w io.Writer) error {
 	if _, err := io.WriteString(w, ") {\n"); err != nil {
 		return err
 	}
-	saved := map[string]string{}
+	savedAll := make(map[string]string)
+	for k, v := range localVarTypes {
+		savedAll[k] = v
+	}
 	for n, t := range f.ParamTypes {
-		if old, ok := localVarTypes[n]; ok {
-			saved[n] = old
-		}
 		localVarTypes[n] = t
 	}
 	for _, st := range f.Body {
@@ -640,12 +648,9 @@ func (f *FuncDecl) emit(w io.Writer) error {
 			}
 		}
 	}
+	localVarTypes = savedAll
 	for n := range f.ParamTypes {
-		if v, ok := saved[n]; ok {
-			localVarTypes[n] = v
-		} else {
-			delete(localVarTypes, n)
-		}
+		delete(localVarTypes, n)
 	}
 	_, err := io.WriteString(w, "}")
 	return err
@@ -1053,7 +1058,19 @@ type SliceExpr struct {
 }
 
 func (s *SliceExpr) emit(w io.Writer) error {
-	if inferType(s.Target) == "String" {
+	typ := inferType(s.Target)
+	// When the target is a string element retrieved from a list
+	// the type inference during conversion may not have resolved
+	// correctly. Handle that case explicitly.
+	if typ == "dynamic" {
+		if ie, ok := s.Target.(*IndexExpr); ok {
+			et := inferType(ie.Target)
+			if strings.HasPrefix(et, "List<String>") {
+				typ = "String"
+			}
+		}
+	}
+	if typ == "String" {
 		if err := s.Target.emit(w); err != nil {
 			return err
 		}
@@ -2590,6 +2607,9 @@ func inferType(e Expr) string {
 		if strings.HasPrefix(lt, "List<") && strings.HasSuffix(lt, ">") {
 			elem := strings.TrimSuffix(strings.TrimPrefix(lt, "List<"), ">")
 			vt := inferType(ex.Value)
+			if elem == "dynamic" && vt != "dynamic" {
+				return "List<" + vt + ">"
+			}
 			if vt == elem || vt == "dynamic" {
 				return lt
 			}
@@ -2674,6 +2694,9 @@ func walkTypes(s Stmt) {
 	case *AssignStmt:
 		inferType(st.Value)
 		inferType(st.Target)
+		if n, ok := st.Target.(*Name); ok {
+			localVarTypes[n.Name] = inferType(st.Value)
+		}
 	case *ExprStmt:
 		inferType(st.Expr)
 	case *IfStmt:
@@ -3191,11 +3214,10 @@ func convertStmtInternal(st *parser.Statement) (Stmt, error) {
 			return nil, fmt.Errorf("let missing value not supported")
 		}
 		typ := typeRefString(st.Let.Type)
+		// Defer type inference until after we have walked all statements
+		// so variables referenced in the initializer are known.
 		if typ == "" {
-			saved := nextStructHint
-			nextStructHint = ""
-			typ = inferType(e)
-			nextStructHint = saved
+			typ = ""
 		}
 		return &LetStmt{Name: sanitize(st.Let.Name), Type: typ, Value: e}, nil
 	case st.Var != nil:
@@ -3210,11 +3232,9 @@ func convertStmtInternal(st *parser.Statement) (Stmt, error) {
 			e = &IntLit{Value: 0}
 		}
 		typ := typeRefString(st.Var.Type)
+		// Type inference is deferred until emit time similar to LetStmt.
 		if typ == "" {
-			saved := nextStructHint
-			nextStructHint = ""
-			typ = inferType(e)
-			nextStructHint = saved
+			typ = ""
 		}
 		return &VarStmt{Name: sanitize(st.Var.Name), Type: typ, Value: e}, nil
 	case st.Assign != nil:
