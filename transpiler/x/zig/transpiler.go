@@ -44,6 +44,7 @@ var useStr bool
 var useConcat bool
 var useInput bool
 var useLookupHost bool
+var useAscii bool
 var variantTags map[string]int
 
 // GetFuncReturns exposes function return types for testing.
@@ -107,6 +108,9 @@ type Expr interface{ emit(io.Writer) }
 
 // BoolLit represents a boolean literal.
 type BoolLit struct{ Value bool }
+
+// NullLit represents a null literal.
+type NullLit struct{}
 
 // IfStmt represents a simple if-else statement.
 type IfStmt struct {
@@ -524,6 +528,8 @@ func zigTypeFromExpr(e Expr) string {
 		return "[]const u8"
 	case *BoolLit:
 		return "bool"
+	case *NullLit:
+		return "i64"
 	case *FloatLit:
 		return "f64"
 	case *IntLit:
@@ -639,6 +645,9 @@ func zigTypeFromExpr(e Expr) string {
 		default:
 			if strings.HasPrefix(ce.Func, "std.math.") {
 				return "f64"
+			}
+			if strings.HasPrefix(ce.Func, "std.ascii.") {
+				return "[]const u8"
 			}
 			if rt, ok := funcReturns[ce.Func]; ok {
 				if rt == "" {
@@ -988,14 +997,14 @@ func (p *Program) Emit() []byte {
 	}
 	if useInput {
 		buf.WriteString("\nvar _in_buf = std.io.bufferedReader(std.io.getStdIn().reader());\n")
-                buf.WriteString("fn _input() []const u8 {\n")
-                buf.WriteString("    const opt_line = _in_buf.reader().readUntilDelimiterOrEofAlloc(std.heap.page_allocator, '\n', 1 << 20) catch return \"\";\n")
-                buf.WriteString("    const line = opt_line orelse return \"\";\n")
-                buf.WriteString("    if (line.len > 0 and line[line.len - 1] == '\n') {\n")
-                buf.WriteString("        return line[0..line.len-1];\n")
-                buf.WriteString("    }\n")
-                buf.WriteString("    return line;\n")
-                buf.WriteString("}\n")
+		buf.WriteString("fn _input() []const u8 {\n")
+		buf.WriteString("    const opt_line = _in_buf.reader().readUntilDelimiterOrEofAlloc(std.heap.page_allocator, '\n', 1 << 20) catch return \"\";\n")
+		buf.WriteString("    const line = opt_line orelse return \"\";\n")
+		buf.WriteString("    if (line.len > 0 and line[line.len - 1] == '\n') {\n")
+		buf.WriteString("        return line[0..line.len-1];\n")
+		buf.WriteString("    }\n")
+		buf.WriteString("    return line;\n")
+		buf.WriteString("}\n")
 	}
 	if useLookupHost {
 		buf.WriteString("\nfn _lookup_host(host: []const u8) []const i32 {\n")
@@ -1440,6 +1449,10 @@ func (b *BoolLit) emit(w io.Writer) {
 	}
 }
 
+func (n *NullLit) emit(w io.Writer) {
+	io.WriteString(w, "null")
+}
+
 func (i *IfStmt) emit(w io.Writer, indent int) {
 	for j := 0; j < indent; j++ {
 		io.WriteString(w, "    ")
@@ -1546,11 +1559,23 @@ func (r *ReturnStmt) emit(w io.Writer, indent int) {
 
 func (i *IfExpr) emit(w io.Writer) {
 	io.WriteString(w, "if (")
-	i.Cond.emit(w)
+	if i.Cond != nil {
+		i.Cond.emit(w)
+	} else {
+		io.WriteString(w, "false")
+	}
 	io.WriteString(w, ") ")
-	i.Then.emit(w)
+	if i.Then != nil {
+		i.Then.emit(w)
+	} else {
+		io.WriteString(w, "0")
+	}
 	io.WriteString(w, " else ")
-	i.Else.emit(w)
+	if i.Else != nil {
+		i.Else.emit(w)
+	} else {
+		io.WriteString(w, "0")
+	}
 }
 
 func (c *CallExpr) emit(w io.Writer) {
@@ -1688,6 +1713,7 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	useStr = false
 	useConcat = false
 	useLookupHost = false
+	useAscii = false
 	mutables := map[string]bool{}
 	collectMutables(prog.Statements, mutables)
 	constLists = map[string]*ListLit{}
@@ -2018,8 +2044,8 @@ func compilePostfix(pf *parser.PostfixExpr) (Expr, error) {
 			continue
 		}
 		if op.Cast != nil {
-			if op.Cast.Type != nil && op.Cast.Type.Simple != nil {
-				expr = &CastExpr{Value: expr, Type: *op.Cast.Type.Simple}
+			if op.Cast.Type != nil {
+				expr = &CastExpr{Value: expr, Type: toZigType(op.Cast.Type)}
 				continue
 			}
 			return nil, fmt.Errorf("unsupported cast type")
@@ -2131,6 +2157,18 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 				}
 			}
 			return &SliceExpr{Target: args[0], Start: args[1], End: args[2]}, nil
+		case "upper":
+			if len(args) != 1 {
+				return nil, fmt.Errorf("upper expects one argument")
+			}
+			useAscii = true
+			return &CallExpr{Func: "std.ascii.upperString", Args: args}, nil
+		case "lower":
+			if len(args) != 1 {
+				return nil, fmt.Errorf("lower expects one argument")
+			}
+			useAscii = true
+			return &CallExpr{Func: "std.ascii.lowerString", Args: args}, nil
 		case "sum":
 			if len(args) == 1 {
 				if list, ok := args[0].(*ListLit); ok {
@@ -2221,6 +2259,9 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 		}
 		if p.Lit.Bool != nil {
 			return &BoolLit{Value: bool(*p.Lit.Bool)}, nil
+		}
+		if p.Lit.Null {
+			return &NullLit{}, nil
 		}
 		return nil, fmt.Errorf("unsupported literal")
 	case p.Load != nil:

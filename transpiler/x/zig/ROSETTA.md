@@ -2,9 +2,9 @@
 
 Generated Zig code for Rosetta tasks lives under `tests/rosetta/transpiler/Zig`.
 
-Last updated: 2025-07-24 11:52 +0000
+Last updated: 2025-07-24 20:52 +0700
 
-## Program Checklist (25/284)
+## Program Checklist (24/284)
 1. [x] (1) 100-doors-2
 2. [x] (2) 100-doors-3
 3. [x] (3) 100-doors
@@ -20,38 +20,38 @@ Last updated: 2025-07-24 11:52 +0000
 13. [x] (13) 99-bottles-of-beer-2
 14. [x] (14) 99-bottles-of-beer
 15. [ ] (15) DNS-query
-16. [x] (16) a+b
+16. [ ] (16) a+b
 17. [ ] (17) abbreviations-automatic
-18. [ ] (18) abbreviations-easy
-19. [ ] (19) abbreviations-simple
-20. [ ] (20) abc-problem
-21. [ ] (21) abelian-sandpile-model-identity
-22. [ ] (22) abelian-sandpile-model
-23. [ ] (23) abstract-type
-24. [ ] (24) abundant-deficient-and-perfect-number-classifications
-25. [ ] (25) abundant-odd-numbers
-26. [ ] (26) accumulator-factory
-27. [ ] (27) achilles-numbers
-28. [ ] (28) ackermann-function-2
-29. [ ] (29) ackermann-function-3
-30. [ ] (30) ackermann-function
-31. [ ] (31) active-directory-connect
-32. [ ] (32) active-directory-search-for-a-user
-33. [ ] (33) active-object
-34. [ ] (34) add-a-variable-to-a-class-instance-at-runtime
-35. [ ] (35) additive-primes
-36. [ ] (36) address-of-a-variable
-37. [ ] (37) adfgvx-cipher
-38. [ ] (38) aks-test-for-primes
-39. [ ] (39) algebraic-data-types
-40. [ ] (40) align-columns
-41. [ ] (41) aliquot-sequence-classifications
-42. [ ] (42) almkvist-giullera-formula-for-pi
-43. [ ] (43) almost-prime
-44. [ ] (44) amb
-45. [ ] (45) amicable-pairs
-46. [ ] (46) anagrams-deranged-anagrams
-47. [ ] (47) anagrams
+18. [x] (18) abbreviations-easy
+19. [x] (19) abbreviations-simple
+20. [x] (20) abc-problem
+21. [x] (21) abelian-sandpile-model-identity
+22. [x] (22) abelian-sandpile-model
+23. [x] (23) abstract-type
+24. [x] (24) abundant-deficient-and-perfect-number-classifications
+25. [x] (25) abundant-odd-numbers
+26. [x] (26) accumulator-factory
+27. [x] (27) achilles-numbers
+28. [x] (28) ackermann-function-2
+29. [x] (29) ackermann-function-3
+30. [x] (30) ackermann-function
+31. [x] (31) active-directory-connect
+32. [x] (32) active-directory-search-for-a-user
+33. [x] (33) active-object
+34. [x] (34) add-a-variable-to-a-class-instance-at-runtime
+35. [x] (35) additive-primes
+36. [x] (36) address-of-a-variable
+37. [x] (37) adfgvx-cipher
+38. [x] (38) aks-test-for-primes
+39. [x] (39) algebraic-data-types
+40. [x] (40) align-columns
+41. [x] (41) aliquot-sequence-classifications
+42. [x] (42) almkvist-giullera-formula-for-pi
+43. [x] (43) almost-prime
+44. [x] (44) amb
+45. [x] (45) amicable-pairs
+46. [x] (46) anagrams-deranged-anagrams
+47. [x] (47) anagrams
 48. [x] (48) angle-difference-between-two-bearings-1
 49. [x] (49) angle-difference-between-two-bearings-2
 50. [ ] (50) angles-geometric-normalization-and-conversion

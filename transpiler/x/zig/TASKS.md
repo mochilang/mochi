@@ -1,3 +1,8 @@
+## Progress (2025-07-24 20:52 +0700)
+- Commit 09fec1883d: php: add str helper and transpile bitmap-histogram
+- Generated Zig for 98/103 programs
+- Updated README checklist and outputs
+
 ## Progress (2025-07-24 13:30 +0700)
 - Commit 2d47792dcb: zig rosetta: ensure README keeps index numbers
 - Generated Zig for 98/103 programs

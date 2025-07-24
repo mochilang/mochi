@@ -1,3 +1,0 @@
-zig build: exit status 1
-/tmp/abc-problem.zig:47:27: error: local constant 'res' shadows local variable from outer scope
-/tmp/abc-problem.zig:35:9: note: previous declaration here
