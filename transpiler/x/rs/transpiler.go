@@ -56,6 +56,7 @@ var globalRenameBack map[string]string
 var localVarStack []map[string]bool
 var currentFuncLocals map[string]bool
 var indexLHS bool
+var currentReturnType string
 
 func VarTypes() map[string]string { return varTypes }
 
@@ -1945,6 +1946,9 @@ func compileStmt(stmt *parser.Statement) (Stmt, error) {
 			if err != nil {
 				return nil, err
 			}
+			if currentReturnType == "String" {
+				val = &StringCastExpr{Expr: val}
+			}
 			return &ReturnStmt{Value: val}, nil
 		}
 		return &ReturnStmt{}, nil
@@ -2231,6 +2235,13 @@ func compileTypeStmt(t *parser.TypeDecl) (Stmt, error) {
 
 func compileFunStmt(fn *parser.FunStmt) (Stmt, error) {
 	funcDepth++
+	prevRet := currentReturnType
+	currentReturnType = ""
+	if fn.Return != nil {
+		if fn.Return.Simple != nil || fn.Return.Generic != nil {
+			currentReturnType = rustTypeRef(fn.Return)
+		}
+	}
 	prevVarTypes := varTypes
 	prevMapVars := mapVars
 	prevStringVars := stringVars
@@ -2245,6 +2256,7 @@ func compileFunStmt(fn *parser.FunStmt) (Stmt, error) {
 		varTypes = prevVarTypes
 		mapVars = prevMapVars
 		stringVars = prevStringVars
+		currentReturnType = prevRet
 	}()
 	locals := map[string]bool{}
 	currentFuncLocals = map[string]bool{}
@@ -2334,12 +2346,7 @@ func compileFunStmt(fn *parser.FunStmt) (Stmt, error) {
 		}
 	}
 	if ret == "String" {
-		for i, st := range body {
-			if r, ok := st.(*ReturnStmt); ok && r.Value != nil {
-				r.Value = &StringCastExpr{Expr: r.Value}
-				body[i] = r
-			}
-		}
+		// return values are handled during statement compilation
 	}
 	name := fn.Name
 	if name == "main" {
