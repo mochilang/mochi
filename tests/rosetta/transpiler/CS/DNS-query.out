@@ -1,0 +1,3 @@
+/tmp/TestCSTranspiler_Rosetta_Golden3864193888/001/Program.cs(7,7): warning CS0105: The using directive for 'System.Linq' appeared previously in this namespace [/tmp/TestCSTranspiler_Rosetta_Golden3864193888/001/app.csproj]
+/tmp/TestCSTranspiler_Rosetta_Golden3864193888/001/Program.cs(8,14): warning CS8981: The type name 'net' only contains lower-cased ascii characters. Such names may become reserved for the language. [/tmp/TestCSTranspiler_Rosetta_Golden3864193888/001/app.csproj]
+System.String[]

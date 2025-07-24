@@ -656,7 +656,12 @@ func (ie *InExpr) emit(w io.Writer) {
 		fmt.Fprint(w, ".Contains(")
 		ie.Item.emit(w)
 		fmt.Fprint(w, ")")
-	} else if isMapExpr(ie.Collection) {
+	} else if isMapExpr(ie.Collection) || strings.HasPrefix(typeOfExpr(ie.Collection), "Dictionary<") {
+		ie.Collection.emit(w)
+		fmt.Fprint(w, ".ContainsKey(")
+		ie.Item.emit(w)
+		fmt.Fprint(w, ")")
+	} else if _, ok := ie.Collection.(*VarRef); ok {
 		ie.Collection.emit(w)
 		fmt.Fprint(w, ".ContainsKey(")
 		ie.Item.emit(w)
@@ -1367,8 +1372,8 @@ func typeOfExpr(e Expr) string {
 }
 
 func mapTypes(m *MapLit) (string, string) {
-	keyType := ""
-	valType := ""
+	keyType := m.KeyType
+	valType := m.ValType
 	for i, it := range m.Items {
 		kt := typeOfExpr(it.Key)
 		vt := typeOfExpr(it.Value)
@@ -1487,7 +1492,11 @@ type MapItem struct {
 	Value Expr
 }
 
-type MapLit struct{ Items []MapItem }
+type MapLit struct {
+	Items   []MapItem
+	KeyType string
+	ValType string
+}
 
 func (m *MapLit) emit(w io.Writer) {
 	k, v := mapTypes(m)
@@ -1924,7 +1933,15 @@ func compilePostfix(p *parser.PostfixExpr) (Expr, error) {
 				// other casts are treated as no-ops
 			}
 		case op.Cast != nil && op.Cast.Type != nil:
-			// ignore casts to complex types (e.g. structs)
+			if op.Cast.Type.Generic != nil && op.Cast.Type.Generic.Name == "list" && len(op.Cast.Type.Generic.Args) == 1 {
+				typ := fmt.Sprintf("%s[]", csType(op.Cast.Type.Generic.Args[0]))
+				expr = &RawExpr{Code: fmt.Sprintf("(%s)"+exprString(expr), typ), Type: typ}
+			} else if op.Cast.Type.Generic != nil && op.Cast.Type.Generic.Name == "map" && len(op.Cast.Type.Generic.Args) == 2 {
+				kt := csType(op.Cast.Type.Generic.Args[0])
+				vt := csType(op.Cast.Type.Generic.Args[1])
+				typ := fmt.Sprintf("Dictionary<%s, %s>", kt, vt)
+				expr = &RawExpr{Code: fmt.Sprintf("(%s)"+exprString(expr), typ), Type: typ}
+			} // ignore other casts
 		default:
 			return nil, fmt.Errorf("unsupported postfix")
 		}
@@ -1973,6 +1990,9 @@ func compileStmt(prog *Program, s *parser.Statement) (Stmt, error) {
 			if err != nil {
 				return nil, err
 			}
+			if s.Let.Type != nil {
+				varTypes[s.Let.Name] = csType(s.Let.Type)
+			}
 		} else if s.Let.Type != nil && s.Let.Type.Simple != nil {
 			switch *s.Let.Type.Simple {
 			case "int":
@@ -1998,7 +2018,10 @@ func compileStmt(prog *Program, s *parser.Statement) (Stmt, error) {
 			}
 		}
 		if mp, ok := val.(*MapLit); ok {
-			if len(mp.Items) > 2 && false {
+			if len(mp.Items) == 0 && s.Let.Type != nil && s.Let.Type.Generic != nil && s.Let.Type.Generic.Name == "map" && len(s.Let.Type.Generic.Args) == 2 {
+				mp.KeyType = csType(s.Let.Type.Generic.Args[0])
+				mp.ValType = csType(s.Let.Type.Generic.Args[1])
+			} else if len(mp.Items) > 2 && false {
 				if res, changed := inferStructMap(s.Let.Name, prog, mp); changed {
 					val = res
 				}
@@ -2011,7 +2034,9 @@ func compileStmt(prog *Program, s *parser.Statement) (Stmt, error) {
 			mapVars[s.Let.Name] = true
 		}
 		if t := typeOfExpr(val); t != "" {
-			varTypes[s.Let.Name] = t
+			if s.Let.Type == nil {
+				varTypes[s.Let.Name] = t
+			}
 		}
 		if prog != nil && blockDepth == 0 {
 			for m := range mutatedVars {
@@ -2043,6 +2068,9 @@ func compileStmt(prog *Program, s *parser.Statement) (Stmt, error) {
 			if err != nil {
 				return nil, err
 			}
+			if s.Var.Type != nil {
+				varTypes[s.Var.Name] = csType(s.Var.Type)
+			}
 		} else if s.Var.Type != nil && s.Var.Type.Simple != nil {
 			switch *s.Var.Type.Simple {
 			case "int":
@@ -2069,6 +2097,10 @@ func compileStmt(prog *Program, s *parser.Statement) (Stmt, error) {
 			_ = list // do not convert mutable vars to structs
 		}
 		if mp, ok := val.(*MapLit); ok {
+			if len(mp.Items) == 0 && s.Var.Type != nil && s.Var.Type.Generic != nil && s.Var.Type.Generic.Name == "map" && len(s.Var.Type.Generic.Args) == 2 {
+				mp.KeyType = csType(s.Var.Type.Generic.Args[0])
+				mp.ValType = csType(s.Var.Type.Generic.Args[1])
+			}
 			_ = mp // keep as dictionary for mutable vars
 		}
 		if isStringExpr(val) {
@@ -2078,7 +2110,9 @@ func compileStmt(prog *Program, s *parser.Statement) (Stmt, error) {
 			mapVars[s.Var.Name] = true
 		}
 		if t := typeOfExpr(val); t != "" {
-			varTypes[s.Var.Name] = t
+			if s.Var.Type == nil {
+				varTypes[s.Var.Name] = t
+			}
 		}
 		if prog != nil && blockDepth == 0 {
 			g := &Global{Name: s.Var.Name, Value: val}
@@ -2291,6 +2325,10 @@ func compileStmt(prog *Program, s *parser.Statement) (Stmt, error) {
 			if err != nil {
 				return nil, err
 			}
+			savedVars := cloneStringMap(varTypes)
+			savedMap := cloneBoolMap(mapVars)
+			savedStr := cloneBoolMap(stringVars)
+			savedMut := cloneBoolMap(mutatedVars)
 			var body []Stmt
 			blockDepth++
 			for _, b := range s.For.Body {
@@ -2303,6 +2341,10 @@ func compileStmt(prog *Program, s *parser.Statement) (Stmt, error) {
 				}
 			}
 			blockDepth--
+			varTypes = savedVars
+			mapVars = savedMap
+			stringVars = savedStr
+			mutatedVars = savedMut
 			stmt := &ForRangeStmt{Var: alias, Start: start, End: end, Body: body}
 			if savedVar == "" {
 				delete(varTypes, s.For.Name)
@@ -2334,6 +2376,10 @@ func compileStmt(prog *Program, s *parser.Statement) (Stmt, error) {
 		alias := fmt.Sprintf("%s_%d", s.For.Name, aliasCounter)
 		aliasCounter++
 		varAliases[s.For.Name] = alias
+		savedVars := cloneStringMap(varTypes)
+		savedMap := cloneBoolMap(mapVars)
+		savedStr := cloneBoolMap(stringVars)
+		savedMut := cloneBoolMap(mutatedVars)
 		var body []Stmt
 		blockDepth++
 		for _, b := range s.For.Body {
@@ -2346,6 +2392,10 @@ func compileStmt(prog *Program, s *parser.Statement) (Stmt, error) {
 			}
 		}
 		blockDepth--
+		varTypes = savedVars
+		mapVars = savedMap
+		stringVars = savedStr
+		mutatedVars = savedMut
 		stmt := &ForInStmt{Var: alias, Iterable: iterable, Body: body}
 		if savedVar == "" {
 			delete(varTypes, s.For.Name)
@@ -2363,6 +2413,10 @@ func compileStmt(prog *Program, s *parser.Statement) (Stmt, error) {
 		if err != nil {
 			return nil, err
 		}
+		savedVars := cloneStringMap(varTypes)
+		savedMap := cloneBoolMap(mapVars)
+		savedStr := cloneBoolMap(stringVars)
+		savedMut := cloneBoolMap(mutatedVars)
 		var body []Stmt
 		blockDepth++
 		for _, b := range s.While.Body {
@@ -2375,6 +2429,10 @@ func compileStmt(prog *Program, s *parser.Statement) (Stmt, error) {
 			}
 		}
 		blockDepth--
+		varTypes = savedVars
+		mapVars = savedMap
+		stringVars = savedStr
+		mutatedVars = savedMut
 		return &WhileStmt{Cond: cond, Body: body}, nil
 	case s.If != nil:
 		return compileIfStmt(prog, s.If)
@@ -2389,7 +2447,25 @@ func compileStmt(prog *Program, s *parser.Statement) (Stmt, error) {
 			}
 		} else if prog != nil && s.Import.Auto && s.Import.Lang != nil && *s.Import.Lang == "go" {
 			path := strings.Trim(s.Import.Path, "\"")
-			if path == "mochi/runtime/ffi/go/testpkg" {
+			if path == "net" {
+				if _, ok := importAliases[s.Import.As]; !ok {
+					stub := "using System.Net;\n" +
+						"using System.Linq;\n" +
+						"static class net {\n" +
+						"    public static object[] LookupHost(string host) {\n" +
+						"        try {\n" +
+						"            var addrs = Dns.GetHostAddresses(host).Select(a => a.ToString()).ToArray();\n" +
+						"            return new object[]{addrs, null};\n" +
+						"        } catch (Exception ex) {\n" +
+						"            return new object[]{null, ex.Message};\n" +
+						"        }\n" +
+						"    }\n" +
+						"}\n"
+					prog.Imports = append(prog.Imports, stub)
+					usesLinq = true
+				}
+				importAliases[s.Import.As] = "net"
+			} else if path == "mochi/runtime/ffi/go/testpkg" {
 				if _, ok := importAliases[s.Import.As]; !ok {
 					stub := "using System.Security.Cryptography;\n" +
 						"using System.Text;\n" +
@@ -2606,6 +2682,14 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 			if len(args) == 1 {
 				return &CallExpr{Func: "Convert.ToDouble", Args: []Expr{args[0]}}, nil
 			}
+		case "upper":
+			if len(args) == 1 {
+				return &MethodCallExpr{Target: args[0], Name: "ToUpper", Args: nil}, nil
+			}
+		case "lower":
+			if len(args) == 1 {
+				return &MethodCallExpr{Target: args[0], Name: "ToLower", Args: nil}, nil
+			}
 		case "input":
 			if len(args) == 0 {
 				usesInput = true
@@ -2716,6 +2800,9 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 		name := p.Selector.Root
 		if alias, ok := varAliases[name]; ok {
 			name = alias
+		}
+		if name == "nil" && len(p.Selector.Tail) == 0 {
+			return &RawExpr{Code: "null", Type: "object"}, nil
 		}
 		expr := Expr(&VarRef{Name: name})
 		for _, t := range p.Selector.Tail {
