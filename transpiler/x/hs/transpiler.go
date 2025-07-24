@@ -513,8 +513,24 @@ func isPureStmt(s Stmt) bool {
 func isPureExpr(e Expr) bool {
 	switch ex := e.(type) {
 	case *IntLit, *FloatLit, *StringLit, *BoolLit, *NameRef,
-		*RecordLit, *BinaryExpr, *UnaryExpr, *CallExpr,
-		*FieldExpr, *IndexExpr, *GroupExpr:
+		*RecordLit, *FieldExpr, *IndexExpr, *GroupExpr:
+		return true
+	case *BinaryExpr:
+		if !isPureExpr(ex.Left) {
+			return false
+		}
+		for _, op := range ex.Ops {
+			if !isPureExpr(op.Right) {
+				return false
+			}
+		}
+		return true
+	case *UnaryExpr:
+		return isPureExpr(ex.Expr)
+	case *CallExpr:
+		if n, ok := ex.Fun.(*NameRef); ok && n.Name == "unsafePerformIO" {
+			return false
+		}
 		return true
 	case *CaseExpr:
 		if !isPureExpr(ex.Target) {
@@ -578,7 +594,7 @@ func (f *Func) emit(w io.Writer) {
 	}
 	io.WriteString(w, " = ")
 	if len(f.Body) == 1 {
-		if r, ok := f.Body[0].(*ReturnStmt); ok {
+		if r, ok := f.Body[0].(*ReturnStmt); ok && isPureExpr(r.Expr) {
 			r.Expr.emit(w)
 			return
 		}
@@ -635,11 +651,12 @@ type ContinueStmt struct{}
 
 // ForStmt iterates over elements in a list, map or range.
 type ForStmt struct {
-	Name      string
-	From      Expr
-	To        Expr
-	Body      []Stmt
-	WithBreak bool
+	Name       string
+	From       Expr
+	To         Expr
+	Body       []Stmt
+	WithBreak  bool
+	VarMutated bool
 }
 
 // WhileStmt repeats a block while a condition is true.
@@ -801,10 +818,18 @@ func (i *IfStmt) emit(w io.Writer) {
 }
 func (r *ReturnStmt) emit(w io.Writer) {
 	writeIndent(w)
-	switch r.Expr.(type) {
+	switch ex := r.Expr.(type) {
 	case *WhileExpr:
 		// WhileExpr already yields an IO action, so avoid wrapping
 		r.Expr.emit(w)
+	case *IntLit:
+		if ex.Value == "0" {
+			io.WriteString(w, "return ()")
+			return
+		}
+		io.WriteString(w, "return (")
+		r.Expr.emit(w)
+		io.WriteString(w, ")")
 	default:
 		io.WriteString(w, "return (")
 		r.Expr.emit(w)
@@ -820,6 +845,15 @@ func (c *ContinueStmt) emit(w io.Writer) {
 }
 
 func (f *ForStmt) emit(w io.Writer) {
+	prevMut, hadPrev := mutated[f.Name]
+	mutated[f.Name] = f.VarMutated
+	defer func() {
+		if hadPrev {
+			mutated[f.Name] = prevMut
+		} else {
+			delete(mutated, f.Name)
+		}
+	}()
 	if f.WithBreak {
 		loop := "loop"
 		prevLoop := currentLoop
@@ -1503,7 +1537,14 @@ func (s *SliceExpr) emit(w io.Writer) {
 	io.WriteString(w, " - ")
 	s.Start.emit(w)
 	io.WriteString(w, ") (drop ")
-	s.Start.emit(w)
+	switch s.Start.(type) {
+	case *NameRef, *IntLit:
+		s.Start.emit(w)
+	default:
+		io.WriteString(w, "(")
+		s.Start.emit(w)
+		io.WriteString(w, ")")
+	}
 	io.WriteString(w, " ")
 	switch s.Target.(type) {
 	case *NameRef, *ListLit, *CallExpr:
@@ -1627,9 +1668,16 @@ func isListExpr(e Expr) bool {
 				return true
 			}
 		}
+	case *SliceExpr:
+		return true
 	case *CallExpr:
-		if n, ok := ex.Fun.(*NameRef); ok && n.Name == "Map.elems" && len(ex.Args) == 1 {
-			return true
+		if n, ok := ex.Fun.(*NameRef); ok {
+			if n.Name == "Map.elems" && len(ex.Args) == 1 {
+				return true
+			}
+			if (n.Name == "take" || n.Name == "drop") && len(ex.Args) == 2 {
+				return true
+			}
 		}
 	}
 	return false
@@ -1803,6 +1851,8 @@ func (b *BinaryExpr) emit(w io.Writer) {
 		switch op.Op {
 		case "+":
 			if isStringExpr(left) || isStringExpr(op.Right) {
+				io.WriteString(w, "++")
+			} else if isListExpr(left) && isListExpr(op.Right) {
 				io.WriteString(w, "++")
 			} else {
 				io.WriteString(w, "+")
@@ -2081,6 +2131,10 @@ func header(withList, withMap, withJSON, withTrace, withIORef, withNow bool) str
 	h += "input = do\n"
 	h += "    eof <- isEOF\n"
 	h += "    if eof then return \"\" else getLine\n"
+	h += "int :: String -> Int\n"
+	h += "int = read\n"
+	h += "float :: Int -> Double\n"
+	h += "float n = fromIntegral n\n"
 	if withIORef {
 		h += "deref :: IORef a -> a\n"
 		h += "{-# NOINLINE deref #-}\n"
@@ -2668,15 +2722,21 @@ func convertPostfix(pf *parser.PostfixExpr) (Expr, error) {
 				continue
 			}
 			if op.Index.Colon != nil && op.Index.Colon2 == nil && op.Index.Step == nil {
+				target := expr
 				start, err := convertExpr(op.Index.Start)
 				if err != nil {
 					return nil, err
 				}
-				end, err := convertExpr(op.Index.End)
-				if err != nil {
-					return nil, err
+				var end Expr
+				if op.Index.End != nil {
+					end, err = convertExpr(op.Index.End)
+					if err != nil {
+						return nil, err
+					}
+				} else {
+					end = &LenExpr{Arg: target}
 				}
-				expr = &SliceExpr{Target: expr, Start: start, End: end}
+				expr = &SliceExpr{Target: target, Start: start, End: end}
 				continue
 			}
 		}
@@ -3576,6 +3636,7 @@ func convertForStmt(f *parser.ForStmt) (Stmt, error) {
 	if err != nil {
 		return nil, err
 	}
+	varMut := mutated[name]
 	withBreak := false
 	var scan func(Stmt)
 	scan = func(s Stmt) {
@@ -3602,7 +3663,7 @@ func convertForStmt(f *parser.ForStmt) (Stmt, error) {
 	for _, st := range body {
 		scan(st)
 	}
-	return &ForStmt{Name: safeName(f.Name), From: src, To: end, Body: body, WithBreak: withBreak}, nil
+	return &ForStmt{Name: safeName(f.Name), From: src, To: end, Body: body, WithBreak: withBreak, VarMutated: varMut}, nil
 }
 
 func convertWhileStmt(w *parser.WhileStmt) (Stmt, error) {
