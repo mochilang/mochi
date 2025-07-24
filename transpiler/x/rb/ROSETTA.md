@@ -137,7 +137,7 @@ Last updated: 2025-07-24 14:23 UTC
 134. [x] boyer-moore-string-search (134)
 135. [x] brazilian-numbers (135)
 136. [x] break-oo-privacy (136)
-137. [ ] brilliant-numbers (137)
+137. [x] brilliant-numbers (137)
 138. [ ] brownian-tree (138)
 139. [x] bulls-and-cows-player (139)
 140. [x] bulls-and-cows (140)
