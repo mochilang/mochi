@@ -4,6 +4,8 @@
 
 (def nowSeed (atom (let [s (System/getenv "MOCHI_NOW_SEED")] (if (and s (not (= s ""))) (Integer/parseInt s) 0))))
 
+(declare ackermann main)
+
 (defn ackermann [m n]
   (do (when (= m 0) (throw (ex-info "return" {:v (+ n 1)}))) (if (= n 0) (ackermann (- m 1) 1) (ackermann (- m 1) (ackermann m (- n 1))))))
 

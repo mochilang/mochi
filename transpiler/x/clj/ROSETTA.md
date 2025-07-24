@@ -1,14 +1,14 @@
 # Clojure Rosetta Transpiler
 
-Completed: 13/284
-Last updated: 2025-07-24 13:38 +0700
+Completed: 14/284
+Last updated: 2025-07-24 18:49 +0700
 
 1. [x] 100-doors-2 (1)
 2. [x] 100-doors-3 (2)
 3. [x] 100-doors (3)
 4. [x] 100-prisoners (4)
 5. [ ] 15-puzzle-game (5)
-6. [ ] 15-puzzle-solver (6)
+6. [x] 15-puzzle-solver (6)
 7. [x] 2048 (7)
 8. [x] 21-game (8)
 9. [x] 24-game-solve (9)

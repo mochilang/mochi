@@ -107,4 +107,4 @@ Compiled programs: 101/103
 - [x] values_builtin
 - [x] var_assignment
 - [x] while_loop
-Last updated: 2025-07-24 13:11 +0700
+Last updated: 2025-07-24 18:46 +0700

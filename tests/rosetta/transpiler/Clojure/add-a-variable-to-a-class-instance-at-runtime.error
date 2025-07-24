@@ -1,7 +1,7 @@
 run error: exit status 1
 WARNING: name already refers to: #'clojure.core/name in namespace: main, being replaced by: #'main/name
-Syntax error compiling at (/workspace/mochi/tests/rosetta/transpiler/Clojure/add-a-variable-to-a-class-instance-at-runtime.clj:8:514).
+Syntax error compiling at (/workspace/mochi/tests/rosetta/transpiler/Clojure/add-a-variable-to-a-class-instance-at-runtime.clj:10:514).
 Unable to resolve symbol: in in this context
 
 Full report at:
-/tmp/clojure-2164126112389609842.edn
+/tmp/clojure-10212346415006270564.edn

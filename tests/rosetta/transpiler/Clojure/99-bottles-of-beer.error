@@ -394,8 +394,8 @@ Take one down, pass it around
 1 bottle of beer on the wall
 1 bottle of beer
 Take one down, pass it around
-Execution error (ExceptionInfo) at main/bottles (99-bottles-of-beer.clj:8).
+Execution error (ExceptionInfo) at main/bottles (99-bottles-of-beer.clj:10).
 return
 
 Full report at:
-/tmp/clojure-13707645540319151284.edn
+/tmp/clojure-1036463119404108839.edn

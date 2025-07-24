@@ -1,8 +1,6 @@
-type error: error[T043]: operator `+` cannot be used with `any`%!(EXTRA string=+)
-  --> /workspace/mochi/tests/rosetta/x/Mochi/accumulator-factory.mochi:7:25
+run error: exit status 1
+Execution error (ArityException) at main/main (accumulator-factory.clj:16).
+Wrong number of args (1) passed to: main/add
 
-  7 |     store[0] = store[0] + nv
-    |                         ^
-
-help:
-  Cast values to concrete types before using `%s`.
+Full report at:
+/tmp/clojure-2999301266349862035.edn
