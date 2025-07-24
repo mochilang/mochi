@@ -24,10 +24,10 @@
   (try (throw (ex-info "return" {:v {:value {:num n :denom 1}}})) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e)))))
 
 (defn exprEval [x]
-  (try (throw (ex-info "return" {:v (cond true (let [v (:value x)] v) true (let [op (:op x) l (:left x) r (:right x)] (binEval op l r)))})) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e)))))
+  (try (throw (ex-info "return" {:v (cond (and (map? x) (contains? x :value)) (let [v (:value x)] v) (and (map? x) (contains? x :op) (contains? x :left) (contains? x :right)) (let [op (:op x) l (:left x) r (:right x)] (binEval op l r)))})) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e)))))
 
 (defn exprString [x]
-  (try (throw (ex-info "return" {:v (cond true (let [v (:value x)] (str (:num v))) true (let [op (:op x) l (:left x) r (:right x)] (binString op l r)))})) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e)))))
+  (try (throw (ex-info "return" {:v (cond (and (map? x) (contains? x :value)) (let [v (:value x)] (str (:num v))) (and (map? x) (contains? x :op) (contains? x :left) (contains? x :right)) (let [op (:op x) l (:left x) r (:right x)] (binString op l r)))})) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e)))))
 
 (def n_cards 4)
 

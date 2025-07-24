@@ -1564,7 +1564,12 @@ func transpileMatchExpr(m *parser.MatchExpr) (Node, error) {
 					binds = append(binds, Symbol(v), &List{Elems: []Node{Keyword(st.Order[i]), target}})
 				}
 				body := &List{Elems: []Node{Symbol("let"), &Vector{Elems: binds}, res}}
-				elems = append(elems, Symbol("true"), body)
+				condElems := []Node{Symbol("and"), &List{Elems: []Node{Symbol("map?"), target}}}
+				for _, f := range st.Order {
+					condElems = append(condElems, &List{Elems: []Node{Symbol("contains?"), target, Keyword(f)}})
+				}
+				cond := &List{Elems: condElems}
+				elems = append(elems, cond, body)
 				continue
 			}
 		}
