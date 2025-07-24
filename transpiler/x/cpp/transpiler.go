@@ -497,11 +497,6 @@ func (p *Program) write(w io.Writer) {
 		p.addInclude("<cstring>")
 		p.addInclude("<map>")
 	}
-	for _, inc := range p.Includes {
-		fmt.Fprintf(w, "#include %s\n", inc)
-	}
-	fmt.Fprintln(w)
-	fmt.Fprintln(w)
 	usesAny := false
 	for _, inc := range p.Includes {
 		if inc == "<any>" {
@@ -509,6 +504,14 @@ func (p *Program) write(w io.Writer) {
 			break
 		}
 	}
+	if usesAny {
+		p.addInclude("<map>")
+	}
+	for _, inc := range p.Includes {
+		fmt.Fprintf(w, "#include %s\n", inc)
+	}
+	fmt.Fprintln(w)
+	fmt.Fprintln(w)
 	if p.UseNow {
 		fmt.Fprintln(w, "static int _now() {")
 		fmt.Fprintln(w, "    static long long seed = 0;")
@@ -594,6 +597,23 @@ func (p *Program) write(w io.Writer) {
 			fmt.Fprintf(w, "    %s %s;\n", f.Type, f.Name)
 		}
 		if !st.Abstract {
+			if st.Base != "" && len(st.Fields) > 0 {
+				fmt.Fprintf(w, "    %s(", st.Name)
+				for i, f := range st.Fields {
+					if i > 0 {
+						io.WriteString(w, ", ")
+					}
+					fmt.Fprintf(w, "%s %s_", f.Type, f.Name)
+				}
+				io.WriteString(w, ") : ")
+				for i, f := range st.Fields {
+					if i > 0 {
+						io.WriteString(w, ", ")
+					}
+					fmt.Fprintf(w, "%s(%s_)", f.Name, f.Name)
+				}
+				fmt.Fprintln(w, " {}")
+			}
 			fmt.Fprintf(w, "    auto operator<=>(const %s&) const = default;\n", st.Name)
 			if strings.HasSuffix(st.Name, "Group") && len(st.Fields) == 2 && st.Fields[1].Name == "items" {
 				fmt.Fprintln(w, "    auto begin() { return items.begin(); }")
@@ -1206,12 +1226,20 @@ func (c *CastExpr) emit(w io.Writer) {
 		return
 	}
 	if valType == "std::any" {
+		if c.Type == "auto" {
+			c.Type = "double"
+		}
 		if currentProgram != nil {
 			currentProgram.addInclude("<any>")
 		}
 		fmt.Fprintf(w, "std::any_cast<%s>(", c.Type)
 		c.Value.emit(w)
 		io.WriteString(w, ")")
+		return
+	}
+	if strings.HasPrefix(valType, "std::unique_ptr<") && strings.HasSuffix(c.Type, "*") {
+		c.Value.emit(w)
+		io.WriteString(w, ".get()")
 		return
 	}
 	io.WriteString(w, "(")
@@ -1825,6 +1853,26 @@ func (b *BinaryExpr) emit(w io.Writer) {
 		io.WriteString(w, ")")
 		return
 	}
+	if strings.Contains(lt, "any") && strings.Contains(rt, "any") {
+		if currentProgram != nil {
+			currentProgram.addInclude("<any>")
+		}
+		io.WriteString(w, "(")
+		io.WriteString(w, "std::any_cast<double>(")
+		b.Left.emit(w)
+		io.WriteString(w, ") "+b.Op+" std::any_cast<double>(")
+		b.Right.emit(w)
+		io.WriteString(w, "))")
+		return
+	}
+	if lt == "auto" && rt == "auto" {
+		io.WriteString(w, "((double)(")
+		b.Left.emit(w)
+		io.WriteString(w, ") "+b.Op+" (double)(")
+		b.Right.emit(w)
+		io.WriteString(w, "))")
+		return
+	}
 	if rt == "std::any" && lt != "std::any" {
 		if currentProgram != nil {
 			currentProgram.addInclude("<any>")
@@ -1856,7 +1904,22 @@ func (s *LetStmt) emit(w io.Writer, indent int) {
 	io.WriteString(w, safeName(s.Name))
 	if s.Value != nil {
 		io.WriteString(w, " = ")
-		s.Value.emit(w)
+		if strings.HasPrefix(typ, "std::unique_ptr<") {
+			if sl, ok := s.Value.(*StructLit); ok {
+				fmt.Fprintf(w, "std::make_unique<%s>(", sl.Name)
+				for i, f := range sl.Fields {
+					if i > 0 {
+						io.WriteString(w, ", ")
+					}
+					f.Value.emit(w)
+				}
+				io.WriteString(w, ")")
+			} else {
+				s.Value.emit(w)
+			}
+		} else {
+			s.Value.emit(w)
+		}
 	} else if typ != "" {
 		io.WriteString(w, " = ")
 		io.WriteString(w, defaultValueForType(typ))
@@ -3050,6 +3113,16 @@ func convertBinary(b *parser.BinaryExpr) (Expr, error) {
 					}
 					ex = &InExpr{Value: l, Coll: r}
 				} else {
+					if ops[i] == "+" || ops[i] == "-" || ops[i] == "*" || ops[i] == "/" || ops[i] == "%" {
+						lt := exprType(l)
+						rt := exprType(r)
+						if strings.Contains(lt, "any") {
+							l = &CastExpr{Value: l, Type: "double"}
+						}
+						if strings.Contains(rt, "any") {
+							r = &CastExpr{Value: r, Type: "double"}
+						}
+					}
 					ex = &BinaryExpr{Left: l, Op: ops[i], Right: r}
 				}
 				operands[i] = ex
@@ -3285,6 +3358,9 @@ func convertFun(fn *parser.FunStmt) (*Func, error) {
 	prevLocals := localTypes
 	prevDecls := currentVarDecls
 	localTypes = map[string]string{}
+	for k, v := range prevLocals {
+		localTypes[k] = v
+	}
 	currentVarDecls = map[string]*LetStmt{}
 	ret := "int"
 	if fn.Return == nil {
@@ -3560,6 +3636,9 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 				for i, arg := range args {
 					if i < len(fn.Params) {
 						ptyp := cppTypeFrom(types.ResolveTypeRef(fn.Params[i].Type, currentEnv))
+						if strings.HasPrefix(ptyp, "std::unique_ptr<") {
+							ptyp = strings.TrimSuffix(strings.TrimPrefix(ptyp, "std::unique_ptr<"), ">") + "*"
+						}
 						if ptyp == "" {
 							ptyp = "auto"
 						}
