@@ -2,5 +2,5 @@
 // Defines an interface type with a single method.
 
 type Eatable {
-  fun eat()
+  eat: fun()
 }
