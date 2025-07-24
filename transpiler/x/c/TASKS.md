@@ -1,5 +1,5 @@
-## Progress (2025-07-24 13:26 +0700)
-- Commit 3715fff6cd: dart transpiler: initial work on index 37
+## Progress (2025-07-24 15:08 +0700)
+- Commit 698dc5b44f: cpp transpiler: support net.LookupHost
 - Regenerated golden files - 80/103 vm valid programs passing
 
 ## Progress (2025-07-22 14:12 +0700)

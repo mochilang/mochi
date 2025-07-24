@@ -681,6 +681,16 @@ func (i *IndexExpr) emitExpr(w io.Writer) {
 				ok2 = true
 			}
 		}
+		if !ok2 {
+			if vr, okVr := i.Target.(*VarRef); okVr {
+				if t, okT := varTypes[vr.Name]; okT {
+					if st2, ok3 := structTypes[t]; ok3 {
+						st = st2
+						ok2 = true
+					}
+				}
+			}
+		}
 		if ok2 {
 			if _, ok3 := st.Fields[key]; ok3 {
 				i.Target.emitExpr(w)
