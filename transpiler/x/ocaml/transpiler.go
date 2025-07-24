@@ -28,6 +28,7 @@ var usesNow bool
 var usesLookupHost bool
 var usesDynMath bool
 var funcMutations = map[string]map[string]bool{}
+var rootEnv *types.Env
 
 // Program represents an OCaml program. All statements are emitted inside
 // a `let () =` block.
@@ -420,8 +421,8 @@ func mapFieldType(typ, field string) (string, bool) {
 	}
 	if strings.HasPrefix(typ, "map-") {
 		elems := strings.Split(typ, "-")
-		if len(elems) >= 3 {
-			return elems[2], true
+		if len(elems) >= 2 {
+			return elems[len(elems)-1], true
 		}
 	}
 	return "", false
@@ -1738,18 +1739,33 @@ func (s *SliceExpr) emit(w io.Writer) {
 func (s *SliceExpr) emitPrint(w io.Writer) { s.emit(w) }
 
 // UnaryMinus represents negation of an integer expression.
-type UnaryMinus struct{ Expr Expr }
+type UnaryMinus struct {
+	Expr Expr
+	Typ  string
+}
 
 func (u *UnaryMinus) emit(w io.Writer) {
-	io.WriteString(w, "-(")
-	u.Expr.emit(w)
-	io.WriteString(w, ")")
+	if u.Typ == "float" {
+		io.WriteString(w, "(-.(")
+		u.Expr.emit(w)
+		io.WriteString(w, "))")
+	} else {
+		io.WriteString(w, "-(")
+		u.Expr.emit(w)
+		io.WriteString(w, ")")
+	}
 }
 
 func (u *UnaryMinus) emitPrint(w io.Writer) {
-	io.WriteString(w, "string_of_int (-")
-	u.Expr.emit(w)
-	io.WriteString(w, ")")
+	if u.Typ == "float" {
+		io.WriteString(w, "string_of_float (-.(")
+		u.Expr.emit(w)
+		io.WriteString(w, "))")
+	} else {
+		io.WriteString(w, "string_of_int (-")
+		u.Expr.emit(w)
+		io.WriteString(w, ")")
+	}
 }
 
 // UnaryNot represents logical negation of a boolean expression.
@@ -2227,6 +2243,12 @@ func typeRefString(t *parser.TypeRef) string {
 			}
 			return "list"
 		case "map":
+			if len(t.Generic.Args) == 2 {
+				val := typeRefString(t.Generic.Args[1])
+				if val != "" {
+					return "map-" + val
+				}
+			}
 			return "map"
 		}
 	}
@@ -2694,7 +2716,7 @@ func transpileStmt(st *parser.Statement, env *types.Env, vars map[string]VarInfo
 				// (none for this case)
 			}
 		}
-		local := len(vars) > 0
+		local := len(vars) > 0 && env != rootEnv
 		return &FunStmt{Name: st.Fun.Name, Params: params, Body: body, Ret: ret, RetTyp: typeString(retTyp), Local: local, EndsWithReturn: endsWithReturn}, nil
 	case st.Type != nil:
 		if len(st.Type.Members) > 0 {
@@ -2753,6 +2775,7 @@ func transpileStmts(list []*parser.Statement, env *types.Env, vars map[string]Va
 }
 
 func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
+	rootEnv = env
 	usesNow = false
 	usesLookupHost = false
 	usesDynMath = false
@@ -2941,7 +2964,7 @@ func convertUnary(u *parser.Unary, env *types.Env, vars map[string]VarInfo) (Exp
 			if typ != "int" && typ != "float" {
 				return nil, "", fmt.Errorf("unary - only for numeric")
 			}
-			return &UnaryMinus{Expr: expr}, typ, nil
+			return &UnaryMinus{Expr: expr, Typ: typ}, typ, nil
 		} else if len(u.Ops) == 1 && u.Ops[0] == "!" {
 			expr, typ, err := convertPostfix(u.Value, env, vars)
 			if err != nil {
@@ -3195,8 +3218,8 @@ func convertPostfix(p *parser.PostfixExpr, env *types.Env, vars map[string]VarIn
 			} else if strings.HasPrefix(typ, "map-") {
 				parts := strings.Split(typ, "-")
 				valTyp := "int"
-				if len(parts) >= 3 {
-					valTyp = parts[2]
+				if len(parts) >= 2 {
+					valTyp = parts[len(parts)-1]
 				}
 				expr = &MapIndexExpr{Map: expr, Key: idxExpr, Typ: valTyp, Dyn: dyn}
 				typ = valTyp
@@ -3332,6 +3355,8 @@ func convertPostfix(p *parser.PostfixExpr, env *types.Env, vars map[string]VarIn
 			target := typeRefString(op.Cast.Type)
 			if typ == "string" && target == "int" {
 				expr = &CastExpr{Expr: expr, Type: target}
+			} else if typ == "int" && target == "float" {
+				expr = &CastExpr{Expr: expr, Type: "int_to_float"}
 			} else if mi, ok := expr.(*MapIndexExpr); ok {
 				mi.Typ = target
 				expr = mi
@@ -3389,10 +3414,10 @@ func convertSelector(sel *parser.SelectorExpr, env *types.Env, vars map[string]V
 			typ = ft
 		} else if fields, ok := structFields[typ]; ok {
 			if ft, ok2 := fields[t]; ok2 {
-				expr = &MapIndexExpr{Map: expr, Key: key, Typ: ft, Dyn: true}
+				expr = &MapIndexExpr{Map: expr, Key: key, Typ: ft, Dyn: false}
 				typ = ft
 			} else {
-				expr = &MapIndexExpr{Map: expr, Key: key, Typ: "int", Dyn: true}
+				expr = &MapIndexExpr{Map: expr, Key: key, Typ: "int", Dyn: false}
 				typ = "int"
 			}
 		} else {
@@ -3475,6 +3500,7 @@ func convertPrimary(p *parser.Primary, env *types.Env, vars map[string]VarInfo) 
 		items := make([]MapEntry, len(p.Map.Items))
 		fieldTypes := []string{}
 		dynamic := false
+		firstType := ""
 		for i, it := range p.Map.Items {
 			k, _, err := convertExpr(it.Key, env, vars)
 			if err != nil {
@@ -3487,7 +3513,12 @@ func convertPrimary(p *parser.Primary, env *types.Env, vars map[string]VarInfo) 
 			if err != nil {
 				return nil, "", err
 			}
-			if vt != "int" {
+			if firstType == "" {
+				firstType = vt
+			} else if vt != firstType {
+				dynamic = true
+			}
+			if vt == "" {
 				dynamic = true
 			}
 			if ks, ok := k.(*StringLit); ok {
@@ -3521,11 +3552,15 @@ func convertPrimary(p *parser.Primary, env *types.Env, vars map[string]VarInfo) 
 			}
 			items = append(items, MapEntry{Key: key, Value: val})
 		}
-		dyn := true
+		dyn := false
 		if _, ok := env.FindUnionByVariant(p.Struct.Name); ok {
 			dyn = false
 		}
-		return &MapLit{Items: items, Dynamic: dyn}, "map-dyn", nil
+		typ := "map-dyn"
+		if _, ok := structFields[p.Struct.Name]; ok {
+			typ = p.Struct.Name
+		}
+		return &MapLit{Items: items, Dynamic: dyn}, typ, nil
 	case p.Query != nil:
 		qe, qtyp, err := convertQueryExpr(p.Query, env, vars)
 		if err != nil {
