@@ -2,9 +2,9 @@
 
 Generated Lua code for programs in `tests/rosetta/x/Mochi`. Each program has a `.lua` file produced by the transpiler and a `.out` file with its runtime output. Compilation or runtime errors are captured in `.error` files.
 
-Transpiled programs: 166/284
+Transpiled programs: 176/284
 
-Last updated: 2025-07-24 20:11 GMT+7
+Last updated: 2025-07-24 21:15 GMT+7
 
 Checklist:
 
@@ -178,16 +178,16 @@ Checklist:
 168. [x] canonicalize-cidr (168)
 169. [x] cantor-set (169)
 170. [x] carmichael-3-strong-pseudoprimes (170)
-171. [ ] cartesian-product-of-two-or-more-lists-1 (171)
-172. [ ] cartesian-product-of-two-or-more-lists-2 (172)
-173. [ ] cartesian-product-of-two-or-more-lists-3 (173)
-174. [ ] cartesian-product-of-two-or-more-lists-4 (174)
-175. [ ] case-sensitivity-of-identifiers (175)
-176. [ ] casting-out-nines (176)
-177. [ ] catalan-numbers-1 (177)
-178. [ ] catalan-numbers-2 (178)
-179. [ ] catalan-numbers-pascals-triangle (179)
-180. [ ] catamorphism (180)
+171. [x] cartesian-product-of-two-or-more-lists-1 (171)
+172. [x] cartesian-product-of-two-or-more-lists-2 (172)
+173. [x] cartesian-product-of-two-or-more-lists-3 (173)
+174. [x] cartesian-product-of-two-or-more-lists-4 (174)
+175. [x] case-sensitivity-of-identifiers (175)
+176. [x] casting-out-nines (176)
+177. [x] catalan-numbers-1 (177)
+178. [x] catalan-numbers-2 (178)
+179. [x] catalan-numbers-pascals-triangle (179)
+180. [x] catamorphism (180)
 181. [ ] catmull-clark-subdivision-surface (181)
 182. [ ] chaocipher (182)
 183. [ ] chaos-game (183)

@@ -1130,6 +1130,12 @@ func isLuaIdent(s string) bool {
 	if s == "" {
 		return false
 	}
+	switch s {
+	case "and", "break", "do", "else", "elseif", "end", "false", "for",
+		"function", "goto", "if", "in", "local", "nil", "not", "or",
+		"repeat", "return", "then", "true", "until", "while":
+		return false
+	}
 	r := []rune(s)
 	if !(unicode.IsLetter(r[0]) || r[0] == '_') {
 		return false
@@ -3302,6 +3308,10 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 				if isStringExpr(target) {
 					kind = "string"
 				} else if isMapExpr(target) {
+					kind = "map"
+				} else if isStringExpr(iexpr) {
+					kind = "map"
+				} else if _, ok := iexpr.(*StringLit); ok {
 					kind = "map"
 				}
 				target = &IndexExpr{Target: target, Index: iexpr, Kind: kind}
