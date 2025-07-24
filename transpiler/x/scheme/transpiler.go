@@ -193,6 +193,7 @@ func header() []byte {
 	}
 	// Always import string helpers for functions like string-contains
 	prelude += "(import (chibi string))\n"
+	prelude += "(import (only (scheme char) string-upcase string-downcase))\n"
 	if needHash {
 		prelude += "(import (srfi 69))\n"
 	}
@@ -235,6 +236,8 @@ func header() []byte {
         ((string? x) x)
         ((boolean? x) (if x "1" "0"))
         (else (number->string x))))`
+	prelude += "\n(define (upper s) (string-upcase s))"
+	prelude += "\n(define (lower s) (string-downcase s))"
 	if usesInput {
 		prelude += "\n(define (_input)\n  (let ((l (read-line)))\n    (if (eof-object? l) \"\" l)))"
 	}
@@ -2006,23 +2009,12 @@ func convertCall(target Node, call *parser.CallOp) (Node, error) {
 		if len(args) != 1 {
 			return nil, fmt.Errorf("len expects 1 arg")
 		}
-		switch types.ExprType(call.Args[0], currentEnv).(type) {
-		case types.StringType:
-			return &List{Elems: []Node{Symbol("string-length"), args[0]}}, nil
-		case types.ListType:
-			return &List{Elems: []Node{Symbol("length"), args[0]}}, nil
-		case types.MapType:
-			return &List{Elems: []Node{Symbol("hash-table-size"), args[0]}}, nil
-		case types.GroupType:
-			return &List{Elems: []Node{Symbol("length"), &List{Elems: []Node{Symbol("hash-table-ref"), args[0], StringLit("items")}}}}, nil
-		default:
-			return &List{Elems: []Node{
-				Symbol("cond"),
-				&List{Elems: []Node{&List{Elems: []Node{Symbol("string?"), args[0]}}, &List{Elems: []Node{Symbol("string-length"), args[0]}}}},
-				&List{Elems: []Node{&List{Elems: []Node{Symbol("hash-table?"), args[0]}}, &List{Elems: []Node{Symbol("hash-table-size"), args[0]}}}},
-				&List{Elems: []Node{Symbol("else"), &List{Elems: []Node{Symbol("length"), args[0]}}}},
-			}}, nil
-		}
+		return &List{Elems: []Node{
+			Symbol("cond"),
+			&List{Elems: []Node{&List{Elems: []Node{Symbol("string?"), args[0]}}, &List{Elems: []Node{Symbol("string-length"), args[0]}}}},
+			&List{Elems: []Node{&List{Elems: []Node{Symbol("hash-table?"), args[0]}}, &List{Elems: []Node{Symbol("hash-table-size"), args[0]}}}},
+			&List{Elems: []Node{Symbol("else"), &List{Elems: []Node{Symbol("length"), args[0]}}}},
+		}}, nil
 	case "append":
 		if len(args) != 2 {
 			return nil, fmt.Errorf("append expects 2 args")
@@ -2130,7 +2122,20 @@ func convertIndex(target Node, orig *parser.Primary, idx *parser.IndexOp) (Node,
 			}
 			end = n
 		} else {
-			end = &List{Elems: []Node{Symbol("length"), target}}
+			t := types.ExprType(&parser.Expr{Binary: &parser.BinaryExpr{Left: &parser.Unary{Value: &parser.PostfixExpr{Target: orig}}}}, currentEnv)
+			switch t.(type) {
+			case types.StringType:
+				end = &List{Elems: []Node{Symbol("string-length"), target}}
+			case types.ListType:
+				end = &List{Elems: []Node{Symbol("length"), target}}
+			default:
+				end = &List{Elems: []Node{
+					Symbol("cond"),
+					&List{Elems: []Node{&List{Elems: []Node{Symbol("string?"), target}}, &List{Elems: []Node{Symbol("string-length"), target}}}},
+					&List{Elems: []Node{&List{Elems: []Node{Symbol("hash-table?"), target}}, &List{Elems: []Node{Symbol("hash-table-size"), target}}}},
+					&List{Elems: []Node{Symbol("else"), &List{Elems: []Node{Symbol("length"), target}}}},
+				}}
+			}
 		}
 		lenNode := &List{Elems: []Node{Symbol("-"), end, start}}
 		if orig != nil {

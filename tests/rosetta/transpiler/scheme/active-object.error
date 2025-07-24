@@ -1,0 +1,11 @@
+exit status 70
+ERROR on line 32 of file /workspace/mochi/tests/rosetta/transpiler/scheme/active-object.scm: invalid type, expected Integer: -3.100627668029982e-05
+  called from loop2 on line 27 of file /workspace/mochi/tests/rosetta/transpiler/scheme/active-object.scm
+  called from call-with-current-continuation on line 848 of file /usr/share/chibi/init-7.scm
+  called from <anonymous> on line 23 of file /workspace/mochi/tests/rosetta/transpiler/scheme/active-object.scm
+  called from call-with-current-continuation on line 848 of file /usr/share/chibi/init-7.scm
+  called from <anonymous> on line 280 of file /usr/share/chibi/init-7.scm
+  called from loop4 on line 72 of file /workspace/mochi/tests/rosetta/transpiler/scheme/active-object.scm
+  called from call-with-current-continuation on line 848 of file /usr/share/chibi/init-7.scm
+  called from <anonymous> on line 1292 of file /usr/share/chibi/init-7.scm
+  called from <anonymous> on line 821 of file /usr/share/chibi/init-7.scm
