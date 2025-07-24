@@ -1,289 +1,289 @@
 # Rosetta Rust Transpiler Output (6/284)
-Last updated: 2025-07-23 10:09 +0700
+Last updated: 2025-07-24 07:09 +0700
 
 ## Program checklist
 
-  1. [x] 100-doors-2.mochi
-  2. [x] 100-doors-3.mochi
-  3. [x] 100-doors.mochi
-  4. [x] 100-prisoners.mochi
-  5. [x] 15-puzzle-game.mochi
-  6. [x] 15-puzzle-solver.mochi
-  7. [ ] 2048.mochi
-  8. [ ] 21-game.mochi
-  9. [ ] 24-game-solve.mochi
- 10. [ ] 24-game.mochi
- 11. [ ] 4-rings-or-4-squares-puzzle.mochi
- 12. [ ] 9-billion-names-of-god-the-integer.mochi
- 13. [ ] 99-bottles-of-beer-2.mochi
- 14. [ ] 99-bottles-of-beer.mochi
- 15. [ ] DNS-query.mochi
- 16. [ ] a+b.mochi
- 17. [ ] abbreviations-automatic.mochi
- 18. [ ] abbreviations-easy.mochi
- 19. [ ] abbreviations-simple.mochi
- 20. [ ] abc-problem.mochi
- 21. [ ] abelian-sandpile-model-identity.mochi
- 22. [ ] abelian-sandpile-model.mochi
- 23. [ ] abstract-type.mochi
- 24. [ ] abundant-deficient-and-perfect-number-classifications.mochi
- 25. [ ] abundant-odd-numbers.mochi
- 26. [ ] accumulator-factory.mochi
- 27. [ ] achilles-numbers.mochi
- 28. [ ] ackermann-function-2.mochi
- 29. [ ] ackermann-function-3.mochi
- 30. [ ] ackermann-function.mochi
- 31. [ ] active-directory-connect.mochi
- 32. [ ] active-directory-search-for-a-user.mochi
- 33. [ ] active-object.mochi
- 34. [ ] add-a-variable-to-a-class-instance-at-runtime.mochi
- 35. [ ] additive-primes.mochi
- 36. [ ] address-of-a-variable.mochi
- 37. [ ] adfgvx-cipher.mochi
- 38. [ ] aks-test-for-primes.mochi
- 39. [ ] algebraic-data-types.mochi
- 40. [ ] align-columns.mochi
- 41. [ ] aliquot-sequence-classifications.mochi
- 42. [ ] almkvist-giullera-formula-for-pi.mochi
- 43. [ ] almost-prime.mochi
- 44. [ ] amb.mochi
- 45. [ ] amicable-pairs.mochi
- 46. [ ] anagrams-deranged-anagrams.mochi
- 47. [ ] anagrams.mochi
- 48. [ ] angle-difference-between-two-bearings-1.mochi
- 49. [ ] angle-difference-between-two-bearings-2.mochi
- 50. [ ] angles-geometric-normalization-and-conversion.mochi
- 51. [ ] animate-a-pendulum.mochi
- 52. [ ] animation.mochi
- 53. [ ] anonymous-recursion-1.mochi
- 54. [ ] anonymous-recursion-2.mochi
- 55. [ ] anonymous-recursion.mochi
- 56. [ ] anti-primes.mochi
- 57. [ ] append-a-record-to-the-end-of-a-text-file.mochi
- 58. [ ] apply-a-callback-to-an-array-1.mochi
- 59. [ ] apply-a-callback-to-an-array-2.mochi
- 60. [ ] apply-a-digital-filter-direct-form-ii-transposed-.mochi
- 61. [ ] approximate-equality.mochi
- 62. [ ] arbitrary-precision-integers-included-.mochi
- 63. [ ] archimedean-spiral.mochi
- 64. [ ] arena-storage-pool.mochi
- 65. [ ] arithmetic-complex.mochi
- 66. [ ] arithmetic-derivative.mochi
- 67. [ ] arithmetic-evaluation.mochi
- 68. [ ] arithmetic-geometric-mean-calculate-pi.mochi
- 69. [ ] arithmetic-geometric-mean.mochi
- 70. [ ] arithmetic-integer-1.mochi
- 71. [ ] arithmetic-integer-2.mochi
- 72. [ ] arithmetic-numbers.mochi
- 73. [ ] arithmetic-rational.mochi
- 74. [ ] array-concatenation.mochi
- 75. [ ] array-length.mochi
- 76. [ ] arrays.mochi
- 77. [ ] ascending-primes.mochi
- 78. [ ] ascii-art-diagram-converter.mochi
- 79. [ ] assertions.mochi
- 80. [ ] associative-array-creation.mochi
- 81. [ ] associative-array-iteration.mochi
- 82. [ ] associative-array-merging.mochi
- 83. [ ] atomic-updates.mochi
- 84. [ ] attractive-numbers.mochi
- 85. [ ] average-loop-length.mochi
- 86. [ ] averages-arithmetic-mean.mochi
- 87. [ ] averages-mean-time-of-day.mochi
- 88. [ ] averages-median-1.mochi
- 89. [ ] averages-median-2.mochi
- 90. [ ] averages-median-3.mochi
- 91. [ ] averages-mode.mochi
- 92. [ ] averages-pythagorean-means.mochi
- 93. [ ] averages-root-mean-square.mochi
- 94. [ ] averages-simple-moving-average.mochi
- 95. [ ] avl-tree.mochi
- 96. [ ] b-zier-curves-intersections.mochi
- 97. [ ] babbage-problem.mochi
- 98. [ ] babylonian-spiral.mochi
- 99. [ ] balanced-brackets.mochi
-100. [ ] balanced-ternary.mochi
-101. [ ] barnsley-fern.mochi
-102. [ ] base64-decode-data.mochi
-103. [ ] bell-numbers.mochi
-104. [ ] benfords-law.mochi
-105. [ ] bernoulli-numbers.mochi
-106. [ ] best-shuffle.mochi
-107. [ ] bifid-cipher.mochi
-108. [ ] bin-given-limits.mochi
-109. [ ] binary-digits.mochi
-110. [ ] binary-search.mochi
-111. [ ] binary-strings.mochi
-112. [ ] bioinformatics-base-count.mochi
-113. [ ] bioinformatics-global-alignment.mochi
-114. [ ] bioinformatics-sequence-mutation.mochi
-115. [ ] biorhythms.mochi
-116. [ ] bitcoin-address-validation.mochi
-117. [ ] bitmap-b-zier-curves-cubic.mochi
-118. [ ] bitmap-b-zier-curves-quadratic.mochi
-119. [ ] bitmap-bresenhams-line-algorithm.mochi
-120. [ ] bitmap-flood-fill.mochi
-121. [ ] bitmap-histogram.mochi
-122. [ ] bitmap-midpoint-circle-algorithm.mochi
-123. [ ] bitmap-ppm-conversion-through-a-pipe.mochi
-124. [ ] bitmap-read-a-ppm-file.mochi
-125. [ ] bitmap-read-an-image-through-a-pipe.mochi
-126. [ ] bitmap-write-a-ppm-file.mochi
-127. [ ] bitmap.mochi
-128. [ ] bitwise-io-1.mochi
-129. [ ] bitwise-io-2.mochi
-130. [ ] bitwise-operations.mochi
-131. [ ] blum-integer.mochi
-132. [ ] boolean-values.mochi
-133. [ ] box-the-compass.mochi
-134. [ ] boyer-moore-string-search.mochi
-135. [ ] brazilian-numbers.mochi
-136. [ ] break-oo-privacy.mochi
-137. [ ] brilliant-numbers.mochi
-138. [ ] brownian-tree.mochi
-139. [ ] bulls-and-cows-player.mochi
-140. [ ] bulls-and-cows.mochi
-141. [ ] burrows-wheeler-transform.mochi
-142. [ ] caesar-cipher-1.mochi
-143. [ ] caesar-cipher-2.mochi
-144. [ ] calculating-the-value-of-e.mochi
-145. [ ] calendar---for-real-programmers-1.mochi
-146. [ ] calendar---for-real-programmers-2.mochi
-147. [ ] calendar.mochi
-148. [ ] calkin-wilf-sequence.mochi
-149. [ ] call-a-foreign-language-function.mochi
-150. [ ] call-a-function-1.mochi
-151. [ ] call-a-function-10.mochi
-152. [ ] call-a-function-11.mochi
-153. [ ] call-a-function-12.mochi
-154. [ ] call-a-function-2.mochi
-155. [ ] call-a-function-3.mochi
-156. [ ] call-a-function-4.mochi
-157. [ ] call-a-function-5.mochi
-158. [ ] call-a-function-6.mochi
-159. [ ] call-a-function-7.mochi
-160. [ ] call-a-function-8.mochi
-161. [ ] call-a-function-9.mochi
-162. [ ] call-an-object-method-1.mochi
-163. [ ] call-an-object-method-2.mochi
-164. [ ] call-an-object-method-3.mochi
-165. [ ] call-an-object-method.mochi
-166. [ ] camel-case-and-snake-case.mochi
-167. [ ] canny-edge-detector.mochi
-168. [ ] canonicalize-cidr.mochi
-169. [ ] cantor-set.mochi
-170. [ ] carmichael-3-strong-pseudoprimes.mochi
-171. [ ] cartesian-product-of-two-or-more-lists-1.mochi
-172. [ ] cartesian-product-of-two-or-more-lists-2.mochi
-173. [ ] cartesian-product-of-two-or-more-lists-3.mochi
-174. [ ] cartesian-product-of-two-or-more-lists-4.mochi
-175. [ ] case-sensitivity-of-identifiers.mochi
-176. [ ] casting-out-nines.mochi
-177. [ ] catalan-numbers-1.mochi
-178. [ ] catalan-numbers-2.mochi
-179. [ ] catalan-numbers-pascals-triangle.mochi
-180. [ ] catamorphism.mochi
-181. [ ] catmull-clark-subdivision-surface.mochi
-182. [ ] chaocipher.mochi
-183. [ ] chaos-game.mochi
-184. [ ] character-codes-1.mochi
-185. [ ] character-codes-2.mochi
-186. [ ] character-codes-3.mochi
-187. [ ] character-codes-4.mochi
-188. [ ] character-codes-5.mochi
-189. [ ] chat-server.mochi
-190. [ ] check-machin-like-formulas.mochi
-191. [ ] check-that-file-exists.mochi
-192. [ ] checkpoint-synchronization-1.mochi
-193. [ ] checkpoint-synchronization-2.mochi
-194. [ ] checkpoint-synchronization-3.mochi
-195. [ ] checkpoint-synchronization-4.mochi
-196. [ ] chernicks-carmichael-numbers.mochi
-197. [ ] cheryls-birthday.mochi
-198. [ ] chinese-remainder-theorem.mochi
-199. [ ] chinese-zodiac.mochi
-200. [ ] cholesky-decomposition-1.mochi
-201. [ ] cholesky-decomposition.mochi
-202. [ ] chowla-numbers.mochi
-203. [ ] church-numerals-1.mochi
-204. [ ] church-numerals-2.mochi
-205. [ ] circles-of-given-radius-through-two-points.mochi
-206. [ ] circular-primes.mochi
-207. [ ] cistercian-numerals.mochi
-208. [ ] comma-quibbling.mochi
-209. [ ] compiler-virtual-machine-interpreter.mochi
-210. [ ] composite-numbers-k-with-no-single-digit-factors-whose-factors-are-all-substrings-of-k.mochi
-211. [ ] compound-data-type.mochi
-212. [ ] concurrent-computing-1.mochi
-213. [ ] concurrent-computing-2.mochi
-214. [ ] concurrent-computing-3.mochi
-215. [ ] conditional-structures-1.mochi
-216. [ ] conditional-structures-10.mochi
-217. [ ] conditional-structures-2.mochi
-218. [ ] conditional-structures-3.mochi
-219. [ ] conditional-structures-4.mochi
-220. [ ] conditional-structures-5.mochi
-221. [ ] conditional-structures-6.mochi
-222. [ ] conditional-structures-7.mochi
-223. [ ] conditional-structures-8.mochi
-224. [ ] conditional-structures-9.mochi
-225. [ ] consecutive-primes-with-ascending-or-descending-differences.mochi
-226. [ ] constrained-genericity-1.mochi
-227. [ ] constrained-genericity-2.mochi
-228. [ ] constrained-genericity-3.mochi
-229. [ ] constrained-genericity-4.mochi
-230. [ ] constrained-random-points-on-a-circle-1.mochi
-231. [ ] constrained-random-points-on-a-circle-2.mochi
-232. [ ] continued-fraction.mochi
-233. [ ] convert-decimal-number-to-rational.mochi
-234. [ ] convert-seconds-to-compound-duration.mochi
-235. [ ] convex-hull.mochi
-236. [ ] conways-game-of-life.mochi
-237. [ ] copy-a-string-1.mochi
-238. [ ] copy-a-string-2.mochi
-239. [ ] copy-stdin-to-stdout-1.mochi
-240. [ ] copy-stdin-to-stdout-2.mochi
-241. [ ] count-in-factors.mochi
-242. [ ] count-in-octal-1.mochi
-243. [ ] count-in-octal-2.mochi
-244. [ ] count-in-octal-3.mochi
-245. [ ] count-in-octal-4.mochi
-246. [ ] count-occurrences-of-a-substring.mochi
-247. [ ] count-the-coins-1.mochi
-248. [ ] count-the-coins-2.mochi
-249. [ ] cramers-rule.mochi
-250. [ ] crc-32-1.mochi
-251. [ ] crc-32-2.mochi
-252. [ ] create-a-file-on-magnetic-tape.mochi
-253. [ ] create-a-file.mochi
-254. [ ] create-a-two-dimensional-array-at-runtime-1.mochi
-255. [ ] create-an-html-table.mochi
-256. [ ] create-an-object-at-a-given-address.mochi
-257. [ ] csv-data-manipulation.mochi
-258. [ ] csv-to-html-translation-1.mochi
-259. [ ] csv-to-html-translation-2.mochi
-260. [ ] csv-to-html-translation-3.mochi
-261. [ ] csv-to-html-translation-4.mochi
-262. [ ] csv-to-html-translation-5.mochi
-263. [ ] cuban-primes.mochi
-264. [ ] cullen-and-woodall-numbers.mochi
-265. [ ] cumulative-standard-deviation.mochi
-266. [ ] currency.mochi
-267. [ ] currying.mochi
-268. [ ] curzon-numbers.mochi
-269. [ ] cusip.mochi
-270. [ ] cyclops-numbers.mochi
-271. [ ] damm-algorithm.mochi
-272. [ ] date-format.mochi
-273. [ ] date-manipulation.mochi
-274. [ ] day-of-the-week.mochi
-275. [ ] de-bruijn-sequences.mochi
-276. [ ] deal-cards-for-freecell.mochi
-277. [ ] death-star.mochi
-278. [ ] deceptive-numbers.mochi
-279. [ ] deconvolution-1d-2.mochi
-280. [ ] deconvolution-1d-3.mochi
-281. [ ] deconvolution-1d.mochi
-282. [ ] deepcopy-1.mochi
-283. [ ] define-a-primitive-data-type.mochi
-284. [ ] md5.mochi
+  1. [x] 100-doors-2 (1)
+  2. [x] 100-doors-3 (2)
+  3. [x] 100-doors (3)
+  4. [x] 100-prisoners (4)
+  5. [x] 15-puzzle-game (5)
+  6. [x] 15-puzzle-solver (6)
+  7. [ ] 2048 (7)
+  8. [ ] 21-game (8)
+  9. [ ] 24-game-solve (9)
+ 10. [ ] 24-game (10)
+ 11. [ ] 4-rings-or-4-squares-puzzle (11)
+ 12. [ ] 9-billion-names-of-god-the-integer (12)
+ 13. [ ] 99-bottles-of-beer-2 (13)
+ 14. [ ] 99-bottles-of-beer (14)
+ 15. [ ] DNS-query (15)
+ 16. [ ] a+b (16)
+ 17. [ ] abbreviations-automatic (17)
+ 18. [ ] abbreviations-easy (18)
+ 19. [ ] abbreviations-simple (19)
+ 20. [ ] abc-problem (20)
+ 21. [ ] abelian-sandpile-model-identity (21)
+ 22. [ ] abelian-sandpile-model (22)
+ 23. [ ] abstract-type (23)
+ 24. [ ] abundant-deficient-and-perfect-number-classifications (24)
+ 25. [ ] abundant-odd-numbers (25)
+ 26. [ ] accumulator-factory (26)
+ 27. [ ] achilles-numbers (27)
+ 28. [ ] ackermann-function-2 (28)
+ 29. [ ] ackermann-function-3 (29)
+ 30. [ ] ackermann-function (30)
+ 31. [ ] active-directory-connect (31)
+ 32. [ ] active-directory-search-for-a-user (32)
+ 33. [ ] active-object (33)
+ 34. [ ] add-a-variable-to-a-class-instance-at-runtime (34)
+ 35. [ ] additive-primes (35)
+ 36. [ ] address-of-a-variable (36)
+ 37. [ ] adfgvx-cipher (37)
+ 38. [ ] aks-test-for-primes (38)
+ 39. [ ] algebraic-data-types (39)
+ 40. [ ] align-columns (40)
+ 41. [ ] aliquot-sequence-classifications (41)
+ 42. [ ] almkvist-giullera-formula-for-pi (42)
+ 43. [ ] almost-prime (43)
+ 44. [ ] amb (44)
+ 45. [ ] amicable-pairs (45)
+ 46. [ ] anagrams-deranged-anagrams (46)
+ 47. [ ] anagrams (47)
+ 48. [ ] angle-difference-between-two-bearings-1 (48)
+ 49. [ ] angle-difference-between-two-bearings-2 (49)
+ 50. [ ] angles-geometric-normalization-and-conversion (50)
+ 51. [ ] animate-a-pendulum (51)
+ 52. [ ] animation (52)
+ 53. [ ] anonymous-recursion-1 (53)
+ 54. [ ] anonymous-recursion-2 (54)
+ 55. [ ] anonymous-recursion (55)
+ 56. [ ] anti-primes (56)
+ 57. [ ] append-a-record-to-the-end-of-a-text-file (57)
+ 58. [ ] apply-a-callback-to-an-array-1 (58)
+ 59. [ ] apply-a-callback-to-an-array-2 (59)
+ 60. [ ] apply-a-digital-filter-direct-form-ii-transposed- (60)
+ 61. [ ] approximate-equality (61)
+ 62. [ ] arbitrary-precision-integers-included- (62)
+ 63. [ ] archimedean-spiral (63)
+ 64. [ ] arena-storage-pool (64)
+ 65. [ ] arithmetic-complex (65)
+ 66. [ ] arithmetic-derivative (66)
+ 67. [ ] arithmetic-evaluation (67)
+ 68. [ ] arithmetic-geometric-mean-calculate-pi (68)
+ 69. [ ] arithmetic-geometric-mean (69)
+ 70. [ ] arithmetic-integer-1 (70)
+ 71. [ ] arithmetic-integer-2 (71)
+ 72. [ ] arithmetic-numbers (72)
+ 73. [ ] arithmetic-rational (73)
+ 74. [ ] array-concatenation (74)
+ 75. [ ] array-length (75)
+ 76. [ ] arrays (76)
+ 77. [ ] ascending-primes (77)
+ 78. [ ] ascii-art-diagram-converter (78)
+ 79. [ ] assertions (79)
+ 80. [ ] associative-array-creation (80)
+ 81. [ ] associative-array-iteration (81)
+ 82. [ ] associative-array-merging (82)
+ 83. [ ] atomic-updates (83)
+ 84. [ ] attractive-numbers (84)
+ 85. [ ] average-loop-length (85)
+ 86. [ ] averages-arithmetic-mean (86)
+ 87. [ ] averages-mean-time-of-day (87)
+ 88. [ ] averages-median-1 (88)
+ 89. [ ] averages-median-2 (89)
+ 90. [ ] averages-median-3 (90)
+ 91. [ ] averages-mode (91)
+ 92. [ ] averages-pythagorean-means (92)
+ 93. [ ] averages-root-mean-square (93)
+ 94. [ ] averages-simple-moving-average (94)
+ 95. [ ] avl-tree (95)
+ 96. [ ] b-zier-curves-intersections (96)
+ 97. [ ] babbage-problem (97)
+ 98. [ ] babylonian-spiral (98)
+ 99. [ ] balanced-brackets (99)
+100. [ ] balanced-ternary (100)
+101. [ ] barnsley-fern (101)
+102. [ ] base64-decode-data (102)
+103. [ ] bell-numbers (103)
+104. [ ] benfords-law (104)
+105. [ ] bernoulli-numbers (105)
+106. [ ] best-shuffle (106)
+107. [ ] bifid-cipher (107)
+108. [ ] bin-given-limits (108)
+109. [ ] binary-digits (109)
+110. [ ] binary-search (110)
+111. [ ] binary-strings (111)
+112. [ ] bioinformatics-base-count (112)
+113. [ ] bioinformatics-global-alignment (113)
+114. [ ] bioinformatics-sequence-mutation (114)
+115. [ ] biorhythms (115)
+116. [ ] bitcoin-address-validation (116)
+117. [ ] bitmap-b-zier-curves-cubic (117)
+118. [ ] bitmap-b-zier-curves-quadratic (118)
+119. [ ] bitmap-bresenhams-line-algorithm (119)
+120. [ ] bitmap-flood-fill (120)
+121. [ ] bitmap-histogram (121)
+122. [ ] bitmap-midpoint-circle-algorithm (122)
+123. [ ] bitmap-ppm-conversion-through-a-pipe (123)
+124. [ ] bitmap-read-a-ppm-file (124)
+125. [ ] bitmap-read-an-image-through-a-pipe (125)
+126. [ ] bitmap-write-a-ppm-file (126)
+127. [ ] bitmap (127)
+128. [ ] bitwise-io-1 (128)
+129. [ ] bitwise-io-2 (129)
+130. [ ] bitwise-operations (130)
+131. [ ] blum-integer (131)
+132. [ ] boolean-values (132)
+133. [ ] box-the-compass (133)
+134. [ ] boyer-moore-string-search (134)
+135. [ ] brazilian-numbers (135)
+136. [ ] break-oo-privacy (136)
+137. [ ] brilliant-numbers (137)
+138. [ ] brownian-tree (138)
+139. [ ] bulls-and-cows-player (139)
+140. [ ] bulls-and-cows (140)
+141. [ ] burrows-wheeler-transform (141)
+142. [ ] caesar-cipher-1 (142)
+143. [ ] caesar-cipher-2 (143)
+144. [ ] calculating-the-value-of-e (144)
+145. [ ] calendar---for-real-programmers-1 (145)
+146. [ ] calendar---for-real-programmers-2 (146)
+147. [ ] calendar (147)
+148. [ ] calkin-wilf-sequence (148)
+149. [ ] call-a-foreign-language-function (149)
+150. [ ] call-a-function-1 (150)
+151. [ ] call-a-function-10 (151)
+152. [ ] call-a-function-11 (152)
+153. [ ] call-a-function-12 (153)
+154. [ ] call-a-function-2 (154)
+155. [ ] call-a-function-3 (155)
+156. [ ] call-a-function-4 (156)
+157. [ ] call-a-function-5 (157)
+158. [ ] call-a-function-6 (158)
+159. [ ] call-a-function-7 (159)
+160. [ ] call-a-function-8 (160)
+161. [ ] call-a-function-9 (161)
+162. [ ] call-an-object-method-1 (162)
+163. [ ] call-an-object-method-2 (163)
+164. [ ] call-an-object-method-3 (164)
+165. [ ] call-an-object-method (165)
+166. [ ] camel-case-and-snake-case (166)
+167. [ ] canny-edge-detector (167)
+168. [ ] canonicalize-cidr (168)
+169. [ ] cantor-set (169)
+170. [ ] carmichael-3-strong-pseudoprimes (170)
+171. [ ] cartesian-product-of-two-or-more-lists-1 (171)
+172. [ ] cartesian-product-of-two-or-more-lists-2 (172)
+173. [ ] cartesian-product-of-two-or-more-lists-3 (173)
+174. [ ] cartesian-product-of-two-or-more-lists-4 (174)
+175. [ ] case-sensitivity-of-identifiers (175)
+176. [ ] casting-out-nines (176)
+177. [ ] catalan-numbers-1 (177)
+178. [ ] catalan-numbers-2 (178)
+179. [ ] catalan-numbers-pascals-triangle (179)
+180. [ ] catamorphism (180)
+181. [ ] catmull-clark-subdivision-surface (181)
+182. [ ] chaocipher (182)
+183. [ ] chaos-game (183)
+184. [ ] character-codes-1 (184)
+185. [ ] character-codes-2 (185)
+186. [ ] character-codes-3 (186)
+187. [ ] character-codes-4 (187)
+188. [ ] character-codes-5 (188)
+189. [ ] chat-server (189)
+190. [ ] check-machin-like-formulas (190)
+191. [ ] check-that-file-exists (191)
+192. [ ] checkpoint-synchronization-1 (192)
+193. [ ] checkpoint-synchronization-2 (193)
+194. [ ] checkpoint-synchronization-3 (194)
+195. [ ] checkpoint-synchronization-4 (195)
+196. [ ] chernicks-carmichael-numbers (196)
+197. [ ] cheryls-birthday (197)
+198. [ ] chinese-remainder-theorem (198)
+199. [ ] chinese-zodiac (199)
+200. [ ] cholesky-decomposition-1 (200)
+201. [ ] cholesky-decomposition (201)
+202. [ ] chowla-numbers (202)
+203. [ ] church-numerals-1 (203)
+204. [ ] church-numerals-2 (204)
+205. [ ] circles-of-given-radius-through-two-points (205)
+206. [ ] circular-primes (206)
+207. [ ] cistercian-numerals (207)
+208. [ ] comma-quibbling (208)
+209. [ ] compiler-virtual-machine-interpreter (209)
+210. [ ] composite-numbers-k-with-no-single-digit-factors-whose-factors-are-all-substrings-of-k (210)
+211. [ ] compound-data-type (211)
+212. [ ] concurrent-computing-1 (212)
+213. [ ] concurrent-computing-2 (213)
+214. [ ] concurrent-computing-3 (214)
+215. [ ] conditional-structures-1 (215)
+216. [ ] conditional-structures-10 (216)
+217. [ ] conditional-structures-2 (217)
+218. [ ] conditional-structures-3 (218)
+219. [ ] conditional-structures-4 (219)
+220. [ ] conditional-structures-5 (220)
+221. [ ] conditional-structures-6 (221)
+222. [ ] conditional-structures-7 (222)
+223. [ ] conditional-structures-8 (223)
+224. [ ] conditional-structures-9 (224)
+225. [ ] consecutive-primes-with-ascending-or-descending-differences (225)
+226. [ ] constrained-genericity-1 (226)
+227. [ ] constrained-genericity-2 (227)
+228. [ ] constrained-genericity-3 (228)
+229. [ ] constrained-genericity-4 (229)
+230. [ ] constrained-random-points-on-a-circle-1 (230)
+231. [ ] constrained-random-points-on-a-circle-2 (231)
+232. [ ] continued-fraction (232)
+233. [ ] convert-decimal-number-to-rational (233)
+234. [ ] convert-seconds-to-compound-duration (234)
+235. [ ] convex-hull (235)
+236. [ ] conways-game-of-life (236)
+237. [ ] copy-a-string-1 (237)
+238. [ ] copy-a-string-2 (238)
+239. [ ] copy-stdin-to-stdout-1 (239)
+240. [ ] copy-stdin-to-stdout-2 (240)
+241. [ ] count-in-factors (241)
+242. [ ] count-in-octal-1 (242)
+243. [ ] count-in-octal-2 (243)
+244. [ ] count-in-octal-3 (244)
+245. [ ] count-in-octal-4 (245)
+246. [ ] count-occurrences-of-a-substring (246)
+247. [ ] count-the-coins-1 (247)
+248. [ ] count-the-coins-2 (248)
+249. [ ] cramers-rule (249)
+250. [ ] crc-32-1 (250)
+251. [ ] crc-32-2 (251)
+252. [ ] create-a-file-on-magnetic-tape (252)
+253. [ ] create-a-file (253)
+254. [ ] create-a-two-dimensional-array-at-runtime-1 (254)
+255. [ ] create-an-html-table (255)
+256. [ ] create-an-object-at-a-given-address (256)
+257. [ ] csv-data-manipulation (257)
+258. [ ] csv-to-html-translation-1 (258)
+259. [ ] csv-to-html-translation-2 (259)
+260. [ ] csv-to-html-translation-3 (260)
+261. [ ] csv-to-html-translation-4 (261)
+262. [ ] csv-to-html-translation-5 (262)
+263. [ ] cuban-primes (263)
+264. [ ] cullen-and-woodall-numbers (264)
+265. [ ] cumulative-standard-deviation (265)
+266. [ ] currency (266)
+267. [ ] currying (267)
+268. [ ] curzon-numbers (268)
+269. [ ] cusip (269)
+270. [ ] cyclops-numbers (270)
+271. [ ] damm-algorithm (271)
+272. [ ] date-format (272)
+273. [ ] date-manipulation (273)
+274. [ ] day-of-the-week (274)
+275. [ ] de-bruijn-sequences (275)
+276. [ ] deal-cards-for-freecell (276)
+277. [ ] death-star (277)
+278. [ ] deceptive-numbers (278)
+279. [ ] deconvolution-1d-2 (279)
+280. [ ] deconvolution-1d-3 (280)
+281. [ ] deconvolution-1d (281)
+282. [ ] deepcopy-1 (282)
+283. [ ] define-a-primitive-data-type (283)
+284. [ ] md5 (284)

@@ -53,6 +53,7 @@ var globalRenames map[string]string
 var globalRenameBack map[string]string
 var localVarStack []map[string]bool
 var currentFuncLocals map[string]bool
+var indexLHS bool
 
 func VarTypes() map[string]string { return varTypes }
 
@@ -393,9 +394,9 @@ func (f *FuncDecl) emit(w io.Writer) {
 			io.WriteString(w, ", ")
 		}
 		if p.Type != "" {
-			fmt.Fprintf(w, "%s: %s", p.Name, p.Type)
+			fmt.Fprintf(w, "mut %s: %s", p.Name, p.Type)
 		} else {
-			io.WriteString(w, p.Name)
+			fmt.Fprintf(w, "mut %s", p.Name)
 		}
 	}
 	io.WriteString(w, ")")
@@ -544,6 +545,15 @@ func (i *IndexExpr) emit(w io.Writer) {
 		io.WriteString(w, " as usize")
 	}
 	io.WriteString(w, "]")
+	if !indexLHS {
+		et := ""
+		if t := inferType(i.Target); strings.HasPrefix(t, "Vec<") {
+			et = strings.TrimSuffix(strings.TrimPrefix(t, "Vec<"), ">")
+		}
+		if et != "" && et != "i64" && et != "bool" && et != "f64" && et != "String" {
+			io.WriteString(w, ".clone()")
+		}
+	}
 }
 
 // StringIndexExpr represents string[index] returning a character.
@@ -809,31 +819,38 @@ func (n *NowExpr) emit(w io.Writer) { io.WriteString(w, "_now()") }
 type NameRef struct{ Name string }
 
 func (n *NameRef) emit(w io.Writer) {
+	name := n.Name
 	if newName, ok := globalRenames[n.Name]; ok && !isLocal(n.Name) {
-		io.WriteString(w, newName)
-		return
+		name = newName
 	}
 	if cloneVars[n.Name] {
 		typ := varTypes[n.Name]
 		switch typ {
 		case "i64", "bool", "f64":
 			io.WriteString(w, "*")
-			io.WriteString(w, n.Name)
+			io.WriteString(w, name)
 		default:
-			io.WriteString(w, n.Name)
+			io.WriteString(w, name)
 			io.WriteString(w, ".clone()")
 		}
 		return
 	}
+	if !isLocal(n.Name) {
+		if typ := varTypes[n.Name]; globalVars[n.Name] && typ != "" && typ != "i64" && typ != "bool" && typ != "f64" && typ != "String" && !strings.HasPrefix(typ, "&") {
+			io.WriteString(w, name)
+			io.WriteString(w, ".clone()")
+			return
+		}
+	}
 	if boxVars[n.Name] && !patternMode {
-		io.WriteString(w, n.Name)
+		io.WriteString(w, name)
 		return
 	}
 	if ut, ok := curEnv.FindUnionByVariant(n.Name); ok && varTypes[n.Name] == "" {
 		fmt.Fprintf(w, "%s::%s", ut.Name, n.Name)
 		return
 	}
-	io.WriteString(w, n.Name)
+	io.WriteString(w, name)
 }
 
 type VarDecl struct {
@@ -928,6 +945,8 @@ type IndexAssignStmt struct {
 
 func (s *IndexAssignStmt) emit(w io.Writer) {
 	if idx, ok := s.Target.(*IndexExpr); ok {
+		old := indexLHS
+		indexLHS = true
 		if strings.HasPrefix(inferType(idx.Target), "HashMap") {
 			idx.Target.emit(w)
 			io.WriteString(w, ".insert(")
@@ -935,10 +954,20 @@ func (s *IndexAssignStmt) emit(w io.Writer) {
 			io.WriteString(w, ", ")
 			s.Value.emit(w)
 			io.WriteString(w, ")")
+			indexLHS = old
 			return
 		}
+		idx.Target.emit(w)
+		io.WriteString(w, "[")
+		idx.Index.emit(w)
+		if strings.HasPrefix(inferType(idx.Target), "Vec<") && inferType(idx.Index) != "usize" {
+			io.WriteString(w, " as usize")
+		}
+		io.WriteString(w, "]")
+		indexLHS = old
+	} else {
+		s.Target.emit(w)
 	}
-	s.Target.emit(w)
 	io.WriteString(w, " = ")
 	s.Value.emit(w)
 }
@@ -2464,6 +2493,9 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 		}
 		if name == "input" && len(args) == 0 {
 			usesInput = true
+			funReturns[name] = "String"
+		}
+		if name == "str" && len(args) == 1 {
 			funReturns[name] = "String"
 		}
 		if name == "int" && len(args) == 1 {
