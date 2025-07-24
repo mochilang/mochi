@@ -851,7 +851,7 @@ type UpdateStmt struct {
 }
 
 // BreakStmt represents a `break` statement.
-type BreakStmt struct{}
+type BreakStmt struct{ Args []string }
 
 // ContinueStmt represents a `continue` statement. Args captures values for loop
 // variables at the time of the continue.
@@ -1129,7 +1129,7 @@ func isMapExpr(e Expr, env *types.Env, ctx *context) bool {
 		}
 	case *IndexExpr:
 		if v.Kind == "map" {
-			return true
+			return mapValueIsMap(v.Target, env, ctx)
 		}
 	case *CallExpr:
 		if env != nil {
@@ -1173,6 +1173,32 @@ func mapValueIsString(e Expr, env *types.Env, ctx *context) bool {
 	if ml, ok := e.(*MapLit); ok && len(ml.Items) > 0 {
 		for _, it := range ml.Items {
 			if !isStringExpr(it.Value) {
+				return false
+			}
+		}
+		return true
+	}
+	return false
+}
+
+// mapValueIsMap reports whether expression e is a map whose values are maps.
+func mapValueIsMap(e Expr, env *types.Env, ctx *context) bool {
+	if nr, ok := e.(*NameRef); ok {
+		name := nr.Name
+		if ctx != nil {
+			name = ctx.original(nr.Name)
+		}
+		if t, err := env.GetVar(name); err == nil {
+			if mt, ok := t.(types.MapType); ok {
+				if _, ok := mt.Value.(types.MapType); ok {
+					return true
+				}
+			}
+		}
+	}
+	if ml, ok := e.(*MapLit); ok && len(ml.Items) > 0 {
+		for _, it := range ml.Items {
+			if _, ok := it.Value.(*MapLit); !ok {
 				return false
 			}
 		}
@@ -1872,7 +1898,19 @@ func (f *ForStmt) emit(w io.Writer) {
 			io.WriteString(w, ", ")
 			fmt.Fprintf(w, "C%d", i)
 		}
-		io.WriteString(w, ");\n            break -> {")
+		io.WriteString(w, ");\n            {break")
+		for i := range f.Params {
+			io.WriteString(w, ", ")
+			fmt.Fprintf(w, "B%d", i)
+		}
+		io.WriteString(w, "} -> {")
+		for i := range f.Params {
+			if i > 0 {
+				io.WriteString(w, ", ")
+			}
+			fmt.Fprintf(w, "B%d", i)
+		}
+		io.WriteString(w, "};\n            break -> {")
 		for i, p := range f.Params {
 			if i > 0 {
 				io.WriteString(w, ", ")
@@ -2058,7 +2096,18 @@ func (u *UpdateStmt) emit(w io.Writer) {
 	io.WriteString(w, ")")
 }
 
-func (b *BreakStmt) emit(w io.Writer) { io.WriteString(w, "throw(break)") }
+func (b *BreakStmt) emit(w io.Writer) {
+	if len(b.Args) == 0 {
+		io.WriteString(w, "throw(break)")
+		return
+	}
+	io.WriteString(w, "throw({break")
+	for _, a := range b.Args {
+		io.WriteString(w, ", ")
+		io.WriteString(w, a)
+	}
+	io.WriteString(w, "})")
+}
 func (c *ContinueStmt) emit(w io.Writer) {
 	if len(c.Args) == 0 {
 		io.WriteString(w, "throw(continue)")
@@ -2841,7 +2890,15 @@ func convertStmt(st *parser.Statement, env *types.Env, ctx *context, top bool) (
 		}
 		return nil, fmt.Errorf("unsupported expression")
 	case st.Break != nil:
-		return []Stmt{&BreakStmt{}}, nil
+		if len(loopStack) == 0 {
+			return nil, fmt.Errorf("break outside loop")
+		}
+		names := loopStack[len(loopStack)-1]
+		args := make([]string, len(names))
+		for i, n := range names {
+			args[i] = ctx.current(n)
+		}
+		return []Stmt{&BreakStmt{Args: args}}, nil
 	case st.Continue != nil:
 		if len(loopStack) == 0 {
 			return nil, fmt.Errorf("continue outside loop")
