@@ -1,3 +1,24 @@
+## Progress (2025-07-24 18:38 +0700)
+- ctrans: add atoi helper and update rosetta (progress 87/103)
+
+## Progress (2025-07-24 18:38 +0700)
+- ctrans: add atoi helper and update rosetta (progress 87/103)
+
+## Progress (2025-07-24 18:38 +0700)
+- ctrans: add atoi helper and update rosetta (progress 87/103)
+
+## Progress (2025-07-24 18:38 +0700)
+- ctrans: add atoi helper and update rosetta (progress 87/103)
+
+## Progress (2025-07-24 18:38 +0700)
+- ctrans: add atoi helper and update rosetta (progress 87/103)
+
+## Progress (2025-07-24 18:38 +0700)
+- ctrans: add atoi helper and update rosetta (progress 87/103)
+
+## Progress (2025-07-24 18:38 +0700)
+- ctrans: add atoi helper and update rosetta (progress 87/103)
+
 ## Progress (2025-07-23 11:36 +0700)
 - python transpiler: handle null literal; add algebraic-data-types (progress 87/103)
 
