@@ -1,0 +1,2 @@
+Deprecated: Implicit conversion from float 244.75 to int loses precision in /workspace/mochi/tests/rosetta/transpiler/php/bitwise-io-1.php on line 58
+[11110100 11000000]
