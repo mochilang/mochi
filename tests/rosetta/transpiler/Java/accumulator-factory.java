@@ -3,7 +3,7 @@ public class Main {
     static java.util.function.Function<Object,Object> accumulator(Object sum) {
         Object[] store = new Object[]{sum};
         java.util.function.Function<Object,Object> add = (nv) -> {
-store[0] = store[0] + nv;
+store[0] = ((Number)(store[0])).doubleValue() + ((Number)(nv)).doubleValue();
     return store[0];
 };
         return add;

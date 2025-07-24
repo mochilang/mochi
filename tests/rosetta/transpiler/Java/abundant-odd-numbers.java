@@ -61,7 +61,7 @@ public class Main {
         int n = searchFrom;
         while (count < countTo) {
             int[] divs = divisors(n);
-            double tot = (((java.util.Arrays.stream(divs).sum()) % 1 == 0) ? (Object)(int)(java.util.Arrays.stream(divs).sum()) : (Object)(java.util.Arrays.stream(divs).sum()));
+            int tot = sum(divs);
             if (tot > n) {
                 count = count + 1;
                 if (printOne && count < countTo) {
