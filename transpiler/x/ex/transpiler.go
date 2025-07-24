@@ -456,7 +456,60 @@ type ForStmt struct {
 }
 
 func (fs *ForStmt) emit(w io.Writer, indent int) {
-	if len(fs.Vars) > 0 && fs.End != nil {
+	if len(fs.Vars) > 0 && fs.End != nil && fs.Simple {
+		if fs.Simple {
+			for i := 0; i < indent; i++ {
+				io.WriteString(w, "  ")
+			}
+			io.WriteString(w, "{")
+			for i, v := range fs.Vars {
+				if i > 0 {
+					io.WriteString(w, ", ")
+				}
+				io.WriteString(w, v)
+			}
+			io.WriteString(w, "} = Enum.reduce((")
+			fs.Start.emit(w)
+			io.WriteString(w, "..(")
+			fs.End.emit(w)
+			io.WriteString(w, " - 1)), {")
+			for i, v := range fs.Vars {
+				if i > 0 {
+					io.WriteString(w, ", ")
+				}
+				io.WriteString(w, v)
+			}
+			io.WriteString(w, "}, fn ")
+			io.WriteString(w, fs.Name)
+			io.WriteString(w, ", {")
+			for i, v := range fs.Vars {
+				if i > 0 {
+					io.WriteString(w, ", ")
+				}
+				io.WriteString(w, v)
+			}
+			io.WriteString(w, "} ->\n")
+			for _, st := range fs.Body {
+				st.emit(w, indent+1)
+				io.WriteString(w, "\n")
+			}
+			for i := 0; i < indent+1; i++ {
+				io.WriteString(w, "  ")
+			}
+			io.WriteString(w, "{")
+			for i, v := range fs.Vars {
+				if i > 0 {
+					io.WriteString(w, ", ")
+				}
+				io.WriteString(w, v)
+			}
+			io.WriteString(w, "}\n")
+			for i := 0; i < indent; i++ {
+				io.WriteString(w, "  ")
+			}
+			io.WriteString(w, "end")
+			return
+		}
 		for i := 0; i < indent; i++ {
 			io.WriteString(w, "  ")
 		}
@@ -488,10 +541,33 @@ func (fs *ForStmt) emit(w io.Writer, indent int) {
 			io.WriteString(w, v)
 		}
 		io.WriteString(w, "} ->\n")
+		for i := 0; i < indent+1; i++ {
+			io.WriteString(w, "  ")
+		}
+		io.WriteString(w, "try do\n")
 		for _, st := range fs.Body {
-			st.emit(w, indent+1)
+			st.emit(w, indent+2)
 			io.WriteString(w, "\n")
 		}
+		for i := 0; i < indent+1; i++ {
+			io.WriteString(w, "  ")
+		}
+		io.WriteString(w, "catch\n")
+		for i := 0; i < indent+2; i++ {
+			io.WriteString(w, "  ")
+		}
+		io.WriteString(w, ":continue -> {")
+		for i, v := range fs.Vars {
+			if i > 0 {
+				io.WriteString(w, ", ")
+			}
+			io.WriteString(w, v)
+		}
+		io.WriteString(w, "}\n")
+		for i := 0; i < indent+1; i++ {
+			io.WriteString(w, "  ")
+		}
+		io.WriteString(w, "end\n")
 		for i := 0; i < indent+1; i++ {
 			io.WriteString(w, "  ")
 		}
@@ -506,7 +582,7 @@ func (fs *ForStmt) emit(w io.Writer, indent int) {
 		for i := 0; i < indent; i++ {
 			io.WriteString(w, "  ")
 		}
-		io.WriteString(w, "end)")
+		io.WriteString(w, "end")
 		return
 	}
 	if fs.Simple {
@@ -1360,7 +1436,7 @@ func Emit(p *Program) []byte {
 			funcs = append(funcs, st)
 			continue
 		}
-		if _, ok := st.(*LetStmt); ok {
+		if _, ok := st.(*LetStmt); ok && !foundFunc {
 			globals = append(globals, st)
 			continue
 		}
@@ -1434,11 +1510,7 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 				}
 			}
 		}
-		if st.Let != nil {
-			globalVars[st.Let.Name] = struct{}{}
-		} else if st.Var != nil {
-			globalVars[st.Var.Name] = struct{}{}
-		} else if !foundFunc {
+		if !foundFunc {
 			if st.Fun != nil {
 				foundFunc = true
 			} else if st.Let != nil {
