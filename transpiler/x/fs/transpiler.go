@@ -1637,10 +1637,15 @@ func (i *IndexExpr) emit(w io.Writer) {
 	}
 	if strings.HasPrefix(t, "Map<") || t == "map" {
 		valT := mapValueType(t)
-		if t == "map" {
-			if id, ok := i.Target.(*IdentExpr); ok {
-				if vt, ok2 := varTypes[id.Name]; ok2 {
-					valT = mapValueType(vt)
+		if id, ok := i.Target.(*IdentExpr); ok {
+			if vt := id.Type; vt != "" {
+				if alt := mapValueType(vt); alt != "obj" {
+					valT = alt
+				}
+			}
+			if vt, ok2 := varTypes[id.Name]; ok2 {
+				if alt := mapValueType(vt); alt != "obj" {
+					valT = alt
 				}
 			}
 		}
@@ -2531,6 +2536,16 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 				return nil, fmt.Errorf("lower expects 1 arg")
 			}
 			return &MethodCallExpr{Target: args[0], Name: "ToLower"}, nil
+		case "keys":
+			if len(args) != 1 {
+				return nil, fmt.Errorf("keys expects 1 arg")
+			}
+			t := inferType(args[0])
+			if t == "map" {
+				inner := &CallExpr{Func: "Map.toList", Args: []Expr{args[0]}}
+				return &CallExpr{Func: "List.map fst", Args: []Expr{inner}}, nil
+			}
+			return &CallExpr{Func: "Seq.map fst", Args: args}, nil
 		case "values":
 			if len(args) != 1 {
 				return nil, fmt.Errorf("values expects 1 arg")
