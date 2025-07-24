@@ -1,3 +1,11 @@
+## Progress (2025-07-24 16:14 +0700)
+- cs transpiler: handle string slice from list
+- Regenerated golden files - 103/103 vm valid programs passing
+
+## Progress (2025-07-24 16:14 +0700)
+- cs transpiler: handle string slice from list
+- Regenerated golden files - 103/103 vm valid programs passing
+
 ## Progress (2025-07-24 15:49 +0700)
 - go transpiler: add padStart and bigint index
 - Regenerated golden files - 103/103 vm valid programs passing
