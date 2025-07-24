@@ -280,6 +280,7 @@ type ForStmt struct {
 	Start    Expr
 	End      Expr
 	List     []Expr
+	ListVar  string
 	ElemType string
 	Body     []Stmt
 }
@@ -503,6 +504,24 @@ func (ws *WhileStmt) emit(w io.Writer, indent int) {
 }
 
 func (f *ForStmt) emit(w io.Writer, indent int) {
+	if f.ListVar != "" {
+		writeIndent(w, indent)
+		io.WriteString(w, "for (size_t __i = 0; __i < ")
+		io.WriteString(w, f.ListVar)
+		io.WriteString(w, "_len; __i++) {\n")
+		typ := f.ElemType
+		if typ == "" {
+			typ = "int"
+		}
+		writeIndent(w, indent+1)
+		fmt.Fprintf(w, "%s %s = %s[__i];\n", typ, f.Var, f.ListVar)
+		for _, s := range f.Body {
+			s.emit(w, indent+1)
+		}
+		writeIndent(w, indent)
+		io.WriteString(w, "}\n")
+		return
+	}
 	if len(f.List) > 0 {
 		arrName := fmt.Sprintf("%s_arr", f.Var)
 		lenName := fmt.Sprintf("%s_len", f.Var)
@@ -643,7 +662,9 @@ type ListLit struct{ Elems []Expr }
 func (l *ListLit) emitExpr(w io.Writer) {
 	elemType := "int"
 	if len(l.Elems) > 0 {
-		if exprIsString(l.Elems[0]) {
+		if t := inferExprType(currentEnv, l.Elems[0]); t != "" {
+			elemType = t
+		} else if exprIsString(l.Elems[0]) {
 			elemType = "const char*"
 		} else if exprIsFloat(l.Elems[0]) {
 			elemType = "double"
@@ -2212,6 +2233,45 @@ func compileStmt(env *types.Env, s *parser.Statement) (Stmt, error) {
 			if keys, ok2 := convertMapKeysExpr(s.For.Source); ok2 {
 				list = keys
 				ok = true
+			} else if name := varName(s.For.Source); name != "" {
+				typStr := inferExprType(env, convertExpr(s.For.Source))
+				if strings.HasSuffix(typStr, "[]") {
+					elemType := strings.TrimSuffix(typStr, "[]")
+					switch elemType {
+					case "int":
+						env.SetVarDeep(s.For.Name, types.IntType{}, true)
+					case "double":
+						env.SetVarDeep(s.For.Name, types.FloatType{}, true)
+					case "const char*":
+						env.SetVarDeep(s.For.Name, types.StringType{}, true)
+					default:
+						if st, ok := env.GetStruct(elemType); ok {
+							env.SetVarDeep(s.For.Name, st, true)
+						} else {
+							env.SetVarDeep(s.For.Name, types.AnyType{}, true)
+						}
+					}
+					body, err := compileStmts(env, s.For.Body)
+					if err != nil {
+						return nil, err
+					}
+					return &ForStmt{Var: s.For.Name, ListVar: name, ElemType: elemType, Body: body}, nil
+				}
+				ex := convertExpr(s.For.Source)
+				if val, ok2 := valueFromExpr(ex); ok2 {
+					if arr, ok3 := val.([]any); ok3 {
+						var elems []Expr
+						for _, it := range arr {
+							e := anyToExpr(it)
+							if e == nil {
+								return nil, fmt.Errorf("unsupported for-loop")
+							}
+							elems = append(elems, e)
+						}
+						list = elems
+						ok = true
+					}
+				}
 			} else {
 				ex := convertExpr(s.For.Source)
 				if val, ok2 := valueFromExpr(ex); ok2 {
