@@ -32,6 +32,7 @@ var builtinAliases map[string]string
 var globalVars map[string]struct{}
 
 var loopCounter int
+var usesLookupHost bool
 
 func moduleAttrName(name string) string {
 	if len(name) > 0 && name[0] >= 'A' && name[0] <= 'Z' {
@@ -1432,6 +1433,9 @@ func Emit(p *Program) []byte {
 	moduleMode = true
 	buf.WriteString("defmodule Main do\n")
 	buf.WriteString(nowHelper(1))
+	if usesLookupHost {
+		buf.WriteString(lookupHostHelper(1))
+	}
 	var globals []Stmt
 	var funcs []Stmt
 	var main []Stmt
@@ -1442,7 +1446,7 @@ func Emit(p *Program) []byte {
 			funcs = append(funcs, st)
 			continue
 		}
-		if _, ok := st.(*LetStmt); ok && !foundFunc {
+		if _, ok := st.(*LetStmt); ok && !foundFunc && funcsExist {
 			globals = append(globals, st)
 			continue
 		}
@@ -1491,6 +1495,7 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	res := &Program{}
 	builtinAliases = make(map[string]string)
 	globalVars = make(map[string]struct{})
+	usesLookupHost = false
 	foundFunc := false
 	for _, st := range prog.Statements {
 		if st.Import != nil && st.Import.Lang != nil {
@@ -1508,6 +1513,11 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 						env.SetVar(alias+".Pi", types.FloatType{}, false)
 						env.SetVar(alias+".Answer", types.IntType{}, false)
 						env.SetFuncType(alias+".FifteenPuzzleExample", types.FuncType{Params: []types.Type{}, Return: types.StringType{}})
+					}
+				} else if st.Import.Auto && path == "net" {
+					builtinAliases[alias] = "go_net"
+					if env != nil {
+						env.SetFuncType(alias+".LookupHost", types.FuncType{Params: []types.Type{types.StringType{}}, Return: types.AnyType{}})
 					}
 				}
 			case "python":
@@ -2696,6 +2706,11 @@ func compilePostfix(pf *parser.PostfixExpr, env *types.Env) (Expr, error) {
 						return &CallExpr{Func: ":math.pow", Args: args}, nil
 					}
 				}
+			case "go_net":
+				if method == "LookupHost" && len(args) == 1 {
+					usesLookupHost = true
+					return &CallExpr{Func: "_lookup_host", Args: args}, nil
+				}
 			}
 		}
 		funcName := alias + "." + method
@@ -2869,6 +2884,11 @@ func compilePrimary(p *parser.Primary, env *types.Env) (Expr, error) {
 						if len(args) == 2 {
 							return &CallExpr{Func: ":math.pow", Args: args}, nil
 						}
+					}
+				case "go_net":
+					if method == "LookupHost" && len(args) == 1 {
+						usesLookupHost = true
+						return &CallExpr{Func: "_lookup_host", Args: args}, nil
 					}
 				}
 			}
@@ -3229,6 +3249,21 @@ func nowHelper(indent int) string {
 	buf.WriteString(pad + "    seed\n")
 	buf.WriteString(pad + "  else\n")
 	buf.WriteString(pad + "    System.os_time(:nanosecond)\n")
+	buf.WriteString(pad + "  end\n")
+	buf.WriteString(pad + "end\n")
+	return buf.String()
+}
+
+func lookupHostHelper(indent int) string {
+	var buf bytes.Buffer
+	pad := strings.Repeat("  ", indent)
+	buf.WriteString(pad + "defp _lookup_host(host) do\n")
+	buf.WriteString(pad + "  case :inet.gethostbyname(String.to_charlist(host)) do\n")
+	buf.WriteString(pad + "    {:ok, {:hostent, _, _, _, _, addrs}} ->\n")
+	buf.WriteString(pad + "      ips = Enum.map(addrs, fn a -> :inet.ntoa(a) |> List.to_string() end)\n")
+	buf.WriteString(pad + "      [ips, nil]\n")
+	buf.WriteString(pad + "    {:error, reason} ->\n")
+	buf.WriteString(pad + "      [nil, reason]\n")
 	buf.WriteString(pad + "  end\n")
 	buf.WriteString(pad + "end\n")
 	return buf.String()
