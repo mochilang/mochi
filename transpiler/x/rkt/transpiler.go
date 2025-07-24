@@ -2140,35 +2140,49 @@ func convertPostfix(pf *parser.PostfixExpr, env *types.Env) (Expr, error) {
 						}
 					}
 				}
-				if lit, ok := n.Index.(*StringLit); ok && lit.Value == "keys" {
-					if len(op.Call.Args) == 0 && types.IsMapPrimary(pf.Target, env) {
-						expr = &CallExpr{Func: "hash-keys", Args: []Expr{n.Target}}
-						break
-					}
-				}
-				if lit, ok := n.Index.(*StringLit); ok && lit.Value == "contains" {
-					if types.IsStringPrimary(pf.Target, env) {
-						arg, err := convertExpr(op.Call.Args[0], env)
-						if err != nil {
-							return nil, err
+				if lit, ok := n.Index.(*StringLit); ok {
+					if lit.Value == "keys" {
+						if len(op.Call.Args) == 0 && types.IsMapPrimary(pf.Target, env) {
+							expr = &CallExpr{Func: "hash-keys", Args: []Expr{n.Target}}
+							break
 						}
-						expr = &CallExpr{Func: "string-contains?", Args: []Expr{n.Target, arg}}
-						break
-					}
-				}
-				if lit, ok := n.Index.(*StringLit); ok && lit.Value == "get" {
-					if len(op.Call.Args) == 2 {
-						key, err := convertExpr(op.Call.Args[0], env)
-						if err != nil {
-							return nil, err
+					} else if lit.Value == "contains" {
+						if types.IsStringPrimary(pf.Target, env) {
+							arg, err := convertExpr(op.Call.Args[0], env)
+							if err != nil {
+								return nil, err
+							}
+							expr = &CallExpr{Func: "string-contains?", Args: []Expr{n.Target, arg}}
+							break
 						}
-						def, err := convertExpr(op.Call.Args[1], env)
-						if err != nil {
-							return nil, err
+					} else if lit.Value == "padStart" {
+						if len(op.Call.Args) == 2 {
+							arg1, err := convertExpr(op.Call.Args[0], env)
+							if err != nil {
+								return nil, err
+							}
+							arg2, err := convertExpr(op.Call.Args[1], env)
+							if err != nil {
+								return nil, err
+							}
+							expr = &CallExpr{Func: "pad-start", Args: []Expr{n.Target, arg1, arg2}}
+							break
 						}
-						expr = &CallExpr{Func: "hash-ref", Args: []Expr{n.Target, key, def}}
-						break
+					} else if lit.Value == "get" {
+						if len(op.Call.Args) == 2 {
+							key, err := convertExpr(op.Call.Args[0], env)
+							if err != nil {
+								return nil, err
+							}
+							def, err := convertExpr(op.Call.Args[1], env)
+							if err != nil {
+								return nil, err
+							}
+							expr = &CallExpr{Func: "hash-ref", Args: []Expr{n.Target, key, def}}
+							break
+						}
 					}
+					return nil, fmt.Errorf("unsupported call %s", lit.Value)
 				}
 				return nil, fmt.Errorf("unsupported call")
 			default:
@@ -2459,6 +2473,10 @@ func convertCall(c *parser.CallExpr, env *types.Env) (Expr, error) {
 			return &CallExpr{Func: "sqrt", Args: args}, nil
 		}
 	case "math.pow":
+		if len(args) == 2 {
+			return &CallExpr{Func: "expt", Args: args}, nil
+		}
+	case "pow":
 		if len(args) == 2 {
 			return &CallExpr{Func: "expt", Args: args}, nil
 		}
