@@ -1,3 +1,178 @@
+## Progress (2025-07-24 13:26 +0700)
+- Commit 6b6044ebae: transpiler(rkt): add base64-decode-data (fails)
+- Generated Racket for 100/100 programs
+- Updated README checklist
+
+## Progress (2025-07-24 13:26 +0700)
+- Commit 6b6044ebae: transpiler(rkt): add base64-decode-data (fails)
+- Generated Racket for 100/100 programs
+- Updated README checklist
+
+## Progress (2025-07-24 13:25 +0700)
+- Commit fe46bebaff: transpiler(rkt): compile barnsley-fern
+- Generated Racket for 100/100 programs
+- Updated README checklist
+
+## Progress (2025-07-24 13:25 +0700)
+- Commit 2020ea1eeb: transpiler(rkt): compile balanced-ternary
+- Generated Racket for 100/100 programs
+- Updated README checklist
+
+## Progress (2025-07-24 13:25 +0700)
+- Commit 00b56c5b0a: transpiler(rkt): compile balanced-brackets
+- Generated Racket for 100/100 programs
+- Updated README checklist
+
+## Progress (2025-07-24 13:25 +0700)
+- Commit c75361525b: transpiler(rkt): sanitize list identifier
+- Generated Racket for 100/100 programs
+- Updated README checklist
+
+## Progress (2025-07-24 13:21 +0700)
+- Commit f2f484df21: transpiler(rkt): compile babbage-problem
+- Generated Racket for 100/100 programs
+- Updated README checklist
+
+## Progress (2025-07-24 13:21 +0700)
+- Commit f2f484df21: transpiler(rkt): compile babbage-problem
+- Generated Racket for 100/100 programs
+- Updated README checklist
+
+## Progress (2025-07-24 13:21 +0700)
+- Commit f2f484df21: transpiler(rkt): compile babbage-problem
+- Generated Racket for 100/100 programs
+- Updated README checklist
+
+## Progress (2025-07-24 13:21 +0700)
+- Commit bce73bc9ac: transpiler(rkt): compile b-zier-curves-intersections
+- Generated Racket for 100/100 programs
+- Updated README checklist
+
+## Progress (2025-07-24 13:21 +0700)
+- Commit 84a37d6544: transpiler(rkt): attempt avl-tree, note failure
+- Generated Racket for 100/100 programs
+- Updated README checklist
+
+## Progress (2025-07-24 13:17 +0700)
+- Commit c74db7ddbb: transpiler(rkt): compile averages-simple-moving-average
+- Generated Racket for 100/100 programs
+- Updated README checklist
+
+## Progress (2025-07-24 13:17 +0700)
+- Commit c74db7ddbb: transpiler(rkt): compile averages-simple-moving-average
+- Generated Racket for 100/100 programs
+- Updated README checklist
+
+## Progress (2025-07-24 13:17 +0700)
+- Commit c74db7ddbb: transpiler(rkt): compile averages-simple-moving-average
+- Generated Racket for 100/100 programs
+- Updated README checklist
+
+## Progress (2025-07-24 13:17 +0700)
+- Commit 4967f8ee96: transpiler(rkt): compile averages-root-mean-square
+- Generated Racket for 100/100 programs
+- Updated README checklist
+
+## Progress (2025-07-24 13:17 +0700)
+- Commit bdb52b8e70: transpiler(rkt): compile averages-pythagorean-means
+- Generated Racket for 100/100 programs
+- Updated README checklist
+
+## Progress (2025-07-24 13:17 +0700)
+- Commit 5ca2b7df1c: transpiler(rkt): compile averages-mode
+- Generated Racket for 100/100 programs
+- Updated README checklist
+
+## Progress (2025-07-24 13:17 +0700)
+- Commit 3b740cd37b: transpiler(rkt): compile averages-median-3
+- Generated Racket for 100/100 programs
+- Updated README checklist
+
+## Progress (2025-07-24 13:16 +0700)
+- Commit e6c62aee5b: transpiler(rkt): compile averages-median-2
+- Generated Racket for 100/100 programs
+- Updated README checklist
+
+## Progress (2025-07-24 13:16 +0700)
+- Commit 27a6a84b7e: transpiler(rkt): compile averages-median-1
+- Generated Racket for 100/100 programs
+- Updated README checklist
+
+## Progress (2025-07-24 13:16 +0700)
+- Commit 58c30fa1de: transpiler(rkt): compile averages-mean-time-of-day
+- Generated Racket for 100/100 programs
+- Updated README checklist
+
+## Progress (2025-07-24 13:16 +0700)
+- Commit a088021115: transpiler(rkt): compile averages-arithmetic-mean
+- Generated Racket for 100/100 programs
+- Updated README checklist
+
+## Progress (2025-07-24 13:16 +0700)
+- Commit 18d3c5fb78: transpiler(rkt): compile average-loop-length
+- Generated Racket for 100/100 programs
+- Updated README checklist
+
+## Progress (2025-07-24 13:16 +0700)
+- Commit 1f52034feb: transpiler(rkt): compile attractive-numbers
+- Generated Racket for 100/100 programs
+- Updated README checklist
+
+## Progress (2025-07-24 13:15 +0700)
+- Commit 08729509b9: transpiler(rkt): compile atomic-updates
+- Generated Racket for 100/100 programs
+- Updated README checklist
+
+## Progress (2025-07-24 13:15 +0700)
+- Commit e3af6b5083: transpiler(rkt): compile associative-array-merging
+- Generated Racket for 100/100 programs
+- Updated README checklist
+
+## Progress (2025-07-24 13:15 +0700)
+- Commit ebaa34d35e: transpiler(rkt): add keys builtin
+- Generated Racket for 100/100 programs
+- Updated README checklist
+
+## Progress (2025-07-24 13:14 +0700)
+- Commit 312fbddb0c: transpiler(rkt): support map default index
+- Generated Racket for 100/100 programs
+- Updated README checklist
+
+## Progress (2025-07-24 13:14 +0700)
+- Commit 312fbddb0c: transpiler(rkt): support map default index
+- Generated Racket for 100/100 programs
+- Updated README checklist
+
+## Progress (2025-07-24 13:13 +0700)
+- Commit 7cfcd64bbf: transpiler(rkt): compile ascii-art-diagram-converter
+- Generated Racket for 100/100 programs
+- Updated README checklist
+
+## Progress (2025-07-24 13:13 +0700)
+- Commit 7cfcd64bbf: transpiler(rkt): compile ascii-art-diagram-converter
+- Generated Racket for 100/100 programs
+- Updated README checklist
+
+## Progress (2025-07-24 13:13 +0700)
+- Commit 7cfcd64bbf: transpiler(rkt): compile ascii-art-diagram-converter
+- Generated Racket for 100/100 programs
+- Updated README checklist
+
+## Progress (2025-07-24 13:03 +0700)
+- Commit 68135693b7: release: v0.10.39
+- Generated Racket for 100/100 programs
+- Updated README checklist
+
+## Progress (2025-07-24 13:03 +0700)
+- Commit 68135693b7: release: v0.10.39
+- Generated Racket for 100/100 programs
+- Updated README checklist
+
+## Progress (2025-07-24 13:03 +0700)
+- Commit 68135693b7: release: v0.10.39
+- Generated Racket for 100/100 programs
+- Updated README checklist
+
 ## Progress (2025-07-24 00:44 +0700)
 - Commit b27d72d2c5: transpiler(py): add rosetta outputs up to index 164
 - Generated Racket for 100/100 programs
