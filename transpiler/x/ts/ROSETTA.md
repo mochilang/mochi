@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated TypeScript code from programs in `tests/rosetta/x/Mochi` lives in `tests/rosetta/transpiler/TypeScript`.
-Last updated: 2025-07-24 01:11 UTC
+Last updated: 2025-07-24 06:14 UTC
 
-## Rosetta Golden Test Checklist (198/284)
+## Rosetta Golden Test Checklist (199/284)
 1. [x] 100-doors-2 (1)
 2. [x] 100-doors-3 (2)
 3. [x] 100-doors (3)
@@ -210,7 +210,7 @@ Last updated: 2025-07-24 01:11 UTC
 203. [x] church-numerals-1 (203)
 204. [x] church-numerals-2 (204)
 205. [x] circles-of-given-radius-through-two-points (205)
-206. [ ] circular-primes (206)
+206. [x] circular-primes (206)
 207. [ ] cistercian-numerals (207)
 208. [ ] comma-quibbling (208)
 209. [ ] compiler-virtual-machine-interpreter (209)
