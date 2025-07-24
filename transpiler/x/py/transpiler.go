@@ -424,6 +424,25 @@ type IndexExpr struct {
 }
 
 func (i *IndexExpr) emit(w io.Writer) error {
+	if mp, ok := inferPyType(i.Target, currentEnv).(types.MapType); ok {
+		if err := emitExpr(w, i.Target); err != nil {
+			return err
+		}
+		if _, err := io.WriteString(w, ".get("); err != nil {
+			return err
+		}
+		if err := emitExpr(w, i.Index); err != nil {
+			return err
+		}
+		if _, err := io.WriteString(w, ", "); err != nil {
+			return err
+		}
+		if err := emitExpr(w, zeroValueExpr(mp.Value)); err != nil {
+			return err
+		}
+		_, err := io.WriteString(w, ")")
+		return err
+	}
 	if err := emitExpr(w, i.Target); err != nil {
 		return err
 	}

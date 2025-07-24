@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Python code from programs in `tests/rosetta/x/Mochi` lives in `tests/rosetta/transpiler/Python`.
-Last updated: 2025-07-24 18:47 GMT+7
+Last updated: 2025-07-24 19:25 GMT+7
 
-## Rosetta Golden Test Checklist (233/284)
+## Rosetta Golden Test Checklist (253/284)
 1. [x] 100-doors-2
 2. [x] 100-doors-3
 3. [x] 100-doors
@@ -234,34 +234,34 @@ Last updated: 2025-07-24 18:47 GMT+7
 227. [x] constrained-genericity-2
 228. [x] constrained-genericity-3
 229. [x] constrained-genericity-4
-230. [ ] constrained-random-points-on-a-circle-1
-231. [ ] constrained-random-points-on-a-circle-2
+230. [x] constrained-random-points-on-a-circle-1
+231. [x] constrained-random-points-on-a-circle-2
 232. [x] continued-fraction
 233. [x] convert-decimal-number-to-rational
 234. [x] convert-seconds-to-compound-duration
-235. [ ] convex-hull
+235. [x] convex-hull
 236. [x] conways-game-of-life
 237. [x] copy-a-string-1
 238. [x] copy-a-string-2
-239. [ ] copy-stdin-to-stdout-1
-240. [ ] copy-stdin-to-stdout-2
-241. [ ] count-in-factors
-242. [ ] count-in-octal-1
-243. [ ] count-in-octal-2
-244. [ ] count-in-octal-3
-245. [ ] count-in-octal-4
-246. [ ] count-occurrences-of-a-substring
-247. [ ] count-the-coins-1
-248. [ ] count-the-coins-2
-249. [ ] cramers-rule
+239. [x] copy-stdin-to-stdout-1
+240. [x] copy-stdin-to-stdout-2
+241. [x] count-in-factors
+242. [x] count-in-octal-1
+243. [x] count-in-octal-2
+244. [x] count-in-octal-3
+245. [x] count-in-octal-4
+246. [x] count-occurrences-of-a-substring
+247. [x] count-the-coins-1
+248. [x] count-the-coins-2
+249. [x] cramers-rule
 250. [ ] crc-32-1
 251. [ ] crc-32-2
-252. [ ] create-a-file-on-magnetic-tape
-253. [ ] create-a-file
-254. [ ] create-a-two-dimensional-array-at-runtime-1
-255. [ ] create-an-html-table
-256. [ ] create-an-object-at-a-given-address
-257. [ ] csv-data-manipulation
+252. [x] create-a-file-on-magnetic-tape
+253. [x] create-a-file
+254. [x] create-a-two-dimensional-array-at-runtime-1
+255. [x] create-an-html-table
+256. [x] create-an-object-at-a-given-address
+257. [x] csv-data-manipulation
 258. [ ] csv-to-html-translation-1
 259. [ ] csv-to-html-translation-2
 260. [ ] csv-to-html-translation-3

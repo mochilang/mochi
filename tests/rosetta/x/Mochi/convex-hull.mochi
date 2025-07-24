@@ -7,7 +7,9 @@ type Point {
 }
 
 fun ccw(a: Point, b: Point, c: Point): bool {
-  return ((b.x - a.x) * (c.y - a.y)) > ((b.y - a.y) * (c.x - a.x))
+  let lhs = (b.x - a.x) * (c.y - a.y)
+  let rhs = (b.y - a.y) * (c.x - a.x)
+  return lhs > rhs
 }
 
 fun sortPoints(ps: list<Point>): list<Point> {
