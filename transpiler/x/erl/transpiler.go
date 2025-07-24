@@ -2097,16 +2097,7 @@ func (u *UpdateStmt) emit(w io.Writer) {
 }
 
 func (b *BreakStmt) emit(w io.Writer) {
-	if len(b.Args) == 0 {
-		io.WriteString(w, "throw(break)")
-		return
-	}
-	io.WriteString(w, "throw({break")
-	for _, a := range b.Args {
-		io.WriteString(w, ", ")
-		io.WriteString(w, a)
-	}
-	io.WriteString(w, "})")
+	io.WriteString(w, "throw(break)")
 }
 func (c *ContinueStmt) emit(w io.Writer) {
 	if len(c.Args) == 0 {
@@ -2959,6 +2950,7 @@ func convertStmt(st *parser.Statement, env *types.Env, ctx *context, top bool) (
 			params[i] = ctx.alias[n]
 			next[i] = loopCtx.alias[n]
 			ctx.alias[n] = loopCtx.alias[n]
+			ctx.orig[loopCtx.alias[n]] = n
 		}
 		brk := containsLoopCtrl(body)
 		if st.For.RangeEnd != nil {
@@ -3192,7 +3184,8 @@ func convertFunStmt(fn *parser.FunStmt, env *types.Env, ctx *context) (*FuncDecl
 			return nil, err
 		}
 		ret = &IfExpr{Cond: cond, Then: thenExpr, Else: elseExpr}
-		return &FuncDecl{Name: fn.Name, Params: params, Body: stmts, Return: ret}, nil
+		name := strings.ToLower(fn.Name)
+		return &FuncDecl{Name: name, Params: params, Body: stmts, Return: ret}, nil
 	}
 	for i, st := range fn.Body {
 		if r := st.Return; r != nil && i == len(fn.Body)-1 {
@@ -3240,7 +3233,8 @@ func convertFunStmt(fn *parser.FunStmt, env *types.Env, ctx *context) (*FuncDecl
 	if fn.Name == "topple" && len(params) > 0 && isZeroExpr(ret) {
 		ret = &NameRef{Name: params[0]}
 	}
-	return &FuncDecl{Name: fn.Name, Params: params, Body: stmts, Return: ret}, nil
+	name := strings.ToLower(fn.Name)
+	return &FuncDecl{Name: name, Params: params, Body: stmts, Return: ret}, nil
 }
 
 func convertFunStmtAsExpr(fn *parser.FunStmt, env *types.Env, ctx *context) (Expr, error) {
@@ -3427,6 +3421,15 @@ func convertBinary(b *parser.BinaryExpr, env *types.Env, ctx *context) (Expr, er
 				if op == "/" && !(isFloatType(typesList[i]) || isFloatType(typesList[i+1]) || isFloatExpr(l, env, ctx) || isFloatExpr(r, env, ctx)) {
 					op = "div"
 					typesList[i] = types.IntType{}
+				} else if op == "%" {
+					if isFloatType(typesList[i]) || isFloatType(typesList[i+1]) || isFloatExpr(l, env, ctx) || isFloatExpr(r, env, ctx) {
+						exprs[i] = &CallExpr{Func: "math:fmod", Args: []Expr{l, r}}
+						exprs = append(exprs[:i+1], exprs[i+2:]...)
+						typesList = append(typesList[:i+1], typesList[i+2:]...)
+						ops = append(ops[:i], ops[i+1:]...)
+						continue
+					}
+					op = "rem"
 				}
 				if op == "+" {
 					_, leftIsList := typesList[i].(types.ListType)
@@ -3838,6 +3841,7 @@ func convertPrimary(p *parser.Primary, env *types.Env, ctx *context) (Expr, erro
 				}
 			}
 		}
+		name = strings.ToLower(name)
 		ce := &CallExpr{Func: name}
 		for _, a := range p.Call.Args {
 			ae, err := convertExpr(a, env, ctx)
@@ -3845,6 +3849,20 @@ func convertPrimary(p *parser.Primary, env *types.Env, ctx *context) (Expr, erro
 				return nil, err
 			}
 			ce.Args = append(ce.Args, ae)
+		}
+		if ce.Func == "print" {
+			parts := make([]string, len(ce.Args))
+			for i, a := range ce.Args {
+				if isStringExpr(a) {
+					parts[i] = "~ts"
+				} else {
+					parts[i] = "~p"
+				}
+			}
+			fmtStr := strings.Join(parts, " ") + "~n"
+			args := []Expr{&StringLit{Value: fmtStr}, &ListLit{Elems: ce.Args}}
+			ce = &CallExpr{Func: "io:format", Args: args}
+			return ce, nil
 		}
 		if fn, ok := env.GetFunc(p.Call.Func); ok && len(p.Call.Args) < len(fn.Params) {
 			remain := fn.Params[len(p.Call.Args):]
