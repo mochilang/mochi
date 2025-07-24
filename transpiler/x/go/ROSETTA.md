@@ -1,7 +1,7 @@
 # Go Rosetta Transpiler Output
 
-Completed programs: 105/284
-Last updated: 2025-07-24 18:38 +0700
+Completed programs: 119/284
+Last updated: 2025-07-24 20:52 +0700
 
 Checklist:
 
@@ -118,20 +118,20 @@ Checklist:
 111. [x] binary-strings (111)
 112. [x] bioinformatics-base-count (112)
 113. [x] bioinformatics-global-alignment (113)
-114. [ ] bioinformatics-sequence-mutation (114)
-115. [ ] biorhythms (115)
-116. [ ] bitcoin-address-validation (116)
-117. [ ] bitmap-b-zier-curves-cubic (117)
-118. [ ] bitmap-b-zier-curves-quadratic (118)
-119. [ ] bitmap-bresenhams-line-algorithm (119)
-120. [ ] bitmap-flood-fill (120)
-121. [ ] bitmap-histogram (121)
-122. [ ] bitmap-midpoint-circle-algorithm (122)
-123. [ ] bitmap-ppm-conversion-through-a-pipe (123)
-124. [ ] bitmap-read-a-ppm-file (124)
-125. [ ] bitmap-read-an-image-through-a-pipe (125)
-126. [ ] bitmap-write-a-ppm-file (126)
-127. [ ] bitmap (127)
+114. [x] bioinformatics-sequence-mutation (114)
+115. [x] biorhythms (115)
+116. [x] bitcoin-address-validation (116)
+117. [x] bitmap-b-zier-curves-cubic (117)
+118. [x] bitmap-b-zier-curves-quadratic (118)
+119. [x] bitmap-bresenhams-line-algorithm (119)
+120. [x] bitmap-flood-fill (120)
+121. [x] bitmap-histogram (121)
+122. [x] bitmap-midpoint-circle-algorithm (122)
+123. [x] bitmap-ppm-conversion-through-a-pipe (123)
+124. [x] bitmap-read-a-ppm-file (124)
+125. [x] bitmap-read-an-image-through-a-pipe (125)
+126. [x] bitmap-write-a-ppm-file (126)
+127. [x] bitmap (127)
 128. [ ] bitwise-io-1 (128)
 129. [ ] bitwise-io-2 (129)
 130. [ ] bitwise-operations (130)

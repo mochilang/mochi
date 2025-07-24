@@ -1854,7 +1854,7 @@ func compileStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 			} else {
 				valType = types.TypeOfExpr(st.Let.Value, env)
 			}
-			if as, ok := e.(*AssertExpr); ok && typ == "" && types.IsAnyType(valType) {
+			if as, ok := e.(*AssertExpr); ok && (typ == "" || typ == "any") && types.IsAnyType(valType) {
 				typ = as.Type
 				valType = toTypeFromGoType(as.Type)
 			}
@@ -2035,7 +2035,7 @@ func compileStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 					}
 				}
 			}
-			if as, ok := e.(*AssertExpr); ok && typ == "" && types.IsAnyType(valType) {
+			if as, ok := e.(*AssertExpr); ok && (typ == "" || typ == "any") && types.IsAnyType(valType) {
 				typ = as.Type
 				valType = toTypeFromGoType(as.Type)
 			}
@@ -3807,6 +3807,12 @@ func compilePostfix(pf *parser.PostfixExpr, env *types.Env, base string) (Expr, 
 			case types.MapType:
 				expr = &IndexExpr{X: expr, Index: &StringLit{Value: f}}
 				t = tt.Value
+				if _, ok := tt.Value.(types.AnyType); ok {
+					if gt, ok2 := fieldTypeGuess[f]; ok2 && gt != "" && gt != "any" {
+						expr = &AssertExpr{Expr: expr, Type: gt}
+						t = toTypeFromGoType(gt)
+					}
+				}
 			case types.StructType:
 				expr = &FieldExpr{X: expr, Name: toGoFieldName(f)}
 				if ft, ok := tt.Fields[f]; ok {
@@ -3831,10 +3837,16 @@ func compilePostfix(pf *parser.PostfixExpr, env *types.Env, base string) (Expr, 
 			default:
 				if types.IsAnyType(t) {
 					expr = &IndexExpr{X: &AssertExpr{Expr: expr, Type: "map[string]any"}, Index: &StringLit{Value: f}}
+					if gt, ok := fieldTypeGuess[f]; ok && gt != "" && gt != "any" {
+						expr = &AssertExpr{Expr: expr, Type: gt}
+						t = toTypeFromGoType(gt)
+					} else {
+						t = types.AnyType{}
+					}
 				} else {
 					expr = &FieldExpr{X: expr, Name: toGoFieldName(f)}
+					t = types.AnyType{}
 				}
-				t = types.AnyType{}
 			}
 		}
 	} else {
