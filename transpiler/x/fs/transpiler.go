@@ -69,20 +69,20 @@ func copyMap(src map[string]string) map[string]string {
 	return dst
 }
 
-const helperNow = `let mutable _nowSeed = 0
+const helperNow = `let mutable _nowSeed:int64 = 0L
 let mutable _nowSeeded = false
 let _initNow () =
     let s = System.Environment.GetEnvironmentVariable("MOCHI_NOW_SEED")
     if System.String.IsNullOrEmpty(s) |> not then
         match System.Int32.TryParse(s) with
         | true, v ->
-            _nowSeed <- v
+            _nowSeed <- int64 v
             _nowSeeded <- true
         | _ -> ()
 let _now () =
     if _nowSeeded then
-        _nowSeed <- (_nowSeed * 1664525 + 1013904223) % 2147483647
-        _nowSeed
+        _nowSeed <- (_nowSeed * 1664525L + 1013904223L) % 2147483647L
+        int _nowSeed
     else
         int (System.DateTime.UtcNow.Ticks % 2147483647L)
 `
@@ -185,7 +185,7 @@ func fsTypeFromString(s string) string {
 		if strings.HasSuffix(s, " list") {
 			return fsTypeFromString(strings.TrimSuffix(s, " list")) + " array"
 		}
-		if strings.HasSuffix(s, " array") || strings.HasPrefix(s, "Map<") || s == "obj" {
+		if strings.HasPrefix(s, "Map<") || s == "obj" {
 			return "obj"
 		}
 		return s
@@ -1420,6 +1420,8 @@ func inferType(e Expr) string {
 		switch v.Func {
 		case "string":
 			return "string"
+		case "System.Console.ReadLine", "input":
+			return "string"
 		case "Seq.length", "List.length", "String.length":
 			return "int"
 		case "Seq.sum", "List.sum":
@@ -1540,9 +1542,10 @@ func (m *MethodCallExpr) emit(w io.Writer) {
 
 // SliceExpr represents slicing start:end on strings.
 type SliceExpr struct {
-	Target Expr
-	Start  Expr // may be nil for start of collection
-	End    Expr // may be nil for end of collection
+	Target   Expr
+	Start    Expr // may be nil for start of collection
+	End      Expr // may be nil for end of collection
+	IsString bool
 }
 
 func (s *SliceExpr) emit(w io.Writer) {
@@ -1551,7 +1554,7 @@ func (s *SliceExpr) emit(w io.Writer) {
 		start = &IntLit{Value: 0}
 	}
 	t := inferType(s.Target)
-	if t != "string" {
+	if !s.IsString && t != "string" {
 		io.WriteString(w, "Array.sub ")
 		s.Target.emit(w)
 		io.WriteString(w, " ")
@@ -1833,8 +1836,24 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 			}
 		}
 		declared := ""
-		if st.Let.Type != nil && st.Let.Type.Simple != nil {
-			declared = *st.Let.Type.Simple
+		if st.Let.Type != nil {
+			if st.Let.Type.Simple != nil {
+				declared = *st.Let.Type.Simple
+			} else if st.Let.Type.Generic != nil {
+				var buf strings.Builder
+				buf.WriteString(st.Let.Type.Generic.Name)
+				buf.WriteString("<")
+				for i, arg := range st.Let.Type.Generic.Args {
+					if i > 0 {
+						buf.WriteString(",")
+					}
+					if arg.Simple != nil {
+						buf.WriteString(*arg.Simple)
+					}
+				}
+				buf.WriteString(">")
+				declared = buf.String()
+			}
 		} else if t := inferLiteralType(st.Let.Value); t != "" {
 			declared = t
 		} else if st.Let.Value != nil && st.Let.Value.Binary != nil && len(st.Let.Value.Binary.Right) == 0 && st.Let.Value.Binary.Left.Value.Target.Query != nil {
@@ -1852,8 +1871,9 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 				}
 			}
 		}
-		varTypes[st.Let.Name] = declared
-		typ := declared
+		fsDecl := fsTypeFromString(declared)
+		varTypes[st.Let.Name] = fsDecl
+		typ := fsDecl
 		if typ == "array" || typ == "map" {
 			typ = ""
 		}
@@ -1868,8 +1888,24 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 			}
 		}
 		declared := ""
-		if st.Var.Type != nil && st.Var.Type.Simple != nil {
-			declared = *st.Var.Type.Simple
+		if st.Var.Type != nil {
+			if st.Var.Type.Simple != nil {
+				declared = *st.Var.Type.Simple
+			} else if st.Var.Type.Generic != nil {
+				var buf strings.Builder
+				buf.WriteString(st.Var.Type.Generic.Name)
+				buf.WriteString("<")
+				for i, arg := range st.Var.Type.Generic.Args {
+					if i > 0 {
+						buf.WriteString(",")
+					}
+					if arg.Simple != nil {
+						buf.WriteString(*arg.Simple)
+					}
+				}
+				buf.WriteString(">")
+				declared = buf.String()
+			}
 		} else if t := inferLiteralType(st.Var.Value); t != "" {
 			declared = t
 		} else if st.Var.Value != nil && st.Var.Value.Binary != nil && len(st.Var.Value.Binary.Right) == 0 && st.Var.Value.Binary.Left.Value.Target.Query != nil {
@@ -1887,8 +1923,9 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 				}
 			}
 		}
-		varTypes[st.Var.Name] = declared
-		typ := declared
+		fsDecl := fsTypeFromString(declared)
+		varTypes[st.Var.Name] = fsDecl
+		typ := fsDecl
 		if typ == "array" || typ == "map" {
 			typ = ""
 		}
@@ -2183,7 +2220,8 @@ func convertPostfix(pf *parser.PostfixExpr) (Expr, error) {
 					return nil, err
 				}
 			}
-			expr = &SliceExpr{Target: expr, Start: start, End: end}
+			isStr := inferType(expr) == "string"
+			expr = &SliceExpr{Target: expr, Start: start, End: end, IsString: isStr}
 		case op.Field != nil:
 			expr = &FieldExpr{Target: expr, Name: op.Field.Name}
 		case op.Call != nil:
