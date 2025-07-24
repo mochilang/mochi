@@ -38,6 +38,7 @@ type Program struct {
 	UsePadStart  bool
 	UseBigInt    bool
 	UseBigRat    bool
+	UseLenAny    bool
 }
 
 var (
@@ -53,6 +54,7 @@ var (
 	usesPadStart   bool
 	usesBigInt     bool
 	usesBigRat     bool
+	usesLenAny     bool
 	topEnv         *types.Env
 	extraDecls     []Stmt
 	structCount    int
@@ -1689,6 +1691,7 @@ func Transpile(p *parser.Program, env *types.Env) (*Program, error) {
 	usesPadStart = false
 	usesBigInt = false
 	usesBigRat = false
+	usesLenAny = false
 	topEnv = env
 	extraDecls = nil
 	structCount = 0
@@ -1722,6 +1725,7 @@ func Transpile(p *parser.Program, env *types.Env) (*Program, error) {
 	gp.UsePadStart = usesPadStart
 	gp.UseBigInt = usesBigInt
 	gp.UseBigRat = usesBigRat
+	gp.UseLenAny = usesLenAny
 	gp.Imports = imports
 	return gp, nil
 }
@@ -2163,6 +2167,15 @@ func compileStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 			e, err := compileExpr(st.Assign.Value, env, st.Assign.Name)
 			if err != nil {
 				return nil, err
+			}
+			if vt, err := env.GetVar(st.Assign.Name); err == nil {
+				valType := types.TypeOfExpr(st.Assign.Value, env)
+				if isBigIntType(vt) {
+					e = ensureBigIntExpr(e, valType)
+				}
+				if vtStr := toGoTypeFromType(vt); vtStr != "" && vtStr != "any" && types.IsAnyType(valType) {
+					e = &AssertExpr{Expr: e, Type: vtStr}
+				}
 			}
 			if ml, ok := e.(*MapLit); ok {
 				if t, err := env.GetVar(st.Assign.Name); err == nil {
@@ -3198,6 +3211,11 @@ func ensureBigRatExpr(e Expr, t types.Type) Expr {
 	return &CallExpr{Func: "_bigrat", Args: []Expr{e}}
 }
 
+func isStringType(t types.Type) bool {
+	_, ok := t.(types.StringType)
+	return ok
+}
+
 func boolExprFor(e Expr, t types.Type) Expr {
 	if _, ok := t.(types.BoolType); ok {
 		return e
@@ -3622,6 +3640,19 @@ func compileBinary(b *parser.BinaryExpr, env *types.Env, base string) (Expr, err
 						if lt, ok := typesList[i].(types.ListType); ok {
 							et := toGoTypeFromType(lt.Elem)
 							newExpr = &UnionAllExpr{Left: left, Right: right, ElemType: et}
+						}
+						if newExpr == nil {
+							if _, ok := typesList[i].(types.StringType); ok || isStringType(typesList[i+1]) {
+								if _, ok := typesList[i].(types.StringType); !ok {
+									usesPrint = true
+									left = &CallExpr{Func: "fmt.Sprint", Args: []Expr{left}}
+								}
+								if _, ok := typesList[i+1].(types.StringType); !ok {
+									usesPrint = true
+									right = &CallExpr{Func: "fmt.Sprint", Args: []Expr{right}}
+								}
+								newExpr = &BinaryExpr{Left: left, Op: "+", Right: right}
+							}
 						}
 					}
 					// auto convert unknown types to float64 for arithmetic
@@ -4080,6 +4111,12 @@ func compilePrimary(p *parser.Primary, env *types.Env, base string) (Expr, error
 				return &CallExpr{Func: "len", Args: []Expr{&FieldExpr{X: args[0], Name: "Items"}}}, nil
 			}
 			name = "len"
+		case "len":
+			if types.IsAnyType(types.TypeOfExpr(p.Call.Args[0], env)) {
+				usesLenAny = true
+				return &CallExpr{Func: "_len", Args: []Expr{args[0]}}, nil
+			}
+			return &CallExpr{Func: "len", Args: []Expr{args[0]}}, nil
 		case "str":
 			name = "fmt.Sprint"
 		case "int":
@@ -4145,6 +4182,10 @@ func compilePrimary(p *parser.Primary, env *types.Env, base string) (Expr, error
 			return &CallExpr{Func: "_padStart", Args: args[:3]}, nil
 		case "substring":
 			usesSubstr = true
+			if types.IsAnyType(types.TypeOfExpr(p.Call.Args[0], env)) {
+				usesPrint = true
+				args[0] = &CallExpr{Func: "fmt.Sprint", Args: []Expr{args[0]}}
+			}
 			return &CallExpr{Func: "_substr", Args: []Expr{args[0], args[1], args[2]}}, nil
 		case "num":
 			usesBigRat = true
@@ -4800,6 +4841,21 @@ func Emit(prog *Program) []byte {
 		buf.WriteString("    if len(s) >= l { return s }\n")
 		buf.WriteString("    fill := ch[:1]\n")
 		buf.WriteString("    return strings.Repeat(fill, l-len(s)) + s\n")
+		buf.WriteString("}\n\n")
+	}
+	if prog.UseLenAny {
+		buf.WriteString("func _len(v any) int {\n")
+		buf.WriteString("    switch t := v.(type) {\n")
+		buf.WriteString("    case string: return len([]rune(t))\n")
+		buf.WriteString("    case []any: return len(t)\n")
+		buf.WriteString("    case []string: return len(t)\n")
+		buf.WriteString("    case []int: return len(t)\n")
+		buf.WriteString("    case []float64: return len(t)\n")
+		buf.WriteString("    case map[string]any: return len(t)\n")
+		buf.WriteString("    case map[int]any: return len(t)\n")
+		buf.WriteString("    case map[any]any: return len(t)\n")
+		buf.WriteString("    default:\n        return 0\n")
+		buf.WriteString("    }\n")
 		buf.WriteString("}\n\n")
 	}
 	if prog.UseFloatConv {
