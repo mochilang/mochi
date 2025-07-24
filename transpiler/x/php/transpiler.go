@@ -135,10 +135,28 @@ function denom($x) {
     return function_exists('bcadd') ? '1' : 1;
 }`
 
+const helperStr = `function _str($x) {
+    if (is_array($x)) {
+        $isList = array_keys($x) === range(0, count($x) - 1);
+        if ($isList) {
+            $parts = [];
+            foreach ($x as $v) { $parts[] = _str($v); }
+            return '[' . implode(' ', $parts) . ']';
+        }
+        $parts = [];
+        foreach ($x as $k => $v) { $parts[] = _str($k) . ':' . _str($v); }
+        return 'map[' . implode(' ', $parts) . ']';
+    }
+    if (is_bool($x)) return $x ? 'true' : 'false';
+    if ($x === null) return 'null';
+    return strval($x);
+}`
+
 var usesLookupHost bool
 var usesNow bool
 var usesLen bool
 var usesBigRat bool
+var usesStr bool
 
 // Some PHP built-in functions cannot be redefined. When a Mochi program
 // defines a function with one of these names we rename the function and all
@@ -1507,6 +1525,11 @@ func Emit(w io.Writer, p *Program) error {
 			return err
 		}
 	}
+	if usesStr {
+		if _, err := io.WriteString(w, helperStr+"\n"); err != nil {
+			return err
+		}
+	}
 	for _, s := range p.Stmts {
 		s.emit(w)
 		switch s.(type) {
@@ -1534,6 +1557,7 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	usesNow = false
 	usesLen = false
 	usesBigRat = false
+	usesStr = false
 	defer func() { transpileEnv = nil }()
 	p := &Program{Env: env}
 	for _, st := range prog.Statements {
@@ -2005,7 +2029,8 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 			if len(args) != 1 {
 				return nil, fmt.Errorf("str expects 1 arg")
 			}
-			return &CallExpr{Func: "json_encode", Args: []Expr{args[0], &IntLit{Value: 1344}}}, nil
+			usesStr = true
+			return &CallExpr{Func: "_str", Args: args}, nil
 		} else if name == "upper" {
 			if len(args) != 1 {
 				return nil, fmt.Errorf("upper expects 1 arg")
