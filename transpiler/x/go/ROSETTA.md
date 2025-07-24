@@ -1,7 +1,7 @@
 # Go Rosetta Transpiler Output
 
-Completed programs: 86/284
-Last updated: 2025-07-24 13:17 +0700
+Completed programs: 87/284
+Last updated: 2025-07-24 14:40 +0700
 
 Checklist:
 
@@ -99,7 +99,7 @@ Checklist:
 92. [x] averages-pythagorean-means (92)
 93. [x] averages-root-mean-square (93)
 94. [x] averages-simple-moving-average (94)
-95. [ ] avl-tree (95)
+95. [x] avl-tree (95)
 96. [ ] b-zier-curves-intersections (96)
 97. [ ] babbage-problem (97)
 98. [ ] babylonian-spiral (98)

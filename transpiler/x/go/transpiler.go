@@ -1851,12 +1851,11 @@ func compileStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 			}
 			if typ != "" && typ != "any" && types.IsAnyType(valType) {
 				e = &AssertExpr{Expr: e, Type: typ}
-			} else if ae, ok := e.(*AssertExpr); ok && typ != "" && ae.Type == typ {
-				e = ae.Expr
 			}
 			if typ != "" && typ != "any" && types.IsAnyType(valType) {
 				e = &AssertExpr{Expr: e, Type: typ}
-			} else if typ == "*big.Int" {
+			}
+			if typ == "*big.Int" {
 				e = ensureBigIntExpr(e, valType)
 			}
 			if declaredType != nil {
@@ -3710,13 +3709,15 @@ func compilePostfix(pf *parser.PostfixExpr, env *types.Env, base string) (Expr, 
 									expr = &AssertExpr{Expr: expr, Type: gt}
 								}
 							}
-							switch gt {
-							case "map[string]int":
-								t = types.MapType{Key: types.StringType{}, Value: types.IntType{}}
-							case "map[string]any":
-								t = types.MapType{Key: types.StringType{}, Value: types.AnyType{}}
-							default:
-								t = toTypeFromGoType(gt)
+							if !nextCast {
+								switch gt {
+								case "map[string]int":
+									t = types.MapType{Key: types.StringType{}, Value: types.IntType{}}
+								case "map[string]any":
+									t = types.MapType{Key: types.StringType{}, Value: types.AnyType{}}
+								default:
+									t = toTypeFromGoType(gt)
+								}
 							}
 						}
 					}
@@ -3813,6 +3814,8 @@ func compilePostfix(pf *parser.PostfixExpr, env *types.Env, base string) (Expr, 
 					case types.BigIntType:
 						usesBigInt = true
 						expr = &BigIntToIntExpr{Value: expr}
+					case types.AnyType:
+						expr = &AssertExpr{Expr: expr, Type: "int"}
 					default:
 						expr = &IntCastExpr{Expr: expr}
 					}
@@ -4243,6 +4246,8 @@ func toGoType(t *parser.TypeRef, env *types.Env) string {
 	}
 	if t.Simple != nil {
 		switch *t.Simple {
+		case "any":
+			return "any"
 		case "int":
 			return "int"
 		case "bigint":
