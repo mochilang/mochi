@@ -24,109 +24,110 @@ begin
 end;
 type IntArray = array of integer;
 var
-  arr: IntArray;
-  i: integer;
-  j: integer;
-  tmp: integer;
-  pardoned: integer;
-  t: integer;
-  drawers: array of integer;
-  p: integer;
-  success: boolean;
-  found: boolean;
-  prev: integer;
-  d: integer;
-  this: integer;
-  opened: array of boolean;
-  k: integer;
-  n: integer;
-  rf: integer;
-  trials: integer;
+  shuffle_arr: IntArray;
+  shuffle_i: integer;
+  shuffle_j: integer;
+  shuffle_tmp: integer;
+  doTrials_pardoned: integer;
+  doTrials_t: integer;
+  doTrials_drawers: array of integer;
+  doTrials_i: integer;
+  doTrials_p: integer;
+  doTrials_success: boolean;
+  doTrials_found: boolean;
+  doTrials_prev: integer;
+  doTrials_d: integer;
+  doTrials_this: integer;
+  doTrials_opened: array of boolean;
+  doTrials_k: integer;
+  doTrials_n: integer;
+  doTrials_rf: integer;
+  main_trials: integer;
   strat: string;
   np: integer;
 function shuffle(xs: IntArray): IntArray;
 begin
-  arr := xs;
-  i := 99;
-  while i > 0 do begin
-  j := _now() mod (i + 1);
-  tmp := arr[i];
-  arr[i] := arr[j];
-  arr[j] := tmp;
-  i := i - 1;
+  shuffle_arr := xs;
+  shuffle_i := 99;
+  while shuffle_i > 0 do begin
+  shuffle_j := _now() mod (shuffle_i + 1);
+  shuffle_tmp := shuffle_arr[shuffle_i];
+  shuffle_arr[shuffle_i] := shuffle_arr[shuffle_j];
+  shuffle_arr[shuffle_j] := shuffle_tmp;
+  shuffle_i := shuffle_i - 1;
 end;
-  exit(arr);
+  exit(shuffle_arr);
 end;
 procedure doTrials(trials: integer; np: integer; strategy: string);
 begin
-  pardoned := 0;
-  t := 0;
-  while t < trials do begin
-  drawers := [];
-  i := 0;
-  while i < 100 do begin
-  drawers := concat(drawers, [i]);
-  i := i + 1;
+  doTrials_pardoned := 0;
+  doTrials_t := 0;
+  while doTrials_t < trials do begin
+  doTrials_drawers := [];
+  doTrials_i := 0;
+  while doTrials_i < 100 do begin
+  doTrials_drawers := concat(doTrials_drawers, [doTrials_i]);
+  doTrials_i := doTrials_i + 1;
 end;
-  drawers := shuffle(drawers);
-  p := 0;
-  success := true;
-  while p < np do begin
-  found := false;
+  doTrials_drawers := shuffle(doTrials_drawers);
+  doTrials_p := 0;
+  doTrials_success := true;
+  while doTrials_p < np do begin
+  doTrials_found := false;
   if strategy = 'optimal' then begin
-  prev := p;
-  d := 0;
-  while d < 50 do begin
-  this := drawers[prev];
-  if this = p then begin
-  found := true;
+  doTrials_prev := doTrials_p;
+  doTrials_d := 0;
+  while doTrials_d < 50 do begin
+  doTrials_this := doTrials_drawers[doTrials_prev];
+  if doTrials_this = doTrials_p then begin
+  doTrials_found := true;
   break;
 end;
-  prev := this;
-  d := d + 1;
+  doTrials_prev := doTrials_this;
+  doTrials_d := doTrials_d + 1;
 end;
 end else begin
-  opened := [];
-  k := 0;
-  while k < 100 do begin
-  opened := concat(opened, [false]);
-  k := k + 1;
+  doTrials_opened := [];
+  doTrials_k := 0;
+  while doTrials_k < 100 do begin
+  doTrials_opened := concat(doTrials_opened, [false]);
+  doTrials_k := doTrials_k + 1;
 end;
-  d := 0;
-  while d < 50 do begin
-  n := _now() mod 100;
-  while opened[n] do begin
-  n := _now() mod 100;
+  doTrials_d := 0;
+  while doTrials_d < 50 do begin
+  doTrials_n := _now() mod 100;
+  while doTrials_opened[doTrials_n] do begin
+  doTrials_n := _now() mod 100;
 end;
-  opened[n] := true;
-  if drawers[n] = p then begin
-  found := true;
+  doTrials_opened[doTrials_n] := true;
+  if doTrials_drawers[doTrials_n] = doTrials_p then begin
+  doTrials_found := true;
   break;
 end;
-  d := d + 1;
+  doTrials_d := doTrials_d + 1;
 end;
 end;
-  if not found then begin
-  success := false;
+  if not doTrials_found then begin
+  doTrials_success := false;
   break;
 end;
-  p := p + 1;
+  doTrials_p := doTrials_p + 1;
 end;
-  if success then begin
-  pardoned := pardoned + 1;
+  if doTrials_success then begin
+  doTrials_pardoned := doTrials_pardoned + 1;
 end;
-  t := t + 1;
+  doTrials_t := doTrials_t + 1;
 end;
-  rf := (pardoned div trials) * 100;
-  writeln(((((('  strategy = ' + strategy) + '  pardoned = ') + IntToStr(pardoned)) + ' relative frequency = ') + IntToStr(rf)) + '%');
+  doTrials_rf := (doTrials_pardoned div trials) * 100;
+  writeln(((((('  strategy = ' + strategy) + '  pardoned = ') + IntToStr(doTrials_pardoned)) + ' relative frequency = ') + IntToStr(doTrials_rf)) + '%');
 end;
 procedure main();
 begin
-  trials := 1000;
+  main_trials := 1000;
   for np in [10, 100] do begin
-  writeln(((('Results from ' + IntToStr(trials)) + ' trials with ') + IntToStr(np)) + ' prisoners:' + #10 + '');
+  writeln(((('Results from ' + IntToStr(main_trials)) + ' trials with ') + IntToStr(np)) + ' prisoners:' + #10 + '');
   for strat in ['random', 'optimal'] do begin
-  doTrials(trials, np, strat);
+  doTrials(main_trials, np, strat);
 end;
 end;
 end;
