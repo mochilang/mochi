@@ -2212,11 +2212,18 @@ func transpileForStmt(f *parser.ForStmt) (Node, error) {
 
 	condElems := []Node{}
 	other := []Node{}
+	pre := []Node{}
+	condFound := false
 	for _, n := range bodyNodes {
 		if c, b, ok := condRecur(n); ok {
+			condFound = true
 			condElems = append(condElems, c, b)
 		} else {
-			other = append(other, n)
+			if !condFound {
+				pre = append(pre, n)
+			} else {
+				other = append(other, n)
+			}
 		}
 	}
 
@@ -2232,7 +2239,13 @@ func transpileForStmt(f *parser.ForStmt) (Node, error) {
 
 	condForm := &List{Elems: append([]Node{Symbol("cond")}, condElems...)}
 	letForm := &List{Elems: []Node{Symbol("let"), iterBinding, condForm}}
-	loopBody := &List{Elems: []Node{Symbol("when"), &List{Elems: []Node{Symbol("seq"), Symbol(seqSym)}}, letForm}}
+	var body Node
+	if len(pre) == 0 {
+		body = letForm
+	} else {
+		body = &List{Elems: append([]Node{Symbol("do")}, append(pre, letForm)...)}
+	}
+	loopBody := &List{Elems: []Node{Symbol("when"), &List{Elems: []Node{Symbol("seq"), Symbol(seqSym)}}, body}}
 	return &List{Elems: []Node{Symbol("loop"), binding, loopBody}}, nil
 }
 
