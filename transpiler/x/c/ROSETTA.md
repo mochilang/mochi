@@ -2,7 +2,7 @@
 
 This directory stores C code generated from Mochi programs in `tests/rosetta/x/Mochi`. Each file is compiled and executed during tests. Successful runs keep the generated `.c` source along with a matching `.out` file. Failures are recorded in `.error` files when tests run with `-update`.
 
-Checklist of programs that currently transpile and run (15/284) - Last updated 2025-07-24 20:52 +0700:
+Checklist of programs that currently transpile and run (16/284) - Last updated 2025-07-24 21:16 +0700:
 1. [x] 100-doors-2 (1)
 2. [x] 100-doors-3 (2)
 3. [x] 100-doors (3)
@@ -22,7 +22,7 @@ Checklist of programs that currently transpile and run (15/284) - Last updated 2
 17. [x] abbreviations-automatic (17)
 18. [x] abbreviations-easy (18)
 19. [x] abbreviations-simple (19)
-20. [ ] abc-problem (20)
+20. [x] abc-problem (20)
 21. [ ] abelian-sandpile-model-identity (21)
 22. [ ] abelian-sandpile-model (22)
 23. [ ] abstract-type (23)
