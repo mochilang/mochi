@@ -120,6 +120,9 @@ var reserved = map[string]bool{
 
 // safeName prefixes an underscore when the provided identifier is reserved.
 func safeName(n string) string {
+	if strings.Contains(n, ".") {
+		return n
+	}
 	if reserved[n] {
 		return "_" + n
 	}
@@ -801,10 +804,22 @@ func (l *LetStmt) emit(w io.Writer) {
 	}
 	if indent != "" {
 		if call, ok := l.Expr.(*CallExpr); ok {
+			// direct input()
 			if n, ok2 := call.Fun.(*NameRef); ok2 && n.Name == "input" && len(call.Args) == 0 {
 				io.WriteString(w, name+" <- ")
 				l.Expr.emit(w)
 				return
+			}
+			// pattern int(input()) or float(input()) etc.
+			if n, ok2 := call.Fun.(*NameRef); ok2 && len(call.Args) == 1 {
+				if inner, ok3 := call.Args[0].(*CallExpr); ok3 {
+					if n2, ok4 := inner.Fun.(*NameRef); ok4 && n2.Name == "input" && len(inner.Args) == 0 {
+						io.WriteString(w, name+" <- fmap ")
+						io.WriteString(w, safeName(n.Name))
+						io.WriteString(w, " input")
+						return
+					}
+				}
 			}
 		}
 		io.WriteString(w, "let ")
