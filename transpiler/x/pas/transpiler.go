@@ -9,6 +9,7 @@ import (
 	"io"
 	"os"
 	"path/filepath"
+	"sort"
 	"strconv"
 	"strings"
 
@@ -20,10 +21,41 @@ var currProg *Program
 var anonCounter int
 var currentVarTypes map[string]string
 var nameMap = map[string]string{}
+var nameStack []map[string]string
+var currentFunc string
 var funcNames map[string]struct{}
+var funcReturns map[string]string
+
+func currentScope() map[string]string {
+	if len(nameStack) == 0 {
+		m := map[string]string{}
+		nameStack = append(nameStack, m)
+		return m
+	}
+	return nameStack[len(nameStack)-1]
+}
+
+func lookupName(name string) (string, bool) {
+	for i := len(nameStack) - 1; i >= 0; i-- {
+		if v, ok := nameStack[i][name]; ok {
+			return v, true
+		}
+	}
+	return "", false
+}
+
+func pushScope() {
+	nameStack = append(nameStack, map[string]string{})
+}
+
+func popScope() {
+	if len(nameStack) > 0 {
+		nameStack = nameStack[:len(nameStack)-1]
+	}
+}
 
 func sanitize(name string) string {
-	if v, ok := nameMap[name]; ok {
+	if v, ok := lookupName(name); ok {
 		return v
 	}
 	newName := name
@@ -31,19 +63,22 @@ func sanitize(name string) string {
 	case "label":
 		newName = name + "_"
 	}
+	if currentFunc != "" {
+		newName = currentFunc + "_" + newName
+	}
 	if _, ok := funcNames[name]; ok {
-		newName = name + "_var"
-	} else if hasVar(name) {
-		newName = fmt.Sprintf("%s_%d", name, len(currProg.Vars))
+		newName = newName + "_var"
+	} else if hasVar(newName) {
+		newName = fmt.Sprintf("%s_%d", newName, len(currProg.Vars))
 	} else {
 		for _, r := range currProg.Records {
 			if strings.EqualFold(name, r.Name) {
-				newName = name + "_var"
+				newName = newName + "_var"
 				break
 			}
 		}
 	}
-	nameMap[name] = newName
+	currentScope()[name] = newName
 	return newName
 }
 
@@ -748,8 +783,16 @@ func (p *Program) Emit() []byte {
 	if p.NeedShowList {
 		buf.WriteString("procedure show_list(xs: array of integer);\nvar i: integer;\nbegin\n  write('[');\n  for i := 0 to High(xs) do begin\n    write(xs[i]);\n    if i < High(xs) then write(', ');\n  end;\n  writeln(']');\nend;\n")
 	}
-	for elem, alias := range p.ArrayAliases {
-		fmt.Fprintf(&buf, "type %s = array of %s;\n", alias, elem)
+	if len(p.ArrayAliases) > 0 {
+		keys := make([]string, 0, len(p.ArrayAliases))
+		for elem := range p.ArrayAliases {
+			keys = append(keys, elem)
+		}
+		sort.Slice(keys, func(i, j int) bool { return len(keys[i]) < len(keys[j]) })
+		for _, elem := range keys {
+			alias := p.ArrayAliases[elem]
+			fmt.Fprintf(&buf, "type %s = array of %s;\n", alias, elem)
+		}
 	}
 	for _, r := range p.Records {
 		fmt.Fprintf(&buf, "type %s = record\n", r.Name)
@@ -797,7 +840,10 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 	_ = env
 	pr := &Program{}
 	currProg = pr
+	nameStack = []map[string]string{{}}
 	funcNames = make(map[string]struct{})
+	funcReturns = make(map[string]string)
+	funcReturns["_input"] = "string"
 	for _, st := range prog.Statements {
 		if st.Fun != nil {
 			funcNames[st.Fun.Name] = struct{}{}
@@ -1211,10 +1257,17 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 				}
 				local[p.Name] = typ
 			}
+			pushScope()
+			currentFunc = st.Fun.Name
+			for _, p := range st.Fun.Params {
+				currentScope()[p.Name] = p.Name
+			}
 			fnBody, err := convertBody(env, st.Fun.Body, local)
 			if err != nil {
 				return nil, err
 			}
+			popScope()
+			currentFunc = ""
 			var params []string
 			for _, p := range st.Fun.Params {
 				typ := "integer"
@@ -1236,6 +1289,9 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 				}
 			}
 			pr.Funs = append(pr.Funs, FunDecl{Name: st.Fun.Name, Params: params, ReturnType: rt, Body: fnBody})
+			if rt != "" {
+				funcReturns[st.Fun.Name] = rt
+			}
 		case st.Return != nil:
 			ex, err := convertExpr(env, st.Return.Value)
 			if err != nil {
@@ -3039,9 +3095,12 @@ func convertPrimary(env *types.Env, p *parser.Primary) (Expr, error) {
 		name := fmt.Sprintf("anon%d", len(currProg.Funs))
 		var params []string
 		child := types.NewEnv(env)
+		pushScope()
+		currentFunc = name
 		for _, pa := range p.FunExpr.Params {
 			params = append(params, pa.Name)
 			child.SetVar(pa.Name, types.AnyType{}, true)
+			currentScope()[pa.Name] = pa.Name
 		}
 		var body []Stmt
 		if p.FunExpr.ExprBody != nil {
@@ -3062,6 +3121,8 @@ func convertPrimary(env *types.Env, p *parser.Primary) (Expr, error) {
 				_ = t
 			}
 		}
+		popScope()
+		currentFunc = ""
 		rt := ""
 		if p.FunExpr.Return != nil && p.FunExpr.Return.Simple != nil {
 			if *p.FunExpr.Return.Simple == "int" {
@@ -3071,9 +3132,12 @@ func convertPrimary(env *types.Env, p *parser.Primary) (Expr, error) {
 			}
 		}
 		currProg.Funs = append(currProg.Funs, FunDecl{Name: name, Params: params, ReturnType: rt, Body: body})
+		if rt != "" {
+			funcReturns[name] = rt
+		}
 		return &VarRef{Name: name}, nil
 	case p.Selector != nil && len(p.Selector.Tail) == 0:
-		if v, ok := nameMap[p.Selector.Root]; ok {
+		if v, ok := lookupName(p.Selector.Root); ok {
 			return &VarRef{Name: v}, nil
 		}
 		return &VarRef{Name: p.Selector.Root}, nil
@@ -3081,6 +3145,9 @@ func convertPrimary(env *types.Env, p *parser.Primary) (Expr, error) {
 		if len(p.Selector.Tail) == 1 {
 			root := p.Selector.Root
 			field := p.Selector.Tail[0]
+			if v, ok := lookupName(root); ok {
+				root = v
+			}
 			switch root {
 			case "math":
 				currProg.UseMath = true
@@ -3099,7 +3166,11 @@ func convertPrimary(env *types.Env, p *parser.Primary) (Expr, error) {
 				}
 			}
 		}
-		return &SelectorExpr{Root: p.Selector.Root, Tail: p.Selector.Tail}, nil
+		r := p.Selector.Root
+		if v, ok := lookupName(r); ok {
+			r = v
+		}
+		return &SelectorExpr{Root: r, Tail: p.Selector.Tail}, nil
 	case p.If != nil:
 		return convertIfExpr(env, p.If)
 	case p.Match != nil:
@@ -3235,6 +3306,9 @@ func inferType(e Expr) string {
 			}
 			return ""
 		default:
+			if rt, ok := funcReturns[v.Name]; ok {
+				return rt
+			}
 			return ""
 		}
 	case *IfExpr:
