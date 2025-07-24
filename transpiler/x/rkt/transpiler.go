@@ -28,6 +28,13 @@ var importedModules map[string]string
 var needsGroupStruct bool
 var groupVars = map[string]bool{}
 
+func sanitizeName(name string) string {
+	if name == "list" {
+		return "list_"
+	}
+	return name
+}
+
 type Program struct {
 	Stmts []Stmt
 }
@@ -68,7 +75,7 @@ type LetStmt struct {
 }
 
 func (l *LetStmt) emit(w io.Writer) {
-	fmt.Fprintf(w, "(define %s ", l.Name)
+	fmt.Fprintf(w, "(define %s ", sanitizeName(l.Name))
 	l.Expr.emit(w)
 	io.WriteString(w, ")\n")
 }
@@ -79,7 +86,7 @@ type AssignStmt struct {
 }
 
 func (a *AssignStmt) emit(w io.Writer) {
-	fmt.Fprintf(w, "(set! %s ", a.Name)
+	fmt.Fprintf(w, "(set! %s ", sanitizeName(a.Name))
 	a.Expr.emit(w)
 	io.WriteString(w, ")\n")
 }
@@ -91,7 +98,8 @@ type ListAssignStmt struct {
 }
 
 func (l *ListAssignStmt) emit(w io.Writer) {
-	fmt.Fprintf(w, "(set! %s (list-set %s ", l.Name, l.Name)
+	name := sanitizeName(l.Name)
+	fmt.Fprintf(w, "(set! %s (list-set %s ", name, name)
 	l.Index.emit(w)
 	io.WriteString(w, " ")
 	l.Expr.emit(w)
@@ -105,7 +113,8 @@ type MapAssignStmt struct {
 }
 
 func (m *MapAssignStmt) emit(w io.Writer) {
-	fmt.Fprintf(w, "(set! %s (hash-set %s ", m.Name, m.Name)
+	name := sanitizeName(m.Name)
+	fmt.Fprintf(w, "(set! %s (hash-set (or %s (hash)) ", name, name)
 	m.Key.emit(w)
 	io.WriteString(w, " ")
 	m.Expr.emit(w)
@@ -120,10 +129,11 @@ type DoubleListAssignStmt struct {
 }
 
 func (d *DoubleListAssignStmt) emit(w io.Writer) {
-	fmt.Fprintf(w, "(set! %s (list-set %s ", d.Name, d.Name)
+	name := sanitizeName(d.Name)
+	fmt.Fprintf(w, "(set! %s (list-set %s ", name, name)
 	d.Index1.emit(w)
 	io.WriteString(w, " (list-set (list-ref ")
-	io.WriteString(w, d.Name)
+	io.WriteString(w, name)
 	io.WriteString(w, " ")
 	d.Index1.emit(w)
 	io.WriteString(w, ") ")
@@ -446,7 +456,13 @@ func (u *UnaryExpr) emit(w io.Writer) {
 
 type Name struct{ Name string }
 
-func (n *Name) emit(w io.Writer) { io.WriteString(w, n.Name) }
+func (n *Name) emit(w io.Writer) {
+	if n.Name == "list" {
+		io.WriteString(w, "list_")
+	} else {
+		io.WriteString(w, n.Name)
+	}
+}
 
 type IntLit struct{ Value int }
 
@@ -525,11 +541,13 @@ func (i *IndexExpr) emit(w io.Writer) {
 		io.WriteString(w, ")")
 		io.WriteString(w, ")")
 	} else if i.IsMap {
-		io.WriteString(w, "(hash-ref ")
+		io.WriteString(w, "(if ")
+		i.Target.emit(w)
+		io.WriteString(w, " (hash-ref ")
 		i.Target.emit(w)
 		io.WriteString(w, " ")
 		i.Index.emit(w)
-		io.WriteString(w, ")")
+		io.WriteString(w, " #f) #f)")
 	} else {
 		io.WriteString(w, "(list-ref ")
 		i.Target.emit(w)
@@ -1087,6 +1105,7 @@ func header() string {
 	hdr += "(define (upper s) (string-upcase s))\n"
 	hdr += "(define (lower s) (string-downcase s))\n"
 	hdr += "(define (sublist lst start end)\n  (if (string? lst)\n      (substring lst start end)\n      (take (drop lst start) (- end start))))\n\n"
+	hdr += "(define (pad-start s width ch)\n  (if (< (string-length s) width)\n      (string-append (make-string (- width (string-length s)) (string-ref ch 0)) s)\n      s))\n"
 	return hdr + "\n"
 }
 
@@ -2214,7 +2233,7 @@ func convertPrimary(p *parser.Primary, env *types.Env) (Expr, error) {
 		if p.Selector.Root == "nil" {
 			return &Name{Name: "#f"}, nil
 		}
-		return &Name{Name: p.Selector.Root}, nil
+		return &Name{Name: sanitizeName(p.Selector.Root)}, nil
 	default:
 		return nil, fmt.Errorf("unsupported primary")
 	}
@@ -2361,6 +2380,10 @@ func convertCall(c *parser.CallExpr, env *types.Env) (Expr, error) {
 		if len(args) == 1 {
 			return &CallExpr{Func: "not", Args: []Expr{&CallExpr{Func: "null?", Args: args}}}, nil
 		}
+	case "keys":
+		if len(args) == 1 {
+			return &CallExpr{Func: "hash-keys", Args: args}, nil
+		}
 	case "str":
 		if len(args) == 1 {
 			return &StrExpr{Arg: args[0]}, nil
@@ -2368,6 +2391,11 @@ func convertCall(c *parser.CallExpr, env *types.Env) (Expr, error) {
 	case "substring":
 		if len(args) == 3 {
 			return &CallExpr{Func: "substring", Args: args}, nil
+		}
+	case "padStart":
+		if len(args) == 3 {
+			// args[0]=string, args[1]=length, args[2]=pad string
+			return &CallExpr{Func: "pad-start", Args: args}, nil
 		}
 	case "min":
 		if len(args) == 1 {

@@ -1,0 +1,26 @@
+run error: exit status 1
+list-ref: index reaches a non-pair
+  index: 0
+  in: #f
+  context...:
+   /workspace/mochi/tests/rosetta/transpiler/Racket/avl-tree.rkt:35:2
+   /workspace/mochi/tests/rosetta/transpiler/Racket/avl-tree.rkt:211:2
+   body of "/workspace/mochi/tests/rosetta/transpiler/Racket/avl-tree.rkt"
+Empty tree:
+null
+
+Insert test:
+{
+   "Data": 3,
+   "Balance": 0,
+   "Link": [
+      null,
+      null
+   ]
+}
+
+Remove test:
+{
+   "Data": #f,
+   "Balance": 0,
+   "Link": [
