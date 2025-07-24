@@ -21,12 +21,12 @@ int _now() {
   return DateTime.now().microsecondsSinceEpoch;
 }
 
-dynamic shuffle(xs) {
-  var arr = xs;
+List<int> shuffle(List<int> xs) {
+  List<int> arr = xs;
   int i = 99;
   while (i > 0) {
     final int j = _now() % (i + 1);
-    final tmp = arr[i];
+    final int tmp = arr[i];
     arr[i] = arr[j];
     arr[j] = tmp;
     i = i - 1;
@@ -34,7 +34,7 @@ dynamic shuffle(xs) {
   return arr;
 }
 
-void doTrials(trials, np, strategy) {
+void doTrials(int trials, int np, String strategy) {
   int pardoned = 0;
   int t = 0;
   while (t < trials) {
@@ -93,7 +93,7 @@ void doTrials(trials, np, strategy) {
   }
     t = t + 1;
   }
-  final num rf = pardoned ~/ trials * 100;
+  final num rf = ((pardoned.toDouble()) / ((trials.toDouble()) * 100;
   print("  strategy = " + strategy + "  pardoned = " + (pardoned).toString() + " relative frequency = " + (rf).toString() + "%");
 }
 
@@ -109,6 +109,5 @@ void main() {
 
 void _start() {
   _initNow();
-  main();
   main();
 }
