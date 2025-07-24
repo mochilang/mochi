@@ -59,6 +59,9 @@ var (
 	needNow              bool
 	needInput            bool
 	needSubstring        bool
+
+	// track local variable declarations so they can be adjusted
+	declStmts map[string]*DeclStmt
 )
 
 const version = "0.10.32"
@@ -671,7 +674,14 @@ type IndexExpr struct {
 func (i *IndexExpr) emitExpr(w io.Writer) {
 	if key, ok := evalString(i.Index); ok {
 		tname := inferExprType(currentEnv, i.Target)
-		if st, ok2 := currentEnv.GetStruct(tname); ok2 {
+		st, ok2 := currentEnv.GetStruct(tname)
+		if !ok2 {
+			if st2, ok3 := structTypes[tname]; ok3 {
+				st = st2
+				ok2 = true
+			}
+		}
+		if ok2 {
 			if _, ok3 := st.Fields[key]; ok3 {
 				i.Target.emitExpr(w)
 				io.WriteString(w, ".")
@@ -1808,7 +1818,11 @@ func compileStmt(env *types.Env, s *parser.Statement) (Stmt, error) {
 			fmt.Fprintf(&buf, "size_t %s_len = %d;\n", s.Let.Name, len(m.Items))
 			return &RawStmt{Code: buf.String()}, nil
 		}
-		return &DeclStmt{Name: s.Let.Name, Value: valExpr, Type: declType}, nil
+		ds := &DeclStmt{Name: s.Let.Name, Value: valExpr, Type: declType}
+		if declStmts != nil {
+			declStmts[s.Let.Name] = ds
+		}
+		return ds, nil
 	case s.Var != nil:
 		currentVarName = s.Var.Name
 		valExpr := convertExpr(s.Var.Value)
@@ -1887,7 +1901,11 @@ func compileStmt(env *types.Env, s *parser.Statement) (Stmt, error) {
 			fmt.Fprintf(&buf, "size_t %s_len = %d;\n", s.Var.Name, len(m.Items))
 			return &RawStmt{Code: buf.String()}, nil
 		}
-		return &DeclStmt{Name: s.Var.Name, Value: valExpr, Type: declType}, nil
+		ds := &DeclStmt{Name: s.Var.Name, Value: valExpr, Type: declType}
+		if declStmts != nil {
+			declStmts[s.Var.Name] = ds
+		}
+		return ds, nil
 	case s.Assign != nil:
 		delete(constLists, s.Assign.Name)
 		delete(constStrings, s.Assign.Name)
@@ -1931,11 +1949,28 @@ func compileStmt(env *types.Env, s *parser.Statement) (Stmt, error) {
 				if base == "" {
 					base = "int"
 				}
+				elemT := inferExprType(env, call.Args[1])
 				switch base {
 				case "int":
-					needListAppendInt = true
+					if strings.HasSuffix(elemT, "[]") {
+						needListAppendPtr = true
+						varTypes[s.Assign.Name] = "int[][]"
+						if ds, ok := declStmts[s.Assign.Name]; ok {
+							ds.Type = "int[][]"
+						}
+					} else {
+						needListAppendInt = true
+					}
 				case "const char*":
-					needListAppendStr = true
+					if strings.HasSuffix(elemT, "[]") {
+						needListAppendPtr = true
+						varTypes[s.Assign.Name] = "const char*[][]"
+						if ds, ok := declStmts[s.Assign.Name]; ok {
+							ds.Type = "const char*[][]"
+						}
+					} else {
+						needListAppendStr = true
+					}
 				default:
 					if strings.HasSuffix(base, "[]") {
 						needListAppendPtr = true
@@ -2310,6 +2345,7 @@ func compileFunction(env *types.Env, name string, fn *parser.FunExpr) (*Function
 	localEnv := types.NewEnv(env)
 	prevEnv := currentEnv
 	currentEnv = localEnv
+	declStmts = map[string]*DeclStmt{}
 	var params []Param
 	var paramTypes []string
 	for _, p := range fn.Params {
@@ -2364,7 +2400,11 @@ func compileFunction(env *types.Env, name string, fn *parser.FunExpr) (*Function
 			ret = t
 		}
 	}
+	for name, st := range localEnv.Structs() {
+		prevEnv.SetStruct(name, st)
+	}
 	currentEnv = prevEnv
+	declStmts = nil
 	return &Function{Name: name, Params: params, Body: body, Return: ret}, nil
 }
 
@@ -2734,7 +2774,14 @@ func convertUnary(u *parser.Unary) Expr {
 				}
 				if str, ok := evalString(idx); ok {
 					tname := inferExprType(currentEnv, current)
-					if st, ok2 := currentEnv.GetStruct(tname); ok2 {
+					st, ok2 := currentEnv.GetStruct(tname)
+					if !ok2 {
+						if st2, ok3 := structTypes[tname]; ok3 {
+							st = st2
+							ok2 = true
+						}
+					}
+					if ok2 {
 						if _, ok3 := st.Fields[str]; ok3 {
 							current = &FieldExpr{Target: current, Name: str}
 							continue
