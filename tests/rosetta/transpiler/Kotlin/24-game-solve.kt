@@ -15,7 +15,10 @@ fun _now(): Int {
     }
 }
 
-val OP_NUM: Int = 0
+sealed class Expr
+data class Num(var value: Rational) : Expr()
+data class Bin(var op: Int, var left: Expr, var right: Expr) : Expr()
+data class Rational(var num: Int, var denom: Int)
 val OP_ADD: Int = 1
 val OP_SUB: Int = 2
 val OP_MUL: Int = 3
@@ -23,103 +26,127 @@ val OP_DIV: Int = 4
 val n_cards: Int = 4
 val goal: Int = 24
 val digit_range: Int = 9
-fun newNum(n: Int): MutableMap<String, Any> {
-    return mutableMapOf<String, Any>("op" to (OP_NUM), "value" to (mutableMapOf<String, Int>("num" to (n), "denom" to (1)))) as MutableMap<String, Any>
+fun binEval(op: Int, l: Expr, r: Expr): Rational {
+    val lv: Rational = exprEval(l)
+    val rv: Rational = exprEval(r)
+    if (op == OP_ADD) {
+        return Rational(num = (lv.num * rv.denom) + (lv.denom * rv.num), denom = lv.denom * rv.denom)
+    }
+    if (op == OP_SUB) {
+        return Rational(num = (lv.num * rv.denom) - (lv.denom * rv.num), denom = lv.denom * rv.denom)
+    }
+    if (op == OP_MUL) {
+        return Rational(num = lv.num * rv.num, denom = lv.denom * rv.denom)
+    }
+    return Rational(num = lv.num * rv.denom, denom = lv.denom * rv.num)
 }
 
-fun exprEval(x: MutableMap<String, Any>): MutableMap<String, Int> {
-    if ((x)["op"]!! == OP_NUM) {
-        return (x)["value"]!! as MutableMap<String, Int>
-    }
-    val l: MutableMap<String, Int> = exprEval((x)["left"]!! as MutableMap<String, Any>)
-    val r: MutableMap<String, Int> = exprEval((x)["right"]!! as MutableMap<String, Any>)
-    if ((x)["op"]!! == OP_ADD) {
-        return mutableMapOf<String, Int>("num" to (((l)["num"] as Int * (r)["denom"] as Int) + ((l)["denom"] as Int * (r)["num"] as Int)), "denom" to ((l)["denom"] as Int * (r)["denom"] as Int)) as MutableMap<String, Int>
-    }
-    if ((x)["op"]!! == OP_SUB) {
-        return mutableMapOf<String, Int>("num" to (((l)["num"] as Int * (r)["denom"] as Int) - ((l)["denom"] as Int * (r)["num"] as Int)), "denom" to ((l)["denom"] as Int * (r)["denom"] as Int)) as MutableMap<String, Int>
-    }
-    if ((x)["op"]!! == OP_MUL) {
-        return mutableMapOf<String, Int>("num" to ((l)["num"] as Int * (r)["num"] as Int), "denom" to ((l)["denom"] as Int * (r)["denom"] as Int)) as MutableMap<String, Int>
-    }
-    return mutableMapOf<String, Int>("num" to ((l)["num"] as Int * (r)["denom"] as Int), "denom" to ((l)["denom"] as Int * (r)["num"] as Int)) as MutableMap<String, Int>
-}
-
-fun exprString(x: MutableMap<String, Any>): String {
-    if ((x)["op"]!! == OP_NUM) {
-        return ((x)["value"] as MutableMap<String, Any>)["num"]!!.toString() as String
-    }
-    val ls: String = exprString((x)["left"]!! as MutableMap<String, Any>)
-    val rs: String = exprString((x)["right"]!! as MutableMap<String, Any>)
+fun binString(op: Int, l: Expr, r: Expr): String {
+    val ls: String = exprString(l)
+    val rs: String = exprString(r)
     var opstr: String = ""
-    if ((x)["op"]!! == OP_ADD) {
+    if (op == OP_ADD) {
         opstr = " + "
     } else {
-        if ((x)["op"]!! == OP_SUB) {
+        if (op == OP_SUB) {
             opstr = " - "
         } else {
-            if ((x)["op"]!! == OP_MUL) {
+            if (op == OP_MUL) {
                 opstr = " * "
             } else {
                 opstr = " / "
             }
         }
     }
-    return ((("(" + ls) + opstr) + rs) + ")" as String
+    return ((("(" + ls) + opstr) + rs) + ")"
 }
 
-fun solve(xs: MutableList<MutableMap<String, Any>>): Boolean {
+fun newNum(n: Int): Expr {
+    return Num(value = Rational(num = n, denom = 1)) as Expr
+}
+
+fun exprEval(x: Expr): Rational {
+    return when (x) {
+    is Num -> run {
+    val v: Rational = (x as Num).value
+    v
+}
+    is Bin -> run {
+    val op: Int = (x as Bin).op
+    val l: Expr = (x as Bin).left
+    val r: Expr = (x as Bin).right
+    binEval(op, l, r)
+}
+} as Rational
+}
+
+fun exprString(x: Expr): String {
+    return when (x) {
+    is Num -> run {
+    val v: Rational = (x as Num).value
+    v.num.toString()
+}
+    is Bin -> run {
+    val op: Int = (x as Bin).op
+    val l: Expr = (x as Bin).left
+    val r: Expr = (x as Bin).right
+    binString(op, l, r)
+}
+} as String
+}
+
+fun solve(xs: MutableList<Expr>): Boolean {
     if (xs.size == 1) {
-        val f: MutableMap<String, Int> = exprEval(xs[0])
-        if (((f)["denom"] as Int != 0) && ((f)["num"] as Int == ((f)["denom"] as Int * goal))) {
+        val f: Rational = exprEval(xs[0])
+        if ((f.denom != 0) && (f.num == (f.denom * goal))) {
             println(exprString(xs[0]))
-            return true as Boolean
+            return true
         }
-        return false as Boolean
+        return false
     }
     var i: Int = 0
     while (i < xs.size) {
         var j: Int = i + 1
         while (j < xs.size) {
-            var rest: MutableList<MutableMap<String, Any>> = mutableListOf()
+            var rest: MutableList<Expr> = mutableListOf()
             var k: Int = 0
             while (k < xs.size) {
                 if ((k != i) && (k != j)) {
-                    rest = run { val _tmp = rest.toMutableList(); _tmp.add(xs[k]); _tmp } as MutableList<MutableMap<String, Any>>
+                    rest = run { val _tmp = rest.toMutableList(); _tmp.add(xs[k]); _tmp } as MutableList<Expr>
                 }
                 k = k + 1
             }
-            val a: MutableMap<String, Any> = xs[i]
-            val b: MutableMap<String, Any> = xs[j]
+            val a: Expr = xs[i]
+            val b: Expr = xs[j]
             for (op in mutableListOf(OP_ADD, OP_SUB, OP_MUL, OP_DIV)) {
-                var node: MutableMap<String, Any> = mutableMapOf<String, Any>("op" to (op), "left" to (a), "right" to (b))
-                if (solve(run { val _tmp = rest.toMutableList(); _tmp.add(node); _tmp } as MutableList<MutableMap<String, Any>>) as Boolean) {
-                    return true as Boolean
+                var node: Bin = Bin(op = op, left = a, right = b)
+                if (solve(run { val _tmp = rest.toMutableList(); _tmp.add(node); _tmp } as MutableList<Expr>) as Boolean) {
+                    return true
                 }
             }
-            var node: MutableMap<String, Any> = mutableMapOf<String, Any>("op" to (OP_SUB), "left" to (b), "right" to (a))
-            if (solve(run { val _tmp = rest.toMutableList(); _tmp.add(node); _tmp } as MutableList<MutableMap<String, Any>>) as Boolean) {
-                return true as Boolean
+            var node: Bin = Bin(op = OP_SUB, left = b, right = a)
+            if (solve(run { val _tmp = rest.toMutableList(); _tmp.add(node); _tmp } as MutableList<Expr>) as Boolean) {
+                return true
             }
-            node = mutableMapOf<String, Any>("op" to (OP_DIV), "left" to (b), "right" to (a))
-            if (solve(run { val _tmp = rest.toMutableList(); _tmp.add(node); _tmp } as MutableList<MutableMap<String, Any>>) as Boolean) {
-                return true as Boolean
+            node = Bin(op = OP_DIV, left = b, right = a)
+            if (solve(run { val _tmp = rest.toMutableList(); _tmp.add(node); _tmp } as MutableList<Expr>) as Boolean) {
+                return true
             }
             j = j + 1
         }
         i = i + 1
     }
-    return false as Boolean
+    return false
 }
 
 fun user_main(): Unit {
     var iter: Int = 0
     while (iter < 10) {
-        var cards: MutableList<MutableMap<String, Any>> = mutableListOf()
+        var cards: MutableList<Expr> = mutableListOf()
         var i: Int = 0
         while (i < n_cards) {
             val n: Int = (_now() % (digit_range - 1)) + 1
-            cards = run { val _tmp = cards.toMutableList(); _tmp.add(newNum(n)); _tmp } as MutableList<MutableMap<String, Any>>
+            cards = run { val _tmp = cards.toMutableList(); _tmp.add(newNum(n)); _tmp } as MutableList<Expr>
             println(" " + n.toString())
             i = i + 1
         }

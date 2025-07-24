@@ -721,7 +721,7 @@ func (b *BinaryExpr) emit(w io.Writer) {
 			}
 		} else if numOp {
 			t := guessType(e)
-			if t == "" || t == "Any" {
+			if t == "Any" {
 				ot := guessType(other)
 				if ot == "Int" {
 					cast(e, "Int")
@@ -740,11 +740,11 @@ func (b *BinaryExpr) emit(w io.Writer) {
 		} else if cmpOp {
 			lt := guessType(e)
 			rt := guessType(other)
-			if (lt == "" || lt == "Any") && rt == "String" {
+			if lt == "Any" && rt == "String" {
 				cast(e, "String")
 				return
 			}
-			if (lt == "" || lt == "Any") && (rt == "Double" || rt == "Int") {
+			if lt == "Any" && (rt == "Double" || rt == "Int") {
 				cast(e, "Double")
 				return
 			}
