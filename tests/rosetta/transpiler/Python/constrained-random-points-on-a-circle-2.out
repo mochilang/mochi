@@ -1,6 +1,33 @@
 404 possible points
-Traceback (most recent call last):
-  File "/workspace/mochi/tests/rosetta/transpiler/Python/constrained-random-points-on-a-circle-2.py", line 65, in <module>
-    if not seen[key]:
-           ~~~~^^^^^
-KeyError: '2,16'
+                                                              
+                      *       *       *                       
+                *     *     *             *                   
+            * *                                               
+                *       *                 * * *               
+                          *     *   * *     *   *   *         
+          *                                 * *   *           
+                                              *               
+            *                                                 
+            *                                           *     
+                                                        *     
+  *       *                                             *     
+      * *                                         *           
+                                                              
+        *                                           *   *     
+* * *                                                   *     
+  *                                               *       *   
+          *                                       *       *   
+  *       *                                           *       
+  * *   *                                                 *   
+    *     *                                       *       *   
+      * *                                                     
+      * *   * *                                   *           
+      *   *   *                                       *       
+              *   *                       *           *       
+                  * *       *       *         * * *           
+                    *     *                                   
+                        *             * *   *                 
+                                    * *     *                 
+                                                              
+                                                              
+91 unique points
