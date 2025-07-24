@@ -11,7 +11,7 @@ fun amb(wordsets: MutableList<MutableList<String>>, res: MutableList<String>, id
         val w: String = wordsets[idx][i]
         if ((idx == 0) || (prev.substring(prev.length - 1, prev.length) == w.substring(0, 1))) {
             res[idx] = w
-            if (amb(wordsets, res, idx + 1) as Boolean as Boolean) {
+            if (amb(wordsets, res, idx + 1) as Boolean) {
                 return true
             }
         }
@@ -28,7 +28,7 @@ fun user_main(): Unit {
         res = run { val _tmp = res.toMutableList(); _tmp.add(""); _tmp } as MutableList<String>
         i = i + 1
     }
-    if (amb(wordset as MutableList<MutableList<String>>, res, 0) as Boolean as Boolean) {
+    if (amb(wordset as MutableList<MutableList<String>>, res, 0) as Boolean) {
         var out: String = "[" + res[0]
         var j: Int = 1
         while (j < res.size) {

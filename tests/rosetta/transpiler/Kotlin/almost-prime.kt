@@ -19,7 +19,7 @@ fun gen(k: Int, count: Int): MutableList<Int> {
     var r: MutableList<Int> = mutableListOf()
     var n: Int = 2
     while (r.size < count) {
-        if (kPrime(n, k) as Boolean as Boolean) {
+        if (kPrime(n, k) as Boolean) {
             r = run { val _tmp = r.toMutableList(); _tmp.add(n); _tmp } as MutableList<Int>
         }
         n = n + 1
@@ -30,7 +30,7 @@ fun gen(k: Int, count: Int): MutableList<Int> {
 fun user_main(): Unit {
     var k: Int = 1
     while (k <= 5) {
-        println((k.toString() + " ") + gen(k, 10) as MutableList<Int>.toString())
+        println((k.toString() + " ") + gen(k, 10).toString())
         k = k + 1
     }
 }

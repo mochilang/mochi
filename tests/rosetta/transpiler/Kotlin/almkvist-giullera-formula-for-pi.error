@@ -1,28 +1,124 @@
 OpenJDK 64-Bit Server VM warning: Options -Xverify:none and -noverify were deprecated in JDK 13 and will likely be removed in a future release.
-/workspace/mochi/tests/rosetta/transpiler/Kotlin/almkvist-giullera-formula-for-pi.kt:367:139: error: type expected
-        if ((denomPow >= 70) && (bigCmp(diff, bigMulPow10(bigFromInt(1) as MutableList<Int>, denomPow - 70) as MutableList<Int>) as Int < 0)) {
-                                                                                                                                          ^
-/workspace/mochi/tests/rosetta/transpiler/Kotlin/almkvist-giullera-formula-for-pi.kt:367:140: error: expecting a '>'
-        if ((denomPow >= 70) && (bigCmp(diff, bigMulPow10(bigFromInt(1) as MutableList<Int>, denomPow - 70) as MutableList<Int>) as Int < 0)) {
-                                                                                                                                           ^
-/workspace/mochi/tests/rosetta/transpiler/Kotlin/almkvist-giullera-formula-for-pi.kt:377:102: error: type expected
-    while (bigCmp(low, bigSub(high, bigFromInt(1) as MutableList<Int>) as MutableList<Int>) as Int < 0) {
-                                                                                                     ^
-/workspace/mochi/tests/rosetta/transpiler/Kotlin/almkvist-giullera-formula-for-pi.kt:377:103: error: expecting a '>'
-    while (bigCmp(low, bigSub(high, bigFromInt(1) as MutableList<Int>) as MutableList<Int>) as Int < 0) {
-                                                                                                      ^
-/workspace/mochi/tests/rosetta/transpiler/Kotlin/almkvist-giullera-formula-for-pi.kt:273:30: error: expression '(f)["get"]!!' of type 'Int' cannot be invoked as a function. The function 'invoke()' is not found
-        (f)[n.toString()] = ((f)["get"]!!(n.toString(), 0) as Int) + 1
+/workspace/mochi/tests/rosetta/transpiler/Kotlin/almkvist-giullera-formula-for-pi.kt:38:32: error: expecting a '>'
+        if ((a)[i] as Int < (b)[i] as Int) {
+                               ^
+/workspace/mochi/tests/rosetta/transpiler/Kotlin/almkvist-giullera-formula-for-pi.kt:38:32: error: unsupported [Collection literals outside of annotations]
+        if ((a)[i] as Int < (b)[i] as Int) {
+                               ^
+/workspace/mochi/tests/rosetta/transpiler/Kotlin/almkvist-giullera-formula-for-pi.kt:38:42: error: unexpected tokens (use ';' to separate expressions on the same line)
+        if ((a)[i] as Int < (b)[i] as Int) {
+                                         ^
+/workspace/mochi/tests/rosetta/transpiler/Kotlin/almkvist-giullera-formula-for-pi.kt:33:25: error: type mismatch: inferred type is Int but BigInteger was expected
+    var i: BigInteger = a.size - 1
+                        ^
+/workspace/mochi/tests/rosetta/transpiler/Kotlin/almkvist-giullera-formula-for-pi.kt:35:17: error: type mismatch: inferred type is BigInteger but Int was expected
+        if ((a)[i] as Int > (b)[i] as Int) {
+                ^
+/workspace/mochi/tests/rosetta/transpiler/Kotlin/almkvist-giullera-formula-for-pi.kt:35:33: error: type mismatch: inferred type is BigInteger but Int was expected
+        if ((a)[i] as Int > (b)[i] as Int) {
+                                ^
+/workspace/mochi/tests/rosetta/transpiler/Kotlin/almkvist-giullera-formula-for-pi.kt:38:17: error: type mismatch: inferred type is BigInteger but Int was expected
+        if ((a)[i] as Int < (b)[i] as Int) {
+                ^
+/workspace/mochi/tests/rosetta/transpiler/Kotlin/almkvist-giullera-formula-for-pi.kt:38:30: error: unresolved reference: b
+        if ((a)[i] as Int < (b)[i] as Int) {
                              ^
-/workspace/mochi/tests/rosetta/transpiler/Kotlin/almkvist-giullera-formula-for-pi.kt:282:22: error: expression '(exps)["get"]!!' of type 'Int' cannot be invoked as a function. The function 'invoke()' is not found
-        (exps)[k] = ((exps)["get"]!!(k, 0) as Int) - (6 * (fn)[k] as Int)
-                     ^
-/workspace/mochi/tests/rosetta/transpiler/Kotlin/almkvist-giullera-formula-for-pi.kt:284:20: error: expression '(exps)["get"]!!' of type 'Int' cannot be invoked as a function. The function 'invoke()' is not found
-    (exps)["2"] = ((exps)["get"]!!("2", 0) as Int) + 5
+/workspace/mochi/tests/rosetta/transpiler/Kotlin/almkvist-giullera-formula-for-pi.kt:39:13: error: 'return' is not allowed here
+            return 0 - 1
+            ^
+/workspace/mochi/tests/rosetta/transpiler/Kotlin/almkvist-giullera-formula-for-pi.kt:41:13: error: type mismatch: inferred type is Int but BigInteger was expected
+        i = (i as Int) - 1
+            ^
+/workspace/mochi/tests/rosetta/transpiler/Kotlin/almkvist-giullera-formula-for-pi.kt:59:29: error: type mismatch: inferred type is Int but BigInteger was expected
+        var s: BigInteger = (av + bv) + carry
+                            ^
+/workspace/mochi/tests/rosetta/transpiler/Kotlin/almkvist-giullera-formula-for-pi.kt:77:32: error: type mismatch: inferred type is Int but BigInteger was expected
+        var diff: BigInteger = (av - bv) - borrow
+                               ^
+/workspace/mochi/tests/rosetta/transpiler/Kotlin/almkvist-giullera-formula-for-pi.kt:79:20: error: type mismatch: inferred type is Int but BigInteger was expected
+            diff = (diff as Int) + 10
                    ^
-/workspace/mochi/tests/rosetta/transpiler/Kotlin/almkvist-giullera-formula-for-pi.kt:288:22: error: expression '(exps)["get"]!!' of type 'Int' cannot be invoked as a function. The function 'invoke()' is not found
-        (exps)[k] = ((exps)["get"]!!(k, 0) as Int) + (ft2)[k] as Int
+/workspace/mochi/tests/rosetta/transpiler/Kotlin/almkvist-giullera-formula-for-pi.kt:84:62: error: type mismatch: inferred type is BigInteger but Int was expected
+        res = run { val _tmp = res.toMutableList(); _tmp.add(diff); _tmp } as MutableList<Int>
+                                                             ^
+/workspace/mochi/tests/rosetta/transpiler/Kotlin/almkvist-giullera-formula-for-pi.kt:98:32: error: type mismatch: inferred type is Int but BigInteger was expected
+        var prod: BigInteger = (a[i] * m) + carry
+                               ^
+/workspace/mochi/tests/rosetta/transpiler/Kotlin/almkvist-giullera-formula-for-pi.kt:122:35: error: type mismatch: inferred type is Int but BigInteger was expected
+            var idx: BigInteger = i + j
+                                  ^
+/workspace/mochi/tests/rosetta/transpiler/Kotlin/almkvist-giullera-formula-for-pi.kt:123:36: error: type mismatch: inferred type is Int but BigInteger was expected
+            var prod: BigInteger = ((res)[idx] as Int + (a[i] * b[j])) + carry
+                                   ^
+/workspace/mochi/tests/rosetta/transpiler/Kotlin/almkvist-giullera-formula-for-pi.kt:123:43: error: type mismatch: inferred type is BigInteger but Int was expected
+            var prod: BigInteger = ((res)[idx] as Int + (a[i] * b[j])) + carry
+                                          ^
+/workspace/mochi/tests/rosetta/transpiler/Kotlin/almkvist-giullera-formula-for-pi.kt:124:17: error: type mismatch: inferred type is BigInteger but Int was expected
+            res[idx] = (prod as Int) % 10
+                ^
+/workspace/mochi/tests/rosetta/transpiler/Kotlin/almkvist-giullera-formula-for-pi.kt:128:31: error: type mismatch: inferred type is Int but BigInteger was expected
+        var idx: BigInteger = i + b.size
+                              ^
+/workspace/mochi/tests/rosetta/transpiler/Kotlin/almkvist-giullera-formula-for-pi.kt:130:36: error: type mismatch: inferred type is Int but BigInteger was expected
+            var prod: BigInteger = (res)[idx] as Int + carry
+                                   ^
+/workspace/mochi/tests/rosetta/transpiler/Kotlin/almkvist-giullera-formula-for-pi.kt:130:42: error: type mismatch: inferred type is BigInteger but Int was expected
+            var prod: BigInteger = (res)[idx] as Int + carry
+                                         ^
+/workspace/mochi/tests/rosetta/transpiler/Kotlin/almkvist-giullera-formula-for-pi.kt:131:17: error: type mismatch: inferred type is BigInteger but Int was expected
+            res[idx] = (prod as Int) % 10
+                ^
+/workspace/mochi/tests/rosetta/transpiler/Kotlin/almkvist-giullera-formula-for-pi.kt:133:19: error: type mismatch: inferred type is Int but BigInteger was expected
+            idx = (idx as Int) + 1
+                  ^
+/workspace/mochi/tests/rosetta/transpiler/Kotlin/almkvist-giullera-formula-for-pi.kt:153:25: error: type mismatch: inferred type is Int but BigInteger was expected
+    var i: BigInteger = a.size - 1
+                        ^
+/workspace/mochi/tests/rosetta/transpiler/Kotlin/almkvist-giullera-formula-for-pi.kt:155:31: error: type mismatch: inferred type is Int but BigInteger was expected
+        var cur: BigInteger = (rem * 10) + (a)[i] as Int
+                              ^
+/workspace/mochi/tests/rosetta/transpiler/Kotlin/almkvist-giullera-formula-for-pi.kt:155:48: error: type mismatch: inferred type is BigInteger but Int was expected
+        var cur: BigInteger = (rem * 10) + (a)[i] as Int
+                                               ^
+/workspace/mochi/tests/rosetta/transpiler/Kotlin/almkvist-giullera-formula-for-pi.kt:159:13: error: type mismatch: inferred type is Int but BigInteger was expected
+        i = (i as Int) - 1
+            ^
+/workspace/mochi/tests/rosetta/transpiler/Kotlin/almkvist-giullera-formula-for-pi.kt:166:25: error: type mismatch: inferred type is Int but BigInteger was expected
+    var i: BigInteger = a.size - 1
+                        ^
+/workspace/mochi/tests/rosetta/transpiler/Kotlin/almkvist-giullera-formula-for-pi.kt:168:22: error: type mismatch: inferred type is BigInteger but Int was expected
+        s = s + ((a)[i] as Int).toString()
                      ^
-/workspace/mochi/tests/rosetta/transpiler/Kotlin/almkvist-giullera-formula-for-pi.kt:290:20: error: expression '(exps)["get"]!!' of type 'Int' cannot be invoked as a function. The function 'invoke()' is not found
-    (exps)["3"] = ((exps)["get"]!!("3", 0) as Int) - 1
-                   ^
+/workspace/mochi/tests/rosetta/transpiler/Kotlin/almkvist-giullera-formula-for-pi.kt:169:13: error: type mismatch: inferred type is Int but BigInteger was expected
+        i = (i as Int) - 1
+            ^
+/workspace/mochi/tests/rosetta/transpiler/Kotlin/almkvist-giullera-formula-for-pi.kt:222:33: error: type mismatch: inferred type is Int but BigInteger was expected
+            var m: BigInteger = p * p
+                                ^
+/workspace/mochi/tests/rosetta/transpiler/Kotlin/almkvist-giullera-formula-for-pi.kt:224:23: error: type mismatch: inferred type is BigInteger but Int was expected
+                sieve[m] = false
+                      ^
+/workspace/mochi/tests/rosetta/transpiler/Kotlin/almkvist-giullera-formula-for-pi.kt:225:21: error: type mismatch: inferred type is Int but BigInteger was expected
+                m = (m as Int) + p
+                    ^
+/workspace/mochi/tests/rosetta/transpiler/Kotlin/almkvist-giullera-formula-for-pi.kt:275:29: error: expression '(f)["get"]!!' of type 'Int' cannot be invoked as a function. The function 'invoke()' is not found
+        (f)[n.toString()] = (f)["get"]!!(n.toString(), 0) + 1
+                            ^
+/workspace/mochi/tests/rosetta/transpiler/Kotlin/almkvist-giullera-formula-for-pi.kt:284:21: error: expression '(exps)["get"]!!' of type 'Int' cannot be invoked as a function. The function 'invoke()' is not found
+        (exps)[k] = (exps)["get"]!!(k, 0) - (6 * (fn)[k] as Int)
+                    ^
+/workspace/mochi/tests/rosetta/transpiler/Kotlin/almkvist-giullera-formula-for-pi.kt:286:19: error: expression '(exps)["get"]!!' of type 'Int' cannot be invoked as a function. The function 'invoke()' is not found
+    (exps)["2"] = (exps)["get"]!!("2", 0) + 5
+                  ^
+/workspace/mochi/tests/rosetta/transpiler/Kotlin/almkvist-giullera-formula-for-pi.kt:287:26: error: type mismatch: inferred type is Int but BigInteger was expected
+    val t2: BigInteger = (((532 * n) * n) + (126 * n)) + 9
+                         ^
+/workspace/mochi/tests/rosetta/transpiler/Kotlin/almkvist-giullera-formula-for-pi.kt:290:21: error: expression '(exps)["get"]!!' of type 'Int' cannot be invoked as a function. The function 'invoke()' is not found
+        (exps)[k] = (exps)["get"]!!(k, 0) + (ft2)[k] as Int
+                    ^
+/workspace/mochi/tests/rosetta/transpiler/Kotlin/almkvist-giullera-formula-for-pi.kt:292:19: error: expression '(exps)["get"]!!' of type 'Int' cannot be invoked as a function. The function 'invoke()' is not found
+    (exps)["3"] = (exps)["get"]!!("3", 0) - 1
+                  ^
+/workspace/mochi/tests/rosetta/transpiler/Kotlin/almkvist-giullera-formula-for-pi.kt:345:30: error: type mismatch: inferred type is Int but BigInteger was expected
+        val pw: BigInteger = (6 * n) + 3
+                             ^

@@ -466,7 +466,7 @@ type IndexExpr struct {
 
 func (ix *IndexExpr) emit(w io.Writer) {
 	baseType := guessType(ix.Target)
-	if baseType == "" || baseType == "Any" {
+	if baseType == "" || baseType == "Any" || baseType == "Any?" {
 		if vr, ok := ix.Target.(*VarRef); ok && vr.Type != "" {
 			baseType = vr.Type
 		}
@@ -477,7 +477,7 @@ func (ix *IndexExpr) emit(w io.Writer) {
 	isList := strings.HasPrefix(baseType, "MutableList<")
 
 	dynamicCast := ""
-	if !isMap && !isList && (baseType == "" || baseType == "Any") {
+	if !isMap && !isList && (baseType == "" || baseType == "Any" || baseType == "Any?") {
 		if idxType == "Int" {
 			isList = true
 		} else {
@@ -487,6 +487,14 @@ func (ix *IndexExpr) emit(w io.Writer) {
 			} else {
 				dynamicCast = " as MutableMap<String, Any?>"
 			}
+		}
+	}
+
+	if dynamicCast == "" && isMap && (baseType == "" || baseType == "Any" || baseType == "Any?") {
+		if idxType == "Int" {
+			dynamicCast = " as MutableMap<Int, Any?>"
+		} else {
+			dynamicCast = " as MutableMap<String, Any?>"
 		}
 	}
 
@@ -521,25 +529,25 @@ type MapItem struct {
 }
 
 func (m *MapLit) emit(w io.Writer) {
-	keyType := "Any"
-	valType := "Any"
+	keyType := "Any?"
+	valType := "Any?"
 	if len(m.Items) > 0 {
 		keyType = guessType(m.Items[0].Key)
 		if keyType == "" {
-			keyType = "Any"
+			keyType = "Any?"
 		}
 		valType = guessType(m.Items[0].Value)
 		if valType == "" {
-			valType = "Any"
+			valType = "Any?"
 		}
 		for _, it := range m.Items[1:] {
 			k := guessType(it.Key)
 			v := guessType(it.Value)
 			if k != keyType {
-				keyType = "Any"
+				keyType = "Any?"
 			}
 			if v != valType {
-				valType = "Any"
+				valType = "Any?"
 			}
 		}
 	}
@@ -1237,11 +1245,12 @@ func (l *LenExpr) emit(w io.Writer) {
 type StrExpr struct{ Value Expr }
 
 func (s *StrExpr) emit(w io.Writer) {
-	if _, ok := s.Value.(*BinaryExpr); ok {
+	switch s.Value.(type) {
+	case *BinaryExpr, *CastExpr, *IndexExpr:
 		io.WriteString(w, "(")
 		s.Value.emit(w)
 		io.WriteString(w, ").toString()")
-	} else {
+	default:
 		s.Value.emit(w)
 		io.WriteString(w, ".toString()")
 	}
@@ -1778,7 +1787,7 @@ func kotlinType(t *parser.TypeRef) string {
 			useHelper("importBigInt")
 			return "BigInteger"
 		case "any":
-			return "Any"
+			return "Any?"
 		default:
 			return *t.Simple
 		}
@@ -1788,17 +1797,17 @@ func kotlinType(t *parser.TypeRef) string {
 		case "list":
 			elem := kotlinType(t.Generic.Args[0])
 			if elem == "" {
-				elem = "Any"
+				elem = "Any?"
 			}
 			return "MutableList<" + elem + ">"
 		case "map":
 			k := kotlinType(t.Generic.Args[0])
 			v := kotlinType(t.Generic.Args[1])
 			if k == "" {
-				k = "Any"
+				k = "Any?"
 			}
 			if v == "" {
-				v = "Any"
+				v = "Any?"
 			}
 			return "MutableMap<" + k + ", " + v + ">"
 		}
@@ -1837,17 +1846,17 @@ func kotlinTypeFromType(t types.Type) string {
 	case types.ListType:
 		elem := kotlinTypeFromType(tt.Elem)
 		if elem == "" {
-			elem = "Any"
+			elem = "Any?"
 		}
 		return "MutableList<" + elem + ">"
 	case types.MapType:
 		k := kotlinTypeFromType(tt.Key)
 		v := kotlinTypeFromType(tt.Value)
 		if k == "" {
-			k = "Any"
+			k = "Any?"
 		}
 		if v == "" {
-			v = "Any"
+			v = "Any?"
 		}
 		return "MutableMap<" + k + ", " + v + ">"
 	case types.FuncType:
@@ -1899,28 +1908,28 @@ func guessType(e Expr) string {
 		if len(v.Items) > 0 {
 			k := guessType(v.Items[0].Key)
 			if k == "" {
-				k = "Any"
+				k = "Any?"
 			}
 			val := guessType(v.Items[0].Value)
 			if val == "" {
-				val = "Any"
+				val = "Any?"
 			}
 			for _, it := range v.Items[1:] {
 				vk := guessType(it.Key)
 				vv := guessType(it.Value)
 				if vk != k {
-					k = "Any"
+					k = "Any?"
 				}
 				if vv != val {
-					val = "Any"
+					val = "Any?"
 				}
-				if k == "Any" && val == "Any" {
+				if k == "Any?" && val == "Any?" {
 					break
 				}
 			}
 			return "MutableMap<" + k + ", " + val + ">"
 		}
-		return "MutableMap<Any, Any>"
+		return "MutableMap<Any?, Any?>"
 	case *ValuesExpr:
 		base := guessType(v.Map)
 		if strings.HasPrefix(base, "MutableMap<") {
@@ -3869,7 +3878,11 @@ func convertPostfix(env *types.Env, p *parser.PostfixExpr) (Expr, error) {
 			if tname == "" && baseIsMap && i+1 < len(p.Ops) && p.Ops[i+1].Index != nil {
 				tname = "MutableMap<String, Any>"
 			}
-			expr = &IndexExpr{Target: expr, Index: idx, Type: tname, ForceBang: true}
+			force := true
+			if tname == "" {
+				force = false
+			}
+			expr = &IndexExpr{Target: expr, Index: idx, Type: tname, ForceBang: force}
 		case op.Index != nil && op.Index.Colon != nil && op.Index.Colon2 == nil && op.Index.Step == nil:
 			var startExpr Expr
 			if op.Index.Start != nil {
@@ -4221,6 +4234,8 @@ func convertPrimary(env *types.Env, p *parser.Primary) (Expr, error) {
 		return &FloatLit{Value: *p.Lit.Float}, nil
 	case p.Lit != nil && p.Lit.Bool != nil:
 		return &BoolLit{Value: bool(*p.Lit.Bool)}, nil
+	case p.Lit != nil && p.Lit.Null:
+		return &NullLit{}, nil
 	case p.Selector != nil && len(p.Selector.Tail) == 0:
 		return newVarRef(env, p.Selector.Root), nil
 	case p.Selector != nil && len(p.Selector.Tail) > 0:

@@ -27,7 +27,7 @@ fun user_main(): Unit {
     }
     i = 1
     while (i < 20000) {
-        sums[i] = pfacSum(i) as Int
+        sums[i] = pfacSum(i)
         i = i + 1
     }
     println("The amicable pairs below 20,000 are:")
@@ -35,7 +35,7 @@ fun user_main(): Unit {
     while (n < 19999) {
         val m: Int = sums[n]
         if ((((m > n) && (m < 20000) as Boolean)) && (n == sums[m])) {
-            println((("  " + pad(n, 5) as String) + " and ") + pad(m, 5) as String)
+            println((("  " + pad(n, 5)) + " and ") + pad(m, 5))
         }
         n = n + 1
     }

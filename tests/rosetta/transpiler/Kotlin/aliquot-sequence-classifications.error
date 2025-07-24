@@ -1,7 +1,40 @@
 OpenJDK 64-Bit Server VM warning: Options -Xverify:none and -noverify were deprecated in JDK 13 and will likely be removed in a future release.
-/workspace/mochi/tests/rosetta/transpiler/Kotlin/aliquot-sequence-classifications.kt:1:22: error: the integer literal does not conform to the expected type Int
+/workspace/mochi/tests/rosetta/transpiler/Kotlin/aliquot-sequence-classifications.kt:137:78: error: expecting function type
+        println((((padLeft(k, 2) + ": ") + padRight((res)["aliquot"] as Any?.toString(), 15)) + " ") + joinWithCommas((res)["seq"] as Any? as MutableList<Int>))
+                                                                             ^
+/workspace/mochi/tests/rosetta/transpiler/Kotlin/aliquot-sequence-classifications.kt:137:78: error: 'infix' modifier is required on 'toString' in 'kotlin.Function1'
+        println((((padLeft(k, 2) + ": ") + padRight((res)["aliquot"] as Any?.toString(), 15)) + " ") + joinWithCommas((res)["seq"] as Any? as MutableList<Int>))
+                                                                             ^
+/workspace/mochi/tests/rosetta/transpiler/Kotlin/aliquot-sequence-classifications.kt:137:87: error: expecting an expression
+        println((((padLeft(k, 2) + ": ") + padRight((res)["aliquot"] as Any?.toString(), 15)) + " ") + joinWithCommas((res)["seq"] as Any? as MutableList<Int>))
+                                                                                      ^
+/workspace/mochi/tests/rosetta/transpiler/Kotlin/aliquot-sequence-classifications.kt:146:81: error: expecting function type
+        println((((padLeft(_val, 7) + ": ") + padRight((res)["aliquot"] as Any?.toString(), 15)) + " ") + joinWithCommas((res)["seq"] as Any? as MutableList<Int>))
+                                                                                ^
+/workspace/mochi/tests/rosetta/transpiler/Kotlin/aliquot-sequence-classifications.kt:146:81: error: 'infix' modifier is required on 'toString' in 'kotlin.Function1'
+        println((((padLeft(_val, 7) + ": ") + padRight((res)["aliquot"] as Any?.toString(), 15)) + " ") + joinWithCommas((res)["seq"] as Any? as MutableList<Int>))
+                                                                                ^
+/workspace/mochi/tests/rosetta/transpiler/Kotlin/aliquot-sequence-classifications.kt:146:90: error: expecting an expression
+        println((((padLeft(_val, 7) + ": ") + padRight((res)["aliquot"] as Any?.toString(), 15)) + " ") + joinWithCommas((res)["seq"] as Any? as MutableList<Int>))
+                                                                                         ^
+/workspace/mochi/tests/rosetta/transpiler/Kotlin/aliquot-sequence-classifications.kt:152:73: error: expecting function type
+    println((((big.toString() + ": ") + padRight((r)["aliquot"] as Any?.toString(), 15)) + " ") + joinWithCommas((r)["seq"] as Any? as MutableList<Int>))
+                                                                        ^
+/workspace/mochi/tests/rosetta/transpiler/Kotlin/aliquot-sequence-classifications.kt:152:73: error: 'infix' modifier is required on 'toString' in 'kotlin.Function1'
+    println((((big.toString() + ": ") + padRight((r)["aliquot"] as Any?.toString(), 15)) + " ") + joinWithCommas((r)["seq"] as Any? as MutableList<Int>))
+                                                                        ^
+/workspace/mochi/tests/rosetta/transpiler/Kotlin/aliquot-sequence-classifications.kt:152:82: error: expecting an expression
+    println((((big.toString() + ": ") + padRight((r)["aliquot"] as Any?.toString(), 15)) + " ") + joinWithCommas((r)["seq"] as Any? as MutableList<Int>))
+                                                                                 ^
+/workspace/mochi/tests/rosetta/transpiler/Kotlin/aliquot-sequence-classifications.kt:3:22: error: the integer literal does not conform to the expected type Int
 val THRESHOLD: Int = 140737488355328
                      ^
-/workspace/mochi/tests/rosetta/transpiler/Kotlin/aliquot-sequence-classifications.kt:148:20: error: the integer literal does not conform to the expected type Int
+/workspace/mochi/tests/rosetta/transpiler/Kotlin/aliquot-sequence-classifications.kt:32:25: error: type mismatch: inferred type is Int but BigInteger was expected
+    var y: BigInteger = (x + 1) / 2
+                        ^
+/workspace/mochi/tests/rosetta/transpiler/Kotlin/aliquot-sequence-classifications.kt:35:13: error: type mismatch: inferred type is Int but BigInteger was expected
+        y = (x + (n / x)) / 2
+            ^
+/workspace/mochi/tests/rosetta/transpiler/Kotlin/aliquot-sequence-classifications.kt:150:20: error: the integer literal does not conform to the expected type Int
     val big: Int = 15355717786080
                    ^
