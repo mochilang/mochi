@@ -363,6 +363,14 @@ func recordType(name string, ex Expr) {
 	}
 }
 
+func copyVarTypes(src map[string]string) map[string]string {
+	dst := make(map[string]string, len(src))
+	for k, v := range src {
+		dst[k] = v
+	}
+	return dst
+}
+
 func guessHsType(ex Expr) string {
 	if _, ok := ex.(*IntLit); ok {
 		return "Int"
@@ -1792,7 +1800,15 @@ func isIntExpr(e Expr) bool {
 			return true
 		}
 	case *NameRef:
-		return varTypes[ex.Name] == "int"
+		if varTypes[ex.Name] == "int" {
+			return true
+		}
+		if envInfo != nil {
+			if vt, err := envInfo.GetVar(ex.Name); err == nil {
+				return types.IsIntType(vt) || types.IsInt64Type(vt)
+			}
+		}
+		return false
 	case *FieldExpr:
 		if t := fieldType(ex); t != "" {
 			return t == "Int"
@@ -1818,7 +1834,15 @@ func isFloatExpr(e Expr) bool {
 			return true
 		}
 	case *NameRef:
-		return varTypes[ex.Name] == "float"
+		if varTypes[ex.Name] == "float" {
+			return true
+		}
+		if envInfo != nil {
+			if vt, err := envInfo.GetVar(ex.Name); err == nil {
+				return types.IsFloatType(vt)
+			}
+		}
+		return false
 	case *FieldExpr:
 		if t := fieldType(ex); t != "" {
 			return t == "Double"
@@ -3614,16 +3638,31 @@ func convertMatchExpr(m *parser.MatchExpr) (Expr, error) {
 func convertFunStmt(f *parser.FunStmt) (*Func, error) {
 	prevMutated := mutated
 	prevLocals := locals
+	prevVarTypes := varTypes
 	mutated = map[string]bool{}
 	locals = map[string]bool{}
+	varTypes = copyVarTypes(varTypes)
 	for _, p := range f.Params {
 		locals[safeName(p.Name)] = true
+		if p.Type != nil && p.Type.Simple != nil {
+			switch *p.Type.Simple {
+			case "int":
+				varTypes[safeName(p.Name)] = "int"
+			case "float":
+				varTypes[safeName(p.Name)] = "float"
+			case "bool":
+				varTypes[safeName(p.Name)] = "bool"
+			case "string":
+				varTypes[safeName(p.Name)] = "string"
+			}
+		}
 	}
 
 	stmts, err := convertStmtList(f.Body)
 	if err != nil {
 		mutated = prevMutated
 		locals = prevLocals
+		varTypes = prevVarTypes
 		return nil, err
 	}
 	localMut := mutated
