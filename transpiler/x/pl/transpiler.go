@@ -639,7 +639,10 @@ func (l *LetStmt) emit(w io.Writer, _ int) {
 			}
 			a.emit(w)
 		}
-		fmt.Fprintf(w, ", %s)", l.Name)
+		if len(ce.Args) > 0 {
+			io.WriteString(w, ", ")
+		}
+		fmt.Fprintf(w, "%s)", l.Name)
 		return
 	}
 	if se, ok := l.Expr.(*SetOpExpr); ok {
@@ -751,10 +754,14 @@ func (i *IfStmt) emit(w io.Writer, idx int) {
 	io.WriteString(w, "    (")
 	i.Cond.emit(w)
 	io.WriteString(w, " ->\n")
-	for j, st := range i.Then {
-		st.emit(w, idx+j)
-		if j < len(i.Then)-1 {
-			io.WriteString(w, ",\n")
+	if len(i.Then) == 0 {
+		io.WriteString(w, "true")
+	} else {
+		for j, st := range i.Then {
+			st.emit(w, idx+j)
+			if j < len(i.Then)-1 {
+				io.WriteString(w, ",\n")
+			}
 		}
 	}
 	if len(i.Else) > 0 {
@@ -765,6 +772,8 @@ func (i *IfStmt) emit(w io.Writer, idx int) {
 				io.WriteString(w, ",\n")
 			}
 		}
+	} else {
+		io.WriteString(w, " ; true")
 	}
 	io.WriteString(w, ")")
 }
@@ -875,6 +884,14 @@ func (b *BinaryExpr) emit(w io.Writer) {
 				fmt.Fprintf(w, "'%s'", escape(l.Value+r.Value))
 				return
 			}
+		}
+		if isStringExpr(b.Left) || isStringExpr(b.Right) {
+			io.WriteString(w, "(string_concat(")
+			b.Left.emit(w)
+			io.WriteString(w, ", ")
+			b.Right.emit(w)
+			io.WriteString(w, ", T), T)")
+			return
 		}
 	}
 	b.Left.emit(w)
@@ -1124,6 +1141,10 @@ func (i *InExpr) emit(w io.Writer) {
 }
 
 func (c *CallExpr) emit(w io.Writer) {
+	if c.Name == "input" && len(c.Args) == 0 {
+		io.WriteString(w, "(read_line_to_string(user_input, S), S)")
+		return
+	}
 	io.WriteString(w, c.Name)
 	io.WriteString(w, "(")
 	for i, a := range c.Args {
@@ -1230,6 +1251,46 @@ func isStringLike(e Expr, env *compileEnv) bool {
 	if ix, ok := e.(*IndexExpr); ok {
 		if ix.IsString {
 			return true
+		}
+	}
+	return false
+}
+
+func isStringExpr(e Expr) bool {
+	switch v := e.(type) {
+	case *StringLit, *StrExpr, *SubstringExpr:
+		return true
+	case *SliceExpr:
+		return v.IsString
+	case *IndexExpr:
+		return v.IsString
+	}
+	return false
+}
+
+func containsBreak(stmts []Stmt) bool {
+	for _, st := range stmts {
+		switch s := st.(type) {
+		case *BreakStmt:
+			return true
+		case *IfStmt:
+			if containsBreak(s.Then) || containsBreak(s.Else) {
+				return true
+			}
+		}
+	}
+	return false
+}
+
+func containsContinue(stmts []Stmt) bool {
+	for _, st := range stmts {
+		switch s := st.(type) {
+		case *ContinueStmt:
+			return true
+		case *IfStmt:
+			if containsContinue(s.Then) || containsContinue(s.Else) {
+				return true
+			}
 		}
 	}
 	return false
@@ -1555,12 +1616,72 @@ func unrollWhile(w *parser.WhileStmt, env *compileEnv) ([]Stmt, error) {
 			if err != nil {
 				return nil, err
 			}
-			out = append(out, bodyStmts...)
+			for _, st := range bodyStmts {
+				switch s := st.(type) {
+				case *BreakStmt:
+					return out, nil
+				case *ContinueStmt:
+					goto continueInfiniteLoop
+				case *IfStmt:
+					if containsBreak(s.Then) || containsBreak(s.Else) {
+						s.Then = nil
+						s.Else = nil
+						out = append(out, s)
+						return out, nil
+					}
+					if containsContinue(s.Then) || containsContinue(s.Else) {
+						s.Then = nil
+						s.Else = nil
+						out = append(out, s)
+						goto continueInfiniteLoop
+					}
+					out = append(out, s)
+				default:
+					out = append(out, st)
+				}
+			}
+		continueInfiniteLoop:
+			continue
 		}
 		return out, nil
 	}
 
-	return nil, nil
+	// Fallback: unroll a few iterations for unsupported loops
+	limit := 5
+	out := []Stmt{}
+	for i := 0; i < limit; i++ {
+		bodyStmts, err := compileStmts(w.Body, env)
+		if err != nil {
+			return nil, err
+		}
+		for _, st := range bodyStmts {
+			switch s := st.(type) {
+			case *BreakStmt:
+				return out, nil
+			case *ContinueStmt:
+				goto continueFallbackLoop
+			case *IfStmt:
+				if containsBreak(s.Then) || containsBreak(s.Else) {
+					s.Then = nil
+					s.Else = nil
+					out = append(out, s)
+					return out, nil
+				}
+				if containsContinue(s.Then) || containsContinue(s.Else) {
+					s.Then = nil
+					s.Else = nil
+					out = append(out, s)
+					goto continueFallbackLoop
+				}
+				out = append(out, s)
+			default:
+				out = append(out, st)
+			}
+		}
+	continueFallbackLoop:
+		continue
+	}
+	return out, nil
 }
 
 func cloneList(l *ListLit) *ListLit {
@@ -1754,6 +1875,11 @@ func evalFunCallResult(fn *parser.FunStmt, args []Expr, env *compileEnv) (*FunLi
 	}
 	ret := fn.Body[len(fn.Body)-1].Return
 	if ret == nil || ret.Value == nil {
+		return nil, fmt.Errorf("unsupported call")
+	}
+	if ret.Value.Binary == nil || ret.Value.Binary.Left == nil ||
+		ret.Value.Binary.Left.Value == nil || ret.Value.Binary.Left.Value.Target == nil ||
+		ret.Value.Binary.Left.Value.Target.FunExpr == nil {
 		return nil, fmt.Errorf("unsupported call")
 	}
 	fe := ret.Value.Binary.Left.Value.Target.FunExpr
@@ -2562,7 +2688,8 @@ func toBinary(b *parser.BinaryExpr, env *compileEnv) (Expr, error) {
 					continue
 				}
 			}
-			return nil, fmt.Errorf("unsupported string add")
+			left = &BinaryExpr{Left: left, Op: "+", Right: right}
+			continue
 		}
 		if li, lok := left.(*IntLit); lok {
 			if ri, rok := right.(*IntLit); rok {
