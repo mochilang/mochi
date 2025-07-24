@@ -1,4 +1,0 @@
-dotnet run: exit status 1
-/tmp/TestCSTranspiler_Rosetta_Golden2760455559/001/Program.cs(55,36): error CS0023: Operator '-' cannot be applied to operand of type 'string' [/tmp/TestCSTranspiler_Rosetta_Golden2760455559/001/app.csproj]
-
-The build failed. Fix the build errors and run again.

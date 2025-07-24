@@ -764,6 +764,11 @@ func (b *BoolLit) emit(w io.Writer) {
 	}
 }
 
+// NullLit represents the `null` literal.
+type NullLit struct{}
+
+func (n *NullLit) emit(w io.Writer) { fmt.Fprint(w, "null") }
+
 // FloatLit represents a floating point literal.
 type FloatLit struct{ Value float64 }
 
@@ -1059,7 +1064,7 @@ func csType(t *parser.TypeRef) string {
 	if t.Simple != nil {
 		switch *t.Simple {
 		case "int":
-			return "int"
+			return "long"
 		case "string":
 			return "string"
 		case "bool":
@@ -1102,7 +1107,7 @@ func csType(t *parser.TypeRef) string {
 func csTypeFromType(t types.Type) string {
 	switch tt := t.(type) {
 	case types.IntType, types.Int64Type:
-		return "int"
+		return "long"
 	case types.FloatType:
 		return "double"
 	case types.StringType:
@@ -1233,11 +1238,13 @@ func typeOfExpr(e Expr) string {
 	case *StringLit:
 		return "string"
 	case *IntLit:
-		return "int"
+		return "long"
 	case *FloatLit:
 		return "double"
 	case *BoolLit:
 		return "bool"
+	case *NullLit:
+		return "object"
 	case *BoolOpExpr:
 		return "bool"
 	case *CmpExpr:
@@ -1258,7 +1265,7 @@ func typeOfExpr(e Expr) string {
 		if lt == "string" || rt == "string" {
 			return "string"
 		}
-		return "int"
+		return "long"
 	case *IfExpr:
 		t := typeOfExpr(ex.Then)
 		e := typeOfExpr(ex.Else)
@@ -1282,9 +1289,9 @@ func typeOfExpr(e Expr) string {
 		if t == "double" {
 			return "double"
 		}
-		return "int"
+		return "long"
 	case *CountExpr:
-		return "int"
+		return "long"
 	case *MinExpr:
 		t := typeOfExpr(ex.Arg)
 		if strings.HasSuffix(t, "[]") {
@@ -1293,7 +1300,7 @@ func typeOfExpr(e Expr) string {
 		if t == "double" {
 			return "double"
 		}
-		return "int"
+		return "long"
 	case *MaxExpr:
 		t := typeOfExpr(ex.Arg)
 		if strings.HasSuffix(t, "[]") {
@@ -1302,7 +1309,7 @@ func typeOfExpr(e Expr) string {
 		if t == "double" {
 			return "double"
 		}
-		return "int"
+		return "long"
 	case *StrExpr:
 		return "string"
 	case *SubstringExpr:
@@ -1482,13 +1489,25 @@ func (ix *IndexExpr) emit(w io.Writer) {
 		fmt.Fprint(w, "((dynamic)")
 		ix.Target.emit(w)
 		fmt.Fprint(w, ")[")
-		ix.Index.emit(w)
+		if typeOfExpr(ix.Index) == "long" {
+			fmt.Fprint(w, "(int)(")
+			ix.Index.emit(w)
+			fmt.Fprint(w, ")")
+		} else {
+			ix.Index.emit(w)
+		}
 		fmt.Fprint(w, "]")
 		return
 	}
 	ix.Target.emit(w)
 	fmt.Fprint(w, "[")
-	ix.Index.emit(w)
+	if typeOfExpr(ix.Index) == "long" {
+		fmt.Fprint(w, "(int)(")
+		ix.Index.emit(w)
+		fmt.Fprint(w, ")")
+	} else {
+		ix.Index.emit(w)
+	}
 	fmt.Fprint(w, "]")
 }
 
@@ -1629,7 +1648,14 @@ func (s *StrExpr) emit(w io.Writer) {
 	if isStringExpr(s.Arg) {
 		s.Arg.emit(w)
 	} else {
-		s.Arg.emit(w)
+		switch s.Arg.(type) {
+		case *UnaryExpr, *BinaryExpr, *BoolOpExpr, *CmpExpr:
+			fmt.Fprint(w, "(")
+			s.Arg.emit(w)
+			fmt.Fprint(w, ")")
+		default:
+			s.Arg.emit(w)
+		}
 		fmt.Fprint(w, ".ToString()")
 	}
 }
@@ -1676,9 +1702,9 @@ type SubstringExpr struct {
 
 func (s *SubstringExpr) emit(w io.Writer) {
 	s.Str.emit(w)
-	fmt.Fprint(w, ".Substring(")
+	fmt.Fprint(w, ".Substring((int)(")
 	s.Start.emit(w)
-	fmt.Fprint(w, ", (")
+	fmt.Fprint(w, "), (int)(")
 	s.End.emit(w)
 	fmt.Fprint(w, " - ")
 	s.Start.emit(w)
@@ -1947,7 +1973,7 @@ func compilePostfix(p *parser.PostfixExpr) (Expr, error) {
 		case op.Cast != nil && op.Cast.Type != nil && op.Cast.Type.Simple != nil:
 			switch *op.Cast.Type.Simple {
 			case "int":
-				expr = &CallExpr{Func: "Convert.ToInt32", Args: []Expr{expr}}
+				expr = &CallExpr{Func: "Convert.ToInt64", Args: []Expr{expr}}
 			case "float":
 				expr = &CallExpr{Func: "Convert.ToDouble", Args: []Expr{expr}}
 			default:
@@ -2741,7 +2767,7 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 			}
 		case "int":
 			if len(args) == 1 {
-				return &CallExpr{Func: "Convert.ToInt32", Args: []Expr{args[0]}}, nil
+				return &CallExpr{Func: "Convert.ToInt64", Args: []Expr{args[0]}}, nil
 			}
 		case "float":
 			if len(args) == 1 {
@@ -2796,6 +2822,8 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 		return &FloatLit{Value: *p.Lit.Float}, nil
 	case p.Lit != nil && p.Lit.Bool != nil:
 		return &BoolLit{Value: bool(*p.Lit.Bool)}, nil
+	case p.Lit != nil && p.Lit.Null:
+		return &NullLit{}, nil
 	case p.List != nil:
 		elems := make([]Expr, len(p.List.Elems))
 		for i, e := range p.List.Elems {
