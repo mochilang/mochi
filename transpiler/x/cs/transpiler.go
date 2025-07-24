@@ -661,6 +661,21 @@ func (ie *InExpr) emit(w io.Writer) {
 		fmt.Fprint(w, ".ContainsKey(")
 		ie.Item.emit(w)
 		fmt.Fprint(w, ")")
+	} else if fe, ok := ie.Collection.(*FieldExpr); ok {
+		t := typeOfExpr(fe.Target)
+		if st, ok2 := structTypes[t]; ok2 {
+			if _, ok3 := st.Fields[fe.Name].(types.MapType); ok3 {
+				ie.Collection.emit(w)
+				fmt.Fprint(w, ".ContainsKey(")
+				ie.Item.emit(w)
+				fmt.Fprint(w, ")")
+				return
+			}
+		}
+		ie.Collection.emit(w)
+		fmt.Fprint(w, ".ContainsKey(")
+		ie.Item.emit(w)
+		fmt.Fprint(w, ")")
 	} else if _, ok := ie.Collection.(*VarRef); ok {
 		ie.Collection.emit(w)
 		fmt.Fprint(w, ".ContainsKey(")
@@ -922,6 +937,12 @@ func isMapExpr(e Expr) bool {
 		if isMapExpr(ex.Target) {
 			return true
 		}
+	case *FieldExpr:
+		if isMapExpr(ex.Target) {
+			return true
+		}
+		t := typeOfExpr(e)
+		return strings.HasPrefix(t, "Dictionary<")
 	case *VarRef:
 		if t, ok := varTypes[ex.Name]; ok {
 			if strings.HasSuffix(t, "[]") {
@@ -1043,6 +1064,8 @@ func csType(t *parser.TypeRef) string {
 			return "string"
 		case "bool":
 			return "bool"
+		case "float":
+			return "double"
 		}
 		if st, ok := structTypes[*t.Simple]; ok {
 			return st.Name
@@ -2813,6 +2836,14 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 			val, err := compileExpr(f.Value)
 			if err != nil {
 				return nil, err
+			}
+			if ml, ok := val.(*MapLit); ok && len(ml.Items) == 0 {
+				if ft, ok2 := st.Fields[f.Name]; ok2 {
+					if mt, ok3 := ft.(types.MapType); ok3 {
+						ml.KeyType = csTypeFromType(mt.Key)
+						ml.ValType = csTypeFromType(mt.Value)
+					}
+				}
 			}
 			fields[i] = StructFieldValue{Name: f.Name, Value: val}
 		}
