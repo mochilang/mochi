@@ -81,10 +81,24 @@ func javaType(t string) string {
 	case "map":
 		return "java.util.Map"
 	case "fn":
-		return "java.util.function.IntUnaryOperator"
+		return "java.util.function.Function"
 	default:
 		if t == "" {
 			return ""
+		}
+		if strings.HasPrefix(t, "fn(") {
+			start := strings.Index(t, "(") + 1
+			end := strings.Index(t, ")")
+			retIdx := strings.LastIndex(t, ":")
+			if start >= 0 && end > start && retIdx > end {
+				params := strings.Split(t[start:end], ",")
+				ret := t[retIdx+1:]
+				if len(params) == 1 {
+					pt := javaBoxType(javaType(params[0]))
+					rt := javaBoxType(javaType(ret))
+					return fmt.Sprintf("java.util.function.Function<%s,%s>", pt, rt)
+				}
+			}
 		}
 		return t
 	}
@@ -357,8 +371,8 @@ func inferType(e Expr) string {
 		switch ex.Name {
 		case "contains":
 			return "boolean"
-		case "applyAsInt":
-			return "int"
+		case "apply":
+			return "Object"
 		}
 	case *VarExpr:
 		if t, ok := varTypes[ex.Name]; ok {
@@ -705,11 +719,7 @@ func (l *LambdaExpr) emit(w io.Writer) {
 		if i > 0 {
 			fmt.Fprint(w, ", ")
 		}
-		typ := javaType(p.Type)
-		if typ == "" {
-			typ = "Object"
-		}
-		fmt.Fprintf(w, "%s %s", typ, sanitize(p.Name))
+		fmt.Fprint(w, sanitize(p.Name))
 	}
 	fmt.Fprint(w, ") -> ")
 	if len(l.Body) == 1 {
@@ -1749,6 +1759,11 @@ func isStringExpr(e Expr) bool {
 		if inferType(ex) == "string" || inferType(ex) == "String" {
 			return true
 		}
+	case *MethodCallExpr:
+		switch ex.Name {
+		case "toLowerCase", "toUpperCase", "trim", "substring":
+			return true
+		}
 	case *IndexExpr:
 		if isStringExpr(ex.Target) {
 			return true
@@ -2228,8 +2243,13 @@ func compileStmt(s *parser.Statement) (Stmt, error) {
 		if err != nil {
 			return nil, err
 		}
-		varTypes[s.Fun.Name] = "fn"
-		return &VarStmt{Name: s.Fun.Name, Type: "fn", Expr: expr}, nil
+		var ptypes []string
+		for _, pa := range s.Fun.Params {
+			ptypes = append(ptypes, typeRefString(pa.Type))
+		}
+		funType := fmt.Sprintf("fn(%s):%s", strings.Join(ptypes, ","), typeRefString(s.Fun.Return))
+		varTypes[s.Fun.Name] = funType
+		return &VarStmt{Name: s.Fun.Name, Type: funType, Expr: expr}, nil
 	case s.Assign != nil:
 		if len(s.Assign.Index) == 0 && len(s.Assign.Field) == 0 {
 			e, err := compileExpr(s.Assign.Value)
@@ -2730,13 +2750,13 @@ func compilePostfix(pf *parser.PostfixExpr) (Expr, error) {
 			} else if v, ok := expr.(*VarExpr); ok {
 				if v.Name == "int" && len(args) == 1 {
 					expr = &IntCastExpr{Value: args[0]}
-				} else if t, ok := varTypes[v.Name]; ok && t == "fn" {
-					expr = &MethodCallExpr{Target: expr, Name: "applyAsInt", Args: args}
+				} else if t, ok := varTypes[v.Name]; ok && (strings.HasPrefix(t, "fn") || strings.HasPrefix(t, "java.util.function.Function")) {
+					expr = &MethodCallExpr{Target: expr, Name: "apply", Args: args}
 				} else {
 					expr = &CallExpr{Func: v.Name, Args: args}
 				}
 			} else if _, ok := expr.(*LambdaExpr); ok {
-				expr = &MethodCallExpr{Target: expr, Name: "applyAsInt", Args: args}
+				expr = &MethodCallExpr{Target: expr, Name: "apply", Args: args}
 			} else {
 				return nil, fmt.Errorf("unsupported call")
 			}
@@ -2789,8 +2809,8 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 			needNow = true
 			return &CallExpr{Func: "_now", Args: nil}, nil
 		}
-		if t, ok := varTypes[name]; ok && t == "fn" {
-			return &MethodCallExpr{Target: &VarExpr{Name: name}, Name: "applyAsInt", Args: args}, nil
+		if t, ok := varTypes[name]; ok && (strings.HasPrefix(t, "fn") || strings.HasPrefix(t, "java.util.function.Function")) {
+			return &MethodCallExpr{Target: &VarExpr{Name: name}, Name: "apply", Args: args}, nil
 		}
 		if name == "print" {
 			name = "System.out.println"
@@ -3590,7 +3610,12 @@ func typeRefString(tr *parser.TypeRef) string {
 		return tr.Generic.Name
 	}
 	if tr.Fun != nil {
-		return "fn"
+		var params []string
+		for _, p := range tr.Fun.Params {
+			params = append(params, typeRefString(p))
+		}
+		ret := typeRefString(tr.Fun.Return)
+		return fmt.Sprintf("fn(%s):%s", strings.Join(params, ","), ret)
 	}
 	return ""
 }
@@ -3625,6 +3650,13 @@ func toJavaTypeFromType(t types.Type) string {
 			v = "Object"
 		}
 		return fmt.Sprintf("java.util.Map<%s,%s>", javaBoxType(k), javaBoxType(v))
+	case types.FuncType:
+		if len(tt.Params) == 1 {
+			pt := javaBoxType(toJavaTypeFromType(tt.Params[0]))
+			rt := javaBoxType(toJavaTypeFromType(tt.Return))
+			return fmt.Sprintf("java.util.function.Function<%s,%s>", pt, rt)
+		}
+		return "java.util.function.Function"
 	}
 	return ""
 }
