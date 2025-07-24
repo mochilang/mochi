@@ -68,6 +68,7 @@ var (
 	currentFuncs      map[string]*parser.FunStmt
 	currentEnv        *types.Env
 	pythonMathAliases map[string]bool
+	currentProg       *Program
 	inputLines        []string
 	inputIndex        int
 )
@@ -318,6 +319,30 @@ func appendAssign(lines *[]string, name string, v value) {
 		*lines = append(*lines, line)
 	}
 	(*lines)[len(*lines)-1] += "."
+}
+
+func emitPrint(vals []value) {
+	if currentProg == nil || len(vals) == 0 {
+		return
+	}
+	parts := make([]string, len(vals))
+	for i, v := range vals {
+		parts[i] = v.String()
+	}
+	line := "Transcript show:" + parts[0]
+	for _, p := range parts[1:] {
+		line += "; show:' '; show:" + p
+	}
+	line += "; cr"
+	currentProg.Lines = append(currentProg.Lines, line)
+}
+
+func emitJSON(v value) {
+	if currentProg == nil {
+		return
+	}
+	line := "Transcript show:" + fmt.Sprintf("'%s'", escape(jsonString(v))) + "; cr"
+	currentProg.Lines = append(currentProg.Lines, line)
 }
 
 func escape(s string) string { return strings.ReplaceAll(s, "'", "''") }
@@ -1793,7 +1818,25 @@ func evalFunction(fn *parser.FunStmt, args []value, captured map[string]value) (
 				if len(call.Args) == 0 {
 					return fmt.Errorf("print with no args")
 				}
-				// ignore prints inside functions
+				vals := make([]value, len(call.Args))
+				for i, a := range call.Args {
+					v, err := evalExpr(a, vars)
+					if err != nil {
+						return err
+					}
+					vals[i] = v
+				}
+				emitPrint(vals)
+				return nil
+			case "json":
+				if len(call.Args) != 1 {
+					return fmt.Errorf("json expects one arg")
+				}
+				v, err := evalExpr(call.Args[0], vars)
+				if err != nil {
+					return err
+				}
+				emitJSON(v)
 				return nil
 			default:
 				return fmt.Errorf("unsupported expression")
@@ -2580,6 +2623,8 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 		inputIndex = 0
 	}()
 	p := &Program{}
+	currentProg = p
+	defer func() { currentProg = nil }()
 
 	var processStmt func(*parser.Statement) error
 	processStmt = func(st *parser.Statement) error {
@@ -2920,20 +2965,15 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 				if len(call.Args) == 0 {
 					return fmt.Errorf("print with no args")
 				}
-				parts := make([]string, len(call.Args))
+				vals := make([]value, len(call.Args))
 				for i, a := range call.Args {
 					v, err := evalExpr(a, vars)
 					if err != nil {
 						return err
 					}
-					parts[i] = v.String()
+					vals[i] = v
 				}
-				line := "Transcript show:" + parts[0]
-				for _, part := range parts[1:] {
-					line += "; show:' '; show:" + part
-				}
-				line += "; cr"
-				p.Lines = append(p.Lines, line)
+				emitPrint(vals)
 			case "json":
 				if len(call.Args) != 1 {
 					return fmt.Errorf("json expects one arg")
@@ -2942,8 +2982,7 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 				if err != nil {
 					return err
 				}
-				line := "Transcript show:" + fmt.Sprintf("'%s'", escape(jsonString(v))) + "; cr"
-				p.Lines = append(p.Lines, line)
+				emitJSON(v)
 			default:
 				return fmt.Errorf("unsupported expression")
 			}
