@@ -652,8 +652,9 @@ type PutStmt struct {
 
 // CallExpr represents a function call.
 type CallExpr struct {
-	Func string
-	Args []Expr
+	Func          string
+	Args          []Expr
+	ReturnsString bool
 }
 
 // BinaryExpr is a binary operation.
@@ -960,6 +961,9 @@ func isStringExpr(e Expr) bool {
 	case *StringLit:
 		return true
 	case *CallExpr:
+		if v.ReturnsString {
+			return true
+		}
 		if v.Func == "str" || strings.HasPrefix(v.Func, "string:") {
 			return true
 		}
@@ -3370,7 +3374,9 @@ func convertBinary(b *parser.BinaryExpr, env *types.Env, ctx *context) (Expr, er
 				if op == "+" {
 					_, leftIsList := typesList[i].(types.ListType)
 					_, rightIsList := typesList[i+1].(types.ListType)
-					if leftIsList || rightIsList {
+					_, leftIsStr := typesList[i].(types.StringType)
+					_, rightIsStr := typesList[i+1].(types.StringType)
+					if leftIsList || rightIsList || leftIsStr || rightIsStr || isStringExpr(l) || isStringExpr(r) {
 						op = "++"
 					}
 				}
@@ -3511,6 +3517,13 @@ func convertPostfix(pf *parser.PostfixExpr, env *types.Env, ctx *context) (Expr,
 					return nil, err
 				}
 				ce.Args = append(ce.Args, ae)
+			}
+			if t, err := env.GetVar(ce.Func); err == nil {
+				if ft, ok := t.(types.FuncType); ok {
+					if _, ok := ft.Return.(types.StringType); ok {
+						ce.ReturnsString = true
+					}
+				}
 			}
 			expr = ce
 		case op.Cast != nil:

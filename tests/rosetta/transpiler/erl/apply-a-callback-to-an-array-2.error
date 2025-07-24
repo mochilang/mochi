@@ -1,0 +1,4 @@
+exit status 127
+/workspace/mochi/tests/rosetta/transpiler/erl/apply-a-callback-to-an-array-2.erl:4:26: bad function name
+/workspace/mochi/tests/rosetta/transpiler/erl/apply-a-callback-to-an-array-2.erl:22:1: syntax error before: Map
+escript: There were compilation errors.

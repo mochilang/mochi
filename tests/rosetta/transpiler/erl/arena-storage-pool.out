@@ -1,0 +1,9 @@
+/workspace/mochi/tests/rosetta/transpiler/erl/arena-storage-pool.erl:69:19: Warning: the result of calling map_get/2 is ignored (suppress the warning by assigning the expression to the _ variable)
+%   69|         Pool_10 = maps:get("pool", Res4),
+%     |                   ^
+
+3
+9
+pool empty
+pool empty
+15
