@@ -3,9 +3,12 @@
 fun example5(b1: bool, b2: bool) {
   if b1 {
     // statements
+    null
   } else if b2 {
     // other statements
+    null
   } else {
     // last resort statements
+    null
   }
 }
