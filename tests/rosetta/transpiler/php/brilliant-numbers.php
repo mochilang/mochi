@@ -158,3 +158,4 @@ function main() {
   $k = $k + 1;
 };
 }
+main();

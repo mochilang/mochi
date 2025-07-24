@@ -1712,6 +1712,19 @@ func Emit(w io.Writer, p *Program) error {
 			return err
 		}
 	}
+	hasMain := false
+	mainCalled := false
+	for _, s := range p.Stmts {
+		if fd, ok := s.(*FuncDecl); ok && fd.Name == "main" {
+			hasMain = true
+		} else if es, ok := s.(*ExprStmt); ok {
+			if call, ok := es.Expr.(*CallExpr); ok {
+				if call.Func == "main" && len(call.Args) == 0 {
+					mainCalled = true
+				}
+			}
+		}
+	}
 	for _, s := range p.Stmts {
 		s.emit(w)
 		switch s.(type) {
@@ -1723,6 +1736,11 @@ func Emit(w io.Writer, p *Program) error {
 			if _, err := io.WriteString(w, ";\n"); err != nil {
 				return err
 			}
+		}
+	}
+	if hasMain && !mainCalled {
+		if _, err := io.WriteString(w, "main();\n"); err != nil {
+			return err
 		}
 	}
 	return nil
