@@ -673,6 +673,18 @@ func zigTypeFromExpr(e Expr) string {
 			}
 		}
 		return "i64"
+	case *SliceExpr:
+		se := e.(*SliceExpr)
+		t := zigTypeFromExpr(se.Target)
+		if strings.HasPrefix(t, "[]") {
+			return t
+		}
+		if strings.HasPrefix(t, "[") {
+			if pos := strings.Index(t, "]"); pos > 0 {
+				return "[]" + t[pos+1:]
+			}
+		}
+		return "[]i64"
 	default:
 		return "i64"
 	}
@@ -1346,7 +1358,7 @@ func (l *ListLit) emit(w io.Writer) {
 			fmt.Fprintf(w, "&[_]%s{}", l.ElemType)
 			return
 		}
-		fmt.Fprintf(w, "[%d]%s{", len(l.Elems), l.ElemType)
+		fmt.Fprintf(w, "@constCast(&[_]%s{", l.ElemType)
 	} else if len(l.Elems) > 0 {
 		if _, ok := l.Elems[0].(*ListLit); ok {
 			if sub, ok := l.Elems[0].(*ListLit); ok {
@@ -1365,7 +1377,11 @@ func (l *ListLit) emit(w io.Writer) {
 		}
 		e.emit(w)
 	}
-	io.WriteString(w, "}")
+	if l.ElemType != "" {
+		io.WriteString(w, "})[0..]")
+	} else {
+		io.WriteString(w, "}")
+	}
 }
 
 func (i *IndexExpr) emit(w io.Writer) {
@@ -2102,17 +2118,19 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 			}
 			return &CallExpr{Func: "_str", Args: args}, nil
 		case "substring":
-			if len(args) == 3 {
-				if s, ok := args[0].(*StringLit); ok {
-					if start, ok1 := args[1].(*IntLit); ok1 {
-						if end, ok2 := args[2].(*IntLit); ok2 {
-							if start.Value >= 0 && end.Value <= len(s.Value) && start.Value <= end.Value {
-								return &StringLit{Value: s.Value[start.Value:end.Value]}, nil
-							}
+			if len(args) != 3 {
+				return nil, fmt.Errorf("substring expects 3 args")
+			}
+			if s, ok := args[0].(*StringLit); ok {
+				if start, ok1 := args[1].(*IntLit); ok1 {
+					if end, ok2 := args[2].(*IntLit); ok2 {
+						if start.Value >= 0 && end.Value <= len(s.Value) && start.Value <= end.Value {
+							return &StringLit{Value: s.Value[start.Value:end.Value]}, nil
 						}
 					}
 				}
 			}
+			return &SliceExpr{Target: args[0], Start: args[1], End: args[2]}, nil
 		case "sum":
 			if len(args) == 1 {
 				if list, ok := args[0].(*ListLit); ok {
