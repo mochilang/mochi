@@ -3900,11 +3900,11 @@ func substituteFields(e Expr, varName string, fields map[string]bool) Expr {
 	}
 }
 
-func replaceFields(e Expr, target Expr, fields map[string]bool) Expr {
+func replaceFields(e Expr, target Expr, fields map[string]string) Expr {
 	switch ex := e.(type) {
 	case *NameRef:
-		if fields[ex.Name] {
-			return &IndexExpr{Target: target, Index: &StringLit{Value: ex.Name}}
+		if field, ok := fields[ex.Name]; ok {
+			return &IndexExpr{Target: target, Index: &StringLit{Value: field}}
 		}
 		return ex
 	case *BinaryExpr:
@@ -4052,7 +4052,7 @@ func emitReplaceName(w io.Writer, e Expr, name string, repl Expr) {
 	}
 }
 
-func patternCond(pat *parser.Expr, target Expr) (Expr, map[string]bool, error) {
+func patternCond(pat *parser.Expr, target Expr) (Expr, map[string]string, error) {
 	if pat == nil {
 		return nil, nil, fmt.Errorf("nil pattern")
 	}
@@ -4060,11 +4060,11 @@ func patternCond(pat *parser.Expr, target Expr) (Expr, map[string]bool, error) {
 		if ut, ok := transpileEnv.FindUnionByVariant(call.Func); ok {
 			st := ut.Variants[call.Func]
 			cond := &BinaryExpr{Left: &IndexExpr{Target: target, Index: &StringLit{Value: "tag"}}, Op: "===", Right: &StringLit{Value: call.Func}}
-			fields := map[string]bool{}
+			fields := map[string]string{}
 			for i, arg := range call.Args {
 				fieldName := st.Order[i]
 				if name, ok := identName(arg); ok {
-					fields[name] = true
+					fields[name] = fieldName
 				} else {
 					val, err := convertExpr(arg)
 					if err != nil {
