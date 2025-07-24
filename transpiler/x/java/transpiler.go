@@ -22,6 +22,7 @@ import (
 
 var varTypes map[string]string
 var funcRet map[string]string
+var funcParams map[string][]string
 var extraDecls []Stmt
 var structCount int
 var topEnv *types.Env
@@ -404,6 +405,11 @@ func collectReturnMap(body []Stmt) map[string]string {
 		if ret, ok := st.(*ReturnStmt); ok {
 			if ml, ok2 := ret.Expr.(*MapLit); ok2 && len(ml.Fields) > 0 {
 				return ml.Fields
+			}
+			if ce, ok2 := ret.Expr.(*CallExpr); ok2 {
+				if f, ok3 := funcMapFields[ce.Func]; ok3 {
+					return f
+				}
 			}
 		}
 	}
@@ -1071,20 +1077,21 @@ func (m *MapLit) emit(w io.Writer) {
 			valType = javaBoxType(t)
 		}
 	}
-	if len(m.Keys) == 0 {
-		fmt.Fprintf(w, "new java.util.LinkedHashMap<String, %s>()", valType)
-		return
-	}
-	fmt.Fprintf(w, "new java.util.LinkedHashMap<String, %s>(java.util.Map.of(", valType)
-	for i := range m.Keys {
-		if i > 0 {
+	fmt.Fprintf(w, "new java.util.LinkedHashMap<String, %s>()", valType)
+	if len(m.Keys) > 0 {
+		fmt.Fprint(w, "{{")
+		for i := range m.Keys {
+			if i > 0 {
+				fmt.Fprint(w, " ")
+			}
+			fmt.Fprint(w, "put(")
+			m.Keys[i].emit(w)
 			fmt.Fprint(w, ", ")
+			m.Values[i].emit(w)
+			fmt.Fprint(w, ");")
 		}
-		m.Keys[i].emit(w)
-		fmt.Fprint(w, ", ")
-		m.Values[i].emit(w)
+		fmt.Fprint(w, "}}")
 	}
-	fmt.Fprint(w, "))")
 }
 
 type BinaryExpr struct {
@@ -1094,6 +1101,12 @@ type BinaryExpr struct {
 }
 
 func (b *BinaryExpr) emit(w io.Writer) {
+	if b.Op == "+" && (isStringExpr(b.Left) || isStringExpr(b.Right)) {
+		emitCastExpr(w, b.Left, "String")
+		fmt.Fprint(w, " + ")
+		emitCastExpr(w, b.Right, "String")
+		return
+	}
 	if (b.Op == "==" || b.Op == "!=") && (isStringExpr(b.Left) || isStringExpr(b.Right)) {
 		if b.Op == "!=" {
 			fmt.Fprint(w, "!")
@@ -1686,7 +1699,13 @@ func (c *CallExpr) emit(w io.Writer) {
 		if i > 0 {
 			fmt.Fprint(w, ", ")
 		}
-		a.emit(w)
+		typ := ""
+		if params, ok := funcParams[c.Func]; ok {
+			if i < len(params) {
+				typ = params[i]
+			}
+		}
+		emitCastExpr(w, a, typ)
 	}
 	fmt.Fprint(w, ")")
 }
@@ -1720,8 +1739,14 @@ func (ix *IndexExpr) emit(w io.Writer) {
 		if ix.ResultType != "" {
 			castType = javaType(ix.ResultType)
 		}
-		fmt.Fprintf(w, "(%s)(", castType)
-		ix.Target.emit(w)
+		fmt.Fprintf(w, "((%s)", castType)
+		if isMapExpr(ix.Target) {
+			ix.Target.emit(w)
+		} else {
+			fmt.Fprint(w, "((java.util.Map)")
+			ix.Target.emit(w)
+			fmt.Fprint(w, ")")
+		}
 		fmt.Fprint(w, ".get(")
 		ix.Index.emit(w)
 		fmt.Fprint(w, "))")
@@ -1742,7 +1767,7 @@ func (ix *IndexExpr) emit(w io.Writer) {
 		if ix.ResultType != "" {
 			castType = javaType(ix.ResultType)
 		}
-		fmt.Fprintf(w, "(%s)(", castType)
+		fmt.Fprintf(w, "((%s)", castType)
 		ix.Target.emit(w)
 		fmt.Fprint(w, ".get(")
 		ix.Index.emit(w)
@@ -2102,6 +2127,7 @@ func Transpile(p *parser.Program, env *types.Env) (*Program, error) {
 	varDecls = map[string]*VarStmt{}
 	funcMapFields = map[string]map[string]string{}
 	mapVarFields = map[string]map[string]string{}
+	funcParams = map[string][]string{}
 	for _, s := range p.Statements {
 		if s.Fun != nil {
 			saved := varTypes
@@ -2133,6 +2159,11 @@ func Transpile(p *parser.Program, env *types.Env) (*Program, error) {
 			if fm := collectReturnMap(body); fm != nil {
 				funcMapFields[s.Fun.Name] = fm
 			}
+			var ptypes []string
+			for _, p := range params {
+				ptypes = append(ptypes, p.Type)
+			}
+			funcParams[s.Fun.Name] = ptypes
 			prog.Funcs = append(prog.Funcs, &Function{Name: s.Fun.Name, Params: params, Return: ret, Body: body})
 			varTypes = saved
 			continue
@@ -2233,6 +2264,12 @@ func compileStmt(s *parser.Statement) (Stmt, error) {
 				if f, ok2 := funcMapFields[ce.Func]; ok2 {
 					mapVarFields[s.Let.Name] = f
 				}
+			} else if cast, ok := e.(*CastExpr); ok {
+				if v, ok2 := cast.Value.(*VarExpr); ok2 {
+					if f, ok3 := mapVarFields[v.Name]; ok3 {
+						mapVarFields[s.Let.Name] = f
+					}
+				}
 			}
 			if l, ok := e.(*ListLit); ok && l.ElemType == "" && strings.HasSuffix(t, "[]") {
 				l.ElemType = strings.TrimSuffix(t, "[]")
@@ -2284,6 +2321,12 @@ func compileStmt(s *parser.Statement) (Stmt, error) {
 			} else if ce, ok := e.(*CallExpr); ok {
 				if f, ok2 := funcMapFields[ce.Func]; ok2 {
 					mapVarFields[s.Var.Name] = f
+				}
+			} else if cast, ok := e.(*CastExpr); ok {
+				if v, ok2 := cast.Value.(*VarExpr); ok2 {
+					if f, ok3 := mapVarFields[v.Name]; ok3 {
+						mapVarFields[s.Var.Name] = f
+					}
 				}
 			}
 			if l, ok := e.(*ListLit); ok && l.ElemType == "" && strings.HasSuffix(t, "[]") {
@@ -2376,6 +2419,12 @@ func compileStmt(s *parser.Statement) (Stmt, error) {
 			} else if ce, ok := e.(*CallExpr); ok {
 				if f, ok2 := funcMapFields[ce.Func]; ok2 {
 					mapVarFields[s.Assign.Name] = f
+				}
+			} else if cast, ok := e.(*CastExpr); ok {
+				if v, ok2 := cast.Value.(*VarExpr); ok2 {
+					if f, ok3 := mapVarFields[v.Name]; ok3 {
+						mapVarFields[s.Assign.Name] = f
+					}
 				}
 			}
 			return &AssignStmt{Name: s.Assign.Name, Expr: e}, nil
@@ -2755,7 +2804,20 @@ func compilePostfix(pf *parser.PostfixExpr) (Expr, error) {
 					rType = mapValueType(varTypes[v.Name])
 				}
 			}
-			expr = &IndexExpr{Target: expr, Index: idx, IsMap: isMapExpr(expr), ResultType: rType}
+			isMap := isMapExpr(expr)
+			if !isMap {
+				it := inferType(idx)
+				if it == "string" {
+					if !isStringExpr(expr) && !isArrayExpr(expr) {
+						isMap = true
+					}
+				} else if _, ok := constStringExpr(idx); ok {
+					if !isStringExpr(expr) && !isArrayExpr(expr) {
+						isMap = true
+					}
+				}
+			}
+			expr = &IndexExpr{Target: expr, Index: idx, IsMap: isMap, ResultType: rType}
 		case op.Index != nil && op.Index.Colon != nil && op.Index.Colon2 == nil && op.Index.Step == nil:
 			var start Expr
 			var end Expr
