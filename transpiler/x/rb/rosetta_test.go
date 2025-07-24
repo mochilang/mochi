@@ -9,6 +9,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"sort"
 	"strconv"
 	"strings"
 	"testing"
@@ -106,6 +107,20 @@ func loadIndex(dir string) ([]string, error) {
 	return files, nil
 }
 
+func updateIndex(dir string) error {
+	pattern := filepath.Join(dir, "*.mochi")
+	files, err := filepath.Glob(pattern)
+	if err != nil {
+		return err
+	}
+	sort.Strings(files)
+	var buf bytes.Buffer
+	for i, f := range files {
+		fmt.Fprintf(&buf, "%d %s\n", i+1, filepath.Base(f))
+	}
+	return os.WriteFile(filepath.Join(dir, "index.txt"), buf.Bytes(), 0o644)
+}
+
 func TestRubyTranspiler_Rosetta(t *testing.T) {
 	if _, err := exec.LookPath("ruby"); err != nil {
 		t.Skip("ruby not installed")
@@ -153,6 +168,7 @@ func updateRosetta() {
 	srcDir := filepath.Join(root, "tests", "rosetta", "x", "Mochi")
 	outDir := filepath.Join(root, "tests", "rosetta", "transpiler", "rb")
 	readmePath := filepath.Join(root, "transpiler", "x", "rb", "ROSETTA.md")
+	_ = updateIndex(srcDir)
 	files, _ := loadIndex(srcDir)
 	total := len(files)
 	compiled := 0
@@ -166,7 +182,7 @@ func updateRosetta() {
 				mark = "[x]"
 			}
 		}
-		lines = append(lines, fmt.Sprintf("%3d. %s %s", i+1, mark, name))
+		lines = append(lines, fmt.Sprintf("%3d. %s %s (%d)", i+1, mark, name, i+1))
 	}
 	ts := time.Now().Format("2006-01-02 15:04 MST")
 	var buf bytes.Buffer

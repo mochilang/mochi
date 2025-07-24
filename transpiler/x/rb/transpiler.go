@@ -1136,8 +1136,12 @@ var reserved = map[string]bool{
 	"when": true, "while": true, "yield": true,
 }
 
+var builtinConsts = map[string]bool{
+	"Rational": true,
+}
+
 func safeName(n string) string {
-	if reserved[n] {
+	if reserved[n] || builtinConsts[n] {
 		return n + "_"
 	}
 	return n
@@ -2112,11 +2116,11 @@ func valueToExpr(v interface{}, typ *parser.TypeRef) Expr {
 		items := make([]MapItem, len(names))
 		for i, k := range names {
 			expr := valueToExpr(val[k], nil)
-			fields[i] = StructField{Name: k, Value: expr}
+			fields[i] = StructField{Name: identName(k), Value: expr}
 			items[i] = MapItem{Key: &StringLit{Value: k}, Value: expr}
 		}
 		if typ != nil && typ.Simple != nil {
-			return &StructNewExpr{Name: *typ.Simple, Fields: fields}
+			return &StructNewExpr{Name: identName(*typ.Simple), Fields: fields}
 		}
 		return &MapLit{Items: items}
 	case []interface{}:
@@ -2508,23 +2512,23 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 			fields := make([]string, 0)
 			for _, m := range st.Type.Members {
 				if m.Field != nil {
-					fields = append(fields, m.Field.Name)
+					fields = append(fields, identName(m.Field.Name))
 				}
 			}
 			if len(fields) > 0 {
-				return &StructDefStmt{Name: st.Type.Name, Fields: fields}, nil
+				return &StructDefStmt{Name: identName(st.Type.Name), Fields: fields}, nil
 			}
 		}
 		var stmts []Stmt
 		for _, v := range st.Type.Variants {
 			if len(v.Fields) == 0 {
-				stmts = append(stmts, &LetStmt{Name: v.Name, Value: &Ident{Name: "nil"}})
+				stmts = append(stmts, &LetStmt{Name: identName(v.Name), Value: &Ident{Name: "nil"}})
 			} else {
 				fields := make([]string, len(v.Fields))
 				for i, f := range v.Fields {
-					fields[i] = f.Name
+					fields[i] = identName(f.Name)
 				}
-				stmts = append(stmts, &StructDefStmt{Name: v.Name, Fields: fields})
+				stmts = append(stmts, &StructDefStmt{Name: identName(v.Name), Fields: fields})
 			}
 		}
 		if len(stmts) > 0 {
@@ -2534,25 +2538,29 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 	case st.Let != nil:
 		if st.Let.Value != nil {
 			if keys, vals, ok := extractListOfMaps(st.Let.Value); ok {
-				structName := toStructName(st.Let.Name)
-				stmts := []Stmt{&StructDefStmt{Name: structName, Fields: keys}}
+				structName := identName(toStructName(st.Let.Name))
+				skeys := make([]string, len(keys))
+				for i, k := range keys {
+					skeys[i] = identName(k)
+				}
+				stmts := []Stmt{&StructDefStmt{Name: structName, Fields: skeys}}
 				elems := make([]Expr, len(vals))
 				if currentEnv != nil {
 					fieldTypes := map[string]types.Type{}
 					for j, val := range vals[0] {
-						fieldTypes[keys[j]] = types.ExprType(val, currentEnv)
+						fieldTypes[skeys[j]] = types.ExprType(val, currentEnv)
 					}
-					currentEnv.SetStruct(structName, types.StructType{Name: structName, Fields: fieldTypes, Order: keys})
-					currentEnv.SetVar(st.Let.Name, types.ListType{Elem: types.StructType{Name: structName, Fields: fieldTypes, Order: keys}}, false)
+					currentEnv.SetStruct(structName, types.StructType{Name: structName, Fields: fieldTypes, Order: skeys})
+					currentEnv.SetVar(st.Let.Name, types.ListType{Elem: types.StructType{Name: structName, Fields: fieldTypes, Order: skeys}}, false)
 				}
 				for i, fields := range vals {
-					fv := make([]StructField, len(keys))
+					fv := make([]StructField, len(skeys))
 					for j, val := range fields {
 						ex, err := convertExpr(val)
 						if err != nil {
 							return nil, err
 						}
-						fv[j] = StructField{Name: keys[j], Value: ex}
+						fv[j] = StructField{Name: skeys[j], Value: ex}
 					}
 					elems[i] = &StructNewExpr{Name: structName, Fields: fv}
 				}
@@ -3338,7 +3346,7 @@ func convertPostfix(pf *parser.PostfixExpr) (Expr, error) {
 			expr, curType = fieldAccess(expr, curType, op.Field.Name)
 		case op.Cast != nil:
 			if op.Cast.Type != nil && op.Cast.Type.Simple != nil {
-				typName := *op.Cast.Type.Simple
+				typName := identName(*op.Cast.Type.Simple)
 				if currentEnv != nil {
 					if st, ok := currentEnv.GetStruct(typName); ok {
 						if ml, ok2 := expr.(*MapLit); ok2 {
@@ -3346,7 +3354,7 @@ func convertPostfix(pf *parser.PostfixExpr) (Expr, error) {
 							for i, name := range st.Order {
 								for _, it := range ml.Items {
 									if sl, ok := it.Key.(*StringLit); ok && sl.Value == name {
-										fields[i] = StructField{Name: name, Value: it.Value}
+										fields[i] = StructField{Name: identName(name), Value: it.Value}
 										break
 									}
 								}
@@ -3580,9 +3588,9 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 			if err != nil {
 				return nil, err
 			}
-			fields[i] = StructField{Name: f.Name, Value: v}
+			fields[i] = StructField{Name: identName(f.Name), Value: v}
 		}
-		return &StructNewExpr{Name: p.Struct.Name, Fields: fields}, nil
+		return &StructNewExpr{Name: identName(p.Struct.Name), Fields: fields}, nil
 	case p.Match != nil:
 		return convertMatchExpr(p.Match)
 	case p.If != nil:
@@ -4196,7 +4204,8 @@ func convertGroupJoinQuery(q *parser.QueryExpr) (Expr, error) {
 
 func convertQueryForLet(q *parser.QueryExpr, name string) (Expr, Stmt, error) {
 	if keys, vals, ok := extractMapLiteral(q.Select); ok {
-		structName := toStructName(name)
+		structName := identName(toStructName(name))
+		skeys := make([]string, len(keys))
 		fields := make([]StructField, len(keys))
 		fieldTypes := map[string]types.Type{}
 		for i, v := range vals {
@@ -4204,9 +4213,10 @@ func convertQueryForLet(q *parser.QueryExpr, name string) (Expr, Stmt, error) {
 			if err != nil {
 				return nil, nil, err
 			}
-			fields[i] = StructField{Name: keys[i], Value: ex}
+			skeys[i] = identName(keys[i])
+			fields[i] = StructField{Name: skeys[i], Value: ex}
 			if currentEnv != nil {
-				fieldTypes[keys[i]] = types.ExprType(v, currentEnv)
+				fieldTypes[skeys[i]] = types.ExprType(v, currentEnv)
 			}
 		}
 		var qe Expr
@@ -4279,11 +4289,11 @@ func convertQueryForLet(q *parser.QueryExpr, name string) (Expr, Stmt, error) {
 			}
 		}
 		if currentEnv != nil {
-			st := types.StructType{Name: structName, Fields: fieldTypes, Order: keys}
+			st := types.StructType{Name: structName, Fields: fieldTypes, Order: skeys}
 			currentEnv.SetStruct(structName, st)
 			currentEnv.SetVar(name, types.ListType{Elem: st}, false)
 		}
-		return qe, &StructDefStmt{Name: structName, Fields: keys}, nil
+		return qe, &StructDefStmt{Name: structName, Fields: skeys}, nil
 	}
 	if ex, err := convertRightJoinQuery(q); err == nil {
 		return ex, nil, nil
