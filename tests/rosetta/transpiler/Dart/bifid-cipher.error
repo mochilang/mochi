@@ -1,5 +1,0 @@
-run: exit status 254
-../../../tests/rosetta/transpiler/Dart/bifid-cipher.dart:25:18: Error: The method 'sublist' isn't defined for the class 'String'.
-Try correcting the name to the name of an existing method, or defining a method named 'sublist'.
-    final ch = s.sublist(i, i + 1);
-                 ^^^^^^^

@@ -18,11 +18,11 @@ Map<String, dynamic> square_to_maps(List<List<String>> square) {
 }
 
 String remove_space(String text, Map<String, List<int>> emap) {
-  final s = text.toUpperCase();
+  final String s = text.toUpperCase();
   String out = "";
   int i = 0;
   while (i < s.length) {
-    final ch = s.sublist(i, i + 1);
+    final String ch = s.substring(i, i + 1);
     if (ch != " " && emap.containsKey(ch)) {
     out = out + ch;
   }

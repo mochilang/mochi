@@ -113,7 +113,7 @@ func TestDartTranspiler_Rosetta_Golden(t *testing.T) {
 	}
 }
 
-func updateRosetta() {
+func UpdateRosetta() {
 	root := repoRoot(&testing.T{})
 	srcDir := filepath.Join(root, "tests", "rosetta", "x", "Mochi")
 	outDir := filepath.Join(root, "tests", "rosetta", "transpiler", "Dart")
