@@ -1,6 +1,6 @@
 import java.math.BigInteger
 
-val THRESHOLD: Int = 140737488355328
+val THRESHOLD: Long = 140737488355328
 fun indexOf(xs: MutableList<Int>, value: Int): Int {
     var i: Int = 0
     while (i < xs.size) {
@@ -79,7 +79,7 @@ fun classifySequence(k: Int): MutableMap<String, Any?> {
                         if (last == seq[n - 2]) {
                             aliquot = "Aspiring"
                         } else {
-                            if (contains(seq.subList(1, maxOf(1, n - 2)), last) as Boolean) {
+                            if ((contains(seq.subList(1, maxOf(1, n - 2)), last)) as Boolean) {
                                 val idx: Int = indexOf(seq, last)
                                 aliquot = ("Cyclic[" + ((n - 1) - idx).toString()) + "]"
                             } else {
@@ -134,7 +134,7 @@ fun user_main(): Unit {
     var k: Int = 1
     while (k <= 10) {
         val res: MutableMap<String, Any?> = classifySequence(k)
-        println((((padLeft(k, 2) + ": ") + padRight((res)["aliquot"] as Any?.toString(), 15)) + " ") + joinWithCommas((res)["seq"] as Any? as MutableList<Int>))
+        println((((padLeft(k, 2) + ": ") + padRight(((res)["aliquot"] as Any?).toString(), 15)) + " ") + joinWithCommas(((res)["seq"] as Any?) as MutableList<Int>))
         k = k + 1
     }
     println("")
@@ -143,13 +143,13 @@ fun user_main(): Unit {
     while (i < s.size) {
         val _val: Int = s[i]
         val res: MutableMap<String, Any?> = classifySequence(_val)
-        println((((padLeft(_val, 7) + ": ") + padRight((res)["aliquot"] as Any?.toString(), 15)) + " ") + joinWithCommas((res)["seq"] as Any? as MutableList<Int>))
+        println((((padLeft(_val, 7) + ": ") + padRight(((res)["aliquot"] as Any?).toString(), 15)) + " ") + joinWithCommas(((res)["seq"] as Any?) as MutableList<Int>))
         i = i + 1
     }
     println("")
     val big: Int = 15355717786080
     val r: MutableMap<String, Any?> = classifySequence(big)
-    println((((big.toString() + ": ") + padRight((r)["aliquot"] as Any?.toString(), 15)) + " ") + joinWithCommas((r)["seq"] as Any? as MutableList<Int>))
+    println((((big.toString() + ": ") + padRight(((r)["aliquot"] as Any?).toString(), 15)) + " ") + joinWithCommas(((r)["seq"] as Any?) as MutableList<Int>))
 }
 
 fun main() {
