@@ -1,7 +1,7 @@
 # Clojure Rosetta Transpiler
 
-Completed: 12/284
-Last updated: 2025-07-24 13:20 +0700
+Completed: 13/284
+Last updated: 2025-07-24 13:38 +0700
 
 1. [x] 100-doors-2 (1)
 2. [x] 100-doors-3 (2)
@@ -11,7 +11,7 @@ Last updated: 2025-07-24 13:20 +0700
 6. [ ] 15-puzzle-solver (6)
 7. [x] 2048 (7)
 8. [x] 21-game (8)
-9. [ ] 24-game-solve (9)
+9. [x] 24-game-solve (9)
 10. [ ] 24-game (10)
 11. [ ] 4-rings-or-4-squares-puzzle (11)
 12. [ ] 9-billion-names-of-god-the-integer (12)
