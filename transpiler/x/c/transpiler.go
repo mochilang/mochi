@@ -1144,10 +1144,24 @@ func (p *Program) Emit() []byte {
 	}
 	if needNow {
 		buf.WriteString("#include <time.h>\n")
-		buf.WriteString("static int _now(void) {\n")
+		buf.WriteString("#include <stdlib.h>\n")
+		buf.WriteString("static int seeded_now = 0;\n")
+		buf.WriteString("static long long now_seed = 0;\n")
+		buf.WriteString("static long long _now(void) {\n")
+		buf.WriteString("    if (!seeded_now) {\n")
+		buf.WriteString("        const char *s = getenv(\"MOCHI_NOW_SEED\");\n")
+		buf.WriteString("        if (s && *s) {\n")
+		buf.WriteString("            now_seed = atoll(s);\n")
+		buf.WriteString("            seeded_now = 1;\n")
+		buf.WriteString("        }\n")
+		buf.WriteString("    }\n")
+		buf.WriteString("    if (seeded_now) {\n")
+		buf.WriteString("        now_seed = (now_seed * 1664525 + 1013904223) % 2147483647;\n")
+		buf.WriteString("        return now_seed;\n")
+		buf.WriteString("    }\n")
 		buf.WriteString("    struct timespec ts;\n")
 		buf.WriteString("    clock_gettime(CLOCK_REALTIME, &ts);\n")
-		buf.WriteString("    return (int)(ts.tv_sec * 1000 + ts.tv_nsec / 1000000);\n")
+		buf.WriteString("    return (long long)(ts.tv_sec * 1000 + ts.tv_nsec / 1000000);\n")
 		buf.WriteString("}\n\n")
 	}
 	if needInput {
@@ -2621,13 +2635,25 @@ func convertUnary(u *parser.Unary) Expr {
 	if len(u.Value.Ops) == 1 && u.Value.Ops[0].Cast != nil &&
 		u.Value.Ops[0].Cast.Type != nil && u.Value.Ops[0].Cast.Type.Simple != nil && len(u.Ops) == 0 {
 		castType := *u.Value.Ops[0].Cast.Type.Simple
+		base := convertUnary(&parser.Unary{Value: &parser.PostfixExpr{Target: u.Value.Target}})
+		if base == nil {
+			return nil
+		}
 		if castType == "int" {
 			if lit := u.Value.Target.Lit; lit != nil && lit.Str != nil {
 				if n, err := strconv.Atoi(*lit.Str); err == nil {
 					return &IntLit{Value: n}
 				}
 			}
-		} else if ml := u.Value.Target.Map; ml != nil {
+			return &UnaryExpr{Op: "(int)", Expr: base}
+		}
+		if castType == "float" {
+			return &UnaryExpr{Op: "(double)", Expr: base}
+		}
+		if castType == "string" {
+			return &CallExpr{Func: "str", Args: []Expr{base}}
+		}
+		if ml := u.Value.Target.Map; ml != nil {
 			var fields []StructField
 			for _, it := range ml.Items {
 				key, ok := types.SimpleStringKey(it.Key)
@@ -2641,10 +2667,8 @@ func convertUnary(u *parser.Unary) Expr {
 				fields = append(fields, StructField{Name: key, Value: val})
 			}
 			return &StructLit{Name: castType, Fields: fields}
-		} else {
-			base := convertUnary(&parser.Unary{Value: &parser.PostfixExpr{Target: u.Value.Target}})
-			return base
 		}
+		return base
 	}
 	if len(u.Value.Ops) >= 1 && len(u.Ops) == 0 {
 		current := convertUnary(&parser.Unary{Value: &parser.PostfixExpr{Target: u.Value.Target}})
