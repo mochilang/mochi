@@ -2106,6 +2106,8 @@ func convertPostfix(pf *parser.PostfixExpr, env *types.Env) (Expr, error) {
 			if err != nil {
 				return nil, err
 			}
+			idxType := types.TypeOfExpr(op.Index.Start, env)
+			numericIdx := types.IsNumericType(idxType)
 			isStr := types.IsStringPrimary(pf.Target, env)
 			isMap := types.IsMapPrimary(pf.Target, env)
 			if !isMap && !isStr {
@@ -2115,7 +2117,11 @@ func convertPostfix(pf *parser.PostfixExpr, env *types.Env) (Expr, error) {
 			}
 			if !isMap {
 				if ex, ok := expr.(*IndexExpr); ok && ex.IsMap {
-					isMap = true
+					// Propagate only when indexing a real map
+					// or when the index is not numeric.
+					if !numericIdx && types.IsMapType(types.TypeOfPrimary(pf.Target, env)) {
+						isMap = true
+					}
 				}
 			}
 			expr = &IndexExpr{Target: expr, Index: idx, IsString: isStr, IsMap: isMap}
