@@ -23,6 +23,7 @@ var gensymCounter int
 var needBase bool
 var needHash bool
 var usesInput bool
+var usesNow bool
 var returnStack []Symbol
 
 func pushLoop(breakSym Symbol, cont Node) {
@@ -176,7 +177,7 @@ func header() []byte {
 	loc, _ := time.LoadLocation("Asia/Bangkok")
 	prelude := ""
 	if needBase {
-		prelude += "(import (only (scheme base) call/cc list-ref list-set! list))\n"
+		prelude += "(import (only (scheme base) call/cc when list-ref list-set! list))\n"
 		prelude += "(import (scheme time))\n"
 	}
 	if needHash {
@@ -184,6 +185,22 @@ func header() []byte {
 	}
 	if usesInput {
 		prelude += "(import (chibi io))\n"
+	}
+	if usesNow {
+		prelude += "(import (chibi time) (srfi 98))\n"
+		prelude += `(define _now_seeded #f)
+(define _now_seed 0)
+(define (now)
+  (when (not _now_seeded)
+    (let ((s (get-environment-variable "MOCHI_NOW_SEED")))
+      (when (and s (string->number s))
+        (set! _now_seed (string->number s))
+        (set! _now_seeded #t))))
+  (if _now_seeded
+      (begin
+        (set! _now_seed (modulo (+ (* _now_seed 1664525) 1013904223) 2147483647))
+        _now_seed)
+      (* (current-seconds) 1000000000)))`
 	}
 	prelude += `(define (to-str x)
   (cond ((pair? x)
@@ -588,6 +605,19 @@ func convertStmt(st *parser.Statement) (Node, error) {
 			return &List{Elems: []Node{Symbol("hash-table-set!"), target, idxNode, val}}, nil
 		}
 		return &List{Elems: []Node{Symbol("list-set!"), target, idxNode, val}}, nil
+	case st.Assign != nil && len(st.Assign.Field) > 0:
+		var target Node = Symbol(st.Assign.Name)
+		for i := 0; i < len(st.Assign.Field)-1; i++ {
+			f := st.Assign.Field[i]
+			target = &List{Elems: []Node{Symbol("hash-table-ref"), target, StringLit(f.Name)}}
+		}
+		last := st.Assign.Field[len(st.Assign.Field)-1]
+		val, err := convertParserExpr(st.Assign.Value)
+		if err != nil {
+			return nil, err
+		}
+		needHash = true
+		return &List{Elems: []Node{Symbol("hash-table-set!"), target, StringLit(last.Name), val}}, nil
 	case st.Fun != nil:
 		params := []Node{}
 		prevEnv := currentEnv
@@ -924,6 +954,18 @@ func convertParserPrimary(p *parser.Primary) (Node, error) {
 				return nil, err
 			}
 			pair := &List{Elems: []Node{Symbol("cons"), k, v}}
+			pairs = append(pairs, pair)
+		}
+		return &List{Elems: []Node{Symbol("alist->hash-table"), &List{Elems: pairs}}}, nil
+	case p.Struct != nil:
+		needHash = true
+		pairs := []Node{Symbol("list")}
+		for _, f := range p.Struct.Fields {
+			v, err := convertParserExpr(f.Value)
+			if err != nil {
+				return nil, err
+			}
+			pair := &List{Elems: []Node{Symbol("cons"), StringLit(f.Name), v}}
 			pairs = append(pairs, pair)
 		}
 		return &List{Elems: []Node{Symbol("alist->hash-table"), &List{Elems: pairs}}}, nil
@@ -1857,8 +1899,9 @@ func convertCall(target Node, call *parser.CallOp) (Node, error) {
 		if len(args) != 0 {
 			return nil, fmt.Errorf("now expects no args")
 		}
+		usesNow = true
 		needBase = true
-		return &List{Elems: []Node{Symbol("current-jiffy")}}, nil
+		return &List{Elems: []Node{Symbol("now")}}, nil
 	case "testpkg.FifteenPuzzleExample":
 		if len(args) != 0 {
 			return nil, fmt.Errorf("FifteenPuzzleExample expects no args")
