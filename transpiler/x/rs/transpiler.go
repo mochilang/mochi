@@ -985,6 +985,21 @@ func (s *IndexAssignStmt) emit(w io.Writer) {
 			indexLHS = old
 			return
 		}
+		if strings.HasPrefix(inferType(idx.Target), "Vec<") {
+			io.WriteString(w, "{ let idx = ")
+			idx.Index.emit(w)
+			if inferType(idx.Index) != "usize" {
+				io.WriteString(w, " as usize")
+			}
+			io.WriteString(w, "; ")
+			idx.Target.emit(w)
+			io.WriteString(w, "[idx]")
+			indexLHS = old
+			io.WriteString(w, " = ")
+			s.Value.emit(w)
+			io.WriteString(w, "; }")
+			return
+		}
 		idx.Target.emit(w)
 		io.WriteString(w, "[")
 		idx.Index.emit(w)
