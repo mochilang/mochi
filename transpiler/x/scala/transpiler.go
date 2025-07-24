@@ -915,10 +915,42 @@ type BinaryExpr struct {
 	Right Expr
 }
 
+func precedence(op string) int {
+	switch op {
+	case "*", "/", "%":
+		return 7
+	case "+", "-":
+		return 6
+	case "<", "<=", ">", ">=":
+		return 5
+	case "==", "!=", "in":
+		return 4
+	case "&&":
+		return 3
+	case "||":
+		return 2
+	case "union", "union_all", "except", "intersect":
+		return 1
+	default:
+		return 0
+	}
+}
+
 func (b *BinaryExpr) emit(w io.Writer) {
-	b.Left.emit(w)
+	emitChild := func(e Expr) {
+		if be, ok := e.(*BinaryExpr); ok {
+			if precedence(be.Op) < precedence(b.Op) {
+				fmt.Fprint(w, "(")
+				be.emit(w)
+				fmt.Fprint(w, ")")
+				return
+			}
+		}
+		e.emit(w)
+	}
+	emitChild(b.Left)
 	fmt.Fprintf(w, " %s ", b.Op)
-	b.Right.emit(w)
+	emitChild(b.Right)
 }
 
 type queryFrom struct {
