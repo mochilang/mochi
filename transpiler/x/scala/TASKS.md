@@ -1,3 +1,95 @@
+## Progress (2025-07-25 00:30 +0700)
+- scala rosetta: implement more casts
+- Regenerated golden files - 92/103 vm valid programs passing
+
+## Progress (2025-07-25 00:30 +0700)
+- scala rosetta: implement more casts
+- Regenerated golden files - 92/103 vm valid programs passing
+
+## Progress (2025-07-25 00:30 +0700)
+- scala rosetta: implement more casts
+- Regenerated golden files - 92/103 vm valid programs passing
+
+## Progress (2025-07-25 00:30 +0700)
+- scala rosetta: implement more casts
+- Regenerated golden files - 92/103 vm valid programs passing
+
+## Progress (2025-07-25 00:30 +0700)
+- scala rosetta: implement more casts
+- Regenerated golden files - 92/103 vm valid programs passing
+
+## Progress (2025-07-25 00:30 +0700)
+- scala rosetta: implement more casts
+- Regenerated golden files - 92/103 vm valid programs passing
+
+## Progress (2025-07-25 00:30 +0700)
+- scala rosetta: implement more casts
+- Regenerated golden files - 92/103 vm valid programs passing
+
+## Progress (2025-07-25 00:30 +0700)
+- scala rosetta: implement more casts
+- Regenerated golden files - 92/103 vm valid programs passing
+
+## Progress (2025-07-25 00:30 +0700)
+- scala rosetta: implement more casts
+- Regenerated golden files - 92/103 vm valid programs passing
+
+## Progress (2025-07-25 00:30 +0700)
+- scala rosetta: implement more casts
+- Regenerated golden files - 92/103 vm valid programs passing
+
+## Progress (2025-07-25 00:30 +0700)
+- scala rosetta: implement more casts
+- Regenerated golden files - 92/103 vm valid programs passing
+
+## Progress (2025-07-25 00:30 +0700)
+- scala rosetta: implement more casts
+- Regenerated golden files - 92/103 vm valid programs passing
+
+## Progress (2025-07-25 00:30 +0700)
+- scala rosetta: implement more casts
+- Regenerated golden files - 92/103 vm valid programs passing
+
+## Progress (2025-07-25 00:30 +0700)
+- scala rosetta: implement more casts
+- Regenerated golden files - 92/103 vm valid programs passing
+
+## Progress (2025-07-25 00:30 +0700)
+- scala rosetta: implement more casts
+- Regenerated golden files - 92/103 vm valid programs passing
+
+## Progress (2025-07-25 00:30 +0700)
+- scala rosetta: implement more casts
+- Regenerated golden files - 92/103 vm valid programs passing
+
+## Progress (2025-07-25 00:30 +0700)
+- scala rosetta: implement more casts
+- Regenerated golden files - 92/103 vm valid programs passing
+
+## Progress (2025-07-25 00:30 +0700)
+- scala rosetta: implement more casts
+- Regenerated golden files - 92/103 vm valid programs passing
+
+## Progress (2025-07-25 00:30 +0700)
+- scala rosetta: implement more casts
+- Regenerated golden files - 92/103 vm valid programs passing
+
+## Progress (2025-07-25 00:30 +0700)
+- scala rosetta: implement more casts
+- Regenerated golden files - 92/103 vm valid programs passing
+
+## Progress (2025-07-25 00:30 +0700)
+- scala rosetta: implement more casts
+- Regenerated golden files - 92/103 vm valid programs passing
+
+## Progress (2025-07-25 00:30 +0700)
+- scala rosetta: implement more casts
+- Regenerated golden files - 92/103 vm valid programs passing
+
+## Progress (2025-07-25 00:30 +0700)
+- scala rosetta: implement more casts
+- Regenerated golden files - 92/103 vm valid programs passing
+
 ## Progress (2025-07-25 00:08 +0700)
 - scala rosetta: transpile aks-test-for-primes
 - Regenerated golden files - 92/103 vm valid programs passing
