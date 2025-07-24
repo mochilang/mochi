@@ -84,11 +84,12 @@ func TestFSTranspiler_Rosetta_Golden(t *testing.T) {
 	var firstFail string
 	for _, src := range files {
 		base := strings.TrimSuffix(filepath.Base(src), ".mochi")
+		safe := strings.ReplaceAll(base, "+", "_")
 		ok := t.Run(base, func(t *testing.T) {
-			codePath := filepath.Join(outDir, base+".fs")
-			outPath := filepath.Join(outDir, base+".out")
-			errPath := filepath.Join(outDir, base+".error")
-			exePath := filepath.Join(outDir, base+".exe")
+			codePath := filepath.Join(outDir, safe+".fs")
+			outPath := filepath.Join(outDir, safe+".out")
+			errPath := filepath.Join(outDir, safe+".error")
+			exePath := filepath.Join(outDir, safe+".exe")
 
 			prog, err := parser.Parse(src)
 			if err != nil {
@@ -176,8 +177,9 @@ func updateRosetta() {
 	var lines []string
 	for i, name := range files {
 		mark := "[ ]"
-		if _, err := os.Stat(filepath.Join(outDir, name+".out")); err == nil {
-			if _, err2 := os.Stat(filepath.Join(outDir, name+".error")); os.IsNotExist(err2) {
+		safe := strings.ReplaceAll(name, "+", "_")
+		if _, err := os.Stat(filepath.Join(outDir, safe+".out")); err == nil {
+			if _, err2 := os.Stat(filepath.Join(outDir, safe+".error")); os.IsNotExist(err2) {
 				mark = "[x]"
 				compiled++
 			}

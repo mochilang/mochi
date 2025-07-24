@@ -1,3 +1,15 @@
+## Progress (2025-07-24 08:38 +0000)
+- fs transpiler: support net.LookupHost
+- Generated F# for 102/103 programs (102 passing)
+
+## Progress (2025-07-24 08:25 +0000)
+- fs transpiler: add rosetta programs 13-14
+- Generated F# for 102/103 programs (102 passing)
+
+## Progress (2025-07-24 15:22 +0700)
+- ctrans: support struct field access
+- Generated F# for 102/103 programs (102 passing)
+
 ## Progress (2025-07-24 15:11 +0700)
 - fs transpiler: handle map literals and loops
 - Generated F# for 102/103 programs (102 passing)
