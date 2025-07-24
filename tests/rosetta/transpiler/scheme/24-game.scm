@@ -1,8 +1,21 @@
-;; Generated on 2025-07-23 13:04 +0700
-(import (only (scheme base) call/cc list-ref list-set! list))
+;; Generated on 2025-07-24 08:13 +0700
+(import (only (scheme base) call/cc when list-ref list-set! list))
 (import (scheme time))
 (import (chibi io))
-(define (to-str x)
+(import (chibi time) (srfi 98))
+(define _now_seeded #f)
+(define _now_seed 0)
+(define (now)
+  (when (not _now_seeded)
+    (let ((s (get-environment-variable "MOCHI_NOW_SEED")))
+      (when (and s (string->number s))
+        (set! _now_seed (string->number s))
+        (set! _now_seeded #t))))
+  (if _now_seeded
+      (begin
+        (set! _now_seed (modulo (+ (* _now_seed 1664525) 1013904223) 2147483647))
+        _now_seed)
+      (* (current-seconds) 1000000000)))(define (to-str x)
   (cond ((pair? x)
          (string-append "[" (string-join (map to-str x) ", ") "]"))
         ((string? x) x)
@@ -13,7 +26,7 @@
     (if (eof-object? l) "" l)))
 (define (randDigit)
  (call/cc (lambda (ret1)
- (ret1 (+ (modulo (current-jiffy)
+ (ret1 (+ (modulo (now)
  9)
  1)
 )
