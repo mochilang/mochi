@@ -59,6 +59,46 @@ local function _padStart(s, len, ch)
 end
 `
 
+const helperBigRat = `
+local function _gcd(a, b)
+  a = math.abs(a)
+  b = math.abs(b)
+  while b ~= 0 do
+    a, b = b, a % b
+  end
+  return a
+end
+local function _bigrat(n, d)
+  if type(n) == 'table' and n.num ~= nil and n.den ~= nil and d == nil then
+    return n
+  end
+  if d == nil then d = 1 end
+  if d < 0 then n, d = -n, -d end
+  local g = _gcd(n, d)
+  return {num = n // g, den = d // g}
+end
+local function _add(a, b)
+  return _bigrat(a.num * b.den + b.num * a.den, a.den * b.den)
+end
+local function _sub(a, b)
+  return _bigrat(a.num * b.den - b.num * a.den, a.den * b.den)
+end
+local function _mul(a, b)
+  return _bigrat(a.num * b.num, a.den * b.den)
+end
+local function _div(a, b)
+  return _bigrat(a.num * b.den, a.den * b.num)
+end
+function num(x)
+  if type(x) == 'table' and x.num ~= nil then return x.num end
+  return x
+end
+function denom(x)
+  if type(x) == 'table' and x.den ~= nil then return x.den end
+  return 1
+end
+`
+
 // Program represents a simple Lua program consisting of a sequence of
 // statements.
 type Program struct {
@@ -1061,6 +1101,9 @@ func isFloatExpr(e Expr) bool {
 				if _, ok := t.(types.FloatType); ok {
 					return true
 				}
+				if _, ok := t.(types.BigRatType); ok {
+					return true
+				}
 			}
 		}
 	case *BinaryExpr:
@@ -1072,6 +1115,27 @@ func isFloatExpr(e Expr) bool {
 		if _, ok := exprType(ex).(types.FloatType); ok {
 			return true
 		}
+	}
+	return false
+}
+
+func isBigRatExpr(e Expr) bool {
+	switch ex := e.(type) {
+	case *Ident:
+		if currentEnv != nil {
+			if t, err := currentEnv.GetVar(ex.Name); err == nil {
+				if _, ok := t.(types.BigRatType); ok {
+					return true
+				}
+			}
+		}
+	case *CallExpr:
+		if ex.Func == "_bigrat" {
+			return true
+		}
+	}
+	if _, ok := exprType(e).(types.BigRatType); ok {
+		return true
 	}
 	return false
 }
@@ -1306,6 +1370,30 @@ func (b *BinaryExpr) emit(w io.Writer) {
 		return
 	}
 	op := b.Op
+	if isBigRatExpr(b.Left) || isBigRatExpr(b.Right) {
+		localOp := ""
+		switch op {
+		case "+":
+			localOp = "_add"
+		case "-":
+			localOp = "_sub"
+		case "*":
+			localOp = "_mul"
+		case "/":
+			localOp = "_div"
+		default:
+			localOp = ""
+		}
+		if localOp != "" {
+			io.WriteString(w, localOp)
+			io.WriteString(w, "(")
+			b.Left.emit(w)
+			io.WriteString(w, ", ")
+			b.Right.emit(w)
+			io.WriteString(w, ")")
+			return
+		}
+	}
 	if op == "!=" {
 		op = "~="
 	}
@@ -2051,6 +2139,7 @@ func Emit(p *Program) []byte {
 	b.WriteString(header())
 	b.WriteString(helperNow)
 	b.WriteString(helperPadStart)
+	b.WriteString(helperBigRat)
 	prevEnv := currentEnv
 	currentEnv = p.Env
 	for i, st := range p.Stmts {
@@ -2303,6 +2392,8 @@ func convertPostfix(p *parser.PostfixExpr) (Expr, error) {
 					expr = &ListCastExpr{Expr: expr}
 				} else if op.Cast.Type.Simple != nil && *op.Cast.Type.Simple == "int" {
 					expr = &CallExpr{Func: "int", Args: []Expr{expr}}
+				} else if op.Cast.Type.Simple != nil && *op.Cast.Type.Simple == "bigrat" {
+					expr = &CallExpr{Func: "_bigrat", Args: []Expr{expr}}
 				}
 			}
 		default:
