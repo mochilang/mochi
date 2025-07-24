@@ -448,6 +448,10 @@ type MapLit struct {
 }
 
 func (m *MapLit) emit(w io.Writer) {
+	if len(m.Keys) == 0 {
+		fmt.Fprint(w, "[:]")
+		return
+	}
 	fmt.Fprint(w, "[")
 	for i := range m.Keys {
 		if i > 0 {
@@ -952,7 +956,7 @@ func (c *CallExpr) emit(w io.Writer) {
 		if len(c.Args) == 1 {
 			fmt.Fprint(w, "Int(")
 			c.Args[0].emit(w)
-			fmt.Fprint(w, ")")
+			fmt.Fprint(w, ")!")
 			return
 		}
 	case "float":
@@ -1020,6 +1024,20 @@ func (c *CallExpr) emit(w io.Writer) {
 			fmt.Fprint(w, "..<")
 			c.Args[2].emit(w)
 			fmt.Fprint(w, "])")
+			return
+		}
+	case "upper":
+		if len(c.Args) == 1 {
+			fmt.Fprint(w, "String(")
+			c.Args[0].emit(w)
+			fmt.Fprint(w, ").uppercased()")
+			return
+		}
+	case "lower":
+		if len(c.Args) == 1 {
+			fmt.Fprint(w, "String(")
+			c.Args[0].emit(w)
+			fmt.Fprint(w, ").lowercased()")
 			return
 		}
 	case "now":
@@ -2970,7 +2988,7 @@ func convertPrimary(env *types.Env, pr *parser.Primary) (Expr, error) {
 			if err != nil {
 				return nil, err
 			}
-			return &CastExpr{Expr: arg, Type: "Int!"}, nil
+			return &CallExpr{Func: "int", Args: []Expr{arg}}, nil
 		}
 		if pr.Call.Func == "input" && len(pr.Call.Args) == 0 {
 			return &CallExpr{Func: "input"}, nil
@@ -3147,6 +3165,17 @@ func toSwiftType(t *parser.TypeRef) string {
 	if t == nil {
 		return ""
 	}
+	if t.Fun != nil {
+		var params []string
+		for _, p := range t.Fun.Params {
+			params = append(params, toSwiftType(p))
+		}
+		ret := "Void"
+		if t.Fun.Return != nil {
+			ret = toSwiftType(t.Fun.Return)
+		}
+		return "(" + strings.Join(params, ", ") + ") -> " + ret
+	}
 	if t.Generic != nil {
 		switch t.Generic.Name {
 		case "list":
@@ -3177,6 +3206,17 @@ func toSwiftType(t *parser.TypeRef) string {
 func toSwiftOptionalType(t *parser.TypeRef) string {
 	if t == nil {
 		return "Any?"
+	}
+	if t.Fun != nil {
+		var params []string
+		for _, p := range t.Fun.Params {
+			params = append(params, toSwiftType(p))
+		}
+		ret := "Void"
+		if t.Fun.Return != nil {
+			ret = toSwiftType(t.Fun.Return)
+		}
+		return "(" + strings.Join(params, ", ") + ") -> " + ret + "?"
 	}
 	if t.Generic != nil {
 		switch t.Generic.Name {
