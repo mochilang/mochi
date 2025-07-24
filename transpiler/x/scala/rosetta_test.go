@@ -152,7 +152,7 @@ func updateRosettaChecklist() {
 		} else if _, err := os.Stat(filepath.Join(outDir, name+".error")); err == nil {
 			mark = "[ ]"
 		}
-		lines = append(lines, fmt.Sprintf("%d. %s %s", i+1, mark, name))
+		lines = append(lines, fmt.Sprintf("%d. %s %s (%d)", i+1, mark, name, i+1))
 	}
 	var buf bytes.Buffer
 	buf.WriteString("# Scala Transpiler Rosetta Output\n\n")

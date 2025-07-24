@@ -355,7 +355,7 @@ func (t *TypeDeclStmt) emit(w io.Writer) {
 				if typ == "" {
 					typ = "Any"
 				}
-				fmt.Fprintf(w, "%s: %s", escapeName(f.Name), typ)
+				fmt.Fprintf(w, "var %s: %s", escapeName(f.Name), typ)
 			}
 			fmt.Fprintf(w, ") extends %s\n", escapeName(t.Name))
 		}
@@ -370,7 +370,7 @@ func (t *TypeDeclStmt) emit(w io.Writer) {
 		if typ == "" {
 			typ = "Any"
 		}
-		fmt.Fprintf(w, "%s: %s", escapeName(f.Name), typ)
+		fmt.Fprintf(w, "var %s: %s", escapeName(f.Name), typ)
 	}
 	fmt.Fprint(w, ")")
 }
