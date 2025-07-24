@@ -1,7 +1,0 @@
-exit status 1
-# command-line-arguments
-../../../tests/rosetta/transpiler/Go/avl-tree.go:19:20: cannot use n["Link"] (map index expression of interface type any) as []any value in variable declaration: need type assertion
-../../../tests/rosetta/transpiler/Go/avl-tree.go:91:5: invalid operation: node["Data"] < data (operator < not defined on interface)
-../../../tests/rosetta/transpiler/Go/avl-tree.go:100:21: invalid operation: node["Balance"] + ((2 * dir) - 1) (mismatched types any and int)
-../../../tests/rosetta/transpiler/Go/avl-tree.go:158:5: invalid operation: node["Data"] < data (operator < not defined on interface)
-../../../tests/rosetta/transpiler/Go/avl-tree.go:167:22: invalid operation: node["Balance"] + 1 (mismatched types any and int)

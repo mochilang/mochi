@@ -1,3 +1,291 @@
+## Progress (2025-07-24 14:40 +0700)
+- fix haskell transpiler main detection
+- Regenerated golden files - 103/103 vm valid programs passing
+
+## Progress (2025-07-24 14:40 +0700)
+- fix haskell transpiler main detection
+- Regenerated golden files - 103/103 vm valid programs passing
+
+## Progress (2025-07-24 14:40 +0700)
+- fix haskell transpiler main detection
+- Regenerated golden files - 103/103 vm valid programs passing
+
+## Progress (2025-07-24 14:40 +0700)
+- fix haskell transpiler main detection
+- Regenerated golden files - 103/103 vm valid programs passing
+
+## Progress (2025-07-24 14:40 +0700)
+- fix haskell transpiler main detection
+- Regenerated golden files - 103/103 vm valid programs passing
+
+## Progress (2025-07-24 14:40 +0700)
+- fix haskell transpiler main detection
+- Regenerated golden files - 103/103 vm valid programs passing
+
+## Progress (2025-07-24 14:40 +0700)
+- fix haskell transpiler main detection
+- Regenerated golden files - 103/103 vm valid programs passing
+
+## Progress (2025-07-24 14:40 +0700)
+- fix haskell transpiler main detection
+- Regenerated golden files - 103/103 vm valid programs passing
+
+## Progress (2025-07-24 14:40 +0700)
+- fix haskell transpiler main detection
+- Regenerated golden files - 103/103 vm valid programs passing
+
+## Progress (2025-07-24 14:40 +0700)
+- fix haskell transpiler main detection
+- Regenerated golden files - 103/103 vm valid programs passing
+
+## Progress (2025-07-24 14:40 +0700)
+- fix haskell transpiler main detection
+- Regenerated golden files - 103/103 vm valid programs passing
+
+## Progress (2025-07-24 14:40 +0700)
+- fix haskell transpiler main detection
+- Regenerated golden files - 103/103 vm valid programs passing
+
+## Progress (2025-07-24 14:40 +0700)
+- fix haskell transpiler main detection
+- Regenerated golden files - 103/103 vm valid programs passing
+
+## Progress (2025-07-24 14:40 +0700)
+- fix haskell transpiler main detection
+- Regenerated golden files - 103/103 vm valid programs passing
+
+## Progress (2025-07-24 14:40 +0700)
+- fix haskell transpiler main detection
+- Regenerated golden files - 103/103 vm valid programs passing
+
+## Progress (2025-07-24 14:40 +0700)
+- fix haskell transpiler main detection
+- Regenerated golden files - 103/103 vm valid programs passing
+
+## Progress (2025-07-24 14:40 +0700)
+- fix haskell transpiler main detection
+- Regenerated golden files - 103/103 vm valid programs passing
+
+## Progress (2025-07-24 14:40 +0700)
+- fix haskell transpiler main detection
+- Regenerated golden files - 103/103 vm valid programs passing
+
+## Progress (2025-07-24 14:40 +0700)
+- fix haskell transpiler main detection
+- Regenerated golden files - 103/103 vm valid programs passing
+
+## Progress (2025-07-24 14:40 +0700)
+- fix haskell transpiler main detection
+- Regenerated golden files - 103/103 vm valid programs passing
+
+## Progress (2025-07-24 14:40 +0700)
+- fix haskell transpiler main detection
+- Regenerated golden files - 103/103 vm valid programs passing
+
+## Progress (2025-07-24 14:40 +0700)
+- fix haskell transpiler main detection
+- Regenerated golden files - 103/103 vm valid programs passing
+
+## Progress (2025-07-24 14:40 +0700)
+- fix haskell transpiler main detection
+- Regenerated golden files - 103/103 vm valid programs passing
+
+## Progress (2025-07-24 14:40 +0700)
+- fix haskell transpiler main detection
+- Regenerated golden files - 103/103 vm valid programs passing
+
+## Progress (2025-07-24 14:40 +0700)
+- fix haskell transpiler main detection
+- Regenerated golden files - 103/103 vm valid programs passing
+
+## Progress (2025-07-24 14:40 +0700)
+- fix haskell transpiler main detection
+- Regenerated golden files - 103/103 vm valid programs passing
+
+## Progress (2025-07-24 14:40 +0700)
+- fix haskell transpiler main detection
+- Regenerated golden files - 103/103 vm valid programs passing
+
+## Progress (2025-07-24 14:40 +0700)
+- fix haskell transpiler main detection
+- Regenerated golden files - 103/103 vm valid programs passing
+
+## Progress (2025-07-24 14:40 +0700)
+- fix haskell transpiler main detection
+- Regenerated golden files - 103/103 vm valid programs passing
+
+## Progress (2025-07-24 14:40 +0700)
+- fix haskell transpiler main detection
+- Regenerated golden files - 103/103 vm valid programs passing
+
+## Progress (2025-07-24 14:40 +0700)
+- fix haskell transpiler main detection
+- Regenerated golden files - 103/103 vm valid programs passing
+
+## Progress (2025-07-24 14:40 +0700)
+- fix haskell transpiler main detection
+- Regenerated golden files - 103/103 vm valid programs passing
+
+## Progress (2025-07-24 14:40 +0700)
+- fix haskell transpiler main detection
+- Regenerated golden files - 103/103 vm valid programs passing
+
+## Progress (2025-07-24 14:40 +0700)
+- fix haskell transpiler main detection
+- Regenerated golden files - 103/103 vm valid programs passing
+
+## Progress (2025-07-24 14:40 +0700)
+- fix haskell transpiler main detection
+- Regenerated golden files - 103/103 vm valid programs passing
+
+## Progress (2025-07-24 14:40 +0700)
+- fix haskell transpiler main detection
+- Regenerated golden files - 103/103 vm valid programs passing
+
+## Progress (2025-07-24 14:40 +0700)
+- fix haskell transpiler main detection
+- Regenerated golden files - 103/103 vm valid programs passing
+
+## Progress (2025-07-24 14:40 +0700)
+- fix haskell transpiler main detection
+- Regenerated golden files - 103/103 vm valid programs passing
+
+## Progress (2025-07-24 14:40 +0700)
+- fix haskell transpiler main detection
+- Regenerated golden files - 103/103 vm valid programs passing
+
+## Progress (2025-07-24 14:40 +0700)
+- fix haskell transpiler main detection
+- Regenerated golden files - 103/103 vm valid programs passing
+
+## Progress (2025-07-24 14:40 +0700)
+- fix haskell transpiler main detection
+- Regenerated golden files - 103/103 vm valid programs passing
+
+## Progress (2025-07-24 14:40 +0700)
+- fix haskell transpiler main detection
+- Regenerated golden files - 103/103 vm valid programs passing
+
+## Progress (2025-07-24 14:40 +0700)
+- fix haskell transpiler main detection
+- Regenerated golden files - 103/103 vm valid programs passing
+
+## Progress (2025-07-24 14:40 +0700)
+- fix haskell transpiler main detection
+- Regenerated golden files - 103/103 vm valid programs passing
+
+## Progress (2025-07-24 14:40 +0700)
+- fix haskell transpiler main detection
+- Regenerated golden files - 103/103 vm valid programs passing
+
+## Progress (2025-07-24 14:40 +0700)
+- fix haskell transpiler main detection
+- Regenerated golden files - 103/103 vm valid programs passing
+
+## Progress (2025-07-24 14:40 +0700)
+- fix haskell transpiler main detection
+- Regenerated golden files - 103/103 vm valid programs passing
+
+## Progress (2025-07-24 14:40 +0700)
+- fix haskell transpiler main detection
+- Regenerated golden files - 103/103 vm valid programs passing
+
+## Progress (2025-07-24 14:40 +0700)
+- fix haskell transpiler main detection
+- Regenerated golden files - 103/103 vm valid programs passing
+
+## Progress (2025-07-24 14:40 +0700)
+- fix haskell transpiler main detection
+- Regenerated golden files - 103/103 vm valid programs passing
+
+## Progress (2025-07-24 14:40 +0700)
+- fix haskell transpiler main detection
+- Regenerated golden files - 103/103 vm valid programs passing
+
+## Progress (2025-07-24 14:40 +0700)
+- fix haskell transpiler main detection
+- Regenerated golden files - 103/103 vm valid programs passing
+
+## Progress (2025-07-24 14:40 +0700)
+- fix haskell transpiler main detection
+- Regenerated golden files - 103/103 vm valid programs passing
+
+## Progress (2025-07-24 14:40 +0700)
+- fix haskell transpiler main detection
+- Regenerated golden files - 103/103 vm valid programs passing
+
+## Progress (2025-07-24 14:40 +0700)
+- fix haskell transpiler main detection
+- Regenerated golden files - 103/103 vm valid programs passing
+
+## Progress (2025-07-24 14:40 +0700)
+- fix haskell transpiler main detection
+- Regenerated golden files - 103/103 vm valid programs passing
+
+## Progress (2025-07-24 14:40 +0700)
+- fix haskell transpiler main detection
+- Regenerated golden files - 103/103 vm valid programs passing
+
+## Progress (2025-07-24 14:40 +0700)
+- fix haskell transpiler main detection
+- Regenerated golden files - 103/103 vm valid programs passing
+
+## Progress (2025-07-24 14:40 +0700)
+- fix haskell transpiler main detection
+- Regenerated golden files - 103/103 vm valid programs passing
+
+## Progress (2025-07-24 14:40 +0700)
+- fix haskell transpiler main detection
+- Regenerated golden files - 103/103 vm valid programs passing
+
+## Progress (2025-07-24 14:40 +0700)
+- fix haskell transpiler main detection
+- Regenerated golden files - 103/103 vm valid programs passing
+
+## Progress (2025-07-24 14:40 +0700)
+- fix haskell transpiler main detection
+- Regenerated golden files - 103/103 vm valid programs passing
+
+## Progress (2025-07-24 14:40 +0700)
+- fix haskell transpiler main detection
+- Regenerated golden files - 103/103 vm valid programs passing
+
+## Progress (2025-07-24 14:40 +0700)
+- fix haskell transpiler main detection
+- Regenerated golden files - 103/103 vm valid programs passing
+
+## Progress (2025-07-24 14:40 +0700)
+- fix haskell transpiler main detection
+- Regenerated golden files - 103/103 vm valid programs passing
+
+## Progress (2025-07-24 14:40 +0700)
+- fix haskell transpiler main detection
+- Regenerated golden files - 103/103 vm valid programs passing
+
+## Progress (2025-07-24 14:40 +0700)
+- fix haskell transpiler main detection
+- Regenerated golden files - 103/103 vm valid programs passing
+
+## Progress (2025-07-24 14:40 +0700)
+- fix haskell transpiler main detection
+- Regenerated golden files - 103/103 vm valid programs passing
+
+## Progress (2025-07-24 14:40 +0700)
+- fix haskell transpiler main detection
+- Regenerated golden files - 103/103 vm valid programs passing
+
+## Progress (2025-07-24 14:40 +0700)
+- fix haskell transpiler main detection
+- Regenerated golden files - 103/103 vm valid programs passing
+
+## Progress (2025-07-24 14:40 +0700)
+- fix haskell transpiler main detection
+- Regenerated golden files - 103/103 vm valid programs passing
+
+## Progress (2025-07-24 14:40 +0700)
+- fix haskell transpiler main detection
+- Regenerated golden files - 103/103 vm valid programs passing
+
 ## Progress (2025-07-24 13:17 +0700)
 - go transpiler: support list element typing
 - Regenerated golden files - 103/103 vm valid programs passing
