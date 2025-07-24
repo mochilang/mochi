@@ -2281,7 +2281,7 @@ func (p *Program) Emit() []byte {
 }
 
 // Transpile converts a Mochi program into a simple OCaml AST.
-func transpileStmt(st *parser.Statement, env *types.Env, vars map[string]VarInfo) (Stmt, error) {
+func transpileStmt(st *parser.Statement, env *types.Env, vars map[string]VarInfo, top bool) (Stmt, error) {
 	switch {
 	case st.Import != nil:
 		if st.Import.Lang != nil {
@@ -2498,13 +2498,13 @@ func transpileStmt(st *parser.Statement, env *types.Env, vars map[string]VarInfo
 		if err != nil {
 			return nil, err
 		}
-		thenStmts, err := transpileStmts(st.If.Then, env, vars)
+		thenStmts, err := transpileStmts(st.If.Then, env, vars, false)
 		if err != nil {
 			return nil, err
 		}
 		var elseStmts []Stmt
 		if st.If.ElseIf != nil {
-			elseStmt, err := transpileStmt(&parser.Statement{If: st.If.ElseIf}, env, vars)
+			elseStmt, err := transpileStmt(&parser.Statement{If: st.If.ElseIf}, env, vars, false)
 			if err != nil {
 				return nil, err
 			}
@@ -2512,7 +2512,7 @@ func transpileStmt(st *parser.Statement, env *types.Env, vars map[string]VarInfo
 				elseStmts = []Stmt{elseStmt}
 			}
 		} else if len(st.If.Else) > 0 {
-			elseStmts, err = transpileStmts(st.If.Else, env, vars)
+			elseStmts, err = transpileStmts(st.If.Else, env, vars, false)
 			if err != nil {
 				return nil, err
 			}
@@ -2523,7 +2523,7 @@ func transpileStmt(st *parser.Statement, env *types.Env, vars map[string]VarInfo
 		if err != nil {
 			return nil, err
 		}
-		body, err := transpileStmts(st.While.Body, env, vars)
+		body, err := transpileStmts(st.While.Body, env, vars, false)
 		if err != nil {
 			return nil, err
 		}
@@ -2539,7 +2539,7 @@ func transpileStmt(st *parser.Statement, env *types.Env, vars map[string]VarInfo
 				return nil, err
 			}
 			vars[st.For.Name] = VarInfo{typ: "int"}
-			body, err := transpileStmts(st.For.Body, env, vars)
+			body, err := transpileStmts(st.For.Body, env, vars, false)
 			if err != nil {
 				return nil, err
 			}
@@ -2563,7 +2563,7 @@ func transpileStmt(st *parser.Statement, env *types.Env, vars map[string]VarInfo
 			}
 		}
 		vars[st.For.Name] = VarInfo{typ: vtyp}
-		body, err := transpileStmts(st.For.Body, env, vars)
+		body, err := transpileStmts(st.For.Body, env, vars, false)
 		if err != nil {
 			return nil, err
 		}
@@ -2672,7 +2672,7 @@ func transpileStmt(st *parser.Statement, env *types.Env, vars map[string]VarInfo
 			}
 			fnVars[p.Name] = VarInfo{typ: typ, ref: mutated[p.Name]}
 		}
-		body, err := transpileStmts(st.Fun.Body, child, fnVars)
+		body, err := transpileStmts(st.Fun.Body, child, fnVars, false)
 		if err != nil {
 			return nil, err
 		}
@@ -2694,7 +2694,11 @@ func transpileStmt(st *parser.Statement, env *types.Env, vars map[string]VarInfo
 				// (none for this case)
 			}
 		}
-		local := len(vars) > 0
+		// Treat functions as local only when defined within another
+		// function scope. Top-level variables preceding a function
+		// should not cause the function to be emitted with a trailing
+		// "in".
+		local := !top
 		return &FunStmt{Name: st.Fun.Name, Params: params, Body: body, Ret: ret, RetTyp: typeString(retTyp), Local: local, EndsWithReturn: endsWithReturn}, nil
 	case st.Type != nil:
 		if len(st.Type.Members) > 0 {
@@ -2738,10 +2742,10 @@ func transpileStmt(st *parser.Statement, env *types.Env, vars map[string]VarInfo
 	}
 }
 
-func transpileStmts(list []*parser.Statement, env *types.Env, vars map[string]VarInfo) ([]Stmt, error) {
+func transpileStmts(list []*parser.Statement, env *types.Env, vars map[string]VarInfo, top bool) ([]Stmt, error) {
 	var out []Stmt
 	for _, st := range list {
-		compiled, err := transpileStmt(st, env, vars)
+		compiled, err := transpileStmt(st, env, vars, top)
 		if err != nil {
 			return nil, err
 		}
@@ -2758,7 +2762,7 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	usesDynMath = false
 	pr := &Program{}
 	vars := map[string]VarInfo{}
-	stmts, err := transpileStmts(prog.Statements, env, vars)
+	stmts, err := transpileStmts(prog.Statements, env, vars, true)
 	if err != nil {
 		return nil, err
 	}
@@ -3657,7 +3661,7 @@ func convertFunExpr(fn *parser.FunExpr, env *types.Env, vars map[string]VarInfo)
 		}
 		retExpr = ex
 	} else if len(fn.BlockBody) > 0 {
-		body, err := transpileStmts(fn.BlockBody, child, fnVars)
+		body, err := transpileStmts(fn.BlockBody, child, fnVars, false)
 		if err != nil {
 			return nil, "", err
 		}

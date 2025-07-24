@@ -2,7 +2,7 @@
 
 This directory contains OCaml code generated from Rosetta Code programs in `tests/rosetta/x/Mochi`.
 
-Completed programs: 26/284
+Completed programs: 27/284
 
 1. [x] 100-doors-2 (1)
 2. [x] 100-doors-3 (2)
@@ -30,7 +30,7 @@ Completed programs: 26/284
 24. [x] abundant-deficient-and-perfect-number-classifications (24)
 25. [x] abundant-odd-numbers (25)
 26. [x] accumulator-factory (26)
-27. [ ] achilles-numbers (27)
+27. [x] achilles-numbers (27)
 28. [ ] ackermann-function-2 (28)
 29. [ ] ackermann-function-3 (29)
 30. [ ] ackermann-function (30)
@@ -288,4 +288,4 @@ Completed programs: 26/284
 282. [ ] deepcopy-1 (282)
 283. [ ] define-a-primitive-data-type (283)
 284. [ ] md5 (284)
-Last updated 2025-07-25 00:13 +0700
+Last updated 2025-07-25 00:31 +0700
