@@ -78,6 +78,20 @@ def _padStart(s, len, ch)
 end
 `
 
+const helperIndexOf = `
+def _indexOf(s, ch)
+  idx = s.index(ch)
+  idx ? idx : -1
+end
+`
+
+const helperSHA256 = `
+require 'digest'
+def _sha256(bs)
+  Digest::SHA256.digest(bs.pack('C*')).bytes
+end
+`
+
 // --- Ruby AST ---
 
 type Program struct {
@@ -1122,6 +1136,8 @@ var (
 	usesNow        bool
 	usesInput      bool
 	usesLookupHost bool
+	usesSHA256     bool
+	usesIndexOf    bool
 )
 
 // reserved lists Ruby reserved keywords that cannot be used as identifiers.
@@ -1721,6 +1737,8 @@ func (c *CastExpr) emit(e *emitter) {
 		io.WriteString(e.w, ".to_f")
 	case "string":
 		io.WriteString(e.w, ".to_s")
+	case "bigrat":
+		io.WriteString(e.w, ".to_r")
 	}
 }
 
@@ -1932,6 +1950,16 @@ type MethodCallExpr struct {
 }
 
 func (m *MethodCallExpr) emit(e *emitter) {
+	if m.Method == "padStart" && len(m.Args) == 2 {
+		io.WriteString(e.w, "_padStart(")
+		m.Target.emit(e)
+		io.WriteString(e.w, ", ")
+		m.Args[0].emit(e)
+		io.WriteString(e.w, ", ")
+		m.Args[1].emit(e)
+		io.WriteString(e.w, ")")
+		return
+	}
 	m.Target.emit(e)
 	io.WriteString(e.w, ".")
 	io.WriteString(e.w, m.Method)
@@ -2459,6 +2487,16 @@ func Emit(w io.Writer, p *Program) error {
 			return err
 		}
 	}
+	if usesSHA256 {
+		if _, err := io.WriteString(w, helperSHA256+"\n"); err != nil {
+			return err
+		}
+	}
+	if usesIndexOf {
+		if _, err := io.WriteString(w, helperIndexOf+"\n"); err != nil {
+			return err
+		}
+	}
 	if _, err := io.WriteString(w, helperAdd+"\n"); err != nil {
 		return err
 	}
@@ -2479,6 +2517,8 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	usesNow = false
 	usesInput = false
 	usesLookupHost = false
+	usesSHA256 = false
+	usesIndexOf = false
 	currentEnv = env
 	topVars = map[string]bool{}
 	scopeStack = nil
@@ -3338,7 +3378,13 @@ func convertPostfix(pf *parser.PostfixExpr) (Expr, error) {
 				if method == "contains" {
 					method = "include?"
 				}
-				expr = &MethodCallExpr{Target: expr, Method: method, Args: args}
+				if method == "padStart" && len(args) == 2 {
+					expr = &CallExpr{Func: "_padStart", Args: append([]Expr{expr}, args...)}
+				} else if method == "get" && len(args) == 2 {
+					expr = &MapGetExpr{Map: expr, Key: args[0], Default: args[1]}
+				} else {
+					expr = &MethodCallExpr{Target: expr, Method: method, Args: args}
+				}
 			}
 			i++ // consume call op
 			curType = nil
@@ -3366,9 +3412,7 @@ func convertPostfix(pf *parser.PostfixExpr) (Expr, error) {
 						curType = types.ResolveTypeRef(op.Cast.Type, currentEnv)
 					}
 				}
-				if curType == nil {
-					expr = &CastExpr{Value: expr, Type: typName}
-				}
+				expr = &CastExpr{Value: expr, Type: typName}
 			}
 		default:
 			return nil, fmt.Errorf("unsupported postfix")
@@ -3454,6 +3498,11 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 				return nil, fmt.Errorf("substring expects 3 args")
 			}
 			return &SliceExpr{Target: args[0], Start: args[1], End: args[2]}, nil
+		case "substr":
+			if len(args) != 3 {
+				return nil, fmt.Errorf("substr expects 3 args")
+			}
+			return &SliceExpr{Target: args[0], Start: args[1], End: args[2]}, nil
 		case "upper":
 			if len(args) != 1 {
 				return nil, fmt.Errorf("upper expects 1 arg")
@@ -3464,11 +3513,38 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 				return nil, fmt.Errorf("lower expects 1 arg")
 			}
 			return &MethodCallExpr{Target: args[0], Method: "downcase"}, nil
+		case "contains":
+			if len(args) != 2 {
+				return nil, fmt.Errorf("contains expects 2 args")
+			}
+			return &MethodCallExpr{Target: args[0], Method: "include?", Args: []Expr{args[1]}}, nil
+		case "indexOf":
+			if len(args) != 2 {
+				return nil, fmt.Errorf("indexOf expects 2 args")
+			}
+			usesIndexOf = true
+			return &CallExpr{Func: "_indexOf", Args: args}, nil
+		case "num":
+			if len(args) != 1 {
+				return nil, fmt.Errorf("num expects 1 arg")
+			}
+			return &MethodCallExpr{Target: args[0], Method: "numerator"}, nil
+		case "denom":
+			if len(args) != 1 {
+				return nil, fmt.Errorf("denom expects 1 arg")
+			}
+			return &MethodCallExpr{Target: args[0], Method: "denominator"}, nil
 		case "padStart":
 			if len(args) != 3 {
 				return nil, fmt.Errorf("padStart expects 3 args")
 			}
 			return &CallExpr{Func: "_padStart", Args: args}, nil
+		case "sha256":
+			if len(args) != 1 {
+				return nil, fmt.Errorf("sha256 expects 1 arg")
+			}
+			usesSHA256 = true
+			return &CallExpr{Func: "_sha256", Args: args}, nil
 		case "now":
 			if len(args) != 0 {
 				return nil, fmt.Errorf("now takes no args")
