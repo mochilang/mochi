@@ -130,7 +130,7 @@ func safeName(n string) string {
 
 func shouldWrapCall(name string) bool {
 	switch name {
-	case "input", "print", "putStrLn", "trace":
+	case "input", "print", "putStrLn", "trace", "main", "randDigit":
 		return false
 	}
 	if strings.Contains(name, ".") {
@@ -139,6 +139,23 @@ func shouldWrapCall(name string) bool {
 	if envInfo != nil {
 		if _, ok := envInfo.GetFunc(name); ok {
 			return true
+		}
+	}
+	return false
+}
+
+func isMainCall(e Expr) bool {
+	if nr, ok := e.(*NameRef); ok {
+		return nr.Name == "main"
+	}
+	if call, ok := e.(*CallExpr); ok {
+		if n, ok2 := call.Fun.(*NameRef); ok2 {
+			if n.Name == "main" && len(call.Args) == 0 {
+				return true
+			}
+			if n.Name == "unsafePerformIO" && len(call.Args) == 1 {
+				return isMainCall(call.Args[0])
+			}
 		}
 	}
 	return false
@@ -866,17 +883,21 @@ func (f *ForStmt) emit(w io.Writer) {
 		}
 		var guards []guard
 		var rest []Stmt
+		seenOther := false
 		for _, st := range f.Body {
-			if is, ok := st.(*IfStmt); ok && len(is.Then) == 1 && len(is.Else) == 0 {
-				switch is.Then[0].(type) {
-				case *ContinueStmt:
-					guards = append(guards, guard{cond: is.Cond, action: loop + " xs"})
-					continue
-				case *BreakStmt:
-					guards = append(guards, guard{cond: is.Cond, action: "return ()"})
-					continue
+			if !seenOther {
+				if is, ok := st.(*IfStmt); ok && len(is.Then) == 1 && len(is.Else) == 0 {
+					switch is.Then[0].(type) {
+					case *ContinueStmt:
+						guards = append(guards, guard{cond: is.Cond, action: loop + " xs"})
+						continue
+					case *BreakStmt:
+						guards = append(guards, guard{cond: is.Cond, action: "return ()"})
+						continue
+					}
 				}
 			}
+			seenOther = true
 			rest = append(rest, st)
 		}
 		if len(guards) > 0 {
@@ -2491,12 +2512,8 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	}
 	if hasMainFunc && len(h.Stmts) > 0 {
 		if es, ok := h.Stmts[len(h.Stmts)-1].(*ExprStmt); ok {
-			if nr, ok2 := es.Expr.(*NameRef); ok2 && nr.Name == "main" {
+			if isMainCall(es.Expr) {
 				h.Stmts = h.Stmts[:len(h.Stmts)-1]
-			} else if call, ok2 := es.Expr.(*CallExpr); ok2 {
-				if n, ok3 := call.Fun.(*NameRef); ok3 && n.Name == "main" && len(call.Args) == 0 {
-					h.Stmts = h.Stmts[:len(h.Stmts)-1]
-				}
 			}
 		}
 	}
@@ -3288,7 +3305,11 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 			}
 			args = append(args, ex)
 		}
-		return &CallExpr{Fun: fun, Args: args}, nil
+		call := &CallExpr{Fun: fun, Args: args}
+		if shouldWrapCall(p.Call.Func) {
+			call = &CallExpr{Fun: &NameRef{Name: "unsafePerformIO"}, Args: []Expr{call}}
+		}
+		return call, nil
 	default:
 		return nil, fmt.Errorf("unsupported primary")
 	}
