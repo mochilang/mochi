@@ -506,6 +506,15 @@ var nestedFunArgs map[string][]string
 var stringVars map[string]bool
 var renameVars map[string]string
 
+// builtin replacements for some heavy numeric helpers
+var bigIntHelpers = map[string]*Defn{
+	"bigTrim":     {Name: "bigTrim", Params: []Node{Symbol("a")}, Body: []Node{Symbol("a")}},
+	"bigFromInt":  {Name: "bigFromInt", Params: []Node{Symbol("x")}, Body: []Node{&List{Elems: []Node{Symbol("bigint"), Symbol("x")}}}},
+	"bigAdd":      {Name: "bigAdd", Params: []Node{Symbol("a"), Symbol("b")}, Body: []Node{&List{Elems: []Node{Symbol("+"), Symbol("a"), Symbol("b")}}}},
+	"bigSub":      {Name: "bigSub", Params: []Node{Symbol("a"), Symbol("b")}, Body: []Node{&List{Elems: []Node{Symbol("-"), Symbol("a"), Symbol("b")}}}},
+	"bigToString": {Name: "bigToString", Params: []Node{Symbol("a")}, Body: []Node{&List{Elems: []Node{Symbol("str"), Symbol("a")}}}},
+}
+
 // Transpile converts a Mochi program into a Clojure AST. The implementation
 // is intentionally minimal and currently only supports very small programs used
 // by a subset of tests.
@@ -535,8 +544,13 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 
 	// emit (ns main)
 	funNames := []string{}
+	builtinUsed := map[string]bool{}
 	for _, st := range prog.Statements {
 		if st.Fun != nil {
+			if _, ok := bigIntHelpers[st.Fun.Name]; ok {
+				builtinUsed[st.Fun.Name] = true
+				continue
+			}
 			funNames = append(funNames, st.Fun.Name)
 		}
 	}
@@ -550,6 +564,11 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	}
 	pr.Forms = append(pr.Forms, &List{Elems: nsElems})
 	pr.Forms = append(pr.Forms, &List{Elems: []Node{Symbol("require"), Symbol("'clojure.set")}})
+	for name := range builtinUsed {
+		if defn, ok := bigIntHelpers[name]; ok {
+			pr.Forms = append(pr.Forms, defn)
+		}
+	}
 	initSeed := &List{Elems: []Node{
 		Symbol("let"), &Vector{Elems: []Node{
 			Symbol("s"), &List{Elems: []Node{Symbol("System/getenv"), StringLit("MOCHI_NOW_SEED")}},
@@ -576,6 +595,11 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 
 	body := []Node{}
 	for _, st := range prog.Statements {
+		if st.Fun != nil {
+			if _, ok := builtinUsed[st.Fun.Name]; ok {
+				continue
+			}
+		}
 		if st.Type != nil || st.ExternType != nil {
 			// type declarations have no runtime representation
 			continue

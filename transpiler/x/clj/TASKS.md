@@ -1,3 +1,7 @@
+## Progress (2025-07-25 00:22 +0700)
+- docs: mark 99-bottles-of-beer-2 done
+- Regenerated golden files - 101/103 vm valid programs passing
+
 ## Progress (2025-07-24 18:46 +0700)
 - clj: support puzzle solver
 - Regenerated golden files - 101/103 vm valid programs passing
