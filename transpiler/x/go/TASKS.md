@@ -1,3 +1,63 @@
+## Progress (2025-07-24 13:17 +0700)
+- go transpiler: support list element typing
+- Regenerated golden files - 103/103 vm valid programs passing
+
+## Progress (2025-07-24 13:17 +0700)
+- go transpiler: support list element typing
+- Regenerated golden files - 103/103 vm valid programs passing
+
+## Progress (2025-07-24 13:17 +0700)
+- go transpiler: support list element typing
+- Regenerated golden files - 103/103 vm valid programs passing
+
+## Progress (2025-07-24 13:17 +0700)
+- go transpiler: support list element typing
+- Regenerated golden files - 103/103 vm valid programs passing
+
+## Progress (2025-07-24 13:17 +0700)
+- go transpiler: support list element typing
+- Regenerated golden files - 103/103 vm valid programs passing
+
+## Progress (2025-07-24 13:17 +0700)
+- go transpiler: support list element typing
+- Regenerated golden files - 103/103 vm valid programs passing
+
+## Progress (2025-07-24 13:17 +0700)
+- go transpiler: support list element typing
+- Regenerated golden files - 103/103 vm valid programs passing
+
+## Progress (2025-07-24 13:17 +0700)
+- go transpiler: support list element typing
+- Regenerated golden files - 103/103 vm valid programs passing
+
+## Progress (2025-07-24 13:17 +0700)
+- go transpiler: support list element typing
+- Regenerated golden files - 103/103 vm valid programs passing
+
+## Progress (2025-07-24 13:17 +0700)
+- go transpiler: support list element typing
+- Regenerated golden files - 103/103 vm valid programs passing
+
+## Progress (2025-07-24 13:17 +0700)
+- go transpiler: support list element typing
+- Regenerated golden files - 103/103 vm valid programs passing
+
+## Progress (2025-07-24 13:17 +0700)
+- go transpiler: support list element typing
+- Regenerated golden files - 103/103 vm valid programs passing
+
+## Progress (2025-07-24 13:17 +0700)
+- go transpiler: support list element typing
+- Regenerated golden files - 103/103 vm valid programs passing
+
+## Progress (2025-07-24 13:03 +0700)
+- release: v0.10.39
+- Regenerated golden files - 103/103 vm valid programs passing
+
+## Progress (2025-07-24 13:03 +0700)
+- release: v0.10.39
+- Regenerated golden files - 103/103 vm valid programs passing
+
 ## Progress (2025-07-24 00:32 +0700)
 - transpile go rosetta: add ascending-primes
 - Regenerated golden files - 103/103 vm valid programs passing

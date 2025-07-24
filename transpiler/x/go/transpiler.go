@@ -1598,6 +1598,11 @@ type AssertExpr struct {
 }
 
 func (a *AssertExpr) emit(w io.Writer) {
+	if inner, ok := a.Expr.(*AssertExpr); ok && inner.Type == a.Type {
+		inner.Expr.emit(w)
+		fmt.Fprintf(w, ".(%s)", a.Type)
+		return
+	}
 	a.Expr.emit(w)
 	fmt.Fprintf(w, ".(%s)", a.Type)
 }
@@ -1769,6 +1774,11 @@ func compileStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 					if st.Let.Type == nil {
 						typ = "[]" + ll.ElemType
 					}
+					if lt, ok2 := valType.(types.ListType); ok2 {
+						if _, ok3 := lt.Elem.(types.AnyType); ok3 {
+							valType = types.ListType{Elem: toTypeFromGoType(ll.ElemType)}
+						}
+					}
 				}
 			}
 			if qe, ok := e.(*QueryExpr); ok && qe.ElemType != "" {
@@ -1927,6 +1937,11 @@ func compileStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 					if st.Var.Type == nil {
 						typ = "[]" + ll.ElemType
 					}
+					if lt, ok2 := valType.(types.ListType); ok2 {
+						if _, ok3 := lt.Elem.(types.AnyType); ok3 {
+							valType = types.ListType{Elem: toTypeFromGoType(ll.ElemType)}
+						}
+					}
 				}
 			}
 			if qe, ok := e.(*QueryExpr); ok && qe.ElemType != "" {
@@ -1961,6 +1976,11 @@ func compileStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 			}
 			if typ == "*big.Int" {
 				e = ensureBigIntExpr(e, valType)
+			}
+			if typ == "" {
+				if _, ok := e.(*NullLit); ok {
+					typ = "any"
+				}
 			}
 			if declaredType != nil {
 				if env == topEnv {
@@ -3684,8 +3704,11 @@ func compilePostfix(pf *parser.PostfixExpr, env *types.Env, base string) (Expr, 
 							key = s
 						}
 						if gt, ok3 := fieldTypeGuess[key]; key != "" && ok3 && gt != "" && gt != "any" {
-							if ae, ok := expr.(*AssertExpr); !(ok && ae.Type == gt) {
-								expr = &AssertExpr{Expr: expr, Type: gt}
+							nextCast := i+1 < len(pf.Ops) && pf.Ops[i+1].Cast != nil
+							if !nextCast && gt != "map[string]any" && gt != "[]any" {
+								if ae, ok := expr.(*AssertExpr); !(ok && ae.Type == gt) {
+									expr = &AssertExpr{Expr: expr, Type: gt}
+								}
 							}
 							switch gt {
 							case "map[string]int":
