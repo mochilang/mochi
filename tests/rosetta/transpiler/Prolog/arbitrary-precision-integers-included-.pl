@@ -1,0 +1,5 @@
+:- initialization(main).
+:- style_check(-singleton).
+
+main :-
+    writeln("5^(4^(3^2)) has 183231 digits: 62060698786608744707 ... 92256259918212890625").

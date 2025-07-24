@@ -1,7 +1,7 @@
 # Rosetta Prolog Transpiler
 
-## Rosetta Golden Test Checklist (34/284)
-Last updated: 2025-07-24 19:43 +0700
+## Rosetta Golden Test Checklist (64/284)
+Last updated: 2025-07-24 20:36 +0700
 1. [x] `1 100-doors-2`
 2. [x] `2 100-doors-3`
 3. [x] `3 100-doors`
@@ -44,36 +44,36 @@ Last updated: 2025-07-24 19:43 +0700
 40. [x] `40 align-columns`
 41. [x] `41 aliquot-sequence-classifications`
 42. [x] `42 almkvist-giullera-formula-for-pi`
-43. [ ] `43 almost-prime`
-44. [ ] `44 amb`
-45. [ ] `45 amicable-pairs`
-46. [ ] `46 anagrams-deranged-anagrams`
-47. [ ] `47 anagrams`
-48. [ ] `48 angle-difference-between-two-bearings-1`
-49. [ ] `49 angle-difference-between-two-bearings-2`
-50. [ ] `50 angles-geometric-normalization-and-conversion`
-51. [ ] `51 animate-a-pendulum`
-52. [ ] `52 animation`
-53. [ ] `53 anonymous-recursion-1`
-54. [ ] `54 anonymous-recursion-2`
-55. [ ] `55 anonymous-recursion`
-56. [ ] `56 anti-primes`
-57. [ ] `57 append-a-record-to-the-end-of-a-text-file`
-58. [ ] `58 apply-a-callback-to-an-array-1`
-59. [ ] `59 apply-a-callback-to-an-array-2`
-60. [ ] `60 apply-a-digital-filter-direct-form-ii-transposed-`
-61. [ ] `61 approximate-equality`
-62. [ ] `62 arbitrary-precision-integers-included-`
-63. [ ] `63 archimedean-spiral`
-64. [ ] `64 arena-storage-pool`
-65. [ ] `65 arithmetic-complex`
-66. [ ] `66 arithmetic-derivative`
-67. [ ] `67 arithmetic-evaluation`
-68. [ ] `68 arithmetic-geometric-mean-calculate-pi`
-69. [ ] `69 arithmetic-geometric-mean`
-70. [ ] `70 arithmetic-integer-1`
-71. [ ] `71 arithmetic-integer-2`
-72. [ ] `72 arithmetic-numbers`
+43. [x] `43 almost-prime`
+44. [x] `44 amb`
+45. [x] `45 amicable-pairs`
+46. [x] `46 anagrams-deranged-anagrams`
+47. [x] `47 anagrams`
+48. [x] `48 angle-difference-between-two-bearings-1`
+49. [x] `49 angle-difference-between-two-bearings-2`
+50. [x] `50 angles-geometric-normalization-and-conversion`
+51. [x] `51 animate-a-pendulum`
+52. [x] `52 animation`
+53. [x] `53 anonymous-recursion-1`
+54. [x] `54 anonymous-recursion-2`
+55. [x] `55 anonymous-recursion`
+56. [x] `56 anti-primes`
+57. [x] `57 append-a-record-to-the-end-of-a-text-file`
+58. [x] `58 apply-a-callback-to-an-array-1`
+59. [x] `59 apply-a-callback-to-an-array-2`
+60. [x] `60 apply-a-digital-filter-direct-form-ii-transposed-`
+61. [x] `61 approximate-equality`
+62. [x] `62 arbitrary-precision-integers-included-`
+63. [x] `63 archimedean-spiral`
+64. [x] `64 arena-storage-pool`
+65. [x] `65 arithmetic-complex`
+66. [x] `66 arithmetic-derivative`
+67. [x] `67 arithmetic-evaluation`
+68. [x] `68 arithmetic-geometric-mean-calculate-pi`
+69. [x] `69 arithmetic-geometric-mean`
+70. [x] `70 arithmetic-integer-1`
+71. [x] `71 arithmetic-integer-2`
+72. [x] `72 arithmetic-numbers`
 73. [ ] `73 arithmetic-rational`
 74. [ ] `74 array-concatenation`
 75. [ ] `75 array-length`
