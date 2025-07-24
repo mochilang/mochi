@@ -85,6 +85,27 @@ def _indexOf(s, ch)
 end
 `
 
+const helperParseIntStr = `
+def parseIntStr(str)
+  i = 0
+  neg = false
+  if str.length > 0 && str[0...1] == "-"
+    neg = true
+    i = 1
+  end
+  n = 0
+  digits = {"0" => 0, "1" => 1, "2" => 2, "3" => 3, "4" => 4, "5" => 5, "6" => 6, "7" => 7, "8" => 8, "9" => 9}
+  while i < str.length
+    n = _add(n * 10, digits[str[i..._add(i, 1)]])
+    i = _add(i, 1)
+  end
+  if neg
+    n = -n
+  end
+  n
+end
+`
+
 const helperSHA256 = `
 require 'digest'
 def _sha256(bs)
@@ -1132,12 +1153,13 @@ func (gq *GroupLeftJoinQueryExpr) emit(e *emitter) {
 }
 
 var (
-	needsJSON      bool
-	usesNow        bool
-	usesInput      bool
-	usesLookupHost bool
-	usesSHA256     bool
-	usesIndexOf    bool
+	needsJSON       bool
+	usesNow         bool
+	usesInput       bool
+	usesLookupHost  bool
+	usesSHA256      bool
+	usesIndexOf     bool
+	usesParseIntStr bool
 )
 
 // reserved lists Ruby reserved keywords that cannot be used as identifiers.
@@ -2497,6 +2519,11 @@ func Emit(w io.Writer, p *Program) error {
 			return err
 		}
 	}
+	if usesParseIntStr {
+		if _, err := io.WriteString(w, helperParseIntStr+"\n"); err != nil {
+			return err
+		}
+	}
 	if _, err := io.WriteString(w, helperAdd+"\n"); err != nil {
 		return err
 	}
@@ -2519,6 +2546,7 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	usesLookupHost = false
 	usesSHA256 = false
 	usesIndexOf = false
+	usesParseIntStr = false
 	currentEnv = env
 	topVars = map[string]bool{}
 	scopeStack = nil
@@ -2797,17 +2825,13 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 		for _, p := range st.Fun.Params {
 			params = append(params, p.Name)
 		}
-		if funcDepth == 0 && currentEnv != nil {
-			// copy struct params to preserve value semantics
-			for _, p := range st.Fun.Params {
-				if p.Type != nil {
-					if _, ok := types.ResolveTypeRef(p.Type, currentEnv).(types.StructType); ok {
-						dup := &CallExpr{Func: "Marshal.load", Args: []Expr{&CallExpr{Func: "Marshal.dump", Args: []Expr{&Ident{Name: p.Name}}}}}
-						body = append([]Stmt{&AssignStmt{Name: p.Name, Value: dup}}, body...)
-					}
-				}
-			}
-		}
+		// In earlier versions the transpiler copied struct parameters at
+		// the start of top‑level functions to emulate pass‑by‑value
+		// semantics.  This caused issues for functions that rely on
+		// updating a struct argument as a side effect (e.g. readers that
+		// maintain internal state).  Since Rosetta examples expect
+		// struct parameters to behave like references, the automatic
+		// cloning is removed so mutations are visible to the caller.
 		if funcDepth > 0 {
 			lam := &LambdaExpr{Params: params, Body: body}
 			return &LetStmt{Name: st.Fun.Name, Value: lam}, nil
@@ -3524,6 +3548,12 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 			}
 			usesIndexOf = true
 			return &CallExpr{Func: "_indexOf", Args: args}, nil
+		case "parseIntStr":
+			if len(args) != 1 {
+				return nil, fmt.Errorf("parseIntStr expects 1 arg")
+			}
+			usesParseIntStr = true
+			return &CallExpr{Func: "parseIntStr", Args: args}, nil
 		case "num":
 			if len(args) != 1 {
 				return nil, fmt.Errorf("num expects 1 arg")
