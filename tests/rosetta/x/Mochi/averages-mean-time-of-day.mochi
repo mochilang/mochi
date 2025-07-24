@@ -62,7 +62,8 @@ fun parseSec(s: string): float {
   let h = parseTwo(s, 0)
   let m = parseTwo(s, 3)
   let sec = parseTwo(s, 6)
-  return ((h*60 + m)*60 + sec) as float
+  let tmp = (h*60 + m)*60 + sec
+  return tmp as float
 }
 
 fun pad(n: int): string {

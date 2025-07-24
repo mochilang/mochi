@@ -1,0 +1,7 @@
+Original : Rosetta Code Base64 decode data task
+
+Warning: foreach() argument must be of type array|object, string given in /workspace/mochi/tests/rosetta/transpiler/php/base64-decode-data.php on line 116
+
+Encoded  :
+
+Decoded  :

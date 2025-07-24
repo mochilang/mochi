@@ -71,6 +71,8 @@ var phpReserved = map[string]struct{}{
 	"join":    {},
 	"pow":     {},
 	"abs":     {},
+	"ord":     {},
+	"chr":     {},
 }
 
 // phpReservedVar lists variable names that cannot be used directly in PHP
@@ -1685,6 +1687,8 @@ func convertPostfix(pf *parser.PostfixExpr) (Expr, error) {
 				} else {
 					e = &CallExpr{Func: "intval", Args: []Expr{e}}
 				}
+			case "float":
+				e = &CallExpr{Func: "floatval", Args: []Expr{e}}
 			case "string":
 				e = &CallExpr{Func: "strval", Args: []Expr{e}}
 			case "bool":
@@ -1711,6 +1715,23 @@ func convertPostfix(pf *parser.PostfixExpr) (Expr, error) {
 			} else {
 				return nil, fmt.Errorf("contains on unsupported type")
 			}
+			i++
+		case op.Field != nil && op.Field.Name == "padStart":
+			if i+1 >= len(pf.Ops) || pf.Ops[i+1].Call == nil {
+				return nil, fmt.Errorf("method padStart requires args")
+			}
+			if len(pf.Ops[i+1].Call.Args) != 2 {
+				return nil, fmt.Errorf("padStart expects 2 args")
+			}
+			width, err := convertExpr(pf.Ops[i+1].Call.Args[0])
+			if err != nil {
+				return nil, err
+			}
+			pad, err := convertExpr(pf.Ops[i+1].Call.Args[1])
+			if err != nil {
+				return nil, err
+			}
+			e = &CallExpr{Func: "str_pad", Args: []Expr{e, width, pad, &Name{Value: "STR_PAD_LEFT"}}}
 			i++
 		case op.Field != nil:
 			e = &IndexExpr{X: e, Index: &StringLit{Value: op.Field.Name}}
@@ -1865,6 +1886,11 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 				return nil, fmt.Errorf("lower expects 1 arg")
 			}
 			return &CallExpr{Func: "strtolower", Args: args}, nil
+		} else if name == "padStart" {
+			if len(args) != 3 {
+				return nil, fmt.Errorf("padStart expects 3 args")
+			}
+			return &CallExpr{Func: "str_pad", Args: []Expr{args[0], args[1], args[2], &Name{Value: "STR_PAD_LEFT"}}}, nil
 		} else if name == "min" || name == "max" {
 			if len(args) != 1 {
 				return nil, fmt.Errorf("%s expects 1 arg", name)

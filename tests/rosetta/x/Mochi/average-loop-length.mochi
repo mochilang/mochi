@@ -5,7 +5,8 @@ fun absf(x: float): float {
 }
 
 fun floorf(x: float): float {
-  return (x as int) as float
+  let y = x as int
+  return y as float
 }
 
 fun indexOf(s: string, ch: string): int {
