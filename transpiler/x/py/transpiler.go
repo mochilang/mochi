@@ -3350,6 +3350,9 @@ func convertStmts(list []*parser.Statement, env *types.Env) ([]Stmt, error) {
 						return nil, err
 					}
 					typ = inferTypeFromExpr(s.Var.Value)
+					if _, ok := typ.(types.AnyType); ok {
+						typ = inferPyType(e, env)
+					}
 					env.SetVar(s.Var.Name, typ, true)
 					if list, ok := e.(*ListLit); ok {
 						if dc, elems := maybeDataClassList(s.Var.Name, list, env); dc != nil {
@@ -3881,7 +3884,19 @@ func convertPostfix(p *parser.PostfixExpr) (Expr, error) {
 				if err != nil {
 					return nil, err
 				}
-				expr = &IndexExpr{Target: expr, Index: idx}
+				if s, ok := idx.(*StringLit); ok {
+					if st, ok2 := inferPyType(expr, currentEnv).(types.StructType); ok2 {
+						if _, ok3 := st.Fields[s.Value]; ok3 {
+							expr = &FieldExpr{Target: expr, Name: s.Value}
+						} else {
+							expr = &IndexExpr{Target: expr, Index: idx}
+						}
+					} else {
+						expr = &IndexExpr{Target: expr, Index: idx}
+					}
+				} else {
+					expr = &IndexExpr{Target: expr, Index: idx}
+				}
 			}
 		case op.Field != nil:
 			mapIndex := true
@@ -4058,7 +4073,17 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 			return &CallExpr{Func: &Name{Name: "print"}, Args: outArgs}, nil
 		case "append":
 			if len(args) == 2 {
-				return &BinaryExpr{Left: args[0], Op: "+", Right: &ListLit{Elems: []Expr{args[1]}}}, nil
+				elem := args[1]
+				if lt, ok := inferPyType(args[0], currentEnv).(types.ListType); ok {
+					if st, ok2 := lt.Elem.(types.StructType); ok2 {
+						if d, ok3 := elem.(*DictLit); ok3 {
+							vals := make([]Expr, len(d.Values))
+							copy(vals, d.Values)
+							elem = &CallExpr{Func: &Name{Name: st.Name}, Args: vals}
+						}
+					}
+				}
+				return &BinaryExpr{Left: args[0], Op: "+", Right: &ListLit{Elems: []Expr{elem}}}, nil
 			}
 		case "avg":
 			if len(args) == 1 {

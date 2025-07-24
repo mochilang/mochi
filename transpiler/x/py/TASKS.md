@@ -1,5 +1,5 @@
-## Progress (2025-07-23 23:20 +0700)
-- Commit fabda9006e: update rosetta index and refactor puzzle move type
+## Progress (2025-07-24 16:30 +0700)
+- Commit 48f60f9af8: transpiler: support struct field indexing and append for dataclass
 - Generated Python for 103/103 programs
 - Updated README checklist and outputs
 - Removed runtime helpers and improved boolean type inference
