@@ -1,3 +1,28 @@
+## Progress (2025-07-24 13:30 +0700)
+- Commit 2d47792dcb: zig rosetta: ensure README keeps index numbers
+- Generated Zig for 98/103 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-24 13:30 +0700)
+- Commit 2d47792dcb: zig rosetta: ensure README keeps index numbers
+- Generated Zig for 98/103 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-24 13:30 +0700)
+- Commit 2d47792dcb: zig rosetta: ensure README keeps index numbers
+- Generated Zig for 98/103 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-24 13:26 +0700)
+- Commit 3715fff6cd: dart transpiler: initial work on index 37
+- Generated Zig for 98/103 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-24 13:26 +0700)
+- Commit 3715fff6cd: dart transpiler: initial work on index 37
+- Generated Zig for 98/103 programs
+- Updated README checklist and outputs
+
 ## Progress (2025-07-23 13:20 +0700)
 - Commit 6be9e42b2c: transpiler/lua: update outputs up to index 36 and tweak binary ops
 - Generated Zig for 98/103 programs

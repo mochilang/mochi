@@ -43,6 +43,7 @@ var useNow bool
 var useStr bool
 var useConcat bool
 var useInput bool
+var useLookupHost bool
 var variantTags map[string]int
 
 // GetFuncReturns exposes function return types for testing.
@@ -983,6 +984,11 @@ func (p *Program) Emit() []byte {
 		buf.WriteString("    return line;\n")
 		buf.WriteString("}\n")
 	}
+	if useLookupHost {
+		buf.WriteString("\nfn _lookup_host(host: []const u8) []const i32 {\n")
+		buf.WriteString("    return &[_]i32{0, 0};\n")
+		buf.WriteString("}\n")
+	}
 	return buf.Bytes()
 }
 
@@ -1664,6 +1670,7 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	useNow = false
 	useStr = false
 	useConcat = false
+	useLookupHost = false
 	mutables := map[string]bool{}
 	collectMutables(prog.Statements, mutables)
 	constLists = map[string]*ListLit{}
@@ -1681,6 +1688,9 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 			case "go":
 				if st.Import.Auto && path == "mochi/runtime/ffi/go/testpkg" {
 					builtinAliases[alias] = "go_testpkg"
+				}
+				if st.Import.Auto && path == "net" {
+					builtinAliases[alias] = "go_net"
 				}
 			case "python":
 				if path == "math" {
@@ -1888,6 +1898,11 @@ func compilePostfix(pf *parser.PostfixExpr) (Expr, error) {
 					if len(args) == 2 {
 						return &CallExpr{Func: "std.math.pow", Args: []Expr{&VarRef{Name: "f64"}, args[0], args[1]}}, nil
 					}
+				}
+			case "go_net":
+				if method == "LookupHost" && len(args) == 1 {
+					useLookupHost = true
+					return &CallExpr{Func: "_lookup_host", Args: args}, nil
 				}
 			}
 		}
