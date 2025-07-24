@@ -1,4 +1,5 @@
 <?php
+ini_set('memory_limit', '-1');
 function intSqrt($x) {
   global $sumRecip, $main;
   if ($x < 2) {
@@ -8,7 +9,7 @@ function intSqrt($x) {
   $right = intdiv($x, 2);
   $ans = 0;
   while ($left <= $right) {
-  $mid = $left + ($right - $left) / 2;
+  $mid = $left + intdiv(($right - $left), 2);
   $sq = $mid * $mid;
   if ($sq == $x) {
   return $mid;
@@ -46,11 +47,11 @@ function main() {
   $s = sumRecip($n);
   if ($s % $n == 0) {
   $val = intdiv($s, $n);
-  $perfect = "";
+  $perfect = '';
   if ($val == 1) {
-  $perfect = "perfect!";
+  $perfect = 'perfect!';
 };
-  echo "Sum of recipr. factors of " . json_encode($n, 1344) . " = " . json_encode($val, 1344) . " exactly " . $perfect, PHP_EOL;
+  echo rtrim('Sum of recipr. factors of ' . json_encode($n, 1344) . ' = ' . json_encode($val, 1344) . ' exactly ' . $perfect), PHP_EOL;
 }
 };
 }

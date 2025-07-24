@@ -1,9 +1,14 @@
 <?php
 ini_set('memory_limit', '-1');
+function _len($x) {
+    if (is_array($x)) { return count($x); }
+    if (is_string($x)) { return strlen($x); }
+    return strlen(strval($x));
+}
 function skipWS($p) {
   global $parseIntStr, $parseNumber, $parseFactor, $powInt, $parsePower, $parseTerm, $parseExpr, $evalExpr, $main;
   $i = $p['pos'];
-  while ($i < strlen($p['expr']) && substr($p['expr'], $i, $i + 1 - $i) == ' ') {
+  while ($i < _len($p['expr']) && substr($p['expr'], $i, $i + 1 - $i) == ' ') {
   $i = $i + 1;
 };
   $p['pos'] = $i;
@@ -23,7 +28,7 @@ function parseNumber($p) {
   global $skipWS, $parseIntStr, $parseFactor, $powInt, $parsePower, $parseTerm, $parseExpr, $evalExpr, $main;
   $p = skipWS($p);
   $start = $p['pos'];
-  while ($p['pos'] < strlen($p['expr'])) {
+  while ($p['pos'] < _len($p['expr'])) {
   $ch = substr($p['expr'], $p['pos'], $p['pos'] + 1 - $p['pos']);
   if ($ch >= '0' && $ch <= '9') {
   $p['pos'] = $p['pos'] + 1;
@@ -37,18 +42,18 @@ function parseNumber($p) {
 function parseFactor($p) {
   global $skipWS, $parseIntStr, $parseNumber, $powInt, $parsePower, $parseTerm, $parseExpr, $evalExpr, $main;
   $p = skipWS($p);
-  if ($p['pos'] < strlen($p['expr']) && substr($p['expr'], $p['pos'], $p['pos'] + 1 - $p['pos']) == '(') {
+  if ($p['pos'] < _len($p['expr']) && substr($p['expr'], $p['pos'], $p['pos'] + 1 - $p['pos']) == '(') {
   $p['pos'] = $p['pos'] + 1;
   $r = parseExpr($p);
   $v = $r['v'];
   $p = $r['p'];
   $p = skipWS($p);
-  if ($p['pos'] < strlen($p['expr']) && substr($p['expr'], $p['pos'], $p['pos'] + 1 - $p['pos']) == ')') {
+  if ($p['pos'] < _len($p['expr']) && substr($p['expr'], $p['pos'], $p['pos'] + 1 - $p['pos']) == ')') {
   $p['pos'] = $p['pos'] + 1;
 };
   return ['v' => $v, 'p' => $p];
 }
-  if ($p['pos'] < strlen($p['expr']) && substr($p['expr'], $p['pos'], $p['pos'] + 1 - $p['pos']) == '-') {
+  if ($p['pos'] < _len($p['expr']) && substr($p['expr'], $p['pos'], $p['pos'] + 1 - $p['pos']) == '-') {
   $p['pos'] = $p['pos'] + 1;
   $r = parseFactor($p);
   $v = $r['v'];
@@ -78,7 +83,7 @@ function parsePower($p) {
   $p = $r['p'];
   while (true) {
   $p = skipWS($p);
-  if ($p['pos'] < strlen($p['expr']) && substr($p['expr'], $p['pos'], $p['pos'] + 1 - $p['pos']) == '^') {
+  if ($p['pos'] < _len($p['expr']) && substr($p['expr'], $p['pos'], $p['pos'] + 1 - $p['pos']) == '^') {
   $p['pos'] = $p['pos'] + 1;
   $r2 = parseFactor($p);
   $rhs = $r2['v'];
@@ -97,7 +102,7 @@ function parseTerm($p) {
   $p = $r['p'];
   while (true) {
   $p = skipWS($p);
-  if ($p['pos'] < strlen($p['expr'])) {
+  if ($p['pos'] < _len($p['expr'])) {
   $op = substr($p['expr'], $p['pos'], $p['pos'] + 1 - $p['pos']);
   if ($op == '*') {
   $p['pos'] = $p['pos'] + 1;
@@ -127,7 +132,7 @@ function parseExpr($p) {
   $p = $r['p'];
   while (true) {
   $p = skipWS($p);
-  if ($p['pos'] < strlen($p['expr'])) {
+  if ($p['pos'] < _len($p['expr'])) {
   $op = substr($p['expr'], $p['pos'], $p['pos'] + 1 - $p['pos']);
   if ($op == '+') {
   $p['pos'] = $p['pos'] + 1;
@@ -159,6 +164,6 @@ function evalExpr($expr) {
 function main() {
   global $skipWS, $parseIntStr, $parseNumber, $parseFactor, $powInt, $parsePower, $parseTerm, $parseExpr, $evalExpr;
   $expr = '2*(3-1)+2*5';
-  echo $expr . ' = ' . json_encode(evalExpr($expr), 1344), PHP_EOL;
+  echo rtrim($expr . ' = ' . json_encode(evalExpr($expr), 1344)), PHP_EOL;
 }
 main();

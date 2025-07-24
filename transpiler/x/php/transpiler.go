@@ -53,8 +53,15 @@ function _now() {
     return hrtime(true);
 }`
 
+const helperLen = `function _len($x) {
+    if (is_array($x)) { return count($x); }
+    if (is_string($x)) { return strlen($x); }
+    return strlen(strval($x));
+}`
+
 var usesLookupHost bool
 var usesNow bool
+var usesLen bool
 
 // Some PHP built-in functions cannot be redefined. When a Mochi program
 // defines a function with one of these names we rename the function and all
@@ -1407,6 +1414,11 @@ func Emit(w io.Writer, p *Program) error {
 			return err
 		}
 	}
+	if usesLen {
+		if _, err := io.WriteString(w, helperLen+"\n"); err != nil {
+			return err
+		}
+	}
 	for _, s := range p.Stmts {
 		s.emit(w)
 		switch s.(type) {
@@ -1432,6 +1444,7 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	renameMap = map[string]string{}
 	usesLookupHost = false
 	usesNow = false
+	usesLen = false
 	defer func() { transpileEnv = nil }()
 	p := &Program{Env: env}
 	for _, st := range prog.Statements {
@@ -1785,13 +1798,18 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 					}
 					args[i] = arg
 				}
+				// Trim trailing spaces to match Mochi interpreter output
+				args[i] = &CallExpr{Func: "rtrim", Args: []Expr{args[i]}}
 			}
 		} else if name == "len" {
 			if len(args) == 1 {
 				if isListArg(args[0]) || isMapArg(args[0]) || isListExpr(args[0]) || isMapExpr(args[0]) {
 					callName = "count"
-				} else {
+				} else if isStringExpr(args[0]) {
 					callName = "strlen"
+				} else {
+					usesLen = true
+					return &CallExpr{Func: "_len", Args: args}, nil
 				}
 			}
 		} else if name == "substring" {
