@@ -185,7 +185,10 @@ func fsTypeFromString(s string) string {
 		if strings.HasSuffix(s, " list") {
 			return fsTypeFromString(strings.TrimSuffix(s, " list")) + " array"
 		}
-		if strings.HasPrefix(s, "Map<") || s == "obj" {
+		if strings.HasPrefix(s, "Map<") {
+			return s
+		}
+		if s == "obj" {
 			return "obj"
 		}
 		return s
@@ -220,6 +223,9 @@ func fsIdent(name string) string {
 }
 
 func inferStructFromMapVars(ml *parser.MapLiteral) ([]StructField, bool) {
+	if ml == nil || len(ml.Items) == 0 {
+		return nil, false
+	}
 	fields := make([]StructField, len(ml.Items))
 	for i, it := range ml.Items {
 		key, ok := types.SimpleStringKey(it.Key)
@@ -1124,6 +1130,13 @@ type BinaryExpr struct {
 func (b *BinaryExpr) emit(w io.Writer) {
 	if b.Op == "in" {
 		rtyp := inferType(b.Right)
+		if rtyp != "map" {
+			if id, ok := b.Right.(*IdentExpr); ok {
+				if t, ok2 := varTypes[id.Name]; ok2 && strings.HasPrefix(t, "Map<") {
+					rtyp = "map"
+				}
+			}
+		}
 		if rtyp == "string" {
 			if needsParen(b.Right) {
 				io.WriteString(w, "(")
