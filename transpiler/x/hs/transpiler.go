@@ -617,9 +617,15 @@ func (i *IfStmt) emit(w io.Writer) {
 }
 func (r *ReturnStmt) emit(w io.Writer) {
 	writeIndent(w)
-	io.WriteString(w, "return (")
-	r.Expr.emit(w)
-	io.WriteString(w, ")")
+	switch r.Expr.(type) {
+	case *WhileExpr:
+		// WhileExpr already yields an IO action, so avoid wrapping
+		r.Expr.emit(w)
+	default:
+		io.WriteString(w, "return (")
+		r.Expr.emit(w)
+		io.WriteString(w, ")")
+	}
 }
 
 func (b *BreakStmt) emit(w io.Writer) { writeIndent(w); io.WriteString(w, "return ()") }
