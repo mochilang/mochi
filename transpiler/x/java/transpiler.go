@@ -1696,11 +1696,17 @@ func isMapExpr(e Expr) bool {
 		return true
 	case *VarExpr:
 		if ex.Type != "" {
+			if strings.HasSuffix(ex.Type, "[]") {
+				break
+			}
 			if ex.Type == "map" || strings.Contains(ex.Type, "Map") {
 				return true
 			}
 		}
 		if t, ok := varTypes[ex.Name]; ok {
+			if strings.HasSuffix(t, "[]") {
+				break
+			}
 			if t == "map" || strings.Contains(t, "Map") {
 				return true
 			}
