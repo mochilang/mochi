@@ -859,12 +859,9 @@ func (l *ListLit) emit(w io.Writer) {
 		io.WriteString(w, "{}")
 		return
 	}
-	elemTyp := exprType(l.Elems[0])
-	if strings.HasPrefix(elemTyp, "std::vector<") {
-		io.WriteString(w, "std::vector<"+elemTyp+">{")
-	} else {
-		io.WriteString(w, "std::vector{")
-	}
+	listTyp := exprType(l)
+	elemTyp := elementTypeFromListType(listTyp)
+	io.WriteString(w, "std::vector<"+elemTyp+">{")
 	for i, e := range l.Elems {
 		if i > 0 {
 			io.WriteString(w, ", ")
@@ -1100,12 +1097,12 @@ func (a *AppendExpr) emit(w io.Writer) {
 	listType := exprType(a.List)
 	elemType := elementTypeFromListType(listType)
 	valType := exprType(a.Elem)
-	if listType == "std::vector<int>" && strings.HasPrefix(valType, "std::vector<") {
-		listType = "std::vector<std::vector<int>>"
+	if strings.HasPrefix(valType, "std::vector<") && listType == "std::vector<int>" {
+		listType = fmt.Sprintf("std::vector<%s>", valType)
 		if vr, ok := a.List.(*VarRef); ok && localTypes != nil {
 			localTypes[vr.Name] = listType
 		}
-		elemType = "std::vector<int>"
+		elemType = valType
 	}
 	io.WriteString(w, "([&]{ auto __tmp = ")
 	a.List.emit(w)
@@ -1826,6 +1823,18 @@ func (b *BinaryExpr) emit(w io.Writer) {
 			io.WriteString(w, "; auto __rhs = ")
 			b.Right.emit(w)
 			io.WriteString(w, "; __lhs.insert(__lhs.end(), __rhs.begin(), __rhs.end()); return __lhs; }())")
+			return
+		}
+		// string + vector<string>
+		if lt == "std::string" && strings.HasPrefix(rt, "std::vector<") && elementTypeFromListType(rt) == "std::string" {
+			if currentProgram != nil {
+				currentProgram.addInclude("<vector>")
+			}
+			io.WriteString(w, "([&]{ std::string __res = ")
+			b.Left.emit(w)
+			io.WriteString(w, "; const auto& __vec = ")
+			b.Right.emit(w)
+			io.WriteString(w, "; for(const auto& __e : __vec){ __res += __e; } return __res; }())")
 			return
 		}
 	}
@@ -4918,12 +4927,27 @@ func guessType(e *parser.Expr) string {
 	if types.IsListExpr(e, currentEnv) {
 		if e.Binary != nil && e.Binary.Left != nil && e.Binary.Left.Value != nil {
 			if list := e.Binary.Left.Value.Target.List; list != nil && len(list.Elems) > 0 {
-				et := guessType(list.Elems[0])
-				return fmt.Sprintf("std::vector<%s>", et)
+				first := guessType(list.Elems[0])
+				uniform := true
+				for _, el := range list.Elems[1:] {
+					if guessType(el) != first {
+						uniform = false
+						break
+					}
+				}
+				if uniform {
+					return fmt.Sprintf("std::vector<%s>", first)
+				}
+				if currentProgram != nil {
+					currentProgram.addInclude("<any>")
+				}
+				return "std::vector<std::any>"
 			}
 		}
-		// Default to vector<int> when element type cannot be inferred
-		return "std::vector<int>"
+		if currentProgram != nil {
+			currentProgram.addInclude("<any>")
+		}
+		return "std::vector<std::any>"
 	}
 	if types.IsMapExpr(e, currentEnv) {
 		if e.Binary != nil && e.Binary.Left != nil && e.Binary.Left.Value != nil {
@@ -4994,8 +5018,21 @@ func guessType(e *parser.Expr) string {
 		}
 	}
 	if list := pf.Target.List; list != nil && len(list.Elems) > 0 {
-		et := guessType(list.Elems[0])
-		return fmt.Sprintf("std::vector<%s>", et)
+		first := guessType(list.Elems[0])
+		uniform := true
+		for _, el := range list.Elems[1:] {
+			if guessType(el) != first {
+				uniform = false
+				break
+			}
+		}
+		if uniform {
+			return fmt.Sprintf("std::vector<%s>", first)
+		}
+		if currentProgram != nil {
+			currentProgram.addInclude("<any>")
+		}
+		return "std::vector<std::any>"
 	}
 	if mp := pf.Target.Map; mp != nil && len(mp.Items) > 0 {
 		kt := guessType(mp.Items[0].Key)
@@ -5085,9 +5122,22 @@ func exprType(e Expr) string {
 		return v.Name
 	case *ListLit:
 		if len(v.Elems) > 0 {
-			return fmt.Sprintf("std::vector<%s>", exprType(v.Elems[0]))
+			first := exprType(v.Elems[0])
+			uniform := true
+			for _, e := range v.Elems[1:] {
+				if exprType(e) != first {
+					uniform = false
+					break
+				}
+			}
+			if uniform {
+				return fmt.Sprintf("std::vector<%s>", first)
+			}
+			if currentProgram != nil {
+				currentProgram.addInclude("<any>")
+			}
+			return "std::vector<std::any>"
 		}
-		// If the list is empty, fall back to a vector of int
 		return "std::vector<int>"
 	case *MapLit:
 		if len(v.Keys) > 0 {

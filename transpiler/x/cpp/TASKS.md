@@ -1,3 +1,58 @@
+## Progress (2025-07-24 19:10 +0700)
+- cpp transpiler: add bigint and map any support
+- Generated C++ for 102/103 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-24 19:10 +0700)
+- cpp transpiler: add bigint and map any support
+- Generated C++ for 102/103 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-24 19:10 +0700)
+- cpp transpiler: add bigint and map any support
+- Generated C++ for 102/103 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-24 19:10 +0700)
+- cpp transpiler: add bigint and map any support
+- Generated C++ for 102/103 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-24 19:10 +0700)
+- cpp transpiler: add bigint and map any support
+- Generated C++ for 102/103 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-24 19:10 +0700)
+- cpp transpiler: add bigint and map any support
+- Generated C++ for 102/103 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-24 19:10 +0700)
+- cpp transpiler: add bigint and map any support
+- Generated C++ for 102/103 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-24 19:10 +0700)
+- cpp transpiler: add bigint and map any support
+- Generated C++ for 102/103 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-24 19:10 +0700)
+- cpp transpiler: add bigint and map any support
+- Generated C++ for 102/103 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-24 19:10 +0700)
+- cpp transpiler: add bigint and map any support
+- Generated C++ for 102/103 programs
+- Updated README checklist and outputs
+
+## Progress (2025-07-24 19:10 +0700)
+- cpp transpiler: add bigint and map any support
+- Generated C++ for 102/103 programs
+- Updated README checklist and outputs
+
 ## Progress (2025-07-24 18:14 +0700)
 - cpp: handle any addition and closures
 - Generated C++ for 102/103 programs

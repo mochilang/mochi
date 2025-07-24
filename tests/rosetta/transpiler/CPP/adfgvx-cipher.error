@@ -1,0 +1,579 @@
+compile: exit status 1
+/workspace/mochi/tests/rosetta/transpiler/CPP/adfgvx-cipher.cpp:34:173: warning: multi-character character constant [-Wmultichar]
+   34 |     else if(val.type() == typeid(std::vector<int>)) { const auto& v = std::any_cast<const std::vector<int>&>(val); os << '['; for(size_t i=0;i<v.size();++i){ if(i>0) os << ', '; os << v[i]; } os << ']'; }
+      |                                                                                                                                                                             ^~~~
+/workspace/mochi/tests/rosetta/transpiler/CPP/adfgvx-cipher.cpp:35:201: warning: multi-character character constant [-Wmultichar]
+   35 |     else if(val.type() == typeid(std::vector<std::vector<int>>)) { const auto& vv = std::any_cast<const std::vector<std::vector<int>>&>(val); os << '['; for(size_t i=0;i<vv.size();++i){ if(i>0) os << ', '; const auto& v = vv[i]; os << '['; for(size_t j=0;j<v.size();++j){ if(j>0) os << ', '; os << v[j]; } os << ']'; } os << ']'; }
+      |                                                                                                                                                                                                         ^~~~
+/workspace/mochi/tests/rosetta/transpiler/CPP/adfgvx-cipher.cpp:35:287: warning: multi-character character constant [-Wmultichar]
+   35 |     else if(val.type() == typeid(std::vector<std::vector<int>>)) { const auto& vv = std::any_cast<const std::vector<std::vector<int>>&>(val); os << '['; for(size_t i=0;i<vv.size();++i){ if(i>0) os << ', '; const auto& v = vv[i]; os << '['; for(size_t j=0;j<v.size();++j){ if(j>0) os << ', '; os << v[j]; } os << ']'; } os << ']'; }
+      |                                                                                                                                                                                                                                                                                               ^~~~
+/workspace/mochi/tests/rosetta/transpiler/CPP/adfgvx-cipher.cpp:36:189: warning: multi-character character constant [-Wmultichar]
+   36 |     else if(val.type() == typeid(std::vector<std::string>)) { const auto& v = std::any_cast<const std::vector<std::string>&>(val); os << '['; for(size_t i=0;i<v.size();++i){ if(i>0) os << ', '; os << v[i]; } os << ']'; }
+      |                                                                                                                                                                                             ^~~~
+/workspace/mochi/tests/rosetta/transpiler/CPP/adfgvx-cipher.cpp:37:183: warning: multi-character character constant [-Wmultichar]
+   37 |     else if(val.type() == typeid(std::vector<std::any>)) { const auto& v = std::any_cast<const std::vector<std::any>&>(val); os << '['; for(size_t i=0;i<v.size();++i){ if(i>0) os << ', '; any_to_stream(os, v[i]); } os << ']'; }
+      |                                                                                                                                                                                       ^~~~
+/workspace/mochi/tests/rosetta/transpiler/CPP/adfgvx-cipher.cpp:38:215: warning: multi-character character constant [-Wmultichar]
+   38 |     else if(val.type() == typeid(std::map<std::string, std::any>)) { const auto& m = std::any_cast<const std::map<std::string, std::any>&>(val); os << '{'; bool first=true; for(const auto& p : m){ if(!first) os << ', '; first=false; os << p.first << ': '; any_to_stream(os, p.second); } os << '}'; }
+      |                                                                                                                                                                                                                       ^~~~
+/workspace/mochi/tests/rosetta/transpiler/CPP/adfgvx-cipher.cpp:38:251: warning: multi-character character constant [-Wmultichar]
+   38 |     else if(val.type() == typeid(std::map<std::string, std::any>)) { const auto& m = std::any_cast<const std::map<std::string, std::any>&>(val); os << '{'; bool first=true; for(const auto& p : m){ if(!first) os << ', '; first=false; os << p.first << ': '; any_to_stream(os, p.second); } os << '}'; }
+      |                                                                                                                                                                                                                                                           ^~~~
+/workspace/mochi/tests/rosetta/transpiler/CPP/adfgvx-cipher.cpp: In lambda function:
+/workspace/mochi/tests/rosetta/transpiler/CPP/adfgvx-cipher.cpp:138:337: error: no matching function for call to ‘std::vector<int>::vector(std::vector<std::any>)’
+  138 |         pairs = ([&]{ auto __tmp = pairs; __tmp.push_back((std::vector<int>)std::vector<std::any>{([&](const auto& c){ if constexpr(std::is_same_v<std::decay_t<decltype(c)>, std::string>) return c.substr(i, (i + 1) - i); else return std::vector<typename std::decay_t<decltype(c)>::value_type>(c.begin()+i, c.begin()+(i + 1)); })(key), i}); return __tmp; }());
+      |                                                                                                                                                                                                                                                                                                                                                 ^
+In file included from /usr/include/c++/13/vector:66,
+                 from /workspace/mochi/tests/rosetta/transpiler/CPP/adfgvx-cipher.cpp:4:
+/usr/include/c++/13/bits/stl_vector.h:707:9: note: candidate: ‘template<class _InputIterator, class> constexpr std::vector<_Tp, _Alloc>::vector(_InputIterator, _InputIterator, const allocator_type&) [with <template-parameter-2-2> = _InputIterator; _Tp = int; _Alloc = std::allocator<int>]’
+  707 |         vector(_InputIterator __first, _InputIterator __last,
+      |         ^~~~~~
+/usr/include/c++/13/bits/stl_vector.h:707:9: note:   template argument deduction/substitution failed:
+/workspace/mochi/tests/rosetta/transpiler/CPP/adfgvx-cipher.cpp:138:337: note:   candidate expects 3 arguments, 1 provided
+  138 |         pairs = ([&]{ auto __tmp = pairs; __tmp.push_back((std::vector<int>)std::vector<std::any>{([&](const auto& c){ if constexpr(std::is_same_v<std::decay_t<decltype(c)>, std::string>) return c.substr(i, (i + 1) - i); else return std::vector<typename std::decay_t<decltype(c)>::value_type>(c.begin()+i, c.begin()+(i + 1)); })(key), i}); return __tmp; }());
+      |                                                                                                                                                                                                                                                                                                                                                 ^
+/usr/include/c++/13/bits/stl_vector.h:678:7: note: candidate: ‘constexpr std::vector<_Tp, _Alloc>::vector(std::initializer_list<_Tp>, const allocator_type&) [with _Tp = int; _Alloc = std::allocator<int>; allocator_type = std::allocator<int>]’
+  678 |       vector(initializer_list<value_type> __l,
+      |       ^~~~~~
+/usr/include/c++/13/bits/stl_vector.h:678:43: note:   no known conversion for argument 1 from ‘std::vector<std::any>’ to ‘std::initializer_list<int>’
+  678 |       vector(initializer_list<value_type> __l,
+      |              ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~
+/usr/include/c++/13/bits/stl_vector.h:659:7: note: candidate: ‘constexpr std::vector<_Tp, _Alloc>::vector(std::vector<_Tp, _Alloc>&&, std::__type_identity_t<_Alloc>&) [with _Tp = int; _Alloc = std::allocator<int>; std::__type_identity_t<_Alloc> = std::allocator<int>]’
+  659 |       vector(vector&& __rv, const __type_identity_t<allocator_type>& __m)
+      |       ^~~~~~
+/usr/include/c++/13/bits/stl_vector.h:659:7: note:   candidate expects 2 arguments, 1 provided
+/usr/include/c++/13/bits/stl_vector.h:640:7: note: candidate: ‘constexpr std::vector<_Tp, _Alloc>::vector(std::vector<_Tp, _Alloc>&&, const allocator_type&, std::false_type) [with _Tp = int; _Alloc = std::allocator<int>; allocator_type = std::allocator<int>; std::false_type = std::integral_constant<bool, false>]’
+  640 |       vector(vector&& __rv, const allocator_type& __m, false_type)
+      |       ^~~~~~
+/usr/include/c++/13/bits/stl_vector.h:640:7: note:   candidate expects 3 arguments, 1 provided
+/usr/include/c++/13/bits/stl_vector.h:635:7: note: candidate: ‘constexpr std::vector<_Tp, _Alloc>::vector(std::vector<_Tp, _Alloc>&&, const allocator_type&, std::true_type) [with _Tp = int; _Alloc = std::allocator<int>; allocator_type = std::allocator<int>; std::true_type = std::integral_constant<bool, true>]’
+  635 |       vector(vector&& __rv, const allocator_type& __m, true_type) noexcept
+      |       ^~~~~~
+/usr/include/c++/13/bits/stl_vector.h:635:7: note:   candidate expects 3 arguments, 1 provided
+/usr/include/c++/13/bits/stl_vector.h:624:7: note: candidate: ‘constexpr std::vector<_Tp, _Alloc>::vector(const std::vector<_Tp, _Alloc>&, std::__type_identity_t<_Alloc>&) [with _Tp = int; _Alloc = std::allocator<int>; std::__type_identity_t<_Alloc> = std::allocator<int>]’
+  624 |       vector(const vector& __x, const __type_identity_t<allocator_type>& __a)
+      |       ^~~~~~
+/usr/include/c++/13/bits/stl_vector.h:624:7: note:   candidate expects 2 arguments, 1 provided
+/usr/include/c++/13/bits/stl_vector.h:620:7: note: candidate: ‘constexpr std::vector<_Tp, _Alloc>::vector(std::vector<_Tp, _Alloc>&&) [with _Tp = int; _Alloc = std::allocator<int>]’
+  620 |       vector(vector&&) noexcept = default;
+      |       ^~~~~~
+/usr/include/c++/13/bits/stl_vector.h:620:14: note:   no known conversion for argument 1 from ‘std::vector<std::any>’ to ‘std::vector<int>&&’
+  620 |       vector(vector&&) noexcept = default;
+      |              ^~~~~~~~
+/usr/include/c++/13/bits/stl_vector.h:601:7: note: candidate: ‘constexpr std::vector<_Tp, _Alloc>::vector(const std::vector<_Tp, _Alloc>&) [with _Tp = int; _Alloc = std::allocator<int>]’
+  601 |       vector(const vector& __x)
+      |       ^~~~~~
+/usr/include/c++/13/bits/stl_vector.h:601:28: note:   no known conversion for argument 1 from ‘std::vector<std::any>’ to ‘const std::vector<int>&’
+  601 |       vector(const vector& __x)
+      |              ~~~~~~~~~~~~~~^~~
+/usr/include/c++/13/bits/stl_vector.h:569:7: note: candidate: ‘constexpr std::vector<_Tp, _Alloc>::vector(size_type, const value_type&, const allocator_type&) [with _Tp = int; _Alloc = std::allocator<int>; size_type = long unsigned int; value_type = int; allocator_type = std::allocator<int>]’
+  569 |       vector(size_type __n, const value_type& __value,
+      |       ^~~~~~
+/usr/include/c++/13/bits/stl_vector.h:569:7: note:   candidate expects 3 arguments, 1 provided
+/usr/include/c++/13/bits/stl_vector.h:556:7: note: candidate: ‘constexpr std::vector<_Tp, _Alloc>::vector(size_type, const allocator_type&) [with _Tp = int; _Alloc = std::allocator<int>; size_type = long unsigned int; allocator_type = std::allocator<int>]’
+  556 |       vector(size_type __n, const allocator_type& __a = allocator_type())
+      |       ^~~~~~
+/usr/include/c++/13/bits/stl_vector.h:556:24: note:   no known conversion for argument 1 from ‘std::vector<std::any>’ to ‘std::vector<int>::size_type’ {aka ‘long unsigned int’}
+  556 |       vector(size_type __n, const allocator_type& __a = allocator_type())
+      |              ~~~~~~~~~~^~~
+/usr/include/c++/13/bits/stl_vector.h:542:7: note: candidate: ‘constexpr std::vector<_Tp, _Alloc>::vector(const allocator_type&) [with _Tp = int; _Alloc = std::allocator<int>; allocator_type = std::allocator<int>]’
+  542 |       vector(const allocator_type& __a) _GLIBCXX_NOEXCEPT
+      |       ^~~~~~
+/usr/include/c++/13/bits/stl_vector.h:542:36: note:   no known conversion for argument 1 from ‘std::vector<std::any>’ to ‘const std::vector<int>::allocator_type&’ {aka ‘const std::allocator<int>&’}
+  542 |       vector(const allocator_type& __a) _GLIBCXX_NOEXCEPT
+      |              ~~~~~~~~~~~~~~~~~~~~~~^~~
+/usr/include/c++/13/bits/stl_vector.h:531:7: note: candidate: ‘constexpr std::vector<_Tp, _Alloc>::vector() [with _Tp = int; _Alloc = std::allocator<int>]’
+  531 |       vector() = default;
+      |       ^~~~~~
+/usr/include/c++/13/bits/stl_vector.h:531:7: note:   candidate expects 0 arguments, 1 provided
+/workspace/mochi/tests/rosetta/transpiler/CPP/adfgvx-cipher.cpp: In instantiation of ‘encrypt(std::vector<std::__cxx11::basic_string<char> >&, std::string, std::string)::<lambda(const auto:53&)> [with auto:53 = std::__cxx11::basic_string<char>]’:
+/workspace/mochi/tests/rosetta/transpiler/CPP/adfgvx-cipher.cpp:178:252:   required from here
+/workspace/mochi/tests/rosetta/transpiler/CPP/adfgvx-cipher.cpp:178:134: error: no match for ‘operator+’ (operand types are ‘const std::__cxx11::basic_string<char>’ and ‘int’)
+  178 |                 if ((([&](const auto& c){ if constexpr(std::is_same_v<std::decay_t<decltype(c)>, std::string>) return c.substr(c, (c + 1) - c); else return std::vector<typename std::decay_t<decltype(c)>::value_type>(c.begin()+c, c.begin()+(c + 1)); })(polybius[r]) == ([&](const auto& c){ if constexpr(std::is_same_v<std::decay_t<decltype(c)>, std::string>) return c.substr(i, (i + 1) - i); else return std::vector<typename std::decay_t<decltype(c)>::value_type>(c.begin()+i, c.begin()+(i + 1)); })(plainText))) {
+      |                                                                                                                                   ~~~^~~~
+In file included from /usr/include/c++/13/string:48,
+                 from /usr/include/c++/13/bits/locale_classes.h:40,
+                 from /usr/include/c++/13/bits/ios_base.h:41,
+                 from /usr/include/c++/13/ios:44,
+                 from /usr/include/c++/13/ostream:40,
+                 from /usr/include/c++/13/iostream:41,
+                 from /workspace/mochi/tests/rosetta/transpiler/CPP/adfgvx-cipher.cpp:2:
+/usr/include/c++/13/bits/stl_iterator.h:634:5: note: candidate: ‘template<class _Iterator> constexpr std::reverse_iterator<_IteratorL> std::operator+(typename reverse_iterator<_IteratorL>::difference_type, const reverse_iterator<_IteratorL>&)’
+  634 |     operator+(typename reverse_iterator<_Iterator>::difference_type __n,
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/stl_iterator.h:634:5: note:   template argument deduction/substitution failed:
+/workspace/mochi/tests/rosetta/transpiler/CPP/adfgvx-cipher.cpp:178:134: note:   mismatched types ‘const std::reverse_iterator<_IteratorL>’ and ‘int’
+  178 |                 if ((([&](const auto& c){ if constexpr(std::is_same_v<std::decay_t<decltype(c)>, std::string>) return c.substr(c, (c + 1) - c); else return std::vector<typename std::decay_t<decltype(c)>::value_type>(c.begin()+c, c.begin()+(c + 1)); })(polybius[r]) == ([&](const auto& c){ if constexpr(std::is_same_v<std::decay_t<decltype(c)>, std::string>) return c.substr(i, (i + 1) - i); else return std::vector<typename std::decay_t<decltype(c)>::value_type>(c.begin()+i, c.begin()+(i + 1)); })(plainText))) {
+      |                                                                                                                                   ~~~^~~~
+/usr/include/c++/13/bits/stl_iterator.h:1808:5: note: candidate: ‘template<class _Iterator> constexpr std::move_iterator<_IteratorL> std::operator+(typename move_iterator<_IteratorL>::difference_type, const move_iterator<_IteratorL>&)’
+ 1808 |     operator+(typename move_iterator<_Iterator>::difference_type __n,
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/stl_iterator.h:1808:5: note:   template argument deduction/substitution failed:
+/workspace/mochi/tests/rosetta/transpiler/CPP/adfgvx-cipher.cpp:178:134: note:   mismatched types ‘const std::move_iterator<_IteratorL>’ and ‘int’
+  178 |                 if ((([&](const auto& c){ if constexpr(std::is_same_v<std::decay_t<decltype(c)>, std::string>) return c.substr(c, (c + 1) - c); else return std::vector<typename std::decay_t<decltype(c)>::value_type>(c.begin()+c, c.begin()+(c + 1)); })(polybius[r]) == ([&](const auto& c){ if constexpr(std::is_same_v<std::decay_t<decltype(c)>, std::string>) return c.substr(i, (i + 1) - i); else return std::vector<typename std::decay_t<decltype(c)>::value_type>(c.begin()+i, c.begin()+(i + 1)); })(plainText))) {
+      |                                                                                                                                   ~~~^~~~
+In file included from /usr/include/c++/13/string:54:
+/usr/include/c++/13/bits/basic_string.h:3553:5: note: candidate: ‘template<class _CharT, class _Traits, class _Alloc> constexpr std::__cxx11::basic_string<_CharT, _Traits, _Allocator> std::operator+(const __cxx11::basic_string<_CharT, _Traits, _Allocator>&, const __cxx11::basic_string<_CharT, _Traits, _Allocator>&)’
+ 3553 |     operator+(const basic_string<_CharT, _Traits, _Alloc>& __lhs,
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/basic_string.h:3553:5: note:   template argument deduction/substitution failed:
+/workspace/mochi/tests/rosetta/transpiler/CPP/adfgvx-cipher.cpp:178:134: note:   mismatched types ‘const std::__cxx11::basic_string<_CharT, _Traits, _Allocator>’ and ‘int’
+  178 |                 if ((([&](const auto& c){ if constexpr(std::is_same_v<std::decay_t<decltype(c)>, std::string>) return c.substr(c, (c + 1) - c); else return std::vector<typename std::decay_t<decltype(c)>::value_type>(c.begin()+c, c.begin()+(c + 1)); })(polybius[r]) == ([&](const auto& c){ if constexpr(std::is_same_v<std::decay_t<decltype(c)>, std::string>) return c.substr(i, (i + 1) - i); else return std::vector<typename std::decay_t<decltype(c)>::value_type>(c.begin()+i, c.begin()+(i + 1)); })(plainText))) {
+      |                                                                                                                                   ~~~^~~~
+/usr/include/c++/13/bits/basic_string.h:3571:5: note: candidate: ‘template<class _CharT, class _Traits, class _Alloc> constexpr std::__cxx11::basic_string<_CharT, _Traits, _Allocator> std::operator+(const _CharT*, const __cxx11::basic_string<_CharT, _Traits, _Allocator>&)’
+ 3571 |     operator+(const _CharT* __lhs,
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/basic_string.h:3571:5: note:   template argument deduction/substitution failed:
+/workspace/mochi/tests/rosetta/transpiler/CPP/adfgvx-cipher.cpp:178:134: note:   mismatched types ‘const _CharT*’ and ‘std::__cxx11::basic_string<char>’
+  178 |                 if ((([&](const auto& c){ if constexpr(std::is_same_v<std::decay_t<decltype(c)>, std::string>) return c.substr(c, (c + 1) - c); else return std::vector<typename std::decay_t<decltype(c)>::value_type>(c.begin()+c, c.begin()+(c + 1)); })(polybius[r]) == ([&](const auto& c){ if constexpr(std::is_same_v<std::decay_t<decltype(c)>, std::string>) return c.substr(i, (i + 1) - i); else return std::vector<typename std::decay_t<decltype(c)>::value_type>(c.begin()+i, c.begin()+(i + 1)); })(plainText))) {
+      |                                                                                                                                   ~~~^~~~
+/usr/include/c++/13/bits/basic_string.h:3590:5: note: candidate: ‘template<class _CharT, class _Traits, class _Alloc> constexpr std::__cxx11::basic_string<_CharT, _Traits, _Allocator> std::operator+(_CharT, const __cxx11::basic_string<_CharT, _Traits, _Allocator>&)’
+ 3590 |     operator+(_CharT __lhs, const basic_string<_CharT,_Traits,_Alloc>& __rhs)
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/basic_string.h:3590:5: note:   template argument deduction/substitution failed:
+/workspace/mochi/tests/rosetta/transpiler/CPP/adfgvx-cipher.cpp:178:134: note:   mismatched types ‘const std::__cxx11::basic_string<_CharT, _Traits, _Allocator>’ and ‘int’
+  178 |                 if ((([&](const auto& c){ if constexpr(std::is_same_v<std::decay_t<decltype(c)>, std::string>) return c.substr(c, (c + 1) - c); else return std::vector<typename std::decay_t<decltype(c)>::value_type>(c.begin()+c, c.begin()+(c + 1)); })(polybius[r]) == ([&](const auto& c){ if constexpr(std::is_same_v<std::decay_t<decltype(c)>, std::string>) return c.substr(i, (i + 1) - i); else return std::vector<typename std::decay_t<decltype(c)>::value_type>(c.begin()+i, c.begin()+(i + 1)); })(plainText))) {
+      |                                                                                                                                   ~~~^~~~
+/usr/include/c++/13/bits/basic_string.h:3607:5: note: candidate: ‘template<class _CharT, class _Traits, class _Alloc> constexpr std::__cxx11::basic_string<_CharT, _Traits, _Allocator> std::operator+(const __cxx11::basic_string<_CharT, _Traits, _Allocator>&, const _CharT*)’
+ 3607 |     operator+(const basic_string<_CharT, _Traits, _Alloc>& __lhs,
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/basic_string.h:3607:5: note:   template argument deduction/substitution failed:
+/workspace/mochi/tests/rosetta/transpiler/CPP/adfgvx-cipher.cpp:178:134: note:   mismatched types ‘const _CharT*’ and ‘int’
+  178 |                 if ((([&](const auto& c){ if constexpr(std::is_same_v<std::decay_t<decltype(c)>, std::string>) return c.substr(c, (c + 1) - c); else return std::vector<typename std::decay_t<decltype(c)>::value_type>(c.begin()+c, c.begin()+(c + 1)); })(polybius[r]) == ([&](const auto& c){ if constexpr(std::is_same_v<std::decay_t<decltype(c)>, std::string>) return c.substr(i, (i + 1) - i); else return std::vector<typename std::decay_t<decltype(c)>::value_type>(c.begin()+i, c.begin()+(i + 1)); })(plainText))) {
+      |                                                                                                                                   ~~~^~~~
+/usr/include/c++/13/bits/basic_string.h:3625:5: note: candidate: ‘template<class _CharT, class _Traits, class _Alloc> constexpr std::__cxx11::basic_string<_CharT, _Traits, _Allocator> std::operator+(const __cxx11::basic_string<_CharT, _Traits, _Allocator>&, _CharT)’
+ 3625 |     operator+(const basic_string<_CharT, _Traits, _Alloc>& __lhs, _CharT __rhs)
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/basic_string.h:3625:5: note:   template argument deduction/substitution failed:
+/workspace/mochi/tests/rosetta/transpiler/CPP/adfgvx-cipher.cpp:178:134: note:   deduced conflicting types for parameter ‘_CharT’ (‘char’ and ‘int’)
+  178 |                 if ((([&](const auto& c){ if constexpr(std::is_same_v<std::decay_t<decltype(c)>, std::string>) return c.substr(c, (c + 1) - c); else return std::vector<typename std::decay_t<decltype(c)>::value_type>(c.begin()+c, c.begin()+(c + 1)); })(polybius[r]) == ([&](const auto& c){ if constexpr(std::is_same_v<std::decay_t<decltype(c)>, std::string>) return c.substr(i, (i + 1) - i); else return std::vector<typename std::decay_t<decltype(c)>::value_type>(c.begin()+i, c.begin()+(i + 1)); })(plainText))) {
+      |                                                                                                                                   ~~~^~~~
+/usr/include/c++/13/bits/basic_string.h:3637:5: note: candidate: ‘template<class _CharT, class _Traits, class _Alloc> constexpr std::__cxx11::basic_string<_CharT, _Traits, _Allocator> std::operator+(__cxx11::basic_string<_CharT, _Traits, _Allocator>&&, const __cxx11::basic_string<_CharT, _Traits, _Allocator>&)’
+ 3637 |     operator+(basic_string<_CharT, _Traits, _Alloc>&& __lhs,
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/basic_string.h:3637:5: note:   template argument deduction/substitution failed:
+/workspace/mochi/tests/rosetta/transpiler/CPP/adfgvx-cipher.cpp:178:134: note:   types ‘std::__cxx11::basic_string<_CharT, _Traits, _Allocator>’ and ‘const std::__cxx11::basic_string<char>’ have incompatible cv-qualifiers
+  178 |                 if ((([&](const auto& c){ if constexpr(std::is_same_v<std::decay_t<decltype(c)>, std::string>) return c.substr(c, (c + 1) - c); else return std::vector<typename std::decay_t<decltype(c)>::value_type>(c.begin()+c, c.begin()+(c + 1)); })(polybius[r]) == ([&](const auto& c){ if constexpr(std::is_same_v<std::decay_t<decltype(c)>, std::string>) return c.substr(i, (i + 1) - i); else return std::vector<typename std::decay_t<decltype(c)>::value_type>(c.begin()+i, c.begin()+(i + 1)); })(plainText))) {
+      |                                                                                                                                   ~~~^~~~
+/usr/include/c++/13/bits/basic_string.h:3644:5: note: candidate: ‘template<class _CharT, class _Traits, class _Alloc> constexpr std::__cxx11::basic_string<_CharT, _Traits, _Allocator> std::operator+(const __cxx11::basic_string<_CharT, _Traits, _Allocator>&, __cxx11::basic_string<_CharT, _Traits, _Allocator>&&)’
+ 3644 |     operator+(const basic_string<_CharT, _Traits, _Alloc>& __lhs,
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/basic_string.h:3644:5: note:   template argument deduction/substitution failed:
+/workspace/mochi/tests/rosetta/transpiler/CPP/adfgvx-cipher.cpp:178:134: note:   mismatched types ‘std::__cxx11::basic_string<_CharT, _Traits, _Allocator>’ and ‘int’
+  178 |                 if ((([&](const auto& c){ if constexpr(std::is_same_v<std::decay_t<decltype(c)>, std::string>) return c.substr(c, (c + 1) - c); else return std::vector<typename std::decay_t<decltype(c)>::value_type>(c.begin()+c, c.begin()+(c + 1)); })(polybius[r]) == ([&](const auto& c){ if constexpr(std::is_same_v<std::decay_t<decltype(c)>, std::string>) return c.substr(i, (i + 1) - i); else return std::vector<typename std::decay_t<decltype(c)>::value_type>(c.begin()+i, c.begin()+(i + 1)); })(plainText))) {
+      |                                                                                                                                   ~~~^~~~
+/usr/include/c++/13/bits/basic_string.h:3651:5: note: candidate: ‘template<class _CharT, class _Traits, class _Alloc> constexpr std::__cxx11::basic_string<_CharT, _Traits, _Allocator> std::operator+(__cxx11::basic_string<_CharT, _Traits, _Allocator>&&, __cxx11::basic_string<_CharT, _Traits, _Allocator>&&)’
+ 3651 |     operator+(basic_string<_CharT, _Traits, _Alloc>&& __lhs,
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/basic_string.h:3651:5: note:   template argument deduction/substitution failed:
+/workspace/mochi/tests/rosetta/transpiler/CPP/adfgvx-cipher.cpp:178:134: note:   types ‘std::__cxx11::basic_string<_CharT, _Traits, _Allocator>’ and ‘const std::__cxx11::basic_string<char>’ have incompatible cv-qualifiers
+  178 |                 if ((([&](const auto& c){ if constexpr(std::is_same_v<std::decay_t<decltype(c)>, std::string>) return c.substr(c, (c + 1) - c); else return std::vector<typename std::decay_t<decltype(c)>::value_type>(c.begin()+c, c.begin()+(c + 1)); })(polybius[r]) == ([&](const auto& c){ if constexpr(std::is_same_v<std::decay_t<decltype(c)>, std::string>) return c.substr(i, (i + 1) - i); else return std::vector<typename std::decay_t<decltype(c)>::value_type>(c.begin()+i, c.begin()+(i + 1)); })(plainText))) {
+      |                                                                                                                                   ~~~^~~~
+/usr/include/c++/13/bits/basic_string.h:3674:5: note: candidate: ‘template<class _CharT, class _Traits, class _Alloc> constexpr std::__cxx11::basic_string<_CharT, _Traits, _Allocator> std::operator+(const _CharT*, __cxx11::basic_string<_CharT, _Traits, _Allocator>&&)’
+ 3674 |     operator+(const _CharT* __lhs,
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/basic_string.h:3674:5: note:   template argument deduction/substitution failed:
+/workspace/mochi/tests/rosetta/transpiler/CPP/adfgvx-cipher.cpp:178:134: note:   mismatched types ‘const _CharT*’ and ‘std::__cxx11::basic_string<char>’
+  178 |                 if ((([&](const auto& c){ if constexpr(std::is_same_v<std::decay_t<decltype(c)>, std::string>) return c.substr(c, (c + 1) - c); else return std::vector<typename std::decay_t<decltype(c)>::value_type>(c.begin()+c, c.begin()+(c + 1)); })(polybius[r]) == ([&](const auto& c){ if constexpr(std::is_same_v<std::decay_t<decltype(c)>, std::string>) return c.substr(i, (i + 1) - i); else return std::vector<typename std::decay_t<decltype(c)>::value_type>(c.begin()+i, c.begin()+(i + 1)); })(plainText))) {
+      |                                                                                                                                   ~~~^~~~
+/usr/include/c++/13/bits/basic_string.h:3681:5: note: candidate: ‘template<class _CharT, class _Traits, class _Alloc> constexpr std::__cxx11::basic_string<_CharT, _Traits, _Allocator> std::operator+(_CharT, __cxx11::basic_string<_CharT, _Traits, _Allocator>&&)’
+ 3681 |     operator+(_CharT __lhs,
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/basic_string.h:3681:5: note:   template argument deduction/substitution failed:
+/workspace/mochi/tests/rosetta/transpiler/CPP/adfgvx-cipher.cpp:178:134: note:   mismatched types ‘std::__cxx11::basic_string<_CharT, _Traits, _Allocator>’ and ‘int’
+  178 |                 if ((([&](const auto& c){ if constexpr(std::is_same_v<std::decay_t<decltype(c)>, std::string>) return c.substr(c, (c + 1) - c); else return std::vector<typename std::decay_t<decltype(c)>::value_type>(c.begin()+c, c.begin()+(c + 1)); })(polybius[r]) == ([&](const auto& c){ if constexpr(std::is_same_v<std::decay_t<decltype(c)>, std::string>) return c.substr(i, (i + 1) - i); else return std::vector<typename std::decay_t<decltype(c)>::value_type>(c.begin()+i, c.begin()+(i + 1)); })(plainText))) {
+      |                                                                                                                                   ~~~^~~~
+/usr/include/c++/13/bits/basic_string.h:3688:5: note: candidate: ‘template<class _CharT, class _Traits, class _Alloc> constexpr std::__cxx11::basic_string<_CharT, _Traits, _Allocator> std::operator+(__cxx11::basic_string<_CharT, _Traits, _Allocator>&&, const _CharT*)’
+ 3688 |     operator+(basic_string<_CharT, _Traits, _Alloc>&& __lhs,
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/basic_string.h:3688:5: note:   template argument deduction/substitution failed:
+/workspace/mochi/tests/rosetta/transpiler/CPP/adfgvx-cipher.cpp:178:134: note:   types ‘std::__cxx11::basic_string<_CharT, _Traits, _Allocator>’ and ‘const std::__cxx11::basic_string<char>’ have incompatible cv-qualifiers
+  178 |                 if ((([&](const auto& c){ if constexpr(std::is_same_v<std::decay_t<decltype(c)>, std::string>) return c.substr(c, (c + 1) - c); else return std::vector<typename std::decay_t<decltype(c)>::value_type>(c.begin()+c, c.begin()+(c + 1)); })(polybius[r]) == ([&](const auto& c){ if constexpr(std::is_same_v<std::decay_t<decltype(c)>, std::string>) return c.substr(i, (i + 1) - i); else return std::vector<typename std::decay_t<decltype(c)>::value_type>(c.begin()+i, c.begin()+(i + 1)); })(plainText))) {
+      |                                                                                                                                   ~~~^~~~
+/usr/include/c++/13/bits/basic_string.h:3695:5: note: candidate: ‘template<class _CharT, class _Traits, class _Alloc> constexpr std::__cxx11::basic_string<_CharT, _Traits, _Allocator> std::operator+(__cxx11::basic_string<_CharT, _Traits, _Allocator>&&, _CharT)’
+ 3695 |     operator+(basic_string<_CharT, _Traits, _Alloc>&& __lhs,
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/basic_string.h:3695:5: note:   template argument deduction/substitution failed:
+/workspace/mochi/tests/rosetta/transpiler/CPP/adfgvx-cipher.cpp:178:134: note:   types ‘std::__cxx11::basic_string<_CharT, _Traits, _Allocator>’ and ‘const std::__cxx11::basic_string<char>’ have incompatible cv-qualifiers
+  178 |                 if ((([&](const auto& c){ if constexpr(std::is_same_v<std::decay_t<decltype(c)>, std::string>) return c.substr(c, (c + 1) - c); else return std::vector<typename std::decay_t<decltype(c)>::value_type>(c.begin()+c, c.begin()+(c + 1)); })(polybius[r]) == ([&](const auto& c){ if constexpr(std::is_same_v<std::decay_t<decltype(c)>, std::string>) return c.substr(i, (i + 1) - i); else return std::vector<typename std::decay_t<decltype(c)>::value_type>(c.begin()+i, c.begin()+(i + 1)); })(plainText))) {
+      |                                                                                                                                   ~~~^~~~
+/workspace/mochi/tests/rosetta/transpiler/CPP/adfgvx-cipher.cpp: In instantiation of ‘encrypt(std::vector<std::__cxx11::basic_string<char> >&, std::string, std::string)::<lambda(const auto:56&)> [with auto:56 = std::vector<std::__cxx11::basic_string<char> >]’:
+/workspace/mochi/tests/rosetta/transpiler/CPP/adfgvx-cipher.cpp:179:618:   required from here
+/workspace/mochi/tests/rosetta/transpiler/CPP/adfgvx-cipher.cpp:179:592: error: no match for ‘operator+’ (operand types are ‘std::vector<std::__cxx11::basic_string<char> >::const_iterator’ and ‘const std::vector<std::__cxx11::basic_string<char> >’)
+  179 |                     temp = (([&]{ std::string __res = temp; const auto& __vec = ([&](const auto& c){ if constexpr(std::is_same_v<std::decay_t<decltype(c)>, std::string>) return c.substr(r, (r + 1) - r); else return std::vector<typename std::decay_t<decltype(c)>::value_type>(c.begin()+r, c.begin()+(r + 1)); })(labels); for(const auto& __e : __vec){ __res += __e; } return __res; }()) + ([&](const auto& c){ if constexpr(std::is_same_v<std::decay_t<decltype(c)>, std::string>) return c.substr(c, (c + 1) - c); else return std::vector<typename std::decay_t<decltype(c)>::value_type>(c.begin()+c, c.begin()+(c + 1)); })(labels));
+      |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       ~~~~~~~~~^~
+/usr/include/c++/13/bits/stl_iterator.h:1147:7: note: candidate: ‘constexpr __gnu_cxx::__normal_iterator<_Iterator, _Container> __gnu_cxx::__normal_iterator<_Iterator, _Container>::operator+(difference_type) const [with _Iterator = const std::__cxx11::basic_string<char>*; _Container = std::vector<std::__cxx11::basic_string<char> >; difference_type = long int]’
+ 1147 |       operator+(difference_type __n) const _GLIBCXX_NOEXCEPT
+      |       ^~~~~~~~
+/usr/include/c++/13/bits/stl_iterator.h:1147:33: note:   no known conversion for argument 1 from ‘const std::vector<std::__cxx11::basic_string<char> >’ to ‘__gnu_cxx::__normal_iterator<const std::__cxx11::basic_string<char>*, std::vector<std::__cxx11::basic_string<char> > >::difference_type’ {aka ‘long int’}
+ 1147 |       operator+(difference_type __n) const _GLIBCXX_NOEXCEPT
+      |                 ~~~~~~~~~~~~~~~~^~~
+/usr/include/c++/13/bits/stl_iterator.h:1342:5: note: candidate: ‘template<class _Iterator, class _Container> constexpr __gnu_cxx::__normal_iterator<_Iterator, _Container> __gnu_cxx::operator+(typename __normal_iterator<_Iterator, _Container>::difference_type, const __normal_iterator<_Iterator, _Container>&)’
+ 1342 |     operator+(typename __normal_iterator<_Iterator, _Container>::difference_type
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/stl_iterator.h:1342:5: note:   template argument deduction/substitution failed:
+/workspace/mochi/tests/rosetta/transpiler/CPP/adfgvx-cipher.cpp:179:592: note:   ‘const std::vector<std::__cxx11::basic_string<char> >’ is not derived from ‘const __gnu_cxx::__normal_iterator<_Iterator, _Container>’
+  179 |                     temp = (([&]{ std::string __res = temp; const auto& __vec = ([&](const auto& c){ if constexpr(std::is_same_v<std::decay_t<decltype(c)>, std::string>) return c.substr(r, (r + 1) - r); else return std::vector<typename std::decay_t<decltype(c)>::value_type>(c.begin()+r, c.begin()+(r + 1)); })(labels); for(const auto& __e : __vec){ __res += __e; } return __res; }()) + ([&](const auto& c){ if constexpr(std::is_same_v<std::decay_t<decltype(c)>, std::string>) return c.substr(c, (c + 1) - c); else return std::vector<typename std::decay_t<decltype(c)>::value_type>(c.begin()+c, c.begin()+(c + 1)); })(labels));
+      |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       ~~~~~~~~~^~
+/usr/include/c++/13/bits/stl_iterator.h:634:5: note: candidate: ‘template<class _Iterator> constexpr std::reverse_iterator<_IteratorL> std::operator+(typename reverse_iterator<_IteratorL>::difference_type, const reverse_iterator<_IteratorL>&)’
+  634 |     operator+(typename reverse_iterator<_Iterator>::difference_type __n,
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/stl_iterator.h:634:5: note:   template argument deduction/substitution failed:
+/workspace/mochi/tests/rosetta/transpiler/CPP/adfgvx-cipher.cpp:179:592: note:   ‘const std::vector<std::__cxx11::basic_string<char> >’ is not derived from ‘const std::reverse_iterator<_IteratorL>’
+  179 |                     temp = (([&]{ std::string __res = temp; const auto& __vec = ([&](const auto& c){ if constexpr(std::is_same_v<std::decay_t<decltype(c)>, std::string>) return c.substr(r, (r + 1) - r); else return std::vector<typename std::decay_t<decltype(c)>::value_type>(c.begin()+r, c.begin()+(r + 1)); })(labels); for(const auto& __e : __vec){ __res += __e; } return __res; }()) + ([&](const auto& c){ if constexpr(std::is_same_v<std::decay_t<decltype(c)>, std::string>) return c.substr(c, (c + 1) - c); else return std::vector<typename std::decay_t<decltype(c)>::value_type>(c.begin()+c, c.begin()+(c + 1)); })(labels));
+      |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       ~~~~~~~~~^~
+/usr/include/c++/13/bits/stl_iterator.h:1808:5: note: candidate: ‘template<class _Iterator> constexpr std::move_iterator<_IteratorL> std::operator+(typename move_iterator<_IteratorL>::difference_type, const move_iterator<_IteratorL>&)’
+ 1808 |     operator+(typename move_iterator<_Iterator>::difference_type __n,
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/stl_iterator.h:1808:5: note:   template argument deduction/substitution failed:
+/workspace/mochi/tests/rosetta/transpiler/CPP/adfgvx-cipher.cpp:179:592: note:   ‘const std::vector<std::__cxx11::basic_string<char> >’ is not derived from ‘const std::move_iterator<_IteratorL>’
+  179 |                     temp = (([&]{ std::string __res = temp; const auto& __vec = ([&](const auto& c){ if constexpr(std::is_same_v<std::decay_t<decltype(c)>, std::string>) return c.substr(r, (r + 1) - r); else return std::vector<typename std::decay_t<decltype(c)>::value_type>(c.begin()+r, c.begin()+(r + 1)); })(labels); for(const auto& __e : __vec){ __res += __e; } return __res; }()) + ([&](const auto& c){ if constexpr(std::is_same_v<std::decay_t<decltype(c)>, std::string>) return c.substr(c, (c + 1) - c); else return std::vector<typename std::decay_t<decltype(c)>::value_type>(c.begin()+c, c.begin()+(c + 1)); })(labels));
+      |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       ~~~~~~~~~^~
+/usr/include/c++/13/bits/basic_string.h:3553:5: note: candidate: ‘template<class _CharT, class _Traits, class _Alloc> constexpr std::__cxx11::basic_string<_CharT, _Traits, _Allocator> std::operator+(const __cxx11::basic_string<_CharT, _Traits, _Allocator>&, const __cxx11::basic_string<_CharT, _Traits, _Allocator>&)’
+ 3553 |     operator+(const basic_string<_CharT, _Traits, _Alloc>& __lhs,
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/basic_string.h:3553:5: note:   template argument deduction/substitution failed:
+/workspace/mochi/tests/rosetta/transpiler/CPP/adfgvx-cipher.cpp:179:592: note:   ‘std::vector<std::__cxx11::basic_string<char> >::const_iterator’ is not derived from ‘const std::__cxx11::basic_string<_CharT, _Traits, _Allocator>’
+  179 |                     temp = (([&]{ std::string __res = temp; const auto& __vec = ([&](const auto& c){ if constexpr(std::is_same_v<std::decay_t<decltype(c)>, std::string>) return c.substr(r, (r + 1) - r); else return std::vector<typename std::decay_t<decltype(c)>::value_type>(c.begin()+r, c.begin()+(r + 1)); })(labels); for(const auto& __e : __vec){ __res += __e; } return __res; }()) + ([&](const auto& c){ if constexpr(std::is_same_v<std::decay_t<decltype(c)>, std::string>) return c.substr(c, (c + 1) - c); else return std::vector<typename std::decay_t<decltype(c)>::value_type>(c.begin()+c, c.begin()+(c + 1)); })(labels));
+      |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       ~~~~~~~~~^~
+/usr/include/c++/13/bits/basic_string.h:3571:5: note: candidate: ‘template<class _CharT, class _Traits, class _Alloc> constexpr std::__cxx11::basic_string<_CharT, _Traits, _Allocator> std::operator+(const _CharT*, const __cxx11::basic_string<_CharT, _Traits, _Allocator>&)’
+ 3571 |     operator+(const _CharT* __lhs,
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/basic_string.h:3571:5: note:   template argument deduction/substitution failed:
+/workspace/mochi/tests/rosetta/transpiler/CPP/adfgvx-cipher.cpp:179:592: note:   mismatched types ‘const _CharT*’ and ‘__gnu_cxx::__normal_iterator<const std::__cxx11::basic_string<char>*, std::vector<std::__cxx11::basic_string<char> > >’
+  179 |                     temp = (([&]{ std::string __res = temp; const auto& __vec = ([&](const auto& c){ if constexpr(std::is_same_v<std::decay_t<decltype(c)>, std::string>) return c.substr(r, (r + 1) - r); else return std::vector<typename std::decay_t<decltype(c)>::value_type>(c.begin()+r, c.begin()+(r + 1)); })(labels); for(const auto& __e : __vec){ __res += __e; } return __res; }()) + ([&](const auto& c){ if constexpr(std::is_same_v<std::decay_t<decltype(c)>, std::string>) return c.substr(c, (c + 1) - c); else return std::vector<typename std::decay_t<decltype(c)>::value_type>(c.begin()+c, c.begin()+(c + 1)); })(labels));
+      |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       ~~~~~~~~~^~
+/usr/include/c++/13/bits/basic_string.h:3590:5: note: candidate: ‘template<class _CharT, class _Traits, class _Alloc> constexpr std::__cxx11::basic_string<_CharT, _Traits, _Allocator> std::operator+(_CharT, const __cxx11::basic_string<_CharT, _Traits, _Allocator>&)’
+ 3590 |     operator+(_CharT __lhs, const basic_string<_CharT,_Traits,_Alloc>& __rhs)
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/basic_string.h:3590:5: note:   template argument deduction/substitution failed:
+/workspace/mochi/tests/rosetta/transpiler/CPP/adfgvx-cipher.cpp:179:592: note:   ‘const std::vector<std::__cxx11::basic_string<char> >’ is not derived from ‘const std::__cxx11::basic_string<_CharT, _Traits, _Allocator>’
+  179 |                     temp = (([&]{ std::string __res = temp; const auto& __vec = ([&](const auto& c){ if constexpr(std::is_same_v<std::decay_t<decltype(c)>, std::string>) return c.substr(r, (r + 1) - r); else return std::vector<typename std::decay_t<decltype(c)>::value_type>(c.begin()+r, c.begin()+(r + 1)); })(labels); for(const auto& __e : __vec){ __res += __e; } return __res; }()) + ([&](const auto& c){ if constexpr(std::is_same_v<std::decay_t<decltype(c)>, std::string>) return c.substr(c, (c + 1) - c); else return std::vector<typename std::decay_t<decltype(c)>::value_type>(c.begin()+c, c.begin()+(c + 1)); })(labels));
+      |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       ~~~~~~~~~^~
+/usr/include/c++/13/bits/basic_string.h:3607:5: note: candidate: ‘template<class _CharT, class _Traits, class _Alloc> constexpr std::__cxx11::basic_string<_CharT, _Traits, _Allocator> std::operator+(const __cxx11::basic_string<_CharT, _Traits, _Allocator>&, const _CharT*)’
+ 3607 |     operator+(const basic_string<_CharT, _Traits, _Alloc>& __lhs,
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/basic_string.h:3607:5: note:   template argument deduction/substitution failed:
+/workspace/mochi/tests/rosetta/transpiler/CPP/adfgvx-cipher.cpp:179:592: note:   ‘std::vector<std::__cxx11::basic_string<char> >::const_iterator’ is not derived from ‘const std::__cxx11::basic_string<_CharT, _Traits, _Allocator>’
+  179 |                     temp = (([&]{ std::string __res = temp; const auto& __vec = ([&](const auto& c){ if constexpr(std::is_same_v<std::decay_t<decltype(c)>, std::string>) return c.substr(r, (r + 1) - r); else return std::vector<typename std::decay_t<decltype(c)>::value_type>(c.begin()+r, c.begin()+(r + 1)); })(labels); for(const auto& __e : __vec){ __res += __e; } return __res; }()) + ([&](const auto& c){ if constexpr(std::is_same_v<std::decay_t<decltype(c)>, std::string>) return c.substr(c, (c + 1) - c); else return std::vector<typename std::decay_t<decltype(c)>::value_type>(c.begin()+c, c.begin()+(c + 1)); })(labels));
+      |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       ~~~~~~~~~^~
+/usr/include/c++/13/bits/basic_string.h:3625:5: note: candidate: ‘template<class _CharT, class _Traits, class _Alloc> constexpr std::__cxx11::basic_string<_CharT, _Traits, _Allocator> std::operator+(const __cxx11::basic_string<_CharT, _Traits, _Allocator>&, _CharT)’
+ 3625 |     operator+(const basic_string<_CharT, _Traits, _Alloc>& __lhs, _CharT __rhs)
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/basic_string.h:3625:5: note:   template argument deduction/substitution failed:
+/workspace/mochi/tests/rosetta/transpiler/CPP/adfgvx-cipher.cpp:179:592: note:   ‘std::vector<std::__cxx11::basic_string<char> >::const_iterator’ is not derived from ‘const std::__cxx11::basic_string<_CharT, _Traits, _Allocator>’
+  179 |                     temp = (([&]{ std::string __res = temp; const auto& __vec = ([&](const auto& c){ if constexpr(std::is_same_v<std::decay_t<decltype(c)>, std::string>) return c.substr(r, (r + 1) - r); else return std::vector<typename std::decay_t<decltype(c)>::value_type>(c.begin()+r, c.begin()+(r + 1)); })(labels); for(const auto& __e : __vec){ __res += __e; } return __res; }()) + ([&](const auto& c){ if constexpr(std::is_same_v<std::decay_t<decltype(c)>, std::string>) return c.substr(c, (c + 1) - c); else return std::vector<typename std::decay_t<decltype(c)>::value_type>(c.begin()+c, c.begin()+(c + 1)); })(labels));
+      |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       ~~~~~~~~~^~
+/usr/include/c++/13/bits/basic_string.h:3637:5: note: candidate: ‘template<class _CharT, class _Traits, class _Alloc> constexpr std::__cxx11::basic_string<_CharT, _Traits, _Allocator> std::operator+(__cxx11::basic_string<_CharT, _Traits, _Allocator>&&, const __cxx11::basic_string<_CharT, _Traits, _Allocator>&)’
+ 3637 |     operator+(basic_string<_CharT, _Traits, _Alloc>&& __lhs,
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/basic_string.h:3637:5: note:   template argument deduction/substitution failed:
+/workspace/mochi/tests/rosetta/transpiler/CPP/adfgvx-cipher.cpp:179:592: note:   ‘std::vector<std::__cxx11::basic_string<char> >::const_iterator’ is not derived from ‘std::__cxx11::basic_string<_CharT, _Traits, _Allocator>’
+  179 |                     temp = (([&]{ std::string __res = temp; const auto& __vec = ([&](const auto& c){ if constexpr(std::is_same_v<std::decay_t<decltype(c)>, std::string>) return c.substr(r, (r + 1) - r); else return std::vector<typename std::decay_t<decltype(c)>::value_type>(c.begin()+r, c.begin()+(r + 1)); })(labels); for(const auto& __e : __vec){ __res += __e; } return __res; }()) + ([&](const auto& c){ if constexpr(std::is_same_v<std::decay_t<decltype(c)>, std::string>) return c.substr(c, (c + 1) - c); else return std::vector<typename std::decay_t<decltype(c)>::value_type>(c.begin()+c, c.begin()+(c + 1)); })(labels));
+      |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       ~~~~~~~~~^~
+/usr/include/c++/13/bits/basic_string.h:3644:5: note: candidate: ‘template<class _CharT, class _Traits, class _Alloc> constexpr std::__cxx11::basic_string<_CharT, _Traits, _Allocator> std::operator+(const __cxx11::basic_string<_CharT, _Traits, _Allocator>&, __cxx11::basic_string<_CharT, _Traits, _Allocator>&&)’
+ 3644 |     operator+(const basic_string<_CharT, _Traits, _Alloc>& __lhs,
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/basic_string.h:3644:5: note:   template argument deduction/substitution failed:
+/workspace/mochi/tests/rosetta/transpiler/CPP/adfgvx-cipher.cpp:179:592: note:   ‘std::vector<std::__cxx11::basic_string<char> >::const_iterator’ is not derived from ‘const std::__cxx11::basic_string<_CharT, _Traits, _Allocator>’
+  179 |                     temp = (([&]{ std::string __res = temp; const auto& __vec = ([&](const auto& c){ if constexpr(std::is_same_v<std::decay_t<decltype(c)>, std::string>) return c.substr(r, (r + 1) - r); else return std::vector<typename std::decay_t<decltype(c)>::value_type>(c.begin()+r, c.begin()+(r + 1)); })(labels); for(const auto& __e : __vec){ __res += __e; } return __res; }()) + ([&](const auto& c){ if constexpr(std::is_same_v<std::decay_t<decltype(c)>, std::string>) return c.substr(c, (c + 1) - c); else return std::vector<typename std::decay_t<decltype(c)>::value_type>(c.begin()+c, c.begin()+(c + 1)); })(labels));
+      |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       ~~~~~~~~~^~
+/usr/include/c++/13/bits/basic_string.h:3651:5: note: candidate: ‘template<class _CharT, class _Traits, class _Alloc> constexpr std::__cxx11::basic_string<_CharT, _Traits, _Allocator> std::operator+(__cxx11::basic_string<_CharT, _Traits, _Allocator>&&, __cxx11::basic_string<_CharT, _Traits, _Allocator>&&)’
+ 3651 |     operator+(basic_string<_CharT, _Traits, _Alloc>&& __lhs,
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/basic_string.h:3651:5: note:   template argument deduction/substitution failed:
+/workspace/mochi/tests/rosetta/transpiler/CPP/adfgvx-cipher.cpp:179:592: note:   ‘std::vector<std::__cxx11::basic_string<char> >::const_iterator’ is not derived from ‘std::__cxx11::basic_string<_CharT, _Traits, _Allocator>’
+  179 |                     temp = (([&]{ std::string __res = temp; const auto& __vec = ([&](const auto& c){ if constexpr(std::is_same_v<std::decay_t<decltype(c)>, std::string>) return c.substr(r, (r + 1) - r); else return std::vector<typename std::decay_t<decltype(c)>::value_type>(c.begin()+r, c.begin()+(r + 1)); })(labels); for(const auto& __e : __vec){ __res += __e; } return __res; }()) + ([&](const auto& c){ if constexpr(std::is_same_v<std::decay_t<decltype(c)>, std::string>) return c.substr(c, (c + 1) - c); else return std::vector<typename std::decay_t<decltype(c)>::value_type>(c.begin()+c, c.begin()+(c + 1)); })(labels));
+      |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       ~~~~~~~~~^~
+/usr/include/c++/13/bits/basic_string.h:3674:5: note: candidate: ‘template<class _CharT, class _Traits, class _Alloc> constexpr std::__cxx11::basic_string<_CharT, _Traits, _Allocator> std::operator+(const _CharT*, __cxx11::basic_string<_CharT, _Traits, _Allocator>&&)’
+ 3674 |     operator+(const _CharT* __lhs,
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/basic_string.h:3674:5: note:   template argument deduction/substitution failed:
+/workspace/mochi/tests/rosetta/transpiler/CPP/adfgvx-cipher.cpp:179:592: note:   mismatched types ‘const _CharT*’ and ‘__gnu_cxx::__normal_iterator<const std::__cxx11::basic_string<char>*, std::vector<std::__cxx11::basic_string<char> > >’
+  179 |                     temp = (([&]{ std::string __res = temp; const auto& __vec = ([&](const auto& c){ if constexpr(std::is_same_v<std::decay_t<decltype(c)>, std::string>) return c.substr(r, (r + 1) - r); else return std::vector<typename std::decay_t<decltype(c)>::value_type>(c.begin()+r, c.begin()+(r + 1)); })(labels); for(const auto& __e : __vec){ __res += __e; } return __res; }()) + ([&](const auto& c){ if constexpr(std::is_same_v<std::decay_t<decltype(c)>, std::string>) return c.substr(c, (c + 1) - c); else return std::vector<typename std::decay_t<decltype(c)>::value_type>(c.begin()+c, c.begin()+(c + 1)); })(labels));
+      |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       ~~~~~~~~~^~
+/usr/include/c++/13/bits/basic_string.h:3681:5: note: candidate: ‘template<class _CharT, class _Traits, class _Alloc> constexpr std::__cxx11::basic_string<_CharT, _Traits, _Allocator> std::operator+(_CharT, __cxx11::basic_string<_CharT, _Traits, _Allocator>&&)’
+ 3681 |     operator+(_CharT __lhs,
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/basic_string.h:3681:5: note:   template argument deduction/substitution failed:
+/workspace/mochi/tests/rosetta/transpiler/CPP/adfgvx-cipher.cpp:179:592: note:   types ‘std::__cxx11::basic_string<_CharT, _Traits, _Allocator>’ and ‘const std::vector<std::__cxx11::basic_string<char> >’ have incompatible cv-qualifiers
+  179 |                     temp = (([&]{ std::string __res = temp; const auto& __vec = ([&](const auto& c){ if constexpr(std::is_same_v<std::decay_t<decltype(c)>, std::string>) return c.substr(r, (r + 1) - r); else return std::vector<typename std::decay_t<decltype(c)>::value_type>(c.begin()+r, c.begin()+(r + 1)); })(labels); for(const auto& __e : __vec){ __res += __e; } return __res; }()) + ([&](const auto& c){ if constexpr(std::is_same_v<std::decay_t<decltype(c)>, std::string>) return c.substr(c, (c + 1) - c); else return std::vector<typename std::decay_t<decltype(c)>::value_type>(c.begin()+c, c.begin()+(c + 1)); })(labels));
+      |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       ~~~~~~~~~^~
+/usr/include/c++/13/bits/basic_string.h:3688:5: note: candidate: ‘template<class _CharT, class _Traits, class _Alloc> constexpr std::__cxx11::basic_string<_CharT, _Traits, _Allocator> std::operator+(__cxx11::basic_string<_CharT, _Traits, _Allocator>&&, const _CharT*)’
+ 3688 |     operator+(basic_string<_CharT, _Traits, _Alloc>&& __lhs,
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/basic_string.h:3688:5: note:   template argument deduction/substitution failed:
+/workspace/mochi/tests/rosetta/transpiler/CPP/adfgvx-cipher.cpp:179:592: note:   ‘std::vector<std::__cxx11::basic_string<char> >::const_iterator’ is not derived from ‘std::__cxx11::basic_string<_CharT, _Traits, _Allocator>’
+  179 |                     temp = (([&]{ std::string __res = temp; const auto& __vec = ([&](const auto& c){ if constexpr(std::is_same_v<std::decay_t<decltype(c)>, std::string>) return c.substr(r, (r + 1) - r); else return std::vector<typename std::decay_t<decltype(c)>::value_type>(c.begin()+r, c.begin()+(r + 1)); })(labels); for(const auto& __e : __vec){ __res += __e; } return __res; }()) + ([&](const auto& c){ if constexpr(std::is_same_v<std::decay_t<decltype(c)>, std::string>) return c.substr(c, (c + 1) - c); else return std::vector<typename std::decay_t<decltype(c)>::value_type>(c.begin()+c, c.begin()+(c + 1)); })(labels));
+      |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       ~~~~~~~~~^~
+/usr/include/c++/13/bits/basic_string.h:3695:5: note: candidate: ‘template<class _CharT, class _Traits, class _Alloc> constexpr std::__cxx11::basic_string<_CharT, _Traits, _Allocator> std::operator+(__cxx11::basic_string<_CharT, _Traits, _Allocator>&&, _CharT)’
+ 3695 |     operator+(basic_string<_CharT, _Traits, _Alloc>&& __lhs,
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/basic_string.h:3695:5: note:   template argument deduction/substitution failed:
+/workspace/mochi/tests/rosetta/transpiler/CPP/adfgvx-cipher.cpp:179:592: note:   ‘std::vector<std::__cxx11::basic_string<char> >::const_iterator’ is not derived from ‘std::__cxx11::basic_string<_CharT, _Traits, _Allocator>’
+  179 |                     temp = (([&]{ std::string __res = temp; const auto& __vec = ([&](const auto& c){ if constexpr(std::is_same_v<std::decay_t<decltype(c)>, std::string>) return c.substr(r, (r + 1) - r); else return std::vector<typename std::decay_t<decltype(c)>::value_type>(c.begin()+r, c.begin()+(r + 1)); })(labels); for(const auto& __e : __vec){ __res += __e; } return __res; }()) + ([&](const auto& c){ if constexpr(std::is_same_v<std::decay_t<decltype(c)>, std::string>) return c.substr(c, (c + 1) - c); else return std::vector<typename std::decay_t<decltype(c)>::value_type>(c.begin()+c, c.begin()+(c + 1)); })(labels));
+      |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       ~~~~~~~~~^~
+/workspace/mochi/tests/rosetta/transpiler/CPP/adfgvx-cipher.cpp: In function ‘std::string decrypt(std::vector<std::__cxx11::basic_string<char> >&, std::string, std::string)’:
+/workspace/mochi/tests/rosetta/transpiler/CPP/adfgvx-cipher.cpp:251:57: error: no match for ‘operator==’ (operand types are ‘__gnu_cxx::__alloc_traits<std::allocator<char>, char>::value_type’ {aka ‘char’} and ‘std::string’ {aka ‘std::__cxx11::basic_string<char>’})
+  251 |         if (((i == cipherText.size()) || (cipherText[i] == std::string(" ")))) {
+In file included from /usr/include/x86_64-linux-gnu/c++/13/bits/c++allocator.h:33,
+                 from /usr/include/c++/13/bits/allocator.h:46,
+                 from /usr/include/c++/13/string:43:
+/usr/include/c++/13/bits/new_allocator.h:215:9: note: candidate: ‘template<class _Up> constexpr bool std::operator==(const __new_allocator<char>&, const __new_allocator<_Tp>&)’ (reversed)
+  215 |         operator==(const __new_allocator&, const __new_allocator<_Up>&)
+      |         ^~~~~~~~
+/usr/include/c++/13/bits/new_allocator.h:215:9: note:   template argument deduction/substitution failed:
+/workspace/mochi/tests/rosetta/transpiler/CPP/adfgvx-cipher.cpp:251:75: note:   mismatched types ‘const std::__new_allocator<_Tp>’ and ‘__gnu_cxx::__alloc_traits<std::allocator<char>, char>::value_type’ {aka ‘char’}
+  251 |         if (((i == cipherText.size()) || (cipherText[i] == std::string(" ")))) {
+      |                                                                           ^
+/usr/include/c++/13/bits/allocator.h:237:5: note: candidate: ‘template<class _T1, class _T2> constexpr bool std::operator==(const allocator<_CharT>&, const allocator<_T2>&)’ (reversed)
+  237 |     operator==(const allocator<_T1>&, const allocator<_T2>&)
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/allocator.h:237:5: note:   template argument deduction/substitution failed:
+/workspace/mochi/tests/rosetta/transpiler/CPP/adfgvx-cipher.cpp:251:75: note:   ‘std::string’ {aka ‘std::__cxx11::basic_string<char>’} is not derived from ‘const std::allocator<_CharT>’
+  251 |         if (((i == cipherText.size()) || (cipherText[i] == std::string(" ")))) {
+      |                                                                           ^
+/usr/include/c++/13/bits/stl_iterator.h:534:5: note: candidate: ‘template<class _IteratorL, class _IteratorR> constexpr bool std::operator==(const reverse_iterator<_IteratorL>&, const reverse_iterator<_IteratorR>&) requires requires{{std::operator==::__x->base() == std::operator==::__y->base()} -> decltype(auto) [requires std::convertible_to<<placeholder>, bool>];}’ (reversed)
+  534 |     operator==(const reverse_iterator<_IteratorL>& __x,
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/stl_iterator.h:534:5: note:   template argument deduction/substitution failed:
+/workspace/mochi/tests/rosetta/transpiler/CPP/adfgvx-cipher.cpp:251:75: note:   ‘std::string’ {aka ‘std::__cxx11::basic_string<char>’} is not derived from ‘const std::reverse_iterator<_IteratorL>’
+  251 |         if (((i == cipherText.size()) || (cipherText[i] == std::string(" ")))) {
+      |                                                                           ^
+/usr/include/c++/13/bits/stl_iterator.h:1678:5: note: candidate: ‘template<class _IteratorL, class _IteratorR> constexpr bool std::operator==(const move_iterator<_IteratorL>&, const move_iterator<_IteratorR>&) requires requires{{std::operator==::__x->base() == std::operator==::__y->base()} -> decltype(auto) [requires std::convertible_to<<placeholder>, bool>];}’ (reversed)
+ 1678 |     operator==(const move_iterator<_IteratorL>& __x,
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/stl_iterator.h:1678:5: note:   template argument deduction/substitution failed:
+/workspace/mochi/tests/rosetta/transpiler/CPP/adfgvx-cipher.cpp:251:75: note:   ‘std::string’ {aka ‘std::__cxx11::basic_string<char>’} is not derived from ‘const std::move_iterator<_IteratorL>’
+  251 |         if (((i == cipherText.size()) || (cipherText[i] == std::string(" ")))) {
+      |                                                                           ^
+In file included from /usr/include/c++/13/bits/basic_string.h:47:
+/usr/include/c++/13/string_view:616:5: note: candidate: ‘template<class _CharT, class _Traits> constexpr bool std::operator==(basic_string_view<_CharT, _Traits>, __type_identity_t<basic_string_view<_CharT, _Traits> >)’ (reversed)
+  616 |     operator==(basic_string_view<_CharT, _Traits> __x,
+      |     ^~~~~~~~
+/usr/include/c++/13/string_view:616:5: note:   template argument deduction/substitution failed:
+/workspace/mochi/tests/rosetta/transpiler/CPP/adfgvx-cipher.cpp:251:75: note:   ‘std::__cxx11::basic_string<char>’ is not derived from ‘std::basic_string_view<_CharT, _Traits>’
+  251 |         if (((i == cipherText.size()) || (cipherText[i] == std::string(" ")))) {
+      |                                                                           ^
+/usr/include/c++/13/bits/basic_string.h:3727:5: note: candidate: ‘template<class _CharT, class _Traits, class _Alloc> constexpr bool std::operator==(const __cxx11::basic_string<_CharT, _Traits, _Allocator>&, const _CharT*)’ (reversed)
+ 3727 |     operator==(const basic_string<_CharT, _Traits, _Alloc>& __lhs,
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/basic_string.h:3727:5: note:   template argument deduction/substitution failed:
+/workspace/mochi/tests/rosetta/transpiler/CPP/adfgvx-cipher.cpp:251:75: note:   mismatched types ‘const _CharT*’ and ‘char’
+  251 |         if (((i == cipherText.size()) || (cipherText[i] == std::string(" ")))) {
+      |                                                                           ^
+In file included from /usr/include/c++/13/bits/uses_allocator_args.h:38,
+                 from /usr/include/c++/13/bits/memory_resource.h:41,
+                 from /usr/include/c++/13/string:58:
+/usr/include/c++/13/tuple:1919:5: note: candidate: ‘template<class ... _TElements, class ... _UElements> constexpr bool std::operator==(const tuple<_UTypes ...>&, const tuple<_UTypes ...>&)’ (reversed)
+ 1919 |     operator==(const tuple<_TElements...>& __t,
+      |     ^~~~~~~~
+/usr/include/c++/13/tuple:1919:5: note:   template argument deduction/substitution failed:
+/workspace/mochi/tests/rosetta/transpiler/CPP/adfgvx-cipher.cpp:251:75: note:   ‘std::string’ {aka ‘std::__cxx11::basic_string<char>’} is not derived from ‘const std::tuple<_UTypes ...>’
+  251 |         if (((i == cipherText.size()) || (cipherText[i] == std::string(" ")))) {
+      |                                                                           ^
+In file included from /workspace/mochi/tests/rosetta/transpiler/CPP/adfgvx-cipher.cpp:10:
+/usr/include/c++/13/optional:1296:5: note: candidate: ‘template<class _Tp> constexpr bool std::operator==(const optional<_Tp>&, nullopt_t)’ (reversed)
+ 1296 |     operator==(const optional<_Tp>& __lhs, nullopt_t) noexcept
+      |     ^~~~~~~~
+/usr/include/c++/13/optional:1296:5: note:   template argument deduction/substitution failed:
+/workspace/mochi/tests/rosetta/transpiler/CPP/adfgvx-cipher.cpp:251:75: note:   ‘std::string’ {aka ‘std::__cxx11::basic_string<char>’} is not derived from ‘const std::optional<_Tp>’
+  251 |         if (((i == cipherText.size()) || (cipherText[i] == std::string(" ")))) {
+      |                                                                           ^
+In file included from /usr/include/c++/13/bits/shared_ptr_base.h:59,
+                 from /usr/include/c++/13/bits/shared_ptr.h:53,
+                 from /usr/include/c++/13/chrono:49,
+                 from /workspace/mochi/tests/rosetta/transpiler/CPP/adfgvx-cipher.cpp:12:
+/usr/include/c++/13/bits/unique_ptr.h:829:5: note: candidate: ‘template<class _Tp, class _Dp, class _Up, class _Ep> bool std::operator==(const unique_ptr<_Tp, _Dp>&, const unique_ptr<_Up, _Ep>&)’ (reversed)
+  829 |     operator==(const unique_ptr<_Tp, _Dp>& __x,
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/unique_ptr.h:829:5: note:   template argument deduction/substitution failed:
+/workspace/mochi/tests/rosetta/transpiler/CPP/adfgvx-cipher.cpp:251:75: note:   ‘std::string’ {aka ‘std::__cxx11::basic_string<char>’} is not derived from ‘const std::unique_ptr<_Tp, _Dp>’
+  251 |         if (((i == cipherText.size()) || (cipherText[i] == std::string(" ")))) {
+      |                                                                           ^
+/usr/include/c++/13/bits/unique_ptr.h:837:5: note: candidate: ‘template<class _Tp, class _Dp> bool std::operator==(const unique_ptr<_Tp, _Dp>&, nullptr_t)’ (reversed)
+  837 |     operator==(const unique_ptr<_Tp, _Dp>& __x, nullptr_t) noexcept
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/unique_ptr.h:837:5: note:   template argument deduction/substitution failed:
+/workspace/mochi/tests/rosetta/transpiler/CPP/adfgvx-cipher.cpp:251:75: note:   ‘std::string’ {aka ‘std::__cxx11::basic_string<char>’} is not derived from ‘const std::unique_ptr<_Tp, _Dp>’
+  251 |         if (((i == cipherText.size()) || (cipherText[i] == std::string(" ")))) {
+      |                                                                           ^
+/usr/include/c++/13/bits/shared_ptr_base.h:1793:5: note: candidate: ‘template<class _Tp1, class _Tp2, __gnu_cxx::_Lock_policy _Lp> bool std::operator==(const __shared_ptr<_Tp1, _Lp>&, const __shared_ptr<_Tp2, _Lp>&)’ (reversed)
+ 1793 |     operator==(const __shared_ptr<_Tp1, _Lp>& __a,
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/shared_ptr_base.h:1793:5: note:   template argument deduction/substitution failed:
+/workspace/mochi/tests/rosetta/transpiler/CPP/adfgvx-cipher.cpp:251:75: note:   ‘std::string’ {aka ‘std::__cxx11::basic_string<char>’} is not derived from ‘const std::__shared_ptr<_Tp1, _Lp>’
+  251 |         if (((i == cipherText.size()) || (cipherText[i] == std::string(" ")))) {
+      |                                                                           ^
+/usr/include/c++/13/bits/shared_ptr_base.h:1799:5: note: candidate: ‘template<class _Tp, __gnu_cxx::_Lock_policy _Lp> bool std::operator==(const __shared_ptr<_Tp, _Lp>&, nullptr_t)’ (reversed)
+ 1799 |     operator==(const __shared_ptr<_Tp, _Lp>& __a, nullptr_t) noexcept
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/shared_ptr_base.h:1799:5: note:   template argument deduction/substitution failed:
+/workspace/mochi/tests/rosetta/transpiler/CPP/adfgvx-cipher.cpp:251:75: note:   ‘std::string’ {aka ‘std::__cxx11::basic_string<char>’} is not derived from ‘const std::__shared_ptr<_Tp, _Lp>’
+  251 |         if (((i == cipherText.size()) || (cipherText[i] == std::string(" ")))) {
+      |                                                                           ^
+/usr/include/c++/13/bits/shared_ptr.h:555:5: note: candidate: ‘template<class _Tp, class _Up> bool std::operator==(const shared_ptr<_Tp>&, const shared_ptr<_Tp>&)’ (reversed)
+  555 |     operator==(const shared_ptr<_Tp>& __a, const shared_ptr<_Up>& __b) noexcept
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/shared_ptr.h:555:5: note:   template argument deduction/substitution failed:
+/workspace/mochi/tests/rosetta/transpiler/CPP/adfgvx-cipher.cpp:251:75: note:   ‘std::string’ {aka ‘std::__cxx11::basic_string<char>’} is not derived from ‘const std::shared_ptr<_Tp>’
+  251 |         if (((i == cipherText.size()) || (cipherText[i] == std::string(" ")))) {
+      |                                                                           ^
+/usr/include/c++/13/bits/shared_ptr.h:561:5: note: candidate: ‘template<class _Tp> bool std::operator==(const shared_ptr<_Tp>&, nullptr_t)’ (reversed)
+  561 |     operator==(const shared_ptr<_Tp>& __a, nullptr_t) noexcept
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/shared_ptr.h:561:5: note:   template argument deduction/substitution failed:
+/workspace/mochi/tests/rosetta/transpiler/CPP/adfgvx-cipher.cpp:251:75: note:   ‘std::string’ {aka ‘std::__cxx11::basic_string<char>’} is not derived from ‘const std::shared_ptr<_Tp>’
+  251 |         if (((i == cipherText.size()) || (cipherText[i] == std::string(" ")))) {
+      |                                                                           ^
+In file included from /usr/include/c++/13/bits/ios_base.h:46:
+/usr/include/c++/13/system_error:465:3: note: candidate: ‘bool std::operator==(const error_code&, const error_condition&)’ (reversed)
+  465 |   operator==(const error_code& __lhs, const error_condition& __rhs) noexcept
+      |   ^~~~~~~~
+/usr/include/c++/13/system_error:465:32: note:   no known conversion for argument 1 from ‘std::string’ {aka ‘std::__cxx11::basic_string<char>’} to ‘const std::error_code&’
+  465 |   operator==(const error_code& __lhs, const error_condition& __rhs) noexcept
+      |              ~~~~~~~~~~~~~~~~~~^~~~~
+In file included from /usr/include/c++/13/iosfwd:42,
+                 from /usr/include/c++/13/ios:40:
+/usr/include/c++/13/bits/postypes.h:192:5: note: candidate: ‘template<class _StateT> bool std::operator==(const fpos<_StateT>&, const fpos<_StateT>&)’
+  192 |     operator==(const fpos<_StateT>& __lhs, const fpos<_StateT>& __rhs)
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/postypes.h:192:5: note:   template argument deduction/substitution failed:
+/workspace/mochi/tests/rosetta/transpiler/CPP/adfgvx-cipher.cpp:251:75: note:   mismatched types ‘const std::fpos<_StateT>’ and ‘__gnu_cxx::__alloc_traits<std::allocator<char>, char>::value_type’ {aka ‘char’}
+  251 |         if (((i == cipherText.size()) || (cipherText[i] == std::string(" ")))) {
+      |                                                                           ^
+/usr/include/c++/13/bits/stl_iterator.h:593:5: note: candidate: ‘template<class _Iterator> constexpr bool std::operator==(const reverse_iterator<_IteratorL>&, const reverse_iterator<_IteratorL>&) requires requires{{std::operator==::__x->base() == std::operator==::__y->base()} -> decltype(auto) [requires std::convertible_to<<placeholder>, bool>];}’
+  593 |     operator==(const reverse_iterator<_Iterator>& __x,
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/stl_iterator.h:593:5: note:   template argument deduction/substitution failed:
+/workspace/mochi/tests/rosetta/transpiler/CPP/adfgvx-cipher.cpp:251:75: note:   mismatched types ‘const std::reverse_iterator<_IteratorL>’ and ‘__gnu_cxx::__alloc_traits<std::allocator<char>, char>::value_type’ {aka ‘char’}
+  251 |         if (((i == cipherText.size()) || (cipherText[i] == std::string(" ")))) {
+      |                                                                           ^
+/usr/include/c++/13/bits/stl_iterator.h:1748:5: note: candidate: ‘template<class _Iterator> constexpr bool std::operator==(const move_iterator<_IteratorL>&, const move_iterator<_IteratorL>&)’
+ 1748 |     operator==(const move_iterator<_Iterator>& __x,
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/stl_iterator.h:1748:5: note:   template argument deduction/substitution failed:
+/workspace/mochi/tests/rosetta/transpiler/CPP/adfgvx-cipher.cpp:251:75: note:   mismatched types ‘const std::move_iterator<_IteratorL>’ and ‘__gnu_cxx::__alloc_traits<std::allocator<char>, char>::value_type’ {aka ‘char’}
+  251 |         if (((i == cipherText.size()) || (cipherText[i] == std::string(" ")))) {
+      |                                                                           ^
+In file included from /usr/include/c++/13/bits/stl_algobase.h:64,
+                 from /usr/include/c++/13/string:51:
+/usr/include/c++/13/bits/stl_pair.h:812:5: note: candidate: ‘template<class _T1, class _T2> constexpr bool std::operator==(const pair<_T1, _T2>&, const pair<_T1, _T2>&)’
+  812 |     operator==(const pair<_T1, _T2>& __x, const pair<_T1, _T2>& __y)
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/stl_pair.h:812:5: note:   template argument deduction/substitution failed:
+/workspace/mochi/tests/rosetta/transpiler/CPP/adfgvx-cipher.cpp:251:75: note:   mismatched types ‘const std::pair<_T1, _T2>’ and ‘__gnu_cxx::__alloc_traits<std::allocator<char>, char>::value_type’ {aka ‘char’}
+  251 |         if (((i == cipherText.size()) || (cipherText[i] == std::string(" ")))) {
+      |                                                                           ^
+/usr/include/c++/13/string_view:609:5: note: candidate: ‘template<class _CharT, class _Traits> constexpr bool std::operator==(basic_string_view<_CharT, _Traits>, basic_string_view<_CharT, _Traits>)’
+  609 |     operator==(basic_string_view<_CharT, _Traits> __x,
+      |     ^~~~~~~~
+/usr/include/c++/13/string_view:609:5: note:   template argument deduction/substitution failed:
+/workspace/mochi/tests/rosetta/transpiler/CPP/adfgvx-cipher.cpp:251:75: note:   mismatched types ‘std::basic_string_view<_CharT, _Traits>’ and ‘char’
+  251 |         if (((i == cipherText.size()) || (cipherText[i] == std::string(" ")))) {
+      |                                                                           ^
+/usr/include/c++/13/bits/basic_string.h:3710:5: note: candidate: ‘template<class _CharT, class _Traits, class _Alloc> constexpr bool std::operator==(const __cxx11::basic_string<_CharT, _Traits, _Allocator>&, const __cxx11::basic_string<_CharT, _Traits, _Allocator>&)’
+ 3710 |     operator==(const basic_string<_CharT, _Traits, _Alloc>& __lhs,
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/basic_string.h:3710:5: note:   template argument deduction/substitution failed:
+/workspace/mochi/tests/rosetta/transpiler/CPP/adfgvx-cipher.cpp:251:75: note:   mismatched types ‘const std::__cxx11::basic_string<_CharT, _Traits, _Allocator>’ and ‘__gnu_cxx::__alloc_traits<std::allocator<char>, char>::value_type’ {aka ‘char’}
+  251 |         if (((i == cipherText.size()) || (cipherText[i] == std::string(" ")))) {
+      |                                                                           ^
+In file included from /usr/include/c++/13/bits/locale_facets.h:48,
+                 from /usr/include/c++/13/bits/basic_ios.h:37,
+                 from /usr/include/c++/13/ios:46:
+/usr/include/c++/13/bits/streambuf_iterator.h:234:5: note: candidate: ‘template<class _CharT, class _Traits> bool std::operator==(const istreambuf_iterator<_CharT, _Traits>&, const istreambuf_iterator<_CharT, _Traits>&)’
+  234 |     operator==(const istreambuf_iterator<_CharT, _Traits>& __a,
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/streambuf_iterator.h:234:5: note:   template argument deduction/substitution failed:
+/workspace/mochi/tests/rosetta/transpiler/CPP/adfgvx-cipher.cpp:251:75: note:   mismatched types ‘const std::istreambuf_iterator<_CharT, _Traits>’ and ‘__gnu_cxx::__alloc_traits<std::allocator<char>, char>::value_type’ {aka ‘char’}
+  251 |         if (((i == cipherText.size()) || (cipherText[i] == std::string(" ")))) {
+      |                                                                           ^
+/usr/include/c++/13/bits/stl_vector.h:2040:5: note: candidate: ‘template<class _Tp, class _Alloc> constexpr bool std::operator==(const vector<_Tp, _Alloc>&, const vector<_Tp, _Alloc>&)’
+ 2040 |     operator==(const vector<_Tp, _Alloc>& __x, const vector<_Tp, _Alloc>& __y)
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/stl_vector.h:2040:5: note:   template argument deduction/substitution failed:
+/workspace/mochi/tests/rosetta/transpiler/CPP/adfgvx-cipher.cpp:251:75: note:   mismatched types ‘const std::vector<_Tp, _Alloc>’ and ‘__gnu_cxx::__alloc_traits<std::allocator<char>, char>::value_type’ {aka ‘char’}
+  251 |         if (((i == cipherText.size()) || (cipherText[i] == std::string(" ")))) {
+      |                                                                           ^
+/usr/include/c++/13/optional:1236:5: note: candidate: ‘template<class _Tp, class _Up> constexpr std::__optional_eq_t<_Tp, _Up> std::operator==(const optional<_Tp>&, const optional<_Up>&)’
+ 1236 |     operator==(const optional<_Tp>& __lhs, const optional<_Up>& __rhs)
+      |     ^~~~~~~~
+/usr/include/c++/13/optional:1236:5: note:   template argument deduction/substitution failed:
+/workspace/mochi/tests/rosetta/transpiler/CPP/adfgvx-cipher.cpp:251:75: note:   mismatched types ‘const std::optional<_Tp>’ and ‘__gnu_cxx::__alloc_traits<std::allocator<char>, char>::value_type’ {aka ‘char’}
+  251 |         if (((i == cipherText.size()) || (cipherText[i] == std::string(" ")))) {
+      |                                                                           ^
+/usr/include/c++/13/optional:1364:5: note: candidate: ‘template<class _Tp, class _Up> constexpr std::__optional_eq_t<_Tp, _Up> std::operator==(const optional<_Tp>&, const _Up&)’
+ 1364 |     operator==(const optional<_Tp>& __lhs, const _Up& __rhs)
+      |     ^~~~~~~~
+/usr/include/c++/13/optional:1364:5: note:   template argument deduction/substitution failed:
+/workspace/mochi/tests/rosetta/transpiler/CPP/adfgvx-cipher.cpp:251:75: note:   mismatched types ‘const std::optional<_Tp>’ and ‘__gnu_cxx::__alloc_traits<std::allocator<char>, char>::value_type’ {aka ‘char’}
+  251 |         if (((i == cipherText.size()) || (cipherText[i] == std::string(" ")))) {
+      |                                                                           ^
+/usr/include/c++/13/optional:1370:5: note: candidate: ‘template<class _Tp, class _Up> constexpr std::__optional_eq_t<_Up, _Tp> std::operator==(const _Up&, const optional<_Tp>&)’
+ 1370 |     operator==(const _Up& __lhs, const optional<_Tp>& __rhs)
+      |     ^~~~~~~~
+/usr/include/c++/13/optional:1370:5: note:   template argument deduction/substitution failed:
+/workspace/mochi/tests/rosetta/transpiler/CPP/adfgvx-cipher.cpp:251:75: note:   ‘std::string’ {aka ‘std::__cxx11::basic_string<char>’} is not derived from ‘const std::optional<_Tp>’
+  251 |         if (((i == cipherText.size()) || (cipherText[i] == std::string(" ")))) {
+      |                                                                           ^
+In file included from /usr/include/c++/13/format:38,
+                 from /usr/include/c++/13/bits/chrono_io.h:39,
+                 from /usr/include/c++/13/chrono:3370:
+/usr/include/c++/13/array:297:5: note: candidate: ‘template<class _Tp, long unsigned int _Nm> constexpr bool std::operator==(const array<_Tp, _Nm>&, const array<_Tp, _Nm>&)’
+  297 |     operator==(const array<_Tp, _Nm>& __one, const array<_Tp, _Nm>& __two)
+      |     ^~~~~~~~
+/usr/include/c++/13/array:297:5: note:   template argument deduction/substitution failed:
+/workspace/mochi/tests/rosetta/transpiler/CPP/adfgvx-cipher.cpp:251:75: note:   mismatched types ‘const std::array<_Tp, _Nm>’ and ‘__gnu_cxx::__alloc_traits<std::allocator<char>, char>::value_type’ {aka ‘char’}
+  251 |         if (((i == cipherText.size()) || (cipherText[i] == std::string(" ")))) {
+      |                                                                           ^
+In file included from /usr/include/c++/13/format:47:
+/usr/include/c++/13/variant:1266:3: note: candidate: ‘template<class ... _Types> constexpr bool std::operator==(const variant<_Types ...>&, const variant<_Types ...>&)’
+ 1266 |   _VARIANT_RELATION_FUNCTION_TEMPLATE(==, equal)
+      |   ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/usr/include/c++/13/variant:1266:3: note:   template argument deduction/substitution failed:
+/workspace/mochi/tests/rosetta/transpiler/CPP/adfgvx-cipher.cpp:251:75: note:   mismatched types ‘const std::variant<_Types ...>’ and ‘__gnu_cxx::__alloc_traits<std::allocator<char>, char>::value_type’ {aka ‘char’}
+  251 |         if (((i == cipherText.size()) || (cipherText[i] == std::string(" ")))) {
+      |                                                                           ^
+In file included from /usr/include/c++/13/map:63,
+                 from /workspace/mochi/tests/rosetta/transpiler/CPP/adfgvx-cipher.cpp:13:
+/usr/include/c++/13/bits/stl_map.h:1513:5: note: candidate: ‘template<class _Key, class _Tp, class _Compare, class _Alloc> bool std::operator==(const map<_Key, _Tp, _Compare, _Allocator>&, const map<_Key, _Tp, _Compare, _Allocator>&)’
+ 1513 |     operator==(const map<_Key, _Tp, _Compare, _Alloc>& __x,
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/stl_map.h:1513:5: note:   template argument deduction/substitution failed:
+/workspace/mochi/tests/rosetta/transpiler/CPP/adfgvx-cipher.cpp:251:75: note:   mismatched types ‘const std::map<_Key, _Tp, _Compare, _Allocator>’ and ‘__gnu_cxx::__alloc_traits<std::allocator<char>, char>::value_type’ {aka ‘char’}
+  251 |         if (((i == cipherText.size()) || (cipherText[i] == std::string(" ")))) {
+      |                                                                           ^
+In file included from /usr/include/c++/13/map:64:
+/usr/include/c++/13/bits/stl_multimap.h:1134:5: note: candidate: ‘template<class _Key, class _Tp, class _Compare, class _Alloc> bool std::operator==(const multimap<_Key, _Tp, _Compare, _Allocator>&, const multimap<_Key, _Tp, _Compare, _Allocator>&)’
+ 1134 |     operator==(const multimap<_Key, _Tp, _Compare, _Alloc>& __x,
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/stl_multimap.h:1134:5: note:   template argument deduction/substitution failed:
+/workspace/mochi/tests/rosetta/transpiler/CPP/adfgvx-cipher.cpp:251:75: note:   mismatched types ‘const std::multimap<_Key, _Tp, _Compare, _Allocator>’ and ‘__gnu_cxx::__alloc_traits<std::allocator<char>, char>::value_type’ {aka ‘char’}
+  251 |         if (((i == cipherText.size()) || (cipherText[i] == std::string(" ")))) {
+      |                                                                           ^
+/usr/include/c++/13/bits/allocator.h:216:7: note: candidate: ‘constexpr bool std::operator==(const allocator<char>&, const allocator<char>&)’
+  216 |       operator==(const allocator&, const allocator&) _GLIBCXX_NOTHROW
+      |       ^~~~~~~~
+/usr/include/c++/13/bits/allocator.h:216:18: note:   no known conversion for argument 1 from ‘__gnu_cxx::__alloc_traits<std::allocator<char>, char>::value_type’ {aka ‘char’} to ‘const std::allocator<char>&’
+  216 |       operator==(const allocator&, const allocator&) _GLIBCXX_NOTHROW
+      |                  ^~~~~~~~~~~~~~~~
+/usr/include/c++/13/system_error:449:3: note: candidate: ‘bool std::operator==(const error_code&, const error_code&)’
+  449 |   operator==(const error_code& __lhs, const error_code& __rhs) noexcept
+      |   ^~~~~~~~
+/usr/include/c++/13/system_error:449:32: note:   no known conversion for argument 1 from ‘__gnu_cxx::__alloc_traits<std::allocator<char>, char>::value_type’ {aka ‘char’} to ‘const std::error_code&’
+  449 |   operator==(const error_code& __lhs, const error_code& __rhs) noexcept
+      |              ~~~~~~~~~~~~~~~~~~^~~~~
+/usr/include/c++/13/system_error:480:3: note: candidate: ‘bool std::operator==(const error_condition&, const error_condition&)’
+  480 |   operator==(const error_condition& __lhs,
+      |   ^~~~~~~~
+/usr/include/c++/13/system_error:480:37: note:   no known conversion for argument 1 from ‘__gnu_cxx::__alloc_traits<std::allocator<char>, char>::value_type’ {aka ‘char’} to ‘const std::error_condition&’
+  480 |   operator==(const error_condition& __lhs,
+      |              ~~~~~~~~~~~~~~~~~~~~~~~^~~~~
+/usr/include/c++/13/variant:1273:18: note: candidate: ‘constexpr bool std::operator==(monostate, monostate)’
+ 1273 |   constexpr bool operator==(monostate, monostate) noexcept { return true; }
+      |                  ^~~~~~~~
+/usr/include/c++/13/variant:1273:29: note:   no known conversion for argument 1 from ‘__gnu_cxx::__alloc_traits<std::allocator<char>, char>::value_type’ {aka ‘char’} to ‘std::monostate’
+ 1273 |   constexpr bool operator==(monostate, monostate) noexcept { return true; }
+      |                             ^~~~~~~~~
