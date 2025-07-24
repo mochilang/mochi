@@ -1,0 +1,11 @@
+run error: exit status 1
+WARNING: key already refers to: #'clojure.core/key in namespace: main, being replaced by: #'main/key
+6 x 6 Polybius square:
+
+  | A D F G V X
+---------------
+Execution error (ClassCastException) at main/createPolybius (adfgvx-cipher.clj:15).
+class java.lang.String cannot be cast to class clojure.lang.IPersistentVector (java.lang.String is in module java.base of loader 'bootstrap'; clojure.lang.IPersistentVector is in unnamed module of loader 'app')
+
+Full report at:
+/tmp/clojure-12740048625241184515.edn

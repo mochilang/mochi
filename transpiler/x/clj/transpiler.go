@@ -12,6 +12,7 @@ import (
 	"sort"
 	"strconv"
 	"strings"
+	"unicode"
 
 	yaml "gopkg.in/yaml.v3"
 
@@ -192,11 +193,21 @@ func inferStructLiteral(e *parser.Expr, env *types.Env) (types.StructType, bool)
 	p := u.Value.Target
 	if ll := p.List; ll != nil {
 		if st, ok := types.InferStructFromList(ll, env); ok {
+			for _, f := range st.Order {
+				if !validCljIdent(f) {
+					return types.StructType{}, false
+				}
+			}
 			return st, true
 		}
 	}
 	if ml := p.Map; ml != nil {
 		if st, ok := types.InferStructFromMapEnv(ml, env); ok {
+			for _, f := range st.Order {
+				if !validCljIdent(f) {
+					return types.StructType{}, false
+				}
+			}
 			return st, true
 		}
 	}
@@ -310,6 +321,24 @@ func renameVar(name string) string {
 		}
 	}
 	return name
+}
+
+func validCljIdent(name string) bool {
+	if name == "" {
+		return false
+	}
+	for i, r := range name {
+		if i == 0 {
+			if !unicode.IsLetter(r) && r != '_' && r != '*' && r != '!' && r != '?' {
+				return false
+			}
+		} else {
+			if !unicode.IsLetter(r) && !unicode.IsDigit(r) && r != '-' && r != '_' && r != '!' && r != '?' && r != '*' {
+				return false
+			}
+		}
+	}
+	return true
 }
 
 func parseFormat(e *parser.Expr) string {
@@ -534,6 +563,14 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 		}},
 	}}
 	pr.Forms = append(pr.Forms, &List{Elems: []Node{Symbol("def"), Symbol("nowSeed"), &List{Elems: []Node{Symbol("atom"), initSeed}}}})
+
+	if len(funNames) > 0 {
+		decl := &List{Elems: []Node{Symbol("declare")}}
+		for _, n := range funNames {
+			decl.Elems = append(decl.Elems, Symbol(n))
+		}
+		pr.Forms = append(pr.Forms, decl)
+	}
 
 	body := []Node{}
 	for _, st := range prog.Statements {

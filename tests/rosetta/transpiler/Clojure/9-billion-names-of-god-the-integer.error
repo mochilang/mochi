@@ -1,0 +1,5 @@
+run error: exit status 1
+WARNING: val already refers to: #'clojure.core/val in namespace: main, being replaced by: #'main/val
+rows:
+
+Exception: java.lang.OutOfMemoryError thrown from the UncaughtExceptionHandler in thread "main"

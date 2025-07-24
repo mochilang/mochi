@@ -1,0 +1,7 @@
+run error: exit status 1
+WARNING: count already refers to: #'clojure.core/count in namespace: main, being replaced by: #'main/count
+Syntax error compiling at (/workspace/mochi/tests/rosetta/transpiler/Clojure/abbreviations-automatic.clj:14:104).
+Unable to resolve symbol: in in this context
+
+Full report at:
+/tmp/clojure-12662371005456620933.edn

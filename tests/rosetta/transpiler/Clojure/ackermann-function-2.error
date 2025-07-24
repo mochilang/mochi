@@ -1,0 +1,6 @@
+run error: exit status 1
+Execution error (ExceptionInfo) at main/ackermann2 (ackermann-function-2.clj:11).
+return
+
+Full report at:
+/tmp/clojure-6327776519884635094.edn

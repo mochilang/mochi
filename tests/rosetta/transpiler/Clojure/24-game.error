@@ -1,0 +1,6 @@
+run error: exit status 1
+Syntax error (UnsupportedOperationException) compiling recur at (/workspace/mochi/tests/rosetta/transpiler/Clojure/24-game.clj:11:1099).
+Can only recur from tail position
+
+Full report at:
+/tmp/clojure-18008210137678561810.edn

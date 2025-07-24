@@ -1,7 +1,7 @@
 # Clojure Rosetta Transpiler
 
-Completed: 5/284
-Last updated: 2025-07-24 07:12 +0700
+Completed: 12/284
+Last updated: 2025-07-24 13:20 +0700
 
 1. [x] 100-doors-2 (1)
 2. [x] 100-doors-3 (2)
@@ -10,7 +10,7 @@ Last updated: 2025-07-24 07:12 +0700
 5. [ ] 15-puzzle-game (5)
 6. [ ] 15-puzzle-solver (6)
 7. [x] 2048 (7)
-8. [ ] 21-game (8)
+8. [x] 21-game (8)
 9. [ ] 24-game-solve (9)
 10. [ ] 24-game (10)
 11. [ ] 4-rings-or-4-squares-puzzle (11)
@@ -25,20 +25,20 @@ Last updated: 2025-07-24 07:12 +0700
 20. [ ] abc-problem (20)
 21. [ ] abelian-sandpile-model-identity (21)
 22. [ ] abelian-sandpile-model (22)
-23. [ ] abstract-type (23)
-24. [ ] abundant-deficient-and-perfect-number-classifications (24)
+23. [x] abstract-type (23)
+24. [x] abundant-deficient-and-perfect-number-classifications (24)
 25. [ ] abundant-odd-numbers (25)
 26. [ ] accumulator-factory (26)
 27. [ ] achilles-numbers (27)
 28. [ ] ackermann-function-2 (28)
 29. [ ] ackermann-function-3 (29)
 30. [ ] ackermann-function (30)
-31. [ ] active-directory-connect (31)
-32. [ ] active-directory-search-for-a-user (32)
-33. [ ] active-object (33)
+31. [x] active-directory-connect (31)
+32. [x] active-directory-search-for-a-user (32)
+33. [x] active-object (33)
 34. [ ] add-a-variable-to-a-class-instance-at-runtime (34)
 35. [ ] additive-primes (35)
-36. [ ] address-of-a-variable (36)
+36. [x] address-of-a-variable (36)
 37. [ ] adfgvx-cipher (37)
 38. [ ] aks-test-for-primes (38)
 39. [ ] algebraic-data-types (39)
