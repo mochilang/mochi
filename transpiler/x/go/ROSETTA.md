@@ -1,7 +1,7 @@
 # Go Rosetta Transpiler Output
 
-Completed programs: 119/284
-Last updated: 2025-07-24 20:52 +0700
+Completed programs: 120/284
+Last updated: 2025-07-25 00:31 +0700
 
 Checklist:
 
@@ -132,7 +132,7 @@ Checklist:
 125. [x] bitmap-read-an-image-through-a-pipe (125)
 126. [x] bitmap-write-a-ppm-file (126)
 127. [x] bitmap (127)
-128. [ ] bitwise-io-1 (128)
+128. [x] bitwise-io-1 (128)
 129. [ ] bitwise-io-2 (129)
 130. [ ] bitwise-operations (130)
 131. [ ] blum-integer (131)

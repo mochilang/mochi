@@ -499,6 +499,27 @@ func updateMapLitTypes(ml *MapLit, t types.Type) {
 	}
 }
 
+// updateListLitType sets the element type of a list literal based on the
+// provided Mochi type. This ensures empty list literals inherit the correct
+// element type when used in a typed context (e.g. struct fields).
+func updateListLitType(ll *ListLit, t types.Type) {
+	lt, ok := t.(types.ListType)
+	if !ok {
+		return
+	}
+	if ll.ElemType == "" || ll.ElemType == "any" {
+		ll.ElemType = toGoTypeFromType(lt.Elem)
+	}
+	for _, el := range ll.Elems {
+		switch inner := el.(type) {
+		case *ListLit:
+			updateListLitType(inner, lt.Elem)
+		case *MapLit:
+			updateMapLitTypes(inner, lt.Elem)
+		}
+	}
+}
+
 func (m *MapLit) emit(w io.Writer) {
 	key := m.KeyType
 	if key == "" {
@@ -4488,6 +4509,11 @@ func compilePrimary(p *parser.Primary, env *types.Env, base string) (Expr, error
 					if ft, ok3 := stype.Fields[name]; ok3 {
 						updateMapLitTypes(ml, ft)
 					}
+				}
+			}
+			if ll, ok := ex.(*ListLit); ok {
+				if ft, ok2 := st.Fields[name]; ok2 {
+					updateListLitType(ll, ft)
 				}
 			}
 			fields[i] = ex

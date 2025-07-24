@@ -1,3 +1,11 @@
+## Progress (2025-07-25 00:31 +0700)
+- ocaml transpiler: support dynamic function calls and map keys
+- Regenerated golden files - 103/103 vm valid programs passing
+
+## Progress (2025-07-25 00:31 +0700)
+- ocaml transpiler: support dynamic function calls and map keys
+- Regenerated golden files - 103/103 vm valid programs passing
+
 ## Progress (2025-07-24 20:52 +0700)
 - php: add str helper and transpile bitmap-histogram
 - Regenerated golden files - 103/103 vm valid programs passing
