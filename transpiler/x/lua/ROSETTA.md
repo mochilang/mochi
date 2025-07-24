@@ -2,9 +2,9 @@
 
 Generated Lua code for programs in `tests/rosetta/x/Mochi`. Each program has a `.lua` file produced by the transpiler and a `.out` file with its runtime output. Compilation or runtime errors are captured in `.error` files.
 
-Transpiled programs: 133/284
+Transpiled programs: 135/284
 
-Last updated: 2025-07-24 18:57 GMT+7
+Last updated: 2025-07-24 19:43 GMT+7
 
 Checklist:
 
@@ -33,7 +33,7 @@ Checklist:
 23. [x] abstract-type (23)
 24. [x] abundant-deficient-and-perfect-number-classifications (24)
 25. [x] abundant-odd-numbers (25)
-26. [ ] accumulator-factory (26)
+26. [x] accumulator-factory (26)
 27. [x] achilles-numbers (27)
 28. [x] ackermann-function-2 (28)
 29. [x] ackermann-function-3 (29)
@@ -46,7 +46,7 @@ Checklist:
 36. [x] address-of-a-variable (36)
 37. [x] adfgvx-cipher (37)
 38. [x] aks-test-for-primes (38)
-39. [ ] algebraic-data-types (39)
+39. [x] algebraic-data-types (39)
 40. [x] align-columns (40)
 41. [x] aliquot-sequence-classifications (41)
 42. [x] almkvist-giullera-formula-for-pi (42)

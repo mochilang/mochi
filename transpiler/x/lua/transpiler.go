@@ -524,15 +524,33 @@ end)(`)
 			}
 		}
 	case "indexOf":
-		io.WriteString(w, "_indexOf(")
-		if len(c.Args) > 0 {
-			c.Args[0].emit(w)
+		if len(c.ParamTypes) == 0 {
+			io.WriteString(w, "_indexOf(")
+			if len(c.Args) > 0 {
+				c.Args[0].emit(w)
+			}
+			io.WriteString(w, ", ")
+			if len(c.Args) > 1 {
+				c.Args[1].emit(w)
+			}
+			io.WriteString(w, ")")
+		} else {
+			io.WriteString(w, sanitizeName(c.Func))
+			io.WriteString(w, "(")
+			for i, a := range c.Args {
+				if i > 0 {
+					io.WriteString(w, ", ")
+				}
+				if i < len(c.ParamTypes) && needsCopyArg(c.ParamTypes[i], exprType(c)) {
+					io.WriteString(w, "(function(_t) local _c={} for k,v in pairs(_t) do _c[k]=v end return _c end)(")
+					a.emit(w)
+					io.WriteString(w, ")")
+				} else {
+					a.emit(w)
+				}
+			}
+			io.WriteString(w, ")")
 		}
-		io.WriteString(w, ", ")
-		if len(c.Args) > 1 {
-			c.Args[1].emit(w)
-		}
-		io.WriteString(w, ")")
 	case "parseIntStr":
 		io.WriteString(w, "_parseIntStr(")
 		if len(c.Args) > 0 {
@@ -2504,8 +2522,12 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 		}
 		switch p.Call.Func {
 		case "append", "avg", "sum", "contains", "len", "count", "now", "sha256", "indexOf", "parseIntStr":
-			// handled during emission
-			return ce, nil
+			// Only treat as built-in if there is no user-defined
+			// declaration with the same name.
+			if !hasFT {
+				// handled during emission
+				return ce, nil
+			}
 		case "substr":
 			ce.Func = "substring"
 			return ce, nil
