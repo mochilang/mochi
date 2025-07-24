@@ -290,41 +290,12 @@ func gatherLocals(stmts []Stmt, locals map[string]struct{}) {
 }
 
 func markRefParams(body []Stmt, params []string) []bool {
-	flags := make([]bool, len(params))
-	var mark func([]Stmt)
-	mark = func(stmts []Stmt) {
-		for _, st := range stmts {
-			switch s := st.(type) {
-			case *AssignStmt:
-				for i, p := range params {
-					if s.Name == p {
-						flags[i] = true
-					}
-				}
-			case *IndexAssignStmt:
-				if idx, ok := s.Target.(*IndexExpr); ok {
-					if v, ok := idx.X.(*Var); ok {
-						for i, p := range params {
-							if v.Name == p {
-								flags[i] = true
-							}
-						}
-					}
-				}
-			case *IfStmt:
-				mark(s.Then)
-				mark(s.Else)
-			case *WhileStmt:
-				mark(s.Body)
-			case *ForRangeStmt:
-				mark(s.Body)
-			case *ForEachStmt:
-				mark(s.Body)
-			}
-		}
-	}
-	mark(body)
-	return flags
+	// Mochi uses pass-by-value semantics. Parameters that are assigned to
+	// inside a function do not need to be passed by reference in the
+	// generated PHP code. Returning a slice of "false" values for each
+	// parameter simplifies call sites and avoids PHP errors when non-
+	// variable expressions are passed to such parameters.
+	return make([]bool, len(params))
 }
 
 func (f *FuncDecl) emit(w io.Writer) {
@@ -1696,7 +1667,11 @@ func convertPostfix(pf *parser.PostfixExpr) (Expr, error) {
 			}
 			switch *op.Cast.Type.Simple {
 			case "int":
-				e = &CallExpr{Func: "intval", Args: []Expr{e}}
+				if isCharExpr(e) {
+					e = &CallExpr{Func: "ord", Args: []Expr{e}}
+				} else {
+					e = &CallExpr{Func: "intval", Args: []Expr{e}}
+				}
 			case "string":
 				e = &CallExpr{Func: "strval", Args: []Expr{e}}
 			case "bool":
@@ -3044,7 +3019,9 @@ func isMapExpr(e Expr) bool {
 		}
 	case *IndexExpr:
 		if _, ok := v.Index.(*StringLit); ok {
-			return true
+			if _, ok := exprType(v.X).(types.MapType); ok {
+				return true
+			}
 		}
 	}
 	return false
@@ -3097,6 +3074,16 @@ func isStringExpr(e Expr) bool {
 		if isStringExpr(v.X) {
 			return true
 		}
+	}
+	return false
+}
+
+// isCharExpr reports whether e represents a single character extracted from a
+// string. This helps choose between ord() and intval() when casting to int.
+func isCharExpr(e Expr) bool {
+	switch e.(type) {
+	case *SubstringExpr, *IndexExpr:
+		return true
 	}
 	return false
 }
