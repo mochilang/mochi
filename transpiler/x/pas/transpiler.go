@@ -1293,11 +1293,15 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 				funcReturns[st.Fun.Name] = rt
 			}
 		case st.Return != nil:
-			ex, err := convertExpr(env, st.Return.Value)
-			if err != nil {
-				return nil, err
+			if st.Return.Value != nil {
+				ex, err := convertExpr(env, st.Return.Value)
+				if err != nil {
+					return nil, err
+				}
+				pr.Stmts = append(pr.Stmts, &ReturnStmt{Expr: ex})
+			} else {
+				pr.Stmts = append(pr.Stmts, &ReturnStmt{Expr: nil})
 			}
-			pr.Stmts = append(pr.Stmts, &ReturnStmt{Expr: ex})
 		case st.Import != nil:
 			continue
 		case st.ExternFun != nil:
@@ -1557,11 +1561,15 @@ func convertBody(env *types.Env, body []*parser.Statement, varTypes map[string]s
 			}
 			out = append(out, &IfStmt{Cond: cond, Then: thenBody, Else: elseBody})
 		case st.Return != nil:
-			ex, err := convertExpr(env, st.Return.Value)
-			if err != nil {
-				return nil, err
+			if st.Return.Value != nil {
+				ex, err := convertExpr(env, st.Return.Value)
+				if err != nil {
+					return nil, err
+				}
+				out = append(out, &ReturnStmt{Expr: ex})
+			} else {
+				out = append(out, &ReturnStmt{Expr: nil})
 			}
-			out = append(out, &ReturnStmt{Expr: ex})
 		case st.Import != nil:
 			continue
 		case st.ExternFun != nil:

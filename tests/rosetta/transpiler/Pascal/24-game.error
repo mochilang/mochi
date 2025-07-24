@@ -1,0 +1,12 @@
+Free Pascal Compiler version 3.2.2+dfsg-32 [2024/01/05] for x86_64
+Copyright (c) 1993-2021 by Florian Klaempfl and others
+Target OS: Linux for x86-64
+Compiling /workspace/mochi/tests/rosetta/transpiler/Pascal/24-game.pas
+24-game.pas(51,51) Error: Incompatible types: got "{Array Of Const/Constant Open} Array of LongInt" expected "{Dynamic} Array Of Boolean"
+24-game.pas(51,39) Error: Incompatible types: got "LongInt" expected "Boolean"
+24-game.pas(55,55) Error: Incompatible type for arg no. 1: Got "Boolean", expected "QWord"
+24-game.pas(75,44) Error: Incompatible type for arg no. 1: Got "ShortString", expected "Extended"
+24-game.pas(75,55) Error: Incompatible type for arg no. 1: Got "Char", expected "Extended"
+24-game.pas(82,46) Fatal: Syntax error, ";" expected but ")" found
+Fatal: Compilation aborted
+Error: /usr/bin/ppcx64 returned an error exitcode
