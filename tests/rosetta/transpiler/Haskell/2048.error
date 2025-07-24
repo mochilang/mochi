@@ -1,10 +1,548 @@
 run: exit status 1
 
-/workspace/mochi/tests/rosetta/transpiler/Haskell/2048.hs:69:17: error:
-    parse error on input ‘=’
-    Suggested fix:
-      Perhaps you need a 'let' in a 'do' block?
-      e.g. 'let x = 5' instead of 'x = 5'
+/workspace/mochi/tests/rosetta/transpiler/Haskell/2048.hs:84:26: error:
+    • Couldn't match expected type ‘()’ with actual type ‘Board’
+    • In the first argument of ‘return’, namely
+        ‘(Board {cells = (deref b)})’
+      In the expression: return (Board {cells = (deref b)})
+      In a stmt of a 'do' block:
+        if (deref y) < sIZE then
+            do row <- newIORef ([])
+               x <- newIORef (0)
+               let loop = ...
+               ....
+        else
+            return (Board {cells = (deref b)})
    |
-69 |         in loop = do
-   |                 ^
+84 |             else return (Board {cells = (deref b)})
+   |                          ^^^^^^^^^^^^^^^^^^^^^^^^^
+
+/workspace/mochi/tests/rosetta/transpiler/Haskell/2048.hs:84:48: error:
+    • Couldn't match type ‘[a0]’ with ‘Char’
+      Expected: IORef String
+        Actual: IORef [[a0]]
+    • In the first argument of ‘deref’, namely ‘b’
+      In the ‘cells’ field of a record
+      In the first argument of ‘return’, namely
+        ‘(Board {cells = (deref b)})’
+    • Relevant bindings include
+        b :: IORef [[a0]]
+          (bound at /workspace/mochi/tests/rosetta/transpiler/Haskell/2048.hs:66:5)
+   |
+84 |             else return (Board {cells = (deref b)})
+   |                                                ^
+
+/workspace/mochi/tests/rosetta/transpiler/Haskell/2048.hs:89:23: error:
+    • Couldn't match type ‘Char’ with ‘[a1]’
+        arising from selecting the field ‘cells’
+    • In the first argument of ‘newIORef’, namely ‘(b.cells)’
+      In a stmt of a 'do' block: grid <- newIORef (b.cells)
+      In the expression:
+        do grid <- newIORef (b.cells)
+           empty <- newIORef ([])
+           y <- newIORef (0)
+           let loop = ...
+           ....
+   |
+89 |     grid <- newIORef (b.cells)
+   |                       ^^^^^^^
+
+/workspace/mochi/tests/rosetta/transpiler/Haskell/2048.hs:122:60: error:
+    • Couldn't match type ‘[a1]’ with ‘Char’
+      Expected: IORef String
+        Actual: IORef [[a1]]
+    • In the first argument of ‘deref’, namely ‘grid’
+      In the ‘cells’ field of a record
+      In the ‘board’ field of a record
+    • Relevant bindings include
+        val :: IORef a1
+          (bound at /workspace/mochi/tests/rosetta/transpiler/Haskell/2048.hs:116:9)
+        grid :: IORef [[a1]]
+          (bound at /workspace/mochi/tests/rosetta/transpiler/Haskell/2048.hs:89:5)
+    |
+122 |         return (SpawnResult {board = Board {cells = (deref grid)}, full = length (deref empty) == 1})
+    |                                                            ^^^^
+
+/workspace/mochi/tests/rosetta/transpiler/Haskell/2048.hs:157:69: error:
+    • Couldn't match expected type: [Char]
+                  with actual type: IO [Char]
+    • In the first argument of ‘(++)’, namely ‘pad v’
+      In the second argument of ‘(++)’, namely ‘pad v ++ "|"’
+      In the second argument of ‘($!)’, namely
+        ‘((deref line) ++ pad v ++ "|")’
+    |
+157 |                                 writeIORef line $! ((deref line) ++ pad v ++ "|")
+    |                                                                     ^^^^^
+
+/workspace/mochi/tests/rosetta/transpiler/Haskell/2048.hs:222:72: error:
+    • Couldn't match type ‘Char’ with ‘Int’
+      Expected: IORef Int
+        Actual: IORef Char
+    • In the first argument of ‘deref’, namely ‘gain’
+      In the ‘gain’ field of a record
+      In the first argument of ‘return’, namely
+        ‘(SlideResult {row = (deref res), gain = (deref gain)})’
+    |
+222 |             else return (SlideResult {row = (deref res), gain = (deref gain)})
+    |                                                                        ^^^^
+
+/workspace/mochi/tests/rosetta/transpiler/Haskell/2048.hs:251:26: error:
+    • Couldn't match expected type ‘()’ with actual type ‘MoveResult’
+    • In the first argument of ‘return’, namely
+        ‘(MoveResult
+            {board = Board {cells = (deref grid)}, score = (deref score),
+             moved = (deref moved)})’
+      In the expression:
+        return
+          (MoveResult
+             {board = Board {cells = (deref grid)}, score = (deref score),
+              moved = (deref moved)})
+      In a stmt of a 'do' block:
+        if (deref y) < sIZE then
+            do r <- newIORef (slideLeft (((deref grid) !! (deref y))))
+               let new = ...
+               writeIORef score $! ((deref score) + (deref r).gain)
+               ....
+        else
+            return
+              (MoveResult
+                 {board = Board {cells = (deref grid)}, score = (deref score),
+                  moved = (deref moved)})
+    |
+251 |             else return (MoveResult {board = Board {cells = (deref grid)}, score = (deref score), moved = (deref moved)})
+    |                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+/workspace/mochi/tests/rosetta/transpiler/Haskell/2048.hs:251:68: error:
+    • Couldn't match type ‘[Char]’ with ‘Char’
+      Expected: IORef String
+        Actual: IORef [[Char]]
+    • In the first argument of ‘deref’, namely ‘grid’
+      In the ‘cells’ field of a record
+      In the ‘board’ field of a record
+    |
+251 |             else return (MoveResult {board = Board {cells = (deref grid)}, score = (deref score), moved = (deref moved)})
+    |                                                                    ^^^^
+
+/workspace/mochi/tests/rosetta/transpiler/Haskell/2048.hs:262:54: error:
+    • Couldn't match type: [a3]
+                     with: IORef [a2]
+      Expected: IORef [IORef [a2]]
+        Actual: IORef [[a3]]
+    • In the first argument of ‘deref’, namely ‘grid’
+      In the first argument of ‘(!!)’, namely ‘(deref grid)’
+      In the first argument of ‘reverseRow’, namely
+        ‘(((deref grid) !! (deref y)))’
+    • Relevant bindings include
+        grid :: IORef [[a3]]
+          (bound at /workspace/mochi/tests/rosetta/transpiler/Haskell/2048.hs:256:5)
+    |
+262 |                 rev <- newIORef (reverseRow (((deref grid) !! (deref y))))
+    |                                                      ^^^^
+
+/workspace/mochi/tests/rosetta/transpiler/Haskell/2048.hs:263:49: error:
+    • Couldn't match type: IO [a2]
+                     with: [Char]
+      Expected: IORef [Char]
+        Actual: IORef (IO [a2])
+    • In the first argument of ‘deref’, namely ‘rev’
+      In the first argument of ‘slideLeft’, namely ‘(deref rev)’
+      In the first argument of ‘newIORef’, namely
+        ‘(slideLeft (deref rev))’
+    • Relevant bindings include
+        rev :: IORef (IO [a2])
+          (bound at /workspace/mochi/tests/rosetta/transpiler/Haskell/2048.hs:262:17)
+    |
+263 |                 r <- newIORef (slideLeft (deref rev))
+    |                                                 ^^^
+
+/workspace/mochi/tests/rosetta/transpiler/Haskell/2048.hs:266:54: error:
+    • Couldn't match type: IO [a2]
+                     with: IORef [a2]
+      Expected: IORef (IORef [a2])
+        Actual: IORef (IO [a2])
+    • In the first argument of ‘deref’, namely ‘rev’
+      In the first argument of ‘reverseRow’, namely ‘(deref rev)’
+      In the second argument of ‘($!)’, namely ‘(reverseRow (deref rev))’
+    • Relevant bindings include
+        rev :: IORef (IO [a2])
+          (bound at /workspace/mochi/tests/rosetta/transpiler/Haskell/2048.hs:262:17)
+    |
+266 |                 writeIORef rev $! (reverseRow (deref rev))
+    |                                                      ^^^
+
+/workspace/mochi/tests/rosetta/transpiler/Haskell/2048.hs:271:86: error:
+    • Couldn't match type: IO [a2]
+                     with: [a3]
+      Expected: IORef [a3]
+        Actual: IORef (IO [a2])
+    • In the first argument of ‘deref’, namely ‘rev’
+      In the first argument of ‘(!!)’, namely ‘(deref rev)’
+      In the second argument of ‘(/=)’, namely
+        ‘((deref rev) !! (deref x))’
+    • Relevant bindings include
+        rev :: IORef (IO [a2])
+          (bound at /workspace/mochi/tests/rosetta/transpiler/Haskell/2048.hs:262:17)
+        grid :: IORef [[a3]]
+          (bound at /workspace/mochi/tests/rosetta/transpiler/Haskell/2048.hs:256:5)
+    |
+271 |                             if (((deref grid) !! (deref y)) !! (deref x)) /= ((deref rev) !! (deref x)) then do
+    |                                                                                      ^^^
+
+/workspace/mochi/tests/rosetta/transpiler/Haskell/2048.hs:275:138: error:
+    • Couldn't match type: IO [a2]
+                     with: [a3]
+      Expected: IORef [a3]
+        Actual: IORef (IO [a2])
+    • In the first argument of ‘deref’, namely ‘rev’
+      In the first argument of ‘(!!)’, namely ‘(deref rev)’
+      In the expression: (deref rev) !! (deref x)
+    • Relevant bindings include
+        rev :: IORef (IO [a2])
+          (bound at /workspace/mochi/tests/rosetta/transpiler/Haskell/2048.hs:262:17)
+        grid :: IORef [[a3]]
+          (bound at /workspace/mochi/tests/rosetta/transpiler/Haskell/2048.hs:256:5)
+    |
+275 |                             writeIORef grid $! (take (deref y) (deref grid) ++ [take (deref x) (((deref grid) !! (deref y))) ++ [((deref rev) !! (deref x))] ++ drop ((deref x) + 1) (((deref grid) !! (deref y)))] ++ drop ((deref y) + 1) (deref grid))
+    |                                                                                                                                          ^^^
+
+/workspace/mochi/tests/rosetta/transpiler/Haskell/2048.hs:282:26: error:
+    • Couldn't match expected type ‘()’ with actual type ‘MoveResult’
+    • In the first argument of ‘return’, namely
+        ‘(MoveResult
+            {board = Board {cells = (deref grid)}, score = (deref score),
+             moved = (deref moved)})’
+      In the expression:
+        return
+          (MoveResult
+             {board = Board {cells = (deref grid)}, score = (deref score),
+              moved = (deref moved)})
+      In a stmt of a 'do' block:
+        if (deref y) < sIZE then
+            do rev <- newIORef (reverseRow (((deref grid) !! (deref y))))
+               r <- newIORef (slideLeft (deref rev))
+               writeIORef rev $! ((deref r).row)
+               ....
+        else
+            return
+              (MoveResult
+                 {board = Board {cells = (deref grid)}, score = (deref score),
+                  moved = (deref moved)})
+    |
+282 |             else return (MoveResult {board = Board {cells = (deref grid)}, score = (deref score), moved = (deref moved)})
+    |                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+/workspace/mochi/tests/rosetta/transpiler/Haskell/2048.hs:282:68: error:
+    • Couldn't match type ‘[a3]’ with ‘Char’
+      Expected: IORef String
+        Actual: IORef [[a3]]
+    • In the first argument of ‘deref’, namely ‘grid’
+      In the ‘cells’ field of a record
+      In the ‘board’ field of a record
+    • Relevant bindings include
+        grid :: IORef [[a3]]
+          (bound at /workspace/mochi/tests/rosetta/transpiler/Haskell/2048.hs:256:5)
+    |
+282 |             else return (MoveResult {board = Board {cells = (deref grid)}, score = (deref score), moved = (deref moved)})
+    |                                                                    ^^^^
+
+/workspace/mochi/tests/rosetta/transpiler/Haskell/2048.hs:300:23: error:
+    • Couldn't match type ‘Char’ with ‘[a]’
+        arising from selecting the field ‘cells’
+    • In the first argument of ‘newIORef’, namely ‘((deref b).cells)’
+      In a stmt of a 'do' block: rows <- newIORef ((deref b).cells)
+      In the expression:
+        do rows <- newIORef ((deref b).cells)
+           y <- newIORef (0)
+           let loop = ...
+           loop
+           ....
+    • Relevant bindings include
+        col :: [a]
+          (bound at /workspace/mochi/tests/rosetta/transpiler/Haskell/2048.hs:299:12)
+        setCol :: IORef Board -> Int -> [a] -> IO ()
+          (bound at /workspace/mochi/tests/rosetta/transpiler/Haskell/2048.hs:299:1)
+    |
+300 |     rows <- newIORef ((deref b).cells)
+    |                       ^^^^^^^^^^^^^^^
+
+/workspace/mochi/tests/rosetta/transpiler/Haskell/2048.hs:312:48: error:
+    • Couldn't match type ‘[a]’ with ‘Char’
+      Expected: IORef String
+        Actual: IORef [[a]]
+    • In the first argument of ‘deref’, namely ‘rows’
+      In the ‘cells’ field of a record
+      In the second argument of ‘($!)’, namely
+        ‘((deref b) {cells = (deref rows)})’
+    • Relevant bindings include
+        rows :: IORef [[a]]
+          (bound at /workspace/mochi/tests/rosetta/transpiler/Haskell/2048.hs:300:5)
+        col :: [a]
+          (bound at /workspace/mochi/tests/rosetta/transpiler/Haskell/2048.hs:299:12)
+        setCol :: IORef Board -> Int -> [a] -> IO ()
+          (bound at /workspace/mochi/tests/rosetta/transpiler/Haskell/2048.hs:299:1)
+    |
+312 |     writeIORef b $! ((deref b) {cells = (deref rows)})
+    |                                                ^^^^
+
+/workspace/mochi/tests/rosetta/transpiler/Haskell/2048.hs:323:42: error:
+    • Couldn't match expected type: [Char]
+                  with actual type: IO [a4]
+    • In the first argument of ‘slideLeft’, namely ‘col’
+      In the first argument of ‘newIORef’, namely ‘(slideLeft col)’
+      In a stmt of a 'do' block: r <- newIORef (slideLeft col)
+    • Relevant bindings include
+        col :: IO [a4]
+          (bound at /workspace/mochi/tests/rosetta/transpiler/Haskell/2048.hs:322:21)
+    |
+323 |                 r <- newIORef (slideLeft col)
+    |                                          ^^^
+
+/workspace/mochi/tests/rosetta/transpiler/Haskell/2048.hs:341:26: error:
+    • Couldn't match expected type ‘()’ with actual type ‘MoveResult’
+    • In the first argument of ‘return’, namely
+        ‘(MoveResult
+            {board = Board {cells = (deref grid)}, score = (deref score),
+             moved = (deref moved)})’
+      In the expression:
+        return
+          (MoveResult
+             {board = Board {cells = (deref grid)}, score = (deref score),
+              moved = (deref moved)})
+      In a stmt of a 'do' block:
+        if (deref x) < sIZE then
+            do let col = ...
+               r <- newIORef (slideLeft col)
+               let new = ...
+               ....
+        else
+            return
+              (MoveResult
+                 {board = Board {cells = (deref grid)}, score = (deref score),
+                  moved = (deref moved)})
+    |
+341 |             else return (MoveResult {board = Board {cells = (deref grid)}, score = (deref score), moved = (deref moved)})
+    |                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+/workspace/mochi/tests/rosetta/transpiler/Haskell/2048.hs:341:68: error:
+    • Couldn't match type ‘[a5]’ with ‘Char’
+      Expected: IORef String
+        Actual: IORef [[a5]]
+    • In the first argument of ‘deref’, namely ‘grid’
+      In the ‘cells’ field of a record
+      In the ‘board’ field of a record
+    • Relevant bindings include
+        grid :: IORef [[a5]]
+          (bound at /workspace/mochi/tests/rosetta/transpiler/Haskell/2048.hs:316:5)
+    |
+341 |             else return (MoveResult {board = Board {cells = (deref grid)}, score = (deref score), moved = (deref moved)})
+    |                                                                    ^^^^
+
+/workspace/mochi/tests/rosetta/transpiler/Haskell/2048.hs:352:46: error:
+    • Couldn't match expected type: IORef [a7]
+                  with actual type: IO [a6]
+    • In the first argument of ‘reverseRow’, namely
+        ‘(getCol b (deref x))’
+      In the first argument of ‘newIORef’, namely
+        ‘(reverseRow (getCol b (deref x)))’
+      In a stmt of a 'do' block:
+        col <- newIORef (reverseRow (getCol b (deref x)))
+    |
+352 |                 col <- newIORef (reverseRow (getCol b (deref x)))
+    |                                              ^^^^^^^^^^^^^^^^^^
+
+/workspace/mochi/tests/rosetta/transpiler/Haskell/2048.hs:353:49: error:
+    • Couldn't match type: IO [a7]
+                     with: [Char]
+      Expected: IORef [Char]
+        Actual: IORef (IO [a7])
+    • In the first argument of ‘deref’, namely ‘col’
+      In the first argument of ‘slideLeft’, namely ‘(deref col)’
+      In the first argument of ‘newIORef’, namely
+        ‘(slideLeft (deref col))’
+    • Relevant bindings include
+        col :: IORef (IO [a7])
+          (bound at /workspace/mochi/tests/rosetta/transpiler/Haskell/2048.hs:352:17)
+    |
+353 |                 r <- newIORef (slideLeft (deref col))
+    |                                                 ^^^
+
+/workspace/mochi/tests/rosetta/transpiler/Haskell/2048.hs:356:54: error:
+    • Couldn't match type: IO [a7]
+                     with: IORef [a7]
+      Expected: IORef (IORef [a7])
+        Actual: IORef (IO [a7])
+    • In the first argument of ‘deref’, namely ‘col’
+      In the first argument of ‘reverseRow’, namely ‘(deref col)’
+      In the second argument of ‘($!)’, namely ‘(reverseRow (deref col))’
+    • Relevant bindings include
+        col :: IORef (IO [a7])
+          (bound at /workspace/mochi/tests/rosetta/transpiler/Haskell/2048.hs:352:17)
+    |
+356 |                 writeIORef col $! (reverseRow (deref col))
+    |                                                      ^^^
+
+/workspace/mochi/tests/rosetta/transpiler/Haskell/2048.hs:361:86: error:
+    • Couldn't match type: IO [a7]
+                     with: [a8]
+      Expected: IORef [a8]
+        Actual: IORef (IO [a7])
+    • In the first argument of ‘deref’, namely ‘col’
+      In the first argument of ‘(!!)’, namely ‘(deref col)’
+      In the second argument of ‘(/=)’, namely
+        ‘((deref col) !! (deref y))’
+    • Relevant bindings include
+        col :: IORef (IO [a7])
+          (bound at /workspace/mochi/tests/rosetta/transpiler/Haskell/2048.hs:352:17)
+        grid :: IORef [[a8]]
+          (bound at /workspace/mochi/tests/rosetta/transpiler/Haskell/2048.hs:346:5)
+    |
+361 |                             if (((deref grid) !! (deref y)) !! (deref x)) /= ((deref col) !! (deref y)) then do
+    |                                                                                      ^^^
+
+/workspace/mochi/tests/rosetta/transpiler/Haskell/2048.hs:365:138: error:
+    • Couldn't match type: IO [a7]
+                     with: [a8]
+      Expected: IORef [a8]
+        Actual: IORef (IO [a7])
+    • In the first argument of ‘deref’, namely ‘col’
+      In the first argument of ‘(!!)’, namely ‘(deref col)’
+      In the expression: (deref col) !! (deref y)
+    • Relevant bindings include
+        col :: IORef (IO [a7])
+          (bound at /workspace/mochi/tests/rosetta/transpiler/Haskell/2048.hs:352:17)
+        grid :: IORef [[a8]]
+          (bound at /workspace/mochi/tests/rosetta/transpiler/Haskell/2048.hs:346:5)
+    |
+365 |                             writeIORef grid $! (take (deref y) (deref grid) ++ [take (deref x) (((deref grid) !! (deref y))) ++ [((deref col) !! (deref y))] ++ drop ((deref x) + 1) (((deref grid) !! (deref y)))] ++ drop ((deref y) + 1) (deref grid))
+    |                                                                                                                                          ^^^
+
+/workspace/mochi/tests/rosetta/transpiler/Haskell/2048.hs:372:26: error:
+    • Couldn't match expected type ‘()’ with actual type ‘MoveResult’
+    • In the first argument of ‘return’, namely
+        ‘(MoveResult
+            {board = Board {cells = (deref grid)}, score = (deref score),
+             moved = (deref moved)})’
+      In the expression:
+        return
+          (MoveResult
+             {board = Board {cells = (deref grid)}, score = (deref score),
+              moved = (deref moved)})
+      In a stmt of a 'do' block:
+        if (deref x) < sIZE then
+            do col <- newIORef (reverseRow (getCol b (deref x)))
+               r <- newIORef (slideLeft (deref col))
+               writeIORef col $! ((deref r).row)
+               ....
+        else
+            return
+              (MoveResult
+                 {board = Board {cells = (deref grid)}, score = (deref score),
+                  moved = (deref moved)})
+    |
+372 |             else return (MoveResult {board = Board {cells = (deref grid)}, score = (deref score), moved = (deref moved)})
+    |                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+/workspace/mochi/tests/rosetta/transpiler/Haskell/2048.hs:372:68: error:
+    • Couldn't match type ‘[a8]’ with ‘Char’
+      Expected: IORef String
+        Actual: IORef [[a8]]
+    • In the first argument of ‘deref’, namely ‘grid’
+      In the ‘cells’ field of a record
+      In the ‘board’ field of a record
+    • Relevant bindings include
+        grid :: IORef [[a8]]
+          (bound at /workspace/mochi/tests/rosetta/transpiler/Haskell/2048.hs:346:5)
+    |
+372 |             else return (MoveResult {board = Board {cells = (deref grid)}, score = (deref score), moved = (deref moved)})
+    |                                                                    ^^^^
+
+/workspace/mochi/tests/rosetta/transpiler/Haskell/2048.hs:391:26: error:
+    • Couldn't match expected type ‘()’ with actual type ‘Bool’
+    • In the first argument of ‘return’, namely ‘(False)’
+      In the expression: return (False)
+      In a stmt of a 'do' block:
+        if (deref y) < sIZE then
+            do x <- newIORef (0)
+               let loop = ...
+               loop
+               ....
+        else
+            return (False)
+    |
+391 |             else return (False)
+    |                          ^^^^^
+
+/workspace/mochi/tests/rosetta/transpiler/Haskell/2048.hs:410:26: error:
+    • Couldn't match expected type ‘()’ with actual type ‘Bool’
+    • In the first argument of ‘return’, namely ‘(False)’
+      In the expression: return (False)
+      In a stmt of a 'do' block:
+        if (deref y) < sIZE then
+            do x <- newIORef (0)
+               let loop = ...
+               loop
+               ....
+        else
+            return (False)
+    |
+410 |             else return (False)
+    |                          ^^^^^
+
+/workspace/mochi/tests/rosetta/transpiler/Haskell/2048.hs:418:31: error:
+    Variable not in scope: r :: IORef r1
+    |
+418 |     board <- newIORef ((deref r).board)
+    |                               ^
+
+/workspace/mochi/tests/rosetta/transpiler/Haskell/2048.hs:419:30: error:
+    Variable not in scope: r :: IORef r0
+    |
+419 |     full <- newIORef ((deref r).full)
+    |                              ^
+
+/workspace/mochi/tests/rosetta/transpiler/Haskell/2048.hs:465:46: error:
+    • Couldn't match expected type ‘Bool’ with actual type ‘IO ()’
+    • In the first argument of ‘not’, namely ‘(hasMoves (deref board))’
+      In the second argument of ‘(&&)’, namely
+        ‘(not (hasMoves (deref board)))’
+      In the expression: (deref full) && (not (hasMoves (deref board)))
+    |
+465 |                     if (deref full) && (not (hasMoves (deref board))) then do
+    |                                              ^^^^^^^^^^^^^^^^^^^^^^
+
+/workspace/mochi/tests/rosetta/transpiler/Haskell/2048.hs:474:20: error:
+    • Couldn't match expected type ‘Bool’ with actual type ‘IO ()’
+    • In the expression: has2048 (deref board)
+      In a stmt of a 'do' block:
+        if has2048 (deref board) then
+            do putStrLn ("You win!")
+               return ()
+        else
+            return ()
+      In the expression:
+        do putStrLn ("Move: ")
+           cmd <- input
+           moved <- newIORef (False)
+           if cmd == "a" || cmd == "A" then
+               do let ...
+                  ....
+           else
+               return ()
+           ....
+    |
+474 |                 if has2048 (deref board) then do
+    |                    ^^^^^^^^^^^^^^^^^^^^^
+
+/workspace/mochi/tests/rosetta/transpiler/Haskell/2048.hs:479:25: error:
+    • Couldn't match expected type ‘Bool’ with actual type ‘IO ()’
+    • In the first argument of ‘not’, namely ‘(hasMoves (deref board))’
+      In the expression: not (hasMoves (deref board))
+      In a stmt of a 'do' block:
+        if not (hasMoves (deref board)) then
+            do putStrLn ("Game Over")
+               return ()
+        else
+            return ()
+    |
+479 |                 if not (hasMoves (deref board)) then do
+    |                         ^^^^^^^^^^^^^^^^^^^^^^
