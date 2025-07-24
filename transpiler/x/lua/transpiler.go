@@ -120,6 +120,25 @@ local function _sha256(bs)
 end
 `
 
+const helperIndexOf = `
+local function _indexOf(s, ch)
+  for i = 1, #s do
+    if string.sub(s, i, i) == ch then
+      return i - 1
+    end
+  end
+  return -1
+end
+`
+
+const helperParseIntStr = `
+local function _parseIntStr(str)
+  local n = tonumber(str, 10)
+  if n == nil then return 0 end
+  return math.floor(n)
+end
+`
+
 // Program represents a simple Lua program consisting of a sequence of
 // statements.
 type Program struct {
@@ -504,6 +523,22 @@ end)(`)
 				return
 			}
 		}
+	case "indexOf":
+		io.WriteString(w, "_indexOf(")
+		if len(c.Args) > 0 {
+			c.Args[0].emit(w)
+		}
+		io.WriteString(w, ", ")
+		if len(c.Args) > 1 {
+			c.Args[1].emit(w)
+		}
+		io.WriteString(w, ")")
+	case "parseIntStr":
+		io.WriteString(w, "_parseIntStr(")
+		if len(c.Args) > 0 {
+			c.Args[0].emit(w)
+		}
+		io.WriteString(w, ")")
 	case "upper":
 		io.WriteString(w, "string.upper(")
 		if len(c.Args) > 0 {
@@ -610,7 +645,7 @@ end)(`)
 			if i > 0 {
 				io.WriteString(w, ", ")
 			}
-			if i < len(c.ParamTypes) && needsCopy(c.ParamTypes[i]) {
+			if i < len(c.ParamTypes) && needsCopyArg(c.ParamTypes[i], exprType(c)) {
 				io.WriteString(w, "(function(_t) local _c={} for k,v in pairs(_t) do _c[k]=v end return _c end)(")
 				a.emit(w)
 				io.WriteString(w, ")")
@@ -1267,9 +1302,12 @@ func isListExpr(e Expr) bool {
 	return false
 }
 
-func needsCopy(t types.Type) bool {
-	switch t.(type) {
-	case types.StructType:
+func needsCopyArg(param types.Type, ret types.Type) bool {
+	p, ok := param.(types.StructType)
+	if !ok {
+		return false
+	}
+	if r, ok := ret.(types.StructType); ok && r.Name == p.Name {
 		return true
 	}
 	return false
@@ -2168,6 +2206,8 @@ func Emit(p *Program) []byte {
 	b.WriteString(helperPadStart)
 	b.WriteString(helperBigRat)
 	b.WriteString(helperSHA256)
+	b.WriteString(helperIndexOf)
+	b.WriteString(helperParseIntStr)
 	prevEnv := currentEnv
 	currentEnv = p.Env
 	for i, st := range p.Stmts {
@@ -2463,7 +2503,7 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 			ce.Args = append(ce.Args, ae)
 		}
 		switch p.Call.Func {
-		case "append", "avg", "sum", "contains", "len", "count", "now", "sha256":
+		case "append", "avg", "sum", "contains", "len", "count", "now", "sha256", "indexOf", "parseIntStr":
 			// handled during emission
 			return ce, nil
 		case "substr":
