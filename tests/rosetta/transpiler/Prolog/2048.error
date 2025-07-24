@@ -1,0 +1,3 @@
+ERROR: /workspace/mochi/tests/rosetta/transpiler/Prolog/2048.pl:1: Initialization goal raised exception:
+ERROR: =:=/2: Arguments are not sufficiently instantiated
+
