@@ -840,10 +840,6 @@ func checkStmt(s *parser.Statement, env *Env, expectedReturn Type) error {
 		return nil
 
 	case s.Assign != nil:
-		rhsType, err := checkExprWithExpected(s.Assign.Value, env, nil)
-		if err != nil {
-			return err
-		}
 		lhsType, err := env.GetVar(s.Assign.Name)
 		if err != nil {
 			return errAssignUndeclared(s.Assign.Pos, s.Assign.Name)
@@ -957,6 +953,10 @@ func checkStmt(s *parser.Statement, env *Env, expectedReturn Type) error {
 					return errNotStruct(fop.Pos, lt)
 				}
 			}
+		}
+		rhsType, err := checkExprWithExpected(s.Assign.Value, env, lhsType)
+		if err != nil {
+			return err
 		}
 		if !unify(lhsType, rhsType, nil) {
 			return errCannotAssign(s.Assign.Pos, rhsType, s.Assign.Name, lhsType)
@@ -1329,7 +1329,7 @@ func checkExpr(e *parser.Expr, env *Env) (Type, error) {
 }
 
 func checkExprWithExpected(e *parser.Expr, env *Env, expected Type) (Type, error) {
-	actual, err := checkBinaryExpr(e.Binary, env)
+	actual, err := checkBinaryExpr(e.Binary, env, expected)
 	if err != nil {
 		return nil, err
 	}
@@ -1338,8 +1338,8 @@ func checkExprWithExpected(e *parser.Expr, env *Env, expected Type) (Type, error
 	}
 	return actual, nil
 }
-func checkBinaryExpr(b *parser.BinaryExpr, env *Env) (Type, error) {
-	left, err := checkUnary(b.Left, env, nil)
+func checkBinaryExpr(b *parser.BinaryExpr, env *Env, expected Type) (Type, error) {
+	left, err := checkUnary(b.Left, env, expected)
 	if err != nil {
 		return nil, err
 	}
