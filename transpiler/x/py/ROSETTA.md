@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Python code from programs in `tests/rosetta/x/Mochi` lives in `tests/rosetta/transpiler/Python`.
-Last updated: 2025-07-24 11:18 UTC
+Last updated: 2025-07-24 18:47 GMT+7
 
-## Rosetta Golden Test Checklist (206/284)
+## Rosetta Golden Test Checklist (233/284)
 1. [x] 100-doors-2
 2. [x] 100-doors-3
 3. [x] 100-doors
@@ -213,36 +213,36 @@ Last updated: 2025-07-24 11:18 UTC
 206. [x] circular-primes
 207. [x] cistercian-numerals
 208. [x] comma-quibbling
-209. [ ] compiler-virtual-machine-interpreter
-210. [ ] composite-numbers-k-with-no-single-digit-factors-whose-factors-are-all-substrings-of-k
-211. [ ] compound-data-type
-212. [ ] concurrent-computing-1
-213. [ ] concurrent-computing-2
-214. [ ] concurrent-computing-3
-215. [ ] conditional-structures-1
-216. [ ] conditional-structures-10
-217. [ ] conditional-structures-2
-218. [ ] conditional-structures-3
-219. [ ] conditional-structures-4
-220. [ ] conditional-structures-5
-221. [ ] conditional-structures-6
-222. [ ] conditional-structures-7
-223. [ ] conditional-structures-8
-224. [ ] conditional-structures-9
-225. [ ] consecutive-primes-with-ascending-or-descending-differences
-226. [ ] constrained-genericity-1
-227. [ ] constrained-genericity-2
-228. [ ] constrained-genericity-3
-229. [ ] constrained-genericity-4
+209. [x] compiler-virtual-machine-interpreter
+210. [x] composite-numbers-k-with-no-single-digit-factors-whose-factors-are-all-substrings-of-k
+211. [x] compound-data-type
+212. [x] concurrent-computing-1
+213. [x] concurrent-computing-2
+214. [x] concurrent-computing-3
+215. [x] conditional-structures-1
+216. [x] conditional-structures-10
+217. [x] conditional-structures-2
+218. [x] conditional-structures-3
+219. [x] conditional-structures-4
+220. [x] conditional-structures-5
+221. [x] conditional-structures-6
+222. [x] conditional-structures-7
+223. [x] conditional-structures-8
+224. [x] conditional-structures-9
+225. [x] consecutive-primes-with-ascending-or-descending-differences
+226. [x] constrained-genericity-1
+227. [x] constrained-genericity-2
+228. [x] constrained-genericity-3
+229. [x] constrained-genericity-4
 230. [ ] constrained-random-points-on-a-circle-1
 231. [ ] constrained-random-points-on-a-circle-2
-232. [ ] continued-fraction
-233. [ ] convert-decimal-number-to-rational
-234. [ ] convert-seconds-to-compound-duration
+232. [x] continued-fraction
+233. [x] convert-decimal-number-to-rational
+234. [x] convert-seconds-to-compound-duration
 235. [ ] convex-hull
-236. [ ] conways-game-of-life
-237. [ ] copy-a-string-1
-238. [ ] copy-a-string-2
+236. [x] conways-game-of-life
+237. [x] copy-a-string-1
+238. [x] copy-a-string-2
 239. [ ] copy-stdin-to-stdout-1
 240. [ ] copy-stdin-to-stdout-2
 241. [ ] count-in-factors
