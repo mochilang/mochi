@@ -1639,6 +1639,13 @@ func (f *ForStmt) emit(w io.Writer) {
 	io.WriteString(w, "|")
 	io.WriteString(w, restVar)
 	io.WriteString(w, "] ->")
+	for i, a := range f.Next {
+		io.WriteString(w, "\n        ")
+		io.WriteString(w, a)
+		io.WriteString(w, " = ")
+		io.WriteString(w, f.Params[i])
+		io.WriteString(w, ",")
+	}
 	if f.Breakable {
 		io.WriteString(w, "\n        try")
 	}
@@ -1668,9 +1675,9 @@ func (f *ForStmt) emit(w io.Writer) {
 		io.WriteString(w, loopName)
 		io.WriteString(w, "(")
 		io.WriteString(w, restVar)
-		for _, p := range f.Params {
+		for _, a := range f.Next {
 			io.WriteString(w, ", ")
-			io.WriteString(w, p)
+			io.WriteString(w, a)
 		}
 		io.WriteString(w, ");\n            break -> {")
 		for i, p := range f.Params {
@@ -1726,7 +1733,15 @@ func (ws *WhileStmt) emit(w io.Writer) {
 	}
 	io.WriteString(w, ") ->\n    case ")
 	ws.Cond.emit(w)
-	io.WriteString(w, " of\n        true ->\n            try")
+	io.WriteString(w, " of\n        true ->")
+	for i := range ws.Next {
+		io.WriteString(w, "\n            ")
+		io.WriteString(w, ws.Next[i])
+		io.WriteString(w, " = ")
+		io.WriteString(w, ws.Params[i])
+		io.WriteString(w, ",")
+	}
+	io.WriteString(w, "\n            try")
 	for _, st := range ws.Body {
 		io.WriteString(w, "\n                ")
 		st.emit(w)
@@ -1744,7 +1759,7 @@ func (ws *WhileStmt) emit(w io.Writer) {
 	io.WriteString(w, ")\n            catch\n                continue -> ")
 	io.WriteString(w, loopName)
 	io.WriteString(w, "(")
-	for i, a := range ws.Params {
+	for i, a := range ws.Next {
 		if i > 0 {
 			io.WriteString(w, ", ")
 		}
