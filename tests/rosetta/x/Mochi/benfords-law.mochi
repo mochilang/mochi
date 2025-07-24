@@ -2,7 +2,8 @@
 // Translated from Go version in tests/rosetta/x/Go/benfords-law.go
 
 fun floorf(x: float): float {
-  return (x as int) as float
+  let y = x as int
+  return y as float
 }
 
 fun indexOf(s: string, ch: string): int {

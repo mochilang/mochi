@@ -1,0 +1,94 @@
+Empty tree:
+null
+
+Insert test:
+
+Warning: Trying to access array offset on null in /workspace/mochi/tests/rosetta/transpiler/php/avl-tree.php on line 61
+
+Warning: Trying to access array offset on null in /workspace/mochi/tests/rosetta/transpiler/php/avl-tree.php on line 9
+
+Warning: Trying to access array offset on null in /workspace/mochi/tests/rosetta/transpiler/php/avl-tree.php on line 9
+
+Warning: Trying to access array offset on null in /workspace/mochi/tests/rosetta/transpiler/php/avl-tree.php on line 43
+
+Warning: Trying to access array offset on null in /workspace/mochi/tests/rosetta/transpiler/php/avl-tree.php on line 9
+
+Warning: Trying to access array offset on null in /workspace/mochi/tests/rosetta/transpiler/php/avl-tree.php on line 9
+
+Warning: Trying to access array offset on null in /workspace/mochi/tests/rosetta/transpiler/php/avl-tree.php on line 9
+
+Warning: Trying to access array offset on null in /workspace/mochi/tests/rosetta/transpiler/php/avl-tree.php on line 9
+
+Warning: Trying to access array offset on null in /workspace/mochi/tests/rosetta/transpiler/php/avl-tree.php on line 13
+
+Warning: Trying to access array offset on null in /workspace/mochi/tests/rosetta/transpiler/php/avl-tree.php on line 13
+
+Warning: Trying to access array offset on null in /workspace/mochi/tests/rosetta/transpiler/php/avl-tree.php on line 9
+
+Warning: Trying to access array offset on null in /workspace/mochi/tests/rosetta/transpiler/php/avl-tree.php on line 9
+
+Warning: Trying to access array offset on null in /workspace/mochi/tests/rosetta/transpiler/php/avl-tree.php on line 13
+
+Warning: Trying to access array offset on null in /workspace/mochi/tests/rosetta/transpiler/php/avl-tree.php on line 61
+
+Warning: Trying to access array offset on null in /workspace/mochi/tests/rosetta/transpiler/php/avl-tree.php on line 9
+
+Warning: Trying to access array offset on null in /workspace/mochi/tests/rosetta/transpiler/php/avl-tree.php on line 9
+
+Warning: Trying to access array offset on null in /workspace/mochi/tests/rosetta/transpiler/php/avl-tree.php on line 43
+
+Warning: Trying to access array offset on null in /workspace/mochi/tests/rosetta/transpiler/php/avl-tree.php on line 9
+
+Warning: Trying to access array offset on null in /workspace/mochi/tests/rosetta/transpiler/php/avl-tree.php on line 9
+
+Warning: Trying to access array offset on null in /workspace/mochi/tests/rosetta/transpiler/php/avl-tree.php on line 9
+
+Warning: Trying to access array offset on null in /workspace/mochi/tests/rosetta/transpiler/php/avl-tree.php on line 9
+
+Warning: Trying to access array offset on null in /workspace/mochi/tests/rosetta/transpiler/php/avl-tree.php on line 13
+
+Warning: Trying to access array offset on null in /workspace/mochi/tests/rosetta/transpiler/php/avl-tree.php on line 13
+
+Warning: Trying to access array offset on null in /workspace/mochi/tests/rosetta/transpiler/php/avl-tree.php on line 9
+
+Warning: Trying to access array offset on null in /workspace/mochi/tests/rosetta/transpiler/php/avl-tree.php on line 9
+
+Warning: Trying to access array offset on null in /workspace/mochi/tests/rosetta/transpiler/php/avl-tree.php on line 13
+{
+   "Data": 5,
+   "Balance": 0,
+   "Link": [
+      null,
+      null
+   ]
+}
+
+Remove test:
+
+Warning: Trying to access array offset on null in /workspace/mochi/tests/rosetta/transpiler/php/avl-tree.php on line 102
+
+Warning: Trying to access array offset on null in /workspace/mochi/tests/rosetta/transpiler/php/avl-tree.php on line 107
+
+Warning: Trying to access array offset on null in /workspace/mochi/tests/rosetta/transpiler/php/avl-tree.php on line 9
+
+Warning: Trying to access array offset on null in /workspace/mochi/tests/rosetta/transpiler/php/avl-tree.php on line 9
+
+Warning: Trying to access array offset on null in /workspace/mochi/tests/rosetta/transpiler/php/avl-tree.php on line 13
+{
+
+Warning: Undefined array key "Data" in /workspace/mochi/tests/rosetta/transpiler/php/avl-tree.php on line 179
+   "Data": null,
+   "Balance": 0,
+   "Link": [
+
+Warning: Undefined array key "Link" in /workspace/mochi/tests/rosetta/transpiler/php/avl-tree.php on line 9
+
+Warning: Trying to access array offset on null in /workspace/mochi/tests/rosetta/transpiler/php/avl-tree.php on line 9
+      null,
+
+Warning: Undefined array key "Link" in /workspace/mochi/tests/rosetta/transpiler/php/avl-tree.php on line 9
+
+Warning: Trying to access array offset on null in /workspace/mochi/tests/rosetta/transpiler/php/avl-tree.php on line 9
+      null
+   ]
+}

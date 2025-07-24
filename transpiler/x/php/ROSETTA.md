@@ -2,9 +2,9 @@
 
 Generated PHP code from Mochi Rosetta tasks lives in `tests/rosetta/transpiler/php`.
 
-Last updated: 2025-07-24 13:22 +0700
+Last updated: 2025-07-24 14:02 +0700
 
-## Checklist (83/284)
+## Checklist (102/284)
 - [x] 1 100-doors-2
 - [x] 2 100-doors-3
 - [x] 3 100-doors
@@ -88,27 +88,27 @@ Last updated: 2025-07-24 13:22 +0700
 - [x] 81 associative-array-iteration
 - [x] 82 associative-array-merging
 - [x] 83 atomic-updates
-- [ ] 84 attractive-numbers
-- [ ] 85 average-loop-length
+- [x] 84 attractive-numbers
+- [x] 85 average-loop-length
 - [x] 86 averages-arithmetic-mean
-- [ ] 87 averages-mean-time-of-day
-- [ ] 88 averages-median-1
-- [ ] 89 averages-median-2
-- [ ] 90 averages-median-3
-- [ ] 91 averages-mode
-- [ ] 92 averages-pythagorean-means
-- [ ] 93 averages-root-mean-square
-- [ ] 94 averages-simple-moving-average
-- [ ] 95 avl-tree
+- [x] 87 averages-mean-time-of-day
+- [x] 88 averages-median-1
+- [x] 89 averages-median-2
+- [x] 90 averages-median-3
+- [x] 91 averages-mode
+- [x] 92 averages-pythagorean-means
+- [x] 93 averages-root-mean-square
+- [x] 94 averages-simple-moving-average
+- [x] 95 avl-tree
 - [x] 96 b-zier-curves-intersections
-- [ ] 97 babbage-problem
-- [ ] 98 babylonian-spiral
-- [ ] 99 balanced-brackets
-- [ ] 100 balanced-ternary
-- [ ] 101 barnsley-fern
-- [ ] 102 base64-decode-data
-- [ ] 103 bell-numbers
-- [ ] 104 benfords-law
+- [x] 97 babbage-problem
+- [x] 98 babylonian-spiral
+- [x] 99 balanced-brackets
+- [x] 100 balanced-ternary
+- [x] 101 barnsley-fern
+- [x] 102 base64-decode-data
+- [x] 103 bell-numbers
+- [x] 104 benfords-law
 - [ ] 105 bernoulli-numbers
 - [ ] 106 best-shuffle
 - [ ] 107 bifid-cipher

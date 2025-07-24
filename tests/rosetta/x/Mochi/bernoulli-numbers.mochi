@@ -13,11 +13,19 @@ fun bernoulli(n: int): bigrat {
   return a[0]
 }
 
+fun padStart(s: string, width: int, pad: string): string {
+  var out = s
+  while len(out) < width {
+    out = pad + out
+  }
+  return out
+}
+
 for i in 0..61 {
   let b = bernoulli(i)
   if num(b) != 0 {
     let numStr = str(num(b))
     let denStr = str(denom(b))
-    print("B(" + str(i).padStart(2, " ") + ") =" + numStr.padStart(45, " ") + "/" + denStr)
+    print("B(" + padStart(str(i), 2, " ") + ") =" + padStart(numStr, 45, " ") + "/" + denStr)
   }
 }
