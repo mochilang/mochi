@@ -27,6 +27,7 @@ var currentProgram *Program
 var currentEnv *types.Env
 var localTypes map[string]string
 var globalTypes map[string]string
+var currentVarDecls map[string]*LetStmt
 var inFunction bool
 var inLambda int
 var builtinAliases map[string]string
@@ -491,6 +492,13 @@ func (p *Program) write(w io.Writer) {
 	}
 	fmt.Fprintln(w)
 	fmt.Fprintln(w)
+	usesAny := false
+	for _, inc := range p.Includes {
+		if inc == "<any>" {
+			usesAny = true
+			break
+		}
+	}
 	if p.UseNow {
 		fmt.Fprintln(w, "static int _now() {")
 		fmt.Fprintln(w, "    static long long seed = 0;")
@@ -504,6 +512,20 @@ func (p *Program) write(w io.Writer) {
 		fmt.Fprintln(w, "        return static_cast<int>(seed);")
 		fmt.Fprintln(w, "    }")
 		fmt.Fprintln(w, "    return (int)(std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::system_clock::now().time_since_epoch()).count() % 2147483647);")
+		fmt.Fprintln(w, "}")
+	}
+	if usesAny {
+		fmt.Fprintln(w, "static void any_to_stream(std::ostream& os, const std::any& val) {")
+		fmt.Fprintln(w, "    if(val.type() == typeid(int)) os << std::any_cast<int>(val);")
+		fmt.Fprintln(w, "    else if(val.type() == typeid(double)) os << std::any_cast<double>(val);")
+		fmt.Fprintln(w, "    else if(val.type() == typeid(bool)) os << (std::any_cast<bool>(val) ? \"true\" : \"false\");")
+		fmt.Fprintln(w, "    else if(val.type() == typeid(std::string)) os << std::any_cast<std::string>(val);")
+		fmt.Fprintln(w, "    else if(val.type() == typeid(std::vector<int>)) { const auto& v = std::any_cast<const std::vector<int>&>(val); os << '['; for(size_t i=0;i<v.size();++i){ if(i>0) os << ', '; os << v[i]; } os << ']'; }")
+		fmt.Fprintln(w, "    else if(val.type() == typeid(std::vector<std::vector<int>>)) { const auto& vv = std::any_cast<const std::vector<std::vector<int>>&>(val); os << '['; for(size_t i=0;i<vv.size();++i){ if(i>0) os << ', '; const auto& v = vv[i]; os << '['; for(size_t j=0;j<v.size();++j){ if(j>0) os << ', '; os << v[j]; } os << ']'; } os << ']'; }")
+		fmt.Fprintln(w, "    else if(val.type() == typeid(std::vector<std::string>)) { const auto& v = std::any_cast<const std::vector<std::string>&>(val); os << '['; for(size_t i=0;i<v.size();++i){ if(i>0) os << ', '; os << v[i]; } os << ']'; }")
+		fmt.Fprintln(w, "    else if(val.type() == typeid(std::vector<std::any>)) { const auto& v = std::any_cast<const std::vector<std::any>&>(val); os << '['; for(size_t i=0;i<v.size();++i){ if(i>0) os << ', '; any_to_stream(os, v[i]); } os << ']'; }")
+		fmt.Fprintln(w, "    else if(val.type() == typeid(std::map<std::string, std::any>)) { const auto& m = std::any_cast<const std::map<std::string, std::any>&>(val); os << '{'; bool first=true; for(const auto& p : m){ if(!first) os << ', '; first=false; os << p.first << ': '; any_to_stream(os, p.second); } os << '}'; }")
+		fmt.Fprintln(w, "    else os << \"<any>\";")
 		fmt.Fprintln(w, "}")
 	}
 	if len(p.Structs) > 0 {
@@ -714,8 +736,12 @@ func emitToStream(w io.Writer, stream string, e Expr, indent int) {
 		io.WriteString(w, ind+"{")
 		io.WriteString(w, " auto __tmp = ")
 		e.emit(w)
-		io.WriteString(w, "; "+stream+" << \"{\"; bool first=true; for(const auto& __p : __tmp){ if(!first) "+stream+" << \", \"; first=false; "+stream+" << __p.first << ': ' << __p.second; } "+stream+" << \"}\"; }")
+		io.WriteString(w, "; "+stream+" << \"{\"; bool first=true; for(const auto& __p : __tmp){ if(!first) "+stream+" << \", \"; first=false; "+stream+" << __p.first << ': '; any_to_stream("+stream+", __p.second); } "+stream+" << \"}\"; }")
 		io.WriteString(w, "\n")
+	case typ == "std::any":
+		io.WriteString(w, ind+"any_to_stream("+stream+", ")
+		e.emit(w)
+		io.WriteString(w, ");\n")
 	default:
 		if typ == "double" {
 			if currentProgram != nil {
@@ -992,7 +1018,7 @@ func (a *AppendExpr) emit(w io.Writer) {
 	elemType := elementTypeFromListType(listType)
 	valType := exprType(a.Elem)
 	if listType == "std::vector<int>" && strings.HasPrefix(valType, "std::vector<") {
-		listType = fmt.Sprintf("std::vector<%s>", elementTypeFromListType(valType))
+		listType = fmt.Sprintf("std::vector<%s>", valType)
 		if vr, ok := a.List.(*VarRef); ok && localTypes != nil {
 			localTypes[vr.Name] = listType
 		}
@@ -2388,6 +2414,19 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 				fld := stmt.Assign.Field[len(stmt.Assign.Field)-1].Name
 				body = append(body, &AssignFieldStmt{Target: target, Field: fld, Value: val})
 			} else {
+				if ap, ok := val.(*AppendExpr); ok {
+					lt := exprType(ap.List)
+					et := exprType(ap.Elem)
+					if lt == "std::vector<int>" && strings.HasPrefix(et, "std::vector<") {
+						newType := fmt.Sprintf("std::vector<%s>", et)
+						if ls, ok2 := currentVarDecls[stmt.Assign.Name]; ok2 {
+							ls.Type = newType
+						}
+						if localTypes != nil {
+							localTypes[stmt.Assign.Name] = newType
+						}
+					}
+				}
 				body = append(body, &AssignStmt{Name: stmt.Assign.Name, Value: val})
 			}
 		case stmt.Update != nil:
@@ -2634,7 +2673,11 @@ func convertStmt(s *parser.Statement) (Stmt, error) {
 		} else {
 			localTypes[s.Let.Name] = "auto"
 		}
-		return &LetStmt{Name: s.Let.Name, Type: typ, Value: val}, nil
+		ls := &LetStmt{Name: s.Let.Name, Type: typ, Value: val}
+		if currentVarDecls != nil {
+			currentVarDecls[s.Let.Name] = ls
+		}
+		return ls, nil
 	case s.Var != nil:
 		var val Expr
 		var err error
@@ -2671,7 +2714,11 @@ func convertStmt(s *parser.Statement) (Stmt, error) {
 		} else {
 			localTypes[s.Var.Name] = "auto"
 		}
-		return &LetStmt{Name: s.Var.Name, Type: typ, Value: val}, nil
+		ls := &LetStmt{Name: s.Var.Name, Type: typ, Value: val}
+		if currentVarDecls != nil {
+			currentVarDecls[s.Var.Name] = ls
+		}
+		return ls, nil
 	case s.Assign != nil:
 		val, err := convertExpr(s.Assign.Value)
 		if err != nil {
@@ -3105,7 +3152,9 @@ func convertFun(fn *parser.FunStmt) (*Func, error) {
 	prev := inFunction
 	inFunction = true
 	prevLocals := localTypes
+	prevDecls := currentVarDecls
 	localTypes = map[string]string{}
+	currentVarDecls = map[string]*LetStmt{}
 	ret := "int"
 	if fn.Return == nil {
 		ret = "void"
@@ -3127,7 +3176,7 @@ func convertFun(fn *parser.FunStmt) (*Func, error) {
 			localTypes[p.Name] = cppTypeFrom(tp)
 		}
 	}
-	defer func() { localTypes = prevLocals }()
+	defer func() { localTypes = prevLocals; currentVarDecls = prevDecls }()
 	var body []Stmt
 	for _, st := range fn.Body {
 		s, err := convertStmt(st)
@@ -3156,13 +3205,15 @@ func convertFunLambda(fn *parser.FunStmt) (*BlockLambda, error) {
 	prev := inFunction
 	inFunction = true
 	prevLocals := localTypes
+	prevDecls := currentVarDecls
 	localTypes = map[string]string{}
+	currentVarDecls = map[string]*LetStmt{}
 	for _, p := range fn.Params {
 		if p.Type != nil && p.Type.Simple != nil {
 			localTypes[p.Name] = cppType(*p.Type.Simple)
 		}
 	}
-	defer func() { localTypes = prevLocals }()
+	defer func() { localTypes = prevLocals; currentVarDecls = prevDecls }()
 	var body []Stmt
 	for _, st := range fn.Body {
 		s, err := convertStmt(st)
