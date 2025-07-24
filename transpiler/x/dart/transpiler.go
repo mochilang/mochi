@@ -971,8 +971,20 @@ func (s *SelectorExpr) emit(w io.Writer) error {
 		_, err := fmt.Fprintf(w, "[%q]", s.Field)
 		return err
 	}
-	if err := s.Receiver.emit(w); err != nil {
-		return err
+	if precedence(s.Receiver) > 0 {
+		if _, err := io.WriteString(w, "("); err != nil {
+			return err
+		}
+		if err := s.Receiver.emit(w); err != nil {
+			return err
+		}
+		if _, err := io.WriteString(w, ")"); err != nil {
+			return err
+		}
+	} else {
+		if err := s.Receiver.emit(w); err != nil {
+			return err
+		}
 	}
 	_, err := io.WriteString(w, "."+s.Field)
 	return err
@@ -999,6 +1011,9 @@ type FloatLit struct{ Value float64 }
 
 func (f *FloatLit) emit(w io.Writer) error {
 	s := strconv.FormatFloat(f.Value, 'f', -1, 64)
+	if !strings.ContainsAny(s, ".eE") {
+		s += ".0"
+	}
 	_, err := io.WriteString(w, s)
 	return err
 }
@@ -1608,6 +1623,17 @@ func (c *CastExpr) emit(w io.Writer) error {
 		return err
 	}
 
+	if c.Type == "int" && valType == "String" {
+		if _, err := io.WriteString(w, "("); err != nil {
+			return err
+		}
+		if err := c.Value.emit(w); err != nil {
+			return err
+		}
+		_, err := io.WriteString(w, ").codeUnitAt(0)")
+		return err
+	}
+
 	if c.Type == "num" && valType == "int" {
 		if _, err := io.WriteString(w, "("); err != nil {
 			return err
@@ -1615,7 +1641,11 @@ func (c *CastExpr) emit(w io.Writer) error {
 		if err := c.Value.emit(w); err != nil {
 			return err
 		}
-		_, err := io.WriteString(w, ".toDouble()")
+		_, err := io.WriteString(w, ")")
+		if err != nil {
+			return err
+		}
+		_, err = io.WriteString(w, ".toDouble()")
 		return err
 	}
 
@@ -2728,6 +2758,12 @@ func inferType(e Expr) string {
 				}
 			}
 		}
+		if sel, ok := ex.Func.(*SelectorExpr); ok {
+			rt := inferType(sel.Receiver)
+			if sel.Field == "abs" && (rt == "int" || rt == "num") {
+				return "num"
+			}
+		}
 		return "dynamic"
 	case *IndexExpr:
 		t := inferType(ex.Target)
@@ -2752,6 +2788,9 @@ func inferType(e Expr) string {
 					return f.Type
 				}
 			}
+		}
+		if ex.Field == "abs" && (rt == "int" || rt == "num") {
+			return "num"
 		}
 		return "dynamic"
 	case *ContainsExpr:
