@@ -1,6 +1,6 @@
 fun ord(ch: string): int {
   let upper = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-  if ch >= "0" && ch <= "9" { return parseIntStr(ch) + 48 }
+  if ch >= "0" && ch <= "9" { return parseIntStr(ch, 10) + 48 }
   var idx = indexOf(upper, ch)
   if idx >= 0 { return 65 + idx }
   return 0
@@ -14,7 +14,7 @@ fun isCusip(s: string): bool {
     let c = s[i:i+1]
     var v = 0
     if c >= "0" && c <= "9" {
-      v = parseIntStr(c)
+      v = parseIntStr(c, 10)
     } else if c >= "A" && c <= "Z" {
       v = ord(c) - 55
     } else if c == "*" {
@@ -30,7 +30,7 @@ fun isCusip(s: string): bool {
     sum = sum + v/10 + v%10
     i = i + 1
   }
-  return parseIntStr(s[8:9]) == (10 - (sum % 10)) % 10
+  return parseIntStr(s[8:9], 10) == (10 - (sum % 10)) % 10
 }
 
 let candidates = ["037833100","17275R102","38259P508","594918104","68389X106","68389X105"]
