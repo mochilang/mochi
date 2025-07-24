@@ -2,7 +2,7 @@
 
 Generated Java code for programs in `tests/rosetta/x/Mochi`. Each program has a `.java` file produced by the transpiler and a `.out` file with its runtime output. Compilation or execution errors are captured in `.error` files.
 
-## Rosetta Checklist (8/284) - updated 2025-07-24 00:47 UTC
+## Rosetta Checklist (14/284) - updated 2025-07-24 08:51 UTC
 1. [x] 100-doors-2 (1)
 2. [x] 100-doors-3 (2)
 3. [x] 100-doors (3)
@@ -13,12 +13,12 @@ Generated Java code for programs in `tests/rosetta/x/Mochi`. Each program has a 
 8. [x] 21-game (8)
 9. [ ] 24-game-solve (9)
 10. [ ] 24-game (10)
-11. [ ] 4-rings-or-4-squares-puzzle (11)
-12. [ ] 9-billion-names-of-god-the-integer (12)
-13. [ ] 99-bottles-of-beer-2 (13)
-14. [ ] 99-bottles-of-beer (14)
-15. [ ] DNS-query (15)
-16. [ ] a+b (16)
+11. [x] 4-rings-or-4-squares-puzzle (11)
+12. [x] 9-billion-names-of-god-the-integer (12)
+13. [x] 99-bottles-of-beer-2 (13)
+14. [x] 99-bottles-of-beer (14)
+15. [x] DNS-query (15)
+16. [x] a+b (16)
 17. [ ] abbreviations-automatic (17)
 18. [ ] abbreviations-easy (18)
 19. [ ] abbreviations-simple (19)

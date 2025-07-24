@@ -31,6 +31,8 @@ var needSaveJsonl bool
 var needInput bool
 var needNow bool
 var needAppendBool bool
+var needAppendObj bool
+var needNetLookupHost bool
 var pyMathAliases map[string]bool
 var builtinAliases map[string]string
 var structDefs map[string]map[string]string
@@ -296,7 +298,10 @@ func inferType(e Expr) string {
 	case *ValuesExpr:
 		return "java.util.List"
 	case *AppendExpr:
-		t := arrayElemType(ex.List)
+		t := inferType(ex.Value)
+		if t == "" {
+			t = arrayElemType(ex.List)
+		}
 		if t == "" {
 			t = "Object"
 		}
@@ -965,14 +970,24 @@ type ListLit struct {
 func (l *ListLit) emit(w io.Writer) {
 	arrType := l.ElemType
 	if arrType == "" {
-		arrType = "int"
 		if len(l.Elems) > 0 {
-			switch inferType(l.Elems[0]) {
-			case "string":
-				arrType = "String"
-			case "boolean":
-				arrType = "boolean"
+			t := inferType(l.Elems[0])
+			if strings.HasSuffix(t, "[]") {
+				arrType = t
+			} else {
+				arrType = t
+				if arrType == "" {
+					arrType = "int"
+				}
+				switch arrType {
+				case "string":
+					arrType = "String"
+				case "boolean":
+					arrType = "boolean"
+				}
 			}
+		} else {
+			arrType = "int"
 		}
 		arrType = javaType(arrType)
 	} else {
@@ -1295,6 +1310,15 @@ func (a *AppendExpr) emit(w io.Writer) {
 		fmt.Fprint(w, ")).toArray()")
 		return
 	}
+	if strings.HasSuffix(jt, "[]") {
+		needAppendObj = true
+		fmt.Fprint(w, "appendObj(")
+		a.List.emit(w)
+		fmt.Fprint(w, ", ")
+		a.Value.emit(w)
+		fmt.Fprint(w, ")")
+		return
+	}
 	fmt.Fprint(w, "java.util.stream.Stream.concat(java.util.Arrays.stream(")
 	a.List.emit(w)
 	fmt.Fprint(w, "), java.util.stream.Stream.of(")
@@ -1310,9 +1334,15 @@ func (a *AppendExpr) emit(w io.Writer) {
 }
 
 func (c *IntCastExpr) emit(w io.Writer) {
-	fmt.Fprint(w, "((Number)(")
-	c.Value.emit(w)
-	fmt.Fprint(w, ")).intValue()")
+	if isStringExpr(c.Value) {
+		fmt.Fprint(w, "Integer.parseInt(")
+		c.Value.emit(w)
+		fmt.Fprint(w, ")")
+	} else {
+		fmt.Fprint(w, "((Number)(")
+		c.Value.emit(w)
+		fmt.Fprint(w, ")).intValue()")
+	}
 }
 
 func (c *FloatCastExpr) emit(w io.Writer) {
@@ -1496,6 +1526,10 @@ func (t *TernaryExpr) emit(w io.Writer) {
 type BoolLit struct{ Value bool }
 
 func (b *BoolLit) emit(w io.Writer) { fmt.Fprint(w, b.Value) }
+
+type NullLit struct{}
+
+func (n *NullLit) emit(w io.Writer) { fmt.Fprint(w, "null") }
 
 // InputExpr represents a call to input() returning a line from stdin.
 type InputExpr struct{}
@@ -1681,6 +1715,8 @@ func isStringExpr(e Expr) bool {
 		}
 	case *SubstringExpr:
 		return true
+	case *InputExpr:
+		return true
 	case *FieldExpr:
 		if t, ok := fieldTypeFromVar(ex.Target, ex.Name); ok {
 			return t == "String" || t == "string"
@@ -1769,6 +1805,20 @@ func isArrayExpr(e Expr) bool {
 		if !isStringExpr(ex.Value) {
 			return true
 		}
+	case *IndexExpr:
+		if ex.ResultType != "" {
+			return strings.HasSuffix(ex.ResultType, "[]")
+		}
+		if isArrayExpr(ex.Target) {
+			return true
+		}
+		if t := arrayElemType(ex.Target); t != "" {
+			return strings.HasSuffix(t, "[]")
+		}
+	case *FieldExpr:
+		if t, ok := fieldTypeFromVar(ex.Target, ex.Name); ok {
+			return strings.HasSuffix(t, "[]")
+		}
 	case *VarExpr:
 		if ex.Type != "" {
 			if strings.HasSuffix(ex.Type, "[]") {
@@ -1818,6 +1868,15 @@ func arrayElemType(e Expr) string {
 		}
 		return t
 	case *IndexExpr:
+		if ex.ResultType != "" {
+			t := ex.ResultType
+			if strings.HasSuffix(t, "[]") {
+				return strings.TrimSuffix(t, "[]")
+			}
+			if strings.HasPrefix(t, "java.util.List<") && strings.HasSuffix(t, ">") {
+				return strings.TrimSuffix(strings.TrimPrefix(t, "java.util.List<"), ">")
+			}
+		}
 		t := arrayElemType(ex.Target)
 		if strings.HasSuffix(t, "[]") {
 			return strings.TrimSuffix(t, "[]")
@@ -2366,10 +2425,18 @@ func compileStmt(s *parser.Statement) (Stmt, error) {
 			varTypes[alias] = "module"
 			return nil, nil
 		}
-		if s.Import.Lang != nil && *s.Import.Lang == "go" && s.Import.Auto && strings.Contains(strings.Trim(s.Import.Path, "\""), "testpkg") {
-			builtinAliases[alias] = "go_testpkg"
-			varTypes[alias] = "module"
-			return nil, nil
+		if s.Import.Lang != nil && *s.Import.Lang == "go" {
+			trimmed := strings.Trim(s.Import.Path, "\"")
+			if s.Import.Auto && strings.Contains(trimmed, "testpkg") {
+				builtinAliases[alias] = "go_testpkg"
+				varTypes[alias] = "module"
+				return nil, nil
+			}
+			if trimmed == "net" {
+				builtinAliases[alias] = "go_net"
+				varTypes[alias] = "module"
+				return nil, nil
+			}
 		}
 		return nil, fmt.Errorf("unsupported import")
 	case s.ExternVar != nil, s.ExternFun != nil, s.ExternType != nil, s.ExternObject != nil:
@@ -2615,6 +2682,13 @@ func compilePostfix(pf *parser.PostfixExpr) (Expr, error) {
 						} else {
 							expr = &MethodCallExpr{Target: fe.Target, Name: fe.Name, Args: args}
 						}
+					} else if kind == "go_net" {
+						if fe.Name == "LookupHost" && len(args) == 1 {
+							needNetLookupHost = true
+							expr = &CallExpr{Func: "_netLookupHost", Args: args}
+						} else {
+							return nil, fmt.Errorf("unsupported call")
+						}
 					} else {
 						expr = &MethodCallExpr{Target: fe.Target, Name: fe.Name, Args: args}
 					}
@@ -2695,7 +2769,11 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 				})() {
 					args[i] = &TernaryExpr{Cond: a, Then: &IntLit{Value: 1}, Else: &IntLit{Value: 0}}
 				} else if isArrayExpr(a) {
-					args[i] = &CallExpr{Func: "java.util.Arrays.toString", Args: []Expr{a}}
+					funcName := "java.util.Arrays.toString"
+					if strings.HasSuffix(arrayElemType(a), "[]") {
+						funcName = "java.util.Arrays.deepToString"
+					}
+					args[i] = &CallExpr{Func: funcName, Args: []Expr{a}}
 				} else if isListExpr(a) {
 					args[i] = &ListStrExpr{List: a}
 				} else if isBoolExpr(a) {
@@ -2778,6 +2856,9 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 		typ := ""
 		if t, ok := varTypes[p.Selector.Root]; ok {
 			typ = t
+		}
+		if p.Selector.Root == "nil" && len(p.Selector.Tail) == 0 {
+			return &NullLit{}, nil
 		}
 		expr := Expr(&VarExpr{Name: p.Selector.Root, Type: typ})
 		for _, name := range p.Selector.Tail {
@@ -3398,6 +3479,25 @@ func Emit(prog *Program) []byte {
 		buf.WriteString("        return out;\n")
 		buf.WriteString("    }\n")
 	}
+	if needAppendObj {
+		buf.WriteString("\n    static <T> T[] appendObj(T[] arr, T v) {\n")
+		buf.WriteString("        T[] out = java.util.Arrays.copyOf(arr, arr.length + 1);\n")
+		buf.WriteString("        out[arr.length] = v;\n")
+		buf.WriteString("        return out;\n")
+		buf.WriteString("    }\n")
+	}
+	if needNetLookupHost {
+		buf.WriteString("\n    static Object[] _netLookupHost(String host) {\n")
+		buf.WriteString("        try {\n")
+		buf.WriteString("            java.net.InetAddress[] arr = java.net.InetAddress.getAllByName(host);\n")
+		buf.WriteString("            String[] out = new String[arr.length];\n")
+		buf.WriteString("            for (int i = 0; i < arr.length; i++) { out[i] = arr[i].getHostAddress(); }\n")
+		buf.WriteString("            return new Object[]{out, null};\n")
+		buf.WriteString("        } catch (Exception e) {\n")
+		buf.WriteString("            return new Object[]{null, e.toString()};\n")
+		buf.WriteString("        }\n")
+		buf.WriteString("    }\n")
+	}
 	buf.WriteString("}\n")
 	return formatJava(buf.Bytes())
 }
@@ -3415,6 +3515,9 @@ func typeRefString(tr *parser.TypeRef) string {
 		return ""
 	}
 	if tr.Simple != nil {
+		if *tr.Simple == "any" {
+			return "Object"
+		}
 		return *tr.Simple
 	}
 	if tr.Generic != nil {

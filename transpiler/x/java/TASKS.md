@@ -1,4 +1,40 @@
-## Progress (2025-07-23 11:52 +0700)
+## Progress (2025-07-24 08:42 UTC)
+- java transpiler: handle nested arrays (4931e2cef0)
+
+- java transpiler: handle nested arrays (4931e2cef0)
+
+- java transpiler: handle nested arrays (4931e2cef0)
+
+- java transpiler: handle nested arrays (4931e2cef0)
+
+- java transpiler: handle nested arrays (4931e2cef0)
+
+- java transpiler: handle nested arrays (4931e2cef0)
+
+- java transpiler: handle nested arrays (4931e2cef0)
+
+- java transpiler: handle nested arrays (4931e2cef0)
+
+- java transpiler: handle nested arrays (4931e2cef0)
+
+- java transpiler: handle nested arrays (4931e2cef0)
+
+- java transpiler: handle nested arrays (4931e2cef0)
+
+- java transpiler: handle nested arrays (4931e2cef0)
+
+- dart transpiler: fix map.get detection and update rosetta index 42 (0b24bd9f29)
+
+- dart transpiler: fix map.get detection and update rosetta index 42 (0b24bd9f29)
+
+- dart transpiler: fix map.get detection and update rosetta index 42 (0b24bd9f29)
+
+- dart transpiler: fix map.get detection and update rosetta index 42 (0b24bd9f29)
+
+- dart transpiler: fix map.get detection and update rosetta index 42 (0b24bd9f29)
+
+- dart transpiler: fix map.get detection and update rosetta index 42 (0b24bd9f29)
+
 - cs transpiler: add 21-game output (a6cd8f57f6)
 
 - cs transpiler: add 21-game output (a6cd8f57f6)
