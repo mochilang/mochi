@@ -105,6 +105,27 @@ func javaBoxType(t string) string {
 	}
 }
 
+func mapValueType(t string) string {
+	if i := strings.Index(t, "Map<"); i >= 0 {
+		inside := strings.TrimSuffix(t[i+4:], ">")
+		parts := strings.SplitN(inside, ",", 2)
+		if len(parts) == 2 {
+			v := strings.TrimSpace(parts[1])
+			switch v {
+			case "Integer":
+				return "int"
+			case "Double":
+				return "double"
+			case "Boolean":
+				return "boolean"
+			default:
+				return v
+			}
+		}
+	}
+	return ""
+}
+
 func emitCastExpr(w io.Writer, e Expr, typ string) {
 	// Cast map lookups to the destination type when needed.
 	if typ != "" && typ != "java.util.Map" && typ != "map" {
@@ -2098,6 +2119,11 @@ func compileStmt(s *parser.Statement) (Stmt, error) {
 					if ex.ElemType != "" {
 						t = ex.ElemType + "[]"
 					}
+				case *MapLit:
+					if len(ex.Values) > 0 {
+						vt := inferType(ex.Values[0])
+						t = fmt.Sprintf("java.util.Map<String,%s>", javaBoxType(vt))
+					}
 				}
 			}
 			if t == "" && topEnv != nil {
@@ -2615,6 +2641,11 @@ func compilePostfix(pf *parser.PostfixExpr) (Expr, error) {
 					}
 				}
 			}
+			if rType == "" {
+				if v, ok := expr.(*VarExpr); ok {
+					rType = mapValueType(varTypes[v.Name])
+				}
+			}
 			expr = &IndexExpr{Target: expr, Index: idx, IsMap: isMapExpr(expr), ResultType: rType}
 		case op.Index != nil && op.Index.Colon != nil && op.Index.Colon2 == nil && op.Index.Step == nil:
 			var start Expr
@@ -2709,16 +2740,26 @@ func compilePostfix(pf *parser.PostfixExpr) (Expr, error) {
 			} else {
 				return nil, fmt.Errorf("unsupported call")
 			}
-		case op.Cast != nil && op.Cast.Type != nil && op.Cast.Type.Simple != nil:
-			ctype := *op.Cast.Type.Simple
-			switch ctype {
-			case "int":
-				expr = &IntCastExpr{Value: expr}
-			case "float", "float64", "double":
-				expr = &FloatCastExpr{Value: expr}
-			default:
-				if st, ok := expr.(*StructLit); ok {
-					st.Name = ctype
+		case op.Cast != nil && op.Cast.Type != nil:
+			ctype := typeRefString(op.Cast.Type)
+			if ctype == "" {
+				break
+			}
+			if idx, ok := expr.(*IndexExpr); ok {
+				idx.ResultType = ctype
+				expr = idx
+				break
+			}
+			if op.Cast.Type.Simple != nil {
+				switch ctype {
+				case "int":
+					expr = &IntCastExpr{Value: expr}
+				case "float", "float64", "double":
+					expr = &FloatCastExpr{Value: expr}
+				default:
+					if st, ok := expr.(*StructLit); ok {
+						st.Name = ctype
+					}
 				}
 			}
 		default:
