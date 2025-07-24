@@ -2,9 +2,9 @@
 
 Generated Lua code for programs in `tests/rosetta/x/Mochi`. Each program has a `.lua` file produced by the transpiler and a `.out` file with its runtime output. Compilation or runtime errors are captured in `.error` files.
 
-Transpiled programs: 124/284
+Transpiled programs: 125/284
 
-Last updated: 2025-07-24 14:54 GMT+7
+Last updated: 2025-07-24 15:20 GMT+7
 
 Checklist:
 
@@ -136,7 +136,7 @@ Checklist:
 126. [x] bitmap-write-a-ppm-file (126)
 127. [x] bitmap (127)
 128. [x] bitwise-io-1 (128)
-129. [ ] bitwise-io-2 (129)
+129. [x] bitwise-io-2 (129)
 130. [ ] bitwise-operations (130)
 131. [ ] blum-integer (131)
 132. [ ] boolean-values (132)
