@@ -1,5 +1,5 @@
-## Progress (2025-07-24 18:38 +0700)
-- ctrans: add atoi helper and update rosetta
+## Progress (2025-07-24 21:16 +0700)
+- swift transpiler: support string cast describing
 - Generated golden tests for 101/103 programs
 - Updated README checklist and output artifacts
 
