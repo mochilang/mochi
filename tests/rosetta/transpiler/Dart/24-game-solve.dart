@@ -21,47 +21,42 @@ int _now() {
   return DateTime.now().microsecondsSinceEpoch;
 }
 
-final int OP_NUM = 0;
+class Rational {
+  int num;
+  int denom;
+  Rational({required this.num, required this.denom});
+}
+
 final int OP_ADD = 1;
 final int OP_SUB = 2;
 final int OP_MUL = 3;
 final int OP_DIV = 4;
-Map<String, dynamic> newNum(n) {
-  return {"op": OP_NUM, "value": {"num": n, "denom": 1}};
+Rational binEval(int op, dynamic l, dynamic r) {
+  final Rational lv = exprEval(l);
+  final Rational rv = exprEval(r);
+  if (op == OP_ADD) {
+    return Rational(num: lv.num * rv.denom + lv.denom * rv.num, denom: lv.denom * rv.denom);
+  }
+  if (op == OP_SUB) {
+    return Rational(num: lv.num * rv.denom - lv.denom * rv.num, denom: lv.denom * rv.denom);
+  }
+  if (op == OP_MUL) {
+    return Rational(num: lv.num * rv.num, denom: lv.denom * rv.denom);
+  }
+  return Rational(num: lv.num * rv.denom, denom: lv.denom * rv.num);
 }
 
-Map<String, dynamic> exprEval(x) {
-  if (x["op"] == OP_NUM) {
-    return x["value"];
-  }
-  final Map<String, dynamic> l = exprEval(x["left"]);
-  final Map<String, dynamic> r = exprEval(x["right"]);
-  if (x["op"] == OP_ADD) {
-    return {"num": l["num"]! * r["denom"]! + l["denom"]! * r["num"]!, "denom": l["denom"]! * r["denom"]!};
-  }
-  if (x["op"] == OP_SUB) {
-    return {"num": l["num"]! * r["denom"]! - l["denom"]! * r["num"]!, "denom": l["denom"]! * r["denom"]!};
-  }
-  if (x["op"] == OP_MUL) {
-    return {"num": l["num"]! * r["num"]!, "denom": l["denom"]! * r["denom"]!};
-  }
-  return {"num": l["num"]! * r["denom"]!, "denom": l["denom"]! * r["num"]!};
-}
-
-String exprString(x) {
-  if (x["op"] == OP_NUM) {
-    return (x["value"]!["num"]).toString();
-  }
-  final String ls = exprString(x["left"]);
-  final String rs = exprString(x["right"]);
+String binString(int op, dynamic l, dynamic r) {
+  final String ls = exprString(l);
+  final String rs = exprString(r);
   String opstr = "";
-  if (x["op"] == OP_ADD) {
+  if (op == OP_ADD) {
     opstr = " + ";
   } else {
-    if (x["op"] == OP_SUB) {
+    if (op == OP_SUB) {
     opstr = " - ";
   } else {
-    if (x["op"] == OP_MUL) {
+    if (op == OP_MUL) {
     opstr = " * ";
   } else {
     opstr = " / ";
@@ -71,13 +66,25 @@ String exprString(x) {
   return "(" + ls + opstr + rs + ")";
 }
 
+dynamic newNum(int n) {
+  return {"__name": "Num", "value": Rational(num: n, denom: 1)};
+}
+
+Rational exprEval(dynamic x) {
+  return x["__name"] == "Num" ? x["value"] : x["__name"] == "Bin" ? binEval(x["op"], x["left"], x["right"]) : "";
+}
+
+String exprString(dynamic x) {
+  return x["__name"] == "Num" ? (v.num).toString() : x["__name"] == "Bin" ? binString(x["op"], x["left"], x["right"]) : "";
+}
+
 final int n_cards = 4;
 final int goal = 24;
 final int digit_range = 9;
-bool solve(xs) {
+bool solve(List<dynamic> xs) {
   if (xs.length == 1) {
-    final Map<String, dynamic> f = exprEval(xs[0]);
-    if (f["denom"]! != 0 && f["num"]! == f["denom"]! * goal) {
+    final Rational f = exprEval(xs[0]);
+    if (f.denom != 0 && f.num == f.denom * goal) {
     print(exprString(xs[0]));
     return true;
   };
@@ -85,9 +92,9 @@ bool solve(xs) {
   }
   int i = 0;
   while (i < xs.length) {
-    int j = i + 1;
+    num j = i + 1;
     while (j < xs.length) {
-    List<Map<String, dynamic>> rest = [];
+    List<dynamic> rest = [];
     int k = 0;
     while (k < xs.length) {
     if (k != i && k != j) {
@@ -98,16 +105,16 @@ bool solve(xs) {
     final a = xs[i];
     final b = xs[j];
     for (var op in [OP_ADD, OP_SUB, OP_MUL, OP_DIV]) {
-    Map<String, dynamic> node = {"op": op, "left": a, "right": b};
+    Map<String, dynamic> node = {"__name": "Bin", "op": op, "left": a, "right": b};
     if (solve([...rest, node])) {
     return true;
   }
   }
-    Map<String, dynamic> node = {"op": OP_SUB, "left": b, "right": a};
+    Map<String, dynamic> node = {"__name": "Bin", "op": OP_SUB, "left": b, "right": a};
     if (solve([...rest, node])) {
     return true;
   }
-    node = {"op": OP_DIV, "left": b, "right": a};
+    node = {"__name": "Bin", "op": OP_DIV, "left": b, "right": a};
     if (solve([...rest, node])) {
     return true;
   }
@@ -121,7 +128,7 @@ bool solve(xs) {
 void main() {
   int iter = 0;
   while (iter < 10) {
-    List<Map<String, dynamic>> cards = [];
+    List<dynamic> cards = [];
     int i = 0;
     while (i < n_cards) {
     final int n = _now() % (digit_range - 1) + 1;
@@ -139,6 +146,5 @@ void main() {
 
 void _start() {
   _initNow();
-  main();
   main();
 }

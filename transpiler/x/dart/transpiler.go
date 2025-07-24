@@ -2832,6 +2832,7 @@ func Emit(w io.Writer, p *Program) error {
 	}
 
 	hasMain := false
+	mainCalled := false
 	for _, st := range p.Stmts {
 		if fd, ok := st.(*FuncDecl); ok {
 			if fd.Name == "main" {
@@ -2856,6 +2857,12 @@ func Emit(w io.Writer, p *Program) error {
 			}
 			if _, err := io.WriteString(w, ";\n"); err != nil {
 				return err
+			}
+		} else if es, ok := st.(*ExprStmt); ok {
+			if call, ok := es.Expr.(*CallExpr); ok {
+				if name, ok := call.Func.(*Name); ok && name.Name == "main" && len(call.Args) == 0 {
+					mainCalled = true
+				}
 			}
 		}
 	}
@@ -2892,7 +2899,7 @@ func Emit(w io.Writer, p *Program) error {
 			}
 		}
 	}
-	if hasMain {
+	if hasMain && !mainCalled {
 		if _, err := io.WriteString(w, "  main();\n"); err != nil {
 			return err
 		}
