@@ -25,11 +25,13 @@ import (
 )
 
 var usesNow bool
+var usesLookupHost bool
 
 // Program is a sequence of Swift statements.
 type Program struct {
-	Stmts  []Stmt
-	UseNow bool
+	Stmts         []Stmt
+	UseNow        bool
+	UseLookupHost bool
 }
 
 type Stmt interface{ emit(io.Writer) }
@@ -1212,6 +1214,11 @@ func (p *Program) Emit() []byte {
 		buf.WriteString("    return Int(Date().timeIntervalSince1970 * 1_000_000_000)\n")
 		buf.WriteString("}\n")
 	}
+	if p.UseLookupHost {
+		buf.WriteString("func _lookup_host(_ host: String) -> [Any] {\n")
+		buf.WriteString("    return [[], NSNull()]\n")
+		buf.WriteString("}\n")
+	}
 	needJSON := false
 	for _, st := range p.Stmts {
 		if _, ok := st.(*SaveStmt); ok {
@@ -1241,6 +1248,7 @@ func (p *Program) Emit() []byte {
 // Transpile converts a Mochi program into a simple Swift AST.
 func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 	usesNow = false
+	usesLookupHost = false
 	p := &Program{}
 	stmts, err := convertStmts(env, prog.Statements)
 	if err != nil {
@@ -1248,6 +1256,7 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 	}
 	p.Stmts = stmts
 	p.UseNow = usesNow
+	p.UseLookupHost = usesLookupHost
 	return p, nil
 }
 
@@ -1671,6 +1680,10 @@ func convertImport(im *parser.ImportStmt) Stmt {
 			return &RawStmt{Code: fmt.Sprintf("struct %s {\n    static func sqrt(_ x: Double) -> Double { return Foundation.sqrt(x) }\n    static let pi = Double.pi\n}\n", alias)}
 		}
 		return &RawStmt{Code: fmt.Sprintf("struct %s {}\n", alias)}
+	}
+	if lang == "go" && im.Path == "net" && im.Auto {
+		usesLookupHost = true
+		return &RawStmt{Code: fmt.Sprintf("struct %s {\n    static func LookupHost(_ host: String) -> [Any] { return _lookup_host(host) }\n}\n", alias)}
 	}
 	return &RawStmt{Code: ""}
 }
@@ -2135,8 +2148,18 @@ func convertExpr(env *types.Env, e *parser.Expr) (Expr, error) {
 		switch op {
 		case "==", "!=", "<", "<=", ">", ">=":
 			if types.IsAnyType(ltyp) && types.IsAnyType(rtyp) {
-				left = &CastExpr{Expr: left, Type: "String"}
-				right = &CastExpr{Expr: right, Type: "String"}
+				ls := exprString(left)
+				rs := exprString(right)
+				if ls == "nil" {
+					left = &RawStmt{Code: "String(describing: nil as Any?)"}
+				} else {
+					left = &RawStmt{Code: fmt.Sprintf("String(describing: %s)", ls)}
+				}
+				if rs == "nil" {
+					right = &RawStmt{Code: "String(describing: nil as Any?)"}
+				} else {
+					right = &RawStmt{Code: fmt.Sprintf("String(describing: %s)", rs)}
+				}
 			} else if (types.IsStructType(ltyp) || types.IsStructType(rtyp)) ||
 				(types.IsListType(ltyp) && types.IsStructType(ltyp.(types.ListType).Elem)) ||
 				(types.IsListType(rtyp) && types.IsStructType(rtyp.(types.ListType).Elem)) {
