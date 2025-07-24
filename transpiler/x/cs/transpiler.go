@@ -1362,6 +1362,18 @@ func listType(l *ListLit) string {
 	elemType := ""
 	for i, e := range l.Elems {
 		t := typeOfExpr(e)
+		if t == "" {
+			switch v := e.(type) {
+			case *IntLit:
+				t = "int"
+			case *FloatLit:
+				t = "double"
+			case *VarRef:
+				if vt, ok := varTypes[v.Name]; ok {
+					t = vt
+				}
+			}
+		}
 		if i == 0 {
 			elemType = t
 		} else if elemType != t {
@@ -1369,7 +1381,26 @@ func listType(l *ListLit) string {
 		}
 	}
 	if elemType == "" {
-		elemType = "object"
+		allInt := true
+		for _, e := range l.Elems {
+			switch v := e.(type) {
+			case *IntLit:
+			case *VarRef:
+				if t, ok := varTypes[v.Name]; !ok || t != "int" {
+					allInt = false
+				}
+			default:
+				allInt = false
+			}
+			if !allInt {
+				break
+			}
+		}
+		if allInt {
+			elemType = "int"
+		} else {
+			elemType = "object"
+		}
 	}
 	return fmt.Sprintf("%s[]", elemType)
 }
@@ -2088,11 +2119,6 @@ func compileStmt(prog *Program, s *parser.Statement) (Stmt, error) {
 			}
 		}
 		retType := csType(s.Fun.Return)
-		if prog != nil && blockDepth == 0 {
-			varTypes[s.Fun.Name] = fmt.Sprintf("fn/%d", len(ptypes))
-			funRets[s.Fun.Name] = retType
-			funParams[s.Fun.Name] = append([]string{}, ptypes...)
-		}
 		var body []Stmt
 		if prog != nil && blockDepth > 0 {
 			prog = nil
@@ -2127,6 +2153,11 @@ func compileStmt(prog *Program, s *parser.Statement) (Stmt, error) {
 		mapVars = savedMap
 		stringVars = savedStrAll
 		mutatedVars = savedMut
+		if prog != nil && blockDepth == 0 {
+			varTypes[s.Fun.Name] = fmt.Sprintf("fn/%d", len(ptypes))
+			funRets[s.Fun.Name] = retType
+			funParams[s.Fun.Name] = append([]string{}, ptypes...)
+		}
 		if s.Fun.Return == nil {
 			retType = ""
 		}
@@ -2267,6 +2298,7 @@ func compileIfStmt(prog *Program, i *parser.IfStmt) (Stmt, error) {
 		return nil, err
 	}
 	var thenStmts []Stmt
+	savedVars := cloneStringMap(varTypes)
 	blockDepth++
 	for _, st := range i.Then {
 		s, err := compileStmt(prog, st)
@@ -2278,6 +2310,7 @@ func compileIfStmt(prog *Program, i *parser.IfStmt) (Stmt, error) {
 		}
 	}
 	blockDepth--
+	varTypes = savedVars
 	var elseStmts []Stmt
 	if i.ElseIf != nil {
 		s, err := compileIfStmt(prog, i.ElseIf)
@@ -2286,6 +2319,7 @@ func compileIfStmt(prog *Program, i *parser.IfStmt) (Stmt, error) {
 		}
 		elseStmts = []Stmt{s}
 	} else if len(i.Else) > 0 {
+		savedVars := cloneStringMap(varTypes)
 		blockDepth++
 		for _, st := range i.Else {
 			s, err := compileStmt(prog, st)
@@ -2297,6 +2331,7 @@ func compileIfStmt(prog *Program, i *parser.IfStmt) (Stmt, error) {
 			}
 		}
 		blockDepth--
+		varTypes = savedVars
 	}
 	return &IfStmt{Cond: cond, Then: thenStmts, Else: elseStmts}, nil
 }
@@ -2489,7 +2524,9 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 			}
 			elems[i] = ex
 		}
-		return &ListLit{Elems: elems}, nil
+		lit := &ListLit{Elems: elems}
+		lit.ElemType = listType(lit)
+		return lit, nil
 	case p.Map != nil:
 		items := make([]MapItem, len(p.Map.Items))
 		for i, it := range p.Map.Items {
