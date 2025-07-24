@@ -2,12 +2,12 @@
 
 This file is auto-generated from rosetta tests.
 
-## Checklist (6/284)
+## Checklist (8/284)
 1. [x] 100-doors-2 (index 1)
 2. [x] 100-doors-3 (index 2)
 3. [x] 100-doors (index 3)
-4. [ ] 100-prisoners (index 4)
-5. [ ] 15-puzzle-game (index 5)
+4. [x] 100-prisoners (index 4)
+5. [x] 15-puzzle-game (index 5)
 6. [ ] 15-puzzle-solver (index 6)
 7. [x] 2048 (index 7)
 8. [ ] 21-game (index 8)
@@ -288,4 +288,4 @@ This file is auto-generated from rosetta tests.
 283. [ ] define-a-primitive-data-type (index 283)
 284. [ ] md5 (index 284)
 
-Last updated: 2025-07-24 08:13 +0700
+Last updated: 2025-07-24 13:03 +0700
