@@ -82,7 +82,7 @@ fun crc32(s: string): int {
 fun main() {
   let s = "The quick brown fox jumps over the lazy dog"
   let result = crc32(s)
-  let hex = toHex(result).lower()
+  let hex = lower(toHex(result))
   print(hex)
 }
 

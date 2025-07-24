@@ -32,6 +32,9 @@ func (i *IntLit) Capture(values []string) error {
 	} else if strings.HasPrefix(s, "0b") || strings.HasPrefix(s, "0B") {
 		base = 2
 		s = s[2:]
+	} else if strings.HasPrefix(s, "0o") || strings.HasPrefix(s, "0O") {
+		base = 8
+		s = s[2:]
 	}
 	v, err := strconv.ParseInt(s, base, 64)
 	if err != nil {
@@ -52,7 +55,7 @@ var mochiLexer = lexer.MustSimple([]lexer.SimpleRule{
 	// expressions like `len(list)-1` inside index operations to
 	// parse correctly.
 	{Name: "Float", Pattern: `\d+\.\d+`},
-	{Name: "Int", Pattern: `0[xX][0-9a-fA-F]+|0[bB][01]+|\d+`},
+	{Name: "Int", Pattern: `0[xX][0-9a-fA-F]+|0[bB][01]+|0[oO][0-7]+|\d+`},
 	{Name: "String", Pattern: `"(?:\\.|[^"\\])*"`},
 	{Name: "Punct", Pattern: `==|!=|<=|>=|&&|\|\||=>|:-|\.\.|[-+*/%=<>!|{}\[\](),.:]`},
 	{Name: "Whitespace", Pattern: `[ \t\n\r;]+`},

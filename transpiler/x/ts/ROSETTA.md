@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated TypeScript code from programs in `tests/rosetta/x/Mochi` lives in `tests/rosetta/transpiler/TypeScript`.
-Last updated: 2025-07-24 08:41 UTC
+Last updated: 2025-07-24 10:00 UTC
 
-## Rosetta Golden Test Checklist (236/284)
+## Rosetta Golden Test Checklist (245/284)
 1. [x] 100-doors-2 (1)
 2. [x] 100-doors-3 (2)
 3. [x] 100-doors (3)
@@ -249,15 +249,15 @@ Last updated: 2025-07-24 08:41 UTC
 242. [x] count-in-octal-1 (242)
 243. [x] count-in-octal-2 (243)
 244. [x] count-in-octal-3 (244)
-245. [ ] count-in-octal-4 (245)
-246. [ ] count-occurrences-of-a-substring (246)
-247. [ ] count-the-coins-1 (247)
-248. [ ] count-the-coins-2 (248)
-249. [ ] cramers-rule (249)
-250. [ ] crc-32-1 (250)
-251. [ ] crc-32-2 (251)
-252. [ ] create-a-file-on-magnetic-tape (252)
-253. [ ] create-a-file (253)
+245. [x] count-in-octal-4 (245)
+246. [x] count-occurrences-of-a-substring (246)
+247. [x] count-the-coins-1 (247)
+248. [x] count-the-coins-2 (248)
+249. [x] cramers-rule (249)
+250. [x] crc-32-1 (250)
+251. [x] crc-32-2 (251)
+252. [x] create-a-file-on-magnetic-tape (252)
+253. [x] create-a-file (253)
 254. [ ] create-a-two-dimensional-array-at-runtime-1 (254)
 255. [ ] create-an-html-table (255)
 256. [ ] create-an-object-at-a-given-address (256)
