@@ -1,3 +1,30 @@
+## Progress (2025-07-24 13:24 UTC)
+- pascal transpiler: support DNS-query (progress 87/103)
+
+## Progress (2025-07-24 13:24 UTC)
+- pascal transpiler: support DNS-query (progress 87/103)
+
+## Progress (2025-07-24 13:24 UTC)
+- pascal transpiler: support DNS-query (progress 87/103)
+
+## Progress (2025-07-24 20:17 +0700)
+- pascal transpiler: add 99-bottles examples (progress 87/103)
+
+## Progress (2025-07-24 20:17 +0700)
+- pascal transpiler: add 99-bottles examples (progress 87/103)
+
+## Progress (2025-07-24 20:17 +0700)
+- pascal transpiler: add 99-bottles examples (progress 87/103)
+
+## Progress (2025-07-24 20:17 +0700)
+- pascal transpiler: add 99-bottles examples (progress 87/103)
+
+## Progress (2025-07-24 20:17 +0700)
+- pascal transpiler: add 99-bottles examples (progress 87/103)
+
+## Progress (2025-07-24 20:17 +0700)
+- pascal transpiler: add 99-bottles examples (progress 87/103)
+
 ## Progress (2025-07-24 19:43 +0700)
 - cpp transpiler: handle string concat and hetero list (progress 87/103)
 

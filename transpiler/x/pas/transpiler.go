@@ -794,7 +794,7 @@ func (p *Program) Emit() []byte {
 		buf.WriteString("function _input(): string;\nvar s: string;\nbegin\n  if EOF(Input) then s := '' else ReadLn(s);\n  _input := s;\nend;\n")
 	}
 	if p.UseLookupHost {
-		buf.WriteString(`function _lookup_host(name: string): StrArray;
+		buf.WriteString(`function _lookup_host(name: string): VariantArray;
 begin
   SetLength(Result, 3);
   Result[0] := '2001:2f0:0:8800:226:2dff:fe0b:4311';
@@ -2877,6 +2877,7 @@ func convertPostfix(env *types.Env, pf *parser.PostfixExpr) (Expr, error) {
 							currProg.NeedListStr = true
 							currProg.UseLookupHost = true
 							_ = currProg.addArrayAlias("string")
+							_ = currProg.addArrayAlias("Variant")
 							expr = &CallExpr{Name: "_lookup_host", Args: []Expr{arg}}
 							break
 						}
@@ -3028,6 +3029,8 @@ func convertPrimary(env *types.Env, p *parser.Primary) (Expr, error) {
 			name = "Length"
 		} else if name == "substring" && len(args) == 3 {
 			return &SliceExpr{Target: args[0], Start: args[1], End: args[2], String: true}, nil
+		} else if name == "int" && len(args) == 1 {
+			return &CastExpr{Expr: args[0], Type: "int"}, nil
 		} else if name == "str" && len(args) == 1 {
 			t := inferType(args[0])
 			if strings.HasPrefix(t, "array of string") {
