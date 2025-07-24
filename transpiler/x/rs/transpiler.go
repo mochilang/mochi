@@ -14,6 +14,7 @@ import (
 	"strconv"
 	"strings"
 	"time"
+	"unicode"
 
 	yaml "gopkg.in/yaml.v3"
 
@@ -274,7 +275,7 @@ type StructDecl struct {
 func (s *StructDecl) emit(w io.Writer) {
 	fmt.Fprintf(w, "#[derive(Debug, Clone, Default)]\nstruct %s {\n", s.Name)
 	for _, f := range s.Fields {
-		fmt.Fprintf(w, "    %s: %s,\n", f.Name, f.Type)
+		fmt.Fprintf(w, "    %s: %s,\n", rustIdent(f.Name), f.Type)
 	}
 	io.WriteString(w, "}\n")
 	fmt.Fprintf(w, "impl std::fmt::Display for %s {\n", s.Name)
@@ -286,13 +287,13 @@ func (s *StructDecl) emit(w io.Writer) {
 		}
 		switch {
 		case fld.Type == "String":
-			fmt.Fprintf(w, "        write!(f, \"\\\"%s\\\": \\\"{}\\\"\", self.%s)?;\n", fld.Name, fld.Name)
+			fmt.Fprintf(w, "        write!(f, \"\\\"%s\\\": \\\"{}\\\"\", self.%s)?;\n", fld.Name, rustIdent(fld.Name))
 		case strings.HasPrefix(fld.Type, "Option<"):
-			fmt.Fprintf(w, "        write!(f, \"\\\"%s\\\": {:?}\", self.%s)?;\n", fld.Name, fld.Name)
+			fmt.Fprintf(w, "        write!(f, \"\\\"%s\\\": {:?}\", self.%s)?;\n", fld.Name, rustIdent(fld.Name))
 		case strings.HasPrefix(fld.Type, "Vec<") || strings.HasPrefix(fld.Type, "HashMap<"):
-			fmt.Fprintf(w, "        write!(f, \"\\\"%s\\\": {:?}\", self.%s)?;\n", fld.Name, fld.Name)
+			fmt.Fprintf(w, "        write!(f, \"\\\"%s\\\": {:?}\", self.%s)?;\n", fld.Name, rustIdent(fld.Name))
 		default:
-			fmt.Fprintf(w, "        write!(f, \"\\\"%s\\\": {}\", self.%s)?;\n", fld.Name, fld.Name)
+			fmt.Fprintf(w, "        write!(f, \"\\\"%s\\\": {}\", self.%s)?;\n", fld.Name, rustIdent(fld.Name))
 		}
 	}
 	io.WriteString(w, "        write!(f, \"}}\")\n    }\n}\n")
@@ -340,7 +341,7 @@ func (s *StructLit) emit(w io.Writer) {
 		if i > 0 {
 			io.WriteString(w, ", ")
 		}
-		fmt.Fprintf(w, "%s: ", s.Names[i])
+		fmt.Fprintf(w, "%s: ", rustIdent(s.Names[i]))
 		f.emit(w)
 	}
 	io.WriteString(w, "}")
@@ -470,7 +471,13 @@ func (m *MapLit) emit(w io.Writer) {
 			io.WriteString(w, ", ")
 		}
 		io.WriteString(w, "(")
-		it.Key.emit(w)
+		if inferType(it.Key) == "String" {
+			io.WriteString(w, "String::from(")
+			it.Key.emit(w)
+			io.WriteString(w, ")")
+		} else {
+			it.Key.emit(w)
+		}
 		io.WriteString(w, ", ")
 		it.Value.emit(w)
 		io.WriteString(w, ")")
@@ -490,12 +497,18 @@ func (s *SliceExpr) emit(w io.Writer) {
 	io.WriteString(w, "[")
 	if s.Start != nil {
 		s.Start.emit(w)
+		if inferType(s.Target) == "String" {
+			io.WriteString(w, " as usize")
+		}
 	} else {
 		io.WriteString(w, "0")
 	}
 	io.WriteString(w, "..")
 	if s.End != nil {
 		s.End.emit(w)
+		if inferType(s.Target) == "String" {
+			io.WriteString(w, " as usize")
+		}
 	}
 	io.WriteString(w, "]")
 	if inferType(s.Target) == "String" {
@@ -578,7 +591,7 @@ type FieldExpr struct {
 func (f *FieldExpr) emit(w io.Writer) {
 	if nr, ok := f.Receiver.(*NameRef); ok && nr.Name == "math" {
 		io.WriteString(w, "math::")
-		io.WriteString(w, f.Name)
+		io.WriteString(w, rustIdent(f.Name))
 		return
 	}
 	if strings.HasPrefix(inferType(f.Receiver), "HashMap<") {
@@ -589,7 +602,7 @@ func (f *FieldExpr) emit(w io.Writer) {
 	if strings.HasPrefix(inferType(f.Receiver), "Option<") {
 		f.Receiver.emit(w)
 		io.WriteString(w, ".as_ref().unwrap().")
-		io.WriteString(w, f.Name)
+		io.WriteString(w, rustIdent(f.Name))
 		return
 	}
 	if nr, ok := f.Receiver.(*NameRef); ok && groupVars[nr.Name] {
@@ -605,7 +618,7 @@ func (f *FieldExpr) emit(w io.Writer) {
 	}
 	f.Receiver.emit(w)
 	io.WriteString(w, ".")
-	io.WriteString(w, f.Name)
+	io.WriteString(w, rustIdent(f.Name))
 }
 
 // MethodCallExpr represents `receiver.method(args...)`.
@@ -2674,42 +2687,51 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 			return &StructLit{Name: name, Fields: fields, Names: names}, nil
 		}
 		if st, ok := types.InferStructFromMapEnv(p.Map, curEnv); ok {
-			sigParts := make([]string, len(st.Order))
-			for i, n := range st.Order {
-				sigParts[i] = n + ":" + rustTypeFromType(st.Fields[n])
+			invalid := false
+			for _, n := range st.Order {
+				if rustIdent(n) != n {
+					invalid = true
+					break
+				}
 			}
-			sig := strings.Join(sigParts, ";")
-			name, ok := structSig[sig]
-			if !ok {
-				name = types.UniqueStructName("Map", curEnv, nil)
-				st.Name = name
-				curEnv.SetStruct(name, st)
-				fields := make([]Param, len(st.Order))
+			if !invalid {
+				sigParts := make([]string, len(st.Order))
 				for i, n := range st.Order {
-					fields[i] = Param{Name: n, Type: rustTypeFromType(st.Fields[n])}
+					sigParts[i] = n + ":" + rustTypeFromType(st.Fields[n])
 				}
-				typeDecls = append(typeDecls, &StructDecl{Name: name, Fields: fields})
-				structTypes[name] = st
-				structSig[sig] = name
+				sig := strings.Join(sigParts, ";")
+				name, ok := structSig[sig]
+				if !ok {
+					name = types.UniqueStructName("Map", curEnv, nil)
+					st.Name = name
+					curEnv.SetStruct(name, st)
+					fields := make([]Param, len(st.Order))
+					for i, n := range st.Order {
+						fields[i] = Param{Name: n, Type: rustTypeFromType(st.Fields[n])}
+					}
+					typeDecls = append(typeDecls, &StructDecl{Name: name, Fields: fields})
+					structTypes[name] = st
+					structSig[sig] = name
+				}
+				structForMap[p.Map] = name
+				names := st.Order
+				vals := make([]Expr, len(p.Map.Items))
+				for i, it := range p.Map.Items {
+					v, err := compileExpr(it.Value)
+					if err != nil {
+						return nil, err
+					}
+					ft := st.Fields[names[i]]
+					rt := rustTypeFromType(ft)
+					if rt == "String" {
+						v = &StringCastExpr{Expr: v}
+					} else if rt == "f64" && inferType(v) == "i64" {
+						v = &FloatCastExpr{Expr: v}
+					}
+					vals[i] = v
+				}
+				return &StructLit{Name: name, Fields: vals, Names: names}, nil
 			}
-			structForMap[p.Map] = name
-			names := st.Order
-			vals := make([]Expr, len(p.Map.Items))
-			for i, it := range p.Map.Items {
-				v, err := compileExpr(it.Value)
-				if err != nil {
-					return nil, err
-				}
-				ft := st.Fields[names[i]]
-				rt := rustTypeFromType(ft)
-				if rt == "String" {
-					v = &StringCastExpr{Expr: v}
-				} else if rt == "f64" && inferType(v) == "i64" {
-					v = &FloatCastExpr{Expr: v}
-				}
-				vals[i] = v
-			}
-			return &StructLit{Name: name, Fields: vals, Names: names}, nil
 		}
 		entries := make([]MapEntry, len(p.Map.Items))
 		for i, it := range p.Map.Items {
@@ -4103,4 +4125,29 @@ func identName(e *parser.Expr) (string, bool) {
 		return p.Target.Selector.Root, true
 	}
 	return "", false
+}
+
+func rustIdent(name string) string {
+	if name == "" {
+		return "_"
+	}
+	var b strings.Builder
+	for i, r := range name {
+		if unicode.IsLetter(r) || r == '_' || (i > 0 && unicode.IsDigit(r)) {
+			b.WriteRune(r)
+		} else if unicode.IsDigit(r) && i == 0 {
+			b.WriteRune('_')
+			b.WriteRune(r)
+		} else {
+			b.WriteRune('_')
+		}
+	}
+	ident := b.String()
+	if ident == "" {
+		ident = "_"
+	}
+	if !unicode.IsLetter(rune(ident[0])) && ident[0] != '_' {
+		ident = "_" + ident
+	}
+	return ident
 }
