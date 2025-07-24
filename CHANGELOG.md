@@ -1,4 +1,27 @@
 # 📦 CHANGELOG.md
+## [0.10.39] – 2025-07-24T11:43:58+07:00
+
+### Added
+
+* BigInt operations in Dart with initial Go support
+* Balanced ternary, calendar helpers and struct methods in TypeScript
+* Deterministic `now` for PHP and C with slice defaults in C++
+* Null handling, generic casts and improved strings for Scala
+* `lower()` builtin and repeat helpers in ST
+* Partial returns and list concatenation in Prolog
+* Input builtins and union variants across Pascal, Swift, Scheme and Zig
+* Map generics and nested indexing for Kotlin plus open-ended slices in F#
+* Numerous Rosetta examples regenerated
+
+### Changed
+
+* Progress logs updated with index numbers across languages
+* Golden outputs refreshed across the repository
+
+### Fixed
+
+* Improved type inference for Haskell and Scala
+* PRNG overflow fixed in C# with map and index handling bugs resolved
 ## [0.10.38] – 2025-07-23T10:17:23+07:00
 
 ### Added
