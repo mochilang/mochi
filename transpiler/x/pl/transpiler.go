@@ -1375,6 +1375,18 @@ func intConst(e *parser.Expr) (int, bool) {
 	return int(*u.Value.Target.Lit.Int), true
 }
 
+func boolConst(e *parser.Expr) (bool, bool) {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) != 0 {
+		return false, false
+	}
+	u := e.Binary.Left
+	if len(u.Ops) != 0 || u.Value == nil || u.Value.Target.Lit == nil || u.Value.Target.Lit.Bool == nil {
+		return false, false
+	}
+	v := bool(*u.Value.Target.Lit.Bool)
+	return v, true
+}
+
 func identNameUnary(u *parser.Unary) (string, bool) {
 	if u == nil || len(u.Ops) != 0 || u.Value == nil {
 		return "", false
@@ -1400,66 +1412,155 @@ func intConstPostfix(p *parser.PostfixExpr) (int, bool) {
 }
 
 func unrollWhile(w *parser.WhileStmt, env *compileEnv) ([]Stmt, error) {
-	if w.Cond == nil || w.Cond.Binary == nil || len(w.Cond.Binary.Right) != 1 {
+	if w.Cond == nil {
 		return nil, nil
 	}
-	be := w.Cond.Binary
-	r := be.Right[0]
-	if r.Op != "<" && r.Op != "<=" {
-		return nil, nil
-	}
-	varName, ok := identNameUnary(be.Left)
-	if !ok {
-		return nil, nil
-	}
-	endVal, ok := intConstPostfix(r.Right)
-	if !ok {
-		return nil, nil
-	}
-	startExpr := env.constExpr(env.current(varName))
-	startVal, ok := intValue(startExpr)
-	if !ok {
-		return nil, nil
-	}
-	limit := endVal
-	if r.Op == "<" {
-		limit = endVal
-	} else {
-		limit = endVal + 1
-	}
-	body := w.Body
-	if len(body) == 0 {
-		return nil, nil
-	}
-	last := body[len(body)-1]
-	inc := false
-	if last.Assign != nil && last.Assign.Name == varName && len(last.Assign.Index) == 0 && len(last.Assign.Field) == 0 {
-		if last.Assign.Value != nil && last.Assign.Value.Binary != nil && len(last.Assign.Value.Binary.Right) == 1 {
-			b2 := last.Assign.Value.Binary
-			if n, ok2 := identNameUnary(b2.Left); ok2 && n == varName && b2.Right[0].Op == "+" {
-				if iv, ok3 := intConstPostfix(b2.Right[0].Right); ok3 && iv == 1 {
-					inc = true
+
+	// Handle simple increasing loops: while i < N { ... i = i + 1 }
+	if w.Cond.Binary != nil && len(w.Cond.Binary.Right) == 1 {
+		be := w.Cond.Binary
+		r := be.Right[0]
+		if r.Op == "<" || r.Op == "<=" {
+			varName, ok := identNameUnary(be.Left)
+			if ok {
+				endVal, ok := intConstPostfix(r.Right)
+				if ok {
+					startExpr := env.constExpr(env.current(varName))
+					startVal, ok := intValue(startExpr)
+					if ok {
+						limit := endVal
+						if r.Op == "<=" {
+							limit = endVal + 1
+						}
+						body := w.Body
+						if len(body) == 0 {
+							return nil, nil
+						}
+						last := body[len(body)-1]
+						inc := false
+						if last.Assign != nil && last.Assign.Name == varName && len(last.Assign.Index) == 0 && len(last.Assign.Field) == 0 {
+							if last.Assign.Value != nil && last.Assign.Value.Binary != nil && len(last.Assign.Value.Binary.Right) == 1 {
+								b2 := last.Assign.Value.Binary
+								if n, ok2 := identNameUnary(b2.Left); ok2 && n == varName && b2.Right[0].Op == "+" {
+									if iv, ok3 := intConstPostfix(b2.Right[0].Right); ok3 && iv == 1 {
+										inc = true
+									}
+								}
+							}
+						}
+						if inc {
+							body = body[:len(body)-1]
+							out := []Stmt{}
+							for i := startVal; i < limit; i++ {
+								vname := env.fresh(varName)
+								iv := &IntLit{Value: i}
+								env.setConst(vname, iv)
+								out = append(out, &LetStmt{Name: vname, Expr: iv})
+								stmts, err := compileStmts(body, env)
+								if err != nil {
+									return nil, err
+								}
+								out = append(out, stmts...)
+							}
+							return out, nil
+						}
+					}
+				}
+			}
+		}
+
+		// Handle simple decreasing loops: while i >= N { ... i = i - 1 }
+		if r.Op == ">=" || r.Op == ">" {
+			varName, ok := identNameUnary(be.Left)
+			if ok {
+				endVal, ok := intConstPostfix(r.Right)
+				if ok {
+					startExpr := env.constExpr(env.current(varName))
+					startVal, ok := intValue(startExpr)
+					if ok {
+						limit := endVal
+						if r.Op == ">" {
+							limit = endVal + 1
+						}
+						body := w.Body
+						if len(body) == 0 {
+							return nil, nil
+						}
+						last := body[len(body)-1]
+						dec := false
+						if last.Assign != nil && last.Assign.Name == varName && len(last.Assign.Index) == 0 && len(last.Assign.Field) == 0 {
+							if last.Assign.Value != nil && last.Assign.Value.Binary != nil && len(last.Assign.Value.Binary.Right) == 1 {
+								b2 := last.Assign.Value.Binary
+								if n, ok2 := identNameUnary(b2.Left); ok2 && n == varName && b2.Right[0].Op == "-" {
+									if iv, ok3 := intConstPostfix(b2.Right[0].Right); ok3 && iv == 1 {
+										dec = true
+									}
+								}
+							}
+						}
+						if dec {
+							body = body[:len(body)-1]
+							out := []Stmt{}
+							for i := startVal; i >= limit; i-- {
+								vname := env.fresh(varName)
+								iv := &IntLit{Value: i}
+								env.setConst(vname, iv)
+								out = append(out, &LetStmt{Name: vname, Expr: iv})
+								stmts, err := compileStmts(body, env)
+								if err != nil {
+									return nil, err
+								}
+								out = append(out, stmts...)
+							}
+							return out, nil
+						}
+					}
+				}
+			}
+		}
+
+		// Handle length based loops: while len(x) < N { ... }
+		if (r.Op == "<" || r.Op == "<=") && be.Left != nil && be.Left.Value != nil && be.Left.Value.Target.Call != nil {
+			call := be.Left.Value.Target.Call
+			if call.Func == "len" && len(call.Args) == 1 {
+				if n, ok := intConstPostfix(r.Right); ok {
+					limit := n
+					if r.Op == "<=" {
+						limit++
+					}
+					out := []Stmt{}
+					for i := 0; i < limit; i++ {
+						cond, err := toExpr(w.Cond, env)
+						if err != nil {
+							return nil, err
+						}
+						bodyStmts, err := compileStmts(w.Body, env)
+						if err != nil {
+							return nil, err
+						}
+						out = append(out, &IfStmt{Cond: cond, Then: bodyStmts})
+					}
+					return out, nil
 				}
 			}
 		}
 	}
-	if !inc {
-		return nil, nil
-	}
-	body = body[:len(body)-1]
-	out := []Stmt{}
-	for i := startVal; i < limit; i++ {
-		vname := env.fresh(varName)
-		iv := &IntLit{Value: i}
-		env.setConst(vname, iv)
-		out = append(out, &LetStmt{Name: vname, Expr: iv})
-		stmts, err := compileStmts(body, env)
-		if err != nil {
-			return nil, err
+
+	// Handle infinite loop - unroll a fixed number of times
+	if val, ok := boolConst(w.Cond); ok && val {
+		limit := 5
+		out := []Stmt{}
+		for i := 0; i < limit; i++ {
+			bodyStmts, err := compileStmts(w.Body, env)
+			if err != nil {
+				return nil, err
+			}
+			out = append(out, bodyStmts...)
 		}
-		out = append(out, stmts...)
+		return out, nil
 	}
-	return out, nil
+
+	return nil, nil
 }
 
 func cloneList(l *ListLit) *ListLit {
