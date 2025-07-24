@@ -39,6 +39,7 @@ type Program struct {
 	UseBigInt    bool
 	UseBigRat    bool
 	UseLenAny    bool
+	UseReflect   bool
 }
 
 var (
@@ -55,6 +56,7 @@ var (
 	usesBigInt     bool
 	usesBigRat     bool
 	usesLenAny     bool
+	usesReflect    bool
 	topEnv         *types.Env
 	extraDecls     []Stmt
 	structCount    int
@@ -605,11 +607,15 @@ type WhileStmt struct {
 }
 
 func (ws *WhileStmt) emit(w io.Writer) {
-	fmt.Fprint(w, "for ")
-	if ws.Cond != nil {
-		ws.Cond.emit(w)
+	if bl, ok := ws.Cond.(*BoolLit); ok && bl.Value {
+		fmt.Fprint(w, "for {\n")
+	} else {
+		fmt.Fprint(w, "for ")
+		if ws.Cond != nil {
+			ws.Cond.emit(w)
+		}
+		fmt.Fprint(w, " {\n")
 	}
-	fmt.Fprint(w, " {\n")
 	for _, st := range ws.Body {
 		fmt.Fprint(w, "    ")
 		st.emit(w)
@@ -1726,6 +1732,7 @@ func Transpile(p *parser.Program, env *types.Env) (*Program, error) {
 	gp.UseBigInt = usesBigInt
 	gp.UseBigRat = usesBigRat
 	gp.UseLenAny = usesLenAny
+	gp.UseReflect = usesReflect
 	gp.Imports = imports
 	return gp, nil
 }
@@ -2016,6 +2023,13 @@ func compileStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 				}
 			} else {
 				valType = types.TypeOfExpr(st.Var.Value, env)
+				if typ == "[]any" {
+					if lt, ok := valType.(types.ListType); ok {
+						if _, ok2 := lt.Elem.(types.AnyType); !ok2 {
+							typ = "[]" + toGoTypeFromType(lt.Elem)
+						}
+					}
+				}
 			}
 			if as, ok := e.(*AssertExpr); ok && typ == "" && types.IsAnyType(valType) {
 				typ = as.Type
@@ -3635,6 +3649,17 @@ func compileBinary(b *parser.BinaryExpr, env *types.Env, base string) (Expr, err
 							newExpr = &BigCmpExpr{Left: left, Op: ops[i].Op, Right: right}
 						}
 					}
+					if newExpr == nil && (ops[i].Op == "==" || ops[i].Op == "!=") {
+						if _, ok := typesList[i].(types.ListType); ok {
+							usesReflect = true
+							eq := &CallExpr{Func: "reflect.DeepEqual", Args: []Expr{left, right}}
+							if ops[i].Op == "==" {
+								newExpr = eq
+							} else {
+								newExpr = &NotExpr{Expr: eq}
+							}
+						}
+					}
 					// list concatenation with +
 					if ops[i].Op == "+" {
 						if lt, ok := typesList[i].(types.ListType); ok {
@@ -4789,6 +4814,9 @@ func Emit(prog *Program) []byte {
 	}
 	if prog.UseBigInt || prog.UseBigRat {
 		buf.WriteString("    \"math/big\"\n")
+	}
+	if prog.UseReflect {
+		buf.WriteString("    \"reflect\"\n")
 	}
 	if prog.UseInput {
 		buf.WriteString("    \"bufio\"\n")

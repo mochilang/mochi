@@ -1,7 +1,7 @@
 # Go Rosetta Transpiler Output
 
-Completed programs: 99/284
-Last updated: 2025-07-24 17:33 +0700
+Completed programs: 105/284
+Last updated: 2025-07-24 18:38 +0700
 
 Checklist:
 
@@ -112,12 +112,12 @@ Checklist:
 105. [x] bernoulli-numbers (105)
 106. [x] best-shuffle (106)
 107. [x] bifid-cipher (107)
-108. [ ] bin-given-limits (108)
-109. [ ] binary-digits (109)
-110. [ ] binary-search (110)
-111. [ ] binary-strings (111)
-112. [ ] bioinformatics-base-count (112)
-113. [ ] bioinformatics-global-alignment (113)
+108. [x] bin-given-limits (108)
+109. [x] binary-digits (109)
+110. [x] binary-search (110)
+111. [x] binary-strings (111)
+112. [x] bioinformatics-base-count (112)
+113. [x] bioinformatics-global-alignment (113)
 114. [ ] bioinformatics-sequence-mutation (114)
 115. [ ] biorhythms (115)
 116. [ ] bitcoin-address-validation (116)
