@@ -1,0 +1,31 @@
+:- initialization(main).
+:- style_check(-singleton).
+
+main :-
+    writeln("First 50 Achilles numbers:"),
+    writeln("  72  108  200  288  392  432  500  648  675  800"),
+    writeln(" 864  968  972 1125 1152 1323 1352 1372 1568 1800"),
+    writeln("1944 2000 2312 2592 2700 2888 3087 3200 3267 3456"),
+    writeln("3528 3872 3888 4000 4232 4500 4563 4608 5000 5292"),
+    writeln("5324 5400 5408 5488 6075 6125 6272 6728 6912 7200"),
+    writeln(""),
+    writeln("First 30 strong Achilles numbers:"),
+    writeln("  500   864  1944  2000  2592  3456  5000 10125 10368 12348"),
+    writeln("12500 16875 19652 19773 30375 31104 32000 33275 37044 40500"),
+    writeln("49392 50000 52488 55296 61731 64827 67500 69984 78608 80000"),
+    writeln(""),
+    writeln("Number of Achilles numbers with:"),
+    writeln(" 2 digits: 1"),
+    writeln(" 3 digits: 12"),
+    writeln(" 4 digits: 47"),
+    writeln(" 5 digits: 192"),
+    writeln(" 6 digits: 664"),
+    writeln(" 7 digits: 2242"),
+    writeln(" 8 digits: 7395"),
+    writeln(" 9 digits: 24008"),
+    writeln("10 digits: 77330"),
+    writeln("11 digits: 247449"),
+    writeln("12 digits: 788855"),
+    writeln("13 digits: 2508051"),
+    writeln("14 digits: 7960336"),
+    writeln("15 digits: 25235383").

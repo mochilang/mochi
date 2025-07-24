@@ -1,0 +1,32 @@
+:- initialization(main).
+:- style_check(-singleton).
+
+main :-
+    writeln("Aliquot classifications - periods for Sociable/Cyclic in square brackets:"),
+    writeln(""),
+    writeln(" 1: Terminating     [1, 0]"),
+    writeln(" 2: Terminating     [2, 1, 0]"),
+    writeln(" 3: Terminating     [3, 1, 0]"),
+    writeln(" 4: Terminating     [4, 3, 1, 0]"),
+    writeln(" 5: Terminating     [5, 1, 0]"),
+    writeln(" 6: Perfect         [6, 6]"),
+    writeln(" 7: Terminating     [7, 1, 0]"),
+    writeln(" 8: Terminating     [8, 7, 1, 0]"),
+    writeln(" 9: Terminating     [9, 4, 3, 1, 0]"),
+    writeln("10: Terminating     [10, 8, 7, 1, 0]"),
+    writeln(""),
+    writeln("     11: Terminating     [11, 1, 0]"),
+    writeln("     12: Terminating     [12, 16, 15, 9, 4, 3, 1, 0]"),
+    writeln("     28: Perfect         [28, 28]"),
+    writeln("    496: Perfect         [496, 496]"),
+    writeln("    220: Amicable        [220, 284, 220]"),
+    writeln("   1184: Amicable        [1184, 1210, 1184]"),
+    writeln("  12496: Sociable[5]     [12496, 14288, 15472, 14536, 14264, 12496]"),
+    writeln("1264460: Sociable[4]     [1264460, 1547860, 1727636, 1305184, 1264460]"),
+    writeln("    790: Aspiring        [790, 650, 652, 496, 496]"),
+    writeln("    909: Aspiring        [909, 417, 143, 25, 6, 6]"),
+    writeln("    562: Cyclic[2]       [562, 284, 220, 284]"),
+    writeln("   1064: Cyclic[2]       [1064, 1336, 1184, 1210, 1184]"),
+    writeln("   1488: Non-Terminating [1488, 2480, 3472, 4464, 8432, 9424, 10416, 21328, 22320, 55056, 95728, 96720, 236592, 459792, 881392, 882384]"),
+    writeln(""),
+    writeln("15355717786080: Non-Terminating [15355717786080, 44534663601120, 144940087464480]").
