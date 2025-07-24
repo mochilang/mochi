@@ -560,7 +560,8 @@ func (b *BinaryExpr) emit(w io.Writer) {
 		b.Right.emit(w)
 		fmt.Fprint(w, ").ToArray())")
 	default:
-		if b.Op == "+" && isListExpr(b.Left) && isListExpr(b.Right) {
+		if b.Op == "+" && (isListExpr(b.Left) && isListExpr(b.Right) ||
+			(strings.HasSuffix(typeOfExpr(b.Left), "[]") && strings.HasSuffix(typeOfExpr(b.Right), "[]"))) {
 			usesLinq = true
 			fmt.Fprint(w, "(")
 			b.Left.emit(w)
@@ -720,6 +721,27 @@ type MethodCallExpr struct {
 	Target Expr
 	Name   string
 	Args   []Expr
+}
+
+// MapGetExpr represents map.get(key, default).
+type MapGetExpr struct {
+	Target  Expr
+	Key     Expr
+	Default Expr
+}
+
+func (m *MapGetExpr) emit(w io.Writer) {
+	fmt.Fprint(w, "(")
+	m.Target.emit(w)
+	fmt.Fprint(w, ".ContainsKey(")
+	m.Key.emit(w)
+	fmt.Fprint(w, ") ? ")
+	m.Target.emit(w)
+	fmt.Fprint(w, "[")
+	m.Key.emit(w)
+	fmt.Fprint(w, "] : ")
+	m.Default.emit(w)
+	fmt.Fprint(w, ")")
 }
 
 func (m *MethodCallExpr) emit(w io.Writer) {
@@ -1428,6 +1450,16 @@ func typeOfExpr(e Expr) string {
 				}
 			}
 		}
+	case *MapGetExpr:
+		t := typeOfExpr(ex.Target)
+		if strings.HasPrefix(t, "Dictionary<") {
+			parts := strings.TrimPrefix(strings.TrimSuffix(t, ">"), "Dictionary<")
+			arr := strings.Split(parts, ",")
+			if len(arr) == 2 {
+				return strings.TrimSpace(arr[1])
+			}
+		}
+		return "object"
 	case *RawExpr:
 		return ex.Type
 	case *FmtExpr:
@@ -1986,6 +2018,11 @@ func compilePostfix(p *parser.PostfixExpr) (Expr, error) {
 						return nil, fmt.Errorf("unsupported method call")
 					}
 					expr = &ContainsExpr{Str: fe.Target, Sub: args[0]}
+				} else if fe.Name == "get" {
+					if len(args) != 2 {
+						return nil, fmt.Errorf("unsupported method call")
+					}
+					expr = &MapGetExpr{Target: fe.Target, Key: args[0], Default: args[1]}
 				} else {
 					expr = &MethodCallExpr{Target: fe.Target, Name: fe.Name, Args: args}
 				}
@@ -2344,6 +2381,12 @@ func compileStmt(prog *Program, s *parser.Statement) (Stmt, error) {
 	case s.Fun != nil:
 		params := make([]string, len(s.Fun.Params))
 		ptypes := make([]string, len(s.Fun.Params))
+		savedAliases := cloneStringMap(varAliases)
+		savedCounter := aliasCounter
+		defer func() {
+			varAliases = savedAliases
+			aliasCounter = savedCounter
+		}()
 		// save global variable maps so local declarations don't leak
 		savedAll := cloneStringMap(varTypes)
 		savedMap := cloneBoolMap(mapVars)
@@ -2411,12 +2454,17 @@ func compileStmt(prog *Program, s *parser.Statement) (Stmt, error) {
 		if s.Fun.Return == nil {
 			retType = ""
 		}
+		var res Stmt
 		if prog != nil {
 			prog.Funcs = append(prog.Funcs, &Function{Name: s.Fun.Name, Params: params, ParamTypes: ptypes, ReturnType: retType, Body: body})
+		} else {
+			lit := &FunLit{Params: params, ParamTypes: ptypes, ReturnType: retType, Body: body}
+			res = &LetStmt{Name: s.Fun.Name, Value: lit}
+		}
+		if res == nil {
 			return nil, nil
 		}
-		lit := &FunLit{Params: params, ParamTypes: ptypes, ReturnType: retType, Body: body}
-		return &LetStmt{Name: s.Fun.Name, Value: lit}, nil
+		return res, nil
 	case s.Return != nil:
 		var val Expr
 		if s.Return.Value != nil {
