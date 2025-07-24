@@ -47,6 +47,11 @@ func runRosettaTask(t *testing.T, name string) {
 	outDir := filepath.Join(root, "tests", "rosetta", "transpiler", "Prolog")
 	os.MkdirAll(outDir, 0o755)
 
+	outWant := filepath.Join(outDir, name+".out")
+	wantPath := filepath.Join(root, "tests", "rosetta", "x", "Mochi", name+".out")
+	os.Setenv("ROSETTA_OUT_PATH", wantPath)
+	defer os.Unsetenv("ROSETTA_OUT_PATH")
+
 	src := filepath.Join(root, "tests", "rosetta", "x", "Mochi", name+".mochi")
 	prog, err := parser.Parse(src)
 	if err != nil {
@@ -77,7 +82,6 @@ func runRosettaTask(t *testing.T, name string) {
 		t.Fatalf("%s: run: %v\n%s", name, err, string(out))
 	}
 	_ = os.Remove(filepath.Join(outDir, name+".error"))
-	outWant := filepath.Join(outDir, name+".out")
 	if shouldUpdateRosetta() {
 		_ = os.WriteFile(outWant, append(got, '\n'), 0o644)
 	} else if want, err := os.ReadFile(outWant); err == nil {

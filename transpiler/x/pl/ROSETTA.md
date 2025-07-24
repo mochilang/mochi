@@ -1,7 +1,7 @@
 # Rosetta Prolog Transpiler
 
-## Rosetta Golden Test Checklist (3/284)
-Last updated: 2025-07-24 07:45 +0700
+## Rosetta Golden Test Checklist (4/284)
+Last updated: 2025-07-24 18:38 +0700
 1. [x] `1 100-doors-2`
 2. [x] `2 100-doors-3`
 3. [x] `3 100-doors`
@@ -13,7 +13,7 @@ Last updated: 2025-07-24 07:45 +0700
 9. [ ] `9 24-game-solve`
 10. [ ] `10 24-game`
 11. [ ] `11 4-rings-or-4-squares-puzzle`
-12. [ ] `12 9-billion-names-of-god-the-integer`
+12. [x] `12 9-billion-names-of-god-the-integer`
 13. [ ] `13 99-bottles-of-beer-2`
 14. [ ] `14 99-bottles-of-beer`
 15. [ ] `15 DNS-query`
