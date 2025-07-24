@@ -26,6 +26,8 @@ import (
 
 var usesNow bool
 var usesLookupHost bool
+var usesNum bool
+var usesKeys bool
 var funcMutParams map[string][]bool
 
 // Program is a sequence of Swift statements.
@@ -33,6 +35,8 @@ type Program struct {
 	Stmts         []Stmt
 	UseNow        bool
 	UseLookupHost bool
+	UseNum        bool
+	UseKeys       bool
 }
 
 type Stmt interface{ emit(io.Writer) }
@@ -1270,6 +1274,19 @@ func (p *Program) Emit() []byte {
 		buf.WriteString("    return [[], NSNull()]\n")
 		buf.WriteString("}\n")
 	}
+	if p.UseNum {
+		buf.WriteString("func _num(_ v: Any) -> Double {\n")
+		buf.WriteString("    if let d = v as? Double { return d }\n")
+		buf.WriteString("    if let i = v as? Int { return Double(i) }\n")
+		buf.WriteString("    if let i = v as? Int64 { return Double(i) }\n")
+		buf.WriteString("    return 0\n")
+		buf.WriteString("}\n")
+	}
+	if p.UseKeys {
+		buf.WriteString("func _keys<K,V>(_ m: [K: V]) -> [K] {\n")
+		buf.WriteString("    Array(m.keys)\n")
+		buf.WriteString("}\n")
+	}
 	needJSON := false
 	for _, st := range p.Stmts {
 		if _, ok := st.(*SaveStmt); ok {
@@ -1300,6 +1317,8 @@ func (p *Program) Emit() []byte {
 func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 	usesNow = false
 	usesLookupHost = false
+	usesNum = false
+	usesKeys = false
 	funcMutParams = map[string][]bool{}
 	p := &Program{}
 	stmts, err := convertStmts(env, prog.Statements)
@@ -1309,6 +1328,8 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 	p.Stmts = stmts
 	p.UseNow = usesNow
 	p.UseLookupHost = usesLookupHost
+	p.UseNum = usesNum
+	p.UseKeys = usesKeys
 	return p, nil
 }
 
@@ -2272,10 +2293,11 @@ func convertExpr(env *types.Env, e *parser.Expr) (Expr, error) {
 				}
 			} else {
 				if types.IsAnyType(ltyp) && types.IsAnyType(rtyp) {
-					left = &CastExpr{Expr: left, Type: "Int!"}
-					right = &CastExpr{Expr: right, Type: "Int!"}
-					ltyp = types.IntType{}
-					rtyp = types.IntType{}
+					left = &CallExpr{Func: "_num", Args: []Expr{left}}
+					right = &CallExpr{Func: "_num", Args: []Expr{right}}
+					ltyp = types.FloatType{}
+					rtyp = types.FloatType{}
+					usesNum = true
 				} else {
 					if types.IsAnyType(ltyp) {
 						if types.IsIntType(rtyp) || types.IsInt64Type(rtyp) {
@@ -2412,6 +2434,15 @@ func convertPostfix(env *types.Env, p *parser.PostfixExpr) (Expr, error) {
 			return nil, err
 		}
 		return &BinaryExpr{Left: arg, Op: "in", Right: expr}, nil
+	}
+
+	// handle `.keys()` as `_keys(expr)`
+	if len(p.Ops) == 1 && p.Ops[0].Call != nil && len(p.Ops[0].Call.Args) == 0 && len(tail) > 0 && tail[len(tail)-1] == "keys" {
+		for _, f := range tail[:len(tail)-1] {
+			expr = &IndexExpr{Base: expr, Index: &LitExpr{Value: f, IsString: true}, Force: true}
+		}
+		usesKeys = true
+		return &CallExpr{Func: "_keys", Args: []Expr{expr}}, nil
 	}
 
 	if len(tail) > 0 {
