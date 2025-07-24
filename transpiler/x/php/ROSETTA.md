@@ -2,13 +2,13 @@
 
 Generated PHP code from Mochi Rosetta tasks lives in `tests/rosetta/transpiler/php`.
 
-Last updated: 2025-07-24 19:43 +0700
+Last updated: 2025-07-24 20:24 +0700
 
-## Checklist (117/284)
+## Checklist (119/284)
 - [x] 1 100-doors-2
 - [x] 2 100-doors-3
 - [x] 3 100-doors
-- [ ] 4 100-prisoners
+- [x] 4 100-prisoners
 - [x] 5 15-puzzle-game
 - [x] 6 15-puzzle-solver
 - [x] 7 2048
@@ -125,7 +125,7 @@ Last updated: 2025-07-24 19:43 +0700
 - [x] 118 bitmap-b-zier-curves-quadratic
 - [x] 119 bitmap-bresenhams-line-algorithm
 - [x] 120 bitmap-flood-fill
-- [ ] 121 bitmap-histogram
+- [x] 121 bitmap-histogram
 - [ ] 122 bitmap-midpoint-circle-algorithm
 - [ ] 123 bitmap-ppm-conversion-through-a-pipe
 - [ ] 124 bitmap-read-a-ppm-file
