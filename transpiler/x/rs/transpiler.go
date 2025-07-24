@@ -2057,7 +2057,10 @@ func compileForStmt(n *parser.ForStmt) (Stmt, error) {
 		if err != nil {
 			return nil, err
 		}
-		varTypes[n.Name] = "usize"
+		// Range loops operate on integers in Mochi, so keep the
+		// iterator variable as a signed integer to avoid numerous
+		// conversions when used in arithmetic expressions.
+		varTypes[n.Name] = "i64"
 	}
 	body := make([]Stmt, 0, len(n.Body))
 	for _, st := range n.Body {
@@ -2640,7 +2643,7 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 					t := inferType(args[0])
 					if strings.HasPrefix(t, "Vec<") {
 						elem := strings.TrimSuffix(strings.TrimPrefix(t, "Vec<"), ">")
-						if elem != "i64" && elem != "String" && elem != "bool" {
+						if elem != "i64" && elem != "String" && elem != "bool" && !strings.HasPrefix(elem, "Vec<") && !strings.HasPrefix(elem, "HashMap<") {
 							args[0] = &JoinExpr{List: args[0]}
 						} else {
 							fmtStr = "{:?}"
@@ -2777,9 +2780,24 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 					name = types.UniqueStructName("Map", curEnv, nil)
 					st.Name = name
 					curEnv.SetStruct(name, st)
+					vals := make([]Expr, len(p.Map.Items))
+					valTypes := make([]string, len(p.Map.Items))
+					for i, it := range p.Map.Items {
+						v, err := compileExpr(it.Value)
+						if err != nil {
+							return nil, err
+						}
+						vals[i] = v
+						valTypes[i] = inferType(v)
+					}
 					fields := make([]Param, len(st.Order))
 					for i, n := range st.Order {
-						fields[i] = Param{Name: n, Type: rustTypeFromType(st.Fields[n])}
+						rt := rustTypeFromType(st.Fields[n])
+						if rt == "i64" && valTypes[i] != "" && valTypes[i] != "i64" {
+							rt = valTypes[i]
+							st.Fields[n] = typeFromString(rt)
+						}
+						fields[i] = Param{Name: n, Type: rt}
 					}
 					typeDecls = append(typeDecls, &StructDecl{Name: name, Fields: fields})
 					structTypes[name] = st
@@ -3367,6 +3385,13 @@ func inferType(e Expr) string {
 				return strings.TrimSpace(vt)
 			}
 		}
+		if key, ok := literalStringExpr(ex.Index); ok {
+			if st, ok2 := structTypes[ct]; ok2 {
+				if ft, ok3 := st.Fields[key]; ok3 {
+					return rustTypeFromType(ft)
+				}
+			}
+		}
 		return "i64"
 	case *NameRef:
 		if t, ok := varTypes[ex.Name]; ok && t != "" {
@@ -3702,6 +3727,27 @@ func zeroValue(typ string) string {
 		}
 		return "Default::default()"
 	}
+}
+
+func typeFromString(typ string) types.Type {
+	switch typ {
+	case "i64":
+		return types.IntType{}
+	case "f64":
+		return types.FloatType{}
+	case "bool":
+		return types.BoolType{}
+	case "String":
+		return types.StringType{}
+	}
+	if strings.HasPrefix(typ, "Vec<") && strings.HasSuffix(typ, ">") {
+		inner := typ[4 : len(typ)-1]
+		return types.ListType{Elem: typeFromString(inner)}
+	}
+	if st, ok := structTypes[typ]; ok {
+		return st
+	}
+	return types.IntType{}
 }
 
 func dataExprFromFile(path, format string, typ *parser.TypeRef) (Expr, error) {

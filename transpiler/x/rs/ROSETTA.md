@@ -13,7 +13,7 @@ Last updated: 2025-07-24 18:38 +0700
   8. [x] 21-game (8)
   9. [x] 24-game-solve (9)
  10. [ ] 24-game (10)
- 11. [ ] 4-rings-or-4-squares-puzzle (11)
+ 11. [x] 4-rings-or-4-squares-puzzle (11)
  12. [ ] 9-billion-names-of-god-the-integer (12)
  13. [ ] 99-bottles-of-beer-2 (13)
  14. [ ] 99-bottles-of-beer (14)
