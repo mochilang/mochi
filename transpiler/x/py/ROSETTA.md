@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Python code from programs in `tests/rosetta/x/Mochi` lives in `tests/rosetta/transpiler/Python`.
-Last updated: 2025-07-24 20:10 GMT+7
+Last updated: 2025-07-25 00:34 GMT+7
 
-## Rosetta Golden Test Checklist (259/284)
+## Rosetta Golden Test Checklist (268/284)
 1. [x] 100-doors-2
 2. [x] 100-doors-3
 3. [x] 100-doors
@@ -248,7 +248,7 @@ Last updated: 2025-07-24 20:10 GMT+7
 241. [x] count-in-factors
 242. [x] count-in-octal-1
 243. [x] count-in-octal-2
-244. [ ] count-in-octal-3
+244. [x] count-in-octal-3
 245. [ ] count-in-octal-4
 246. [x] count-occurrences-of-a-substring
 247. [x] count-the-coins-1
@@ -277,7 +277,7 @@ Last updated: 2025-07-24 20:10 GMT+7
 270. [x] cyclops-numbers
 271. [x] damm-algorithm
 272. [x] date-format
-273. [ ] date-manipulation
+273. [x] date-manipulation
 274. [x] day-of-the-week
 275. [x] de-bruijn-sequences
 276. [ ] deal-cards-for-freecell
