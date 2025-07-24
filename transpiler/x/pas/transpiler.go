@@ -109,6 +109,7 @@ type Program struct {
 	Vars          []VarDecl
 	Records       []RecordDef
 	ArrayAliases  map[string]string
+	UseFGL        bool
 	Stmts         []Stmt
 	UseSysUtils   bool
 	UseMath       bool
@@ -503,6 +504,21 @@ func (c *ContainsExpr) emit(w io.Writer) {
 
 func (c *ContainsExpr) isBool() bool { return true }
 
+// MapContainsExpr checks whether a map contains a key.
+type MapContainsExpr struct {
+	Map Expr
+	Key Expr
+}
+
+func (m *MapContainsExpr) emit(w io.Writer) {
+	m.Map.emit(w)
+	io.WriteString(w, ".IndexOf(")
+	m.Key.emit(w)
+	io.WriteString(w, ") <> -1")
+}
+
+func (m *MapContainsExpr) isBool() bool { return true }
+
 type IndexExpr struct {
 	Target Expr
 	Index  Expr
@@ -677,6 +693,25 @@ func (d *DoubleIndexAssignStmt) emit(w io.Writer) {
 	io.WriteString(w, ";")
 }
 
+// MapAssignStmt assigns a value for a given key in a map.
+type MapAssignStmt struct {
+	Name string
+	Key  Expr
+	Expr Expr
+}
+
+func (m *MapAssignStmt) emit(w io.Writer) {
+	fmt.Fprintf(w, "%s.AddOrSetData(", m.Name)
+	if m.Key != nil {
+		m.Key.emit(w)
+	}
+	io.WriteString(w, ", ")
+	if m.Expr != nil {
+		m.Expr.emit(w)
+	}
+	io.WriteString(w, ");")
+}
+
 // ExprStmt allows a bare expression as a statement.
 type ExprStmt struct{ Expr Expr }
 
@@ -769,6 +804,9 @@ func (p *Program) Emit() []byte {
 	}
 	if p.UseMath {
 		uses = append(uses, "Math")
+	}
+	if p.UseFGL {
+		uses = append(uses, "fgl")
 	}
 	if len(uses) > 0 {
 		fmt.Fprintf(&buf, "uses %s;\n", strings.Join(uses, ", "))
@@ -984,6 +1022,12 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 				vd.Type = "array of string"
 			}
 			if st.Let.Value != nil {
+				if isEmptyMapLiteral(st.Let.Value) && strings.HasPrefix(vd.Type, "specialize TFPGMap") {
+					vd.Init = &CallExpr{Name: vd.Type + ".Create"}
+					pr.Vars = append(pr.Vars, vd)
+					varTypes[vd.Name] = vd.Type
+					continue
+				}
 				if call := callFromExpr(st.Let.Value); call != nil && call.Func == "exists" && len(call.Args) == 1 {
 					if q := queryFromExpr(call.Args[0]); q != nil {
 						tmp := fmt.Sprintf("tmp%d", len(pr.Vars))
@@ -1113,6 +1157,12 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 				vd.Type = typeFromRef(st.Var.Type)
 			}
 			if st.Var.Value != nil {
+				if isEmptyMapLiteral(st.Var.Value) && strings.HasPrefix(vd.Type, "specialize TFPGMap") {
+					vd.Init = &CallExpr{Name: vd.Type + ".Create"}
+					pr.Vars = append(pr.Vars, vd)
+					varTypes[vd.Name] = vd.Type
+					continue
+				}
 				ex, err := convertExpr(env, st.Var.Value)
 				if err != nil {
 					return nil, err
@@ -1172,7 +1222,11 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 				if err != nil {
 					return nil, err
 				}
-				pr.Stmts = append(pr.Stmts, &IndexAssignStmt{Name: name, Index: idx, Expr: ex})
+				if t, ok := varTypes[name]; ok && strings.HasPrefix(t, "specialize TFPGMap") {
+					pr.Stmts = append(pr.Stmts, &MapAssignStmt{Name: name, Key: idx, Expr: ex})
+				} else {
+					pr.Stmts = append(pr.Stmts, &IndexAssignStmt{Name: name, Index: idx, Expr: ex})
+				}
 				break
 			}
 			if len(st.Assign.Index) == 2 &&
@@ -1420,7 +1474,11 @@ func convertBody(env *types.Env, body []*parser.Statement, varTypes map[string]s
 				if err != nil {
 					return nil, err
 				}
-				out = append(out, &IndexAssignStmt{Name: name, Index: idx, Expr: ex})
+				if t, ok := varTypes[name]; ok && strings.HasPrefix(t, "specialize TFPGMap") {
+					out = append(out, &MapAssignStmt{Name: name, Key: idx, Expr: ex})
+				} else {
+					out = append(out, &IndexAssignStmt{Name: name, Index: idx, Expr: ex})
+				}
 				break
 			}
 			if len(st.Assign.Index) == 2 &&
@@ -1485,6 +1543,16 @@ func convertBody(env *types.Env, body []*parser.Statement, varTypes map[string]s
 				vd.Type = typeFromRef(st.Var.Type)
 			}
 			if st.Var.Value != nil {
+				if isEmptyMapLiteral(st.Var.Value) && strings.HasPrefix(vd.Type, "specialize TFPGMap") {
+					vd.Init = &CallExpr{Name: vd.Type + ".Create"}
+					if !hasVar(vd.Name) {
+						currProg.Vars = append(currProg.Vars, vd)
+					}
+					if vd.Type != "" {
+						varTypes[vd.Name] = vd.Type
+					}
+					continue
+				}
 				ex, err := convertExpr(env, st.Var.Value)
 				if err != nil {
 					return nil, err
@@ -1732,6 +1800,12 @@ func convertExpr(env *types.Env, e *parser.Expr) (Expr, error) {
 				exprs = append(exprs, &ContainsExpr{Collection: right, Value: left, Kind: "list"})
 				return nil
 			}
+			if strings.HasPrefix(rt, "specialize TFPGMap") {
+				currProg.UseFGL = true
+				be = nil
+				exprs = append(exprs, &MapContainsExpr{Map: right, Key: left})
+				return nil
+			}
 			be = &BinaryExpr{Op: "in", Left: left, Right: right, Bool: true}
 		default:
 			return fmt.Errorf("unsupported op")
@@ -1780,6 +1854,11 @@ func mapLitFromExpr(e *parser.Expr) *parser.MapLiteral {
 		return pf.Target.Map
 	}
 	return nil
+}
+
+func isEmptyMapLiteral(e *parser.Expr) bool {
+	ml := mapLitFromExpr(e)
+	return ml != nil && len(ml.Items) == 0
 }
 
 func queryFromExpr(e *parser.Expr) *parser.QueryExpr {
@@ -2796,6 +2875,12 @@ func typeFromRef(tr *parser.TypeRef) string {
 		}
 		return "array of " + elem
 	}
+	if tr.Generic != nil && tr.Generic.Name == "map" && len(tr.Generic.Args) == 2 {
+		key := typeFromRef(tr.Generic.Args[0])
+		val := typeFromRef(tr.Generic.Args[1])
+		currProg.UseFGL = true
+		return fmt.Sprintf("specialize TFPGMap<%s, %s>", key, val)
+	}
 	if tr.Struct != nil {
 		var fields []Field
 		for _, f := range tr.Struct.Fields {
@@ -3554,6 +3639,8 @@ func usesSysUtilsExpr(e Expr) bool {
 		return usesSysUtilsExpr(v.Expr)
 	case *ContainsExpr:
 		return usesSysUtilsExpr(v.Collection) || usesSysUtilsExpr(v.Value)
+	case *MapContainsExpr:
+		return usesSysUtilsExpr(v.Map) || usesSysUtilsExpr(v.Key)
 	case *IndexExpr:
 		return usesSysUtilsExpr(v.Target) || usesSysUtilsExpr(v.Index)
 	case *SliceExpr:
@@ -3595,6 +3682,8 @@ func usesSysUtilsStmt(s Stmt) bool {
 		return usesSysUtilsExpr(v.Index) || usesSysUtilsExpr(v.Expr)
 	case *DoubleIndexAssignStmt:
 		return usesSysUtilsExpr(v.Index1) || usesSysUtilsExpr(v.Index2) || usesSysUtilsExpr(v.Expr)
+	case *MapAssignStmt:
+		return usesSysUtilsExpr(v.Key) || usesSysUtilsExpr(v.Expr)
 	case *ExprStmt:
 		return usesSysUtilsExpr(v.Expr)
 	case *SetStmt:
