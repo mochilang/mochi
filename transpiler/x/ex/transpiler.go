@@ -1399,9 +1399,14 @@ type CastExpr struct {
 func (c *CastExpr) emit(w io.Writer) {
 	switch c.Type {
 	case "int":
-		io.WriteString(w, "String.to_integer(")
-		c.Expr.emit(w)
-		io.WriteString(w, ")")
+		switch c.Expr.(type) {
+		case *StringLit:
+			io.WriteString(w, "String.to_integer(")
+			c.Expr.emit(w)
+			io.WriteString(w, ")")
+		default:
+			c.Expr.emit(w)
+		}
 	default:
 		c.Expr.emit(w)
 	}
@@ -2930,7 +2935,7 @@ func compilePrimary(p *parser.Primary, env *types.Env) (Expr, error) {
 				t := types.TypeOfExprBasic(p.Call.Args[0], env)
 				if _, ok := t.(types.MapType); ok {
 					name = "map_size"
-				} else if _, ok := t.(types.StringType); ok || (!types.IsMapType(t) && !types.IsListType(t)) {
+				} else if _, ok := t.(types.StringType); ok {
 					name = "String.length"
 				}
 			}
@@ -2977,7 +2982,7 @@ func compilePrimary(p *parser.Primary, env *types.Env) (Expr, error) {
 			}
 		case "substring":
 			if len(args) == 3 {
-				diff := &BinaryExpr{Left: args[2], Op: "-", Right: args[1]}
+				diff := &BinaryExpr{Left: args[2], Op: "-", Right: &GroupExpr{Expr: args[1]}}
 				return &CallExpr{Func: "String.slice", Args: []Expr{args[0], args[1], diff}}, nil
 			}
 		case "exists":
