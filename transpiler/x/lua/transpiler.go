@@ -142,8 +142,9 @@ end
 // Program represents a simple Lua program consisting of a sequence of
 // statements.
 type Program struct {
-	Stmts []Stmt
-	Env   *types.Env
+	Stmts   []Stmt
+	Env     *types.Env
+	HasMain bool
 }
 
 type Stmt interface{ emit(io.Writer) }
@@ -420,6 +421,16 @@ func (c *CallExpr) emit(w io.Writer) {
 			c.Args[0].emit(w)
 		}
 		io.WriteString(w, ")")
+	case "pow":
+		io.WriteString(w, "math.pow(")
+		if len(c.Args) > 0 {
+			c.Args[0].emit(w)
+		}
+		io.WriteString(w, ", ")
+		if len(c.Args) > 1 {
+			c.Args[1].emit(w)
+		}
+		io.WriteString(w, ")")
 	case "min":
 		io.WriteString(w, "(function(lst)\n  local m = nil\n  for _, v in ipairs(lst) do\n    if m == nil or v < m then\n      m = v\n    end\n  end\n  return m\nend)(")
 		if len(c.Args) > 0 {
@@ -445,7 +456,7 @@ func (c *CallExpr) emit(w io.Writer) {
 		}
 		io.WriteString(w, ")")
 	case "append":
-		io.WriteString(w, "(function(lst, item)\n  local res = {table.unpack(lst)}\n  table.insert(res, item)\n  return res\nend)(")
+		io.WriteString(w, "(function(lst, item)\n  lst[#lst+1] = item\n  return lst\nend)(")
 		if len(c.Args) > 0 {
 			c.Args[0].emit(w)
 		}
@@ -2217,6 +2228,9 @@ func Emit(p *Program) []byte {
 		st.emit(&b)
 		b.WriteString(";\n")
 	}
+	if p.HasMain {
+		b.WriteString("main();\n")
+	}
 	currentEnv = prevEnv
 	return formatLua(b.Bytes())
 }
@@ -3328,6 +3342,9 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 		}
 		if s != nil {
 			lp.Stmts = append(lp.Stmts, s)
+			if fs, ok := s.(*FunStmt); ok && fs.Name == "main" {
+				lp.HasMain = true
+			}
 		}
 	}
 	currentEnv = nil
