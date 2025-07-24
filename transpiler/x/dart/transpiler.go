@@ -724,6 +724,42 @@ func (b *BinaryExpr) emit(w io.Writer) error {
 	} else if rt != lt {
 		target = lt
 	}
+	if b.Op == "+" && ((lt == "String" && rt == "List<String>") || (lt == "List<String>" && rt == "String")) {
+		if lt == "List<String>" {
+			if _, err := io.WriteString(w, "("); err != nil {
+				return err
+			}
+			if err := b.Left.emit(w); err != nil {
+				return err
+			}
+			if _, err := io.WriteString(w, ").join()"); err != nil {
+				return err
+			}
+		} else {
+			if err := b.Left.emit(w); err != nil {
+				return err
+			}
+		}
+		if _, err := io.WriteString(w, " + "); err != nil {
+			return err
+		}
+		if rt == "List<String>" {
+			if _, err := io.WriteString(w, "("); err != nil {
+				return err
+			}
+			if err := b.Right.emit(w); err != nil {
+				return err
+			}
+			if _, err := io.WriteString(w, ").join()"); err != nil {
+				return err
+			}
+		} else {
+			if err := b.Right.emit(w); err != nil {
+				return err
+			}
+		}
+		return nil
+	}
 	left := func() error { return emitWithBigIntCast(w, b.Left, lt, target) }
 	right := func() error { return emitWithBigIntCast(w, b.Right, rt, target) }
 	if (b.Op == "<" || b.Op == "<=" || b.Op == ">" || b.Op == ">=") && lt == "String" && rt == "String" {
@@ -748,6 +784,33 @@ func (b *BinaryExpr) emit(w io.Writer) error {
 			cmp = " >= 0"
 		}
 		_, err := io.WriteString(w, ")"+cmp)
+		return err
+	}
+	if (b.Op == "<" || b.Op == "<=" || b.Op == ">" || b.Op == ">=") && (lt == "dynamic" || rt == "dynamic") {
+		if err := b.Left.emit(w); err != nil {
+			return err
+		}
+		if _, err := io.WriteString(w, ".toString().compareTo("); err != nil {
+			return err
+		}
+		if err := b.Right.emit(w); err != nil {
+			return err
+		}
+		if _, err := io.WriteString(w, ".toString())"); err != nil {
+			return err
+		}
+		var cmp string
+		switch b.Op {
+		case "<":
+			cmp = " < 0"
+		case "<=":
+			cmp = " <= 0"
+		case ">":
+			cmp = " > 0"
+		case ">=":
+			cmp = " >= 0"
+		}
+		_, err := io.WriteString(w, cmp)
 		return err
 	}
 	lp := precedence(b.Left)
@@ -2671,6 +2734,8 @@ func inferType(e Expr) string {
 		return "String"
 	case *ValuesExpr:
 		return "List<dynamic>"
+	case *NotNilExpr:
+		return inferType(ex.X)
 	case *StrExpr, *FormatList:
 		return "String"
 	default:
