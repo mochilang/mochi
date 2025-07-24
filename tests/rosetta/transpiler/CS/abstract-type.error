@@ -1,0 +1,7 @@
+dotnet run: exit status 1
+/tmp/TestCSTranspiler_Rosetta_Golden668617821/001/Program.cs(48,16): error CS0266: Cannot implicitly convert type 'object' to 'string'. An explicit conversion exists (are you missing a cast?) [/tmp/TestCSTranspiler_Rosetta_Golden668617821/001/app.csproj]
+/tmp/TestCSTranspiler_Rosetta_Golden668617821/001/Program.cs(52,16): error CS0266: Cannot implicitly convert type 'object' to 'string'. An explicit conversion exists (are you missing a cast?) [/tmp/TestCSTranspiler_Rosetta_Golden668617821/001/app.csproj]
+/tmp/TestCSTranspiler_Rosetta_Golden668617821/001/Program.cs(56,97): error CS0128: A local variable or function named '_' is already defined in this scope [/tmp/TestCSTranspiler_Rosetta_Golden668617821/001/app.csproj]
+/tmp/TestCSTranspiler_Rosetta_Golden668617821/001/Program.cs(56,177): error CS0128: A local variable or function named '_' is already defined in this scope [/tmp/TestCSTranspiler_Rosetta_Golden668617821/001/app.csproj]
+
+The build failed. Fix the build errors and run again.
