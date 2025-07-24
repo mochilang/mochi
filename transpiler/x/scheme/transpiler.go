@@ -1867,9 +1867,9 @@ func makeBinary(op string, left, right Node) Node {
 	case "in":
 		return &List{Elems: []Node{
 			Symbol("cond"),
-			&List{Elems: []Node{&List{Elems: []Node{Symbol("string?"), right}}, &List{Elems: []Node{Symbol("if"), &List{Elems: []Node{Symbol("string-contains"), right, left}}, StringLit("true"), StringLit("false")}}}},
-			&List{Elems: []Node{&List{Elems: []Node{Symbol("hash-table?"), right}}, &List{Elems: []Node{Symbol("if"), &List{Elems: []Node{Symbol("hash-table-exists?"), right, left}}, StringLit("true"), StringLit("false")}}}},
-			&List{Elems: []Node{Symbol("else"), &List{Elems: []Node{Symbol("if"), &List{Elems: []Node{Symbol("member"), left, right}}, StringLit("true"), StringLit("false")}}}},
+			&List{Elems: []Node{&List{Elems: []Node{Symbol("string?"), right}}, &List{Elems: []Node{Symbol("if"), &List{Elems: []Node{Symbol("string-contains"), right, left}}, BoolLit(true), BoolLit(false)}}}},
+			&List{Elems: []Node{&List{Elems: []Node{Symbol("hash-table?"), right}}, &List{Elems: []Node{Symbol("if"), &List{Elems: []Node{Symbol("hash-table-exists?"), right, left}}, BoolLit(true), BoolLit(false)}}}},
+			&List{Elems: []Node{Symbol("else"), &List{Elems: []Node{Symbol("if"), &List{Elems: []Node{Symbol("member"), left, right}}, BoolLit(true), BoolLit(false)}}}},
 		}}
 	case "union":
 		return &List{Elems: []Node{Symbol("delete-duplicates"), &List{Elems: []Node{Symbol("append"), left, right}}}}
