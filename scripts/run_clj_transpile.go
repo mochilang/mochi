@@ -1,3 +1,5 @@
+//go:build archive && slow
+
 package main
 
 import (
