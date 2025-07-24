@@ -8,6 +8,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"math"
 	"os"
 	"path/filepath"
 	"reflect"
@@ -735,9 +736,18 @@ type StringLit struct{ Value string }
 
 func (s *StringLit) emit(w io.Writer) { fmt.Fprintf(w, "%q", s.Value) }
 
-type IntLit struct{ Value int }
+type IntLit struct {
+	Value int64
+	Long  bool
+}
 
-func (i *IntLit) emit(w io.Writer) { fmt.Fprintf(w, "%d", i.Value) }
+func (i *IntLit) emit(w io.Writer) {
+	if i.Long {
+		fmt.Fprintf(w, "%dL", i.Value)
+	} else {
+		fmt.Fprintf(w, "%d", i.Value)
+	}
+}
 
 type BoolLit struct{ Value bool }
 
@@ -842,11 +852,17 @@ type IndexExpr struct {
 	Index     Expr
 	Type      string
 	Container string
+	ForceMap  bool
 }
 
 func (idx *IndexExpr) emit(w io.Writer) {
 	if idx.Container == "Any" {
-		if prev, ok := idx.Value.(*IndexExpr); ok && strings.HasPrefix(prev.Container, "Map[") {
+		if (idx.ForceMap) || (func() bool {
+			if prev, ok := idx.Value.(*IndexExpr); ok {
+				return strings.HasPrefix(prev.Container, "Map[")
+			}
+			return false
+		}()) {
 			idx.Value.emit(w)
 			if idx.Type != "" {
 				fmt.Fprintf(w, ".asInstanceOf[Map[String,%s]](", idx.Type)
@@ -1687,37 +1703,41 @@ func convertBinary(b *parser.BinaryExpr, env *types.Env) (Expr, error) {
 					return
 				}
 				if lt != "Any" && lt != "" && rt == "Any" {
-					right = &CastExpr{Value: right, Type: strings.ToLower(lt)}
+					right = &CastExpr{Value: right, Type: lt}
 				}
 				if rt != "Any" && rt != "" && lt == "Any" {
-					left = &CastExpr{Value: left, Type: strings.ToLower(rt)}
+					left = &CastExpr{Value: left, Type: rt}
 				}
 				if (lt == "Any" || lt == "") && (rt == "Any" || rt == "") {
 					if op == "+" {
-						left = &CastExpr{Value: left, Type: "string"}
-						right = &CastExpr{Value: right, Type: "string"}
+						left = &CastExpr{Value: left, Type: "Int"}
+						right = &CastExpr{Value: right, Type: "Int"}
 					} else {
-						left = &CastExpr{Value: left, Type: "float"}
-						right = &CastExpr{Value: right, Type: "float"}
+						left = &CastExpr{Value: left, Type: "Double"}
+						right = &CastExpr{Value: right, Type: "Double"}
 					}
 				}
 			} else if op == "&&" || op == "||" {
 				if inferTypeWithEnv(left, env) != "Boolean" {
-					left = &CastExpr{Value: left, Type: "bool"}
+					left = &CastExpr{Value: left, Type: "Boolean"}
 				}
 				if inferTypeWithEnv(right, env) != "Boolean" {
-					right = &CastExpr{Value: right, Type: "bool"}
+					right = &CastExpr{Value: right, Type: "Boolean"}
 				}
 			} else if op == ">" || op == "<" || op == ">=" || op == "<=" {
 				lt := inferTypeWithEnv(left, env)
 				rt := inferTypeWithEnv(right, env)
 				if lt == "String" && (rt == "Any" || rt == "") {
-					right = &CastExpr{Value: right, Type: "string"}
+					right = &CastExpr{Value: right, Type: "String"}
 				} else if rt == "String" && (lt == "Any" || lt == "") {
-					left = &CastExpr{Value: left, Type: "string"}
+					left = &CastExpr{Value: left, Type: "String"}
+				} else if lt == "Int" && (rt == "Any" || rt == "") {
+					right = &CastExpr{Value: right, Type: "Int"}
+				} else if rt == "Int" && (lt == "Any" || lt == "") {
+					left = &CastExpr{Value: left, Type: "Int"}
 				} else if (lt == "Any" || lt == "") && (rt == "Any" || rt == "") {
-					left = &CastExpr{Value: left, Type: "string"}
-					right = &CastExpr{Value: right, Type: "string"}
+					left = &CastExpr{Value: left, Type: "String"}
+					right = &CastExpr{Value: right, Type: "String"}
 				}
 			}
 			ex = &BinaryExpr{Left: left, Op: op, Right: right}
@@ -1775,12 +1795,15 @@ func applyIndexOps(base Expr, ops []*parser.IndexOp, env *types.Env) (Expr, erro
 			return nil, err
 		}
 		ct := inferTypeWithEnv(base, env)
+		forceMap := false
 		if ct == "" || ct == "Any" {
 			if iePrev, ok := base.(*IndexExpr); ok {
 				ct = iePrev.Type
+			} else if _, ok := idx.(*StringLit); ok {
+				forceMap = true
 			}
 		}
-		ie := &IndexExpr{Value: base, Index: idx, Container: ct}
+		ie := &IndexExpr{Value: base, Index: idx, Container: ct, ForceMap: forceMap}
 		// assignment targets should not emit type casts
 		ie.Type = ""
 		base = ie
@@ -2076,12 +2099,16 @@ func convertPostfix(pf *parser.PostfixExpr, env *types.Env) (Expr, error) {
 					return nil, err
 				}
 				ct := inferTypeWithEnv(expr, env)
+				forceMap := false
 				if ct == "" || ct == "Any" {
 					if iePrev, ok := expr.(*IndexExpr); ok {
 						ct = iePrev.Type
+					} else if _, ok := start.(*StringLit); ok {
+						// assume map when indexing by string
+						forceMap = true
 					}
 				}
-				ie := &IndexExpr{Value: expr, Index: start, Container: ct}
+				ie := &IndexExpr{Value: expr, Index: start, Container: ct, ForceMap: forceMap}
 				ie.Type = elementType(ct)
 				expr = ie
 			}
@@ -2096,6 +2123,10 @@ func convertPostfix(pf *parser.PostfixExpr, env *types.Env) (Expr, error) {
 				args[j] = ex
 			}
 			skipCall := false
+			if fe, ok := expr.(*FieldExpr); ok && fe.Name == "get" && len(args) == 2 {
+				expr = &CallExpr{Fn: &FieldExpr{Receiver: fe.Receiver, Name: "getOrElse"}, Args: args}
+				skipCall = true
+			}
 			if fe, ok := expr.(*FieldExpr); ok {
 				if n, ok2 := fe.Receiver.(*Name); ok2 {
 					if kind, ok3 := builtinAliases[n.Name]; ok3 {
@@ -2430,10 +2461,22 @@ func convertCall(c *parser.CallExpr, env *types.Env) (Expr, error) {
 			if len(args) == len(fn.Params) {
 				for i, p := range fn.Params {
 					target := toScalaType(p.Type)
+					if target == "" || target == "Any" {
+						continue
+					}
 					if strings.HasPrefix(target, "Map[") {
 						if ie, ok := args[i].(*IndexExpr); ok && (ie.Type == "" || ie.Type == "Any") {
 							args[i] = &FieldExpr{Receiver: ie, Name: "asInstanceOf[" + target + "]"}
+							continue
 						}
+					}
+					if ie, ok := args[i].(*IndexExpr); ok && (ie.Type == "" || ie.Type == "Any") {
+						args[i] = &CastExpr{Value: ie, Type: target}
+						continue
+					}
+					at := inferTypeWithEnv(args[i], env)
+					if at != target {
+						args[i] = &CastExpr{Value: args[i], Type: target}
 					}
 				}
 			}
@@ -2448,7 +2491,11 @@ func convertLiteral(l *parser.Literal) (Expr, error) {
 		return &StringLit{Value: *l.Str}, nil
 	}
 	if l.Int != nil {
-		return &IntLit{Value: int(*l.Int)}, nil
+		v := int64(*l.Int)
+		if v > math.MaxInt32 || v < math.MinInt32 {
+			return &IntLit{Value: v, Long: true}, nil
+		}
+		return &IntLit{Value: v}, nil
 	}
 	if l.Float != nil {
 		return &FloatLit{Value: *l.Float}, nil
@@ -3404,6 +3451,9 @@ func elementType(container string) string {
 func inferType(e Expr) string {
 	switch ex := e.(type) {
 	case *IntLit:
+		if ex.Long {
+			return "Long"
+		}
 		return "Int"
 	case *StringLit:
 		return "String"
@@ -3924,12 +3974,12 @@ func valueToExpr(v interface{}, typ *parser.TypeRef, env *types.Env) Expr {
 	case bool:
 		return &BoolLit{Value: val}
 	case float64:
-		if float64(int(val)) == val {
-			return &IntLit{Value: int(val)}
+		if float64(int64(val)) == val {
+			return &IntLit{Value: int64(val)}
 		}
 		return &FloatLit{Value: val}
 	case int, int64:
-		return &IntLit{Value: int(reflect.ValueOf(val).Int())}
+		return &IntLit{Value: reflect.ValueOf(val).Int()}
 	case nil:
 		return &StringLit{Value: ""}
 	default:

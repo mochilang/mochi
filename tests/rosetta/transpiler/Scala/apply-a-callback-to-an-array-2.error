@@ -1,0 +1,35 @@
+exit status 1
+1.0
+4.0
+9.0
+16.0
+25.0
+java.lang.ClassCastException: class java.lang.Double cannot be cast to class java.lang.Integer (java.lang.Double and java.lang.Integer are in module java.base of loader 'bootstrap')
+	at scala.runtime.BoxesRunTime.unboxToInt(BoxesRunTime.java:101)
+	at scala.Function1$class.apply$mcII$sp(Function1.scala:36)
+	at scala.runtime.AbstractFunction1.apply$mcII$sp(AbstractFunction1.scala:12)
+	at Main$$anonfun$Map$1.apply$mcVI$sp(apply-a-callback-to-an-array-2.scala:13)
+	at Main$$anonfun$Map$1.apply(apply-a-callback-to-an-array-2.scala:12)
+	at Main$$anonfun$Map$1.apply(apply-a-callback-to-an-array-2.scala:12)
+	at scala.collection.mutable.ResizableArray$class.foreach(ResizableArray.scala:59)
+	at scala.collection.mutable.ArrayBuffer.foreach(ArrayBuffer.scala:48)
+	at Main$.Map(apply-a-callback-to-an-array-2.scala:12)
+	at Main$.main(apply-a-callback-to-an-array-2.scala:21)
+	at Main$.main(apply-a-callback-to-an-array-2.scala:25)
+	at Main.main(apply-a-callback-to-an-array-2.scala)
+	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:103)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:580)
+	at scala.reflect.internal.util.ScalaClassLoader$$anonfun$run$1.apply(ScalaClassLoader.scala:70)
+	at scala.reflect.internal.util.ScalaClassLoader$class.asContext(ScalaClassLoader.scala:31)
+	at scala.reflect.internal.util.ScalaClassLoader$URLClassLoader.asContext(ScalaClassLoader.scala:101)
+	at scala.reflect.internal.util.ScalaClassLoader$class.run(ScalaClassLoader.scala:70)
+	at scala.reflect.internal.util.ScalaClassLoader$URLClassLoader.run(ScalaClassLoader.scala:101)
+	at scala.tools.nsc.CommonRunner$class.run(ObjectRunner.scala:22)
+	at scala.tools.nsc.ObjectRunner$.run(ObjectRunner.scala:39)
+	at scala.tools.nsc.CommonRunner$class.runAndCatch(ObjectRunner.scala:29)
+	at scala.tools.nsc.ObjectRunner$.runAndCatch(ObjectRunner.scala:39)
+	at scala.tools.nsc.MainGenericRunner.runTarget$1(MainGenericRunner.scala:65)
+	at scala.tools.nsc.MainGenericRunner.run$1(MainGenericRunner.scala:87)
+	at scala.tools.nsc.MainGenericRunner.process(MainGenericRunner.scala:98)
+	at scala.tools.nsc.MainGenericRunner$.main(MainGenericRunner.scala:103)
+	at scala.tools.nsc.MainGenericRunner.main(MainGenericRunner.scala)
