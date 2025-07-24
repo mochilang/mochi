@@ -485,6 +485,7 @@ func (p *Program) write(w io.Writer) {
 	p.addInclude("<string>")
 	p.addInclude("<sstream>")
 	p.addInclude("<iomanip>")
+	p.addInclude("<cmath>")
 	p.addInclude("<optional>")
 	p.addInclude("<vector>")
 	if p.UseNow {
@@ -877,6 +878,9 @@ func (m *MapLit) emit(w io.Writer) {
 	if len(m.Keys) == 0 {
 		io.WriteString(w, "{}")
 		return
+	}
+	if m.ValueType == "std::any" && currentProgram != nil {
+		currentProgram.addInclude("<any>")
 	}
 	fmt.Fprintf(w, "std::map<%s, %s>{", m.KeyType, m.ValueType)
 	for i := range m.Keys {
@@ -3813,6 +3817,9 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 			}
 			vt = "std::any"
 		}
+		if currentProgram != nil && vt == "std::any" {
+			currentProgram.addInclude("<any>")
+		}
 		keys := make([]Expr, len(p.Map.Items))
 		vals := make([]Expr, len(p.Map.Items))
 		for i, it := range p.Map.Items {
@@ -4794,6 +4801,11 @@ func cppType(t string) string {
 		return "std::any"
 	case "string":
 		return "std::string"
+	case "bigint":
+		if currentProgram != nil {
+			currentProgram.addInclude("<boost/multiprecision/cpp_int.hpp>")
+		}
+		return "boost::multiprecision::cpp_int"
 	}
 	if strings.HasPrefix(t, "list<") && strings.HasSuffix(t, ">") {
 		elem := strings.TrimSuffix(strings.TrimPrefix(t, "list<"), ">")
@@ -4828,6 +4840,11 @@ func cppTypeFrom(tp types.Type) string {
 		return "int"
 	case types.Int64Type:
 		return "int64_t"
+	case types.BigIntType:
+		if currentProgram != nil {
+			currentProgram.addInclude("<boost/multiprecision/cpp_int.hpp>")
+		}
+		return "boost::multiprecision::cpp_int"
 	case types.FloatType:
 		return "double"
 	case types.BoolType:
@@ -5045,6 +5062,10 @@ func exprType(e Expr) string {
 		return "bool"
 	case *StringLit:
 		return "std::string"
+	case *StrExpr:
+		return "std::string"
+	case *CastExpr:
+		return v.Type
 	case *VarRef:
 		if v.Name == "nil" {
 			return "std::any"
