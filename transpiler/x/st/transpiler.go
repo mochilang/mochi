@@ -74,6 +74,8 @@ var (
 	currentProg       *Program
 	inputLines        []string
 	inputIndex        int
+	loopLimit         = 1000000
+	loopCount         int
 )
 
 type breakErr struct{}
@@ -349,6 +351,11 @@ func emitJSON(v value) {
 }
 
 func escape(s string) string { return strings.ReplaceAll(s, "'", "''") }
+
+func incLoop() bool {
+	loopCount++
+	return loopCount > loopLimit
+}
 
 func zeroValue(t *parser.TypeRef) value {
 	if t == nil || t.Simple == nil {
@@ -1774,6 +1781,9 @@ func evalFunction(fn *parser.FunStmt, args []value, captured map[string]value) (
 			}
 		case st.While != nil:
 			for {
+				if incLoop() {
+					break
+				}
 				cond, err := evalExpr(st.While.Cond, vars)
 				if err != nil {
 					return err
@@ -1831,6 +1841,9 @@ func evalFunction(fn *parser.FunStmt, args []value, captured map[string]value) (
 				}
 			}
 			for _, it := range items {
+				if incLoop() {
+					break
+				}
 				vars[st.For.Name] = it
 				for _, b := range st.For.Body {
 					if err := process(b); err != nil {
@@ -2673,6 +2686,7 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	netAliases = map[string]bool{}
 	inputLines = nil
 	inputIndex = 0
+	loopCount = 0
 	if prog != nil {
 		inPath := strings.TrimSuffix(prog.Pos.Filename, ".mochi") + ".in"
 		if data, err := os.ReadFile(inPath); err == nil {
@@ -2868,6 +2882,9 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 			return nil
 		case st.While != nil:
 			for {
+				if incLoop() {
+					break
+				}
 				cond, err := evalExpr(st.While.Cond, vars)
 				if err != nil {
 					return err
@@ -2929,6 +2946,9 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 				}
 			}
 			for _, it := range items {
+				if incLoop() {
+					break
+				}
 				vars[st.For.Name] = it
 				cont := false
 				for _, b := range st.For.Body {
