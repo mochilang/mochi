@@ -1062,8 +1062,8 @@ func (b *BinaryExpr) emit(w io.Writer) {
 		fmt.Fprint(w, "))")
 		return
 	}
-	if (isStringExpr(b.Left) && isStringExpr(b.Right)) ||
-		(inferType(b.Left) == "string" && inferType(b.Right) == "string") {
+	if (isStringExpr(b.Left) || isStringExpr(b.Right)) &&
+		(b.Op == "<" || b.Op == "<=" || b.Op == ">" || b.Op == ">=") {
 		switch b.Op {
 		case "<", "<=", ">", ">=":
 			fmt.Fprint(w, "(")
@@ -1174,6 +1174,10 @@ type LenExpr struct{ Value Expr }
 
 func (l *LenExpr) emit(w io.Writer) {
 	l.Value.emit(w)
+	if _, ok := l.Value.(*IndexExpr); ok {
+		fmt.Fprint(w, ".length()")
+		return
+	}
 	switch {
 	case isGroupExpr(l.Value):
 		fmt.Fprint(w, ".items.size()")
@@ -1808,9 +1812,6 @@ func isArrayExpr(e Expr) bool {
 	case *IndexExpr:
 		if ex.ResultType != "" {
 			return strings.HasSuffix(ex.ResultType, "[]")
-		}
-		if isArrayExpr(ex.Target) {
-			return true
 		}
 		if t := arrayElemType(ex.Target); t != "" {
 			return strings.HasSuffix(t, "[]")
@@ -2824,6 +2825,12 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 		}
 		if name == "substring" && len(args) == 3 {
 			return &SubstringExpr{Str: args[0], Start: args[1], End: args[2]}, nil
+		}
+		if name == "upper" && len(args) == 1 {
+			return &MethodCallExpr{Target: args[0], Name: "toUpperCase", Args: nil}, nil
+		}
+		if name == "lower" && len(args) == 1 {
+			return &MethodCallExpr{Target: args[0], Name: "toLowerCase", Args: nil}, nil
 		}
 		return &CallExpr{Func: name, Args: args}, nil
 	case p.Lit != nil && p.Lit.Str != nil:
