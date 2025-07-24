@@ -2,6 +2,7 @@ package types_test
 
 import (
 	"fmt"
+	"os"
 	"testing"
 
 	"mochi/golden"
@@ -44,6 +45,9 @@ func TestQueryPlan(t *testing.T) {
 }
 
 func TestQueryPlanTPCH(t *testing.T) {
+	if os.Getenv("RUN_TPCH") == "" {
+		t.Skip("TPCH tests disabled")
+	}
 	golden.Run(t, "tests/dataset/tpc-h", ".mochi", ".plan", func(src string) ([]byte, error) {
 		prog, err := parser.Parse(src)
 		if err != nil {
