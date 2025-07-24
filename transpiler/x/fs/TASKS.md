@@ -1,3 +1,11 @@
+## Progress (2025-07-24 18:50 +0000)
+- fs transpiler: fix map lookup typing
+- Generated F# for 102/103 programs (102 passing)
+
+## Progress (2025-07-25 01:36 +0700)
+- transpiler fs: update rosetta outputs and improve map handling
+- Generated F# for 102/103 programs (102 passing)
+
 ## Progress (2025-07-25 01:11 +0700)
 - Update F# transpiler and generated outputs
 - Generated F# for 102/103 programs (102 passing)
