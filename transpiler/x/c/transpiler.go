@@ -1877,6 +1877,9 @@ func compileStmt(env *types.Env, s *parser.Statement) (Stmt, error) {
 		if valExpr == nil {
 			valExpr = convertExpr(s.Let.Value)
 		}
+		if fe := indexCastFieldExpr(s.Let.Value); fe != nil {
+			valExpr = fe
+		}
 		if valExpr == nil {
 			if q := queryExpr(s.Let.Value); q != nil {
 				if lst, ok := evalQueryConst(q); ok {
@@ -4627,6 +4630,32 @@ func varName(e *parser.Expr) string {
 func isMapVar(name string) bool {
 	_, ok := mapKeyTypes[name]
 	return ok
+}
+
+func indexCastFieldExpr(e *parser.Expr) Expr {
+	if e == nil || e.Binary == nil || e.Binary.Left == nil {
+		return nil
+	}
+	u := e.Binary.Left
+	if u.Value == nil || len(u.Value.Ops) != 2 {
+		return nil
+	}
+	if u.Value.Ops[0].Index == nil || u.Value.Ops[1].Cast == nil {
+		return nil
+	}
+	base := u.Value.Target
+	if base == nil || base.Selector == nil || len(base.Selector.Tail) != 0 {
+		return nil
+	}
+	idx := u.Value.Ops[0].Index.Start
+	if idx == nil || idx.Binary == nil || idx.Binary.Left == nil {
+		return nil
+	}
+	if idx.Binary.Left.Value == nil || idx.Binary.Left.Value.Target == nil || idx.Binary.Left.Value.Target.Lit == nil || idx.Binary.Left.Value.Target.Lit.Str == nil {
+		return nil
+	}
+	field := *idx.Binary.Left.Value.Target.Lit.Str
+	return &FieldExpr{Target: &VarRef{Name: base.Selector.Root}, Name: field}
 }
 
 func matchFilteredQuery(q *parser.QueryExpr) bool {
