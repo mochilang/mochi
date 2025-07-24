@@ -32,6 +32,7 @@ var inFunction bool
 var inLambda int
 var builtinAliases map[string]string
 var useNow bool
+var usesLookupHost bool
 var reserved = map[string]bool{"this": true, "new": true}
 var currentReturnType string
 var inReturn bool
@@ -67,8 +68,9 @@ type Program struct {
 	Functions []*Func
 	ListTypes map[string]string
 	// collected types of top-level variables
-	GlobalTypes map[string]string
-	UseNow      bool
+	GlobalTypes   map[string]string
+	UseNow        bool
+	UseLookupHost bool
 }
 
 func (p *Program) addInclude(inc string) {
@@ -487,6 +489,12 @@ func (p *Program) write(w io.Writer) {
 		p.addInclude("<cstdlib>")
 		p.addInclude("<chrono>")
 	}
+	if p.UseLookupHost {
+		p.addInclude("<any>")
+		p.addInclude("<netdb.h>")
+		p.addInclude("<arpa/inet.h>")
+		p.addInclude("<map>")
+	}
 	for _, inc := range p.Includes {
 		fmt.Fprintf(w, "#include %s\n", inc)
 	}
@@ -512,6 +520,29 @@ func (p *Program) write(w io.Writer) {
 		fmt.Fprintln(w, "        return static_cast<int>(seed);")
 		fmt.Fprintln(w, "    }")
 		fmt.Fprintln(w, "    return (int)(std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::system_clock::now().time_since_epoch()).count() % 2147483647);")
+		fmt.Fprintln(w, "}")
+	}
+	if p.UseLookupHost {
+		fmt.Fprintln(w, "static std::vector<std::any> _lookup_host(const std::string& host) {")
+		fmt.Fprintln(w, "    std::vector<std::any> res;")
+		fmt.Fprintln(w, "    std::vector<std::string> ips;")
+		fmt.Fprintln(w, "    addrinfo hints{}; memset(&hints, 0, sizeof(hints)); hints.ai_family = AF_INET;")
+		fmt.Fprintln(w, "    addrinfo* info=nullptr;")
+		fmt.Fprintln(w, "    int rc = getaddrinfo(host.c_str(), nullptr, &hints, &info);")
+		fmt.Fprintln(w, "    if(rc != 0) {")
+		fmt.Fprintln(w, "        res.push_back(ips);")
+		fmt.Fprintln(w, "        res.push_back(std::string(gai_strerror(rc)));")
+		fmt.Fprintln(w, "        return res;")
+		fmt.Fprintln(w, "    }")
+		fmt.Fprintln(w, "    for(auto p=info; p; p=p->ai_next){")
+		fmt.Fprintln(w, "        char buf[INET_ADDRSTRLEN];")
+		fmt.Fprintln(w, "        auto* addr = reinterpret_cast<sockaddr_in*>(p->ai_addr);")
+		fmt.Fprintln(w, "        if(inet_ntop(AF_INET, &addr->sin_addr, buf, sizeof(buf))) ips.push_back(std::string(buf));")
+		fmt.Fprintln(w, "    }")
+		fmt.Fprintln(w, "    freeaddrinfo(info);")
+		fmt.Fprintln(w, "    res.push_back(ips);")
+		fmt.Fprintln(w, "    res.push_back(std::any());")
+		fmt.Fprintln(w, "    return res;")
 		fmt.Fprintln(w, "}")
 	}
 	if usesAny {
@@ -1174,7 +1205,13 @@ func (s *SubstringExpr) emit(w io.Writer) {
 	io.WriteString(w, ")")
 }
 
-func (v *VarRef) emit(w io.Writer) { io.WriteString(w, safeName(v.Name)) }
+func (v *VarRef) emit(w io.Writer) {
+	if v.Name == "nil" {
+		io.WriteString(w, "std::any{}")
+		return
+	}
+	io.WriteString(w, safeName(v.Name))
+}
 
 func (c *CallExpr) emit(w io.Writer) {
 	io.WriteString(w, c.Name)
@@ -1723,6 +1760,32 @@ func (b *BinaryExpr) emit(w io.Writer) {
 	}
 	lt := exprType(b.Left)
 	rt := exprType(b.Right)
+	if (b.Op == "==" || b.Op == "!=") && lt == "std::any" && rt == "std::any" {
+		if vr, ok := b.Left.(*VarRef); ok && vr.Name == "nil" {
+			if b.Op == "==" {
+				io.WriteString(w, "(!")
+				b.Right.emit(w)
+				io.WriteString(w, ".has_value())")
+			} else {
+				io.WriteString(w, "(")
+				b.Right.emit(w)
+				io.WriteString(w, ".has_value())")
+			}
+			return
+		}
+		if vr, ok := b.Right.(*VarRef); ok && vr.Name == "nil" {
+			if b.Op == "==" {
+				io.WriteString(w, "(!")
+				b.Left.emit(w)
+				io.WriteString(w, ".has_value())")
+			} else {
+				io.WriteString(w, "(")
+				b.Left.emit(w)
+				io.WriteString(w, ".has_value())")
+			}
+			return
+		}
+	}
 	if lt == "std::any" && rt != "std::any" {
 		if currentProgram != nil {
 			currentProgram.addInclude("<any>")
@@ -2094,6 +2157,7 @@ func (i *IfExpr) emit(w io.Writer) {
 
 func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	useNow = false
+	usesLookupHost = false
 	cp := &Program{Includes: []string{"<iostream>", "<string>"}, ListTypes: map[string]string{}, GlobalTypes: map[string]string{}}
 	currentProgram = cp
 	currentEnv = env
@@ -2510,6 +2574,7 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	}
 	cp.Globals = globals
 	cp.UseNow = useNow
+	cp.UseLookupHost = usesLookupHost
 	hasMain := false
 	for _, fn := range cp.Functions {
 		if fn.Name == "main" {
@@ -2881,6 +2946,10 @@ func convertStmt(s *parser.Statement) (Stmt, error) {
 					}
 					return nil, nil
 				}
+				if path == "net" {
+					builtinAliases[alias] = "go_net"
+					return nil, nil
+				}
 				if s.Import.Auto && path == "mochi/runtime/ffi/go/testpkg" {
 					builtinAliases[alias] = "go_testpkg"
 					return nil, nil
@@ -3078,6 +3147,12 @@ func convertPostfix(p *parser.PostfixExpr) (Expr, error) {
 									break
 								}
 							}
+						case "go_net":
+							if sel.Field == "LookupHost" && len(args) == 1 {
+								usesLookupHost = true
+								expr = &CallExpr{Name: "_lookup_host", Args: args}
+								break
+							}
 						}
 					}
 				}
@@ -3271,6 +3346,15 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 			if len(p.Call.Args) == 0 {
 				useNow = true
 				return &NowExpr{}, nil
+			}
+		case "net.LookupHost":
+			if len(p.Call.Args) == 1 {
+				arg, err := convertExpr(p.Call.Args[0])
+				if err != nil {
+					return nil, err
+				}
+				usesLookupHost = true
+				return &CallExpr{Name: "_lookup_host", Args: []Expr{arg}}, nil
 			}
 		case "len":
 			if len(p.Call.Args) == 1 {
@@ -4751,6 +4835,9 @@ func exprType(e Expr) string {
 	case *StringLit:
 		return "std::string"
 	case *VarRef:
+		if v.Name == "nil" {
+			return "std::any"
+		}
 		if currentEnv != nil {
 			if t, err := currentEnv.GetVar(v.Name); err == nil {
 				return cppTypeFrom(t)
