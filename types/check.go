@@ -1782,17 +1782,39 @@ func checkPrimary(p *parser.Primary, env *Env, expected Type) (Type, error) {
 					return nil, err
 				}
 			}
-			return ft.Return, nil
+			ret := ft.Return
+			if p.Call.Func == "keys" && len(argTypes) == 1 {
+				if mt, ok := argTypes[0].(MapType); ok {
+					ret = ListType{Elem: mt.Key}
+				}
+			}
+			if p.Call.Func == "values" && len(argTypes) == 1 {
+				if mt, ok := argTypes[0].(MapType); ok {
+					ret = ListType{Elem: mt.Value}
+				}
+			}
+			return ret, nil
 		}
 		if _, defined := env.GetFunc(p.Call.Func); !defined {
 			if err := checkBuiltinCall(p.Call.Func, argTypes, p.Pos); err != nil {
 				return nil, err
 			}
 		}
-		if argCount == paramCount {
-			return ft.Return, nil
+		ret := ft.Return
+		if p.Call.Func == "keys" && len(argTypes) == 1 {
+			if mt, ok := argTypes[0].(MapType); ok {
+				ret = ListType{Elem: mt.Key}
+			}
 		}
-		return curryFuncType(ft.Params[argCount:], ft.Return), nil
+		if p.Call.Func == "values" && len(argTypes) == 1 {
+			if mt, ok := argTypes[0].(MapType); ok {
+				ret = ListType{Elem: mt.Value}
+			}
+		}
+		if argCount == paramCount {
+			return ret, nil
+		}
+		return curryFuncType(ft.Params[argCount:], ret), nil
 
 	case p.Struct != nil:
 		st, ok := env.GetStruct(p.Struct.Name)
