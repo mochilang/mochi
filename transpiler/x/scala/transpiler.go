@@ -498,17 +498,63 @@ func (ws *WhileStmt) emit(w io.Writer) {
 }
 
 func (fr *ForRangeStmt) emit(w io.Writer) {
-	fmt.Fprintf(w, "for (%s <- ", fr.Name)
+	hasBr := containsBreak(fr.Body)
+	hasCont := containsContinue(fr.Body)
+	if hasBr || hasCont {
+		needsBreaks = true
+	}
+	id := loopCounter
+	loopCounter++
+	var brVar, contVar string
+	if hasBr {
+		brVar = fmt.Sprintf("_br%d", id)
+		fmt.Fprintf(w, "  val %s = new Breaks\n", brVar)
+		if hasCont {
+			contVar = fmt.Sprintf("_ct%d", id)
+			fmt.Fprintf(w, "  val %s = new Breaks\n", contVar)
+		}
+		fmt.Fprintf(w, "  %s.breakable {\n", brVar)
+		breakStack = append(breakStack, brVar)
+	} else if hasCont {
+		contVar = fmt.Sprintf("_ct%d", id)
+		fmt.Fprintf(w, "  val %s = new Breaks\n", contVar)
+	}
+	fmt.Fprintf(w, "  for (%s <- ", fr.Name)
 	fr.Start.emit(w)
 	fmt.Fprint(w, " until ")
 	fr.End.emit(w)
 	fmt.Fprint(w, ") {\n")
+	if hasCont {
+		fmt.Fprintf(w, "    %s.breakable {\n", contVar)
+		continueStack = append(continueStack, contVar)
+		replaceContinue = true
+	}
 	for _, st := range fr.Body {
 		fmt.Fprint(w, "    ")
-		st.emit(w)
+		switch s := st.(type) {
+		case *BreakStmt:
+			if hasBr {
+				s.emit(w)
+			}
+		case *ContinueStmt:
+			if hasCont {
+				s.emit(w)
+			}
+		default:
+			st.emit(w)
+		}
 		fmt.Fprint(w, "\n")
 	}
+	if hasCont {
+		replaceContinue = false
+		continueStack = continueStack[:len(continueStack)-1]
+		fmt.Fprint(w, "    }\n")
+	}
 	fmt.Fprint(w, "  }")
+	if hasBr {
+		breakStack = breakStack[:len(breakStack)-1]
+		fmt.Fprint(w, "\n}")
+	}
 }
 
 func (fe *ForEachStmt) emit(w io.Writer) {
@@ -2004,7 +2050,10 @@ func convertPostfix(pf *parser.PostfixExpr, env *types.Env) (Expr, error) {
 				expr = &CallExpr{Fn: expr, Args: args}
 			}
 		case op.Cast != nil:
-			if op.Cast.Type != nil && op.Cast.Type.Simple != nil {
+			if op.Cast.Type == nil {
+				return nil, fmt.Errorf("unsupported cast")
+			}
+			if op.Cast.Type.Simple != nil {
 				typ := *op.Cast.Type.Simple
 				converted := false
 				if env != nil {
@@ -2028,7 +2077,7 @@ func convertPostfix(pf *parser.PostfixExpr, env *types.Env) (Expr, error) {
 					expr = &CastExpr{Value: expr, Type: typ}
 				}
 			} else {
-				return nil, fmt.Errorf("unsupported cast")
+				expr = &CastExpr{Value: expr, Type: toScalaType(op.Cast.Type)}
 			}
 		default:
 			return nil, fmt.Errorf("unsupported postfix")
@@ -2330,6 +2379,9 @@ func convertLiteral(l *parser.Literal) (Expr, error) {
 	}
 	if l.Bool != nil {
 		return &BoolLit{Value: bool(*l.Bool)}, nil
+	}
+	if l.Null {
+		return &Name{Name: "null"}, nil
 	}
 	return nil, fmt.Errorf("unsupported literal")
 }
@@ -3171,7 +3223,8 @@ func toScalaType(t *parser.TypeRef) string {
 		return ""
 	}
 	if t.Simple != nil {
-		switch *t.Simple {
+		name := strings.ToLower(strings.TrimSpace(*t.Simple))
+		switch name {
 		case "int":
 			return "Int"
 		case "string":
@@ -3183,7 +3236,7 @@ func toScalaType(t *parser.TypeRef) string {
 		case "any":
 			return "Any"
 		default:
-			return *t.Simple
+			return strings.TrimSpace(*t.Simple)
 		}
 	}
 	if t.Generic != nil {
