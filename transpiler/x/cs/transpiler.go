@@ -1582,13 +1582,9 @@ func (l *LenExpr) emit(w io.Writer) {
 type SumExpr struct{ Arg Expr }
 
 func (s *SumExpr) emit(w io.Writer) {
-	if strings.HasSuffix(typeOfExpr(s.Arg), "[]") {
-		fmt.Fprint(w, "(")
-		s.Arg.emit(w)
-		fmt.Fprint(w, ".Sum())")
-	} else {
-		s.Arg.emit(w)
-	}
+	fmt.Fprint(w, "(")
+	s.Arg.emit(w)
+	fmt.Fprint(w, ".Sum())")
 }
 
 type AppendExpr struct {
@@ -2040,18 +2036,32 @@ func compileStmt(prog *Program, s *parser.Statement) (Stmt, error) {
 				varTypes[s.Let.Name] = t
 			}
 		}
+		alias := s.Let.Name
+		if _, ok := varAliases[s.Let.Name]; ok {
+			alias = fmt.Sprintf("%s_%d", s.Let.Name, aliasCounter)
+			aliasCounter++
+			varAliases[s.Let.Name] = alias
+		} else {
+			varAliases[s.Let.Name] = alias
+		}
+		if t, ok := varTypes[s.Let.Name]; ok {
+			varTypes[alias] = t
+			if alias != s.Let.Name {
+				delete(varTypes, s.Let.Name)
+			}
+		}
 		if prog != nil && blockDepth == 0 {
 			for m := range mutatedVars {
 				if exprUsesVar(val, m) {
-					return &LetStmt{Name: s.Let.Name, Value: val}, nil
+					return &LetStmt{Name: alias, Value: val}, nil
 				}
 			}
-			g := &Global{Name: s.Let.Name, Value: val}
+			g := &Global{Name: alias, Value: val}
 			prog.Globals = append(prog.Globals, g)
 			globalDecls[s.Let.Name] = g
 			return nil, nil
 		}
-		return &LetStmt{Name: s.Let.Name, Value: val}, nil
+		return &LetStmt{Name: alias, Value: val}, nil
 	case s.Var != nil:
 		if _, ok := varTypes[s.Var.Name]; ok {
 			if s.Var.Value == nil {
@@ -2061,7 +2071,11 @@ func compileStmt(prog *Program, s *parser.Statement) (Stmt, error) {
 			if err != nil {
 				return nil, err
 			}
-			return &AssignStmt{Name: s.Var.Name, Value: val}, nil
+			name := s.Var.Name
+			if alias, ok := varAliases[name]; ok {
+				name = alias
+			}
+			return &AssignStmt{Name: name, Value: val}, nil
 		}
 		var val Expr
 		var err error
@@ -2116,13 +2130,27 @@ func compileStmt(prog *Program, s *parser.Statement) (Stmt, error) {
 				varTypes[s.Var.Name] = t
 			}
 		}
+		alias := s.Var.Name
+		if _, ok := varAliases[s.Var.Name]; ok {
+			alias = fmt.Sprintf("%s_%d", s.Var.Name, aliasCounter)
+			aliasCounter++
+			varAliases[s.Var.Name] = alias
+		} else {
+			varAliases[s.Var.Name] = alias
+		}
+		if t, ok := varTypes[s.Var.Name]; ok {
+			varTypes[alias] = t
+			if alias != s.Var.Name {
+				delete(varTypes, s.Var.Name)
+			}
+		}
 		if prog != nil && blockDepth == 0 {
-			g := &Global{Name: s.Var.Name, Value: val}
+			g := &Global{Name: alias, Value: val}
 			prog.Globals = append(prog.Globals, g)
 			globalDecls[s.Var.Name] = g
 			return nil, nil
 		}
-		return &VarStmt{Name: s.Var.Name, Value: val}, nil
+		return &VarStmt{Name: alias, Value: val}, nil
 	case s.Type != nil:
 		if prog != nil {
 			if st, ok := structTypes[s.Type.Name]; ok {
@@ -2188,10 +2216,18 @@ func compileStmt(prog *Program, s *parser.Statement) (Stmt, error) {
 				varTypes[s.Assign.Name] = t
 			}
 			mutatedVars[s.Assign.Name] = true
-			return &AssignStmt{Name: s.Assign.Name, Value: val}, nil
+			name := s.Assign.Name
+			if alias, ok := varAliases[name]; ok {
+				name = alias
+			}
+			return &AssignStmt{Name: name, Value: val}, nil
 		}
 		if len(s.Assign.Index) > 0 && len(s.Assign.Field) == 0 {
-			var target Expr = &VarRef{Name: s.Assign.Name}
+			name := s.Assign.Name
+			if alias, ok := varAliases[name]; ok {
+				name = alias
+			}
+			var target Expr = &VarRef{Name: name}
 			for i := 0; i < len(s.Assign.Index)-1; i++ {
 				idx, err := compileExpr(s.Assign.Index[i].Start)
 				if err != nil {
@@ -2210,7 +2246,11 @@ func compileStmt(prog *Program, s *parser.Statement) (Stmt, error) {
 			return &AssignIndexStmt{Target: target, Index: idx, Value: val}, nil
 		}
 		if len(s.Assign.Field) > 0 && len(s.Assign.Index) == 0 {
-			var target Expr = &VarRef{Name: s.Assign.Name}
+			name := s.Assign.Name
+			if alias, ok := varAliases[name]; ok {
+				name = alias
+			}
+			var target Expr = &VarRef{Name: name}
 			for i := 0; i < len(s.Assign.Field)-1; i++ {
 				target = &FieldExpr{Target: target, Name: s.Assign.Field[i].Name}
 			}

@@ -90,7 +90,7 @@ func TestCSTranspiler_Rosetta_Golden(t *testing.T) {
 			return nil, err
 		}
 		cmd := exec.Command("dotnet", "run", "--project", proj)
-               cmd.Env = append(os.Environ(), "DOTNET_NOLOGO=1", "DOTNET_SKIP_FIRST_TIME_EXPERIENCE=1", "MOCHI_NOW_SEED=1")
+		cmd.Env = append(os.Environ(), "DOTNET_NOLOGO=1", "DOTNET_SKIP_FIRST_TIME_EXPERIENCE=1", "MOCHI_NOW_SEED=1")
 		inPath := filepath.Join(srcDir, base+".in")
 		if data, err := os.ReadFile(inPath); err == nil {
 			env := "MOCHI_INPUT_FILE=" + inPath
@@ -140,7 +140,7 @@ func updateRosetta() {
 				mark = "[x]"
 			}
 		}
-		lines = append(lines, fmt.Sprintf("%d. %s %s", i+1, mark, base))
+		lines = append(lines, fmt.Sprintf("%d. %s %s (%d)", i+1, mark, base, i+1))
 	}
 
 	var buf bytes.Buffer
