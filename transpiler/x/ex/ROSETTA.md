@@ -2,8 +2,8 @@
 
 Generated Elixir code from Mochi Rosetta programs lives in `tests/rosetta/transpiler/Elixir`.
 
-## Rosetta Test Checklist (5/284)
-_Last updated: 2025-07-24 00:44 +0700_
+## Rosetta Test Checklist (6/284)
+_Last updated: 2025-07-24 07:28 +0700_
 1. [x] 100-doors-2
 2. [x] 100-doors-3
 3. [x] 100-doors
@@ -12,7 +12,7 @@ _Last updated: 2025-07-24 00:44 +0700_
 6. [ ] 15-puzzle-solver
 7. [x] 2048
 8. [ ] 21-game
-9. [ ] 24-game-solve
+9. [x] 24-game-solve
 10. [ ] 24-game
 11. [ ] 4-rings-or-4-squares-puzzle
 12. [ ] 9-billion-names-of-god-the-integer
