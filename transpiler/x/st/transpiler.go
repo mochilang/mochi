@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"io"
 	"math"
+	"net"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -69,6 +70,7 @@ var (
 	currentFuncs      map[string]*parser.FunStmt
 	currentEnv        *types.Env
 	pythonMathAliases map[string]bool
+	netAliases        map[string]bool
 	currentProg       *Program
 	inputLines        []string
 	inputIndex        int
@@ -608,6 +610,12 @@ func applyOp(a value, op string, b value) (value, error) {
 			return value{kind: valBool, b: a.s >= b.s}, nil
 		}
 	case "==":
+		if a.kind == valUnknown && b.kind == valUnknown {
+			return value{kind: valBool, b: true}, nil
+		}
+		if a.kind == valUnknown || b.kind == valUnknown {
+			return value{kind: valBool, b: false}, nil
+		}
 		if (a.kind == valInt || a.kind == valFloat) && (b.kind == valInt || b.kind == valFloat) {
 			return value{kind: valBool, b: toFloat(a) == toFloat(b)}, nil
 		}
@@ -790,6 +798,35 @@ func evalPostfix(p *parser.PostfixExpr, vars map[string]value) (value, error) {
 				return value{}, fmt.Errorf("bad args")
 			}
 			return value{kind: valString, s: testpkg.FifteenPuzzleExample()}, nil
+		}
+		if netAliases[p.Target.Selector.Root] && p.Target.Selector.Tail[0] == "LookupHost" {
+			call := p.Ops[0].Call
+			if len(call.Args) != 1 {
+				return value{}, fmt.Errorf("bad args")
+			}
+			host, err := evalExpr(call.Args[0], vars)
+			if err != nil {
+				return value{}, err
+			}
+			if host.kind != valString {
+				return value{}, fmt.Errorf("bad args")
+			}
+			addrs, err := net.LookupHost(host.s)
+			if err != nil {
+				return value{kind: valList, list: []value{
+					{kind: valList},
+					{kind: valString, s: err.Error()},
+				}}, nil
+			}
+			sort.Strings(addrs)
+			vals := make([]value, len(addrs))
+			for i, a := range addrs {
+				vals[i] = value{kind: valString, s: a}
+			}
+			return value{kind: valList, list: []value{
+				{kind: valList, list: vals},
+				{},
+			}}, nil
 		}
 		if pythonMathAliases[p.Target.Selector.Root] {
 			call := p.Ops[0].Call
@@ -1097,6 +1134,9 @@ func evalPrimary(p *parser.Primary, vars map[string]value) (value, error) {
 			}
 			return v, nil
 		}
+		if p.Selector.Root == "nil" && len(p.Selector.Tail) == 0 {
+			return value{}, nil
+		}
 		if len(p.Selector.Tail) == 0 {
 			return value{kind: valString, s: p.Selector.Root}, nil
 		}
@@ -1249,6 +1289,8 @@ func evalPrimary(p *parser.Primary, vars map[string]value) (value, error) {
 				return value{kind: valString, s: "false"}, nil
 			case valString:
 				return value{kind: valString, s: v.s}, nil
+			case valList, valMap, valFunc:
+				return value{kind: valString, s: v.String()}, nil
 			}
 		case "append":
 			if len(p.Call.Args) != 2 {
@@ -2628,6 +2670,7 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	currentFuncs = funcs
 	currentEnv = env
 	pythonMathAliases = map[string]bool{}
+	netAliases = map[string]bool{}
 	inputLines = nil
 	inputIndex = 0
 	if prog != nil {
@@ -2644,6 +2687,7 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 		currentFuncs = nil
 		currentEnv = nil
 		pythonMathAliases = nil
+		netAliases = nil
 		inputLines = nil
 		inputIndex = 0
 	}()
@@ -2661,6 +2705,14 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 					alias = parser.AliasFromPath(st.Import.Path)
 				}
 				pythonMathAliases[alias] = true
+				return nil
+			}
+			if st.Import.Lang != nil && *st.Import.Lang == "go" && strings.Trim(st.Import.Path, "\"") == "net" && st.Import.Auto {
+				alias := st.Import.As
+				if alias == "" {
+					alias = parser.AliasFromPath(st.Import.Path)
+				}
+				netAliases[alias] = true
 				return nil
 			}
 			// other imports are ignored
