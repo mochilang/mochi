@@ -143,6 +143,10 @@ func fsType(t types.Type) string {
 	switch tt := t.(type) {
 	case types.IntType, types.Int64Type:
 		return "int"
+	case types.BigIntType:
+		return "bigint"
+	case types.BigRatType:
+		return "bignum"
 	case types.FloatType:
 		return "float"
 	case types.BoolType:
@@ -155,6 +159,15 @@ func fsType(t types.Type) string {
 		return fmt.Sprintf("Map<%s, %s>", fsType(tt.Key), fsType(tt.Value))
 	case types.OptionType:
 		return fsType(tt.Elem) + " option"
+	case types.VoidType:
+		return "unit"
+	case types.FuncType:
+		parts := make([]string, len(tt.Params)+1)
+		for i, p := range tt.Params {
+			parts[i] = fsType(p)
+		}
+		parts[len(parts)-1] = fsType(tt.Return)
+		return strings.Join(parts, " -> ")
 	case types.StructType:
 		if tt.Name != "" {
 			return tt.Name
@@ -177,6 +190,8 @@ func fsTypeFromString(s string) string {
 		return "bool"
 	case "string":
 		return "string"
+	case "bigint":
+		return "bigint"
 	default:
 		if strings.HasPrefix(s, "list<") && strings.HasSuffix(s, ">") {
 			elem := strings.TrimSuffix(strings.TrimPrefix(s, "list<"), ">")
@@ -209,6 +224,7 @@ func fsIdent(name string) string {
 		"downcast": true, "downto": true, "elif": true, "else": true, "end": true,
 		"exception": true, "extern": true, "false": true, "finally": true, "for": true,
 		"fun": true, "function": true, "if": true, "in": true, "inherit": true,
+		"base":   true,
 		"inline": true, "interface": true, "internal": true, "lazy": true, "let": true,
 		"match": true, "member": true, "module": true, "mutable": true, "namespace": true,
 		"new": true, "null": true, "of": true, "open": true, "or": true, "override": true,
@@ -296,12 +312,32 @@ func simpleListType(l *ListLit) string {
 	if first == "" {
 		return ""
 	}
-	for _, e := range l.Elems[1:] {
-		if inferType(e) != first {
+	// Handle nested lists
+	var elemType string
+	if first == "array" {
+		if inner, ok := l.Elems[0].(*ListLit); ok {
+			elemType = simpleListType(inner)
+			if elemType == "" {
+				return ""
+			}
+		} else {
 			return ""
 		}
+		for _, e := range l.Elems[1:] {
+			inner, ok := e.(*ListLit)
+			if !ok || simpleListType(inner) != elemType {
+				return ""
+			}
+		}
+	} else {
+		elemType = first
+		for _, e := range l.Elems[1:] {
+			if inferType(e) != first {
+				return ""
+			}
+		}
 	}
-	return first + " array"
+	return elemType + " array"
 }
 
 func inferLiteralType(e *parser.Expr) string {
@@ -455,14 +491,15 @@ func (f *FunDef) emitWithPrefix(w io.Writer, prefix string) {
 	}
 	for i, p := range f.Params {
 		io.WriteString(w, " ")
+		name := fsIdent(p)
 		if i < len(f.Types) && f.Types[i] != "" {
 			io.WriteString(w, "(")
-			io.WriteString(w, p)
+			io.WriteString(w, name)
 			io.WriteString(w, ": ")
 			io.WriteString(w, f.Types[i])
 			io.WriteString(w, ")")
 		} else {
-			io.WriteString(w, p)
+			io.WriteString(w, name)
 		}
 	}
 	io.WriteString(w, " =\n")
@@ -1233,22 +1270,31 @@ func (b *BinaryExpr) emit(w io.Writer) {
 			return
 		}
 	}
-	if needsParen(b.Left) {
+	lt := inferType(b.Left)
+	rt := inferType(b.Right)
+	left := b.Left
+	right := b.Right
+	if lt == "float" && rt == "int" {
+		right = &CastExpr{Expr: right, Type: "float"}
+	} else if rt == "float" && lt == "int" {
+		left = &CastExpr{Expr: left, Type: "float"}
+	}
+	if needsParen(left) {
 		io.WriteString(w, "(")
-		b.Left.emit(w)
+		left.emit(w)
 		io.WriteString(w, ")")
 	} else {
-		b.Left.emit(w)
+		left.emit(w)
 	}
 	io.WriteString(w, " ")
 	io.WriteString(w, mapOp(b.Op))
 	io.WriteString(w, " ")
-	if needsParen(b.Right) {
+	if needsParen(right) {
 		io.WriteString(w, "(")
-		b.Right.emit(w)
+		right.emit(w)
 		io.WriteString(w, ")")
 	} else {
-		b.Right.emit(w)
+		right.emit(w)
 	}
 }
 
@@ -1687,8 +1733,8 @@ type CastExpr struct {
 
 func (c *CastExpr) emit(w io.Writer) {
 	switch c.Type {
-	case "int":
-		io.WriteString(w, "int ")
+	case "float":
+		io.WriteString(w, "float ")
 		if needsParen(c.Expr) {
 			io.WriteString(w, "(")
 			c.Expr.emit(w)
@@ -1696,8 +1742,8 @@ func (c *CastExpr) emit(w io.Writer) {
 		} else {
 			c.Expr.emit(w)
 		}
-	case "float":
-		io.WriteString(w, "float ")
+	case "int":
+		io.WriteString(w, "int ")
 		if needsParen(c.Expr) {
 			io.WriteString(w, "(")
 			c.Expr.emit(w)
@@ -1948,6 +1994,11 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 			}
 		}
 		fsDecl := fsTypeFromString(declared)
+		if fsDecl == "bigint" {
+			if _, ok := e.(*IntLit); ok {
+				e = &CastExpr{Expr: e, Type: "bigint"}
+			}
+		}
 		varTypes[st.Let.Name] = declared
 		typ := fsDecl
 		if typ == "array" || typ == "map" {
@@ -1984,6 +2035,11 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 			}
 		}
 		fsDecl := fsTypeFromString(declared)
+		if fsDecl == "bigint" {
+			if _, ok := e.(*IntLit); ok {
+				e = &CastExpr{Expr: e, Type: "bigint"}
+			}
+		}
 		varTypes[st.Var.Name] = declared
 		typ := fsDecl
 		if typ == "array" || typ == "map" {
@@ -2071,7 +2127,10 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 		save := varTypes
 		varTypes = copyMap(varTypes)
 		for _, p := range st.Fun.Params {
-			if p.Type != nil && p.Type.Simple != nil {
+			if p.Type != nil && transpileEnv != nil {
+				t := types.ResolveTypeRef(p.Type, transpileEnv)
+				varTypes[p.Name] = fsType(t)
+			} else if p.Type != nil && p.Type.Simple != nil {
 				varTypes[p.Name] = fsTypeFromString(*p.Type.Simple)
 			} else if transpileEnv != nil {
 				if t, err := transpileEnv.GetVar(p.Name); err == nil {
