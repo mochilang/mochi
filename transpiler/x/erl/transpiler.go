@@ -80,6 +80,9 @@ var useToInt bool
 var useMemberHelper bool
 var mutatedFuncs map[string]int
 
+// loopStack tracks variable names for nested loops to handle continue.
+var loopStack [][]string
+
 // Program is a minimal Erlang module consisting of sequential statements.
 // Program is a minimal Erlang module consisting of sequential statements and
 // optional function declarations.
@@ -811,8 +814,9 @@ type UpdateStmt struct {
 // BreakStmt represents a `break` statement.
 type BreakStmt struct{}
 
-// ContinueStmt represents a `continue` statement.
-type ContinueStmt struct{}
+// ContinueStmt represents a `continue` statement. Args captures values for loop
+// variables at the time of the continue.
+type ContinueStmt struct{ Args []string }
 
 // CallStmt represents a standalone function call.
 type CallStmt struct{ Call *CallExpr }
@@ -1639,13 +1643,6 @@ func (f *ForStmt) emit(w io.Writer) {
 	io.WriteString(w, "|")
 	io.WriteString(w, restVar)
 	io.WriteString(w, "] ->")
-	for i, a := range f.Next {
-		io.WriteString(w, "\n        ")
-		io.WriteString(w, a)
-		io.WriteString(w, " = ")
-		io.WriteString(w, f.Params[i])
-		io.WriteString(w, ",")
-	}
 	if f.Breakable {
 		io.WriteString(w, "\n        try")
 	}
@@ -1671,13 +1668,18 @@ func (f *ForStmt) emit(w io.Writer) {
 	}
 	io.WriteString(w, ")")
 	if f.Breakable {
-		io.WriteString(w, "\n        catch\n            continue -> ")
+		io.WriteString(w, "\n        catch\n            {continue")
+		for i := range f.Next {
+			io.WriteString(w, ", ")
+			fmt.Fprintf(w, "C%d", i)
+		}
+		io.WriteString(w, "} -> ")
 		io.WriteString(w, loopName)
 		io.WriteString(w, "(")
 		io.WriteString(w, restVar)
-		for _, a := range f.Next {
+		for i := range f.Next {
 			io.WriteString(w, ", ")
-			io.WriteString(w, a)
+			fmt.Fprintf(w, "C%d", i)
 		}
 		io.WriteString(w, ");\n            break -> {")
 		for i, p := range f.Params {
@@ -1733,15 +1735,7 @@ func (ws *WhileStmt) emit(w io.Writer) {
 	}
 	io.WriteString(w, ") ->\n    case ")
 	ws.Cond.emit(w)
-	io.WriteString(w, " of\n        true ->")
-	for i := range ws.Next {
-		io.WriteString(w, "\n            ")
-		io.WriteString(w, ws.Next[i])
-		io.WriteString(w, " = ")
-		io.WriteString(w, ws.Params[i])
-		io.WriteString(w, ",")
-	}
-	io.WriteString(w, "\n            try")
+	io.WriteString(w, " of\n        true ->\n            try")
 	for _, st := range ws.Body {
 		io.WriteString(w, "\n                ")
 		st.emit(w)
@@ -1756,14 +1750,19 @@ func (ws *WhileStmt) emit(w io.Writer) {
 		}
 		io.WriteString(w, a)
 	}
-	io.WriteString(w, ")\n            catch\n                continue -> ")
+	io.WriteString(w, ")\n            catch\n                {continue")
+	for i := range ws.Next {
+		io.WriteString(w, ", ")
+		fmt.Fprintf(w, "C%d", i)
+	}
+	io.WriteString(w, "} -> ")
 	io.WriteString(w, loopName)
 	io.WriteString(w, "(")
-	for i, a := range ws.Next {
+	for i := range ws.Next {
 		if i > 0 {
 			io.WriteString(w, ", ")
 		}
-		io.WriteString(w, a)
+		fmt.Fprintf(w, "C%d", i)
 	}
 	io.WriteString(w, ");\n                break -> {")
 	for i, p := range ws.Params {
@@ -1838,8 +1837,19 @@ func (u *UpdateStmt) emit(w io.Writer) {
 	io.WriteString(w, ")")
 }
 
-func (b *BreakStmt) emit(w io.Writer)    { io.WriteString(w, "throw(break)") }
-func (c *ContinueStmt) emit(w io.Writer) { io.WriteString(w, "throw(continue)") }
+func (b *BreakStmt) emit(w io.Writer) { io.WriteString(w, "throw(break)") }
+func (c *ContinueStmt) emit(w io.Writer) {
+	if len(c.Args) == 0 {
+		io.WriteString(w, "throw(continue)")
+		return
+	}
+	io.WriteString(w, "throw({continue")
+	for _, a := range c.Args {
+		io.WriteString(w, ", ")
+		io.WriteString(w, a)
+	}
+	io.WriteString(w, "})")
+}
 
 func (cs *CallStmt) emit(w io.Writer) { cs.Call.emit(w) }
 
@@ -2584,7 +2594,15 @@ func convertStmt(st *parser.Statement, env *types.Env, ctx *context, top bool) (
 	case st.Break != nil:
 		return []Stmt{&BreakStmt{}}, nil
 	case st.Continue != nil:
-		return []Stmt{&ContinueStmt{}}, nil
+		if len(loopStack) == 0 {
+			return nil, fmt.Errorf("continue outside loop")
+		}
+		names := loopStack[len(loopStack)-1]
+		args := make([]string, len(names))
+		for i, n := range names {
+			args[i] = ctx.current(n)
+		}
+		return []Stmt{&ContinueStmt{Args: args}}, nil
 	case st.If != nil:
 		s, err := convertIfStmt(st.If, env, ctx)
 		if err != nil {
@@ -2595,17 +2613,6 @@ func convertStmt(st *parser.Statement, env *types.Env, ctx *context, top bool) (
 		loopCtx := ctx.clone()
 		alias := loopCtx.newAlias(st.For.Name)
 		funName := ctx.newAlias("fun")
-		body := []Stmt{}
-		for _, bs := range st.For.Body {
-			cs, err := convertStmt(bs, env, loopCtx, false)
-			if err != nil {
-				return nil, err
-			}
-			body = append(body, cs...)
-		}
-		for n := range loopCtx.mutated {
-			ctx.markMutated(n)
-		}
 		names := make([]string, 0, len(ctx.alias))
 		for n := range ctx.alias {
 			if n == "fun" {
@@ -2614,6 +2621,20 @@ func convertStmt(st *parser.Statement, env *types.Env, ctx *context, top bool) (
 			names = append(names, n)
 		}
 		sort.Strings(names)
+		loopStack = append(loopStack, names)
+		body := []Stmt{}
+		for _, bs := range st.For.Body {
+			cs, err := convertStmt(bs, env, loopCtx, false)
+			if err != nil {
+				loopStack = loopStack[:len(loopStack)-1]
+				return nil, err
+			}
+			body = append(body, cs...)
+		}
+		loopStack = loopStack[:len(loopStack)-1]
+		for n := range loopCtx.mutated {
+			ctx.markMutated(n)
+		}
 		params := make([]string, len(names))
 		next := make([]string, len(names))
 		for i, n := range names {
@@ -2675,14 +2696,17 @@ func convertStmt(st *parser.Statement, env *types.Env, ctx *context, top bool) (
 			return nil, err
 		}
 		loopCtx := ctx.clone()
+		loopStack = append(loopStack, names)
 		body := []Stmt{}
 		for _, bs := range st.While.Body {
 			cs, err := convertStmt(bs, env, loopCtx, false)
 			if err != nil {
+				loopStack = loopStack[:len(loopStack)-1]
 				return nil, err
 			}
 			body = append(body, cs...)
 		}
+		loopStack = loopStack[:len(loopStack)-1]
 		for n := range loopCtx.mutated {
 			ctx.markMutated(n)
 		}
