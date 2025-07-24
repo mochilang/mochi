@@ -2,8 +2,8 @@
 
 Generated Scala code for Rosetta tasks in `tests/rosetta/x/Mochi`. Each program has a `.scala` file produced by the transpiler and a `.out` file with its runtime output. Compilation or execution errors are captured in `.error` files.
 
-## Golden Test Checklist (35/284)
-_Last updated: 2025-07-24 20:12 +0700_
+## Golden Test Checklist (36/284)
+_Last updated: 2025-07-24 21:32 +0700_
 
 1. [x] 100-doors-2 (1)
 2. [x] 100-doors-3 (2)
@@ -42,7 +42,7 @@ _Last updated: 2025-07-24 20:12 +0700_
 35. [x] additive-primes (35)
 36. [x] address-of-a-variable (36)
 37. [ ] adfgvx-cipher (37)
-38. [ ] aks-test-for-primes (38)
+38. [x] aks-test-for-primes (38)
 39. [ ] algebraic-data-types (39)
 40. [ ] align-columns (40)
 41. [ ] aliquot-sequence-classifications (41)

@@ -998,9 +998,11 @@ func precedence(op string) int {
 }
 
 func (b *BinaryExpr) emit(w io.Writer) {
-	emitChild := func(e Expr) {
+	emitChild := func(e Expr, right bool) {
 		if be, ok := e.(*BinaryExpr); ok {
-			if precedence(be.Op) < precedence(b.Op) {
+			if precedence(be.Op) < precedence(b.Op) ||
+				(right && precedence(be.Op) == precedence(b.Op) &&
+					(b.Op == "-" || b.Op == "/" || b.Op == "%")) {
 				fmt.Fprint(w, "(")
 				be.emit(w)
 				fmt.Fprint(w, ")")
@@ -1009,9 +1011,9 @@ func (b *BinaryExpr) emit(w io.Writer) {
 		}
 		e.emit(w)
 	}
-	emitChild(b.Left)
+	emitChild(b.Left, false)
 	fmt.Fprintf(w, " %s ", b.Op)
-	emitChild(b.Right)
+	emitChild(b.Right, true)
 }
 
 type queryFrom struct {
@@ -1697,8 +1699,8 @@ func convertBinary(b *parser.BinaryExpr, env *types.Env) (Expr, error) {
 						left = &CastExpr{Value: left, Type: "string"}
 						right = &CastExpr{Value: right, Type: "string"}
 					} else {
-						left = &CastExpr{Value: left, Type: "float"}
-						right = &CastExpr{Value: right, Type: "float"}
+						left = &CastExpr{Value: left, Type: "Long"}
+						right = &CastExpr{Value: right, Type: "Long"}
 					}
 				}
 			} else if op == "&&" || op == "||" {
@@ -2122,6 +2124,9 @@ func convertPostfix(pf *parser.PostfixExpr, env *types.Env) (Expr, error) {
 			}
 			if op.Cast.Type.Simple != nil {
 				typ := *op.Cast.Type.Simple
+				if t := toScalaType(op.Cast.Type); t != "" {
+					typ = t
+				}
 				converted := false
 				if env != nil {
 					if st, ok := env.GetStruct(typ); ok {
@@ -3304,7 +3309,7 @@ func toScalaType(t *parser.TypeRef) string {
 		name := strings.ToLower(strings.TrimSpace(*t.Simple))
 		switch name {
 		case "int":
-			return "Int"
+			return "Long"
 		case "string":
 			return "String"
 		case "bool":
@@ -3363,7 +3368,7 @@ func toScalaType(t *parser.TypeRef) string {
 func toScalaTypeFromType(t types.Type) string {
 	switch tt := t.(type) {
 	case types.IntType, types.Int64Type:
-		return "Int"
+		return "Long"
 	case types.StringType:
 		return "String"
 	case types.BoolType:
