@@ -967,16 +967,16 @@ type WhileStmt struct {
 }
 
 func (wst *WhileStmt) emit(w io.Writer) {
-	writeIndent(w)
-	io.WriteString(w, "while ")
-	wst.Cond.emit(w)
-	io.WriteString(w, " do\n")
-	indentLevel++
 	if wst.WithBreak {
 		writeIndent(w)
 		io.WriteString(w, "try\n")
 		indentLevel++
 	}
+	writeIndent(w)
+	io.WriteString(w, "while ")
+	wst.Cond.emit(w)
+	io.WriteString(w, " do\n")
+	indentLevel++
 	for i, st := range wst.Body {
 		st.emit(w)
 		if i < len(wst.Body)-1 {
@@ -2406,6 +2406,16 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 				return nil, fmt.Errorf("substring expects 3 args")
 			}
 			return &SubstringExpr{Str: args[0], Start: args[1], End: args[2]}, nil
+		case "upper":
+			if len(args) != 1 {
+				return nil, fmt.Errorf("upper expects 1 arg")
+			}
+			return &MethodCallExpr{Target: args[0], Name: "ToUpper"}, nil
+		case "lower":
+			if len(args) != 1 {
+				return nil, fmt.Errorf("lower expects 1 arg")
+			}
+			return &MethodCallExpr{Target: args[0], Name: "ToLower"}, nil
 		case "values":
 			if len(args) != 1 {
 				return nil, fmt.Errorf("values expects 1 arg")

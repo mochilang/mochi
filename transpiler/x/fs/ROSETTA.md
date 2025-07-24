@@ -2,11 +2,11 @@
 
 This file is auto-generated from rosetta tests.
 
-## Checklist (14/284)
+## Checklist (16/284)
 1. [x] 100-doors-2 (index 1)
 2. [x] 100-doors-3 (index 2)
 3. [x] 100-doors (index 3)
-4. [ ] 100-prisoners (index 4)
+4. [x] 100-prisoners (index 4)
 5. [x] 15-puzzle-game (index 5)
 6. [ ] 15-puzzle-solver (index 6)
 7. [x] 2048 (index 7)
@@ -20,7 +20,7 @@ This file is auto-generated from rosetta tests.
 15. [x] DNS-query (index 15)
 16. [x] a+b (index 16)
 17. [x] abbreviations-automatic (index 17)
-18. [ ] abbreviations-easy (index 18)
+18. [x] abbreviations-easy (index 18)
 19. [ ] abbreviations-simple (index 19)
 20. [ ] abc-problem (index 20)
 21. [ ] abelian-sandpile-model-identity (index 21)
@@ -288,4 +288,4 @@ This file is auto-generated from rosetta tests.
 283. [ ] define-a-primitive-data-type (index 283)
 284. [ ] md5 (index 284)
 
-Last updated: 2025-07-24 18:38 +0700
+Last updated: 2025-07-24 20:06 +0700
