@@ -378,15 +378,21 @@ func (e *EnumLit) emit(w io.Writer) {
 }
 
 type FuncDecl struct {
-	Name   string
-	Params []Param
-	Return string
-	Body   []Stmt
-	Unsafe bool
-	Locals map[string]bool
+	Name       string
+	Params     []Param
+	Return     string
+	Body       []Stmt
+	Unsafe     bool
+	Locals     map[string]bool
+	VarTypes   map[string]string
+	StringVars map[string]bool
 }
 
 func (f *FuncDecl) emit(w io.Writer) {
+	oldVarTypes := varTypes
+	oldStringVars := stringVars
+	varTypes = f.VarTypes
+	stringVars = f.StringVars
 	if f.Unsafe {
 		fmt.Fprintf(w, "unsafe fn %s(", f.Name)
 	} else {
@@ -413,6 +419,8 @@ func (f *FuncDecl) emit(w io.Writer) {
 	}
 	localVarStack = localVarStack[:len(localVarStack)-1]
 	io.WriteString(w, "}")
+	varTypes = oldVarTypes
+	stringVars = oldStringVars
 }
 
 type FunLit struct {
@@ -557,8 +565,10 @@ func (i *IndexExpr) emit(w io.Writer) {
 	i.Target.emit(w)
 	io.WriteString(w, "[")
 	i.Index.emit(w)
-	if strings.HasPrefix(inferType(i.Target), "Vec<") && inferType(i.Index) != "usize" {
-		io.WriteString(w, " as usize")
+	if strings.HasPrefix(inferType(i.Target), "Vec<") {
+		if inferType(i.Index) != "usize" {
+			io.WriteString(w, " as usize")
+		}
 	}
 	io.WriteString(w, "]")
 	if !indexLHS {
@@ -844,7 +854,10 @@ type NowExpr struct{}
 
 func (n *NowExpr) emit(w io.Writer) { io.WriteString(w, "_now()") }
 
-type NameRef struct{ Name string }
+type NameRef struct {
+	Name string
+	Type string
+}
 
 func (n *NameRef) emit(w io.Writer) {
 	name := n.Name
@@ -852,7 +865,10 @@ func (n *NameRef) emit(w io.Writer) {
 		name = newName
 	}
 	if cloneVars[n.Name] {
-		typ := varTypes[n.Name]
+		typ := n.Type
+		if typ == "" {
+			typ = varTypes[n.Name]
+		}
 		switch typ {
 		case "i64", "bool", "f64":
 			io.WriteString(w, "*")
@@ -864,7 +880,11 @@ func (n *NameRef) emit(w io.Writer) {
 		return
 	}
 	if !isLocal(n.Name) {
-		if typ := varTypes[n.Name]; globalVars[n.Name] && typ != "" && typ != "i64" && typ != "bool" && typ != "f64" && typ != "String" && !strings.HasPrefix(typ, "&") {
+		typ := n.Type
+		if typ == "" {
+			typ = varTypes[n.Name]
+		}
+		if globalVars[n.Name] && typ != "" && typ != "i64" && typ != "bool" && typ != "f64" && typ != "String" && !strings.HasPrefix(typ, "&") {
 			io.WriteString(w, name)
 			io.WriteString(w, ".clone()")
 			return
@@ -874,7 +894,13 @@ func (n *NameRef) emit(w io.Writer) {
 		io.WriteString(w, name)
 		return
 	}
-	if ut, ok := curEnv.FindUnionByVariant(n.Name); ok && varTypes[n.Name] == "" {
+	var typ string
+	if n.Type != "" {
+		typ = n.Type
+	} else {
+		typ = varTypes[n.Name]
+	}
+	if ut, ok := curEnv.FindUnionByVariant(n.Name); ok && typ == "" {
 		fmt.Fprintf(w, "%s::%s", ut.Name, n.Name)
 		return
 	}
@@ -1300,7 +1326,7 @@ func (q *QueryExpr) emit(w io.Writer) {
 		io.WriteString(w, j.Var)
 		fmt.Fprintf(w, ": Option<%s> = Some(", j.Typ)
 		cloneVars = map[string]bool{j.Var: j.ByRef}
-		(&NameRef{Name: j.Var}).emit(w)
+		(&NameRef{Name: j.Var, Type: j.Typ}).emit(w)
 		cloneVars = nil
 		io.WriteString(w, "); _q.push(")
 		cloneVars = map[string]bool{q.Var: q.VarByRef, j.Var: true}
@@ -1879,7 +1905,7 @@ func compileStmt(stmt *parser.Statement) (Stmt, error) {
 			return nil, err
 		}
 		if len(stmt.Assign.Index) > 0 {
-			target := Expr(&NameRef{Name: stmt.Assign.Name})
+			target := Expr(&NameRef{Name: stmt.Assign.Name, Type: varTypes[stmt.Assign.Name]})
 			target, err = applyIndexOps(target, stmt.Assign.Index)
 			if err != nil {
 				return nil, err
@@ -2091,7 +2117,7 @@ func compileForStmt(n *parser.ForStmt) (Stmt, error) {
 func compileUpdateStmt(u *parser.UpdateStmt) (Stmt, error) {
 	idxVar := "_i"
 	start := &NumberLit{Value: "0"}
-	end := &LenExpr{Arg: &NameRef{Name: u.Target}}
+	end := &LenExpr{Arg: &NameRef{Name: u.Target, Type: varTypes[u.Target]}}
 
 	var st types.StructType
 	if curEnv != nil {
@@ -2110,7 +2136,7 @@ func compileUpdateStmt(u *parser.UpdateStmt) (Stmt, error) {
 		for _, f := range st.Order {
 			child.SetVar(f, st.Fields[f], true)
 			varTypes[f] = rustTypeFromType(st.Fields[f])
-			expr := Expr(&FieldExpr{Receiver: &IndexExpr{Target: &NameRef{Name: u.Target}, Index: &NameRef{Name: idxVar}}, Name: f})
+			expr := Expr(&FieldExpr{Receiver: &IndexExpr{Target: &NameRef{Name: u.Target, Type: varTypes[u.Target]}, Index: &NameRef{Name: idxVar}}, Name: f})
 			vt := rustTypeFromType(st.Fields[f])
 			if vt == "String" {
 				expr = &MethodCallExpr{Receiver: expr, Name: "clone"}
@@ -2135,7 +2161,7 @@ func compileUpdateStmt(u *parser.UpdateStmt) (Stmt, error) {
 				}
 			}
 		}
-		target := &FieldExpr{Receiver: &IndexExpr{Target: &NameRef{Name: u.Target}, Index: &NameRef{Name: idxVar}}, Name: field}
+		target := &FieldExpr{Receiver: &IndexExpr{Target: &NameRef{Name: u.Target, Type: varTypes[u.Target]}, Index: &NameRef{Name: idxVar}}, Name: field}
 		updates = append(updates, &IndexAssignStmt{Target: target, Value: val})
 	}
 
@@ -2159,7 +2185,7 @@ func compileUpdateStmt(u *parser.UpdateStmt) (Stmt, error) {
 		body = append(body, updates...)
 	}
 	loop := &ForStmt{Var: idxVar, Iter: start, End: end, Body: body}
-	decl := &VarDecl{Name: u.Target, Expr: &NameRef{Name: u.Target}, Mutable: true}
+	decl := &VarDecl{Name: u.Target, Expr: &NameRef{Name: u.Target, Type: varTypes[u.Target]}, Mutable: true}
 	return &MultiStmt{Stmts: []Stmt{decl, loop}}, nil
 }
 
@@ -2205,11 +2231,20 @@ func compileTypeStmt(t *parser.TypeDecl) (Stmt, error) {
 
 func compileFunStmt(fn *parser.FunStmt) (Stmt, error) {
 	funcDepth++
+	prevVarTypes := varTypes
+	prevMapVars := mapVars
+	prevStringVars := stringVars
+	varTypes = copyStringMap(varTypes)
+	mapVars = copyBoolMap(mapVars)
+	stringVars = copyBoolMap(stringVars)
 	defer func() {
 		funcDepth--
 		if len(localVarStack) > 0 {
 			localVarStack = localVarStack[:len(localVarStack)-1]
 		}
+		varTypes = prevVarTypes
+		mapVars = prevMapVars
+		stringVars = prevStringVars
 	}()
 	locals := map[string]bool{}
 	currentFuncLocals = map[string]bool{}
@@ -2316,7 +2351,9 @@ func compileFunStmt(fn *parser.FunStmt) (Stmt, error) {
 	}
 	localsCopy := currentFuncLocals
 	currentFuncLocals = nil
-	return &FuncDecl{Name: name, Params: params, Return: ret, Body: body, Locals: localsCopy}, nil
+	vtCopy := copyStringMap(varTypes)
+	svCopy := copyBoolMap(stringVars)
+	return &FuncDecl{Name: name, Params: params, Return: ret, Body: body, Locals: localsCopy, VarTypes: vtCopy, StringVars: svCopy}, nil
 }
 
 func applyIndexOps(base Expr, ops []*parser.IndexOp) (Expr, error) {
@@ -2711,7 +2748,7 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 			for i := 0; i < missing; i++ {
 				pname := fmt.Sprintf("p%d", i)
 				params[i] = Param{Name: pname}
-				vars[i] = &NameRef{Name: pname}
+				vars[i] = &NameRef{Name: pname, Type: varTypes[pname]}
 			}
 			bodyArgs := append(append([]Expr{}, args...), vars...)
 			body := &CallExpr{Func: name, Args: bodyArgs}
@@ -2928,7 +2965,7 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 				}
 			}
 		}
-		expr := Expr(&NameRef{Name: p.Selector.Root})
+		expr := Expr(&NameRef{Name: p.Selector.Root, Type: varTypes[p.Selector.Root]})
 		for _, f := range p.Selector.Tail {
 			expr = &FieldExpr{Receiver: expr, Name: f}
 		}
@@ -3394,6 +3431,9 @@ func inferType(e Expr) string {
 		}
 		return "i64"
 	case *NameRef:
+		if ex.Type != "" {
+			return ex.Type
+		}
 		if t, ok := varTypes[ex.Name]; ok && t != "" {
 			return t
 		}
@@ -4280,4 +4320,20 @@ func rustIdent(name string) string {
 		ident = "_" + ident
 	}
 	return ident
+}
+
+func copyStringMap(src map[string]string) map[string]string {
+	dst := make(map[string]string, len(src))
+	for k, v := range src {
+		dst[k] = v
+	}
+	return dst
+}
+
+func copyBoolMap(src map[string]bool) map[string]bool {
+	dst := make(map[string]bool, len(src))
+	for k, v := range src {
+		dst[k] = v
+	}
+	return dst
 }
