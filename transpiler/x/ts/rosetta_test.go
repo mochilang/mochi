@@ -153,7 +153,7 @@ func updateRosettaChecklist() {
 			compiled++
 			mark = "[x]"
 		}
-		lines = append(lines, fmt.Sprintf("%d. %s %s", i+1, mark, name))
+		lines = append(lines, fmt.Sprintf("%d. %s %s (%d)", i+1, mark, name, i+1))
 	}
 	ts := time.Now().UTC().Format("2006-01-02 15:04 MST")
 	var buf bytes.Buffer
