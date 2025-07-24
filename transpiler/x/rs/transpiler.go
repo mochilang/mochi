@@ -500,18 +500,14 @@ func (s *SliceExpr) emit(w io.Writer) {
 	tgt := inferType(s.Target)
 	if s.Start != nil {
 		s.Start.emit(w)
-		if tgt == "String" || strings.HasPrefix(tgt, "Vec<") {
-			io.WriteString(w, " as usize")
-		}
+		io.WriteString(w, " as usize")
 	} else {
 		io.WriteString(w, "0")
 	}
 	io.WriteString(w, "..")
 	if s.End != nil {
 		s.End.emit(w)
-		if tgt == "String" || strings.HasPrefix(tgt, "Vec<") {
-			io.WriteString(w, " as usize")
-		}
+		io.WriteString(w, " as usize")
 	}
 	io.WriteString(w, "]")
 	if tgt == "String" {
@@ -557,18 +553,15 @@ func (i *IndexExpr) emit(w io.Writer) {
 	i.Target.emit(w)
 	io.WriteString(w, "[")
 	i.Index.emit(w)
-	if strings.HasPrefix(inferType(i.Target), "Vec<") && inferType(i.Index) != "usize" {
-		io.WriteString(w, " as usize")
-	}
+	// Always cast list indices to usize to avoid type errors when the index
+	// expression type cannot be inferred correctly.
+	// Default to casting the index to `usize`. Many Mochi programs use `int`
+	// values for list indices and type inference may not always propagate
+	// the vector element type here.
+	io.WriteString(w, " as usize")
 	io.WriteString(w, "]")
 	if !indexLHS {
-		et := ""
-		if t := inferType(i.Target); strings.HasPrefix(t, "Vec<") {
-			et = strings.TrimSuffix(strings.TrimPrefix(t, "Vec<"), ">")
-		}
-		if et != "" && et != "i64" && et != "bool" && et != "f64" && et != "String" {
-			io.WriteString(w, ".clone()")
-		}
+		io.WriteString(w, ".clone()")
 	}
 }
 
@@ -2302,6 +2295,9 @@ func compileFunStmt(fn *parser.FunStmt) (Stmt, error) {
 	}
 	localsCopy := currentFuncLocals
 	currentFuncLocals = nil
+	for n := range localsCopy {
+		delete(varTypes, n)
+	}
 	return &FuncDecl{Name: name, Params: params, Return: ret, Body: body, Locals: localsCopy}, nil
 }
 
