@@ -2,8 +2,8 @@
 
 Generated Scheme code for Rosetta Code tasks under `tests/rosetta/x/Mochi`.
 
-## Checklist (12/284)
-Last updated: 2025-07-24 01:13 UTC
+## Checklist (13/284)
+Last updated: 2025-07-24 12:43 UTC
 
 1. [x] 100-doors-2
 2. [x] 100-doors-3
@@ -20,7 +20,7 @@ Last updated: 2025-07-24 01:13 UTC
 13. [x] 99-bottles-of-beer-2
 14. [x] 99-bottles-of-beer
 15. [ ] DNS-query
-16. [ ] a+b
+16. [x] a+b
 17. [ ] abbreviations-automatic
 18. [ ] abbreviations-easy
 19. [ ] abbreviations-simple

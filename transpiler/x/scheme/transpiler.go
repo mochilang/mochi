@@ -654,6 +654,7 @@ func convertStmt(st *parser.Statement) (Node, error) {
 		} else {
 			body = &List{Elems: append([]Node{Symbol("begin")}, bodyForms...)}
 		}
+		needBase = true
 		wrapped := &List{Elems: []Node{
 			Symbol("call/cc"),
 			&List{Elems: []Node{
@@ -2037,12 +2038,17 @@ func convertCall(target Node, call *parser.CallOp) (Node, error) {
 		if len(args) != 1 {
 			return nil, fmt.Errorf("int expects 1 arg")
 		}
-		x := args[0]
+		x := gensym("x")
+		needBase = true
 		return &List{Elems: []Node{
-			Symbol("cond"),
-			&List{Elems: []Node{&List{Elems: []Node{Symbol("string?"), x}}, &List{Elems: []Node{Symbol("inexact->exact"), &List{Elems: []Node{Symbol("string->number"), x}}}}}},
-			&List{Elems: []Node{&List{Elems: []Node{Symbol("boolean?"), x}}, &List{Elems: []Node{Symbol("if"), x, IntLit(1), IntLit(0)}}}},
-			&List{Elems: []Node{Symbol("else"), &List{Elems: []Node{Symbol("inexact->exact"), x}}}},
+			Symbol("let"),
+			&List{Elems: []Node{&List{Elems: []Node{x, args[0]}}}},
+			&List{Elems: []Node{
+				Symbol("cond"),
+				&List{Elems: []Node{&List{Elems: []Node{Symbol("string?"), x}}, &List{Elems: []Node{Symbol("inexact->exact"), &List{Elems: []Node{Symbol("string->number"), x}}}}}},
+				&List{Elems: []Node{&List{Elems: []Node{Symbol("boolean?"), x}}, &List{Elems: []Node{Symbol("if"), x, IntLit(1), IntLit(0)}}}},
+				&List{Elems: []Node{Symbol("else"), &List{Elems: []Node{Symbol("inexact->exact"), x}}}},
+			}},
 		}}, nil
 	case "input":
 		if len(args) != 0 {
