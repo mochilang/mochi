@@ -1,3 +1,11 @@
+## Progress (2025-07-24 20:52 +0700)
+- php: add str helper and transpile bitmap-histogram
+- Regenerated golden files - 92/103 vm valid programs passing
+
+## Progress (2025-07-24 20:52 +0700)
+- php: add str helper and transpile bitmap-histogram
+- Regenerated golden files - 92/103 vm valid programs passing
+
 ## Progress (2025-07-24 20:08 +0700)
 - scala rosetta: support bigint; transpile ackermann-function-3
 - Regenerated golden files - 92/103 vm valid programs passing
