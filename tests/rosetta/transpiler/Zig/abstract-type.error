@@ -1,4 +1,0 @@
-zig build: exit status 1
-/tmp/abstract-type.zig:5:67: error: use of undeclared identifier 'handleError'
-/tmp/abstract-type.zig:22:35: error: unused capture
-/tmp/abstract-type.zig:22:59: error: unused capture
