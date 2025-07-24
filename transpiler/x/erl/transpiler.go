@@ -2894,6 +2894,13 @@ func convertFunStmt(fn *parser.FunStmt, env *types.Env, ctx *context) (*FuncDecl
 	for i, p := range fn.Params {
 		params[i] = fctx.newAlias(p.Name)
 		fctx.addParam(p.Name)
+		if p.Type != nil {
+			if p.Type.Generic != nil && p.Type.Generic.Name == "map" {
+				fctx.setMapVar(p.Name, true)
+			} else if p.Type.Simple != nil && *p.Type.Simple == "string" {
+				fctx.setStringVar(p.Name, true)
+			}
+		}
 	}
 	var stmts []Stmt
 	var ret Expr
@@ -2974,6 +2981,13 @@ func convertFunStmtAsExpr(fn *parser.FunStmt, env *types.Env, ctx *context) (Exp
 	for i, p := range fn.Params {
 		params[i] = fctx.newAlias(p.Name)
 		fctx.addParam(p.Name)
+		if p.Type != nil {
+			if p.Type.Generic != nil && p.Type.Generic.Name == "map" {
+				fctx.setMapVar(p.Name, true)
+			} else if p.Type.Simple != nil && *p.Type.Simple == "string" {
+				fctx.setStringVar(p.Name, true)
+			}
+		}
 	}
 	var stmts []Stmt
 	var ret Expr
