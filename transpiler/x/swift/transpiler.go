@@ -122,6 +122,33 @@ func (sd *StructDef) emit(w io.Writer) {
 	fmt.Fprint(w, "}\n")
 }
 
+// UnionDef represents a simple enum type declaration for a union.
+type UnionDef struct {
+	Name     string
+	Variants []UnionVariant
+}
+
+// UnionVariant defines a single case within a union enum.
+type UnionVariant struct {
+	Name   string
+	Fields []StructField
+}
+
+func (ud *UnionDef) emit(w io.Writer) {
+	fmt.Fprintf(w, "indirect enum %s {\n", ud.Name)
+	for _, v := range ud.Variants {
+		fmt.Fprintf(w, "    case %s(", v.Name)
+		for i, f := range v.Fields {
+			if i > 0 {
+				fmt.Fprint(w, ", ")
+			}
+			fmt.Fprintf(w, "%s: %s", f.Name, f.Type)
+		}
+		fmt.Fprint(w, ")\n")
+	}
+	fmt.Fprint(w, "}\n")
+}
+
 type IfStmt struct {
 	Cond   Expr
 	Then   []Stmt
@@ -163,6 +190,19 @@ type FunExpr struct {
 	Body   Expr
 }
 
+// UnionMatchExpr represents a switch over a union enum value.
+type UnionMatchExpr struct {
+	Target Expr
+	Cases  []UnionMatchCase
+	Type   string
+}
+
+type UnionMatchCase struct {
+	Variant  string
+	Bindings []string
+	Body     Expr
+}
+
 func (f *FunExpr) emit(w io.Writer) {
 	fmt.Fprint(w, "{ (")
 	for i, p := range f.Params {
@@ -184,6 +224,34 @@ func (f *FunExpr) emit(w io.Writer) {
 		f.Body.emit(w)
 	}
 	fmt.Fprint(w, " }")
+}
+
+func (m *UnionMatchExpr) emit(w io.Writer) {
+	ret := "Any"
+	if m.Type != "" {
+		ret = m.Type
+	}
+	fmt.Fprintf(w, "{ () -> %s in\n", ret)
+	fmt.Fprint(w, "switch ")
+	m.Target.emit(w)
+	fmt.Fprint(w, " {\n")
+	for _, c := range m.Cases {
+		fmt.Fprintf(w, "case let .%s(", c.Variant)
+		for i, b := range c.Bindings {
+			if i > 0 {
+				fmt.Fprint(w, ", ")
+			}
+			if b != "" {
+				fmt.Fprint(w, b)
+			} else {
+				fmt.Fprint(w, "_")
+			}
+		}
+		fmt.Fprint(w, "):\n    return ")
+		c.Body.emit(w)
+		fmt.Fprint(w, "\n")
+	}
+	fmt.Fprintf(w, "default:\n    var z: %s\n    return z\n}\n}()", ret)
 }
 
 func (c *CondExpr) emit(w io.Writer) {
@@ -402,9 +470,28 @@ type FieldInit struct {
 	Value Expr
 }
 
+// UnionInit represents initialization of a union case.
+type UnionInit struct {
+	Union   string
+	Variant string
+	Fields  []FieldInit
+}
+
 func (si *StructInit) emit(w io.Writer) {
 	fmt.Fprintf(w, "%s(", si.Name)
 	for i, f := range si.Fields {
+		if i > 0 {
+			fmt.Fprint(w, ", ")
+		}
+		fmt.Fprintf(w, "%s: ", f.Name)
+		f.Value.emit(w)
+	}
+	fmt.Fprint(w, ")")
+}
+
+func (ui *UnionInit) emit(w io.Writer) {
+	fmt.Fprintf(w, "%s.%s(", ui.Union, ui.Variant)
+	for i, f := range ui.Fields {
 		if i > 0 {
 			fmt.Fprint(w, ", ")
 		}
@@ -1326,8 +1413,16 @@ func convertStmt(env *types.Env, st *parser.Statement) (Stmt, error) {
 			} else if st.Var.Value != nil {
 				varT = types.TypeOfExpr(st.Var.Value, env)
 			}
-			env.SetVar(st.Var.Name, varT, true)
+			ut, okU := env.FindUnionByVariant(swiftTypeOf(varT))
+			if okU {
+				env.SetVar(st.Var.Name, ut, true)
+			} else {
+				env.SetVar(st.Var.Name, varT, true)
+			}
 			swiftT := swiftTypeOf(varT)
+			if okU {
+				swiftT = ut.Name
+			}
 			if swiftT != "Any" {
 				ex = &CastExpr{Expr: ex, Type: swiftT + "!"}
 			}
@@ -1721,6 +1816,21 @@ func convertUpdateStmt(env *types.Env, us *parser.UpdateStmt) (Stmt, error) {
 
 func convertTypeDecl(env *types.Env, td *parser.TypeDecl) (Stmt, error) {
 	if len(td.Variants) > 0 {
+		if _, ok := env.GetUnion(td.Name); ok {
+			variants := make([]UnionVariant, 0, len(td.Variants))
+			for _, v := range td.Variants {
+				st, ok := env.GetStruct(v.Name)
+				if !ok {
+					continue
+				}
+				fields := make([]StructField, len(st.Order))
+				for i, n := range st.Order {
+					fields[i] = StructField{Name: n, Type: swiftTypeOf(st.Fields[n])}
+				}
+				variants = append(variants, UnionVariant{Name: v.Name, Fields: fields})
+			}
+			return &UnionDef{Name: td.Name, Variants: variants}, nil
+		}
 		return &BlockStmt{}, nil
 	}
 	var fields []StructField
@@ -2454,6 +2564,54 @@ func convertMatchExpr(env *types.Env, me *parser.MatchExpr) (Expr, error) {
 	if err != nil {
 		return nil, err
 	}
+	typ := "Any"
+	if len(me.Cases) > 0 {
+		t0 := types.ExprType(me.Cases[0].Result, env)
+		typ = swiftTypeOf(t0)
+		for _, c := range me.Cases[1:] {
+			if !types.EqualTypes(t0, types.ExprType(c.Result, env)) {
+				typ = "Any"
+				break
+			}
+		}
+	}
+	if len(me.Cases) > 0 {
+		var firstVar string
+		if name, ok := identName(me.Cases[0].Pattern); ok {
+			firstVar = name
+		} else if call, ok := callPattern(me.Cases[0].Pattern); ok {
+			firstVar = call.Func
+		}
+		if firstVar != "" {
+			if _, ok := env.FindUnionByVariant(firstVar); ok {
+				cases := make([]UnionMatchCase, len(me.Cases))
+				for i, c := range me.Cases {
+					var variant string
+					var bindings []string
+					if n, ok := identName(c.Pattern); ok {
+						variant = n
+					} else if call, ok := callPattern(c.Pattern); ok {
+						variant = call.Func
+						bindings = make([]string, len(call.Args))
+						for j, a := range call.Args {
+							if nm, ok := identName(a); ok {
+								bindings[j] = nm
+							}
+						}
+					} else {
+						variant = "_"
+					}
+					body, err := convertExpr(env, c.Result)
+					if err != nil {
+						return nil, err
+					}
+					cases[i] = UnionMatchCase{Variant: variant, Bindings: bindings, Body: body}
+				}
+				return &UnionMatchExpr{Target: target, Cases: cases, Type: typ}, nil
+			}
+		}
+	}
+
 	var expr Expr = &LitExpr{Value: "nil", IsString: false}
 	for i := len(me.Cases) - 1; i >= 0; i-- {
 		c := me.Cases[i]
@@ -2894,6 +3052,9 @@ func convertStructLiteral(env *types.Env, sl *parser.StructLiteral) (Expr, error
 		vals = append(vals, v)
 	}
 	if sl.Name != "" {
+		if ut, ok := env.FindUnionByVariant(sl.Name); ok {
+			return &UnionInit{Union: ut.Name, Variant: sl.Name, Fields: fields}, nil
+		}
 		return &StructInit{Name: sl.Name, Fields: fields}, nil
 	}
 	return &MapLit{Keys: keys, Values: vals}, nil
@@ -3044,6 +3205,11 @@ func swiftTypeOf(t types.Type) string {
 			return tt.Name
 		}
 		return "Any"
+	case types.UnionType:
+		if tt.Name != "" {
+			return tt.Name
+		}
+		return "Any"
 	default:
 		return "Any"
 	}
@@ -3122,6 +3288,25 @@ func isSimpleIdent(e *parser.Expr) (string, bool) {
 		return p.Target.Selector.Root, true
 	}
 	return "", false
+}
+
+func identName(e *parser.Expr) (string, bool) {
+	return isSimpleIdent(e)
+}
+
+func callPattern(e *parser.Expr) (*parser.CallExpr, bool) {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) > 0 {
+		return nil, false
+	}
+	u := e.Binary.Left
+	if len(u.Ops) > 0 || u.Value == nil {
+		return nil, false
+	}
+	p := u.Value
+	if len(p.Ops) > 0 || p.Target == nil || p.Target.Call == nil {
+		return nil, false
+	}
+	return p.Target.Call, true
 }
 
 func parseFormat(e *parser.Expr) string {
