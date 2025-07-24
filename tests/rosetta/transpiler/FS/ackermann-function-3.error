@@ -1,0 +1,13 @@
+compile: exit status 1
+F# Compiler for F# 4.0 (Open Source Edition)
+Freely distributed under the Apache 2.0 Open Source License
+
+/workspace/mochi/tests/rosetta/transpiler/FS/ackermann-function-3.fs(5,18): error FS0010: Unexpected keyword 'base' in pattern. Expected ')' or other token.
+
+/workspace/mochi/tests/rosetta/transpiler/FS/ackermann-function-3.fs(5,17): error FS0583: Unmatched '('
+
+/workspace/mochi/tests/rosetta/transpiler/FS/ackermann-function-3.fs(7,17): error FS0010: Unexpected keyword 'base' in binding
+
+/workspace/mochi/tests/rosetta/transpiler/FS/ackermann-function-3.fs(12,9): error FS0010: Incomplete structured construct at or before this point in expression. Expected '.' or other token.
+
+/workspace/mochi/tests/rosetta/transpiler/FS/ackermann-function-3.fs(3,1): warning FS0221: The declarations in this file will be placed in an implicit module 'Ackermann-function-3' based on the file name 'ackermann-function-3.fs'. However this is not a valid F# identifier, so the contents will not be accessible from other files. Consider renaming the file or adding a 'module' or 'namespace' declaration at the top of the file.
