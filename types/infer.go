@@ -496,6 +496,8 @@ func inferPrimaryType(env *Env, p *parser.Primary) Type {
 			return ListType{Elem: AnyType{}}
 		case "now":
 			return IntType{}
+		case "to_string":
+			return StringType{}
 		case "to_json":
 			return StringType{}
 		default:
@@ -1117,6 +1119,11 @@ func TypeOfPrimaryBasic(p *parser.Primary, env *Env) Type {
 			if t, err := env.GetVar(p.Selector.Root); err == nil {
 				return FieldType(t, p.Selector.Tail)
 			}
+		}
+	case p.Call != nil:
+		switch p.Call.Func {
+		case "to_string", "str", "input":
+			return StringType{}
 		}
 	}
 	return AnyType{}
