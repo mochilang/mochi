@@ -1,3 +1,7 @@
+## Progress (2025-07-24 18:38 +0700)
+- ctrans: add atoi helper and update rosetta
+- Generated F# for 102/103 programs (102 passing)
+
 ## Progress (2025-07-24 08:38 +0000)
 - fs transpiler: support net.LookupHost
 - Generated F# for 102/103 programs (102 passing)

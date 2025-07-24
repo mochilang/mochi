@@ -1276,7 +1276,10 @@ func (f *FloatLit) emit(w io.Writer) {
 	io.WriteString(w, s)
 }
 
-type IdentExpr struct{ Name string }
+type IdentExpr struct {
+	Name string
+	Type string
+}
 
 func (i *IdentExpr) emit(w io.Writer) { io.WriteString(w, fsIdent(i.Name)) }
 
@@ -1417,6 +1420,15 @@ func inferType(e Expr) string {
 	case *QueryExpr, *GroupQueryExpr:
 		return "array"
 	case *IdentExpr:
+		if t := v.Type; t != "" {
+			if strings.HasSuffix(t, " list") || strings.HasSuffix(t, " array") || strings.HasPrefix(t, "list<") {
+				return "array"
+			}
+			if strings.HasPrefix(t, "Map<") {
+				return "map"
+			}
+			return t
+		}
 		if t, ok := varTypes[v.Name]; ok {
 			if strings.HasSuffix(t, " list") || strings.HasSuffix(t, " array") || strings.HasPrefix(t, "list<") {
 				return "array"
@@ -1970,7 +1982,8 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 		if err != nil {
 			return nil, err
 		}
-		target := Expr(&IdentExpr{Name: st.Assign.Name})
+		typ := varTypes[st.Assign.Name]
+		target := Expr(&IdentExpr{Name: st.Assign.Name, Type: typ})
 		if len(st.Assign.Index) > 0 {
 			target, err = applyIndexOps(target, st.Assign.Index)
 			if err != nil {
@@ -1978,7 +1991,7 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 			}
 			if t := varTypes[st.Assign.Name]; strings.HasPrefix(t, "Map<") {
 				if len(st.Assign.Index) == 1 {
-					upd := &CallExpr{Func: "Map.add", Args: []Expr{target.(*IndexExpr).Index, val, &IdentExpr{Name: st.Assign.Name}}}
+					upd := &CallExpr{Func: "Map.add", Args: []Expr{target.(*IndexExpr).Index, val, &IdentExpr{Name: st.Assign.Name, Type: t}}}
 					return &AssignStmt{Name: st.Assign.Name, Expr: upd}, nil
 				}
 			}
@@ -1991,7 +2004,7 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 					}
 					indices[i] = idx
 				}
-				list := &IdentExpr{Name: st.Assign.Name}
+				list := &IdentExpr{Name: st.Assign.Name, Type: t}
 				upd := buildListUpdate(list, indices, val)
 				return &AssignStmt{Name: st.Assign.Name, Expr: upd}, nil
 			}
@@ -2004,7 +2017,7 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 					}
 					indices[i] = idx
 				}
-				upd := buildMapUpdate(&IdentExpr{Name: st.Assign.Name}, indices, val)
+				upd := buildMapUpdate(&IdentExpr{Name: st.Assign.Name, Type: t}, indices, val)
 				return &AssignStmt{Name: st.Assign.Name, Expr: upd}, nil
 			}
 			return &IndexAssignStmt{Target: target, Value: val}, nil
@@ -2581,7 +2594,11 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 		if p.Selector.Root == "nil" && len(p.Selector.Tail) == 0 {
 			return &NullLit{}, nil
 		}
-		expr := Expr(&IdentExpr{Name: p.Selector.Root})
+		typ := ""
+		if t, ok := varTypes[p.Selector.Root]; ok {
+			typ = t
+		}
+		expr := Expr(&IdentExpr{Name: p.Selector.Root, Type: typ})
 		for _, name := range p.Selector.Tail {
 			expr = &FieldExpr{Target: expr, Name: name}
 		}

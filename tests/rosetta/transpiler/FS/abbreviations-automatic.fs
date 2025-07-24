@@ -1,4 +1,4 @@
-// Generated 2025-07-24 16:18 +0700
+// Generated 2025-07-24 18:38 +0700
 
 exception Return
 
@@ -52,7 +52,7 @@ and distinct (xs: string array) =
         let mutable i: int = 0
         while i < (Seq.length xs) do
             let x = xs.[i]
-            if not (Seq.contains x m) then
+            if not (Map.containsKey x m) then
                 m <- Map.add x true m
                 out <- Array.append out [|x|]
             i <- i + 1
