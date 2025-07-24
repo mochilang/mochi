@@ -301,11 +301,35 @@ type ForInStmt struct {
 	Iterable Expr
 	Body     []Stmt
 	Keys     bool
+	String   bool
 	Break    Expr
 	Unless   Expr
 }
 
 func (f *ForInStmt) emit(w io.Writer) {
+	if f.String {
+		io.WriteString(w, "(for ([__i (in-range (string-length ")
+		f.Iterable.emit(w)
+		io.WriteString(w, "))])")
+		if f.Break != nil {
+			io.WriteString(w, " #:break ")
+			f.Break.emit(w)
+		}
+		if f.Unless != nil {
+			io.WriteString(w, " #:unless ")
+			f.Unless.emit(w)
+		}
+		io.WriteString(w, "\n  (define ")
+		io.WriteString(w, f.Name)
+		io.WriteString(w, " (substring ")
+		f.Iterable.emit(w)
+		io.WriteString(w, " __i (+ __i 1)))\n")
+		for _, st := range f.Body {
+			st.emit(w)
+		}
+		io.WriteString(w, ")\n")
+		return
+	}
 	io.WriteString(w, "(for ([")
 	io.WriteString(w, f.Name)
 	io.WriteString(w, " ")
@@ -533,13 +557,13 @@ type MatchExpr struct {
 
 func (i *IndexExpr) emit(w io.Writer) {
 	if i.IsString {
-		io.WriteString(w, "(string ")
-		io.WriteString(w, "(string-ref ")
+		io.WriteString(w, "(substring ")
 		i.Target.emit(w)
 		io.WriteString(w, " ")
 		i.Index.emit(w)
-		io.WriteString(w, ")")
-		io.WriteString(w, ")")
+		io.WriteString(w, " (+ ")
+		i.Index.emit(w)
+		io.WriteString(w, " 1))")
 	} else if i.IsMap {
 		io.WriteString(w, "(if ")
 		i.Target.emit(w)
@@ -1682,7 +1706,11 @@ func convertForStmt(n *parser.ForStmt, env *types.Env) (Stmt, error) {
 	if _, ok := types.ExprType(n.Source, env).(types.MapType); ok {
 		keys = true
 	}
-	return &ForInStmt{Name: n.Name, Iterable: iter, Body: body, Keys: keys, Break: breakCond, Unless: continueCond}, nil
+	stringIter := false
+	if _, ok := types.ExprType(n.Source, env).(types.StringType); ok {
+		stringIter = true
+	}
+	return &ForInStmt{Name: n.Name, Iterable: iter, Body: body, Keys: keys, String: stringIter, Break: breakCond, Unless: continueCond}, nil
 }
 
 func replaceRangeContinue(st Stmt, varName string) Stmt {

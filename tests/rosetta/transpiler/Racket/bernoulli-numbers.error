@@ -1,0 +1,5 @@
+run error: exit status 1
+/workspace/mochi/tests/rosetta/transpiler/Racket/bernoulli-numbers.rkt:65:18: num: unbound identifier
+  in: num
+  location...:
+   /workspace/mochi/tests/rosetta/transpiler/Racket/bernoulli-numbers.rkt:65:18

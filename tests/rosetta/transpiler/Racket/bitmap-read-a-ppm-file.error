@@ -1,0 +1,5 @@
+run error: exit status 1
+/workspace/mochi/tests/rosetta/transpiler/Racket/bitmap-read-a-ppm-file.rkt:73:16: substr: unbound identifier
+  in: substr
+  location...:
+   /workspace/mochi/tests/rosetta/transpiler/Racket/bitmap-read-a-ppm-file.rkt:73:16

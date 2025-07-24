@@ -1,0 +1,5 @@
+run error: exit status 1
+list-ref: index 0.0 is not an exact nonnegative integer
+  context...:
+   /workspace/mochi/tests/rosetta/transpiler/Racket/benfords-law.rkt:118:2
+   body of "/workspace/mochi/tests/rosetta/transpiler/Racket/benfords-law.rkt"
