@@ -1903,6 +1903,17 @@ type RawExpr struct{ Code string }
 func (r *RawExpr) emit(w io.Writer)      { io.WriteString(w, r.Code) }
 func (r *RawExpr) emitPrint(w io.Writer) { io.WriteString(w, r.Code) }
 
+// IgnoreExpr wraps an expression with OCaml's [ignore] to discard its result.
+type IgnoreExpr struct{ Expr Expr }
+
+func (i *IgnoreExpr) emit(w io.Writer) {
+	io.WriteString(w, "ignore (")
+	i.Expr.emit(w)
+	io.WriteString(w, ")")
+}
+
+func (i *IgnoreExpr) emitPrint(w io.Writer) { i.emit(w) }
+
 // FloatLit represents a floating point literal.
 type FloatLit struct{ Value float64 }
 
@@ -2364,15 +2375,14 @@ func transpileStmt(st *parser.Statement, env *types.Env, vars map[string]VarInfo
 			return &SaveStmt{Src: src, Path: path, Format: format}, nil
 		}
 		if call != nil {
-			args := make([]Expr, len(call.Args))
-			for i, a := range call.Args {
-				ex, _, err := convertExpr(a, env, vars)
-				if err != nil {
-					return nil, err
-				}
-				args[i] = ex
+			expr, ret, err := convertCall(call, env, vars)
+			if err != nil {
+				return nil, err
 			}
-			return &ExprStmt{Expr: &FuncCall{Name: call.Func, Args: args, Ret: "int"}}, nil
+			if ret != "" && ret != "unit" {
+				expr = &IgnoreExpr{Expr: expr}
+			}
+			return &ExprStmt{Expr: expr}, nil
 		}
 		return nil, fmt.Errorf("unsupported expression")
 	case st.If != nil:
@@ -3671,6 +3681,22 @@ func convertQueryExpr(q *parser.QueryExpr, env *types.Env, vars map[string]VarIn
 }
 
 func convertCall(c *parser.CallExpr, env *types.Env, vars map[string]VarInfo) (Expr, string, error) {
+	if ut, ok := env.FindUnionByVariant(c.Func); ok {
+		if st, ok2 := ut.Variants[c.Func]; ok2 {
+			if len(c.Args) == len(st.Order) {
+				items := make([]MapEntry, 0, len(st.Order)+1)
+				items = append(items, MapEntry{Key: &StringLit{Value: "tag"}, Value: &StringLit{Value: c.Func}})
+				for i, name := range st.Order {
+					val, _, err := convertExpr(c.Args[i], env, vars)
+					if err != nil {
+						return nil, "", err
+					}
+					items = append(items, MapEntry{Key: &StringLit{Value: name}, Value: val})
+				}
+				return &MapLit{Items: items, Dynamic: false}, "map-dyn", nil
+			}
+		}
+	}
 	if (c.Func == "upper" || c.Func == "lower") && len(c.Args) == 1 {
 		arg, typ, err := convertExpr(c.Args[0], env, vars)
 		if err != nil {
