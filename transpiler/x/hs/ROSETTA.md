@@ -1,8 +1,8 @@
-# Rosetta Haskell Transpiler (11/284 succeeded)
+# Rosetta Haskell Transpiler (12/284 succeeded)
 
 Generated Haskell code for Rosetta Mochi programs. Each `.hs` file is in `tests/rosetta/transpiler/Haskell` with matching `.out` output. Failures produce a `.error` file.
 
-Last updated: 2025-07-24 18:53 GMT+7
+Last updated: 2025-07-25 00:31 GMT+7
 
 ## Checklist
 1. [x] 100-doors-2 (1)
@@ -20,7 +20,7 @@ Last updated: 2025-07-24 18:53 GMT+7
 13. [ ] 99-bottles-of-beer-2 (13)
 14. [ ] 99-bottles-of-beer (14)
 15. [ ] DNS-query (15)
-16. [ ] a+b (16)
+16. [x] a+b (16)
 17. [ ] abbreviations-automatic (17)
 18. [ ] abbreviations-easy (18)
 19. [ ] abbreviations-simple (19)

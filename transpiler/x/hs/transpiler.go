@@ -120,7 +120,7 @@ func safeName(n string) string {
 	if reserved[n] {
 		return "_" + n
 	}
-	if len(n) > 0 && unicode.IsUpper(rune(n[0])) {
+	if len(n) > 0 && unicode.IsUpper(rune(n[0])) && !strings.Contains(n, ".") {
 		r := []rune(n)
 		r[0] = unicode.ToLower(r[0])
 		return string(r)
@@ -798,10 +798,22 @@ func (l *LetStmt) emit(w io.Writer) {
 	}
 	if indent != "" {
 		if call, ok := l.Expr.(*CallExpr); ok {
-			if n, ok2 := call.Fun.(*NameRef); ok2 && n.Name == "input" && len(call.Args) == 0 {
-				io.WriteString(w, name+" <- ")
-				l.Expr.emit(w)
-				return
+			if n, ok2 := call.Fun.(*NameRef); ok2 {
+				if n.Name == "input" && len(call.Args) == 0 {
+					io.WriteString(w, name+" <- ")
+					l.Expr.emit(w)
+					return
+				}
+				if len(call.Args) == 1 {
+					if inCall, ok3 := call.Args[0].(*CallExpr); ok3 {
+						if inName, ok4 := inCall.Fun.(*NameRef); ok4 && inName.Name == "input" && len(inCall.Args) == 0 {
+							io.WriteString(w, name+" <- fmap ")
+							io.WriteString(w, n.Name)
+							io.WriteString(w, " input")
+							return
+						}
+					}
+				}
 			}
 		}
 		io.WriteString(w, "let ")
@@ -856,15 +868,11 @@ func (i *IfStmt) emit(w io.Writer) {
 }
 func (r *ReturnStmt) emit(w io.Writer) {
 	writeIndent(w)
-	switch ex := r.Expr.(type) {
+	switch r.Expr.(type) {
 	case *WhileExpr:
 		// WhileExpr already yields an IO action, so avoid wrapping
 		r.Expr.emit(w)
 	case *IntLit:
-		if ex.Value == "0" {
-			io.WriteString(w, "return ()")
-			return
-		}
 		io.WriteString(w, "return (")
 		r.Expr.emit(w)
 		io.WriteString(w, ")")
