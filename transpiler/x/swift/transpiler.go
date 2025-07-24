@@ -2558,6 +2558,11 @@ func convertPostfix(env *types.Env, p *parser.PostfixExpr) (Expr, error) {
 		return nil, fmt.Errorf("unsupported postfix")
 	}
 	if env != nil {
+		if ce, ok := expr.(*CallExpr); ok && ce.Func == "input" {
+			if t := types.TypeOfPostfix(p, env); types.IsStringType(t) {
+				return expr, nil
+			}
+		}
 		t := types.TypeOfPostfix(p, env)
 		if ot, ok := t.(types.OptionType); ok {
 			t = ot.Elem
