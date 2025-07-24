@@ -1,3 +1,123 @@
+## Progress (2025-07-25 01:09 +0700)
+- scala transpiler: handle function expr param types
+- Regenerated golden files - 92/103 vm valid programs passing
+
+## Progress (2025-07-25 01:09 +0700)
+- scala transpiler: handle function expr param types
+- Regenerated golden files - 92/103 vm valid programs passing
+
+## Progress (2025-07-25 01:09 +0700)
+- scala transpiler: handle function expr param types
+- Regenerated golden files - 92/103 vm valid programs passing
+
+## Progress (2025-07-25 01:09 +0700)
+- scala transpiler: handle function expr param types
+- Regenerated golden files - 92/103 vm valid programs passing
+
+## Progress (2025-07-25 01:09 +0700)
+- scala transpiler: handle function expr param types
+- Regenerated golden files - 92/103 vm valid programs passing
+
+## Progress (2025-07-25 01:09 +0700)
+- scala transpiler: handle function expr param types
+- Regenerated golden files - 92/103 vm valid programs passing
+
+## Progress (2025-07-25 01:09 +0700)
+- scala transpiler: handle function expr param types
+- Regenerated golden files - 92/103 vm valid programs passing
+
+## Progress (2025-07-25 01:09 +0700)
+- scala transpiler: handle function expr param types
+- Regenerated golden files - 92/103 vm valid programs passing
+
+## Progress (2025-07-25 01:09 +0700)
+- scala transpiler: handle function expr param types
+- Regenerated golden files - 92/103 vm valid programs passing
+
+## Progress (2025-07-25 01:09 +0700)
+- scala transpiler: handle function expr param types
+- Regenerated golden files - 92/103 vm valid programs passing
+
+## Progress (2025-07-25 01:09 +0700)
+- scala transpiler: handle function expr param types
+- Regenerated golden files - 92/103 vm valid programs passing
+
+## Progress (2025-07-25 01:09 +0700)
+- scala transpiler: handle function expr param types
+- Regenerated golden files - 92/103 vm valid programs passing
+
+## Progress (2025-07-25 01:09 +0700)
+- scala transpiler: handle function expr param types
+- Regenerated golden files - 92/103 vm valid programs passing
+
+## Progress (2025-07-25 01:09 +0700)
+- scala transpiler: handle function expr param types
+- Regenerated golden files - 92/103 vm valid programs passing
+
+## Progress (2025-07-25 01:09 +0700)
+- scala transpiler: handle function expr param types
+- Regenerated golden files - 92/103 vm valid programs passing
+
+## Progress (2025-07-25 01:09 +0700)
+- scala transpiler: handle function expr param types
+- Regenerated golden files - 92/103 vm valid programs passing
+
+## Progress (2025-07-25 01:09 +0700)
+- scala transpiler: handle function expr param types
+- Regenerated golden files - 92/103 vm valid programs passing
+
+## Progress (2025-07-25 01:09 +0700)
+- scala transpiler: handle function expr param types
+- Regenerated golden files - 92/103 vm valid programs passing
+
+## Progress (2025-07-25 01:09 +0700)
+- scala transpiler: handle function expr param types
+- Regenerated golden files - 92/103 vm valid programs passing
+
+## Progress (2025-07-25 01:09 +0700)
+- scala transpiler: handle function expr param types
+- Regenerated golden files - 92/103 vm valid programs passing
+
+## Progress (2025-07-25 01:09 +0700)
+- scala transpiler: handle function expr param types
+- Regenerated golden files - 92/103 vm valid programs passing
+
+## Progress (2025-07-25 01:09 +0700)
+- scala transpiler: handle function expr param types
+- Regenerated golden files - 92/103 vm valid programs passing
+
+## Progress (2025-07-25 01:09 +0700)
+- scala transpiler: handle function expr param types
+- Regenerated golden files - 92/103 vm valid programs passing
+
+## Progress (2025-07-25 01:09 +0700)
+- scala transpiler: handle function expr param types
+- Regenerated golden files - 92/103 vm valid programs passing
+
+## Progress (2025-07-25 01:09 +0700)
+- scala transpiler: handle function expr param types
+- Regenerated golden files - 92/103 vm valid programs passing
+
+## Progress (2025-07-25 01:09 +0700)
+- scala transpiler: handle function expr param types
+- Regenerated golden files - 92/103 vm valid programs passing
+
+## Progress (2025-07-25 01:09 +0700)
+- scala transpiler: handle function expr param types
+- Regenerated golden files - 92/103 vm valid programs passing
+
+## Progress (2025-07-25 01:09 +0700)
+- scala transpiler: handle function expr param types
+- Regenerated golden files - 92/103 vm valid programs passing
+
+## Progress (2025-07-25 01:09 +0700)
+- scala transpiler: handle function expr param types
+- Regenerated golden files - 92/103 vm valid programs passing
+
+## Progress (2025-07-25 01:09 +0700)
+- scala transpiler: handle function expr param types
+- Regenerated golden files - 92/103 vm valid programs passing
+
 ## Progress (2025-07-25 00:30 +0700)
 - scala rosetta: implement more casts
 - Regenerated golden files - 92/103 vm valid programs passing

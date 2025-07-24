@@ -1,0 +1,7 @@
+exit status 1
+/workspace/mochi/tests/rosetta/transpiler/Scala/b-zier-curves-intersections.scala:121: error: type mismatch;
+ found   : Main.Item
+ required: scala.collection.mutable.Map[String,Main.QuadCurve]
+    var workload: ArrayBuffer[Map[String,QuadCurve]] = ArrayBuffer(Item(p, q))
+                                                                       ^
+one error found
