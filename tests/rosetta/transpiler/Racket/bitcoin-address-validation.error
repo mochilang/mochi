@@ -1,0 +1,5 @@
+run error: exit status 1
+/workspace/mochi/tests/rosetta/transpiler/Racket/bitcoin-address-validation.rkt:82:15: sha256: unbound identifier
+  in: sha256
+  location...:
+   /workspace/mochi/tests/rosetta/transpiler/Racket/bitcoin-address-validation.rkt:82:15

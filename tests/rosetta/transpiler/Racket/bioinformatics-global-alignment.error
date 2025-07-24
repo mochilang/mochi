@@ -1,0 +1,5 @@
+run error: exit status 1
+/workspace/mochi/tests/rosetta/transpiler/Racket/bioinformatics-global-alignment.rkt:81:1: _break: unbound identifier
+  in: _break
+  location...:
+   /workspace/mochi/tests/rosetta/transpiler/Racket/bioinformatics-global-alignment.rkt:81:1
