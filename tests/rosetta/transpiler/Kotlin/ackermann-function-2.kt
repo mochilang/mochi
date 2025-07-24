@@ -19,7 +19,7 @@ fun ackermann2(m: Int, n: Int): Int {
         return (2 * n) + 3
     }
     if (m == 3) {
-        return (8 * pow(2, n) as Int) - 3
+        return (8 * pow(2, n)) - 3
     }
     if (n == 0) {
         return ackermann2(m - 1, 1) as Int
@@ -28,10 +28,10 @@ fun ackermann2(m: Int, n: Int): Int {
 }
 
 fun user_main(): Unit {
-    println("A(0, 0) = " + ackermann2(0, 0) as Int.toString())
-    println("A(1, 2) = " + ackermann2(1, 2) as Int.toString())
-    println("A(2, 4) = " + ackermann2(2, 4) as Int.toString())
-    println("A(3, 4) = " + ackermann2(3, 4) as Int.toString())
+    println("A(0, 0) = " + ackermann2(0, 0).toString())
+    println("A(1, 2) = " + ackermann2(1, 2).toString())
+    println("A(2, 4) = " + ackermann2(2, 4).toString())
+    println("A(3, 4) = " + ackermann2(3, 4).toString())
 }
 
 fun main() {
