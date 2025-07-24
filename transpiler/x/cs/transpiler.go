@@ -8,6 +8,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"math"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -751,9 +752,15 @@ type StringLit struct{ Value string }
 
 func (s *StringLit) emit(w io.Writer) { fmt.Fprintf(w, "%q", s.Value) }
 
-type IntLit struct{ Value int }
+type IntLit struct{ Value int64 }
 
-func (i *IntLit) emit(w io.Writer) { fmt.Fprintf(w, "%d", i.Value) }
+func (i *IntLit) emit(w io.Writer) {
+	if i.Value > math.MaxInt32 || i.Value < math.MinInt32 {
+		fmt.Fprintf(w, "%dL", i.Value)
+	} else {
+		fmt.Fprintf(w, "%d", i.Value)
+	}
+}
 
 type BoolLit struct{ Value bool }
 
@@ -878,14 +885,15 @@ func (s *SliceExpr) emit(w io.Writer) {
 		fmt.Fprint(w, "))")
 	} else {
 		s.Value.emit(w)
-		fmt.Fprint(w, ".Skip(")
+		fmt.Fprint(w, ".Skip((int)(")
 		s.Start.emit(w)
-		fmt.Fprint(w, ").Take(")
+		fmt.Fprint(w, "))")
+		fmt.Fprint(w, ".Take((int)(")
 		fmt.Fprint(w, "(")
 		s.End.emit(w)
 		fmt.Fprint(w, " - ")
 		s.Start.emit(w)
-		fmt.Fprint(w, ")).ToArray()")
+		fmt.Fprint(w, "))).ToArray()")
 	}
 }
 
@@ -1087,7 +1095,7 @@ func csType(t *parser.TypeRef) string {
 	if t.Simple != nil {
 		switch *t.Simple {
 		case "int":
-			return "int"
+			return "long"
 		case "string":
 			return "string"
 		case "bool":
@@ -1130,7 +1138,7 @@ func csType(t *parser.TypeRef) string {
 func csTypeFromType(t types.Type) string {
 	switch tt := t.(type) {
 	case types.IntType, types.Int64Type:
-		return "int"
+		return "long"
 	case types.FloatType:
 		return "double"
 	case types.StringType:
@@ -1261,7 +1269,7 @@ func typeOfExpr(e Expr) string {
 	case *StringLit:
 		return "string"
 	case *IntLit:
-		return "int"
+		return "long"
 	case *FloatLit:
 		return "double"
 	case *BoolLit:
@@ -1282,6 +1290,9 @@ func typeOfExpr(e Expr) string {
 		}
 		if lt == "double" || rt == "double" {
 			return "double"
+		}
+		if lt == "long" || rt == "long" {
+			return "long"
 		}
 		if lt == "string" || rt == "string" {
 			return "string"
@@ -2837,11 +2848,13 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 	case p.Lit != nil && p.Lit.Str != nil:
 		return &StringLit{Value: *p.Lit.Str}, nil
 	case p.Lit != nil && p.Lit.Int != nil:
-		return &IntLit{Value: int(*p.Lit.Int)}, nil
+		return &IntLit{Value: int64(*p.Lit.Int)}, nil
 	case p.Lit != nil && p.Lit.Float != nil:
 		return &FloatLit{Value: *p.Lit.Float}, nil
 	case p.Lit != nil && p.Lit.Bool != nil:
 		return &BoolLit{Value: bool(*p.Lit.Bool)}, nil
+	case p.Lit != nil && p.Lit.Null:
+		return &RawExpr{Code: "null", Type: "object"}, nil
 	case p.List != nil:
 		elems := make([]Expr, len(p.List.Elems))
 		for i, e := range p.List.Elems {
@@ -3792,11 +3805,11 @@ func valueToExpr(v interface{}, typ *parser.TypeRef) Expr {
 		return &BoolLit{Value: val}
 	case float64:
 		if typ != nil && typ.Simple != nil && *typ.Simple == "int" {
-			return &IntLit{Value: int(val)}
+			return &IntLit{Value: int64(val)}
 		}
 		return &FloatLit{Value: val}
 	case int, int64:
-		return &IntLit{Value: int(reflect.ValueOf(val).Int())}
+		return &IntLit{Value: reflect.ValueOf(val).Int()}
 	default:
 		return &StringLit{Value: fmt.Sprintf("%v", val)}
 	}
