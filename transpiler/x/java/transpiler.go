@@ -820,14 +820,23 @@ type IndexAssignStmt struct {
 }
 
 func (s *IndexAssignStmt) emit(w io.Writer, indent string) {
-	if len(s.Indices) == 1 && isMapExpr(s.Target) {
-		s.Target.emit(w)
-		fmt.Fprint(w, ".put(")
-		s.Indices[0].emit(w)
-		fmt.Fprint(w, ", ")
-		s.Expr.emit(w)
-		fmt.Fprint(w, ");\n")
-		return
+	if len(s.Indices) == 1 {
+		if isMapExpr(s.Target) {
+			s.Target.emit(w)
+			fmt.Fprint(w, ".put(")
+			s.Indices[0].emit(w)
+			fmt.Fprint(w, ", ")
+			s.Expr.emit(w)
+			fmt.Fprint(w, ");\n")
+			return
+		}
+		if key, ok := s.Indices[0].(*StringLit); ok && !isMapExpr(s.Target) {
+			s.Target.emit(w)
+			fmt.Fprintf(w, ".%s = ", key.Value)
+			s.Expr.emit(w)
+			fmt.Fprint(w, ";\n")
+			return
+		}
 	}
 	s.Target.emit(w)
 	for _, idx := range s.Indices {
@@ -1703,6 +1712,35 @@ func isMapExpr(e Expr) bool {
 	return false
 }
 
+func isStructType(name string) bool {
+	base := strings.TrimSuffix(name, "[]")
+	if topEnv != nil {
+		if _, ok := topEnv.GetStruct(base); ok {
+			return true
+		}
+	}
+	if structDefs != nil {
+		if _, ok := structDefs[base]; ok {
+			return true
+		}
+	}
+	return false
+}
+
+func isStructExpr(e Expr) bool {
+	switch ex := e.(type) {
+	case *VarExpr:
+		if t, ok := varTypes[ex.Name]; ok {
+			return isStructType(t)
+		}
+	case *FieldExpr:
+		if t, ok := fieldTypeFromVar(ex.Target, ex.Name); ok {
+			return isStructType(t)
+		}
+	}
+	return false
+}
+
 func isArrayExpr(e Expr) bool {
 	switch ex := e.(type) {
 	case *ListLit:
@@ -1774,6 +1812,15 @@ func arrayElemType(e Expr) string {
 		return ""
 	case *VarExpr:
 		if t, ok := varTypes[ex.Name]; ok {
+			if strings.HasSuffix(t, "[]") {
+				return strings.TrimSuffix(t, "[]")
+			}
+			if strings.HasPrefix(t, "java.util.List<") && strings.HasSuffix(t, ">") {
+				return strings.TrimSuffix(strings.TrimPrefix(t, "java.util.List<"), ">")
+			}
+		}
+	case *FieldExpr:
+		if t, ok := fieldTypeFromVar(ex.Target, ex.Name); ok {
 			if strings.HasSuffix(t, "[]") {
 				return strings.TrimSuffix(t, "[]")
 			}
