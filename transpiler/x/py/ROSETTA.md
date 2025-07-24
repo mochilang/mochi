@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Python code from programs in `tests/rosetta/x/Mochi` lives in `tests/rosetta/transpiler/Python`.
-Last updated: 2025-07-24 19:25 GMT+7
+Last updated: 2025-07-24 20:10 GMT+7
 
-## Rosetta Golden Test Checklist (253/284)
+## Rosetta Golden Test Checklist (259/284)
 1. [x] 100-doors-2
 2. [x] 100-doors-3
 3. [x] 100-doors
@@ -234,28 +234,28 @@ Last updated: 2025-07-24 19:25 GMT+7
 227. [x] constrained-genericity-2
 228. [x] constrained-genericity-3
 229. [x] constrained-genericity-4
-230. [x] constrained-random-points-on-a-circle-1
-231. [x] constrained-random-points-on-a-circle-2
+230. [ ] constrained-random-points-on-a-circle-1
+231. [ ] constrained-random-points-on-a-circle-2
 232. [x] continued-fraction
 233. [x] convert-decimal-number-to-rational
 234. [x] convert-seconds-to-compound-duration
-235. [x] convex-hull
+235. [ ] convex-hull
 236. [x] conways-game-of-life
 237. [x] copy-a-string-1
 238. [x] copy-a-string-2
 239. [x] copy-stdin-to-stdout-1
 240. [x] copy-stdin-to-stdout-2
-241. [x] count-in-factors
-242. [x] count-in-octal-1
-243. [x] count-in-octal-2
-244. [x] count-in-octal-3
-245. [x] count-in-octal-4
-246. [x] count-occurrences-of-a-substring
-247. [x] count-the-coins-1
-248. [x] count-the-coins-2
-249. [x] cramers-rule
-250. [ ] crc-32-1
-251. [ ] crc-32-2
+241. [ ] count-in-factors
+242. [ ] count-in-octal-1
+243. [ ] count-in-octal-2
+244. [ ] count-in-octal-3
+245. [ ] count-in-octal-4
+246. [ ] count-occurrences-of-a-substring
+247. [ ] count-the-coins-1
+248. [ ] count-the-coins-2
+249. [ ] cramers-rule
+250. [x] crc-32-1
+251. [x] crc-32-2
 252. [x] create-a-file-on-magnetic-tape
 253. [x] create-a-file
 254. [x] create-a-two-dimensional-array-at-runtime-1
@@ -264,28 +264,28 @@ Last updated: 2025-07-24 19:25 GMT+7
 257. [x] csv-data-manipulation
 258. [ ] csv-to-html-translation-1
 259. [ ] csv-to-html-translation-2
-260. [ ] csv-to-html-translation-3
-261. [ ] csv-to-html-translation-4
-262. [ ] csv-to-html-translation-5
-263. [ ] cuban-primes
-264. [ ] cullen-and-woodall-numbers
-265. [ ] cumulative-standard-deviation
-266. [ ] currency
-267. [ ] currying
-268. [ ] curzon-numbers
+260. [x] csv-to-html-translation-3
+261. [x] csv-to-html-translation-4
+262. [x] csv-to-html-translation-5
+263. [x] cuban-primes
+264. [x] cullen-and-woodall-numbers
+265. [x] cumulative-standard-deviation
+266. [x] currency
+267. [x] currying
+268. [x] curzon-numbers
 269. [ ] cusip
-270. [ ] cyclops-numbers
-271. [ ] damm-algorithm
-272. [ ] date-format
+270. [x] cyclops-numbers
+271. [x] damm-algorithm
+272. [x] date-format
 273. [ ] date-manipulation
-274. [ ] day-of-the-week
-275. [ ] de-bruijn-sequences
+274. [x] day-of-the-week
+275. [x] de-bruijn-sequences
 276. [ ] deal-cards-for-freecell
 277. [ ] death-star
-278. [ ] deceptive-numbers
+278. [x] deceptive-numbers
 279. [ ] deconvolution-1d-2
 280. [ ] deconvolution-1d-3
-281. [ ] deconvolution-1d
+281. [x] deconvolution-1d
 282. [ ] deepcopy-1
 283. [ ] define-a-primitive-data-type
 284. [ ] md5

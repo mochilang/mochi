@@ -1,0 +1,8 @@
+parse: error[P999]: /workspace/mochi/tests/rosetta/x/Mochi/deconvolution-1d-3.mochi:17:13: unexpected token "-" (expected PostfixExpr)
+  --> /workspace/mochi/tests/rosetta/x/Mochi/deconvolution-1d-3.mochi:17:13
+
+ 17 |   if dot == -1 { s = s + ".0" }
+    |             ^
+
+help:
+  Parse error occurred. Check syntax near this location.
