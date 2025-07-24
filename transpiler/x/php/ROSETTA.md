@@ -2,9 +2,9 @@
 
 Generated PHP code from Mochi Rosetta tasks lives in `tests/rosetta/transpiler/php`.
 
-Last updated: 2025-07-24 08:13 +0700
+Last updated: 2025-07-24 13:22 +0700
 
-## Checklist (80/284)
+## Checklist (83/284)
 - [x] 1 100-doors-2
 - [x] 2 100-doors-3
 - [x] 3 100-doors
@@ -71,7 +71,7 @@ Last updated: 2025-07-24 08:13 +0700
 - [x] 64 arena-storage-pool
 - [x] 65 arithmetic-complex
 - [x] 66 arithmetic-derivative
-- [ ] 67 arithmetic-evaluation
+- [x] 67 arithmetic-evaluation
 - [x] 68 arithmetic-geometric-mean-calculate-pi
 - [x] 69 arithmetic-geometric-mean
 - [x] 70 arithmetic-integer-1
@@ -90,7 +90,7 @@ Last updated: 2025-07-24 08:13 +0700
 - [x] 83 atomic-updates
 - [ ] 84 attractive-numbers
 - [ ] 85 average-loop-length
-- [ ] 86 averages-arithmetic-mean
+- [x] 86 averages-arithmetic-mean
 - [ ] 87 averages-mean-time-of-day
 - [ ] 88 averages-median-1
 - [ ] 89 averages-median-2
@@ -100,7 +100,7 @@ Last updated: 2025-07-24 08:13 +0700
 - [ ] 93 averages-root-mean-square
 - [ ] 94 averages-simple-moving-average
 - [ ] 95 avl-tree
-- [ ] 96 b-zier-curves-intersections
+- [x] 96 b-zier-curves-intersections
 - [ ] 97 babbage-problem
 - [ ] 98 babylonian-spiral
 - [ ] 99 balanced-brackets

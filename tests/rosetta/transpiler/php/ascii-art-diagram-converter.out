@@ -1,5 +1,4 @@
 Diagram after trimming whitespace and removal of blank lines:
-
 +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
 |                      ID                       |
 +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
@@ -15,7 +14,6 @@ Diagram after trimming whitespace and removal of blank lines:
 +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
 
 Decoded:
-
 Name     Bits  Start  End
 =======  ====  =====  ===
 ID        16      0    15
@@ -39,7 +37,6 @@ Test string in binary:
 011110000100011101111011101111110101010010010110111000010010111000011011111100010110100110100100
 
 Unpacked:
-
 Name     Size  Bit pattern
 =======  ====  ================
 ID        16   0111100001000111
