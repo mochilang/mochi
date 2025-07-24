@@ -32,6 +32,7 @@ var loopCounter int
 var breakStack []string
 var continueStack []string
 var useNow bool
+var useLookupHost bool
 var builtinAliases map[string]string
 var localVarTypes map[string]string
 var returnTypeStack []string
@@ -759,7 +760,13 @@ func (n *NowExpr) emit(w io.Writer) { fmt.Fprint(w, "_now()") }
 
 type Name struct{ Name string }
 
-func (n *Name) emit(w io.Writer) { fmt.Fprint(w, escapeName(n.Name)) }
+func (n *Name) emit(w io.Writer) {
+	if n.Name == "nil" {
+		fmt.Fprint(w, "null")
+		return
+	}
+	fmt.Fprint(w, escapeName(n.Name))
+}
 
 // ListLit represents a mutable list using ArrayBuffer.
 type ListLit struct{ Elems []Expr }
@@ -1300,6 +1307,12 @@ func Emit(p *Program) []byte {
 		buf.WriteString("    }\n")
 		buf.WriteString("  }\n\n")
 	}
+	if useLookupHost {
+		buf.WriteString("  private def _lookupHost(host: String): ArrayBuffer[Any] = {\n")
+		buf.WriteString("    val addrs = java.net.InetAddress.getAllByName(host).map(_.getHostAddress).sortBy(a => if (a.contains(\".\")) 0 else 1).toList\n")
+		buf.WriteString("    ArrayBuffer(addrs, null)\n")
+		buf.WriteString("  }\n\n")
+	}
 	if needsJSON {
 		buf.WriteString("  def toJson(value: Any, indent: Int = 0): String = value match {\n")
 		buf.WriteString("    case m: scala.collection.Map[_, _] =>\n")
@@ -1376,6 +1389,7 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	needsBreaks = false
 	needsJSON = false
 	useNow = false
+	useLookupHost = false
 	builtinAliases = map[string]string{}
 	localVarTypes = make(map[string]string)
 	for _, st := range prog.Statements {
@@ -1391,6 +1405,8 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 					builtinAliases[alias] = "go_testpkg"
 				} else if st.Import.Auto && path == "strings" {
 					builtinAliases[alias] = "go_strings"
+				} else if st.Import.Auto && path == "net" {
+					builtinAliases[alias] = "go_net"
 				}
 			case "python":
 				if path == "math" {
@@ -1872,6 +1888,13 @@ func convertPostfix(pf *parser.PostfixExpr, env *types.Env) (Expr, error) {
 					expr = &FieldExpr{Receiver: &Name{Name: "math"}, Name: "E"}
 					return expr, nil
 				}
+			case "go_net":
+				switch field {
+				case "LookupHost":
+					useLookupHost = true
+					expr = &CallExpr{Fn: &Name{Name: "_lookupHost"}, Args: args}
+					return expr, nil
+				}
 			}
 		}
 	}
@@ -2291,7 +2314,8 @@ func convertCall(c *parser.CallExpr, env *types.Env) (Expr, error) {
 		}
 	case "int":
 		if len(args) == 1 {
-			return &FieldExpr{Receiver: args[0], Name: "asInstanceOf[Int]"}, nil
+			toStr := &CallExpr{Fn: &FieldExpr{Receiver: args[0], Name: "toString"}}
+			return &FieldExpr{Receiver: toStr, Name: "toInt"}, nil
 		}
 	case "input":
 		if len(args) == 0 {
