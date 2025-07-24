@@ -2864,7 +2864,8 @@ func convertBinary(b *parser.BinaryExpr) (Expr, error) {
 		case "in":
 			isMap := false
 			if typ := postfixExprType(opnodes[i].Right); typ != nil {
-				if _, ok := typ.(types.MapType); ok {
+				switch typ.(type) {
+				case types.MapType, types.StructType:
 					isMap = true
 				}
 			}
@@ -3269,6 +3270,11 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 			// Math.trunc mirrors Mochi's int() which drops the
 			// fractional part without rounding.
 			return &CallExpr{Func: "Math.trunc", Args: args}, nil
+		case "split":
+			if len(args) != 2 {
+				return nil, fmt.Errorf("split expects two arguments")
+			}
+			return &MethodCallExpr{Target: args[0], Method: "split", Args: []Expr{args[1]}}, nil
 		case "parseIntStr":
 			if transpileEnv != nil {
 				if _, ok := transpileEnv.GetFunc("parseIntStr"); ok {

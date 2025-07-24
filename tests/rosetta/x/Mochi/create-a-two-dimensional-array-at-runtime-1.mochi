@@ -20,10 +20,10 @@ fun main() {
   }
 
   print("a[0][0] = " + str(a[0][0]))
-  a[row-1][col-1] = 7
-  print("a[" + str(row-1) + "][" + str(col-1) + "] = " + str(a[row-1][col-1]))
+  a[(row-1) as int][(col-1) as int] = 7
+  print("a[" + str(row-1) + "][" + str(col-1) + "] = " + str(a[(row-1) as int][(col-1) as int]))
 
-  a = nil
+  a = null
 }
 
 main()
