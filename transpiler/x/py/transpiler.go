@@ -4157,6 +4157,10 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 			if len(args) == 3 {
 				return &CallExpr{Func: &FieldExpr{Target: args[0], Name: "rjust"}, Args: []Expr{args[1], args[2]}}, nil
 			}
+		case "indexOf":
+			if len(args) == 2 {
+				return &CallExpr{Func: &FieldExpr{Target: args[0], Name: "find"}, Args: []Expr{args[1]}}, nil
+			}
 		case "now":
 			if len(args) == 0 {
 				usesNow = true
