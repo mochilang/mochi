@@ -1152,6 +1152,31 @@ func (b *BinaryExpr) emit(w io.Writer) {
 		}
 		return
 	}
+	if b.Op == "+" {
+		lt := inferType(b.Left)
+		rt := inferType(b.Right)
+		leftArr := lt == "array" || lt == "" && (isSlice(b.Left) || isList(b.Left))
+		rightArr := rt == "array" || rt == "" && (isSlice(b.Right) || isList(b.Right))
+		if lt != "string" && rt != "string" && (leftArr || rightArr) {
+			io.WriteString(w, "Array.append ")
+			if needsParen(b.Left) {
+				io.WriteString(w, "(")
+				b.Left.emit(w)
+				io.WriteString(w, ")")
+			} else {
+				b.Left.emit(w)
+			}
+			io.WriteString(w, " ")
+			if needsParen(b.Right) {
+				io.WriteString(w, "(")
+				b.Right.emit(w)
+				io.WriteString(w, ")")
+			} else {
+				b.Right.emit(w)
+			}
+			return
+		}
+	}
 	if needsParen(b.Left) {
 		io.WriteString(w, "(")
 		b.Left.emit(w)
@@ -1417,6 +1442,20 @@ func inferType(e Expr) string {
 	return ""
 }
 
+func isSlice(e Expr) bool {
+	_, ok := e.(*SliceExpr)
+	return ok
+}
+
+func isList(e Expr) bool {
+	switch e.(type) {
+	case *ListLit, *AppendExpr:
+		return true
+	default:
+		return false
+	}
+}
+
 func (c *CallExpr) emit(w io.Writer) {
 	io.WriteString(w, c.Func)
 	if len(c.Args) == 0 {
@@ -1502,26 +1541,54 @@ func (m *MethodCallExpr) emit(w io.Writer) {
 // SliceExpr represents slicing start:end on strings.
 type SliceExpr struct {
 	Target Expr
-	Start  Expr
-	End    Expr
+	Start  Expr // may be nil for start of collection
+	End    Expr // may be nil for end of collection
 }
 
 func (s *SliceExpr) emit(w io.Writer) {
-	if inferType(s.Target) == "array" {
+	start := s.Start
+	if start == nil {
+		start = &IntLit{Value: 0}
+	}
+	t := inferType(s.Target)
+	if t != "string" {
 		io.WriteString(w, "Array.sub ")
 		s.Target.emit(w)
 		io.WriteString(w, " ")
-		s.Start.emit(w)
-		io.WriteString(w, " (")
-		(&BinaryExpr{Left: s.End, Op: "-", Right: s.Start}).emit(w)
-		io.WriteString(w, ")")
+		if needsParen(start) {
+			io.WriteString(w, "(")
+			start.emit(w)
+			io.WriteString(w, ")")
+		} else {
+			start.emit(w)
+		}
+		io.WriteString(w, " ")
+		var endLen Expr
+		if s.End != nil {
+			endLen = &BinaryExpr{Left: s.End, Op: "-", Right: start}
+		} else {
+			endLen = &BinaryExpr{Left: &CallExpr{Func: "Array.length", Args: []Expr{s.Target}}, Op: "-", Right: start}
+		}
+		if needsParen(endLen) {
+			io.WriteString(w, "(")
+			endLen.emit(w)
+			io.WriteString(w, ")")
+		} else {
+			endLen.emit(w)
+		}
 		return
 	}
 	s.Target.emit(w)
 	io.WriteString(w, ".Substring(")
-	s.Start.emit(w)
+	start.emit(w)
 	io.WriteString(w, ", ")
-	(&BinaryExpr{Left: s.End, Op: "-", Right: s.Start}).emit(w)
+	var length Expr
+	if s.End != nil {
+		length = &BinaryExpr{Left: s.End, Op: "-", Right: start}
+	} else {
+		length = &BinaryExpr{Left: &CallExpr{Func: "String.length", Args: []Expr{s.Target}}, Op: "-", Right: start}
+	}
+	length.emit(w)
 	io.WriteString(w, ")")
 }
 
@@ -2101,14 +2168,20 @@ func convertPostfix(pf *parser.PostfixExpr) (Expr, error) {
 				return nil, err
 			}
 			expr = &IndexExpr{Target: expr, Index: idx}
-		case op.Index != nil && op.Index.Colon != nil && op.Index.End != nil && op.Index.Step == nil && op.Index.Colon2 == nil:
-			start, err := convertExpr(op.Index.Start)
-			if err != nil {
-				return nil, err
+		case op.Index != nil && op.Index.Colon != nil && op.Index.Step == nil && op.Index.Colon2 == nil:
+			var start, end Expr
+			var err error
+			if op.Index.Start != nil {
+				start, err = convertExpr(op.Index.Start)
+				if err != nil {
+					return nil, err
+				}
 			}
-			end, err := convertExpr(op.Index.End)
-			if err != nil {
-				return nil, err
+			if op.Index.End != nil {
+				end, err = convertExpr(op.Index.End)
+				if err != nil {
+					return nil, err
+				}
 			}
 			expr = &SliceExpr{Target: expr, Start: start, End: end}
 		case op.Field != nil:
