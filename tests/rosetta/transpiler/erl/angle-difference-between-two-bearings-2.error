@@ -1,0 +1,17 @@
+exit status 127
+25
+90
+175
+-175
+170
+-170
+escript: exception error: an error occurred when evaluating an arithmetic expression
+  in operator  rem/2
+     called as -118.1184 rem 360
+  in call from main:angleDiff/2 (/workspace/mochi/tests/rosetta/transpiler/erl/angle-difference-between-two-bearings-2.erl, line 11)
+  in call from main:'-main/1-Fun_loop/1-0-'/1 (/workspace/mochi/tests/rosetta/transpiler/erl/angle-difference-between-two-bearings-2.erl, line 20)
+  in call from escript:run/2 (escript.erl, line 904)
+  in call from escript:start/1 (escript.erl, line 418)
+  in call from init:start_it/1 
+  in call from init:start_em/1 
+  in call from init:do_boot/3 

@@ -1,4 +1,3 @@
-exit status 127
 /workspace/mochi/tests/rosetta/transpiler/erl/almkvist-giullera-formula-for-pi.erl:640:2: Warning: variable 'DenomPow_3' exported from 'case' (line 618, column 17)
 %  640| {DenomPow_3, Ip_2, IpStr_2, Line, N_11, Prev_3, Primes_4, Pw_2, Sum_3, TermStr} = Fun_33(DenomPow_3, Ip_2, IpStr, Line, N_11, Prev_3, Primes_4, Pw_2, Sum_3, TermStr),
 %     |  ^
@@ -37,13 +36,16 @@ exit status 127
 
 N                               Integer Portion  Pow  Nth Term (33 dp)
 "-----------------------------------------------------------------------------------------"
-escript: exception error: an error occurred when evaluating an arithmetic expression
-  in operator  +/2
-     called as "0" + "96"
-  in call from main:formatTerm/2 (/workspace/mochi/tests/rosetta/transpiler/erl/almkvist-giullera-formula-for-pi.erl, line 574)
-  in call from main:'-main/0-Fun_37_loop/6-0-'/6 (/workspace/mochi/tests/rosetta/transpiler/erl/almkvist-giullera-formula-for-pi.erl, line 630)
-  in call from main:main/0 (/workspace/mochi/tests/rosetta/transpiler/erl/almkvist-giullera-formula-for-pi.erl, line 689)
-  in call from escript:run/2 (escript.erl, line 904)
-  in call from escript:start/1 (escript.erl, line 418)
-  in call from init:start_it/1 
-  in call from init:start_em/1 
+0                                            96   -3  0.096000000000000000000000000000000
+1                                       5122560   -9  0.005122560000000000000000000000000
+2                                  190722470400  -15  0.000190722470400000000000000000000
+3                              7574824857600000  -21  0.000007574824857600000000000000000
+4                         312546150372456000000  -27  0.000000312546150372456000000000000
+5                    13207874703225491420651520  -33  0.000000013207874703225491420651520
+6                567273919793089083292259942400  -39  0.000000000567273919793089083292259
+7           24650600248172987140112763715584000  -45  0.000000000024650600248172987140112
+8      1080657854354639453670407474439566400000  -51  0.000000000001080657854354639453670
+9  47701779391594966287470570490839978880000000  -57  0.000000000000047701779391594966287
+
+Pi to 70 decimal places is:
+3.1415926535897932384626433832795028841971693993751058209749445923078165
