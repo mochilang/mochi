@@ -4,6 +4,8 @@
 
 (def nowSeed (atom (let [s (System/getenv "MOCHI_NOW_SEED")] (if (and s (not (= s ""))) (Integer/parseInt s) 0))))
 
+(declare fields canSpell newSpeller main)
+
 (defn fields [s]
   (try (do (def res []) (def cur "") (def i 0) (while (< i (count s)) (do (def c (subs s i (+ i 1))) (if (= c " ") (when (> (count cur) 0) (do (def res (conj res cur)) (def cur ""))) (def cur (str cur c))) (def i (+ i 1)))) (when (> (count cur) 0) (def res (conj res cur))) (throw (ex-info "return" {:v res}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e)))))
 

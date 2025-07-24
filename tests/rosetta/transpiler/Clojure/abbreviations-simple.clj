@@ -4,6 +4,8 @@
 
 (def nowSeed (atom (let [s (System/getenv "MOCHI_NOW_SEED")] (if (and s (not (= s ""))) (Integer/parseInt s) 0))))
 
+(declare fields padRight join parseIntStr isDigits readTable validate main)
+
 (defn fields [s]
   (try (do (def words []) (def cur "") (def i 0) (while (< i (count s)) (do (def ch (subs s i (+ i 1))) (if (or (or (= ch " ") (= ch "\n")) (= ch "\t")) (when (> (count cur) 0) (do (def words (conj words cur)) (def cur ""))) (def cur (str cur ch))) (def i (+ i 1)))) (when (> (count cur) 0) (def words (conj words cur))) (throw (ex-info "return" {:v words}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e)))))
 

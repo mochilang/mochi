@@ -8,6 +8,8 @@
 
 (def nowSeed (atom (let [s (System/getenv "MOCHI_NOW_SEED")] (if (and s (not (= s ""))) (Integer/parseInt s) 0))))
 
+(declare search_user main)
+
 (defn search_user [directory username]
   (try (throw (ex-info "return" {:v (get directory username)})) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e)))))
 

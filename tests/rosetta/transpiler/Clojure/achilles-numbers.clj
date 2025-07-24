@@ -4,6 +4,8 @@
 
 (def nowSeed (atom (let [s (System/getenv "MOCHI_NOW_SEED")] (if (and s (not (= s ""))) (Integer/parseInt s) 0))))
 
+(declare pow10 totient getPerfectPowers getAchilles sortInts pad main)
+
 (defn pow10 [exp]
   (try (do (def n 1) (def i 0) (while (< i exp) (do (def n (* n 10)) (def i (+ i 1)))) (throw (ex-info "return" {:v n}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e)))))
 

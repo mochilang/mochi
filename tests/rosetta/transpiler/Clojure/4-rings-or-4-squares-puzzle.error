@@ -1,7 +1,7 @@
 run error: exit status 1
 WARNING: count already refers to: #'clojure.core/count in namespace: main, being replaced by: #'main/count
-Syntax error compiling at (/workspace/mochi/tests/rosetta/transpiler/Clojure/4-rings-or-4-squares-puzzle.clj:14:291).
+Syntax error compiling at (/workspace/mochi/tests/rosetta/transpiler/Clojure/4-rings-or-4-squares-puzzle.clj:16:291).
 Unable to resolve symbol: a in this context
 
 Full report at:
-/tmp/clojure-17784717190824479845.edn
+/tmp/clojure-9132664370898407156.edn

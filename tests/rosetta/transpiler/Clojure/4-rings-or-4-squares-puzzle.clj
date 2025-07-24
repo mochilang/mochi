@@ -4,6 +4,8 @@
 
 (def nowSeed (atom (let [s (System/getenv "MOCHI_NOW_SEED")] (if (and s (not (= s ""))) (Integer/parseInt s) 0))))
 
+(declare validComb isUnique getCombs)
+
 (defn validComb [a b c d e f g]
   (try (do (def square1 (+ a b)) (def square2 (+ (+ b c) d)) (def square3 (+ (+ d e) f)) (def square4 (+ f g)) (throw (ex-info "return" {:v (and (and (= square1 square2) (= square2 square3)) (= square3 square4))}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e)))))
 

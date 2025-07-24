@@ -1,6 +1,6 @@
 run error: exit status 1
-Syntax error compiling at (/workspace/mochi/tests/rosetta/transpiler/Clojure/abbreviations-easy.clj:17:414).
+Syntax error compiling at (/workspace/mochi/tests/rosetta/transpiler/Clojure/abbreviations-easy.clj:19:414).
 Unable to resolve symbol: c in this context
 
 Full report at:
-/tmp/clojure-6030309011191058771.edn
+/tmp/clojure-13579345924944557784.edn

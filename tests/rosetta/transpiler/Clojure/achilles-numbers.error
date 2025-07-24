@@ -1,6 +1,6 @@
 run error: exit status 1
-Syntax error compiling at (/workspace/mochi/tests/rosetta/transpiler/Clojure/achilles-numbers.clj:19:318).
+Syntax error compiling at (/workspace/mochi/tests/rosetta/transpiler/Clojure/achilles-numbers.clj:21:318).
 Unable to resolve symbol: in in this context
 
 Full report at:
-/tmp/clojure-1289732778871531788.edn
+/tmp/clojure-17230562911793860312.edn

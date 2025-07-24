@@ -1,8 +1,8 @@
 run error: exit status 1
 WARNING: count already refers to: #'clojure.core/count in namespace: main, being replaced by: #'main/count
 Additive primes less than 500:
-Execution error (ExceptionInfo) at main/pad (additive-primes.clj:14).
+Execution error (ExceptionInfo) at main/pad (additive-primes.clj:16).
 return
 
 Full report at:
-/tmp/clojure-1280623746534462545.edn
+/tmp/clojure-3860272391061110324.edn

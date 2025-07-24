@@ -1,6 +1,6 @@
 run error: exit status 1
-Syntax error compiling at (/workspace/mochi/tests/rosetta/transpiler/Clojure/abc-problem.clj:11:82).
+Syntax error compiling at (/workspace/mochi/tests/rosetta/transpiler/Clojure/abc-problem.clj:13:82).
 Unable to resolve symbol: lower in this context
 
 Full report at:
-/tmp/clojure-1949837913496226812.edn
+/tmp/clojure-10335308496966562648.edn

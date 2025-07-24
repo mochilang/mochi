@@ -4,6 +4,8 @@
 
 (def nowSeed (atom (let [s (System/getenv "MOCHI_NOW_SEED")] (if (and s (not (= s ""))) (Integer/parseInt s) 0))))
 
+(declare divisors sum sumStr pad2 pad5 abundantOdd main)
+
 (defn divisors [n]
   (try (do (def divs [1]) (def divs2 []) (def i 2) (while (<= (* i i) n) (do (when (= (mod n i) 0) (do (def j (int (/ n i))) (def divs (conj divs i)) (when (not= i j) (def divs2 (conj divs2 j))))) (def i (+ i 1)))) (def j (- (count divs2) 1)) (while (>= j 0) (do (def divs (conj divs (nth divs2 j))) (def j (- j 1)))) (throw (ex-info "return" {:v divs}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e)))))
 

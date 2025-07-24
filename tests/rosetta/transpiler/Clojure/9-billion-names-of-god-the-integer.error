@@ -1,5 +1,36 @@
 run error: exit status 1
 WARNING: val already refers to: #'clojure.core/val in namespace: main, being replaced by: #'main/val
 rows:
-
-Exception: java.lang.OutOfMemoryError thrown from the UncaughtExceptionHandler in thread "main"
+Exception in thread "main" java.lang.OutOfMemoryError: Java heap space
+	at java.base/java.util.Arrays.copyOf(Arrays.java:3541)
+	at java.base/jdk.internal.loader.Resource.getBytes(Resource.java:120)
+	at java.base/jdk.internal.loader.URLClassPath$JarLoader$2.getBytes(URLClassPath.java:862)
+	at java.base/jdk.internal.loader.BuiltinClassLoader.defineClass(BuiltinClassLoader.java:859)
+	at java.base/jdk.internal.loader.BuiltinClassLoader.findClassOnClassPathOrNull(BuiltinClassLoader.java:760)
+	at java.base/jdk.internal.loader.BuiltinClassLoader.loadClassOrNull(BuiltinClassLoader.java:681)
+	at java.base/jdk.internal.loader.BuiltinClassLoader.loadClass(BuiltinClassLoader.java:639)
+	at java.base/jdk.internal.loader.ClassLoaders$AppClassLoader.loadClass(ClassLoaders.java:188)
+	at java.base/java.lang.ClassLoader.loadClass(ClassLoader.java:526)
+	at clojure.pprint.pretty_writer__init.load(Unknown Source)
+	at clojure.pprint.pretty_writer__init.<clinit>(Unknown Source)
+	at java.base/java.lang.Class.forName0(Native Method)
+	at java.base/java.lang.Class.forName(Class.java:534)
+	at java.base/java.lang.Class.forName(Class.java:513)
+	at clojure.lang.RT.classForName(RT.java:2209)
+	at clojure.lang.RT.classForName(RT.java:2218)
+	at clojure.lang.RT.loadClassForName(RT.java:2237)
+	at clojure.lang.RT.load(RT.java:449)
+	at clojure.lang.RT.load(RT.java:424)
+	at clojure.core$load$fn__6908.invoke(core.clj:6161)
+	at clojure.core$load.invokeStatic(core.clj:6160)
+	at clojure.core$load.doInvoke(core.clj:6144)
+	at clojure.lang.RestFn.invoke(RestFn.java:408)
+	at clojure.pprint__init.load(Unknown Source)
+	at clojure.pprint__init.<clinit>(Unknown Source)
+	at java.base/java.lang.Class.forName0(Native Method)
+	at java.base/java.lang.Class.forName(Class.java:534)
+	at java.base/java.lang.Class.forName(Class.java:513)
+	at clojure.lang.RT.classForName(RT.java:2209)
+	at clojure.lang.RT.classForName(RT.java:2218)
+	at clojure.lang.RT.loadClassForName(RT.java:2237)
+	at clojure.lang.RT.load(RT.java:449)

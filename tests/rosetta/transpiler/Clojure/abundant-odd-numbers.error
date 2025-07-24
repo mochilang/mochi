@@ -1,7 +1,7 @@
 run error: exit status 1
 WARNING: count already refers to: #'clojure.core/count in namespace: main, being replaced by: #'main/count
-Syntax error (UnsupportedOperationException) compiling recur at (/workspace/mochi/tests/rosetta/transpiler/Clojure/abundant-odd-numbers.clj:23:281).
+Syntax error (UnsupportedOperationException) compiling recur at (/workspace/mochi/tests/rosetta/transpiler/Clojure/abundant-odd-numbers.clj:25:281).
 Can only recur from tail position
 
 Full report at:
-/tmp/clojure-9041138985580909277.edn
+/tmp/clojure-17354449695797946742.edn

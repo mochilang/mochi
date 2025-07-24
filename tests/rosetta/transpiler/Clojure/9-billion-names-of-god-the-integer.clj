@@ -4,6 +4,8 @@
 
 (def nowSeed (atom (let [s (System/getenv "MOCHI_NOW_SEED")] (if (and s (not (= s ""))) (Integer/parseInt s) 0))))
 
+(declare bigTrim bigFromInt bigAdd bigSub bigToString minInt cumu row)
+
 (defn bigTrim [a]
   (try (do (def n (count a)) (while (and (> n 1) (= (nth a (- n 1)) 0)) (do (def a (subvec a 0 (- n 1))) (def n (- n 1)))) (throw (ex-info "return" {:v a}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e)))))
 

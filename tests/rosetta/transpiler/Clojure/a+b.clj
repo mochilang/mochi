@@ -4,6 +4,8 @@
 
 (def nowSeed (atom (let [s (System/getenv "MOCHI_NOW_SEED")] (if (and s (not (= s ""))) (Integer/parseInt s) 0))))
 
+(declare main)
+
 (defn main []
   (do (def a (int (read-line))) (def b (int (read-line))) (println (+ a b))))
 

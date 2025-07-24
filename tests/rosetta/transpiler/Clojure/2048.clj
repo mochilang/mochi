@@ -4,6 +4,8 @@
 
 (def nowSeed (atom (let [s (System/getenv "MOCHI_NOW_SEED")] (if (and s (not (= s ""))) (Integer/parseInt s) 0))))
 
+(declare newBoard spawnTile pad draw reverseRow slideLeft moveLeft moveRight getCol setCol moveUp moveDown hasMoves has2048)
+
 (def SIZE 4)
 
 (defn newBoard []
