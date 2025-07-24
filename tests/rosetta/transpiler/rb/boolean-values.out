@@ -1,0 +1,9 @@
+True
+bool
+False
+x == y: False
+x < y: True
+
+Convert String into Boolean Data type
+Before : string
+After : bool
