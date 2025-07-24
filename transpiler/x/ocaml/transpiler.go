@@ -26,6 +26,7 @@ import (
 var structFields = map[string]map[string]string{}
 var usesNow bool
 var usesLookupHost bool
+var usesDynMath bool
 var funcMutations = map[string]map[string]bool{}
 
 // Program represents an OCaml program. All statements are emitted inside
@@ -1768,6 +1769,14 @@ func (c *CastExpr) emit(w io.Writer) {
 	case "int_to_float":
 		io.WriteString(w, "float_of_int ")
 		c.Expr.emit(w)
+	case "int_to_obj":
+		io.WriteString(w, "Obj.repr (")
+		c.Expr.emit(w)
+		io.WriteString(w, ")")
+	case "float_to_obj":
+		io.WriteString(w, "Obj.repr (")
+		c.Expr.emit(w)
+		io.WriteString(w, ")")
 	default:
 		c.Expr.emit(w)
 	}
@@ -1787,6 +1796,12 @@ func (c *CastExpr) emitPrint(w io.Writer) {
 		io.WriteString(w, "string_of_float (float_of_int ")
 		c.Expr.emit(w)
 		io.WriteString(w, ")")
+	case "int_to_obj":
+		io.WriteString(w, "string_of_int ")
+		c.Expr.emit(w)
+	case "float_to_obj":
+		io.WriteString(w, "string_of_float ")
+		c.Expr.emit(w)
 	default:
 		c.Expr.emitPrint(w)
 	}
@@ -1969,6 +1984,12 @@ type BinaryExpr struct {
 	Rtyp  string
 }
 
+type DynBinaryExpr struct {
+	Left  Expr
+	Op    string
+	Right Expr
+}
+
 func (b *BinaryExpr) emit(w io.Writer) {
 	op := b.Op
 	if b.Op == "%" {
@@ -2028,6 +2049,33 @@ func (b *BinaryExpr) emitPrint(w io.Writer) {
 	}
 }
 
+func (d *DynBinaryExpr) emit(w io.Writer) {
+	fn := "_dyn_add"
+	switch d.Op {
+	case "+":
+		fn = "_dyn_add"
+	case "-":
+		fn = "_dyn_sub"
+	case "*":
+		fn = "_dyn_mul"
+	case "/":
+		fn = "_dyn_div"
+	}
+	io.WriteString(w, "(")
+	io.WriteString(w, fn)
+	io.WriteString(w, " (")
+	d.Left.emit(w)
+	io.WriteString(w, ") (")
+	d.Right.emit(w)
+	io.WriteString(w, "))")
+}
+
+func (d *DynBinaryExpr) emitPrint(w io.Writer) {
+	io.WriteString(w, "__show (")
+	d.emit(w)
+	io.WriteString(w, ")")
+}
+
 func header() string {
 	ts := gitTimestamp()
 	version := strings.TrimSpace(meta.Version())
@@ -2055,6 +2103,37 @@ let nil = Obj.repr 0
 
 let _lookup_host _host =
   [Obj.repr ([] : string list); nil]
+`
+
+const helperDynMath = `
+let _dyn_add a b =
+  if Obj.is_int a && Obj.is_int b then
+    Obj.repr ((Obj.magic a : int) + (Obj.magic b : int))
+  else
+    let af = if Obj.is_int a then float_of_int (Obj.magic a : int) else (Obj.magic a : float) in
+    let bf = if Obj.is_int b then float_of_int (Obj.magic b : int) else (Obj.magic b : float) in
+    Obj.repr (af +. bf)
+
+let _dyn_sub a b =
+  if Obj.is_int a && Obj.is_int b then
+    Obj.repr ((Obj.magic a : int) - (Obj.magic b : int))
+  else
+    let af = if Obj.is_int a then float_of_int (Obj.magic a : int) else (Obj.magic a : float) in
+    let bf = if Obj.is_int b then float_of_int (Obj.magic b : int) else (Obj.magic b : float) in
+    Obj.repr (af -. bf)
+
+let _dyn_mul a b =
+  if Obj.is_int a && Obj.is_int b then
+    Obj.repr ((Obj.magic a : int) * (Obj.magic b : int))
+  else
+    let af = if Obj.is_int a then float_of_int (Obj.magic a : int) else (Obj.magic a : float) in
+    let bf = if Obj.is_int b then float_of_int (Obj.magic b : int) else (Obj.magic b : float) in
+    Obj.repr (af *. bf)
+
+let _dyn_div a b =
+  let af = if Obj.is_int a then float_of_int (Obj.magic a : int) else (Obj.magic a : float) in
+  let bf = if Obj.is_int b then float_of_int (Obj.magic b : int) else (Obj.magic b : float) in
+  Obj.repr (af /. bf)
 `
 
 const helperShow = `
@@ -2155,6 +2234,10 @@ func (p *Program) Emit() []byte {
 	}
 	if usesLookupHost {
 		buf.WriteString(helperLookupHost)
+		buf.WriteString("\n")
+	}
+	if usesDynMath {
+		buf.WriteString(helperDynMath)
 		buf.WriteString("\n")
 	}
 	if p.UsesControl() {
@@ -2657,6 +2740,7 @@ func transpileStmts(list []*parser.Statement, env *types.Env, vars map[string]Va
 func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	usesNow = false
 	usesLookupHost = false
+	usesDynMath = false
 	pr := &Program{}
 	vars := map[string]VarInfo{}
 	stmts, err := transpileStmts(prog.Statements, env, vars)
@@ -2775,8 +2859,7 @@ func convertBinary(b *parser.BinaryExpr, env *types.Env, vars map[string]VarInfo
 			} else if ltyp == "float" || rtyp == "float" {
 				resTyp = "float"
 			} else if ltyp == "" || rtyp == "" {
-				// default to float when operand types are unknown
-				resTyp = "float"
+				resTyp = ""
 			} else {
 				resTyp = "int"
 			}
@@ -2800,7 +2883,12 @@ func convertBinary(b *parser.BinaryExpr, env *types.Env, vars map[string]VarInfo
 			expr = &IntersectExpr{Left: left, Right: right}
 			resTyp = ltyp
 		} else {
-			expr = &BinaryExpr{Left: left, Op: info.op, Right: right, Typ: resTyp, Ltyp: ltyp, Rtyp: rtyp}
+			if resTyp == "" {
+				expr = &DynBinaryExpr{Left: left, Op: info.op, Right: right}
+				usesDynMath = true
+			} else {
+				expr = &BinaryExpr{Left: left, Op: info.op, Right: right, Typ: resTyp, Ltyp: ltyp, Rtyp: rtyp}
+			}
 		}
 		exprStack = append(exprStack, expr)
 		typeStack = append(typeStack, resTyp)
@@ -4046,6 +4134,13 @@ func convertCall(c *parser.CallExpr, env *types.Env, vars map[string]VarInfo) (E
 				}
 				if ptyp == "float" && at == "int" {
 					ex = &CastExpr{Expr: ex, Type: "int_to_float"}
+				} else if ptyp == "" {
+					switch at {
+					case "int":
+						ex = &CastExpr{Expr: ex, Type: "int_to_obj"}
+					case "float":
+						ex = &CastExpr{Expr: ex, Type: "float_to_obj"}
+					}
 				}
 			}
 			args[i] = ex
