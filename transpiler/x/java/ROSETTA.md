@@ -2,7 +2,7 @@
 
 Generated Java code for programs in `tests/rosetta/x/Mochi`. Each program has a `.java` file produced by the transpiler and a `.out` file with its runtime output. Compilation or execution errors are captured in `.error` files.
 
-## Rosetta Checklist (36/284) - updated 2025-07-24 13:20 UTC
+## Rosetta Checklist (37/284) - updated 2025-07-24 17:50 UTC
 1. [x] 100-doors-2 (1)
 2. [x] 100-doors-3 (2)
 3. [x] 100-doors (3)
@@ -42,7 +42,7 @@ Generated Java code for programs in `tests/rosetta/x/Mochi`. Each program has a 
 37. [ ] adfgvx-cipher (37)
 38. [x] aks-test-for-primes (38)
 39. [ ] algebraic-data-types (39)
-40. [ ] align-columns (40)
+40. [x] align-columns (40)
 41. [ ] aliquot-sequence-classifications (41)
 42. [ ] almkvist-giullera-formula-for-pi (42)
 43. [x] almost-prime (43)

@@ -40,10 +40,10 @@ public class Main {
 
     static String pad(String word, int width, int align) {
         int diff = width - word.length();
-        if (align == 0) {
+        if (((Number)(align)).doubleValue() == 0) {
             return word + spaces(diff);
         }
-        if (align == 2) {
+        if (((Number)(align)).doubleValue() == 2) {
             return spaces(diff) + word;
         }
         int left = ((Number)((diff / 2))).intValue();
@@ -53,7 +53,7 @@ public class Main {
 
     static java.util.Map<String,Object> newFormatter(String text) {
         String[] lines = split(text, "\n");
-        string[][] fmtLines = new String[][]{};
+        String[][] fmtLines = new String[][]{};
         int[] width = new int[]{};
         int i = 0;
         while (i < lines.length) {
@@ -68,7 +68,7 @@ public class Main {
                 int wlen = words[j].length();
                 if (j == width.length) {
                     width = java.util.stream.IntStream.concat(java.util.Arrays.stream(width), java.util.stream.IntStream.of(wlen)).toArray();
-                } else                 if (wlen > width[j]) {
+                } else                 if (wlen > ((Number)(width[j])).doubleValue()) {
 width[j] = wlen;
                 }
                 j = j + 1;
@@ -79,7 +79,7 @@ width[j] = wlen;
     }
 
     static void printFmt(java.util.Map<String,Object> f, int align) {
-        String[][] lines = (String[][])((string[][])(f.get("text")));
+        String[][] lines = (String[][])((String[][])(f.get("text")));
         int[] width = (int[])((int[])(f.get("width")));
         int i = 0;
         while (i < lines.length) {

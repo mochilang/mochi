@@ -1141,6 +1141,12 @@ func (b *BinaryExpr) emit(w io.Writer) {
 			return
 		}
 	}
+	if b.Op == "+" && (isStringExpr(b.Left) || isStringExpr(b.Right)) {
+		emitCastExpr(w, b.Left, "String")
+		fmt.Fprint(w, " + ")
+		emitCastExpr(w, b.Right, "String")
+		return
+	}
 	if b.Op == "&&" || b.Op == "||" {
 		emitCastExpr(w, b.Left, "boolean")
 		fmt.Fprint(w, " "+b.Op+" ")
@@ -1151,7 +1157,25 @@ func (b *BinaryExpr) emit(w io.Writer) {
 	if b.Op == "+" || b.Op == "-" || b.Op == "*" || b.Op == "/" || b.Op == "%" ||
 		b.Op == "==" || b.Op == "!=" || b.Op == "<" || b.Op == "<=" || b.Op == ">" || b.Op == ">=" {
 		lt := inferType(b.Left)
+		if lt == "" {
+			if v, ok := b.Left.(*VarExpr); ok {
+				if vs, ok2 := varDecls[v.Name]; ok2 && vs.Type != "" {
+					lt = vs.Type
+				} else if t, ok2 := varTypes[v.Name]; ok2 {
+					lt = t
+				}
+			}
+		}
 		rt := inferType(b.Right)
+		if rt == "" {
+			if v, ok := b.Right.(*VarExpr); ok {
+				if vs, ok2 := varDecls[v.Name]; ok2 && vs.Type != "" {
+					rt = vs.Type
+				} else if t, ok2 := varTypes[v.Name]; ok2 {
+					rt = t
+				}
+			}
+		}
 		typ := "int"
 		if lt == "double" || rt == "double" {
 			typ = "double"
@@ -3768,7 +3792,7 @@ func typeRefString(tr *parser.TypeRef) string {
 		if *tr.Simple == "any" {
 			return "Object"
 		}
-		return *tr.Simple
+		return javaType(*tr.Simple)
 	}
 	if tr.Generic != nil {
 		if tr.Generic.Name == "list" && len(tr.Generic.Args) == 1 {
