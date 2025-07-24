@@ -2733,7 +2733,7 @@ func compilePostfix(pf *parser.PostfixExpr, env *types.Env) (Expr, error) {
 					expr = &CastExpr{Expr: expr, Type: typName}
 				}
 			} else {
-				return nil, fmt.Errorf("unsupported cast")
+				// ignore unsupported casts for dynamic backend
 			}
 		} else if op.Index != nil && op.Index.Colon == nil && op.Index.Colon2 == nil {
 			idx, err := compileExpr(op.Index.Start, env)
@@ -2751,7 +2751,11 @@ func compilePostfix(pf *parser.PostfixExpr, env *types.Env) (Expr, error) {
 				expr = &IndexExpr{Target: expr, Index: idx, UseMapSyntax: true}
 				typ = tt.Value
 			default:
-				expr = &IndexExpr{Target: expr, Index: idx}
+				if _, ok := types.TypeOfExpr(op.Index.Start, env).(types.StringType); ok {
+					expr = &IndexExpr{Target: expr, Index: idx, UseMapSyntax: true}
+				} else {
+					expr = &IndexExpr{Target: expr, Index: idx}
+				}
 				typ = types.AnyType{}
 			}
 		} else if op.Index != nil && (op.Index.Colon != nil || op.Index.Colon2 != nil) {
@@ -2965,6 +2969,14 @@ func compilePrimary(p *parser.Primary, env *types.Env) (Expr, error) {
 				divExpr := &BinaryExpr{Left: sumCall, Op: "/", Right: countCall}
 				cexpr := &CondExpr{Cond: cond, Then: intDiv, Else: divExpr}
 				return &GroupExpr{Expr: cexpr}, nil
+			}
+		case "upper":
+			if len(args) == 1 {
+				return &CallExpr{Func: "String.upcase", Args: []Expr{args[0]}}, nil
+			}
+		case "lower":
+			if len(args) == 1 {
+				return &CallExpr{Func: "String.downcase", Args: []Expr{args[0]}}, nil
 			}
 		case "str":
 			name = "to_string"
