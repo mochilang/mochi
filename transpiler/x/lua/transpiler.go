@@ -198,6 +198,18 @@ type ForRangeStmt struct {
 	Body  []Stmt
 }
 
+// MultiStmt represents a sequence of statements emitted consecutively.
+type MultiStmt struct{ Stmts []Stmt }
+
+func (m *MultiStmt) emit(w io.Writer) {
+	for i, st := range m.Stmts {
+		if i > 0 {
+			io.WriteString(w, "\n")
+		}
+		st.emit(w)
+	}
+}
+
 type ForInStmt struct {
 	Name     string
 	Iterable Expr
@@ -403,7 +415,9 @@ func (c *CallExpr) emit(w io.Writer) {
 	case "padStart":
 		io.WriteString(w, "_padStart(")
 		if len(c.Args) > 0 {
+			io.WriteString(w, "tostring(")
 			c.Args[0].emit(w)
+			io.WriteString(w, ")")
 		}
 		io.WriteString(w, ", ")
 		if len(c.Args) > 1 {
@@ -412,6 +426,16 @@ func (c *CallExpr) emit(w io.Writer) {
 		io.WriteString(w, ", ")
 		if len(c.Args) > 2 {
 			c.Args[2].emit(w)
+		}
+		io.WriteString(w, ")")
+	case "repeat":
+		io.WriteString(w, "string.rep(")
+		if len(c.Args) > 0 {
+			c.Args[0].emit(w)
+		}
+		io.WriteString(w, ", ")
+		if len(c.Args) > 1 {
+			c.Args[1].emit(w)
 		}
 		io.WriteString(w, ")")
 	case "sha256":
@@ -2503,7 +2527,7 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 			ce.Args = append(ce.Args, ae)
 		}
 		switch p.Call.Func {
-		case "append", "avg", "sum", "contains", "len", "count", "now", "sha256", "indexOf", "parseIntStr":
+		case "append", "avg", "sum", "contains", "len", "count", "now", "sha256", "indexOf", "parseIntStr", "repeat":
 			// handled during emission
 			return ce, nil
 		case "substr":
@@ -3152,7 +3176,22 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 	case st.Import != nil:
 		return convertImportStmt(st.Import)
 	case st.Type != nil:
-		return nil, nil
+		ms := &MultiStmt{}
+		if st.Type.Members != nil {
+			for _, m := range st.Type.Members {
+				if m.Method != nil {
+					fn, err := convertFunStmt(m.Method)
+					if err != nil {
+						return nil, err
+					}
+					ms.Stmts = append(ms.Stmts, fn)
+				}
+			}
+		}
+		if len(ms.Stmts) == 0 {
+			return nil, nil
+		}
+		return ms, nil
 	case st.ExternType != nil:
 		return nil, nil
 	case st.ExternVar != nil:
