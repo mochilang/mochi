@@ -1,0 +1,11 @@
+exit status 70
+ERROR: not a number: "Terminating"
+  called from <anonymous> on line 444 of file /workspace/mochi/tests/rosetta/transpiler/scheme/aliquot-sequence-classifications.scm
+  called from loop25 on line 440 of file /workspace/mochi/tests/rosetta/transpiler/scheme/aliquot-sequence-classifications.scm
+  called from call-with-current-continuation on line 848 of file /usr/share/chibi/init-7.scm
+  called from <anonymous> on line 438 of file /workspace/mochi/tests/rosetta/transpiler/scheme/aliquot-sequence-classifications.scm
+  called from call-with-current-continuation on line 848 of file /usr/share/chibi/init-7.scm
+  called from <anonymous> on line 1292 of file /usr/share/chibi/init-7.scm
+  called from <anonymous> on line 821 of file /usr/share/chibi/init-7.scm
+Aliquot classifications - periods for Sociable/Cyclic in square brackets:
+
