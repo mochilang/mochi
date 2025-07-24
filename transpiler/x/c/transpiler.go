@@ -60,6 +60,9 @@ var (
 	needInput            bool
 	needSubstring        bool
 
+	currentFuncName   string
+	currentFuncReturn string
+
 	// track local variable declarations so they can be adjusted
 	declStmts map[string]*DeclStmt
 )
@@ -79,10 +82,11 @@ type Param struct {
 }
 
 type Function struct {
-	Name   string
-	Params []Param
-	Return string
-	Body   []Stmt
+	Name     string
+	Params   []Param
+	Return   string
+	Body     []Stmt
+	VarTypes map[string]string
 }
 
 type Stmt interface {
@@ -302,6 +306,11 @@ func (r *ReturnStmt) emit(w io.Writer, indent int) {
 	io.WriteString(w, "return")
 	if r.Expr != nil {
 		io.WriteString(w, " ")
+		if strings.HasSuffix(currentFuncReturn, "[]") {
+			if vr, ok := r.Expr.(*VarRef); ok {
+				fmt.Fprintf(w, "%s_len = %s_len, ", currentFuncName, vr.Name)
+			}
+		}
 		r.Expr.emitExpr(w)
 	} else {
 		io.WriteString(w, " 0")
@@ -348,6 +357,16 @@ func (d *DeclStmt) emit(w io.Writer, indent int) {
 		}
 		if vr, ok := d.Value.(*VarRef); ok {
 			fmt.Fprintf(w, "%s *%s = %s;\n", base, d.Name, vr.Name)
+			writeIndent(w, indent)
+			fmt.Fprintf(w, "size_t %s_len = %s_len;\n", d.Name, vr.Name)
+			return
+		}
+		if call, ok := d.Value.(*CallExpr); ok {
+			fmt.Fprintf(w, "%s *%s = ", base, d.Name)
+			d.Value.emitExpr(w)
+			io.WriteString(w, ";\n")
+			writeIndent(w, indent)
+			fmt.Fprintf(w, "size_t %s_len = %s_len;\n", d.Name, call.Func)
 			return
 		}
 		if d.Value != nil {
@@ -423,6 +442,13 @@ func (a *AssignStmt) emit(w io.Writer, indent int) {
 		a.Value.emitExpr(w)
 	}
 	io.WriteString(w, ";\n")
+
+	if call, ok := a.Value.(*CallExpr); ok {
+		if strings.HasSuffix(funcReturnTypes[call.Func], "[]") {
+			writeIndent(w, indent)
+			fmt.Fprintf(w, "size_t %s_len = %s_len;\n", a.Name, call.Func)
+		}
+	}
 }
 
 func (ws *WhileStmt) emit(w io.Writer, indent int) {
@@ -1117,6 +1143,14 @@ func (p *Program) Emit() []byte {
 		buf.WriteString("#include <math.h>\n")
 	}
 	buf.WriteString("\n")
+	for _, fn := range p.Functions {
+		if strings.HasSuffix(fn.Return, "[]") {
+			fmt.Fprintf(&buf, "size_t %s_len;\n", fn.Name)
+		}
+	}
+	if len(p.Functions) > 0 {
+		buf.WriteString("\n")
+	}
 	if needContainsInt {
 		buf.WriteString("static int contains_int(const int arr[], size_t len, int val) {\n")
 		buf.WriteString("    for (size_t i = 0; i < len; i++) {\n")
@@ -1335,6 +1369,10 @@ func (p *Program) Emit() []byte {
 		buf.WriteString("\n")
 	}
 	for i, f := range p.Functions {
+		prevVars := varTypes
+		varTypes = f.VarTypes
+		currentFuncName = f.Name
+		currentFuncReturn = f.Return
 		ret := f.Return
 		if ret == "" {
 			ret = "int"
@@ -1394,6 +1432,9 @@ func (p *Program) Emit() []byte {
 		if i < len(p.Functions)-1 {
 			buf.WriteString("\n")
 		}
+		varTypes = prevVars
+		currentFuncName = ""
+		currentFuncReturn = ""
 	}
 	return buf.Bytes()
 }
@@ -2355,6 +2396,8 @@ func compileFunction(env *types.Env, name string, fn *parser.FunExpr) (*Function
 	localEnv := types.NewEnv(env)
 	prevEnv := currentEnv
 	currentEnv = localEnv
+	prevVarTypes := varTypes
+	varTypes = make(map[string]string)
 	declStmts = map[string]*DeclStmt{}
 	var params []Param
 	var paramTypes []string
@@ -2413,9 +2456,11 @@ func compileFunction(env *types.Env, name string, fn *parser.FunExpr) (*Function
 	for name, st := range localEnv.Structs() {
 		prevEnv.SetStruct(name, st)
 	}
+	fnInfo := &Function{Name: name, Params: params, Body: body, Return: ret, VarTypes: varTypes}
 	currentEnv = prevEnv
+	varTypes = prevVarTypes
 	declStmts = nil
-	return &Function{Name: name, Params: params, Body: body, Return: ret}, nil
+	return fnInfo, nil
 }
 
 func detectReturnType(stmts []Stmt, env *types.Env) string {
