@@ -20,6 +20,7 @@ var (
 	extraHelpers   []string
 	helpersUsed    map[string]bool
 	localFuncs     map[string]bool
+	funcRets       map[string]string
 	builtinAliases map[string]string
 	reserved       map[string]bool
 	currentRetType string
@@ -122,8 +123,9 @@ func init() {
     is Iterable<*> -> v.joinToString(prefix = "[", postfix = "]") { toJson(it) }
     else -> toJson(v.toString())
 }`,
-		"expect": `fun expect(cond: Boolean) { if (!cond) throw RuntimeException("expect failed") }`,
-		"input":  `fun input(): String = readLine() ?: ""`,
+		"expect":       `fun expect(cond: Boolean) { if (!cond) throw RuntimeException("expect failed") }`,
+		"input":        `fun input(): String = readLine() ?: ""`,
+		"importBigInt": `import java.math.BigInteger`,
 		"_now": `var _nowSeed = 0L
 var _nowSeeded = false
 fun _now(): Int {
@@ -152,6 +154,7 @@ fun _now(): Int {
 	extraHelpers = nil
 	helpersUsed = map[string]bool{}
 	localFuncs = map[string]bool{}
+	funcRets = map[string]string{}
 }
 
 // Program represents a simple Kotlin program consisting of statements executed in main.
@@ -618,6 +621,8 @@ func (c *CastExpr) emit(w io.Writer) {
 		io.WriteString(w, ".toDouble()")
 	case "string":
 		io.WriteString(w, ".toString()")
+	case "BigInteger":
+		io.WriteString(w, ".toBigInteger()")
 	default:
 		io.WriteString(w, " as "+c.Type)
 	}
@@ -691,6 +696,7 @@ func (b *BinaryExpr) emit(w io.Writer) {
 	cmpOp := b.Op == ">" || b.Op == "<" || b.Op == ">=" || b.Op == "<="
 	boolOp := b.Op == "&&" || b.Op == "||"
 	strOp := b.Op == "+" && (leftType == "String" || rightType == "String")
+	bigOp := leftType == "BigInteger" || rightType == "BigInteger"
 	cast := func(e Expr, typ string) {
 		if typ == "Double" {
 			io.WriteString(w, "(")
@@ -700,6 +706,10 @@ func (b *BinaryExpr) emit(w io.Writer) {
 			io.WriteString(w, "(")
 			e.emit(w)
 			io.WriteString(w, " as Int)")
+		} else if typ == "BigInteger" {
+			io.WriteString(w, "(")
+			e.emit(w)
+			io.WriteString(w, ").toBigInteger()")
 		} else if typ == "String" {
 			io.WriteString(w, "(")
 			e.emit(w)
@@ -751,6 +761,115 @@ func (b *BinaryExpr) emit(w io.Writer) {
 		}
 		e.emit(w)
 	}
+	if bigOp {
+		if _, ok := b.Left.(*BinaryExpr); ok {
+			io.WriteString(w, "(")
+			b.Left.emit(w)
+			io.WriteString(w, ")")
+		} else {
+			b.Left.emit(w)
+		}
+		if leftType != "BigInteger" {
+			io.WriteString(w, ".toBigInteger()")
+		}
+		switch b.Op {
+		case "+":
+			io.WriteString(w, ".add(")
+			if _, ok := b.Right.(*BinaryExpr); ok {
+				io.WriteString(w, "(")
+				b.Right.emit(w)
+				io.WriteString(w, ")")
+			} else {
+				b.Right.emit(w)
+			}
+			if rightType != "BigInteger" {
+				io.WriteString(w, ".toBigInteger()")
+			}
+			io.WriteString(w, ")")
+		case "-":
+			io.WriteString(w, ".subtract(")
+			if _, ok := b.Right.(*BinaryExpr); ok {
+				io.WriteString(w, "(")
+				b.Right.emit(w)
+				io.WriteString(w, ")")
+			} else {
+				b.Right.emit(w)
+			}
+			if rightType != "BigInteger" {
+				io.WriteString(w, ".toBigInteger()")
+			}
+			io.WriteString(w, ")")
+		case "*":
+			io.WriteString(w, ".multiply(")
+			if _, ok := b.Right.(*BinaryExpr); ok {
+				io.WriteString(w, "(")
+				b.Right.emit(w)
+				io.WriteString(w, ")")
+			} else {
+				b.Right.emit(w)
+			}
+			if rightType != "BigInteger" {
+				io.WriteString(w, ".toBigInteger()")
+			}
+			io.WriteString(w, ")")
+		case "/":
+			io.WriteString(w, ".divide(")
+			if _, ok := b.Right.(*BinaryExpr); ok {
+				io.WriteString(w, "(")
+				b.Right.emit(w)
+				io.WriteString(w, ")")
+			} else {
+				b.Right.emit(w)
+			}
+			if rightType != "BigInteger" {
+				io.WriteString(w, ".toBigInteger()")
+			}
+			io.WriteString(w, ")")
+		case "%":
+			io.WriteString(w, ".remainder(")
+			if _, ok := b.Right.(*BinaryExpr); ok {
+				io.WriteString(w, "(")
+				b.Right.emit(w)
+				io.WriteString(w, ")")
+			} else {
+				b.Right.emit(w)
+			}
+			if rightType != "BigInteger" {
+				io.WriteString(w, ".toBigInteger()")
+			}
+			io.WriteString(w, ")")
+		case "==", "!=", "<", ">", "<=", ">=":
+			io.WriteString(w, ".compareTo(")
+			if _, ok := b.Right.(*BinaryExpr); ok {
+				io.WriteString(w, "(")
+				b.Right.emit(w)
+				io.WriteString(w, ")")
+			} else {
+				b.Right.emit(w)
+			}
+			if rightType != "BigInteger" {
+				io.WriteString(w, ".toBigInteger()")
+			}
+			io.WriteString(w, ") ")
+			switch b.Op {
+			case "==":
+				io.WriteString(w, "== 0")
+			case "!=":
+				io.WriteString(w, "!= 0")
+			case "<":
+				io.WriteString(w, "< 0")
+			case ">":
+				io.WriteString(w, "> 0")
+			case "<=":
+				io.WriteString(w, "<= 0")
+			case ">=":
+				io.WriteString(w, ">= 0")
+			}
+		default:
+			io.WriteString(w, " /* unsupported */ ")
+		}
+		return
+	}
 	if listOp {
 		io.WriteString(w, "(")
 	}
@@ -788,6 +907,14 @@ func (s *LetStmt) emit(w io.Writer, indentLevel int) { // 'let' is immutable
 		io.WriteString(w, ": "+s.Type)
 	}
 	io.WriteString(w, " = ")
+	if s.Type == "BigInteger" {
+		if _, ok := s.Value.(*IntLit); ok {
+			io.WriteString(w, "java.math.BigInteger.valueOf(")
+			s.Value.emit(w)
+			io.WriteString(w, ")")
+			return
+		}
+	}
 	s.Value.emit(w)
 }
 
@@ -804,6 +931,14 @@ func (s *VarStmt) emit(w io.Writer, indentLevel int) {
 		io.WriteString(w, ": "+s.Type)
 	}
 	io.WriteString(w, " = ")
+	if s.Type == "BigInteger" {
+		if _, ok := s.Value.(*IntLit); ok {
+			io.WriteString(w, "java.math.BigInteger.valueOf(")
+			s.Value.emit(w)
+			io.WriteString(w, ")")
+			return
+		}
+	}
 	s.Value.emit(w)
 }
 
@@ -1637,6 +1772,9 @@ func kotlinType(t *parser.TypeRef) string {
 			return "Boolean"
 		case "string":
 			return "String"
+		case "bigint":
+			useHelper("importBigInt")
+			return "BigInteger"
 		case "any":
 			return "Any"
 		default:
@@ -1685,6 +1823,9 @@ func kotlinTypeFromType(t types.Type) string {
 	switch tt := t.(type) {
 	case types.IntType, *types.IntType, types.Int64Type, *types.Int64Type:
 		return "Int"
+	case types.BigIntType, *types.BigIntType:
+		useHelper("importBigInt")
+		return "BigInteger"
 	case types.BoolType, *types.BoolType:
 		return "Boolean"
 	case types.StringType, *types.StringType:
@@ -1832,6 +1973,9 @@ func guessType(e Expr) string {
 		if v.Op == "+" {
 			lt := guessType(v.Left)
 			rt := guessType(v.Right)
+			if lt == "BigInteger" || rt == "BigInteger" {
+				return "BigInteger"
+			}
 			if strings.HasPrefix(lt, "MutableList<") || strings.HasPrefix(rt, "MutableList<") {
 				elem := "Any"
 				if strings.HasPrefix(lt, "MutableList<") {
@@ -1858,6 +2002,9 @@ func guessType(e Expr) string {
 		if v.Op == "-" || v.Op == "*" || v.Op == "%" {
 			lt := guessType(v.Left)
 			rt := guessType(v.Right)
+			if lt == "BigInteger" || rt == "BigInteger" {
+				return "BigInteger"
+			}
 			if lt == "String" || rt == "String" {
 				return "String"
 			}
@@ -1869,6 +2016,9 @@ func guessType(e Expr) string {
 		if v.Op == "/" {
 			lt := guessType(v.Left)
 			rt := guessType(v.Right)
+			if lt == "BigInteger" || rt == "BigInteger" {
+				return "BigInteger"
+			}
 			if lt != "Double" && rt != "Double" {
 				return "Int"
 			}
@@ -1903,6 +2053,9 @@ func guessType(e Expr) string {
 		}
 		return "Any"
 	case *CallExpr:
+		if ret, ok := funcRets[v.Func]; ok {
+			return ret
+		}
 		switch v.Func {
 		case "input":
 			return "String"
@@ -1912,7 +2065,16 @@ func guessType(e Expr) string {
 		return ""
 	case *CastExpr:
 		if v.Type != "" {
-			return v.Type
+			switch v.Type {
+			case "int":
+				return "Int"
+			case "float":
+				return "Double"
+			case "string":
+				return "String"
+			default:
+				return v.Type
+			}
 		}
 		return guessType(v.Value)
 	case *FieldExpr:
@@ -2235,6 +2397,11 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 				}
 			}
 			currentRetType = ret
+			fname := st.Fun.Name
+			if fname == "main" {
+				fname = "user_main"
+			}
+			funcRets[fname] = ret
 			body, err := convertStmts(bodyEnv, st.Fun.Body)
 			currentRetType = prevRet
 			if err != nil {
@@ -2247,10 +2414,6 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 					typ = "Any"
 				}
 				params = append(params, fmt.Sprintf("%s: %s", p0.Name, typ))
-			}
-			fname := st.Fun.Name
-			if fname == "main" {
-				fname = "user_main"
 			}
 			// insert mutable parameter locals if assigned
 			for i, p0 := range st.Fun.Params {
@@ -2266,6 +2429,7 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 				_ = i
 			}
 			p.Funcs = append(p.Funcs, &FuncDef{Name: fname, Params: params, Ret: ret, Body: body})
+			funcRets[fname] = ret
 		case st.If != nil:
 			stmt, err := convertIfStmt(env, st.If)
 			if err != nil {
@@ -2401,6 +2565,8 @@ func convertStmts(env *types.Env, list []*parser.Statement) ([]Stmt, error) {
 						tt = types.BoolType{}
 					case "String":
 						tt = types.StringType{}
+					case "BigInteger":
+						tt = types.BigIntType{}
 					default:
 						if strings.HasPrefix(typ, "MutableList<") {
 							elem := strings.TrimSuffix(strings.TrimPrefix(typ, "MutableList<"), ">")
@@ -3763,6 +3929,10 @@ func convertPostfix(env *types.Env, p *parser.PostfixExpr) (Expr, error) {
 		case op.Cast != nil:
 			if op.Cast.Type != nil && op.Cast.Type.Simple != nil {
 				ctype := *op.Cast.Type.Simple
+				if ctype == "bigint" {
+					useHelper("importBigInt")
+					ctype = "BigInteger"
+				}
 				switch ctype {
 				case "int", "float", "string":
 					expr = &CastExpr{Value: expr, Type: ctype}
