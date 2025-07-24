@@ -79,6 +79,7 @@ var blockDepth int
 var importAliases map[string]string
 var varAliases map[string]string
 var aliasCounter int
+var usesFmt bool
 
 // reserved lists C# reserved keywords that cannot be used as identifiers.
 var reserved = map[string]bool{
@@ -898,6 +899,10 @@ func isStringExpr(e Expr) bool {
 		}
 	case *RawExpr:
 		return ex.Type == "string"
+	case *FmtExpr:
+		return true
+	case *FmtTopExpr:
+		return true
 	}
 	return false
 }
@@ -1353,6 +1358,10 @@ func typeOfExpr(e Expr) string {
 		}
 	case *RawExpr:
 		return ex.Type
+	case *FmtExpr:
+		return "string"
+	case *FmtTopExpr:
+		return "string"
 	}
 	return ""
 }
@@ -1595,6 +1604,24 @@ func (s *StrExpr) emit(w io.Writer) {
 	}
 }
 
+// FmtExpr wraps another expression with the _fmt helper.
+type FmtExpr struct{ Value Expr }
+
+func (f *FmtExpr) emit(w io.Writer) {
+	fmt.Fprint(w, "_fmt(")
+	f.Value.emit(w)
+	fmt.Fprint(w, ")")
+}
+
+// FmtTopExpr calls the _fmtTop helper on the value.
+type FmtTopExpr struct{ Value Expr }
+
+func (f *FmtTopExpr) emit(w io.Writer) {
+	fmt.Fprint(w, "_fmtTop(")
+	f.Value.emit(w)
+	fmt.Fprint(w, ")")
+}
+
 type MinExpr struct{ Arg Expr }
 
 func (m *MinExpr) emit(w io.Writer) {
@@ -1677,6 +1704,7 @@ func Transpile(p *parser.Program, env *types.Env) (*Program, error) {
 	usesJson = false
 	usesNow = false
 	usesInput = false
+	usesFmt = false
 	globalDecls = make(map[string]*Global)
 	mutatedVars = make(map[string]bool)
 	importAliases = make(map[string]string)
@@ -2523,14 +2551,16 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 					inner := &CallExpr{Func: "JsonSerializer.Serialize", Args: []Expr{arg}}
 					return &CallExpr{Func: name, Args: []Expr{inner}}, nil
 				}
-				return &CallExpr{Func: name, Args: []Expr{arg}}, nil
+				usesFmt = true
+				return &CallExpr{Func: name, Args: []Expr{&FmtTopExpr{Value: arg}}}, nil
 			}
 			elems := make([]Expr, len(args))
 			for i, a := range args {
-				elems[i] = a
+				elems[i] = &FmtTopExpr{Value: a}
 			}
 			list := &ListLit{Elems: elems}
 			join := &CallExpr{Func: "string.Join", Args: []Expr{&StringLit{Value: " "}, list}}
+			usesFmt = true
 			return &CallExpr{Func: name, Args: []Expr{join}}, nil
 		case "append":
 			if len(args) == 2 {
@@ -3188,6 +3218,12 @@ func Emit(prog *Program) []byte {
 	if usesInput {
 		buf.WriteString("using System.IO;\n")
 	}
+	if usesFmt {
+		buf.WriteString("using System.Collections;\n")
+		if !usesDict {
+			buf.WriteString("using System.Collections.Generic;\n")
+		}
+	}
 	for _, imp := range prog.Imports {
 		buf.WriteString(imp)
 		if !strings.HasSuffix(imp, "\n") {
@@ -3255,6 +3291,40 @@ func Emit(prog *Program) []byte {
 		buf.WriteString("\t\t}\n")
 		buf.WriteString("\t\treturn Console.ReadLine();\n")
 		buf.WriteString("\t}\n")
+	}
+	if usesFmt {
+		buf.WriteString(`static string _fmt(object v) {
+if (v is Array a) {
+var parts = new List<string>();
+foreach (var x in a) parts.Add(_fmt(x));
+return "[" + string.Join(" ", parts) + "]";
+}
+if (v is System.Collections.IDictionary d) {
+var keys = new List<string>();
+foreach (var k in d.Keys) keys.Add(k.ToString());
+keys.Sort();
+var parts = new List<string>();
+foreach (var k in keys) parts.Add(k + ":" + _fmt(d[k]));
+return "map[" + string.Join(" ", parts) + "]";
+}
+if (v is System.Collections.IEnumerable e && !(v is string)) {
+var parts = new List<string>();
+foreach (var x in e) parts.Add(_fmt(x));
+return string.Join(" ", parts);
+}
+if (v is bool b) return b ? "1" : "0";
+return Convert.ToString(v);
+}
+`)
+		buf.WriteString(`static string _fmtTop(object v) {
+if (v is Array a && a.Length > 0 && a.GetValue(0) is Array) {
+    var parts = new List<string>();
+    foreach (var x in a) parts.Add(_fmt(x));
+    return string.Join(" ", parts);
+}
+return _fmt(v);
+}
+`)
 	}
 	for _, g := range prog.Globals {
 		buf.WriteString("\tstatic ")
