@@ -1,0 +1,9 @@
+run error: exit status 1
+/workspace/mochi/tests/rosetta/transpiler/Racket/casting-out-nines.rkt:75:0: define: not allowed in an expression context
+  in: (define b (parseIntBase begin base))
+  location...:
+   /workspace/mochi/tests/rosetta/transpiler/Racket/casting-out-nines.rkt:75:0
+  context...:
+   /usr/share/racket/collects/racket/private/norm-define.rkt:9:4: normalize-definition/mk-rhs
+   /usr/share/racket/collects/racket/private/norm-define.rkt:165:4: normalize-definition
+   /usr/share/racket/collects/racket/private/kw.rkt:1171:2

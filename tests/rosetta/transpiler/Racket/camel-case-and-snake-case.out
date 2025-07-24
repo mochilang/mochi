@@ -1,0 +1,27 @@
+=== To snake_case ===
+                         snakeCase => snake_case
+                        snake_case => snake_case
+                        snake-case => snake_case-
+                        snake case => snake_case 
+                        snake CASE => snake_c_a_s_e 
+                        snake.case => snake_case.
+                  variable_10_case => variable_10_case
+                    variable10Case => variable10_case
+                      ɛrgo rE tHis => ɛrgo_r_e_t_his  
+                     hurry-up-joe! => hurry_up_joe!--
+ c://my-docs/happy_Flag-Day/12.doc => c://my_docs/happy_flag_day/12_doc.-_-
+                           spaces  => spaces
+
+=== To camelCase ===
+                         snakeCase => snakeCases
+                        snake_case => snakeCase_s
+                        snake-case => snakeCase-s
+                        snake case => snakeCase s
+                        snake CASE => snakeCASE s
+                        snake.case => snakeCase.s
+                  variable_10_case => variable10Case__v
+                    variable10Case => variable10Casev
+                      ɛrgo rE tHis => ɛrgoRETHis  ɛ
+                     hurry-up-joe! => hurryUpJoe!--h
+ c://my-docs/happy_Flag-Day/12.doc => c://myDocs/happyFlagDay/12Doc.-_-c
+                           spaces  => spacess

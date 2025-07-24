@@ -1,0 +1,6 @@
+run error: exit status 1
+/workspace/mochi/tests/rosetta/transpiler/Racket/call-a-function-3.rkt:44:18: begin (possibly implicit): the last form is not an expression
+  at: (begin)
+  in: (begin (begin))
+  location...:
+   /workspace/mochi/tests/rosetta/transpiler/Racket/call-a-function-3.rkt:44:18

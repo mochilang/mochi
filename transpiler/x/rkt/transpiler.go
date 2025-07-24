@@ -1897,6 +1897,27 @@ func convertBinary(b *parser.BinaryExpr, env *types.Env) (Expr, error) {
 			} else {
 				op = "string!="
 			}
+			leftIsStr := types.IsStringUnary(b.Left, env)
+			rightIsStr := types.IsStringPostfix(part.Right, env)
+			if leftIsStr && !rightIsStr {
+				if n, ok := right.(*Name); ok {
+					if n.Name == "#t" {
+						right = &StringLit{Value: "true"}
+					} else if n.Name == "#f" {
+						right = &StringLit{Value: "false"}
+					}
+				}
+			}
+			if rightIsStr && !leftIsStr {
+				if n, ok := currLeft.(*Name); ok {
+					if n.Name == "#t" {
+						currLeft = &StringLit{Value: "true"}
+					} else if n.Name == "#f" {
+						currLeft = &StringLit{Value: "false"}
+					}
+					exprs[len(exprs)-1] = currLeft
+				}
+			}
 		}
 		if op == "+" {
 			stringLeft := false

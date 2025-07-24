@@ -1,0 +1,5 @@
+run error: exit status 1
+/workspace/mochi/tests/rosetta/transpiler/Racket/caesar-cipher-1.rkt:109:1: loop: unbound identifier
+  in: loop
+  location...:
+   /workspace/mochi/tests/rosetta/transpiler/Racket/caesar-cipher-1.rkt:109:1
