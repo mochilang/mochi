@@ -149,7 +149,7 @@ func updateRosettaReadme() {
 			completed++
 			mark = "[x]"
 		}
-		lines = append(lines, fmt.Sprintf("%d. %s %s", i+1, mark, name))
+		lines = append(lines, fmt.Sprintf("%d. %s %s (%d)", i+1, mark, name, i+1))
 	}
 	loc, _ := time.LoadLocation("Asia/Bangkok")
 	ts := time.Now().In(loc).Format("2006-01-02 15:04 -0700")

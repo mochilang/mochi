@@ -1,3 +1,7 @@
+## Progress (2025-07-24 06:53 +0700)
+- transpiler/clj: update 2048 example and now() handling
+- Regenerated golden files - 101/103 vm valid programs passing
+
 ## Progress (2025-07-22 22:18 +0700)
 - clj rosetta: index tasks and run by env
 - Regenerated golden files - 101/103 vm valid programs passing
