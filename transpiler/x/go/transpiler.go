@@ -36,6 +36,7 @@ type Program struct {
 	UseSubstr    bool
 	UseFloatConv bool
 	UsePadStart  bool
+	UseSHA256    bool
 	UseBigInt    bool
 	UseBigRat    bool
 	UseLenAny    bool
@@ -53,6 +54,7 @@ var (
 	usesSubstr     bool
 	usesFloatConv  bool
 	usesPadStart   bool
+	usesSHA256     bool
 	usesBigInt     bool
 	usesBigRat     bool
 	usesLenAny     bool
@@ -1695,6 +1697,7 @@ func Transpile(p *parser.Program, env *types.Env) (*Program, error) {
 	usesSubstr = false
 	usesFloatConv = false
 	usesPadStart = false
+	usesSHA256 = false
 	usesBigInt = false
 	usesBigRat = false
 	usesLenAny = false
@@ -1729,6 +1732,7 @@ func Transpile(p *parser.Program, env *types.Env) (*Program, error) {
 	gp.UseSubstr = usesSubstr
 	gp.UseFloatConv = usesFloatConv
 	gp.UsePadStart = usesPadStart
+	gp.UseSHA256 = usesSHA256
 	gp.UseBigInt = usesBigInt
 	gp.UseBigRat = usesBigRat
 	gp.UseLenAny = usesLenAny
@@ -3480,7 +3484,20 @@ func compileFunStmt(fn *parser.FunStmt, env *types.Env) (Stmt, error) {
 	}
 	if env != topEnv {
 		lit := &FuncLit{Params: params, Return: ret, Body: body}
-		return &VarDecl{Name: fn.Name, Value: lit}, nil
+		ftype := "func("
+		for i, p := range params {
+			if i > 0 {
+				ftype += ", "
+			}
+			ftype += p.Type
+		}
+		ftype += ")"
+		if ret != "" {
+			ftype += " " + ret
+		}
+		decl := &VarDecl{Name: fn.Name, Type: ftype}
+		assign := &AssignStmt{Name: fn.Name, Value: lit}
+		return &StmtList{List: []Stmt{decl, assign}}, nil
 	}
 	name := fn.Name
 	if name == "main" {
@@ -3779,10 +3796,10 @@ func compilePostfix(pf *parser.PostfixExpr, env *types.Env, base string) (Expr, 
 		if v, err := env.GetVar(pf.Target.Selector.Root); err == nil {
 			t = v
 		} else {
-			t = types.TypeOfPrimaryBasic(pf.Target, env)
+			t = types.TypeOfPrimary(pf.Target, env)
 		}
 	} else {
-		t = types.TypeOfPrimaryBasic(pf.Target, env)
+		t = types.TypeOfPrimary(pf.Target, env)
 	}
 	if len(tail) > 0 && (len(pf.Ops) == 0 || pf.Ops[0].Call == nil) {
 		for _, f := range tail {
@@ -4009,7 +4026,11 @@ func compilePostfix(pf *parser.PostfixExpr, env *types.Env, base string) (Expr, 
 						usesBigInt = true
 						expr = &BigIntToIntExpr{Value: expr}
 					case types.AnyType:
-						expr = &IntCastExpr{Expr: expr}
+						if pf.Target != nil && pf.Target.Group != nil {
+							expr = &IntCastExpr{Expr: expr}
+						} else {
+							expr = &AssertExpr{Expr: expr, Type: "int"}
+						}
 					default:
 						expr = &IntCastExpr{Expr: expr}
 					}
@@ -4027,6 +4048,12 @@ func compilePostfix(pf *parser.PostfixExpr, env *types.Env, base string) (Expr, 
 					t = types.BigIntType{}
 				} else if name == "float" {
 					expr = &CallExpr{Func: "float64", Args: []Expr{expr}}
+				} else if name == "string" {
+					expr = &AssertExpr{Expr: expr, Type: "string"}
+					t = types.StringType{}
+				} else if name == "bool" {
+					expr = &AssertExpr{Expr: expr, Type: "bool"}
+					t = types.BoolType{}
 				} else if name == "bigrat" {
 					usesBigRat = true
 					expr = ensureBigRatExpr(expr, t)
@@ -4094,6 +4121,12 @@ func compilePostfix(pf *parser.PostfixExpr, env *types.Env, base string) (Expr, 
 			case types.MapType:
 				expr = &IndexExpr{X: expr, Index: &StringLit{Value: op.Field.Name}}
 				t = tt.Value
+				if _, ok := tt.Value.(types.AnyType); ok {
+					if gt, ok2 := fieldTypeGuess[op.Field.Name]; ok2 && gt != "" && gt != "any" {
+						expr = &AssertExpr{Expr: expr, Type: gt}
+						t = toTypeFromGoType(gt)
+					}
+				}
 			case types.StructType:
 				expr = &FieldExpr{X: expr, Name: op.Field.Name}
 				if ft, ok := tt.Fields[op.Field.Name]; ok {
@@ -4201,17 +4234,42 @@ func compilePrimary(p *parser.Primary, env *types.Env, base string) (Expr, error
 		case "exists":
 			bexpr := &BinaryExpr{Left: &CallExpr{Func: "len", Args: []Expr{args[0]}}, Op: ">", Right: &IntLit{Value: 0}}
 			return &ExistsExpr{Expr: bexpr}, nil
+		case "contains":
+			at := types.TypeOfExpr(p.Call.Args[0], env)
+			var kind, et string
+			switch mt := at.(type) {
+			case types.StringType:
+				kind = "string"
+			case types.MapType:
+				kind = "map"
+				et = toGoTypeFromType(mt.Key)
+			case types.ListType:
+				kind = "list"
+				et = toGoTypeFromType(mt.Elem)
+			default:
+				kind = "list"
+			}
+			if kind == "string" {
+				usesStrings = true
+			}
+			return &ContainsExpr{Collection: args[0], Value: args[1], Kind: kind, ElemType: et}, nil
 		case "padStart":
 			usesPadStart = true
 			usesStrings = true
 			return &CallExpr{Func: "_padStart", Args: args[:3]}, nil
-		case "substring":
+		case "substring", "substr":
 			usesSubstr = true
 			if types.IsAnyType(types.TypeOfExpr(p.Call.Args[0], env)) {
 				usesPrint = true
 				args[0] = &CallExpr{Func: "fmt.Sprint", Args: []Expr{args[0]}}
 			}
 			return &CallExpr{Func: "_substr", Args: []Expr{args[0], args[1], args[2]}}, nil
+		case "sha256":
+			if len(args) != 1 {
+				return nil, fmt.Errorf("sha256 expects one argument")
+			}
+			usesSHA256 = true
+			return &CallExpr{Func: "_sha256", Args: args}, nil
 		case "num":
 			usesBigRat = true
 			return &CallExpr{Func: "_num", Args: []Expr{args[0]}}, nil
@@ -4784,7 +4842,10 @@ func Emit(prog *Program) []byte {
 	buf.WriteString("//go:build ignore\n\n")
 	buf.Write(meta.Header("//"))
 	buf.WriteString("package main\n\n")
-	buf.WriteString("import (\n    \"fmt\"\n")
+	buf.WriteString("import (\n")
+	if prog.UsePrint {
+		buf.WriteString("    \"fmt\"\n")
+	}
 	if prog.Imports != nil {
 		aliases := make([]string, 0, len(prog.Imports))
 		for a := range prog.Imports {
@@ -4811,6 +4872,9 @@ func Emit(prog *Program) []byte {
 	}
 	if prog.UseSort {
 		buf.WriteString("    \"sort\"\n")
+	}
+	if prog.UseSHA256 {
+		buf.WriteString("    \"crypto/sha256\"\n")
 	}
 	if prog.UseBigInt || prog.UseBigRat {
 		buf.WriteString("    \"math/big\"\n")
@@ -4894,6 +4958,16 @@ func Emit(prog *Program) []byte {
 		buf.WriteString("    case float64: return t\n")
 		buf.WriteString("    default: return 0\n")
 		buf.WriteString("    }\n")
+		buf.WriteString("}\n\n")
+	}
+	if prog.UseSHA256 {
+		buf.WriteString("func _sha256(bs []int) []int {\n")
+		buf.WriteString("    b := make([]byte, len(bs))\n")
+		buf.WriteString("    for i, v := range bs { b[i] = byte(v) }\n")
+		buf.WriteString("    h := sha256.Sum256(b)\n")
+		buf.WriteString("    out := make([]int, len(h))\n")
+		buf.WriteString("    for i, v := range h[:] { out[i] = int(v) }\n")
+		buf.WriteString("    return out\n")
 		buf.WriteString("}\n\n")
 	}
 	if prog.UseBigRat {
