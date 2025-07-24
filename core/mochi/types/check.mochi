@@ -56,10 +56,16 @@ fun exprType(node: any, env: map<string,string>, funcs: map<string,FunInfo>): Re
   if node.kind == "call" {
     if node.value in funcs {
       var errs: list<string> = []
-      for arg in node.children {
-        let r = exprType(arg, env, funcs)
+      let fn = funcs[node.value]
+      if len(node.children) != len(fn.params) {
+        errs = errs + ["wrong number of args to " + node.value]
+      }
+      var i = 0
+      while i < len(node.children) {
+        let r = exprType(node.children[i], env, funcs)
         if count(r.errs) > 0 { errs = errs + r.errs }
         if r.typ != "int" { errs = errs + ["type mismatch in call to " + node.value] }
+        i = i + 1
       }
       return Result{ typ: "int", errs: errs }
     }
