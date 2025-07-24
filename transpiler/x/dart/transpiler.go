@@ -538,6 +538,52 @@ func (s *ContinueStmt) emit(w io.Writer) error {
 	return err
 }
 
+// BenchStmt measures execution time and memory usage of a statement block.
+type BenchStmt struct {
+	Name string
+	Body []Stmt
+}
+
+func (b *BenchStmt) emit(w io.Writer) error {
+	if _, err := io.WriteString(w, "{\n"); err != nil {
+		return err
+	}
+	if _, err := io.WriteString(w, "  var _benchMem0 = ProcessInfo.currentRss;\n"); err != nil {
+		return err
+	}
+	if _, err := io.WriteString(w, "  var _benchSw = Stopwatch()..start();\n"); err != nil {
+		return err
+	}
+	for _, st := range b.Body {
+		if _, err := io.WriteString(w, "  "); err != nil {
+			return err
+		}
+		if err := st.emit(w); err != nil {
+			return err
+		}
+		if isBlockStmt(st) {
+			if _, err := io.WriteString(w, "\n"); err != nil {
+				return err
+			}
+		} else {
+			if _, err := io.WriteString(w, ";\n"); err != nil {
+				return err
+			}
+		}
+	}
+	if _, err := io.WriteString(w, "  _benchSw.stop();\n"); err != nil {
+		return err
+	}
+	if _, err := io.WriteString(w, "  var _benchMem1 = ProcessInfo.currentRss;\n"); err != nil {
+		return err
+	}
+	if _, err := fmt.Fprintf(w, "  print(jsonEncode({\"duration_us\": _benchSw.elapsedMicroseconds, \"memory_bytes\": _benchMem1 - _benchMem0, \"name\": %q}));\n", b.Name); err != nil {
+		return err
+	}
+	_, err := io.WriteString(w, "}")
+	return err
+}
+
 // SaveStmt saves a list of maps to stdout in JSONL format.
 type SaveStmt struct {
 	Src    Expr
@@ -2926,7 +2972,7 @@ func emitExpr(w io.Writer, e Expr) error { return e.emit(w) }
 
 func isBlockStmt(s Stmt) bool {
 	switch s.(type) {
-	case *IfStmt, *WhileStmt, *ForRangeStmt, *ForInStmt, *FuncDecl, *UpdateStmt, *SaveStmt:
+	case *IfStmt, *WhileStmt, *ForRangeStmt, *ForInStmt, *FuncDecl, *UpdateStmt, *SaveStmt, *BenchStmt:
 		return true
 	default:
 		return false
@@ -3554,6 +3600,15 @@ func convertStmtInternal(st *parser.Statement) (Stmt, error) {
 		return convertForStmt(st.For)
 	case st.If != nil:
 		return convertIfStmt(st.If)
+	case st.Bench != nil:
+		body, err := convertStmtList(st.Bench.Body)
+		if err != nil {
+			return nil, err
+		}
+		usesJSON = true
+		useNow = true
+		name := strings.Trim(st.Bench.Name, "\"")
+		return &BenchStmt{Name: name, Body: body}, nil
 	case st.Update != nil:
 		up, err := convertUpdate(st.Update)
 		if err != nil {
