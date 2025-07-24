@@ -1,3 +1,63 @@
+## Progress (2025-07-24 20:08 +0700)
+- scala rosetta: support bigint; transpile ackermann-function-3
+- Regenerated golden files - 92/103 vm valid programs passing
+
+## Progress (2025-07-24 20:08 +0700)
+- scala rosetta: support bigint; transpile ackermann-function-3
+- Regenerated golden files - 92/103 vm valid programs passing
+
+## Progress (2025-07-24 20:08 +0700)
+- scala rosetta: support bigint; transpile ackermann-function-3
+- Regenerated golden files - 92/103 vm valid programs passing
+
+## Progress (2025-07-24 20:08 +0700)
+- scala rosetta: support bigint; transpile ackermann-function-3
+- Regenerated golden files - 92/103 vm valid programs passing
+
+## Progress (2025-07-24 20:08 +0700)
+- scala rosetta: support bigint; transpile ackermann-function-3
+- Regenerated golden files - 92/103 vm valid programs passing
+
+## Progress (2025-07-24 20:08 +0700)
+- scala rosetta: support bigint; transpile ackermann-function-3
+- Regenerated golden files - 92/103 vm valid programs passing
+
+## Progress (2025-07-24 20:08 +0700)
+- scala rosetta: support bigint; transpile ackermann-function-3
+- Regenerated golden files - 92/103 vm valid programs passing
+
+## Progress (2025-07-24 20:08 +0700)
+- scala rosetta: support bigint; transpile ackermann-function-3
+- Regenerated golden files - 92/103 vm valid programs passing
+
+## Progress (2025-07-24 20:08 +0700)
+- scala rosetta: support bigint; transpile ackermann-function-3
+- Regenerated golden files - 92/103 vm valid programs passing
+
+## Progress (2025-07-24 20:08 +0700)
+- scala rosetta: support bigint; transpile ackermann-function-3
+- Regenerated golden files - 92/103 vm valid programs passing
+
+## Progress (2025-07-24 20:08 +0700)
+- scala rosetta: support bigint; transpile ackermann-function-3
+- Regenerated golden files - 92/103 vm valid programs passing
+
+## Progress (2025-07-24 20:02 +0700)
+- scala rosetta: transpile ackermann-function-2
+- Regenerated golden files - 92/103 vm valid programs passing
+
+## Progress (2025-07-24 20:02 +0700)
+- scala rosetta: transpile ackermann-function-2
+- Regenerated golden files - 92/103 vm valid programs passing
+
+## Progress (2025-07-24 19:43 +0700)
+- cpp transpiler: handle string concat and hetero list
+- Regenerated golden files - 92/103 vm valid programs passing
+
+## Progress (2025-07-24 19:43 +0700)
+- cpp transpiler: handle string concat and hetero list
+- Regenerated golden files - 92/103 vm valid programs passing
+
 ## Progress (2025-07-24 18:38 +0700)
 - ctrans: add atoi helper and update rosetta
 - Regenerated golden files - 92/103 vm valid programs passing
