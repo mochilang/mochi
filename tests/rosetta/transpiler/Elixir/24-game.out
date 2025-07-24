@@ -1,0 +1,11 @@
+Your numbers: 6296
+
+Enter RPN: 
+invalid. expression length must be 7. (4 numbers, 3 operators, no spaces)
+          * is_float/1
+
+    │
+ 86 │               stack = (stack ++ [Kernel.float(String.to_integer(ch) - String.to_integer("0"))])
+    │                                         ~
+    │
+    └─ tests/rosetta/transpiler/Elixir/24-game.exs:86:41: Main.main/0

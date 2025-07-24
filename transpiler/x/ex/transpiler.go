@@ -1335,10 +1335,13 @@ func Emit(p *Program) []byte {
 	var buf bytes.Buffer
 	buf.WriteString(header())
 	funcsExist := false
+	hasMain := false
 	for _, st := range p.Stmts {
-		if _, ok := st.(*FuncDecl); ok {
+		if fd, ok := st.(*FuncDecl); ok {
 			funcsExist = true
-			break
+			if fd.Name == "main" {
+				hasMain = true
+			}
 		}
 	}
 	if !funcsExist {
@@ -1384,12 +1387,15 @@ func Emit(p *Program) []byte {
 		st.emit(&buf, 1)
 		buf.WriteString("\n")
 	}
-	buf.WriteString("  def main() do\n")
-	for _, st := range main {
-		st.emit(&buf, 2)
-		buf.WriteString("\n")
+	if !hasMain {
+		buf.WriteString("  def main() do\n")
+		for _, st := range main {
+			st.emit(&buf, 2)
+			buf.WriteString("\n")
+		}
+		buf.WriteString("  end\n")
 	}
-	buf.WriteString("  end\nend\n")
+	buf.WriteString("end\n")
 	buf.WriteString("Main.main()\n")
 	moduleMode = false
 	out := buf.Bytes()
@@ -2777,6 +2783,18 @@ func compilePrimary(p *parser.Primary, env *types.Env) (Expr, error) {
 			}
 		}
 		switch name {
+		case "int":
+			if len(args) == 1 {
+				return &CallExpr{Func: "String.to_integer", Args: []Expr{args[0]}}, nil
+			}
+		case "float":
+			if len(args) == 1 {
+				return &CallExpr{Func: "Kernel.float", Args: []Expr{args[0]}}, nil
+			}
+		case "abs":
+			if len(args) == 1 {
+				return &CallExpr{Func: "abs", Args: []Expr{args[0]}}, nil
+			}
 		case "print":
 			if len(args) == 1 {
 				t := types.TypeOfExprBasic(p.Call.Args[0], env)
@@ -2823,10 +2841,10 @@ func compilePrimary(p *parser.Primary, env *types.Env) (Expr, error) {
 			name = "length"
 			if len(args) == 1 {
 				t := types.TypeOfExprBasic(p.Call.Args[0], env)
-				if _, ok := t.(types.StringType); ok {
-					name = "String.length"
-				} else if _, ok := t.(types.MapType); ok {
+				if _, ok := t.(types.MapType); ok {
 					name = "map_size"
+				} else if _, ok := t.(types.StringType); ok || (!types.IsMapType(t) && !types.IsListType(t)) {
+					name = "String.length"
 				}
 			}
 		case "sum":
