@@ -1837,7 +1837,7 @@ func emitStmt(w *indentWriter, s Stmt, level int) {
 	case *ForRangeStmt:
 		io.WriteString(w, pad)
 		io.WriteString(w, "for (let ")
-		io.WriteString(w, st.Name)
+		io.WriteString(w, safeName(st.Name))
 		io.WriteString(w, " = ")
 		if st.Start != nil {
 			st.Start.emit(w)
@@ -1845,7 +1845,7 @@ func emitStmt(w *indentWriter, s Stmt, level int) {
 			io.WriteString(w, "0")
 		}
 		io.WriteString(w, "; ")
-		io.WriteString(w, st.Name)
+		io.WriteString(w, safeName(st.Name))
 		io.WriteString(w, " < ")
 		if st.End != nil {
 			st.End.emit(w)
@@ -1853,7 +1853,7 @@ func emitStmt(w *indentWriter, s Stmt, level int) {
 			io.WriteString(w, "0")
 		}
 		io.WriteString(w, "; ")
-		io.WriteString(w, st.Name)
+		io.WriteString(w, safeName(st.Name))
 		io.WriteString(w, "++) {\n")
 		for _, bs := range st.Body {
 			emitStmt(w, bs, level+1)
@@ -1863,7 +1863,7 @@ func emitStmt(w *indentWriter, s Stmt, level int) {
 	case *ForInStmt:
 		io.WriteString(w, pad)
 		io.WriteString(w, "for (const ")
-		io.WriteString(w, st.Name)
+		io.WriteString(w, safeName(st.Name))
 		if st.Keys {
 			io.WriteString(w, " in ")
 		} else {
@@ -2766,6 +2766,20 @@ func isIntType(t types.Type) bool {
 	return false
 }
 
+func isIntLitExpr(e Expr) bool {
+	if n, ok := e.(*NumberLit); ok {
+		return !strings.Contains(n.Value, ".")
+	}
+	return false
+}
+
+func isFloatLitExpr(e Expr) bool {
+	if n, ok := e.(*NumberLit); ok {
+		return strings.Contains(n.Value, ".")
+	}
+	return false
+}
+
 func convertBinary(b *parser.BinaryExpr) (Expr, error) {
 	if b == nil {
 		return nil, fmt.Errorf("nil binary")
@@ -2882,7 +2896,7 @@ func convertBinary(b *parser.BinaryExpr) (Expr, error) {
 		case "intersect":
 			operands[i] = &IntersectExpr{Left: operands[i], Right: operands[i+1]}
 		default:
-			if ops[i] == "/" && isIntType(typesArr[i]) && isIntType(typesArr[i+1]) {
+			if ops[i] == "/" && !(isFloatLitExpr(operands[i]) || isFloatLitExpr(operands[i+1])) {
 				operands[i] = &IntDivExpr{Left: operands[i], Right: operands[i+1]}
 				typesArr[i] = types.IntType{}
 			} else {
@@ -3292,6 +3306,11 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 				return nil, fmt.Errorf("substr expects three arguments")
 			}
 			return &MethodCallExpr{Target: args[0], Method: "substring", Args: []Expr{args[1], args[2]}}, nil
+		case "slice":
+			if len(args) != 3 {
+				return nil, fmt.Errorf("slice expects three arguments")
+			}
+			return &SliceExpr{Target: args[0], Start: args[1], End: args[2]}, nil
 		case "upper":
 			if len(args) != 1 {
 				return nil, fmt.Errorf("upper expects one argument")
