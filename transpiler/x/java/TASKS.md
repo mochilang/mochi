@@ -1,4 +1,92 @@
-## Progress (2025-07-24 16:13 +0700)
+## Progress (2025-07-24 19:43 +0700)
+- cpp transpiler: handle string concat and hetero list (b4d35670d6)
+
+- cpp transpiler: handle string concat and hetero list (b4d35670d6)
+
+- cpp transpiler: handle string concat and hetero list (b4d35670d6)
+
+- cpp transpiler: handle string concat and hetero list (b4d35670d6)
+
+- cpp transpiler: handle string concat and hetero list (b4d35670d6)
+
+- cpp transpiler: handle string concat and hetero list (b4d35670d6)
+
+- cpp transpiler: handle string concat and hetero list (b4d35670d6)
+
+- cpp transpiler: handle string concat and hetero list (b4d35670d6)
+
+- cpp transpiler: handle string concat and hetero list (b4d35670d6)
+
+- cpp transpiler: handle string concat and hetero list (b4d35670d6)
+
+- cpp transpiler: handle string concat and hetero list (b4d35670d6)
+
+- cpp transpiler: handle string concat and hetero list (b4d35670d6)
+
+- cpp transpiler: handle string concat and hetero list (b4d35670d6)
+
+- cpp transpiler: handle string concat and hetero list (b4d35670d6)
+
+- cpp transpiler: handle string concat and hetero list (b4d35670d6)
+
+- cpp transpiler: handle string concat and hetero list (b4d35670d6)
+
+- cpp transpiler: handle string concat and hetero list (b4d35670d6)
+
+- cpp transpiler: handle string concat and hetero list (b4d35670d6)
+
+- cpp transpiler: handle string concat and hetero list (b4d35670d6)
+
+- cpp transpiler: handle string concat and hetero list (b4d35670d6)
+
+- cpp transpiler: handle string concat and hetero list (b4d35670d6)
+
+- cpp transpiler: handle string concat and hetero list (b4d35670d6)
+
+- cpp transpiler: handle string concat and hetero list (b4d35670d6)
+
+- cpp transpiler: handle string concat and hetero list (b4d35670d6)
+
+- cpp transpiler: handle string concat and hetero list (b4d35670d6)
+
+- cpp transpiler: handle string concat and hetero list (b4d35670d6)
+
+- cpp transpiler: handle string concat and hetero list (b4d35670d6)
+
+- cpp transpiler: handle string concat and hetero list (b4d35670d6)
+
+- cpp transpiler: handle string concat and hetero list (b4d35670d6)
+
+- cpp transpiler: handle string concat and hetero list (b4d35670d6)
+
+- cpp transpiler: handle string concat and hetero list (b4d35670d6)
+
+- cpp transpiler: handle string concat and hetero list (b4d35670d6)
+
+- cpp transpiler: handle string concat and hetero list (b4d35670d6)
+
+- cpp transpiler: handle string concat and hetero list (b4d35670d6)
+
+- cpp transpiler: handle string concat and hetero list (b4d35670d6)
+
+- cpp transpiler: handle string concat and hetero list (b4d35670d6)
+
+- cpp transpiler: handle string concat and hetero list (b4d35670d6)
+
+- cpp transpiler: handle string concat and hetero list (b4d35670d6)
+
+- cpp transpiler: handle string concat and hetero list (b4d35670d6)
+
+- cpp transpiler: handle string concat and hetero list (b4d35670d6)
+
+- cpp transpiler: handle string concat and hetero list (b4d35670d6)
+
+- cpp transpiler: handle string concat and hetero list (b4d35670d6)
+
+- cpp transpiler: handle string concat and hetero list (b4d35670d6)
+
+- cpp transpiler: handle string concat and hetero list (b4d35670d6)
+
 - ctranspiler: handle count on list variables (4b47fc18ae)
 
 - ctranspiler: handle count on list variables (4b47fc18ae)

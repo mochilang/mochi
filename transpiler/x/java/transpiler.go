@@ -424,9 +424,13 @@ type Param struct {
 
 // TypeDeclStmt declares a simple struct type.
 type TypeDeclStmt struct {
-	Name   string
-	Fields []Param
+	Name    string
+	Fields  []Param
+	Extends string
 }
+
+// InterfaceDeclStmt declares a simple interface type.
+type InterfaceDeclStmt struct{ Name string }
 
 // queryFrom represents a single 'from' clause in a query.
 type queryFrom struct {
@@ -495,7 +499,11 @@ type Stmt interface{ emit(io.Writer, string) }
 type Expr interface{ emit(io.Writer) }
 
 func (t *TypeDeclStmt) emit(w io.Writer, indent string) {
-	fmt.Fprintf(w, indent+"static class %s {\n", t.Name)
+	decl := "static class " + t.Name
+	if t.Extends != "" {
+		decl += " implements " + t.Extends
+	}
+	fmt.Fprintf(w, indent+"%s {\n", decl)
 	for _, f := range t.Fields {
 		typ := javaType(f.Type)
 		if typ == "" {
@@ -546,6 +554,10 @@ func (t *TypeDeclStmt) emit(w io.Writer, indent string) {
 	fmt.Fprint(w, ");\n")
 	fmt.Fprint(w, indent+"    }\n")
 	fmt.Fprint(w, indent+"}\n")
+}
+
+func (i *InterfaceDeclStmt) emit(w io.Writer, indent string) {
+	fmt.Fprintf(w, indent+"interface %s {}\n", i.Name)
 }
 
 func (s *StructLit) emit(w io.Writer) {
@@ -1280,6 +1292,18 @@ type IntCastExpr struct{ Value Expr }
 // FloatCastExpr casts a value to double.
 type FloatCastExpr struct{ Value Expr }
 
+// CastExpr casts a value to the given reference type.
+type CastExpr struct {
+	Value Expr
+	Type  string
+}
+
+// InstanceOfExpr checks if Target is an instance of Type.
+type InstanceOfExpr struct {
+	Target Expr
+	Type   string
+}
+
 // UnionExpr concatenates two arrays removing duplicate elements.
 type UnionExpr struct{ Left, Right Expr }
 
@@ -1384,6 +1408,17 @@ func (c *FloatCastExpr) emit(w io.Writer) {
 	fmt.Fprint(w, "((Number)(")
 	c.Value.emit(w)
 	fmt.Fprint(w, ")).doubleValue()")
+}
+
+func (c *CastExpr) emit(w io.Writer) {
+	fmt.Fprintf(w, "((%s)(", c.Type)
+	c.Value.emit(w)
+	fmt.Fprint(w, "))")
+}
+
+func (i *InstanceOfExpr) emit(w io.Writer) {
+	i.Target.emit(w)
+	fmt.Fprintf(w, " instanceof %s", i.Type)
 }
 
 func (u *UnionExpr) emit(w io.Writer) {
@@ -2230,6 +2265,19 @@ func compileStmt(s *parser.Statement) (Stmt, error) {
 		varDecls[s.Var.Name] = vs
 		return vs, nil
 	case s.Type != nil:
+		if len(s.Type.Variants) > 0 {
+			extraDecls = append(extraDecls, &InterfaceDeclStmt{Name: s.Type.Name})
+			for _, v := range s.Type.Variants {
+				if st, ok := topEnv.GetStruct(v.Name); ok {
+					fields := make([]Param, len(st.Order))
+					for i, n := range st.Order {
+						fields[i] = Param{Name: n, Type: toJavaTypeFromType(st.Fields[n])}
+					}
+					extraDecls = append(extraDecls, &TypeDeclStmt{Name: v.Name, Fields: fields, Extends: s.Type.Name})
+				}
+			}
+			return nil, nil
+		}
 		if st, ok := topEnv.GetStruct(s.Type.Name); ok {
 			fields := make([]Param, len(st.Order))
 			for i, n := range st.Order {
@@ -3117,25 +3165,108 @@ func compileMatchExpr(me *parser.MatchExpr) (Expr, error) {
 	var expr Expr
 	for i := len(me.Cases) - 1; i >= 0; i-- {
 		c := me.Cases[i]
+		if call, ok := callPattern(c.Pattern); ok {
+			if ut, ok2 := topEnv.FindUnionByVariant(call.Func); ok2 {
+				st := ut.Variants[call.Func]
+				subs := map[string]Expr{}
+				var cond Expr = &InstanceOfExpr{Target: target, Type: call.Func}
+				for idx, arg := range call.Args {
+					field := st.Order[idx]
+					fv := &FieldExpr{Target: &CastExpr{Value: target, Type: call.Func}, Name: field}
+					if name, ok := identName(arg); ok {
+						if name != "_" {
+							subs[name] = fv
+						}
+					} else {
+						val, err := compileExpr(arg)
+						if err != nil {
+							return nil, err
+						}
+						part := &BinaryExpr{Left: fv, Op: "==", Right: val}
+						if cond != nil {
+							cond = &BinaryExpr{Left: cond, Op: "&&", Right: part}
+						} else {
+							cond = part
+						}
+					}
+				}
+				res, err := compileExpr(c.Result)
+				if err != nil {
+					return nil, err
+				}
+				res = substituteVars(res, subs)
+				if expr == nil {
+					expr = res
+				} else {
+					expr = &TernaryExpr{Cond: cond, Then: res, Else: expr}
+				}
+				continue
+			}
+		}
 		res, err := compileExpr(c.Result)
 		if err != nil {
 			return nil, err
+		}
+		if name, ok := identName(c.Pattern); ok {
+			if name == "_" {
+				expr = res
+				continue
+			}
+			if _, ok := topEnv.FindUnionByVariant(name); ok {
+				cond := &InstanceOfExpr{Target: target, Type: name}
+				if expr == nil {
+					expr = res
+				} else {
+					expr = &TernaryExpr{Cond: cond, Then: res, Else: expr}
+				}
+				continue
+			}
 		}
 		pat, err := compileExpr(c.Pattern)
 		if err != nil {
 			return nil, err
 		}
-		if v, ok := pat.(*VarExpr); ok && v.Name == "_" {
-			expr = res
-			continue
-		}
 		cond := &BinaryExpr{Left: target, Op: "==", Right: pat}
 		if expr == nil {
 			expr = res
+		} else {
+			expr = &TernaryExpr{Cond: cond, Then: res, Else: expr}
 		}
-		expr = &TernaryExpr{Cond: cond, Then: res, Else: expr}
 	}
 	return expr, nil
+}
+
+func callPattern(e *parser.Expr) (*parser.CallExpr, bool) {
+	if e == nil || len(e.Binary.Right) != 0 {
+		return nil, false
+	}
+	u := e.Binary.Left
+	if len(u.Ops) != 0 {
+		return nil, false
+	}
+	p := u.Value
+	if len(p.Ops) != 0 || p.Target == nil || p.Target.Call == nil {
+		return nil, false
+	}
+	return p.Target.Call, true
+}
+
+func identName(e *parser.Expr) (string, bool) {
+	if e == nil || len(e.Binary.Right) != 0 {
+		return "", false
+	}
+	u := e.Binary.Left
+	if len(u.Ops) != 0 {
+		return "", false
+	}
+	p := u.Value
+	if len(p.Ops) != 0 || p.Target == nil {
+		return "", false
+	}
+	if p.Target.Selector != nil && len(p.Target.Selector.Tail) == 0 {
+		return p.Target.Selector.Root, true
+	}
+	return "", false
 }
 
 func compileQueryExpr(q *parser.QueryExpr) (Expr, error) {
@@ -3410,7 +3541,7 @@ func Emit(prog *Program) []byte {
 	// emit type declarations and global variables first
 	for _, st := range prog.Stmts {
 		switch st.(type) {
-		case *TypeDeclStmt:
+		case *TypeDeclStmt, *InterfaceDeclStmt:
 			st.emit(&buf, "    ")
 			buf.WriteByte('\n')
 		case *LetStmt, *VarStmt:
@@ -3516,7 +3647,7 @@ func Emit(prog *Program) []byte {
 	buf.WriteString("    public static void main(String[] args) {\n")
 	for _, st := range prog.Stmts {
 		switch st.(type) {
-		case *LetStmt, *VarStmt, *TypeDeclStmt:
+		case *LetStmt, *VarStmt, *TypeDeclStmt, *InterfaceDeclStmt:
 			// already emitted as globals or declarations
 		default:
 			st.emit(&buf, "        ")
@@ -3765,6 +3896,10 @@ func renameVar(e Expr, oldName, newName string) Expr {
 		return &IntCastExpr{Value: renameVar(ex.Value, oldName, newName)}
 	case *FloatCastExpr:
 		return &FloatCastExpr{Value: renameVar(ex.Value, oldName, newName)}
+	case *CastExpr:
+		return &CastExpr{Value: renameVar(ex.Value, oldName, newName), Type: ex.Type}
+	case *InstanceOfExpr:
+		return &InstanceOfExpr{Target: renameVar(ex.Target, oldName, newName), Type: ex.Type}
 	case *ListLit:
 		elems := make([]Expr, len(ex.Elems))
 		for i, el := range ex.Elems {
@@ -3853,12 +3988,67 @@ func substituteFieldVars(e Expr, fields map[string]bool) Expr {
 		return &IntCastExpr{Value: substituteFieldVars(ex.Value, fields)}
 	case *FloatCastExpr:
 		return &FloatCastExpr{Value: substituteFieldVars(ex.Value, fields)}
+	case *CastExpr:
+		return &CastExpr{Value: substituteFieldVars(ex.Value, fields), Type: ex.Type}
+	case *InstanceOfExpr:
+		return &InstanceOfExpr{Target: substituteFieldVars(ex.Target, fields), Type: ex.Type}
 	case *SliceExpr:
 		return &SliceExpr{Value: substituteFieldVars(ex.Value, fields), Start: substituteFieldVars(ex.Start, fields), End: substituteFieldVars(ex.End, fields)}
 	case *ListLit:
 		elems := make([]Expr, len(ex.Elems))
 		for i, el := range ex.Elems {
 			elems[i] = substituteFieldVars(el, fields)
+		}
+		return &ListLit{ElemType: ex.ElemType, Elems: elems}
+	default:
+		return ex
+	}
+}
+
+// substituteVars replaces variable names with provided expressions.
+func substituteVars(e Expr, vars map[string]Expr) Expr {
+	switch ex := e.(type) {
+	case *VarExpr:
+		if v, ok := vars[ex.Name]; ok {
+			return v
+		}
+		return ex
+	case *BinaryExpr:
+		return &BinaryExpr{Left: substituteVars(ex.Left, vars), Op: ex.Op, Right: substituteVars(ex.Right, vars)}
+	case *UnaryExpr:
+		return &UnaryExpr{Op: ex.Op, Value: substituteVars(ex.Value, vars)}
+	case *TernaryExpr:
+		return &TernaryExpr{Cond: substituteVars(ex.Cond, vars), Then: substituteVars(ex.Then, vars), Else: substituteVars(ex.Else, vars)}
+	case *CallExpr:
+		args := make([]Expr, len(ex.Args))
+		for i, a := range ex.Args {
+			args[i] = substituteVars(a, vars)
+		}
+		return &CallExpr{Func: ex.Func, Args: args}
+	case *MethodCallExpr:
+		args := make([]Expr, len(ex.Args))
+		for i, a := range ex.Args {
+			args[i] = substituteVars(a, vars)
+		}
+		return &MethodCallExpr{Target: substituteVars(ex.Target, vars), Name: ex.Name, Args: args}
+	case *FieldExpr:
+		return &FieldExpr{Target: substituteVars(ex.Target, vars), Name: ex.Name}
+	case *IndexExpr:
+		return &IndexExpr{Target: substituteVars(ex.Target, vars), Index: substituteVars(ex.Index, vars), IsMap: ex.IsMap, ResultType: ex.ResultType}
+	case *IntCastExpr:
+		return &IntCastExpr{Value: substituteVars(ex.Value, vars)}
+	case *FloatCastExpr:
+		return &FloatCastExpr{Value: substituteVars(ex.Value, vars)}
+	case *CastExpr:
+		return &CastExpr{Value: substituteVars(ex.Value, vars), Type: ex.Type}
+	case *InstanceOfExpr:
+		return &InstanceOfExpr{Target: substituteVars(ex.Target, vars), Type: ex.Type}
+	case *SliceExpr:
+		return &SliceExpr{Value: substituteVars(ex.Value, vars), Start: substituteVars(ex.Start, vars), End: substituteVars(ex.End, vars)}
+	case *ListLit:
+		elems := make([]Expr, len(ex.Elems))
+		for i, el := range ex.Elems {
+			elems[i] = substituteVars(el, vars)
 		}
 		return &ListLit{ElemType: ex.ElemType, Elems: elems}
 	default:

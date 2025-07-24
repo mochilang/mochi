@@ -1,0 +1,10 @@
+compile: exit status 1
+/tmp/TestJavaTranspiler_Rosetta_Goldenabundant-odd-numbers3663584980/001/Main.java:64: error: incompatible types: bad type in conditional expression
+            double tot = (((java.util.Arrays.stream(divs).sum()) % 1 == 0) ? (Object)(int)(java.util.Arrays.stream(divs).sum()) : (Object)(java.util.Arrays.stream(divs).sum()));
+                                                                             ^
+    Object cannot be converted to double
+/tmp/TestJavaTranspiler_Rosetta_Goldenabundant-odd-numbers3663584980/001/Main.java:64: error: incompatible types: bad type in conditional expression
+            double tot = (((java.util.Arrays.stream(divs).sum()) % 1 == 0) ? (Object)(int)(java.util.Arrays.stream(divs).sum()) : (Object)(java.util.Arrays.stream(divs).sum()));
+                                                                                                                                  ^
+    Object cannot be converted to double
+2 errors

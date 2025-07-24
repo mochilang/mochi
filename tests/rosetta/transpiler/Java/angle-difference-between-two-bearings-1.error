@@ -1,0 +1,5 @@
+compile: exit status 1
+/tmp/TestJavaTranspiler_Rosetta_Goldenangle-difference-between-two-bearings-14064414171/001/Main.java:5: error: incompatible types: possible lossy conversion from double to int
+        int d = b2 - b1;
+                   ^
+1 error

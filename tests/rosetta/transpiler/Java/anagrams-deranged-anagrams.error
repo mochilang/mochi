@@ -1,0 +1,34 @@
+compile: exit status 1
+/tmp/TestJavaTranspiler_Rosetta_Goldenanagrams-deranged-anagrams1959498414/001/Main.java:15: error: bad operand types for binary operator '>'
+                if (arr[j] > arr[j + 1]) {
+                           ^
+  first type:  String
+  second type: String
+/tmp/TestJavaTranspiler_Rosetta_Goldenanagrams-deranged-anagrams1959498414/001/Main.java:59: error: incompatible types: String cannot be converted to int
+m.put(k, new int[]{w});
+                   ^
+/tmp/TestJavaTranspiler_Rosetta_Goldenanagrams-deranged-anagrams1959498414/001/Main.java:62: error: for-each not applicable to expression type
+            for (var c : (Object)(m.get(k))) {
+                         ^
+  required: array or java.lang.Iterable
+  found:    Object
+/tmp/TestJavaTranspiler_Rosetta_Goldenanagrams-deranged-anagrams1959498414/001/Main.java:70: error: no suitable method found for stream(Object)
+m.put(k, java.util.stream.Stream.concat(java.util.Arrays.stream((Object)(m.get(k))), java.util.stream.Stream.of(w)).toArray(String[]::new));
+                                                        ^
+    method Arrays.<T#1>stream(T#1[]) is not applicable
+      (cannot infer type-variable(s) T#1
+        (argument mismatch; Object cannot be converted to T#1[]))
+    method Arrays.<T#2>stream(T#2[],int,int) is not applicable
+      (cannot infer type-variable(s) T#2
+        (actual and formal argument lists differ in length))
+    method Arrays.stream(int[]) is not applicable
+      (argument mismatch; Object cannot be converted to int[])
+    method Arrays.stream(long[]) is not applicable
+      (argument mismatch; Object cannot be converted to long[])
+    method Arrays.stream(double[]) is not applicable
+      (argument mismatch; Object cannot be converted to double[])
+  where T#1,T#2 are type-variables:
+    T#1 extends Object declared in method <T#1>stream(T#1[])
+    T#2 extends Object declared in method <T#2>stream(T#2[],int,int)
+Note: Some messages have been simplified; recompile with -Xdiags:verbose to get full output
+4 errors

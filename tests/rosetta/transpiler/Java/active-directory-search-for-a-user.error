@@ -1,0 +1,8 @@
+compile: exit status 1
+/tmp/TestJavaTranspiler_Rosetta_Goldenactive-directory-search-for-a-user2735668891/001/Main.java:4: error: incompatible types: Object cannot be converted to String[]
+        return (Object)(directory.get(username));
+               ^
+/tmp/TestJavaTranspiler_Rosetta_Goldenactive-directory-search-for-a-user2735668891/001/Main.java:8: error: incompatible types: LinkedHashMap<String,Object> cannot be converted to Map<String,String>
+        java.util.Map<String,String> client = new java.util.LinkedHashMap<String, Object>(java.util.Map.of("Base", "dc=example,dc=com", "Host", "ldap.example.com", "Port", 389, "GroupFilter", "(memberUid=%s)"));
+                                              ^
+2 errors
