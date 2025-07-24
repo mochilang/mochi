@@ -53,7 +53,7 @@ public class Main {
 
     static java.util.Map<String,Object> newFormatter(String text) {
         String[] lines = split(text, "\n");
-        string[][] fmtLines = new String[][]{};
+        String[][] fmtLines = new String[][]{};
         int[] width = new int[]{};
         int i = 0;
         while (i < lines.length) {
@@ -68,7 +68,7 @@ public class Main {
                 int wlen = words[j].length();
                 if (j == width.length) {
                     width = java.util.stream.IntStream.concat(java.util.Arrays.stream(width), java.util.stream.IntStream.of(wlen)).toArray();
-                } else                 if (wlen > width[j]) {
+                } else                 if (wlen > ((Number)(width[j])).doubleValue()) {
 width[j] = wlen;
                 }
                 j = j + 1;
@@ -79,8 +79,8 @@ width[j] = wlen;
     }
 
     static void printFmt(java.util.Map<String,Object> f, int align) {
-        String[][] lines = (String[][])((string[][])(f.get("text")));
-        int[] width = (int[])((int[])(f.get("width")));
+        String[][] lines = (String[][])(((String[][])f.get("text")));
+        int[] width = (int[])(((int[])f.get("width")));
         int i = 0;
         while (i < lines.length) {
             String[] words = lines[i];
