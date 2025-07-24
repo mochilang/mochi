@@ -1075,6 +1075,21 @@ func (v *ValuesBuiltin) emitPrint(w io.Writer) {
 	io.WriteString(w, "))")
 }
 
+// KeysBuiltin represents keys(map) returning list of keys.
+type KeysBuiltin struct{ Map Expr }
+
+func (k *KeysBuiltin) emit(w io.Writer) {
+	io.WriteString(w, "(List.map fst ")
+	k.Map.emit(w)
+	io.WriteString(w, ")")
+}
+
+func (k *KeysBuiltin) emitPrint(w io.Writer) {
+	io.WriteString(w, "String.concat \" \" (List.map string_of_int (")
+	k.emit(w)
+	io.WriteString(w, "))")
+}
+
 // ExistsBuiltin checks if a list has any element.
 type ExistsBuiltin struct{ List Expr }
 
@@ -2961,6 +2976,17 @@ func convertPostfix(p *parser.PostfixExpr, env *types.Env, vars map[string]VarIn
 		root := &Name{Ident: p.Target.Selector.Root, Typ: info.typ, Ref: info.ref}
 		return &StringContainsBuiltin{Str: root, Sub: arg}, "bool", nil
 	}
+	// Handle map.keys()
+	if p.Target != nil && p.Target.Selector != nil &&
+		len(p.Target.Selector.Tail) == 1 && p.Target.Selector.Tail[0] == "keys" &&
+		len(p.Ops) == 1 && p.Ops[0].Call != nil && len(p.Ops[0].Call.Args) == 0 {
+		info := vars[p.Target.Selector.Root]
+		if info.typ != "map" && !strings.HasPrefix(info.typ, "map-") && !strings.HasPrefix(info.typ, "map{") {
+			return nil, "", fmt.Errorf("keys expects map")
+		}
+		root := &Name{Ident: p.Target.Selector.Root, Typ: info.typ, Ref: info.ref}
+		return &KeysBuiltin{Map: root}, "list", nil
+	}
 	// Handle testpkg.FifteenPuzzleExample()
 	if p.Target != nil && p.Target.Selector != nil && len(p.Target.Selector.Tail) == 1 &&
 		len(p.Ops) == 1 && p.Ops[0].Call != nil && len(p.Ops[0].Call.Args) == 0 {
@@ -3003,6 +3029,17 @@ func convertPostfix(p *parser.PostfixExpr, env *types.Env, vars map[string]VarIn
 			}
 			expr = &StringContainsBuiltin{Str: expr, Sub: arg}
 			typ = "bool"
+			i += 2
+			continue
+		case op.Field != nil && op.Field.Name == "keys":
+			if i+1 >= len(p.Ops) || p.Ops[i+1].Call == nil || len(p.Ops[i+1].Call.Args) != 0 {
+				return nil, "", fmt.Errorf("keys must be called with no args")
+			}
+			if typ != "map" && !strings.HasPrefix(typ, "map-") && !strings.HasPrefix(typ, "map{") {
+				return nil, "", fmt.Errorf("keys expects map")
+			}
+			expr = &KeysBuiltin{Map: expr}
+			typ = "list"
 			i += 2
 			continue
 		case op.Field != nil:
@@ -4077,6 +4114,16 @@ func convertCall(c *parser.CallExpr, env *types.Env, vars map[string]VarInfo) (E
 		}
 		return &ValuesBuiltin{Map: mapArg}, "list", nil
 	}
+	if c.Func == "keys" && len(c.Args) == 1 {
+		mapArg, typ, err := convertExpr(c.Args[0], env, vars)
+		if err != nil {
+			return nil, "", err
+		}
+		if typ != "map" && !strings.HasPrefix(typ, "map-") && !strings.HasPrefix(typ, "map{") {
+			return nil, "", fmt.Errorf("keys expects map")
+		}
+		return &KeysBuiltin{Map: mapArg}, "list", nil
+	}
 	if fn, ok := env.GetFunc(c.Func); ok {
 		ret := "int"
 		if fn.Return != nil {
@@ -4132,6 +4179,9 @@ func convertCall(c *parser.CallExpr, env *types.Env, vars map[string]VarInfo) (E
 				if ts := typeString(types.ResolveTypeRef(fn.Params[i].Type, env)); ts != "" {
 					ptyp = ts
 				}
+				if ptyp == "any" {
+					ptyp = ""
+				}
 				if ptyp == "float" && at == "int" {
 					ex = &CastExpr{Expr: ex, Type: "int_to_float"}
 				} else if ptyp == "" {
@@ -4153,15 +4203,26 @@ func convertCall(c *parser.CallExpr, env *types.Env, vars map[string]VarInfo) (E
 	if v, ok := vars[c.Func]; ok && (v.typ == "func" || strings.HasPrefix(v.typ, "func-")) {
 		args := make([]Expr, len(c.Args))
 		for i, a := range c.Args {
-			ex, _, err := convertExpr(a, env, vars)
+			ex, at, err := convertExpr(a, env, vars)
 			if err != nil {
 				return nil, "", err
 			}
+			// when calling a function stored in a variable, we
+			// don't have parameter type information. Assume dynamic
+			// parameters and box primitive values accordingly.
+			if at == "int" {
+				ex = &CastExpr{Expr: ex, Type: "int_to_obj"}
+			} else if at == "float" {
+				ex = &CastExpr{Expr: ex, Type: "float_to_obj"}
+			}
 			args[i] = ex
 		}
-		ret := "int"
+		ret := ""
 		if strings.HasPrefix(v.typ, "func-") {
 			ret = strings.TrimPrefix(v.typ, "func-")
+			if ret == "any" {
+				ret = ""
+			}
 		} else if t, err := env.GetVar(c.Func); err == nil {
 			if ft, ok := t.(types.FuncType); ok {
 				if r := typeString(ft.Return); r != "" {
