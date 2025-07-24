@@ -265,7 +265,7 @@ type MatchBlock struct{ Body []Stmt }
 func (m *MatchBlock) emit(w io.Writer) {
 	cap := "[]"
 	if inFunction || inLambda > 0 {
-		cap = "[&]"
+		cap = "[=]"
 	}
 	io.WriteString(w, "("+cap+"{\n")
 	inLambda++
@@ -562,6 +562,11 @@ func (p *Program) write(w io.Writer) {
 		fmt.Fprintln(w, "    else if(val.type() == typeid(std::vector<std::any>)) { const auto& v = std::any_cast<const std::vector<std::any>&>(val); os << '['; for(size_t i=0;i<v.size();++i){ if(i>0) os << ', '; any_to_stream(os, v[i]); } os << ']'; }")
 		fmt.Fprintln(w, "    else if(val.type() == typeid(std::map<std::string, std::any>)) { const auto& m = std::any_cast<const std::map<std::string, std::any>&>(val); os << '{'; bool first=true; for(const auto& p : m){ if(!first) os << ', '; first=false; os << p.first << ': '; any_to_stream(os, p.second); } os << '}'; }")
 		fmt.Fprintln(w, "    else os << \"<any>\";")
+		fmt.Fprintln(w, "}")
+		fmt.Fprintln(w, "static double any_to_double(const std::any& v) {")
+		fmt.Fprintln(w, "    if(v.type() == typeid(int)) return (double)std::any_cast<int>(v);")
+		fmt.Fprintln(w, "    if(v.type() == typeid(double)) return std::any_cast<double>(v);")
+		fmt.Fprintln(w, "    return 0;")
 		fmt.Fprintln(w, "}")
 	}
 	if len(p.Structs) > 0 {
@@ -1283,7 +1288,7 @@ func (c *CallExpr) emit(w io.Writer) {
 func (l *LambdaExpr) emit(w io.Writer) {
 	cap := "[]"
 	if inFunction || inLambda > 0 {
-		cap = "[=]"
+		cap = "[&]"
 	}
 	io.WriteString(w, cap+"(")
 	for i, p := range l.Params {
@@ -1307,6 +1312,18 @@ func (l *BlockLambda) emit(w io.Writer) {
 	if inFunction || inLambda > 0 {
 		cap = "[=]"
 	}
+	prev := localTypes
+	nt := map[string]string{}
+	for k, v := range prev {
+		nt[k] = v
+	}
+	for _, p := range l.Params {
+		if p.Type != "" {
+			nt[p.Name] = p.Type
+		}
+	}
+	localTypes = nt
+	defer func() { localTypes = prev }()
 	io.WriteString(w, cap+"(")
 	for i, p := range l.Params {
 		if i > 0 {
@@ -1319,7 +1336,7 @@ func (l *BlockLambda) emit(w io.Writer) {
 		}
 		io.WriteString(w, p.Name)
 	}
-	io.WriteString(w, ") {\n")
+	io.WriteString(w, ") mutable {\n")
 	for _, st := range l.Body {
 		st.emit(w, 1)
 	}
@@ -1858,9 +1875,9 @@ func (b *BinaryExpr) emit(w io.Writer) {
 			currentProgram.addInclude("<any>")
 		}
 		io.WriteString(w, "(")
-		io.WriteString(w, "std::any_cast<double>(")
+		io.WriteString(w, "any_to_double(")
 		b.Left.emit(w)
-		io.WriteString(w, ") "+b.Op+" std::any_cast<double>(")
+		io.WriteString(w, ") "+b.Op+" any_to_double(")
 		b.Right.emit(w)
 		io.WriteString(w, "))")
 		return
@@ -3116,11 +3133,13 @@ func convertBinary(b *parser.BinaryExpr) (Expr, error) {
 					if ops[i] == "+" || ops[i] == "-" || ops[i] == "*" || ops[i] == "/" || ops[i] == "%" {
 						lt := exprType(l)
 						rt := exprType(r)
-						if strings.Contains(lt, "any") {
-							l = &CastExpr{Value: l, Type: "double"}
-						}
-						if strings.Contains(rt, "any") {
-							r = &CastExpr{Value: r, Type: "double"}
+						if !(strings.Contains(lt, "any") && strings.Contains(rt, "any")) {
+							if strings.Contains(lt, "any") {
+								l = &CastExpr{Value: l, Type: "double"}
+							}
+							if strings.Contains(rt, "any") {
+								r = &CastExpr{Value: r, Type: "double"}
+							}
 						}
 					}
 					ex = &BinaryExpr{Left: l, Op: ops[i], Right: r}
@@ -3417,6 +3436,9 @@ func convertFunLambda(fn *parser.FunStmt) (*BlockLambda, error) {
 	prevLocals := localTypes
 	prevDecls := currentVarDecls
 	localTypes = map[string]string{}
+	for k, v := range prevLocals {
+		localTypes[k] = v
+	}
 	currentVarDecls = map[string]*LetStmt{}
 	for _, p := range fn.Params {
 		if p.Type != nil && p.Type.Simple != nil {
