@@ -337,10 +337,10 @@ func collectConstFuncs(p *parser.Program) map[string]Expr {
 			continue
 		}
 		body := st.Fun.Body
-		if len(body) == 0 {
+		if len(body) != 1 {
 			continue
 		}
-		ret := body[len(body)-1].Return
+		ret := body[0].Return
 		if ret == nil || ret.Value == nil {
 			continue
 		}
@@ -1925,7 +1925,7 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 		case st.ExternType != nil, st.ExternVar != nil, st.ExternFun != nil, st.ExternObject != nil:
 			continue
 		case st.Fun != nil:
-			if len(st.Fun.Params) == 0 && st.Fun.Return != nil {
+			if len(st.Fun.Params) == 0 && st.Fun.Return != nil && len(st.Fun.Body) == 1 {
 				// used for constant folding only
 				continue
 			}
@@ -3020,14 +3020,14 @@ func toPrimary(p *parser.Primary, env *compileEnv) (Expr, error) {
 					}
 				}
 			}
-			idx := &StringLit{Value: field}
+			idx := &AtomLit{Value: field}
 			target := &Var{Name: env.current(root)}
 			return &IndexExpr{Target: target, Index: idx, IsString: true, IsMap: true}, nil
 		}
 		if len(p.Selector.Tail) > 1 {
 			var expr Expr = &Var{Name: env.current(p.Selector.Root)}
 			for _, f := range p.Selector.Tail {
-				expr = &IndexExpr{Target: expr, Index: &StringLit{Value: f}, IsString: true, IsMap: true}
+				expr = &IndexExpr{Target: expr, Index: &AtomLit{Value: f}, IsString: true, IsMap: true}
 			}
 			return expr, nil
 		}
