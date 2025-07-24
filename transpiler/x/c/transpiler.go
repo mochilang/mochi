@@ -69,6 +69,22 @@ var (
 	declStmts map[string]*DeclStmt
 )
 
+func emitLenExpr(w io.Writer, e Expr) {
+	switch v := e.(type) {
+	case *VarRef:
+		io.WriteString(w, v.Name+"_len")
+	case *FieldExpr:
+		v.Target.emitExpr(w)
+		io.WriteString(w, "."+v.Name+"_len")
+	case *CallExpr:
+		io.WriteString(w, v.Func+"_len")
+	case *ListLit:
+		fmt.Fprintf(w, "%d", len(v.Elems))
+	default:
+		io.WriteString(w, "0")
+	}
+}
+
 const version = "0.10.32"
 
 // --- Simple C AST ---
@@ -309,8 +325,15 @@ func (r *ReturnStmt) emit(w io.Writer, indent int) {
 	if r.Expr != nil {
 		io.WriteString(w, " ")
 		if strings.HasSuffix(currentFuncReturn, "[]") {
-			if vr, ok := r.Expr.(*VarRef); ok {
-				fmt.Fprintf(w, "%s_len = %s_len, ", currentFuncName, vr.Name)
+			switch v := r.Expr.(type) {
+			case *VarRef:
+				fmt.Fprintf(w, "%s_len = %s_len, ", currentFuncName, v.Name)
+			case *FieldExpr:
+				fmt.Fprintf(w, "%s_len = ", currentFuncName)
+				v.Target.emitExpr(w)
+				fmt.Fprintf(w, ".%s_len, ", v.Name)
+			case *CallExpr:
+				fmt.Fprintf(w, "%s_len = %s_len, ", currentFuncName, v.Func)
 			}
 		}
 		r.Expr.emitExpr(w)
@@ -361,6 +384,16 @@ func (d *DeclStmt) emit(w io.Writer, indent int) {
 			fmt.Fprintf(w, "%s *%s = %s;\n", base, d.Name, vr.Name)
 			writeIndent(w, indent)
 			fmt.Fprintf(w, "size_t %s_len = %s_len;\n", d.Name, vr.Name)
+			return
+		}
+		if fe, ok := d.Value.(*FieldExpr); ok {
+			fmt.Fprintf(w, "%s *%s = ", base, d.Name)
+			d.Value.emitExpr(w)
+			io.WriteString(w, ";\n")
+			writeIndent(w, indent)
+			fmt.Fprintf(w, "size_t %s_len = ", d.Name)
+			fe.Target.emitExpr(w)
+			fmt.Fprintf(w, ".%s_len;\n", fe.Name)
 			return
 		}
 		if call, ok := d.Value.(*CallExpr); ok {
@@ -643,6 +676,15 @@ func (s *StructLit) emitExpr(w io.Writer) {
 		fmt.Fprintf(w, ".%s = ", f.Name)
 		if f.Value != nil {
 			f.Value.emitExpr(w)
+		}
+		if st, ok := structTypes[s.Name]; ok {
+			if ft, ok2 := st.Fields[f.Name]; ok2 {
+				if _, ok3 := ft.(types.ListType); ok3 {
+					io.WriteString(w, ", .")
+					io.WriteString(w, f.Name+"_len = ")
+					emitLenExpr(w, f.Value)
+				}
+			}
 		}
 	}
 	io.WriteString(w, "}")
@@ -1392,6 +1434,11 @@ func (p *Program) Emit() []byte {
 				}
 			}
 			fmt.Fprintf(&buf, "    %s %s;\n", typ, field)
+			if ft, ok := st.Fields[field]; ok {
+				if _, ok2 := ft.(types.ListType); ok2 {
+					fmt.Fprintf(&buf, "    size_t %s_len;\n", field)
+				}
+			}
 		}
 		fmt.Fprintf(&buf, "};\n\n")
 	}
@@ -2912,6 +2959,10 @@ func convertUnary(u *parser.Unary) Expr {
 			}
 			if op.Field != nil {
 				current = &FieldExpr{Target: current, Name: op.Field.Name}
+				continue
+			}
+			if op.Cast != nil && op.Cast.Type != nil && op.Cast.Type.Simple != nil {
+				// type cast does not affect generated expression
 				continue
 			}
 			simple = false
