@@ -52,6 +52,7 @@ var builtinAliases map[string]string
 var globalRenames map[string]string
 var globalRenameBack map[string]string
 var localVarStack []map[string]bool
+var currentFuncLocals map[string]bool
 
 func VarTypes() map[string]string { return varTypes }
 
@@ -270,7 +271,7 @@ type StructDecl struct {
 }
 
 func (s *StructDecl) emit(w io.Writer) {
-	fmt.Fprintf(w, "#[derive(Debug, Clone)]\nstruct %s {\n", s.Name)
+	fmt.Fprintf(w, "#[derive(Debug, Clone, Default)]\nstruct %s {\n", s.Name)
 	for _, f := range s.Fields {
 		fmt.Fprintf(w, "    %s: %s,\n", f.Name, f.Type)
 	}
@@ -286,6 +287,8 @@ func (s *StructDecl) emit(w io.Writer) {
 		case fld.Type == "String":
 			fmt.Fprintf(w, "        write!(f, \"\\\"%s\\\": \\\"{}\\\"\", self.%s)?;\n", fld.Name, fld.Name)
 		case strings.HasPrefix(fld.Type, "Option<"):
+			fmt.Fprintf(w, "        write!(f, \"\\\"%s\\\": {:?}\", self.%s)?;\n", fld.Name, fld.Name)
+		case strings.HasPrefix(fld.Type, "Vec<") || strings.HasPrefix(fld.Type, "HashMap<"):
 			fmt.Fprintf(w, "        write!(f, \"\\\"%s\\\": {:?}\", self.%s)?;\n", fld.Name, fld.Name)
 		default:
 			fmt.Fprintf(w, "        write!(f, \"\\\"%s\\\": {}\", self.%s)?;\n", fld.Name, fld.Name)
@@ -376,6 +379,7 @@ type FuncDecl struct {
 	Return string
 	Body   []Stmt
 	Unsafe bool
+	Locals map[string]bool
 }
 
 func (f *FuncDecl) emit(w io.Writer) {
@@ -399,9 +403,11 @@ func (f *FuncDecl) emit(w io.Writer) {
 		fmt.Fprintf(w, " -> %s", f.Return)
 	}
 	io.WriteString(w, " {\n")
+	localVarStack = append(localVarStack, f.Locals)
 	for _, st := range f.Body {
 		writeStmt(w.(*bytes.Buffer), st, 1)
 	}
+	localVarStack = localVarStack[:len(localVarStack)-1]
 	io.WriteString(w, "}")
 }
 
@@ -627,7 +633,7 @@ func (l *LenExpr) emit(w io.Writer) {
 		io.WriteString(w, ".items.len() as i64")
 	} else {
 		l.Arg.emit(w)
-		io.WriteString(w, ".len()")
+		io.WriteString(w, ".len() as i64")
 	}
 }
 
@@ -857,24 +863,7 @@ func (v *VarDecl) emit(w io.Writer) {
 		}
 		io.WriteString(w, typ)
 		io.WriteString(w, " = ")
-		switch typ {
-		case "String":
-			io.WriteString(w, "String::new()")
-		case "bool":
-			io.WriteString(w, "false")
-		case "i64", "f64":
-			io.WriteString(w, "0")
-		default:
-			if strings.HasPrefix(typ, "Vec<") {
-				io.WriteString(w, "Vec::new()")
-			} else if strings.HasPrefix(typ, "HashMap<") {
-				io.WriteString(w, "HashMap::new()")
-			} else if strings.HasPrefix(typ, "Option<") {
-				io.WriteString(w, "None")
-			} else {
-				io.WriteString(w, "Default::default()")
-			}
-		}
+		io.WriteString(w, zeroValue(typ))
 		io.WriteString(w, ";")
 		return
 	}
@@ -1687,6 +1676,9 @@ func compileStmt(stmt *parser.Statement) (Stmt, error) {
 			if len(localVarStack) > 0 {
 				localVarStack[len(localVarStack)-1][stmt.Let.Name] = true
 			}
+			if currentFuncLocals != nil {
+				currentFuncLocals[stmt.Let.Name] = true
+			}
 		}
 		return vd, nil
 	case stmt.Var != nil:
@@ -1792,6 +1784,9 @@ func compileStmt(stmt *parser.Statement) (Stmt, error) {
 		} else {
 			if len(localVarStack) > 0 {
 				localVarStack[len(localVarStack)-1][stmt.Var.Name] = true
+			}
+			if currentFuncLocals != nil {
+				currentFuncLocals[stmt.Var.Name] = true
 			}
 		}
 		return vd, nil
@@ -2131,20 +2126,17 @@ func compileFunStmt(fn *parser.FunStmt) (Stmt, error) {
 		}
 	}()
 	locals := map[string]bool{}
+	currentFuncLocals = map[string]bool{}
 	params := make([]Param, len(fn.Params))
 	typList := make([]string, len(fn.Params))
 	for i, p := range fn.Params {
 		typ := ""
 		if p.Type != nil {
 			typ = rustTypeRef(p.Type)
-			if _, ok := curEnv.GetStruct(typ); ok {
-				typ = "&" + typ
-			} else if _, ok := curEnv.GetUnion(typ); ok {
-				typ = "&" + typ
-			}
 		}
 		params[i] = Param{Name: p.Name, Type: typ}
 		locals[p.Name] = true
+		currentFuncLocals[p.Name] = true
 		typList[i] = typ
 		if typ != "" {
 			varTypes[p.Name] = typ
@@ -2225,7 +2217,9 @@ func compileFunStmt(fn *parser.FunStmt) (Stmt, error) {
 	if ret != "" {
 		funReturns[fn.Name] = ret
 	}
-	return &FuncDecl{Name: name, Params: params, Return: ret, Body: body}, nil
+	localsCopy := currentFuncLocals
+	currentFuncLocals = nil
+	return &FuncDecl{Name: name, Params: params, Return: ret, Body: body, Locals: localsCopy}, nil
 }
 
 func applyIndexOps(base Expr, ops []*parser.IndexOp) (Expr, error) {
@@ -3314,6 +3308,9 @@ func inferType(e Expr) string {
 			return "f64"
 		}
 		rt := inferType(ex.Receiver)
+		if strings.HasPrefix(rt, "&") {
+			rt = rt[1:]
+		}
 		if st, ok := structTypes[rt]; ok {
 			if ft, okf := st.Fields[ex.Name]; okf {
 				return rustTypeFromType(ft)
@@ -3542,6 +3539,33 @@ func valueToExpr(v interface{}, typ *parser.TypeRef) Expr {
 		return &NumberLit{Value: fmt.Sprintf("%v", val)}
 	default:
 		return &StringLit{Value: fmt.Sprintf("%v", val)}
+	}
+}
+
+func zeroValue(typ string) string {
+	switch {
+	case typ == "String":
+		return "String::new()"
+	case typ == "bool":
+		return "false"
+	case typ == "i64" || typ == "f64":
+		return "0"
+	case strings.HasPrefix(typ, "Vec<"):
+		return "Vec::new()"
+	case strings.HasPrefix(typ, "HashMap<"):
+		return "HashMap::new()"
+	case strings.HasPrefix(typ, "Option<"):
+		return "None"
+	default:
+		if st, ok := structTypes[typ]; ok {
+			parts := make([]string, len(st.Order))
+			for i, name := range st.Order {
+				ft := rustTypeFromType(st.Fields[name])
+				parts[i] = fmt.Sprintf("%s: %s", name, zeroValue(ft))
+			}
+			return fmt.Sprintf("%s { %s }", typ, strings.Join(parts, ", "))
+		}
+		return "Default::default()"
 	}
 }
 
