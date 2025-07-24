@@ -1,3 +1,7 @@
+## Progress (2025-07-24 20:52 +0700)
+- php: add str helper and transpile bitmap-histogram
+- Generated F# for 102/103 programs (102 passing)
+
 ## Progress (2025-07-24 18:38 +0700)
 - ctrans: add atoi helper and update rosetta
 - Generated F# for 102/103 programs (102 passing)

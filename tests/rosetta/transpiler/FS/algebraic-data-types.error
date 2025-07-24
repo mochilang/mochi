@@ -1,0 +1,127 @@
+compile: exit status 1
+F# Compiler for F# 4.0 (Open Source Edition)
+Freely distributed under the Apache 2.0 Open Source License
+
+/workspace/mochi/tests/rosetta/transpiler/FS/algebraic-data-types.fs(3,1): warning FS0221: The declarations in this file will be placed in an implicit module 'Algebraic-data-types' based on the file name 'algebraic-data-types.fs'. However this is not a valid F# identifier, so the contents will not be accessible from other files. Consider renaming the file or adding a 'module' or 'namespace' declaration at the top of the file.
+
+/workspace/mochi/tests/rosetta/transpiler/FS/algebraic-data-types.fs(25,33): error FS0001: The type 'obj' does not match the type 'string'
+
+/workspace/mochi/tests/rosetta/transpiler/FS/algebraic-data-types.fs(38,26): error FS0001: This expression was expected to have type
+    obj    
+but here has type
+    string    
+
+/workspace/mochi/tests/rosetta/transpiler/FS/algebraic-data-types.fs(45,33): error FS0001: This expression was expected to have type
+    obj    
+but here has type
+    string    
+
+/workspace/mochi/tests/rosetta/transpiler/FS/algebraic-data-types.fs(49,43): error FS0001: This expression was expected to have type
+    obj    
+but here has type
+    string    
+
+/workspace/mochi/tests/rosetta/transpiler/FS/algebraic-data-types.fs(50,71): error FS0001: This expression was expected to have type
+    int    
+but here has type
+    obj    
+
+/workspace/mochi/tests/rosetta/transpiler/FS/algebraic-data-types.fs(50,106): error FS0001: This expression was expected to have type
+    int    
+but here has type
+    obj    
+
+/workspace/mochi/tests/rosetta/transpiler/FS/algebraic-data-types.fs(50,146): error FS0001: This expression was expected to have type
+    int    
+but here has type
+    obj    
+
+/workspace/mochi/tests/rosetta/transpiler/FS/algebraic-data-types.fs(55,43): error FS0001: This expression was expected to have type
+    obj    
+but here has type
+    string    
+
+/workspace/mochi/tests/rosetta/transpiler/FS/algebraic-data-types.fs(56,69): error FS0001: This expression was expected to have type
+    int    
+but here has type
+    obj    
+
+/workspace/mochi/tests/rosetta/transpiler/FS/algebraic-data-types.fs(56,102): error FS0001: This expression was expected to have type
+    int    
+but here has type
+    obj    
+
+/workspace/mochi/tests/rosetta/transpiler/FS/algebraic-data-types.fs(56,146): error FS0001: This expression was expected to have type
+    int    
+but here has type
+    obj    
+
+/workspace/mochi/tests/rosetta/transpiler/FS/algebraic-data-types.fs(60,33): error FS0001: This expression was expected to have type
+    obj    
+but here has type
+    string    
+
+/workspace/mochi/tests/rosetta/transpiler/FS/algebraic-data-types.fs(64,43): error FS0001: This expression was expected to have type
+    obj    
+but here has type
+    string    
+
+/workspace/mochi/tests/rosetta/transpiler/FS/algebraic-data-types.fs(65,65): error FS0001: This expression was expected to have type
+    int    
+but here has type
+    obj    
+
+/workspace/mochi/tests/rosetta/transpiler/FS/algebraic-data-types.fs(65,94): error FS0001: This expression was expected to have type
+    int    
+but here has type
+    obj    
+
+/workspace/mochi/tests/rosetta/transpiler/FS/algebraic-data-types.fs(65,138): error FS0001: This expression was expected to have type
+    int    
+but here has type
+    obj    
+
+/workspace/mochi/tests/rosetta/transpiler/FS/algebraic-data-types.fs(70,43): error FS0001: This expression was expected to have type
+    obj    
+but here has type
+    string    
+
+/workspace/mochi/tests/rosetta/transpiler/FS/algebraic-data-types.fs(71,65): error FS0001: This expression was expected to have type
+    int    
+but here has type
+    obj    
+
+/workspace/mochi/tests/rosetta/transpiler/FS/algebraic-data-types.fs(71,92): error FS0001: This expression was expected to have type
+    int    
+but here has type
+    obj    
+
+/workspace/mochi/tests/rosetta/transpiler/FS/algebraic-data-types.fs(71,134): error FS0001: This expression was expected to have type
+    int    
+but here has type
+    obj    
+
+/workspace/mochi/tests/rosetta/transpiler/FS/algebraic-data-types.fs(86,17): error FS0039: The field, constructor or member 'Item' is not defined
+
+/workspace/mochi/tests/rosetta/transpiler/FS/algebraic-data-types.fs(87,37): error FS0039: The field, constructor or member 'Item' is not defined
+
+/workspace/mochi/tests/rosetta/transpiler/FS/algebraic-data-types.fs(87,54): error FS0039: The field, constructor or member 'Item' is not defined
+
+/workspace/mochi/tests/rosetta/transpiler/FS/algebraic-data-types.fs(87,69): error FS0039: The field, constructor or member 'Item' is not defined
+
+/workspace/mochi/tests/rosetta/transpiler/FS/algebraic-data-types.fs(87,81): error FS0039: The field, constructor or member 'Item' is not defined
+
+/workspace/mochi/tests/rosetta/transpiler/FS/algebraic-data-types.fs(89,17): error FS0039: The field, constructor or member 'Item' is not defined
+
+/workspace/mochi/tests/rosetta/transpiler/FS/algebraic-data-types.fs(90,37): error FS0039: The field, constructor or member 'Item' is not defined
+
+/workspace/mochi/tests/rosetta/transpiler/FS/algebraic-data-types.fs(90,49): error FS0039: The field, constructor or member 'Item' is not defined
+
+/workspace/mochi/tests/rosetta/transpiler/FS/algebraic-data-types.fs(90,61): error FS0039: The field, constructor or member 'Item' is not defined
+
+/workspace/mochi/tests/rosetta/transpiler/FS/algebraic-data-types.fs(90,78): error FS0039: The field, constructor or member 'Item' is not defined
+
+/workspace/mochi/tests/rosetta/transpiler/FS/algebraic-data-types.fs(107,39): error FS0001: This expression was expected to have type
+    int    
+but here has type
+    obj    

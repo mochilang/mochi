@@ -1,0 +1,19 @@
+compile: exit status 1
+F# Compiler for F# 4.0 (Open Source Edition)
+Freely distributed under the Apache 2.0 Open Source License
+
+/workspace/mochi/tests/rosetta/transpiler/FS/almkvist-giullera-formula-for-pi.fs(3,1): warning FS0221: The declarations in this file will be placed in an implicit module 'Almkvist-giullera-formula-for-pi' based on the file name 'almkvist-giullera-formula-for-pi.fs'. However this is not a valid F# identifier, so the contents will not be accessible from other files. Consider renaming the file or adding a 'module' or 'namespace' declaration at the top of the file.
+
+/workspace/mochi/tests/rosetta/transpiler/FS/almkvist-giullera-formula-for-pi.fs(332,41): error FS0039: The field, constructor or member 'get' is not defined
+
+/workspace/mochi/tests/rosetta/transpiler/FS/almkvist-giullera-formula-for-pi.fs(346,13): error FS0810: Property 'Item' cannot be set
+
+/workspace/mochi/tests/rosetta/transpiler/FS/almkvist-giullera-formula-for-pi.fs(347,9): error FS0810: Property 'Item' cannot be set
+
+/workspace/mochi/tests/rosetta/transpiler/FS/almkvist-giullera-formula-for-pi.fs(351,13): error FS0810: Property 'Item' cannot be set
+
+/workspace/mochi/tests/rosetta/transpiler/FS/almkvist-giullera-formula-for-pi.fs(352,9): error FS0810: Property 'Item' cannot be set
+
+/workspace/mochi/tests/rosetta/transpiler/FS/almkvist-giullera-formula-for-pi.fs(355,45): error FS0001: The type 'System.Collections.Generic.KeyValuePair<string,int>' does not support a conversion to the type 'int'
+
+/workspace/mochi/tests/rosetta/transpiler/FS/almkvist-giullera-formula-for-pi.fs(462,1): warning FS0020: This expression should have type 'unit', but has type 'obj'. Use 'ignore' to discard the result of the expression, or 'let' to bind the result to a name.

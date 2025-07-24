@@ -1,0 +1,50 @@
+compile: exit status 1
+F# Compiler for F# 4.0 (Open Source Edition)
+Freely distributed under the Apache 2.0 Open Source License
+
+/workspace/mochi/tests/rosetta/transpiler/FS/adfgvx-cipher.fs(3,1): warning FS0221: The declarations in this file will be placed in an implicit module 'Adfgvx-cipher' based on the file name 'adfgvx-cipher.fs'. However this is not a valid F# identifier, so the contents will not be accessible from other files. Consider renaming the file or adding a 'module' or 'namespace' declaration at the top of the file.
+
+/workspace/mochi/tests/rosetta/transpiler/FS/adfgvx-cipher.fs(68,41): error FS0001: This expression was expected to have type
+    'a []    
+but here has type
+    string    
+
+/workspace/mochi/tests/rosetta/transpiler/FS/adfgvx-cipher.fs(69,35): error FS0001: This expression was expected to have type
+    string    
+but here has type
+    'a []    
+
+/workspace/mochi/tests/rosetta/transpiler/FS/adfgvx-cipher.fs(73,34): error FS0001: The type ''a []' does not match the type 'string'
+
+/workspace/mochi/tests/rosetta/transpiler/FS/adfgvx-cipher.fs(93,27): error FS0001: The type 'char' does not match the type 'string'
+
+/workspace/mochi/tests/rosetta/transpiler/FS/adfgvx-cipher.fs(109,76): error FS0001: This expression was expected to have type
+    string    
+but here has type
+    int    
+
+/workspace/mochi/tests/rosetta/transpiler/FS/adfgvx-cipher.fs(150,35): error FS0001: This expression was expected to have type
+    'a []    
+but here has type
+    string    
+
+/workspace/mochi/tests/rosetta/transpiler/FS/adfgvx-cipher.fs(150,68): error FS0001: This expression was expected to have type
+    'a []    
+but here has type
+    string    
+
+/workspace/mochi/tests/rosetta/transpiler/FS/adfgvx-cipher.fs(151,42): error FS0001: The type ''a []' does not match the type 'string'
+
+/workspace/mochi/tests/rosetta/transpiler/FS/adfgvx-cipher.fs(223,72): error FS0001: This expression was expected to have type
+    char    
+but here has type
+    string    
+
+/workspace/mochi/tests/rosetta/transpiler/FS/adfgvx-cipher.fs(240,41): error FS0001: This expression was expected to have type
+    string    
+but here has type
+    'a []    
+
+/workspace/mochi/tests/rosetta/transpiler/FS/adfgvx-cipher.fs(286,39): error FS0001: The type 'char' does not match the type 'string'
+
+/workspace/mochi/tests/rosetta/transpiler/FS/adfgvx-cipher.fs(307,1): warning FS0020: This expression should have type 'unit', but has type 'obj'. Use 'ignore' to discard the result of the expression, or 'let' to bind the result to a name.

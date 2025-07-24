@@ -1,0 +1,7 @@
+compile: exit status 1
+F# Compiler for F# 4.0 (Open Source Edition)
+Freely distributed under the Apache 2.0 Open Source License
+
+/workspace/mochi/tests/rosetta/transpiler/FS/amb.fs(34,22): error FS0033: The type 'Microsoft.FSharp.Core.array<_>' expects 1 type argument(s) but is given 0
+
+/workspace/mochi/tests/rosetta/transpiler/FS/amb.fs(53,1): warning FS0020: This expression should have type 'unit', but has type 'obj'. Use 'ignore' to discard the result of the expression, or 'let' to bind the result to a name.

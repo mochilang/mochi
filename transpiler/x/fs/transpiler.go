@@ -1516,6 +1516,18 @@ func inferType(e Expr) string {
 	return ""
 }
 
+func valueType(e Expr) string {
+	if id, ok := e.(*IdentExpr); ok {
+		if id.Type != "" {
+			return id.Type
+		}
+		if t, ok := varTypes[id.Name]; ok {
+			return t
+		}
+	}
+	return inferType(e)
+}
+
 func isSlice(e Expr) bool {
 	_, ok := e.(*SliceExpr)
 	return ok
@@ -1694,7 +1706,15 @@ func (c *CastExpr) emit(w io.Writer) {
 			c.Expr.emit(w)
 		}
 	default:
-		c.Expr.emit(w)
+		if needsParen(c.Expr) {
+			io.WriteString(w, "(")
+			c.Expr.emit(w)
+			io.WriteString(w, ")")
+		} else {
+			c.Expr.emit(w)
+		}
+		io.WriteString(w, " :?> ")
+		io.WriteString(w, c.Type)
 	}
 }
 
@@ -1975,7 +1995,12 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 		if err != nil {
 			return nil, err
 		}
-		varTypes[st.Assign.Name] = inferType(e)
+		if t := inferType(e); t != "" {
+			cur := varTypes[st.Assign.Name]
+			if cur == "" || cur == "array" || cur == "map" {
+				varTypes[st.Assign.Name] = t
+			}
+		}
 		return &AssignStmt{Name: st.Assign.Name, Expr: e}, nil
 	case st.Assign != nil && (len(st.Assign.Index) > 0 || len(st.Assign.Field) > 0):
 		val, err := convertExpr(st.Assign.Value)
@@ -2283,8 +2308,8 @@ func convertPostfix(pf *parser.PostfixExpr) (Expr, error) {
 					return nil, fmt.Errorf("unsupported postfix")
 				}
 			}
-		case op.Cast != nil && op.Cast.Type != nil && op.Cast.Type.Simple != nil:
-			expr = &CastExpr{Expr: expr, Type: *op.Cast.Type.Simple}
+		case op.Cast != nil && op.Cast.Type != nil:
+			expr = &CastExpr{Expr: expr, Type: typeRefString(op.Cast.Type)}
 		default:
 			return nil, fmt.Errorf("unsupported postfix")
 		}
@@ -2556,6 +2581,8 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 		}
 		items := make([][2]Expr, len(p.Map.Items))
 		types := make([]string, len(p.Map.Items))
+		same := true
+		prev := ""
 		for i, it := range p.Map.Items {
 			k, err := convertExpr(it.Key)
 			if err != nil {
@@ -2566,7 +2593,19 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 				return nil, err
 			}
 			items[i] = [2]Expr{k, v}
-			types[i] = inferType(v)
+			t := valueType(v)
+			types[i] = t
+			if i == 0 {
+				prev = t
+			} else if t != prev {
+				same = false
+			}
+		}
+		if !same {
+			for i := range items {
+				items[i][1] = &CallExpr{Func: "box", Args: []Expr{items[i][1]}}
+				types[i] = "obj"
+			}
 		}
 		return &MapLit{Items: items, Types: types}, nil
 	case p.Match != nil:

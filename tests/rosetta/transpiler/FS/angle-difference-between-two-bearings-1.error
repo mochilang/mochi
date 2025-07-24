@@ -1,0 +1,25 @@
+compile: exit status 1
+F# Compiler for F# 4.0 (Open Source Edition)
+Freely distributed under the Apache 2.0 Open Source License
+
+/workspace/mochi/tests/rosetta/transpiler/FS/angle-difference-between-two-bearings-1.fs(3,1): warning FS0221: The declarations in this file will be placed in an implicit module 'Angle-difference-between-two-bearings-1' based on the file name 'angle-difference-between-two-bearings-1.fs'. However this is not a valid F# identifier, so the contents will not be accessible from other files. Consider renaming the file or adding a 'module' or 'namespace' declaration at the top of the file.
+
+/workspace/mochi/tests/rosetta/transpiler/FS/angle-difference-between-two-bearings-1.fs(11,21): error FS0001: The type 'float' does not match the type 'int'
+
+/workspace/mochi/tests/rosetta/transpiler/FS/angle-difference-between-two-bearings-1.fs(22,24): error FS0033: The type 'Microsoft.FSharp.Core.array<_>' expects 1 type argument(s) but is given 0
+
+/workspace/mochi/tests/rosetta/transpiler/FS/angle-difference-between-two-bearings-1.fs(22,62): error FS0001: The type 'float' does not match the type 'int'
+
+/workspace/mochi/tests/rosetta/transpiler/FS/angle-difference-between-two-bearings-1.fs(22,82): error FS0001: The type 'float' does not match the type 'int'
+
+/workspace/mochi/tests/rosetta/transpiler/FS/angle-difference-between-two-bearings-1.fs(22,102): error FS0001: The type 'float' does not match the type 'int'
+
+/workspace/mochi/tests/rosetta/transpiler/FS/angle-difference-between-two-bearings-1.fs(22,122): error FS0001: The type 'float' does not match the type 'int'
+
+/workspace/mochi/tests/rosetta/transpiler/FS/angle-difference-between-two-bearings-1.fs(22,143): error FS0001: The type 'float' does not match the type 'int'
+
+/workspace/mochi/tests/rosetta/transpiler/FS/angle-difference-between-two-bearings-1.fs(22,173): error FS0001: The type 'float' does not match the type 'int'
+
+/workspace/mochi/tests/rosetta/transpiler/FS/angle-difference-between-two-bearings-1.fs(22,190): error FS0001: The type 'float' does not match the type 'int'
+
+/workspace/mochi/tests/rosetta/transpiler/FS/angle-difference-between-two-bearings-1.fs(22,203): error FS0001: The type 'float' does not match the type 'int'
