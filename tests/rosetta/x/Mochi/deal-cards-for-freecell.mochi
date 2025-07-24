@@ -31,11 +31,15 @@ let suits = "CDHS"
 let nums = "A23456789TJQK"
 
 fun show(cards: list<int>) {
+  var line = ""
   var i = 0
   while i < len(cards) {
     let c = cards[i]
-    stdout.write(" " + substring(nums, c / 4, c / 4 + 1) + substring(suits, c % 4, c % 4 + 1))
-    if (i + 1) % 8 == 0 || i + 1 == len(cards) { print("") }
+    line = line + " " + substring(nums, c / 4, c / 4 + 1) + substring(suits, c % 4, c % 4 + 1)
+    if (i + 1) % 8 == 0 || i + 1 == len(cards) {
+      print(line)
+      line = ""
+    }
     i = i + 1
   }
 }

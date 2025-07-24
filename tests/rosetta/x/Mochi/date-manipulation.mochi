@@ -148,7 +148,7 @@ fun parseTime(s: string): list<int> {
 fun main() {
   let input = "March 7 2009 7:30pm EST"
   print("Input:              " + input)
-  let parts = []
+  var parts = []
   var cur = ""
   var i = 0
   while i < len(input) {
@@ -180,7 +180,7 @@ fun main() {
   }
   let eastParts = fromEpoch(utc12 + offEast)
   var eastAbbr = "EST"
-  if offEast == -14400 {
+  if offEast == (-14400) {
     eastAbbr = "EDT"
   }
   print("+12 hrs:            " + formatDate(eastParts, offEast, eastAbbr))

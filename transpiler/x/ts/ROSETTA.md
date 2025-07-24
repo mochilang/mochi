@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated TypeScript code from programs in `tests/rosetta/x/Mochi` lives in `tests/rosetta/transpiler/TypeScript`.
-Last updated: 2025-07-24 14:25 UTC
+Last updated: 2025-07-24 17:37 UTC
 
-## Rosetta Golden Test Checklist (271/284)
+## Rosetta Golden Test Checklist (274/284)
 1. [x] 100-doors-2 (1)
 2. [x] 100-doors-3 (2)
 3. [x] 100-doors (3)
@@ -277,11 +277,11 @@ Last updated: 2025-07-24 14:25 UTC
 270. [x] cyclops-numbers (270)
 271. [x] damm-algorithm (271)
 272. [x] date-format (272)
-273. [ ] date-manipulation (273)
+273. [x] date-manipulation (273)
 274. [x] day-of-the-week (274)
 275. [x] de-bruijn-sequences (275)
-276. [ ] deal-cards-for-freecell (276)
-277. [ ] death-star (277)
+276. [x] deal-cards-for-freecell (276)
+277. [x] death-star (277)
 278. [x] deceptive-numbers (278)
 279. [ ] deconvolution-1d-2 (279)
 280. [ ] deconvolution-1d-3 (280)

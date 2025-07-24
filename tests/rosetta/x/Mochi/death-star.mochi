@@ -53,9 +53,9 @@ fun hitSphere(s: Sphere, x: float, y: float): map<string, any> {
 fun main() {
   let shades = ".:!*oe&#%@"
 
-  var light = normalize(V3{ x:-50.0, y:30.0, z:50.0 })
+  var light = normalize(V3{ x: -50.0, y: 30.0, z: 50.0 })
   let pos = Sphere{ cx:20.0, cy:20.0, cz:0.0, r:20.0 }
-  let neg = Sphere{ cx:1.0, cy:1.0, cz:-6.0, r:20.0 }
+  let neg = Sphere{ cx: 1.0, cy: 1.0, cz: -6.0, r: 20.0 }
 
   var yi = 0
   while yi <= 40 {
