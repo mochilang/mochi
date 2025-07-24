@@ -1,0 +1,7 @@
+exit status 2
+File "/workspace/mochi/tests/rosetta/transpiler/OCaml/achilles-numbers.ml", line 1:
+Warning 24 [bad-module-name]: bad source file name: "Achilles-numbers" is not a valid module name.
+File "/workspace/mochi/tests/rosetta/transpiler/OCaml/achilles-numbers.ml", line 90, characters 25-27:
+90 |   with Return -> !__ret) in
+                              ^^
+Error: Syntax error

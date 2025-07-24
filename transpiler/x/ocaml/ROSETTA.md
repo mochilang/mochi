@@ -2,7 +2,7 @@
 
 This directory contains OCaml code generated from Rosetta Code programs in `tests/rosetta/x/Mochi`.
 
-Completed programs: 33/284
+Completed programs: 26/284
 
 1. [x] 100-doors-2 (1)
 2. [x] 100-doors-3 (2)
@@ -29,25 +29,25 @@ Completed programs: 33/284
 23. [x] abstract-type (23)
 24. [x] abundant-deficient-and-perfect-number-classifications (24)
 25. [x] abundant-odd-numbers (25)
-26. [ ] accumulator-factory (26)
+26. [x] accumulator-factory (26)
 27. [ ] achilles-numbers (27)
-28. [x] ackermann-function-2 (28)
+28. [ ] ackermann-function-2 (28)
 29. [ ] ackermann-function-3 (29)
-30. [x] ackermann-function (30)
+30. [ ] ackermann-function (30)
 31. [ ] active-directory-connect (31)
 32. [ ] active-directory-search-for-a-user (32)
 33. [ ] active-object (33)
 34. [ ] add-a-variable-to-a-class-instance-at-runtime (34)
-35. [x] additive-primes (35)
-36. [x] address-of-a-variable (36)
+35. [ ] additive-primes (35)
+36. [ ] address-of-a-variable (36)
 37. [ ] adfgvx-cipher (37)
-38. [x] aks-test-for-primes (38)
+38. [ ] aks-test-for-primes (38)
 39. [ ] algebraic-data-types (39)
-40. [x] align-columns (40)
-41. [x] aliquot-sequence-classifications (41)
+40. [ ] align-columns (40)
+41. [ ] aliquot-sequence-classifications (41)
 42. [ ] almkvist-giullera-formula-for-pi (42)
 43. [ ] almost-prime (43)
-44. [x] amb (44)
+44. [ ] amb (44)
 45. [ ] amicable-pairs (45)
 46. [ ] anagrams-deranged-anagrams (46)
 47. [ ] anagrams (47)
@@ -288,4 +288,4 @@ Completed programs: 33/284
 282. [ ] deepcopy-1 (282)
 283. [ ] define-a-primitive-data-type (283)
 284. [ ] md5 (284)
-Last updated 2025-07-24 14:08 UTC
+Last updated 2025-07-25 00:13 +0700
