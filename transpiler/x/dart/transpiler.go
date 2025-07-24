@@ -43,6 +43,7 @@ var (
 	useNow           bool
 	useInput         bool
 	useLookupHost    bool
+	usePadStart      bool
 	imports          []string
 	testpkgAliases   map[string]struct{}
 	netAliases       map[string]struct{}
@@ -3027,6 +3028,11 @@ func Emit(w io.Writer, p *Program) error {
 			return err
 		}
 	}
+	if usePadStart {
+		if _, err := io.WriteString(w, "String _padStart(String s, int l, String ch) {\n  if (ch.isEmpty) ch = ' ';\n  return s.padLeft(l, ch);\n}\n\n"); err != nil {
+			return err
+		}
+	}
 	for _, name := range structOrder {
 		fields := structFields[name]
 		if _, err := fmt.Fprintf(w, "class %s {\n", name); err != nil {
@@ -3151,6 +3157,7 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	useNow = false
 	useInput = false
 	useLookupHost = false
+	usePadStart = false
 	imports = nil
 	testpkgAliases = map[string]struct{}{}
 	netAliases = map[string]struct{}{}
@@ -3722,7 +3729,12 @@ func convertPostfix(pf *parser.PostfixExpr) (Expr, error) {
 					}
 					args = append(args, ex)
 				}
-				expr = &CallExpr{Func: &SelectorExpr{Receiver: expr, Field: op.Field.Name}, Args: args}
+				if op.Field.Name == "padStart" && len(args) == 2 {
+					usePadStart = true
+					expr = &CallExpr{Func: &SelectorExpr{Receiver: expr, Field: "padLeft"}, Args: args}
+				} else {
+					expr = &CallExpr{Func: &SelectorExpr{Receiver: expr, Field: op.Field.Name}, Args: args}
+				}
 				i++
 			} else {
 				expr = &SelectorExpr{Receiver: expr, Field: op.Field.Name}
@@ -3901,6 +3913,22 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 				return nil, err
 			}
 			return &SubstringExpr{Str: s0, Start: s1, End: s2}, nil
+		}
+		if p.Call.Func == "padStart" && len(p.Call.Args) == 3 {
+			s0, err := convertExpr(p.Call.Args[0])
+			if err != nil {
+				return nil, err
+			}
+			s1, err := convertExpr(p.Call.Args[1])
+			if err != nil {
+				return nil, err
+			}
+			s2, err := convertExpr(p.Call.Args[2])
+			if err != nil {
+				return nil, err
+			}
+			usePadStart = true
+			return &CallExpr{Func: &SelectorExpr{Receiver: s0, Field: "padLeft"}, Args: []Expr{s1, s2}}, nil
 		}
 		if p.Call.Func == "upper" && len(p.Call.Args) == 1 {
 			arg, err := convertExpr(p.Call.Args[0])

@@ -1,0 +1,10 @@
+run: exit status 254
+../../../tests/rosetta/transpiler/Dart/bernoulli-numbers.dart:33:9: Error: The class 'num' is abstract and can't be instantiated.
+    if (num(b) != BigInt.from(0)) {
+        ^^^
+../../../tests/rosetta/transpiler/Dart/bernoulli-numbers.dart:34:28: Error: The class 'num' is abstract and can't be instantiated.
+    final String numStr = (num(b)).toString();
+                           ^^^
+../../../tests/rosetta/transpiler/Dart/bernoulli-numbers.dart:35:28: Error: Method not found: 'denom'.
+    final String denStr = (denom(b)).toString();
+                           ^^^^^
