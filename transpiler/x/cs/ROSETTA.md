@@ -1,7 +1,7 @@
 # Rosetta C# Transpiler Output
 
-Completed programs: 33/284
-Last updated: 2025-07-24 16:14 +0700
+Completed programs: 35/284
+Last updated: 2025-07-24 18:38 +0700
 
 ## Checklist
 1. [x] 100-doors-2 (1)
@@ -36,8 +36,8 @@ Last updated: 2025-07-24 16:14 +0700
 30. [x] ackermann-function (30)
 31. [x] active-directory-connect (31)
 32. [x] active-directory-search-for-a-user (32)
-33. [ ] active-object (33)
-34. [ ] add-a-variable-to-a-class-instance-at-runtime (34)
+33. [x] active-object (33)
+34. [x] add-a-variable-to-a-class-instance-at-runtime (34)
 35. [x] additive-primes (35)
 36. [x] address-of-a-variable (36)
 37. [ ] adfgvx-cipher (37)
