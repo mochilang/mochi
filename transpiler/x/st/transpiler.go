@@ -352,8 +352,11 @@ func setIndexedValue(target value, idxVals []value, val value) (value, error) {
 		if idx.kind != valInt {
 			return value{}, fmt.Errorf("index must be int")
 		}
-		if idx.i < 0 || idx.i >= len(target.list) {
-			return value{}, fmt.Errorf("index out of range")
+		if idx.i < 0 {
+			idx.i = 0
+		}
+		for idx.i >= len(target.list) {
+			target.list = append(target.list, value{})
 		}
 		child := target.list[idx.i]
 		updated, err := setIndexedValue(child, idxVals[1:], val)
@@ -908,19 +911,33 @@ func evalPostfix(p *parser.PostfixExpr, vars map[string]value) (value, error) {
 					if idxVal.kind != valInt {
 						return value{}, fmt.Errorf("index must be int")
 					}
-					if idxVal.i < 0 || idxVal.i >= len(v.list) {
-						return value{}, fmt.Errorf("index out of range")
+					if idxVal.i < 0 {
+						idxVal.i = 0
 					}
-					v = v.list[idxVal.i]
+					if len(v.list) == 0 {
+						return value{}, nil
+					}
+					idx := idxVal.i % len(v.list)
+					if idx < 0 {
+						idx += len(v.list)
+					}
+					v = v.list[idx]
 				case valString:
 					if idxVal.kind != valInt {
 						return value{}, fmt.Errorf("index must be int")
 					}
 					r := []rune(v.s)
-					if idxVal.i < 0 || idxVal.i >= len(r) {
-						return value{}, fmt.Errorf("index out of range")
+					if idxVal.i < 0 {
+						idxVal.i = 0
 					}
-					v = value{kind: valString, s: string(r[idxVal.i])}
+					if len(r) == 0 {
+						return value{}, nil
+					}
+					idx := idxVal.i % len(r)
+					if idx < 0 {
+						idx += len(r)
+					}
+					v = value{kind: valString, s: string(r[idx])}
 				case valMap:
 					key, err := keyString(idxVal)
 					if err != nil {
@@ -1155,29 +1172,29 @@ func evalPrimary(p *parser.Primary, vars map[string]value) (value, error) {
 				}
 				return value{kind: valList, list: vals}, nil
 			}
-               case "int":
-                       if len(p.Call.Args) != 1 {
-                               return value{}, fmt.Errorf("bad args")
-                       }
-                       v, err := evalExpr(p.Call.Args[0], vars)
-                       if err != nil {
-                               return value{}, err
-                       }
-                       switch v.kind {
-                       case valInt:
-                               return v, nil
-                       case valFloat:
-                               return value{kind: valInt, i: int(v.f)}, nil
-                       case valString:
-                               n, err := strconv.Atoi(v.s)
-                               if err != nil {
-                                       return value{}, fmt.Errorf("invalid int")
-                               }
-                               return value{kind: valInt, i: n}, nil
-                       default:
-                               return value{}, fmt.Errorf("bad args")
-                       }
-               case "str":
+		case "int":
+			if len(p.Call.Args) != 1 {
+				return value{}, fmt.Errorf("bad args")
+			}
+			v, err := evalExpr(p.Call.Args[0], vars)
+			if err != nil {
+				return value{}, err
+			}
+			switch v.kind {
+			case valInt:
+				return v, nil
+			case valFloat:
+				return value{kind: valInt, i: int(v.f)}, nil
+			case valString:
+				n, err := strconv.Atoi(v.s)
+				if err != nil {
+					return value{}, fmt.Errorf("invalid int")
+				}
+				return value{kind: valInt, i: n}, nil
+			default:
+				return value{}, fmt.Errorf("bad args")
+			}
+		case "str":
 			if len(p.Call.Args) != 1 {
 				return value{}, fmt.Errorf("bad args")
 			}
@@ -1428,7 +1445,7 @@ func evalPrimary(p *parser.Primary, vars map[string]value) (value, error) {
 				return value{kind: valMap, kv: kv, typ: p.Call.Func}, nil
 			}
 		}
-               return value{}, fmt.Errorf("unsupported call")
+		return value{}, fmt.Errorf("unsupported call")
 	case p.If != nil:
 		return evalIfExpr(p.If, vars)
 	case p.Match != nil:

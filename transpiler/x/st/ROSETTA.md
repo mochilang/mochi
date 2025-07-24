@@ -1,16 +1,16 @@
 # Smalltalk Transpiler Rosetta Results
 
 This checklist tracks the Rosetta Code programs transpiled into Smalltalk under `tests/rosetta/transpiler/st`.
-Last updated: 2025-07-23 12:29 +0700
+Last updated: 2025-07-24 00:44 +0700
 
-## Rosetta Golden Test Checklist (11/284)
+## Rosetta Golden Test Checklist (12/284)
 1. [x] 1 100-doors-2
 2. [x] 2 100-doors-3
 3. [x] 3 100-doors
 4. [x] 4 100-prisoners
 5. [ ] 5 15-puzzle-game
 6. [ ] 6 15-puzzle-solver
-7. [ ] 7 2048
+7. [x] 7 2048
 8. [ ] 8 21-game
 9. [x] 9 24-game-solve
 10. [ ] 10 24-game
