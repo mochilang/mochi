@@ -1,5 +1,0 @@
-dotnet run: exit status 1
-/tmp/TestCSTranspiler_Rosetta_Golden251006772/001/Program.cs(44,21): error CS0136: A local or parameter named 'j' cannot be declared in this scope because that name is used in an enclosing local scope to define a local or parameter [/tmp/TestCSTranspiler_Rosetta_Golden251006772/001/app.csproj]
-/tmp/TestCSTranspiler_Rosetta_Golden251006772/001/Program.cs(99,23): error CS0029: Cannot implicitly convert type 'int[]' to 'int' [/tmp/TestCSTranspiler_Rosetta_Golden251006772/001/app.csproj]
-
-The build failed. Fix the build errors and run again.
