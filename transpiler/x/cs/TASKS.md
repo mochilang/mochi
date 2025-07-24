@@ -1,3 +1,6 @@
+## Progress (2025-07-24 20:52 +0700)
+- cs transpiler: fix StrExpr parentheses for unary expressions (aks-test-for-primes) (progress 36/284)
+
 ## Progress (2025-07-24 13:16 UTC)
 - Enhanced C# transpiler variable type tracking for Rosetta program 37. (progress 102/103)
 
@@ -223,6 +226,8 @@
 
 ## Progress (2025-07-22 03:14 +0000)
 - cs transpiler: 100/102 tests compiled
+
+
 
 
 
