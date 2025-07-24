@@ -2,11 +2,11 @@
 
 Generated Pascal code for Rosetta tasks lives under `tests/rosetta/transpiler/Pascal`.
 
-## Rosetta Checklist (4/284) - updated 2025-07-24 00:56 UTC
+## Rosetta Checklist (5/284) - updated 2025-07-24 13:03 +0700
 - [x] (1) 100-doors-2
 - [x] (2) 100-doors-3
 - [x] (3) 100-doors
-- [ ] (4) 100-prisoners
+- [x] (4) 100-prisoners
 - [ ] (5) 15-puzzle-game
 - [ ] (6) 15-puzzle-solver
 - [x] (7) 2048
