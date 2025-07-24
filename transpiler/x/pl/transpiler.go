@@ -256,6 +256,9 @@ type BreakStmt struct{}
 // ContinueStmt skips to the next iteration of the nearest loop during compile time.
 type ContinueStmt struct{}
 
+// ReturnStmt signals an early function return during compile time.
+type ReturnStmt struct{}
+
 // IndexAssignStmt updates a list element at runtime.
 type IndexAssignStmt struct {
 	Name   string
@@ -729,6 +732,7 @@ func (m *MapAssignStmt) emit(w io.Writer, idx int) {
 
 func (b *BreakStmt) emit(w io.Writer, idx int)    {}
 func (c *ContinueStmt) emit(w io.Writer, idx int) {}
+func (r *ReturnStmt) emit(w io.Writer, idx int)   {}
 
 func emitIfToVar(w io.Writer, name string, ie *IfExpr) {
 	io.WriteString(w, "(")
@@ -1145,6 +1149,12 @@ func (c *CallExpr) emit(w io.Writer) {
 		io.WriteString(w, "(read_line_to_string(user_input, S), S)")
 		return
 	}
+	if c.Name == "abs" && len(c.Args) == 1 {
+		io.WriteString(w, "(abs(")
+		c.Args[0].emit(w)
+		io.WriteString(w, ", R), R)")
+		return
+	}
 	io.WriteString(w, c.Name)
 	io.WriteString(w, "(")
 	for i, a := range c.Args {
@@ -1296,6 +1306,20 @@ func containsContinue(stmts []Stmt) bool {
 	return false
 }
 
+func containsReturn(stmts []Stmt) bool {
+	for _, st := range stmts {
+		switch s := st.(type) {
+		case *ReturnStmt:
+			return true
+		case *IfStmt:
+			if containsReturn(s.Then) || containsReturn(s.Else) {
+				return true
+			}
+		}
+	}
+	return false
+}
+
 func isBoolLike(e Expr, env *compileEnv) bool {
 	if _, ok := e.(*BoolLit); ok {
 		return true
@@ -1316,6 +1340,21 @@ func isMapLike(e Expr, env *compileEnv) bool {
 		if _, ok2 := env.constExpr(v.Name).(*MapLit); ok2 {
 			return true
 		}
+	}
+	return false
+}
+
+func isListLike(e Expr, env *compileEnv) bool {
+	if _, ok := e.(*ListLit); ok {
+		return true
+	}
+	if v, ok := e.(*Var); ok {
+		if _, ok2 := env.constExpr(v.Name).(*ListLit); ok2 {
+			return true
+		}
+	}
+	if _, ok := e.(*SliceExpr); ok {
+		return true
 	}
 	return false
 }
@@ -1622,8 +1661,11 @@ func unrollWhile(w *parser.WhileStmt, env *compileEnv) ([]Stmt, error) {
 					return out, nil
 				case *ContinueStmt:
 					goto continueInfiniteLoop
+				case *ReturnStmt:
+					return append(out, s), nil
 				case *IfStmt:
-					if containsBreak(s.Then) || containsBreak(s.Else) {
+					if containsBreak(s.Then) || containsBreak(s.Else) ||
+						containsReturn(s.Then) || containsReturn(s.Else) {
 						s.Then = nil
 						s.Else = nil
 						out = append(out, s)
@@ -1660,8 +1702,11 @@ func unrollWhile(w *parser.WhileStmt, env *compileEnv) ([]Stmt, error) {
 				return out, nil
 			case *ContinueStmt:
 				goto continueFallbackLoop
+			case *ReturnStmt:
+				return append(out, s), nil
 			case *IfStmt:
-				if containsBreak(s.Then) || containsBreak(s.Else) {
+				if containsBreak(s.Then) || containsBreak(s.Else) ||
+					containsReturn(s.Then) || containsReturn(s.Else) {
 					s.Then = nil
 					s.Else = nil
 					out = append(out, s)
@@ -2362,16 +2407,21 @@ func compileStmts(sts []*parser.Statement, env *compileEnv) ([]Stmt, error) {
 				out = append(out, ifStmt)
 			}
 		case s.Return != nil:
-			if s.Return.Value == nil {
-				return nil, fmt.Errorf("unsupported return")
-			}
-			expr, err := toExpr(s.Return.Value, env)
-			if err != nil {
-				return nil, err
+			var expr Expr
+			if s.Return.Value != nil {
+				var err error
+				expr, err = toExpr(s.Return.Value, env)
+				if err != nil {
+					return nil, err
+				}
+			} else {
+				expr = &IntLit{Value: 0}
 			}
 			name := env.fresh("return")
 			env.setConst(name, expr)
 			out = append(out, &LetStmt{Name: name, Expr: expr})
+			out = append(out, &ReturnStmt{})
+			return out, nil
 		case s.Break != nil:
 			out = append(out, &BreakStmt{})
 		case s.Continue != nil:
@@ -2406,6 +2456,9 @@ func compileStmts(sts []*parser.Statement, env *compileEnv) ([]Stmt, error) {
 							goto breakNumFor
 						case *ContinueStmt:
 							goto continueNumFor
+						case *ReturnStmt:
+							out = append(out, st)
+							goto breakNumFor
 						default:
 							out = append(out, st)
 						}
@@ -2455,6 +2508,9 @@ func compileStmts(sts []*parser.Statement, env *compileEnv) ([]Stmt, error) {
 								goto breakListFor
 							case *ContinueStmt:
 								goto continueListFor
+							case *ReturnStmt:
+								out = append(out, st)
+								goto breakListFor
 							default:
 								out = append(out, st)
 							}
@@ -2477,6 +2533,9 @@ func compileStmts(sts []*parser.Statement, env *compileEnv) ([]Stmt, error) {
 								goto breakListFor
 							case *ContinueStmt:
 								goto continueListFor2
+							case *ReturnStmt:
+								out = append(out, st)
+								goto breakListFor
 							default:
 								out = append(out, st)
 							}
@@ -2561,6 +2620,8 @@ func stmtNode(s Stmt) *ast.Node {
 		return &ast.Node{Kind: "break"}
 	case *ContinueStmt:
 		return &ast.Node{Kind: "continue"}
+	case *ReturnStmt:
+		return &ast.Node{Kind: "return"}
 	default:
 		return &ast.Node{Kind: "unknown"}
 	}
@@ -2680,6 +2741,11 @@ func toBinary(b *parser.BinaryExpr, env *compileEnv) (Expr, error) {
 			}
 			left = &BinaryExpr{Left: left, Op: "+", Right: right}
 			continue
+		}
+		if opStr == "+" {
+			if isListLike(left, env) && isListLike(right, env) {
+				opStr = "union_all"
+			}
 		}
 		if li, lok := left.(*IntLit); lok {
 			if ri, rok := right.(*IntLit); rok {
@@ -3158,6 +3224,24 @@ func toPrimary(p *parser.Primary, env *compileEnv) (Expr, error) {
 				return nil, err
 			}
 			return &AppendExpr{List: listArg, Elem: elemArg}, nil
+		case "abs":
+			if len(p.Call.Args) != 1 {
+				return nil, fmt.Errorf("unsupported call")
+			}
+			arg, err := toExpr(p.Call.Args[0], env)
+			if err != nil {
+				return nil, err
+			}
+			if iv, ok := intValue(arg); ok {
+				if iv < 0 {
+					iv = -iv
+				}
+				return &IntLit{Value: iv}, nil
+			}
+			if fl, ok := arg.(*FloatLit); ok {
+				return &FloatLit{Value: math.Abs(fl.Value)}, nil
+			}
+			return &CallExpr{Name: "abs", Args: []Expr{arg}}, nil
 		default:
 			if len(p.Call.Func) > 0 && unicode.IsUpper(rune(p.Call.Func[0])) {
 				args := make([]Expr, len(p.Call.Args))
@@ -3356,6 +3440,10 @@ func compileFunction(fn *parser.FunStmt, env *compileEnv) (*Function, error) {
 		return nil, err
 	}
 	ret := fenv.current("return")
+	if fenv.constExpr(ret) == nil {
+		fenv.setConst(ret, &IntLit{Value: 0})
+		body = append(body, &LetStmt{Name: ret, Expr: &IntLit{Value: 0}})
+	}
 	return &Function{Name: fn.Name, Params: params, Body: body, Return: &Var{Name: ret}}, nil
 }
 
