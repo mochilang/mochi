@@ -152,10 +152,17 @@ func popIndent() {
 }
 func writeIndent(w io.Writer) { io.WriteString(w, indent) }
 
-type TypeDecl struct {
+type Variant struct {
 	Name   string
 	Fields []string
 	Types  []string
+}
+
+type TypeDecl struct {
+	Name     string
+	Fields   []string
+	Types    []string
+	Variants []Variant
 }
 
 func groupPrelude() string {
@@ -163,14 +170,37 @@ func groupPrelude() string {
 }
 
 func (t *TypeDecl) emit(w io.Writer) {
-	fmt.Fprintf(w, "data %s = %s\n  { ", t.Name, t.Name)
-	for i, f := range t.Fields {
-		if i > 0 {
-			io.WriteString(w, ",\n    ")
+	if len(t.Variants) == 0 {
+		fmt.Fprintf(w, "data %s = %s\n  { ", t.Name, t.Name)
+		for i, f := range t.Fields {
+			if i > 0 {
+				io.WriteString(w, ",\n    ")
+			}
+			fmt.Fprintf(w, "%s :: %s", f, t.Types[i])
 		}
-		fmt.Fprintf(w, "%s :: %s", f, t.Types[i])
+		io.WriteString(w, "\n  } deriving (Show, Eq)\n")
+		return
 	}
-	io.WriteString(w, "\n  } deriving (Show, Eq)\n")
+
+	fmt.Fprintf(w, "data %s =", t.Name)
+	for i, v := range t.Variants {
+		io.WriteString(w, " ")
+		io.WriteString(w, v.Name)
+		if len(v.Fields) > 0 {
+			io.WriteString(w, " {")
+			for j, f := range v.Fields {
+				if j > 0 {
+					io.WriteString(w, ", ")
+				}
+				fmt.Fprintf(w, "%s :: %s", f, v.Types[j])
+			}
+			io.WriteString(w, "}")
+		}
+		if i < len(t.Variants)-1 {
+			io.WriteString(w, " |")
+		}
+	}
+	io.WriteString(w, "\n  deriving (Show, Eq)\n")
 }
 
 var structDefs map[string]*TypeDecl
@@ -454,6 +484,83 @@ type Func struct {
 	Mutated map[string]bool
 }
 
+func isPureStmt(s Stmt) bool {
+	switch st := s.(type) {
+	case *LetStmt:
+		return isPureExpr(st.Expr)
+	case *ReturnStmt:
+		return isPureExpr(st.Expr)
+	case *IfStmt:
+		if !isPureExpr(st.Cond) {
+			return false
+		}
+		for _, t := range st.Then {
+			if !isPureStmt(t) {
+				return false
+			}
+		}
+		for _, e := range st.Else {
+			if !isPureStmt(e) {
+				return false
+			}
+		}
+		return true
+	default:
+		return false
+	}
+}
+
+func isPureExpr(e Expr) bool {
+	switch ex := e.(type) {
+	case *IntLit, *FloatLit, *StringLit, *BoolLit, *NameRef,
+		*RecordLit, *BinaryExpr, *UnaryExpr, *CallExpr,
+		*FieldExpr, *IndexExpr, *GroupExpr:
+		return true
+	case *CaseExpr:
+		if !isPureExpr(ex.Target) {
+			return false
+		}
+		for _, cl := range ex.Clauses {
+			if cl.Pattern != nil {
+				// assume pattern pure
+			}
+			if !isPureExpr(cl.Result) {
+				return false
+			}
+		}
+		return true
+	default:
+		_ = ex
+		return false
+	}
+}
+
+func isPureFunc(stmts []Stmt) bool {
+	for _, st := range stmts {
+		if !isPureStmt(st) {
+			return false
+		}
+	}
+	return true
+}
+
+func blockToExpr(stmts []Stmt) Expr {
+	var expr Expr = &IntLit{Value: "()"}
+	for i := len(stmts) - 1; i >= 0; i-- {
+		switch st := stmts[i].(type) {
+		case *ReturnStmt:
+			expr = st.Expr
+		case *LetStmt:
+			expr = &LetInExpr{Name: st.Name, Value: st.Expr, Body: expr}
+		case *IfStmt:
+			thenExpr := blockToExpr(st.Then)
+			elseExpr := blockToExpr(st.Else)
+			expr = &IfExpr{Cond: st.Cond, Then: thenExpr, Else: elseExpr}
+		}
+	}
+	return expr
+}
+
 func (f *Func) emit(w io.Writer) {
 	prevMut := mutated
 	mutated = map[string]bool{}
@@ -475,6 +582,11 @@ func (f *Func) emit(w io.Writer) {
 			r.Expr.emit(w)
 			return
 		}
+	}
+	if isPureFunc(f.Body) {
+		expr := blockToExpr(f.Body)
+		expr.emit(w)
+		return
 	}
 	io.WriteString(w, "do\n")
 	prev := indent
@@ -1147,12 +1259,63 @@ type LetInExpr struct {
 	Body  Expr
 }
 
+// CaseExpr represents a simple case expression used for pattern matching.
+type CaseExpr struct {
+	Target  Expr
+	Clauses []CaseClause
+}
+
+// CaseClause is a single pattern -> result pair.
+type CaseClause struct {
+	Pattern Expr // nil represents '_'
+	Result  Expr
+}
+
+// VariantPattern matches a union variant and binds its fields.
+type VariantPattern struct {
+	Name       string
+	FieldNames []string
+	Binds      []string
+}
+
 func (c *CastExpr) emit(w io.Writer) {
 	io.WriteString(w, "(")
 	c.Expr.emit(w)
 	io.WriteString(w, " :: ")
 	io.WriteString(w, c.Type)
 	io.WriteString(w, ")")
+}
+
+func (ce *CaseExpr) emit(w io.Writer) {
+	io.WriteString(w, "(case ")
+	ce.Target.emit(w)
+	io.WriteString(w, " of")
+	for _, cl := range ce.Clauses {
+		io.WriteString(w, " ")
+		if cl.Pattern != nil {
+			cl.Pattern.emit(w)
+		} else {
+			io.WriteString(w, "_")
+		}
+		io.WriteString(w, " -> ")
+		cl.Result.emit(w)
+		io.WriteString(w, ";")
+	}
+	io.WriteString(w, " )")
+}
+
+func (vp *VariantPattern) emit(w io.Writer) {
+	io.WriteString(w, vp.Name)
+	if len(vp.FieldNames) > 0 {
+		io.WriteString(w, " {")
+		for i, fn := range vp.FieldNames {
+			if i > 0 {
+				io.WriteString(w, ", ")
+			}
+			fmt.Fprintf(w, "%s = %s", fn, vp.Binds[i])
+		}
+		io.WriteString(w, "}")
+	}
 }
 
 func (l *LetInExpr) emit(w io.Writer) {
@@ -1782,6 +1945,8 @@ func toHsType(t types.Type) string {
 		return "Map.Map " + toHsType(tt.Key) + " " + toHsType(tt.Value)
 	case types.StructType:
 		return tt.Name
+	case types.UnionType:
+		return tt.Name
 	case types.VoidType:
 		return "()"
 	default:
@@ -1804,6 +1969,8 @@ func shortType(t types.Type) string {
 	case types.MapType:
 		return "map"
 	case types.StructType:
+		return "record"
+	case types.UnionType:
 		return "record"
 	default:
 		return ""
@@ -2124,9 +2291,24 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 					typestr[i] = typeNameFromRef(m.Field.Type)
 				}
 				structDefs[st.Type.Name] = &TypeDecl{Name: st.Type.Name, Fields: fields, Types: typestr}
+				preludeHide[st.Type.Name] = true
 				for _, f := range fields {
 					preludeHide[f] = true
 				}
+			} else if len(st.Type.Variants) > 0 {
+				var vars []Variant
+				for _, v := range st.Type.Variants {
+					fields := make([]string, len(v.Fields))
+					typestr := make([]string, len(v.Fields))
+					for i, f := range v.Fields {
+						fields[i] = f.Name
+						typestr[i] = typeNameFromRef(f.Type)
+						preludeHide[f.Name] = true
+					}
+					vars = append(vars, Variant{Name: v.Name, Fields: fields, Types: typestr})
+				}
+				structDefs[st.Type.Name] = &TypeDecl{Name: st.Type.Name, Variants: vars}
+				preludeHide[st.Type.Name] = true
 			}
 		case st.Assign != nil:
 			val, err := convertExpr(st.Assign.Value)
@@ -3257,37 +3439,76 @@ func convertIfStmt(s *parser.IfStmt) (Stmt, error) {
 	return &IfStmt{Cond: cond, Then: thenStmts, Else: elseStmts}, nil
 }
 
+func identName(e *parser.Expr) (string, bool) {
+	if e == nil || len(e.Binary.Right) != 0 {
+		return "", false
+	}
+	u := e.Binary.Left
+	if len(u.Ops) != 0 {
+		return "", false
+	}
+	p := u.Value
+	if len(p.Ops) != 0 || p.Target == nil {
+		return "", false
+	}
+	if p.Target.Selector != nil && len(p.Target.Selector.Tail) == 0 {
+		return p.Target.Selector.Root, true
+	}
+	return "", false
+}
+
+func callPattern(e *parser.Expr) (*parser.CallExpr, bool) {
+	if e == nil || len(e.Binary.Right) != 0 {
+		return nil, false
+	}
+	u := e.Binary.Left
+	if len(u.Ops) != 0 {
+		return nil, false
+	}
+	p := u.Value
+	if len(p.Ops) != 0 || p.Target == nil || p.Target.Call == nil {
+		return nil, false
+	}
+	return p.Target.Call, true
+}
+
 func convertMatchExpr(m *parser.MatchExpr) (Expr, error) {
 	target, err := convertExpr(m.Target)
 	if err != nil {
 		return nil, err
 	}
-	var expr Expr
-	for i := len(m.Cases) - 1; i >= 0; i-- {
-		c := m.Cases[i]
+	clauses := make([]CaseClause, len(m.Cases))
+	for i, c := range m.Cases {
 		res, err := convertExpr(c.Result)
 		if err != nil {
 			return nil, err
 		}
 		if isUnderscoreExpr(c.Pattern) {
-			expr = res
+			clauses[i] = CaseClause{Pattern: nil, Result: res}
 			continue
+		}
+		if call, ok := callPattern(c.Pattern); ok && envInfo != nil {
+			if ut, ok := envInfo.FindUnionByVariant(call.Func); ok {
+				st := ut.Variants[call.Func]
+				vars := make([]string, len(call.Args))
+				for j, a := range call.Args {
+					if n, ok := identName(a); ok {
+						vars[j] = safeName(n)
+					} else {
+						vars[j] = "_"
+					}
+				}
+				clauses[i] = CaseClause{Pattern: &VariantPattern{Name: call.Func, FieldNames: st.Order, Binds: vars}, Result: res}
+				continue
+			}
 		}
 		pat, err := convertExpr(c.Pattern)
 		if err != nil {
 			return nil, err
 		}
-		cond := &BinaryExpr{Left: target, Ops: []BinaryOp{{Op: "==", Right: pat}}}
-		if expr == nil {
-			expr = &IfExpr{Cond: cond, Then: res, Else: &IntLit{Value: "0"}}
-		} else {
-			expr = &IfExpr{Cond: cond, Then: res, Else: expr}
-		}
+		clauses[i] = CaseClause{Pattern: pat, Result: res}
 	}
-	if expr == nil {
-		expr = &IntLit{Value: "0"}
-	}
-	return expr, nil
+	return &CaseExpr{Target: target, Clauses: clauses}, nil
 }
 
 func convertFunStmt(f *parser.FunStmt) (*Func, error) {
