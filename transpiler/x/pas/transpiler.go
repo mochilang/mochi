@@ -27,6 +27,21 @@ func sanitize(name string) string {
 		nameMap[name] = name + "_"
 		return name + "_"
 	}
+	for _, r := range currProg.Records {
+		if strings.EqualFold(name, r.Name) {
+			newName := name + "_var"
+			nameMap[name] = newName
+			return newName
+		}
+	}
+	if hasVar(name) {
+		newName := fmt.Sprintf("%s_%d", name, len(currProg.Vars))
+		nameMap[name] = newName
+		return newName
+	}
+	if v, ok := nameMap[name]; ok {
+		return v
+	}
 	return name
 }
 
@@ -64,6 +79,7 @@ type Program struct {
 	NeedContains bool
 	NeedShowList bool
 	UseNow       bool
+	UseInput     bool
 }
 
 // Stmt represents a Pascal statement.
@@ -357,9 +373,6 @@ func (v *ValuesExpr) emit(w io.Writer) {
 }
 
 func (r *RecordLit) emit(w io.Writer) {
-	if r.Type != "" {
-		io.WriteString(w, r.Type)
-	}
 	io.WriteString(w, "(")
 	for i, f := range r.Fields {
 		if i > 0 {
@@ -713,6 +726,9 @@ func (p *Program) Emit() []byte {
 		buf.WriteString("procedure init_now();\nvar s: string; v: int64;\nbegin\n  s := GetEnvironmentVariable('MOCHI_NOW_SEED');\n  if s <> '' then begin\n    Val(s, v);\n    _nowSeed := v;\n    _nowSeeded := true;\n  end;\nend;\n")
 		buf.WriteString("function _now(): integer;\nbegin\n  if _nowSeeded then begin\n    _nowSeed := (_nowSeed * 1664525 + 1013904223) mod 2147483647;\n    _now := _nowSeed;\n  end else begin\n    _now := Integer(GetTickCount64());\n  end;\nend;\n")
 	}
+	if p.UseInput {
+		buf.WriteString("function _input(): string;\nvar s: string;\nbegin\n  if EOF(Input) then s := '' else ReadLn(s);\n  _input := s;\nend;\n")
+	}
 	if p.NeedContains {
 		buf.WriteString("function contains(xs: array of integer; v: integer): boolean;\nvar i: integer;\nbegin\n  for i := 0 to High(xs) do begin\n    if xs[i] = v then begin\n      contains := true; exit;\n    end;\n  end;\n  contains := false;\nend;\n")
 	}
@@ -848,17 +864,12 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 		case st.Type != nil:
 			var fields []Field
 			for _, m := range st.Type.Members {
-				if m.Field == nil || m.Field.Type == nil || m.Field.Type.Simple == nil {
+				if m.Field == nil || m.Field.Type == nil {
 					continue
 				}
-				typ := ""
-				switch *m.Field.Type.Simple {
-				case "int":
-					typ = "integer"
-				case "string":
-					typ = "string"
-				default:
-					typ = *m.Field.Type.Simple
+				typ := typeFromRef(m.Field.Type)
+				if typ == "" {
+					continue
 				}
 				fields = append(fields, Field{Name: m.Field.Name, Type: typ})
 			}
@@ -866,12 +877,8 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 		case st.Let != nil:
 			name := sanitize(st.Let.Name)
 			vd := VarDecl{Name: name}
-			if st.Let.Type != nil && st.Let.Type.Simple != nil {
-				if *st.Let.Type.Simple == "int" {
-					vd.Type = "integer"
-				} else if *st.Let.Type.Simple == "string" {
-					vd.Type = "string"
-				}
+			if st.Let.Type != nil {
+				vd.Type = typeFromRef(st.Let.Type)
 			}
 			if st.Let.Value != nil {
 				if call := callFromExpr(st.Let.Value); call != nil && call.Func == "exists" && len(call.Args) == 1 {
@@ -992,31 +999,10 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 				varTypes[vd.Name] = vd.Type
 			}
 		case st.Var != nil:
-			vd := VarDecl{Name: st.Var.Name}
+			name := sanitize(st.Var.Name)
+			vd := VarDecl{Name: name}
 			if st.Var.Type != nil {
-				if st.Var.Type.Simple != nil {
-					if *st.Var.Type.Simple == "int" {
-						vd.Type = "integer"
-					} else if *st.Var.Type.Simple == "string" {
-						vd.Type = "string"
-					}
-				} else if st.Var.Type.Generic != nil && st.Var.Type.Generic.Name == "list" && len(st.Var.Type.Generic.Args) == 1 {
-					arg := st.Var.Type.Generic.Args[0]
-					elem := "integer"
-					if arg.Simple != nil {
-						switch *arg.Simple {
-						case "int":
-							elem = "integer"
-						case "string":
-							elem = "string"
-						case "bool":
-							elem = "boolean"
-						default:
-							elem = *arg.Simple
-						}
-					}
-					vd.Type = "array of " + elem
-				}
+				vd.Type = typeFromRef(st.Var.Type)
 			}
 			if st.Var.Value != nil {
 				ex, err := convertExpr(env, st.Var.Value)
@@ -1222,32 +1208,7 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 			for _, p := range st.Fun.Params {
 				typ := "integer"
 				if p.Type != nil {
-					if p.Type.Simple != nil {
-						switch *p.Type.Simple {
-						case "int":
-							typ = "integer"
-						case "string":
-							typ = "string"
-						default:
-							typ = *p.Type.Simple
-						}
-					} else if p.Type.Generic != nil && p.Type.Generic.Name == "list" && len(p.Type.Generic.Args) == 1 {
-						arg := p.Type.Generic.Args[0]
-						elem := "integer"
-						if arg.Simple != nil {
-							switch *arg.Simple {
-							case "int":
-								elem = "integer"
-							case "string":
-								elem = "string"
-							case "bool":
-								elem = "boolean"
-							default:
-								elem = *arg.Simple
-							}
-						}
-						typ = "array of " + elem
-					}
+					typ = typeFromRef(p.Type)
 				}
 				if strings.HasPrefix(typ, "array of ") {
 					elem := strings.TrimPrefix(typ, "array of ")
@@ -1257,29 +1218,10 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 			}
 			rt := ""
 			if st.Fun.Return != nil {
-				if st.Fun.Return.Simple != nil {
-					if *st.Fun.Return.Simple == "bool" {
-						rt = "boolean"
-					} else if *st.Fun.Return.Simple == "int" {
-						rt = "integer"
-					}
-				} else if st.Fun.Return.Generic != nil && st.Fun.Return.Generic.Name == "list" && len(st.Fun.Return.Generic.Args) == 1 {
-					arg := st.Fun.Return.Generic.Args[0]
-					elem := "integer"
-					if arg.Simple != nil {
-						switch *arg.Simple {
-						case "int":
-							elem = "integer"
-						case "string":
-							elem = "string"
-						case "bool":
-							elem = "boolean"
-						default:
-							elem = *arg.Simple
-						}
-					}
-					alias := pr.addArrayAlias(elem)
-					rt = alias
+				rt = typeFromRef(st.Fun.Return)
+				if strings.HasPrefix(rt, "array of ") {
+					elem := strings.TrimPrefix(rt, "array of ")
+					rt = pr.addArrayAlias(elem)
 				}
 			}
 			pr.Funs = append(pr.Funs, FunDecl{Name: st.Fun.Name, Params: params, ReturnType: rt, Body: fnBody})
@@ -1371,12 +1313,8 @@ func convertBody(env *types.Env, body []*parser.Statement, varTypes map[string]s
 		case st.Let != nil:
 			name := sanitize(st.Let.Name)
 			vd := VarDecl{Name: name}
-			if st.Let.Type != nil && st.Let.Type.Simple != nil {
-				if *st.Let.Type.Simple == "int" {
-					vd.Type = "integer"
-				} else if *st.Let.Type.Simple == "string" {
-					vd.Type = "string"
-				}
+			if st.Let.Type != nil {
+				vd.Type = typeFromRef(st.Let.Type)
 			}
 			if st.Let.Value != nil {
 				ex, err := convertExpr(env, st.Let.Value)
@@ -1397,31 +1335,10 @@ func convertBody(env *types.Env, body []*parser.Statement, varTypes map[string]s
 				varTypes[vd.Name] = vd.Type
 			}
 		case st.Var != nil:
-			vd := VarDecl{Name: st.Var.Name}
+			name := sanitize(st.Var.Name)
+			vd := VarDecl{Name: name}
 			if st.Var.Type != nil {
-				if st.Var.Type.Simple != nil {
-					if *st.Var.Type.Simple == "int" {
-						vd.Type = "integer"
-					} else if *st.Var.Type.Simple == "string" {
-						vd.Type = "string"
-					}
-				} else if st.Var.Type.Generic != nil && st.Var.Type.Generic.Name == "list" && len(st.Var.Type.Generic.Args) == 1 {
-					arg := st.Var.Type.Generic.Args[0]
-					elem := "integer"
-					if arg.Simple != nil {
-						switch *arg.Simple {
-						case "int":
-							elem = "integer"
-						case "string":
-							elem = "string"
-						case "bool":
-							elem = "boolean"
-						default:
-							elem = *arg.Simple
-						}
-					}
-					vd.Type = "array of " + elem
-				}
+				vd.Type = typeFromRef(st.Var.Type)
 			}
 			if st.Var.Value != nil {
 				ex, err := convertExpr(env, st.Var.Value)
@@ -2710,6 +2627,40 @@ func elemType(t string) string {
 	return ""
 }
 
+func typeFromRef(tr *parser.TypeRef) string {
+	if tr == nil {
+		return ""
+	}
+	if tr.Simple != nil {
+		switch *tr.Simple {
+		case "int":
+			return "integer"
+		case "string":
+			return "string"
+		case "bool":
+			return "boolean"
+		default:
+			return *tr.Simple
+		}
+	}
+	if tr.Generic != nil && tr.Generic.Name == "list" && len(tr.Generic.Args) == 1 {
+		elem := typeFromRef(tr.Generic.Args[0])
+		if strings.HasPrefix(elem, "array of ") {
+			alias := currProg.addArrayAlias(strings.TrimPrefix(elem, "array of "))
+			return "array of " + alias
+		}
+		return "array of " + elem
+	}
+	if tr.Struct != nil {
+		var fields []Field
+		for _, f := range tr.Struct.Fields {
+			fields = append(fields, Field{Name: f.Name, Type: typeFromRef(f.Type)})
+		}
+		return ensureRecord(fields)
+	}
+	return ""
+}
+
 func CurrentVarTypesDebug() map[string]string { return currentVarTypes }
 
 func convertUnary(env *types.Env, u *parser.Unary) (Expr, error) {
@@ -2975,6 +2926,9 @@ func convertPrimary(env *types.Env, p *parser.Primary) (Expr, error) {
 			currProg.UseSysUtils = true
 			currProg.UseNow = true
 			return &CallExpr{Name: "_now", Args: nil}, nil
+		} else if name == "input" && len(args) == 0 {
+			currProg.UseInput = true
+			return &CallExpr{Name: "_input", Args: nil}, nil
 		} else if name == "append" && len(args) == 2 {
 			return &CallExpr{Name: "concat", Args: []Expr{args[0], &ListLit{Elems: []Expr{args[1]}}}}, nil
 		}
