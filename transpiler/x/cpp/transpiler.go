@@ -690,10 +690,19 @@ func emitToStream(w io.Writer, stream string, e Expr, indent int) {
 	typ := exprType(e)
 	switch {
 	case strings.HasPrefix(typ, "std::vector<"):
+		elem := elementTypeFromListType(typ)
 		io.WriteString(w, ind+"{")
 		io.WriteString(w, " auto __tmp = ")
 		e.emit(w)
-		io.WriteString(w, "; "+stream+" << \"[\"; for(size_t i=0;i<__tmp.size();++i){ if(i>0) "+stream+" << \", \"; "+stream+" << __tmp[i]; } "+stream+" << \"]\"; }")
+		io.WriteString(w, "; "+stream+" << \"[\"; for(size_t i=0;i<__tmp.size();++i){ if(i>0) "+stream+" << \", \"; ")
+		if strings.HasPrefix(elem, "std::vector<") || strings.HasPrefix(elem, "std::map<") || strings.HasPrefix(elem, "std::optional<") {
+			io.WriteString(w, "{ std::ostringstream __ss; ")
+			emitToStream(w, "__ss", &IndexExpr{Target: &VarRef{Name: "__tmp"}, Index: &VarRef{Name: "i"}}, indent)
+			io.WriteString(w, " "+stream+" << __ss.str(); }")
+		} else {
+			io.WriteString(w, stream+" << __tmp[i]")
+		}
+		io.WriteString(w, "; } "+stream+" << \"]\"; }")
 		io.WriteString(w, "\n")
 	case strings.HasPrefix(typ, "std::optional<"):
 		io.WriteString(w, ind+"{")
@@ -979,11 +988,20 @@ func (s *SumExpr) emit(w io.Writer) {
 }
 
 func (a *AppendExpr) emit(w io.Writer) {
+	listType := exprType(a.List)
+	elemType := elementTypeFromListType(listType)
+	valType := exprType(a.Elem)
+	if listType == "std::vector<int>" && strings.HasPrefix(valType, "std::vector<") {
+		listType = fmt.Sprintf("std::vector<%s>", elementTypeFromListType(valType))
+		if vr, ok := a.List.(*VarRef); ok && localTypes != nil {
+			localTypes[vr.Name] = listType
+		}
+		elemType = valType
+	}
 	io.WriteString(w, "([&]{ auto __tmp = ")
 	a.List.emit(w)
 	io.WriteString(w, "; __tmp.push_back(")
-	elemType := elementTypeFromListType(exprType(a.List))
-	if et := exprType(a.Elem); et != elemType && elemType != "auto" {
+	if et := valType; et != elemType && elemType != "auto" {
 		io.WriteString(w, "("+elemType+")")
 	}
 	a.Elem.emit(w)
@@ -4755,6 +4773,15 @@ func exprType(e Expr) string {
 		return "std::string"
 	case *InputExpr:
 		return "std::string"
+	case *SliceExpr:
+		t := exprType(v.Target)
+		if strings.HasPrefix(t, "std::vector<") {
+			return t
+		}
+		if t == "std::string" {
+			return "std::string"
+		}
+		return "auto"
 	case *SumExpr:
 		return "double"
 	case *MultiListComp:
