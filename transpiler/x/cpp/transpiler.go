@@ -787,7 +787,12 @@ func (l *ListLit) emit(w io.Writer) {
 		io.WriteString(w, "{}")
 		return
 	}
-	io.WriteString(w, "std::vector{")
+	elemTyp := exprType(l.Elems[0])
+	if strings.HasPrefix(elemTyp, "std::vector<") {
+		io.WriteString(w, "std::vector<"+elemTyp+">{")
+	} else {
+		io.WriteString(w, "std::vector{")
+	}
 	for i, e := range l.Elems {
 		if i > 0 {
 			io.WriteString(w, ", ")
@@ -1018,11 +1023,11 @@ func (a *AppendExpr) emit(w io.Writer) {
 	elemType := elementTypeFromListType(listType)
 	valType := exprType(a.Elem)
 	if listType == "std::vector<int>" && strings.HasPrefix(valType, "std::vector<") {
-		listType = fmt.Sprintf("std::vector<%s>", valType)
+		listType = "std::vector<std::vector<int>>"
 		if vr, ok := a.List.(*VarRef); ok && localTypes != nil {
 			localTypes[vr.Name] = listType
 		}
-		elemType = valType
+		elemType = "std::vector<int>"
 	}
 	io.WriteString(w, "([&]{ auto __tmp = ")
 	a.List.emit(w)
@@ -1049,9 +1054,17 @@ func (s *StrExpr) emit(w io.Writer) {
 	if currentProgram != nil {
 		currentProgram.addInclude("<sstream>")
 	}
-	io.WriteString(w, "([&]{ std::ostringstream ss; ss<<")
-	s.Value.emit(w)
-	io.WriteString(w, "; return ss.str(); }())")
+	io.WriteString(w, "([&]{ std::ostringstream ss; ")
+	if exprType(s.Value) == "std::any" {
+		io.WriteString(w, "any_to_stream(ss, ")
+		s.Value.emit(w)
+		io.WriteString(w, ");")
+	} else {
+		io.WriteString(w, "ss<<")
+		s.Value.emit(w)
+		io.WriteString(w, ";")
+	}
+	io.WriteString(w, " return ss.str(); }())")
 }
 
 func (v *ValuesExpr) emit(w io.Writer) {
@@ -2418,7 +2431,7 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 					lt := exprType(ap.List)
 					et := exprType(ap.Elem)
 					if lt == "std::vector<int>" && strings.HasPrefix(et, "std::vector<") {
-						newType := fmt.Sprintf("std::vector<%s>", et)
+						newType := "std::vector<std::vector<int>>"
 						if ls, ok2 := currentVarDecls[stmt.Assign.Name]; ok2 {
 							ls.Type = newType
 						}
@@ -2723,6 +2736,19 @@ func convertStmt(s *parser.Statement) (Stmt, error) {
 		val, err := convertExpr(s.Assign.Value)
 		if err != nil {
 			return nil, err
+		}
+		if ap, ok := val.(*AppendExpr); ok {
+			lt := exprType(ap.List)
+			et := exprType(ap.Elem)
+			if lt == "std::vector<int>" && strings.HasPrefix(et, "std::vector<") {
+				newType := "std::vector<std::vector<int>>"
+				if ls, ok2 := currentVarDecls[s.Assign.Name]; ok2 {
+					ls.Type = newType
+				}
+				if localTypes != nil {
+					localTypes[s.Assign.Name] = newType
+				}
+			}
 		}
 		if len(s.Assign.Index) > 0 {
 			parts := s.Assign.Index
