@@ -2,9 +2,9 @@
 
 Generated PHP code from Mochi Rosetta tasks lives in `tests/rosetta/transpiler/php`.
 
-Last updated: 2025-07-24 14:02 +0700
+Last updated: 2025-07-24 15:19 +0700
 
-## Checklist (102/284)
+## Checklist (117/284)
 - [x] 1 100-doors-2
 - [x] 2 100-doors-3
 - [x] 3 100-doors
@@ -109,21 +109,21 @@ Last updated: 2025-07-24 14:02 +0700
 - [x] 102 base64-decode-data
 - [x] 103 bell-numbers
 - [x] 104 benfords-law
-- [ ] 105 bernoulli-numbers
-- [ ] 106 best-shuffle
-- [ ] 107 bifid-cipher
-- [ ] 108 bin-given-limits
-- [ ] 109 binary-digits
-- [ ] 110 binary-search
-- [ ] 111 binary-strings
-- [ ] 112 bioinformatics-base-count
-- [ ] 113 bioinformatics-global-alignment
-- [ ] 114 bioinformatics-sequence-mutation
-- [ ] 115 biorhythms
-- [ ] 116 bitcoin-address-validation
-- [ ] 117 bitmap-b-zier-curves-cubic
-- [ ] 118 bitmap-b-zier-curves-quadratic
-- [ ] 119 bitmap-bresenhams-line-algorithm
+- [x] 105 bernoulli-numbers
+- [x] 106 best-shuffle
+- [x] 107 bifid-cipher
+- [x] 108 bin-given-limits
+- [x] 109 binary-digits
+- [x] 110 binary-search
+- [x] 111 binary-strings
+- [x] 112 bioinformatics-base-count
+- [x] 113 bioinformatics-global-alignment
+- [x] 114 bioinformatics-sequence-mutation
+- [x] 115 biorhythms
+- [x] 116 bitcoin-address-validation
+- [x] 117 bitmap-b-zier-curves-cubic
+- [x] 118 bitmap-b-zier-curves-quadratic
+- [x] 119 bitmap-bresenhams-line-algorithm
 - [ ] 120 bitmap-flood-fill
 - [ ] 121 bitmap-histogram
 - [ ] 122 bitmap-midpoint-circle-algorithm

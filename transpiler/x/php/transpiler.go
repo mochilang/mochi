@@ -60,6 +60,16 @@ const helperLen = `function _len($x) {
 }`
 
 const helperBigRat = `function _gcd($a, $b) {
+    if (function_exists('bcadd')) {
+        if (bccomp($a, '0') < 0) $a = bcsub('0', $a);
+        if (bccomp($b, '0') < 0) $b = bcsub('0', $b);
+        while (bccomp($b, '0') != 0) {
+            $t = bcmod($a, $b);
+            $a = $b;
+            $b = $t;
+        }
+        return $a;
+    }
     $a = abs($a);
     $b = abs($b);
     while ($b != 0) {
@@ -74,20 +84,46 @@ function _bigrat($n, $d = 1) {
         return $n;
     }
     if ($d === null) { $d = 1; }
+    if (function_exists('bcadd')) {
+        $n = (string)$n; $d = (string)$d;
+        if (bccomp($d, '0') < 0) { $n = bcsub('0', $n); $d = bcsub('0', $d); }
+        $g = _gcd($n, $d);
+        return ['num' => bcdiv($n, $g, 0), 'den' => bcdiv($d, $g, 0)];
+    }
     if ($d < 0) { $n = -$n; $d = -$d; }
     $g = _gcd($n, $d);
     return ['num' => intdiv($n, $g), 'den' => intdiv($d, $g)];
 }
 function _add($a, $b) {
+    if (function_exists('bcadd')) {
+        $n = bcadd(bcmul(num($a), denom($b)), bcmul(num($b), denom($a)));
+        $d = bcmul(denom($a), denom($b));
+        return _bigrat($n, $d);
+    }
     return _bigrat(num($a) * denom($b) + num($b) * denom($a), denom($a) * denom($b));
 }
 function _sub($a, $b) {
+    if (function_exists('bcadd')) {
+        $n = bcsub(bcmul(num($a), denom($b)), bcmul(num($b), denom($a)));
+        $d = bcmul(denom($a), denom($b));
+        return _bigrat($n, $d);
+    }
     return _bigrat(num($a) * denom($b) - num($b) * denom($a), denom($a) * denom($b));
 }
 function _mul($a, $b) {
+    if (function_exists('bcadd')) {
+        $n = bcmul(num($a), num($b));
+        $d = bcmul(denom($a), denom($b));
+        return _bigrat($n, $d);
+    }
     return _bigrat(num($a) * num($b), denom($a) * denom($b));
 }
 function _div($a, $b) {
+    if (function_exists('bcadd')) {
+        $n = bcmul(num($a), denom($b));
+        $d = bcmul(denom($a), num($b));
+        return _bigrat($n, $d);
+    }
     return _bigrat(num($a) * denom($b), denom($a) * num($b));
 }
 function num($x) {
@@ -96,7 +132,7 @@ function num($x) {
 }
 function denom($x) {
     if (is_array($x) && array_key_exists('den', $x)) return $x['den'];
-    return 1;
+    return function_exists('bcadd') ? '1' : 1;
 }`
 
 var usesLookupHost bool
@@ -1612,6 +1648,14 @@ func convertBinary(b *parser.BinaryExpr) (Expr, error) {
 				usesBigRat = true
 				return &CallExpr{Func: "_sub", Args: []Expr{left, right}}, false
 			}
+			if _, ok := left.(*IndexExpr); ok {
+				usesBigRat = true
+				return &CallExpr{Func: "_sub", Args: []Expr{left, right}}, false
+			}
+			if _, ok := right.(*IndexExpr); ok {
+				usesBigRat = true
+				return &CallExpr{Func: "_sub", Args: []Expr{left, right}}, false
+			}
 			return &BinaryExpr{Left: left, Op: "-", Right: right}, false
 		case "*":
 			if isBigRatExpr(left) || isBigRatExpr(right) {
@@ -2228,6 +2272,10 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 	case st.Let != nil:
 		var val Expr
 		if st.Let.Value != nil {
+			if len(funcStack) > 0 {
+				funcStack[len(funcStack)-1] = append(funcStack[len(funcStack)-1], st.Let.Name)
+				defer func() { funcStack[len(funcStack)-1] = funcStack[len(funcStack)-1][:len(funcStack[len(funcStack)-1])-1] }()
+			}
 			v, err := convertExpr(st.Let.Value)
 			if err != nil {
 				return nil, err
@@ -2274,6 +2322,10 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 	case st.Var != nil:
 		var val Expr
 		if st.Var.Value != nil {
+			if len(funcStack) > 0 {
+				funcStack[len(funcStack)-1] = append(funcStack[len(funcStack)-1], st.Var.Name)
+				defer func() { funcStack[len(funcStack)-1] = funcStack[len(funcStack)-1][:len(funcStack[len(funcStack)-1])-1] }()
+			}
 			v, err := convertExpr(st.Var.Value)
 			if err != nil {
 				return nil, err
@@ -3315,6 +3367,10 @@ func isBigRatExpr(e Expr) bool {
 		return isBigRatExpr(v.X)
 	case *CondExpr:
 		return isBigRatExpr(v.Then) && isBigRatExpr(v.Else)
+	case *IndexExpr:
+		if _, ok := exprType(v).(types.BigRatType); ok {
+			return true
+		}
 	}
 	if _, ok := exprType(e).(types.BigRatType); ok {
 		return true
