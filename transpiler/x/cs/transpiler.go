@@ -77,6 +77,8 @@ var globalDecls map[string]*Global
 var mutatedVars map[string]bool
 var blockDepth int
 var importAliases map[string]string
+var varAliases map[string]string
+var aliasCounter int
 
 // reserved lists C# reserved keywords that cannot be used as identifiers.
 var reserved = map[string]bool{
@@ -555,11 +557,20 @@ func (b *BinaryExpr) emit(w io.Writer) {
 		b.Right.emit(w)
 		fmt.Fprint(w, ").ToArray())")
 	default:
-		fmt.Fprint(w, "(")
-		b.Left.emit(w)
-		fmt.Fprintf(w, " %s ", b.Op)
-		b.Right.emit(w)
-		fmt.Fprint(w, ")")
+		if b.Op == "+" && isListExpr(b.Left) && isListExpr(b.Right) {
+			usesLinq = true
+			fmt.Fprint(w, "(")
+			b.Left.emit(w)
+			fmt.Fprint(w, ".Concat(")
+			b.Right.emit(w)
+			fmt.Fprint(w, ").ToArray())")
+		} else {
+			fmt.Fprint(w, "(")
+			b.Left.emit(w)
+			fmt.Fprintf(w, " %s ", b.Op)
+			b.Right.emit(w)
+			fmt.Fprint(w, ")")
+		}
 	}
 }
 
@@ -920,6 +931,24 @@ func isMapExpr(e Expr) bool {
 		}
 	}
 	return false
+}
+
+func isListExpr(e Expr) bool {
+	switch ex := e.(type) {
+	case *ListLit:
+		return true
+	case *SliceExpr:
+		return true
+	case *AppendExpr:
+		return true
+	case *VarRef:
+		if t, ok := varTypes[ex.Name]; ok {
+			return strings.HasSuffix(t, "[]")
+		}
+	case *RawExpr:
+		return strings.HasSuffix(ex.Type, "[]")
+	}
+	return strings.HasSuffix(typeOfExpr(e), "[]")
 }
 
 func isStructExpr(e Expr) bool {
@@ -1356,8 +1385,11 @@ func mapTypes(m *MapLit) (string, string) {
 }
 
 func listType(l *ListLit) string {
-	if len(l.Elems) == 0 && l.ElemType != "" {
-		return l.ElemType
+	if len(l.Elems) == 0 {
+		if l.ElemType != "" {
+			return l.ElemType
+		}
+		return "object[]"
 	}
 	elemType := ""
 	for i, e := range l.Elems {
@@ -1648,6 +1680,8 @@ func Transpile(p *parser.Program, env *types.Env) (*Program, error) {
 	globalDecls = make(map[string]*Global)
 	mutatedVars = make(map[string]bool)
 	importAliases = make(map[string]string)
+	varAliases = make(map[string]string)
+	aliasCounter = 0
 	for _, st := range p.Statements {
 		s, err := compileStmt(prog, st)
 		if err != nil {
@@ -1819,7 +1853,7 @@ func compilePostfix(p *parser.PostfixExpr) (Expr, error) {
 					return nil, err
 				}
 			} else {
-				end = &CallExpr{Func: "len", Args: []Expr{expr}}
+				end = &LenExpr{Arg: expr}
 			}
 			if isStringExpr(expr) {
 				expr = &SubstringExpr{Str: expr, Start: start, End: end}
@@ -1996,8 +2030,13 @@ func compileStmt(prog *Program, s *parser.Statement) (Stmt, error) {
 			varTypes[s.Var.Name] = csType(s.Var.Type)
 		}
 		if list, ok := val.(*ListLit); ok {
-			if len(list.Elems) == 0 && s.Var.Type != nil && s.Var.Type.Generic != nil && s.Var.Type.Generic.Name == "list" && len(s.Var.Type.Generic.Args) == 1 {
-				list.ElemType = fmt.Sprintf("%s[]", csType(s.Var.Type.Generic.Args[0]))
+			if len(list.Elems) == 0 {
+				if s.Var.Type != nil && s.Var.Type.Generic != nil && s.Var.Type.Generic.Name == "list" && len(s.Var.Type.Generic.Args) == 1 {
+					list.ElemType = fmt.Sprintf("%s[]", csType(s.Var.Type.Generic.Args[0]))
+				} else {
+					list.ElemType = "object[]"
+					varTypes[s.Var.Name] = "object[]"
+				}
 			}
 			_ = list // do not convert mutable vars to structs
 		}
@@ -2038,7 +2077,7 @@ func compileStmt(prog *Program, s *parser.Statement) (Stmt, error) {
 				return nil, err
 			}
 			if app, ok := val.(*AppendExpr); ok {
-				if vt, ok2 := varTypes[s.Assign.Name]; ok2 && (vt == "" || vt == "object[]") {
+				if vt, ok2 := varTypes[s.Assign.Name]; ok2 {
 					item := app.Item
 					if mp, ok3 := item.(*MapLit); ok3 {
 						if len(mp.Items) > 2 {
@@ -2049,7 +2088,18 @@ func compileStmt(prog *Program, s *parser.Statement) (Stmt, error) {
 					}
 					t := typeOfExpr(item)
 					if t != "" {
-						varTypes[s.Assign.Name] = t + "[]"
+						if vt == "" || vt == "object[]" {
+							varTypes[s.Assign.Name] = t + "[]"
+						} else if strings.HasSuffix(vt, "[]") {
+							cur := strings.TrimSuffix(vt, "[]")
+							if cur != t {
+								if cur == "int" && t == "double" {
+									varTypes[s.Assign.Name] = "double[]"
+								} else {
+									varTypes[s.Assign.Name] = "object[]"
+								}
+							}
+						}
 						if g, ok3 := globalDecls[s.Assign.Name]; ok3 {
 							g.Value = &RawExpr{Code: fmt.Sprintf("new %s{}", varTypes[s.Assign.Name])}
 						}
@@ -2199,7 +2249,12 @@ func compileStmt(prog *Program, s *parser.Statement) (Stmt, error) {
 		return &ContinueStmt{}, nil
 	case s.For != nil:
 		if s.For.RangeEnd != nil {
+			savedVar := varTypes[s.For.Name]
+			savedAlias := varAliases[s.For.Name]
 			varTypes[s.For.Name] = "int"
+			alias := fmt.Sprintf("%s_%d", s.For.Name, aliasCounter)
+			aliasCounter++
+			varAliases[s.For.Name] = alias
 			start, err := compileExpr(s.For.Source)
 			if err != nil {
 				return nil, err
@@ -2220,8 +2275,21 @@ func compileStmt(prog *Program, s *parser.Statement) (Stmt, error) {
 				}
 			}
 			blockDepth--
-			return &ForRangeStmt{Var: s.For.Name, Start: start, End: end, Body: body}, nil
+			stmt := &ForRangeStmt{Var: alias, Start: start, End: end, Body: body}
+			if savedVar == "" {
+				delete(varTypes, s.For.Name)
+			} else {
+				varTypes[s.For.Name] = savedVar
+			}
+			if savedAlias == "" {
+				delete(varAliases, s.For.Name)
+			} else {
+				varAliases[s.For.Name] = savedAlias
+			}
+			return stmt, nil
 		}
+		savedVar := varTypes[s.For.Name]
+		savedAlias := varAliases[s.For.Name]
 		iterable, err := compileExpr(s.For.Source)
 		if err != nil {
 			return nil, err
@@ -2235,6 +2303,9 @@ func compileStmt(prog *Program, s *parser.Statement) (Stmt, error) {
 				varTypes[s.For.Name] = strings.TrimSuffix(t, "[]")
 			}
 		}
+		alias := fmt.Sprintf("%s_%d", s.For.Name, aliasCounter)
+		aliasCounter++
+		varAliases[s.For.Name] = alias
 		var body []Stmt
 		blockDepth++
 		for _, b := range s.For.Body {
@@ -2247,7 +2318,18 @@ func compileStmt(prog *Program, s *parser.Statement) (Stmt, error) {
 			}
 		}
 		blockDepth--
-		return &ForInStmt{Var: s.For.Name, Iterable: iterable, Body: body}, nil
+		stmt := &ForInStmt{Var: alias, Iterable: iterable, Body: body}
+		if savedVar == "" {
+			delete(varTypes, s.For.Name)
+		} else {
+			varTypes[s.For.Name] = savedVar
+		}
+		if savedAlias == "" {
+			delete(varAliases, s.For.Name)
+		} else {
+			varAliases[s.For.Name] = savedAlias
+		}
+		return stmt, nil
 	case s.While != nil:
 		cond, err := compileExpr(s.While.Cond)
 		if err != nil {
@@ -2469,6 +2551,10 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 				usesLinq = true
 				return &AvgExpr{Arg: args[0]}, nil
 			}
+		case "abs":
+			if len(args) == 1 {
+				return &CallExpr{Func: "Math.Abs", Args: []Expr{args[0]}}, nil
+			}
 		case "len":
 			if len(args) == 1 {
 				return &LenExpr{Arg: args[0]}, nil
@@ -2597,7 +2683,11 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 	case p.Match != nil:
 		return compileMatchExpr(p.Match)
 	case p.Selector != nil:
-		expr := Expr(&VarRef{Name: p.Selector.Root})
+		name := p.Selector.Root
+		if alias, ok := varAliases[name]; ok {
+			name = alias
+		}
+		expr := Expr(&VarRef{Name: name})
 		for _, t := range p.Selector.Tail {
 			expr = &FieldExpr{Target: expr, Name: t}
 		}
