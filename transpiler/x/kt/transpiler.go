@@ -621,7 +621,19 @@ type CastExpr struct {
 }
 
 func (c *CastExpr) emit(w io.Writer) {
-	c.Value.emit(w)
+	needParens := false
+	switch c.Value.(type) {
+	case *BinaryExpr, *CastExpr, *IndexExpr, *CallExpr, *FieldExpr,
+		*UnionExpr, *UnionAllExpr, *ExceptExpr, *IntersectExpr:
+		needParens = true
+	}
+	if needParens {
+		io.WriteString(w, "(")
+		c.Value.emit(w)
+		io.WriteString(w, ")")
+	} else {
+		c.Value.emit(w)
+	}
 	switch c.Type {
 	case "int":
 		io.WriteString(w, ".toInt()")
@@ -1832,8 +1844,10 @@ func kotlinType(t *parser.TypeRef) string {
 
 func kotlinTypeFromType(t types.Type) string {
 	switch tt := t.(type) {
-	case types.IntType, *types.IntType, types.Int64Type, *types.Int64Type:
+	case types.IntType, *types.IntType:
 		return "Int"
+	case types.Int64Type, *types.Int64Type:
+		return "Long"
 	case types.BigIntType, *types.BigIntType:
 		useHelper("importBigInt")
 		return "BigInteger"
@@ -1884,6 +1898,9 @@ func kotlinTypeFromType(t types.Type) string {
 func guessType(e Expr) string {
 	switch v := e.(type) {
 	case *IntLit:
+		if v.Value > 2147483647 || v.Value < -2147483648 {
+			return "Long"
+		}
 		return "Int"
 	case *FloatLit:
 		return "Double"
@@ -2274,6 +2291,13 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 				if typ == "" {
 					typ = guessType(val)
 				}
+				if typ == "Int" {
+					if lit, ok := val.(*IntLit); ok {
+						if lit.Value > 2147483647 || lit.Value < -2147483648 {
+							typ = "Long"
+						}
+					}
+				}
 				if typ == "Any" {
 					typ = ""
 				}
@@ -2314,6 +2338,13 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 				}
 				if typ == "" {
 					typ = guessType(val)
+				}
+				if typ == "Int" {
+					if lit, ok := val.(*IntLit); ok {
+						if lit.Value > 2147483647 || lit.Value < -2147483648 {
+							typ = "Long"
+						}
+					}
 				}
 				if typ == "Any" {
 					typ = ""
@@ -2649,6 +2680,13 @@ func convertStmts(env *types.Env, list []*parser.Statement) ([]Stmt, error) {
 				}
 				if typ == "" {
 					typ = guessType(v)
+				}
+				if typ == "Int" {
+					if lit, ok := v.(*IntLit); ok {
+						if lit.Value > 2147483647 || lit.Value < -2147483648 {
+							typ = "Long"
+						}
+					}
 				}
 				if typ == "Any" {
 					// prefer type inference over explicit Any
