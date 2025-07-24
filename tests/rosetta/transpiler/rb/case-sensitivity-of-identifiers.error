@@ -1,0 +1,11 @@
+run: exit status 1
+/workspace/mochi/tests/rosetta/transpiler/rb/case-sensitivity-of-identifiers.rb: /workspace/mochi/tests/rosetta/transpiler/rb/case-sensitivity-of-identifiers.rb:20: dynamic constant assignment (SyntaxError)
+  Dog = "Pepper"
+  ^~~
+/workspace/mochi/tests/rosetta/transpiler/rb/case-sensitivity-of-identifiers.rb:35: dynamic constant assignment
+  Dog = "Samba"
+  ^~~
+/workspace/mochi/tests/rosetta/transpiler/rb/case-sensitivity-of-identifiers.rb:42: dynamic constant assignment
+  DOG = "Bernie"
+  ^~~
+

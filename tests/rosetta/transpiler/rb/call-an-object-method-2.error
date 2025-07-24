@@ -1,0 +1,8 @@
+run: exit status 1
+/workspace/mochi/tests/rosetta/transpiler/rb/call-an-object-method-2.rb: /workspace/mochi/tests/rosetta/transpiler/rb/call-an-object-method-2.rb:20: dynamic constant assignment (SyntaxError)
+  New = ->() {
+  ^~~
+/workspace/mochi/tests/rosetta/transpiler/rb/call-an-object-method-2.rb:32: dynamic constant assignment
+  Count = ->() {
+  ^~~~~
+
