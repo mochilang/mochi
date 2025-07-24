@@ -1143,9 +1143,21 @@ func (b *BinaryExpr) emit(w io.Writer) {
 		if lt == "double" || rt == "double" {
 			typ = "double"
 		}
-		emitCastExpr(w, b.Left, typ)
+		if lt == "" {
+			fmt.Fprint(w, "((Number)(")
+			b.Left.emit(w)
+			fmt.Fprint(w, ")).doubleValue()")
+		} else {
+			emitCastExpr(w, b.Left, typ)
+		}
 		fmt.Fprint(w, " "+b.Op+" ")
-		emitCastExpr(w, b.Right, typ)
+		if rt == "" {
+			fmt.Fprint(w, "((Number)(")
+			b.Right.emit(w)
+			fmt.Fprint(w, ")).doubleValue()")
+		} else {
+			emitCastExpr(w, b.Right, typ)
+		}
 		return
 	}
 
@@ -2176,6 +2188,17 @@ func compileStmt(s *parser.Statement) (Stmt, error) {
 					}
 				}
 			}
+			if t == "" {
+				if ce, ok := e.(*CallExpr); ok {
+					if ret, ok2 := funcRet[ce.Func]; ok2 {
+						t = ret
+					} else if topEnv != nil {
+						if fn, ok3 := topEnv.GetFunc(ce.Func); ok3 {
+							t = typeRefString(fn.Return)
+						}
+					}
+				}
+			}
 			if t == "" && topEnv != nil {
 				t = toJavaTypeFromType(types.ExprType(s.Let.Value, topEnv))
 			}
@@ -2911,6 +2934,12 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 			return &AvgExpr{Value: args[0]}, nil
 		}
 		if name == "sum" && len(args) == 1 {
+			if topEnv != nil {
+				if _, ok := topEnv.GetFunc("sum"); ok {
+					// User-defined function takes precedence
+					return &CallExpr{Func: name, Args: args}, nil
+				}
+			}
 			return &SumExpr{Value: args[0]}, nil
 		}
 		if name == "int" && len(args) == 1 {

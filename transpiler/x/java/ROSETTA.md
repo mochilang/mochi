@@ -2,7 +2,7 @@
 
 Generated Java code for programs in `tests/rosetta/x/Mochi`. Each program has a `.java` file produced by the transpiler and a `.out` file with its runtime output. Compilation or execution errors are captured in `.error` files.
 
-## Rosetta Checklist (34/284) - updated 2025-07-24 13:05 UTC
+## Rosetta Checklist (36/284) - updated 2025-07-24 13:20 UTC
 1. [x] 100-doors-2 (1)
 2. [x] 100-doors-3 (2)
 3. [x] 100-doors (3)
@@ -27,8 +27,8 @@ Generated Java code for programs in `tests/rosetta/x/Mochi`. Each program has a 
 22. [x] abelian-sandpile-model (22)
 23. [x] abstract-type (23)
 24. [x] abundant-deficient-and-perfect-number-classifications (24)
-25. [ ] abundant-odd-numbers (25)
-26. [ ] accumulator-factory (26)
+25. [x] abundant-odd-numbers (25)
+26. [x] accumulator-factory (26)
 27. [ ] achilles-numbers (27)
 28. [x] ackermann-function-2 (28)
 29. [ ] ackermann-function-3 (29)
