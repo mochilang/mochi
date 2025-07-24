@@ -1,3 +1,27 @@
+## Progress (2025-07-24 19:09 +0700)
+- go transpiler: add binary-search
+- Regenerated golden files - 103/103 vm valid programs passing
+
+## Progress (2025-07-24 19:09 +0700)
+- go transpiler: add binary-search
+- Regenerated golden files - 103/103 vm valid programs passing
+
+## Progress (2025-07-24 19:09 +0700)
+- go transpiler: add binary-search
+- Regenerated golden files - 103/103 vm valid programs passing
+
+## Progress (2025-07-24 19:09 +0700)
+- go transpiler: add binary-digits
+- Regenerated golden files - 103/103 vm valid programs passing
+
+## Progress (2025-07-24 19:08 +0700)
+- go transpiler: add bin-given-limits
+- Regenerated golden files - 103/103 vm valid programs passing
+
+## Progress (2025-07-24 18:57 +0700)
+- java transpiler: support function types
+- Regenerated golden files - 103/103 vm valid programs passing
+
 ## Progress (2025-07-24 16:14 +0700)
 - cs transpiler: handle string slice from list
 - Regenerated golden files - 103/103 vm valid programs passing

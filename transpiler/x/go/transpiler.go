@@ -39,6 +39,7 @@ type Program struct {
 	UseBigInt    bool
 	UseBigRat    bool
 	UseLenAny    bool
+	UseReflect   bool
 }
 
 var (
@@ -55,6 +56,7 @@ var (
 	usesBigInt     bool
 	usesBigRat     bool
 	usesLenAny     bool
+	usesReflect    bool
 	topEnv         *types.Env
 	extraDecls     []Stmt
 	structCount    int
@@ -1726,6 +1728,7 @@ func Transpile(p *parser.Program, env *types.Env) (*Program, error) {
 	gp.UseBigInt = usesBigInt
 	gp.UseBigRat = usesBigRat
 	gp.UseLenAny = usesLenAny
+	gp.UseReflect = usesReflect
 	gp.Imports = imports
 	return gp, nil
 }
@@ -2005,17 +2008,15 @@ func compileStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 				}
 			}
 			var valType types.Type
-			if typ == "" {
-				valType = types.TypeOfExpr(st.Var.Value, env)
-				if types.IsAnyType(valType) {
-					valType = types.TypeOfExprBasic(st.Var.Value, env)
-				}
+			valType = types.TypeOfExpr(st.Var.Value, env)
+			if types.IsAnyType(valType) {
+				valType = types.TypeOfExprBasic(st.Var.Value, env)
+			}
+			if typ == "" || typ == "[]any" || typ == "map[string]any" {
 				typ = toGoTypeFromType(valType)
 				if _, ok := valType.(types.FuncType); ok {
 					typ = ""
 				}
-			} else {
-				valType = types.TypeOfExpr(st.Var.Value, env)
 			}
 			if as, ok := e.(*AssertExpr); ok && typ == "" && types.IsAnyType(valType) {
 				typ = as.Type
@@ -3253,6 +3254,15 @@ func boolExprFor(e Expr, t types.Type) Expr {
 	}
 }
 
+func isCompositeType(t types.Type) bool {
+	switch t.(type) {
+	case types.ListType, types.MapType, types.StructType, types.UnionType, types.GroupType:
+		return true
+	default:
+		return false
+	}
+}
+
 func compileWhileStmt(ws *parser.WhileStmt, env *types.Env) (Stmt, error) {
 	condExpr, err := compileExpr(ws.Cond, env, "")
 	if err != nil {
@@ -3633,6 +3643,16 @@ func compileBinary(b *parser.BinaryExpr, env *types.Env, base string) (Expr, err
 							newExpr = &BigBinaryExpr{Left: left, Op: ops[i].Op, Right: right}
 						case "<", "<=", ">", ">=", "==", "!=":
 							newExpr = &BigCmpExpr{Left: left, Op: ops[i].Op, Right: right}
+						}
+					}
+					if newExpr == nil && (ops[i].Op == "==" || ops[i].Op == "!=") &&
+						(isCompositeType(typesList[i]) || isCompositeType(typesList[i+1])) {
+						usesReflect = true
+						cmp := &CallExpr{Func: "reflect.DeepEqual", Args: []Expr{left, right}}
+						if ops[i].Op == "!=" {
+							newExpr = &NotExpr{Expr: cmp}
+						} else {
+							newExpr = cmp
 						}
 					}
 					// list concatenation with +
@@ -4786,6 +4806,9 @@ func Emit(prog *Program) []byte {
 	}
 	if prog.UseSort {
 		buf.WriteString("    \"sort\"\n")
+	}
+	if prog.UseReflect {
+		buf.WriteString("    \"reflect\"\n")
 	}
 	if prog.UseBigInt || prog.UseBigRat {
 		buf.WriteString("    \"math/big\"\n")
