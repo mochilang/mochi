@@ -1,0 +1,6 @@
+string_concat((string_concat(Your numbers: ,(string_concat((string_concat((string_concat((string_concat(,nth0(0,[now()mod 9+1,now()mod 9+1,now()mod 9+1,now()mod 9+1],_5936),_5914),_5914),nth0(1,[now()mod 9+1,now()mod 9+1,now()mod 9+1,now()mod 9+1],_5936),_5914),_5914),nth0(2,[now()mod 9+1,now()mod 9+1,now()mod 9+1,now()mod 9+1],_5936),_5914),_5914),nth0(3,[now()mod 9+1,now()mod 9+1,now()mod 9+1,now()mod 9+1],_5936),_5914),_5914),_5914),_5914),
+,_5914),_5914
+Enter RPN: 
+ERROR: /workspace/mochi/tests/rosetta/transpiler/Prolog/24-game.pl:1: Initialization goal raised exception:
+ERROR: main/1: Unknown procedure: input/1
+

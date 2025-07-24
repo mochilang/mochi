@@ -21,6 +21,7 @@ import (
 )
 
 var usesNow bool
+var usesSlice bool
 
 const helperNow = `
 :- dynamic _now_seed/1.
@@ -45,6 +46,18 @@ _now(T) :-
     ;
         get_time(Time), T is floor(Time*1000000000)
     ).
+`
+
+const helperSlice = `
+_slice(List, Start, End, Result) :-
+    length(List, Len),
+    S is max(Start, 0),
+    E is min(End, Len),
+    L is max(E - S, 0),
+    length(Prefix, S),
+    append(Prefix, Rest, List),
+    length(Result, L),
+    append(Result, _, Rest).
 `
 
 // Program represents a simple Prolog program.
@@ -203,6 +216,10 @@ func builtinCall(env *compileEnv, name string, args []Expr) (Expr, bool) {
 			if fl, ok := args[0].(*FloatLit); ok {
 				return &FloatLit{Value: math.Log(fl.Value)}, true
 			}
+		}
+	case "input":
+		if len(args) == 0 {
+			return &StringLit{Value: ""}, true
 		}
 	case "now":
 		if len(args) == 0 {
@@ -522,7 +539,14 @@ func (p *PrintStmt) emit(w io.Writer, idx int) {
 			e.Start.emit(w)
 			fmt.Fprintf(w, ", L%d, _, R%d), writeln(R%d)", idx, idx, idx)
 		} else {
-			io.WriteString(w, "    writeln(slice_not_supported)")
+			usesSlice = true
+			fmt.Fprintf(w, "    _slice(")
+			e.Target.emit(w)
+			io.WriteString(w, ", ")
+			e.Start.emit(w)
+			io.WriteString(w, ", ")
+			e.End.emit(w)
+			fmt.Fprintf(w, ", R%d), writeln(R%d)", idx, idx)
 		}
 		return
 	case *SubstringExpr:
@@ -758,28 +782,32 @@ func (i *IfStmt) emit(w io.Writer, idx int) {
 	io.WriteString(w, "    (")
 	i.Cond.emit(w)
 	io.WriteString(w, " ->\n")
-	if len(i.Then) == 0 {
-		io.WriteString(w, "true")
-	} else {
-		for j, st := range i.Then {
-			st.emit(w, idx+j)
-			if j < len(i.Then)-1 {
-				io.WriteString(w, ",\n")
-			}
-		}
-	}
+	emitStmtList(w, i.Then, idx)
 	if len(i.Else) > 0 {
 		io.WriteString(w, " ;\n")
-		for j, st := range i.Else {
-			st.emit(w, idx+j)
-			if j < len(i.Else)-1 {
-				io.WriteString(w, ",\n")
-			}
-		}
+		emitStmtList(w, i.Else, idx)
 	} else {
 		io.WriteString(w, " ; true")
 	}
 	io.WriteString(w, ")")
+}
+
+func emitStmtList(w io.Writer, stmts []Stmt, idx int) {
+	first := true
+	for j, st := range stmts {
+		if _, ok := st.(*ReturnStmt); ok {
+			st.emit(w, idx+j)
+			continue
+		}
+		if !first {
+			io.WriteString(w, ",\n")
+		}
+		st.emit(w, idx+j)
+		first = false
+	}
+	if first {
+		io.WriteString(w, "true")
+	}
 }
 
 type Expr interface{ emit(io.Writer) }
@@ -1066,7 +1094,14 @@ func (s *SliceExpr) emit(w io.Writer) {
 		s.Start.emit(w)
 		io.WriteString(w, ", Len, _, R))")
 	} else {
-		io.WriteString(w, "slice_not_supported")
+		usesSlice = true
+		io.WriteString(w, "_slice(")
+		s.Target.emit(w)
+		io.WriteString(w, ", ")
+		s.Start.emit(w)
+		io.WriteString(w, ", ")
+		s.End.emit(w)
+		io.WriteString(w, ", R)")
 	}
 }
 
@@ -1169,6 +1204,8 @@ func (c *CallExpr) emit(w io.Writer) {
 func escape(s string) string {
 	s = strings.ReplaceAll(s, "'", "''")
 	s = strings.ReplaceAll(s, "\"", "\\\"")
+	s = strings.ReplaceAll(s, "\n", "\\n")
+	s = strings.ReplaceAll(s, "\r", "\\r")
 	return s
 }
 
@@ -2109,6 +2146,9 @@ func Emit(w io.Writer, p *Program) error {
 		io.WriteString(w, helperNow+"\n")
 		io.WriteString(w, ":- initialization(init_now).\n")
 	}
+	if usesSlice {
+		io.WriteString(w, helperSlice+"\n")
+	}
 	io.WriteString(w, ":- initialization(main).\n")
 	io.WriteString(w, ":- style_check(-singleton).\n\n")
 	for _, fn := range p.Funcs {
@@ -2905,14 +2945,26 @@ func toPostfix(pf *parser.PostfixExpr, env *compileEnv) (Expr, error) {
 			if op.Index.Step != nil {
 				return nil, fmt.Errorf("unsupported slice")
 			}
-			idxExpr, err := toExpr(op.Index.Start, env)
-			if err != nil {
-				return nil, err
-			}
-			if op.Index.Colon != nil || op.Index.End != nil {
-				endExpr, err := toExpr(op.Index.End, env)
+			var idxExpr Expr
+			if op.Index.Start != nil {
+				var err error
+				idxExpr, err = toExpr(op.Index.Start, env)
 				if err != nil {
 					return nil, err
+				}
+			} else {
+				idxExpr = &IntLit{Value: 0}
+			}
+			if op.Index.Colon != nil || op.Index.End != nil {
+				var endExpr Expr
+				if op.Index.End != nil {
+					var err error
+					endExpr, err = toExpr(op.Index.End, env)
+					if err != nil {
+						return nil, err
+					}
+				} else {
+					endExpr = &LenExpr{Value: expr}
 				}
 				isStr := isStringLike(expr, env)
 				if list, ok := expr.(*ListLit); ok && !isStr {
