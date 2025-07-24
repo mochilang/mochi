@@ -1391,16 +1391,23 @@ func (oj *OuterJoinExpr) emit(w io.Writer) {
 
 // CastExpr represents a simple cast like expr as int.
 type CastExpr struct {
-	Expr Expr
-	Type string
+	Expr       Expr
+	Type       string
+	FromString bool
 }
 
 func (c *CastExpr) emit(w io.Writer) {
 	switch c.Type {
 	case "int":
-		io.WriteString(w, "String.to_integer(")
-		c.Expr.emit(w)
-		io.WriteString(w, ")")
+		if c.FromString {
+			io.WriteString(w, "String.to_integer(")
+			c.Expr.emit(w)
+			io.WriteString(w, ")")
+		} else {
+			io.WriteString(w, "trunc(")
+			c.Expr.emit(w)
+			io.WriteString(w, ")")
+		}
 	default:
 		c.Expr.emit(w)
 	}
@@ -2701,7 +2708,17 @@ func compilePostfix(pf *parser.PostfixExpr, env *types.Env) (Expr, error) {
 						}
 					}
 				} else {
-					expr = &CastExpr{Expr: expr, Type: typName}
+					fromString := false
+					if _, ok := typ.(types.StringType); ok {
+						fromString = true
+					}
+					expr = &CastExpr{Expr: expr, Type: typName, FromString: fromString}
+					switch typName {
+					case "int":
+						typ = types.IntType{}
+					case "float":
+						typ = types.FloatType{}
+					}
 				}
 			} else {
 				return nil, fmt.Errorf("unsupported cast")
@@ -2869,7 +2886,7 @@ func compilePrimary(p *parser.Primary, env *types.Env) (Expr, error) {
 			}
 		case "print":
 			if len(args) == 1 {
-				t := types.TypeOfExprBasic(p.Call.Args[0], env)
+				t := types.TypeOfExpr(p.Call.Args[0], env)
 				switch t.(type) {
 				case types.StringType, types.IntType, types.FloatType, types.BoolType:
 					return &CallExpr{Func: "IO.puts", Args: []Expr{args[0]}}, nil
@@ -2885,7 +2902,7 @@ func compilePrimary(p *parser.Primary, env *types.Env) (Expr, error) {
 					if s, ok := a.(*StringLit); ok {
 						parts = append(parts, s.Value)
 					} else {
-						t := types.TypeOfExprBasic(p.Call.Args[i], env)
+						t := types.TypeOfExpr(p.Call.Args[i], env)
 						switch t.(type) {
 						case types.StringType, types.IntType, types.FloatType, types.BoolType:
 							parts = append(parts, a)
@@ -2915,7 +2932,7 @@ func compilePrimary(p *parser.Primary, env *types.Env) (Expr, error) {
 				t := types.TypeOfExprBasic(p.Call.Args[0], env)
 				if _, ok := t.(types.MapType); ok {
 					name = "map_size"
-				} else if _, ok := t.(types.StringType); ok || (!types.IsMapType(t) && !types.IsListType(t)) {
+				} else if _, ok := t.(types.StringType); ok {
 					name = "String.length"
 				}
 			}
@@ -2962,7 +2979,11 @@ func compilePrimary(p *parser.Primary, env *types.Env) (Expr, error) {
 			}
 		case "substring":
 			if len(args) == 3 {
-				diff := &BinaryExpr{Left: args[2], Op: "-", Right: args[1]}
+				right := args[1]
+				if _, ok := right.(*BinaryExpr); ok {
+					right = &GroupExpr{Expr: right}
+				}
+				diff := &BinaryExpr{Left: args[2], Op: "-", Right: right}
 				return &CallExpr{Func: "String.slice", Args: []Expr{args[0], args[1], diff}}, nil
 			}
 		case "exists":

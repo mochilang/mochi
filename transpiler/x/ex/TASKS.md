@@ -1,5 +1,5 @@
-## Progress (2025-07-24 19:43 +0700)
-- Commit b4d35670d6: cpp transpiler: handle string concat and hetero list
+## Progress (2025-07-24 21:15 +0700)
+- Commit 7ff09a8d47: transpiler/ex: handle numeric casts and substring
 - Generated Elixir for 102/103 programs
 - Updated README checklist and outputs
 - Improved code emission and type inference
