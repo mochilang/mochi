@@ -2,7 +2,7 @@
 
 This directory contains Dart code generated from Mochi programs in `tests/rosetta/x/Mochi`. Each program has a `.dart` file and `.out` output. Compilation or runtime failures are captured in a `.error` file.
 
-Compiled and ran: 123/284
+Compiled and ran: 124/284
 
 ## Checklist
 1. [x] 100-doors-2 (1)
@@ -111,7 +111,7 @@ Compiled and ran: 123/284
 104. [x] benfords-law (104)
 105. [x] bernoulli-numbers (105)
 106. [x] best-shuffle (106)
-107. [ ] bifid-cipher (107)
+107. [x] bifid-cipher (107)
 108. [x] bin-given-limits (108)
 109. [x] binary-digits (109)
 110. [x] binary-search (110)
@@ -290,4 +290,4 @@ Compiled and ran: 123/284
 283. [ ] define-a-primitive-data-type (283)
 284. [ ] md5 (284)
 
-_Last updated: 2025-07-24 18:26 +0700_
+_Last updated: 2025-07-24 18:57 +0700_
