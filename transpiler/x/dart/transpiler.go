@@ -252,8 +252,17 @@ func (f *ForInStmt) emit(out io.Writer) error {
 		return err
 	}
 	if f.Iterable != nil {
-		if err := f.Iterable.emit(out); err != nil {
-			return err
+		if strings.HasPrefix(inferType(f.Iterable), "Map<") {
+			if err := f.Iterable.emit(out); err != nil {
+				return err
+			}
+			if _, err := io.WriteString(out, ".keys"); err != nil {
+				return err
+			}
+		} else {
+			if err := f.Iterable.emit(out); err != nil {
+				return err
+			}
 		}
 	}
 	if _, err := io.WriteString(out, ") {\n"); err != nil {
@@ -1036,6 +1045,48 @@ type MapLit struct{ Entries []MapEntry }
 type MapEntry struct {
 	Key   Expr
 	Value Expr
+}
+
+// MapGetExpr represents m.get(key, default).
+type MapGetExpr struct {
+	Map     Expr
+	Key     Expr
+	Default Expr
+}
+
+func (m *MapGetExpr) emit(w io.Writer) error {
+	if _, err := io.WriteString(w, "("); err != nil {
+		return err
+	}
+	if err := m.Map.emit(w); err != nil {
+		return err
+	}
+	if _, err := io.WriteString(w, ".containsKey("); err != nil {
+		return err
+	}
+	if err := m.Key.emit(w); err != nil {
+		return err
+	}
+	if _, err := io.WriteString(w, ") ? "); err != nil {
+		return err
+	}
+	if err := (&IndexExpr{Target: m.Map, Index: m.Key, NoBang: false}).emit(w); err != nil {
+		return err
+	}
+	if _, err := io.WriteString(w, " : "); err != nil {
+		return err
+	}
+	if m.Default != nil {
+		if err := m.Default.emit(w); err != nil {
+			return err
+		}
+	} else {
+		if _, err := io.WriteString(w, "null"); err != nil {
+			return err
+		}
+	}
+	_, err := io.WriteString(w, ")")
+	return err
 }
 
 // NotNilExpr appends `!` to an expression to assert it is not null.
@@ -2290,6 +2341,8 @@ func inferType(e Expr) string {
 		return "bool"
 	case *StringLit:
 		return "String"
+	case *CastExpr:
+		return ex.Type
 	case *Name:
 		if t, ok := localVarTypes[ex.Name]; ok {
 			return t
@@ -3581,6 +3634,22 @@ func convertPostfix(pf *parser.PostfixExpr) (Expr, error) {
 			// method call if next op is call
 			if i+1 < len(pf.Ops) && pf.Ops[i+1].Call != nil {
 				call := pf.Ops[i+1]
+				if op.Field.Name == "get" && strings.HasPrefix(inferType(expr), "Map<") && (len(call.Call.Args) == 1 || len(call.Call.Args) == 2) {
+					key, err := convertExpr(call.Call.Args[0])
+					if err != nil {
+						return nil, err
+					}
+					var def Expr
+					if len(call.Call.Args) == 2 {
+						def, err = convertExpr(call.Call.Args[1])
+						if err != nil {
+							return nil, err
+						}
+					}
+					expr = &MapGetExpr{Map: expr, Key: key, Default: def}
+					i++
+					continue
+				}
 				if n, ok := expr.(*Name); ok {
 					if _, ok := testpkgAliases[n.Name]; ok {
 						switch op.Field.Name {
@@ -3861,6 +3930,8 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 		return &IntLit{Value: int(*p.Lit.Int)}, nil
 	case p.Lit != nil && p.Lit.Float != nil:
 		return &FloatLit{Value: *p.Lit.Float}, nil
+	case p.Lit != nil && p.Lit.Null:
+		return &Name{Name: "null"}, nil
 	case p.List != nil:
 		var elems []Expr
 		for _, e := range p.List.Elems {
@@ -3943,7 +4014,7 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 	case p.Group != nil:
 		return convertExpr(p.Group)
 	}
-	return nil, fmt.Errorf("unsupported expression")
+	return nil, fmt.Errorf("unsupported expression: %+v", *p)
 }
 
 func isBoolExpr(e *parser.Expr) bool { return isBoolBinary(e.Binary) }

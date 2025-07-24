@@ -1400,6 +1400,9 @@ func checkBinaryExpr(b *parser.BinaryExpr, env *Env, expected Type) (Type, error
 
 func applyBinaryType(pos lexer.Position, op string, left, right Type) (Type, error) {
 	if _, ok := left.(AnyType); ok {
+		if op == "+" && unify(right, StringType{}, nil) {
+			return StringType{}, nil
+		}
 		switch op {
 		case "+", "-", "*", "/", "%", "<", "<=", ">", ">=", "==", "!=", "&&", "||", "in":
 			return nil, errAnyOperator(pos, op)
@@ -1408,6 +1411,9 @@ func applyBinaryType(pos lexer.Position, op string, left, right Type) (Type, err
 		}
 	}
 	if _, ok := right.(AnyType); ok {
+		if op == "+" && unify(left, StringType{}, nil) {
+			return StringType{}, nil
+		}
 		switch op {
 		case "+", "-", "*", "/", "%", "<", "<=", ">", ">=", "==", "!=", "&&", "||", "in":
 			return nil, errAnyOperator(pos, op)
