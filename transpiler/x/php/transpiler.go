@@ -86,7 +86,16 @@ var renameMap map[string]string
 var closureNames = map[string]bool{}
 var groupStack []string
 var globalNames []string
+var globalSet map[string]struct{}
 var importedModules = map[string]struct{}{}
+
+func addGlobal(name string) {
+	if _, ok := globalSet[name]; ok {
+		return
+	}
+	globalSet[name] = struct{}{}
+	globalNames = append(globalNames, name)
+}
 
 // --- Simple PHP AST ---
 
@@ -1447,6 +1456,7 @@ func Emit(w io.Writer, p *Program) error {
 func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	transpileEnv = env
 	globalNames = nil
+	globalSet = map[string]struct{}{}
 	closureNames = map[string]bool{}
 	renameMap = map[string]string{}
 	usesLookupHost = false
@@ -2123,7 +2133,7 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 			}
 			if q, ok := v.(*QueryExpr); ok {
 				if len(funcStack) == 0 {
-					globalNames = append(globalNames, st.Let.Name)
+					addGlobal(st.Let.Name)
 				}
 				return &QueryLetStmt{Name: st.Let.Name, Query: q}, nil
 			}
@@ -2155,7 +2165,7 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 			}
 		}
 		if len(funcStack) == 0 {
-			globalNames = append(globalNames, st.Let.Name)
+			addGlobal(st.Let.Name)
 		} else {
 			funcStack[len(funcStack)-1] = append(funcStack[len(funcStack)-1], st.Let.Name)
 		}
@@ -2195,7 +2205,7 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 			}
 		}
 		if len(funcStack) == 0 {
-			globalNames = append(globalNames, st.Var.Name)
+			addGlobal(st.Var.Name)
 		} else {
 			funcStack[len(funcStack)-1] = append(funcStack[len(funcStack)-1], st.Var.Name)
 		}
@@ -2280,12 +2290,12 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 		}
 		if wasTop {
 			decl := &FuncDecl{Name: name, Params: params, RefParams: refFlags, Body: body}
-			globalNames = append(globalNames, name)
+			addGlobal(name)
 			return decl, nil
 		}
 		clo := &ClosureExpr{Params: params, RefParams: refFlags, Uses: uses, Body: body}
 		if len(funcStack) == 0 {
-			globalNames = append(globalNames, name)
+			addGlobal(name)
 		}
 		return &LetStmt{Name: name, Value: clo}, nil
 	case st.While != nil:
