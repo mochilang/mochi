@@ -1459,6 +1459,11 @@ func convertStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 			key := &StringLit{Value: st.Assign.Field[0].Name}
 			return &MapAssignStmt{Name: st.Assign.Name, Key: key, Expr: e}, nil
 		}
+		if _, err2 := env.GetVar(st.Assign.Name); err2 != nil && env != nil {
+			typ := types.TypeOfExprBasic(st.Assign.Value, env)
+			env.SetVar(st.Assign.Name, typ, true)
+			return &LetStmt{Name: st.Assign.Name, Expr: e, Type: typ}, nil
+		}
 		return &AssignStmt{Name: st.Assign.Name, Expr: e}, nil
 	case st.Return != nil:
 		var e Expr
