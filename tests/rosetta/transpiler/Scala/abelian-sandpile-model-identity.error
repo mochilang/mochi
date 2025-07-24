@@ -1,5 +1,0 @@
-exit status 1
-/workspace/mochi/tests/rosetta/transpiler/Scala/abelian-sandpile-model-identity.scala:34: error: value foreach is not a member of Any
-        for (j <- nbs) {
-                  ^
-one error found
