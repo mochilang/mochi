@@ -61,8 +61,8 @@ func sanitize(name string) string {
 
 func javaType(t string) string {
 	switch t {
-	case "int":
-		return "int"
+	case "int", "long":
+		return "long"
 	case "bool":
 		return "boolean"
 	case "boolean":
@@ -73,8 +73,8 @@ func javaType(t string) string {
 		return "void"
 	case "float", "float64", "double":
 		return "double"
-	case "int[]":
-		return "int[]"
+	case "int[]", "long[]":
+		return "long[]"
 	case "string[]":
 		return "String[]"
 	case "bool[]":
@@ -116,8 +116,8 @@ func javaType(t string) string {
 
 func javaBoxType(t string) string {
 	switch t {
-	case "int":
-		return "Integer"
+	case "int", "long":
+		return "Long"
 	case "float", "float64", "double":
 		return "Double"
 	case "bool", "boolean":
@@ -136,8 +136,8 @@ func mapValueType(t string) string {
 		if len(parts) == 2 {
 			v := strings.TrimSpace(parts[1])
 			switch v {
-			case "Integer":
-				return "int"
+			case "Integer", "Long":
+				return "long"
 			case "Double":
 				return "double"
 			case "Boolean":
@@ -175,7 +175,7 @@ func emitCastExpr(w io.Writer, e Expr, typ string) {
 
 func typeFromName(n string) types.Type {
 	switch n {
-	case "int", "Integer":
+	case "int", "Integer", "long", "Long":
 		return types.IntType{}
 	case "double", "float", "float64":
 		return types.FloatType{}
@@ -234,6 +234,9 @@ func fieldTypeFromVar(target Expr, name string) (string, bool) {
 func inferType(e Expr) string {
 	switch ex := e.(type) {
 	case *IntLit:
+		if ex.Value > math.MaxInt32 || ex.Value < math.MinInt32 {
+			return "long"
+		}
 		return "int"
 	case *FloatLit:
 		return "double"
@@ -308,12 +311,18 @@ func inferType(e Expr) string {
 			if lt == "double" || rt == "double" {
 				return "double"
 			}
+			if lt == "long" || rt == "long" {
+				return "long"
+			}
 			return "int"
 		case "-", "*", "/", "%":
 			lt := inferType(ex.Left)
 			rt := inferType(ex.Right)
 			if lt == "double" || rt == "double" {
 				return "double"
+			}
+			if lt == "long" || rt == "long" {
+				return "long"
 			}
 			return "int"
 		case "==", "!=", "<", "<=", ">", ">=":
@@ -389,6 +398,12 @@ func inferType(e Expr) string {
 			return ex.Type
 		}
 		if t, ok := varTypes[ex.Name]; ok {
+			if t == "int" {
+				return "long"
+			}
+			if t == "int[]" {
+				return "long[]"
+			}
 			return t
 		}
 	}
@@ -1179,19 +1194,29 @@ func (b *BinaryExpr) emit(w io.Writer) {
 		typ := "int"
 		if lt == "double" || rt == "double" {
 			typ = "double"
+		} else if lt == "long" || rt == "long" {
+			typ = "long"
 		}
 		if lt == "" {
-			fmt.Fprint(w, "((Number)(")
-			b.Left.emit(w)
-			fmt.Fprint(w, ")).doubleValue()")
+			if typ == "long" {
+				emitCastExpr(w, b.Left, typ)
+			} else {
+				fmt.Fprint(w, "((Number)(")
+				b.Left.emit(w)
+				fmt.Fprint(w, ")).doubleValue()")
+			}
 		} else {
 			emitCastExpr(w, b.Left, typ)
 		}
 		fmt.Fprint(w, " "+b.Op+" ")
 		if rt == "" {
-			fmt.Fprint(w, "((Number)(")
-			b.Right.emit(w)
-			fmt.Fprint(w, ")).doubleValue()")
+			if typ == "long" {
+				emitCastExpr(w, b.Right, typ)
+			} else {
+				fmt.Fprint(w, "((Number)(")
+				b.Right.emit(w)
+				fmt.Fprint(w, ")).doubleValue()")
+			}
 		} else {
 			emitCastExpr(w, b.Right, typ)
 		}
@@ -1217,7 +1242,13 @@ func (b *BinaryExpr) emit(w io.Writer) {
 
 type IntLit struct{ Value int }
 
-func (i *IntLit) emit(w io.Writer) { fmt.Fprint(w, i.Value) }
+func (i *IntLit) emit(w io.Writer) {
+	if i.Value > math.MaxInt32 || i.Value < math.MinInt32 {
+		fmt.Fprintf(w, "%dL", i.Value)
+	} else {
+		fmt.Fprint(w, i.Value)
+	}
+}
 
 type FloatLit struct{ Value float64 }
 
@@ -1401,6 +1432,7 @@ func (a *AppendExpr) emit(w io.Writer) {
 	if jt == "" {
 		jt = elem
 	}
+	elem = jt
 	if elem == "boolean" {
 		needAppendBool = true
 		fmt.Fprint(w, "appendBool(")
@@ -1410,10 +1442,14 @@ func (a *AppendExpr) emit(w io.Writer) {
 		fmt.Fprint(w, ")")
 		return
 	}
-	if elem == "int" {
-		fmt.Fprint(w, "java.util.stream.IntStream.concat(java.util.Arrays.stream(")
+	if elem == "int" || elem == "long" {
+		stream := "IntStream"
+		if elem == "long" {
+			stream = "LongStream"
+		}
+		fmt.Fprintf(w, "java.util.stream.%s.concat(java.util.Arrays.stream(", stream)
 		a.List.emit(w)
-		fmt.Fprint(w, "), java.util.stream.IntStream.of(")
+		fmt.Fprintf(w, "), java.util.stream.%s.of(", stream)
 		a.Value.emit(w)
 		fmt.Fprint(w, ")).toArray()")
 		return
@@ -1766,12 +1802,24 @@ func (ix *IndexExpr) emit(w io.Writer) {
 	if isStringExpr(ix.Target) {
 		ix.Target.emit(w)
 		fmt.Fprint(w, ".charAt(")
-		ix.Index.emit(w)
+		if inferType(ix.Index) == "long" {
+			fmt.Fprint(w, "(int)(")
+			ix.Index.emit(w)
+			fmt.Fprint(w, ")")
+		} else {
+			ix.Index.emit(w)
+		}
 		fmt.Fprint(w, ")")
 	} else if isArrayExpr(ix.Target) {
 		ix.Target.emit(w)
 		fmt.Fprint(w, "[")
-		ix.Index.emit(w)
+		if inferType(ix.Index) == "long" {
+			fmt.Fprint(w, "(int)(")
+			ix.Index.emit(w)
+			fmt.Fprint(w, ")")
+		} else {
+			ix.Index.emit(w)
+		}
 		fmt.Fprint(w, "]")
 	} else if isMapExpr(ix.Target) {
 		castType := "java.util.Map"
@@ -1811,9 +1859,21 @@ func (sli *SliceExpr) emit(w io.Writer) {
 		fmt.Fprint(w, "java.util.Arrays.copyOfRange(")
 		sli.Value.emit(w)
 		fmt.Fprint(w, ", ")
-		sli.Start.emit(w)
+		if inferType(sli.Start) == "long" {
+			fmt.Fprint(w, "(int)(")
+			sli.Start.emit(w)
+			fmt.Fprint(w, ")")
+		} else {
+			sli.Start.emit(w)
+		}
 		fmt.Fprint(w, ", ")
-		sli.End.emit(w)
+		if inferType(sli.End) == "long" {
+			fmt.Fprint(w, "(int)(")
+			sli.End.emit(w)
+			fmt.Fprint(w, ")")
+		} else {
+			sli.End.emit(w)
+		}
 		fmt.Fprint(w, ")")
 	default:
 		sli.Value.emit(w)
@@ -2021,11 +2081,23 @@ func arrayElemType(e Expr) string {
 	case *VarExpr:
 		if t, ok := varTypes[ex.Name]; ok {
 			if strings.HasSuffix(t, "[]") {
-				return strings.TrimSuffix(t, "[]")
+				t = strings.TrimSuffix(t, "[]")
+				if t == "int" {
+					return "long"
+				}
+				return t
 			}
 			if strings.HasPrefix(t, "java.util.List<") && strings.HasSuffix(t, ">") {
-				return strings.TrimSuffix(strings.TrimPrefix(t, "java.util.List<"), ">")
+				t = strings.TrimSuffix(strings.TrimPrefix(t, "java.util.List<"), ">")
+				if t == "int" {
+					return "long"
+				}
+				return t
 			}
+			if t == "int" {
+				return "long"
+			}
+			return t
 		}
 	case *FieldExpr:
 		if t, ok := fieldTypeFromVar(ex.Target, ex.Name); ok {
@@ -2145,7 +2217,7 @@ func Transpile(p *parser.Program, env *types.Env) (*Program, error) {
 			varTypes = copyMap(varTypes)
 			for _, pa := range s.Fun.Params {
 				if t := typeRefString(pa.Type); t != "" {
-					varTypes[pa.Name] = t
+					varTypes[pa.Name] = javaType(t)
 				}
 			}
 			body, err := compileStmts(s.Fun.Body)
@@ -2266,7 +2338,7 @@ func compileStmt(s *parser.Statement) (Stmt, error) {
 				t = inferType(e)
 			}
 			if t != "" {
-				varTypes[s.Let.Name] = t
+				varTypes[s.Let.Name] = javaType(t)
 				varDecls[s.Let.Name] = &VarStmt{Name: s.Let.Name, Type: t, Expr: e}
 			}
 			if ml, ok := e.(*MapLit); ok && len(ml.Fields) > 0 {
@@ -2294,7 +2366,7 @@ func compileStmt(s *parser.Statement) (Stmt, error) {
 			}
 		}
 		if t != "" {
-			varTypes[s.Let.Name] = t
+			varTypes[s.Let.Name] = javaType(t)
 			varDecls[s.Let.Name] = &VarStmt{Name: s.Let.Name, Type: t}
 		}
 		return &LetStmt{Name: s.Let.Name, Type: t}, nil
@@ -2325,7 +2397,7 @@ func compileStmt(s *parser.Statement) (Stmt, error) {
 				t = inferType(e)
 			}
 			if t != "" {
-				varTypes[s.Var.Name] = t
+				varTypes[s.Var.Name] = javaType(t)
 			}
 			if ml, ok := e.(*MapLit); ok && len(ml.Fields) > 0 {
 				mapVarFields[s.Var.Name] = ml.Fields
@@ -2354,7 +2426,7 @@ func compileStmt(s *parser.Statement) (Stmt, error) {
 			}
 		}
 		if t != "" {
-			varTypes[s.Var.Name] = t
+			varTypes[s.Var.Name] = javaType(t)
 		}
 		vs := &VarStmt{Name: s.Var.Name, Type: t}
 		varDecls[s.Var.Name] = vs
@@ -2416,7 +2488,7 @@ func compileStmt(s *parser.Statement) (Stmt, error) {
 			}
 			if t := inferType(e); t != "" {
 				if cur, ok := varTypes[s.Assign.Name]; !ok || ((cur == "int[]" || cur == "Object[]") && t != cur) {
-					varTypes[s.Assign.Name] = t
+					varTypes[s.Assign.Name] = javaType(t)
 					if vs, ok := varDecls[s.Assign.Name]; ok {
 						vs.Type = t
 						if ll, ok2 := vs.Expr.(*ListLit); ok2 && strings.HasSuffix(t, "[]") {
@@ -2579,7 +2651,7 @@ func compileStmt(s *parser.Statement) (Stmt, error) {
 		}
 		elem := arrayElemType(iter)
 		if elem != "" {
-			varTypes[s.For.Name] = elem
+			varTypes[s.For.Name] = javaType(elem)
 		}
 		var body []Stmt
 		for _, b := range s.For.Body {
@@ -3878,7 +3950,7 @@ func typeRefString(tr *parser.TypeRef) string {
 func toJavaTypeFromType(t types.Type) string {
 	switch tt := t.(type) {
 	case types.IntType, types.Int64Type:
-		return "int"
+		return "long"
 	case types.FloatType:
 		return "double"
 	case types.BoolType:

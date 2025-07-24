@@ -1,8 +1,37 @@
 compile: exit status 1
-/tmp/TestJavaTranspiler_Rosetta_Goldenaliquot-sequence-classifications3881237625/001/Main.java:2: error: integer number too large
-    static int THRESHOLD = 140737488355328;
-                           ^
-/tmp/TestJavaTranspiler_Rosetta_Goldenaliquot-sequence-classifications3881237625/001/Main.java:138: error: integer number too large
-        int big = 15355717786080;
-                  ^
-2 errors
+/tmp/TestJavaTranspiler_Rosetta_Goldenaliquot-sequence-classifications3786683302/001/Main.java:32: error: incompatible types: possible lossy conversion from double to long
+        long y = ((Number)((x + 1))).doubleValue() / 2;
+                                                   ^
+/tmp/TestJavaTranspiler_Rosetta_Goldenaliquot-sequence-classifications3786683302/001/Main.java:35: error: incompatible types: possible lossy conversion from double to long
+            y = ((Number)((x + n / x))).doubleValue() / 2;
+                                                      ^
+/tmp/TestJavaTranspiler_Rosetta_Goldenaliquot-sequence-classifications3786683302/001/Main.java:77: error: no suitable method found for copyOfRange(long[],int,long)
+            } else             if (contains(java.util.Arrays.copyOfRange(seq, 1, maxOf(1, n - 2)), last)) {
+                                                            ^
+    method Arrays.<T#1>copyOfRange(T#1[],int,int) is not applicable
+      (cannot infer type-variable(s) T#1
+        (argument mismatch; possible lossy conversion from long to int))
+    method Arrays.<T#2,U>copyOfRange(U[],int,int,Class<? extends T#2[]>) is not applicable
+      (cannot infer type-variable(s) T#2,U
+        (actual and formal argument lists differ in length))
+    method Arrays.copyOfRange(byte[],int,int) is not applicable
+      (argument mismatch; long[] cannot be converted to byte[])
+    method Arrays.copyOfRange(short[],int,int) is not applicable
+      (argument mismatch; long[] cannot be converted to short[])
+    method Arrays.copyOfRange(int[],int,int) is not applicable
+      (argument mismatch; long[] cannot be converted to int[])
+    method Arrays.copyOfRange(long[],int,int) is not applicable
+      (argument mismatch; possible lossy conversion from long to int)
+    method Arrays.copyOfRange(char[],int,int) is not applicable
+      (argument mismatch; long[] cannot be converted to char[])
+    method Arrays.copyOfRange(float[],int,int) is not applicable
+      (argument mismatch; long[] cannot be converted to float[])
+    method Arrays.copyOfRange(double[],int,int) is not applicable
+      (argument mismatch; long[] cannot be converted to double[])
+    method Arrays.copyOfRange(boolean[],int,int) is not applicable
+      (argument mismatch; long[] cannot be converted to boolean[])
+  where T#1,T#2,U are type-variables:
+    T#1 extends Object declared in method <T#1>copyOfRange(T#1[],int,int)
+    T#2 extends Object declared in method <T#2,U>copyOfRange(U[],int,int,Class<? extends T#2[]>)
+    U extends Object declared in method <T#2,U>copyOfRange(U[],int,int,Class<? extends T#2[]>)
+3 errors
