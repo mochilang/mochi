@@ -20,29 +20,31 @@ var currProg *Program
 var anonCounter int
 var currentVarTypes map[string]string
 var nameMap = map[string]string{}
+var funcNames map[string]struct{}
 
 func sanitize(name string) string {
-	switch name {
-	case "label":
-		nameMap[name] = name + "_"
-		return name + "_"
-	}
-	for _, r := range currProg.Records {
-		if strings.EqualFold(name, r.Name) {
-			newName := name + "_var"
-			nameMap[name] = newName
-			return newName
-		}
-	}
-	if hasVar(name) {
-		newName := fmt.Sprintf("%s_%d", name, len(currProg.Vars))
-		nameMap[name] = newName
-		return newName
-	}
 	if v, ok := nameMap[name]; ok {
 		return v
 	}
-	return name
+	newName := name
+	switch name {
+	case "label":
+		newName = name + "_"
+	}
+	if _, ok := funcNames[name]; ok {
+		newName = name + "_var"
+	} else if hasVar(name) {
+		newName = fmt.Sprintf("%s_%d", name, len(currProg.Vars))
+	} else {
+		for _, r := range currProg.Records {
+			if strings.EqualFold(name, r.Name) {
+				newName = name + "_var"
+				break
+			}
+		}
+	}
+	nameMap[name] = newName
+	return newName
 }
 
 // Program is a minimal Pascal AST consisting of a sequence of statements.
@@ -795,6 +797,12 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 	_ = env
 	pr := &Program{}
 	currProg = pr
+	funcNames = make(map[string]struct{})
+	for _, st := range prog.Statements {
+		if st.Fun != nil {
+			funcNames[st.Fun.Name] = struct{}{}
+		}
+	}
 	varTypes := map[string]string{}
 	currentVarTypes = varTypes
 	for _, st := range prog.Statements {
@@ -1047,6 +1055,7 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 			}
 			pr.Vars = append(pr.Vars, vd)
 		case st.Assign != nil:
+			name := sanitize(st.Assign.Name)
 			ex, err := convertExpr(env, st.Assign.Value)
 			if err != nil {
 				return nil, err
@@ -1064,7 +1073,7 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 				if err != nil {
 					return nil, err
 				}
-				pr.Stmts = append(pr.Stmts, &IndexAssignStmt{Name: st.Assign.Name, Index: idx, Expr: ex})
+				pr.Stmts = append(pr.Stmts, &IndexAssignStmt{Name: name, Index: idx, Expr: ex})
 				break
 			}
 			if len(st.Assign.Index) == 2 &&
@@ -1079,25 +1088,25 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 				if err != nil {
 					return nil, err
 				}
-				pr.Stmts = append(pr.Stmts, &DoubleIndexAssignStmt{Name: st.Assign.Name, Index1: idx1, Index2: idx2, Expr: ex})
+				pr.Stmts = append(pr.Stmts, &DoubleIndexAssignStmt{Name: name, Index1: idx1, Index2: idx2, Expr: ex})
 				break
 			}
-			if _, ok := varTypes[st.Assign.Name]; !ok {
+			if _, ok := varTypes[name]; !ok {
 				if t := inferType(ex); t != "" {
-					varTypes[st.Assign.Name] = t
-					setVarType(st.Assign.Name, t)
+					varTypes[name] = t
+					setVarType(name, t)
 				}
 				if call, ok := ex.(*CallExpr); ok && call.Name == "concat" && len(call.Args) == 2 {
 					if list, ok := call.Args[1].(*ListLit); ok && len(list.Elems) == 1 {
 						if et := inferType(list.Elems[0]); et != "" {
 							t := "array of " + et
-							varTypes[st.Assign.Name] = t
-							setVarType(st.Assign.Name, t)
+							varTypes[name] = t
+							setVarType(name, t)
 						}
 					}
 				}
 			}
-			pr.Stmts = append(pr.Stmts, &AssignStmt{Name: st.Assign.Name, Expr: ex})
+			pr.Stmts = append(pr.Stmts, &AssignStmt{Name: name, Expr: ex})
 		case st.For != nil:
 			start, err := convertExpr(env, st.For.Source)
 			if err != nil {
@@ -1272,12 +1281,13 @@ func convertBody(env *types.Env, body []*parser.Statement, varTypes map[string]s
 	for _, st := range body {
 		switch {
 		case st.Assign != nil:
+			name := sanitize(st.Assign.Name)
 			ex, err := convertExpr(env, st.Assign.Value)
 			if err != nil {
 				return nil, err
 			}
 			if len(st.Assign.Field) > 0 {
-				target := &SelectorExpr{Root: st.Assign.Name}
+				target := &SelectorExpr{Root: name}
 				for _, f := range st.Assign.Field {
 					target.Tail = append(target.Tail, f.Name)
 				}
@@ -1289,7 +1299,7 @@ func convertBody(env *types.Env, body []*parser.Statement, varTypes map[string]s
 				if err != nil {
 					return nil, err
 				}
-				out = append(out, &IndexAssignStmt{Name: st.Assign.Name, Index: idx, Expr: ex})
+				out = append(out, &IndexAssignStmt{Name: name, Index: idx, Expr: ex})
 				break
 			}
 			if len(st.Assign.Index) == 2 &&
@@ -1304,15 +1314,15 @@ func convertBody(env *types.Env, body []*parser.Statement, varTypes map[string]s
 				if err != nil {
 					return nil, err
 				}
-				out = append(out, &DoubleIndexAssignStmt{Name: st.Assign.Name, Index1: idx1, Index2: idx2, Expr: ex})
+				out = append(out, &DoubleIndexAssignStmt{Name: name, Index1: idx1, Index2: idx2, Expr: ex})
 				break
 			}
-			if _, ok := varTypes[st.Assign.Name]; !ok {
+			if _, ok := varTypes[name]; !ok {
 				if t := inferType(ex); t != "" {
-					varTypes[st.Assign.Name] = t
+					varTypes[name] = t
 				}
 			}
-			out = append(out, &AssignStmt{Name: st.Assign.Name, Expr: ex})
+			out = append(out, &AssignStmt{Name: name, Expr: ex})
 		case st.Let != nil:
 			name := sanitize(st.Let.Name)
 			vd := VarDecl{Name: name}
@@ -1329,7 +1339,7 @@ func convertBody(env *types.Env, body []*parser.Statement, varTypes map[string]s
 						vd.Type = t
 					}
 				}
-				out = append(out, &AssignStmt{Name: st.Let.Name, Expr: ex})
+				out = append(out, &AssignStmt{Name: name, Expr: ex})
 			}
 			if !hasVar(vd.Name) {
 				currProg.Vars = append(currProg.Vars, vd)
@@ -1355,7 +1365,7 @@ func convertBody(env *types.Env, body []*parser.Statement, varTypes map[string]s
 						vd.Type = "array of boolean"
 					}
 				}
-				out = append(out, &AssignStmt{Name: st.Var.Name, Expr: ex})
+				out = append(out, &AssignStmt{Name: name, Expr: ex})
 			}
 			if !hasVar(vd.Name) {
 				currProg.Vars = append(currProg.Vars, vd)
@@ -3263,6 +3273,10 @@ func inferType(e Expr) string {
 	case *IndexExpr:
 		if v.String {
 			return "string"
+		}
+		t := inferType(v.Target)
+		if strings.HasPrefix(t, "array of ") {
+			return strings.TrimPrefix(t, "array of ")
 		}
 		return "integer"
 	case *SliceExpr:
