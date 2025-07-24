@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated TypeScript code from programs in `tests/rosetta/x/Mochi` lives in `tests/rosetta/transpiler/TypeScript`.
-Last updated: 2025-07-24 14:25 UTC
+Last updated: 2025-07-24 17:32 UTC
 
-## Rosetta Golden Test Checklist (271/284)
+## Rosetta Golden Test Checklist (272/284)
 1. [x] 100-doors-2 (1)
 2. [x] 100-doors-3 (2)
 3. [x] 100-doors (3)
@@ -76,7 +76,7 @@ Last updated: 2025-07-24 14:25 UTC
 69. [x] arithmetic-geometric-mean (69)
 70. [x] arithmetic-integer-1 (70)
 71. [x] arithmetic-integer-2 (71)
-72. [ ] arithmetic-numbers (72)
+72. [x] arithmetic-numbers (72)
 73. [x] arithmetic-rational (73)
 74. [x] array-concatenation (74)
 75. [x] array-length (75)
