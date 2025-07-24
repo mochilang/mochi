@@ -22,6 +22,8 @@ import (
 
 var varTypes map[string]string
 var funcRet map[string]string
+var funcFnParam map[string]string
+var funcFnRet map[string]string
 var extraDecls []Stmt
 var structCount int
 var topEnv *types.Env
@@ -39,6 +41,10 @@ var structDefs map[string]map[string]string
 var varDecls map[string]*VarStmt
 var funcMapFields map[string]map[string]string
 var mapVarFields map[string]map[string]string
+
+func isFunctionType(t string) bool {
+	return t == "fn" || strings.HasPrefix(t, "java.util.function.Function")
+}
 
 func copyMap(src map[string]string) map[string]string {
 	dst := make(map[string]string, len(src))
@@ -81,7 +87,7 @@ func javaType(t string) string {
 	case "map":
 		return "java.util.Map"
 	case "fn":
-		return "java.util.function.IntUnaryOperator"
+		return "java.util.function.Function"
 	default:
 		if t == "" {
 			return ""
@@ -313,9 +319,23 @@ func inferType(e Expr) string {
 	case *LenExpr:
 		return "int"
 	case *AvgExpr:
-		return "Object"
+		t := arrayElemType(ex.Value)
+		if t == "int" || t == "Integer" {
+			return "double"
+		}
+		if t == "double" || t == "float" || t == "Float" || t == "Double" {
+			return "double"
+		}
+		return "double"
 	case *SumExpr:
-		return "Object"
+		t := arrayElemType(ex.Value)
+		if t == "int" || t == "Integer" {
+			return "int"
+		}
+		if t == "double" || t == "float" || t == "Float" || t == "Double" {
+			return "double"
+		}
+		return "double"
 	case *ValuesExpr:
 		return "java.util.List"
 	case *AppendExpr:
@@ -357,8 +377,17 @@ func inferType(e Expr) string {
 		switch ex.Name {
 		case "contains":
 			return "boolean"
-		case "applyAsInt":
-			return "int"
+		case "apply":
+			if v, ok := ex.Target.(*VarExpr); ok {
+				if rt, ok2 := funcFnRet[v.Name]; ok2 {
+					return rt
+				}
+			} else if le, ok := ex.Target.(*LambdaExpr); ok {
+				if le.Return != "" {
+					return le.Return
+				}
+			}
+			return "Object"
 		}
 	case *VarExpr:
 		if t, ok := varTypes[ex.Name]; ok {
@@ -479,6 +508,31 @@ func (r *ReturnStmt) emit(w io.Writer, indent string) {
 type Stmt interface{ emit(io.Writer, string) }
 
 type Expr interface{ emit(io.Writer) }
+
+// RawExpr emits raw Java code verbatim as an expression.
+type RawExpr struct{ Code string }
+
+func (r *RawExpr) emit(w io.Writer) { io.WriteString(w, r.Code) }
+
+// RawStmt emits raw Java code verbatim as a statement.
+type RawStmt struct{ Code string }
+
+func (r *RawStmt) emit(w io.Writer, indent string) {
+	if r == nil {
+		return
+	}
+	if !strings.HasSuffix(r.Code, "\n") {
+		fmt.Fprint(w, indent+r.Code+"\n")
+	} else {
+		lines := strings.Split(r.Code, "\n")
+		for _, line := range lines {
+			if line == "" {
+				continue
+			}
+			fmt.Fprint(w, indent+line+"\n")
+		}
+	}
+}
 
 func (t *TypeDeclStmt) emit(w io.Writer, indent string) {
 	fmt.Fprintf(w, indent+"static class %s {\n", t.Name)
@@ -1235,22 +1289,13 @@ func (a *AvgExpr) emit(w io.Writer) {
 type SumExpr struct{ Value Expr }
 
 func (s *SumExpr) emit(w io.Writer) {
-	fmt.Fprint(w, "(((")
 	if isArrayExpr(s.Value) {
 		fmt.Fprint(w, "java.util.Arrays.stream(")
 		s.Value.emit(w)
-		fmt.Fprint(w, ").sum()) % 1 == 0) ? (Object)(int)(java.util.Arrays.stream(")
-		s.Value.emit(w)
-		fmt.Fprint(w, ").sum()) : (Object)(java.util.Arrays.stream(")
-		s.Value.emit(w)
-		fmt.Fprint(w, ").sum()))")
+		fmt.Fprint(w, ").sum()")
 	} else {
 		s.Value.emit(w)
-		fmt.Fprint(w, ".stream().mapToDouble(v -> ((Number)v).doubleValue()).sum()) % 1 == 0) ? (Object)(int)(")
-		s.Value.emit(w)
-		fmt.Fprint(w, ".stream().mapToDouble(v -> ((Number)v).doubleValue()).sum()) : (Object)(")
-		s.Value.emit(w)
-		fmt.Fprint(w, ".stream().mapToDouble(v -> ((Number)v).doubleValue()).sum()))")
+		fmt.Fprint(w, ".stream().mapToDouble(v -> ((Number)v).doubleValue()).sum()")
 	}
 }
 
@@ -2022,6 +2067,8 @@ func Transpile(p *parser.Program, env *types.Env) (*Program, error) {
 	varDecls = map[string]*VarStmt{}
 	funcMapFields = map[string]map[string]string{}
 	mapVarFields = map[string]map[string]string{}
+	funcFnParam = map[string]string{}
+	funcFnRet = map[string]string{}
 	for _, s := range p.Statements {
 		if s.Fun != nil {
 			saved := varTypes
@@ -2042,6 +2089,19 @@ func Transpile(p *parser.Program, env *types.Env) (*Program, error) {
 			ret := typeRefString(s.Fun.Return)
 			if ret == "" {
 				ret = inferReturnType(body)
+			}
+			if s.Fun.Return != nil && s.Fun.Return.Fun != nil && len(s.Fun.Return.Fun.Params) == 1 {
+				pt := typeRefString(s.Fun.Return.Fun.Params[0])
+				rt := typeRefString(s.Fun.Return.Fun.Return)
+				if pt == "" {
+					pt = "Object"
+				}
+				if rt == "" {
+					rt = "Object"
+				}
+				funcFnParam[s.Fun.Name] = pt
+				funcFnRet[s.Fun.Name] = rt
+				ret = fmt.Sprintf("java.util.function.Function<%s,%s>", javaBoxType(pt), javaBoxType(rt))
 			}
 			for _, p := range params {
 				if javaType(p.Type) == "" {
@@ -2067,6 +2127,21 @@ func Transpile(p *parser.Program, env *types.Env) (*Program, error) {
 		if len(extraDecls) > 0 {
 			prog.Stmts = append(prog.Stmts, extraDecls...)
 			extraDecls = nil
+		}
+	}
+	// Ensure struct declarations for types defined only via unions
+	for name, st := range env.Structs() {
+		if _, ok := structDefs[name]; ok {
+			continue
+		}
+		fields := make([]Param, len(st.Order))
+		for i, n := range st.Order {
+			fields[i] = Param{Name: n, Type: toJavaTypeFromType(st.Fields[n])}
+		}
+		prog.Stmts = append([]Stmt{&TypeDeclStmt{Name: name, Fields: fields}}, prog.Stmts...)
+		structDefs[name] = map[string]string{}
+		for _, f := range fields {
+			structDefs[name][f.Name] = f.Type
 		}
 	}
 	_ = env // reserved
@@ -2134,6 +2209,22 @@ func compileStmt(s *parser.Statement) (Stmt, error) {
 			}
 			if t != "" {
 				varTypes[s.Let.Name] = t
+				if isFunctionType(t) {
+					switch ex := e.(type) {
+					case *LambdaExpr:
+						if len(ex.Params) == 1 {
+							funcFnParam[s.Let.Name] = ex.Params[0].Type
+						}
+						funcFnRet[s.Let.Name] = ex.Return
+					case *CallExpr:
+						if p, ok := funcFnParam[ex.Func]; ok {
+							funcFnParam[s.Let.Name] = p
+						}
+						if r, ok := funcFnRet[ex.Func]; ok {
+							funcFnRet[s.Let.Name] = r
+						}
+					}
+				}
 				varDecls[s.Let.Name] = &VarStmt{Name: s.Let.Name, Type: t, Expr: e}
 			}
 			if ml, ok := e.(*MapLit); ok && len(ml.Fields) > 0 {
@@ -2187,6 +2278,22 @@ func compileStmt(s *parser.Statement) (Stmt, error) {
 			}
 			if t != "" {
 				varTypes[s.Var.Name] = t
+				if isFunctionType(t) {
+					switch ex := e.(type) {
+					case *LambdaExpr:
+						if len(ex.Params) == 1 {
+							funcFnParam[s.Var.Name] = ex.Params[0].Type
+						}
+						funcFnRet[s.Var.Name] = ex.Return
+					case *CallExpr:
+						if p, ok := funcFnParam[ex.Func]; ok {
+							funcFnParam[s.Var.Name] = p
+						}
+						if r, ok := funcFnRet[ex.Func]; ok {
+							funcFnRet[s.Var.Name] = r
+						}
+					}
+				}
 			}
 			if ml, ok := e.(*MapLit); ok && len(ml.Fields) > 0 {
 				mapVarFields[s.Var.Name] = ml.Fields
@@ -2730,13 +2837,13 @@ func compilePostfix(pf *parser.PostfixExpr) (Expr, error) {
 			} else if v, ok := expr.(*VarExpr); ok {
 				if v.Name == "int" && len(args) == 1 {
 					expr = &IntCastExpr{Value: args[0]}
-				} else if t, ok := varTypes[v.Name]; ok && t == "fn" {
-					expr = &MethodCallExpr{Target: expr, Name: "applyAsInt", Args: args}
+				} else if t, ok := varTypes[v.Name]; ok && isFunctionType(t) {
+					expr = &MethodCallExpr{Target: expr, Name: "apply", Args: args}
 				} else {
 					expr = &CallExpr{Func: v.Name, Args: args}
 				}
 			} else if _, ok := expr.(*LambdaExpr); ok {
-				expr = &MethodCallExpr{Target: expr, Name: "applyAsInt", Args: args}
+				expr = &MethodCallExpr{Target: expr, Name: "apply", Args: args}
 			} else {
 				return nil, fmt.Errorf("unsupported call")
 			}
@@ -2789,8 +2896,8 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 			needNow = true
 			return &CallExpr{Func: "_now", Args: nil}, nil
 		}
-		if t, ok := varTypes[name]; ok && t == "fn" {
-			return &MethodCallExpr{Target: &VarExpr{Name: name}, Name: "applyAsInt", Args: args}, nil
+		if t, ok := varTypes[name]; ok && isFunctionType(t) {
+			return &MethodCallExpr{Target: &VarExpr{Name: name}, Name: "apply", Args: args}, nil
 		}
 		if name == "print" {
 			name = "System.out.println"
@@ -3094,28 +3201,50 @@ func compileMatchExpr(me *parser.MatchExpr) (Expr, error) {
 	if err != nil {
 		return nil, err
 	}
-	var expr Expr
-	for i := len(me.Cases) - 1; i >= 0; i-- {
-		c := me.Cases[i]
+	tmp := fmt.Sprintf("_m%d", structCount)
+	structCount++
+	var buf bytes.Buffer
+	buf.WriteString("(new java.util.function.Supplier<String>(){public String get(){\n")
+	buf.WriteString("    var " + tmp + " = ")
+	target.emit(&buf)
+	buf.WriteString(";\n")
+	for i, c := range me.Cases {
+		patExpr, err := compileExpr(c.Pattern)
+		if err != nil {
+			return nil, err
+		}
 		res, err := compileExpr(c.Result)
 		if err != nil {
 			return nil, err
 		}
-		pat, err := compileExpr(c.Pattern)
-		if err != nil {
-			return nil, err
+		if v, ok := patExpr.(*VarExpr); ok && v.Name == "_" {
+			buf.WriteString("    return ")
+			res.emit(&buf)
+			buf.WriteString(";\n")
+			buf.WriteString("}}).get()")
+			return &RawExpr{Code: buf.String()}, nil
 		}
-		if v, ok := pat.(*VarExpr); ok && v.Name == "_" {
-			expr = res
-			continue
+		if call, ok := patExpr.(*CallExpr); ok {
+			st, ok2 := topEnv.GetStruct(call.Func)
+			if !ok2 {
+				return nil, fmt.Errorf("unknown struct %s", call.Func)
+			}
+			buf.WriteString("    if (" + tmp + " instanceof " + call.Func + " v" + fmt.Sprint(i) + ") {\n")
+			for j, arg := range call.Args {
+				if ve, ok3 := arg.(*VarExpr); ok3 && ve.Name != "_" {
+					if j < len(st.Order) {
+						fname := st.Order[j]
+						buf.WriteString("        var " + sanitize(ve.Name) + " = v" + fmt.Sprint(i) + "." + fname + ";\n")
+					}
+				}
+			}
+			buf.WriteString("        return ")
+			res.emit(&buf)
+			buf.WriteString(";\n    }\n")
 		}
-		cond := &BinaryExpr{Left: target, Op: "==", Right: pat}
-		if expr == nil {
-			expr = res
-		}
-		expr = &TernaryExpr{Cond: cond, Then: res, Else: expr}
 	}
-	return expr, nil
+	buf.WriteString("    return null;\n}}).get()")
+	return &RawExpr{Code: buf.String()}, nil
 }
 
 func compileQueryExpr(q *parser.QueryExpr) (Expr, error) {
@@ -3566,6 +3695,11 @@ func typeRefString(tr *parser.TypeRef) string {
 		if *tr.Simple == "any" {
 			return "Object"
 		}
+		if topEnv != nil {
+			if _, ok := topEnv.GetUnion(*tr.Simple); ok {
+				return "Object"
+			}
+		}
 		return *tr.Simple
 	}
 	if tr.Generic != nil {
@@ -3625,6 +3759,8 @@ func toJavaTypeFromType(t types.Type) string {
 			v = "Object"
 		}
 		return fmt.Sprintf("java.util.Map<%s,%s>", javaBoxType(k), javaBoxType(v))
+	case types.UnionType:
+		return "Object"
 	}
 	return ""
 }

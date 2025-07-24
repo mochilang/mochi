@@ -1,4 +1,36 @@
-## Progress (2025-07-24 16:13 +0700)
+## Progress (2025-07-24 18:38 +0700)
+- ctrans: add atoi helper and update rosetta (b41f3403cf)
+
+- ctrans: add atoi helper and update rosetta (b41f3403cf)
+
+- ctrans: add atoi helper and update rosetta (b41f3403cf)
+
+- ctrans: add atoi helper and update rosetta (b41f3403cf)
+
+- ctrans: add atoi helper and update rosetta (b41f3403cf)
+
+- ctrans: add atoi helper and update rosetta (b41f3403cf)
+
+- ctrans: add atoi helper and update rosetta (b41f3403cf)
+
+- ctrans: add atoi helper and update rosetta (b41f3403cf)
+
+- ctrans: add atoi helper and update rosetta (b41f3403cf)
+
+- ctrans: add atoi helper and update rosetta (b41f3403cf)
+
+- ctrans: add atoi helper and update rosetta (b41f3403cf)
+
+- ctrans: add atoi helper and update rosetta (b41f3403cf)
+
+- ctrans: add atoi helper and update rosetta (b41f3403cf)
+
+- ctrans: add atoi helper and update rosetta (b41f3403cf)
+
+- ctrans: add atoi helper and update rosetta (b41f3403cf)
+
+- ctrans: add atoi helper and update rosetta (b41f3403cf)
+
 - ctranspiler: handle count on list variables (4b47fc18ae)
 
 - ctranspiler: handle count on list variables (4b47fc18ae)
