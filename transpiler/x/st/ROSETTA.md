@@ -1,15 +1,15 @@
 # Smalltalk Transpiler Rosetta Results
 
 This checklist tracks the Rosetta Code programs transpiled into Smalltalk under `tests/rosetta/transpiler/st`.
-Last updated: 2025-07-24 08:29 +0700
+Last updated: 2025-07-24 13:19 +0700
 
-## Rosetta Golden Test Checklist (13/284)
+## Rosetta Golden Test Checklist (21/284)
 1. [x] 1 100-doors-2
 2. [x] 2 100-doors-3
 3. [x] 3 100-doors
 4. [x] 4 100-prisoners
 5. [ ] 5 15-puzzle-game
-6. [ ] 6 15-puzzle-solver
+6. [x] 6 15-puzzle-solver
 7. [x] 7 2048
 8. [ ] 8 21-game
 9. [x] 9 24-game-solve
@@ -19,26 +19,26 @@ Last updated: 2025-07-24 08:29 +0700
 13. [x] 13 99-bottles-of-beer-2
 14. [x] 14 99-bottles-of-beer
 15. [ ] 15 DNS-query
-16. [ ] 16 a+b
+16. [x] 16 a+b
 17. [ ] 17 abbreviations-automatic
 18. [ ] 18 abbreviations-easy
 19. [ ] 19 abbreviations-simple
 20. [x] 20 abc-problem
 21. [x] 21 abelian-sandpile-model-identity
 22. [x] 22 abelian-sandpile-model
-23. [ ] 23 abstract-type
+23. [x] 23 abstract-type
 24. [ ] 24 abundant-deficient-and-perfect-number-classifications
 25. [ ] 25 abundant-odd-numbers
 26. [ ] 26 accumulator-factory
 27. [ ] 27 achilles-numbers
-28. [ ] 28 ackermann-function-2
+28. [x] 28 ackermann-function-2
 29. [ ] 29 ackermann-function-3
 30. [ ] 30 ackermann-function
-31. [ ] 31 active-directory-connect
-32. [ ] 32 active-directory-search-for-a-user
-33. [ ] 33 active-object
+31. [x] 31 active-directory-connect
+32. [x] 32 active-directory-search-for-a-user
+33. [x] 33 active-object
 34. [ ] 34 add-a-variable-to-a-class-instance-at-runtime
-35. [ ] 35 additive-primes
+35. [x] 35 additive-primes
 36. [ ] 36 address-of-a-variable
 37. [ ] 37 adfgvx-cipher
 38. [ ] 38 aks-test-for-primes

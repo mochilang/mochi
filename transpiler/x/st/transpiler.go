@@ -20,6 +20,7 @@ import (
 	"gopkg.in/yaml.v3"
 
 	"mochi/parser"
+	testpkg "mochi/runtime/ffi/go/testpkg"
 	"mochi/types"
 )
 
@@ -782,6 +783,13 @@ func evalPostfix(p *parser.PostfixExpr, vars map[string]value) (value, error) {
 				return value{kind: valInt, i: a.i + b.i}, nil
 			}
 			return value{}, fmt.Errorf("bad args")
+		}
+		if p.Target.Selector.Root == "testpkg" && p.Target.Selector.Tail[0] == "FifteenPuzzleExample" {
+			call := p.Ops[0].Call
+			if len(call.Args) != 0 {
+				return value{}, fmt.Errorf("bad args")
+			}
+			return value{kind: valString, s: testpkg.FifteenPuzzleExample()}, nil
 		}
 		if pythonMathAliases[p.Target.Selector.Root] {
 			call := p.Ops[0].Call
