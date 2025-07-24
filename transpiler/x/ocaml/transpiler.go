@@ -26,6 +26,7 @@ import (
 var structFields = map[string]map[string]string{}
 var usesNow bool
 var usesLookupHost bool
+var funcMutations = map[string]map[string]bool{}
 
 // Program represents an OCaml program. All statements are emitted inside
 // a `let () =` block.
@@ -319,6 +320,49 @@ type VarInfo struct {
 	ref   bool
 	group bool
 	ret   string
+}
+
+func collectMutations(stmts []*parser.Statement, mutated map[string]bool) {
+	var walk func(list []*parser.Statement)
+	walk = func(list []*parser.Statement) {
+		for _, st := range list {
+			if st.Assign != nil {
+				mutated[st.Assign.Name] = true
+			}
+			if st.If != nil {
+				walk(st.If.Then)
+				if st.If.ElseIf != nil {
+					walk([]*parser.Statement{{If: st.If.ElseIf}})
+				}
+				walk(st.If.Else)
+			}
+			if st.While != nil {
+				walk(st.While.Body)
+			}
+			if st.For != nil {
+				walk(st.For.Body)
+			}
+		}
+	}
+	walk(stmts)
+}
+
+func getFuncMutations(env *types.Env, name string) map[string]bool {
+	if m, ok := funcMutations[name]; ok {
+		return m
+	}
+	if fn, ok := env.GetFunc(name); ok {
+		m := map[string]bool{}
+		collectMutations(fn.Body, m)
+		funcMutations[name] = m
+		return m
+	}
+	return nil
+}
+
+// GetFuncMutations is an exported helper for tests/debugging.
+func GetFuncMutations(name string) map[string]bool {
+	return funcMutations[name]
 }
 
 func guessTypeFromName(name string) string {
@@ -2488,6 +2532,9 @@ func transpileStmt(st *parser.Statement, env *types.Env, vars map[string]VarInfo
 		for k, v := range vars {
 			fnVars[k] = v
 		}
+		mutated := map[string]bool{}
+		collectMutations(st.Fun.Body, mutated)
+		funcMutations[st.Fun.Name] = mutated
 		params := make([]string, len(st.Fun.Params))
 		for i, p := range st.Fun.Params {
 			params[i] = p.Name
@@ -2501,7 +2548,7 @@ func transpileStmt(st *parser.Statement, env *types.Env, vars map[string]VarInfo
 					typ = "int"
 				}
 			}
-			fnVars[p.Name] = VarInfo{typ: typ}
+			fnVars[p.Name] = VarInfo{typ: typ, ref: mutated[p.Name]}
 		}
 		body, err := transpileStmts(st.Fun.Body, child, fnVars)
 		if err != nil {
@@ -3405,6 +3452,8 @@ func convertFunExpr(fn *parser.FunExpr, env *types.Env, vars map[string]VarInfo)
 	for k, v := range vars {
 		fnVars[k] = v
 	}
+	mutated := map[string]bool{}
+	collectMutations(fn.BlockBody, mutated)
 	params := make([]string, len(fn.Params))
 	for i, p := range fn.Params {
 		typ := "int"
@@ -3414,7 +3463,7 @@ func convertFunExpr(fn *parser.FunExpr, env *types.Env, vars map[string]VarInfo)
 				typ = "int"
 			}
 		}
-		fnVars[p.Name] = VarInfo{typ: typ}
+		fnVars[p.Name] = VarInfo{typ: typ, ref: mutated[p.Name]}
 		params[i] = p.Name
 	}
 	var retExpr Expr
@@ -3906,10 +3955,17 @@ func convertCall(c *parser.CallExpr, env *types.Env, vars map[string]VarInfo) (E
 			}
 		}
 		args := make([]Expr, len(c.Args))
+		mutated := getFuncMutations(env, c.Func)
 		for i, a := range c.Args {
 			ex, _, err := convertExpr(a, env, vars)
 			if err != nil {
 				return nil, "", err
+			}
+			if i < len(fn.Params) {
+				if n, ok := ex.(*Name); ok && mutated != nil && mutated[fn.Params[i].Name] {
+					// pass reference without dereference
+					n.Ref = false
+				}
 			}
 			args[i] = ex
 		}
