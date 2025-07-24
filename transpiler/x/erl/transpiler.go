@@ -74,10 +74,20 @@ mochi_to_int(V) ->
     end.
 `
 
+const helperBitLen = `
+mochi_bit_len(N) ->
+    case N of
+        0 -> 0;
+        _ when N > 0 -> byte_size(binary:encode_unsigned(N)) * 8;
+        _ -> 0
+    end.
+`
+
 var useNow bool
 var useLookupHost bool
 var useToInt bool
 var useMemberHelper bool
+var useBitLen bool
 var mutatedFuncs map[string]int
 
 // loopStack tracks variable names for nested loops to handle continue.
@@ -93,6 +103,7 @@ type Program struct {
 	UseLookupHost   bool
 	UseToInt        bool
 	UseMemberHelper bool
+	UseBitLen       bool
 }
 
 // context tracks variable aliases to emulate mutable variables.
@@ -2175,7 +2186,7 @@ func mapOp(op string) string {
 
 func builtinFunc(name string) bool {
 	switch name {
-	case "print", "append", "avg", "count", "len", "str", "sum", "min", "max", "values", "keys", "exists", "json", "now", "input", "int", "abs", "upper", "lower":
+	case "print", "append", "avg", "count", "len", "str", "sum", "min", "max", "values", "keys", "exists", "json", "now", "input", "int", "abs", "upper", "lower", "bit_len":
 		return true
 	default:
 		return false
@@ -2347,6 +2358,7 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	useLookupHost = false
 	useToInt = false
 	useMemberHelper = false
+	useBitLen = false
 	mutatedFuncs = map[string]int{"topple": 0}
 	p := &Program{}
 	for _, st := range prog.Statements {
@@ -2368,6 +2380,7 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	p.UseLookupHost = useLookupHost
 	p.UseToInt = useToInt
 	p.UseMemberHelper = useMemberHelper
+	p.UseBitLen = useBitLen
 	return p, nil
 }
 
@@ -3494,6 +3507,14 @@ func convertPrimary(p *parser.Primary, env *types.Env, ctx *context) (Expr, erro
 		}
 		if p.Call.Func == "int" && len(p.Call.Args) == 1 {
 			useToInt = true
+		}
+		if p.Call.Func == "bit_len" && len(p.Call.Args) == 1 {
+			useBitLen = true
+			arg, err := convertExpr(p.Call.Args[0], env, ctx)
+			if err != nil {
+				return nil, err
+			}
+			return &CallExpr{Func: "mochi_bit_len", Args: []Expr{arg}}, nil
 		}
 		name := p.Call.Func
 		if !builtinFunc(name) {
@@ -4631,6 +4652,10 @@ func (p *Program) Emit() []byte {
 	}
 	if p.UseMemberHelper {
 		buf.WriteString(helperMember)
+		buf.WriteString("\n")
+	}
+	if p.UseBitLen {
+		buf.WriteString(helperBitLen)
 		buf.WriteString("\n")
 	}
 	for _, f := range p.Funs {
