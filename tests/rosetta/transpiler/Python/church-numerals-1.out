@@ -1,0 +1,7 @@
+three        -> 3
+four         -> 4
+three + four -> 7
+three * four -> 12
+three ^ four -> 81
+four ^ three -> 64
+5 -> five    -> 5

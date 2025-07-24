@@ -4246,6 +4246,47 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 			return nil, err
 		}
 		return &LambdaExpr{Params: params, Expr: body}, nil
+	case p.FunExpr != nil && len(p.FunExpr.BlockBody) == 1:
+		if ret := p.FunExpr.BlockBody[0].Return; ret != nil && ret.Value != nil {
+			var params []string
+			for _, pa := range p.FunExpr.Params {
+				params = append(params, pa.Name)
+			}
+			body, err := convertExpr(ret.Value)
+			if err != nil {
+				return nil, err
+			}
+			return &LambdaExpr{Params: params, Expr: body}, nil
+		}
+		if ex := p.FunExpr.BlockBody[0].Expr; ex != nil {
+			var params []string
+			for _, pa := range p.FunExpr.Params {
+				params = append(params, pa.Name)
+			}
+			body, err := convertExpr(ex.Expr)
+			if err != nil {
+				return nil, err
+			}
+			return &LambdaExpr{Params: params, Expr: body}, nil
+		}
+		return nil, fmt.Errorf("unsupported expression")
+	case p.FunExpr != nil && len(p.FunExpr.BlockBody) > 1:
+		exprs := []Expr{}
+		for _, st := range p.FunExpr.BlockBody {
+			if st.Expr == nil {
+				return nil, fmt.Errorf("unsupported expression")
+			}
+			e, err := convertExpr(st.Expr.Expr)
+			if err != nil {
+				return nil, err
+			}
+			exprs = append(exprs, e)
+		}
+		var params []string
+		for _, pa := range p.FunExpr.Params {
+			params = append(params, pa.Name)
+		}
+		return &LambdaExpr{Params: params, Expr: &ListLit{Elems: exprs}}, nil
 	case p.If != nil:
 		return convertIfExpr(p.If)
 	case p.Match != nil:
