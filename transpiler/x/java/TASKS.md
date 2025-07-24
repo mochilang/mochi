@@ -1,4 +1,76 @@
-## Progress (2025-07-25 00:31 +0700)
+## Progress (2025-07-25 01:07 +0700)
+- hs transpiler: handle int division cast (c922ad38fa)
+
+- hs transpiler: handle int division cast (c922ad38fa)
+
+- hs transpiler: handle int division cast (c922ad38fa)
+
+- hs transpiler: handle int division cast (c922ad38fa)
+
+- hs transpiler: handle int division cast (c922ad38fa)
+
+- hs transpiler: handle int division cast (c922ad38fa)
+
+- hs transpiler: handle int division cast (c922ad38fa)
+
+- hs transpiler: handle int division cast (c922ad38fa)
+
+- hs transpiler: handle int division cast (c922ad38fa)
+
+- hs transpiler: handle int division cast (c922ad38fa)
+
+- hs transpiler: handle int division cast (c922ad38fa)
+
+- hs transpiler: handle int division cast (c922ad38fa)
+
+- hs transpiler: handle int division cast (c922ad38fa)
+
+- hs transpiler: handle int division cast (c922ad38fa)
+
+- hs transpiler: handle int division cast (c922ad38fa)
+
+- hs transpiler: handle int division cast (c922ad38fa)
+
+- hs transpiler: handle int division cast (c922ad38fa)
+
+- hs transpiler: handle int division cast (c922ad38fa)
+
+- hs transpiler: handle int division cast (c922ad38fa)
+
+- hs transpiler: handle int division cast (c922ad38fa)
+
+- hs transpiler: handle int division cast (c922ad38fa)
+
+- hs transpiler: handle int division cast (c922ad38fa)
+
+- hs transpiler: handle int division cast (c922ad38fa)
+
+- hs transpiler: handle int division cast (c922ad38fa)
+
+- hs transpiler: handle int division cast (c922ad38fa)
+
+- hs transpiler: handle int division cast (c922ad38fa)
+
+- hs transpiler: handle int division cast (c922ad38fa)
+
+- hs transpiler: handle int division cast (c922ad38fa)
+
+- hs transpiler: handle int division cast (c922ad38fa)
+
+- hs transpiler: handle int division cast (c922ad38fa)
+
+- hs transpiler: handle int division cast (c922ad38fa)
+
+- hs transpiler: handle int division cast (c922ad38fa)
+
+- hs transpiler: handle int division cast (c922ad38fa)
+
+- hs transpiler: handle int division cast (c922ad38fa)
+
+- hs transpiler: handle int division cast (c922ad38fa)
+
+- hs transpiler: handle int division cast (c922ad38fa)
+
 - ocaml transpiler: support dynamic function calls and map keys (c9e041ed6e)
 
 - ocaml transpiler: support dynamic function calls and map keys (c9e041ed6e)

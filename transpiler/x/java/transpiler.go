@@ -87,6 +87,15 @@ func javaType(t string) string {
 		if t == "" {
 			return ""
 		}
+		if strings.HasPrefix(t, "string") {
+			return "String" + t[len("string"):]
+		}
+		if strings.HasPrefix(t, "bool") {
+			return "boolean" + t[len("bool"):]
+		}
+		if strings.HasPrefix(t, "boolean") && t != "boolean" {
+			return "boolean" + t[len("boolean"):]
+		}
 		if strings.HasPrefix(t, "fn(") {
 			start := strings.Index(t, "(") + 1
 			end := strings.Index(t, ")")
@@ -376,6 +385,9 @@ func inferType(e Expr) string {
 			return "Object"
 		}
 	case *VarExpr:
+		if ex.Type != "" {
+			return ex.Type
+		}
 		if t, ok := varTypes[ex.Name]; ok {
 			return t
 		}
@@ -1077,20 +1089,19 @@ func (m *MapLit) emit(w io.Writer) {
 			valType = javaBoxType(t)
 		}
 	}
-	fmt.Fprintf(w, "new java.util.LinkedHashMap<String, %s>()", valType)
 	if len(m.Keys) > 0 {
-		fmt.Fprint(w, "{{")
+		fmt.Fprintf(w, "new java.util.LinkedHashMap<String, %s>(java.util.Map.of(", valType)
 		for i := range m.Keys {
 			if i > 0 {
-				fmt.Fprint(w, " ")
+				fmt.Fprint(w, ", ")
 			}
-			fmt.Fprint(w, "put(")
 			m.Keys[i].emit(w)
 			fmt.Fprint(w, ", ")
 			m.Values[i].emit(w)
-			fmt.Fprint(w, ");")
 		}
-		fmt.Fprint(w, "}}")
+		fmt.Fprint(w, "))")
+	} else {
+		fmt.Fprintf(w, "new java.util.LinkedHashMap<String, %s>()", valType)
 	}
 }
 
