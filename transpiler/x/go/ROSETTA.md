@@ -1,7 +1,7 @@
 # Go Rosetta Transpiler Output
 
-Completed programs: 87/284
-Last updated: 2025-07-24 14:40 +0700
+Completed programs: 99/284
+Last updated: 2025-07-24 15:13 +0700
 
 Checklist:
 
@@ -100,36 +100,36 @@ Checklist:
 93. [x] averages-root-mean-square (93)
 94. [x] averages-simple-moving-average (94)
 95. [x] avl-tree (95)
-96. [ ] b-zier-curves-intersections (96)
-97. [ ] babbage-problem (97)
-98. [ ] babylonian-spiral (98)
-99. [ ] balanced-brackets (99)
+96. [x] b-zier-curves-intersections (96)
+97. [x] babbage-problem (97)
+98. [x] babylonian-spiral (98)
+99. [x] balanced-brackets (99)
 100. [ ] balanced-ternary (100)
 101. [ ] barnsley-fern (101)
 102. [ ] base64-decode-data (102)
 103. [ ] bell-numbers (103)
-104. [ ] benfords-law (104)
+104. [x] benfords-law (104)
 105. [ ] bernoulli-numbers (105)
 106. [ ] best-shuffle (106)
-107. [ ] bifid-cipher (107)
-108. [ ] bin-given-limits (108)
+107. [x] bifid-cipher (107)
+108. [x] bin-given-limits (108)
 109. [ ] binary-digits (109)
-110. [ ] binary-search (110)
+110. [x] binary-search (110)
 111. [ ] binary-strings (111)
-112. [ ] bioinformatics-base-count (112)
+112. [x] bioinformatics-base-count (112)
 113. [ ] bioinformatics-global-alignment (113)
 114. [ ] bioinformatics-sequence-mutation (114)
 115. [ ] biorhythms (115)
 116. [ ] bitcoin-address-validation (116)
 117. [ ] bitmap-b-zier-curves-cubic (117)
 118. [ ] bitmap-b-zier-curves-quadratic (118)
-119. [ ] bitmap-bresenhams-line-algorithm (119)
+119. [x] bitmap-bresenhams-line-algorithm (119)
 120. [ ] bitmap-flood-fill (120)
 121. [ ] bitmap-histogram (121)
-122. [ ] bitmap-midpoint-circle-algorithm (122)
+122. [x] bitmap-midpoint-circle-algorithm (122)
 123. [ ] bitmap-ppm-conversion-through-a-pipe (123)
 124. [ ] bitmap-read-a-ppm-file (124)
-125. [ ] bitmap-read-an-image-through-a-pipe (125)
+125. [x] bitmap-read-an-image-through-a-pipe (125)
 126. [ ] bitmap-write-a-ppm-file (126)
 127. [ ] bitmap (127)
 128. [ ] bitwise-io-1 (128)
