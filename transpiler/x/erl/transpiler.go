@@ -1799,52 +1799,82 @@ func (ws *WhileStmt) emit(w io.Writer) {
 		}
 		io.WriteString(w, p)
 	}
-	io.WriteString(w, ") ->\n    case ")
-	ws.Cond.emit(w)
-	io.WriteString(w, " of\n        true ->\n            try")
-	for _, st := range ws.Body {
+	io.WriteString(w, ") ->\n")
+	if containsLoopCtrl(ws.Body) {
+		io.WriteString(w, "    case ")
+		ws.Cond.emit(w)
+		io.WriteString(w, " of\n        true ->\n            try")
+		for _, st := range ws.Body {
+			io.WriteString(w, "\n                ")
+			st.emit(w)
+			io.WriteString(w, ",")
+		}
 		io.WriteString(w, "\n                ")
-		st.emit(w)
-		io.WriteString(w, ",")
-	}
-	io.WriteString(w, "\n                ")
-	io.WriteString(w, loopName)
-	io.WriteString(w, "(")
-	for i, a := range ws.Next {
-		if i > 0 {
-			io.WriteString(w, ", ")
+		io.WriteString(w, loopName)
+		io.WriteString(w, "(")
+		for i, a := range ws.Next {
+			if i > 0 {
+				io.WriteString(w, ", ")
+			}
+			io.WriteString(w, a)
 		}
-		io.WriteString(w, a)
-	}
-	io.WriteString(w, ")\n            catch\n                {continue")
-	for i := range ws.Next {
-		io.WriteString(w, ", ")
-		fmt.Fprintf(w, "C%d", i)
-	}
-	io.WriteString(w, "} -> ")
-	io.WriteString(w, loopName)
-	io.WriteString(w, "(")
-	for i := range ws.Next {
-		if i > 0 {
+		io.WriteString(w, ")\n            catch\n                {continue")
+		for i := range ws.Next {
 			io.WriteString(w, ", ")
+			fmt.Fprintf(w, "C%d", i)
 		}
-		fmt.Fprintf(w, "C%d", i)
-	}
-	io.WriteString(w, ");\n                break -> {")
-	for i, p := range ws.Params {
-		if i > 0 {
-			io.WriteString(w, ", ")
+		io.WriteString(w, "} -> ")
+		io.WriteString(w, loopName)
+		io.WriteString(w, "(")
+		for i := range ws.Next {
+			if i > 0 {
+				io.WriteString(w, ", ")
+			}
+			fmt.Fprintf(w, "C%d", i)
 		}
-		io.WriteString(w, p)
-	}
-	io.WriteString(w, "}\n            end;\n        _ -> {")
-	for i, p := range ws.Params {
-		if i > 0 {
-			io.WriteString(w, ", ")
+		io.WriteString(w, ");\n                break -> {")
+		for i, p := range ws.Params {
+			if i > 0 {
+				io.WriteString(w, ", ")
+			}
+			io.WriteString(w, p)
 		}
-		io.WriteString(w, p)
+		io.WriteString(w, "}\n            end;\n        _ -> {")
+		for i, p := range ws.Params {
+			if i > 0 {
+				io.WriteString(w, ", ")
+			}
+			io.WriteString(w, p)
+		}
+		io.WriteString(w, "}\n    end")
+	} else {
+		io.WriteString(w, "    case ")
+		ws.Cond.emit(w)
+		io.WriteString(w, " of\n        true ->")
+		for _, st := range ws.Body {
+			io.WriteString(w, "\n            ")
+			st.emit(w)
+			io.WriteString(w, ",")
+		}
+		io.WriteString(w, "\n            ")
+		io.WriteString(w, loopName)
+		io.WriteString(w, "(")
+		for i, a := range ws.Next {
+			if i > 0 {
+				io.WriteString(w, ", ")
+			}
+			io.WriteString(w, a)
+		}
+		io.WriteString(w, ");\n        _ -> {")
+		for i, p := range ws.Params {
+			if i > 0 {
+				io.WriteString(w, ", ")
+			}
+			io.WriteString(w, p)
+		}
+		io.WriteString(w, "}\n    end")
 	}
-	io.WriteString(w, "}\n    end\nend,\n{")
+	io.WriteString(w, "\nend,\n{")
 	for i, a := range ws.Next {
 		if i > 0 {
 			io.WriteString(w, ", ")
@@ -2894,6 +2924,14 @@ func convertFunStmt(fn *parser.FunStmt, env *types.Env, ctx *context) (*FuncDecl
 	for i, p := range fn.Params {
 		params[i] = fctx.newAlias(p.Name)
 		fctx.addParam(p.Name)
+		if p.Type != nil {
+			if p.Type.Simple != nil && *p.Type.Simple == "string" {
+				fctx.setStringVar(p.Name, true)
+			}
+			if p.Type.Generic != nil && p.Type.Generic.Name == "map" {
+				fctx.setMapVar(p.Name, true)
+			}
+		}
 	}
 	var stmts []Stmt
 	var ret Expr
