@@ -1,5 +1,5 @@
-## Progress (2025-07-23 13:23 +0700)
-- rb transpiler: handle null literals and map get; add _add helper
+## Progress (2025-07-24 00:44 +0700)
+- transpiler(py): add rosetta outputs up to index 164
 - Generated golden tests for 101/103 programs
 - Updated README checklist and output artifacts
 
