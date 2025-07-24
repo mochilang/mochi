@@ -1,3 +1,33 @@
+## Progress (2025-07-24 07:28:23 +0700)
+- hs transpiler: handle while expr returns
+
+## Progress (2025-07-24 07:28:23 +0700)
+- hs transpiler: handle while expr returns
+
+## Progress (2025-07-24 07:28:23 +0700)
+- hs transpiler: handle while expr returns
+
+## Progress (2025-07-24 07:28:23 +0700)
+- hs transpiler: handle while expr returns
+
+## Progress (2025-07-24 07:28:23 +0700)
+- hs transpiler: handle while expr returns
+
+## Progress (2025-07-24 07:28:23 +0700)
+- hs transpiler: handle while expr returns
+
+## Progress (2025-07-24 07:28:23 +0700)
+- hs transpiler: handle while expr returns
+
+## Progress (2025-07-24 07:28:23 +0700)
+- hs transpiler: handle while expr returns
+
+## Progress (2025-07-24 07:28:23 +0700)
+- hs transpiler: handle while expr returns
+
+## Progress (2025-07-24 07:28:23 +0700)
+- hs transpiler: handle while expr returns
+
 ## Progress (2025-07-22 11:17:41 +0700)
 - fortran: support nested list assignment
 - Regenerated golden files - 79/102 vm valid programs passing

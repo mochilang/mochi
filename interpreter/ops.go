@@ -129,7 +129,7 @@ func (i *Interpreter) applyIndex(val any, idx *parser.IndexOp) (any, error) {
 			if err != nil {
 				return nil, err
 			}
-			n, ok := index.(int)
+			n, ok := toInt(index)
 			if !ok {
 				return nil, errInvalidIndex(idx.Pos, index)
 			}
@@ -147,7 +147,7 @@ func (i *Interpreter) applyIndex(val any, idx *parser.IndexOp) (any, error) {
 			if err != nil {
 				return nil, err
 			}
-			if n, ok := s.(int); ok {
+			if n, ok := toInt(s); ok {
 				if n < 0 {
 					n += len(src)
 				}
@@ -161,7 +161,7 @@ func (i *Interpreter) applyIndex(val any, idx *parser.IndexOp) (any, error) {
 			if err != nil {
 				return nil, err
 			}
-			if n, ok := e.(int); ok {
+			if n, ok := toInt(e); ok {
 				if n < 0 {
 					n += len(src)
 				}
@@ -175,7 +175,7 @@ func (i *Interpreter) applyIndex(val any, idx *parser.IndexOp) (any, error) {
 			if err != nil {
 				return nil, err
 			}
-			if n, ok := st.(int); ok {
+			if n, ok := toInt(st); ok {
 				step = n
 			} else {
 				return nil, errInvalidIndex(idx.Pos, st)
@@ -215,7 +215,7 @@ func (i *Interpreter) applyIndex(val any, idx *parser.IndexOp) (any, error) {
 			if err != nil {
 				return nil, err
 			}
-			n, ok := index.(int)
+			n, ok := toInt(index)
 			if !ok {
 				return nil, errInvalidIndex(idx.Pos, index)
 			}
@@ -233,7 +233,7 @@ func (i *Interpreter) applyIndex(val any, idx *parser.IndexOp) (any, error) {
 			if err != nil {
 				return nil, err
 			}
-			if n, ok := s.(int); ok {
+			if n, ok := toInt(s); ok {
 				if n < 0 {
 					n += len(runes)
 				}
@@ -247,7 +247,7 @@ func (i *Interpreter) applyIndex(val any, idx *parser.IndexOp) (any, error) {
 			if err != nil {
 				return nil, err
 			}
-			if n, ok := e.(int); ok {
+			if n, ok := toInt(e); ok {
 				if n < 0 {
 					n += len(runes)
 				}
@@ -261,7 +261,7 @@ func (i *Interpreter) applyIndex(val any, idx *parser.IndexOp) (any, error) {
 			if err != nil {
 				return nil, err
 			}
-			if n, ok := st.(int); ok {
+			if n, ok := toInt(st); ok {
 				step = n
 			} else {
 				return nil, errInvalidIndex(idx.Pos, st)
