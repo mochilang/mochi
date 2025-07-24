@@ -23,17 +23,17 @@ func UpdateRosettaChecklist() {
 	total := len(files)
 	compiled := 0
 	var lines []string
-       for i, f := range files {
-               name := strings.TrimSuffix(filepath.Base(f), ".mochi")
-               mark := "[ ]"
-               if _, err := os.Stat(filepath.Join(outDir, name+".kt")); err == nil {
-                       if _, errE := os.Stat(filepath.Join(outDir, name+".error")); errE != nil {
-                               compiled++
-                               mark = "[x]"
-                       }
-               }
-               lines = append(lines, fmt.Sprintf("%d. %s `%s`", i+1, mark, name))
-       }
+	for i, f := range files {
+		name := strings.TrimSuffix(filepath.Base(f), ".mochi")
+		mark := "[ ]"
+		if _, err := os.Stat(filepath.Join(outDir, name+".kt")); err == nil {
+			if _, errE := os.Stat(filepath.Join(outDir, name+".error")); errE != nil {
+				compiled++
+				mark = "[x]"
+			}
+		}
+		lines = append(lines, fmt.Sprintf("%d. %s `%s` (%d)", i+1, mark, name, i+1))
+	}
 	out, err := exec.Command("git", "log", "-1", "--date=iso-strict", "--format=%cd").Output()
 	ts := ""
 	if err == nil {

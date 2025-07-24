@@ -305,7 +305,7 @@ func (d *DataClass) emit(w io.Writer, indentLevel int) {
 		if typ == "" {
 			typ = "Any"
 		}
-		io.WriteString(w, "val "+f.Name+": "+typ)
+		io.WriteString(w, "var "+f.Name+": "+typ)
 	}
 	io.WriteString(w, ")")
 	if d.Extends != "" {
@@ -1946,15 +1946,19 @@ func newVarRef(env *types.Env, name string) *VarRef {
 	}
 	typ := ""
 	isFunc := false
+	hasVar := false
 	if env != nil {
 		if t, err := env.GetVar(name); err == nil {
 			typ = kotlinTypeFromType(t)
+			hasVar = true
 		}
-		if _, ok := env.GetFunc(name); ok {
-			isFunc = true
+		if !hasVar {
+			if _, ok := env.GetFunc(name); ok {
+				isFunc = true
+			}
 		}
 	}
-	if localFuncs[name] {
+	if !hasVar && localFuncs[name] {
 		isFunc = true
 	}
 	return &VarRef{Name: name, Type: typ, IsFunc: isFunc}
