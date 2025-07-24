@@ -2,7 +2,7 @@
 
 This directory contains OCaml code generated from Rosetta Code programs in `tests/rosetta/x/Mochi`.
 
-Completed programs: 20/284
+Completed programs: 22/284
 
 1. [x] 100-doors-2 (1)
 2. [x] 100-doors-3 (2)
@@ -24,8 +24,8 @@ Completed programs: 20/284
 18. [x] abbreviations-easy (18)
 19. [x] abbreviations-simple (19)
 20. [x] abc-problem (20)
-21. [ ] abelian-sandpile-model-identity (21)
-22. [ ] abelian-sandpile-model (22)
+21. [x] abelian-sandpile-model-identity (21)
+22. [x] abelian-sandpile-model (22)
 23. [ ] abstract-type (23)
 24. [ ] abundant-deficient-and-perfect-number-classifications (24)
 25. [ ] abundant-odd-numbers (25)
@@ -288,4 +288,4 @@ Completed programs: 20/284
 282. [ ] deepcopy-1 (282)
 283. [ ] define-a-primitive-data-type (283)
 284. [ ] md5 (284)
-Last updated 2025-07-24 13:03 +0700
+Last updated 2025-07-24 19:43 +0700
