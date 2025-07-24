@@ -737,7 +737,9 @@ func (f *Func) emit(w io.Writer) {
 		if typ == "" {
 			io.WriteString(w, "auto ")
 		} else {
-			if strings.HasPrefix(typ, "std::vector<") || strings.HasPrefix(typ, "std::map<") {
+			if strings.HasPrefix(typ, "std::vector<") {
+				io.WriteString(w, "const "+typ+"& ")
+			} else if strings.HasPrefix(typ, "std::map<") {
 				io.WriteString(w, typ+"& ")
 			} else {
 				io.WriteString(w, typ+" ")
