@@ -2,9 +2,9 @@
 
 Generated Lua code for programs in `tests/rosetta/x/Mochi`. Each program has a `.lua` file produced by the transpiler and a `.out` file with its runtime output. Compilation or runtime errors are captured in `.error` files.
 
-Transpiled programs: 133/284
+Transpiled programs: 134/284
 
-Last updated: 2025-07-24 18:57 GMT+7
+Last updated: 2025-07-24 20:01 GMT+7
 
 Checklist:
 
@@ -145,7 +145,7 @@ Checklist:
 135. [x] brazilian-numbers (135)
 136. [x] break-oo-privacy (136)
 137. [x] brilliant-numbers (137)
-138. [ ] brownian-tree (138)
+138. [x] brownian-tree (138)
 139. [ ] bulls-and-cows-player (139)
 140. [ ] bulls-and-cows (140)
 141. [ ] burrows-wheeler-transform (141)
