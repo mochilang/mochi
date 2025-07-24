@@ -891,6 +891,7 @@ func (we *WhileExpr) emit(w io.Writer) {
 	io.WriteString(w, "(let\n")
 	pushIndent()
 	writeIndent(w)
+	io.WriteString(w, "in ")
 	io.WriteString(w, name)
 	if we.Var != "" && !mutated[we.Var] {
 		io.WriteString(w, " ")
@@ -937,6 +938,7 @@ func (we *WhileExpr) emit(w io.Writer) {
 	popIndent()
 	popIndent()
 	writeIndent(w)
+	io.WriteString(w, "in ")
 	io.WriteString(w, name)
 	if we.Var != "" && !mutated[we.Var] {
 		io.WriteString(w, " ")
@@ -3320,6 +3322,12 @@ func convertWhileStmt(w *parser.WhileStmt) (Stmt, error) {
 }
 
 func convertStmtList(list []*parser.Statement) ([]Stmt, error) {
+	if locals == nil {
+		locals = map[string]bool{}
+	}
+	if mutated == nil {
+		mutated = map[string]bool{}
+	}
 	var out []Stmt
 	for i := 0; i < len(list); i++ {
 		st := list[i]
