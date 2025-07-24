@@ -1,3 +1,7 @@
+## Progress (2025-07-25 00:53 +0700)
+- remove stale error file
+- Generated F# for 102/103 programs (102 passing)
+
 ## Progress (2025-07-24 20:52 +0700)
 - php: add str helper and transpile bitmap-histogram
 - Generated F# for 102/103 programs (102 passing)
