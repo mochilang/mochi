@@ -128,6 +128,22 @@ func safeName(n string) string {
 	return n
 }
 
+func shouldWrapCall(name string) bool {
+	switch name {
+	case "input", "print", "putStrLn", "trace":
+		return false
+	}
+	if strings.Contains(name, ".") {
+		return false
+	}
+	if envInfo != nil {
+		if _, ok := envInfo.GetFunc(name); ok {
+			return true
+		}
+	}
+	return false
+}
+
 func pushIndent() { indent += "    " }
 func popIndent() {
 	if len(indent) >= 4 {
@@ -172,21 +188,77 @@ func markMutated(name string) {
 }
 
 func typeNameFromRef(tr *parser.TypeRef) string {
-	if tr == nil || tr.Simple == nil {
+	if tr == nil {
 		return "String"
 	}
-	switch *tr.Simple {
-	case "int":
-		return "Int"
-	case "float":
-		return "Double"
-	case "bool":
-		return "Bool"
-	case "string":
-		return "String"
-	default:
-		return *tr.Simple
+	if tr.Simple != nil {
+		switch *tr.Simple {
+		case "int":
+			return "Int"
+		case "float":
+			return "Double"
+		case "bool":
+			return "Bool"
+		case "string":
+			return "String"
+		default:
+			return *tr.Simple
+		}
 	}
+	if tr.Generic != nil {
+		name := tr.Generic.Name
+		args := tr.Generic.Args
+		switch name {
+		case "list":
+			if len(args) == 1 {
+				return "[" + typeNameFromRef(args[0]) + "]"
+			}
+		case "map":
+			if len(args) == 2 {
+				needDataMap = true
+				return "Map.Map " + typeNameFromRef(args[0]) + " " + typeNameFromRef(args[1])
+			}
+		case "maybe":
+			if len(args) == 1 {
+				return "Maybe " + typeNameFromRef(args[0])
+			}
+		default:
+			parts := make([]string, len(args))
+			for i, a := range args {
+				parts[i] = typeNameFromRef(a)
+			}
+			if len(parts) > 0 {
+				return name + " " + strings.Join(parts, " ")
+			}
+			return name
+		}
+	}
+	if tr.Struct != nil {
+		structCount++
+		name := fmt.Sprintf("AnonStruct%d", structCount)
+		fields := make([]string, len(tr.Struct.Fields))
+		typestr := make([]string, len(tr.Struct.Fields))
+		for i, f := range tr.Struct.Fields {
+			fields[i] = f.Name
+			typestr[i] = typeNameFromRef(f.Type)
+			preludeHide[f.Name] = true
+		}
+		structDefs[name] = &TypeDecl{Name: name, Fields: fields, Types: typestr}
+		return name
+	}
+	if tr.Fun != nil {
+		params := make([]string, len(tr.Fun.Params))
+		for i, p := range tr.Fun.Params {
+			params[i] = typeNameFromRef(p)
+		}
+		ret := typeNameFromRef(tr.Fun.Return)
+		if ret == "" {
+			ret = "()"
+		}
+		params = append(params, ret)
+		return strings.Join(params, " -> ")
+	}
+	return "String"
 }
 
 func recordType(name string, ex Expr) {
@@ -2396,7 +2468,11 @@ func convertPostfix(pf *parser.PostfixExpr) (Expr, error) {
 			if n, ok := expr.(*NameRef); ok && n.Name == "str" && len(args) == 1 {
 				expr = &CallExpr{Fun: &NameRef{Name: "show"}, Args: args}
 			} else {
-				expr = &CallExpr{Fun: expr, Args: args}
+				call := &CallExpr{Fun: expr, Args: args}
+				if n, ok := expr.(*NameRef); ok && shouldWrapCall(n.Name) {
+					call = &CallExpr{Fun: &NameRef{Name: "unsafePerformIO"}, Args: []Expr{call}}
+				}
+				expr = call
 			}
 			continue
 		}
