@@ -49,6 +49,7 @@ var unsafeFuncs map[string]bool
 var funcDepth int
 var usesInput bool
 var usesInt bool
+var useAbs bool
 var builtinAliases map[string]string
 var globalRenames map[string]string
 var globalRenameBack map[string]string
@@ -108,6 +109,7 @@ type Program struct {
 	UseTime     bool
 	UseInput    bool
 	UseInt      bool
+	UseAbs      bool
 	Types       []TypeDecl
 	Globals     []*VarDecl
 }
@@ -495,9 +497,10 @@ type SliceExpr struct {
 func (s *SliceExpr) emit(w io.Writer) {
 	s.Target.emit(w)
 	io.WriteString(w, "[")
+	tgt := inferType(s.Target)
 	if s.Start != nil {
 		s.Start.emit(w)
-		if inferType(s.Target) == "String" {
+		if tgt == "String" || strings.HasPrefix(tgt, "Vec<") {
 			io.WriteString(w, " as usize")
 		}
 	} else {
@@ -506,12 +509,12 @@ func (s *SliceExpr) emit(w io.Writer) {
 	io.WriteString(w, "..")
 	if s.End != nil {
 		s.End.emit(w)
-		if inferType(s.Target) == "String" {
+		if tgt == "String" || strings.HasPrefix(tgt, "Vec<") {
 			io.WriteString(w, " as usize")
 		}
 	}
 	io.WriteString(w, "]")
-	if inferType(s.Target) == "String" {
+	if tgt == "String" {
 		io.WriteString(w, ".to_string()")
 	} else {
 		io.WriteString(w, ".to_vec()")
@@ -652,11 +655,13 @@ type LenExpr struct{ Arg Expr }
 
 func (l *LenExpr) emit(w io.Writer) {
 	if nr, ok := l.Arg.(*NameRef); ok && groupVars[nr.Name] {
+		io.WriteString(w, "(")
 		l.Arg.emit(w)
-		io.WriteString(w, ".items.len() as i64")
+		io.WriteString(w, ".items.len() as i64)")
 	} else {
+		io.WriteString(w, "(")
 		l.Arg.emit(w)
-		io.WriteString(w, ".len() as i64")
+		io.WriteString(w, ".len() as i64)")
 	}
 }
 
@@ -807,9 +812,18 @@ func (i *IntCastExpr) emit(w io.Writer) {
 	if inferType(i.Expr) == "i64" {
 		i.Expr.emit(w)
 	} else {
+		io.WriteString(w, "(")
 		i.Expr.emit(w)
-		io.WriteString(w, " as i64")
+		io.WriteString(w, " as i64)")
 	}
+}
+
+type AtoiExpr struct{ Expr Expr }
+
+func (a *AtoiExpr) emit(w io.Writer) {
+	io.WriteString(w, "{ let n: i64 = ")
+	a.Expr.emit(w)
+	io.WriteString(w, ".parse().unwrap(); n }")
 }
 
 // FloatCastExpr converts an expression to a 64-bit float.
@@ -819,8 +833,9 @@ func (f *FloatCastExpr) emit(w io.Writer) {
 	if inferType(f.Expr) == "f64" {
 		f.Expr.emit(w)
 	} else {
+		io.WriteString(w, "(")
 		f.Expr.emit(w)
-		io.WriteString(w, " as f64")
+		io.WriteString(w, " as f64)")
 	}
 }
 
@@ -993,10 +1008,34 @@ type BinaryExpr struct {
 
 func (b *BinaryExpr) emit(w io.Writer) {
 	if b.Op == "+" {
-		if inferType(b.Left) == "String" || inferType(b.Right) == "String" {
+		lt := inferType(b.Left)
+		rt := inferType(b.Right)
+		if lt == "String" || rt == "String" {
 			io.WriteString(w, "format!(\"{}{}\", ")
 			b.Left.emit(w)
 			io.WriteString(w, ", ")
+			b.Right.emit(w)
+			io.WriteString(w, ")")
+			return
+		}
+		if strings.HasPrefix(lt, "Vec<") && lt == rt {
+			io.WriteString(w, "{ let mut v = ")
+			b.Left.emit(w)
+			io.WriteString(w, ".clone(); v.extend(")
+			b.Right.emit(w)
+			io.WriteString(w, "); v }")
+			return
+		}
+	}
+	if b.Op == "<" || b.Op == "<=" || b.Op == ">" || b.Op == ">=" || b.Op == "==" || b.Op == "!=" {
+		lt := inferType(b.Left)
+		rt := inferType(b.Right)
+		if lt == "String" && rt == "String" {
+			io.WriteString(w, "(")
+			b.Left.emit(w)
+			io.WriteString(w, ".as_str() ")
+			io.WriteString(w, b.Op)
+			io.WriteString(w, " ")
 			b.Right.emit(w)
 			io.WriteString(w, ")")
 			return
@@ -1532,6 +1571,7 @@ func Transpile(p *parser.Program, env *types.Env) (*Program, error) {
 	useTime = false
 	usesInput = false
 	usesInt = false
+	useAbs = false
 	mapVars = make(map[string]bool)
 	stringVars = make(map[string]bool)
 	groupVars = make(map[string]bool)
@@ -1588,6 +1628,7 @@ func Transpile(p *parser.Program, env *types.Env) (*Program, error) {
 	prog.UseTime = useTime
 	prog.UseInput = usesInput
 	prog.UseInt = usesInt
+	prog.UseAbs = useAbs
 	return prog, nil
 }
 
@@ -2514,6 +2555,21 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 		if name == "int" && len(args) == 1 {
 			usesInt = true
 			funReturns[name] = "i64"
+			if inferType(args[0]) == "String" {
+				return &AtoiExpr{Expr: args[0]}, nil
+			}
+		}
+		if name == "float" && len(args) == 1 {
+			funReturns[name] = "f64"
+			return &FloatCastExpr{Expr: args[0]}, nil
+		}
+		if name == "abs" && len(args) == 1 {
+			useAbs = true
+			funReturns[name] = "f64"
+			if inferType(args[0]) != "f64" {
+				args[0] = &FloatCastExpr{Expr: args[0]}
+			}
+			return &CallExpr{Func: "abs", Args: []Expr{args[0]}}, nil
 		}
 		if ut, ok := curEnv.FindUnionByVariant(name); ok {
 			st, _ := curEnv.GetStruct(name)
@@ -3817,6 +3873,9 @@ func Emit(prog *Program) []byte {
 	}
 	if prog.UseInt {
 		buf.WriteString("fn int(x: i64) -> i64 { x }\n")
+	}
+	if prog.UseAbs {
+		buf.WriteString("fn abs(x: f64) -> f64 { x.abs() }\n")
 	}
 	for _, d := range prog.Types {
 		d.emit(&buf)
