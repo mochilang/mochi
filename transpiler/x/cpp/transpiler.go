@@ -116,6 +116,7 @@ type IntLit struct{ Value int }
 type FloatLit struct{ Value float64 }
 
 type BoolLit struct{ Value bool }
+type NullLit struct{}
 
 type StructLit struct {
 	Name   string
@@ -947,6 +948,10 @@ func (b *BoolLit) emit(w io.Writer) {
 	} else {
 		io.WriteString(w, "false")
 	}
+}
+
+func (n *NullLit) emit(w io.Writer) {
+	io.WriteString(w, "nullptr")
 }
 
 func (s *StructLit) emit(w io.Writer) {
@@ -3896,6 +3901,8 @@ func convertLiteral(l *parser.Literal) (Expr, error) {
 		return &FloatLit{Value: *l.Float}, nil
 	case l.Bool != nil:
 		return &BoolLit{Value: bool(*l.Bool)}, nil
+	case l.Null:
+		return &NullLit{}, nil
 	default:
 		return nil, fmt.Errorf("unsupported literal")
 	}
@@ -5097,6 +5104,8 @@ func exprType(e Expr) string {
 		return "double"
 	case *BoolLit:
 		return "bool"
+	case *NullLit:
+		return "std::any"
 	case *StringLit:
 		return "std::string"
 	case *StrExpr:
