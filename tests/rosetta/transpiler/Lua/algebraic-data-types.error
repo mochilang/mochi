@@ -1,0 +1,8 @@
+error[T043]: operator `+` cannot be used with `any`%!(EXTRA string=+)
+  --> /workspace/mochi/tests/rosetta/x/Mochi/algebraic-data-types.mochi:13:15
+
+ 13 |   return "T(" + m["cl"] + ", " + treeString(m["le"]) + ", " + str(m["aa"]) + ", " + treeString(m["ri"]) + ")"
+    |               ^
+
+help:
+  Cast values to concrete types before using `%s`.
