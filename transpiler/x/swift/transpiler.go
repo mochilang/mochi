@@ -24,9 +24,12 @@ import (
 	"mochi/types"
 )
 
+var usesNow bool
+
 // Program is a sequence of Swift statements.
 type Program struct {
-	Stmts []Stmt
+	Stmts  []Stmt
+	UseNow bool
 }
 
 type Stmt interface{ emit(io.Writer) }
@@ -932,7 +935,7 @@ func (c *CallExpr) emit(w io.Writer) {
 		}
 	case "now":
 		if len(c.Args) == 0 {
-			fmt.Fprint(w, "Int.random(in: 0..<Int.max)")
+			fmt.Fprint(w, "_now()")
 			return
 		}
 	}
@@ -1105,6 +1108,23 @@ func isAnyType(t types.Type) bool {
 func (p *Program) Emit() []byte {
 	var buf bytes.Buffer
 	buf.WriteString(header())
+	if p.UseNow {
+		buf.WriteString("var _nowSeed = 0\n")
+		buf.WriteString("var _nowSeeded = false\n")
+		buf.WriteString("func _now() -> Int {\n")
+		buf.WriteString("    if !_nowSeeded {\n")
+		buf.WriteString("        if let s = ProcessInfo.processInfo.environment[\"MOCHI_NOW_SEED\"], let v = Int(s) {\n")
+		buf.WriteString("            _nowSeed = v\n")
+		buf.WriteString("            _nowSeeded = true\n")
+		buf.WriteString("        }\n")
+		buf.WriteString("    }\n")
+		buf.WriteString("    if _nowSeeded {\n")
+		buf.WriteString("        _nowSeed = (_nowSeed * 1664525 + 1013904223) % 2147483647\n")
+		buf.WriteString("        return _nowSeed\n")
+		buf.WriteString("    }\n")
+		buf.WriteString("    return Int(Date().timeIntervalSince1970 * 1_000_000_000)\n")
+		buf.WriteString("}\n")
+	}
 	needJSON := false
 	for _, st := range p.Stmts {
 		if _, ok := st.(*SaveStmt); ok {
@@ -1133,12 +1153,14 @@ func (p *Program) Emit() []byte {
 
 // Transpile converts a Mochi program into a simple Swift AST.
 func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
+	usesNow = false
 	p := &Program{}
 	stmts, err := convertStmts(env, prog.Statements)
 	if err != nil {
 		return nil, err
 	}
 	p.Stmts = stmts
+	p.UseNow = usesNow
 	return p, nil
 }
 
@@ -2321,6 +2343,10 @@ func convertPostfix(env *types.Env, p *parser.PostfixExpr) (Expr, error) {
 		}
 		if op.Call != nil {
 			ce := &CallExpr{Func: exprString(expr)}
+			if ce.Func == "now" && len(op.Call.Args) == 0 {
+				usesNow = true
+				ce.Func = "_now"
+			}
 			var paramTypes []types.Type
 			if env != nil {
 				if t, err := env.GetVar(exprString(expr)); err == nil {
@@ -2785,6 +2811,10 @@ func convertPrimary(env *types.Env, pr *parser.Primary) (Expr, error) {
 				}
 			}
 			return expr, nil
+		}
+		if pr.Call.Func == "now" && len(pr.Call.Args) == 0 {
+			usesNow = true
+			return &CallExpr{Func: "_now"}, nil
 		}
 		if pr.Call.Func == "len" && len(pr.Call.Args) == 1 {
 			if n, ok := evalLenConst(pr.Call.Args[0]); ok {
