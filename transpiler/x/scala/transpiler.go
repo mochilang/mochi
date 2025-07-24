@@ -3637,7 +3637,11 @@ func formatScala(src []byte) []byte {
 			indent++
 		}
 	}
-	return []byte(strings.Join(out, "\n"))
+	result := strings.Join(out, "\n")
+	if !strings.HasSuffix(result, "\n") {
+		result += "\n"
+	}
+	return []byte(result)
 }
 
 func repoRoot() string {
