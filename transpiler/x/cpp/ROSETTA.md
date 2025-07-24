@@ -2,7 +2,7 @@
 
 This directory stores C++ code generated from Mochi programs in `tests/rosetta/x/Mochi`. Each file is compiled and executed during tests. Successful runs keep the generated `.cpp` source along with a matching `.out` file. Failures are recorded in `.error` files when tests run with `-update`.
 
-Checklist of programs that currently transpile and run (25/284) - Last updated 2025-07-24 17:32 +0700:
+Checklist of programs that currently transpile and run (26/284) - Last updated 2025-07-24 18:14 +0700:
 1. [x] 100-doors-2 (1)
 2. [x] 100-doors-3 (2)
 3. [x] 100-doors (3)
@@ -29,7 +29,7 @@ Checklist of programs that currently transpile and run (25/284) - Last updated 2
 24. [x] abundant-deficient-and-perfect-number-classifications (24)
 25. [x] abundant-odd-numbers (25)
 26. [x] accumulator-factory (26)
-27. [ ] achilles-numbers (27)
+27. [x] achilles-numbers (27)
 28. [ ] ackermann-function-2 (28)
 29. [ ] ackermann-function-3 (29)
 30. [ ] ackermann-function (30)

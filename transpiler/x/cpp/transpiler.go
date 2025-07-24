@@ -210,6 +210,7 @@ type StrExpr struct{ Value Expr }
 
 // ValuesExpr represents the `values` builtin for maps.
 type ValuesExpr struct{ Map Expr }
+type KeysExpr struct{ Map Expr }
 
 // MinExpr represents the `min` builtin for lists of numbers.
 type MinExpr struct{ List Expr }
@@ -1151,6 +1152,18 @@ func (v *ValuesExpr) emit(w io.Writer) {
 	io.WriteString(w, ".begin()->second)> vals; for(const auto& __p : ")
 	v.Map.emit(w)
 	io.WriteString(w, ") vals.push_back(__p.second); return vals; }())")
+}
+
+func (k *KeysExpr) emit(w io.Writer) {
+	if currentProgram != nil {
+		currentProgram.addInclude("<vector>")
+		currentProgram.addInclude("<map>")
+	}
+	io.WriteString(w, "([&]{ std::vector<std::decay_t<decltype(")
+	k.Map.emit(w)
+	io.WriteString(w, ".begin()->first)>> keys; for(const auto& __p : ")
+	k.Map.emit(w)
+	io.WriteString(w, ") keys.push_back(__p.first); return keys; }())")
 }
 
 func (m *MinExpr) emit(w io.Writer) {
@@ -3230,47 +3243,51 @@ func convertPostfix(p *parser.PostfixExpr) (Expr, error) {
 			if sel, ok := expr.(*SelectorExpr); ok && sel.Field == "contains" && len(args) == 1 {
 				expr = &ContainsExpr{Value: sel.Target, Sub: args[0]}
 			} else if sel, ok := expr.(*SelectorExpr); ok {
-				if vr, ok2 := sel.Target.(*VarRef); ok2 {
-					if kind, ok3 := builtinAliases[vr.Name]; ok3 {
-						switch kind {
-						case "go_testpkg":
-							if sel.Field == "Add" && len(args) == 2 {
-								expr = &BinaryExpr{Left: args[0], Op: "+", Right: args[1]}
-								break
-							}
-							if sel.Field == "FifteenPuzzleExample" && len(args) == 0 {
-								return &StringLit{Value: "Solution found in 52 moves: rrrulddluuuldrurdddrullulurrrddldluurddlulurruldrdrd"}, nil
-							}
-						case "python_math":
-							if currentProgram != nil {
-								currentProgram.addInclude("<cmath>")
-							}
-							switch sel.Field {
-							case "sqrt", "sin", "log":
-								expr = &CallExpr{Name: "std::" + sel.Field, Args: args}
-								break
-							case "pow":
-								expr = &CallExpr{Name: "std::pow", Args: args}
-								break
-							}
-						case "go_strings":
-							switch sel.Field {
-							case "ToUpper":
-								if len(args) == 1 {
-									expr = &ToUpperExpr{Value: args[0]}
+				if sel.Field == "keys" && len(args) == 0 {
+					expr = &KeysExpr{Map: sel.Target}
+				} else {
+					if vr, ok2 := sel.Target.(*VarRef); ok2 {
+						if kind, ok3 := builtinAliases[vr.Name]; ok3 {
+							switch kind {
+							case "go_testpkg":
+								if sel.Field == "Add" && len(args) == 2 {
+									expr = &BinaryExpr{Left: args[0], Op: "+", Right: args[1]}
 									break
 								}
-							case "TrimSpace":
-								if len(args) == 1 {
-									expr = &TrimSpaceExpr{Value: args[0]}
+								if sel.Field == "FifteenPuzzleExample" && len(args) == 0 {
+									return &StringLit{Value: "Solution found in 52 moves: rrrulddluuuldrurdddrullulurrrddldluurddlulurruldrdrd"}, nil
+								}
+							case "python_math":
+								if currentProgram != nil {
+									currentProgram.addInclude("<cmath>")
+								}
+								switch sel.Field {
+								case "sqrt", "sin", "log":
+									expr = &CallExpr{Name: "std::" + sel.Field, Args: args}
+									break
+								case "pow":
+									expr = &CallExpr{Name: "std::pow", Args: args}
 									break
 								}
-							}
-						case "go_net":
-							if sel.Field == "LookupHost" && len(args) == 1 {
-								usesLookupHost = true
-								expr = &CallExpr{Name: "_lookup_host", Args: args}
-								break
+							case "go_strings":
+								switch sel.Field {
+								case "ToUpper":
+									if len(args) == 1 {
+										expr = &ToUpperExpr{Value: args[0]}
+										break
+									}
+								case "TrimSpace":
+									if len(args) == 1 {
+										expr = &TrimSpaceExpr{Value: args[0]}
+										break
+									}
+								}
+							case "go_net":
+								if sel.Field == "LookupHost" && len(args) == 1 {
+									usesLookupHost = true
+									expr = &CallExpr{Name: "_lookup_host", Args: args}
+									break
+								}
 							}
 						}
 					}
@@ -3282,6 +3299,8 @@ func convertPostfix(p *parser.PostfixExpr) (Expr, error) {
 				} else if _, ok4 := expr.(*ToUpperExpr); ok4 {
 					// builtin handled
 				} else if _, ok4 := expr.(*TrimSpaceExpr); ok4 {
+					// builtin handled
+				} else if _, ok4 := expr.(*KeysExpr); ok4 {
 					// builtin handled
 				} else {
 					return nil, fmt.Errorf("unsupported call")
@@ -3577,6 +3596,18 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 					currentProgram.addInclude("<sstream>")
 				}
 				return &ValuesExpr{Map: arg}, nil
+			}
+		case "keys":
+			if len(p.Call.Args) == 1 {
+				arg, err := convertExpr(p.Call.Args[0])
+				if err != nil {
+					return nil, err
+				}
+				if currentProgram != nil {
+					currentProgram.addInclude("<vector>")
+					currentProgram.addInclude("<map>")
+				}
+				return &KeysExpr{Map: arg}, nil
 			}
 		case "min":
 			if len(p.Call.Args) == 1 {
@@ -4831,7 +4862,11 @@ func guessType(e *parser.Expr) string {
 	if currentEnv != nil {
 		typ := types.TypeOfExpr(e, currentEnv)
 		if typ != nil {
-			if _, ok := typ.(types.AnyType); !ok {
+			if lt, ok := typ.(types.ListType); ok {
+				if _, ok2 := lt.Elem.(types.AnyType); !ok2 {
+					return cppTypeFrom(typ)
+				}
+			} else if _, ok := typ.(types.AnyType); !ok {
 				return cppTypeFrom(typ)
 			}
 		}
@@ -4893,6 +4928,30 @@ func guessType(e *parser.Expr) string {
 			case "values":
 				t := guessType(call.Args[0])
 				return fmt.Sprintf("std::vector<%s>", elementTypeFromListType(t))
+			case "keys":
+				t := guessType(call.Args[0])
+				if strings.HasPrefix(t, "std::map<") {
+					parts := strings.TrimPrefix(t, "std::map<")
+					parts = strings.TrimSuffix(parts, ">")
+					kt := strings.Split(parts, ",")[0]
+					return fmt.Sprintf("std::vector<%s>", strings.TrimSpace(kt))
+				}
+				return "std::vector<int>"
+			}
+		}
+		if pf := e.Binary.Left.Value; pf != nil && pf.Target.Selector != nil && len(pf.Ops) > 0 && pf.Ops[0].Call != nil {
+			method := pf.Target.Selector.Tail[len(pf.Target.Selector.Tail)-1]
+			if method == "keys" {
+				baseSel := &parser.SelectorExpr{Root: pf.Target.Selector.Root, Tail: pf.Target.Selector.Tail[:len(pf.Target.Selector.Tail)-1]}
+				baseExpr := &parser.Expr{Binary: &parser.BinaryExpr{Left: &parser.Unary{Value: &parser.PostfixExpr{Target: &parser.Primary{Selector: baseSel}}}}}
+				t := guessType(baseExpr)
+				if strings.HasPrefix(t, "std::map<") {
+					parts := strings.TrimPrefix(t, "std::map<")
+					parts = strings.TrimSuffix(parts, ">")
+					kt := strings.Split(parts, ",")[0]
+					return fmt.Sprintf("std::vector<%s>", strings.TrimSpace(kt))
+				}
+				return "std::vector<int>"
 			}
 		}
 	}
@@ -5116,6 +5175,15 @@ func exprType(e Expr) string {
 		return fmt.Sprintf("std::vector<%s>", v.ElemType)
 	case *SortComp:
 		return fmt.Sprintf("std::vector<%s>", v.ElemType)
+	case *KeysExpr:
+		mt := exprType(v.Map)
+		if strings.HasPrefix(mt, "std::map<") && strings.HasSuffix(mt, ">") {
+			parts := strings.SplitN(strings.TrimSuffix(strings.TrimPrefix(mt, "std::map<"), ">"), ",", 2)
+			if len(parts) > 0 {
+				return fmt.Sprintf("std::vector<%s>", strings.TrimSpace(parts[0]))
+			}
+		}
+		return "std::vector<int>"
 	case *ExistsExpr:
 		return "bool"
 	}
