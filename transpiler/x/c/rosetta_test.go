@@ -120,7 +120,7 @@ func updateRosettaReadme() {
 			mark = "[x]"
 			compiled++
 		}
-		lines = append(lines, fmt.Sprintf("%d. %s %s", i+1, mark, name))
+		lines = append(lines, fmt.Sprintf("%d. %s %s (%d)", i+1, mark, name, i+1))
 	}
 	var buf bytes.Buffer
 	buf.WriteString("# C Transpiler Rosetta Output\n\n")
