@@ -1,0 +1,21 @@
+run: exit status 254
+../../../tests/rosetta/transpiler/Dart/almkvist-giullera-formula-for-pi.dart:272:33: Error: The method 'call' isn't defined for the class 'int?'.
+Try correcting the name to the name of an existing method, or defining a method named 'call'.
+    f[(n).toString()] = f["get"]((n).toString(), 0) + 1;
+                                ^
+../../../tests/rosetta/transpiler/Dart/almkvist-giullera-formula-for-pi.dart:281:26: Error: The method 'call' isn't defined for the class 'int?'.
+Try correcting the name to the name of an existing method, or defining a method named 'call'.
+    exps[k] = exps["get"](k, 0) - 6 * fn[k]!;
+                         ^
+../../../tests/rosetta/transpiler/Dart/almkvist-giullera-formula-for-pi.dart:283:26: Error: The method 'call' isn't defined for the class 'int?'.
+Try correcting the name to the name of an existing method, or defining a method named 'call'.
+  exps["2"] = exps["get"]("2", 0) + 5;
+                         ^
+../../../tests/rosetta/transpiler/Dart/almkvist-giullera-formula-for-pi.dart:287:26: Error: The method 'call' isn't defined for the class 'int?'.
+Try correcting the name to the name of an existing method, or defining a method named 'call'.
+    exps[k] = exps["get"](k, 0) + ft2[k]!;
+                         ^
+../../../tests/rosetta/transpiler/Dart/almkvist-giullera-formula-for-pi.dart:289:26: Error: The method 'call' isn't defined for the class 'int?'.
+Try correcting the name to the name of an existing method, or defining a method named 'call'.
+  exps["3"] = exps["get"]("3", 0) - 1;
+                         ^
