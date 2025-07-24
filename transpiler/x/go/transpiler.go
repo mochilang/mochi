@@ -445,6 +445,11 @@ type BoolLit struct{ Value bool }
 
 func (b *BoolLit) emit(w io.Writer) { fmt.Fprintf(w, "%t", b.Value) }
 
+// NullLit represents the `null` literal which maps to Go's nil.
+type NullLit struct{}
+
+func (n *NullLit) emit(w io.Writer) { io.WriteString(w, "nil") }
+
 // NotExpr represents a boolean negation.
 type NotExpr struct{ Expr Expr }
 
@@ -921,6 +926,12 @@ type ValuesExpr struct {
 	ValueType string
 }
 
+// KeysExpr collects all keys from a map.
+type KeysExpr struct {
+	Map     Expr
+	KeyType string
+}
+
 func (v *ValuesExpr) emit(w io.Writer) {
 	usesSort = true
 	fmt.Fprintf(w, "func() []%s { res := make([]%s, 0, len(", v.ValueType, v.ValueType)
@@ -937,6 +948,24 @@ func (v *ValuesExpr) emit(w io.Writer) {
 		fmt.Fprint(w, "sort.Slice(res, func(i,j int) bool { return fmt.Sprint(res[i]) < fmt.Sprint(res[j]) }); ")
 	}
 	fmt.Fprint(w, "return res }()")
+}
+
+func (k *KeysExpr) emit(w io.Writer) {
+	usesSort = true
+	fmt.Fprintf(w, "func() []%s { keys := make([]%s, 0, len(", k.KeyType, k.KeyType)
+	k.Map.emit(w)
+	fmt.Fprint(w, ")) ; for kx := range ")
+	k.Map.emit(w)
+	fmt.Fprint(w, " { keys = append(keys, kx) } ; ")
+	switch k.KeyType {
+	case "int":
+		fmt.Fprint(w, "sort.Ints(keys); ")
+	case "string":
+		fmt.Fprint(w, "sort.Strings(keys); ")
+	default:
+		fmt.Fprint(w, "sort.Slice(keys, func(i,j int) bool { return fmt.Sprint(keys[i]) < fmt.Sprint(keys[j]) }); ")
+	}
+	fmt.Fprint(w, "return keys }()")
 }
 
 // ListStringExpr converts a list to a string with Mochi style formatting.
@@ -2013,9 +2042,14 @@ func compileStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 			return &IndexAssignStmt{Name: st.Assign.Name, Index: idx, Value: val}, nil
 		}
 		if len(st.Assign.Index) == 0 && len(st.Assign.Field) == 0 {
-			e, err := compileExpr(st.Assign.Value, env, "")
+			e, err := compileExpr(st.Assign.Value, env, st.Assign.Name)
 			if err != nil {
 				return nil, err
+			}
+			if ml, ok := e.(*MapLit); ok {
+				if t, err := env.GetVar(st.Assign.Name); err == nil {
+					updateMapLitTypes(ml, t)
+				}
 			}
 			if ll, ok := e.(*ListLit); ok {
 				if vt, err := env.GetVar(st.Assign.Name); err == nil {
@@ -3193,12 +3227,8 @@ func compileReturnStmt(rs *parser.ReturnStmt, env *types.Env) (Stmt, error) {
 		}
 		if ml, ok := val.(*MapLit); ok && strings.HasPrefix(ret, "map[") {
 			if mt, ok2 := toTypeFromGoType(ret).(types.MapType); ok2 {
-				if ml.KeyType == "" || ml.KeyType == "any" {
-					ml.KeyType = toGoTypeFromType(mt.Key)
-				}
-				if ml.ValueType == "" || ml.ValueType == "any" {
-					ml.ValueType = toGoTypeFromType(mt.Value)
-				}
+				ml.KeyType = toGoTypeFromType(mt.Key)
+				ml.ValueType = toGoTypeFromType(mt.Value)
 				exprType = ret
 			}
 		}
@@ -3922,6 +3952,10 @@ func compilePrimary(p *parser.Primary, env *types.Env, base string) (Expr, error
 			return &MinExpr{List: args[0]}, nil
 		case "max":
 			return &MaxExpr{List: args[0]}, nil
+		case "keys":
+			mt, _ := types.TypeOfExpr(p.Call.Args[0], env).(types.MapType)
+			usesSort = true
+			return &KeysExpr{Map: args[0], KeyType: toGoTypeFromType(mt.Key)}, nil
 		case "values":
 			mt, _ := types.TypeOfExpr(p.Call.Args[0], env).(types.MapType)
 			usesSort = true
@@ -4024,7 +4058,7 @@ func compilePrimary(p *parser.Primary, env *types.Env, base string) (Expr, error
 		elems := make([]Expr, len(p.List.Elems))
 		elemType := "any"
 		if len(p.List.Elems) > 0 {
-			t := types.ExprType(p.List.Elems[0], env)
+			var base types.Type
 			same := true
 			for i, e := range p.List.Elems {
 				ex, err := compileExpr(e, env, "")
@@ -4035,14 +4069,25 @@ func compilePrimary(p *parser.Primary, env *types.Env, base string) (Expr, error
 					updateMapLitTypes(ml, types.ExprType(e, env))
 				}
 				elems[i] = ex
-				if i > 0 {
-					if !types.EqualTypes(t, types.ExprType(e, env)) {
-						same = false
+				et := types.ExprType(e, env)
+				if base == nil {
+					if !types.ContainsAny(et) {
+						base = et
 					}
+				} else if !types.EqualTypes(base, et) && !types.ContainsAny(et) {
+					same = false
 				}
 			}
-			if same {
-				elemType = toGoTypeFromType(t)
+			if same && base != nil {
+				elemType = toGoTypeFromType(base)
+				if lt, ok := base.(types.ListType); ok {
+					for i, e := range elems {
+						if ll, ok2 := e.(*ListLit); ok2 && ll.ElemType == "any" && len(ll.Elems) == 0 {
+							ll.ElemType = toGoTypeFromType(lt.Elem)
+							elems[i] = ll
+						}
+					}
+				}
 			}
 		}
 		return &ListLit{ElemType: elemType, Elems: elems}, nil
@@ -4126,6 +4171,9 @@ func compilePrimary(p *parser.Primary, env *types.Env, base string) (Expr, error
 		}
 		if p.Lit.Bool != nil {
 			return &BoolLit{Value: bool(*p.Lit.Bool)}, nil
+		}
+		if p.Lit.Null {
+			return &NullLit{}, nil
 		}
 		return nil, fmt.Errorf("unsupported literal")
 	case p.If != nil:
@@ -4765,6 +4813,8 @@ func toNodeExpr(e Expr) *ast.Node {
 		return &ast.Node{Kind: "min", Children: []*ast.Node{toNodeExpr(ex.List)}}
 	case *MaxExpr:
 		return &ast.Node{Kind: "max", Children: []*ast.Node{toNodeExpr(ex.List)}}
+	case *KeysExpr:
+		return &ast.Node{Kind: "keys", Children: []*ast.Node{toNodeExpr(ex.Map)}}
 	case *ValuesExpr:
 		return &ast.Node{Kind: "values", Children: []*ast.Node{toNodeExpr(ex.Map)}}
 	case *ListStringExpr:
