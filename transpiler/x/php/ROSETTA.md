@@ -2,7 +2,7 @@
 
 Generated PHP code from Mochi Rosetta tasks lives in `tests/rosetta/transpiler/php`.
 
-Last updated: 2025-07-24 20:52 +0700
+Last updated: 2025-07-24 23:48 +0700
 
 ## Checklist (134/284)
 - [x] 1 100-doors-2
@@ -141,7 +141,7 @@ Last updated: 2025-07-24 20:52 +0700
 - [x] 134 boyer-moore-string-search
 - [x] 135 brazilian-numbers
 - [x] 136 break-oo-privacy
-- [ ] 137 brilliant-numbers
+- [x] 137 brilliant-numbers
 - [ ] 138 brownian-tree
 - [ ] 139 bulls-and-cows-player
 - [ ] 140 bulls-and-cows
