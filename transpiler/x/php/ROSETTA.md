@@ -2,9 +2,9 @@
 
 Generated PHP code from Mochi Rosetta tasks lives in `tests/rosetta/transpiler/php`.
 
-Last updated: 2025-07-24 20:24 +0700
+Last updated: 2025-07-24 20:52 +0700
 
-## Checklist (119/284)
+## Checklist (134/284)
 - [x] 1 100-doors-2
 - [x] 2 100-doors-3
 - [x] 3 100-doors
@@ -126,21 +126,21 @@ Last updated: 2025-07-24 20:24 +0700
 - [x] 119 bitmap-bresenhams-line-algorithm
 - [x] 120 bitmap-flood-fill
 - [x] 121 bitmap-histogram
-- [ ] 122 bitmap-midpoint-circle-algorithm
-- [ ] 123 bitmap-ppm-conversion-through-a-pipe
-- [ ] 124 bitmap-read-a-ppm-file
-- [ ] 125 bitmap-read-an-image-through-a-pipe
-- [ ] 126 bitmap-write-a-ppm-file
-- [ ] 127 bitmap
-- [ ] 128 bitwise-io-1
-- [ ] 129 bitwise-io-2
-- [ ] 130 bitwise-operations
-- [ ] 131 blum-integer
-- [ ] 132 boolean-values
-- [ ] 133 box-the-compass
-- [ ] 134 boyer-moore-string-search
-- [ ] 135 brazilian-numbers
-- [ ] 136 break-oo-privacy
+- [x] 122 bitmap-midpoint-circle-algorithm
+- [x] 123 bitmap-ppm-conversion-through-a-pipe
+- [x] 124 bitmap-read-a-ppm-file
+- [x] 125 bitmap-read-an-image-through-a-pipe
+- [x] 126 bitmap-write-a-ppm-file
+- [x] 127 bitmap
+- [x] 128 bitwise-io-1
+- [x] 129 bitwise-io-2
+- [x] 130 bitwise-operations
+- [x] 131 blum-integer
+- [x] 132 boolean-values
+- [x] 133 box-the-compass
+- [x] 134 boyer-moore-string-search
+- [x] 135 brazilian-numbers
+- [x] 136 break-oo-privacy
 - [ ] 137 brilliant-numbers
 - [ ] 138 brownian-tree
 - [ ] 139 bulls-and-cows-player

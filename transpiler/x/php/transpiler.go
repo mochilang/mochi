@@ -22,7 +22,7 @@ var builtinNames = map[string]struct{}{
 	"print": {}, "len": {}, "substring": {}, "count": {}, "sum": {}, "avg": {},
 	"str": {}, "min": {}, "max": {}, "append": {}, "json": {}, "exists": {},
 	"values": {}, "keys": {}, "load": {}, "save": {}, "now": {}, "input": {},
-	"upper": {}, "lower": {}, "num": {}, "denom": {},
+	"upper": {}, "lower": {}, "num": {}, "denom": {}, "indexOf": {},
 }
 
 const helperLookupHost = `function _lookup_host($host) {
@@ -152,11 +152,17 @@ const helperStr = `function _str($x) {
     return strval($x);
 }`
 
+const helperIndexOf = `function _indexof($s, $sub) {
+    $pos = strpos($s, $sub);
+    return $pos === false ? -1 : $pos;
+}`
+
 var usesLookupHost bool
 var usesNow bool
 var usesLen bool
 var usesBigRat bool
 var usesStr bool
+var usesIndexOf bool
 
 // Some PHP built-in functions cannot be redefined. When a Mochi program
 // defines a function with one of these names we rename the function and all
@@ -188,6 +194,7 @@ func sanitizeVarName(name string) string {
 // used in the generated PHP code.
 var renameMap map[string]string
 var closureNames = map[string]bool{}
+var funcRefParams = map[string][]bool{}
 var groupStack []string
 var globalNames []string
 var globalSet map[string]struct{}
@@ -394,12 +401,182 @@ func gatherLocals(stmts []Stmt, locals map[string]struct{}) {
 }
 
 func markRefParams(body []Stmt, params []string) []bool {
-	// Mochi uses pass-by-value semantics. Parameters that are assigned to
-	// inside a function do not need to be passed by reference in the
-	// generated PHP code. Returning a slice of "false" values for each
-	// parameter simplifies call sites and avoids PHP errors when non-
-	// variable expressions are passed to such parameters.
-	return make([]bool, len(params))
+	idx := map[string]int{}
+	for i, p := range params {
+		idx[p] = i
+	}
+	ref := make([]bool, len(params))
+
+	var rootVar func(Expr) string
+	rootVar = func(e Expr) string {
+		switch t := e.(type) {
+		case *Var:
+			return t.Name
+		case *IndexExpr:
+			return rootVar(t.X)
+		default:
+			return ""
+		}
+	}
+
+	var walkExpr func(Expr)
+	walkExpr = func(e Expr) {
+		switch ex := e.(type) {
+		case *CallExpr:
+			if flags, ok := funcRefParams[ex.Func]; ok {
+				for iArg, a := range ex.Args {
+					if iArg < len(flags) && flags[iArg] {
+						if name := rootVar(a); name != "" {
+							if idxPos, ok := idx[name]; ok {
+								ref[idxPos] = true
+							}
+						}
+					}
+					walkExpr(a)
+				}
+			} else {
+				for _, a := range ex.Args {
+					walkExpr(a)
+				}
+			}
+		case *IndexExpr:
+			walkExpr(ex.X)
+			walkExpr(ex.Index)
+		case *SliceExpr:
+			walkExpr(ex.X)
+			if ex.Start != nil {
+				walkExpr(ex.Start)
+			}
+			if ex.End != nil {
+				walkExpr(ex.End)
+			}
+		case *UnaryExpr:
+			walkExpr(ex.X)
+		case *BinaryExpr:
+			walkExpr(ex.Left)
+			walkExpr(ex.Right)
+		case *CondExpr:
+			walkExpr(ex.Cond)
+			walkExpr(ex.Then)
+			walkExpr(ex.Else)
+		case *MatchExpr:
+			walkExpr(ex.Target)
+			for _, a := range ex.Arms {
+				walkExpr(a.Pattern)
+				walkExpr(a.Result)
+			}
+		case *UnionMatchExpr:
+			walkExpr(ex.Target)
+			for _, c := range ex.Cases {
+				walkExpr(c.Result)
+			}
+		case *QueryExpr:
+			if ex.Select != nil {
+				walkExpr(ex.Select)
+			}
+			if ex.Where != nil {
+				walkExpr(ex.Where)
+			}
+		case *GroupByExpr:
+			if ex.Key != nil {
+				walkExpr(ex.Key)
+			}
+			if ex.Where != nil {
+				walkExpr(ex.Where)
+			}
+			if ex.Select != nil {
+				walkExpr(ex.Select)
+			}
+			if ex.Having != nil {
+				walkExpr(ex.Having)
+			}
+		case *RightJoinExpr:
+			walkExpr(ex.Select)
+			walkExpr(ex.Cond)
+		case *LeftJoinExpr:
+			walkExpr(ex.Select)
+			walkExpr(ex.Cond)
+		case *OuterJoinExpr:
+			walkExpr(ex.Select)
+			walkExpr(ex.Cond)
+		case *SumExpr:
+			walkExpr(ex.List)
+		case *SubstringExpr:
+			walkExpr(ex.Str)
+			walkExpr(ex.Start)
+			if ex.End != nil {
+				walkExpr(ex.End)
+			}
+		case *IndexAssignStmt:
+			// handled in walkStmt
+		}
+	}
+
+	var walkStmt func(Stmt)
+	walkStmt = func(s Stmt) {
+		switch st := s.(type) {
+		case *IndexAssignStmt:
+			if name := rootVar(st.Target); name != "" {
+				if i, ok := idx[name]; ok {
+					ref[i] = true
+				}
+			}
+			walkExpr(st.Value)
+		case *ExprStmt:
+			walkExpr(st.Expr)
+		case *LetStmt:
+			if st.Value != nil {
+				walkExpr(st.Value)
+			}
+		case *VarStmt:
+			if st.Value != nil {
+				walkExpr(st.Value)
+			}
+		case *IfStmt:
+			for _, t := range st.Then {
+				walkStmt(t)
+			}
+			for _, e := range st.Else {
+				walkStmt(e)
+			}
+		case *WhileStmt:
+			for _, b := range st.Body {
+				walkStmt(b)
+			}
+		case *ForRangeStmt:
+			for _, b := range st.Body {
+				walkStmt(b)
+			}
+		case *ForEachStmt:
+			for _, b := range st.Body {
+				walkStmt(b)
+			}
+		case *QueryLetStmt:
+			if st.Query != nil {
+				walkExpr(st.Query.Select)
+				walkExpr(st.Query.Where)
+			}
+		case *ReturnStmt:
+			if st.Value != nil {
+				walkExpr(st.Value)
+			}
+		case *SaveStmt:
+			walkExpr(st.Src)
+		case *UpdateStmt:
+			for _, v := range st.Values {
+				walkExpr(v)
+			}
+			if st.Cond != nil {
+				walkExpr(st.Cond)
+			}
+		}
+	}
+
+	for _, st := range body {
+		walkStmt(st)
+	}
+
+	return ref
 }
 
 func (f *FuncDecl) emit(w io.Writer) {
@@ -1530,6 +1707,11 @@ func Emit(w io.Writer, p *Program) error {
 			return err
 		}
 	}
+	if usesIndexOf {
+		if _, err := io.WriteString(w, helperIndexOf+"\n"); err != nil {
+			return err
+		}
+	}
 	for _, s := range p.Stmts {
 		s.emit(w)
 		switch s.(type) {
@@ -1558,6 +1740,7 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	usesLen = false
 	usesBigRat = false
 	usesStr = false
+	usesIndexOf = false
 	defer func() { transpileEnv = nil }()
 	p := &Program{Env: env}
 	for _, st := range prog.Statements {
@@ -1676,14 +1859,6 @@ func convertBinary(b *parser.BinaryExpr) (Expr, error) {
 				usesBigRat = true
 				return &CallExpr{Func: "_sub", Args: []Expr{left, right}}, false
 			}
-			if _, ok := left.(*IndexExpr); ok {
-				usesBigRat = true
-				return &CallExpr{Func: "_sub", Args: []Expr{left, right}}, false
-			}
-			if _, ok := right.(*IndexExpr); ok {
-				usesBigRat = true
-				return &CallExpr{Func: "_sub", Args: []Expr{left, right}}, false
-			}
 			return &BinaryExpr{Left: left, Op: "-", Right: right}, false
 		case "*":
 			if isBigRatExpr(left) || isBigRatExpr(right) {
@@ -1779,6 +1954,11 @@ func convertPostfix(pf *parser.PostfixExpr) (Expr, error) {
 				return &CallExpr{Func: "in_array", Args: append(args, e)}, nil
 			}
 			return nil, fmt.Errorf("contains on unsupported type")
+		case "padStart":
+			if len(args) != 2 {
+				return nil, fmt.Errorf("padStart expects 2 args")
+			}
+			return &CallExpr{Func: "str_pad", Args: []Expr{e, args[0], args[1], &Name{Value: "STR_PAD_LEFT"}}}, nil
 		case "keys":
 			if len(args) != 0 {
 				return nil, fmt.Errorf("keys expects no args")
@@ -1980,6 +2160,14 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 				return nil, fmt.Errorf("substring expects 3 args")
 			}
 			return &SubstringExpr{Str: args[0], Start: args[1], End: args[2]}, nil
+		} else if name == "indexOf" {
+			if len(args) != 2 {
+				return nil, fmt.Errorf("indexOf expects 2 args")
+			}
+			if isStringExpr(args[0]) {
+				usesIndexOf = true
+				return &CallExpr{Func: "_indexof", Args: args}, nil
+			}
 		} else if name == "int" {
 			if len(args) != 1 {
 				return nil, fmt.Errorf("int expects 1 arg")
@@ -2462,6 +2650,13 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 			return nil, err
 		}
 		refFlags = markRefParams(body, params)
+		name := st.Fun.Name
+		if _, reserved := phpReserved[name]; reserved {
+			newName := "mochi_" + name
+			renameMap[name] = newName
+			name = newName
+		}
+		funcRefParams[name] = refFlags
 		uses := []string{"&" + st.Fun.Name}
 		for _, frame := range funcStack {
 			uses = append(uses, frame...)
@@ -2470,12 +2665,6 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 			for _, g := range globalNames {
 				uses = append(uses, "&"+g)
 			}
-		}
-		name := st.Fun.Name
-		if _, reserved := phpReserved[name]; reserved {
-			newName := "mochi_" + name
-			renameMap[name] = newName
-			name = newName
 		}
 		if wasTop {
 			decl := &FuncDecl{Name: name, Params: params, RefParams: refFlags, Body: body}
