@@ -1,0 +1,9 @@
+exit status 2
+File "/workspace/mochi/tests/rosetta/transpiler/OCaml/accumulator-factory.ml", line 1:
+Warning 24 [bad-module-name]: bad source file name: "Accumulator-factory" is not a valid module name.
+File "/workspace/mochi/tests/rosetta/transpiler/OCaml/accumulator-factory.ml", line 39, characters 22-25:
+39 |   let x = accumulator (1) in
+                           ^^^
+Error: This expression has type int but an expression was expected of type
+         float
+  Hint: Did you mean `1.'?
