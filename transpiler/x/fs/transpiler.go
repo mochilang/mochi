@@ -192,6 +192,14 @@ func fsTypeFromString(s string) string {
 	}
 }
 
+func typeRefString(t *parser.TypeRef) string {
+	if t == nil || transpileEnv == nil {
+		return ""
+	}
+	ft := types.ResolveTypeRef(t, transpileEnv)
+	return fsType(ft)
+}
+
 func fsIdent(name string) string {
 	keywords := map[string]bool{"and": true, "as": true, "assert": true, "begin": true,
 		"class": true, "default": true, "delegate": true, "do": true, "done": true,
@@ -1869,23 +1877,7 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 		}
 		declared := ""
 		if st.Let.Type != nil {
-			if st.Let.Type.Simple != nil {
-				declared = *st.Let.Type.Simple
-			} else if st.Let.Type.Generic != nil {
-				var buf strings.Builder
-				buf.WriteString(st.Let.Type.Generic.Name)
-				buf.WriteString("<")
-				for i, arg := range st.Let.Type.Generic.Args {
-					if i > 0 {
-						buf.WriteString(",")
-					}
-					if arg.Simple != nil {
-						buf.WriteString(*arg.Simple)
-					}
-				}
-				buf.WriteString(">")
-				declared = buf.String()
-			}
+			declared = typeRefString(st.Let.Type)
 		} else if t := inferLiteralType(st.Let.Value); t != "" {
 			declared = t
 		} else if st.Let.Value != nil && st.Let.Value.Binary != nil && len(st.Let.Value.Binary.Right) == 0 && st.Let.Value.Binary.Left.Value.Target.Query != nil {
@@ -1921,23 +1913,7 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 		}
 		declared := ""
 		if st.Var.Type != nil {
-			if st.Var.Type.Simple != nil {
-				declared = *st.Var.Type.Simple
-			} else if st.Var.Type.Generic != nil {
-				var buf strings.Builder
-				buf.WriteString(st.Var.Type.Generic.Name)
-				buf.WriteString("<")
-				for i, arg := range st.Var.Type.Generic.Args {
-					if i > 0 {
-						buf.WriteString(",")
-					}
-					if arg.Simple != nil {
-						buf.WriteString(*arg.Simple)
-					}
-				}
-				buf.WriteString(">")
-				declared = buf.String()
-			}
+			declared = typeRefString(st.Var.Type)
 		} else if t := inferLiteralType(st.Var.Value); t != "" {
 			declared = t
 		} else if st.Var.Value != nil && st.Var.Value.Binary != nil && len(st.Var.Value.Binary.Right) == 0 && st.Var.Value.Binary.Left.Value.Target.Query != nil {
