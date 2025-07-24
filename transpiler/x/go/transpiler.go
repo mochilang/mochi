@@ -361,7 +361,7 @@ func (m *UnionMatchExpr) emit(w io.Writer) {
 	if m.Type != "" {
 		ret = m.Type
 	}
-	fmt.Fprintf(w, "func() %s { switch v := ", ret)
+	fmt.Fprintf(w, "func() %s { switch uv := ", ret)
 	m.Target.emit(w)
 	fmt.Fprint(w, ".(type) {")
 	for _, c := range m.Cases {
@@ -369,9 +369,9 @@ func (m *UnionMatchExpr) emit(w io.Writer) {
 		for i, b := range c.Bindings {
 			if b != "" && i < len(c.Fields) {
 				if b == "_" {
-					fmt.Fprintf(w, " _ = v.%s;", c.Fields[i])
+					fmt.Fprintf(w, " _ = uv.%s;", c.Fields[i])
 				} else {
-					fmt.Fprintf(w, " %s := v.%s;", b, c.Fields[i])
+					fmt.Fprintf(w, " %s := uv.%s;", b, c.Fields[i])
 				}
 			}
 		}
@@ -2437,6 +2437,7 @@ func compileMatchExpr(me *parser.MatchExpr, env *types.Env) (Expr, error) {
 					var variant string
 					var bindings []string
 					var fields []string
+					caseEnv := env
 					if n, ok := identName(c.Pattern); ok {
 						variant = n
 					} else if call, ok := callPattern(c.Pattern); ok {
@@ -2444,18 +2445,21 @@ func compileMatchExpr(me *parser.MatchExpr, env *types.Env) (Expr, error) {
 						st, _ := env.GetStruct(variant)
 						bindings = make([]string, len(call.Args))
 						fields = make([]string, len(call.Args))
+						child := types.NewEnv(env)
 						for j, a := range call.Args {
 							if j < len(st.Order) {
 								fields[j] = toGoFieldName(st.Order[j])
-							}
-							if nm, ok := identName(a); ok {
-								bindings[j] = nm
+								if nm, ok := identName(a); ok {
+									bindings[j] = nm
+									child.SetVar(nm, st.Fields[st.Order[j]], true)
+								}
 							}
 						}
+						caseEnv = child
 					} else {
 						variant = "_"
 					}
-					body, err := compileExpr(c.Result, env, "")
+					body, err := compileExpr(c.Result, caseEnv, "")
 					if err != nil {
 						return nil, err
 					}
@@ -3217,7 +3221,11 @@ func compileReturnStmt(rs *parser.ReturnStmt, env *types.Env) (Stmt, error) {
 	if ret != "" && ret != "any" {
 		exprType := toGoTypeFromType(types.ExprType(rs.Value, env))
 		if exprType == "" {
-			exprType = "any"
+			if um, ok := val.(*UnionMatchExpr); ok && um.Type != "" {
+				exprType = um.Type
+			} else {
+				exprType = "any"
+			}
 		}
 		if ll, ok := val.(*ListLit); ok && strings.HasPrefix(ret, "[]") {
 			if ll.ElemType == "" || ll.ElemType == "any" {
