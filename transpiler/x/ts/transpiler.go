@@ -2110,14 +2110,6 @@ func convertStmt(s *parser.Statement) (Stmt, error) {
 			return nil, err
 		}
 		target := Expr(&NameRef{Name: s.Assign.Name})
-		if len(s.Assign.Field) == 1 && len(s.Assign.Index) == 0 {
-			if t, err2 := transpileEnv.GetVar(s.Assign.Name); err2 == nil {
-				if _, ok := t.(types.StructType); ok {
-					expr := &StructUpdateExpr{Target: target, Field: s.Assign.Field[0].Name, Value: val}
-					return &AssignStmt{Name: s.Assign.Name, Expr: expr}, nil
-				}
-			}
-		}
 		if len(s.Assign.Index) > 0 {
 			target, err = applyIndexOps(target, s.Assign.Index)
 			if err != nil {
@@ -2961,11 +2953,17 @@ func convertUnary(u *parser.Unary) (Expr, error) {
 	return expr, nil
 }
 
-func convertPostfix(p *parser.PostfixExpr) (Expr, error) {
-	if p == nil {
+func convertPostfix(p *parser.PostfixExpr) (expr Expr, err error) {
+	if p == nil || p.Target == nil {
 		return nil, fmt.Errorf("nil postfix")
 	}
-	expr, err := convertPrimary(p.Target)
+	defer func() {
+		if r := recover(); r != nil {
+			expr = nil
+			err = fmt.Errorf("convertPostfix panic")
+		}
+	}()
+	expr, err = convertPrimary(p.Target)
 	if err != nil {
 		return nil, err
 	}
@@ -3080,9 +3078,19 @@ func convertPostfix(p *parser.PostfixExpr) (Expr, error) {
 				t := types.ResolveTypeRef(op.Cast.Type, transpileEnv)
 				switch t.(type) {
 				case types.IntType, types.Int64Type:
-					switch expr.(type) {
-					case *SliceExpr, *MethodCallExpr, *IndexExpr, *SubstringExpr:
+					switch e := expr.(type) {
+					case *SliceExpr, *MethodCallExpr, *SubstringExpr:
 						expr = &MethodCallExpr{Target: expr, Method: "charCodeAt", Args: []Expr{&NumberLit{Value: "0"}}}
+					case *IndexExpr:
+						if ct := curType; ct != nil {
+							if _, ok := ct.(types.StringType); ok {
+								expr = &MethodCallExpr{Target: expr, Method: "charCodeAt", Args: []Expr{&NumberLit{Value: "0"}}}
+							} else {
+								expr = &CallExpr{Func: "Math.trunc", Args: []Expr{e}}
+							}
+						} else {
+							expr = &CallExpr{Func: "Math.trunc", Args: []Expr{e}}
+						}
 					default:
 						expr = &CallExpr{Func: "Math.trunc", Args: []Expr{expr}}
 					}
@@ -3286,11 +3294,16 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 					return &CallExpr{Func: "parseIntStr", Args: args}, nil
 				}
 			}
-			if len(args) != 2 {
-				return nil, fmt.Errorf("parseIntStr expects two arguments")
+			switch len(args) {
+			case 1:
+				useParseIntStr = true
+				return &CallExpr{Func: "parseIntStr", Args: []Expr{args[0], &NumberLit{Value: "10"}}}, nil
+			case 2:
+				useParseIntStr = true
+				return &CallExpr{Func: "parseIntStr", Args: []Expr{args[0], args[1]}}, nil
+			default:
+				return nil, fmt.Errorf("parseIntStr expects one or two arguments")
 			}
-			useParseIntStr = true
-			return &CallExpr{Func: "parseIntStr", Args: []Expr{args[0], args[1]}}, nil
 		case "substring":
 			if len(args) != 3 {
 				return nil, fmt.Errorf("substring expects three arguments")
