@@ -505,6 +505,9 @@ var funParamsStack [][]string
 var nestedFunArgs map[string][]string
 var stringVars map[string]bool
 var renameVars map[string]string
+var funcAlias = map[string]string{
+	"subs": "substring",
+}
 
 // Transpile converts a Mochi program into a Clojure AST. The implementation
 // is intentionally minimal and currently only supports very small programs used
@@ -926,8 +929,23 @@ func isStringNode(n Node) bool {
 		return true
 	case *List:
 		if len(t.Elems) > 0 {
-			if sym, ok := t.Elems[0].(Symbol); ok && sym == "str" {
-				return true
+			if sym, ok := t.Elems[0].(Symbol); ok {
+				if sym == "str" {
+					return true
+				}
+				name := string(sym)
+				if orig, ok := funcAlias[name]; ok {
+					name = orig
+				}
+				if transpileEnv != nil {
+					if typ, err := transpileEnv.GetVar(name); err == nil {
+						if ft, ok := typ.(types.FuncType); ok {
+							if _, ok2 := ft.Return.(types.StringType); ok2 {
+								return true
+							}
+						}
+					}
+				}
 			}
 		}
 	case Symbol:
