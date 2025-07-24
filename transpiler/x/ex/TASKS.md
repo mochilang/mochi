@@ -1,5 +1,5 @@
-## Progress (2025-07-23 20:13 +0700)
-- Commit 0a4e3506ef: transpiler: update ts outputs for rosetta indices 170-199
+## Progress (2025-07-24 07:28 +0700)
+- Commit 87696b4f93: hs transpiler: handle while expr returns
 - Generated Elixir for 102/103 programs
 - Updated README checklist and outputs
 - Improved code emission and type inference

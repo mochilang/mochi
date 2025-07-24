@@ -11,6 +11,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"regexp"
 	"sort"
 	"strconv"
 	"strings"
@@ -39,6 +40,10 @@ func moduleAttrName(name string) string {
 	return name
 }
 
+func isConstName(name string) bool {
+	return name == strings.ToUpper(name)
+}
+
 func uniqueWhileName() string {
 	loopCounter++
 	if loopCounter == 1 {
@@ -61,14 +66,14 @@ type Stmt interface{ emit(io.Writer, int) }
 type VarRef struct{ Name string }
 
 func (v *VarRef) emit(w io.Writer) {
-        if moduleMode {
-                if _, ok := globalVars[v.Name]; ok {
-                        fmt.Fprintf(w, "Process.get(:%s)", moduleAttrName(v.Name))
-                        return
-                }
-                io.WriteString(w, v.Name)
-                return
-        }
+	if moduleMode {
+		if _, ok := globalVars[v.Name]; ok {
+			fmt.Fprintf(w, "Process.get(:%s)", moduleAttrName(v.Name))
+			return
+		}
+		io.WriteString(w, v.Name)
+		return
+	}
 	io.WriteString(w, v.Name)
 }
 
@@ -92,18 +97,18 @@ func (s *LetStmt) emit(w io.Writer, indent int) {
 }
 
 func (s *LetStmt) emitGlobal(w io.Writer, indent int) {
-        for i := 0; i < indent; i++ {
-                io.WriteString(w, "  ")
-        }
-        io.WriteString(w, "Process.put(:")
-        io.WriteString(w, moduleAttrName(s.Name))
-        io.WriteString(w, ", ")
-        if s.Value != nil {
-                s.Value.emit(w)
-        } else {
-                io.WriteString(w, "nil")
-        }
-        io.WriteString(w, ")")
+	for i := 0; i < indent; i++ {
+		io.WriteString(w, "  ")
+	}
+	io.WriteString(w, "Process.put(:")
+	io.WriteString(w, moduleAttrName(s.Name))
+	io.WriteString(w, ", ")
+	if s.Value != nil {
+		s.Value.emit(w)
+	} else {
+		io.WriteString(w, "nil")
+	}
+	io.WriteString(w, ")")
 }
 
 // AssignStmt reassigns a variable.
@@ -116,19 +121,19 @@ func (s *AssignStmt) emit(w io.Writer, indent int) {
 	for i := 0; i < indent; i++ {
 		io.WriteString(w, "  ")
 	}
-        if moduleMode {
-                if _, ok := globalVars[s.Name]; ok {
-                        fmt.Fprintf(w, "Process.put(:%s, ", moduleAttrName(s.Name))
-                        s.Value.emit(w)
-                        io.WriteString(w, ")")
-                        return
-                }
-                io.WriteString(w, s.Name)
-        } else {
-                io.WriteString(w, s.Name)
-        }
-        io.WriteString(w, " = ")
-        s.Value.emit(w)
+	if moduleMode {
+		if _, ok := globalVars[s.Name]; ok {
+			fmt.Fprintf(w, "Process.put(:%s, ", moduleAttrName(s.Name))
+			s.Value.emit(w)
+			io.WriteString(w, ")")
+			return
+		}
+		io.WriteString(w, s.Name)
+	} else {
+		io.WriteString(w, s.Name)
+	}
+	io.WriteString(w, " = ")
+	s.Value.emit(w)
 }
 
 type Expr interface{ emit(io.Writer) }
@@ -1352,6 +1357,10 @@ func Emit(p *Program) []byte {
 			funcs = append(funcs, st)
 			continue
 		}
+		if _, ok := st.(*LetStmt); ok {
+			globals = append(globals, st)
+			continue
+		}
 		if funcsExist && !foundFunc {
 			globals = append(globals, st)
 		} else {
@@ -1383,7 +1392,10 @@ func Emit(p *Program) []byte {
 	buf.WriteString("  end\nend\n")
 	buf.WriteString("Main.main()\n")
 	moduleMode = false
-	return buf.Bytes()
+	out := buf.Bytes()
+	re := regexp.MustCompile(`(@[A-Z][A-Z0-9_]* )([0-9]+)`)
+	out = re.ReplaceAll(out, []byte("$1= $2"))
+	return out
 }
 
 // Transpile converts a Mochi program into an Elixir AST.
@@ -1410,7 +1422,11 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 				}
 			}
 		}
-		if !foundFunc {
+		if st.Let != nil {
+			globalVars[st.Let.Name] = struct{}{}
+		} else if st.Var != nil {
+			globalVars[st.Var.Name] = struct{}{}
+		} else if !foundFunc {
 			if st.Fun != nil {
 				foundFunc = true
 			} else if st.Let != nil {
@@ -1784,19 +1800,19 @@ func gatherMutVars(stmts []Stmt, env *types.Env) []string {
 		for _, s := range ss {
 			switch t := s.(type) {
 			case *AssignStmt:
-                               if _, err := env.GetVar(t.Name); err == nil {
-                                       if _, ok := globalVars[t.Name]; !ok {
-                                               set[t.Name] = struct{}{}
-                                       }
-                               }
+				if _, err := env.GetVar(t.Name); err == nil {
+					if _, ok := globalVars[t.Name]; !ok {
+						set[t.Name] = struct{}{}
+					}
+				}
 			case *IfStmt:
-                               for _, v := range t.Vars {
-                                       if _, err := env.GetVar(v); err == nil {
-                                               if _, ok := globalVars[v]; !ok {
-                                                       set[v] = struct{}{}
-                                               }
-                                       }
-                               }
+				for _, v := range t.Vars {
+					if _, err := env.GetVar(v); err == nil {
+						if _, ok := globalVars[v]; !ok {
+							set[v] = struct{}{}
+						}
+					}
+				}
 				walk(t.Then)
 				walk(t.Else)
 			case *ForStmt:
