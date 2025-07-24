@@ -856,7 +856,17 @@ type IndexExpr struct {
 }
 
 func (idx *IndexExpr) emit(w io.Writer) {
-	if idx.Container == "Any" {
+	if strings.HasPrefix(idx.Container, "Map[") && idx.Container != "Any" && idx.Type != "" {
+		idx.Value.emit(w)
+		fmt.Fprint(w, ".getOrElse(")
+		idx.Index.emit(w)
+		fmt.Fprint(w, ", ")
+		t := idx.Type
+		if t == "" {
+			t = "Any"
+		}
+		fmt.Fprintf(w, "null.asInstanceOf[%s])", t)
+	} else if idx.Container == "Any" {
 		if (idx.ForceMap) || (func() bool {
 			if prev, ok := idx.Value.(*IndexExpr); ok {
 				return strings.HasPrefix(prev.Container, "Map[")
@@ -1547,6 +1557,9 @@ func convertStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 		}
 		return &LetStmt{Name: st.Let.Name, Type: typ, Value: e}, nil
 	case st.Var != nil:
+		if st.Var.Type != nil && env != nil {
+			env.SetVar(st.Var.Name, types.ResolveTypeRef(st.Var.Type, env), true)
+		}
 		var e Expr
 		var err error
 		if st.Var.Value != nil {
@@ -1560,6 +1573,9 @@ func convertStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 			typ = inferTypeWithEnv(e, env)
 			if typ == "Any" {
 				typ = ""
+			}
+			if n, ok := e.(*Name); ok && n.Name == "null" {
+				typ = "Any"
 			}
 		}
 		if typ == "" || typ == "ArrayBuffer[Any]" {
@@ -1774,7 +1790,11 @@ func convertBinary(b *parser.BinaryExpr, env *types.Env) (Expr, error) {
 					right = &CastExpr{Value: right, Type: "String"}
 				}
 			}
-			ex = &BinaryExpr{Left: left, Op: op, Right: right}
+			if op == "%" && inferTypeWithEnv(left, env) == "Int" && inferTypeWithEnv(right, env) == "Int" {
+				ex = &CallExpr{Fn: &Name{Name: "Math.floorMod"}, Args: []Expr{left, right}}
+			} else {
+				ex = &BinaryExpr{Left: left, Op: op, Right: right}
+			}
 		}
 		operands[i] = ex
 		operands = append(operands[:i+1], operands[i+2:]...)
@@ -2260,37 +2280,6 @@ func convertPrimary(p *parser.Primary, env *types.Env) (Expr, error) {
 		}
 		return expr, nil
 	case p.List != nil:
-		if env != nil {
-			if st, ok := types.InferStructFromList(p.List, env); ok {
-				name := types.UniqueStructName("Item", env, nil)
-				st.Name = name
-				env.SetStruct(name, st)
-				fields := make([]Param, len(st.Order))
-				for i, n := range st.Order {
-					fields[i] = Param{Name: n, Type: toScalaTypeFromType(st.Fields[n])}
-				}
-				typeDecls = append(typeDecls, &TypeDeclStmt{Name: name, Fields: fields})
-				elems := make([]Expr, len(p.List.Elems))
-				for i, el := range p.List.Elems {
-					ml := el.Binary.Left.Value.Target.Map
-					sl := &parser.StructLiteral{Name: name}
-					for _, fn := range st.Order {
-						for _, it := range ml.Items {
-							if key, _ := types.SimpleStringKey(it.Key); key == fn {
-								sl.Fields = append(sl.Fields, &parser.StructLitField{Name: fn, Value: it.Value})
-								break
-							}
-						}
-					}
-					ex, err := convertStructLiteral(sl, env)
-					if err != nil {
-						return nil, err
-					}
-					elems[i] = ex
-				}
-				return &ListLit{Elems: elems}, nil
-			}
-		}
 		elems := make([]Expr, len(p.List.Elems))
 		for i, e := range p.List.Elems {
 			ex, err := convertExpr(e, env)
@@ -2459,6 +2448,10 @@ func convertCall(c *parser.CallExpr, env *types.Env) (Expr, error) {
 	case "max":
 		if len(args) == 1 {
 			return &FieldExpr{Receiver: args[0], Name: "max"}, nil
+		}
+	case "keys":
+		if len(args) == 1 {
+			return &FieldExpr{Receiver: args[0], Name: "keys"}, nil
 		}
 	case "values":
 		if len(args) == 1 {
@@ -3199,7 +3192,7 @@ func convertFunStmt(fs *parser.FunStmt, env *types.Env) (Stmt, error) {
 	if len(init) > 0 {
 		fn.Body = append(init, fn.Body...)
 	}
-	if fn.Return == "" && containsReturn(fn.Body) {
+	if fn.Return == "" {
 		fn.Return = "Unit"
 	}
 	return fn, nil
