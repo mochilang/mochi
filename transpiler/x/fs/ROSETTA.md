@@ -2,7 +2,7 @@
 
 This file is auto-generated from rosetta tests.
 
-## Checklist (63/284)
+## Checklist (66/284)
 1. [x] 100-doors-2 (index 1)
 2. [x] 100-doors-3 (index 2)
 3. [x] 100-doors (index 3)
@@ -82,9 +82,9 @@ This file is auto-generated from rosetta tests.
 77. [x] ascending-primes (index 77)
 78. [x] ascii-art-diagram-converter (index 78)
 79. [x] assertions (index 79)
-80. [ ] associative-array-creation (index 80)
-81. [ ] associative-array-iteration (index 81)
-82. [ ] associative-array-merging (index 82)
+80. [x] associative-array-creation (index 80)
+81. [x] associative-array-iteration (index 81)
+82. [x] associative-array-merging (index 82)
 83. [ ] atomic-updates (index 83)
 84. [ ] attractive-numbers (index 84)
 85. [ ] average-loop-length (index 85)
@@ -288,4 +288,4 @@ This file is auto-generated from rosetta tests.
 283. [ ] define-a-primitive-data-type (index 283)
 284. [ ] md5 (index 284)
 
-Last updated: 2025-07-25 01:11 +0700
+Last updated: 2025-07-24 18:50 +0000
