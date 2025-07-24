@@ -1,4 +1,4 @@
-;; Generated on 2025-07-24 20:52 +0700
+;; Generated on 2025-07-25 00:31 +0700
 (import (only (scheme base) call/cc when list-ref list-set! list))
 (import (scheme time))
 (import (chibi string))
@@ -137,14 +137,14 @@
 )
  (begin (if (not (cond ((string? m)
  (if (string-contains m x)
- "true" "false")
+ #t #f)
 )
  ((hash-table? m)
  (if (hash-table-exists? m x)
- "true" "false")
+ #t #f)
 )
  (else (if (member x m)
- "true" "false")
+ #t #f)
 )
 )
 )
