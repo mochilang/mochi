@@ -1,0 +1,9 @@
+Traceback (most recent call last):
+  File "/workspace/mochi/tests/rosetta/transpiler/Python/chat-server.py", line 33, in <module>
+    main()
+  File "/workspace/mochi/tests/rosetta/transpiler/Python/chat-server.py", line 26, in main
+    add("Alice")
+  File "/workspace/mochi/tests/rosetta/transpiler/Python/chat-server.py", line 18, in add
+    clients = clients + [name]
+              ^^^^^^^
+NameError: name 'clients' is not defined

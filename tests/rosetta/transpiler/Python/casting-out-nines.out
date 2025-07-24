@@ -1,0 +1,5 @@
+Traceback (most recent call last):
+  File "/workspace/mochi/tests/rosetta/transpiler/Python/casting-out-nines.py", line 61, in <module>
+    print("\nTest case base = " + str(tc["base"]) + ", begin = " + tc["begin"] + ", end = " + tc["end"] + ":")
+                                      ~~^^^^^^^^
+TypeError: 'TestCase' object is not subscriptable
