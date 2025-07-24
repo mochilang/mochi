@@ -1358,6 +1358,15 @@ func (c *CallExpr) emit(w io.Writer) {
 		}
 		io.WriteString(w, ")")
 		return
+	case "pow_big":
+		if len(c.Args) == 2 {
+			if lit, ok := c.Args[0].(*IntLit); ok && lit.Value == 2 {
+				io.WriteString(w, "(1 bsl ")
+				c.Args[1].emit(w)
+				io.WriteString(w, ")")
+				return
+			}
+		}
 	case "min":
 		io.WriteString(w, "lists:min(")
 		if len(c.Args) > 0 {
