@@ -1491,7 +1491,6 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	res := &Program{}
 	builtinAliases = make(map[string]string)
 	globalVars = make(map[string]struct{})
-	foundFunc := false
 	for _, st := range prog.Statements {
 		if st.Import != nil && st.Import.Lang != nil {
 			alias := st.Import.As
@@ -1516,14 +1515,10 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 				}
 			}
 		}
-		if !foundFunc {
-			if st.Fun != nil {
-				foundFunc = true
-			} else if st.Let != nil {
-				globalVars[st.Let.Name] = struct{}{}
-			} else if st.Var != nil {
-				globalVars[st.Var.Name] = struct{}{}
-			}
+		if st.Let != nil {
+			globalVars[st.Let.Name] = struct{}{}
+		} else if st.Var != nil {
+			globalVars[st.Var.Name] = struct{}{}
 		}
 	}
 	for _, st := range prog.Statements {
@@ -2723,7 +2718,7 @@ func compilePostfix(pf *parser.PostfixExpr, env *types.Env) (Expr, error) {
 					expr = &CastExpr{Expr: expr, Type: typName}
 				}
 			} else {
-				return nil, fmt.Errorf("unsupported cast")
+				// ignore complex casts for dynamic targets
 			}
 		} else if op.Index != nil && op.Index.Colon == nil && op.Index.Colon2 == nil {
 			idx, err := compileExpr(op.Index.Start, env)
@@ -2741,7 +2736,11 @@ func compilePostfix(pf *parser.PostfixExpr, env *types.Env) (Expr, error) {
 				expr = &IndexExpr{Target: expr, Index: idx, UseMapSyntax: true}
 				typ = tt.Value
 			default:
-				expr = &IndexExpr{Target: expr, Index: idx}
+				if _, ok := idx.(*StringLit); ok {
+					expr = &IndexExpr{Target: expr, Index: idx, UseMapSyntax: true}
+				} else {
+					expr = &IndexExpr{Target: expr, Index: idx}
+				}
 				typ = types.AnyType{}
 			}
 		} else if op.Index != nil && (op.Index.Colon != nil || op.Index.Colon2 != nil) {
@@ -2876,7 +2875,7 @@ func compilePrimary(p *parser.Primary, env *types.Env) (Expr, error) {
 		switch name {
 		case "int":
 			if len(args) == 1 {
-				return &CallExpr{Func: "String.to_integer", Args: []Expr{args[0]}}, nil
+				return &CallExpr{Func: "Kernel.trunc", Args: []Expr{args[0]}}, nil
 			}
 		case "float":
 			if len(args) == 1 {
@@ -2930,14 +2929,20 @@ func compilePrimary(p *parser.Primary, env *types.Env) (Expr, error) {
 				}
 			}
 		case "len":
-			name = "length"
 			if len(args) == 1 {
 				t := types.TypeOfExprBasic(p.Call.Args[0], env)
 				if _, ok := t.(types.MapType); ok {
 					name = "map_size"
-				} else if _, ok := t.(types.StringType); ok {
-					name = "String.length"
+				} else if _, ok := t.(types.ListType); ok {
+					name = "length"
+				} else {
+					cond := &CallExpr{Func: "is_list", Args: []Expr{args[0]}}
+					thenExpr := &CallExpr{Func: "length", Args: []Expr{args[0]}}
+					elseExpr := &CallExpr{Func: "String.length", Args: []Expr{args[0]}}
+					return &GroupExpr{Expr: &CondExpr{Cond: cond, Then: thenExpr, Else: elseExpr}}, nil
 				}
+			} else {
+				name = "String.length"
 			}
 		case "sum":
 			name = "Enum.sum"
@@ -2984,6 +2989,14 @@ func compilePrimary(p *parser.Primary, env *types.Env) (Expr, error) {
 			if len(args) == 3 {
 				diff := &BinaryExpr{Left: args[2], Op: "-", Right: &GroupExpr{Expr: args[1]}}
 				return &CallExpr{Func: "String.slice", Args: []Expr{args[0], args[1], diff}}, nil
+			}
+		case "upper":
+			if len(args) == 1 {
+				return &CallExpr{Func: "String.upcase", Args: []Expr{args[0]}}, nil
+			}
+		case "lower":
+			if len(args) == 1 {
+				return &CallExpr{Func: "String.downcase", Args: []Expr{args[0]}}, nil
 			}
 		case "exists":
 			if len(args) == 1 {

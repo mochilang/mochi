@@ -2,8 +2,8 @@
 
 Generated Elixir code from Mochi Rosetta programs lives in `tests/rosetta/transpiler/Elixir`.
 
-## Rosetta Test Checklist (11/284)
-_Last updated: 2025-07-24 20:52 +0700_
+## Rosetta Test Checklist (22/284)
+_Last updated: 2025-07-25 00:31 +0700_
 1. [x] [1] 100-doors-2
 2. [x] [2] 100-doors-3
 3. [x] [3] 100-doors
@@ -19,21 +19,21 @@ _Last updated: 2025-07-24 20:52 +0700_
 13. [x] [13] 99-bottles-of-beer-2
 14. [ ] [14] 99-bottles-of-beer
 15. [ ] [15] DNS-query
-16. [ ] [16] a+b
-17. [ ] [17] abbreviations-automatic
-18. [ ] [18] abbreviations-easy
-19. [ ] [19] abbreviations-simple
-20. [ ] [20] abc-problem
+16. [x] [16] a+b
+17. [x] [17] abbreviations-automatic
+18. [x] [18] abbreviations-easy
+19. [x] [19] abbreviations-simple
+20. [x] [20] abc-problem
 21. [ ] [21] abelian-sandpile-model-identity
 22. [ ] [22] abelian-sandpile-model
-23. [ ] [23] abstract-type
+23. [x] [23] abstract-type
 24. [ ] [24] abundant-deficient-and-perfect-number-classifications
 25. [ ] [25] abundant-odd-numbers
-26. [ ] [26] accumulator-factory
+26. [x] [26] accumulator-factory
 27. [ ] [27] achilles-numbers
-28. [ ] [28] ackermann-function-2
-29. [ ] [29] ackermann-function-3
-30. [ ] [30] ackermann-function
+28. [x] [28] ackermann-function-2
+29. [x] [29] ackermann-function-3
+30. [x] [30] ackermann-function
 31. [ ] [31] active-directory-connect
 32. [ ] [32] active-directory-search-for-a-user
 33. [ ] [33] active-object

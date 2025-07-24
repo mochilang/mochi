@@ -1,0 +1,143 @@
+run: exit status 1
+    warning: variable "seed" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 14 │               seed = v
+    │               ~
+    │
+    └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/abelian-sandpile-model-identity.exs:14:15: Main._now/0
+
+    warning: variable "seeded" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 15 │               seeded = true
+    │               ~
+    │
+    └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/abelian-sandpile-model-identity.exs:15:15: Main._now/0
+
+    warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 48 │       {i, res} = try do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/abelian-sandpile-model-identity.exs:48:8: Main.plus/2
+
+    warning: variable "p" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 81 │               p = List.replace_at(p, j, Enum.at(p, j) + 1)
+    │               ~
+    │
+    └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/abelian-sandpile-model-identity.exs:81:15: Main.topple/1
+
+    warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 91 │       {i, p} = try do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/abelian-sandpile-model-identity.exs:91:8: Main.topple/1
+
+    warning: variable "p" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 91 │       {i, p} = try do
+    │           ~
+    │
+    └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/abelian-sandpile-model-identity.exs:91:11: Main.topple/1
+
+     warning: variable "c" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 118 │           {c, s} = try do
+     │            ~
+     │
+     └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/abelian-sandpile-model-identity.exs:118:12: Main.pileString/1
+
+     warning: variable "r" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 131 │       {r, s} = try do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/abelian-sandpile-model-identity.exs:131:8: Main.pileString/1
+
+     warning: variable "s1" is unused (if the variable is not meant to be used, prefix it with an underscore)
+     │
+ 162 │     s1 = [1, 2, 0, 2, 1, 1, 0, 1, 3]
+     │     ~~
+     │
+     └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/abelian-sandpile-model-identity.exs:162:5: Main.main/0
+
+     warning: variable "s2" is unused (if the variable is not meant to be used, prefix it with an underscore)
+     │
+ 163 │     s2 = [2, 1, 3, 1, 0, 1, 0, 1, 0]
+     │     ~~
+     │
+     └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/abelian-sandpile-model-identity.exs:163:5: Main.main/0
+
+     warning: variable "s3" is unused (if the variable is not meant to be used, prefix it with an underscore)
+     │
+ 197 │     s3 = [3, 3, 3, 3, 3, 3, 3, 3, 3]
+     │     ~~
+     │
+     └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/abelian-sandpile-model-identity.exs:197:5: Main.main/0
+
+     warning: variable "s3_a" is unused (if the variable is not meant to be used, prefix it with an underscore)
+     │
+ 164 │     s3_a = plus(Process.get(:s1), Process.get(:s2))
+     │     ~~~~
+     │
+     └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/abelian-sandpile-model-identity.exs:164:5: Main.main/0
+
+     warning: variable "s3_b" is unused (if the variable is not meant to be used, prefix it with an underscore)
+     │
+ 179 │     s3_b = plus(Process.get(:s2), Process.get(:s1))
+     │     ~~~~
+     │
+     └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/abelian-sandpile-model-identity.exs:179:5: Main.main/0
+
+     warning: variable "s3_id" is unused (if the variable is not meant to be used, prefix it with an underscore)
+     │
+ 198 │     s3_id = [2, 1, 2, 1, 0, 1, 2, 1, 2]
+     │     ~~~~~
+     │
+     └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/abelian-sandpile-model-identity.exs:198:5: Main.main/0
+
+     warning: variable "s4" is unused (if the variable is not meant to be used, prefix it with an underscore)
+     │
+ 144 │     s4 = [4, 3, 3, 3, 1, 2, 0, 2, 3]
+     │     ~~
+     │
+     └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/abelian-sandpile-model-identity.exs:144:5: Main.main/0
+
+     warning: variable "s4b" is unused (if the variable is not meant to be used, prefix it with an underscore)
+     │
+ 199 │     s4b = plus(Process.get(:s3), Process.get(:s3_id))
+     │     ~~~
+     │
+     └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/abelian-sandpile-model-identity.exs:199:5: Main.main/0
+
+     warning: variable "s5" is unused (if the variable is not meant to be used, prefix it with an underscore)
+     │
+ 216 │     s5 = plus(Process.get(:s3_id), Process.get(:s3_id))
+     │     ~~
+     │
+     └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/abelian-sandpile-model-identity.exs:216:5: Main.main/0
+
+    warning: function _now/0 is unused
+    │
+  3 │   defp _now() do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/abelian-sandpile-model-identity.exs:3:8: Main (module)
+
+Avalanche of topplings:
+
+** (Protocol.UndefinedError) protocol Enumerable not implemented for type Atom
+
+Got value:
+
+    nil
+
+    (elixir 1.18.3) lib/enum.ex:1: Enumerable.impl_for!/1
+    (elixir 1.18.3) lib/enum.ex:230: Enumerable.slice/1
+    (elixir 1.18.3) lib/enum.ex:4579: Enum.slice_forward/4
+    (elixir 1.18.3) lib/enum.ex:479: Enum.at/3
+    /workspace/mochi/tests/rosetta/transpiler/Elixir/abelian-sandpile-model-identity.exs:111: anonymous fn/5 in Main.pileString/1
+    /workspace/mochi/tests/rosetta/transpiler/Elixir/abelian-sandpile-model-identity.exs:119: anonymous fn/4 in Main.pileString/1
+    /workspace/mochi/tests/rosetta/transpiler/Elixir/abelian-sandpile-model-identity.exs:132: Main.pileString/1
+    /workspace/mochi/tests/rosetta/transpiler/Elixir/abelian-sandpile-model-identity.exs:145: Main.main/0
