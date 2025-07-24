@@ -1,0 +1,10 @@
+run: exit status 1
+Traceback (most recent call last):
+  File "/workspace/mochi/tests/rosetta/transpiler/Python/compiler-virtual-machine-interpreter.py", line 179, in <module>
+    main()
+  File "/workspace/mochi/tests/rosetta/transpiler/Python/compiler-virtual-machine-interpreter.py", line 178, in main
+    runVM(prog)
+  File "/workspace/mochi/tests/rosetta/transpiler/Python/compiler-virtual-machine-interpreter.py", line 113, in runVM
+    stack = stack + [data[arg]]
+            ~~~~~~^~~~~~~~~~~~~
+TypeError: unsupported operand type(s) for +: 'slice' and 'list'

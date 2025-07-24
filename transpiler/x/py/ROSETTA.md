@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Python code from programs in `tests/rosetta/x/Mochi` lives in `tests/rosetta/transpiler/Python`.
-Last updated: 2025-07-24 09:31 UTC
+Last updated: 2025-07-24 11:18 UTC
 
-## Rosetta Golden Test Checklist (191/284)
+## Rosetta Golden Test Checklist (206/284)
 1. [x] 100-doors-2
 2. [x] 100-doors-3
 3. [x] 100-doors
@@ -180,7 +180,7 @@ Last updated: 2025-07-24 09:31 UTC
 173. [x] cartesian-product-of-two-or-more-lists-3
 174. [x] cartesian-product-of-two-or-more-lists-4
 175. [x] case-sensitivity-of-identifiers
-176. [ ] casting-out-nines
+176. [x] casting-out-nines
 177. [x] catalan-numbers-1
 178. [x] catalan-numbers-2
 179. [x] catalan-numbers-pascals-triangle
@@ -193,26 +193,26 @@ Last updated: 2025-07-24 09:31 UTC
 186. [x] character-codes-3
 187. [x] character-codes-4
 188. [x] character-codes-5
-189. [ ] chat-server
+189. [x] chat-server
 190. [x] check-machin-like-formulas
 191. [x] check-that-file-exists
 192. [x] checkpoint-synchronization-1
 193. [x] checkpoint-synchronization-2
 194. [x] checkpoint-synchronization-3
 195. [x] checkpoint-synchronization-4
-196. [ ] chernicks-carmichael-numbers
-197. [ ] cheryls-birthday
-198. [ ] chinese-remainder-theorem
-199. [ ] chinese-zodiac
-200. [ ] cholesky-decomposition-1
-201. [ ] cholesky-decomposition
-202. [ ] chowla-numbers
-203. [ ] church-numerals-1
-204. [ ] church-numerals-2
-205. [ ] circles-of-given-radius-through-two-points
-206. [ ] circular-primes
-207. [ ] cistercian-numerals
-208. [ ] comma-quibbling
+196. [x] chernicks-carmichael-numbers
+197. [x] cheryls-birthday
+198. [x] chinese-remainder-theorem
+199. [x] chinese-zodiac
+200. [x] cholesky-decomposition-1
+201. [x] cholesky-decomposition
+202. [x] chowla-numbers
+203. [x] church-numerals-1
+204. [x] church-numerals-2
+205. [x] circles-of-given-radius-through-two-points
+206. [x] circular-primes
+207. [x] cistercian-numerals
+208. [x] comma-quibbling
 209. [ ] compiler-virtual-machine-interpreter
 210. [ ] composite-numbers-k-with-no-single-digit-factors-whose-factors-are-all-substrings-of-k
 211. [ ] compound-data-type
