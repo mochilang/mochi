@@ -27,6 +27,7 @@ var typeDecls []*TypeDeclStmt
 
 var needsBreaks bool
 var needsJSON bool
+var needsBigInt bool
 var replaceContinue bool
 var loopCounter int
 var breakStack []string
@@ -900,6 +901,13 @@ type CastExpr struct {
 }
 
 func (c *CastExpr) emit(w io.Writer) {
+	if c.Type == "bigint" {
+		needsBigInt = true
+		fmt.Fprint(w, "BigInt(")
+		c.Value.emit(w)
+		fmt.Fprint(w, ")")
+		return
+	}
 	switch c.Value.(type) {
 	case *Name, *IntLit, *StringLit, *BoolLit, *FloatLit:
 		c.Value.emit(w)
@@ -1282,6 +1290,9 @@ func Emit(p *Program) []byte {
 	var buf bytes.Buffer
 	buf.Write(meta.Header("//"))
 	buf.WriteString("import scala.collection.mutable.{ArrayBuffer, Map}\n")
+	if needsBigInt {
+		buf.WriteString("import scala.math.BigInt\n")
+	}
 	if needsJSON {
 		buf.WriteString("import scala.collection.immutable.ListMap\n")
 	}
@@ -1388,6 +1399,7 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	typeDecls = nil
 	needsBreaks = false
 	needsJSON = false
+	needsBigInt = false
 	useNow = false
 	useLookupHost = false
 	builtinAliases = map[string]string{}
@@ -1681,8 +1693,13 @@ func convertBinary(b *parser.BinaryExpr, env *types.Env) (Expr, error) {
 					left = &CastExpr{Value: left, Type: strings.ToLower(rt)}
 				}
 				if (lt == "Any" || lt == "") && (rt == "Any" || rt == "") {
-					left = &CastExpr{Value: left, Type: "float"}
-					right = &CastExpr{Value: right, Type: "float"}
+					if op == "+" {
+						left = &CastExpr{Value: left, Type: "string"}
+						right = &CastExpr{Value: right, Type: "string"}
+					} else {
+						left = &CastExpr{Value: left, Type: "float"}
+						right = &CastExpr{Value: right, Type: "float"}
+					}
 				}
 			} else if op == "&&" || op == "||" {
 				if inferTypeWithEnv(left, env) != "Boolean" {
@@ -3294,6 +3311,9 @@ func toScalaType(t *parser.TypeRef) string {
 			return "Boolean"
 		case "float":
 			return "Double"
+		case "bigint":
+			needsBigInt = true
+			return "BigInt"
 		case "any":
 			return "Any"
 		default:
@@ -3350,6 +3370,9 @@ func toScalaTypeFromType(t types.Type) string {
 		return "Boolean"
 	case types.FloatType:
 		return "Double"
+	case types.BigIntType:
+		needsBigInt = true
+		return "BigInt"
 	case types.ListType:
 		return fmt.Sprintf("ArrayBuffer[%s]", toScalaTypeFromType(tt.Elem))
 	case types.MapType:
@@ -3454,6 +3477,8 @@ func inferType(e Expr) string {
 		return "Any"
 	case *SubstringExpr:
 		return "String"
+	case *NowExpr:
+		return "Int"
 	case *BinaryExpr:
 		switch ex.Op {
 		case "+", "-", "*", "/", "%":
