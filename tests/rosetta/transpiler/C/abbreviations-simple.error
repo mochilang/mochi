@@ -1,0 +1,26 @@
+compile failed: exit status 1: /tmp/ctranspile4139327415/abbreviations-simple.mochi.c: In function ‘user_main’:
+/tmp/ctranspile4139327415/abbreviations-simple.mochi.c:220:47: error: ‘commands_len’ undeclared (first use in this function); did you mean ‘commands’?
+  220 |     const char* *results = validate(commands, commands_len, mins, mins_len, words, words_len);
+      |                                               ^~~~~~~~~~~~
+      |                                               commands
+/tmp/ctranspile4139327415/abbreviations-simple.mochi.c:220:47: note: each undeclared identifier is reported only once for each function it appears in
+/tmp/ctranspile4139327415/abbreviations-simple.mochi.c:220:67: error: ‘mins_len’ undeclared (first use in this function)
+  220 |     const char* *results = validate(commands, commands_len, mins, mins_len, words, words_len);
+      |                                                                   ^~~~~~~~
+/tmp/ctranspile4139327415/abbreviations-simple.mochi.c:220:37: error: incompatible type for argument 1 of ‘validate’
+  220 |     const char* *results = validate(commands, commands_len, mins, mins_len, words, words_len);
+      |                                     ^~~~~~~~
+      |                                     |
+      |                                     Anon1
+/tmp/ctranspile4139327415/abbreviations-simple.mochi.c:182:38: note: expected ‘const char **’ but argument is of type ‘Anon1’
+  182 | const char* * validate(const char* * commands, size_t commands_len, int * mins, size_t mins_len, const char* * words, size_t words_len) {
+      |                        ~~~~~~~~~~~~~~^~~~~~~~
+/tmp/ctranspile4139327415/abbreviations-simple.mochi.c:220:61: error: incompatible type for argument 3 of ‘validate’
+  220 |     const char* *results = validate(commands, commands_len, mins, mins_len, words, words_len);
+      |                                                             ^~~~
+      |                                                             |
+      |                                                             Anon1
+/tmp/ctranspile4139327415/abbreviations-simple.mochi.c:182:75: note: expected ‘int *’ but argument is of type ‘Anon1’
+  182 | const char* * validate(const char* * commands, size_t commands_len, int * mins, size_t mins_len, const char* * words, size_t words_len) {
+      |                                                                     ~~~~~~^~~~
+
