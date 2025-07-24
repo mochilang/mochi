@@ -1,0 +1,8 @@
+compile: exit status 1
+/tmp/TestJavaTranspiler_Rosetta_Goldenaliquot-sequence-classifications3881237625/001/Main.java:2: error: integer number too large
+    static int THRESHOLD = 140737488355328;
+                           ^
+/tmp/TestJavaTranspiler_Rosetta_Goldenaliquot-sequence-classifications3881237625/001/Main.java:138: error: integer number too large
+        int big = 15355717786080;
+                  ^
+2 errors

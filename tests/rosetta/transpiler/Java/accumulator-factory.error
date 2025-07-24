@@ -1,0 +1,7 @@
+compile: exit status 1
+/tmp/TestJavaTranspiler_Rosetta_Goldenaccumulator-factory2639168552/001/Main.java:6: error: bad operand types for binary operator '+'
+store[0] = store[0] + nv;
+                    ^
+  first type:  Object
+  second type: Object
+1 error

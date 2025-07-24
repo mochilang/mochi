@@ -1,0 +1,53 @@
+compile: exit status 1
+/tmp/TestJavaTranspiler_Rosetta_Goldenachilles-numbers2652443450/001/Main.java:2: error: incompatible types: LinkedHashMap<String,Object> cannot be converted to Map<Integer,Boolean>
+    static java.util.Map<Integer,Boolean> pps = new java.util.LinkedHashMap<String, Object>();
+                                                ^
+/tmp/TestJavaTranspiler_Rosetta_Goldenachilles-numbers2652443450/001/Main.java:55: error: incompatible types: LinkedHashMap<String,Object> cannot be converted to Map<Integer,Boolean>
+        java.util.Map<Integer,Boolean> achilles = new java.util.LinkedHashMap<String, Object>();
+                                                  ^
+/tmp/TestJavaTranspiler_Rosetta_Goldenachilles-numbers2652443450/001/Main.java:91: error: method concat in interface Stream<T#2> cannot be applied to given types;
+            res = java.util.stream.Stream.concat(java.util.Arrays.stream(res), java.util.Arrays.stream(new int[]{min})).toArray(Object[]::new);
+                                         ^
+  required: Stream<? extends T#1>,Stream<? extends T#1>
+  found:    IntStream,IntStream
+  reason: cannot infer type-variable(s) T#1
+    (argument mismatch; IntStream cannot be converted to Stream<? extends T#1>)
+  where T#1,T#2 are type-variables:
+    T#1 extends Object declared in method <T#1>concat(Stream<? extends T#1>,Stream<? extends T#1>)
+    T#2 extends Object declared in interface Stream
+/tmp/TestJavaTranspiler_Rosetta_Goldenachilles-numbers2652443450/001/Main.java:96: error: method concat in interface Stream<T#2> cannot be applied to given types;
+                    out = java.util.stream.Stream.concat(java.util.Arrays.stream(out), java.util.Arrays.stream(new int[]{tmp[j]})).toArray(Object[]::new);
+                                                 ^
+  required: Stream<? extends T#1>,Stream<? extends T#1>
+  found:    IntStream,IntStream
+  reason: cannot infer type-variable(s) T#1
+    (argument mismatch; IntStream cannot be converted to Stream<? extends T#1>)
+  where T#1,T#2 are type-variables:
+    T#1 extends Object declared in method <T#1>concat(Stream<? extends T#1>,Stream<? extends T#1>)
+    T#2 extends Object declared in interface Stream
+/tmp/TestJavaTranspiler_Rosetta_Goldenachilles-numbers2652443450/001/Main.java:118: error: cannot find symbol
+        for (var k : achSet.keys()) {
+                           ^
+  symbol:   method keys()
+  location: variable achSet of type Map<Integer,Boolean>
+/tmp/TestJavaTranspiler_Rosetta_Goldenachilles-numbers2652443450/001/Main.java:119: error: method concat in interface Stream<T#2> cannot be applied to given types;
+            ach = java.util.stream.Stream.concat(java.util.Arrays.stream(ach), java.util.Arrays.stream(new int[]{k})).toArray(Object[]::new);
+                                         ^
+  required: Stream<? extends T#1>,Stream<? extends T#1>
+  found:    IntStream,IntStream
+  reason: cannot infer type-variable(s) T#1
+    (argument mismatch; IntStream cannot be converted to Stream<? extends T#1>)
+  where T#1,T#2 are type-variables:
+    T#1 extends Object declared in method <T#1>concat(Stream<? extends T#1>,Stream<? extends T#1>)
+    T#2 extends Object declared in interface Stream
+/tmp/TestJavaTranspiler_Rosetta_Goldenachilles-numbers2652443450/001/Main.java:144: error: method concat in interface Stream<T#2> cannot be applied to given types;
+                strong = java.util.stream.Stream.concat(java.util.Arrays.stream(strong), java.util.Arrays.stream(new int[]{ach[idx]})).toArray(Object[]::new);
+                                                ^
+  required: Stream<? extends T#1>,Stream<? extends T#1>
+  found:    IntStream,IntStream
+  reason: cannot infer type-variable(s) T#1
+    (argument mismatch; IntStream cannot be converted to Stream<? extends T#1>)
+  where T#1,T#2 are type-variables:
+    T#1 extends Object declared in method <T#1>concat(Stream<? extends T#1>,Stream<? extends T#1>)
+    T#2 extends Object declared in interface Stream
+7 errors

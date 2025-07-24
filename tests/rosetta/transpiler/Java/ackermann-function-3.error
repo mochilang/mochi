@@ -1,0 +1,57 @@
+compile: exit status 1
+/tmp/TestJavaTranspiler_Rosetta_Goldenackermann-function-33989153194/001/Main.java:4: error: cannot find symbol
+    static bigint pow_big(bigint base, int exp) {
+                          ^
+  symbol:   class bigint
+  location: class Main
+/tmp/TestJavaTranspiler_Rosetta_Goldenackermann-function-33989153194/001/Main.java:4: error: cannot find symbol
+    static bigint pow_big(bigint base, int exp) {
+           ^
+  symbol:   class bigint
+  location: class Main
+/tmp/TestJavaTranspiler_Rosetta_Goldenackermann-function-33989153194/001/Main.java:18: error: cannot find symbol
+    static int bit_len(bigint x) {
+                       ^
+  symbol:   class bigint
+  location: class Main
+/tmp/TestJavaTranspiler_Rosetta_Goldenackermann-function-33989153194/001/Main.java:28: error: cannot find symbol
+    static bigint ackermann2(bigint m, bigint n) {
+                             ^
+  symbol:   class bigint
+  location: class Main
+/tmp/TestJavaTranspiler_Rosetta_Goldenackermann-function-33989153194/001/Main.java:28: error: cannot find symbol
+    static bigint ackermann2(bigint m, bigint n) {
+                                       ^
+  symbol:   class bigint
+  location: class Main
+/tmp/TestJavaTranspiler_Rosetta_Goldenackermann-function-33989153194/001/Main.java:28: error: cannot find symbol
+    static bigint ackermann2(bigint m, bigint n) {
+           ^
+  symbol:   class bigint
+  location: class Main
+/tmp/TestJavaTranspiler_Rosetta_Goldenackermann-function-33989153194/001/Main.java:5: error: cannot find symbol
+        bigint result = 1;
+        ^
+  symbol:   class bigint
+  location: class Main
+/tmp/TestJavaTranspiler_Rosetta_Goldenackermann-function-33989153194/001/Main.java:6: error: cannot find symbol
+        bigint b = base;
+        ^
+  symbol:   class bigint
+  location: class Main
+/tmp/TestJavaTranspiler_Rosetta_Goldenackermann-function-33989153194/001/Main.java:19: error: cannot find symbol
+        bigint n = x;
+        ^
+  symbol:   class bigint
+  location: class Main
+/tmp/TestJavaTranspiler_Rosetta_Goldenackermann-function-33989153194/001/Main.java:49: error: cannot find symbol
+                bigint r = pow_big(2, ((Number)(n)).intValue());
+                ^
+  symbol:   class bigint
+  location: class Main
+/tmp/TestJavaTranspiler_Rosetta_Goldenackermann-function-33989153194/001/Main.java:61: error: cannot find symbol
+        bigint res = ackermann2(m, n);
+        ^
+  symbol:   class bigint
+  location: class Main
+11 errors
