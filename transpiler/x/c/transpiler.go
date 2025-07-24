@@ -56,6 +56,7 @@ var (
 	needListAppendInt    bool
 	needListAppendStr    bool
 	needListAppendPtr    bool
+	needListLen          bool
 	needNow              bool
 	needInput            bool
 	needSubstring        bool
@@ -348,12 +349,32 @@ func (d *DeclStmt) emit(w io.Writer, indent int) {
 		}
 		if vr, ok := d.Value.(*VarRef); ok {
 			fmt.Fprintf(w, "%s *%s = %s;\n", base, d.Name, vr.Name)
+			if _, ok := varTypes[vr.Name]; ok {
+				writeIndent(w, indent)
+				fmt.Fprintf(w, "size_t %s_len = %s_len;\n", d.Name, vr.Name)
+			} else {
+				needListLen = true
+				writeIndent(w, indent)
+				fmt.Fprintf(w, "size_t %s_len = list_len(%s);\n", d.Name, vr.Name)
+			}
+			return
+		}
+		if _, ok := d.Value.(*CallExpr); ok {
+			fmt.Fprintf(w, "%s *%s = ", base, d.Name)
+			d.Value.emitExpr(w)
+			io.WriteString(w, ";\n")
+			needListLen = true
+			writeIndent(w, indent)
+			fmt.Fprintf(w, "size_t %s_len = list_len(%s);\n", d.Name, d.Name)
 			return
 		}
 		if d.Value != nil {
 			fmt.Fprintf(w, "%s *%s = ", base, d.Name)
 			d.Value.emitExpr(w)
 			io.WriteString(w, ";\n")
+			needListLen = true
+			writeIndent(w, indent)
+			fmt.Fprintf(w, "size_t %s_len = list_len(%s);\n", d.Name, d.Name)
 			return
 		}
 		fmt.Fprintf(w, "%s *%s = NULL;\n", base, d.Name)
@@ -1192,9 +1213,10 @@ func (p *Program) Emit() []byte {
 	}
 	if needListAppendStr {
 		buf.WriteString("static const char** list_append_str(const char **arr, size_t *len, const char *val) {\n")
-		buf.WriteString("    arr = realloc((void*)arr, (*len + 1) * sizeof(char*));\n")
+		buf.WriteString("    arr = realloc((void*)arr, (*len + 2) * sizeof(char*));\n")
 		buf.WriteString("    arr[*len] = val;\n")
 		buf.WriteString("    (*len)++;\n")
+		buf.WriteString("    arr[*len] = NULL;\n")
 		buf.WriteString("    return arr;\n")
 		buf.WriteString("}\n\n")
 	}
@@ -1204,6 +1226,14 @@ func (p *Program) Emit() []byte {
 		buf.WriteString("    arr[*len] = val;\n")
 		buf.WriteString("    (*len)++;\n")
 		buf.WriteString("    return arr;\n")
+		buf.WriteString("}\n\n")
+	}
+	if needListLen {
+		buf.WriteString("static size_t list_len(const char **arr) {\n")
+		buf.WriteString("    size_t n = 0;\n")
+		buf.WriteString("    if (!arr) return 0;\n")
+		buf.WriteString("    while (arr[n]) n++;\n")
+		buf.WriteString("    return n;\n")
 		buf.WriteString("}\n\n")
 	}
 	if needNow {
@@ -1426,6 +1456,7 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 	needListAppendInt = false
 	needListAppendStr = false
 	needListAppendPtr = false
+	needListLen = false
 	needNow = false
 	needInput = false
 	needSubstring = false
@@ -2355,6 +2386,8 @@ func compileFunction(env *types.Env, name string, fn *parser.FunExpr) (*Function
 	localEnv := types.NewEnv(env)
 	prevEnv := currentEnv
 	currentEnv = localEnv
+	prevVarTypes := varTypes
+	varTypes = make(map[string]string)
 	declStmts = map[string]*DeclStmt{}
 	var params []Param
 	var paramTypes []string
@@ -2414,6 +2447,7 @@ func compileFunction(env *types.Env, name string, fn *parser.FunExpr) (*Function
 		prevEnv.SetStruct(name, st)
 	}
 	currentEnv = prevEnv
+	varTypes = prevVarTypes
 	declStmts = nil
 	return &Function{Name: name, Params: params, Body: body, Return: ret}, nil
 }
@@ -3706,7 +3740,7 @@ func exprIsString(e Expr) bool {
 		_, ok := constStrings[v.Name]
 		return ok
 	case *CallExpr:
-		if v.Func == "str" || v.Func == "substring" || v.Func == "json" {
+		if v.Func == "str" || v.Func == "substring" || v.Func == "_substring" || v.Func == "json" {
 			return true
 		}
 		if fn, ok := currentEnv.GetFunc(v.Func); ok && fn.Return != nil && fn.Return.Simple != nil {
