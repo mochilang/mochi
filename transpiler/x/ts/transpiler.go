@@ -37,6 +37,7 @@ var useNumDenom bool
 var useSHA256 bool
 var useRepeat bool
 var useParseIntStr bool
+var useAppend bool
 
 var reserved = map[string]bool{
 	"break": true, "case": true, "catch": true, "class": true, "const": true,
@@ -539,16 +540,17 @@ func (l *LenExpr) emit(w io.Writer) {
 }
 
 func (a *AppendExpr) emit(w io.Writer) {
-	io.WriteString(w, "[")
-	io.WriteString(w, "...")
+	io.WriteString(w, "_append(")
 	if a.List != nil {
 		a.List.emit(w)
+	} else {
+		io.WriteString(w, "[]")
 	}
 	io.WriteString(w, ", ")
 	if a.Elem != nil {
 		a.Elem.emit(w)
 	}
-	io.WriteString(w, "]")
+	io.WriteString(w, ")")
 }
 
 func (s *SpreadExpr) emit(w io.Writer) {
@@ -1901,6 +1903,7 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	useSHA256 = false
 	useRepeat = false
 	useParseIntStr = false
+	useAppend = false
 	defer func() {
 		transpileEnv = nil
 		generatedTypes = nil
@@ -1913,6 +1916,7 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 		useSHA256 = false
 		useRepeat = false
 		useParseIntStr = false
+		useAppend = false
 	}()
 	tsProg := &Program{}
 
@@ -1992,6 +1996,9 @@ function sha256(bs: number[]): number[] {
 	}
 	if useParseIntStr {
 		prelude = append(prelude, &RawStmt{Code: `function parseIntStr(s: string, base: number): number { return parseInt(s, Math.trunc(base)); }`})
+	}
+	if useAppend {
+		prelude = append(prelude, &RawStmt{Code: `function _append(arr: any[], v: any): any[] { arr.push(v); return arr; }`})
 	}
 	if len(prelude) > 0 {
 		tsProg.Stmts = append(prelude, tsProg.Stmts...)
@@ -3193,6 +3200,7 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 			if len(args) != 2 {
 				return nil, fmt.Errorf("append expects two arguments")
 			}
+			useAppend = true
 			return &AppendExpr{List: args[0], Elem: args[1]}, nil
 		case "avg":
 			if len(args) != 1 {
