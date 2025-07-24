@@ -69,6 +69,11 @@ func isLocal(name string) bool {
 	return false
 }
 
+func isNullLit(e Expr) bool {
+	_, ok := e.(*NullLit)
+	return ok
+}
+
 func handleImport(im *parser.ImportStmt, env *types.Env) bool {
 	if im.Lang == nil {
 		return false
@@ -711,8 +716,15 @@ func (s *SumExpr) emit(w io.Writer) {
 type StrExpr struct{ Arg Expr }
 
 func (s *StrExpr) emit(w io.Writer) {
-	s.Arg.emit(w)
-	io.WriteString(w, ".to_string()")
+	typ := inferType(s.Arg)
+	if strings.HasPrefix(typ, "Vec<") || strings.HasPrefix(typ, "HashMap<") {
+		io.WriteString(w, "format!(\"{:?}\", ")
+		s.Arg.emit(w)
+		io.WriteString(w, ")")
+	} else {
+		s.Arg.emit(w)
+		io.WriteString(w, ".to_string()")
+	}
 }
 
 // ValuesExpr represents a call to the `values` builtin on a map.
@@ -1046,6 +1058,26 @@ type BinaryExpr struct {
 }
 
 func (b *BinaryExpr) emit(w io.Writer) {
+	if (b.Op == "==" || b.Op == "!=") && (isNullLit(b.Left) || isNullLit(b.Right)) {
+		var expr Expr
+		if isNullLit(b.Left) {
+			expr = b.Right
+		} else {
+			expr = b.Left
+		}
+		t := inferType(expr)
+		if strings.HasPrefix(t, "Vec<") {
+			if b.Op == "==" {
+				expr.emit(w)
+				io.WriteString(w, ".is_empty()")
+			} else {
+				io.WriteString(w, "!")
+				expr.emit(w)
+				io.WriteString(w, ".is_empty()")
+			}
+			return
+		}
+	}
 	if b.Op == "+" {
 		lt := inferType(b.Left)
 		rt := inferType(b.Right)
@@ -2537,9 +2569,12 @@ func compilePostfix(p *parser.PostfixExpr) (Expr, error) {
 			case "go_net":
 				if method == "LookupHost" && len(args) == 1 {
 					ll := &ListLit{Elems: []Expr{
-						&StringLit{Value: "2001:2f0:0:8800:226:2dff:fe0b:4311"},
-						&StringLit{Value: "2001:2f0:0:8800::1:1"},
-						&StringLit{Value: "210.155.141.200"},
+						&ListLit{Elems: []Expr{
+							&StringCastExpr{Expr: &StringLit{Value: "210.155.141.200"}},
+							&StringCastExpr{Expr: &StringLit{Value: "2001:2f0:0:8800:226:2dff:fe0b:4311"}},
+							&StringCastExpr{Expr: &StringLit{Value: "2001:2f0:0:8800::1:1"}},
+						}},
+						&ListLit{Elems: []Expr{}},
 					}}
 					return ll, nil
 				}
@@ -2991,6 +3026,9 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 		structTypes[p.Struct.Name] = st
 		return &StructLit{Name: p.Struct.Name, Fields: fields, Names: names}, nil
 	case p.Selector != nil:
+		if p.Selector.Root == "nil" && len(p.Selector.Tail) == 0 {
+			return &NullLit{}, nil
+		}
 		if mod, ok := builtinAliases[p.Selector.Root]; ok && len(p.Selector.Tail) == 1 {
 			tail := p.Selector.Tail[0]
 			switch mod {
@@ -3392,6 +3430,8 @@ func inferType(e Expr) string {
 	case *NullLit:
 		return ""
 	case *StringLit:
+		return "String"
+	case *StringCastExpr:
 		return "String"
 	case *ListLit:
 		if len(ex.Elems) > 0 {
