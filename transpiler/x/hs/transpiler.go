@@ -13,6 +13,7 @@ import (
 	"sort"
 	"strings"
 	"time"
+	"unicode"
 
 	"gopkg.in/yaml.v3"
 
@@ -118,6 +119,11 @@ var reserved = map[string]bool{
 func safeName(n string) string {
 	if reserved[n] {
 		return "_" + n
+	}
+	if len(n) > 0 && unicode.IsUpper(rune(n[0])) {
+		r := []rune(n)
+		r[0] = unicode.ToLower(r[0])
+		return string(r)
 	}
 	return n
 }
@@ -888,10 +894,9 @@ func (we *WhileExpr) emit(w io.Writer) {
 	prevArgs := loopArgs
 	currentLoop = name
 	loopArgs = ""
-	io.WriteString(w, "(let\n")
+	io.WriteString(w, "(let {\n")
 	pushIndent()
 	writeIndent(w)
-	io.WriteString(w, "in ")
 	io.WriteString(w, name)
 	if we.Var != "" && !mutated[we.Var] {
 		io.WriteString(w, " ")
@@ -938,7 +943,7 @@ func (we *WhileExpr) emit(w io.Writer) {
 	popIndent()
 	popIndent()
 	writeIndent(w)
-	io.WriteString(w, "in ")
+	io.WriteString(w, "} in ")
 	io.WriteString(w, name)
 	if we.Var != "" && !mutated[we.Var] {
 		io.WriteString(w, " ")
