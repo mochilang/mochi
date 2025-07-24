@@ -180,7 +180,7 @@ fun main() {
   }
   let eastParts = fromEpoch(utc12 + offEast)
   var eastAbbr = "EST"
-  if offEast == -14400 {
+  if offEast == (-14400) {
     eastAbbr = "EDT"
   }
   print("+12 hrs:            " + formatDate(eastParts, offEast, eastAbbr))
