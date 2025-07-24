@@ -2,9 +2,9 @@
 
 Generated Lua code for programs in `tests/rosetta/x/Mochi`. Each program has a `.lua` file produced by the transpiler and a `.out` file with its runtime output. Compilation or runtime errors are captured in `.error` files.
 
-Transpiled programs: 99/284
+Transpiled programs: 100/284
 
-Last updated: 2025-07-24 08:13 GMT+7
+Last updated: 2025-07-24 13:03 GMT+7
 
 Checklist:
 
@@ -111,7 +111,7 @@ Checklist:
 101. [x] barnsley-fern
 102. [x] base64-decode-data
 103. [x] bell-numbers
-104. [ ] benfords-law
+104. [x] benfords-law
 105. [ ] bernoulli-numbers
 106. [ ] best-shuffle
 107. [ ] bifid-cipher
