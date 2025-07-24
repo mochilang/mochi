@@ -1,0 +1,178 @@
+run: exit status 1
+    warning: variable "seed" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 14 │               seed = v
+    │               ~
+    │
+    └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/abbreviations-easy.exs:14:15: Main._now/0
+
+    warning: variable "seeded" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 15 │               seeded = true
+    │               ~
+    │
+    └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/abbreviations-easy.exs:15:15: Main._now/0
+
+    warning: variable "cur" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 49 │             cur = (cur <> ch)
+    │             ~
+    │
+    └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/abbreviations-easy.exs:49:13: Main.fields/1
+
+    warning: variable "cur" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 46 │               cur = ""
+    │               ~
+    │
+    └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/abbreviations-easy.exs:46:15: Main.fields/1
+
+    warning: variable "words" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 45 │               words = (words ++ [cur])
+    │               ~
+    │
+    └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/abbreviations-easy.exs:45:15: Main.fields/1
+
+    warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 57 │       {cur, i, words} = try do
+    │             ~
+    │
+    └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/abbreviations-easy.exs:57:13: Main.fields/1
+
+    warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 87 │       {i, out} = try do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/abbreviations-easy.exs:87:8: Main.padRight/2
+
+     warning: variable "res" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 105 │             res = (res <> sep)
+     │             ~
+     │
+     └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/abbreviations-easy.exs:105:13: Main.join/2
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 114 │       {i, res} = try do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/abbreviations-easy.exs:114:8: Main.join/2
+
+     error: undefined variable "upper"
+     │
+ 144 │                     c = upper.(cmd)
+     │                         ^^^^^
+     │
+     └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/abbreviations-easy.exs:144:25: Main.validate/3
+
+     error: undefined variable "upper"
+     │
+ 145 │                     ww = upper.(w)
+     │                          ^^^^^
+     │
+     └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/abbreviations-easy.exs:145:26: Main.validate/3
+
+     warning: variable "found" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 148 │                       found = true
+     │                       ~
+     │
+     └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/abbreviations-easy.exs:148:23: Main.validate/3
+
+     warning: variable "results" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 147 │                       results = (results ++ [c])
+     │                       ~
+     │
+     └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/abbreviations-easy.exs:147:23: Main.validate/3
+
+     warning: variable "ci" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 152 │                   ci = ci + 1
+     │                   ~
+     │
+     └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/abbreviations-easy.exs:152:19: Main.validate/3
+
+     warning: variable "results" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 168 │               results = (results ++ ["*error*"])
+     │               ~
+     │
+     └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/abbreviations-easy.exs:168:15: Main.validate/3
+
+     warning: variable "ci" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 161 │             {ci, found, results} = try do
+     │              ~
+     │
+     └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/abbreviations-easy.exs:161:14: Main.validate/3
+
+     warning: variable "wi" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 170 │             wi = wi + 1
+     │             ~
+     │
+     └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/abbreviations-easy.exs:170:13: Main.validate/3
+
+     warning: variable "wi" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 179 │       {results, wi} = try do
+     │                 ~
+     │
+     └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/abbreviations-easy.exs:179:17: Main.validate/3
+
+     warning: variable "count" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 205 │                 count = count + 1
+     │                 ~
+     │
+     └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/abbreviations-easy.exs:205:17: Main.main/0
+
+     warning: variable "j" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 213 │           {count, j} = try do
+     │                   ~
+     │
+     └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/abbreviations-easy.exs:213:19: Main.main/0
+
+     error: undefined variable "count"
+     │
+ 227 │           while_fun_6.(while_fun_6, count, i, mins)
+     │                                     ^^^^^
+     │
+     └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/abbreviations-easy.exs:227:37: Main.main/0
+
+     error: undefined variable "count"
+     │
+ 229 │           :break -> {count, i, mins}
+     │                      ^^^^^
+     │
+     └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/abbreviations-easy.exs:229:22: Main.main/0
+
+     warning: variable "count" is unused (if the variable is not meant to be used, prefix it with an underscore)
+     │
+ 226 │       {count, i, mins} = try do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/abbreviations-easy.exs:226:8: Main.main/0
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 226 │       {count, i, mins} = try do
+     │               ~
+     │
+     └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/abbreviations-easy.exs:226:15: Main.main/0
+
+     warning: variable "k" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 246 │       {k, out1} = try do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/abbreviations-easy.exs:246:8: Main.main/0
+
+** (CompileError) /workspace/mochi/tests/rosetta/transpiler/Elixir/abbreviations-easy.exs: cannot compile module Main (errors have been logged)
+

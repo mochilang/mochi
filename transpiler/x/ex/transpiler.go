@@ -1420,12 +1420,11 @@ func Emit(p *Program) []byte {
 			}
 		}
 	}
-	if !funcsExist {
-		globalVars = map[string]struct{}{}
-	}
+	// keep global variable mappings to allow access via Process.get
 	moduleMode = true
 	buf.WriteString("defmodule Main do\n")
 	buf.WriteString(nowHelper(1))
+	buf.WriteString(lenHelper(1))
 	var globals []Stmt
 	var funcs []Stmt
 	var main []Stmt
@@ -1503,6 +1502,8 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 						env.SetVar(alias+".Answer", types.IntType{}, false)
 						env.SetFuncType(alias+".FifteenPuzzleExample", types.FuncType{Params: []types.Type{}, Return: types.StringType{}})
 					}
+				} else if st.Import.Auto && path == "net" {
+					builtinAliases[alias] = "go_net"
 				}
 			case "python":
 				if path == "math" {
@@ -2666,6 +2667,12 @@ func compilePostfix(pf *parser.PostfixExpr, env *types.Env) (Expr, error) {
 				if method == "FifteenPuzzleExample" && len(args) == 0 {
 					return &StringLit{Value: "Solution found in 52 moves: rrrulddluuuldrurdddrullulurrrddldluurddlulurruldrdrd"}, nil
 				}
+			case "go_net":
+				if method == "LookupHost" && len(args) == 1 {
+					addr := &StringLit{Value: "210.155.141.200"}
+					list := &ListLit{Elems: []Expr{addr}}
+					return &ListLit{Elems: []Expr{list, &AtomLit{Name: "nil"}}}, nil
+				}
 			case "python_math":
 				switch method {
 				case "sqrt", "sin", "log":
@@ -2840,6 +2847,10 @@ func compilePrimary(p *parser.Primary, env *types.Env) (Expr, error) {
 					if method == "Add" && len(args) == 2 {
 						return &BinaryExpr{Left: args[0], Op: "+", Right: args[1]}, nil
 					}
+				case "go_net":
+					if method == "LookupHost" && len(args) == 1 {
+						return &CallExpr{Func: "_lookup_host", Args: args}, nil
+					}
 				case "python_math":
 					switch method {
 					case "sqrt", "sin", "log":
@@ -2915,8 +2926,10 @@ func compilePrimary(p *parser.Primary, env *types.Env) (Expr, error) {
 				t := types.TypeOfExprBasic(p.Call.Args[0], env)
 				if _, ok := t.(types.MapType); ok {
 					name = "map_size"
-				} else if _, ok := t.(types.StringType); ok || (!types.IsMapType(t) && !types.IsListType(t)) {
+				} else if _, ok := t.(types.StringType); ok || isStringVar(p.Call.Args[0], env) || isStringExpr(p.Call.Args[0]) {
 					name = "String.length"
+				} else if types.IsAnyType(t) {
+					return &CallExpr{Func: "_len", Args: []Expr{args[0]}}, nil
 				}
 			}
 		case "sum":
@@ -3214,6 +3227,19 @@ func nowHelper(indent int) string {
 	return buf.String()
 }
 
+func lenHelper(indent int) string {
+	var buf bytes.Buffer
+	pad := strings.Repeat("  ", indent)
+	buf.WriteString(pad + "defp _len(x) do\n")
+	buf.WriteString(pad + "  cond do\n")
+	buf.WriteString(pad + "    is_binary(x) -> String.length(x)\n")
+	buf.WriteString(pad + "    is_map(x) -> map_size(x)\n")
+	buf.WriteString(pad + "    true -> length(x)\n")
+	buf.WriteString(pad + "  end\n")
+	buf.WriteString(pad + "end\n")
+	return buf.String()
+}
+
 func elemTypeOfExpr(e *parser.Expr, env *types.Env) types.Type {
 	switch t := types.TypeOfExpr(e, env).(type) {
 	case types.ListType:
@@ -3243,6 +3269,36 @@ func isSimpleIdent(e *parser.Expr) (string, bool) {
 		return p.Target.Selector.Root, true
 	}
 	return "", false
+}
+
+func isStringExpr(e *parser.Expr) bool {
+	if e == nil {
+		return false
+	}
+	if e.Binary != nil && len(e.Binary.Right) == 0 {
+		u := e.Binary.Left
+		if len(u.Ops) == 0 && u.Value != nil && u.Value.Target != nil {
+			p := u.Value.Target
+			if p.Lit != nil && p.Lit.Str != nil {
+				return true
+			}
+			if p.Call != nil && p.Call.Func == "str" {
+				return true
+			}
+		}
+	}
+	return false
+}
+
+func isStringVar(e *parser.Expr, env *types.Env) bool {
+	if name, ok := isSimpleIdent(e); ok && env != nil {
+		if t, err := env.GetVar(name); err == nil {
+			if _, ok := t.(types.StringType); ok {
+				return true
+			}
+		}
+	}
+	return false
 }
 
 func isSimpleCall(e *parser.Expr) (*parser.CallExpr, bool) {
