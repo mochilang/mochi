@@ -1664,6 +1664,17 @@ func convertBinary(b *parser.BinaryExpr, env *types.Env) (Expr, error) {
 				if inferTypeWithEnv(right, env) != "Boolean" {
 					right = &CastExpr{Value: right, Type: "bool"}
 				}
+			} else if op == ">" || op == "<" || op == ">=" || op == "<=" {
+				lt := inferTypeWithEnv(left, env)
+				rt := inferTypeWithEnv(right, env)
+				if lt == "String" && (rt == "Any" || rt == "") {
+					right = &CastExpr{Value: right, Type: "string"}
+				} else if rt == "String" && (lt == "Any" || lt == "") {
+					left = &CastExpr{Value: left, Type: "string"}
+				} else if (lt == "Any" || lt == "") && (rt == "Any" || rt == "") {
+					left = &CastExpr{Value: left, Type: "string"}
+					right = &CastExpr{Value: right, Type: "string"}
+				}
 			}
 			ex = &BinaryExpr{Left: left, Op: op, Right: right}
 		}
@@ -3398,6 +3409,11 @@ func inferType(e Expr) string {
 		case "+", "-", "*", "/", "%":
 			lt := inferType(ex.Left)
 			rt := inferType(ex.Right)
+			if ex.Op == "+" {
+				if lt == "String" || rt == "String" {
+					return "String"
+				}
+			}
 			if lt == "Double" || rt == "Double" {
 				return "Double"
 			}
