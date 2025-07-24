@@ -103,6 +103,7 @@ type context struct {
 	strVar    map[string]bool
 	floatVar  map[string]bool
 	mapVar    map[string]bool
+	boolVar   map[string]bool
 	strField  map[string]map[string]bool
 	boolField map[string]map[string]bool
 	groups    map[string]groupInfo
@@ -117,7 +118,7 @@ type context struct {
 type groupInfo struct{ key, items string }
 
 func newContext(base string) *context {
-	return &context{alias: map[string]string{}, orig: map[string]string{}, counter: map[string]int{}, strVar: map[string]bool{}, floatVar: map[string]bool{}, mapVar: map[string]bool{}, strField: map[string]map[string]bool{}, boolField: map[string]map[string]bool{}, groups: map[string]groupInfo{}, constVal: map[string]Expr{}, autoMod: map[string]string{}, baseDir: base, globals: map[string]bool{}, params: map[string]bool{}, mutated: map[string]bool{}}
+	return &context{alias: map[string]string{}, orig: map[string]string{}, counter: map[string]int{}, strVar: map[string]bool{}, floatVar: map[string]bool{}, mapVar: map[string]bool{}, boolVar: map[string]bool{}, strField: map[string]map[string]bool{}, boolField: map[string]map[string]bool{}, groups: map[string]groupInfo{}, constVal: map[string]Expr{}, autoMod: map[string]string{}, baseDir: base, globals: map[string]bool{}, params: map[string]bool{}, mutated: map[string]bool{}}
 }
 
 func (c *context) clone() *context {
@@ -162,6 +163,10 @@ func (c *context) clone() *context {
 	for k, v := range c.mapVar {
 		mapVar[k] = v
 	}
+	boolVar := make(map[string]bool, len(c.boolVar))
+	for k, v := range c.boolVar {
+		boolVar[k] = v
+	}
 	consts := make(map[string]Expr, len(c.constVal))
 	for k, v := range c.constVal {
 		consts[k] = v
@@ -182,7 +187,7 @@ func (c *context) clone() *context {
 	for k, v := range c.mutated {
 		mut[k] = v
 	}
-	return &context{alias: alias, orig: orig, counter: counter, strVar: strVar, floatVar: floatVar, mapVar: mapVar, strField: fields, boolField: bfields, groups: groups, constVal: consts, autoMod: mods, baseDir: c.baseDir, globals: gl, params: params, mutated: mut}
+	return &context{alias: alias, orig: orig, counter: counter, strVar: strVar, floatVar: floatVar, mapVar: mapVar, boolVar: boolVar, strField: fields, boolField: bfields, groups: groups, constVal: consts, autoMod: mods, baseDir: c.baseDir, globals: gl, params: params, mutated: mut}
 }
 
 func (c *context) newAlias(name string) string {
@@ -273,6 +278,16 @@ func (c *context) setFloatVar(name string, isFloat bool) {
 	c.floatVar[name] = true
 }
 
+func (c *context) setBoolVar(name string, isBool bool) {
+	if !isBool {
+		return
+	}
+	if c.boolVar == nil {
+		c.boolVar = map[string]bool{}
+	}
+	c.boolVar[name] = true
+}
+
 func (c *context) addParam(name string) {
 	if c.params == nil {
 		c.params = map[string]bool{}
@@ -341,6 +356,10 @@ func (c *context) isMapVar(name string) bool {
 
 func (c *context) isFloatVar(name string) bool {
 	return c.floatVar[name]
+}
+
+func (c *context) isBoolVar(name string) bool {
+	return c.boolVar[name]
 }
 
 func (c *context) getGroup(name string) (groupInfo, bool) {
@@ -1039,10 +1058,26 @@ func isBoolExpr(e Expr, env *types.Env, ctx *context) bool {
 				}
 			}
 		}
+		if ctx != nil {
+			name := ctx.original(v.Name)
+			if ctx.isBoolVar(name) {
+				return true
+			}
+		}
 	case *IndexExpr:
 		if env != nil && v.Kind == "map" {
 			if fieldIsBool(v.Target, v.Index, env, ctx) {
 				return true
+			}
+		}
+	case *CallExpr:
+		if env != nil {
+			if t, err := env.GetVar(v.Func); err == nil {
+				if ft, ok := t.(types.FuncType); ok {
+					if _, ok := ft.Return.(types.BoolType); ok {
+						return true
+					}
+				}
 			}
 		}
 	case *IfExpr:
@@ -2516,6 +2551,7 @@ func convertStmt(st *parser.Statement, env *types.Env, ctx *context, top bool) (
 		ctx.setStringVar(st.Let.Name, isStringExpr(e))
 		ctx.setFloatVar(st.Let.Name, isFloatExpr(e, env, ctx) || (st.Let.Type != nil && st.Let.Type.Simple != nil && *st.Let.Type.Simple == "float"))
 		ctx.setMapVar(st.Let.Name, isMapExpr(e, env, ctx) || (st.Let.Type != nil && st.Let.Type.Generic != nil && st.Let.Type.Generic.Name == "map"))
+		ctx.setBoolVar(st.Let.Name, isBoolExpr(e, env, ctx) || (st.Let.Type != nil && st.Let.Type.Simple != nil && *st.Let.Type.Simple == "bool"))
 		switch e.(type) {
 		case *IntLit, *FloatLit, *BoolLit, *StringLit, *AtomLit:
 			ctx.setConst(st.Let.Name, e)
@@ -2542,6 +2578,7 @@ func convertStmt(st *parser.Statement, env *types.Env, ctx *context, top bool) (
 		ctx.setStringVar(st.Var.Name, isStringExpr(e))
 		ctx.setFloatVar(st.Var.Name, isFloatExpr(e, env, ctx) || (st.Var.Type != nil && st.Var.Type.Simple != nil && *st.Var.Type.Simple == "float"))
 		ctx.setMapVar(st.Var.Name, isMapExpr(e, env, ctx) || (st.Var.Type != nil && st.Var.Type.Generic != nil && st.Var.Type.Generic.Name == "map"))
+		ctx.setBoolVar(st.Var.Name, isBoolExpr(e, env, ctx) || (st.Var.Type != nil && st.Var.Type.Simple != nil && *st.Var.Type.Simple == "bool"))
 		ctx.clearConst(st.Var.Name)
 		if top {
 			ctx.setGlobal(st.Var.Name)
@@ -2566,6 +2603,7 @@ func convertStmt(st *parser.Statement, env *types.Env, ctx *context, top bool) (
 		ctx.setStringVar(st.Assign.Name, isStringExpr(val))
 		ctx.setFloatVar(st.Assign.Name, isFloatExpr(val, env, ctx))
 		ctx.setMapVar(st.Assign.Name, isMapExpr(val, env, ctx))
+		ctx.setBoolVar(st.Assign.Name, isBoolExpr(val, env, ctx))
 		switch val.(type) {
 		case *IntLit, *FloatLit, *BoolLit, *StringLit, *AtomLit:
 			ctx.setConst(st.Assign.Name, val)
@@ -2785,6 +2823,9 @@ func convertStmt(st *parser.Statement, env *types.Env, ctx *context, top bool) (
 			names = append(names, n)
 		}
 		sort.Strings(names)
+		for _, n := range names {
+			ctx.clearConst(n)
+		}
 		loopStack = append(loopStack, names)
 		body := []Stmt{}
 		for _, bs := range st.For.Body {
@@ -2798,6 +2839,15 @@ func convertStmt(st *parser.Statement, env *types.Env, ctx *context, top bool) (
 		loopStack = loopStack[:len(loopStack)-1]
 		for n := range loopCtx.mutated {
 			ctx.markMutated(n)
+		}
+		for _, n := range names {
+			if loopCtx.alias[n] != ctx.alias[n] {
+				ctx.clearConst(n)
+			} else if v, ok := loopCtx.constValue(n); ok {
+				ctx.setConst(n, v)
+			} else {
+				ctx.clearConst(n)
+			}
 		}
 		params := make([]string, len(names))
 		next := make([]string, len(names))
@@ -2827,6 +2877,7 @@ func convertStmt(st *parser.Statement, env *types.Env, ctx *context, top bool) (
 		loopCtx.setStringVar(st.For.Name, isStringExpr(src))
 		loopCtx.setFloatVar(st.For.Name, isFloatExpr(src, env, ctx))
 		loopCtx.setMapVar(st.For.Name, isMapExpr(src, env, ctx))
+		loopCtx.setBoolVar(st.For.Name, isBoolExpr(src, env, ctx))
 		kind := "list"
 		if isMapExpr(src, env, ctx) {
 			isGroupItems := false
@@ -2851,6 +2902,9 @@ func convertStmt(st *parser.Statement, env *types.Env, ctx *context, top bool) (
 			names = append(names, n)
 		}
 		sort.Strings(names)
+		for _, n := range names {
+			ctx.clearConst(n)
+		}
 		params := make([]string, len(names))
 		for i, n := range names {
 			params[i] = ctx.alias[n]
@@ -2874,6 +2928,15 @@ func convertStmt(st *parser.Statement, env *types.Env, ctx *context, top bool) (
 		loopStack = loopStack[:len(loopStack)-1]
 		for n := range loopCtx.mutated {
 			ctx.markMutated(n)
+		}
+		for _, n := range names {
+			if loopCtx.alias[n] != ctx.alias[n] {
+				ctx.clearConst(n)
+			} else if v, ok := loopCtx.constValue(n); ok {
+				ctx.setConst(n, v)
+			} else {
+				ctx.clearConst(n)
+			}
 		}
 		next := make([]string, len(names))
 		for i, n := range names {
