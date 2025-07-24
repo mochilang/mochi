@@ -1,5 +1,5 @@
-/workspace/mochi/tests/rosetta/transpiler/erl/24-game-solve.erl:169:2: Warning: variable 'F2' exported from 'case' (line 86, column 9)
-%  169| {F2, I2, Xs} = Fun4(F2, I, Xs),
+/workspace/mochi/tests/rosetta/transpiler/erl/24-game-solve.erl:180:2: Warning: variable 'F_2' exported from 'case' (line 94, column 9)
+%  180| {F_2, I_2, Xs} = Fun_4(F_2, I, Xs),
 %     |  ^
 
  5
