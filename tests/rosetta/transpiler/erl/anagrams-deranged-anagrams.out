@@ -1,0 +1,5 @@
+/workspace/mochi/tests/rosetta/transpiler/erl/anagrams-deranged-anagrams.erl:138:16: Warning: variable 'M_5' exported from 'case' (line 107, column 13)
+%  138| {BestLen_3, K, M_5, W, W1_3, W2_3, Words} = Fun_7(maps:get(K, M_5), BestLen, K, M_5, W, W1, W2, Words),
+%     |                ^
+
+constitutionalism misconstitutional : Length 17
