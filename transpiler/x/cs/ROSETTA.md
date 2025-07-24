@@ -1,7 +1,7 @@
 # Rosetta C# Transpiler Output
 
 Completed programs: 36/284
-Last updated: 2025-07-24 13:16 UTC
+Last updated: 2025-07-24 20:52 +0700
 
 ## Checklist
 1. [x] 100-doors-2 (1)
@@ -40,8 +40,8 @@ Last updated: 2025-07-24 13:16 UTC
 34. [x] add-a-variable-to-a-class-instance-at-runtime (34)
 35. [x] additive-primes (35)
 36. [x] address-of-a-variable (36)
-37. [x] adfgvx-cipher (37)
-38. [ ] aks-test-for-primes (38)
+37. [ ] adfgvx-cipher (37)
+38. [x] aks-test-for-primes (38)
 39. [ ] algebraic-data-types (39)
 40. [x] align-columns (40)
 41. [ ] aliquot-sequence-classifications (41)

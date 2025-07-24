@@ -1666,8 +1666,9 @@ func (s *StrExpr) emit(w io.Writer) {
 	if isStringExpr(s.Arg) {
 		s.Arg.emit(w)
 	} else {
+		fmt.Fprint(w, "(")
 		s.Arg.emit(w)
-		fmt.Fprint(w, ".ToString()")
+		fmt.Fprint(w, ").ToString()")
 	}
 }
 
