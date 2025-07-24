@@ -3080,7 +3080,12 @@ func convertPostfix(p *parser.PostfixExpr) (Expr, error) {
 				t := types.ResolveTypeRef(op.Cast.Type, transpileEnv)
 				switch t.(type) {
 				case types.IntType, types.Int64Type:
-					expr = &CallExpr{Func: "Math.trunc", Args: []Expr{expr}}
+					switch expr.(type) {
+					case *SliceExpr, *MethodCallExpr, *IndexExpr, *SubstringExpr:
+						expr = &MethodCallExpr{Target: expr, Method: "charCodeAt", Args: []Expr{&NumberLit{Value: "0"}}}
+					default:
+						expr = &CallExpr{Func: "Math.trunc", Args: []Expr{expr}}
+					}
 				default:
 					// other casts are no-ops in JavaScript
 				}
