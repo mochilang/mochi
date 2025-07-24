@@ -1230,6 +1230,15 @@ func checkStmt(s *parser.Statement, env *Env, expectedReturn Type) error {
 		}
 		return nil
 
+	case s.Bench != nil:
+		child := NewEnv(env)
+		for _, stmt := range s.Bench.Body {
+			if err := checkStmt(stmt, child, expectedReturn); err != nil {
+				return err
+			}
+		}
+		return nil
+
 	case s.Expect != nil:
 		t, err := checkExprWithExpected(s.Expect.Value, env, BoolType{})
 		if err != nil {

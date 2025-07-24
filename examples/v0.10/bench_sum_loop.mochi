@@ -1,0 +1,7 @@
+bench "sum_loop" {
+  let n = 1000
+  var total = 0
+  for i in 1..n {
+    total = total + i
+  }
+}

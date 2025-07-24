@@ -100,7 +100,7 @@ func useDef(ins Instr, n int) (use, def []bool) {
 		addUse(ins.C)
 	case OpNeg, OpNegInt, OpNegFloat, OpNot, OpStr, OpFirst, OpExists,
 		OpLen, OpCount, OpAvg, OpSum, OpMin, OpMax, OpValues,
-		OpCast, OpIterPrep, OpNow:
+		OpCast, OpIterPrep, OpNow, OpMem:
 		addDef(ins.A)
 		addUse(ins.B)
 	case OpAppend:
@@ -208,7 +208,7 @@ func defRegs(ins Instr) []int {
 		OpIn, OpNeg, OpNegInt, OpNegFloat, OpNot, OpStr, OpFirst, OpExists,
 		OpLen, OpIndex, OpSlice, OpMakeList, OpMakeMap,
 		OpCount, OpAvg, OpSum, OpMin, OpMax, OpValues,
-		OpCast, OpIterPrep, OpNow, OpAppend, OpUnionAll, OpUnion,
+		OpCast, OpIterPrep, OpNow, OpMem, OpAppend, OpUnionAll, OpUnion,
 		OpExcept, OpIntersect, OpSort, OpCall2, OpCall, OpCallV,
 		OpMakeClosure, OpLoad, OpSave, OpEval, OpFetch:
 		return []int{ins.A}

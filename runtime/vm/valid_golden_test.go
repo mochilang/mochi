@@ -16,6 +16,7 @@ import (
 )
 
 func TestVMValidPrograms(t *testing.T) {
+	os.Setenv("MOCHI_NOW_SEED", "1")
 	golden.Run(t, "tests/vm/valid", ".mochi", ".out", func(src string) ([]byte, error) {
 		wd, _ := os.Getwd()
 		os.Chdir(filepath.Join(filepath.Dir(src), ".."))
@@ -48,6 +49,7 @@ func TestVMValidPrograms(t *testing.T) {
 }
 
 func TestVMIRGolden(t *testing.T) {
+	os.Setenv("MOCHI_NOW_SEED", "1")
 	golden.Run(t, "tests/vm/valid", ".mochi", ".ir.out", func(src string) ([]byte, error) {
 		prog, err := parser.Parse(src)
 		if err != nil {

@@ -1,0 +1,47 @@
+func main (regs=28)
+  // bench "simple" {
+  Mem          0,0,0,0
+  Now          r1
+  // let n = 1000
+  Const        r2, 1000
+  Move         r3, r2
+  // var s = 0
+  Const        r4, 0
+  Move         r5, r4
+  // for i in 1..n {
+  Const        r6, 1
+  Const        r2, 1000
+  Move         r7, r6
+L1:
+  LessInt      r8, r7, r2
+  JumpIfFalse  r8, L0
+  // s = s + i
+  AddInt       r9, r5, r7
+  Move         r5, r9
+  // for i in 1..n {
+  Const        r10, 1
+  AddInt       r11, r7, r10
+  Move         r7, r11
+  Jump         L1
+L0:
+  // bench "simple" {
+  Now          r12
+  Mem          13,0,0,0
+  SubInt       r14, r12, r1
+  Const        r2, 1000
+  DivInt       r15, r14, r2
+  SubInt       r16, r13, r0
+  Const        r17, "name"
+  Const        r18, "simple"
+  Const        r19, "duration_us"
+  Const        r20, "memory_bytes"
+  Move         r21, r17
+  Move         r22, r18
+  Move         r23, r19
+  Move         r24, r15
+  Move         r25, r20
+  Move         r26, r16
+  MakeMap      r27, 3, r21
+  JSON         r27
+  Return       r0
+
