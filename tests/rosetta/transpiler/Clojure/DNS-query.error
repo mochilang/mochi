@@ -1,0 +1,6 @@
+run error: exit status 1
+Syntax error compiling at (/workspace/mochi/tests/rosetta/transpiler/Clojure/DNS-query.clj:7:11).
+Unable to resolve symbol: net in this context
+
+Full report at:
+/tmp/clojure-2735388271606832340.edn

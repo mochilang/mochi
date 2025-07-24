@@ -1,0 +1,7 @@
+run error: exit status 1
+WARNING: chars already refers to: #'clojure.core/chars in namespace: main, being replaced by: #'main/chars
+Execution error (StackOverflowError) at main/handlePile (abelian-sandpile-model.clj:13).
+null
+
+Full report at:
+/tmp/clojure-4593928273104610587.edn
