@@ -853,6 +853,7 @@ type BinaryExpr struct {
 	Right     Expr
 	MapIn     bool
 	StrConcat bool
+	IntDiv    bool
 }
 
 func (b *BinaryExpr) emit(w io.Writer) {
@@ -873,7 +874,7 @@ func (b *BinaryExpr) emit(w io.Writer) {
 		}
 		return false
 	}
-	if b.Op == "/" && isInt(b.Left) && isInt(b.Right) {
+	if b.Op == "/" && (b.IntDiv || (isInt(b.Left) && isInt(b.Right))) {
 		io.WriteString(w, "div(")
 		b.Left.emit(w)
 		io.WriteString(w, ", ")
@@ -1879,19 +1880,28 @@ func compileWhileStmt(ws *parser.WhileStmt, env *types.Env) (Stmt, error) {
 
 func gatherMutVars(stmts []Stmt, env *types.Env) []string {
 	set := map[string]struct{}{}
+	locals := map[string]struct{}{}
 	var walk func([]Stmt)
 	walk = func(ss []Stmt) {
 		for _, s := range ss {
 			switch t := s.(type) {
+			case *LetStmt:
+				locals[t.Name] = struct{}{}
 			case *AssignStmt:
-				if _, err := env.GetVar(t.Name); err == nil {
+				if _, ok := locals[t.Name]; ok {
+					break
+				}
+				if _, err := env.IsMutable(t.Name); err == nil {
 					if _, ok := globalVars[t.Name]; !ok {
 						set[t.Name] = struct{}{}
 					}
 				}
 			case *IfStmt:
 				for _, v := range t.Vars {
-					if _, err := env.GetVar(v); err == nil {
+					if _, ok := locals[v]; ok {
+						continue
+					}
+					if _, err := env.IsMutable(v); err == nil {
 						if _, ok := globalVars[v]; !ok {
 							set[v] = struct{}{}
 						}
@@ -2607,6 +2617,10 @@ func compileBinary(b *parser.BinaryExpr, env *types.Env) (Expr, error) {
 						if _, ok := typesSlice[i+1].(types.StringType); ok {
 							bin.StrConcat = true
 						}
+					} else if opName == "/" {
+						if types.IsIntType(typesSlice[i]) && types.IsIntType(typesSlice[i+1]) {
+							bin.IntDiv = true
+						}
 					}
 					expr = bin
 				}
@@ -2874,7 +2888,8 @@ func compilePrimary(p *parser.Primary, env *types.Env) (Expr, error) {
 				case types.StringType, types.IntType, types.FloatType, types.BoolType:
 					return &CallExpr{Func: "IO.puts", Args: []Expr{args[0]}}, nil
 				default:
-					return &CallExpr{Func: "IO.inspect", Args: []Expr{args[0]}}, nil
+					str := &CallExpr{Func: "Kernel.to_string", Args: []Expr{args[0]}}
+					return &CallExpr{Func: "IO.puts", Args: []Expr{str}}, nil
 				}
 			} else {
 				parts := make([]interface{}, 0, len(args)*2-1)
