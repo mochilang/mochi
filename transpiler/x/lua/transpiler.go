@@ -99,6 +99,36 @@ function denom(x)
 end
 `
 
+const helperSHA256 = `
+local function _sha256(bs)
+  local tmp = os.tmpname()
+  local f = assert(io.open(tmp, "wb"))
+  for i = 1, #bs do
+    f:write(string.char(bs[i]))
+  end
+  f:close()
+  local p = assert(io.popen("openssl dgst -sha256 -binary " .. tmp, "r"))
+  local out = p:read("*a")
+  p:close()
+  os.remove(tmp)
+  local res = {}
+  for i = 1, #out do
+    res[#res + 1] = string.byte(out, i)
+  end
+  return res
+end
+`
+
+const helperIndexOf = `
+local function _indexOf(s, ch)
+  local i = string.find(s, ch, 1, true)
+  if i then
+    return i - 1
+  end
+  return -1
+end
+`
+
 // Program represents a simple Lua program consisting of a sequence of
 // statements.
 type Program struct {
@@ -346,7 +376,7 @@ func (c *CallExpr) emit(w io.Writer) {
 			}
 			io.WriteString(w, ")")
 		}
-	case "substring":
+	case "substring", "substr":
 		io.WriteString(w, "string.sub(")
 		if len(c.Args) > 0 {
 			c.Args[0].emit(w)
@@ -372,6 +402,12 @@ func (c *CallExpr) emit(w io.Writer) {
 		io.WriteString(w, ", ")
 		if len(c.Args) > 2 {
 			c.Args[2].emit(w)
+		}
+		io.WriteString(w, ")")
+	case "sha256":
+		io.WriteString(w, "_sha256(")
+		if len(c.Args) > 0 {
+			c.Args[0].emit(w)
 		}
 		io.WriteString(w, ")")
 	case "min":
@@ -454,6 +490,22 @@ func (c *CallExpr) emit(w io.Writer) {
 			}
 			io.WriteString(w, ")")
 		}
+	case "indexOf":
+		io.WriteString(w, "_indexOf(")
+		if len(c.Args) > 0 {
+			c.Args[0].emit(w)
+		}
+		io.WriteString(w, ", ")
+		if len(c.Args) > 1 {
+			c.Args[1].emit(w)
+		}
+		io.WriteString(w, ")")
+	case "parseIntStr":
+		io.WriteString(w, "tonumber(")
+		if len(c.Args) > 0 {
+			c.Args[0].emit(w)
+		}
+		io.WriteString(w, ")")
 	case "now":
 		io.WriteString(w, "_now()")
 	case "net.LookupHost":
@@ -2140,6 +2192,8 @@ func Emit(p *Program) []byte {
 	b.WriteString(helperNow)
 	b.WriteString(helperPadStart)
 	b.WriteString(helperBigRat)
+	b.WriteString(helperSHA256)
+	b.WriteString(helperIndexOf)
 	prevEnv := currentEnv
 	currentEnv = p.Env
 	for i, st := range p.Stmts {
