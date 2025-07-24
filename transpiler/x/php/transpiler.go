@@ -22,7 +22,7 @@ var builtinNames = map[string]struct{}{
 	"print": {}, "len": {}, "substring": {}, "count": {}, "sum": {}, "avg": {},
 	"str": {}, "min": {}, "max": {}, "append": {}, "json": {}, "exists": {},
 	"values": {}, "keys": {}, "load": {}, "save": {}, "now": {}, "input": {},
-	"upper": {}, "lower": {}, "num": {}, "denom": {}, "indexOf": {}, "repeat": {}, "parseIntStr": {},
+	"upper": {}, "lower": {}, "num": {}, "denom": {}, "indexOf": {}, "repeat": {}, "parseIntStr": {}, "slice": {},
 }
 
 const helperLookupHost = `function _lookup_host($host) {
@@ -178,12 +178,17 @@ var usesParseIntStr bool
 // defines a function with one of these names we rename the function and all
 // call sites to avoid redeclaration errors.
 var phpReserved = map[string]struct{}{
-	"shuffle": {},
-	"join":    {},
-	"pow":     {},
-	"abs":     {},
-	"ord":     {},
-	"chr":     {},
+	"shuffle":     {},
+	"join":        {},
+	"pow":         {},
+	"abs":         {},
+	"ord":         {},
+	"chr":         {},
+	"key":         {},
+	"exp":         {},
+	"hypot":       {},
+	"parseIntStr": {},
+	"trim":        {},
 }
 
 // phpReservedVar lists variable names that cannot be used directly in PHP
@@ -208,6 +213,7 @@ var funcRefParams = map[string][]bool{}
 var groupStack []string
 var globalNames []string
 var globalSet map[string]struct{}
+var globalFuncs map[string]struct{}
 var importedModules = map[string]struct{}{}
 
 func addGlobal(name string) {
@@ -216,6 +222,11 @@ func addGlobal(name string) {
 	}
 	globalSet[name] = struct{}{}
 	globalNames = append(globalNames, name)
+}
+
+func addGlobalFunc(name string) {
+	addGlobal(name)
+	globalFuncs[name] = struct{}{}
 }
 
 // --- Simple PHP AST ---
@@ -617,6 +628,9 @@ func (f *FuncDecl) emit(w io.Writer) {
 				}
 			}
 			if _, ok := locals[g]; ok {
+				skip = true
+			}
+			if _, ok := globalFuncs[g]; ok {
 				skip = true
 			}
 			if skip {
@@ -1771,6 +1785,7 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	transpileEnv = env
 	globalNames = nil
 	globalSet = map[string]struct{}{}
+	globalFuncs = map[string]struct{}{}
 	closureNames = map[string]bool{}
 	renameMap = map[string]string{}
 	usesLookupHost = false
@@ -1783,6 +1798,17 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	usesParseIntStr = false
 	defer func() { transpileEnv = nil }()
 	p := &Program{Env: env}
+	for _, st := range prog.Statements {
+		if st.Fun != nil {
+			name := st.Fun.Name
+			if _, reserved := phpReserved[name]; reserved {
+				newName := "mochi_" + name
+				renameMap[name] = newName
+				name = newName
+			}
+			addGlobalFunc(name)
+		}
+	}
 	for _, st := range prog.Statements {
 		conv, err := convertStmt(st)
 		if err != nil {
@@ -1948,7 +1974,14 @@ func convertUnary(u *parser.Unary) (Expr, error) {
 	for i := len(u.Ops) - 1; i >= 0; i-- {
 		op := u.Ops[i]
 		switch op {
-		case "-", "!":
+		case "-":
+			if isBigRatExpr(x) {
+				usesBigRat = true
+				x = &CallExpr{Func: "_mul", Args: []Expr{x, &IntLit{Value: -1}}}
+			} else {
+				x = &UnaryExpr{Op: op, X: x}
+			}
+		case "!":
 			x = &UnaryExpr{Op: op, X: x}
 		default:
 			return nil, fmt.Errorf("unary op %s not supported", op)
@@ -2054,7 +2087,7 @@ func convertPostfix(pf *parser.PostfixExpr) (Expr, error) {
 				e = &CallExpr{Func: "boolval", Args: []Expr{e}}
 			case "bigrat":
 				usesBigRat = true
-				e = &CallExpr{Func: "_bigrat", Args: []Expr{e}}
+				e = &CallExpr{Func: "_bigrat", Args: []Expr{e, &NullLit{}}}
 			default:
 				// ignore casts to user types
 			}
@@ -2133,6 +2166,16 @@ func convertPostfix(pf *parser.PostfixExpr) (Expr, error) {
 					e = &SliceExpr{X: e, Start: start, End: end}
 				}
 			}
+		case op.Call != nil:
+			args := make([]Expr, len(op.Call.Args))
+			for j, a := range op.Call.Args {
+				ex, err := convertExpr(a)
+				if err != nil {
+					return nil, err
+				}
+				args[j] = ex
+			}
+			e = &CallExpr{Func: "call_user_func", Args: append([]Expr{e}, args...)}
 		default:
 			return nil, fmt.Errorf("postfix op not supported")
 		}
@@ -2158,6 +2201,11 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 				if closureNames[name] {
 					callName = "$" + name
 				}
+			}
+		}
+		if callName == name {
+			if _, glob := globalSet[name]; !glob {
+				callName = "$" + name
 			}
 		}
 		if newName, ok := renameMap[name]; ok {
@@ -2200,6 +2248,11 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 				return nil, fmt.Errorf("substring expects 3 args")
 			}
 			return &SubstringExpr{Str: args[0], Start: args[1], End: args[2]}, nil
+		} else if name == "slice" {
+			if len(args) != 3 {
+				return nil, fmt.Errorf("slice expects 3 args")
+			}
+			return &SliceExpr{X: args[0], Start: args[1], End: args[2]}, nil
 		} else if name == "indexOf" {
 			if len(args) != 2 {
 				return nil, fmt.Errorf("indexOf expects 2 args")
@@ -2469,6 +2522,9 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 		}
 		if len(globalNames) > 0 {
 			for _, g := range globalNames {
+				if _, ok := globalFuncs[g]; ok {
+					continue
+				}
 				uses = append(uses, "&"+g)
 			}
 		}
@@ -2478,6 +2534,9 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 	case p.Selector != nil:
 		if len(p.Selector.Tail) > 0 {
 			return nil, fmt.Errorf("selector tail not supported")
+		}
+		if _, ok := globalFuncs[p.Selector.Root]; ok {
+			return &StringLit{Value: p.Selector.Root}, nil
 		}
 		return &Var{Name: p.Selector.Root}, nil
 	case p.Group != nil:
@@ -2718,17 +2777,22 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 		}
 		if len(globalNames) > 0 {
 			for _, g := range globalNames {
+				if _, ok := globalFuncs[g]; ok {
+					continue
+				}
 				uses = append(uses, "&"+g)
 			}
 		}
 		if wasTop {
 			decl := &FuncDecl{Name: name, Params: params, RefParams: refFlags, Body: body}
-			addGlobal(name)
+			addGlobalFunc(name)
 			return decl, nil
 		}
 		clo := &ClosureExpr{Params: params, RefParams: refFlags, Uses: uses, Body: body}
 		if len(funcStack) == 0 {
 			addGlobal(name)
+		} else {
+			funcStack[len(funcStack)-1] = append(funcStack[len(funcStack)-1], name)
 		}
 		return &LetStmt{Name: name, Value: clo}, nil
 	case st.While != nil:
@@ -2966,6 +3030,9 @@ func convertQueryExpr(q *parser.QueryExpr) (Expr, error) {
 		}
 		if len(funcStack) == 0 {
 			for _, g := range globalNames {
+				if _, ok := globalFuncs[g]; ok {
+					continue
+				}
 				uses = append(uses, "&"+g)
 			}
 		}
@@ -3002,6 +3069,9 @@ func convertQueryExpr(q *parser.QueryExpr) (Expr, error) {
 		}
 		if len(funcStack) == 0 {
 			for _, g := range globalNames {
+				if _, ok := globalFuncs[g]; ok {
+					continue
+				}
 				uses = append(uses, "&"+g)
 			}
 		}
@@ -3038,6 +3108,9 @@ func convertQueryExpr(q *parser.QueryExpr) (Expr, error) {
 		}
 		if len(funcStack) == 0 {
 			for _, g := range globalNames {
+				if _, ok := globalFuncs[g]; ok {
+					continue
+				}
 				uses = append(uses, "&"+g)
 			}
 		}
@@ -3117,6 +3190,9 @@ func convertQueryExpr(q *parser.QueryExpr) (Expr, error) {
 	}
 	if len(funcStack) == 0 {
 		for _, g := range globalNames {
+			if _, ok := globalFuncs[g]; ok {
+				continue
+			}
 			uses = append(uses, "&"+g)
 		}
 	}
@@ -3246,6 +3322,9 @@ func convertGroupQuery(q *parser.QueryExpr) (Expr, error) {
 	}
 	if len(funcStack) == 0 {
 		for _, g := range globalNames {
+			if _, ok := globalFuncs[g]; ok {
+				continue
+			}
 			uses = append(uses, "&"+g)
 		}
 	}
