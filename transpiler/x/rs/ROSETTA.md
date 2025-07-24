@@ -1,5 +1,5 @@
-# Rosetta Rust Transpiler Output (7/284)
-Last updated: 2025-07-24 13:03 +0700
+# Rosetta Rust Transpiler Output (8/284)
+Last updated: 2025-07-24 18:38 +0700
 
 ## Program checklist
 
@@ -11,7 +11,7 @@ Last updated: 2025-07-24 13:03 +0700
   6. [x] 15-puzzle-solver (6)
   7. [ ] 2048 (7)
   8. [x] 21-game (8)
-  9. [ ] 24-game-solve (9)
+  9. [x] 24-game-solve (9)
  10. [ ] 24-game (10)
  11. [ ] 4-rings-or-4-squares-puzzle (11)
  12. [ ] 9-billion-names-of-god-the-integer (12)
