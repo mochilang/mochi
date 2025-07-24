@@ -3575,6 +3575,11 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 			}
 			usesSHA256 = true
 			return &CallExpr{Func: "_sha256", Args: args}, nil
+		case "pow":
+			if len(args) != 2 {
+				return nil, fmt.Errorf("pow expects 2 args")
+			}
+			return &BinaryExpr{Op: "**", Left: args[0], Right: args[1]}, nil
 		case "now":
 			if len(args) != 0 {
 				return nil, fmt.Errorf("now takes no args")
