@@ -2575,7 +2575,10 @@ func transpileStmt(st *parser.Statement, env *types.Env, vars map[string]VarInfo
 				ret = r
 			}
 		}
-		return &FunStmt{Name: st.Fun.Name, Params: params, Body: body, Ret: ret, RetTyp: typeString(retTyp)}, nil
+		if env.Parent() == nil {
+			return &FunStmt{Name: st.Fun.Name, Params: params, Body: body, Ret: ret, RetTyp: typeString(retTyp)}, nil
+		}
+		return &LetStmt{Name: st.Fun.Name, Expr: &FuncExpr{Params: params, Body: body, Ret: ret}}, nil
 	case st.Type != nil:
 		if len(st.Type.Members) > 0 {
 			fields := map[string]string{}
@@ -3512,12 +3515,11 @@ func convertFunExpr(fn *parser.FunExpr, env *types.Env, vars map[string]VarInfo)
 			return nil, "", err
 		}
 		var ret Expr
-		if last := fn.BlockBody[len(fn.BlockBody)-1]; last.Return != nil && last.Return.Value != nil {
-			r, _, err := convertExpr(last.Return.Value, child, fnVars)
-			if err != nil {
-				return nil, "", err
+		if n := len(body); n > 0 {
+			if rstmt, ok := body[n-1].(*ReturnStmt); ok {
+				ret = rstmt.Expr
+				body = body[:n-1]
 			}
-			ret = r
 		}
 		return &FuncExpr{Params: params, Body: body, Ret: ret}, "func", nil
 	}

@@ -20,6 +20,8 @@ import (
 	"mochi/types"
 )
 
+var update = flag.Bool("update", false, "update golden files")
+
 func repoRootDir(t *testing.T) string {
 	dir, err := os.Getwd()
 	if err != nil {

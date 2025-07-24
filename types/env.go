@@ -59,6 +59,9 @@ func NewEnv(parent *Env) *Env {
 	}
 }
 
+// Parent returns the enclosing environment or nil if this is the root scope.
+func (e *Env) Parent() *Env { return e.parent }
+
 // --- Type (Static) Binding ---
 
 // SetStruct defines a user-defined struct type.
