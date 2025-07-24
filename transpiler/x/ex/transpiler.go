@@ -797,6 +797,7 @@ type CondExpr struct {
 }
 
 func (c *CondExpr) emit(w io.Writer) {
+	io.WriteString(w, "(")
 	io.WriteString(w, "if ")
 	c.Cond.emit(w)
 	io.WriteString(w, ", do: ")
@@ -805,6 +806,7 @@ func (c *CondExpr) emit(w io.Writer) {
 		io.WriteString(w, ", else: ")
 		c.Else.emit(w)
 	}
+	io.WriteString(w, ")")
 }
 
 // CaseExpr represents a simple match/case expression.
@@ -2910,15 +2912,28 @@ func compilePrimary(p *parser.Primary, env *types.Env) (Expr, error) {
 				}
 			}
 		case "len":
-			name = "length"
 			if len(args) == 1 {
 				t := types.TypeOfExprBasic(p.Call.Args[0], env)
-				if _, ok := t.(types.MapType); ok {
-					name = "map_size"
-				} else if _, ok := t.(types.StringType); ok || (!types.IsMapType(t) && !types.IsListType(t)) {
-					name = "String.length"
+				if types.IsListType(t) {
+					return &CallExpr{Func: "length", Args: args}, nil
 				}
+				if _, ok := t.(types.MapType); ok {
+					return &CallExpr{Func: "map_size", Args: args}, nil
+				}
+				if _, ok := t.(types.StringType); ok {
+					return &CallExpr{Func: "String.length", Args: args}, nil
+				}
+				// Generate a runtime check for unknown types
+				isBin := &CallExpr{Func: "is_binary", Args: args}
+				strLen := &CallExpr{Func: "String.length", Args: args}
+				isMap := &CallExpr{Func: "is_map", Args: args}
+				mapSize := &CallExpr{Func: "map_size", Args: args}
+				listLen := &CallExpr{Func: "length", Args: args}
+				elseExpr := &CondExpr{Cond: isMap, Then: mapSize, Else: listLen}
+				cond := &CondExpr{Cond: isBin, Then: strLen, Else: elseExpr}
+				return cond, nil
 			}
+			name = "length"
 		case "sum":
 			name = "Enum.sum"
 		case "min":
@@ -2938,6 +2953,11 @@ func compilePrimary(p *parser.Primary, env *types.Env) (Expr, error) {
 			}
 		case "str":
 			name = "to_string"
+		case "upper":
+			if len(args) == 1 {
+				return &CallExpr{Func: "String.upcase", Args: []Expr{args[0]}}, nil
+			}
+			name = "String.upcase"
 		case "append":
 			if len(args) == 2 {
 				list := args[0]
