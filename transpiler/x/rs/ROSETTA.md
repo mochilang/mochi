@@ -1,5 +1,5 @@
-# Rosetta Rust Transpiler Output (14/284)
-Last updated: 2025-07-25 00:18 +0700
+# Rosetta Rust Transpiler Output (16/284)
+Last updated: 2025-07-25 00:33 +0700
 
 ## Program checklist
 
@@ -19,8 +19,8 @@ Last updated: 2025-07-25 00:18 +0700
  14. [x] 99-bottles-of-beer (14)
  15. [x] DNS-query (15)
  16. [x] a+b (16)
- 17. [ ] abbreviations-automatic (17)
- 18. [ ] abbreviations-easy (18)
+ 17. [x] abbreviations-automatic (17)
+ 18. [x] abbreviations-easy (18)
  19. [ ] abbreviations-simple (19)
  20. [ ] abc-problem (20)
  21. [ ] abelian-sandpile-model-identity (21)
