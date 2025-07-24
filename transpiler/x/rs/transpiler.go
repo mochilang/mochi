@@ -2234,6 +2234,17 @@ func compileFunStmt(fn *parser.FunStmt) (Stmt, error) {
 	localVarStack = append(localVarStack, locals)
 	funParams[fn.Name] = len(fn.Params)
 	funParamTypes[fn.Name] = typList
+
+	preRet := ""
+	if fn.Return != nil {
+		if fn.Return.Simple != nil || fn.Return.Generic != nil {
+			preRet = rustTypeRef(fn.Return)
+		}
+	}
+	if preRet != "" {
+		funReturns[fn.Name] = preRet
+	}
+
 	body := make([]Stmt, 0, len(fn.Body))
 	for _, st := range fn.Body {
 		cs, err := compileStmt(st)
@@ -2585,6 +2596,9 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 					if stf, ok := st.Fields[names[i]]; ok {
 						rt := rustTypeFromType(stf)
 						if rt == ut.Name {
+							if !patternMode {
+								a = &MethodCallExpr{Receiver: a, Name: "clone"}
+							}
 							a = &CallExpr{Func: "Box::new", Args: []Expr{a}}
 						}
 					}
@@ -2682,6 +2696,8 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 					}
 				} else if pts[i] == "String" && inferType(args[i]) != "String" {
 					args[i] = &StringCastExpr{Expr: args[i]}
+				} else if nr, ok := args[i].(*NameRef); ok && boxVars[nr.Name] && !strings.HasPrefix(pts[i], "Box<") {
+					args[i] = &UnaryExpr{Op: "*", Expr: &MethodCallExpr{Receiver: args[i], Name: "clone"}}
 				}
 			}
 		}
@@ -2829,6 +2845,9 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 					if stf, ok := st.Fields[f.Name]; ok {
 						rt := rustTypeFromType(stf)
 						if rt == ut.Name {
+							if !patternMode {
+								v = &MethodCallExpr{Receiver: v, Name: "clone"}
+							}
 							v = &CallExpr{Func: "Box::new", Args: []Expr{v}}
 						} else if rt == "String" {
 							v = &StringCastExpr{Expr: v}
@@ -2965,6 +2984,7 @@ func compileMatchExpr(me *parser.MatchExpr) (Expr, error) {
 	}
 	arms := make([]MatchArm, len(me.Cases))
 	for i, c := range me.Cases {
+		oldBox := boxVars
 		pat, err := compilePattern(c.Pattern)
 		if err != nil {
 			return nil, err
@@ -2977,6 +2997,7 @@ func compileMatchExpr(me *parser.MatchExpr) (Expr, error) {
 			return nil, err
 		}
 		arms[i] = MatchArm{Pattern: pat, Result: res}
+		boxVars = oldBox
 	}
 	return &MatchExpr{Target: target, Arms: arms}, nil
 }
@@ -2988,7 +3009,11 @@ func compilePattern(e *parser.Expr) (Expr, error) {
 	if el, ok := ex.(*EnumLit); ok {
 		for i, t := range el.Types {
 			if strings.HasPrefix(t, "Box<") {
-				boxVars[el.Names[i]] = true
+				if nr, ok := el.Fields[i].(*NameRef); ok {
+					boxVars[nr.Name] = true
+				} else {
+					boxVars[el.Names[i]] = true
+				}
 			}
 		}
 	}
