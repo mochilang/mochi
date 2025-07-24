@@ -1047,7 +1047,8 @@ func (b *BinaryExpr) emit(w io.Writer) {
 		fmt.Fprint(w, "))")
 		return
 	}
-	if isStringExpr(b.Left) && isStringExpr(b.Right) {
+	if (isStringExpr(b.Left) && isStringExpr(b.Right)) ||
+		(inferType(b.Left) == "string" && inferType(b.Right) == "string") {
 		switch b.Op {
 		case "<", "<=", ">", ">=":
 			fmt.Fprint(w, "(")
@@ -1226,6 +1227,9 @@ type AppendExpr struct {
 // IntCastExpr casts a value to int.
 type IntCastExpr struct{ Value Expr }
 
+// FloatCastExpr casts a value to double.
+type FloatCastExpr struct{ Value Expr }
+
 // UnionExpr concatenates two arrays removing duplicate elements.
 type UnionExpr struct{ Left, Right Expr }
 
@@ -1309,6 +1313,12 @@ func (c *IntCastExpr) emit(w io.Writer) {
 	fmt.Fprint(w, "((Number)(")
 	c.Value.emit(w)
 	fmt.Fprint(w, ")).intValue()")
+}
+
+func (c *FloatCastExpr) emit(w io.Writer) {
+	fmt.Fprint(w, "((Number)(")
+	c.Value.emit(w)
+	fmt.Fprint(w, ")).doubleValue()")
 }
 
 func (u *UnionExpr) emit(w io.Writer) {
@@ -2446,7 +2456,13 @@ func compileExpr(e *parser.Expr) (Expr, error) {
 			return nil, err
 		}
 		switch op.Op {
-		case "+", "-", "*", "/", "%", "==", "!=", "<", "<=", ">", ">=", "&&", "||":
+		case "+":
+			if isArrayExpr(expr) && isArrayExpr(r) {
+				expr = &UnionAllExpr{Left: expr, Right: r}
+				continue
+			}
+			fallthrough
+		case "-", "*", "/", "%", "==", "!=", "<", "<=", ">", ">=", "&&", "||":
 			expr = &BinaryExpr{Left: expr, Op: op.Op, Right: r}
 		case "in":
 			if isStringExpr(r) {
@@ -2533,16 +2549,24 @@ func compilePostfix(pf *parser.PostfixExpr) (Expr, error) {
 			}
 			expr = &IndexExpr{Target: expr, Index: idx, IsMap: isMapExpr(expr), ResultType: rType}
 		case op.Index != nil && op.Index.Colon != nil && op.Index.Colon2 == nil && op.Index.Step == nil:
-			if op.Index.Start == nil || op.Index.End == nil {
-				return nil, fmt.Errorf("unsupported slice")
+			var start Expr
+			var end Expr
+			var err error
+			if op.Index.Start != nil {
+				start, err = compileExpr(op.Index.Start)
+				if err != nil {
+					return nil, err
+				}
+			} else {
+				start = &IntLit{Value: 0}
 			}
-			start, err := compileExpr(op.Index.Start)
-			if err != nil {
-				return nil, err
-			}
-			end, err := compileExpr(op.Index.End)
-			if err != nil {
-				return nil, err
+			if op.Index.End != nil {
+				end, err = compileExpr(op.Index.End)
+				if err != nil {
+					return nil, err
+				}
+			} else {
+				end = &LenExpr{Value: expr}
 			}
 			expr = &SliceExpr{Value: expr, Start: start, End: end}
 		case op.Field != nil:
@@ -2615,6 +2639,8 @@ func compilePostfix(pf *parser.PostfixExpr) (Expr, error) {
 			switch ctype {
 			case "int":
 				expr = &IntCastExpr{Value: expr}
+			case "float", "float64", "double":
+				expr = &FloatCastExpr{Value: expr}
 			default:
 				if st, ok := expr.(*StructLit); ok {
 					st.Name = ctype
@@ -2701,6 +2727,9 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 		}
 		if name == "int" && len(args) == 1 {
 			return &IntCastExpr{Value: args[0]}, nil
+		}
+		if (name == "float" || name == "float64" || name == "double") && len(args) == 1 {
+			return &FloatCastExpr{Value: args[0]}, nil
 		}
 		if name == "values" && len(args) == 1 {
 			return &ValuesExpr{Map: args[0]}, nil
@@ -3551,6 +3580,8 @@ func renameVar(e Expr, oldName, newName string) Expr {
 		return &AppendExpr{List: renameVar(ex.List, oldName, newName), Value: renameVar(ex.Value, oldName, newName), ElemType: ex.ElemType}
 	case *IntCastExpr:
 		return &IntCastExpr{Value: renameVar(ex.Value, oldName, newName)}
+	case *FloatCastExpr:
+		return &FloatCastExpr{Value: renameVar(ex.Value, oldName, newName)}
 	case *ListLit:
 		elems := make([]Expr, len(ex.Elems))
 		for i, el := range ex.Elems {
@@ -3637,6 +3668,8 @@ func substituteFieldVars(e Expr, fields map[string]bool) Expr {
 		return &IndexExpr{Target: substituteFieldVars(ex.Target, fields), Index: substituteFieldVars(ex.Index, fields), IsMap: ex.IsMap, ResultType: ex.ResultType}
 	case *IntCastExpr:
 		return &IntCastExpr{Value: substituteFieldVars(ex.Value, fields)}
+	case *FloatCastExpr:
+		return &FloatCastExpr{Value: substituteFieldVars(ex.Value, fields)}
 	case *SliceExpr:
 		return &SliceExpr{Value: substituteFieldVars(ex.Value, fields), Start: substituteFieldVars(ex.Start, fields), End: substituteFieldVars(ex.End, fields)}
 	case *ListLit:
