@@ -1819,6 +1819,24 @@ func isIntExpr(e Expr) bool {
 	return false
 }
 
+// isSimpleIntExpr reports whether e is a basic integer literal or variable.
+func isSimpleIntExpr(e Expr) bool {
+	switch ex := e.(type) {
+	case *IntLit:
+		return true
+	case *NameRef:
+		if varTypes[ex.Name] == "int" {
+			return true
+		}
+		if envInfo != nil {
+			if vt, err := envInfo.GetVar(ex.Name); err == nil {
+				return types.IsIntType(vt) || types.IsInt64Type(vt)
+			}
+		}
+	}
+	return false
+}
+
 func isFloatExpr(e Expr) bool {
 	switch ex := e.(type) {
 	case *FloatLit:
@@ -2801,7 +2819,7 @@ func convertPostfix(pf *parser.PostfixExpr) (Expr, error) {
 					if g, ok := expr.(*GroupExpr); ok {
 						expr = g.Expr
 					}
-					if be, ok := expr.(*BinaryExpr); ok && len(be.Ops) == 1 && be.Ops[0].Op == "/" && isIntExpr(be.Left) && isIntExpr(be.Ops[0].Right) {
+					if be, ok := expr.(*BinaryExpr); ok && len(be.Ops) == 1 && be.Ops[0].Op == "/" && isSimpleIntExpr(be.Left) && isSimpleIntExpr(be.Ops[0].Right) {
 						expr = &CallExpr{Fun: &NameRef{Name: "div"}, Args: []Expr{be.Left, be.Ops[0].Right}}
 					} else {
 						// Cast numeric expressions using round instead of read which expects a String.
