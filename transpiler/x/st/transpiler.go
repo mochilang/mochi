@@ -549,6 +549,10 @@ func applyOp(a value, op string, b value) (value, error) {
 		if (a.kind == valFloat || a.kind == valInt) && (b.kind == valFloat || b.kind == valInt) {
 			return value{kind: valFloat, f: toFloat(a) + toFloat(b)}, nil
 		}
+		if a.kind == valList && b.kind == valList {
+			nl := append(append([]value{}, a.list...), b.list...)
+			return value{kind: valList, list: nl}, nil
+		}
 	case "-":
 		if a.kind == valInt && b.kind == valInt {
 			return value{kind: valInt, i: a.i - b.i}, nil
@@ -1320,6 +1324,17 @@ func evalPrimary(p *parser.Primary, vars map[string]value) (value, error) {
 			case valFloat:
 				return value{kind: valFloat, f: math.Abs(v.f)}, nil
 			}
+		case "lower":
+			if len(p.Call.Args) != 1 {
+				return value{}, fmt.Errorf("bad args")
+			}
+			v, err := evalExpr(p.Call.Args[0], vars)
+			if err != nil {
+				return value{}, err
+			}
+			if v.kind == valString {
+				return value{kind: valString, s: strings.ToLower(v.s)}, nil
+			}
 		case "substring":
 			if len(p.Call.Args) != 3 {
 				return value{}, fmt.Errorf("bad args")
@@ -1602,6 +1617,7 @@ func evalFunction(fn *parser.FunStmt, args []value, captured map[string]value) (
 	}
 
 	var ret *parser.Expr
+	var returned bool
 
 	var process func(*parser.Statement) error
 	process = func(st *parser.Statement) error {
@@ -1842,6 +1858,7 @@ func evalFunction(fn *parser.FunStmt, args []value, captured map[string]value) (
 				return fmt.Errorf("unsupported expression")
 			}
 		case st.Return != nil:
+			returned = true
 			ret = st.Return.Value
 			return nil
 		case st.Test != nil:
@@ -1868,13 +1885,13 @@ func evalFunction(fn *parser.FunStmt, args []value, captured map[string]value) (
 		if err := process(st); err != nil {
 			return value{}, nil, err
 		}
-		if ret != nil {
+		if returned {
 			break
 		}
 	}
 	var out value
 	var err error
-	if ret != nil {
+	if returned && ret != nil {
 		out, err = evalExpr(ret, vars)
 		if err != nil {
 			return value{}, nil, err
