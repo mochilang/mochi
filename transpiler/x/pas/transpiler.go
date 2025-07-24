@@ -63,6 +63,8 @@ type RecordDef struct {
 	Fields []Field
 }
 
+func ctorName(name string) string { return "make" + name }
+
 // Program is a minimal Pascal AST consisting of a sequence of statements
 // plus optional variable declarations.
 type Program struct {
@@ -1256,6 +1258,7 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 			pr.Vars = append(pr.Vars, VarDecl{Name: name, Type: typ})
 		}
 	}
+	addConstructors(pr)
 	markSysUtils(pr)
 	currProg = nil
 	return pr, nil
@@ -1871,11 +1874,11 @@ func zeroValue(typ string) Expr {
 	default:
 		for _, r := range currProg.Records {
 			if r.Name == typ {
-				var fields []FieldExpr
+				var args []Expr
 				for _, f := range r.Fields {
-					fields = append(fields, FieldExpr{Name: f.Name, Expr: zeroValue(f.Type)})
+					args = append(args, zeroValue(f.Type))
 				}
-				return &RecordLit{Type: typ, Fields: fields}
+				return &CallExpr{Name: ctorName(typ), Args: args}
 			}
 		}
 	}
@@ -2944,15 +2947,15 @@ func convertPrimary(env *types.Env, p *parser.Primary) (Expr, error) {
 		}
 		return &ListLit{Elems: elems}, nil
 	case p.Struct != nil:
-		var fields []FieldExpr
+		var args []Expr
 		for _, it := range p.Struct.Fields {
 			val, err := convertExpr(env, it.Value)
 			if err != nil {
 				return nil, err
 			}
-			fields = append(fields, FieldExpr{Name: it.Name, Expr: val})
+			args = append(args, val)
 		}
-		return &RecordLit{Type: p.Struct.Name, Fields: fields}, nil
+		return &CallExpr{Name: ctorName(p.Struct.Name), Args: args}, nil
 	case p.Map != nil:
 		var fields []FieldExpr
 		var rec []Field
@@ -2970,7 +2973,11 @@ func convertPrimary(env *types.Env, p *parser.Primary) (Expr, error) {
 			rec = append(rec, Field{Name: key, Type: ftype})
 		}
 		name := ensureRecord(rec)
-		return &RecordLit{Type: name, Fields: fields}, nil
+		var args []Expr
+		for _, f := range fields {
+			args = append(args, f.Expr)
+		}
+		return &CallExpr{Name: ctorName(name), Args: args}, nil
 	case p.Load != nil:
 		if p.Load.Path == nil || p.Load.Type == nil || p.Load.Type.Simple == nil {
 			return nil, fmt.Errorf("unsupported load")
@@ -3446,6 +3453,24 @@ func repoRoot() string {
 		dir = parent
 	}
 	return ""
+}
+
+func addConstructors(p *Program) {
+	for _, r := range p.Records {
+		var params []string
+		var body []Stmt
+		for _, f := range r.Fields {
+			typ := f.Type
+			if strings.HasPrefix(typ, "array of ") {
+				elem := strings.TrimPrefix(typ, "array of ")
+				typ = p.addArrayAlias(elem)
+			}
+			params = append(params, fmt.Sprintf("%s: %s", f.Name, typ))
+			body = append(body, &SetStmt{Target: &SelectorExpr{Root: "Result", Tail: []string{f.Name}}, Expr: &VarRef{Name: f.Name}})
+		}
+		fn := FunDecl{Name: ctorName(r.Name), Params: params, ReturnType: r.Name, Body: body}
+		p.Funs = append([]FunDecl{fn}, p.Funs...)
+	}
 }
 
 func parseFormat(e *parser.Expr) string {
