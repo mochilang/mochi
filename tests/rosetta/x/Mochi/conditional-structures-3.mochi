@@ -3,7 +3,9 @@
 fun example3(a: bool, b: bool) {
   if a {
     // statements
+    null
   } else if b {
     // other statements
+    null
   }
 }

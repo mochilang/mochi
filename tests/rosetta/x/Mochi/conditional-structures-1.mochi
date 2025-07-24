@@ -3,5 +3,6 @@
 fun example1(flag: bool) {
   if flag {
     // statements
+    null
   }
 }

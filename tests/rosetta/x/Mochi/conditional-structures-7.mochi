@@ -1,13 +1,15 @@
 // Mochi translation of Rosetta "Conditional structures" variant 7
 
-fun fetch(): string { return "" }
+fun fetch_(): string { return "" }
 
 fun example7() {
-  let x = fetch()
+  let x = fetch_()
   if x == "cheese" {
     // statements
+    null
   } else if someCondition() {
     // other statements
+    null
   }
 }
 

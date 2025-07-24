@@ -2,11 +2,7 @@
 
 fun example6(value: int) {
   match value {
-    1 => {
-      // statements
-    }
-    2 | 3 | 4 => {
-      // other statements
-    }
+    1 => null
+    2 | 3 | 4 => null
   }
 }

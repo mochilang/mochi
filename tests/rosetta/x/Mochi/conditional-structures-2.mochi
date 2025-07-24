@@ -3,7 +3,9 @@
 fun example2(flag: bool) {
   if flag {
     // statements
+    null
   } else {
     // other statements
+    null
   }
 }
