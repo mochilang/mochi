@@ -1,0 +1,8 @@
+run: exit status 255
+
+Fatal error: Uncaught TypeError: Unsupported operand types: array - array in /workspace/mochi/tests/rosetta/transpiler/php/calkin-wilf-sequence.php:110
+Stack trace:
+#0 /workspace/mochi/tests/rosetta/transpiler/php/calkin-wilf-sequence.php(180): calkinWilf(20)
+#1 /workspace/mochi/tests/rosetta/transpiler/php/calkin-wilf-sequence.php(197): main()
+#2 {main}
+  thrown in /workspace/mochi/tests/rosetta/transpiler/php/calkin-wilf-sequence.php on line 110

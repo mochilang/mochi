@@ -1873,7 +1873,7 @@ func convertBinary(b *parser.BinaryExpr) (Expr, error) {
 			}
 			return &BinaryExpr{Left: left, Op: "+", Right: right}, false
 		case "-":
-			if isBigRatExpr(left) || isBigRatExpr(right) {
+			if isBigRatExpr(left) || isBigRatExpr(right) || (isArrayExpr(left) && isArrayExpr(right)) {
 				usesBigRat = true
 				return &CallExpr{Func: "_sub", Args: []Expr{left, right}}, false
 			}
@@ -3454,6 +3454,13 @@ func isMapExpr(e Expr) bool {
 				return true
 			}
 		}
+	}
+	return false
+}
+
+func isArrayExpr(e Expr) bool {
+	if isListExpr(e) || isMapExpr(e) || isBigRatExpr(e) {
+		return true
 	}
 	return false
 }

@@ -2,9 +2,9 @@
 
 Generated PHP code from Mochi Rosetta tasks lives in `tests/rosetta/transpiler/php`.
 
-Last updated: 2025-07-24 23:48 +0700
+Last updated: 2025-07-25 00:31 +0700
 
-## Checklist (134/284)
+## Checklist (144/284)
 - [x] 1 100-doors-2
 - [x] 2 100-doors-3
 - [x] 3 100-doors
@@ -141,17 +141,17 @@ Last updated: 2025-07-24 23:48 +0700
 - [x] 134 boyer-moore-string-search
 - [x] 135 brazilian-numbers
 - [x] 136 break-oo-privacy
-- [x] 137 brilliant-numbers
-- [ ] 138 brownian-tree
-- [ ] 139 bulls-and-cows-player
-- [ ] 140 bulls-and-cows
-- [ ] 141 burrows-wheeler-transform
-- [ ] 142 caesar-cipher-1
-- [ ] 143 caesar-cipher-2
-- [ ] 144 calculating-the-value-of-e
-- [ ] 145 calendar---for-real-programmers-1
-- [ ] 146 calendar---for-real-programmers-2
-- [ ] 147 calendar
+- [ ] 137 brilliant-numbers
+- [x] 138 brownian-tree
+- [x] 139 bulls-and-cows-player
+- [x] 140 bulls-and-cows
+- [x] 141 burrows-wheeler-transform
+- [x] 142 caesar-cipher-1
+- [x] 143 caesar-cipher-2
+- [x] 144 calculating-the-value-of-e
+- [x] 145 calendar---for-real-programmers-1
+- [x] 146 calendar---for-real-programmers-2
+- [x] 147 calendar
 - [ ] 148 calkin-wilf-sequence
 - [ ] 149 call-a-foreign-language-function
 - [ ] 150 call-a-function-1
