@@ -110,4 +110,4 @@ The list below tracks Mochi programs under `tests/vm/valid` that should successf
 - [x] var_assignment.mochi
 - [x] while_loop.mochi
 
-Last updated: 2025-07-24 13:03 +0700
+Last updated: 2025-07-24 14:25 +0700

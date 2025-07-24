@@ -1,3 +1,7 @@
+## Progress (2025-07-24 14:25 +0700)
+- php transpiler: handle float casts and padStart, update rosetta
+- Generated F# for 102/103 programs (102 passing)
+
 ## Progress (2025-07-24 13:03 +0700)
 - release: v0.10.39
 - Generated F# for 102/103 programs (102 passing)
