@@ -22,7 +22,7 @@ var builtinNames = map[string]struct{}{
 	"print": {}, "len": {}, "substring": {}, "count": {}, "sum": {}, "avg": {},
 	"str": {}, "min": {}, "max": {}, "append": {}, "json": {}, "exists": {},
 	"values": {}, "keys": {}, "load": {}, "save": {}, "now": {}, "input": {},
-	"upper": {}, "lower": {}, "num": {}, "denom": {}, "indexOf": {},
+	"upper": {}, "lower": {}, "num": {}, "denom": {}, "indexOf": {}, "repeat": {}, "parseIntStr": {},
 }
 
 const helperLookupHost = `function _lookup_host($host) {
@@ -157,12 +157,22 @@ const helperIndexOf = `function _indexof($s, $sub) {
     return $pos === false ? -1 : $pos;
 }`
 
+const helperRepeat = `function repeat($s, $n) {
+    return str_repeat($s, intval($n));
+}`
+
+const helperParseIntStr = `function parseIntStr($s, $base = 10) {
+    return intval($s, intval($base));
+}`
+
 var usesLookupHost bool
 var usesNow bool
 var usesLen bool
 var usesBigRat bool
 var usesStr bool
 var usesIndexOf bool
+var usesRepeat bool
+var usesParseIntStr bool
 
 // Some PHP built-in functions cannot be redefined. When a Mochi program
 // defines a function with one of these names we rename the function and all
@@ -1712,6 +1722,16 @@ func Emit(w io.Writer, p *Program) error {
 			return err
 		}
 	}
+	if usesRepeat {
+		if _, err := io.WriteString(w, helperRepeat+"\n"); err != nil {
+			return err
+		}
+	}
+	if usesParseIntStr {
+		if _, err := io.WriteString(w, helperParseIntStr+"\n"); err != nil {
+			return err
+		}
+	}
 	hasMain := false
 	mainCalled := false
 	for _, s := range p.Stmts {
@@ -1759,6 +1779,8 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	usesBigRat = false
 	usesStr = false
 	usesIndexOf = false
+	usesRepeat = false
+	usesParseIntStr = false
 	defer func() { transpileEnv = nil }()
 	p := &Program{Env: env}
 	for _, st := range prog.Statements {
@@ -2191,6 +2213,15 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 				return nil, fmt.Errorf("int expects 1 arg")
 			}
 			return &CallExpr{Func: "intval", Args: args}, nil
+		} else if name == "parseIntStr" {
+			if len(args) == 1 {
+				usesParseIntStr = true
+				return &CallExpr{Func: "parseIntStr", Args: []Expr{args[0], &IntLit{Value: 10}}}, nil
+			} else if len(args) == 2 {
+				usesParseIntStr = true
+				return &CallExpr{Func: "parseIntStr", Args: []Expr{args[0], args[1]}}, nil
+			}
+			return nil, fmt.Errorf("parseIntStr expects 1 or 2 args")
 		} else if name == "count" {
 			if len(args) != 1 {
 				return nil, fmt.Errorf("count expects 1 arg")
@@ -2247,6 +2278,12 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 				return nil, fmt.Errorf("lower expects 1 arg")
 			}
 			return &CallExpr{Func: "strtolower", Args: args}, nil
+		} else if name == "repeat" {
+			if len(args) != 2 {
+				return nil, fmt.Errorf("repeat expects 2 args")
+			}
+			usesRepeat = true
+			return &CallExpr{Func: "repeat", Args: []Expr{args[0], args[1]}}, nil
 		} else if name == "padStart" {
 			if len(args) != 3 {
 				return nil, fmt.Errorf("padStart expects 3 args")
@@ -3371,6 +3408,8 @@ func simpleResolveType(t *parser.TypeRef, env *types.Env) types.Type {
 			return types.StringType{}
 		case "bool":
 			return types.BoolType{}
+		case "bigrat":
+			return types.BigRatType{}
 		default:
 			if st, ok := env.GetStruct(*t.Simple); ok {
 				return st

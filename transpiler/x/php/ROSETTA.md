@@ -2,13 +2,13 @@
 
 Generated PHP code from Mochi Rosetta tasks lives in `tests/rosetta/transpiler/php`.
 
-Last updated: 2025-07-25 00:28 +0700
+Last updated: 2025-07-25 01:26 +0700
 
-## Checklist (133/284)
+## Checklist (169/284)
 - [x] 1 100-doors-2
 - [x] 2 100-doors-3
 - [x] 3 100-doors
-- [ ] 4 100-prisoners
+- [x] 4 100-prisoners
 - [x] 5 15-puzzle-game
 - [x] 6 15-puzzle-solver
 - [x] 7 2048
@@ -143,45 +143,45 @@ Last updated: 2025-07-25 00:28 +0700
 - [x] 136 break-oo-privacy
 - [ ] 137 brilliant-numbers
 - [x] 138 brownian-tree
-- [ ] 139 bulls-and-cows-player
-- [ ] 140 bulls-and-cows
-- [ ] 141 burrows-wheeler-transform
-- [ ] 142 caesar-cipher-1
-- [ ] 143 caesar-cipher-2
-- [ ] 144 calculating-the-value-of-e
-- [ ] 145 calendar---for-real-programmers-1
-- [ ] 146 calendar---for-real-programmers-2
-- [ ] 147 calendar
-- [ ] 148 calkin-wilf-sequence
-- [ ] 149 call-a-foreign-language-function
-- [ ] 150 call-a-function-1
-- [ ] 151 call-a-function-10
-- [ ] 152 call-a-function-11
-- [ ] 153 call-a-function-12
-- [ ] 154 call-a-function-2
-- [ ] 155 call-a-function-3
-- [ ] 156 call-a-function-4
-- [ ] 157 call-a-function-5
-- [ ] 158 call-a-function-6
-- [ ] 159 call-a-function-7
-- [ ] 160 call-a-function-8
-- [ ] 161 call-a-function-9
+- [x] 139 bulls-and-cows-player
+- [x] 140 bulls-and-cows
+- [x] 141 burrows-wheeler-transform
+- [x] 142 caesar-cipher-1
+- [x] 143 caesar-cipher-2
+- [x] 144 calculating-the-value-of-e
+- [x] 145 calendar---for-real-programmers-1
+- [x] 146 calendar---for-real-programmers-2
+- [x] 147 calendar
+- [x] 148 calkin-wilf-sequence
+- [x] 149 call-a-foreign-language-function
+- [x] 150 call-a-function-1
+- [x] 151 call-a-function-10
+- [x] 152 call-a-function-11
+- [x] 153 call-a-function-12
+- [x] 154 call-a-function-2
+- [x] 155 call-a-function-3
+- [x] 156 call-a-function-4
+- [x] 157 call-a-function-5
+- [x] 158 call-a-function-6
+- [x] 159 call-a-function-7
+- [x] 160 call-a-function-8
+- [x] 161 call-a-function-9
 - [ ] 162 call-an-object-method-1
-- [ ] 163 call-an-object-method-2
+- [x] 163 call-an-object-method-2
 - [ ] 164 call-an-object-method-3
 - [ ] 165 call-an-object-method
-- [ ] 166 camel-case-and-snake-case
-- [ ] 167 canny-edge-detector
+- [x] 166 camel-case-and-snake-case
+- [x] 167 canny-edge-detector
 - [ ] 168 canonicalize-cidr
-- [ ] 169 cantor-set
-- [ ] 170 carmichael-3-strong-pseudoprimes
-- [ ] 171 cartesian-product-of-two-or-more-lists-1
-- [ ] 172 cartesian-product-of-two-or-more-lists-2
-- [ ] 173 cartesian-product-of-two-or-more-lists-3
+- [x] 169 cantor-set
+- [x] 170 carmichael-3-strong-pseudoprimes
+- [x] 171 cartesian-product-of-two-or-more-lists-1
+- [x] 172 cartesian-product-of-two-or-more-lists-2
+- [x] 173 cartesian-product-of-two-or-more-lists-3
 - [ ] 174 cartesian-product-of-two-or-more-lists-4
-- [ ] 175 case-sensitivity-of-identifiers
-- [ ] 176 casting-out-nines
-- [ ] 177 catalan-numbers-1
+- [x] 175 case-sensitivity-of-identifiers
+- [x] 176 casting-out-nines
+- [x] 177 catalan-numbers-1
 - [ ] 178 catalan-numbers-2
 - [ ] 179 catalan-numbers-pascals-triangle
 - [ ] 180 catamorphism
