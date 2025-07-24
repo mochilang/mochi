@@ -73,6 +73,7 @@ type Program struct {
 type Statement struct {
 	Pos          lexer.Position
 	Test         *TestBlock        `parser:"@@"`
+	Bench        *BenchBlock       `parser:"| @@"`
 	Expect       *ExpectStmt       `parser:"| @@"`
 	Agent        *AgentDecl        `parser:"| @@"`
 	Stream       *StreamDecl       `parser:"| @@"`
@@ -107,6 +108,12 @@ type Statement struct {
 type TestBlock struct {
 	Pos  lexer.Position
 	Name string       `parser:"'test' @String"`
+	Body []*Statement `parser:"'{' @@* '}'"`
+}
+
+type BenchBlock struct {
+	Pos  lexer.Position
+	Name string       `parser:"'bench' @String"`
 	Body []*Statement `parser:"'{' @@* '}'"`
 }
 

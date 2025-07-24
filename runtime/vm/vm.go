@@ -10,6 +10,7 @@ import (
 	"math/big"
 	"os"
 	"reflect"
+	"runtime"
 	"sort"
 	"strconv"
 	"strings"
@@ -107,6 +108,7 @@ const (
 	OpNot
 	OpJumpIfTrue
 	OpNow
+	OpMem
 	OpJSON
 	OpAppend
 	OpStr
@@ -238,6 +240,8 @@ func (op Op) String() string {
 		return "JumpIfTrue"
 	case OpNow:
 		return "Now"
+	case OpMem:
+		return "Mem"
 	case OpJSON:
 		return "JSON"
 	case OpAppend:
@@ -1264,6 +1268,10 @@ func (m *VM) call(fnIndex int, args []Value, trace []StackFrame) (Value, error) 
 			} else {
 				fr.regs[ins.A] = Value{Tag: ValueInt, Int: int(time.Now().UnixNano())}
 			}
+		case OpMem:
+			var ms runtime.MemStats
+			runtime.ReadMemStats(&ms)
+			fr.regs[ins.A] = Value{Tag: ValueInt, Int: int(ms.Alloc)}
 		case OpJSON:
 			b, _ := json.MarshalIndent(fr.regs[ins.A].ToAny(), "", "  ")
 			fmt.Fprintln(m.writer, string(b))
@@ -2495,7 +2503,7 @@ func (fc *funcCompiler) emit(pos lexer.Position, i Instr) {
 		OpLess, OpLessEq, OpLessInt, OpLessFloat, OpLessEqInt, OpLessEqFloat,
 		OpIn, OpNot:
 		fc.tags[i.A] = tagBool
-	case OpLen, OpNow:
+	case OpLen, OpNow, OpMem:
 		fc.tags[i.A] = tagInt
 	case OpJSON, OpPrint, OpPrint2, OpPrintN:
 		// no result
@@ -2782,6 +2790,53 @@ func (fc *funcCompiler) compileStmt(s *parser.Statement) error {
 			}
 		}
 		fc.popScope()
+		return nil
+	case s.Bench != nil:
+		startMem := fc.newReg()
+		fc.emit(s.Bench.Pos, Instr{Op: OpMem, A: startMem})
+		start := fc.newReg()
+		fc.emit(s.Bench.Pos, Instr{Op: OpNow, A: start})
+		fc.pushScope()
+		for _, st := range s.Bench.Body {
+			if err := fc.compileStmt(st); err != nil {
+				fc.popScope()
+				return err
+			}
+		}
+		fc.popScope()
+		end := fc.newReg()
+		fc.emit(s.Bench.Pos, Instr{Op: OpNow, A: end})
+		endMem := fc.newReg()
+		fc.emit(s.Bench.Pos, Instr{Op: OpMem, A: endMem})
+		dur := fc.newReg()
+		fc.emit(s.Bench.Pos, Instr{Op: OpSubInt, A: dur, B: end, C: start})
+		thousand := fc.constReg(s.Bench.Pos, Value{Tag: ValueInt, Int: 1000})
+		durUs := fc.newReg()
+		fc.emit(s.Bench.Pos, Instr{Op: OpDivInt, A: durUs, B: dur, C: thousand})
+		memDiff := fc.newReg()
+		fc.emit(s.Bench.Pos, Instr{Op: OpSubInt, A: memDiff, B: endMem, C: startMem})
+		nameKeyConst := fc.constReg(s.Bench.Pos, Value{Tag: ValueStr, Str: "name"})
+		nameValConst := fc.constReg(s.Bench.Pos, Value{Tag: ValueStr, Str: s.Bench.Name})
+		durKeyConst := fc.constReg(s.Bench.Pos, Value{Tag: ValueStr, Str: "duration_us"})
+		memKeyConst := fc.constReg(s.Bench.Pos, Value{Tag: ValueStr, Str: "memory_bytes"})
+
+		nameKey := fc.newReg()
+		fc.emit(s.Bench.Pos, Instr{Op: OpMove, A: nameKey, B: nameKeyConst})
+		nameVal := fc.newReg()
+		fc.emit(s.Bench.Pos, Instr{Op: OpMove, A: nameVal, B: nameValConst})
+		durKey := fc.newReg()
+		fc.emit(s.Bench.Pos, Instr{Op: OpMove, A: durKey, B: durKeyConst})
+		durVal := fc.newReg()
+		fc.emit(s.Bench.Pos, Instr{Op: OpMove, A: durVal, B: durUs})
+		memKey := fc.newReg()
+		fc.emit(s.Bench.Pos, Instr{Op: OpMove, A: memKey, B: memKeyConst})
+		memVal := fc.newReg()
+		fc.emit(s.Bench.Pos, Instr{Op: OpMove, A: memVal, B: memDiff})
+
+		regs := []int{nameKey, nameVal, durKey, durVal, memKey, memVal}
+		mapReg := fc.newReg()
+		fc.emit(s.Bench.Pos, Instr{Op: OpMakeMap, A: mapReg, B: len(regs) / 2, C: regs[0]})
+		fc.emit(s.Bench.Pos, Instr{Op: OpJSON, A: mapReg})
 		return nil
 	case s.Expect != nil:
 		r := fc.compileExpr(s.Expect.Value)
@@ -3527,6 +3582,10 @@ func (fc *funcCompiler) compilePrimary(p *parser.Primary) int {
 		case "now":
 			dst := fc.newReg()
 			fc.emit(p.Pos, Instr{Op: OpNow, A: dst})
+			return dst
+		case "mem":
+			dst := fc.newReg()
+			fc.emit(p.Pos, Instr{Op: OpMem, A: dst})
 			return dst
 		case "json":
 			arg := fc.compileExpr(p.Call.Args[0])
