@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Python code from programs in `tests/rosetta/x/Mochi` lives in `tests/rosetta/transpiler/Python`.
-Last updated: 2025-07-24 00:34 UTC
+Last updated: 2025-07-24 06:39 UTC
 
-## Rosetta Golden Test Checklist (163/284)
+## Rosetta Golden Test Checklist (164/284)
 1. [x] 100-doors-2
 2. [x] 100-doors-3
 3. [x] 100-doors
@@ -169,7 +169,7 @@ Last updated: 2025-07-24 00:34 UTC
 162. [x] call-an-object-method-1
 163. [x] call-an-object-method-2
 164. [x] call-an-object-method-3
-165. [ ] call-an-object-method
+165. [x] call-an-object-method
 166. [ ] camel-case-and-snake-case
 167. [ ] canny-edge-detector
 168. [ ] canonicalize-cidr

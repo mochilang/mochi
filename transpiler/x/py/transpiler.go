@@ -209,8 +209,9 @@ func (*CommentStmt) isStmt() {}
 
 // DataClassDef represents a @dataclass definition.
 type DataClassDef struct {
-	Name   string
-	Fields []DataClassField
+	Name    string
+	Fields  []DataClassField
+	Methods []*FuncDef
 }
 
 type DataClassField struct {
@@ -918,7 +919,7 @@ func emitStmtIndent(w io.Writer, s Stmt, indent string) error {
 		if _, err := io.WriteString(w, indent+"class "+safeName(st.Name)+":\n"); err != nil {
 			return err
 		}
-		if len(st.Fields) == 0 {
+		if len(st.Fields) == 0 && len(st.Methods) == 0 {
 			if _, err := io.WriteString(w, indent+"    pass\n"); err != nil {
 				return err
 			}
@@ -927,6 +928,11 @@ func emitStmtIndent(w io.Writer, s Stmt, indent string) error {
 		for _, f := range st.Fields {
 			line := fmt.Sprintf("%s    %s: %s\n", indent, safeName(f.Name), pyTypeName(f.Type))
 			if _, err := io.WriteString(w, line); err != nil {
+				return err
+			}
+		}
+		for _, m := range st.Methods {
+			if err := emitStmtIndent(w, m, indent+"    "); err != nil {
 				return err
 			}
 		}
@@ -2577,7 +2583,7 @@ func Emit(w io.Writer, p *Program) error {
 			if _, err := io.WriteString(w, "@dataclass\nclass "+safeName(st.Name)+":\n"); err != nil {
 				return err
 			}
-			if len(st.Fields) == 0 {
+			if len(st.Fields) == 0 && len(st.Methods) == 0 {
 				if _, err := io.WriteString(w, "    pass\n\n"); err != nil {
 					return err
 				}
@@ -2586,6 +2592,11 @@ func Emit(w io.Writer, p *Program) error {
 			for _, f := range st.Fields {
 				line := fmt.Sprintf("    %s: %s\n", safeName(f.Name), pyTypeName(f.Type))
 				if _, err := io.WriteString(w, line); err != nil {
+					return err
+				}
+			}
+			for _, m := range st.Methods {
+				if err := emitStmtIndent(w, m, "    "); err != nil {
 					return err
 				}
 			}
@@ -3144,6 +3155,7 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 		case st.Type != nil:
 			if len(st.Type.Members) > 0 {
 				var fields []DataClassField
+				var methods []*FuncDef
 				for _, m := range st.Type.Members {
 					if m.Field != nil {
 						typ := "any"
@@ -3154,10 +3166,40 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 					}
 				}
 				dc := &DataClassDef{Name: st.Type.Name, Fields: fields}
-				p.Stmts = append(p.Stmts, dc)
 				if env != nil {
 					env.SetStruct(dc.Name, structFromDataClass(dc, env))
 				}
+				for _, m := range st.Type.Members {
+					if m.Method != nil {
+						menv := types.NewEnv(env)
+						var selfType types.Type = types.AnyType{}
+						if env != nil {
+							if stt, ok := env.GetStruct(dc.Name); ok {
+								selfType = stt
+							}
+						}
+						menv.SetVar("self", selfType, false)
+						for _, p := range m.Method.Params {
+							var pt types.Type = types.AnyType{}
+							if p.Type != nil {
+								pt = types.ResolveTypeRef(p.Type, env)
+							}
+							menv.SetVar(p.Name, pt, false)
+						}
+						body, err := convertStmts(m.Method.Body, menv)
+						if err != nil {
+							return nil, err
+						}
+						params := []string{"self"}
+						for _, p := range m.Method.Params {
+							params = append(params, p.Name)
+						}
+						globals := detectGlobals(body, menv, env)
+						methods = append(methods, &FuncDef{Name: m.Method.Name, Params: params, Globals: globals, Body: body})
+					}
+				}
+				dc.Methods = methods
+				p.Stmts = append(p.Stmts, dc)
 			}
 			for _, v := range st.Type.Variants {
 				if len(v.Fields) == 0 {
@@ -3734,6 +3776,17 @@ func convertUnary(u *parser.Unary) (Expr, error) {
 func convertSelector(sel *parser.SelectorExpr, method bool) Expr {
 	if sel.Root == "nil" && len(sel.Tail) == 0 {
 		return &RawExpr{Code: "None"}
+	}
+	if len(sel.Tail) == 0 && currentEnv != nil {
+		if _, err := currentEnv.GetVar(sel.Root); err != nil {
+			if t, err2 := currentEnv.GetVar("self"); err2 == nil {
+				if st, ok := t.(types.StructType); ok {
+					if _, ok2 := st.Fields[sel.Root]; ok2 {
+						return &FieldExpr{Target: &Name{Name: "self"}, Name: sel.Root}
+					}
+				}
+			}
+		}
 	}
 	if lang, ok := currentImportLang[sel.Root]; ok && lang == "go" && len(sel.Tail) == 1 && !method {
 		switch sel.Root {
