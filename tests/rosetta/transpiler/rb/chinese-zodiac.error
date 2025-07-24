@@ -1,0 +1,10 @@
+run: exit status 1
+/workspace/mochi/tests/rosetta/transpiler/rb/chinese-zodiac.rb:29:in `initialize': unknown keywords: animal, yinYang, element (ArgumentError)
+
+  return Info.new(animal: (animal[branch]).to_s, yinYang: (yinYang[stem % 2]).to_s, element: (element[((stem / 2)).to_i]).to_s, stemBranch: sb, cycle: _add(y % 60, 1))
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+	from /workspace/mochi/tests/rosetta/transpiler/rb/chinese-zodiac.rb:29:in `new'
+	from /workspace/mochi/tests/rosetta/transpiler/rb/chinese-zodiac.rb:29:in `cz'
+	from /workspace/mochi/tests/rosetta/transpiler/rb/chinese-zodiac.rb:32:in `block in <main>'
+	from /workspace/mochi/tests/rosetta/transpiler/rb/chinese-zodiac.rb:31:in `each'
+	from /workspace/mochi/tests/rosetta/transpiler/rb/chinese-zodiac.rb:31:in `<main>'

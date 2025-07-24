@@ -1,0 +1,8 @@
+type: error[T008]: type mismatch: expected float, got int
+  --> /workspace/mochi/tests/rosetta/x/Mochi/catmull-clark-subdivision-surface.mochi:35:8
+
+ 35 |   y = (y as int) as float / 10000.0
+    |        ^
+
+help:
+  Change the value to match the expected type.

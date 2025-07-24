@@ -1,0 +1,46 @@
+run: exit status 1
+/workspace/mochi/tests/rosetta/transpiler/rb/chernicks-carmichael-numbers.rb: --> /workspace/mochi/tests/rosetta/transpiler/rb/chernicks-carmichael-numbers.rb
+Unmatched `end', missing keyword (`do', `def`, `if`, etc.) ?
+>  18  def isPrime(n)
+>  28    d = 5
+>  39    return true
+>  40  end
+>  41  def bigTrim(a)
+>  42    n = a.length
+>  47    return a
+>  48  end
+>  49  def bigFromInt(x)
+>  53    digits = []
+>  54    n = x
+>  59    return digits
+>  60  end
+>  61  def bigMulSmall(a, m)
+>  65    res = []
+>  66    carry = 0
+>  67    i = 0
+>  78    return bigTrim(res)
+>  79  end
+>  80  def bigToString(a)
+>  81    s = ""
+>  82    i = a.length - 1
+>  87    return s
+>  88  end
+>  89  def pow2(k)
+>  90    r = 1
+>  91    i = 0
+>  96    return r
+>  97  end
+>  98  def ccFactors(n, m)
+>  99    p = _add(6 * m, 1)
+> 103    prod = bigFromInt(p)
+> 104    p = _add(12 * m, 1)
+> 108    prod = bigMulSmall(prod, p)
+> 109    i = 1
+> 118    return prod
+> 119  end
+> 120  def ccNumbers(start, end)
+> 141  end
+/workspace/mochi/tests/rosetta/transpiler/rb/chernicks-carmichael-numbers.rb:120: syntax error, unexpected `end' (SyntaxError)
+def ccNumbers(start, end)
+                     ^~~
+

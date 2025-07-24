@@ -1,0 +1,7 @@
+run: exit status 1
+/workspace/mochi/tests/rosetta/transpiler/rb/compiler-virtual-machine-interpreter.rb:165:in `runVM': undefined local variable or method `slice' for main:Object (NameError)
+
+      stack = slice.call(stack, 0, stack.length - 1)
+              ^^^^^
+	from /workspace/mochi/tests/rosetta/transpiler/rb/compiler-virtual-machine-interpreter.rb:253:in `main'
+	from /workspace/mochi/tests/rosetta/transpiler/rb/compiler-virtual-machine-interpreter.rb:255:in `<main>'
