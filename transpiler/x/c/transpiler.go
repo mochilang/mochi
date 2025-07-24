@@ -281,6 +281,38 @@ func (c *CallStmt) emit(w io.Writer, indent int) {
 		}
 		return
 	}
+	writeIndent(w, indent)
+	fn := c.Func
+	if strings.HasPrefix(fn, "math.") {
+		fn = strings.TrimPrefix(fn, "math.")
+	}
+	io.WriteString(w, fn)
+	io.WriteString(w, "(")
+	for i, a := range c.Args {
+		if i > 0 {
+			io.WriteString(w, ", ")
+		}
+		var paramType string
+		if types, ok := funcParamTypes[c.Func]; ok && i < len(types) {
+			paramType = types[i]
+		}
+		if strings.HasPrefix(paramType, "struct ") && strings.HasSuffix(paramType, "*") {
+			io.WriteString(w, "&")
+		}
+		a.emitExpr(w)
+		if strings.HasSuffix(paramType, "[]") {
+			io.WriteString(w, ", ")
+			switch v := a.(type) {
+			case *VarRef:
+				io.WriteString(w, v.Name+"_len")
+			case *IndexExpr:
+				io.WriteString(w, "SIZE")
+			default:
+				io.WriteString(w, "0")
+			}
+		}
+	}
+	io.WriteString(w, ");\n")
 }
 
 func (r *ReturnStmt) emit(w io.Writer, indent int) {
@@ -1506,6 +1538,24 @@ func compileStmt(env *types.Env, s *parser.Statement) (Stmt, error) {
 				return &PrintStmt{Args: []Expr{&StringLit{Value: str}}, Types: []string{"string"}}, nil
 			}
 			return nil, fmt.Errorf("unsupported json argument")
+		}
+		if call != nil {
+			if newName, ok := funcAliases[call.Func]; ok {
+				call.Func = newName
+			}
+			var args []Expr
+			for _, a := range call.Args {
+				ex := convertExpr(a)
+				if ex == nil {
+					return nil, fmt.Errorf("invalid call argument")
+				}
+				args = append(args, ex)
+			}
+			typ := ""
+			if t, ok := funcReturnTypes[call.Func]; ok {
+				typ = t
+			}
+			return &CallStmt{Func: call.Func, Args: args, Type: typ}, nil
 		}
 	case s.Let != nil:
 		currentVarName = s.Let.Name
