@@ -26,6 +26,7 @@ import (
 
 var usesNow bool
 var usesLookupHost bool
+var funcMutParams map[string][]bool
 
 // Program is a sequence of Swift statements.
 type Program struct {
@@ -46,8 +47,9 @@ type FunDecl struct {
 }
 
 type Param struct {
-	Name string
-	Type string
+	Name  string
+	Type  string
+	InOut bool
 }
 
 type ReturnStmt struct{ Expr Expr }
@@ -282,6 +284,7 @@ func (p *PrintStmt) emit(w io.Writer) {
 type ExprStmt struct{ Expr Expr }
 
 func (e *ExprStmt) emit(w io.Writer) {
+	io.WriteString(w, "_ = ")
 	e.Expr.emit(w)
 	fmt.Fprint(w, "\n")
 }
@@ -1062,6 +1065,18 @@ func (c *CallExpr) emit(w io.Writer) {
 		if i > 0 {
 			fmt.Fprint(w, ", ")
 		}
+		if flags, ok := funcMutParams[c.Func]; ok && i < len(flags) && flags[i] {
+			fmt.Fprint(w, "&")
+			if ce, ok2 := a.(*CastExpr); ok2 {
+				a = ce.Expr
+			}
+			// ensure any cast is removed in output
+			if str := exprString(a); strings.HasPrefix(str, "(") && strings.Contains(str, " as!") {
+				idx := strings.Index(str, " as!")
+				io.WriteString(w, str[1:idx])
+				continue
+			}
+		}
 		a.emit(w)
 	}
 	fmt.Fprint(w, ")")
@@ -1083,9 +1098,17 @@ func (f *FunDecl) emit(w io.Writer) {
 			fmt.Fprint(w, ", ")
 		}
 		if p.Type != "" {
-			fmt.Fprintf(w, "_ %s: %s", p.Name, p.Type)
+			if p.InOut {
+				fmt.Fprintf(w, "_ %s: inout %s", p.Name, p.Type)
+			} else {
+				fmt.Fprintf(w, "_ %s: %s", p.Name, p.Type)
+			}
 		} else {
-			fmt.Fprintf(w, "_ %s", p.Name)
+			if p.InOut {
+				fmt.Fprintf(w, "_ %s: inout Any", p.Name)
+			} else {
+				fmt.Fprintf(w, "_ %s", p.Name)
+			}
 		}
 	}
 	fmt.Fprint(w, ")")
@@ -1277,6 +1300,7 @@ func (p *Program) Emit() []byte {
 func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 	usesNow = false
 	usesLookupHost = false
+	funcMutParams = map[string][]bool{}
 	p := &Program{}
 	stmts, err := convertStmts(env, prog.Statements)
 	if err != nil {
@@ -1606,6 +1630,8 @@ func convertIfStmt(env *types.Env, i *parser.IfStmt) (Stmt, error) {
 
 func convertFunDecl(env *types.Env, f *parser.FunStmt) (Stmt, error) {
 	fn := &FunDecl{Name: f.Name, Ret: toSwiftType(f.Return)}
+	updated := map[string]bool{}
+	findUpdatedVars(f.Body, updated)
 	// register function type for calls (and recursion)
 	if env != nil {
 		var params []types.Type
@@ -1630,21 +1656,30 @@ func convertFunDecl(env *types.Env, f *parser.FunStmt) (Stmt, error) {
 		retT = types.ResolveTypeRef(f.Return, env)
 	}
 	child.SetVar("$retType", retT, false)
-	for _, p := range f.Params {
-		fn.Params = append(fn.Params, Param{Name: p.Name, Type: toSwiftType(p.Type)})
+	mutFlags := make([]bool, len(f.Params))
+	for i, p := range f.Params {
+		m := updated[p.Name]
+		mutFlags[i] = m
 		var pt types.Type = types.AnyType{}
 		if p.Type != nil {
 			pt = types.ResolveTypeRef(p.Type, env)
 		}
 		child.SetVar(p.Name, pt, true)
+		useInOut := m && (types.IsListType(pt) || types.IsMapType(pt) || types.IsStructType(pt) || types.IsUnionType(pt))
+		fn.Params = append(fn.Params, Param{Name: p.Name, Type: toSwiftType(p.Type), InOut: useInOut})
 	}
+	funcMutParams[f.Name] = mutFlags
 	body, err := convertStmts(child, f.Body)
 	if err != nil {
 		return nil, err
 	}
 	for i := len(f.Params) - 1; i >= 0; i-- {
-		p := f.Params[i]
-		body = append([]Stmt{&VarDecl{Name: p.Name, Expr: &NameExpr{Name: p.Name}}}, body...)
+		if mutFlags[i] {
+			if !(fn.Params[i].InOut) {
+				p := f.Params[i]
+				body = append([]Stmt{&VarDecl{Name: p.Name, Expr: &NameExpr{Name: p.Name}}}, body...)
+			}
+		}
 	}
 	fn.Body = body
 	return fn, nil
@@ -2509,12 +2544,16 @@ func convertPostfix(env *types.Env, p *parser.PostfixExpr) (Expr, error) {
 				ce.Func = "_now"
 			}
 			var paramTypes []types.Type
+			var mutInfo []bool
 			if env != nil {
 				if t, err := env.GetVar(exprString(expr)); err == nil {
 					if ft, ok := t.(types.FuncType); ok {
 						paramTypes = ft.Params
 					}
 				}
+			}
+			if flags, ok := funcMutParams[exprString(expr)]; ok {
+				mutInfo = flags
 			}
 			for j, a := range op.Call.Args {
 				ae, err := convertExpr(env, a)
@@ -2523,7 +2562,7 @@ func convertPostfix(env *types.Env, p *parser.PostfixExpr) (Expr, error) {
 				}
 				if env != nil && j < len(paramTypes) {
 					pt := swiftTypeOf(paramTypes[j])
-					if pt != "Any" {
+					if pt != "Any" && !(j < len(mutInfo) && mutInfo[j]) {
 						ae = &CastExpr{Expr: ae, Type: pt + "!"}
 					}
 				}
@@ -3185,7 +3224,7 @@ func toSwiftType(t *parser.TypeRef) string {
 		for i, p := range t.Fun.Params {
 			params[i] = toSwiftType(p)
 		}
-		ret := "Void"
+		ret := "Any"
 		if t.Fun.Return != nil {
 			ret = toSwiftType(t.Fun.Return)
 		}
@@ -3227,7 +3266,7 @@ func toSwiftOptionalType(t *parser.TypeRef) string {
 		for i, p := range t.Fun.Params {
 			params[i] = toSwiftType(p)
 		}
-		ret := "Void"
+		ret := "Any"
 		if t.Fun.Return != nil {
 			ret = toSwiftType(t.Fun.Return)
 		}

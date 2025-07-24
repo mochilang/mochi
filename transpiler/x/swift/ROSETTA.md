@@ -2,8 +2,8 @@
 
 Generated Swift code for Mochi Rosetta programs in `tests/rosetta/x/Mochi`. Outputs are stored in `tests/rosetta/transpiler/Swift`. Errors are captured in `.error` files.
 
-Completed: 20/284
-Last updated: 2025-07-24 14:25 +0700
+Completed: 21/284
+Last updated: 2025-07-24 18:38 +0700
 
 Checklist:
 1. [x] 100-doors-2 (1)
@@ -26,7 +26,7 @@ Checklist:
 18. [x] abbreviations-easy (18)
 19. [x] abbreviations-simple (19)
 20. [x] abc-problem (20)
-21. [ ] abelian-sandpile-model-identity (21)
+21. [x] abelian-sandpile-model-identity (21)
 22. [ ] abelian-sandpile-model (22)
 23. [ ] abstract-type (23)
 24. [ ] abundant-deficient-and-perfect-number-classifications (24)
