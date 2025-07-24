@@ -29,6 +29,7 @@ var usesLookupHost bool
 var usesNum bool
 var usesKeys bool
 var funcMutParams map[string][]bool
+var funcInOutParams map[string][]bool
 
 var swiftKeywords = map[string]struct{}{
 	"associatedtype": {}, "class": {}, "deinit": {}, "enum": {}, "extension": {},
@@ -980,6 +981,31 @@ func (u *UnaryExpr) emit(w io.Writer) {
 }
 
 func (c *CallExpr) emit(w io.Writer) {
+	var addrable func(Expr) bool
+	addrable = func(e Expr) bool {
+		switch v := e.(type) {
+		case *NameExpr:
+			return true
+		case *IndexExpr:
+			return addrable(v.Base)
+		case *FieldExpr:
+			return addrable(v.Target)
+		case *CastExpr:
+			return addrable(v.Expr)
+		default:
+			return false
+		}
+	}
+
+	var emitNoCast func(Expr)
+	emitNoCast = func(e Expr) {
+		if ce, ok := e.(*CastExpr); ok {
+			emitNoCast(ce.Expr)
+			return
+		}
+		e.emit(w)
+	}
+
 	switch c.Func {
 	case "len":
 		if len(c.Args) == 1 {
@@ -1100,27 +1126,50 @@ func (c *CallExpr) emit(w io.Writer) {
 			return
 		}
 	}
+	flags, has := funcMutParams[c.Func]
+	inFlags := funcInOutParams[c.Func]
+	needTmp := false
+	if has {
+		for i, f := range flags {
+			if f && i < len(c.Args) && i < len(inFlags) && inFlags[i] && !addrable(c.Args[i]) {
+				needTmp = true
+				break
+			}
+		}
+	}
+	if needTmp {
+		fmt.Fprint(w, "{ () -> Any in\n")
+		for i, f := range flags {
+			if f && i < len(c.Args) && i < len(inFlags) && inFlags[i] && !addrable(c.Args[i]) {
+				fmt.Fprintf(w, "var _tmp%d = ", i)
+				emitNoCast(c.Args[i])
+				fmt.Fprint(w, "\n")
+			}
+		}
+		fmt.Fprint(w, "return ")
+	}
+
 	fmt.Fprint(w, esc(c.Func))
 	fmt.Fprint(w, "(")
 	for i, a := range c.Args {
 		if i > 0 {
 			fmt.Fprint(w, ", ")
 		}
-		if flags, ok := funcMutParams[c.Func]; ok && i < len(flags) && flags[i] {
+		if has && i < len(flags) && flags[i] && i < len(inFlags) && inFlags[i] {
 			fmt.Fprint(w, "&")
-			if ce, ok2 := a.(*CastExpr); ok2 {
-				a = ce.Expr
+			if addrable(a) {
+				emitNoCast(a)
+			} else {
+				fmt.Fprintf(w, "_tmp%d", i)
 			}
-			// ensure any cast is removed in output
-			if str := exprString(a); strings.HasPrefix(str, "(") && strings.Contains(str, " as!") {
-				idx := strings.Index(str, " as!")
-				io.WriteString(w, str[1:idx])
-				continue
-			}
+			continue
 		}
 		a.emit(w)
 	}
 	fmt.Fprint(w, ")")
+	if needTmp {
+		fmt.Fprint(w, "\n}()")
+	}
 }
 
 func (r *ReturnStmt) emit(w io.Writer) {
@@ -1360,6 +1409,7 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 	usesNum = false
 	usesKeys = false
 	funcMutParams = map[string][]bool{}
+	funcInOutParams = map[string][]bool{}
 	p := &Program{}
 	stmts, err := convertStmts(env, prog.Statements)
 	if err != nil {
@@ -1718,6 +1768,7 @@ func convertFunDecl(env *types.Env, f *parser.FunStmt) (Stmt, error) {
 	}
 	child.SetVar("$retType", retT, false)
 	mutFlags := make([]bool, len(f.Params))
+	inFlags := make([]bool, len(f.Params))
 	for i, p := range f.Params {
 		m := updated[p.Name]
 		mutFlags[i] = m
@@ -1727,9 +1778,11 @@ func convertFunDecl(env *types.Env, f *parser.FunStmt) (Stmt, error) {
 		}
 		child.SetVar(p.Name, pt, true)
 		useInOut := m && (types.IsListType(pt) || types.IsMapType(pt) || types.IsStructType(pt) || types.IsUnionType(pt))
+		inFlags[i] = useInOut
 		fn.Params = append(fn.Params, Param{Name: p.Name, Type: toSwiftType(p.Type), InOut: useInOut})
 	}
 	funcMutParams[f.Name] = mutFlags
+	funcInOutParams[f.Name] = inFlags
 	body, err := convertStmts(child, f.Body)
 	if err != nil {
 		return nil, err
