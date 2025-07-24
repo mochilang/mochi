@@ -38,11 +38,12 @@ type UnionDef struct {
 }
 
 type Program struct {
-	Structs  []StructDef
-	Unions   []UnionDef
-	Stmts    []Stmt
-	UseNow   bool
-	UseBreak bool
+	Structs   []StructDef
+	Unions    []UnionDef
+	Stmts     []Stmt
+	UseNow    bool
+	UseBreak  bool
+	UseReturn bool
 }
 
 // varTypes holds the inferred type for each variable defined during
@@ -57,6 +58,7 @@ var (
 	indentLevel  int
 	usesNow      bool
 	usesBreak    bool
+	usesReturn   bool
 )
 
 func copyMap(src map[string]string) map[string]string {
@@ -419,6 +421,7 @@ type FunDef struct {
 	Params []string
 	Types  []string
 	Body   []Stmt
+	Return string
 }
 
 func (f *FunDef) emit(w io.Writer) {
@@ -442,12 +445,36 @@ func (f *FunDef) emit(w io.Writer) {
 	}
 	io.WriteString(w, " =\n")
 	indentLevel++
+	writeIndent(w)
+	if f.Return != "" {
+		fmt.Fprintf(w, "let mutable __ret : %s = Unchecked.defaultof<%s>\n", f.Return, f.Return)
+	} else {
+		io.WriteString(w, "let mutable __ret = ()\n")
+	}
+	for _, p := range f.Params {
+		writeIndent(w)
+		fmt.Fprintf(w, "let mutable %s = %s\n", fsIdent(p), fsIdent(p))
+	}
+	writeIndent(w)
+	io.WriteString(w, "try\n")
+	indentLevel++
 	for i, st := range f.Body {
 		st.emit(w)
 		if i < len(f.Body)-1 {
 			w.Write([]byte{'\n'})
 		}
 	}
+	w.Write([]byte{'\n'})
+	writeIndent(w)
+	io.WriteString(w, "__ret")
+	indentLevel--
+	w.Write([]byte{'\n'})
+	writeIndent(w)
+	io.WriteString(w, "with\n")
+	indentLevel++
+	writeIndent(w)
+	io.WriteString(w, "| Return -> __ret")
+	indentLevel--
 	indentLevel--
 }
 
@@ -455,9 +482,15 @@ type ReturnStmt struct{ Expr Expr }
 
 func (r *ReturnStmt) emit(w io.Writer) {
 	writeIndent(w)
+	io.WriteString(w, "__ret <- ")
 	if r.Expr != nil {
 		r.Expr.emit(w)
+	} else {
+		io.WriteString(w, "()")
 	}
+	io.WriteString(w, "\n")
+	writeIndent(w)
+	io.WriteString(w, "raise Return")
 }
 
 type BreakStmt struct{}
@@ -1519,6 +1552,9 @@ func Emit(prog *Program) []byte {
 	if prog.UseBreak {
 		buf.WriteString("exception Break\nexception Continue\n\n")
 	}
+	if prog.UseReturn {
+		buf.WriteString("exception Return\n\n")
+	}
 	if prog.UseNow {
 		buf.WriteString(helperNow)
 		buf.WriteString("\n_initNow()\n")
@@ -1588,6 +1624,7 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	neededOpens = map[string]bool{}
 	usesNow = false
 	usesBreak = false
+	usesReturn = false
 	p := &Program{}
 	for _, st := range prog.Statements {
 		conv, err := convertStmt(st)
@@ -1610,6 +1647,7 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	transpileEnv = nil
 	p.UseNow = usesNow
 	p.UseBreak = usesBreak
+	p.UseReturn = usesReturn
 	return p, nil
 }
 
@@ -1826,6 +1864,7 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 				return nil, err
 			}
 		}
+		usesReturn = true
 		return &ReturnStmt{Expr: e}, nil
 	case st.Break != nil:
 		return &BreakStmt{}, nil
@@ -1853,19 +1892,30 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 			body[i] = cs
 		}
 		params := make([]string, len(st.Fun.Params))
-		types := make([]string, len(st.Fun.Params))
+		paramTypes := make([]string, len(st.Fun.Params))
 		for i, p := range st.Fun.Params {
 			params[i] = p.Name
-			if t, ok := varTypes[p.Name]; ok {
-				types[i] = fsTypeFromString(t)
+			if p.Type != nil && transpileEnv != nil {
+				ft := types.ResolveTypeRef(p.Type, transpileEnv)
+				paramTypes[i] = fsType(ft)
+			} else if t, ok := varTypes[p.Name]; ok {
+				paramTypes[i] = fsTypeFromString(t)
 			} else if transpileEnv != nil {
 				if vt, err := transpileEnv.GetVar(p.Name); err == nil {
-					types[i] = fsType(vt)
+					paramTypes[i] = fsType(vt)
+				}
+			}
+		}
+		var retType string
+		if transpileEnv != nil {
+			if vt, err := transpileEnv.GetVar(st.Fun.Name); err == nil {
+				if ft, ok := vt.(types.FuncType); ok {
+					retType = fsType(ft.Return)
 				}
 			}
 		}
 		varTypes = save
-		return &FunDef{Name: st.Fun.Name, Params: params, Types: types, Body: body}, nil
+		return &FunDef{Name: st.Fun.Name, Params: params, Types: paramTypes, Body: body, Return: retType}, nil
 	case st.While != nil:
 		cond, err := convertExpr(st.While.Cond)
 		if err != nil {
@@ -2170,6 +2220,11 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 				usesNow = true
 				neededOpens["System"] = true
 				return &CallExpr{Func: "_now", Args: nil}, nil
+			}
+		case "input":
+			if len(args) == 0 {
+				neededOpens["System"] = true
+				return &CallExpr{Func: "System.Console.ReadLine", Args: nil}, nil
 			}
 		case "substring":
 			if len(args) != 3 {
