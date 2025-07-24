@@ -1733,6 +1733,7 @@ func compileStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 		if st.Let.Type != nil {
 			typ = toGoType(st.Let.Type, env)
 			declaredType = types.ResolveTypeRef(st.Let.Type, env)
+			env.SetVar(st.Let.Name, declaredType, false)
 		} else if env == topEnv {
 			if t, err := env.GetVar(st.Let.Name); err == nil {
 				if _, ok := t.(types.FuncType); !ok {
@@ -1766,10 +1767,21 @@ func compileStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 			} else {
 				valType = types.TypeOfExpr(st.Let.Value, env)
 			}
+			if as, ok := e.(*AssertExpr); ok && typ == "" && types.IsAnyType(valType) {
+				typ = as.Type
+				valType = toTypeFromGoType(as.Type)
+			}
 			if ll, ok := e.(*ListLit); ok {
 				if st.Let.Type != nil && st.Let.Type.Generic != nil && st.Let.Type.Generic.Name == "list" && len(st.Let.Type.Generic.Args) == 1 {
 					ll.ElemType = toGoType(st.Let.Type.Generic.Args[0], env)
 					typ = "[]" + ll.ElemType
+					if mt, ok2 := types.ResolveTypeRef(st.Let.Type.Generic.Args[0], env).(types.MapType); ok2 {
+						for _, el := range ll.Elems {
+							if ml, ok3 := el.(*MapLit); ok3 {
+								updateMapLitTypes(ml, mt)
+							}
+						}
+					}
 				} else if ll.ElemType != "" && ll.ElemType != "any" {
 					if st.Let.Type == nil {
 						typ = "[]" + ll.ElemType
@@ -1895,6 +1907,7 @@ func compileStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 		if st.Var.Type != nil {
 			typ = toGoType(st.Var.Type, env)
 			declaredType = types.ResolveTypeRef(st.Var.Type, env)
+			env.SetVar(st.Var.Name, declaredType, true)
 		} else if env == topEnv {
 			if t, err := env.GetVar(st.Var.Name); err == nil {
 				if _, ok := t.(types.FuncType); !ok {
@@ -1928,10 +1941,21 @@ func compileStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 			} else {
 				valType = types.TypeOfExpr(st.Var.Value, env)
 			}
+			if as, ok := e.(*AssertExpr); ok && typ == "" && types.IsAnyType(valType) {
+				typ = as.Type
+				valType = toTypeFromGoType(as.Type)
+			}
 			if ll, ok := e.(*ListLit); ok {
 				if st.Var.Type != nil && st.Var.Type.Generic != nil && st.Var.Type.Generic.Name == "list" && len(st.Var.Type.Generic.Args) == 1 {
 					ll.ElemType = toGoType(st.Var.Type.Generic.Args[0], env)
 					typ = "[]" + ll.ElemType
+					if mt, ok2 := types.ResolveTypeRef(st.Var.Type.Generic.Args[0], env).(types.MapType); ok2 {
+						for _, el := range ll.Elems {
+							if ml, ok3 := el.(*MapLit); ok3 {
+								updateMapLitTypes(ml, mt)
+							}
+						}
+					}
 				} else if ll.ElemType != "" && ll.ElemType != "any" {
 					if st.Var.Type == nil {
 						typ = "[]" + ll.ElemType
@@ -3809,8 +3833,6 @@ func compilePostfix(pf *parser.PostfixExpr, env *types.Env, base string) (Expr, 
 					case types.StringType:
 						usesStrconv = true
 						expr = &AtoiExpr{Expr: expr}
-					case types.IntType, types.Int64Type:
-						// no-op
 					case types.BigIntType:
 						usesBigInt = true
 						expr = &BigIntToIntExpr{Value: expr}
@@ -4055,39 +4077,51 @@ func compilePrimary(p *parser.Primary, env *types.Env, base string) (Expr, error
 		}
 		return &CallExpr{Func: name, Args: args}, nil
 	case p.List != nil:
-		if st, ok := types.InferStructFromList(p.List, env); ok {
-			structCount++
-			baseName := fmt.Sprintf("Data%d", structCount)
-			if base != "" {
-				baseName = structNameFromVar(base)
-			}
-			name := types.UniqueStructName(baseName, topEnv, nil)
-			st.Name = name
-			if topEnv != nil {
-				topEnv.SetStruct(name, st)
-			}
-			fieldsDecl := make([]ParamDecl, len(st.Order))
-			for i, fn := range st.Order {
-				fieldsDecl[i] = ParamDecl{Name: fn, Type: toGoTypeFromType(st.Fields[fn])}
-			}
-			extraDecls = append(extraDecls, &TypeDeclStmt{Name: name, Fields: fieldsDecl})
-			if base != "" {
-				env.SetVarDeep(base, types.ListType{Elem: types.StructType{Name: name, Fields: st.Fields, Order: st.Order}}, true)
-			}
-			elems := make([]Expr, len(p.List.Elems))
-			for i, e := range p.List.Elems {
-				ml := e.Binary.Left.Value.Target.Map
-				vals := make([]Expr, len(st.Order))
-				for j, it := range ml.Items {
-					ve, err := compileExpr(it.Value, env, "")
-					if err != nil {
-						return nil, err
+		skipStruct := false
+		if base != "" {
+			if v, err := env.GetVar(base); err == nil {
+				if lt, ok := v.(types.ListType); ok {
+					if _, ok2 := lt.Elem.(types.MapType); ok2 {
+						skipStruct = true
 					}
-					vals[j] = ve
 				}
-				elems[i] = &StructLit{Name: name, Fields: vals, Names: st.Order}
 			}
-			return &ListLit{ElemType: name, Elems: elems}, nil
+		}
+		if !skipStruct {
+			if st, ok := types.InferStructFromList(p.List, env); ok {
+				structCount++
+				baseName := fmt.Sprintf("Data%d", structCount)
+				if base != "" {
+					baseName = structNameFromVar(base)
+				}
+				name := types.UniqueStructName(baseName, topEnv, nil)
+				st.Name = name
+				if topEnv != nil {
+					topEnv.SetStruct(name, st)
+				}
+				fieldsDecl := make([]ParamDecl, len(st.Order))
+				for i, fn := range st.Order {
+					fieldsDecl[i] = ParamDecl{Name: fn, Type: toGoTypeFromType(st.Fields[fn])}
+				}
+				extraDecls = append(extraDecls, &TypeDeclStmt{Name: name, Fields: fieldsDecl})
+				if base != "" {
+					env.SetVarDeep(base, types.ListType{Elem: types.StructType{Name: name, Fields: st.Fields, Order: st.Order}}, true)
+				}
+				elems := make([]Expr, len(p.List.Elems))
+				for i, e := range p.List.Elems {
+					ml := e.Binary.Left.Value.Target.Map
+					vals := make([]Expr, len(st.Order))
+					for j, it := range ml.Items {
+						ve, err := compileExpr(it.Value, env, "")
+						if err != nil {
+							return nil, err
+						}
+						vals[j] = ve
+					}
+					elems[i] = &StructLit{Name: name, Fields: vals, Names: st.Order}
+				}
+				return &ListLit{ElemType: name, Elems: elems}, nil
+			}
 		}
 		elems := make([]Expr, len(p.List.Elems))
 		elemType := "any"
