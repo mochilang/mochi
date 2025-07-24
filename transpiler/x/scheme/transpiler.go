@@ -238,6 +238,7 @@ func header() []byte {
         (else (number->string x))))`
 	prelude += "\n(define (upper s) (string-upcase s))"
 	prelude += "\n(define (lower s) (string-downcase s))"
+	prelude += "\n(define (fmod a b) (- a (* (floor (/ a b)) b)))"
 	if usesInput {
 		prelude += "\n(define (_input)\n  (let ((l (read-line)))\n    (if (eof-object? l) \"\" l)))"
 	}
@@ -920,7 +921,18 @@ func convertParserPostfix(pf *parser.PostfixExpr) (Node, error) {
 		case op.Cast != nil:
 			t := op.Cast.Type
 			if t.Simple != nil && *t.Simple == "int" {
-				node = &List{Elems: []Node{Symbol("inexact->exact"), node}}
+				x := gensym("v")
+				cond := &List{Elems: []Node{
+					Symbol("cond"),
+					&List{Elems: []Node{&List{Elems: []Node{Symbol("string?"), Symbol(x)}}, &List{Elems: []Node{Symbol("inexact->exact"), &List{Elems: []Node{Symbol("string->number"), Symbol(x)}}}}}},
+					&List{Elems: []Node{&List{Elems: []Node{Symbol("boolean?"), Symbol(x)}}, &List{Elems: []Node{Symbol("if"), Symbol(x), IntLit(1), IntLit(0)}}}},
+					&List{Elems: []Node{Symbol("else"), &List{Elems: []Node{Symbol("inexact->exact"), Symbol(x)}}}},
+				}}
+				node = &List{Elems: []Node{
+					Symbol("let"),
+					&List{Elems: []Node{&List{Elems: []Node{Symbol(x), node}}}},
+					cond,
+				}}
 			} else if t.Simple != nil && *t.Simple == "string" {
 				node = &List{Elems: []Node{Symbol("number->string"), node}}
 			} // ignore other casts
@@ -1832,6 +1844,12 @@ func makeBinary(op string, left, right Node) Node {
 		}
 		return &List{Elems: []Node{Symbol("quotient"), left, right}}
 	case "%":
+		_, lfloat := left.(FloatLit)
+		_, rfloat := right.(FloatLit)
+		if lfloat || rfloat {
+			needBase = true
+			return &List{Elems: []Node{Symbol("fmod"), left, right}}
+		}
 		return &List{Elems: []Node{Symbol("modulo"), left, right}}
 	case "<":
 		if isStr(left) || isStr(right) {
@@ -1897,6 +1915,24 @@ func makeBinaryTyped(op string, left, right Node, lt, rt types.Type) Node {
 	isBoolType := func(t types.Type) bool {
 		_, ok := t.(types.BoolType)
 		return ok
+	}
+	if op == "/" {
+		if _, ok := lt.(types.FloatType); ok {
+			return &List{Elems: []Node{Symbol("/"), left, right}}
+		}
+		if _, ok := rt.(types.FloatType); ok {
+			return &List{Elems: []Node{Symbol("/"), left, right}}
+		}
+	}
+	if op == "%" {
+		if _, ok := lt.(types.FloatType); ok {
+			needBase = true
+			return &List{Elems: []Node{Symbol("fmod"), left, right}}
+		}
+		if _, ok := rt.(types.FloatType); ok {
+			needBase = true
+			return &List{Elems: []Node{Symbol("fmod"), left, right}}
+		}
 	}
 	if isStrType(lt) || isStrType(rt) {
 		switch op {
@@ -2005,6 +2041,19 @@ func convertCall(target Node, call *parser.CallOp) (Node, error) {
 		return &List{Elems: []Node{Symbol("alist->hash-table"), &List{Elems: pairs}}}, nil
 	}
 	switch sym {
+	case "print":
+		forms := []Node{Symbol("begin")}
+		for i, a := range args {
+			if _, ok := types.ExprType(call.Args[i], currentEnv).(types.BoolType); ok {
+				a = &List{Elems: []Node{Symbol("if"), a, BoolLit(true), BoolLit(false)}}
+			}
+			forms = append(forms, &List{Elems: []Node{Symbol("display"), &List{Elems: []Node{Symbol("to-str"), a}}}})
+			if i < len(args)-1 {
+				forms = append(forms, &List{Elems: []Node{Symbol("display"), StringLit(" ")}})
+			}
+		}
+		forms = append(forms, &List{Elems: []Node{Symbol("newline")}})
+		return &List{Elems: forms}, nil
 	case "len", "count":
 		if len(args) != 1 {
 			return nil, fmt.Errorf("len expects 1 arg")
