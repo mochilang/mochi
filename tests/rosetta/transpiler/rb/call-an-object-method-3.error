@@ -1,5 +1,0 @@
-run: exit status 1
-/workspace/mochi/tests/rosetta/transpiler/rb/call-an-object-method-3.rb:24:in `<main>': undefined method `TellSecret' for #<struct Box Contents="rabbit", secret=1> (NoMethodError)
-
-$box.TellSecret()
-    ^^^^^^^^^^^

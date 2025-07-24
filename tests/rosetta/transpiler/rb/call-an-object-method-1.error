@@ -1,5 +1,0 @@
-run: exit status 1
-/workspace/mochi/tests/rosetta/transpiler/rb/call-an-object-method-1.rb:18:in `<main>': uninitialized constant Foo (NameError)
-
-$myValue = Foo.new()
-           ^^^

@@ -13,6 +13,7 @@ import (
 	"sort"
 	"strings"
 	"time"
+	"unicode"
 
 	"gopkg.in/yaml.v3"
 
@@ -86,23 +87,8 @@ end
 `
 
 const helperParseIntStr = `
-def parseIntStr(str)
-  i = 0
-  neg = false
-  if str.length > 0 && str[0...1] == "-"
-    neg = true
-    i = 1
-  end
-  n = 0
-  digits = {"0" => 0, "1" => 1, "2" => 2, "3" => 3, "4" => 4, "5" => 5, "6" => 6, "7" => 7, "8" => 8, "9" => 9}
-  while i < str.length
-    n = _add(n * 10, digits[str[i..._add(i, 1)]])
-    i = _add(i, 1)
-  end
-  if neg
-    n = -n
-  end
-  n
+def parseIntStr(str, base = 10)
+  str.to_i(base)
 end
 `
 
@@ -120,20 +106,43 @@ type Program struct {
 }
 
 type StructDefStmt struct {
-	Name   string
-	Fields []string
+	Name    string
+	Fields  []string
+	Methods []*FuncStmt
 }
 
 func (s *StructDefStmt) emit(e *emitter) {
 	io.WriteString(e.w, s.Name)
-	io.WriteString(e.w, " = Struct.new(")
-	for i, f := range s.Fields {
-		if i > 0 {
-			io.WriteString(e.w, ", ")
+	if len(s.Fields) == 0 {
+		io.WriteString(e.w, " = Class.new do")
+		e.indent++
+		e.nl()
+		e.writeIndent()
+		io.WriteString(e.w, "def initialize(); end")
+	} else {
+		io.WriteString(e.w, " = Struct.new(")
+		for i, f := range s.Fields {
+			if i > 0 {
+				io.WriteString(e.w, ", ")
+			}
+			io.WriteString(e.w, ":"+f)
 		}
-		io.WriteString(e.w, ":"+f)
+		if len(s.Methods) == 0 {
+			io.WriteString(e.w, ", keyword_init: true)")
+			return
+		}
+		io.WriteString(e.w, ", keyword_init: true) do")
+		e.indent++
 	}
-	io.WriteString(e.w, ", keyword_init: true)")
+	for _, m := range s.Methods {
+		e.nl()
+		e.writeIndent()
+		m.emit(e)
+	}
+	e.indent--
+	e.nl()
+	e.writeIndent()
+	io.WriteString(e.w, "end")
 }
 
 type StructField struct {
@@ -1232,6 +1241,9 @@ func identName(n string) string {
 		name = "$" + n
 	} else {
 		name = n
+	}
+	if inScope(n) && name != "" && unicode.IsUpper(rune(n[0])) {
+		name = "_" + name
 	}
 	switch name {
 	case "nil", "true", "false":
@@ -2578,13 +2590,20 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 	case st.Type != nil:
 		if len(st.Type.Members) > 0 {
 			fields := make([]string, 0)
+			var methods []*FuncStmt
 			for _, m := range st.Type.Members {
 				if m.Field != nil {
 					fields = append(fields, identName(m.Field.Name))
+				} else if m.Method != nil {
+					fn, err := convertFunc(m.Method)
+					if err != nil {
+						return nil, err
+					}
+					methods = append(methods, fn)
 				}
 			}
-			if len(fields) > 0 {
-				return &StructDefStmt{Name: identName(st.Type.Name), Fields: fields}, nil
+			if len(fields) > 0 || len(methods) > 0 {
+				return &StructDefStmt{Name: identName(st.Type.Name), Fields: fields, Methods: methods}, nil
 			}
 		}
 		var stmts []Stmt
@@ -2840,6 +2859,45 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 	default:
 		return nil, fmt.Errorf("unsupported statement")
 	}
+}
+
+func convertFunc(fn *parser.FunStmt) (*FuncStmt, error) {
+	funcDepth++
+	savedEnv := currentEnv
+	if savedEnv != nil {
+		child := types.NewEnv(savedEnv)
+		for _, p := range fn.Params {
+			var typ types.Type = types.AnyType{}
+			if p.Type != nil {
+				typ = types.ResolveTypeRef(p.Type, savedEnv)
+			}
+			child.SetVar(p.Name, typ, true)
+		}
+		currentEnv = child
+	}
+	pushScope()
+	for _, p := range fn.Params {
+		addVar(p.Name)
+	}
+	body := make([]Stmt, len(fn.Body))
+	for i, s := range fn.Body {
+		st2, err := convertStmt(s)
+		if err != nil {
+			popScope()
+			currentEnv = savedEnv
+			funcDepth--
+			return nil, err
+		}
+		body[i] = st2
+	}
+	popScope()
+	currentEnv = savedEnv
+	funcDepth--
+	params := make([]string, len(fn.Params))
+	for i, p := range fn.Params {
+		params[i] = p.Name
+	}
+	return &FuncStmt{Name: fn.Name, Params: params, Body: body}, nil
 }
 
 func convertIf(ifst *parser.IfStmt) (Stmt, error) {
@@ -3549,11 +3607,15 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 			usesIndexOf = true
 			return &CallExpr{Func: "_indexOf", Args: args}, nil
 		case "parseIntStr":
-			if len(args) != 1 {
-				return nil, fmt.Errorf("parseIntStr expects 1 arg")
-			}
 			usesParseIntStr = true
-			return &CallExpr{Func: "parseIntStr", Args: args}, nil
+			switch len(args) {
+			case 1:
+				return &CallExpr{Func: "parseIntStr", Args: args}, nil
+			case 2:
+				return &CallExpr{Func: "parseIntStr", Args: args}, nil
+			default:
+				return nil, fmt.Errorf("parseIntStr expects 1 or 2 args")
+			}
 		case "num":
 			if len(args) != 1 {
 				return nil, fmt.Errorf("num expects 1 arg")
