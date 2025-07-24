@@ -1510,7 +1510,11 @@ func checkUnary(u *parser.Unary, env *Env, expected Type) (Type, error) {
 }
 
 func checkPostfix(p *parser.PostfixExpr, env *Env, expected Type) (Type, error) {
-	typ, err := checkPrimary(p.Target, env, expected)
+	exp := expected
+	if len(p.Ops) > 0 {
+		exp = nil
+	}
+	typ, err := checkPrimary(p.Target, env, exp)
 	if err != nil {
 		return nil, err
 	}
