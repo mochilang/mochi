@@ -1,3 +1,11 @@
+## Progress (2025-07-25 00:28 GMT+7)
+- 102/103 VM tests passing
+- Added float literal support
+
+## Progress (2025-07-25 00:28 GMT+7)
+- 102/103 VM tests passing
+- Added float literal support
+
 ## Progress (2025-07-24 21:15 GMT+7)
 - 102/103 VM tests passing
 - Added float literal support

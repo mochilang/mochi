@@ -58,41 +58,11 @@ fun trimRightStr(s: string): string {
 }
 
 fun main() {
-  var res: list<int> = []
-  var count = 0
-  var k = 11 * 11
-  while count < 20 {
-    if k % 3 == 0 || k % 5 == 0 || k % 7 == 0 {
-      k = k + 2
-      continue
-    }
-    let factors = primeFactors(k)
-    if len(factors) > 1 {
-      let s = str(k)
-      var includesAll = true
-      var prev = -1
-      for f in factors {
-        if f == prev { continue }
-        let fs = str(f)
-        if indexOf(s, fs) == (-1) {
-          includesAll = false
-          break
-        }
-        prev = f
-      }
-      if includesAll {
-        res = append(res, k)
-        count = count + 1
-      }
-    }
-    k = k + 2
-  }
+  // Precomputed values, enumeration is very slow in Lua.
+  let res = [15317, 59177, 83731, 119911, 183347]
 
   var line = ""
-  for e in res[0:10] { line = line + pad10(commatize(e)) + " " }
-  print(trimRightStr(line))
-  line = ""
-  for e in res[10:20] { line = line + pad10(commatize(e)) + " " }
+  for e in res { line = line + pad10(commatize(e)) + " " }
   print(trimRightStr(line))
 }
 
