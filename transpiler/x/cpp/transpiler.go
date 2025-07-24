@@ -648,7 +648,11 @@ func (p *Program) write(w io.Writer) {
 			if typ == "" {
 				io.WriteString(w, "auto")
 			} else {
-				io.WriteString(w, typ)
+				if strings.HasPrefix(typ, "std::vector<") || strings.HasPrefix(typ, "std::map<") {
+					io.WriteString(w, typ+"&")
+				} else {
+					io.WriteString(w, typ)
+				}
 			}
 			io.WriteString(w, " ")
 			io.WriteString(w, safeName(p.Name))
@@ -705,7 +709,11 @@ func (f *Func) emit(w io.Writer) {
 		if typ == "" {
 			io.WriteString(w, "auto ")
 		} else {
-			io.WriteString(w, typ+" ")
+			if strings.HasPrefix(typ, "std::vector<") || strings.HasPrefix(typ, "std::map<") {
+				io.WriteString(w, typ+"& ")
+			} else {
+				io.WriteString(w, typ+" ")
+			}
 		}
 		io.WriteString(w, safeName(p.Name))
 	}
@@ -775,6 +783,10 @@ func emitToStream(w io.Writer, stream string, e Expr, indent int) {
 		io.WriteString(w, ind+"any_to_stream("+stream+", ")
 		e.emit(w)
 		io.WriteString(w, ");\n")
+	case typ == "bool":
+		io.WriteString(w, ind+stream+" << (")
+		e.emit(w)
+		io.WriteString(w, " ? \"true\" : \"false\");\n")
 	default:
 		if typ == "double" {
 			if currentProgram != nil {
@@ -917,7 +929,6 @@ func (s *StructLit) emit(w io.Writer) {
 		if i > 0 {
 			io.WriteString(w, ", ")
 		}
-		fmt.Fprintf(w, ".%s = ", f.Name)
 		f.Value.emit(w)
 	}
 	io.WriteString(w, "}")
@@ -1092,12 +1103,13 @@ func (s *StrExpr) emit(w io.Writer) {
 		currentProgram.addInclude("<sstream>")
 	}
 	io.WriteString(w, "([&]{ std::ostringstream ss; ")
-	if exprType(s.Value) == "std::any" {
+	typ := exprType(s.Value)
+	if typ == "std::any" {
 		io.WriteString(w, "any_to_stream(ss, ")
 		s.Value.emit(w)
 		io.WriteString(w, ");")
 	} else {
-		io.WriteString(w, "ss<<")
+		io.WriteString(w, "ss << std::boolalpha << ")
 		s.Value.emit(w)
 		io.WriteString(w, ";")
 	}
@@ -1243,7 +1255,7 @@ func (c *CallExpr) emit(w io.Writer) {
 func (l *LambdaExpr) emit(w io.Writer) {
 	cap := "[]"
 	if inFunction || inLambda > 0 {
-		cap = "[&]"
+		cap = "[=]"
 	}
 	io.WriteString(w, cap+"(")
 	for i, p := range l.Params {
@@ -1265,7 +1277,7 @@ func (l *LambdaExpr) emit(w io.Writer) {
 func (l *BlockLambda) emit(w io.Writer) {
 	cap := "[]"
 	if inFunction || inLambda > 0 {
-		cap = "[&]"
+		cap = "[=]"
 	}
 	io.WriteString(w, cap+"(")
 	for i, p := range l.Params {
@@ -3312,6 +3324,9 @@ func convertFun(fn *parser.FunStmt) (*Func, error) {
 		if p.Type != nil {
 			tp := types.ResolveTypeRef(p.Type, currentEnv)
 			typ = cppTypeFrom(tp)
+			if strings.HasPrefix(typ, "std::unique_ptr<") {
+				typ = strings.TrimSuffix(strings.TrimPrefix(typ, "std::unique_ptr<"), ">") + "*"
+			}
 		}
 		inFunction = prev
 		params = append(params, Param{Name: p.Name, Type: typ})
@@ -3818,8 +3833,10 @@ func convertMatchExpr(me *parser.MatchExpr) (Expr, error) {
 						val = &PtrGetExpr{Target: val}
 						ft = strings.TrimSuffix(strings.TrimPrefix(ft, "std::unique_ptr<"), ">") + "*"
 					}
-					then = append(then, &LetStmt{Name: name, Type: ft, Value: val})
-					nt[name] = ft
+					if name != "_" {
+						then = append(then, &LetStmt{Name: name, Type: ft, Value: val})
+						nt[name] = ft
+					}
 				}
 			}
 			localTypes = nt
@@ -3838,7 +3855,7 @@ func convertMatchExpr(me *parser.MatchExpr) (Expr, error) {
 			body = append(body, &ReturnStmt{Value: res})
 		}
 	}
-	body = append(body, &ReturnStmt{Value: &IntLit{Value: 0}})
+	body = append(body, &ReturnStmt{Value: &StringLit{Value: ""}})
 	return &MatchBlock{Body: body}, nil
 }
 

@@ -1,2 +1,7 @@
-terminate called after throwing an instance of 'std::bad_alloc'
-  what():  std::bad_alloc
+A true
+BARK true
+BOOK false
+TREAT true
+COMMON false
+SQUAD true
+CONFUSE true
