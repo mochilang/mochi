@@ -1,10 +1,12 @@
 # Rosetta Prolog Transpiler
-## Rosetta Golden Test Checklist (4/284)
+
+## Rosetta Golden Test Checklist (3/284)
+Last updated: 2025-07-24 00:44 +0700
 1. [x] `1 100-doors-2`
 2. [x] `2 100-doors-3`
 3. [x] `3 100-doors`
 4. [ ] `4 100-prisoners`
-5. [x] `5 15-puzzle-game`
+5. [ ] `5 15-puzzle-game`
 6. [ ] `6 15-puzzle-solver`
 7. [ ] `7 2048`
 8. [ ] `8 21-game`
@@ -284,4 +286,5 @@
 282. [ ] `282 deepcopy-1`
 283. [ ] `283 define-a-primitive-data-type`
 284. [ ] `284 md5`
+
 *Checklist generated automatically from tests/rosetta/x/Mochi*
