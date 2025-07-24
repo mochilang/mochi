@@ -357,7 +357,10 @@ type Expr interface{ emit(io.Writer) }
 // OpenStmt represents `open <module>`.
 type OpenStmt struct{ Name string }
 
-func (o *OpenStmt) emit(w io.Writer) { fmt.Fprintf(w, "open %s\n", fsIdent(o.Name)) }
+func (o *OpenStmt) emit(w io.Writer) {
+	writeIndent(w)
+	fmt.Fprintf(w, "open %s\n", fsIdent(o.Name))
+}
 
 // ModuleDef represents `module <name>` with nested declarations.
 type ModuleDef struct {
@@ -371,7 +374,7 @@ func (m *ModuleDef) emit(w io.Writer) {
 		io.WriteString(w, "open System\n\n")
 	}
 	writeIndent(w)
-	fmt.Fprintf(w, "module %s\n", fsIdent(m.Name))
+	fmt.Fprintf(w, "module %s =\n", fsIdent(m.Name))
 	indentLevel++
 	for i, st := range m.Stmts {
 		st.emit(w)
@@ -1267,6 +1270,10 @@ func (i *IdentExpr) emit(w io.Writer) { io.WriteString(w, fsIdent(i.Name)) }
 type UnitLit struct{}
 
 func (u *UnitLit) emit(w io.Writer) { io.WriteString(w, "()") }
+
+type NullLit struct{}
+
+func (n *NullLit) emit(w io.Writer) { io.WriteString(w, "null") }
 
 // MatchExpr represents a match expression.
 type MatchExpr struct {
@@ -2408,6 +2415,8 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 		return &FloatLit{Value: *p.Lit.Float}, nil
 	case p.Lit != nil && p.Lit.Bool != nil:
 		return &BoolLit{Value: bool(*p.Lit.Bool)}, nil
+	case p.Lit != nil && p.Lit.Null:
+		return &NullLit{}, nil
 	case p.List != nil:
 		if st, ok := types.InferStructFromList(p.List, transpileEnv); ok {
 			structCount++
@@ -2556,6 +2565,9 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 		varTypes = save
 		return &LambdaExpr{Params: params, Body: stmts}, nil
 	case p.Selector != nil:
+		if p.Selector.Root == "nil" && len(p.Selector.Tail) == 0 {
+			return &NullLit{}, nil
+		}
 		expr := Expr(&IdentExpr{Name: p.Selector.Root})
 		for _, name := range p.Selector.Tail {
 			expr = &FieldExpr{Target: expr, Name: name}
@@ -2831,6 +2843,24 @@ func convertImport(im *parser.ImportStmt) (Stmt, error) {
 			return &ModuleDef{Open: true, Name: alias, Stmts: []Stmt{
 				&FunDef{Name: "ToUpper", Params: []string{"s"}, Body: []Stmt{&ReturnStmt{Expr: &MethodCallExpr{Target: &IdentExpr{Name: "s"}, Name: "ToUpper"}}}},
 				&FunDef{Name: "TrimSpace", Params: []string{"s"}, Body: []Stmt{&ReturnStmt{Expr: &MethodCallExpr{Target: &IdentExpr{Name: "s"}, Name: "Trim"}}}},
+			}}, nil
+		}
+		if path == "net" {
+			usesReturn = true
+			return &ModuleDef{Open: true, Name: alias, Stmts: []Stmt{
+				&OpenStmt{Name: "System.Net"},
+				&FunDef{Name: "LookupHost", Params: []string{"host"}, Return: "obj array", Body: []Stmt{
+					&LetStmt{Name: "addrs", Expr: &CallExpr{Func: "Dns.GetHostAddresses", Args: []Expr{&IdentExpr{Name: "host"}}}},
+					&LetStmt{Name: "mapped", Expr: &CallExpr{Func: "Array.map", Args: []Expr{
+						&LambdaExpr{Params: []string{"ip"}, Expr: &MethodCallExpr{Target: &IdentExpr{Name: "ip"}, Name: "ToString"}},
+						&IdentExpr{Name: "addrs"},
+					}}},
+					&LetStmt{Name: "lst", Expr: &CallExpr{Func: "Array.toList", Args: []Expr{&IdentExpr{Name: "mapped"}}}},
+					&ReturnStmt{Expr: &ListLit{Elems: []Expr{
+						&CallExpr{Func: "box", Args: []Expr{&IdentExpr{Name: "lst"}}},
+						&NullLit{},
+					}}},
+				}},
 			}}, nil
 		}
 	}
