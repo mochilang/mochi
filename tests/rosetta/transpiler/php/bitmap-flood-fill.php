@@ -7,7 +7,7 @@ function flood($x, $y, $repl) {
   if ($target == $repl) {
   return;
 }
-  $ff = function($px, $py) use ($x, $y, $repl, $target) {
+  $ff = function($px, $py) use (&$ff, $x, $y, $repl, $target, &$grid) {
   if ($px < 0 || $py < 0 || $py >= count($grid) || $px >= count($grid[0])) {
   return;
 }

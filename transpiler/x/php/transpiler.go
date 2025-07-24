@@ -461,7 +461,11 @@ func (c *ClosureExpr) emit(w io.Writer) {
 			if i > 0 {
 				fmt.Fprint(w, ", ")
 			}
-			fmt.Fprintf(w, "$%s", sanitizeVarName(u))
+			if strings.HasPrefix(u, "&") {
+				fmt.Fprintf(w, "&$%s", sanitizeVarName(u[1:]))
+			} else {
+				fmt.Fprintf(w, "$%s", sanitizeVarName(u))
+			}
 		}
 		fmt.Fprint(w, ")")
 	}
@@ -2195,6 +2199,11 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 		for _, frame := range funcStack {
 			uses = append(uses, frame...)
 		}
+		if len(globalNames) > 0 {
+			for _, g := range globalNames {
+				uses = append(uses, "&"+g)
+			}
+		}
 		return &ClosureExpr{Params: params, RefParams: refFlags, Uses: uses, Body: body}, nil
 	case p.If != nil:
 		return convertIfExpr(p.If)
@@ -2428,12 +2437,14 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 			return nil, err
 		}
 		refFlags = markRefParams(body, params)
-		uses := []string{}
+		uses := []string{"&" + st.Fun.Name}
 		for _, frame := range funcStack {
 			uses = append(uses, frame...)
 		}
-		if len(funcStack) == 0 {
-			uses = append(uses, globalNames...)
+		if len(globalNames) > 0 {
+			for _, g := range globalNames {
+				uses = append(uses, "&"+g)
+			}
 		}
 		name := st.Fun.Name
 		if _, reserved := phpReserved[name]; reserved {
@@ -2685,7 +2696,9 @@ func convertQueryExpr(q *parser.QueryExpr) (Expr, error) {
 			uses = append(uses, frame...)
 		}
 		if len(funcStack) == 0 {
-			uses = append(uses, globalNames...)
+			for _, g := range globalNames {
+				uses = append(uses, "&"+g)
+			}
 		}
 		rj := &RightJoinExpr{LeftVar: q.Var, LeftSrc: leftSrc, RightVar: j.Var, RightSrc: rightSrc, Cond: cond, Select: sel, Uses: uses}
 		return rj, nil
@@ -2719,7 +2732,9 @@ func convertQueryExpr(q *parser.QueryExpr) (Expr, error) {
 			uses = append(uses, frame...)
 		}
 		if len(funcStack) == 0 {
-			uses = append(uses, globalNames...)
+			for _, g := range globalNames {
+				uses = append(uses, "&"+g)
+			}
 		}
 		lj := &LeftJoinExpr{LeftVar: q.Var, LeftSrc: leftSrc, RightVar: j.Var, RightSrc: rightSrc, Cond: cond, Select: sel, Uses: uses}
 		return lj, nil
@@ -2753,7 +2768,9 @@ func convertQueryExpr(q *parser.QueryExpr) (Expr, error) {
 			uses = append(uses, frame...)
 		}
 		if len(funcStack) == 0 {
-			uses = append(uses, globalNames...)
+			for _, g := range globalNames {
+				uses = append(uses, "&"+g)
+			}
 		}
 		oj := &OuterJoinExpr{LeftVar: q.Var, LeftSrc: leftSrc, RightVar: j.Var, RightSrc: rightSrc, Cond: cond, Select: sel, Uses: uses}
 		return oj, nil
@@ -2830,7 +2847,9 @@ func convertQueryExpr(q *parser.QueryExpr) (Expr, error) {
 		uses = append(uses, frame...)
 	}
 	if len(funcStack) == 0 {
-		uses = append(uses, globalNames...)
+		for _, g := range globalNames {
+			uses = append(uses, "&"+g)
+		}
 	}
 	if c, ok := sel.(*CallExpr); ok && c.Func == "array_sum" && len(c.Args) == 1 {
 		if v, ok2 := c.Args[0].(*Var); ok2 && v.Name == q.Var && len(q.Froms) == 0 && len(q.Joins) == 0 && q.Sort == nil && q.Skip == nil && q.Take == nil && !q.Distinct {
@@ -2957,7 +2976,9 @@ func convertGroupQuery(q *parser.QueryExpr) (Expr, error) {
 		uses = append(uses, frame...)
 	}
 	if len(funcStack) == 0 {
-		uses = append(uses, globalNames...)
+		for _, g := range globalNames {
+			uses = append(uses, "&"+g)
+		}
 	}
 	return &GroupByExpr{Loops: loops, Key: key, Name: q.Group.Name, Where: where, Select: sel, Having: having, SortKey: sortKey, Sort: sortExpr, Uses: uses}, nil
 }
