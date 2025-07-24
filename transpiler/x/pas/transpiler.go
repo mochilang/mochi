@@ -2729,6 +2729,9 @@ func ensureRecord(fields []Field) string {
 	anonCounter++
 	name := fmt.Sprintf("Anon%d", anonCounter)
 	currProg.Records = append(currProg.Records, RecordDef{Name: name, Fields: fields})
+	if funcReturns != nil {
+		funcReturns[ctorName(name)] = name
+	}
 	return name
 }
 
@@ -2801,6 +2804,19 @@ func typeFromRef(tr *parser.TypeRef) string {
 		return ensureRecord(fields)
 	}
 	return ""
+}
+
+func typeFromSimple(s string) string {
+	switch s {
+	case "int":
+		return "integer"
+	case "string":
+		return "string"
+	case "bool":
+		return "boolean"
+	default:
+		return s
+	}
 }
 
 func CurrentVarTypesDebug() map[string]string { return currentVarTypes }
@@ -2973,6 +2989,14 @@ func convertPostfix(env *types.Env, pf *parser.PostfixExpr) (Expr, error) {
 			} else {
 				expr = expr
 			}
+		case op.Cast != nil && op.Cast.Type != nil && op.Cast.Type.Generic != nil:
+			g := op.Cast.Type.Generic
+			if g.Name == "list" && len(g.Args) == 1 && g.Args[0].Simple != nil {
+				elem := typeFromSimple(*g.Args[0].Simple)
+				expr = &CastExpr{Expr: expr, Type: "array of " + elem}
+			} else {
+				return nil, fmt.Errorf("unsupported postfix")
+			}
 		default:
 			return nil, fmt.Errorf("unsupported postfix")
 		}
@@ -3041,6 +3065,12 @@ func convertPrimary(env *types.Env, p *parser.Primary) (Expr, error) {
 				return args[0], nil
 			}
 			name = "IntToStr"
+		} else if name == "upper" && len(args) == 1 {
+			currProg.UseSysUtils = true
+			return &CallExpr{Name: "UpperCase", Args: args}, nil
+		} else if name == "lower" && len(args) == 1 {
+			currProg.UseSysUtils = true
+			return &CallExpr{Name: "LowerCase", Args: args}, nil
 		} else if name == "sum" && len(args) == 1 {
 			if l, ok := args[0].(*ListLit); ok {
 				var sum Expr
@@ -3129,6 +3159,9 @@ func convertPrimary(env *types.Env, p *parser.Primary) (Expr, error) {
 			key, ok := exprToIdent(it.Key)
 			if !ok {
 				return nil, fmt.Errorf("unsupported map key")
+			}
+			if len(key) > 0 && key[0] >= '0' && key[0] <= '9' {
+				key = "f" + key
 			}
 			ftype := inferType(val)
 			if strings.HasPrefix(ftype, "array of ") {
@@ -3375,7 +3408,7 @@ func inferType(e Expr) string {
 		return "boolean"
 	case *VarRef:
 		if t, ok := currentVarTypes[v.Name]; ok {
-			return t
+			return resolveAlias(t)
 		}
 		return ""
 	case *BinaryExpr:
@@ -3396,6 +3429,8 @@ func inferType(e Expr) string {
 		case "Length", "Pos":
 			return "integer"
 		case "IntToStr":
+			return "string"
+		case "UpperCase", "LowerCase":
 			return "string"
 		case "avg":
 			return "real"
@@ -3487,6 +3522,9 @@ func inferType(e Expr) string {
 		if v.Type == "int" {
 			return "integer"
 		}
+		if strings.HasPrefix(v.Type, "array of ") {
+			return v.Type
+		}
 		return inferType(v.Expr)
 	case *UnaryExpr:
 		return inferType(v.Expr)
@@ -3498,7 +3536,7 @@ func inferType(e Expr) string {
 func usesSysUtilsExpr(e Expr) bool {
 	switch v := e.(type) {
 	case *CallExpr:
-		if v.Name == "IntToStr" || v.Name == "StrToInt" {
+		if v.Name == "IntToStr" || v.Name == "StrToInt" || v.Name == "UpperCase" || v.Name == "LowerCase" {
 			return true
 		}
 		for _, a := range v.Args {
@@ -3664,6 +3702,9 @@ func addConstructors(p *Program) {
 		}
 		fn := FunDecl{Name: ctorName(r.Name), Params: params, ReturnType: r.Name, Body: body}
 		p.Funs = append([]FunDecl{fn}, p.Funs...)
+		if funcReturns != nil {
+			funcReturns[fn.Name] = r.Name
+		}
 	}
 }
 
@@ -3778,6 +3819,17 @@ func (p *Program) addArrayAlias(elem string) string {
 	}
 	p.ArrayAliases[elem] = alias
 	return alias
+}
+
+func resolveAlias(t string) string {
+	if currProg != nil && currProg.ArrayAliases != nil {
+		for elem, alias := range currProg.ArrayAliases {
+			if alias == t {
+				return "array of " + elem
+			}
+		}
+	}
+	return t
 }
 
 func findRecord(name string) (RecordDef, bool) {

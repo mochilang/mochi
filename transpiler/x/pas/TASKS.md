@@ -1,3 +1,39 @@
+## Progress (2025-07-24 14:14 UTC)
+- pascal: support upper/lower builtin and resolve array alias (progress 87/103)
+
+## Progress (2025-07-24 14:14 UTC)
+- pascal: support upper/lower builtin and resolve array alias (progress 87/103)
+
+## Progress (2025-07-24 14:14 UTC)
+- pascal: support upper/lower builtin and resolve array alias (progress 87/103)
+
+## Progress (2025-07-24 14:14 UTC)
+- pascal: support upper/lower builtin and resolve array alias (progress 87/103)
+
+## Progress (2025-07-24 14:14 UTC)
+- pascal: support upper/lower builtin and resolve array alias (progress 87/103)
+
+## Progress (2025-07-24 14:14 UTC)
+- pascal: support upper/lower builtin and resolve array alias (progress 87/103)
+
+## Progress (2025-07-24 20:52 +0700)
+- php: add str helper and transpile bitmap-histogram (progress 87/103)
+
+## Progress (2025-07-24 20:52 +0700)
+- php: add str helper and transpile bitmap-histogram (progress 87/103)
+
+## Progress (2025-07-24 20:52 +0700)
+- php: add str helper and transpile bitmap-histogram (progress 87/103)
+
+## Progress (2025-07-24 20:52 +0700)
+- php: add str helper and transpile bitmap-histogram (progress 87/103)
+
+## Progress (2025-07-24 20:52 +0700)
+- php: add str helper and transpile bitmap-histogram (progress 87/103)
+
+## Progress (2025-07-24 20:52 +0700)
+- php: add str helper and transpile bitmap-histogram (progress 87/103)
+
 ## Progress (2025-07-24 13:24 UTC)
 - pascal transpiler: support DNS-query (progress 87/103)
 
