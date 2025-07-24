@@ -37,6 +37,7 @@ type Program struct {
 	UseFloatConv bool
 	UsePadStart  bool
 	UseBigInt    bool
+	UseBigRat    bool
 }
 
 var (
@@ -51,6 +52,7 @@ var (
 	usesFloatConv  bool
 	usesPadStart   bool
 	usesBigInt     bool
+	usesBigRat     bool
 	topEnv         *types.Env
 	extraDecls     []Stmt
 	structCount    int
@@ -869,6 +871,63 @@ func (b *BigCmpExpr) emit(w io.Writer) {
 	io.WriteString(w, " }()")
 }
 
+// BigRatBinaryExpr represents arithmetic on big rationals.
+type BigRatBinaryExpr struct {
+	Left  Expr
+	Op    string
+	Right Expr
+}
+
+func (b *BigRatBinaryExpr) emit(w io.Writer) {
+	switch b.Op {
+	case "+":
+		io.WriteString(w, "new(big.Rat).Add(")
+	case "-":
+		io.WriteString(w, "new(big.Rat).Sub(")
+	case "*":
+		io.WriteString(w, "new(big.Rat).Mul(")
+	case "/":
+		io.WriteString(w, "new(big.Rat).Quo(")
+	default:
+		io.WriteString(w, "new(big.Rat)")
+		return
+	}
+	b.Left.emit(w)
+	io.WriteString(w, ", ")
+	b.Right.emit(w)
+	io.WriteString(w, ")")
+}
+
+// BigRatCmpExpr compares two big rationals with the given operator.
+type BigRatCmpExpr struct {
+	Left  Expr
+	Op    string
+	Right Expr
+}
+
+func (b *BigRatCmpExpr) emit(w io.Writer) {
+	io.WriteString(w, "func() bool { return ")
+	b.Left.emit(w)
+	io.WriteString(w, ".Cmp(")
+	b.Right.emit(w)
+	io.WriteString(w, ") ")
+	switch b.Op {
+	case "<":
+		io.WriteString(w, "< 0")
+	case "<=":
+		io.WriteString(w, "<= 0")
+	case ">":
+		io.WriteString(w, "> 0")
+	case ">=":
+		io.WriteString(w, ">= 0")
+	case "==":
+		io.WriteString(w, "== 0")
+	case "!=":
+		io.WriteString(w, "!= 0")
+	}
+	io.WriteString(w, " }()")
+}
+
 // BigIntToIntExpr converts a *big.Int to int via Int64().
 type BigIntToIntExpr struct{ Value Expr }
 
@@ -1629,6 +1688,7 @@ func Transpile(p *parser.Program, env *types.Env) (*Program, error) {
 	usesFloatConv = false
 	usesPadStart = false
 	usesBigInt = false
+	usesBigRat = false
 	topEnv = env
 	extraDecls = nil
 	structCount = 0
@@ -1661,6 +1721,7 @@ func Transpile(p *parser.Program, env *types.Env) (*Program, error) {
 	gp.UseFloatConv = usesFloatConv
 	gp.UsePadStart = usesPadStart
 	gp.UseBigInt = usesBigInt
+	gp.UseBigRat = usesBigRat
 	gp.Imports = imports
 	return gp, nil
 }
@@ -3098,6 +3159,10 @@ func zeroValueExpr(goType string) Expr {
 			usesBigInt = true
 			return &CallExpr{Func: "big.NewInt", Args: []Expr{&IntLit{Value: 0}}}
 		}
+		if goType == "*big.Rat" {
+			usesBigRat = true
+			return &CallExpr{Func: "big.NewRat", Args: []Expr{&IntLit{Value: 0}, &IntLit{Value: 1}}}
+		}
 		return &VarRef{Name: "nil"}
 	default:
 		if _, ok := topEnv.GetStruct(goType); ok {
@@ -3118,6 +3183,19 @@ func ensureBigIntExpr(e Expr, t types.Type) Expr {
 	}
 	usesBigInt = true
 	return &CallExpr{Func: "big.NewInt", Args: []Expr{&CallExpr{Func: "int64", Args: []Expr{e}}}}
+}
+
+func isBigRatType(t types.Type) bool {
+	_, ok := t.(types.BigRatType)
+	return ok
+}
+
+func ensureBigRatExpr(e Expr, t types.Type) Expr {
+	if isBigRatType(t) {
+		return e
+	}
+	usesBigRat = true
+	return &CallExpr{Func: "_bigrat", Args: []Expr{e}}
 }
 
 func boolExprFor(e Expr, t types.Type) Expr {
@@ -3517,7 +3595,18 @@ func compileBinary(b *parser.BinaryExpr, env *types.Env, base string) (Expr, err
 					}
 					newExpr = &IntersectExpr{Left: left, Right: right, ElemType: et}
 				default:
-					if isBigIntType(typesList[i]) || isBigIntType(typesList[i+1]) {
+					if isBigRatType(typesList[i]) || isBigRatType(typesList[i+1]) {
+						usesBigRat = true
+						left = ensureBigRatExpr(left, typesList[i])
+						right = ensureBigRatExpr(right, typesList[i+1])
+						switch ops[i].Op {
+						case "+", "-", "*", "/":
+							newExpr = &BigRatBinaryExpr{Left: left, Op: ops[i].Op, Right: right}
+						case "<", "<=", ">", ">=", "==", "!=":
+							newExpr = &BigRatCmpExpr{Left: left, Op: ops[i].Op, Right: right}
+						}
+					}
+					if newExpr == nil && (isBigIntType(typesList[i]) || isBigIntType(typesList[i+1])) {
 						usesBigInt = true
 						left = ensureBigIntExpr(left, typesList[i])
 						right = ensureBigIntExpr(right, typesList[i+1])
@@ -3585,7 +3674,12 @@ func compileUnary(u *parser.Unary, env *types.Env, base string) (Expr, error) {
 		op := u.Ops[i]
 		switch op {
 		case "-":
-			if isBigIntType(types.TypeOfPostfix(u.Value, env)) {
+			if isBigRatType(types.TypeOfPostfix(u.Value, env)) {
+				usesBigRat = true
+				zero := &CallExpr{Func: "_bigrat", Args: []Expr{&IntLit{Value: 0}}}
+				expr = ensureBigRatExpr(expr, types.TypeOfPostfix(u.Value, env))
+				expr = &BigRatBinaryExpr{Left: zero, Op: "-", Right: expr}
+			} else if isBigIntType(types.TypeOfPostfix(u.Value, env)) {
 				usesBigInt = true
 				zero := &CallExpr{Func: "big.NewInt", Args: []Expr{&IntLit{Value: 0}}}
 				expr = ensureBigIntExpr(expr, types.TypeOfPostfix(u.Value, env))
@@ -3877,6 +3971,10 @@ func compilePostfix(pf *parser.PostfixExpr, env *types.Env, base string) (Expr, 
 					t = types.BigIntType{}
 				} else if name == "float" {
 					expr = &CallExpr{Func: "float64", Args: []Expr{expr}}
+				} else if name == "bigrat" {
+					usesBigRat = true
+					expr = ensureBigRatExpr(expr, t)
+					t = types.BigRatType{}
 				} else if st, ok := env.GetStruct(name); ok {
 					if ml, ok := expr.(*MapLit); ok {
 						fields := make([]Expr, len(st.Order))
@@ -4048,6 +4146,12 @@ func compilePrimary(p *parser.Primary, env *types.Env, base string) (Expr, error
 		case "substring":
 			usesSubstr = true
 			return &CallExpr{Func: "_substr", Args: []Expr{args[0], args[1], args[2]}}, nil
+		case "num":
+			usesBigRat = true
+			return &CallExpr{Func: "_num", Args: []Expr{args[0]}}, nil
+		case "denom":
+			usesBigRat = true
+			return &CallExpr{Func: "_denom", Args: []Expr{args[0]}}, nil
 		case "lower":
 			usesStrings = true
 			return &CallExpr{Func: "strings.ToLower", Args: []Expr{args[0]}}, nil
@@ -4313,6 +4417,9 @@ func toGoType(t *parser.TypeRef, env *types.Env) string {
 		case "bigint":
 			usesBigInt = true
 			return "*big.Int"
+		case "bigrat":
+			usesBigRat = true
+			return "*big.Rat"
 		case "float":
 			return "float64"
 		case "string":
@@ -4374,7 +4481,10 @@ func toGoTypeFromType(t types.Type) string {
 		return "string"
 	case types.BoolType:
 		return "bool"
-	case types.BigRatType, types.FloatType:
+	case types.BigRatType:
+		usesBigRat = true
+		return "*big.Rat"
+	case types.FloatType:
 		return "float64"
 	case types.ListType:
 		elem := toGoTypeFromType(tt.Elem)
@@ -4437,6 +4547,8 @@ func toTypeFromGoType(s string) types.Type {
 		return types.BoolType{}
 	case s == "*big.Int":
 		return types.BigIntType{}
+	case s == "*big.Rat":
+		return types.BigRatType{}
 	case strings.HasPrefix(s, "[]"):
 		return types.ListType{Elem: toTypeFromGoType(s[2:])}
 	case strings.HasPrefix(s, "map[string]"):
@@ -4634,7 +4746,7 @@ func Emit(prog *Program) []byte {
 	if prog.UseSort {
 		buf.WriteString("    \"sort\"\n")
 	}
-	if prog.UseBigInt {
+	if prog.UseBigInt || prog.UseBigRat {
 		buf.WriteString("    \"math/big\"\n")
 	}
 	if prog.UseInput {
@@ -4699,6 +4811,19 @@ func Emit(prog *Program) []byte {
 		buf.WriteString("    default: return 0\n")
 		buf.WriteString("    }\n")
 		buf.WriteString("}\n\n")
+	}
+	if prog.UseBigRat {
+		buf.WriteString("func _bigrat(v any) *big.Rat {\n")
+		buf.WriteString("    switch t := v.(type) {\n")
+		buf.WriteString("    case *big.Rat:\n        return new(big.Rat).Set(t)\n")
+		buf.WriteString("    case *big.Int:\n        return new(big.Rat).SetInt(t)\n")
+		buf.WriteString("    case int:\n        return big.NewRat(int64(t), 1)\n")
+		buf.WriteString("    case int64:\n        return big.NewRat(t, 1)\n")
+		buf.WriteString("    case float64:\n        r := new(big.Rat); r.SetFloat64(t); return r\n")
+		buf.WriteString("    default:\n        return big.NewRat(0,1)\n")
+		buf.WriteString("    }\n}\n\n")
+		buf.WriteString("func _num(r *big.Rat) *big.Int { return new(big.Int).Set(r.Num()) }\n\n")
+		buf.WriteString("func _denom(r *big.Rat) *big.Int { return new(big.Int).Set(r.Denom()) }\n\n")
 	}
 
 	// no runtime helper functions needed
