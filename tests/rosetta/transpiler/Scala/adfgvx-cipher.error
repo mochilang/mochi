@@ -15,10 +15,10 @@ The key is L5A3YCSXJ
 Plaintext : ATTACKAT1200AM
 
 Encrypted : aXfr(urrBAey)faFfr(urrBAey)faVfr(urrBAey)faA rrBAey)faVfr(urrBAey)faXfr(urrBAey)faVfr(urr r(urrBAey)faXfr(urrBAey)faFfr(urrBAey)faXfr( BAey)faXfr(urrBAey)faXfr(urrBAey)faVfr(urrB faXfr(urrBAey)faVfr(urrBAey)faAfr(urrBAey)f Aey)faVfr(urrBAey)faXfr(urrBAey)faVfr(urrBAe urrBAey)faXfr(urrBAey)faVfr(urrBAey)faXfr(u fr(urrBAey)faXfr(urrBAey)faFfr(urrBAey)faAf y)faXfr(urrBAey)faFfr(urrBAey)faVfr(urrBAey)
-java.lang.IndexOutOfBoundsException: 1
-	at scala.collection.mutable.ResizableArray$class.apply(ResizableArray.scala:43)
+java.lang.ArrayIndexOutOfBoundsException: Index -1 out of bounds for length 16
+	at scala.collection.mutable.ResizableArray$class.apply(ResizableArray.scala:44)
 	at scala.collection.mutable.ArrayBuffer.apply(ArrayBuffer.scala:48)
-	at Main$.decrypt(adfgvx-cipher.scala:264)
+	at Main$.decrypt(adfgvx-cipher.scala:284)
 	at Main$.main(adfgvx-cipher.scala:297)
 	at Main$.main(adfgvx-cipher.scala:306)
 	at Main.main(adfgvx-cipher.scala)

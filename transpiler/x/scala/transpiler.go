@@ -845,7 +845,14 @@ type IndexExpr struct {
 }
 
 func (idx *IndexExpr) emit(w io.Writer) {
-	if idx.Container == "Any" {
+	if idx.Container == "String" {
+		idx.Value.emit(w)
+		fmt.Fprint(w, ".slice(")
+		idx.Index.emit(w)
+		fmt.Fprint(w, ", ")
+		idx.Index.emit(w)
+		fmt.Fprint(w, " + 1)")
+	} else if idx.Container == "Any" {
 		if prev, ok := idx.Value.(*IndexExpr); ok && strings.HasPrefix(prev.Container, "Map[") {
 			idx.Value.emit(w)
 			if idx.Type != "" {
