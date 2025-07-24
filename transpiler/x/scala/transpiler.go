@@ -39,12 +39,18 @@ var returnTypeStack []string
 func BuiltinAliases() map[string]string { return builtinAliases }
 
 var scalaKeywords = map[string]bool{
-	"val":  true,
-	"var":  true,
-	"type": true,
-	"def":  true,
-	"this": true,
-	"new":  true,
+	"val":    true,
+	"var":    true,
+	"type":   true,
+	"def":    true,
+	"this":   true,
+	"new":    true,
+	"object": true,
+	"class":  true,
+	"trait":  true,
+	"case":   true,
+	"match":  true,
+	"with":   true,
 }
 
 func escapeName(name string) string {
