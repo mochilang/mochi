@@ -65,6 +65,7 @@ type StructField struct {
 var stringVars map[string]bool
 var mapVars map[string]bool
 var varTypes map[string]string
+var finalVarTypes map[string]string
 var structTypes map[string]types.StructType
 var funRets map[string]string
 var funParams map[string][]string
@@ -914,9 +915,20 @@ func isStringExpr(e Expr) bool {
 	case *IndexExpr:
 		return typeOfExpr(ex) == "string"
 	case *VarRef:
-		return stringVars[ex.Name]
+		if stringVars[ex.Name] {
+			return true
+		}
+		if t, ok := varTypes[ex.Name]; ok && t == "string" {
+			return true
+		}
+		if t, ok := finalVarTypes[ex.Name]; ok && t == "string" {
+			return true
+		}
 	case *CallExpr:
 		if ex.Func == "Convert.ToString" {
+			return true
+		}
+		if ret, ok := funRets[ex.Func]; ok && ret == "string" {
 			return true
 		}
 	case *RawExpr:
@@ -953,6 +965,15 @@ func isMapExpr(e Expr) bool {
 			}
 			return false
 		}
+		if t, ok := finalVarTypes[ex.Name]; ok {
+			if strings.HasSuffix(t, "[]") {
+				return false
+			}
+			if strings.HasPrefix(t, "Dictionary<") {
+				return true
+			}
+			return false
+		}
 		return false
 	default:
 		t := typeOfExpr(e)
@@ -978,6 +999,9 @@ func isListExpr(e Expr) bool {
 		if t, ok := varTypes[ex.Name]; ok {
 			return strings.HasSuffix(t, "[]")
 		}
+		if t, ok := finalVarTypes[ex.Name]; ok {
+			return strings.HasSuffix(t, "[]")
+		}
 	case *RawExpr:
 		return strings.HasSuffix(ex.Type, "[]")
 	}
@@ -990,6 +1014,10 @@ func isStructExpr(e Expr) bool {
 		return true
 	case *VarRef:
 		if t, ok := varTypes[ex.Name]; ok {
+			_, ok2 := structTypes[t]
+			return ok2
+		}
+		if t, ok := finalVarTypes[ex.Name]; ok {
 			_, ok2 := structTypes[t]
 			return ok2
 		}
@@ -1362,6 +1390,9 @@ func typeOfExpr(e Expr) string {
 		if t, ok := varTypes[ex.Name]; ok {
 			return t
 		}
+		if t, ok := finalVarTypes[ex.Name]; ok {
+			return t
+		}
 	case *CallExpr:
 		if ret, ok := funRets[ex.Func]; ok {
 			return ret
@@ -1478,7 +1509,7 @@ func listType(l *ListLit) string {
 
 func (ix *IndexExpr) emit(w io.Writer) {
 	t := typeOfExpr(ix)
-	if (t == "object" || t == "") && isMapExpr(ix.Target) {
+	if t == "object" || t == "" {
 		fmt.Fprint(w, "((dynamic)")
 		ix.Target.emit(w)
 		fmt.Fprint(w, ")[")
@@ -1619,7 +1650,13 @@ func (a *AppendExpr) emit(w io.Writer) {
 	fmt.Fprint(w, "(")
 	a.List.emit(w)
 	fmt.Fprint(w, ".Append(")
-	a.Item.emit(w)
+	t := typeOfExpr(a.List)
+	if t == "" || strings.HasSuffix(t, "object[]") {
+		fmt.Fprint(w, "(object)")
+		a.Item.emit(w)
+	} else {
+		a.Item.emit(w)
+	}
 	fmt.Fprint(w, ").ToArray())")
 }
 
@@ -1726,6 +1763,7 @@ func Transpile(p *parser.Program, env *types.Env) (*Program, error) {
 	stringVars = make(map[string]bool)
 	mapVars = make(map[string]bool)
 	varTypes = make(map[string]string)
+	finalVarTypes = make(map[string]string)
 	structTypes = env.Structs()
 	funRets = make(map[string]string)
 	funParams = make(map[string][]string)
@@ -2072,6 +2110,7 @@ func compileStmt(prog *Program, s *parser.Statement) (Stmt, error) {
 			if alias != s.Let.Name {
 				delete(varTypes, s.Let.Name)
 			}
+			finalVarTypes[alias] = t
 		}
 		if prog != nil && blockDepth == 0 {
 			for m := range mutatedVars {
@@ -2166,6 +2205,7 @@ func compileStmt(prog *Program, s *parser.Statement) (Stmt, error) {
 			if alias != s.Var.Name {
 				delete(varTypes, s.Var.Name)
 			}
+			finalVarTypes[alias] = t
 		}
 		if prog != nil && blockDepth == 0 {
 			g := &Global{Name: alias, Value: val}
@@ -2339,6 +2379,11 @@ func compileStmt(prog *Program, s *parser.Statement) (Stmt, error) {
 				delete(stringVars, name)
 			} else {
 				stringVars[name] = val
+			}
+		}
+		for name, typ := range varTypes {
+			if typ != "" {
+				finalVarTypes[name] = typ
 			}
 		}
 		// restore global maps
