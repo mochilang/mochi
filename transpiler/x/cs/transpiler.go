@@ -1657,6 +1657,22 @@ func Transpile(p *parser.Program, env *types.Env) (*Program, error) {
 			prog.Stmts = append(prog.Stmts, s)
 		}
 	}
+	for name, st := range structTypes {
+		found := false
+		for _, decl := range prog.Structs {
+			if decl.Name == name {
+				found = true
+				break
+			}
+		}
+		if !found && len(st.Order) > 0 {
+			fields := make([]StructField, len(st.Order))
+			for i, n := range st.Order {
+				fields[i] = StructField{Name: n, Type: csTypeFromType(st.Fields[n])}
+			}
+			prog.Structs = append(prog.Structs, StructDecl{Name: name, Fields: fields})
+		}
+	}
 	_ = env // env reserved for future use
 	return prog, nil
 }
@@ -2653,31 +2669,55 @@ func compileMatchExpr(me *parser.MatchExpr) (Expr, error) {
 	if err != nil {
 		return nil, err
 	}
-	var expr Expr
-	for i := len(me.Cases) - 1; i >= 0; i-- {
-		c := me.Cases[i]
+	var body bytes.Buffer
+	body.WriteString("var __t = ")
+	target.emit(&body)
+	body.WriteString("; ")
+	retType := "object"
+	for i, c := range me.Cases {
+		name, vars, ok := structPattern(c.Pattern)
+		if !ok {
+			return nil, fmt.Errorf("unsupported match pattern")
+		}
+		saved := make(map[string]string)
+		st := structTypes[name]
+		for j, v := range vars {
+			saved[v] = varTypes[v]
+			varTypes[v] = csTypeFromType(st.Fields[st.Order[j]])
+		}
 		res, err := compileExpr(c.Result)
-		if err != nil {
-			return nil, err
-		}
-		patExpr, err := compileExpr(c.Pattern)
-		if err != nil {
-			return nil, err
-		}
-		if i == len(me.Cases)-1 {
-			expr = res
-			if vr, ok := patExpr.(*VarRef); ok && vr.Name == "_" {
-				continue
+		for _, v := range vars {
+			if saved[v] == "" {
+				delete(varTypes, v)
+			} else {
+				varTypes[v] = saved[v]
 			}
 		}
-		if vr, ok := patExpr.(*VarRef); ok && vr.Name == "_" {
-			expr = res
-			continue
+		if err != nil {
+			return nil, err
 		}
-		cond := &CmpExpr{Op: "==", Left: target, Right: patExpr}
-		expr = &IfExpr{Cond: cond, Then: res, Else: expr}
+		if i > 0 {
+			body.WriteString(" else ")
+		}
+		tmp := fmt.Sprintf("_p%d", i)
+		body.WriteString("if (__t is " + name + " " + tmp + ") { ")
+		for j, v := range vars {
+			field := st.Order[j]
+			body.WriteString(fmt.Sprintf("var %s = %s.%s; ", safeName(v), tmp, field))
+		}
+		if retType == "object" {
+			t := typeOfExpr(res)
+			if t != "" {
+				retType = t
+			}
+		}
+		var rbuf bytes.Buffer
+		res.emit(&rbuf)
+		body.WriteString("return " + rbuf.String() + "; }")
 	}
-	return expr, nil
+	body.WriteString(" return default(" + retType + "); ")
+	code := fmt.Sprintf("((Func<%s>)(() => { %s}))()", retType, body.String())
+	return &RawExpr{Code: code, Type: retType}, nil
 }
 
 func compileQueryExpr(q *parser.QueryExpr) (Expr, error) {
@@ -3235,6 +3275,36 @@ func simpleIdent(e *parser.Expr) (string, bool) {
 		return p.Target.Selector.Root, true
 	}
 	return "", false
+}
+
+// structPattern checks if expression e is a constructor call of a known struct
+// and returns the struct name and argument identifiers.
+func structPattern(e *parser.Expr) (string, []string, bool) {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) > 0 {
+		return "", nil, false
+	}
+	u := e.Binary.Left
+	if len(u.Ops) > 0 || u.Value == nil {
+		return "", nil, false
+	}
+	p := u.Value
+	if len(p.Ops) > 0 || p.Target == nil || p.Target.Call == nil {
+		return "", nil, false
+	}
+	call := p.Target.Call
+	st, ok := structTypes[call.Func]
+	if !ok || len(call.Args) != len(st.Order) {
+		return "", nil, false
+	}
+	vars := make([]string, len(call.Args))
+	for i, a := range call.Args {
+		v, ok := simpleIdent(a)
+		if !ok {
+			return "", nil, false
+		}
+		vars[i] = v
+	}
+	return call.Func, vars, true
 }
 
 func parseFormat(e *parser.Expr) string {

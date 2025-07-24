@@ -81,11 +81,12 @@ fun solve(xs: list<Expr>): bool {
       }
       let a = xs[i]
       let b = xs[j]
+      var node = Bin { op: OP_ADD, left: a, right: b }
       for op in [OP_ADD, OP_SUB, OP_MUL, OP_DIV] {
-        var node = Bin { op: op, left: a, right: b }
+        node = Bin { op: op, left: a, right: b }
         if solve(append(rest, node)) { return true }
       }
-      var node = Bin { op: OP_SUB, left: b, right: a }
+      node = Bin { op: OP_SUB, left: b, right: a }
       if solve(append(rest, node)) { return true }
       node = Bin { op: OP_DIV, left: b, right: a }
       if solve(append(rest, node)) { return true }

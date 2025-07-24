@@ -1,3 +1,36 @@
+## Progress (2025-07-24 00:46 UTC)
+- cs transpiler: support union pattern matching (progress 102/103)
+
+## Progress (2025-07-24 07:28 +0700)
+- hs transpiler: handle while expr returns (progress 102/103)
+
+## Progress (2025-07-24 07:28 +0700)
+- hs transpiler: handle while expr returns (progress 102/103)
+
+## Progress (2025-07-24 07:28 +0700)
+- hs transpiler: handle while expr returns (progress 102/103)
+
+## Progress (2025-07-24 07:28 +0700)
+- hs transpiler: handle while expr returns (progress 102/103)
+
+## Progress (2025-07-24 07:28 +0700)
+- hs transpiler: handle while expr returns (progress 102/103)
+
+## Progress (2025-07-24 07:28 +0700)
+- hs transpiler: handle while expr returns (progress 102/103)
+
+## Progress (2025-07-24 07:28 +0700)
+- hs transpiler: handle while expr returns (progress 102/103)
+
+## Progress (2025-07-24 07:28 +0700)
+- hs transpiler: handle while expr returns (progress 102/103)
+
+## Progress (2025-07-24 07:28 +0700)
+- hs transpiler: handle while expr returns (progress 102/103)
+
+## Progress (2025-07-24 07:28 +0700)
+- hs transpiler: handle while expr returns (progress 102/103)
+
 ## Progress (2025-07-24 06:53 +0700)
 - cs: seed rosetta runs (progress 102/103)
 
@@ -82,6 +115,17 @@
 
 ## Progress (2025-07-22 03:14 +0000)
 - cs transpiler: 100/102 tests compiled
+
+
+
+
+
+
+
+
+
+
+
 
 
 

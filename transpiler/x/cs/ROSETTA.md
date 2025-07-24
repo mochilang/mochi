@@ -1,7 +1,7 @@
 # Rosetta C# Transpiler Output
 
-Completed programs: 8/284
-Last updated: 2025-07-24 07:16 +0700
+Completed programs: 9/284
+Last updated: 2025-07-24 00:46 UTC
 
 ## Checklist
 1. [x] 100-doors-2
@@ -12,7 +12,7 @@ Last updated: 2025-07-24 07:16 +0700
 6. [x] 15-puzzle-solver
 7. [x] 2048
 8. [x] 21-game
-9. [ ] 24-game-solve
+9. [x] 24-game-solve
 10. [ ] 24-game
 11. [ ] 4-rings-or-4-squares-puzzle
 12. [ ] 9-billion-names-of-god-the-integer
