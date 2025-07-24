@@ -2,9 +2,9 @@
 
 Generated Kotlin sources for Rosetta Code tests are stored in `tests/rosetta/transpiler/Kotlin`.
 
-Last updated: 2025-07-24 13:26 +0700
+Last updated: 2025-07-24 13:32 +0700
 
-Completed tasks: **36/284**
+Completed tasks: **38/284**
 
 ### Checklist
 1. [x] `100-doors-2` (1)
@@ -39,8 +39,8 @@ Completed tasks: **36/284**
 30. [x] `ackermann-function` (30)
 31. [x] `active-directory-connect` (31)
 32. [x] `active-directory-search-for-a-user` (32)
-33. [ ] `active-object` (33)
-34. [ ] `add-a-variable-to-a-class-instance-at-runtime` (34)
+33. [x] `active-object` (33)
+34. [x] `add-a-variable-to-a-class-instance-at-runtime` (34)
 35. [x] `additive-primes` (35)
 36. [x] `address-of-a-variable` (36)
 37. [ ] `adfgvx-cipher` (37)

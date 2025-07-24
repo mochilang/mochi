@@ -1772,6 +1772,8 @@ func kotlinType(t *parser.TypeRef) string {
 			return "Boolean"
 		case "string":
 			return "String"
+		case "float":
+			return "Double"
 		case "bigint":
 			useHelper("importBigInt")
 			return "BigInteger"
@@ -3474,6 +3476,18 @@ func convertStructLiteral(env *types.Env, sl *parser.StructLiteral) (Expr, error
 		v, err := convertExpr(env, f.Value)
 		if err != nil {
 			return nil, err
+		}
+		if env != nil {
+			if st, ok := env.GetStruct(sl.Name); ok {
+				if ft, ok := st.Fields[f.Name]; ok {
+					if _, ok := v.(*MapLit); ok {
+						typ := kotlinTypeFromType(ft)
+						if typ != "" && typ != "Any" {
+							v = &CastExpr{Value: v, Type: typ}
+						}
+					}
+				}
+			}
 		}
 		names[i] = f.Name
 		vals[i] = v

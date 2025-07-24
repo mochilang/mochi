@@ -1,8 +1,8 @@
 fun input(): String = readLine() ?: ""
 
-data class SomeStruct(val runtimeFields: MutableMap<String, String>)
+data class SomeStruct(var runtimeFields: MutableMap<String, String>)
 fun user_main(): Unit {
-    var ss: SomeStruct = SomeStruct(runtimeFields = mutableMapOf<Any, Any>())
+    var ss: SomeStruct = SomeStruct(runtimeFields = mutableMapOf<Any, Any>() as MutableMap<String, String>)
     println("Create two fields at runtime: \n")
     var i: Int = 1
     while (i <= 2) {
