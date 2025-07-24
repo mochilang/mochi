@@ -556,10 +556,13 @@ type IndexExpr struct {
 func (i *IndexExpr) emit(w io.Writer) {
 	switch t := i.Target.(type) {
 	case *NameRef:
-		if mapVars[t.Name] {
+		if mapVars[t.Name] || strings.HasPrefix(inferType(i.Target), "HashMap") {
 			t.emit(w)
 			io.WriteString(w, "[&")
 			i.Index.emit(w)
+			if inferType(i.Index) == "String" {
+				io.WriteString(w, ".as_str()")
+			}
 			io.WriteString(w, "]")
 			return
 		}
@@ -746,7 +749,14 @@ func (a *AppendExpr) emit(w io.Writer) {
 	io.WriteString(w, "{ let mut v = ")
 	a.List.emit(w)
 	io.WriteString(w, ".clone(); v.push(")
-	a.Elem.emit(w)
+	lt := inferType(a.List)
+	if lt == "Vec<String>" {
+		io.WriteString(w, "String::from(")
+		a.Elem.emit(w)
+		io.WriteString(w, ")")
+	} else {
+		a.Elem.emit(w)
+	}
 	io.WriteString(w, "); v }")
 }
 
@@ -799,6 +809,24 @@ func (e *ExistsExpr) emit(w io.Writer) {
 	io.WriteString(w, ".is_empty())")
 }
 
+// UpperExpr represents a call to the `upper` builtin.
+type UpperExpr struct{ Value Expr }
+
+func (u *UpperExpr) emit(w io.Writer) {
+	io.WriteString(w, "(")
+	u.Value.emit(w)
+	io.WriteString(w, ".to_uppercase())")
+}
+
+// LowerExpr represents a call to the `lower` builtin.
+type LowerExpr struct{ Value Expr }
+
+func (u *LowerExpr) emit(w io.Writer) {
+	io.WriteString(w, "(")
+	u.Value.emit(w)
+	io.WriteString(w, ".to_lowercase())")
+}
+
 // SubstringExpr represents a call to the `substring` builtin.
 type SubstringExpr struct {
 	Str   Expr
@@ -807,13 +835,16 @@ type SubstringExpr struct {
 }
 
 func (s *SubstringExpr) emit(w io.Writer) {
-	io.WriteString(w, "String::from(&")
+	io.WriteString(w, "{")
+	io.WriteString(w, " let tmp = &")
 	s.Str.emit(w)
-	io.WriteString(w, "[")
+	io.WriteString(w, "; tmp.chars().skip(")
 	s.Start.emit(w)
-	io.WriteString(w, " as usize .. ")
+	io.WriteString(w, " as usize).take((")
 	s.End.emit(w)
-	io.WriteString(w, " as usize])")
+	io.WriteString(w, " - ")
+	s.Start.emit(w)
+	io.WriteString(w, ") as usize).collect::<String>() }")
 }
 
 // StringCastExpr converts an expression to a Rust String.
@@ -1030,7 +1061,7 @@ func (s *IndexAssignStmt) emit(w io.Writer) {
 			idx.Target.emit(w)
 			io.WriteString(w, ".insert(")
 			idx.Index.emit(w)
-			io.WriteString(w, ", ")
+			io.WriteString(w, ".clone(), ")
 			s.Value.emit(w)
 			io.WriteString(w, ")")
 			indexLHS = old
@@ -2801,6 +2832,12 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 		if name == "substring" && len(args) == 3 {
 			return &SubstringExpr{Str: args[0], Start: args[1], End: args[2]}, nil
 		}
+		if name == "upper" && len(args) == 1 {
+			return &UpperExpr{Value: args[0]}, nil
+		}
+		if name == "lower" && len(args) == 1 {
+			return &LowerExpr{Value: args[0]}, nil
+		}
 		if pts, ok := funParamTypes[name]; ok {
 			for i := 0; i < len(args) && i < len(pts); i++ {
 				if strings.HasPrefix(pts[i], "&") {
@@ -2813,6 +2850,8 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 					}
 				} else if nr, ok := args[i].(*NameRef); ok && boxVars[nr.Name] && !strings.HasPrefix(pts[i], "Box<") {
 					args[i] = &UnaryExpr{Op: "*", Expr: &MethodCallExpr{Receiver: args[i], Name: "clone"}}
+				} else if _, ok := args[i].(*NameRef); ok && !strings.HasPrefix(pts[i], "&") && (pts[i] == "String" || strings.HasPrefix(pts[i], "Vec<") || strings.HasPrefix(pts[i], "HashMap<")) {
+					args[i] = &MethodCallExpr{Receiver: args[i], Name: "clone"}
 				}
 			}
 		}
@@ -3562,6 +3601,8 @@ func inferType(e Expr) string {
 		return "HashMap<String, i64>"
 	case *SubstringExpr:
 		return "String"
+	case *UpperExpr, *LowerExpr:
+		return "String"
 	case *MethodCallExpr:
 		switch ex.Name {
 		case "contains":
@@ -4307,6 +4348,14 @@ func exprNode(e Expr) *ast.Node {
 		n.Children = append(n.Children, exprNode(ex.Str))
 		n.Children = append(n.Children, exprNode(ex.Start))
 		n.Children = append(n.Children, exprNode(ex.End))
+		return n
+	case *UpperExpr:
+		n := &ast.Node{Kind: "upper"}
+		n.Children = append(n.Children, exprNode(ex.Value))
+		return n
+	case *LowerExpr:
+		n := &ast.Node{Kind: "lower"}
+		n.Children = append(n.Children, exprNode(ex.Value))
 		return n
 	case *IndexExpr:
 		return &ast.Node{Kind: "index", Children: []*ast.Node{exprNode(ex.Target), exprNode(ex.Index)}}
