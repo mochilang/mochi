@@ -2,9 +2,9 @@
 
 Generated Zig code for Rosetta tasks lives under `tests/rosetta/transpiler/Zig`.
 
-Last updated: 2025-07-24 13:30 +0700
+Last updated: 2025-07-24 11:52 +0000
 
-## Program Checklist (24/284)
+## Program Checklist (25/284)
 1. [x] (1) 100-doors-2
 2. [x] (2) 100-doors-3
 3. [x] (3) 100-doors
@@ -20,7 +20,7 @@ Last updated: 2025-07-24 13:30 +0700
 13. [x] (13) 99-bottles-of-beer-2
 14. [x] (14) 99-bottles-of-beer
 15. [ ] (15) DNS-query
-16. [ ] (16) a+b
+16. [x] (16) a+b
 17. [ ] (17) abbreviations-automatic
 18. [ ] (18) abbreviations-easy
 19. [ ] (19) abbreviations-simple
