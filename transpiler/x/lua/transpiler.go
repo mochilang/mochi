@@ -139,6 +139,18 @@ local function _parseIntStr(str)
 end
 `
 
+const helperSlice = `
+local function slice(lst, s, e)
+  if s < 0 then s = #lst + s end
+  if e == nil then e = #lst end
+  local r = {}
+  for i = s + 1, e do
+    r[#r+1] = lst[i]
+  end
+  return r
+end
+`
+
 // Program represents a simple Lua program consisting of a sequence of
 // statements.
 type Program struct {
@@ -232,6 +244,11 @@ type CallExpr struct {
 	ParamTypes []types.Type
 }
 
+type DynCallExpr struct {
+	Fn   Expr
+	Args []Expr
+}
+
 type StringLit struct{ Value string }
 type IntLit struct{ Value int }
 type FloatLit struct{ Value float64 }
@@ -266,6 +283,18 @@ type BinaryExpr struct {
 type UnaryExpr struct {
 	Op    string
 	Value Expr
+}
+
+func (dc *DynCallExpr) emit(w io.Writer) {
+	dc.Fn.emit(w)
+	io.WriteString(w, "(")
+	for i, a := range dc.Args {
+		if i > 0 {
+			io.WriteString(w, ", ")
+		}
+		a.emit(w)
+	}
+	io.WriteString(w, ")")
 }
 
 type MatchArm struct {
@@ -1562,11 +1591,19 @@ func (u *UnaryExpr) emit(w io.Writer) {
 		}
 		io.WriteString(w, ")")
 	case "-":
-		io.WriteString(w, "(-")
-		if u.Value != nil {
-			u.Value.emit(w)
+		if isBigRatExpr(u.Value) {
+			io.WriteString(w, "_sub(_bigrat(0), ")
+			if u.Value != nil {
+				u.Value.emit(w)
+			}
+			io.WriteString(w, ")")
+		} else {
+			io.WriteString(w, "(-")
+			if u.Value != nil {
+				u.Value.emit(w)
+			}
+			io.WriteString(w, ")")
 		}
-		io.WriteString(w, ")")
 	}
 }
 
@@ -2238,6 +2275,7 @@ func Emit(p *Program) []byte {
 	b.WriteString(helperSHA256)
 	b.WriteString(helperIndexOf)
 	b.WriteString(helperParseIntStr)
+	b.WriteString(helperSlice)
 	prevEnv := currentEnv
 	currentEnv = p.Env
 	for i, st := range p.Stmts {
@@ -2341,7 +2379,7 @@ func convertUnary(u *parser.Unary) (Expr, error) {
 		op := u.Ops[i]
 		switch op {
 		case "-":
-			expr = &BinaryExpr{Left: &IntLit{Value: 0}, Op: "-", Right: expr}
+			expr = &UnaryExpr{Op: "-", Value: expr}
 		case "!":
 			expr = &UnaryExpr{Op: "!", Value: expr}
 		default:
@@ -2474,13 +2512,13 @@ func convertPostfix(p *parser.PostfixExpr) (Expr, error) {
 						cexpr := &CallExpr{Func: name, Args: args}
 						expr = cexpr
 					} else {
-						return nil, fmt.Errorf("unsupported call")
+						expr = &DynCallExpr{Fn: expr, Args: args}
 					}
 				} else {
-					return nil, fmt.Errorf("unsupported call")
+					expr = &DynCallExpr{Fn: expr, Args: args}
 				}
 			} else {
-				return nil, fmt.Errorf("unsupported call")
+				expr = &DynCallExpr{Fn: expr, Args: args}
 			}
 		case op.Cast != nil:
 			if op.Cast.Type != nil {
