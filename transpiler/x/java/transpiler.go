@@ -1105,6 +1105,19 @@ func (b *BinaryExpr) emit(w io.Writer) {
 		fmt.Fprint(w, "))")
 		return
 	}
+	if (b.Op == "==" || b.Op == "!=") && (isNullExpr(b.Left) || isNullExpr(b.Right)) {
+		if b.Op == "!=" {
+			fmt.Fprint(w, "!")
+		}
+		fmt.Fprint(w, "(")
+		if isNullExpr(b.Left) {
+			b.Right.emit(w)
+		} else {
+			b.Left.emit(w)
+		}
+		fmt.Fprint(w, " == null)")
+		return
+	}
 	if (isStringExpr(b.Left) || isStringExpr(b.Right)) &&
 		(b.Op == "<" || b.Op == "<=" || b.Op == ">" || b.Op == ">=") {
 		switch b.Op {
@@ -1703,7 +1716,7 @@ type IndexExpr struct {
 
 func (ix *IndexExpr) emit(w io.Writer) {
 	if ix.IsMap {
-		castType := "java.util.Map"
+		castType := "Object"
 		if ix.ResultType != "" {
 			castType = javaType(ix.ResultType)
 		}
@@ -2010,6 +2023,11 @@ func isGroupExpr(e Expr) bool {
 		}
 	}
 	return false
+}
+
+func isNullExpr(e Expr) bool {
+	_, ok := e.(*NullLit)
+	return ok
 }
 
 func isNumericBool(e Expr) bool {
@@ -2852,6 +2870,8 @@ func compilePostfix(pf *parser.PostfixExpr) (Expr, error) {
 						st.Name = ctype
 					}
 				}
+			} else {
+				expr = &CastExpr{Value: expr, Type: ctype}
 			}
 		default:
 			return nil, fmt.Errorf("unsupported postfix")
@@ -2979,6 +2999,8 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 		return &FloatLit{Value: *p.Lit.Float}, nil
 	case p.Lit != nil && p.Lit.Bool != nil:
 		return &BoolLit{Value: bool(*p.Lit.Bool)}, nil
+	case p.Lit != nil && p.Lit.Null:
+		return &NullLit{}, nil
 	case p.Selector != nil:
 		if pyMathAliases[p.Selector.Root] && len(p.Selector.Tail) == 1 {
 			name := p.Selector.Tail[0]
