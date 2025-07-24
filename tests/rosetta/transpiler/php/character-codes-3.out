@@ -1,0 +1,4 @@
+97 960 aπ
+string cast to []rune: [97 960]
+    string range loop: 97 960
+         string bytes: 0x61 0xcf 0x80

@@ -2,9 +2,9 @@
 
 Generated PHP code from Mochi Rosetta tasks lives in `tests/rosetta/transpiler/php`.
 
-Last updated: 2025-07-25 01:26 +0700
+Last updated: 2025-07-25 01:29 +0700
 
-## Checklist (169/284)
+## Checklist (218/284)
 - [x] 1 100-doors-2
 - [x] 2 100-doors-3
 - [x] 3 100-doors
@@ -182,56 +182,56 @@ Last updated: 2025-07-25 01:26 +0700
 - [x] 175 case-sensitivity-of-identifiers
 - [x] 176 casting-out-nines
 - [x] 177 catalan-numbers-1
-- [ ] 178 catalan-numbers-2
-- [ ] 179 catalan-numbers-pascals-triangle
-- [ ] 180 catamorphism
-- [ ] 181 catmull-clark-subdivision-surface
-- [ ] 182 chaocipher
-- [ ] 183 chaos-game
-- [ ] 184 character-codes-1
-- [ ] 185 character-codes-2
-- [ ] 186 character-codes-3
-- [ ] 187 character-codes-4
-- [ ] 188 character-codes-5
-- [ ] 189 chat-server
-- [ ] 190 check-machin-like-formulas
-- [ ] 191 check-that-file-exists
-- [ ] 192 checkpoint-synchronization-1
-- [ ] 193 checkpoint-synchronization-2
-- [ ] 194 checkpoint-synchronization-3
-- [ ] 195 checkpoint-synchronization-4
-- [ ] 196 chernicks-carmichael-numbers
-- [ ] 197 cheryls-birthday
-- [ ] 198 chinese-remainder-theorem
-- [ ] 199 chinese-zodiac
-- [ ] 200 cholesky-decomposition-1
-- [ ] 201 cholesky-decomposition
-- [ ] 202 chowla-numbers
-- [ ] 203 church-numerals-1
-- [ ] 204 church-numerals-2
-- [ ] 205 circles-of-given-radius-through-two-points
-- [ ] 206 circular-primes
-- [ ] 207 cistercian-numerals
-- [ ] 208 comma-quibbling
-- [ ] 209 compiler-virtual-machine-interpreter
-- [ ] 210 composite-numbers-k-with-no-single-digit-factors-whose-factors-are-all-substrings-of-k
-- [ ] 211 compound-data-type
-- [ ] 212 concurrent-computing-1
-- [ ] 213 concurrent-computing-2
-- [ ] 214 concurrent-computing-3
-- [ ] 215 conditional-structures-1
-- [ ] 216 conditional-structures-10
-- [ ] 217 conditional-structures-2
-- [ ] 218 conditional-structures-3
-- [ ] 219 conditional-structures-4
-- [ ] 220 conditional-structures-5
-- [ ] 221 conditional-structures-6
-- [ ] 222 conditional-structures-7
-- [ ] 223 conditional-structures-8
-- [ ] 224 conditional-structures-9
-- [ ] 225 consecutive-primes-with-ascending-or-descending-differences
-- [ ] 226 constrained-genericity-1
-- [ ] 227 constrained-genericity-2
+- [x] 178 catalan-numbers-2
+- [x] 179 catalan-numbers-pascals-triangle
+- [x] 180 catamorphism
+- [x] 181 catmull-clark-subdivision-surface
+- [x] 182 chaocipher
+- [x] 183 chaos-game
+- [x] 184 character-codes-1
+- [x] 185 character-codes-2
+- [x] 186 character-codes-3
+- [x] 187 character-codes-4
+- [x] 188 character-codes-5
+- [x] 189 chat-server
+- [x] 190 check-machin-like-formulas
+- [x] 191 check-that-file-exists
+- [x] 192 checkpoint-synchronization-1
+- [x] 193 checkpoint-synchronization-2
+- [x] 194 checkpoint-synchronization-3
+- [x] 195 checkpoint-synchronization-4
+- [x] 196 chernicks-carmichael-numbers
+- [x] 197 cheryls-birthday
+- [x] 198 chinese-remainder-theorem
+- [x] 199 chinese-zodiac
+- [x] 200 cholesky-decomposition-1
+- [x] 201 cholesky-decomposition
+- [x] 202 chowla-numbers
+- [x] 203 church-numerals-1
+- [x] 204 church-numerals-2
+- [x] 205 circles-of-given-radius-through-two-points
+- [x] 206 circular-primes
+- [x] 207 cistercian-numerals
+- [x] 208 comma-quibbling
+- [x] 209 compiler-virtual-machine-interpreter
+- [x] 210 composite-numbers-k-with-no-single-digit-factors-whose-factors-are-all-substrings-of-k
+- [x] 211 compound-data-type
+- [x] 212 concurrent-computing-1
+- [x] 213 concurrent-computing-2
+- [x] 214 concurrent-computing-3
+- [x] 215 conditional-structures-1
+- [x] 216 conditional-structures-10
+- [x] 217 conditional-structures-2
+- [x] 218 conditional-structures-3
+- [x] 219 conditional-structures-4
+- [x] 220 conditional-structures-5
+- [x] 221 conditional-structures-6
+- [x] 222 conditional-structures-7
+- [x] 223 conditional-structures-8
+- [x] 224 conditional-structures-9
+- [x] 225 consecutive-primes-with-ascending-or-descending-differences
+- [x] 226 constrained-genericity-1
+- [x] 227 constrained-genericity-2
 - [ ] 228 constrained-genericity-3
 - [ ] 229 constrained-genericity-4
 - [ ] 230 constrained-random-points-on-a-circle-1
