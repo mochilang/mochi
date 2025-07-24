@@ -2,8 +2,8 @@
 
 Generated Swift code for Mochi Rosetta programs in `tests/rosetta/x/Mochi`. Outputs are stored in `tests/rosetta/transpiler/Swift`. Errors are captured in `.error` files.
 
-Completed: 43/284
-Last updated: 2025-07-24 19:43 +0700
+Completed: 44/284
+Last updated: 2025-07-24 21:16 +0700
 
 Checklist:
 1. [x] 100-doors-2 (1)
@@ -46,7 +46,7 @@ Checklist:
 38. [x] aks-test-for-primes (38)
 39. [ ] algebraic-data-types (39)
 40. [x] align-columns (40)
-41. [ ] aliquot-sequence-classifications (41)
+41. [x] aliquot-sequence-classifications (41)
 42. [ ] almkvist-giullera-formula-for-pi (42)
 43. [ ] almost-prime (43)
 44. [x] amb (44)

@@ -30,6 +30,22 @@ var usesNum bool
 var usesKeys bool
 var funcMutParams map[string][]bool
 
+var swiftKeywords = map[string]struct{}{
+	"associatedtype": {}, "class": {}, "deinit": {}, "enum": {}, "extension": {},
+	"func": {}, "import": {}, "init": {}, "inout": {}, "let": {}, "operator": {},
+	"protocol": {}, "subscript": {}, "typealias": {}, "var": {}, "break": {},
+	"case": {}, "continue": {}, "default": {}, "defer": {}, "do": {}, "else": {},
+	"fallthrough": {}, "for": {}, "guard": {}, "if": {}, "in": {}, "repeat": {},
+	"return": {}, "switch": {}, "where": {}, "while": {},
+}
+
+func esc(name string) string {
+	if _, ok := swiftKeywords[name]; ok {
+		return "`" + name + "`"
+	}
+	return name
+}
+
 // Program is a sequence of Swift statements.
 type Program struct {
 	Stmts         []Stmt
@@ -305,7 +321,7 @@ func (v *VarDecl) emit(w io.Writer) {
 	if v.Const && v.Expr != nil {
 		kw = "let"
 	}
-	fmt.Fprint(w, kw+" "+v.Name)
+	fmt.Fprint(w, kw+" "+esc(v.Name))
 	if v.Type != "" {
 		fmt.Fprintf(w, ": %s", v.Type)
 	}
@@ -322,7 +338,7 @@ type AssignStmt struct {
 }
 
 func (a *AssignStmt) emit(w io.Writer) {
-	fmt.Fprint(w, a.Name+" = ")
+	fmt.Fprint(w, esc(a.Name)+" = ")
 	a.Expr.emit(w)
 	fmt.Fprint(w, "\n")
 }
@@ -429,9 +445,9 @@ type NameExpr struct {
 
 func (n *NameExpr) emit(w io.Writer) {
 	if n.AsItems {
-		fmt.Fprintf(w, "%s[\"items\"] as! [[String: Any]]", n.Name)
+		fmt.Fprintf(w, "%s[\"items\"] as! [[String: Any]]", esc(n.Name))
 	} else {
-		fmt.Fprint(w, n.Name)
+		fmt.Fprint(w, esc(n.Name))
 	}
 }
 
@@ -469,6 +485,21 @@ func (m *MapLit) emit(w io.Writer) {
 		m.Values[i].emit(w)
 	}
 	fmt.Fprint(w, "] as [String: Any]")
+}
+
+// MapGetExpr represents m.get(k, default) -> m[k] ?? default
+type MapGetExpr struct {
+	Map     Expr
+	Key     Expr
+	Default Expr
+}
+
+func (mg *MapGetExpr) emit(w io.Writer) {
+	mg.Map.emit(w)
+	fmt.Fprint(w, "[")
+	mg.Key.emit(w)
+	fmt.Fprint(w, "] ?? ")
+	mg.Default.emit(w)
 }
 
 // StructInit represents initialization of a struct value.
@@ -591,16 +622,16 @@ func (q *QueryExpr) emit(w io.Writer) {
 	} else {
 		fmt.Fprint(w, "({ var _res: [Any] = []\n")
 	}
-	fmt.Fprintf(w, "for %s in ", q.Var)
+	fmt.Fprintf(w, "for %s in ", esc(q.Var))
 	q.Src.emit(w)
 	fmt.Fprint(w, " {\n")
 	for _, f := range q.Froms {
-		fmt.Fprintf(w, "for %s in ", f.Var)
+		fmt.Fprintf(w, "for %s in ", esc(f.Var))
 		f.Src.emit(w)
 		fmt.Fprint(w, " {\n")
 	}
 	for _, j := range q.Joins {
-		fmt.Fprintf(w, "for %s in ", j.Var)
+		fmt.Fprintf(w, "for %s in ", esc(j.Var))
 		j.Src.emit(w)
 		fmt.Fprint(w, " {\nif ")
 		if j.On != nil {
@@ -633,11 +664,11 @@ func (q *QueryExpr) emit(w io.Writer) {
 		fmt.Fprint(w, "var _list = _res\n")
 		if q.Sort != nil {
 			fmt.Fprint(w, "_list.sort { left, right in\n")
-			fmt.Fprintf(w, "var %s = left\n", q.Var)
+			fmt.Fprintf(w, "var %s = left\n", esc(q.Var))
 			fmt.Fprint(w, "let _ka = ")
 			q.Sort.emit(w)
 			fmt.Fprint(w, "\n")
-			fmt.Fprintf(w, "%s = right\n", q.Var)
+			fmt.Fprintf(w, "%s = right\n", esc(q.Var))
 			fmt.Fprint(w, "let _kb = ")
 			q.Sort.emit(w)
 			fmt.Fprint(w, "\nreturn String(describing: _ka) < String(describing: _kb)\n}\n")
@@ -660,10 +691,10 @@ func (q *QueryExpr) emit(w io.Writer) {
 
 func (l *LeftJoinExpr) emit(w io.Writer) {
 	fmt.Fprint(w, "({ var _res: [[String: Any]] = []\n")
-	fmt.Fprintf(w, "for %s in ", l.LeftVar)
+	fmt.Fprintf(w, "for %s in ", esc(l.LeftVar))
 	l.LeftSrc.emit(w)
 	fmt.Fprint(w, " {\nvar matched = false\n")
-	fmt.Fprintf(w, "for %s in ", l.RightVar)
+	fmt.Fprintf(w, "for %s in ", esc(l.RightVar))
 	l.RightSrc.emit(w)
 	fmt.Fprint(w, " {\nif ")
 	l.Cond.emit(w)
@@ -671,7 +702,7 @@ func (l *LeftJoinExpr) emit(w io.Writer) {
 	l.Select.emit(w)
 	fmt.Fprint(w, ")\n}\n}\n")
 	fmt.Fprint(w, "if !matched {\n")
-	fmt.Fprintf(w, "let %s: Any? = nil\n", l.RightVar)
+	fmt.Fprintf(w, "let %s: Any? = nil\n", esc(l.RightVar))
 	fmt.Fprint(w, "_res.append(")
 	l.Select.emit(w)
 	fmt.Fprint(w, ")\n}\n}")
@@ -681,16 +712,16 @@ func (l *LeftJoinExpr) emit(w io.Writer) {
 func (g *GroupByExpr) emit(w io.Writer) {
 	fmt.Fprint(w, "({ var _groups: [String: [String: Any]] = [:]\n")
 	fmt.Fprint(w, "var _res: [[String: Any]] = []\n")
-	fmt.Fprintf(w, "for %s in ", g.Var)
+	fmt.Fprintf(w, "for %s in ", esc(g.Var))
 	g.Source.emit(w)
 	fmt.Fprint(w, " {\n")
 	for _, f := range g.Froms {
-		fmt.Fprintf(w, "for %s in ", f.Var)
+		fmt.Fprintf(w, "for %s in ", esc(f.Var))
 		f.Src.emit(w)
 		fmt.Fprint(w, " {\n")
 	}
 	for _, j := range g.Joins {
-		fmt.Fprintf(w, "for %s in ", j.Var)
+		fmt.Fprintf(w, "for %s in ", esc(j.Var))
 		j.Src.emit(w)
 		fmt.Fprint(w, " {\nif ")
 		if j.On != nil {
@@ -732,11 +763,11 @@ func (g *GroupByExpr) emit(w io.Writer) {
 	fmt.Fprint(w, "var _list = Array(_groups.values)\n")
 	if g.Sort != nil {
 		fmt.Fprint(w, "_list.sort { left, right in\n")
-		fmt.Fprintf(w, "var %s = left\n", g.Name)
+		fmt.Fprintf(w, "var %s = left\n", esc(g.Name))
 		fmt.Fprint(w, "let _ka = ")
 		g.Sort.emit(w)
 		fmt.Fprint(w, "\n")
-		fmt.Fprintf(w, "%s = right\n", g.Name)
+		fmt.Fprintf(w, "%s = right\n", esc(g.Name))
 		fmt.Fprint(w, "let _kb = ")
 		g.Sort.emit(w)
 		fmt.Fprint(w, "\nreturn String(describing: _ka) < String(describing: _kb)\n}\n")
@@ -873,9 +904,15 @@ func (c *CastExpr) emit(w io.Writer) {
 				fmt.Fprintf(w, " as! %s)", t)
 			}
 		} else {
-			fmt.Fprintf(w, "%s(", t)
-			c.Expr.emit(w)
-			fmt.Fprint(w, ")")
+			if t == "String" {
+				fmt.Fprint(w, "String(describing: ")
+				c.Expr.emit(w)
+				fmt.Fprint(w, ")")
+			} else {
+				fmt.Fprintf(w, "%s(", t)
+				c.Expr.emit(w)
+				fmt.Fprint(w, ")")
+			}
 		}
 	default:
 		fmt.Fprint(w, "(")
@@ -1063,7 +1100,7 @@ func (c *CallExpr) emit(w io.Writer) {
 			return
 		}
 	}
-	fmt.Fprint(w, c.Func)
+	fmt.Fprint(w, esc(c.Func))
 	fmt.Fprint(w, "(")
 	for i, a := range c.Args {
 		if i > 0 {
@@ -1096,22 +1133,22 @@ func (r *ReturnStmt) emit(w io.Writer) {
 }
 
 func (f *FunDecl) emit(w io.Writer) {
-	fmt.Fprintf(w, "func %s(", f.Name)
+	fmt.Fprintf(w, "func %s(", esc(f.Name))
 	for i, p := range f.Params {
 		if i > 0 {
 			fmt.Fprint(w, ", ")
 		}
 		if p.Type != "" {
 			if p.InOut {
-				fmt.Fprintf(w, "_ %s: inout %s", p.Name, p.Type)
+				fmt.Fprintf(w, "_ %s: inout %s", esc(p.Name), p.Type)
 			} else {
-				fmt.Fprintf(w, "_ %s: %s", p.Name, p.Type)
+				fmt.Fprintf(w, "_ %s: %s", esc(p.Name), p.Type)
 			}
 		} else {
 			if p.InOut {
-				fmt.Fprintf(w, "_ %s: inout Any", p.Name)
+				fmt.Fprintf(w, "_ %s: inout Any", esc(p.Name))
 			} else {
-				fmt.Fprintf(w, "_ %s", p.Name)
+				fmt.Fprintf(w, "_ %s", esc(p.Name))
 			}
 		}
 	}
@@ -1141,7 +1178,7 @@ func (ws *WhileStmt) emit(w io.Writer) {
 }
 
 func (fr *ForRangeStmt) emit(w io.Writer) {
-	fmt.Fprintf(w, "for %s in ", fr.Name)
+	fmt.Fprintf(w, "for %s in ", esc(fr.Name))
 	fr.Start.emit(w)
 	fmt.Fprint(w, "..<")
 	fr.End.emit(w)
@@ -1157,9 +1194,9 @@ func (fe *ForEachStmt) emit(w io.Writer) {
 		fmt.Fprint(w, "for _item in ")
 		fe.Expr.emit(w)
 		fmt.Fprint(w, " as! [[String: Any]] {\n")
-		fmt.Fprintf(w, "let %s = _item as! [String: Any]\n", fe.Name)
+		fmt.Fprintf(w, "let %s = _item as! [String: Any]\n", esc(fe.Name))
 	} else {
-		fmt.Fprintf(w, "for %s in ", fe.Name)
+		fmt.Fprintf(w, "for %s in ", esc(fe.Name))
 		fe.Expr.emit(w)
 		if fe.Keys {
 			fmt.Fprint(w, ".keys.sorted()")
@@ -1238,6 +1275,9 @@ func formatCode(src []byte) []byte {
 }
 
 func exprString(e Expr) string {
+	if n, ok := e.(*NameExpr); ok {
+		return n.Name
+	}
 	var buf bytes.Buffer
 	e.emit(&buf)
 	return strings.TrimSpace(buf.String())
@@ -2267,6 +2307,12 @@ func convertExpr(env *types.Env, e *parser.Expr) (Expr, error) {
 			} else if types.IsFloatType(rtyp) && types.IsAnyType(ltyp) {
 				left = &CastExpr{Expr: left, Type: "Double!"}
 				ltyp = types.FloatType{}
+			} else if types.IsFloatType(ltyp) && types.IsIntType(rtyp) {
+				right = &CastExpr{Expr: right, Type: "Double!"}
+				rtyp = types.FloatType{}
+			} else if types.IsFloatType(rtyp) && types.IsIntType(ltyp) {
+				left = &CastExpr{Expr: left, Type: "Double!"}
+				ltyp = types.FloatType{}
 			} else if types.IsStringType(ltyp) && types.IsAnyType(rtyp) {
 				right = &CastExpr{Expr: right, Type: "String"}
 				rtyp = types.StringType{}
@@ -2443,6 +2489,25 @@ func convertPostfix(env *types.Env, p *parser.PostfixExpr) (Expr, error) {
 		}
 		usesKeys = true
 		return &CallExpr{Func: "_keys", Args: []Expr{expr}}, nil
+	}
+
+	// handle `.get(key, default)`
+	if len(p.Ops) == 1 && p.Ops[0].Call != nil && len(tail) > 0 && tail[len(tail)-1] == "get" {
+		for _, f := range tail[:len(tail)-1] {
+			expr = &IndexExpr{Base: expr, Index: &LitExpr{Value: f, IsString: true}, Force: true}
+		}
+		key, err := convertExpr(env, p.Ops[0].Call.Args[0])
+		if err != nil {
+			return nil, err
+		}
+		var def Expr = &LitExpr{Value: "nil", IsString: false}
+		if len(p.Ops[0].Call.Args) > 1 {
+			def, err = convertExpr(env, p.Ops[0].Call.Args[1])
+			if err != nil {
+				return nil, err
+			}
+		}
+		return &MapGetExpr{Map: expr, Key: key, Default: def}, nil
 	}
 
 	if len(tail) > 0 {
