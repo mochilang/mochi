@@ -104,7 +104,7 @@ List<int> orderKey(String key) {
   while (m < n) {
     int j = 0;
     while (j < n - 1) {
-    if (pairs[j]![0] > pairs[j + 1]![0]) {
+    if (pairs[j]![0].toString().compareTo(pairs[j + 1]![0].toString()) > 0) {
     final tmp = pairs[j];
     pairs[j] = pairs[j + 1];
     pairs[j + 1] = tmp;
@@ -136,8 +136,8 @@ String encrypt(List<String> polybius, String key, String plainText) {
     while (r < 6) {
     int c = 0;
     while (c < 6) {
-    if (polybius[r]!.sublist(c, c + 1) == plainText.substring(i, i + 1)) {
-    temp = temp + labels.sublist(r, r + 1) + labels.sublist(c, c + 1);
+    if (polybius[r]!.substring(c, c + 1) == plainText.substring(i, i + 1)) {
+    temp = temp + (labels.sublist(r, r + 1)).join() + (labels.sublist(c, c + 1)).join();
   }
     c = c + 1;
   }
@@ -287,7 +287,7 @@ String decrypt(List<String> polybius, String key, String cipherText) {
   while (idx < temp.length) {
     final int rIdx = indexOf(adfgvx, temp.substring(idx, idx + 1));
     final int cIdx = indexOf(adfgvx, temp.substring(idx + 1, idx + 2));
-    plainText = plainText + polybius[rIdx]![cIdx];
+    plainText = plainText + polybius[rIdx]!.substring(cIdx, cIdx + 1);
     idx = idx + 2;
   }
   return plainText;

@@ -2,7 +2,7 @@
 
 This directory contains Dart code generated from Mochi programs in `tests/rosetta/x/Mochi`. Each program has a `.dart` file and `.out` output. Compilation or runtime failures are captured in a `.error` file.
 
-Compiled and ran: 35/284
+Compiled and ran: 36/284
 
 ## Checklist
 1. [x] 100-doors-2 (1)
@@ -41,7 +41,7 @@ Compiled and ran: 35/284
 34. [x] add-a-variable-to-a-class-instance-at-runtime (34)
 35. [x] additive-primes (35)
 36. [x] address-of-a-variable (36)
-37. [ ] adfgvx-cipher (37)
+37. [x] adfgvx-cipher (37)
 38. [ ] aks-test-for-primes (38)
 39. [ ] algebraic-data-types (39)
 40. [ ] align-columns (40)
@@ -290,4 +290,4 @@ Compiled and ran: 35/284
 283. [ ] define-a-primitive-data-type (283)
 284. [ ] md5 (284)
 
-_Last updated: 2025-07-24 07:28 +0700_
+_Last updated: 2025-07-24 13:26 +0700_
