@@ -386,8 +386,6 @@ func inferPrimaryType(env *Env, p *parser.Primary) Type {
 			ret = ResolveTypeRef(p.FunExpr.Return, env)
 		} else if p.FunExpr.ExprBody != nil {
 			ret = ExprType(p.FunExpr.ExprBody, env)
-		} else {
-			ret = AnyType{}
 		}
 		return FuncType{Params: params, Return: ret}
 	case p.Generate != nil:
