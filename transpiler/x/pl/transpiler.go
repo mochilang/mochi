@@ -2025,25 +2025,11 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 			ce.setConst(name, nil)
 			p.Stmts = append(p.Stmts, &IndexAssignStmt{Name: name, Target: target, Index: idx, Value: val})
 		case st.If != nil:
-			cond, err := toExpr(st.If.Cond, ce)
+			ifStmt, err := compileIfStmt(st.If, ce)
 			if err != nil {
 				return nil, err
 			}
-			if st.If.ElseIf != nil {
-				return nil, fmt.Errorf("unsupported elseif")
-			}
-			thenStmts, err := compileStmts(st.If.Then, ce)
-			if err != nil {
-				return nil, err
-			}
-			var elseStmts []Stmt
-			if st.If.Else != nil {
-				elseStmts, err = compileStmts(st.If.Else, ce)
-				if err != nil {
-					return nil, err
-				}
-			}
-			p.Stmts = append(p.Stmts, &IfStmt{Cond: cond, Then: thenStmts, Else: elseStmts})
+			p.Stmts = append(p.Stmts, ifStmt)
 		case st.For != nil:
 			loopStmts, err := compileStmts([]*parser.Statement{st}, ce)
 			if err != nil {
@@ -2361,44 +2347,20 @@ func compileStmts(sts []*parser.Statement, env *compileEnv) ([]Stmt, error) {
 			env.setConst(name, nil)
 			out = append(out, &IndexAssignStmt{Name: name, Target: target, Index: idx, Value: val})
 		case s.If != nil:
-			cond, err := toExpr(s.If.Cond, env)
+			ifStmt, err := compileIfStmt(s.If, env)
 			if err != nil {
 				return nil, err
 			}
-			if m, ok := cond.(*MapLit); ok {
-				cond = &BoolLit{Value: len(m.Items) > 0}
-			}
-			if s.If.ElseIf != nil {
-				return nil, fmt.Errorf("unsupported elseif")
-			}
-			if b, ok := cond.(*BoolLit); ok {
+			// constant condition folding
+			if b, ok := ifStmt.Cond.(*BoolLit); ok {
 				if b.Value {
-					thenStmts, err := compileStmts(s.If.Then, env)
-					if err != nil {
-						return nil, err
-					}
-					out = append(out, thenStmts...)
-				} else if s.If.Else != nil {
-					elseStmts, err := compileStmts(s.If.Else, env)
-					if err != nil {
-						return nil, err
-					}
-					out = append(out, elseStmts...)
+					out = append(out, ifStmt.Then...)
+				} else {
+					out = append(out, ifStmt.Else...)
 				}
-				continue
+			} else {
+				out = append(out, ifStmt)
 			}
-			thenStmts, err := compileStmts(s.If.Then, env)
-			if err != nil {
-				return nil, err
-			}
-			var elseStmts []Stmt
-			if s.If.Else != nil {
-				elseStmts, err = compileStmts(s.If.Else, env)
-				if err != nil {
-					return nil, err
-				}
-			}
-			out = append(out, &IfStmt{Cond: cond, Then: thenStmts, Else: elseStmts})
 		case s.Return != nil:
 			if s.Return.Value == nil {
 				return nil, fmt.Errorf("unsupported return")
@@ -2543,6 +2505,34 @@ func compileStmts(sts []*parser.Statement, env *compileEnv) ([]Stmt, error) {
 		}
 	}
 	return out, nil
+}
+
+func compileIfStmt(is *parser.IfStmt, env *compileEnv) (*IfStmt, error) {
+	cond, err := toExpr(is.Cond, env)
+	if err != nil {
+		return nil, err
+	}
+	if m, ok := cond.(*MapLit); ok {
+		cond = &BoolLit{Value: len(m.Items) > 0}
+	}
+	thenStmts, err := compileStmts(is.Then, env)
+	if err != nil {
+		return nil, err
+	}
+	var elseStmts []Stmt
+	if is.ElseIf != nil {
+		nested, err := compileIfStmt(is.ElseIf, env)
+		if err != nil {
+			return nil, err
+		}
+		elseStmts = []Stmt{nested}
+	} else if is.Else != nil {
+		elseStmts, err = compileStmts(is.Else, env)
+		if err != nil {
+			return nil, err
+		}
+	}
+	return &IfStmt{Cond: cond, Then: thenStmts, Else: elseStmts}, nil
 }
 
 func stmtNode(s Stmt) *ast.Node {
