@@ -1,3 +1,7 @@
+## Progress (2025-07-24 07:28 +0700)
+- hs transpiler: handle while expr returns
+- Generated F# for 102/103 programs (102 passing)
+
 ## Progress (2025-07-22 22:23 +0700)
 - fs: add index-based Rosetta test
 - Generated F# for 102/103 programs (102 passing)

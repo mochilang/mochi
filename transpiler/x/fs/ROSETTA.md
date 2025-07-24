@@ -2,7 +2,7 @@
 
 This file is auto-generated from rosetta tests.
 
-## Checklist (4/284)
+## Checklist (5/284)
 1. [x] 100-doors-2 (index 1)
 2. [x] 100-doors-3 (index 2)
 3. [x] 100-doors (index 3)
@@ -11,7 +11,7 @@ This file is auto-generated from rosetta tests.
 6. [ ] 15-puzzle-solver (index 6)
 7. [x] 2048 (index 7)
 8. [ ] 21-game (index 8)
-9. [ ] 24-game-solve (index 9)
+9. [x] 24-game-solve (index 9)
 10. [ ] 24-game (index 10)
 11. [ ] 4-rings-or-4-squares-puzzle (index 11)
 12. [ ] 9-billion-names-of-god-the-integer (index 12)
@@ -288,4 +288,4 @@ This file is auto-generated from rosetta tests.
 283. [ ] define-a-primitive-data-type (index 283)
 284. [ ] md5 (index 284)
 
-Last updated: 2025-07-24 06:58 +0700
+Last updated: 2025-07-24 07:28 +0700

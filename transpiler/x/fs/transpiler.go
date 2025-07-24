@@ -159,6 +159,10 @@ func fsType(t types.Type) string {
 		if tt.Name != "" {
 			return tt.Name
 		}
+	case types.UnionType:
+		if tt.Name != "" {
+			return tt.Name
+		}
 	}
 	return "obj"
 }
@@ -424,9 +428,10 @@ type FunDef struct {
 	Return string
 }
 
-func (f *FunDef) emit(w io.Writer) {
+func (f *FunDef) emitWithPrefix(w io.Writer, prefix string) {
 	writeIndent(w)
-	io.WriteString(w, "let rec ")
+	io.WriteString(w, prefix)
+	io.WriteString(w, " ")
 	io.WriteString(w, fsIdent(f.Name))
 	if len(f.Params) == 0 {
 		io.WriteString(w, " ()")
@@ -477,6 +482,8 @@ func (f *FunDef) emit(w io.Writer) {
 	indentLevel--
 	indentLevel--
 }
+
+func (f *FunDef) emit(w io.Writer) { f.emitWithPrefix(w, "let rec") }
 
 type ReturnStmt struct{ Expr Expr }
 
@@ -1208,15 +1215,20 @@ type MatchCase struct {
 }
 
 func (m *MatchExpr) emit(w io.Writer) {
-	io.WriteString(w, "match ")
+	io.WriteString(w, "(match ")
 	m.Target.emit(w)
 	io.WriteString(w, " with")
+	indentLevel++
 	for _, c := range m.Cases {
-		io.WriteString(w, "\n    | ")
+		io.WriteString(w, "\n")
+		writeIndent(w)
+		io.WriteString(w, "| ")
 		c.Pattern.emit(w)
 		io.WriteString(w, " -> ")
 		c.Result.emit(w)
 	}
+	indentLevel--
+	io.WriteString(w, ")")
 }
 
 type IfExpr struct {
@@ -1559,6 +1571,17 @@ func Emit(prog *Program) []byte {
 		buf.WriteString(helperNow)
 		buf.WriteString("\n_initNow()\n")
 	}
+	for _, st := range prog.Structs {
+		fmt.Fprintf(&buf, "type %s = {\n", fsIdent(st.Name))
+		for _, f := range st.Fields {
+			if f.Mut {
+				fmt.Fprintf(&buf, "    mutable %s: %s\n", fsIdent(f.Name), f.Type)
+			} else {
+				fmt.Fprintf(&buf, "    %s: %s\n", fsIdent(f.Name), f.Type)
+			}
+		}
+		buf.WriteString("}\n")
+	}
 	for _, u := range prog.Unions {
 		fmt.Fprintf(&buf, "type %s =\n", u.Name)
 		for i, c := range u.Cases {
@@ -1580,20 +1603,24 @@ func Emit(prog *Program) []byte {
 			}
 		}
 	}
-	for _, st := range prog.Structs {
-		fmt.Fprintf(&buf, "type %s = {\n", fsIdent(st.Name))
-		for _, f := range st.Fields {
-			if f.Mut {
-				fmt.Fprintf(&buf, "    mutable %s: %s\n", fsIdent(f.Name), f.Type)
-			} else {
-				fmt.Fprintf(&buf, "    %s: %s\n", fsIdent(f.Name), f.Type)
+	for i := 0; i < len(prog.Stmts); {
+		if fd, ok := prog.Stmts[i].(*FunDef); ok {
+			fd.emitWithPrefix(&buf, "let rec")
+			i++
+			for i < len(prog.Stmts) {
+				next, ok := prog.Stmts[i].(*FunDef)
+				if !ok {
+					break
+				}
+				buf.WriteByte('\n')
+				next.emitWithPrefix(&buf, "and")
+				i++
 			}
+		} else {
+			prog.Stmts[i].emit(&buf)
+			i++
 		}
-		buf.WriteString("}\n")
-	}
-	for i, st := range prog.Stmts {
-		st.emit(&buf)
-		if i < len(prog.Stmts)-1 {
+		if i < len(prog.Stmts) {
 			buf.WriteByte('\n')
 		}
 	}
@@ -2249,6 +2276,11 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 			}
 			return &CallExpr{Func: "Seq.map snd", Args: args}, nil
 		default:
+			if transpileEnv != nil {
+				if _, ok := transpileEnv.FindUnionByVariant(p.Call.Func); ok {
+					return &VariantExpr{Name: p.Call.Func, Args: args}, nil
+				}
+			}
 			return &CallExpr{Func: p.Call.Func, Args: args}, nil
 		}
 	case p.If != nil:
