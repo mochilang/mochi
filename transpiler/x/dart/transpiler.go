@@ -47,6 +47,7 @@ var (
 	testpkgAliases   map[string]struct{}
 	netAliases       map[string]struct{}
 	structMutable    map[string]bool
+	currentRetType   string
 )
 
 // GetStructOrder returns the generated struct names (for testing).
@@ -478,8 +479,31 @@ func (s *ReturnStmt) emit(w io.Writer) error {
 		if _, err := io.WriteString(w, " "); err != nil {
 			return err
 		}
-		if err := s.Value.emit(w); err != nil {
-			return err
+		valType := inferType(s.Value)
+		if currentRetType == "int" && valType == "num" {
+			if _, err := io.WriteString(w, "("); err != nil {
+				return err
+			}
+			if err := s.Value.emit(w); err != nil {
+				return err
+			}
+			if _, err := io.WriteString(w, ").toInt()"); err != nil {
+				return err
+			}
+		} else if strings.HasPrefix(currentRetType, "List<") && valType == "List<dynamic>" {
+			if _, err := io.WriteString(w, "List<"+strings.TrimSuffix(strings.TrimPrefix(currentRetType, "List<"), ">")+">.from("); err != nil {
+				return err
+			}
+			if err := s.Value.emit(w); err != nil {
+				return err
+			}
+			if _, err := io.WriteString(w, ")"); err != nil {
+				return err
+			}
+		} else {
+			if err := s.Value.emit(w); err != nil {
+				return err
+			}
 		}
 	}
 	return nil
@@ -599,6 +623,8 @@ func (f *FuncDecl) emit(w io.Writer) error {
 	if retType == "" {
 		retType = inferReturnType(f.Body)
 	}
+	savedRet := currentRetType
+	currentRetType = retType
 	if _, err := io.WriteString(w, retType+" "+f.Name+"("); err != nil {
 		return err
 	}
@@ -647,6 +673,7 @@ func (f *FuncDecl) emit(w io.Writer) error {
 			delete(localVarTypes, n)
 		}
 	}
+	currentRetType = savedRet
 	_, err := io.WriteString(w, "}")
 	return err
 }
@@ -1135,6 +1162,43 @@ func (i *IndexExpr) emit(w io.Writer) error {
 				}
 			}
 		}
+	}
+	if t == "String" {
+		if err := i.Target.emit(w); err != nil {
+			return err
+		}
+		if _, err := io.WriteString(w, ".substring("); err != nil {
+			return err
+		}
+		if i.Index != nil {
+			if err := i.Index.emit(w); err != nil {
+				return err
+			}
+		} else {
+			if _, err := io.WriteString(w, "0"); err != nil {
+				return err
+			}
+		}
+		if _, err := io.WriteString(w, ", "); err != nil {
+			return err
+		}
+		if i.Index != nil {
+			if err := i.Index.emit(w); err != nil {
+				return err
+			}
+			if _, err := io.WriteString(w, " + 1"); err != nil {
+				return err
+			}
+		} else {
+			if err := i.Target.emit(w); err != nil {
+				return err
+			}
+			if _, err := io.WriteString(w, ".length"); err != nil {
+				return err
+			}
+		}
+		_, err := io.WriteString(w, ")")
+		return err
 	}
 	if err := i.Target.emit(w); err != nil {
 		return err
@@ -2551,6 +2615,9 @@ func inferType(e Expr) string {
 		return "dynamic"
 	case *IndexExpr:
 		t := inferType(ex.Target)
+		if t == "String" {
+			return "String"
+		}
 		if strings.HasPrefix(t, "List<") && strings.HasSuffix(t, ">") {
 			return strings.TrimSuffix(strings.TrimPrefix(t, "List<"), ">")
 		}
@@ -3191,12 +3258,6 @@ func convertStmtInternal(st *parser.Statement) (Stmt, error) {
 			return nil, fmt.Errorf("let missing value not supported")
 		}
 		typ := typeRefString(st.Let.Type)
-		if typ == "" {
-			saved := nextStructHint
-			nextStructHint = ""
-			typ = inferType(e)
-			nextStructHint = saved
-		}
 		return &LetStmt{Name: sanitize(st.Let.Name), Type: typ, Value: e}, nil
 	case st.Var != nil:
 		var e Expr
@@ -3210,12 +3271,6 @@ func convertStmtInternal(st *parser.Statement) (Stmt, error) {
 			e = &IntLit{Value: 0}
 		}
 		typ := typeRefString(st.Var.Type)
-		if typ == "" {
-			saved := nextStructHint
-			nextStructHint = ""
-			typ = inferType(e)
-			nextStructHint = saved
-		}
 		return &VarStmt{Name: sanitize(st.Var.Name), Type: typ, Value: e}, nil
 	case st.Assign != nil:
 		target, err := convertAssignTarget(st.Assign)

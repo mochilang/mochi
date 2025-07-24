@@ -1,0 +1,13 @@
+run: exit status 254
+../../../tests/rosetta/transpiler/Dart/adfgvx-cipher.dart:139:22: Error: The method 'sublist' isn't defined for the class 'String'.
+Try correcting the name to the name of an existing method, or defining a method named 'sublist'.
+    if (polybius[r]!.sublist(c, c + 1) == plainText.substring(i, i + 1)) {
+                     ^^^^^^^
+../../../tests/rosetta/transpiler/Dart/adfgvx-cipher.dart:140:26: Error: A value of type 'List<String>' can't be assigned to a variable of type 'String'.
+ - 'List' is from 'dart:core'.
+    temp = temp + labels.sublist(r, r + 1) + labels.sublist(c, c + 1);
+                         ^
+../../../tests/rosetta/transpiler/Dart/adfgvx-cipher.dart:140:53: Error: A value of type 'List<String>' can't be assigned to a variable of type 'String'.
+ - 'List' is from 'dart:core'.
+    temp = temp + labels.sublist(r, r + 1) + labels.sublist(c, c + 1);
+                                                    ^
