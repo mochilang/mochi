@@ -22,7 +22,7 @@ var builtinNames = map[string]struct{}{
 	"print": {}, "len": {}, "substring": {}, "count": {}, "sum": {}, "avg": {},
 	"str": {}, "min": {}, "max": {}, "append": {}, "json": {}, "exists": {},
 	"values": {}, "keys": {}, "load": {}, "save": {}, "now": {}, "input": {},
-	"upper": {}, "lower": {},
+	"upper": {}, "lower": {}, "num": {}, "denom": {},
 }
 
 const helperLookupHost = `function _lookup_host($host) {
@@ -59,9 +59,50 @@ const helperLen = `function _len($x) {
     return strlen(strval($x));
 }`
 
+const helperBigRat = `function _gcd($a, $b) {
+    $a = abs($a);
+    $b = abs($b);
+    while ($b != 0) {
+        $t = $a % $b;
+        $a = $b;
+        $b = $t;
+    }
+    return $a;
+}
+function _bigrat($n, $d = 1) {
+    if (is_array($n) && isset($n['num']) && isset($n['den']) && $d === null) {
+        return $n;
+    }
+    if ($d === null) { $d = 1; }
+    if ($d < 0) { $n = -$n; $d = -$d; }
+    $g = _gcd($n, $d);
+    return ['num' => intdiv($n, $g), 'den' => intdiv($d, $g)];
+}
+function _add($a, $b) {
+    return _bigrat(num($a) * denom($b) + num($b) * denom($a), denom($a) * denom($b));
+}
+function _sub($a, $b) {
+    return _bigrat(num($a) * denom($b) - num($b) * denom($a), denom($a) * denom($b));
+}
+function _mul($a, $b) {
+    return _bigrat(num($a) * num($b), denom($a) * denom($b));
+}
+function _div($a, $b) {
+    return _bigrat(num($a) * denom($b), denom($a) * num($b));
+}
+function num($x) {
+    if (is_array($x) && array_key_exists('num', $x)) return $x['num'];
+    return $x;
+}
+function denom($x) {
+    if (is_array($x) && array_key_exists('den', $x)) return $x['den'];
+    return 1;
+}`
+
 var usesLookupHost bool
 var usesNow bool
 var usesLen bool
+var usesBigRat bool
 
 // Some PHP built-in functions cannot be redefined. When a Mochi program
 // defines a function with one of these names we rename the function and all
@@ -1421,6 +1462,11 @@ func Emit(w io.Writer, p *Program) error {
 			return err
 		}
 	}
+	if usesBigRat {
+		if _, err := io.WriteString(w, helperBigRat+"\n"); err != nil {
+			return err
+		}
+	}
 	for _, s := range p.Stmts {
 		s.emit(w)
 		switch s.(type) {
@@ -1447,6 +1493,7 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	usesLookupHost = false
 	usesNow = false
 	usesLen = false
+	usesBigRat = false
 	defer func() { transpileEnv = nil }()
 	p := &Program{Env: env}
 	for _, st := range prog.Statements {
@@ -1524,6 +1571,10 @@ func convertBinary(b *parser.BinaryExpr) (Expr, error) {
 			if isIntExpr(left) && isIntExpr(right) {
 				return &IntDivExpr{Left: left, Right: right}, false
 			}
+			if isBigRatExpr(left) || isBigRatExpr(right) {
+				usesBigRat = true
+				return &CallExpr{Func: "_div", Args: []Expr{left, right}}, false
+			}
 			return &BinaryExpr{Left: left, Op: "/", Right: right}, false
 		case "in":
 			if isListExpr(right) {
@@ -1540,6 +1591,10 @@ func convertBinary(b *parser.BinaryExpr) (Expr, error) {
 			if ls || rs {
 				return &BinaryExpr{Left: left, Op: ".", Right: right}, true
 			}
+			if isBigRatExpr(left) || isBigRatExpr(right) {
+				usesBigRat = true
+				return &CallExpr{Func: "_add", Args: []Expr{left, right}}, false
+			}
 			if isListExpr(left) && isListExpr(right) {
 				return &CallExpr{Func: "array_merge", Args: []Expr{left, right}}, false
 			}
@@ -1552,6 +1607,18 @@ func convertBinary(b *parser.BinaryExpr) (Expr, error) {
 				return &BinaryExpr{Left: left, Op: ".", Right: joined}, true
 			}
 			return &BinaryExpr{Left: left, Op: "+", Right: right}, false
+		case "-":
+			if isBigRatExpr(left) || isBigRatExpr(right) {
+				usesBigRat = true
+				return &CallExpr{Func: "_sub", Args: []Expr{left, right}}, false
+			}
+			return &BinaryExpr{Left: left, Op: "-", Right: right}, false
+		case "*":
+			if isBigRatExpr(left) || isBigRatExpr(right) {
+				usesBigRat = true
+				return &CallExpr{Func: "_mul", Args: []Expr{left, right}}, false
+			}
+			return &BinaryExpr{Left: left, Op: "*", Right: right}, false
 		}
 		return &BinaryExpr{Left: left, Op: op, Right: right}, false
 	}
@@ -1693,6 +1760,9 @@ func convertPostfix(pf *parser.PostfixExpr) (Expr, error) {
 				e = &CallExpr{Func: "strval", Args: []Expr{e}}
 			case "bool":
 				e = &CallExpr{Func: "boolval", Args: []Expr{e}}
+			case "bigrat":
+				usesBigRat = true
+				e = &CallExpr{Func: "_bigrat", Args: []Expr{e}}
 			default:
 				// ignore casts to user types
 			}
@@ -1871,6 +1941,18 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 			}
 			frac := &BinaryExpr{Left: &CallExpr{Func: "array_sum", Args: []Expr{list}}, Op: "/", Right: &CallExpr{Func: "count", Args: []Expr{list}}}
 			return frac, nil
+		} else if name == "num" {
+			if len(args) != 1 {
+				return nil, fmt.Errorf("num expects 1 arg")
+			}
+			usesBigRat = true
+			return &CallExpr{Func: "num", Args: args}, nil
+		} else if name == "denom" {
+			if len(args) != 1 {
+				return nil, fmt.Errorf("denom expects 1 arg")
+			}
+			usesBigRat = true
+			return &CallExpr{Func: "denom", Args: args}, nil
 		} else if name == "str" {
 			if len(args) != 1 {
 				return nil, fmt.Errorf("str expects 1 arg")
@@ -3197,6 +3279,45 @@ func isIntExpr(e Expr) bool {
 		return isIntExpr(v.Left) && isIntExpr(v.Right)
 	case *CondExpr:
 		return isIntExpr(v.Then) && isIntExpr(v.Else)
+	}
+	return false
+}
+
+func isBigRatExpr(e Expr) bool {
+	switch v := e.(type) {
+	case *Var:
+		if transpileEnv != nil {
+			if t, err := transpileEnv.GetVar(v.Name); err == nil {
+				if _, ok := t.(types.BigRatType); ok {
+					return true
+				}
+			}
+		}
+	case *CallExpr:
+		if v.Func == "_bigrat" {
+			return true
+		}
+		if transpileEnv != nil {
+			if t, err := transpileEnv.GetVar(v.Func); err == nil {
+				if ft, ok := t.(types.FuncType); ok {
+					if _, ok := ft.Return.(types.BigRatType); ok {
+						return true
+					}
+				}
+			}
+		}
+	case *BinaryExpr:
+		switch v.Op {
+		case "+", "-", "*", "/":
+			return isBigRatExpr(v.Left) || isBigRatExpr(v.Right)
+		}
+	case *GroupExpr:
+		return isBigRatExpr(v.X)
+	case *CondExpr:
+		return isBigRatExpr(v.Then) && isBigRatExpr(v.Else)
+	}
+	if _, ok := exprType(e).(types.BigRatType); ok {
+		return true
 	}
 	return false
 }
