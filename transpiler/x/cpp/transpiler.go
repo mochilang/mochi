@@ -219,6 +219,7 @@ type MaxExpr struct{ List Expr }
 
 // ToUpperExpr represents strings.ToUpper for Go strings package.
 type ToUpperExpr struct{ Value Expr }
+type ToLowerExpr struct{ Value Expr }
 
 // TrimSpaceExpr represents strings.TrimSpace for Go strings package.
 type TrimSpaceExpr struct{ Value Expr }
@@ -493,6 +494,7 @@ func (p *Program) write(w io.Writer) {
 		p.addInclude("<any>")
 		p.addInclude("<netdb.h>")
 		p.addInclude("<arpa/inet.h>")
+		p.addInclude("<cstring>")
 		p.addInclude("<map>")
 	}
 	for _, inc := range p.Includes {
@@ -834,6 +836,10 @@ func (l *ListLit) emit(w io.Writer) {
 }
 
 func (m *MapLit) emit(w io.Writer) {
+	if len(m.Keys) == 0 {
+		io.WriteString(w, "{}")
+		return
+	}
 	fmt.Fprintf(w, "std::map<%s, %s>{", m.KeyType, m.ValueType)
 	for i := range m.Keys {
 		if i > 0 {
@@ -1136,9 +1142,18 @@ func (u *ToUpperExpr) emit(w io.Writer) {
 	if currentProgram != nil {
 		currentProgram.addInclude("<cctype>")
 	}
-	io.WriteString(w, "([]{ std::string __s = ")
+	io.WriteString(w, "([&]{ std::string __s = ")
 	u.Value.emit(w)
 	io.WriteString(w, "; for(auto &__c : __s){ __c = std::toupper(static_cast<unsigned char>(__c)); } return __s; }())")
+}
+
+func (u *ToLowerExpr) emit(w io.Writer) {
+	if currentProgram != nil {
+		currentProgram.addInclude("<cctype>")
+	}
+	io.WriteString(w, "([&]{ std::string __s = ")
+	u.Value.emit(w)
+	io.WriteString(w, "; for(auto &__c : __s){ __c = std::tolower(static_cast<unsigned char>(__c)); } return __s; }())")
 }
 
 func (t *TrimSpaceExpr) emit(w io.Writer) {
@@ -3192,6 +3207,9 @@ func convertPostfix(p *parser.PostfixExpr) (Expr, error) {
 			}
 			typ := cppType(name)
 			expr = &CastExpr{Value: expr, Type: typ}
+		case op.Cast != nil && op.Cast.Type != nil && op.Cast.Type.Generic != nil:
+			typ := cppType(typeRefString(op.Cast.Type))
+			expr = &CastExpr{Value: expr, Type: typ}
 		default:
 			return nil, fmt.Errorf("unsupported postfix")
 		}
@@ -3399,6 +3417,22 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 					currentProgram.addInclude("<iomanip>")
 				}
 				return &AvgExpr{List: arg}, nil
+			}
+		case "upper":
+			if len(p.Call.Args) == 1 {
+				arg, err := convertExpr(p.Call.Args[0])
+				if err != nil {
+					return nil, err
+				}
+				return &ToUpperExpr{Value: arg}, nil
+			}
+		case "lower":
+			if len(p.Call.Args) == 1 {
+				arg, err := convertExpr(p.Call.Args[0])
+				if err != nil {
+					return nil, err
+				}
+				return &ToLowerExpr{Value: arg}, nil
 			}
 		case "str":
 			if len(p.Call.Args) == 1 {
@@ -4933,7 +4967,7 @@ func exprType(e Expr) string {
 		return "int"
 	case *AvgExpr:
 		return "double"
-	case *ToUpperExpr, *TrimSpaceExpr:
+	case *ToUpperExpr, *ToLowerExpr, *TrimSpaceExpr:
 		return "std::string"
 	case *InputExpr:
 		return "std::string"
