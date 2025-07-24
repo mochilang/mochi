@@ -35,6 +35,7 @@ type Program struct {
 	UseInput     bool
 	UseSubstr    bool
 	UseFloatConv bool
+	UsePadStart  bool
 	UseBigInt    bool
 }
 
@@ -48,6 +49,7 @@ var (
 	usesInput      bool
 	usesSubstr     bool
 	usesFloatConv  bool
+	usesPadStart   bool
 	usesBigInt     bool
 	topEnv         *types.Env
 	extraDecls     []Stmt
@@ -645,6 +647,7 @@ type ForEachStmt struct {
 	Body     []Stmt
 	IsMap    bool
 	KeyType  string
+	ElemType string
 }
 
 func (fe *ForEachStmt) emit(w io.Writer) {
@@ -661,14 +664,20 @@ func (fe *ForEachStmt) emit(w io.Writer) {
 		}
 		fmt.Fprint(w, " { keys = append(keys, k) }\n")
 		fmt.Fprint(w, "        sort.Slice(keys, func(i, j int) bool { return fmt.Sprint(keys[i]) < fmt.Sprint(keys[j]) })\n")
-		fmt.Fprint(w, "        return keys }()")
+		fmt.Fprint(w, "        return keys }() {\n")
+	} else if fe.ElemType == "string" {
+		fmt.Fprint(w, "for _, _ch := range ")
+		if fe.Iterable != nil {
+			fe.Iterable.emit(w)
+		}
+		fmt.Fprintf(w, " {\n    %s := string(_ch)\n", fe.Name)
 	} else {
 		fmt.Fprintf(w, "for _, %s := range ", fe.Name)
 		if fe.Iterable != nil {
 			fe.Iterable.emit(w)
 		}
+		fmt.Fprint(w, " {\n")
 	}
-	fmt.Fprint(w, " {\n")
 	for _, st := range fe.Body {
 		fmt.Fprint(w, "    ")
 		st.emit(w)
@@ -1618,6 +1627,7 @@ func Transpile(p *parser.Program, env *types.Env) (*Program, error) {
 	usesInput = false
 	usesSubstr = false
 	usesFloatConv = false
+	usesPadStart = false
 	usesBigInt = false
 	topEnv = env
 	extraDecls = nil
@@ -1649,6 +1659,7 @@ func Transpile(p *parser.Program, env *types.Env) (*Program, error) {
 	gp.UseInput = usesInput
 	gp.UseSubstr = usesSubstr
 	gp.UseFloatConv = usesFloatConv
+	gp.UsePadStart = usesPadStart
 	gp.UseBigInt = usesBigInt
 	gp.Imports = imports
 	return gp, nil
@@ -2077,6 +2088,9 @@ func compileStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 					if types.IsAnyType(elemT) {
 						elemT = types.TypeOfExprBasic(st.Assign.Value, env)
 					}
+					if isBigIntType(lt.Elem) {
+						val = ensureBigIntExpr(val, elemT)
+					}
 					if types.IsAnyType(lt.Elem) && !types.IsAnyType(elemT) {
 						env.SetVarDeep(st.Assign.Name, types.ListType{Elem: elemT}, true)
 					}
@@ -2123,6 +2137,9 @@ func compileStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 		val, err := compileExpr(st.Assign.Value, env, "")
 		if err != nil {
 			return nil, err
+		}
+		if isBigIntType(types.TypeOfPostfix(pf, env)) {
+			val = ensureBigIntExpr(val, types.TypeOfExpr(st.Assign.Value, env))
 		}
 		return &SetStmt{Target: target, Value: val}, nil
 	case st.If != nil:
@@ -3183,6 +3200,7 @@ func compileForStmt(fs *parser.ForStmt, env *types.Env) (Stmt, error) {
 	child := types.NewEnv(env)
 	var isMap bool
 	var keyType string
+	var elemType string
 	switch tt := t.(type) {
 	case types.MapType:
 		isMap = true
@@ -3191,6 +3209,10 @@ func compileForStmt(fs *parser.ForStmt, env *types.Env) (Stmt, error) {
 		usesSort = true
 	case types.ListType:
 		child.SetVar(fs.Name, tt.Elem, true)
+		elemType = toGoTypeFromType(tt.Elem)
+	case types.StringType:
+		child.SetVar(fs.Name, types.StringType{}, true)
+		elemType = "string"
 	default:
 		child.SetVar(fs.Name, types.AnyType{}, true)
 	}
@@ -3198,7 +3220,7 @@ func compileForStmt(fs *parser.ForStmt, env *types.Env) (Stmt, error) {
 	if err != nil {
 		return nil, err
 	}
-	return &ForEachStmt{Name: fs.Name, Iterable: iter, Body: body, IsMap: isMap, KeyType: keyType}, nil
+	return &ForEachStmt{Name: fs.Name, Iterable: iter, Body: body, IsMap: isMap, KeyType: keyType, ElemType: elemType}, nil
 }
 
 func compileUpdateStmt(u *parser.UpdateStmt, env *types.Env) (Stmt, error) {
@@ -3837,7 +3859,7 @@ func compilePostfix(pf *parser.PostfixExpr, env *types.Env, base string) (Expr, 
 						usesBigInt = true
 						expr = &BigIntToIntExpr{Value: expr}
 					case types.AnyType:
-						expr = &AssertExpr{Expr: expr, Type: "int"}
+						expr = &IntCastExpr{Expr: expr}
 					default:
 						expr = &IntCastExpr{Expr: expr}
 					}
@@ -4019,6 +4041,10 @@ func compilePrimary(p *parser.Primary, env *types.Env, base string) (Expr, error
 		case "exists":
 			bexpr := &BinaryExpr{Left: &CallExpr{Func: "len", Args: []Expr{args[0]}}, Op: ">", Right: &IntLit{Value: 0}}
 			return &ExistsExpr{Expr: bexpr}, nil
+		case "padStart":
+			usesPadStart = true
+			usesStrings = true
+			return &CallExpr{Func: "_padStart", Args: args[:3]}, nil
 		case "substring":
 			usesSubstr = true
 			return &CallExpr{Func: "_substr", Args: []Expr{args[0], args[1], args[2]}}, nil
@@ -4654,6 +4680,14 @@ func Emit(prog *Program) []byte {
 		buf.WriteString("    if start > len(r) { start = len(r) }\n")
 		buf.WriteString("    if end < start { end = start }\n")
 		buf.WriteString("    return string(r[start:end])\n")
+		buf.WriteString("}\n\n")
+	}
+	if prog.UsePadStart {
+		buf.WriteString("func _padStart(s string, l int, ch string) string {\n")
+		buf.WriteString("    if len(ch) == 0 { ch = \" \" }\n")
+		buf.WriteString("    if len(s) >= l { return s }\n")
+		buf.WriteString("    fill := ch[:1]\n")
+		buf.WriteString("    return strings.Repeat(fill, l-len(s)) + s\n")
 		buf.WriteString("}\n\n")
 	}
 	if prog.UseFloatConv {
