@@ -1,0 +1,10 @@
+#t
+bool
+#f
+x == y: #f
+x < y: #t
+
+Convert String into Boolean Data type
+
+Before : string
+After : bool
