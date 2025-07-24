@@ -1,0 +1,13 @@
+OpenJDK 64-Bit Server VM warning: Options -Xverify:none and -noverify were deprecated in JDK 13 and will likely be removed in a future release.
+/workspace/mochi/tests/rosetta/transpiler/Kotlin/anagrams-deranged-anagrams.kt:68:78: error: unexpected tokens (use ';' to separate expressions on the same line)
+        (m)[k] = run { val _tmp = (m)[k] as MutableList<String>.toMutableList(); _tmp.add(w); _tmp }
+                                                                             ^
+/workspace/mochi/tests/rosetta/transpiler/Kotlin/anagrams-deranged-anagrams.kt:68:80: error: expecting an element
+        (m)[k] = run { val _tmp = (m)[k] as MutableList<String>.toMutableList(); _tmp.add(w); _tmp }
+                                                                               ^
+/workspace/mochi/tests/rosetta/transpiler/Kotlin/anagrams-deranged-anagrams.kt:60:49: error: unresolved reference: keys
+        for (c in (m)[k] as MutableList<String>.keys) {
+                                                ^
+/workspace/mochi/tests/rosetta/transpiler/Kotlin/anagrams-deranged-anagrams.kt:68:65: error: unresolved reference: toMutableList
+        (m)[k] = run { val _tmp = (m)[k] as MutableList<String>.toMutableList(); _tmp.add(w); _tmp }
+                                                                ^

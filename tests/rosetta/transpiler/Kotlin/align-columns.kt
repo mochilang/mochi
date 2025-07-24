@@ -1,5 +1,7 @@
+import java.math.BigInteger
+
 val text: String = (((("Given$a$text$file$of$many$lines,$where$fields$within$a$line\n" + "are$delineated$by$a$single$'dollar'$character,$write$a$program\n") + "that$aligns$each$column$of$fields$by$ensuring$that$words$in$each\n") + "column$are$separated$by$at$least$one$space.\n") + "Further,$allow$for$each$word$in$a$column$to$be$either$left\n") + "justified,$right$justified,$or$center$justified$within$its$column."
-val f: MutableMap<String, Any> = newFormatter(text) as MutableMap<String, Any>
+val f: MutableMap<String, Any?> = newFormatter(text)
 fun split(s: String, sep: String): MutableList<String> {
     var parts: MutableList<String> = mutableListOf()
     var cur: String = ""
@@ -37,20 +39,20 @@ fun spaces(n: Int): String {
 }
 
 fun pad(word: String, width: Int, align: Int): String {
-    val diff: Int = width - word.length
+    val diff: BigInteger = width - word.length
     if (align == 0) {
-        return word + spaces(diff) as String
+        return word + spaces(diff as Int)
     }
     if (align == 2) {
-        return spaces(diff) as String + word
+        return spaces(diff as Int) + word
     }
-    var left: Int = diff / 2.toInt()
-    var right: Int = diff - left
-    return (spaces(left) as String + word) + spaces(right) as String
+    var left: Int = diff.divide(2.toBigInteger()).toInt()
+    var right: BigInteger = diff.subtract(left.toBigInteger())
+    return (spaces(left) + word) + spaces(right as Int)
 }
 
-fun newFormatter(text: String): MutableMap<String, Any> {
-    var lines: MutableList<String> = split(text, "\n") as MutableList<String>
+fun newFormatter(text: String): MutableMap<String, Any?> {
+    var lines: MutableList<String> = split(text, "\n")
     var fmtLines: MutableList<MutableList<String>> = mutableListOf()
     var width: MutableList<Int> = mutableListOf()
     var i: Int = 0
@@ -59,7 +61,7 @@ fun newFormatter(text: String): MutableMap<String, Any> {
             i = i + 1
             continue
         }
-        var words: MutableList<String> = rstripEmpty(split(lines[i], "$") as MutableList<String>) as MutableList<String>
+        var words: MutableList<String> = rstripEmpty(split(lines[i], "$"))
         fmtLines = run { val _tmp = fmtLines.toMutableList(); _tmp.add(words); _tmp } as MutableList<MutableList<String>>
         var j: Int = 0
         while (j < words.size) {
@@ -75,19 +77,19 @@ fun newFormatter(text: String): MutableMap<String, Any> {
         }
         i = i + 1
     }
-    return mutableMapOf<String, Any>("text" to (fmtLines), "width" to (width))
+    return mutableMapOf<String, Any?>("text" to (fmtLines), "width" to (width))
 }
 
-fun printFmt(f: MutableMap<String, Any>, align: Int): Unit {
-    val lines: MutableList<MutableList<String>> = (f)["text"]!! as MutableList<MutableList<String>>
-    val width: MutableList<Int> = (f)["width"]!! as MutableList<Int>
+fun printFmt(f: MutableMap<String, Any?>, align: Int): Unit {
+    val lines: MutableList<MutableList<String>> = (f)["text"] as Any? as MutableList<MutableList<String>>
+    val width: MutableList<Int> = (f)["width"] as Any? as MutableList<Int>
     var i: Int = 0
     while (i < lines.size) {
-        val words = lines[i]
+        val words: Any? = lines[i]
         var line: String = ""
         var j: Int = 0
         while (j < words.size) {
-            line = (line + pad(words[j] as String, width[j], align) as String) + " "
+            line = (line + pad(words[j] as String, width[j], align)) + " "
             j = j + 1
         }
         println(line)

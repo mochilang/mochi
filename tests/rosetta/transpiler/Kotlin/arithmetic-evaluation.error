@@ -1,0 +1,10 @@
+OpenJDK 64-Bit Server VM warning: Options -Xverify:none and -noverify were deprecated in JDK 13 and will likely be removed in a future release.
+/workspace/mochi/tests/rosetta/transpiler/Kotlin/arithmetic-evaluation.kt:110:21: error: type mismatch: inferred type is Double but Int was expected
+                v = (v as Number).toDouble() * (rhs as Number).toDouble()
+                    ^
+/workspace/mochi/tests/rosetta/transpiler/Kotlin/arithmetic-evaluation.kt:141:21: error: type mismatch: inferred type is Double but Int was expected
+                v = (v as Number).toDouble() + (rhs as Number).toDouble()
+                    ^
+/workspace/mochi/tests/rosetta/transpiler/Kotlin/arithmetic-evaluation.kt:149:21: error: type mismatch: inferred type is Double but Int was expected
+                v = (v as Number).toDouble() - (rhs as Number).toDouble()
+                    ^

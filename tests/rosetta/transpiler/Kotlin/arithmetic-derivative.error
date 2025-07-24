@@ -1,0 +1,4 @@
+OpenJDK 64-Bit Server VM warning: Options -Xverify:none and -noverify were deprecated in JDK 13 and will likely be removed in a future release.
+/workspace/mochi/tests/rosetta/transpiler/Kotlin/arithmetic-derivative.kt:43:22: error: type mismatch: inferred type is Double but Int was expected
+        val g: Int = n / 100.0.toInt()
+                     ^

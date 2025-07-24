@@ -1,0 +1,63 @@
+OpenJDK 64-Bit Server VM warning: Options -Xverify:none and -noverify were deprecated in JDK 13 and will likely be removed in a future release.
+/workspace/mochi/tests/rosetta/transpiler/Kotlin/arena-storage-pool.kt:34:31: error: expecting function type
+    i = (res1)["val"] as Any?.toInt()
+                              ^
+/workspace/mochi/tests/rosetta/transpiler/Kotlin/arena-storage-pool.kt:34:31: error: unresolved reference. None of the following candidates is applicable because of receiver type mismatch: 
+@InlineOnly public inline fun String.toInt(): Int defined in kotlin.text
+@SinceKotlin @InlineOnly public inline fun String.toInt(radix: Int): Int defined in kotlin.text
+private fun Iterable<FlagEnum>.toInt(): Int defined in kotlin.text
+    i = (res1)["val"] as Any?.toInt()
+                              ^
+/workspace/mochi/tests/rosetta/transpiler/Kotlin/arena-storage-pool.kt:34:37: error: expecting an expression
+    i = (res1)["val"] as Any?.toInt()
+                                    ^
+/workspace/mochi/tests/rosetta/transpiler/Kotlin/arena-storage-pool.kt:37:31: error: expecting function type
+    j = (res2)["val"] as Any?.toInt()
+                              ^
+/workspace/mochi/tests/rosetta/transpiler/Kotlin/arena-storage-pool.kt:37:31: error: unresolved reference. None of the following candidates is applicable because of receiver type mismatch: 
+@InlineOnly public inline fun String.toInt(): Int defined in kotlin.text
+@SinceKotlin @InlineOnly public inline fun String.toInt(radix: Int): Int defined in kotlin.text
+private fun Iterable<FlagEnum>.toInt(): Int defined in kotlin.text
+    j = (res2)["val"] as Any?.toInt()
+                              ^
+/workspace/mochi/tests/rosetta/transpiler/Kotlin/arena-storage-pool.kt:37:37: error: expecting an expression
+    j = (res2)["val"] as Any?.toInt()
+                                    ^
+/workspace/mochi/tests/rosetta/transpiler/Kotlin/arena-storage-pool.kt:48:31: error: expecting function type
+    i = (res3)["val"] as Any?.toInt()
+                              ^
+/workspace/mochi/tests/rosetta/transpiler/Kotlin/arena-storage-pool.kt:48:31: error: unresolved reference. None of the following candidates is applicable because of receiver type mismatch: 
+@InlineOnly public inline fun String.toInt(): Int defined in kotlin.text
+@SinceKotlin @InlineOnly public inline fun String.toInt(radix: Int): Int defined in kotlin.text
+private fun Iterable<FlagEnum>.toInt(): Int defined in kotlin.text
+    i = (res3)["val"] as Any?.toInt()
+                              ^
+/workspace/mochi/tests/rosetta/transpiler/Kotlin/arena-storage-pool.kt:48:37: error: expecting an expression
+    i = (res3)["val"] as Any?.toInt()
+                                    ^
+/workspace/mochi/tests/rosetta/transpiler/Kotlin/arena-storage-pool.kt:51:31: error: expecting function type
+    j = (res4)["val"] as Any?.toInt()
+                              ^
+/workspace/mochi/tests/rosetta/transpiler/Kotlin/arena-storage-pool.kt:51:31: error: unresolved reference. None of the following candidates is applicable because of receiver type mismatch: 
+@InlineOnly public inline fun String.toInt(): Int defined in kotlin.text
+@SinceKotlin @InlineOnly public inline fun String.toInt(radix: Int): Int defined in kotlin.text
+private fun Iterable<FlagEnum>.toInt(): Int defined in kotlin.text
+    j = (res4)["val"] as Any?.toInt()
+                              ^
+/workspace/mochi/tests/rosetta/transpiler/Kotlin/arena-storage-pool.kt:51:37: error: expecting an expression
+    j = (res4)["val"] as Any?.toInt()
+                                    ^
+/workspace/mochi/tests/rosetta/transpiler/Kotlin/arena-storage-pool.kt:13:27: error: type mismatch: inferred type is Int but BigInteger was expected
+    val idx: BigInteger = p.size - 1
+                          ^
+/workspace/mochi/tests/rosetta/transpiler/Kotlin/arena-storage-pool.kt:14:22: error: type mismatch: inferred type is BigInteger but Int was expected
+    val v: Int = (p)[idx] as Int
+                     ^
+/workspace/mochi/tests/rosetta/transpiler/Kotlin/arena-storage-pool.kt:15:22: error: type mismatch: inferred type is BigInteger but Int was expected
+    p = p.subList(0, idx)
+                     ^
+/workspace/mochi/tests/rosetta/transpiler/Kotlin/arena-storage-pool.kt:20:12: error: type inference failed: Not enough information to infer parameter T in inline fun <T> mutableListOf(): MutableList<T>
+Please specify it explicitly.
+
+    return mutableListOf() as MutableList<Int>
+           ^
