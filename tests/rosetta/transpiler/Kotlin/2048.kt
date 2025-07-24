@@ -17,12 +17,16 @@ fun _now(): Int {
 
 fun input(): String = readLine() ?: ""
 
+data class Board(var cells: MutableList<MutableList<Int>>)
+data class SpawnResult(var board: Board, var full: Boolean)
+data class SlideResult(var row: MutableList<Int>, var gain: Int)
+data class MoveResult(var board: Board, var score: Int, var moved: Boolean)
 val SIZE: Int = 4
-var board: MutableList<MutableList<Int>> = newBoard()
-var r: MutableMap<String, Any> = spawnTile(board)
-var full = (r)["full"]!!
+var board: Board = newBoard()
+var r: SpawnResult = spawnTile(board)
+var full: Boolean = r.full
 var score: Int = 0
-fun newBoard(): MutableList<MutableList<Int>> {
+fun newBoard(): Board {
     var b: MutableList<MutableList<Int>> = mutableListOf()
     var y: Int = 0
     while (y < SIZE) {
@@ -35,16 +39,17 @@ fun newBoard(): MutableList<MutableList<Int>> {
         b = run { val _tmp = b.toMutableList(); _tmp.add(row); _tmp } as MutableList<MutableList<Int>>
         y = y + 1
     }
-    return b
+    return Board(cells = b)
 }
 
-fun spawnTile(b: MutableList<MutableList<Int>>): MutableMap<String, Any> {
+fun spawnTile(b: Board): SpawnResult {
+    var grid: MutableList<MutableList<Int>> = b.cells
     var empty: MutableList<MutableList<Int>> = mutableListOf()
     var y: Int = 0
     while (y < SIZE) {
         var x: Int = 0
         while (x < SIZE) {
-            if (b[y][x] == 0) {
+            if (grid[y][x] == 0) {
                 empty = run { val _tmp = empty.toMutableList(); _tmp.add(mutableListOf(x, y)); _tmp } as MutableList<MutableList<Int>>
             }
             x = x + 1
@@ -52,7 +57,7 @@ fun spawnTile(b: MutableList<MutableList<Int>>): MutableMap<String, Any> {
         y = y + 1
     }
     if (empty.size == 0) {
-        return mutableMapOf<String, Any>("board" to (b), "full" to (true))
+        return SpawnResult(board = b, full = true)
     }
     var idx: Int = _now() % empty.size
     val cell: MutableList<Int> = empty[idx]
@@ -60,8 +65,8 @@ fun spawnTile(b: MutableList<MutableList<Int>>): MutableMap<String, Any> {
     if ((_now() % 10) < 9) {
         _val = 2
     }
-    b[cell[1]][cell[0]] = _val
-    return mutableMapOf<String, Any>("board" to (b), "full" to (empty.size == 1))
+    grid[cell[1]][cell[0]] = _val
+    return SpawnResult(board = Board(cells = grid), full = empty.size == 1)
 }
 
 fun pad(n: Int): String {
@@ -76,7 +81,7 @@ fun pad(n: Int): String {
     return out + s
 }
 
-fun draw(b: MutableList<MutableList<Int>>, score: Int): Unit {
+fun draw(b: Board, score: Int): Unit {
     println("Score: " + score.toString())
     var y: Int = 0
     while (y < SIZE) {
@@ -84,7 +89,7 @@ fun draw(b: MutableList<MutableList<Int>>, score: Int): Unit {
         var line: String = "|"
         var x: Int = 0
         while (x < SIZE) {
-            var v: Int = b[y][x]
+            var v: Int = b.cells[y][x]
             if (v == 0) {
                 line = line + "    |"
             } else {
@@ -109,7 +114,7 @@ fun reverseRow(r: MutableList<Int>): MutableList<Int> {
     return out
 }
 
-fun slideLeft(row: MutableList<Int>): MutableMap<String, Any> {
+fun slideLeft(row: MutableList<Int>): SlideResult {
     var xs: MutableList<Int> = mutableListOf()
     var i: Int = 0
     while (i < row.size) {
@@ -135,128 +140,136 @@ fun slideLeft(row: MutableList<Int>): MutableMap<String, Any> {
     while (res.size < SIZE) {
         res = run { val _tmp = res.toMutableList(); _tmp.add(0); _tmp } as MutableList<Int>
     }
-    return mutableMapOf<String, Any>("row" to (res), "gain" to (gain))
+    return SlideResult(row = res, gain = gain)
 }
 
-fun moveLeft(b: MutableList<MutableList<Int>>, score: Int): MutableMap<String, Any> {
+fun moveLeft(b: Board, score: Int): MoveResult {
     var score: Int = score
+    var grid: MutableList<MutableList<Int>> = b.cells
     var moved: Boolean = false
     var y: Int = 0
     while (y < SIZE) {
-        val r: MutableMap<String, Any> = slideLeft(b[y])
-        val new = (r)["row"]!!
-        score = score + ((r)["gain"]!! as Int) as Int
+        val r: SlideResult = slideLeft(grid[y] as MutableList<Int>)
+        val new = r.row
+        score = score + (r.gain as Int)
         var x: Int = 0
         while (x < SIZE) {
-            if (b[y][x] != (new as MutableList<Any?>)[x]!!) {
+            if (grid[y][x] != new[x]) {
                 moved = true
             }
-            b[y][x] = (new as MutableList<Any?>)[x]!! as Int
+            grid[y][x] = new[x]
             x = x + 1
         }
         y = y + 1
     }
-    return mutableMapOf<String, Any>("board" to (b), "score" to (score), "moved" to (moved))
+    return MoveResult(board = Board(cells = grid), score = score, moved = moved)
 }
 
-fun moveRight(b: MutableList<MutableList<Int>>, score: Int): MutableMap<String, Any> {
+fun moveRight(b: Board, score: Int): MoveResult {
     var score: Int = score
+    var grid: MutableList<MutableList<Int>> = b.cells
     var moved: Boolean = false
     var y: Int = 0
     while (y < SIZE) {
-        var rev: MutableList<Int> = reverseRow(b[y])
-        val r: MutableMap<String, Any> = slideLeft(rev)
-        rev = (r)["row"]!! as MutableList<Int>
-        score = score + ((r)["gain"]!! as Int) as Int
+        var rev: MutableList<Int> = reverseRow(grid[y] as MutableList<Int>)
+        val r: SlideResult = slideLeft(rev)
+        rev = r.row as MutableList<Int>
+        score = score + (r.gain as Int)
         rev = reverseRow(rev) as MutableList<Int>
         var x: Int = 0
         while (x < SIZE) {
-            if (b[y][x] != rev[x]) {
+            if (grid[y][x] != rev[x]) {
                 moved = true
             }
-            b[y][x] = rev[x]
+            grid[y][x] = rev[x]
             x = x + 1
         }
         y = y + 1
     }
-    return mutableMapOf<String, Any>("board" to (b), "score" to (score), "moved" to (moved))
+    return MoveResult(board = Board(cells = grid), score = score, moved = moved)
 }
 
-fun getCol(b: MutableList<MutableList<Int>>, x: Int): MutableList<Int> {
+fun getCol(b: Board, x: Int): MutableList<Int> {
     var col: MutableList<Int> = mutableListOf()
     var y: Int = 0
     while (y < SIZE) {
-        col = run { val _tmp = col.toMutableList(); _tmp.add(b[y][x]); _tmp } as MutableList<Int>
+        col = run { val _tmp = col.toMutableList(); _tmp.add(b.cells[y][x]); _tmp } as MutableList<Int>
         y = y + 1
     }
     return col
 }
 
-fun setCol(b: MutableList<MutableList<Int>>, x: Int, col: MutableList<Int>): Unit {
+fun setCol(b: Board, x: Int, col: MutableList<Int>): Unit {
+    var rows: MutableList<MutableList<Int>> = b.cells
     var y: Int = 0
     while (y < SIZE) {
-        b[y][x] = col[y]
+        var row = rows[y]
+        row[x] = col[y]
+        rows[y] = row
         y = y + 1
     }
+    b.cells = rows
 }
 
-fun moveUp(b: MutableList<MutableList<Int>>, score: Int): MutableMap<String, Any> {
+fun moveUp(b: Board, score: Int): MoveResult {
     var score: Int = score
+    var grid: MutableList<MutableList<Int>> = b.cells
     var moved: Boolean = false
     var x: Int = 0
     while (x < SIZE) {
         var col: MutableList<Int> = getCol(b, x)
-        val r: MutableMap<String, Any> = slideLeft(col)
-        val new = (r)["row"]!!
-        score = score + ((r)["gain"]!! as Int) as Int
+        val r: SlideResult = slideLeft(col)
+        val new = r.row
+        score = score + (r.gain as Int)
         var y: Int = 0
         while (y < SIZE) {
-            if (b[y][x] != (new as MutableList<Any?>)[y]!!) {
+            if (grid[y][x] != new[y]) {
                 moved = true
             }
-            b[y][x] = (new as MutableList<Any?>)[y]!! as Int
+            grid[y][x] = new[y]
             y = y + 1
         }
         x = x + 1
     }
-    return mutableMapOf<String, Any>("board" to (b), "score" to (score), "moved" to (moved))
+    return MoveResult(board = Board(cells = grid), score = score, moved = moved)
 }
 
-fun moveDown(b: MutableList<MutableList<Int>>, score: Int): MutableMap<String, Any> {
+fun moveDown(b: Board, score: Int): MoveResult {
     var score: Int = score
+    var grid: MutableList<MutableList<Int>> = b.cells
     var moved: Boolean = false
     var x: Int = 0
     while (x < SIZE) {
-        var col: MutableList<Int> = reverseRow(getCol(b, x))
-        val r: MutableMap<String, Any> = slideLeft(col)
-        col = (r)["row"]!! as MutableList<Int>
-        score = score + ((r)["gain"]!! as Int) as Int
+        var col: MutableList<Int> = reverseRow(getCol(b, x) as MutableList<Int>)
+        val r: SlideResult = slideLeft(col)
+        col = r.row as MutableList<Int>
+        score = score + (r.gain as Int)
         col = reverseRow(col) as MutableList<Int>
         var y: Int = 0
         while (y < SIZE) {
-            if (b[y][x] != col[y]) {
+            if (grid[y][x] != col[y]) {
                 moved = true
             }
-            b[y][x] = col[y]
+            grid[y][x] = col[y]
             y = y + 1
         }
         x = x + 1
     }
-    return mutableMapOf<String, Any>("board" to (b), "score" to (score), "moved" to (moved))
+    return MoveResult(board = Board(cells = grid), score = score, moved = moved)
 }
 
-fun hasMoves(b: MutableList<MutableList<Int>>): Boolean {
+fun hasMoves(b: Board): Boolean {
     var y: Int = 0
     while (y < SIZE) {
         var x: Int = 0
         while (x < SIZE) {
-            if (b[y][x] == 0) {
+            if (b.cells[y][x] == 0) {
                 return true
             }
-            if (((x + 1) < SIZE) && (b[y][x] == b[y][x + 1])) {
+            if (((x + 1) < SIZE) && (b.cells[y][x] == b.cells[y][x + 1])) {
                 return true
             }
-            if (((y + 1) < SIZE) && (b[y][x] == b[y + 1][x])) {
+            if (((y + 1) < SIZE) && (b.cells[y][x] == b.cells[y + 1][x])) {
                 return true
             }
             x = x + 1
@@ -266,12 +279,12 @@ fun hasMoves(b: MutableList<MutableList<Int>>): Boolean {
     return false
 }
 
-fun has2048(b: MutableList<MutableList<Int>>): Boolean {
+fun has2048(b: Board): Boolean {
     var y: Int = 0
     while (y < SIZE) {
         var x: Int = 0
         while (x < SIZE) {
-            if (b[y][x] >= 2048) {
+            if (b.cells[y][x] >= 2048) {
                 return true
             }
             x = x + 1
@@ -282,47 +295,47 @@ fun has2048(b: MutableList<MutableList<Int>>): Boolean {
 }
 
 fun main() {
-    board = (r)["board"]!! as MutableList<MutableList<Int>>
-    r = spawnTile(board) as MutableMap<String, Any>
-    board = (r)["board"]!! as MutableList<MutableList<Int>>
-    full = (r)["full"]!!
+    board = r.board
+    r = spawnTile(board)
+    board = r.board
+    full = r.full
     draw(board, score)
     while (true) {
         println("Move: ")
         val cmd: String = input()
         var moved: Boolean = false
         if ((cmd == "a") || (cmd == "A")) {
-            val m: MutableMap<String, Any> = moveLeft(board, score)
-            board = (m)["board"]!! as MutableList<MutableList<Int>>
-            score = (m)["score"]!! as Int
-            moved = (m)["moved"]!! as Boolean
+            val m: MoveResult = moveLeft(board, score)
+            board = m.board as Board
+            score = m.score as Int
+            moved = m.moved as Boolean
         }
         if ((cmd == "d") || (cmd == "D")) {
-            val m: MutableMap<String, Any> = moveRight(board, score)
-            board = (m)["board"]!! as MutableList<MutableList<Int>>
-            score = (m)["score"]!! as Int
-            moved = (m)["moved"]!! as Boolean
+            val m: MoveResult = moveRight(board, score)
+            board = m.board as Board
+            score = m.score as Int
+            moved = m.moved as Boolean
         }
         if ((cmd == "w") || (cmd == "W")) {
-            val m: MutableMap<String, Any> = moveUp(board, score)
-            board = (m)["board"]!! as MutableList<MutableList<Int>>
-            score = (m)["score"]!! as Int
-            moved = (m)["moved"]!! as Boolean
+            val m: MoveResult = moveUp(board, score)
+            board = m.board as Board
+            score = m.score as Int
+            moved = m.moved as Boolean
         }
         if ((cmd == "s") || (cmd == "S")) {
-            val m: MutableMap<String, Any> = moveDown(board, score)
-            board = (m)["board"]!! as MutableList<MutableList<Int>>
-            score = (m)["score"]!! as Int
-            moved = (m)["moved"]!! as Boolean
+            val m: MoveResult = moveDown(board, score)
+            board = m.board as Board
+            score = m.score as Int
+            moved = m.moved as Boolean
         }
         if ((cmd == "q") || (cmd == "Q")) {
             break
         }
         if (moved as Boolean) {
-            val r2: MutableMap<String, Any> = spawnTile(board)
-            board = (r2)["board"]!! as MutableList<MutableList<Int>>
-            full = (r2)["full"]!!
-            if ((full as Boolean) && (!(hasMoves(board) as Boolean) as Boolean)) {
+            val r2: SpawnResult = spawnTile(board)
+            board = r2.board as Board
+            full = r2.full as Boolean
+            if (full && (!(hasMoves(board) as Boolean) as Boolean)) {
                 draw(board, score)
                 println("Game Over")
                 break
