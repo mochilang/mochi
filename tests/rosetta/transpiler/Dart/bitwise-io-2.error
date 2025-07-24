@@ -1,0 +1,13 @@
+run: exit status 254
+../../../tests/rosetta/transpiler/Dart/bitwise-io-2.dart:174:13: Error: Method not found: 'indexOf'.
+  int idx = indexOf(upper, ch);
+            ^^^^^^^
+../../../tests/rosetta/transpiler/Dart/bitwise-io-2.dart:178:9: Error: Method not found: 'indexOf'.
+  idx = indexOf(lower, ch);
+        ^^^^^^^
+../../../tests/rosetta/transpiler/Dart/bitwise-io-2.dart:183:17: Error: Method not found: 'parseIntStr'.
+    return 48 + parseIntStr(ch);
+                ^^^^^^^^^^^
+../../../tests/rosetta/transpiler/Dart/bitwise-io-2.dart:183:15: Error: A value of type 'double' can't be returned from a function with return type 'int'.
+    return 48 + parseIntStr(ch);
+              ^

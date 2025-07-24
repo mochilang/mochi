@@ -43,6 +43,7 @@ var (
 	useNow           bool
 	useInput         bool
 	useLookupHost    bool
+	useBigRat        bool
 	imports          []string
 	testpkgAliases   map[string]struct{}
 	netAliases       map[string]struct{}
@@ -727,6 +728,32 @@ func (b *BinaryExpr) emit(w io.Writer) error {
 	}
 	lt := inferType(b.Left)
 	rt := inferType(b.Right)
+	if lt == "BigRat" || rt == "BigRat" {
+		useBigRat = true
+		var fn string
+		switch b.Op {
+		case "+":
+			fn = "_add"
+		case "-":
+			fn = "_sub"
+		case "*":
+			fn = "_mul"
+		case "/":
+			fn = "_div"
+		}
+		if fn != "" {
+			io.WriteString(w, fn+"(")
+			if err := b.Left.emit(w); err != nil {
+				return err
+			}
+			io.WriteString(w, ", ")
+			if err := b.Right.emit(w); err != nil {
+				return err
+			}
+			_, err := io.WriteString(w, ")")
+			return err
+		}
+	}
 	target := lt
 	if lt == "BigInt" || rt == "BigInt" {
 		target = "BigInt"
@@ -2329,8 +2356,11 @@ func dartType(t types.Type) string {
 		return "int"
 	case types.BigIntType:
 		return "BigInt"
-	case types.FloatType, types.BigRatType:
+	case types.FloatType:
 		return "num"
+	case types.BigRatType:
+		useBigRat = true
+		return "BigRat"
 	case types.BoolType:
 		return "bool"
 	case types.StringType:
@@ -2758,6 +2788,14 @@ func inferType(e Expr) string {
 				}
 			}
 		}
+		if n, ok := ex.Func.(*Name); ok {
+			switch n.Name {
+			case "_bigrat", "_add", "_sub", "_mul", "_div":
+				return "BigRat"
+			case "_num", "_denom":
+				return "BigInt"
+			}
+		}
 		if sel, ok := ex.Func.(*SelectorExpr); ok {
 			rt := inferType(sel.Receiver)
 			if sel.Field == "abs" && (rt == "int" || rt == "num") {
@@ -3027,6 +3065,11 @@ func Emit(w io.Writer, p *Program) error {
 			return err
 		}
 	}
+	if useBigRat {
+		if _, err := io.WriteString(w, "class BigRat {\n  BigInt num;\n  BigInt den;\n  BigRat(this.num, [BigInt? d]) : den = d ?? BigInt.one {\n    if (den.isNegative) { num = -num; den = -den; }\n    var g = num.gcd(den);\n    num = num ~/ g;\n    den = den ~/ g;\n  }\n  BigRat add(BigRat o) => BigRat(num * o.den + o.num * den, den * o.den);\n  BigRat sub(BigRat o) => BigRat(num * o.den - o.num * den, den * o.den);\n  BigRat mul(BigRat o) => BigRat(num * o.num, den * o.den);\n  BigRat div(BigRat o) => BigRat(num * o.den, den * o.num);\n}\n\nBigRat _bigrat(dynamic n, [dynamic d]) {\n  if (n is BigRat && d == null) return BigRat(n.num, n.den);\n  BigInt numer;\n  BigInt denom = d == null ? BigInt.one : (d is BigInt ? d : BigInt.from((d as num).toInt()));\n  if (n is BigRat) { numer = n.num; denom = n.den; }\n  else if (n is BigInt) { numer = n; }\n  else if (n is int) { numer = BigInt.from(n); }\n  else if (n is num) { numer = BigInt.from(n.toInt()); }\n  else { numer = BigInt.zero; }\n  return BigRat(numer, denom);\n}\nBigInt _num(BigRat r) => r.num;\nBigInt _denom(BigRat r) => r.den;\nBigRat _add(BigRat a, BigRat b) => a.add(b);\nBigRat _sub(BigRat a, BigRat b) => a.sub(b);\nBigRat _mul(BigRat a, BigRat b) => a.mul(b);\nBigRat _div(BigRat a, BigRat b) => a.div(b);\n\n"); err != nil {
+			return err
+		}
+	}
 	for _, name := range structOrder {
 		fields := structFields[name]
 		if _, err := fmt.Fprintf(w, "class %s {\n", name); err != nil {
@@ -3151,6 +3194,7 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	useNow = false
 	useInput = false
 	useLookupHost = false
+	useBigRat = false
 	imports = nil
 	testpkgAliases = map[string]struct{}{}
 	netAliases = map[string]struct{}{}
@@ -3722,7 +3766,14 @@ func convertPostfix(pf *parser.PostfixExpr) (Expr, error) {
 					}
 					args = append(args, ex)
 				}
-				expr = &CallExpr{Func: &SelectorExpr{Receiver: expr, Field: op.Field.Name}, Args: args}
+				if op.Field.Name == "padStart" {
+					if len(args) != 2 {
+						return nil, fmt.Errorf("padStart expects 2 args")
+					}
+					expr = &CallExpr{Func: &SelectorExpr{Receiver: expr, Field: "padLeft"}, Args: args}
+				} else {
+					expr = &CallExpr{Func: &SelectorExpr{Receiver: expr, Field: op.Field.Name}, Args: args}
+				}
 				i++
 			} else {
 				expr = &SelectorExpr{Receiver: expr, Field: op.Field.Name}
@@ -3763,7 +3814,12 @@ func convertPostfix(pf *parser.PostfixExpr) (Expr, error) {
 			}
 		case op.Cast != nil:
 			typ := typeRefString(op.Cast.Type)
-			expr = &CastExpr{Value: expr, Type: typ}
+			if typ == "BigRat" {
+				useBigRat = true
+				expr = &CallExpr{Func: &Name{"_bigrat"}, Args: []Expr{expr}}
+			} else {
+				expr = &CastExpr{Value: expr, Type: typ}
+			}
 		default:
 			return nil, fmt.Errorf("postfix op not supported")
 		}
@@ -3901,6 +3957,43 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 				return nil, err
 			}
 			return &SubstringExpr{Str: s0, Start: s1, End: s2}, nil
+		}
+		if p.Call.Func == "padStart" && len(p.Call.Args) == 3 {
+			s0, err := convertExpr(p.Call.Args[0])
+			if err != nil {
+				return nil, err
+			}
+			s1, err := convertExpr(p.Call.Args[1])
+			if err != nil {
+				return nil, err
+			}
+			s2, err := convertExpr(p.Call.Args[2])
+			if err != nil {
+				return nil, err
+			}
+			return &CallExpr{Func: &SelectorExpr{Receiver: s0, Field: "padLeft"}, Args: []Expr{s1, s2}}, nil
+		}
+		if p.Call.Func == "num" && len(p.Call.Args) == 1 {
+			arg, err := convertExpr(p.Call.Args[0])
+			if err != nil {
+				return nil, err
+			}
+			if inferType(arg) == "BigRat" {
+				useBigRat = true
+				return &CallExpr{Func: &Name{"_num"}, Args: []Expr{arg}}, nil
+			}
+			return arg, nil
+		}
+		if p.Call.Func == "denom" && len(p.Call.Args) == 1 {
+			arg, err := convertExpr(p.Call.Args[0])
+			if err != nil {
+				return nil, err
+			}
+			if inferType(arg) == "BigRat" {
+				useBigRat = true
+				return &CallExpr{Func: &Name{"_denom"}, Args: []Expr{arg}}, nil
+			}
+			return &IntLit{Value: 1}, nil
 		}
 		if p.Call.Func == "upper" && len(p.Call.Args) == 1 {
 			arg, err := convertExpr(p.Call.Args[0])
