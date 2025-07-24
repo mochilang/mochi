@@ -2909,6 +2909,12 @@ func convertUnary(u *parser.Unary) Expr {
 			if list, ok := convertListExpr(call.Args[0]); ok {
 				return &IntLit{Value: len(list)}
 			}
+			arg := convertExpr(call.Args[0])
+			if vr, ok := arg.(*VarRef); ok {
+				if t, ok2 := varTypes[vr.Name]; ok2 && strings.HasSuffix(t, "[]") {
+					return &VarRef{Name: vr.Name + "_len"}
+				}
+			}
 		}
 		if call.Func == "sum" && len(call.Args) == 1 {
 			if l, ok := evalList(convertExpr(call.Args[0])); ok {
