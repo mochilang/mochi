@@ -2,9 +2,9 @@
 
 Generated Lua code for programs in `tests/rosetta/x/Mochi`. Each program has a `.lua` file produced by the transpiler and a `.out` file with its runtime output. Compilation or runtime errors are captured in `.error` files.
 
-Transpiled programs: 204/284
+Transpiled programs: 205/284
 
-Last updated: 2025-07-24 22:55 GMT+7
+Last updated: 2025-07-24 23:27 GMT+7
 
 Checklist:
 
@@ -216,7 +216,7 @@ Checklist:
 206. [x] circular-primes (206)
 207. [x] cistercian-numerals (207)
 208. [x] comma-quibbling (208)
-209. [ ] compiler-virtual-machine-interpreter (209)
+209. [x] compiler-virtual-machine-interpreter (209)
 210. [ ] composite-numbers-k-with-no-single-digit-factors-whose-factors-are-all-substrings-of-k (210)
 211. [ ] compound-data-type (211)
 212. [ ] concurrent-computing-1 (212)
