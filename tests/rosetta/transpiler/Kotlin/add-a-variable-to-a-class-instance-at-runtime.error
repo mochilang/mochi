@@ -1,7 +1,0 @@
-OpenJDK 64-Bit Server VM warning: Options -Xverify:none and -noverify were deprecated in JDK 13 and will likely be removed in a future release.
-/workspace/mochi/tests/rosetta/transpiler/Kotlin/add-a-variable-to-a-class-instance-at-runtime.kt:5:53: error: type mismatch: inferred type is MutableMap<Any, Any> but MutableMap<String, String> was expected
-    var ss: SomeStruct = SomeStruct(runtimeFields = mutableMapOf<Any, Any>())
-                                                    ^
-/workspace/mochi/tests/rosetta/transpiler/Kotlin/add-a-variable-to-a-class-instance-at-runtime.kt:16:9: error: val cannot be reassigned
-        ss.runtimeFields = fields
-        ^

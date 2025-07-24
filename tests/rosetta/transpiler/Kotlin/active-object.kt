@@ -2,10 +2,10 @@ val PI: Double = 3.141592653589793
 val dt: Double = 0.01
 var s: Double = 0.0
 var t1: Double = 0.0
-var k1: Double = sinApprox(0.0) as Double
+var k1: Double = sinApprox(0.0)
 var i: Int = 1
 var i2: Int = 1
-fun sinApprox(x: float): float {
+fun sinApprox(x: Double): Double {
     var term: Double = x
     var sum: Double = x
     var n: Int = 1
@@ -15,13 +15,13 @@ fun sinApprox(x: float): float {
         sum = sum + term
         n = n + 1
     }
-    return sum.toDouble()
+    return sum
 }
 
 fun main() {
     while (i <= 200) {
         val t2: Double = i.toDouble() * dt
-        val k2: Double = sinApprox(t2 * PI) as Double
+        val k2: Double = sinApprox(t2 * PI)
         s = s + (((k1 + k2) * 0.5) * (t2 - t1))
         t1 = t2
         k1 = k2

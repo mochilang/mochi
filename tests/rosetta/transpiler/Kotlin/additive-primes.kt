@@ -27,7 +27,7 @@ fun sumDigits(n: Int): Int {
     var x: Int = n
     while (x > 0) {
         s = s + (x % 10)
-        x = x / 10.toInt() as Int
+        x = x / 10.toInt()
     }
     return s
 }
@@ -49,9 +49,9 @@ fun user_main(): Unit {
     var lineCount: Int = 0
     var i: Int = 2
     while (i < 500) {
-        if (isPrime(i) as Boolean && isPrime(sumDigits(i) as Int) as Boolean) {
+        if (isPrime(i) && isPrime(sumDigits(i))) {
             count = count + 1
-            line = (line + pad(i) as String) + "  "
+            line = (line + pad(i)) + "  "
             lineCount = lineCount + 1
             if (lineCount == 10) {
                 println(line.substring(0, line.length - 2))
