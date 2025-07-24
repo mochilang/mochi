@@ -161,6 +161,17 @@ func isMainCall(e Expr) bool {
 	return false
 }
 
+func maybeWrapUnsafe(e Expr) Expr {
+	if call, ok := e.(*CallExpr); ok {
+		if n, ok2 := call.Fun.(*NameRef); ok2 && shouldWrapCall(n.Name) {
+			if n.Name != "unsafePerformIO" {
+				return &CallExpr{Fun: &NameRef{Name: "unsafePerformIO"}, Args: []Expr{call}}
+			}
+		}
+	}
+	return e
+}
+
 func pushIndent() { indent += "    " }
 func popIndent() {
 	if len(indent) >= 4 {
@@ -772,7 +783,8 @@ func (l *LetStmt) emit(w io.Writer) {
 	if mutated[l.Name] && indent != "" {
 		needIORef = true
 		io.WriteString(w, name+" <- newIORef (")
-		l.Expr.emit(w)
+		expr := maybeWrapUnsafe(l.Expr)
+		expr.emit(w)
 		io.WriteString(w, ")")
 		return
 	}
@@ -799,7 +811,8 @@ func (a *AssignStmt) emit(w io.Writer) {
 		io.WriteString(w, "writeIORef ")
 		io.WriteString(w, name)
 		io.WriteString(w, " $! (")
-		a.Expr.emit(w)
+		expr := maybeWrapUnsafe(a.Expr)
+		expr.emit(w)
 		io.WriteString(w, ")")
 	} else {
 		io.WriteString(w, name)
@@ -2761,9 +2774,15 @@ func convertPostfix(pf *parser.PostfixExpr) (Expr, error) {
 			if op.Cast.Type.Simple != nil {
 				tname := *op.Cast.Type.Simple
 				if tname == "int" {
-					// Cast numeric expressions using round instead of read
-					// which expects a String.
-					expr = &CallExpr{Fun: &NameRef{Name: "round"}, Args: []Expr{&GroupExpr{Expr: expr}}}
+					if g, ok := expr.(*GroupExpr); ok {
+						expr = g.Expr
+					}
+					if be, ok := expr.(*BinaryExpr); ok && len(be.Ops) == 1 && be.Ops[0].Op == "/" && isIntExpr(be.Left) && isIntExpr(be.Ops[0].Right) {
+						expr = &CallExpr{Fun: &NameRef{Name: "div"}, Args: []Expr{be.Left, be.Ops[0].Right}}
+					} else {
+						// Cast numeric expressions using round instead of read which expects a String.
+						expr = &CallExpr{Fun: &NameRef{Name: "round"}, Args: []Expr{&GroupExpr{Expr: expr}}}
+					}
 					continue
 				}
 				if tname == "float" {
