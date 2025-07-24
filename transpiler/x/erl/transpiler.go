@@ -1127,6 +1127,27 @@ func isMapExpr(e Expr, env *types.Env, ctx *context) bool {
 		if v.Kind == "map" {
 			return true
 		}
+	case *CallExpr:
+		if env != nil {
+			if fn, ok := env.GetFunc(v.Func); ok && fn.Return != nil {
+				if fn.Return.Generic != nil && fn.Return.Generic.Name == "map" {
+					return true
+				}
+			}
+		}
+	}
+	return false
+}
+
+func exprHasListCast(e *parser.Expr) bool {
+	if e == nil || e.Binary == nil || e.Binary.Left == nil || e.Binary.Left.Value == nil {
+		return false
+	}
+	pf := e.Binary.Left.Value
+	for _, op := range pf.Ops {
+		if op.Cast != nil && op.Cast.Type != nil && op.Cast.Type.Generic != nil && op.Cast.Type.Generic.Name == "list" {
+			return true
+		}
 	}
 	return false
 }
@@ -2550,7 +2571,18 @@ func convertStmt(st *parser.Statement, env *types.Env, ctx *context, top bool) (
 		ctx.setBoolFields(st.Let.Name, boolFields(e, env, ctx))
 		ctx.setStringVar(st.Let.Name, isStringExpr(e))
 		ctx.setFloatVar(st.Let.Name, isFloatExpr(e, env, ctx) || (st.Let.Type != nil && st.Let.Type.Simple != nil && *st.Let.Type.Simple == "float"))
-		ctx.setMapVar(st.Let.Name, isMapExpr(e, env, ctx) || (st.Let.Type != nil && st.Let.Type.Generic != nil && st.Let.Type.Generic.Name == "map"))
+		isMap := isMapExpr(e, env, ctx) || (st.Let.Type != nil && st.Let.Type.Generic != nil && st.Let.Type.Generic.Name == "map")
+		if !isMap {
+			if t, err := env.GetVar(st.Let.Name); err == nil {
+				if _, ok := t.(types.MapType); ok {
+					isMap = true
+				}
+			}
+		}
+		if exprHasListCast(st.Let.Value) && !(st.Let.Type != nil && st.Let.Type.Generic != nil && st.Let.Type.Generic.Name == "map") {
+			isMap = false
+		}
+		ctx.setMapVar(st.Let.Name, isMap)
 		ctx.setBoolVar(st.Let.Name, isBoolExpr(e, env, ctx) || (st.Let.Type != nil && st.Let.Type.Simple != nil && *st.Let.Type.Simple == "bool"))
 		switch e.(type) {
 		case *IntLit, *FloatLit, *BoolLit, *StringLit, *AtomLit:
@@ -2577,7 +2609,18 @@ func convertStmt(st *parser.Statement, env *types.Env, ctx *context, top bool) (
 		ctx.setBoolFields(st.Var.Name, boolFields(e, env, ctx))
 		ctx.setStringVar(st.Var.Name, isStringExpr(e))
 		ctx.setFloatVar(st.Var.Name, isFloatExpr(e, env, ctx) || (st.Var.Type != nil && st.Var.Type.Simple != nil && *st.Var.Type.Simple == "float"))
-		ctx.setMapVar(st.Var.Name, isMapExpr(e, env, ctx) || (st.Var.Type != nil && st.Var.Type.Generic != nil && st.Var.Type.Generic.Name == "map"))
+		isMapV := isMapExpr(e, env, ctx) || (st.Var.Type != nil && st.Var.Type.Generic != nil && st.Var.Type.Generic.Name == "map")
+		if !isMapV {
+			if t, err := env.GetVar(st.Var.Name); err == nil {
+				if _, ok := t.(types.MapType); ok {
+					isMapV = true
+				}
+			}
+		}
+		if exprHasListCast(st.Var.Value) && !(st.Var.Type != nil && st.Var.Type.Generic != nil && st.Var.Type.Generic.Name == "map") {
+			isMapV = false
+		}
+		ctx.setMapVar(st.Var.Name, isMapV)
 		ctx.setBoolVar(st.Var.Name, isBoolExpr(e, env, ctx) || (st.Var.Type != nil && st.Var.Type.Simple != nil && *st.Var.Type.Simple == "bool"))
 		ctx.clearConst(st.Var.Name)
 		if top {
@@ -3430,6 +3473,29 @@ func convertPostfix(pf *parser.PostfixExpr, env *types.Env, ctx *context) (Expr,
 		op := pf.Ops[i]
 		switch {
 		case op.Call != nil:
+			if ie, ok := expr.(*IndexExpr); ok && ie.Kind == "map" {
+				if key, ok := ie.Index.(*StringLit); ok && key.Value == "get" {
+					call := op.Call
+					if len(call.Args) == 0 || len(call.Args) > 2 {
+						return nil, fmt.Errorf("get expects 1 or 2 args")
+					}
+					k, err := convertExpr(call.Args[0], env, ctx)
+					if err != nil {
+						return nil, err
+					}
+					args := []Expr{k, ie.Target}
+					if len(call.Args) == 2 {
+						d, err := convertExpr(call.Args[1], env, ctx)
+						if err != nil {
+							return nil, err
+						}
+						args = append(args, d)
+					}
+					expr = &CallExpr{Func: "maps:get", Args: args}
+					i++
+					continue
+				}
+			}
 			ce := &CallExpr{}
 			if nr, ok := expr.(*NameRef); ok {
 				ce.Func = nr.Name
@@ -3520,6 +3586,25 @@ func convertPostfix(pf *parser.PostfixExpr, env *types.Env, ctx *context) (Expr,
 				return nil, fmt.Errorf("keys expects 0 arg")
 			}
 			expr = &CallExpr{Func: "maps:keys", Args: []Expr{expr}}
+			i++
+		case op.Field != nil && op.Field.Name == "get" && i+1 < len(pf.Ops) && pf.Ops[i+1].Call != nil:
+			call := pf.Ops[i+1].Call
+			if len(call.Args) == 0 || len(call.Args) > 2 {
+				return nil, fmt.Errorf("get expects 1 or 2 args")
+			}
+			key, err := convertExpr(call.Args[0], env, ctx)
+			if err != nil {
+				return nil, err
+			}
+			args := []Expr{key, expr}
+			if len(call.Args) == 2 {
+				def, err := convertExpr(call.Args[1], env, ctx)
+				if err != nil {
+					return nil, err
+				}
+				args = append(args, def)
+			}
+			expr = &CallExpr{Func: "maps:get", Args: args}
 			i++
 		case op.Field != nil:
 			field := op.Field.Name

@@ -1,0 +1,24 @@
+/workspace/mochi/tests/rosetta/transpiler/erl/align-columns.erl:134:14: Warning: variable 'I_9' exported from 'case' (line 106, column 17)
+%  134| {FmtLines_2, I_9, J_2, Lines, Text, Width_6, Words_2} = Fun_4(FmtLines_2, I_9, J, Lines, Text, Width_2, Words_2),
+%     |              ^
+
+Given      a          text       file   of     many      lines,     where    fields  within  a      line 
+are        delineated by         a      single 'dollar'  character, write    a       program 
+that       aligns     each       column of     fields    by         ensuring that    words   in     each 
+column     are        separated  by     at     least     one        space.   
+Further,   allow      for        each   word   in        a          column   to      be      either left 
+justified, right      justified, or     center justified within     its      column. 
+
+  Given        a         text     file    of     many      lines,    where   fields  within    a    line 
+   are     delineated     by       a    single 'dollar'  character,  write      a    program 
+   that      aligns      each    column   of    fields       by     ensuring  that    words    in   each 
+  column      are     separated    by     at     least      one      space.  
+ Further,    allow       for      each   word     in         a       column    to      be    either left 
+justified,   right    justified,   or   center justified   within     its    column. 
+
+     Given          a       text   file     of      many     lines,    where  fields  within      a line 
+       are delineated         by      a single  'dollar' character,    write       a program 
+      that     aligns       each column     of    fields         by ensuring    that   words     in each 
+    column        are  separated     by     at     least        one   space. 
+  Further,      allow        for   each   word        in          a   column      to      be either left 
+justified,      right justified,     or center justified     within      its column.
