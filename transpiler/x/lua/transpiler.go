@@ -2416,6 +2416,8 @@ func convertPostfix(p *parser.PostfixExpr) (Expr, error) {
 				kind = "string"
 			} else if isMapExpr(expr) {
 				kind = "map"
+			} else if id, ok := expr.(*Ident); ok && strings.HasSuffix(id.Name, "Map") {
+				kind = "map"
 			} else if _, ok := idx.(*StringLit); ok {
 				kind = "map"
 			}
