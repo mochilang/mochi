@@ -318,6 +318,7 @@ type VarInfo struct {
 	typ   string
 	ref   bool
 	group bool
+	ret   string
 }
 
 func guessTypeFromName(name string) string {
@@ -435,6 +436,8 @@ func typeString(t types.Type) string {
 			return "map"
 		}
 		return "map-" + val
+	case types.FuncType:
+		return "func"
 	case types.StructType:
 		fields := make([]string, len(tt.Order))
 		for i, name := range tt.Order {
@@ -761,8 +764,8 @@ func (f *FunStmt) emit(w io.Writer) {
 		io.WriteString(w, "()")
 	}
 	io.WriteString(w, " in\n")
-	for _, p := range f.Params {
-		fmt.Fprintf(w, "  let %s = ref %s in\n", sanitizeIdent(p), sanitizeIdent(p))
+	for range f.Params {
+		// parameters are immutable; no refs needed
 	}
 	io.WriteString(w, "  (try\n")
 	for _, st := range f.Body {
@@ -1850,6 +1853,12 @@ type IntLit struct{ Value int }
 func (i *IntLit) emit(w io.Writer)      { fmt.Fprintf(w, "%d", i.Value) }
 func (i *IntLit) emitPrint(w io.Writer) { fmt.Fprintf(w, "string_of_int %d", i.Value) }
 
+// RawExpr emits raw OCaml code as-is.
+type RawExpr struct{ Code string }
+
+func (r *RawExpr) emit(w io.Writer)      { io.WriteString(w, r.Code) }
+func (r *RawExpr) emitPrint(w io.Writer) { io.WriteString(w, r.Code) }
+
 // FloatLit represents a floating point literal.
 type FloatLit struct{ Value float64 }
 
@@ -2027,14 +2036,16 @@ func defaultValueExpr(typ string) Expr {
 	case "map":
 		return &MapLit{Items: nil}
 	case "func":
-		return &FuncExpr{}
-	default:
-		if strings.HasPrefix(typ, "list-") {
-			return &ListLit{Elems: nil}
-		}
-		if strings.HasPrefix(typ, "map-") {
-			return &MapLit{Items: nil}
-		}
+		return &RawExpr{Code: "(Obj.magic 0)"}
+	}
+	if strings.HasPrefix(typ, "func-") {
+		return &RawExpr{Code: "(Obj.magic 0)"}
+	}
+	if strings.HasPrefix(typ, "list-") {
+		return &ListLit{Elems: nil}
+	}
+	if strings.HasPrefix(typ, "map-") {
+		return &MapLit{Items: nil}
 	}
 	return &IntLit{Value: 0}
 }
@@ -2166,6 +2177,9 @@ func transpileStmt(st *parser.Statement, env *types.Env, vars map[string]VarInfo
 			return nil, fmt.Errorf("let without value not supported")
 		}
 		vinfo := VarInfo{typ: typ}
+		if strings.HasPrefix(typ, "func-") {
+			vinfo.ret = strings.TrimPrefix(typ, "func-")
+		}
 		stmt := Stmt(&LetStmt{Name: st.Let.Name, Expr: expr})
 		if strings.HasPrefix(typ, "list-") || strings.HasPrefix(typ, "map") {
 			vinfo.ref = true
@@ -2196,7 +2210,11 @@ func transpileStmt(st *parser.Statement, env *types.Env, vars map[string]VarInfo
 		if typ == "" {
 			typ = "int"
 		}
-		vars[st.Var.Name] = VarInfo{typ: typ, ref: true}
+		vinfo := VarInfo{typ: typ, ref: true}
+		if strings.HasPrefix(typ, "func-") {
+			vinfo.ret = strings.TrimPrefix(typ, "func-")
+		}
+		vars[st.Var.Name] = vinfo
 		return &VarStmt{Name: st.Var.Name, Expr: expr}, nil
 	case st.Assign != nil:
 		info, ok := vars[st.Assign.Name]
@@ -2483,7 +2501,7 @@ func transpileStmt(st *parser.Statement, env *types.Env, vars map[string]VarInfo
 					typ = "int"
 				}
 			}
-			fnVars[p.Name] = VarInfo{typ: typ, ref: true}
+			fnVars[p.Name] = VarInfo{typ: typ}
 		}
 		body, err := transpileStmts(st.Fun.Body, child, fnVars)
 		if err != nil {
@@ -2997,7 +3015,7 @@ func convertPostfix(p *parser.PostfixExpr, env *types.Env, vars map[string]VarIn
 					return nil, "", err
 				}
 			} else {
-				endExpr = &LenBuiltin{Arg: expr, Typ: "int"}
+				endExpr = &LenBuiltin{Arg: expr, Typ: typ}
 			}
 			expr = &SliceExpr{Col: expr, Start: startExpr, End: endExpr, Typ: typ}
 			i++
@@ -3382,8 +3400,11 @@ func convertMatch(m *parser.MatchExpr, env *types.Env, vars map[string]VarInfo) 
 }
 
 func convertFunExpr(fn *parser.FunExpr, env *types.Env, vars map[string]VarInfo) (Expr, string, error) {
-	child := env.Copy()
+	child := types.NewEnv(env)
 	fnVars := make(map[string]VarInfo)
+	for k, v := range vars {
+		fnVars[k] = v
+	}
 	params := make([]string, len(fn.Params))
 	for i, p := range fn.Params {
 		typ := "int"
@@ -3393,7 +3414,7 @@ func convertFunExpr(fn *parser.FunExpr, env *types.Env, vars map[string]VarInfo)
 				typ = "int"
 			}
 		}
-		fnVars[p.Name] = VarInfo{typ: typ, ref: true}
+		fnVars[p.Name] = VarInfo{typ: typ}
 		params[i] = p.Name
 	}
 	var retExpr Expr
@@ -3876,7 +3897,12 @@ func convertCall(c *parser.CallExpr, env *types.Env, vars map[string]VarInfo) (E
 					}
 				}
 			} else if fn.Return.Fun != nil {
-				ret = "func"
+				sub := typeRefString(fn.Return.Fun.Return)
+				if sub != "" {
+					ret = "func-" + sub
+				} else {
+					ret = "func"
+				}
 			}
 		}
 		args := make([]Expr, len(c.Args))
@@ -3892,7 +3918,7 @@ func convertCall(c *parser.CallExpr, env *types.Env, vars map[string]VarInfo) (E
 		}
 		return &FuncCall{Name: c.Func, Args: args, Ret: ret}, ret, nil
 	}
-	if v, ok := vars[c.Func]; ok && v.typ == "func" {
+	if v, ok := vars[c.Func]; ok && (v.typ == "func" || strings.HasPrefix(v.typ, "func-")) {
 		args := make([]Expr, len(c.Args))
 		for i, a := range c.Args {
 			ex, _, err := convertExpr(a, env, vars)
@@ -3901,7 +3927,17 @@ func convertCall(c *parser.CallExpr, env *types.Env, vars map[string]VarInfo) (E
 			}
 			args[i] = ex
 		}
-		return &FuncCall{Name: c.Func, Args: args, Ret: "int"}, "int", nil
+		ret := "int"
+		if strings.HasPrefix(v.typ, "func-") {
+			ret = strings.TrimPrefix(v.typ, "func-")
+		} else if t, err := env.GetVar(c.Func); err == nil {
+			if ft, ok := t.(types.FuncType); ok {
+				if r := typeString(ft.Return); r != "" {
+					ret = r
+				}
+			}
+		}
+		return &FuncCall{Name: c.Func, Args: args, Ret: ret}, ret, nil
 	}
 	return nil, "", fmt.Errorf("call %s not supported", c.Func)
 }
