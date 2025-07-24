@@ -1,4 +1,44 @@
-## Progress (2025-07-24 08:42 UTC)
+## Progress (2025-07-24 16:13 +0700)
+- ctranspiler: handle count on list variables (4b47fc18ae)
+
+- ctranspiler: handle count on list variables (4b47fc18ae)
+
+- ctranspiler: handle count on list variables (4b47fc18ae)
+
+- ctranspiler: handle count on list variables (4b47fc18ae)
+
+- ctranspiler: handle count on list variables (4b47fc18ae)
+
+- ctranspiler: handle count on list variables (4b47fc18ae)
+
+- ctranspiler: handle count on list variables (4b47fc18ae)
+
+- ctranspiler: handle count on list variables (4b47fc18ae)
+
+- ctranspiler: handle count on list variables (4b47fc18ae)
+
+- ctranspiler: handle count on list variables (4b47fc18ae)
+
+- ctranspiler: handle count on list variables (4b47fc18ae)
+
+- ctranspiler: handle count on list variables (4b47fc18ae)
+
+- ctranspiler: handle count on list variables (4b47fc18ae)
+
+- ctranspiler: handle count on list variables (4b47fc18ae)
+
+- ctranspiler: handle count on list variables (4b47fc18ae)
+
+- ctranspiler: handle count on list variables (4b47fc18ae)
+
+- ctranspiler: handle count on list variables (4b47fc18ae)
+
+- ctranspiler: handle count on list variables (4b47fc18ae)
+
+- ctranspiler: handle count on list variables (4b47fc18ae)
+
+- ctranspiler: handle count on list variables (4b47fc18ae)
+
 - java transpiler: handle nested arrays (4931e2cef0)
 
 - java transpiler: handle nested arrays (4931e2cef0)
