@@ -316,7 +316,18 @@ func (c *CallStmt) emit(w io.Writer, indent int) {
 		if i > 0 {
 			io.WriteString(w, ", ")
 		}
+		var paramType string
+		if types, ok := funcParamTypes[c.Func]; ok && i < len(types) {
+			paramType = types[i]
+		}
+		if strings.HasPrefix(paramType, "struct ") && strings.HasSuffix(paramType, "*") {
+			io.WriteString(w, "&")
+		}
 		a.emitExpr(w)
+		if strings.HasSuffix(paramType, "[]") {
+			io.WriteString(w, ", ")
+			emitLenExpr(w, a)
+		}
 	}
 	io.WriteString(w, ");\n")
 }
@@ -353,6 +364,14 @@ func (d *DeclStmt) emit(w io.Writer, indent int) {
 	writeIndent(w, indent)
 	if strings.HasSuffix(typ, "[][]") {
 		base := strings.TrimSuffix(typ, "[][]")
+		if call, ok := d.Value.(*CallExpr); ok {
+			fmt.Fprintf(w, "%s **%s = ", base, d.Name)
+			d.Value.emitExpr(w)
+			io.WriteString(w, ";\n")
+			writeIndent(w, indent)
+			fmt.Fprintf(w, "size_t %s_len = %s_len;\n", d.Name, call.Func)
+			return
+		}
 		fmt.Fprintf(w, "%s **%s = NULL;\n", base, d.Name)
 		writeIndent(w, indent)
 		fmt.Fprintf(w, "size_t %s_len = 0;\n", d.Name)
@@ -483,7 +502,11 @@ func (a *AssignStmt) emit(w io.Writer, indent int) {
 	if call, ok := a.Value.(*CallExpr); ok {
 		if strings.HasSuffix(funcReturnTypes[call.Func], "[]") {
 			writeIndent(w, indent)
-			fmt.Fprintf(w, "size_t %s_len = %s_len;\n", a.Name, call.Func)
+			if _, declared := varTypes[a.Name]; declared {
+				fmt.Fprintf(w, "%s_len = %s_len;\n", a.Name, call.Func)
+			} else {
+				fmt.Fprintf(w, "size_t %s_len = %s_len;\n", a.Name, call.Func)
+			}
 		}
 	}
 }
