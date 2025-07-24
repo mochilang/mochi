@@ -2,7 +2,7 @@
 
 This directory contains Dart code generated from Mochi programs in `tests/rosetta/x/Mochi`. Each program has a `.dart` file and `.out` output. Compilation or runtime failures are captured in a `.error` file.
 
-Compiled and ran: 40/284
+Compiled and ran: 41/284
 
 ## Checklist
 1. [x] 100-doors-2 (1)
@@ -46,7 +46,7 @@ Compiled and ran: 40/284
 39. [x] algebraic-data-types (39)
 40. [x] align-columns (40)
 41. [x] aliquot-sequence-classifications (41)
-42. [ ] almkvist-giullera-formula-for-pi (42)
+42. [x] almkvist-giullera-formula-for-pi (42)
 43. [ ] almost-prime (43)
 44. [ ] amb (44)
 45. [ ] amicable-pairs (45)
@@ -290,4 +290,4 @@ Compiled and ran: 40/284
 283. [ ] define-a-primitive-data-type (283)
 284. [ ] md5 (284)
 
-_Last updated: 2025-07-24 14:46 +0700_
+_Last updated: 2025-07-24 08:20 +0000_

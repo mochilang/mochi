@@ -3634,7 +3634,7 @@ func convertPostfix(pf *parser.PostfixExpr) (Expr, error) {
 			// method call if next op is call
 			if i+1 < len(pf.Ops) && pf.Ops[i+1].Call != nil {
 				call := pf.Ops[i+1]
-				if op.Field.Name == "get" && strings.HasPrefix(inferType(expr), "Map<") && (len(call.Call.Args) == 1 || len(call.Call.Args) == 2) {
+				if op.Field.Name == "get" && (len(call.Call.Args) == 1 || len(call.Call.Args) == 2) {
 					key, err := convertExpr(call.Call.Args[0])
 					if err != nil {
 						return nil, err
