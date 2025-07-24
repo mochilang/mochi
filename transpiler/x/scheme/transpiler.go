@@ -191,6 +191,8 @@ func header() []byte {
 		prelude += "(import (only (scheme base) call/cc when list-ref list-set! list))\n"
 		prelude += "(import (scheme time))\n"
 	}
+	// Always import string helpers for functions like string-contains
+	prelude += "(import (chibi string))\n"
 	if needHash {
 		prelude += "(import (srfi 69))\n"
 	}
