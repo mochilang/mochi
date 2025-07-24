@@ -1761,6 +1761,10 @@ func compileStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 			} else {
 				valType = types.TypeOfExpr(st.Let.Value, env)
 			}
+			if _, ok := e.(*NullLit); ok && typ == "" {
+				typ = "any"
+				valType = types.AnyType{}
+			}
 			if ll, ok := e.(*ListLit); ok {
 				if st.Let.Type != nil && st.Let.Type.Generic != nil && st.Let.Type.Generic.Name == "list" && len(st.Let.Type.Generic.Args) == 1 {
 					ll.ElemType = toGoType(st.Let.Type.Generic.Args[0], env)
@@ -1768,6 +1772,14 @@ func compileStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 				} else if ll.ElemType != "" && ll.ElemType != "any" {
 					if st.Let.Type == nil {
 						typ = "[]" + ll.ElemType
+					}
+					// refine variable type based on inferred element type
+					elemT := toTypeFromGoType(ll.ElemType)
+					valType = types.ListType{Elem: elemT}
+					if env == topEnv {
+						env.SetVarDeep(st.Let.Name, valType, false)
+					} else {
+						env.SetVar(st.Let.Name, valType, false)
 					}
 				}
 			}
@@ -1919,6 +1931,10 @@ func compileStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 			} else {
 				valType = types.TypeOfExpr(st.Var.Value, env)
 			}
+			if _, ok := e.(*NullLit); ok && typ == "" {
+				typ = "any"
+				valType = types.AnyType{}
+			}
 			if ll, ok := e.(*ListLit); ok {
 				if st.Var.Type != nil && st.Var.Type.Generic != nil && st.Var.Type.Generic.Name == "list" && len(st.Var.Type.Generic.Args) == 1 {
 					ll.ElemType = toGoType(st.Var.Type.Generic.Args[0], env)
@@ -1926,6 +1942,14 @@ func compileStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 				} else if ll.ElemType != "" && ll.ElemType != "any" {
 					if st.Var.Type == nil {
 						typ = "[]" + ll.ElemType
+					}
+					// refine variable type based on inferred element type
+					elemT := toTypeFromGoType(ll.ElemType)
+					valType = types.ListType{Elem: elemT}
+					if env == topEnv {
+						env.SetVarDeep(st.Var.Name, valType, true)
+					} else {
+						env.SetVar(st.Var.Name, valType, true)
 					}
 				}
 			}
@@ -3692,9 +3716,17 @@ func compilePostfix(pf *parser.PostfixExpr, env *types.Env, base string) (Expr, 
 				default:
 					if types.IsAnyType(t) {
 						if _, ok2 := types.TypeOfExpr(idx.Start, env).(types.IntType); ok2 {
-							expr = &IndexExpr{X: &AssertExpr{Expr: expr, Type: "[]any"}, Index: iex}
+							if ae, ok3 := expr.(*AssertExpr); ok3 && ae.Type == "[]any" {
+								expr = &IndexExpr{X: expr, Index: iex}
+							} else {
+								expr = &IndexExpr{X: &AssertExpr{Expr: expr, Type: "[]any"}, Index: iex}
+							}
 						} else {
-							expr = &IndexExpr{X: &AssertExpr{Expr: expr, Type: "map[string]any"}, Index: iex}
+							if ae, ok3 := expr.(*AssertExpr); ok3 && ae.Type == "map[string]any" {
+								expr = &IndexExpr{X: expr, Index: iex}
+							} else {
+								expr = &IndexExpr{X: &AssertExpr{Expr: expr, Type: "map[string]any"}, Index: iex}
+							}
 						}
 					} else {
 						expr = &IndexExpr{X: expr, Index: iex}

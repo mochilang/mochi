@@ -1,7 +1,7 @@
 # Go Rosetta Transpiler Output
 
-Completed programs: 77/284
-Last updated: 2025-07-24 00:32 +0700
+Completed programs: 86/284
+Last updated: 2025-07-24 08:21 +0700
 
 Checklist:
 
@@ -90,15 +90,15 @@ Checklist:
 83. [x] atomic-updates (83)
 84. [x] attractive-numbers (84)
 85. [x] average-loop-length (85)
-86. [ ] averages-arithmetic-mean (86)
-87. [ ] averages-mean-time-of-day (87)
-88. [ ] averages-median-1 (88)
-89. [ ] averages-median-2 (89)
-90. [ ] averages-median-3 (90)
-91. [ ] averages-mode (91)
-92. [ ] averages-pythagorean-means (92)
-93. [ ] averages-root-mean-square (93)
-94. [ ] averages-simple-moving-average (94)
+86. [x] averages-arithmetic-mean (86)
+87. [x] averages-mean-time-of-day (87)
+88. [x] averages-median-1 (88)
+89. [x] averages-median-2 (89)
+90. [x] averages-median-3 (90)
+91. [x] averages-mode (91)
+92. [x] averages-pythagorean-means (92)
+93. [x] averages-root-mean-square (93)
+94. [x] averages-simple-moving-average (94)
 95. [ ] avl-tree (95)
 96. [ ] b-zier-curves-intersections (96)
 97. [ ] babbage-problem (97)

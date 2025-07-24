@@ -1,3 +1,71 @@
+## Progress (2025-07-24 08:21 +0700)
+- transpiler/go: support nil variable decl
+- Regenerated golden files - 103/103 vm valid programs passing
+
+## Progress (2025-07-24 08:21 +0700)
+- transpiler/go: support nil variable decl
+- Regenerated golden files - 103/103 vm valid programs passing
+
+## Progress (2025-07-24 08:14 +0700)
+- go transpiler: refine list type inference
+- Regenerated golden files - 103/103 vm valid programs passing
+
+## Progress (2025-07-24 08:14 +0700)
+- go transpiler: refine list type inference
+- Regenerated golden files - 103/103 vm valid programs passing
+
+## Progress (2025-07-24 08:14 +0700)
+- go transpiler: refine list type inference
+- Regenerated golden files - 103/103 vm valid programs passing
+
+## Progress (2025-07-24 08:14 +0700)
+- go transpiler: refine list type inference
+- Regenerated golden files - 103/103 vm valid programs passing
+
+## Progress (2025-07-24 08:14 +0700)
+- go transpiler: refine list type inference
+- Regenerated golden files - 103/103 vm valid programs passing
+
+## Progress (2025-07-24 08:14 +0700)
+- go transpiler: refine list type inference
+- Regenerated golden files - 103/103 vm valid programs passing
+
+## Progress (2025-07-24 08:14 +0700)
+- go transpiler: refine list type inference
+- Regenerated golden files - 103/103 vm valid programs passing
+
+## Progress (2025-07-24 08:14 +0700)
+- go transpiler: refine list type inference
+- Regenerated golden files - 103/103 vm valid programs passing
+
+## Progress (2025-07-24 08:14 +0700)
+- go transpiler: refine list type inference
+- Regenerated golden files - 103/103 vm valid programs passing
+
+## Progress (2025-07-24 08:14 +0700)
+- go transpiler: refine list type inference
+- Regenerated golden files - 103/103 vm valid programs passing
+
+## Progress (2025-07-24 08:14 +0700)
+- go transpiler: refine list type inference
+- Regenerated golden files - 103/103 vm valid programs passing
+
+## Progress (2025-07-24 08:14 +0700)
+- go transpiler: refine list type inference
+- Regenerated golden files - 103/103 vm valid programs passing
+
+## Progress (2025-07-24 08:14 +0700)
+- go transpiler: refine list type inference
+- Regenerated golden files - 103/103 vm valid programs passing
+
+## Progress (2025-07-24 08:05 +0700)
+- lua transpiler: regenerate 24-game-solve
+- Regenerated golden files - 103/103 vm valid programs passing
+
+## Progress (2025-07-24 08:05 +0700)
+- lua transpiler: regenerate 24-game-solve
+- Regenerated golden files - 103/103 vm valid programs passing
+
 ## Progress (2025-07-24 00:32 +0700)
 - transpile go rosetta: add ascending-primes
 - Regenerated golden files - 103/103 vm valid programs passing
