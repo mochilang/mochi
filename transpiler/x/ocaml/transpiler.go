@@ -759,7 +759,7 @@ func (r *ReturnStmt) emit(w io.Writer) {
 	} else {
 		io.WriteString(w, "()")
 	}
-	io.WriteString(w, "; raise Return;\n")
+	io.WriteString(w, "; raise Return\n")
 }
 
 // SaveStmt writes rows to stdout in JSONL format.
@@ -784,11 +784,13 @@ func (s *SaveStmt) emit(w io.Writer) {
 
 // FunStmt represents a simple function declaration with no parameters.
 type FunStmt struct {
-	Name   string
-	Params []string
-	Body   []Stmt
-	Ret    Expr
-	RetTyp string
+	Name           string
+	Params         []string
+	Body           []Stmt
+	Ret            Expr
+	RetTyp         string
+	Local          bool
+	EndsWithReturn bool
 }
 
 func (f *FunStmt) emit(w io.Writer) {
@@ -805,7 +807,7 @@ func (f *FunStmt) emit(w io.Writer) {
 	if f.RetTyp != "" {
 		defaultValueExpr(f.RetTyp).emit(w)
 	} else {
-		io.WriteString(w, "()")
+		io.WriteString(w, "(Obj.magic 0)")
 	}
 	io.WriteString(w, " in\n")
 	for range f.Params {
@@ -815,12 +817,20 @@ func (f *FunStmt) emit(w io.Writer) {
 	for _, st := range f.Body {
 		st.emit(w)
 	}
-	if f.Ret != nil {
-		io.WriteString(w, "  __ret := ")
-		f.Ret.emit(w)
-		io.WriteString(w, ";\n")
+	if !f.EndsWithReturn {
+		if f.Ret != nil {
+			io.WriteString(w, "  __ret := ")
+			f.Ret.emit(w)
+			io.WriteString(w, ";\n")
+		}
+		io.WriteString(w, "    !__ret\n")
 	}
-	io.WriteString(w, "    !__ret\n  with Return -> !__ret)\n\n")
+	io.WriteString(w, "  with Return -> !__ret)")
+	if f.Local {
+		io.WriteString(w, " in\n")
+	} else {
+		io.WriteString(w, "\n\n")
+	}
 }
 
 // Expr is any OCaml expression that can emit itself.
@@ -2554,8 +2564,12 @@ func transpileStmt(st *parser.Statement, env *types.Env, vars map[string]VarInfo
 				if ts := typeString(types.ResolveTypeRef(p.Type, env)); ts != "" {
 					typ = ts
 				}
+				if typ == "any" {
+					typ = ""
+				}
+				// leave typ empty for dynamic parameters
 				if typ == "" {
-					typ = "int"
+					// no default
 				}
 			}
 			fnVars[p.Name] = VarInfo{typ: typ, ref: mutated[p.Name]}
@@ -2565,17 +2579,25 @@ func transpileStmt(st *parser.Statement, env *types.Env, vars map[string]VarInfo
 			return nil, err
 		}
 		var ret Expr
+		endsWithReturn := false
 		if len(st.Fun.Body) > 0 {
 			last := st.Fun.Body[len(st.Fun.Body)-1]
 			if last.Return != nil && last.Return.Value != nil {
+				// last statement explicitly returns a value; no implicit return
 				r, _, err := convertExpr(last.Return.Value, child, fnVars)
 				if err != nil {
 					return nil, err
 				}
-				ret = r
+				// body already contains a ReturnStmt, so skip implicit return
+				_ = r
+				endsWithReturn = true
+			} else if last.Return == nil {
+				// infer implicit return value if provided
+				// (none for this case)
 			}
 		}
-		return &FunStmt{Name: st.Fun.Name, Params: params, Body: body, Ret: ret, RetTyp: typeString(retTyp)}, nil
+		local := len(vars) > 0
+		return &FunStmt{Name: st.Fun.Name, Params: params, Body: body, Ret: ret, RetTyp: typeString(retTyp), Local: local, EndsWithReturn: endsWithReturn}, nil
 	case st.Type != nil:
 		if len(st.Type.Members) > 0 {
 			fields := map[string]string{}
@@ -2751,6 +2773,9 @@ func convertBinary(b *parser.BinaryExpr, env *types.Env, vars map[string]VarInfo
 			} else if info.op == "+" && ltyp == "string" && rtyp == "string" {
 				resTyp = "string"
 			} else if ltyp == "float" || rtyp == "float" {
+				resTyp = "float"
+			} else if ltyp == "" || rtyp == "" {
+				// default to float when operand types are unknown
 				resTyp = "float"
 			} else {
 				resTyp = "int"
@@ -4006,7 +4031,7 @@ func convertCall(c *parser.CallExpr, env *types.Env, vars map[string]VarInfo) (E
 		args := make([]Expr, len(c.Args))
 		mutated := getFuncMutations(env, c.Func)
 		for i, a := range c.Args {
-			ex, _, err := convertExpr(a, env, vars)
+			ex, at, err := convertExpr(a, env, vars)
 			if err != nil {
 				return nil, "", err
 			}
@@ -4014,6 +4039,13 @@ func convertCall(c *parser.CallExpr, env *types.Env, vars map[string]VarInfo) (E
 				if n, ok := ex.(*Name); ok && mutated != nil && mutated[fn.Params[i].Name] {
 					// pass reference without dereference
 					n.Ref = false
+				}
+				ptyp := typeRefString(fn.Params[i].Type)
+				if ts := typeString(types.ResolveTypeRef(fn.Params[i].Type, env)); ts != "" {
+					ptyp = ts
+				}
+				if ptyp == "float" && at == "int" {
+					ex = &CastExpr{Expr: ex, Type: "int_to_float"}
 				}
 			}
 			args[i] = ex
