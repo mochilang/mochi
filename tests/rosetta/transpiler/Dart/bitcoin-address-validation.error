@@ -1,0 +1,7 @@
+run: exit status 254
+../../../tests/rosetta/transpiler/Dart/bitcoin-address-validation.dart:44:27: Error: Method not found: 'sha256'.
+  final List<int> first = sha256(bs);
+                          ^^^^^^
+../../../tests/rosetta/transpiler/Dart/bitcoin-address-validation.dart:45:10: Error: Method not found: 'sha256'.
+  return sha256(first);
+         ^^^^^^

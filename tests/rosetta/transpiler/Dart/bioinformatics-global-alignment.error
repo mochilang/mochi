@@ -1,0 +1,30 @@
+run: exit status 255
+
+Nucleotide counts for TAAGAA:
+
+         A           4
+         C           0
+         G           1
+         T           1
+     Other           4
+  ____________________
+  Total length       6
+
+Nucleotide counts for CATTAGGG:
+
+         A           2
+         C           1
+         G           3
+         T           2
+     Other          12
+  ____________________
+  Total length       8
+Unhandled exception:
+RangeError (end): Invalid value: Not in inclusive range 0..8: 13
+#0      RangeError.checkValidRange (dart:core/errors.dart:392:9)
+#1      _StringBase.substring (dart:core-patch/string_patch.dart:440:27)
+#2      headTailOverlap (file:///workspace/mochi/tests/rosetta/transpiler/Dart/bioinformatics-global-alignment.dart:91:12)
+#3      shortestCommonSuperstring (file:///workspace/mochi/tests/rosetta/transpiler/Dart/bioinformatics-global-alignment.dart:139:20)
+#4      main (file:///workspace/mochi/tests/rosetta/transpiler/Dart/bioinformatics-global-alignment.dart:190:24)
+#5      _delayEntrypointInvocation.<anonymous closure> (dart:isolate-patch/isolate_patch.dart:314:19)
+#6      _RawReceivePort._handleMessage (dart:isolate-patch/isolate_patch.dart:193:12)
