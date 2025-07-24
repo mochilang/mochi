@@ -245,15 +245,15 @@ Last updated: 2025-07-24 20:10 GMT+7
 238. [x] copy-a-string-2
 239. [x] copy-stdin-to-stdout-1
 240. [x] copy-stdin-to-stdout-2
-241. [ ] count-in-factors
-242. [ ] count-in-octal-1
-243. [ ] count-in-octal-2
+241. [x] count-in-factors
+242. [x] count-in-octal-1
+243. [x] count-in-octal-2
 244. [ ] count-in-octal-3
 245. [ ] count-in-octal-4
-246. [ ] count-occurrences-of-a-substring
-247. [ ] count-the-coins-1
-248. [ ] count-the-coins-2
-249. [ ] cramers-rule
+246. [x] count-occurrences-of-a-substring
+247. [x] count-the-coins-1
+248. [x] count-the-coins-2
+249. [x] cramers-rule
 250. [x] crc-32-1
 251. [x] crc-32-2
 252. [x] create-a-file-on-magnetic-tape
