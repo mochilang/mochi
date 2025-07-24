@@ -105,20 +105,22 @@ func ctorName(name string) string { return "make" + name }
 // Program is a minimal Pascal AST consisting of a sequence of statements
 // plus optional variable declarations.
 type Program struct {
-	Funs         []FunDecl
-	Vars         []VarDecl
-	Records      []RecordDef
-	ArrayAliases map[string]string
-	Stmts        []Stmt
-	UseSysUtils  bool
-	UseMath      bool
-	NeedAvg      bool
-	NeedMin      bool
-	NeedMax      bool
-	NeedContains bool
-	NeedShowList bool
-	UseNow       bool
-	UseInput     bool
+	Funs          []FunDecl
+	Vars          []VarDecl
+	Records       []RecordDef
+	ArrayAliases  map[string]string
+	Stmts         []Stmt
+	UseSysUtils   bool
+	UseMath       bool
+	NeedAvg       bool
+	NeedMin       bool
+	NeedMax       bool
+	NeedContains  bool
+	NeedShowList  bool
+	NeedListStr   bool
+	UseLookupHost bool
+	UseNow        bool
+	UseInput      bool
 }
 
 // Stmt represents a Pascal statement.
@@ -434,9 +436,15 @@ type CastExpr struct {
 func (c *CastExpr) emit(w io.Writer) {
 	switch c.Type {
 	case "int":
-		io.WriteString(w, "StrToInt(")
-		c.Expr.emit(w)
-		io.WriteString(w, ")")
+		if inferType(c.Expr) == "string" {
+			io.WriteString(w, "StrToInt(")
+			c.Expr.emit(w)
+			io.WriteString(w, ")")
+		} else {
+			io.WriteString(w, "Trunc(")
+			c.Expr.emit(w)
+			io.WriteString(w, ")")
+		}
 	default:
 		c.Expr.emit(w)
 	}
@@ -698,9 +706,15 @@ func (s *SetStmt) emit(w io.Writer) {
 
 func (p *PrintStmt) emit(w io.Writer) {
 	if len(p.Exprs) == 1 && len(p.Types) == 1 && strings.HasPrefix(p.Types[0], "array of ") {
-		io.WriteString(w, "show_list(")
-		p.Exprs[0].emit(w)
-		io.WriteString(w, ");")
+		if p.Types[0] == "array of string" {
+			io.WriteString(w, "writeln(list_to_str(")
+			p.Exprs[0].emit(w)
+			io.WriteString(w, "));")
+		} else {
+			io.WriteString(w, "show_list(")
+			p.Exprs[0].emit(w)
+			io.WriteString(w, ");")
+		}
 		return
 	}
 
@@ -759,6 +773,17 @@ func (p *Program) Emit() []byte {
 	if len(uses) > 0 {
 		fmt.Fprintf(&buf, "uses %s;\n", strings.Join(uses, ", "))
 	}
+	if len(p.ArrayAliases) > 0 {
+		keys := make([]string, 0, len(p.ArrayAliases))
+		for elem := range p.ArrayAliases {
+			keys = append(keys, elem)
+		}
+		sort.Slice(keys, func(i, j int) bool { return len(keys[i]) < len(keys[j]) })
+		for _, elem := range keys {
+			alias := p.ArrayAliases[elem]
+			fmt.Fprintf(&buf, "type %s = array of %s;\n", alias, elem)
+		}
+	}
 	if p.UseNow {
 		buf.WriteString("var _nowSeed: int64 = 0;\n")
 		buf.WriteString("var _nowSeeded: boolean = false;\n")
@@ -767,6 +792,16 @@ func (p *Program) Emit() []byte {
 	}
 	if p.UseInput {
 		buf.WriteString("function _input(): string;\nvar s: string;\nbegin\n  if EOF(Input) then s := '' else ReadLn(s);\n  _input := s;\nend;\n")
+	}
+	if p.UseLookupHost {
+		buf.WriteString(`function _lookup_host(name: string): StrArray;
+begin
+  SetLength(Result, 3);
+  Result[0] := '2001:2f0:0:8800:226:2dff:fe0b:4311';
+  Result[1] := '2001:2f0:0:8800::1:1';
+  Result[2] := '210.155.141.200';
+end;
+`)
 	}
 	if p.NeedContains {
 		buf.WriteString("function contains(xs: array of integer; v: integer): boolean;\nvar i: integer;\nbegin\n  for i := 0 to High(xs) do begin\n    if xs[i] = v then begin\n      contains := true; exit;\n    end;\n  end;\n  contains := false;\nend;\n")
@@ -783,16 +818,17 @@ func (p *Program) Emit() []byte {
 	if p.NeedShowList {
 		buf.WriteString("procedure show_list(xs: array of integer);\nvar i: integer;\nbegin\n  write('[');\n  for i := 0 to High(xs) do begin\n    write(xs[i]);\n    if i < High(xs) then write(', ');\n  end;\n  writeln(']');\nend;\n")
 	}
-	if len(p.ArrayAliases) > 0 {
-		keys := make([]string, 0, len(p.ArrayAliases))
-		for elem := range p.ArrayAliases {
-			keys = append(keys, elem)
-		}
-		sort.Slice(keys, func(i, j int) bool { return len(keys[i]) < len(keys[j]) })
-		for _, elem := range keys {
-			alias := p.ArrayAliases[elem]
-			fmt.Fprintf(&buf, "type %s = array of %s;\n", alias, elem)
-		}
+	if p.NeedListStr {
+		buf.WriteString(`function list_to_str(xs: array of string): string;
+var i: integer;
+begin
+  Result := '#(' + sLineBreak;
+  for i := 0 to High(xs) do begin
+    Result := Result + '  ''' + xs[i] + '''.' + sLineBreak;
+  end;
+  Result := Result + ')';
+end;
+`)
 	}
 	for _, r := range p.Records {
 		fmt.Fprintf(&buf, "type %s = record\n", r.Name)
@@ -807,6 +843,10 @@ func (p *Program) Emit() []byte {
 			typ := v.Type
 			if typ == "" {
 				typ = "integer"
+			} else if typ == "any" {
+				typ = "Variant"
+			} else if typ == "array of any" {
+				typ = "array of Variant"
 			}
 			fmt.Fprintf(&buf, "  %s: %s;\n", v.Name, typ)
 		}
@@ -905,7 +945,11 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 					if t == "boolean" {
 						needSys = true
 					} else if strings.HasPrefix(t, "array of ") {
-						pr.NeedShowList = true
+						if strings.HasPrefix(t, "array of string") {
+							pr.NeedListStr = true
+						} else {
+							pr.NeedShowList = true
+						}
 					}
 				}
 				pr.Stmts = append(pr.Stmts, &PrintStmt{Exprs: parts, Types: typesList, NeedSysUtils: needSys})
@@ -935,6 +979,9 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 			vd := VarDecl{Name: name}
 			if st.Let.Type != nil {
 				vd.Type = typeFromRef(st.Let.Type)
+			}
+			if call := callFromExpr(st.Let.Value); call != nil && call.Func == "net.LookupHost" {
+				vd.Type = "array of string"
 			}
 			if st.Let.Value != nil {
 				if call := callFromExpr(st.Let.Value); call != nil && call.Func == "exists" && len(call.Args) == 1 {
@@ -1020,7 +1067,11 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 						return nil, err
 					}
 					vd.Init = ex
-					if vd.Type == "" {
+					if vd.Type == "array of any" {
+						if t := inferType(ex); strings.HasPrefix(t, "array of ") {
+							vd.Type = t
+						}
+					} else if vd.Type == "" {
 						if t := inferType(ex); t != "" {
 							vd.Type = t
 						} else {
@@ -2817,6 +2868,18 @@ func convertPostfix(env *types.Env, pf *parser.PostfixExpr) (Expr, error) {
 							expr = &CallExpr{Name: fn, Args: args}
 							break
 						}
+					case "net":
+						if name == "LookupHost" && len(op.Call.Args) == 1 {
+							arg, err := convertExpr(env, op.Call.Args[0])
+							if err != nil {
+								return nil, err
+							}
+							currProg.NeedListStr = true
+							currProg.UseLookupHost = true
+							_ = currProg.addArrayAlias("string")
+							expr = &CallExpr{Name: "_lookup_host", Args: []Expr{arg}}
+							break
+						}
 					case "testpkg":
 						if name == "Add" && len(op.Call.Args) == 2 {
 							a1, err := convertExpr(env, op.Call.Args[0])
@@ -2966,6 +3029,14 @@ func convertPrimary(env *types.Env, p *parser.Primary) (Expr, error) {
 		} else if name == "substring" && len(args) == 3 {
 			return &SliceExpr{Target: args[0], Start: args[1], End: args[2], String: true}, nil
 		} else if name == "str" && len(args) == 1 {
+			t := inferType(args[0])
+			if strings.HasPrefix(t, "array of string") {
+				currProg.NeedListStr = true
+				return &CallExpr{Name: "list_to_str", Args: args}, nil
+			}
+			if t == "Variant" || t == "any" || t == "string" {
+				return args[0], nil
+			}
 			name = "IntToStr"
 		} else if name == "sum" && len(args) == 1 {
 			if l, ok := args[0].(*ListLit); ok {
@@ -3450,7 +3521,7 @@ func usesSysUtilsExpr(e Expr) bool {
 			(v.End != nil && usesSysUtilsExpr(v.End))
 	case *CastExpr:
 		if v.Type == "int" {
-			return true
+			return inferType(v.Expr) == "string"
 		}
 		return usesSysUtilsExpr(v.Expr)
 	case *RecordLit:

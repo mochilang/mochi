@@ -2,7 +2,7 @@
 
 Generated Pascal code for Rosetta tasks lives under `tests/rosetta/transpiler/Pascal`.
 
-## Rosetta Checklist (5/284) - updated 2025-07-24 18:38 +0700
+## Rosetta Checklist (7/284) - updated 2025-07-24 19:43 +0700
 - [x] (1) 100-doors-2
 - [x] (2) 100-doors-3
 - [x] (3) 100-doors
@@ -15,8 +15,8 @@ Generated Pascal code for Rosetta tasks lives under `tests/rosetta/transpiler/Pa
 - [ ] (10) 24-game
 - [ ] (11) 4-rings-or-4-squares-puzzle
 - [ ] (12) 9-billion-names-of-god-the-integer
-- [ ] (13) 99-bottles-of-beer-2
-- [ ] (14) 99-bottles-of-beer
+- [x] (13) 99-bottles-of-beer-2
+- [x] (14) 99-bottles-of-beer
 - [ ] (15) DNS-query
 - [ ] (16) a+b
 - [ ] (17) abbreviations-automatic
