@@ -1959,6 +1959,7 @@ func convertBinary(b *parser.BinaryExpr, env *types.Env) (Expr, error) {
 	}
 	exprs := []Expr{left}
 	ops := []string{}
+	leftType := types.TypeOfUnary(b.Left, env)
 	for _, part := range b.Right {
 		right, err := convertPostfix(part.Right, env)
 		if err != nil {
@@ -2049,7 +2050,7 @@ func convertBinary(b *parser.BinaryExpr, env *types.Env) (Expr, error) {
 			op = "or"
 		}
 		if op == "/" {
-			lt := types.TypeOfUnary(b.Left, env)
+			lt := leftType
 			rt := types.TypeOfPostfix(part.Right, env)
 			if literalIntPostfix(part.Right) && !types.IsFloatType(lt) {
 				op = "quotient"
@@ -2090,7 +2091,7 @@ func convertBinary(b *parser.BinaryExpr, env *types.Env) (Expr, error) {
 		}
 		if op == "<" || op == "<=" || op == ">" || op == ">=" {
 			leftIsString := false
-			if _, ok := types.TypeOfUnary(b.Left, env).(types.StringType); ok {
+			if _, ok := leftType.(types.StringType); ok {
 				leftIsString = true
 			}
 			rightIsString := false
@@ -2111,7 +2112,7 @@ func convertBinary(b *parser.BinaryExpr, env *types.Env) (Expr, error) {
 			}
 		}
 		if op == "%" {
-			lt := types.TypeOfUnary(b.Left, env)
+			lt := leftType
 			rt := types.TypeOfPostfix(part.Right, env)
 			if types.IsFloatType(lt) || types.IsFloatType(rt) {
 				left := exprs[len(exprs)-1]
@@ -2131,6 +2132,12 @@ func convertBinary(b *parser.BinaryExpr, env *types.Env) (Expr, error) {
 		}
 		ops = append(ops, op)
 		exprs = append(exprs, right)
+		switch op {
+		case "&&", "||", "and", "or", "==", "!=", "string=?", "string!=", "<", "<=", ">", ">=", "string<?", "string<=?", "string>?", "string>=?", "in":
+			leftType = types.BoolType{}
+		default:
+			leftType = types.AnyType{}
+		}
 	}
 	for len(ops) > 0 {
 		r := exprs[len(exprs)-1]
