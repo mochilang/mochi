@@ -35,6 +35,8 @@ func TestJavaTranspiler_VMValid_Golden(t *testing.T) {
 		outPath := filepath.Join(outDir, base+".out")
 		errPath := filepath.Join(outDir, base+".error")
 
+		bench := os.Getenv("MOCHI_BENCHMARK") == "true"
+		javatr.SetBenchMain(bench)
 		prog, err := parser.Parse(src)
 		if err != nil {
 			_ = os.WriteFile(errPath, []byte(err.Error()), 0o644)
@@ -65,7 +67,13 @@ func TestJavaTranspiler_VMValid_Golden(t *testing.T) {
 			return nil, err
 		}
 		cmd = exec.Command("java", "-cp", outDir, "Main")
-		cmd.Env = append(os.Environ(), "MOCHI_NOW_SEED=1")
+		runEnv := []string{"MOCHI_ROOT=" + root}
+		if bench {
+			runEnv = append(runEnv, "MOCHI_BENCHMARK=1")
+		} else {
+			runEnv = append(runEnv, "MOCHI_NOW_SEED=1")
+		}
+		cmd.Env = append(os.Environ(), runEnv...)
 		if data, err := os.ReadFile(strings.TrimSuffix(src, ".mochi") + ".in"); err == nil {
 			cmd.Stdin = bytes.NewReader(data)
 		}
