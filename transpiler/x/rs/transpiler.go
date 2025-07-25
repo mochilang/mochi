@@ -450,6 +450,7 @@ type FunLit struct {
 	Params []Param
 	Return string
 	Expr   Expr
+	Body   []Stmt
 }
 
 func (f *FunLit) emit(w io.Writer) {
@@ -467,6 +468,15 @@ func (f *FunLit) emit(w io.Writer) {
 	io.WriteString(w, "|")
 	if f.Return != "" && f.Return != "()" {
 		fmt.Fprintf(w, " -> %s", f.Return)
+	}
+	if len(f.Body) > 0 {
+		io.WriteString(w, " {\n")
+		buf := w.(*bytes.Buffer)
+		for _, st := range f.Body {
+			writeStmt(buf, st, 1)
+		}
+		io.WriteString(w, "}")
+		return
 	}
 	io.WriteString(w, " {")
 	if f.Expr != nil {
@@ -1905,7 +1915,8 @@ func compileStmt(stmt *parser.Statement) (Stmt, error) {
 				typ = ""
 			}
 		}
-		if typ == "fn" || strings.HasPrefix(typ, "impl Fn(") {
+		if typ == "fn" || strings.HasPrefix(typ, "impl Fn(") || strings.HasPrefix(typ, "impl FnMut(") {
+			varTypes[stmt.Let.Name] = typ
 			typ = ""
 		}
 		if q, ok := e.(*QueryExpr); ok && typ == "" {
@@ -1954,7 +1965,7 @@ func compileStmt(stmt *parser.Statement) (Stmt, error) {
 				e = &StringCastExpr{Expr: e}
 			}
 		}
-		mut := strings.HasPrefix(typ, "Vec<") || strings.HasPrefix(typ, "HashMap<")
+		mut := strings.HasPrefix(typ, "Vec<") || strings.HasPrefix(typ, "HashMap<") || strings.HasPrefix(varTypes[stmt.Let.Name], "impl FnMut(")
 		vd := &VarDecl{Name: stmt.Let.Name, Expr: e, Type: typ, Mutable: mut}
 		if funcDepth == 0 && len(localVarStack) == 0 {
 			vd.Global = true
@@ -2033,7 +2044,8 @@ func compileStmt(stmt *parser.Statement) (Stmt, error) {
 				typ = ""
 			}
 		}
-		if typ == "fn" || strings.HasPrefix(typ, "impl Fn(") {
+		if typ == "fn" || strings.HasPrefix(typ, "impl Fn(") || strings.HasPrefix(typ, "impl FnMut(") {
+			varTypes[stmt.Var.Name] = typ
 			typ = ""
 		}
 		if q, ok := e.(*QueryExpr); ok && typ == "" {
@@ -2484,6 +2496,7 @@ func compileTypeStmt(t *parser.TypeDecl) (Stmt, error) {
 }
 
 func compileFunStmt(fn *parser.FunStmt) (Stmt, error) {
+	nested := funcDepth > 0
 	funcDepth++
 	prevVarTypes := varTypes
 	prevMapVars := mapVars
@@ -2514,6 +2527,9 @@ func compileFunStmt(fn *parser.FunStmt) (Stmt, error) {
 			if t, err := curEnv.GetVar(p.Name); err == nil {
 				typ = rustTypeFromType(t)
 			}
+		}
+		if typ == "" {
+			typ = "f64"
 		}
 		sigType := typ
 		if strings.HasPrefix(typ, "Vec<") {
@@ -2586,7 +2602,26 @@ func compileFunStmt(fn *parser.FunStmt) (Stmt, error) {
 					rt = r
 				}
 			}
-			ret = fmt.Sprintf("impl Fn(%s) -> %s", strings.Join(pts, ", "), rt)
+			kw := "FnMut"
+			ret = fmt.Sprintf("impl %s(%s) -> %s", kw, strings.Join(pts, ", "), rt)
+		}
+	}
+	if (strings.HasPrefix(ret, "impl Fn(") || strings.HasPrefix(ret, "impl FnMut(")) && strings.HasSuffix(ret, "-> ()") {
+		var t string
+		for _, st := range body {
+			if r, ok := st.(*ReturnStmt); ok && r.Value != nil {
+				if nr, ok2 := r.Value.(*NameRef); ok2 {
+					if rt, ok3 := funReturns[nr.Name]; ok3 {
+						t = rt
+					}
+				}
+			}
+		}
+		if t != "" {
+			idx := strings.LastIndex(ret, "->")
+			if idx >= 0 {
+				ret = ret[:idx+2] + " " + t
+			}
 		}
 	}
 	if ret == "" || strings.HasPrefix(ret, "HashMap") {
@@ -2623,9 +2658,21 @@ func compileFunStmt(fn *parser.FunStmt) (Stmt, error) {
 		funReturns[fn.Name] = ret
 	}
 	localsCopy := currentFuncLocals
-	currentFuncLocals = nil
 	vtCopy := copyStringMap(varTypes)
 	svCopy := copyBoolMap(stringVars)
+	if nested {
+		flit := &FunLit{Params: params, Return: ret, Body: body}
+		vd := &VarDecl{Name: fn.Name, Expr: flit}
+		if len(localVarStack) > 0 {
+			localVarStack[len(localVarStack)-1][fn.Name] = true
+		}
+		if currentFuncLocals != nil {
+			currentFuncLocals[fn.Name] = true
+		}
+		currentFuncLocals = nil
+		return vd, nil
+	}
+	currentFuncLocals = nil
 	return &FuncDecl{Name: name, Params: params, Return: ret, Body: body, Locals: localsCopy, VarTypes: vtCopy, StringVars: svCopy}, nil
 }
 
@@ -3019,8 +3066,10 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 		if name == "lower" && len(args) == 1 {
 			return &LowerExpr{Value: args[0]}, nil
 		}
+		var paramTypes []string
 		if pts, ok := funParamTypes[name]; ok {
-			for i := 0; i < len(args) && i < len(pts); i++ {
+			paramTypes = pts
+			for i := 0; i < len(args) && i < len(paramTypes); i++ {
 				if strings.HasPrefix(pts[i], "&mut ") {
 					if _, isUnary := args[i].(*UnaryExpr); !isUnary {
 						args[i] = &UnaryExpr{Op: "&mut", Expr: args[i]}
@@ -3033,14 +3082,31 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 					if _, ok := args[i].(*StringLit); ok || inferType(args[i]) != "String" {
 						args[i] = &StringCastExpr{Expr: args[i]}
 					}
+				} else if pts[i] == "f64" && inferType(args[i]) == "i64" {
+					args[i] = &FloatCastExpr{Expr: args[i]}
 				} else if nr, ok := args[i].(*NameRef); ok && boxVars[nr.Name] && !strings.HasPrefix(pts[i], "Box<") {
 					args[i] = &UnaryExpr{Op: "*", Expr: &MethodCallExpr{Receiver: args[i], Name: "clone"}}
 				} else if _, ok := args[i].(*NameRef); ok && !strings.HasPrefix(pts[i], "&") && (pts[i] == "String" || strings.HasPrefix(pts[i], "Vec<") || strings.HasPrefix(pts[i], "HashMap<")) {
 					args[i] = &MethodCallExpr{Receiver: args[i], Name: "clone"}
 				}
 			}
-		}
-		if _, ok := funParamTypes[name]; !ok {
+		} else {
+			if vt, vok := varTypes[name]; vok && strings.HasPrefix(vt, "impl Fn") {
+				start := strings.Index(vt, "(")
+				end := strings.Index(vt, ")")
+				if start >= 0 && end > start {
+					parts := strings.Split(vt[start+1:end], ",")
+					paramTypes = make([]string, len(parts))
+					for i, p := range parts {
+						paramTypes[i] = strings.TrimSpace(p)
+					}
+				}
+			}
+			for i := 0; i < len(args) && i < len(paramTypes); i++ {
+				if paramTypes[i] == "f64" && inferType(args[i]) == "i64" {
+					args[i] = &FloatCastExpr{Expr: args[i]}
+				}
+			}
 			for i, a := range args {
 				if nr, ok := a.(*NameRef); ok {
 					if varTypes[nr.Name] == "&String" {
@@ -3297,6 +3363,23 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 			}
 			params[i] = Param{Name: pa.Name, Type: typ}
 		}
+		ret := ""
+		if p.FunExpr.Return != nil {
+			ret = rustTypeRef(p.FunExpr.Return)
+		}
+		if p.FunExpr.BlockBody != nil {
+			body := make([]Stmt, 0, len(p.FunExpr.BlockBody))
+			for _, st := range p.FunExpr.BlockBody {
+				cs, err := compileStmt(st)
+				if err != nil {
+					return nil, err
+				}
+				if cs != nil {
+					body = append(body, cs)
+				}
+			}
+			return &FunLit{Params: params, Return: ret, Body: body}, nil
+		}
 		var expr Expr
 		if p.FunExpr.ExprBody != nil {
 			e, err := compileExpr(p.FunExpr.ExprBody)
@@ -3304,10 +3387,6 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 				return nil, err
 			}
 			expr = e
-		}
-		ret := ""
-		if p.FunExpr.Return != nil {
-			ret = rustTypeRef(p.FunExpr.Return)
 		}
 		return &FunLit{Params: params, Return: ret, Expr: expr}, nil
 	case p.Match != nil:
@@ -3902,6 +3981,8 @@ func rustType(t string) string {
 	case "int":
 		return "i64"
 	case "float":
+		return "f64"
+	case "any":
 		return "f64"
 	case "bool":
 		return "bool"
