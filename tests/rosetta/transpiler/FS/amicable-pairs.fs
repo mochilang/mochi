@@ -1,4 +1,4 @@
-// Generated 2025-07-25 14:38 +0000
+// Generated 2025-07-26 05:05 +0700
 
 exception Return
 
@@ -9,7 +9,7 @@ let rec pfacSum (i: int) =
         let mutable sum: int = 0
         let mutable p: int = 1
         while p <= (i / 2) do
-            if (i % p) = 0 then
+            if (((i % p + p) % p)) = 0 then
                 sum <- sum + p
             p <- p + 1
         __ret <- sum
@@ -46,7 +46,7 @@ and main () =
         let mutable n: int = 2
         while n < 19999 do
             let m: int = sums.[n]
-            if ((m > n) && (m < 20000)) && (n = (unbox<int> (sums.[m]))) then
+            if ((m > n) && (m < 20000)) && (n = (int (sums.[m]))) then
                 printfn "%s" ((("  " + (unbox<string> (pad n 5))) + " and ") + (unbox<string> (pad m 5)))
             n <- n + 1
         __ret

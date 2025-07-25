@@ -1,4 +1,4 @@
-// Generated 2025-07-25 14:38 +0000
+// Generated 2025-07-26 05:05 +0700
 
 exception Return
 
@@ -38,11 +38,11 @@ and sortStrings (xs: string array) =
     try
         let mutable res: string array = [||]
         let mutable tmp = xs
-        while (unbox<int> (Array.length tmp)) > 0 do
+        while (int (Array.length tmp)) > 0 do
             let mutable min = tmp.[0]
             let mutable idx: int = 0
             let mutable i: int = 1
-            while i < (unbox<int> (Array.length tmp)) do
+            while i < (int (Array.length tmp)) do
                 if (tmp.[i]) < min then
                     min <- tmp.[i]
                     idx <- i
@@ -50,7 +50,7 @@ and sortStrings (xs: string array) =
             res <- Array.append res [|min|]
             let mutable out: string array = [||]
             let mutable j: int = 0
-            while j < (unbox<int> (Array.length tmp)) do
+            while j < (int (Array.length tmp)) do
                 if j <> idx then
                     out <- Array.append out [|tmp.[j]|]
                 j <- j + 1
@@ -82,7 +82,7 @@ and main () =
                     let mutable g: string array = sortStrings (unbox<string array> (groups.[k] |> unbox<string array>))
                     let mutable line: string = "[" + (unbox<string> (g.[0]))
                     let mutable i: int = 1
-                    while i < (unbox<int> (Array.length g)) do
+                    while i < (int (Array.length g)) do
                         line <- (line + " ") + (unbox<string> (g.[i]))
                         i <- i + 1
                     line <- line + "]"

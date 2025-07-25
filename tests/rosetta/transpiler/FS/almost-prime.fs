@@ -1,4 +1,4 @@
-// Generated 2025-07-25 14:38 +0000
+// Generated 2025-07-26 05:05 +0700
 
 exception Return
 
@@ -10,7 +10,7 @@ let rec kPrime (n: int) (k: int) =
         let mutable nf: int = 0
         let mutable i: int = 2
         while i <= n do
-            while (n % i) = 0 do
+            while (((n % i + i) % i)) = 0 do
                 if nf = k then
                     __ret <- false
                     raise Return
@@ -29,8 +29,8 @@ and gen (k: int) (count: int) =
     try
         let mutable r: int array = [||]
         let mutable n: int = 2
-        while (unbox<int> (Array.length r)) < count do
-            if kPrime n k then
+        while (int (Array.length r)) < count do
+            if unbox<bool> (kPrime n k) then
                 r <- Array.append r [|n|]
             n <- n + 1
         __ret <- r
