@@ -2,7 +2,7 @@
 
 This directory stores C++ code generated from Mochi programs in `tests/rosetta/x/Mochi`. Each file is compiled and executed during tests. Successful runs keep the generated `.cpp` source along with a matching `.out` file. Failures are recorded in `.error` files when tests run with `-update`.
 
-Checklist of programs that currently transpile and run (37/284) - Last updated 2025-07-25 19:01 +0700:
+Checklist of programs that currently transpile and run (49/284) - Last updated 2025-07-25 19:16 +0700:
 | Index | Name | Status | Duration | Memory |
 | ---: | --- | :---: | ---: | ---: |
 | 1 | 100-doors-2 | ✓ | 222.0µs | 13.12MB |
@@ -39,25 +39,25 @@ Checklist of programs that currently transpile and run (37/284) - Last updated 2
 | 32 | active-directory-search-for-a-user | ✓ | 66.0µs | 12.94MB |
 | 33 | active-object | ✓ | 85.0µs | 13.00MB |
 | 34 | add-a-variable-to-a-class-instance-at-runtime | ✓ |  |  |
-| 35 | additive-primes | ✓ |  |  |
-| 36 | address-of-a-variable | ✓ |  |  |
+| 35 | additive-primes | ✓ | 162.0µs | 13.29MB |
+| 36 | address-of-a-variable | ✓ | 83.0µs | 12.34MB |
 | 37 | adfgvx-cipher |   |  |  |
-| 38 | aks-test-for-primes | ✓ |  |  |
+| 38 | aks-test-for-primes | ✓ | 114.0µs | 13.14MB |
 | 39 | algebraic-data-types |   |  |  |
-| 40 | align-columns | ✓ |  |  |
-| 41 | aliquot-sequence-classifications |   |  |  |
+| 40 | align-columns | ✓ | 473.0µs | 13.67MB |
+| 41 | aliquot-sequence-classifications | ✓ | 442.0µs | 13.93MB |
 | 42 | almkvist-giullera-formula-for-pi |   |  |  |
-| 43 | almost-prime |   |  |  |
-| 44 | amb |   |  |  |
-| 45 | amicable-pairs |   |  |  |
-| 46 | anagrams-deranged-anagrams |   |  |  |
-| 47 | anagrams |   |  |  |
-| 48 | angle-difference-between-two-bearings-1 |   |  |  |
-| 49 | angle-difference-between-two-bearings-2 |   |  |  |
-| 50 | angles-geometric-normalization-and-conversion |   |  |  |
-| 51 | animate-a-pendulum |   |  |  |
-| 52 | animation |   |  |  |
-| 53 | anonymous-recursion-1 |   |  |  |
+| 43 | almost-prime | ✓ | 144.0µs | 12.99MB |
+| 44 | amb | ✓ | 70.0µs | 13.10MB |
+| 45 | amicable-pairs | ✓ | 326.0ms | 13.35MB |
+| 46 | anagrams-deranged-anagrams | ✓ | 228.0µs | 13.68MB |
+| 47 | anagrams | ✓ | 640.0µs | 13.48MB |
+| 48 | angle-difference-between-two-bearings-1 | ✓ | 96.0µs | 12.93MB |
+| 49 | angle-difference-between-two-bearings-2 | ✓ | 80.0µs | 12.96MB |
+| 50 | angles-geometric-normalization-and-conversion | ✓ | 380.0µs | 13.27MB |
+| 51 | animate-a-pendulum | ✓ | 320.0µs | 13.16MB |
+| 52 | animation | ✓ | 491.0µs | 12.45MB |
+| 53 | anonymous-recursion-1 | ✓ | 73.0µs | 12.67MB |
 | 54 | anonymous-recursion-2 |   |  |  |
 | 55 | anonymous-recursion |   |  |  |
 | 56 | anti-primes |   |  |  |
