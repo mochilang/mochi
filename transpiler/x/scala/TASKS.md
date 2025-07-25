@@ -1,3 +1,219 @@
+## Progress (2025-07-25 12:58 +0700)
+- scala: update transpiler and regenerate rosetta outputs
+- Regenerated golden files - 93/104 vm valid programs passing
+
+## Progress (2025-07-25 12:38 +0700)
+- ts transpiler: update Rosetta output index 3
+- Regenerated golden files - 93/104 vm valid programs passing
+
+## Progress (2025-07-25 12:38 +0700)
+- ts transpiler: update Rosetta output index 3
+- Regenerated golden files - 93/104 vm valid programs passing
+
+## Progress (2025-07-25 12:38 +0700)
+- ts transpiler: update Rosetta output index 3
+- Regenerated golden files - 93/104 vm valid programs passing
+
+## Progress (2025-07-25 12:38 +0700)
+- ts transpiler: update Rosetta output index 3
+- Regenerated golden files - 93/104 vm valid programs passing
+
+## Progress (2025-07-25 12:38 +0700)
+- ts transpiler: update Rosetta output index 3
+- Regenerated golden files - 93/104 vm valid programs passing
+
+## Progress (2025-07-25 12:38 +0700)
+- ts transpiler: update Rosetta output index 3
+- Regenerated golden files - 93/104 vm valid programs passing
+
+## Progress (2025-07-25 12:38 +0700)
+- ts transpiler: update Rosetta output index 3
+- Regenerated golden files - 93/104 vm valid programs passing
+
+## Progress (2025-07-25 12:38 +0700)
+- ts transpiler: update Rosetta output index 3
+- Regenerated golden files - 93/104 vm valid programs passing
+
+## Progress (2025-07-25 12:38 +0700)
+- ts transpiler: update Rosetta output index 3
+- Regenerated golden files - 93/104 vm valid programs passing
+
+## Progress (2025-07-25 12:38 +0700)
+- ts transpiler: update Rosetta output index 3
+- Regenerated golden files - 93/104 vm valid programs passing
+
+## Progress (2025-07-25 12:38 +0700)
+- ts transpiler: update Rosetta output index 3
+- Regenerated golden files - 93/104 vm valid programs passing
+
+## Progress (2025-07-25 12:38 +0700)
+- ts transpiler: update Rosetta output index 3
+- Regenerated golden files - 93/104 vm valid programs passing
+
+## Progress (2025-07-25 12:38 +0700)
+- ts transpiler: update Rosetta output index 3
+- Regenerated golden files - 93/104 vm valid programs passing
+
+## Progress (2025-07-25 12:38 +0700)
+- ts transpiler: update Rosetta output index 3
+- Regenerated golden files - 93/104 vm valid programs passing
+
+## Progress (2025-07-25 12:38 +0700)
+- ts transpiler: update Rosetta output index 3
+- Regenerated golden files - 93/104 vm valid programs passing
+
+## Progress (2025-07-25 12:38 +0700)
+- ts transpiler: update Rosetta output index 3
+- Regenerated golden files - 93/104 vm valid programs passing
+
+## Progress (2025-07-25 12:38 +0700)
+- ts transpiler: update Rosetta output index 3
+- Regenerated golden files - 93/104 vm valid programs passing
+
+## Progress (2025-07-25 12:38 +0700)
+- ts transpiler: update Rosetta output index 3
+- Regenerated golden files - 93/104 vm valid programs passing
+
+## Progress (2025-07-25 12:38 +0700)
+- ts transpiler: update Rosetta output index 3
+- Regenerated golden files - 93/104 vm valid programs passing
+
+## Progress (2025-07-25 12:38 +0700)
+- ts transpiler: update Rosetta output index 3
+- Regenerated golden files - 93/104 vm valid programs passing
+
+## Progress (2025-07-25 12:38 +0700)
+- ts transpiler: update Rosetta output index 3
+- Regenerated golden files - 93/104 vm valid programs passing
+
+## Progress (2025-07-25 12:38 +0700)
+- ts transpiler: update Rosetta output index 3
+- Regenerated golden files - 93/104 vm valid programs passing
+
+## Progress (2025-07-25 12:38 +0700)
+- ts transpiler: update Rosetta output index 3
+- Regenerated golden files - 93/104 vm valid programs passing
+
+## Progress (2025-07-25 12:38 +0700)
+- ts transpiler: update Rosetta output index 3
+- Regenerated golden files - 93/104 vm valid programs passing
+
+## Progress (2025-07-25 12:38 +0700)
+- ts transpiler: update Rosetta output index 3
+- Regenerated golden files - 93/104 vm valid programs passing
+
+## Progress (2025-07-25 12:38 +0700)
+- ts transpiler: update Rosetta output index 3
+- Regenerated golden files - 93/104 vm valid programs passing
+
+## Progress (2025-07-25 12:38 +0700)
+- ts transpiler: update Rosetta output index 3
+- Regenerated golden files - 93/104 vm valid programs passing
+
+## Progress (2025-07-25 12:38 +0700)
+- ts transpiler: update Rosetta output index 3
+- Regenerated golden files - 93/104 vm valid programs passing
+
+## Progress (2025-07-25 12:38 +0700)
+- ts transpiler: update Rosetta output index 3
+- Regenerated golden files - 93/104 vm valid programs passing
+
+## Progress (2025-07-25 12:38 +0700)
+- ts transpiler: update Rosetta output index 3
+- Regenerated golden files - 93/104 vm valid programs passing
+
+## Progress (2025-07-25 12:38 +0700)
+- ts transpiler: update Rosetta output index 3
+- Regenerated golden files - 93/104 vm valid programs passing
+
+## Progress (2025-07-25 12:38 +0700)
+- ts transpiler: update Rosetta output index 3
+- Regenerated golden files - 93/104 vm valid programs passing
+
+## Progress (2025-07-25 12:38 +0700)
+- ts transpiler: update Rosetta output index 3
+- Regenerated golden files - 93/104 vm valid programs passing
+
+## Progress (2025-07-25 12:38 +0700)
+- ts transpiler: update Rosetta output index 3
+- Regenerated golden files - 93/104 vm valid programs passing
+
+## Progress (2025-07-25 12:38 +0700)
+- ts transpiler: update Rosetta output index 3
+- Regenerated golden files - 93/104 vm valid programs passing
+
+## Progress (2025-07-25 12:38 +0700)
+- ts transpiler: update Rosetta output index 3
+- Regenerated golden files - 93/104 vm valid programs passing
+
+## Progress (2025-07-25 12:38 +0700)
+- ts transpiler: update Rosetta output index 3
+- Regenerated golden files - 93/104 vm valid programs passing
+
+## Progress (2025-07-25 12:38 +0700)
+- ts transpiler: update Rosetta output index 3
+- Regenerated golden files - 93/104 vm valid programs passing
+
+## Progress (2025-07-25 12:38 +0700)
+- ts transpiler: update Rosetta output index 3
+- Regenerated golden files - 93/104 vm valid programs passing
+
+## Progress (2025-07-25 12:38 +0700)
+- ts transpiler: update Rosetta output index 3
+- Regenerated golden files - 93/104 vm valid programs passing
+
+## Progress (2025-07-25 12:38 +0700)
+- ts transpiler: update Rosetta output index 3
+- Regenerated golden files - 93/104 vm valid programs passing
+
+## Progress (2025-07-25 12:38 +0700)
+- ts transpiler: update Rosetta output index 3
+- Regenerated golden files - 93/104 vm valid programs passing
+
+## Progress (2025-07-25 12:38 +0700)
+- ts transpiler: update Rosetta output index 3
+- Regenerated golden files - 93/104 vm valid programs passing
+
+## Progress (2025-07-25 12:38 +0700)
+- ts transpiler: update Rosetta output index 3
+- Regenerated golden files - 93/104 vm valid programs passing
+
+## Progress (2025-07-25 12:38 +0700)
+- ts transpiler: update Rosetta output index 3
+- Regenerated golden files - 93/104 vm valid programs passing
+
+## Progress (2025-07-25 12:38 +0700)
+- ts transpiler: update Rosetta output index 3
+- Regenerated golden files - 93/104 vm valid programs passing
+
+## Progress (2025-07-25 12:38 +0700)
+- ts transpiler: update Rosetta output index 3
+- Regenerated golden files - 93/104 vm valid programs passing
+
+## Progress (2025-07-25 12:38 +0700)
+- ts transpiler: update Rosetta output index 3
+- Regenerated golden files - 93/104 vm valid programs passing
+
+## Progress (2025-07-25 12:38 +0700)
+- ts transpiler: update Rosetta output index 3
+- Regenerated golden files - 93/104 vm valid programs passing
+
+## Progress (2025-07-25 12:38 +0700)
+- ts transpiler: update Rosetta output index 3
+- Regenerated golden files - 93/104 vm valid programs passing
+
+## Progress (2025-07-25 12:38 +0700)
+- ts transpiler: update Rosetta output index 3
+- Regenerated golden files - 93/104 vm valid programs passing
+
+## Progress (2025-07-25 12:38 +0700)
+- ts transpiler: update Rosetta output index 3
+- Regenerated golden files - 93/104 vm valid programs passing
+
+## Progress (2025-07-25 12:38 +0700)
+- ts transpiler: update Rosetta output index 3
+- Regenerated golden files - 93/104 vm valid programs passing
+
 ## Progress (2025-07-25 10:49 +0700)
 - scala rosetta: handle BenchStmt breaks
 - Regenerated golden files - 93/104 vm valid programs passing

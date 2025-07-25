@@ -1833,8 +1833,14 @@ func convertBinary(b *parser.BinaryExpr, env *types.Env) (Expr, error) {
 					right = &CastExpr{Value: right, Type: "Int"}
 				}
 			}
-			if op == "%" && inferTypeWithEnv(left, env) == "Int" && inferTypeWithEnv(right, env) == "Int" {
-				ex = &CallExpr{Fn: &Name{Name: "Math.floorMod"}, Args: []Expr{left, right}}
+			if op == "%" {
+				lt := inferTypeWithEnv(left, env)
+				rt := inferTypeWithEnv(right, env)
+				if lt != "Double" && lt != "Float" && rt != "Double" && rt != "Float" {
+					ex = &CallExpr{Fn: &Name{Name: "Math.floorMod"}, Args: []Expr{left, right}}
+				} else {
+					ex = &BinaryExpr{Left: left, Op: op, Right: right}
+				}
 			} else {
 				ex = &BinaryExpr{Left: left, Op: op, Right: right}
 			}

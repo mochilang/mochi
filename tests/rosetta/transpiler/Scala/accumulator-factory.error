@@ -1,23 +1,12 @@
 exit status 1
-6 x 6 Polybius square:
-
-  | A D F G V X
----------------
-A | M N J F 6 B 
-D | O 5 L X G W 
-F | 7 E 1 R 8 H 
-G | V Q I D P U 
-V | 2 Z K 9 0 Y 
-X | S 4 C 3 T A 
-
-The key is L5A3YCSXJ
-
-Plaintext : ATTACKAT1200AM
-java.lang.ClassCastException: class scala.collection.immutable.Vector cannot be cast to class java.lang.String (scala.collection.immutable.Vector is in unnamed module of loader scala.reflect.internal.util.ScalaClassLoader$URLClassLoader @7c6908d7; java.lang.String is in module java.base of loader 'bootstrap')
-	at Main$.encrypt(adfgvx-cipher.scala:134)
-	at Main$.main(adfgvx-cipher.scala:295)
-	at Main$.main(adfgvx-cipher.scala:306)
-	at Main.main(adfgvx-cipher.scala)
+java.lang.ClassCastException: class java.lang.Double cannot be cast to class java.lang.Integer (java.lang.Double and java.lang.Integer are in module java.base of loader 'bootstrap')
+	at scala.runtime.BoxesRunTime.unboxToInt(BoxesRunTime.java:101)
+	at Main$.Main$$add$1(accumulator-factory.scala:7)
+	at Main$$anonfun$accumulator$1.apply(accumulator-factory.scala:10)
+	at Main$$anonfun$accumulator$1.apply(accumulator-factory.scala:10)
+	at Main$.main(accumulator-factory.scala:17)
+	at Main$.main(accumulator-factory.scala:21)
+	at Main.main(accumulator-factory.scala)
 	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:103)
 	at java.base/java.lang.reflect.Method.invoke(Method.java:580)
 	at scala.reflect.internal.util.ScalaClassLoader$$anonfun$run$1.apply(ScalaClassLoader.scala:70)
