@@ -88,6 +88,8 @@ func javaType(t string) string {
 		return "String[]"
 	case "bool[]":
 		return "boolean[]"
+	case "float[]", "float64[]", "double[]":
+		return "double[]"
 	case "map":
 		return "java.util.Map"
 	case "fn":
@@ -1641,6 +1643,9 @@ func (a *AppendExpr) emit(w io.Writer) {
 	}
 	if elem == "bool" {
 		elem = "boolean"
+	}
+	if elem == "float" || elem == "float64" {
+		elem = "double"
 	}
 	jt := javaType(elem)
 	if jt == "" {
