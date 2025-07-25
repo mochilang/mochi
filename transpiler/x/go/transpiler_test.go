@@ -54,7 +54,7 @@ func TestTranspilePrintHello(t *testing.T) {
 	if err != nil {
 		t.Fatalf("transpile: %v", err)
 	}
-	code := gotrans.Emit(gprog)
+	code := gotrans.Emit(gprog, false)
 	goFile := filepath.Join(outDir, "print_hello.go")
 	if err := os.WriteFile(goFile, code, 0o644); err != nil {
 		t.Fatalf("write: %v", err)

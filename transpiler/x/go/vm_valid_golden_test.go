@@ -47,7 +47,7 @@ func TestGoTranspiler_VMValid_Golden(t *testing.T) {
 			_ = os.WriteFile(errPath, []byte(err.Error()), 0o644)
 			return nil, err
 		}
-		code := gotrans.Emit(gprog)
+		code := gotrans.Emit(gprog, os.Getenv("MOCHI_BENCHMARK") == "true")
 		if err := os.WriteFile(codePath, code, 0o644); err != nil {
 			return nil, err
 		}

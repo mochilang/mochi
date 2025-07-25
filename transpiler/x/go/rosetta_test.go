@@ -5,6 +5,7 @@ package gotranspiler_test
 import (
 	"bufio"
 	"bytes"
+	"encoding/json"
 	"flag"
 	"fmt"
 	"os"
@@ -96,7 +97,8 @@ func TestGoTranspiler_Rosetta_Golden(t *testing.T) {
 				_ = os.WriteFile(errPath, []byte(err.Error()), 0o644)
 				t.Fatalf("transpile: %v", err)
 			}
-			code := gotrans.Emit(gprog)
+			bench := os.Getenv("MOCHI_BENCHMARK") == "true"
+			code := gotrans.Emit(gprog, bench)
 			if err := os.WriteFile(codePath, code, 0o644); err != nil {
 				t.Fatalf("write code: %v", err)
 			}
@@ -106,7 +108,9 @@ func TestGoTranspiler_Rosetta_Golden(t *testing.T) {
 				cmd.Stdin = bytes.NewReader(data)
 			}
 			want, _ := os.ReadFile(outPath)
-			want = bytes.TrimSpace(want)
+			if !bench {
+				want = bytes.TrimSpace(want)
+			}
 
 			out, err := cmd.CombinedOutput()
 			got := bytes.TrimSpace(out)
@@ -115,8 +119,14 @@ func TestGoTranspiler_Rosetta_Golden(t *testing.T) {
 				t.Fatalf("run: %v", err)
 			}
 			_ = os.Remove(errPath)
-			_ = os.WriteFile(outPath, got, 0o644)
-
+			if bench {
+				_ = os.WriteFile(filepath.Join(outDir, name+".bench"), got, 0o644)
+			} else {
+				_ = os.WriteFile(outPath, got, 0o644)
+			}
+			if bench {
+				return
+			}
 			if updating() || len(want) == 0 {
 				return
 			}
@@ -152,15 +162,31 @@ func updateRosettaChecklist() {
 	names, _ := readIndex(filepath.Join(srcDir, "index.txt"))
 	total := len(names)
 	compiled := 0
-	var lines []string
+	var rows []string
+	rows = append(rows, "| Index | Name | Status | Duration | Memory |")
+	rows = append(rows, "|------:|------|--------|---------:|-------:|")
 	for i, f := range names {
 		name := strings.TrimSuffix(f, ".mochi")
-		mark := "[ ]"
-		if _, err := os.Stat(filepath.Join(outDir, name+".out")); err == nil {
+		status := " "
+		dur := ""
+		mem := ""
+		if _, err := os.Stat(filepath.Join(outDir, name+".error")); err == nil {
+			status = "error"
+		} else if _, err := os.Stat(filepath.Join(outDir, name+".go")); err == nil {
+			status = "ok"
 			compiled++
-			mark = "[x]"
 		}
-		lines = append(lines, fmt.Sprintf("%d. %s %s (%d)", i+1, mark, name, i+1))
+		if data, err := os.ReadFile(filepath.Join(outDir, name+".bench")); err == nil {
+			var r struct {
+				DurationUS  int64 `json:"duration_us"`
+				MemoryBytes int64 `json:"memory_bytes"`
+			}
+			if json.Unmarshal(bytes.TrimSpace(data), &r) == nil {
+				dur = formatDuration(time.Duration(r.DurationUS) * time.Microsecond)
+				mem = formatBytes(r.MemoryBytes)
+			}
+		}
+		rows = append(rows, fmt.Sprintf("| %d | %s | %s | %s | %s |", i+1, name, status, dur, mem))
 	}
 	tsRaw, _ := exec.Command("git", "log", "-1", "--format=%cI").Output()
 	ts := strings.TrimSpace(string(tsRaw))
@@ -176,7 +202,7 @@ func updateRosettaChecklist() {
 	fmt.Fprintf(&buf, "Completed programs: %d/%d\n", compiled, total)
 	fmt.Fprintf(&buf, "Last updated: %s\n\n", ts)
 	buf.WriteString("Checklist:\n\n")
-	buf.WriteString(strings.Join(lines, "\n"))
+	buf.WriteString(strings.Join(rows, "\n"))
 	buf.WriteString("\n")
 	_ = os.WriteFile(readmePath, buf.Bytes(), 0o644)
 }
@@ -194,4 +220,35 @@ func updating() bool {
 		}
 	}
 	return false
+}
+
+func formatDuration(d time.Duration) string {
+	switch {
+	case d < time.Microsecond:
+		return fmt.Sprintf("%dns", d.Nanoseconds())
+	case d < time.Millisecond:
+		return fmt.Sprintf("%.1fµs", float64(d.Microseconds()))
+	case d < time.Second:
+		return fmt.Sprintf("%.1fms", float64(d.Milliseconds()))
+	default:
+		return fmt.Sprintf("%.2fs", d.Seconds())
+	}
+}
+
+func formatBytes(n int64) string {
+	const (
+		_KB = 1024
+		_MB = _KB * 1024
+		_GB = _MB * 1024
+	)
+	switch {
+	case n >= _GB:
+		return fmt.Sprintf("%.2fGB", float64(n)/float64(_GB))
+	case n >= _MB:
+		return fmt.Sprintf("%.2fMB", float64(n)/float64(_MB))
+	case n >= _KB:
+		return fmt.Sprintf("%.2fKB", float64(n)/float64(_KB))
+	default:
+		return fmt.Sprintf("%dB", n)
+	}
 }
