@@ -1899,7 +1899,8 @@ func kotlinTypeFromType(t types.Type) string {
 	case types.Int64Type, *types.Int64Type:
 		return "Long"
 	case types.BigIntType, *types.BigIntType:
-		return "Int"
+		useHelper("importBigInt")
+		return "BigInteger"
 	case types.BoolType, *types.BoolType:
 		return "Boolean"
 	case types.StringType, *types.StringType:
