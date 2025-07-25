@@ -2,7 +2,7 @@
 
 This directory stores C code generated from Mochi programs in `tests/rosetta/x/Mochi`. Each file is compiled and executed during tests. Successful runs keep the generated `.c` source along with a matching `.out` file. Failures are recorded in `.error` files when tests run with `-update`.
 
-Checklist of programs that currently transpile and run (18/284) - Last updated 2025-07-25 17:35 +0700:
+Checklist of programs that currently transpile and run (19/284) - Last updated 2025-07-25 17:54 +0700:
 | Index | Name | Status | Duration | Memory |
 | ---: | --- | :---: | ---: | ---: |
 | 1 | 100-doors-2 | ✓ | 65us | 17.2 KB |
@@ -25,10 +25,10 @@ Checklist of programs that currently transpile and run (18/284) - Last updated 2
 | 18 | abbreviations-easy | ✓ | 246us | 108.3 KB |
 | 19 | abbreviations-simple | ✓ | 402us | 140.8 KB |
 | 20 | abc-problem | ✓ | 238us | 69.5 KB |
-| 21 | abelian-sandpile-model-identity | ✓ |  |  |
-| 22 | abelian-sandpile-model | ✓ |  |  |
+| 21 | abelian-sandpile-model-identity | ✓ | 387us | 24.6 KB |
+| 22 | abelian-sandpile-model | ✓ | 451us | 15.2 KB |
 | 23 | abstract-type |  |  |  |
-| 24 | abundant-deficient-and-perfect-number-classifications |  |  |  |
+| 24 | abundant-deficient-and-perfect-number-classifications | ✓ | 317.38ms | 5.0 KB |
 | 25 | abundant-odd-numbers |  |  |  |
 | 26 | accumulator-factory |  |  |  |
 | 27 | achilles-numbers |  |  |  |
