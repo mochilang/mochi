@@ -79,9 +79,11 @@ func TestRosettaKotlin(t *testing.T) {
 			t.Fatalf("kotlinc: %v", err)
 		}
 		cmd := exec.Command("java", "-jar", jar)
-		runEnv := append(os.Environ(), "MOCHI_ROOT="+root, "MOCHI_NOW_SEED=1")
+		runEnv := append(os.Environ(), "MOCHI_ROOT="+root)
 		if bench {
 			runEnv = append(runEnv, "MOCHI_BENCHMARK=1")
+		} else {
+			runEnv = append(runEnv, "MOCHI_NOW_SEED=1")
 		}
 		cmd.Env = runEnv
 		if inData, err := os.ReadFile(filepath.Join(srcDir, name+".in")); err == nil {
