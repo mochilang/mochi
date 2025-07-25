@@ -1,5 +1,5 @@
-## Progress (2025-07-25 08:23 +0700)
-- dart: add bench main support
+## Progress (2025-07-25 09:00 +0700)
+- swift transpiler: benchmark support
 - Generated golden tests for 102/104 programs
 - Updated README checklist and output artifacts
 

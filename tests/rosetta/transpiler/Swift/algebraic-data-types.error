@@ -1,118 +1,86 @@
 exit status 1
-/tmp/TestSwiftTranspiler_Rosetta_Golden1911055332/001/main.swift:104:15: error: 'nil' cannot initialize specified type 'Any'
+/tmp/TestSwiftTranspiler_Rosetta_Golden4106075462/001/main.swift:104:15: error: 'nil' cannot initialize specified type 'Any'
 102 |     return (node("B", (m as! [String: Any])["le"]!, ((m as! [String: Any])["aa"]! as! Int), (m as! [String: Any])["ri"]!) as! [String: Any])
 103 | }
 104 | var tr: Any = nil
     |         |     `- error: 'nil' cannot initialize specified type 'Any'
     |         `- note: add '?' to form the optional type 'Any?'
 105 | var i = 1
-106 | while (Int(i) <= 16) {
+106 | while (i <= 16) {
 
-/tmp/TestSwiftTranspiler_Rosetta_Golden1911055332/001/main.swift:108:23: warning: forced cast of 'Int' to same type has no effect
-106 | while (Int(i) <= 16) {
-107 |     tr = insert(tr, Int(i))
-108 |     i = ((Int(i) + 1) as! Int)
-    |                       `- warning: forced cast of 'Int' to same type has no effect
+/tmp/TestSwiftTranspiler_Rosetta_Golden4106075462/001/main.swift:107:24: warning: forced cast of 'Int' to same type has no effect
+105 | var i = 1
+106 | while (i <= 16) {
+107 |     tr = insert(tr, (i as! Int))
+    |                        `- warning: forced cast of 'Int' to same type has no effect
+108 |     i = ((i + 1) as! Int)
 109 | }
-110 | print(String(treeString(tr)))
 
-/tmp/TestSwiftTranspiler_Rosetta_Golden1911055332/001/main.swift:5:84: warning: forced cast of '[String : Any]' to same type has no effect
+/tmp/TestSwiftTranspiler_Rosetta_Golden4106075462/001/main.swift:108:18: warning: forced cast of 'Int' to same type has no effect
+106 | while (i <= 16) {
+107 |     tr = insert(tr, (i as! Int))
+108 |     i = ((i + 1) as! Int)
+    |                  `- warning: forced cast of 'Int' to same type has no effect
+109 | }
+110 | print(String(describing: treeString(tr)))
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden4106075462/001/main.swift:5:71: warning: forced cast of '[String : Any]' to same type has no effect
   3 | 
   4 | func node(_ cl: String, _ le: Any, _ aa: Int, _ ri: Any) -> [String: Any] {
-  5 |     return (["cl": String(cl), "le": le, "aa": Int(aa), "ri": ri] as [String: Any] as! [String: Any])
-    |                                                                                    `- warning: forced cast of '[String : Any]' to same type has no effect
+  5 |     return (["cl": cl, "le": le, "aa": aa, "ri": ri] as [String: Any] as! [String: Any])
+    |                                                                       `- warning: forced cast of '[String : Any]' to same type has no effect
   6 | }
   7 | func treeString(_ t: Any) -> String {
 
-/tmp/TestSwiftTranspiler_Rosetta_Golden1911055332/001/main.swift:14:28: error: no exact matches in call to initializer 
+/tmp/TestSwiftTranspiler_Rosetta_Golden4106075462/001/main.swift:14:50: warning: forced cast of '[String : Any]' to same type has no effect
  12 |     }
  13 |     let m = (t as! [String: Any])
- 14 |     return ((((((((("T(" + String((m as! [String: Any])["cl"]!)) + ", ") + String(treeString((m as! [String: Any])["le"]!))) + ", ") + String(String(describing: (m as! [String: Any])["aa"]!))) + ", ") + String(treeString((m as! [String: Any])["ri"]!))) + ")") as! String)
-    |                            `- error: no exact matches in call to initializer 
+ 14 |     return ((((((((("T(" + String(describing: (m as! [String: Any])["cl"]!)) + ", ") + String(describing: treeString((m as! [String: Any])["le"]!))) + ", ") + String(describing: (m as! [String: Any])["aa"]!)) + ", ") + String(describing: treeString((m as! [String: Any])["ri"]!))) + ")") as! String)
+    |                                                  `- warning: forced cast of '[String : Any]' to same type has no effect
  15 | }
  16 | func balance(_ t: Any) -> Any {
 
-Swift.String.init:2:19: note: candidate requires that 'Any' conform to 'LosslessStringConvertible' (requirement specified as 'T' : 'LosslessStringConvertible')
-1 | struct String {
-2 | @inlinable public init<T>(_ value: T) where T : LosslessStringConvertible}
-  |                   `- note: candidate requires that 'Any' conform to 'LosslessStringConvertible' (requirement specified as 'T' : 'LosslessStringConvertible')
-3 | 
+/tmp/TestSwiftTranspiler_Rosetta_Golden4106075462/001/main.swift:14:121: warning: forced cast of '[String : Any]' to same type has no effect
+ 12 |     }
+ 13 |     let m = (t as! [String: Any])
+ 14 |     return ((((((((("T(" + String(describing: (m as! [String: Any])["cl"]!)) + ", ") + String(describing: treeString((m as! [String: Any])["le"]!))) + ", ") + String(describing: (m as! [String: Any])["aa"]!)) + ", ") + String(describing: treeString((m as! [String: Any])["ri"]!))) + ")") as! String)
+    |                                                                                                                         `- warning: forced cast of '[String : Any]' to same type has no effect
+ 15 | }
+ 16 | func balance(_ t: Any) -> Any {
 
-Swift.String.init:2:8: note: candidate requires that 'Any' conform to 'BinaryInteger' (requirement specified as 'T' : 'BinaryInteger')
-1 | struct String {
-2 | public init<T>(_ value: T, radix: Int = 10, uppercase: Bool = false) where T : BinaryInteger}
-  |        `- note: candidate requires that 'Any' conform to 'BinaryInteger' (requirement specified as 'T' : 'BinaryInteger')
-3 | 
+/tmp/TestSwiftTranspiler_Rosetta_Golden4106075462/001/main.swift:14:182: warning: forced cast of '[String : Any]' to same type has no effect
+ 12 |     }
+ 13 |     let m = (t as! [String: Any])
+ 14 |     return ((((((((("T(" + String(describing: (m as! [String: Any])["cl"]!)) + ", ") + String(describing: treeString((m as! [String: Any])["le"]!))) + ", ") + String(describing: (m as! [String: Any])["aa"]!)) + ", ") + String(describing: treeString((m as! [String: Any])["ri"]!))) + ")") as! String)
+    |                                                                                                                                                                                      `- warning: forced cast of '[String : Any]' to same type has no effect
+ 15 | }
+ 16 | func balance(_ t: Any) -> Any {
 
-Swift.String.init:2:8: note: candidate requires that 'Any' conform to 'Sequence' (requirement specified as 'S' : 'Sequence')
-1 | struct String {
-2 | public init<S>(_ characters: S) where S : Sequence, S.Element == Character}
-  |        `- note: candidate requires that 'Any' conform to 'Sequence' (requirement specified as 'S' : 'Sequence')
-3 | 
+/tmp/TestSwiftTranspiler_Rosetta_Golden4106075462/001/main.swift:14:253: warning: forced cast of '[String : Any]' to same type has no effect
+ 12 |     }
+ 13 |     let m = (t as! [String: Any])
+ 14 |     return ((((((((("T(" + String(describing: (m as! [String: Any])["cl"]!)) + ", ") + String(describing: treeString((m as! [String: Any])["le"]!))) + ", ") + String(describing: (m as! [String: Any])["aa"]!)) + ", ") + String(describing: treeString((m as! [String: Any])["ri"]!))) + ")") as! String)
+    |                                                                                                                                                                                                                                                             `- warning: forced cast of '[String : Any]' to same type has no effect
+ 15 | }
+ 16 | func balance(_ t: Any) -> Any {
 
-Swift.RangeReplaceableCollection.init:2:19: note: candidate requires that 'Any' conform to 'Sequence' (requirement specified as 'S' : 'Sequence')
-1 | protocol RangeReplaceableCollection {
-2 | @inlinable public init<S>(_ elements: S) where S : Sequence, Self.Element == S.Element}
-  |                   `- note: candidate requires that 'Any' conform to 'Sequence' (requirement specified as 'S' : 'Sequence')
-3 | 
+/tmp/TestSwiftTranspiler_Rosetta_Golden4106075462/001/main.swift:14:289: warning: forced cast of 'String' to same type has no effect
+ 12 |     }
+ 13 |     let m = (t as! [String: Any])
+ 14 |     return ((((((((("T(" + String(describing: (m as! [String: Any])["cl"]!)) + ", ") + String(describing: treeString((m as! [String: Any])["le"]!))) + ", ") + String(describing: (m as! [String: Any])["aa"]!)) + ", ") + String(describing: treeString((m as! [String: Any])["ri"]!))) + ")") as! String)
+    |                                                                                                                                                                                                                                                                                                 `- warning: forced cast of 'String' to same type has no effect
+ 15 | }
+ 16 | func balance(_ t: Any) -> Any {
 
-Swift.String.init:2:8: note: incorrect labels for candidate (have: '(_:)', expected: '(describing:)')
-1 | struct String {
-2 | public init<Subject>(describing instance: Subject)}
-  |        `- note: incorrect labels for candidate (have: '(_:)', expected: '(describing:)')
-3 | 
-
-Swift.String.init:2:8: note: incorrect labels for candidate (have: '(_:)', expected: '(reflecting:)')
-1 | struct String {
-2 | public init<Subject>(reflecting subject: Subject)}
-  |        `- note: incorrect labels for candidate (have: '(_:)', expected: '(reflecting:)')
-3 | 
-
-/tmp/TestSwiftTranspiler_Rosetta_Golden1911055332/001/main.swift:23:9: error: no exact matches in call to initializer 
+/tmp/TestSwiftTranspiler_Rosetta_Golden4106075462/001/main.swift:23:31: warning: forced cast of '[String : Any]' to same type has no effect
  21 |     }
  22 |     let m = (t as! [String: Any])
- 23 |     if (String((m as! [String: Any])["cl"]!) != "B") {
-    |         `- error: no exact matches in call to initializer 
+ 23 |     if (String(describing: (m as! [String: Any])["cl"]!) != "B") {
+    |                               `- warning: forced cast of '[String : Any]' to same type has no effect
  24 |         return t
  25 |     }
 
-Swift.String.init:2:19: note: candidate requires that 'Any' conform to 'LosslessStringConvertible' (requirement specified as 'T' : 'LosslessStringConvertible')
-1 | struct String {
-2 | @inlinable public init<T>(_ value: T) where T : LosslessStringConvertible}
-  |                   `- note: candidate requires that 'Any' conform to 'LosslessStringConvertible' (requirement specified as 'T' : 'LosslessStringConvertible')
-3 | 
-
-Swift.String.init:2:8: note: candidate requires that 'Any' conform to 'BinaryInteger' (requirement specified as 'T' : 'BinaryInteger')
-1 | struct String {
-2 | public init<T>(_ value: T, radix: Int = 10, uppercase: Bool = false) where T : BinaryInteger}
-  |        `- note: candidate requires that 'Any' conform to 'BinaryInteger' (requirement specified as 'T' : 'BinaryInteger')
-3 | 
-
-Swift.String.init:2:8: note: candidate requires that 'Any' conform to 'Sequence' (requirement specified as 'S' : 'Sequence')
-1 | struct String {
-2 | public init<S>(_ characters: S) where S : Sequence, S.Element == Character}
-  |        `- note: candidate requires that 'Any' conform to 'Sequence' (requirement specified as 'S' : 'Sequence')
-3 | 
-
-Swift.RangeReplaceableCollection.init:2:19: note: candidate requires that 'Any' conform to 'Sequence' (requirement specified as 'S' : 'Sequence')
-1 | protocol RangeReplaceableCollection {
-2 | @inlinable public init<S>(_ elements: S) where S : Sequence, Self.Element == S.Element}
-  |                   `- note: candidate requires that 'Any' conform to 'Sequence' (requirement specified as 'S' : 'Sequence')
-3 | 
-
-Swift.String.init:2:8: note: incorrect labels for candidate (have: '(_:)', expected: '(describing:)')
-1 | struct String {
-2 | public init<Subject>(describing instance: Subject)}
-  |        `- note: incorrect labels for candidate (have: '(_:)', expected: '(describing:)')
-3 | 
-
-Swift.String.init:2:8: note: incorrect labels for candidate (have: '(_:)', expected: '(reflecting:)')
-1 | struct String {
-2 | public init<Subject>(reflecting subject: Subject)}
-  |        `- note: incorrect labels for candidate (have: '(_:)', expected: '(reflecting:)')
-3 | 
-
-/tmp/TestSwiftTranspiler_Rosetta_Golden1911055332/001/main.swift:26:17: warning: forced cast of '[String : Any]' to same type has no effect
+/tmp/TestSwiftTranspiler_Rosetta_Golden4106075462/001/main.swift:26:17: warning: forced cast of '[String : Any]' to same type has no effect
  24 |         return t
  25 |     }
  26 |     let le = (m as! [String: Any])["le"]!
@@ -120,7 +88,7 @@ Swift.String.init:2:8: note: incorrect labels for candidate (have: '(_:)', expec
  27 |     let ri = (m as! [String: Any])["ri"]!
  28 |     if (String(describing: le)
 
-/tmp/TestSwiftTranspiler_Rosetta_Golden1911055332/001/main.swift:27:17: warning: forced cast of '[String : Any]' to same type has no effect
+/tmp/TestSwiftTranspiler_Rosetta_Golden4106075462/001/main.swift:27:17: warning: forced cast of '[String : Any]' to same type has no effect
  25 |     }
  26 |     let le = (m as! [String: Any])["le"]!
  27 |     let ri = (m as! [String: Any])["ri"]!
@@ -128,175 +96,103 @@ Swift.String.init:2:8: note: incorrect labels for candidate (have: '(_:)', expec
  28 |     if (String(describing: le)
  29 |     != String(describing: nil as Any?)
 
-/tmp/TestSwiftTranspiler_Rosetta_Golden1911055332/001/main.swift:32:13: error: no exact matches in call to initializer 
+/tmp/TestSwiftTranspiler_Rosetta_Golden4106075462/001/main.swift:32:39: warning: forced cast of '[String : Any]' to same type has no effect
  30 |     ) {
  31 |         let leMap = (le as! [String: Any])
- 32 |         if (String((leMap as! [String: Any])["cl"]!) == "R") {
-    |             `- error: no exact matches in call to initializer 
+ 32 |         if (String(describing: (leMap as! [String: Any])["cl"]!) == "R") {
+    |                                       `- warning: forced cast of '[String : Any]' to same type has no effect
  33 |             let lele = (leMap as! [String: Any])["le"]!
  34 |             if (String(describing: lele)
 
-Swift.String.init:2:19: note: candidate requires that 'Any' conform to 'LosslessStringConvertible' (requirement specified as 'T' : 'LosslessStringConvertible')
-1 | struct String {
-2 | @inlinable public init<T>(_ value: T) where T : LosslessStringConvertible}
-  |                   `- note: candidate requires that 'Any' conform to 'LosslessStringConvertible' (requirement specified as 'T' : 'LosslessStringConvertible')
-3 | 
-
-Swift.String.init:2:8: note: candidate requires that 'Any' conform to 'BinaryInteger' (requirement specified as 'T' : 'BinaryInteger')
-1 | struct String {
-2 | public init<T>(_ value: T, radix: Int = 10, uppercase: Bool = false) where T : BinaryInteger}
-  |        `- note: candidate requires that 'Any' conform to 'BinaryInteger' (requirement specified as 'T' : 'BinaryInteger')
-3 | 
-
-Swift.String.init:2:8: note: candidate requires that 'Any' conform to 'Sequence' (requirement specified as 'S' : 'Sequence')
-1 | struct String {
-2 | public init<S>(_ characters: S) where S : Sequence, S.Element == Character}
-  |        `- note: candidate requires that 'Any' conform to 'Sequence' (requirement specified as 'S' : 'Sequence')
-3 | 
-
-Swift.RangeReplaceableCollection.init:2:19: note: candidate requires that 'Any' conform to 'Sequence' (requirement specified as 'S' : 'Sequence')
-1 | protocol RangeReplaceableCollection {
-2 | @inlinable public init<S>(_ elements: S) where S : Sequence, Self.Element == S.Element}
-  |                   `- note: candidate requires that 'Any' conform to 'Sequence' (requirement specified as 'S' : 'Sequence')
-3 | 
-
-Swift.String.init:2:8: note: incorrect labels for candidate (have: '(_:)', expected: '(describing:)')
-1 | struct String {
-2 | public init<Subject>(describing instance: Subject)}
-  |        `- note: incorrect labels for candidate (have: '(_:)', expected: '(describing:)')
-3 | 
-
-Swift.String.init:2:8: note: incorrect labels for candidate (have: '(_:)', expected: '(reflecting:)')
-1 | struct String {
-2 | public init<Subject>(reflecting subject: Subject)}
-  |        `- note: incorrect labels for candidate (have: '(_:)', expected: '(reflecting:)')
-3 | 
-
-/tmp/TestSwiftTranspiler_Rosetta_Golden1911055332/001/main.swift:33:31: warning: forced cast of '[String : Any]' to same type has no effect
+/tmp/TestSwiftTranspiler_Rosetta_Golden4106075462/001/main.swift:33:31: warning: forced cast of '[String : Any]' to same type has no effect
  31 |         let leMap = (le as! [String: Any])
- 32 |         if (String((leMap as! [String: Any])["cl"]!) == "R") {
+ 32 |         if (String(describing: (leMap as! [String: Any])["cl"]!) == "R") {
  33 |             let lele = (leMap as! [String: Any])["le"]!
     |                               `- warning: forced cast of '[String : Any]' to same type has no effect
  34 |             if (String(describing: lele)
  35 |             != String(describing: nil as Any?)
 
-/tmp/TestSwiftTranspiler_Rosetta_Golden1911055332/001/main.swift:38:21: error: no exact matches in call to initializer 
+/tmp/TestSwiftTranspiler_Rosetta_Golden4106075462/001/main.swift:38:49: warning: forced cast of '[String : Any]' to same type has no effect
  36 |             ) {
  37 |                 let leleMap = (lele as! [String: Any])
- 38 |                 if (String((leleMap as! [String: Any])["cl"]!) == "R") {
-    |                     `- error: no exact matches in call to initializer 
+ 38 |                 if (String(describing: (leleMap as! [String: Any])["cl"]!) == "R") {
+    |                                                 `- warning: forced cast of '[String : Any]' to same type has no effect
  39 |                     return (node("R", (node("B", (leleMap as! [String: Any])["le"]!, ((leleMap as! [String: Any])["aa"]! as! Int), (leleMap as! [String: Any])["ri"]!) as! [String: Any]), ((leMap as! [String: Any])["aa"]! as! Int), (node("B", (leMap as! [String: Any])["ri"]!, ((m as! [String: Any])["aa"]! as! Int), ri) as! [String: Any])) as! [String: Any])
  40 |                 }
 
-Swift.String.init:2:19: note: candidate requires that 'Any' conform to 'LosslessStringConvertible' (requirement specified as 'T' : 'LosslessStringConvertible')
-1 | struct String {
-2 | @inlinable public init<T>(_ value: T) where T : LosslessStringConvertible}
-  |                   `- note: candidate requires that 'Any' conform to 'LosslessStringConvertible' (requirement specified as 'T' : 'LosslessStringConvertible')
-3 | 
-
-Swift.String.init:2:8: note: candidate requires that 'Any' conform to 'BinaryInteger' (requirement specified as 'T' : 'BinaryInteger')
-1 | struct String {
-2 | public init<T>(_ value: T, radix: Int = 10, uppercase: Bool = false) where T : BinaryInteger}
-  |        `- note: candidate requires that 'Any' conform to 'BinaryInteger' (requirement specified as 'T' : 'BinaryInteger')
-3 | 
-
-Swift.String.init:2:8: note: candidate requires that 'Any' conform to 'Sequence' (requirement specified as 'S' : 'Sequence')
-1 | struct String {
-2 | public init<S>(_ characters: S) where S : Sequence, S.Element == Character}
-  |        `- note: candidate requires that 'Any' conform to 'Sequence' (requirement specified as 'S' : 'Sequence')
-3 | 
-
-Swift.RangeReplaceableCollection.init:2:19: note: candidate requires that 'Any' conform to 'Sequence' (requirement specified as 'S' : 'Sequence')
-1 | protocol RangeReplaceableCollection {
-2 | @inlinable public init<S>(_ elements: S) where S : Sequence, Self.Element == S.Element}
-  |                   `- note: candidate requires that 'Any' conform to 'Sequence' (requirement specified as 'S' : 'Sequence')
-3 | 
-
-Swift.String.init:2:8: note: incorrect labels for candidate (have: '(_:)', expected: '(describing:)')
-1 | struct String {
-2 | public init<Subject>(describing instance: Subject)}
-  |        `- note: incorrect labels for candidate (have: '(_:)', expected: '(describing:)')
-3 | 
-
-Swift.String.init:2:8: note: incorrect labels for candidate (have: '(_:)', expected: '(reflecting:)')
-1 | struct String {
-2 | public init<Subject>(reflecting subject: Subject)}
-  |        `- note: incorrect labels for candidate (have: '(_:)', expected: '(reflecting:)')
-3 | 
-
-/tmp/TestSwiftTranspiler_Rosetta_Golden1911055332/001/main.swift:39:59: warning: forced cast of '[String : Any]' to same type has no effect
+/tmp/TestSwiftTranspiler_Rosetta_Golden4106075462/001/main.swift:39:59: warning: forced cast of '[String : Any]' to same type has no effect
  37 |                 let leleMap = (lele as! [String: Any])
- 38 |                 if (String((leleMap as! [String: Any])["cl"]!) == "R") {
+ 38 |                 if (String(describing: (leleMap as! [String: Any])["cl"]!) == "R") {
  39 |                     return (node("R", (node("B", (leleMap as! [String: Any])["le"]!, ((leleMap as! [String: Any])["aa"]! as! Int), (leleMap as! [String: Any])["ri"]!) as! [String: Any]), ((leMap as! [String: Any])["aa"]! as! Int), (node("B", (leMap as! [String: Any])["ri"]!, ((m as! [String: Any])["aa"]! as! Int), ri) as! [String: Any])) as! [String: Any])
     |                                                           `- warning: forced cast of '[String : Any]' to same type has no effect
  40 |                 }
  41 |             }
 
-/tmp/TestSwiftTranspiler_Rosetta_Golden1911055332/001/main.swift:39:96: warning: forced cast of '[String : Any]' to same type has no effect
+/tmp/TestSwiftTranspiler_Rosetta_Golden4106075462/001/main.swift:39:96: warning: forced cast of '[String : Any]' to same type has no effect
  37 |                 let leleMap = (lele as! [String: Any])
- 38 |                 if (String((leleMap as! [String: Any])["cl"]!) == "R") {
+ 38 |                 if (String(describing: (leleMap as! [String: Any])["cl"]!) == "R") {
  39 |                     return (node("R", (node("B", (leleMap as! [String: Any])["le"]!, ((leleMap as! [String: Any])["aa"]! as! Int), (leleMap as! [String: Any])["ri"]!) as! [String: Any]), ((leMap as! [String: Any])["aa"]! as! Int), (node("B", (leMap as! [String: Any])["ri"]!, ((m as! [String: Any])["aa"]! as! Int), ri) as! [String: Any])) as! [String: Any])
     |                                                                                                `- warning: forced cast of '[String : Any]' to same type has no effect
  40 |                 }
  41 |             }
 
-/tmp/TestSwiftTranspiler_Rosetta_Golden1911055332/001/main.swift:39:141: warning: forced cast of '[String : Any]' to same type has no effect
+/tmp/TestSwiftTranspiler_Rosetta_Golden4106075462/001/main.swift:39:141: warning: forced cast of '[String : Any]' to same type has no effect
  37 |                 let leleMap = (lele as! [String: Any])
- 38 |                 if (String((leleMap as! [String: Any])["cl"]!) == "R") {
+ 38 |                 if (String(describing: (leleMap as! [String: Any])["cl"]!) == "R") {
  39 |                     return (node("R", (node("B", (leleMap as! [String: Any])["le"]!, ((leleMap as! [String: Any])["aa"]! as! Int), (leleMap as! [String: Any])["ri"]!) as! [String: Any]), ((leMap as! [String: Any])["aa"]! as! Int), (node("B", (leMap as! [String: Any])["ri"]!, ((m as! [String: Any])["aa"]! as! Int), ri) as! [String: Any])) as! [String: Any])
     |                                                                                                                                             `- warning: forced cast of '[String : Any]' to same type has no effect
  40 |                 }
  41 |             }
 
-/tmp/TestSwiftTranspiler_Rosetta_Golden1911055332/001/main.swift:39:168: warning: forced cast of '[String : Any]' to same type has no effect
+/tmp/TestSwiftTranspiler_Rosetta_Golden4106075462/001/main.swift:39:168: warning: forced cast of '[String : Any]' to same type has no effect
  37 |                 let leleMap = (lele as! [String: Any])
- 38 |                 if (String((leleMap as! [String: Any])["cl"]!) == "R") {
+ 38 |                 if (String(describing: (leleMap as! [String: Any])["cl"]!) == "R") {
  39 |                     return (node("R", (node("B", (leleMap as! [String: Any])["le"]!, ((leleMap as! [String: Any])["aa"]! as! Int), (leleMap as! [String: Any])["ri"]!) as! [String: Any]), ((leMap as! [String: Any])["aa"]! as! Int), (node("B", (leMap as! [String: Any])["ri"]!, ((m as! [String: Any])["aa"]! as! Int), ri) as! [String: Any])) as! [String: Any])
     |                                                                                                                                                                        `- warning: forced cast of '[String : Any]' to same type has no effect
  40 |                 }
  41 |             }
 
-/tmp/TestSwiftTranspiler_Rosetta_Golden1911055332/001/main.swift:39:196: warning: forced cast of '[String : Any]' to same type has no effect
+/tmp/TestSwiftTranspiler_Rosetta_Golden4106075462/001/main.swift:39:196: warning: forced cast of '[String : Any]' to same type has no effect
  37 |                 let leleMap = (lele as! [String: Any])
- 38 |                 if (String((leleMap as! [String: Any])["cl"]!) == "R") {
+ 38 |                 if (String(describing: (leleMap as! [String: Any])["cl"]!) == "R") {
  39 |                     return (node("R", (node("B", (leleMap as! [String: Any])["le"]!, ((leleMap as! [String: Any])["aa"]! as! Int), (leleMap as! [String: Any])["ri"]!) as! [String: Any]), ((leMap as! [String: Any])["aa"]! as! Int), (node("B", (leMap as! [String: Any])["ri"]!, ((m as! [String: Any])["aa"]! as! Int), ri) as! [String: Any])) as! [String: Any])
     |                                                                                                                                                                                                    `- warning: forced cast of '[String : Any]' to same type has no effect
  40 |                 }
  41 |             }
 
-/tmp/TestSwiftTranspiler_Rosetta_Golden1911055332/001/main.swift:39:250: warning: forced cast of '[String : Any]' to same type has no effect
+/tmp/TestSwiftTranspiler_Rosetta_Golden4106075462/001/main.swift:39:250: warning: forced cast of '[String : Any]' to same type has no effect
  37 |                 let leleMap = (lele as! [String: Any])
- 38 |                 if (String((leleMap as! [String: Any])["cl"]!) == "R") {
+ 38 |                 if (String(describing: (leleMap as! [String: Any])["cl"]!) == "R") {
  39 |                     return (node("R", (node("B", (leleMap as! [String: Any])["le"]!, ((leleMap as! [String: Any])["aa"]! as! Int), (leleMap as! [String: Any])["ri"]!) as! [String: Any]), ((leMap as! [String: Any])["aa"]! as! Int), (node("B", (leMap as! [String: Any])["ri"]!, ((m as! [String: Any])["aa"]! as! Int), ri) as! [String: Any])) as! [String: Any])
     |                                                                                                                                                                                                                                                          `- warning: forced cast of '[String : Any]' to same type has no effect
  40 |                 }
  41 |             }
 
-/tmp/TestSwiftTranspiler_Rosetta_Golden1911055332/001/main.swift:39:281: warning: forced cast of '[String : Any]' to same type has no effect
+/tmp/TestSwiftTranspiler_Rosetta_Golden4106075462/001/main.swift:39:281: warning: forced cast of '[String : Any]' to same type has no effect
  37 |                 let leleMap = (lele as! [String: Any])
- 38 |                 if (String((leleMap as! [String: Any])["cl"]!) == "R") {
+ 38 |                 if (String(describing: (leleMap as! [String: Any])["cl"]!) == "R") {
  39 |                     return (node("R", (node("B", (leleMap as! [String: Any])["le"]!, ((leleMap as! [String: Any])["aa"]! as! Int), (leleMap as! [String: Any])["ri"]!) as! [String: Any]), ((leMap as! [String: Any])["aa"]! as! Int), (node("B", (leMap as! [String: Any])["ri"]!, ((m as! [String: Any])["aa"]! as! Int), ri) as! [String: Any])) as! [String: Any])
     |                                                                                                                                                                                                                                                                                         `- warning: forced cast of '[String : Any]' to same type has no effect
  40 |                 }
  41 |             }
 
-/tmp/TestSwiftTranspiler_Rosetta_Golden1911055332/001/main.swift:39:321: warning: forced cast of '[String : Any]' to same type has no effect
+/tmp/TestSwiftTranspiler_Rosetta_Golden4106075462/001/main.swift:39:321: warning: forced cast of '[String : Any]' to same type has no effect
  37 |                 let leleMap = (lele as! [String: Any])
- 38 |                 if (String((leleMap as! [String: Any])["cl"]!) == "R") {
+ 38 |                 if (String(describing: (leleMap as! [String: Any])["cl"]!) == "R") {
  39 |                     return (node("R", (node("B", (leleMap as! [String: Any])["le"]!, ((leleMap as! [String: Any])["aa"]! as! Int), (leleMap as! [String: Any])["ri"]!) as! [String: Any]), ((leMap as! [String: Any])["aa"]! as! Int), (node("B", (leMap as! [String: Any])["ri"]!, ((m as! [String: Any])["aa"]! as! Int), ri) as! [String: Any])) as! [String: Any])
     |                                                                                                                                                                                                                                                                                                                                 `- warning: forced cast of '[String : Any]' to same type has no effect
  40 |                 }
  41 |             }
 
-/tmp/TestSwiftTranspiler_Rosetta_Golden1911055332/001/main.swift:39:341: warning: forced cast of '[String : Any]' to same type has no effect
+/tmp/TestSwiftTranspiler_Rosetta_Golden4106075462/001/main.swift:39:341: warning: forced cast of '[String : Any]' to same type has no effect
  37 |                 let leleMap = (lele as! [String: Any])
- 38 |                 if (String((leleMap as! [String: Any])["cl"]!) == "R") {
+ 38 |                 if (String(describing: (leleMap as! [String: Any])["cl"]!) == "R") {
  39 |                     return (node("R", (node("B", (leleMap as! [String: Any])["le"]!, ((leleMap as! [String: Any])["aa"]! as! Int), (leleMap as! [String: Any])["ri"]!) as! [String: Any]), ((leMap as! [String: Any])["aa"]! as! Int), (node("B", (leMap as! [String: Any])["ri"]!, ((m as! [String: Any])["aa"]! as! Int), ri) as! [String: Any])) as! [String: Any])
     |                                                                                                                                                                                                                                                                                                                                                     `- warning: forced cast of '[String : Any]' to same type has no effect
  40 |                 }
  41 |             }
 
-/tmp/TestSwiftTranspiler_Rosetta_Golden1911055332/001/main.swift:42:31: warning: forced cast of '[String : Any]' to same type has no effect
+/tmp/TestSwiftTranspiler_Rosetta_Golden4106075462/001/main.swift:42:31: warning: forced cast of '[String : Any]' to same type has no effect
  40 |                 }
  41 |             }
  42 |             let leri = (leMap as! [String: Any])["ri"]!
@@ -304,299 +200,191 @@ Swift.String.init:2:8: note: incorrect labels for candidate (have: '(_:)', expec
  43 |             if (String(describing: leri)
  44 |             != String(describing: nil as Any?)
 
-/tmp/TestSwiftTranspiler_Rosetta_Golden1911055332/001/main.swift:47:21: error: no exact matches in call to initializer 
+/tmp/TestSwiftTranspiler_Rosetta_Golden4106075462/001/main.swift:47:49: warning: forced cast of '[String : Any]' to same type has no effect
  45 |             ) {
  46 |                 let leriMap = (leri as! [String: Any])
- 47 |                 if (String((leriMap as! [String: Any])["cl"]!) == "R") {
-    |                     `- error: no exact matches in call to initializer 
+ 47 |                 if (String(describing: (leriMap as! [String: Any])["cl"]!) == "R") {
+    |                                                 `- warning: forced cast of '[String : Any]' to same type has no effect
  48 |                     return (node("R", (node("B", (leMap as! [String: Any])["le"]!, ((leMap as! [String: Any])["aa"]! as! Int), (leriMap as! [String: Any])["le"]!) as! [String: Any]), ((leriMap as! [String: Any])["aa"]! as! Int), (node("B", (leriMap as! [String: Any])["ri"]!, ((m as! [String: Any])["aa"]! as! Int), ri) as! [String: Any])) as! [String: Any])
  49 |                 }
 
-Swift.String.init:2:19: note: candidate requires that 'Any' conform to 'LosslessStringConvertible' (requirement specified as 'T' : 'LosslessStringConvertible')
-1 | struct String {
-2 | @inlinable public init<T>(_ value: T) where T : LosslessStringConvertible}
-  |                   `- note: candidate requires that 'Any' conform to 'LosslessStringConvertible' (requirement specified as 'T' : 'LosslessStringConvertible')
-3 | 
-
-Swift.String.init:2:8: note: candidate requires that 'Any' conform to 'BinaryInteger' (requirement specified as 'T' : 'BinaryInteger')
-1 | struct String {
-2 | public init<T>(_ value: T, radix: Int = 10, uppercase: Bool = false) where T : BinaryInteger}
-  |        `- note: candidate requires that 'Any' conform to 'BinaryInteger' (requirement specified as 'T' : 'BinaryInteger')
-3 | 
-
-Swift.String.init:2:8: note: candidate requires that 'Any' conform to 'Sequence' (requirement specified as 'S' : 'Sequence')
-1 | struct String {
-2 | public init<S>(_ characters: S) where S : Sequence, S.Element == Character}
-  |        `- note: candidate requires that 'Any' conform to 'Sequence' (requirement specified as 'S' : 'Sequence')
-3 | 
-
-Swift.RangeReplaceableCollection.init:2:19: note: candidate requires that 'Any' conform to 'Sequence' (requirement specified as 'S' : 'Sequence')
-1 | protocol RangeReplaceableCollection {
-2 | @inlinable public init<S>(_ elements: S) where S : Sequence, Self.Element == S.Element}
-  |                   `- note: candidate requires that 'Any' conform to 'Sequence' (requirement specified as 'S' : 'Sequence')
-3 | 
-
-Swift.String.init:2:8: note: incorrect labels for candidate (have: '(_:)', expected: '(describing:)')
-1 | struct String {
-2 | public init<Subject>(describing instance: Subject)}
-  |        `- note: incorrect labels for candidate (have: '(_:)', expected: '(describing:)')
-3 | 
-
-Swift.String.init:2:8: note: incorrect labels for candidate (have: '(_:)', expected: '(reflecting:)')
-1 | struct String {
-2 | public init<Subject>(reflecting subject: Subject)}
-  |        `- note: incorrect labels for candidate (have: '(_:)', expected: '(reflecting:)')
-3 | 
-
-/tmp/TestSwiftTranspiler_Rosetta_Golden1911055332/001/main.swift:48:57: warning: forced cast of '[String : Any]' to same type has no effect
+/tmp/TestSwiftTranspiler_Rosetta_Golden4106075462/001/main.swift:48:57: warning: forced cast of '[String : Any]' to same type has no effect
  46 |                 let leriMap = (leri as! [String: Any])
- 47 |                 if (String((leriMap as! [String: Any])["cl"]!) == "R") {
+ 47 |                 if (String(describing: (leriMap as! [String: Any])["cl"]!) == "R") {
  48 |                     return (node("R", (node("B", (leMap as! [String: Any])["le"]!, ((leMap as! [String: Any])["aa"]! as! Int), (leriMap as! [String: Any])["le"]!) as! [String: Any]), ((leriMap as! [String: Any])["aa"]! as! Int), (node("B", (leriMap as! [String: Any])["ri"]!, ((m as! [String: Any])["aa"]! as! Int), ri) as! [String: Any])) as! [String: Any])
     |                                                         `- warning: forced cast of '[String : Any]' to same type has no effect
  49 |                 }
  50 |             }
 
-/tmp/TestSwiftTranspiler_Rosetta_Golden1911055332/001/main.swift:48:92: warning: forced cast of '[String : Any]' to same type has no effect
+/tmp/TestSwiftTranspiler_Rosetta_Golden4106075462/001/main.swift:48:92: warning: forced cast of '[String : Any]' to same type has no effect
  46 |                 let leriMap = (leri as! [String: Any])
- 47 |                 if (String((leriMap as! [String: Any])["cl"]!) == "R") {
+ 47 |                 if (String(describing: (leriMap as! [String: Any])["cl"]!) == "R") {
  48 |                     return (node("R", (node("B", (leMap as! [String: Any])["le"]!, ((leMap as! [String: Any])["aa"]! as! Int), (leriMap as! [String: Any])["le"]!) as! [String: Any]), ((leriMap as! [String: Any])["aa"]! as! Int), (node("B", (leriMap as! [String: Any])["ri"]!, ((m as! [String: Any])["aa"]! as! Int), ri) as! [String: Any])) as! [String: Any])
     |                                                                                            `- warning: forced cast of '[String : Any]' to same type has no effect
  49 |                 }
  50 |             }
 
-/tmp/TestSwiftTranspiler_Rosetta_Golden1911055332/001/main.swift:48:137: warning: forced cast of '[String : Any]' to same type has no effect
+/tmp/TestSwiftTranspiler_Rosetta_Golden4106075462/001/main.swift:48:137: warning: forced cast of '[String : Any]' to same type has no effect
  46 |                 let leriMap = (leri as! [String: Any])
- 47 |                 if (String((leriMap as! [String: Any])["cl"]!) == "R") {
+ 47 |                 if (String(describing: (leriMap as! [String: Any])["cl"]!) == "R") {
  48 |                     return (node("R", (node("B", (leMap as! [String: Any])["le"]!, ((leMap as! [String: Any])["aa"]! as! Int), (leriMap as! [String: Any])["le"]!) as! [String: Any]), ((leriMap as! [String: Any])["aa"]! as! Int), (node("B", (leriMap as! [String: Any])["ri"]!, ((m as! [String: Any])["aa"]! as! Int), ri) as! [String: Any])) as! [String: Any])
     |                                                                                                                                         `- warning: forced cast of '[String : Any]' to same type has no effect
  49 |                 }
  50 |             }
 
-/tmp/TestSwiftTranspiler_Rosetta_Golden1911055332/001/main.swift:48:164: warning: forced cast of '[String : Any]' to same type has no effect
+/tmp/TestSwiftTranspiler_Rosetta_Golden4106075462/001/main.swift:48:164: warning: forced cast of '[String : Any]' to same type has no effect
  46 |                 let leriMap = (leri as! [String: Any])
- 47 |                 if (String((leriMap as! [String: Any])["cl"]!) == "R") {
+ 47 |                 if (String(describing: (leriMap as! [String: Any])["cl"]!) == "R") {
  48 |                     return (node("R", (node("B", (leMap as! [String: Any])["le"]!, ((leMap as! [String: Any])["aa"]! as! Int), (leriMap as! [String: Any])["le"]!) as! [String: Any]), ((leriMap as! [String: Any])["aa"]! as! Int), (node("B", (leriMap as! [String: Any])["ri"]!, ((m as! [String: Any])["aa"]! as! Int), ri) as! [String: Any])) as! [String: Any])
     |                                                                                                                                                                    `- warning: forced cast of '[String : Any]' to same type has no effect
  49 |                 }
  50 |             }
 
-/tmp/TestSwiftTranspiler_Rosetta_Golden1911055332/001/main.swift:48:194: warning: forced cast of '[String : Any]' to same type has no effect
+/tmp/TestSwiftTranspiler_Rosetta_Golden4106075462/001/main.swift:48:194: warning: forced cast of '[String : Any]' to same type has no effect
  46 |                 let leriMap = (leri as! [String: Any])
- 47 |                 if (String((leriMap as! [String: Any])["cl"]!) == "R") {
+ 47 |                 if (String(describing: (leriMap as! [String: Any])["cl"]!) == "R") {
  48 |                     return (node("R", (node("B", (leMap as! [String: Any])["le"]!, ((leMap as! [String: Any])["aa"]! as! Int), (leriMap as! [String: Any])["le"]!) as! [String: Any]), ((leriMap as! [String: Any])["aa"]! as! Int), (node("B", (leriMap as! [String: Any])["ri"]!, ((m as! [String: Any])["aa"]! as! Int), ri) as! [String: Any])) as! [String: Any])
     |                                                                                                                                                                                                  `- warning: forced cast of '[String : Any]' to same type has no effect
  49 |                 }
  50 |             }
 
-/tmp/TestSwiftTranspiler_Rosetta_Golden1911055332/001/main.swift:48:250: warning: forced cast of '[String : Any]' to same type has no effect
+/tmp/TestSwiftTranspiler_Rosetta_Golden4106075462/001/main.swift:48:250: warning: forced cast of '[String : Any]' to same type has no effect
  46 |                 let leriMap = (leri as! [String: Any])
- 47 |                 if (String((leriMap as! [String: Any])["cl"]!) == "R") {
+ 47 |                 if (String(describing: (leriMap as! [String: Any])["cl"]!) == "R") {
  48 |                     return (node("R", (node("B", (leMap as! [String: Any])["le"]!, ((leMap as! [String: Any])["aa"]! as! Int), (leriMap as! [String: Any])["le"]!) as! [String: Any]), ((leriMap as! [String: Any])["aa"]! as! Int), (node("B", (leriMap as! [String: Any])["ri"]!, ((m as! [String: Any])["aa"]! as! Int), ri) as! [String: Any])) as! [String: Any])
     |                                                                                                                                                                                                                                                          `- warning: forced cast of '[String : Any]' to same type has no effect
  49 |                 }
  50 |             }
 
-/tmp/TestSwiftTranspiler_Rosetta_Golden1911055332/001/main.swift:48:281: warning: forced cast of '[String : Any]' to same type has no effect
+/tmp/TestSwiftTranspiler_Rosetta_Golden4106075462/001/main.swift:48:281: warning: forced cast of '[String : Any]' to same type has no effect
  46 |                 let leriMap = (leri as! [String: Any])
- 47 |                 if (String((leriMap as! [String: Any])["cl"]!) == "R") {
+ 47 |                 if (String(describing: (leriMap as! [String: Any])["cl"]!) == "R") {
  48 |                     return (node("R", (node("B", (leMap as! [String: Any])["le"]!, ((leMap as! [String: Any])["aa"]! as! Int), (leriMap as! [String: Any])["le"]!) as! [String: Any]), ((leriMap as! [String: Any])["aa"]! as! Int), (node("B", (leriMap as! [String: Any])["ri"]!, ((m as! [String: Any])["aa"]! as! Int), ri) as! [String: Any])) as! [String: Any])
     |                                                                                                                                                                                                                                                                                         `- warning: forced cast of '[String : Any]' to same type has no effect
  49 |                 }
  50 |             }
 
-/tmp/TestSwiftTranspiler_Rosetta_Golden1911055332/001/main.swift:48:321: warning: forced cast of '[String : Any]' to same type has no effect
+/tmp/TestSwiftTranspiler_Rosetta_Golden4106075462/001/main.swift:48:321: warning: forced cast of '[String : Any]' to same type has no effect
  46 |                 let leriMap = (leri as! [String: Any])
- 47 |                 if (String((leriMap as! [String: Any])["cl"]!) == "R") {
+ 47 |                 if (String(describing: (leriMap as! [String: Any])["cl"]!) == "R") {
  48 |                     return (node("R", (node("B", (leMap as! [String: Any])["le"]!, ((leMap as! [String: Any])["aa"]! as! Int), (leriMap as! [String: Any])["le"]!) as! [String: Any]), ((leriMap as! [String: Any])["aa"]! as! Int), (node("B", (leriMap as! [String: Any])["ri"]!, ((m as! [String: Any])["aa"]! as! Int), ri) as! [String: Any])) as! [String: Any])
     |                                                                                                                                                                                                                                                                                                                                 `- warning: forced cast of '[String : Any]' to same type has no effect
  49 |                 }
  50 |             }
 
-/tmp/TestSwiftTranspiler_Rosetta_Golden1911055332/001/main.swift:48:341: warning: forced cast of '[String : Any]' to same type has no effect
+/tmp/TestSwiftTranspiler_Rosetta_Golden4106075462/001/main.swift:48:341: warning: forced cast of '[String : Any]' to same type has no effect
  46 |                 let leriMap = (leri as! [String: Any])
- 47 |                 if (String((leriMap as! [String: Any])["cl"]!) == "R") {
+ 47 |                 if (String(describing: (leriMap as! [String: Any])["cl"]!) == "R") {
  48 |                     return (node("R", (node("B", (leMap as! [String: Any])["le"]!, ((leMap as! [String: Any])["aa"]! as! Int), (leriMap as! [String: Any])["le"]!) as! [String: Any]), ((leriMap as! [String: Any])["aa"]! as! Int), (node("B", (leriMap as! [String: Any])["ri"]!, ((m as! [String: Any])["aa"]! as! Int), ri) as! [String: Any])) as! [String: Any])
     |                                                                                                                                                                                                                                                                                                                                                     `- warning: forced cast of '[String : Any]' to same type has no effect
  49 |                 }
  50 |             }
 
-/tmp/TestSwiftTranspiler_Rosetta_Golden1911055332/001/main.swift:57:13: error: no exact matches in call to initializer 
+/tmp/TestSwiftTranspiler_Rosetta_Golden4106075462/001/main.swift:57:39: warning: forced cast of '[String : Any]' to same type has no effect
  55 |     ) {
  56 |         let riMap = (ri as! [String: Any])
- 57 |         if (String((riMap as! [String: Any])["cl"]!) == "R") {
-    |             `- error: no exact matches in call to initializer 
+ 57 |         if (String(describing: (riMap as! [String: Any])["cl"]!) == "R") {
+    |                                       `- warning: forced cast of '[String : Any]' to same type has no effect
  58 |             let rile = (riMap as! [String: Any])["le"]!
  59 |             if (String(describing: rile)
 
-Swift.String.init:2:19: note: candidate requires that 'Any' conform to 'LosslessStringConvertible' (requirement specified as 'T' : 'LosslessStringConvertible')
-1 | struct String {
-2 | @inlinable public init<T>(_ value: T) where T : LosslessStringConvertible}
-  |                   `- note: candidate requires that 'Any' conform to 'LosslessStringConvertible' (requirement specified as 'T' : 'LosslessStringConvertible')
-3 | 
-
-Swift.String.init:2:8: note: candidate requires that 'Any' conform to 'BinaryInteger' (requirement specified as 'T' : 'BinaryInteger')
-1 | struct String {
-2 | public init<T>(_ value: T, radix: Int = 10, uppercase: Bool = false) where T : BinaryInteger}
-  |        `- note: candidate requires that 'Any' conform to 'BinaryInteger' (requirement specified as 'T' : 'BinaryInteger')
-3 | 
-
-Swift.String.init:2:8: note: candidate requires that 'Any' conform to 'Sequence' (requirement specified as 'S' : 'Sequence')
-1 | struct String {
-2 | public init<S>(_ characters: S) where S : Sequence, S.Element == Character}
-  |        `- note: candidate requires that 'Any' conform to 'Sequence' (requirement specified as 'S' : 'Sequence')
-3 | 
-
-Swift.RangeReplaceableCollection.init:2:19: note: candidate requires that 'Any' conform to 'Sequence' (requirement specified as 'S' : 'Sequence')
-1 | protocol RangeReplaceableCollection {
-2 | @inlinable public init<S>(_ elements: S) where S : Sequence, Self.Element == S.Element}
-  |                   `- note: candidate requires that 'Any' conform to 'Sequence' (requirement specified as 'S' : 'Sequence')
-3 | 
-
-Swift.String.init:2:8: note: incorrect labels for candidate (have: '(_:)', expected: '(describing:)')
-1 | struct String {
-2 | public init<Subject>(describing instance: Subject)}
-  |        `- note: incorrect labels for candidate (have: '(_:)', expected: '(describing:)')
-3 | 
-
-Swift.String.init:2:8: note: incorrect labels for candidate (have: '(_:)', expected: '(reflecting:)')
-1 | struct String {
-2 | public init<Subject>(reflecting subject: Subject)}
-  |        `- note: incorrect labels for candidate (have: '(_:)', expected: '(reflecting:)')
-3 | 
-
-/tmp/TestSwiftTranspiler_Rosetta_Golden1911055332/001/main.swift:58:31: warning: forced cast of '[String : Any]' to same type has no effect
+/tmp/TestSwiftTranspiler_Rosetta_Golden4106075462/001/main.swift:58:31: warning: forced cast of '[String : Any]' to same type has no effect
  56 |         let riMap = (ri as! [String: Any])
- 57 |         if (String((riMap as! [String: Any])["cl"]!) == "R") {
+ 57 |         if (String(describing: (riMap as! [String: Any])["cl"]!) == "R") {
  58 |             let rile = (riMap as! [String: Any])["le"]!
     |                               `- warning: forced cast of '[String : Any]' to same type has no effect
  59 |             if (String(describing: rile)
  60 |             != String(describing: nil as Any?)
 
-/tmp/TestSwiftTranspiler_Rosetta_Golden1911055332/001/main.swift:63:21: error: no exact matches in call to initializer 
+/tmp/TestSwiftTranspiler_Rosetta_Golden4106075462/001/main.swift:63:49: warning: forced cast of '[String : Any]' to same type has no effect
  61 |             ) {
  62 |                 let rileMap = (rile as! [String: Any])
- 63 |                 if (String((rileMap as! [String: Any])["cl"]!) == "R") {
-    |                     `- error: no exact matches in call to initializer 
+ 63 |                 if (String(describing: (rileMap as! [String: Any])["cl"]!) == "R") {
+    |                                                 `- warning: forced cast of '[String : Any]' to same type has no effect
  64 |                     return (node("R", (node("B", (m as! [String: Any])["le"]!, ((m as! [String: Any])["aa"]! as! Int), (rileMap as! [String: Any])["le"]!) as! [String: Any]), ((rileMap as! [String: Any])["aa"]! as! Int), (node("B", (rileMap as! [String: Any])["ri"]!, ((riMap as! [String: Any])["aa"]! as! Int), (riMap as! [String: Any])["ri"]!) as! [String: Any])) as! [String: Any])
  65 |                 }
 
-Swift.String.init:2:19: note: candidate requires that 'Any' conform to 'LosslessStringConvertible' (requirement specified as 'T' : 'LosslessStringConvertible')
-1 | struct String {
-2 | @inlinable public init<T>(_ value: T) where T : LosslessStringConvertible}
-  |                   `- note: candidate requires that 'Any' conform to 'LosslessStringConvertible' (requirement specified as 'T' : 'LosslessStringConvertible')
-3 | 
-
-Swift.String.init:2:8: note: candidate requires that 'Any' conform to 'BinaryInteger' (requirement specified as 'T' : 'BinaryInteger')
-1 | struct String {
-2 | public init<T>(_ value: T, radix: Int = 10, uppercase: Bool = false) where T : BinaryInteger}
-  |        `- note: candidate requires that 'Any' conform to 'BinaryInteger' (requirement specified as 'T' : 'BinaryInteger')
-3 | 
-
-Swift.String.init:2:8: note: candidate requires that 'Any' conform to 'Sequence' (requirement specified as 'S' : 'Sequence')
-1 | struct String {
-2 | public init<S>(_ characters: S) where S : Sequence, S.Element == Character}
-  |        `- note: candidate requires that 'Any' conform to 'Sequence' (requirement specified as 'S' : 'Sequence')
-3 | 
-
-Swift.RangeReplaceableCollection.init:2:19: note: candidate requires that 'Any' conform to 'Sequence' (requirement specified as 'S' : 'Sequence')
-1 | protocol RangeReplaceableCollection {
-2 | @inlinable public init<S>(_ elements: S) where S : Sequence, Self.Element == S.Element}
-  |                   `- note: candidate requires that 'Any' conform to 'Sequence' (requirement specified as 'S' : 'Sequence')
-3 | 
-
-Swift.String.init:2:8: note: incorrect labels for candidate (have: '(_:)', expected: '(describing:)')
-1 | struct String {
-2 | public init<Subject>(describing instance: Subject)}
-  |        `- note: incorrect labels for candidate (have: '(_:)', expected: '(describing:)')
-3 | 
-
-Swift.String.init:2:8: note: incorrect labels for candidate (have: '(_:)', expected: '(reflecting:)')
-1 | struct String {
-2 | public init<Subject>(reflecting subject: Subject)}
-  |        `- note: incorrect labels for candidate (have: '(_:)', expected: '(reflecting:)')
-3 | 
-
-/tmp/TestSwiftTranspiler_Rosetta_Golden1911055332/001/main.swift:64:53: warning: forced cast of '[String : Any]' to same type has no effect
+/tmp/TestSwiftTranspiler_Rosetta_Golden4106075462/001/main.swift:64:53: warning: forced cast of '[String : Any]' to same type has no effect
  62 |                 let rileMap = (rile as! [String: Any])
- 63 |                 if (String((rileMap as! [String: Any])["cl"]!) == "R") {
+ 63 |                 if (String(describing: (rileMap as! [String: Any])["cl"]!) == "R") {
  64 |                     return (node("R", (node("B", (m as! [String: Any])["le"]!, ((m as! [String: Any])["aa"]! as! Int), (rileMap as! [String: Any])["le"]!) as! [String: Any]), ((rileMap as! [String: Any])["aa"]! as! Int), (node("B", (rileMap as! [String: Any])["ri"]!, ((riMap as! [String: Any])["aa"]! as! Int), (riMap as! [String: Any])["ri"]!) as! [String: Any])) as! [String: Any])
     |                                                     `- warning: forced cast of '[String : Any]' to same type has no effect
  65 |                 }
  66 |             }
 
-/tmp/TestSwiftTranspiler_Rosetta_Golden1911055332/001/main.swift:64:84: warning: forced cast of '[String : Any]' to same type has no effect
+/tmp/TestSwiftTranspiler_Rosetta_Golden4106075462/001/main.swift:64:84: warning: forced cast of '[String : Any]' to same type has no effect
  62 |                 let rileMap = (rile as! [String: Any])
- 63 |                 if (String((rileMap as! [String: Any])["cl"]!) == "R") {
+ 63 |                 if (String(describing: (rileMap as! [String: Any])["cl"]!) == "R") {
  64 |                     return (node("R", (node("B", (m as! [String: Any])["le"]!, ((m as! [String: Any])["aa"]! as! Int), (rileMap as! [String: Any])["le"]!) as! [String: Any]), ((rileMap as! [String: Any])["aa"]! as! Int), (node("B", (rileMap as! [String: Any])["ri"]!, ((riMap as! [String: Any])["aa"]! as! Int), (riMap as! [String: Any])["ri"]!) as! [String: Any])) as! [String: Any])
     |                                                                                    `- warning: forced cast of '[String : Any]' to same type has no effect
  65 |                 }
  66 |             }
 
-/tmp/TestSwiftTranspiler_Rosetta_Golden1911055332/001/main.swift:64:129: warning: forced cast of '[String : Any]' to same type has no effect
+/tmp/TestSwiftTranspiler_Rosetta_Golden4106075462/001/main.swift:64:129: warning: forced cast of '[String : Any]' to same type has no effect
  62 |                 let rileMap = (rile as! [String: Any])
- 63 |                 if (String((rileMap as! [String: Any])["cl"]!) == "R") {
+ 63 |                 if (String(describing: (rileMap as! [String: Any])["cl"]!) == "R") {
  64 |                     return (node("R", (node("B", (m as! [String: Any])["le"]!, ((m as! [String: Any])["aa"]! as! Int), (rileMap as! [String: Any])["le"]!) as! [String: Any]), ((rileMap as! [String: Any])["aa"]! as! Int), (node("B", (rileMap as! [String: Any])["ri"]!, ((riMap as! [String: Any])["aa"]! as! Int), (riMap as! [String: Any])["ri"]!) as! [String: Any])) as! [String: Any])
     |                                                                                                                                 `- warning: forced cast of '[String : Any]' to same type has no effect
  65 |                 }
  66 |             }
 
-/tmp/TestSwiftTranspiler_Rosetta_Golden1911055332/001/main.swift:64:156: warning: forced cast of '[String : Any]' to same type has no effect
+/tmp/TestSwiftTranspiler_Rosetta_Golden4106075462/001/main.swift:64:156: warning: forced cast of '[String : Any]' to same type has no effect
  62 |                 let rileMap = (rile as! [String: Any])
- 63 |                 if (String((rileMap as! [String: Any])["cl"]!) == "R") {
+ 63 |                 if (String(describing: (rileMap as! [String: Any])["cl"]!) == "R") {
  64 |                     return (node("R", (node("B", (m as! [String: Any])["le"]!, ((m as! [String: Any])["aa"]! as! Int), (rileMap as! [String: Any])["le"]!) as! [String: Any]), ((rileMap as! [String: Any])["aa"]! as! Int), (node("B", (rileMap as! [String: Any])["ri"]!, ((riMap as! [String: Any])["aa"]! as! Int), (riMap as! [String: Any])["ri"]!) as! [String: Any])) as! [String: Any])
     |                                                                                                                                                            `- warning: forced cast of '[String : Any]' to same type has no effect
  65 |                 }
  66 |             }
 
-/tmp/TestSwiftTranspiler_Rosetta_Golden1911055332/001/main.swift:64:186: warning: forced cast of '[String : Any]' to same type has no effect
+/tmp/TestSwiftTranspiler_Rosetta_Golden4106075462/001/main.swift:64:186: warning: forced cast of '[String : Any]' to same type has no effect
  62 |                 let rileMap = (rile as! [String: Any])
- 63 |                 if (String((rileMap as! [String: Any])["cl"]!) == "R") {
+ 63 |                 if (String(describing: (rileMap as! [String: Any])["cl"]!) == "R") {
  64 |                     return (node("R", (node("B", (m as! [String: Any])["le"]!, ((m as! [String: Any])["aa"]! as! Int), (rileMap as! [String: Any])["le"]!) as! [String: Any]), ((rileMap as! [String: Any])["aa"]! as! Int), (node("B", (rileMap as! [String: Any])["ri"]!, ((riMap as! [String: Any])["aa"]! as! Int), (riMap as! [String: Any])["ri"]!) as! [String: Any])) as! [String: Any])
     |                                                                                                                                                                                          `- warning: forced cast of '[String : Any]' to same type has no effect
  65 |                 }
  66 |             }
 
-/tmp/TestSwiftTranspiler_Rosetta_Golden1911055332/001/main.swift:64:242: warning: forced cast of '[String : Any]' to same type has no effect
+/tmp/TestSwiftTranspiler_Rosetta_Golden4106075462/001/main.swift:64:242: warning: forced cast of '[String : Any]' to same type has no effect
  62 |                 let rileMap = (rile as! [String: Any])
- 63 |                 if (String((rileMap as! [String: Any])["cl"]!) == "R") {
+ 63 |                 if (String(describing: (rileMap as! [String: Any])["cl"]!) == "R") {
  64 |                     return (node("R", (node("B", (m as! [String: Any])["le"]!, ((m as! [String: Any])["aa"]! as! Int), (rileMap as! [String: Any])["le"]!) as! [String: Any]), ((rileMap as! [String: Any])["aa"]! as! Int), (node("B", (rileMap as! [String: Any])["ri"]!, ((riMap as! [String: Any])["aa"]! as! Int), (riMap as! [String: Any])["ri"]!) as! [String: Any])) as! [String: Any])
     |                                                                                                                                                                                                                                                  `- warning: forced cast of '[String : Any]' to same type has no effect
  65 |                 }
  66 |             }
 
-/tmp/TestSwiftTranspiler_Rosetta_Golden1911055332/001/main.swift:64:277: warning: forced cast of '[String : Any]' to same type has no effect
+/tmp/TestSwiftTranspiler_Rosetta_Golden4106075462/001/main.swift:64:277: warning: forced cast of '[String : Any]' to same type has no effect
  62 |                 let rileMap = (rile as! [String: Any])
- 63 |                 if (String((rileMap as! [String: Any])["cl"]!) == "R") {
+ 63 |                 if (String(describing: (rileMap as! [String: Any])["cl"]!) == "R") {
  64 |                     return (node("R", (node("B", (m as! [String: Any])["le"]!, ((m as! [String: Any])["aa"]! as! Int), (rileMap as! [String: Any])["le"]!) as! [String: Any]), ((rileMap as! [String: Any])["aa"]! as! Int), (node("B", (rileMap as! [String: Any])["ri"]!, ((riMap as! [String: Any])["aa"]! as! Int), (riMap as! [String: Any])["ri"]!) as! [String: Any])) as! [String: Any])
     |                                                                                                                                                                                                                                                                                     `- warning: forced cast of '[String : Any]' to same type has no effect
  65 |                 }
  66 |             }
 
-/tmp/TestSwiftTranspiler_Rosetta_Golden1911055332/001/main.swift:64:320: warning: forced cast of '[String : Any]' to same type has no effect
+/tmp/TestSwiftTranspiler_Rosetta_Golden4106075462/001/main.swift:64:320: warning: forced cast of '[String : Any]' to same type has no effect
  62 |                 let rileMap = (rile as! [String: Any])
- 63 |                 if (String((rileMap as! [String: Any])["cl"]!) == "R") {
+ 63 |                 if (String(describing: (rileMap as! [String: Any])["cl"]!) == "R") {
  64 |                     return (node("R", (node("B", (m as! [String: Any])["le"]!, ((m as! [String: Any])["aa"]! as! Int), (rileMap as! [String: Any])["le"]!) as! [String: Any]), ((rileMap as! [String: Any])["aa"]! as! Int), (node("B", (rileMap as! [String: Any])["ri"]!, ((riMap as! [String: Any])["aa"]! as! Int), (riMap as! [String: Any])["ri"]!) as! [String: Any])) as! [String: Any])
     |                                                                                                                                                                                                                                                                                                                                `- warning: forced cast of '[String : Any]' to same type has no effect
  65 |                 }
  66 |             }
 
-/tmp/TestSwiftTranspiler_Rosetta_Golden1911055332/001/main.swift:64:347: warning: forced cast of '[String : Any]' to same type has no effect
+/tmp/TestSwiftTranspiler_Rosetta_Golden4106075462/001/main.swift:64:347: warning: forced cast of '[String : Any]' to same type has no effect
  62 |                 let rileMap = (rile as! [String: Any])
- 63 |                 if (String((rileMap as! [String: Any])["cl"]!) == "R") {
+ 63 |                 if (String(describing: (rileMap as! [String: Any])["cl"]!) == "R") {
  64 |                     return (node("R", (node("B", (m as! [String: Any])["le"]!, ((m as! [String: Any])["aa"]! as! Int), (rileMap as! [String: Any])["le"]!) as! [String: Any]), ((rileMap as! [String: Any])["aa"]! as! Int), (node("B", (rileMap as! [String: Any])["ri"]!, ((riMap as! [String: Any])["aa"]! as! Int), (riMap as! [String: Any])["ri"]!) as! [String: Any])) as! [String: Any])
     |                                                                                                                                                                                                                                                                                                                                                           `- warning: forced cast of '[String : Any]' to same type has no effect
  65 |                 }
  66 |             }
 
-/tmp/TestSwiftTranspiler_Rosetta_Golden1911055332/001/main.swift:64:367: warning: forced cast of '[String : Any]' to same type has no effect
+/tmp/TestSwiftTranspiler_Rosetta_Golden4106075462/001/main.swift:64:367: warning: forced cast of '[String : Any]' to same type has no effect
  62 |                 let rileMap = (rile as! [String: Any])
- 63 |                 if (String((rileMap as! [String: Any])["cl"]!) == "R") {
+ 63 |                 if (String(describing: (rileMap as! [String: Any])["cl"]!) == "R") {
  64 |                     return (node("R", (node("B", (m as! [String: Any])["le"]!, ((m as! [String: Any])["aa"]! as! Int), (rileMap as! [String: Any])["le"]!) as! [String: Any]), ((rileMap as! [String: Any])["aa"]! as! Int), (node("B", (rileMap as! [String: Any])["ri"]!, ((riMap as! [String: Any])["aa"]! as! Int), (riMap as! [String: Any])["ri"]!) as! [String: Any])) as! [String: Any])
     |                                                                                                                                                                                                                                                                                                                                                                               `- warning: forced cast of '[String : Any]' to same type has no effect
  65 |                 }
  66 |             }
 
-/tmp/TestSwiftTranspiler_Rosetta_Golden1911055332/001/main.swift:67:31: warning: forced cast of '[String : Any]' to same type has no effect
+/tmp/TestSwiftTranspiler_Rosetta_Golden4106075462/001/main.swift:67:31: warning: forced cast of '[String : Any]' to same type has no effect
  65 |                 }
  66 |             }
  67 |             let riri = (riMap as! [String: Any])["ri"]!
@@ -604,196 +392,184 @@ Swift.String.init:2:8: note: incorrect labels for candidate (have: '(_:)', expec
  68 |             if (String(describing: riri)
  69 |             != String(describing: nil as Any?)
 
-/tmp/TestSwiftTranspiler_Rosetta_Golden1911055332/001/main.swift:72:21: error: no exact matches in call to initializer 
+/tmp/TestSwiftTranspiler_Rosetta_Golden4106075462/001/main.swift:72:49: warning: forced cast of '[String : Any]' to same type has no effect
  70 |             ) {
  71 |                 let ririMap = (riri as! [String: Any])
- 72 |                 if (String((ririMap as! [String: Any])["cl"]!) == "R") {
-    |                     `- error: no exact matches in call to initializer 
+ 72 |                 if (String(describing: (ririMap as! [String: Any])["cl"]!) == "R") {
+    |                                                 `- warning: forced cast of '[String : Any]' to same type has no effect
  73 |                     return (node("R", (node("B", (m as! [String: Any])["le"]!, ((m as! [String: Any])["aa"]! as! Int), (riMap as! [String: Any])["le"]!) as! [String: Any]), ((riMap as! [String: Any])["aa"]! as! Int), (node("B", (ririMap as! [String: Any])["le"]!, ((ririMap as! [String: Any])["aa"]! as! Int), (ririMap as! [String: Any])["ri"]!) as! [String: Any])) as! [String: Any])
  74 |                 }
 
-Swift.String.init:2:19: note: candidate requires that 'Any' conform to 'LosslessStringConvertible' (requirement specified as 'T' : 'LosslessStringConvertible')
-1 | struct String {
-2 | @inlinable public init<T>(_ value: T) where T : LosslessStringConvertible}
-  |                   `- note: candidate requires that 'Any' conform to 'LosslessStringConvertible' (requirement specified as 'T' : 'LosslessStringConvertible')
-3 | 
-
-Swift.String.init:2:8: note: candidate requires that 'Any' conform to 'BinaryInteger' (requirement specified as 'T' : 'BinaryInteger')
-1 | struct String {
-2 | public init<T>(_ value: T, radix: Int = 10, uppercase: Bool = false) where T : BinaryInteger}
-  |        `- note: candidate requires that 'Any' conform to 'BinaryInteger' (requirement specified as 'T' : 'BinaryInteger')
-3 | 
-
-Swift.String.init:2:8: note: candidate requires that 'Any' conform to 'Sequence' (requirement specified as 'S' : 'Sequence')
-1 | struct String {
-2 | public init<S>(_ characters: S) where S : Sequence, S.Element == Character}
-  |        `- note: candidate requires that 'Any' conform to 'Sequence' (requirement specified as 'S' : 'Sequence')
-3 | 
-
-Swift.RangeReplaceableCollection.init:2:19: note: candidate requires that 'Any' conform to 'Sequence' (requirement specified as 'S' : 'Sequence')
-1 | protocol RangeReplaceableCollection {
-2 | @inlinable public init<S>(_ elements: S) where S : Sequence, Self.Element == S.Element}
-  |                   `- note: candidate requires that 'Any' conform to 'Sequence' (requirement specified as 'S' : 'Sequence')
-3 | 
-
-Swift.String.init:2:8: note: incorrect labels for candidate (have: '(_:)', expected: '(describing:)')
-1 | struct String {
-2 | public init<Subject>(describing instance: Subject)}
-  |        `- note: incorrect labels for candidate (have: '(_:)', expected: '(describing:)')
-3 | 
-
-Swift.String.init:2:8: note: incorrect labels for candidate (have: '(_:)', expected: '(reflecting:)')
-1 | struct String {
-2 | public init<Subject>(reflecting subject: Subject)}
-  |        `- note: incorrect labels for candidate (have: '(_:)', expected: '(reflecting:)')
-3 | 
-
-/tmp/TestSwiftTranspiler_Rosetta_Golden1911055332/001/main.swift:73:53: warning: forced cast of '[String : Any]' to same type has no effect
+/tmp/TestSwiftTranspiler_Rosetta_Golden4106075462/001/main.swift:73:53: warning: forced cast of '[String : Any]' to same type has no effect
  71 |                 let ririMap = (riri as! [String: Any])
- 72 |                 if (String((ririMap as! [String: Any])["cl"]!) == "R") {
+ 72 |                 if (String(describing: (ririMap as! [String: Any])["cl"]!) == "R") {
  73 |                     return (node("R", (node("B", (m as! [String: Any])["le"]!, ((m as! [String: Any])["aa"]! as! Int), (riMap as! [String: Any])["le"]!) as! [String: Any]), ((riMap as! [String: Any])["aa"]! as! Int), (node("B", (ririMap as! [String: Any])["le"]!, ((ririMap as! [String: Any])["aa"]! as! Int), (ririMap as! [String: Any])["ri"]!) as! [String: Any])) as! [String: Any])
     |                                                     `- warning: forced cast of '[String : Any]' to same type has no effect
  74 |                 }
  75 |             }
 
-/tmp/TestSwiftTranspiler_Rosetta_Golden1911055332/001/main.swift:73:84: warning: forced cast of '[String : Any]' to same type has no effect
+/tmp/TestSwiftTranspiler_Rosetta_Golden4106075462/001/main.swift:73:84: warning: forced cast of '[String : Any]' to same type has no effect
  71 |                 let ririMap = (riri as! [String: Any])
- 72 |                 if (String((ririMap as! [String: Any])["cl"]!) == "R") {
+ 72 |                 if (String(describing: (ririMap as! [String: Any])["cl"]!) == "R") {
  73 |                     return (node("R", (node("B", (m as! [String: Any])["le"]!, ((m as! [String: Any])["aa"]! as! Int), (riMap as! [String: Any])["le"]!) as! [String: Any]), ((riMap as! [String: Any])["aa"]! as! Int), (node("B", (ririMap as! [String: Any])["le"]!, ((ririMap as! [String: Any])["aa"]! as! Int), (ririMap as! [String: Any])["ri"]!) as! [String: Any])) as! [String: Any])
     |                                                                                    `- warning: forced cast of '[String : Any]' to same type has no effect
  74 |                 }
  75 |             }
 
-/tmp/TestSwiftTranspiler_Rosetta_Golden1911055332/001/main.swift:73:127: warning: forced cast of '[String : Any]' to same type has no effect
+/tmp/TestSwiftTranspiler_Rosetta_Golden4106075462/001/main.swift:73:127: warning: forced cast of '[String : Any]' to same type has no effect
  71 |                 let ririMap = (riri as! [String: Any])
- 72 |                 if (String((ririMap as! [String: Any])["cl"]!) == "R") {
+ 72 |                 if (String(describing: (ririMap as! [String: Any])["cl"]!) == "R") {
  73 |                     return (node("R", (node("B", (m as! [String: Any])["le"]!, ((m as! [String: Any])["aa"]! as! Int), (riMap as! [String: Any])["le"]!) as! [String: Any]), ((riMap as! [String: Any])["aa"]! as! Int), (node("B", (ririMap as! [String: Any])["le"]!, ((ririMap as! [String: Any])["aa"]! as! Int), (ririMap as! [String: Any])["ri"]!) as! [String: Any])) as! [String: Any])
     |                                                                                                                               `- warning: forced cast of '[String : Any]' to same type has no effect
  74 |                 }
  75 |             }
 
-/tmp/TestSwiftTranspiler_Rosetta_Golden1911055332/001/main.swift:73:154: warning: forced cast of '[String : Any]' to same type has no effect
+/tmp/TestSwiftTranspiler_Rosetta_Golden4106075462/001/main.swift:73:154: warning: forced cast of '[String : Any]' to same type has no effect
  71 |                 let ririMap = (riri as! [String: Any])
- 72 |                 if (String((ririMap as! [String: Any])["cl"]!) == "R") {
+ 72 |                 if (String(describing: (ririMap as! [String: Any])["cl"]!) == "R") {
  73 |                     return (node("R", (node("B", (m as! [String: Any])["le"]!, ((m as! [String: Any])["aa"]! as! Int), (riMap as! [String: Any])["le"]!) as! [String: Any]), ((riMap as! [String: Any])["aa"]! as! Int), (node("B", (ririMap as! [String: Any])["le"]!, ((ririMap as! [String: Any])["aa"]! as! Int), (ririMap as! [String: Any])["ri"]!) as! [String: Any])) as! [String: Any])
     |                                                                                                                                                          `- warning: forced cast of '[String : Any]' to same type has no effect
  74 |                 }
  75 |             }
 
-/tmp/TestSwiftTranspiler_Rosetta_Golden1911055332/001/main.swift:73:182: warning: forced cast of '[String : Any]' to same type has no effect
+/tmp/TestSwiftTranspiler_Rosetta_Golden4106075462/001/main.swift:73:182: warning: forced cast of '[String : Any]' to same type has no effect
  71 |                 let ririMap = (riri as! [String: Any])
- 72 |                 if (String((ririMap as! [String: Any])["cl"]!) == "R") {
+ 72 |                 if (String(describing: (ririMap as! [String: Any])["cl"]!) == "R") {
  73 |                     return (node("R", (node("B", (m as! [String: Any])["le"]!, ((m as! [String: Any])["aa"]! as! Int), (riMap as! [String: Any])["le"]!) as! [String: Any]), ((riMap as! [String: Any])["aa"]! as! Int), (node("B", (ririMap as! [String: Any])["le"]!, ((ririMap as! [String: Any])["aa"]! as! Int), (ririMap as! [String: Any])["ri"]!) as! [String: Any])) as! [String: Any])
     |                                                                                                                                                                                      `- warning: forced cast of '[String : Any]' to same type has no effect
  74 |                 }
  75 |             }
 
-/tmp/TestSwiftTranspiler_Rosetta_Golden1911055332/001/main.swift:73:238: warning: forced cast of '[String : Any]' to same type has no effect
+/tmp/TestSwiftTranspiler_Rosetta_Golden4106075462/001/main.swift:73:238: warning: forced cast of '[String : Any]' to same type has no effect
  71 |                 let ririMap = (riri as! [String: Any])
- 72 |                 if (String((ririMap as! [String: Any])["cl"]!) == "R") {
+ 72 |                 if (String(describing: (ririMap as! [String: Any])["cl"]!) == "R") {
  73 |                     return (node("R", (node("B", (m as! [String: Any])["le"]!, ((m as! [String: Any])["aa"]! as! Int), (riMap as! [String: Any])["le"]!) as! [String: Any]), ((riMap as! [String: Any])["aa"]! as! Int), (node("B", (ririMap as! [String: Any])["le"]!, ((ririMap as! [String: Any])["aa"]! as! Int), (ririMap as! [String: Any])["ri"]!) as! [String: Any])) as! [String: Any])
     |                                                                                                                                                                                                                                              `- warning: forced cast of '[String : Any]' to same type has no effect
  74 |                 }
  75 |             }
 
-/tmp/TestSwiftTranspiler_Rosetta_Golden1911055332/001/main.swift:73:275: warning: forced cast of '[String : Any]' to same type has no effect
+/tmp/TestSwiftTranspiler_Rosetta_Golden4106075462/001/main.swift:73:275: warning: forced cast of '[String : Any]' to same type has no effect
  71 |                 let ririMap = (riri as! [String: Any])
- 72 |                 if (String((ririMap as! [String: Any])["cl"]!) == "R") {
+ 72 |                 if (String(describing: (ririMap as! [String: Any])["cl"]!) == "R") {
  73 |                     return (node("R", (node("B", (m as! [String: Any])["le"]!, ((m as! [String: Any])["aa"]! as! Int), (riMap as! [String: Any])["le"]!) as! [String: Any]), ((riMap as! [String: Any])["aa"]! as! Int), (node("B", (ririMap as! [String: Any])["le"]!, ((ririMap as! [String: Any])["aa"]! as! Int), (ririMap as! [String: Any])["ri"]!) as! [String: Any])) as! [String: Any])
     |                                                                                                                                                                                                                                                                                   `- warning: forced cast of '[String : Any]' to same type has no effect
  74 |                 }
  75 |             }
 
-/tmp/TestSwiftTranspiler_Rosetta_Golden1911055332/001/main.swift:73:320: warning: forced cast of '[String : Any]' to same type has no effect
+/tmp/TestSwiftTranspiler_Rosetta_Golden4106075462/001/main.swift:73:320: warning: forced cast of '[String : Any]' to same type has no effect
  71 |                 let ririMap = (riri as! [String: Any])
- 72 |                 if (String((ririMap as! [String: Any])["cl"]!) == "R") {
+ 72 |                 if (String(describing: (ririMap as! [String: Any])["cl"]!) == "R") {
  73 |                     return (node("R", (node("B", (m as! [String: Any])["le"]!, ((m as! [String: Any])["aa"]! as! Int), (riMap as! [String: Any])["le"]!) as! [String: Any]), ((riMap as! [String: Any])["aa"]! as! Int), (node("B", (ririMap as! [String: Any])["le"]!, ((ririMap as! [String: Any])["aa"]! as! Int), (ririMap as! [String: Any])["ri"]!) as! [String: Any])) as! [String: Any])
     |                                                                                                                                                                                                                                                                                                                                `- warning: forced cast of '[String : Any]' to same type has no effect
  74 |                 }
  75 |             }
 
-/tmp/TestSwiftTranspiler_Rosetta_Golden1911055332/001/main.swift:73:347: warning: forced cast of '[String : Any]' to same type has no effect
+/tmp/TestSwiftTranspiler_Rosetta_Golden4106075462/001/main.swift:73:347: warning: forced cast of '[String : Any]' to same type has no effect
  71 |                 let ririMap = (riri as! [String: Any])
- 72 |                 if (String((ririMap as! [String: Any])["cl"]!) == "R") {
+ 72 |                 if (String(describing: (ririMap as! [String: Any])["cl"]!) == "R") {
  73 |                     return (node("R", (node("B", (m as! [String: Any])["le"]!, ((m as! [String: Any])["aa"]! as! Int), (riMap as! [String: Any])["le"]!) as! [String: Any]), ((riMap as! [String: Any])["aa"]! as! Int), (node("B", (ririMap as! [String: Any])["le"]!, ((ririMap as! [String: Any])["aa"]! as! Int), (ririMap as! [String: Any])["ri"]!) as! [String: Any])) as! [String: Any])
     |                                                                                                                                                                                                                                                                                                                                                           `- warning: forced cast of '[String : Any]' to same type has no effect
  74 |                 }
  75 |             }
 
-/tmp/TestSwiftTranspiler_Rosetta_Golden1911055332/001/main.swift:73:367: warning: forced cast of '[String : Any]' to same type has no effect
+/tmp/TestSwiftTranspiler_Rosetta_Golden4106075462/001/main.swift:73:367: warning: forced cast of '[String : Any]' to same type has no effect
  71 |                 let ririMap = (riri as! [String: Any])
- 72 |                 if (String((ririMap as! [String: Any])["cl"]!) == "R") {
+ 72 |                 if (String(describing: (ririMap as! [String: Any])["cl"]!) == "R") {
  73 |                     return (node("R", (node("B", (m as! [String: Any])["le"]!, ((m as! [String: Any])["aa"]! as! Int), (riMap as! [String: Any])["le"]!) as! [String: Any]), ((riMap as! [String: Any])["aa"]! as! Int), (node("B", (ririMap as! [String: Any])["le"]!, ((ririMap as! [String: Any])["aa"]! as! Int), (ririMap as! [String: Any])["ri"]!) as! [String: Any])) as! [String: Any])
     |                                                                                                                                                                                                                                                                                                                                                                               `- warning: forced cast of '[String : Any]' to same type has no effect
  74 |                 }
  75 |             }
 
-/tmp/TestSwiftTranspiler_Rosetta_Golden1911055332/001/main.swift:84:27: error: 'nil' is not compatible with expected argument type 'Any'
+/tmp/TestSwiftTranspiler_Rosetta_Golden4106075462/001/main.swift:84:27: error: 'nil' is not compatible with expected argument type 'Any'
  82 |     == String(describing: nil as Any?)
  83 |     ) {
- 84 |         return (node("R", nil, Int(x), nil) as! [String: Any])
+ 84 |         return (node("R", nil, (x as! Int), nil) as! [String: Any])
     |                           `- error: 'nil' is not compatible with expected argument type 'Any'
  85 |     }
- 86 |     if (Int(x) < ((tr as! [String: Any])["aa"] as! Int)) {
+ 86 |     if (x < ((tr as! [String: Any])["aa"] as! Int)) {
 
-/tmp/TestSwiftTranspiler_Rosetta_Golden1911055332/001/main.swift:84:40: error: 'nil' is not compatible with expected argument type 'Any'
+/tmp/TestSwiftTranspiler_Rosetta_Golden4106075462/001/main.swift:84:45: error: 'nil' is not compatible with expected argument type 'Any'
  82 |     == String(describing: nil as Any?)
  83 |     ) {
- 84 |         return (node("R", nil, Int(x), nil) as! [String: Any])
-    |                                        `- error: 'nil' is not compatible with expected argument type 'Any'
+ 84 |         return (node("R", nil, (x as! Int), nil) as! [String: Any])
+    |                                             `- error: 'nil' is not compatible with expected argument type 'Any'
  85 |     }
- 86 |     if (Int(x) < ((tr as! [String: Any])["aa"] as! Int)) {
+ 86 |     if (x < ((tr as! [String: Any])["aa"] as! Int)) {
 
-/tmp/TestSwiftTranspiler_Rosetta_Golden1911055332/001/main.swift:84:45: warning: forced cast of '[String : Any]' to same type has no effect
+/tmp/TestSwiftTranspiler_Rosetta_Golden4106075462/001/main.swift:84:35: warning: forced cast of 'Int' to same type has no effect
  82 |     == String(describing: nil as Any?)
  83 |     ) {
- 84 |         return (node("R", nil, Int(x), nil) as! [String: Any])
-    |                                             `- warning: forced cast of '[String : Any]' to same type has no effect
+ 84 |         return (node("R", nil, (x as! Int), nil) as! [String: Any])
+    |                                   `- warning: forced cast of 'Int' to same type has no effect
  85 |     }
- 86 |     if (Int(x) < ((tr as! [String: Any])["aa"] as! Int)) {
+ 86 |     if (x < ((tr as! [String: Any])["aa"] as! Int)) {
 
-/tmp/TestSwiftTranspiler_Rosetta_Golden1911055332/001/main.swift:87:186: warning: forced cast of '[String : Any]' to same type has no effect
+/tmp/TestSwiftTranspiler_Rosetta_Golden4106075462/001/main.swift:84:50: warning: forced cast of '[String : Any]' to same type has no effect
+ 82 |     == String(describing: nil as Any?)
+ 83 |     ) {
+ 84 |         return (node("R", nil, (x as! Int), nil) as! [String: Any])
+    |                                                  `- warning: forced cast of '[String : Any]' to same type has no effect
  85 |     }
- 86 |     if (Int(x) < ((tr as! [String: Any])["aa"] as! Int)) {
- 87 |         return balance((node(((tr as! [String: Any])["cl"] as! String), ins((tr as! [String: Any])["le"], Int(x)), ((tr as! [String: Any])["aa"] as! Int), (tr as! [String: Any])["ri"]) as! [String: Any]))
-    |                                                                                                                                                                                          `- warning: forced cast of '[String : Any]' to same type has no effect
+ 86 |     if (x < ((tr as! [String: Any])["aa"] as! Int)) {
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden4106075462/001/main.swift:87:110: warning: forced cast of 'Int' to same type has no effect
+ 85 |     }
+ 86 |     if (x < ((tr as! [String: Any])["aa"] as! Int)) {
+ 87 |         return balance((node(((tr as! [String: Any])["cl"] as! String), ins((tr as! [String: Any])["le"], (x as! Int)), ((tr as! [String: Any])["aa"] as! Int), (tr as! [String: Any])["ri"]) as! [String: Any]))
+    |                                                                                                              `- warning: forced cast of 'Int' to same type has no effect
  88 |     }
- 89 |     if (Int(x) > ((tr as! [String: Any])["aa"] as! Int)) {
+ 89 |     if (x > ((tr as! [String: Any])["aa"] as! Int)) {
 
-/tmp/TestSwiftTranspiler_Rosetta_Golden1911055332/001/main.swift:87:77: warning: expression implicitly coerced from 'Any?' to 'Any'
+/tmp/TestSwiftTranspiler_Rosetta_Golden4106075462/001/main.swift:87:191: warning: forced cast of '[String : Any]' to same type has no effect
  85 |     }
- 86 |     if (Int(x) < ((tr as! [String: Any])["aa"] as! Int)) {
- 87 |         return balance((node(((tr as! [String: Any])["cl"] as! String), ins((tr as! [String: Any])["le"], Int(x)), ((tr as! [String: Any])["aa"] as! Int), (tr as! [String: Any])["ri"]) as! [String: Any]))
+ 86 |     if (x < ((tr as! [String: Any])["aa"] as! Int)) {
+ 87 |         return balance((node(((tr as! [String: Any])["cl"] as! String), ins((tr as! [String: Any])["le"], (x as! Int)), ((tr as! [String: Any])["aa"] as! Int), (tr as! [String: Any])["ri"]) as! [String: Any]))
+    |                                                                                                                                                                                               `- warning: forced cast of '[String : Any]' to same type has no effect
+ 88 |     }
+ 89 |     if (x > ((tr as! [String: Any])["aa"] as! Int)) {
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden4106075462/001/main.swift:87:77: warning: expression implicitly coerced from 'Any?' to 'Any'
+ 85 |     }
+ 86 |     if (x < ((tr as! [String: Any])["aa"] as! Int)) {
+ 87 |         return balance((node(((tr as! [String: Any])["cl"] as! String), ins((tr as! [String: Any])["le"], (x as! Int)), ((tr as! [String: Any])["aa"] as! Int), (tr as! [String: Any])["ri"]) as! [String: Any]))
     |                                                                             |                     |- note: provide a default value to avoid this warning
     |                                                                             |                     |- note: force-unwrap the value to avoid this warning
     |                                                                             |                     `- note: explicitly cast to 'Any' with 'as Any' to silence this warning
     |                                                                             `- warning: expression implicitly coerced from 'Any?' to 'Any'
  88 |     }
- 89 |     if (Int(x) > ((tr as! [String: Any])["aa"] as! Int)) {
+ 89 |     if (x > ((tr as! [String: Any])["aa"] as! Int)) {
 
-/tmp/TestSwiftTranspiler_Rosetta_Golden1911055332/001/main.swift:87:156: warning: expression implicitly coerced from 'Any?' to 'Any'
+/tmp/TestSwiftTranspiler_Rosetta_Golden4106075462/001/main.swift:87:161: warning: expression implicitly coerced from 'Any?' to 'Any'
  85 |     }
- 86 |     if (Int(x) < ((tr as! [String: Any])["aa"] as! Int)) {
- 87 |         return balance((node(((tr as! [String: Any])["cl"] as! String), ins((tr as! [String: Any])["le"], Int(x)), ((tr as! [String: Any])["aa"] as! Int), (tr as! [String: Any])["ri"]) as! [String: Any]))
-    |                                                                                                                                                            |                     |- note: provide a default value to avoid this warning
-    |                                                                                                                                                            |                     |- note: force-unwrap the value to avoid this warning
-    |                                                                                                                                                            |                     `- note: explicitly cast to 'Any' with 'as Any' to silence this warning
-    |                                                                                                                                                            `- warning: expression implicitly coerced from 'Any?' to 'Any'
+ 86 |     if (x < ((tr as! [String: Any])["aa"] as! Int)) {
+ 87 |         return balance((node(((tr as! [String: Any])["cl"] as! String), ins((tr as! [String: Any])["le"], (x as! Int)), ((tr as! [String: Any])["aa"] as! Int), (tr as! [String: Any])["ri"]) as! [String: Any]))
+    |                                                                                                                                                                 |                     |- note: provide a default value to avoid this warning
+    |                                                                                                                                                                 |                     |- note: force-unwrap the value to avoid this warning
+    |                                                                                                                                                                 |                     `- note: explicitly cast to 'Any' with 'as Any' to silence this warning
+    |                                                                                                                                                                 `- warning: expression implicitly coerced from 'Any?' to 'Any'
  88 |     }
- 89 |     if (Int(x) > ((tr as! [String: Any])["aa"] as! Int)) {
+ 89 |     if (x > ((tr as! [String: Any])["aa"] as! Int)) {
 
-/tmp/TestSwiftTranspiler_Rosetta_Golden1911055332/001/main.swift:90:186: warning: forced cast of '[String : Any]' to same type has no effect
+/tmp/TestSwiftTranspiler_Rosetta_Golden4106075462/001/main.swift:90:180: warning: forced cast of 'Int' to same type has no effect
  88 |     }
- 89 |     if (Int(x) > ((tr as! [String: Any])["aa"] as! Int)) {
- 90 |         return balance((node(((tr as! [String: Any])["cl"] as! String), (tr as! [String: Any])["le"], ((tr as! [String: Any])["aa"] as! Int), ins((tr as! [String: Any])["ri"], Int(x))) as! [String: Any]))
-    |                                                                                                                                                                                          `- warning: forced cast of '[String : Any]' to same type has no effect
+ 89 |     if (x > ((tr as! [String: Any])["aa"] as! Int)) {
+ 90 |         return balance((node(((tr as! [String: Any])["cl"] as! String), (tr as! [String: Any])["le"], ((tr as! [String: Any])["aa"] as! Int), ins((tr as! [String: Any])["ri"], (x as! Int))) as! [String: Any]))
+    |                                                                                                                                                                                    `- warning: forced cast of 'Int' to same type has no effect
  91 |     }
  92 |     return tr
 
-/tmp/TestSwiftTranspiler_Rosetta_Golden1911055332/001/main.swift:90:73: warning: expression implicitly coerced from 'Any?' to 'Any'
+/tmp/TestSwiftTranspiler_Rosetta_Golden4106075462/001/main.swift:90:191: warning: forced cast of '[String : Any]' to same type has no effect
  88 |     }
- 89 |     if (Int(x) > ((tr as! [String: Any])["aa"] as! Int)) {
- 90 |         return balance((node(((tr as! [String: Any])["cl"] as! String), (tr as! [String: Any])["le"], ((tr as! [String: Any])["aa"] as! Int), ins((tr as! [String: Any])["ri"], Int(x))) as! [String: Any]))
+ 89 |     if (x > ((tr as! [String: Any])["aa"] as! Int)) {
+ 90 |         return balance((node(((tr as! [String: Any])["cl"] as! String), (tr as! [String: Any])["le"], ((tr as! [String: Any])["aa"] as! Int), ins((tr as! [String: Any])["ri"], (x as! Int))) as! [String: Any]))
+    |                                                                                                                                                                                               `- warning: forced cast of '[String : Any]' to same type has no effect
+ 91 |     }
+ 92 |     return tr
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden4106075462/001/main.swift:90:73: warning: expression implicitly coerced from 'Any?' to 'Any'
+ 88 |     }
+ 89 |     if (x > ((tr as! [String: Any])["aa"] as! Int)) {
+ 90 |         return balance((node(((tr as! [String: Any])["cl"] as! String), (tr as! [String: Any])["le"], ((tr as! [String: Any])["aa"] as! Int), ins((tr as! [String: Any])["ri"], (x as! Int))) as! [String: Any]))
     |                                                                         |                     |- note: provide a default value to avoid this warning
     |                                                                         |                     |- note: force-unwrap the value to avoid this warning
     |                                                                         |                     `- note: explicitly cast to 'Any' with 'as Any' to silence this warning
@@ -801,10 +577,10 @@ Swift.String.init:2:8: note: incorrect labels for candidate (have: '(_:)', expec
  91 |     }
  92 |     return tr
 
-/tmp/TestSwiftTranspiler_Rosetta_Golden1911055332/001/main.swift:90:147: warning: expression implicitly coerced from 'Any?' to 'Any'
+/tmp/TestSwiftTranspiler_Rosetta_Golden4106075462/001/main.swift:90:147: warning: expression implicitly coerced from 'Any?' to 'Any'
  88 |     }
- 89 |     if (Int(x) > ((tr as! [String: Any])["aa"] as! Int)) {
- 90 |         return balance((node(((tr as! [String: Any])["cl"] as! String), (tr as! [String: Any])["le"], ((tr as! [String: Any])["aa"] as! Int), ins((tr as! [String: Any])["ri"], Int(x))) as! [String: Any]))
+ 89 |     if (x > ((tr as! [String: Any])["aa"] as! Int)) {
+ 90 |         return balance((node(((tr as! [String: Any])["cl"] as! String), (tr as! [String: Any])["le"], ((tr as! [String: Any])["aa"] as! Int), ins((tr as! [String: Any])["ri"], (x as! Int))) as! [String: Any]))
     |                                                                                                                                                   |                     |- note: provide a default value to avoid this warning
     |                                                                                                                                                   |                     |- note: force-unwrap the value to avoid this warning
     |                                                                                                                                                   |                     `- note: explicitly cast to 'Any' with 'as Any' to silence this warning
@@ -812,7 +588,15 @@ Swift.String.init:2:8: note: incorrect labels for candidate (have: '(_:)', expec
  91 |     }
  92 |     return tr
 
-/tmp/TestSwiftTranspiler_Rosetta_Golden1911055332/001/main.swift:99:16: error: 'nil' is incompatible with return type 'Any'
+/tmp/TestSwiftTranspiler_Rosetta_Golden4106075462/001/main.swift:95:24: warning: forced cast of 'Int' to same type has no effect
+ 93 | }
+ 94 | func insert(_ tr: Any, _ x: Int) -> Any {
+ 95 |     let t = ins(tr, (x as! Int))
+    |                        `- warning: forced cast of 'Int' to same type has no effect
+ 96 |     if (String(describing: t)
+ 97 |     == String(describing: nil as Any?)
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden4106075462/001/main.swift:99:16: error: 'nil' is incompatible with return type 'Any'
  97 |     == String(describing: nil as Any?)
  98 |     ) {
  99 |         return nil
@@ -820,7 +604,7 @@ Swift.String.init:2:8: note: incorrect labels for candidate (have: '(_:)', expec
 100 |     }
 101 |     let m = (t as! [String: Any])
 
-/tmp/TestSwiftTranspiler_Rosetta_Golden1911055332/001/main.swift:102:26: warning: forced cast of '[String : Any]' to same type has no effect
+/tmp/TestSwiftTranspiler_Rosetta_Golden4106075462/001/main.swift:102:26: warning: forced cast of '[String : Any]' to same type has no effect
 100 |     }
 101 |     let m = (t as! [String: Any])
 102 |     return (node("B", (m as! [String: Any])["le"]!, ((m as! [String: Any])["aa"]! as! Int), (m as! [String: Any])["ri"]!) as! [String: Any])
@@ -828,7 +612,7 @@ Swift.String.init:2:8: note: incorrect labels for candidate (have: '(_:)', expec
 103 | }
 104 | var tr: Any = nil
 
-/tmp/TestSwiftTranspiler_Rosetta_Golden1911055332/001/main.swift:102:57: warning: forced cast of '[String : Any]' to same type has no effect
+/tmp/TestSwiftTranspiler_Rosetta_Golden4106075462/001/main.swift:102:57: warning: forced cast of '[String : Any]' to same type has no effect
 100 |     }
 101 |     let m = (t as! [String: Any])
 102 |     return (node("B", (m as! [String: Any])["le"]!, ((m as! [String: Any])["aa"]! as! Int), (m as! [String: Any])["ri"]!) as! [String: Any])
@@ -836,7 +620,7 @@ Swift.String.init:2:8: note: incorrect labels for candidate (have: '(_:)', expec
 103 | }
 104 | var tr: Any = nil
 
-/tmp/TestSwiftTranspiler_Rosetta_Golden1911055332/001/main.swift:102:96: warning: forced cast of '[String : Any]' to same type has no effect
+/tmp/TestSwiftTranspiler_Rosetta_Golden4106075462/001/main.swift:102:96: warning: forced cast of '[String : Any]' to same type has no effect
 100 |     }
 101 |     let m = (t as! [String: Any])
 102 |     return (node("B", (m as! [String: Any])["le"]!, ((m as! [String: Any])["aa"]! as! Int), (m as! [String: Any])["ri"]!) as! [String: Any])
@@ -844,7 +628,7 @@ Swift.String.init:2:8: note: incorrect labels for candidate (have: '(_:)', expec
 103 | }
 104 | var tr: Any = nil
 
-/tmp/TestSwiftTranspiler_Rosetta_Golden1911055332/001/main.swift:102:123: warning: forced cast of '[String : Any]' to same type has no effect
+/tmp/TestSwiftTranspiler_Rosetta_Golden4106075462/001/main.swift:102:123: warning: forced cast of '[String : Any]' to same type has no effect
 100 |     }
 101 |     let m = (t as! [String: Any])
 102 |     return (node("B", (m as! [String: Any])["le"]!, ((m as! [String: Any])["aa"]! as! Int), (m as! [String: Any])["ri"]!) as! [String: Any])

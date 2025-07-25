@@ -2,24 +2,24 @@
 
 Generated Swift code for Mochi Rosetta programs in `tests/rosetta/x/Mochi`. Outputs are stored in `tests/rosetta/transpiler/Swift`. Errors are captured in `.error` files.
 
-Completed: 43/284
-Last updated: 2025-07-25 08:23 +0700
+Completed: 39/284
+Last updated: 2025-07-25 09:00 +0700
 
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
-| 1 | 100-doors-2 | ✓ | 571.223ms | 3.0 MB |
+| 1 | 100-doors-2 | ✓ | 292µs | 3.1 MB |
 | 2 | 100-doors-3 | ✓ |  |  |
-| 3 | 100-doors | ✓ |  |  |
+| 3 | 100-doors |   |  |  |
 | 4 | 100-prisoners | ✓ |  |  |
 | 5 | 15-puzzle-game | ✓ |  |  |
 | 6 | 15-puzzle-solver | ✓ |  |  |
-| 7 | 2048 | ✓ |  |  |
+| 7 | 2048 |   |  |  |
 | 8 | 21-game | ✓ |  |  |
 | 9 | 24-game-solve | ✓ |  |  |
-| 10 | 24-game | ✓ |  |  |
-| 11 | 4-rings-or-4-squares-puzzle | ✓ |  |  |
+| 10 | 24-game |   |  |  |
+| 11 | 4-rings-or-4-squares-puzzle |   |  |  |
 | 12 | 9-billion-names-of-god-the-integer | ✓ |  |  |
-| 13 | 99-bottles-of-beer-2 |   |  |  |
+| 13 | 99-bottles-of-beer-2 | ✓ |  |  |
 | 14 | 99-bottles-of-beer | ✓ |  |  |
 | 15 | DNS-query | ✓ |  |  |
 | 16 | a+b | ✓ |  |  |
@@ -31,32 +31,32 @@ Last updated: 2025-07-25 08:23 +0700
 | 22 | abelian-sandpile-model | ✓ |  |  |
 | 23 | abstract-type | ✓ |  |  |
 | 24 | abundant-deficient-and-perfect-number-classifications | ✓ |  |  |
-| 25 | abundant-odd-numbers | ✓ |  |  |
+| 25 | abundant-odd-numbers |   |  |  |
 | 26 | accumulator-factory | ✓ |  |  |
-| 27 | achilles-numbers | ✓ |  |  |
+| 27 | achilles-numbers |   |  |  |
 | 28 | ackermann-function-2 | ✓ |  |  |
 | 29 | ackermann-function-3 |   |  |  |
 | 30 | ackermann-function | ✓ |  |  |
 | 31 | active-directory-connect | ✓ |  |  |
 | 32 | active-directory-search-for-a-user | ✓ |  |  |
 | 33 | active-object | ✓ |  |  |
-| 34 | add-a-variable-to-a-class-instance-at-runtime |   |  |  |
-| 35 | additive-primes | ✓ |  |  |
+| 34 | add-a-variable-to-a-class-instance-at-runtime | ✓ |  |  |
+| 35 | additive-primes |   |  |  |
 | 36 | address-of-a-variable | ✓ |  |  |
 | 37 | adfgvx-cipher |   |  |  |
 | 38 | aks-test-for-primes | ✓ |  |  |
 | 39 | algebraic-data-types |   |  |  |
 | 40 | align-columns | ✓ |  |  |
-| 41 | aliquot-sequence-classifications | ✓ |  |  |
+| 41 | aliquot-sequence-classifications |   |  |  |
 | 42 | almkvist-giullera-formula-for-pi |   |  |  |
-| 43 | almost-prime |   |  |  |
+| 43 | almost-prime | ✓ |  |  |
 | 44 | amb | ✓ |  |  |
-| 45 | amicable-pairs | ✓ |  |  |
+| 45 | amicable-pairs |   |  |  |
 | 46 | anagrams-deranged-anagrams | ✓ |  |  |
 | 47 | anagrams | ✓ |  |  |
 | 48 | angle-difference-between-two-bearings-1 | ✓ |  |  |
-| 49 | angle-difference-between-two-bearings-2 |   |  |  |
-| 50 | angles-geometric-normalization-and-conversion |   |  |  |
+| 49 | angle-difference-between-two-bearings-2 | ✓ |  |  |
+| 50 | angles-geometric-normalization-and-conversion | ✓ |  |  |
 | 51 | animate-a-pendulum | ✓ |  |  |
 | 52 | animation | ✓ |  |  |
 | 53 | anonymous-recursion-1 |   |  |  |

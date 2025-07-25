@@ -1,0 +1,1030 @@
+exit status 1
+/tmp/TestSwiftTranspiler_Rosetta_Golden1118086293/001/main.swift:290:32: warning: forced cast of 'Board' to same type has no effect
+288 |     return false
+289 | }
+290 | var board: Board = (newBoard() as! Board)
+    |                                `- warning: forced cast of 'Board' to same type has no effect
+291 | var r = (spawnTile((board as! Board)) as! SpawnResult)
+292 | board = (r.board as! Board)
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden1118086293/001/main.swift:291:27: warning: forced cast of 'Board' to same type has no effect
+289 | }
+290 | var board: Board = (newBoard() as! Board)
+291 | var r = (spawnTile((board as! Board)) as! SpawnResult)
+    |                           `- warning: forced cast of 'Board' to same type has no effect
+292 | board = (r.board as! Board)
+293 | var full = (r.full as! Bool)
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden1118086293/001/main.swift:291:39: warning: forced cast of 'SpawnResult' to same type has no effect
+289 | }
+290 | var board: Board = (newBoard() as! Board)
+291 | var r = (spawnTile((board as! Board)) as! SpawnResult)
+    |                                       `- warning: forced cast of 'SpawnResult' to same type has no effect
+292 | board = (r.board as! Board)
+293 | var full = (r.full as! Bool)
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden1118086293/001/main.swift:292:18: warning: forced cast of 'Board' to same type has no effect
+290 | var board: Board = (newBoard() as! Board)
+291 | var r = (spawnTile((board as! Board)) as! SpawnResult)
+292 | board = (r.board as! Board)
+    |                  `- warning: forced cast of 'Board' to same type has no effect
+293 | var full = (r.full as! Bool)
+294 | r = (spawnTile((board as! Board)) as! SpawnResult)
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden1118086293/001/main.swift:293:20: warning: forced cast of 'Bool' to same type has no effect
+291 | var r = (spawnTile((board as! Board)) as! SpawnResult)
+292 | board = (r.board as! Board)
+293 | var full = (r.full as! Bool)
+    |                    `- warning: forced cast of 'Bool' to same type has no effect
+294 | r = (spawnTile((board as! Board)) as! SpawnResult)
+295 | board = (r.board as! Board)
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden1118086293/001/main.swift:294:23: warning: forced cast of 'Board' to same type has no effect
+292 | board = (r.board as! Board)
+293 | var full = (r.full as! Bool)
+294 | r = (spawnTile((board as! Board)) as! SpawnResult)
+    |                       `- warning: forced cast of 'Board' to same type has no effect
+295 | board = (r.board as! Board)
+296 | full = (r.full as! Bool)
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden1118086293/001/main.swift:294:35: warning: forced cast of 'SpawnResult' to same type has no effect
+292 | board = (r.board as! Board)
+293 | var full = (r.full as! Bool)
+294 | r = (spawnTile((board as! Board)) as! SpawnResult)
+    |                                   `- warning: forced cast of 'SpawnResult' to same type has no effect
+295 | board = (r.board as! Board)
+296 | full = (r.full as! Bool)
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden1118086293/001/main.swift:295:18: warning: forced cast of 'Board' to same type has no effect
+293 | var full = (r.full as! Bool)
+294 | r = (spawnTile((board as! Board)) as! SpawnResult)
+295 | board = (r.board as! Board)
+    |                  `- warning: forced cast of 'Board' to same type has no effect
+296 | full = (r.full as! Bool)
+297 | var score = 0
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden1118086293/001/main.swift:296:16: warning: forced cast of 'Bool' to same type has no effect
+294 | r = (spawnTile((board as! Board)) as! SpawnResult)
+295 | board = (r.board as! Board)
+296 | full = (r.full as! Bool)
+    |                `- warning: forced cast of 'Bool' to same type has no effect
+297 | var score = 0
+298 | _ = draw((board as! Board), (score as! Int))
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden1118086293/001/main.swift:298:17: warning: forced cast of 'Board' to same type has no effect
+296 | full = (r.full as! Bool)
+297 | var score = 0
+298 | _ = draw((board as! Board), (score as! Int))
+    |                 `- warning: forced cast of 'Board' to same type has no effect
+299 | while true {
+300 |     print("Move: ")
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden1118086293/001/main.swift:298:36: warning: forced cast of 'Int' to same type has no effect
+296 | full = (r.full as! Bool)
+297 | var score = 0
+298 | _ = draw((board as! Board), (score as! Int))
+    |                                    `- warning: forced cast of 'Int' to same type has no effect
+299 | while true {
+300 |     print("Move: ")
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden1118086293/001/main.swift:298:1: warning: using '_' to ignore the result of a Void-returning function is redundant
+296 | full = (r.full as! Bool)
+297 | var score = 0
+298 | _ = draw((board as! Board), (score as! Int))
+    | `- warning: using '_' to ignore the result of a Void-returning function is redundant
+299 | while true {
+300 |     print("Move: ")
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden1118086293/001/main.swift:304:33: warning: forced cast of 'Board' to same type has no effect
+302 |     var moved = false
+303 |     if ((cmd == "a") || (cmd == "A")) {
+304 |         let m = moveLeft((board as! Board), (score as! Int))
+    |                                 `- warning: forced cast of 'Board' to same type has no effect
+305 |         board = (m.board as! Board)
+306 |         score = (m.score as! Int)
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden1118086293/001/main.swift:304:52: warning: forced cast of 'Int' to same type has no effect
+302 |     var moved = false
+303 |     if ((cmd == "a") || (cmd == "A")) {
+304 |         let m = moveLeft((board as! Board), (score as! Int))
+    |                                                    `- warning: forced cast of 'Int' to same type has no effect
+305 |         board = (m.board as! Board)
+306 |         score = (m.score as! Int)
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden1118086293/001/main.swift:305:26: warning: forced cast of 'Board' to same type has no effect
+303 |     if ((cmd == "a") || (cmd == "A")) {
+304 |         let m = moveLeft((board as! Board), (score as! Int))
+305 |         board = (m.board as! Board)
+    |                          `- warning: forced cast of 'Board' to same type has no effect
+306 |         score = (m.score as! Int)
+307 |         moved = (m.moved as! Bool)
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden1118086293/001/main.swift:306:26: warning: forced cast of 'Int' to same type has no effect
+304 |         let m = moveLeft((board as! Board), (score as! Int))
+305 |         board = (m.board as! Board)
+306 |         score = (m.score as! Int)
+    |                          `- warning: forced cast of 'Int' to same type has no effect
+307 |         moved = (m.moved as! Bool)
+308 |     }
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden1118086293/001/main.swift:307:26: warning: forced cast of 'Bool' to same type has no effect
+305 |         board = (m.board as! Board)
+306 |         score = (m.score as! Int)
+307 |         moved = (m.moved as! Bool)
+    |                          `- warning: forced cast of 'Bool' to same type has no effect
+308 |     }
+309 |     if ((cmd == "d") || (cmd == "D")) {
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden1118086293/001/main.swift:310:34: warning: forced cast of 'Board' to same type has no effect
+308 |     }
+309 |     if ((cmd == "d") || (cmd == "D")) {
+310 |         let m = moveRight((board as! Board), (score as! Int))
+    |                                  `- warning: forced cast of 'Board' to same type has no effect
+311 |         board = (m.board as! Board)
+312 |         score = (m.score as! Int)
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden1118086293/001/main.swift:310:53: warning: forced cast of 'Int' to same type has no effect
+308 |     }
+309 |     if ((cmd == "d") || (cmd == "D")) {
+310 |         let m = moveRight((board as! Board), (score as! Int))
+    |                                                     `- warning: forced cast of 'Int' to same type has no effect
+311 |         board = (m.board as! Board)
+312 |         score = (m.score as! Int)
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden1118086293/001/main.swift:311:26: warning: forced cast of 'Board' to same type has no effect
+309 |     if ((cmd == "d") || (cmd == "D")) {
+310 |         let m = moveRight((board as! Board), (score as! Int))
+311 |         board = (m.board as! Board)
+    |                          `- warning: forced cast of 'Board' to same type has no effect
+312 |         score = (m.score as! Int)
+313 |         moved = (m.moved as! Bool)
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden1118086293/001/main.swift:312:26: warning: forced cast of 'Int' to same type has no effect
+310 |         let m = moveRight((board as! Board), (score as! Int))
+311 |         board = (m.board as! Board)
+312 |         score = (m.score as! Int)
+    |                          `- warning: forced cast of 'Int' to same type has no effect
+313 |         moved = (m.moved as! Bool)
+314 |     }
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden1118086293/001/main.swift:313:26: warning: forced cast of 'Bool' to same type has no effect
+311 |         board = (m.board as! Board)
+312 |         score = (m.score as! Int)
+313 |         moved = (m.moved as! Bool)
+    |                          `- warning: forced cast of 'Bool' to same type has no effect
+314 |     }
+315 |     if ((cmd == "w") || (cmd == "W")) {
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden1118086293/001/main.swift:316:31: warning: forced cast of 'Board' to same type has no effect
+314 |     }
+315 |     if ((cmd == "w") || (cmd == "W")) {
+316 |         let m = moveUp((board as! Board), (score as! Int))
+    |                               `- warning: forced cast of 'Board' to same type has no effect
+317 |         board = (m.board as! Board)
+318 |         score = (m.score as! Int)
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden1118086293/001/main.swift:316:50: warning: forced cast of 'Int' to same type has no effect
+314 |     }
+315 |     if ((cmd == "w") || (cmd == "W")) {
+316 |         let m = moveUp((board as! Board), (score as! Int))
+    |                                                  `- warning: forced cast of 'Int' to same type has no effect
+317 |         board = (m.board as! Board)
+318 |         score = (m.score as! Int)
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden1118086293/001/main.swift:317:26: warning: forced cast of 'Board' to same type has no effect
+315 |     if ((cmd == "w") || (cmd == "W")) {
+316 |         let m = moveUp((board as! Board), (score as! Int))
+317 |         board = (m.board as! Board)
+    |                          `- warning: forced cast of 'Board' to same type has no effect
+318 |         score = (m.score as! Int)
+319 |         moved = (m.moved as! Bool)
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden1118086293/001/main.swift:318:26: warning: forced cast of 'Int' to same type has no effect
+316 |         let m = moveUp((board as! Board), (score as! Int))
+317 |         board = (m.board as! Board)
+318 |         score = (m.score as! Int)
+    |                          `- warning: forced cast of 'Int' to same type has no effect
+319 |         moved = (m.moved as! Bool)
+320 |     }
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden1118086293/001/main.swift:319:26: warning: forced cast of 'Bool' to same type has no effect
+317 |         board = (m.board as! Board)
+318 |         score = (m.score as! Int)
+319 |         moved = (m.moved as! Bool)
+    |                          `- warning: forced cast of 'Bool' to same type has no effect
+320 |     }
+321 |     if ((cmd == "s") || (cmd == "S")) {
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden1118086293/001/main.swift:322:33: warning: forced cast of 'Board' to same type has no effect
+320 |     }
+321 |     if ((cmd == "s") || (cmd == "S")) {
+322 |         let m = moveDown((board as! Board), (score as! Int))
+    |                                 `- warning: forced cast of 'Board' to same type has no effect
+323 |         board = (m.board as! Board)
+324 |         score = (m.score as! Int)
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden1118086293/001/main.swift:322:52: warning: forced cast of 'Int' to same type has no effect
+320 |     }
+321 |     if ((cmd == "s") || (cmd == "S")) {
+322 |         let m = moveDown((board as! Board), (score as! Int))
+    |                                                    `- warning: forced cast of 'Int' to same type has no effect
+323 |         board = (m.board as! Board)
+324 |         score = (m.score as! Int)
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden1118086293/001/main.swift:323:26: warning: forced cast of 'Board' to same type has no effect
+321 |     if ((cmd == "s") || (cmd == "S")) {
+322 |         let m = moveDown((board as! Board), (score as! Int))
+323 |         board = (m.board as! Board)
+    |                          `- warning: forced cast of 'Board' to same type has no effect
+324 |         score = (m.score as! Int)
+325 |         moved = (m.moved as! Bool)
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden1118086293/001/main.swift:324:26: warning: forced cast of 'Int' to same type has no effect
+322 |         let m = moveDown((board as! Board), (score as! Int))
+323 |         board = (m.board as! Board)
+324 |         score = (m.score as! Int)
+    |                          `- warning: forced cast of 'Int' to same type has no effect
+325 |         moved = (m.moved as! Bool)
+326 |     }
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden1118086293/001/main.swift:325:26: warning: forced cast of 'Bool' to same type has no effect
+323 |         board = (m.board as! Board)
+324 |         score = (m.score as! Int)
+325 |         moved = (m.moved as! Bool)
+    |                          `- warning: forced cast of 'Bool' to same type has no effect
+326 |     }
+327 |     if ((cmd == "q") || (cmd == "Q")) {
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden1118086293/001/main.swift:331:35: warning: forced cast of 'Board' to same type has no effect
+329 |     }
+330 |     if moved {
+331 |         let r2 = spawnTile((board as! Board))
+    |                                   `- warning: forced cast of 'Board' to same type has no effect
+332 |         board = (r2.board as! Board)
+333 |         full = (r2.full as! Bool)
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden1118086293/001/main.swift:332:27: warning: forced cast of 'Board' to same type has no effect
+330 |     if moved {
+331 |         let r2 = spawnTile((board as! Board))
+332 |         board = (r2.board as! Board)
+    |                           `- warning: forced cast of 'Board' to same type has no effect
+333 |         full = (r2.full as! Bool)
+334 |         if (full && ((!Bool(hasMoves((board as! Board)))) as! Bool)) {
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden1118086293/001/main.swift:333:25: warning: forced cast of 'Bool' to same type has no effect
+331 |         let r2 = spawnTile((board as! Board))
+332 |         board = (r2.board as! Board)
+333 |         full = (r2.full as! Bool)
+    |                         `- warning: forced cast of 'Bool' to same type has no effect
+334 |         if (full && ((!Bool(hasMoves((board as! Board)))) as! Bool)) {
+335 |             _ = draw((board as! Board), (score as! Int))
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden1118086293/001/main.swift:334:45: warning: forced cast of 'Board' to same type has no effect
+332 |         board = (r2.board as! Board)
+333 |         full = (r2.full as! Bool)
+334 |         if (full && ((!Bool(hasMoves((board as! Board)))) as! Bool)) {
+    |                                             `- warning: forced cast of 'Board' to same type has no effect
+335 |             _ = draw((board as! Board), (score as! Int))
+336 |             print("Game Over")
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden1118086293/001/main.swift:334:59: warning: forced cast of 'Bool' to same type has no effect
+332 |         board = (r2.board as! Board)
+333 |         full = (r2.full as! Bool)
+334 |         if (full && ((!Bool(hasMoves((board as! Board)))) as! Bool)) {
+    |                                                           `- warning: forced cast of 'Bool' to same type has no effect
+335 |             _ = draw((board as! Board), (score as! Int))
+336 |             print("Game Over")
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden1118086293/001/main.swift:335:29: warning: forced cast of 'Board' to same type has no effect
+333 |         full = (r2.full as! Bool)
+334 |         if (full && ((!Bool(hasMoves((board as! Board)))) as! Bool)) {
+335 |             _ = draw((board as! Board), (score as! Int))
+    |                             `- warning: forced cast of 'Board' to same type has no effect
+336 |             print("Game Over")
+337 |             break
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden1118086293/001/main.swift:335:48: warning: forced cast of 'Int' to same type has no effect
+333 |         full = (r2.full as! Bool)
+334 |         if (full && ((!Bool(hasMoves((board as! Board)))) as! Bool)) {
+335 |             _ = draw((board as! Board), (score as! Int))
+    |                                                `- warning: forced cast of 'Int' to same type has no effect
+336 |             print("Game Over")
+337 |             break
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden1118086293/001/main.swift:335:13: warning: using '_' to ignore the result of a Void-returning function is redundant
+333 |         full = (r2.full as! Bool)
+334 |         if (full && ((!Bool(hasMoves((board as! Board)))) as! Bool)) {
+335 |             _ = draw((board as! Board), (score as! Int))
+    |             `- warning: using '_' to ignore the result of a Void-returning function is redundant
+336 |             print("Game Over")
+337 |             break
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden1118086293/001/main.swift:340:21: warning: forced cast of 'Board' to same type has no effect
+338 |         }
+339 |     }
+340 |     _ = draw((board as! Board), (score as! Int))
+    |                     `- warning: forced cast of 'Board' to same type has no effect
+341 |     if Bool(has2048((board as! Board))) {
+342 |         print("You win!")
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden1118086293/001/main.swift:340:40: warning: forced cast of 'Int' to same type has no effect
+338 |         }
+339 |     }
+340 |     _ = draw((board as! Board), (score as! Int))
+    |                                        `- warning: forced cast of 'Int' to same type has no effect
+341 |     if Bool(has2048((board as! Board))) {
+342 |         print("You win!")
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden1118086293/001/main.swift:340:5: warning: using '_' to ignore the result of a Void-returning function is redundant
+338 |         }
+339 |     }
+340 |     _ = draw((board as! Board), (score as! Int))
+    |     `- warning: using '_' to ignore the result of a Void-returning function is redundant
+341 |     if Bool(has2048((board as! Board))) {
+342 |         print("You win!")
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden1118086293/001/main.swift:341:28: warning: forced cast of 'Board' to same type has no effect
+339 |     }
+340 |     _ = draw((board as! Board), (score as! Int))
+341 |     if Bool(has2048((board as! Board))) {
+    |                            `- warning: forced cast of 'Board' to same type has no effect
+342 |         print("You win!")
+343 |         break
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden1118086293/001/main.swift:345:31: warning: forced cast of 'Board' to same type has no effect
+343 |         break
+344 |     }
+345 |     if (!Bool(hasMoves((board as! Board)))) {
+    |                               `- warning: forced cast of 'Board' to same type has no effect
+346 |         print("Game Over")
+347 |         break
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden1118086293/001/main.swift:44:26: warning: forced cast of 'Int' to same type has no effect
+ 42 |         while (x < SIZE) {
+ 43 |             row = ((row + [0]) as! [Int])
+ 44 |             x = ((x + 1) as! Int)
+    |                          `- warning: forced cast of 'Int' to same type has no effect
+ 45 |         }
+ 46 |         b = ((b + [row]) as! [[Int]])
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden1118086293/001/main.swift:47:22: warning: forced cast of 'Int' to same type has no effect
+ 45 |         }
+ 46 |         b = ((b + [row]) as! [[Int]])
+ 47 |         y = ((y + 1) as! Int)
+    |                      `- warning: forced cast of 'Int' to same type has no effect
+ 48 |     }
+ 49 |     return (Board(cells: b) as! Board)
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden1118086293/001/main.swift:49:29: warning: forced cast of 'Board' to same type has no effect
+ 47 |         y = ((y + 1) as! Int)
+ 48 |     }
+ 49 |     return (Board(cells: b) as! Board)
+    |                             `- warning: forced cast of 'Board' to same type has no effect
+ 50 | }
+ 51 | func spawnTile(_ b: Board) -> SpawnResult {
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden1118086293/001/main.swift:52:25: warning: forced cast of '[[Int]]' to same type has no effect
+ 50 | }
+ 51 | func spawnTile(_ b: Board) -> SpawnResult {
+ 52 |     var grid = (b.cells as! [[Int]])
+    |                         `- warning: forced cast of '[[Int]]' to same type has no effect
+ 53 |     var empty: [[Int]] = ([] as! [[Int]])
+ 54 |     var y = 0
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden1118086293/001/main.swift:61:26: warning: forced cast of 'Int' to same type has no effect
+ 59 |                 empty = ((empty + [([x, y] as! [Int])]) as! [[Int]])
+ 60 |             }
+ 61 |             x = ((x + 1) as! Int)
+    |                          `- warning: forced cast of 'Int' to same type has no effect
+ 62 |         }
+ 63 |         y = ((y + 1) as! Int)
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden1118086293/001/main.swift:63:22: warning: forced cast of 'Int' to same type has no effect
+ 61 |             x = ((x + 1) as! Int)
+ 62 |         }
+ 63 |         y = ((y + 1) as! Int)
+    |                      `- warning: forced cast of 'Int' to same type has no effect
+ 64 |     }
+ 65 |     if (Int(((empty).count)) == 0) {
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden1118086293/001/main.swift:66:51: warning: forced cast of 'SpawnResult' to same type has no effect
+ 64 |     }
+ 65 |     if (Int(((empty).count)) == 0) {
+ 66 |         return (SpawnResult(board: b, full: true) as! SpawnResult)
+    |                                                   `- warning: forced cast of 'SpawnResult' to same type has no effect
+ 67 |     }
+ 68 |     var idx = ((Int(_now()) % Int(((empty).count))) as! Int)
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden1118086293/001/main.swift:68:53: warning: forced cast of 'Int' to same type has no effect
+ 66 |         return (SpawnResult(board: b, full: true) as! SpawnResult)
+ 67 |     }
+ 68 |     var idx = ((Int(_now()) % Int(((empty).count))) as! Int)
+    |                                                     `- warning: forced cast of 'Int' to same type has no effect
+ 69 |     let cell = (empty[idx] as! [Int])
+ 70 |     var val = 4
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden1118086293/001/main.swift:69:28: warning: forced cast of '[Int]' to same type has no effect
+ 67 |     }
+ 68 |     var idx = ((Int(_now()) % Int(((empty).count))) as! Int)
+ 69 |     let cell = (empty[idx] as! [Int])
+    |                            `- warning: forced cast of '[Int]' to same type has no effect
+ 70 |     var val = 4
+ 71 |     if ((Int(_now()) % 10) < 9) {
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden1118086293/001/main.swift:74:45: warning: forced cast of 'Int' to same type has no effect
+ 72 |         val = 2
+ 73 |     }
+ 74 |     grid[Int(cell[1])][Int(cell[0])] = (val as! Int)
+    |                                             `- warning: forced cast of 'Int' to same type has no effect
+ 75 |     return (SpawnResult(board: Board(cells: grid), full: (Int(((empty).count)) == 1)) as! SpawnResult)
+ 76 | }
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden1118086293/001/main.swift:75:87: warning: forced cast of 'SpawnResult' to same type has no effect
+ 73 |     }
+ 74 |     grid[Int(cell[1])][Int(cell[0])] = (val as! Int)
+ 75 |     return (SpawnResult(board: Board(cells: grid), full: (Int(((empty).count)) == 1)) as! SpawnResult)
+    |                                                                                       `- warning: forced cast of 'SpawnResult' to same type has no effect
+ 76 | }
+ 77 | func pad(_ n: Int) -> String {
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden1118086293/001/main.swift:68:9: warning: variable 'idx' was never mutated; consider changing to 'let' constant
+ 66 |         return (SpawnResult(board: b, full: true) as! SpawnResult)
+ 67 |     }
+ 68 |     var idx = ((Int(_now()) % Int(((empty).count))) as! Int)
+    |         `- warning: variable 'idx' was never mutated; consider changing to 'let' constant
+ 69 |     let cell = (empty[idx] as! [Int])
+ 70 |     var val = 4
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden1118086293/001/main.swift:78:13: error: no exact matches in call to initializer 
+ 76 | }
+ 77 | func pad(_ n: Int) -> String {
+ 78 |     var s = String(String(describing: n))!
+    |             |- error: no exact matches in call to initializer 
+    |             `- note: found candidate with type '(String) -> String'
+ 79 |     var pad = ((4 - Int(((s).count))) as! Int)
+ 80 |     var i = 0
+
+Swift.String.init:3:21: note: incorrect labels for candidate (have: '(_:)', expected: '(validatingCString:)')
+1 | struct String {
+2 | @available(*, deprecated, message: "Use a copy of the String argument")
+3 |   @inlinable public init?(validatingCString nullTerminatedUTF8: String)}
+  |                     `- note: incorrect labels for candidate (have: '(_:)', expected: '(validatingCString:)')
+4 | 
+
+Swift.String.init:3:21: note: incorrect labels for candidate (have: '(_:)', expected: '(validatingUTF8:)')
+1 | struct String {
+2 | @available(*, deprecated, message: "Use a copy of the String argument")
+3 |   @inlinable public init?(validatingUTF8 cString: String)}
+  |                     `- note: incorrect labels for candidate (have: '(_:)', expected: '(validatingUTF8:)')
+4 | 
+
+Foundation.String.init:3:10: note: incorrect labels for candidate (have: '(_:)', expected: '(utf8String:)')
+1 | struct String {
+2 | @available(*, deprecated, message: "Use a copy of the String argument")
+3 |   public init?(utf8String bytes: String)}
+  |          `- note: incorrect labels for candidate (have: '(_:)', expected: '(utf8String:)')
+4 | 
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden1118086293/001/main.swift:83:28: warning: forced cast of 'String' to same type has no effect
+ 81 |     var out = ""
+ 82 |     while (i < pad) {
+ 83 |         out = ((out + " ") as! String)
+    |                            `- warning: forced cast of 'String' to same type has no effect
+ 84 |         i = ((i + 1) as! Int)
+ 85 |     }
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden1118086293/001/main.swift:84:22: warning: forced cast of 'Int' to same type has no effect
+ 82 |     while (i < pad) {
+ 83 |         out = ((out + " ") as! String)
+ 84 |         i = ((i + 1) as! Int)
+    |                      `- warning: forced cast of 'Int' to same type has no effect
+ 85 |     }
+ 86 |     return ((out + s) as! String)
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden1118086293/001/main.swift:86:23: warning: forced cast of 'String' to same type has no effect
+ 84 |         i = ((i + 1) as! Int)
+ 85 |     }
+ 86 |     return ((out + s) as! String)
+    |                       `- warning: forced cast of 'String' to same type has no effect
+ 87 | }
+ 88 | func draw(_ b: Board, _ score: Int) {
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden1118086293/001/main.swift:98:42: warning: forced cast of 'String' to same type has no effect
+ 96 |             var v = Int(b.cells[y][x])
+ 97 |             if (v == 0) {
+ 98 |                 line = ((line + "    |") as! String)
+    |                                          `- warning: forced cast of 'String' to same type has no effect
+ 99 |             } else {
+100 |                 line = (((line + String(describing: pad((v as! Int)))) + "|") as! String)
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden1118086293/001/main.swift:100:60: warning: forced cast of 'Int' to same type has no effect
+ 98 |                 line = ((line + "    |") as! String)
+ 99 |             } else {
+100 |                 line = (((line + String(describing: pad((v as! Int)))) + "|") as! String)
+    |                                                            `- warning: forced cast of 'Int' to same type has no effect
+101 |             }
+102 |             x = ((x + 1) as! Int)
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden1118086293/001/main.swift:100:79: warning: forced cast of 'String' to same type has no effect
+ 98 |                 line = ((line + "    |") as! String)
+ 99 |             } else {
+100 |                 line = (((line + String(describing: pad((v as! Int)))) + "|") as! String)
+    |                                                                               `- warning: forced cast of 'String' to same type has no effect
+101 |             }
+102 |             x = ((x + 1) as! Int)
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden1118086293/001/main.swift:102:26: warning: forced cast of 'Int' to same type has no effect
+100 |                 line = (((line + String(describing: pad((v as! Int)))) + "|") as! String)
+101 |             }
+102 |             x = ((x + 1) as! Int)
+    |                          `- warning: forced cast of 'Int' to same type has no effect
+103 |         }
+104 |         print(line)
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden1118086293/001/main.swift:105:22: warning: forced cast of 'Int' to same type has no effect
+103 |         }
+104 |         print(line)
+105 |         y = ((y + 1) as! Int)
+    |                      `- warning: forced cast of 'Int' to same type has no effect
+106 |     }
+107 |     print("+----+----+----+----+")
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden1118086293/001/main.swift:96:17: warning: variable 'v' was never mutated; consider changing to 'let' constant
+ 94 |         var x = 0
+ 95 |         while (x < SIZE) {
+ 96 |             var v = Int(b.cells[y][x])
+    |                 `- warning: variable 'v' was never mutated; consider changing to 'let' constant
+ 97 |             if (v == 0) {
+ 98 |                 line = ((line + "    |") as! String)
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden1118086293/001/main.swift:112:37: warning: forced cast of 'Int' to same type has no effect
+110 | func reverseRow(_ r: [Int]) -> [Int] {
+111 |     var out: [Int] = ([] as! [Int])
+112 |     var i = ((Int(((r).count)) - 1) as! Int)
+    |                                     `- warning: forced cast of 'Int' to same type has no effect
+113 |     while (i >= 0) {
+114 |         out = ((out + [Int(r[i])]) as! [Int])
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden1118086293/001/main.swift:115:22: warning: forced cast of 'Int' to same type has no effect
+113 |     while (i >= 0) {
+114 |         out = ((out + [Int(r[i])]) as! [Int])
+115 |         i = ((i - 1) as! Int)
+    |                      `- warning: forced cast of 'Int' to same type has no effect
+116 |     }
+117 |     return (out as! [Int])
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden1118086293/001/main.swift:117:17: warning: forced cast of '[Int]' to same type has no effect
+115 |         i = ((i - 1) as! Int)
+116 |     }
+117 |     return (out as! [Int])
+    |                 `- warning: forced cast of '[Int]' to same type has no effect
+118 | }
+119 | func slideLeft(_ row: [Int]) -> SlideResult {
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden1118086293/001/main.swift:126:22: warning: forced cast of 'Int' to same type has no effect
+124 |             xs = ((xs + [Int(row[i])]) as! [Int])
+125 |         }
+126 |         i = ((i + 1) as! Int)
+    |                      `- warning: forced cast of 'Int' to same type has no effect
+127 |     }
+128 |     var res: [Int] = ([] as! [Int])
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden1118086293/001/main.swift:134:32: warning: forced cast of 'Int' to same type has no effect
+132 |         if (((i + 1) < Int(((xs).count))) && (Int(xs[i]) == Int(xs[(i + 1)]))) {
+133 |             let v = (Int(xs[i]) * 2)
+134 |             gain = ((gain + v) as! Int)
+    |                                `- warning: forced cast of 'Int' to same type has no effect
+135 |             res = ((res + [v]) as! [Int])
+136 |             i = ((i + 2) as! Int)
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden1118086293/001/main.swift:136:26: warning: forced cast of 'Int' to same type has no effect
+134 |             gain = ((gain + v) as! Int)
+135 |             res = ((res + [v]) as! [Int])
+136 |             i = ((i + 2) as! Int)
+    |                          `- warning: forced cast of 'Int' to same type has no effect
+137 |         } else {
+138 |             res = ((res + [Int(xs[i])]) as! [Int])
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden1118086293/001/main.swift:139:26: warning: forced cast of 'Int' to same type has no effect
+137 |         } else {
+138 |             res = ((res + [Int(xs[i])]) as! [Int])
+139 |             i = ((i + 1) as! Int)
+    |                          `- warning: forced cast of 'Int' to same type has no effect
+140 |         }
+141 |     }
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden1118086293/001/main.swift:145:47: warning: forced cast of 'SlideResult' to same type has no effect
+143 |         res = ((res + [0]) as! [Int])
+144 |     }
+145 |     return (SlideResult(row: res, gain: gain) as! SlideResult)
+    |                                               `- warning: forced cast of 'SlideResult' to same type has no effect
+146 | }
+147 | func moveLeft(_ b: Board, _ score: Int) -> MoveResult {
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden1118086293/001/main.swift:149:25: warning: forced cast of '[[Int]]' to same type has no effect
+147 | func moveLeft(_ b: Board, _ score: Int) -> MoveResult {
+148 |     var score = score
+149 |     var grid = (b.cells as! [[Int]])
+    |                         `- warning: forced cast of '[[Int]]' to same type has no effect
+150 |     var moved = false
+151 |     var y = 0
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden1118086293/001/main.swift:153:36: warning: forced cast of '[Int]' to same type has no effect
+151 |     var y = 0
+152 |     while (y < SIZE) {
+153 |         let r = slideLeft((grid[y] as! [Int]))
+    |                                    `- warning: forced cast of '[Int]' to same type has no effect
+154 |         let new = r.row
+155 |         score = ((score + r.gain) as! Int)
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden1118086293/001/main.swift:155:35: warning: forced cast of 'Int' to same type has no effect
+153 |         let r = slideLeft((grid[y] as! [Int]))
+154 |         let new = r.row
+155 |         score = ((score + r.gain) as! Int)
+    |                                   `- warning: forced cast of 'Int' to same type has no effect
+156 |         var x = 0
+157 |         while (x < SIZE) {
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden1118086293/001/main.swift:162:26: warning: forced cast of 'Int' to same type has no effect
+160 |             }
+161 |             grid[y][x] = Int(new[x])
+162 |             x = ((x + 1) as! Int)
+    |                          `- warning: forced cast of 'Int' to same type has no effect
+163 |         }
+164 |         y = ((y + 1) as! Int)
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden1118086293/001/main.swift:164:22: warning: forced cast of 'Int' to same type has no effect
+162 |             x = ((x + 1) as! Int)
+163 |         }
+164 |         y = ((y + 1) as! Int)
+    |                      `- warning: forced cast of 'Int' to same type has no effect
+165 |     }
+166 |     return (MoveResult(board: Board(cells: grid), score: score, moved: moved) as! MoveResult)
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden1118086293/001/main.swift:166:79: warning: forced cast of 'MoveResult' to same type has no effect
+164 |         y = ((y + 1) as! Int)
+165 |     }
+166 |     return (MoveResult(board: Board(cells: grid), score: score, moved: moved) as! MoveResult)
+    |                                                                               `- warning: forced cast of 'MoveResult' to same type has no effect
+167 | }
+168 | func moveRight(_ b: Board, _ score: Int) -> MoveResult {
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden1118086293/001/main.swift:170:25: warning: forced cast of '[[Int]]' to same type has no effect
+168 | func moveRight(_ b: Board, _ score: Int) -> MoveResult {
+169 |     var score = score
+170 |     var grid = (b.cells as! [[Int]])
+    |                         `- warning: forced cast of '[[Int]]' to same type has no effect
+171 |     var moved = false
+172 |     var y = 0
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden1118086293/001/main.swift:174:40: warning: forced cast of '[Int]' to same type has no effect
+172 |     var y = 0
+173 |     while (y < SIZE) {
+174 |         var rev = (reverseRow((grid[y] as! [Int])) as! [Int])
+    |                                        `- warning: forced cast of '[Int]' to same type has no effect
+175 |         let r = slideLeft((rev as! [Int]))
+176 |         rev = (r.row as! [Int])
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden1118086293/001/main.swift:174:52: warning: forced cast of '[Int]' to same type has no effect
+172 |     var y = 0
+173 |     while (y < SIZE) {
+174 |         var rev = (reverseRow((grid[y] as! [Int])) as! [Int])
+    |                                                    `- warning: forced cast of '[Int]' to same type has no effect
+175 |         let r = slideLeft((rev as! [Int]))
+176 |         rev = (r.row as! [Int])
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden1118086293/001/main.swift:175:32: warning: forced cast of '[Int]' to same type has no effect
+173 |     while (y < SIZE) {
+174 |         var rev = (reverseRow((grid[y] as! [Int])) as! [Int])
+175 |         let r = slideLeft((rev as! [Int]))
+    |                                `- warning: forced cast of '[Int]' to same type has no effect
+176 |         rev = (r.row as! [Int])
+177 |         score = ((score + r.gain) as! Int)
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden1118086293/001/main.swift:176:22: warning: forced cast of '[Int]' to same type has no effect
+174 |         var rev = (reverseRow((grid[y] as! [Int])) as! [Int])
+175 |         let r = slideLeft((rev as! [Int]))
+176 |         rev = (r.row as! [Int])
+    |                      `- warning: forced cast of '[Int]' to same type has no effect
+177 |         score = ((score + r.gain) as! Int)
+178 |         rev = (reverseRow((rev as! [Int])) as! [Int])
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden1118086293/001/main.swift:177:35: warning: forced cast of 'Int' to same type has no effect
+175 |         let r = slideLeft((rev as! [Int]))
+176 |         rev = (r.row as! [Int])
+177 |         score = ((score + r.gain) as! Int)
+    |                                   `- warning: forced cast of 'Int' to same type has no effect
+178 |         rev = (reverseRow((rev as! [Int])) as! [Int])
+179 |         var x = 0
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden1118086293/001/main.swift:178:32: warning: forced cast of '[Int]' to same type has no effect
+176 |         rev = (r.row as! [Int])
+177 |         score = ((score + r.gain) as! Int)
+178 |         rev = (reverseRow((rev as! [Int])) as! [Int])
+    |                                `- warning: forced cast of '[Int]' to same type has no effect
+179 |         var x = 0
+180 |         while (x < SIZE) {
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden1118086293/001/main.swift:178:44: warning: forced cast of '[Int]' to same type has no effect
+176 |         rev = (r.row as! [Int])
+177 |         score = ((score + r.gain) as! Int)
+178 |         rev = (reverseRow((rev as! [Int])) as! [Int])
+    |                                            `- warning: forced cast of '[Int]' to same type has no effect
+179 |         var x = 0
+180 |         while (x < SIZE) {
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden1118086293/001/main.swift:185:26: warning: forced cast of 'Int' to same type has no effect
+183 |             }
+184 |             grid[y][x] = Int(rev[x])
+185 |             x = ((x + 1) as! Int)
+    |                          `- warning: forced cast of 'Int' to same type has no effect
+186 |         }
+187 |         y = ((y + 1) as! Int)
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden1118086293/001/main.swift:187:22: warning: forced cast of 'Int' to same type has no effect
+185 |             x = ((x + 1) as! Int)
+186 |         }
+187 |         y = ((y + 1) as! Int)
+    |                      `- warning: forced cast of 'Int' to same type has no effect
+188 |     }
+189 |     return (MoveResult(board: Board(cells: grid), score: score, moved: moved) as! MoveResult)
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden1118086293/001/main.swift:189:79: warning: forced cast of 'MoveResult' to same type has no effect
+187 |         y = ((y + 1) as! Int)
+188 |     }
+189 |     return (MoveResult(board: Board(cells: grid), score: score, moved: moved) as! MoveResult)
+    |                                                                               `- warning: forced cast of 'MoveResult' to same type has no effect
+190 | }
+191 | func getCol(_ b: Board, _ x: Int) -> [Int] {
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden1118086293/001/main.swift:196:22: warning: forced cast of 'Int' to same type has no effect
+194 |     while (y < SIZE) {
+195 |         col = ((col + [Int(b.cells[y][x])]) as! [Int])
+196 |         y = ((y + 1) as! Int)
+    |                      `- warning: forced cast of 'Int' to same type has no effect
+197 |     }
+198 |     return (col as! [Int])
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden1118086293/001/main.swift:198:17: warning: forced cast of '[Int]' to same type has no effect
+196 |         y = ((y + 1) as! Int)
+197 |     }
+198 |     return (col as! [Int])
+    |                 `- warning: forced cast of '[Int]' to same type has no effect
+199 | }
+200 | func setCol(_ b: inout Board, _ x: Int, _ col: [Int]) {
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden1118086293/001/main.swift:201:25: warning: forced cast of '[[Int]]' to same type has no effect
+199 | }
+200 | func setCol(_ b: inout Board, _ x: Int, _ col: [Int]) {
+201 |     var rows = (b.cells as! [[Int]])
+    |                         `- warning: forced cast of '[[Int]]' to same type has no effect
+202 |     var y = 0
+203 |     while (y < SIZE) {
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden1118086293/001/main.swift:204:28: warning: forced cast of '[Int]' to same type has no effect
+202 |     var y = 0
+203 |     while (y < SIZE) {
+204 |         var row = (rows[y] as! [Int])
+    |                            `- warning: forced cast of '[Int]' to same type has no effect
+205 |         row[x] = Int(col[y])
+206 |         rows[y] = (row as! [Int])
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden1118086293/001/main.swift:206:24: warning: forced cast of '[Int]' to same type has no effect
+204 |         var row = (rows[y] as! [Int])
+205 |         row[x] = Int(col[y])
+206 |         rows[y] = (row as! [Int])
+    |                        `- warning: forced cast of '[Int]' to same type has no effect
+207 |         y = ((y + 1) as! Int)
+208 |     }
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden1118086293/001/main.swift:207:22: warning: forced cast of 'Int' to same type has no effect
+205 |         row[x] = Int(col[y])
+206 |         rows[y] = (row as! [Int])
+207 |         y = ((y + 1) as! Int)
+    |                      `- warning: forced cast of 'Int' to same type has no effect
+208 |     }
+209 |     b.cells = (rows as! [[Int]])
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden1118086293/001/main.swift:209:21: warning: forced cast of '[[Int]]' to same type has no effect
+207 |         y = ((y + 1) as! Int)
+208 |     }
+209 |     b.cells = (rows as! [[Int]])
+    |                     `- warning: forced cast of '[[Int]]' to same type has no effect
+210 | }
+211 | func moveUp(_ b: Board, _ score: Int) -> MoveResult {
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden1118086293/001/main.swift:213:25: warning: forced cast of '[[Int]]' to same type has no effect
+211 | func moveUp(_ b: Board, _ score: Int) -> MoveResult {
+212 |     var score = score
+213 |     var grid = (b.cells as! [[Int]])
+    |                         `- warning: forced cast of '[[Int]]' to same type has no effect
+214 |     var moved = false
+215 |     var x = 0
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden1118086293/001/main.swift:217:30: warning: forced cast of 'Board' to same type has no effect
+215 |     var x = 0
+216 |     while (x < SIZE) {
+217 |         var col = (getCol((b as! Board), (x as! Int)) as! [Int])
+    |                              `- warning: forced cast of 'Board' to same type has no effect
+218 |         let r = slideLeft((col as! [Int]))
+219 |         let new = r.row
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden1118086293/001/main.swift:217:45: warning: forced cast of 'Int' to same type has no effect
+215 |     var x = 0
+216 |     while (x < SIZE) {
+217 |         var col = (getCol((b as! Board), (x as! Int)) as! [Int])
+    |                                             `- warning: forced cast of 'Int' to same type has no effect
+218 |         let r = slideLeft((col as! [Int]))
+219 |         let new = r.row
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden1118086293/001/main.swift:217:55: warning: forced cast of '[Int]' to same type has no effect
+215 |     var x = 0
+216 |     while (x < SIZE) {
+217 |         var col = (getCol((b as! Board), (x as! Int)) as! [Int])
+    |                                                       `- warning: forced cast of '[Int]' to same type has no effect
+218 |         let r = slideLeft((col as! [Int]))
+219 |         let new = r.row
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden1118086293/001/main.swift:218:32: warning: forced cast of '[Int]' to same type has no effect
+216 |     while (x < SIZE) {
+217 |         var col = (getCol((b as! Board), (x as! Int)) as! [Int])
+218 |         let r = slideLeft((col as! [Int]))
+    |                                `- warning: forced cast of '[Int]' to same type has no effect
+219 |         let new = r.row
+220 |         score = ((score + r.gain) as! Int)
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden1118086293/001/main.swift:220:35: warning: forced cast of 'Int' to same type has no effect
+218 |         let r = slideLeft((col as! [Int]))
+219 |         let new = r.row
+220 |         score = ((score + r.gain) as! Int)
+    |                                   `- warning: forced cast of 'Int' to same type has no effect
+221 |         var y = 0
+222 |         while (y < SIZE) {
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden1118086293/001/main.swift:227:26: warning: forced cast of 'Int' to same type has no effect
+225 |             }
+226 |             grid[y][x] = Int(new[y])
+227 |             y = ((y + 1) as! Int)
+    |                          `- warning: forced cast of 'Int' to same type has no effect
+228 |         }
+229 |         x = ((x + 1) as! Int)
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden1118086293/001/main.swift:229:22: warning: forced cast of 'Int' to same type has no effect
+227 |             y = ((y + 1) as! Int)
+228 |         }
+229 |         x = ((x + 1) as! Int)
+    |                      `- warning: forced cast of 'Int' to same type has no effect
+230 |     }
+231 |     return (MoveResult(board: Board(cells: grid), score: score, moved: moved) as! MoveResult)
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden1118086293/001/main.swift:231:79: warning: forced cast of 'MoveResult' to same type has no effect
+229 |         x = ((x + 1) as! Int)
+230 |     }
+231 |     return (MoveResult(board: Board(cells: grid), score: score, moved: moved) as! MoveResult)
+    |                                                                               `- warning: forced cast of 'MoveResult' to same type has no effect
+232 | }
+233 | func moveDown(_ b: Board, _ score: Int) -> MoveResult {
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden1118086293/001/main.swift:217:13: warning: variable 'col' was never mutated; consider changing to 'let' constant
+215 |     var x = 0
+216 |     while (x < SIZE) {
+217 |         var col = (getCol((b as! Board), (x as! Int)) as! [Int])
+    |             `- warning: variable 'col' was never mutated; consider changing to 'let' constant
+218 |         let r = slideLeft((col as! [Int]))
+219 |         let new = r.row
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden1118086293/001/main.swift:235:25: warning: forced cast of '[[Int]]' to same type has no effect
+233 | func moveDown(_ b: Board, _ score: Int) -> MoveResult {
+234 |     var score = score
+235 |     var grid = (b.cells as! [[Int]])
+    |                         `- warning: forced cast of '[[Int]]' to same type has no effect
+236 |     var moved = false
+237 |     var x = 0
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden1118086293/001/main.swift:239:42: warning: forced cast of 'Board' to same type has no effect
+237 |     var x = 0
+238 |     while (x < SIZE) {
+239 |         var col = (reverseRow((getCol((b as! Board), (x as! Int)) as! [Int])) as! [Int])
+    |                                          `- warning: forced cast of 'Board' to same type has no effect
+240 |         let r = slideLeft((col as! [Int]))
+241 |         col = (r.row as! [Int])
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden1118086293/001/main.swift:239:57: warning: forced cast of 'Int' to same type has no effect
+237 |     var x = 0
+238 |     while (x < SIZE) {
+239 |         var col = (reverseRow((getCol((b as! Board), (x as! Int)) as! [Int])) as! [Int])
+    |                                                         `- warning: forced cast of 'Int' to same type has no effect
+240 |         let r = slideLeft((col as! [Int]))
+241 |         col = (r.row as! [Int])
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden1118086293/001/main.swift:239:67: warning: forced cast of '[Int]' to same type has no effect
+237 |     var x = 0
+238 |     while (x < SIZE) {
+239 |         var col = (reverseRow((getCol((b as! Board), (x as! Int)) as! [Int])) as! [Int])
+    |                                                                   `- warning: forced cast of '[Int]' to same type has no effect
+240 |         let r = slideLeft((col as! [Int]))
+241 |         col = (r.row as! [Int])
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden1118086293/001/main.swift:239:79: warning: forced cast of '[Int]' to same type has no effect
+237 |     var x = 0
+238 |     while (x < SIZE) {
+239 |         var col = (reverseRow((getCol((b as! Board), (x as! Int)) as! [Int])) as! [Int])
+    |                                                                               `- warning: forced cast of '[Int]' to same type has no effect
+240 |         let r = slideLeft((col as! [Int]))
+241 |         col = (r.row as! [Int])
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden1118086293/001/main.swift:240:32: warning: forced cast of '[Int]' to same type has no effect
+238 |     while (x < SIZE) {
+239 |         var col = (reverseRow((getCol((b as! Board), (x as! Int)) as! [Int])) as! [Int])
+240 |         let r = slideLeft((col as! [Int]))
+    |                                `- warning: forced cast of '[Int]' to same type has no effect
+241 |         col = (r.row as! [Int])
+242 |         score = ((score + r.gain) as! Int)
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden1118086293/001/main.swift:241:22: warning: forced cast of '[Int]' to same type has no effect
+239 |         var col = (reverseRow((getCol((b as! Board), (x as! Int)) as! [Int])) as! [Int])
+240 |         let r = slideLeft((col as! [Int]))
+241 |         col = (r.row as! [Int])
+    |                      `- warning: forced cast of '[Int]' to same type has no effect
+242 |         score = ((score + r.gain) as! Int)
+243 |         col = (reverseRow((col as! [Int])) as! [Int])
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden1118086293/001/main.swift:242:35: warning: forced cast of 'Int' to same type has no effect
+240 |         let r = slideLeft((col as! [Int]))
+241 |         col = (r.row as! [Int])
+242 |         score = ((score + r.gain) as! Int)
+    |                                   `- warning: forced cast of 'Int' to same type has no effect
+243 |         col = (reverseRow((col as! [Int])) as! [Int])
+244 |         var y = 0
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden1118086293/001/main.swift:243:32: warning: forced cast of '[Int]' to same type has no effect
+241 |         col = (r.row as! [Int])
+242 |         score = ((score + r.gain) as! Int)
+243 |         col = (reverseRow((col as! [Int])) as! [Int])
+    |                                `- warning: forced cast of '[Int]' to same type has no effect
+244 |         var y = 0
+245 |         while (y < SIZE) {
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden1118086293/001/main.swift:243:44: warning: forced cast of '[Int]' to same type has no effect
+241 |         col = (r.row as! [Int])
+242 |         score = ((score + r.gain) as! Int)
+243 |         col = (reverseRow((col as! [Int])) as! [Int])
+    |                                            `- warning: forced cast of '[Int]' to same type has no effect
+244 |         var y = 0
+245 |         while (y < SIZE) {
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden1118086293/001/main.swift:250:26: warning: forced cast of 'Int' to same type has no effect
+248 |             }
+249 |             grid[y][x] = Int(col[y])
+250 |             y = ((y + 1) as! Int)
+    |                          `- warning: forced cast of 'Int' to same type has no effect
+251 |         }
+252 |         x = ((x + 1) as! Int)
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden1118086293/001/main.swift:252:22: warning: forced cast of 'Int' to same type has no effect
+250 |             y = ((y + 1) as! Int)
+251 |         }
+252 |         x = ((x + 1) as! Int)
+    |                      `- warning: forced cast of 'Int' to same type has no effect
+253 |     }
+254 |     return (MoveResult(board: Board(cells: grid), score: score, moved: moved) as! MoveResult)
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden1118086293/001/main.swift:254:79: warning: forced cast of 'MoveResult' to same type has no effect
+252 |         x = ((x + 1) as! Int)
+253 |     }
+254 |     return (MoveResult(board: Board(cells: grid), score: score, moved: moved) as! MoveResult)
+    |                                                                               `- warning: forced cast of 'MoveResult' to same type has no effect
+255 | }
+256 | func hasMoves(_ b: Board) -> Bool {
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden1118086293/001/main.swift:270:26: warning: forced cast of 'Int' to same type has no effect
+268 |                 return true
+269 |             }
+270 |             x = ((x + 1) as! Int)
+    |                          `- warning: forced cast of 'Int' to same type has no effect
+271 |         }
+272 |         y = ((y + 1) as! Int)
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden1118086293/001/main.swift:272:22: warning: forced cast of 'Int' to same type has no effect
+270 |             x = ((x + 1) as! Int)
+271 |         }
+272 |         y = ((y + 1) as! Int)
+    |                      `- warning: forced cast of 'Int' to same type has no effect
+273 |     }
+274 |     return false
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden1118086293/001/main.swift:284:26: warning: forced cast of 'Int' to same type has no effect
+282 |                 return true
+283 |             }
+284 |             x = ((x + 1) as! Int)
+    |                          `- warning: forced cast of 'Int' to same type has no effect
+285 |         }
+286 |         y = ((y + 1) as! Int)
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden1118086293/001/main.swift:286:22: warning: forced cast of 'Int' to same type has no effect
+284 |             x = ((x + 1) as! Int)
+285 |         }
+286 |         y = ((y + 1) as! Int)
+    |                      `- warning: forced cast of 'Int' to same type has no effect
+287 |     }
+288 |     return false

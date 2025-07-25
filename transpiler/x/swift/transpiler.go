@@ -946,10 +946,11 @@ func (c *CastExpr) emit(w io.Writer) {
 }
 
 type BinaryExpr struct {
-	Left  Expr
-	Op    string
-	Right Expr
-	InMap bool
+        Left     Expr
+        Op       string
+        Right    Expr
+        InMap    bool
+        FloatMod bool
 }
 
 func (b *BinaryExpr) emit(w io.Writer) {
@@ -970,15 +971,24 @@ func (b *BinaryExpr) emit(w io.Writer) {
 		return
 	}
 
-	switch b.Op {
-	case "&&", "||", "<", "<=", ">", ">=", "==", "!=":
-		fmt.Fprint(w, "(")
-		b.Left.emit(w)
-		fmt.Fprintf(w, " %s ", b.Op)
-		b.Right.emit(w)
-		fmt.Fprint(w, ")")
-		return
-	}
+        switch b.Op {
+        case "&&", "||", "<", "<=", ">", ">=", "==", "!=":
+                fmt.Fprint(w, "(")
+                b.Left.emit(w)
+                fmt.Fprintf(w, " %s ", b.Op)
+                b.Right.emit(w)
+                fmt.Fprint(w, ")")
+                return
+       case "%":
+               if b.FloatMod {
+                       fmt.Fprint(w, "(")
+                       b.Left.emit(w)
+                       fmt.Fprint(w, ".truncatingRemainder(dividingBy: ")
+                       b.Right.emit(w)
+                       fmt.Fprint(w, "))")
+                       return
+               }
+        }
 
 	fmt.Fprint(w, "(")
 	b.Left.emit(w)
@@ -2493,8 +2503,12 @@ func convertExpr(env *types.Env, e *parser.Expr) (Expr, error) {
 			resType = rtyp
 		}
 
-		exprStack = append(exprStack, &BinaryExpr{Left: left, Op: op, Right: right, InMap: false})
-		typeStack = append(typeStack, resType)
+                be := &BinaryExpr{Left: left, Op: op, Right: right, InMap: false}
+                if op == "%" && (types.IsFloatType(ltyp) || types.IsFloatType(rtyp)) {
+                        be.FloatMod = true
+                }
+                exprStack = append(exprStack, be)
+                typeStack = append(typeStack, resType)
 	}
 
 	exprStack = append(exprStack, operands[0])
@@ -2803,26 +2817,29 @@ func convertPostfix(env *types.Env, p *parser.PostfixExpr) (Expr, error) {
 				return expr, nil
 			}
 		}
-		t := types.TypeOfPostfix(p, env)
-		if ot, ok := t.(types.OptionType); ok {
-			t = ot.Elem
-		}
-		if _, ok := expr.(*FieldExpr); !ok {
-			switch {
-			case types.IsIntType(t):
-				expr = &CastExpr{Expr: expr, Type: "Int"}
-			case types.IsInt64Type(t):
-				expr = &CastExpr{Expr: expr, Type: "Int64"}
-			case types.IsFloatType(t):
-				expr = &CastExpr{Expr: expr, Type: "Double"}
-			case types.IsStringType(t):
-				expr = &CastExpr{Expr: expr, Type: "String"}
-			case types.IsBoolType(t):
-				expr = &CastExpr{Expr: expr, Type: "Bool!"}
-			case types.IsListType(t), types.IsMapType(t):
-				expr = &CastExpr{Expr: expr, Type: swiftTypeOf(t)}
-			}
-		}
+        t := types.TypeOfPostfix(p, env)
+        if ot, ok := t.(types.OptionType); ok {
+                t = ot.Elem
+        }
+        if baseType != nil && types.EqualTypes(baseType, t) {
+                return expr, nil
+        }
+        if _, ok := expr.(*FieldExpr); !ok {
+                switch {
+                case types.IsIntType(t):
+                        expr = &CastExpr{Expr: expr, Type: "Int"}
+                case types.IsInt64Type(t):
+                        expr = &CastExpr{Expr: expr, Type: "Int64"}
+                case types.IsFloatType(t):
+                        expr = &CastExpr{Expr: expr, Type: "Double"}
+                case types.IsStringType(t):
+                        expr = &CastExpr{Expr: expr, Type: "String"}
+                case types.IsBoolType(t):
+                        expr = &CastExpr{Expr: expr, Type: "Bool!"}
+                case types.IsListType(t), types.IsMapType(t):
+                        expr = &CastExpr{Expr: expr, Type: swiftTypeOf(t)}
+                }
+        }
 	}
 	return expr, nil
 }
