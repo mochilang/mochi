@@ -18,14 +18,14 @@ Completed programs: 52/284
 | 10 | 24-game | ✓ | 21.0µs | 952B |
 | 11 | 4-rings-or-4-squares-puzzle | ✓ | 82.0µs | 11.43KB |
 | 12 | 9-billion-names-of-god-the-integer | ✓ | 53.04s | 14.99GB |
-| 13 | 99-bottles-of-beer-2 | ✓ |  |  |
-| 14 | 99-bottles-of-beer | ✓ |  |  |
-| 15 | DNS-query | ✓ |  |  |
-| 16 | a+b | ✓ |  |  |
-| 17 | abbreviations-automatic | ✓ |  |  |
-| 18 | abbreviations-easy | ✓ |  |  |
-| 19 | abbreviations-simple | ✓ |  |  |
-| 20 | abc-problem | ✓ |  |  |
+| 13 | 99-bottles-of-beer-2 | ✓ | 26.0ms | 4.91MB |
+| 14 | 99-bottles-of-beer | ✓ | 526.0µs | 22.48KB |
+| 15 | DNS-query | ✓ | 96.0µs | 256B |
+| 16 | a+b | ✓ | 105.0µs | 400B |
+| 17 | abbreviations-automatic | ✓ | 8.0ms | 999.22KB |
+| 18 | abbreviations-easy | ✓ | 3.0ms | 250.42KB |
+| 19 | abbreviations-simple | ✓ | 5.0ms | 499.24KB |
+| 20 | abc-problem | ✓ | 1.0ms | 193.75KB |
 | 21 | abelian-sandpile-model-identity | ✓ |  |  |
 | 22 | abelian-sandpile-model | ✓ |  |  |
 | 23 | abstract-type | ✓ |  |  |
@@ -290,4 +290,4 @@ Completed programs: 52/284
 | 282 | deepcopy-1 |   |  |  |
 | 283 | define-a-primitive-data-type |   |  |  |
 | 284 | md5 |   |  |  |
-Last updated 2025-07-25 20:04 +0700
+Last updated 2025-07-25 20:48 +0700
