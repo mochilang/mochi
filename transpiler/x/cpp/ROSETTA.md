@@ -2,7 +2,7 @@
 
 This directory stores C++ code generated from Mochi programs in `tests/rosetta/x/Mochi`. Each file is compiled and executed during tests. Successful runs keep the generated `.cpp` source along with a matching `.out` file. Failures are recorded in `.error` files when tests run with `-update`.
 
-Checklist of programs that currently transpile and run (59/284) - Last updated 2025-07-25 19:47 +0700:
+Checklist of programs that currently transpile and run (67/284) - Last updated 2025-07-25 21:15 +0700:
 | Index | Name | Status | Duration | Memory |
 | ---: | --- | :---: | ---: | ---: |
 | 1 | 100-doors-2 | ✓ | 222.0µs | 13.12MB |
@@ -68,14 +68,14 @@ Checklist of programs that currently transpile and run (59/284) - Last updated 2
 | 61 | approximate-equality | ✓ | 186.0µs | 13.23MB |
 | 62 | arbitrary-precision-integers-included- | ✓ | 1.0ms | 13.24MB |
 | 63 | archimedean-spiral | ✓ | 9.0ms | 13.12MB |
-| 64 | arena-storage-pool |   |  |  |
-| 65 | arithmetic-complex |   |  |  |
-| 66 | arithmetic-derivative |   |  |  |
-| 67 | arithmetic-evaluation |   |  |  |
-| 68 | arithmetic-geometric-mean-calculate-pi |   |  |  |
-| 69 | arithmetic-geometric-mean |   |  |  |
-| 70 | arithmetic-integer-1 |   |  |  |
-| 71 | arithmetic-integer-2 |   |  |  |
+| 64 | arena-storage-pool | ✓ |  |  |
+| 65 | arithmetic-complex | ✓ | 424.0µs | 12.80MB |
+| 66 | arithmetic-derivative | ✓ | 2.0ms | 13.12MB |
+| 67 | arithmetic-evaluation | ✓ | 346.0µs | 13.70MB |
+| 68 | arithmetic-geometric-mean-calculate-pi | ✓ | 463.0µs | 12.61MB |
+| 69 | arithmetic-geometric-mean | ✓ | 440.0µs | 13.05MB |
+| 70 | arithmetic-integer-1 | ✓ | 256.0µs | 12.80MB |
+| 71 | arithmetic-integer-2 | ✓ | 197.0µs | 13.10MB |
 | 72 | arithmetic-numbers |   |  |  |
 | 73 | arithmetic-rational |   |  |  |
 | 74 | array-concatenation |   |  |  |
