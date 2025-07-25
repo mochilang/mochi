@@ -386,6 +386,22 @@ func (d *DeclStmt) emit(w io.Writer, indent int) {
 			fmt.Fprintf(w, "size_t %s_len = %s_len;\n", d.Name, call.Func)
 			return
 		}
+		if vr, ok := d.Value.(*VarRef); ok {
+			fmt.Fprintf(w, "%s **%s = %s;\n", base, d.Name, vr.Name)
+			writeIndent(w, indent)
+			fmt.Fprintf(w, "size_t %s_len = %s_len;\n", d.Name, vr.Name)
+			return
+		}
+		if fe, ok := d.Value.(*FieldExpr); ok {
+			fmt.Fprintf(w, "%s **%s = ", base, d.Name)
+			d.Value.emitExpr(w)
+			io.WriteString(w, ";\n")
+			writeIndent(w, indent)
+			fmt.Fprintf(w, "size_t %s_len = ", d.Name)
+			fe.Target.emitExpr(w)
+			fmt.Fprintf(w, ".%s_len;\n", fe.Name)
+			return
+		}
 		fmt.Fprintf(w, "%s **%s = NULL;\n", base, d.Name)
 		writeIndent(w, indent)
 		fmt.Fprintf(w, "size_t %s_len = 0;\n", d.Name)
@@ -486,10 +502,27 @@ func (a *AssignStmt) emit(w io.Writer, indent int) {
 				io.WriteString(w, ");\n")
 				return
 			default:
-				if strings.HasSuffix(base, "[]") || base == "" {
+				if base == "" {
+					needListAppendInt = true
+					fmt.Fprintf(w, "%s = list_append_int(%s, &%s_len, ", a.Name, a.Name, a.Name)
+					call.Args[1].emitExpr(w)
+					io.WriteString(w, ");\n")
+					return
+				}
+				if strings.HasSuffix(base, "[]") {
 					needListAppendPtr = true
 					fmt.Fprintf(w, "%s = list_append_intptr(%s, &%s_len, ", a.Name, a.Name, a.Name)
-					call.Args[1].emitExpr(w)
+					if lit, ok := call.Args[1].(*ListLit); ok {
+						fmt.Fprintf(w, "({int *tmp = malloc(%d * sizeof(int)); ", len(lit.Elems))
+						for i, e := range lit.Elems {
+							fmt.Fprintf(w, "tmp[%d] = ", i)
+							e.emitExpr(w)
+							io.WriteString(w, "; ")
+						}
+						io.WriteString(w, "tmp;})")
+					} else {
+						call.Args[1].emitExpr(w)
+					}
 					io.WriteString(w, ");\n")
 					return
 				}
