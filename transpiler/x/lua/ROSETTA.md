@@ -4,7 +4,7 @@ Generated Lua code for programs in `tests/rosetta/x/Mochi`. Each program has a `
 
 Transpiled programs: 237/284
 
-Last updated: 2025-07-25 12:29 GMT+7
+Last updated: 2025-07-25 13:06 GMT+7
 
 Checklist:
 
@@ -20,16 +20,16 @@ Checklist:
 | 8 | 21-game | ✓ | 726.918ms | 304 B |
 | 9 | 24-game-solve | ✓ | 245.103ms | 2.1 KB |
 | 10 | 24-game | ✓ | 1.704ms | 248 B |
-| 11 | 4-rings-or-4-squares-puzzle | ✓ |  |  |
-| 12 | 9-billion-names-of-god-the-integer | ✓ |  |  |
-| 13 | 99-bottles-of-beer-2 | ✓ |  |  |
-| 14 | 99-bottles-of-beer | ✓ |  |  |
-| 15 | DNS-query | ✓ |  |  |
-| 16 | a+b | ✓ |  |  |
-| 17 | abbreviations-automatic | ✓ |  |  |
-| 18 | abbreviations-easy | ✓ |  |  |
-| 19 | abbreviations-simple | ✓ |  |  |
-| 20 | abc-problem | ✓ |  |  |
+| 11 | 4-rings-or-4-squares-puzzle | ✓ | 67.993ms | 615.3 KB |
+| 12 | 9-billion-names-of-god-the-integer | ✓ | 3m18.319678s | 1.3 MB |
+| 13 | 99-bottles-of-beer-2 | ✓ | 30.276ms | 528 B |
+| 14 | 99-bottles-of-beer | ✓ | 571µs | 208 B |
+| 15 | DNS-query | ✓ | 59µs | 192 B |
+| 16 | a+b | ✓ | 118µs | 168 B |
+| 17 | abbreviations-automatic | ✓ | 11.754ms | 4.5 KB |
+| 18 | abbreviations-easy | ✓ | 1.549ms | 1.6 KB |
+| 19 | abbreviations-simple | ✓ | 2.17ms | 8.4 KB |
+| 20 | abc-problem | ✓ | 1.294ms | 2.0 KB |
 | 21 | abelian-sandpile-model-identity | ✓ |  |  |
 | 22 | abelian-sandpile-model | ✓ |  |  |
 | 23 | abstract-type | ✓ |  |  |
