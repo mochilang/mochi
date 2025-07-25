@@ -2,21 +2,21 @@
 
 This checklist is auto-generated.
 Generated IR and outputs from programs in `tests/rosetta/x/Mochi` lives in `tests/rosetta/ir`.
-Last updated: 2025-07-25 05:09 UTC
+Last updated: 2025-07-25 06:13 UTC
 
 ## Rosetta Golden Test Checklist (20/284)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
-| 1 | 100-doors-2 | ✓ | 116µs | 11.7 KB |
-| 2 | 100-doors-3 | ✓ | 184µs | 7.7 KB |
-| 3 | 100-doors | ✓ | 6.231ms | 851.8 KB |
-| 4 | 100-prisoners | ✓ | 4.224632s | 275.7 KB |
+| 1 | 100-doors-2 | ✓ | 317µs | 11.7 KB |
+| 2 | 100-doors-3 | ✓ | 291µs | 7.8 KB |
+| 3 | 100-doors | ✓ | 12.473ms | 632.6 KB |
+| 4 | 100-prisoners | ✓ | 3.738977s | 860.6 KB |
 | 5 | 15-puzzle-game | ✓ |  |  |
-| 6 | 15-puzzle-solver | ✓ | 917.949ms | 26.9 KB |
-| 7 | 2048 | ✓ |  |  |
-| 8 | 21-game | ✓ |  |  |
-| 9 | 24-game-solve | ✓ | 2.162ms |  |
-| 10 | 24-game | ✓ | 119µs | 17.0 KB |
+| 6 | 15-puzzle-solver | ✓ | 1.620123s | 28.6 KB |
+| 7 | 2048 | ✓ | 3.866ms |  |
+| 8 | 21-game | ✓ | 437µs | 10.0 KB |
+| 9 | 24-game-solve | ✓ | 4.469ms | 150.9 KB |
+| 10 | 24-game | ✓ | 287µs | 17.0 KB |
 | 11 | 4-rings-or-4-squares-puzzle | ✓ | 273.989ms | 4.9 MB |
 | 12 | 9-billion-names-of-god-the-integer | ✓ | 11.35998s | 112.4 MB |
 | 13 | 99-bottles-of-beer-2 | ✓ | 60.961ms |  |
