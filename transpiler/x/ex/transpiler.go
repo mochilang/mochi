@@ -455,6 +455,39 @@ type ForStmt struct {
 	Simple bool
 }
 
+// BenchStmt represents a benchmarking block.
+type BenchStmt struct {
+	Name string
+	Body []Stmt
+}
+
+func (bs *BenchStmt) emit(w io.Writer, indent int) {
+	for i := 0; i < indent; i++ {
+		io.WriteString(w, "  ")
+	}
+	io.WriteString(w, "mem_start = _mem()\n")
+	for i := 0; i < indent; i++ {
+		io.WriteString(w, "  ")
+	}
+	io.WriteString(w, "t_start = _now()\n")
+	for _, st := range bs.Body {
+		st.emit(w, indent)
+		io.WriteString(w, "\n")
+	}
+	for i := 0; i < indent; i++ {
+		io.WriteString(w, "  ")
+	}
+	io.WriteString(w, "duration_us = div(_now() - t_start, 1000)\n")
+	for i := 0; i < indent; i++ {
+		io.WriteString(w, "  ")
+	}
+	io.WriteString(w, "mem_diff = _mem() - mem_start\n")
+	for i := 0; i < indent; i++ {
+		io.WriteString(w, "  ")
+	}
+	fmt.Fprintf(w, "IO.puts(\"{\\n  \\\"duration_us\\\": #{duration_us},\\n  \\\"memory_bytes\\\": #{mem_diff},\\n  \\\"name\\\": \\\"%s\\\"\\n}\")", bs.Name)
+}
+
 func (fs *ForStmt) emit(w io.Writer, indent int) {
 	if len(fs.Vars) > 0 && fs.End != nil && fs.Simple {
 		if fs.Simple {
@@ -507,7 +540,7 @@ func (fs *ForStmt) emit(w io.Writer, indent int) {
 			for i := 0; i < indent; i++ {
 				io.WriteString(w, "  ")
 			}
-			io.WriteString(w, "end")
+			io.WriteString(w, "end)")
 			return
 		}
 		for i := 0; i < indent; i++ {
@@ -1432,6 +1465,7 @@ func Emit(p *Program) []byte {
 	moduleMode = true
 	buf.WriteString("defmodule Main do\n")
 	buf.WriteString(nowHelper(1))
+	buf.WriteString(memHelper(1))
 	buf.WriteString(lookupHostHelper(1))
 	var globals []Stmt
 	var funcs []Stmt
@@ -1738,6 +1772,8 @@ func compileStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 		return compileWhileStmt(st.While, env)
 	case st.For != nil:
 		return compileForStmt(st.For, env)
+	case st.Bench != nil:
+		return compileBenchStmt(st.Bench, env)
 	case st.Update != nil:
 		return compileUpdateStmt(st.Update, env)
 	case st.Break != nil:
@@ -1989,6 +2025,22 @@ func compileForStmt(fs *parser.ForStmt, env *types.Env) (Stmt, error) {
 	vars := gatherMutVars(body, env)
 	res := &ForStmt{Name: fs.Name, Start: start, End: end, Source: src, Body: body, Vars: vars, Simple: simple}
 	return res, nil
+}
+
+func compileBenchStmt(bb *parser.BenchBlock, env *types.Env) (Stmt, error) {
+	bodyEnv := types.NewEnv(env)
+	body := make([]Stmt, 0, len(bb.Body))
+	for _, s := range bb.Body {
+		st, err := compileStmt(s, bodyEnv)
+		if err != nil {
+			return nil, err
+		}
+		if st != nil {
+			body = append(body, st)
+		}
+	}
+	name := strings.Trim(bb.Name, "\"")
+	return &BenchStmt{Name: name, Body: body}, nil
 }
 
 func compileUpdateStmt(us *parser.UpdateStmt, env *types.Env) (Stmt, error) {
@@ -3256,6 +3308,15 @@ func nowHelper(indent int) string {
 	buf.WriteString(pad + "  else\n")
 	buf.WriteString(pad + "    System.os_time(:nanosecond)\n")
 	buf.WriteString(pad + "  end\n")
+	buf.WriteString(pad + "end\n")
+	return buf.String()
+}
+
+func memHelper(indent int) string {
+	var buf bytes.Buffer
+	pad := strings.Repeat("  ", indent)
+	buf.WriteString(pad + "defp _mem() do\n")
+	buf.WriteString(pad + "  :erlang.memory(:total)\n")
 	buf.WriteString(pad + "end\n")
 	return buf.String()
 }

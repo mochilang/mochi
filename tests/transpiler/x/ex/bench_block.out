@@ -1,0 +1,33 @@
+warning: variable "seed" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 14 │               seed = v
+    │               ~
+    │
+    └─ /workspace/mochi/tests/transpiler/x/ex/bench_block.exs:14:15: Main._now/0
+
+    warning: variable "seeded" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 15 │               seeded = true
+    │               ~
+    │
+    └─ /workspace/mochi/tests/transpiler/x/ex/bench_block.exs:15:15: Main._now/0
+
+    warning: variable "s" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 45 │     {s} = Enum.reduce((1..(n - 1)), {s}, fn i, {s} ->
+    │      ~
+    │
+    └─ /workspace/mochi/tests/transpiler/x/ex/bench_block.exs:45:6: Main.main/0
+
+    warning: function _lookup_host/1 is unused
+    │
+ 31 │   defp _lookup_host(host) do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/transpiler/x/ex/bench_block.exs:31:8: Main (module)
+
+{
+  "duration_us": -1753384192378074,
+  "memory_bytes": 535344,
+  "name": "simple"
+}
