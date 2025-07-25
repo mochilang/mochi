@@ -2,31 +2,31 @@
 
 This checklist is auto-generated.
 Generated IR and outputs from programs in `tests/rosetta/x/Mochi` lives in `tests/rosetta/ir`.
-Last updated: 2025-07-25 04:40 UTC
+Last updated: 2025-07-25 05:09 UTC
 
-## Rosetta Golden Test Checklist (5/284)
+## Rosetta Golden Test Checklist (20/284)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
-| 1 | 100-doors-2 | ✓ | 94µs | 11.7 KB |
-| 2 | 100-doors-3 | ✓ | 402µs | 7.7 KB |
-| 3 | 100-doors | ✓ | 6.139ms | 809.9 KB |
-| 4 | 100-prisoners | ✓ | 3.646688s |  |
+| 1 | 100-doors-2 | ✓ | 116µs | 11.7 KB |
+| 2 | 100-doors-3 | ✓ | 184µs | 7.7 KB |
+| 3 | 100-doors | ✓ | 6.231ms | 851.8 KB |
+| 4 | 100-prisoners | ✓ | 4.224632s | 275.7 KB |
 | 5 | 15-puzzle-game | ✓ |  |  |
-| 6 | 15-puzzle-solver |   |  |  |
-| 7 | 2048 |   |  |  |
-| 8 | 21-game |   |  |  |
-| 9 | 24-game-solve |   |  |  |
-| 10 | 24-game |   |  |  |
-| 11 | 4-rings-or-4-squares-puzzle |   |  |  |
-| 12 | 9-billion-names-of-god-the-integer |   |  |  |
-| 13 | 99-bottles-of-beer-2 |   |  |  |
-| 14 | 99-bottles-of-beer |   |  |  |
-| 15 | DNS-query |   |  |  |
-| 16 | a+b |   |  |  |
-| 17 | abbreviations-automatic |   |  |  |
-| 18 | abbreviations-easy |   |  |  |
-| 19 | abbreviations-simple |   |  |  |
-| 20 | abc-problem |   |  |  |
+| 6 | 15-puzzle-solver | ✓ | 917.949ms | 26.9 KB |
+| 7 | 2048 | ✓ |  |  |
+| 8 | 21-game | ✓ |  |  |
+| 9 | 24-game-solve | ✓ | 2.162ms |  |
+| 10 | 24-game | ✓ | 119µs | 17.0 KB |
+| 11 | 4-rings-or-4-squares-puzzle | ✓ | 273.989ms | 4.9 MB |
+| 12 | 9-billion-names-of-god-the-integer | ✓ | 11.35998s | 112.4 MB |
+| 13 | 99-bottles-of-beer-2 | ✓ | 60.961ms |  |
+| 14 | 99-bottles-of-beer | ✓ | 1.628ms | 434.1 KB |
+| 15 | DNS-query | ✓ | 740.178ms |  |
+| 16 | a+b | ✓ | 20µs | 792 B |
+| 17 | abbreviations-automatic | ✓ | 14.043ms | 154.7 KB |
+| 18 | abbreviations-easy | ✓ | 4.772ms |  |
+| 19 | abbreviations-simple | ✓ | 5.16ms |  |
+| 20 | abc-problem | ✓ | 4.951ms |  |
 | 21 | abelian-sandpile-model-identity |   |  |  |
 | 22 | abelian-sandpile-model |   |  |  |
 | 23 | abstract-type |   |  |  |

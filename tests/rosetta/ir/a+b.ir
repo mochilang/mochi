@@ -1,0 +1,15 @@
+func main (regs=1)
+  // main()
+  Call         r0, main, 
+  Return       r0
+
+  // fun main() {
+func main (regs=5)
+  // let a = int(input())
+  Move         r1, r0
+  // let b = int(input())
+  Move         r3, r2
+  // print(a + b)
+  Add          r4, r1, r3
+  Print        r4
+  Return       r0

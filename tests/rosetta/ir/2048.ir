@@ -1,0 +1,1210 @@
+func main (regs=104)
+  // let SIZE = 4
+  Const        r5, 4
+  Move         r0, r5
+  SetGlobal    0,0,0,0
+  // var board: Board = newBoard()
+  Call         r6, newBoard, 
+  Move         r1, r6
+  SetGlobal    1,1,0,0
+  // var r = spawnTile(board)
+  Move         r7, r1
+  Call         r8, spawnTile, r7
+  Move         r2, r8
+  SetGlobal    2,2,0,0
+  // board = r.board
+  Const        r9, "board"
+  Index        r10, r2, r9
+  Move         r1, r10
+  SetGlobal    1,1,0,0
+  // var full = r.full
+  Const        r11, "full"
+  Index        r12, r2, r11
+  Move         r3, r12
+  SetGlobal    3,3,0,0
+  // r = spawnTile(board)
+  Move         r13, r1
+  Call         r14, spawnTile, r13
+  Move         r2, r14
+  SetGlobal    2,2,0,0
+  // board = r.board
+  Const        r9, "board"
+  Index        r15, r2, r9
+  Move         r1, r15
+  SetGlobal    1,1,0,0
+  // full = r.full
+  Const        r11, "full"
+  Index        r16, r2, r11
+  Move         r3, r16
+  SetGlobal    3,3,0,0
+  // var score = 0
+  Const        r17, 0
+  Move         r4, r17
+  SetGlobal    4,4,0,0
+  // draw(board, score)
+  Move         r18, r1
+  Move         r19, r4
+  Call2        r20, draw, r18, r19
+L14:
+  // while true {
+  Const        r21, true
+  // print("Move: ")
+  Const        r22, "Move: "
+  Print        r22
+  // let cmd = input()
+  Input        r23
+  Move         r24, r23
+  // var moved = false
+  Const        r25, false
+  Move         r26, r25
+  // if cmd == "a" || cmd == "A" {
+  Const        r27, "a"
+  Equal        r28, r24, r27
+  Const        r29, "A"
+  Equal        r30, r24, r29
+  Move         r31, r28
+  JumpIfTrue   r31, L0
+  Move         r31, r30
+L0:
+  JumpIfFalse  r31, L1
+  // let m = moveLeft(board, score)
+  Move         r32, r1
+  Move         r33, r4
+  Call2        r34, moveLeft, r32, r33
+  Move         r35, r34
+  // board = m.board
+  Const        r9, "board"
+  Index        r36, r35, r9
+  Move         r1, r36
+  SetGlobal    1,1,0,0
+  // score = m.score
+  Const        r37, "score"
+  Index        r38, r35, r37
+  Move         r4, r38
+  SetGlobal    4,4,0,0
+  // moved = m.moved
+  Const        r39, "moved"
+  Index        r40, r35, r39
+  Move         r26, r40
+L1:
+  // if cmd == "d" || cmd == "D" {
+  Const        r41, "d"
+  Equal        r42, r24, r41
+  Const        r43, "D"
+  Equal        r44, r24, r43
+  Move         r45, r42
+  JumpIfTrue   r45, L2
+  Move         r45, r44
+L2:
+  JumpIfFalse  r45, L3
+  // let m = moveRight(board, score)
+  Move         r46, r1
+  Move         r47, r4
+  Call2        r48, moveRight, r46, r47
+  Move         r49, r48
+  // board = m.board
+  Const        r9, "board"
+  Index        r50, r49, r9
+  Move         r1, r50
+  SetGlobal    1,1,0,0
+  // score = m.score
+  Const        r37, "score"
+  Index        r51, r49, r37
+  Move         r4, r51
+  SetGlobal    4,4,0,0
+  // moved = m.moved
+  Const        r39, "moved"
+  Index        r52, r49, r39
+  Move         r26, r52
+L3:
+  // if cmd == "w" || cmd == "W" {
+  Const        r53, "w"
+  Equal        r54, r24, r53
+  Const        r55, "W"
+  Equal        r56, r24, r55
+  Move         r57, r54
+  JumpIfTrue   r57, L4
+  Move         r57, r56
+L4:
+  JumpIfFalse  r57, L5
+  // let m = moveUp(board, score)
+  Move         r58, r1
+  Move         r59, r4
+  Call2        r60, moveUp, r58, r59
+  Move         r61, r60
+  // board = m.board
+  Const        r9, "board"
+  Index        r62, r61, r9
+  Move         r1, r62
+  SetGlobal    1,1,0,0
+  // score = m.score
+  Const        r37, "score"
+  Index        r63, r61, r37
+  Move         r4, r63
+  SetGlobal    4,4,0,0
+  // moved = m.moved
+  Const        r39, "moved"
+  Index        r64, r61, r39
+  Move         r26, r64
+L5:
+  // if cmd == "s" || cmd == "S" {
+  Const        r65, "s"
+  Equal        r66, r24, r65
+  Const        r67, "S"
+  Equal        r68, r24, r67
+  Move         r69, r66
+  JumpIfTrue   r69, L6
+  Move         r69, r68
+L6:
+  JumpIfFalse  r69, L7
+  // let m = moveDown(board, score)
+  Move         r70, r1
+  Move         r71, r4
+  Call2        r72, moveDown, r70, r71
+  Move         r73, r72
+  // board = m.board
+  Const        r9, "board"
+  Index        r74, r73, r9
+  Move         r1, r74
+  SetGlobal    1,1,0,0
+  // score = m.score
+  Const        r37, "score"
+  Index        r75, r73, r37
+  Move         r4, r75
+  SetGlobal    4,4,0,0
+  // moved = m.moved
+  Const        r39, "moved"
+  Index        r76, r73, r39
+  Move         r26, r76
+L7:
+  // if cmd == "q" || cmd == "Q" { break }
+  Const        r77, "q"
+  Equal        r78, r24, r77
+  Const        r79, "Q"
+  Equal        r80, r24, r79
+  Move         r81, r78
+  JumpIfTrue   r81, L8
+  Move         r81, r80
+L8:
+  JumpIfFalse  r81, L9
+  Jump         L10
+L9:
+  // if moved {
+  JumpIfFalse  r26, L11
+  // let r2 = spawnTile(board)
+  Move         r82, r1
+  Call         r83, spawnTile, r82
+  Move         r84, r83
+  // board = r2.board
+  Const        r9, "board"
+  Index        r85, r84, r9
+  Move         r1, r85
+  SetGlobal    1,1,0,0
+  // full = r2.full
+  Const        r11, "full"
+  Index        r86, r84, r11
+  Move         r3, r86
+  SetGlobal    3,3,0,0
+  // if full && (!hasMoves(board)) {
+  Move         r87, r3
+  JumpIfFalse  r87, L12
+  Move         r88, r1
+  Call         r89, hasMoves, r88
+  Not          r90, r89
+  Move         r87, r90
+L12:
+  JumpIfFalse  r87, L11
+  // draw(board, score)
+  Move         r91, r1
+  Move         r92, r4
+  Call2        r93, draw, r91, r92
+  // print("Game Over")
+  Const        r94, "Game Over"
+  Print        r94
+  // break
+  Jump         L10
+L11:
+  // draw(board, score)
+  Move         r95, r1
+  Move         r96, r4
+  Call2        r97, draw, r95, r96
+  // if has2048(board) {
+  Move         r98, r1
+  Call         r99, has2048, r98
+  JumpIfFalse  r99, L13
+  // print("You win!")
+  Const        r100, "You win!"
+  Print        r100
+  // break
+  Jump         L10
+L13:
+  // if !hasMoves(board) {
+  Move         r101, r1
+  Call         r102, hasMoves, r101
+  Not          r103, r102
+  JumpIfFalse  r103, L14
+  // print("Game Over")
+  Const        r94, "Game Over"
+  Print        r94
+L10:
+  Return       r0
+
+  // fun newBoard(): Board {
+func newBoard (regs=23)
+  // var b: list<list<int>> = []
+  Const        r5, []
+  Move         r6, r5
+  // var y = 0
+  Const        r7, 0
+  Move         r8, r7
+L3:
+  // while y < SIZE {
+  Less         r9, r8, r0
+  JumpIfFalse  r9, L0
+  // var row: list<int> = []
+  Const        r5, []
+  Move         r10, r5
+  // var x = 0
+  Const        r7, 0
+  Move         r11, r7
+L2:
+  // while x < SIZE {
+  Less         r12, r11, r0
+  JumpIfFalse  r12, L1
+  // row = append(row, 0)
+  Const        r7, 0
+  Append       r13, r10, r7
+  Move         r10, r13
+  // x = x + 1
+  Const        r14, 1
+  AddInt       r15, r11, r14
+  Move         r11, r15
+  // while x < SIZE {
+  Jump         L2
+L1:
+  // b = append(b, row)
+  Append       r16, r6, r10
+  Move         r6, r16
+  // y = y + 1
+  Const        r14, 1
+  AddInt       r17, r8, r14
+  Move         r8, r17
+  // while y < SIZE {
+  Jump         L3
+L0:
+  // return Board{ cells: b }
+  Const        r18, "__name"
+  Const        r19, "Board"
+  Const        r20, "cells"
+  Move         r21, r6
+  MakeMap      r22, 2, r18
+  Return       r22
+
+  // fun spawnTile(b: Board): SpawnResult {
+func spawnTile (regs=67)
+  // var grid = b.cells
+  Const        r6, "cells"
+  Index        r7, r5, r6
+  Move         r8, r7
+  // var empty: list<list<int>> = []
+  Const        r9, []
+  Move         r10, r9
+  // var y = 0
+  Const        r11, 0
+  Move         r12, r11
+L4:
+  // while y < SIZE {
+  Less         r13, r12, r0
+  JumpIfFalse  r13, L0
+  // var x = 0
+  Const        r11, 0
+  Move         r14, r11
+L3:
+  // while x < SIZE {
+  Less         r15, r14, r0
+  JumpIfFalse  r15, L1
+  // if grid[y][x] == 0 {
+  Index        r16, r8, r12
+  Index        r17, r16, r14
+  Const        r11, 0
+  Equal        r18, r17, r11
+  JumpIfFalse  r18, L2
+  // empty = append(empty, [x, y])
+  Move         r19, r14
+  Move         r20, r12
+  MakeList     r21, 2, r19
+  Append       r22, r10, r21
+  Move         r10, r22
+L2:
+  // x = x + 1
+  Const        r23, 1
+  AddInt       r24, r14, r23
+  Move         r14, r24
+  // while x < SIZE {
+  Jump         L3
+L1:
+  // y = y + 1
+  Const        r23, 1
+  AddInt       r25, r12, r23
+  Move         r12, r25
+  // while y < SIZE {
+  Jump         L4
+L0:
+  // if len(empty) == 0 { return SpawnResult{ board: b, full: true } }
+  Len          r26, r10
+  Const        r11, 0
+  EqualInt     r27, r26, r11
+  JumpIfFalse  r27, L5
+  Const        r28, true
+  Const        r29, "__name"
+  Const        r30, "SpawnResult"
+  Const        r31, "board"
+  Move         r32, r5
+  Const        r33, "full"
+  Move         r34, r28
+  MakeMap      r35, 3, r29
+  Return       r35
+L5:
+  // var idx = now() % len(empty)
+  Now          r36
+  Len          r37, r10
+  ModInt       r38, r36, r37
+  Move         r39, r38
+  // let cell = empty[idx]
+  Index        r40, r10, r39
+  Move         r41, r40
+  // var val = 4
+  Const        r42, 4
+  Move         r43, r42
+  // if now() % 10 < 9 { val = 2 }
+  Now          r44
+  Const        r45, 10
+  ModInt       r46, r44, r45
+  Const        r47, 9
+  LessInt      r48, r46, r47
+  JumpIfFalse  r48, L6
+  Const        r49, 2
+  Move         r43, r49
+L6:
+  // grid[cell[1]][cell[0]] = val
+  Const        r23, 1
+  Index        r50, r41, r23
+  Index        r51, r8, r50
+  Const        r11, 0
+  Index        r52, r41, r11
+  SetIndex     r51, r52, r43
+  // return SpawnResult{ board: Board{ cells: grid }, full: len(empty) == 1 }
+  Const        r53, "__name"
+  Const        r54, "Board"
+  Const        r55, "cells"
+  Move         r56, r8
+  MakeMap      r57, 2, r53
+  Len          r58, r10
+  Const        r23, 1
+  EqualInt     r59, r58, r23
+  Const        r60, "__name"
+  Const        r61, "SpawnResult"
+  Const        r62, "board"
+  Move         r63, r57
+  Const        r64, "full"
+  Move         r65, r59
+  MakeMap      r66, 3, r60
+  Return       r66
+
+  // fun pad(n: int): string {
+func pad (regs=22)
+  // var s = str(n)
+  Str          r6, r5
+  Move         r7, r6
+  // var pad = 4 - len(s)
+  Const        r8, 4
+  Len          r9, r7
+  SubInt       r10, r8, r9
+  Move         r11, r10
+  // var i = 0
+  Const        r12, 0
+  Move         r13, r12
+  // var out = ""
+  Const        r14, ""
+  Move         r15, r14
+L1:
+  // while i < pad {
+  LessInt      r16, r13, r11
+  JumpIfFalse  r16, L0
+  // out = out + " "
+  Const        r17, " "
+  Add          r18, r15, r17
+  Move         r15, r18
+  // i = i + 1
+  Const        r19, 1
+  AddInt       r20, r13, r19
+  Move         r13, r20
+  // while i < pad {
+  Jump         L1
+L0:
+  // return out + s
+  Add          r21, r15, r7
+  Return       r21
+
+  // fun draw(b: Board, score: int) {
+func draw (regs=34)
+  // print("Score: " + str(score))
+  Const        r7, "Score: "
+  Str          r8, r6
+  Add          r9, r7, r8
+  Print        r9
+  // var y = 0
+  Const        r10, 0
+  Move         r11, r10
+L5:
+  // while y < SIZE {
+  Less         r12, r11, r0
+  JumpIfFalse  r12, L0
+  // print("+----+----+----+----+")
+  Const        r13, "+----+----+----+----+"
+  Print        r13
+  // var line = "|"
+  Const        r14, "|"
+  Move         r15, r14
+  // var x = 0
+  Const        r10, 0
+  Move         r16, r10
+L4:
+  // while x < SIZE {
+  Less         r17, r16, r0
+  JumpIfFalse  r17, L1
+  // var v = b.cells[y][x]
+  Const        r18, "cells"
+  Index        r19, r5, r18
+  Index        r20, r19, r11
+  Index        r21, r20, r16
+  Move         r22, r21
+  // if v == 0 {
+  Const        r10, 0
+  Equal        r23, r22, r10
+  JumpIfFalse  r23, L2
+  // line = line + "    |"
+  Const        r24, "    |"
+  Add          r25, r15, r24
+  Move         r15, r25
+  // if v == 0 {
+  Jump         L3
+L2:
+  // line = line + pad(v) + "|"
+  Move         r26, r22
+  Call         r27, pad, r26
+  Add          r28, r15, r27
+  Const        r14, "|"
+  Add          r29, r28, r14
+  Move         r15, r29
+L3:
+  // x = x + 1
+  Const        r30, 1
+  AddInt       r31, r16, r30
+  Move         r16, r31
+  // while x < SIZE {
+  Jump         L4
+L1:
+  // print(line)
+  Print        r15
+  // y = y + 1
+  Const        r30, 1
+  AddInt       r32, r11, r30
+  Move         r11, r32
+  // while y < SIZE {
+  Jump         L5
+L0:
+  // print("+----+----+----+----+")
+  Const        r13, "+----+----+----+----+"
+  Print        r13
+  // print("W=Up S=Down A=Left D=Right Q=Quit")
+  Const        r33, "W=Up S=Down A=Left D=Right Q=Quit"
+  Print        r33
+  Return       r0
+
+  // fun reverseRow(r: list<int>): list<int> {
+func reverseRow (regs=17)
+  // var out: list<int> = []
+  Const        r6, []
+  Move         r7, r6
+  // var i = len(r) - 1
+  Len          r8, r5
+  Const        r9, 1
+  SubInt       r10, r8, r9
+  Move         r11, r10
+L1:
+  // while i >= 0 {
+  Const        r12, 0
+  LessEqInt    r13, r12, r11
+  JumpIfFalse  r13, L0
+  // out = append(out, r[i])
+  Index        r14, r5, r11
+  Append       r15, r7, r14
+  Move         r7, r15
+  // i = i - 1
+  Const        r9, 1
+  SubInt       r16, r11, r9
+  Move         r11, r16
+  // while i >= 0 {
+  Jump         L1
+L0:
+  // return out
+  Return       r7
+
+  // fun slideLeft(row: list<int>): SlideResult {
+func slideLeft (regs=50)
+  // var xs: list<int> = []
+  Const        r6, []
+  Move         r7, r6
+  // var i = 0
+  Const        r8, 0
+  Move         r9, r8
+L2:
+  // while i < len(row) {
+  Len          r10, r5
+  LessInt      r11, r9, r10
+  JumpIfFalse  r11, L0
+  // if row[i] != 0 { xs = append(xs, row[i]) }
+  Index        r12, r5, r9
+  Const        r8, 0
+  NotEqual     r13, r12, r8
+  JumpIfFalse  r13, L1
+  Index        r14, r5, r9
+  Append       r15, r7, r14
+  Move         r7, r15
+L1:
+  // i = i + 1
+  Const        r16, 1
+  AddInt       r17, r9, r16
+  Move         r9, r17
+  // while i < len(row) {
+  Jump         L2
+L0:
+  // var res: list<int> = []
+  Const        r6, []
+  Move         r18, r6
+  // var gain = 0
+  Const        r8, 0
+  Move         r19, r8
+  // i = 0
+  Const        r8, 0
+  Move         r9, r8
+L6:
+  // while i < len(xs) {
+  Len          r20, r7
+  LessInt      r21, r9, r20
+  JumpIfFalse  r21, L3
+  // if i + 1 < len(xs) && xs[i] == xs[i+1] {
+  Const        r16, 1
+  AddInt       r22, r9, r16
+  Len          r23, r7
+  LessInt      r24, r22, r23
+  Index        r25, r7, r9
+  Const        r16, 1
+  AddInt       r26, r9, r16
+  Index        r27, r7, r26
+  Equal        r28, r25, r27
+  Move         r29, r24
+  JumpIfFalse  r29, L4
+  Move         r29, r28
+L4:
+  JumpIfFalse  r29, L5
+  // let v = xs[i] * 2
+  Index        r30, r7, r9
+  Const        r31, 2
+  Mul          r32, r30, r31
+  Move         r33, r32
+  // gain = gain + v
+  Add          r34, r19, r33
+  Move         r19, r34
+  // res = append(res, v)
+  Append       r35, r18, r33
+  Move         r18, r35
+  // i = i + 2
+  Const        r31, 2
+  AddInt       r36, r9, r31
+  Move         r9, r36
+  // if i + 1 < len(xs) && xs[i] == xs[i+1] {
+  Jump         L6
+L5:
+  // res = append(res, xs[i])
+  Index        r37, r7, r9
+  Append       r38, r18, r37
+  Move         r18, r38
+  // i = i + 1
+  Const        r16, 1
+  AddInt       r39, r9, r16
+  Move         r9, r39
+  // while i < len(xs) {
+  Jump         L6
+L3:
+  // while len(res) < SIZE { res = append(res, 0) }
+  Len          r40, r18
+  Less         r41, r40, r0
+  JumpIfFalse  r41, L7
+  Const        r8, 0
+  Append       r42, r18, r8
+  Move         r18, r42
+  Jump         L3
+L7:
+  // return SlideResult{ row: res, gain: gain }
+  Const        r43, "__name"
+  Const        r44, "SlideResult"
+  Const        r45, "row"
+  Move         r46, r18
+  Const        r47, "gain"
+  Move         r48, r19
+  MakeMap      r49, 3, r43
+  Return       r49
+
+  // fun moveLeft(b: Board, score: int): MoveResult {
+func moveLeft (regs=50)
+  // var grid = b.cells
+  Const        r7, "cells"
+  Index        r8, r5, r7
+  Move         r9, r8
+  // var moved = false
+  Const        r10, false
+  Move         r11, r10
+  // var y = 0
+  Const        r12, 0
+  Move         r13, r12
+L4:
+  // while y < SIZE {
+  Less         r14, r13, r0
+  JumpIfFalse  r14, L0
+  // let r = slideLeft(grid[y])
+  Index        r16, r9, r13
+  Move         r15, r16
+  Call         r17, slideLeft, r15
+  Move         r2, r17
+  SetGlobal    2,2,0,0
+  // let new = r.row
+  Const        r18, "row"
+  Index        r19, r2, r18
+  Move         r20, r19
+  // score = score + r.gain
+  Const        r21, "gain"
+  Index        r22, r2, r21
+  Add          r23, r6, r22
+  Move         r6, r23
+  SetGlobal    4,6,0,0
+  // var x = 0
+  Const        r12, 0
+  Move         r24, r12
+L3:
+  // while x < SIZE {
+  Less         r25, r24, r0
+  JumpIfFalse  r25, L1
+  // if grid[y][x] != new[x] { moved = true }
+  Index        r26, r9, r13
+  Index        r27, r26, r24
+  Index        r28, r20, r24
+  NotEqual     r29, r27, r28
+  JumpIfFalse  r29, L2
+  Const        r30, true
+  Move         r11, r30
+L2:
+  // grid[y][x] = new[x]
+  Index        r31, r9, r13
+  Index        r32, r20, r24
+  SetIndex     r31, r24, r32
+  // x = x + 1
+  Const        r33, 1
+  AddInt       r34, r24, r33
+  Move         r24, r34
+  // while x < SIZE {
+  Jump         L3
+L1:
+  // y = y + 1
+  Const        r33, 1
+  AddInt       r35, r13, r33
+  Move         r13, r35
+  // while y < SIZE {
+  Jump         L4
+L0:
+  // return MoveResult{ board: Board{ cells: grid }, score: score, moved: moved }
+  Const        r36, "__name"
+  Const        r37, "Board"
+  Const        r38, "cells"
+  Move         r39, r9
+  MakeMap      r40, 2, r36
+  Const        r41, "__name"
+  Const        r42, "MoveResult"
+  Const        r43, "board"
+  Move         r44, r40
+  Const        r45, "score"
+  Move         r46, r6
+  Const        r47, "moved"
+  Move         r48, r11
+  MakeMap      r49, 4, r41
+  Return       r49
+
+  // fun moveRight(b: Board, score: int): MoveResult {
+func moveRight (regs=54)
+  // var grid = b.cells
+  Const        r7, "cells"
+  Index        r8, r5, r7
+  Move         r9, r8
+  // var moved = false
+  Const        r10, false
+  Move         r11, r10
+  // var y = 0
+  Const        r12, 0
+  Move         r13, r12
+L4:
+  // while y < SIZE {
+  Less         r14, r13, r0
+  JumpIfFalse  r14, L0
+  // var rev = reverseRow(grid[y])
+  Index        r16, r9, r13
+  Move         r15, r16
+  Call         r17, reverseRow, r15
+  Move         r18, r17
+  // let r = slideLeft(rev)
+  Move         r19, r18
+  Call         r20, slideLeft, r19
+  Move         r2, r20
+  SetGlobal    2,2,0,0
+  // rev = r.row
+  Const        r21, "row"
+  Index        r22, r2, r21
+  Move         r18, r22
+  // score = score + r.gain
+  Const        r23, "gain"
+  Index        r24, r2, r23
+  Add          r25, r6, r24
+  Move         r6, r25
+  SetGlobal    4,6,0,0
+  // rev = reverseRow(rev)
+  Move         r26, r18
+  Call         r27, reverseRow, r26
+  Move         r18, r27
+  // var x = 0
+  Const        r12, 0
+  Move         r28, r12
+L3:
+  // while x < SIZE {
+  Less         r29, r28, r0
+  JumpIfFalse  r29, L1
+  // if grid[y][x] != rev[x] { moved = true }
+  Index        r30, r9, r13
+  Index        r31, r30, r28
+  Index        r32, r18, r28
+  NotEqual     r33, r31, r32
+  JumpIfFalse  r33, L2
+  Const        r34, true
+  Move         r11, r34
+L2:
+  // grid[y][x] = rev[x]
+  Index        r35, r9, r13
+  Index        r36, r18, r28
+  SetIndex     r35, r28, r36
+  // x = x + 1
+  Const        r37, 1
+  AddInt       r38, r28, r37
+  Move         r28, r38
+  // while x < SIZE {
+  Jump         L3
+L1:
+  // y = y + 1
+  Const        r37, 1
+  AddInt       r39, r13, r37
+  Move         r13, r39
+  // while y < SIZE {
+  Jump         L4
+L0:
+  // return MoveResult{ board: Board{ cells: grid }, score: score, moved: moved }
+  Const        r40, "__name"
+  Const        r41, "Board"
+  Const        r42, "cells"
+  Move         r43, r9
+  MakeMap      r44, 2, r40
+  Const        r45, "__name"
+  Const        r46, "MoveResult"
+  Const        r47, "board"
+  Move         r48, r44
+  Const        r49, "score"
+  Move         r50, r6
+  Const        r51, "moved"
+  Move         r52, r11
+  MakeMap      r53, 4, r45
+  Return       r53
+
+  // fun getCol(b: Board, x: int): list<int> {
+func getCol (regs=19)
+  // var col: list<int> = []
+  Const        r7, []
+  Move         r8, r7
+  // var y = 0
+  Const        r9, 0
+  Move         r10, r9
+L1:
+  // while y < SIZE {
+  Less         r11, r10, r0
+  JumpIfFalse  r11, L0
+  // col = append(col, b.cells[y][x])
+  Const        r12, "cells"
+  Index        r13, r5, r12
+  Index        r14, r13, r10
+  Index        r15, r14, r6
+  Append       r16, r8, r15
+  Move         r8, r16
+  // y = y + 1
+  Const        r17, 1
+  AddInt       r18, r10, r17
+  Move         r10, r18
+  // while y < SIZE {
+  Jump         L1
+L0:
+  // return col
+  Return       r8
+
+  // fun setCol(b: Board, x: int, col: list<int>) {
+func setCol (regs=19)
+  // var rows = b.cells
+  Const        r8, "cells"
+  Index        r9, r5, r8
+  Move         r10, r9
+  // var y = 0
+  Const        r11, 0
+  Move         r12, r11
+L1:
+  // while y < SIZE {
+  Less         r13, r12, r0
+  JumpIfFalse  r13, L0
+  // var row = rows[y]
+  Index        r14, r10, r12
+  Move         r15, r14
+  // row[x] = col[y]
+  Index        r16, r7, r12
+  SetIndex     r15, r6, r16
+  // rows[y] = row
+  SetIndex     r10, r12, r15
+  // y = y + 1
+  Const        r17, 1
+  AddInt       r18, r12, r17
+  Move         r12, r18
+  // while y < SIZE {
+  Jump         L1
+L0:
+  // b.cells = rows
+  Const        r8, "cells"
+  SetIndex     r5, r8, r10
+  Return       r0
+
+  // fun moveUp(b: Board, score: int): MoveResult {
+func moveUp (regs=53)
+  // var grid = b.cells
+  Const        r7, "cells"
+  Index        r8, r5, r7
+  Move         r9, r8
+  // var moved = false
+  Const        r10, false
+  Move         r11, r10
+  // var x = 0
+  Const        r12, 0
+  Move         r13, r12
+L4:
+  // while x < SIZE {
+  Less         r14, r13, r0
+  JumpIfFalse  r14, L0
+  // var col = getCol(b, x)
+  Move         r15, r5
+  Move         r16, r13
+  Call2        r17, getCol, r15, r16
+  Move         r18, r17
+  // let r = slideLeft(col)
+  Move         r19, r18
+  Call         r20, slideLeft, r19
+  Move         r2, r20
+  SetGlobal    2,2,0,0
+  // let new = r.row
+  Const        r21, "row"
+  Index        r22, r2, r21
+  Move         r23, r22
+  // score = score + r.gain
+  Const        r24, "gain"
+  Index        r25, r2, r24
+  Add          r26, r6, r25
+  Move         r6, r26
+  SetGlobal    4,6,0,0
+  // var y = 0
+  Const        r12, 0
+  Move         r27, r12
+L3:
+  // while y < SIZE {
+  Less         r28, r27, r0
+  JumpIfFalse  r28, L1
+  // if grid[y][x] != new[y] { moved = true }
+  Index        r29, r9, r27
+  Index        r30, r29, r13
+  Index        r31, r23, r27
+  NotEqual     r32, r30, r31
+  JumpIfFalse  r32, L2
+  Const        r33, true
+  Move         r11, r33
+L2:
+  // grid[y][x] = new[y]
+  Index        r34, r9, r27
+  Index        r35, r23, r27
+  SetIndex     r34, r13, r35
+  // y = y + 1
+  Const        r36, 1
+  AddInt       r37, r27, r36
+  Move         r27, r37
+  // while y < SIZE {
+  Jump         L3
+L1:
+  // x = x + 1
+  Const        r36, 1
+  AddInt       r38, r13, r36
+  Move         r13, r38
+  // while x < SIZE {
+  Jump         L4
+L0:
+  // return MoveResult{ board: Board{ cells: grid }, score: score, moved: moved }
+  Const        r39, "__name"
+  Const        r40, "Board"
+  Const        r41, "cells"
+  Move         r42, r9
+  MakeMap      r43, 2, r39
+  Const        r44, "__name"
+  Const        r45, "MoveResult"
+  Const        r46, "board"
+  Move         r47, r43
+  Const        r48, "score"
+  Move         r49, r6
+  Const        r50, "moved"
+  Move         r51, r11
+  MakeMap      r52, 4, r44
+  Return       r52
+
+  // fun moveDown(b: Board, score: int): MoveResult {
+func moveDown (regs=56)
+  // var grid = b.cells
+  Const        r7, "cells"
+  Index        r8, r5, r7
+  Move         r9, r8
+  // var moved = false
+  Const        r10, false
+  Move         r11, r10
+  // var x = 0
+  Const        r12, 0
+  Move         r13, r12
+L4:
+  // while x < SIZE {
+  Less         r14, r13, r0
+  JumpIfFalse  r14, L0
+  // var col = reverseRow(getCol(b, x))
+  Move         r16, r5
+  Move         r17, r13
+  Call2        r18, getCol, r16, r17
+  Move         r15, r18
+  Call         r19, reverseRow, r15
+  Move         r20, r19
+  // let r = slideLeft(col)
+  Move         r21, r20
+  Call         r22, slideLeft, r21
+  Move         r2, r22
+  SetGlobal    2,2,0,0
+  // col = r.row
+  Const        r23, "row"
+  Index        r24, r2, r23
+  Move         r20, r24
+  // score = score + r.gain
+  Const        r25, "gain"
+  Index        r26, r2, r25
+  Add          r27, r6, r26
+  Move         r6, r27
+  SetGlobal    4,6,0,0
+  // col = reverseRow(col)
+  Move         r28, r20
+  Call         r29, reverseRow, r28
+  Move         r20, r29
+  // var y = 0
+  Const        r12, 0
+  Move         r30, r12
+L3:
+  // while y < SIZE {
+  Less         r31, r30, r0
+  JumpIfFalse  r31, L1
+  // if grid[y][x] != col[y] { moved = true }
+  Index        r32, r9, r30
+  Index        r33, r32, r13
+  Index        r34, r20, r30
+  NotEqual     r35, r33, r34
+  JumpIfFalse  r35, L2
+  Const        r36, true
+  Move         r11, r36
+L2:
+  // grid[y][x] = col[y]
+  Index        r37, r9, r30
+  Index        r38, r20, r30
+  SetIndex     r37, r13, r38
+  // y = y + 1
+  Const        r39, 1
+  AddInt       r40, r30, r39
+  Move         r30, r40
+  // while y < SIZE {
+  Jump         L3
+L1:
+  // x = x + 1
+  Const        r39, 1
+  AddInt       r41, r13, r39
+  Move         r13, r41
+  // while x < SIZE {
+  Jump         L4
+L0:
+  // return MoveResult{ board: Board{ cells: grid }, score: score, moved: moved }
+  Const        r42, "__name"
+  Const        r43, "Board"
+  Const        r44, "cells"
+  Move         r45, r9
+  MakeMap      r46, 2, r42
+  Const        r47, "__name"
+  Const        r48, "MoveResult"
+  Const        r49, "board"
+  Move         r50, r46
+  Const        r51, "score"
+  Move         r52, r6
+  Const        r53, "moved"
+  Move         r54, r11
+  MakeMap      r55, 4, r47
+  Return       r55
+
+  // fun hasMoves(b: Board): bool {
+func hasMoves (regs=43)
+  // var y = 0
+  Const        r6, 0
+  Move         r7, r6
+L8:
+  // while y < SIZE {
+  Less         r8, r7, r0
+  JumpIfFalse  r8, L0
+  // var x = 0
+  Const        r6, 0
+  Move         r9, r6
+L7:
+  // while x < SIZE {
+  Less         r10, r9, r0
+  JumpIfFalse  r10, L1
+  // if b.cells[y][x] == 0 { return true }
+  Const        r11, "cells"
+  Index        r12, r5, r11
+  Index        r13, r12, r7
+  Index        r14, r13, r9
+  Const        r6, 0
+  Equal        r15, r14, r6
+  JumpIfFalse  r15, L2
+  Const        r16, true
+  Return       r16
+L2:
+  // if x + 1 < SIZE && b.cells[y][x] == b.cells[y][x+1] { return true }
+  Const        r17, 1
+  AddInt       r18, r9, r17
+  Less         r19, r18, r0
+  Const        r11, "cells"
+  Index        r20, r5, r11
+  Index        r21, r20, r7
+  Index        r22, r21, r9
+  Const        r11, "cells"
+  Index        r23, r5, r11
+  Index        r24, r23, r7
+  Const        r17, 1
+  AddInt       r25, r9, r17
+  Index        r26, r24, r25
+  Equal        r27, r22, r26
+  Move         r28, r19
+  JumpIfFalse  r28, L3
+  Move         r28, r27
+L3:
+  JumpIfFalse  r28, L4
+  Const        r16, true
+  Return       r16
+L4:
+  // if y + 1 < SIZE && b.cells[y][x] == b.cells[y+1][x] { return true }
+  Const        r17, 1
+  AddInt       r29, r7, r17
+  Less         r30, r29, r0
+  Const        r11, "cells"
+  Index        r31, r5, r11
+  Index        r32, r31, r7
+  Index        r33, r32, r9
+  Const        r11, "cells"
+  Index        r34, r5, r11
+  Const        r17, 1
+  AddInt       r35, r7, r17
+  Index        r36, r34, r35
+  Index        r37, r36, r9
+  Equal        r38, r33, r37
+  Move         r39, r30
+  JumpIfFalse  r39, L5
+  Move         r39, r38
+L5:
+  JumpIfFalse  r39, L6
+  Const        r16, true
+  Return       r16
+L6:
+  // x = x + 1
+  Const        r17, 1
+  AddInt       r40, r9, r17
+  Move         r9, r40
+  // while x < SIZE {
+  Jump         L7
+L1:
+  // y = y + 1
+  Const        r17, 1
+  AddInt       r41, r7, r17
+  Move         r7, r41
+  // while y < SIZE {
+  Jump         L8
+L0:
+  // return false
+  Const        r42, false
+  Return       r42
+
+  // fun has2048(b: Board): bool {
+func has2048 (regs=22)
+  // var y = 0
+  Const        r6, 0
+  Move         r7, r6
+L4:
+  // while y < SIZE {
+  Less         r8, r7, r0
+  JumpIfFalse  r8, L0
+  // var x = 0
+  Const        r6, 0
+  Move         r9, r6
+L3:
+  // while x < SIZE {
+  Less         r10, r9, r0
+  JumpIfFalse  r10, L1
+  // if b.cells[y][x] >= 2048 { return true }
+  Const        r11, "cells"
+  Index        r12, r5, r11
+  Index        r13, r12, r7
+  Index        r14, r13, r9
+  Const        r15, 2048
+  LessEq       r16, r15, r14
+  JumpIfFalse  r16, L2
+  Const        r17, true
+  Return       r17
+L2:
+  // x = x + 1
+  Const        r18, 1
+  AddInt       r19, r9, r18
+  Move         r9, r19
+  // while x < SIZE {
+  Jump         L3
+L1:
+  // y = y + 1
+  Const        r18, 1
+  AddInt       r20, r7, r18
+  Move         r7, r20
+  // while y < SIZE {
+  Jump         L4
+L0:
+  // return false
+  Const        r21, false
+  Return       r21

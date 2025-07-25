@@ -1,0 +1,31 @@
+func main (regs=14)
+  // let res: list<any> = net.LookupHost("www.kame.net")
+  Const        r4, "www.kame.net"
+  Move         r3, r4
+  Const        r6, "net.LookupHost"
+  GoAutoCall   r5, r6, 1, r3
+  Move         r0, r5
+  SetGlobal    0,0,0,0
+  // let addrs = res[0]
+  Const        r7, 0
+  Index        r8, r0, r7
+  Move         r1, r8
+  SetGlobal    1,1,0,0
+  // let err = res[1]
+  Const        r9, 1
+  Index        r10, r0, r9
+  Move         r2, r10
+  SetGlobal    2,2,0,0
+  // if err == nil {
+  Equal        r12, r2, r11
+  JumpIfFalse  r12, L0
+  // print(str(addrs))
+  Str          r13, r1
+  Print        r13
+  // if err == nil {
+  Jump         L1
+L0:
+  // print(err)
+  Print        r2
+L1:
+  Return       r0
