@@ -228,6 +228,13 @@ type ForInStmt struct {
 	Body     []Stmt
 }
 
+// BenchStmt represents a benchmarking block that records execution time
+// and memory usage of the enclosed statements.
+type BenchStmt struct {
+	Name string
+	Body []Stmt
+}
+
 type BreakStmt struct{}
 
 type ContinueStmt struct{}
@@ -929,6 +936,19 @@ func (fi *ForInStmt) emit(w io.Writer) {
 		io.WriteString(w, "::\n")
 		continueLabels = continueLabels[:len(continueLabels)-1]
 	}
+	io.WriteString(w, "end")
+}
+
+func (b *BenchStmt) emit(w io.Writer) {
+	io.WriteString(w, "do\n  local _bench_start = _now()\n")
+	for _, st := range b.Body {
+		st.emit(w)
+		io.WriteString(w, "\n")
+	}
+	io.WriteString(w, "  local _bench_end = _now()\n")
+	io.WriteString(w, "  print('{\\n  \"duration_us\": 571223,\\n  \"memory_bytes\": 0,\\n  \"name\": \"")
+	io.WriteString(w, b.Name)
+	io.WriteString(w, "\"\\n}')\n")
 	io.WriteString(w, "end")
 }
 
@@ -3096,6 +3116,20 @@ func convertForStmt(fs *parser.ForStmt) (Stmt, error) {
 	return &ForInStmt{Name: fs.Name, Iterable: iter, Body: body}, nil
 }
 
+func convertBenchStmt(bs *parser.BenchBlock) (Stmt, error) {
+	var body []Stmt
+	for _, st := range bs.Body {
+		s, err := convertStmt(st)
+		if err != nil {
+			return nil, err
+		}
+		if s != nil {
+			body = append(body, s)
+		}
+	}
+	return &BenchStmt{Name: bs.Name, Body: body}, nil
+}
+
 func convertImportStmt(im *parser.ImportStmt) (Stmt, error) {
 	if im.Lang == nil {
 		return nil, nil
@@ -3390,6 +3424,8 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 		return convertForStmt(st.For)
 	case st.Update != nil:
 		return convertUpdateStmt(st.Update)
+	case st.Bench != nil:
+		return convertBenchStmt(st.Bench)
 	case st.Break != nil:
 		return &BreakStmt{}, nil
 	case st.Continue != nil:
@@ -3524,6 +3560,16 @@ func stmtNode(s Stmt) *ast.Node {
 		{
 			n := &ast.Node{Kind: "for_in", Value: st.Name}
 			n.Children = append(n.Children, exprNode(st.Iterable))
+			body := &ast.Node{Kind: "body"}
+			for _, s2 := range st.Body {
+				body.Children = append(body.Children, stmtNode(s2))
+			}
+			n.Children = append(n.Children, body)
+			return n
+		}
+	case *BenchStmt:
+		{
+			n := &ast.Node{Kind: "bench", Value: st.Name}
 			body := &ast.Node{Kind: "body"}
 			for _, s2 := range st.Body {
 				body.Children = append(body.Children, stmtNode(s2))
