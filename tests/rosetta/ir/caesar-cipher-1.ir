@@ -1,0 +1,297 @@
+func main (regs=1)
+  // main()
+  Call         r0, main, 
+  Return       r0
+
+  // fun indexOf(s: string, ch: string): int {
+func indexOf (regs=12)
+  // var i = 0
+  Const        r2, 0
+  Move         r3, r2
+L2:
+  // while i < len(s) {
+  Len          r4, r0
+  LessInt      r5, r3, r4
+  JumpIfFalse  r5, L0
+  // if substring(s, i, i+1) == ch {
+  Const        r6, 1
+  AddInt       r7, r3, r6
+  Slice        r8, r0, r3, r7
+  Equal        r9, r8, r1
+  JumpIfFalse  r9, L1
+  // return i
+  Return       r3
+L1:
+  // i = i + 1
+  Const        r6, 1
+  AddInt       r10, r3, r6
+  Move         r3, r10
+  // while i < len(s) {
+  Jump         L2
+L0:
+  // return -1
+  Const        r6, 1
+  NegInt       r11, r6
+  Return       r11
+
+  // fun ord(ch: string): int {
+func ord (regs=19)
+  // let upper = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+  Const        r1, "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+  Move         r2, r1
+  // let lower = "abcdefghijklmnopqrstuvwxyz"
+  Const        r3, "abcdefghijklmnopqrstuvwxyz"
+  Move         r4, r3
+  // var idx = indexOf(upper, ch)
+  Const        r1, "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+  Move         r5, r1
+  Move         r6, r0
+  Call2        r7, indexOf, r5, r6
+  Move         r8, r7
+  // if idx >= 0 { return 65 + idx }
+  Const        r9, 0
+  LessEq       r10, r9, r8
+  JumpIfFalse  r10, L0
+  Const        r11, 65
+  Add          r12, r11, r8
+  Return       r12
+L0:
+  // idx = indexOf(lower, ch)
+  Const        r3, "abcdefghijklmnopqrstuvwxyz"
+  Move         r13, r3
+  Move         r14, r0
+  Call2        r15, indexOf, r13, r14
+  Move         r8, r15
+  // if idx >= 0 { return 97 + idx }
+  Const        r9, 0
+  LessEq       r16, r9, r8
+  JumpIfFalse  r16, L1
+  Const        r17, 97
+  Add          r18, r17, r8
+  Return       r18
+L1:
+  // return 0
+  Const        r9, 0
+  Return       r9
+
+  // fun chr(n: int): string {
+func chr (regs=28)
+  // let upper = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+  Const        r1, "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+  Move         r2, r1
+  // let lower = "abcdefghijklmnopqrstuvwxyz"
+  Const        r3, "abcdefghijklmnopqrstuvwxyz"
+  Move         r4, r3
+  // if n >= 65 && n < 91 { return upper[n-65:n-64] }
+  Const        r5, 65
+  LessEq       r6, r5, r0
+  Const        r7, 91
+  Less         r8, r0, r7
+  Move         r9, r6
+  JumpIfFalse  r9, L0
+  Move         r9, r8
+L0:
+  JumpIfFalse  r9, L1
+  Const        r5, 65
+  Sub          r11, r0, r5
+  Move         r10, r11
+  Const        r13, 64
+  Sub          r14, r0, r13
+  Move         r12, r14
+  Slice        r15, r2, r10, r12
+  Return       r15
+L1:
+  // if n >= 97 && n < 123 { return lower[n-97:n-96] }
+  Const        r16, 97
+  LessEq       r17, r16, r0
+  Const        r18, 123
+  Less         r19, r0, r18
+  Move         r20, r17
+  JumpIfFalse  r20, L2
+  Move         r20, r19
+L2:
+  JumpIfFalse  r20, L3
+  Const        r16, 97
+  Sub          r22, r0, r16
+  Move         r21, r22
+  Const        r24, 96
+  Sub          r25, r0, r24
+  Move         r23, r25
+  Slice        r26, r4, r21, r23
+  Return       r26
+L3:
+  // return "?"
+  Const        r27, "?"
+  Return       r27
+
+  // fun shiftRune(r: string, k: int): string {
+func shiftRune (regs=31)
+  // if r >= "a" && r <= "z" {
+  Const        r2, "a"
+  LessEq       r3, r2, r0
+  Const        r4, "z"
+  LessEq       r5, r0, r4
+  Move         r6, r3
+  JumpIfFalse  r6, L0
+  Move         r6, r5
+L0:
+  JumpIfFalse  r6, L1
+  // return chr(((ord(r)-97 + k) % 26) + 97)
+  Move         r8, r0
+  Call         r9, ord, r8
+  Const        r10, 97
+  Sub          r11, r9, r10
+  Add          r12, r11, r1
+  Const        r13, 26
+  Mod          r14, r12, r13
+  Const        r10, 97
+  Add          r15, r14, r10
+  Move         r7, r15
+  Call         r16, chr, r7
+  Return       r16
+L1:
+  // if r >= "A" && r <= "Z" {
+  Const        r17, "A"
+  LessEq       r18, r17, r0
+  Const        r19, "Z"
+  LessEq       r20, r0, r19
+  Move         r21, r18
+  JumpIfFalse  r21, L2
+  Move         r21, r20
+L2:
+  JumpIfFalse  r21, L3
+  // return chr(((ord(r)-65 + k) % 26) + 65)
+  Move         r23, r0
+  Call         r24, ord, r23
+  Const        r25, 65
+  Sub          r26, r24, r25
+  Add          r27, r26, r1
+  Const        r13, 26
+  Mod          r28, r27, r13
+  Const        r25, 65
+  Add          r29, r28, r25
+  Move         r22, r29
+  Call         r30, chr, r22
+  Return       r30
+L3:
+  // return r
+  Return       r0
+
+  // fun encipher(s: string, k: int): string {
+func encipher (regs=18)
+  // var out = ""
+  Const        r2, ""
+  Move         r3, r2
+  // var i = 0
+  Const        r4, 0
+  Move         r5, r4
+L1:
+  // while i < len(s) {
+  Len          r6, r0
+  LessInt      r7, r5, r6
+  JumpIfFalse  r7, L0
+  // out = out + shiftRune(s[i:i+1], k)
+  Move         r10, r5
+  Const        r12, 1
+  AddInt       r13, r5, r12
+  Move         r11, r13
+  Slice        r14, r0, r10, r11
+  Move         r8, r14
+  Move         r9, r1
+  Call2        r15, shiftRune, r8, r9
+  Add          r16, r3, r15
+  Move         r3, r16
+  // i = i + 1
+  Const        r12, 1
+  AddInt       r17, r5, r12
+  Move         r5, r17
+  // while i < len(s) {
+  Jump         L1
+L0:
+  // return out
+  Return       r3
+
+  // fun decipher(s: string, k: int): string {
+func decipher (regs=9)
+  // return encipher(s, (26 - k % 26) % 26)
+  Move         r2, r0
+  Const        r4, 26
+  Const        r4, 26
+  Mod          r5, r1, r4
+  Sub          r6, r4, r5
+  Const        r4, 26
+  Mod          r7, r6, r4
+  Move         r3, r7
+  Call2        r8, encipher, r2, r3
+  Return       r8
+
+  // fun main() {
+func main (regs=36)
+  // let pt = "The five boxing wizards jump quickly"
+  Const        r0, "The five boxing wizards jump quickly"
+  Move         r1, r0
+  // print("Plaintext: " + pt)
+  Const        r2, "Plaintext: "
+  Const        r0, "The five boxing wizards jump quickly"
+  Add          r3, r2, r0
+  Print        r3
+  // for key in [0,1,7,25,26] {
+  Const        r4, [0, 1, 7, 25, 26]
+  IterPrep     r5, r4
+  Len          r6, r5
+  Const        r7, 0
+L4:
+  LessInt      r8, r7, r6
+  JumpIfFalse  r8, L0
+  Index        r9, r5, r7
+  Move         r10, r9
+  // if key < 1 || key > 25 {
+  Const        r11, 1
+  Less         r12, r10, r11
+  Const        r13, 25
+  Less         r14, r13, r10
+  Move         r15, r12
+  JumpIfTrue   r15, L1
+  Move         r15, r14
+L1:
+  JumpIfFalse  r15, L2
+  // print("Key " + str(key) + " invalid")
+  Const        r16, "Key "
+  Str          r17, r10
+  Add          r18, r16, r17
+  Const        r19, " invalid"
+  Add          r20, r18, r19
+  Print        r20
+  // continue
+  Jump         L3
+L2:
+  // let ct = encipher(pt, key)
+  Const        r0, "The five boxing wizards jump quickly"
+  Move         r21, r0
+  Move         r22, r10
+  Call2        r23, encipher, r21, r22
+  Move         r24, r23
+  // print("Key " + str(key))
+  Const        r16, "Key "
+  Str          r25, r10
+  Add          r26, r16, r25
+  Print        r26
+  // print("  Enciphered: " + ct)
+  Const        r27, "  Enciphered: "
+  Add          r28, r27, r24
+  Print        r28
+  // print("  Deciphered: " + decipher(ct, key))
+  Const        r29, "  Deciphered: "
+  Move         r30, r24
+  Move         r31, r10
+  Call2        r32, decipher, r30, r31
+  Add          r33, r29, r32
+  Print        r33
+L3:
+  // for key in [0,1,7,25,26] {
+  Const        r34, 1
+  AddInt       r35, r7, r34
+  Move         r7, r35
+  Jump         L4
+L0:
+  Return       r0

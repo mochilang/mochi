@@ -1,0 +1,144 @@
+func main (regs=25)
+  // let epsilon = 0.000000000000001
+  Const        r5, 0.000000000000001
+  Move         r0, r5
+  SetGlobal    0,0,0,0
+  // var factval = 1
+  Const        r6, 1
+  Move         r1, r6
+  SetGlobal    1,1,0,0
+  // var e: float = 2.0
+  Const        r7, 2.0
+  Move         r2, r7
+  SetGlobal    2,2,0,0
+  // var n = 2
+  Const        r8, 2
+  Move         r3, r8
+  SetGlobal    3,3,0,0
+  // var term: float = 1.0
+  Const        r9, 1.0
+  Move         r4, r9
+  SetGlobal    4,4,0,0
+L0:
+  // while true {
+  Const        r10, true
+  // factval = factval * n
+  MulInt       r11, r1, r3
+  Move         r1, r11
+  SetGlobal    1,1,0,0
+  // n = n + 1
+  Const        r6, 1
+  AddInt       r12, r3, r6
+  Move         r3, r12
+  SetGlobal    3,3,0,0
+  // term = 1.0 / (factval as float)
+  Const        r9, 1.0
+  Cast         r13, r1, float
+  DivFloat     r14, r9, r13
+  Move         r4, r14
+  SetGlobal    4,4,0,0
+  // e = e + term
+  AddFloat     r15, r2, r4
+  Move         r2, r15
+  SetGlobal    2,2,0,0
+  // if absf(term) < epsilon { break }
+  Move         r16, r4
+  Call         r17, absf, r16
+  Const        r5, 0.000000000000001
+  LessFloat    r18, r17, r5
+  JumpIfFalse  r18, L0
+  // print("e = " + formatFloat(e, 15))
+  Const        r19, "e = "
+  Move         r20, r2
+  Const        r22, 15
+  Move         r21, r22
+  Call2        r23, formatFloat, r20, r21
+  Add          r24, r19, r23
+  Print        r24
+  Return       r0
+
+  // fun absf(x: float): float {
+func absf (regs=9)
+  // if x < 0.0 { return -x }
+  Const        r6, 0.0
+  LessFloat    r7, r5, r6
+  JumpIfFalse  r7, L0
+  Neg          r8, r5
+  Return       r8
+L0:
+  // return x
+  Return       r5
+
+  // fun pow10(n: int): float {
+func pow10 (regs=15)
+  // var r: float = 1.0
+  Const        r6, 1.0
+  Move         r7, r6
+  // var i = 0
+  Const        r8, 0
+  Move         r9, r8
+L1:
+  // while i < n {
+  Less         r10, r9, r5
+  JumpIfFalse  r10, L0
+  // r = r * 10.0
+  Const        r11, 10.0
+  MulFloat     r12, r7, r11
+  Move         r7, r12
+  // i = i + 1
+  Const        r13, 1
+  AddInt       r14, r9, r13
+  Move         r9, r14
+  // while i < n {
+  Jump         L1
+L0:
+  // return r
+  Return       r7
+
+  // fun formatFloat(f: float, prec: int): string {
+func formatFloat (regs=34)
+  // let scale = pow10(prec)
+  Move         r7, r6
+  Call         r8, pow10, r7
+  Move         r9, r8
+  // let scaled = (f * scale) + 0.5
+  Mul          r10, r5, r9
+  Const        r11, 0.5
+  AddFloat     r12, r10, r11
+  Move         r13, r12
+  // var n = (scaled as int)
+  Cast         r14, r13, int
+  Move         r3, r14
+  SetGlobal    3,3,0,0
+  // var digits = str(n)
+  Str          r15, r3
+  Move         r16, r15
+L1:
+  // while len(digits) <= prec {
+  Len          r17, r16
+  LessEq       r18, r17, r6
+  JumpIfFalse  r18, L0
+  // digits = "0" + digits
+  Const        r19, "0"
+  Add          r20, r19, r16
+  Move         r16, r20
+  // while len(digits) <= prec {
+  Jump         L1
+L0:
+  // let intPart = substring(digits, 0, len(digits)-prec)
+  Const        r21, 0
+  Len          r22, r16
+  Sub          r23, r22, r6
+  Slice        r24, r16, r21, r23
+  Move         r25, r24
+  // let fracPart = substring(digits, len(digits)-prec, len(digits))
+  Len          r26, r16
+  Sub          r27, r26, r6
+  Len          r28, r16
+  Slice        r29, r16, r27, r28
+  Move         r30, r29
+  // return intPart + "." + fracPart
+  Const        r31, "."
+  Add          r32, r25, r31
+  Add          r33, r32, r30
+  Return       r33
