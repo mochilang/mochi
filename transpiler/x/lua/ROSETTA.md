@@ -4,7 +4,7 @@ Generated Lua code for programs in `tests/rosetta/x/Mochi`. Each program has a `
 
 Transpiled programs: 275/284
 
-Last updated: 2025-07-25 17:59 GMT+7
+Last updated: 2025-07-25 18:07 GMT+7
 
 Checklist:
 
@@ -144,8 +144,8 @@ Checklist:
 | 132 | boolean-values | ✓ | 57µs | 848 B |
 | 133 | box-the-compass | ✓ | 264µs | 1.5 KB |
 | 134 | boyer-moore-string-search | ✓ | 138µs | 1.1 KB |
-| 135 | brazilian-numbers | ✓ |  |  |
-| 136 | break-oo-privacy | ✓ |  |  |
+| 135 | brazilian-numbers | ✓ | 1m34.269996s | 3.0 KB |
+| 136 | break-oo-privacy | ✓ | 32µs | 2.9 KB |
 | 137 | brilliant-numbers | ✓ |  |  |
 | 138 | brownian-tree | ✓ |  |  |
 | 139 | bulls-and-cows-player | ✓ |  |  |
