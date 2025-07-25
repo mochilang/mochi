@@ -2006,6 +2006,12 @@ function _now(): number {
     _nowSeed = (_nowSeed * 1664525 + 1013904223) % 2147483647;
     return _nowSeed;
   }
+  if (typeof Deno !== 'undefined') {
+    return Math.trunc(performance.now() * 1e6);
+  }
+  if (typeof performance !== 'undefined') {
+    return Math.trunc(performance.now() * 1e6);
+  }
   return Date.now() * 1000;
 }`})
 		}

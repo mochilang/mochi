@@ -2,12 +2,12 @@
 
 This checklist is auto-generated.
 Generated TypeScript code from programs in `tests/rosetta/x/Mochi` lives in `tests/rosetta/transpiler/TypeScript`.
-Last updated: 2025-07-25 05:01 UTC
+Last updated: 2025-07-25 06:02 UTC
 
 ## Rosetta Golden Test Checklist (272/284)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
-| 1 | 100-doors-2 | ✓ | 4µs | 384.0 KB |
+| 1 | 100-doors-2 | ✓ | 3.528ms | 384.0 KB |
 | 2 | 100-doors-3 | ✓ |  | 128.0 KB |
 | 3 | 100-doors | ✓ | 3µs | 256.0 KB |
 | 4 | 100-prisoners | ✓ |  | 13.1 MB |
