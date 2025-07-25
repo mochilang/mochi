@@ -2,61 +2,61 @@
 
 Generated Ruby code from Mochi Rosetta tasks lives in `tests/rosetta/transpiler/rb`.
 
-Last updated: 2025-07-25 03:15 UTC
+Last updated: 2025-07-25 03:43 UTC
 
 ## Checklist (197/284)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
-| 1 | 100-doors-2 | ✓ | 118µs | 36.2 KB |
-| 2 | 100-doors-3 | ✓ |  |  |
-| 3 | 100-doors | ✓ |  |  |
-| 4 | 100-prisoners | ✓ |  |  |
-| 5 | 15-puzzle-game | ✓ |  |  |
-| 6 | 15-puzzle-solver | ✓ |  |  |
-| 7 | 2048 | ✓ |  |  |
-| 8 | 21-game | ✓ |  |  |
-| 9 | 24-game-solve | ✓ |  |  |
-| 10 | 24-game | ✓ |  |  |
-| 11 | 4-rings-or-4-squares-puzzle | ✓ |  |  |
-| 12 | 9-billion-names-of-god-the-integer | ✓ |  |  |
-| 13 | 99-bottles-of-beer-2 | ✓ |  |  |
-| 14 | 99-bottles-of-beer | ✓ |  |  |
-| 15 | DNS-query | ✓ |  |  |
-| 16 | a+b | ✓ |  |  |
-| 17 | abbreviations-automatic | ✓ |  |  |
-| 18 | abbreviations-easy | ✓ |  |  |
-| 19 | abbreviations-simple | ✓ |  |  |
-| 20 | abc-problem | ✓ |  |  |
-| 21 | abelian-sandpile-model-identity | ✓ |  |  |
-| 22 | abelian-sandpile-model | ✓ |  |  |
-| 23 | abstract-type | ✓ |  |  |
-| 24 | abundant-deficient-and-perfect-number-classifications | ✓ |  |  |
-| 25 | abundant-odd-numbers | ✓ |  |  |
-| 26 | accumulator-factory | ✓ |  |  |
-| 27 | achilles-numbers | ✓ |  |  |
-| 28 | ackermann-function-2 | ✓ |  |  |
-| 29 | ackermann-function-3 | ✓ |  |  |
-| 30 | ackermann-function | ✓ |  |  |
-| 31 | active-directory-connect | ✓ |  |  |
-| 32 | active-directory-search-for-a-user | ✓ |  |  |
-| 33 | active-object | ✓ |  |  |
-| 34 | add-a-variable-to-a-class-instance-at-runtime | ✓ |  |  |
-| 35 | additive-primes | ✓ |  |  |
-| 36 | address-of-a-variable | ✓ |  |  |
-| 37 | adfgvx-cipher | ✓ |  |  |
-| 38 | aks-test-for-primes | ✓ |  |  |
-| 39 | algebraic-data-types | ✓ |  |  |
-| 40 | align-columns | ✓ |  |  |
-| 41 | aliquot-sequence-classifications | ✓ |  |  |
-| 42 | almkvist-giullera-formula-for-pi | ✓ |  |  |
-| 43 | almost-prime | ✓ |  |  |
-| 44 | amb | ✓ |  |  |
-| 45 | amicable-pairs | ✓ |  |  |
-| 46 | anagrams-deranged-anagrams | ✓ |  |  |
-| 47 | anagrams | ✓ |  |  |
-| 48 | angle-difference-between-two-bearings-1 | ✓ |  |  |
-| 49 | angle-difference-between-two-bearings-2 | ✓ |  |  |
-| 50 | angles-geometric-normalization-and-conversion | ✓ |  |  |
+| 1 | 100-doors-2 | ✓ | 195µs | 36.2 KB |
+| 2 | 100-doors-3 | ✓ | 159µs | 23.6 KB |
+| 3 | 100-doors | ✓ | 320µs | 79.2 KB |
+| 4 | 100-prisoners | ✓ | 486.886ms | 3.1 MB |
+| 5 | 15-puzzle-game | ✓ | 170µs | 35.5 KB |
+| 6 | 15-puzzle-solver | ✓ | 52µs | 9.7 KB |
+| 7 | 2048 | ✓ | 346µs | 82.1 KB |
+| 8 | 21-game | ✓ | 43µs | 18.2 KB |
+| 9 | 24-game-solve | ✓ | 104.708ms | -19391 B |
+| 10 | 24-game | ✓ | 49µs | 18.8 KB |
+| 11 | 4-rings-or-4-squares-puzzle | ✓ | 116.975ms | 13.9 MB |
+| 12 | 9-billion-names-of-god-the-integer | ✓ | 15.810347s | 227.3 MB |
+| 13 | 99-bottles-of-beer-2 | ✓ | 30.784ms | 70.4 KB |
+| 14 | 99-bottles-of-beer | ✓ | 387µs | 93.9 KB |
+| 15 | DNS-query | ✓ | 843.276ms | 80.9 KB |
+| 16 | a+b | ✓ | 46µs | 17.7 KB |
+| 17 | abbreviations-automatic | ✓ | 12.098ms | 2.5 KB |
+| 18 | abbreviations-easy | ✓ | 1.094ms | 359.8 KB |
+| 19 | abbreviations-simple | ✓ | 1.134ms | 468.8 KB |
+| 20 | abc-problem | ✓ | 440µs | 190.0 KB |
+| 21 | abelian-sandpile-model-identity | ✓ | 261µs | 60.2 KB |
+| 22 | abelian-sandpile-model | ✓ | 229µs | 62.8 KB |
+| 23 | abstract-type | ✓ | 92µs | 13.7 KB |
+| 24 | abundant-deficient-and-perfect-number-classifications | ✓ | 12.300626s | 9.9 KB |
+| 25 | abundant-odd-numbers | ✓ | 14.588835s | 963.5 KB |
+| 26 | accumulator-factory | ✓ | 57µs | 9.5 KB |
+| 27 | achilles-numbers | ✓ | 42.678ms | 3.3 MB |
+| 28 | ackermann-function-2 | ✓ | 60µs | 9.7 KB |
+| 29 | ackermann-function-3 | ✓ | 21.495735s | 435.1 KB |
+| 30 | ackermann-function | ✓ | 936µs | 9.6 KB |
+| 31 | active-directory-connect | ✓ | 69µs | 12.2 KB |
+| 32 | active-directory-search-for-a-user | ✓ | 56µs | 10.7 KB |
+| 33 | active-object | ✓ | 1.426ms | 10.5 KB |
+| 34 | add-a-variable-to-a-class-instance-at-runtime | ✓ | 85µs | 20.2 KB |
+| 35 | additive-primes | ✓ | 287µs | 22.9 KB |
+| 36 | address-of-a-variable | ✓ | 41µs | 9.8 KB |
+| 37 | adfgvx-cipher | ✓ | 766µs | 167.3 KB |
+| 38 | aks-test-for-primes | ✓ | 190µs | 26.8 KB |
+| 39 | algebraic-data-types | ✓ | 219µs | 49.7 KB |
+| 40 | align-columns | ✓ | 1.207ms | 292.1 KB |
+| 41 | aliquot-sequence-classifications | ✓ | 1.135365s | 80.9 KB |
+| 42 | almkvist-giullera-formula-for-pi | ✓ | 5.266628s | 3.3 MB |
+| 43 | almost-prime | ✓ | 1.11ms | 19.2 KB |
+| 44 | amb | ✓ | 45µs | 13.0 KB |
+| 45 | amicable-pairs | ✓ | 13.195329s | 2.5 MB |
+| 46 | anagrams-deranged-anagrams | ✓ | 359µs | 22.5 KB |
+| 47 | anagrams | ✓ | 749µs | 89.0 KB |
+| 48 | angle-difference-between-two-bearings-1 | ✓ | 44µs | 10.0 KB |
+| 49 | angle-difference-between-two-bearings-2 | ✓ | 64µs | 10.7 KB |
+| 50 | angles-geometric-normalization-and-conversion | ✓ | 378µs | 58.5 KB |
 | 51 | animate-a-pendulum | ✓ |  |  |
 | 52 | animation | ✓ |  |  |
 | 53 | anonymous-recursion-1 | ✓ |  |  |
