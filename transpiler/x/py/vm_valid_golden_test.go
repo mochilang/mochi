@@ -47,7 +47,7 @@ func TestPyTranspiler_VMValid_Golden(t *testing.T) {
 			_ = os.WriteFile(errPath, []byte("type: "+errs[0].Error()), 0o644)
 			return nil, errs[0]
 		}
-		bench := os.Getenv("MOCHI_BENCHMARK") == "true"
+		bench := os.Getenv("MOCHI_BENCHMARK") != ""
 		ast, err := py.Transpile(prog, env, bench)
 		if err != nil {
 			_ = os.WriteFile(errPath, []byte("transpile: "+err.Error()), 0o644)

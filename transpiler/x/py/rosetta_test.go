@@ -36,7 +36,7 @@ func runRosettaCase(t *testing.T, name string) {
 	outPath := filepath.Join(outDir, name+".out")
 	errPath := filepath.Join(outDir, name+".error")
 
-	bench := os.Getenv("MOCHI_BENCHMARK") == "true"
+	bench := os.Getenv("MOCHI_BENCHMARK") != ""
 	want, err := os.ReadFile(outPath)
 	if err != nil {
 		if !updateEnabled() {
