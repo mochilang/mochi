@@ -1623,6 +1623,14 @@ func inferPyType(e Expr, env *types.Env) types.Type {
 				return types.ListType{Elem: types.AnyType{}}
 			case "dict":
 				return types.MapType{Key: types.AnyType{}, Value: types.AnyType{}}
+			case "int":
+				return types.IntType{}
+			case "float":
+				return types.FloatType{}
+			case "str":
+				return types.StringType{}
+			case "bool":
+				return types.BoolType{}
 			case "upper", "lower":
 				if len(ex.Args) == 1 {
 					return types.StringType{}
@@ -3833,11 +3841,10 @@ func convertBinary(b *parser.BinaryExpr) (Expr, error) {
 
 	apply := func(left Expr, op string, right Expr) Expr {
 		if op == "/" {
-			lt := inferPyType(left, currentEnv)
-			rt := inferPyType(right, currentEnv)
-			if !isFloatLike(lt) && !isFloatLike(rt) {
-				op = "//"
-			}
+			// Python's division operator performs floating point division.
+			// Mochi's "/" operator matches this behaviour, so we do
+			// not attempt to detect integer division and always
+			// emit "/".
 		}
 		if op == "+" {
 			if s, ok := left.(*SliceExpr); ok {
