@@ -50,7 +50,7 @@ func TestTranspile_PrintHello(t *testing.T) {
 	if errs := types.Check(prog, env); len(errs) > 0 {
 		t.Fatalf("type: %v", errs[0])
 	}
-	progAST, err := rs.Transpile(prog, env)
+	progAST, err := rs.Transpile(prog, env, false)
 	if err != nil {
 		t.Fatalf("transpile: %v", err)
 	}
@@ -101,7 +101,7 @@ func TestTranspile_LetAndPrint(t *testing.T) {
 	if errs := types.Check(prog, env); len(errs) > 0 {
 		t.Fatalf("type: %v", errs[0])
 	}
-	progAST, err := rs.Transpile(prog, env)
+	progAST, err := rs.Transpile(prog, env, false)
 	if err != nil {
 		t.Fatalf("transpile: %v", err)
 	}
@@ -151,7 +151,7 @@ func runExample(t *testing.T, base string) {
 	if errs := types.Check(prog, env); len(errs) > 0 {
 		t.Fatalf("type: %v", errs[0])
 	}
-	progAST, err := rs.Transpile(prog, env)
+	progAST, err := rs.Transpile(prog, env, false)
 	if err != nil {
 		t.Fatalf("transpile: %v", err)
 	}
