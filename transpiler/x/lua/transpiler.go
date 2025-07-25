@@ -49,8 +49,9 @@ do
 end
 local function _now()
   if _now_seeded then
-    _now_seed = (_now_seed * 1664525 + 1013904223) % 2147483647
-    return _now_seed
+    -- keep the seed within safe integer range for Lua (53 bits)
+    _now_seed = (_now_seed * 1664525 + 1013904223) % 9007199254740991
+    return _now_seed % 1000000000
   end
   return os.time() * 1000000000 + math.floor(os.clock() * 1000000000)
 end
@@ -2517,16 +2518,31 @@ func convertPostfix(p *parser.PostfixExpr) (Expr, error) {
 					}
 					args = append(args, ae)
 				}
-				args = append([]Expr{expr}, args...)
-				cexpr := &CallExpr{Func: op.Field.Name, Args: args}
-				if currentEnv != nil {
-					if t, err := currentEnv.GetVar(op.Field.Name); err == nil {
-						if ft, ok := t.(types.FuncType); ok {
-							cexpr.ParamTypes = ft.Params
+				if id, ok := expr.(*Ident); ok {
+					// treat as a namespaced function call
+					name := id.Name + "." + op.Field.Name
+					cexpr := &CallExpr{Func: name, Args: args}
+					if currentEnv != nil {
+						if t, err := currentEnv.GetVar(name); err == nil {
+							if ft, ok := t.(types.FuncType); ok {
+								cexpr.ParamTypes = ft.Params
+							}
 						}
 					}
+					expr = cexpr
+				} else {
+					// method call with receiver as first argument
+					args = append([]Expr{expr}, args...)
+					cexpr := &CallExpr{Func: op.Field.Name, Args: args}
+					if currentEnv != nil {
+						if t, err := currentEnv.GetVar(op.Field.Name); err == nil {
+							if ft, ok := t.(types.FuncType); ok {
+								cexpr.ParamTypes = ft.Params
+							}
+						}
+					}
+					expr = cexpr
 				}
-				expr = cexpr
 			} else {
 				expr = &IndexExpr{Target: expr, Index: &StringLit{Value: op.Field.Name}, Kind: "map"}
 			}

@@ -4,22 +4,22 @@ Generated Lua code for programs in `tests/rosetta/x/Mochi`. Each program has a `
 
 Transpiled programs: 237/284
 
-Last updated: 2025-07-25 10:01 GMT+7
+Last updated: 2025-07-25 12:29 GMT+7
 
 Checklist:
 
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
-| 1 | 100-doors-2 | ✓ | 176µs | 102 B |
-| 2 | 100-doors-3 | ✓ |  |  |
-| 3 | 100-doors | ✓ |  |  |
-| 4 | 100-prisoners | ✓ |  |  |
-| 5 | 15-puzzle-game | ✓ |  |  |
-| 6 | 15-puzzle-solver |   |  |  |
-| 7 | 2048 | ✓ |  |  |
-| 8 | 21-game | ✓ |  |  |
-| 9 | 24-game-solve | ✓ |  |  |
-| 10 | 24-game | ✓ |  |  |
+| 1 | 100-doors-2 | ✓ | 568.6ms | 38 B |
+| 2 | 100-doors-3 | ✓ | 568.6ms | 125 B |
+| 3 | 100-doors | ✓ | 568.6ms | 3.4 KB |
+| 4 | 100-prisoners | ✓ | 244.151ms | 1.6 KB |
+| 5 | 15-puzzle-game | ✓ | 119.487ms | 1.2 KB |
+| 6 | 15-puzzle-solver | ✓ | 568.6ms | 224 B |
+| 7 | 2048 | ✓ | 884.042ms | 2.0 KB |
+| 8 | 21-game | ✓ | 726.918ms | 304 B |
+| 9 | 24-game-solve | ✓ | 245.103ms | 2.1 KB |
+| 10 | 24-game | ✓ | 1.704ms | 248 B |
 | 11 | 4-rings-or-4-squares-puzzle | ✓ |  |  |
 | 12 | 9-billion-names-of-god-the-integer | ✓ |  |  |
 | 13 | 99-bottles-of-beer-2 | ✓ |  |  |
@@ -35,7 +35,7 @@ Checklist:
 | 23 | abstract-type | ✓ |  |  |
 | 24 | abundant-deficient-and-perfect-number-classifications | ✓ |  |  |
 | 25 | abundant-odd-numbers | ✓ |  |  |
-| 26 | accumulator-factory | ✓ |  |  |
+| 26 | accumulator-factory |   |  |  |
 | 27 | achilles-numbers | ✓ |  |  |
 | 28 | ackermann-function-2 | ✓ |  |  |
 | 29 | ackermann-function-3 | ✓ |  |  |
@@ -48,9 +48,9 @@ Checklist:
 | 36 | address-of-a-variable | ✓ |  |  |
 | 37 | adfgvx-cipher | ✓ |  |  |
 | 38 | aks-test-for-primes | ✓ |  |  |
-| 39 | algebraic-data-types | ✓ |  |  |
+| 39 | algebraic-data-types |   |  |  |
 | 40 | align-columns | ✓ |  |  |
-| 41 | aliquot-sequence-classifications |   |  |  |
+| 41 | aliquot-sequence-classifications | ✓ |  |  |
 | 42 | almkvist-giullera-formula-for-pi | ✓ |  |  |
 | 43 | almost-prime | ✓ |  |  |
 | 44 | amb | ✓ |  |  |
