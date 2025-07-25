@@ -1,15 +1,39 @@
 <?php
-function connect($client) {
-  global $main;
-  return $client["Host"] != "" && $client["Port"] > 0;
+ini_set('memory_limit', '-1');
+$now_seed = 0;
+$now_seeded = false;
+$s = getenv('MOCHI_NOW_SEED');
+if ($s !== false && $s !== '') {
+    $now_seed = intval($s);
+    $now_seeded = true;
 }
-function main() {
-  global $connect;
-  $client = ["Base" => "dc=example,dc=com", "Host" => "ldap.example.com", "Port" => 389, "UseSSL" => false, "BindDN" => "uid=readonlyuser,ou=People,dc=example,dc=com", "BindPassword" => "readonlypassword", "UserFilter" => "(uid=%s)", "GroupFilter" => "(memberUid=%s)", "Attributes" => ["givenName", "sn", "mail", "uid"]];
+function _now() {
+    global $now_seed, $now_seeded;
+    if ($now_seeded) {
+        $now_seed = ($now_seed * 1664525 + 1013904223) % 2147483647;
+        return $now_seed;
+    }
+    return hrtime(true);
+}
+$__start_mem = memory_get_usage();
+$__start = _now();
+  function connect($client) {
+  return $client['Host'] != '' && $client['Port'] > 0;
+};
+  function main() {
+  $client = ['Base' => 'dc=example,dc=com', 'Host' => 'ldap.example.com', 'Port' => 389, 'UseSSL' => false, 'BindDN' => 'uid=readonlyuser,ou=People,dc=example,dc=com', 'BindPassword' => 'readonlypassword', 'UserFilter' => '(uid=%s)', 'GroupFilter' => '(memberUid=%s)', 'Attributes' => ['givenName', 'sn', 'mail', 'uid']];
   if (connect($client)) {
-  echo "Connected to " . $client["Host"], PHP_EOL;
+  echo rtrim('Connected to ' . $client['Host']), PHP_EOL;
 } else {
-  echo "Failed to connect", PHP_EOL;
+  echo rtrim('Failed to connect'), PHP_EOL;
 }
-}
-main();
+};
+  main();
+$__end = _now();
+$__end_mem = memory_get_usage();
+$__duration = intdiv($__end - $__start, 1000);
+$__mem_diff = max(0, $__end_mem - $__start_mem);
+$__bench = ["duration_us" => $__duration, "memory_bytes" => $__mem_diff, "name" => "main"];
+$__j = json_encode($__bench, 128);
+$__j = str_replace("    ", "  ", $__j);
+echo $__j, PHP_EOL;;

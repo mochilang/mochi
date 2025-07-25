@@ -2,7 +2,7 @@
 
 Generated PHP code from Mochi Rosetta tasks lives in `tests/rosetta/transpiler/php`.
 
-Last updated: 2025-07-25 19:26 +0700
+Last updated: 2025-07-25 19:43 +0700
 
 ## Checklist (264/284)
 | Index | Name | Status | Duration | Memory |
@@ -32,16 +32,16 @@ Last updated: 2025-07-25 19:26 +0700
 | 23 | abstract-type | ✓ | 75µs | 96 B |
 | 24 | abundant-deficient-and-perfect-number-classifications | ✓ | 29.816518s | 96 B |
 | 25 | abundant-odd-numbers | ✓ | 3.612025s | 96 B |
-| 26 | accumulator-factory | ✓ |  |  |
-| 27 | achilles-numbers | ✓ |  |  |
-| 28 | ackermann-function-2 | ✓ |  |  |
-| 29 | ackermann-function-3 | ✓ |  |  |
-| 30 | ackermann-function | ✓ |  |  |
-| 31 | active-directory-connect | ✓ |  |  |
-| 32 | active-directory-search-for-a-user | ✓ |  |  |
-| 33 | active-object | ✓ |  |  |
-| 34 | add-a-variable-to-a-class-instance-at-runtime | ✓ |  |  |
-| 35 | additive-primes | ✓ |  |  |
+| 26 | accumulator-factory | ✓ | 97µs | 2.1 KB |
+| 27 | achilles-numbers | ✓ | 10.575ms | 20.2 KB |
+| 28 | ackermann-function-2 | ✓ | 56µs | 96 B |
+| 29 | ackermann-function-3 | ✓ | 475µs | 192 B |
+| 30 | ackermann-function | ✓ | 645µs | 96 B |
+| 31 | active-directory-connect | ✓ | 62µs | 96 B |
+| 32 | active-directory-search-for-a-user | ✓ | 79µs | 96 B |
+| 33 | active-object | ✓ | 242µs | 384 B |
+| 34 | add-a-variable-to-a-class-instance-at-runtime | ✓ | 123µs | 8.1 KB |
+| 35 | additive-primes | ✓ | 274µs | 96 B |
 | 36 | address-of-a-variable | ✓ |  |  |
 | 37 | adfgvx-cipher | ✓ |  |  |
 | 38 | aks-test-for-primes | ✓ |  |  |

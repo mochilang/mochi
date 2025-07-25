@@ -4,13 +4,11 @@ First 50 Achilles numbers:
 1944 2000 2312 2592 2700 2888 3087 3200 3267 3456
 3528 3872 3888 4000 4232 4500 4563 4608 5000 5292
 5324 5400 5408 5488 6075 6125 6272 6728 6912 7200
-
-First 30 strong Achilles numbers:
+\nFirst 30 strong Achilles numbers:
   500   864  1944  2000  2592  3456  5000 10125 10368 12348
 12500 16875 19652 19773 30375 31104 32000 33275 37044 40500
 49392 50000 52488 55296 61731 64827 67500 69984 78608 80000
-
-Number of Achilles numbers with:
+\nNumber of Achilles numbers with:
  2 digits: 1
  3 digits: 12
  4 digits: 47
@@ -25,3 +23,8 @@ Number of Achilles numbers with:
 13 digits: 2508051
 14 digits: 7960336
 15 digits: 25235383
+{
+  "duration_us": 10575,
+  "memory_bytes": 20664,
+  "name": "main"
+}

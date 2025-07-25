@@ -3764,7 +3764,7 @@ func isStringExpr(e Expr) bool {
 			}
 		}
 		switch v.Func {
-		case "json_encode", "strval", "strtoupper", "strtolower", "trim", "fgets":
+		case "json_encode", "strval", "strtoupper", "strtolower", "trim", "fgets", "_str":
 			return true
 		}
 	case *CondExpr:

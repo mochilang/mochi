@@ -1,16 +1,16 @@
-Create two fields at runtime: 
-
-  Field #1:
-
-       Enter name  : 
-       Enter value : 
-
-
-  Field #2:
-
-       Enter name  : 
-       Enter value : 
-
-
-Which field do you want to inspect ? 
+Create two fields at runtime: \n
+  Field #1:\n
+       Enter name  :
+       Enter value :
+\n
+  Field #2:\n
+       Enter name  :
+       Enter value :
+\n
+Which field do you want to inspect ?
 Its value is ''
+{
+  "duration_us": 123,
+  "memory_bytes": 8288,
+  "name": "main"
+}
