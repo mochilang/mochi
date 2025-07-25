@@ -52,11 +52,11 @@ func TestTranspilePrintHello(t *testing.T) {
 	if errs := types.Check(prog, env); len(errs) > 0 {
 		t.Fatal(errs[0])
 	}
-	ast, err := transpiler.Transpile(prog, env)
+	ast, err := transpiler.Transpile(prog, env, false)
 	if err != nil {
 		t.Fatal(err)
 	}
-	code := transpiler.Emit(ast, false)
+	code := transpiler.Emit(ast)
 
 	dir := t.TempDir()
 	proj := filepath.Join(dir, "app.csproj")
@@ -114,11 +114,11 @@ func TestCSTranspiler_Golden(t *testing.T) {
 			if errs := types.Check(prog, env); len(errs) > 0 {
 				t.Fatalf("type error: %v", errs[0])
 			}
-			ast, err := transpiler.Transpile(prog, env)
+			ast, err := transpiler.Transpile(prog, env, false)
 			if err != nil {
 				t.Fatalf("transpile error: %v", err)
 			}
-			code := transpiler.Emit(ast, false)
+			code := transpiler.Emit(ast)
 			if err := os.WriteFile(csPath, code, 0644); err != nil {
 				t.Fatalf("write generated: %v", err)
 			}

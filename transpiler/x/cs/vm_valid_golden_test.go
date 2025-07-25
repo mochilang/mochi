@@ -41,13 +41,13 @@ func TestCSTranspiler_VMValid_Golden(t *testing.T) {
 			_ = os.WriteFile(errPath, []byte("type: "+errs[0].Error()), 0o644)
 			return nil, errs[0]
 		}
-		ast, err := cs.Transpile(prog, env)
+		bench := os.Getenv("MOCHI_BENCHMARK") == "true" || os.Getenv("MOCHI_BENCHMARK") == "1"
+		ast, err := cs.Transpile(prog, env, bench)
 		if err != nil {
 			_ = os.WriteFile(errPath, []byte("transpile: "+err.Error()), 0o644)
 			return nil, err
 		}
-		bench := os.Getenv("MOCHI_BENCHMARK") == "true" || os.Getenv("MOCHI_BENCHMARK") == "1"
-		code := cs.Emit(ast, bench)
+		code := cs.Emit(ast)
 		if err := os.WriteFile(codePath, code, 0o644); err != nil {
 			return nil, err
 		}
@@ -61,12 +61,12 @@ func TestCSTranspiler_VMValid_Golden(t *testing.T) {
 		if err := os.WriteFile(file, code, 0644); err != nil {
 			return nil, err
 		}
-               cmd := exec.Command("dotnet", "run", "--project", proj)
-               envs := []string{"DOTNET_NOLOGO=1", "DOTNET_SKIP_FIRST_TIME_EXPERIENCE=1"}
-               if os.Getenv("MOCHI_BENCHMARK") != "true" && os.Getenv("MOCHI_BENCHMARK") != "1" {
-                       envs = append(envs, "MOCHI_NOW_SEED=1")
-               }
-               cmd.Env = append(os.Environ(), envs...)
+		cmd := exec.Command("dotnet", "run", "--project", proj)
+		envs := []string{"DOTNET_NOLOGO=1", "DOTNET_SKIP_FIRST_TIME_EXPERIENCE=1"}
+		if os.Getenv("MOCHI_BENCHMARK") != "true" && os.Getenv("MOCHI_BENCHMARK") != "1" {
+			envs = append(envs, "MOCHI_NOW_SEED=1")
+		}
+		cmd.Env = append(os.Environ(), envs...)
 		out, err := cmd.CombinedOutput()
 		if err != nil {
 			_ = os.WriteFile(errPath, append([]byte("dotnet run: "+err.Error()+"\n"), out...), 0o644)
