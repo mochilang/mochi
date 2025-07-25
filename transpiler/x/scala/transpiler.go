@@ -82,6 +82,10 @@ func containsBreak(stmts []Stmt) bool {
 		switch s := st.(type) {
 		case *BreakStmt:
 			return true
+		case *BenchStmt:
+			if containsBreak(s.Body) {
+				return true
+			}
 		case *FunStmt:
 			if containsBreak(s.Body) {
 				return true
@@ -112,6 +116,10 @@ func containsContinue(stmts []Stmt) bool {
 		switch s := st.(type) {
 		case *ContinueStmt:
 			return true
+		case *BenchStmt:
+			if containsContinue(s.Body) {
+				return true
+			}
 		case *FunStmt:
 			if containsContinue(s.Body) {
 				return true
@@ -940,6 +948,7 @@ type SliceExpr struct {
 	Value Expr
 	Start Expr
 	End   Expr
+	Type  string
 }
 
 func (s *SliceExpr) emit(w io.Writer) {
@@ -2180,7 +2189,8 @@ func convertPostfix(pf *parser.PostfixExpr, env *types.Env) (Expr, error) {
 				} else {
 					end = &LenExpr{Value: expr}
 				}
-				expr = &SliceExpr{Value: expr, Start: start, End: end}
+				ct := inferTypeWithEnv(expr, env)
+				expr = &SliceExpr{Value: expr, Start: start, End: end, Type: ct}
 			} else {
 				start, err := convertExpr(idx.Start, env)
 				if err != nil {
@@ -3622,6 +3632,11 @@ func inferType(e Expr) string {
 		return "Any"
 	case *SubstringExpr:
 		return "String"
+	case *SliceExpr:
+		if ex.Type != "" {
+			return ex.Type
+		}
+		return inferType(ex.Value)
 	case *NowExpr:
 		return "Int"
 	case *BinaryExpr:
