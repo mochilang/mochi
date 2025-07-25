@@ -1,48 +1,15 @@
-warning: variable "doors" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
-    │
-  4 │   doors = (doors ++ [false])
-    │   ~
-    │
-    └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/100-doors.exs:4:3
-
-    warning: variable "i" is unused (if the variable is not meant to be used, prefix it with an underscore)
-    │
-  3 │ Enum.each((0..(100 - 1)), fn i ->
-    │                              ~
-    │
-    └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/100-doors.exs:3:30
-
-    warning: variable "doors" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
-    │
- 17 │   {doors, idx} = while_fun.(while_fun, doors, idx)
-    │    ~
-    │
-    └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/100-doors.exs:17:4
-
-    warning: variable "idx" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
-    │
- 17 │   {doors, idx} = while_fun.(while_fun, doors, idx)
-    │           ~
-    │
-    └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/100-doors.exs:17:11
-
-    warning: variable "line" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
-    │
- 26 │       line = (line <> "0")
-    │       ~
-    │
-    └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/100-doors.exs:26:7
-
-    warning: variable "line" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
-    │
- 24 │       line = (line <> "1")
-    │       ~
-    │
-    └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/100-doors.exs:24:7
-
-    warning: variable "line" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
-    │
- 29 │       line = (line <> " ")
-    │       ~
-    │
-    └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/100-doors.exs:29:7
+0000000000
+0000000000
+0000000000
+0000000000
+0000000000
+0000000000
+0000000000
+0000000000
+0000000000
+0000000000
+{
+  "duration_us": 2938,
+  "memory_bytes": 58384,
+  "name": "main"
+}

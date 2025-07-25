@@ -1,11 +1,16 @@
-Your numbers: 6296
+Your numbers: 6747
 
 Enter RPN: 
 invalid. expression length must be 7. (4 numbers, 3 operators, no spaces)
-          * is_float/1
+{
+  "duration_us": 4450,
+  "memory_bytes": 2324992,
+  "name": "main"
+}
+           * is_float/1
 
-    │
- 86 │               stack = (stack ++ [Kernel.float(String.to_integer(ch) - String.to_integer("0"))])
-    │                                         ~
-    │
-    └─ tests/rosetta/transpiler/Elixir/24-game.exs:86:41: Main.main/0
+     │
+ 102 │               stack = (stack ++ [Kernel.float(String.to_integer(ch) - String.to_integer("0"))])
+     │                                         ~
+     │
+     └─ tests/rosetta/transpiler/Elixir/24-game.exs:102:41: Main.main/0

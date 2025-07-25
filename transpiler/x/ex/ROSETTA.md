@@ -3,22 +3,22 @@
 Generated Elixir code from Mochi Rosetta programs lives in `tests/rosetta/transpiler/Elixir`.
 
 ## Rosetta Test Checklist (19/284)
-_Last updated: 2025-07-25 01:57 +0000_
+_Last updated: 2025-07-25 12:29 +0700_
 | Index | Name | Status | Duration | Memory |
 | ---: | --- | :---: | ---: | ---: |
-| 1 | 100-doors-2 | ✓ | 7.11ms | 1.9 KB |
-| 2 | 100-doors-3 | ✓ |  |  |
-| 3 | 100-doors | ✓ |  |  |
+| 1 | 100-doors-2 | ✓ | 6.21ms | 91.6 KB |
+| 2 | 100-doors-3 | ✓ | 3.37ms | 513.3 KB |
+| 3 | 100-doors | ✓ | 2.94ms | 57.0 KB |
 | 4 | 100-prisoners | ✓ |  |  |
 | 5 | 15-puzzle-game | ✓ |  |  |
-| 6 | 15-puzzle-solver | ✓ |  |  |
-| 7 | 2048 | ✓ |  |  |
+| 6 | 15-puzzle-solver | ✓ | 140us | 370.3 KB |
+| 7 | 2048 | ✓ | 19.28ms | 6.2 MB |
 | 8 | 21-game |  |  |  |
-| 9 | 24-game-solve | ✓ |  |  |
+| 9 | 24-game-solve | ✓ | 2.93ms | 6.3 MB |
 | 10 | 24-game | ✓ |  |  |
-| 11 | 4-rings-or-4-squares-puzzle | ✓ |  |  |
+| 11 | 4-rings-or-4-squares-puzzle | ✓ | 22.44ms | 4.3 MB |
 | 12 | 9-billion-names-of-god-the-integer | ✓ |  |  |
-| 13 | 99-bottles-of-beer-2 | ✓ |  |  |
+| 13 | 99-bottles-of-beer-2 | ✓ | 20.17ms | 2.6 MB |
 | 14 | 99-bottles-of-beer | ✓ |  |  |
 | 15 | DNS-query | ✓ |  |  |
 | 16 | a+b | ✓ |  |  |

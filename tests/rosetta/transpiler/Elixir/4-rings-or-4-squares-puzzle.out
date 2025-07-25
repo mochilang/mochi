@@ -1,5 +1,10 @@
-"0 unique solutions in 1 to 7"
-[]
-"0 unique solutions in 3 to 9"
-[]
-"0 non-unique solutions in 0 to 9"
+unique solutions in 1 to 7
+
+ unique solutions in 3 to 9
+
+ non-unique solutions in 0 to 9
+{
+  "duration_us": 22444,
+  "memory_bytes": 4532768,
+  "name": "main"
+}

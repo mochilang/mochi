@@ -57,4 +57,9 @@ Score: 0
 |    |    |    |    |
 +----+----+----+----+
 W=Up S=Down A=Left D=Right Q=Quit
-Move:
+Move: 
+{
+  "duration_us": 19278,
+  "memory_bytes": 6480576,
+  "name": "main"
+}

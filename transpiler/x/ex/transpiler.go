@@ -1470,20 +1470,21 @@ func Emit(p *Program, benchMain bool) []byte {
 	var globals []Stmt
 	var funcs []Stmt
 	var main []Stmt
-	foundFunc := false
+	funcsSeen := false
 	for _, st := range p.Stmts {
-		if _, ok := st.(*FuncDecl); ok {
-			foundFunc = true
+		switch st.(type) {
+		case *FuncDecl:
 			funcs = append(funcs, st)
-			continue
-		}
-		if _, ok := st.(*LetStmt); ok && !foundFunc && funcsExist {
-			globals = append(globals, st)
-			continue
-		}
-		if funcsExist && !foundFunc {
-			globals = append(globals, st)
-		} else {
+			funcsSeen = true
+		case *LetStmt:
+			if !funcsExist {
+				main = append(main, st)
+			} else if funcsSeen {
+				main = append(main, st)
+			} else {
+				globals = append(globals, st)
+			}
+		default:
 			if es, ok := st.(*ExprStmt); ok {
 				if call, ok := es.Expr.(*CallExpr); ok && call.Func == "main" && len(call.Args) == 0 {
 					continue
@@ -1548,7 +1549,6 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	res := &Program{}
 	builtinAliases = make(map[string]string)
 	globalVars = make(map[string]struct{})
-	foundFunc := false
 	for _, st := range prog.Statements {
 		if st.Import != nil && st.Import.Lang != nil {
 			alias := st.Import.As
@@ -1578,14 +1578,10 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 				}
 			}
 		}
-		if !foundFunc {
-			if st.Fun != nil {
-				foundFunc = true
-			} else if st.Let != nil {
-				globalVars[st.Let.Name] = struct{}{}
-			} else if st.Var != nil {
-				globalVars[st.Var.Name] = struct{}{}
-			}
+		if st.Let != nil {
+			globalVars[st.Let.Name] = struct{}{}
+		} else if st.Var != nil {
+			globalVars[st.Var.Name] = struct{}{}
 		}
 	}
 	for _, st := range prog.Statements {
