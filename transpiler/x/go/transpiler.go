@@ -1731,6 +1731,20 @@ type AssertExpr struct {
 }
 
 func (a *AssertExpr) emit(w io.Writer) {
+	if a.Type == "bool" {
+		if ix, ok := a.Expr.(*IndexExpr); ok {
+			if vr, ok2 := ix.X.(*VarRef); ok2 && topEnv != nil {
+				if vt, err := topEnv.GetVar(vr.Name); err == nil {
+					if lt, ok3 := vt.(types.ListType); ok3 {
+						if _, ok4 := lt.Elem.(types.BoolType); ok4 {
+							a.Expr.emit(w)
+							return
+						}
+					}
+				}
+			}
+		}
+	}
 	if inner, ok := a.Expr.(*AssertExpr); ok && inner.Type == a.Type {
 		inner.Expr.emit(w)
 		fmt.Fprintf(w, ".(%s)", a.Type)
@@ -1741,7 +1755,7 @@ func (a *AssertExpr) emit(w io.Writer) {
 }
 
 // Transpile converts a Mochi program to a minimal Go AST.
-func Transpile(p *parser.Program, env *types.Env) (*Program, error) {
+func Transpile(p *parser.Program, env *types.Env, benchMain bool) (*Program, error) {
 	usesStrings = false
 	usesStrconv = false
 	usesPrint = false
@@ -1796,6 +1810,57 @@ func Transpile(p *parser.Program, env *types.Env) (*Program, error) {
 	gp.UseReflect = usesReflect
 	gp.UseRuntime = usesRuntime
 	gp.Imports = imports
+	gp.BenchMain = benchMain
+
+	// update variable declaration types based on final environment
+	initTypes := map[string]string{}
+	for _, st := range gp.Stmts {
+		if vd, ok := st.(*VarDecl); ok {
+			if t, err := env.GetVar(vd.Name); err == nil {
+				if gt := toGoTypeFromType(t); gt != "" {
+					vd.Type = gt
+				}
+			}
+			initTypes[vd.Name] = vd.Type
+			if ll, ok2 := vd.Value.(*ListLit); ok2 && ll.ElemType == "any" && len(ll.Elems) == 0 {
+				if strings.HasPrefix(vd.Type, "[]") && vd.Type != "[]any" {
+					ll.ElemType = strings.TrimPrefix(vd.Type, "[]")
+				}
+			}
+		}
+	}
+	for _, st := range gp.Stmts {
+		if as, ok := st.(*AssignStmt); ok {
+			if typ, ok2 := initTypes[as.Name]; ok2 {
+				if ll, ok3 := as.Value.(*ListLit); ok3 && ll.ElemType == "any" && len(ll.Elems) == 0 {
+					if strings.HasPrefix(typ, "[]") && typ != "[]any" {
+						ll.ElemType = strings.TrimPrefix(typ, "[]")
+					}
+				}
+			}
+		}
+		switch s := st.(type) {
+		case *VarDecl:
+			if s.Value != nil {
+				fixListLits(s.Value, env)
+			}
+		case *AssignStmt:
+			fixListLits(s.Value, env)
+		case *ExprStmt:
+			fixListLits(s.Expr, env)
+		case *IndexAssignStmt:
+			fixListLits(s.Index, env)
+			fixListLits(s.Value, env)
+		case *BenchStmt:
+			for _, b := range s.Body {
+				if es, ok2 := b.(*ExprStmt); ok2 {
+					fixListLits(es.Expr, env)
+				} else if as2, ok2 := b.(*AssignStmt); ok2 {
+					fixListLits(as2.Value, env)
+				}
+			}
+		}
+	}
 	return gp, nil
 }
 
@@ -5656,4 +5721,65 @@ func compileGroupKey(e *parser.Expr, env *types.Env, base string) (Expr, types.T
 		}
 	}
 	return keyExpr, keyType, nil
+}
+
+func fixListLits(expr Expr, env *types.Env) {
+	switch ex := expr.(type) {
+	case *ListLit:
+		if ex.ElemType == "any" && len(ex.Elems) == 1 {
+			if vr, ok := ex.Elems[0].(*VarRef); ok {
+				if t, err := env.GetVar(vr.Name); err == nil {
+					if gt := toGoTypeFromType(t); gt != "" && gt != "any" {
+						ex.ElemType = gt
+					}
+				}
+			}
+		}
+		for _, e := range ex.Elems {
+			fixListLits(e, env)
+		}
+	case *CallExpr:
+		for _, a := range ex.Args {
+			fixListLits(a, env)
+		}
+	case *BinaryExpr:
+		fixListLits(ex.Left, env)
+		fixListLits(ex.Right, env)
+	case *NotExpr:
+		fixListLits(ex.Expr, env)
+	case *AssertExpr:
+		fixListLits(ex.Expr, env)
+	case *IndexExpr:
+		fixListLits(ex.X, env)
+		fixListLits(ex.Index, env)
+	case *SliceExpr:
+		fixListLits(ex.X, env)
+		if ex.Start != nil {
+			fixListLits(ex.Start, env)
+		}
+		if ex.End != nil {
+			fixListLits(ex.End, env)
+		}
+	case *MapLit:
+		for i := range ex.Keys {
+			fixListLits(ex.Keys[i], env)
+			fixListLits(ex.Values[i], env)
+		}
+	case *StructLit:
+		for _, f := range ex.Fields {
+			fixListLits(f, env)
+		}
+	case *UnionExpr:
+		fixListLits(ex.Left, env)
+		fixListLits(ex.Right, env)
+		if ll, ok := ex.Right.(*ListLit); ok && ll.ElemType == "any" && ex.ElemType != "any" {
+			ll.ElemType = ex.ElemType
+		}
+	case *UnionAllExpr:
+		fixListLits(ex.Left, env)
+		fixListLits(ex.Right, env)
+		if ll, ok := ex.Right.(*ListLit); ok && ll.ElemType == "any" && ex.ElemType != "any" {
+			ll.ElemType = ex.ElemType
+		}
+	}
 }

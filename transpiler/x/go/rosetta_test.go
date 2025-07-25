@@ -94,7 +94,7 @@ func TestGoTranspiler_Rosetta_Golden(t *testing.T) {
 			}
 			benchEnv := os.Getenv("MOCHI_BENCHMARK")
 			bench := benchEnv == "true" || benchEnv == "1"
-			gprog, err := gotrans.Transpile(prog, env)
+			gprog, err := gotrans.Transpile(prog, env, bench)
 			if err != nil {
 				_ = os.WriteFile(errPath, []byte(err.Error()), 0o644)
 				t.Fatalf("transpile: %v", err)

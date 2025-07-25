@@ -4,12 +4,15 @@ package vm_test
 
 import (
 	"bytes"
+	"encoding/json"
 	"flag"
 	"fmt"
 	"os"
 	"path/filepath"
+	"runtime"
 	"strings"
 	"testing"
+	"time"
 
 	_ "mochi/golden"
 	"mochi/parser"
@@ -73,6 +76,8 @@ func TestVM_RosettaTasks(t *testing.T) {
 }
 
 func runMochi(src string) ([]byte, error) {
+	benchEnv := os.Getenv("MOCHI_BENCHMARK")
+	bench := benchEnv == "true" || benchEnv == "1"
 	prog, err := parser.Parse(src)
 	if err != nil {
 		writeErr(src, err)
@@ -90,9 +95,26 @@ func runMochi(src string) ([]byte, error) {
 	}
 	var out bytes.Buffer
 	m := vm.New(p, &out)
+	var start time.Time
+	var startMem uint64
+	if bench {
+		var ms runtime.MemStats
+		runtime.ReadMemStats(&ms)
+		startMem = ms.Alloc
+		start = time.Now()
+	}
 	if err := m.Run(); err != nil {
 		writeErr(src, err)
 		return nil, fmt.Errorf("run error: %w", err)
+	}
+	if bench {
+		var ms runtime.MemStats
+		runtime.ReadMemStats(&ms)
+		dur := time.Since(start)
+		mem := int64(ms.Alloc - startMem)
+		data := map[string]any{"name": "main", "duration_us": dur.Microseconds(), "memory_bytes": mem}
+		js, _ := json.MarshalIndent(data, "", "  ")
+		fmt.Fprintln(&out, string(js))
 	}
 	removeErr(src)
 	b := bytes.TrimSpace(out.Bytes())
