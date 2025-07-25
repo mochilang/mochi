@@ -26,16 +26,16 @@ Completed programs: 52/284
 | 18 | abbreviations-easy | ✓ | 3.0ms | 250.42KB |
 | 19 | abbreviations-simple | ✓ | 5.0ms | 499.24KB |
 | 20 | abc-problem | ✓ | 1.0ms | 193.75KB |
-| 21 | abelian-sandpile-model-identity | ✓ |  |  |
-| 22 | abelian-sandpile-model | ✓ |  |  |
-| 23 | abstract-type | ✓ |  |  |
-| 24 | abundant-deficient-and-perfect-number-classifications | ✓ |  |  |
-| 25 | abundant-odd-numbers | ✓ |  |  |
-| 26 | accumulator-factory | ✓ |  |  |
-| 27 | achilles-numbers | ✓ |  |  |
-| 28 | ackermann-function-2 | ✓ | 41.0µs | 368B |
-| 29 | ackermann-function-3 | ✓ | 56.0µs | 1.61KB |
-| 30 | ackermann-function | ✓ | 291.0µs | 368B |
+| 21 | abelian-sandpile-model-identity | ✓ | 617.0µs | 43.14KB |
+| 22 | abelian-sandpile-model | ✓ | 874.0µs | 116.73KB |
+| 23 | abstract-type | ✓ | 26.0µs | 600B |
+| 24 | abundant-deficient-and-perfect-number-classifications | ✓ | 3.91s | 512B |
+| 25 | abundant-odd-numbers | ✓ | 4.23s | 305.90MB |
+| 26 | accumulator-factory | ✓ | 151.0µs | 752B |
+| 27 | achilles-numbers | ✓ | 310.0ms | 66.48MB |
+| 28 | ackermann-function-2 | ✓ | 152.0µs | 368B |
+| 29 | ackermann-function-3 | ✓ | 135.0µs | 1.61KB |
+| 30 | ackermann-function | ✓ | 519.0µs | 368B |
 | 31 | active-directory-connect | ✓ | 19.0µs | 248B |
 | 32 | active-directory-search-for-a-user | ✓ | 25.0µs | 560B |
 | 33 | active-object | ✓ | 746.0µs | 256.98KB |
@@ -290,4 +290,4 @@ Completed programs: 52/284
 | 282 | deepcopy-1 |   |  |  |
 | 283 | define-a-primitive-data-type |   |  |  |
 | 284 | md5 |   |  |  |
-Last updated 2025-07-25 20:48 +0700
+Last updated 2025-07-25 21:12 +0700
