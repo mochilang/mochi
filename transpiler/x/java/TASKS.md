@@ -1,4 +1,28 @@
-## Progress (2025-07-26 00:11 +0700)
+## Progress (2025-07-26 04:40 +0700)
+- transpiler/java: fix list return and reset varDecls (dbccf60947)
+
+- transpiler/java: fix list return and reset varDecls (dbccf60947)
+
+- transpiler/java: fix list return and reset varDecls (dbccf60947)
+
+- transpiler/java: fix list return and reset varDecls (dbccf60947)
+
+- transpiler/java: fix list return and reset varDecls (dbccf60947)
+
+- transpiler/java: fix list return and reset varDecls (dbccf60947)
+
+- transpiler/java: fix list return and reset varDecls (dbccf60947)
+
+- transpiler/java: fix list return and reset varDecls (dbccf60947)
+
+- transpiler/java: fix list return and reset varDecls (dbccf60947)
+
+- transpiler/java: fix list return and reset varDecls (dbccf60947)
+
+- transpiler/java: fix list return and reset varDecls (dbccf60947)
+
+- transpiler/java: fix list return and reset varDecls (dbccf60947)
+
 - transpiler/java: handle generic arrays (c574f72cc9)
 
 - transpiler/java: handle generic arrays (c574f72cc9)

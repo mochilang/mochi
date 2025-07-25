@@ -1,0 +1,8 @@
+compile: exit status 1
+/tmp/TestJavaTranspiler_Rosetta_Goldenbell-numbers1227119724/001/Main.java:16: error: incompatible types: int cannot be converted to BigInteger
+tri[1][0] = 1;
+            ^
+/tmp/TestJavaTranspiler_Rosetta_Goldenbell-numbers1227119724/001/Main.java:22: error: incompatible types: int cannot be converted to BigInteger
+tri[i][j] = ((Number)(tri[i][j - 1])).intValue() + ((Number)(tri[i - 1][j - 1])).intValue();
+                                                 ^
+2 errors
