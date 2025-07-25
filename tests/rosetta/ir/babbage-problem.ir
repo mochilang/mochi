@@ -1,0 +1,48 @@
+func main (regs=20)
+  // let target = 269696
+  Const        r3, 269696
+  Move         r0, r3
+  SetGlobal    0,0,0,0
+  // let modulus = 1000000
+  Const        r4, 1000000
+  Move         r1, r4
+  SetGlobal    1,1,0,0
+  // var n = 1
+  Const        r5, 1
+  Move         r2, r5
+  SetGlobal    2,2,0,0
+L2:
+  // while true {
+  Const        r6, true
+  // let square = n * n
+  MulInt       r7, r2, r2
+  Move         r8, r7
+  // let ending = square % modulus
+  Const        r4, 1000000
+  ModInt       r9, r8, r4
+  Move         r10, r9
+  // if ending == target {
+  Const        r3, 269696
+  EqualInt     r11, r10, r3
+  JumpIfFalse  r11, L0
+  // print("The smallest number whose square ends with " + str(target) + " is " + str(n))
+  Const        r12, "The smallest number whose square ends with "
+  Const        r13, "269696"
+  Const        r14, "The smallest number whose square ends with 269696"
+  Const        r15, " is "
+  Const        r16, "The smallest number whose square ends with 269696 is "
+  Str          r17, r2
+  Add          r18, r16, r17
+  Print        r18
+  // break
+  Jump         L1
+L0:
+  // n = n + 1
+  Const        r5, 1
+  AddInt       r19, r2, r5
+  Move         r2, r19
+  SetGlobal    2,2,0,0
+  // while true {
+  Jump         L2
+L1:
+  Return       r0

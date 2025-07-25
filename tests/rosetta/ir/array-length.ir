@@ -1,0 +1,20 @@
+func main (regs=1)
+  Return       r0
+
+  // fun main() {
+func main (regs=11)
+  // let arr = ["apple", "orange", "pear"]
+  Const        r0, ["apple", "orange", "pear"]
+  Move         r1, r0
+  // print("Length of " + str(arr) + " is " + str(len(arr)) + ".")
+  Const        r2, "Length of "
+  Const        r3, "[apple orange pear]"
+  Const        r4, "Length of [apple orange pear]"
+  Const        r5, " is "
+  Const        r6, "Length of [apple orange pear] is "
+  Const        r7, "3"
+  Const        r8, "Length of [apple orange pear] is 3"
+  Const        r9, "."
+  Const        r10, "Length of [apple orange pear] is 3."
+  Print        r10
+  Return       r0

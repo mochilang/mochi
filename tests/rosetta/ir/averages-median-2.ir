@@ -1,0 +1,102 @@
+func main (regs=8)
+  // print(str(median([3.0, 1.0, 4.0, 1.0])))
+  Const        r1, [3.0, 1.0, 4.0, 1.0]
+  Move         r0, r1
+  Call         r2, median, r0
+  Str          r3, r2
+  Print        r3
+  // print(str(median([3.0, 1.0, 4.0, 1.0, 5.0])))
+  Const        r5, [3.0, 1.0, 4.0, 1.0, 5.0]
+  Move         r4, r5
+  Call         r6, median, r4
+  Str          r7, r6
+  Print        r7
+  Return       r0
+
+  // fun sel(list: list<float>, k: int): float {
+func sel (regs=20)
+  // var i = 0
+  Const        r2, 0
+  Move         r3, r2
+L4:
+  // while i <= k {
+  LessEq       r4, r3, r1
+  JumpIfFalse  r4, L0
+  // var minIndex = i
+  Move         r5, r3
+  // var j = i + 1
+  Const        r6, 1
+  AddInt       r7, r3, r6
+  Move         r8, r7
+L3:
+  // while j < len(list) {
+  Len          r9, r0
+  LessInt      r10, r8, r9
+  JumpIfFalse  r10, L1
+  // if list[j] < list[minIndex] {
+  Index        r11, r0, r8
+  Index        r12, r0, r5
+  Less         r13, r11, r12
+  JumpIfFalse  r13, L2
+  // minIndex = j
+  Move         r5, r8
+L2:
+  // j = j + 1
+  Const        r6, 1
+  AddInt       r14, r8, r6
+  Move         r8, r14
+  // while j < len(list) {
+  Jump         L3
+L1:
+  // let tmp = list[i]
+  Index        r15, r0, r3
+  Move         r16, r15
+  // list[i] = list[minIndex]
+  Index        r17, r0, r5
+  SetIndex     r0, r3, r17
+  // list[minIndex] = tmp
+  SetIndex     r0, r5, r16
+  // i = i + 1
+  Const        r6, 1
+  AddInt       r18, r3, r6
+  Move         r3, r18
+  // while i <= k {
+  Jump         L4
+L0:
+  // return list[k]
+  Index        r19, r0, r1
+  Return       r19
+
+  // fun median(a: list<float>): float {
+func median (regs=21)
+  // var arr = a
+  Move         r1, r0
+  // let half = (len(arr) / 2) as int
+  Len          r2, r1
+  Const        r3, 2
+  DivInt       r4, r2, r3
+  Cast         r5, r4, int
+  Move         r6, r5
+  // let med = sel(arr, half)
+  Move         r7, r1
+  Move         r8, r6
+  Call2        r9, sel, r7, r8
+  Move         r10, r9
+  // if len(arr) % 2 == 0 {
+  Len          r11, r1
+  Const        r3, 2
+  ModInt       r12, r11, r3
+  Const        r13, 0
+  EqualInt     r14, r12, r13
+  JumpIfFalse  r14, L0
+  // return (med + arr[half-1]) / 2.0
+  Const        r15, 1
+  Sub          r16, r6, r15
+  Index        r17, r1, r16
+  Add          r18, r10, r17
+  Const        r19, 2.0
+  DivFloat     r20, r18, r19
+  Return       r20
+L0:
+  // return med
+  Return       r10

@@ -1,0 +1,128 @@
+func main (regs=37)
+  // for i in 0..61 {
+  Const        r0, 0
+  Const        r1, 61
+  Move         r2, r0
+L2:
+  LessInt      r3, r2, r1
+  JumpIfFalse  r3, L0
+  // let b = bernoulli(i)
+  Move         r4, r2
+  Call         r5, bernoulli, r4
+  Move         r6, r5
+  // if num(b) != 0 {
+  Const        r0, 0
+  NotEqual     r8, r7, r0
+  JumpIfFalse  r8, L1
+  // let numStr = str(num(b))
+  Str          r10, r9
+  Move         r11, r10
+  // let denStr = str(denom(b))
+  Str          r13, r12
+  Move         r14, r13
+  // print("B(" + padStart(str(i), 2, " ") + ") =" + padStart(numStr, 45, " ") + "/" + denStr)
+  Const        r15, "B("
+  Str          r19, r2
+  Move         r16, r19
+  Const        r20, 2
+  Move         r17, r20
+  Const        r21, " "
+  Move         r18, r21
+  Call         r22, padStart, r16, r17, r18
+  Add          r23, r15, r22
+  Const        r24, ") ="
+  Add          r25, r23, r24
+  Move         r26, r11
+  Const        r29, 45
+  Move         r27, r29
+  Const        r21, " "
+  Move         r28, r21
+  Call         r30, padStart, r26, r27, r28
+  Add          r31, r25, r30
+  Const        r32, "/"
+  Add          r33, r31, r32
+  Add          r34, r33, r14
+  Print        r34
+L1:
+  // for i in 0..61 {
+  Const        r35, 1
+  AddInt       r36, r2, r35
+  Move         r2, r36
+  Jump         L2
+L0:
+  Return       r0
+
+  // fun bernoulli(n: int): bigrat {
+func bernoulli (regs=23)
+  // var a: list<bigrat> = []
+  Const        r1, []
+  Move         r2, r1
+  // var m = 0
+  Const        r3, 0
+  Move         r4, r3
+L3:
+  // while m <= n {
+  LessEq       r5, r4, r0
+  JumpIfFalse  r5, L0
+  // a = append(a, 1 as bigrat / ((m + 1) as bigrat))
+  Const        r6, 1
+  Const        r6, 1
+  AddInt       r7, r4, r6
+  Cast         r8, r7, any
+  Div          r9, r6, r8
+  Append       r10, r2, r9
+  Move         r2, r10
+  // var j = m
+  Move         r11, r4
+L2:
+  // while j >= 1 {
+  Const        r6, 1
+  LessEqInt    r12, r6, r11
+  JumpIfFalse  r12, L1
+  // a[j-1] = (j as bigrat) * (a[j-1] - a[j])
+  Cast         r13, r11, any
+  Const        r6, 1
+  SubInt       r14, r11, r6
+  Index        r15, r2, r14
+  Index        r16, r2, r11
+  Sub          r17, r15, r16
+  Mul          r18, r13, r17
+  Const        r6, 1
+  SubInt       r19, r11, r6
+  SetIndex     r2, r19, r18
+  // j = j - 1
+  Const        r6, 1
+  SubInt       r20, r11, r6
+  Move         r11, r20
+  // while j >= 1 {
+  Jump         L2
+L1:
+  // m = m + 1
+  Const        r6, 1
+  AddInt       r21, r4, r6
+  Move         r4, r21
+  // while m <= n {
+  Jump         L3
+L0:
+  // return a[0]
+  Const        r3, 0
+  Index        r22, r2, r3
+  Return       r22
+
+  // fun padStart(s: string, width: int, pad: string): string {
+func padStart (regs=7)
+  // var out = s
+  Move         r3, r0
+L1:
+  // while len(out) < width {
+  Len          r4, r3
+  Less         r5, r4, r1
+  JumpIfFalse  r5, L0
+  // out = pad + out
+  Add          r6, r2, r3
+  Move         r3, r6
+  // while len(out) < width {
+  Jump         L1
+L0:
+  // return out
+  Return       r3

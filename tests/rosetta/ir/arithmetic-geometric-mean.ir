@@ -1,0 +1,94 @@
+func main (regs=1)
+  Return       r0
+
+  // fun abs(x: float): float {
+func abs (regs=4)
+  // if x < 0.0 { return -x }
+  Const        r1, 0.0
+  LessFloat    r2, r0, r1
+  JumpIfFalse  r2, L0
+  Neg          r3, r0
+  Return       r3
+L0:
+  // return x
+  Return       r0
+
+  // fun sqrtApprox(x: float): float {
+func sqrtApprox (regs=12)
+  // var guess = x
+  Move         r1, r0
+  // var i = 0
+  Const        r2, 0
+  Move         r3, r2
+L1:
+  // while i < 20 {
+  Const        r4, 20
+  LessInt      r5, r3, r4
+  JumpIfFalse  r5, L0
+  // guess = (guess + x / guess) / 2.0
+  Div          r6, r0, r1
+  Add          r7, r1, r6
+  Const        r8, 2.0
+  DivFloat     r9, r7, r8
+  Move         r1, r9
+  // i = i + 1
+  Const        r10, 1
+  AddInt       r11, r3, r10
+  Move         r3, r11
+  // while i < 20 {
+  Jump         L1
+L0:
+  // return guess
+  Return       r1
+
+  // fun agm(a: float, g: float): float {
+func agm (regs=19)
+  // let eps = 0.00000000000001
+  Const        r2, 0.00000000000001
+  Move         r3, r2
+L1:
+  // while abs(a - g) > abs(a) * eps {
+  Sub          r5, r0, r1
+  Move         r4, r5
+  Call         r6, abs, r4
+  Move         r7, r0
+  Call         r8, abs, r7
+  Const        r2, 0.00000000000001
+  MulFloat     r9, r8, r2
+  LessFloat    r10, r9, r6
+  JumpIfFalse  r10, L0
+  // let newA = (a + g) / 2.0
+  Add          r11, r0, r1
+  Const        r12, 2.0
+  DivFloat     r13, r11, r12
+  Move         r14, r13
+  // let newG = sqrtApprox(a * g)
+  Mul          r16, r0, r1
+  Move         r15, r16
+  Call         r17, sqrtApprox, r15
+  Move         r18, r17
+  // a = newA
+  Move         r0, r14
+  // g = newG
+  Move         r1, r18
+  // while abs(a - g) > abs(a) * eps {
+  Jump         L1
+L0:
+  // return a
+  Return       r0
+
+  // fun main() {
+func main (regs=9)
+  // print(str(agm(1.0, 1.0 / sqrtApprox(2.0))))
+  Const        r2, 1.0
+  Move         r0, r2
+  Const        r2, 1.0
+  Const        r4, 2.0
+  Move         r3, r4
+  Call         r5, sqrtApprox, r3
+  DivFloat     r6, r2, r5
+  Move         r1, r6
+  Call2        r7, agm, r0, r1
+  Str          r8, r7
+  Print        r8
+  Return       r0

@@ -1,0 +1,65 @@
+func main (regs=1)
+  Return       r0
+
+  // fun merge(base: map<string, any>, update: map<string, any>): map<string, any> {
+func merge (regs=21)
+  // var result: map<string, any> = {}
+  Const        r2, {}
+  Move         r3, r2
+  // for k in base {
+  IterPrep     r4, r0
+  Len          r5, r4
+  Const        r6, 0
+L1:
+  LessInt      r7, r6, r5
+  JumpIfFalse  r7, L0
+  Index        r8, r4, r6
+  Move         r9, r8
+  // result[k] = base[k]
+  Index        r10, r0, r9
+  SetIndex     r3, r9, r10
+  // for k in base {
+  Const        r11, 1
+  AddInt       r12, r6, r11
+  Move         r6, r12
+  Jump         L1
+L0:
+  // for k in update {
+  IterPrep     r13, r1
+  Len          r14, r13
+  Const        r15, 0
+L3:
+  LessInt      r16, r15, r14
+  JumpIfFalse  r16, L2
+  Index        r17, r13, r15
+  Move         r9, r17
+  // result[k] = update[k]
+  Index        r18, r1, r9
+  SetIndex     r3, r9, r18
+  // for k in update {
+  Const        r19, 1
+  AddInt       r20, r15, r19
+  Move         r15, r20
+  Jump         L3
+L2:
+  // return result
+  Return       r3
+
+  // fun main() {
+func main (regs=10)
+  // let base: map<string, any> = {"name": "Rocket Skates", "price": 12.75, "color": "yellow"}
+  Const        r0, {"color": "yellow", "name": "Rocket Skates", "price": 12.75}
+  Move         r1, r0
+  // let update: map<string, any> = {"price": 15.25, "color": "red", "year": 1974}
+  Const        r2, {"color": "red", "price": 15.25, "year": 1974}
+  Move         r3, r2
+  // let result = merge(base, update)
+  Const        r6, {"color": "yellow", "name": "Rocket Skates", "price": 12.75}
+  Move         r4, r6
+  Const        r7, {"color": "red", "price": 15.25, "year": 1974}
+  Move         r5, r7
+  Call2        r8, merge, r4, r5
+  Move         r9, r8
+  // print(result)
+  Print        r9
+  Return       r0

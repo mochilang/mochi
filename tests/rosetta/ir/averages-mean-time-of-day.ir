@@ -1,0 +1,401 @@
+func main (regs=2)
+  // let PI = 3.141592653589793
+  Const        r1, 3.141592653589793
+  Move         r0, r1
+  SetGlobal    0,0,0,0
+  Return       r0
+
+  // fun sinApprox(x: float): float {
+func sinApprox (regs=21)
+  // var term = x
+  Move         r2, r1
+  // var sum = x
+  Move         r3, r1
+  // var n = 1
+  Const        r4, 1
+  Move         r5, r4
+L1:
+  // while n <= 8 {
+  Const        r6, 8
+  LessEqInt    r7, r5, r6
+  JumpIfFalse  r7, L0
+  // let denom = ((2*n) * (2*n + 1)) as float
+  Const        r8, 2
+  MulInt       r9, r8, r5
+  Const        r8, 2
+  MulInt       r10, r8, r5
+  Const        r4, 1
+  AddInt       r11, r10, r4
+  MulInt       r12, r9, r11
+  Cast         r13, r12, float
+  Move         r14, r13
+  // term = -term * x * x / denom
+  Neg          r15, r2
+  Mul          r16, r15, r1
+  Mul          r17, r16, r1
+  Div          r18, r17, r14
+  Move         r2, r18
+  // sum = sum + term
+  Add          r19, r3, r2
+  Move         r3, r19
+  // n = n + 1
+  Const        r4, 1
+  AddInt       r20, r5, r4
+  Move         r5, r20
+  // while n <= 8 {
+  Jump         L1
+L0:
+  // return sum
+  Return       r3
+
+  // fun cosApprox(x: float): float {
+func cosApprox (regs=22)
+  // var term = 1.0
+  Const        r2, 1.0
+  Move         r3, r2
+  // var sum = 1.0
+  Const        r2, 1.0
+  Move         r4, r2
+  // var n = 1
+  Const        r5, 1
+  Move         r6, r5
+L1:
+  // while n <= 8 {
+  Const        r7, 8
+  LessEqInt    r8, r6, r7
+  JumpIfFalse  r8, L0
+  // let denom = ((2*n - 1) * (2*n)) as float
+  Const        r9, 2
+  MulInt       r10, r9, r6
+  Const        r5, 1
+  SubInt       r11, r10, r5
+  Const        r9, 2
+  MulInt       r12, r9, r6
+  MulInt       r13, r11, r12
+  Cast         r14, r13, float
+  Move         r15, r14
+  // term = -term * x * x / denom
+  NegFloat     r16, r3
+  MulFloat     r17, r16, r1
+  MulFloat     r18, r17, r1
+  DivFloat     r19, r18, r15
+  Move         r3, r19
+  // sum = sum + term
+  AddFloat     r20, r4, r3
+  Move         r4, r20
+  // n = n + 1
+  Const        r5, 1
+  AddInt       r21, r6, r5
+  Move         r6, r21
+  // while n <= 8 {
+  Jump         L1
+L0:
+  // return sum
+  Return       r4
+
+  // fun atanApprox(x: float): float {
+func atanApprox (regs=23)
+  // if x > 1.0 { return PI/2.0 - x/(x*x + 0.28) }
+  Const        r2, 1.0
+  LessFloat    r3, r2, r1
+  JumpIfFalse  r3, L0
+  Const        r4, 2.0
+  DivFloat     r5, r0, r4
+  Mul          r6, r1, r1
+  Const        r7, 0.28
+  AddFloat     r8, r6, r7
+  DivFloat     r9, r1, r8
+  SubFloat     r10, r5, r9
+  Return       r10
+L0:
+  // if x < (-1.0) { return -PI/2.0 - x/(x*x + 0.28) }
+  Const        r11, -1.0
+  LessFloat    r12, r1, r11
+  JumpIfFalse  r12, L1
+  Neg          r13, r0
+  Const        r4, 2.0
+  DivFloat     r14, r13, r4
+  Mul          r15, r1, r1
+  Const        r7, 0.28
+  AddFloat     r16, r15, r7
+  DivFloat     r17, r1, r16
+  SubFloat     r18, r14, r17
+  Return       r18
+L1:
+  // return x/(1.0 + 0.28*x*x)
+  Const        r2, 1.0
+  Const        r7, 0.28
+  MulFloat     r19, r7, r1
+  MulFloat     r20, r19, r1
+  AddFloat     r21, r2, r20
+  DivFloat     r22, r1, r21
+  Return       r22
+
+  // fun atan2Approx(y: float, x: float): float {
+func atan2Approx (regs=24)
+  // if x > 0.0 { return atanApprox(y/x) }
+  Const        r3, 0.0
+  LessFloat    r4, r3, r2
+  JumpIfFalse  r4, L0
+  Div          r6, r1, r2
+  Move         r5, r6
+  Call         r7, atanApprox, r5
+  Return       r7
+L0:
+  // if x < 0.0 {
+  Const        r3, 0.0
+  LessFloat    r8, r2, r3
+  JumpIfFalse  r8, L1
+  // if y >= 0.0 { return atanApprox(y/x) + PI }
+  Const        r3, 0.0
+  LessEqFloat  r9, r3, r1
+  JumpIfFalse  r9, L2
+  Div          r11, r1, r2
+  Move         r10, r11
+  Call         r12, atanApprox, r10
+  Add          r13, r12, r0
+  Return       r13
+L2:
+  // return atanApprox(y/x) - PI
+  Div          r15, r1, r2
+  Move         r14, r15
+  Call         r16, atanApprox, r14
+  Sub          r17, r16, r0
+  Return       r17
+L1:
+  // if y > 0.0 { return PI/2.0 }
+  Const        r3, 0.0
+  LessFloat    r18, r3, r1
+  JumpIfFalse  r18, L3
+  Const        r19, 2.0
+  DivFloat     r20, r0, r19
+  Return       r20
+L3:
+  // if y < 0.0 { return -PI/2.0 }
+  Const        r3, 0.0
+  LessFloat    r21, r1, r3
+  JumpIfFalse  r21, L4
+  Neg          r22, r0
+  Const        r19, 2.0
+  DivFloat     r23, r22, r19
+  Return       r23
+L4:
+  // return 0.0
+  Const        r3, 0.0
+  Return       r3
+
+  // fun digit(ch: string): int {
+func digit (regs=13)
+  // let digits = "0123456789"
+  Const        r2, "0123456789"
+  Move         r3, r2
+  // var i = 0
+  Const        r4, 0
+  Move         r5, r4
+L2:
+  // while i < len(digits) {
+  Const        r6, 10
+  LessInt      r7, r5, r6
+  JumpIfFalse  r7, L0
+  // if substring(digits, i, i+1) == ch { return i }
+  Const        r2, "0123456789"
+  Const        r8, 1
+  AddInt       r9, r5, r8
+  Slice        r10, r2, r5, r9
+  Equal        r11, r10, r1
+  JumpIfFalse  r11, L1
+  Return       r5
+L1:
+  // i = i + 1
+  Const        r8, 1
+  AddInt       r12, r5, r8
+  Move         r5, r12
+  // while i < len(digits) {
+  Jump         L2
+L0:
+  // return 0
+  Const        r4, 0
+  Return       r4
+
+  // fun parseTwo(s: string, idx: int): int {
+func parseTwo (regs=17)
+  // return digit(substring(s, idx, idx+1))*10 + digit(substring(s, idx+1, idx+2))
+  Const        r4, 1
+  Add          r5, r2, r4
+  Slice        r6, r1, r2, r5
+  Move         r3, r6
+  Call         r7, digit, r3
+  Const        r8, 10
+  Mul          r9, r7, r8
+  Const        r4, 1
+  Add          r11, r2, r4
+  Const        r12, 2
+  Add          r13, r2, r12
+  Slice        r14, r1, r11, r13
+  Move         r10, r14
+  Call         r15, digit, r10
+  Add          r16, r9, r15
+  Return       r16
+
+  // fun parseSec(s: string): float {
+func parseSec (regs=24)
+  // let h = parseTwo(s, 0)
+  Move         r2, r1
+  Const        r4, 0
+  Move         r3, r4
+  Call2        r5, parseTwo, r2, r3
+  Move         r6, r5
+  // let m = parseTwo(s, 3)
+  Move         r7, r1
+  Const        r9, 3
+  Move         r8, r9
+  Call2        r10, parseTwo, r7, r8
+  Move         r11, r10
+  // let sec = parseTwo(s, 6)
+  Move         r12, r1
+  Const        r14, 6
+  Move         r13, r14
+  Call2        r15, parseTwo, r12, r13
+  Move         r16, r15
+  // let tmp = (h*60 + m)*60 + sec
+  Const        r17, 60
+  Mul          r18, r6, r17
+  Add          r19, r18, r11
+  Const        r17, 60
+  Mul          r20, r19, r17
+  Add          r21, r20, r16
+  Move         r22, r21
+  // return tmp as float
+  Cast         r23, r22, float
+  Return       r23
+
+  // fun pad(n: int): string {
+func pad (regs=8)
+  // if n < 10 { return "0" + str(n) }
+  Const        r2, 10
+  Less         r3, r1, r2
+  JumpIfFalse  r3, L0
+  Const        r4, "0"
+  Str          r5, r1
+  Add          r6, r4, r5
+  Return       r6
+L0:
+  // return str(n)
+  Str          r7, r1
+  Return       r7
+
+  // fun meanTime(times: list<string>): string {
+func meanTime (regs=64)
+  // var ssum = 0.0
+  Const        r2, 0.0
+  Move         r3, r2
+  // var csum = 0.0
+  Const        r2, 0.0
+  Move         r4, r2
+  // var i = 0
+  Const        r5, 0
+  Move         r6, r5
+L1:
+  // while i < len(times) {
+  Len          r7, r1
+  LessInt      r8, r6, r7
+  JumpIfFalse  r8, L0
+  // let sec = parseSec(times[i])
+  Index        r10, r1, r6
+  Move         r9, r10
+  Call         r11, parseSec, r9
+  Move         r12, r11
+  // let ang = sec * 2.0 * PI / 86400.0
+  Const        r13, 2.0
+  MulFloat     r14, r12, r13
+  MulFloat     r15, r14, r0
+  Const        r16, 86400.0
+  DivFloat     r17, r15, r16
+  Move         r18, r17
+  // ssum = ssum + sinApprox(ang)
+  Move         r19, r18
+  Call         r20, sinApprox, r19
+  AddFloat     r21, r3, r20
+  Move         r3, r21
+  // csum = csum + cosApprox(ang)
+  Move         r22, r18
+  Call         r23, cosApprox, r22
+  AddFloat     r24, r4, r23
+  Move         r4, r24
+  // i = i + 1
+  Const        r25, 1
+  AddInt       r26, r6, r25
+  Move         r6, r26
+  // while i < len(times) {
+  Jump         L1
+L0:
+  // var theta = atan2Approx(ssum, csum)
+  Move         r27, r3
+  Move         r28, r4
+  Call2        r29, atan2Approx, r27, r28
+  Move         r30, r29
+  // var frac = theta / (2.0 * PI)
+  Const        r13, 2.0
+  MulFloat     r31, r13, r0
+  DivFloat     r32, r30, r31
+  Move         r33, r32
+L3:
+  // while frac < 0.0 { frac = frac + 1.0 }
+  Const        r2, 0.0
+  LessFloat    r34, r33, r2
+  JumpIfFalse  r34, L2
+  Const        r35, 1.0
+  AddFloat     r36, r33, r35
+  Move         r33, r36
+  Jump         L3
+L2:
+  // let total = frac * 86400.0
+  Const        r16, 86400.0
+  MulFloat     r37, r33, r16
+  Move         r38, r37
+  // let si = total as int
+  Cast         r39, r38, int
+  Move         r40, r39
+  // let h = (si / 3600) as int
+  Const        r41, 3600
+  Div          r42, r40, r41
+  Cast         r43, r42, int
+  Move         r44, r43
+  // let m = ((si % 3600) / 60) as int
+  Const        r41, 3600
+  Mod          r45, r40, r41
+  Const        r46, 60
+  Div          r47, r45, r46
+  Cast         r48, r47, int
+  Move         r49, r48
+  // let s = (si % 60) as int
+  Const        r46, 60
+  Mod          r50, r40, r46
+  Cast         r51, r50, int
+  Move         r52, r51
+  // return pad(h) + ":" + pad(m) + ":" + pad(s)
+  Move         r53, r44
+  Call         r54, pad, r53
+  Const        r55, ":"
+  Add          r56, r54, r55
+  Move         r57, r49
+  Call         r58, pad, r57
+  Add          r59, r56, r58
+  Const        r55, ":"
+  Add          r60, r59, r55
+  Move         r61, r52
+  Call         r62, pad, r61
+  Add          r63, r60, r62
+  Return       r63
+
+  // fun main() {
+func main (regs=6)
+  // let inputs = ["23:00:17", "23:40:20", "00:12:45", "00:17:19"]
+  Const        r1, ["23:00:17", "23:40:20", "00:12:45", "00:17:19"]
+  Move         r2, r1
+  // print(meanTime(inputs))
+  Const        r4, ["23:00:17", "23:40:20", "00:12:45", "00:17:19"]
+  Move         r3, r4
+  Call         r5, meanTime, r3
+  Print        r5
+  Return       r0

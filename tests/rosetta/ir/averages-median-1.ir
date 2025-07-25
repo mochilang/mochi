@@ -1,0 +1,108 @@
+func main (regs=8)
+  // print(str(median([3.0, 1.0, 4.0, 1.0])))
+  Const        r1, [3.0, 1.0, 4.0, 1.0]
+  Move         r0, r1
+  Call         r2, median, r0
+  Str          r3, r2
+  Print        r3
+  // print(str(median([3.0, 1.0, 4.0, 1.0, 5.0])))
+  Const        r5, [3.0, 1.0, 4.0, 1.0, 5.0]
+  Move         r4, r5
+  Call         r6, median, r4
+  Str          r7, r6
+  Print        r7
+  Return       r0
+
+  // fun sortFloat(xs: list<float>): list<float> {
+func sortFloat (regs=22)
+  // var arr = xs
+  Move         r1, r0
+  // var n = len(arr)
+  Len          r2, r1
+  Move         r3, r2
+  // var i = 0
+  Const        r4, 0
+  Move         r5, r4
+L4:
+  // while i < n {
+  LessInt      r6, r5, r3
+  JumpIfFalse  r6, L0
+  // var j = 0
+  Const        r4, 0
+  Move         r7, r4
+L3:
+  // while j < n - 1 {
+  Const        r8, 1
+  SubInt       r9, r3, r8
+  LessInt      r10, r7, r9
+  JumpIfFalse  r10, L1
+  // if arr[j] > arr[j+1] {
+  Index        r11, r1, r7
+  Const        r8, 1
+  AddInt       r12, r7, r8
+  Index        r13, r1, r12
+  Less         r14, r13, r11
+  JumpIfFalse  r14, L2
+  // let tmp = arr[j]
+  Index        r15, r1, r7
+  Move         r16, r15
+  // arr[j] = arr[j+1]
+  Const        r8, 1
+  AddInt       r17, r7, r8
+  Index        r18, r1, r17
+  SetIndex     r1, r7, r18
+  // arr[j+1] = tmp
+  Const        r8, 1
+  AddInt       r19, r7, r8
+  SetIndex     r1, r19, r16
+L2:
+  // j = j + 1
+  Const        r8, 1
+  AddInt       r20, r7, r8
+  Move         r7, r20
+  // while j < n - 1 {
+  Jump         L3
+L1:
+  // i = i + 1
+  Const        r8, 1
+  AddInt       r21, r5, r8
+  Move         r5, r21
+  // while i < n {
+  Jump         L4
+L0:
+  // return arr
+  Return       r1
+
+  // fun median(a: list<float>): float {
+func median (regs=21)
+  // var arr = sortFloat(a)
+  Move         r1, r0
+  Call         r2, sortFloat, r1
+  Move         r3, r2
+  // let half = (len(arr) / 2) as int
+  Len          r4, r3
+  Const        r5, 2
+  DivInt       r6, r4, r5
+  Cast         r7, r6, int
+  Move         r8, r7
+  // var m = arr[half]
+  Index        r9, r3, r8
+  Move         r10, r9
+  // if len(arr) % 2 == 0 {
+  Len          r11, r3
+  Const        r5, 2
+  ModInt       r12, r11, r5
+  Const        r13, 0
+  EqualInt     r14, r12, r13
+  JumpIfFalse  r14, L0
+  // m = (m + arr[half-1]) / 2.0
+  Const        r15, 1
+  Sub          r16, r8, r15
+  Index        r17, r3, r16
+  Add          r18, r10, r17
+  Const        r19, 2.0
+  DivFloat     r20, r18, r19
+  Move         r10, r20
+L0:
+  // return m
+  Return       r10

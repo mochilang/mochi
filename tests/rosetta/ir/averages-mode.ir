@@ -1,0 +1,246 @@
+func main (regs=69)
+  // var arr1 = [2,7,1,8,2]
+  Const        r11, [2, 7, 1, 8, 2]
+  Move         r0, r11
+  SetGlobal    0,0,0,0
+  // var counts1: map<int,int> = {}
+  Const        r12, {}
+  Move         r1, r12
+  SetGlobal    1,1,0,0
+  // var keys1: list<int> = []
+  Const        r13, []
+  Move         r2, r13
+  SetGlobal    2,2,0,0
+  // var i = 0
+  Const        r14, 0
+  Move         r3, r14
+  SetGlobal    3,3,0,0
+L3:
+  // while i < len(arr1) {
+  Const        r15, 5
+  LessInt      r16, r3, r15
+  JumpIfFalse  r16, L0
+  // let v = arr1[i]
+  Index        r17, r0, r3
+  Move         r18, r17
+  // if v in counts1 {
+  In           r19, r18, r1
+  JumpIfFalse  r19, L1
+  // counts1[v] = counts1[v] + 1
+  Index        r20, r1, r18
+  Const        r21, 1
+  Add          r22, r20, r21
+  SetIndex     r1, r18, r22
+  SetGlobal    1,1,0,0
+  // if v in counts1 {
+  Jump         L2
+L1:
+  // counts1[v] = 1
+  Const        r21, 1
+  SetIndex     r1, r18, r21
+  SetGlobal    1,1,0,0
+  // keys1 = append(keys1, v)
+  Append       r23, r2, r18
+  Move         r2, r23
+  SetGlobal    2,2,0,0
+L2:
+  // i = i + 1
+  Const        r21, 1
+  AddInt       r24, r3, r21
+  Move         r3, r24
+  SetGlobal    3,3,0,0
+  // while i < len(arr1) {
+  Jump         L3
+L0:
+  // var max1 = 0
+  Const        r14, 0
+  Move         r4, r14
+  SetGlobal    4,4,0,0
+  // i = 0
+  Const        r14, 0
+  Move         r3, r14
+  SetGlobal    3,3,0,0
+L6:
+  // while i < len(keys1) {
+  Len          r25, r2
+  LessInt      r26, r3, r25
+  JumpIfFalse  r26, L4
+  // let k = keys1[i]
+  Index        r27, r2, r3
+  Move         r28, r27
+  // let c = counts1[k]
+  Index        r29, r1, r28
+  Move         r30, r29
+  // if c > max1 { max1 = c }
+  Less         r31, r4, r30
+  JumpIfFalse  r31, L5
+  Move         r4, r30
+  SetGlobal    4,4,0,0
+L5:
+  // i = i + 1
+  Const        r21, 1
+  AddInt       r32, r3, r21
+  Move         r3, r32
+  SetGlobal    3,3,0,0
+  // while i < len(keys1) {
+  Jump         L6
+L4:
+  // var modes1: list<int> = []
+  Const        r13, []
+  Move         r5, r13
+  SetGlobal    5,5,0,0
+  // i = 0
+  Const        r14, 0
+  Move         r3, r14
+  SetGlobal    3,3,0,0
+L9:
+  // while i < len(keys1) {
+  Len          r33, r2
+  LessInt      r34, r3, r33
+  JumpIfFalse  r34, L7
+  // let k = keys1[i]
+  Index        r35, r2, r3
+  Move         r36, r35
+  // if counts1[k] == max1 {
+  Index        r37, r1, r36
+  Equal        r38, r37, r4
+  JumpIfFalse  r38, L8
+  // modes1 = append(modes1, k)
+  Append       r39, r5, r36
+  Move         r5, r39
+  SetGlobal    5,5,0,0
+L8:
+  // i = i + 1
+  Const        r21, 1
+  AddInt       r40, r3, r21
+  Move         r3, r40
+  SetGlobal    3,3,0,0
+  // while i < len(keys1) {
+  Jump         L9
+L7:
+  // print(str(modes1))
+  Str          r41, r5
+  Print        r41
+  // var arr2 = [2,7,1,8,2,8]
+  Const        r42, [2, 7, 1, 8, 2, 8]
+  Move         r6, r42
+  SetGlobal    6,6,0,0
+  // var counts2: map<int,int> = {}
+  Const        r12, {}
+  Move         r7, r12
+  SetGlobal    7,7,0,0
+  // var keys2: list<int> = []
+  Const        r13, []
+  Move         r8, r13
+  SetGlobal    8,8,0,0
+  // i = 0
+  Const        r14, 0
+  Move         r3, r14
+  SetGlobal    3,3,0,0
+L13:
+  // while i < len(arr2) {
+  Const        r43, 6
+  LessInt      r44, r3, r43
+  JumpIfFalse  r44, L10
+  // let v = arr2[i]
+  Index        r45, r6, r3
+  Move         r46, r45
+  // if v in counts2 {
+  In           r47, r46, r7
+  JumpIfFalse  r47, L11
+  // counts2[v] = counts2[v] + 1
+  Index        r48, r7, r46
+  Const        r21, 1
+  Add          r49, r48, r21
+  SetIndex     r7, r46, r49
+  SetGlobal    7,7,0,0
+  // if v in counts2 {
+  Jump         L12
+L11:
+  // counts2[v] = 1
+  Const        r21, 1
+  SetIndex     r7, r46, r21
+  SetGlobal    7,7,0,0
+  // keys2 = append(keys2, v)
+  Append       r50, r8, r46
+  Move         r8, r50
+  SetGlobal    8,8,0,0
+L12:
+  // i = i + 1
+  Const        r21, 1
+  AddInt       r51, r3, r21
+  Move         r3, r51
+  SetGlobal    3,3,0,0
+  // while i < len(arr2) {
+  Jump         L13
+L10:
+  // var max2 = 0
+  Const        r14, 0
+  Move         r9, r14
+  SetGlobal    9,9,0,0
+  // i = 0
+  Const        r14, 0
+  Move         r3, r14
+  SetGlobal    3,3,0,0
+L16:
+  // while i < len(keys2) {
+  Len          r52, r8
+  LessInt      r53, r3, r52
+  JumpIfFalse  r53, L14
+  // let k = keys2[i]
+  Index        r54, r8, r3
+  Move         r55, r54
+  // let c = counts2[k]
+  Index        r56, r7, r55
+  Move         r57, r56
+  // if c > max2 { max2 = c }
+  Less         r58, r9, r57
+  JumpIfFalse  r58, L15
+  Move         r9, r57
+  SetGlobal    9,9,0,0
+L15:
+  // i = i + 1
+  Const        r21, 1
+  AddInt       r59, r3, r21
+  Move         r3, r59
+  SetGlobal    3,3,0,0
+  // while i < len(keys2) {
+  Jump         L16
+L14:
+  // var modes2: list<int> = []
+  Const        r13, []
+  Move         r10, r13
+  SetGlobal    10,10,0,0
+  // i = 0
+  Const        r14, 0
+  Move         r3, r14
+  SetGlobal    3,3,0,0
+L19:
+  // while i < len(keys2) {
+  Len          r60, r8
+  LessInt      r61, r3, r60
+  JumpIfFalse  r61, L17
+  // let k = keys2[i]
+  Index        r62, r8, r3
+  Move         r63, r62
+  // if counts2[k] == max2 {
+  Index        r64, r7, r63
+  Equal        r65, r64, r9
+  JumpIfFalse  r65, L18
+  // modes2 = append(modes2, k)
+  Append       r66, r10, r63
+  Move         r10, r66
+  SetGlobal    10,10,0,0
+L18:
+  // i = i + 1
+  Const        r21, 1
+  AddInt       r67, r3, r21
+  Move         r3, r67
+  SetGlobal    3,3,0,0
+  // while i < len(keys2) {
+  Jump         L19
+L17:
+  // print(str(modes2))
+  Str          r68, r10
+  Print        r68
+  Return       r0

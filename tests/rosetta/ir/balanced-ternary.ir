@@ -1,0 +1,441 @@
+func main (regs=1)
+  Return       r0
+
+  // fun trimLeftZeros(s: string): string {
+func trimLeftZeros (regs=14)
+  // var i = 0
+  Const        r1, 0
+  Move         r2, r1
+L2:
+  // while i < len(s) && substring(s, i, i+1) == "0" {
+  Len          r3, r0
+  LessInt      r4, r2, r3
+  Const        r5, 1
+  AddInt       r6, r2, r5
+  Slice        r7, r0, r2, r6
+  Const        r8, "0"
+  Equal        r9, r7, r8
+  Move         r10, r4
+  JumpIfFalse  r10, L0
+  Move         r10, r9
+L0:
+  JumpIfFalse  r10, L1
+  // i = i + 1
+  Const        r5, 1
+  AddInt       r11, r2, r5
+  Move         r2, r11
+  // while i < len(s) && substring(s, i, i+1) == "0" {
+  Jump         L2
+L1:
+  // return substring(s, i, len(s))
+  Len          r12, r0
+  Slice        r13, r0, r2, r12
+  Return       r13
+
+  // fun btString(s: string): map<string, any> {
+func btString (regs=34)
+  // s = trimLeftZeros(s)
+  Move         r1, r0
+  Call         r2, trimLeftZeros, r1
+  Move         r0, r2
+  // var b: list<int> = []
+  Const        r3, []
+  Move         r4, r3
+  // var i = len(s) - 1
+  Len          r5, r0
+  Const        r6, 1
+  SubInt       r7, r5, r6
+  Move         r8, r7
+L5:
+  // while i >= 0 {
+  Const        r9, 0
+  LessEqInt    r10, r9, r8
+  JumpIfFalse  r10, L0
+  // let ch = substring(s, i, i+1)
+  Const        r6, 1
+  AddInt       r11, r8, r6
+  Slice        r12, r0, r8, r11
+  Move         r13, r12
+  // if ch == "+" {
+  Const        r14, "+"
+  Equal        r15, r13, r14
+  JumpIfFalse  r15, L1
+  // b = append(b, 1)
+  Const        r6, 1
+  Append       r16, r4, r6
+  Move         r4, r16
+  // if ch == "+" {
+  Jump         L2
+L1:
+  // if ch == "0" {
+  Const        r17, "0"
+  Equal        r18, r13, r17
+  JumpIfFalse  r18, L3
+  // b = append(b, 0)
+  Const        r9, 0
+  Append       r19, r4, r9
+  Move         r4, r19
+  // if ch == "0" {
+  Jump         L2
+L3:
+  // if ch == "-" {
+  Const        r20, "-"
+  Equal        r21, r13, r20
+  JumpIfFalse  r21, L4
+  // b = append(b, 0 - 1)
+  Const        r9, 0
+  Const        r6, 1
+  SubInt       r22, r9, r6
+  Append       r23, r4, r22
+  Move         r4, r23
+  // if ch == "-" {
+  Jump         L2
+L4:
+  // return {"bt": [], "ok": false}
+  Const        r24, {"bt": [], "ok": false}
+  Return       r24
+L2:
+  // i = i - 1
+  Const        r6, 1
+  SubInt       r25, r8, r6
+  Move         r8, r25
+  // while i >= 0 {
+  Jump         L5
+L0:
+  // return {"bt": b, "ok": true}
+  Const        r26, "bt"
+  Const        r27, "ok"
+  Const        r28, true
+  Move         r29, r26
+  Move         r30, r4
+  Move         r31, r27
+  Move         r32, r28
+  MakeMap      r33, 2, r29
+  Return       r33
+
+  // fun btToString(b: list<int>): string {
+func btToString (regs=23)
+  // if len(b) == 0 { return "0" }
+  Len          r1, r0
+  Const        r2, 0
+  EqualInt     r3, r1, r2
+  JumpIfFalse  r3, L0
+  Const        r4, "0"
+  Return       r4
+L0:
+  // var r = ""
+  Const        r5, ""
+  Move         r6, r5
+  // var i = len(b) - 1
+  Len          r7, r0
+  Const        r8, 1
+  SubInt       r9, r7, r8
+  Move         r10, r9
+L5:
+  // while i >= 0 {
+  Const        r2, 0
+  LessEqInt    r11, r2, r10
+  JumpIfFalse  r11, L1
+  // let d = b[i]
+  Index        r12, r0, r10
+  Move         r13, r12
+  // if d == 0 - 1 {
+  Const        r2, 0
+  Const        r8, 1
+  SubInt       r14, r2, r8
+  Equal        r15, r13, r14
+  JumpIfFalse  r15, L2
+  // r = r + "-"
+  Const        r16, "-"
+  Add          r17, r6, r16
+  Move         r6, r17
+  // if d == 0 - 1 {
+  Jump         L3
+L2:
+  // if d == 0 {
+  Const        r2, 0
+  Equal        r18, r13, r2
+  JumpIfFalse  r18, L4
+  // r = r + "0"
+  Const        r4, "0"
+  Add          r19, r6, r4
+  Move         r6, r19
+  // if d == 0 {
+  Jump         L3
+L4:
+  // r = r + "+"
+  Const        r20, "+"
+  Add          r21, r6, r20
+  Move         r6, r21
+L3:
+  // i = i - 1
+  Const        r8, 1
+  SubInt       r22, r10, r8
+  Move         r10, r22
+  // while i >= 0 {
+  Jump         L5
+L1:
+  // return r
+  Return       r6
+
+  // fun btInt(i: int): list<int> {
+func btInt (regs=21)
+  // if i == 0 { return [] }
+  Const        r1, 0
+  Equal        r2, r0, r1
+  JumpIfFalse  r2, L0
+  Const        r3, []
+  Return       r3
+L0:
+  // var n = i
+  Move         r4, r0
+  // var b: list<int> = []
+  Const        r3, []
+  Move         r5, r3
+L4:
+  // while n != 0 {
+  Const        r1, 0
+  NotEqual     r6, r4, r1
+  JumpIfFalse  r6, L1
+  // var m = n % 3
+  Const        r7, 3
+  Mod          r8, r4, r7
+  Move         r9, r8
+  // n = (n / 3) as int
+  Const        r7, 3
+  Div          r10, r4, r7
+  Cast         r11, r10, int
+  Move         r4, r11
+  // if m == 2 {
+  Const        r12, 2
+  Equal        r13, r9, r12
+  JumpIfFalse  r13, L2
+  // m = 0 - 1
+  Const        r1, 0
+  Const        r14, 1
+  SubInt       r15, r1, r14
+  Move         r9, r15
+  // n = n + 1
+  Const        r14, 1
+  Add          r16, r4, r14
+  Move         r4, r16
+  // if m == 2 {
+  Jump         L3
+L2:
+  // if m == 0 - 2 {
+  Const        r1, 0
+  Const        r12, 2
+  SubInt       r17, r1, r12
+  EqualInt     r18, r9, r17
+  JumpIfFalse  r18, L3
+  // m = 1
+  Const        r14, 1
+  Move         r9, r14
+  // n = n - 1
+  Const        r14, 1
+  Sub          r19, r4, r14
+  Move         r4, r19
+L3:
+  // b = append(b, m)
+  Append       r20, r5, r9
+  Move         r5, r20
+  // while n != 0 {
+  Jump         L4
+L1:
+  // return b
+  Return       r5
+
+  // fun btToInt(b: list<int>): int {
+func btToInt (regs=14)
+  // var r = 0
+  Const        r1, 0
+  Move         r2, r1
+  // var pt = 1
+  Const        r3, 1
+  Move         r4, r3
+  // var i = 0
+  Const        r1, 0
+  Move         r5, r1
+L1:
+  // while i < len(b) {
+  Len          r6, r0
+  LessInt      r7, r5, r6
+  JumpIfFalse  r7, L0
+  // r = r + b[i] * pt
+  Index        r8, r0, r5
+  Mul          r9, r8, r4
+  Add          r10, r2, r9
+  Move         r2, r10
+  // pt = pt * 3
+  Const        r11, 3
+  MulInt       r12, r4, r11
+  Move         r4, r12
+  // i = i + 1
+  Const        r3, 1
+  AddInt       r13, r5, r3
+  Move         r5, r13
+  // while i < len(b) {
+  Jump         L1
+L0:
+  // return r
+  Return       r2
+
+  // fun btNeg(b: list<int>): list<int> {
+func btNeg (regs=12)
+  // var r: list<int> = []
+  Const        r1, []
+  Move         r2, r1
+  // var i = 0
+  Const        r3, 0
+  Move         r4, r3
+L1:
+  // while i < len(b) {
+  Len          r5, r0
+  LessInt      r6, r4, r5
+  JumpIfFalse  r6, L0
+  // r = append(r, -b[i])
+  Index        r7, r0, r4
+  Neg          r8, r7
+  Append       r9, r2, r8
+  Move         r2, r9
+  // i = i + 1
+  Const        r10, 1
+  AddInt       r11, r4, r10
+  Move         r4, r11
+  // while i < len(b) {
+  Jump         L1
+L0:
+  // return r
+  Return       r2
+
+  // fun btAdd(a: list<int>, b: list<int>): list<int> {
+func btAdd (regs=9)
+  // return btInt(btToInt(a) + btToInt(b))
+  Move         r3, r0
+  Call         r4, btToInt, r3
+  Move         r5, r1
+  Call         r6, btToInt, r5
+  Add          r7, r4, r6
+  Move         r2, r7
+  Call         r8, btInt, r2
+  Return       r8
+
+  // fun btMul(a: list<int>, b: list<int>): list<int> {
+func btMul (regs=9)
+  // return btInt(btToInt(a) * btToInt(b))
+  Move         r3, r0
+  Call         r4, btToInt, r3
+  Move         r5, r1
+  Call         r6, btToInt, r5
+  Mul          r7, r4, r6
+  Move         r2, r7
+  Call         r8, btInt, r2
+  Return       r8
+
+  // fun padLeft(s: string, w: int): string {
+func padLeft (regs=7)
+  // var r = s
+  Move         r2, r0
+L1:
+  // while len(r) < w { r = " " + r }
+  Len          r3, r2
+  Less         r4, r3, r1
+  JumpIfFalse  r4, L0
+  Const        r5, " "
+  Add          r6, r5, r2
+  Move         r2, r6
+  Jump         L1
+L0:
+  // return r
+  Return       r2
+
+  // fun show(label: string, b: list<int>) {
+func show (regs=26)
+  // let l = padLeft(label, 7)
+  Move         r2, r0
+  Const        r4, 7
+  Move         r3, r4
+  Call2        r5, padLeft, r2, r3
+  Move         r6, r5
+  // let bs = padLeft(btToString(b), 12)
+  Move         r9, r1
+  Call         r10, btToString, r9
+  Move         r7, r10
+  Const        r11, 12
+  Move         r8, r11
+  Call2        r12, padLeft, r7, r8
+  Move         r13, r12
+  // let is = padLeft(str(btToInt(b)), 7)
+  Move         r16, r1
+  Call         r17, btToInt, r16
+  Str          r18, r17
+  Move         r14, r18
+  Const        r4, 7
+  Move         r15, r4
+  Call2        r19, padLeft, r14, r15
+  Move         r20, r19
+  // print(l + " " + bs + " " + is)
+  Const        r21, " "
+  Add          r22, r6, r21
+  Add          r23, r22, r13
+  Const        r21, " "
+  Add          r24, r23, r21
+  Add          r25, r24, r20
+  Print        r25
+  Return       r0
+
+  // fun main() {
+func main (regs=42)
+  // let ares = btString("+-0++0+")
+  Const        r1, "+-0++0+"
+  Move         r0, r1
+  Call         r2, btString, r0
+  Move         r3, r2
+  // let a = ares["bt"]
+  Const        r4, "bt"
+  Index        r5, r3, r4
+  Move         r6, r5
+  // let b = btInt(-436)
+  Const        r8, 436
+  Const        r9, -436
+  Move         r7, r9
+  Call         r10, btInt, r7
+  Move         r11, r10
+  // let cres = btString("+-++-")
+  Const        r13, "+-++-"
+  Move         r12, r13
+  Call         r14, btString, r12
+  Move         r15, r14
+  // let c = cres["bt"]
+  Const        r4, "bt"
+  Index        r16, r15, r4
+  Move         r17, r16
+  // show("a:", a)
+  Const        r20, "a:"
+  Move         r18, r20
+  Move         r19, r6
+  Call2        r21, show, r18, r19
+  // show("b:", b)
+  Const        r24, "b:"
+  Move         r22, r24
+  Move         r23, r11
+  Call2        r25, show, r22, r23
+  // show("c:", c)
+  Const        r28, "c:"
+  Move         r26, r28
+  Move         r27, r17
+  Call2        r29, show, r26, r27
+  // show("a(b-c):", btMul(a, btAdd(b, btNeg(c))))
+  Const        r32, "a(b-c):"
+  Move         r30, r32
+  Move         r33, r6
+  Move         r35, r11
+  Move         r37, r17
+  Call         r38, btNeg, r37
+  Move         r36, r38
+  Call2        r39, btAdd, r35, r36
+  Move         r34, r39
+  Call2        r40, btMul, r33, r34
+  Move         r31, r40
+  Call2        r41, show, r30, r31
+  Return       r0

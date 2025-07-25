@@ -1,0 +1,87 @@
+func main (regs=1)
+  Return       r0
+
+  // fun each(xs: list<int>, f: fun(int)) {
+func each (regs=12)
+  // for x in xs { f(x) }
+  IterPrep     r2, r0
+  Len          r3, r2
+  Const        r4, 0
+L1:
+  LessInt      r5, r4, r3
+  JumpIfFalse  r5, L0
+  Index        r6, r2, r4
+  Move         r7, r6
+  Move         r8, r7
+  CallV        r9, r1, 1, r8
+  Const        r10, 1
+  AddInt       r11, r4, r10
+  Move         r4, r11
+  Jump         L1
+L0:
+  Return       r0
+
+  // fun Map(xs: list<int>, f: fun(int): int): list<int> {
+func Map (regs=15)
+  // var r: list<int> = []
+  Const        r2, []
+  Move         r3, r2
+  // for x in xs {
+  IterPrep     r4, r0
+  Len          r5, r4
+  Const        r6, 0
+L1:
+  LessInt      r7, r6, r5
+  JumpIfFalse  r7, L0
+  Index        r8, r4, r6
+  Move         r9, r8
+  // r = append(r, f(x))
+  Move         r10, r9
+  CallV        r11, r1, 1, r10
+  Append       r12, r3, r11
+  Move         r3, r12
+  // for x in xs {
+  Const        r13, 1
+  AddInt       r14, r6, r13
+  Move         r6, r14
+  Jump         L1
+L0:
+  // return r
+  Return       r3
+
+  // fun main() {
+func main (regs=15)
+  // let s: list<int> = [1, 2, 3, 4, 5]
+  Const        r0, [1, 2, 3, 4, 5]
+  Move         r1, r0
+  // each(s, fun(i: int): any => print(str(i * i)))
+  Const        r4, [1, 2, 3, 4, 5]
+  Move         r2, r4
+  Move         r5, r1
+  MakeClosure  r6, fn4, 1, r5
+  Move         r3, r6
+  Call2        r7, each, r2, r3
+  // print(str(Map(s, fun(i: int): int => i * i)))
+  Const        r10, [1, 2, 3, 4, 5]
+  Move         r8, r10
+  Move         r11, r1
+  MakeClosure  r12, fn5, 1, r11
+  Move         r9, r12
+  Call2        r13, Map, r8, r9
+  Str          r14, r13
+  Print        r14
+  Return       r0
+
+  // each(s, fun(i: int): any => print(str(i * i)))
+func fn4 (regs=4)
+  // each(s, fun(i: int): any => print(str(i * i)))
+  Mul          r2, r1, r1
+  Str          r3, r2
+  Print        r3
+  Return       r3
+
+  // print(str(Map(s, fun(i: int): int => i * i)))
+func fn5 (regs=3)
+  // print(str(Map(s, fun(i: int): int => i * i)))
+  Mul          r2, r1, r1
+  Return       r2

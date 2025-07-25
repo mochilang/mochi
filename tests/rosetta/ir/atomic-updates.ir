@@ -1,0 +1,318 @@
+func main (regs=1)
+  Return       r0
+
+  // fun randOrder(seed: int, n: int): list<int> {
+func randOrder (regs=13)
+  // let next = (seed * 1664525 + 1013904223) % 2147483647
+  Const        r2, 1664525
+  Mul          r3, r0, r2
+  Const        r4, 1013904223
+  Add          r5, r3, r4
+  Const        r6, 2147483647
+  Mod          r7, r5, r6
+  Move         r8, r7
+  // return [next, next % n]
+  Move         r9, r8
+  Mod          r11, r8, r1
+  Move         r10, r11
+  MakeList     r12, 2, r9
+  Return       r12
+
+  // fun randChaos(seed: int, n: int): list<int> {
+func randChaos (regs=13)
+  // let next = (seed * 1103515245 + 12345) % 2147483647
+  Const        r2, 1103515245
+  Mul          r3, r0, r2
+  Const        r4, 12345
+  Add          r5, r3, r4
+  Const        r6, 2147483647
+  Mod          r7, r5, r6
+  Move         r8, r7
+  // return [next, next % n]
+  Move         r9, r8
+  Mod          r11, r8, r1
+  Move         r10, r11
+  MakeList     r12, 2, r9
+  Return       r12
+
+  // fun main() {
+func main (regs=117)
+  // let nBuckets = 10
+  Const        r0, 10
+  Move         r1, r0
+  // let initialSum = 1000
+  Const        r2, 1000
+  Move         r3, r2
+  // var buckets: list<int> = []
+  Const        r4, []
+  Move         r5, r4
+  // for i in 0..nBuckets {
+  Const        r6, 0
+  Const        r0, 10
+  Move         r7, r6
+L1:
+  LessInt      r8, r7, r0
+  JumpIfFalse  r8, L0
+  // buckets = append(buckets, 0)
+  Const        r6, 0
+  Append       r9, r5, r6
+  Move         r5, r9
+  // for i in 0..nBuckets {
+  Const        r10, 1
+  AddInt       r11, r7, r10
+  Move         r7, r11
+  Jump         L1
+L0:
+  // var i = nBuckets
+  Const        r0, 10
+  Move         r7, r0
+  // var dist = initialSum
+  Const        r2, 1000
+  Move         r12, r2
+L3:
+  // while i > 0 {
+  Const        r6, 0
+  LessInt      r13, r6, r7
+  JumpIfFalse  r13, L2
+  // let v = dist / i
+  DivInt       r14, r12, r7
+  Move         r15, r14
+  // i = i - 1
+  Const        r16, 1
+  SubInt       r17, r7, r16
+  Move         r7, r17
+  // buckets[i] = v
+  SetIndex     r5, r7, r15
+  // dist = dist - v
+  SubInt       r18, r12, r15
+  Move         r12, r18
+  // while i > 0 {
+  Jump         L3
+L2:
+  // var tc0 = 0
+  Const        r6, 0
+  Move         r19, r6
+  // var tc1 = 0
+  Const        r6, 0
+  Move         r20, r6
+  // var total = 0
+  Const        r6, 0
+  Move         r21, r6
+  // var nTicks = 0
+  Const        r6, 0
+  Move         r22, r6
+  // var seedOrder = 1
+  Const        r16, 1
+  Move         r23, r16
+  // var seedChaos = 2
+  Const        r24, 2
+  Move         r25, r24
+  // print("sum  ---updates---    mean  buckets")
+  Const        r26, "sum  ---updates---    mean  buckets"
+  Print        r26
+  // var t = 0
+  Const        r6, 0
+  Move         r27, r6
+L12:
+  // while t < 5 {
+  Const        r28, 5
+  LessInt      r29, r27, r28
+  JumpIfFalse  r29, L4
+  // var r = randOrder(seedOrder, nBuckets)
+  Move         r30, r23
+  Const        r0, 10
+  Move         r31, r0
+  Call2        r32, randOrder, r30, r31
+  Move         r33, r32
+  // seedOrder = r[0]
+  Const        r6, 0
+  Index        r34, r33, r6
+  Move         r23, r34
+  // var b1 = r[1]
+  Const        r16, 1
+  Index        r35, r33, r16
+  Move         r36, r35
+  // var b2 = (b1 + 1) % nBuckets
+  Const        r16, 1
+  Add          r37, r36, r16
+  Const        r0, 10
+  Mod          r38, r37, r0
+  Move         r39, r38
+  // let v1 = buckets[b1]
+  Index        r40, r5, r36
+  Move         r41, r40
+  // let v2 = buckets[b2]
+  Index        r42, r5, r39
+  Move         r43, r42
+  // if v1 > v2 {
+  Less         r44, r43, r41
+  JumpIfFalse  r44, L5
+  // var a = ((v1 - v2) / 2) as int
+  Sub          r45, r41, r43
+  Const        r24, 2
+  Div          r46, r45, r24
+  Cast         r47, r46, int
+  Move         r48, r47
+  // if a > buckets[b1] { a = buckets[b1] }
+  Index        r49, r5, r36
+  Less         r50, r49, r48
+  JumpIfFalse  r50, L6
+  Index        r51, r5, r36
+  Move         r48, r51
+L6:
+  // buckets[b1] = buckets[b1] - a
+  Index        r52, r5, r36
+  Sub          r53, r52, r48
+  SetIndex     r5, r36, r53
+  // buckets[b2] = buckets[b2] + a
+  Index        r54, r5, r39
+  Add          r55, r54, r48
+  SetIndex     r5, r39, r55
+  // if v1 > v2 {
+  Jump         L7
+L5:
+  // var a = ((v2 - v1) / 2) as int
+  Sub          r56, r43, r41
+  Const        r24, 2
+  Div          r57, r56, r24
+  Cast         r58, r57, int
+  Move         r59, r58
+  // if a > buckets[b2] { a = buckets[b2] }
+  Index        r60, r5, r39
+  Less         r61, r60, r59
+  JumpIfFalse  r61, L8
+  Index        r62, r5, r39
+  Move         r59, r62
+L8:
+  // buckets[b2] = buckets[b2] - a
+  Index        r63, r5, r39
+  Sub          r64, r63, r59
+  SetIndex     r5, r39, r64
+  // buckets[b1] = buckets[b1] + a
+  Index        r65, r5, r36
+  Add          r66, r65, r59
+  SetIndex     r5, r36, r66
+L7:
+  // tc0 = tc0 + 1
+  Const        r16, 1
+  AddInt       r67, r19, r16
+  Move         r19, r67
+  // r = randChaos(seedChaos, nBuckets)
+  Move         r68, r25
+  Const        r0, 10
+  Move         r69, r0
+  Call2        r70, randChaos, r68, r69
+  Move         r33, r70
+  // seedChaos = r[0]
+  Const        r6, 0
+  Index        r71, r33, r6
+  Move         r25, r71
+  // b1 = r[1]
+  Const        r16, 1
+  Index        r72, r33, r16
+  Move         r36, r72
+  // b2 = (b1 + 1) % nBuckets
+  Const        r16, 1
+  Add          r73, r36, r16
+  Const        r0, 10
+  Mod          r74, r73, r0
+  Move         r39, r74
+  // r = randChaos(seedChaos, buckets[b1] + 1)
+  Move         r75, r25
+  Index        r77, r5, r36
+  Const        r16, 1
+  Add          r78, r77, r16
+  Move         r76, r78
+  Call2        r79, randChaos, r75, r76
+  Move         r33, r79
+  // seedChaos = r[0]
+  Const        r6, 0
+  Index        r80, r33, r6
+  Move         r25, r80
+  // var amt = r[1]
+  Const        r16, 1
+  Index        r81, r33, r16
+  Move         r82, r81
+  // if amt > buckets[b1] { amt = buckets[b1] }
+  Index        r83, r5, r36
+  Less         r84, r83, r82
+  JumpIfFalse  r84, L9
+  Index        r85, r5, r36
+  Move         r82, r85
+L9:
+  // buckets[b1] = buckets[b1] - amt
+  Index        r86, r5, r36
+  Sub          r87, r86, r82
+  SetIndex     r5, r36, r87
+  // buckets[b2] = buckets[b2] + amt
+  Index        r88, r5, r39
+  Add          r89, r88, r82
+  SetIndex     r5, r39, r89
+  // tc1 = tc1 + 1
+  Const        r16, 1
+  AddInt       r90, r20, r16
+  Move         r20, r90
+  // var sum = 0
+  Const        r6, 0
+  Move         r91, r6
+  // var idx = 0
+  Const        r6, 0
+  Move         r92, r6
+L11:
+  // while idx < nBuckets {
+  Const        r0, 10
+  LessInt      r93, r92, r0
+  JumpIfFalse  r93, L10
+  // sum = sum + buckets[idx]
+  Index        r94, r5, r92
+  Add          r95, r91, r94
+  Move         r91, r95
+  // idx = idx + 1
+  Const        r16, 1
+  AddInt       r96, r92, r16
+  Move         r92, r96
+  // while idx < nBuckets {
+  Jump         L11
+L10:
+  // total = total + tc0 + tc1
+  AddInt       r97, r21, r19
+  AddInt       r98, r97, r20
+  Move         r21, r98
+  // nTicks = nTicks + 1
+  Const        r16, 1
+  AddInt       r99, r22, r16
+  Move         r22, r99
+  // print(str(sum) + " " + str(tc0) + " " + str(tc1) + " " + str(total / nTicks) + "  " + str(buckets))
+  Str          r100, r91
+  Const        r101, " "
+  Add          r102, r100, r101
+  Str          r103, r19
+  Add          r104, r102, r103
+  Const        r101, " "
+  Add          r105, r104, r101
+  Str          r106, r20
+  Add          r107, r105, r106
+  Const        r101, " "
+  Add          r108, r107, r101
+  DivInt       r109, r21, r22
+  Str          r110, r109
+  Add          r111, r108, r110
+  Const        r112, "  "
+  Add          r113, r111, r112
+  Str          r114, r5
+  Add          r115, r113, r114
+  Print        r115
+  // tc0 = 0
+  Const        r6, 0
+  Move         r19, r6
+  // tc1 = 0
+  Const        r6, 0
+  Move         r20, r6
+  // t = t + 1
+  Const        r16, 1
+  AddInt       r116, r27, r16
+  Move         r27, r116
+  // while t < 5 {
+  Jump         L12
+L4:
+  Return       r0

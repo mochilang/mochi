@@ -1,0 +1,220 @@
+func main (regs=1)
+  Return       r0
+
+  // fun isPrime(n: int): bool {
+func isPrime (regs=24)
+  // if n < 2 { return false }
+  Const        r1, 2
+  Less         r2, r0, r1
+  JumpIfFalse  r2, L0
+  Const        r3, false
+  Return       r3
+L0:
+  // if n % 2 == 0 { return n == 2 }
+  Const        r1, 2
+  Mod          r4, r0, r1
+  Const        r5, 0
+  Equal        r6, r4, r5
+  JumpIfFalse  r6, L1
+  Const        r1, 2
+  Equal        r7, r0, r1
+  Return       r7
+L1:
+  // if n % 3 == 0 { return n == 3 }
+  Const        r8, 3
+  Mod          r9, r0, r8
+  Const        r5, 0
+  Equal        r10, r9, r5
+  JumpIfFalse  r10, L2
+  Const        r8, 3
+  Equal        r11, r0, r8
+  Return       r11
+L2:
+  // var d = 5
+  Const        r12, 5
+  Move         r13, r12
+L6:
+  // while d * d <= n {
+  MulInt       r14, r13, r13
+  LessEq       r15, r14, r0
+  JumpIfFalse  r15, L3
+  // if n % d == 0 { return false }
+  Mod          r16, r0, r13
+  Const        r5, 0
+  Equal        r17, r16, r5
+  JumpIfFalse  r17, L4
+  Const        r3, false
+  Return       r3
+L4:
+  // d = d + 2
+  Const        r1, 2
+  AddInt       r18, r13, r1
+  Move         r13, r18
+  // if n % d == 0 { return false }
+  Mod          r19, r0, r13
+  Const        r5, 0
+  Equal        r20, r19, r5
+  JumpIfFalse  r20, L5
+  Const        r3, false
+  Return       r3
+L5:
+  // d = d + 4
+  Const        r21, 4
+  AddInt       r22, r13, r21
+  Move         r13, r22
+  // while d * d <= n {
+  Jump         L6
+L3:
+  // return true
+  Const        r23, true
+  Return       r23
+
+  // fun countPrimeFactors(n: int): int {
+func countPrimeFactors (regs=17)
+  // if n == 1 { return 0 }
+  Const        r1, 1
+  Equal        r2, r0, r1
+  JumpIfFalse  r2, L0
+  Const        r3, 0
+  Return       r3
+L0:
+  // if isPrime(n) { return 1 }
+  Move         r4, r0
+  Call         r5, isPrime, r4
+  JumpIfFalse  r5, L1
+  Const        r1, 1
+  Return       r1
+L1:
+  // var count = 0
+  Const        r3, 0
+  Move         r6, r3
+  // var f = 2
+  Const        r7, 2
+  Move         r8, r7
+L2:
+  // while true {
+  Const        r9, true
+  // if n % f == 0 {
+  Mod          r10, r0, r8
+  Const        r3, 0
+  Equal        r11, r10, r3
+  JumpIfFalse  r11, L2
+  // count = count + 1
+  Const        r1, 1
+  AddInt       r12, r6, r1
+  Move         r6, r12
+  // n = n / f
+  Div          r13, r0, r8
+  Move         r0, r13
+  // if n == 1 { return count }
+  Const        r1, 1
+  Equal        r14, r0, r1
+  JumpIfFalse  r14, L3
+  Return       r6
+L3:
+  // if isPrime(n) { f = n }
+  Move         r15, r0
+  Call         r16, isPrime, r15
+  JumpIfFalse  r16, L2
+  Move         r8, r0
+  // while true {
+  Jump         L2
+
+  // fun pad4(n: int): string {
+func pad4 (regs=8)
+  // var s = str(n)
+  Str          r1, r0
+  Move         r2, r1
+L1:
+  // while len(s) < 4 {
+  Len          r3, r2
+  Const        r4, 4
+  LessInt      r5, r3, r4
+  JumpIfFalse  r5, L0
+  // s = " " + s
+  Const        r6, " "
+  Add          r7, r6, r2
+  Move         r2, r7
+  // while len(s) < 4 {
+  Jump         L1
+L0:
+  // return s
+  Return       r2
+
+  // fun main() {
+func main (regs=29)
+  // let max = 120
+  Const        r0, 120
+  Move         r1, r0
+  // print("The attractive numbers up to and including " + str(max) + " are:")
+  Const        r2, "The attractive numbers up to and including "
+  Const        r3, "120"
+  Const        r4, "The attractive numbers up to and including 120"
+  Const        r5, " are:"
+  Const        r6, "The attractive numbers up to and including 120 are:"
+  Print        r6
+  // var count = 0
+  Const        r7, 0
+  Move         r8, r7
+  // var line = ""
+  Const        r9, ""
+  Move         r10, r9
+  // var lineCount = 0
+  Const        r7, 0
+  Move         r11, r7
+  // var i = 1
+  Const        r12, 1
+  Move         r13, r12
+L2:
+  // while i <= max {
+  Const        r0, 120
+  LessEqInt    r14, r13, r0
+  JumpIfFalse  r14, L0
+  // let c = countPrimeFactors(i)
+  Move         r15, r13
+  Call         r16, countPrimeFactors, r15
+  Move         r17, r16
+  // if isPrime(c) {
+  Move         r18, r17
+  Call         r19, isPrime, r18
+  JumpIfFalse  r19, L1
+  // line = line + pad4(i)
+  Move         r20, r13
+  Call         r21, pad4, r20
+  Add          r22, r10, r21
+  Move         r10, r22
+  // count = count + 1
+  Const        r12, 1
+  AddInt       r23, r8, r12
+  Move         r8, r23
+  // lineCount = lineCount + 1
+  Const        r12, 1
+  AddInt       r24, r11, r12
+  Move         r11, r24
+  // if lineCount == 20 {
+  Const        r25, 20
+  EqualInt     r26, r11, r25
+  JumpIfFalse  r26, L1
+  // print(line)
+  Print        r10
+  // line = ""
+  Const        r9, ""
+  Move         r10, r9
+  // lineCount = 0
+  Const        r7, 0
+  Move         r11, r7
+L1:
+  // i = i + 1
+  Const        r12, 1
+  AddInt       r27, r13, r12
+  Move         r13, r27
+  // while i <= max {
+  Jump         L2
+L0:
+  // if lineCount > 0 { print(line) }
+  Const        r7, 0
+  LessInt      r28, r7, r11
+  JumpIfFalse  r28, L3
+  Print        r10
+L3:
+  Return       r0

@@ -1,0 +1,102 @@
+func main (regs=1)
+  Return       r0
+
+  // fun countDivisors(n: int): int {
+func countDivisors (regs=13)
+  // if n < 2 { return 1 }
+  Const        r1, 2
+  Less         r2, r0, r1
+  JumpIfFalse  r2, L0
+  Const        r3, 1
+  Return       r3
+L0:
+  // var count = 2 // 1 and n
+  Const        r1, 2
+  Move         r4, r1
+  // var i = 2
+  Const        r1, 2
+  Move         r5, r1
+L3:
+  // while i <= n / 2 {
+  Const        r1, 2
+  Div          r6, r0, r1
+  LessEq       r7, r5, r6
+  JumpIfFalse  r7, L1
+  // if n % i == 0 { count = count + 1 }
+  Mod          r8, r0, r5
+  Const        r9, 0
+  Equal        r10, r8, r9
+  JumpIfFalse  r10, L2
+  Const        r3, 1
+  AddInt       r11, r4, r3
+  Move         r4, r11
+L2:
+  // i = i + 1
+  Const        r3, 1
+  AddInt       r12, r5, r3
+  Move         r5, r12
+  // while i <= n / 2 {
+  Jump         L3
+L1:
+  // return count
+  Return       r4
+
+  // fun main() {
+func main (regs=23)
+  // print("The first 20 anti-primes are:")
+  Const        r0, "The first 20 anti-primes are:"
+  Print        r0
+  // var maxDiv = 0
+  Const        r1, 0
+  Move         r2, r1
+  // var count = 0
+  Const        r1, 0
+  Move         r3, r1
+  // var n = 1
+  Const        r4, 1
+  Move         r5, r4
+  // var line = ""
+  Const        r6, ""
+  Move         r7, r6
+L2:
+  // while count < 20 {
+  Const        r8, 20
+  LessInt      r9, r3, r8
+  JumpIfFalse  r9, L0
+  // let d = countDivisors(n)
+  Move         r10, r5
+  Call         r11, countDivisors, r10
+  Move         r12, r11
+  // if d > maxDiv {
+  Less         r13, r2, r12
+  JumpIfFalse  r13, L1
+  // line = line + str(n) + " "
+  Str          r14, r5
+  Add          r15, r7, r14
+  Const        r16, " "
+  Add          r17, r15, r16
+  Move         r7, r17
+  // maxDiv = d
+  Move         r2, r12
+  // count = count + 1
+  Const        r4, 1
+  AddInt       r18, r3, r4
+  Move         r3, r18
+L1:
+  // n = n + 1
+  Const        r4, 1
+  AddInt       r19, r5, r4
+  Move         r5, r19
+  // while count < 20 {
+  Jump         L2
+L0:
+  // line = substring(line, 0, len(line) - 1)
+  Const        r1, 0
+  Len          r20, r7
+  Const        r4, 1
+  SubInt       r21, r20, r4
+  Slice        r22, r7, r1, r21
+  Move         r7, r22
+  // print(line)
+  Print        r7
+  Return       r0
