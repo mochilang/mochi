@@ -5,6 +5,7 @@ package ocaml_test
 import (
 	"bufio"
 	"bytes"
+	"encoding/json"
 	"flag"
 	"fmt"
 	"os"
@@ -50,6 +51,8 @@ func runCase(src, outDir string) ([]byte, error) {
 	codePath := filepath.Join(outDir, base+".ml")
 	outPath := filepath.Join(outDir, base+".out")
 	errPath := filepath.Join(outDir, base+".error")
+	benchPath := filepath.Join(outDir, base+".bench")
+	bench := os.Getenv("MOCHI_BENCHMARK") == "true" || os.Getenv("MOCHI_BENCHMARK") == "1"
 
 	prog, err := parser.Parse(src)
 	if err != nil {
@@ -61,6 +64,7 @@ func runCase(src, outDir string) ([]byte, error) {
 		_ = os.WriteFile(errPath, []byte(errs[0].Error()), 0o644)
 		return nil, errs[0]
 	}
+	ocaml.SetBenchMain(bench)
 	ast, err := ocaml.Transpile(prog, env)
 	if err != nil {
 		_ = os.WriteFile(errPath, []byte(err.Error()), 0o644)
@@ -86,7 +90,11 @@ func runCase(src, outDir string) ([]byte, error) {
 		return nil, err
 	}
 	outBytes := bytes.TrimSpace(out)
-	_ = os.WriteFile(outPath, outBytes, 0o644)
+	if bench {
+		_ = os.WriteFile(benchPath, outBytes, 0o644)
+	} else {
+		_ = os.WriteFile(outPath, outBytes, 0o644)
+	}
 	_ = os.Remove(errPath)
 	return outBytes, nil
 }
@@ -190,25 +198,39 @@ func updateRosettaReadme() {
 		return
 	}
 	total := len(names)
-	completed := 0
-	var lines []string
+	compiled := 0
+	var rows []string
+	rows = append(rows, "| Index | Name | Status | Duration | Memory |")
+	rows = append(rows, "|------:|------|:-----:|---------:|-------:|")
 	for i, nameFile := range names {
 		name := strings.TrimSuffix(nameFile, ".mochi")
-		mark := "[ ]"
-		if _, err := os.Stat(filepath.Join(outDir, name+".out")); err == nil {
-			if _, err2 := os.Stat(filepath.Join(outDir, name+".error")); os.IsNotExist(err2) {
-				completed++
-				mark = "[x]"
+		status := " "
+		dur := ""
+		mem := ""
+		if _, err := os.Stat(filepath.Join(outDir, name+".error")); err == nil {
+			status = "error"
+		} else if _, err := os.Stat(filepath.Join(outDir, name+".ml")); err == nil {
+			status = "✓"
+			compiled++
+		}
+		if data, err := os.ReadFile(filepath.Join(outDir, name+".bench")); err == nil {
+			var r struct {
+				DurationUS  int64 `json:"duration_us"`
+				MemoryBytes int64 `json:"memory_bytes"`
+			}
+			if json.Unmarshal(bytes.TrimSpace(data), &r) == nil {
+				dur = formatDuration(time.Duration(r.DurationUS) * time.Microsecond)
+				mem = formatBytes(r.MemoryBytes)
 			}
 		}
-		lines = append(lines, fmt.Sprintf("%d. %s %s (%d)", i+1, mark, name, i+1))
+		rows = append(rows, fmt.Sprintf("| %d | %s | %s | %s | %s |", i+1, name, status, dur, mem))
 	}
 
 	var buf bytes.Buffer
 	buf.WriteString("# Rosetta OCaml Transpiler\n\n")
 	buf.WriteString("This directory contains OCaml code generated from Rosetta Code programs in `tests/rosetta/x/Mochi`.\n\n")
-	fmt.Fprintf(&buf, "Completed programs: %d/%d\n\n", completed, total)
-	buf.WriteString(strings.Join(lines, "\n"))
+	fmt.Fprintf(&buf, "Completed programs: %d/%d\n\n", compiled, total)
+	buf.WriteString(strings.Join(rows, "\n"))
 	buf.WriteString("\n")
 	if out, err := exec.Command("git", "log", "-1", "--format=%cI").Output(); err == nil {
 		if t, perr := time.Parse(time.RFC3339, strings.TrimSpace(string(out))); perr == nil {
@@ -216,4 +238,35 @@ func updateRosettaReadme() {
 		}
 	}
 	_ = os.WriteFile(readmePath, buf.Bytes(), 0o644)
+}
+
+func formatDuration(d time.Duration) string {
+	switch {
+	case d < time.Microsecond:
+		return fmt.Sprintf("%dns", d.Nanoseconds())
+	case d < time.Millisecond:
+		return fmt.Sprintf("%.1fµs", float64(d.Microseconds()))
+	case d < time.Second:
+		return fmt.Sprintf("%.1fms", float64(d.Milliseconds()))
+	default:
+		return fmt.Sprintf("%.2fs", d.Seconds())
+	}
+}
+
+func formatBytes(n int64) string {
+	const (
+		_KB = 1024
+		_MB = _KB * 1024
+		_GB = _MB * 1024
+	)
+	switch {
+	case n >= _GB:
+		return fmt.Sprintf("%.2fGB", float64(n)/float64(_GB))
+	case n >= _MB:
+		return fmt.Sprintf("%.2fMB", float64(n)/float64(_MB))
+	case n >= _KB:
+		return fmt.Sprintf("%.2fKB", float64(n)/float64(_KB))
+	default:
+		return fmt.Sprintf("%dB", n)
+	}
 }
