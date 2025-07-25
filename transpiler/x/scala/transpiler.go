@@ -985,7 +985,7 @@ func (c *CastExpr) emit(w io.Writer) {
 	switch c.Type {
 	case "int":
 		fmt.Fprint(w, ".asInstanceOf[Int]")
-	case "float":
+	case "float", "Double":
 		fmt.Fprint(w, ".toString.toDouble")
 	case "string":
 		fmt.Fprint(w, ".toString")
@@ -1456,7 +1456,10 @@ func Emit(p *Program) []byte {
 	}
 	buf.WriteString("  }\n")
 	buf.WriteString("}\n")
-	return formatScala(buf.Bytes())
+	code := formatScala(buf.Bytes())
+	code = bytes.ReplaceAll(code, []byte("keys()"), []byte("keys"))
+	code = bytes.ReplaceAll(code, []byte("values()"), []byte("values"))
+	return code
 }
 
 // Transpile converts a Mochi AST into our simple Scala AST.
@@ -1807,8 +1810,10 @@ func convertBinary(b *parser.BinaryExpr, env *types.Env) (Expr, error) {
 					left = &CastExpr{Value: left, Type: rt}
 				}
 				if (lt == "Any" || lt == "") && (rt == "Any" || rt == "") {
-					left = &CastExpr{Value: left, Type: "Int"}
-					right = &CastExpr{Value: right, Type: "Int"}
+					// fallback to floating point arithmetic when
+					// both operand types are unknown
+					left = &CastExpr{Value: left, Type: "Double"}
+					right = &CastExpr{Value: right, Type: "Double"}
 				}
 			} else if op == "&&" || op == "||" {
 				if inferTypeWithEnv(left, env) != "Boolean" {
@@ -2058,19 +2063,21 @@ func convertPostfix(pf *parser.PostfixExpr, env *types.Env) (Expr, error) {
 		case op.Field != nil:
 			if n, ok := expr.(*Name); ok && env != nil {
 				if typ, err := env.GetVar(n.Name); err == nil {
-					switch typ.(type) {
-					case types.GroupType, types.MapType:
-						ie := &IndexExpr{Value: expr, Index: &StringLit{Value: op.Field.Name}, Container: toScalaTypeFromType(typ)}
-						ie.Type = inferTypeWithEnv(ie, env)
-						if op.Field.Name == "value" {
-							ie.Type = "Map[String,Int]"
-						} else if op.Field.Name == "left" || op.Field.Name == "right" {
-							if mt, ok2 := typ.(types.MapType); ok2 {
-								ie.Type = toScalaTypeFromType(mt)
+					if !(op.Field.Name == "keys" && i+1 < len(pf.Ops) && pf.Ops[i+1].Call != nil && len(pf.Ops[i+1].Call.Args) == 0) {
+						switch typ.(type) {
+						case types.GroupType, types.MapType:
+							ie := &IndexExpr{Value: expr, Index: &StringLit{Value: op.Field.Name}, Container: toScalaTypeFromType(typ)}
+							ie.Type = inferTypeWithEnv(ie, env)
+							if op.Field.Name == "value" {
+								ie.Type = "Map[String,Int]"
+							} else if op.Field.Name == "left" || op.Field.Name == "right" {
+								if mt, ok2 := typ.(types.MapType); ok2 {
+									ie.Type = toScalaTypeFromType(mt)
+								}
 							}
+							expr = ie
+							continue
 						}
-						expr = ie
-						continue
 					}
 				}
 				if kind, ok := builtinAliases[n.Name]; ok {
