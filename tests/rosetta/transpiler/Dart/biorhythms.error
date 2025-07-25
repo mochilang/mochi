@@ -1,4 +1,0 @@
-run: exit status 254
-../../../tests/rosetta/transpiler/Dart/biorhythms.dart:177:10: Error: Method not found: 'contains'.
-    if (!contains(pct, ".")) {
-         ^^^^^^^^
