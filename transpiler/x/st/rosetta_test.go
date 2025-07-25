@@ -59,6 +59,7 @@ func TestSmalltalkRosetta(t *testing.T) {
 	}
 
 	bench := os.Getenv("MOCHI_BENCHMARK") == "true" || os.Getenv("MOCHI_BENCHMARK") == "1"
+	st.SetBenchMain(bench)
 
 	for i, srcPath := range files {
 		name := strings.TrimSuffix(filepath.Base(srcPath), ".mochi")
@@ -92,7 +93,7 @@ func TestSmalltalkRosetta(t *testing.T) {
 				return
 			}
 			var buf bytes.Buffer
-			if err := st.Emit(&buf, ast, bench); err != nil {
+			if err := st.Emit(&buf, ast, false); err != nil {
 				_ = os.WriteFile(errPath, []byte(err.Error()), 0o644)
 				t.Skip("emit error")
 				return
