@@ -2,7 +2,7 @@
 
 This checklist is auto-generated.
 Generated TypeScript code from programs in `tests/rosetta/x/Mochi` lives in `tests/rosetta/transpiler/TypeScript`.
-Last updated: 2025-07-25 09:59 UTC
+Last updated: 2025-07-25 10:10 UTC
 
 ## Rosetta Golden Test Checklist (272/284)
 | Index | Name | Status | Duration | Memory |
@@ -18,18 +18,18 @@ Last updated: 2025-07-25 09:59 UTC
 | 9 | 24-game-solve | ✓ | 10.405ms | 5.1 MB |
 | 10 | 24-game | ✓ | 819µs | 512.0 KB |
 | 11 | 4-rings-or-4-squares-puzzle | ✓ | 16.8ms | 17.0 MB |
-| 12 | 9-billion-names-of-god-the-integer | ✓ | 4.267838s | 523.1 MB |
-| 13 | 99-bottles-of-beer-2 | ✓ | 571.223ms | 5.2 MB |
-| 14 | 99-bottles-of-beer | ✓ | 571.223ms | 3.4 MB |
-| 15 | DNS-query | ✓ | 571.223ms | 128.0 KB |
-| 16 | a+b | ✓ | 571.223ms | 384.0 KB |
-| 17 | abbreviations-automatic | ✓ | 571.223ms | 5.2 MB |
-| 18 | abbreviations-easy | ✓ | 571.223ms | 384.0 KB |
-| 19 | abbreviations-simple | ✓ | 571.223ms | 640.0 KB |
-| 20 | abc-problem | ✓ | 571.223ms | 512.0 KB |
-| 21 | abelian-sandpile-model-identity | ✓ | 571.223ms | 128.0 KB |
-| 22 | abelian-sandpile-model | ✓ | 571.223ms | 256.0 KB |
-| 23 | abstract-type | ✓ | 571.223ms | 128.0 KB |
+| 12 | 9-billion-names-of-god-the-integer | ✓ | 6.453699s | 555.6 MB |
+| 13 | 99-bottles-of-beer-2 | ✓ | 21.361ms | 5.3 MB |
+| 14 | 99-bottles-of-beer | ✓ | 14.585ms | 3.5 MB |
+| 15 | DNS-query | ✓ | 631µs | 128.0 KB |
+| 16 | a+b | ✓ | 1.936ms | 512.0 KB |
+| 17 | abbreviations-automatic | ✓ | 25.499ms | 5.2 MB |
+| 18 | abbreviations-easy | ✓ | 6.557ms | 384.0 KB |
+| 19 | abbreviations-simple | ✓ | 4.605ms | 640.0 KB |
+| 20 | abc-problem | ✓ | 3.639ms | 384.0 KB |
+| 21 | abelian-sandpile-model-identity | ✓ | 3.276ms | 128.0 KB |
+| 22 | abelian-sandpile-model | ✓ | 3.758ms | 256.0 KB |
+| 23 | abstract-type | ✓ | 626µs |  |
 | 24 | abundant-deficient-and-perfect-number-classifications | ✓ | 571.223ms | 7.4 MB |
 | 25 | abundant-odd-numbers | ✓ | 571.223ms | 10.8 MB |
 | 26 | accumulator-factory | ✓ | 571.223ms | 128.0 KB |
