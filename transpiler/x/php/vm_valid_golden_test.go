@@ -22,6 +22,8 @@ func TestPHPTranspiler_VMValid_Golden(t *testing.T) {
 	if _, err := exec.LookPath("php"); err != nil {
 		t.Skip("php not installed")
 	}
+	bench := os.Getenv("MOCHI_BENCHMARK") == "true" || os.Getenv("MOCHI_BENCHMARK") == "1"
+	php.SetBenchMain(bench)
 	root := vmRepoRoot(t)
 	outDir := filepath.Join(root, "tests", "transpiler", "x", "php")
 	os.MkdirAll(outDir, 0o755)
@@ -56,7 +58,11 @@ func TestPHPTranspiler_VMValid_Golden(t *testing.T) {
 			return nil, err
 		}
 		cmd := exec.Command("php", codePath)
-		cmd.Env = append(os.Environ(), "MOCHI_NOW_SEED=1")
+		envv := append(os.Environ(), "MOCHI_NOW_SEED=1")
+		if bench {
+			envv = append(envv, "MOCHI_BENCHMARK=1")
+		}
+		cmd.Env = envv
 		if data, err := os.ReadFile(strings.TrimSuffix(src, ".mochi") + ".in"); err == nil {
 			cmd.Stdin = bytes.NewReader(data)
 		}
