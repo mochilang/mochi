@@ -61,6 +61,7 @@ var scalaKeywords = map[string]bool{
 	"case":   true,
 	"match":  true,
 	"with":   true,
+	"Map":    true,
 }
 
 func escapeName(name string) string {
@@ -429,15 +430,15 @@ func (s *AssignStmt) emit(w io.Writer) {
 }
 
 func (f *FunStmt) emit(w io.Writer) {
-	fmt.Fprintf(w, "def %s(", f.Name)
+	fmt.Fprintf(w, "def %s(", escapeName(f.Name))
 	for i, p := range f.Params {
 		if i > 0 {
 			fmt.Fprint(w, ", ")
 		}
 		if p.Type != "" {
-			fmt.Fprintf(w, "%s: %s", p.Name, p.Type)
+			fmt.Fprintf(w, "%s: %s", escapeName(p.Name), p.Type)
 		} else {
-			fmt.Fprint(w, p.Name)
+			fmt.Fprint(w, escapeName(p.Name))
 		}
 	}
 	fmt.Fprint(w, ")")
@@ -692,7 +693,7 @@ func (b *BenchStmt) emit(w io.Writer) {
 	fmt.Fprint(w, "  val _durUs = (_end - _start) / 1000\n")
 	fmt.Fprint(w, "  var _memDiff = _endMem - _startMem\n")
 	fmt.Fprint(w, "  if (_memDiff <= 0) _memDiff = _endMem\n")
-	fmt.Fprintf(w, "  println(toJson(Map(\"duration_us\" -> _durUs, \"memory_bytes\" -> _memDiff, \"name\" -> \"%s\")))\n", b.Name)
+	fmt.Fprintf(w, "  println(toJson(scala.collection.immutable.Map(\"duration_us\" -> _durUs, \"memory_bytes\" -> _memDiff, \"name\" -> \"%s\")))\n", b.Name)
 	fmt.Fprint(w, "}")
 }
 
@@ -996,7 +997,24 @@ func (c *CastExpr) emit(w io.Writer) {
 	}
 	switch c.Type {
 	case "int":
-		fmt.Fprint(w, ".asInstanceOf[Int]")
+		switch v := c.Value.(type) {
+		case *IndexExpr:
+			if v.Container == "String" {
+				fmt.Fprint(w, ".charAt(0).toInt")
+			} else {
+				fmt.Fprint(w, ".asInstanceOf[Int]")
+			}
+		case *SliceExpr:
+			if v.Type == "String" {
+				fmt.Fprint(w, ".charAt(0).toInt")
+			} else {
+				fmt.Fprint(w, ".asInstanceOf[Int]")
+			}
+		case *SubstringExpr:
+			fmt.Fprint(w, ".charAt(0).toInt")
+		default:
+			fmt.Fprint(w, ".asInstanceOf[Int]")
+		}
 	case "float", "Double":
 		fmt.Fprint(w, ".toString.toDouble")
 	case "string", "String":

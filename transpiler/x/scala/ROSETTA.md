@@ -2,8 +2,8 @@
 
 Generated Scala code for Rosetta tasks in `tests/rosetta/x/Mochi`. Each program has a `.scala` file produced by the transpiler and a `.out` file with its runtime output. Compilation or execution errors are captured in `.error` files.
 
-## Golden Test Checklist (104/284)
-_Last updated: 2025-07-25 20:41 +0700_
+## Golden Test Checklist (105/284)
+_Last updated: 2025-07-25 21:13 +0700_
 
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
@@ -56,37 +56,37 @@ _Last updated: 2025-07-25 20:41 +0700_
 | 47 | anagrams | ✓ | 10µs | 8.7 MB |
 | 48 | angle-difference-between-two-bearings-1 | ✓ | 5µs | 8.7 MB |
 | 49 | angle-difference-between-two-bearings-2 | ✓ | 5µs | 8.7 MB |
-| 50 | angles-geometric-normalization-and-conversion | ✓ |  |  |
-| 51 | animate-a-pendulum | ✓ |  |  |
-| 52 | animation | ✓ |  |  |
-| 53 | anonymous-recursion-1 | ✓ |  |  |
-| 54 | anonymous-recursion-2 | ✓ |  |  |
-| 55 | anonymous-recursion | ✓ |  |  |
-| 56 | anti-primes | ✓ |  |  |
-| 57 | append-a-record-to-the-end-of-a-text-file | ✓ |  |  |
-| 58 | apply-a-callback-to-an-array-1 | ✓ |  |  |
-| 59 | apply-a-callback-to-an-array-2 | ✓ |  |  |
-| 60 | apply-a-digital-filter-direct-form-ii-transposed- | ✓ |  |  |
-| 61 | approximate-equality | ✓ |  |  |
-| 62 | arbitrary-precision-integers-included- | ✓ |  |  |
-| 63 | archimedean-spiral | ✓ |  |  |
-| 64 | arena-storage-pool | ✓ |  |  |
-| 65 | arithmetic-complex | ✓ |  |  |
-| 66 | arithmetic-derivative | ✓ |  |  |
-| 67 | arithmetic-evaluation | error |  |  |
-| 68 | arithmetic-geometric-mean-calculate-pi | ✓ |  |  |
-| 69 | arithmetic-geometric-mean | ✓ |  |  |
-| 70 | arithmetic-integer-1 | ✓ |  |  |
-| 71 | arithmetic-integer-2 | ✓ |  |  |
+| 50 | angles-geometric-normalization-and-conversion | ✓ | 9µs | 8.8 MB |
+| 51 | animate-a-pendulum | ✓ | 17µs | 8.7 MB |
+| 52 | animation | ✓ | 8µs | 8.7 MB |
+| 53 | anonymous-recursion-1 | ✓ | 3µs | 8.7 MB |
+| 54 | anonymous-recursion-2 | ✓ | 3µs | 8.7 MB |
+| 55 | anonymous-recursion | ✓ | 2µs | 8.7 MB |
+| 56 | anti-primes | ✓ | 31µs | 8.7 MB |
+| 57 | append-a-record-to-the-end-of-a-text-file | ✓ | 2µs | 8.7 MB |
+| 58 | apply-a-callback-to-an-array-1 | ✓ | 4µs | 8.7 MB |
+| 59 | apply-a-callback-to-an-array-2 | ✓ | 4µs | 8.7 MB |
+| 60 | apply-a-digital-filter-direct-form-ii-transposed- | ✓ | 8µs | 8.7 MB |
+| 61 | approximate-equality | ✓ | 5µs | 8.7 MB |
+| 62 | arbitrary-precision-integers-included- | ✓ | 237µs | 105.4 KB |
+| 63 | archimedean-spiral | ✓ | 261µs | 8.7 MB |
+| 64 | arena-storage-pool | ✓ | 7µs | 8.7 MB |
+| 65 | arithmetic-complex | ✓ | 5µs | 8.7 MB |
+| 66 | arithmetic-derivative | ✓ | 14µs | 8.7 MB |
+| 67 | arithmetic-evaluation | ✓ | 4µs | 8.7 MB |
+| 68 | arithmetic-geometric-mean-calculate-pi | ✓ | 4µs | 8.7 MB |
+| 69 | arithmetic-geometric-mean | ✓ | 3µs | 8.7 MB |
+| 70 | arithmetic-integer-1 | ✓ | 2µs | 8.7 MB |
+| 71 | arithmetic-integer-2 | ✓ | 2µs | 8.7 MB |
 | 72 | arithmetic-numbers | ✓ |  |  |
-| 73 | arithmetic-rational | ✓ |  |  |
-| 74 | array-concatenation | ✓ |  |  |
-| 75 | array-length | ✓ |  |  |
-| 76 | arrays | ✓ |  |  |
-| 77 | ascending-primes | ✓ |  |  |
-| 78 | ascii-art-diagram-converter | ✓ |  |  |
-| 79 | assertions | ✓ |  |  |
-| 80 | associative-array-creation | ✓ |  |  |
+| 73 | arithmetic-rational | ✓ | 6µs | 8.7 MB |
+| 74 | array-concatenation | ✓ | 4µs | 8.7 MB |
+| 75 | array-length | ✓ | 2µs | 8.7 MB |
+| 76 | arrays | ✓ | 5µs | 8.7 MB |
+| 77 | ascending-primes | ✓ | 7µs | 8.7 MB |
+| 78 | ascii-art-diagram-converter | ✓ | 3µs | 8.7 MB |
+| 79 | assertions | ✓ | 2µs | 8.7 MB |
+| 80 | associative-array-creation | ✓ | 7µs | 8.7 MB |
 | 81 | associative-array-iteration | ✓ |  |  |
 | 82 | associative-array-merging | ✓ |  |  |
 | 83 | atomic-updates | ✓ |  |  |
