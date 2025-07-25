@@ -1,23 +1,23 @@
 # Rosetta C# Transpiler Output
 
-Completed programs: 38/284
-Last updated: 2025-07-25 10:01 +0700
+Completed programs: 39/284
+Last updated: 2025-07-25 12:29 +0700
 
 ## Checklist
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
-| 1 | 100-doors-2 | ✓ | 1.055ms | 32.1MB |
-| 2 | 100-doors-3 | ✓ |  |  |
-| 3 | 100-doors | ✓ |  |  |
-| 4 | 100-prisoners | ✓ |  |  |
-| 5 | 15-puzzle-game | ✓ |  |  |
-| 6 | 15-puzzle-solver | ✓ |  |  |
-| 7 | 2048 | ✓ |  |  |
-| 8 | 21-game | ✓ |  |  |
-| 9 | 24-game-solve | ✓ |  |  |
-| 10 | 24-game |   |  |  |
-| 11 | 4-rings-or-4-squares-puzzle | ✓ |  |  |
-| 12 | 9-billion-names-of-god-the-integer | ✓ |  |  |
+| 1 | 100-doors-2 | ✓ | 2.465ms | 32.1MB |
+| 2 | 100-doors-3 | ✓ | 2.266ms | 24.1MB |
+| 3 | 100-doors | ✓ | 16.294ms | 2.3GB |
+| 4 | 100-prisoners | ✓ | 176.496ms | 1.4GB |
+| 5 | 15-puzzle-game | ✓ | 3.183ms | 24.1MB |
+| 6 | 15-puzzle-solver | ✓ | 2.292ms | 16.0MB |
+| 7 | 2048 | ✓ | 3.004ms | 69.0MB |
+| 8 | 21-game | ✓ | 2.772ms | 24.1MB |
+| 9 | 24-game-solve | ✓ | 23.015ms | 13.9GB |
+| 10 | 24-game | ✓ | 16.84ms | 2.1GB |
+| 11 | 4-rings-or-4-squares-puzzle | ✓ | 15.268ms | 16.7GB |
+| 12 | 9-billion-names-of-god-the-integer | ✓ | 567.108ms | 186.3GB |
 | 13 | 99-bottles-of-beer-2 | ✓ |  |  |
 | 14 | 99-bottles-of-beer | ✓ |  |  |
 | 15 | DNS-query | ✓ |  |  |

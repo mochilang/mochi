@@ -1355,7 +1355,7 @@ func typeOfExpr(e Expr) string {
 		if lt == "string" || rt == "string" {
 			return "string"
 		}
-		return "int"
+		return "long"
 	case *IfExpr:
 		t := typeOfExpr(ex.Then)
 		e := typeOfExpr(ex.Else)
@@ -1727,9 +1727,9 @@ type AppendExpr struct {
 
 func (a *AppendExpr) emit(w io.Writer) {
 	usesLinq = true
-	fmt.Fprint(w, "(")
+	fmt.Fprint(w, "(Enumerable.ToArray(Enumerable.Append(")
 	a.List.emit(w)
-	fmt.Fprint(w, ".Append(")
+	fmt.Fprint(w, ", ")
 	t := typeOfExpr(a.List)
 	if t == "" || strings.HasSuffix(t, "object[]") {
 		if vr, ok := a.List.(*VarRef); ok {
@@ -1744,7 +1744,7 @@ func (a *AppendExpr) emit(w io.Writer) {
 	} else {
 		a.Item.emit(w)
 	}
-	fmt.Fprint(w, ").ToArray())")
+	fmt.Fprint(w, ")))")
 }
 
 type StrExpr struct{ Arg Expr }
@@ -2529,7 +2529,7 @@ func compileStmt(prog *Program, s *parser.Statement) (Stmt, error) {
 		if s.For.RangeEnd != nil {
 			savedVar := varTypes[s.For.Name]
 			savedAlias := varAliases[s.For.Name]
-			varTypes[s.For.Name] = "int"
+			varTypes[s.For.Name] = "long"
 			alias := fmt.Sprintf("%s_%d", s.For.Name, aliasCounter)
 			aliasCounter++
 			varAliases[s.For.Name] = alias
