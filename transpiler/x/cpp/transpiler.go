@@ -163,7 +163,10 @@ type BenchStmt struct {
 }
 
 // ListLit represents a list literal converted to std::vector.
-type ListLit struct{ Elems []Expr }
+type ListLit struct {
+	Elems    []Expr
+	ElemType string
+}
 
 // UnaryExpr represents a prefix unary operation like negation or logical not.
 type UnaryExpr struct {
@@ -898,8 +901,11 @@ func (l *ListLit) emit(w io.Writer) {
 		io.WriteString(w, "{}")
 		return
 	}
-	listTyp := exprType(l)
-	elemTyp := elementTypeFromListType(listTyp)
+	elemTyp := l.ElemType
+	if elemTyp == "" {
+		listTyp := exprType(l)
+		elemTyp = elementTypeFromListType(listTyp)
+	}
 	io.WriteString(w, "std::vector<"+elemTyp+">{")
 	for i, e := range l.Elems {
 		if i > 0 {
@@ -1088,7 +1094,7 @@ func (s *SliceExpr) emit(w io.Writer) {
 	s.End.emit(w)
 	io.WriteString(w, " - ")
 	s.Start.emit(w)
-	io.WriteString(w, "); else return std::vector<typename std::decay_t<decltype(__v)>::value_type>(__v.begin+")
+	io.WriteString(w, "); else return std::vector<typename std::decay_t<decltype(__v)>::value_type>(__v.begin()+")
 	s.Start.emit(w)
 	io.WriteString(w, ", __v.begin()+")
 	s.End.emit(w)
@@ -1140,6 +1146,11 @@ func (a *AppendExpr) emit(w io.Writer) {
 	listType := exprType(a.List)
 	elemType := elementTypeFromListType(listType)
 	valType := exprType(a.Elem)
+	var elem Expr = a.Elem
+	if strings.HasPrefix(valType, "std::vector<auto>") && elemType != "auto" {
+		valType = elemType
+		elem = &CastExpr{Value: a.Elem, Type: valType}
+	}
 	if strings.HasPrefix(valType, "std::vector<") && listType == "std::vector<int>" {
 		listType = fmt.Sprintf("std::vector<%s>", valType)
 		if vr, ok := a.List.(*VarRef); ok && localTypes != nil {
@@ -1153,7 +1164,7 @@ func (a *AppendExpr) emit(w io.Writer) {
 	if et := valType; et != elemType && elemType != "auto" {
 		io.WriteString(w, "("+elemType+")")
 	}
-	a.Elem.emit(w)
+	elem.emit(w)
 	io.WriteString(w, "); return __tmp; }())")
 }
 
@@ -3969,7 +3980,21 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 			}
 			elems = append(elems, ce)
 		}
-		return &ListLit{Elems: elems}, nil
+		elemType := ""
+		if len(elems) > 0 {
+			first := exprType(elems[0])
+			uniform := true
+			for _, el := range elems[1:] {
+				if exprType(el) != first {
+					uniform = false
+					break
+				}
+			}
+			if uniform {
+				elemType = first
+			}
+		}
+		return &ListLit{Elems: elems, ElemType: elemType}, nil
 	case p.Map != nil:
 		if currentProgram != nil {
 			currentProgram.addInclude("<map>")
@@ -5308,14 +5333,15 @@ func exprType(e Expr) string {
 		if v.Name == "nil" {
 			return "std::any"
 		}
+		if t, ok := localTypes[v.Name]; ok {
+			return t
+		}
 		if currentEnv != nil {
 			if t, err := currentEnv.GetVar(v.Name); err == nil {
 				return cppTypeFrom(t)
 			}
 		}
-		if t, ok := localTypes[v.Name]; ok {
-			return t
-		} else if t, ok := globalTypes[v.Name]; ok {
+		if t, ok := globalTypes[v.Name]; ok {
 			return t
 		}
 		return "auto"
@@ -5330,6 +5356,9 @@ func exprType(e Expr) string {
 		}
 		return v.Name
 	case *ListLit:
+		if v.ElemType != "" {
+			return fmt.Sprintf("std::vector<%s>", v.ElemType)
+		}
 		if len(v.Elems) > 0 {
 			first := exprType(v.Elems[0])
 			uniform := true
