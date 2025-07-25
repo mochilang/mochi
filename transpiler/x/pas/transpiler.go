@@ -123,6 +123,7 @@ type Program struct {
 	NeedMax       bool
 	NeedContains  bool
 	NeedShowList  bool
+	NeedShowList2 bool
 	NeedListStr   bool
 	UseLookupHost bool
 	UseNow        bool
@@ -751,6 +752,10 @@ func (p *PrintStmt) emit(w io.Writer) {
 			io.WriteString(w, "writeln(list_to_str(")
 			p.Exprs[0].emit(w)
 			io.WriteString(w, "));")
+		} else if strings.HasPrefix(p.Types[0], "array of array") || strings.HasPrefix(p.Types[0], "array of IntArray") {
+			io.WriteString(w, "show_list_list(")
+			p.Exprs[0].emit(w)
+			io.WriteString(w, ");")
 		} else {
 			io.WriteString(w, "show_list(")
 			p.Exprs[0].emit(w)
@@ -862,8 +867,11 @@ end;
 	if p.NeedMax {
 		buf.WriteString("function max(xs: array of integer): integer;\nvar i, m: integer;\nbegin\n  if Length(xs) = 0 then begin max := 0; exit; end;\n  m := xs[0];\n  for i := 1 to High(xs) do if xs[i] > m then m := xs[i];\n  max := m;\nend;\n")
 	}
-	if p.NeedShowList {
-		buf.WriteString("procedure show_list(xs: array of integer);\nvar i: integer;\nbegin\n  write('[');\n  for i := 0 to High(xs) do begin\n    write(xs[i]);\n    if i < High(xs) then write(', ');\n  end;\n  writeln(']');\nend;\n")
+	if p.NeedShowList || p.NeedShowList2 {
+		buf.WriteString("procedure show_list(xs: array of integer);\nvar i: integer;\nbegin\n  write('[');\n  for i := 0 to High(xs) do begin\n    write(xs[i]);\n    if i < High(xs) then write(' ');\n  end;\n  write(']');\nend;\n")
+	}
+	if p.NeedShowList2 {
+		buf.WriteString("procedure show_list_list(xs: array of IntArray);\nvar i: integer;\nbegin\n  for i := 0 to High(xs) do begin\n    show_list(xs[i]);\n    if i < High(xs) then write(' ');\n  end;\n  writeln('');\nend;\n")
 	}
 	if p.NeedListStr {
 		buf.WriteString(`function list_to_str(xs: array of string): string;
@@ -1003,6 +1011,8 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 						} else if strings.HasPrefix(t, "array of ") {
 							if strings.HasPrefix(t, "array of string") {
 								pr.NeedListStr = true
+							} else if strings.HasPrefix(t, "array of array") || strings.HasPrefix(t, "array of IntArray") {
+								pr.NeedShowList2 = true
 							} else {
 								pr.NeedShowList = true
 							}
@@ -1408,6 +1418,16 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 							if strings.HasPrefix(rt, "array of ") {
 								elem := strings.TrimPrefix(rt, "array of ")
 								rt = currProg.addArrayAlias(elem)
+							}
+							break
+						}
+					}
+				} else if strings.HasPrefix(rt, "specialize TFPGMap") {
+					for _, st := range fnBody {
+						if ret, ok := st.(*ReturnStmt); ok && ret.Expr != nil {
+							typ := inferType(ret.Expr)
+							if typ != "" && !strings.HasPrefix(typ, "specialize TFPGMap") {
+								rt = typ
 							}
 							break
 						}
@@ -3293,6 +3313,30 @@ func convertPostfix(env *types.Env, pf *parser.PostfixExpr) (Expr, error) {
 			tmp := *pf
 			tmp.Ops = tmp.Ops[:i]
 			_ = tmp
+			if lit, ok := idx.(*StringLit); ok {
+				if vr, ok := expr.(*VarRef); ok {
+					if t, ok2 := currentVarTypes[vr.Name]; ok2 {
+						found := false
+						for _, r := range currProg.Records {
+							if r.Name == t {
+								for _, f := range r.Fields {
+									if f.Name == lit.Value {
+										expr = &SelectorExpr{Root: vr.Name, Tail: []string{lit.Value}}
+										found = true
+										break
+									}
+								}
+								if found {
+									break
+								}
+							}
+						}
+						if found {
+							continue
+						}
+					}
+				}
+			}
 			isStr := inferType(expr) == "string"
 			expr = &IndexExpr{Target: expr, Index: idx, String: isStr}
 		case op.Index != nil && op.Index.Colon != nil && op.Index.Colon2 == nil && op.Index.Step == nil:
