@@ -200,7 +200,7 @@ func updateRosettaReadme() {
 		mem := ""
 		outPath := filepath.Join(outDir, name+".out")
 		if data, err := os.ReadFile(outPath); err == nil {
-			status = "x"
+			status = "✓"
 			compiled++
 			var res struct {
 				Dur int64 `json:"duration_us"`

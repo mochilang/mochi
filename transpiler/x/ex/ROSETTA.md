@@ -3,29 +3,29 @@
 Generated Elixir code from Mochi Rosetta programs lives in `tests/rosetta/transpiler/Elixir`.
 
 ## Rosetta Test Checklist (19/284)
-_Last updated: 2025-07-25 08:23 +0700_
+_Last updated: 2025-07-25 01:57 +0000_
 | Index | Name | Status | Duration | Memory |
 | ---: | --- | :---: | ---: | ---: |
-| 1 | 100-doors-2 | x | 5.23ms | 99.3 KB |
-| 2 | 100-doors-3 | x |  |  |
-| 3 | 100-doors | x |  |  |
-| 4 | 100-prisoners | x |  |  |
-| 5 | 15-puzzle-game | x |  |  |
-| 6 | 15-puzzle-solver | x |  |  |
-| 7 | 2048 | x |  |  |
+| 1 | 100-doors-2 | ✓ | 7.11ms | 1.9 KB |
+| 2 | 100-doors-3 | ✓ |  |  |
+| 3 | 100-doors | ✓ |  |  |
+| 4 | 100-prisoners | ✓ |  |  |
+| 5 | 15-puzzle-game | ✓ |  |  |
+| 6 | 15-puzzle-solver | ✓ |  |  |
+| 7 | 2048 | ✓ |  |  |
 | 8 | 21-game |  |  |  |
-| 9 | 24-game-solve | x |  |  |
-| 10 | 24-game | x |  |  |
-| 11 | 4-rings-or-4-squares-puzzle | x |  |  |
-| 12 | 9-billion-names-of-god-the-integer | x |  |  |
-| 13 | 99-bottles-of-beer-2 | x |  |  |
-| 14 | 99-bottles-of-beer | x |  |  |
-| 15 | DNS-query | x |  |  |
-| 16 | a+b | x |  |  |
-| 17 | abbreviations-automatic | x |  |  |
-| 18 | abbreviations-easy | x |  |  |
-| 19 | abbreviations-simple | x |  |  |
-| 20 | abc-problem | x |  |  |
+| 9 | 24-game-solve | ✓ |  |  |
+| 10 | 24-game | ✓ |  |  |
+| 11 | 4-rings-or-4-squares-puzzle | ✓ |  |  |
+| 12 | 9-billion-names-of-god-the-integer | ✓ |  |  |
+| 13 | 99-bottles-of-beer-2 | ✓ |  |  |
+| 14 | 99-bottles-of-beer | ✓ |  |  |
+| 15 | DNS-query | ✓ |  |  |
+| 16 | a+b | ✓ |  |  |
+| 17 | abbreviations-automatic | ✓ |  |  |
+| 18 | abbreviations-easy | ✓ |  |  |
+| 19 | abbreviations-simple | ✓ |  |  |
+| 20 | abc-problem | ✓ |  |  |
 | 21 | abelian-sandpile-model-identity |  |  |  |
 | 22 | abelian-sandpile-model |  |  |  |
 | 23 | abstract-type |  |  |  |
