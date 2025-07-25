@@ -1637,6 +1637,10 @@ func inferPyType(e Expr, env *types.Env) types.Type {
 				return types.StringType{}
 			case "bool":
 				return types.BoolType{}
+			case "split":
+				if len(ex.Args) == 2 {
+					return types.ListType{Elem: types.StringType{}}
+				}
 			case "upper", "lower":
 				if len(ex.Args) == 1 {
 					return types.StringType{}
@@ -2589,14 +2593,14 @@ func Emit(w io.Writer, p *Program, bench bool) error {
 		return err
 	}
 	var imports []string
-       needDC := false
+	needDC := false
 	if currentImports != nil {
 		if currentImports["json"] && !hasImport(p, "json") {
 			imports = append(imports, "import json")
 		}
-               if currentImports["dataclasses"] && !hasImport(p, "dataclasses") {
-                       imports = append(imports, "import dataclasses")
-               }
+		if currentImports["dataclasses"] && !hasImport(p, "dataclasses") {
+			imports = append(imports, "import dataclasses")
+		}
 		if currentImports["socket"] && !hasImport(p, "socket") {
 			imports = append(imports, "import socket")
 		}
@@ -2625,11 +2629,11 @@ func Emit(w io.Writer, p *Program, bench bool) error {
 			imports = append(imports, line)
 		}
 	}
-       if needDC || (currentImports != nil && currentImports["dataclasses"]) {
-               imports = append(imports, "from __future__ import annotations")
-               imports = append(imports, "from dataclasses import dataclass")
-               imports = append(imports, "from typing import List, Dict")
-       }
+	if needDC || (currentImports != nil && currentImports["dataclasses"]) {
+		imports = append(imports, "from __future__ import annotations")
+		imports = append(imports, "from dataclasses import dataclass")
+		imports = append(imports, "from typing import List, Dict")
+	}
 	sort.Strings(imports)
 	for _, line := range imports {
 		if _, err := io.WriteString(w, line+"\n"); err != nil {
@@ -4259,6 +4263,10 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 		case "min", "max":
 			if len(args) == 1 {
 				return &CallExpr{Func: &Name{Name: p.Call.Func}, Args: args}, nil
+			}
+		case "split":
+			if len(args) == 2 {
+				return &CallExpr{Func: &FieldExpr{Target: args[0], Name: "split"}, Args: []Expr{args[1]}}, nil
 			}
 		case "substring":
 			if len(args) == 3 {

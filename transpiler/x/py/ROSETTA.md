@@ -2,31 +2,31 @@
 
 This checklist is auto-generated.
 Generated Python code from programs in `tests/rosetta/x/Mochi` lives in `tests/rosetta/transpiler/Python`.
-Last updated: 2025-07-25 10:37 GMT+7
+Last updated: 2025-07-25 13:22 GMT+7
 
-## Rosetta Golden Test Checklist (268/284)
+## Rosetta Golden Test Checklist (271/284)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
-| 1 | 100-doors-2 | ✓ | 158.0µs | 12.57MB |
-| 2 | 100-doors-3 | ✓ | 125.0µs | 12.82MB |
-| 3 | 100-doors | ✓ | 211.0µs | 13.07MB |
-| 4 | 100-prisoners | ✓ | 546.0ms | 14.07MB |
-| 5 | 15-puzzle-game | ✓ | 201.0µs | 14.82MB |
-| 6 | 15-puzzle-solver | ✓ | 9.0µs | 14.82MB |
-| 7 | 2048 | ✓ | 2.0ms | 15.20MB |
-| 8 | 21-game | ✓ | 68.0µs | 15.20MB |
-| 9 | 24-game-solve | ✓ | 24.0ms | 15.20MB |
+| 1 | 100-doors-2 | ✓ | 161.0µs | 12.50MB |
+| 2 | 100-doors-3 | ✓ | 126.0µs | 12.43MB |
+| 3 | 100-doors | ✓ | 272.0µs | 12.62MB |
+| 4 | 100-prisoners | ✓ | 554.0ms | 12.85MB |
+| 5 | 15-puzzle-game | ✓ | 205.0µs | 13.59MB |
+| 6 | 15-puzzle-solver | ✓ | 10.0µs | 12.04MB |
+| 7 | 2048 | ✓ | 2.0ms | 13.80MB |
+| 8 | 21-game | ✓ | 70.0µs | 12.98MB |
+| 9 | 24-game-solve | ✓ | 41.0ms | 13.88MB |
 | 10 | 24-game | ✓ |  |  |
-| 11 | 4-rings-or-4-squares-puzzle | ✓ | 30.0ms | 15.20MB |
-| 12 | 9-billion-names-of-god-the-integer | ✓ | 9.99s | 233.76MB |
-| 13 | 99-bottles-of-beer-2 | ✓ | 12.0ms | 15.20MB |
-| 14 | 99-bottles-of-beer | ✓ | 487.0µs | 15.20MB |
-| 15 | DNS-query | ✓ | 615.0ms | 15.20MB |
-| 16 | a+b | ✓ | 95.0µs | 15.20MB |
-| 17 | abbreviations-automatic | ✓ | 4.0ms | 15.20MB |
-| 18 | abbreviations-easy | ✓ | 800.0µs | 15.20MB |
-| 19 | abbreviations-simple | ✓ | 935.0µs | 15.20MB |
-| 20 | abc-problem | ✓ | 338.0µs | 15.20MB |
+| 11 | 4-rings-or-4-squares-puzzle | ✓ | 28.0ms | 12.36MB |
+| 12 | 9-billion-names-of-god-the-integer | ✓ | 10.67s | 233.76MB |
+| 13 | 99-bottles-of-beer-2 | ✓ | 12.0ms | 13.84MB |
+| 14 | 99-bottles-of-beer | ✓ | 455.0µs | 12.65MB |
+| 15 | DNS-query | ✓ | 935.0ms | 12.37MB |
+| 16 | a+b | ✓ | 107.0µs | 12.21MB |
+| 17 | abbreviations-automatic | ✓ | 4.0ms | 13.73MB |
+| 18 | abbreviations-easy | ✓ | 779.0µs | 13.69MB |
+| 19 | abbreviations-simple | ✓ | 1.0ms | 13.32MB |
+| 20 | abc-problem | ✓ | 356.0µs | 12.68MB |
 | 21 | abelian-sandpile-model-identity | ✓ | 158.0µs | 15.20MB |
 | 22 | abelian-sandpile-model | ✓ | 160.0µs | 15.23MB |
 | 23 | abstract-type | ✓ | 17.0µs | 15.23MB |
@@ -73,7 +73,7 @@ Last updated: 2025-07-25 10:37 GMT+7
 | 64 | arena-storage-pool | ✓ |  |  |
 | 65 | arithmetic-complex | ✓ |  |  |
 | 66 | arithmetic-derivative | ✓ |  |  |
-| 67 | arithmetic-evaluation | error |  |  |
+| 67 | arithmetic-evaluation | ✓ | 238.0µs | 13.50MB |
 | 68 | arithmetic-geometric-mean-calculate-pi | ✓ |  |  |
 | 69 | arithmetic-geometric-mean | ✓ |  |  |
 | 70 | arithmetic-integer-1 | ✓ |  |  |
@@ -236,7 +236,7 @@ Last updated: 2025-07-25 10:37 GMT+7
 | 227 | constrained-genericity-2 | ✓ |  |  |
 | 228 | constrained-genericity-3 | ✓ |  |  |
 | 229 | constrained-genericity-4 | ✓ |  |  |
-| 230 | constrained-random-points-on-a-circle-1 | error |  |  |
+| 230 | constrained-random-points-on-a-circle-1 | ✓ |  |  |
 | 231 | constrained-random-points-on-a-circle-2 | error |  |  |
 | 232 | continued-fraction | ✓ |  |  |
 | 233 | convert-decimal-number-to-rational | ✓ |  |  |
@@ -265,7 +265,7 @@ Last updated: 2025-07-25 10:37 GMT+7
 | 256 | create-an-object-at-a-given-address | ✓ |  |  |
 | 257 | csv-data-manipulation | ✓ |  |  |
 | 258 | csv-to-html-translation-1 | error |  |  |
-| 259 | csv-to-html-translation-2 | error |  |  |
+| 259 | csv-to-html-translation-2 | ✓ | 62.0µs | 13.05MB |
 | 260 | csv-to-html-translation-3 | ✓ |  |  |
 | 261 | csv-to-html-translation-4 | ✓ |  |  |
 | 262 | csv-to-html-translation-5 | ✓ |  |  |
