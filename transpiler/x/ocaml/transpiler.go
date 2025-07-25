@@ -444,7 +444,13 @@ func mapFieldType(typ, field string) (string, bool) {
 }
 
 func isDynamicMapType(typ string) bool {
-	return strings.HasPrefix(typ, "map-dyn") || typ == "map"
+	if strings.HasPrefix(typ, "map-dyn") || typ == "map" {
+		return true
+	}
+	if _, ok := structFields[typ]; ok {
+		return true
+	}
+	return false
 }
 
 func ocamlType(t string) string {
@@ -2871,7 +2877,17 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	if benchMain {
 		usesNow = true
 		usesMem = true
-		pr.Stmts = []Stmt{&BenchStmt{Name: "main", Body: pr.Stmts}}
+		var defs []Stmt
+		var body []Stmt
+		for _, st := range pr.Stmts {
+			switch st.(type) {
+			case *FunStmt, *VarStmt, *LetStmt:
+				defs = append(defs, st)
+			default:
+				body = append(body, st)
+			}
+		}
+		pr.Stmts = append(defs, &BenchStmt{Name: "main", Body: body})
 	}
 	return pr, nil
 }
@@ -3509,10 +3525,10 @@ func convertSelector(sel *parser.SelectorExpr, env *types.Env, vars map[string]V
 			typ = ft
 		} else if fields, ok := structFields[typ]; ok {
 			if ft, ok2 := fields[t]; ok2 {
-				expr = &MapIndexExpr{Map: expr, Key: key, Typ: ft, Dyn: false}
+				expr = &MapIndexExpr{Map: expr, Key: key, Typ: ft, Dyn: dyn}
 				typ = ft
 			} else {
-				expr = &MapIndexExpr{Map: expr, Key: key, Typ: "int", Dyn: false}
+				expr = &MapIndexExpr{Map: expr, Key: key, Typ: "int", Dyn: dyn}
 				typ = "int"
 			}
 		} else {
@@ -3653,7 +3669,7 @@ func convertPrimary(p *parser.Primary, env *types.Env, vars map[string]VarInfo) 
 			}
 			items = append(items, MapEntry{Key: key, Value: val})
 		}
-		dyn := false
+		dyn := true
 		if _, ok := env.FindUnionByVariant(p.Struct.Name); ok {
 			dyn = false
 		}
