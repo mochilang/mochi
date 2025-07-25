@@ -1,0 +1,70 @@
+run: exit status 1
+    warning: variable "seed" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 14 │               seed = v
+    │               ~
+    │
+    └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/add-a-variable-to-a-class-instance-at-runtime.exs:14:15: Main._now/0
+
+    warning: variable "seeded" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 15 │               seeded = true
+    │               ~
+    │
+    └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/add-a-variable-to-a-class-instance-at-runtime.exs:15:15: Main._now/0
+
+    warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 70 │       {i, ss} = try do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/add-a-variable-to-a-class-instance-at-runtime.exs:70:8: Main.main/0
+
+    warning: function _now/0 is unused
+    │
+  3 │   defp _now() do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/add-a-variable-to-a-class-instance-at-runtime.exs:3:8: Main (module)
+
+    warning: function _mem/0 is unused
+    │
+ 28 │   defp _mem() do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/add-a-variable-to-a-class-instance-at-runtime.exs:28:8: Main (module)
+
+    warning: function _lookup_host/1 is unused
+    │
+ 31 │   defp _lookup_host(host) do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/add-a-variable-to-a-class-instance-at-runtime.exs:31:8: Main (module)
+
+Create two fields at runtime: 
+
+  Field #1:
+
+       Enter name  : 
+       Enter value : 
+** (FunctionClauseError) no function clause matching in List.replace_at/3    
+    
+    The following arguments were given to List.replace_at/3:
+    
+        # 1
+        %{}
+    
+        # 2
+        ""
+    
+        # 3
+        ""
+    
+    Attempted function clauses (showing 1 out of 1):
+    
+        def replace_at(+list+, +index+, +value+) when -is_list(list)- and -is_integer(index)-
+    
+    (elixir 1.18.3) lib/list.ex:814: List.replace_at/3
+    /workspace/mochi/tests/rosetta/transpiler/Elixir/add-a-variable-to-a-class-instance-at-runtime.exs:61: anonymous fn/3 in Main.main/0
+    /workspace/mochi/tests/rosetta/transpiler/Elixir/add-a-variable-to-a-class-instance-at-runtime.exs:71: Main.main/0
+    /workspace/mochi/tests/rosetta/transpiler/Elixir/add-a-variable-to-a-class-instance-at-runtime.exs:107: (file)

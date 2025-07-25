@@ -1,0 +1,253 @@
+run: exit status 1
+    warning: variable "seed" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 14 │               seed = v
+    │               ~
+    │
+    └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/achilles-numbers.exs:14:15: Main._now/0
+
+    warning: variable "seeded" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 15 │               seeded = true
+    │               ~
+    │
+    └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/achilles-numbers.exs:15:15: Main._now/0
+
+    warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 53 │       {i, n} = try do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/achilles-numbers.exs:53:8: Main.pow10/1
+
+    warning: variable "nn" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 80 │             nn = try do
+    │             ~
+    │
+    └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/achilles-numbers.exs:80:13: Main.totient/1
+
+    warning: variable "tot" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 86 │             tot = tot - div(tot, i)
+    │             ~
+    │
+    └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/achilles-numbers.exs:86:13: Main.totient/1
+
+    warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 89 │             i = 1
+    │             ~
+    │
+    └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/achilles-numbers.exs:89:13: Main.totient/1
+
+    warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 97 │       {i, nn, tot} = try do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/achilles-numbers.exs:97:8: Main.totient/1
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 144 │             i = i + 1
+     │             ~
+     │
+     └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/achilles-numbers.exs:144:13: Main.getPerfectPowers/1
+
+     warning: variable "p" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 138 │             p = try do
+     │             ~
+     │
+     └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/achilles-numbers.exs:138:13: Main.getPerfectPowers/1
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 153 │       i = try do
+     │       ~
+     │
+     └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/achilles-numbers.exs:153:7: Main.getPerfectPowers/1
+
+     warning: variable "achilles" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 183 │                       achilles = Map.put(achilles, p, true)
+     │                       ~
+     │
+     └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/achilles-numbers.exs:183:23: Main.getAchilles/2
+
+     warning: variable "a" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 186 │                   a = a + 1
+     │                   ~
+     │
+     └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/achilles-numbers.exs:186:19: Main.getAchilles/2
+
+     warning: variable "a" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 195 │             {a, achilles} = try do
+     │              ~
+     │
+     └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/achilles-numbers.exs:195:14: Main.getAchilles/2
+
+     warning: variable "achilles" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 195 │             {a, achilles} = try do
+     │                 ~
+     │
+     └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/achilles-numbers.exs:195:17: Main.getAchilles/2
+
+     warning: variable "b" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 201 │             b = b + 1
+     │             ~
+     │
+     └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/achilles-numbers.exs:201:13: Main.getAchilles/2
+
+     warning: variable "b" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 210 │       {achilles, b} = try do
+     │                  ~
+     │
+     └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/achilles-numbers.exs:210:18: Main.getAchilles/2
+
+     warning: variable "idx" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 234 │                 idx = i
+     │                 ~
+     │
+     └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/achilles-numbers.exs:234:17: Main.sortInts/1
+
+     warning: variable "min" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 233 │                 min = Enum.at(tmp, i)
+     │                 ~
+     │
+     └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/achilles-numbers.exs:233:17: Main.sortInts/1
+
+     warning: variable "out" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 254 │                 out = out + [Enum.at(tmp, j)]
+     │                 ~
+     │
+     └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/achilles-numbers.exs:254:17: Main.sortInts/1
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 242 │           {i, idx, min} = try do
+     │            ~
+     │
+     └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/achilles-numbers.exs:242:12: Main.sortInts/1
+
+     warning: variable "j" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 262 │           {j, out} = try do
+     │            ~
+     │
+     └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/achilles-numbers.exs:262:12: Main.sortInts/1
+
+     warning: variable "tmp" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 274 │       {res, tmp} = try do
+     │             ~
+     │
+     └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/achilles-numbers.exs:274:13: Main.sortInts/1
+
+     warning: variable "ach" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 314 │         ach = ach + [k]
+     │         ~
+     │
+     └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/achilles-numbers.exs:314:9: Main.main/0
+
+     warning: variable "line" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 327 │                 line = (line <> " ")
+     │                 ~
+     │
+     └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/achilles-numbers.exs:327:17: Main.main/0
+
+     warning: variable "j" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 336 │           {i, j, line} = try do
+     │               ~
+     │
+     └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/achilles-numbers.exs:336:15: Main.main/0
+
+     warning: variable "count" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 363 │             count = count + 1
+     │             ~
+     │
+     └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/achilles-numbers.exs:363:13: Main.main/0
+
+     warning: variable "strong" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 362 │             strong = strong + [Enum.at(ach, idx)]
+     │             ~
+     │
+     └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/achilles-numbers.exs:362:13: Main.main/0
+
+     warning: variable "line" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 386 │                 line = (line <> " ")
+     │                 ~
+     │
+     └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/achilles-numbers.exs:386:17: Main.main/0
+
+     warning: variable "j" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 395 │           {i, j, line} = try do
+     │               ~
+     │
+     └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/achilles-numbers.exs:395:15: Main.main/0
+
+     warning: variable "count" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 371 │       {count, idx, strong} = try do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/achilles-numbers.exs:371:8: Main.main/0
+
+     warning: variable "d" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 426 │       d = try do
+     │       ~
+     │
+     └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/achilles-numbers.exs:426:7: Main.main/0
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 348 │       i = try do
+     │       ~
+     │
+     └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/achilles-numbers.exs:348:7: Main.main/0
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 407 │       i = try do
+     │       ~
+     │
+     └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/achilles-numbers.exs:407:7: Main.main/0
+
+     warning: variable "idx" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 371 │       {count, idx, strong} = try do
+     │               ~
+     │
+     └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/achilles-numbers.exs:371:15: Main.main/0
+
+    warning: function _lookup_host/1 is unused
+    │
+ 31 │   defp _lookup_host(host) do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/achilles-numbers.exs:31:8: Main (module)
+
+** (BadMapError) expected a map, got: nil
+    /workspace/mochi/tests/rosetta/transpiler/Elixir/achilles-numbers.exs:129: anonymous fn/4 in Main.getPerfectPowers/1
+    /workspace/mochi/tests/rosetta/transpiler/Elixir/achilles-numbers.exs:139: anonymous fn/3 in Main.getPerfectPowers/1
+    /workspace/mochi/tests/rosetta/transpiler/Elixir/achilles-numbers.exs:154: Main.getPerfectPowers/1
+    /workspace/mochi/tests/rosetta/transpiler/Elixir/achilles-numbers.exs:310: Main.main/0
+    /workspace/mochi/tests/rosetta/transpiler/Elixir/achilles-numbers.exs:439: Main.bench_main/0
+    /workspace/mochi/tests/rosetta/transpiler/Elixir/achilles-numbers.exs:445: (file)

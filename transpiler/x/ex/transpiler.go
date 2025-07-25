@@ -1008,8 +1008,15 @@ func (i *IndexExpr) emit(w io.Writer) {
 	if i.UseMapSyntax {
 		if a, ok := i.Index.(*AtomLit); ok {
 			i.Target.emit(w)
-			io.WriteString(w, ".")
-			io.WriteString(w, a.Name)
+			name := strings.TrimPrefix(a.Name, ":")
+			if len(name) > 0 && name[0] >= 'A' && name[0] <= 'Z' {
+				io.WriteString(w, "[:")
+				io.WriteString(w, name)
+				io.WriteString(w, "]")
+			} else {
+				io.WriteString(w, ".")
+				io.WriteString(w, name)
+			}
 			return
 		}
 		i.Target.emit(w)
@@ -1470,16 +1477,12 @@ func Emit(p *Program, benchMain bool) []byte {
 	var globals []Stmt
 	var funcs []Stmt
 	var main []Stmt
-	funcsSeen := false
 	for _, st := range p.Stmts {
 		switch st.(type) {
 		case *FuncDecl:
 			funcs = append(funcs, st)
-			funcsSeen = true
 		case *LetStmt:
-			if !funcsExist {
-				main = append(main, st)
-			} else if funcsSeen {
+			if funcsExist {
 				main = append(main, st)
 			} else {
 				globals = append(globals, st)
@@ -1493,16 +1496,16 @@ func Emit(p *Program, benchMain bool) []byte {
 			main = append(main, st)
 		}
 	}
+	for _, st := range funcs {
+		st.emit(&buf, 1)
+		buf.WriteString("\n")
+	}
 	for _, st := range globals {
 		if ls, ok := st.(*LetStmt); ok {
 			ls.emitGlobal(&buf, 1)
 		} else {
 			st.emit(&buf, 1)
 		}
-		buf.WriteString("\n")
-	}
-	for _, st := range funcs {
-		st.emit(&buf, 1)
 		buf.WriteString("\n")
 	}
 	if !hasMain {
@@ -1512,7 +1515,15 @@ func Emit(p *Program, benchMain bool) []byte {
 			buf.WriteString("    t_start = _now()\n")
 		}
 		for _, st := range main {
-			st.emit(&buf, 2)
+			if ls, ok := st.(*LetStmt); ok {
+				if _, ok := globalVars[ls.Name]; ok {
+					ls.emitGlobal(&buf, 2)
+				} else {
+					ls.emit(&buf, 2)
+				}
+			} else {
+				st.emit(&buf, 2)
+			}
 			buf.WriteString("\n")
 		}
 		if benchMain {
@@ -1549,7 +1560,6 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	res := &Program{}
 	builtinAliases = make(map[string]string)
 	globalVars = make(map[string]struct{})
-	funcSeen := false
 	for _, st := range prog.Statements {
 		if st.Import != nil && st.Import.Lang != nil {
 			alias := st.Import.As
@@ -1579,15 +1589,13 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 				}
 			}
 		}
-		if !funcSeen {
-			if st.Fun != nil {
-				funcSeen = true
-			}
-			if st.Let != nil {
-				globalVars[st.Let.Name] = struct{}{}
-			} else if st.Var != nil {
-				globalVars[st.Var.Name] = struct{}{}
-			}
+		if st.Fun != nil {
+			// presence of a function means we are in module mode
+		}
+		if st.Let != nil {
+			globalVars[st.Let.Name] = struct{}{}
+		} else if st.Var != nil {
+			globalVars[st.Var.Name] = struct{}{}
 		}
 	}
 	for _, st := range prog.Statements {
@@ -1764,7 +1772,11 @@ func compileStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 					return &AssignStmt{Name: st.Assign.Name, Value: call}, nil
 				}
 			}
-			return nil, fmt.Errorf("unsupported indexed assignment at %d:%d", st.Pos.Line, st.Pos.Column)
+			// Fallback to list-of-list semantics when type info is unavailable
+			inner := &CallExpr{Func: "Enum.at", Args: []Expr{&VarRef{Name: st.Assign.Name}, idx0}}
+			innerUpdate := &CallExpr{Func: "List.replace_at", Args: []Expr{inner, idx1, val}}
+			call := &CallExpr{Func: "List.replace_at", Args: []Expr{&VarRef{Name: st.Assign.Name}, idx0, innerUpdate}}
+			return &AssignStmt{Name: st.Assign.Name, Value: call}, nil
 		}
 		return nil, fmt.Errorf("unsupported statement at %d:%d", st.Pos.Line, st.Pos.Column)
 	case st.If != nil:
@@ -2966,7 +2978,7 @@ func compilePrimary(p *parser.Primary, env *types.Env) (Expr, error) {
 		switch name {
 		case "int":
 			if len(args) == 1 {
-				return &CallExpr{Func: "String.to_integer", Args: []Expr{args[0]}}, nil
+				return &CallExpr{Func: "Kernel.trunc", Args: []Expr{args[0]}}, nil
 			}
 		case "float":
 			if len(args) == 1 {
