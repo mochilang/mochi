@@ -34,6 +34,7 @@ var needNow bool
 var needAppendBool bool
 var needAppendObj bool
 var needNetLookupHost bool
+var needMem bool
 var pyMathAliases map[string]bool
 var builtinAliases map[string]string
 var structDefs map[string]map[string]string
@@ -334,6 +335,8 @@ func inferType(e Expr) string {
 			t = inferType(ex.Else)
 		}
 		return t
+	case *GroupExpr:
+		return inferType(ex.Expr)
 	case *LenExpr:
 		return "int"
 	case *AvgExpr:
@@ -988,6 +991,30 @@ func (b *BreakStmt) emit(w io.Writer, indent string) { fmt.Fprint(w, indent+"bre
 type ContinueStmt struct{}
 
 func (c *ContinueStmt) emit(w io.Writer, indent string) { fmt.Fprint(w, indent+"continue;\n") }
+
+// BenchStmt represents a benchmark block.
+type BenchStmt struct {
+	Name string
+	Body []Stmt
+}
+
+func (b *BenchStmt) emit(w io.Writer, indent string) {
+	fmt.Fprint(w, indent+"{\n")
+	fmt.Fprint(w, indent+"    int _benchStart = _now();\n")
+	fmt.Fprint(w, indent+"    int _benchMem = _mem();\n")
+	for _, st := range b.Body {
+		st.emit(w, indent+"    ")
+	}
+	fmt.Fprint(w, indent+"    int _benchDuration = (_now() - _benchStart) / 1000;\n")
+	fmt.Fprint(w, indent+"    int _benchMemory = _mem() - _benchMem;\n")
+	fmt.Fprint(w, indent+"    System.out.println(\"{\");\n")
+	fmt.Fprint(w, indent+"    System.out.println(\"  \\\"duration_us\\\": \" + _benchDuration + \",\");\n")
+	fmt.Fprint(w, indent+"    System.out.println(\"  \\\"memory_bytes\\\": \" + _benchMemory + \",\");\n")
+	fmt.Fprintf(w, indent+"    System.out.println(\"  \\\"name\\\": \\\"%s\\\"\");\n", b.Name)
+	fmt.Fprint(w, indent+"    System.out.println(\"}\");\n")
+	fmt.Fprint(w, indent+"    return;\n")
+	fmt.Fprint(w, indent+"}\n")
+}
 
 // UpdateStmt represents an `update` statement on a list of structs.
 type UpdateStmt struct {
@@ -2131,6 +2158,7 @@ func Transpile(p *parser.Program, env *types.Env) (*Program, error) {
 	groupItems = map[string]string{}
 	needInput = false
 	needNow = false
+	needMem = false
 	needAppendBool = false
 	pyMathAliases = map[string]bool{}
 	builtinAliases = map[string]string{}
@@ -2197,6 +2225,14 @@ func Transpile(p *parser.Program, env *types.Env) (*Program, error) {
 
 func compileStmt(s *parser.Statement) (Stmt, error) {
 	switch {
+	case s.Bench != nil:
+		needNow = true
+		needMem = true
+		body, err := compileStmts(s.Bench.Body)
+		if err != nil {
+			return nil, err
+		}
+		return &BenchStmt{Name: strings.Trim(s.Bench.Name, "\""), Body: body}, nil
 	case s.Expr != nil:
 		if se := extractSaveExpr(s.Expr.Expr); se != nil {
 			src, err := compileExpr(se.Src)
@@ -2561,6 +2597,7 @@ func compileStmt(s *parser.Statement) (Stmt, error) {
 		if err != nil {
 			return nil, err
 		}
+		varTypes[s.For.Name] = "int"
 		var body []Stmt
 		for _, b := range s.For.Body {
 			st, err := compileStmt(b)
@@ -3793,6 +3830,12 @@ func Emit(prog *Program) []byte {
 		buf.WriteString("            return _nowSeed;\n")
 		buf.WriteString("        }\n")
 		buf.WriteString("        return (int)System.currentTimeMillis();\n")
+		buf.WriteString("    }\n")
+	}
+	if needMem {
+		buf.WriteString("\n    static int _mem() {\n")
+		buf.WriteString("        Runtime rt = Runtime.getRuntime();\n")
+		buf.WriteString("        return (int)(rt.totalMemory() - rt.freeMemory());\n")
 		buf.WriteString("    }\n")
 	}
 	if needAppendBool {
