@@ -162,3 +162,6 @@ func UpdateRosetta() {
 	}
 	_ = os.WriteFile(readmePath, buf.Bytes(), 0o644)
 }
+
+// updateRosetta is kept for consistency with other transpiler tests.
+func updateRosetta() { UpdateRosetta() }
