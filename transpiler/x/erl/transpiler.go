@@ -88,11 +88,18 @@ mochi_pad_start(S, Len, Ch) ->
     end.
 `
 
+const helperSHA256 = `
+mochi_sha256(Bs) ->
+    Bin = list_to_binary(Bs),
+    binary_to_list(crypto:hash(sha256, Bin)).
+`
+
 var useNow bool
 var useLookupHost bool
 var useToInt bool
 var useMemberHelper bool
 var usePadStart bool
+var useSHA256 bool
 var mutatedFuncs map[string]int
 var benchMain bool
 
@@ -115,6 +122,7 @@ type Program struct {
 	UseToInt        bool
 	UseMemberHelper bool
 	UsePadStart     bool
+	UseSHA256       bool
 }
 
 // context tracks variable aliases to emulate mutable variables.
@@ -2474,7 +2482,7 @@ func mapOp(op string) string {
 
 func builtinFunc(name string) bool {
 	switch name {
-	case "print", "append", "avg", "count", "len", "str", "sum", "min", "max", "values", "keys", "exists", "json", "now", "input", "int", "abs", "upper", "lower":
+	case "print", "append", "avg", "count", "len", "str", "sum", "min", "max", "values", "keys", "exists", "contains", "sha256", "json", "now", "input", "int", "abs", "upper", "lower":
 		return true
 	default:
 		return false
@@ -2647,6 +2655,7 @@ func Transpile(prog *parser.Program, env *types.Env, bench bool) (*Program, erro
 	useToInt = false
 	useMemberHelper = false
 	usePadStart = false
+	useSHA256 = false
 	mutatedFuncs = map[string]int{"topple": 0}
 	p := &Program{}
 	for _, st := range prog.Statements {
@@ -2674,6 +2683,7 @@ func Transpile(prog *parser.Program, env *types.Env, bench bool) (*Program, erro
 	p.UseToInt = useToInt
 	p.UseMemberHelper = useMemberHelper
 	p.UsePadStart = usePadStart
+	p.UseSHA256 = useSHA256
 	return p, nil
 }
 
@@ -4036,6 +4046,17 @@ func convertPrimary(p *parser.Primary, env *types.Env, ctx *context) (Expr, erro
 				lenExpr = &CallExpr{Func: "length", Args: []Expr{arg}}
 			}
 			return &BinaryExpr{Left: lenExpr, Op: ">", Right: &IntLit{Value: 0}}, nil
+		} else if ce.Func == "contains" && len(ce.Args) == 2 {
+			target := ce.Args[0]
+			sub := ce.Args[1]
+			if isStringExpr(target) && isStringExpr(sub) {
+				return &ContainsExpr{Str: target, Sub: sub}, nil
+			}
+			useMemberHelper = true
+			return &CallExpr{Func: "mochi_member", Args: []Expr{sub, target}}, nil
+		} else if ce.Func == "sha256" && len(ce.Args) == 1 {
+			useSHA256 = true
+			return &CallExpr{Func: "mochi_sha256", Args: ce.Args}, nil
 		}
 		return ce, nil
 	case p.FunExpr != nil:
@@ -5136,6 +5157,10 @@ func (p *Program) Emit() []byte {
 	}
 	if p.UseMemberHelper {
 		buf.WriteString(helperMember)
+		buf.WriteString("\n")
+	}
+	if p.UseSHA256 {
+		buf.WriteString(helperSHA256)
 		buf.WriteString("\n")
 	}
 	buf.WriteString(helperPadStart)
