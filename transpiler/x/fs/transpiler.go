@@ -2078,7 +2078,7 @@ func (c *CastExpr) emit(w io.Writer) {
 			c.Expr.emit(w)
 		}
 	case "int":
-		if t := inferType(c.Expr); t == "obj" {
+		if t := inferType(c.Expr); t == "obj" || t == "" {
 			io.WriteString(w, "unbox<int> ")
 		} else {
 			io.WriteString(w, "int ")

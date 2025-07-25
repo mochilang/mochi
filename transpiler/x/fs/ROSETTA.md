@@ -68,7 +68,7 @@ This file is auto-generated from rosetta tests.
 | 61 | approximate-equality | ✓ | 174µs | 42.9 KB |
 | 62 | arbitrary-precision-integers-included- | ✓ | 15.861ms | 528.1 KB |
 | 63 | archimedean-spiral | ✓ | 363µs | 42.5 KB |
-| 64 | arena-storage-pool | ✓ | 237µs | 53.4 KB |
+| 64 | arena-storage-pool | ✓ | 241µs | 76.3 KB |
 | 65 | arithmetic-complex | ✓ | 180µs | 46.4 KB |
 | 66 | arithmetic-derivative | ✓ | 191µs | 41.8 KB |
 | 67 | arithmetic-evaluation | ✓ | 500µs | 52.6 KB |
