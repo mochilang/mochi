@@ -1,3 +1,9 @@
+## Progress (2025-07-25 12:07 UTC)
+- pascal: update rosetta 100-doors-3 (progress 88/104)
+
+## Progress (2025-07-25 19:02 +0700)
+- pascal transpiler: handle else-if and list concatenation (progress 88/104)
+
 ## Progress (2025-07-25 12:29 +0700)
 - cs transpiler: handle string element type in loops (progress 88/104)
 
