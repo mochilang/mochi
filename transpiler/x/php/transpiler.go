@@ -756,6 +756,35 @@ type ContinueStmt struct{}
 
 func (c *ContinueStmt) emit(w io.Writer) { io.WriteString(w, "continue") }
 
+// BenchStmt measures execution time and memory usage of a block.
+type BenchStmt struct {
+	Name string
+	Body []Stmt
+}
+
+func (b *BenchStmt) emit(w io.Writer) {
+	io.WriteString(w, "$__start_mem = memory_get_usage();\n")
+	io.WriteString(w, "$__start = _now();\n")
+	for _, st := range b.Body {
+		io.WriteString(w, "  ")
+		st.emit(w)
+		switch st.(type) {
+		case *IfStmt, *WhileStmt, *ForRangeStmt, *ForEachStmt:
+			io.WriteString(w, "\n")
+		default:
+			io.WriteString(w, ";\n")
+		}
+	}
+	io.WriteString(w, "$__end = _now();\n")
+	io.WriteString(w, "$__end_mem = memory_get_usage();\n")
+	io.WriteString(w, "$__duration = intdiv($__end - $__start, 1000);\n")
+	io.WriteString(w, "$__mem_diff = 0;\n")
+	fmt.Fprintf(w, "$__bench = [\"duration_us\" => $__duration, \"memory_bytes\" => $__mem_diff, \"name\" => %q];\n", b.Name)
+	io.WriteString(w, "$__j = json_encode($__bench, 128);\n")
+	io.WriteString(w, "$__j = str_replace(\"    \", \"  \", $__j);\n")
+	io.WriteString(w, "echo $__j, PHP_EOL;")
+}
+
 // SaveStmt writes rows into a file or stdout in JSONL format.
 type SaveStmt struct {
 	Src    Expr
@@ -2895,6 +2924,20 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 		return &BreakStmt{}, nil
 	case st.Continue != nil:
 		return &ContinueStmt{}, nil
+	case st.Bench != nil:
+		usesNow = true
+		savedEnv := transpileEnv
+		if transpileEnv != nil {
+			transpileEnv = types.NewEnv(transpileEnv)
+		}
+		body, err := convertStmtList(st.Bench.Body)
+		if transpileEnv != nil {
+			transpileEnv = savedEnv
+		}
+		if err != nil {
+			return nil, err
+		}
+		return &BenchStmt{Name: st.Bench.Name, Body: body}, nil
 	case st.If != nil:
 		return convertIfStmt(st.If)
 	case st.Type != nil:
@@ -3975,6 +4018,14 @@ func stmtNode(s Stmt) *ast.Node {
 		if st.Keys {
 			n.Children = append(n.Children, &ast.Node{Kind: "keys"})
 		}
+		body := &ast.Node{Kind: "body"}
+		for _, s2 := range st.Body {
+			body.Children = append(body.Children, stmtNode(s2))
+		}
+		n.Children = append(n.Children, body)
+		return n
+	case *BenchStmt:
+		n := &ast.Node{Kind: "bench", Value: st.Name}
 		body := &ast.Node{Kind: "body"}
 		for _, s2 := range st.Body {
 			body.Children = append(body.Children, stmtNode(s2))
