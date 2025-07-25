@@ -558,7 +558,10 @@ func (i *IndexExpr) emit(w io.Writer) {
 	case *NameRef:
 		if mapVars[t.Name] || strings.HasPrefix(inferType(i.Target), "HashMap") {
 			t.emit(w)
-			io.WriteString(w, "[&")
+			io.WriteString(w, "[")
+			if inferType(i.Index) != "String" {
+				io.WriteString(w, "&")
+			}
 			i.Index.emit(w)
 			if inferType(i.Index) == "String" {
 				io.WriteString(w, ".as_str()")
@@ -578,20 +581,43 @@ func (i *IndexExpr) emit(w io.Writer) {
 		}
 	case *MapLit:
 		i.Target.emit(w)
-		io.WriteString(w, "[&")
+		io.WriteString(w, "[")
+		if inferType(i.Index) != "String" {
+			io.WriteString(w, "&")
+		}
 		i.Index.emit(w)
+		if inferType(i.Index) == "String" {
+			io.WriteString(w, ".as_str()")
+		}
 		io.WriteString(w, "]")
 		return
 	}
 	i.Target.emit(w)
-	io.WriteString(w, "[")
-	i.Index.emit(w)
-	if strings.HasPrefix(inferType(i.Target), "Vec<") {
-		if inferType(i.Index) != "usize" {
-			io.WriteString(w, " as usize")
+	if strings.HasPrefix(inferType(i.Target), "HashMap") {
+		io.WriteString(w, "[")
+		i.Index.emit(w)
+		if inferType(i.Index) == "String" {
+			io.WriteString(w, ".as_str()")
+		}
+		io.WriteString(w, "]")
+	} else {
+		if strings.HasPrefix(inferType(i.Target), "Vec<") {
+			io.WriteString(w, "[")
+			i.Index.emit(w)
+			if inferType(i.Index) != "usize" {
+				io.WriteString(w, " as usize")
+			}
+			io.WriteString(w, "]")
+		} else if inferType(i.Index) == "String" {
+			io.WriteString(w, "[")
+			i.Index.emit(w)
+			io.WriteString(w, ".as_str()]")
+		} else {
+			io.WriteString(w, "[")
+			i.Index.emit(w)
+			io.WriteString(w, "]")
 		}
 	}
-	io.WriteString(w, "]")
 	if !indexLHS {
 		et := ""
 		if t := inferType(i.Target); strings.HasPrefix(t, "Vec<") {
@@ -758,6 +784,15 @@ func (a *AppendExpr) emit(w io.Writer) {
 		a.Elem.emit(w)
 	}
 	io.WriteString(w, "); v }")
+}
+
+// PopExpr represents removing the last element from a list.
+type PopExpr struct{ List Expr }
+
+func (p *PopExpr) emit(w io.Writer) {
+	io.WriteString(w, "{ let mut v = ")
+	p.List.emit(w)
+	io.WriteString(w, ".clone(); v.pop(); v }")
 }
 
 // JoinExpr converts a list of integers into a space separated string.
@@ -1990,6 +2025,17 @@ func compileStmt(stmt *parser.Statement) (Stmt, error) {
 		val, err := compileExpr(stmt.Assign.Value)
 		if err != nil {
 			return nil, err
+		}
+		if sl, ok := val.(*SliceExpr); ok && sl.Start == nil {
+			if be, ok2 := sl.End.(*BinaryExpr); ok2 && be.Op == "-" {
+				if call, ok3 := be.Left.(*CallExpr); ok3 && call.Func == "len" && len(call.Args) == 1 {
+					if nr, ok4 := call.Args[0].(*NameRef); ok4 && nr.Name == stmt.Assign.Name {
+						if num, ok5 := be.Right.(*NumberLit); ok5 && num.Value == "1" {
+							val = &PopExpr{List: &NameRef{Name: stmt.Assign.Name, Type: varTypes[stmt.Assign.Name]}}
+						}
+					}
+				}
+			}
 		}
 		if len(stmt.Assign.Index) > 0 {
 			target := Expr(&NameRef{Name: stmt.Assign.Name, Type: varTypes[stmt.Assign.Name]})
@@ -3541,6 +3587,8 @@ func inferType(e Expr) string {
 		return "Vec<i64>"
 	case *AppendExpr:
 		return inferType(e.(*AppendExpr).List)
+	case *PopExpr:
+		return inferType(e.(*PopExpr).List)
 	case *ExistsExpr:
 		return "bool"
 	case *BinaryExpr:
