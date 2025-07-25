@@ -190,7 +190,7 @@ func updateRosetta() {
 	compiled := 0
 	var rows []string
 	rows = append(rows, "| Index | Name | Status | Duration | Memory |")
-	rows = append(rows, "|------:|------|--------|---------:|-------:|")
+	rows = append(rows, "|------:|------|:-----:|---------:|-------:|")
 	for _, e := range entries {
 		name := strings.TrimSuffix(filepath.Base(e.file), ".mochi")
 		status := " "
@@ -199,7 +199,7 @@ func updateRosetta() {
 		if _, err := os.Stat(filepath.Join(outDir, name+".error")); err == nil {
 			status = "error"
 		} else if _, err := os.Stat(filepath.Join(outDir, name+".py")); err == nil {
-			status = "ok"
+			status = "✓"
 			compiled++
 		}
 		if data, err := os.ReadFile(filepath.Join(outDir, name+".bench")); err == nil {
