@@ -37,36 +37,15 @@ defmodule Main do
         [nil, reason]
     end
   end
-  def ackermann(m, n) do
-    try do
-      if m == 0 do
-        throw {:return, n + 1}
-      end
-      if n == 0 do
-        throw {:return, ackermann(m - 1, 1)}
-      end
-      throw {:return, ackermann(m - 1, ackermann(m, n - 1))}
-    catch
-      {:return, val} -> val
-    end
-  end
   def main() do
-    try do
-      IO.puts(("A(0, 0) = " <> to_string(ackermann(0, 0))))
-      IO.puts(("A(1, 2) = " <> to_string(ackermann(1, 2))))
-      IO.puts(("A(2, 4) = " <> to_string(ackermann(2, 4))))
-      IO.puts(("A(3, 4) = " <> to_string(ackermann(3, 4))))
-    catch
-      {:return, val} -> val
-    end
-  end
-  def bench_main() do
     mem_start = _mem()
     t_start = _now()
-    main()
+    myVar = 3.14
+    IO.puts("value as float: #{myVar}")
+    IO.puts("address: <not available>")
     duration_us = div(_now() - t_start, 1000)
     mem_diff = abs(_mem() - mem_start)
     IO.puts("{\n  \"duration_us\": #{duration_us},\n  \"memory_bytes\": #{mem_diff},\n  \"name\": \"main\"\n}")
   end
 end
-Main.bench_main()
+Main.main()

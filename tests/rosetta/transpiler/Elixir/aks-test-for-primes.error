@@ -1,0 +1,115 @@
+run: exit status 1
+    warning: variable "seed" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 14 │               seed = v
+    │               ~
+    │
+    └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/aks-test-for-primes.exs:14:15: Main._now/0
+
+    warning: variable "seeded" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 15 │               seeded = true
+    │               ~
+    │
+    └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/aks-test-for-primes.exs:15:15: Main._now/0
+
+    warning: variable "s" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 55 │             s = ((s <> "^") <> to_string(i))
+    │             ~
+    │
+    └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/aks-test-for-primes.exs:55:13: Main.poly/1
+
+    warning: variable "coef" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 72 │       {coef, i, s} = try do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/aks-test-for-primes.exs:72:8: Main.poly/1
+
+    warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 72 │       {coef, i, s} = try do
+    │              ~
+    │
+    └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/aks-test-for-primes.exs:72:14: Main.poly/1
+
+     warning: variable "c" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 108 │       {c, i} = try do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/aks-test-for-primes.exs:108:8: Main.aks/1
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 108 │       {c, i} = try do
+     │           ~
+     │
+     └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/aks-test-for-primes.exs:108:11: Main.aks/1
+
+     warning: variable "line" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 147 │               line = ((line <> " ") <> to_string(p))
+     │               ~
+     │
+     └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/aks-test-for-primes.exs:147:15: Main.main/0
+
+     warning: variable "first" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 145 │               first = false
+     │               ~
+     │
+     └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/aks-test-for-primes.exs:145:15: Main.main/0
+
+     warning: variable "line" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 144 │               line = (line <> to_string(p))
+     │               ~
+     │
+     └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/aks-test-for-primes.exs:144:15: Main.main/0
+
+     warning: variable "first" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 156 │       {first, line, p} = try do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/aks-test-for-primes.exs:156:8: Main.main/0
+
+     warning: variable "p" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 131 │       p = try do
+     │       ~
+     │
+     └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/aks-test-for-primes.exs:131:7: Main.main/0
+
+     warning: variable "p" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 156 │       {first, line, p} = try do
+     │                     ~
+     │
+     └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/aks-test-for-primes.exs:156:21: Main.main/0
+
+    warning: function _lookup_host/1 is unused
+    │
+ 31 │   defp _lookup_host(host) do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/aks-test-for-primes.exs:31:8: Main (module)
+
+0:  1
+1:  x - 1.0
+2:  x - 2.0x + 1.0
+3:  x - 3.0x + 3.0x - 1.0
+4:  x - 4.0x + 6.0x - 4.0x + 1.0
+5:  x - 5.0x + 10.0x - 10.0x + 5.0x - 1.0
+6:  x - 6.0x + 15.0x - 20.0x + 15.0x - 6.0x + 1.0
+7:  x - 7.0x + 21.0x - 35.0x + 35.0x - 21.0x + 7.0x - 1.0
+** (ArithmeticError) bad argument in arithmetic expression: rem(3.0, 3)
+    :erlang.rem(3.0, 3)
+    /workspace/mochi/tests/rosetta/transpiler/Elixir/aks-test-for-primes.exs:98: anonymous fn/4 in Main.aks/1
+    /workspace/mochi/tests/rosetta/transpiler/Elixir/aks-test-for-primes.exs:109: Main.aks/1
+    /workspace/mochi/tests/rosetta/transpiler/Elixir/aks-test-for-primes.exs:142: anonymous fn/4 in Main.main/0
+    /workspace/mochi/tests/rosetta/transpiler/Elixir/aks-test-for-primes.exs:157: Main.main/0
+    /workspace/mochi/tests/rosetta/transpiler/Elixir/aks-test-for-primes.exs:170: Main.bench_main/0
+    /workspace/mochi/tests/rosetta/transpiler/Elixir/aks-test-for-primes.exs:176: (file)
