@@ -1,9 +1,9 @@
 # Java Rosetta Transpiler Output
 
 Generated Java code for programs in `tests/rosetta/x/Mochi`. Each program has a `.java` file produced by the transpiler and a `.out` file with its runtime output. Compilation or execution errors are captured in `.error` files.
-Last updated: 2025-07-25 16:47 GMT+7
+Last updated: 2025-07-25 17:12 GMT+7
 
-## Rosetta Checklist (44/284)
+## Rosetta Checklist (51/284)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | 100-doors-2 | ✓ | 23.0ms | 245.84KB |
@@ -43,21 +43,21 @@ Last updated: 2025-07-25 16:47 GMT+7
 | 35 | additive-primes | ✓ | 14.0ms | 0B |
 | 36 | address-of-a-variable | ✓ | 11.0ms | 245.78KB |
 | 37 | adfgvx-cipher |   |  |  |
-| 38 | aks-test-for-primes | ✓ |  |  |
-| 39 | algebraic-data-types | ✓ |  |  |
-| 40 | align-columns | ✓ |  |  |
-| 41 | aliquot-sequence-classifications |   |  |  |
-| 42 | almkvist-giullera-formula-for-pi |   |  |  |
-| 43 | almost-prime | ✓ |  |  |
-| 44 | amb |   |  |  |
-| 45 | amicable-pairs | ✓ |  |  |
-| 46 | anagrams-deranged-anagrams |   |  |  |
-| 47 | anagrams |   |  |  |
-| 48 | angle-difference-between-two-bearings-1 |   |  |  |
-| 49 | angle-difference-between-two-bearings-2 |   |  |  |
-| 50 | angles-geometric-normalization-and-conversion | ✓ |  |  |
-| 51 | animate-a-pendulum | ✓ |  |  |
-| 52 | animation | ✓ |  |  |
+| 38 | aks-test-for-primes | ✓ | 14.0ms | 245.79KB |
+| 39 | algebraic-data-types | ✓ | 15.0ms | 245.98KB |
+| 40 | align-columns | ✓ | 11.0ms | 491.66KB |
+| 41 | aliquot-sequence-classifications | ✓ | 19.0ms | 491.59KB |
+| 42 | almkvist-giullera-formula-for-pi | ✓ | 227.0ms | 63.45MB |
+| 43 | almost-prime | ✓ | 9.0ms | 0B |
+| 44 | amb | ✓ | 16.0ms | 245.88KB |
+| 45 | amicable-pairs | ✓ | 405.0ms | 80.72MB |
+| 46 | anagrams-deranged-anagrams | ✓ | 9.0ms | 245.78KB |
+| 47 | anagrams | ✓ | 21.0ms | 491.59KB |
+| 48 | angle-difference-between-two-bearings-1 | ✓ | 627.0µs | 0B |
+| 49 | angle-difference-between-two-bearings-2 | ✓ | 802.0µs | 0B |
+| 50 | angles-geometric-normalization-and-conversion | ✓ | 9.0ms | 245.78KB |
+| 51 | animate-a-pendulum | ✓ | 634.0µs | 0B |
+| 52 | animation | ✓ | 11.0ms | 0B |
 | 53 | anonymous-recursion-1 |   |  |  |
 | 54 | anonymous-recursion-2 |   |  |  |
 | 55 | anonymous-recursion |   |  |  |

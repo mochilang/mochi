@@ -68,22 +68,55 @@ public class Main {
         double[] angles = new double[]{-2.0, -1.0, 0.0, 1.0, 2.0, 6.2831853, 16.0, 57.2957795, 359.0, 399.0, 6399.0, 1000000.0};
         System.out.println("degrees normalized_degs gradians mils radians");
         for (var a : angles) {
-            System.out.println(String.valueOf(a) + " " + String.valueOf(d2d(a)) + " " + String.valueOf(d2g(a)) + " " + String.valueOf(d2m(a)) + " " + String.valueOf(d2r(a)));
+            System.out.println(String.valueOf(String.valueOf(String.valueOf(String.valueOf(String.valueOf(String.valueOf(String.valueOf(String.valueOf(a) + " ") + String.valueOf(d2d(a))) + " ") + String.valueOf(d2g(a))) + " ") + String.valueOf(d2m(a))) + " ") + String.valueOf(d2r(a)));
         }
         System.out.println("\ngradians normalized_grds degrees mils radians");
         for (var a : angles) {
-            System.out.println(String.valueOf(a) + " " + String.valueOf(g2g(a)) + " " + String.valueOf(g2d(a)) + " " + String.valueOf(g2m(a)) + " " + String.valueOf(g2r(a)));
+            System.out.println(String.valueOf(String.valueOf(String.valueOf(String.valueOf(String.valueOf(String.valueOf(String.valueOf(String.valueOf(a) + " ") + String.valueOf(g2g(a))) + " ") + String.valueOf(g2d(a))) + " ") + String.valueOf(g2m(a))) + " ") + String.valueOf(g2r(a)));
         }
         System.out.println("\nmils normalized_mils degrees gradians radians");
         for (var a : angles) {
-            System.out.println(String.valueOf(a) + " " + String.valueOf(m2m(a)) + " " + String.valueOf(m2d(a)) + " " + String.valueOf(m2g(a)) + " " + String.valueOf(m2r(a)));
+            System.out.println(String.valueOf(String.valueOf(String.valueOf(String.valueOf(String.valueOf(String.valueOf(String.valueOf(String.valueOf(a) + " ") + String.valueOf(m2m(a))) + " ") + String.valueOf(m2d(a))) + " ") + String.valueOf(m2g(a))) + " ") + String.valueOf(m2r(a)));
         }
         System.out.println("\nradians normalized_rads degrees gradians mils");
         for (var a : angles) {
-            System.out.println(String.valueOf(a) + " " + String.valueOf(r2r(a)) + " " + String.valueOf(r2d(a)) + " " + String.valueOf(r2g(a)) + " " + String.valueOf(r2m(a)));
+            System.out.println(String.valueOf(String.valueOf(String.valueOf(String.valueOf(String.valueOf(String.valueOf(String.valueOf(String.valueOf(a) + " ") + String.valueOf(r2r(a))) + " ") + String.valueOf(r2d(a))) + " ") + String.valueOf(r2g(a))) + " ") + String.valueOf(r2m(a)));
         }
     }
     public static void main(String[] args) {
-        main();
+        {
+            long _benchStart = _now();
+            long _benchMem = _mem();
+            main();
+            long _benchDuration = _now() - _benchStart;
+            long _benchMemory = _mem() - _benchMem;
+            System.out.println("{");
+            System.out.println("  \"duration_us\": " + _benchDuration + ",");
+            System.out.println("  \"memory_bytes\": " + _benchMemory + ",");
+            System.out.println("  \"name\": \"main\"");
+            System.out.println("}");
+            return;
+        }
+    }
+
+    static boolean _nowSeeded = false;
+    static int _nowSeed;
+    static int _now() {
+        if (!_nowSeeded) {
+            String s = System.getenv("MOCHI_NOW_SEED");
+            if (s != null && !s.isEmpty()) {
+                try { _nowSeed = Integer.parseInt(s); _nowSeeded = true; } catch (Exception e) {}
+            }
+        }
+        if (_nowSeeded) {
+            _nowSeed = (int)((_nowSeed * 1664525L + 1013904223) % 2147483647);
+            return _nowSeed;
+        }
+        return (int)(System.nanoTime() / 1000);
+    }
+
+    static long _mem() {
+        Runtime rt = Runtime.getRuntime();
+        return rt.totalMemory() - rt.freeMemory();
     }
 }

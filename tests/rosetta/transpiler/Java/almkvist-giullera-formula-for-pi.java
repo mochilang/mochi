@@ -31,10 +31,10 @@ public class Main {
         }
         int i = a.length - 1;
         while (i >= 0) {
-            if (a[i] > b[i]) {
+            if (((Number)(a[i])).intValue() > ((Number)(b[i])).intValue()) {
                 return 1;
             }
-            if (a[i] < b[i]) {
+            if (((Number)(a[i])).intValue() < ((Number)(b[i])).intValue()) {
                 return -1;
             }
             i = i - 1;
@@ -94,7 +94,7 @@ public class Main {
         int carry = 0;
         int i = 0;
         while (i < a.length) {
-            int prod = a[i] * m + carry;
+            int prod = ((Number)(a[i])).intValue() * m + carry;
             res = java.util.stream.IntStream.concat(java.util.Arrays.stream(res), java.util.stream.IntStream.of(prod % 10)).toArray();
             carry = prod / 10;
             i = i + 1;
@@ -119,7 +119,7 @@ public class Main {
             int j = 0;
             while (j < b.length) {
                 int idx = i + j;
-                int prod = res[idx] + a[i] * b[j] + carry;
+                int prod = res[idx] + ((Number)(a[i])).intValue() * ((Number)(b[j])).intValue() + carry;
 res[idx] = prod % 10;
                 carry = prod / 10;
                 j = j + 1;
@@ -150,10 +150,10 @@ res[idx] = prod % 10;
         int rem = 0;
         int i = a.length - 1;
         while (i >= 0) {
-            int cur = rem * 10 + a[i];
+            int cur = rem * 10 + ((Number)(a[i])).intValue();
             int q = cur / m;
             rem = cur % m;
-            res = java.util.stream.Stream.concat(java.util.Arrays.stream(new int[]{q}), java.util.Arrays.stream(res)).toArray(Object[]::new);
+            res = java.util.stream.IntStream.concat(java.util.Arrays.stream(new int[]{q}), java.util.Arrays.stream(res)).toArray();
             i = i - 1;
         }
         return bigTrim(res);
@@ -163,7 +163,7 @@ res[idx] = prod % 10;
         String s = "";
         int i = a.length - 1;
         while (i >= 0) {
-            s = s + String.valueOf(a[i]);
+            s = String.valueOf(s + String.valueOf(a[i]));
             i = i - 1;
         }
         return s;
@@ -173,7 +173,7 @@ res[idx] = prod % 10;
         String s = "";
         int i = 0;
         while (i < n) {
-            s = s + ch;
+            s = String.valueOf(s + ch);
             i = i + 1;
         }
         return s;
@@ -193,12 +193,12 @@ res[idx] = prod % 10;
                 }
                 i = i + 1;
             }
-            res = java.util.stream.Stream.concat(java.util.Arrays.stream(res), java.util.Arrays.stream(new int[]{min})).toArray(Object[]::new);
+            res = java.util.stream.IntStream.concat(java.util.Arrays.stream(res), java.util.Arrays.stream(new int[]{min})).toArray();
             int[] out = new int[]{};
             int j = 0;
             while (j < tmp.length) {
                 if (j != idx) {
-                    out = java.util.stream.Stream.concat(java.util.Arrays.stream(out), java.util.Arrays.stream(new int[]{tmp[j]})).toArray(Object[]::new);
+                    out = java.util.stream.IntStream.concat(java.util.Arrays.stream(out), java.util.Arrays.stream(new int[]{tmp[j]})).toArray();
                 }
                 j = j + 1;
             }
@@ -237,7 +237,7 @@ sieve[m] = false;
     }
 
     static java.util.Map<String,Integer> factorialExp(int n, int[] primes) {
-        java.util.Map<String,Integer> m = new java.util.LinkedHashMap<String, Object>();
+        java.util.Map<String,Integer> m = new java.util.LinkedHashMap<String, Integer>();
         for (var p : primes) {
             if (p > n) {
                 break;
@@ -254,7 +254,7 @@ m.put(String.valueOf(p), e);
     }
 
     static java.util.Map<String,Integer> factorSmall(int x, int[] primes) {
-        java.util.Map<String,Integer> f = new java.util.LinkedHashMap<String, Object>();
+        java.util.Map<String,Integer> f = new java.util.LinkedHashMap<String, Integer>();
         int n = x;
         for (var p : primes) {
             if (p * p > n) {
@@ -270,7 +270,7 @@ f.put(String.valueOf(p), c);
             }
         }
         if (n > 1) {
-f.put(String.valueOf(n), f.get(String.valueOf(n), 0) + 1);
+f.put(String.valueOf(n), ((Number)(f.getOrDefault(String.valueOf(n), 0))).intValue() + 1);
         }
         return f;
     }
@@ -278,24 +278,24 @@ f.put(String.valueOf(n), f.get(String.valueOf(n), 0) + 1);
     static int[] computeIP(int n, int[] primes) {
         java.util.Map<String,Integer> exps = factorialExp(6 * n, primes);
         java.util.Map<String,Integer> fn = factorialExp(n, primes);
-        for (var k : fn) {
-exps.put(k, exps.get(k, 0) - 6 * (int)((int)(fn.get(k))));
+        for (var k : fn.keySet()) {
+exps.put(k, ((Number)(exps.getOrDefault(k, 0))).intValue() - 6 * (int)(((int)fn.get(k))));
         }
-exps.put("2", exps.get("2", 0) + 5);
+exps.put("2", ((Number)(exps.getOrDefault("2", 0))).intValue() + 5);
         int t2 = 532 * n * n + 126 * n + 9;
         java.util.Map<String,Integer> ft2 = factorSmall(t2, primes);
-        for (var k : ft2) {
-exps.put(k, exps.get(k, 0) + (int)((int)(ft2.get(k))));
+        for (var k : ft2.keySet()) {
+exps.put(k, ((Number)(exps.getOrDefault(k, 0))).intValue() + (int)(((int)ft2.get(k))));
         }
-exps.put("3", exps.get("3", 0) - 1);
+exps.put("3", ((Number)(exps.getOrDefault("3", 0))).intValue() - 1);
         int[] keys = new int[]{};
-        for (var k : exps) {
-            keys = java.util.stream.IntStream.concat(java.util.Arrays.stream(keys), java.util.stream.IntStream.of(((Number)(k)).intValue())).toArray();
+        for (var k : exps.keySet()) {
+            keys = java.util.stream.IntStream.concat(java.util.Arrays.stream(keys), java.util.stream.IntStream.of(Integer.parseInt(k))).toArray();
         }
         keys = sortInts(keys);
         int[] res = bigFromInt(1);
         for (var p : keys) {
-            int e = (int)((int)(exps.get(String.valueOf(p))));
+            int e = (int)(((int)exps.get(String.valueOf(p))));
             int i = 0;
             while (i < e) {
                 res = bigMulSmall(res, p);
@@ -306,20 +306,20 @@ exps.put("3", exps.get("3", 0) - 1);
     }
 
     static String formatTerm(int[] ip, int pw) {
-        String s = bigToString(ip);
+        String s = String.valueOf(bigToString(ip));
         if (pw >= s.length()) {
-            String frac = repeat("0", pw - s.length()) + s;
+            String frac = String.valueOf(String.valueOf(repeat("0", pw - s.length())) + s);
             if (frac.length() < 33) {
-                frac = frac + repeat("0", 33 - frac.length());
+                frac = String.valueOf(frac + String.valueOf(repeat("0", 33 - frac.length())));
             }
             return "0." + frac.substring(0, 33);
         }
         String intpart = s.substring(0, s.length() - pw);
         String frac = s.substring(s.length() - pw, s.length());
         if (frac.length() < 33) {
-            frac = frac + repeat("0", 33 - frac.length());
+            frac = String.valueOf(frac + String.valueOf(repeat("0", 33 - frac.length())));
         }
-        return intpart + "." + frac.substring(0, 33);
+        return String.valueOf(intpart + ".") + frac.substring(0, 33);
     }
 
     static int[] bigAbsDiff(int[] a, int[] b) {
@@ -332,7 +332,7 @@ exps.put("3", exps.get("3", 0) - 1);
     static void main() {
         int[] primes = primesUpTo(2000);
         System.out.println("N                               Integer Portion  Pow  Nth Term (33 dp)");
-        String line = repeat("-", 89);
+        String line = String.valueOf(repeat("-", 89));
         System.out.println(line);
         int[] sum = bigFromInt(0);
         int[] prev = bigFromInt(0);
@@ -347,20 +347,20 @@ exps.put("3", exps.get("3", 0) - 1);
                 denomPow = pw;
             }
             if (n < 10) {
-                String termStr = formatTerm(ip, pw);
-                String ipStr = bigToString(ip);
+                String termStr = String.valueOf(formatTerm(ip, pw));
+                String ipStr = String.valueOf(bigToString(ip));
                 while (ipStr.length() < 44) {
-                    ipStr = " " + ipStr;
+                    ipStr = String.valueOf(" " + ipStr);
                 }
                 String pwStr = String.valueOf(-pw);
                 while (pwStr.length() < 3) {
-                    pwStr = " " + pwStr;
+                    pwStr = String.valueOf(" " + pwStr);
                 }
                 String padTerm = termStr;
                 while (padTerm.length() < 35) {
-                    padTerm = padTerm + " ";
+                    padTerm = String.valueOf(padTerm + " ");
                 }
-                System.out.println(String.valueOf(n) + "  " + ipStr + "  " + pwStr + "  " + padTerm);
+                System.out.println(String.valueOf(String.valueOf(String.valueOf(String.valueOf(String.valueOf(String.valueOf(n) + "  ") + ipStr) + "  ") + pwStr) + "  ") + padTerm);
             }
             sum = bigAdd(sum, ip);
             int[] diff = bigAbsDiff(sum, prev);
@@ -384,17 +384,50 @@ exps.put("3", exps.get("3", 0) - 1);
             }
         }
         int[] piInt = low;
-        String piStr = bigToString(piInt);
+        String piStr = String.valueOf(bigToString(piInt));
         if (piStr.length() <= precision) {
-            piStr = repeat("0", precision - piStr.length() + 1) + piStr;
+            piStr = String.valueOf(String.valueOf(repeat("0", precision - piStr.length() + 1)) + piStr);
         }
-        String out = piStr.substring(0, piStr.length() - precision) + "." + piStr.substring(piStr.length() - precision, piStr.length());
+        String out = String.valueOf(String.valueOf(piStr.substring(0, piStr.length() - precision) + ".") + piStr.substring(piStr.length() - precision, piStr.length()));
         System.out.println("");
         System.out.println("Pi to 70 decimal places is:");
         System.out.println(out);
     }
     public static void main(String[] args) {
-        main();
+        {
+            long _benchStart = _now();
+            long _benchMem = _mem();
+            main();
+            long _benchDuration = _now() - _benchStart;
+            long _benchMemory = _mem() - _benchMem;
+            System.out.println("{");
+            System.out.println("  \"duration_us\": " + _benchDuration + ",");
+            System.out.println("  \"memory_bytes\": " + _benchMemory + ",");
+            System.out.println("  \"name\": \"main\"");
+            System.out.println("}");
+            return;
+        }
+    }
+
+    static boolean _nowSeeded = false;
+    static int _nowSeed;
+    static int _now() {
+        if (!_nowSeeded) {
+            String s = System.getenv("MOCHI_NOW_SEED");
+            if (s != null && !s.isEmpty()) {
+                try { _nowSeed = Integer.parseInt(s); _nowSeeded = true; } catch (Exception e) {}
+            }
+        }
+        if (_nowSeeded) {
+            _nowSeed = (int)((_nowSeed * 1664525L + 1013904223) % 2147483647);
+            return _nowSeed;
+        }
+        return (int)(System.nanoTime() / 1000);
+    }
+
+    static long _mem() {
+        Runtime rt = Runtime.getRuntime();
+        return rt.totalMemory() - rt.freeMemory();
     }
 
     static boolean[] appendBool(boolean[] arr, boolean v) {

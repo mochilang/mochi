@@ -371,7 +371,7 @@ func inferType(e Expr) string {
 			if lt == "bigint" || rt == "bigint" {
 				return "bigint"
 			}
-			if lt == "double" || rt == "double" {
+			if lt == "double" || rt == "double" || lt == "float" || rt == "float" {
 				return "double"
 			}
 			return "int"
@@ -381,7 +381,7 @@ func inferType(e Expr) string {
 			if lt == "bigint" || rt == "bigint" {
 				return "bigint"
 			}
-			if lt == "double" || rt == "double" {
+			if lt == "double" || rt == "double" || lt == "float" || rt == "float" {
 				return "double"
 			}
 			return "int"
@@ -958,13 +958,16 @@ func (s *VarStmt) emit(w io.Writer, indent string) {
 type AssignStmt struct {
 	Name string
 	Expr Expr
+	Type string
 }
 
 func (s *AssignStmt) emit(w io.Writer, indent string) {
 	fmt.Fprint(w, indent+sanitize(s.Name)+" = ")
-	typ := ""
-	if vs, ok := varDecls[s.Name]; ok {
-		typ = vs.Type
+	typ := s.Type
+	if typ == "" {
+		if vs, ok := varDecls[s.Name]; ok {
+			typ = vs.Type
+		}
 	}
 	emitCastExpr(w, s.Expr, typ)
 	fmt.Fprint(w, ";\n")
@@ -1216,9 +1219,12 @@ func (m *MapLit) emit(w io.Writer) {
 		keyType = javaBoxType(m.KeyType)
 	}
 	if len(m.Keys) > 0 {
-		fmt.Fprintf(w, "new java.util.LinkedHashMap<%s, %s>() {{", keyType, valType)
+		fmt.Fprintf(w, "new java.util.LinkedHashMap<%s, %s>(java.util.Map.ofEntries(", keyType, valType)
 		for i := range m.Keys {
-			fmt.Fprint(w, " put(")
+			if i > 0 {
+				fmt.Fprint(w, ", ")
+			}
+			fmt.Fprint(w, "java.util.Map.entry(")
 			m.Keys[i].emit(w)
 			fmt.Fprint(w, ", ")
 			if m.ValueType != "" {
@@ -1226,9 +1232,9 @@ func (m *MapLit) emit(w io.Writer) {
 			} else {
 				m.Values[i].emit(w)
 			}
-			fmt.Fprint(w, ");")
+			fmt.Fprint(w, ")")
 		}
-		fmt.Fprint(w, " }}")
+		fmt.Fprint(w, "))")
 	} else {
 		fmt.Fprintf(w, "new java.util.LinkedHashMap<%s, %s>()", keyType, valType)
 	}
@@ -1428,7 +1434,13 @@ func (b *BinaryExpr) emit(w io.Writer) {
 
 type IntLit struct{ Value int }
 
-func (i *IntLit) emit(w io.Writer) { fmt.Fprint(w, i.Value) }
+func (i *IntLit) emit(w io.Writer) {
+	if i.Value > math.MaxInt32 || i.Value < math.MinInt32 {
+		fmt.Fprintf(w, "(int)%dL", int64(i.Value))
+	} else {
+		fmt.Fprint(w, i.Value)
+	}
+}
 
 type FloatLit struct{ Value float64 }
 
@@ -1477,8 +1489,12 @@ type LenExpr struct{ Value Expr }
 
 func (l *LenExpr) emit(w io.Writer) {
 	l.Value.emit(w)
-	if _, ok := l.Value.(*IndexExpr); ok {
-		fmt.Fprint(w, ".length()")
+	if ix, ok := l.Value.(*IndexExpr); ok {
+		if isStringExpr(ix) {
+			fmt.Fprint(w, ".length()")
+		} else {
+			fmt.Fprint(w, ".length")
+		}
 		return
 	}
 	switch {
@@ -1938,7 +1954,11 @@ type MethodCallExpr struct {
 
 func (m *MethodCallExpr) emit(w io.Writer) {
 	m.Target.emit(w)
-	fmt.Fprint(w, "."+m.Name+"(")
+	name := m.Name
+	if name == "get" && len(m.Args) == 2 {
+		name = "getOrDefault"
+	}
+	fmt.Fprint(w, "."+name+"(")
 	for i, a := range m.Args {
 		if i > 0 {
 			fmt.Fprint(w, ", ")
@@ -2106,7 +2126,7 @@ func isStringExpr(e Expr) bool {
 			return true
 		}
 	case *IndexExpr:
-		if isStringExpr(ex.Target) {
+		if isStringExpr(ex.Target) || arrayElemType(ex.Target) == "string" {
 			return true
 		}
 	case *SliceExpr:
@@ -2427,7 +2447,7 @@ func Transpile(p *parser.Program, env *types.Env) (*Program, error) {
 			}
 			for _, p := range params {
 				if javaType(p.Type) == "" {
-					stmt := &AssignStmt{Name: p.Name, Expr: &CallExpr{Func: "new java.util.LinkedHashMap", Args: []Expr{&VarExpr{Name: p.Name}}}}
+					stmt := &AssignStmt{Name: p.Name, Expr: &CallExpr{Func: "new java.util.LinkedHashMap", Args: []Expr{&VarExpr{Name: p.Name}}}, Type: p.Type}
 					body = append([]Stmt{stmt}, body...)
 				}
 			}
@@ -2739,7 +2759,13 @@ func compileStmt(s *parser.Statement) (Stmt, error) {
 					}
 				}
 			}
-			return &AssignStmt{Name: s.Assign.Name, Expr: e}, nil
+			t := ""
+			if vt, ok := varTypes[s.Assign.Name]; ok {
+				t = vt
+			} else if vs, ok := varDecls[s.Assign.Name]; ok {
+				t = vs.Type
+			}
+			return &AssignStmt{Name: s.Assign.Name, Expr: e, Type: t}, nil
 		}
 		if len(s.Assign.Index) > 0 && len(s.Assign.Field) == 0 {
 			indices := make([]Expr, len(s.Assign.Index))
@@ -2894,13 +2920,19 @@ func compileStmt(s *parser.Statement) (Stmt, error) {
 			}
 		}
 		isMap := false
+		keyType := ""
 		switch it := iter.(type) {
 		case *MapLit:
 			isMap = true
+			keyType = it.KeyType
 		case *VarExpr:
-			if t, ok := varTypes[it.Name]; ok && t == "map" {
+			if t, ok := varTypes[it.Name]; ok && (t == "map" || strings.HasPrefix(t, "java.util.Map")) {
 				isMap = true
+				keyType = mapKeyType(t)
 			}
+		}
+		if isMap && keyType != "" {
+			varTypes[s.For.Name] = keyType
 		}
 		return &ForEachStmt{Name: s.For.Name, Iterable: iter, Body: body, IsMap: isMap}, nil
 	case s.Update != nil:
@@ -3612,7 +3644,7 @@ func compileFunExpr(fn *parser.FunExpr) (Expr, error) {
 	}
 	for _, p := range params {
 		if javaType(p.Type) == "" {
-			stmt := &AssignStmt{Name: p.Name, Expr: &CallExpr{Func: "new java.util.LinkedHashMap", Args: []Expr{&VarExpr{Name: p.Name}}}}
+			stmt := &AssignStmt{Name: p.Name, Expr: &CallExpr{Func: "new java.util.LinkedHashMap", Args: []Expr{&VarExpr{Name: p.Name}}}, Type: p.Type}
 			body = append([]Stmt{stmt}, body...)
 		}
 	}

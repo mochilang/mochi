@@ -1,7 +1,0 @@
-compile: exit status 1
-/tmp/TestJavaTranspiler_Rosetta_Goldenamb2908443975/001/Main.java:3: error: cannot find symbol
-    static boolean amb(string[][] wordsets, String[] res, int idx) {
-                       ^
-  symbol:   class string
-  location: class Main
-1 error

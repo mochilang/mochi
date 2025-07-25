@@ -1,0 +1,28 @@
+Aliquot classifications - periods for Sociable/Cyclic in square brackets:
+
+ 1: Terminating     [1, 0]
+ 2: Non-Terminating [2, 1]
+ 3: Non-Terminating [3, 1]
+ 4: Non-Terminating [4, 3]
+ 5: Non-Terminating [5, 1]
+ 6: Perfect         [6, 6]
+ 7: Non-Terminating [7, 1]
+ 8: Non-Terminating [8, 7]
+ 9: Non-Terminating [9, 4]
+10: Non-Terminating [10, 8]
+
+     11: Non-Terminating [11, 1]
+     12: Non-Terminating [12, 16]
+     28: Perfect         [28, 28]
+    496: Perfect         [496, 496]
+    220: Non-Terminating [220, 284]
+   1184: Non-Terminating [1184, 1210]
+  12496: Non-Terminating [12496, 14288]
+1264460: Non-Terminating [1264460, 1547860]
+    790: Non-Terminating [790, 650]
+    909: Non-Terminating [909, 417]
+    562: Non-Terminating [562, 284]
+   1064: Non-Terminating [1064, 1336]
+   1488: Non-Terminating [1488, 2480]
+
+1209702880: Non-Terminating [1209702880, 1648220552]
