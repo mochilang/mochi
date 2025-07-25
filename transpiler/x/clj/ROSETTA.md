@@ -1,14 +1,14 @@
 # Clojure Rosetta Transpiler
 
-Completed: 15/284
-Last updated: 2025-07-25 10:15 +0700
+Completed: 16/284
+Last updated: 2025-07-25 10:49 +0700
 
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
-| 1 | 100-doors-2 |   | 17.246ms | 18.6 MB |
-| 2 | 100-doors-3 | ✓ |  |  |
-| 3 | 100-doors | ✓ |  |  |
-| 4 | 100-prisoners | ✓ |  |  |
+| 1 | 100-doors-2 | ✓ | 42.868ms | 18.4 MB |
+| 2 | 100-doors-3 | ✓ | 40.46ms | 18.4 MB |
+| 3 | 100-doors | ✓ | 43.762ms | 19.4 MB |
+| 4 | 100-prisoners | ✓ | 2.882578s | 21.8 MB |
 | 5 | 15-puzzle-game |   |  |  |
 | 6 | 15-puzzle-solver | ✓ |  |  |
 | 7 | 2048 | ✓ |  |  |
