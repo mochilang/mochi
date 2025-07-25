@@ -2,7 +2,7 @@
 
 This file is auto-generated from rosetta tests.
 
-## Rosetta Golden Test Checklist (78/284)
+## Rosetta Golden Test Checklist (82/284)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | 100-doors-2 | ✓ | 151µs | 41.3 KB |
@@ -14,7 +14,7 @@ This file is auto-generated from rosetta tests.
 | 7 | 2048 | ✓ | 188µs | 42.7 KB |
 | 8 | 21-game | ✓ | 153µs | 41.8 KB |
 | 9 | 24-game-solve | ✓ | 1.054ms | 62.3 KB |
-| 10 | 24-game |   |  |  |
+| 10 | 24-game | ✓ |  |  |
 | 11 | 4-rings-or-4-squares-puzzle | ✓ | 2.005ms | 302.9 KB |
 | 12 | 9-billion-names-of-god-the-integer | ✓ | 54.495ms | 289.7 KB |
 | 13 | 99-bottles-of-beer-2 | ✓ | 322µs | 43.1 KB |
@@ -85,11 +85,11 @@ This file is auto-generated from rosetta tests.
 | 78 | ascii-art-diagram-converter | ✓ | 294µs | 42.3 KB |
 | 79 | assertions | ✓ | 330µs | 34.9 KB |
 | 80 | associative-array-creation | ✓ |  |  |
-| 81 | associative-array-iteration | ✓ |  |  |
-| 82 | associative-array-merging | ✓ |  |  |
-| 83 | atomic-updates |   |  |  |
-| 84 | attractive-numbers |   |  |  |
-| 85 | average-loop-length |   |  |  |
+| 81 | associative-array-iteration | ✓ | 439µs | 57.1 KB |
+| 82 | associative-array-merging | ✓ | 895µs | 73.0 KB |
+| 83 | atomic-updates | ✓ | 315µs | 48.7 KB |
+| 84 | attractive-numbers | ✓ | 341µs | 52.6 KB |
+| 85 | average-loop-length | ✓ | 3.122ms | 44.0 KB |
 | 86 | averages-arithmetic-mean |   |  |  |
 | 87 | averages-mean-time-of-day |   |  |  |
 | 88 | averages-median-1 |   |  |  |
@@ -290,4 +290,4 @@ This file is auto-generated from rosetta tests.
 | 283 | define-a-primitive-data-type |   |  |  |
 | 284 | md5 |   |  |  |
 
-Last updated: 2025-07-25 22:14 +0700
+Last updated: 2025-07-25 17:34 +0000

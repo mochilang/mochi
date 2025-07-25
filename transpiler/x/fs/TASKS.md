@@ -1,3 +1,19 @@
+## Progress (2025-07-25 17:34 +0000)
+- fs transpiler: add index 84
+- Generated F# for 103/104 programs (103 passing)
+
+## Progress (2025-07-25 17:33 +0000)
+- fs transpiler: fix mod operator and add index 83
+- Generated F# for 103/104 programs (103 passing)
+
+## Progress (2025-07-25 17:29 +0000)
+- fs transpiler: add index 81 result
+- Generated F# for 103/104 programs (103 passing)
+
+## Progress (2025-07-26 00:23 +0700)
+- vm: support else-if statements
+- Generated F# for 103/104 programs (103 passing)
+
 ## Progress (2025-07-25 14:38 +0000)
 - fs transpiler: support map get
 - Generated F# for 103/104 programs (103 passing)
