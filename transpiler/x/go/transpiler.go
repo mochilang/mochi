@@ -1737,7 +1737,7 @@ func (a *AssertExpr) emit(w io.Writer) {
 }
 
 // Transpile converts a Mochi program to a minimal Go AST.
-func Transpile(p *parser.Program, env *types.Env) (*Program, error) {
+func Transpile(p *parser.Program, env *types.Env, bench bool) (*Program, error) {
 	usesStrings = false
 	usesStrconv = false
 	usesPrint = false
@@ -1772,6 +1772,46 @@ func Transpile(p *parser.Program, env *types.Env) (*Program, error) {
 		if len(extraDecls) > 0 {
 			gp.Stmts = append(gp.Stmts, extraDecls...)
 			extraDecls = nil
+		}
+	}
+
+	if bench {
+		if mainFuncName != "" {
+			for _, st := range gp.Stmts {
+				if fd, ok := st.(*FuncDecl); ok && fd.Name == mainFuncName {
+					usesTime = true
+					usesJSON = true
+					usesPrint = true
+					usesRuntime = true
+					fd.Body = []Stmt{&BenchStmt{Name: "main", Body: fd.Body}}
+					break
+				}
+			}
+		} else {
+			var body []Stmt
+			var newStmts []Stmt
+			for _, st := range gp.Stmts {
+				switch v := st.(type) {
+				case *FuncDecl, *TypeDeclStmt, *UnionDeclStmt:
+					newStmts = append(newStmts, st)
+				case *VarDecl:
+					if v.Global {
+						newStmts = append(newStmts, st)
+					} else {
+						body = append(body, st)
+					}
+				default:
+					body = append(body, st)
+				}
+			}
+			if len(body) > 0 {
+				usesTime = true
+				usesJSON = true
+				usesPrint = true
+				usesRuntime = true
+				newStmts = append(newStmts, &BenchStmt{Name: "main", Body: body})
+				gp.Stmts = newStmts
+			}
 		}
 	}
 	_ = env // reserved for future use

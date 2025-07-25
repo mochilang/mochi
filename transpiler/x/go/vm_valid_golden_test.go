@@ -42,7 +42,7 @@ func TestGoTranspiler_VMValid_Golden(t *testing.T) {
 			_ = os.WriteFile(errPath, []byte(errs[0].Error()), 0o644)
 			return nil, errs[0]
 		}
-		gprog, err := gotrans.Transpile(prog, env)
+		gprog, err := gotrans.Transpile(prog, env, false)
 		if err != nil {
 			_ = os.WriteFile(errPath, []byte(err.Error()), 0o644)
 			return nil, err

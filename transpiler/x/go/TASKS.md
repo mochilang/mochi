@@ -1,3 +1,11 @@
+## Progress (2025-07-25 08:23 +0700)
+- dart: add bench main support
+- Regenerated golden files - 104/104 vm valid programs passing
+
+## Progress (2025-07-25 08:23 +0700)
+- dart: add bench main support
+- Regenerated golden files - 104/104 vm valid programs passing
+
 ## Progress (2025-07-25 00:31 +0700)
 - ocaml transpiler: support dynamic function calls and map keys
 - Regenerated golden files - 103/103 vm valid programs passing

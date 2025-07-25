@@ -50,7 +50,7 @@ func TestTranspilePrintHello(t *testing.T) {
 	if errs := types.Check(prog, env); len(errs) > 0 {
 		t.Fatalf("type: %v", errs[0])
 	}
-	gprog, err := gotrans.Transpile(prog, env)
+	gprog, err := gotrans.Transpile(prog, env, false)
 	if err != nil {
 		t.Fatalf("transpile: %v", err)
 	}

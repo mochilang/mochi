@@ -5,6 +5,7 @@ package gotranspiler_test
 import (
 	"bufio"
 	"bytes"
+	"encoding/json"
 	"flag"
 	"fmt"
 	"os"
@@ -91,7 +92,8 @@ func TestGoTranspiler_Rosetta_Golden(t *testing.T) {
 				_ = os.WriteFile(errPath, []byte(errs[0].Error()), 0o644)
 				t.Fatalf("type: %v", errs[0])
 			}
-			gprog, err := gotrans.Transpile(prog, env)
+			bench := os.Getenv("MOCHI_BENCHMARK") == "true" || os.Getenv("MOCHI_BENCHMARK") == "1"
+			gprog, err := gotrans.Transpile(prog, env, bench)
 			if err != nil {
 				_ = os.WriteFile(errPath, []byte(err.Error()), 0o644)
 				t.Fatalf("transpile: %v", err)
@@ -116,6 +118,10 @@ func TestGoTranspiler_Rosetta_Golden(t *testing.T) {
 			}
 			_ = os.Remove(errPath)
 			_ = os.WriteFile(outPath, got, 0o644)
+
+			if bench {
+				return
+			}
 
 			if updating() || len(want) == 0 {
 				return
@@ -153,14 +159,33 @@ func updateRosettaChecklist() {
 	total := len(names)
 	compiled := 0
 	var lines []string
+	lines = append(lines, "| Index | Name | Status | Duration | Memory |")
+	lines = append(lines, "|------:|------|:-----:|---------:|-------:|")
 	for i, f := range names {
 		name := strings.TrimSuffix(f, ".mochi")
-		mark := "[ ]"
-		if _, err := os.Stat(filepath.Join(outDir, name+".out")); err == nil {
+		status := " "
+		if _, err := os.Stat(filepath.Join(outDir, name+".error")); err == nil {
+			// leave blank for failure
+		} else if _, err := os.Stat(filepath.Join(outDir, name+".go")); err == nil {
 			compiled++
-			mark = "[x]"
+			status = "✓"
 		}
-		lines = append(lines, fmt.Sprintf("%d. %s %s (%d)", i+1, mark, name, i+1))
+		dur := ""
+		mem := ""
+		if data, err := os.ReadFile(filepath.Join(outDir, name+".out")); err == nil {
+			var r struct {
+				Dur int64 `json:"duration_us"`
+				Mem int64 `json:"memory_bytes"`
+			}
+			trimmed := bytes.TrimSpace(data)
+			if idx := bytes.LastIndexByte(trimmed, '{'); idx >= 0 {
+				if json.Unmarshal(trimmed[idx:], &r) == nil && r.Dur > 0 {
+					dur = humanDur(time.Duration(r.Dur) * time.Microsecond)
+					mem = humanSize(r.Mem)
+				}
+			}
+		}
+		lines = append(lines, fmt.Sprintf("| %d | %s | %s | %s | %s |", i+1, name, status, dur, mem))
 	}
 	tsRaw, _ := exec.Command("git", "log", "-1", "--format=%cI").Output()
 	ts := strings.TrimSpace(string(tsRaw))
@@ -175,10 +200,37 @@ func updateRosettaChecklist() {
 	buf.WriteString("# Go Rosetta Transpiler Output\n\n")
 	fmt.Fprintf(&buf, "Completed programs: %d/%d\n", compiled, total)
 	fmt.Fprintf(&buf, "Last updated: %s\n\n", ts)
-	buf.WriteString("Checklist:\n\n")
 	buf.WriteString(strings.Join(lines, "\n"))
 	buf.WriteString("\n")
 	_ = os.WriteFile(readmePath, buf.Bytes(), 0o644)
+}
+
+func humanDur(d time.Duration) string {
+	if d < time.Millisecond {
+		return fmt.Sprintf("%dus", d.Microseconds())
+	}
+	if d < time.Second {
+		return fmt.Sprintf("%.2fms", float64(d.Microseconds())/1000)
+	}
+	if d < time.Minute {
+		return fmt.Sprintf("%.2fs", d.Seconds())
+	}
+	return d.String()
+}
+
+func humanSize(n int64) string {
+	const unit = 1024
+	units := []string{"B", "KB", "MB", "GB", "TB"}
+	if n < unit {
+		return fmt.Sprintf("%d B", n)
+	}
+	val := float64(n)
+	exp := 0
+	for val >= unit && exp < len(units)-1 {
+		val /= unit
+		exp++
+	}
+	return fmt.Sprintf("%.1f %s", val, units[exp])
 }
 
 // findRepoRoot is declared in vm_valid_golden_test.go and shared across tests.

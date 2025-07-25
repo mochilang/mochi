@@ -692,7 +692,8 @@ func normalizeType(t string) string {
 func transpileProgram(lang string, env *types.Env, prog *parser.Program, root, src string) ([]byte, error) {
 	switch lang {
 	case "go":
-		p, err := gotrans.Transpile(prog, env)
+		bench := os.Getenv("MOCHI_BENCHMARK") == "true"
+		p, err := gotrans.Transpile(prog, env, bench)
 		if err != nil {
 			return nil, err
 		}
