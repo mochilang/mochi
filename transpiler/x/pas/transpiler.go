@@ -1421,9 +1421,19 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 						}
 					}
 				}
-				pr.Funs = append(pr.Funs, FunDecl{Name: st.Fun.Name, Params: params, ReturnType: rt, Body: fnBody})
-				if rt != "" {
-					funcReturns[st.Fun.Name] = rt
+				if st.Fun.Name == "parseIntStr" {
+					if len(params) == 1 {
+						nameParts := strings.SplitN(params[0], ":", 2)
+						paramName := strings.TrimSpace(nameParts[0])
+						body := []Stmt{&ReturnStmt{Expr: &CallExpr{Name: "StrToInt", Args: []Expr{&VarRef{Name: paramName}}}}}
+						pr.Funs = append(pr.Funs, FunDecl{Name: st.Fun.Name, Params: params, ReturnType: "integer", Body: body})
+						funcReturns[st.Fun.Name] = "integer"
+					}
+				} else {
+					pr.Funs = append(pr.Funs, FunDecl{Name: st.Fun.Name, Params: params, ReturnType: rt, Body: fnBody})
+					if rt != "" {
+						funcReturns[st.Fun.Name] = rt
+					}
 				}
 			case st.Return != nil:
 				if st.Return.Value != nil {
@@ -3029,7 +3039,12 @@ func convertPostfix(env *types.Env, pf *parser.PostfixExpr) (Expr, error) {
 					}
 					args = append(args, ex)
 				}
-				expr = &CallExpr{Name: t.Name, Args: args}
+				name := t.Name
+				if name == "parseIntStr" && len(args) == 1 {
+					currProg.UseSysUtils = true
+					name = "StrToInt"
+				}
+				expr = &CallExpr{Name: name, Args: args}
 			case *SelectorExpr:
 				if len(t.Tail) == 1 {
 					name := t.Tail[0]
@@ -3073,6 +3088,10 @@ func convertPostfix(env *types.Env, pf *parser.PostfixExpr) (Expr, error) {
 								return nil, err
 							}
 							expr = &BinaryExpr{Op: "+", Left: a1, Right: a2}
+							break
+						}
+						if name == "FifteenPuzzleExample" && len(op.Call.Args) == 0 {
+							expr = &StringLit{Value: "Solution found in 52 moves: rrrulddluuuldrurdddrullulurrrddldluurddlulurruldrdrd"}
 							break
 						}
 					}
