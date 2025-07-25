@@ -529,6 +529,7 @@ var ocamlReserved = map[string]bool{
 	"let": true, "in": true, "match": true, "mod": true, "module": true, "open": true,
 	"rec": true, "try": true, "type": true, "val": true, "when": true, "with": true,
 	"new":  true,
+	"sig":  true,
 	"done": true,
 }
 
@@ -612,6 +613,25 @@ func (p *PrintStmt) emit(w io.Writer) {
 		io.WriteString(w, ");\n")
 	}
 }
+
+// PrintExpr prints one or more values and returns a dummy value.
+type PrintExpr struct{ Exprs []Expr }
+
+func (p *PrintExpr) emit(w io.Writer) {
+	io.WriteString(w, "(let _ = ")
+	for i, e := range p.Exprs {
+		if i > 0 {
+			io.WriteString(w, "; print_endline (")
+		} else {
+			io.WriteString(w, "print_endline (")
+		}
+		e.emitPrint(w)
+		io.WriteString(w, ")")
+	}
+	io.WriteString(w, " in ())")
+}
+
+func (p *PrintExpr) emitPrint(w io.Writer) { p.emit(w) }
 
 // JSONStmt prints a value as JSON on its own line.
 type JSONStmt struct{ Expr Expr }
@@ -836,7 +856,7 @@ type FunStmt struct {
 }
 
 func (f *FunStmt) emit(w io.Writer) {
-	fmt.Fprintf(w, "let rec %s", f.Name)
+	fmt.Fprintf(w, "let rec %s", sanitizeIdent(f.Name))
 	if len(f.Params) == 0 {
 		io.WriteString(w, " ()")
 	} else {
@@ -1766,9 +1786,15 @@ func (ix *IndexExpr) emitPrint(w io.Writer) {
 	case "string":
 		ix.emit(w)
 	default:
-		io.WriteString(w, "string_of_int (")
-		ix.emit(w)
-		io.WriteString(w, ")")
+		if ix.Typ == "float" {
+			io.WriteString(w, "Printf.sprintf \"%.15f\" (")
+			ix.emit(w)
+			io.WriteString(w, ")")
+		} else {
+			io.WriteString(w, "string_of_int (")
+			ix.emit(w)
+			io.WriteString(w, ")")
+		}
 	}
 }
 
@@ -2785,6 +2811,18 @@ func transpileStmt(st *parser.Statement, env *types.Env, vars map[string]VarInfo
 		if err != nil {
 			return nil, err
 		}
+		casts := []Stmt{}
+		for _, p := range st.Fun.Params {
+			if p.Type != nil {
+				typ := typeRefString(p.Type)
+				if typ == "int" || typ == "float" {
+					casts = append(casts, &LetStmt{Name: p.Name, Expr: &RawExpr{Code: fmt.Sprintf("(Obj.magic %s : %s)", sanitizeIdent(p.Name), typ)}})
+				}
+			}
+		}
+		if len(casts) > 0 {
+			body = append(casts, body...)
+		}
 		var ret Expr
 		endsWithReturn := false
 		if len(st.Fun.Body) > 0 {
@@ -3468,6 +3506,8 @@ func convertPostfix(p *parser.PostfixExpr, env *types.Env, vars map[string]VarIn
 				expr = &CastExpr{Expr: expr, Type: target}
 			} else if typ == "int" && target == "float" {
 				expr = &CastExpr{Expr: expr, Type: "int_to_float"}
+			} else if typ == "float" && target == "int" {
+				expr = &CastExpr{Expr: expr, Type: "float_to_int"}
 			} else if mi, ok := expr.(*MapIndexExpr); ok {
 				mi.Typ = target
 				expr = mi
@@ -3807,11 +3847,35 @@ func convertFunExpr(fn *parser.FunExpr, env *types.Env, vars map[string]VarInfo)
 		if err != nil {
 			return nil, "", err
 		}
+		casts := []Stmt{}
+		for _, p := range fn.Params {
+			if p.Type != nil {
+				typ := typeRefString(p.Type)
+				if typ == "int" || typ == "float" {
+					casts = append(casts, &LetStmt{Name: p.Name, Expr: &RawExpr{Code: fmt.Sprintf("(Obj.magic %s : %s)", sanitizeIdent(p.Name), typ)}})
+				}
+			}
+		}
+		if len(casts) > 0 {
+			return &FuncExpr{Params: params, Body: casts, Ret: ex}, "func", nil
+		}
 		retExpr = ex
 	} else if len(fn.BlockBody) > 0 {
 		body, err := transpileStmts(fn.BlockBody, child, fnVars)
 		if err != nil {
 			return nil, "", err
+		}
+		casts := []Stmt{}
+		for _, p := range fn.Params {
+			if p.Type != nil {
+				typ := typeRefString(p.Type)
+				if typ == "int" || typ == "float" {
+					casts = append(casts, &LetStmt{Name: p.Name, Expr: &RawExpr{Code: fmt.Sprintf("(Obj.magic %s : %s)", sanitizeIdent(p.Name), typ)}})
+				}
+			}
+		}
+		if len(casts) > 0 {
+			body = append(casts, body...)
 		}
 		var ret Expr
 		if last := fn.BlockBody[len(fn.BlockBody)-1]; last.Return != nil && last.Return.Value != nil {
@@ -4206,6 +4270,17 @@ func convertCall(c *parser.CallExpr, env *types.Env, vars map[string]VarInfo) (E
 	if c.Func == "input" && len(c.Args) == 0 {
 		return &InputBuiltin{}, "string", nil
 	}
+	if c.Func == "print" {
+		args := make([]Expr, len(c.Args))
+		for i, a := range c.Args {
+			ex, _, err := convertExpr(a, env, vars)
+			if err != nil {
+				return nil, "", err
+			}
+			args[i] = ex
+		}
+		return &PrintExpr{Exprs: args}, "", nil
+	}
 	if c.Func == "now" && len(c.Args) == 0 {
 		usesNow = true
 		return &FuncCall{Name: "_now", Args: nil, Ret: "int"}, "int", nil
@@ -4350,7 +4425,7 @@ func convertCall(c *parser.CallExpr, env *types.Env, vars map[string]VarInfo) (E
 		if len(args) < len(fn.Params) {
 			ret = "func"
 		}
-		return &FuncCall{Name: c.Func, Args: args, Ret: ret}, ret, nil
+		return &FuncCall{Name: sanitizeIdent(c.Func), Args: args, Ret: ret}, ret, nil
 	}
 	if v, ok := vars[c.Func]; ok && (v.typ == "func" || strings.HasPrefix(v.typ, "func-")) {
 		args := make([]Expr, len(c.Args))
@@ -4382,7 +4457,7 @@ func convertCall(c *parser.CallExpr, env *types.Env, vars map[string]VarInfo) (E
 				}
 			}
 		}
-		return &FuncCall{Name: c.Func, Args: args, Ret: ret}, ret, nil
+		return &FuncCall{Name: sanitizeIdent(c.Func), Args: args, Ret: ret}, ret, nil
 	}
 	return nil, "", fmt.Errorf("call %s not supported", c.Func)
 }

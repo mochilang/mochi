@@ -2,13 +2,13 @@
 
 This directory contains OCaml code generated from Rosetta Code programs in `tests/rosetta/x/Mochi`.
 
-Completed programs: 43/284
+Completed programs: 53/284
 
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
-| 1 | 100-doors-2 | ✓ | 98.0µs | 11.08KB |
-| 2 | 100-doors-3 | ✓ |  |  |
-| 3 | 100-doors | ✓ |  |  |
+| 1 | 100-doors-2 | ✓ | 186.0µs | 11.08KB |
+| 2 | 100-doors-3 | ✓ | 45.0µs | 6.39KB |
+| 3 | 100-doors | ✓ | 3.0ms | 1.25MB |
 | 4 | 100-prisoners | ✓ |  |  |
 | 5 | 15-puzzle-game | ✓ |  |  |
 | 6 | 15-puzzle-solver | ✓ |  |  |
@@ -56,16 +56,16 @@ Completed programs: 43/284
 | 48 | angle-difference-between-two-bearings-1 | ✓ |  |  |
 | 49 | angle-difference-between-two-bearings-2 | error |  |  |
 | 50 | angles-geometric-normalization-and-conversion | error |  |  |
-| 51 | animate-a-pendulum |   |  |  |
-| 52 | animation |   |  |  |
-| 53 | anonymous-recursion-1 |   |  |  |
-| 54 | anonymous-recursion-2 |   |  |  |
-| 55 | anonymous-recursion |   |  |  |
-| 56 | anti-primes |   |  |  |
-| 57 | append-a-record-to-the-end-of-a-text-file |   |  |  |
-| 58 | apply-a-callback-to-an-array-1 |   |  |  |
-| 59 | apply-a-callback-to-an-array-2 |   |  |  |
-| 60 | apply-a-digital-filter-direct-form-ii-transposed- |   |  |  |
+| 51 | animate-a-pendulum | ✓ | 69.0µs | 19.89KB |
+| 52 | animation | ✓ | 327.0µs | 31.69KB |
+| 53 | anonymous-recursion-1 | ✓ | 31.0µs | 1.01KB |
+| 54 | anonymous-recursion-2 | ✓ | 41.0µs | 1.36KB |
+| 55 | anonymous-recursion | ✓ | 75.0µs | 1.32KB |
+| 56 | anti-primes | ✓ | 322.0ms | 2.33KB |
+| 57 | append-a-record-to-the-end-of-a-text-file | ✓ | 11.0µs | 280B |
+| 58 | apply-a-callback-to-an-array-1 | ✓ | 35.0µs | 320B |
+| 59 | apply-a-callback-to-an-array-2 | ✓ | 49.0µs | 1.28KB |
+| 60 | apply-a-digital-filter-direct-form-ii-transposed- | ✓ | 125.0µs | 11.14KB |
 | 61 | approximate-equality |   |  |  |
 | 62 | arbitrary-precision-integers-included- |   |  |  |
 | 63 | archimedean-spiral |   |  |  |
@@ -290,4 +290,4 @@ Completed programs: 43/284
 | 282 | deepcopy-1 |   |  |  |
 | 283 | define-a-primitive-data-type |   |  |  |
 | 284 | md5 |   |  |  |
-Last updated 2025-07-25 05:42 UTC
+Last updated 2025-07-25 13:13 +0700
