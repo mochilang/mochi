@@ -1,0 +1,53 @@
+compile: exit status 1
+/tmp/TestJavaTranspiler_Rosetta_Goldenavl-tree2716836569/001/Main.java:23: error: incompatible types: Object cannot be converted to Map<String,Object>
+        setLink(root, opp(dir), getLink(tmp, dir));
+                                        ^
+/tmp/TestJavaTranspiler_Rosetta_Goldenavl-tree2716836569/001/Main.java:24: error: incompatible types: Object cannot be converted to Map<String,Object>
+        setLink(tmp, dir, root);
+                ^
+/tmp/TestJavaTranspiler_Rosetta_Goldenavl-tree2716836569/001/Main.java:25: error: incompatible types: Object cannot be converted to Map<String,Object>
+        return tmp;
+               ^
+/tmp/TestJavaTranspiler_Rosetta_Goldenavl-tree2716836569/001/Main.java:29: error: incompatible types: Object cannot be converted to Map<String,Object>
+        Object tmp = getLink(getLink(root, opp(dir)), dir);
+                                    ^
+/tmp/TestJavaTranspiler_Rosetta_Goldenavl-tree2716836569/001/Main.java:30: error: incompatible types: Object cannot be converted to Map<String,Object>
+        setLink(getLink(root, opp(dir)), dir, getLink(tmp, opp(dir)));
+                                                      ^
+/tmp/TestJavaTranspiler_Rosetta_Goldenavl-tree2716836569/001/Main.java:31: error: incompatible types: Object cannot be converted to Map<String,Object>
+        setLink(tmp, opp(dir), getLink(root, opp(dir)));
+                ^
+/tmp/TestJavaTranspiler_Rosetta_Goldenavl-tree2716836569/001/Main.java:34: error: incompatible types: Object cannot be converted to Map<String,Object>
+        setLink(root, opp(dir), getLink(tmp, dir));
+                                        ^
+/tmp/TestJavaTranspiler_Rosetta_Goldenavl-tree2716836569/001/Main.java:35: error: incompatible types: Object cannot be converted to Map<String,Object>
+        setLink(tmp, dir, root);
+                ^
+/tmp/TestJavaTranspiler_Rosetta_Goldenavl-tree2716836569/001/Main.java:36: error: incompatible types: Object cannot be converted to Map<String,Object>
+        return tmp;
+               ^
+/tmp/TestJavaTranspiler_Rosetta_Goldenavl-tree2716836569/001/Main.java:78: error: incompatible types: Object cannot be converted to boolean
+        if (((Object)r.get("done"))) {
+             ^
+/tmp/TestJavaTranspiler_Rosetta_Goldenavl-tree2716836569/001/Main.java:85: error: incomparable types: boolean and int
+        if (((Number)(((Object)node.get("Balance")))).intValue() == 1 || (boolean)(((Object)node.get("Balance"))) == (-1)) {
+                                                                                                                  ^
+/tmp/TestJavaTranspiler_Rosetta_Goldenavl-tree2716836569/001/Main.java:126: error: incompatible types: Object cannot be converted to Map<String,Object>
+            while (!(getLink(heir, 1) == null)) {
+                             ^
+/tmp/TestJavaTranspiler_Rosetta_Goldenavl-tree2716836569/001/Main.java:127: error: incompatible types: Object cannot be converted to Map<String,Object>
+                heir = getLink(heir, 1);
+                               ^
+/tmp/TestJavaTranspiler_Rosetta_Goldenavl-tree2716836569/001/Main.java:142: error: incomparable types: boolean and int
+        if (((Number)(((Object)node.get("Balance")))).intValue() == 1 || (boolean)(((Object)node.get("Balance"))) == (-1)) {
+                                                                                                                  ^
+/tmp/TestJavaTranspiler_Rosetta_Goldenavl-tree2716836569/001/Main.java:179: error: incompatible types: Object cannot be converted to Map<String,Object>
+            dumpNode(getLink(node, 0), indent + 6, true);
+                             ^
+/tmp/TestJavaTranspiler_Rosetta_Goldenavl-tree2716836569/001/Main.java:180: error: incompatible types: Object cannot be converted to Map<String,Object>
+            dumpNode(getLink(node, 1), indent + 6, false);
+                             ^
+Note: /tmp/TestJavaTranspiler_Rosetta_Goldenavl-tree2716836569/001/Main.java uses unchecked or unsafe operations.
+Note: Recompile with -Xlint:unchecked for details.
+Note: Some messages have been simplified; recompile with -Xdiags:verbose to get full output
+16 errors
