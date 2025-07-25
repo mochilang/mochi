@@ -1,3 +1,27 @@
+## Progress (2025-07-25 14:52 +0700)
+- go transpiler: benchmark abundant-odd-numbers
+- Regenerated golden files - 104/104 vm valid programs passing
+
+## Progress (2025-07-25 14:52 +0700)
+- go transpiler: benchmark abundant-deficient-and-perfect-number-classifications
+- Regenerated golden files - 104/104 vm valid programs passing
+
+## Progress (2025-07-25 14:51 +0700)
+- go transpiler: benchmark abstract-type
+- Regenerated golden files - 104/104 vm valid programs passing
+
+## Progress (2025-07-25 14:51 +0700)
+- go transpiler: benchmark abelian-sandpile-model
+- Regenerated golden files - 104/104 vm valid programs passing
+
+## Progress (2025-07-25 14:51 +0700)
+- go transpiler: benchmark abelian-sandpile-model-identity
+- Regenerated golden files - 104/104 vm valid programs passing
+
+## Progress (2025-07-25 14:40 +0700)
+- transpiler/erl: run rosetta indexes 107-113
+- Regenerated golden files - 104/104 vm valid programs passing
+
 ## Progress (2025-07-25 14:28 +0700)
 - go transpiler: bench rosetta index 19
 - Regenerated golden files - 104/104 vm valid programs passing
