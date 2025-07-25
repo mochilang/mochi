@@ -2,29 +2,29 @@
 
 This directory stores C code generated from Mochi programs in `tests/rosetta/x/Mochi`. Each file is compiled and executed during tests. Successful runs keep the generated `.c` source along with a matching `.out` file. Failures are recorded in `.error` files when tests run with `-update`.
 
-Checklist of programs that currently transpile and run (17/284) - Last updated 2025-07-25 10:23 +0700:
+Checklist of programs that currently transpile and run (17/284) - Last updated 2025-07-25 17:17 +0700:
 | Index | Name | Status | Duration | Memory |
 | ---: | --- | :---: | ---: | ---: |
 | 1 | 100-doors-2 | ✓ | 65us | 17.2 KB |
-| 2 | 100-doors-3 | ✓ | 26us | 11.3 KB |
-| 3 | 100-doors | ✓ | 36us | 11.0 KB |
-| 4 | 100-prisoners | ✓ | 54.77ms | 3.2 MB |
-| 5 | 15-puzzle-game | ✓ | 53us | 10.4 KB |
-| 6 | 15-puzzle-solver | ✓ | 18us | 4.7 KB |
+| 2 | 100-doors-3 | ✓ |  |  |
+| 3 | 100-doors | ✓ |  |  |
+| 4 | 100-prisoners | ✓ |  |  |
+| 5 | 15-puzzle-game | ✓ |  |  |
+| 6 | 15-puzzle-solver | ✓ |  |  |
 | 7 | 2048 |  |  |  |
-| 8 | 21-game | ✓ |  |  |
+| 8 | 21-game | ✓ | 25us | 8.8 KB |
 | 9 | 24-game-solve |  |  |  |
-| 10 | 24-game | ✓ |  |  |
-| 11 | 4-rings-or-4-squares-puzzle | ✓ |  |  |
+| 10 | 24-game | ✓ | 36us | 9.1 KB |
+| 11 | 4-rings-or-4-squares-puzzle | ✓ | 689us | 195.6 KB |
 | 12 | 9-billion-names-of-god-the-integer |  |  |  |
-| 13 | 99-bottles-of-beer-2 | ✓ |  |  |
-| 14 | 99-bottles-of-beer | ✓ |  |  |
+| 13 | 99-bottles-of-beer-2 | ✓ | 2.69ms | 1.9 MB |
+| 14 | 99-bottles-of-beer | ✓ | 156us | 35.3 KB |
 | 15 | DNS-query |  |  |  |
-| 16 | a+b | ✓ |  |  |
-| 17 | abbreviations-automatic | ✓ |  |  |
-| 18 | abbreviations-easy | ✓ |  |  |
-| 19 | abbreviations-simple | ✓ |  |  |
-| 20 | abc-problem | ✓ |  |  |
+| 16 | a+b | ✓ | 30us | 8.7 KB |
+| 17 | abbreviations-automatic | ✓ | 846us | 536.0 KB |
+| 18 | abbreviations-easy | ✓ | 246us | 108.3 KB |
+| 19 | abbreviations-simple | ✓ | 402us | 140.8 KB |
+| 20 | abc-problem | ✓ | 238us | 69.5 KB |
 | 21 | abelian-sandpile-model-identity |  |  |  |
 | 22 | abelian-sandpile-model | ✓ |  |  |
 | 23 | abstract-type |  |  |  |

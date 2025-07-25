@@ -1,9 +1,17 @@
-compile failed: exit status 1: /tmp/ctranspile1230977883/DNS-query.mochi.c: In function ‘main’:
-/tmp/ctranspile1230977883/DNS-query.mochi.c:14:16: error: ‘net’ undeclared (first use in this function)
-   14 |     int *res = net.LookupHost;
-      |                ^~~
-/tmp/ctranspile1230977883/DNS-query.mochi.c:14:16: note: each undeclared identifier is reported only once for each function it appears in
-/tmp/ctranspile1230977883/DNS-query.mochi.c:17:16: error: ‘nil’ undeclared (first use in this function)
-   17 |     if (err == nil) {
-      |                ^~~
+compile failed: exit status 1: /tmp/ctranspile35177917/DNS-query.mochi.c: In function ‘_mem’:
+/tmp/ctranspile35177917/DNS-query.mochi.c:38:12: warning: ‘mallinfo’ is deprecated [-Wdeprecated-declarations]
+   38 |     struct mallinfo mi = mallinfo();
+      |            ^~~~~~~~
+In file included from /tmp/ctranspile35177917/DNS-query.mochi.c:5:
+/usr/include/malloc.h:114:24: note: declared here
+  114 | extern struct mallinfo mallinfo (void) __THROW __MALLOC_DEPRECATED;
+      |                        ^~~~~~~~
+/tmp/ctranspile35177917/DNS-query.mochi.c: In function ‘main’:
+/tmp/ctranspile35177917/DNS-query.mochi.c:46:20: error: ‘net’ undeclared (first use in this function)
+   46 |         int *res = net.LookupHost;
+      |                    ^~~
+/tmp/ctranspile35177917/DNS-query.mochi.c:46:20: note: each undeclared identifier is reported only once for each function it appears in
+/tmp/ctranspile35177917/DNS-query.mochi.c:50:20: error: ‘nil’ undeclared (first use in this function)
+   50 |         if (err == nil) {
+      |                    ^~~
 
