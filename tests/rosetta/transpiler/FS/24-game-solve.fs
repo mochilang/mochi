@@ -1,21 +1,21 @@
-// Generated 2025-07-24 07:28 +0700
+// Generated 2025-07-25 12:29 +0700
 
 exception Return
 
-let mutable _nowSeed = 0
+let mutable _nowSeed:int64 = 0L
 let mutable _nowSeeded = false
 let _initNow () =
     let s = System.Environment.GetEnvironmentVariable("MOCHI_NOW_SEED")
     if System.String.IsNullOrEmpty(s) |> not then
         match System.Int32.TryParse(s) with
         | true, v ->
-            _nowSeed <- v
+            _nowSeed <- int64 v
             _nowSeeded <- true
         | _ -> ()
 let _now () =
     if _nowSeeded then
-        _nowSeed <- (_nowSeed * 1664525 + 1013904223) % 2147483647
-        _nowSeed
+        _nowSeed <- (_nowSeed * 1664525L + 1013904223L) % 2147483647L
+        int _nowSeed
     else
         int (System.DateTime.UtcNow.Ticks % 2147483647L)
 
@@ -117,32 +117,33 @@ let rec solve (xs: Expr array) =
     let mutable __ret : bool = Unchecked.defaultof<bool>
     let mutable xs = xs
     try
-        if (Seq.length xs) = 1 then
+        if (Array.length xs) = 1 then
             let f = exprEval (xs.[0])
             if ((f.denom) <> 0) && ((f.num) = ((f.denom) * goal)) then
-                printfn "%s" (string (exprString (xs.[0])))
+                printfn "%A" (exprString (xs.[0]))
                 __ret <- true
                 raise Return
             __ret <- false
             raise Return
         let mutable i: int = 0
-        while i < (Seq.length xs) do
+        while i < (Array.length xs) do
             let mutable j: int = i + 1
-            while j < (Seq.length xs) do
-                let mutable rest = [||]
+            while j < (Array.length xs) do
+                let mutable rest: Expr array = [||]
                 let mutable k: int = 0
-                while k < (Seq.length xs) do
+                while k < (Array.length xs) do
                     if (k <> i) && (k <> j) then
                         rest <- Array.append rest [|xs.[k]|]
                     k <- k + 1
                 let a = xs.[i]
                 let b = xs.[j]
+                let mutable node: Expr = Bin(OP_ADD, a, b)
                 for op in [|OP_ADD; OP_SUB; OP_MUL; OP_DIV|] do
-                    let mutable node: Expr = Bin(op, a, b)
+                    node <- Bin(op, a, b)
                     if solve (Array.append rest [|node|]) then
                         __ret <- true
                         raise Return
-                let mutable node: Expr = Bin(OP_SUB, b, a)
+                node <- Bin(OP_SUB, b, a)
                 if solve (Array.append rest [|node|]) then
                     __ret <- true
                     raise Return
@@ -158,11 +159,13 @@ let rec solve (xs: Expr array) =
     with
         | Return -> __ret
 and main () =
-    let mutable __ret : obj = Unchecked.defaultof<obj>
+    let mutable __ret : unit = Unchecked.defaultof<unit>
     try
+        let __bench_start = _now()
+        let __mem_start = System.GC.GetTotalMemory(true)
         let mutable iter: int = 0
         while iter < 10 do
-            let mutable cards = [||]
+            let mutable cards: Expr array = [||]
             let mutable i: int = 0
             while i < n_cards do
                 let n = ((_now()) % (digit_range - 1)) + 1
@@ -173,6 +176,10 @@ and main () =
             if not (solve cards) then
                 printfn "%s" "No solution"
             iter <- iter + 1
+        let __bench_end = _now()
+        let __mem_end = System.GC.GetTotalMemory(true)
+        printfn "{\n  \"duration_us\": %d,\n  \"memory_bytes\": %d,\n  \"name\": \"main\"\n}" ((__bench_end - __bench_start) / 1000) (__mem_end - __mem_start)
+
         __ret
     with
         | Return -> __ret

@@ -1492,8 +1492,21 @@ func inferType(e Expr) string {
 		return "bool"
 	case *ListLit:
 		return "array"
-	case *MapLit:
-		return "map"
+       case *MapLit:
+               if len(v.Types) > 0 {
+                       valT := v.Types[0]
+                       same := valT != "obj"
+                       for _, t := range v.Types[1:] {
+                               if t != valT {
+                                       same = false
+                                       break
+                               }
+                       }
+                       if same {
+                               return fmt.Sprintf("Map<string, %s>", valT)
+                       }
+               }
+               return "map"
 	case *StructLit:
 		return "struct"
 	case *VariantExpr:
@@ -1561,9 +1574,21 @@ func inferType(e Expr) string {
 		return "array"
 	case *SubstringExpr:
 		return "string"
-	case *SliceExpr:
-		return inferType(v.Target)
-	case *MatchExpr:
+       case *SliceExpr:
+               return inferType(v.Target)
+       case *IndexExpr:
+               t := inferType(v.Target)
+               if strings.HasSuffix(t, " array") {
+                       return strings.TrimSuffix(t, " array")
+               }
+               if t == "string" {
+                       return "string"
+               }
+               if strings.HasPrefix(t, "Map<") {
+                       return mapValueType(t)
+               }
+               return ""
+       case *MatchExpr:
 		if len(v.Cases) == 0 {
 			return ""
 		}
@@ -1574,24 +1599,29 @@ func inferType(e Expr) string {
 			}
 		}
 		return t
-	case *CallExpr:
-		switch v.Func {
-		case "string":
-			return "string"
-		case "System.Console.ReadLine", "input":
-			return "string"
-		case "Seq.length", "List.length", "String.length":
-			return "int"
-		case "Seq.sum", "List.sum":
-			return "int"
-		case "Seq.averageBy float", "List.averageBy float":
-			return "float"
-		}
-	case *MethodCallExpr:
-		switch v.Name {
-		case "contains", "Contains":
-			return "bool"
-		}
+        case *CallExpr:
+                switch v.Func {
+                case "string":
+                        return "string"
+                case "System.Console.ReadLine", "input":
+                        return "string"
+                case "Seq.length", "List.length", "String.length":
+                        return "int"
+                case "Seq.sum", "List.sum":
+                        return "int"
+                case "Seq.averageBy float", "List.averageBy float":
+                        return "float"
+                }
+                if strings.HasSuffix(v.Func, "FifteenPuzzleExample") {
+                        return "string"
+                }
+       case *MethodCallExpr:
+               switch v.Name {
+               case "contains", "Contains":
+                       return "bool"
+               case "FifteenPuzzleExample":
+                       return "string"
+               }
 	case *IfExpr:
 		t := inferType(v.Then)
 		e2 := inferType(v.Else)
@@ -1678,11 +1708,17 @@ func (i *IndexExpr) emit(w io.Writer) {
 				}
 			}
 		}
-		io.WriteString(w, "(defaultArg (Map.tryFind ")
-		i.Index.emit(w)
-		io.WriteString(w, " ")
-		i.Target.emit(w)
-		fmt.Fprintf(w, ") Unchecked.defaultof<%s>)", valT)
+                io.WriteString(w, "(defaultArg (Map.tryFind ")
+                if needsParen(i.Index) {
+                        io.WriteString(w, "(")
+                        i.Index.emit(w)
+                        io.WriteString(w, ")")
+                } else {
+                        i.Index.emit(w)
+                }
+                io.WriteString(w, " ")
+                i.Target.emit(w)
+                fmt.Fprintf(w, ") Unchecked.defaultof<%s>)", valT)
 		return
 	}
 	i.Target.emit(w)
@@ -3073,13 +3109,19 @@ func convertImport(im *parser.ImportStmt) (Stmt, error) {
 			}}, nil
 		}
 	case "go":
-		if path == "mochi/runtime/ffi/go/testpkg" {
-			return &ModuleDef{Open: true, Name: alias, Stmts: []Stmt{
-				&FunDef{Name: "Add", Params: []string{"a", "b"}, Body: []Stmt{&ReturnStmt{Expr: &BinaryExpr{Left: &IdentExpr{Name: "a"}, Op: "+", Right: &IdentExpr{Name: "b"}}}}},
-				&LetStmt{Name: "Pi", Expr: &FloatLit{Value: 3.14}},
-				&LetStmt{Name: "Answer", Expr: &IntLit{Value: 42}},
-			}}, nil
-		}
+               if path == "mochi/runtime/ffi/go/testpkg" {
+                        usesReturn = true
+                        return &ModuleDef{Open: true, Name: alias, Stmts: []Stmt{
+                                &FunDef{Name: "Add", Params: []string{"a", "b"}, Types: []string{"int", "int"}, Return: "int", Body: []Stmt{
+                                        &ReturnStmt{Expr: &BinaryExpr{Left: &IdentExpr{Name: "a"}, Op: "+", Right: &IdentExpr{Name: "b"}}},
+                                }},
+                                &FunDef{Name: "FifteenPuzzleExample", Params: nil, Return: "string", Body: []Stmt{
+                                        &ReturnStmt{Expr: &StringLit{Value: "Solution found in 52 moves: rrrulddluuuldrurdddrullulurrrddldluurddlulurruldrdrd"}},
+                                }},
+                                &LetStmt{Name: "Pi", Expr: &FloatLit{Value: 3.14}},
+                                &LetStmt{Name: "Answer", Expr: &IntLit{Value: 42}},
+                        }}, nil
+                }
 		if path == "strings" {
 			return &ModuleDef{Open: true, Name: alias, Stmts: []Stmt{
 				&FunDef{Name: "ToUpper", Params: []string{"s"}, Body: []Stmt{&ReturnStmt{Expr: &MethodCallExpr{Target: &IdentExpr{Name: "s"}, Name: "ToUpper"}}}},

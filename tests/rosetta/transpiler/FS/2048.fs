@@ -1,24 +1,24 @@
-// Generated 2025-07-24 06:58 +0700
+// Generated 2025-07-25 12:29 +0700
 
 exception Break
 exception Continue
 
 exception Return
 
-let mutable _nowSeed = 0
+let mutable _nowSeed:int64 = 0L
 let mutable _nowSeeded = false
 let _initNow () =
     let s = System.Environment.GetEnvironmentVariable("MOCHI_NOW_SEED")
     if System.String.IsNullOrEmpty(s) |> not then
         match System.Int32.TryParse(s) with
         | true, v ->
-            _nowSeed <- v
+            _nowSeed <- int64 v
             _nowSeeded <- true
         | _ -> ()
 let _now () =
     if _nowSeeded then
-        _nowSeed <- (_nowSeed * 1664525 + 1013904223) % 2147483647
-        _nowSeed
+        _nowSeed <- (_nowSeed * 1664525L + 1013904223L) % 2147483647L
+        int _nowSeed
     else
         int (System.DateTime.UtcNow.Ticks % 2147483647L)
 
@@ -39,16 +39,18 @@ type MoveResult = {
     score: int
     moved: bool
 }
+let __bench_start = _now()
+let __mem_start = System.GC.GetTotalMemory(true)
 open System
 
 let SIZE: int = 4
 let rec newBoard () =
     let mutable __ret : Board = Unchecked.defaultof<Board>
     try
-        let mutable b = [||]
+        let mutable b: int array array = [||]
         let mutable y: int = 0
         while y < SIZE do
-            let mutable row = [||]
+            let mutable row: int array = [||]
             let mutable x: int = 0
             while x < SIZE do
                 row <- Array.append row [|0|]
@@ -65,7 +67,7 @@ let rec spawnTile (b: Board) =
     let mutable b = b
     try
         let mutable grid: int array array = b.cells
-        let mutable empty = [||]
+        let mutable empty: int array array = [||]
         let mutable y: int = 0
         while y < SIZE do
             let mutable x: int = 0
@@ -105,7 +107,7 @@ let rec pad (n: int) =
     with
         | Return -> __ret
 let rec draw (b: Board) (score: int) =
-    let mutable __ret : obj = Unchecked.defaultof<obj>
+    let mutable __ret : unit = Unchecked.defaultof<unit>
     let mutable b = b
     let mutable score = score
     try
@@ -133,8 +135,8 @@ let rec reverseRow (r: int array) =
     let mutable __ret : int array = Unchecked.defaultof<int array>
     let mutable r = r
     try
-        let mutable out = [||]
-        let mutable i: int = (Seq.length r) - 1
+        let mutable out: int array = [||]
+        let mutable i = (Array.length r) - 1
         while i >= 0 do
             out <- Array.append out [|r.[i]|]
             i <- i - 1
@@ -147,13 +149,13 @@ let rec slideLeft (row: int array) =
     let mutable __ret : SlideResult = Unchecked.defaultof<SlideResult>
     let mutable row = row
     try
-        let mutable xs = [||]
+        let mutable xs: int array = [||]
         let mutable i: int = 0
-        while i < (Seq.length row) do
+        while i < (Array.length row) do
             if (row.[i]) <> 0 then
                 xs <- Array.append xs [|row.[i]|]
             i <- i + 1
-        let mutable res = [||]
+        let mutable res: int array = [||]
         let mutable gain: int = 0
         i <- 0
         while i < (Array.length xs) do
@@ -227,7 +229,7 @@ let rec getCol (b: Board) (x: int) =
     let mutable b = b
     let mutable x = x
     try
-        let mutable col = [||]
+        let mutable col: int array = [||]
         let mutable y: int = 0
         while y < SIZE do
             col <- Array.append col [|b.cells.[y].[x]|]
@@ -238,7 +240,7 @@ let rec getCol (b: Board) (x: int) =
     with
         | Return -> __ret
 let rec setCol (b: Board) (x: int) (col: int array) =
-    let mutable __ret : obj = Unchecked.defaultof<obj>
+    let mutable __ret : unit = Unchecked.defaultof<unit>
     let mutable b = b
     let mutable x = x
     let mutable col = col
@@ -250,7 +252,7 @@ let rec setCol (b: Board) (x: int) (col: int array) =
             row.[x] <- col.[y]
             rows.[y] <- row
             y <- y + 1
-        { b with cells = rows }
+        b <- { b with cells = rows }
         __ret
     with
         | Return -> __ret
@@ -359,7 +361,7 @@ draw board score
 try
     while true do
         printfn "%s" "Move: "
-        let cmd = System.Console.ReadLine()
+        let cmd: string = System.Console.ReadLine()
         let mutable moved: bool = false
         if (cmd = "a") || (cmd = "A") then
             let m = moveLeft board score
@@ -400,3 +402,7 @@ try
             raise Break
 with
 | Break -> ()
+| Continue -> ()
+let __bench_end = _now()
+let __mem_end = System.GC.GetTotalMemory(true)
+printfn "{\n  \"duration_us\": %d,\n  \"memory_bytes\": %d,\n  \"name\": \"main\"\n}" ((__bench_end - __bench_start) / 1000) (__mem_end - __mem_start)

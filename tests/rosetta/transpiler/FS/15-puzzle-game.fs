@@ -1,4 +1,4 @@
-// Generated 2025-07-24 13:03 +0700
+// Generated 2025-07-25 12:29 +0700
 
 exception Break
 exception Continue
@@ -98,7 +98,7 @@ and doMove (m: int) =
     with
         | Return -> __ret
 and shuffle (n: int) =
-    let mutable __ret : obj = Unchecked.defaultof<obj>
+    let mutable __ret : unit = Unchecked.defaultof<unit>
     let mutable n = n
     try
         let mutable i: int = 0
@@ -109,7 +109,7 @@ and shuffle (n: int) =
     with
         | Return -> __ret
 and printBoard () =
-    let mutable __ret : obj = Unchecked.defaultof<obj>
+    let mutable __ret : unit = Unchecked.defaultof<unit>
     try
         let mutable line: string = ""
         let mutable i: int = 0
@@ -131,7 +131,7 @@ and printBoard () =
     with
         | Return -> __ret
 and playOneMove () =
-    let mutable __ret : obj = Unchecked.defaultof<obj>
+    let mutable __ret : unit = Unchecked.defaultof<unit>
     try
         try
             while true do
@@ -168,11 +168,12 @@ and playOneMove () =
                 raise Return
         with
         | Break -> ()
+        | Continue -> ()
         __ret
     with
         | Return -> __ret
 and play () =
-    let mutable __ret : obj = Unchecked.defaultof<obj>
+    let mutable __ret : unit = Unchecked.defaultof<unit>
     try
         printfn "%s" "Starting board:"
         while (not quit) && ((isSolved()) = false) do
@@ -185,10 +186,16 @@ and play () =
     with
         | Return -> __ret
 and main () =
-    let mutable __ret : obj = Unchecked.defaultof<obj>
+    let mutable __ret : unit = Unchecked.defaultof<unit>
     try
+        let __bench_start = _now()
+        let __mem_start = System.GC.GetTotalMemory(true)
         shuffle 50
         play()
+        let __bench_end = _now()
+        let __mem_end = System.GC.GetTotalMemory(true)
+        printfn "{\n  \"duration_us\": %d,\n  \"memory_bytes\": %d,\n  \"name\": \"main\"\n}" ((__bench_end - __bench_start) / 1000) (__mem_end - __mem_start)
+
         __ret
     with
         | Return -> __ret

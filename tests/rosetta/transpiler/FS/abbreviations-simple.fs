@@ -1,10 +1,28 @@
-// Generated 2025-07-24 20:52 +0700
+// Generated 2025-07-25 12:29 +0700
 
 exception Break
 exception Continue
 
 exception Return
 
+let mutable _nowSeed:int64 = 0L
+let mutable _nowSeeded = false
+let _initNow () =
+    let s = System.Environment.GetEnvironmentVariable("MOCHI_NOW_SEED")
+    if System.String.IsNullOrEmpty(s) |> not then
+        match System.Int32.TryParse(s) with
+        | true, v ->
+            _nowSeed <- int64 v
+            _nowSeeded <- true
+        | _ -> ()
+let _now () =
+    if _nowSeeded then
+        _nowSeed <- (_nowSeed * 1664525L + 1013904223L) % 2147483647L
+        int _nowSeed
+    else
+        int (System.DateTime.UtcNow.Ticks % 2147483647L)
+
+_initNow()
 let rec fields (s: string) =
     let mutable __ret : string array = Unchecked.defaultof<string array>
     let mutable s = s
@@ -50,7 +68,7 @@ and join (xs: string array) (sep: string) =
     try
         let mutable res: string = ""
         let mutable i: int = 0
-        while i < (Seq.length xs) do
+        while i < (Array.length xs) do
             if i > 0 then
                 res <- res + sep
             res <- res + (xs.[i])
@@ -70,9 +88,9 @@ and parseIntStr (str: string) =
             neg <- true
             i <- 1
         let mutable n: int = 0
-        let digits = Map.ofList [("0", 0); ("1", 1); ("2", 2); ("3", 3); ("4", 4); ("5", 5); ("6", 6); ("7", 7); ("8", 8); ("9", 9)]
+        let digits: Map<string, int> = Map.ofList [("0", 0); ("1", 1); ("2", 2); ("3", 3); ("4", 4); ("5", 5); ("6", 6); ("7", 7); ("8", 8); ("9", 9)]
         while i < (String.length str) do
-            n <- (n * 10) + (digits.[str.Substring(i, (i + 1) - i)])
+            n <- (n * 10) + ((defaultArg (Map.tryFind (str.Substring(i, (i + 1) - i)) digits) Unchecked.defaultof<int>))
             i <- i + 1
         if neg then
             n <- -n
@@ -133,13 +151,13 @@ and validate (commands: string array) (mins: int array) (words: string array) =
         let mutable results: string array = [||]
         let mutable wi: int = 0
         try
-            while wi < (Seq.length words) do
+            while wi < (Array.length words) do
                 let w = words.[wi]
                 let mutable found: bool = false
                 let wlen: int = Seq.length w
                 let mutable ci: int = 0
                 try
-                    while ci < (Seq.length commands) do
+                    while ci < (Array.length commands) do
                         let cmd = commands.[ci]
                         if (((mins.[ci]) <> 0) && (wlen >= (mins.[ci]))) && (wlen <= (Seq.length cmd)) then
                             let c = cmd.ToUpper()
@@ -164,8 +182,10 @@ and validate (commands: string array) (mins: int array) (words: string array) =
     with
         | Return -> __ret
 and main () =
-    let mutable __ret : obj = Unchecked.defaultof<obj>
+    let mutable __ret : unit = Unchecked.defaultof<unit>
     try
+        let __bench_start = _now()
+        let __mem_start = System.GC.GetTotalMemory(true)
         let table: string = ((((((("" + "add 1  alter 3  backup 2  bottom 1  Cappend 2  change 1  Schange  Cinsert 2  Clast 3 ") + "compress 4 copy 2 count 3 Coverlay 3 cursor 3  delete 3 Cdelete 2  down 1  duplicate ") + "3 xEdit 1 expand 3 extract 3  find 1 Nfind 2 Nfindup 6 NfUP 3 Cfind 2 findUP 3 fUP 2 ") + "forward 2  get  help 1 hexType 4  input 1 powerInput 3  join 1 split 2 spltJOIN load ") + "locate 1 Clocate 2 lowerCase 3 upperCase 3 Lprefix 2  macro  merge 2 modify 3 move 2 ") + "msg  next 1 overlay 1 parse preserve 4 purge 3 put putD query 1 quit  read recover 3 ") + "refresh renum 3 repeat 3 replace 1 Creplace 2 reset 3 restore 4 rgtLEFT right 2 left ") + "2  save  set  shift 2  si  sort  sos  stack 3 status 4 top  transfer 3  type 1  up 1 "
         let sentence: string = "riG   rePEAT copies  put mo   rest    types   fup.    6\npoweRin"
         let tbl = readTable table
@@ -184,6 +204,10 @@ and main () =
             k <- k + 1
         printfn "%s" out1
         printfn "%s" ("full words: " + (join results " "))
+        let __bench_end = _now()
+        let __mem_end = System.GC.GetTotalMemory(true)
+        printfn "{\n  \"duration_us\": %d,\n  \"memory_bytes\": %d,\n  \"name\": \"main\"\n}" ((__bench_end - __bench_start) / 1000) (__mem_end - __mem_start)
+
         __ret
     with
         | Return -> __ret
