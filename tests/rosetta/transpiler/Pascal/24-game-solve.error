@@ -1,0 +1,57 @@
+Free Pascal Compiler version 3.2.2+dfsg-32 [2024/01/05] for x86_64
+Copyright (c) 1993-2021 by Florian Klaempfl and others
+Target OS: Linux for x86-64
+Compiling /workspace/mochi/tests/rosetta/transpiler/Pascal/24-game-solve.pas
+24-game-solve.pas(4,27) Error: Identifier not found "Expr"
+24-game-solve.pas(4,31) Error: Error in type definition
+24-game-solve.pas(78,17) Error: Identifier not found "exprEval"
+24-game-solve.pas(79,17) Error: Identifier not found "exprEval"
+24-game-solve.pas(81,33) Error: Illegal qualifier
+24-game-solve.pas(81,50) Error: Illegal qualifier
+24-game-solve.pas(81,71) Error: Illegal qualifier
+24-game-solve.pas(81,90) Error: Illegal qualifier
+24-game-solve.pas(81,107) Error: Illegal qualifier
+24-game-solve.pas(81,126) Error: Illegal qualifier
+24-game-solve.pas(84,33) Error: Illegal qualifier
+24-game-solve.pas(84,50) Error: Illegal qualifier
+24-game-solve.pas(84,71) Error: Illegal qualifier
+24-game-solve.pas(84,90) Error: Illegal qualifier
+24-game-solve.pas(84,107) Error: Illegal qualifier
+24-game-solve.pas(84,126) Error: Illegal qualifier
+24-game-solve.pas(87,32) Error: Illegal qualifier
+24-game-solve.pas(87,49) Error: Illegal qualifier
+24-game-solve.pas(87,65) Error: Illegal qualifier
+24-game-solve.pas(87,84) Error: Illegal qualifier
+24-game-solve.pas(89,32) Error: Illegal qualifier
+24-game-solve.pas(89,49) Error: Illegal qualifier
+24-game-solve.pas(89,67) Error: Illegal qualifier
+24-game-solve.pas(89,86) Error: Illegal qualifier
+24-game-solve.pas(93,19) Error: Identifier not found "exprString"
+24-game-solve.pas(94,19) Error: Identifier not found "exprString"
+24-game-solve.pas(109,15) Error: Operator is not overloaded: "Char" + "LongInt"
+24-game-solve.pas(113,8) Error: Identifier not found "makeNum"
+24-game-solve.pas(117,8) Error: Generics without specialization cannot be used as a type for a variable
+24-game-solve.pas(117,19) Error: Identifier not found "Num"
+24-game-solve.pas(117,23) Error: Identifier not found "v"
+24-game-solve.pas(117,27) Error: Identifier not found "v"
+24-game-solve.pas(117,42) Error: Identifier not found "l"
+24-game-solve.pas(117,45) Error: Identifier not found "r"
+24-game-solve.pas(121,8) Error: Generics without specialization cannot be used as a type for a variable
+24-game-solve.pas(121,19) Error: Identifier not found "Num"
+24-game-solve.pas(121,23) Error: Identifier not found "v"
+24-game-solve.pas(121,36) Error: Identifier not found "v"
+24-game-solve.pas(121,58) Error: Identifier not found "l"
+24-game-solve.pas(121,61) Error: Identifier not found "r"
+24-game-solve.pas(126,28) Error: Incompatible type for arg no. 1: Got "<erroneous type>", expected "Expr"
+24-game-solve.pas(128,27) Error: Incompatible type for arg no. 1: Got "<erroneous type>", expected "Expr"
+24-game-solve.pas(141,49) Error: Incompatible types: got "{Array Of Const/Constant Open} Array of <erroneous type>" expected "{Dynamic} Array Of Expr"
+24-game-solve.pas(147,17) Error: Identifier not found "makeBin"
+24-game-solve.pas(149,17) Error: Identifier not found "makeBin"
+24-game-solve.pas(150,43) Error: Incompatible types: got "{Array Of Const/Constant Open} Array of LongInt" expected "{Dynamic} Array Of Expr"
+24-game-solve.pas(150,32) Error: Incompatible types: got "LongInt" expected "Expr"
+24-game-solve.pas(150,44) Error: Incompatible type for arg no. 1: Got "{Dynamic} Array Of Expr", expected "ExprArray"
+24-game-solve.pas(154,17) Error: Identifier not found "makeBin"
+24-game-solve.pas(155,43) Error: Incompatible types: got "{Array Of Const/Constant Open} Array of LongInt" expected "{Dynamic} Array Of Expr"
+24-game-solve.pas(155,43) Fatal: There were 50 errors compiling module, stopping
+Fatal: Compilation aborted
+Error: /usr/bin/ppcx64 returned an error exitcode
