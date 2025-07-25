@@ -55,8 +55,9 @@ func runCase(t *testing.T, name string) {
 	if err != nil {
 		t.Fatalf("transpile: %v", err)
 	}
+	bench := os.Getenv("MOCHI_BENCHMARK") == "true"
 	var buf bytes.Buffer
-	if err := py.Emit(&buf, progAST); err != nil {
+	if err := py.Emit(&buf, progAST, bench); err != nil {
 		t.Fatalf("emit: %v", err)
 	}
 	code := buf.Bytes()

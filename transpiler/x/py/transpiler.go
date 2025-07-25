@@ -2557,7 +2557,26 @@ func hasImport(p *Program, mod string) bool {
 }
 
 // Emit renders Python code from AST
-func Emit(w io.Writer, p *Program) error {
+// Emit renders Python code from AST. If bench is true, the body of a function
+// named "main" is wrapped in a benchmark block which measures execution time
+// and prints a JSON report.
+func Emit(w io.Writer, p *Program, bench bool) error {
+	if bench {
+		// find the main function and wrap its body in a BenchStmt
+		for _, s := range p.Stmts {
+			if fn, ok := s.(*FuncDef); ok && fn.Name == "main" {
+				fn.Body = []Stmt{&BenchStmt{Name: "main", Body: fn.Body}}
+				if currentImports != nil {
+					currentImports["json"] = true
+					currentImports["os"] = true
+					currentImports["time"] = true
+				}
+				usesNow = true
+				break
+			}
+		}
+	}
+
 	if _, err := io.WriteString(w, header()); err != nil {
 		return err
 	}

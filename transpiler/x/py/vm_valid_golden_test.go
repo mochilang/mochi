@@ -52,8 +52,9 @@ func TestPyTranspiler_VMValid_Golden(t *testing.T) {
 			_ = os.WriteFile(errPath, []byte("transpile: "+err.Error()), 0o644)
 			return nil, err
 		}
+		bench := os.Getenv("MOCHI_BENCHMARK") == "true"
 		var buf bytes.Buffer
-		if err := py.Emit(&buf, ast); err != nil {
+		if err := py.Emit(&buf, ast, bench); err != nil {
 			_ = os.WriteFile(errPath, []byte("emit: "+err.Error()), 0o644)
 			return nil, err
 		}
