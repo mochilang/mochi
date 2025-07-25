@@ -52,7 +52,7 @@ func TestFSTranspiler_PrintHello(t *testing.T) {
 	if errs := types.Check(prog, env); len(errs) > 0 {
 		t.Fatal(errs[0])
 	}
-	ast, err := fstrans.Transpile(prog, env)
+	ast, err := fstrans.Transpile(prog, env, false)
 	if err != nil {
 		t.Fatal(err)
 	}

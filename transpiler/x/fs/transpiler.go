@@ -44,6 +44,7 @@ type Program struct {
 	UseNow    bool
 	UseBreak  bool
 	UseReturn bool
+	UseBench  bool
 }
 
 // varTypes holds the inferred type for each variable defined during
@@ -59,6 +60,7 @@ var (
 	usesNow      bool
 	usesBreak    bool
 	usesReturn   bool
+	usesBench    bool
 )
 
 func copyMap(src map[string]string) map[string]string {
@@ -85,6 +87,11 @@ let _now () =
         int _nowSeed
     else
         int (System.DateTime.UtcNow.Ticks % 2147483647L)
+`
+
+const helperMem = `let _mem () =
+    System.GC.Collect()
+    System.GC.GetTotalMemory(true)
 `
 
 func writeIndent(w io.Writer) {
@@ -423,12 +430,13 @@ type ModuleDef struct {
 }
 
 func (m *ModuleDef) emit(w io.Writer) {
-	if m.Open {
-		io.WriteString(w, "open System\n\n")
-	}
 	writeIndent(w)
 	fmt.Fprintf(w, "module %s =\n", fsIdent(m.Name))
 	indentLevel++
+	if m.Open {
+		writeIndent(w)
+		io.WriteString(w, "open System\n")
+	}
 	for i, st := range m.Stmts {
 		st.emit(w)
 		if i < len(m.Stmts)-1 {
@@ -587,6 +595,8 @@ type BenchStmt struct {
 
 func (b *BenchStmt) emit(w io.Writer) {
 	writeIndent(w)
+	io.WriteString(w, "let __bench_mem_start = _mem()\n")
+	writeIndent(w)
 	io.WriteString(w, "let __bench_start = _now()\n")
 	for _, st := range b.Body {
 		st.emit(w)
@@ -595,7 +605,9 @@ func (b *BenchStmt) emit(w io.Writer) {
 	writeIndent(w)
 	io.WriteString(w, "let __bench_end = _now()\n")
 	writeIndent(w)
-	fmt.Fprintf(w, "printfn \"{\\n  \\\"duration_us\\\": %%d,\\n  \\\"memory_bytes\\\": 0,\\n  \\\"name\\\": \\\"%s\\\"\\n}\" ((__bench_end - __bench_start) / 1000)\n", b.Name)
+	io.WriteString(w, "let __bench_mem_end = _mem()\n")
+	writeIndent(w)
+	fmt.Fprintf(w, "printfn \"{\\n  \\\"duration_us\\\": %%d,\\n  \\\"memory_bytes\\\": %%d,\\n  \\\"name\\\": \\\"%s\\\"\\n}\" ((__bench_end - __bench_start) / 1000) (__bench_mem_end - __bench_mem_start)\n", b.Name)
 }
 
 // ListLit represents an F# list literal.
@@ -1830,6 +1842,9 @@ func Emit(prog *Program) []byte {
 		buf.WriteString(helperNow)
 		buf.WriteString("\n_initNow()\n")
 	}
+	if prog.UseBench {
+		buf.WriteString(helperMem)
+	}
 	for _, st := range prog.Structs {
 		fmt.Fprintf(&buf, "type %s = {\n", fsIdent(st.Name))
 		for _, f := range st.Fields {
@@ -1901,7 +1916,7 @@ func header() string {
 }
 
 // Transpile converts a Mochi program to a simple F# AST.
-func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
+func Transpile(prog *parser.Program, env *types.Env, benchMain bool) (*Program, error) {
 	transpileEnv = env
 	varTypes = map[string]string{}
 	structDefs = nil
@@ -1911,6 +1926,7 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	usesNow = false
 	usesBreak = false
 	usesReturn = false
+	usesBench = false
 	p := &Program{}
 	for _, st := range prog.Statements {
 		conv, err := convertStmt(st)
@@ -1930,10 +1946,16 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 		}
 		p.Stmts = append(opens, p.Stmts...)
 	}
+	if benchMain {
+		usesNow = true
+		usesBench = true
+		p.Stmts = []Stmt{&BenchStmt{Name: "main", Body: p.Stmts}}
+	}
 	transpileEnv = nil
 	p.UseNow = usesNow
 	p.UseBreak = usesBreak
 	p.UseReturn = usesReturn
+	p.UseBench = usesBench
 	return p, nil
 }
 
@@ -2272,6 +2294,7 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 		return &ForStmt{Name: st.For.Name, Start: start, End: end, Body: body, WithBreak: wb}, nil
 	case st.Bench != nil:
 		usesNow = true
+		usesBench = true
 		body := make([]Stmt, len(st.Bench.Body))
 		for i, s := range st.Bench.Body {
 			cs, err := convertStmt(s)
@@ -3047,10 +3070,12 @@ func convertImport(im *parser.ImportStmt) (Stmt, error) {
 		}
 	case "go":
 		if path == "mochi/runtime/ffi/go/testpkg" {
+			usesReturn = true
 			return &ModuleDef{Open: true, Name: alias, Stmts: []Stmt{
-				&FunDef{Name: "Add", Params: []string{"a", "b"}, Body: []Stmt{&ReturnStmt{Expr: &BinaryExpr{Left: &IdentExpr{Name: "a"}, Op: "+", Right: &IdentExpr{Name: "b"}}}}},
+				&FunDef{Name: "Add", Params: []string{"a", "b"}, Return: "int", Body: []Stmt{&ReturnStmt{Expr: &BinaryExpr{Left: &IdentExpr{Name: "a"}, Op: "+", Right: &IdentExpr{Name: "b"}}}}},
 				&LetStmt{Name: "Pi", Expr: &FloatLit{Value: 3.14}},
 				&LetStmt{Name: "Answer", Expr: &IntLit{Value: 42}},
+				&FunDef{Name: "FifteenPuzzleExample", Params: nil, Return: "string", Body: []Stmt{&ReturnStmt{Expr: &StringLit{Value: "Solution found in 52 moves: rrrulddluuuldrurdddrullulurrrddldluurddlulurruldrdrd"}}}},
 			}}, nil
 		}
 		if path == "strings" {

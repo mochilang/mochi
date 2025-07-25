@@ -16,7 +16,7 @@ type Program struct{}
 
 // Transpile returns a nil program and no error. It exists so packages depending
 // on fstrans compile without requiring the slow implementation.
-func Transpile(_ *parser.Program, _ *types.Env) (*Program, error) {
+func Transpile(_ *parser.Program, _ *types.Env, _ bool) (*Program, error) {
 	return &Program{}, nil
 }
 

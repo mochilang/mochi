@@ -5,6 +5,7 @@ package fstrans_test
 import (
 	"bufio"
 	"bytes"
+	"encoding/json"
 	"fmt"
 	"os"
 	"os/exec"
@@ -101,7 +102,8 @@ func TestFSTranspiler_Rosetta_Golden(t *testing.T) {
 				_ = os.WriteFile(errPath, []byte("type: "+errs[0].Error()), 0o644)
 				t.Fatalf("type error: %v", errs[0])
 			}
-			ast, err := fstrans.Transpile(prog, env)
+			bench := os.Getenv("MOCHI_BENCHMARK") != ""
+			ast, err := fstrans.Transpile(prog, env, bench)
 			if err != nil {
 				_ = os.WriteFile(errPath, []byte("transpile: "+err.Error()), 0o644)
 				t.Fatalf("transpile error: %v", err)
@@ -175,16 +177,32 @@ func updateRosetta() {
 	total := len(files)
 	compiled := 0
 	var lines []string
+	lines = append(lines, "| Index | Name | Status | Duration | Memory |")
+	lines = append(lines, "|------:|------|:-----:|---------:|-------:|")
 	for i, name := range files {
-		mark := "[ ]"
 		safe := strings.ReplaceAll(name, "+", "_")
-		if _, err := os.Stat(filepath.Join(outDir, safe+".out")); err == nil {
-			if _, err2 := os.Stat(filepath.Join(outDir, safe+".error")); os.IsNotExist(err2) {
-				mark = "[x]"
-				compiled++
+		status := " "
+		if _, err := os.Stat(filepath.Join(outDir, safe+".error")); err == nil {
+		} else if _, err := os.Stat(filepath.Join(outDir, safe+".fs")); err == nil {
+			status = "✓"
+			compiled++
+		}
+		dur := ""
+		mem := ""
+		if data, err := os.ReadFile(filepath.Join(outDir, safe+".out")); err == nil {
+			var js struct {
+				Duration int64 `json:"duration_us"`
+				Memory   int64 `json:"memory_bytes"`
+			}
+			data = bytes.TrimSpace(data)
+			if idx := bytes.LastIndexByte(data, '{'); idx >= 0 {
+				if json.Unmarshal(data[idx:], &js) == nil && js.Duration > 0 {
+					dur = humanDuration(js.Duration)
+					mem = humanSize(js.Memory)
+				}
 			}
 		}
-		lines = append(lines, fmt.Sprintf("%d. %s %s (index %d)", i+1, mark, name, i+1))
+		lines = append(lines, fmt.Sprintf("| %d | %s | %s | %s | %s |", i+1, name, status, dur, mem))
 	}
 	tsRaw, _ := exec.Command("git", "log", "-1", "--format=%cI").Output()
 	ts := strings.TrimSpace(string(tsRaw))
@@ -200,6 +218,24 @@ func updateRosetta() {
 	buf.WriteString("\n\n")
 	fmt.Fprintf(&buf, "Last updated: %s\n", ts)
 	_ = os.WriteFile(readmePath, buf.Bytes(), 0o644)
+}
+
+func humanDuration(us int64) string {
+	d := time.Duration(us) * time.Microsecond
+	return d.String()
+}
+
+func humanSize(b int64) string {
+	const unit = 1024
+	if b < unit {
+		return fmt.Sprintf("%d B", b)
+	}
+	div, exp := int64(unit), 0
+	for n := b / unit; n >= unit; n /= unit {
+		div *= unit
+		exp++
+	}
+	return fmt.Sprintf("%.1f %cB", float64(b)/float64(div), "KMGTPE"[exp])
 }
 
 func readIndex(path string) ([]string, error) {

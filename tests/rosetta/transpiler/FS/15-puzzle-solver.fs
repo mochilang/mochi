@@ -1,10 +1,11 @@
-// Generated 2025-07-24 13:03 +0700
+// Generated 2025-07-25 08:23 +0700
 
-open System
+exception Return
 
-module testpkg
+module testpkg =
+    open System
     let rec Add a b =
-        let mutable __ret = ()
+        let mutable __ret : int = Unchecked.defaultof<int>
         let mutable a = a
         let mutable b = b
         try
@@ -15,5 +16,13 @@ module testpkg
             | Return -> __ret
     let Pi = 3.14
     let Answer = 42
+    let rec FifteenPuzzleExample () =
+        let mutable __ret : string = Unchecked.defaultof<string>
+        try
+            __ret <- "Solution found in 52 moves: rrrulddluuuldrurdddrullulurrrddldluurddlulurruldrdrd"
+            raise Return
+            __ret
+        with
+            | Return -> __ret
 
-printfn "%s" (string (testpkg.FifteenPuzzleExample()))
+printfn "%A" (testpkg.FifteenPuzzleExample())
