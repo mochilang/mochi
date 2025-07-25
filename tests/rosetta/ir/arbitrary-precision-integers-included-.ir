@@ -1,0 +1,127 @@
+func main (regs=38)
+  // var e1 = pow_int(3, 2)
+  Const        r7, 3
+  Move         r5, r7
+  Const        r8, 2
+  Move         r6, r8
+  Call2        r9, pow_int, r5, r6
+  Move         r0, r9
+  SetGlobal    0,0,0,0
+  // var e2 = pow_int(4, e1)
+  Const        r12, 4
+  Move         r10, r12
+  Move         r11, r0
+  Call2        r13, pow_int, r10, r11
+  Move         r1, r13
+  SetGlobal    1,1,0,0
+  // var base: bigint = 5
+  Const        r14, 5
+  Cast         r15, r14, bigint
+  Move         r2, r15
+  SetGlobal    2,2,0,0
+  // var x: bigint = pow_big(base, e2)
+  Move         r16, r2
+  Move         r17, r1
+  Call2        r18, pow_big, r16, r17
+  Cast         r19, r18, bigint
+  Move         r3, r19
+  SetGlobal    3,3,0,0
+  // var s = str(x)
+  Str          r20, r3
+  Move         r4, r20
+  SetGlobal    4,4,0,0
+  // print("5^(4^(3^2)) has", len(s), "digits:", substring(s, 0, 20), "...", substring(s, len(s)-20, len(s)))
+  Const        r27, "5^(4^(3^2)) has"
+  Move         r21, r27
+  Len          r28, r4
+  Move         r22, r28
+  Const        r29, "digits:"
+  Move         r23, r29
+  Const        r30, 0
+  Const        r31, 20
+  Slice        r32, r4, r30, r31
+  Move         r24, r32
+  Const        r33, "..."
+  Move         r25, r33
+  Len          r34, r4
+  Const        r31, 20
+  SubInt       r35, r34, r31
+  Len          r36, r4
+  Slice        r37, r4, r35, r36
+  Move         r26, r37
+  PrintN       r21, 6, r21
+  Return       r0
+
+  // fun pow_int(base: int, exp: int): int {
+func pow_int (regs=20)
+  // var result = 1
+  Const        r7, 1
+  Move         r8, r7
+  // var b = base
+  Move         r9, r5
+  // var e = exp
+  Move         r10, r6
+L2:
+  // while e > 0 {
+  Const        r11, 0
+  Less         r12, r11, r10
+  JumpIfFalse  r12, L0
+  // if e % 2 == 1 { result = result * b }
+  Const        r13, 2
+  Mod          r14, r10, r13
+  Const        r7, 1
+  Equal        r15, r14, r7
+  JumpIfFalse  r15, L1
+  Mul          r16, r8, r9
+  Move         r8, r16
+L1:
+  // b = b * b
+  Mul          r17, r9, r9
+  Move         r9, r17
+  // e = (e / 2) as int
+  Const        r13, 2
+  Div          r18, r10, r13
+  Cast         r19, r18, int
+  Move         r10, r19
+  // while e > 0 {
+  Jump         L2
+L0:
+  // return result
+  Return       r8
+
+  // fun pow_big(base: bigint, exp: int): bigint {
+func pow_big (regs=20)
+  // var result: bigint = 1
+  Const        r7, 1
+  Move         r8, r7
+  // var b: bigint = base
+  Move         r9, r5
+  // var e = exp
+  Move         r10, r6
+L2:
+  // while e > 0 {
+  Const        r11, 0
+  Less         r12, r11, r10
+  JumpIfFalse  r12, L0
+  // if e % 2 == 1 { result = result * b }
+  Const        r13, 2
+  Mod          r14, r10, r13
+  Const        r7, 1
+  Equal        r15, r14, r7
+  JumpIfFalse  r15, L1
+  Mul          r16, r8, r9
+  Move         r8, r16
+L1:
+  // b = b * b
+  Mul          r17, r9, r9
+  Move         r9, r17
+  // e = (e / 2) as int
+  Const        r13, 2
+  Div          r18, r10, r13
+  Cast         r19, r18, int
+  Move         r10, r19
+  // while e > 0 {
+  Jump         L2
+L0:
+  // return result
+  Return       r8

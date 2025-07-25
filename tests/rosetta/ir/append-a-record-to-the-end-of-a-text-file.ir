@@ -1,0 +1,51 @@
+func main (regs=1)
+  // main()
+  Call         r0, main, 
+  Return       r0
+
+  // fun writeTwo(): list<string> {
+func writeTwo (regs=1)
+  // return [
+  Const        r0, ["jsmith:x:1001:1000:Joe Smith,Room 1007,(234)555-8917,(234)555-0077,jsmith@rosettacode.org:/home/jsmith:/bin/bash", "jdoe:x:1002:1000:Jane Doe,Room 1004,(234)555-8914,(234)555-0044,jdoe@rosettacode.org:/home/jsmith:/bin/bash"]
+  Return       r0
+
+  // fun appendOneMore(lines: list<string>): list<string> {
+func appendOneMore (regs=3)
+  // return append(lines, "xyz:x:1003:1000:X Yz,Room 1003,(234)555-8913,(234)555-0033,xyz@rosettacode.org:/home/xyz:/bin/bash")
+  Const        r1, "xyz:x:1003:1000:X Yz,Room 1003,(234)555-8913,(234)555-0033,xyz@rosettacode.org:/home/xyz:/bin/bash"
+  Append       r2, r0, r1
+  Return       r2
+
+  // fun main() {
+func main (regs=14)
+  // var lines = writeTwo()
+  Call         r0, writeTwo, 
+  Move         r1, r0
+  // lines = appendOneMore(lines)
+  Move         r2, r1
+  Call         r3, appendOneMore, r2
+  Move         r1, r3
+  // if len(lines) >= 3 && lines[2] == "xyz:x:1003:1000:X Yz,Room 1003,(234)555-8913,(234)555-0033,xyz@rosettacode.org:/home/xyz:/bin/bash" {
+  Len          r4, r1
+  Const        r5, 3
+  LessEqInt    r6, r5, r4
+  Const        r7, 2
+  Index        r8, r1, r7
+  Const        r9, "xyz:x:1003:1000:X Yz,Room 1003,(234)555-8913,(234)555-0033,xyz@rosettacode.org:/home/xyz:/bin/bash"
+  Equal        r10, r8, r9
+  Move         r11, r6
+  JumpIfFalse  r11, L0
+  Move         r11, r10
+L0:
+  JumpIfFalse  r11, L1
+  // print("append okay")
+  Const        r12, "append okay"
+  Print        r12
+  // if len(lines) >= 3 && lines[2] == "xyz:x:1003:1000:X Yz,Room 1003,(234)555-8913,(234)555-0033,xyz@rosettacode.org:/home/xyz:/bin/bash" {
+  Jump         L2
+L1:
+  // print("it didn't work")
+  Const        r13, "it didn't work"
+  Print        r13
+L2:
+  Return       r0

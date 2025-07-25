@@ -2,17 +2,17 @@
 
 This checklist is auto-generated.
 Generated IR and outputs from programs in `tests/rosetta/x/Mochi` lives in `tests/rosetta/ir`.
-Last updated: 2025-07-25 06:09 UTC
+Last updated: 2025-07-25 07:33 UTC
 
-## Rosetta Golden Test Checklist (51/284)
+## Rosetta Golden Test Checklist (61/284)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
-| 1 | 100-doors-2 | ✓ | 582µs | 11.7 KB |
-| 2 | 100-doors-3 | ✓ | 409µs | 7.8 KB |
-| 3 | 100-doors | ✓ | 18.974ms | 1.1 MB |
-| 4 | 100-prisoners | ✓ | 5.27737s | 1.3 MB |
+| 1 | 100-doors-2 | ✓ | 116µs | 11.7 KB |
+| 2 | 100-doors-3 | ✓ | 184µs | 7.7 KB |
+| 3 | 100-doors | ✓ | 6.231ms | 851.8 KB |
+| 4 | 100-prisoners | ✓ | 4.224632s | 275.7 KB |
 | 5 | 15-puzzle-game | ✓ |  |  |
-| 6 | 15-puzzle-solver | ✓ | 1.637648s | 27.5 KB |
+| 6 | 15-puzzle-solver | ✓ | 917.949ms | 26.9 KB |
 | 7 | 2048 | ✓ |  |  |
 | 8 | 21-game | ✓ |  |  |
 | 9 | 24-game-solve | ✓ | 2.162ms |  |
@@ -60,16 +60,16 @@ Last updated: 2025-07-25 06:09 UTC
 | 51 | animate-a-pendulum | ✓ | 1.023ms | 73.8 KB |
 | 52 | animation | ✓ | 930µs | 18.1 KB |
 | 53 | anonymous-recursion-1 | ✓ | 349µs | 15.6 KB |
-| 54 | anonymous-recursion-2 |   |  |  |
-| 55 | anonymous-recursion |   |  |  |
-| 56 | anti-primes |   |  |  |
-| 57 | append-a-record-to-the-end-of-a-text-file |   |  |  |
-| 58 | apply-a-callback-to-an-array-1 |   |  |  |
-| 59 | apply-a-callback-to-an-array-2 |   |  |  |
-| 60 | apply-a-digital-filter-direct-form-ii-transposed- |   |  |  |
-| 61 | approximate-equality |   |  |  |
-| 62 | arbitrary-precision-integers-included- |   |  |  |
-| 63 | archimedean-spiral |   |  |  |
+| 54 | anonymous-recursion-2 | ✓ | 81µs | 21.2 KB |
+| 55 | anonymous-recursion | ✓ | 566µs | 653.5 KB |
+| 56 | anti-primes | ✓ | 2.949969s |  |
+| 57 | append-a-record-to-the-end-of-a-text-file | ✓ | 87µs | 3.9 KB |
+| 58 | apply-a-callback-to-an-array-1 | ✓ | 64µs | 1.6 KB |
+| 59 | apply-a-callback-to-an-array-2 | ✓ | 85µs | 25.9 KB |
+| 60 | apply-a-digital-filter-direct-form-ii-transposed- | ✓ | 154µs | 72.0 KB |
+| 61 | approximate-equality | ✓ | 120µs | 55.8 KB |
+| 62 | arbitrary-precision-integers-included- | ✓ | 35.689ms | 2.6 MB |
+| 63 | archimedean-spiral | ✓ | 92.785ms |  |
 | 64 | arena-storage-pool |   |  |  |
 | 65 | arithmetic-complex |   |  |  |
 | 66 | arithmetic-derivative |   |  |  |

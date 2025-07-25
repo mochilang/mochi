@@ -1,0 +1,70 @@
+func main (regs=1)
+  // main()
+  Call         r0, main, 
+  Return       r0
+
+  // fun fib(n: int): int {
+func fib (regs=11)
+  // if n < 2 { return n }
+  Const        r1, 2
+  Less         r2, r0, r1
+  JumpIfFalse  r2, L0
+  Return       r0
+L0:
+  // return fib(n-1) + fib(n-2)
+  Const        r4, 1
+  Sub          r5, r0, r4
+  Move         r3, r5
+  Call         r6, fib, r3
+  Const        r1, 2
+  Sub          r8, r0, r1
+  Move         r7, r8
+  Call         r9, fib, r7
+  Add          r10, r6, r9
+  Return       r10
+
+  // fun main() {
+func main (regs=21)
+  // var i = -1
+  Const        r0, 1
+  NegInt       r1, r0
+  Move         r2, r1
+L3:
+  // while i <= 10 {
+  Const        r3, 10
+  LessEqInt    r4, r2, r3
+  JumpIfFalse  r4, L0
+  // if i < 0 {
+  Const        r5, 0
+  LessInt      r6, r2, r5
+  JumpIfFalse  r6, L1
+  // print("fib(" + str(i) + ") returned error: negative n is forbidden")
+  Const        r7, "fib("
+  Str          r8, r2
+  Add          r9, r7, r8
+  Const        r10, ") returned error: negative n is forbidden"
+  Add          r11, r9, r10
+  Print        r11
+  // if i < 0 {
+  Jump         L2
+L1:
+  // print("fib(" + str(i) + ") = " + str(fib(i)))
+  Const        r7, "fib("
+  Str          r12, r2
+  Add          r13, r7, r12
+  Const        r14, ") = "
+  Add          r15, r13, r14
+  Move         r16, r2
+  Call         r17, fib, r16
+  Str          r18, r17
+  Add          r19, r15, r18
+  Print        r19
+L2:
+  // i = i + 1
+  Const        r0, 1
+  AddInt       r20, r2, r0
+  Move         r2, r20
+  // while i <= 10 {
+  Jump         L3
+L0:
+  Return       r0
