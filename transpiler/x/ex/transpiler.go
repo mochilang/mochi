@@ -1516,13 +1516,26 @@ func Emit(p *Program, benchMain bool) []byte {
 		}
 		if benchMain {
 			buf.WriteString("    duration_us = div(_now() - t_start, 1000)\n")
-			buf.WriteString("    mem_diff = _mem() - mem_start\n")
+			buf.WriteString("    mem_diff = abs(_mem() - mem_start)\n")
 			buf.WriteString("    IO.puts(\"{\\n  \\\"duration_us\\\": #{duration_us},\\n  \\\"memory_bytes\\\": #{mem_diff},\\n  \\\"name\\\": \\\"main\\\"\\n}\")\n")
 		}
 		buf.WriteString("  end\n")
+	} else if benchMain {
+		buf.WriteString("  def bench_main() do\n")
+		buf.WriteString("    mem_start = _mem()\n")
+		buf.WriteString("    t_start = _now()\n")
+		buf.WriteString("    main()\n")
+		buf.WriteString("    duration_us = div(_now() - t_start, 1000)\n")
+		buf.WriteString("    mem_diff = abs(_mem() - mem_start)\n")
+		buf.WriteString("    IO.puts(\"{\\n  \\\"duration_us\\\": #{duration_us},\\n  \\\"memory_bytes\\\": #{mem_diff},\\n  \\\"name\\\": \\\"main\\\"\\n}\")\n")
+		buf.WriteString("  end\n")
 	}
 	buf.WriteString("end\n")
-	buf.WriteString("Main.main()\n")
+	if benchMain && hasMain {
+		buf.WriteString("Main.bench_main()\n")
+	} else {
+		buf.WriteString("Main.main()\n")
+	}
 	moduleMode = false
 	out := buf.Bytes()
 	re := regexp.MustCompile(`(@[A-Z][A-Z0-9_]* )([0-9]+)`)
@@ -3054,8 +3067,13 @@ func compilePrimary(p *parser.Primary, env *types.Env) (Expr, error) {
 		case "input":
 			if len(args) == 0 {
 				gets := &CallExpr{Func: "IO.gets", Args: []Expr{&StringLit{Value: ""}}}
-				trim := &CallExpr{Func: "String.trim", Args: []Expr{gets}}
-				return trim, nil
+				trim := &CallExpr{Func: "String.trim", Args: []Expr{&VarRef{Name: "line"}}}
+				clauses := []CaseClause{
+					{Pattern: &NilLit{}, Result: &StringLit{Value: ""}},
+					{Pattern: &AtomLit{Name: ":eof"}, Result: &StringLit{Value: ""}},
+					{Pattern: &VarRef{Name: "line"}, Result: trim},
+				}
+				return &CaseExpr{Target: gets, Clauses: clauses}, nil
 			}
 		case "values":
 			if len(args) == 1 {
