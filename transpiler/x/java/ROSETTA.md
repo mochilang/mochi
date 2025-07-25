@@ -1,9 +1,9 @@
 # Java Rosetta Transpiler Output
 
 Generated Java code for programs in `tests/rosetta/x/Mochi`. Each program has a `.java` file produced by the transpiler and a `.out` file with its runtime output. Compilation or execution errors are captured in `.error` files.
-Last updated: 2025-07-26 00:07 GMT+7
+Last updated: 2025-07-26 00:20 GMT+7
 
-## Rosetta Checklist (94/284)
+## Rosetta Checklist (95/284)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | 100-doors-2 | ✓ | 23.0ms | 245.84KB |
@@ -102,8 +102,8 @@ Last updated: 2025-07-26 00:07 GMT+7
 | 94 | averages-simple-moving-average | ✓ | 58.0ms | 105.52KB |
 | 95 | avl-tree |   |  |  |
 | 96 | b-zier-curves-intersections |   |  |  |
-| 97 | babbage-problem | ✓ | 12.0ms | 38.90KB |
-| 98 | babylonian-spiral |   |  |  |
+| 97 | babbage-problem | ✓ | 28.0ms | 38.90KB |
+| 98 | babylonian-spiral | ✓ | 31.0ms | 40.02KB |
 | 99 | balanced-brackets |   |  |  |
 | 100 | balanced-ternary |   |  |  |
 | 101 | barnsley-fern |   |  |  |
