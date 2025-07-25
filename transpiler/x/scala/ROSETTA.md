@@ -2,8 +2,8 @@
 
 Generated Scala code for Rosetta tasks in `tests/rosetta/x/Mochi`. Each program has a `.scala` file produced by the transpiler and a `.out` file with its runtime output. Compilation or execution errors are captured in `.error` files.
 
-## Golden Test Checklist (93/284)
-_Last updated: 2025-07-25 13:21 +0700_
+## Golden Test Checklist (94/284)
+_Last updated: 2025-07-25 16:40 +0700_
 
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
@@ -41,21 +41,21 @@ _Last updated: 2025-07-25 13:21 +0700_
 | 32 | active-directory-search-for-a-user | ✓ | 4µs | 8.7 MB |
 | 33 | active-object | ✓ | 39µs | 8.7 MB |
 | 34 | add-a-variable-to-a-class-instance-at-runtime | ✓ | 5µs | 8.7 MB |
-| 35 | additive-primes | ✓ |  |  |
-| 36 | address-of-a-variable | ✓ |  |  |
-| 37 | adfgvx-cipher | error |  |  |
-| 38 | aks-test-for-primes | ✓ |  |  |
-| 39 | algebraic-data-types | ✓ |  |  |
-| 40 | align-columns | ✓ |  |  |
-| 41 | aliquot-sequence-classifications | ✓ |  |  |
-| 42 | almkvist-giullera-formula-for-pi | ✓ |  |  |
-| 43 | almost-prime | ✓ |  |  |
-| 44 | amb | ✓ |  |  |
-| 45 | amicable-pairs | ✓ |  |  |
-| 46 | anagrams-deranged-anagrams | ✓ |  |  |
-| 47 | anagrams | ✓ |  |  |
-| 48 | angle-difference-between-two-bearings-1 | ✓ |  |  |
-| 49 | angle-difference-between-two-bearings-2 | ✓ |  |  |
+| 35 | additive-primes | ✓ | 4µs | 8.7 MB |
+| 36 | address-of-a-variable | ✓ | 5µs | 8.7 MB |
+| 37 | adfgvx-cipher | ✓ | 15µs | 8.7 MB |
+| 38 | aks-test-for-primes | ✓ | 5µs | 8.7 MB |
+| 39 | algebraic-data-types | ✓ | 7µs | 8.7 MB |
+| 40 | align-columns | ✓ | 9µs | 8.7 MB |
+| 41 | aliquot-sequence-classifications | ✓ | 20µs | 8.7 MB |
+| 42 | almkvist-giullera-formula-for-pi | ✓ | 252µs | 8.7 MB |
+| 43 | almost-prime | ✓ | 4µs | 8.7 MB |
+| 44 | amb | ✓ | 3µs | 8.7 MB |
+| 45 | amicable-pairs | ✓ | 388µs | 8.7 MB |
+| 46 | anagrams-deranged-anagrams | ✓ | 7µs | 8.7 MB |
+| 47 | anagrams | ✓ | 10µs | 8.7 MB |
+| 48 | angle-difference-between-two-bearings-1 | ✓ | 5µs | 8.7 MB |
+| 49 | angle-difference-between-two-bearings-2 | ✓ | 5µs | 8.7 MB |
 | 50 | angles-geometric-normalization-and-conversion | ✓ |  |  |
 | 51 | animate-a-pendulum | ✓ |  |  |
 | 52 | animation | ✓ |  |  |
