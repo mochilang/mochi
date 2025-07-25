@@ -1,7 +1,7 @@
 # Rosetta C# Transpiler Output
 
-Completed programs: 38/284
-Last updated: 2025-07-25 10:01 +0700
+Completed programs: 39/284
+Last updated: 2025-07-25 04:08 UTC
 
 ## Checklist
 | Index | Name | Status | Duration | Memory |
@@ -15,9 +15,9 @@ Last updated: 2025-07-25 10:01 +0700
 | 7 | 2048 | ✓ |  |  |
 | 8 | 21-game | ✓ |  |  |
 | 9 | 24-game-solve | ✓ |  |  |
-| 10 | 24-game |   |  |  |
-| 11 | 4-rings-or-4-squares-puzzle | ✓ |  |  |
-| 12 | 9-billion-names-of-god-the-integer | ✓ |  |  |
+| 10 | 24-game | ✓ | 19.001ms | 2.1GB |
+| 11 | 4-rings-or-4-squares-puzzle | ✓ | 15.163ms | 11.4GB |
+| 12 | 9-billion-names-of-god-the-integer | ✓ | 417.583ms | 192.6GB |
 | 13 | 99-bottles-of-beer-2 | ✓ |  |  |
 | 14 | 99-bottles-of-beer | ✓ |  |  |
 | 15 | DNS-query | ✓ |  |  |
