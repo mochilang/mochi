@@ -47,17 +47,21 @@ func TestExTranspiler_VMValid_Golden(t *testing.T) {
 			_ = os.WriteFile(errPath, []byte("type: "+errs[0].Error()), 0o644)
 			return nil, errs[0]
 		}
+		bench := os.Getenv("MOCHI_BENCHMARK") == "true"
 		ast, err := ex.Transpile(prog, env)
 		if err != nil {
 			_ = os.WriteFile(errPath, []byte("transpile: "+err.Error()), 0o644)
 			return nil, err
 		}
-		code := ex.Emit(ast)
+		code := ex.Emit(ast, bench)
 		if err := os.WriteFile(codePath, code, 0o644); err != nil {
 			return nil, err
 		}
 		cmd := exec.Command("elixir", codePath)
 		cmd.Env = append(os.Environ(), "MOCHI_NOW_SEED=1")
+		if bench {
+			cmd.Env = append(cmd.Env, "MOCHI_BENCHMARK=true")
+		}
 		if data, err := os.ReadFile(strings.TrimSuffix(src, ".mochi") + ".in"); err == nil {
 			cmd.Stdin = bytes.NewReader(data)
 		}

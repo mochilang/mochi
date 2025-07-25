@@ -71,7 +71,8 @@ func TestElixirTranspiler_VMValid_Golden(t *testing.T) {
 				_ = os.WriteFile(errPath, []byte(err.Error()), 0o644)
 				t.Fatalf("transpile: %v", err)
 			}
-			code := ex.Emit(gprog)
+			bench := os.Getenv("MOCHI_BENCHMARK") == "true"
+			code := ex.Emit(gprog, bench)
 			if err := os.WriteFile(codePath, code, 0o644); err != nil {
 				t.Fatalf("write: %v", err)
 			}
