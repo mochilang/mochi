@@ -4,7 +4,7 @@ Generated Lua code for programs in `tests/rosetta/x/Mochi`. Each program has a `
 
 Transpiled programs: 275/284
 
-Last updated: 2025-07-25 20:06 GMT+7
+Last updated: 2025-07-25 20:18 GMT+7
 
 Checklist:
 
@@ -169,71 +169,71 @@ Checklist:
 | 157 | call-a-function-5 | ✓ | 42µs | 320 B |
 | 158 | call-a-function-6 | ✓ | 44µs | 400 B |
 | 159 | call-a-function-7 | ✓ | 3µs | 384 B |
-| 160 | call-a-function-8 | ✓ | 39µs | 400 B |
-| 161 | call-a-function-9 | ✓ | 17µs | 384 B |
-| 162 | call-an-object-method-1 | ✓ | 3µs | 424 B |
-| 163 | call-an-object-method-2 | ✓ | 4µs | 520 B |
-| 164 | call-an-object-method-3 | ✓ | 3µs | 432 B |
-| 165 | call-an-object-method | ✓ | 4µs | 432 B |
-| 166 | camel-case-and-snake-case | ✓ | 498µs | 4.0 KB |
-| 167 | canny-edge-detector | ✓ | 306µs | 520 B |
-| 168 | canonicalize-cidr | ✓ | 415µs | 4.7 KB |
-| 169 | cantor-set | ✓ | 393µs | 988 B |
-| 170 | carmichael-3-strong-pseudoprimes | ✓ | 2.614ms | 4.5 KB |
-| 171 | cartesian-product-of-two-or-more-lists-1 | ✓ | 70µs | 440 B |
-| 172 | cartesian-product-of-two-or-more-lists-2 | ✓ | 370µs | 528 B |
-| 173 | cartesian-product-of-two-or-more-lists-3 | ✓ | 582µs | 120 B |
-| 174 | cartesian-product-of-two-or-more-lists-4 | ✓ | 415µs | 120 B |
-| 175 | case-sensitivity-of-identifiers | ✓ | 77µs | 400 B |
-| 176 | casting-out-nines | ✓ | 8.707ms | 7.4 KB |
-| 177 | catalan-numbers-1 | ✓ | 80µs | 2.4 KB |
-| 178 | catalan-numbers-2 | ✓ | 117µs | 2.8 KB |
-| 179 | catalan-numbers-pascals-triangle | ✓ | 140µs | 2.8 KB |
-| 180 | catamorphism | ✓ | 59µs | 2.5 KB |
-| 181 | catmull-clark-subdivision-surface | ✓ | 1.924ms | 4.6 KB |
-| 182 | chaocipher | ✓ | 504µs | 4.5 KB |
-| 183 | chaos-game | ✓ | 7.999ms | 59.6 KB |
-| 184 | character-codes-1 | ✓ | 36µs | 280 B |
-| 185 | character-codes-2 | ✓ | 47µs | 312 B |
-| 186 | character-codes-3 | ✓ | 46µs | 2.3 KB |
-| 187 | character-codes-4 | ✓ | 40µs | 280 B |
-| 188 | character-codes-5 | ✓ | 34µs | 280 B |
-| 189 | chat-server | ✓ | 48µs | 664 B |
-| 190 | check-machin-like-formulas | ✓ | 7.794ms | 23.1 KB |
-| 191 | check-that-file-exists | ✓ |  |  |
-| 192 | checkpoint-synchronization-1 | ✓ |  |  |
-| 193 | checkpoint-synchronization-2 | ✓ |  |  |
-| 194 | checkpoint-synchronization-3 | ✓ |  |  |
-| 195 | checkpoint-synchronization-4 | ✓ |  |  |
-| 196 | chernicks-carmichael-numbers | ✓ |  |  |
-| 197 | cheryls-birthday | ✓ |  |  |
-| 198 | chinese-remainder-theorem | ✓ |  |  |
-| 199 | chinese-zodiac | ✓ |  |  |
-| 200 | cholesky-decomposition-1 | ✓ |  |  |
-| 201 | cholesky-decomposition | ✓ |  |  |
-| 202 | chowla-numbers | ✓ |  |  |
-| 203 | church-numerals-1 | ✓ |  |  |
-| 204 | church-numerals-2 | ✓ |  |  |
-| 205 | circles-of-given-radius-through-two-points | ✓ |  |  |
-| 206 | circular-primes | ✓ |  |  |
-| 207 | cistercian-numerals | ✓ |  |  |
-| 208 | comma-quibbling | ✓ |  |  |
-| 209 | compiler-virtual-machine-interpreter | ✓ |  |  |
+| 160 | call-a-function-8 | ✓ | 23µs | 2.9 KB |
+| 161 | call-a-function-9 | ✓ | 7µs | 904 B |
+| 162 | call-an-object-method-1 | ✓ | 2µs | 240 B |
+| 163 | call-an-object-method-2 | ✓ | 3µs | 344 B |
+| 164 | call-an-object-method-3 | ✓ | 3µs | 232 B |
+| 165 | call-an-object-method | ✓ | 2µs | 232 B |
+| 166 | camel-case-and-snake-case | ✓ | 426µs | 1.1 KB |
+| 167 | canny-edge-detector | ✓ | 149µs | 1.1 KB |
+| 168 | canonicalize-cidr | ✓ | 303µs | 1.4 KB |
+| 169 | cantor-set | ✓ | 665µs | 2.0 KB |
+| 170 | carmichael-3-strong-pseudoprimes | ✓ | 1.045ms | 3.0 KB |
+| 171 | cartesian-product-of-two-or-more-lists-1 | ✓ | 56µs | 2.9 KB |
+| 172 | cartesian-product-of-two-or-more-lists-2 | ✓ | 518µs | 3.1 KB |
+| 173 | cartesian-product-of-two-or-more-lists-3 | ✓ | 441µs | 4.6 KB |
+| 174 | cartesian-product-of-two-or-more-lists-4 | ✓ | 551µs | 2.6 KB |
+| 175 | case-sensitivity-of-identifiers | ✓ | 45µs | 848 B |
+| 176 | casting-out-nines | ✓ | 6.658ms | 3.8 KB |
+| 177 | catalan-numbers-1 | ✓ | 52µs | 952 B |
+| 178 | catalan-numbers-2 | ✓ | 36µs | 3.0 KB |
+| 179 | catalan-numbers-pascals-triangle | ✓ | 122µs | 3.2 KB |
+| 180 | catamorphism | ✓ | 45µs | 1.0 KB |
+| 181 | catmull-clark-subdivision-surface | ✓ | 1.297ms | 7.0 KB |
+| 182 | chaocipher | ✓ | 222µs | 1.1 KB |
+| 183 | chaos-game | ✓ | 4.361ms | 58.1 KB |
+| 184 | character-codes-1 | ✓ | 42µs | 96 B |
+| 185 | character-codes-2 | ✓ | 36µs | 128 B |
+| 186 | character-codes-3 | ✓ | 40µs | 2.1 KB |
+| 187 | character-codes-4 | ✓ | 27µs | 96 B |
+| 188 | character-codes-5 | ✓ | 32µs | 96 B |
+| 189 | chat-server | ✓ | 47µs | 1.2 KB |
+| 190 | check-machin-like-formulas | ✓ | 4.076ms | 21.5 KB |
+| 191 | check-that-file-exists | ✓ | 63µs | 848 B |
+| 192 | checkpoint-synchronization-1 | ✓ | 57µs | 2.8 KB |
+| 193 | checkpoint-synchronization-2 | ✓ | 71µs | 2.9 KB |
+| 194 | checkpoint-synchronization-3 | ✓ | 64µs | 2.9 KB |
+| 195 | checkpoint-synchronization-4 | ✓ | 129µs | 2.7 KB |
+| 196 | chernicks-carmichael-numbers | ✓ | 1.575146s | 2.4 KB |
+| 197 | cheryls-birthday | ✓ | 68µs | 2.8 KB |
+| 198 | chinese-remainder-theorem | ✓ | 45µs | 1.2 KB |
+| 199 | chinese-zodiac | ✓ | 65µs | 1.9 KB |
+| 200 | cholesky-decomposition-1 | ✓ | 201µs | 1.2 KB |
+| 201 | cholesky-decomposition | ✓ | 200µs | 3.0 KB |
+| 202 | chowla-numbers | ✓ | 28µs | 64 B |
+| 203 | church-numerals-1 | ✓ | 119µs | 3.9 KB |
+| 204 | church-numerals-2 | ✓ | 3µs | 480 B |
+| 205 | circles-of-given-radius-through-two-points | ✓ | 105µs | 2.6 KB |
+| 206 | circular-primes | ✓ | 872µs | 10.9 KB |
+| 207 | cistercian-numerals | ✓ | 1.443ms | 43.6 KB |
+| 208 | comma-quibbling | ✓ | 40µs | 2.9 KB |
+| 209 | compiler-virtual-machine-interpreter | ✓ | 426µs | 1.3 KB |
 | 210 | composite-numbers-k-with-no-single-digit-factors-whose-factors-are-all-substrings-of-k | ✓ |  |  |
-| 211 | compound-data-type | ✓ |  |  |
-| 212 | concurrent-computing-1 | ✓ |  |  |
-| 213 | concurrent-computing-2 | ✓ |  |  |
-| 214 | concurrent-computing-3 | ✓ |  |  |
-| 215 | conditional-structures-1 | ✓ |  |  |
-| 216 | conditional-structures-10 | ✓ |  |  |
-| 217 | conditional-structures-2 | ✓ |  |  |
-| 218 | conditional-structures-3 | ✓ |  |  |
-| 219 | conditional-structures-4 | ✓ |  |  |
-| 220 | conditional-structures-5 | ✓ |  |  |
-| 221 | conditional-structures-6 | ✓ |  |  |
-| 222 | conditional-structures-7 | ✓ |  |  |
-| 223 | conditional-structures-8 | ✓ |  |  |
-| 224 | conditional-structures-9 | ✓ |  |  |
+| 211 | compound-data-type | ✓ | 1µs | 64 B |
+| 212 | concurrent-computing-1 | ✓ | 25µs | 856 B |
+| 213 | concurrent-computing-2 | ✓ | 28µs | 856 B |
+| 214 | concurrent-computing-3 | ✓ | 41µs | 856 B |
+| 215 | conditional-structures-1 | ✓ | 2µs | 144 B |
+| 216 | conditional-structures-10 | ✓ | 26µs | 208 B |
+| 217 | conditional-structures-2 | ✓ | 2µs | 144 B |
+| 218 | conditional-structures-3 | ✓ | 2µs | 144 B |
+| 219 | conditional-structures-4 | ✓ | 3µs | 200 B |
+| 220 | conditional-structures-5 | ✓ | 2µs | 144 B |
+| 221 | conditional-structures-6 | ✓ | 2µs | 144 B |
+| 222 | conditional-structures-7 | ✓ | 1µs | 216 B |
+| 223 | conditional-structures-8 | ✓ | 2µs | 144 B |
+| 224 | conditional-structures-9 | ✓ | 2µs | 104 B |
 | 225 | consecutive-primes-with-ascending-or-descending-differences | ✓ |  |  |
 | 226 | constrained-genericity-1 | ✓ |  |  |
 | 227 | constrained-genericity-2 | ✓ |  |  |
