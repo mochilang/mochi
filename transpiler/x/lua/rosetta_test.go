@@ -5,6 +5,7 @@ package lua_test
 import (
 	"bufio"
 	"bytes"
+	"encoding/json"
 	"flag"
 	"fmt"
 	"os"
@@ -64,7 +65,8 @@ func runCase(src, outDir string) ([]byte, error) {
 		_ = os.WriteFile(errPath, []byte(errs[0].Error()), 0o644)
 		return nil, errs[0]
 	}
-	ast, err := lua.Transpile(prog, env)
+	bench := os.Getenv("MOCHI_BENCHMARK") != ""
+	ast, err := lua.Transpile(prog, env, bench)
 	if err != nil {
 		_ = os.WriteFile(errPath, []byte(err.Error()), 0o644)
 		return nil, err
@@ -74,7 +76,18 @@ func runCase(src, outDir string) ([]byte, error) {
 		return nil, err
 	}
 	cmd := exec.Command("lua", codePath)
-	cmd.Env = append(os.Environ(), "MOCHI_NOW_SEED=1")
+	runEnv := append(os.Environ(), "MOCHI_NOW_SEED=1")
+	if bench {
+		// allow real timing when benchmarking
+		for i, v := range runEnv {
+			if strings.HasPrefix(v, "MOCHI_NOW_SEED=") {
+				runEnv = append(runEnv[:i], runEnv[i+1:]...)
+				break
+			}
+		}
+		runEnv = append(runEnv, "MOCHI_BENCHMARK=1")
+	}
+	cmd.Env = runEnv
 	if data, err := os.ReadFile(strings.TrimSuffix(src, ".mochi") + ".in"); err == nil {
 		cmd.Stdin = bytes.NewReader(data)
 	}
@@ -182,16 +195,33 @@ func updateRosettaReadme() {
 	total := len(files)
 	compiled := 0
 	var lines []string
+	lines = append(lines, "| Index | Name | Status | Duration | Memory |")
+	lines = append(lines, "|------:|------|:-----:|---------:|-------:|")
 	for i, f := range files {
 		name := strings.TrimSuffix(filepath.Base(f), ".mochi")
-		mark := "[ ]"
-		if _, err := os.Stat(filepath.Join(outDir, name+".out")); err == nil {
-			if _, err2 := os.Stat(filepath.Join(outDir, name+".error")); os.IsNotExist(err2) {
-				compiled++
-				mark = "[x]"
+		status := " "
+		if _, err := os.Stat(filepath.Join(outDir, name+".error")); err == nil {
+			// leave unchecked
+		} else if _, err := os.Stat(filepath.Join(outDir, name+".lua")); err == nil {
+			compiled++
+			status = "✓"
+		}
+		dur := ""
+		mem := ""
+		if data, err := os.ReadFile(filepath.Join(outDir, name+".out")); err == nil {
+			var js struct {
+				Duration int64 `json:"duration_us"`
+				Memory   int64 `json:"memory_bytes"`
+			}
+			data = bytes.TrimSpace(data)
+			if idx := bytes.LastIndexByte(data, '{'); idx >= 0 {
+				if json.Unmarshal(data[idx:], &js) == nil && js.Duration > 0 {
+					dur = humanDuration(js.Duration)
+					mem = humanSize(js.Memory)
+				}
 			}
 		}
-		lines = append(lines, fmt.Sprintf("%d. %s %s (%d)", i+1, mark, name, i+1))
+		lines = append(lines, fmt.Sprintf("| %d | %s | %s | %s | %s |", i+1, name, status, dur, mem))
 	}
 	ts := ""
 	if out, err := exec.Command("git", "log", "-1", "--format=%cI").Output(); err == nil {
@@ -211,4 +241,22 @@ func updateRosettaReadme() {
 	buf.WriteString(strings.Join(lines, "\n"))
 	buf.WriteString("\n")
 	_ = os.WriteFile(readmePath, buf.Bytes(), 0o644)
+}
+
+func humanDuration(us int64) string {
+	d := time.Duration(us) * time.Microsecond
+	return d.String()
+}
+
+func humanSize(b int64) string {
+	const unit = 1024
+	if b < unit {
+		return fmt.Sprintf("%d B", b)
+	}
+	div, exp := int64(unit), 0
+	for n := b / unit; n >= unit; n /= unit {
+		div *= unit
+		exp++
+	}
+	return fmt.Sprintf("%.1f %cB", float64(b)/float64(div), "KMGTPE"[exp])
 }

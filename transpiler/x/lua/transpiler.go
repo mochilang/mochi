@@ -940,13 +940,20 @@ func (fi *ForInStmt) emit(w io.Writer) {
 }
 
 func (b *BenchStmt) emit(w io.Writer) {
-	io.WriteString(w, "do\n  local _bench_start = _now()\n")
+	io.WriteString(w, "do\n")
+	io.WriteString(w, "  collectgarbage()\n")
+	io.WriteString(w, "  local _bench_start_mem = collectgarbage('count') * 1024\n")
+	io.WriteString(w, "  local _bench_start = _now()\n")
 	for _, st := range b.Body {
 		st.emit(w)
 		io.WriteString(w, "\n")
 	}
 	io.WriteString(w, "  local _bench_end = _now()\n")
-	io.WriteString(w, "  print('{\\n  \"duration_us\": 571223,\\n  \"memory_bytes\": 0,\\n  \"name\": \"")
+	io.WriteString(w, "  collectgarbage()\n")
+	io.WriteString(w, "  local _bench_end_mem = collectgarbage('count') * 1024\n")
+	io.WriteString(w, "  local _bench_duration_us = math.floor((_bench_end - _bench_start) / 1000)\n")
+	io.WriteString(w, "  local _bench_mem = math.floor(math.max(0, _bench_end_mem - _bench_start_mem))\n")
+	io.WriteString(w, "  print('{\\n  \"duration_us\": ' .. _bench_duration_us .. ',\\n  \"memory_bytes\": ' .. _bench_mem .. ',\\n  \"name\": \"")
 	io.WriteString(w, b.Name)
 	io.WriteString(w, "\"\\n}')\n")
 	io.WriteString(w, "end")
@@ -3452,7 +3459,7 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 // declarations, assignments, `if` statements and expressions, and calls like
 // `print`. Expressions handle unary negation, arithmetic, comparison and basic
 // boolean operators.
-func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
+func Transpile(prog *parser.Program, env *types.Env, benchMain bool) (*Program, error) {
 	currentEnv = env
 	lp := &Program{Env: env}
 	for _, st := range prog.Statements {
@@ -3463,6 +3470,9 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 		if s != nil {
 			lp.Stmts = append(lp.Stmts, s)
 		}
+	}
+	if benchMain {
+		lp.Stmts = []Stmt{&BenchStmt{Name: "main", Body: lp.Stmts}}
 	}
 	currentEnv = nil
 	return lp, nil

@@ -43,7 +43,8 @@ func TestLuaTranspiler_VMValid_Golden(t *testing.T) {
 			_ = os.WriteFile(errPath, []byte(errs[0].Error()), 0o644)
 			return nil, errs[0]
 		}
-		lp, err := lua.Transpile(prog, env)
+		bench := os.Getenv("MOCHI_BENCHMARK") == "true" || os.Getenv("MOCHI_BENCHMARK") == "1"
+		lp, err := lua.Transpile(prog, env, bench)
 		if err != nil {
 			_ = os.WriteFile(errPath, []byte(err.Error()), 0o644)
 			return nil, err
@@ -53,7 +54,11 @@ func TestLuaTranspiler_VMValid_Golden(t *testing.T) {
 			return nil, err
 		}
 		cmd := exec.Command("lua", codePath)
-		cmd.Env = append(os.Environ(), "MOCHI_NOW_SEED=1")
+		runEnv := append(os.Environ(), "MOCHI_NOW_SEED=1")
+		if bench {
+			runEnv = append(runEnv, "MOCHI_BENCHMARK=1")
+		}
+		cmd.Env = runEnv
 		if data, err := os.ReadFile(strings.TrimSuffix(src, ".mochi") + ".in"); err == nil {
 			cmd.Stdin = bytes.NewReader(data)
 		}
