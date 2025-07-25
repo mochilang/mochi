@@ -103,7 +103,11 @@ func TestScalaTranspiler_Rosetta_Golden(t *testing.T) {
 				t.Fatalf("compile: %v", err)
 			}
 			cmd := exec.Command("scala", "-cp", tmp, "Main")
-			cmd.Env = append(os.Environ(), "MOCHI_NOW_SEED=1")
+			runEnv := append(os.Environ(), "MOCHI_NOW_SEED=1")
+			if bench {
+				runEnv = append(runEnv, "MOCHI_BENCHMARK=1")
+			}
+			cmd.Env = runEnv
 			if data, err := os.ReadFile(strings.TrimSuffix(filepath.Join(srcDir, nameFile), ".mochi") + ".in"); err == nil {
 				cmd.Stdin = bytes.NewReader(data)
 			}
@@ -119,10 +123,11 @@ func TestScalaTranspiler_Rosetta_Golden(t *testing.T) {
 				t.Fatalf("run: %v", err)
 			}
 			_ = os.Remove(errPath)
-			_ = os.WriteFile(outPath, got, 0o644)
 			if bench {
+				_ = os.WriteFile(filepath.Join(outDir, name+".bench"), got, 0o644)
 				return
 			}
+			_ = os.WriteFile(outPath, got, 0o644)
 
 			if !updating() && len(want) > 0 {
 				if !bytes.Equal(got, want) {
@@ -164,7 +169,21 @@ func updateRosettaChecklist() {
 			compiled++
 			status = "✓"
 		}
-		if data, err := os.ReadFile(filepath.Join(outDir, name+".out")); err == nil {
+		benchPath := filepath.Join(outDir, name+".bench")
+		outPath := filepath.Join(outDir, name+".out")
+		if data, err := os.ReadFile(benchPath); err == nil {
+			var js struct {
+				Duration int64 `json:"duration_us"`
+				Memory   int64 `json:"memory_bytes"`
+			}
+			data = bytes.TrimSpace(data)
+			if idx := bytes.LastIndexByte(data, '{'); idx >= 0 {
+				if json.Unmarshal(data[idx:], &js) == nil && js.Duration > 0 {
+					dur = humanDuration(js.Duration)
+					mem = humanSize(js.Memory)
+				}
+			}
+		} else if data, err := os.ReadFile(outPath); err == nil {
 			var js struct {
 				Duration int64 `json:"duration_us"`
 				Memory   int64 `json:"memory_bytes"`
