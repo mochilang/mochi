@@ -28,7 +28,7 @@ func main() {
 	if errs := types.Check(prog, env); len(errs) > 0 {
 		panic(errs[0])
 	}
-	ast, err := rkt.Transpile(prog, env)
+	ast, err := rkt.Transpile(prog, env, false)
 	if err != nil {
 		panic(err)
 	}
