@@ -1,5 +1,5 @@
-Traceback (most recent call last):
-  File "/workspace/mochi/tests/rosetta/transpiler/Python/convex-hull.py", line 31, in <module>
-    @dataclass
-     ^^^^^^^^^
-NameError: name 'dataclass' is not defined
+{
+  "duration_us": 566,
+  "memory_bytes": 14303232,
+  "name": "main"
+}
