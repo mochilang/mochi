@@ -1,4 +1,10 @@
-## Progress (2025-07-25 01:07 +0700)
+## Progress (2025-07-25 10:36 +0700)
+- php: fix union constructor detection and bench output (7568f9dcb2)
+
+- php: fix union constructor detection and bench output (7568f9dcb2)
+
+- php: fix union constructor detection and bench output (7568f9dcb2)
+
 - hs transpiler: handle int division cast (c922ad38fa)
 
 - hs transpiler: handle int division cast (c922ad38fa)

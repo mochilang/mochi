@@ -42,7 +42,8 @@ func runRosettaTask(t *testing.T, name string) {
 	benchPath := filepath.Join(outDir, name+".bench")
 	errPath := filepath.Join(outDir, name+".error")
 
-	bench := os.Getenv("MOCHI_BENCHMARK") == "true"
+	benv := os.Getenv("MOCHI_BENCHMARK")
+	bench := benv == "true" || benv == "1"
 	javatr.SetBenchMain(bench)
 
 	prog, err := parser.Parse(src)

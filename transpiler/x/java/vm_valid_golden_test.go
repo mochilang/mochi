@@ -35,7 +35,8 @@ func TestJavaTranspiler_VMValid_Golden(t *testing.T) {
 		outPath := filepath.Join(outDir, base+".out")
 		errPath := filepath.Join(outDir, base+".error")
 
-		bench := os.Getenv("MOCHI_BENCHMARK") == "true"
+		benv := os.Getenv("MOCHI_BENCHMARK")
+		bench := benv == "true" || benv == "1"
 		javatr.SetBenchMain(bench)
 		prog, err := parser.Parse(src)
 		if err != nil {
