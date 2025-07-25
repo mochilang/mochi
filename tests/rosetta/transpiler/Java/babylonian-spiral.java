@@ -19,7 +19,7 @@ h[i] = tmp;
         }
         int s = (int)(((int)h[0].getOrDefault("s", 0)));
         int[][] v = new int[][]{};
-        while ((h.length > 0 && ((int)h[0].getOrDefault("s", 0)).equals(s))) {
+        while (h.length > 0 && ((int)h[0].getOrDefault("s", 0)) == s) {
             java.util.Map<String,Integer> it = h[0];
             h = java.util.Arrays.copyOfRange(h, 1, h.length);
             v = appendObj(v, new int[]{((int)it.getOrDefault("a", 0)), ((int)it.getOrDefault("b", 0))});

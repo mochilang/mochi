@@ -1319,7 +1319,7 @@ func (b *BinaryExpr) emit(w io.Writer) {
 		emitCastExpr(w, b.Right, "String")
 		return
 	}
-	if (b.Op == "==" || b.Op == "!=") && (isStringExpr(b.Left) || isStringExpr(b.Right)) {
+	if (b.Op == "==" || b.Op == "!=") && isStringExpr(b.Left) && isStringExpr(b.Right) {
 		if b.Op == "!=" {
 			fmt.Fprint(w, "!")
 		}

@@ -1,4 +1,12 @@
-## Progress (2025-07-25 19:02 +0700)
+## Progress (2025-07-26 00:11 +0700)
+- transpiler/java: handle generic arrays (c574f72cc9)
+
+- transpiler/java: handle generic arrays (c574f72cc9)
+
+- transpiler/java: handle generic arrays (c574f72cc9)
+
+- transpiler/java: handle generic arrays (c574f72cc9)
+
 - pascal transpiler: handle else-if and list concatenation (6bb4e4bd23)
 
 - pascal transpiler: handle else-if and list concatenation (6bb4e4bd23)
