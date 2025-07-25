@@ -1,0 +1,18 @@
+exit status 127
+/workspace/mochi/tests/rosetta/transpiler/erl/bernoulli-numbers.erl:92:19: function num/1 undefined
+%   92|             case (num(B) /= 0) of
+%     |                   ^
+
+/workspace/mochi/tests/rosetta/transpiler/erl/bernoulli-numbers.erl:93:61: function num/1 undefined
+%   93|         true -> NumStr = lists:flatten(io_lib:format("~p", [num(B)])),
+%     |                                                             ^
+
+/workspace/mochi/tests/rosetta/transpiler/erl/bernoulli-numbers.erl:94:57: function denom/1 undefined
+%   94|             DenStr = lists:flatten(io_lib:format("~p", [denom(B)])),
+%     |                                                         ^
+
+/workspace/mochi/tests/rosetta/transpiler/erl/bernoulli-numbers.erl:97:23: variable 'Denom' is unbound
+%   97|             Denom_2 = Denom,
+%     |                       ^
+
+escript: There were compilation errors.

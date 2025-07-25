@@ -74,10 +74,25 @@ mochi_to_int(V) ->
     end.
 `
 
+const helperPadStart = `
+mochi_pad_start(S, Len, Ch) ->
+    Fill0 = case Ch of
+        "" -> " ";
+        _ -> Ch
+    end,
+    Fill = string:substr(Fill0, 1, 1),
+    SL = length(S),
+    case SL >= Len of
+        true -> S;
+        _ -> string:copies(Fill, Len - SL) ++ S
+    end.
+`
+
 var useNow bool
 var useLookupHost bool
 var useToInt bool
 var useMemberHelper bool
+var usePadStart bool
 var mutatedFuncs map[string]int
 var benchMain bool
 
@@ -99,6 +114,7 @@ type Program struct {
 	UseLookupHost   bool
 	UseToInt        bool
 	UseMemberHelper bool
+	UsePadStart     bool
 }
 
 // context tracks variable aliases to emulate mutable variables.
@@ -1434,6 +1450,15 @@ func containsLoopCtrl(list []Stmt) bool {
 	return false
 }
 
+func containsName(list []string, v string) bool {
+	for _, s := range list {
+		if s == v {
+			return true
+		}
+	}
+	return false
+}
+
 func (l *LetStmt) emit(w io.Writer) {
 	fmt.Fprintf(w, "%s = ", l.Name)
 	l.Expr.emit(w)
@@ -1532,6 +1557,26 @@ func (c *CallExpr) emit(w io.Writer) {
 		io.WriteString(w, "string:to_lower(")
 		if len(c.Args) > 0 {
 			c.Args[0].emit(w)
+		}
+		io.WriteString(w, ")")
+		return
+	case "padStart", "padstart":
+		usePadStart = true
+		io.WriteString(w, "mochi_pad_start(")
+		if len(c.Args) > 0 {
+			c.Args[0].emit(w)
+		}
+		io.WriteString(w, ", ")
+		if len(c.Args) > 1 {
+			c.Args[1].emit(w)
+		} else {
+			io.WriteString(w, "0")
+		}
+		io.WriteString(w, ", ")
+		if len(c.Args) > 2 {
+			c.Args[2].emit(w)
+		} else {
+			io.WriteString(w, "\" \"")
 		}
 		io.WriteString(w, ")")
 		return
@@ -1882,16 +1927,23 @@ func (i *IfStmt) emit(w io.Writer) {
 
 func (f *ForStmt) emit(w io.Writer) {
 	loopName := f.Fun + "_loop"
-	restVar := loopName + "_rest"
+	srcVar := "List"
+	for containsName(f.Params, srcVar) {
+		srcVar = srcVar + "_"
+	}
+	restVar := srcVar + "_rest"
 	io.WriteString(w, f.Fun)
 	io.WriteString(w, " = fun ")
 	io.WriteString(w, loopName)
-	io.WriteString(w, "(List")
+	io.WriteString(w, "(")
+	io.WriteString(w, srcVar)
 	for _, p := range f.Params {
 		io.WriteString(w, ", ")
 		io.WriteString(w, p)
 	}
-	io.WriteString(w, ") ->\n    case List of\n        [] -> {")
+	io.WriteString(w, ") ->\n    case ")
+	io.WriteString(w, srcVar)
+	io.WriteString(w, " of\n        [] -> {")
 	for i, p := range f.Params {
 		if i > 0 {
 			io.WriteString(w, ", ")
@@ -2594,6 +2646,7 @@ func Transpile(prog *parser.Program, env *types.Env, bench bool) (*Program, erro
 	useLookupHost = false
 	useToInt = false
 	useMemberHelper = false
+	usePadStart = false
 	mutatedFuncs = map[string]int{"topple": 0}
 	p := &Program{}
 	for _, st := range prog.Statements {
@@ -2620,6 +2673,7 @@ func Transpile(prog *parser.Program, env *types.Env, bench bool) (*Program, erro
 	p.UseLookupHost = useLookupHost
 	p.UseToInt = useToInt
 	p.UseMemberHelper = useMemberHelper
+	p.UsePadStart = usePadStart
 	return p, nil
 }
 
@@ -2780,7 +2834,12 @@ func convertStmt(st *parser.Statement, env *types.Env, ctx *context, top bool) (
 		if ctx.isParam(st.Assign.Name) {
 			ctx.markMutated(st.Assign.Name)
 		}
-		old := ctx.current(st.Assign.Name)
+		var old string
+		if ctx.isGlobal(st.Assign.Name) {
+			old = ctx.newAlias(st.Assign.Name)
+		} else {
+			old = ctx.current(st.Assign.Name)
+		}
 		alias := ctx.newAlias(st.Assign.Name)
 		key := &StringLit{Value: st.Assign.Field[0].Name}
 		ctx.clearConst(st.Assign.Name)
@@ -2835,7 +2894,12 @@ func convertStmt(st *parser.Statement, env *types.Env, ctx *context, top bool) (
 		}
 		return []Stmt{&ListAssignStmt{Name: alias, Old: old, Index: idx, Value: val}}, nil
 	case st.Assign != nil && len(st.Assign.Index) == 2 && len(st.Assign.Field) == 0:
-		old := ctx.current(st.Assign.Name)
+		var old string
+		if ctx.isGlobal(st.Assign.Name) {
+			old = ctx.newAlias(st.Assign.Name)
+		} else {
+			old = ctx.current(st.Assign.Name)
+		}
 		idx1, err := convertExpr(st.Assign.Index[0].Start, env, ctx)
 		if err != nil {
 			return nil, err
@@ -5074,6 +5138,8 @@ func (p *Program) Emit() []byte {
 		buf.WriteString(helperMember)
 		buf.WriteString("\n")
 	}
+	buf.WriteString(helperPadStart)
+	buf.WriteString("\n")
 	for _, f := range p.Funs {
 		f.emit(&buf)
 	}
