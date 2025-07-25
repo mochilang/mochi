@@ -25,3 +25,8 @@ Number of Achilles numbers with:
 13 digits: 2508051
 14 digits: 7960336
 15 digits: 25235383
+{
+  "duration_us": 68179,
+  "memory_bytes": 6887360,
+  "name": "main"
+}
