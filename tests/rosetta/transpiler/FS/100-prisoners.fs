@@ -1,4 +1,4 @@
-// Generated 2025-07-24 13:03 +0700
+// Generated 2025-07-25 12:29 +0700
 
 exception Break
 exception Continue
@@ -43,7 +43,7 @@ let rec shuffle (xs: int array) =
     with
         | Return -> __ret
 and doTrials (trials: int) (np: int) (strategy: string) =
-    let mutable __ret : obj = Unchecked.defaultof<obj>
+    let mutable __ret : unit = Unchecked.defaultof<unit>
     let mutable trials = trials
     let mutable np = np
     let mutable strategy = strategy
@@ -76,6 +76,7 @@ and doTrials (trials: int) (np: int) (strategy: string) =
                                     d <- d + 1
                             with
                             | Break -> ()
+                            | Continue -> ()
                         else
                             let mutable opened: bool array = [||]
                             let mutable k: int = 0
@@ -95,30 +96,39 @@ and doTrials (trials: int) (np: int) (strategy: string) =
                                     d <- d + 1
                             with
                             | Break -> ()
+                            | Continue -> ()
                         if not found then
                             success <- false
                             raise Break
                         p <- p + 1
                 with
                 | Break -> ()
+                | Continue -> ()
                 if success then
                     pardoned <- pardoned + 1
                 t <- t + 1
         with
         | Break -> ()
+        | Continue -> ()
         let rf = ((float pardoned) / (float trials)) * 100.0
         printfn "%s" (((((("  strategy = " + strategy) + "  pardoned = ") + (string pardoned)) + " relative frequency = ") + (string rf)) + "%")
         __ret
     with
         | Return -> __ret
 and main () =
-    let mutable __ret : obj = Unchecked.defaultof<obj>
+    let mutable __ret : unit = Unchecked.defaultof<unit>
     try
+        let __bench_start = _now()
+        let __mem_start = System.GC.GetTotalMemory(true)
         let trials: int = 1000
         for np in [|10; 100|] do
             printfn "%s" (((("Results from " + (string trials)) + " trials with ") + (string np)) + " prisoners:\n")
             for strat in [|"random"; "optimal"|] do
                 doTrials trials np strat
+        let __bench_end = _now()
+        let __mem_end = System.GC.GetTotalMemory(true)
+        printfn "{\n  \"duration_us\": %d,\n  \"memory_bytes\": %d,\n  \"name\": \"main\"\n}" ((__bench_end - __bench_start) / 1000) (__mem_end - __mem_start)
+
         __ret
     with
         | Return -> __ret

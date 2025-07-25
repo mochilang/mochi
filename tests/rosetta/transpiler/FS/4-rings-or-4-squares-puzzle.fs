@@ -1,10 +1,30 @@
-// Generated 2025-07-24 14:25 +0700
+// Generated 2025-07-25 12:29 +0700
 
 exception Break
 exception Continue
 
 exception Return
 
+let mutable _nowSeed:int64 = 0L
+let mutable _nowSeeded = false
+let _initNow () =
+    let s = System.Environment.GetEnvironmentVariable("MOCHI_NOW_SEED")
+    if System.String.IsNullOrEmpty(s) |> not then
+        match System.Int32.TryParse(s) with
+        | true, v ->
+            _nowSeed <- int64 v
+            _nowSeeded <- true
+        | _ -> ()
+let _now () =
+    if _nowSeeded then
+        _nowSeed <- (_nowSeed * 1664525L + 1013904223L) % 2147483647L
+        int _nowSeed
+    else
+        int (System.DateTime.UtcNow.Ticks % 2147483647L)
+
+_initNow()
+let __bench_start = _now()
+let __mem_start = System.GC.GetTotalMemory(true)
 let rec validComb (a: int) (b: int) (c: int) (d: int) (e: int) (f: int) (g: int) =
     let mutable __ret : bool = Unchecked.defaultof<bool>
     let mutable a = a
@@ -24,7 +44,7 @@ let rec validComb (a: int) (b: int) (c: int) (d: int) (e: int) (f: int) (g: int)
         __ret
     with
         | Return -> __ret
-and isUnique (a: int) (b: int) (c: int) (d: int) (e: int) (f: int) (g: int) =
+let rec isUnique (a: int) (b: int) (c: int) (d: int) (e: int) (f: int) (g: int) =
     let mutable __ret : bool = Unchecked.defaultof<bool>
     let mutable a = a
     let mutable b = b
@@ -49,7 +69,7 @@ and isUnique (a: int) (b: int) (c: int) (d: int) (e: int) (f: int) (g: int) =
         __ret
     with
         | Return -> __ret
-and getCombs (low: int) (high: int) (unique: bool) =
+let rec getCombs (low: int) (high: int) (unique: bool) =
     let mutable __ret : Map<string, obj> = Unchecked.defaultof<Map<string, obj>>
     let mutable low = low
     let mutable high = high
@@ -109,3 +129,6 @@ printfn "%s" ((string (r2.["count"])) + " unique solutions in 3 to 9")
 printfn "%A" (r2.["list"])
 let r3 = getCombs 0 9 false
 printfn "%s" ((string (r3.["count"])) + " non-unique solutions in 0 to 9")
+let __bench_end = _now()
+let __mem_end = System.GC.GetTotalMemory(true)
+printfn "{\n  \"duration_us\": %d,\n  \"memory_bytes\": %d,\n  \"name\": \"main\"\n}" ((__bench_end - __bench_start) / 1000) (__mem_end - __mem_start)

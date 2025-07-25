@@ -2,28 +2,28 @@
 
 This file is auto-generated from rosetta tests.
 
-## Rosetta Golden Test Checklist (67/284)
+## Rosetta Golden Test Checklist (69/284)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
-| 1 | 100-doors-2 | ✓ | 162µs | 44.2 KB |
-| 2 | 100-doors-3 | ✓ | 325µs | 45.8 KB |
-| 3 | 100-doors | ✓ | 328µs | 45.6 KB |
+| 1 | 100-doors-2 | ✓ | 151µs | 41.3 KB |
+| 2 | 100-doors-3 | ✓ | 154µs | 41.9 KB |
+| 3 | 100-doors | ✓ | 155µs | 41.6 KB |
 | 4 | 100-prisoners | ✓ |  |  |
 | 5 | 15-puzzle-game | ✓ |  |  |
-| 6 | 15-puzzle-solver |   |  |  |
-| 7 | 2048 | ✓ |  |  |
-| 8 | 21-game |   |  |  |
-| 9 | 24-game-solve | ✓ |  |  |
+| 6 | 15-puzzle-solver | ✓ | 155µs | 42.0 KB |
+| 7 | 2048 | ✓ | 188µs | 42.7 KB |
+| 8 | 21-game | ✓ | 153µs | 41.8 KB |
+| 9 | 24-game-solve | ✓ | 1.054ms | 62.3 KB |
 | 10 | 24-game | ✓ |  |  |
-| 11 | 4-rings-or-4-squares-puzzle | ✓ |  |  |
-| 12 | 9-billion-names-of-god-the-integer | ✓ |  |  |
-| 13 | 99-bottles-of-beer-2 | ✓ |  |  |
-| 14 | 99-bottles-of-beer | ✓ |  |  |
-| 15 | DNS-query | ✓ |  |  |
-| 16 | a+b | ✓ |  |  |
-| 17 | abbreviations-automatic | ✓ |  |  |
-| 18 | abbreviations-easy | ✓ |  |  |
-| 19 | abbreviations-simple | ✓ |  |  |
+| 11 | 4-rings-or-4-squares-puzzle | ✓ | 2.005ms | 302.9 KB |
+| 12 | 9-billion-names-of-god-the-integer | ✓ | 54.495ms | 289.7 KB |
+| 13 | 99-bottles-of-beer-2 | ✓ | 322µs | 43.1 KB |
+| 14 | 99-bottles-of-beer | ✓ | 169µs | 42.1 KB |
+| 15 | DNS-query | ✓ | 5.283ms | 319.1 KB |
+| 16 | a+b | ✓ | 370µs | 62.2 KB |
+| 17 | abbreviations-automatic | ✓ | 308µs | 53.6 KB |
+| 18 | abbreviations-easy | ✓ | 229µs | 55.7 KB |
+| 19 | abbreviations-simple | ✓ | 316µs | 57.5 KB |
 | 20 | abc-problem |   |  |  |
 | 21 | abelian-sandpile-model-identity | ✓ |  |  |
 | 22 | abelian-sandpile-model | ✓ |  |  |
@@ -290,4 +290,4 @@ This file is auto-generated from rosetta tests.
 | 283 | define-a-primitive-data-type |   |  |  |
 | 284 | md5 |   |  |  |
 
-Last updated: 2025-07-25 10:01 +0700
+Last updated: 2025-07-25 12:29 +0700
