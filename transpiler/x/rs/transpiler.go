@@ -940,7 +940,7 @@ func (n *NameRef) emit(w io.Writer) {
 		if typ == "" {
 			typ = varTypes[n.Name]
 		}
-		if globalVars[n.Name] && typ != "" && typ != "i64" && typ != "bool" && typ != "f64" && typ != "String" && !strings.HasPrefix(typ, "&") {
+		if globalVars[n.Name] && !indexLHS && typ != "" && typ != "i64" && typ != "bool" && typ != "f64" && typ != "String" && !strings.HasPrefix(typ, "&") {
 			io.WriteString(w, name)
 			io.WriteString(w, ".clone()")
 			return
