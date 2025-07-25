@@ -4,10 +4,6 @@ Freely distributed under the Apache 2.0 Open Source License
 
 /workspace/mochi/tests/rosetta/transpiler/FS/achilles-numbers.fs(3,1): warning FS0221: The declarations in this file will be placed in an implicit module 'Achilles-numbers' based on the file name 'achilles-numbers.fs'. However this is not a valid F# identifier, so the contents will not be accessible from other files. Consider renaming the file or adding a 'module' or 'namespace' declaration at the top of the file.
 
-/workspace/mochi/tests/rosetta/transpiler/FS/achilles-numbers.fs(149,9): warning FS0020: This expression should have type 'unit', but has type 'obj'. Use 'ignore' to discard the result of the expression, or 'let' to bind the result to a name.
-
 /workspace/mochi/tests/rosetta/transpiler/FS/achilles-numbers.fs(152,25): error FS0039: The field, constructor or member 'keys' is not defined
 
 /workspace/mochi/tests/rosetta/transpiler/FS/achilles-numbers.fs(173,33): error FS0001: The type 'Map<int,bool>' is not compatible with the type 'seq<int>'
-
-/workspace/mochi/tests/rosetta/transpiler/FS/achilles-numbers.fs(198,1): warning FS0020: This expression should have type 'unit', but has type 'obj'. Use 'ignore' to discard the result of the expression, or 'let' to bind the result to a name.

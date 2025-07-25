@@ -1,3 +1,7 @@
+## Progress (2025-07-25 13:04 +0700)
+- transpiler fs: improve map indexing and type inference
+- Generated F# for 103/104 programs (103 passing)
+
 ## Progress (2025-07-25 12:29 +0700)
 - cs transpiler: handle string element type in loops
 - Generated F# for 103/104 programs (103 passing)

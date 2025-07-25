@@ -1,4 +1,4 @@
-// Generated 2025-07-24 20:52 +0700
+// Generated 2025-07-25 13:04 +0700
 
 exception Return
 
@@ -7,16 +7,16 @@ let rec search_user (directory: Map<string, string array>) (username: string) =
     let mutable directory = directory
     let mutable username = username
     try
-        __ret <- directory.[username]
+        __ret <- (defaultArg (Map.tryFind username directory) Unchecked.defaultof<string array>)
         raise Return
         __ret
     with
         | Return -> __ret
 and main () =
-    let mutable __ret : obj = Unchecked.defaultof<obj>
+    let mutable __ret : unit = Unchecked.defaultof<unit>
     try
         let client = Map.ofList [("Base", box "dc=example,dc=com"); ("Host", box "ldap.example.com"); ("Port", box 389); ("GroupFilter", box "(memberUid=%s)")]
-        let directory = Map.ofList [("username", [|"admins"; "users"|]); ("john", [|"users"|])]
+        let directory: Map<string, array> = Map.ofList [("username", [|"admins"; "users"|]); ("john", [|"users"|])]
         let groups = search_user directory "username"
         if (Seq.length groups) > 0 then
             let mutable out: string = "Groups: ["

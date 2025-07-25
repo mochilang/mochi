@@ -1,4 +1,4 @@
-// Generated 2025-07-24 20:52 +0700
+// Generated 2025-07-25 13:04 +0700
 
 exception Return
 
@@ -53,7 +53,7 @@ and handlePile (pile: int array array) (x: int) (y: int) =
     with
         | Return -> __ret
 and drawPile (pile: int array array) (d: int) =
-    let mutable __ret : obj = Unchecked.defaultof<obj>
+    let mutable __ret : unit = Unchecked.defaultof<unit>
     let mutable pile = pile
     let mutable d = d
     try
@@ -74,7 +74,7 @@ and drawPile (pile: int array array) (d: int) =
     with
         | Return -> __ret
 and main () =
-    let mutable __ret : obj = Unchecked.defaultof<obj>
+    let mutable __ret : unit = Unchecked.defaultof<unit>
     try
         let mutable pile = newPile 16
         let hdim: int = 7

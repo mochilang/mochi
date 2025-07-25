@@ -1,4 +1,4 @@
-// Generated 2025-07-24 20:52 +0700
+// Generated 2025-07-25 13:04 +0700
 
 exception Return
 
@@ -18,7 +18,7 @@ let rec pfacSum (i: int) =
     with
         | Return -> __ret
 and main () =
-    let mutable __ret : obj = Unchecked.defaultof<obj>
+    let mutable __ret : unit = Unchecked.defaultof<unit>
     try
         let mutable d: int = 0
         let mutable a: int = 0

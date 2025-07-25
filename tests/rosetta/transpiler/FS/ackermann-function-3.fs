@@ -1,14 +1,14 @@
-// Generated 2025-07-24 20:52 +0700
+// Generated 2025-07-25 13:04 +0700
 
 exception Return
 
-let rec pow_big (base: obj) (exp: int) =
-    let mutable __ret : obj = Unchecked.defaultof<obj>
-    let mutable base = base
+let rec pow_big (``base``: bigint) (exp: int) =
+    let mutable __ret : bigint = Unchecked.defaultof<bigint>
+    let mutable ``base`` = ``base``
     let mutable exp = exp
     try
-        let mutable result: obj = 1
-        let mutable b: obj = base
+        let mutable result: bigint = 1 :?> bigint
+        let mutable b: bigint = ``base``
         let mutable e: int = exp
         while e > 0 do
             if (e % 2) = 1 then
@@ -20,11 +20,11 @@ let rec pow_big (base: obj) (exp: int) =
         __ret
     with
         | Return -> __ret
-and bit_len (x: obj) =
+and bit_len (x: bigint) =
     let mutable __ret : int = Unchecked.defaultof<int>
     let mutable x = x
     try
-        let mutable n: obj = x
+        let mutable n: bigint = x
         let mutable c: int = 0
         while n > 0 do
             n <- n / 2
@@ -35,13 +35,13 @@ and bit_len (x: obj) =
     with
         | Return -> __ret
 let mutable err: string = ""
-let rec ackermann2 (m: obj) (n: obj) =
-    let mutable __ret : obj = Unchecked.defaultof<obj>
+let rec ackermann2 (m: bigint) (n: bigint) =
+    let mutable __ret : bigint = Unchecked.defaultof<bigint>
     let mutable m = m
     let mutable n = n
     try
         if err <> "" then
-            __ret <- 0 :?> obj
+            __ret <- 0 :?> bigint
             raise Return
         if m <= 3 then
             let mi = int m
@@ -58,26 +58,26 @@ let rec ackermann2 (m: obj) (n: obj) =
                 let nb = bit_len n
                 if nb > 64 then
                     err <- ("A(m,n) had n of " + (string nb)) + " bits; too large"
-                    __ret <- 0 :?> obj
+                    __ret <- 0 :?> bigint
                     raise Return
-                let r = pow_big (2 :?> obj) (int n)
+                let r = pow_big (2 :?> bigint) (int n)
                 __ret <- (8 * r) - 3
                 raise Return
         if (bit_len n) = 0 then
-            __ret <- ackermann2 (m - (1 :?> obj)) (1 :?> obj)
+            __ret <- ackermann2 (m - (1 :?> bigint)) (1 :?> bigint)
             raise Return
-        __ret <- ackermann2 (m - (1 :?> obj)) (ackermann2 m (n - (1 :?> obj)))
+        __ret <- ackermann2 (m - (1 :?> bigint)) (ackermann2 m (n - (1 :?> bigint)))
         raise Return
         __ret
     with
         | Return -> __ret
 and show (m: int) (n: int) =
-    let mutable __ret : obj = Unchecked.defaultof<obj>
+    let mutable __ret : unit = Unchecked.defaultof<unit>
     let mutable m = m
     let mutable n = n
     try
         err <- ""
-        let res = ackermann2 (m :?> obj) (n :?> obj)
+        let res = ackermann2 (m :?> bigint) (n :?> bigint)
         if err <> "" then
             printfn "%s" ((((("A(" + (string m)) + ", ") + (string n)) + ") = Error: ") + err)
             __ret <- ()
@@ -93,7 +93,7 @@ and show (m: int) (n: int) =
     with
         | Return -> __ret
 and main () =
-    let mutable __ret : obj = Unchecked.defaultof<obj>
+    let mutable __ret : unit = Unchecked.defaultof<unit>
     try
         show 0 0
         show 1 2
