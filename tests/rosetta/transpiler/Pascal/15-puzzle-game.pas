@@ -22,6 +22,12 @@ begin
     _now := Integer(GetTickCount64()*1000);
   end;
 end;
+function _mem(): int64;
+var h: TFPCHeapStatus;
+begin
+  h := GetFPCHeapStatus;
+  _mem := h.CurrHeapUsed;
+end;
 function _input(): string;
 var s: string;
 begin
@@ -33,6 +39,10 @@ type MoveResult = record
   ok: boolean;
 end;
 var
+  bench_start_0: integer;
+  bench_dur_0: integer;
+  bench_mem_0: int64;
+  bench_memdiff_0: int64;
   board: array of integer;
   solved: array of integer;
   empty: integer;
@@ -194,10 +204,20 @@ begin
 end;
 begin
   init_now();
+  bench_mem_0 := _mem();
+  bench_start_0 := _now();
   board := [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 0];
   solved := [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 0];
   empty := 15;
   moves := 0;
   quit := false;
   main();
+  Sleep(1);
+  bench_memdiff_0 := _mem() - bench_mem_0;
+  bench_dur_0 := (_now() - bench_start_0) div 1000;
+  writeln('{');
+  writeln(('  "duration_us": ' + IntToStr(bench_dur_0)) + ',');
+  writeln(('  "memory_bytes": ' + IntToStr(bench_memdiff_0)) + ',');
+  writeln(('  "name": "' + 'main') + '"');
+  writeln('}');
 end.

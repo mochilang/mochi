@@ -1366,7 +1366,7 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 					}
 					if strings.HasPrefix(typ, "array of ") {
 						elem := strings.TrimPrefix(typ, "array of ")
-						typ = pr.addArrayAlias(elem)
+						typ = currProg.addArrayAlias(elem)
 					}
 					local[p.Name] = typ
 				}
@@ -1389,7 +1389,7 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 					}
 					if strings.HasPrefix(typ, "array of ") {
 						elem := strings.TrimPrefix(typ, "array of ")
-						typ = pr.addArrayAlias(elem)
+						typ = currProg.addArrayAlias(elem)
 					}
 					params = append(params, fmt.Sprintf("%s: %s", p.Name, typ))
 				}
@@ -1398,7 +1398,7 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 					rt = typeFromRef(st.Fun.Return)
 					if strings.HasPrefix(rt, "array of ") {
 						elem := strings.TrimPrefix(rt, "array of ")
-						rt = pr.addArrayAlias(elem)
+						rt = currProg.addArrayAlias(elem)
 					}
 				}
 				if rt == "" {
@@ -1407,7 +1407,7 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 							rt = inferType(ret.Expr)
 							if strings.HasPrefix(rt, "array of ") {
 								elem := strings.TrimPrefix(rt, "array of ")
-								rt = pr.addArrayAlias(elem)
+								rt = currProg.addArrayAlias(elem)
 							}
 							break
 						}
@@ -1418,11 +1418,11 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 						nameParts := strings.SplitN(params[0], ":", 2)
 						paramName := strings.TrimSpace(nameParts[0])
 						body := []Stmt{&ReturnStmt{Expr: &CallExpr{Name: "StrToInt", Args: []Expr{&VarRef{Name: paramName}}}}}
-						pr.Funs = append(pr.Funs, FunDecl{Name: st.Fun.Name, Params: params, ReturnType: "integer", Body: body})
+						currProg.Funs = append(currProg.Funs, FunDecl{Name: st.Fun.Name, Params: params, ReturnType: "integer", Body: body})
 						funcReturns[st.Fun.Name] = "integer"
 					}
 				} else {
-					pr.Funs = append(pr.Funs, FunDecl{Name: st.Fun.Name, Params: params, ReturnType: rt, Body: fnBody})
+					currProg.Funs = append(currProg.Funs, FunDecl{Name: st.Fun.Name, Params: params, ReturnType: rt, Body: fnBody})
 					if rt != "" {
 						funcReturns[st.Fun.Name] = rt
 					}
@@ -1757,6 +1757,106 @@ func convertBody(env *types.Env, body []*parser.Statement, varTypes map[string]s
 				return nil, err
 			}
 			out = append(out, ifStmt)
+		case st.Fun != nil:
+			local := map[string]string{}
+			for k, v := range varTypes {
+				local[k] = v
+			}
+			for _, p := range st.Fun.Params {
+				typ := "integer"
+				if p.Type != nil {
+					if p.Type.Simple != nil {
+						switch *p.Type.Simple {
+						case "int":
+							typ = "integer"
+						case "string":
+							typ = "string"
+						case "bool":
+							typ = "boolean"
+						default:
+							typ = *p.Type.Simple
+						}
+					} else if p.Type.Generic != nil && p.Type.Generic.Name == "list" && len(p.Type.Generic.Args) == 1 {
+						arg := p.Type.Generic.Args[0]
+						elem := "integer"
+						if arg.Simple != nil {
+							switch *arg.Simple {
+							case "int":
+								elem = "integer"
+							case "string":
+								elem = "string"
+							case "bool":
+								elem = "boolean"
+							default:
+								elem = *arg.Simple
+							}
+						}
+						typ = "array of " + elem
+					}
+				}
+				if strings.HasPrefix(typ, "array of ") {
+					elem := strings.TrimPrefix(typ, "array of ")
+					typ = currProg.addArrayAlias(elem)
+				}
+				local[p.Name] = typ
+			}
+			pushScope()
+			currentFunc = st.Fun.Name
+			for _, p := range st.Fun.Params {
+				currentScope()[p.Name] = p.Name
+			}
+			fnBody, err := convertBody(env, st.Fun.Body, local)
+			if err != nil {
+				return nil, err
+			}
+			popScope()
+			currentFunc = ""
+			var params []string
+			for _, p := range st.Fun.Params {
+				typ := "integer"
+				if p.Type != nil {
+					typ = typeFromRef(p.Type)
+				}
+				if strings.HasPrefix(typ, "array of ") {
+					elem := strings.TrimPrefix(typ, "array of ")
+					typ = currProg.addArrayAlias(elem)
+				}
+				params = append(params, fmt.Sprintf("%s: %s", p.Name, typ))
+			}
+			rt := ""
+			if st.Fun.Return != nil {
+				rt = typeFromRef(st.Fun.Return)
+				if strings.HasPrefix(rt, "array of ") {
+					elem := strings.TrimPrefix(rt, "array of ")
+					rt = currProg.addArrayAlias(elem)
+				}
+			}
+			if rt == "" {
+				for _, st := range fnBody {
+					if ret, ok := st.(*ReturnStmt); ok && ret.Expr != nil {
+						rt = inferType(ret.Expr)
+						if strings.HasPrefix(rt, "array of ") {
+							elem := strings.TrimPrefix(rt, "array of ")
+							rt = currProg.addArrayAlias(elem)
+						}
+						break
+					}
+				}
+			}
+			if st.Fun.Name == "parseIntStr" {
+				if len(params) == 1 {
+					nameParts := strings.SplitN(params[0], ":", 2)
+					paramName := strings.TrimSpace(nameParts[0])
+					body := []Stmt{&ReturnStmt{Expr: &CallExpr{Name: "StrToInt", Args: []Expr{&VarRef{Name: paramName}}}}}
+					currProg.Funs = append(currProg.Funs, FunDecl{Name: st.Fun.Name, Params: params, ReturnType: "integer", Body: body})
+					funcReturns[st.Fun.Name] = "integer"
+				}
+			} else {
+				currProg.Funs = append(currProg.Funs, FunDecl{Name: st.Fun.Name, Params: params, ReturnType: rt, Body: fnBody})
+				if rt != "" {
+					funcReturns[st.Fun.Name] = rt
+				}
+			}
 		case st.Return != nil:
 			if st.Return.Value != nil {
 				ex, err := convertExpr(env, st.Return.Value)
@@ -3001,6 +3101,9 @@ func typeFromRef(tr *parser.TypeRef) string {
 	}
 	if tr.Generic != nil && tr.Generic.Name == "list" && len(tr.Generic.Args) == 1 {
 		elem := typeFromRef(tr.Generic.Args[0])
+		if elem == "any" {
+			elem = "Variant"
+		}
 		if strings.HasPrefix(elem, "array of ") {
 			alias := currProg.addArrayAlias(strings.TrimPrefix(elem, "array of "))
 			return "array of " + alias
@@ -3010,6 +3113,12 @@ func typeFromRef(tr *parser.TypeRef) string {
 	if tr.Generic != nil && tr.Generic.Name == "map" && len(tr.Generic.Args) == 2 {
 		key := typeFromRef(tr.Generic.Args[0])
 		val := typeFromRef(tr.Generic.Args[1])
+		if key == "any" {
+			key = "Variant"
+		}
+		if val == "any" {
+			val = "Variant"
+		}
 		currProg.UseFGL = true
 		return fmt.Sprintf("specialize TFPGMap<%s, %s>", key, val)
 	}
