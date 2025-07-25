@@ -3,23 +3,23 @@
 package vm_test
 
 import (
-        "bufio"
-        "bytes"
-        "encoding/json"
-        "flag"
-        "fmt"
-        "io"
-        "os"
-        "path/filepath"
-        "runtime"
-        "strconv"
-        "strings"
-        "testing"
-        "time"
+	"bufio"
+	"bytes"
+	"encoding/json"
+	"flag"
+	"fmt"
+	"io"
+	"os"
+	"path/filepath"
+	"runtime"
+	"strconv"
+	"strings"
+	"testing"
+	"time"
 
-        "mochi/parser"
-        "mochi/runtime/vm"
-        "mochi/types"
+	"mochi/parser"
+	"mochi/runtime/vm"
+	"mochi/types"
 )
 
 func repoRoot(t *testing.T) string {
@@ -97,13 +97,13 @@ func runRosettaCase(t *testing.T, name string) {
 		t.Fatalf("write ir: %v", err)
 	}
 
-    bench := os.Getenv("MOCHI_BENCHMARK") == "true" || os.Getenv("MOCHI_BENCHMARK") == "1"
-    var out bytes.Buffer
-    var in io.Reader = os.Stdin
-    if data, err := os.ReadFile(strings.TrimSuffix(src, ".mochi") + ".in"); err == nil {
-            in = bytes.NewReader(data)
-    }
-    m := vm.NewWithIO(p, in, &out)
+	bench := os.Getenv("MOCHI_BENCHMARK") == "true" || os.Getenv("MOCHI_BENCHMARK") == "1"
+	var out bytes.Buffer
+	var in io.Reader = os.Stdin
+	if data, err := os.ReadFile(strings.TrimSuffix(src, ".mochi") + ".in"); err == nil {
+		in = bytes.NewReader(data)
+	}
+	m := vm.NewWithIO(p, in, &out)
 	var start time.Time
 	var startMem uint64
 	if bench {
@@ -120,7 +120,10 @@ func runRosettaCase(t *testing.T, name string) {
 		var ms runtime.MemStats
 		runtime.ReadMemStats(&ms)
 		dur := time.Since(start)
-		mem := int64(ms.Alloc - startMem)
+		mem := int64(ms.Alloc) - int64(startMem)
+		if mem < 0 {
+			mem = 0
+		}
 		data := map[string]any{"name": "main", "duration_us": dur.Microseconds(), "memory_bytes": mem}
 		js, _ := json.MarshalIndent(data, "", "  ")
 		fmt.Fprintln(&out, string(js))

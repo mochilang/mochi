@@ -2467,9 +2467,12 @@ func (c *compiler) compileMain(p *parser.Program) (Function, error) {
 			continue
 		}
 		if st.Expr != nil {
-			if isTopLevelMainCall(st.Expr.Expr) {
-				continue
-			}
+			// Expression statements at the top level are allowed.
+			// Do not remove calls to user-defined main functions
+			// so programs like:
+			//   fun main() { ... }
+			//   main()
+			// execute as expected.
 		}
 		if err := fc.compileStmt(st); err != nil {
 			return Function{}, err
@@ -2480,18 +2483,6 @@ func (c *compiler) compileMain(p *parser.Program) (Function, error) {
 		fc.fn.NumRegs = 1
 	}
 	return fc.fn, nil
-}
-
-func isTopLevelMainCall(e *parser.Expr) bool {
-	if e == nil || e.Binary == nil || e.Binary.Right != nil {
-		return false
-	}
-	left := e.Binary.Left
-	if left == nil || left.Value == nil || left.Value.Target == nil {
-		return false
-	}
-	call := left.Value.Target.Call
-	return call != nil && call.Func == "main" && len(call.Args) == 0
 }
 
 func (fc *funcCompiler) emit(pos lexer.Position, i Instr) {
