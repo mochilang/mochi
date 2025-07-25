@@ -210,17 +210,23 @@ func emitCastExpr(w io.Writer, e Expr, typ string) {
 		switch ex := e.(type) {
 		case *IndexExpr:
 			if ex.IsMap || isMapExpr(ex.Target) {
-				fmt.Fprintf(w, "(%s)(", javaType(typ))
-				e.emit(w)
-				fmt.Fprint(w, ")")
-				return
+				jt := javaType(typ)
+				if jt != "String" {
+					fmt.Fprintf(w, "(%s)(", jt)
+					e.emit(w)
+					fmt.Fprint(w, ")")
+					return
+				}
 			}
 		case *FieldExpr:
 			if isMapExpr(ex.Target) {
-				fmt.Fprintf(w, "(%s)(", javaType(typ))
-				e.emit(w)
-				fmt.Fprint(w, ")")
-				return
+				jt := javaType(typ)
+				if jt != "String" {
+					fmt.Fprintf(w, "(%s)(", jt)
+					e.emit(w)
+					fmt.Fprint(w, ")")
+					return
+				}
 			}
 		}
 	}
@@ -428,6 +434,8 @@ func inferType(e Expr) string {
 	case *SumExpr:
 		return "Object"
 	case *ValuesExpr:
+		return "java.util.List"
+	case *KeysExpr:
 		return "java.util.List"
 	case *AppendExpr:
 		t := inferType(ex.Value)
@@ -1589,6 +1597,9 @@ func (s *SumExpr) emit(w io.Writer) {
 // ValuesExpr collects map values into a list.
 type ValuesExpr struct{ Map Expr }
 
+// KeysExpr collects map keys into a list.
+type KeysExpr struct{ Map Expr }
+
 // AppendExpr appends an element to an array and returns the new array.
 type AppendExpr struct {
 	List     Expr
@@ -1645,6 +1656,12 @@ func (v *ValuesExpr) emit(w io.Writer) {
 	fmt.Fprint(w, "new java.util.ArrayList<>(")
 	v.Map.emit(w)
 	fmt.Fprint(w, ".values())")
+}
+
+func (k *KeysExpr) emit(w io.Writer) {
+	fmt.Fprint(w, "new java.util.ArrayList<>(")
+	k.Map.emit(w)
+	fmt.Fprint(w, ".keySet())")
 }
 
 func (a *AppendExpr) emit(w io.Writer) {
@@ -2052,6 +2069,19 @@ func (ix *IndexExpr) emit(w io.Writer) {
 		if ix.ResultType != "" {
 			castType = javaType(ix.ResultType)
 		}
+		useDefault := false
+		defVal := "null"
+		switch castType {
+		case "int", "Integer":
+			useDefault = true
+			defVal = "0"
+		case "double", "Double":
+			useDefault = true
+			defVal = "0.0"
+		case "boolean", "Boolean":
+			useDefault = true
+			defVal = "false"
+		}
 		fmt.Fprintf(w, "((%s)", castType)
 		if isMapExpr(ix.Target) {
 			ix.Target.emit(w)
@@ -2060,9 +2090,15 @@ func (ix *IndexExpr) emit(w io.Writer) {
 			ix.Target.emit(w)
 			fmt.Fprint(w, ")")
 		}
-		fmt.Fprint(w, ".get(")
-		ix.Index.emit(w)
-		fmt.Fprint(w, "))")
+		if useDefault {
+			fmt.Fprint(w, ".getOrDefault(")
+			ix.Index.emit(w)
+			fmt.Fprintf(w, ", %s))", defVal)
+		} else {
+			fmt.Fprint(w, ".get(")
+			ix.Index.emit(w)
+			fmt.Fprint(w, "))")
+		}
 		return
 	}
 	if isStringExpr(ix.Target) {
@@ -2363,7 +2399,7 @@ func arrayElemType(e Expr) string {
 
 func isListExpr(e Expr) bool {
 	switch ex := e.(type) {
-	case *QueryExpr, *ListLit, *ValuesExpr:
+	case *QueryExpr, *ListLit, *ValuesExpr, *KeysExpr:
 		return true
 	case *VarExpr:
 		if t, ok := varTypes[ex.Name]; ok && strings.HasPrefix(t, "java.util.List") {
@@ -2791,8 +2827,26 @@ func compileStmt(s *parser.Statement) (Stmt, error) {
 					}
 				}
 			}
-			if ml, ok := e.(*MapLit); ok && len(ml.Fields) > 0 {
-				mapVarFields[s.Assign.Name] = ml.Fields
+			t := ""
+			if vt, ok := varTypes[s.Assign.Name]; ok {
+				t = vt
+			} else if vs, ok := varDecls[s.Assign.Name]; ok {
+				t = vs.Type
+			}
+			if ml, ok := e.(*MapLit); ok {
+				if ml.ValueType == "" {
+					if vt := mapValueType(t); vt != "" {
+						ml.ValueType = vt
+					}
+				}
+				if ml.KeyType == "" {
+					if kt := mapKeyType(t); kt != "" {
+						ml.KeyType = kt
+					}
+				}
+				if len(ml.Fields) > 0 {
+					mapVarFields[s.Assign.Name] = ml.Fields
+				}
 			} else if ce, ok := e.(*CallExpr); ok {
 				if f, ok2 := funcMapFields[ce.Func]; ok2 {
 					mapVarFields[s.Assign.Name] = f
@@ -2803,12 +2857,6 @@ func compileStmt(s *parser.Statement) (Stmt, error) {
 						mapVarFields[s.Assign.Name] = f
 					}
 				}
-			}
-			t := ""
-			if vt, ok := varTypes[s.Assign.Name]; ok {
-				t = vt
-			} else if vs, ok := varDecls[s.Assign.Name]; ok {
-				t = vs.Type
 			}
 			return &AssignStmt{Name: s.Assign.Name, Expr: e, Type: t}, nil
 		}
@@ -3453,6 +3501,9 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 		}
 		if name == "values" && len(args) == 1 {
 			return &ValuesExpr{Map: args[0]}, nil
+		}
+		if name == "keys" && len(args) == 1 {
+			return &KeysExpr{Map: args[0]}, nil
 		}
 		if name == "append" && len(args) == 2 {
 			et := arrayElemType(args[0])
@@ -4480,6 +4531,8 @@ func renameVar(e Expr, oldName, newName string) Expr {
 		return &SumExpr{Value: renameVar(ex.Value, oldName, newName)}
 	case *ValuesExpr:
 		return &ValuesExpr{Map: renameVar(ex.Map, oldName, newName)}
+	case *KeysExpr:
+		return &KeysExpr{Map: renameVar(ex.Map, oldName, newName)}
 	case *AppendExpr:
 		return &AppendExpr{List: renameVar(ex.List, oldName, newName), Value: renameVar(ex.Value, oldName, newName), ElemType: ex.ElemType}
 	case *IntCastExpr:
