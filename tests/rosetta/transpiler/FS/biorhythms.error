@@ -1,0 +1,5 @@
+compile: exit status 1
+F# Compiler for F# 4.0 (Open Source Edition)
+Freely distributed under the Apache 2.0 Open Source License
+
+/workspace/mochi/tests/rosetta/transpiler/FS/biorhythms.fs(249,33): error FS0039: The value or constructor 'contains' is not defined

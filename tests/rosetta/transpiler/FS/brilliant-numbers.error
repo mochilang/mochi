@@ -1,0 +1,7 @@
+compile: exit status 1
+F# Compiler for F# 4.0 (Open Source Edition)
+Freely distributed under the Apache 2.0 Open Source License
+
+/workspace/mochi/tests/rosetta/transpiler/FS/brilliant-numbers.fs(148,84): error FS0597: Successive arguments should be separated by spaces or tupled, and arguments involving function or method applications should be parenthesized
+
+/workspace/mochi/tests/rosetta/transpiler/FS/brilliant-numbers.fs(3,1): warning FS0221: The declarations in this file will be placed in an implicit module 'Brilliant-numbers' based on the file name 'brilliant-numbers.fs'. However this is not a valid F# identifier, so the contents will not be accessible from other files. Consider renaming the file or adding a 'module' or 'namespace' declaration at the top of the file.

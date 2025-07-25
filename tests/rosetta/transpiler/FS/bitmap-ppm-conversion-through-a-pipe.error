@@ -1,0 +1,17 @@
+compile: exit status 1
+F# Compiler for F# 4.0 (Open Source Edition)
+Freely distributed under the Apache 2.0 Open Source License
+
+/workspace/mochi/tests/rosetta/transpiler/FS/bitmap-ppm-conversion-through-a-pipe.fs(3,1): warning FS0221: The declarations in this file will be placed in an implicit module 'Bitmap-ppm-conversion-through-a-pipe' based on the file name 'bitmap-ppm-conversion-through-a-pipe.fs'. However this is not a valid F# identifier, so the contents will not be accessible from other files. Consider renaming the file or adding a 'module' or 'namespace' declaration at the top of the file.
+
+/workspace/mochi/tests/rosetta/transpiler/FS/bitmap-ppm-conversion-through-a-pipe.fs(120,54): error FS0001: The type 'int64' does not match the type 'int'
+
+/workspace/mochi/tests/rosetta/transpiler/FS/bitmap-ppm-conversion-through-a-pipe.fs(137,13): warning FS0020: This expression should have type 'unit', but has type 'bool'. Use 'ignore' to discard the result of the expression, or 'let' to bind the result to a name.
+
+/workspace/mochi/tests/rosetta/transpiler/FS/bitmap-ppm-conversion-through-a-pipe.fs(143,17): warning FS0020: This expression should have type 'unit', but has type 'bool'. Use 'ignore' to discard the result of the expression, or 'let' to bind the result to a name.
+
+/workspace/mochi/tests/rosetta/transpiler/FS/bitmap-ppm-conversion-through-a-pipe.fs(147,17): warning FS0020: This expression should have type 'unit', but has type 'bool'. Use 'ignore' to discard the result of the expression, or 'let' to bind the result to a name.
+
+/workspace/mochi/tests/rosetta/transpiler/FS/bitmap-ppm-conversion-through-a-pipe.fs(154,17): warning FS0020: This expression should have type 'unit', but has type 'bool'. Use 'ignore' to discard the result of the expression, or 'let' to bind the result to a name.
+
+/workspace/mochi/tests/rosetta/transpiler/FS/bitmap-ppm-conversion-through-a-pipe.fs(158,17): warning FS0020: This expression should have type 'unit', but has type 'bool'. Use 'ignore' to discard the result of the expression, or 'let' to bind the result to a name.

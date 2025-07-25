@@ -1,0 +1,11 @@
+compile: exit status 1
+F# Compiler for F# 4.0 (Open Source Edition)
+Freely distributed under the Apache 2.0 Open Source License
+
+/workspace/mochi/tests/rosetta/transpiler/FS/bitmap-read-a-ppm-file.fs(3,1): warning FS0221: The declarations in this file will be placed in an implicit module 'Bitmap-read-a-ppm-file' based on the file name 'bitmap-read-a-ppm-file.fs'. However this is not a valid F# identifier, so the contents will not be accessible from other files. Consider renaming the file or adding a 'module' or 'namespace' declaration at the top of the file.
+
+/workspace/mochi/tests/rosetta/transpiler/FS/bitmap-read-a-ppm-file.fs(74,30): error FS0039: The value or constructor 'substr' is not defined
+
+/workspace/mochi/tests/rosetta/transpiler/FS/bitmap-read-a-ppm-file.fs(95,30): error FS0039: The value or constructor 'substr' is not defined
+
+/workspace/mochi/tests/rosetta/transpiler/FS/bitmap-read-a-ppm-file.fs(141,67): error FS0039: The value or constructor 'substr' is not defined

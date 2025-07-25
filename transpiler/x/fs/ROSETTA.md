@@ -2,7 +2,7 @@
 
 This file is auto-generated from rosetta tests.
 
-## Rosetta Golden Test Checklist (82/284)
+## Rosetta Golden Test Checklist (125/284)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | 100-doors-2 | ✓ | 151µs | 41.3 KB |
@@ -90,71 +90,71 @@ This file is auto-generated from rosetta tests.
 | 83 | atomic-updates | ✓ | 315µs | 48.7 KB |
 | 84 | attractive-numbers | ✓ | 341µs | 52.6 KB |
 | 85 | average-loop-length | ✓ | 3.122ms | 44.0 KB |
-| 86 | averages-arithmetic-mean |   |  |  |
-| 87 | averages-mean-time-of-day |   |  |  |
-| 88 | averages-median-1 |   |  |  |
-| 89 | averages-median-2 |   |  |  |
-| 90 | averages-median-3 |   |  |  |
-| 91 | averages-mode |   |  |  |
-| 92 | averages-pythagorean-means |   |  |  |
-| 93 | averages-root-mean-square |   |  |  |
-| 94 | averages-simple-moving-average |   |  |  |
+| 86 | averages-arithmetic-mean | ✓ | 338µs | 54.5 KB |
+| 87 | averages-mean-time-of-day | ✓ | 487µs | 61.8 KB |
+| 88 | averages-median-1 | ✓ | 231µs | 42.6 KB |
+| 89 | averages-median-2 | ✓ | 227µs | 42.6 KB |
+| 90 | averages-median-3 | ✓ | 236µs | 42.6 KB |
+| 91 | averages-mode | ✓ | 304µs | 53.6 KB |
+| 92 | averages-pythagorean-means | ✓ | 227µs | 42.5 KB |
+| 93 | averages-root-mean-square | ✓ | 254µs | 42.5 KB |
+| 94 | averages-simple-moving-average | ✓ | 241µs | 42.9 KB |
 | 95 | avl-tree |   |  |  |
 | 96 | b-zier-curves-intersections |   |  |  |
-| 97 | babbage-problem |   |  |  |
+| 97 | babbage-problem | ✓ | 207µs | 41.5 KB |
 | 98 | babylonian-spiral |   |  |  |
 | 99 | balanced-brackets |   |  |  |
-| 100 | balanced-ternary |   |  |  |
-| 101 | barnsley-fern |   |  |  |
+| 100 | balanced-ternary | ✓ | 367µs | 53.7 KB |
+| 101 | barnsley-fern | ✓ | 415µs | 104.1 KB |
 | 102 | base64-decode-data |   |  |  |
 | 103 | bell-numbers |   |  |  |
-| 104 | benfords-law |   |  |  |
+| 104 | benfords-law | ✓ | 309µs | 51.0 KB |
 | 105 | bernoulli-numbers |   |  |  |
 | 106 | best-shuffle |   |  |  |
-| 107 | bifid-cipher |   |  |  |
-| 108 | bin-given-limits |   |  |  |
-| 109 | binary-digits |   |  |  |
-| 110 | binary-search |   |  |  |
-| 111 | binary-strings |   |  |  |
-| 112 | bioinformatics-base-count |   |  |  |
+| 107 | bifid-cipher | ✓ | 362µs | 64.3 KB |
+| 108 | bin-given-limits | ✓ | 225µs | 41.8 KB |
+| 109 | binary-digits | ✓ | 541µs | 61.8 KB |
+| 110 | binary-search | ✓ | 209µs | 41.5 KB |
+| 111 | binary-strings | ✓ | 660µs | 62.5 KB |
+| 112 | bioinformatics-base-count | ✓ | 210µs | 42.9 KB |
 | 113 | bioinformatics-global-alignment |   |  |  |
 | 114 | bioinformatics-sequence-mutation |   |  |  |
 | 115 | biorhythms |   |  |  |
 | 116 | bitcoin-address-validation |   |  |  |
 | 117 | bitmap-b-zier-curves-cubic |   |  |  |
 | 118 | bitmap-b-zier-curves-quadratic |   |  |  |
-| 119 | bitmap-bresenhams-line-algorithm |   |  |  |
-| 120 | bitmap-flood-fill |   |  |  |
-| 121 | bitmap-histogram |   |  |  |
-| 122 | bitmap-midpoint-circle-algorithm |   |  |  |
+| 119 | bitmap-bresenhams-line-algorithm | ✓ |  |  |
+| 120 | bitmap-flood-fill | ✓ |  |  |
+| 121 | bitmap-histogram | ✓ |  |  |
+| 122 | bitmap-midpoint-circle-algorithm | ✓ |  |  |
 | 123 | bitmap-ppm-conversion-through-a-pipe |   |  |  |
 | 124 | bitmap-read-a-ppm-file |   |  |  |
 | 125 | bitmap-read-an-image-through-a-pipe |   |  |  |
-| 126 | bitmap-write-a-ppm-file |   |  |  |
+| 126 | bitmap-write-a-ppm-file | ✓ |  |  |
 | 127 | bitmap |   |  |  |
-| 128 | bitwise-io-1 |   |  |  |
+| 128 | bitwise-io-1 | ✓ |  |  |
 | 129 | bitwise-io-2 |   |  |  |
 | 130 | bitwise-operations |   |  |  |
-| 131 | blum-integer |   |  |  |
+| 131 | blum-integer | ✓ |  |  |
 | 132 | boolean-values |   |  |  |
-| 133 | box-the-compass |   |  |  |
-| 134 | boyer-moore-string-search |   |  |  |
-| 135 | brazilian-numbers |   |  |  |
-| 136 | break-oo-privacy |   |  |  |
+| 133 | box-the-compass | ✓ |  |  |
+| 134 | boyer-moore-string-search | ✓ |  |  |
+| 135 | brazilian-numbers | ✓ |  |  |
+| 136 | break-oo-privacy | ✓ |  |  |
 | 137 | brilliant-numbers |   |  |  |
-| 138 | brownian-tree |   |  |  |
-| 139 | bulls-and-cows-player |   |  |  |
-| 140 | bulls-and-cows |   |  |  |
-| 141 | burrows-wheeler-transform |   |  |  |
-| 142 | caesar-cipher-1 |   |  |  |
-| 143 | caesar-cipher-2 |   |  |  |
-| 144 | calculating-the-value-of-e |   |  |  |
-| 145 | calendar---for-real-programmers-1 |   |  |  |
-| 146 | calendar---for-real-programmers-2 |   |  |  |
-| 147 | calendar |   |  |  |
-| 148 | calkin-wilf-sequence |   |  |  |
-| 149 | call-a-foreign-language-function |   |  |  |
-| 150 | call-a-function-1 |   |  |  |
+| 138 | brownian-tree | ✓ |  |  |
+| 139 | bulls-and-cows-player | ✓ |  |  |
+| 140 | bulls-and-cows | ✓ |  |  |
+| 141 | burrows-wheeler-transform | ✓ |  |  |
+| 142 | caesar-cipher-1 | ✓ |  |  |
+| 143 | caesar-cipher-2 | ✓ |  |  |
+| 144 | calculating-the-value-of-e | ✓ |  |  |
+| 145 | calendar---for-real-programmers-1 | ✓ |  |  |
+| 146 | calendar---for-real-programmers-2 | ✓ |  |  |
+| 147 | calendar | ✓ |  |  |
+| 148 | calkin-wilf-sequence | ✓ |  |  |
+| 149 | call-a-foreign-language-function | ✓ |  |  |
+| 150 | call-a-function-1 | ✓ |  |  |
 | 151 | call-a-function-10 |   |  |  |
 | 152 | call-a-function-11 |   |  |  |
 | 153 | call-a-function-12 |   |  |  |
@@ -290,4 +290,4 @@ This file is auto-generated from rosetta tests.
 | 283 | define-a-primitive-data-type |   |  |  |
 | 284 | md5 |   |  |  |
 
-Last updated: 2025-07-25 17:34 +0000
+Last updated: 2025-07-26 04:38 +0700

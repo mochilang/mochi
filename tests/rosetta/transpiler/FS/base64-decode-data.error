@@ -1,0 +1,10 @@
+run: exit status 1
+Original : Rosetta Code Base64 decode data task
+
+Unhandled Exception:
+System.InvalidCastException: Specified cast is not valid.
+  at Base64-decode-data.base64Encode (System.String text) [0x0015e] in <6883fd8f829e08c5a74503838ffd8368>:0 
+  at <StartupCode$base64-decode-data>.$Base64-decode-data.main@ () [0x00061] in <6883fd8f829e08c5a74503838ffd8368>:0 
+[ERROR] FATAL UNHANDLED EXCEPTION: System.InvalidCastException: Specified cast is not valid.
+  at Base64-decode-data.base64Encode (System.String text) [0x0015e] in <6883fd8f829e08c5a74503838ffd8368>:0 
+  at <StartupCode$base64-decode-data>.$Base64-decode-data.main@ () [0x00061] in <6883fd8f829e08c5a74503838ffd8368>:0 
