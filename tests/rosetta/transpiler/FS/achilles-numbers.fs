@@ -1,4 +1,4 @@
-// Generated 2025-07-24 20:52 +0700
+// Generated 2025-07-25 13:04 +0700
 
 exception Break
 exception Continue
@@ -43,7 +43,7 @@ and totient (n: int) =
         | Return -> __ret
 let mutable pps: Map<int, bool> = Map.ofList []
 let rec getPerfectPowers (maxExp: int) =
-    let mutable __ret : obj = Unchecked.defaultof<obj>
+    let mutable __ret : unit = Unchecked.defaultof<unit>
     let mutable maxExp = maxExp
     try
         let upper = pow10 maxExp
@@ -107,11 +107,11 @@ and sortInts (xs: int array) =
     try
         let mutable res: int array = [||]
         let mutable tmp = xs
-        while (Seq.length tmp) > 0 do
+        while (Array.length tmp) > 0 do
             let mutable min = tmp.[0]
             let mutable idx: int = 0
             let mutable i: int = 1
-            while i < (Seq.length tmp) do
+            while i < (Array.length tmp) do
                 if (tmp.[i]) < min then
                     min <- tmp.[i]
                     idx <- i
@@ -119,7 +119,7 @@ and sortInts (xs: int array) =
             res <- Array.append res [|min|]
             let mutable out: int array = [||]
             let mutable j: int = 0
-            while j < (Seq.length tmp) do
+            while j < (Array.length tmp) do
                 if j <> idx then
                     out <- Array.append out [|tmp.[j]|]
                 j <- j + 1
@@ -143,7 +143,7 @@ and pad (n: int) (width: int) =
     with
         | Return -> __ret
 and main () =
-    let mutable __ret : obj = Unchecked.defaultof<obj>
+    let mutable __ret : unit = Unchecked.defaultof<unit>
     try
         let maxDigits: int = 15
         getPerfectPowers 5
@@ -189,7 +189,7 @@ and main () =
         let counts: int array = [|1; 12; 47; 192; 664; 2242; 7395; 24008; 77330; 247449; 788855; 2508051; 7960336; 25235383|]
         let mutable d: int = 2
         while d <= maxDigits do
-            let c = counts.[d - 2]
+            let c: int = counts.[d - 2]
             printfn "%s" (((pad d 2) + " digits: ") + (string c))
             d <- d + 1
         __ret

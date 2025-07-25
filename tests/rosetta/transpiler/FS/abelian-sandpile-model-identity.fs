@@ -1,4 +1,4 @@
-// Generated 2025-07-24 20:52 +0700
+// Generated 2025-07-25 13:04 +0700
 
 exception Return
 
@@ -17,7 +17,7 @@ and plus (a: int array) (b: int array) =
     try
         let mutable res: int array = [||]
         let mutable i: int = 0
-        while i < (Seq.length a) do
+        while i < (Array.length a) do
             res <- Array.append res [|(a.[i]) + (b.[i])|]
             i <- i + 1
         __ret <- res
@@ -44,7 +44,7 @@ and topple (p: int array) =
     try
         let neighbors = neighborsList()
         let mutable i: int = 0
-        while i < (Seq.length p) do
+        while i < (Array.length p) do
             if (p.[i]) > 3 then
                 p.[i] <- (p.[i]) - 4
                 let nbs = neighbors.[i]

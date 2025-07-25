@@ -1,9 +1,9 @@
-// Generated 2025-07-24 20:52 +0700
+// Generated 2025-07-25 13:04 +0700
 
 exception Return
 
 let rec accumulator (sum: obj) =
-    let mutable __ret : obj = Unchecked.defaultof<obj>
+    let mutable __ret : obj -> unit = Unchecked.defaultof<obj -> unit>
     let mutable sum = sum
     try
         let mutable store: obj array = [|sum|]
@@ -23,7 +23,7 @@ let rec accumulator (sum: obj) =
     with
         | Return -> __ret
 and main () =
-    let mutable __ret : obj = Unchecked.defaultof<obj>
+    let mutable __ret : unit = Unchecked.defaultof<unit>
     try
         let x = accumulator 1
         x 5

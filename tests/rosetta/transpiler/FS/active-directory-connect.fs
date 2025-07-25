@@ -1,4 +1,4 @@
-// Generated 2025-07-24 20:52 +0700
+// Generated 2025-07-25 13:04 +0700
 
 exception Return
 
@@ -23,7 +23,7 @@ let rec connect (client: LDAPClient) =
     with
         | Return -> __ret
 and main () =
-    let mutable __ret : obj = Unchecked.defaultof<obj>
+    let mutable __ret : unit = Unchecked.defaultof<unit>
     try
         let client: LDAPClient = { Base = "dc=example,dc=com"; Host = "ldap.example.com"; Port = 389; UseSSL = false; BindDN = "uid=readonlyuser,ou=People,dc=example,dc=com"; BindPassword = "readonlypassword"; UserFilter = "(uid=%s)"; GroupFilter = "(memberUid=%s)"; Attributes = [|"givenName"; "sn"; "mail"; "uid"|] }
         if connect client then

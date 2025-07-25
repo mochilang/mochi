@@ -1,4 +1,4 @@
-// Generated 2025-07-24 20:52 +0700
+// Generated 2025-07-25 13:04 +0700
 
 exception Return
 
@@ -19,7 +19,7 @@ let rec ackermann (m: int) (n: int) =
     with
         | Return -> __ret
 and main () =
-    let mutable __ret : obj = Unchecked.defaultof<obj>
+    let mutable __ret : unit = Unchecked.defaultof<unit>
     try
         printfn "%s" ("A(0, 0) = " + (string (ackermann 0 0)))
         printfn "%s" ("A(1, 2) = " + (string (ackermann 1 2)))

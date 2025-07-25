@@ -1,4 +1,4 @@
-// Generated 2025-07-24 20:52 +0700
+// Generated 2025-07-25 13:04 +0700
 
 exception Break
 exception Continue
@@ -46,7 +46,7 @@ and sumStr (xs: int array) =
     try
         let mutable s: string = ""
         let mutable i: int = 0
-        while i < (Seq.length xs) do
+        while i < (Array.length xs) do
             s <- (s + (string (xs.[i]))) + " + "
             i <- i + 1
         __ret <- s.Substring(0, ((String.length s) - 3) - 0)
@@ -112,7 +112,7 @@ and abundantOdd (searchFrom: int) (countFrom: int) (countTo: int) (printOne: boo
     with
         | Return -> __ret
 and main () =
-    let mutable __ret : obj = Unchecked.defaultof<obj>
+    let mutable __ret : unit = Unchecked.defaultof<unit>
     try
         let max: int = 25
         printfn "%s" (("The first " + (string max)) + " abundant odd numbers are:")

@@ -11,10 +11,9 @@ Freely distributed under the Apache 2.0 Open Source License
 but here has type
     obj    
 
-/workspace/mochi/tests/rosetta/transpiler/FS/accumulator-factory.fs(29,9): error FS0003: This value is not a function and cannot be applied
+/workspace/mochi/tests/rosetta/transpiler/FS/accumulator-factory.fs(30,9): warning FS0193: This expression is a function value, i.e. is missing arguments. Its type is 'a -> unit.
 
-/workspace/mochi/tests/rosetta/transpiler/FS/accumulator-factory.fs(30,9): warning FS0020: This expression should have type 'unit', but has type 'obj'. Use 'ignore' to discard the result of the expression, or 'let' to bind the result to a name.
-
-/workspace/mochi/tests/rosetta/transpiler/FS/accumulator-factory.fs(31,31): error FS0003: This value is not a function and cannot be applied
-
-/workspace/mochi/tests/rosetta/transpiler/FS/accumulator-factory.fs(35,1): warning FS0020: This expression should have type 'unit', but has type 'obj'. Use 'ignore' to discard the result of the expression, or 'let' to bind the result to a name.
+/workspace/mochi/tests/rosetta/transpiler/FS/accumulator-factory.fs(31,33): error FS0001: This expression was expected to have type
+    int    
+but here has type
+    float    

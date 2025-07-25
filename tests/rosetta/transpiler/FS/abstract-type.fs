@@ -1,4 +1,4 @@
-// Generated 2025-07-24 20:52 +0700
+// Generated 2025-07-25 13:04 +0700
 
 exception Return
 
@@ -39,7 +39,7 @@ and beastCry (b: Beast) =
     with
         | Return -> __ret
 and bprint (b: Beast) =
-    let mutable __ret : obj = Unchecked.defaultof<obj>
+    let mutable __ret : unit = Unchecked.defaultof<unit>
     let mutable b = b
     try
         printfn "%s" ((((((beastName b) + ", who's a ") + (beastKind b)) + ", cries: \"") + (beastCry b)) + "\".")
@@ -47,7 +47,7 @@ and bprint (b: Beast) =
     with
         | Return -> __ret
 and main () =
-    let mutable __ret : obj = Unchecked.defaultof<obj>
+    let mutable __ret : unit = Unchecked.defaultof<unit>
     try
         let d: Beast = Dog("labrador", "Max")
         let c: Beast = Cat("siamese", "Sammy")
