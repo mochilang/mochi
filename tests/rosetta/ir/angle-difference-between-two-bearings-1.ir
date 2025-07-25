@@ -1,0 +1,56 @@
+func main (regs=17)
+  // var testCases = [
+  Const        r1, [[20.0, 45.0], [-45.0, 45.0], [-85.0, 90.0], [-95.0, 90.0], [-45.0, 125.0], [-45.0, 145.0], [29.4803, -88.6381], [-78.3251, -159.036]]
+  Move         r0, r1
+  SetGlobal    0,0,0,0
+  // for tc in testCases {
+  IterPrep     r2, r0
+  Len          r3, r2
+  Const        r4, 0
+L1:
+  LessInt      r5, r4, r3
+  JumpIfFalse  r5, L0
+  Index        r6, r2, r4
+  Move         r7, r6
+  // print(angleDiff(tc[0], tc[1]))
+  Const        r10, 0
+  Index        r11, r7, r10
+  Move         r8, r11
+  Const        r12, 1
+  Index        r13, r7, r12
+  Move         r9, r13
+  Call2        r14, angleDiff, r8, r9
+  Print        r14
+  // for tc in testCases {
+  Const        r15, 1
+  AddInt       r16, r4, r15
+  Move         r4, r16
+  Jump         L1
+L0:
+  Return       r0
+
+  // fun angleDiff(b1: float, b2: float): float {
+func angleDiff (regs=13)
+  // let d = b2 - b1
+  Sub          r3, r2, r1
+  Move         r4, r3
+  // if d < 0 - 180.0 { return d + 360.0 }
+  Const        r5, 0
+  Const        r6, 180.0
+  SubFloat     r7, r5, r6
+  LessFloat    r8, r4, r7
+  JumpIfFalse  r8, L0
+  Const        r9, 360.0
+  AddFloat     r10, r4, r9
+  Return       r10
+L0:
+  // if d > 180.0 { return d - 360.0 }
+  Const        r6, 180.0
+  LessFloat    r11, r6, r4
+  JumpIfFalse  r11, L1
+  Const        r9, 360.0
+  SubFloat     r12, r4, r9
+  Return       r12
+L1:
+  // return d
+  Return       r4
