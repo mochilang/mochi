@@ -1,21 +1,22 @@
 exit status 70
 ERROR in "string-concatenate": invalid type, expected String: #\L
-  called from <anonymous> on line 314 of file /workspace/mochi/tests/rosetta/transpiler/scheme/adfgvx-cipher.scm
-  called from loop16 on line 280 of file /usr/share/chibi/init-7.scm
+  called from <anonymous> on line 321 of file /workspace/mochi/tests/rosetta/transpiler/scheme/adfgvx-cipher.scm
+  called from loop16 on line 308 of file /workspace/mochi/tests/rosetta/transpiler/scheme/adfgvx-cipher.scm
   called from call-with-current-continuation on line 848 of file /usr/share/chibi/init-7.scm
-  called from <anonymous> on line 298 of file /workspace/mochi/tests/rosetta/transpiler/scheme/adfgvx-cipher.scm
+  called from <anonymous> on line 305 of file /workspace/mochi/tests/rosetta/transpiler/scheme/adfgvx-cipher.scm
   called from call-with-current-continuation on line 848 of file /usr/share/chibi/init-7.scm
   called from <anonymous> on line 280 of file /usr/share/chibi/init-7.scm
   called from call-with-current-continuation on line 848 of file /usr/share/chibi/init-7.scm
+  called from <anonymous> on line 1650 of file /workspace/mochi/tests/rosetta/transpiler/scheme/adfgvx-cipher.scm
   called from <anonymous> on line 1292 of file /usr/share/chibi/init-7.scm
   called from <anonymous> on line 821 of file /usr/share/chibi/init-7.scm
 6 x 6 Polybius square:
 
   | A D F G V X
 ---------------
-A | M N J F 6 B 
-D | O 5 L X G W 
-F | 7 E 1 R 8 H 
-G | V Q I D P U 
-V | 2 Z K 9 0 Y 
-X | S 4 C 3 T A 
+A | T F X Q 9 V 
+D | 0 Y P J 4 3 
+F | O D 8 1 G R 
+G | A 6 B N C I 
+V | H Z E 7 K U 
+X | W M 2 S 5 L 

@@ -6,3 +6,8 @@ Additive primes less than 500:
 353  359  373  379  397  401  409  421  443  449
 461  463  467  487
 54 additive primes found.
+{
+  "duration_us": 571223,
+  "memory_bytes": 13295616,
+  "name": "main"
+}

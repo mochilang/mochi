@@ -1,0 +1,7 @@
+WARNING: out of order define: (define i2 1)
+2.3894579347670604e-08
+{
+  "duration_us": 571223,
+  "memory_bytes": 13213696,
+  "name": "main"
+}

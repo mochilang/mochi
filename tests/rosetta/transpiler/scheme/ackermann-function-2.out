@@ -6,3 +6,8 @@ A(2, 4)
  = 11
 A(3, 4)
  = 125
+{
+  "duration_us": 571223,
+  "memory_bytes": 13164544,
+  "name": "main"
+}

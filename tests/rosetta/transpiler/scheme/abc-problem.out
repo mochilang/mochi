@@ -5,3 +5,8 @@ TREAT 1
 COMMON 0
 SQUAD 1
 CONFUSE 1
+{
+  "duration_us": 571223,
+  "memory_bytes": 13889536,
+  "name": "main"
+}
