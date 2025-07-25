@@ -42,13 +42,13 @@ func compileAndRunSwiftSrc(t *testing.T, swiftExe string, code []byte, in []byte
 		return out, err
 	}
 	cmd := exec.Command(exe)
-    env := os.Environ()
-    if bench {
-            env = append(env, "MOCHI_BENCHMARK=1")
-    } else {
-            env = append(env, "MOCHI_NOW_SEED=1")
-    }
-    cmd.Env = env
+	env := os.Environ()
+	if bench {
+		env = append(env, "MOCHI_BENCHMARK=1", "MOCHI_NOW_SEED=1")
+	} else {
+		env = append(env, "MOCHI_NOW_SEED=1")
+	}
+	cmd.Env = env
 	if len(in) > 0 {
 		cmd.Stdin = bytes.NewReader(in)
 	}

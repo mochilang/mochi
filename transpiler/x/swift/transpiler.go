@@ -1396,6 +1396,9 @@ func (p *Program) Emit() []byte {
 		buf.WriteString("        _nowSeed = (_nowSeed * 1664525 + 1013904223) % 2147483647\n")
 		buf.WriteString("        return _nowSeed\n")
 		buf.WriteString("    }\n")
+		buf.WriteString("    if ProcessInfo.processInfo.environment[\"MOCHI_BENCHMARK\"] != nil {\n")
+		buf.WriteString("        return Int(DispatchTime.now().uptimeNanoseconds)\n")
+		buf.WriteString("    }\n")
 		buf.WriteString("    return Int(Date().timeIntervalSince1970 * 1_000_000_000)\n")
 		buf.WriteString("}\n")
 	}

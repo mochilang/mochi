@@ -1,5 +1,5 @@
-## Progress (2025-07-25 10:40 +0700)
-- swift: benchmark output for first rosetta
+## Progress (2025-07-25 11:04 +0700)
+- swift transpiler: support env for closures
 - Generated golden tests for 102/104 programs
 - Updated README checklist and output artifacts
 
