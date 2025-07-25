@@ -74,6 +74,8 @@ var (
 	currentProg       *Program
 	inputLines        []string
 	inputIndex        int
+	seededNow         bool
+	nowSeed           int64
 	loopLimit         = 1000000
 	loopCount         int
 )
@@ -355,6 +357,14 @@ func escape(s string) string { return strings.ReplaceAll(s, "'", "''") }
 func incLoop() bool {
 	loopCount++
 	return loopCount > loopLimit
+}
+
+func pseudoNow() int {
+	if seededNow {
+		nowSeed = (nowSeed*1664525 + 1013904223) % 2147483647
+		return int(nowSeed)
+	}
+	return int(time.Now().UnixNano())
 }
 
 func zeroValue(t *parser.TypeRef) value {
@@ -1470,7 +1480,7 @@ func evalPrimary(p *parser.Primary, vars map[string]value) (value, error) {
 			if len(p.Call.Args) != 0 {
 				return value{}, fmt.Errorf("bad args")
 			}
-			return value{kind: valInt, i: int(time.Now().UnixNano())}, nil
+			return value{kind: valInt, i: pseudoNow()}, nil
 		case "input":
 			if len(p.Call.Args) != 0 {
 				return value{}, fmt.Errorf("bad args")
@@ -1930,6 +1940,28 @@ func evalFunction(fn *parser.FunStmt, args []value, captured map[string]value) (
 					return err
 				}
 			}
+		case st.Bench != nil:
+			oldSeeded := seededNow
+			oldSeed := nowSeed
+			seededNow = true
+			nowSeed = 1
+			start := pseudoNow()
+			for _, b := range st.Bench.Body {
+				if err := process(b); err != nil {
+					return err
+				}
+			}
+			end := pseudoNow()
+			seededNow = oldSeeded
+			nowSeed = oldSeed
+			duration := (end - start) / 1000
+			result := value{kind: valMap, kv: map[string]value{
+				"name":         {kind: valString, s: strings.Trim(st.Bench.Name, "\"")},
+				"duration_us":  {kind: valInt, i: duration},
+				"memory_bytes": {kind: valInt, i: 0},
+			}}
+			emitJSON(result)
+			return nil
 		case st.Expect != nil:
 			v, err := evalExpr(st.Expect.Value, vars)
 			if err != nil {
@@ -2767,6 +2799,30 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 			return nil
 		case st.Test != nil:
 			// tests are ignored when transpiling
+			return nil
+		case st.Bench != nil:
+			oldSeeded := seededNow
+			oldSeed := nowSeed
+			seededNow = true
+			nowSeed = 1
+			start := pseudoNow()
+			for _, b := range st.Bench.Body {
+				if err := processStmt(b); err != nil {
+					seededNow = oldSeeded
+					nowSeed = oldSeed
+					return err
+				}
+			}
+			end := pseudoNow()
+			seededNow = oldSeeded
+			nowSeed = oldSeed
+			duration := (end - start) / 1000
+			result := value{kind: valMap, kv: map[string]value{
+				"name":         {kind: valString, s: strings.Trim(st.Bench.Name, "\"")},
+				"duration_us":  {kind: valInt, i: duration},
+				"memory_bytes": {kind: valInt, i: 0},
+			}}
+			emitJSON(result)
 			return nil
 		case st.Expect != nil:
 			// expects are ignored when transpiling
