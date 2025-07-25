@@ -448,7 +448,7 @@ type FunLit struct {
 }
 
 func (f *FunLit) emit(w io.Writer) {
-	io.WriteString(w, "|")
+	io.WriteString(w, "move |")
 	for i, p := range f.Params {
 		if i > 0 {
 			io.WriteString(w, ", ")
@@ -1171,7 +1171,7 @@ func (b *BinaryExpr) emit(w io.Writer) {
 	if b.Op == "+" {
 		lt := inferType(b.Left)
 		rt := inferType(b.Right)
-		if lt == "String" || rt == "String" {
+		if lt == "String" || rt == "String" || isStringExpr(b.Left) || isStringExpr(b.Right) {
 			io.WriteString(w, "format!(\"{}{}\", ")
 			b.Left.emit(w)
 			io.WriteString(w, ", ")
@@ -1877,7 +1877,7 @@ func compileStmt(stmt *parser.Statement) (Stmt, error) {
 				typ = ""
 			}
 		}
-		if typ == "fn" {
+		if typ == "fn" || strings.HasPrefix(typ, "impl Fn(") {
 			typ = ""
 		}
 		if q, ok := e.(*QueryExpr); ok && typ == "" {
@@ -1997,7 +1997,7 @@ func compileStmt(stmt *parser.Statement) (Stmt, error) {
 				typ = ""
 			}
 		}
-		if typ == "fn" {
+		if typ == "fn" || strings.HasPrefix(typ, "impl Fn(") {
 			typ = ""
 		}
 		if q, ok := e.(*QueryExpr); ok && typ == "" {
@@ -2235,7 +2235,9 @@ func compileForStmt(n *parser.ForStmt) (Stmt, error) {
 	byRef := false
 	if t := inferType(iter); strings.HasPrefix(t, "Vec<") {
 		elem := strings.TrimSuffix(strings.TrimPrefix(t, "Vec<"), ">")
-		if elem == "String" || strings.HasPrefix(elem, "Vec<") || strings.HasPrefix(elem, "HashMap<") {
+		if elem == "String" {
+			byRef = false
+		} else if strings.HasPrefix(elem, "Vec<") || strings.HasPrefix(elem, "HashMap<") {
 			byRef = true
 		} else if _, ok := structTypes[elem]; ok {
 			byRef = true
@@ -2266,8 +2268,12 @@ func compileForStmt(n *parser.ForStmt) (Stmt, error) {
 		t := inferType(iter)
 		if strings.HasPrefix(t, "Vec<") {
 			typ := strings.TrimSuffix(strings.TrimPrefix(t, "Vec<"), ">")
-			if byRef && typ == "String" {
-				varTypes[n.Name] = "&String"
+			if typ == "String" {
+				varTypes[n.Name] = "String"
+				stringVars[n.Name] = true
+				byRef = false
+			} else if byRef {
+				varTypes[n.Name] = "&" + typ
 			} else {
 				varTypes[n.Name] = typ
 			}
@@ -2974,6 +2980,15 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 				}
 			}
 		}
+		if _, ok := funParamTypes[name]; !ok {
+			for i, a := range args {
+				if nr, ok := a.(*NameRef); ok {
+					if varTypes[nr.Name] == "&String" {
+						args[i] = &MethodCallExpr{Receiver: &UnaryExpr{Op: "*", Expr: a}, Name: "clone"}
+					}
+				}
+			}
+		}
 		if cnt, ok := funParams[name]; ok && len(args) < cnt {
 			missing := cnt - len(args)
 			params := make([]Param, missing)
@@ -3001,6 +3016,13 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 				ex = &IntCastExpr{Expr: ex}
 			}
 			elems[i] = ex
+		}
+		if len(elems) > 0 && inferType(elems[0]) == "String" {
+			for i, el := range elems {
+				if _, ok := el.(*StringLit); ok {
+					elems[i] = &StringCastExpr{Expr: el}
+				}
+			}
 		}
 		return &ListLit{Elems: elems}, nil
 	case p.Map != nil:
@@ -3674,11 +3696,11 @@ func inferType(e Expr) string {
 		if ex.Type != "" {
 			return ex.Type
 		}
-		if t, ok := varTypes[ex.Name]; ok && t != "" {
-			return t
-		}
 		if stringVars[ex.Name] {
 			return "String"
+		}
+		if t, ok := varTypes[ex.Name]; ok && t != "" {
+			return t
 		}
 		if mapVars[ex.Name] {
 			return "HashMap<String, i64>"
@@ -3775,6 +3797,24 @@ func containsFloat(e Expr) bool {
 		return containsFloat(ex.Left) || containsFloat(ex.Right)
 	case *UnaryExpr:
 		return containsFloat(ex.Expr)
+	}
+	return false
+}
+
+func isStringExpr(e Expr) bool {
+	if inferType(e) == "String" {
+		return true
+	}
+	if m, ok := e.(*MethodCallExpr); ok && m.Name == "to_string" {
+		return true
+	}
+	if _, ok := e.(*StrExpr); ok {
+		return true
+	}
+	if b, ok := e.(*BinaryExpr); ok && b.Op == "+" {
+		if inferType(b.Left) == "String" || inferType(b.Right) == "String" || isStringExpr(b.Left) || isStringExpr(b.Right) {
+			return true
+		}
 	}
 	return false
 }
