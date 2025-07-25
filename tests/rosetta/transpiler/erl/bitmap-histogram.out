@@ -1,0 +1,18 @@
+/workspace/mochi/tests/rosetta/transpiler/erl/bitmap-histogram.erl:61:2: Warning: variable 'Bins_3' exported from 'case' (line 45, column 9)
+%   61| {Bins_3, G, H_2, I_2} = Fun(Bins_3, G, H, I),
+%     |  ^
+
+/workspace/mochi/tests/rosetta/transpiler/erl/bitmap-histogram.erl:85:2: Warning: variable 'Bins_3' exported from 'case' (line 45, column 9)
+%   85| {Bins_3, G, H_3, I_2, Y_2} = Fun_3(Bins_3, G, H_2, I_2, Y),
+%     |  ^
+
+Histogram: [3,0,6]
+Threshold: 21845
+000
+111
+111
+{
+  "duration_us": 19147,
+  "memory_bytes": 2136776,
+  "name": "main"
+}

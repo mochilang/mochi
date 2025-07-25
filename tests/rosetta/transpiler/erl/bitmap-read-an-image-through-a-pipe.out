@@ -1,0 +1,10 @@
+/workspace/mochi/tests/rosetta/transpiler/erl/bitmap-read-an-image-through-a-pipe.erl:51:20: Warning: variable 'Neg_3' exported from 'case' (line 32, column 9)
+%   51| {Digits, I_4, N_2, Neg_3, Str} = Fun(Digits, I_3, N, Neg_3, Str),
+%     |                    ^
+
+width=2 height=2
+{
+  "duration_us": 16655,
+  "memory_bytes": 336120,
+  "name": "main"
+}

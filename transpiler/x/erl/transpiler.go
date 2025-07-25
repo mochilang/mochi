@@ -94,12 +94,33 @@ mochi_sha256(Bs) ->
     binary_to_list(crypto:hash(sha256, Bin)).
 `
 
+const helperIndexOf = `
+mochi_index_of(S, Ch) when is_list(S) ->
+    Char = case Ch of
+        [C|_] -> C;
+        C when is_integer(C) -> C;
+        _ -> $\0
+    end,
+    case string:chr(S, Char) of
+        0 -> -1;
+        N -> N - 1
+    end;
+mochi_index_of(_, _) -> -1.
+`
+
+const helperParseIntStr = `
+mochi_parse_int_str(S) ->
+    try list_to_integer(S) catch _:_ -> 0 end.
+`
+
 var useNow bool
 var useLookupHost bool
 var useToInt bool
 var useMemberHelper bool
 var usePadStart bool
 var useSHA256 bool
+var useIndexOf bool
+var useParseIntStr bool
 var mutatedFuncs map[string]int
 var benchMain bool
 
@@ -123,6 +144,8 @@ type Program struct {
 	UseMemberHelper bool
 	UsePadStart     bool
 	UseSHA256       bool
+	UseIndexOf      bool
+	UseParseIntStr  bool
 }
 
 // context tracks variable aliases to emulate mutable variables.
@@ -663,6 +686,7 @@ type FuncDecl struct {
 
 // AnonFunc represents an anonymous function expression.
 type AnonFunc struct {
+	Name   string
 	Params []string
 	Body   []Stmt
 	Return Expr
@@ -969,7 +993,12 @@ func (fd *FuncDecl) emit(w io.Writer) {
 }
 
 func (af *AnonFunc) emit(w io.Writer) {
-	io.WriteString(w, "fun(")
+	io.WriteString(w, "fun")
+	if af.Name != "" {
+		io.WriteString(w, " ")
+		io.WriteString(w, af.Name)
+	}
+	io.WriteString(w, "(")
 	for i, p := range af.Params {
 		if i > 0 {
 			io.WriteString(w, ", ")
@@ -1939,7 +1968,10 @@ func (f *ForStmt) emit(w io.Writer) {
 	for containsName(f.Params, srcVar) {
 		srcVar = srcVar + "_"
 	}
-	restVar := srcVar + "_rest"
+	restVar := f.Var + "_rest"
+	for containsName(f.Params, restVar) {
+		restVar = restVar + "_"
+	}
 	io.WriteString(w, f.Fun)
 	io.WriteString(w, " = fun ")
 	io.WriteString(w, loopName)
@@ -2482,7 +2514,7 @@ func mapOp(op string) string {
 
 func builtinFunc(name string) bool {
 	switch name {
-	case "print", "append", "avg", "count", "len", "str", "sum", "min", "max", "values", "keys", "exists", "contains", "sha256", "json", "now", "input", "int", "abs", "upper", "lower":
+	case "print", "append", "avg", "count", "len", "str", "sum", "min", "max", "values", "keys", "exists", "contains", "sha256", "json", "now", "input", "int", "abs", "upper", "lower", "indexOf", "parseIntStr", "indexof", "parseintstr":
 		return true
 	default:
 		return false
@@ -2656,6 +2688,8 @@ func Transpile(prog *parser.Program, env *types.Env, bench bool) (*Program, erro
 	useMemberHelper = false
 	usePadStart = false
 	useSHA256 = false
+	useIndexOf = false
+	useParseIntStr = false
 	mutatedFuncs = map[string]int{
 		"topple":  0,
 		"fill":    0,
@@ -2690,6 +2724,8 @@ func Transpile(prog *parser.Program, env *types.Env, bench bool) (*Program, erro
 	p.UseMemberHelper = useMemberHelper
 	p.UsePadStart = usePadStart
 	p.UseSHA256 = useSHA256
+	p.UseIndexOf = useIndexOf
+	p.UseParseIntStr = useParseIntStr
 	return p, nil
 }
 
@@ -3512,7 +3548,7 @@ func convertFunStmtAsExpr(fn *parser.FunStmt, env *types.Env, ctx *context) (Exp
 			return nil, err
 		}
 		ret = &IfExpr{Cond: cond, Then: thenExpr, Else: elseExpr}
-		return &AnonFunc{Params: params, Body: stmts, Return: ret}, nil
+		return &AnonFunc{Name: ctx.current(fn.Name), Params: params, Body: stmts, Return: ret}, nil
 	}
 	for i, st := range fn.Body {
 		if r := st.Return; r != nil && i == len(fn.Body)-1 {
@@ -3534,7 +3570,7 @@ func convertFunStmtAsExpr(fn *parser.FunStmt, env *types.Env, ctx *context) (Exp
 	if ret == nil {
 		ret = &AtomLit{Name: "nil"}
 	}
-	return &AnonFunc{Params: params, Body: stmts, Return: ret}, nil
+	return &AnonFunc{Name: ctx.current(fn.Name), Params: params, Body: stmts, Return: ret}, nil
 }
 
 func convertUpdateStmt(us *parser.UpdateStmt, env *types.Env, ctx *context) (*UpdateStmt, error) {
@@ -4055,7 +4091,7 @@ func convertPrimary(p *parser.Primary, env *types.Env, ctx *context) (Expr, erro
 			_ = ut // silence unused, for future use
 			return &MapLit{Items: items}, nil
 		}
-		if p.Call.Func == "substring" && len(p.Call.Args) == 3 {
+		if (p.Call.Func == "substring" || p.Call.Func == "substr") && len(p.Call.Args) == 3 {
 			strExpr, err := convertExpr(p.Call.Args[0], env, ctx)
 			if err != nil {
 				return nil, err
@@ -4078,16 +4114,21 @@ func convertPrimary(p *parser.Primary, env *types.Env, ctx *context) (Expr, erro
 			useToInt = true
 		}
 		name := p.Call.Func
+		var varCall bool
 		if !builtinFunc(name) {
 			if _, ok := ctx.alias[name]; ok {
 				name = ctx.current(name)
+				varCall = true
 			} else if _, err := env.GetVar(name); err == nil {
 				if _, ok := env.GetFunc(name); !ok {
 					name = ctx.current(name)
+					varCall = true
 				}
 			}
 		}
-		name = strings.ToLower(name)
+		if !varCall {
+			name = strings.ToLower(name)
+		}
 		ce := &CallExpr{Func: name}
 		for _, a := range p.Call.Args {
 			ae, err := convertExpr(a, env, ctx)
@@ -4154,6 +4195,12 @@ func convertPrimary(p *parser.Primary, env *types.Env, ctx *context) (Expr, erro
 		} else if ce.Func == "sha256" && len(ce.Args) == 1 {
 			useSHA256 = true
 			return &CallExpr{Func: "mochi_sha256", Args: ce.Args}, nil
+		} else if ce.Func == "indexof" && len(ce.Args) == 2 {
+			useIndexOf = true
+			return &CallExpr{Func: "mochi_index_of", Args: ce.Args}, nil
+		} else if ce.Func == "parseintstr" && (len(ce.Args) == 1 || len(ce.Args) == 2) {
+			useParseIntStr = true
+			return &CallExpr{Func: "mochi_parse_int_str", Args: ce.Args[:1]}, nil
 		}
 		return ce, nil
 	case p.FunExpr != nil:
@@ -5262,6 +5309,14 @@ func (p *Program) Emit() []byte {
 	}
 	if p.UsePadStart {
 		buf.WriteString(helperPadStart)
+		buf.WriteString("\n")
+	}
+	if p.UseIndexOf {
+		buf.WriteString(helperIndexOf)
+		buf.WriteString("\n")
+	}
+	if p.UseParseIntStr {
+		buf.WriteString(helperParseIntStr)
 		buf.WriteString("\n")
 	}
 	for _, f := range p.Funs {
