@@ -1,10 +1,8 @@
-func main (regs=3)
+func main (regs=2)
   // var pps: map<int, bool> = {}
   Const        r1, {}
   Move         r0, r1
   SetGlobal    0,0,0,0
-  // main()
-  Call         r2, main, 
   Return       r0
 
   // fun pow10(exp: int): int {

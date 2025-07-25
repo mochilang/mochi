@@ -701,7 +701,7 @@ func (m *VM) call(fnIndex int, args []Value, trace []StackFrame) (Value, error) 
 	// Function parameters are placed after the global register section.
 	off := m.prog.NumGlobals
 	for i := 0; i < len(args) && off+i < len(f.regs); i++ {
-		f.regs[off+i] = copyValue(args[i])
+		f.regs[off+i] = args[i]
 	}
 	stack := []*frame{f}
 	for len(stack) > 0 {
@@ -1993,7 +1993,7 @@ func (m *VM) call(fnIndex int, args []Value, trace []StackFrame) (Value, error) 
 		case OpCall:
 			args := make([]Value, ins.C)
 			for i := 0; i < ins.C; i++ {
-				args[i] = copyValue(fr.regs[ins.D+i])
+				args[i] = fr.regs[ins.D+i]
 			}
 			if fr.ip < len(fr.fn.Code) {
 				next := fr.fn.Code[fr.ip]
@@ -2003,7 +2003,7 @@ func (m *VM) call(fnIndex int, args []Value, trace []StackFrame) (Value, error) 
 						fr.fn = fn
 						fr.regs = make([]Value, fn.NumRegs)
 						for i := 0; i < len(args) && i < len(fr.regs); i++ {
-							fr.regs[i] = copyValue(args[i])
+							fr.regs[i] = args[i]
 						}
 						fr.ip = 0
 						trace[len(trace)-1] = StackFrame{Func: m.prog.funcName(ins.B), Line: ins.Line}
@@ -2036,9 +2036,6 @@ func (m *VM) call(fnIndex int, args []Value, trace []StackFrame) (Value, error) 
 						cl := fnVal.Func.(*closure)
 						fnIdx = cl.fn
 						all = append(append([]Value{}, cl.args...), args...)
-						for i := range all {
-							all[i] = copyValue(all[i])
-						}
 					} else {
 						fnIdx = fnVal.Int
 						all = args
@@ -2048,7 +2045,7 @@ func (m *VM) call(fnIndex int, args []Value, trace []StackFrame) (Value, error) 
 						fr.fn = fn
 						fr.regs = make([]Value, fn.NumRegs)
 						for i := 0; i < len(all) && i < len(fr.regs); i++ {
-							fr.regs[i] = copyValue(all[i])
+							fr.regs[i] = all[i]
 						}
 						fr.ip = 0
 						trace[len(trace)-1] = StackFrame{Func: m.prog.funcName(fnIdx), Line: ins.Line}
@@ -2469,6 +2466,11 @@ func (c *compiler) compileMain(p *parser.Program) (Function, error) {
 		if st.Fun != nil {
 			continue
 		}
+		if st.Expr != nil {
+			if isTopLevelMainCall(st.Expr.Expr) {
+				continue
+			}
+		}
 		if err := fc.compileStmt(st); err != nil {
 			return Function{}, err
 		}
@@ -2478,6 +2480,18 @@ func (c *compiler) compileMain(p *parser.Program) (Function, error) {
 		fc.fn.NumRegs = 1
 	}
 	return fc.fn, nil
+}
+
+func isTopLevelMainCall(e *parser.Expr) bool {
+	if e == nil || e.Binary == nil || e.Binary.Right != nil {
+		return false
+	}
+	left := e.Binary.Left
+	if left == nil || left.Value == nil || left.Value.Target == nil {
+		return false
+	}
+	call := left.Value.Target.Call
+	return call != nil && call.Func == "main" && len(call.Args) == 0
 }
 
 func (fc *funcCompiler) emit(pos lexer.Position, i Instr) {
