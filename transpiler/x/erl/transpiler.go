@@ -860,6 +860,12 @@ type ContinueStmt struct{ Args []string }
 // CallStmt represents a standalone function call.
 type CallStmt struct{ Call *CallExpr }
 
+// BenchStmt represents a benchmark block.
+type BenchStmt struct {
+	Name string
+	Body []Stmt
+}
+
 func (p *PrintStmt) emit(w io.Writer) {
 	if len(p.Args) == 0 {
 		return
@@ -2114,6 +2120,15 @@ func (c *ContinueStmt) emit(w io.Writer) {
 
 func (cs *CallStmt) emit(w io.Writer) { cs.Call.emit(w) }
 
+func (b *BenchStmt) emit(w io.Writer) {
+	io.WriteString(w, "Start = mochi_now()")
+	for _, st := range b.Body {
+		io.WriteString(w, ",\n    ")
+		st.emit(w)
+	}
+	fmt.Fprintf(w, ",\n    End = mochi_now(),\n    DurationUs = (End - Start) div 1000,\n    io:format(\"{~n  \\\"duration_us\\\": ~p,~n  \\\"memory_bytes\\\": 0,~n  \\\"name\\\": \\\"~s\\\"~n}\n\", [DurationUs, \"%s\"])", b.Name)
+}
+
 func isNameRef(e Expr, name string) bool {
 	if n, ok := e.(*NameRef); ok {
 		return n.Name == name
@@ -3041,6 +3056,18 @@ func convertStmt(st *parser.Statement, env *types.Env, ctx *context, top bool) (
 		}
 		funName := ctx.newAlias("fun")
 		return []Stmt{&WhileStmt{Params: params, Cond: cond, Body: body, Next: next, Fun: funName}}, nil
+	case st.Bench != nil:
+		useNow = true
+		benchCtx := ctx.clone()
+		body := []Stmt{}
+		for _, bs := range st.Bench.Body {
+			cs, err := convertStmt(bs, env, benchCtx, false)
+			if err != nil {
+				return nil, err
+			}
+			body = append(body, cs...)
+		}
+		return []Stmt{&BenchStmt{Name: st.Bench.Name, Body: body}}, nil
 	case st.Import != nil:
 		if st.Import.Auto && st.Import.Lang != nil && *st.Import.Lang == "go" {
 			alias := st.Import.As

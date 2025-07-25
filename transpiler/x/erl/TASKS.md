@@ -1,3 +1,7 @@
+## Progress (2025-07-25 01:49 +0700)
+- fix go tests by adding build tag (d0bf63391b)
+- Regenerated golden files - 103/104 vm valid programs passing
+
 ## Progress (2025-07-23 10:03 +0700)
 - ts transpiler: handle parameter scope (2ea03adf09)
 - Regenerated golden files - 102/103 vm valid programs passing
