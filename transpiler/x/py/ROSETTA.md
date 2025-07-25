@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Python code from programs in `tests/rosetta/x/Mochi` lives in `tests/rosetta/transpiler/Python`.
-Last updated: 2025-07-25 20:10 GMT+7
+Last updated: 2025-07-25 21:16 GMT+7
 
-## Rosetta Golden Test Checklist (267/284)
+## Rosetta Golden Test Checklist (269/284)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | 100-doors-2 | ✓ | 161.0µs | 12.50MB |
@@ -217,37 +217,37 @@ Last updated: 2025-07-25 20:10 GMT+7
 | 208 | comma-quibbling | ✓ | 20.0µs | 12.93MB |
 | 209 | compiler-virtual-machine-interpreter | ✓ | 319.0µs | 14.35MB |
 | 210 | composite-numbers-k-with-no-single-digit-factors-whose-factors-are-all-substrings-of-k | ✓ |  |  |
-| 211 | compound-data-type | ✓ |  |  |
-| 212 | concurrent-computing-1 | ✓ |  |  |
-| 213 | concurrent-computing-2 | ✓ |  |  |
-| 214 | concurrent-computing-3 | ✓ |  |  |
-| 215 | conditional-structures-1 | ✓ |  |  |
-| 216 | conditional-structures-10 | ✓ |  |  |
-| 217 | conditional-structures-2 | ✓ |  |  |
-| 218 | conditional-structures-3 | ✓ |  |  |
-| 219 | conditional-structures-4 | ✓ |  |  |
-| 220 | conditional-structures-5 | ✓ |  |  |
-| 221 | conditional-structures-6 | ✓ |  |  |
-| 222 | conditional-structures-7 | ✓ |  |  |
-| 223 | conditional-structures-8 | ✓ |  |  |
-| 224 | conditional-structures-9 | ✓ |  |  |
+| 211 | compound-data-type | ✓ | 489.0µs | 12.27MB |
+| 212 | concurrent-computing-1 | ✓ | 12.0µs | 12.29MB |
+| 213 | concurrent-computing-2 | ✓ | 12.0µs | 12.43MB |
+| 214 | concurrent-computing-3 | ✓ | 22.0µs | 12.74MB |
+| 215 | conditional-structures-1 | ✓ | 1.0µs | 12.17MB |
+| 216 | conditional-structures-10 | ✓ | 7.0µs | 12.29MB |
+| 217 | conditional-structures-2 | ✓ | 1.0µs | 12.45MB |
+| 218 | conditional-structures-3 | ✓ | 2.0µs | 11.88MB |
+| 219 | conditional-structures-4 | ✓ | 2.0µs | 12.49MB |
+| 220 | conditional-structures-5 | ✓ | 1.0µs | 11.65MB |
+| 221 | conditional-structures-6 | ✓ | 1.0µs | 11.48MB |
+| 222 | conditional-structures-7 | ✓ | 2.0µs | 12.41MB |
+| 223 | conditional-structures-8 | ✓ | 1.0µs | 12.43MB |
+| 224 | conditional-structures-9 | ✓ | 1.0µs | 11.91MB |
 | 225 | consecutive-primes-with-ascending-or-descending-differences | ✓ |  |  |
-| 226 | constrained-genericity-1 | ✓ |  |  |
-| 227 | constrained-genericity-2 | ✓ |  |  |
-| 228 | constrained-genericity-3 | ✓ |  |  |
-| 229 | constrained-genericity-4 | ✓ |  |  |
-| 230 | constrained-random-points-on-a-circle-1 | ✓ |  |  |
-| 231 | constrained-random-points-on-a-circle-2 | error |  |  |
-| 232 | continued-fraction | ✓ |  |  |
-| 233 | convert-decimal-number-to-rational | ✓ |  |  |
-| 234 | convert-seconds-to-compound-duration | ✓ |  |  |
-| 235 | convex-hull | error |  |  |
-| 236 | conways-game-of-life | ✓ |  |  |
-| 237 | copy-a-string-1 | ✓ |  |  |
-| 238 | copy-a-string-2 | ✓ |  |  |
-| 239 | copy-stdin-to-stdout-1 | ✓ |  |  |
-| 240 | copy-stdin-to-stdout-2 | ✓ |  |  |
-| 241 | count-in-factors | ✓ |  |  |
+| 226 | constrained-genericity-1 | ✓ | 426.0µs | 12.24MB |
+| 227 | constrained-genericity-2 | ✓ | 402.0µs | 12.24MB |
+| 228 | constrained-genericity-3 | ✓ | 438.0µs | 12.27MB |
+| 229 | constrained-genericity-4 | ✓ | 11.0µs | 12.74MB |
+| 230 | constrained-random-points-on-a-circle-1 | ✓ | 1.0ms | 12.66MB |
+| 231 | constrained-random-points-on-a-circle-2 | ✓ | 1.0ms | 13.15MB |
+| 232 | continued-fraction | ✓ | 59.0µs | 12.87MB |
+| 233 | convert-decimal-number-to-rational | ✓ | 41.0µs | 12.88MB |
+| 234 | convert-seconds-to-compound-duration | ✓ | 15.0µs | 12.75MB |
+| 235 | convex-hull | ✓ | 566.0µs | 13.64MB |
+| 236 | conways-game-of-life | ✓ | 979.0ms | 13.68MB |
+| 237 | copy-a-string-1 | ✓ | 1.0µs | 11.70MB |
+| 238 | copy-a-string-2 | ✓ | 11.0µs | 12.61MB |
+| 239 | copy-stdin-to-stdout-1 | ✓ | 58.0µs | 12.43MB |
+| 240 | copy-stdin-to-stdout-2 | ✓ | 84.0µs | 12.35MB |
+| 241 | count-in-factors | ✓ | 1.0ms | 12.57MB |
 | 242 | count-in-octal-1 | ✓ |  |  |
 | 243 | count-in-octal-2 | ✓ |  |  |
 | 244 | count-in-octal-3 | ✓ |  |  |
