@@ -101,7 +101,7 @@ func transpileAndRunRacket(root, srcPath, wantPath, outDir, name string) error {
 		return err
 	}
 	if bench {
-		if err := os.WriteFile(filepath.Join(outDir, name+".out"), got, 0o644); err != nil {
+		if err := os.WriteFile(filepath.Join(outDir, name+".bench"), got, 0o644); err != nil {
 			return fmt.Errorf("write out: %w", err)
 		}
 		_ = os.Remove(filepath.Join(outDir, name+".error"))
@@ -177,7 +177,7 @@ func updateRosettaChecklist() {
 		}
 		dur := ""
 		mem := ""
-		if data, err := os.ReadFile(filepath.Join(outDir, name+".out")); err == nil {
+		if data, err := os.ReadFile(filepath.Join(outDir, name+".bench")); err == nil {
 			var js struct {
 				Duration int64 `json:"duration_us"`
 				Memory   int64 `json:"memory_bytes"`
