@@ -22,7 +22,7 @@
  2  s0ndag mandag tirsdag onsdag torsdag fredag l0rdag
  2  zondag maandag dinsdag woensdag donderdag vrijdag zaterdag
  2  Diman^co Lundo Mardo Merkredo ^Jaùdo Vendredo Sabato
- 1  pÜhapäev esmaspäev teisipäev kolmapäev neljapäev reede laupäev
+true  pÜhapäev esmaspäev teisipäev kolmapäev neljapäev reede laupäev
  7  Diu_prima Diu_sequima Diu_tritima Diu_quartima Diu_quintima Diu_sextima Diu_sabbata
  2  sunnudagur mánadagur tÿsdaguy mikudagur hósdagur friggjadagur leygardagur
  2  Yek_Sham'beh Do_Sham'beh Seh_Sham'beh Cha'har_Sham'beh Panj_Sham'beh Jom'eh Sham'beh
@@ -45,7 +45,7 @@
  5  Dé_Domhnaigh Dé_Luain Dé_Máirt Dé_Ceadaoin Dé_ardaoin Dé_hAoine Dé_Sathairn
  2  domenica lunedí martedí mercoledí giovedí venerdí sabato
  2  Nichiyou_bi Getzuyou_bi Kayou_bi Suiyou_bi Mokuyou_bi Kin'you_bi Doyou_bi
- 1  Il-yo-il Wol-yo-il Hwa-yo-il Su-yo-il Mok-yo-il Kum-yo-il To-yo-il
+true  Il-yo-il Wol-yo-il Hwa-yo-il Su-yo-il Mok-yo-il Kum-yo-il To-yo-il
  7  Dies_Dominica Dies_Lunæ Dies_Martis Dies_Mercurii Dies_Iovis Dies_Veneris Dies_Saturni
  3  sve-tdien pirmdien otrdien tresvdien ceturtdien piektdien sestdien
  2  Sekmadienis Pirmadienis Antradienis Trec^iadienis Ketvirtadienis Penktadienis S^es^tadienis
@@ -60,7 +60,7 @@
  4  djadomingo djaluna djamars djarason djaweps djabièrna djasabra
  2  Niedziela Poniedzial/ek Wtorek S,roda Czwartek Pia,tek Sobota
  3  Domingo segunda-feire terça-feire quarta-feire quinta-feire sexta-feira såbado
- 1  Domingo Lunes martes Miercoles Jueves Viernes Sabado
+true  Domingo Lunes martes Miercoles Jueves Viernes Sabado
  2  Duminicª Luni Mart'i Miercuri Joi Vineri Sâmbªtª
  2  voskresenie ponedelnik vtornik sreda chetverg pyatnitsa subbota
  4  Sunday Di-luain Di-màirt Di-ciadain Di-ardaoin Di-haoine Di-sathurne
@@ -91,7 +91,7 @@
  2  zondag maandag dinsdag woensdag donderdag vrijdag zaterdag
  2  KoseEraa GyoOraa BenEraa Kuoraa YOwaaraa FeEraa Memenaa
  5  Sonntag Montag Dienstag Mittwoch Donnerstag Freitag Sonnabend
- 1  Domingo Luns Terza_feira Corta_feira Xoves Venres Sábado
+true  Domingo Luns Terza_feira Corta_feira Xoves Venres Sábado
  7  Dies_Solis Dies_Lunae Dies_Martis Dies_Mercurii Dies_Iovis Dies_Veneris Dies_Sabbatum
 12  xing-_qi-_tiàn xing-_qi-_yi-. xing-_qi-_èr xing-_qi-_san-. xing-_qi-_sì xing-_qi-_wuv. xing-_qi-_liù
  4  djadomingu djaluna djamars djarason djaweps djabièrnè djasabra

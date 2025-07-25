@@ -1,0 +1,88 @@
+compile failed: exit status 1: /tmp/ctranspile3529740425/24-game-solve.mochi.c: In function ‘_mem’:
+/tmp/ctranspile3529740425/24-game-solve.mochi.c:55:12: warning: ‘mallinfo’ is deprecated [-Wdeprecated-declarations]
+   55 |     struct mallinfo mi = mallinfo();
+      |            ^~~~~~~~
+In file included from /tmp/ctranspile3529740425/24-game-solve.mochi.c:5:
+/usr/include/malloc.h:114:24: note: declared here
+  114 | extern struct mallinfo mallinfo (void) __THROW __MALLOC_DEPRECATED;
+      |                        ^~~~~~~~
+/tmp/ctranspile3529740425/24-game-solve.mochi.c: In function ‘binEval’:
+/tmp/ctranspile3529740425/24-game-solve.mochi.c:87:19: warning: implicit declaration of function ‘exprEval’ [-Wimplicit-function-declaration]
+   87 |     Rational lv = exprEval(l);
+      |                   ^~~~~~~~
+/tmp/ctranspile3529740425/24-game-solve.mochi.c:87:19: error: invalid initializer
+/tmp/ctranspile3529740425/24-game-solve.mochi.c:88:19: error: invalid initializer
+   88 |     Rational rv = exprEval(r);
+      |                   ^~~~~~~~
+/tmp/ctranspile3529740425/24-game-solve.mochi.c: In function ‘binString’:
+/tmp/ctranspile3529740425/24-game-solve.mochi.c:102:22: warning: implicit declaration of function ‘exprString’ [-Wimplicit-function-declaration]
+  102 |     const char* ls = exprString(l);
+      |                      ^~~~~~~~~~
+/tmp/ctranspile3529740425/24-game-solve.mochi.c:102:22: warning: initialization of ‘const char *’ from ‘int’ makes pointer from integer without a cast [-Wint-conversion]
+/tmp/ctranspile3529740425/24-game-solve.mochi.c:103:22: warning: initialization of ‘const char *’ from ‘int’ makes pointer from integer without a cast [-Wint-conversion]
+  103 |     const char* rs = exprString(r);
+      |                      ^~~~~~~~~~
+/tmp/ctranspile3529740425/24-game-solve.mochi.c: At top level:
+/tmp/ctranspile3529740425/24-game-solve.mochi.c:125:10: error: conflicting types for ‘exprEval’; have ‘Rational(int)’
+  125 | Rational exprEval(int x) {
+      |          ^~~~~~~~
+/tmp/ctranspile3529740425/24-game-solve.mochi.c:87:19: note: previous implicit declaration of ‘exprEval’ with type ‘int()’
+   87 |     Rational lv = exprEval(l);
+      |                   ^~~~~~~~
+/tmp/ctranspile3529740425/24-game-solve.mochi.c: In function ‘exprEval’:
+/tmp/ctranspile3529740425/24-game-solve.mochi.c:126:18: error: expected expression before ‘Num’
+  126 |     return (x == Num(v) ? v : binEval(op, l, r));
+      |                  ^~~
+/tmp/ctranspile3529740425/24-game-solve.mochi.c: At top level:
+/tmp/ctranspile3529740425/24-game-solve.mochi.c:129:13: error: conflicting types for ‘exprString’; have ‘const char *(int)’
+  129 | const char* exprString(int x) {
+      |             ^~~~~~~~~~
+/tmp/ctranspile3529740425/24-game-solve.mochi.c:102:22: note: previous implicit declaration of ‘exprString’ with type ‘int()’
+  102 |     const char* ls = exprString(l);
+      |                      ^~~~~~~~~~
+/tmp/ctranspile3529740425/24-game-solve.mochi.c: In function ‘exprString’:
+/tmp/ctranspile3529740425/24-game-solve.mochi.c:130:18: error: expected expression before ‘Num’
+  130 |     return (x == Num(v) ? str_int(v.num) : binString(op, l, r));
+      |                  ^~~
+/tmp/ctranspile3529740425/24-game-solve.mochi.c: In function ‘solve’:
+/tmp/ctranspile3529740425/24-game-solve.mochi.c:164:31: warning: implicit declaration of function ‘append’ [-Wimplicit-function-declaration]
+  164 |                     if (solve(append(rest, node), append_len)) {
+      |                               ^~~~~~
+/tmp/ctranspile3529740425/24-game-solve.mochi.c:164:51: error: ‘append_len’ undeclared (first use in this function)
+  164 |                     if (solve(append(rest, node), append_len)) {
+      |                                                   ^~~~~~~~~~
+/tmp/ctranspile3529740425/24-game-solve.mochi.c:164:51: note: each undeclared identifier is reported only once for each function it appears in
+/tmp/ctranspile3529740425/24-game-solve.mochi.c:164:31: warning: passing argument 1 of ‘solve’ makes pointer from integer without a cast [-Wint-conversion]
+  164 |                     if (solve(append(rest, node), append_len)) {
+      |                               ^~~~~~~~~~~~~~~~~~
+      |                               |
+      |                               int
+/tmp/ctranspile3529740425/24-game-solve.mochi.c:133:17: note: expected ‘int *’ but argument is of type ‘int’
+  133 | int solve(int * xs, size_t xs_len) {
+      |           ~~~~~~^~
+/tmp/ctranspile3529740425/24-game-solve.mochi.c:170:23: warning: passing argument 1 of ‘solve’ makes pointer from integer without a cast [-Wint-conversion]
+  170 |             if (solve(append(rest, node), append_len)) {
+      |                       ^~~~~~~~~~~~~~~~~~
+      |                       |
+      |                       int
+/tmp/ctranspile3529740425/24-game-solve.mochi.c:133:17: note: expected ‘int *’ but argument is of type ‘int’
+  133 | int solve(int * xs, size_t xs_len) {
+      |           ~~~~~~^~
+/tmp/ctranspile3529740425/24-game-solve.mochi.c:174:23: warning: passing argument 1 of ‘solve’ makes pointer from integer without a cast [-Wint-conversion]
+  174 |             if (solve(append(rest, node), append_len)) {
+      |                       ^~~~~~~~~~~~~~~~~~
+      |                       |
+      |                       int
+/tmp/ctranspile3529740425/24-game-solve.mochi.c:133:17: note: expected ‘int *’ but argument is of type ‘int’
+  133 | int solve(int * xs, size_t xs_len) {
+      |           ~~~~~~^~
+/tmp/ctranspile3529740425/24-game-solve.mochi.c: In function ‘user_main’:
+/tmp/ctranspile3529740425/24-game-solve.mochi.c:192:56: error: incompatible type for argument 3 of ‘list_append_int’
+  192 |             cards = list_append_int(cards, &cards_len, newNum(n));
+      |                                                        ^~~~~~~~~
+      |                                                        |
+      |                                                        Num
+/tmp/ctranspile3529740425/24-game-solve.mochi.c:26:56: note: expected ‘int’ but argument is of type ‘Num’
+   26 | static int* list_append_int(int *arr, size_t *len, int val) {
+      |                                                    ~~~~^~~
+

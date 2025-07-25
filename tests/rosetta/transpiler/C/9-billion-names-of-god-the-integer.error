@@ -1,34 +1,28 @@
-compile failed: exit status 1: /tmp/ctranspile3581749236/9-billion-names-of-god-the-integer.mochi.c: In function ‘cumu’:
-/tmp/ctranspile3581749236/9-billion-names-of-god-the-integer.mochi.c:133:8: error: expected identifier or ‘(’ before ‘[’ token
-  133 |     int[] **cache = NULL;
+compile failed: exit status 1: /tmp/ctranspile1990601982/9-billion-names-of-god-the-integer.mochi.c: In function ‘_mem’:
+/tmp/ctranspile1990601982/9-billion-names-of-god-the-integer.mochi.c:75:12: warning: ‘mallinfo’ is deprecated [-Wdeprecated-declarations]
+   75 |     struct mallinfo mi = mallinfo();
+      |            ^~~~~~~~
+In file included from /tmp/ctranspile1990601982/9-billion-names-of-god-the-integer.mochi.c:5:
+/usr/include/malloc.h:114:24: note: declared here
+  114 | extern struct mallinfo mallinfo (void) __THROW __MALLOC_DEPRECATED;
+      |                        ^~~~~~~~
+/tmp/ctranspile1990601982/9-billion-names-of-god-the-integer.mochi.c: In function ‘cumu’:
+/tmp/ctranspile1990601982/9-billion-names-of-god-the-integer.mochi.c:169:8: error: expected identifier or ‘(’ before ‘[’ token
+  169 |     int[] **cache = NULL;
       |        ^
-/tmp/ctranspile3581749236/9-billion-names-of-god-the-integer.mochi.c:141:24: error: ‘cache’ undeclared (first use in this function)
-  141 |             int *val = cache[y - x][minInt(x, y - x)];
+/tmp/ctranspile1990601982/9-billion-names-of-god-the-integer.mochi.c:177:24: error: ‘cache’ undeclared (first use in this function)
+  177 |             int *val = cache[y - x][minInt(x, y - x)];
       |                        ^~~~~
-/tmp/ctranspile3581749236/9-billion-names-of-god-the-integer.mochi.c:141:24: note: each undeclared identifier is reported only once for each function it appears in
-/tmp/ctranspile3581749236/9-billion-names-of-god-the-integer.mochi.c:142:78: error: ‘SIZE’ undeclared (first use in this function)
-  142 |             row = list_append_intptr(row, &row_len, bigAdd(row[row_len - 1], SIZE, val, val_len));
-      |                                                                              ^~~~
-/tmp/ctranspile3581749236/9-billion-names-of-god-the-integer.mochi.c:142:89: error: ‘val_len’ undeclared (first use in this function)
-  142 |             row = list_append_intptr(row, &row_len, bigAdd(row[row_len - 1], SIZE, val, val_len));
-      |                                                                                         ^~~~~~~
-/tmp/ctranspile3581749236/9-billion-names-of-god-the-integer.mochi.c:145:55: warning: passing argument 3 of ‘list_append_intptr’ from incompatible pointer type [-Wincompatible-pointer-types]
-  145 |         cache = list_append_intptr(cache, &cache_len, row);
+/tmp/ctranspile1990601982/9-billion-names-of-god-the-integer.mochi.c:177:24: note: each undeclared identifier is reported only once for each function it appears in
+/tmp/ctranspile1990601982/9-billion-names-of-god-the-integer.mochi.c:178:86: error: ‘val_len’ undeclared (first use in this function)
+  178 |             row = list_append_intptr(row, &row_len, bigAdd(row[row_len - 1], 0, val, val_len));
+      |                                                                                      ^~~~~~~
+/tmp/ctranspile1990601982/9-billion-names-of-god-the-integer.mochi.c:181:55: warning: passing argument 3 of ‘list_append_intptr’ from incompatible pointer type [-Wincompatible-pointer-types]
+  181 |         cache = list_append_intptr(cache, &cache_len, row);
       |                                                       ^~~
       |                                                       |
       |                                                       int **
-/tmp/ctranspile3581749236/9-billion-names-of-god-the-integer.mochi.c:36:62: note: expected ‘int *’ but argument is of type ‘int **’
-   36 | static int** list_append_intptr(int **arr, size_t *len, int *val) {
+/tmp/ctranspile1990601982/9-billion-names-of-god-the-integer.mochi.c:46:62: note: expected ‘int *’ but argument is of type ‘int **’
+   46 | static int** list_append_intptr(int **arr, size_t *len, int *val) {
       |                                                         ~~~~~^~~
-/tmp/ctranspile3581749236/9-billion-names-of-god-the-integer.mochi.c: In function ‘row’:
-/tmp/ctranspile3581749236/9-billion-names-of-god-the-integer.mochi.c:158:38: error: ‘SIZE’ undeclared (first use in this function)
-  158 |         int *diff = bigSub(e[i + 1], SIZE, e[i], SIZE);
-      |                                      ^~~~
-/tmp/ctranspile3581749236/9-billion-names-of-god-the-integer.mochi.c:159:64: error: ‘diff_len’ undeclared (first use in this function)
-  159 |         out = list_append_str(out, &out_len, bigToString(diff, diff_len));
-      |                                                                ^~~~~~~~
-/tmp/ctranspile3581749236/9-billion-names-of-god-the-integer.mochi.c: In function ‘main’:
-/tmp/ctranspile3581749236/9-billion-names-of-god-the-integer.mochi.c:187:86: error: ‘SIZE’ undeclared (first use in this function)
-  187 |             puts(str_concat(str_concat(str_int(num), " "), bigToString(r[r_len - 1], SIZE)));
-      |                                                                                      ^~~~
 
