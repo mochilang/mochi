@@ -1,6 +1,4 @@
 func main (regs=1)
-  // main()
-  Call         r0, main, 
   Return       r0
 
   // fun search_user(directory: map<string, list<string>>, username: string): list<string> {

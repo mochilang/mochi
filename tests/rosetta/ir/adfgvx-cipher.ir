@@ -1,4 +1,4 @@
-func main (regs=5)
+func main (regs=4)
   // var adfgvx = "ADFGVX"
   Const        r2, "ADFGVX"
   Move         r0, r2
@@ -7,8 +7,6 @@ func main (regs=5)
   Const        r3, "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
   Move         r1, r3
   SetGlobal    1,1,0,0
-  // main()
-  Call         r4, main, 
   Return       r0
 
   // fun shuffleStr(s: string): string {
