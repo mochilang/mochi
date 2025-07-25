@@ -1309,7 +1309,9 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 					varTypes[st.For.Name] = typ
 				}
 				setVarType(st.For.Name, varTypes[st.For.Name])
+				pushScope()
 				body, err := convertBody(env, st.For.Body, varTypes)
+				popScope()
 				if err != nil {
 					return nil, err
 				}
@@ -1327,7 +1329,9 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 				if err != nil {
 					return nil, err
 				}
+				pushScope()
 				body, err := convertBody(env, st.While.Body, varTypes)
+				popScope()
 				if err != nil {
 					return nil, err
 				}
@@ -1444,7 +1448,7 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 						}
 					}
 					if strings.HasPrefix(rt, "Anon") {
-						funcReturns[fn.Name] = rt
+						funcReturns[st.Fun.Name] = rt
 					}
 				}
 				if fn.Name == "parseIntStr" {
@@ -1875,6 +1879,28 @@ func convertBody(env *types.Env, body []*parser.Statement, varTypes map[string]s
 						}
 						break
 					}
+				}
+			} else if strings.HasPrefix(rt, "specialize TFPGMap") {
+				for _, stmt := range fnBody {
+					if ret, ok := stmt.(*ReturnStmt); ok && ret.Expr != nil {
+						switch expr := ret.Expr.(type) {
+						case *RecordLit:
+							rt = expr.Type
+						case *CallExpr:
+							if t, ok := funcReturns[expr.Name]; ok {
+								rt = t
+							}
+						default:
+							typ := inferType(ret.Expr)
+							if typ != "" && !strings.HasPrefix(typ, "specialize TFPGMap") {
+								rt = typ
+							}
+						}
+						break
+					}
+				}
+				if strings.HasPrefix(rt, "Anon") {
+					funcReturns[st.Fun.Name] = rt
 				}
 			}
 			if st.Fun.Name == "parseIntStr" {
@@ -3075,6 +3101,11 @@ func ensureRecord(fields []Field) string {
 	anonCounter++
 	name := fmt.Sprintf("Anon%d", anonCounter)
 	currProg.Records = append(currProg.Records, RecordDef{Name: name, Fields: fields})
+	for _, f := range fields {
+		if strings.HasPrefix(f.Type, "array of IntArray") || strings.HasPrefix(f.Type, "array of array") {
+			currProg.NeedShowList2 = true
+		}
+	}
 	if funcReturns != nil {
 		funcReturns[ctorName(name)] = name
 	}
@@ -3894,7 +3925,7 @@ func inferType(e Expr) string {
 		if v.String {
 			return "string"
 		}
-		t := inferType(v.Target)
+		t := resolveAlias(inferType(v.Target))
 		if strings.HasPrefix(t, "array of ") {
 			return strings.TrimPrefix(t, "array of ")
 		}
