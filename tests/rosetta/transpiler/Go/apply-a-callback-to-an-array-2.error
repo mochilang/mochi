@@ -1,3 +1,0 @@
-exit status 1
-# command-line-arguments
-../../../tests/rosetta/transpiler/Go/apply-a-callback-to-an-array-2.go:29:10: print(fmt.Sprint((i * i))) (no value) used as value
