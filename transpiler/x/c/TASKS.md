@@ -1,5 +1,5 @@
-## Progress (2025-07-25 19:53 +0700)
-- Commit 09f86bb2ce: cs rosetta: support map keys, run index 27
+## Progress (2025-07-25 21:49 +0700)
+- Commit e364bb13f3: transpiler: add int map index support
 - Regenerated golden files - 81/104 vm valid programs passing
 
 ## Progress (2025-07-22 14:12 +0700)
