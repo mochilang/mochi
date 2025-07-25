@@ -1,11 +1,19 @@
-## Progress (2025-07-22 10:55 +0000)
+## Progress (2025-07-25 07:45 +0700)
+- go transpiler: add bench block (00c74ea891)
+
+- VM valid programs compiled: 102/104
+
+- go transpiler: add bench block (00c74ea891)
+
+
+- go transpiler: add bench block (00c74ea891)
+
+
 - ocaml transpiler: implement update stmt (6aad3e4d2)
-- VM valid programs compiled: 102/103
 
 ## Previous Progress (2025-07-22 17:08 +0700)
 - ocaml docs: update progress (3d7a570e5)
 
-- VM valid programs compiled: 99/103
 
 - ocaml transpiler: support ffi auto imports (9ff917453)
 

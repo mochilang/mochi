@@ -187,6 +187,10 @@ func (p *Program) UsesControl() bool {
 			for _, e := range st.Else {
 				check(e)
 			}
+		case *BenchStmt:
+			for _, b := range st.Body {
+				check(b)
+			}
 		case *FunStmt:
 			for _, b := range st.Body {
 				check(b)
@@ -222,6 +226,10 @@ func (p *Program) UsesReturn() bool {
 				check(b)
 			}
 		case *ForEachStmt:
+			for _, b := range st.Body {
+				check(b)
+			}
+		case *BenchStmt:
 			for _, b := range st.Body {
 				check(b)
 			}
@@ -782,6 +790,23 @@ func (s *SaveStmt) emit(w io.Writer) {
 		return
 	}
 	io.WriteString(w, "  () (* unsupported save *)\n")
+}
+
+// BenchStmt measures execution time of a block.
+type BenchStmt struct {
+	Name string
+	Body []Stmt
+}
+
+func (b *BenchStmt) emit(w io.Writer) {
+	io.WriteString(w, "  _now_seeded := true;\n")
+	io.WriteString(w, "  _now_seed := 1;\n")
+	io.WriteString(w, "  let start = _now () in\n")
+	for _, st := range b.Body {
+		st.emit(w)
+	}
+	io.WriteString(w, "  let finish = _now () in\n")
+	fmt.Fprintf(w, "  Printf.printf \"{\\n  \\\"duration_us\\\": %%d,\\n  \\\"memory_bytes\\\": 0,\\n  \\\"name\\\": \\\"%%s\\\"\\n}\\n\" ((finish - start) / 1000) %q;\n", b.Name)
 }
 
 // FunStmt represents a simple function declaration with no parameters.
@@ -2646,6 +2671,14 @@ func transpileStmt(st *parser.Statement, env *types.Env, vars map[string]VarInfo
 			cond = substituteFieldVars(cond, fieldSet)
 		}
 		return &UpdateStmt{Target: st.Update.Target, Fields: fields, Values: values, Cond: cond}, nil
+	case st.Bench != nil:
+		body, err := transpileStmts(st.Bench.Body, env, vars)
+		if err != nil {
+			return nil, err
+		}
+		usesNow = true
+		name := strings.Trim(st.Bench.Name, "\"")
+		return &BenchStmt{Name: name, Body: body}, nil
 	case st.Break != nil:
 		return &BreakStmt{}, nil
 	case st.Continue != nil:
