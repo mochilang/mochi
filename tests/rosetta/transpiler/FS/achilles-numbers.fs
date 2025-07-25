@@ -1,10 +1,28 @@
-// Generated 2025-07-25 13:04 +0700
+// Generated 2025-07-25 16:42 +0700
 
 exception Break
 exception Continue
 
 exception Return
 
+let mutable _nowSeed:int64 = 0L
+let mutable _nowSeeded = false
+let _initNow () =
+    let s = System.Environment.GetEnvironmentVariable("MOCHI_NOW_SEED")
+    if System.String.IsNullOrEmpty(s) |> not then
+        match System.Int32.TryParse(s) with
+        | true, v ->
+            _nowSeed <- int64 v
+            _nowSeeded <- true
+        | _ -> ()
+let _now () =
+    if _nowSeeded then
+        _nowSeed <- (_nowSeed * 1664525L + 1013904223L) % 2147483647L
+        int _nowSeed
+    else
+        int (System.DateTime.UtcNow.Ticks % 2147483647L)
+
+_initNow()
 let rec pow10 (exp: int) =
     let mutable __ret : int = Unchecked.defaultof<int>
     let mutable exp = exp
@@ -46,7 +64,7 @@ let rec getPerfectPowers (maxExp: int) =
     let mutable __ret : unit = Unchecked.defaultof<unit>
     let mutable maxExp = maxExp
     try
-        let upper = pow10 maxExp
+        let upper: int = pow10 maxExp
         let mutable i: int = 2
         try
             while (i * i) < upper do
@@ -72,8 +90,8 @@ and getAchilles (minExp: int) (maxExp: int) =
     let mutable minExp = minExp
     let mutable maxExp = maxExp
     try
-        let lower = pow10 minExp
-        let upper = pow10 maxExp
+        let lower: int = pow10 minExp
+        let upper: int = pow10 maxExp
         let mutable achilles: Map<int, bool> = Map.ofList []
         let mutable b: int = 1
         try
@@ -145,11 +163,13 @@ and pad (n: int) (width: int) =
 and main () =
     let mutable __ret : unit = Unchecked.defaultof<unit>
     try
+        let __bench_start = _now()
+        let __mem_start = System.GC.GetTotalMemory(true)
         let maxDigits: int = 15
         getPerfectPowers 5
-        let achSet = getAchilles 1 5
+        let achSet: Map<int, bool> = getAchilles 1 5
         let mutable ach: int array = [||]
-        for k in achSet.keys() do
+        for k in (Map.toList achSet |> List.map fst) do
             ach <- Array.append ach [|k|]
         ach <- sortInts ach
         printfn "%s" "First 50 Achilles numbers:"
@@ -169,8 +189,8 @@ and main () =
         let mutable count: int = 0
         let mutable idx: int = 0
         while count < 30 do
-            let tot = totient (ach.[idx])
-            if Seq.contains tot achSet then
+            let tot: int = totient (ach.[idx])
+            if Map.containsKey tot achSet then
                 strong <- Array.append strong [|ach.[idx]|]
                 count <- count + 1
             idx <- idx + 1
@@ -192,6 +212,10 @@ and main () =
             let c: int = counts.[d - 2]
             printfn "%s" (((pad d 2) + " digits: ") + (string c))
             d <- d + 1
+        let __bench_end = _now()
+        let __mem_end = System.GC.GetTotalMemory(true)
+        printfn "{\n  \"duration_us\": %d,\n  \"memory_bytes\": %d,\n  \"name\": \"main\"\n}" ((__bench_end - __bench_start) / 1000) (__mem_end - __mem_start)
+
         __ret
     with
         | Return -> __ret
