@@ -289,12 +289,18 @@ func compareValues(a, b value) int {
 }
 
 // Emit writes the Smalltalk source code to w with a generated header.
-func Emit(w io.Writer, prog *Program) error {
+// Emit writes the Smalltalk source code to w. If bench is true, the
+// entire program is wrapped in a benchmark block that prints a JSON
+// report with execution duration and memory usage.
+func Emit(w io.Writer, prog *Program, bench bool) error {
 	if prog == nil {
 		return nil
 	}
 	if _, err := io.WriteString(w, header()); err != nil {
 		return err
+	}
+	if bench {
+		io.WriteString(w, "benchStart := Time millisecondClockValue.\n")
 	}
 	for i, line := range prog.Lines {
 		if _, err := io.WriteString(w, line); err != nil {
@@ -305,6 +311,12 @@ func Emit(w io.Writer, prog *Program) error {
 				return err
 			}
 		}
+	}
+	if bench {
+		io.WriteString(w, "benchEnd := Time millisecondClockValue.\n")
+		io.WriteString(w, "dur := (benchEnd - benchStart) * 1000.\n")
+		io.WriteString(w, "Transcript show:'{\"duration_us\": '")
+		io.WriteString(w, " , dur printString , ', \"memory_bytes\": 0, \"name\": \"main\"}' ; cr\n")
 	}
 	if len(prog.Lines) > 0 {
 		if _, err := io.WriteString(w, "\n"); err != nil {

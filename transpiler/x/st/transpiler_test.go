@@ -55,7 +55,7 @@ func TestTranspile_PrintHello(t *testing.T) {
 		t.Fatalf("transpile: %v", err)
 	}
 	var buf bytes.Buffer
-	if err := st.Emit(&buf, ast); err != nil {
+	if err := st.Emit(&buf, ast, false); err != nil {
 		t.Fatalf("emit: %v", err)
 	}
 	code := buf.Bytes()
