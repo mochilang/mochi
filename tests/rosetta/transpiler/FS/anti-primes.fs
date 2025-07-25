@@ -1,4 +1,4 @@
-// Generated 2025-07-25 14:38 +0000
+// Generated 2025-07-26 05:05 +0700
 
 exception Return
 
@@ -30,7 +30,7 @@ let rec countDivisors (n: int) =
         let mutable count: int = 2
         let mutable i: int = 2
         while i <= (n / 2) do
-            if (n % i) = 0 then
+            if (((n % i + i) % i)) = 0 then
                 count <- count + 1
             i <- i + 1
         __ret <- count

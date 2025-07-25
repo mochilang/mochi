@@ -1,4 +1,4 @@
-// Generated 2025-07-25 14:38 +0000
+// Generated 2025-07-26 05:05 +0700
 
 exception Return
 
@@ -24,7 +24,7 @@ let rec d2d (d: float) =
     let mutable __ret : float = Unchecked.defaultof<float>
     let mutable d = d
     try
-        __ret <- d % 360.0
+        __ret <- ((d % 360.0 + 360.0) % 360.0)
         raise Return
         __ret
     with
@@ -33,7 +33,7 @@ and g2g (g: float) =
     let mutable __ret : float = Unchecked.defaultof<float>
     let mutable g = g
     try
-        __ret <- g % 400.0
+        __ret <- ((g % 400.0 + 400.0) % 400.0)
         raise Return
         __ret
     with
@@ -42,7 +42,7 @@ and m2m (m: float) =
     let mutable __ret : float = Unchecked.defaultof<float>
     let mutable m = m
     try
-        __ret <- m % 6400.0
+        __ret <- ((m % 6400.0 + 6400.0) % 6400.0)
         raise Return
         __ret
     with
@@ -51,7 +51,7 @@ and r2r (r: float) =
     let mutable __ret : float = Unchecked.defaultof<float>
     let mutable r = r
     try
-        __ret <- r % (2.0 * 3.141592653589793)
+        __ret <- ((r % (2.0 * 3.141592653589793) + (2.0 * 3.141592653589793)) % (2.0 * 3.141592653589793))
         raise Return
         __ret
     with

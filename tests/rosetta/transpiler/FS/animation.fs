@@ -1,4 +1,4 @@
-// Generated 2025-07-25 14:38 +0000
+// Generated 2025-07-26 05:05 +0700
 
 let mutable _nowSeed:int64 = 0L
 let mutable _nowSeeded = false
@@ -29,13 +29,13 @@ while clicks < 5 do
     let mutable line: string = ""
     let mutable i: int = 0
     while i < (String.length msg) do
-        let idx: int = (shift + i) % (String.length msg)
+        let idx: int = (((shift + i) % (String.length msg) + (String.length msg)) % (String.length msg))
         line <- line + (msg.Substring(idx, (idx + 1) - idx))
         i <- i + 1
     printfn "%s" line
-    shift <- (shift + inc) % (String.length msg)
+    shift <- (((shift + inc) % (String.length msg) + (String.length msg)) % (String.length msg))
     frames <- frames + 1
-    if (frames % (String.length msg)) = 0 then
+    if (((frames % (String.length msg) + (String.length msg)) % (String.length msg))) = 0 then
         inc <- (String.length msg) - inc
         clicks <- clicks + 1
 let __bench_end = _now()

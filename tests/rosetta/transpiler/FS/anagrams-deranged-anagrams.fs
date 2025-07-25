@@ -1,4 +1,4 @@
-// Generated 2025-07-25 14:38 +0000
+// Generated 2025-07-26 05:05 +0700
 
 exception Break
 exception Continue
@@ -92,7 +92,7 @@ and main () =
                     raise Continue
                 for c in m.[k] |> unbox<string array> do
                     try
-                        if deranged (unbox<string> w) (unbox<string> c) then
+                        if unbox<bool> (deranged (unbox<string> w) (unbox<string> c)) then
                             bestLen <- Seq.length w
                             w1 <- c
                             w2 <- w

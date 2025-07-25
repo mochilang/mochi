@@ -46,25 +46,25 @@ This file is auto-generated from rosetta tests.
 | 39 | algebraic-data-types | ✓ | 393µs | 66.7 KB |
 | 40 | align-columns | ✓ | 262µs | 70.9 KB |
 | 41 | aliquot-sequence-classifications |   |  |  |
-| 42 | almkvist-giullera-formula-for-pi | ✓ | 2.249ms | 131.9 KB |
-| 43 | almost-prime | ✓ |  |  |
-| 44 | amb | ✓ |  |  |
-| 45 | amicable-pairs | ✓ |  |  |
-| 46 | anagrams-deranged-anagrams | ✓ | 240µs | 53.0 KB |
-| 47 | anagrams | ✓ |  |  |
-| 48 | angle-difference-between-two-bearings-1 | ✓ | 596µs | 67.4 KB |
-| 49 | angle-difference-between-two-bearings-2 | ✓ | 378µs | 74.8 KB |
-| 50 | angles-geometric-normalization-and-conversion | ✓ | 191µs | 42.5 KB |
-| 51 | animate-a-pendulum | ✓ | 159µs | 41.5 KB |
-| 52 | animation | ✓ | 156µs | 41.6 KB |
-| 53 | anonymous-recursion-1 | ✓ | 333µs | 51.9 KB |
-| 54 | anonymous-recursion-2 | ✓ | 152µs | 41.5 KB |
-| 55 | anonymous-recursion | ✓ | 159µs | 41.5 KB |
-| 56 | anti-primes | ✓ | 495µs | 41.5 KB |
-| 57 | append-a-record-to-the-end-of-a-text-file | ✓ | 156µs | 42.1 KB |
-| 58 | apply-a-callback-to-an-array-1 | ✓ | 153µs | 41.4 KB |
-| 59 | apply-a-callback-to-an-array-2 | ✓ | 163µs | 41.8 KB |
-| 60 | apply-a-digital-filter-direct-form-ii-transposed- | ✓ | 379µs | 63.6 KB |
+| 42 | almkvist-giullera-formula-for-pi | ✓ | 2.281ms | 104.7 KB |
+| 43 | almost-prime | ✓ | 176µs | 41.5 KB |
+| 44 | amb | ✓ | 208µs | 41.7 KB |
+| 45 | amicable-pairs | ✓ | 7.233ms | 120.0 KB |
+| 46 | anagrams-deranged-anagrams | ✓ | 248µs | 53.0 KB |
+| 47 | anagrams | ✓ | 384µs | 90.9 KB |
+| 48 | angle-difference-between-two-bearings-1 | ✓ | 366µs | 63.5 KB |
+| 49 | angle-difference-between-two-bearings-2 | ✓ | 384µs | 63.7 KB |
+| 50 | angles-geometric-normalization-and-conversion | ✓ | 187µs | 50.4 KB |
+| 51 | animate-a-pendulum | ✓ |  | 41.5 KB |
+| 52 | animation | ✓ | 162µs | 41.6 KB |
+| 53 | anonymous-recursion-1 | ✓ | 152µs | 41.5 KB |
+| 54 | anonymous-recursion-2 | ✓ | 180µs | 41.5 KB |
+| 55 | anonymous-recursion | ✓ | 394µs | 57.5 KB |
+| 56 | anti-primes | ✓ | 747µs | 41.5 KB |
+| 57 | append-a-record-to-the-end-of-a-text-file | ✓ | 187µs | 42.1 KB |
+| 58 | apply-a-callback-to-an-array-1 | ✓ | 278µs | 57.3 KB |
+| 59 | apply-a-callback-to-an-array-2 | ✓ | 337µs | 58.8 KB |
+| 60 | apply-a-digital-filter-direct-form-ii-transposed- | ✓ | 381µs | 63.6 KB |
 | 61 | approximate-equality | ✓ | 174µs | 42.9 KB |
 | 62 | arbitrary-precision-integers-included- | ✓ | 15.861ms | 528.1 KB |
 | 63 | archimedean-spiral | ✓ | 363µs | 42.5 KB |
@@ -290,4 +290,4 @@ This file is auto-generated from rosetta tests.
 | 283 | define-a-primitive-data-type |   |  |  |
 | 284 | md5 |   |  |  |
 
-Last updated: 2025-07-26 04:38 +0700
+Last updated: 2025-07-26 05:05 +0700

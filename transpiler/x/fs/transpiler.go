@@ -2386,6 +2386,13 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 			if _, ok := e.(*IntLit); ok {
 				e = &CastExpr{Expr: e, Type: "bigint"}
 			}
+		} else if fsDecl != "" {
+			inferred := inferType(e)
+			if fsDecl == "obj" && inferred != "obj" {
+				e = &CallExpr{Func: "box", Args: []Expr{e}}
+			} else if inferred == "obj" && fsDecl != "obj" {
+				e = &CastExpr{Expr: e, Type: fsDecl}
+			}
 		}
 		varTypes[st.Let.Name] = declared
 		typ := fsDecl
@@ -2442,6 +2449,13 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 			if _, ok := e.(*IntLit); ok {
 				e = &CastExpr{Expr: e, Type: "bigint"}
 			}
+		} else if fsDecl != "" {
+			inferred := inferType(e)
+			if fsDecl == "obj" && inferred != "obj" {
+				e = &CallExpr{Func: "box", Args: []Expr{e}}
+			} else if inferred == "obj" && fsDecl != "obj" {
+				e = &CastExpr{Expr: e, Type: fsDecl}
+			}
 		}
 		varTypes[st.Var.Name] = declared
 		typ := fsDecl
@@ -2475,7 +2489,12 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 			}
 			if t := varTypes[st.Assign.Name]; strings.HasPrefix(t, "Map<") {
 				if len(st.Assign.Index) == 1 {
-					upd := &CallExpr{Func: "Map.add", Args: []Expr{target.(*IndexExpr).Index, val, &IdentExpr{Name: st.Assign.Name, Type: t}}}
+					mapVal := mapValueType(t)
+					v := val
+					if mapVal == "obj" && inferType(val) != "obj" {
+						v = &CallExpr{Func: "box", Args: []Expr{val}}
+					}
+					upd := &CallExpr{Func: "Map.add", Args: []Expr{target.(*IndexExpr).Index, v, &IdentExpr{Name: st.Assign.Name, Type: t}}}
 					return &AssignStmt{Name: st.Assign.Name, Expr: upd}, nil
 				}
 			}
@@ -3325,7 +3344,12 @@ func buildListUpdate(list Expr, indexes []Expr, val Expr) Expr {
 func buildMapUpdate(m Expr, keys []Expr, val Expr) Expr {
 	key := keys[0]
 	if len(keys) == 1 {
-		return &CallExpr{Func: "Map.add", Args: []Expr{key, val, m}}
+		mapVal := mapValueType(inferType(m))
+		v := val
+		if mapVal == "obj" && inferType(val) != "obj" {
+			v = &CallExpr{Func: "box", Args: []Expr{val}}
+		}
+		return &CallExpr{Func: "Map.add", Args: []Expr{key, v, m}}
 	}
 	inner := buildMapUpdate(&IndexExpr{Target: m, Index: key}, keys[1:], val)
 	return &CallExpr{Func: "Map.add", Args: []Expr{key, inner, m}}
