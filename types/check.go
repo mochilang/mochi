@@ -615,14 +615,10 @@ func Check(prog *parser.Program, env *Env) []error {
 
 	var errs []error
 
-	// First pass: gather type and function declarations so definitions can
-	// reference them regardless of order in the source file.
+	// First pass: gather all function declarations so methods defined in types
+	// can reference them regardless of order in the source file.
 	for _, stmt := range prog.Statements {
-		if stmt.Type != nil {
-			if err := checkStmt(stmt, env, VoidType{}); err != nil {
-				errs = append(errs, err)
-			}
-		} else if stmt.Fun != nil {
+		if stmt.Fun != nil {
 			params := make([]Type, len(stmt.Fun.Params))
 			for i, p := range stmt.Fun.Params {
 				if p.Type != nil {
@@ -641,8 +637,18 @@ func Check(prog *parser.Program, env *Env) []error {
 		}
 	}
 
+	// Second pass: process type declarations now that all functions are known.
 	for _, stmt := range prog.Statements {
-		if stmt.Type == nil {
+		if stmt.Type != nil {
+			if err := checkStmt(stmt, env, VoidType{}); err != nil {
+				errs = append(errs, err)
+			}
+		}
+	}
+
+	// Final pass: check remaining statements.
+	for _, stmt := range prog.Statements {
+		if stmt.Type == nil && stmt.Fun == nil {
 			if err := checkStmt(stmt, env, VoidType{}); err != nil {
 				errs = append(errs, err)
 			}
@@ -1101,23 +1107,36 @@ func checkStmt(s *parser.Statement, env *Env, expectedReturn Type) error {
 					order = append(order, m.Field.Name)
 				}
 			}
-			// Second pass: check methods
+			// Precompute method types so they can reference each other.
 			for _, m := range s.Type.Members {
 				if m.Method != nil {
-					params := []Type{}
-					for _, p := range m.Method.Params {
+					params := make([]Type, len(m.Method.Params))
+					for i, p := range m.Method.Params {
 						if p.Type == nil {
 							return errParamMissingType(m.Method.Pos, p.Name)
 						}
-						params = append(params, resolveTypeRef(p.Type, env))
+						params[i] = resolveTypeRef(p.Type, env)
 					}
 					var ret Type = VoidType{}
 					if m.Method.Return != nil {
 						ret = resolveTypeRef(m.Method.Return, env)
 					}
+					methods[m.Method.Name] = Method{Decl: m.Method, Type: FuncType{Params: params, Return: ret}}
+				}
+			}
+			// Second pass: check methods using the computed types.
+			for _, m := range s.Type.Members {
+				if m.Method != nil {
+					meth := methods[m.Method.Name]
+					params := meth.Type.Params
+					ret := meth.Type.Return
+
 					methodEnv := NewEnv(env)
 					for name, t := range fields {
 						methodEnv.SetVar(name, t, true)
+					}
+					for name, mt := range methods {
+						methodEnv.SetVar(name, mt.Type, true)
 					}
 					for i, p := range m.Method.Params {
 						methodEnv.SetVar(p.Name, params[i], true)
