@@ -1,6 +1,6 @@
 The smallest number whose square ends with 269696 is 25264
 {
-  "duration_us": 8991,
-  "memory_bytes": 1049408,
+  "duration_us": 10156,
+  "memory_bytes": 864720,
   "name": "main"
 }
