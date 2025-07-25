@@ -546,6 +546,7 @@ func (p *Program) write(w io.Writer) {
 	}
 	if usesAny {
 		p.addInclude("<map>")
+		p.addInclude("<type_traits>")
 	}
 	for _, inc := range p.Includes {
 		fmt.Fprintf(w, "#include %s\n", inc)
@@ -601,11 +602,6 @@ func (p *Program) write(w io.Writer) {
 		fmt.Fprintln(w, "    return res;")
 		fmt.Fprintln(w, "}")
 	}
-	fmt.Fprintln(w, "template<typename T> std::string _to_string(const T& v) {")
-	fmt.Fprintln(w, "    std::ostringstream ss;")
-	fmt.Fprintln(w, "    ss << std::boolalpha << v;")
-	fmt.Fprintln(w, "    return ss.str();")
-	fmt.Fprintln(w, "}")
 	if usesAny {
 		fmt.Fprintln(w, "static void any_to_stream(std::ostream& os, const std::any& val) {")
 		fmt.Fprintln(w, "    if(val.type() == typeid(int)) os << std::any_cast<int>(val);")
@@ -625,17 +621,22 @@ func (p *Program) write(w io.Writer) {
 		fmt.Fprintln(w, "    return 0;")
 		fmt.Fprintln(w, "}")
 	}
-	if len(p.Structs) > 0 {
-		fmt.Fprintln(w, "template <typename T>")
-		fmt.Fprintln(w, "std::ostream& operator<<(std::ostream& os, const std::vector<T>& vec) {")
-		fmt.Fprintln(w, "    os << \"[\";")
-		fmt.Fprintln(w, "    for(size_t i=0;i<vec.size();++i){ if(i>0) os << \", \"; os << vec[i]; }")
-		fmt.Fprintln(w, "    os << \"]\";")
-		fmt.Fprintln(w, "    return os;")
-		fmt.Fprintln(w, "}")
-		fmt.Fprintln(w)
-	}
 
+	fmt.Fprintln(w, "template <typename T>")
+	fmt.Fprintln(w, "std::ostream& operator<<(std::ostream& os, const std::vector<T>& vec) {")
+	fmt.Fprintln(w, "    os << \"[\";")
+	fmt.Fprintln(w, "    for(size_t i=0;i<vec.size();++i){ if(i>0) os << \", \"; if constexpr(std::is_same_v<T, std::any>) any_to_stream(os, vec[i]); else os << vec[i]; }")
+	fmt.Fprintln(w, "    os << \"]\";")
+	fmt.Fprintln(w, "    return os;")
+	fmt.Fprintln(w, "}")
+	fmt.Fprintln(w)
+	fmt.Fprintln(w)
+
+	fmt.Fprintln(w, "template<typename T> std::string _to_string(const T& v) {")
+	fmt.Fprintln(w, "    std::ostringstream ss;")
+	fmt.Fprintln(w, "    ss << std::boolalpha << v;")
+	fmt.Fprintln(w, "    return ss.str();")
+	fmt.Fprintln(w, "}")
 	for _, st := range p.Structs {
 		if st.Abstract {
 			fmt.Fprintf(w, "struct %s;\n", st.Name)
@@ -980,7 +981,13 @@ func (l *ListLit) emit(w io.Writer) {
 		if i > 0 {
 			io.WriteString(w, ", ")
 		}
-		e.emit(w)
+		if elemTyp == "std::any" && exprType(e) != "std::any" {
+			io.WriteString(w, "std::any(")
+			e.emit(w)
+			io.WriteString(w, ")")
+		} else {
+			e.emit(w)
+		}
 	}
 	io.WriteString(w, "}")
 }
@@ -2725,6 +2732,11 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 			if typ == "" && val != nil {
 				typ = exprType(val)
 			}
+			if typ == "std::vector<std::any>" {
+				if lst, ok := val.(*ListLit); ok {
+					lst.ElemType = "std::any"
+				}
+			}
 			globals = append(globals, &LetStmt{Name: stmt.Let.Name, Type: typ, Value: val})
 			if cp.GlobalTypes != nil {
 				cp.GlobalTypes[stmt.Let.Name] = typ
@@ -2837,6 +2849,11 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 			if typ == "" && val != nil {
 				typ = exprType(val)
 			}
+			if typ == "std::vector<std::any>" {
+				if lst, ok := val.(*ListLit); ok {
+					lst.ElemType = "std::any"
+				}
+			}
 			globals = append(globals, &LetStmt{Name: stmt.Var.Name, Type: typ, Value: val})
 			if cp.GlobalTypes != nil {
 				cp.GlobalTypes[stmt.Var.Name] = typ
@@ -2933,8 +2950,10 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 			}
 			varType := elementTypeFromListType(guessType(stmt.For.Source))
 			if vr, ok := start.(*VarRef); ok {
-				if t, ok2 := currentProgram.ListTypes[vr.Name]; ok2 {
-					varType = t
+				if _, ok3 := localTypes[vr.Name]; !ok3 {
+					if t, ok2 := currentProgram.ListTypes[vr.Name]; ok2 {
+						varType = t
+					}
 				}
 			}
 			fs.ElemType = varType
@@ -5271,6 +5290,17 @@ func guessType(e *parser.Expr) string {
 	if e == nil {
 		return "auto"
 	}
+	if e.Binary != nil && e.Binary.Left != nil && e.Binary.Left.Value != nil {
+		pf := e.Binary.Left.Value
+		if sel := pf.Target.Selector; sel != nil && len(sel.Tail) == 0 {
+			if t, ok := localTypes[sel.Root]; ok {
+				return t
+			}
+			if t, ok := globalTypes[sel.Root]; ok {
+				return t
+			}
+		}
+	}
 	if currentEnv != nil {
 		typ := types.TypeOfExpr(e, currentEnv)
 		if typ != nil {
@@ -5286,12 +5316,6 @@ func guessType(e *parser.Expr) string {
 	if e.Binary != nil && e.Binary.Left != nil && e.Binary.Left.Value != nil {
 		pf := e.Binary.Left.Value
 		if sel := pf.Target.Selector; sel != nil && len(sel.Tail) == 0 {
-			if t, ok := localTypes[sel.Root]; ok {
-				return t
-			}
-			if t, ok := globalTypes[sel.Root]; ok {
-				return t
-			}
 			if currentEnv != nil {
 				if _, err := currentEnv.GetVar(sel.Root); err != nil {
 					return "std::string"
