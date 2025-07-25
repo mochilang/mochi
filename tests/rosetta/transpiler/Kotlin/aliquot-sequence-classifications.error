@@ -2,9 +2,6 @@ OpenJDK 64-Bit Server VM warning: Options -Xverify:none and -noverify were depre
 /workspace/mochi/tests/rosetta/transpiler/Kotlin/aliquot-sequence-classifications.kt:32:25: error: type mismatch: inferred type is Int but BigInteger was expected
     var y: BigInteger = (x + 1) / 2
                         ^
-/workspace/mochi/tests/rosetta/transpiler/Kotlin/aliquot-sequence-classifications.kt:35:13: error: type mismatch: inferred type is Int but BigInteger was expected
-        y = (x + (n / x)) / 2
-            ^
 /workspace/mochi/tests/rosetta/transpiler/Kotlin/aliquot-sequence-classifications.kt:150:20: error: the integer literal does not conform to the expected type Int
     val big: Int = 15355717786080
                    ^

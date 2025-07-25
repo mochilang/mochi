@@ -30,9 +30,9 @@ fun intSqrt(n: Int): Int {
     }
     var x: Int = n
     var y: BigInteger = (x + 1) / 2
-    while ((y as Number).toDouble() < x) {
+    while (y.compareTo(x.toBigInteger()) < 0) {
         x = y as Int
-        y = (x + (n / x)) / 2
+        y = ((x + (n / x)) / 2).toBigInteger()
     }
     return x
 }
@@ -80,8 +80,8 @@ fun classifySequence(k: Int): MutableMap<String, Any?> {
                             aliquot = "Aspiring"
                         } else {
                             if ((contains(seq.subList(1, maxOf(1, n - 2)), last)) as Boolean) {
-                                val idx: Int = indexOf(seq, last)
-                                aliquot = ("Cyclic[" + ((n - 1) - idx).toString()) + "]"
+                                val idx: Any? = indexOf(seq, last)
+                                aliquot = ("Cyclic[" + ((n - 1) - (idx as Int)).toString()) + "]"
                             } else {
                                 if ((n == 16) || (last > THRESHOLD)) {
                                     aliquot = "Non-Terminating"

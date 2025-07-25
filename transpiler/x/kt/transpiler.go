@@ -2346,6 +2346,8 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 						if lit.Value > 2147483647 || lit.Value < -2147483648 {
 							typ = "Long"
 						}
+					} else if guessType(val) == "Long" {
+						typ = "Long"
 					}
 				}
 				if typ == "Any" {
@@ -2369,9 +2371,17 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 				} else if t := types.CheckExprType(st.Let.Value, env); t != nil {
 					tt = t
 				} else {
-					tt = types.AnyType{}
+					if typ == "Long" {
+						tt = types.Int64Type{}
+					} else {
+						tt = types.AnyType{}
+					}
 				}
-				env.SetVar(st.Let.Name, tt, false)
+				if typ == "Long" {
+					env.SetVar(st.Let.Name, types.Int64Type{}, false)
+				} else {
+					env.SetVar(st.Let.Name, tt, false)
+				}
 			}
 		case st.Var != nil:
 			var val Expr
@@ -2419,9 +2429,17 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 				} else if t := types.CheckExprType(st.Var.Value, env); t != nil {
 					tt = t
 				} else {
-					tt = types.AnyType{}
+					if typ == "Long" {
+						tt = types.Int64Type{}
+					} else {
+						tt = types.AnyType{}
+					}
 				}
-				env.SetVar(st.Var.Name, tt, true)
+				if typ == "Long" {
+					env.SetVar(st.Var.Name, types.Int64Type{}, true)
+				} else {
+					env.SetVar(st.Var.Name, tt, true)
+				}
 			}
 		case st.Assign != nil && len(st.Assign.Index) == 0 && len(st.Assign.Field) == 0:
 			e, err := convertExpr(env, st.Assign.Value)
@@ -2725,7 +2743,11 @@ func convertStmts(env *types.Env, list []*parser.Statement) ([]Stmt, error) {
 						}
 					}
 				}
-				env.SetVar(s.Let.Name, tt, false)
+				if typ == "Long" {
+					env.SetVar(s.Let.Name, types.Int64Type{}, false)
+				} else {
+					env.SetVar(s.Let.Name, tt, false)
+				}
 			}
 		case s.Var != nil:
 			v, err := convertExpr(env, s.Var.Value)
@@ -2759,6 +2781,8 @@ func convertStmts(env *types.Env, list []*parser.Statement) ([]Stmt, error) {
 						if lit.Value > 2147483647 || lit.Value < -2147483648 {
 							typ = "Long"
 						}
+					} else if guessType(v) == "Long" {
+						typ = "Long"
 					}
 				}
 				if typ == "Any" {
@@ -2839,7 +2863,11 @@ func convertStmts(env *types.Env, list []*parser.Statement) ([]Stmt, error) {
 						}
 					}
 				}
-				env.SetVar(s.Var.Name, tt, true)
+				if typ == "Long" {
+					env.SetVar(s.Var.Name, types.Int64Type{}, true)
+				} else {
+					env.SetVar(s.Var.Name, tt, true)
+				}
 			}
 		case s.Assign != nil && len(s.Assign.Index) == 0 && len(s.Assign.Field) == 0:
 			v, err := convertExpr(env, s.Assign.Value)
