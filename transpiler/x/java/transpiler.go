@@ -73,6 +73,8 @@ func sanitize(name string) string {
 		return "this_"
 	case "new":
 		return "new_"
+	case "double":
+		return "double_"
 	}
 	return name
 }
@@ -1207,7 +1209,7 @@ func (l *ListLit) emit(w io.Writer) {
 			} else {
 				arrType = t
 				if arrType == "" {
-					arrType = "int"
+					arrType = "Object"
 				}
 				switch arrType {
 				case "string":
@@ -1217,7 +1219,7 @@ func (l *ListLit) emit(w io.Writer) {
 				}
 			}
 		} else {
-			arrType = "int"
+			arrType = "Object"
 		}
 		arrType = javaType(arrType)
 	} else {
@@ -2014,7 +2016,7 @@ type MethodCallExpr struct {
 
 func (m *MethodCallExpr) emit(w io.Writer) {
 	m.Target.emit(w)
-	name := m.Name
+	name := sanitize(m.Name)
 	if name == "get" && len(m.Args) == 2 {
 		name = "getOrDefault"
 	}
@@ -2029,7 +2031,7 @@ func (m *MethodCallExpr) emit(w io.Writer) {
 }
 
 func (c *CallExpr) emit(w io.Writer) {
-	fmt.Fprint(w, c.Func)
+	fmt.Fprint(w, sanitize(c.Func))
 	fmt.Fprint(w, "(")
 	for i, a := range c.Args {
 		if i > 0 {
@@ -2762,8 +2764,12 @@ func compileStmt(s *parser.Statement) (Stmt, error) {
 					}
 				}
 			}
-			if l, ok := e.(*ListLit); ok && l.ElemType == "" && strings.HasSuffix(t, "[]") {
-				l.ElemType = strings.TrimSuffix(t, "[]")
+			if l, ok := e.(*ListLit); ok {
+				if l.ElemType != "" {
+					t = l.ElemType + "[]"
+				} else if strings.HasSuffix(t, "[]") {
+					l.ElemType = strings.TrimSuffix(t, "[]")
+				}
 			}
 			vs := &VarStmt{Name: s.Var.Name, Type: t, Expr: e}
 			varDecls[s.Var.Name] = vs
@@ -4265,7 +4271,7 @@ func Emit(prog *Program) []byte {
 		if ret == "" {
 			ret = "void"
 		}
-		buf.WriteString("    static " + ret + " " + fn.Name + "(")
+		buf.WriteString("    static " + ret + " " + sanitize(fn.Name) + "(")
 		for i, p := range fn.Params {
 			if i > 0 {
 				buf.WriteString(", ")
@@ -4274,7 +4280,7 @@ func Emit(prog *Program) []byte {
 			if typ == "" {
 				typ = "java.util.Map"
 			}
-			buf.WriteString(typ + " " + p.Name)
+			buf.WriteString(typ + " " + sanitize(p.Name))
 		}
 		buf.WriteString(") {\n")
 		savedVT := varTypes
@@ -4437,6 +4443,8 @@ func toJavaTypeFromType(t types.Type) string {
 		return "String"
 	case types.BigIntType:
 		return "java.math.BigInteger"
+	case types.AnyType:
+		return "Object"
 	case types.ListType:
 		et := toJavaTypeFromType(tt.Elem)
 		if et == "" {

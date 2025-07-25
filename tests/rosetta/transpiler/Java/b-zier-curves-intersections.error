@@ -1,0 +1,8 @@
+compile: exit status 1
+/tmp/TestJavaTranspiler_Rosetta_Goldenb-zier-curves-intersections46036802/001/Main.java:165: error: illegal start of expression
+            Object>[] work = workload[idx];
+                   ^
+/tmp/TestJavaTranspiler_Rosetta_Goldenb-zier-curves-intersections46036802/001/Main.java:165: error: not a statement
+            Object>[] work = workload[idx];
+                  ^
+2 errors
