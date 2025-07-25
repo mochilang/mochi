@@ -4,6 +4,7 @@ package fortran_test
 
 import (
 	"bytes"
+	"encoding/json"
 	"fmt"
 	"os"
 	"os/exec"
@@ -31,6 +32,8 @@ func runTask(name string) ([]byte, error) {
 	if errs := types.Check(prog, env); len(errs) > 0 {
 		return nil, fmt.Errorf("type: %v", errs[0])
 	}
+	bench := os.Getenv("MOCHI_BENCHMARK") != "" && os.Getenv("MOCHI_BENCHMARK") != "0"
+	ftn.SetBenchMain(bench)
 	ast, err := ftn.Transpile(prog, env)
 	if err != nil {
 		return nil, fmt.Errorf("transpile: %w", err)
@@ -49,6 +52,9 @@ func runTask(name string) ([]byte, error) {
 		return nil, fmt.Errorf("compile: %v", err)
 	}
 	cmd := exec.Command(exe)
+	if bench {
+		cmd.Env = append(os.Environ(), "MOCHI_BENCHMARK=1")
+	}
 	if data, err := os.ReadFile(strings.TrimSuffix(src, ".mochi") + ".in"); err == nil {
 		cmd.Stdin = bytes.NewReader(data)
 	}
@@ -67,6 +73,7 @@ func TestFortranTranspiler_Rosetta(t *testing.T) {
 	if _, err := exec.LookPath("gfortran"); err != nil {
 		t.Skip("gfortran not installed")
 	}
+	t.Cleanup(updateChecklist)
 	root := repoRoot(t)
 
 	names, err := listPrograms(root)
@@ -121,14 +128,31 @@ func updateChecklist() {
 	total := len(files)
 	compiled := 0
 	var lines []string
+	lines = append(lines, "| Index | Name | Status | Duration | Memory |")
+	lines = append(lines, "|------:|------|:-----:|---------:|-------:|")
 	for i, f := range files {
 		name := strings.TrimSuffix(filepath.Base(f), ".mochi")
-		mark := "[ ]"
-		if _, err := os.Stat(filepath.Join(outDir, name+".out")); err == nil {
+		status := ""
+		dur := ""
+		mem := ""
+		outPath := filepath.Join(outDir, name+".out")
+		if data, err := os.ReadFile(outPath); err == nil {
+			status = "✓"
 			compiled++
-			mark = "[x]"
+			var js struct {
+				Dur int64 `json:"duration_us"`
+				Mem int64 `json:"memory_bytes"`
+			}
+			trimmed := bytes.TrimSpace(data)
+			if idx := bytes.LastIndex(trimmed, []byte("{")); idx >= 0 {
+				trimmed = trimmed[idx:]
+			}
+			if json.Unmarshal(trimmed, &js) == nil && js.Dur > 0 {
+				dur = humanDur(time.Duration(js.Dur) * time.Microsecond)
+				mem = humanSize(js.Mem)
+			}
 		}
-		lines = append(lines, fmt.Sprintf("%d. %s %s", i+1, mark, name))
+		lines = append(lines, fmt.Sprintf("| %d | %s | %s | %s | %s |", i+1, name, status, dur, mem))
 	}
 	ts := ""
 	if out, err := exec.Command("git", "log", "-1", "--format=%cI").Output(); err == nil {
@@ -150,4 +174,32 @@ func updateChecklist() {
 		fmt.Fprintf(&buf, "\n_Last updated: %s_\n", ts)
 	}
 	_ = os.WriteFile(readme, buf.Bytes(), 0o644)
+}
+
+func humanDur(d time.Duration) string {
+	if d < time.Millisecond {
+		return fmt.Sprintf("%dus", d.Microseconds())
+	}
+	if d < time.Second {
+		return fmt.Sprintf("%.2fms", float64(d.Microseconds())/1000)
+	}
+	if d < time.Minute {
+		return fmt.Sprintf("%.2fs", d.Seconds())
+	}
+	return d.String()
+}
+
+func humanSize(n int64) string {
+	const unit = 1024
+	units := []string{"B", "KB", "MB", "GB", "TB"}
+	if n < unit {
+		return fmt.Sprintf("%d B", n)
+	}
+	val := float64(n)
+	exp := 0
+	for val >= unit && exp < len(units)-1 {
+		val /= unit
+		exp++
+	}
+	return fmt.Sprintf("%.1f %s", val, units[exp])
 }
