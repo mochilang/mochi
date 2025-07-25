@@ -4,7 +4,7 @@ Generated Lua code for programs in `tests/rosetta/x/Mochi`. Each program has a `
 
 Transpiled programs: 275/284
 
-Last updated: 2025-07-25 18:07 GMT+7
+Last updated: 2025-07-25 19:21 GMT+7
 
 Checklist:
 
@@ -147,17 +147,17 @@ Checklist:
 | 135 | brazilian-numbers | ✓ | 1m34.269996s | 3.0 KB |
 | 136 | break-oo-privacy | ✓ | 32µs | 2.9 KB |
 | 137 | brilliant-numbers | ✓ |  |  |
-| 138 | brownian-tree | ✓ |  |  |
-| 139 | bulls-and-cows-player | ✓ |  |  |
+| 138 | brownian-tree | ✓ | 4m41.44364s | 2.4 MB |
+| 139 | bulls-and-cows-player | ✓ | 38.086ms | 91.8 KB |
 | 140 | bulls-and-cows | ✓ |  |  |
-| 141 | burrows-wheeler-transform | ✓ |  |  |
-| 142 | caesar-cipher-1 | ✓ |  |  |
-| 143 | caesar-cipher-2 | ✓ |  |  |
-| 144 | calculating-the-value-of-e | ✓ |  |  |
-| 145 | calendar---for-real-programmers-1 | ✓ |  |  |
-| 146 | calendar---for-real-programmers-2 | ✓ |  |  |
-| 147 | calendar | ✓ |  |  |
-| 148 | calkin-wilf-sequence | ✓ |  |  |
+| 141 | burrows-wheeler-transform | ✓ | 7.727ms | 5.1 KB |
+| 142 | caesar-cipher-1 | ✓ | 667µs | 1.2 KB |
+| 143 | caesar-cipher-2 | ✓ | 608µs | 1.2 KB |
+| 144 | calculating-the-value-of-e | ✓ | 48µs | 2.9 KB |
+| 145 | calendar---for-real-programmers-1 | ✓ | 1.431ms | 1003 B |
+| 146 | calendar---for-real-programmers-2 | ✓ | 1.337ms | 1003 B |
+| 147 | calendar | ✓ | 1.046ms | 1003 B |
+| 148 | calkin-wilf-sequence | ✓ | 206µs | 864 B |
 | 149 | call-a-foreign-language-function | ✓ |  |  |
 | 150 | call-a-function-1 | ✓ |  |  |
 | 151 | call-a-function-10 | ✓ |  |  |
