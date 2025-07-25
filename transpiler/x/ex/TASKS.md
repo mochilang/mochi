@@ -1,5 +1,5 @@
-## Progress (2025-07-25 19:29 +0700)
-- Commit f1df3b85c1: go transpiler: update rosetta outputs for indices 43-56
+## Progress (2025-07-25 21:12 +0700)
+- Commit 00b4b2a038: ex transpiler: add rosetta output for index 41
 - Generated Elixir for 102/104 programs
 - Updated README checklist and outputs
 - Improved code emission and type inference

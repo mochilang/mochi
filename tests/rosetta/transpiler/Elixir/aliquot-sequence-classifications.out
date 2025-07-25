@@ -1,0 +1,33 @@
+Aliquot classifications - periods for Sociable/Cyclic in square brackets:
+
+ 1: Terminating     [10]
+ 2: Terminating     [210]
+ 3: Terminating     [310]
+ 4: Terminating     [410]
+ 5: Terminating     [510]
+ 6: Terminating     [610]
+ 7: Terminating     [710]
+ 8: Terminating     [810]
+ 9: Terminating     [910]
+10: Terminating     [1010]
+
+     11: Terminating     [1110]
+     12: Terminating     [1210]
+     28: Terminating     [2810]
+    496: Terminating     [49610]
+    220: Terminating     [22010]
+   1184: Terminating     [118410]
+  12496: Terminating     [1249610]
+1264460: Terminating     [126446010]
+    790: Terminating     [79010]
+    909: Terminating     [90910]
+    562: Terminating     [56210]
+   1064: Terminating     [106410]
+   1488: Terminating     [148810]
+
+15355717786080: Terminating     [1535571778608010]
+{
+  "duration_us": 75492,
+  "memory_bytes": 138624,
+  "name": "main"
+}

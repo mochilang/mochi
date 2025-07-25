@@ -23,6 +23,17 @@ import (
 	"mochi/types"
 )
 
+var elixirReserved = map[string]struct{}{
+	"fn": {},
+}
+
+func sanitizeIdent(name string) string {
+	if _, ok := elixirReserved[name]; ok {
+		return name + "_"
+	}
+	return name
+}
+
 var funcDepth int
 
 // builtinAliases maps import aliases to special built-in modules.
@@ -71,10 +82,10 @@ func (v *VarRef) emit(w io.Writer) {
 			fmt.Fprintf(w, "Process.get(:%s)", moduleAttrName(v.Name))
 			return
 		}
-		io.WriteString(w, v.Name)
+		io.WriteString(w, sanitizeIdent(v.Name))
 		return
 	}
-	io.WriteString(w, v.Name)
+	io.WriteString(w, sanitizeIdent(v.Name))
 }
 
 // LetStmt binds a variable optionally to a value.
@@ -87,7 +98,7 @@ func (s *LetStmt) emit(w io.Writer, indent int) {
 	for i := 0; i < indent; i++ {
 		io.WriteString(w, "  ")
 	}
-	io.WriteString(w, s.Name)
+	io.WriteString(w, sanitizeIdent(s.Name))
 	io.WriteString(w, " = ")
 	if s.Value != nil {
 		s.Value.emit(w)
@@ -128,9 +139,9 @@ func (s *AssignStmt) emit(w io.Writer, indent int) {
 			io.WriteString(w, ")")
 			return
 		}
-		io.WriteString(w, s.Name)
+		io.WriteString(w, sanitizeIdent(s.Name))
 	} else {
-		io.WriteString(w, s.Name)
+		io.WriteString(w, sanitizeIdent(s.Name))
 	}
 	io.WriteString(w, " = ")
 	s.Value.emit(w)
@@ -768,13 +779,13 @@ func (fn *FuncDecl) emit(w io.Writer, indent int) {
 		io.WriteString(w, "  ")
 	}
 	io.WriteString(w, "def ")
-	io.WriteString(w, fn.Name)
+	io.WriteString(w, sanitizeIdent(fn.Name))
 	io.WriteString(w, "(")
 	for i, p := range fn.Params {
 		if i > 0 {
 			io.WriteString(w, ", ")
 		}
-		io.WriteString(w, p)
+		io.WriteString(w, sanitizeIdent(p))
 	}
 	io.WriteString(w, ") do\n")
 	for i := 0; i < indent+1; i++ {
@@ -816,7 +827,7 @@ func (af *AnonFun) emit(w io.Writer) {
 		if i > 0 {
 			io.WriteString(w, ", ")
 		}
-		io.WriteString(w, p)
+		io.WriteString(w, sanitizeIdent(p))
 	}
 	io.WriteString(w, " ->")
 	if len(af.Body) == 1 {
@@ -2827,6 +2838,10 @@ func compilePostfix(pf *parser.PostfixExpr, env *types.Env) (Expr, error) {
 				}
 			}
 		}
+		if method == "get" {
+			base := &VarRef{Name: alias}
+			return &CallExpr{Func: "Map.get", Args: append([]Expr{base}, args...)}, nil
+		}
 		funcName := alias + "." + method
 		return &CallExpr{Func: funcName, Args: args}, nil
 	}
@@ -2948,7 +2963,9 @@ func compilePostfix(pf *parser.PostfixExpr, env *types.Env) (Expr, error) {
 				}
 				args[j] = ce
 			}
-			if v, ok := expr.(*VarRef); ok {
+			if op.Field.Name == "get" {
+				expr = &CallExpr{Func: "Map.get", Args: append([]Expr{expr}, args...)}
+			} else if v, ok := expr.(*VarRef); ok {
 				methodName := v.Name + "." + op.Field.Name
 				expr = &CallExpr{Func: methodName, Args: args}
 			} else {

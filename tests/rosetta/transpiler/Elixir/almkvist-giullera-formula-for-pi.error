@@ -1,0 +1,23 @@
+run: exit status 1
+** (SyntaxError) invalid syntax found on /workspace/mochi/tests/rosetta/transpiler/Elixir/almkvist-giullera-formula-for-pi.exs:733:23:
+     error: unexpected comma. Parentheses are required to solve ambiguity inside containers.
+
+     This error may happen when you forget a comma in a list or other container:
+
+         [a, b c, d]
+
+     Or when you have ambiguous calls:
+
+         [function a, b, c]
+
+     In the example above, we don't know if the values "b" and "c" belongs to the list or the function "function". You can solve this by explicitly adding parentheses:
+
+         [one, function(a, b, c)]
+
+     Elixir cannot compile otherwise. Syntax error before: ','
+     │
+ 733 │       throw {:return, if bigCmp(a, b) >= 0, do: bigSub(a, b), else: bigSub(b, a)}
+     │                       ^
+     │
+     └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/almkvist-giullera-formula-for-pi.exs:733:23
+    (elixir 1.18.3) lib/code.ex:1525: Code.require_file/2
