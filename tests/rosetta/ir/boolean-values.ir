@@ -1,0 +1,93 @@
+func main (regs=1)
+  // main()
+  Call         r0, main, 
+  Return       r0
+
+  // fun parseBool(s: string): bool {
+func parseBool (regs=15)
+  // let l = lower(s)
+  Lower        r1, r0
+  Move         r2, r1
+  // if l == "1" || l == "t" || l == "true" || l == "yes" || l == "y" {
+  Const        r3, "1"
+  Equal        r4, r2, r3
+  Const        r5, "t"
+  Equal        r6, r2, r5
+  Const        r7, true
+  Equal        r8, r2, r7
+  Const        r9, "yes"
+  Equal        r10, r2, r9
+  Const        r11, "y"
+  Equal        r12, r2, r11
+  Move         r13, r4
+  JumpIfTrue   r13, L0
+  Move         r13, r6
+  JumpIfTrue   r13, L0
+  Move         r13, r8
+  JumpIfTrue   r13, L0
+  Move         r13, r10
+  JumpIfTrue   r13, L0
+  Move         r13, r12
+L0:
+  JumpIfFalse  r13, L1
+  // return true
+  Const        r7, true
+  Return       r7
+L1:
+  // return false
+  Const        r14, false
+  Return       r14
+
+  // fun main() {
+func main (regs=21)
+  // var n = true
+  Const        r0, true
+  Move         r1, r0
+  // print(n)
+  Print        r1
+  // print("bool")
+  Const        r2, "bool"
+  Print        r2
+  // n = !n
+  Not          r3, r1
+  Move         r1, r3
+  // print(n)
+  Print        r1
+  // let x = 5
+  Const        r4, 5
+  Move         r5, r4
+  // let y = 8
+  Const        r6, 8
+  Move         r7, r6
+  // print("x == y:", x == y)
+  Const        r8, "x == y:"
+  Const        r4, 5
+  Const        r6, 8
+  EqualInt     r9, r4, r6
+  Print2       r8, r9
+  // print("x < y:", x < y)
+  Const        r10, "x < y:"
+  Const        r4, 5
+  Const        r6, 8
+  LessInt      r11, r4, r6
+  Print2       r10, r11
+  // print("\nConvert String into Boolean Data type\n")
+  Const        r12, "\nConvert String into Boolean Data type\n"
+  Print        r12
+  // let str1 = "japan"
+  Const        r13, "japan"
+  Move         r14, r13
+  // print("Before :", "string")
+  Const        r15, "Before :"
+  Const        r16, "string"
+  Print2       r15, r16
+  // let bolStr = parseBool(str1)
+  Const        r13, "japan"
+  Move         r17, r13
+  Call         r18, parseBool, r17
+  Move         r19, r18
+  // print("After :", "bool")
+  Const        r20, "After :"
+  Const        r2, "bool"
+  Print2       r20, r2
+  Return       r0

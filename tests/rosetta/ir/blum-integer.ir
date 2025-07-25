@@ -1,0 +1,370 @@
+func main (regs=1)
+  // main()
+  Call         r0, main, 
+  Return       r0
+
+  // fun isPrime(n: int): bool {
+func isPrime (regs=24)
+  // if n < 2 { return false }
+  Const        r1, 2
+  Less         r2, r0, r1
+  JumpIfFalse  r2, L0
+  Const        r3, false
+  Return       r3
+L0:
+  // if n % 2 == 0 { return n == 2 }
+  Const        r1, 2
+  Mod          r4, r0, r1
+  Const        r5, 0
+  Equal        r6, r4, r5
+  JumpIfFalse  r6, L1
+  Const        r1, 2
+  Equal        r7, r0, r1
+  Return       r7
+L1:
+  // if n % 3 == 0 { return n == 3 }
+  Const        r8, 3
+  Mod          r9, r0, r8
+  Const        r5, 0
+  Equal        r10, r9, r5
+  JumpIfFalse  r10, L2
+  Const        r8, 3
+  Equal        r11, r0, r8
+  Return       r11
+L2:
+  // var d = 5
+  Const        r12, 5
+  Move         r13, r12
+L6:
+  // while d * d <= n {
+  MulInt       r14, r13, r13
+  LessEq       r15, r14, r0
+  JumpIfFalse  r15, L3
+  // if n % d == 0 { return false }
+  Mod          r16, r0, r13
+  Const        r5, 0
+  Equal        r17, r16, r5
+  JumpIfFalse  r17, L4
+  Const        r3, false
+  Return       r3
+L4:
+  // d = d + 2
+  Const        r1, 2
+  AddInt       r18, r13, r1
+  Move         r13, r18
+  // if n % d == 0 { return false }
+  Mod          r19, r0, r13
+  Const        r5, 0
+  Equal        r20, r19, r5
+  JumpIfFalse  r20, L5
+  Const        r3, false
+  Return       r3
+L5:
+  // d = d + 4
+  Const        r21, 4
+  AddInt       r22, r13, r21
+  Move         r13, r22
+  // while d * d <= n {
+  Jump         L6
+L3:
+  // return true
+  Const        r23, true
+  Return       r23
+
+  // fun firstPrimeFactor(n: int): int {
+func firstPrimeFactor (regs=24)
+  // if n == 1 { return 1 }
+  Const        r1, 1
+  Equal        r2, r0, r1
+  JumpIfFalse  r2, L0
+  Const        r1, 1
+  Return       r1
+L0:
+  // if n % 3 == 0 { return 3 }
+  Const        r3, 3
+  Mod          r4, r0, r3
+  Const        r5, 0
+  Equal        r6, r4, r5
+  JumpIfFalse  r6, L1
+  Const        r3, 3
+  Return       r3
+L1:
+  // if n % 5 == 0 { return 5 }
+  Const        r7, 5
+  Mod          r8, r0, r7
+  Const        r5, 0
+  Equal        r9, r8, r5
+  JumpIfFalse  r9, L2
+  Const        r7, 5
+  Return       r7
+L2:
+  // var inc = [4,2,4,2,4,6,2,6]
+  Const        r10, [4, 2, 4, 2, 4, 6, 2, 6]
+  Move         r11, r10
+  // var k = 7
+  Const        r12, 7
+  Move         r13, r12
+  // var i = 0
+  Const        r5, 0
+  Move         r14, r5
+L5:
+  // while k * k <= n {
+  MulInt       r15, r13, r13
+  LessEq       r16, r15, r0
+  JumpIfFalse  r16, L3
+  // if n % k == 0 { return k }
+  Mod          r17, r0, r13
+  Const        r5, 0
+  Equal        r18, r17, r5
+  JumpIfFalse  r18, L4
+  Return       r13
+L4:
+  // k = k + inc[i]
+  Index        r19, r11, r14
+  Add          r20, r13, r19
+  Move         r13, r20
+  // i = (i + 1) % len(inc)
+  Const        r1, 1
+  AddInt       r21, r14, r1
+  Const        r22, 8
+  ModInt       r23, r21, r22
+  Move         r14, r23
+  // while k * k <= n {
+  Jump         L5
+L3:
+  // return n
+  Return       r0
+
+  // fun indexOf(s: string, ch: string): int {
+func indexOf (regs=12)
+  // var i = 0
+  Const        r2, 0
+  Move         r3, r2
+L2:
+  // while i < len(s) {
+  Len          r4, r0
+  LessInt      r5, r3, r4
+  JumpIfFalse  r5, L0
+  // if substring(s, i, i+1) == ch { return i }
+  Const        r6, 1
+  AddInt       r7, r3, r6
+  Slice        r8, r0, r3, r7
+  Equal        r9, r8, r1
+  JumpIfFalse  r9, L1
+  Return       r3
+L1:
+  // i = i + 1
+  Const        r6, 1
+  AddInt       r10, r3, r6
+  Move         r3, r10
+  // while i < len(s) {
+  Jump         L2
+L0:
+  // return -1
+  Const        r6, 1
+  NegInt       r11, r6
+  Return       r11
+
+  // fun padLeft(n: int, width: int): string {
+func padLeft (regs=8)
+  // var s = str(n)
+  Str          r2, r0
+  Move         r3, r2
+L1:
+  // while len(s) < width {
+  Len          r4, r3
+  Less         r5, r4, r1
+  JumpIfFalse  r5, L0
+  // s = " " + s
+  Const        r6, " "
+  Add          r7, r6, r3
+  Move         r3, r7
+  // while len(s) < width {
+  Jump         L1
+L0:
+  // return s
+  Return       r3
+
+  // fun formatFloat(f: float, prec: int): string {
+func formatFloat (regs=18)
+  // let s = str(f)
+  Str          r2, r0
+  Move         r3, r2
+  // let idx = indexOf(s, ".")
+  Move         r4, r3
+  Const        r6, "."
+  Move         r5, r6
+  Call2        r7, indexOf, r4, r5
+  Move         r8, r7
+  // if idx < 0 { return s }
+  Const        r9, 0
+  Less         r10, r8, r9
+  JumpIfFalse  r10, L0
+  Return       r3
+L0:
+  // let need = idx + 1 + prec
+  Const        r11, 1
+  Add          r12, r8, r11
+  Add          r13, r12, r1
+  Move         r14, r13
+  // if len(s) > need { return substring(s, 0, need) }
+  Len          r15, r3
+  Less         r16, r14, r15
+  JumpIfFalse  r16, L1
+  Const        r9, 0
+  Slice        r17, r3, r9, r14
+  Return       r17
+L1:
+  // return s
+  Return       r3
+
+  // fun main() {
+func main (regs=63)
+  // var blum: list<int> = []
+  Const        r0, []
+  Move         r1, r0
+  // var counts = [0,0,0,0]
+  Const        r2, [0, 0, 0, 0]
+  Move         r3, r2
+  // var digits = [1,3,7,9]
+  Const        r4, [1, 3, 7, 9]
+  Move         r5, r4
+  // var i = 1
+  Const        r6, 1
+  Move         r7, r6
+  // var bc = 0
+  Const        r8, 0
+  Move         r9, r8
+L9:
+  // while true {
+  Const        r10, true
+  // let p = firstPrimeFactor(i)
+  Move         r11, r7
+  Call         r12, firstPrimeFactor, r11
+  Move         r13, r12
+  // if p % 4 == 3 {
+  Const        r14, 4
+  Mod          r15, r13, r14
+  Const        r16, 3
+  Equal        r17, r15, r16
+  JumpIfFalse  r17, L0
+  // let q = (i / p) as int
+  Div          r18, r7, r13
+  Cast         r19, r18, int
+  Move         r20, r19
+  // if q != p && q % 4 == 3 && isPrime(q) {
+  Const        r14, 4
+  Mod          r21, r20, r14
+  NotEqual     r22, r20, r13
+  Const        r16, 3
+  Equal        r23, r21, r16
+  Move         r24, r22
+  JumpIfFalse  r24, L1
+  Move         r24, r23
+  JumpIfFalse  r24, L1
+  Move         r25, r20
+  Call         r26, isPrime, r25
+  Move         r24, r26
+L1:
+  JumpIfFalse  r24, L0
+  // if bc < 50 { blum = append(blum, i) }
+  Const        r27, 50
+  LessInt      r28, r9, r27
+  JumpIfFalse  r28, L2
+  Append       r29, r1, r7
+  Move         r1, r29
+L2:
+  // let d = i % 10
+  Const        r30, 10
+  ModInt       r31, r7, r30
+  Move         r32, r31
+  // if d == 1 { counts[0] = counts[0] + 1 }
+  Const        r6, 1
+  EqualInt     r33, r32, r6
+  JumpIfFalse  r33, L3
+  Const        r8, 0
+  Index        r34, r3, r8
+  Const        r6, 1
+  Add          r35, r34, r6
+  Const        r8, 0
+  SetIndex     r3, r8, r35
+L3:
+  // bc = bc + 1
+  Const        r6, 1
+  AddInt       r36, r9, r6
+  Move         r9, r36
+  // if bc == 50 {
+  Const        r27, 50
+  EqualInt     r37, r9, r27
+  JumpIfFalse  r37, L0
+  // print("First 50 Blum integers:")
+  Const        r38, "First 50 Blum integers:"
+  Print        r38
+  // var idx = 0
+  Const        r8, 0
+  Move         r39, r8
+L7:
+  // while idx < 50 {
+  Const        r27, 50
+  LessInt      r40, r39, r27
+  JumpIfFalse  r40, L4
+  // var line = ""
+  Const        r41, ""
+  Move         r42, r41
+  // var j = 0
+  Const        r8, 0
+  Move         r43, r8
+L6:
+  // while j < 10 {
+  Const        r30, 10
+  LessInt      r44, r43, r30
+  JumpIfFalse  r44, L5
+  // line = line + padLeft(blum[idx],3) + " "
+  Index        r47, r1, r39
+  Move         r45, r47
+  Const        r16, 3
+  Move         r46, r16
+  Call2        r48, padLeft, r45, r46
+  Add          r49, r42, r48
+  Const        r50, " "
+  Add          r51, r49, r50
+  Move         r42, r51
+  // idx = idx + 1
+  Const        r6, 1
+  AddInt       r52, r39, r6
+  Move         r39, r52
+  // j = j + 1
+  Const        r6, 1
+  AddInt       r53, r43, r6
+  Move         r43, r53
+  // while j < 10 {
+  Jump         L6
+L5:
+  // print(substring(line,0,len(line)-1))
+  Const        r8, 0
+  Len          r54, r42
+  Const        r6, 1
+  SubInt       r55, r54, r6
+  Slice        r56, r42, r8, r55
+  Print        r56
+  // while idx < 50 {
+  Jump         L7
+L0:
+  // if i % 5 == 3 { i = i + 4 } else { i = i + 2 }
+  Const        r57, 5
+  ModInt       r58, r7, r57
+  Const        r16, 3
+  EqualInt     r59, r58, r16
+  JumpIfFalse  r59, L8
+  Const        r14, 4
+  AddInt       r60, r7, r14
+  Move         r7, r60
+  Jump         L9
+L8:
+  Const        r61, 2
+  AddInt       r62, r7, r61
+  Move         r7, r62
+  // while true {
+  Jump         L9
+L4:
+  Return       r0

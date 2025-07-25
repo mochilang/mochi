@@ -1,0 +1,247 @@
+func main (regs=1)
+  // main()
+  Call         r0, main, 
+  Return       r0
+
+  // fun indexOf(s: string, ch: string): int {
+func indexOf (regs=12)
+  // var i = 0
+  Const        r2, 0
+  Move         r3, r2
+L2:
+  // while i < len(s) {
+  Len          r4, r0
+  LessInt      r5, r3, r4
+  JumpIfFalse  r5, L0
+  // if substring(s, i, i + 1) == ch { return i }
+  Const        r6, 1
+  AddInt       r7, r3, r6
+  Slice        r8, r0, r3, r7
+  Equal        r9, r8, r1
+  JumpIfFalse  r9, L1
+  Return       r3
+L1:
+  // i = i + 1
+  Const        r6, 1
+  AddInt       r10, r3, r6
+  Move         r3, r10
+  // while i < len(s) {
+  Jump         L2
+L0:
+  // return -1
+  Const        r6, 1
+  NegInt       r11, r6
+  Return       r11
+
+  // fun shuffle(xs: list<string>): list<string> {
+func shuffle (regs=16)
+  // var arr = xs
+  Move         r1, r0
+  // var i = len(arr) - 1
+  Len          r2, r1
+  Const        r3, 1
+  SubInt       r4, r2, r3
+  Move         r5, r4
+L1:
+  // while i > 0 {
+  Const        r6, 0
+  LessInt      r7, r6, r5
+  JumpIfFalse  r7, L0
+  // let j = now() % (i + 1)
+  Now          r8
+  Const        r3, 1
+  AddInt       r9, r5, r3
+  ModInt       r10, r8, r9
+  Move         r11, r10
+  // let tmp = arr[i]
+  Index        r12, r1, r5
+  Move         r13, r12
+  // arr[i] = arr[j]
+  Index        r14, r1, r11
+  SetIndex     r1, r5, r14
+  // arr[j] = tmp
+  SetIndex     r1, r11, r13
+  // i = i - 1
+  Const        r3, 1
+  SubInt       r15, r5, r3
+  Move         r5, r15
+  // while i > 0 {
+  Jump         L1
+L0:
+  // return arr
+  Return       r1
+
+  // fun main() {
+func main (regs=73)
+  // print("Cows and Bulls")
+  Const        r0, "Cows and Bulls"
+  Print        r0
+  // print("Guess four digit number of unique digits in the range 1 to 9.")
+  Const        r1, "Guess four digit number of unique digits in the range 1 to 9."
+  Print        r1
+  // print("A correct digit but not in the correct place is a cow.")
+  Const        r2, "A correct digit but not in the correct place is a cow."
+  Print        r2
+  // print("A correct digit in the correct place is a bull.")
+  Const        r3, "A correct digit in the correct place is a bull."
+  Print        r3
+  // var digits = ["1","2","3","4","5","6","7","8","9"]
+  Const        r4, ["1", "2", "3", "4", "5", "6", "7", "8", "9"]
+  Move         r5, r4
+  // digits = shuffle(digits)
+  Move         r6, r5
+  Call         r7, shuffle, r6
+  Move         r5, r7
+  // var pat = digits[0] + digits[1] + digits[2] + digits[3]
+  Const        r8, 0
+  Index        r9, r5, r8
+  Const        r10, 1
+  Index        r11, r5, r10
+  Add          r12, r9, r11
+  Const        r13, 2
+  Index        r14, r5, r13
+  Add          r15, r12, r14
+  Const        r16, 3
+  Index        r17, r5, r16
+  Add          r18, r15, r17
+  Move         r19, r18
+  // let valid = "123456789"
+  Const        r20, "123456789"
+  Move         r21, r20
+L2:
+  // while true {
+  Const        r22, true
+  JumpIfFalse  r22, L0
+  // print("Guess: ")
+  Const        r23, "Guess: "
+  Print        r23
+  // let guess = input()
+  Input        r24
+  Move         r25, r24
+  // if len(guess) != 4 {
+  Len          r26, r25
+  Const        r27, 4
+  NotEqual     r28, r26, r27
+  JumpIfFalse  r28, L1
+  // print("Please guess a four digit number.")
+  Const        r29, "Please guess a four digit number."
+  Print        r29
+  // continue
+  Jump         L2
+L1:
+  // var cows = 0
+  Const        r8, 0
+  Move         r30, r8
+  // var bulls = 0
+  Const        r8, 0
+  Move         r31, r8
+  // var seen = ""
+  Const        r32, ""
+  Move         r33, r32
+  // var i = 0
+  Const        r8, 0
+  Move         r34, r8
+  // var malformed = false
+  Const        r35, false
+  Move         r36, r35
+L8:
+  // while i < 4 {
+  Const        r27, 4
+  LessInt      r37, r34, r27
+  JumpIfFalse  r37, L3
+  // let cg = substring(guess, i, i + 1)
+  Const        r10, 1
+  AddInt       r38, r34, r10
+  Slice        r39, r25, r34, r38
+  Move         r40, r39
+  // if indexOf(seen, cg) != (-1) {
+  Move         r41, r33
+  Move         r42, r40
+  Call2        r43, indexOf, r41, r42
+  Const        r44, -1
+  NotEqual     r45, r43, r44
+  JumpIfFalse  r45, L4
+  // print("Repeated digit: " + cg)
+  Const        r46, "Repeated digit: "
+  Add          r47, r46, r40
+  Print        r47
+  // malformed = true
+  Const        r22, true
+  Move         r36, r22
+  // break
+  Jump         L3
+L4:
+  // seen = seen + cg
+  Add          r48, r33, r40
+  Move         r33, r48
+  // let pos = indexOf(pat, cg)
+  Move         r49, r19
+  Move         r50, r40
+  Call2        r51, indexOf, r49, r50
+  Move         r52, r51
+  // if pos == (-1) {
+  Const        r44, -1
+  Equal        r53, r52, r44
+  JumpIfFalse  r53, L5
+  // if indexOf(valid, cg) == (-1) {
+  Const        r20, "123456789"
+  Move         r54, r20
+  Move         r55, r40
+  Call2        r56, indexOf, r54, r55
+  Const        r44, -1
+  Equal        r57, r56, r44
+  JumpIfFalse  r57, L6
+  // print("Invalid digit: " + cg)
+  Const        r58, "Invalid digit: "
+  Add          r59, r58, r40
+  Print        r59
+  // malformed = true
+  Const        r22, true
+  Move         r36, r22
+  // break
+  Jump         L3
+L5:
+  // if pos == i {
+  Equal        r60, r52, r34
+  JumpIfFalse  r60, L7
+  // bulls = bulls + 1
+  Const        r10, 1
+  AddInt       r61, r31, r10
+  Move         r31, r61
+  // if pos == i {
+  Jump         L6
+L7:
+  // cows = cows + 1
+  Const        r10, 1
+  AddInt       r62, r30, r10
+  Move         r30, r62
+L6:
+  // i = i + 1
+  Const        r10, 1
+  AddInt       r63, r34, r10
+  Move         r34, r63
+  // while i < 4 {
+  Jump         L8
+L3:
+  // if malformed { continue }
+  JumpIfFalse  r36, L9
+  Jump         L2
+L9:
+  // print("Cows: " + str(cows) + ", bulls: " + str(bulls))
+  Const        r64, "Cows: "
+  Str          r65, r30
+  Add          r66, r64, r65
+  Const        r67, ", bulls: "
+  Add          r68, r66, r67
+  Str          r69, r31
+  Add          r70, r68, r69
+  Print        r70
+  // if bulls == 4 {
+  Const        r27, 4
+  EqualInt     r71, r31, r27
+  JumpIfFalse  r71, L2
+  // print("You got it.")
+  Const        r72, "You got it."
+  Print        r72
+L0:
+  Return       r0

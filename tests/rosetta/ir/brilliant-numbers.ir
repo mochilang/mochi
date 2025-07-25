@@ -1,0 +1,502 @@
+func main (regs=4)
+  // var primes = primesUpTo(3200000)
+  Const        r2, 3200000
+  Move         r1, r2
+  Call         r3, primesUpTo, r1
+  Move         r0, r3
+  SetGlobal    0,0,0,0
+  Return       r0
+
+  // fun primesUpTo(n: int): list<int> {
+func primesUpTo (regs=28)
+  // var sieve: list<bool> = []
+  Const        r2, []
+  Move         r3, r2
+  // var i = 0
+  Const        r4, 0
+  Move         r5, r4
+L1:
+  // while i <= n {
+  LessEq       r6, r5, r1
+  JumpIfFalse  r6, L0
+  // sieve = append(sieve, true)
+  Const        r7, true
+  Append       r8, r3, r7
+  Move         r3, r8
+  // i = i + 1
+  Const        r9, 1
+  AddInt       r10, r5, r9
+  Move         r5, r10
+  // while i <= n {
+  Jump         L1
+L0:
+  // var p = 2
+  Const        r11, 2
+  Move         r12, r11
+L5:
+  // while p * p <= n {
+  MulInt       r13, r12, r12
+  LessEq       r14, r13, r1
+  JumpIfFalse  r14, L2
+  // if sieve[p] {
+  Index        r15, r3, r12
+  JumpIfFalse  r15, L3
+  // var m = p * p
+  MulInt       r16, r12, r12
+  Move         r17, r16
+L4:
+  // while m <= n {
+  LessEq       r18, r17, r1
+  JumpIfFalse  r18, L3
+  // sieve[m] = false
+  Const        r19, false
+  SetIndex     r3, r17, r19
+  // m = m + p
+  AddInt       r20, r17, r12
+  Move         r17, r20
+  // while m <= n {
+  Jump         L4
+L3:
+  // p = p + 1
+  Const        r9, 1
+  AddInt       r21, r12, r9
+  Move         r12, r21
+  // while p * p <= n {
+  Jump         L5
+L2:
+  // var res: list<int> = []
+  Const        r2, []
+  Move         r22, r2
+  // var x = 2
+  Const        r11, 2
+  Move         r23, r11
+L8:
+  // while x <= n {
+  LessEq       r24, r23, r1
+  JumpIfFalse  r24, L6
+  // if sieve[x] { res = append(res, x) }
+  Index        r25, r3, r23
+  JumpIfFalse  r25, L7
+  Append       r26, r22, r23
+  Move         r22, r26
+L7:
+  // x = x + 1
+  Const        r9, 1
+  AddInt       r27, r23, r9
+  Move         r23, r27
+  // while x <= n {
+  Jump         L8
+L6:
+  // return res
+  Return       r22
+
+  // fun sortInts(xs: list<int>): list<int> {
+func sortInts (regs=28)
+  // var res: list<int> = []
+  Const        r2, []
+  Move         r3, r2
+  // var tmp = xs
+  Move         r4, r1
+L7:
+  // while len(tmp) > 0 {
+  Len          r5, r4
+  Const        r6, 0
+  LessInt      r7, r6, r5
+  JumpIfFalse  r7, L0
+  // var min = tmp[0]
+  Const        r6, 0
+  Index        r8, r4, r6
+  Move         r9, r8
+  // var idx = 0
+  Const        r6, 0
+  Move         r10, r6
+  // var i = 1
+  Const        r11, 1
+  Move         r12, r11
+L3:
+  // while i < len(tmp) {
+  Len          r13, r4
+  LessInt      r14, r12, r13
+  JumpIfFalse  r14, L1
+  // if tmp[i] < min {
+  Index        r15, r4, r12
+  Less         r16, r15, r9
+  JumpIfFalse  r16, L2
+  // min = tmp[i]
+  Index        r17, r4, r12
+  Move         r9, r17
+  // idx = i
+  Move         r10, r12
+L2:
+  // i = i + 1
+  Const        r11, 1
+  AddInt       r18, r12, r11
+  Move         r12, r18
+  // while i < len(tmp) {
+  Jump         L3
+L1:
+  // res = append(res, min)
+  Append       r19, r3, r9
+  Move         r3, r19
+  // var out: list<int> = []
+  Const        r2, []
+  Move         r20, r2
+  // var j = 0
+  Const        r6, 0
+  Move         r21, r6
+L6:
+  // while j < len(tmp) {
+  Len          r22, r4
+  LessInt      r23, r21, r22
+  JumpIfFalse  r23, L4
+  // if j != idx { out = append(out, tmp[j]) }
+  NotEqual     r24, r21, r10
+  JumpIfFalse  r24, L5
+  Index        r25, r4, r21
+  Append       r26, r20, r25
+  Move         r20, r26
+L5:
+  // j = j + 1
+  Const        r11, 1
+  AddInt       r27, r21, r11
+  Move         r21, r27
+  // while j < len(tmp) {
+  Jump         L6
+L4:
+  // tmp = out
+  Move         r4, r20
+  // while len(tmp) > 0 {
+  Jump         L7
+L0:
+  // return res
+  Return       r3
+
+  // fun commatize(n: int): string {
+func commatize (regs=22)
+  // var s = str(n)
+  Str          r2, r1
+  Move         r3, r2
+  // var i = len(s) - 3
+  Len          r4, r3
+  Const        r5, 3
+  SubInt       r6, r4, r5
+  Move         r7, r6
+L1:
+  // while i >= 1 {
+  Const        r8, 1
+  LessEqInt    r9, r8, r7
+  JumpIfFalse  r9, L0
+  // s = s[0:i] + "," + s[i:len(s)]
+  Const        r11, 0
+  Move         r10, r11
+  Move         r12, r7
+  Slice        r13, r3, r10, r12
+  Const        r14, ","
+  Add          r15, r13, r14
+  Move         r16, r7
+  Len          r18, r3
+  Move         r17, r18
+  Slice        r19, r3, r16, r17
+  Add          r20, r15, r19
+  Move         r3, r20
+  // i = i - 3
+  Const        r5, 3
+  SubInt       r21, r7, r5
+  Move         r7, r21
+  // while i >= 1 {
+  Jump         L1
+L0:
+  // return s
+  Return       r3
+
+  // fun getBrilliant(digits: int, limit: int, countOnly: bool): map<string,any> {
+func getBrilliant (regs=58)
+  // var brilliant: list<int> = []
+  Const        r4, []
+  Move         r5, r4
+  // var count = 0
+  Const        r6, 0
+  Move         r7, r6
+  // var pow = 1
+  Const        r8, 1
+  Move         r9, r8
+  // var next = 999999999999999
+  Const        r10, 999999999999999
+  Move         r11, r10
+  // var k = 1
+  Const        r8, 1
+  Move         r12, r8
+L12:
+  // while k <= digits {
+  LessEq       r13, r12, r1
+  JumpIfFalse  r13, L0
+  // var s: list<int> = []
+  Const        r4, []
+  Move         r14, r4
+  // for p in primes {
+  IterPrep     r15, r0
+  Len          r16, r15
+  Const        r17, 0
+L4:
+  LessInt      r18, r17, r16
+  JumpIfFalse  r18, L1
+  Index        r19, r15, r17
+  Move         r20, r19
+  // if p >= pow * 10 { break }
+  Const        r21, 10
+  MulInt       r22, r9, r21
+  LessEq       r23, r22, r20
+  JumpIfFalse  r23, L2
+  Jump         L1
+L2:
+  // if p > pow { s = append(s, p) }
+  Less         r24, r9, r20
+  JumpIfFalse  r24, L3
+  Append       r25, r14, r20
+  Move         r14, r25
+L3:
+  // for p in primes {
+  Const        r26, 1
+  AddInt       r27, r17, r26
+  Move         r17, r27
+  Jump         L4
+L1:
+  // var i = 0
+  Const        r6, 0
+  Move         r28, r6
+L11:
+  // while i < len(s) {
+  Len          r29, r14
+  LessInt      r30, r28, r29
+  JumpIfFalse  r30, L5
+  // var j = i
+  Move         r31, r28
+L10:
+  // while j < len(s) {
+  Len          r32, r14
+  LessInt      r33, r31, r32
+  JumpIfFalse  r33, L6
+  // var prod = s[i] * s[j]
+  Index        r34, r14, r28
+  Index        r35, r14, r31
+  Mul          r36, r34, r35
+  Move         r37, r36
+  // if prod < limit {
+  Less         r38, r37, r2
+  JumpIfFalse  r38, L7
+  // if countOnly {
+  JumpIfFalse  r3, L8
+  // count = count + 1
+  Const        r8, 1
+  AddInt       r39, r7, r8
+  Move         r7, r39
+  // if countOnly {
+  Jump         L9
+L8:
+  // brilliant = append(brilliant, prod)
+  Append       r40, r5, r37
+  Move         r5, r40
+  // if prod < limit {
+  Jump         L9
+L7:
+  // if prod < next { next = prod }
+  Less         r41, r37, r11
+  JumpIfFalse  r41, L6
+  Move         r11, r37
+  // break
+  Jump         L6
+L9:
+  // j = j + 1
+  Const        r8, 1
+  AddInt       r42, r31, r8
+  Move         r31, r42
+  // while j < len(s) {
+  Jump         L10
+L6:
+  // i = i + 1
+  Const        r8, 1
+  AddInt       r43, r28, r8
+  Move         r28, r43
+  // while i < len(s) {
+  Jump         L11
+L5:
+  // pow = pow * 10
+  Const        r21, 10
+  MulInt       r44, r9, r21
+  Move         r9, r44
+  // k = k + 1
+  Const        r8, 1
+  AddInt       r45, r12, r8
+  Move         r12, r45
+  // while k <= digits {
+  Jump         L12
+L0:
+  // if countOnly { return {"bc": count, "next": next} }
+  JumpIfFalse  r3, L13
+  Const        r46, "bc"
+  Const        r47, "next"
+  Move         r48, r46
+  Move         r49, r7
+  Move         r50, r47
+  Move         r51, r11
+  MakeMap      r52, 2, r48
+  Return       r52
+L13:
+  // return {"bc": brilliant, "next": next}
+  Const        r46, "bc"
+  Const        r47, "next"
+  Move         r53, r46
+  Move         r54, r5
+  Move         r55, r47
+  Move         r56, r11
+  MakeMap      r57, 2, r53
+  Return       r57
+
+  // fun main() {
+func main (regs=88)
+  // print("First 100 brilliant numbers:")
+  Const        r1, "First 100 brilliant numbers:"
+  Print        r1
+  // let r = getBrilliant(2, 10000, false)
+  Const        r5, 2
+  Move         r2, r5
+  Const        r6, 10000
+  Move         r3, r6
+  Const        r7, false
+  Move         r4, r7
+  Call         r8, getBrilliant, r2, r3, r4
+  Move         r9, r8
+  // var br = sortInts(r["bc"])
+  Const        r11, "bc"
+  Index        r12, r9, r11
+  Move         r10, r12
+  Call         r13, sortInts, r10
+  Move         r14, r13
+  // br = br[0:100]
+  Const        r16, 0
+  Move         r15, r16
+  Const        r18, 100
+  Move         r17, r18
+  Slice        r19, r14, r15, r17
+  Move         r14, r19
+  // var i = 0
+  Const        r16, 0
+  Move         r20, r16
+L2:
+  // while i < len(br) {
+  Len          r21, r14
+  LessInt      r22, r20, r21
+  JumpIfFalse  r22, L0
+  // print(str(br[i]).padStart(4, " ") + " ", false)
+  Index        r23, r14, r20
+  Str          r24, r23
+  Const        r27, 4
+  Move         r25, r27
+  Const        r28, " "
+  Move         r26, r28
+  CallV        r29, r24, 2, r25
+  Const        r28, " "
+  Add          r30, r29, r28
+  Const        r7, false
+  Print2       r30, r7
+  // if (i + 1) % 10 == 0 { print("", true) }
+  Const        r31, 1
+  AddInt       r32, r20, r31
+  Const        r33, 10
+  ModInt       r34, r32, r33
+  Const        r16, 0
+  EqualInt     r35, r34, r16
+  JumpIfFalse  r35, L1
+  Const        r36, ""
+  Const        r37, true
+  Print2       r36, r37
+L1:
+  // i = i + 1
+  Const        r31, 1
+  AddInt       r38, r20, r31
+  Move         r20, r38
+  // while i < len(br) {
+  Jump         L2
+L0:
+  // print("", true)
+  Const        r36, ""
+  Const        r37, true
+  Print2       r36, r37
+  // var k = 1
+  Const        r31, 1
+  Move         r39, r31
+L4:
+  // while k <= 13 {
+  Const        r40, 13
+  LessEqInt    r41, r39, r40
+  JumpIfFalse  r41, L3
+  // let limit = pow(10, k)
+  Move         r43, r42
+  // let r2 = getBrilliant(k, limit, true)
+  Move         r44, r39
+  Move         r45, r43
+  Const        r37, true
+  Move         r46, r37
+  Call         r47, getBrilliant, r44, r45, r46
+  Move         r48, r47
+  // let total = r2["bc"]
+  Const        r11, "bc"
+  Index        r49, r48, r11
+  Move         r50, r49
+  // let next = r2["next"]
+  Const        r51, "next"
+  Index        r52, r48, r51
+  Move         r53, r52
+  // let climit = commatize(limit)
+  Move         r54, r43
+  Call         r55, commatize, r54
+  Move         r56, r55
+  // let ctotal = commatize(total + 1)
+  Const        r31, 1
+  Add          r58, r50, r31
+  Move         r57, r58
+  Call         r59, commatize, r57
+  Move         r60, r59
+  // let cnext = commatize(next)
+  Move         r61, r53
+  Call         r62, commatize, r61
+  Move         r63, r62
+  // print("First >= " + climit.padStart(18, " ") + " is " + ctotal.padStart(14, " ") + " in the series: " + cnext.padStart(18, " "))
+  Const        r64, "First >= "
+  Const        r65, "padStart"
+  Index        r66, r56, r65
+  Const        r69, 18
+  Move         r67, r69
+  Const        r28, " "
+  Move         r68, r28
+  CallV        r70, r66, 2, r67
+  Add          r71, r64, r70
+  Const        r72, " is "
+  Add          r73, r71, r72
+  Const        r65, "padStart"
+  Index        r74, r60, r65
+  Const        r77, 14
+  Move         r75, r77
+  Const        r28, " "
+  Move         r76, r28
+  CallV        r78, r74, 2, r75
+  Add          r79, r73, r78
+  Const        r80, " in the series: "
+  Add          r81, r79, r80
+  Const        r65, "padStart"
+  Index        r82, r63, r65
+  Const        r69, 18
+  Move         r83, r69
+  Const        r28, " "
+  Move         r84, r28
+  CallV        r85, r82, 2, r83
+  Add          r86, r81, r85
+  Print        r86
+  // k = k + 1
+  Const        r31, 1
+  AddInt       r87, r39, r31
+  Move         r39, r87
+  // while k <= 13 {
+  Jump         L4
+L3:
+  Return       r0

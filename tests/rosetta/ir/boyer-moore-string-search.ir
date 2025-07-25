@@ -1,0 +1,213 @@
+func main (regs=1)
+  // main()
+  Call         r0, main, 
+  Return       r0
+
+  // fun indexOfStr(h: string, n: string): int {
+func indexOfStr (regs=17)
+  // let hlen = len(h)
+  Len          r2, r0
+  Move         r3, r2
+  // let nlen = len(n)
+  Len          r4, r1
+  Move         r5, r4
+  // if nlen == 0 { return 0 }
+  Const        r6, 0
+  EqualInt     r7, r5, r6
+  JumpIfFalse  r7, L0
+  Const        r6, 0
+  Return       r6
+L0:
+  // var i = 0
+  Const        r6, 0
+  Move         r8, r6
+L3:
+  // while i <= hlen - nlen {
+  SubInt       r9, r3, r5
+  LessEqInt    r10, r8, r9
+  JumpIfFalse  r10, L1
+  // if substring(h, i, i + nlen) == n { return i }
+  AddInt       r11, r8, r5
+  Slice        r12, r0, r8, r11
+  Equal        r13, r12, r1
+  JumpIfFalse  r13, L2
+  Return       r8
+L2:
+  // i = i + 1
+  Const        r14, 1
+  AddInt       r15, r8, r14
+  Move         r8, r15
+  // while i <= hlen - nlen {
+  Jump         L3
+L1:
+  // return -1
+  Const        r14, 1
+  NegInt       r16, r14
+  Return       r16
+
+  // fun stringSearchSingle(h: string, n: string): int {
+func stringSearchSingle (regs=5)
+  // return indexOfStr(h, n)
+  Move         r2, r0
+  Move         r3, r1
+  Call2        r4, indexOfStr, r2, r3
+  Return       r4
+
+  // fun stringSearch(h: string, n: string): list<int> {
+func stringSearch (regs=21)
+  // var result: list<int> = []
+  Const        r2, []
+  Move         r3, r2
+  // var start = 0
+  Const        r4, 0
+  Move         r5, r4
+  // let hlen = len(h)
+  Len          r6, r0
+  Move         r7, r6
+  // let nlen = len(n)
+  Len          r8, r1
+  Move         r9, r8
+L1:
+  // while start < hlen {
+  LessInt      r10, r5, r7
+  JumpIfFalse  r10, L0
+  // let idx = indexOfStr(substring(h, start, hlen), n)
+  Slice        r13, r0, r5, r7
+  Move         r11, r13
+  Move         r12, r1
+  Call2        r14, indexOfStr, r11, r12
+  Move         r15, r14
+  // if idx >= 0 {
+  Const        r4, 0
+  LessEq       r16, r4, r15
+  JumpIfFalse  r16, L0
+  // result = append(result, start + idx)
+  Add          r17, r5, r15
+  Append       r18, r3, r17
+  Move         r3, r18
+  // start = start + idx + nlen
+  Add          r19, r5, r15
+  Add          r20, r19, r9
+  Move         r5, r20
+  // if idx >= 0 {
+  Jump         L1
+L0:
+  // return result
+  Return       r3
+
+  // fun display(nums: list<int>): string {
+func display (regs=17)
+  // var s = "["
+  Const        r1, "["
+  Move         r2, r1
+  // var i = 0
+  Const        r3, 0
+  Move         r4, r3
+L2:
+  // while i < len(nums) {
+  Len          r5, r0
+  LessInt      r6, r4, r5
+  JumpIfFalse  r6, L0
+  // if i > 0 { s = s + ", " }
+  Const        r3, 0
+  LessInt      r7, r3, r4
+  JumpIfFalse  r7, L1
+  Const        r8, ", "
+  Add          r9, r2, r8
+  Move         r2, r9
+L1:
+  // s = s + str(nums[i])
+  Index        r10, r0, r4
+  Str          r11, r10
+  Add          r12, r2, r11
+  Move         r2, r12
+  // i = i + 1
+  Const        r13, 1
+  AddInt       r14, r4, r13
+  Move         r4, r14
+  // while i < len(nums) {
+  Jump         L2
+L0:
+  // s = s + "]"
+  Const        r15, "]"
+  Add          r16, r2, r15
+  Move         r2, r16
+  // return s
+  Return       r2
+
+  // fun main() {
+func main (regs=41)
+  // let texts = [
+  Const        r0, ["GCTAGCTCTACGAGTCTA", "GGCTATAATGCGTA", "there would have been a time for such a word", "needle need noodle needle", "DKnuthusesandprogramsanimaginarycomputertheMIXanditsassociatedmachinecodeandassemblylanguages", "Nearby farms grew an acre of alfalfa on the dairy's behalf, with bales of that alfalfa exchanged for milk."]
+  Move         r1, r0
+  // let patterns = ["TCTA", "TAATAAA", "word", "needle", "and", "alfalfa"]
+  Const        r2, ["TCTA", "TAATAAA", "word", "needle", "and", "alfalfa"]
+  Move         r3, r2
+  // var i = 0
+  Const        r4, 0
+  Move         r5, r4
+L1:
+  // while i < len(texts) {
+  Const        r6, 6
+  LessInt      r7, r5, r6
+  JumpIfFalse  r7, L0
+  // print("text" + str(i + 1) + " = " + texts[i])
+  Const        r8, "text"
+  Const        r9, 1
+  AddInt       r10, r5, r9
+  Str          r11, r10
+  Add          r12, r8, r11
+  Const        r13, " = "
+  Add          r14, r12, r13
+  Index        r15, r1, r5
+  Add          r16, r14, r15
+  Print        r16
+  // i = i + 1
+  Const        r9, 1
+  AddInt       r17, r5, r9
+  Move         r5, r17
+  // while i < len(texts) {
+  Jump         L1
+L0:
+  // print("")
+  Const        r18, ""
+  Print        r18
+  // var j = 0
+  Const        r4, 0
+  Move         r19, r4
+L3:
+  // while j < len(texts) {
+  Const        r6, 6
+  LessInt      r20, r19, r6
+  JumpIfFalse  r20, L2
+  // let idxs = stringSearch(texts[j], patterns[j])
+  Index        r23, r1, r19
+  Move         r21, r23
+  Index        r24, r3, r19
+  Move         r22, r24
+  Call2        r25, stringSearch, r21, r22
+  Move         r26, r25
+  // print("Found \"" + patterns[j] + "\" in 'text" + str(j + 1) + "' at indexes " + display(idxs))
+  Const        r27, "Found \""
+  Index        r28, r3, r19
+  Add          r29, r27, r28
+  Const        r30, "\" in 'text"
+  Add          r31, r29, r30
+  Const        r9, 1
+  AddInt       r32, r19, r9
+  Str          r33, r32
+  Add          r34, r31, r33
+  Const        r35, "' at indexes "
+  Add          r36, r34, r35
+  Move         r37, r26
+  Call         r38, display, r37
+  Add          r39, r36, r38
+  Print        r39
+  // j = j + 1
+  Const        r9, 1
+  AddInt       r40, r19, r9
+  Move         r19, r40
+  // while j < len(texts) {
+  Jump         L3
+L2:
+  Return       r0

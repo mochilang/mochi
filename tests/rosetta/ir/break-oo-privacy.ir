@@ -1,0 +1,110 @@
+func main (regs=34)
+  // var obj = Foobar{ Exported: 12, unexported: 42 }
+  Const        r1, 12
+  Const        r2, 42
+  Const        r3, "__name"
+  Const        r4, "Foobar"
+  Const        r5, "Exported"
+  Move         r6, r1
+  Const        r7, "unexported"
+  Move         r8, r2
+  MakeMap      r9, 3, r3
+  Move         r0, r9
+  SetGlobal    0,0,0,0
+  // print("obj: {" + str(obj.Exported) + " " + str(obj.unexported) + "}")
+  Const        r10, "obj: {"
+  Const        r11, "Exported"
+  Index        r12, r0, r11
+  Str          r13, r12
+  Add          r14, r10, r13
+  Const        r15, " "
+  Add          r16, r14, r15
+  Const        r17, "unexported"
+  Index        r18, r0, r17
+  Str          r19, r18
+  Add          r20, r16, r19
+  Const        r21, "}"
+  Add          r22, r20, r21
+  Print        r22
+  // obj = examineAndModify(obj)
+  Move         r23, r0
+  Call         r24, examineAndModify, r23
+  Move         r0, r24
+  SetGlobal    0,0,0,0
+  // print("obj: {" + str(obj.Exported) + " " + str(obj.unexported) + "}")
+  Const        r10, "obj: {"
+  Const        r11, "Exported"
+  Index        r25, r0, r11
+  Str          r26, r25
+  Add          r27, r10, r26
+  Const        r15, " "
+  Add          r28, r27, r15
+  Const        r17, "unexported"
+  Index        r29, r0, r17
+  Str          r30, r29
+  Add          r31, r28, r30
+  Const        r21, "}"
+  Add          r32, r31, r21
+  Print        r32
+  // anotherExample()
+  Call         r33, anotherExample, 
+  Return       r0
+
+  // fun examineAndModify(f: Foobar): Foobar {
+func examineAndModify (regs=30)
+  // print(" v: {" + str(f.Exported) + " " + str(f.unexported) + "} = {" + str(f.Exported) + " " + str(f.unexported) + "}")
+  Const        r2, " v: {"
+  Const        r3, "Exported"
+  Index        r4, r1, r3
+  Str          r5, r4
+  Add          r6, r2, r5
+  Const        r7, " "
+  Add          r8, r6, r7
+  Const        r9, "unexported"
+  Index        r10, r1, r9
+  Str          r11, r10
+  Add          r12, r8, r11
+  Const        r13, "} = {"
+  Add          r14, r12, r13
+  Const        r3, "Exported"
+  Index        r15, r1, r3
+  Str          r16, r15
+  Add          r17, r14, r16
+  Const        r7, " "
+  Add          r18, r17, r7
+  Const        r9, "unexported"
+  Index        r19, r1, r9
+  Str          r20, r19
+  Add          r21, r18, r20
+  Const        r22, "}"
+  Add          r23, r21, r22
+  Print        r23
+  // print("    Idx Name       Type CanSet")
+  Const        r24, "    Idx Name       Type CanSet"
+  Print        r24
+  // print("     0: Exported   int  true")
+  Const        r25, "     0: Exported   int  true"
+  Print        r25
+  // print("     1: unexported int  false")
+  Const        r26, "     1: unexported int  false"
+  Print        r26
+  // f.Exported = 16
+  Const        r27, 16
+  Const        r3, "Exported"
+  SetIndex     r1, r3, r27
+  // f.unexported = 44
+  Const        r28, 44
+  Const        r9, "unexported"
+  SetIndex     r1, r9, r28
+  // print("  modified unexported field via unsafe")
+  Const        r29, "  modified unexported field via unsafe"
+  Print        r29
+  // return f
+  Return       r1
+
+  // fun anotherExample() {
+func anotherExample (regs=2)
+  // print("bufio.ReadByte returned error: unsafely injected error value into bufio inner workings")
+  Const        r1, "bufio.ReadByte returned error: unsafely injected error value into bufio inner workings"
+  Print        r1
+  Return       r0
