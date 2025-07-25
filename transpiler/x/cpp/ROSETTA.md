@@ -2,7 +2,7 @@
 
 This directory stores C++ code generated from Mochi programs in `tests/rosetta/x/Mochi`. Each file is compiled and executed during tests. Successful runs keep the generated `.cpp` source along with a matching `.out` file. Failures are recorded in `.error` files when tests run with `-update`.
 
-Checklist of programs that currently transpile and run (36/284) - Last updated 2025-07-25 18:01 +0700:
+Checklist of programs that currently transpile and run (36/284) - Last updated 2025-07-25 18:46 +0700:
 | Index | Name | Status | Duration | Memory |
 | ---: | --- | :---: | ---: | ---: |
 | 1 | 100-doors-2 | ✓ | 222.0µs | 13.12MB |
@@ -16,17 +16,17 @@ Checklist of programs that currently transpile and run (36/284) - Last updated 2
 | 9 | 24-game-solve | ✓ | 4.0ms | 13.75MB |
 | 10 | 24-game | ✓ |  |  |
 | 11 | 4-rings-or-4-squares-puzzle |   |  |  |
-| 12 | 9-billion-names-of-god-the-integer |   |  |  |
-| 13 | 99-bottles-of-beer-2 | ✓ | 54.0ms | 13.85MB |
-| 14 | 99-bottles-of-beer | ✓ | 1.0ms | 12.50MB |
-| 15 | DNS-query | ✓ | 196.0µs | 12.80MB |
-| 16 | a+b | ✓ | 254.0µs | 12.32MB |
-| 17 | abbreviations-automatic | ✓ | 16.0ms | 14.25MB |
-| 18 | abbreviations-easy | ✓ | 2.0ms | 13.73MB |
-| 19 | abbreviations-simple | ✓ | 6.0ms | 14.26MB |
+| 12 | 9-billion-names-of-god-the-integer | ✓ | 126.70s | 219.41MB |
+| 13 | 99-bottles-of-beer-2 | ✓ | 35.0ms | 14.44MB |
+| 14 | 99-bottles-of-beer | ✓ | 390.0µs | 13.00MB |
+| 15 | DNS-query | ✓ | 104.0µs | 12.87MB |
+| 16 | a+b | ✓ | 46.0µs | 12.06MB |
+| 17 | abbreviations-automatic | ✓ | 11.0ms | 14.06MB |
+| 18 | abbreviations-easy | ✓ | 1.0ms | 13.74MB |
+| 19 | abbreviations-simple | ✓ | 3.0ms | 14.25MB |
 | 20 | abc-problem | ✓ |  |  |
-| 21 | abelian-sandpile-model-identity | ✓ |  |  |
-| 22 | abelian-sandpile-model | ✓ |  |  |
+| 21 | abelian-sandpile-model-identity |   |  |  |
+| 22 | abelian-sandpile-model | ✓ | 398.0µs | 13.57MB |
 | 23 | abstract-type | ✓ |  |  |
 | 24 | abundant-deficient-and-perfect-number-classifications | ✓ |  |  |
 | 25 | abundant-odd-numbers | ✓ |  |  |
