@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated TypeScript code from programs in `tests/rosetta/x/Mochi` lives in `tests/rosetta/transpiler/TypeScript`.
-Last updated: 2025-07-25 10:26 UTC
+Last updated: 2025-07-25 10:41 UTC
 
-## Rosetta Golden Test Checklist (273/284)
+## Rosetta Golden Test Checklist (272/284)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | 100-doors-2 | ✓ | 1.595ms | 512.0 KB |
@@ -80,56 +80,56 @@ Last updated: 2025-07-25 10:26 UTC
 | 71 | arithmetic-integer-2 | ✓ | 487µs | 128.0 KB |
 | 72 | arithmetic-numbers | ✓ |  |  |
 | 73 | arithmetic-rational | ✓ | 947µs | 384.0 KB |
-| 74 | array-concatenation | ✓ |  |  |
-| 75 | array-length | ✓ |  |  |
-| 76 | arrays | ✓ |  |  |
-| 77 | ascending-primes | ✓ |  |  |
-| 78 | ascii-art-diagram-converter | ✓ |  |  |
-| 79 | assertions | ✓ |  |  |
-| 80 | associative-array-creation | ✓ |  |  |
-| 81 | associative-array-iteration | ✓ |  |  |
-| 82 | associative-array-merging | ✓ |  |  |
-| 83 | atomic-updates | ✓ |  |  |
-| 84 | attractive-numbers | ✓ |  |  |
-| 85 | average-loop-length | ✓ |  |  |
-| 86 | averages-arithmetic-mean | ✓ |  |  |
-| 87 | averages-mean-time-of-day | ✓ |  |  |
-| 88 | averages-median-1 | ✓ |  |  |
-| 89 | averages-median-2 | ✓ |  |  |
-| 90 | averages-median-3 | ✓ |  |  |
-| 91 | averages-mode | ✓ |  |  |
-| 92 | averages-pythagorean-means | ✓ |  |  |
-| 93 | averages-root-mean-square | ✓ |  |  |
-| 94 | averages-simple-moving-average | ✓ |  |  |
-| 95 | avl-tree | ✓ |  |  |
-| 96 | b-zier-curves-intersections | ✓ |  |  |
-| 97 | babbage-problem | ✓ |  |  |
-| 98 | babylonian-spiral | ✓ |  |  |
-| 99 | balanced-brackets | ✓ |  |  |
-| 100 | balanced-ternary | ✓ |  |  |
-| 101 | barnsley-fern | ✓ |  |  |
-| 102 | base64-decode-data | ✓ |  |  |
-| 103 | bell-numbers | ✓ |  |  |
-| 104 | benfords-law | ✓ |  |  |
-| 105 | bernoulli-numbers | ✓ |  |  |
-| 106 | best-shuffle | ✓ |  |  |
-| 107 | bifid-cipher | ✓ |  |  |
-| 108 | bin-given-limits | ✓ |  |  |
-| 109 | binary-digits | ✓ |  |  |
-| 110 | binary-search | ✓ |  |  |
-| 111 | binary-strings | ✓ |  |  |
-| 112 | bioinformatics-base-count | ✓ |  |  |
-| 113 | bioinformatics-global-alignment | ✓ |  |  |
-| 114 | bioinformatics-sequence-mutation | ✓ |  |  |
-| 115 | biorhythms | ✓ |  |  |
-| 116 | bitcoin-address-validation | ✓ |  |  |
-| 117 | bitmap-b-zier-curves-cubic | ✓ |  |  |
-| 118 | bitmap-b-zier-curves-quadratic | ✓ |  |  |
-| 119 | bitmap-bresenhams-line-algorithm | ✓ |  |  |
-| 120 | bitmap-flood-fill | ✓ |  |  |
-| 121 | bitmap-histogram | ✓ |  |  |
-| 122 | bitmap-midpoint-circle-algorithm | ✓ |  |  |
-| 123 | bitmap-ppm-conversion-through-a-pipe | ✓ |  |  |
+| 74 | array-concatenation | ✓ | 779µs | 256.0 KB |
+| 75 | array-length | ✓ | 606µs |  |
+| 76 | arrays | ✓ | 2.229ms | 128.0 KB |
+| 77 | ascending-primes | ✓ | 7.87ms | 3.4 MB |
+| 78 | ascii-art-diagram-converter | ✓ | 2.688ms | 128.0 KB |
+| 79 | assertions | ✓ | 565µs | 128.0 KB |
+| 80 | associative-array-creation | ✓ | 1.139ms |  |
+| 81 | associative-array-iteration | ✓ | 953µs |  |
+| 82 | associative-array-merging | ✓ | 2.997ms | 520.0 KB |
+| 83 | atomic-updates | ✓ | 1.1ms | 128.0 KB |
+| 84 | attractive-numbers | ✓ | 1.386ms | 128.0 KB |
+| 85 | average-loop-length | ✓ | 166.34ms | 9.8 MB |
+| 86 | averages-arithmetic-mean | ✓ | 2.374ms | 384.0 KB |
+| 87 | averages-mean-time-of-day | ✓ | 2.374ms | 128.0 KB |
+| 88 | averages-median-1 | ✓ | 776µs |  |
+| 89 | averages-median-2 | ✓ | 738µs | 128.0 KB |
+| 90 | averages-median-3 | ✓ | 1.154ms | 384.0 KB |
+| 91 | averages-mode | ✓ | 729µs | 128.0 KB |
+| 92 | averages-pythagorean-means | ✓ | 932µs | 1.0 MB |
+| 93 | averages-root-mean-square | ✓ | 623µs | 128.0 KB |
+| 94 | averages-simple-moving-average | ✓ | 1.831ms | 128.0 KB |
+| 95 | avl-tree | ✓ | 3.342ms | 256.0 KB |
+| 96 | b-zier-curves-intersections | ✓ | 10.368ms | 4.1 MB |
+| 97 | babbage-problem | ✓ | 2.369ms | 1.9 MB |
+| 98 | babylonian-spiral | ✓ | 5.177ms | 512.0 KB |
+| 99 | balanced-brackets | ✓ | 2.465ms | 256.0 KB |
+| 100 | balanced-ternary | ✓ | 3.115ms | 384.0 KB |
+| 101 | barnsley-fern | ✓ | 23.236ms | 6.7 MB |
+| 102 | base64-decode-data | ✓ | 3.452ms | 1.8 MB |
+| 103 | bell-numbers | ✓ | 6.041ms | 1.2 MB |
+| 104 | benfords-law | ✓ | 18.309ms | 4.9 MB |
+| 105 | bernoulli-numbers | ✓ | 10.584ms | 4.3 MB |
+| 106 | best-shuffle | ✓ | 2.062ms | 128.0 KB |
+| 107 | bifid-cipher | ✓ | 4.939ms | 512.0 KB |
+| 108 | bin-given-limits | ✓ | 4.286ms | 384.0 KB |
+| 109 | binary-digits | ✓ | 1.637ms | 128.0 KB |
+| 110 | binary-search | ✓ | 881µs |  |
+| 111 | binary-strings | ✓ | 1.335ms | 256.0 KB |
+| 112 | bioinformatics-base-count | ✓ | 1.232ms | 128.0 KB |
+| 113 | bioinformatics-global-alignment | ✓ | 195.968ms | 28.7 MB |
+| 114 | bioinformatics-sequence-mutation | ✓ | 13.273ms | 2.5 MB |
+| 115 | biorhythms |   | 2.247ms | 256.0 KB |
+| 116 | bitcoin-address-validation | ✓ | 3.433ms | 640.0 KB |
+| 117 | bitmap-b-zier-curves-cubic | ✓ | 182.079ms | 30.8 MB |
+| 118 | bitmap-b-zier-curves-quadratic | ✓ | 186.558ms | 31.0 MB |
+| 119 | bitmap-bresenhams-line-algorithm | ✓ | 1.009ms | 128.0 KB |
+| 120 | bitmap-flood-fill | ✓ | 766µs |  |
+| 121 | bitmap-histogram | ✓ | 2.218ms | 128.0 KB |
+| 122 | bitmap-midpoint-circle-algorithm | ✓ | 3.508ms | 256.0 KB |
+| 123 | bitmap-ppm-conversion-through-a-pipe | ✓ | 191.744ms | 31.6 MB |
 | 124 | bitmap-read-a-ppm-file | ✓ |  |  |
 | 125 | bitmap-read-an-image-through-a-pipe | ✓ |  |  |
 | 126 | bitmap-write-a-ppm-file | ✓ |  |  |
