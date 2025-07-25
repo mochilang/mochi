@@ -51,6 +51,39 @@ type Stmt interface{ emit(io.Writer) }
 
 type Expr interface{ emit(io.Writer) }
 
+// LetExpr represents a "let" expression with local bindings.
+type LetExpr struct {
+	Binds []LetBind
+	Body  Expr
+}
+
+// LetBind holds a single variable binding for LetExpr.
+type LetBind struct {
+	Name string
+	Expr Expr
+}
+
+func (l *LetExpr) emit(w io.Writer) {
+	io.WriteString(w, "(let (")
+	for i, b := range l.Binds {
+		if i > 0 {
+			io.WriteString(w, " ")
+		}
+		io.WriteString(w, "[")
+		io.WriteString(w, sanitizeName(b.Name))
+		io.WriteString(w, " ")
+		b.Expr.emit(w)
+		io.WriteString(w, "]")
+	}
+	io.WriteString(w, ") ")
+	if l.Body != nil {
+		l.Body.emit(w)
+	} else {
+		io.WriteString(w, "(void)")
+	}
+	io.WriteString(w, ")")
+}
+
 // RawStmt emits raw Racket code as-is.
 type RawStmt struct{ Code string }
 
@@ -2379,14 +2412,31 @@ func convertList(l *parser.ListLiteral, env *types.Env) (Expr, error) {
 }
 
 func convertStruct(s *parser.StructLiteral, env *types.Env) (Expr, error) {
+	if env != nil {
+		if ut, ok := env.FindUnionByVariant(s.Name); ok {
+			st := ut.Variants[s.Name]
+			args := []Expr{&StringLit{Value: "tag"}, &StringLit{Value: s.Name}}
+			for i, f := range s.Fields {
+				val, err := convertExpr(f.Value, env)
+				if err != nil {
+					return nil, err
+				}
+				key := f.Name
+				if i < len(st.Order) {
+					key = st.Order[i]
+				}
+				args = append(args, &StringLit{Value: key}, val)
+			}
+			return &CallExpr{Func: "hash", Args: args}, nil
+		}
+	}
 	var args []Expr
 	for _, f := range s.Fields {
 		val, err := convertExpr(f.Value, env)
 		if err != nil {
 			return nil, err
 		}
-		args = append(args, &StringLit{Value: f.Name})
-		args = append(args, val)
+		args = append(args, &StringLit{Value: f.Name}, val)
 	}
 	return &CallExpr{Func: "hash", Args: args}, nil
 }
@@ -2414,28 +2464,27 @@ func convertMap(m *parser.MapLiteral, env *types.Env) (Expr, error) {
 }
 
 func convertMatchExpr(m *parser.MatchExpr, env *types.Env) (Expr, error) {
-	val, err := convertExpr(m.Target, env)
+	target, err := convertExpr(m.Target, env)
 	if err != nil {
 		return nil, err
 	}
-	var cases []MatchCase
-	for _, c := range m.Cases {
-		patExpr, err := convertExpr(c.Pattern, env)
+	var expr Expr = &Name{Name: "#f"}
+	for i := len(m.Cases) - 1; i >= 0; i-- {
+		c := m.Cases[i]
+		cond, binds, err := patternCond(c.Pattern, target, env)
 		if err != nil {
 			return nil, err
 		}
-		resExpr, err := convertExpr(c.Result, env)
+		body, err := convertExpr(c.Result, env)
 		if err != nil {
 			return nil, err
 		}
-		def := false
-		if name, ok := isSimpleIdent(c.Pattern); ok && name == "_" {
-			def = true
-			patExpr = nil
+		if len(binds) > 0 {
+			body = &LetExpr{Binds: binds, Body: body}
 		}
-		cases = append(cases, MatchCase{Pattern: patExpr, Expr: resExpr, Default: def})
+		expr = &IfExpr{Cond: cond, Then: body, Else: expr}
 	}
-	return &MatchExpr{Value: val, Cases: cases}, nil
+	return expr, nil
 }
 
 func convertCall(c *parser.CallExpr, env *types.Env) (Expr, error) {
@@ -2446,6 +2495,18 @@ func convertCall(c *parser.CallExpr, env *types.Env) (Expr, error) {
 			return nil, err
 		}
 		args = append(args, ae)
+	}
+	if env != nil {
+		if ut, ok := env.FindUnionByVariant(c.Func); ok {
+			st := ut.Variants[c.Func]
+			if len(args) == len(st.Order) {
+				entries := []Expr{&StringLit{Value: "tag"}, &StringLit{Value: c.Func}}
+				for i, name := range st.Order {
+					entries = append(entries, &StringLit{Value: name}, args[i])
+				}
+				return &CallExpr{Func: "hash", Args: entries}, nil
+			}
+		}
 	}
 	switch c.Func {
 	case "len":
@@ -2542,6 +2603,80 @@ func convertCall(c *parser.CallExpr, env *types.Env) (Expr, error) {
 		return &CallExpr{Func: c.Func, Args: args}, nil
 	}
 	return nil, fmt.Errorf("unsupported call")
+}
+
+func patternCond(pat *parser.Expr, target Expr, env *types.Env) (Expr, []LetBind, error) {
+	if pat == nil {
+		return nil, nil, fmt.Errorf("nil pattern")
+	}
+	if call, ok := callPattern(pat); ok && env != nil {
+		if ut, ok := env.FindUnionByVariant(call.Func); ok {
+			st := ut.Variants[call.Func]
+			cond := &BinaryExpr{Op: "==", Left: &IndexExpr{Target: target, Index: &StringLit{Value: "tag"}, IsMap: true}, Right: &StringLit{Value: call.Func}}
+			binds := []LetBind{}
+			for i, arg := range call.Args {
+				field := st.Order[i]
+				if name, ok := identName(arg); ok {
+					if name != "_" {
+						binds = append(binds, LetBind{Name: name, Expr: &IndexExpr{Target: target, Index: &StringLit{Value: field}, IsMap: true}})
+					}
+				} else {
+					val, err := convertExpr(arg, env)
+					if err != nil {
+						return nil, nil, err
+					}
+					part := &BinaryExpr{Op: "==", Left: &IndexExpr{Target: target, Index: &StringLit{Value: field}, IsMap: true}, Right: val}
+					cond = &BinaryExpr{Op: "and", Left: cond, Right: part}
+				}
+			}
+			return cond, binds, nil
+		}
+	}
+	if name, ok := identName(pat); ok {
+		if name == "_" {
+			return &Name{Name: "#t"}, nil, nil
+		}
+		if env != nil {
+			if _, ok := env.FindUnionByVariant(name); ok {
+				return &BinaryExpr{Op: "==", Left: &IndexExpr{Target: target, Index: &StringLit{Value: "tag"}, IsMap: true}, Right: &StringLit{Value: name}}, nil, nil
+			}
+		}
+	}
+	expr, err := convertExpr(pat, env)
+	if err != nil {
+		return nil, nil, err
+	}
+	return &BinaryExpr{Op: "==", Left: target, Right: expr}, nil, nil
+}
+
+func callPattern(e *parser.Expr) (*parser.CallExpr, bool) {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) != 0 {
+		return nil, false
+	}
+	u := e.Binary.Left
+	if len(u.Ops) != 0 || u.Value == nil {
+		return nil, false
+	}
+	pf := u.Value
+	if len(pf.Ops) == 0 && pf.Target != nil && pf.Target.Call != nil {
+		return pf.Target.Call, true
+	}
+	return nil, false
+}
+
+func identName(e *parser.Expr) (string, bool) {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) != 0 {
+		return "", false
+	}
+	u := e.Binary.Left
+	if len(u.Ops) != 0 || u.Value == nil {
+		return "", false
+	}
+	pf := u.Value
+	if len(pf.Ops) == 0 && pf.Target != nil && pf.Target.Selector != nil && len(pf.Target.Selector.Tail) == 0 {
+		return pf.Target.Selector.Root, true
+	}
+	return "", false
 }
 
 func convertLeftJoinQuery(q *parser.QueryExpr, env *types.Env) (Expr, error) {
