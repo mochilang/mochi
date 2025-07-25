@@ -41,6 +41,7 @@ type Program struct {
 	UseBigRat    bool
 	UseLenAny    bool
 	UseReflect   bool
+	UseRuntime   bool
 }
 
 var (
@@ -59,6 +60,7 @@ var (
 	usesBigRat     bool
 	usesLenAny     bool
 	usesReflect    bool
+	usesRuntime    bool
 	topEnv         *types.Env
 	extraDecls     []Stmt
 	structCount    int
@@ -788,6 +790,34 @@ func (s *SaveStmt) emit(w io.Writer) {
 		return
 	}
 	fmt.Fprint(w, "// unsupported save")
+}
+
+// BenchStmt measures execution time and memory usage of a block.
+type BenchStmt struct {
+	Name string
+	Body []Stmt
+}
+
+func (b *BenchStmt) emit(w io.Writer) {
+	fmt.Fprint(w, "func() {\n")
+	fmt.Fprint(w, "    var ms runtime.MemStats\n")
+	fmt.Fprint(w, "    runtime.ReadMemStats(&ms)\n")
+	fmt.Fprint(w, "    startMem := ms.Alloc\n")
+	fmt.Fprint(w, "    seededNow = true\n")
+	fmt.Fprint(w, "    nowSeed = 1\n")
+	fmt.Fprint(w, "    start := _now()\n")
+	for _, st := range b.Body {
+		fmt.Fprint(w, "    ")
+		st.emit(w)
+		fmt.Fprint(w, "\n")
+	}
+	fmt.Fprint(w, "    runtime.ReadMemStats(&ms)\n")
+	fmt.Fprint(w, "    endMem := ms.Alloc\n")
+	fmt.Fprint(w, "    end := _now()\n")
+	fmt.Fprintf(w, "    data := map[string]any{\"name\": %q, \"duration_us\": (end - start)/1000, \"memory_bytes\": endMem - startMem}\n", b.Name)
+	fmt.Fprint(w, "    out, _ := json.MarshalIndent(data, \"\", \"  \")\n")
+	fmt.Fprint(w, "    fmt.Println(string(out))\n")
+	fmt.Fprint(w, "}()")
 }
 
 type ListLit struct {
@@ -1722,6 +1752,8 @@ func Transpile(p *parser.Program, env *types.Env) (*Program, error) {
 	usesBigInt = false
 	usesBigRat = false
 	usesLenAny = false
+	usesReflect = false
+	usesRuntime = false
 	topEnv = env
 	extraDecls = nil
 	structCount = 0
@@ -1758,6 +1790,7 @@ func Transpile(p *parser.Program, env *types.Env) (*Program, error) {
 	gp.UseBigRat = usesBigRat
 	gp.UseLenAny = usesLenAny
 	gp.UseReflect = usesReflect
+	gp.UseRuntime = usesRuntime
 	gp.Imports = imports
 	return gp, nil
 }
@@ -1870,7 +1903,9 @@ func compileStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 				}
 				typ = toGoTypeFromType(valType)
 				if _, ok := valType.(types.FuncType); ok {
-					typ = ""
+					if env != topEnv {
+						typ = ""
+					}
 				}
 			} else {
 				valType = types.TypeOfExpr(st.Let.Value, env)
@@ -2044,7 +2079,9 @@ func compileStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 				}
 				typ = toGoTypeFromType(valType)
 				if _, ok := valType.(types.FuncType); ok {
-					typ = ""
+					if env != topEnv {
+						typ = ""
+					}
 				}
 			} else {
 				valType = types.TypeOfExpr(st.Var.Value, env)
@@ -2261,6 +2298,8 @@ func compileStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 		return compileWhileStmt(st.While, env)
 	case st.For != nil:
 		return compileForStmt(st.For, env)
+	case st.Bench != nil:
+		return compileBenchBlock(st.Bench, env)
 	case st.Update != nil:
 		return compileUpdateStmt(st.Update, env)
 	case st.Return != nil:
@@ -3356,6 +3395,20 @@ func compileForStmt(fs *parser.ForStmt, env *types.Env) (Stmt, error) {
 		return nil, err
 	}
 	return &ForEachStmt{Name: fs.Name, Iterable: iter, Body: body, IsMap: isMap, KeyType: keyType, ElemType: elemType}, nil
+}
+
+func compileBenchBlock(bb *parser.BenchBlock, env *types.Env) (Stmt, error) {
+	child := types.NewEnv(env)
+	body, err := compileStmts(bb.Body, child)
+	if err != nil {
+		return nil, err
+	}
+	usesTime = true
+	usesJSON = true
+	usesPrint = true
+	usesRuntime = true
+	name := strings.Trim(bb.Name, "\"")
+	return &BenchStmt{Name: name, Body: body}, nil
 }
 
 func compileUpdateStmt(u *parser.UpdateStmt, env *types.Env) (Stmt, error) {
@@ -4920,6 +4973,9 @@ func Emit(prog *Program) []byte {
 	if prog.UseReflect {
 		buf.WriteString("    \"reflect\"\n")
 	}
+	if prog.UseRuntime {
+		buf.WriteString("    \"runtime\"\n")
+	}
 	if prog.UseInput {
 		buf.WriteString("    \"bufio\"\n")
 		if !prog.UseTime {
@@ -5127,6 +5183,14 @@ func toNodeStmt(s Stmt) *ast.Node {
 		return n
 	case *ForEachStmt:
 		n := &ast.Node{Kind: "foreach", Value: st.Name, Children: []*ast.Node{toNodeExpr(st.Iterable)}}
+		body := &ast.Node{Kind: "body"}
+		for _, b := range st.Body {
+			body.Children = append(body.Children, toNodeStmt(b))
+		}
+		n.Children = append(n.Children, body)
+		return n
+	case *BenchStmt:
+		n := &ast.Node{Kind: "bench", Value: st.Name}
 		body := &ast.Node{Kind: "body"}
 		for _, b := range st.Body {
 			body.Children = append(body.Children, toNodeStmt(b))
