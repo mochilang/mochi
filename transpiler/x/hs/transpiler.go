@@ -912,10 +912,6 @@ func (b *BenchStmt) emit(w io.Writer) {
 	io.WriteString(w, "do\n")
 	pushIndent()
 	writeIndent(w)
-	io.WriteString(w, "writeIORef _nowSeed 1\n")
-	writeIndent(w)
-	io.WriteString(w, "writeIORef _nowSeeded True\n")
-	writeIndent(w)
 	io.WriteString(w, "start <- _now\n")
 	for _, st := range b.Body {
 		st.emit(w)
