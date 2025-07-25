@@ -1550,7 +1550,7 @@ func (c *CallExpr) emit(w io.Writer) {
 		io.WriteString(w, ")")
 		return
 	case "input":
-		io.WriteString(w, "(case io:get_line(\"\") of eof -> \"q\"; L -> string:trim(L) end)")
+		io.WriteString(w, "((fun() -> case io:get_line(\"\") of eof -> \"q\"; L -> string:trim(L) end end)())")
 		return
 	case "abs":
 		io.WriteString(w, "erlang:abs(")
@@ -1818,7 +1818,7 @@ func (s *SliceExpr) emit(w io.Writer) {
 			}
 			io.WriteString(w, ")")
 		} else {
-			io.WriteString(w, "byte_size(")
+			io.WriteString(w, "length(")
 			s.Target.emit(w)
 			io.WriteString(w, ")")
 			if s.Start != nil {
