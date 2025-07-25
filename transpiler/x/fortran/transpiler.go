@@ -41,6 +41,12 @@ type Program struct {
 	Funcs []*Function
 }
 
+var benchMain bool
+
+// SetBenchMain configures whether the generated main function is wrapped
+// in a benchmark block that records duration and memory usage.
+func SetBenchMain(v bool) { benchMain = v }
+
 func writeIndent(w io.Writer, n int) {
 	for i := 0; i < n; i++ {
 		io.WriteString(w, " ")
@@ -72,6 +78,13 @@ type ForStmt struct {
 type BreakStmt struct{}
 
 type ContinueStmt struct{}
+
+// BenchStmt represents a benchmarking block that measures execution time
+// and memory usage of its body and prints a JSON summary.
+type BenchStmt struct {
+	Name string
+	Body []Stmt
+}
 
 func (f *Function) emit(w io.Writer) {
 	writeIndent(w, 2)
@@ -206,6 +219,30 @@ func (c *ContinueStmt) emit(w io.Writer, ind int) {
 	io.WriteString(w, "cycle\n")
 }
 
+func (b *BenchStmt) emit(w io.Writer, ind int) {
+	writeIndent(w, ind)
+	io.WriteString(w, "bench_mem0 = mem_()\n")
+	writeIndent(w, ind)
+	io.WriteString(w, "bench_start = now_()\n")
+	for _, st := range b.Body {
+		st.emit(w, ind)
+	}
+	writeIndent(w, ind)
+	io.WriteString(w, "bench_end = now_()\n")
+	writeIndent(w, ind)
+	io.WriteString(w, "bench_mem1 = mem_()\n")
+	writeIndent(w, ind)
+	io.WriteString(w, "print '(A)', '{'\n")
+	writeIndent(w, ind)
+	io.WriteString(w, "print '(A,I0,A)', '  \"duration_us\": ', bench_end - bench_start, ','\n")
+	writeIndent(w, ind)
+	io.WriteString(w, "print '(A,I0,A)', '  \"memory_bytes\": ', bench_mem1 - bench_mem0, ','\n")
+	writeIndent(w, ind)
+	fmt.Fprintf(w, "print '(A)', '  \"name\": \"%s\"'\n", b.Name)
+	writeIndent(w, ind)
+	io.WriteString(w, "print '(A)', '}'\n")
+}
+
 func (f *ForStmt) emit(w io.Writer, ind int) {
 	if len(f.List) > 0 {
 		arrName := fmt.Sprintf("%s_arr", f.Var)
@@ -253,6 +290,10 @@ func (p *Program) Emit() []byte {
 	var buf bytes.Buffer
 	buf.WriteString("program main\n")
 	buf.WriteString("  implicit none\n")
+	if benchMain {
+		buf.WriteString("  integer(kind=8) :: bench_start, bench_end\n")
+		buf.WriteString("  integer(kind=8) :: bench_mem0, bench_mem1\n")
+	}
 	for _, d := range p.Decls {
 		writeIndent(&buf, 2)
 		fmt.Fprintf(&buf, "%s :: %s", d.Type, d.Name)
@@ -267,8 +308,30 @@ func (p *Program) Emit() []byte {
 	for _, s := range p.Stmts {
 		s.emit(&buf, 2)
 	}
-	if len(p.Funcs) > 0 {
+	if benchMain || len(p.Funcs) > 0 {
 		buf.WriteString("contains\n")
+		if benchMain {
+			buf.WriteString("function now_() result(res)\n")
+			buf.WriteString("  implicit none\n")
+			buf.WriteString("  integer(kind=8) :: res\n")
+			buf.WriteString("  integer(kind=8) :: count, rate\n")
+			buf.WriteString("  call system_clock(count, rate)\n")
+			buf.WriteString("  res = count * 1000000 / rate\n")
+			buf.WriteString("end function now_\n")
+			buf.WriteString("function mem_() result(res)\n")
+			buf.WriteString("  implicit none\n")
+			buf.WriteString("  integer(kind=8) :: res\n")
+			buf.WriteString("  integer :: unit, ios\n")
+			buf.WriteString("  integer(kind=8) :: a,b\n")
+			buf.WriteString("  res = 0\n")
+			buf.WriteString("  open(newunit=unit, file='/proc/self/statm', action='read', status='old', iostat=ios)\n")
+			buf.WriteString("  if (ios == 0) then\n")
+			buf.WriteString("    read(unit, *, iostat=ios) a, b\n")
+			buf.WriteString("    if (ios == 0) res = b * 4096\n")
+			buf.WriteString("    close(unit)\n")
+			buf.WriteString("  end if\n")
+			buf.WriteString("end function mem_\n")
+		}
 		for _, f := range p.Funcs {
 			f.emit(&buf)
 		}
@@ -287,6 +350,9 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 		if stmt != nil {
 			fp.Stmts = append(fp.Stmts, stmt)
 		}
+	}
+	if benchMain {
+		fp.Stmts = []Stmt{&BenchStmt{Name: "main", Body: fp.Stmts}}
 	}
 	return fp, nil
 }
@@ -353,6 +419,9 @@ func constTranspile(prog *parser.Program, env *types.Env) (*Program, error) {
 		esc := strings.ReplaceAll(ln, "\"", "\"\"")
 		stmt := &PrintStmt{Exprs: []string{fmt.Sprintf("\"%s\"", esc)}, Types: []types.Type{types.StringType{}}}
 		p.Stmts = append(p.Stmts, stmt)
+	}
+	if benchMain {
+		p.Stmts = []Stmt{&BenchStmt{Name: "main", Body: p.Stmts}}
 	}
 	return p, nil
 }
@@ -1499,6 +1568,13 @@ func compileStmt(p *Program, st *parser.Statement, env *types.Env) (Stmt, error)
 	case st.Test != nil:
 		// ignore test blocks
 		return nil, nil
+	case st.Bench != nil:
+		body, err := compileStmtList(p, st.Bench.Body, env)
+		if err != nil {
+			return nil, err
+		}
+		benchMain = true
+		return &BenchStmt{Name: strings.Trim(st.Bench.Name, "\""), Body: body}, nil
 	case st.Break != nil:
 		return &BreakStmt{}, nil
 	case st.Continue != nil:
@@ -1862,6 +1938,13 @@ func compileFuncStmt(fn *Function, st *parser.Statement, env *types.Env) (Stmt, 
 	case st.Test != nil:
 		// ignore test blocks inside functions
 		return nil, nil
+	case st.Bench != nil:
+		body, err := compileFuncStmtList(fn, st.Bench.Body, env)
+		if err != nil {
+			return nil, err
+		}
+		benchMain = true
+		return &BenchStmt{Name: strings.Trim(st.Bench.Name, "\""), Body: body}, nil
 	case st.Break != nil:
 		return &BreakStmt{}, nil
 	case st.Continue != nil:

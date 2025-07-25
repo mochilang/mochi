@@ -42,6 +42,8 @@ func TestFortranTranspiler_VMValid_Golden(t *testing.T) {
 		if errs := types.Check(prog, env); len(errs) > 0 {
 			typeErr = errs[0]
 		}
+		bench := os.Getenv("MOCHI_BENCHMARK") != "" && os.Getenv("MOCHI_BENCHMARK") != "0"
+		ftn.SetBenchMain(bench)
 		ast, err := ftn.Transpile(prog, env)
 		_ = typeErr
 		if err != nil {
@@ -58,6 +60,9 @@ func TestFortranTranspiler_VMValid_Golden(t *testing.T) {
 			return nil, err
 		}
 		cmd := exec.Command(exe)
+		if bench {
+			cmd.Env = append(os.Environ(), "MOCHI_BENCHMARK=1")
+		}
 		if data, err := os.ReadFile(strings.TrimSuffix(src, ".mochi") + ".in"); err == nil {
 			cmd.Stdin = bytes.NewReader(data)
 		}
