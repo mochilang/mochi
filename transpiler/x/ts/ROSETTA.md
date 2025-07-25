@@ -2,7 +2,7 @@
 
 This checklist is auto-generated.
 Generated TypeScript code from programs in `tests/rosetta/x/Mochi` lives in `tests/rosetta/transpiler/TypeScript`.
-Last updated: 2025-07-25 12:45 UTC
+Last updated: 2025-07-25 14:17 UTC
 
 ## Rosetta Golden Test Checklist (275/284)
 | Index | Name | Status | Duration | Memory |
@@ -154,65 +154,65 @@ Last updated: 2025-07-25 12:45 UTC
 | 145 | calendar---for-real-programmers-1 | ✓ | 571.223ms | 5.4 MB |
 | 146 | calendar---for-real-programmers-2 | ✓ | 571.223ms | 5.1 MB |
 | 147 | calendar | ✓ | 571.223ms | 5.4 MB |
-| 148 | calkin-wilf-sequence | ✓ |  |  |
-| 149 | call-a-foreign-language-function | ✓ |  |  |
-| 150 | call-a-function-1 | ✓ |  |  |
-| 151 | call-a-function-10 | ✓ |  |  |
-| 152 | call-a-function-11 | ✓ |  |  |
-| 153 | call-a-function-12 | ✓ |  |  |
-| 154 | call-a-function-2 | ✓ |  |  |
-| 155 | call-a-function-3 | ✓ |  |  |
-| 156 | call-a-function-4 | ✓ |  |  |
-| 157 | call-a-function-5 | ✓ |  |  |
-| 158 | call-a-function-6 | ✓ |  |  |
-| 159 | call-a-function-7 | ✓ |  |  |
-| 160 | call-a-function-8 | ✓ |  |  |
-| 161 | call-a-function-9 | ✓ |  |  |
-| 162 | call-an-object-method-1 | ✓ |  |  |
-| 163 | call-an-object-method-2 | ✓ |  |  |
-| 164 | call-an-object-method-3 | ✓ |  |  |
-| 165 | call-an-object-method | ✓ |  |  |
-| 166 | camel-case-and-snake-case | ✓ |  |  |
-| 167 | canny-edge-detector | ✓ |  |  |
-| 168 | canonicalize-cidr | ✓ |  |  |
-| 169 | cantor-set | ✓ |  |  |
-| 170 | carmichael-3-strong-pseudoprimes | ✓ |  |  |
-| 171 | cartesian-product-of-two-or-more-lists-1 | ✓ |  |  |
-| 172 | cartesian-product-of-two-or-more-lists-2 | ✓ |  |  |
-| 173 | cartesian-product-of-two-or-more-lists-3 | ✓ |  |  |
-| 174 | cartesian-product-of-two-or-more-lists-4 | ✓ |  |  |
-| 175 | case-sensitivity-of-identifiers | ✓ |  |  |
-| 176 | casting-out-nines | ✓ |  |  |
-| 177 | catalan-numbers-1 | ✓ |  |  |
-| 178 | catalan-numbers-2 | ✓ |  |  |
-| 179 | catalan-numbers-pascals-triangle | ✓ |  |  |
-| 180 | catamorphism | ✓ |  |  |
-| 181 | catmull-clark-subdivision-surface | ✓ |  |  |
-| 182 | chaocipher | ✓ |  |  |
-| 183 | chaos-game | ✓ |  |  |
-| 184 | character-codes-1 | ✓ |  |  |
-| 185 | character-codes-2 | ✓ |  |  |
-| 186 | character-codes-3 | ✓ |  |  |
-| 187 | character-codes-4 | ✓ |  |  |
-| 188 | character-codes-5 | ✓ |  |  |
-| 189 | chat-server | ✓ |  |  |
-| 190 | check-machin-like-formulas | ✓ |  |  |
-| 191 | check-that-file-exists | ✓ |  |  |
-| 192 | checkpoint-synchronization-1 | ✓ |  |  |
-| 193 | checkpoint-synchronization-2 | ✓ |  |  |
-| 194 | checkpoint-synchronization-3 | ✓ |  |  |
-| 195 | checkpoint-synchronization-4 | ✓ |  |  |
-| 196 | chernicks-carmichael-numbers | ✓ |  |  |
-| 197 | cheryls-birthday | ✓ |  |  |
-| 198 | chinese-remainder-theorem | ✓ |  |  |
-| 199 | chinese-zodiac | ✓ |  |  |
-| 200 | cholesky-decomposition-1 | ✓ |  |  |
-| 201 | cholesky-decomposition | ✓ |  |  |
-| 202 | chowla-numbers | ✓ |  |  |
-| 203 | church-numerals-1 | ✓ |  |  |
-| 204 | church-numerals-2 | ✓ |  |  |
-| 205 | circles-of-given-radius-through-two-points | ✓ |  |  |
-| 206 | circular-primes | ✓ |  |  |
+| 148 | calkin-wilf-sequence | ✓ | 1.048ms | 512.0 KB |
+| 149 | call-a-foreign-language-function | ✓ | 304µs |  |
+| 150 | call-a-function-1 | ✓ | 3µs |  |
+| 151 | call-a-function-10 | ✓ | 41µs |  |
+| 152 | call-a-function-11 | ✓ | 472µs | 128.0 KB |
+| 153 | call-a-function-12 | ✓ | 359µs | 128.0 KB |
+| 154 | call-a-function-2 | ✓ | 28µs |  |
+| 155 | call-a-function-3 | ✓ | 23µs |  |
+| 156 | call-a-function-4 | ✓ | 22µs |  |
+| 157 | call-a-function-5 | ✓ | 319µs |  |
+| 158 | call-a-function-6 | ✓ | 311µs | 128.0 KB |
+| 159 | call-a-function-7 | ✓ | 16µs |  |
+| 160 | call-a-function-8 | ✓ | 83µs |  |
+| 161 | call-a-function-9 | ✓ | 59µs |  |
+| 162 | call-an-object-method-1 | ✓ | 40µs |  |
+| 163 | call-an-object-method-2 | ✓ | 26µs | 128.0 KB |
+| 164 | call-an-object-method-3 | ✓ | 41µs |  |
+| 165 | call-an-object-method | ✓ | 40µs |  |
+| 166 | camel-case-and-snake-case | ✓ | 9.764ms | 384.0 KB |
+| 167 | canny-edge-detector | ✓ | 897µs | 128.0 KB |
+| 168 | canonicalize-cidr | ✓ | 6.677ms | 256.0 KB |
+| 169 | cantor-set | ✓ | 586µs | 384.0 KB |
+| 170 | carmichael-3-strong-pseudoprimes | ✓ | 1.284ms | 2.8 MB |
+| 171 | cartesian-product-of-two-or-more-lists-1 | ✓ | 603µs | 128.0 KB |
+| 172 | cartesian-product-of-two-or-more-lists-2 | ✓ | 855µs | 128.0 KB |
+| 173 | cartesian-product-of-two-or-more-lists-3 | ✓ | 1.441ms | 256.0 KB |
+| 174 | cartesian-product-of-two-or-more-lists-4 | ✓ | 1.073ms | 256.0 KB |
+| 175 | case-sensitivity-of-identifiers | ✓ | 523µs | 128.0 KB |
+| 176 | casting-out-nines | ✓ | 1.73ms | 2.9 MB |
+| 177 | catalan-numbers-1 | ✓ | 516µs |  |
+| 178 | catalan-numbers-2 | ✓ | 467µs | 128.0 KB |
+| 179 | catalan-numbers-pascals-triangle | ✓ | 848µs | 512.0 KB |
+| 180 | catamorphism | ✓ | 534µs |  |
+| 181 | catmull-clark-subdivision-surface | ✓ | 2.467ms | 1.0 MB |
+| 182 | chaocipher | ✓ | 581µs | 128.0 KB |
+| 183 | chaos-game | ✓ | 3.848ms | 5.2 MB |
+| 184 | character-codes-1 | ✓ | 330µs |  |
+| 185 | character-codes-2 | ✓ | 322µs |  |
+| 186 | character-codes-3 | ✓ | 332µs | 128.0 KB |
+| 187 | character-codes-4 | ✓ | 326µs | 128.0 KB |
+| 188 | character-codes-5 | ✓ | 8.549ms |  |
+| 189 | chat-server | ✓ | 512µs |  |
+| 190 | check-machin-like-formulas | ✓ | 1.201ms | 1.0 MB |
+| 191 | check-that-file-exists | ✓ | 345µs |  |
+| 192 | checkpoint-synchronization-1 | ✓ | 503µs | 128.0 KB |
+| 193 | checkpoint-synchronization-2 | ✓ | 759µs | 128.0 KB |
+| 194 | checkpoint-synchronization-3 | ✓ | 683µs | 256.0 KB |
+| 195 | checkpoint-synchronization-4 | ✓ | 626µs | 256.0 KB |
+| 196 | chernicks-carmichael-numbers | ✓ | 85.368ms | 10.4 MB |
+| 197 | cheryls-birthday | ✓ | 505µs | 128.0 KB |
+| 198 | chinese-remainder-theorem | ✓ | 363µs | 128.0 KB |
+| 199 | chinese-zodiac | ✓ | 360µs | 128.0 KB |
+| 200 | cholesky-decomposition-1 | ✓ | 917µs | 128.0 KB |
+| 201 | cholesky-decomposition | ✓ | 706µs | 256.0 KB |
+| 202 | chowla-numbers | ✓ | 286µs |  |
+| 203 | church-numerals-1 | ✓ | 477µs | 128.0 KB |
+| 204 | church-numerals-2 | ✓ | 5µs |  |
+| 205 | circles-of-given-radius-through-two-points | ✓ | 789µs | 640.0 KB |
+| 206 | circular-primes | ✓ | 1.099ms | 1.2 MB |
 | 207 | cistercian-numerals | ✓ |  |  |
 | 208 | comma-quibbling | ✓ |  |  |
 | 209 | compiler-virtual-machine-interpreter | ✓ |  |  |
