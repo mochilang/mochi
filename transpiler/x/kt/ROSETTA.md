@@ -2,14 +2,14 @@
 
 Generated Kotlin sources for Rosetta Code tests are stored in `tests/rosetta/transpiler/Kotlin`.
 
-Last updated: 2025-07-25 09:05 +0700
+Last updated: 2025-07-25 10:01 +0700
 
 Completed tasks: **52/284**
 
 ### Checklist
 | Index | Name | Status | Duration | Memory |
 | ---: | --- | :---: | ---: | ---: |
-| 1 | 100-doors-2 | ✓ | 571.22ms | 431.4 KB |
+| 1 | 100-doors-2 | ✓ | 8.78ms | 134.1 KB |
 | 2 | 100-doors-3 | ✓ |  |  |
 | 3 | 100-doors | ✓ |  |  |
 | 4 | 100-prisoners |  |  |  |
