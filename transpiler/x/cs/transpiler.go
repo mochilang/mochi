@@ -2533,6 +2533,16 @@ func compileStmt(prog *Program, s *parser.Statement) (Stmt, error) {
 			alias := fmt.Sprintf("%s_%d", s.For.Name, aliasCounter)
 			aliasCounter++
 			varAliases[s.For.Name] = alias
+			if t, ok := varTypes[s.For.Name]; ok {
+				varTypes[alias] = t
+				finalVarTypes[alias] = t
+				if stringVars[s.For.Name] {
+					stringVars[alias] = true
+				}
+				if mapVars[s.For.Name] {
+					mapVars[alias] = true
+				}
+			}
 			start, err := compileExpr(s.For.Source)
 			if err != nil {
 				return nil, err
@@ -2592,6 +2602,16 @@ func compileStmt(prog *Program, s *parser.Statement) (Stmt, error) {
 		alias := fmt.Sprintf("%s_%d", s.For.Name, aliasCounter)
 		aliasCounter++
 		varAliases[s.For.Name] = alias
+		if t, ok := varTypes[s.For.Name]; ok {
+			varTypes[alias] = t
+			finalVarTypes[alias] = t
+			if stringVars[s.For.Name] {
+				stringVars[alias] = true
+			}
+			if mapVars[s.For.Name] {
+				mapVars[alias] = true
+			}
+		}
 		savedVars := cloneStringMap(varTypes)
 		savedMap := cloneBoolMap(mapVars)
 		savedStr := cloneBoolMap(stringVars)
