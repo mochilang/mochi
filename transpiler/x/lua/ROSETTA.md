@@ -4,7 +4,7 @@ Generated Lua code for programs in `tests/rosetta/x/Mochi`. Each program has a `
 
 Transpiled programs: 275/284
 
-Last updated: 2025-07-25 17:45 GMT+7
+Last updated: 2025-07-25 17:59 GMT+7
 
 Checklist:
 
@@ -113,37 +113,37 @@ Checklist:
 | 101 | barnsley-fern | ✓ | 15.654ms | 139.0 KB |
 | 102 | base64-decode-data | ✓ | 1.565ms | 1.3 KB |
 | 103 | bell-numbers | ✓ | 1.762ms | 960 B |
-| 104 | benfords-law | ✓ |  |  |
-| 105 | bernoulli-numbers | ✓ |  |  |
-| 106 | best-shuffle | ✓ |  |  |
-| 107 | bifid-cipher | ✓ |  |  |
-| 108 | bin-given-limits | ✓ |  |  |
-| 109 | binary-digits | ✓ |  |  |
-| 110 | binary-search | ✓ |  |  |
-| 111 | binary-strings | ✓ |  |  |
-| 112 | bioinformatics-base-count | ✓ |  |  |
-| 113 | bioinformatics-global-alignment | ✓ |  |  |
-| 114 | bioinformatics-sequence-mutation | ✓ |  |  |
-| 115 | biorhythms | ✓ |  |  |
-| 116 | bitcoin-address-validation | ✓ |  |  |
-| 117 | bitmap-b-zier-curves-cubic | ✓ |  |  |
-| 118 | bitmap-b-zier-curves-quadratic | ✓ |  |  |
-| 119 | bitmap-bresenhams-line-algorithm | ✓ |  |  |
-| 120 | bitmap-flood-fill | ✓ |  |  |
-| 121 | bitmap-histogram | ✓ |  |  |
-| 122 | bitmap-midpoint-circle-algorithm | ✓ |  |  |
-| 123 | bitmap-ppm-conversion-through-a-pipe | ✓ |  |  |
-| 124 | bitmap-read-a-ppm-file | ✓ |  |  |
-| 125 | bitmap-read-an-image-through-a-pipe | ✓ |  |  |
-| 126 | bitmap-write-a-ppm-file | ✓ |  |  |
-| 127 | bitmap | ✓ |  |  |
-| 128 | bitwise-io-1 | ✓ |  |  |
-| 129 | bitwise-io-2 | ✓ |  |  |
-| 130 | bitwise-operations | ✓ |  |  |
-| 131 | blum-integer | ✓ |  |  |
-| 132 | boolean-values | ✓ |  |  |
-| 133 | box-the-compass | ✓ |  |  |
-| 134 | boyer-moore-string-search | ✓ |  |  |
+| 104 | benfords-law | ✓ | 6.477ms | 20.0 KB |
+| 105 | bernoulli-numbers | ✓ | 72.698ms | 1.9 KB |
+| 106 | best-shuffle | ✓ | 285µs | 1.0 KB |
+| 107 | bifid-cipher | ✓ | 1.395ms | 2.3 KB |
+| 108 | bin-given-limits | ✓ | 710µs | 1.0 KB |
+| 109 | binary-digits | ✓ | 97µs | 2.7 KB |
+| 110 | binary-search | ✓ | 55µs | 952 B |
+| 111 | binary-strings | ✓ | 177µs | 1.8 KB |
+| 112 | bioinformatics-base-count | ✓ | 181µs | 1.3 KB |
+| 113 | bioinformatics-global-alignment | ✓ | 2.613976s | 84.4 KB |
+| 114 | bioinformatics-sequence-mutation | ✓ | 6.92ms | 4.9 KB |
+| 115 | biorhythms | ✓ | 144µs | 1.4 KB |
+| 116 | bitcoin-address-validation | ✓ | 1.579ms | 1.2 KB |
+| 117 | bitmap-b-zier-curves-cubic | ✓ | 1.430062s | 2.4 MB |
+| 118 | bitmap-b-zier-curves-quadratic | ✓ | 411.352ms | 2.4 MB |
+| 119 | bitmap-bresenhams-line-algorithm | ✓ | 289µs | 944 B |
+| 120 | bitmap-flood-fill | ✓ | 341µs | 3.9 KB |
+| 121 | bitmap-histogram | ✓ | 115µs | 1.0 KB |
+| 122 | bitmap-midpoint-circle-algorithm | ✓ | 500µs | 15.2 KB |
+| 123 | bitmap-ppm-conversion-through-a-pipe | ✓ | 1.501627s | 9.9 KB |
+| 124 | bitmap-read-a-ppm-file | ✓ | 533µs | 6.1 KB |
+| 125 | bitmap-read-an-image-through-a-pipe | ✓ | 84µs | 1.7 KB |
+| 126 | bitmap-write-a-ppm-file | ✓ | 151µs | 1.1 KB |
+| 127 | bitmap | ✓ | 242.368ms | 10.0 KB |
+| 128 | bitwise-io-1 | ✓ | 77µs | 1.2 KB |
+| 129 | bitwise-io-2 | ✓ | 430µs | 1.7 KB |
+| 130 | bitwise-operations | ✓ | 111µs | 1.4 KB |
+| 131 | blum-integer | ✓ | 510µs | 1.1 KB |
+| 132 | boolean-values | ✓ | 57µs | 848 B |
+| 133 | box-the-compass | ✓ | 264µs | 1.5 KB |
+| 134 | boyer-moore-string-search | ✓ | 138µs | 1.1 KB |
 | 135 | brazilian-numbers | ✓ |  |  |
 | 136 | break-oo-privacy | ✓ |  |  |
 | 137 | brilliant-numbers | ✓ |  |  |
