@@ -690,6 +690,10 @@ type ReturnStmt struct {
 
 type BreakStmt struct{}
 type ContinueStmt struct{}
+type BenchStmt struct {
+	Name string
+	Body []Stmt
+}
 
 // ForStmt iterates over elements in a list, map or range.
 type ForStmt struct {
@@ -786,7 +790,7 @@ func (e *ExprStmt) emit(w io.Writer) {
 
 func (j *JSONStmt) emit(w io.Writer) {
 	writeIndent(w)
-	io.WriteString(w, "BSL.putStrLn (Aeson.encode ")
+	io.WriteString(w, "BSL.putStrLn (Pretty.encodePretty' Pretty.defConfig{Pretty.confIndent = Pretty.Spaces 2} ")
 	j.Expr.emit(w)
 	io.WriteString(w, ")")
 }
@@ -898,6 +902,32 @@ func (c *ContinueStmt) emit(w io.Writer) {
 	writeIndent(w)
 	io.WriteString(w, currentLoop)
 	io.WriteString(w, loopArgs)
+}
+
+func (b *BenchStmt) emit(w io.Writer) {
+	writeIndent(w)
+	io.WriteString(w, "do\n")
+	pushIndent()
+	writeIndent(w)
+	io.WriteString(w, "writeIORef _nowSeed 1\n")
+	writeIndent(w)
+	io.WriteString(w, "writeIORef _nowSeeded True\n")
+	writeIndent(w)
+	io.WriteString(w, "start <- _now\n")
+	for _, st := range b.Body {
+		st.emit(w)
+		io.WriteString(w, "\n")
+	}
+	writeIndent(w)
+	io.WriteString(w, "end <- _now\n")
+	writeIndent(w)
+	io.WriteString(w, "let benchData = Aeson.object [")
+	io.WriteString(w, "\"duration_us\" Aeson..= ((end - start) `div` 1000), ")
+	io.WriteString(w, "\"memory_bytes\" Aeson..= (0 :: Int), ")
+	fmt.Fprintf(w, "\"name\" Aeson..= (%q :: String)]\n", b.Name)
+	writeIndent(w)
+	io.WriteString(w, "BSL.putStrLn (Pretty.encodePretty' Pretty.defConfig{Pretty.confIndent = Pretty.Spaces 2} benchData)\n")
+	popIndent()
 }
 
 func (f *ForStmt) emit(w io.Writer) {
@@ -2189,6 +2219,9 @@ func header(withList, withMap, withJSON, withTrace, withIORef, withNow, withLook
 	h := "{-# LANGUAGE DuplicateRecordFields #-}\n"
 	h += "{-# LANGUAGE OverloadedRecordDot #-}\n"
 	h += "{-# LANGUAGE NoFieldSelectors #-}\n"
+	if withJSON {
+		h += "{-# LANGUAGE OverloadedStrings #-}\n"
+	}
 	if len(preludeHide) > 0 {
 		names := make([]string, 0, len(preludeHide))
 		for n := range preludeHide {
@@ -2206,6 +2239,7 @@ func header(withList, withMap, withJSON, withTrace, withIORef, withNow, withLook
 	}
 	if withJSON {
 		h += "import qualified Data.Aeson as Aeson\n"
+		h += "import qualified Data.Aeson.Encode.Pretty as Pretty\n"
 		h += "import qualified Data.ByteString.Lazy.Char8 as BSL\n"
 	}
 	if withTrace {
@@ -2524,6 +2558,12 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 				return nil, err
 			}
 			h.Stmts = append(h.Stmts, s)
+		case st.Bench != nil:
+			s, err := convertBenchBlock(st.Bench)
+			if err != nil {
+				return nil, err
+			}
+			h.Stmts = append(h.Stmts, s)
 		case st.Expr != nil:
 			call := st.Expr.Expr.Binary.Left.Value.Target.Call
 			if call != nil && call.Func == "print" {
@@ -2648,6 +2688,14 @@ func stmtNode(s Stmt) *ast.Node {
 		for _, c := range st.Body {
 			n.Children = append(n.Children, stmtNode(c))
 		}
+		return n
+	case *BenchStmt:
+		n := &ast.Node{Kind: "bench", Value: st.Name}
+		body := &ast.Node{Kind: "body"}
+		for _, b := range st.Body {
+			body.Children = append(body.Children, stmtNode(b))
+		}
+		n.Children = append(n.Children, body)
 		return n
 	default:
 		return &ast.Node{Kind: "stmt"}
@@ -3833,6 +3881,17 @@ func convertWhileStmt(w *parser.WhileStmt) (Stmt, error) {
 	return ws, nil
 }
 
+func convertBenchBlock(b *parser.BenchBlock) (Stmt, error) {
+	body, err := convertStmtList(b.Body)
+	if err != nil {
+		return nil, err
+	}
+	usesNow = true
+	needJSON = true
+	name := strings.Trim(b.Name, "\"")
+	return &BenchStmt{Name: name, Body: body}, nil
+}
+
 func convertStmtList(list []*parser.Statement) ([]Stmt, error) {
 	if locals == nil {
 		locals = map[string]bool{}
@@ -4003,6 +4062,12 @@ func convertStmtList(list []*parser.Statement) ([]Stmt, error) {
 			}
 		case st.For != nil:
 			s, err := convertForStmt(st.For)
+			if err != nil {
+				return nil, err
+			}
+			out = append(out, s)
+		case st.Bench != nil:
+			s, err := convertBenchBlock(st.Bench)
 			if err != nil {
 				return nil, err
 			}
