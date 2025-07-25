@@ -69,12 +69,12 @@ var (
 	currentRetType string
 	mainFuncName   string
 	fieldTypeGuess map[string]string
-	benchMain      bool
+	benchMainFlag  bool
 )
 
 // SetBenchMain configures whether the generated main function is wrapped in a
 // benchmark block when emitting code.
-func SetBenchMain(v bool) { benchMain = v }
+func SetBenchMain(v bool) { benchMainFlag = v }
 
 func toPascalCase(s string) string {
 	parts := strings.Split(s, "_")
@@ -5064,7 +5064,7 @@ func identName(e *parser.Expr) (string, bool) {
 
 // Emit formats the Go AST back into source code.
 func Emit(prog *Program, bench bool) []byte {
-	bench = bench || benchMain || prog.BenchMain
+	bench = bench || benchMainFlag || prog.BenchMain
 	if bench {
 		prog.UseTime = true
 		prog.UseJSON = true
