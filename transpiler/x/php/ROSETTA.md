@@ -2,9 +2,9 @@
 
 Generated PHP code from Mochi Rosetta tasks lives in `tests/rosetta/transpiler/php`.
 
-Last updated: 2025-07-25 02:13 +0700
+Last updated: 2025-07-25 07:55 +0700
 
-## Checklist (260/284)
+## Checklist (264/284)
 - [x] 1 100-doors-2
 - [x] 2 100-doors-3
 - [x] 3 100-doors
@@ -279,10 +279,10 @@ Last updated: 2025-07-25 02:13 +0700
 - [x] 272 date-format
 - [x] 273 date-manipulation
 - [x] 274 day-of-the-week
-- [ ] 275 de-bruijn-sequences
-- [ ] 276 deal-cards-for-freecell
-- [ ] 277 death-star
-- [ ] 278 deceptive-numbers
+- [x] 275 de-bruijn-sequences
+- [x] 276 deal-cards-for-freecell
+- [x] 277 death-star
+- [x] 278 deceptive-numbers
 - [ ] 279 deconvolution-1d-2
 - [ ] 280 deconvolution-1d-3
 - [ ] 281 deconvolution-1d
