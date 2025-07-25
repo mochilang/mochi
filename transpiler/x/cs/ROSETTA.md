@@ -1,7 +1,7 @@
 # Rosetta C# Transpiler Output
 
-Completed programs: 39/284
-Last updated: 2025-07-25 12:29 +0700
+Completed programs: 52/284
+Last updated: 2025-07-25 12:58 +0700
 
 ## Checklist
 | Index | Name | Status | Duration | Memory |
@@ -51,19 +51,19 @@ Last updated: 2025-07-25 12:29 +0700
 | 43 | almost-prime | ✓ |  |  |
 | 44 | amb | ✓ |  |  |
 | 45 | amicable-pairs | ✓ |  |  |
-| 46 | anagrams-deranged-anagrams |   |  |  |
-| 47 | anagrams |   |  |  |
-| 48 | angle-difference-between-two-bearings-1 |   |  |  |
-| 49 | angle-difference-between-two-bearings-2 |   |  |  |
-| 50 | angles-geometric-normalization-and-conversion |   |  |  |
-| 51 | animate-a-pendulum |   |  |  |
-| 52 | animation |   |  |  |
-| 53 | anonymous-recursion-1 |   |  |  |
-| 54 | anonymous-recursion-2 |   |  |  |
-| 55 | anonymous-recursion |   |  |  |
-| 56 | anti-primes |   |  |  |
-| 57 | append-a-record-to-the-end-of-a-text-file |   |  |  |
-| 58 | apply-a-callback-to-an-array-1 |   |  |  |
+| 46 | anagrams-deranged-anagrams | ✓ | 4.177ms | 24.1MB |
+| 47 | anagrams | ✓ | 1.529ms | 77.0MB |
+| 48 | angle-difference-between-two-bearings-1 | ✓ | 1.464ms | 16.0MB |
+| 49 | angle-difference-between-two-bearings-2 | ✓ | 1.341ms | 16.0MB |
+| 50 | angles-geometric-normalization-and-conversion | ✓ | 1.241ms | 32.1MB |
+| 51 | animate-a-pendulum | ✓ | 951µs | 16.0MB |
+| 52 | animation | ✓ | 895µs | 60.9MB |
+| 53 | anonymous-recursion-1 | ✓ | 903µs | 16.0MB |
+| 54 | anonymous-recursion-2 | ✓ | 1.013ms | 16.0MB |
+| 55 | anonymous-recursion | ✓ | 949µs | 16.0MB |
+| 56 | anti-primes | ✓ | 9.324ms | 16.0MB |
+| 57 | append-a-record-to-the-end-of-a-text-file | ✓ | 1.01ms | 16.0MB |
+| 58 | apply-a-callback-to-an-array-1 | ✓ | 882µs | 16.0MB |
 | 59 | apply-a-callback-to-an-array-2 |   |  |  |
 | 60 | apply-a-digital-filter-direct-form-ii-transposed- |   |  |  |
 | 61 | approximate-equality |   |  |  |

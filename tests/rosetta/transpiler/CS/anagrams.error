@@ -1,6 +1,0 @@
-dotnet run: exit status 1
-/tmp/TestCSTranspiler_Rosetta_Golden19080068/001/Program.cs(50,22): error CS0019: Operator '>' cannot be applied to operands of type 'string' and 'string' [/tmp/TestCSTranspiler_Rosetta_Golden19080068/001/app.csproj]
-/tmp/TestCSTranspiler_Rosetta_Golden19080068/001/Program.cs(76,22): error CS0019: Operator '<' cannot be applied to operands of type 'string' and 'string' [/tmp/TestCSTranspiler_Rosetta_Golden19080068/001/app.csproj]
-/tmp/TestCSTranspiler_Rosetta_Golden19080068/001/Program.cs(103,29): error CS0266: Cannot implicitly convert type 'object[]' to 'string[]'. An explicit conversion exists (are you missing a cast?) [/tmp/TestCSTranspiler_Rosetta_Golden19080068/001/app.csproj]
-
-The build failed. Fix the build errors and run again.

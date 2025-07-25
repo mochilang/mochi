@@ -56,19 +56,45 @@ class Program {
         }
         return _fmt(v);
     }
-    static double[][] testCases = new double[][]{new double[]{20, 45}, new double[]{(0 - 45), 45}, new double[]{(0 - 85), 90}, new double[]{(0 - 95), 90}, new double[]{(0 - 45), 125}, new double[]{(0 - 45), 145}, new double[]{29.4803, (0 - 88.6381)}, new double[]{(0 - 78.3251), (0 - 159.036)}, new double[]{(0 - 70099.74233810938), 29840.67437876723}, new double[]{(0 - 165313.6666297357), 33693.9894517456}, new double[]{1174.8380510598456, (0 - 154146.66490124757)}, new double[]{60175.77306795546, 42213.07192354373}};
-    static double angleDiff(double b1, double b2) {
-        double diff = (b2 - b1);
-        return (((((diff % 360) + 360) + 180) % 360) - 180);
+    static long countDivisors(long n) {
+        if ((n < 2)) {
+            return 1;
+        };
+        long count = 2;
+        long i = 2;
+        while ((i <= (n / 2))) {
+            if (((n % i) == 0)) {
+                count = (count + 1);
+            }
+            i = (i + 1);
+        };
+        return count;
+    }
+
+    static void main() {
+        Console.WriteLine(_fmtTop("The first 20 anti-primes are:"));
+        long maxDiv = 0;
+        long count = 0;
+        long n = 1;
+        string line = "";
+        while ((count < 20)) {
+            long d = countDivisors(n);
+            if ((d > maxDiv)) {
+                line = ((line + (n).ToString()) + " ");
+                maxDiv = d;
+                count = (count + 1);
+            }
+            n = (n + 1);
+        };
+        line = line.Substring((int)(0), (int)((line.Length - 1) - 0));
+        Console.WriteLine(_fmtTop(line));
     }
 
     static void Main() {
         {
             var __memStart = _mem();
             var __start = _now();
-            foreach (var tc_0 in testCases) {
-                Console.WriteLine(_fmtTop(angleDiff(tc_0[0], tc_0[1])));
-            }
+            main();
             var __end = _now();
             var __memEnd = _mem();
             var __dur = (__end - __start);
