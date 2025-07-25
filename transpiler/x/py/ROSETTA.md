@@ -2,61 +2,61 @@
 
 This checklist is auto-generated.
 Generated Python code from programs in `tests/rosetta/x/Mochi` lives in `tests/rosetta/transpiler/Python`.
-Last updated: 2025-07-25 10:07 GMT+7
+Last updated: 2025-07-25 10:39 GMT+7
 
 ## Rosetta Golden Test Checklist (268/284)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
-| 1 | 100-doors-2 | ✓ | 162.0µs | 12.50MB |
-| 2 | 100-doors-3 | ✓ |  |  |
-| 3 | 100-doors | ✓ |  |  |
-| 4 | 100-prisoners | ✓ |  |  |
-| 5 | 15-puzzle-game | ✓ |  |  |
-| 6 | 15-puzzle-solver | ✓ |  |  |
-| 7 | 2048 | ✓ |  |  |
-| 8 | 21-game | ✓ |  |  |
-| 9 | 24-game-solve | ✓ |  |  |
+| 1 | 100-doors-2 | ✓ | 177.0µs | 12.60MB |
+| 2 | 100-doors-3 | ✓ | 137.0µs | 13.22MB |
+| 3 | 100-doors | ✓ | 245.0µs | 13.35MB |
+| 4 | 100-prisoners | ✓ | 545.0ms | 14.35MB |
+| 5 | 15-puzzle-game | ✓ | 245.0µs | 14.47MB |
+| 6 | 15-puzzle-solver | ✓ | 10.0µs | 14.47MB |
+| 7 | 2048 | ✓ | 2.0ms | 15.07MB |
+| 8 | 21-game | ✓ | 87.0µs | 15.07MB |
+| 9 | 24-game-solve | ✓ | 40.0ms | 15.07MB |
 | 10 | 24-game | ✓ |  |  |
-| 11 | 4-rings-or-4-squares-puzzle | ✓ |  |  |
-| 12 | 9-billion-names-of-god-the-integer | ✓ |  |  |
-| 13 | 99-bottles-of-beer-2 | ✓ |  |  |
-| 14 | 99-bottles-of-beer | ✓ |  |  |
-| 15 | DNS-query | ✓ |  |  |
-| 16 | a+b | ✓ |  |  |
-| 17 | abbreviations-automatic | ✓ |  |  |
-| 18 | abbreviations-easy | ✓ |  |  |
-| 19 | abbreviations-simple | ✓ |  |  |
-| 20 | abc-problem | ✓ |  |  |
-| 21 | abelian-sandpile-model-identity | ✓ |  |  |
-| 22 | abelian-sandpile-model | ✓ |  |  |
-| 23 | abstract-type | ✓ |  |  |
-| 24 | abundant-deficient-and-perfect-number-classifications | ✓ |  |  |
-| 25 | abundant-odd-numbers | ✓ |  |  |
-| 26 | accumulator-factory | ✓ |  |  |
-| 27 | achilles-numbers | ✓ |  |  |
-| 28 | ackermann-function-2 | ✓ |  |  |
-| 29 | ackermann-function-3 | ✓ |  |  |
-| 30 | ackermann-function | ✓ |  |  |
-| 31 | active-directory-connect | ✓ |  |  |
-| 32 | active-directory-search-for-a-user | ✓ |  |  |
-| 33 | active-object | ✓ |  |  |
+| 11 | 4-rings-or-4-squares-puzzle | ✓ | 31.0ms | 15.07MB |
+| 12 | 9-billion-names-of-god-the-integer | ✓ | 10.59s | 233.74MB |
+| 13 | 99-bottles-of-beer-2 | ✓ | 11.0ms | 15.07MB |
+| 14 | 99-bottles-of-beer | ✓ | 502.0µs | 15.07MB |
+| 15 | DNS-query | ✓ | 962.0ms | 15.07MB |
+| 16 | a+b | ✓ | 127.0µs | 15.07MB |
+| 17 | abbreviations-automatic | ✓ | 3.0ms | 15.07MB |
+| 18 | abbreviations-easy | ✓ | 778.0µs | 15.07MB |
+| 19 | abbreviations-simple | ✓ | 976.0µs | 15.40MB |
+| 20 | abc-problem | ✓ | 325.0µs | 15.40MB |
+| 21 | abelian-sandpile-model-identity | ✓ | 161.0µs | 15.40MB |
+| 22 | abelian-sandpile-model | ✓ | 158.0µs | 15.40MB |
+| 23 | abstract-type | ✓ | 20.0µs | 15.40MB |
+| 24 | abundant-deficient-and-perfect-number-classifications | ✓ | 8.58s | 15.40MB |
+| 25 | abundant-odd-numbers | ✓ | 9.83s | 15.40MB |
+| 26 | accumulator-factory | ✓ | 20.0µs | 15.40MB |
+| 27 | achilles-numbers | ✓ | 18.0ms | 15.40MB |
+| 28 | ackermann-function-2 | ✓ | 19.0µs | 15.40MB |
+| 29 | ackermann-function-3 | ✓ | 144.81s | 15.40MB |
+| 30 | ackermann-function | ✓ | 2.0ms | 15.40MB |
+| 31 | active-directory-connect | ✓ | 20.0µs | 15.40MB |
+| 32 | active-directory-search-for-a-user | ✓ | 16.0µs | 15.40MB |
+| 33 | active-object | ✓ | 654.0µs | 15.40MB |
 | 34 | add-a-variable-to-a-class-instance-at-runtime | ✓ |  |  |
-| 35 | additive-primes | ✓ |  |  |
-| 36 | address-of-a-variable | ✓ |  |  |
-| 37 | adfgvx-cipher | ✓ |  |  |
-| 38 | aks-test-for-primes | ✓ |  |  |
-| 39 | algebraic-data-types | ✓ |  |  |
-| 40 | align-columns | ✓ |  |  |
-| 41 | aliquot-sequence-classifications | ✓ |  |  |
-| 42 | almkvist-giullera-formula-for-pi | ✓ |  |  |
-| 43 | almost-prime | ✓ |  |  |
-| 44 | amb | ✓ |  |  |
-| 45 | amicable-pairs | ✓ |  |  |
-| 46 | anagrams-deranged-anagrams | ✓ |  |  |
-| 47 | anagrams | ✓ |  |  |
-| 48 | angle-difference-between-two-bearings-1 | ✓ |  |  |
-| 49 | angle-difference-between-two-bearings-2 | ✓ |  |  |
-| 50 | angles-geometric-normalization-and-conversion | ✓ |  |  |
+| 35 | additive-primes | ✓ | 217.0µs | 15.40MB |
+| 36 | address-of-a-variable | ✓ | 18.0µs | 15.40MB |
+| 37 | adfgvx-cipher | ✓ | 430.0µs | 15.44MB |
+| 38 | aks-test-for-primes | ✓ | 184.0µs | 15.44MB |
+| 39 | algebraic-data-types | ✓ | 137.0µs | 15.44MB |
+| 40 | align-columns | ✓ | 1.0ms | 15.53MB |
+| 41 | aliquot-sequence-classifications | ✓ | 793.0ms | 15.53MB |
+| 42 | almkvist-giullera-formula-for-pi | ✓ | 2.37s | 16.28MB |
+| 43 | almost-prime | ✓ | 574.0µs | 16.28MB |
+| 44 | amb | ✓ | 31.0µs | 16.28MB |
+| 45 | amicable-pairs | ✓ | 11.73s | 16.28MB |
+| 46 | anagrams-deranged-anagrams | ✓ | 128.0µs | 16.28MB |
+| 47 | anagrams | ✓ | 321.0µs | 16.28MB |
+| 48 | angle-difference-between-two-bearings-1 | ✓ | 33.0µs | 16.28MB |
+| 49 | angle-difference-between-two-bearings-2 | ✓ | 43.0µs | 16.28MB |
+| 50 | angles-geometric-normalization-and-conversion | ✓ | 274.0µs | 16.28MB |
 | 51 | animate-a-pendulum | ✓ |  |  |
 | 52 | animation | ✓ |  |  |
 | 53 | anonymous-recursion-1 | ✓ |  |  |

@@ -2596,6 +2596,7 @@ func Emit(w io.Writer, p *Program, bench bool) error {
 		}
 		if currentImports["dataclasses"] && !hasImport(p, "dataclasses") {
 			imports = append(imports, "import dataclasses")
+			needDC = true
 		}
 		if currentImports["socket"] && !hasImport(p, "socket") {
 			imports = append(imports, "import socket")
@@ -3871,9 +3872,13 @@ func convertBinary(b *parser.BinaryExpr) (Expr, error) {
 	apply := func(left Expr, op string, right Expr) Expr {
 		if op == "/" {
 			// Python's division operator performs floating point division.
-			// Mochi's "/" operator matches this behaviour, so we do
-			// not attempt to detect integer division and always
-			// emit "/".
+			// Mochi's "/" operator matches this behaviour, but when both
+			// operands are integer-like we want floor division.
+			if isIntLike(inferPyType(left, currentEnv)) && isIntLike(inferPyType(right, currentEnv)) {
+				op = "//"
+			} else if _, ok := right.(*IntLit); ok {
+				op = "//"
+			}
 		}
 		if op == "+" {
 			if s, ok := left.(*SliceExpr); ok {
@@ -4282,6 +4287,11 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 			}
 		case "indexOf":
 			if len(args) == 2 {
+				if currentEnv != nil {
+					if _, ok := currentEnv.GetFunc("indexOf"); ok {
+						break
+					}
+				}
 				return &CallExpr{Func: &FieldExpr{Target: args[0], Name: "find"}, Args: []Expr{args[1]}}, nil
 			}
 		case "now":
