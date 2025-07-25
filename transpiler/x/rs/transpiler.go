@@ -1092,6 +1092,30 @@ func (s *IndexAssignStmt) emit(w io.Writer) {
 	if idx, ok := s.Target.(*IndexExpr); ok {
 		old := indexLHS
 		indexLHS = true
+		// Special case: assigning using an index based on len(target)
+		// like `x[len(x)-n] = v`. Borrowing `x` multiple times in the
+		// generated code triggers Rust's borrow checker, so compute the
+		// index in a temporary variable first.
+		if be, ok2 := idx.Index.(*BinaryExpr); ok2 && be.Op == "-" {
+			if le, ok3 := be.Left.(*LenExpr); ok3 {
+				if nr, ok4 := le.Arg.(*NameRef); ok4 {
+					if tnr, ok5 := idx.Target.(*NameRef); ok5 && nr.Name == tnr.Name {
+						io.WriteString(w, "{ let _i = (")
+						idx.Target.emit(w)
+						io.WriteString(w, ".len() as i64) - ")
+						be.Right.emit(w)
+						io.WriteString(w, "; ")
+						idx.Target.emit(w)
+						io.WriteString(w, "[_i as usize]")
+						io.WriteString(w, " = ")
+						s.Value.emit(w)
+						io.WriteString(w, "; }")
+						indexLHS = old
+						return
+					}
+				}
+			}
+		}
 		if strings.HasPrefix(inferType(idx.Target), "HashMap") {
 			idx.Target.emit(w)
 			io.WriteString(w, ".insert(")
