@@ -928,9 +928,15 @@ func (c *CastExpr) emit(w io.Writer) {
 			return
 		}
 		if force {
-			fmt.Fprint(w, "(")
-			c.Expr.emit(w)
-			fmt.Fprintf(w, " as! %s)", t)
+			if ie, ok := c.Expr.(*IndexExpr); ok && ie.Force {
+				fmt.Fprint(w, "(")
+				c.Expr.emit(w)
+				fmt.Fprintf(w, " as! %s)", t)
+			} else {
+				fmt.Fprintf(w, "%s(", t)
+				c.Expr.emit(w)
+				fmt.Fprint(w, ")")
+			}
 		} else if t == "String" {
 			fmt.Fprint(w, "String(describing: ")
 			c.Expr.emit(w)

@@ -1,5 +1,5 @@
-## Progress (2025-07-26 04:52 +0700)
-- swift: record progress checklist for indices 43-61
+## Progress (2025-07-26 05:13 +0700)
+- swift: transpile rosetta indices 62-65
 - Generated golden tests for 102/104 programs
 - Updated README checklist and output artifacts
 
