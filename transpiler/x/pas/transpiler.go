@@ -3086,8 +3086,8 @@ func convertPostfix(env *types.Env, pf *parser.PostfixExpr) (Expr, error) {
 			}
 			tmp := *pf
 			tmp.Ops = tmp.Ops[:i]
-			t := types.ExprType(&parser.Expr{Binary: &parser.BinaryExpr{Left: &parser.Unary{Value: &tmp}}}, env)
-			_, isStr := t.(types.StringType)
+			_ = tmp
+			isStr := inferType(expr) == "string"
 			expr = &IndexExpr{Target: expr, Index: idx, String: isStr}
 		case op.Index != nil && op.Index.Colon != nil && op.Index.Colon2 == nil && op.Index.Step == nil:
 			var start Expr
@@ -3108,8 +3108,8 @@ func convertPostfix(env *types.Env, pf *parser.PostfixExpr) (Expr, error) {
 			}
 			tmp := *pf
 			tmp.Ops = tmp.Ops[:i]
-			t := types.ExprType(&parser.Expr{Binary: &parser.BinaryExpr{Left: &parser.Unary{Value: &tmp}}}, env)
-			_, isStr := t.(types.StringType)
+			_ = tmp
+			isStr := inferType(expr) == "string"
 			expr = &SliceExpr{Target: expr, Start: start, End: end, String: isStr}
 		case op.Cast != nil && op.Cast.Type != nil && op.Cast.Type.Simple != nil:
 			target := *op.Cast.Type.Simple
