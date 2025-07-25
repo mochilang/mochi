@@ -11,3 +11,8 @@ Found "word" in 'text3' at indexes [40]
 Found "needle" in 'text4' at indexes [0, 19]
 Found "and" in 'text5' at indexes [10, 46, 73]
 Found "alfalfa" in 'text6' at indexes [29, 79]
+{
+  "duration_us": 104,
+  "memory_bytes": 96,
+  "name": "main"
+}

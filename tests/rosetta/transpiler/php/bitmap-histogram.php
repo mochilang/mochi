@@ -1,5 +1,20 @@
 <?php
 ini_set('memory_limit', '-1');
+$now_seed = 0;
+$now_seeded = false;
+$s = getenv('MOCHI_NOW_SEED');
+if ($s !== false && $s !== '') {
+    $now_seed = intval($s);
+    $now_seeded = true;
+}
+function _now() {
+    global $now_seed, $now_seeded;
+    if ($now_seeded) {
+        $now_seed = ($now_seed * 1664525 + 1013904223) % 2147483647;
+        return $now_seed;
+    }
+    return hrtime(true);
+}
 function _str($x) {
     if (is_array($x)) {
         $isList = array_keys($x) === range(0, count($x) - 1);
@@ -16,12 +31,20 @@ function _str($x) {
     if ($x === null) return 'null';
     return strval($x);
 }
-function image() {
-  global $histogram, $medianThreshold, $threshold, $printImage, $main;
-  return [[0, 0, 10000], [65535, 65535, 65535], [65535, 65535, 65535]];
+function _intdiv($a, $b) {
+    if (function_exists('bcdiv')) {
+        $sa = is_int($a) ? strval($a) : sprintf('%.0f', $a);
+        $sb = is_int($b) ? strval($b) : sprintf('%.0f', $b);
+        return intval(bcdiv($sa, $sb, 0));
+    }
+    return intdiv($a, $b);
 }
-function histogram($g, $bins) {
-  global $image, $medianThreshold, $threshold, $printImage, $main;
+$__start_mem = memory_get_usage();
+$__start = _now();
+  function image() {
+  return [[0, 0, 10000], [65535, 65535, 65535], [65535, 65535, 65535]];
+};
+  function histogram($g, $bins) {
   if ($bins <= 0) {
   $bins = count($g[0]);
 }
@@ -37,16 +60,15 @@ function histogram($g, $bins) {
   $x = 0;
   while ($x < count($row)) {
   $p = $row[$x];
-  $idx = intval((intdiv(($p * ($bins - 1)), 65535)));
+  $idx = intval((_intdiv(($p * ($bins - 1)), 65535)));
   $h[$idx] = $h[$idx] + 1;
   $x = $x + 1;
 };
   $y = $y + 1;
 };
   return $h;
-}
-function medianThreshold($h) {
-  global $image, $histogram, $threshold, $printImage, $main;
+};
+  function medianThreshold($h) {
   $lb = 0;
   $ub = count($h) - 1;
   $lSum = 0;
@@ -61,9 +83,8 @@ function medianThreshold($h) {
 }
 };
   return intval((($ub * 65535) / count($h)));
-}
-function threshold($g, $t) {
-  global $image, $histogram, $medianThreshold, $printImage, $main;
+};
+  function threshold($g, $t) {
   $out = [];
   $y = 0;
   while ($y < count($g)) {
@@ -82,9 +103,8 @@ function threshold($g, $t) {
   $y = $y + 1;
 };
   return $out;
-}
-function printImage($g) {
-  global $image, $histogram, $medianThreshold, $threshold, $main;
+};
+  function printImage($g) {
   $y = 0;
   while ($y < count($g)) {
   $row = $g[$y];
@@ -101,9 +121,8 @@ function printImage($g) {
   echo rtrim($line), PHP_EOL;
   $y = $y + 1;
 };
-}
-function main() {
-  global $image, $histogram, $medianThreshold, $threshold, $printImage;
+};
+  function main() {
   $img = image();
   $h = histogram($img, 0);
   echo rtrim('Histogram: ' . _str($h)), PHP_EOL;
@@ -111,5 +130,13 @@ function main() {
   echo rtrim('Threshold: ' . _str($t)), PHP_EOL;
   $bw = threshold($img, $t);
   printImage($bw);
-}
-main();
+};
+  main();
+$__end = _now();
+$__end_mem = memory_get_usage();
+$__duration = intdiv($__end - $__start, 1000);
+$__mem_diff = max(0, $__end_mem - $__start_mem);
+$__bench = ["duration_us" => $__duration, "memory_bytes" => $__mem_diff, "name" => "main"];
+$__j = json_encode($__bench, 128);
+$__j = str_replace("    ", "  ", $__j);
+echo $__j, PHP_EOL;;

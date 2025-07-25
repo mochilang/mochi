@@ -1,5 +1,20 @@
 <?php
 ini_set('memory_limit', '-1');
+$now_seed = 0;
+$now_seeded = false;
+$s = getenv('MOCHI_NOW_SEED');
+if ($s !== false && $s !== '') {
+    $now_seed = intval($s);
+    $now_seeded = true;
+}
+function _now() {
+    global $now_seed, $now_seeded;
+    if ($now_seeded) {
+        $now_seed = ($now_seed * 1664525 + 1013904223) % 2147483647;
+        return $now_seed;
+    }
+    return hrtime(true);
+}
 function _str($x) {
     if (is_array($x)) {
         $isList = array_keys($x) === range(0, count($x) - 1);
@@ -16,8 +31,10 @@ function _str($x) {
     if ($x === null) return 'null';
     return strval($x);
 }
-function primesUpTo($n) {
-  global $sortInts, $commatize, $primes, $getBrilliant, $main;
+$__start_mem = memory_get_usage();
+$__start = _now();
+  function primesUpTo($n) {
+  global $primes;
   $sieve = [];
   $i = 0;
   while ($i <= $n) {
@@ -44,9 +61,9 @@ function primesUpTo($n) {
   $x = $x + 1;
 };
   return $res;
-}
-function sortInts($xs) {
-  global $primesUpTo, $commatize, $primes, $getBrilliant, $main;
+};
+  function sortInts($xs) {
+  global $primes;
   $res = [];
   $tmp = $xs;
   while (count($tmp) > 0) {
@@ -72,9 +89,9 @@ function sortInts($xs) {
   $tmp = $out;
 };
   return $res;
-}
-function commatize($n) {
-  global $primesUpTo, $sortInts, $primes, $getBrilliant, $main;
+};
+  function commatize($n) {
+  global $primes;
   $s = _str($n);
   $i = strlen($s) - 3;
   while ($i >= 1) {
@@ -82,10 +99,10 @@ function commatize($n) {
   $i = $i - 3;
 };
   return $s;
-}
-$primes = primesUpTo(3200000);
-function getBrilliant($digits, $limit, $countOnly) {
-  global $primesUpTo, $sortInts, $commatize, $primes, $main;
+};
+  $primes = primesUpTo(3200000);
+  function getBrilliant($digits, $limit, $countOnly) {
+  global $primes;
   $brilliant = [];
   $count = 0;
   $pow = 1;
@@ -129,9 +146,9 @@ function getBrilliant($digits, $limit, $countOnly) {
   return ['bc' => $count, 'next' => $next];
 }
   return ['bc' => $brilliant, 'next' => $next];
-}
-function main() {
-  global $primesUpTo, $sortInts, $commatize, $primes, $getBrilliant;
+};
+  function main() {
+  global $primes;
   echo rtrim('First 100 brilliant numbers:'), PHP_EOL;
   $r = getBrilliant(2, 10000, false);
   $br = sortInts($r['bc']);
@@ -147,7 +164,7 @@ function main() {
   echo rtrim('') . " " . rtrim((true ? 'true' : 'false')), PHP_EOL;
   $k = 1;
   while ($k <= 13) {
-  $limit = pow(10, $k);
+  $limit = $pow(10, $k);
   $r2 = getBrilliant($k, $limit, true);
   $total = $r2['bc'];
   $next = $r2['next'];
@@ -157,5 +174,12 @@ function main() {
   echo rtrim('First >= ' . str_pad($climit, 18, ' ', STR_PAD_LEFT) . ' is ' . str_pad($ctotal, 14, ' ', STR_PAD_LEFT) . ' in the series: ' . str_pad($cnext, 18, ' ', STR_PAD_LEFT)), PHP_EOL;
   $k = $k + 1;
 };
-}
-main();
+};
+$__end = _now();
+$__end_mem = memory_get_usage();
+$__duration = intdiv($__end - $__start, 1000);
+$__mem_diff = max(0, $__end_mem - $__start_mem);
+$__bench = ["duration_us" => $__duration, "memory_bytes" => $__mem_diff, "name" => "main"];
+$__j = json_encode($__bench, 128);
+$__j = str_replace("    ", "  ", $__j);
+echo $__j, PHP_EOL;;

@@ -1,9 +1,19 @@
 <?php
 ini_set('memory_limit', '-1');
-function _len($x) {
-    if (is_array($x)) { return count($x); }
-    if (is_string($x)) { return strlen($x); }
-    return strlen(strval($x));
+$now_seed = 0;
+$now_seeded = false;
+$s = getenv('MOCHI_NOW_SEED');
+if ($s !== false && $s !== '') {
+    $now_seed = intval($s);
+    $now_seeded = true;
+}
+function _now() {
+    global $now_seed, $now_seeded;
+    if ($now_seeded) {
+        $now_seed = ($now_seed * 1664525 + 1013904223) % 2147483647;
+        return $now_seed;
+    }
+    return hrtime(true);
 }
 function _str($x) {
     if (is_array($x)) {
@@ -21,8 +31,13 @@ function _str($x) {
     if ($x === null) return 'null';
     return strval($x);
 }
-function newBitmap($w, $h, $max) {
-  global $setPx, $getPx, $splitLines, $splitWS, $parseIntStr, $tokenize, $readP3, $toGrey, $pad, $writeP3, $ppmtxt, $bm, $out;
+function parseIntStr($s, $base = 10) {
+    return intval($s, intval($base));
+}
+$__start_mem = memory_get_usage();
+$__start = _now();
+  function newBitmap($w, $h, $max) {
+  global $ppmtxt, $bm, $out;
   $rows = [];
   $y = 0;
   while ($y < $h) {
@@ -36,28 +51,27 @@ function newBitmap($w, $h, $max) {
   $y = $y + 1;
 };
   return ['w' => $w, 'h' => $h, 'max' => $max, 'data' => $rows];
-}
-function setPx(&$b, $x, $y, $p) {
-  global $newBitmap, $getPx, $splitLines, $splitWS, $parseIntStr, $tokenize, $readP3, $toGrey, $pad, $writeP3, $ppmtxt, $bm, $out;
+};
+  function setPx(&$b, $x, $y, $p) {
+  global $ppmtxt, $bm, $out;
   $rows = $b['data'];
   $row = $rows[$y];
   $row[$x] = $p;
   $rows[$y] = $row;
   $b['data'] = $rows;
-}
-function getPx($b, $x, $y) {
-  global $newBitmap, $setPx, $splitLines, $splitWS, $parseIntStr, $tokenize, $readP3, $toGrey, $pad, $writeP3, $ppmtxt, $bm, $out;
+};
+  function getPx($b, $x, $y) {
+  global $ppmtxt, $bm, $out;
   return $b['data'][$y][$x];
-}
-function splitLines($s) {
-  global $newBitmap, $setPx, $getPx, $splitWS, $parseIntStr, $tokenize, $readP3, $toGrey, $pad, $writeP3, $ppmtxt, $bm;
+};
+  function splitLines($s) {
+  global $ppmtxt, $bm;
   $out = [];
   $cur = '';
   $i = 0;
   while ($i < strlen($s)) {
-  $ch = substr($s, $i, $i + 1);
-  if ($ch == '
-') {
+  $ch = substr($s, $i, $i + 1 - $i);
+  if ($ch == '\n') {
   $out = array_merge($out, [$cur]);
   $cur = '';
 } else {
@@ -67,69 +81,64 @@ function splitLines($s) {
 };
   $out = array_merge($out, [$cur]);
   return $out;
-}
-function splitWS($s) {
-  global $newBitmap, $setPx, $getPx, $splitLines, $parseIntStr, $tokenize, $readP3, $toGrey, $pad, $writeP3, $ppmtxt, $bm;
+};
+  function splitWS($s) {
+  global $ppmtxt, $bm;
   $out = [];
   $cur = '';
   $i = 0;
   while ($i < strlen($s)) {
-  $ch = substr($s, $i, $i + 1);
-  if ($ch == ' ' || $ch == '	' || $ch == '' || $ch == '
-') {
-  if (strlen($cur) > 0) {
-  $out = array_merge($out, [$cur]);
-  $cur = '';
+  $ch = substr($s, $i, $i + 1 - $i);
+  if ($ch == ' ' || $ch == '\t' || $ch == '' || $ch == '\n') {
 };
-} else {
-  $cur = $cur . $ch;
+  function mochi_parseIntStr($str) {
+  global $ppmtxt, $bm, $out;
+};
+  function tokenize($s) {
+  global $ppmtxt, $bm, $out;
+  if (strlen($line) > 0 && substr($line, 0, 1 - 0) == '#') {
 }
   $i = $i + 1;
 };
-  if (strlen($cur) > 0) {
-  $out = array_merge($out, [$cur]);
-}
-  return $out;
-}
-function parseIntStr($str) {
-  global $newBitmap, $setPx, $getPx, $splitLines, $splitWS, $tokenize, $readP3, $toGrey, $pad, $writeP3, $ppmtxt, $bm, $out;
-  $i = 0;
-  $neg = false;
-  if (strlen($str) > 0 && substr($str, 0, 1 - 0) == '-') {
-  $neg = true;
-  $i = 1;
-}
-  $n = 0;
-  $digits = ['0' => 0, '1' => 1, '2' => 2, '3' => 3, '4' => 4, '5' => 5, '6' => 6, '7' => 7, '8' => 8, '9' => 9];
-  while ($i < strlen($str)) {
-  $n = $n * 10 + $digits[substr($str, $i, $i + 1 - $i)];
-  $i = $i + 1;
 };
-  if ($neg) {
-  $n = -$n;
-}
-  return $n;
-}
-function tokenize($s) {
-  global $newBitmap, $setPx, $getPx, $splitLines, $splitWS, $parseIntStr, $readP3, $toGrey, $pad, $writeP3, $ppmtxt, $bm, $out;
-  $lines = splitLines($s);
-  $toks = [];
-  $i = 0;
-  while ($i < count($lines)) {
-  $line = $lines[$i];
-  if (strlen($line) > 0 && substr($line, 0, 1) == '#') {
-  $i = $i + 1;
-  continue;
-}
-  $parts = splitWS($line);
-  $j = 0;
-  while ($j < count($parts)) {
-  $toks = array_merge($toks, [$parts[$j]]);
-  $j = $j + 1;
+  function readP3($text) {
+  global $ppmtxt, $out;
+  $w = parseIntStr($toks[1], 10);
+  $h = parseIntStr($toks[2], 10);
+  $maxv = parseIntStr($toks[3], 10);
+  $r = parseIntStr($toks[$idx], 10);
+  $g = parseIntStr($toks[$idx + 1], 10);
+  $b = parseIntStr($toks[$idx + 2], 10);
 };
-  $i = $i + 1;
+  function toGrey(&$b) {
+  global $ppmtxt, $bm, $out;
+}
 };
-  return $toks;
+  function pad($n, $w) {
+  global $ppmtxt, $bm, $out;
+};
+  function writeP3($b) {
+  global $ppmtxt, $bm;
+  $digits = strlen(_str($max));
+  $out = 'P3\n# generated from Bitmap.writeppmp3\n' . _str($w) . ' ' . _str($h) . '\n' . _str($max) . '\n';
+  $out = $out . $line . '\n';
+};
+  $ppmtxt = 'P3\n' . '# feep.ppm\n' . '4 4\n' . '15\n' . ' 0  0  0    0  0  0    0  0  0   15  0 15\n' . ' 0  0  0    0 15  7    0  0  0    0  0  0\n' . ' 0  0  0    0  0  0    0 15  7    0  0  0\n' . '15  0 15    0  0  0    0  0  0    0  0  0\n';
+  echo rtrim('Original Colour PPM file'), PHP_EOL;
+  echo rtrim($ppmtxt), PHP_EOL;
+  $bm = readP3($ppmtxt);
+  echo rtrim('Grey PPM:'), PHP_EOL;
+  toGrey($bm);
+  $out = writeP3($bm);
+  echo rtrim($out), PHP_EOL;
+$__end = _now();
+$__end_mem = memory_get_usage();
+$__duration = intdiv($__end - $__start, 1000);
+$__mem_diff = max(0, $__end_mem - $__start_mem);
+$__bench = ["duration_us" => $__duration, "memory_bytes" => $__mem_diff, "name" => "main"];
+$__j = json_encode($__bench, 128);
+$__j = str_replace("    ", "  ", $__j);
+echo $__j, PHP_EOL;;
 }
 function readP3($text) {
   global $newBitmap, $setPx, $getPx, $splitLines, $splitWS, $parseIntStr, $tokenize, $toGrey, $pad, $writeP3, $ppmtxt, $out;

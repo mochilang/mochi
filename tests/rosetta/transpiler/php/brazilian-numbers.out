@@ -19,7 +19,7 @@ First 20 Brazilian numbers:
 31
 32
 33
-
+\n
 First 20 odd Brazilian numbers:
 7
 13
@@ -41,7 +41,7 @@ First 20 odd Brazilian numbers:
 73
 75
 77
-
+\n
 First 20 prime Brazilian numbers:
 7
 13
@@ -63,5 +63,10 @@ First 20 prime Brazilian numbers:
 1723
 2551
 2801
-
+\n
 The 100,000th Brazilian number: 110468
+{
+  "duration_us": 162486305,
+  "memory_bytes": 96,
+  "name": "main"
+}

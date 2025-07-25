@@ -2,7 +2,7 @@
 
 Generated PHP code from Mochi Rosetta tasks lives in `tests/rosetta/transpiler/php`.
 
-Last updated: 2025-07-25 20:48 +0700
+Last updated: 2025-07-25 21:15 +0700
 
 ## Checklist (265/284)
 | Index | Name | Status | Duration | Memory |
@@ -119,30 +119,30 @@ Last updated: 2025-07-25 20:48 +0700
 | 110 | binary-search | ✓ |  |  |
 | 111 | binary-strings | ✓ |  |  |
 | 112 | bioinformatics-base-count | ✓ |  |  |
-| 113 | bioinformatics-global-alignment | ✓ |  |  |
-| 114 | bioinformatics-sequence-mutation | ✓ |  |  |
-| 115 | biorhythms | ✓ |  |  |
-| 116 | bitcoin-address-validation | ✓ |  |  |
-| 117 | bitmap-b-zier-curves-cubic | ✓ |  |  |
-| 118 | bitmap-b-zier-curves-quadratic | ✓ |  |  |
-| 119 | bitmap-bresenhams-line-algorithm | ✓ |  |  |
-| 120 | bitmap-flood-fill | ✓ |  |  |
-| 121 | bitmap-histogram | ✓ |  |  |
-| 122 | bitmap-midpoint-circle-algorithm | ✓ |  |  |
-| 123 | bitmap-ppm-conversion-through-a-pipe | ✓ |  |  |
-| 124 | bitmap-read-a-ppm-file | ✓ |  |  |
-| 125 | bitmap-read-an-image-through-a-pipe | ✓ |  |  |
-| 126 | bitmap-write-a-ppm-file | ✓ |  |  |
-| 127 | bitmap | ✓ |  |  |
-| 128 | bitwise-io-1 | ✓ |  |  |
-| 129 | bitwise-io-2 | ✓ |  |  |
-| 130 | bitwise-operations | ✓ |  |  |
-| 131 | blum-integer | ✓ |  |  |
-| 132 | boolean-values | ✓ |  |  |
-| 133 | box-the-compass | ✓ |  |  |
-| 134 | boyer-moore-string-search | ✓ |  |  |
-| 135 | brazilian-numbers | ✓ |  |  |
-| 136 | break-oo-privacy | ✓ |  |  |
+| 113 | bioinformatics-global-alignment | ✓ | 174.66ms | 96 B |
+| 114 | bioinformatics-sequence-mutation | ✓ | 989µs | 96 B |
+| 115 | biorhythms | ✓ | 151µs | 160 B |
+| 116 | bitcoin-address-validation | ✓ | 450µs | 96 B |
+| 117 | bitmap-b-zier-curves-cubic | ✓ | 121.283ms | 3.5 MB |
+| 118 | bitmap-b-zier-curves-quadratic | ✓ | 108.898ms | 3.5 MB |
+| 119 | bitmap-bresenhams-line-algorithm | ✓ | 39µs | 96 B |
+| 120 | bitmap-flood-fill | ✓ | 49µs | 1.4 KB |
+| 121 | bitmap-histogram | ✓ | 65µs | 96 B |
+| 122 | bitmap-midpoint-circle-algorithm | ✓ | 104µs | 15.1 KB |
+| 123 | bitmap-ppm-conversion-through-a-pipe | ✓ | 413.121ms | 64 B |
+| 124 | bitmap-read-a-ppm-file | ✓ | 101µs | 648 B |
+| 125 | bitmap-read-an-image-through-a-pipe | ✓ | 79µs | 944 B |
+| 126 | bitmap-write-a-ppm-file | ✓ | 44µs | 96 B |
+| 127 | bitmap | ✓ | 171.333ms | 96 B |
+| 128 | bitwise-io-1 | ✓ | 109µs | 192 B |
+| 129 | bitwise-io-2 | ✓ | 250µs | 192 B |
+| 130 | bitwise-operations | ✓ | 146µs | 96 B |
+| 131 | blum-integer | ✓ | 167µs | 96 B |
+| 132 | boolean-values | ✓ | 15µs | 96 B |
+| 133 | box-the-compass | ✓ | 123µs | 288 B |
+| 134 | boyer-moore-string-search | ✓ | 104µs | 96 B |
+| 135 | brazilian-numbers | ✓ | 2m42.486305s | 96 B |
+| 136 | break-oo-privacy | ✓ | 46µs | 504 B |
 | 137 | brilliant-numbers |   |  |  |
 | 138 | brownian-tree | ✓ |  |  |
 | 139 | bulls-and-cows-player | ✓ |  |  |

@@ -6,3 +6,8 @@ obj: {12 42}
   modified unexported field via unsafe
 obj: {16 44}
 bufio.ReadByte returned error: unsafely injected error value into bufio inner workings
+{
+  "duration_us": 46,
+  "memory_bytes": 504,
+  "name": "main"
+}

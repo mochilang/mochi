@@ -3,7 +3,11 @@ bool
 false
 x == y: false
 x < y: true
-
-Convert String into Boolean Data type
+\nConvert String into Boolean Data type\n
 Before : string
 After : bool
+{
+  "duration_us": 15,
+  "memory_bytes": 96,
+  "name": "main"
+}

@@ -32,3 +32,8 @@ Index  Compass point         Degree
   31   North-northwest     337.50°
   32   North by west       354.37°
    1   North               354.38°
+{
+  "duration_us": 123,
+  "memory_bytes": 288,
+  "name": "main"
+}

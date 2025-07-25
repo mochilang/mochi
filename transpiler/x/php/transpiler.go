@@ -22,7 +22,7 @@ var builtinNames = map[string]struct{}{
 	"print": {}, "len": {}, "substring": {}, "count": {}, "sum": {}, "avg": {},
 	"str": {}, "min": {}, "max": {}, "append": {}, "json": {}, "exists": {},
 	"values": {}, "keys": {}, "load": {}, "save": {}, "now": {}, "input": {},
-	"upper": {}, "lower": {}, "num": {}, "denom": {}, "indexOf": {}, "repeat": {}, "parseIntStr": {}, "slice": {}, "split": {},
+	"upper": {}, "lower": {}, "num": {}, "denom": {}, "indexOf": {}, "repeat": {}, "parseIntStr": {}, "slice": {}, "split": {}, "sha256": {}, "substr": {},
 }
 
 const helperLookupHost = `function _lookup_host($host) {
@@ -174,6 +174,15 @@ const helperIntDiv = `function _intdiv($a, $b) {
     return intdiv($a, $b);
 }`
 
+const helperSHA256 = `function _sha256($bs) {
+    $bytes = '';
+    foreach ($bs as $b) { $bytes .= chr($b); }
+    $hash = hash('sha256', $bytes, true);
+    $res = [];
+    for ($i = 0; $i < strlen($hash); $i++) { $res[] = ord($hash[$i]); }
+    return $res;
+}`
+
 var usesLookupHost bool
 var usesNow bool
 var usesLen bool
@@ -183,6 +192,7 @@ var usesIndexOf bool
 var usesRepeat bool
 var usesParseIntStr bool
 var usesIntDiv bool
+var usesSHA256 bool
 var benchMain bool
 
 // SetBenchMain configures whether the generated main function is wrapped in a
@@ -203,6 +213,7 @@ var phpReserved = map[string]struct{}{
 	"key":         {},
 	"exp":         {},
 	"hypot":       {},
+	"floor":       {},
 	"parseIntStr": {},
 	"repeat":      {},
 	"crc32":       {},
@@ -1868,6 +1879,11 @@ func Emit(w io.Writer, p *Program) error {
 			return err
 		}
 	}
+	if usesSHA256 {
+		if _, err := io.WriteString(w, helperSHA256+"\n"); err != nil {
+			return err
+		}
+	}
 	hasMain := false
 	mainCalled := false
 	for _, s := range p.Stmts {
@@ -1919,6 +1935,7 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	usesRepeat = false
 	usesParseIntStr = false
 	usesIntDiv = false
+	usesSHA256 = false
 	defer func() { transpileEnv = nil }()
 	p := &Program{Env: env}
 	for _, st := range prog.Statements {
@@ -2395,7 +2412,7 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 					return &CallExpr{Func: "_len", Args: args}, nil
 				}
 			}
-		} else if name == "substring" {
+		} else if name == "substring" || name == "substr" {
 			if len(args) != 3 {
 				return nil, fmt.Errorf("substring expects 3 args")
 			}
@@ -2418,6 +2435,17 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 				usesIndexOf = true
 				return &CallExpr{Func: "_indexof", Args: args}, nil
 			}
+		} else if name == "contains" {
+			if len(args) != 2 {
+				return nil, fmt.Errorf("contains expects 2 args")
+			}
+			if isStringExpr(args[0]) {
+				return &CallExpr{Func: "str_contains", Args: args}, nil
+			}
+			if isListExpr(args[0]) {
+				return &CallExpr{Func: "in_array", Args: []Expr{args[1], args[0]}}, nil
+			}
+			return nil, fmt.Errorf("contains on unsupported type")
 		} else if name == "int" {
 			if len(args) != 1 {
 				return nil, fmt.Errorf("int expects 1 arg")
@@ -2432,6 +2460,12 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 				return &CallExpr{Func: "parseIntStr", Args: []Expr{args[0], args[1]}}, nil
 			}
 			return nil, fmt.Errorf("parseIntStr expects 1 or 2 args")
+		} else if name == "sha256" {
+			if len(args) != 1 {
+				return nil, fmt.Errorf("sha256 expects 1 arg")
+			}
+			usesSHA256 = true
+			return &CallExpr{Func: "_sha256", Args: args}, nil
 		} else if name == "count" {
 			if len(args) != 1 {
 				return nil, fmt.Errorf("count expects 1 arg")
@@ -3801,9 +3835,13 @@ func isStringExpr(e Expr) bool {
 // isCharExpr reports whether e represents a single character extracted from a
 // string. This helps choose between ord() and intval() when casting to int.
 func isCharExpr(e Expr) bool {
-	switch e.(type) {
-	case *SubstringExpr, *IndexExpr:
+	switch v := e.(type) {
+	case *SubstringExpr:
 		return true
+	case *IndexExpr:
+		if _, ok := exprType(v).(types.StringType); ok {
+			return true
+		}
 	}
 	return false
 }

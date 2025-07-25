@@ -3,3 +3,8 @@ Threshold: 21845
 000
 111
 111
+{
+  "duration_us": 65,
+  "memory_bytes": 96,
+  "name": "main"
+}

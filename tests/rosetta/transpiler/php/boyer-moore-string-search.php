@@ -1,5 +1,20 @@
 <?php
 ini_set('memory_limit', '-1');
+$now_seed = 0;
+$now_seeded = false;
+$s = getenv('MOCHI_NOW_SEED');
+if ($s !== false && $s !== '') {
+    $now_seed = intval($s);
+    $now_seeded = true;
+}
+function _now() {
+    global $now_seed, $now_seeded;
+    if ($now_seeded) {
+        $now_seed = ($now_seed * 1664525 + 1013904223) % 2147483647;
+        return $now_seed;
+    }
+    return hrtime(true);
+}
 function _str($x) {
     if (is_array($x)) {
         $isList = array_keys($x) === range(0, count($x) - 1);
@@ -16,8 +31,9 @@ function _str($x) {
     if ($x === null) return 'null';
     return strval($x);
 }
-function indexOfStr($h, $n) {
-  global $stringSearchSingle, $stringSearch, $display, $main;
+$__start_mem = memory_get_usage();
+$__start = _now();
+  function indexOfStr($h, $n) {
   $hlen = strlen($h);
   $nlen = strlen($n);
   if ($nlen == 0) {
@@ -31,13 +47,11 @@ function indexOfStr($h, $n) {
   $i = $i + 1;
 };
   return -1;
-}
-function stringSearchSingle($h, $n) {
-  global $indexOfStr, $stringSearch, $display, $main;
+};
+  function stringSearchSingle($h, $n) {
   return indexOfStr($h, $n);
-}
-function stringSearch($h, $n) {
-  global $indexOfStr, $stringSearchSingle, $display, $main;
+};
+  function stringSearch($h, $n) {
   $result = [];
   $start = 0;
   $hlen = strlen($h);
@@ -52,9 +66,8 @@ function stringSearch($h, $n) {
 }
 };
   return $result;
-}
-function display($nums) {
-  global $indexOfStr, $stringSearchSingle, $stringSearch, $main;
+};
+  function display($nums) {
   $s = '[';
   $i = 0;
   while ($i < count($nums)) {
@@ -66,9 +79,8 @@ function display($nums) {
 };
   $s = $s . ']';
   return $s;
-}
-function main() {
-  global $indexOfStr, $stringSearchSingle, $stringSearch, $display;
+};
+  function main() {
   $texts = ['GCTAGCTCTACGAGTCTA', 'GGCTATAATGCGTA', 'there would have been a time for such a word', 'needle need noodle needle', 'DKnuthusesandprogramsanimaginarycomputertheMIXanditsassociatedmachinecodeandassemblylanguages', 'Nearby farms grew an acre of alfalfa on the dairy\'s behalf, with bales of that alfalfa exchanged for milk.'];
   $patterns = ['TCTA', 'TAATAAA', 'word', 'needle', 'and', 'alfalfa'];
   $i = 0;
@@ -83,5 +95,13 @@ function main() {
   echo rtrim('Found "' . $patterns[$j] . '" in \'text' . _str($j + 1) . '\' at indexes ' . display($idxs)), PHP_EOL;
   $j = $j + 1;
 };
-}
-main();
+};
+  main();
+$__end = _now();
+$__end_mem = memory_get_usage();
+$__duration = intdiv($__end - $__start, 1000);
+$__mem_diff = max(0, $__end_mem - $__start_mem);
+$__bench = ["duration_us" => $__duration, "memory_bytes" => $__mem_diff, "name" => "main"];
+$__j = json_encode($__bench, 128);
+$__j = str_replace("    ", "  ", $__j);
+echo $__j, PHP_EOL;;
