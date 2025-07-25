@@ -1,8 +1,8 @@
 exit status 2
 File "/workspace/mochi/tests/rosetta/transpiler/OCaml/adfgvx-cipher.ml", line 1:
 Warning 24 [bad-module-name]: bad source file name: "Adfgvx-cipher" is not a valid module name.
-File "/workspace/mochi/tests/rosetta/transpiler/OCaml/adfgvx-cipher.ml", line 193, characters 6-16:
-193 |   if (String.sub List.nth (polybius) (!r) !c ((!c + 1) - !c) = String.sub plainText !i ((!i + 1) - !i)) then (
-            ^^^^^^^^^^
-Error: This function has type string -> int -> int -> string
-       It is applied to too many arguments; maybe you forgot a `;'.
+File "/workspace/mochi/tests/rosetta/transpiler/OCaml/adfgvx-cipher.ml", line 247, characters 58-83:
+247 |   colStr := (!colStr ^ List.nth (List.nth (!table) (!ri)) (List.nth (!order) (!ci)));
+                                                                ^^^^^^^^^^^^^^^^^^^^^^^^^
+Error: This expression has type Obj.t but an expression was expected of type
+         int
