@@ -59,7 +59,13 @@ var (
 	usesNow      bool
 	usesBreak    bool
 	usesReturn   bool
+	benchMain    bool
 )
+
+// SetBenchMain configures whether the generated main function is wrapped in a
+// benchmark block when emitting code. When enabled, the program will print a
+// JSON object with duration and memory statistics on completion.
+func SetBenchMain(v bool) { benchMain = v }
 
 func copyMap(src map[string]string) map[string]string {
 	dst := make(map[string]string, len(src))
@@ -588,6 +594,8 @@ type BenchStmt struct {
 func (b *BenchStmt) emit(w io.Writer) {
 	writeIndent(w)
 	io.WriteString(w, "let __bench_start = _now()\n")
+	writeIndent(w)
+	io.WriteString(w, "let __mem_start = System.GC.GetTotalMemory(true)\n")
 	for _, st := range b.Body {
 		st.emit(w)
 		w.Write([]byte{'\n'})
@@ -595,7 +603,9 @@ func (b *BenchStmt) emit(w io.Writer) {
 	writeIndent(w)
 	io.WriteString(w, "let __bench_end = _now()\n")
 	writeIndent(w)
-	fmt.Fprintf(w, "printfn \"{\\n  \\\"duration_us\\\": %%d,\\n  \\\"memory_bytes\\\": 0,\\n  \\\"name\\\": \\\"%s\\\"\\n}\" ((__bench_end - __bench_start) / 1000)\n", b.Name)
+	io.WriteString(w, "let __mem_end = System.GC.GetTotalMemory(true)\n")
+	writeIndent(w)
+	fmt.Fprintf(w, "printfn \"{\\n  \\\"duration_us\\\": %%d,\\n  \\\"memory_bytes\\\": %%d,\\n  \\\"name\\\": \\\"%s\\\"\\n}\" ((__bench_end - __bench_start) / 1000) (__mem_end - __mem_start)\n", b.Name)
 }
 
 // ListLit represents an F# list literal.
@@ -1930,6 +1940,19 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 		}
 		p.Stmts = append(opens, p.Stmts...)
 	}
+	if benchMain {
+		hasMain := false
+		for _, st := range p.Stmts {
+			if fd, ok := st.(*FunDef); ok && fd.Name == "main" {
+				hasMain = true
+				break
+			}
+		}
+		if !hasMain {
+			usesNow = true
+			p.Stmts = []Stmt{&BenchStmt{Name: "main", Body: p.Stmts}}
+		}
+	}
 	transpileEnv = nil
 	p.UseNow = usesNow
 	p.UseBreak = usesBreak
@@ -2226,6 +2249,10 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 			}
 		}
 		varTypes = save
+		if benchMain && st.Fun.Name == "main" {
+			usesNow = true
+			body = []Stmt{&BenchStmt{Name: "main", Body: body}}
+		}
 		return &FunDef{Name: st.Fun.Name, Params: params, Types: paramTypes, Body: body, Return: retType}, nil
 	case st.While != nil:
 		cond, err := convertExpr(st.While.Cond)

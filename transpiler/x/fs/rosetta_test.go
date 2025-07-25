@@ -5,6 +5,7 @@ package fstrans_test
 import (
 	"bufio"
 	"bytes"
+	"encoding/json"
 	"fmt"
 	"os"
 	"os/exec"
@@ -55,6 +56,9 @@ func TestFSTranspiler_Rosetta_Golden(t *testing.T) {
 	srcDir := filepath.Join(root, "tests", "rosetta", "x", "Mochi")
 	os.MkdirAll(outDir, 0o755)
 	t.Cleanup(updateRosettaReadme)
+
+	bench := os.Getenv("MOCHI_BENCHMARK") == "true" || os.Getenv("MOCHI_BENCHMARK") == "1"
+	fstrans.SetBenchMain(bench)
 
 	_ = updateIndex(srcDir)
 	names, err := readIndex(filepath.Join(srcDir, "index.txt"))
@@ -116,6 +120,12 @@ func TestFSTranspiler_Rosetta_Golden(t *testing.T) {
 				t.Fatalf("compile: %v", err)
 			}
 			run := exec.Command("mono", exePath)
+			run.Env = append(os.Environ())
+			if bench {
+				run.Env = append(run.Env, "MOCHI_BENCHMARK=1")
+			} else {
+				run.Env = append(run.Env, "MOCHI_NOW_SEED=1")
+			}
 			if data, err := os.ReadFile(strings.TrimSuffix(src, ".mochi") + ".in"); err == nil {
 				run.Stdin = bytes.NewReader(data)
 			}
@@ -175,16 +185,33 @@ func updateRosetta() {
 	total := len(files)
 	compiled := 0
 	var lines []string
+	lines = append(lines, "| Index | Name | Status | Duration | Memory |")
+	lines = append(lines, "|------:|------|:-----:|---------:|-------:|")
 	for i, name := range files {
-		mark := "[ ]"
+		mark := " "
 		safe := strings.ReplaceAll(name, "+", "_")
-		if _, err := os.Stat(filepath.Join(outDir, safe+".out")); err == nil {
-			if _, err2 := os.Stat(filepath.Join(outDir, safe+".error")); os.IsNotExist(err2) {
-				mark = "[x]"
-				compiled++
+		if _, err := os.Stat(filepath.Join(outDir, safe+".error")); err == nil {
+			// leave unchecked
+		} else if _, err := os.Stat(filepath.Join(outDir, safe+".fs")); err == nil {
+			compiled++
+			mark = "✓"
+		}
+		dur := ""
+		mem := ""
+		if data, err := os.ReadFile(filepath.Join(outDir, safe+".out")); err == nil {
+			var js struct {
+				Duration int64 `json:"duration_us"`
+				Memory   int64 `json:"memory_bytes"`
+			}
+			data = bytes.TrimSpace(data)
+			if idx := bytes.LastIndexByte(data, '{'); idx >= 0 {
+				if json.Unmarshal(data[idx:], &js) == nil && js.Duration > 0 {
+					dur = humanDuration(js.Duration)
+					mem = humanSize(js.Memory)
+				}
 			}
 		}
-		lines = append(lines, fmt.Sprintf("%d. %s %s (index %d)", i+1, mark, name, i+1))
+		lines = append(lines, fmt.Sprintf("| %d | %s | %s | %s | %s |", i+1, name, mark, dur, mem))
 	}
 	tsRaw, _ := exec.Command("git", "log", "-1", "--format=%cI").Output()
 	ts := strings.TrimSpace(string(tsRaw))
@@ -195,7 +222,7 @@ func updateRosetta() {
 	var buf bytes.Buffer
 	buf.WriteString("# F# Rosetta Transpiler\n\n")
 	buf.WriteString("This file is auto-generated from rosetta tests.\n\n")
-	fmt.Fprintf(&buf, "## Checklist (%d/%d)\n", compiled, total)
+	fmt.Fprintf(&buf, "## Rosetta Golden Test Checklist (%d/%d)\n", compiled, total)
 	buf.WriteString(strings.Join(lines, "\n"))
 	buf.WriteString("\n\n")
 	fmt.Fprintf(&buf, "Last updated: %s\n", ts)
@@ -234,4 +261,22 @@ func updateIndex(dir string) error {
 		fmt.Fprintf(&buf, "%d %s\n", i+1, filepath.Base(f))
 	}
 	return os.WriteFile(filepath.Join(dir, "index.txt"), buf.Bytes(), 0o644)
+}
+
+func humanDuration(us int64) string {
+	d := time.Duration(us) * time.Microsecond
+	return d.String()
+}
+
+func humanSize(b int64) string {
+	const unit = 1024
+	if b < unit {
+		return fmt.Sprintf("%d B", b)
+	}
+	div, exp := int64(unit), 0
+	for n := b / unit; n >= unit; n /= unit {
+		div *= unit
+		exp++
+	}
+	return fmt.Sprintf("%.1f %cB", float64(b)/float64(div), "KMGTPE"[exp])
 }

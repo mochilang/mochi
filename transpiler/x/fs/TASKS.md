@@ -1,3 +1,11 @@
+## Progress (2025-07-25 01:38 +0000)
+- Applying previous commit.
+- Generated F# for 103/104 programs (103 passing)
+
+## Progress (2025-07-25 08:23 +0700)
+- dart: add bench main support
+- Generated F# for 103/104 programs (103 passing)
+
 ## Progress (2025-07-24 18:50 +0000)
 - fs transpiler: fix map lookup typing
 - Generated F# for 102/103 programs (102 passing)

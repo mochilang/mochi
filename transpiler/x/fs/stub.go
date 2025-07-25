@@ -14,6 +14,11 @@ import (
 // excluded by build tags.
 type Program struct{}
 
+var benchMain bool
+
+// SetBenchMain is a no-op in the stub build.
+func SetBenchMain(v bool) { benchMain = v }
+
 // Transpile returns a nil program and no error. It exists so packages depending
 // on fstrans compile without requiring the slow implementation.
 func Transpile(_ *parser.Program, _ *types.Env) (*Program, error) {
