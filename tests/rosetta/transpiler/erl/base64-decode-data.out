@@ -1,0 +1,14 @@
+/workspace/mochi/tests/rosetta/transpiler/erl/base64-decode-data.erl:80:20: Warning: variable 'Neg_3' exported from 'case' (line 61, column 9)
+%   80| {Digits, I_6, N_2, Neg_3, Str} = Fun_2(Digits, I_5, N, Neg_3, Str),
+%     |                    ^
+
+Original : Rosetta Code Base64 decode data task
+
+Encoded  : AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+
+Decoded  : ????????????????????????????????????
+{
+  "duration_us": 6427,
+  "memory_bytes": 378416,
+  "name": "main"
+}
