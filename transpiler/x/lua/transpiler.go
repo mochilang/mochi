@@ -460,6 +460,12 @@ func (c *CallExpr) emit(w io.Writer) {
 	case "str":
 		if len(c.Args) > 0 && (isListExpr(c.Args[0]) || isMapExpr(c.Args[0])) {
 			(&CallExpr{Func: "repr", Args: c.Args}).emit(w)
+		} else if len(c.Args) > 0 && isBigRatExpr(c.Args[0]) {
+			io.WriteString(w, "(tostring(")
+			c.Args[0].emit(w)
+			io.WriteString(w, ".num) .. '/' .. tostring(")
+			c.Args[0].emit(w)
+			io.WriteString(w, ".den))")
 		} else {
 			io.WriteString(w, "tostring(")
 			if len(c.Args) > 0 {
@@ -2744,17 +2750,31 @@ func convertPostfix(p *parser.PostfixExpr) (Expr, error) {
 					args = append([]Expr{expr}, args...)
 					expr = &CallExpr{Func: op.Field.Name, Args: args}
 				} else if id, ok := expr.(*Ident); ok {
-					// treat as a namespaced function call
-					name := id.Name + "." + op.Field.Name
-					cexpr := &CallExpr{Func: name, Args: args}
-					if currentEnv != nil {
-						if t, err := currentEnv.GetVar(name); err == nil {
-							if ft, ok := t.(types.FuncType); ok {
-								cexpr.ParamTypes = ft.Params
+					if id.Name == "net" {
+						// treat as a namespaced function call for known package
+						name := id.Name + "." + op.Field.Name
+						cexpr := &CallExpr{Func: name, Args: args}
+						if currentEnv != nil {
+							if t, err := currentEnv.GetVar(name); err == nil {
+								if ft, ok := t.(types.FuncType); ok {
+									cexpr.ParamTypes = ft.Params
+								}
 							}
 						}
+						expr = cexpr
+					} else {
+						// method call with receiver as first argument
+						args = append([]Expr{expr}, args...)
+						cexpr := &CallExpr{Func: op.Field.Name, Args: args}
+						if currentEnv != nil {
+							if t, err := currentEnv.GetVar(op.Field.Name); err == nil {
+								if ft, ok := t.(types.FuncType); ok {
+									cexpr.ParamTypes = ft.Params
+								}
+							}
+						}
+						expr = cexpr
 					}
-					expr = cexpr
 				} else {
 					// method call with receiver as first argument
 					args = append([]Expr{expr}, args...)
@@ -3514,16 +3534,58 @@ func convertFunStmt(fs *parser.FunStmt) (Stmt, error) {
 	return f, nil
 }
 
+func convertMethodStmt(fs *parser.FunStmt, fields []string) (Stmt, error) {
+	f := &FunStmt{Name: fs.Name}
+	child := types.NewEnv(currentEnv)
+	f.Params = append(f.Params, "self")
+	child.SetVar("self", types.AnyType{}, false)
+	for _, p := range fs.Params {
+		f.Params = append(f.Params, p.Name)
+		if p.Type != nil {
+			child.SetVar(p.Name, types.ResolveTypeRef(p.Type, currentEnv), false)
+		} else {
+			child.SetVar(p.Name, types.AnyType{}, false)
+		}
+	}
+	prev := currentEnv
+	currentEnv = child
+	funcDepth++
+	// preload fields as locals
+	for _, name := range fields {
+		assign := &AssignStmt{Local: true, Name: name, Value: &IndexExpr{Target: &Ident{Name: "self"}, Index: &StringLit{Value: name}, Kind: "map"}}
+		f.Body = append(f.Body, assign)
+	}
+	for _, st := range fs.Body {
+		s, err := convertStmt(st)
+		if err != nil {
+			currentEnv = prev
+			funcDepth--
+			return nil, err
+		}
+		f.Body = append(f.Body, s)
+	}
+	currentEnv = prev
+	funcDepth--
+	f.Env = child
+	return f, nil
+}
+
 func convertStmt(st *parser.Statement) (Stmt, error) {
 	switch {
 	case st.Import != nil:
 		return convertImportStmt(st.Import)
 	case st.Type != nil:
 		ms := &MultiStmt{}
+		var fields []string
 		if st.Type.Members != nil {
 			for _, m := range st.Type.Members {
+				if m.Field != nil {
+					fields = append(fields, m.Field.Name)
+				}
+			}
+			for _, m := range st.Type.Members {
 				if m.Method != nil {
-					fn, err := convertFunStmt(m.Method)
+					fn, err := convertMethodStmt(m.Method, fields)
 					if err != nil {
 						return nil, err
 					}
