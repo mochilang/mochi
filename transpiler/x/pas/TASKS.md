@@ -1,3 +1,837 @@
+## Progress (2025-07-25 21:32 +0700)
+- pascal rosetta: update outputs for indexes 8 and 10 (progress 88/104)
+
+## Progress (2025-07-25 21:32 +0700)
+- pascal rosetta: update outputs for indexes 8 and 10 (progress 88/104)
+
+## Progress (2025-07-25 21:32 +0700)
+- pascal rosetta: update outputs for indexes 8 and 10 (progress 88/104)
+
+## Progress (2025-07-25 21:32 +0700)
+- pascal rosetta: update outputs for indexes 8 and 10 (progress 88/104)
+
+## Progress (2025-07-25 21:32 +0700)
+- pascal rosetta: update outputs for indexes 8 and 10 (progress 88/104)
+
+## Progress (2025-07-25 21:32 +0700)
+- pascal rosetta: update outputs for indexes 8 and 10 (progress 88/104)
+
+## Progress (2025-07-25 21:32 +0700)
+- pascal rosetta: update outputs for indexes 8 and 10 (progress 88/104)
+
+## Progress (2025-07-25 21:32 +0700)
+- pascal rosetta: update outputs for indexes 8 and 10 (progress 88/104)
+
+## Progress (2025-07-25 21:32 +0700)
+- pascal rosetta: update outputs for indexes 8 and 10 (progress 88/104)
+
+## Progress (2025-07-25 21:32 +0700)
+- pascal rosetta: update outputs for indexes 8 and 10 (progress 88/104)
+
+## Progress (2025-07-25 21:32 +0700)
+- pascal rosetta: update outputs for indexes 8 and 10 (progress 88/104)
+
+## Progress (2025-07-25 21:32 +0700)
+- pascal rosetta: update outputs for indexes 8 and 10 (progress 88/104)
+
+## Progress (2025-07-25 21:32 +0700)
+- pascal rosetta: update outputs for indexes 8 and 10 (progress 88/104)
+
+## Progress (2025-07-25 21:32 +0700)
+- pascal rosetta: update outputs for indexes 8 and 10 (progress 88/104)
+
+## Progress (2025-07-25 21:32 +0700)
+- pascal rosetta: update outputs for indexes 8 and 10 (progress 88/104)
+
+## Progress (2025-07-25 21:32 +0700)
+- pascal rosetta: update outputs for indexes 8 and 10 (progress 88/104)
+
+## Progress (2025-07-25 21:32 +0700)
+- pascal rosetta: update outputs for indexes 8 and 10 (progress 88/104)
+
+## Progress (2025-07-25 21:32 +0700)
+- pascal rosetta: update outputs for indexes 8 and 10 (progress 88/104)
+
+## Progress (2025-07-25 21:32 +0700)
+- pascal rosetta: update outputs for indexes 8 and 10 (progress 88/104)
+
+## Progress (2025-07-25 21:32 +0700)
+- pascal rosetta: update outputs for indexes 8 and 10 (progress 88/104)
+
+## Progress (2025-07-25 21:32 +0700)
+- pascal rosetta: update outputs for indexes 8 and 10 (progress 88/104)
+
+## Progress (2025-07-25 21:32 +0700)
+- pascal rosetta: update outputs for indexes 8 and 10 (progress 88/104)
+
+## Progress (2025-07-25 21:32 +0700)
+- pascal rosetta: update outputs for indexes 8 and 10 (progress 88/104)
+
+## Progress (2025-07-25 21:32 +0700)
+- pascal rosetta: update outputs for indexes 8 and 10 (progress 88/104)
+
+## Progress (2025-07-25 21:32 +0700)
+- pascal rosetta: update outputs for indexes 8 and 10 (progress 88/104)
+
+## Progress (2025-07-25 21:32 +0700)
+- pascal rosetta: update outputs for indexes 8 and 10 (progress 88/104)
+
+## Progress (2025-07-25 21:32 +0700)
+- pascal rosetta: update outputs for indexes 8 and 10 (progress 88/104)
+
+## Progress (2025-07-25 21:32 +0700)
+- pascal rosetta: update outputs for indexes 8 and 10 (progress 88/104)
+
+## Progress (2025-07-25 21:32 +0700)
+- pascal rosetta: update outputs for indexes 8 and 10 (progress 88/104)
+
+## Progress (2025-07-25 21:32 +0700)
+- pascal rosetta: update outputs for indexes 8 and 10 (progress 88/104)
+
+## Progress (2025-07-25 21:32 +0700)
+- pascal rosetta: update outputs for indexes 8 and 10 (progress 88/104)
+
+## Progress (2025-07-25 21:32 +0700)
+- pascal rosetta: update outputs for indexes 8 and 10 (progress 88/104)
+
+## Progress (2025-07-25 21:32 +0700)
+- pascal rosetta: update outputs for indexes 8 and 10 (progress 88/104)
+
+## Progress (2025-07-25 21:32 +0700)
+- pascal rosetta: update outputs for indexes 8 and 10 (progress 88/104)
+
+## Progress (2025-07-25 21:32 +0700)
+- pascal rosetta: update outputs for indexes 8 and 10 (progress 88/104)
+
+## Progress (2025-07-25 21:32 +0700)
+- pascal rosetta: update outputs for indexes 8 and 10 (progress 88/104)
+
+## Progress (2025-07-25 21:32 +0700)
+- pascal rosetta: update outputs for indexes 8 and 10 (progress 88/104)
+
+## Progress (2025-07-25 21:32 +0700)
+- pascal rosetta: update outputs for indexes 8 and 10 (progress 88/104)
+
+## Progress (2025-07-25 21:32 +0700)
+- pascal rosetta: update outputs for indexes 8 and 10 (progress 88/104)
+
+## Progress (2025-07-25 21:32 +0700)
+- pascal rosetta: update outputs for indexes 8 and 10 (progress 88/104)
+
+## Progress (2025-07-25 21:32 +0700)
+- pascal rosetta: update outputs for indexes 8 and 10 (progress 88/104)
+
+## Progress (2025-07-25 21:32 +0700)
+- pascal rosetta: update outputs for indexes 8 and 10 (progress 88/104)
+
+## Progress (2025-07-25 21:32 +0700)
+- pascal rosetta: update outputs for indexes 8 and 10 (progress 88/104)
+
+## Progress (2025-07-25 21:32 +0700)
+- pascal rosetta: update outputs for indexes 8 and 10 (progress 88/104)
+
+## Progress (2025-07-25 21:32 +0700)
+- pascal rosetta: update outputs for indexes 8 and 10 (progress 88/104)
+
+## Progress (2025-07-25 21:32 +0700)
+- pascal rosetta: update outputs for indexes 8 and 10 (progress 88/104)
+
+## Progress (2025-07-25 21:32 +0700)
+- pascal rosetta: update outputs for indexes 8 and 10 (progress 88/104)
+
+## Progress (2025-07-25 21:32 +0700)
+- pascal rosetta: update outputs for indexes 8 and 10 (progress 88/104)
+
+## Progress (2025-07-25 21:32 +0700)
+- pascal rosetta: update outputs for indexes 8 and 10 (progress 88/104)
+
+## Progress (2025-07-25 21:32 +0700)
+- pascal rosetta: update outputs for indexes 8 and 10 (progress 88/104)
+
+## Progress (2025-07-25 21:32 +0700)
+- pascal rosetta: update outputs for indexes 8 and 10 (progress 88/104)
+
+## Progress (2025-07-25 21:32 +0700)
+- pascal rosetta: update outputs for indexes 8 and 10 (progress 88/104)
+
+## Progress (2025-07-25 21:32 +0700)
+- pascal rosetta: update outputs for indexes 8 and 10 (progress 88/104)
+
+## Progress (2025-07-25 21:32 +0700)
+- pascal rosetta: update outputs for indexes 8 and 10 (progress 88/104)
+
+## Progress (2025-07-25 21:32 +0700)
+- pascal rosetta: update outputs for indexes 8 and 10 (progress 88/104)
+
+## Progress (2025-07-25 21:32 +0700)
+- pascal rosetta: update outputs for indexes 8 and 10 (progress 88/104)
+
+## Progress (2025-07-25 21:32 +0700)
+- pascal rosetta: update outputs for indexes 8 and 10 (progress 88/104)
+
+## Progress (2025-07-25 21:32 +0700)
+- pascal rosetta: update outputs for indexes 8 and 10 (progress 88/104)
+
+## Progress (2025-07-25 21:32 +0700)
+- pascal rosetta: update outputs for indexes 8 and 10 (progress 88/104)
+
+## Progress (2025-07-25 21:32 +0700)
+- pascal rosetta: update outputs for indexes 8 and 10 (progress 88/104)
+
+## Progress (2025-07-25 21:32 +0700)
+- pascal rosetta: update outputs for indexes 8 and 10 (progress 88/104)
+
+## Progress (2025-07-25 21:32 +0700)
+- pascal rosetta: update outputs for indexes 8 and 10 (progress 88/104)
+
+## Progress (2025-07-25 21:32 +0700)
+- pascal rosetta: update outputs for indexes 8 and 10 (progress 88/104)
+
+## Progress (2025-07-25 21:32 +0700)
+- pascal rosetta: update outputs for indexes 8 and 10 (progress 88/104)
+
+## Progress (2025-07-25 21:32 +0700)
+- pascal rosetta: update outputs for indexes 8 and 10 (progress 88/104)
+
+## Progress (2025-07-25 21:32 +0700)
+- pascal rosetta: update outputs for indexes 8 and 10 (progress 88/104)
+
+## Progress (2025-07-25 21:32 +0700)
+- pascal rosetta: update outputs for indexes 8 and 10 (progress 88/104)
+
+## Progress (2025-07-25 21:32 +0700)
+- pascal rosetta: update outputs for indexes 8 and 10 (progress 88/104)
+
+## Progress (2025-07-25 21:32 +0700)
+- pascal rosetta: update outputs for indexes 8 and 10 (progress 88/104)
+
+## Progress (2025-07-25 21:32 +0700)
+- pascal rosetta: update outputs for indexes 8 and 10 (progress 88/104)
+
+## Progress (2025-07-25 21:32 +0700)
+- pascal rosetta: update outputs for indexes 8 and 10 (progress 88/104)
+
+## Progress (2025-07-25 21:32 +0700)
+- pascal rosetta: update outputs for indexes 8 and 10 (progress 88/104)
+
+## Progress (2025-07-25 21:32 +0700)
+- pascal rosetta: update outputs for indexes 8 and 10 (progress 88/104)
+
+## Progress (2025-07-25 21:32 +0700)
+- pascal rosetta: update outputs for indexes 8 and 10 (progress 88/104)
+
+## Progress (2025-07-25 21:32 +0700)
+- pascal rosetta: update outputs for indexes 8 and 10 (progress 88/104)
+
+## Progress (2025-07-25 21:32 +0700)
+- pascal rosetta: update outputs for indexes 8 and 10 (progress 88/104)
+
+## Progress (2025-07-25 21:32 +0700)
+- pascal rosetta: update outputs for indexes 8 and 10 (progress 88/104)
+
+## Progress (2025-07-25 21:32 +0700)
+- pascal rosetta: update outputs for indexes 8 and 10 (progress 88/104)
+
+## Progress (2025-07-25 21:32 +0700)
+- pascal rosetta: update outputs for indexes 8 and 10 (progress 88/104)
+
+## Progress (2025-07-25 21:32 +0700)
+- pascal rosetta: update outputs for indexes 8 and 10 (progress 88/104)
+
+## Progress (2025-07-25 21:32 +0700)
+- pascal rosetta: update outputs for indexes 8 and 10 (progress 88/104)
+
+## Progress (2025-07-25 21:32 +0700)
+- pascal rosetta: update outputs for indexes 8 and 10 (progress 88/104)
+
+## Progress (2025-07-25 21:32 +0700)
+- pascal rosetta: update outputs for indexes 8 and 10 (progress 88/104)
+
+## Progress (2025-07-25 21:32 +0700)
+- pascal rosetta: update outputs for indexes 8 and 10 (progress 88/104)
+
+## Progress (2025-07-25 21:32 +0700)
+- pascal rosetta: update outputs for indexes 8 and 10 (progress 88/104)
+
+## Progress (2025-07-25 21:32 +0700)
+- pascal rosetta: update outputs for indexes 8 and 10 (progress 88/104)
+
+## Progress (2025-07-25 21:32 +0700)
+- pascal rosetta: update outputs for indexes 8 and 10 (progress 88/104)
+
+## Progress (2025-07-25 21:32 +0700)
+- pascal rosetta: update outputs for indexes 8 and 10 (progress 88/104)
+
+## Progress (2025-07-25 21:32 +0700)
+- pascal rosetta: update outputs for indexes 8 and 10 (progress 88/104)
+
+## Progress (2025-07-25 21:32 +0700)
+- pascal rosetta: update outputs for indexes 8 and 10 (progress 88/104)
+
+## Progress (2025-07-25 21:32 +0700)
+- pascal rosetta: update outputs for indexes 8 and 10 (progress 88/104)
+
+## Progress (2025-07-25 21:32 +0700)
+- pascal rosetta: update outputs for indexes 8 and 10 (progress 88/104)
+
+## Progress (2025-07-25 21:32 +0700)
+- pascal rosetta: update outputs for indexes 8 and 10 (progress 88/104)
+
+## Progress (2025-07-25 21:32 +0700)
+- pascal rosetta: update outputs for indexes 8 and 10 (progress 88/104)
+
+## Progress (2025-07-25 21:32 +0700)
+- pascal rosetta: update outputs for indexes 8 and 10 (progress 88/104)
+
+## Progress (2025-07-25 21:32 +0700)
+- pascal rosetta: update outputs for indexes 8 and 10 (progress 88/104)
+
+## Progress (2025-07-25 21:32 +0700)
+- pascal rosetta: update outputs for indexes 8 and 10 (progress 88/104)
+
+## Progress (2025-07-25 21:32 +0700)
+- pascal rosetta: update outputs for indexes 8 and 10 (progress 88/104)
+
+## Progress (2025-07-25 21:32 +0700)
+- pascal rosetta: update outputs for indexes 8 and 10 (progress 88/104)
+
+## Progress (2025-07-25 21:32 +0700)
+- pascal rosetta: update outputs for indexes 8 and 10 (progress 88/104)
+
+## Progress (2025-07-25 21:32 +0700)
+- pascal rosetta: update outputs for indexes 8 and 10 (progress 88/104)
+
+## Progress (2025-07-25 21:32 +0700)
+- pascal rosetta: update outputs for indexes 8 and 10 (progress 88/104)
+
+## Progress (2025-07-25 21:32 +0700)
+- pascal rosetta: update outputs for indexes 8 and 10 (progress 88/104)
+
+## Progress (2025-07-25 21:32 +0700)
+- pascal rosetta: update outputs for indexes 8 and 10 (progress 88/104)
+
+## Progress (2025-07-25 21:32 +0700)
+- pascal rosetta: update outputs for indexes 8 and 10 (progress 88/104)
+
+## Progress (2025-07-25 21:32 +0700)
+- pascal rosetta: update outputs for indexes 8 and 10 (progress 88/104)
+
+## Progress (2025-07-25 21:32 +0700)
+- pascal rosetta: update outputs for indexes 8 and 10 (progress 88/104)
+
+## Progress (2025-07-25 21:32 +0700)
+- pascal rosetta: update outputs for indexes 8 and 10 (progress 88/104)
+
+## Progress (2025-07-25 21:32 +0700)
+- pascal rosetta: update outputs for indexes 8 and 10 (progress 88/104)
+
+## Progress (2025-07-25 21:32 +0700)
+- pascal rosetta: update outputs for indexes 8 and 10 (progress 88/104)
+
+## Progress (2025-07-25 21:32 +0700)
+- pascal rosetta: update outputs for indexes 8 and 10 (progress 88/104)
+
+## Progress (2025-07-25 21:32 +0700)
+- pascal rosetta: update outputs for indexes 8 and 10 (progress 88/104)
+
+## Progress (2025-07-25 21:32 +0700)
+- pascal rosetta: update outputs for indexes 8 and 10 (progress 88/104)
+
+## Progress (2025-07-25 21:32 +0700)
+- pascal rosetta: update outputs for indexes 8 and 10 (progress 88/104)
+
+## Progress (2025-07-25 21:32 +0700)
+- pascal rosetta: update outputs for indexes 8 and 10 (progress 88/104)
+
+## Progress (2025-07-25 21:32 +0700)
+- pascal rosetta: update outputs for indexes 8 and 10 (progress 88/104)
+
+## Progress (2025-07-25 21:32 +0700)
+- pascal rosetta: update outputs for indexes 8 and 10 (progress 88/104)
+
+## Progress (2025-07-25 21:32 +0700)
+- pascal rosetta: update outputs for indexes 8 and 10 (progress 88/104)
+
+## Progress (2025-07-25 21:32 +0700)
+- pascal rosetta: update outputs for indexes 8 and 10 (progress 88/104)
+
+## Progress (2025-07-25 21:32 +0700)
+- pascal rosetta: update outputs for indexes 8 and 10 (progress 88/104)
+
+## Progress (2025-07-25 21:32 +0700)
+- pascal rosetta: update outputs for indexes 8 and 10 (progress 88/104)
+
+## Progress (2025-07-25 21:32 +0700)
+- pascal rosetta: update outputs for indexes 8 and 10 (progress 88/104)
+
+## Progress (2025-07-25 21:32 +0700)
+- pascal rosetta: update outputs for indexes 8 and 10 (progress 88/104)
+
+## Progress (2025-07-25 21:32 +0700)
+- pascal rosetta: update outputs for indexes 8 and 10 (progress 88/104)
+
+## Progress (2025-07-25 21:32 +0700)
+- pascal rosetta: update outputs for indexes 8 and 10 (progress 88/104)
+
+## Progress (2025-07-25 21:32 +0700)
+- pascal rosetta: update outputs for indexes 8 and 10 (progress 88/104)
+
+## Progress (2025-07-25 21:32 +0700)
+- pascal rosetta: update outputs for indexes 8 and 10 (progress 88/104)
+
+## Progress (2025-07-25 21:32 +0700)
+- pascal rosetta: update outputs for indexes 8 and 10 (progress 88/104)
+
+## Progress (2025-07-25 21:32 +0700)
+- pascal rosetta: update outputs for indexes 8 and 10 (progress 88/104)
+
+## Progress (2025-07-25 21:32 +0700)
+- pascal rosetta: update outputs for indexes 8 and 10 (progress 88/104)
+
+## Progress (2025-07-25 21:32 +0700)
+- pascal rosetta: update outputs for indexes 8 and 10 (progress 88/104)
+
+## Progress (2025-07-25 21:32 +0700)
+- pascal rosetta: update outputs for indexes 8 and 10 (progress 88/104)
+
+## Progress (2025-07-25 21:32 +0700)
+- pascal rosetta: update outputs for indexes 8 and 10 (progress 88/104)
+
+## Progress (2025-07-25 21:32 +0700)
+- pascal rosetta: update outputs for indexes 8 and 10 (progress 88/104)
+
+## Progress (2025-07-25 21:32 +0700)
+- pascal rosetta: update outputs for indexes 8 and 10 (progress 88/104)
+
+## Progress (2025-07-25 21:32 +0700)
+- pascal rosetta: update outputs for indexes 8 and 10 (progress 88/104)
+
+## Progress (2025-07-25 21:32 +0700)
+- pascal rosetta: update outputs for indexes 8 and 10 (progress 88/104)
+
+## Progress (2025-07-25 21:32 +0700)
+- pascal rosetta: update outputs for indexes 8 and 10 (progress 88/104)
+
+## Progress (2025-07-25 21:32 +0700)
+- pascal rosetta: update outputs for indexes 8 and 10 (progress 88/104)
+
+## Progress (2025-07-25 21:32 +0700)
+- pascal rosetta: update outputs for indexes 8 and 10 (progress 88/104)
+
+## Progress (2025-07-25 21:32 +0700)
+- pascal rosetta: update outputs for indexes 8 and 10 (progress 88/104)
+
+## Progress (2025-07-25 21:32 +0700)
+- pascal rosetta: update outputs for indexes 8 and 10 (progress 88/104)
+
+## Progress (2025-07-25 21:32 +0700)
+- pascal rosetta: update outputs for indexes 8 and 10 (progress 88/104)
+
+## Progress (2025-07-25 21:32 +0700)
+- pascal rosetta: update outputs for indexes 8 and 10 (progress 88/104)
+
+## Progress (2025-07-25 21:32 +0700)
+- pascal rosetta: update outputs for indexes 8 and 10 (progress 88/104)
+
+## Progress (2025-07-25 21:32 +0700)
+- pascal rosetta: update outputs for indexes 8 and 10 (progress 88/104)
+
+## Progress (2025-07-25 21:32 +0700)
+- pascal rosetta: update outputs for indexes 8 and 10 (progress 88/104)
+
+## Progress (2025-07-25 21:32 +0700)
+- pascal rosetta: update outputs for indexes 8 and 10 (progress 88/104)
+
+## Progress (2025-07-25 21:32 +0700)
+- pascal rosetta: update outputs for indexes 8 and 10 (progress 88/104)
+
+## Progress (2025-07-25 21:32 +0700)
+- pascal rosetta: update outputs for indexes 8 and 10 (progress 88/104)
+
+## Progress (2025-07-25 21:32 +0700)
+- pascal rosetta: update outputs for indexes 8 and 10 (progress 88/104)
+
+## Progress (2025-07-25 21:32 +0700)
+- pascal rosetta: update outputs for indexes 8 and 10 (progress 88/104)
+
+## Progress (2025-07-25 21:32 +0700)
+- pascal rosetta: update outputs for indexes 8 and 10 (progress 88/104)
+
+## Progress (2025-07-25 21:32 +0700)
+- pascal rosetta: update outputs for indexes 8 and 10 (progress 88/104)
+
+## Progress (2025-07-25 21:32 +0700)
+- pascal rosetta: update outputs for indexes 8 and 10 (progress 88/104)
+
+## Progress (2025-07-25 21:32 +0700)
+- pascal rosetta: update outputs for indexes 8 and 10 (progress 88/104)
+
+## Progress (2025-07-25 21:32 +0700)
+- pascal rosetta: update outputs for indexes 8 and 10 (progress 88/104)
+
+## Progress (2025-07-25 21:32 +0700)
+- pascal rosetta: update outputs for indexes 8 and 10 (progress 88/104)
+
+## Progress (2025-07-25 21:32 +0700)
+- pascal rosetta: update outputs for indexes 8 and 10 (progress 88/104)
+
+## Progress (2025-07-25 21:32 +0700)
+- pascal rosetta: update outputs for indexes 8 and 10 (progress 88/104)
+
+## Progress (2025-07-25 21:32 +0700)
+- pascal rosetta: update outputs for indexes 8 and 10 (progress 88/104)
+
+## Progress (2025-07-25 21:32 +0700)
+- pascal rosetta: update outputs for indexes 8 and 10 (progress 88/104)
+
+## Progress (2025-07-25 21:32 +0700)
+- pascal rosetta: update outputs for indexes 8 and 10 (progress 88/104)
+
+## Progress (2025-07-25 21:32 +0700)
+- pascal rosetta: update outputs for indexes 8 and 10 (progress 88/104)
+
+## Progress (2025-07-25 21:32 +0700)
+- pascal rosetta: update outputs for indexes 8 and 10 (progress 88/104)
+
+## Progress (2025-07-25 21:32 +0700)
+- pascal rosetta: update outputs for indexes 8 and 10 (progress 88/104)
+
+## Progress (2025-07-25 21:32 +0700)
+- pascal rosetta: update outputs for indexes 8 and 10 (progress 88/104)
+
+## Progress (2025-07-25 21:32 +0700)
+- pascal rosetta: update outputs for indexes 8 and 10 (progress 88/104)
+
+## Progress (2025-07-25 21:32 +0700)
+- pascal rosetta: update outputs for indexes 8 and 10 (progress 88/104)
+
+## Progress (2025-07-25 21:32 +0700)
+- pascal rosetta: update outputs for indexes 8 and 10 (progress 88/104)
+
+## Progress (2025-07-25 21:32 +0700)
+- pascal rosetta: update outputs for indexes 8 and 10 (progress 88/104)
+
+## Progress (2025-07-25 21:32 +0700)
+- pascal rosetta: update outputs for indexes 8 and 10 (progress 88/104)
+
+## Progress (2025-07-25 21:32 +0700)
+- pascal rosetta: update outputs for indexes 8 and 10 (progress 88/104)
+
+## Progress (2025-07-25 21:32 +0700)
+- pascal rosetta: update outputs for indexes 8 and 10 (progress 88/104)
+
+## Progress (2025-07-25 21:32 +0700)
+- pascal rosetta: update outputs for indexes 8 and 10 (progress 88/104)
+
+## Progress (2025-07-25 21:32 +0700)
+- pascal rosetta: update outputs for indexes 8 and 10 (progress 88/104)
+
+## Progress (2025-07-25 21:32 +0700)
+- pascal rosetta: update outputs for indexes 8 and 10 (progress 88/104)
+
+## Progress (2025-07-25 21:32 +0700)
+- pascal rosetta: update outputs for indexes 8 and 10 (progress 88/104)
+
+## Progress (2025-07-25 21:32 +0700)
+- pascal rosetta: update outputs for indexes 8 and 10 (progress 88/104)
+
+## Progress (2025-07-25 21:32 +0700)
+- pascal rosetta: update outputs for indexes 8 and 10 (progress 88/104)
+
+## Progress (2025-07-25 21:32 +0700)
+- pascal rosetta: update outputs for indexes 8 and 10 (progress 88/104)
+
+## Progress (2025-07-25 21:32 +0700)
+- pascal rosetta: update outputs for indexes 8 and 10 (progress 88/104)
+
+## Progress (2025-07-25 21:32 +0700)
+- pascal rosetta: update outputs for indexes 8 and 10 (progress 88/104)
+
+## Progress (2025-07-25 21:32 +0700)
+- pascal rosetta: update outputs for indexes 8 and 10 (progress 88/104)
+
+## Progress (2025-07-25 21:32 +0700)
+- pascal rosetta: update outputs for indexes 8 and 10 (progress 88/104)
+
+## Progress (2025-07-25 21:32 +0700)
+- pascal rosetta: update outputs for indexes 8 and 10 (progress 88/104)
+
+## Progress (2025-07-25 21:32 +0700)
+- pascal rosetta: update outputs for indexes 8 and 10 (progress 88/104)
+
+## Progress (2025-07-25 21:32 +0700)
+- pascal rosetta: update outputs for indexes 8 and 10 (progress 88/104)
+
+## Progress (2025-07-25 21:32 +0700)
+- pascal rosetta: update outputs for indexes 8 and 10 (progress 88/104)
+
+## Progress (2025-07-25 21:32 +0700)
+- pascal rosetta: update outputs for indexes 8 and 10 (progress 88/104)
+
+## Progress (2025-07-25 21:32 +0700)
+- pascal rosetta: update outputs for indexes 8 and 10 (progress 88/104)
+
+## Progress (2025-07-25 21:32 +0700)
+- pascal rosetta: update outputs for indexes 8 and 10 (progress 88/104)
+
+## Progress (2025-07-25 21:32 +0700)
+- pascal rosetta: update outputs for indexes 8 and 10 (progress 88/104)
+
+## Progress (2025-07-25 21:32 +0700)
+- pascal rosetta: update outputs for indexes 8 and 10 (progress 88/104)
+
+## Progress (2025-07-25 21:32 +0700)
+- pascal rosetta: update outputs for indexes 8 and 10 (progress 88/104)
+
+## Progress (2025-07-25 21:32 +0700)
+- pascal rosetta: update outputs for indexes 8 and 10 (progress 88/104)
+
+## Progress (2025-07-25 21:32 +0700)
+- pascal rosetta: update outputs for indexes 8 and 10 (progress 88/104)
+
+## Progress (2025-07-25 21:32 +0700)
+- pascal rosetta: update outputs for indexes 8 and 10 (progress 88/104)
+
+## Progress (2025-07-25 21:32 +0700)
+- pascal rosetta: update outputs for indexes 8 and 10 (progress 88/104)
+
+## Progress (2025-07-25 21:32 +0700)
+- pascal rosetta: update outputs for indexes 8 and 10 (progress 88/104)
+
+## Progress (2025-07-25 21:32 +0700)
+- pascal rosetta: update outputs for indexes 8 and 10 (progress 88/104)
+
+## Progress (2025-07-25 21:32 +0700)
+- pascal rosetta: update outputs for indexes 8 and 10 (progress 88/104)
+
+## Progress (2025-07-25 21:32 +0700)
+- pascal rosetta: update outputs for indexes 8 and 10 (progress 88/104)
+
+## Progress (2025-07-25 21:32 +0700)
+- pascal rosetta: update outputs for indexes 8 and 10 (progress 88/104)
+
+## Progress (2025-07-25 21:32 +0700)
+- pascal rosetta: update outputs for indexes 8 and 10 (progress 88/104)
+
+## Progress (2025-07-25 21:32 +0700)
+- pascal rosetta: update outputs for indexes 8 and 10 (progress 88/104)
+
+## Progress (2025-07-25 21:32 +0700)
+- pascal rosetta: update outputs for indexes 8 and 10 (progress 88/104)
+
+## Progress (2025-07-25 21:32 +0700)
+- pascal rosetta: update outputs for indexes 8 and 10 (progress 88/104)
+
+## Progress (2025-07-25 21:32 +0700)
+- pascal rosetta: update outputs for indexes 8 and 10 (progress 88/104)
+
+## Progress (2025-07-25 21:32 +0700)
+- pascal rosetta: update outputs for indexes 8 and 10 (progress 88/104)
+
+## Progress (2025-07-25 21:32 +0700)
+- pascal rosetta: update outputs for indexes 8 and 10 (progress 88/104)
+
+## Progress (2025-07-25 21:32 +0700)
+- pascal rosetta: update outputs for indexes 8 and 10 (progress 88/104)
+
+## Progress (2025-07-25 21:32 +0700)
+- pascal rosetta: update outputs for indexes 8 and 10 (progress 88/104)
+
+## Progress (2025-07-25 21:32 +0700)
+- pascal rosetta: update outputs for indexes 8 and 10 (progress 88/104)
+
+## Progress (2025-07-25 21:32 +0700)
+- pascal rosetta: update outputs for indexes 8 and 10 (progress 88/104)
+
+## Progress (2025-07-25 21:32 +0700)
+- pascal rosetta: update outputs for indexes 8 and 10 (progress 88/104)
+
+## Progress (2025-07-25 21:32 +0700)
+- pascal rosetta: update outputs for indexes 8 and 10 (progress 88/104)
+
+## Progress (2025-07-25 21:32 +0700)
+- pascal rosetta: update outputs for indexes 8 and 10 (progress 88/104)
+
+## Progress (2025-07-25 21:32 +0700)
+- pascal rosetta: update outputs for indexes 8 and 10 (progress 88/104)
+
+## Progress (2025-07-25 21:32 +0700)
+- pascal rosetta: update outputs for indexes 8 and 10 (progress 88/104)
+
+## Progress (2025-07-25 21:32 +0700)
+- pascal rosetta: update outputs for indexes 8 and 10 (progress 88/104)
+
+## Progress (2025-07-25 21:32 +0700)
+- pascal rosetta: update outputs for indexes 8 and 10 (progress 88/104)
+
+## Progress (2025-07-25 21:32 +0700)
+- pascal rosetta: update outputs for indexes 8 and 10 (progress 88/104)
+
+## Progress (2025-07-25 21:32 +0700)
+- pascal rosetta: update outputs for indexes 8 and 10 (progress 88/104)
+
+## Progress (2025-07-25 21:32 +0700)
+- pascal rosetta: update outputs for indexes 8 and 10 (progress 88/104)
+
+## Progress (2025-07-25 21:32 +0700)
+- pascal rosetta: update outputs for indexes 8 and 10 (progress 88/104)
+
+## Progress (2025-07-25 21:32 +0700)
+- pascal rosetta: update outputs for indexes 8 and 10 (progress 88/104)
+
+## Progress (2025-07-25 21:32 +0700)
+- pascal rosetta: update outputs for indexes 8 and 10 (progress 88/104)
+
+## Progress (2025-07-25 21:32 +0700)
+- pascal rosetta: update outputs for indexes 8 and 10 (progress 88/104)
+
+## Progress (2025-07-25 21:32 +0700)
+- pascal rosetta: update outputs for indexes 8 and 10 (progress 88/104)
+
+## Progress (2025-07-25 21:32 +0700)
+- pascal rosetta: update outputs for indexes 8 and 10 (progress 88/104)
+
+## Progress (2025-07-25 21:32 +0700)
+- pascal rosetta: update outputs for indexes 8 and 10 (progress 88/104)
+
+## Progress (2025-07-25 21:32 +0700)
+- pascal rosetta: update outputs for indexes 8 and 10 (progress 88/104)
+
+## Progress (2025-07-25 21:32 +0700)
+- pascal rosetta: update outputs for indexes 8 and 10 (progress 88/104)
+
+## Progress (2025-07-25 21:32 +0700)
+- pascal rosetta: update outputs for indexes 8 and 10 (progress 88/104)
+
+## Progress (2025-07-25 21:32 +0700)
+- pascal rosetta: update outputs for indexes 8 and 10 (progress 88/104)
+
+## Progress (2025-07-25 21:32 +0700)
+- pascal rosetta: update outputs for indexes 8 and 10 (progress 88/104)
+
+## Progress (2025-07-25 21:32 +0700)
+- pascal rosetta: update outputs for indexes 8 and 10 (progress 88/104)
+
+## Progress (2025-07-25 21:32 +0700)
+- pascal rosetta: update outputs for indexes 8 and 10 (progress 88/104)
+
+## Progress (2025-07-25 21:32 +0700)
+- pascal rosetta: update outputs for indexes 8 and 10 (progress 88/104)
+
+## Progress (2025-07-25 21:32 +0700)
+- pascal rosetta: update outputs for indexes 8 and 10 (progress 88/104)
+
+## Progress (2025-07-25 21:32 +0700)
+- pascal rosetta: update outputs for indexes 8 and 10 (progress 88/104)
+
+## Progress (2025-07-25 21:32 +0700)
+- pascal rosetta: update outputs for indexes 8 and 10 (progress 88/104)
+
+## Progress (2025-07-25 21:32 +0700)
+- pascal rosetta: update outputs for indexes 8 and 10 (progress 88/104)
+
+## Progress (2025-07-25 21:32 +0700)
+- pascal rosetta: update outputs for indexes 8 and 10 (progress 88/104)
+
+## Progress (2025-07-25 21:32 +0700)
+- pascal rosetta: update outputs for indexes 8 and 10 (progress 88/104)
+
+## Progress (2025-07-25 21:32 +0700)
+- pascal rosetta: update outputs for indexes 8 and 10 (progress 88/104)
+
+## Progress (2025-07-25 21:32 +0700)
+- pascal rosetta: update outputs for indexes 8 and 10 (progress 88/104)
+
+## Progress (2025-07-25 21:32 +0700)
+- pascal rosetta: update outputs for indexes 8 and 10 (progress 88/104)
+
+## Progress (2025-07-25 21:32 +0700)
+- pascal rosetta: update outputs for indexes 8 and 10 (progress 88/104)
+
+## Progress (2025-07-25 21:32 +0700)
+- pascal rosetta: update outputs for indexes 8 and 10 (progress 88/104)
+
+## Progress (2025-07-25 21:32 +0700)
+- pascal rosetta: update outputs for indexes 8 and 10 (progress 88/104)
+
+## Progress (2025-07-25 21:32 +0700)
+- pascal rosetta: update outputs for indexes 8 and 10 (progress 88/104)
+
+## Progress (2025-07-25 21:32 +0700)
+- pascal rosetta: update outputs for indexes 8 and 10 (progress 88/104)
+
+## Progress (2025-07-25 21:32 +0700)
+- pascal rosetta: update outputs for indexes 8 and 10 (progress 88/104)
+
+## Progress (2025-07-25 21:32 +0700)
+- pascal rosetta: update outputs for indexes 8 and 10 (progress 88/104)
+
+## Progress (2025-07-25 21:32 +0700)
+- pascal rosetta: update outputs for indexes 8 and 10 (progress 88/104)
+
+## Progress (2025-07-25 21:32 +0700)
+- pascal rosetta: update outputs for indexes 8 and 10 (progress 88/104)
+
+## Progress (2025-07-25 21:32 +0700)
+- pascal rosetta: update outputs for indexes 8 and 10 (progress 88/104)
+
+## Progress (2025-07-25 21:32 +0700)
+- pascal rosetta: update outputs for indexes 8 and 10 (progress 88/104)
+
+## Progress (2025-07-25 21:32 +0700)
+- pascal rosetta: update outputs for indexes 8 and 10 (progress 88/104)
+
+## Progress (2025-07-25 21:32 +0700)
+- pascal rosetta: update outputs for indexes 8 and 10 (progress 88/104)
+
+## Progress (2025-07-25 21:32 +0700)
+- pascal rosetta: update outputs for indexes 8 and 10 (progress 88/104)
+
+## Progress (2025-07-25 21:32 +0700)
+- pascal rosetta: update outputs for indexes 8 and 10 (progress 88/104)
+
+## Progress (2025-07-25 21:32 +0700)
+- pascal rosetta: update outputs for indexes 8 and 10 (progress 88/104)
+
+## Progress (2025-07-25 21:32 +0700)
+- pascal rosetta: update outputs for indexes 8 and 10 (progress 88/104)
+
+## Progress (2025-07-25 21:32 +0700)
+- pascal rosetta: update outputs for indexes 8 and 10 (progress 88/104)
+
+## Progress (2025-07-25 21:32 +0700)
+- pascal rosetta: update outputs for indexes 8 and 10 (progress 88/104)
+
+## Progress (2025-07-25 21:32 +0700)
+- pascal rosetta: update outputs for indexes 8 and 10 (progress 88/104)
+
+## Progress (2025-07-25 21:32 +0700)
+- pascal rosetta: update outputs for indexes 8 and 10 (progress 88/104)
+
+## Progress (2025-07-25 21:32 +0700)
+- pascal rosetta: update outputs for indexes 8 and 10 (progress 88/104)
+
+## Progress (2025-07-25 21:32 +0700)
+- pascal rosetta: update outputs for indexes 8 and 10 (progress 88/104)
+
+## Progress (2025-07-25 21:32 +0700)
+- pascal rosetta: update outputs for indexes 8 and 10 (progress 88/104)
+
+## Progress (2025-07-25 21:32 +0700)
+- pascal rosetta: update outputs for indexes 8 and 10 (progress 88/104)
+
+## Progress (2025-07-25 21:32 +0700)
+- pascal rosetta: update outputs for indexes 8 and 10 (progress 88/104)
+
+## Progress (2025-07-25 21:32 +0700)
+- pascal rosetta: update outputs for indexes 8 and 10 (progress 88/104)
+
+## Progress (2025-07-25 21:32 +0700)
+- pascal rosetta: update outputs for indexes 8 and 10 (progress 88/104)
+
+## Progress (2025-07-25 21:32 +0700)
+- pascal rosetta: update outputs for indexes 8 and 10 (progress 88/104)
+
 ## Progress (2025-07-25 20:14 +0700)
 - pascal: update transpiler and rosetta outputs (progress 88/104)
 
