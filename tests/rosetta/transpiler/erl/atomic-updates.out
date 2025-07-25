@@ -1,0 +1,19 @@
+/workspace/mochi/tests/rosetta/transpiler/erl/atomic-updates.erl:144:2: Warning: variable 'A_7' exported from 'case' (line 95, column 13)
+%  144| {A_7, Amt_3, B1_2, B2_2, Buckets_10, Dist_2, I_3, Idx_2, InitialSum, NBuckets, NTicks, R_3, SeedChaos_3, SeedOrder_2, Sum_2, T, Tc0_2, Tc1_2, Total, V1, V2} = Fun_3(A_7, Amt_3, B1_2, B2_2, Buckets_10, Dist_2, I_3, Idx, InitialSum, NBuckets, NTicks, R_3, SeedChaos_3, SeedOrder_2, Sum, T, Tc0_2, Tc1_2, Total, V1, V2),
+%     |  ^
+
+/workspace/mochi/tests/rosetta/transpiler/erl/atomic-updates.erl:144:7: Warning: variable 'Amt_3' exported from 'case' (line 125, column 13)
+%  144| {A_7, Amt_3, B1_2, B2_2, Buckets_10, Dist_2, I_3, Idx_2, InitialSum, NBuckets, NTicks, R_3, SeedChaos_3, SeedOrder_2, Sum_2, T, Tc0_2, Tc1_2, Total, V1, V2} = Fun_3(A_7, Amt_3, B1_2, B2_2, Buckets_10, Dist_2, I_3, Idx, InitialSum, NBuckets, NTicks, R_3, SeedChaos_3, SeedOrder_2, Sum, T, Tc0_2, Tc1_2, Total, V1, V2),
+%     |       ^
+
+sum  ---updates---    mean  buckets
+1000 1 1 2  [100,100,100,100,100,100,100,100,58,142]
+1000 1 1 2  [121,100,100,100,100,100,100,4,154,121]
+1000 1 1 2  [121,100,100,100,100,100,59,45,154,121]
+1000 1 1 2  "ondddd;-V½"
+1000 1 1 2  "on_idd;-V½"
+{
+  "duration_us": 21682,
+  "memory_bytes": 4258656,
+  "name": "main"
+}
