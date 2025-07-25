@@ -5,6 +5,7 @@ package dartt_test
 import (
 	"bufio"
 	"bytes"
+	"encoding/json"
 	"fmt"
 	"os"
 	"os/exec"
@@ -62,6 +63,7 @@ func TestDartTranspiler_Rosetta_Golden(t *testing.T) {
 		start = idx
 		list = names[idx-1 : idx]
 	}
+	bench := os.Getenv("MOCHI_BENCHMARK") == "true"
 	for i, fname := range list {
 		name := strings.TrimSuffix(fname, ".mochi")
 		src := filepath.Join(srcDir, fname)
@@ -81,7 +83,7 @@ func TestDartTranspiler_Rosetta_Golden(t *testing.T) {
 				_ = os.WriteFile(errPath, []byte("type: "+errs[0].Error()), 0o644)
 				t.Fatalf("type: %v", errs[0])
 			}
-			ast, err := dartt.Transpile(prog, env)
+			ast, err := dartt.Transpile(prog, env, bench)
 			if err != nil {
 				_ = os.WriteFile(errPath, []byte("transpile: "+err.Error()), 0o644)
 				t.Fatalf("transpile: %v", err)
@@ -95,6 +97,9 @@ func TestDartTranspiler_Rosetta_Golden(t *testing.T) {
 				t.Fatalf("write code: %v", err)
 			}
 			cmd := exec.Command("dart", codePath)
+			if bench {
+				cmd.Env = append(os.Environ(), "MOCHI_BENCHMARK=1")
+			}
 			if data, err := os.ReadFile(strings.TrimSuffix(src, ".mochi") + ".in"); err == nil {
 				cmd.Stdin = bytes.NewReader(data)
 			}
@@ -138,16 +143,47 @@ func UpdateRosetta() {
 	total := len(names)
 	completed := 0
 	var lines []string
+	fmtDuration := func(us int64) string {
+		d := time.Duration(us) * time.Microsecond
+		return d.String()
+	}
+	fmtSize := func(b int64) string {
+		const KB = 1024
+		const MB = 1024 * KB
+		if b >= MB {
+			return fmt.Sprintf("%.1f MB", float64(b)/float64(MB))
+		}
+		if b >= KB {
+			return fmt.Sprintf("%.1f KB", float64(b)/float64(KB))
+		}
+		return fmt.Sprintf("%d B", b)
+	}
 	for i, fname := range names {
 		name := strings.TrimSuffix(fname, ".mochi")
 		mark := "[ ]"
+		dur := ""
+		mem := ""
 		if _, err := os.Stat(filepath.Join(outDir, name+".out")); err == nil {
 			if _, err2 := os.Stat(filepath.Join(outDir, name+".error")); os.IsNotExist(err2) {
 				completed++
 				mark = "[x]"
+				data, _ := os.ReadFile(filepath.Join(outDir, name+".out"))
+				if idx := bytes.LastIndexByte(data, '{'); idx != -1 {
+					var bench struct {
+						DurationUs  int64 `json:"duration_us"`
+						MemoryBytes int64 `json:"memory_bytes"`
+					}
+					_ = json.Unmarshal(data[idx:], &bench)
+					if bench.DurationUs > 0 {
+						dur = fmtDuration(bench.DurationUs)
+					}
+					if bench.MemoryBytes > 0 {
+						mem = fmtSize(bench.MemoryBytes)
+					}
+				}
 			}
 		}
-		lines = append(lines, fmt.Sprintf("%d. %s %s (%d)", i+1, mark, name, i+1))
+		lines = append(lines, fmt.Sprintf("| %d | %s | %s | %s | %s |", i+1, name, mark, dur, mem))
 	}
 
 	var buf bytes.Buffer
@@ -155,6 +191,8 @@ func UpdateRosetta() {
 	buf.WriteString("This directory contains Dart code generated from Mochi programs in `tests/rosetta/x/Mochi`. Each program has a `.dart` file and `.out` output. Compilation or runtime failures are captured in a `.error` file.\n\n")
 	fmt.Fprintf(&buf, "Compiled and ran: %d/%d\n", completed, total)
 	buf.WriteString("\n## Checklist\n")
+	buf.WriteString("| Index | Name | Status | Duration | Memory |\n")
+	buf.WriteString("| --- | --- | --- | --- | --- |\n")
 	buf.WriteString(strings.Join(lines, "\n"))
 	buf.WriteString("\n")
 	if ts != "" {

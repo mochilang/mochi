@@ -46,7 +46,8 @@ func TestDartTranspiler_VMValid_Golden(t *testing.T) {
 			_ = os.WriteFile(errPath, []byte("type: "+errs[0].Error()), 0o644)
 			return nil, errs[0]
 		}
-		ast, err := dartt.Transpile(prog, env)
+		bench := os.Getenv("MOCHI_BENCHMARK") == "true"
+		ast, err := dartt.Transpile(prog, env, bench)
 		if err != nil {
 			_ = os.WriteFile(errPath, []byte("transpile: "+err.Error()), 0o644)
 			return nil, err
@@ -60,6 +61,9 @@ func TestDartTranspiler_VMValid_Golden(t *testing.T) {
 			return nil, err
 		}
 		cmd := exec.Command("dart", codePath)
+		if bench {
+			cmd.Env = append(os.Environ(), "MOCHI_BENCHMARK=1")
+		}
 		if data, err := os.ReadFile(strings.TrimSuffix(src, ".mochi") + ".in"); err == nil {
 			cmd.Stdin = bytes.NewReader(data)
 		}
