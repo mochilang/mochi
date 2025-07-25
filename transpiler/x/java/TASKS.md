@@ -1,4 +1,62 @@
-## Progress (2025-07-25 16:54 +0700)
+## Progress (2025-07-25 10:20 UTC)
+- transpiler/java: add apply-a-callback-to-an-array-1 (4156232354)
+
+- transpiler/java: add apply-a-callback-to-an-array-1 (4156232354)
+
+- transpiler/java: add apply-a-callback-to-an-array-1 (4156232354)
+
+- transpiler/java: add apply-a-callback-to-an-array-1 (4156232354)
+
+- transpiler/java: add apply-a-callback-to-an-array-1 (4156232354)
+
+- transpiler/java: add apply-a-callback-to-an-array-1 (4156232354)
+
+- transpiler/java: add apply-a-callback-to-an-array-1 (4156232354)
+
+- transpiler/java: add apply-a-callback-to-an-array-1 (4156232354)
+
+- transpiler/java: add apply-a-callback-to-an-array-1 (4156232354)
+
+- transpiler/java: add apply-a-callback-to-an-array-1 (4156232354)
+
+- transpiler/java: add apply-a-callback-to-an-array-1 (4156232354)
+
+- transpiler/java: add append-a-record example (c69f202b69)
+
+- transpiler/java: add append-a-record example (c69f202b69)
+
+- transpiler/java: add append-a-record example (c69f202b69)
+
+- transpiler/java: add anti-primes (7a410fb458)
+
+- transpiler/java: add anti-primes (7a410fb458)
+
+- transpiler/java: add anti-primes (7a410fb458)
+
+- transpiler/java: add anonymous-recursion (73e3ed5334)
+
+- transpiler/java: add anonymous-recursion (73e3ed5334)
+
+- transpiler/java: add anonymous-recursion (73e3ed5334)
+
+- transpiler/java: add anonymous-recursion-2 (2eb074ff42)
+
+- transpiler/java: add anonymous-recursion-2 (2eb074ff42)
+
+- transpiler/java: add anonymous-recursion-2 (2eb074ff42)
+
+- transpiler/java: add anonymous-recursion-1 (9fb296e869)
+
+- transpiler/java: add anonymous-recursion-1 (9fb296e869)
+
+- transpiler/java: add anonymous-recursion-1 (9fb296e869)
+
+- transpiler(java): update rosetta outputs and fix map/array handling (2d5f246299)
+
+- transpiler(java): update rosetta outputs and fix map/array handling (2d5f246299)
+
+- transpiler(java): update rosetta outputs and fix map/array handling (2d5f246299)
+
 - rosetta: update index 36 (be772c1031)
 
 - rosetta: update index 36 (be772c1031)
