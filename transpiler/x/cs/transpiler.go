@@ -1587,15 +1587,6 @@ func listType(l *ListLit) string {
 }
 
 func (ix *IndexExpr) emit(w io.Writer) {
-	t := typeOfExpr(ix)
-	if t == "object" || t == "" {
-		fmt.Fprint(w, "((dynamic)")
-		ix.Target.emit(w)
-		fmt.Fprint(w, ")[")
-		ix.Index.emit(w)
-		fmt.Fprint(w, "]")
-		return
-	}
 	ix.Target.emit(w)
 	fmt.Fprint(w, "[")
 	ix.Index.emit(w)
@@ -1728,15 +1719,32 @@ type AppendExpr struct {
 func (a *AppendExpr) emit(w io.Writer) {
 	usesLinq = true
 	fmt.Fprint(w, "(")
-	a.List.emit(w)
-	fmt.Fprint(w, ".Append(")
 	t := typeOfExpr(a.List)
 	if t == "" || strings.HasSuffix(t, "object[]") {
 		if vr, ok := a.List.(*VarRef); ok {
-			if ft, ok2 := finalVarTypes[vr.Name]; ok2 && ft != "" && !strings.HasSuffix(ft, "object[]") {
+			if ft, ok2 := finalVarTypes[vr.Name]; ok2 && ft != "" {
 				t = ft
 			}
 		}
+	}
+	elem := ""
+	if strings.HasSuffix(t, "[]") {
+		elem = strings.TrimSuffix(t, "[]")
+	}
+	if elem == "" {
+		if isListExpr(a.List) {
+			elem = "object"
+		}
+	}
+	if elem != "" {
+		usesDict = true
+		fmt.Fprintf(w, "System.Linq.Enumerable.Append(")
+		a.List.emit(w)
+		fmt.Fprint(w, ", ")
+	} else {
+		fmt.Fprint(w, "System.Linq.Enumerable.Append(")
+		a.List.emit(w)
+		fmt.Fprint(w, ", ")
 	}
 	if t == "" || strings.HasSuffix(t, "object[]") {
 		fmt.Fprint(w, "(object)")
