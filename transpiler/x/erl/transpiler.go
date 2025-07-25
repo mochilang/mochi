@@ -4017,7 +4017,11 @@ func convertPrimary(p *parser.Primary, env *types.Env, ctx *context) (Expr, erro
 			}
 		}
 		if ctx.isGlobal(p.Selector.Root) {
-			return &CallExpr{Func: "erlang:get", Args: []Expr{&AtomLit{Name: fmt.Sprintf("'%s'", p.Selector.Root)}}}, nil
+			call := &CallExpr{Func: "erlang:get", Args: []Expr{&AtomLit{Name: fmt.Sprintf("'%s'", p.Selector.Root)}}}
+			if ctx.isStringVar(p.Selector.Root) {
+				call.ReturnsString = true
+			}
+			return call, nil
 		}
 		nr := &NameRef{Name: ctx.current(p.Selector.Root)}
 		if t, err := env.GetVar(p.Selector.Root); err == nil {
@@ -4054,7 +4058,11 @@ func convertPrimary(p *parser.Primary, env *types.Env, ctx *context) (Expr, erro
 		}
 		var expr Expr
 		if ctx.isGlobal(p.Selector.Root) {
-			expr = &CallExpr{Func: "erlang:get", Args: []Expr{&AtomLit{Name: fmt.Sprintf("'%s'", p.Selector.Root)}}}
+			call := &CallExpr{Func: "erlang:get", Args: []Expr{&AtomLit{Name: fmt.Sprintf("'%s'", p.Selector.Root)}}}
+			if ctx.isStringVar(p.Selector.Root) {
+				call.ReturnsString = true
+			}
+			expr = call
 		} else {
 			expr = &NameRef{Name: ctx.current(p.Selector.Root)}
 		}
