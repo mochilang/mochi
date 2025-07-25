@@ -1,7 +1,7 @@
 # Go Rosetta Transpiler Output
 
 Completed programs: 123/284
-Last updated: 2025-07-25 14:28 +0700
+Last updated: 2025-07-25 14:52 +0700
 
 Checklist:
 
@@ -27,12 +27,12 @@ Checklist:
 | 18 | abbreviations-easy | ✓ | 6.0ms | 1.24MB |
 | 19 | abbreviations-simple | ✓ | 10.0ms | 2.06MB |
 | 20 | abc-problem | ✓ | 906.0µs | 54.01KB |
-| 21 | abelian-sandpile-model-identity | ✓ |  |  |
-| 22 | abelian-sandpile-model | ✓ |  |  |
-| 23 | abstract-type | ✓ |  |  |
-| 24 | abundant-deficient-and-perfect-number-classifications | ✓ |  |  |
-| 25 | abundant-odd-numbers | ✓ |  |  |
-| 26 | accumulator-factory | ✓ |  |  |
+| 21 | abelian-sandpile-model-identity | ✓ | 617.0µs | 5.70KB |
+| 22 | abelian-sandpile-model | ✓ | 714.0µs | 8.59KB |
+| 23 | abstract-type | ✓ | 750.0µs | 1.07KB |
+| 24 | abundant-deficient-and-perfect-number-classifications | ✓ | 1.01s | 1.23KB |
+| 25 | abundant-odd-numbers | ✓ | 1.48s | 2.79MB |
+| 26 | accumulator-factory | ✓ | 507.0µs | 968B |
 | 27 | achilles-numbers |   |  |  |
 | 28 | ackermann-function-2 | ✓ |  |  |
 | 29 | ackermann-function-3 | ✓ |  |  |
