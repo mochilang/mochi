@@ -1472,6 +1472,53 @@ func (mi *MapIndexExpr) emitPrint(w io.Writer) {
 	}
 }
 
+// MapGetExpr represents m.get(key, default)
+type MapGetExpr struct {
+	Map     Expr
+	Key     Expr
+	Default Expr
+	Typ     string
+	Dyn     bool
+}
+
+func (mg *MapGetExpr) emit(w io.Writer) {
+	if mg.Dyn {
+		io.WriteString(w, "(try (Obj.obj (List.assoc (")
+		mg.Key.emit(w)
+		io.WriteString(w, ") ")
+		mg.Map.emit(w)
+		io.WriteString(w, ") : ")
+		if isDynamicMapType(mg.Typ) {
+			io.WriteString(w, "(string * Obj.t) list")
+		} else {
+			io.WriteString(w, ocamlType(mg.Typ))
+		}
+		io.WriteString(w, ") with Not_found -> ")
+		mg.Default.emit(w)
+		io.WriteString(w, ")")
+	} else {
+		io.WriteString(w, "(try List.assoc (")
+		mg.Key.emit(w)
+		io.WriteString(w, ") ")
+		mg.Map.emit(w)
+		io.WriteString(w, " with Not_found -> ")
+		mg.Default.emit(w)
+		io.WriteString(w, ")")
+	}
+}
+
+func (mg *MapGetExpr) emitPrint(w io.Writer) {
+	switch mg.Typ {
+	case "int":
+		io.WriteString(w, "string_of_int ")
+	case "float":
+		io.WriteString(w, "string_of_float ")
+	default:
+		io.WriteString(w, "__show ")
+	}
+	mg.emit(w)
+}
+
 // IndexExpr represents list[index] or string[index].
 type IndexExpr struct {
 	Col    Expr
@@ -3283,6 +3330,30 @@ func convertPostfix(p *parser.PostfixExpr, env *types.Env, vars map[string]VarIn
 			typ = "list"
 			i += 2
 			continue
+		case op.Field != nil && op.Field.Name == "get":
+			if i+1 >= len(p.Ops) || p.Ops[i+1].Call == nil {
+				return nil, "", fmt.Errorf("get must be called")
+			}
+			call := p.Ops[i+1].Call
+			if len(call.Args) != 2 {
+				return nil, "", fmt.Errorf("get expects 2 args")
+			}
+			key, _, err := convertExpr(call.Args[0], env, vars)
+			if err != nil {
+				return nil, "", err
+			}
+			defVal, defTyp, err := convertExpr(call.Args[1], env, vars)
+			if err != nil {
+				return nil, "", err
+			}
+			valTyp := defTyp
+			if strings.HasPrefix(typ, "map-") {
+				valTyp = strings.TrimPrefix(typ, "map-")
+			}
+			expr = &MapGetExpr{Map: expr, Key: key, Default: defVal, Typ: valTyp, Dyn: isDynamicMapType(typ)}
+			typ = valTyp
+			i += 2
+			continue
 		case op.Field != nil:
 			if name, ok := expr.(*Name); ok {
 				if nameTyp := vars[name.Ident].typ; nameTyp == "python_math" {
@@ -3485,6 +3556,27 @@ func convertPostfix(p *parser.PostfixExpr, env *types.Env, vars map[string]VarIn
 			i++
 		case op.Call != nil:
 			if idx, ok := expr.(*MapIndexExpr); ok {
+				if key, ok := idx.Key.(*StringLit); ok && key.Value == "get" {
+					if len(op.Call.Args) != 2 {
+						return nil, "", fmt.Errorf("get expects 2 args")
+					}
+					k, _, err := convertExpr(op.Call.Args[0], env, vars)
+					if err != nil {
+						return nil, "", err
+					}
+					def, defTyp, err := convertExpr(op.Call.Args[1], env, vars)
+					if err != nil {
+						return nil, "", err
+					}
+					valTyp := defTyp
+					if strings.HasPrefix(idx.Typ, "map-") {
+						valTyp = strings.TrimPrefix(idx.Typ, "map-")
+					}
+					expr = &MapGetExpr{Map: idx.Map, Key: k, Default: def, Typ: valTyp, Dyn: idx.Dyn}
+					typ = valTyp
+					i++
+					continue
+				}
 				if root, ok := idx.Map.(*Name); ok {
 					if info := vars[root.Ident]; info.typ == "python_math" {
 						if key, ok := idx.Key.(*StringLit); ok {
