@@ -55,7 +55,7 @@ public class Main {
         int n = 0;
         java.util.Map<String,Integer> digits = new java.util.LinkedHashMap<String, Integer>(java.util.Map.of("0", 0, "1", 1, "2", 2, "3", 3, "4", 4, "5", 5, "6", 6, "7", 7, "8", 8, "9", 9));
         while (i < str.length()) {
-            n = n * 10 + (int)((int)(digits.get(str.substring(i, i + 1))));
+            n = n * 10 + (int)(((int)digits.get(str.substring(i, i + 1))));
             i = i + 1;
         }
         if (neg) {
@@ -122,7 +122,7 @@ public class Main {
                 }
                 ci = ci + 1;
             }
-            if (!(Boolean)found) {
+            if (!found) {
                 results = java.util.stream.Stream.concat(java.util.Arrays.stream(results), java.util.stream.Stream.of("*error*")).toArray(String[]::new);
             }
             wi = wi + 1;
@@ -134,8 +134,8 @@ public class Main {
         String table = "" + "add 1  alter 3  backup 2  bottom 1  Cappend 2  change 1  Schange  Cinsert 2  Clast 3 " + "compress 4 copy 2 count 3 Coverlay 3 cursor 3  delete 3 Cdelete 2  down 1  duplicate " + "3 xEdit 1 expand 3 extract 3  find 1 Nfind 2 Nfindup 6 NfUP 3 Cfind 2 findUP 3 fUP 2 " + "forward 2  get  help 1 hexType 4  input 1 powerInput 3  join 1 split 2 spltJOIN load " + "locate 1 Clocate 2 lowerCase 3 upperCase 3 Lprefix 2  macro  merge 2 modify 3 move 2 " + "msg  next 1 overlay 1 parse preserve 4 purge 3 put putD query 1 quit  read recover 3 " + "refresh renum 3 repeat 3 replace 1 Creplace 2 reset 3 restore 4 rgtLEFT right 2 left " + "2  save  set  shift 2  si  sort  sos  stack 3 status 4 top  transfer 3  type 1  up 1 ";
         String sentence = "riG   rePEAT copies  put mo   rest    types   fup.    6\npoweRin";
         java.util.Map<String,Object> tbl = readTable(table);
-        String[] commands = (String[])((String[])(tbl.get("commands")));
-        int[] mins = (int[])((int[])(tbl.get("mins")));
+        String[] commands = (String[])(((String[])tbl.get("commands")));
+        int[] mins = (int[])(((int[])tbl.get("mins")));
         String[] words = fields(sentence);
         String[] results = validate(commands, mins, words);
         String out1 = "user words:";
@@ -153,6 +153,39 @@ public class Main {
         System.out.println("full words: " + join(results, " "));
     }
     public static void main(String[] args) {
-        main();
+        {
+            long _benchStart = _now();
+            long _benchMem = _mem();
+            main();
+            long _benchDuration = _now() - _benchStart;
+            long _benchMemory = _mem() - _benchMem;
+            System.out.println("{");
+            System.out.println("  \"duration_us\": " + _benchDuration + ",");
+            System.out.println("  \"memory_bytes\": " + _benchMemory + ",");
+            System.out.println("  \"name\": \"main\"");
+            System.out.println("}");
+            return;
+        }
+    }
+
+    static boolean _nowSeeded = false;
+    static int _nowSeed;
+    static int _now() {
+        if (!_nowSeeded) {
+            String s = System.getenv("MOCHI_NOW_SEED");
+            if (s != null && !s.isEmpty()) {
+                try { _nowSeed = Integer.parseInt(s); _nowSeeded = true; } catch (Exception e) {}
+            }
+        }
+        if (_nowSeeded) {
+            _nowSeed = (int)((_nowSeed * 1664525L + 1013904223) % 2147483647);
+            return _nowSeed;
+        }
+        return (int)(System.nanoTime() / 1000);
+    }
+
+    static long _mem() {
+        Runtime rt = Runtime.getRuntime();
+        return rt.totalMemory() - rt.freeMemory();
     }
 }

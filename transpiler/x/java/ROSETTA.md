@@ -1,9 +1,9 @@
 # Java Rosetta Transpiler Output
 
 Generated Java code for programs in `tests/rosetta/x/Mochi`. Each program has a `.java` file produced by the transpiler and a `.out` file with its runtime output. Compilation or execution errors are captured in `.error` files.
-Last updated: 2025-07-25 12:48 GMT+7
+Last updated: 2025-07-25 13:22 GMT+7
 
-## Rosetta Checklist (40/284)
+## Rosetta Checklist (41/284)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | 100-doors-2 | ✓ | 23.0ms | 245.84KB |
@@ -16,24 +16,24 @@ Last updated: 2025-07-25 12:48 GMT+7
 | 8 | 21-game | ✓ | 11.0ms | 245.81KB |
 | 9 | 24-game-solve | ✓ | 70.0ms | 3.76MB |
 | 10 | 24-game | ✓ | 13.0ms | 245.81KB |
-| 11 | 4-rings-or-4-squares-puzzle | ✓ |  |  |
-| 12 | 9-billion-names-of-god-the-integer | ✓ |  |  |
-| 13 | 99-bottles-of-beer-2 | ✓ |  |  |
-| 14 | 99-bottles-of-beer | ✓ |  |  |
-| 15 | DNS-query | ✓ |  |  |
-| 16 | a+b | ✓ |  |  |
-| 17 | abbreviations-automatic | ✓ |  |  |
-| 18 | abbreviations-easy | ✓ |  |  |
-| 19 | abbreviations-simple | ✓ |  |  |
-| 20 | abc-problem | ✓ |  |  |
-| 21 | abelian-sandpile-model-identity | ✓ |  |  |
-| 22 | abelian-sandpile-model | ✓ |  |  |
-| 23 | abstract-type | ✓ |  |  |
-| 24 | abundant-deficient-and-perfect-number-classifications | ✓ |  |  |
-| 25 | abundant-odd-numbers | ✓ |  |  |
-| 26 | accumulator-factory | ✓ |  |  |
-| 27 | achilles-numbers |   |  |  |
-| 28 | ackermann-function-2 | ✓ |  |  |
+| 11 | 4-rings-or-4-squares-puzzle | ✓ | 5.0ms | 0B |
+| 12 | 9-billion-names-of-god-the-integer | ✓ | 3.37s | 698.28MB |
+| 13 | 99-bottles-of-beer-2 | ✓ | 63.0ms | 6.96MB |
+| 14 | 99-bottles-of-beer | ✓ | 14.0ms | 0B |
+| 15 | DNS-query | ✓ | 391.0µs | 0B |
+| 16 | a+b | ✓ | 1.0ms | 0B |
+| 17 | abbreviations-automatic | ✓ | 44.0ms | 2.96MB |
+| 18 | abbreviations-easy | ✓ | 23.0ms | 491.63KB |
+| 19 | abbreviations-simple | ✓ | 39.0ms | 737.39KB |
+| 20 | abc-problem | ✓ | 22.0ms | 737.38KB |
+| 21 | abelian-sandpile-model-identity | ✓ | 16.0ms | 491.65KB |
+| 22 | abelian-sandpile-model | ✓ | 10.0ms | 245.78KB |
+| 23 | abstract-type | ✓ | 25.0ms | 245.84KB |
+| 24 | abundant-deficient-and-perfect-number-classifications | ✓ | 205.0ms | 245.78KB |
+| 25 | abundant-odd-numbers | ✓ | 554.0ms | 95.51MB |
+| 26 | accumulator-factory | ✓ | 4.0ms | 0B |
+| 27 | achilles-numbers | ✓ | 54.0ms | 10.33MB |
+| 28 | ackermann-function-2 | ✓ | 5.0ms | 0B |
 | 29 | ackermann-function-3 |   |  |  |
 | 30 | ackermann-function | ✓ |  |  |
 | 31 | active-directory-connect | ✓ |  |  |

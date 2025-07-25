@@ -17,7 +17,7 @@ public class Main {
         int[] res = new int[]{};
         int i = 0;
         while (i < a.length) {
-            res = java.util.stream.IntStream.concat(java.util.Arrays.stream(res), java.util.stream.IntStream.of(a[i] + b[i])).toArray();
+            res = java.util.stream.IntStream.concat(java.util.Arrays.stream(res), java.util.stream.IntStream.of(((Number)(a[i])).intValue() + ((Number)(b[i])).intValue())).toArray();
             i = i + 1;
         }
         return res;
@@ -36,11 +36,11 @@ public class Main {
         int[][] neighbors = neighborsList();
         int i = 0;
         while (i < p.length) {
-            if (p[i] > 3) {
-p[i] = p[i] - 4;
+            if (((Number)(p[i])).intValue() > 3) {
+p[i] = ((Number)(p[i])).intValue() - 4;
                 int[] nbs = neighbors[i];
                 for (var j : nbs) {
-p[j] = p[j] + 1;
+p[j] = ((Number)(p[j])).intValue() + 1;
                 }
                 return 0;
             }
@@ -64,30 +64,63 @@ p[j] = p[j] + 1;
         return s;
     }
     public static void main(String[] args) {
-        System.out.println("Avalanche of topplings:\n");
-        System.out.println(pileString(s4));
-        while (!(Boolean)isStable(s4)) {
-            topple(s4);
+        {
+            long _benchStart = _now();
+            long _benchMem = _mem();
+            System.out.println("Avalanche of topplings:\n");
             System.out.println(pileString(s4));
+            while (!(Boolean)isStable(s4)) {
+                topple(s4);
+                System.out.println(pileString(s4));
+            }
+            System.out.println("Commutative additions:\n");
+            while (!(Boolean)isStable(s3_a)) {
+                topple(s3_a);
+            }
+            while (!(Boolean)isStable(s3_b)) {
+                topple(s3_b);
+            }
+            System.out.println(pileString(s1) + "\nplus\n\n" + pileString(s2) + "\nequals\n\n" + pileString(s3_a));
+            System.out.println("and\n\n" + pileString(s2) + "\nplus\n\n" + pileString(s1) + "\nalso equals\n\n" + pileString(s3_b));
+            System.out.println("Addition of identity sandpile:\n");
+            while (!(Boolean)isStable(s4b)) {
+                topple(s4b);
+            }
+            System.out.println(pileString(s3) + "\nplus\n\n" + pileString(s3_id) + "\nequals\n\n" + pileString(s4b));
+            System.out.println("Addition of identities:\n");
+            while (!(Boolean)isStable(s5)) {
+                topple(s5);
+            }
+            System.out.println(pileString(s3_id) + "\nplus\n\n" + pileString(s3_id) + "\nequals\n\n" + pileString(s5));
+            long _benchDuration = _now() - _benchStart;
+            long _benchMemory = _mem() - _benchMem;
+            System.out.println("{");
+            System.out.println("  \"duration_us\": " + _benchDuration + ",");
+            System.out.println("  \"memory_bytes\": " + _benchMemory + ",");
+            System.out.println("  \"name\": \"main\"");
+            System.out.println("}");
+            return;
         }
-        System.out.println("Commutative additions:\n");
-        while (!(Boolean)isStable(s3_a)) {
-            topple(s3_a);
+    }
+
+    static boolean _nowSeeded = false;
+    static int _nowSeed;
+    static int _now() {
+        if (!_nowSeeded) {
+            String s = System.getenv("MOCHI_NOW_SEED");
+            if (s != null && !s.isEmpty()) {
+                try { _nowSeed = Integer.parseInt(s); _nowSeeded = true; } catch (Exception e) {}
+            }
         }
-        while (!(Boolean)isStable(s3_b)) {
-            topple(s3_b);
+        if (_nowSeeded) {
+            _nowSeed = (int)((_nowSeed * 1664525L + 1013904223) % 2147483647);
+            return _nowSeed;
         }
-        System.out.println(pileString(s1) + "\nplus\n\n" + pileString(s2) + "\nequals\n\n" + pileString(s3_a));
-        System.out.println("and\n\n" + pileString(s2) + "\nplus\n\n" + pileString(s1) + "\nalso equals\n\n" + pileString(s3_b));
-        System.out.println("Addition of identity sandpile:\n");
-        while (!(Boolean)isStable(s4b)) {
-            topple(s4b);
-        }
-        System.out.println(pileString(s3) + "\nplus\n\n" + pileString(s3_id) + "\nequals\n\n" + pileString(s4b));
-        System.out.println("Addition of identities:\n");
-        while (!(Boolean)isStable(s5)) {
-            topple(s5);
-        }
-        System.out.println(pileString(s3_id) + "\nplus\n\n" + pileString(s3_id) + "\nequals\n\n" + pileString(s5));
+        return (int)(System.nanoTime() / 1000);
+    }
+
+    static long _mem() {
+        Runtime rt = Runtime.getRuntime();
+        return rt.totalMemory() - rt.freeMemory();
     }
 }
