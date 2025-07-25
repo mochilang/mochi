@@ -2,44 +2,44 @@
 
 This checklist is auto-generated.
 Generated Python code from programs in `tests/rosetta/x/Mochi` lives in `tests/rosetta/transpiler/Python`.
-Last updated: 2025-07-25 10:23 GMT+7
+Last updated: 2025-07-25 10:37 GMT+7
 
 ## Rosetta Golden Test Checklist (268/284)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
-| 1 | 100-doors-2 | ✓ | 170.0µs | 12.61MB |
-| 2 | 100-doors-3 | ✓ | 129.0µs | 12.98MB |
-| 3 | 100-doors | ✓ | 297.0µs | 12.98MB |
-| 4 | 100-prisoners | ✓ | 563.0ms | 13.98MB |
-| 5 | 15-puzzle-game | ✓ | 182.0µs | 14.47MB |
-| 6 | 15-puzzle-solver | ✓ | 10.0µs | 14.47MB |
-| 7 | 2048 | ✓ | 2.0ms | 15.22MB |
-| 8 | 21-game | ✓ | 71.0µs | 15.22MB |
-| 9 | 24-game-solve | ✓ | 40.0ms | 15.22MB |
+| 1 | 100-doors-2 | ✓ | 158.0µs | 12.57MB |
+| 2 | 100-doors-3 | ✓ | 125.0µs | 12.82MB |
+| 3 | 100-doors | ✓ | 211.0µs | 13.07MB |
+| 4 | 100-prisoners | ✓ | 546.0ms | 14.07MB |
+| 5 | 15-puzzle-game | ✓ | 201.0µs | 14.82MB |
+| 6 | 15-puzzle-solver | ✓ | 9.0µs | 14.82MB |
+| 7 | 2048 | ✓ | 2.0ms | 15.20MB |
+| 8 | 21-game | ✓ | 68.0µs | 15.20MB |
+| 9 | 24-game-solve | ✓ | 24.0ms | 15.20MB |
 | 10 | 24-game | ✓ |  |  |
-| 11 | 4-rings-or-4-squares-puzzle | ✓ | 31.0ms | 15.22MB |
-| 12 | 9-billion-names-of-god-the-integer | ✓ | 9.99s | 233.64MB |
-| 13 | 99-bottles-of-beer-2 | ✓ | 11.0ms | 15.22MB |
-| 14 | 99-bottles-of-beer | ✓ | 535.0µs | 15.22MB |
-| 15 | DNS-query | ✓ | 475.0ms | 15.22MB |
-| 16 | a+b | ✓ | 94.0µs | 15.22MB |
-| 17 | abbreviations-automatic | ✓ | 3.0ms | 15.22MB |
-| 18 | abbreviations-easy | ✓ | 754.0µs | 15.22MB |
-| 19 | abbreviations-simple | ✓ | 967.0µs | 15.22MB |
-| 20 | abc-problem | ✓ | 341.0µs | 15.22MB |
-| 21 | abelian-sandpile-model-identity | ✓ | 159.0µs | 15.22MB |
-| 22 | abelian-sandpile-model | ✓ | 155.0µs | 15.22MB |
-| 23 | abstract-type | ✓ | 17.0µs | 15.22MB |
-| 24 | abundant-deficient-and-perfect-number-classifications | ✓ | 11.41s | 15.22MB |
-| 25 | abundant-odd-numbers | ✓ | 9.96s | 15.22MB |
-| 26 | accumulator-factory | ✓ | 19.0µs | 15.52MB |
-| 27 | achilles-numbers | ✓ | 18.0ms | 15.52MB |
-| 28 | ackermann-function-2 | ✓ | 16.0µs | 15.52MB |
+| 11 | 4-rings-or-4-squares-puzzle | ✓ | 30.0ms | 15.20MB |
+| 12 | 9-billion-names-of-god-the-integer | ✓ | 9.99s | 233.76MB |
+| 13 | 99-bottles-of-beer-2 | ✓ | 12.0ms | 15.20MB |
+| 14 | 99-bottles-of-beer | ✓ | 487.0µs | 15.20MB |
+| 15 | DNS-query | ✓ | 615.0ms | 15.20MB |
+| 16 | a+b | ✓ | 95.0µs | 15.20MB |
+| 17 | abbreviations-automatic | ✓ | 4.0ms | 15.20MB |
+| 18 | abbreviations-easy | ✓ | 800.0µs | 15.20MB |
+| 19 | abbreviations-simple | ✓ | 935.0µs | 15.20MB |
+| 20 | abc-problem | ✓ | 338.0µs | 15.20MB |
+| 21 | abelian-sandpile-model-identity | ✓ | 158.0µs | 15.20MB |
+| 22 | abelian-sandpile-model | ✓ | 160.0µs | 15.23MB |
+| 23 | abstract-type | ✓ | 17.0µs | 15.23MB |
+| 24 | abundant-deficient-and-perfect-number-classifications | ✓ | 11.57s | 15.23MB |
+| 25 | abundant-odd-numbers | ✓ | 9.65s | 15.23MB |
+| 26 | accumulator-factory | ✓ | 18.0µs | 15.23MB |
+| 27 | achilles-numbers | ✓ | 18.0ms | 15.36MB |
+| 28 | ackermann-function-2 | ✓ | 17.0µs | 15.36MB |
 | 29 | ackermann-function-3 | ✓ | 144.77s | 15.52MB |
 | 30 | ackermann-function | ✓ | 2.0ms | 15.52MB |
 | 31 | active-directory-connect | ✓ | 16.0µs | 15.52MB |
 | 32 | active-directory-search-for-a-user | ✓ | 13.0µs | 15.52MB |
-| 33 | active-object | ✓ |  |  |
+| 33 | active-object | ✓ | 604.0µs | 12.62MB |
 | 34 | add-a-variable-to-a-class-instance-at-runtime | ✓ |  |  |
 | 35 | additive-primes | ✓ |  |  |
 | 36 | address-of-a-variable | ✓ |  |  |
