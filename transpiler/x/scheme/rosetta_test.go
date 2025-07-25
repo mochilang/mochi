@@ -108,7 +108,13 @@ func TestSchemeTranspiler_Rosetta_Golden(t *testing.T) {
 				t.Fatalf("write code: %v", err)
 			}
 			cmd := exec.Command("chibi-scheme", "-q", "-m", "chibi", "-m", "srfi.1", "-m", "srfi.69", "-m", "scheme.sort", "-m", "chibi.string", codePath)
-			cmd.Env = append(os.Environ(), "MOCHI_NOW_SEED=1")
+			runEnv := append(os.Environ())
+			if bench {
+				runEnv = append(runEnv, "MOCHI_BENCHMARK=1")
+			} else {
+				runEnv = append(runEnv, "MOCHI_NOW_SEED=1")
+			}
+			cmd.Env = runEnv
 			if data, err := os.ReadFile(strings.TrimSuffix(src, ".mochi") + ".in"); err == nil {
 				cmd.Stdin = bytes.NewReader(data)
 			}
@@ -120,14 +126,18 @@ func TestSchemeTranspiler_Rosetta_Golden(t *testing.T) {
 			outBytes := bytes.TrimSpace(out)
 			if bench {
 				benchPath := filepath.Join(outDir, base+".bench")
-				_ = os.WriteFile(benchPath, outBytes, 0o644)
+				benchBytes := outBytes
+				if idx := bytes.LastIndexByte(benchBytes, '{'); idx >= 0 {
+					benchBytes = benchBytes[idx:]
+				}
+				_ = os.WriteFile(benchPath, benchBytes, 0o644)
 				_ = os.Remove(errPath)
 				var js struct {
 					Duration int64  `json:"duration_us"`
 					Memory   int64  `json:"memory_bytes"`
 					Name     string `json:"name"`
 				}
-				_ = json.Unmarshal(outBytes, &js)
+				_ = json.Unmarshal(benchBytes, &js)
 				return
 			}
 			_ = os.WriteFile(outPath, outBytes, 0o644)
