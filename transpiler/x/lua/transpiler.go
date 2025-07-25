@@ -129,9 +129,17 @@ end
 
 const helperIndexOf = `
 local function _indexOf(s, ch)
-  for i = 1, #s do
-    if string.sub(s, i, i) == ch then
-      return i - 1
+  if type(s) == 'string' then
+    for i = 1, #s do
+      if string.sub(s, i, i) == ch then
+        return i - 1
+      end
+    end
+  elseif type(s) == 'table' then
+    for i, v in ipairs(s) do
+      if v == ch then
+        return i - 1
+      end
     end
   end
   return -1
@@ -2518,7 +2526,7 @@ func convertPostfix(p *parser.PostfixExpr) (Expr, error) {
 					}
 					args = append(args, ae)
 				}
-				if op.Field.Name == "keys" || op.Field.Name == "values" {
+				if op.Field.Name == "keys" || op.Field.Name == "values" || op.Field.Name == "get" {
 					// built-in map methods
 					args = append([]Expr{expr}, args...)
 					expr = &CallExpr{Func: op.Field.Name, Args: args}

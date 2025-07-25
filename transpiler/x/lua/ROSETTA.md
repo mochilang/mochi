@@ -2,9 +2,9 @@
 
 Generated Lua code for programs in `tests/rosetta/x/Mochi`. Each program has a `.lua` file produced by the transpiler and a `.out` file with its runtime output. Compilation or runtime errors are captured in `.error` files.
 
-Transpiled programs: 238/284
+Transpiled programs: 239/284
 
-Last updated: 2025-07-25 14:32 GMT+7
+Last updated: 2025-07-25 16:25 GMT+7
 
 Checklist:
 
@@ -44,17 +44,17 @@ Checklist:
 | 32 | active-directory-search-for-a-user | ✓ | 36µs | 200 B |
 | 33 | active-object | ✓ | 209µs | 96 B |
 | 34 | add-a-variable-to-a-class-instance-at-runtime | ✓ | 255µs | 168 B |
-| 35 | additive-primes | ✓ |  |  |
-| 36 | address-of-a-variable | ✓ |  |  |
-| 37 | adfgvx-cipher | ✓ |  |  |
-| 38 | aks-test-for-primes | ✓ |  |  |
-| 39 | algebraic-data-types |   |  |  |
-| 40 | align-columns | ✓ |  |  |
-| 41 | aliquot-sequence-classifications | ✓ |  |  |
-| 42 | almkvist-giullera-formula-for-pi | ✓ |  |  |
-| 43 | almost-prime | ✓ |  |  |
-| 44 | amb | ✓ |  |  |
-| 45 | amicable-pairs | ✓ |  |  |
+| 35 | additive-primes | ✓ | 307µs | 280 B |
+| 36 | address-of-a-variable | ✓ | 92µs | 64 B |
+| 37 | adfgvx-cipher | ✓ | 731µs | 680 B |
+| 38 | aks-test-for-primes | ✓ | 217µs | 248 B |
+| 39 | algebraic-data-types | ✓ | 313µs | 7.7 KB |
+| 40 | align-columns | ✓ | 1.77ms | 4.3 KB |
+| 41 | aliquot-sequence-classifications | ✓ | 273.763ms | 624 B |
+| 42 | almkvist-giullera-formula-for-pi | ✓ | 13.31461s | 39.7 KB |
+| 43 | almost-prime | ✓ | 669µs | 304 B |
+| 44 | amb | ✓ | 62µs | 1.8 KB |
+| 45 | amicable-pairs | ✓ | 12.414371s | 319.0 KB |
 | 46 | anagrams-deranged-anagrams | ✓ |  |  |
 | 47 | anagrams | ✓ |  |  |
 | 48 | angle-difference-between-two-bearings-1 | ✓ |  |  |
