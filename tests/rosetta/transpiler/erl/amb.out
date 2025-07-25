@@ -1,5 +1,10 @@
-/workspace/mochi/tests/rosetta/transpiler/erl/amb.erl:39:12: Warning: variable 'Prev_3' exported from 'case' (line 15, column 9)
-%   39| {I_2, Idx, Prev_3, Res_3, Wordsets} = Fun(I, Idx, Prev_3, Res, Wordsets),
+/workspace/mochi/tests/rosetta/transpiler/erl/amb.erl:59:12: Warning: variable 'Prev_3' exported from 'case' (line 35, column 9)
+%   59| {I_2, Idx, Prev_3, Res_3, Wordsets} = Fun(I, Idx, Prev_3, Res, Wordsets),
 %     |            ^
 
 [   ]
+{
+  "duration_us": 5553,
+  "memory_bytes": 67312,
+  "name": "main"
+}

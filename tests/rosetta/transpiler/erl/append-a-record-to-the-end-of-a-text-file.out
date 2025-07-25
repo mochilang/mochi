@@ -1,1 +1,6 @@
 append okay
+{
+  "duration_us": 4246,
+  "memory_bytes": 460000,
+  "name": "main"
+}

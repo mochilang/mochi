@@ -1,0 +1,7 @@
+exit status 127
+/workspace/mochi/tests/rosetta/transpiler/erl/approximate-equality.erl:98:16: ambiguous call of overridden pre Erlang/OTP R14 auto-imported BIF abs/1 --
+use erlang:abs/1 or \"-compile({no_auto_import,[abs/1]}).\" to resolve name clash
+%   98|     MemBytes = abs(EndMem - StartMem),
+%     |                ^
+
+escript: There were compilation errors.
