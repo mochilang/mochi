@@ -762,11 +762,12 @@ func transpileProgram(lang string, env *types.Env, prog *parser.Program, root, s
 		}
 		return p.Emit(), nil
 	case "ex", "elixir":
-		p, err := ex.Transpile(prog, env)
+		bench := os.Getenv("MOCHI_BENCHMARK") == "true"
+		p, err := ex.Transpile(prog, env, bench)
 		if err != nil {
 			return nil, err
 		}
-		return ex.Emit(p), nil
+		return ex.Emit(p, bench), nil
 	case "fortran", "ftn":
 		p, err := fortran.Transpile(prog, env)
 		if err != nil {

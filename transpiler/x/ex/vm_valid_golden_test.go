@@ -48,7 +48,7 @@ func TestExTranspiler_VMValid_Golden(t *testing.T) {
 			return nil, errs[0]
 		}
 		bench := os.Getenv("MOCHI_BENCHMARK") == "true"
-		ast, err := ex.Transpile(prog, env)
+		ast, err := ex.Transpile(prog, env, bench)
 		if err != nil {
 			_ = os.WriteFile(errPath, []byte("transpile: "+err.Error()), 0o644)
 			return nil, err

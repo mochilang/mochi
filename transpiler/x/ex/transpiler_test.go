@@ -66,7 +66,7 @@ func TestElixirTranspiler_VMValid_Golden(t *testing.T) {
 				_ = os.WriteFile(errPath, []byte(errs[0].Error()), 0o644)
 				t.Fatalf("type: %v", errs[0])
 			}
-			gprog, err := ex.Transpile(prog, env)
+			gprog, err := ex.Transpile(prog, env, false)
 			if err != nil {
 				_ = os.WriteFile(errPath, []byte(err.Error()), 0o644)
 				t.Fatalf("transpile: %v", err)

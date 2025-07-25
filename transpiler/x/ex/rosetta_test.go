@@ -69,6 +69,7 @@ func TestExTranspiler_Rosetta_Golden(t *testing.T) {
 		name := strings.TrimSuffix(filepath.Base(src), ".mochi")
 		codePath := filepath.Join(outDir, name+".exs")
 		outPath := filepath.Join(outDir, name+".out")
+		benchPath := filepath.Join(outDir, name+".bench")
 		errPath := filepath.Join(outDir, name+".error")
 
 		ok := t.Run(name, func(t *testing.T) {
@@ -83,7 +84,7 @@ func TestExTranspiler_Rosetta_Golden(t *testing.T) {
 				t.Fatalf("type: %v", errs[0])
 			}
 			bench := os.Getenv("MOCHI_BENCHMARK") == "true"
-			ast, err := ex.Transpile(prog, env)
+			ast, err := ex.Transpile(prog, env, bench)
 			if err != nil {
 				_ = os.WriteFile(errPath, []byte("transpile: "+err.Error()), 0o644)
 				t.Fatalf("transpile: %v", err)
@@ -107,11 +108,15 @@ func TestExTranspiler_Rosetta_Golden(t *testing.T) {
 			}
 			_ = os.Remove(errPath)
 			got = normalizeOutput(root, got)
-			_ = os.WriteFile(outPath, got, 0o644)
-
 			if bench {
+				outBytes := got
+				if idx := bytes.LastIndexByte(outBytes, '{'); idx >= 0 {
+					outBytes = outBytes[idx:]
+				}
+				_ = os.WriteFile(benchPath, outBytes, 0o644)
 				return
 			}
+			_ = os.WriteFile(outPath, got, 0o644)
 
 			if update {
 				if err := os.WriteFile(outPath, got, 0o644); err != nil {
@@ -199,7 +204,23 @@ func updateRosettaReadme() {
 		dur := ""
 		mem := ""
 		outPath := filepath.Join(outDir, name+".out")
-		if data, err := os.ReadFile(outPath); err == nil {
+		benchPath := filepath.Join(outDir, name+".bench")
+		if data, err := os.ReadFile(benchPath); err == nil {
+			status = "✓"
+			compiled++
+			var res struct {
+				Dur int64 `json:"duration_us"`
+				Mem int64 `json:"memory_bytes"`
+			}
+			if json.Unmarshal(bytes.TrimSpace(data), &res) == nil {
+				if res.Dur > 0 {
+					dur = humanDur(time.Duration(res.Dur) * time.Microsecond)
+				}
+				if res.Mem > 0 {
+					mem = humanSize(res.Mem)
+				}
+			}
+		} else if data, err := os.ReadFile(outPath); err == nil {
 			status = "✓"
 			compiled++
 			var res struct {

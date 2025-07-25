@@ -1544,7 +1544,7 @@ func Emit(p *Program, benchMain bool) []byte {
 }
 
 // Transpile converts a Mochi program into an Elixir AST.
-func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
+func Transpile(prog *parser.Program, env *types.Env, benchMain bool) (*Program, error) {
 	res := &Program{}
 	builtinAliases = make(map[string]string)
 	globalVars = make(map[string]struct{})
@@ -1596,6 +1596,9 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 		if stmt != nil {
 			res.Stmts = append(res.Stmts, stmt)
 		}
+	}
+	if benchMain {
+		res.Stmts = []Stmt{&BenchStmt{Name: "main", Body: res.Stmts}}
 	}
 	_ = env
 	return res, nil
