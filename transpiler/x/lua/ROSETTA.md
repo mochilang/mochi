@@ -2,9 +2,9 @@
 
 Generated Lua code for programs in `tests/rosetta/x/Mochi`. Each program has a `.lua` file produced by the transpiler and a `.out` file with its runtime output. Compilation or runtime errors are captured in `.error` files.
 
-Transpiled programs: 240/284
+Transpiled programs: 278/284
 
-Last updated: 2025-07-25 17:18 GMT+7
+Last updated: 2025-07-25 17:25 GMT+7
 
 Checklist:
 
@@ -81,7 +81,7 @@ Checklist:
 | 69 | arithmetic-geometric-mean | ✓ | 101µs | 272 B |
 | 70 | arithmetic-integer-1 | ✓ | 28µs | 2.7 KB |
 | 71 | arithmetic-integer-2 | ✓ | 58µs | 2.7 KB |
-| 72 | arithmetic-numbers |   |  |  |
+| 72 | arithmetic-numbers | ✓ |  |  |
 | 73 | arithmetic-rational | ✓ |  |  |
 | 74 | array-concatenation | ✓ |  |  |
 | 75 | array-length | ✓ |  |  |
@@ -251,46 +251,46 @@ Checklist:
 | 239 | copy-stdin-to-stdout-1 | ✓ |  |  |
 | 240 | copy-stdin-to-stdout-2 | ✓ |  |  |
 | 241 | count-in-factors | ✓ |  |  |
-| 242 | count-in-octal-1 |   |  |  |
-| 243 | count-in-octal-2 |   |  |  |
-| 244 | count-in-octal-3 |   |  |  |
-| 245 | count-in-octal-4 |   |  |  |
-| 246 | count-occurrences-of-a-substring |   |  |  |
-| 247 | count-the-coins-1 |   |  |  |
-| 248 | count-the-coins-2 |   |  |  |
-| 249 | cramers-rule |   |  |  |
-| 250 | crc-32-1 |   |  |  |
-| 251 | crc-32-2 |   |  |  |
-| 252 | create-a-file-on-magnetic-tape |   |  |  |
-| 253 | create-a-file |   |  |  |
-| 254 | create-a-two-dimensional-array-at-runtime-1 |   |  |  |
-| 255 | create-an-html-table |   |  |  |
-| 256 | create-an-object-at-a-given-address |   |  |  |
-| 257 | csv-data-manipulation |   |  |  |
-| 258 | csv-to-html-translation-1 |   |  |  |
-| 259 | csv-to-html-translation-2 |   |  |  |
-| 260 | csv-to-html-translation-3 |   |  |  |
-| 261 | csv-to-html-translation-4 |   |  |  |
-| 262 | csv-to-html-translation-5 |   |  |  |
-| 263 | cuban-primes |   |  |  |
-| 264 | cullen-and-woodall-numbers |   |  |  |
-| 265 | cumulative-standard-deviation |   |  |  |
-| 266 | currency |   |  |  |
+| 242 | count-in-octal-1 | ✓ | 143µs | 2.8 KB |
+| 243 | count-in-octal-2 | ✓ | 87.341ms | 2.8 KB |
+| 244 | count-in-octal-3 | ✓ |  |  |
+| 245 | count-in-octal-4 | ✓ |  |  |
+| 246 | count-occurrences-of-a-substring | ✓ | 41µs | 912 B |
+| 247 | count-the-coins-1 | ✓ | 1.051ms | 15.9 KB |
+| 248 | count-the-coins-2 | ✓ |  |  |
+| 249 | cramers-rule | ✓ | 520µs | 4.5 KB |
+| 250 | crc-32-1 | ✓ | 1.802ms | 9.0 KB |
+| 251 | crc-32-2 | ✓ | 1.799ms | 9.0 KB |
+| 252 | create-a-file-on-magnetic-tape | ✓ | 5µs | 1.0 KB |
+| 253 | create-a-file | ✓ | 33µs | 888 B |
+| 254 | create-a-two-dimensional-array-at-runtime-1 | ✓ | 57µs | 856 B |
+| 255 | create-an-html-table | ✓ | 122µs | 2.8 KB |
+| 256 | create-an-object-at-a-given-address | ✓ | 120µs | 2.9 KB |
+| 257 | csv-data-manipulation | ✓ | 57µs | 1.5 KB |
+| 258 | csv-to-html-translation-1 | ✓ | 48µs | 4.3 KB |
+| 259 | csv-to-html-translation-2 | ✓ | 93µs | 2.4 KB |
+| 260 | csv-to-html-translation-3 | ✓ | 35µs | 64 B |
+| 261 | csv-to-html-translation-4 | ✓ | 28µs | 64 B |
+| 262 | csv-to-html-translation-5 | ✓ | 199µs | 2.4 KB |
+| 263 | cuban-primes | ✓ |  |  |
+| 264 | cullen-and-woodall-numbers | ✓ | 157µs | 1.1 KB |
+| 265 | cumulative-standard-deviation | ✓ | 100µs | 2.9 KB |
+| 266 | currency | ✓ | 84µs | 1.2 KB |
 | 267 | currying |   |  |  |
-| 268 | curzon-numbers |   |  |  |
-| 269 | cusip |   |  |  |
-| 270 | cyclops-numbers |   |  |  |
-| 271 | damm-algorithm |   |  |  |
-| 272 | date-format |   |  |  |
-| 273 | date-manipulation |   |  |  |
-| 274 | day-of-the-week |   |  |  |
-| 275 | de-bruijn-sequences |   |  |  |
+| 268 | curzon-numbers | ✓ | 51.514ms | 2.9 KB |
+| 269 | cusip | ✓ | 88µs | 1.1 KB |
+| 270 | cyclops-numbers | ✓ | 3µs | 1.1 KB |
+| 271 | damm-algorithm | ✓ | 77µs | 952 B |
+| 272 | date-format | ✓ | 41µs | 928 B |
+| 273 | date-manipulation | ✓ | 118µs | 2.1 KB |
+| 274 | day-of-the-week | ✓ | 51µs | 2.7 KB |
+| 275 | de-bruijn-sequences | ✓ | 2.607883s | 164.3 KB |
 | 276 | deal-cards-for-freecell |   |  |  |
-| 277 | death-star |   |  |  |
-| 278 | deceptive-numbers |   |  |  |
+| 277 | death-star | ✓ | 7.933ms | 984 B |
+| 278 | deceptive-numbers | ✓ | 2.491983s | 2.9 KB |
 | 279 | deconvolution-1d-2 |   |  |  |
 | 280 | deconvolution-1d-3 |   |  |  |
-| 281 | deconvolution-1d |   |  |  |
-| 282 | deepcopy-1 |   |  |  |
+| 281 | deconvolution-1d | ✓ | 142µs | 2.9 KB |
+| 282 | deepcopy-1 | ✓ | 73µs | 1.6 KB |
 | 283 | define-a-primitive-data-type |   |  |  |
 | 284 | md5 |   |  |  |
