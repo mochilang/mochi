@@ -1550,6 +1550,14 @@ func Emit(p *Program, benchMain bool) []byte {
 		buf.WriteString("  end\n")
 	} else if benchMain {
 		buf.WriteString("  def bench_main() do\n")
+		for _, st := range globals {
+			if ls, ok := st.(*LetStmt); ok {
+				ls.emitGlobal(&buf, 2)
+			} else {
+				st.emit(&buf, 2)
+			}
+			buf.WriteString("\n")
+		}
 		buf.WriteString("    mem_start = _mem()\n")
 		buf.WriteString("    t_start = _now()\n")
 		buf.WriteString("    main()\n")
