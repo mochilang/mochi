@@ -15,9 +15,9 @@ Completed programs: 52/284
 | 7 | 2048 | error |  |  |
 | 8 | 21-game | ✓ | 161.0µs | 512B |
 | 9 | 24-game-solve | ✓ |  |  |
-| 10 | 24-game | ✓ |  |  |
-| 11 | 4-rings-or-4-squares-puzzle | ✓ |  |  |
-| 12 | 9-billion-names-of-god-the-integer | ✓ |  |  |
+| 10 | 24-game | ✓ | 21.0µs | 952B |
+| 11 | 4-rings-or-4-squares-puzzle | ✓ | 82.0µs | 11.43KB |
+| 12 | 9-billion-names-of-god-the-integer | ✓ | 53.04s | 14.99GB |
 | 13 | 99-bottles-of-beer-2 | ✓ |  |  |
 | 14 | 99-bottles-of-beer | ✓ |  |  |
 | 15 | DNS-query | ✓ |  |  |
@@ -290,4 +290,4 @@ Completed programs: 52/284
 | 282 | deepcopy-1 |   |  |  |
 | 283 | define-a-primitive-data-type |   |  |  |
 | 284 | md5 |   |  |  |
-Last updated 2025-07-25 19:02 +0700
+Last updated 2025-07-25 20:04 +0700
