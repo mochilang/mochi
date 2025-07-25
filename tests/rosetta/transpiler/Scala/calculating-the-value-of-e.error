@@ -1,0 +1,31 @@
+exit status 1
+/workspace/mochi/tests/rosetta/transpiler/Scala/calculating-the-value-of-e.scala:43: error: type mismatch;
+ found   : Double
+ required: scala.math.BigInt
+        return (BigInt(0) - x).toString.toDouble
+                            ^
+/workspace/mochi/tests/rosetta/transpiler/Scala/calculating-the-value-of-e.scala:59: error: overloaded method value apply with alternatives:
+  (x: java.math.BigInteger)scala.math.BigInt <and>
+  (x: String)scala.math.BigInt <and>
+  (x: Array[Byte])scala.math.BigInt <and>
+  (l: Long)scala.math.BigInt <and>
+  (i: Int)scala.math.BigInt
+ cannot be applied to (Double)
+      var n: BigInt = BigInt(scaled)
+                      ^
+/workspace/mochi/tests/rosetta/transpiler/Scala/calculating-the-value-of-e.scala:64: error: type mismatch;
+ found   : scala.math.BigInt
+ required: Int
+      val intPart: String = digits.slice(BigInt(0), (digits).size - prec)
+                                               ^
+/workspace/mochi/tests/rosetta/transpiler/Scala/calculating-the-value-of-e.scala:64: error: type mismatch;
+ found   : scala.math.BigInt
+ required: Int
+      val intPart: String = digits.slice(BigInt(0), (digits).size - prec)
+                                                                  ^
+/workspace/mochi/tests/rosetta/transpiler/Scala/calculating-the-value-of-e.scala:65: error: type mismatch;
+ found   : scala.math.BigInt
+ required: Int
+      val fracPart: String = digits.slice((digits).size - prec, (digits).size)
+                                                        ^
+5 errors found

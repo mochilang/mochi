@@ -2,12 +2,12 @@
 
 Generated Scala code for Rosetta tasks in `tests/rosetta/x/Mochi`. Each program has a `.scala` file produced by the transpiler and a `.out` file with its runtime output. Compilation or execution errors are captured in `.error` files.
 
-## Golden Test Checklist (133/284)
-_Last updated: 2025-07-26 04:52 +0700_
+## Golden Test Checklist (134/284)
+_Last updated: 2025-07-26 05:17 +0700_
 
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
-| 1 | 100-doors-2 | ✓ | 7µs | 8.7 MB |
+| 1 | 100-doors-2 | ✓ | 6µs | 8.7 MB |
 | 2 | 100-doors-3 | ✓ | 5µs | 8.7 MB |
 | 3 | 100-doors | ✓ | 8µs | 8.7 MB |
 | 4 | 100-prisoners | ✓ | 4.792ms | 8.7 MB |
@@ -149,8 +149,8 @@ _Last updated: 2025-07-26 04:52 +0700_
 | 140 | bulls-and-cows | error |  |  |
 | 141 | burrows-wheeler-transform | ✓ | 25µs | 8.7 MB |
 | 142 | caesar-cipher-1 | ✓ | 8µs | 8.7 MB |
-| 143 | caesar-cipher-2 |   |  |  |
-| 144 | calculating-the-value-of-e |   |  |  |
+| 143 | caesar-cipher-2 | ✓ | 11µs | 8.7 MB |
+| 144 | calculating-the-value-of-e | error |  |  |
 | 145 | calendar---for-real-programmers-1 |   |  |  |
 | 146 | calendar---for-real-programmers-2 |   |  |  |
 | 147 | calendar |   |  |  |
