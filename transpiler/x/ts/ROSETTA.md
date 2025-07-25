@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated TypeScript code from programs in `tests/rosetta/x/Mochi` lives in `tests/rosetta/transpiler/TypeScript`.
-Last updated: 2025-07-25 10:10 UTC
+Last updated: 2025-07-25 10:26 UTC
 
-## Rosetta Golden Test Checklist (272/284)
+## Rosetta Golden Test Checklist (273/284)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | 100-doors-2 | ✓ | 1.595ms | 512.0 KB |
@@ -30,56 +30,56 @@ Last updated: 2025-07-25 10:10 UTC
 | 21 | abelian-sandpile-model-identity | ✓ | 3.276ms | 128.0 KB |
 | 22 | abelian-sandpile-model | ✓ | 3.758ms | 256.0 KB |
 | 23 | abstract-type | ✓ | 626µs |  |
-| 24 | abundant-deficient-and-perfect-number-classifications | ✓ | 571.223ms | 7.4 MB |
-| 25 | abundant-odd-numbers | ✓ | 571.223ms | 10.8 MB |
-| 26 | accumulator-factory | ✓ | 571.223ms | 128.0 KB |
-| 27 | achilles-numbers | ✓ | 571.223ms | 10.5 MB |
-| 28 | ackermann-function-2 | ✓ | 571.223ms | 128.0 KB |
+| 24 | abundant-deficient-and-perfect-number-classifications | ✓ | 251.495ms | 7.8 MB |
+| 25 | abundant-odd-numbers | ✓ | 499.683ms | 10.8 MB |
+| 26 | accumulator-factory | ✓ | 455µs | 128.0 KB |
+| 27 | achilles-numbers | ✓ | 36.63ms | 10.8 MB |
+| 28 | ackermann-function-2 | ✓ | 705µs |  |
 | 29 | ackermann-function-3 | ✓ | 571.223ms | 4.2 MB |
-| 30 | ackermann-function | ✓ | 571.223ms | 2.2 MB |
-| 31 | active-directory-connect | ✓ | 571.223ms |  |
-| 32 | active-directory-search-for-a-user | ✓ | 571.223ms | 128.0 KB |
-| 33 | active-object | ✓ | 571.223ms | 2.7 MB |
-| 34 | add-a-variable-to-a-class-instance-at-runtime | ✓ | 571.223ms | 384.0 KB |
-| 35 | additive-primes | ✓ | 571.223ms | 384.0 KB |
-| 36 | address-of-a-variable | ✓ | 571.223ms | 128.0 KB |
-| 37 | adfgvx-cipher | ✓ | 251.644ms | 512.0 KB |
-| 38 | aks-test-for-primes | ✓ | 571.223ms |  |
-| 39 | algebraic-data-types | ✓ | 571.223ms | 128.0 KB |
-| 40 | align-columns | ✓ | 571.223ms | 1.8 MB |
-| 41 | aliquot-sequence-classifications | ✓ | 571.223ms | 8.9 MB |
-| 42 | almkvist-giullera-formula-for-pi |   |  |  |
-| 43 | almost-prime | ✓ | 571.223ms | 1.5 MB |
-| 44 | amb | ✓ | 571.223ms | 256.0 KB |
-| 45 | amicable-pairs | ✓ | 571.223ms | 48.2 MB |
-| 46 | anagrams-deranged-anagrams | ✓ | 571.223ms | 128.0 KB |
-| 47 | anagrams | ✓ | 571.223ms | 800.0 KB |
-| 48 | angle-difference-between-two-bearings-1 | ✓ | 571.223ms | 128.0 KB |
-| 49 | angle-difference-between-two-bearings-2 | ✓ | 571.223ms | 384.0 KB |
-| 50 | angles-geometric-normalization-and-conversion | ✓ | 571.223ms | 512.0 KB |
-| 51 | animate-a-pendulum | ✓ | 571.223ms | 128.0 KB |
-| 52 | animation | ✓ | 571.223ms | 256.0 KB |
-| 53 | anonymous-recursion-1 | ✓ | 571.223ms |  |
-| 54 | anonymous-recursion-2 | ✓ | 571.223ms |  |
-| 55 | anonymous-recursion | ✓ | 571.223ms |  |
-| 56 | anti-primes | ✓ | 571.223ms | 7.4 MB |
-| 57 | append-a-record-to-the-end-of-a-text-file | ✓ | 571.223ms | 128.0 KB |
-| 58 | apply-a-callback-to-an-array-1 | ✓ | 571.223ms |  |
-| 59 | apply-a-callback-to-an-array-2 | ✓ | 571.223ms | 128.0 KB |
-| 60 | apply-a-digital-filter-direct-form-ii-transposed- | ✓ | 571.223ms | 256.0 KB |
-| 61 | approximate-equality | ✓ |  |  |
-| 62 | arbitrary-precision-integers-included- | ✓ |  |  |
-| 63 | archimedean-spiral | ✓ |  |  |
-| 64 | arena-storage-pool | ✓ |  |  |
-| 65 | arithmetic-complex | ✓ |  |  |
-| 66 | arithmetic-derivative | ✓ |  |  |
-| 67 | arithmetic-evaluation | ✓ |  |  |
-| 68 | arithmetic-geometric-mean-calculate-pi | ✓ |  |  |
-| 69 | arithmetic-geometric-mean | ✓ |  |  |
-| 70 | arithmetic-integer-1 | ✓ |  |  |
-| 71 | arithmetic-integer-2 | ✓ |  |  |
+| 30 | ackermann-function | ✓ | 1.028ms | 2.6 MB |
+| 31 | active-directory-connect | ✓ | 425µs | 128.0 KB |
+| 32 | active-directory-search-for-a-user | ✓ | 490µs | 128.0 KB |
+| 33 | active-object | ✓ | 1.249ms | 3.2 MB |
+| 34 | add-a-variable-to-a-class-instance-at-runtime | ✓ | 1.219ms | 512.0 KB |
+| 35 | additive-primes | ✓ | 1.207ms | 512.0 KB |
+| 36 | address-of-a-variable | ✓ | 771µs | 128.0 KB |
+| 37 | adfgvx-cipher | ✓ | 2.84ms | 768.0 KB |
+| 38 | aks-test-for-primes | ✓ | 714µs |  |
+| 39 | algebraic-data-types | ✓ | 748µs | 128.0 KB |
+| 40 | align-columns | ✓ | 1.316ms | 1.7 MB |
+| 41 | aliquot-sequence-classifications | ✓ | 144.624ms | 8.7 MB |
+| 42 | almkvist-giullera-formula-for-pi | ✓ | 441.808ms | 19.6 MB |
+| 43 | almost-prime | ✓ | 1.054ms | 1.5 MB |
+| 44 | amb | ✓ | 727µs | 256.0 KB |
+| 45 | amicable-pairs | ✓ | 2.606433s | 48.6 MB |
+| 46 | anagrams-deranged-anagrams | ✓ | 796µs | 128.0 KB |
+| 47 | anagrams | ✓ | 1.832ms | 768.0 KB |
+| 48 | angle-difference-between-two-bearings-1 | ✓ | 839µs | 128.0 KB |
+| 49 | angle-difference-between-two-bearings-2 | ✓ | 1.083ms | 384.0 KB |
+| 50 | angles-geometric-normalization-and-conversion | ✓ | 1.471ms | 512.0 KB |
+| 51 | animate-a-pendulum | ✓ | 687µs | 128.0 KB |
+| 52 | animation | ✓ | 1.145ms | 256.0 KB |
+| 53 | anonymous-recursion-1 | ✓ | 591µs | 128.0 KB |
+| 54 | anonymous-recursion-2 | ✓ | 5.577ms | 128.0 KB |
+| 55 | anonymous-recursion | ✓ | 649µs | 128.0 KB |
+| 56 | anti-primes | ✓ | 40.119ms | 7.7 MB |
+| 57 | append-a-record-to-the-end-of-a-text-file | ✓ | 491µs | 128.0 KB |
+| 58 | apply-a-callback-to-an-array-1 | ✓ | 424µs |  |
+| 59 | apply-a-callback-to-an-array-2 | ✓ | 614µs |  |
+| 60 | apply-a-digital-filter-direct-form-ii-transposed- | ✓ | 1.163ms | 128.0 KB |
+| 61 | approximate-equality | ✓ | 953µs | 384.0 KB |
+| 62 | arbitrary-precision-integers-included- | ✓ | 731µs | 256.0 KB |
+| 63 | archimedean-spiral | ✓ | 6.855ms | 10.7 MB |
+| 64 | arena-storage-pool | ✓ | 687µs | 128.0 KB |
+| 65 | arithmetic-complex | ✓ | 870µs | 384.0 KB |
+| 66 | arithmetic-derivative | ✓ | 2.564ms | 3.8 MB |
+| 67 | arithmetic-evaluation | ✓ | 866µs | 256.0 KB |
+| 68 | arithmetic-geometric-mean-calculate-pi | ✓ | 631µs | 2.2 MB |
+| 69 | arithmetic-geometric-mean | ✓ | 603µs | 2.0 MB |
+| 70 | arithmetic-integer-1 | ✓ | 454µs |  |
+| 71 | arithmetic-integer-2 | ✓ | 487µs | 128.0 KB |
 | 72 | arithmetic-numbers | ✓ |  |  |
-| 73 | arithmetic-rational | ✓ |  |  |
+| 73 | arithmetic-rational | ✓ | 947µs | 384.0 KB |
 | 74 | array-concatenation | ✓ |  |  |
 | 75 | array-length | ✓ |  |  |
 | 76 | arrays | ✓ |  |  |
