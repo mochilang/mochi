@@ -1,3 +1,127 @@
+## Progress (2025-07-25 20:06 +0700)
+- transpiler: bench benfords-law
+- Regenerated golden files - 104/104 vm valid programs passing
+
+## Progress (2025-07-25 20:06 +0700)
+- transpiler: bench bell-numbers
+- Regenerated golden files - 104/104 vm valid programs passing
+
+## Progress (2025-07-25 20:06 +0700)
+- transpiler: bench base64-decode-data
+- Regenerated golden files - 104/104 vm valid programs passing
+
+## Progress (2025-07-25 20:05 +0700)
+- transpiler: bench barnsley-fern
+- Regenerated golden files - 104/104 vm valid programs passing
+
+## Progress (2025-07-25 20:05 +0700)
+- transpiler: bench balanced-ternary
+- Regenerated golden files - 104/104 vm valid programs passing
+
+## Progress (2025-07-25 20:05 +0700)
+- transpiler: bench balanced-brackets
+- Regenerated golden files - 104/104 vm valid programs passing
+
+## Progress (2025-07-25 20:05 +0700)
+- transpiler: bench babylonian-spiral
+- Regenerated golden files - 104/104 vm valid programs passing
+
+## Progress (2025-07-25 20:04 +0700)
+- transpiler: bench babbage-problem
+- Regenerated golden files - 104/104 vm valid programs passing
+
+## Progress (2025-07-25 20:04 +0700)
+- transpiler: bench b-zier-curves-intersections
+- Regenerated golden files - 104/104 vm valid programs passing
+
+## Progress (2025-07-25 20:04 +0700)
+- transpiler: bench avl-tree
+- Regenerated golden files - 104/104 vm valid programs passing
+
+## Progress (2025-07-25 20:04 +0700)
+- transpiler: bench averages-simple-moving-average
+- Regenerated golden files - 104/104 vm valid programs passing
+
+## Progress (2025-07-25 20:03 +0700)
+- transpiler: bench averages-root-mean-square
+- Regenerated golden files - 104/104 vm valid programs passing
+
+## Progress (2025-07-25 20:03 +0700)
+- transpiler: bench averages-pythagorean-means
+- Regenerated golden files - 104/104 vm valid programs passing
+
+## Progress (2025-07-25 20:03 +0700)
+- transpiler: bench averages-mode
+- Regenerated golden files - 104/104 vm valid programs passing
+
+## Progress (2025-07-25 20:03 +0700)
+- transpiler: bench averages-median-3
+- Regenerated golden files - 104/104 vm valid programs passing
+
+## Progress (2025-07-25 20:03 +0700)
+- transpiler: bench averages-median-2
+- Regenerated golden files - 104/104 vm valid programs passing
+
+## Progress (2025-07-25 20:02 +0700)
+- transpiler: bench averages-median-1
+- Regenerated golden files - 104/104 vm valid programs passing
+
+## Progress (2025-07-25 20:02 +0700)
+- transpiler: bench averages-mean-time-of-day
+- Regenerated golden files - 104/104 vm valid programs passing
+
+## Progress (2025-07-25 20:02 +0700)
+- transpiler: bench averages-arithmetic-mean
+- Regenerated golden files - 104/104 vm valid programs passing
+
+## Progress (2025-07-25 20:02 +0700)
+- transpiler: bench average-loop-length
+- Regenerated golden files - 104/104 vm valid programs passing
+
+## Progress (2025-07-25 20:01 +0700)
+- transpiler: bench attractive-numbers
+- Regenerated golden files - 104/104 vm valid programs passing
+
+## Progress (2025-07-25 20:01 +0700)
+- transpiler: bench atomic-updates
+- Regenerated golden files - 104/104 vm valid programs passing
+
+## Progress (2025-07-25 20:01 +0700)
+- transpiler: bench associative-array-merging
+- Regenerated golden files - 104/104 vm valid programs passing
+
+## Progress (2025-07-25 20:01 +0700)
+- transpiler: bench associative-array-iteration
+- Regenerated golden files - 104/104 vm valid programs passing
+
+## Progress (2025-07-25 20:00 +0700)
+- transpiler: bench associative-array-creation
+- Regenerated golden files - 104/104 vm valid programs passing
+
+## Progress (2025-07-25 20:00 +0700)
+- transpiler: bench assertions
+- Regenerated golden files - 104/104 vm valid programs passing
+
+## Progress (2025-07-25 20:00 +0700)
+- transpiler: bench ascii-art-diagram-converter
+- Regenerated golden files - 104/104 vm valid programs passing
+
+## Progress (2025-07-25 20:00 +0700)
+- transpiler: bench ascending-primes
+- Regenerated golden files - 104/104 vm valid programs passing
+
+## Progress (2025-07-25 20:00 +0700)
+- transpiler: add bench for arrays
+- Regenerated golden files - 104/104 vm valid programs passing
+
+## Progress (2025-07-25 19:59 +0700)
+- transpiler: add bench for array-length
+- Regenerated golden files - 104/104 vm valid programs passing
+
+## Progress (2025-07-25 19:57 +0700)
+- transpiler: fix func return cast for void callbacks
+- Regenerated golden files - 104/104 vm valid programs passing
+
 ## Progress (2025-07-25 19:29 +0700)
 - go transpiler: update rosetta outputs for indices 43-56
 - Regenerated golden files - 104/104 vm valid programs passing
