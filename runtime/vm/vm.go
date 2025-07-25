@@ -111,6 +111,8 @@ const (
 	OpMem
 	OpJSON
 	OpAppend
+	// In-place append when the source list is dead after the instruction
+	OpAppendFast
 	OpStr
 	OpUpper
 	OpLower
@@ -246,6 +248,8 @@ func (op Op) String() string {
 		return "JSON"
 	case OpAppend:
 		return "Append"
+	case OpAppendFast:
+		return "AppendFast"
 	case OpStr:
 		return "Str"
 	case OpUpper:
@@ -500,7 +504,7 @@ func (p *Program) Disassemble(src string) string {
 				fmt.Fprintf(&b, "%s", formatReg(ins.A))
 			case OpJSON:
 				fmt.Fprintf(&b, "%s", formatReg(ins.A))
-			case OpAppend:
+			case OpAppend, OpAppendFast:
 				fmt.Fprintf(&b, "%s, %s, %s", formatReg(ins.A), formatReg(ins.B), formatReg(ins.C))
 			case OpUnionAll, OpUnion, OpExcept, OpIntersect:
 				fmt.Fprintf(&b, "%s, %s, %s", formatReg(ins.A), formatReg(ins.B), formatReg(ins.C))
@@ -1296,6 +1300,16 @@ func (m *VM) call(fnIndex int, args []Value, trace []StackFrame) (Value, error) 
 			}
 			newList := append(append([]Value(nil), lst.List...), fr.regs[ins.C])
 			fr.regs[ins.A] = Value{Tag: ValueList, List: newList}
+		case OpAppendFast:
+			lst := fr.regs[ins.B]
+			if lst.Tag == ValueNull {
+				lst = Value{Tag: ValueList, List: []Value{}}
+			} else if lst.Tag != ValueList {
+				return Value{}, m.newError(fmt.Errorf("append expects list"), trace, ins.Line)
+			}
+			lst.List = append(lst.List, fr.regs[ins.C])
+			fr.regs[ins.B] = lst
+			fr.regs[ins.A] = lst
 		case OpUnionAll:
 			a := fr.regs[ins.B]
 			if a.Tag == ValueNull {
@@ -2467,9 +2481,8 @@ func (c *compiler) compileMain(p *parser.Program) (Function, error) {
 			continue
 		}
 		if st.Expr != nil {
-			if isTopLevelMainCall(st.Expr.Expr) {
-				continue
-			}
+			// Preserve top-level `main()` invocation so programs
+			// with an explicit entrypoint run as expected.
 		}
 		if err := fc.compileStmt(st); err != nil {
 			return Function{}, err
@@ -2521,7 +2534,7 @@ func (fc *funcCompiler) emit(pos lexer.Position, i Instr) {
 		fc.tags[i.A] = tagInt
 	case OpJSON, OpPrint, OpPrint2, OpPrintN:
 		// no result
-	case OpAppend, OpStr, OpUpper, OpLower, OpReverse, OpInput, OpFirst, OpSHA256:
+	case OpAppend, OpAppendFast, OpStr, OpUpper, OpLower, OpReverse, OpInput, OpFirst, OpSHA256:
 		fc.tags[i.A] = tagUnknown
 	case OpLoad:
 		fc.tags[i.A] = tagUnknown
