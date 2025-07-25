@@ -39,6 +39,7 @@ var useSHA256 bool
 var useRepeat bool
 var useParseIntStr bool
 var useBench bool
+var useStdout bool
 
 var reserved = map[string]bool{
 	"break": true, "case": true, "catch": true, "class": true, "const": true,
@@ -1931,6 +1932,7 @@ func Transpile(prog *parser.Program, env *types.Env, benchMain bool) (*Program, 
 	useSHA256 = false
 	useRepeat = false
 	useParseIntStr = false
+	useStdout = false
 	defer func() {
 		transpileEnv = nil
 		generatedTypes = nil
@@ -1943,6 +1945,7 @@ func Transpile(prog *parser.Program, env *types.Env, benchMain bool) (*Program, 
 		useSHA256 = false
 		useRepeat = false
 		useParseIntStr = false
+		useStdout = false
 	}()
 	tsProg := &Program{}
 
@@ -2076,6 +2079,17 @@ function sha256(bs: number[]): number[] {
 	if useParseIntStr {
 		prelude = append(prelude, &RawStmt{Code: `function parseIntStr(s: string, base: number): number { return parseInt(s, Math.trunc(base)); }`})
 	}
+	if useStdout {
+		prelude = append(prelude, &RawStmt{Code: `function _stdout_write(s: string) {
+  if (typeof Deno !== 'undefined') {
+    Deno.stdout.writeSync(new TextEncoder().encode(s));
+  } else if (typeof process !== 'undefined') {
+    process.stdout.write(s);
+  } else {
+    console.log(s);
+  }
+}`})
+	}
 	if len(prelude) > 0 {
 		tsProg.Stmts = append(prelude, tsProg.Stmts...)
 	}
@@ -2098,9 +2112,10 @@ func convertStmt(s *parser.Statement) (Stmt, error) {
 		} else if s.Let.Type != nil {
 			e = zeroValue(s.Let.Type, transpileEnv)
 		}
-		// `let` bindings are immutable in Mochi so we always emit
-		// a `const` declaration in the generated TypeScript.
-		mutable := false
+		// `let` bindings in Mochi may be reassigned, so emit a normal
+		// `let` declaration rather than `const` to match the VM
+		// semantics.
+		mutable := true
 		var t types.Type
 		var typErr error
 		if transpileEnv != nil {
@@ -3104,6 +3119,23 @@ func convertPostfix(p *parser.PostfixExpr) (expr Expr, err error) {
 					continue
 				}
 			}
+			if nr, ok := expr.(*NameRef); ok && nr.Name == "stdout" && op.Field.Name == "write" {
+				callOp := p.Ops[i+1].Call
+				args := make([]Expr, len(callOp.Args))
+				for j, a := range callOp.Args {
+					ae, err := convertExpr(a)
+					if err != nil {
+						return nil, err
+					}
+					args[j] = ae
+				}
+				expr = &CallExpr{Func: "_stdout_write", Args: args}
+				useStdout = true
+				partial.Ops = append(partial.Ops, op, p.Ops[i+1])
+				curType = postfixExprType(partial)
+				i++
+				continue
+			}
 			// treat as property access on non-struct value
 			expr = &IndexExpr{Target: expr, Index: &StringLit{Value: op.Field.Name}}
 			partial.Ops = append(partial.Ops, op)
@@ -3174,6 +3206,9 @@ func convertPostfix(p *parser.PostfixExpr) (expr Expr, err error) {
 						expr = &MethodCallExpr{Target: idx.Target, Method: "get", Args: args}
 					case lit.Value == "padStart" && len(args) == 2:
 						expr = &MethodCallExpr{Target: &CallExpr{Func: "String", Args: []Expr{idx.Target}}, Method: "padStart", Args: args}
+					case lit.Value == "write":
+						expr = &CallExpr{Func: "_stdout_write", Args: args}
+						useStdout = true
 					default:
 						expr = &InvokeExpr{Callee: expr, Args: args}
 					}
