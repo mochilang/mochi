@@ -1,0 +1,11 @@
+/workspace/mochi/tests/rosetta/transpiler/erl/binary-search.erl:29:1: Warning: function mochi_pad_start/3 is unused
+%   29| mochi_pad_start(S, Len, Ch) ->
+%     | ^
+
+2 is at index 4.
+5 is not found.
+{
+  "duration_us": 7809,
+  "memory_bytes": 93504,
+  "name": "main"
+}

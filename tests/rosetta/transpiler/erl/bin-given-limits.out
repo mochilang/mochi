@@ -1,0 +1,37 @@
+/workspace/mochi/tests/rosetta/transpiler/erl/bin-given-limits.erl:29:1: Warning: function mochi_pad_start/3 is unused
+%   29| mochi_pad_start(S, Len, Ch) ->
+%     | ^
+
+/workspace/mochi/tests/rosetta/transpiler/erl/bin-given-limits.erl:72:34: Warning: the result of evaluating operator '+'/2 is ignored (suppress the warning by assigning the expression to the _ variable)
+%   72|         true -> Index_2 = (Index + 1),
+%     |                                  ^
+
+Example 1
+
+           <  23 = 11
+>=  23 and <  37 =  5
+>=  37 and <  43 =  2
+>=  43 and <  53 =  6
+>=  53 and <  67 =  8
+>=  67 and <  83 =  7
+>=  83           = 11
+
+Example 2
+
+           <  14 =  3
+>=  14 and <  18 =  0
+>=  18 and < 249 = 44
+>= 249 and < 312 = 10
+>= 312 and < 389 = 16
+>= 389 and < 392 =  2
+>= 392 and < 513 = 28
+>= 513 and < 591 = 16
+>= 591 and < 634 =  7
+>= 634 and < 720 = 16
+>= 720           = 58
+
+{
+  "duration_us": 5413,
+  "memory_bytes": 2517776,
+  "name": "main"
+}
