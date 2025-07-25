@@ -98,6 +98,7 @@ const helperIndexOf = `
 mochi_index_of(S, Ch) when is_list(S) ->
     Char = case Ch of
         [C|_] -> C;
+        <<C,_/binary>> -> C;
         C when is_integer(C) -> C;
         _ -> $\0
     end,
@@ -1040,6 +1041,8 @@ func isStringExpr(e Expr) bool {
 		return false
 	case *SubstringExpr:
 		return true
+	case *SliceExpr:
+		return v.IsString
 	case *IfExpr:
 		return isStringExpr(v.Then) && isStringExpr(v.Else)
 	case *CaseExpr:
@@ -1236,6 +1239,8 @@ func isMapExpr(e Expr, env *types.Env, ctx *context) bool {
 					return true
 				}
 			}
+			// when type information is unavailable, assume map
+			return true
 		}
 	case *CallExpr:
 		if v.Func == "maps:get" {
@@ -2881,6 +2886,10 @@ func convertStmt(st *parser.Statement, env *types.Env, ctx *context, top bool) (
 					if _, ok := t.(types.MapType); ok {
 						isMapV = true
 					}
+				} else {
+					// default to map when indexing a struct field
+					// and type information is unavailable
+					isMapV = true
 				}
 			}
 		}
