@@ -1,19 +1,53 @@
 <?php
 ini_set('memory_limit', '-1');
-function absf($x) {
-  global $floorf, $indexOf, $fmtF, $padInt, $padFloat, $avgLen, $ana, $main;
+$now_seed = 0;
+$now_seeded = false;
+$s = getenv('MOCHI_NOW_SEED');
+if ($s !== false && $s !== '') {
+    $now_seed = intval($s);
+    $now_seeded = true;
+}
+function _now() {
+    global $now_seed, $now_seeded;
+    if ($now_seeded) {
+        $now_seed = ($now_seed * 1664525 + 1013904223) % 2147483647;
+        return $now_seed;
+    }
+    return hrtime(true);
+}
+function _str($x) {
+    if (is_array($x)) {
+        $isList = array_keys($x) === range(0, count($x) - 1);
+        if ($isList) {
+            $parts = [];
+            foreach ($x as $v) { $parts[] = _str($v); }
+            return '[' . implode(' ', $parts) . ']';
+        }
+        $parts = [];
+        foreach ($x as $k => $v) { $parts[] = _str($k) . ':' . _str($v); }
+        return 'map[' . implode(' ', $parts) . ']';
+    }
+    if (is_bool($x)) return $x ? 'true' : 'false';
+    if ($x === null) return 'null';
+    return strval($x);
+}
+function _indexof($s, $sub) {
+    $pos = strpos($s, $sub);
+    return $pos === false ? -1 : $pos;
+}
+$__start_mem = memory_get_usage();
+$__start = _now();
+  function absf($x) {
   if ($x < 0.0) {
   return -$x;
 }
   return $x;
-}
-function floorf($x) {
-  global $absf, $indexOf, $fmtF, $padInt, $padFloat, $avgLen, $ana, $main;
+};
+  function floorf($x) {
   $y = intval($x);
   return floatval($y);
-}
-function indexOf($s, $ch) {
-  global $absf, $floorf, $fmtF, $padInt, $padFloat, $avgLen, $ana, $main;
+};
+  function indexOf($s, $ch) {
   $i = 0;
   while ($i < strlen($s)) {
   if (substr($s, $i, $i + 1 - $i) == $ch) {
@@ -22,12 +56,11 @@ function indexOf($s, $ch) {
   $i = $i + 1;
 };
   return -1;
-}
-function fmtF($x) {
-  global $absf, $floorf, $indexOf, $padInt, $padFloat, $avgLen, $ana, $main;
+};
+  function fmtF($x) {
   $y = floorf($x * 10000.0 + 0.5) / 10000.0;
-  $s = json_encode($y, 1344);
-  $dot = indexOf($s, '.');
+  $s = _str($y);
+  $dot = _indexof($s, '.');
   if ($dot == 0 - 1) {
   $s = $s . '.0000';
 } else {
@@ -42,25 +75,22 @@ function fmtF($x) {
 };
 }
   return $s;
-}
-function padInt($n, $width) {
-  global $absf, $floorf, $indexOf, $fmtF, $padFloat, $avgLen, $ana, $main;
-  $s = json_encode($n, 1344);
+};
+  function padInt($n, $width) {
+  $s = _str($n);
   while (strlen($s) < $width) {
   $s = ' ' . $s;
 };
   return $s;
-}
-function padFloat($x, $width) {
-  global $absf, $floorf, $indexOf, $fmtF, $padInt, $avgLen, $ana, $main;
+};
+  function padFloat($x, $width) {
   $s = fmtF($x);
   while (strlen($s) < $width) {
   $s = ' ' . $s;
 };
   return $s;
-}
-function avgLen($n) {
-  global $absf, $floorf, $indexOf, $fmtF, $padInt, $padFloat, $ana, $main;
+};
+  function avgLen($n) {
   $tests = 10000;
   $sum = 0;
   $seed = 1;
@@ -82,9 +112,8 @@ function avgLen($n) {
   $t = $t + 1;
 };
   return (floatval($sum)) / $tests;
-}
-function ana($n) {
-  global $absf, $floorf, $indexOf, $fmtF, $padInt, $padFloat, $avgLen, $main;
+};
+  function ana($n) {
   $nn = floatval($n);
   $term = 1.0;
   $sum = 1.0;
@@ -95,9 +124,8 @@ function ana($n) {
   $i = $i - 1.0;
 };
   return $sum;
-}
-function main() {
-  global $absf, $floorf, $indexOf, $fmtF, $padInt, $padFloat, $avgLen, $ana;
+};
+  function main() {
   $nmax = 20;
   echo rtrim(' N    average    analytical    (error)'), PHP_EOL;
   echo rtrim('===  =========  ============  ========='), PHP_EOL;
@@ -110,5 +138,13 @@ function main() {
   echo rtrim($line), PHP_EOL;
   $n = $n + 1;
 };
-}
-main();
+};
+  main();
+$__end = _now();
+$__end_mem = memory_get_usage();
+$__duration = intdiv($__end - $__start, 1000);
+$__mem_diff = max(0, $__end_mem - $__start_mem);
+$__bench = ["duration_us" => $__duration, "memory_bytes" => $__mem_diff, "name" => "main"];
+$__j = json_encode($__bench, 128);
+$__j = str_replace("    ", "  ", $__j);
+echo $__j, PHP_EOL;;

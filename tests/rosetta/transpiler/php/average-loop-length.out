@@ -20,3 +20,8 @@ N    average    analytical    (error)
  18     5.0516        5.0071  (0.8895%)
  19     5.1401        5.1522  (0.2348%)
  20     5.3321        5.2936  (0.7276%)
+{
+  "duration_us": 200863,
+  "memory_bytes": 96,
+  "name": "main"
+}

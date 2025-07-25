@@ -9,3 +9,8 @@
 [[][[][]]][][][]: ok
 ][[[]]]]][][[[][][: not ok
 (): not ok
+{
+  "duration_us": 232,
+  "memory_bytes": 128,
+  "name": "main"
+}

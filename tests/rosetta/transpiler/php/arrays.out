@@ -13,3 +13,8 @@ a = [22 0 0 0 -1]
 s = [22 0 0 0 0 4 5 6]
 s = [0 0 0 0 0 0 0 0]
 len(s) = 8  cap(s) = 8
+{
+  "duration_us": 123,
+  "memory_bytes": 592,
+  "name": "main"
+}

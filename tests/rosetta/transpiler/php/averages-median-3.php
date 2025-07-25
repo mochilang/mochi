@@ -15,11 +15,28 @@ function _now() {
     }
     return hrtime(true);
 }
-function qsel($a, $k) {
-  global $median;
+function _str($x) {
+    if (is_array($x)) {
+        $isList = array_keys($x) === range(0, count($x) - 1);
+        if ($isList) {
+            $parts = [];
+            foreach ($x as $v) { $parts[] = _str($v); }
+            return '[' . implode(' ', $parts) . ']';
+        }
+        $parts = [];
+        foreach ($x as $k => $v) { $parts[] = _str($k) . ':' . _str($v); }
+        return 'map[' . implode(' ', $parts) . ']';
+    }
+    if (is_bool($x)) return $x ? 'true' : 'false';
+    if ($x === null) return 'null';
+    return strval($x);
+}
+$__start_mem = memory_get_usage();
+$__start = _now();
+  function qsel($a, $k) {
   $arr = $a;
   while (count($arr) > 1) {
-  $px = _now() % count($arr);
+  $px = fmod(_now(), count($arr));
   $pv = $arr[$px];
   $last = count($arr) - 1;
   $tmp = $arr[$px];
@@ -51,16 +68,23 @@ function qsel($a, $k) {
 }
 };
   return $arr[0];
-}
-function median($list) {
-  global $qsel;
+};
+  function median($list) {
   $arr = $list;
   $half = intval((count($arr) / 2));
   $med = qsel($arr, $half);
-  if (count($arr) % 2 == 0) {
+  if (fmod(count($arr), 2) == 0) {
   return ($med + qsel($arr, $half - 1)) / 2.0;
 }
   return $med;
-}
-echo rtrim(json_encode(median([3.0, 1.0, 4.0, 1.0]), 1344)), PHP_EOL;
-echo rtrim(json_encode(median([3.0, 1.0, 4.0, 1.0, 5.0]), 1344)), PHP_EOL;
+};
+  echo rtrim(_str(median([3.0, 1.0, 4.0, 1.0]))), PHP_EOL;
+  echo rtrim(_str(median([3.0, 1.0, 4.0, 1.0, 5.0]))), PHP_EOL;
+$__end = _now();
+$__end_mem = memory_get_usage();
+$__duration = intdiv($__end - $__start, 1000);
+$__mem_diff = max(0, $__end_mem - $__start_mem);
+$__bench = ["duration_us" => $__duration, "memory_bytes" => $__mem_diff, "name" => "main"];
+$__j = json_encode($__bench, 128);
+$__j = str_replace("    ", "  ", $__j);
+echo $__j, PHP_EOL;;

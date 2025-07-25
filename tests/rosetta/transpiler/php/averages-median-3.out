@@ -1,2 +1,7 @@
-2.0
-3.0
+2
+3
+{
+  "duration_us": 99,
+  "memory_bytes": 96,
+  "name": "main"
+}
