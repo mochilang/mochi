@@ -22,14 +22,7 @@ int _now() {
   return DateTime.now().microsecondsSinceEpoch;
 }
 
-void main() {
-  var _benchMem0 = ProcessInfo.currentRss;
-  var _benchSw = Stopwatch()..start();
-  _initNow();
-  {
-  var _benchMem0 = ProcessInfo.currentRss;
-  var _benchSw = Stopwatch()..start();
-  List<int> bigTrim(List<int> a) {
+List<int> bigTrim(List<int> a) {
   int n = a.length;
   while (n > 1 && a[n - 1] == 0) {
     a = a.sublist(0, n - 1);
@@ -37,7 +30,8 @@ void main() {
   }
   return a;
 }
-  List<int> bigFromInt(int x) {
+
+List<int> bigFromInt(int x) {
   if (x == 0) {
     return [0];
   }
@@ -49,7 +43,8 @@ void main() {
   }
   return digits;
 }
-  List<int> bigAdd(List<int> a, List<int> b) {
+
+List<int> bigAdd(List<int> a, List<int> b) {
   List<int> res = [];
   int carry = 0;
   int i = 0;
@@ -69,7 +64,8 @@ void main() {
   }
   return bigTrim(res);
 }
-  List<int> bigSub(List<int> a, List<int> b) {
+
+List<int> bigSub(List<int> a, List<int> b) {
   List<int> res = [];
   int borrow = 0;
   int i = 0;
@@ -91,7 +87,8 @@ void main() {
   }
   return bigTrim(res);
 }
-  String bigToString(List<int> a) {
+
+String bigToString(List<int> a) {
   String s = "";
   int i = a.length - 1;
   while (i >= 0) {
@@ -100,14 +97,16 @@ void main() {
   }
   return s;
 }
-  int minInt(int a, int b) {
+
+int minInt(int a, int b) {
   if (a < b) {
     return a;
   } else {
     return b;
   }
 }
-  List<List<int>> cumu(int n) {
+
+List<List<int>> cumu(int n) {
   List<List<List<int>>> cache = [[bigFromInt(1)]];
   int y = 1;
   while (y <= n) {
@@ -123,7 +122,8 @@ void main() {
   }
   return cache[n];
 }
-  List<String> row(int n) {
+
+List<String> row(int n) {
   final List<List<int>> e = cumu(n);
   List<String> out = [];
   int i = 0;
@@ -134,8 +134,13 @@ void main() {
   }
   return out;
 }
+
+int x = 1;
+void main() {
+  var _benchMem0 = ProcessInfo.currentRss;
+  var _benchSw = Stopwatch()..start();
+  _initNow();
   print("rows:");
-  int x = 1;
   while (x < 11) {
     final List<String> r = row(x);
     String line = "";
@@ -153,6 +158,10 @@ void main() {
     final List<List<int>> r = cumu(num);
     print((num).toString() + " " + bigToString(r[r.length - 1]));
   }
+  {
+  var _benchMem0 = ProcessInfo.currentRss;
+  var _benchSw = Stopwatch()..start();
+  main();
   _benchSw.stop();
   var _benchMem1 = ProcessInfo.currentRss;
   print(jsonEncode({"duration_us": _benchSw.elapsedMicroseconds, "memory_bytes": (_benchMem1 - _benchMem0).abs(), "name": "main"}));

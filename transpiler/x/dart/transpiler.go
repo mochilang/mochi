@@ -3336,7 +3336,21 @@ func Transpile(prog *parser.Program, env *types.Env, bench, wrapMain bool) (*Pro
 	if wrapMain {
 		usesJSON = true
 		useNow = true
-		p.Stmts = []Stmt{&BenchStmt{Name: "main", Body: p.Stmts}}
+		replaced := false
+		for i, st := range p.Stmts {
+			if es, ok := st.(*ExprStmt); ok {
+				if call, ok := es.Expr.(*CallExpr); ok {
+					if name, ok := call.Func.(*Name); ok && name.Name == "main" && len(call.Args) == 0 {
+						p.Stmts[i] = &BenchStmt{Name: "main", Body: []Stmt{st}}
+						replaced = true
+						break
+					}
+				}
+			}
+		}
+		if !replaced {
+			p.Stmts = append(p.Stmts, &BenchStmt{Name: "main", Body: []Stmt{&ExprStmt{Expr: &CallExpr{Func: &Name{Name: "main"}}}}})
+		}
 	}
 	p.Imports = append(p.Imports, imports...)
 	return p, nil
@@ -4839,6 +4853,9 @@ func replaceVars(e Expr, vars map[string]Expr) Expr {
 		for i := range ex.Args {
 			ex.Args[i] = replaceVars(ex.Args[i], vars)
 		}
+		return ex
+	case *SelectorExpr:
+		ex.Receiver = replaceVars(ex.Receiver, vars)
 		return ex
 	case *IndexExpr:
 		ex.Target = replaceVars(ex.Target, vars)

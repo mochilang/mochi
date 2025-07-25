@@ -28,18 +28,11 @@ class Rational {
   Rational({required this.num, required this.denom});
 }
 
-void main() {
-  var _benchMem0 = ProcessInfo.currentRss;
-  var _benchSw = Stopwatch()..start();
-  _initNow();
-  {
-  var _benchMem0 = ProcessInfo.currentRss;
-  var _benchSw = Stopwatch()..start();
-  final int OP_ADD = 1;
-  final int OP_SUB = 2;
-  final int OP_MUL = 3;
-  final int OP_DIV = 4;
-  Rational binEval(int op, dynamic l, dynamic r) {
+final int OP_ADD = 1;
+final int OP_SUB = 2;
+final int OP_MUL = 3;
+final int OP_DIV = 4;
+Rational binEval(int op, dynamic l, dynamic r) {
   final Rational lv = exprEval(l);
   final Rational rv = exprEval(r);
   if (op == OP_ADD) {
@@ -53,7 +46,8 @@ void main() {
   }
   return Rational(num: lv.num * rv.denom, denom: lv.denom * rv.num);
 }
-  String binString(int op, dynamic l, dynamic r) {
+
+String binString(int op, dynamic l, dynamic r) {
   final String ls = exprString(l);
   final String rs = exprString(r);
   String opstr = "";
@@ -72,19 +66,23 @@ void main() {
   }
   return "(" + ls + opstr + rs + ")";
 }
-  dynamic newNum(int n) {
+
+dynamic newNum(int n) {
   return {"__name": "Num", "value": Rational(num: n, denom: 1)};
 }
-  Rational exprEval(dynamic x) {
+
+Rational exprEval(dynamic x) {
   return x["__name"] == "Num" ? x["value"] : x["__name"] == "Bin" ? binEval(x["op"], x["left"], x["right"]) : "";
 }
-  String exprString(dynamic x) {
+
+String exprString(dynamic x) {
   return x["__name"] == "Num" ? (v.num).toString() : x["__name"] == "Bin" ? binString(x["op"], x["left"], x["right"]) : "";
 }
-  final int n_cards = 4;
-  final int goal = 24;
-  final int digit_range = 9;
-  bool solve(List<dynamic> xs) {
+
+final int n_cards = 4;
+final int goal = 24;
+final int digit_range = 9;
+bool solve(List<dynamic> xs) {
   if (xs.length == 1) {
     final Rational f = exprEval(xs[0]);
     if (f.denom != 0 && f.num == f.denom * goal) {
@@ -128,7 +126,8 @@ void main() {
   }
   return false;
 }
-  void main() {
+
+void main() {
   int iter = 0;
   while (iter < 10) {
     List<dynamic> cards = [];
@@ -146,12 +145,21 @@ void main() {
     iter = iter + 1;
   }
 }
+
+void _start() {
+  var _benchMem0 = ProcessInfo.currentRss;
+  var _benchSw = Stopwatch()..start();
+  _initNow();
+  {
+  var _benchMem0 = ProcessInfo.currentRss;
+  var _benchSw = Stopwatch()..start();
   main();
   _benchSw.stop();
   var _benchMem1 = ProcessInfo.currentRss;
   print(jsonEncode({"duration_us": _benchSw.elapsedMicroseconds, "memory_bytes": (_benchMem1 - _benchMem0).abs(), "name": "main"}));
 }
+  main();
   _benchSw.stop();
   var _benchMem1 = ProcessInfo.currentRss;
-  print(jsonEncode({"duration_us": _benchSw.elapsedMicroseconds, "memory_bytes": (_benchMem1 - _benchMem0).abs(), "name": "main"}));
+  print(jsonEncode({"duration_us": _benchSw.elapsedMicroseconds, "memory_bytes": (_benchMem1 - _benchMem0).abs(), "name": "_start"}));
 }

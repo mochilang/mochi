@@ -34,7 +34,7 @@ void main() {
     doors = [...doors, false];
   }
   for (int pass = 1; pass < 101; pass++) {
-    num idx = pass - 1;
+    int idx = pass - 1;
     while (idx < 100) {
     doors[idx] = !doors[idx];
     idx = idx + pass;
@@ -43,13 +43,13 @@ void main() {
   for (int row = 0; row < 10; row++) {
     String line = "";
     for (int col = 0; col < 10; col++) {
-    final num idx = row * 10 + col;
+    final int idx = row * 10 + col;
     if (doors[idx]) {
     line = line + "1";
   } else {
     line = line + "0";
   }
-    if (col.toString().compareTo(9.toString()) < 0) {
+    if (col < 9) {
     line = line + " ";
   }
   }

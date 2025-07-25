@@ -2,11 +2,35 @@
 import 'dart:convert';
 import 'dart:io';
 
-int door = 1;
-int incrementer = 0;
+int _nowSeed = 0;
+bool _nowSeeded = false;
+void _initNow() {
+  var s = Platform.environment['MOCHI_NOW_SEED'];
+  if (s != null && s.isNotEmpty) {
+    var v = int.tryParse(s);
+    if (v != null) {
+      _nowSeed = v;
+      _nowSeeded = true;
+    }
+  }
+}
+int _now() {
+  if (_nowSeeded) {
+    _nowSeed = (_nowSeed * 1664525 + 1013904223) % 2147483647;
+    return _nowSeed;
+  }
+  return DateTime.now().microsecondsSinceEpoch;
+}
+
 void main() {
   var _benchMem0 = ProcessInfo.currentRss;
   var _benchSw = Stopwatch()..start();
+  _initNow();
+  {
+  var _benchMem0 = ProcessInfo.currentRss;
+  var _benchSw = Stopwatch()..start();
+  int door = 1;
+  int incrementer = 0;
   for (int current = 1; current < 101; current++) {
     String line = "Door " + (current).toString() + " ";
     if (current == door) {
@@ -20,5 +44,9 @@ void main() {
   }
   _benchSw.stop();
   var _benchMem1 = ProcessInfo.currentRss;
-  print(jsonEncode({"duration_us": _benchSw.elapsedMicroseconds, "memory_bytes": _benchMem1 - _benchMem0, "name": "main"}));
+  print(jsonEncode({"duration_us": _benchSw.elapsedMicroseconds, "memory_bytes": (_benchMem1 - _benchMem0).abs(), "name": "main"}));
+}
+  _benchSw.stop();
+  var _benchMem1 = ProcessInfo.currentRss;
+  print(jsonEncode({"duration_us": _benchSw.elapsedMicroseconds, "memory_bytes": (_benchMem1 - _benchMem0).abs(), "name": "main"}));
 }

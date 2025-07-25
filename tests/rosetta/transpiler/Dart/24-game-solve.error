@@ -1,0 +1,4 @@
+run: exit status 254
+../../../tests/rosetta/transpiler/Dart/24-game-solve.dart:79:34: Error: Undefined name 'v'.
+  return x["__name"] == "Num" ? (v.num).toString() : x["__name"] == "Bin" ? binString(x["op"], x["left"], x["right"]) : "";
+                                 ^
