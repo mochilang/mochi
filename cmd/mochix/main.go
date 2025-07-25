@@ -766,7 +766,7 @@ func transpileProgram(lang string, env *types.Env, prog *parser.Program, root, s
 		if err != nil {
 			return nil, err
 		}
-		return ex.Emit(p), nil
+		return ex.Emit(p, false), nil
 	case "fortran", "ftn":
 		p, err := fortran.Transpile(prog, env)
 		if err != nil {
@@ -784,7 +784,7 @@ func transpileProgram(lang string, env *types.Env, prog *parser.Program, root, s
 		if err != nil {
 			return nil, err
 		}
-		return hs.Emit(p), nil
+		return hs.Emit(p, false), nil
 	case "java":
 		p, err := javatr.Transpile(prog, env)
 		if err != nil {
@@ -869,7 +869,7 @@ func transpileProgram(lang string, env *types.Env, prog *parser.Program, root, s
 		}
 		return scalat.Emit(p), nil
 	case "scheme":
-		p, err := scheme.Transpile(prog, env, false)
+		p, err := scheme.Transpile(prog, env)
 		if err != nil {
 			return nil, err
 		}
@@ -880,12 +880,12 @@ func transpileProgram(lang string, env *types.Env, prog *parser.Program, root, s
 			return nil, err
 		}
 		var buf bytes.Buffer
-		if err := st.Emit(&buf, p); err != nil {
+		if err := st.Emit(&buf, p, false); err != nil {
 			return nil, err
 		}
 		return buf.Bytes(), nil
 	case "swift":
-		p, err := swifttrans.Transpile(env, prog)
+		p, err := swifttrans.Transpile(env, prog, false)
 		if err != nil {
 			return nil, err
 		}
