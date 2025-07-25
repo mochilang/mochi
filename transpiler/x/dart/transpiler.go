@@ -2515,6 +2515,7 @@ func inferType(e Expr) string {
 		sigParts := make([]string, len(ex.Entries))
 		valid := true
 		hasDynamic := false
+		hasList := false
 		for i, it := range ex.Entries {
 			var field string
 			switch k := it.Key.(type) {
@@ -2537,12 +2538,15 @@ func inferType(e Expr) string {
 				break
 			}
 			t := inferType(it.Value)
+			if strings.HasPrefix(t, "List<") {
+				hasList = true
+			}
 			if t == "dynamic" || len(structFields[t]) > 0 {
 				hasDynamic = true
 			}
 			sigParts[i] = field + ":" + t
 		}
-		if valid && !hasDynamic && nextStructHint != "" {
+		if valid && !hasDynamic && !hasList && nextStructHint != "" {
 			sig := strings.Join(sigParts, ";")
 			name, ok := structSig[sig]
 			if !ok {
@@ -3099,6 +3103,10 @@ func walkTypes(s Stmt) {
 		}
 		if funcReturnTypes[st.Name] == "" {
 			funcReturnTypes[st.Name] = inferReturnType(st.Body)
+		}
+	case *BenchStmt:
+		for _, b := range st.Body {
+			walkTypes(b)
 		}
 	}
 }
