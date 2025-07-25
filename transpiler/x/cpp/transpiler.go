@@ -905,6 +905,31 @@ func (l *ListLit) emit(w io.Writer) {
 	if elemTyp == "" {
 		listTyp := exprType(l)
 		elemTyp = elementTypeFromListType(listTyp)
+		if elemTyp == "auto" || elemTyp == "std::any" {
+			first := exprType(l.Elems[0])
+			if first == "auto" {
+				first = elementTypeFromListType(listTyp)
+			}
+			uniform := true
+			for _, e := range l.Elems[1:] {
+				typ := exprType(e)
+				if typ == "auto" {
+					typ = elementTypeFromListType(listTyp)
+				}
+				if typ != first {
+					uniform = false
+					break
+				}
+			}
+			if uniform {
+				elemTyp = first
+			} else {
+				if currentProgram != nil {
+					currentProgram.addInclude("<any>")
+				}
+				elemTyp = "std::any"
+			}
+		}
 	}
 	io.WriteString(w, "std::vector<"+elemTyp+">{")
 	for i, e := range l.Elems {
@@ -1148,8 +1173,15 @@ func (a *AppendExpr) emit(w io.Writer) {
 	valType := exprType(a.Elem)
 	var elem Expr = a.Elem
 	if strings.HasPrefix(valType, "std::vector<auto>") && elemType != "auto" {
-		valType = elemType
-		elem = &CastExpr{Value: a.Elem, Type: valType}
+		et := elemType
+		if ll, ok := a.Elem.(*ListLit); ok {
+			ll2 := *ll
+			if ll2.ElemType == "" {
+				ll2.ElemType = et
+			}
+			elem = &ll2
+		}
+		valType = fmt.Sprintf("std::vector<%s>", et)
 	}
 	if strings.HasPrefix(valType, "std::vector<") && listType == "std::vector<int>" {
 		listType = fmt.Sprintf("std::vector<%s>", valType)
