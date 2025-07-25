@@ -3725,7 +3725,11 @@ func compileFunExpr(fn *parser.FunExpr, env *types.Env) (Expr, error) {
 		if err != nil {
 			return nil, err
 		}
-		stmts = []Stmt{&ReturnStmt{Value: ex}}
+		if _, ok := types.TypeOfExpr(fn.ExprBody, child).(types.VoidType); ok {
+			stmts = []Stmt{&ExprStmt{Expr: ex}}
+		} else {
+			stmts = []Stmt{&ReturnStmt{Value: ex}}
+		}
 	}
 	params := make([]ParamDecl, len(fn.Params))
 	for i, p := range fn.Params {
@@ -4551,6 +4555,18 @@ func compilePrimary(p *parser.Primary, env *types.Env, base string) (Expr, error
 								args[i] = &AssertExpr{Expr: args[i], Type: gt}
 							}
 						}
+						if lit, ok := args[i].(*FuncLit); ok {
+							if expFt, ok2 := mt.(types.FuncType); ok2 {
+								if _, ok3 := expFt.Return.(types.VoidType); ok3 && lit.Return != "" {
+									lit.Return = ""
+									for j, st := range lit.Body {
+										if rs, ok4 := st.(*ReturnStmt); ok4 {
+											lit.Body[j] = &ExprStmt{Expr: rs.Value}
+										}
+									}
+								}
+							}
+						}
 					}
 				}
 			}
@@ -4815,7 +4831,7 @@ func toGoType(t *parser.TypeRef, env *types.Env) string {
 		}
 		ret := toGoType(t.Fun.Return, env)
 		if ret == "" {
-			ret = "any"
+			return fmt.Sprintf("func(%s)", strings.Join(params, ", "))
 		}
 		if ret != "any" {
 			return fmt.Sprintf("func(%s) %s", strings.Join(params, ", "), ret)

@@ -1,7 +1,7 @@
 # Go Rosetta Transpiler Output
 
-Completed programs: 123/284
-Last updated: 2025-07-25 19:02 +0700
+Completed programs: 124/284
+Last updated: 2025-07-25 19:29 +0700
 
 Checklist:
 
@@ -63,24 +63,24 @@ Checklist:
 | 54 | anonymous-recursion-2 | ✓ | 502.0µs | 1.37KB |
 | 55 | anonymous-recursion | ✓ | 383.0µs | 1.37KB |
 | 56 | anti-primes | ✓ | 148.0ms | 2.25KB |
-| 57 | append-a-record-to-the-end-of-a-text-file | ✓ |  |  |
-| 58 | apply-a-callback-to-an-array-1 | ✓ |  |  |
-| 59 | apply-a-callback-to-an-array-2 |   |  |  |
-| 60 | apply-a-digital-filter-direct-form-ii-transposed- | ✓ |  |  |
-| 61 | approximate-equality | ✓ |  |  |
-| 62 | arbitrary-precision-integers-included- | ✓ |  |  |
-| 63 | archimedean-spiral | ✓ |  |  |
-| 64 | arena-storage-pool | ✓ |  |  |
-| 65 | arithmetic-complex | ✓ |  |  |
-| 66 | arithmetic-derivative | ✓ |  |  |
-| 67 | arithmetic-evaluation | ✓ |  |  |
-| 68 | arithmetic-geometric-mean-calculate-pi | ✓ |  |  |
-| 69 | arithmetic-geometric-mean | ✓ |  |  |
-| 70 | arithmetic-integer-1 | ✓ |  |  |
-| 71 | arithmetic-integer-2 | ✓ |  |  |
-| 72 | arithmetic-numbers | ✓ |  |  |
-| 73 | arithmetic-rational | ✓ |  |  |
-| 74 | array-concatenation | ✓ |  |  |
+| 57 | append-a-record-to-the-end-of-a-text-file | ✓ | 301.0µs | 1000B |
+| 58 | apply-a-callback-to-an-array-1 | ✓ | 484.0µs | 1016B |
+| 59 | apply-a-callback-to-an-array-2 | ✓ | 488.0µs | 1.14KB |
+| 60 | apply-a-digital-filter-direct-form-ii-transposed- | ✓ | 847.0µs | 2.58KB |
+| 61 | approximate-equality | ✓ | 500.0µs | 1.82KB |
+| 62 | arbitrary-precision-integers-included- | ✓ | 67.0ms | 2.16MB |
+| 63 | archimedean-spiral | ✓ | 1.0ms | 9.96KB |
+| 64 | arena-storage-pool | ✓ | 708.0µs | 2.41KB |
+| 65 | arithmetic-complex | ✓ | 372.0µs | 1.65KB |
+| 66 | arithmetic-derivative | ✓ | 953.0µs | 34.26KB |
+| 67 | arithmetic-evaluation | ✓ | 543.0µs | 1016B |
+| 68 | arithmetic-geometric-mean-calculate-pi | ✓ | 526.0µs | 1000B |
+| 69 | arithmetic-geometric-mean | ✓ | 369.0µs | 1000B |
+| 70 | arithmetic-integer-1 | ✓ | 422.0µs | 1.09KB |
+| 71 | arithmetic-integer-2 | ✓ | 326.0µs | 1.43KB |
+| 72 | arithmetic-numbers | ✓ | 370.0ms | 30.57MB |
+| 73 | arithmetic-rational | ✓ | 597.0µs | 1.76KB |
+| 74 | array-concatenation | ✓ | 753.0µs | 1.97KB |
 | 75 | array-length | ✓ |  |  |
 | 76 | arrays | ✓ |  |  |
 | 77 | ascending-primes | ✓ |  |  |
