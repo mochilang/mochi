@@ -1,5 +1,5 @@
-## Progress (2025-07-25 14:40 +0700)
-- Commit f46f5284ac: transpiler/erl: run rosetta indexes 107-113
+## Progress (2025-07-25 16:52 +0700)
+- Commit 04d6bedffa: add error logs for failing rosetta cases
 - Generated Python for 104/104 programs
 - Updated README checklist and outputs
 - Removed runtime helpers and improved boolean type inference
