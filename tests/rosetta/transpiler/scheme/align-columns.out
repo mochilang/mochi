@@ -17,4 +17,10 @@ justified,   right    justified,   or   center justified   within     its    col
       that     aligns       each column     of    fields         by ensuring    that   words     in each 
     column        are  separated     by     at     least        one   space. 
   Further,      allow        for   each   word        in          a   column      to      be either left 
-justified,      right justified,     or center justified     within      its column.
+justified,      right justified,     or center justified     within      its column. 
+
+{
+  "duration_us": 571223,
+  "memory_bytes": 14151680,
+  "name": "main"
+}

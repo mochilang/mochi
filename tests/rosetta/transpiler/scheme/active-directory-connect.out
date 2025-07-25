@@ -1,1 +1,6 @@
 Connected to ldap.example.com
+{
+  "duration_us": 571223,
+  "memory_bytes": 12972032,
+  "name": "main"
+}

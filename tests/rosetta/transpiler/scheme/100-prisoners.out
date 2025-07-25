@@ -1,12 +1,13 @@
-WARNING: out of order define: (define p 0)
-WARNING: out of order define: (define success #t)
-WARNING: out of order define: (define d 0)
-WARNING: out of order define: (define rf (* (quotient pardoned trials) 100.0))
 Results from 1000 trials with 10 prisoners:
 
-  strategy = random  pardoned = 0 relative frequency = 0%
-  strategy = optimal  pardoned = 380 relative frequency = 0%
+  strategy = random  pardoned = 1 relative frequency = 0.1%
+  strategy = optimal  pardoned = 307 relative frequency = 30.7%
 Results from 1000 trials with 100 prisoners:
 
   strategy = random  pardoned = 0 relative frequency = 0%
-  strategy = optimal  pardoned = 383 relative frequency = 0%
+  strategy = optimal  pardoned = 335 relative frequency = 33.5%
+{
+  "duration_us": -601178,
+  "memory_bytes": 17567744,
+  "name": "main"
+}

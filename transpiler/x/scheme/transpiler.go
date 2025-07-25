@@ -1133,26 +1133,16 @@ func convertParserPrimary(p *parser.Primary) (Node, error) {
 			if len(p.Struct.Fields) != len(st.Order) {
 				return nil, fmt.Errorf("invalid fields for %s", p.Struct.Name)
 			}
-			pairs := []Node{Symbol("list")}
-			if p.Struct.Name == "Num" {
-				pairs = append(pairs, &List{Elems: []Node{Symbol("cons"), StringLit("op"), ensureUnionConst("Num")}})
-				for i, f := range p.Struct.Fields {
-					v, err := convertParserExpr(f.Value)
-					if err != nil {
-						return nil, err
-					}
-					pair := &List{Elems: []Node{Symbol("cons"), StringLit(st.Order[i]), v}}
-					pairs = append(pairs, pair)
+			pairs := []Node{Symbol("list"),
+				&List{Elems: []Node{Symbol("cons"), StringLit("op"), ensureUnionConst(p.Struct.Name)}},
+			}
+			for i, f := range p.Struct.Fields {
+				v, err := convertParserExpr(f.Value)
+				if err != nil {
+					return nil, err
 				}
-			} else {
-				for i, f := range p.Struct.Fields {
-					v, err := convertParserExpr(f.Value)
-					if err != nil {
-						return nil, err
-					}
-					pair := &List{Elems: []Node{Symbol("cons"), StringLit(st.Order[i]), v}}
-					pairs = append(pairs, pair)
-				}
+				pair := &List{Elems: []Node{Symbol("cons"), StringLit(st.Order[i]), v}}
+				pairs = append(pairs, pair)
 			}
 			return &List{Elems: []Node{Symbol("alist->hash-table"), &List{Elems: pairs}}}, nil
 		}
@@ -1253,23 +1243,23 @@ func convertMatchExpr(me *parser.MatchExpr) (Node, error) {
 			}
 			then := body
 			if len(vars) > 0 {
-				bindings := make([]Node, len(vars))
+				bindings := []Node{}
 				for j, nm := range vars {
 					if nm == "_" {
-						bindings[j] = &List{Elems: []Node{Symbol("_"), voidSym()}}
 						continue
 					}
 					val := &List{Elems: []Node{Symbol("hash-table-ref"), temp, StringLit(fields[j])}}
-					bindings[j] = &List{Elems: []Node{Symbol(nm), val}}
+					bindings = append(bindings, &List{Elems: []Node{Symbol(nm), val}})
 				}
-				then = &List{Elems: []Node{Symbol("let"), &List{Elems: bindings}, body}}
+				if len(bindings) > 0 {
+					then = &List{Elems: []Node{Symbol("let"), &List{Elems: bindings}, body}}
+				}
 			}
 			var cond Node
-			if variant == "Num" {
-				cond = &List{Elems: []Node{Symbol("equal?"), &List{Elems: []Node{Symbol("hash-table-ref"), temp, StringLit("op")}}, ensureUnionConst("Num")}}
-			} else {
-				cond = &List{Elems: []Node{Symbol("not"), &List{Elems: []Node{Symbol("equal?"), &List{Elems: []Node{Symbol("hash-table-ref"), temp, StringLit("op")}}, ensureUnionConst("Num")}}}}
-			}
+			cond = &List{Elems: []Node{Symbol("equal?"),
+				&List{Elems: []Node{Symbol("hash-table-ref"), temp, StringLit("op")}},
+				ensureUnionConst(variant),
+			}}
 			expr = &List{Elems: []Node{Symbol("if"), cond, then, expr}}
 			continue
 		}
