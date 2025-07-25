@@ -1,1 +1,9 @@
-postfix op not supported
+exit status 2
+File "/workspace/mochi/tests/rosetta/transpiler/OCaml/almkvist-giullera-formula-for-pi.ml", line 1:
+Warning 24 [bad-module-name]: bad source file name: "Almkvist-giullera-formula-for-pi" is not a valid module name.
+File "/workspace/mochi/tests/rosetta/transpiler/OCaml/almkvist-giullera-formula-for-pi.ml", line 434, characters 10-26:
+434 |   keys := sortInts (!keys);
+                ^^^^^^^^^^^^^^^^
+Error: This expression has type int list
+       but an expression was expected of type string list
+       Type int is not compatible with type string 
