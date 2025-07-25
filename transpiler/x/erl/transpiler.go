@@ -1457,7 +1457,7 @@ func (c *CallExpr) emit(w io.Writer) {
 		io.WriteString(w, ")")
 		return
 	case "input":
-		io.WriteString(w, "string:trim(io:get_line(\"\"))")
+		io.WriteString(w, "(case io:get_line(\"\") of eof -> \"q\"; L -> string:trim(L) end)")
 		return
 	case "abs":
 		io.WriteString(w, "erlang:abs(")
@@ -2127,12 +2127,12 @@ func (c *ContinueStmt) emit(w io.Writer) {
 func (cs *CallStmt) emit(w io.Writer) { cs.Call.emit(w) }
 
 func (b *BenchStmt) emit(w io.Writer) {
-       io.WriteString(w, "Start = mochi_now(),\n    StartMem = erlang:memory(total)")
-       for _, st := range b.Body {
-               io.WriteString(w, ",\n    ")
-               st.emit(w)
-       }
-       fmt.Fprintf(w, ",\n    End = mochi_now(),\n    EndMem = erlang:memory(total),\n    DurationUs = (End - Start) div 1000,\n    MemBytes = EndMem - StartMem,\n    io:format(\"{~n  \\\"duration_us\\\": ~p,~n  \\\"memory_bytes\\\": ~p,~n  \\\"name\\\": \\\"%s\\\"~n}\n\", [DurationUs, MemBytes])", b.Name)
+	io.WriteString(w, "Start = mochi_now(),\n    StartMem = erlang:memory(total)")
+	for _, st := range b.Body {
+		io.WriteString(w, ",\n    ")
+		st.emit(w)
+	}
+	fmt.Fprintf(w, ",\n    End = mochi_now(),\n    EndMem = erlang:memory(total),\n    DurationUs = (End - Start) div 1000,\n    MemBytes = abs(EndMem - StartMem),\n    io:format(\"{~n  \\\"duration_us\\\": ~p,~n  \\\"memory_bytes\\\": ~p,~n  \\\"name\\\": \\\"%s\\\"~n}\n\", [DurationUs, MemBytes])", b.Name)
 }
 
 func isNameRef(e Expr, name string) bool {
@@ -2564,7 +2564,7 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	useToInt = false
 	useMemberHelper = false
 	mutatedFuncs = map[string]int{"topple": 0}
-       p := &Program{}
+	p := &Program{}
 	for _, st := range prog.Statements {
 		if st.Fun != nil {
 			fd, err := convertFunStmt(st.Fun, env, ctx)
@@ -2580,15 +2580,15 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 		}
 		p.Stmts = append(p.Stmts, stmts...)
 	}
-       if benchMain {
-               useNow = true
-               p.Stmts = []Stmt{&BenchStmt{Name: "main", Body: p.Stmts}}
-       }
-       p.UseNow = useNow
-       p.UseLookupHost = useLookupHost
-       p.UseToInt = useToInt
-       p.UseMemberHelper = useMemberHelper
-       return p, nil
+	if benchMain {
+		useNow = true
+		p.Stmts = []Stmt{&BenchStmt{Name: "main", Body: p.Stmts}}
+	}
+	p.UseNow = useNow
+	p.UseLookupHost = useLookupHost
+	p.UseToInt = useToInt
+	p.UseMemberHelper = useMemberHelper
+	return p, nil
 }
 
 func convertStmt(st *parser.Statement, env *types.Env, ctx *context, top bool) ([]Stmt, error) {

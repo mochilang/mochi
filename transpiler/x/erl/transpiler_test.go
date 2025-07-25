@@ -58,6 +58,8 @@ func runGolden(t *testing.T, name string) {
 	if errs := types.Check(prog, env); len(errs) > 0 {
 		t.Fatalf("type: %v", errs[0])
 	}
+	bench := os.Getenv("MOCHI_BENCHMARK") == "true" || os.Getenv("MOCHI_BENCHMARK") == "1"
+	erl.SetBenchMain(bench)
 	ast, err := erl.Transpile(prog, env)
 	if err != nil {
 		t.Fatalf("transpile: %v", err)
@@ -72,7 +74,11 @@ func runGolden(t *testing.T, name string) {
 		_ = os.WriteFile(erlFile, code, 0o755)
 	}
 	cmd := exec.Command("escript", erlFile)
-	cmd.Env = append(os.Environ(), "MOCHI_NOW_SEED=1")
+	envv := append(os.Environ(), "MOCHI_NOW_SEED=1")
+	if bench {
+		envv = append(envv, "MOCHI_BENCHMARK=1")
+	}
+	cmd.Env = envv
 	out, err := cmd.CombinedOutput()
 	if err != nil {
 		if updateEnabled() {
