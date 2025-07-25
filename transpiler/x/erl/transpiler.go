@@ -1160,7 +1160,7 @@ func isMapExpr(e Expr, env *types.Env, ctx *context) bool {
 		}
 	case *IndexExpr:
 		if v.Kind == "map" {
-			return mapValueIsMap(v.Target, env, ctx)
+			return true
 		}
 	case *CallExpr:
 		if v.Func == "erlang:get" && len(v.Args) == 1 {
@@ -1293,6 +1293,18 @@ func isListExpr(e Expr, env *types.Env, ctx *context) bool {
 	case *BinaryExpr:
 		if v.Op == "++" || v.Op == "+" {
 			return isListExpr(v.Left, env, ctx) && isListExpr(v.Right, env, ctx)
+		}
+	}
+	return false
+}
+
+func isListValue(e Expr) bool {
+	switch v := e.(type) {
+	case *ListLit:
+		return true
+	case *BinaryExpr:
+		if v.Op == "++" {
+			return true
 		}
 	}
 	return false
@@ -1513,7 +1525,7 @@ func (c *CallExpr) emit(w io.Writer) {
 		io.WriteString(w, ")")
 		return
 	case "input":
-		io.WriteString(w, "(case io:get_line(\"\") of eof -> \"q\"; L -> string:trim(L) end)")
+		io.WriteString(w, "(fun() -> In = io:get_line(\"\"), case In of eof -> \"q\"; _ -> string:trim(In) end end)()")
 		return
 	case "abs":
 		io.WriteString(w, "erlang:abs(")
@@ -1678,7 +1690,7 @@ func (b *BinaryExpr) emit(w io.Writer) {
 		op := mapOp(b.Op)
 		// use string concatenation operator when needed
 		if b.Op == "+" {
-			if isStringExpr(b.Left) || isStringExpr(b.Right) {
+			if isStringExpr(b.Left) || isStringExpr(b.Right) || isListValue(b.Left) || isListValue(b.Right) {
 				op = "++"
 			}
 		}
@@ -2734,6 +2746,13 @@ func convertStmt(st *parser.Statement, env *types.Env, ctx *context, top bool) (
 				}
 			}
 		}
+		if !isMap && st.Let.Value != nil {
+			if _, ok := types.ExprType(st.Let.Value, env).(types.MapType); ok {
+				isMap = true
+			} else if ix, ok := e.(*IndexExpr); ok && ix.Kind == "map" {
+				isMap = true
+			}
+		}
 		if exprHasListCast(st.Let.Value) && !(st.Let.Type != nil && st.Let.Type.Generic != nil && st.Let.Type.Generic.Name == "map") {
 			isMap = false
 		}
@@ -2773,6 +2792,13 @@ func convertStmt(st *parser.Statement, env *types.Env, ctx *context, top bool) (
 				if _, ok := t.(types.MapType); ok {
 					isMapV = true
 				}
+			}
+		}
+		if !isMapV && st.Var.Value != nil {
+			if _, ok := types.ExprType(st.Var.Value, env).(types.MapType); ok {
+				isMapV = true
+			} else if ix, ok := e.(*IndexExpr); ok && ix.Kind == "map" {
+				isMapV = true
 			}
 		}
 		if exprHasListCast(st.Var.Value) && !(st.Var.Type != nil && st.Var.Type.Generic != nil && st.Var.Type.Generic.Name == "map") {
@@ -3577,6 +3603,12 @@ func convertBinary(b *parser.BinaryExpr, env *types.Env, ctx *context) (Expr, er
 					_, rightIsStr := typesList[i+1].(types.StringType)
 					if leftIsList || rightIsList || leftIsStr || rightIsStr || isStringExpr(l) || isStringExpr(r) {
 						op = "++"
+					} else {
+						if ce, ok := l.(*CallExpr); ok && strings.HasPrefix(ce.Func, "string:") {
+							op = "++"
+						} else if ce, ok := r.(*CallExpr); ok && strings.HasPrefix(ce.Func, "string:") {
+							op = "++"
+						}
 					}
 				}
 				exprs[i] = &BinaryExpr{Left: l, Op: op, Right: r}
