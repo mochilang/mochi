@@ -1,0 +1,10 @@
+Free Pascal Compiler version 3.2.2+dfsg-32 [2024/01/05] for x86_64
+Copyright (c) 1993-2021 by Florian Klaempfl and others
+Target OS: Linux for x86-64
+Compiling /workspace/mochi/tests/rosetta/transpiler/Pascal/15-puzzle-game.pas
+15-puzzle-game.pas(145,20) Error: Incompatible types: got "ShortString" expected "{Dynamic} Array Of LongInt"
+15-puzzle-game.pas(147,21) Error: Operator is not overloaded: "{Dynamic} Array Of LongInt" = "Char"
+15-puzzle-game.pas(147,46) Error: Operator is not overloaded: "{Dynamic} Array Of LongInt" = "Char"
+15-puzzle-game.pas(183) Fatal: There were 3 errors compiling module, stopping
+Fatal: Compilation aborted
+Error: /usr/bin/ppcx64 returned an error exitcode
