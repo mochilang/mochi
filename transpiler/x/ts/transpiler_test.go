@@ -42,7 +42,7 @@ func TestTranspilePrintHello(t *testing.T) {
 		t.Fatalf("type error: %v", errs[0])
 	}
 
-	tsProg, err := tstranspiler.Transpile(prog, env)
+	tsProg, err := tstranspiler.Transpile(prog, env, false)
 	if err != nil {
 		_ = os.WriteFile(filepath.Join(outDir, base+".error"), []byte("transpile: "+err.Error()), 0o644)
 		t.Fatalf("transpile error: %v", err)
@@ -102,7 +102,7 @@ func TestTranspileIfElse(t *testing.T) {
 		t.Fatalf("type error: %v", errs[0])
 	}
 
-	tsProg, err := tstranspiler.Transpile(prog, env)
+	tsProg, err := tstranspiler.Transpile(prog, env, false)
 	if err != nil {
 		_ = os.WriteFile(filepath.Join(outDir, base+".error"), []byte("transpile: "+err.Error()), 0o644)
 		t.Fatalf("transpile error: %v", err)
@@ -161,7 +161,7 @@ func TestTranspileForLoop(t *testing.T) {
 		t.Fatalf("type error: %v", errs[0])
 	}
 
-	tsProg, err := tstranspiler.Transpile(prog, env)
+	tsProg, err := tstranspiler.Transpile(prog, env, false)
 	if err != nil {
 		_ = os.WriteFile(filepath.Join(outDir, base+".error"), []byte("transpile: "+err.Error()), 0o644)
 		t.Fatalf("transpile error: %v", err)
@@ -220,7 +220,7 @@ func TestTranspileWhileLoop(t *testing.T) {
 		t.Fatalf("type error: %v", errs[0])
 	}
 
-	tsProg, err := tstranspiler.Transpile(prog, env)
+	tsProg, err := tstranspiler.Transpile(prog, env, false)
 	if err != nil {
 		_ = os.WriteFile(filepath.Join(outDir, base+".error"), []byte("transpile: "+err.Error()), 0o644)
 		t.Fatalf("transpile error: %v", err)
@@ -279,7 +279,7 @@ func TestTranspileVarAssignment(t *testing.T) {
 		t.Fatalf("type error: %v", errs[0])
 	}
 
-	tsProg, err := tstranspiler.Transpile(prog, env)
+	tsProg, err := tstranspiler.Transpile(prog, env, false)
 	if err != nil {
 		_ = os.WriteFile(filepath.Join(outDir, base+".error"), []byte("transpile: "+err.Error()), 0o644)
 		t.Fatalf("transpile error: %v", err)
@@ -338,7 +338,7 @@ func TestTranspileTypedLet(t *testing.T) {
 		t.Fatalf("type error: %v", errs[0])
 	}
 
-	tsProg, err := tstranspiler.Transpile(prog, env)
+	tsProg, err := tstranspiler.Transpile(prog, env, false)
 	if err != nil {
 		_ = os.WriteFile(filepath.Join(outDir, base+".error"), []byte("transpile: "+err.Error()), 0o644)
 		t.Fatalf("transpile error: %v", err)
@@ -397,7 +397,7 @@ func TestTranspileTypedVar(t *testing.T) {
 		t.Fatalf("type error: %v", errs[0])
 	}
 
-	tsProg, err := tstranspiler.Transpile(prog, env)
+	tsProg, err := tstranspiler.Transpile(prog, env, false)
 	if err != nil {
 		_ = os.WriteFile(filepath.Join(outDir, base+".error"), []byte("transpile: "+err.Error()), 0o644)
 		t.Fatalf("transpile error: %v", err)

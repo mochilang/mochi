@@ -1919,7 +1919,7 @@ func emitStmt(w *indentWriter, s Stmt, level int) {
 // code aims to be idiomatic and readable TypeScript without depending on
 // runtime helper libraries. Most Mochi features are supported including
 // joins and grouping in query expressions.
-func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
+func Transpile(prog *parser.Program, env *types.Env, benchMain bool) (*Program, error) {
 	transpileEnv = env
 	generatedTypes = map[string]bool{}
 	prelude = nil
@@ -1952,6 +1952,11 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 			return nil, err
 		}
 		tsProg.Stmts = append(tsProg.Stmts, stmt)
+	}
+	if benchMain {
+		useBench = true
+		useNow = true
+		tsProg.Stmts = []Stmt{&BenchStmt{Name: "main", Body: tsProg.Stmts}}
 	}
 	if useNow {
 		seed := os.Getenv("MOCHI_NOW_SEED")
