@@ -44,6 +44,7 @@ var (
 	useInput         bool
 	useLookupHost    bool
 	useBigRat        bool
+	useSubstrClamp   bool
 	imports          []string
 	testpkgAliases   map[string]struct{}
 	netAliases       map[string]struct{}
@@ -489,6 +490,9 @@ func (s *LetStmt) emit(w io.Writer) error {
 	typ := s.Type
 	if typ == "" {
 		typ = inferType(s.Value)
+		if _, ok := s.Value.(*IndexExpr); ok && strings.HasSuffix(typ, "?") {
+			typ = strings.TrimSuffix(typ, "?")
+		}
 	}
 	nextStructHint = ""
 	localVarTypes[s.Name] = typ
@@ -498,6 +502,21 @@ func (s *LetStmt) emit(w io.Writer) error {
 		}
 	} else {
 		if _, err := io.WriteString(w, "final "+typ+" "+s.Name+" = "); err != nil {
+			return err
+		}
+	}
+	if iex, ok := s.Value.(*IndexExpr); ok {
+		valType := inferType(s.Value)
+		if strings.HasSuffix(valType, "?") && !strings.HasSuffix(typ, "?") {
+			old := iex.NoBang
+			iex.NoBang = true
+			if err := iex.emit(w); err != nil {
+				return err
+			}
+			iex.NoBang = old
+			_, err := io.WriteString(w, "!")
+			typ = strings.TrimSuffix(typ, "?")
+			localVarTypes[s.Name] = typ
 			return err
 		}
 	}
@@ -1364,10 +1383,14 @@ type SliceExpr struct {
 
 func (s *SliceExpr) emit(w io.Writer) error {
 	if inferType(s.Target) == "String" || isMaybeString(s.Target) {
+		useSubstrClamp = true
+		if _, err := io.WriteString(w, "_substr("); err != nil {
+			return err
+		}
 		if err := s.Target.emit(w); err != nil {
 			return err
 		}
-		if _, err := io.WriteString(w, ".substring("); err != nil {
+		if _, err := io.WriteString(w, ", "); err != nil {
 			return err
 		}
 		if s.Start != nil {
@@ -1529,14 +1552,22 @@ type SubstringExpr struct {
 }
 
 func (s *SubstringExpr) emit(w io.Writer) error {
+	useSubstrClamp = true
+	if _, err := io.WriteString(w, "_substr("); err != nil {
+		return err
+	}
 	if err := s.Str.emit(w); err != nil {
 		return err
 	}
-	if _, err := io.WriteString(w, ".substring("); err != nil {
+	if _, err := io.WriteString(w, ", "); err != nil {
 		return err
 	}
 	if s.Start != nil {
 		if err := s.Start.emit(w); err != nil {
+			return err
+		}
+	} else {
+		if _, err := io.WriteString(w, "0"); err != nil {
 			return err
 		}
 	}
@@ -1545,6 +1576,13 @@ func (s *SubstringExpr) emit(w io.Writer) error {
 	}
 	if s.End != nil {
 		if err := s.End.emit(w); err != nil {
+			return err
+		}
+	} else {
+		if err := s.Str.emit(w); err != nil {
+			return err
+		}
+		if _, err := io.WriteString(w, ".length"); err != nil {
 			return err
 		}
 	}
@@ -3263,6 +3301,9 @@ func Emit(w io.Writer, p *Program) error {
 			return err
 		}
 	}
+	if _, err := io.WriteString(w, "String _substr(String s, int start, int end) {\n  var n = s.length;\n  if (start < 0) start += n;\n  if (end < 0) end += n;\n  if (start < 0) start = 0;\n  if (start > n) start = n;\n  if (end < 0) end = 0;\n  if (end > n) end = n;\n  if (start > end) start = end;\n  return s.substring(start, end);\n}\n\n"); err != nil {
+		return err
+	}
 	if useBigRat {
 		if _, err := io.WriteString(w, "class BigRat {\n  BigInt num;\n  BigInt den;\n  BigRat(this.num, [BigInt? d]) : den = d ?? BigInt.one {\n    if (den.isNegative) { num = -num; den = -den; }\n    var g = num.gcd(den);\n    num = num ~/ g;\n    den = den ~/ g;\n  }\n  BigRat add(BigRat o) => BigRat(num * o.den + o.num * den, den * o.den);\n  BigRat sub(BigRat o) => BigRat(num * o.den - o.num * den, den * o.den);\n  BigRat mul(BigRat o) => BigRat(num * o.num, den * o.den);\n  BigRat div(BigRat o) => BigRat(num * o.den, den * o.num);\n}\n\nBigRat _bigrat(dynamic n, [dynamic d]) {\n  if (n is BigRat && d == null) return BigRat(n.num, n.den);\n  BigInt numer;\n  BigInt denom = d == null ? BigInt.one : (d is BigInt ? d : BigInt.from((d as num).toInt()));\n  if (n is BigRat) { numer = n.num; denom = n.den; }\n  else if (n is BigInt) { numer = n; }\n  else if (n is int) { numer = BigInt.from(n); }\n  else if (n is num) { numer = BigInt.from(n.toInt()); }\n  else { numer = BigInt.zero; }\n  return BigRat(numer, denom);\n}\nBigInt _num(BigRat r) => r.num;\nBigInt _denom(BigRat r) => r.den;\nBigRat _add(BigRat a, BigRat b) => a.add(b);\nBigRat _sub(BigRat a, BigRat b) => a.sub(b);\nBigRat _mul(BigRat a, BigRat b) => a.mul(b);\nBigRat _div(BigRat a, BigRat b) => a.div(b);\n\n"); err != nil {
 			return err
@@ -3418,6 +3459,7 @@ func Transpile(prog *parser.Program, env *types.Env, bench, wrapMain bool) (*Pro
 	useInput = false
 	useLookupHost = false
 	useBigRat = false
+	useSubstrClamp = false
 	imports = nil
 	testpkgAliases = map[string]struct{}{}
 	netAliases = map[string]struct{}{}
@@ -3945,6 +3987,9 @@ func convertPostfix(pf *parser.PostfixExpr) (Expr, error) {
 						return nil, err
 					}
 				}
+				if inferType(expr) == "String" || isMaybeString(expr) {
+					useSubstrClamp = true
+				}
 				expr = &SliceExpr{Target: expr, Start: startExpr, End: endExpr}
 			} else {
 				if op.Index.Start == nil {
@@ -3955,12 +4000,7 @@ func convertPostfix(pf *parser.PostfixExpr) (Expr, error) {
 					return nil, err
 				}
 				iex := &IndexExpr{Target: expr, Index: idx}
-				if i < len(pf.Ops)-1 {
-					expr = iex
-				} else {
-					iex.NoBang = true
-					expr = iex
-				}
+				expr = iex
 			}
 		case op.Field != nil:
 			// method call if next op is call
@@ -4212,6 +4252,7 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 			if err != nil {
 				return nil, err
 			}
+			useSubstrClamp = true
 			return &SubstringExpr{Str: s0, Start: s1, End: s2}, nil
 		}
 		if p.Call.Func == "padStart" && len(p.Call.Args) == 3 {

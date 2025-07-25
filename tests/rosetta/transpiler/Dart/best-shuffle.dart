@@ -22,6 +22,18 @@ int _now() {
   return DateTime.now().microsecondsSinceEpoch;
 }
 
+String _substr(String s, int start, int end) {
+  var n = s.length;
+  if (start < 0) start += n;
+  if (end < 0) end += n;
+  if (start < 0) start = 0;
+  if (start > n) start = n;
+  if (end < 0) end = 0;
+  if (end > n) end = n;
+  if (start > end) start = end;
+  return s.substring(start, end);
+}
+
 int nextRand(int seed) {
   return (seed * 1664525 + 1013904223) % 2147483647;
 }
@@ -30,7 +42,7 @@ List<dynamic> shuffleChars(String s, int seed) {
   List<String> chars = <String>[];
   int i = 0;
   while (i < s.length) {
-    chars = [...chars, s.substring(i, i + 1)];
+    chars = [...chars, _substr(s, i, i + 1)];
     i = i + 1;
   }
   int sd = seed;
@@ -59,14 +71,14 @@ List<dynamic> bestShuffle(String s, int seed) {
   List<String> arr = <String>[];
   int i = 0;
   while (i < t.length) {
-    arr = [...arr, t.substring(i, i + 1)];
+    arr = [...arr, _substr(t, i, i + 1)];
     i = i + 1;
   }
   i = 0;
   while (i < arr.length) {
     int j = 0;
     while (j < arr.length) {
-    if (i != j && arr[i] != s.substring(j, j + 1) && arr[j] != s.substring(i, i + 1)) {
+    if (i != j && arr[i] != _substr(s, j, j + 1) && arr[j] != _substr(s, i, i + 1)) {
     final String tmp = arr[i];
     arr[i] = arr[j];
     arr[j] = tmp;
@@ -79,7 +91,7 @@ List<dynamic> bestShuffle(String s, int seed) {
   int count = 0;
   i = 0;
   while (i < arr.length) {
-    if (arr[i] == s.substring(i, i + 1)) {
+    if (arr[i] == _substr(s, i, i + 1)) {
     count = count + 1;
   }
     i = i + 1;
