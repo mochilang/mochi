@@ -754,6 +754,18 @@ func (u *UnaryExpr) emit(w io.Writer) error {
 	if _, err := io.WriteString(w, u.Op); err != nil {
 		return err
 	}
+	// Wrap the operand in parentheses when it is a binary expression to
+	// preserve the intended precedence of the original Mochi expression.
+	if _, ok := u.X.(*BinaryExpr); ok {
+		if _, err := io.WriteString(w, "("); err != nil {
+			return err
+		}
+		if err := u.X.emit(w); err != nil {
+			return err
+		}
+		_, err := io.WriteString(w, ")")
+		return err
+	}
 	return u.X.emit(w)
 }
 

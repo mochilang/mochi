@@ -59,16 +59,16 @@ Compiled and ran: 130/284
 | 50 | angles-geometric-normalization-and-conversion | ✓ | 8.128ms | 204.0 KB |
 | 51 | animate-a-pendulum | ✓ | 6.655ms | 12.4 MB |
 | 52 | animation | ✓ | 30.716ms | 9.2 MB |
-| 53 | anonymous-recursion-1 | ✓ |  |  |
-| 54 | anonymous-recursion-2 | ✓ |  |  |
-| 55 | anonymous-recursion | ✓ |  |  |
-| 56 | anti-primes | ✓ |  |  |
-| 57 | append-a-record-to-the-end-of-a-text-file | ✓ |  |  |
-| 58 | apply-a-callback-to-an-array-1 | ✓ |  |  |
-| 59 | apply-a-callback-to-an-array-2 | ✓ |  |  |
-| 60 | apply-a-digital-filter-direct-form-ii-transposed- | ✓ |  |  |
-| 61 | approximate-equality | ✓ |  |  |
-| 62 | arbitrary-precision-integers-included- | ✓ |  |  |
+| 53 | anonymous-recursion-1 | ✓ | 6.078ms | 10.0 MB |
+| 54 | anonymous-recursion-2 | ✓ | 6.101ms | 11.8 MB |
+| 55 | anonymous-recursion | ✓ | 5.697ms | 12.1 MB |
+| 56 | anti-primes | ✓ | 32.22ms | 988.0 KB |
+| 57 | append-a-record-to-the-end-of-a-text-file | ✓ | 5.405ms | 2.6 MB |
+| 58 | apply-a-callback-to-an-array-1 | ✓ | 6.05ms | 12.0 MB |
+| 59 | apply-a-callback-to-an-array-2 | ✓ | 6.838ms | 11.1 MB |
+| 60 | apply-a-digital-filter-direct-form-ii-transposed- | ✓ | 6.921ms | 12.1 MB |
+| 61 | approximate-equality | ✓ | 7.786ms | 4.3 MB |
+| 62 | arbitrary-precision-integers-included- | ✓ | 1.560571s | 140.0 KB |
 | 63 | archimedean-spiral | ✓ |  |  |
 | 64 | arena-storage-pool | ✓ |  |  |
 | 65 | arithmetic-complex | ✓ |  |  |
@@ -292,4 +292,4 @@ Compiled and ran: 130/284
 | 283 | define-a-primitive-data-type |   |  |  |
 | 284 | md5 |   |  |  |
 
-_Last updated: 2025-07-25 12:23 +0700_
+_Last updated: 2025-07-25 17:27 +0700_
