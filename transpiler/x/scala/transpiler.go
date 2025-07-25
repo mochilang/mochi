@@ -334,6 +334,12 @@ type UpdateStmt struct {
 	Cond   Expr
 }
 
+// BenchStmt measures execution time and memory usage of a block.
+type BenchStmt struct {
+	Name string
+	Body []Stmt
+}
+
 // TypeDeclStmt represents a case class declaration.
 type Variant struct {
 	Name   string
@@ -653,6 +659,23 @@ func (u *UpdateStmt) emit(w io.Writer) {
 	}
 	fmt.Fprintf(w, "  %s(i) = item\n", u.Target)
 	fmt.Fprint(w, "}\n")
+}
+
+func (b *BenchStmt) emit(w io.Writer) {
+	fmt.Fprint(w, "{\n")
+	fmt.Fprint(w, "  val _startMem = Runtime.getRuntime.totalMemory() - Runtime.getRuntime.freeMemory()\n")
+	fmt.Fprint(w, "  val _start = _now()\n")
+	for _, st := range b.Body {
+		fmt.Fprint(w, "  ")
+		st.emit(w)
+		fmt.Fprint(w, "\n")
+	}
+	fmt.Fprint(w, "  val _end = _now()\n")
+	fmt.Fprint(w, "  val _endMem = Runtime.getRuntime.totalMemory() - Runtime.getRuntime.freeMemory()\n")
+	fmt.Fprint(w, "  val _durUs = (_end - _start) / 1000\n")
+	fmt.Fprint(w, "  val _memDiff = 0\n")
+	fmt.Fprintf(w, "  println(toJson(Map(\"duration_us\" -> _durUs, \"memory_bytes\" -> _memDiff, \"name\" -> \"%s\")))\n", b.Name)
+	fmt.Fprint(w, "}")
 }
 
 func (i *IfStmt) emit(w io.Writer) {
@@ -1671,6 +1694,8 @@ func convertStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 		return convertWhileStmt(st.While, env)
 	case st.For != nil:
 		return convertForStmt(st.For, env)
+	case st.Bench != nil:
+		return convertBenchStmt(st.Bench, env)
 	case st.Update != nil:
 		up, err := convertUpdateStmt(st.Update, env)
 		if err != nil {
@@ -3344,6 +3369,20 @@ func convertUpdateStmt(us *parser.UpdateStmt, env *types.Env) (Stmt, error) {
 		cond = substituteFieldVars(cond, fieldSet)
 	}
 	return &UpdateStmt{Target: us.Target, Fields: fields, Values: values, Cond: cond}, nil
+}
+
+func convertBenchStmt(bb *parser.BenchBlock, env *types.Env) (Stmt, error) {
+	var body []Stmt
+	for _, st := range bb.Body {
+		s, err := convertStmt(st, env)
+		if err != nil {
+			return nil, err
+		}
+		body = append(body, s)
+	}
+	needsJSON = true
+	useNow = true
+	return &BenchStmt{Name: bb.Name, Body: body}, nil
 }
 
 func convertIfStmt(is *parser.IfStmt, env *types.Env) (Stmt, error) {
