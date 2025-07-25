@@ -8,3 +8,8 @@
 1
 0
 -1
+{
+  "duration_us": 176,
+  "memory_bytes": 75608,
+  "name": "main"
+}

@@ -2,7 +2,7 @@
 
 This checklist is auto-generated.
 Generated IR and outputs from programs in `tests/rosetta/x/Mochi` lives in `tests/rosetta/ir`.
-Last updated: 2025-07-25 09:46 UTC
+Last updated: 2025-07-25 10:06 UTC
 
 ## Rosetta Golden Test Checklist (53/284)
 | Index | Name | Status | Duration | Memory |
@@ -57,7 +57,7 @@ Last updated: 2025-07-25 09:46 UTC
 | 48 | angle-difference-between-two-bearings-1 | ✓ | 504µs | 19.2 KB |
 | 49 | angle-difference-between-two-bearings-2 | ✓ | 551µs | 26.6 KB |
 | 50 | angles-geometric-normalization-and-conversion | ✓ | 593µs | 136 B |
-| 51 | animate-a-pendulum | ✓ | 1.023ms | 73.8 KB |
+| 51 | animate-a-pendulum | ✓ | 138µs | 73.8 KB |
 | 52 | animation | ✓ | 930µs | 18.1 KB |
 | 53 | anonymous-recursion-1 | ✓ | 349µs | 15.6 KB |
 | 54 | anonymous-recursion-2 |   |  |  |
