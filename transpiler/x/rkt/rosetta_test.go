@@ -101,7 +101,11 @@ func transpileAndRunRacket(root, srcPath, wantPath, outDir, name string) error {
 		return err
 	}
 	if bench {
-		if err := os.WriteFile(filepath.Join(outDir, name+".bench"), got, 0o644); err != nil {
+		benchBytes := got
+		if idx := bytes.LastIndexByte(benchBytes, '{'); idx >= 0 {
+			benchBytes = benchBytes[idx:]
+		}
+		if err := os.WriteFile(filepath.Join(outDir, name+".bench"), benchBytes, 0o644); err != nil {
 			return fmt.Errorf("write out: %w", err)
 		}
 		_ = os.Remove(filepath.Join(outDir, name+".error"))
