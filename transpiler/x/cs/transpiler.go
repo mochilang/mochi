@@ -75,6 +75,7 @@ var usesLinq bool
 var usesJson bool
 var usesNow bool
 var usesInput bool
+var usesMem bool
 var globalDecls map[string]*Global
 var mutatedVars map[string]bool
 var blockDepth int
@@ -143,7 +144,7 @@ type Stmt interface{ emit(io.Writer) }
 
 func isBlockStmt(s Stmt) bool {
 	switch s.(type) {
-	case *ForRangeStmt, *ForInStmt, *WhileStmt, *IfStmt:
+	case *ForRangeStmt, *ForInStmt, *WhileStmt, *IfStmt, *BenchStmt:
 		return true
 	}
 	return false
@@ -265,6 +266,33 @@ func (b *BreakStmt) emit(w io.Writer) { fmt.Fprint(w, "break") }
 type ContinueStmt struct{}
 
 func (c *ContinueStmt) emit(w io.Writer) { fmt.Fprint(w, "continue") }
+
+// BenchStmt represents a benchmark block.
+type BenchStmt struct {
+	Name string
+	Body []Stmt
+}
+
+func (b *BenchStmt) emit(w io.Writer) {
+	fmt.Fprint(w, "{\n")
+	fmt.Fprint(w, "    var __memStart = _mem();\n")
+	fmt.Fprint(w, "    var __start = _now();\n")
+	for _, st := range b.Body {
+		fmt.Fprint(w, "    ")
+		st.emit(w)
+		if isBlockStmt(st) {
+			fmt.Fprint(w, "\n")
+		} else {
+			fmt.Fprint(w, ";\n")
+		}
+	}
+	fmt.Fprint(w, "    var __end = _now();\n")
+	fmt.Fprint(w, "    var __memEnd = _mem();\n")
+	fmt.Fprint(w, "    var __dur = (__end - __start) / 1000;\n")
+	fmt.Fprint(w, "    var __memDiff = __memEnd - __memStart;\n")
+	fmt.Fprintf(w, "    Console.WriteLine(JsonSerializer.Serialize(new SortedDictionary<string, object>{{\"name\", \"%s\"}, {\"duration_us\", __dur}, {\"memory_bytes\", __memDiff}}, new JsonSerializerOptions{ WriteIndented = true }));\n", b.Name)
+	fmt.Fprint(w, "}")
+}
 
 // UpdateStmt updates fields of items in a list of structs.
 type UpdateStmt struct {
@@ -1816,6 +1844,7 @@ func Transpile(p *parser.Program, env *types.Env) (*Program, error) {
 	usesJson = false
 	usesNow = false
 	usesInput = false
+	usesMem = false
 	usesFmt = false
 	globalDecls = make(map[string]*Global)
 	mutatedVars = make(map[string]bool)
@@ -2604,6 +2633,32 @@ func compileStmt(prog *Program, s *parser.Statement) (Stmt, error) {
 		stringVars = savedStr
 		mutatedVars = savedMut
 		return &WhileStmt{Cond: cond, Body: body}, nil
+	case s.Bench != nil:
+		savedVars := cloneStringMap(varTypes)
+		savedMap := cloneBoolMap(mapVars)
+		savedStr := cloneBoolMap(stringVars)
+		savedMut := cloneBoolMap(mutatedVars)
+		var body []Stmt
+		blockDepth++
+		for _, b := range s.Bench.Body {
+			st, err := compileStmt(prog, b)
+			if err != nil {
+				return nil, err
+			}
+			if st != nil {
+				body = append(body, st)
+			}
+		}
+		blockDepth--
+		varTypes = savedVars
+		mapVars = savedMap
+		stringVars = savedStr
+		mutatedVars = savedMut
+		usesNow = true
+		usesMem = true
+		usesJson = true
+		usesDict = true
+		return &BenchStmt{Name: s.Bench.Name, Body: body}, nil
 	case s.If != nil:
 		return compileIfStmt(prog, s.If)
 	case s.Update != nil:
@@ -3539,6 +3594,11 @@ func Emit(prog *Program) []byte {
 		buf.WriteString("\t\t\treturn (int)nowSeed;\n")
 		buf.WriteString("\t\t}\n")
 		buf.WriteString("\t\treturn (int)(DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() % int.MaxValue);\n")
+		buf.WriteString("\t}\n")
+	}
+	if usesMem {
+		buf.WriteString("\tstatic long _mem() {\n")
+		buf.WriteString("\t\treturn GC.GetTotalMemory(false);\n")
 		buf.WriteString("\t}\n")
 	}
 	if usesInput {
