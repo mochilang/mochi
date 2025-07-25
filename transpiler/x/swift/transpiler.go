@@ -112,6 +112,15 @@ type BreakStmt struct{}
 
 type ContinueStmt struct{}
 
+func toBigIntExpr(e Expr) Expr {
+	return &CallExpr{Func: "BigInt", Args: []Expr{e}}
+}
+
+func isBigIntType(t types.Type) bool {
+	_, ok := t.(types.BigIntType)
+	return ok
+}
+
 // RawStmt emits preformed Swift code directly.
 type RawStmt struct{ Code string }
 
@@ -1509,6 +1518,20 @@ func (p *Program) Emit() []byte {
 		buf.WriteString("        while resDigits.last == 0 { resDigits.removeLast(); if resDigits.isEmpty { break } }\n")
 		buf.WriteString("        var r = BigInt(); r.digits = resDigits; return r\n")
 		buf.WriteString("    }\n")
+		buf.WriteString("    static func /(lhs: BigInt, rhs: BigInt) -> BigInt {\n")
+		buf.WriteString("        if rhs.digits.isEmpty { return BigInt() }\n")
+		buf.WriteString("        let left = lhs.toInt()\n")
+		buf.WriteString("        let right = rhs.toInt()\n")
+		buf.WriteString("        if right == 0 { return BigInt() }\n")
+		buf.WriteString("        return BigInt(left / right)\n")
+		buf.WriteString("    }\n")
+		buf.WriteString("    static func %(lhs: BigInt, rhs: BigInt) -> BigInt {\n")
+		buf.WriteString("        if rhs.digits.isEmpty { return BigInt() }\n")
+		buf.WriteString("        let left2 = lhs.toInt()\n")
+		buf.WriteString("        let right2 = rhs.toInt()\n")
+		buf.WriteString("        if right2 == 0 { return BigInt() }\n")
+		buf.WriteString("        return BigInt(left2 % right2)\n")
+		buf.WriteString("    }\n")
 		buf.WriteString("    func bitLength() -> Int {\n")
 		buf.WriteString("        if digits.isEmpty { return 0 }\n")
 		buf.WriteString("        var v = digits.last!\n")
@@ -1763,7 +1786,11 @@ func convertStmt(env *types.Env, st *parser.Statement) (Stmt, error) {
 				swiftT = ut.Name
 			}
 			if swiftT != "Any" {
-				ex = &CastExpr{Expr: ex, Type: swiftT + "!"}
+				if swiftT == "BigInt" {
+					ex = toBigIntExpr(ex)
+				} else {
+					ex = &CastExpr{Expr: ex, Type: swiftT + "!"}
+				}
 			}
 		}
 		return &VarDecl{Name: st.Var.Name, Const: false, Type: typ, Expr: ex}, nil
@@ -2498,6 +2525,14 @@ func convertExpr(env *types.Env, e *parser.Expr) (Expr, error) {
 		exprStack = exprStack[:len(exprStack)-1]
 		typeStack = typeStack[:len(typeStack)-1]
 
+		if isBigIntType(ltyp) && (types.IsIntType(rtyp) || types.IsInt64Type(rtyp)) {
+			right = toBigIntExpr(right)
+			rtyp = types.BigIntType{}
+		} else if isBigIntType(rtyp) && (types.IsIntType(ltyp) || types.IsInt64Type(ltyp)) {
+			left = toBigIntExpr(left)
+			ltyp = types.BigIntType{}
+		}
+
 		if op == "in" && env != nil {
 			inMap := false
 			if types.IsMapType(rtyp) {
@@ -2613,6 +2648,8 @@ func convertExpr(env *types.Env, e *parser.Expr) (Expr, error) {
 		case "+", "-", "*", "/", "%":
 			if types.IsStringType(ltyp) || types.IsStringType(rtyp) {
 				resType = types.StringType{}
+			} else if isBigIntType(ltyp) || isBigIntType(rtyp) {
+				resType = types.BigIntType{}
 			} else if (types.IsIntType(ltyp) || types.IsInt64Type(ltyp)) &&
 				(types.IsIntType(rtyp) || types.IsInt64Type(rtyp)) {
 				if types.IsInt64Type(ltyp) || types.IsInt64Type(rtyp) {
@@ -2912,7 +2949,9 @@ func convertPostfix(env *types.Env, p *parser.PostfixExpr) (Expr, error) {
 		}
 		if op.Cast != nil {
 			typ := toSwiftType(op.Cast.Type)
-			if env != nil {
+			if typ == "BigInt" {
+				expr = toBigIntExpr(expr)
+			} else if env != nil {
 				if st, ok := types.ResolveTypeRef(op.Cast.Type, env).(types.StructType); ok {
 					if ml, ok := expr.(*MapLit); ok {
 						var fields []FieldInit
@@ -2954,6 +2993,8 @@ func convertPostfix(env *types.Env, p *parser.PostfixExpr) (Expr, error) {
 				expr = &CastExpr{Expr: expr, Type: "Int"}
 			case types.IsInt64Type(t):
 				expr = &CastExpr{Expr: expr, Type: "Int64"}
+			case isBigIntType(t):
+				expr = toBigIntExpr(expr)
 			case types.IsFloatType(t):
 				expr = &CastExpr{Expr: expr, Type: "Double"}
 			case types.IsStringType(t):
@@ -3551,6 +3592,8 @@ func zeroValue(t *parser.TypeRef) Expr {
 		return &LitExpr{Value: "", IsString: true}
 	case "bool":
 		return &LitExpr{Value: "false", IsString: false}
+	case "bigint":
+		return toBigIntExpr(&LitExpr{Value: "0", IsString: false})
 	default:
 		return &LitExpr{Value: toSwiftType(t) + "()", IsString: false}
 	}
