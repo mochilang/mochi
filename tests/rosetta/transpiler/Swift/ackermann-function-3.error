@@ -1,5 +1,5 @@
 exit status 1
-/tmp/TestSwiftTranspiler_Rosetta_Golden3553086543/001/main.swift:4:45: error: cannot find type 'bigint' in scope
+/tmp/TestSwiftTranspiler_Rosetta_Golden1138770315/001/main.swift:4:45: error: cannot find type 'bigint' in scope
  2 | import Foundation
  3 | 
  4 | func pow_big(_ base: bigint, _ exp: Int) -> bigint {
@@ -7,7 +7,7 @@ exit status 1
  5 |     var result: bigint = 1
  6 |     var b: bigint = base
 
-/tmp/TestSwiftTranspiler_Rosetta_Golden3553086543/001/main.swift:4:22: error: cannot find type 'bigint' in scope
+/tmp/TestSwiftTranspiler_Rosetta_Golden1138770315/001/main.swift:4:22: error: cannot find type 'bigint' in scope
  2 | import Foundation
  3 | 
  4 | func pow_big(_ base: bigint, _ exp: Int) -> bigint {
@@ -15,7 +15,7 @@ exit status 1
  5 |     var result: bigint = 1
  6 |     var b: bigint = base
 
-/tmp/TestSwiftTranspiler_Rosetta_Golden3553086543/001/main.swift:17:19: error: cannot find type 'bigint' in scope
+/tmp/TestSwiftTranspiler_Rosetta_Golden1138770315/001/main.swift:17:19: error: cannot find type 'bigint' in scope
 15 |     return result
 16 | }
 17 | func bit_len(_ x: bigint) -> Int {
@@ -23,54 +23,62 @@ exit status 1
 18 |     var n: bigint = x
 19 |     var c = 0
 
-/tmp/TestSwiftTranspiler_Rosetta_Golden3553086543/001/main.swift:27:46: error: cannot find type 'bigint' in scope
+/tmp/TestSwiftTranspiler_Rosetta_Golden1138770315/001/main.swift:27:46: error: cannot find type 'bigint' in scope
 25 | }
 26 | var err = ""
 27 | func ackermann2(_ m: bigint, _ n: bigint) -> bigint {
    |                                              `- error: cannot find type 'bigint' in scope
-28 |     if (String(err) != "") {
+28 |     if (err != "") {
 29 |         return 0
 
-/tmp/TestSwiftTranspiler_Rosetta_Golden3553086543/001/main.swift:27:22: error: cannot find type 'bigint' in scope
+/tmp/TestSwiftTranspiler_Rosetta_Golden1138770315/001/main.swift:27:22: error: cannot find type 'bigint' in scope
 25 | }
 26 | var err = ""
 27 | func ackermann2(_ m: bigint, _ n: bigint) -> bigint {
    |                      `- error: cannot find type 'bigint' in scope
-28 |     if (String(err) != "") {
+28 |     if (err != "") {
 29 |         return 0
 
-/tmp/TestSwiftTranspiler_Rosetta_Golden3553086543/001/main.swift:27:35: error: cannot find type 'bigint' in scope
+/tmp/TestSwiftTranspiler_Rosetta_Golden1138770315/001/main.swift:27:35: error: cannot find type 'bigint' in scope
 25 | }
 26 | var err = ""
 27 | func ackermann2(_ m: bigint, _ n: bigint) -> bigint {
    |                                   `- error: cannot find type 'bigint' in scope
-28 |     if (String(err) != "") {
+28 |     if (err != "") {
 29 |         return 0
 
-/tmp/TestSwiftTranspiler_Rosetta_Golden3553086543/001/main.swift:83:1: warning: using '_' to ignore the result of a Void-returning function is redundant
+/tmp/TestSwiftTranspiler_Rosetta_Golden1138770315/001/main.swift:83:1: warning: using '_' to ignore the result of a Void-returning function is redundant
 81 |     _ = show(4, 3)
 82 | }
 83 | _ = main()
    | `- warning: using '_' to ignore the result of a Void-returning function is redundant
 84 | 
 
-/tmp/TestSwiftTranspiler_Rosetta_Golden3553086543/001/main.swift:5:17: error: cannot find type 'bigint' in scope
+/tmp/TestSwiftTranspiler_Rosetta_Golden1138770315/001/main.swift:5:17: error: cannot find type 'bigint' in scope
  3 | 
  4 | func pow_big(_ base: bigint, _ exp: Int) -> bigint {
  5 |     var result: bigint = 1
    |                 `- error: cannot find type 'bigint' in scope
  6 |     var b: bigint = base
- 7 |     var e = Int(exp)
+ 7 |     var e = (exp as! Int)
 
-/tmp/TestSwiftTranspiler_Rosetta_Golden3553086543/001/main.swift:6:12: error: cannot find type 'bigint' in scope
+/tmp/TestSwiftTranspiler_Rosetta_Golden1138770315/001/main.swift:6:12: error: cannot find type 'bigint' in scope
  4 | func pow_big(_ base: bigint, _ exp: Int) -> bigint {
  5 |     var result: bigint = 1
  6 |     var b: bigint = base
    |            `- error: cannot find type 'bigint' in scope
- 7 |     var e = Int(exp)
- 8 |     while (Int(e) > 0) {
+ 7 |     var e = (exp as! Int)
+ 8 |     while (e > 0) {
 
-/tmp/TestSwiftTranspiler_Rosetta_Golden3553086543/001/main.swift:18:12: error: cannot find type 'bigint' in scope
+/tmp/TestSwiftTranspiler_Rosetta_Golden1138770315/001/main.swift:7:18: warning: forced cast of 'Int' to same type has no effect
+ 5 |     var result: bigint = 1
+ 6 |     var b: bigint = base
+ 7 |     var e = (exp as! Int)
+   |                  `- warning: forced cast of 'Int' to same type has no effect
+ 8 |     while (e > 0) {
+ 9 |         if ((e % 2) == 1) {
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden1138770315/001/main.swift:18:12: error: cannot find type 'bigint' in scope
 16 | }
 17 | func bit_len(_ x: bigint) -> Int {
 18 |     var n: bigint = x
@@ -78,39 +86,47 @@ exit status 1
 19 |     var c = 0
 20 |     while (n > 0) {
 
-/tmp/TestSwiftTranspiler_Rosetta_Golden3553086543/001/main.swift:22:27: warning: forced cast of 'Int' to same type has no effect
+/tmp/TestSwiftTranspiler_Rosetta_Golden1138770315/001/main.swift:22:22: warning: forced cast of 'Int' to same type has no effect
 20 |     while (n > 0) {
 21 |         n = (n / 2)
-22 |         c = ((Int(c) + 1) as! Int)
-   |                           `- warning: forced cast of 'Int' to same type has no effect
+22 |         c = ((c + 1) as! Int)
+   |                      `- warning: forced cast of 'Int' to same type has no effect
 23 |     }
-24 |     return Int(c)
+24 |     return (c as! Int)
 
-/tmp/TestSwiftTranspiler_Rosetta_Golden3553086543/001/main.swift:59:33: error: cannot find type 'bigint' in scope
+/tmp/TestSwiftTranspiler_Rosetta_Golden1138770315/001/main.swift:24:15: warning: forced cast of 'Int' to same type has no effect
+22 |         c = ((c + 1) as! Int)
+23 |     }
+24 |     return (c as! Int)
+   |               `- warning: forced cast of 'Int' to same type has no effect
+25 | }
+26 | var err = ""
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden1138770315/001/main.swift:45:93: warning: forced cast of 'String' to same type has no effect
+43 |             let nb = Int(bit_len(n))
+44 |             if (nb > 64) {
+45 |                 err = ((("A(m,n) had n of " + String(describing: nb)) + " bits; too large") as! String)
+   |                                                                                             `- warning: forced cast of 'String' to same type has no effect
+46 |                 return 0
+47 |             }
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden1138770315/001/main.swift:59:33: error: cannot find type 'bigint' in scope
 57 | func show(_ m: Int, _ n: Int) {
 58 |     err = ""
 59 |     let res = ackermann2((m as! bigint), (n as! bigint))
    |                                 `- error: cannot find type 'bigint' in scope
-60 |     if (String(err) != "") {
-61 |         print(((((("A(" + String(String(describing: Int(m)))) + ", ") + String(String(describing: Int(n)))) + ") = Error: ") + String(err)))
+60 |     if (err != "") {
+61 |         print(((((("A(" + String(describing: m)) + ", ") + String(describing: n)) + ") = Error: ") + err))
 
-/tmp/TestSwiftTranspiler_Rosetta_Golden3553086543/001/main.swift:59:49: error: cannot find type 'bigint' in scope
+/tmp/TestSwiftTranspiler_Rosetta_Golden1138770315/001/main.swift:59:49: error: cannot find type 'bigint' in scope
 57 | func show(_ m: Int, _ n: Int) {
 58 |     err = ""
 59 |     let res = ackermann2((m as! bigint), (n as! bigint))
    |                                                 `- error: cannot find type 'bigint' in scope
-60 |     if (String(err) != "") {
-61 |         print(((((("A(" + String(String(describing: Int(m)))) + ", ") + String(String(describing: Int(n)))) + ") = Error: ") + String(err)))
+60 |     if (err != "") {
+61 |         print(((((("A(" + String(describing: m)) + ", ") + String(describing: n)) + ") = Error: ") + err))
 
-/tmp/TestSwiftTranspiler_Rosetta_Golden3553086543/001/main.swift:70:9: error: the compiler is unable to type-check this expression in reasonable time; try breaking up the expression into distinct sub-expressions
-68 |         let pre = String(String(Array(String(s))[0..<20]))
-69 |         let suf = String(String(Array(String(s))[((Int(((String(s)).count)) - 20) as! Int)..<Int(((String(s)).count))]))
-70 |         print(((((((((("A(" + String(String(describing: Int(m)))) + ", ") + String(String(describing: Int(n)))) + ") = ") + String(String(describing: Int(((String(s)).count))))) + " digits starting/ending with: ") + String(pre)) + "...") + String(suf)))
-   |         `- error: the compiler is unable to type-check this expression in reasonable time; try breaking up the expression into distinct sub-expressions
-71 |     }
-72 | }
-
-/tmp/TestSwiftTranspiler_Rosetta_Golden3553086543/001/main.swift:74:5: warning: using '_' to ignore the result of a Void-returning function is redundant
+/tmp/TestSwiftTranspiler_Rosetta_Golden1138770315/001/main.swift:74:5: warning: using '_' to ignore the result of a Void-returning function is redundant
 72 | }
 73 | func main() {
 74 |     _ = show(0, 0)
@@ -118,7 +134,7 @@ exit status 1
 75 |     _ = show(1, 2)
 76 |     _ = show(2, 4)
 
-/tmp/TestSwiftTranspiler_Rosetta_Golden3553086543/001/main.swift:75:5: warning: using '_' to ignore the result of a Void-returning function is redundant
+/tmp/TestSwiftTranspiler_Rosetta_Golden1138770315/001/main.swift:75:5: warning: using '_' to ignore the result of a Void-returning function is redundant
 73 | func main() {
 74 |     _ = show(0, 0)
 75 |     _ = show(1, 2)
@@ -126,7 +142,7 @@ exit status 1
 76 |     _ = show(2, 4)
 77 |     _ = show(3, 100)
 
-/tmp/TestSwiftTranspiler_Rosetta_Golden3553086543/001/main.swift:76:5: warning: using '_' to ignore the result of a Void-returning function is redundant
+/tmp/TestSwiftTranspiler_Rosetta_Golden1138770315/001/main.swift:76:5: warning: using '_' to ignore the result of a Void-returning function is redundant
 74 |     _ = show(0, 0)
 75 |     _ = show(1, 2)
 76 |     _ = show(2, 4)
@@ -134,7 +150,7 @@ exit status 1
 77 |     _ = show(3, 100)
 78 |     _ = show(3, 1000000)
 
-/tmp/TestSwiftTranspiler_Rosetta_Golden3553086543/001/main.swift:77:5: warning: using '_' to ignore the result of a Void-returning function is redundant
+/tmp/TestSwiftTranspiler_Rosetta_Golden1138770315/001/main.swift:77:5: warning: using '_' to ignore the result of a Void-returning function is redundant
 75 |     _ = show(1, 2)
 76 |     _ = show(2, 4)
 77 |     _ = show(3, 100)
@@ -142,7 +158,7 @@ exit status 1
 78 |     _ = show(3, 1000000)
 79 |     _ = show(4, 1)
 
-/tmp/TestSwiftTranspiler_Rosetta_Golden3553086543/001/main.swift:78:5: warning: using '_' to ignore the result of a Void-returning function is redundant
+/tmp/TestSwiftTranspiler_Rosetta_Golden1138770315/001/main.swift:78:5: warning: using '_' to ignore the result of a Void-returning function is redundant
 76 |     _ = show(2, 4)
 77 |     _ = show(3, 100)
 78 |     _ = show(3, 1000000)
@@ -150,7 +166,7 @@ exit status 1
 79 |     _ = show(4, 1)
 80 |     _ = show(4, 2)
 
-/tmp/TestSwiftTranspiler_Rosetta_Golden3553086543/001/main.swift:79:5: warning: using '_' to ignore the result of a Void-returning function is redundant
+/tmp/TestSwiftTranspiler_Rosetta_Golden1138770315/001/main.swift:79:5: warning: using '_' to ignore the result of a Void-returning function is redundant
 77 |     _ = show(3, 100)
 78 |     _ = show(3, 1000000)
 79 |     _ = show(4, 1)
@@ -158,7 +174,7 @@ exit status 1
 80 |     _ = show(4, 2)
 81 |     _ = show(4, 3)
 
-/tmp/TestSwiftTranspiler_Rosetta_Golden3553086543/001/main.swift:80:5: warning: using '_' to ignore the result of a Void-returning function is redundant
+/tmp/TestSwiftTranspiler_Rosetta_Golden1138770315/001/main.swift:80:5: warning: using '_' to ignore the result of a Void-returning function is redundant
 78 |     _ = show(3, 1000000)
 79 |     _ = show(4, 1)
 80 |     _ = show(4, 2)
@@ -166,7 +182,7 @@ exit status 1
 81 |     _ = show(4, 3)
 82 | }
 
-/tmp/TestSwiftTranspiler_Rosetta_Golden3553086543/001/main.swift:81:5: warning: using '_' to ignore the result of a Void-returning function is redundant
+/tmp/TestSwiftTranspiler_Rosetta_Golden1138770315/001/main.swift:81:5: warning: using '_' to ignore the result of a Void-returning function is redundant
 79 |     _ = show(4, 1)
 80 |     _ = show(4, 2)
 81 |     _ = show(4, 3)

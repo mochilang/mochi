@@ -1,321 +1,281 @@
 exit status 1
-/tmp/TestSwiftTranspiler_Rosetta_Golden3897884450/001/main.swift:296:1: warning: using '_' to ignore the result of a Void-returning function is redundant
-294 |     print(("\nDecrypted : " + String(plainText2)))
+/tmp/TestSwiftTranspiler_Rosetta_Golden2871300367/001/main.swift:296:1: warning: using '_' to ignore the result of a Void-returning function is redundant
+294 |     print(("\nDecrypted : " + plainText2))
 295 | }
 296 | _ = main()
     | `- warning: using '_' to ignore the result of a Void-returning function is redundant
 297 | 
 
-/tmp/TestSwiftTranspiler_Rosetta_Golden3897884450/001/main.swift:25:22: warning: forced cast of '[String]' to same type has no effect
- 23 |     var i = 0
- 24 |     while (Int(i) < Int(((String(s)).count))) {
- 25 |         arr = (((arr as! [String]) + [String(String(Array(s)[Int(i)..<(Int(i) + 1)]))]) as! [String])
-    |                      `- warning: forced cast of '[String]' to same type has no effect
- 26 |         i = ((Int(i) + 1) as! Int)
+/tmp/TestSwiftTranspiler_Rosetta_Golden2871300367/001/main.swift:26:22: warning: forced cast of 'Int' to same type has no effect
+ 24 |     while (i < Int(((s).count))) {
+ 25 |         arr = ((arr + [String(Array(s)[i..<(i + 1)])]) as! [String])
+ 26 |         i = ((i + 1) as! Int)
+    |                      `- warning: forced cast of 'Int' to same type has no effect
  27 |     }
+ 28 |     var j = ((Int(((arr).count)) - 1) as! Int)
 
-/tmp/TestSwiftTranspiler_Rosetta_Golden3897884450/001/main.swift:26:27: warning: forced cast of 'Int' to same type has no effect
- 24 |     while (Int(i) < Int(((String(s)).count))) {
- 25 |         arr = (((arr as! [String]) + [String(String(Array(s)[Int(i)..<(Int(i) + 1)]))]) as! [String])
- 26 |         i = ((Int(i) + 1) as! Int)
-    |                           `- warning: forced cast of 'Int' to same type has no effect
+/tmp/TestSwiftTranspiler_Rosetta_Golden2871300367/001/main.swift:28:39: warning: forced cast of 'Int' to same type has no effect
+ 26 |         i = ((i + 1) as! Int)
  27 |     }
- 28 |     var j = ((Int((((arr as! [String])).count)) - 1) as! Int)
+ 28 |     var j = ((Int(((arr).count)) - 1) as! Int)
+    |                                       `- warning: forced cast of 'Int' to same type has no effect
+ 29 |     while (j > 0) {
+ 30 |         let k = (Int(_now()) % Int((j + 1)))
 
-/tmp/TestSwiftTranspiler_Rosetta_Golden3897884450/001/main.swift:28:26: warning: forced cast of '[String]' to same type has no effect
- 26 |         i = ((Int(i) + 1) as! Int)
- 27 |     }
- 28 |     var j = ((Int((((arr as! [String])).count)) - 1) as! Int)
-    |                          `- warning: forced cast of '[String]' to same type has no effect
- 29 |     while (Int(j) > 0) {
- 30 |         let k = (Int(_now()) % Int((Int(j) + 1)))
+/tmp/TestSwiftTranspiler_Rosetta_Golden2871300367/001/main.swift:33:23: warning: forced cast of 'String' to same type has no effect
+ 31 |         let tmp = String(describing: arr[j])
+ 32 |         arr[j] = String(describing: arr[k])
+ 33 |         arr[k] = (tmp as! String)
+    |                       `- warning: forced cast of 'String' to same type has no effect
+ 34 |         j = ((j - 1) as! Int)
+ 35 |     }
 
-/tmp/TestSwiftTranspiler_Rosetta_Golden3897884450/001/main.swift:28:54: warning: forced cast of 'Int' to same type has no effect
- 26 |         i = ((Int(i) + 1) as! Int)
- 27 |     }
- 28 |     var j = ((Int((((arr as! [String])).count)) - 1) as! Int)
-    |                                                      `- warning: forced cast of 'Int' to same type has no effect
- 29 |     while (Int(j) > 0) {
- 30 |         let k = (Int(_now()) % Int((Int(j) + 1)))
-
-/tmp/TestSwiftTranspiler_Rosetta_Golden3897884450/001/main.swift:34:27: warning: forced cast of 'Int' to same type has no effect
- 32 |         arr[Int(j)] = String(arr[Int(k)])
- 33 |         arr[Int(k)] = String(tmp)
- 34 |         j = ((Int(j) - 1) as! Int)
-    |                           `- warning: forced cast of 'Int' to same type has no effect
+/tmp/TestSwiftTranspiler_Rosetta_Golden2871300367/001/main.swift:34:22: warning: forced cast of 'Int' to same type has no effect
+ 32 |         arr[j] = String(describing: arr[k])
+ 33 |         arr[k] = (tmp as! String)
+ 34 |         j = ((j - 1) as! Int)
+    |                      `- warning: forced cast of 'Int' to same type has no effect
  35 |     }
  36 |     var out = ""
 
-/tmp/TestSwiftTranspiler_Rosetta_Golden3897884450/001/main.swift:38:32: warning: forced cast of '[String]' to same type has no effect
- 36 |     var out = ""
+/tmp/TestSwiftTranspiler_Rosetta_Golden2871300367/001/main.swift:39:51: warning: forced cast of 'String' to same type has no effect
  37 |     i = 0
- 38 |     while (Int(i) < Int((((arr as! [String])).count))) {
-    |                                `- warning: forced cast of '[String]' to same type has no effect
- 39 |         out = ((String(out) + String(arr[Int(i)])) as! String)
- 40 |         i = ((Int(i) + 1) as! Int)
-
-/tmp/TestSwiftTranspiler_Rosetta_Golden3897884450/001/main.swift:39:52: warning: forced cast of 'String' to same type has no effect
- 37 |     i = 0
- 38 |     while (Int(i) < Int((((arr as! [String])).count))) {
- 39 |         out = ((String(out) + String(arr[Int(i)])) as! String)
-    |                                                    `- warning: forced cast of 'String' to same type has no effect
- 40 |         i = ((Int(i) + 1) as! Int)
+ 38 |     while (i < Int(((arr).count))) {
+ 39 |         out = ((out + String(describing: arr[i])) as! String)
+    |                                                   `- warning: forced cast of 'String' to same type has no effect
+ 40 |         i = ((i + 1) as! Int)
  41 |     }
 
-/tmp/TestSwiftTranspiler_Rosetta_Golden3897884450/001/main.swift:40:27: warning: forced cast of 'Int' to same type has no effect
- 38 |     while (Int(i) < Int((((arr as! [String])).count))) {
- 39 |         out = ((String(out) + String(arr[Int(i)])) as! String)
- 40 |         i = ((Int(i) + 1) as! Int)
-    |                           `- warning: forced cast of 'Int' to same type has no effect
+/tmp/TestSwiftTranspiler_Rosetta_Golden2871300367/001/main.swift:40:22: warning: forced cast of 'Int' to same type has no effect
+ 38 |     while (i < Int(((arr).count))) {
+ 39 |         out = ((out + String(describing: arr[i])) as! String)
+ 40 |         i = ((i + 1) as! Int)
+    |                      `- warning: forced cast of 'Int' to same type has no effect
  41 |     }
- 42 |     return String(out)
+ 42 |     return (out as! String)
 
-/tmp/TestSwiftTranspiler_Rosetta_Golden3897884450/001/main.swift:49:28: warning: forced cast of '[String]' to same type has no effect
+/tmp/TestSwiftTranspiler_Rosetta_Golden2871300367/001/main.swift:42:17: warning: forced cast of 'String' to same type has no effect
+ 40 |         i = ((i + 1) as! Int)
+ 41 |     }
+ 42 |     return (out as! String)
+    |                 `- warning: forced cast of 'String' to same type has no effect
+ 43 | }
+ 44 | func createPolybius() -> [String] {
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2871300367/001/main.swift:45:60: warning: forced cast of 'String' to same type has no effect
+ 43 | }
+ 44 | func createPolybius() -> [String] {
+ 45 |     let shuffled = String(describing: shuffleStr((alphabet as! String)))
+    |                                                            `- warning: forced cast of 'String' to same type has no effect
+ 46 |     var labels: [String] = ([] as! [String])
  47 |     var li = 0
- 48 |     while (Int(li) < Int(((String(adfgvx)).count))) {
- 49 |         labels = (((labels as! [String]) + [String(String(Array(adfgvx)[Int(li)..<(Int(li) + 1)]))]) as! [String])
-    |                            `- warning: forced cast of '[String]' to same type has no effect
- 50 |         li = ((Int(li) + 1) as! Int)
- 51 |     }
 
-/tmp/TestSwiftTranspiler_Rosetta_Golden3897884450/001/main.swift:50:29: warning: forced cast of 'Int' to same type has no effect
- 48 |     while (Int(li) < Int(((String(adfgvx)).count))) {
- 49 |         labels = (((labels as! [String]) + [String(String(Array(adfgvx)[Int(li)..<(Int(li) + 1)]))]) as! [String])
- 50 |         li = ((Int(li) + 1) as! Int)
-    |                             `- warning: forced cast of 'Int' to same type has no effect
+/tmp/TestSwiftTranspiler_Rosetta_Golden2871300367/001/main.swift:50:24: warning: forced cast of 'Int' to same type has no effect
+ 48 |     while (li < Int(((adfgvx).count))) {
+ 49 |         labels = ((labels + [String(Array(adfgvx)[li..<(li + 1)])]) as! [String])
+ 50 |         li = ((li + 1) as! Int)
+    |                        `- warning: forced cast of 'Int' to same type has no effect
  51 |     }
  52 |     print("6 x 6 Polybius square:\n")
 
-/tmp/TestSwiftTranspiler_Rosetta_Golden3897884450/001/main.swift:59:18: warning: forced cast of '[String]' to same type has no effect
- 57 |     while (Int(i) < 6) {
- 58 |         var row = String(String(Array(shuffled)[(Int(i) * 6)..<(Int((Int(i) + 1)) * 6)]))
- 59 |         p = (((p as! [String]) + [String(row)]) as! [String])
-    |                  `- warning: forced cast of '[String]' to same type has no effect
- 60 |         var line = ((String(labels[Int(i)]) + " | ") as! String)
- 61 |         var j = 0
+/tmp/TestSwiftTranspiler_Rosetta_Golden2871300367/001/main.swift:58:74: warning: forced cast of 'String' to same type has no effect
+ 56 |     var i = 0
+ 57 |     while (i < 6) {
+ 58 |         var row = (String(Array(shuffled)[(i * 6)..<(Int((i + 1)) * 6)]) as! String)
+    |                                                                          `- warning: forced cast of 'String' to same type has no effect
+ 59 |         p = ((p + [row]) as! [String])
+ 60 |         var line = ((String(describing: labels[i]) + " | ") as! String)
 
-/tmp/TestSwiftTranspiler_Rosetta_Golden3897884450/001/main.swift:60:54: warning: forced cast of 'String' to same type has no effect
- 58 |         var row = String(String(Array(shuffled)[(Int(i) * 6)..<(Int((Int(i) + 1)) * 6)]))
- 59 |         p = (((p as! [String]) + [String(row)]) as! [String])
- 60 |         var line = ((String(labels[Int(i)]) + " | ") as! String)
-    |                                                      `- warning: forced cast of 'String' to same type has no effect
+/tmp/TestSwiftTranspiler_Rosetta_Golden2871300367/001/main.swift:60:61: warning: forced cast of 'String' to same type has no effect
+ 58 |         var row = (String(Array(shuffled)[(i * 6)..<(Int((i + 1)) * 6)]) as! String)
+ 59 |         p = ((p + [row]) as! [String])
+ 60 |         var line = ((String(describing: labels[i]) + " | ") as! String)
+    |                                                             `- warning: forced cast of 'String' to same type has no effect
  61 |         var j = 0
- 62 |         while (Int(j) < 6) {
+ 62 |         while (j < 6) {
 
-/tmp/TestSwiftTranspiler_Rosetta_Golden3897884450/001/main.swift:63:96: warning: forced cast of 'String' to same type has no effect
+/tmp/TestSwiftTranspiler_Rosetta_Golden2871300367/001/main.swift:63:70: warning: forced cast of 'String' to same type has no effect
  61 |         var j = 0
- 62 |         while (Int(j) < 6) {
- 63 |             line = (((String(line) + String(String(Array(row)[Int(j)..<(Int(j) + 1)]))) + " ") as! String)
-    |                                                                                                `- warning: forced cast of 'String' to same type has no effect
- 64 |             j = ((Int(j) + 1) as! Int)
+ 62 |         while (j < 6) {
+ 63 |             line = (((line + String(Array(row)[j..<(j + 1)])) + " ") as! String)
+    |                                                                      `- warning: forced cast of 'String' to same type has no effect
+ 64 |             j = ((j + 1) as! Int)
  65 |         }
 
-/tmp/TestSwiftTranspiler_Rosetta_Golden3897884450/001/main.swift:64:31: warning: forced cast of 'Int' to same type has no effect
- 62 |         while (Int(j) < 6) {
- 63 |             line = (((String(line) + String(String(Array(row)[Int(j)..<(Int(j) + 1)]))) + " ") as! String)
- 64 |             j = ((Int(j) + 1) as! Int)
-    |                               `- warning: forced cast of 'Int' to same type has no effect
+/tmp/TestSwiftTranspiler_Rosetta_Golden2871300367/001/main.swift:64:26: warning: forced cast of 'Int' to same type has no effect
+ 62 |         while (j < 6) {
+ 63 |             line = (((line + String(Array(row)[j..<(j + 1)])) + " ") as! String)
+ 64 |             j = ((j + 1) as! Int)
+    |                          `- warning: forced cast of 'Int' to same type has no effect
  65 |         }
- 66 |         print(String(line))
+ 66 |         print(line)
 
-/tmp/TestSwiftTranspiler_Rosetta_Golden3897884450/001/main.swift:67:27: warning: forced cast of 'Int' to same type has no effect
+/tmp/TestSwiftTranspiler_Rosetta_Golden2871300367/001/main.swift:67:22: warning: forced cast of 'Int' to same type has no effect
  65 |         }
- 66 |         print(String(line))
- 67 |         i = ((Int(i) + 1) as! Int)
-    |                           `- warning: forced cast of 'Int' to same type has no effect
+ 66 |         print(line)
+ 67 |         i = ((i + 1) as! Int)
+    |                      `- warning: forced cast of 'Int' to same type has no effect
  68 |     }
  69 |     return (p as! [String])
 
-/tmp/TestSwiftTranspiler_Rosetta_Golden3897884450/001/main.swift:69:15: warning: forced cast of '[String]' to same type has no effect
- 67 |         i = ((Int(i) + 1) as! Int)
+/tmp/TestSwiftTranspiler_Rosetta_Golden2871300367/001/main.swift:69:15: warning: forced cast of '[String]' to same type has no effect
+ 67 |         i = ((i + 1) as! Int)
  68 |     }
  69 |     return (p as! [String])
     |               `- warning: forced cast of '[String]' to same type has no effect
  70 | }
  71 | func createKey(_ n: Int) -> String {
 
-/tmp/TestSwiftTranspiler_Rosetta_Golden3897884450/001/main.swift:58:13: warning: variable 'row' was never mutated; consider changing to 'let' constant
+/tmp/TestSwiftTranspiler_Rosetta_Golden2871300367/001/main.swift:58:13: warning: variable 'row' was never mutated; consider changing to 'let' constant
  56 |     var i = 0
- 57 |     while (Int(i) < 6) {
- 58 |         var row = String(String(Array(shuffled)[(Int(i) * 6)..<(Int((Int(i) + 1)) * 6)]))
+ 57 |     while (i < 6) {
+ 58 |         var row = (String(Array(shuffled)[(i * 6)..<(Int((i + 1)) * 6)]) as! String)
     |             `- warning: variable 'row' was never mutated; consider changing to 'let' constant
- 59 |         p = (((p as! [String]) + [String(row)]) as! [String])
- 60 |         var line = ((String(labels[Int(i)]) + " | ") as! String)
+ 59 |         p = ((p + [row]) as! [String])
+ 60 |         var line = ((String(describing: labels[i]) + " | ") as! String)
 
-/tmp/TestSwiftTranspiler_Rosetta_Golden3897884450/001/main.swift:80:70: warning: forced cast of 'String' to same type has no effect
- 78 |     while (Int(i) < Int(n)) {
- 79 |         let idx = (Int(_now()) % Int(((String(pool)).count)))
- 80 |         key = ((String(key) + String(String(Array(pool)[Int(idx)]))) as! String)
-    |                                                                      `- warning: forced cast of 'String' to same type has no effect
- 81 |         pool = ((String(String(Array(pool)[0..<Int(idx)])) + String(String(Array(pool)[(Int(idx) + 1)..<Int(((String(pool)).count))]))) as! String)
- 82 |         i = ((Int(i) + 1) as! Int)
+/tmp/TestSwiftTranspiler_Rosetta_Golden2871300367/001/main.swift:80:69: warning: forced cast of 'String' to same type has no effect
+ 78 |     while (i < n) {
+ 79 |         let idx = (Int(_now()) % Int(((pool).count)))
+ 80 |         key = ((key + String(describing: String(Array(pool)[idx]))) as! String)
+    |                                                                     `- warning: forced cast of 'String' to same type has no effect
+ 81 |         pool = ((String(Array(pool)[0..<idx]) + String(Array(pool)[(idx + 1)..<Int(((pool).count))])) as! String)
+ 82 |         i = ((i + 1) as! Int)
 
-/tmp/TestSwiftTranspiler_Rosetta_Golden3897884450/001/main.swift:81:137: warning: forced cast of 'String' to same type has no effect
- 79 |         let idx = (Int(_now()) % Int(((String(pool)).count)))
- 80 |         key = ((String(key) + String(String(Array(pool)[Int(idx)]))) as! String)
- 81 |         pool = ((String(String(Array(pool)[0..<Int(idx)])) + String(String(Array(pool)[(Int(idx) + 1)..<Int(((String(pool)).count))]))) as! String)
-    |                                                                                                                                         `- warning: forced cast of 'String' to same type has no effect
- 82 |         i = ((Int(i) + 1) as! Int)
+/tmp/TestSwiftTranspiler_Rosetta_Golden2871300367/001/main.swift:81:103: warning: forced cast of 'String' to same type has no effect
+ 79 |         let idx = (Int(_now()) % Int(((pool).count)))
+ 80 |         key = ((key + String(describing: String(Array(pool)[idx]))) as! String)
+ 81 |         pool = ((String(Array(pool)[0..<idx]) + String(Array(pool)[(idx + 1)..<Int(((pool).count))])) as! String)
+    |                                                                                                       `- warning: forced cast of 'String' to same type has no effect
+ 82 |         i = ((i + 1) as! Int)
  83 |     }
 
-/tmp/TestSwiftTranspiler_Rosetta_Golden3897884450/001/main.swift:82:27: warning: forced cast of 'Int' to same type has no effect
- 80 |         key = ((String(key) + String(String(Array(pool)[Int(idx)]))) as! String)
- 81 |         pool = ((String(String(Array(pool)[0..<Int(idx)])) + String(String(Array(pool)[(Int(idx) + 1)..<Int(((String(pool)).count))]))) as! String)
- 82 |         i = ((Int(i) + 1) as! Int)
-    |                           `- warning: forced cast of 'Int' to same type has no effect
+/tmp/TestSwiftTranspiler_Rosetta_Golden2871300367/001/main.swift:82:22: warning: forced cast of 'Int' to same type has no effect
+ 80 |         key = ((key + String(describing: String(Array(pool)[idx]))) as! String)
+ 81 |         pool = ((String(Array(pool)[0..<idx]) + String(Array(pool)[(idx + 1)..<Int(((pool).count))])) as! String)
+ 82 |         i = ((i + 1) as! Int)
+    |                      `- warning: forced cast of 'Int' to same type has no effect
  83 |     }
- 84 |     print(("\nThe key is " + String(key)))
+ 84 |     print(("\nThe key is " + key))
 
-/tmp/TestSwiftTranspiler_Rosetta_Golden3897884450/001/main.swift:91:28: warning: forced cast of '[Any]' to same type has no effect
+/tmp/TestSwiftTranspiler_Rosetta_Golden2871300367/001/main.swift:85:17: warning: forced cast of 'String' to same type has no effect
+ 83 |     }
+ 84 |     print(("\nThe key is " + key))
+ 85 |     return (key as! String)
+    |                 `- warning: forced cast of 'String' to same type has no effect
+ 86 | }
+ 87 | func orderKey(_ key: String) -> [Int] {
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2871300367/001/main.swift:91:93: warning: forced cast from '[[Any]]' to '[Any]' always succeeds; did you mean to use 'as'?
  89 |     var i = 0
- 90 |     while (Int(i) < Int(((String(key)).count))) {
- 91 |         pairs = (((((pairs as! [Any]) + [([String(String(Array(key)[Int(i)..<(Int(i) + 1)])), Int(i)] as! [Any])]) as! [Any]) as! [[Any]]) as! [Any])
-    |                            `- warning: forced cast of '[Any]' to same type has no effect
- 92 |         i = ((Int(i) + 1) as! Int)
+ 90 |     while (i < Int(((key).count))) {
+ 91 |         pairs = ((((pairs + [[String(Array(key)[i..<(i + 1)]), i]]) as! [Any]) as! [[Any]]) as! [Any])
+    |                                                                                             `- warning: forced cast from '[[Any]]' to '[Any]' always succeeds; did you mean to use 'as'?
+ 92 |         i = ((i + 1) as! Int)
  93 |     }
 
-/tmp/TestSwiftTranspiler_Rosetta_Golden3897884450/001/main.swift:91:140: warning: forced cast from '[[Any]]' to '[Any]' always succeeds; did you mean to use 'as'?
- 89 |     var i = 0
- 90 |     while (Int(i) < Int(((String(key)).count))) {
- 91 |         pairs = (((((pairs as! [Any]) + [([String(String(Array(key)[Int(i)..<(Int(i) + 1)])), Int(i)] as! [Any])]) as! [Any]) as! [[Any]]) as! [Any])
-    |                                                                                                                                            `- warning: forced cast from '[[Any]]' to '[Any]' always succeeds; did you mean to use 'as'?
- 92 |         i = ((Int(i) + 1) as! Int)
+/tmp/TestSwiftTranspiler_Rosetta_Golden2871300367/001/main.swift:92:22: warning: forced cast of 'Int' to same type has no effect
+ 90 |     while (i < Int(((key).count))) {
+ 91 |         pairs = ((((pairs + [[String(Array(key)[i..<(i + 1)]), i]]) as! [Any]) as! [[Any]]) as! [Any])
+ 92 |         i = ((i + 1) as! Int)
+    |                      `- warning: forced cast of 'Int' to same type has no effect
  93 |     }
+ 94 |     var n = Int(((pairs).count))
 
-/tmp/TestSwiftTranspiler_Rosetta_Golden3897884450/001/main.swift:92:27: warning: forced cast of 'Int' to same type has no effect
- 90 |     while (Int(i) < Int(((String(key)).count))) {
- 91 |         pairs = (((((pairs as! [Any]) + [([String(String(Array(key)[Int(i)..<(Int(i) + 1)])), Int(i)] as! [Any])]) as! [Any]) as! [[Any]]) as! [Any])
- 92 |         i = ((Int(i) + 1) as! Int)
-    |                           `- warning: forced cast of 'Int' to same type has no effect
- 93 |     }
- 94 |     var n = Int((((pairs as! [Any])).count))
-
-/tmp/TestSwiftTranspiler_Rosetta_Golden3897884450/001/main.swift:94:26: warning: forced cast of '[Any]' to same type has no effect
- 92 |         i = ((Int(i) + 1) as! Int)
- 93 |     }
- 94 |     var n = Int((((pairs as! [Any])).count))
-    |                          `- warning: forced cast of '[Any]' to same type has no effect
- 95 |     var m = 0
- 96 |     while (Int(m) < Int(n)) {
-
-/tmp/TestSwiftTranspiler_Rosetta_Golden3897884450/001/main.swift:99:44: warning: forced cast of '[Any]' to same type has no effect
+/tmp/TestSwiftTranspiler_Rosetta_Golden2871300367/001/main.swift:99:44: warning: forced cast of '[Any]' to same type has no effect
  97 |         var j = 0
- 98 |         while (Int(j) < (Int(n) - 1)) {
- 99 |             if (String(describing: ((pairs as! [Any])[Int(j)] as! [Any])[0])
+ 98 |         while (j < (n - 1)) {
+ 99 |             if (String(describing: ((pairs as! [Any])[j] as! [Any])[0])
     |                                            `- warning: forced cast of '[Any]' to same type has no effect
-100 |             > String(describing: ((pairs as! [Any])[(Int(j) + 1)] as! [Any])[0])
+100 |             > String(describing: ((pairs as! [Any])[(j + 1)] as! [Any])[0])
 101 |             ) {
 
-/tmp/TestSwiftTranspiler_Rosetta_Golden3897884450/001/main.swift:100:42: warning: forced cast of '[Any]' to same type has no effect
- 98 |         while (Int(j) < (Int(n) - 1)) {
- 99 |             if (String(describing: ((pairs as! [Any])[Int(j)] as! [Any])[0])
-100 |             > String(describing: ((pairs as! [Any])[(Int(j) + 1)] as! [Any])[0])
+/tmp/TestSwiftTranspiler_Rosetta_Golden2871300367/001/main.swift:100:42: warning: forced cast of '[Any]' to same type has no effect
+ 98 |         while (j < (n - 1)) {
+ 99 |             if (String(describing: ((pairs as! [Any])[j] as! [Any])[0])
+100 |             > String(describing: ((pairs as! [Any])[(j + 1)] as! [Any])[0])
     |                                          `- warning: forced cast of '[Any]' to same type has no effect
 101 |             ) {
-102 |                 let tmp = (pairs as! [Any])[Int(j)]
+102 |                 let tmp = (pairs as! [Any])[j]
 
-/tmp/TestSwiftTranspiler_Rosetta_Golden3897884450/001/main.swift:102:34: warning: forced cast of '[Any]' to same type has no effect
-100 |             > String(describing: ((pairs as! [Any])[(Int(j) + 1)] as! [Any])[0])
+/tmp/TestSwiftTranspiler_Rosetta_Golden2871300367/001/main.swift:102:34: warning: forced cast of '[Any]' to same type has no effect
+100 |             > String(describing: ((pairs as! [Any])[(j + 1)] as! [Any])[0])
 101 |             ) {
-102 |                 let tmp = (pairs as! [Any])[Int(j)]
+102 |                 let tmp = (pairs as! [Any])[j]
     |                                  `- warning: forced cast of '[Any]' to same type has no effect
-103 |                 pairs[Int(j)] = (pairs as! [Any])[(Int(j) + 1)]
-104 |                 pairs[(Int(j) + 1)] = tmp
+103 |                 pairs[j] = (pairs as! [Any])[(j + 1)]
+104 |                 pairs[(j + 1)] = tmp
 
-/tmp/TestSwiftTranspiler_Rosetta_Golden3897884450/001/main.swift:103:40: warning: forced cast of '[Any]' to same type has no effect
+/tmp/TestSwiftTranspiler_Rosetta_Golden2871300367/001/main.swift:103:35: warning: forced cast of '[Any]' to same type has no effect
 101 |             ) {
-102 |                 let tmp = (pairs as! [Any])[Int(j)]
-103 |                 pairs[Int(j)] = (pairs as! [Any])[(Int(j) + 1)]
-    |                                        `- warning: forced cast of '[Any]' to same type has no effect
-104 |                 pairs[(Int(j) + 1)] = tmp
+102 |                 let tmp = (pairs as! [Any])[j]
+103 |                 pairs[j] = (pairs as! [Any])[(j + 1)]
+    |                                   `- warning: forced cast of '[Any]' to same type has no effect
+104 |                 pairs[(j + 1)] = tmp
 105 |             }
 
-/tmp/TestSwiftTranspiler_Rosetta_Golden3897884450/001/main.swift:106:31: warning: forced cast of 'Int' to same type has no effect
-104 |                 pairs[(Int(j) + 1)] = tmp
+/tmp/TestSwiftTranspiler_Rosetta_Golden2871300367/001/main.swift:106:26: warning: forced cast of 'Int' to same type has no effect
+104 |                 pairs[(j + 1)] = tmp
 105 |             }
-106 |             j = ((Int(j) + 1) as! Int)
-    |                               `- warning: forced cast of 'Int' to same type has no effect
+106 |             j = ((j + 1) as! Int)
+    |                          `- warning: forced cast of 'Int' to same type has no effect
 107 |         }
-108 |         m = ((Int(m) + 1) as! Int)
+108 |         m = ((m + 1) as! Int)
 
-/tmp/TestSwiftTranspiler_Rosetta_Golden3897884450/001/main.swift:108:27: warning: forced cast of 'Int' to same type has no effect
-106 |             j = ((Int(j) + 1) as! Int)
+/tmp/TestSwiftTranspiler_Rosetta_Golden2871300367/001/main.swift:108:22: warning: forced cast of 'Int' to same type has no effect
+106 |             j = ((j + 1) as! Int)
 107 |         }
-108 |         m = ((Int(m) + 1) as! Int)
-    |                           `- warning: forced cast of 'Int' to same type has no effect
+108 |         m = ((m + 1) as! Int)
+    |                      `- warning: forced cast of 'Int' to same type has no effect
 109 |     }
 110 |     var res: [Any] = ([] as! [Any])
 
-/tmp/TestSwiftTranspiler_Rosetta_Golden3897884450/001/main.swift:113:24: warning: forced cast of '[Any]' to same type has no effect
+/tmp/TestSwiftTranspiler_Rosetta_Golden2871300367/001/main.swift:113:26: error: initializer 'init(_:)' requires that 'T' conform to 'BinaryInteger'
 111 |     i = 0
-112 |     while (Int(i) < Int(n)) {
-113 |         res = (((((res as! [Any]) + [Int(((pairs as! [Any])[Int(i)] as! [Any])[1])]) as! [Any]) as! [Int]) as! [Any])
-    |                        `- warning: forced cast of '[Any]' to same type has no effect
-114 |         i = ((Int(i) + 1) as! Int)
+112 |     while (i < n) {
+113 |         res = ((((res + [Int(((pairs as! [Any])[i] as! [Any])[1])]) as! [Any]) as! [Int]) as! [Any])
+    |                          `- error: initializer 'init(_:)' requires that 'T' conform to 'BinaryInteger'
+114 |         i = ((i + 1) as! Int)
 115 |     }
 
-/tmp/TestSwiftTranspiler_Rosetta_Golden3897884450/001/main.swift:113:38: error: initializer 'init(_:)' requires that 'T' conform to 'BinaryInteger'
+/tmp/TestSwiftTranspiler_Rosetta_Golden2871300367/001/main.swift:113:38: warning: forced cast of '[Any]' to same type has no effect
 111 |     i = 0
-112 |     while (Int(i) < Int(n)) {
-113 |         res = (((((res as! [Any]) + [Int(((pairs as! [Any])[Int(i)] as! [Any])[1])]) as! [Any]) as! [Int]) as! [Any])
-    |                                      `- error: initializer 'init(_:)' requires that 'T' conform to 'BinaryInteger'
-114 |         i = ((Int(i) + 1) as! Int)
+112 |     while (i < n) {
+113 |         res = ((((res + [Int(((pairs as! [Any])[i] as! [Any])[1])]) as! [Any]) as! [Int]) as! [Any])
+    |                                      `- warning: forced cast of '[Any]' to same type has no effect
+114 |         i = ((i + 1) as! Int)
 115 |     }
 
-/tmp/TestSwiftTranspiler_Rosetta_Golden3897884450/001/main.swift:113:50: warning: forced cast of '[Any]' to same type has no effect
+/tmp/TestSwiftTranspiler_Rosetta_Golden2871300367/001/main.swift:113:91: warning: forced cast from '[Int]' to '[Any]' always succeeds; did you mean to use 'as'?
 111 |     i = 0
-112 |     while (Int(i) < Int(n)) {
-113 |         res = (((((res as! [Any]) + [Int(((pairs as! [Any])[Int(i)] as! [Any])[1])]) as! [Any]) as! [Int]) as! [Any])
-    |                                                  `- warning: forced cast of '[Any]' to same type has no effect
-114 |         i = ((Int(i) + 1) as! Int)
+112 |     while (i < n) {
+113 |         res = ((((res + [Int(((pairs as! [Any])[i] as! [Any])[1])]) as! [Any]) as! [Int]) as! [Any])
+    |                                                                                           `- warning: forced cast from '[Int]' to '[Any]' always succeeds; did you mean to use 'as'?
+114 |         i = ((i + 1) as! Int)
 115 |     }
 
-/tmp/TestSwiftTranspiler_Rosetta_Golden3897884450/001/main.swift:113:108: warning: forced cast from '[Int]' to '[Any]' always succeeds; did you mean to use 'as'?
-111 |     i = 0
-112 |     while (Int(i) < Int(n)) {
-113 |         res = (((((res as! [Any]) + [Int(((pairs as! [Any])[Int(i)] as! [Any])[1])]) as! [Any]) as! [Int]) as! [Any])
-    |                                                                                                            `- warning: forced cast from '[Int]' to '[Any]' always succeeds; did you mean to use 'as'?
-114 |         i = ((Int(i) + 1) as! Int)
+/tmp/TestSwiftTranspiler_Rosetta_Golden2871300367/001/main.swift:114:22: warning: forced cast of 'Int' to same type has no effect
+112 |     while (i < n) {
+113 |         res = ((((res + [Int(((pairs as! [Any])[i] as! [Any])[1])]) as! [Any]) as! [Int]) as! [Any])
+114 |         i = ((i + 1) as! Int)
+    |                      `- warning: forced cast of 'Int' to same type has no effect
 115 |     }
+116 |     return (res as! [Int])
 
-/tmp/TestSwiftTranspiler_Rosetta_Golden3897884450/001/main.swift:114:27: warning: forced cast of 'Int' to same type has no effect
-112 |     while (Int(i) < Int(n)) {
-113 |         res = (((((res as! [Any]) + [Int(((pairs as! [Any])[Int(i)] as! [Any])[1])]) as! [Any]) as! [Int]) as! [Any])
-114 |         i = ((Int(i) + 1) as! Int)
-    |                           `- warning: forced cast of 'Int' to same type has no effect
-115 |     }
-116 |     return ((res as! [Any]) as! [Int])
-
-/tmp/TestSwiftTranspiler_Rosetta_Golden3897884450/001/main.swift:116:18: warning: forced cast of '[Any]' to same type has no effect
-114 |         i = ((Int(i) + 1) as! Int)
-115 |     }
-116 |     return ((res as! [Any]) as! [Int])
-    |                  `- warning: forced cast of '[Any]' to same type has no effect
-117 | }
-118 | func encrypt(_ polybius: [String], _ key: String, _ plainText: String) -> String {
-
-/tmp/TestSwiftTranspiler_Rosetta_Golden3897884450/001/main.swift:122:28: warning: forced cast of '[String]' to same type has no effect
-120 |     var li = 0
-121 |     while (Int(li) < Int(((String(adfgvx)).count))) {
-122 |         labels = (((labels as! [String]) + [String(String(Array(adfgvx)[Int(li)..<(Int(li) + 1)]))]) as! [String])
-    |                            `- warning: forced cast of '[String]' to same type has no effect
-123 |         li = ((Int(li) + 1) as! Int)
-124 |     }
-
-/tmp/TestSwiftTranspiler_Rosetta_Golden3897884450/001/main.swift:123:29: warning: forced cast of 'Int' to same type has no effect
-121 |     while (Int(li) < Int(((String(adfgvx)).count))) {
-122 |         labels = (((labels as! [String]) + [String(String(Array(adfgvx)[Int(li)..<(Int(li) + 1)]))]) as! [String])
-123 |         li = ((Int(li) + 1) as! Int)
-    |                             `- warning: forced cast of 'Int' to same type has no effect
+/tmp/TestSwiftTranspiler_Rosetta_Golden2871300367/001/main.swift:123:24: warning: forced cast of 'Int' to same type has no effect
+121 |     while (li < Int(((adfgvx).count))) {
+122 |         labels = ((labels + [String(Array(adfgvx)[li..<(li + 1)])]) as! [String])
+123 |         li = ((li + 1) as! Int)
+    |                        `- warning: forced cast of 'Int' to same type has no effect
 124 |     }
 125 |     var temp = ""
 
-/tmp/TestSwiftTranspiler_Rosetta_Golden3897884450/001/main.swift:132:34: error: 'subscript(_:)' is unavailable: cannot subscript String with an integer range, use a String.Index range instead.
+/tmp/TestSwiftTranspiler_Rosetta_Golden2871300367/001/main.swift:132:46: error: 'subscript(_:)' is unavailable: cannot subscript String with an integer range, use a String.Index range instead.
 130 |             var c = 0
-131 |             while (Int(c) < 6) {
-132 |                 if (String(Array(polybius[Int(r)][Int(c)..<(Int(c) + 1)])) == String(String(Array(plainText)[Int(i)..<(Int(i) + 1)]))) {
-    |                                  `- error: 'subscript(_:)' is unavailable: cannot subscript String with an integer range, use a String.Index range instead.
-133 |                     temp = (((String(temp) + (Array(labels[Int(r)..<(Int(r) + 1)]) as! [String])) + (Array(labels[Int(c)..<(Int(c) + 1)]) as! [String])) as! String)
+131 |             while (c < 6) {
+132 |                 if (String(describing: Array(polybius[r][c..<(c + 1)])) == String(Array(plainText)[i..<(i + 1)])) {
+    |                                              `- error: 'subscript(_:)' is unavailable: cannot subscript String with an integer range, use a String.Index range instead.
+133 |                     temp = (((temp + Array(labels[r..<(r + 1)])) + Array(labels[c..<(c + 1)])) as! String)
 134 |                 }
 
 Swift.String.subscript:3:10: note: 'subscript(_:)' has been explicitly marked unavailable here
@@ -325,486 +285,434 @@ Swift.String.subscript:3:10: note: 'subscript(_:)' has been explicitly marked un
   |          `- note: 'subscript(_:)' has been explicitly marked unavailable here
 4 | 
 
-/tmp/TestSwiftTranspiler_Rosetta_Golden3897884450/001/main.swift:133:31: error: cannot convert value of type 'String' to expected argument type 'Array<String>'
-131 |             while (Int(c) < 6) {
-132 |                 if (String(Array(polybius[Int(r)][Int(c)..<(Int(c) + 1)])) == String(String(Array(plainText)[Int(i)..<(Int(i) + 1)]))) {
-133 |                     temp = (((String(temp) + (Array(labels[Int(r)..<(Int(r) + 1)]) as! [String])) + (Array(labels[Int(c)..<(Int(c) + 1)]) as! [String])) as! String)
+/tmp/TestSwiftTranspiler_Rosetta_Golden2871300367/001/main.swift:133:31: error: cannot convert value of type 'String' to expected argument type 'Array<String>'
+131 |             while (c < 6) {
+132 |                 if (String(describing: Array(polybius[r][c..<(c + 1)])) == String(Array(plainText)[i..<(i + 1)])) {
+133 |                     temp = (((temp + Array(labels[r..<(r + 1)])) + Array(labels[c..<(c + 1)])) as! String)
     |                               `- error: cannot convert value of type 'String' to expected argument type 'Array<String>'
 134 |                 }
-135 |                 c = ((Int(c) + 1) as! Int)
+135 |                 c = ((c + 1) as! Int)
 
-/tmp/TestSwiftTranspiler_Rosetta_Golden3897884450/001/main.swift:135:35: warning: forced cast of 'Int' to same type has no effect
-133 |                     temp = (((String(temp) + (Array(labels[Int(r)..<(Int(r) + 1)]) as! [String])) + (Array(labels[Int(c)..<(Int(c) + 1)]) as! [String])) as! String)
+/tmp/TestSwiftTranspiler_Rosetta_Golden2871300367/001/main.swift:135:30: warning: forced cast of 'Int' to same type has no effect
+133 |                     temp = (((temp + Array(labels[r..<(r + 1)])) + Array(labels[c..<(c + 1)])) as! String)
 134 |                 }
-135 |                 c = ((Int(c) + 1) as! Int)
-    |                                   `- warning: forced cast of 'Int' to same type has no effect
+135 |                 c = ((c + 1) as! Int)
+    |                              `- warning: forced cast of 'Int' to same type has no effect
 136 |             }
-137 |             r = ((Int(r) + 1) as! Int)
+137 |             r = ((r + 1) as! Int)
 
-/tmp/TestSwiftTranspiler_Rosetta_Golden3897884450/001/main.swift:137:31: warning: forced cast of 'Int' to same type has no effect
-135 |                 c = ((Int(c) + 1) as! Int)
+/tmp/TestSwiftTranspiler_Rosetta_Golden2871300367/001/main.swift:137:26: warning: forced cast of 'Int' to same type has no effect
+135 |                 c = ((c + 1) as! Int)
 136 |             }
-137 |             r = ((Int(r) + 1) as! Int)
-    |                               `- warning: forced cast of 'Int' to same type has no effect
+137 |             r = ((r + 1) as! Int)
+    |                          `- warning: forced cast of 'Int' to same type has no effect
 138 |         }
-139 |         i = ((Int(i) + 1) as! Int)
+139 |         i = ((i + 1) as! Int)
 
-/tmp/TestSwiftTranspiler_Rosetta_Golden3897884450/001/main.swift:139:27: warning: forced cast of 'Int' to same type has no effect
-137 |             r = ((Int(r) + 1) as! Int)
+/tmp/TestSwiftTranspiler_Rosetta_Golden2871300367/001/main.swift:139:22: warning: forced cast of 'Int' to same type has no effect
+137 |             r = ((r + 1) as! Int)
 138 |         }
-139 |         i = ((Int(i) + 1) as! Int)
-    |                           `- warning: forced cast of 'Int' to same type has no effect
+139 |         i = ((i + 1) as! Int)
+    |                      `- warning: forced cast of 'Int' to same type has no effect
 140 |     }
-141 |     var colLen = ((Int(((String(temp)).count)) / Int(((String(key)).count))) as! Int)
+141 |     var colLen = ((Int(((temp).count)) / Int(((key).count))) as! Int)
 
-/tmp/TestSwiftTranspiler_Rosetta_Golden3897884450/001/main.swift:141:78: warning: forced cast of 'Int' to same type has no effect
-139 |         i = ((Int(i) + 1) as! Int)
+/tmp/TestSwiftTranspiler_Rosetta_Golden2871300367/001/main.swift:141:62: warning: forced cast of 'Int' to same type has no effect
+139 |         i = ((i + 1) as! Int)
 140 |     }
-141 |     var colLen = ((Int(((String(temp)).count)) / Int(((String(key)).count))) as! Int)
-    |                                                                              `- warning: forced cast of 'Int' to same type has no effect
-142 |     if ((Int(((String(temp)).count)) % Int(((String(key)).count))) > 0) {
-143 |         colLen = ((Int(colLen) + 1) as! Int)
+141 |     var colLen = ((Int(((temp).count)) / Int(((key).count))) as! Int)
+    |                                                              `- warning: forced cast of 'Int' to same type has no effect
+142 |     if ((Int(((temp).count)) % Int(((key).count))) > 0) {
+143 |         colLen = ((colLen + 1) as! Int)
 
-/tmp/TestSwiftTranspiler_Rosetta_Golden3897884450/001/main.swift:143:37: warning: forced cast of 'Int' to same type has no effect
-141 |     var colLen = ((Int(((String(temp)).count)) / Int(((String(key)).count))) as! Int)
-142 |     if ((Int(((String(temp)).count)) % Int(((String(key)).count))) > 0) {
-143 |         colLen = ((Int(colLen) + 1) as! Int)
-    |                                     `- warning: forced cast of 'Int' to same type has no effect
+/tmp/TestSwiftTranspiler_Rosetta_Golden2871300367/001/main.swift:143:32: warning: forced cast of 'Int' to same type has no effect
+141 |     var colLen = ((Int(((temp).count)) / Int(((key).count))) as! Int)
+142 |     if ((Int(((temp).count)) % Int(((key).count))) > 0) {
+143 |         colLen = ((colLen + 1) as! Int)
+    |                                `- warning: forced cast of 'Int' to same type has no effect
 144 |     }
 145 |     var table: [[String]] = ([] as! [[String]])
 
-/tmp/TestSwiftTranspiler_Rosetta_Golden3897884450/001/main.swift:151:26: warning: forced cast of '[String]' to same type has no effect
-149 |         var j = 0
-150 |         while (Int(j) < Int(((String(key)).count))) {
-151 |             row = (((row as! [String]) + [""]) as! [String])
-    |                          `- warning: forced cast of '[String]' to same type has no effect
-152 |             j = ((Int(j) + 1) as! Int)
+/tmp/TestSwiftTranspiler_Rosetta_Golden2871300367/001/main.swift:152:26: warning: forced cast of 'Int' to same type has no effect
+150 |         while (j < Int(((key).count))) {
+151 |             row = ((row + [""]) as! [String])
+152 |             j = ((j + 1) as! Int)
+    |                          `- warning: forced cast of 'Int' to same type has no effect
 153 |         }
+154 |         table = ((table + [row]) as! [[String]])
 
-/tmp/TestSwiftTranspiler_Rosetta_Golden3897884450/001/main.swift:152:31: warning: forced cast of 'Int' to same type has no effect
-150 |         while (Int(j) < Int(((String(key)).count))) {
-151 |             row = (((row as! [String]) + [""]) as! [String])
-152 |             j = ((Int(j) + 1) as! Int)
-    |                               `- warning: forced cast of 'Int' to same type has no effect
+/tmp/TestSwiftTranspiler_Rosetta_Golden2871300367/001/main.swift:155:28: warning: forced cast of 'Int' to same type has no effect
 153 |         }
-154 |         table = (((table as! [[String]]) + [(row as! [String])]) as! [[String]])
-
-/tmp/TestSwiftTranspiler_Rosetta_Golden3897884450/001/main.swift:154:26: warning: forced cast of '[[String]]' to same type has no effect
-152 |             j = ((Int(j) + 1) as! Int)
-153 |         }
-154 |         table = (((table as! [[String]]) + [(row as! [String])]) as! [[String]])
-    |                          `- warning: forced cast of '[[String]]' to same type has no effect
-155 |         rIdx = ((Int(rIdx) + 1) as! Int)
-156 |     }
-
-/tmp/TestSwiftTranspiler_Rosetta_Golden3897884450/001/main.swift:154:50: warning: forced cast of '[String]' to same type has no effect
-152 |             j = ((Int(j) + 1) as! Int)
-153 |         }
-154 |         table = (((table as! [[String]]) + [(row as! [String])]) as! [[String]])
-    |                                                  `- warning: forced cast of '[String]' to same type has no effect
-155 |         rIdx = ((Int(rIdx) + 1) as! Int)
-156 |     }
-
-/tmp/TestSwiftTranspiler_Rosetta_Golden3897884450/001/main.swift:155:33: warning: forced cast of 'Int' to same type has no effect
-153 |         }
-154 |         table = (((table as! [[String]]) + [(row as! [String])]) as! [[String]])
-155 |         rIdx = ((Int(rIdx) + 1) as! Int)
-    |                                 `- warning: forced cast of 'Int' to same type has no effect
+154 |         table = ((table + [row]) as! [[String]])
+155 |         rIdx = ((rIdx + 1) as! Int)
+    |                            `- warning: forced cast of 'Int' to same type has no effect
 156 |     }
 157 |     var idx = 0
 
-/tmp/TestSwiftTranspiler_Rosetta_Golden3897884450/001/main.swift:162:31: warning: forced cast of 'Int' to same type has no effect
-160 |         let col = (Int(idx) % Int(((String(key)).count)))
-161 |         table[Int(row)][Int(col)] = String(String(Array(temp)[Int(idx)..<(Int(idx) + 1)]))
-162 |         idx = ((Int(idx) + 1) as! Int)
-    |                               `- warning: forced cast of 'Int' to same type has no effect
+/tmp/TestSwiftTranspiler_Rosetta_Golden2871300367/001/main.swift:161:65: warning: forced cast of 'String' to same type has no effect
+159 |         let row = (idx / Int(((key).count)))
+160 |         let col = (idx % Int(((key).count)))
+161 |         table[row][col] = (String(Array(temp)[idx..<(idx + 1)]) as! String)
+    |                                                                 `- warning: forced cast of 'String' to same type has no effect
+162 |         idx = ((idx + 1) as! Int)
 163 |     }
-164 |     let order = (orderKey(String(key)) as! [Int])
 
-/tmp/TestSwiftTranspiler_Rosetta_Golden3897884450/001/main.swift:164:40: warning: forced cast of '[Int]' to same type has no effect
-162 |         idx = ((Int(idx) + 1) as! Int)
+/tmp/TestSwiftTranspiler_Rosetta_Golden2871300367/001/main.swift:162:26: warning: forced cast of 'Int' to same type has no effect
+160 |         let col = (idx % Int(((key).count)))
+161 |         table[row][col] = (String(Array(temp)[idx..<(idx + 1)]) as! String)
+162 |         idx = ((idx + 1) as! Int)
+    |                          `- warning: forced cast of 'Int' to same type has no effect
 163 |     }
-164 |     let order = (orderKey(String(key)) as! [Int])
-    |                                        `- warning: forced cast of '[Int]' to same type has no effect
+164 |     let order = (orderKey((key as! String)) as! [Int])
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2871300367/001/main.swift:164:32: warning: forced cast of 'String' to same type has no effect
+162 |         idx = ((idx + 1) as! Int)
+163 |     }
+164 |     let order = (orderKey((key as! String)) as! [Int])
+    |                                `- warning: forced cast of 'String' to same type has no effect
 165 |     var cols: [String] = ([] as! [String])
 166 |     var ci = 0
 
-/tmp/TestSwiftTranspiler_Rosetta_Golden3897884450/001/main.swift:171:101: warning: forced cast of 'String' to same type has no effect
+/tmp/TestSwiftTranspiler_Rosetta_Golden2871300367/001/main.swift:164:45: warning: forced cast of '[Int]' to same type has no effect
+162 |         idx = ((idx + 1) as! Int)
+163 |     }
+164 |     let order = (orderKey((key as! String)) as! [Int])
+    |                                             `- warning: forced cast of '[Int]' to same type has no effect
+165 |     var cols: [String] = ([] as! [String])
+166 |     var ci = 0
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2871300367/001/main.swift:171:95: warning: forced cast of 'String' to same type has no effect
 169 |         var ri = 0
-170 |         while (Int(ri) < Int(colLen)) {
-171 |             colStr = ((String(colStr) + String(String(Array(table[Int(ri)])[Int(order[Int(ci)])]))) as! String)
-    |                                                                                                     `- warning: forced cast of 'String' to same type has no effect
-172 |             ri = ((Int(ri) + 1) as! Int)
+170 |         while (ri < colLen) {
+171 |             colStr = ((colStr + String(describing: String(Array(table[ri])[Int(order[ci])]))) as! String)
+    |                                                                                               `- warning: forced cast of 'String' to same type has no effect
+172 |             ri = ((ri + 1) as! Int)
 173 |         }
 
-/tmp/TestSwiftTranspiler_Rosetta_Golden3897884450/001/main.swift:172:33: warning: forced cast of 'Int' to same type has no effect
-170 |         while (Int(ri) < Int(colLen)) {
-171 |             colStr = ((String(colStr) + String(String(Array(table[Int(ri)])[Int(order[Int(ci)])]))) as! String)
-172 |             ri = ((Int(ri) + 1) as! Int)
-    |                                 `- warning: forced cast of 'Int' to same type has no effect
+/tmp/TestSwiftTranspiler_Rosetta_Golden2871300367/001/main.swift:172:28: warning: forced cast of 'Int' to same type has no effect
+170 |         while (ri < colLen) {
+171 |             colStr = ((colStr + String(describing: String(Array(table[ri])[Int(order[ci])]))) as! String)
+172 |             ri = ((ri + 1) as! Int)
+    |                            `- warning: forced cast of 'Int' to same type has no effect
 173 |         }
-174 |         cols = (((cols as! [String]) + [String(colStr)]) as! [String])
+174 |         cols = ((cols + [colStr]) as! [String])
 
-/tmp/TestSwiftTranspiler_Rosetta_Golden3897884450/001/main.swift:174:24: warning: forced cast of '[String]' to same type has no effect
-172 |             ri = ((Int(ri) + 1) as! Int)
+/tmp/TestSwiftTranspiler_Rosetta_Golden2871300367/001/main.swift:175:24: warning: forced cast of 'Int' to same type has no effect
 173 |         }
-174 |         cols = (((cols as! [String]) + [String(colStr)]) as! [String])
-    |                        `- warning: forced cast of '[String]' to same type has no effect
-175 |         ci = ((Int(ci) + 1) as! Int)
-176 |     }
-
-/tmp/TestSwiftTranspiler_Rosetta_Golden3897884450/001/main.swift:175:29: warning: forced cast of 'Int' to same type has no effect
-173 |         }
-174 |         cols = (((cols as! [String]) + [String(colStr)]) as! [String])
-175 |         ci = ((Int(ci) + 1) as! Int)
-    |                             `- warning: forced cast of 'Int' to same type has no effect
+174 |         cols = ((cols + [colStr]) as! [String])
+175 |         ci = ((ci + 1) as! Int)
+    |                        `- warning: forced cast of 'Int' to same type has no effect
 176 |     }
 177 |     var result = ""
 
-/tmp/TestSwiftTranspiler_Rosetta_Golden3897884450/001/main.swift:179:34: warning: forced cast of '[String]' to same type has no effect
-177 |     var result = ""
+/tmp/TestSwiftTranspiler_Rosetta_Golden2871300367/001/main.swift:180:59: warning: forced cast of 'String' to same type has no effect
 178 |     ci = 0
-179 |     while (Int(ci) < Int((((cols as! [String])).count))) {
-    |                                  `- warning: forced cast of '[String]' to same type has no effect
-180 |         result = ((String(result) + String(cols[Int(ci)])) as! String)
-181 |         if (Int(ci) < (Int((((cols as! [String])).count)) - 1)) {
+179 |     while (ci < Int(((cols).count))) {
+180 |         result = ((result + String(describing: cols[ci])) as! String)
+    |                                                           `- warning: forced cast of 'String' to same type has no effect
+181 |         if (ci < (Int(((cols).count)) - 1)) {
+182 |             result = ((result + " ") as! String)
 
-/tmp/TestSwiftTranspiler_Rosetta_Golden3897884450/001/main.swift:180:60: warning: forced cast of 'String' to same type has no effect
-178 |     ci = 0
-179 |     while (Int(ci) < Int((((cols as! [String])).count))) {
-180 |         result = ((String(result) + String(cols[Int(ci)])) as! String)
-    |                                                            `- warning: forced cast of 'String' to same type has no effect
-181 |         if (Int(ci) < (Int((((cols as! [String])).count)) - 1)) {
-182 |             result = ((String(result) + " ") as! String)
-
-/tmp/TestSwiftTranspiler_Rosetta_Golden3897884450/001/main.swift:181:36: warning: forced cast of '[String]' to same type has no effect
-179 |     while (Int(ci) < Int((((cols as! [String])).count))) {
-180 |         result = ((String(result) + String(cols[Int(ci)])) as! String)
-181 |         if (Int(ci) < (Int((((cols as! [String])).count)) - 1)) {
-    |                                    `- warning: forced cast of '[String]' to same type has no effect
-182 |             result = ((String(result) + " ") as! String)
+/tmp/TestSwiftTranspiler_Rosetta_Golden2871300367/001/main.swift:182:38: warning: forced cast of 'String' to same type has no effect
+180 |         result = ((result + String(describing: cols[ci])) as! String)
+181 |         if (ci < (Int(((cols).count)) - 1)) {
+182 |             result = ((result + " ") as! String)
+    |                                      `- warning: forced cast of 'String' to same type has no effect
 183 |         }
+184 |         ci = ((ci + 1) as! Int)
 
-/tmp/TestSwiftTranspiler_Rosetta_Golden3897884450/001/main.swift:182:46: warning: forced cast of 'String' to same type has no effect
-180 |         result = ((String(result) + String(cols[Int(ci)])) as! String)
-181 |         if (Int(ci) < (Int((((cols as! [String])).count)) - 1)) {
-182 |             result = ((String(result) + " ") as! String)
-    |                                              `- warning: forced cast of 'String' to same type has no effect
+/tmp/TestSwiftTranspiler_Rosetta_Golden2871300367/001/main.swift:184:24: warning: forced cast of 'Int' to same type has no effect
+182 |             result = ((result + " ") as! String)
 183 |         }
-184 |         ci = ((Int(ci) + 1) as! Int)
-
-/tmp/TestSwiftTranspiler_Rosetta_Golden3897884450/001/main.swift:184:29: warning: forced cast of 'Int' to same type has no effect
-182 |             result = ((String(result) + " ") as! String)
-183 |         }
-184 |         ci = ((Int(ci) + 1) as! Int)
-    |                             `- warning: forced cast of 'Int' to same type has no effect
+184 |         ci = ((ci + 1) as! Int)
+    |                        `- warning: forced cast of 'Int' to same type has no effect
 185 |     }
-186 |     return String(result)
+186 |     return (result as! String)
 
-/tmp/TestSwiftTranspiler_Rosetta_Golden3897884450/001/main.swift:194:27: warning: forced cast of 'Int' to same type has no effect
-192 |             return Int(i)
+/tmp/TestSwiftTranspiler_Rosetta_Golden2871300367/001/main.swift:186:20: warning: forced cast of 'String' to same type has no effect
+184 |         ci = ((ci + 1) as! Int)
+185 |     }
+186 |     return (result as! String)
+    |                    `- warning: forced cast of 'String' to same type has no effect
+187 | }
+188 | func indexOf(_ s: String, _ ch: String) -> Int {
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2871300367/001/main.swift:192:23: warning: forced cast of 'Int' to same type has no effect
+190 |     while (i < Int(((s).count))) {
+191 |         if (String(Array(s)[i..<(i + 1)]) == ch) {
+192 |             return (i as! Int)
+    |                       `- warning: forced cast of 'Int' to same type has no effect
 193 |         }
-194 |         i = ((Int(i) + 1) as! Int)
-    |                           `- warning: forced cast of 'Int' to same type has no effect
+194 |         i = ((i + 1) as! Int)
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2871300367/001/main.swift:194:22: warning: forced cast of 'Int' to same type has no effect
+192 |             return (i as! Int)
+193 |         }
+194 |         i = ((i + 1) as! Int)
+    |                      `- warning: forced cast of 'Int' to same type has no effect
 195 |     }
 196 |     return (-1 as! Int)
 
-/tmp/TestSwiftTranspiler_Rosetta_Golden3897884450/001/main.swift:196:16: warning: forced cast of 'Int' to same type has no effect
-194 |         i = ((Int(i) + 1) as! Int)
+/tmp/TestSwiftTranspiler_Rosetta_Golden2871300367/001/main.swift:196:16: warning: forced cast of 'Int' to same type has no effect
+194 |         i = ((i + 1) as! Int)
 195 |     }
 196 |     return (-1 as! Int)
     |                `- warning: forced cast of 'Int' to same type has no effect
 197 | }
 198 | func decrypt(_ polybius: [String], _ key: String, _ cipherText: String) -> String {
 
-/tmp/TestSwiftTranspiler_Rosetta_Golden3897884450/001/main.swift:204:34: warning: forced cast of '[String]' to same type has no effect
-202 |     while (Int(i) <= Int(((String(cipherText)).count))) {
-203 |         if ((Int(i) == Int(((String(cipherText)).count))) || (String(String(Array(cipherText)[Int(i)])) == " ")) {
-204 |             colStrs = (((colStrs as! [String]) + [String(String(Array(cipherText)[Int(start)..<Int(i)]))]) as! [String])
-    |                                  `- warning: forced cast of '[String]' to same type has no effect
-205 |             start = ((Int(i) + 1) as! Int)
+/tmp/TestSwiftTranspiler_Rosetta_Golden2871300367/001/main.swift:205:30: warning: forced cast of 'Int' to same type has no effect
+203 |         if ((i == Int(((cipherText).count))) || (String(describing: String(Array(cipherText)[i])) == " ")) {
+204 |             colStrs = ((colStrs + [String(Array(cipherText)[start..<i])]) as! [String])
+205 |             start = ((i + 1) as! Int)
+    |                              `- warning: forced cast of 'Int' to same type has no effect
 206 |         }
+207 |         i = ((i + 1) as! Int)
 
-/tmp/TestSwiftTranspiler_Rosetta_Golden3897884450/001/main.swift:205:35: warning: forced cast of 'Int' to same type has no effect
-203 |         if ((Int(i) == Int(((String(cipherText)).count))) || (String(String(Array(cipherText)[Int(i)])) == " ")) {
-204 |             colStrs = (((colStrs as! [String]) + [String(String(Array(cipherText)[Int(start)..<Int(i)]))]) as! [String])
-205 |             start = ((Int(i) + 1) as! Int)
-    |                                   `- warning: forced cast of 'Int' to same type has no effect
+/tmp/TestSwiftTranspiler_Rosetta_Golden2871300367/001/main.swift:207:22: warning: forced cast of 'Int' to same type has no effect
+205 |             start = ((i + 1) as! Int)
 206 |         }
-207 |         i = ((Int(i) + 1) as! Int)
-
-/tmp/TestSwiftTranspiler_Rosetta_Golden3897884450/001/main.swift:207:27: warning: forced cast of 'Int' to same type has no effect
-205 |             start = ((Int(i) + 1) as! Int)
-206 |         }
-207 |         i = ((Int(i) + 1) as! Int)
-    |                           `- warning: forced cast of 'Int' to same type has no effect
+207 |         i = ((i + 1) as! Int)
+    |                      `- warning: forced cast of 'Int' to same type has no effect
 208 |     }
 209 |     var maxColLen = 0
 
-/tmp/TestSwiftTranspiler_Rosetta_Golden3897884450/001/main.swift:211:36: warning: forced cast of '[String]' to same type has no effect
-209 |     var maxColLen = 0
-210 |     i = 0
-211 |     while (Int(i) < Int((((colStrs as! [String])).count))) {
-    |                                    `- warning: forced cast of '[String]' to same type has no effect
-212 |         if (Int(((String(colStrs[Int(i)])).count)) > Int(maxColLen)) {
-213 |             maxColLen = Int(((String(colStrs[Int(i)])).count))
-
-/tmp/TestSwiftTranspiler_Rosetta_Golden3897884450/001/main.swift:215:27: warning: forced cast of 'Int' to same type has no effect
-213 |             maxColLen = Int(((String(colStrs[Int(i)])).count))
+/tmp/TestSwiftTranspiler_Rosetta_Golden2871300367/001/main.swift:215:22: warning: forced cast of 'Int' to same type has no effect
+213 |             maxColLen = Int(((String(describing: colStrs[i])).count))
 214 |         }
-215 |         i = ((Int(i) + 1) as! Int)
-    |                           `- warning: forced cast of 'Int' to same type has no effect
+215 |         i = ((i + 1) as! Int)
+    |                      `- warning: forced cast of 'Int' to same type has no effect
 216 |     }
 217 |     var cols: [[String]] = ([] as! [[String]])
 
-/tmp/TestSwiftTranspiler_Rosetta_Golden3897884450/001/main.swift:219:36: warning: forced cast of '[String]' to same type has no effect
-217 |     var cols: [[String]] = ([] as! [[String]])
-218 |     i = 0
-219 |     while (Int(i) < Int((((colStrs as! [String])).count))) {
-    |                                    `- warning: forced cast of '[String]' to same type has no effect
-220 |         var s = String(colStrs[Int(i)])
-221 |         var ls: [String] = ([] as! [String])
-
-/tmp/TestSwiftTranspiler_Rosetta_Golden3897884450/001/main.swift:224:24: warning: forced cast of '[String]' to same type has no effect
-222 |         var j = 0
-223 |         while (Int(j) < Int(((String(s)).count))) {
-224 |             ls = (((ls as! [String]) + [String(String(Array(s)[Int(j)..<(Int(j) + 1)]))]) as! [String])
-    |                        `- warning: forced cast of '[String]' to same type has no effect
-225 |             j = ((Int(j) + 1) as! Int)
+/tmp/TestSwiftTranspiler_Rosetta_Golden2871300367/001/main.swift:225:26: warning: forced cast of 'Int' to same type has no effect
+223 |         while (j < Int(((s).count))) {
+224 |             ls = ((ls + [String(Array(s)[j..<(j + 1)])]) as! [String])
+225 |             j = ((j + 1) as! Int)
+    |                          `- warning: forced cast of 'Int' to same type has no effect
 226 |         }
+227 |         if (Int(((s).count)) < maxColLen) {
 
-/tmp/TestSwiftTranspiler_Rosetta_Golden3897884450/001/main.swift:225:31: warning: forced cast of 'Int' to same type has no effect
-223 |         while (Int(j) < Int(((String(s)).count))) {
-224 |             ls = (((ls as! [String]) + [String(String(Array(s)[Int(j)..<(Int(j) + 1)]))]) as! [String])
-225 |             j = ((Int(j) + 1) as! Int)
-    |                               `- warning: forced cast of 'Int' to same type has no effect
-226 |         }
-227 |         if (Int(((String(s)).count)) < Int(maxColLen)) {
-
-/tmp/TestSwiftTranspiler_Rosetta_Golden3897884450/001/main.swift:231:40: warning: forced cast of '[String]' to same type has no effect
-229 |             var k = 0
-230 |             while (Int(k) < Int(maxColLen)) {
-231 |                 if (Int(k) < Int((((ls as! [String])).count))) {
-    |                                        `- warning: forced cast of '[String]' to same type has no effect
-232 |                     pad = (((pad as! [String]) + [String(ls[Int(k)])]) as! [String])
-233 |                 } else {
-
-/tmp/TestSwiftTranspiler_Rosetta_Golden3897884450/001/main.swift:232:34: warning: forced cast of '[String]' to same type has no effect
-230 |             while (Int(k) < Int(maxColLen)) {
-231 |                 if (Int(k) < Int((((ls as! [String])).count))) {
-232 |                     pad = (((pad as! [String]) + [String(ls[Int(k)])]) as! [String])
-    |                                  `- warning: forced cast of '[String]' to same type has no effect
-233 |                 } else {
-234 |                     pad = (((pad as! [String]) + [""]) as! [String])
-
-/tmp/TestSwiftTranspiler_Rosetta_Golden3897884450/001/main.swift:234:34: warning: forced cast of '[String]' to same type has no effect
-232 |                     pad = (((pad as! [String]) + [String(ls[Int(k)])]) as! [String])
-233 |                 } else {
-234 |                     pad = (((pad as! [String]) + [""]) as! [String])
-    |                                  `- warning: forced cast of '[String]' to same type has no effect
+/tmp/TestSwiftTranspiler_Rosetta_Golden2871300367/001/main.swift:236:30: warning: forced cast of 'Int' to same type has no effect
+234 |                     pad = ((pad + [""]) as! [String])
 235 |                 }
-236 |                 k = ((Int(k) + 1) as! Int)
-
-/tmp/TestSwiftTranspiler_Rosetta_Golden3897884450/001/main.swift:236:35: warning: forced cast of 'Int' to same type has no effect
-234 |                     pad = (((pad as! [String]) + [""]) as! [String])
-235 |                 }
-236 |                 k = ((Int(k) + 1) as! Int)
-    |                                   `- warning: forced cast of 'Int' to same type has no effect
+236 |                 k = ((k + 1) as! Int)
+    |                              `- warning: forced cast of 'Int' to same type has no effect
 237 |             }
-238 |             cols = (((cols as! [[String]]) + [(pad as! [String])]) as! [[String]])
+238 |             cols = ((cols + [pad]) as! [[String]])
 
-/tmp/TestSwiftTranspiler_Rosetta_Golden3897884450/001/main.swift:238:28: warning: forced cast of '[[String]]' to same type has no effect
-236 |                 k = ((Int(k) + 1) as! Int)
-237 |             }
-238 |             cols = (((cols as! [[String]]) + [(pad as! [String])]) as! [[String]])
-    |                            `- warning: forced cast of '[[String]]' to same type has no effect
-239 |         } else {
-240 |             cols = (((cols as! [[String]]) + [(ls as! [String])]) as! [[String]])
-
-/tmp/TestSwiftTranspiler_Rosetta_Golden3897884450/001/main.swift:238:52: warning: forced cast of '[String]' to same type has no effect
-236 |                 k = ((Int(k) + 1) as! Int)
-237 |             }
-238 |             cols = (((cols as! [[String]]) + [(pad as! [String])]) as! [[String]])
-    |                                                    `- warning: forced cast of '[String]' to same type has no effect
-239 |         } else {
-240 |             cols = (((cols as! [[String]]) + [(ls as! [String])]) as! [[String]])
-
-/tmp/TestSwiftTranspiler_Rosetta_Golden3897884450/001/main.swift:240:28: warning: forced cast of '[[String]]' to same type has no effect
-238 |             cols = (((cols as! [[String]]) + [(pad as! [String])]) as! [[String]])
-239 |         } else {
-240 |             cols = (((cols as! [[String]]) + [(ls as! [String])]) as! [[String]])
-    |                            `- warning: forced cast of '[[String]]' to same type has no effect
+/tmp/TestSwiftTranspiler_Rosetta_Golden2871300367/001/main.swift:242:22: warning: forced cast of 'Int' to same type has no effect
+240 |             cols = ((cols + [ls]) as! [[String]])
 241 |         }
-242 |         i = ((Int(i) + 1) as! Int)
-
-/tmp/TestSwiftTranspiler_Rosetta_Golden3897884450/001/main.swift:240:51: warning: forced cast of '[String]' to same type has no effect
-238 |             cols = (((cols as! [[String]]) + [(pad as! [String])]) as! [[String]])
-239 |         } else {
-240 |             cols = (((cols as! [[String]]) + [(ls as! [String])]) as! [[String]])
-    |                                                   `- warning: forced cast of '[String]' to same type has no effect
-241 |         }
-242 |         i = ((Int(i) + 1) as! Int)
-
-/tmp/TestSwiftTranspiler_Rosetta_Golden3897884450/001/main.swift:242:27: warning: forced cast of 'Int' to same type has no effect
-240 |             cols = (((cols as! [[String]]) + [(ls as! [String])]) as! [[String]])
-241 |         }
-242 |         i = ((Int(i) + 1) as! Int)
-    |                           `- warning: forced cast of 'Int' to same type has no effect
+242 |         i = ((i + 1) as! Int)
+    |                      `- warning: forced cast of 'Int' to same type has no effect
 243 |     }
 244 |     var table: [[String]] = ([] as! [[String]])
 
-/tmp/TestSwiftTranspiler_Rosetta_Golden3897884450/001/main.swift:250:26: warning: forced cast of '[String]' to same type has no effect
-248 |         var c = 0
-249 |         while (Int(c) < Int(((String(key)).count))) {
-250 |             row = (((row as! [String]) + [""]) as! [String])
-    |                          `- warning: forced cast of '[String]' to same type has no effect
-251 |             c = ((Int(c) + 1) as! Int)
+/tmp/TestSwiftTranspiler_Rosetta_Golden2871300367/001/main.swift:251:26: warning: forced cast of 'Int' to same type has no effect
+249 |         while (c < Int(((key).count))) {
+250 |             row = ((row + [""]) as! [String])
+251 |             c = ((c + 1) as! Int)
+    |                          `- warning: forced cast of 'Int' to same type has no effect
 252 |         }
+253 |         table = ((table + [row]) as! [[String]])
 
-/tmp/TestSwiftTranspiler_Rosetta_Golden3897884450/001/main.swift:251:31: warning: forced cast of 'Int' to same type has no effect
-249 |         while (Int(c) < Int(((String(key)).count))) {
-250 |             row = (((row as! [String]) + [""]) as! [String])
-251 |             c = ((Int(c) + 1) as! Int)
-    |                               `- warning: forced cast of 'Int' to same type has no effect
+/tmp/TestSwiftTranspiler_Rosetta_Golden2871300367/001/main.swift:254:22: warning: forced cast of 'Int' to same type has no effect
 252 |         }
-253 |         table = (((table as! [[String]]) + [(row as! [String])]) as! [[String]])
-
-/tmp/TestSwiftTranspiler_Rosetta_Golden3897884450/001/main.swift:253:26: warning: forced cast of '[[String]]' to same type has no effect
-251 |             c = ((Int(c) + 1) as! Int)
-252 |         }
-253 |         table = (((table as! [[String]]) + [(row as! [String])]) as! [[String]])
-    |                          `- warning: forced cast of '[[String]]' to same type has no effect
-254 |         r = ((Int(r) + 1) as! Int)
+253 |         table = ((table + [row]) as! [[String]])
+254 |         r = ((r + 1) as! Int)
+    |                      `- warning: forced cast of 'Int' to same type has no effect
 255 |     }
+256 |     let order = (orderKey((key as! String)) as! [Int])
 
-/tmp/TestSwiftTranspiler_Rosetta_Golden3897884450/001/main.swift:253:50: warning: forced cast of '[String]' to same type has no effect
-251 |             c = ((Int(c) + 1) as! Int)
-252 |         }
-253 |         table = (((table as! [[String]]) + [(row as! [String])]) as! [[String]])
-    |                                                  `- warning: forced cast of '[String]' to same type has no effect
-254 |         r = ((Int(r) + 1) as! Int)
+/tmp/TestSwiftTranspiler_Rosetta_Golden2871300367/001/main.swift:256:32: warning: forced cast of 'String' to same type has no effect
+254 |         r = ((r + 1) as! Int)
 255 |     }
-
-/tmp/TestSwiftTranspiler_Rosetta_Golden3897884450/001/main.swift:254:27: warning: forced cast of 'Int' to same type has no effect
-252 |         }
-253 |         table = (((table as! [[String]]) + [(row as! [String])]) as! [[String]])
-254 |         r = ((Int(r) + 1) as! Int)
-    |                           `- warning: forced cast of 'Int' to same type has no effect
-255 |     }
-256 |     let order = (orderKey(String(key)) as! [Int])
-
-/tmp/TestSwiftTranspiler_Rosetta_Golden3897884450/001/main.swift:256:40: warning: forced cast of '[Int]' to same type has no effect
-254 |         r = ((Int(r) + 1) as! Int)
-255 |     }
-256 |     let order = (orderKey(String(key)) as! [Int])
-    |                                        `- warning: forced cast of '[Int]' to same type has no effect
+256 |     let order = (orderKey((key as! String)) as! [Int])
+    |                                `- warning: forced cast of 'String' to same type has no effect
 257 |     r = 0
-258 |     while (Int(r) < Int(maxColLen)) {
+258 |     while (r < maxColLen) {
 
-/tmp/TestSwiftTranspiler_Rosetta_Golden3897884450/001/main.swift:262:31: warning: forced cast of 'Int' to same type has no effect
-260 |         while (Int(c) < Int(((String(key)).count))) {
-261 |             table[Int(r)][Int(order[Int(c)])] = String(String(Array(cols[Int(c)])[Int(r)]))
-262 |             c = ((Int(c) + 1) as! Int)
-    |                               `- warning: forced cast of 'Int' to same type has no effect
-263 |         }
-264 |         r = ((Int(r) + 1) as! Int)
+/tmp/TestSwiftTranspiler_Rosetta_Golden2871300367/001/main.swift:256:45: warning: forced cast of '[Int]' to same type has no effect
+254 |         r = ((r + 1) as! Int)
+255 |     }
+256 |     let order = (orderKey((key as! String)) as! [Int])
+    |                                             `- warning: forced cast of '[Int]' to same type has no effect
+257 |     r = 0
+258 |     while (r < maxColLen) {
 
-/tmp/TestSwiftTranspiler_Rosetta_Golden3897884450/001/main.swift:264:27: warning: forced cast of 'Int' to same type has no effect
-262 |             c = ((Int(c) + 1) as! Int)
+/tmp/TestSwiftTranspiler_Rosetta_Golden2871300367/001/main.swift:262:26: warning: forced cast of 'Int' to same type has no effect
+260 |         while (c < Int(((key).count))) {
+261 |             table[r][Int(order[c])] = String(describing: String(Array(cols[c])[r]))
+262 |             c = ((c + 1) as! Int)
+    |                          `- warning: forced cast of 'Int' to same type has no effect
 263 |         }
-264 |         r = ((Int(r) + 1) as! Int)
-    |                           `- warning: forced cast of 'Int' to same type has no effect
+264 |         r = ((r + 1) as! Int)
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2871300367/001/main.swift:264:22: warning: forced cast of 'Int' to same type has no effect
+262 |             c = ((c + 1) as! Int)
+263 |         }
+264 |         r = ((r + 1) as! Int)
+    |                      `- warning: forced cast of 'Int' to same type has no effect
 265 |     }
 266 |     var temp = ""
 
-/tmp/TestSwiftTranspiler_Rosetta_Golden3897884450/001/main.swift:268:34: warning: forced cast of '[[String]]' to same type has no effect
-266 |     var temp = ""
-267 |     r = 0
-268 |     while (Int(r) < Int((((table as! [[String]])).count))) {
-    |                                  `- warning: forced cast of '[[String]]' to same type has no effect
+/tmp/TestSwiftTranspiler_Rosetta_Golden2871300367/001/main.swift:270:36: warning: forced cast of '[String]' to same type has no effect
+268 |     while (r < Int(((table).count))) {
 269 |         var j = 0
-270 |         while (Int(j) < Int((((table[Int(r)] as! [String])).count))) {
+270 |         while (j < Int((((table[r] as! [String])).count))) {
+    |                                    `- warning: forced cast of '[String]' to same type has no effect
+271 |             temp = ((temp + String(describing: String(Array(table[r])[j]))) as! String)
+272 |             j = ((j + 1) as! Int)
 
-/tmp/TestSwiftTranspiler_Rosetta_Golden3897884450/001/main.swift:270:46: warning: forced cast of '[String]' to same type has no effect
-268 |     while (Int(r) < Int((((table as! [[String]])).count))) {
+/tmp/TestSwiftTranspiler_Rosetta_Golden2871300367/001/main.swift:271:77: warning: forced cast of 'String' to same type has no effect
 269 |         var j = 0
-270 |         while (Int(j) < Int((((table[Int(r)] as! [String])).count))) {
-    |                                              `- warning: forced cast of '[String]' to same type has no effect
-271 |             temp = ((String(temp) + String(String(Array(table[Int(r)])[Int(j)]))) as! String)
-272 |             j = ((Int(j) + 1) as! Int)
-
-/tmp/TestSwiftTranspiler_Rosetta_Golden3897884450/001/main.swift:271:83: warning: forced cast of 'String' to same type has no effect
-269 |         var j = 0
-270 |         while (Int(j) < Int((((table[Int(r)] as! [String])).count))) {
-271 |             temp = ((String(temp) + String(String(Array(table[Int(r)])[Int(j)]))) as! String)
-    |                                                                                   `- warning: forced cast of 'String' to same type has no effect
-272 |             j = ((Int(j) + 1) as! Int)
+270 |         while (j < Int((((table[r] as! [String])).count))) {
+271 |             temp = ((temp + String(describing: String(Array(table[r])[j]))) as! String)
+    |                                                                             `- warning: forced cast of 'String' to same type has no effect
+272 |             j = ((j + 1) as! Int)
 273 |         }
 
-/tmp/TestSwiftTranspiler_Rosetta_Golden3897884450/001/main.swift:272:31: warning: forced cast of 'Int' to same type has no effect
-270 |         while (Int(j) < Int((((table[Int(r)] as! [String])).count))) {
-271 |             temp = ((String(temp) + String(String(Array(table[Int(r)])[Int(j)]))) as! String)
-272 |             j = ((Int(j) + 1) as! Int)
-    |                               `- warning: forced cast of 'Int' to same type has no effect
+/tmp/TestSwiftTranspiler_Rosetta_Golden2871300367/001/main.swift:272:26: warning: forced cast of 'Int' to same type has no effect
+270 |         while (j < Int((((table[r] as! [String])).count))) {
+271 |             temp = ((temp + String(describing: String(Array(table[r])[j]))) as! String)
+272 |             j = ((j + 1) as! Int)
+    |                          `- warning: forced cast of 'Int' to same type has no effect
 273 |         }
-274 |         r = ((Int(r) + 1) as! Int)
+274 |         r = ((r + 1) as! Int)
 
-/tmp/TestSwiftTranspiler_Rosetta_Golden3897884450/001/main.swift:274:27: warning: forced cast of 'Int' to same type has no effect
-272 |             j = ((Int(j) + 1) as! Int)
+/tmp/TestSwiftTranspiler_Rosetta_Golden2871300367/001/main.swift:274:22: warning: forced cast of 'Int' to same type has no effect
+272 |             j = ((j + 1) as! Int)
 273 |         }
-274 |         r = ((Int(r) + 1) as! Int)
-    |                           `- warning: forced cast of 'Int' to same type has no effect
+274 |         r = ((r + 1) as! Int)
+    |                      `- warning: forced cast of 'Int' to same type has no effect
 275 |     }
 276 |     var plainText = ""
 
-/tmp/TestSwiftTranspiler_Rosetta_Golden3897884450/001/main.swift:281:43: error: no exact matches in call to initializer 
-279 |         let rIdx = Int(indexOf(String(adfgvx), String(String(Array(temp)[Int(idx)..<(Int(idx) + 1)]))))
-280 |         let cIdx = Int(indexOf(String(adfgvx), String(String(Array(temp)[(Int(idx) + 1)..<(Int(idx) + 2)]))))
-281 |         plainText = ((String(plainText) + String((polybius[Int(rIdx)] as! [Any])[Int(cIdx)])) as! String)
-    |                                           `- error: no exact matches in call to initializer 
-282 |         idx = ((Int(idx) + 2) as! Int)
+/tmp/TestSwiftTranspiler_Rosetta_Golden2871300367/001/main.swift:279:40: warning: forced cast of 'String' to same type has no effect
+277 |     var idx = 0
+278 |     while (idx < Int(((temp).count))) {
+279 |         let rIdx = Int(indexOf((adfgvx as! String), (String(Array(temp)[idx..<(idx + 1)]) as! String)))
+    |                                        `- warning: forced cast of 'String' to same type has no effect
+280 |         let cIdx = Int(indexOf((adfgvx as! String), (String(Array(temp)[(idx + 1)..<(idx + 2)]) as! String)))
+281 |         plainText = ((plainText + String(describing: (polybius[rIdx] as! [Any])[cIdx])) as! String)
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2871300367/001/main.swift:279:91: warning: forced cast of 'String' to same type has no effect
+277 |     var idx = 0
+278 |     while (idx < Int(((temp).count))) {
+279 |         let rIdx = Int(indexOf((adfgvx as! String), (String(Array(temp)[idx..<(idx + 1)]) as! String)))
+    |                                                                                           `- warning: forced cast of 'String' to same type has no effect
+280 |         let cIdx = Int(indexOf((adfgvx as! String), (String(Array(temp)[(idx + 1)..<(idx + 2)]) as! String)))
+281 |         plainText = ((plainText + String(describing: (polybius[rIdx] as! [Any])[cIdx])) as! String)
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2871300367/001/main.swift:280:40: warning: forced cast of 'String' to same type has no effect
+278 |     while (idx < Int(((temp).count))) {
+279 |         let rIdx = Int(indexOf((adfgvx as! String), (String(Array(temp)[idx..<(idx + 1)]) as! String)))
+280 |         let cIdx = Int(indexOf((adfgvx as! String), (String(Array(temp)[(idx + 1)..<(idx + 2)]) as! String)))
+    |                                        `- warning: forced cast of 'String' to same type has no effect
+281 |         plainText = ((plainText + String(describing: (polybius[rIdx] as! [Any])[cIdx])) as! String)
+282 |         idx = ((idx + 2) as! Int)
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2871300367/001/main.swift:280:97: warning: forced cast of 'String' to same type has no effect
+278 |     while (idx < Int(((temp).count))) {
+279 |         let rIdx = Int(indexOf((adfgvx as! String), (String(Array(temp)[idx..<(idx + 1)]) as! String)))
+280 |         let cIdx = Int(indexOf((adfgvx as! String), (String(Array(temp)[(idx + 1)..<(idx + 2)]) as! String)))
+    |                                                                                                 `- warning: forced cast of 'String' to same type has no effect
+281 |         plainText = ((plainText + String(describing: (polybius[rIdx] as! [Any])[cIdx])) as! String)
+282 |         idx = ((idx + 2) as! Int)
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2871300367/001/main.swift:281:70: warning: cast from 'String' to unrelated type '[Any]' always fails
+279 |         let rIdx = Int(indexOf((adfgvx as! String), (String(Array(temp)[idx..<(idx + 1)]) as! String)))
+280 |         let cIdx = Int(indexOf((adfgvx as! String), (String(Array(temp)[(idx + 1)..<(idx + 2)]) as! String)))
+281 |         plainText = ((plainText + String(describing: (polybius[rIdx] as! [Any])[cIdx])) as! String)
+    |                                                                      `- warning: cast from 'String' to unrelated type '[Any]' always fails
+282 |         idx = ((idx + 2) as! Int)
 283 |     }
 
-Swift.String.init:2:8: note: incorrect labels for candidate (have: '(_:)', expected: '(describing:)')
-1 | struct String {
-2 | public init<Subject>(describing instance: Subject)}
-  |        `- note: incorrect labels for candidate (have: '(_:)', expected: '(describing:)')
-3 | 
-
-Swift.String.init:2:8: note: incorrect labels for candidate (have: '(_:)', expected: '(reflecting:)')
-1 | struct String {
-2 | public init<Subject>(reflecting subject: Subject)}
-  |        `- note: incorrect labels for candidate (have: '(_:)', expected: '(reflecting:)')
-3 | 
-
-/tmp/TestSwiftTranspiler_Rosetta_Golden3897884450/001/main.swift:282:31: warning: forced cast of 'Int' to same type has no effect
-280 |         let cIdx = Int(indexOf(String(adfgvx), String(String(Array(temp)[(Int(idx) + 1)..<(Int(idx) + 2)]))))
-281 |         plainText = ((String(plainText) + String((polybius[Int(rIdx)] as! [Any])[Int(cIdx)])) as! String)
-282 |         idx = ((Int(idx) + 2) as! Int)
-    |                               `- warning: forced cast of 'Int' to same type has no effect
+/tmp/TestSwiftTranspiler_Rosetta_Golden2871300367/001/main.swift:281:89: warning: forced cast of 'String' to same type has no effect
+279 |         let rIdx = Int(indexOf((adfgvx as! String), (String(Array(temp)[idx..<(idx + 1)]) as! String)))
+280 |         let cIdx = Int(indexOf((adfgvx as! String), (String(Array(temp)[(idx + 1)..<(idx + 2)]) as! String)))
+281 |         plainText = ((plainText + String(describing: (polybius[rIdx] as! [Any])[cIdx])) as! String)
+    |                                                                                         `- warning: forced cast of 'String' to same type has no effect
+282 |         idx = ((idx + 2) as! Int)
 283 |     }
-284 |     return String(plainText)
 
-/tmp/TestSwiftTranspiler_Rosetta_Golden3897884450/001/main.swift:288:38: warning: forced cast of '[String]' to same type has no effect
+/tmp/TestSwiftTranspiler_Rosetta_Golden2871300367/001/main.swift:282:26: warning: forced cast of 'Int' to same type has no effect
+280 |         let cIdx = Int(indexOf((adfgvx as! String), (String(Array(temp)[(idx + 1)..<(idx + 2)]) as! String)))
+281 |         plainText = ((plainText + String(describing: (polybius[rIdx] as! [Any])[cIdx])) as! String)
+282 |         idx = ((idx + 2) as! Int)
+    |                          `- warning: forced cast of 'Int' to same type has no effect
+283 |     }
+284 |     return (plainText as! String)
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2871300367/001/main.swift:284:23: warning: forced cast of 'String' to same type has no effect
+282 |         idx = ((idx + 2) as! Int)
+283 |     }
+284 |     return (plainText as! String)
+    |                       `- warning: forced cast of 'String' to same type has no effect
+285 | }
+286 | func main() {
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2871300367/001/main.swift:220:13: warning: variable 's' was never mutated; consider changing to 'let' constant
+218 |     i = 0
+219 |     while (i < Int(((colStrs).count))) {
+220 |         var s = String(describing: colStrs[i])
+    |             `- warning: variable 's' was never mutated; consider changing to 'let' constant
+221 |         var ls: [String] = ([] as! [String])
+222 |         var j = 0
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2871300367/001/main.swift:288:38: warning: forced cast of '[String]' to same type has no effect
 286 | func main() {
 287 |     let plainText = "ATTACKAT1200AM"
 288 |     let polybius = (createPolybius() as! [String])
     |                                      `- warning: forced cast of '[String]' to same type has no effect
-289 |     let key = String(createKey(9))
-290 |     print(("\nPlaintext : " + String(plainText)))
+289 |     let key = String(describing: createKey(9))
+290 |     print(("\nPlaintext : " + plainText))
 
-/tmp/TestSwiftTranspiler_Rosetta_Golden3897884450/001/main.swift:291:47: warning: forced cast of '[String]' to same type has no effect
-289 |     let key = String(createKey(9))
-290 |     print(("\nPlaintext : " + String(plainText)))
-291 |     let cipherText = String(encrypt((polybius as! [String]), String(key), String(plainText)))
-    |                                               `- warning: forced cast of '[String]' to same type has no effect
-292 |     print(("\nEncrypted : " + String(cipherText)))
-293 |     let plainText2 = String(decrypt((polybius as! [String]), String(key), String(cipherText)))
+/tmp/TestSwiftTranspiler_Rosetta_Golden2871300367/001/main.swift:291:59: warning: forced cast of '[String]' to same type has no effect
+289 |     let key = String(describing: createKey(9))
+290 |     print(("\nPlaintext : " + plainText))
+291 |     let cipherText = String(describing: encrypt((polybius as! [String]), (key as! String), (plainText as! String)))
+    |                                                           `- warning: forced cast of '[String]' to same type has no effect
+292 |     print(("\nEncrypted : " + cipherText))
+293 |     let plainText2 = String(describing: decrypt((polybius as! [String]), (key as! String), (cipherText as! String)))
 
-/tmp/TestSwiftTranspiler_Rosetta_Golden3897884450/001/main.swift:293:47: warning: forced cast of '[String]' to same type has no effect
-291 |     let cipherText = String(encrypt((polybius as! [String]), String(key), String(plainText)))
-292 |     print(("\nEncrypted : " + String(cipherText)))
-293 |     let plainText2 = String(decrypt((polybius as! [String]), String(key), String(cipherText)))
-    |                                               `- warning: forced cast of '[String]' to same type has no effect
-294 |     print(("\nDecrypted : " + String(plainText2)))
+/tmp/TestSwiftTranspiler_Rosetta_Golden2871300367/001/main.swift:291:79: warning: forced cast of 'String' to same type has no effect
+289 |     let key = String(describing: createKey(9))
+290 |     print(("\nPlaintext : " + plainText))
+291 |     let cipherText = String(describing: encrypt((polybius as! [String]), (key as! String), (plainText as! String)))
+    |                                                                               `- warning: forced cast of 'String' to same type has no effect
+292 |     print(("\nEncrypted : " + cipherText))
+293 |     let plainText2 = String(describing: decrypt((polybius as! [String]), (key as! String), (cipherText as! String)))
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2871300367/001/main.swift:291:103: warning: forced cast of 'String' to same type has no effect
+289 |     let key = String(describing: createKey(9))
+290 |     print(("\nPlaintext : " + plainText))
+291 |     let cipherText = String(describing: encrypt((polybius as! [String]), (key as! String), (plainText as! String)))
+    |                                                                                                       `- warning: forced cast of 'String' to same type has no effect
+292 |     print(("\nEncrypted : " + cipherText))
+293 |     let plainText2 = String(describing: decrypt((polybius as! [String]), (key as! String), (cipherText as! String)))
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2871300367/001/main.swift:293:59: warning: forced cast of '[String]' to same type has no effect
+291 |     let cipherText = String(describing: encrypt((polybius as! [String]), (key as! String), (plainText as! String)))
+292 |     print(("\nEncrypted : " + cipherText))
+293 |     let plainText2 = String(describing: decrypt((polybius as! [String]), (key as! String), (cipherText as! String)))
+    |                                                           `- warning: forced cast of '[String]' to same type has no effect
+294 |     print(("\nDecrypted : " + plainText2))
+295 | }
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2871300367/001/main.swift:293:79: warning: forced cast of 'String' to same type has no effect
+291 |     let cipherText = String(describing: encrypt((polybius as! [String]), (key as! String), (plainText as! String)))
+292 |     print(("\nEncrypted : " + cipherText))
+293 |     let plainText2 = String(describing: decrypt((polybius as! [String]), (key as! String), (cipherText as! String)))
+    |                                                                               `- warning: forced cast of 'String' to same type has no effect
+294 |     print(("\nDecrypted : " + plainText2))
+295 | }
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden2871300367/001/main.swift:293:104: warning: forced cast of 'String' to same type has no effect
+291 |     let cipherText = String(describing: encrypt((polybius as! [String]), (key as! String), (plainText as! String)))
+292 |     print(("\nEncrypted : " + cipherText))
+293 |     let plainText2 = String(describing: decrypt((polybius as! [String]), (key as! String), (cipherText as! String)))
+    |                                                                                                        `- warning: forced cast of 'String' to same type has no effect
+294 |     print(("\nDecrypted : " + plainText2))
 295 | }

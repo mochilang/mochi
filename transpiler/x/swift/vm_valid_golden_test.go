@@ -25,11 +25,11 @@ func TestSwiftTranspiler_VMValid_Golden(t *testing.T) {
 	outDir := filepath.Join(root, "tests", "transpiler", "x", "swift")
 	os.MkdirAll(outDir, 0o755)
 
-	golden.RunWithSummary(t, "tests/vm/valid", ".mochi", ".out", func(src string) ([]byte, error) {
-		base := strings.TrimSuffix(filepath.Base(src), ".mochi")
-		codePath := filepath.Join(outDir, base+".swift")
-		outPath := filepath.Join(outDir, base+".out")
-		errPath := filepath.Join(outDir, base+".error")
+       golden.RunWithSummary(t, "tests/vm/valid", ".mochi", ".out", func(src string) ([]byte, error) {
+               base := strings.TrimSuffix(filepath.Base(src), ".mochi")
+               codePath := filepath.Join(outDir, base+".swift")
+               outPath := filepath.Join(outDir, base+".out")
+               errPath := filepath.Join(outDir, base+".error")
 
 		prog, err := parser.Parse(src)
 		if err != nil {
@@ -41,20 +41,21 @@ func TestSwiftTranspiler_VMValid_Golden(t *testing.T) {
 			_ = os.WriteFile(errPath, []byte(errs[0].Error()), 0o644)
 			return nil, errs[0]
 		}
-		ast, err := swifttrans.Transpile(env, prog, false)
-		if err != nil {
-			_ = os.WriteFile(errPath, []byte(err.Error()), 0o644)
-			return nil, err
-		}
-		code := ast.Emit()
-		if err := os.WriteFile(codePath, code, 0o644); err != nil {
-			return nil, err
-		}
-		out, err := compileAndRunSwiftSrc(t, swiftExe, code, nil, false)
-		if err != nil {
-			_ = os.WriteFile(errPath, append([]byte(err.Error()+"\n"), out...), 0o644)
-			return nil, err
-		}
+               bench := os.Getenv("MOCHI_BENCHMARK") == "true" || os.Getenv("MOCHI_BENCHMARK") == "1"
+               ast, err := swifttrans.Transpile(env, prog, bench)
+               if err != nil {
+                       _ = os.WriteFile(errPath, []byte(err.Error()), 0o644)
+                       return nil, err
+               }
+               code := ast.Emit()
+               if err := os.WriteFile(codePath, code, 0o644); err != nil {
+                       return nil, err
+               }
+               out, err := compileAndRunSwiftSrc(t, swiftExe, code, nil, bench)
+               if err != nil {
+                       _ = os.WriteFile(errPath, append([]byte(err.Error()+"\n"), out...), 0o644)
+                       return nil, err
+               }
 		outBytes := bytes.TrimSpace(out)
 		_ = os.WriteFile(outPath, outBytes, 0o644)
 		_ = os.Remove(errPath)

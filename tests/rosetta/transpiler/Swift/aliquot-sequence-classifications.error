@@ -1,0 +1,461 @@
+exit status 1
+/tmp/TestSwiftTranspiler_Rosetta_Golden1941188353/001/main.swift:140:1: warning: using '_' to ignore the result of a Void-returning function is redundant
+138 |     print(((((String(describing: big) + ": ") + String(describing: padRight(String(describing: (r as! [String: Any])["aliquot"]!), 15))) + " ") + String(describing: joinWithCommas(((r as! [String: Any])["seq"]! as! [Int])))))
+139 | }
+140 | _ = main()
+    | `- warning: using '_' to ignore the result of a Void-returning function is redundant
+141 | 
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden1941188353/001/main.swift:9:23: warning: forced cast of 'Int' to same type has no effect
+  7 |     while (i < Int(((xs).count))) {
+  8 |         if (Int(xs[i]) == value) {
+  9 |             return (i as! Int)
+    |                       `- warning: forced cast of 'Int' to same type has no effect
+ 10 |         }
+ 11 |         i = ((i + 1) as! Int)
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden1941188353/001/main.swift:11:22: warning: forced cast of 'Int' to same type has no effect
+  9 |             return (i as! Int)
+ 10 |         }
+ 11 |         i = ((i + 1) as! Int)
+    |                      `- warning: forced cast of 'Int' to same type has no effect
+ 12 |     }
+ 13 |     return ((0 - 1) as! Int)
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden1941188353/001/main.swift:13:21: warning: forced cast of 'Int' to same type has no effect
+ 11 |         i = ((i + 1) as! Int)
+ 12 |     }
+ 13 |     return ((0 - 1) as! Int)
+    |                     `- warning: forced cast of 'Int' to same type has no effect
+ 14 | }
+ 15 | func contains(_ xs: [Int], _ value: Int) -> Bool {
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden1941188353/001/main.swift:16:30: warning: forced cast of '[Int]' to same type has no effect
+ 14 | }
+ 15 | func contains(_ xs: [Int], _ value: Int) -> Bool {
+ 16 |     return ((Int(indexOf((xs as! [Int]), (value as! Int))) != (0 - 1)) as! Bool)
+    |                              `- warning: forced cast of '[Int]' to same type has no effect
+ 17 | }
+ 18 | func maxOf(_ a: Int, _ b: Int) -> Int {
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden1941188353/001/main.swift:16:49: warning: forced cast of 'Int' to same type has no effect
+ 14 | }
+ 15 | func contains(_ xs: [Int], _ value: Int) -> Bool {
+ 16 |     return ((Int(indexOf((xs as! [Int]), (value as! Int))) != (0 - 1)) as! Bool)
+    |                                                 `- warning: forced cast of 'Int' to same type has no effect
+ 17 | }
+ 18 | func maxOf(_ a: Int, _ b: Int) -> Int {
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden1941188353/001/main.swift:16:72: warning: forced cast of 'Bool' to same type has no effect
+ 14 | }
+ 15 | func contains(_ xs: [Int], _ value: Int) -> Bool {
+ 16 |     return ((Int(indexOf((xs as! [Int]), (value as! Int))) != (0 - 1)) as! Bool)
+    |                                                                        `- warning: forced cast of 'Bool' to same type has no effect
+ 17 | }
+ 18 | func maxOf(_ a: Int, _ b: Int) -> Int {
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden1941188353/001/main.swift:20:19: warning: forced cast of 'Int' to same type has no effect
+ 18 | func maxOf(_ a: Int, _ b: Int) -> Int {
+ 19 |     if (a > b) {
+ 20 |         return (a as! Int)
+    |                   `- warning: forced cast of 'Int' to same type has no effect
+ 21 |     } else {
+ 22 |         return (b as! Int)
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden1941188353/001/main.swift:22:19: warning: forced cast of 'Int' to same type has no effect
+ 20 |         return (a as! Int)
+ 21 |     } else {
+ 22 |         return (b as! Int)
+    |                   `- warning: forced cast of 'Int' to same type has no effect
+ 23 |     }
+ 24 | }
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden1941188353/001/main.swift:29:16: warning: forced cast of 'Int' to same type has no effect
+ 27 |         return 0
+ 28 |     }
+ 29 |     var x = (n as! Int)
+    |                `- warning: forced cast of 'Int' to same type has no effect
+ 30 |     var y = ((Int((x + 1)) / 2) as! Int)
+ 31 |     while (y < x) {
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden1941188353/001/main.swift:30:33: warning: forced cast of 'Int' to same type has no effect
+ 28 |     }
+ 29 |     var x = (n as! Int)
+ 30 |     var y = ((Int((x + 1)) / 2) as! Int)
+    |                                 `- warning: forced cast of 'Int' to same type has no effect
+ 31 |     while (y < x) {
+ 32 |         x = (y as! Int)
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden1941188353/001/main.swift:32:16: warning: forced cast of 'Int' to same type has no effect
+ 30 |     var y = ((Int((x + 1)) / 2) as! Int)
+ 31 |     while (y < x) {
+ 32 |         x = (y as! Int)
+    |                `- warning: forced cast of 'Int' to same type has no effect
+ 33 |         y = ((Int((x + (n / x))) / 2) as! Int)
+ 34 |     }
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden1941188353/001/main.swift:33:39: warning: forced cast of 'Int' to same type has no effect
+ 31 |     while (y < x) {
+ 32 |         x = (y as! Int)
+ 33 |         y = ((Int((x + (n / x))) / 2) as! Int)
+    |                                       `- warning: forced cast of 'Int' to same type has no effect
+ 34 |     }
+ 35 |     return (x as! Int)
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden1941188353/001/main.swift:35:15: warning: forced cast of 'Int' to same type has no effect
+ 33 |         y = ((Int((x + (n / x))) / 2) as! Int)
+ 34 |     }
+ 35 |     return (x as! Int)
+    |               `- warning: forced cast of 'Int' to same type has no effect
+ 36 | }
+ 37 | func sumProperDivisors(_ n: Int) -> Int {
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden1941188353/001/main.swift:41:31: warning: forced cast of 'Int' to same type has no effect
+ 39 |         return 0
+ 40 |     }
+ 41 |     let sqrt = Int(intSqrt((n as! Int)))
+    |                               `- warning: forced cast of 'Int' to same type has no effect
+ 42 |     var sum = 1
+ 43 |     var i = 2
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden1941188353/001/main.swift:46:42: warning: forced cast of 'Int' to same type has no effect
+ 44 |     while (i <= sqrt) {
+ 45 |         if ((n % i) == 0) {
+ 46 |             sum = (((sum + i) + (n / i)) as! Int)
+    |                                          `- warning: forced cast of 'Int' to same type has no effect
+ 47 |         }
+ 48 |         i = ((i + 1) as! Int)
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden1941188353/001/main.swift:48:22: warning: forced cast of 'Int' to same type has no effect
+ 46 |             sum = (((sum + i) + (n / i)) as! Int)
+ 47 |         }
+ 48 |         i = ((i + 1) as! Int)
+    |                      `- warning: forced cast of 'Int' to same type has no effect
+ 49 |     }
+ 50 |     if ((sqrt * sqrt) == n) {
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden1941188353/001/main.swift:51:29: warning: forced cast of 'Int' to same type has no effect
+ 49 |     }
+ 50 |     if ((sqrt * sqrt) == n) {
+ 51 |         sum = ((sum - sqrt) as! Int)
+    |                             `- warning: forced cast of 'Int' to same type has no effect
+ 52 |     }
+ 53 |     return (sum as! Int)
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden1941188353/001/main.swift:53:17: warning: forced cast of 'Int' to same type has no effect
+ 51 |         sum = ((sum - sqrt) as! Int)
+ 52 |     }
+ 53 |     return (sum as! Int)
+    |                 `- warning: forced cast of 'Int' to same type has no effect
+ 54 | }
+ 55 | func classifySequence(_ k: Int) -> [String: Any] {
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden1941188353/001/main.swift:56:19: warning: forced cast of 'Int' to same type has no effect
+ 54 | }
+ 55 | func classifySequence(_ k: Int) -> [String: Any] {
+ 56 |     var last = (k as! Int)
+    |                   `- warning: forced cast of 'Int' to same type has no effect
+ 57 |     var seq: [Int] = ([k] as! [Int])
+ 58 |     while true {
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden1941188353/001/main.swift:59:44: warning: forced cast of 'Int' to same type has no effect
+ 57 |     var seq: [Int] = ([k] as! [Int])
+ 58 |     while true {
+ 59 |         last = Int(sumProperDivisors((last as! Int)))
+    |                                            `- warning: forced cast of 'Int' to same type has no effect
+ 60 |         seq = ((seq + [last]) as! [Int])
+ 61 |         let n = Int(((seq).count))
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden1941188353/001/main.swift:70:76: warning: forced cast of 'String' to same type has no effect
+ 68 |             aliquot = "Amicable"
+ 69 |         } else if ((n >= 4) && (last == k)) {
+ 70 |             aliquot = ((("Sociable[" + String(describing: (n - 1))) + "]") as! String)
+    |                                                                            `- warning: forced cast of 'String' to same type has no effect
+ 71 |         } else if (last == Int(seq[(n - 2)])) {
+ 72 |             aliquot = "Aspiring"
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden1941188353/001/main.swift:73:70: warning: forced cast of 'Int' to same type has no effect
+ 71 |         } else if (last == Int(seq[(n - 2)])) {
+ 72 |             aliquot = "Aspiring"
+ 73 |         } else if Bool(contains((Array(seq[1..<Int(maxOf(1, ((n - 2) as! Int)))]) as! [Int]), (last as! Int))) {
+    |                                                                      `- warning: forced cast of 'Int' to same type has no effect
+ 74 |             let idx = Int(indexOf((seq as! [Int]), (last as! Int)))
+ 75 |             aliquot = ((("Cyclic[" + String(describing: ((n - 1) - idx))) + "]") as! String)
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden1941188353/001/main.swift:73:101: warning: forced cast of 'Int' to same type has no effect
+ 71 |         } else if (last == Int(seq[(n - 2)])) {
+ 72 |             aliquot = "Aspiring"
+ 73 |         } else if Bool(contains((Array(seq[1..<Int(maxOf(1, ((n - 2) as! Int)))]) as! [Int]), (last as! Int))) {
+    |                                                                                                     `- warning: forced cast of 'Int' to same type has no effect
+ 74 |             let idx = Int(indexOf((seq as! [Int]), (last as! Int)))
+ 75 |             aliquot = ((("Cyclic[" + String(describing: ((n - 1) - idx))) + "]") as! String)
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden1941188353/001/main.swift:74:40: warning: forced cast of '[Int]' to same type has no effect
+ 72 |             aliquot = "Aspiring"
+ 73 |         } else if Bool(contains((Array(seq[1..<Int(maxOf(1, ((n - 2) as! Int)))]) as! [Int]), (last as! Int))) {
+ 74 |             let idx = Int(indexOf((seq as! [Int]), (last as! Int)))
+    |                                        `- warning: forced cast of '[Int]' to same type has no effect
+ 75 |             aliquot = ((("Cyclic[" + String(describing: ((n - 1) - idx))) + "]") as! String)
+ 76 |         } else if ((n == 16) || (last > THRESHOLD)) {
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden1941188353/001/main.swift:74:58: warning: forced cast of 'Int' to same type has no effect
+ 72 |             aliquot = "Aspiring"
+ 73 |         } else if Bool(contains((Array(seq[1..<Int(maxOf(1, ((n - 2) as! Int)))]) as! [Int]), (last as! Int))) {
+ 74 |             let idx = Int(indexOf((seq as! [Int]), (last as! Int)))
+    |                                                          `- warning: forced cast of 'Int' to same type has no effect
+ 75 |             aliquot = ((("Cyclic[" + String(describing: ((n - 1) - idx))) + "]") as! String)
+ 76 |         } else if ((n == 16) || (last > THRESHOLD)) {
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden1941188353/001/main.swift:75:82: warning: forced cast of 'String' to same type has no effect
+ 73 |         } else if Bool(contains((Array(seq[1..<Int(maxOf(1, ((n - 2) as! Int)))]) as! [Int]), (last as! Int))) {
+ 74 |             let idx = Int(indexOf((seq as! [Int]), (last as! Int)))
+ 75 |             aliquot = ((("Cyclic[" + String(describing: ((n - 1) - idx))) + "]") as! String)
+    |                                                                                  `- warning: forced cast of 'String' to same type has no effect
+ 76 |         } else if ((n == 16) || (last > THRESHOLD)) {
+ 77 |             aliquot = "Non-Terminating"
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden1941188353/001/main.swift:86:71: warning: forced cast of '[String : Any]' to same type has no effect
+ 84 |         
+ 85 |         if (aliquot != "") {
+ 86 |             return (["seq": seq, "aliquot": aliquot] as [String: Any] as! [String: Any])
+    |                                                                       `- warning: forced cast of '[String : Any]' to same type has no effect
+ 87 |         }
+ 88 |     }
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden1941188353/001/main.swift:89:58: warning: forced cast of '[String : Any]' to same type has no effect
+ 87 |         }
+ 88 |     }
+ 89 |     return (["seq": seq, "aliquot": ""] as [String: Any] as! [String: Any])
+    |                                                          `- warning: forced cast of '[String : Any]' to same type has no effect
+ 90 | }
+ 91 | func padLeft(_ n: Int, _ w: Int) -> String {
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden1941188353/001/main.swift:92:13: error: no exact matches in call to initializer 
+ 90 | }
+ 91 | func padLeft(_ n: Int, _ w: Int) -> String {
+ 92 |     var s = String(String(describing: n))!
+    |             |- error: no exact matches in call to initializer 
+    |             `- note: found candidate with type '(String) -> String'
+ 93 |     while (Int(((s).count)) < w) {
+ 94 |         s = ((" " + s) as! String)
+
+Swift.String.init:3:21: note: incorrect labels for candidate (have: '(_:)', expected: '(validatingCString:)')
+1 | struct String {
+2 | @available(*, deprecated, message: "Use a copy of the String argument")
+3 |   @inlinable public init?(validatingCString nullTerminatedUTF8: String)}
+  |                     `- note: incorrect labels for candidate (have: '(_:)', expected: '(validatingCString:)')
+4 | 
+
+Swift.String.init:3:21: note: incorrect labels for candidate (have: '(_:)', expected: '(validatingUTF8:)')
+1 | struct String {
+2 | @available(*, deprecated, message: "Use a copy of the String argument")
+3 |   @inlinable public init?(validatingUTF8 cString: String)}
+  |                     `- note: incorrect labels for candidate (have: '(_:)', expected: '(validatingUTF8:)')
+4 | 
+
+Foundation.String.init:3:10: note: incorrect labels for candidate (have: '(_:)', expected: '(utf8String:)')
+1 | struct String {
+2 | @available(*, deprecated, message: "Use a copy of the String argument")
+3 |   public init?(utf8String bytes: String)}
+  |          `- note: incorrect labels for candidate (have: '(_:)', expected: '(utf8String:)')
+4 | 
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden1941188353/001/main.swift:94:24: warning: forced cast of 'String' to same type has no effect
+ 92 |     var s = String(String(describing: n))!
+ 93 |     while (Int(((s).count)) < w) {
+ 94 |         s = ((" " + s) as! String)
+    |                        `- warning: forced cast of 'String' to same type has no effect
+ 95 |     }
+ 96 |     return (s as! String)
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden1941188353/001/main.swift:99:16: warning: forced cast of 'String' to same type has no effect
+ 97 | }
+ 98 | func padRight(_ s: String, _ w: Int) -> String {
+ 99 |     var r = (s as! String)
+    |                `- warning: forced cast of 'String' to same type has no effect
+100 |     while (Int(((r).count)) < w) {
+101 |         r = ((r + " ") as! String)
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden1941188353/001/main.swift:101:24: warning: forced cast of 'String' to same type has no effect
+ 99 |     var r = (s as! String)
+100 |     while (Int(((r).count)) < w) {
+101 |         r = ((r + " ") as! String)
+    |                        `- warning: forced cast of 'String' to same type has no effect
+102 |     }
+103 |     return (r as! String)
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden1941188353/001/main.swift:103:15: warning: forced cast of 'String' to same type has no effect
+101 |         r = ((r + " ") as! String)
+102 |     }
+103 |     return (r as! String)
+    |               `- warning: forced cast of 'String' to same type has no effect
+104 | }
+105 | func joinWithCommas(_ seq: [Int]) -> String {
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden1941188353/001/main.swift:109:52: warning: forced cast of 'String' to same type has no effect
+107 |     var i = 0
+108 |     while (i < Int(((seq).count))) {
+109 |         s = ((s + String(describing: Int(seq[i]))) as! String)
+    |                                                    `- warning: forced cast of 'String' to same type has no effect
+110 |         if (i < (Int(((seq).count)) - 1)) {
+111 |             s = ((s + ", ") as! String)
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden1941188353/001/main.swift:111:29: warning: forced cast of 'String' to same type has no effect
+109 |         s = ((s + String(describing: Int(seq[i]))) as! String)
+110 |         if (i < (Int(((seq).count)) - 1)) {
+111 |             s = ((s + ", ") as! String)
+    |                             `- warning: forced cast of 'String' to same type has no effect
+112 |         }
+113 |         i = ((i + 1) as! Int)
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden1941188353/001/main.swift:113:22: warning: forced cast of 'Int' to same type has no effect
+111 |             s = ((s + ", ") as! String)
+112 |         }
+113 |         i = ((i + 1) as! Int)
+    |                      `- warning: forced cast of 'Int' to same type has no effect
+114 |     }
+115 |     s = ((s + "]") as! String)
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden1941188353/001/main.swift:115:20: warning: forced cast of 'String' to same type has no effect
+113 |         i = ((i + 1) as! Int)
+114 |     }
+115 |     s = ((s + "]") as! String)
+    |                    `- warning: forced cast of 'String' to same type has no effect
+116 |     return (s as! String)
+117 | }
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden1941188353/001/main.swift:116:15: warning: forced cast of 'String' to same type has no effect
+114 |     }
+115 |     s = ((s + "]") as! String)
+116 |     return (s as! String)
+    |               `- warning: forced cast of 'String' to same type has no effect
+117 | }
+118 | func main() {
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden1941188353/001/main.swift:122:40: warning: forced cast of 'Int' to same type has no effect
+120 |     var k = 1
+121 |     while (k <= 10) {
+122 |         let res = (classifySequence((k as! Int)) as! [String: Any])
+    |                                        `- warning: forced cast of 'Int' to same type has no effect
+123 |         print(((((String(describing: padLeft((k as! Int), 2)) + ": ") + String(describing: padRight(String(describing: (res as! [String: Any])["aliquot"]!), 15))) + " ") + String(describing: joinWithCommas(((res as! [String: Any])["seq"]! as! [Int])))))
+124 |         k = ((k + 1) as! Int)
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden1941188353/001/main.swift:122:50: warning: forced cast of '[String : Any]' to same type has no effect
+120 |     var k = 1
+121 |     while (k <= 10) {
+122 |         let res = (classifySequence((k as! Int)) as! [String: Any])
+    |                                                  `- warning: forced cast of '[String : Any]' to same type has no effect
+123 |         print(((((String(describing: padLeft((k as! Int), 2)) + ": ") + String(describing: padRight(String(describing: (res as! [String: Any])["aliquot"]!), 15))) + " ") + String(describing: joinWithCommas(((res as! [String: Any])["seq"]! as! [Int])))))
+124 |         k = ((k + 1) as! Int)
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden1941188353/001/main.swift:123:49: warning: forced cast of 'Int' to same type has no effect
+121 |     while (k <= 10) {
+122 |         let res = (classifySequence((k as! Int)) as! [String: Any])
+123 |         print(((((String(describing: padLeft((k as! Int), 2)) + ": ") + String(describing: padRight(String(describing: (res as! [String: Any])["aliquot"]!), 15))) + " ") + String(describing: joinWithCommas(((res as! [String: Any])["seq"]! as! [Int])))))
+    |                                                 `- warning: forced cast of 'Int' to same type has no effect
+124 |         k = ((k + 1) as! Int)
+125 |     }
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden1941188353/001/main.swift:123:125: warning: forced cast of '[String : Any]' to same type has no effect
+121 |     while (k <= 10) {
+122 |         let res = (classifySequence((k as! Int)) as! [String: Any])
+123 |         print(((((String(describing: padLeft((k as! Int), 2)) + ": ") + String(describing: padRight(String(describing: (res as! [String: Any])["aliquot"]!), 15))) + " ") + String(describing: joinWithCommas(((res as! [String: Any])["seq"]! as! [Int])))))
+    |                                                                                                                             `- warning: forced cast of '[String : Any]' to same type has no effect
+124 |         k = ((k + 1) as! Int)
+125 |     }
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden1941188353/001/main.swift:123:213: warning: forced cast of '[String : Any]' to same type has no effect
+121 |     while (k <= 10) {
+122 |         let res = (classifySequence((k as! Int)) as! [String: Any])
+123 |         print(((((String(describing: padLeft((k as! Int), 2)) + ": ") + String(describing: padRight(String(describing: (res as! [String: Any])["aliquot"]!), 15))) + " ") + String(describing: joinWithCommas(((res as! [String: Any])["seq"]! as! [Int])))))
+    |                                                                                                                                                                                                                     `- warning: forced cast of '[String : Any]' to same type has no effect
+124 |         k = ((k + 1) as! Int)
+125 |     }
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden1941188353/001/main.swift:124:22: warning: forced cast of 'Int' to same type has no effect
+122 |         let res = (classifySequence((k as! Int)) as! [String: Any])
+123 |         print(((((String(describing: padLeft((k as! Int), 2)) + ": ") + String(describing: padRight(String(describing: (res as! [String: Any])["aliquot"]!), 15))) + " ") + String(describing: joinWithCommas(((res as! [String: Any])["seq"]! as! [Int])))))
+124 |         k = ((k + 1) as! Int)
+    |                      `- warning: forced cast of 'Int' to same type has no effect
+125 |     }
+126 |     print("")
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden1941188353/001/main.swift:131:42: warning: forced cast of 'Int' to same type has no effect
+129 |     while (i < Int(((s).count))) {
+130 |         let val = Int(s[i])
+131 |         let res = (classifySequence((val as! Int)) as! [String: Any])
+    |                                          `- warning: forced cast of 'Int' to same type has no effect
+132 |         print(((((String(describing: padLeft((val as! Int), 7)) + ": ") + String(describing: padRight(String(describing: (res as! [String: Any])["aliquot"]!), 15))) + " ") + String(describing: joinWithCommas(((res as! [String: Any])["seq"]! as! [Int])))))
+133 |         i = ((i + 1) as! Int)
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden1941188353/001/main.swift:131:52: warning: forced cast of '[String : Any]' to same type has no effect
+129 |     while (i < Int(((s).count))) {
+130 |         let val = Int(s[i])
+131 |         let res = (classifySequence((val as! Int)) as! [String: Any])
+    |                                                    `- warning: forced cast of '[String : Any]' to same type has no effect
+132 |         print(((((String(describing: padLeft((val as! Int), 7)) + ": ") + String(describing: padRight(String(describing: (res as! [String: Any])["aliquot"]!), 15))) + " ") + String(describing: joinWithCommas(((res as! [String: Any])["seq"]! as! [Int])))))
+133 |         i = ((i + 1) as! Int)
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden1941188353/001/main.swift:132:51: warning: forced cast of 'Int' to same type has no effect
+130 |         let val = Int(s[i])
+131 |         let res = (classifySequence((val as! Int)) as! [String: Any])
+132 |         print(((((String(describing: padLeft((val as! Int), 7)) + ": ") + String(describing: padRight(String(describing: (res as! [String: Any])["aliquot"]!), 15))) + " ") + String(describing: joinWithCommas(((res as! [String: Any])["seq"]! as! [Int])))))
+    |                                                   `- warning: forced cast of 'Int' to same type has no effect
+133 |         i = ((i + 1) as! Int)
+134 |     }
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden1941188353/001/main.swift:132:127: warning: forced cast of '[String : Any]' to same type has no effect
+130 |         let val = Int(s[i])
+131 |         let res = (classifySequence((val as! Int)) as! [String: Any])
+132 |         print(((((String(describing: padLeft((val as! Int), 7)) + ": ") + String(describing: padRight(String(describing: (res as! [String: Any])["aliquot"]!), 15))) + " ") + String(describing: joinWithCommas(((res as! [String: Any])["seq"]! as! [Int])))))
+    |                                                                                                                               `- warning: forced cast of '[String : Any]' to same type has no effect
+133 |         i = ((i + 1) as! Int)
+134 |     }
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden1941188353/001/main.swift:132:215: warning: forced cast of '[String : Any]' to same type has no effect
+130 |         let val = Int(s[i])
+131 |         let res = (classifySequence((val as! Int)) as! [String: Any])
+132 |         print(((((String(describing: padLeft((val as! Int), 7)) + ": ") + String(describing: padRight(String(describing: (res as! [String: Any])["aliquot"]!), 15))) + " ") + String(describing: joinWithCommas(((res as! [String: Any])["seq"]! as! [Int])))))
+    |                                                                                                                                                                                                                       `- warning: forced cast of '[String : Any]' to same type has no effect
+133 |         i = ((i + 1) as! Int)
+134 |     }
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden1941188353/001/main.swift:133:22: warning: forced cast of 'Int' to same type has no effect
+131 |         let res = (classifySequence((val as! Int)) as! [String: Any])
+132 |         print(((((String(describing: padLeft((val as! Int), 7)) + ": ") + String(describing: padRight(String(describing: (res as! [String: Any])["aliquot"]!), 15))) + " ") + String(describing: joinWithCommas(((res as! [String: Any])["seq"]! as! [Int])))))
+133 |         i = ((i + 1) as! Int)
+    |                      `- warning: forced cast of 'Int' to same type has no effect
+134 |     }
+135 |     print("")
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden1941188353/001/main.swift:137:36: warning: forced cast of 'Int' to same type has no effect
+135 |     print("")
+136 |     let big = 15355717786080
+137 |     let r = (classifySequence((big as! Int)) as! [String: Any])
+    |                                    `- warning: forced cast of 'Int' to same type has no effect
+138 |     print(((((String(describing: big) + ": ") + String(describing: padRight(String(describing: (r as! [String: Any])["aliquot"]!), 15))) + " ") + String(describing: joinWithCommas(((r as! [String: Any])["seq"]! as! [Int])))))
+139 | }
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden1941188353/001/main.swift:137:46: warning: forced cast of '[String : Any]' to same type has no effect
+135 |     print("")
+136 |     let big = 15355717786080
+137 |     let r = (classifySequence((big as! Int)) as! [String: Any])
+    |                                              `- warning: forced cast of '[String : Any]' to same type has no effect
+138 |     print(((((String(describing: big) + ": ") + String(describing: padRight(String(describing: (r as! [String: Any])["aliquot"]!), 15))) + " ") + String(describing: joinWithCommas(((r as! [String: Any])["seq"]! as! [Int])))))
+139 | }
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden1941188353/001/main.swift:138:99: warning: forced cast of '[String : Any]' to same type has no effect
+136 |     let big = 15355717786080
+137 |     let r = (classifySequence((big as! Int)) as! [String: Any])
+138 |     print(((((String(describing: big) + ": ") + String(describing: padRight(String(describing: (r as! [String: Any])["aliquot"]!), 15))) + " ") + String(describing: joinWithCommas(((r as! [String: Any])["seq"]! as! [Int])))))
+    |                                                                                                   `- warning: forced cast of '[String : Any]' to same type has no effect
+139 | }
+140 | _ = main()
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden1941188353/001/main.swift:138:185: warning: forced cast of '[String : Any]' to same type has no effect
+136 |     let big = 15355717786080
+137 |     let r = (classifySequence((big as! Int)) as! [String: Any])
+138 |     print(((((String(describing: big) + ": ") + String(describing: padRight(String(describing: (r as! [String: Any])["aliquot"]!), 15))) + " ") + String(describing: joinWithCommas(((r as! [String: Any])["seq"]! as! [Int])))))
+    |                                                                                                                                                                                         `- warning: forced cast of '[String : Any]' to same type has no effect
+139 | }
+140 | _ = main()
